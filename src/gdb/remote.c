@@ -5319,7 +5319,7 @@ remote_insert_watchpoint(CORE_ADDR addr, int len, int type)
     warning(_("buflen is too big"));
   }
 
-  snprintf(buf, buflen, "Z%x,", u_packet);
+  snprintf(buf, buflen, "Z%x,", min(u_packet, (unsigned int)INT_MAX));
   p = strchr(buf, '\0');
   addr = remote_address_masked(addr);
   p += hexnumstr(p, (ULONGEST)addr);
@@ -5367,7 +5367,7 @@ remote_remove_watchpoint(CORE_ADDR addr, int len, int type)
     warning(_("buflen is too big"));
   }
 
-  snprintf(buf, buflen, "z%x,", u_packet);
+  snprintf(buf, buflen, "z%x,", min(u_packet, (unsigned int)INT_MAX));
   p = strchr(buf, '\0');
   addr = remote_address_masked(addr);
   p += hexnumstr(p, (ULONGEST)addr);

@@ -6050,14 +6050,15 @@ ada_find_renaming_symbol (const char *name, struct block *block)
           && strstr(function_name, "_ada_") == function_name)
         function_name = (function_name + 5);
 
-      total_rename_len = min((rename_len * sizeof(char)), MAX_ALLOCA_SIZE);
+      total_rename_len = (min((rename_len * sizeof(char)), MAX_ALLOCA_SIZE)
+			  + 10UL);
       rename = (char *)alloca(min(total_rename_len, MAX_ALLOCA_SIZE));
       snprintf(rename, (total_rename_len + 1UL), "%s__%s___XR", function_name,
 	       name);
     }
   else
     {
-      const size_t rename_len = (strlen(name) + 6UL);
+      const size_t rename_len = (strlen(name) + 7UL);
       size_t total_rename_len = min((rename_len * sizeof(char)),
 				    MAX_ALLOCA_SIZE);
       rename = (char *)alloca(min(total_rename_len, MAX_ALLOCA_SIZE));

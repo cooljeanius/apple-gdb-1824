@@ -747,7 +747,7 @@ bfd_pef_parse_traceback_tables(bfd *abfd, asection *sec,
        * counting symbols.  */
       if (csym)
 	{
-	  tbnamelen = (strlen(tbprefix) + strlen(function.name));
+	  tbnamelen = (strlen(tbprefix) + strlen(function.name) + 1UL);
 	  name = (char *)bfd_alloc(abfd, (bfd_size_type)(tbnamelen + 1UL));
 	  if (name == NULL)
 	    {
@@ -755,7 +755,7 @@ bfd_pef_parse_traceback_tables(bfd *abfd, asection *sec,
 	      function.name = NULL;
 	      break;
 	    }
-	  snprintf(name, (tbnamelen + 1), "%s%s", tbprefix, function.name);
+	  snprintf(name, (tbnamelen + 1UL), "%s%s", tbprefix, function.name);
 	  traceback.name = name;
 	  traceback.value = pos;
 	  traceback.the_bfd = abfd;

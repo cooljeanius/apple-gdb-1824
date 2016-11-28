@@ -313,7 +313,8 @@ typedef bfd_vma CORE_ADDR;
 #endif /* !SIZE_T_MAX */
 
 #ifndef BUF_LEN_MAX_FOR_SNPRINTF
-# define BUF_LEN_MAX_FOR_SNPRINTF (min(((SIZE_T_MAX - 1UL) / 2UL), (size_t)INT_MAX))
+# define BUF_LEN_MAX_FOR_SNPRINTF \
+           (min((((SIZE_T_MAX - 1UL) / 2UL) - 1UL), ((size_t)INT_MAX - 1UL)))
 #endif /* BUF_LEN_MAX_FOR_SNPRINTF */
 
 /* Macros to do string compares.

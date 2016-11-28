@@ -1504,9 +1504,9 @@ macosx_process_completer_quoted(const char *text, char *word, int quote,
       /* Skip zombie processes: */
       if ((proc[i].kp_proc.p_stat == SZOMB) || proc[i].kp_proc.p_stat == 0)
         continue;
-      /* FIXME: should really be 2 strlens in here, but a pid_t is not a string,
-       * unfortunately: */
-      templen = (strlen(proc[i].kp_proc.p_comm) + (size_t)proc[i].kp_proc.p_pid
+      /* FIXME: check math: */
+      templen = (strlen(proc[i].kp_proc.p_comm)
+		 + strlen(target_pid_to_str(pid_to_ptid(proc[i].kp_proc.p_pid)))
 		 + 1UL + 16UL);
       temp = (char *)xmalloc(templen);
       snprintf(temp, templen, "%s.%d", proc[i].kp_proc.p_comm,

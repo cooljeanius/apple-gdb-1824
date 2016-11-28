@@ -2483,13 +2483,13 @@ print_inlined_frame (struct frame_info *fi, int print_level,
 
   if (tmp_name)
     {
-      buffer_len = (strlen(tmp_name) + strlen(" [inlined]") + 2UL);
+      buffer_len = (strlen(tmp_name) + strlen(" [inlined]") + 3UL);
       buffer = (char *)xmalloc(buffer_len);
       snprintf(buffer, buffer_len, "%s [inlined]", tmp_name);
     }
   else
     {
-      buffer_len = (strlen("<unknown function> [inlined]") + 1UL);
+      buffer_len = (strlen("<unknown function> [inlined]") + 3UL);
       buffer = (char *)xmalloc(buffer_len);
       snprintf(buffer, buffer_len, "<unknown function> [inlined]");
     }

@@ -695,7 +695,7 @@ dyld_init_paths(dyld_path_info * d)
   if (d->fallback_framework_path == NULL)
     {
       size_t dlen0 = (strlen(default_fallback_framework_path)
-		      + strlen(home) + 1UL);
+		      + strlen(home) + 2UL);
       d->fallback_framework_path = (char *)xmalloc(dlen0);
       snprintf(d->fallback_framework_path, dlen0,
 	       default_fallback_framework_path, home);
@@ -704,7 +704,7 @@ dyld_init_paths(dyld_path_info * d)
   if (d->fallback_library_path == NULL)
     {
       size_t dlen1 = (strlen(default_fallback_library_path)
-		      + strlen(home) + 1UL);
+		      + strlen(home) + 2UL);
       d->fallback_library_path = (char *)xmalloc(dlen1);
       snprintf(d->fallback_library_path, dlen1, default_fallback_library_path,
 	       home);

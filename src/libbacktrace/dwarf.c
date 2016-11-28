@@ -2610,6 +2610,11 @@ report_inlined_functions (uintptr_t pc, struct function *function,
   return 0;
 }
 
+
+#ifdef filename
+# undef filename
+#endif /* filename */
+
 /* Look for a PC in the DWARF mapping for one module.  On success,
    call CALLBACK and return whatever it returns.  On error, call
    ERROR_CALLBACK and return 0.  Sets *FOUND to 1 if the PC is found,
@@ -2628,7 +2633,7 @@ dwarf_lookup_pc (struct backtrace_state *state, struct dwarf_data *ddata,
   struct line *ln;
   struct function_addrs *function_addrs;
   struct function *function;
-  const char *filename;
+  const char *filename0;
   int lineno;
   int ret;
 
@@ -2766,38 +2771,38 @@ dwarf_lookup_pc (struct backtrace_state *state, struct dwarf_data *ddata,
 
       if (entry->u->abs_filename == NULL)
 	{
-	  const char *filename;
+	  const char *filename1;
 
-	  filename = entry->u->filename;
-	  if (filename != NULL
-	      && !IS_ABSOLUTE_PATH (filename)
-	      && entry->u->comp_dir != NULL)
+	  filename1 = entry->u->filename;
+	  if ((filename1 != NULL)
+	      && !IS_ABSOLUTE_PATH(filename1)
+	      && (entry->u->comp_dir != NULL))
 	    {
 	      size_t filename_len;
 	      const char *dir;
 	      size_t dir_len;
 	      char *s;
 
-	      filename_len = strlen (filename);
+	      filename_len = strlen(filename1);
 	      dir = entry->u->comp_dir;
-	      dir_len = strlen (dir);
-	      s = (char *) backtrace_alloc (state, dir_len + filename_len + 2,
-					    error_callback, data);
+	      dir_len = strlen(dir);
+	      s = (char *)backtrace_alloc(state, (dir_len + filename_len + 2),
+					  error_callback, data);
 	      if (s == NULL)
 		{
 		  *found = 0;
 		  return 0;
 		}
-	      memcpy (s, dir, dir_len);
+	      memcpy(s, dir, dir_len);
 	      /* FIXME: Should use backslash if DOS file system.  */
 	      s[dir_len] = '/';
-	      memcpy (s + dir_len + 1, filename, filename_len + 1);
-	      filename = s;
+	      memcpy((s + dir_len + 1), filename1, (filename_len + 1));
+	      filename1 = s;
 	    }
-	  entry->u->abs_filename = filename;
+	  entry->u->abs_filename = filename1;
 	}
 
-      return callback (data, pc, entry->u->abs_filename, 0, NULL);
+      return callback(data, pc, entry->u->abs_filename, 0, NULL);
     }
 
   /* Search for function name within this unit.  */
@@ -2824,15 +2829,15 @@ dwarf_lookup_pc (struct backtrace_state *state, struct dwarf_data *ddata,
 
   function = function_addrs->function;
 
-  filename = ln->filename;
+  filename0 = ln->filename;
   lineno = ln->lineno;
 
-  ret = report_inlined_functions (pc, function, callback, data,
-				  &filename, &lineno);
+  ret = report_inlined_functions(pc, function, callback, data,
+				 &filename0, &lineno);
   if (ret != 0)
     return ret;
 
-  return callback (data, pc, filename, lineno, function->name);
+  return callback(data, pc, filename0, lineno, function->name);
 }
 
 

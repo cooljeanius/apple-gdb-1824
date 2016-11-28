@@ -1479,7 +1479,7 @@ stab_start_class_type (void *p, const char *tag, unsigned int id, bfd_boolean st
 	}
       else
 	{
-	  vtable_len = (strlen(vstring) + 3UL);
+	  vtable_len = (strlen(vstring) + 4UL);
 	  vtable = (char *)xmalloc(vtable_len);
 	  snprintf(vtable, vtable_len, "~%%%s", vstring);
 	  free(vstring);
@@ -2074,7 +2074,7 @@ stab_variable (void *p, const char *name, enum debug_var_kind kind,
       break;
     }
 
-  buf_len = (strlen(name) + strlen(s) + 3UL);
+  buf_len = (strlen(name) + strlen(s) + 4UL);
   buf = (char *)xmalloc(buf_len);
   snprintf(buf, buf_len, "%s:%s%s", name, kindstr, s);
   free(s);

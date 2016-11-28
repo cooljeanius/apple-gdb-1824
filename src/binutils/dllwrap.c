@@ -817,7 +817,7 @@ main(int argc, char **argv)
   if (! def_file_seen)
     {
       char *fileprefix = choose_temp_base();
-      const size_t def_file_name_len = (strlen(fileprefix) + 5UL);
+      const size_t def_file_name_len = (strlen(fileprefix) + 6UL);
 
       def_file_name = (char *)xmalloc(def_file_name_len);
       snprintf(def_file_name, def_file_name_len, "%s.def",
@@ -1001,7 +1001,7 @@ Creating one, but that may not be what you want"));
   if (! base_file_name)
     {
       char *fileprefix = choose_temp_base();
-      const size_t base_file_name_len = (strlen(fileprefix) + 6UL);
+      const size_t base_file_name_len = (strlen(fileprefix) + 7UL);
       base_file_name = (char *)xmalloc(base_file_name_len);
       snprintf(base_file_name, base_file_name_len, "%s.base",
 	       ((dontdeltemps) ? mybasename (fileprefix) : fileprefix));

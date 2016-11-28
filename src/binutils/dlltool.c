@@ -1121,7 +1121,7 @@ def_import(const char *app_name, const char *module, const char *dllext,
 
   if (dllext != NULL)
     {
-      const size_t buflen = (strlen(module) + strlen(dllext) + 2UL);
+      const size_t buflen = (strlen(module) + strlen(dllext) + 4UL);
       buf = (char *)alloca(buflen);
       snprintf(buf, buflen, "%s.%s", module, dllext);
       module = buf;
@@ -1393,7 +1393,7 @@ add_excludes (const char *new_excludes)
   for (; exclude_string; exclude_string = strtok(NULL, ",:"))
     {
       struct string_list *new_exclude;
-      size_t exclude_string_len = (strlen(exclude_string) + 2UL);
+      size_t exclude_string_len = (strlen(exclude_string) + 3UL);
 
       new_exclude = ((struct string_list *)
 		     xmalloc(sizeof(struct string_list)));
@@ -2249,7 +2249,7 @@ make_one_lib_file (export_type *exp, int i)
 #endif /* !EXTRA */
   asymbol *ptrs[NSECS + 4 + EXTRA + 1];
   flagword applicable;
-  const size_t outnamelen = (strlen(TMP_STUB) + 10UL);
+  const size_t outnamelen = (strlen(TMP_STUB) + 15UL);
   char *outname = (char *)xmalloc(outnamelen);
   int oidx = 0;
 
@@ -2855,7 +2855,7 @@ gen_lib_file(void)
   if (dontdeltemps < 2)
     {
       char *name;
-      const size_t namelen = (strlen(TMP_STUB) + 10UL);
+      const size_t namelen = (strlen(TMP_STUB) + 14UL);
 
       name = (char *)alloca(namelen);
       for (i = 0; (exp = d_exports_lexically[i]); i++)

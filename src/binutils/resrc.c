@@ -287,7 +287,7 @@ open_input_stream(char *cmd)
       size_t cpp_temp_file_len;
 
       fileprefix = choose_temp_base();
-      cpp_temp_file_len = (strlen(fileprefix) + 5UL);
+      cpp_temp_file_len = (strlen(fileprefix) + 6UL);
       cpp_temp_file = (char *)xmalloc(cpp_temp_file_len);
       snprintf(cpp_temp_file, cpp_temp_file_len, "%s.irc", fileprefix);
       xfree(fileprefix);

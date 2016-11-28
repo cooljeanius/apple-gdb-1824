@@ -876,7 +876,7 @@ make_qualified_name(struct archive_info * arch,
 
   len = (strlen(arch->file_name) + strlen(member_name) + 3UL);
   if (arch->is_thin_archive
-      && arch->nested_member_origin != 0)
+      && (arch->nested_member_origin != 0))
     {
       /* PR 15140: Allow for corrupt thin archives: */
       if (nested_arch->file_name)
@@ -884,6 +884,8 @@ make_qualified_name(struct archive_info * arch,
       else
 	len += (strlen(error_name) + 2UL);
     }
+  else
+    len += 2UL;
 
   name = (char *)malloc(len);
   if (name == NULL)

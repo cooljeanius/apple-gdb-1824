@@ -874,7 +874,7 @@ concat_filename(struct line_info_table *table, unsigned int file)
 	 The best we can do is return the filename part.  */
       if (dirname != NULL)
 	{
-	  size_t len = (strlen(dirname) + strlen(filename) + 2UL);
+	  size_t len = (strlen(dirname) + strlen(filename) + 4UL);
 	  char *name;
 
 	  name = (char *)bfd_malloc((bfd_size_type)len);
