@@ -1369,7 +1369,7 @@ fixup_section (struct general_symbol_info *ginfo, struct objfile *objfile)
       ginfo->name && ginfo->name[0])
     {
       size_t prefixed_name_len = (strlen(objfile->prefix) + strlen(ginfo->name)
-				  + 1UL);
+				  + 3UL);
       char *prefixed_name = (char *)xmalloc(prefixed_name_len);
       if (prefixed_name)
 	{
@@ -4565,7 +4565,7 @@ search_symbols(const char *regexp, domain_enum kind, int nfiles, char *files[],
 	  /* If wrong number of spaces, fix it. */
 	  if (fix >= 0)
 	    {
-	      const size_t tmplen = (8UL + fix + strlen(opname) + 1UL);
+	      const size_t tmplen = (8UL + fix + strlen(opname) + 3UL);
 	      char *tmp = (char *)alloca(tmplen);
 	      snprintf(tmp, tmplen, "operator%.*s%s", fix, " ", opname);
 	      regexp = tmp;

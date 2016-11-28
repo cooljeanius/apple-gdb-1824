@@ -1160,7 +1160,7 @@ add_objfile_prefix(struct objfile *objfile, const char* name)
   if (name && name[0] && objfile && objfile->prefix && objfile->prefix[0])
     {
       /* Get length for leading char, prefix, name and NULL terminator: */
-      prefixed_name_length = (strlen(objfile->prefix) + strlen(name) + 1UL);
+      prefixed_name_length = (strlen(objfile->prefix) + strlen(name) + 3UL);
       prefixed_name = (char *)obstack_alloc(&objfile->objfile_obstack,
 					    prefixed_name_length);
 

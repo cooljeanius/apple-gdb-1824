@@ -1198,7 +1198,7 @@ set_async_prompt(const char *args, int from_tty, struct cmd_list_element *c)
       && (strstr(PROMPT(0), "[opt> ") != 0))
     {
       char *new_str;
-      size_t new_str_len = (strlen(new_async_prompt) + 7UL);
+      size_t new_str_len = (strlen(new_async_prompt) + 8UL);
       pop_prompt();
       PROMPT(0) = savestring(new_async_prompt, strlen(new_async_prompt));
       new_str = (char *)xmalloc(new_str_len);
@@ -1318,7 +1318,7 @@ adjust_prompts_for_optimized_code (void)
 	  char *new_prompt;
 	  if (strstr(old_prompt, "[opt> ") == 0)
 	    {
-	      size_t new_prompt_len = (strlen(old_prompt) + 7UL);
+	      size_t new_prompt_len = (strlen(old_prompt) + 8UL);
 	      new_prompt = (char *)xmalloc(new_prompt_len);
 	      snprintf(new_prompt, new_prompt_len, "%s[opt> ", old_prompt);
 	      push_prompt("", new_prompt, "");

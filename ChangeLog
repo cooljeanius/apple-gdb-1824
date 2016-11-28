@@ -1,3 +1,21 @@
+2016-11-15  cooljeanius  <egall@gwmail.gwu.edu>
+
+	add bfd-stringcheck script
+
+	Change-Id: I6a9f905ff2c0cf66de5bf7aa46baf7bd176fbb80
+
+2016-11-02  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Wednesday, November 2nd, 2016
+
+	Change-Id: I28f0fb87eea6850a35d41c172206046b7868afaf
+
+2016-10-06  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Nothing much. idk. Please send help.
+
+	Change-Id: Ic005c757f6c50d83ceb893ab5e62f42b49c5d9e1
+
 2016-09-26  cooljeanius  <egall@gwmail.gwu.edu>
 
 	distclean harder; should have noticed before prev. commit

@@ -3129,7 +3129,7 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wdangling-else -Wmemset-elt-size -Wswitch-unreachable -Whsa \
 -Wscalar-storage-order -Wimplicit-fallthrough -Wformat-length=2 \
 -Wexpansion-to-defined -Wint-in-bool-context -Wbool-operation \
--Wduplicated-branches -Wstringop-overflow"
+-Wduplicated-branches -Wstringop-overflow -Wbuiltin-declaration-mismatch"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -3235,6 +3235,10 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
 -Wmissing-variable-declarations -Wunneeded-internal-declaration \
 -Wstring-plus-int -Wstring-conversion -Wbool-conversion \
 -Wconstant-logical-operand -Wunreachable-code-break"
+  if test "x${enable_build_with_cxx}" = "xyes"; then
+    build_warnings="${build_warnings} -Wmismatched-tags \
+-Wmissing-exception-spec -Wpessimizing-move -Wredundant-move"
+  fi
   ## mig typechecks cause paramaters that would otherwise be unused to be
   ## used, triggering this:
   if test "x${MIG_CHECKING}" = "x"; then

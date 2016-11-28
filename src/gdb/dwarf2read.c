@@ -14027,7 +14027,7 @@ open_dwarf_repository(char *dirname, char *filename, struct objfile *objfile,
     initialize_repositories();
 
   gdb_assert(dirname != NULL);
-  fullname_len = (strlen(dirname) +  strlen(filename) + 2UL);
+  fullname_len = (strlen(dirname) +  strlen(filename) + 4UL);
   fullname = (char *)xmalloc(fullname_len);
   snprintf(fullname, fullname_len, "%s/%s", dirname, filename);
 

@@ -882,7 +882,7 @@ open_source_file_fullpath(const char *dirname, const char *filename,
   if (filename[0] == '/' || dirname == NULL)
     snprintf(path, (strlen(filename) + 2UL), "%s", filename);
   else
-    snprintf(path, (strlen(dirname) + strlen(filename) + 2UL), "%s/%s",
+    snprintf(path, (strlen(dirname) + strlen(filename) + 4UL), "%s/%s",
 	     dirname, filename);
 
   for (;;)
@@ -919,7 +919,7 @@ open_source_file_fullpath(const char *dirname, const char *filename,
       if (strncmp(path, from, strlen(from)) == 0)
         {
           char *remainder = path + strlen(from);
-	  size_t npath_len = (strlen(to) + strlen(remainder) + 1UL);
+	  size_t npath_len = (strlen(to) + strlen(remainder) + 3UL);
           char *npath = (char *)alloca(npath_len);
 
           snprintf(npath, npath_len, "%s%s", to, remainder);

@@ -71,14 +71,6 @@
 #ifdef HAVE_LIBGEN_H
 # include <libgen.h> /* for basename() on some systems */
 #endif /* HAVE_LIBGEN_H */
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif /* HAVE_LIMITS_H */
-#ifndef SIZE_T_MAX
-# ifdef ULONG_MAX
-#  define SIZE_T_MAX ULONG_MAX	/* max value for a size_t */
-# endif /* ULONG_MAX */
-#endif /* !SIZE_T_MAX */
 
 /* Prototypes for local functions: */
 static void cleanup_sigint_signal_handler(void *dummy);
@@ -5212,7 +5204,7 @@ remote_insert_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
       *(p++) = ',';
       p += hexnumstr(p, (ULONGEST)addr);
       BREAKPOINT_FROM_PC(&addr, &bp_size);
-      snprintf(p, (SIZE_T_MAX - 1UL), ",%d", bp_size);
+      snprintf(p, BUF_LEN_MAX_FOR_SNPRINTF, ",%d", bp_size);
 
       putpkt(buf);
       getpkt(buf, (rs->remote_packet_size), 0);
@@ -5267,7 +5259,7 @@ remote_remove_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
       addr = remote_address_masked(addr);
       p += hexnumstr(p, (ULONGEST)addr);
       BREAKPOINT_FROM_PC(&addr, &bp_size);
-      snprintf(p, (SIZE_T_MAX - 1UL), ",%d", bp_size);
+      snprintf(p, BUF_LEN_MAX_FOR_SNPRINTF, ",%d", bp_size);
 
       putpkt(buf);
       getpkt(buf, (rs->remote_packet_size), 0);
@@ -5331,7 +5323,7 @@ remote_insert_watchpoint(CORE_ADDR addr, int len, int type)
   p = strchr(buf, '\0');
   addr = remote_address_masked(addr);
   p += hexnumstr(p, (ULONGEST)addr);
-  snprintf(p, (SIZE_T_MAX - 1UL), ",%x", len);
+  snprintf(p, BUF_LEN_MAX_FOR_SNPRINTF, ",%x", len);
 
   putpkt(buf);
   getpkt(buf, buflen, 0);
@@ -5379,7 +5371,7 @@ remote_remove_watchpoint(CORE_ADDR addr, int len, int type)
   p = strchr(buf, '\0');
   addr = remote_address_masked(addr);
   p += hexnumstr(p, (ULONGEST)addr);
-  snprintf(p, (SIZE_T_MAX - 1UL), ",%x", len);
+  snprintf(p, BUF_LEN_MAX_FOR_SNPRINTF, ",%x", len);
   putpkt(buf);
   getpkt(buf, buflen, 0);
 
@@ -5474,7 +5466,7 @@ remote_insert_hw_breakpoint(CORE_ADDR addr, gdb_byte *shadow)
 
   addr = remote_address_masked(addr);
   p += hexnumstr (p, (ULONGEST)addr);
-  snprintf(p, (SIZE_T_MAX - 1UL), ",%x", len);
+  snprintf(p, BUF_LEN_MAX_FOR_SNPRINTF, ",%x", len);
 
   putpkt(buf);
   getpkt(buf, (rs->remote_packet_size), 0);
@@ -5518,7 +5510,7 @@ remote_remove_hw_breakpoint(CORE_ADDR addr, gdb_byte *shadow)
 
   addr = remote_address_masked(addr);
   p += hexnumstr(p, (ULONGEST)addr);
-  snprintf(p, (SIZE_T_MAX - 1UL), ",%x", len);
+  snprintf(p, BUF_LEN_MAX_FOR_SNPRINTF, ",%x", len);
 
   putpkt(buf);
   getpkt(buf, (rs->remote_packet_size), 0);
@@ -6590,7 +6582,7 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
     {
       char *file_name = basename(exec_file);
       size_t refnamlen = (strlen(remote_macosx_exec_dir)
-			  + strlen(file_name) + 1UL);
+			  + strlen(file_name) + 4UL);
       remote_exec_file = (char *)xmalloc(refnamlen);
       snprintf(remote_exec_file, refnamlen, "%s/%s", remote_macosx_exec_dir,
 	       file_name);

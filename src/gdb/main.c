@@ -415,7 +415,7 @@ captured_main(void *data)
 	  /* APPLE LOCAL: */
 	  case OPT_WAITFOR:
 	    {
-	      size_t a_w_len = (12UL + strlen(optarg));
+	      const size_t a_w_len = (12UL + strlen(optarg) + 1UL);
 	      attach_waitfor = (char *)xmalloc(a_w_len);
 	      snprintf(attach_waitfor, a_w_len, "-waitfor \"%s\"", optarg);
 	    }

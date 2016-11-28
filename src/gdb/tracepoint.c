@@ -57,15 +57,6 @@
 # include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif /* HAVE_LIMITS_H */
-#ifndef SIZE_T_MAX
-# ifdef ULONG_MAX
-#  define SIZE_T_MAX ULONG_MAX	/* max value for a size_t */
-# endif /* ULONG_MAX */
-#endif /* !SIZE_T_MAX */
-
 #if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3)) && \
     !defined(NO_POISON) && !defined(FLEX_SCANNER)
 # ifdef sprintf_vma
@@ -1433,7 +1424,7 @@ stringify_collection_list(struct collection_list *list, char *string)
 	  QUIT;			/* allow user to bail out with ^C */
 	  if (info_verbose)
 	    printf_filtered ("%02X", list->regs_mask[i]);
-	  snprintf(end, (SIZE_T_MAX - 1UL), "%02X", list->regs_mask[i]);
+	  snprintf(end, BUF_LEN_MAX_FOR_SNPRINTF, "%02X", list->regs_mask[i]);
 	  end += 2;
 	}
       (*str_list)[ndx] = savestring (temp_buf, end - temp_buf);
@@ -1462,8 +1453,8 @@ stringify_collection_list(struct collection_list *list, char *string)
 	  end = temp_buf;
 	}
 
-      snprintf(end, (SIZE_T_MAX - 1UL), "M%X,%s,%lX", list->list[i].type, tmp2,
-	       (long)(list->list[i].end - list->list[i].start));
+      snprintf(end, BUF_LEN_MAX_FOR_SNPRINTF, "M%X,%s,%lX", list->list[i].type,
+	       tmp2, (long)(list->list[i].end - list->list[i].start));
 
       count += strlen(end);
       end = temp_buf + count;
@@ -1479,7 +1470,7 @@ stringify_collection_list(struct collection_list *list, char *string)
 	  count = 0;
 	  end = temp_buf;
 	}
-      snprintf(end, (SIZE_T_MAX - 1UL), "X%08X,",
+      snprintf(end, BUF_LEN_MAX_FOR_SNPRINTF, "X%08X,",
 	       (unsigned int)list->aexpr_list[i]->len);
       end += 10;		/* 'X' + 8 hex digits + ',' */
       count += 10;

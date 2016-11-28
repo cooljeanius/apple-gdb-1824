@@ -6444,7 +6444,7 @@ parse_breakpoint_sals(const char **address,
 	    size_t addr_string_len;
 	    s = paddr_u(sal.pc);
 	    *addr_string = (char **)xmalloc(sizeof(char **));
-	    addr_string_len = (strlen(s) + 2UL);
+	    addr_string_len = (strlen(s) + 3UL);
 	    **addr_string = (char *)xmalloc(addr_string_len);
 	    snprintf(**addr_string, addr_string_len, "*%s", s);
 	  }

@@ -57,12 +57,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include <limits.h>
 #endif /* HAVE_LIMITS_H && !_I386_LIMITS_H_ */
 
-#if !defined(SIZE_T_MAX)
-# if defined(ULONG_MAX)
-#  define SIZE_T_MAX	ULONG_MAX
-# endif /* ULONG_MAX */
-#endif /* !SIZE_T_MAX */
-
 #ifndef ADA_RETAIN_DOTS
 # define ADA_RETAIN_DOTS 0
 #endif /* !ADA_RETAIN_DOTS */
@@ -994,7 +988,7 @@ Suppress:
   if (encoded[0] == '<')
     strcpy(decoded, encoded);
   else
-    snprintf(decoded, (SIZE_T_MAX - 1UL), "<%s>", encoded);
+    snprintf(decoded, BUF_LEN_MAX_FOR_SNPRINTF, "<%s>", encoded);
   return decoded;
 }
 
@@ -6058,7 +6052,8 @@ ada_find_renaming_symbol (const char *name, struct block *block)
 
       total_rename_len = min((rename_len * sizeof(char)), MAX_ALLOCA_SIZE);
       rename = (char *)alloca(min(total_rename_len, MAX_ALLOCA_SIZE));
-      snprintf(rename, total_rename_len, "%s__%s___XR", function_name, name);
+      snprintf(rename, (total_rename_len + 1UL), "%s__%s___XR", function_name,
+	       name);
     }
   else
     {
@@ -7102,11 +7097,13 @@ ada_enum_name(const char *name)
 
       GROW_VECT(result, result_len, 16UL, char);
       if (isascii(v) && isprint(v))
-        snprintf(result, (SIZE_T_MAX - 1UL), "'%c'", v);
+        snprintf(result, BUF_LEN_MAX_FOR_SNPRINTF, "'%c'", v);
       else if (name[1] == 'U')
-        snprintf(result, (SIZE_T_MAX - 1UL), "[\"%02x\"]", (unsigned int)v);
+        snprintf(result, BUF_LEN_MAX_FOR_SNPRINTF, "[\"%02x\"]",
+		 (unsigned int)v);
       else
-        snprintf(result, (SIZE_T_MAX - 1UL), "[\"%04x\"]", (unsigned int)v);
+        snprintf(result, BUF_LEN_MAX_FOR_SNPRINTF, "[\"%04x\"]",
+		 (unsigned int)v);
 
       return result;
     }

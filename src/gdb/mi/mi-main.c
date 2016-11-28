@@ -66,15 +66,6 @@
 /* APPLE LOCAL Disable breakpoints while updating data formatters.  */
 #include "breakpoint.h"
 
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif /* HAVE_LIMITS_H */
-#ifndef SIZE_T_MAX
-# ifdef ULONG_MAX
-#  define SIZE_T_MAX ULONG_MAX	/* max value for a size_t */
-# endif /* ULONG_MAX */
-#endif /* !SIZE_T_MAX */
-
 enum
   {
     FROM_TTY = 0
@@ -1132,7 +1123,8 @@ get_register (int regnum, int format)
 	  int idx =
 	    ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 	     ? j : (register_size(current_gdbarch, regnum) - 1 - j));
-	  snprintf(ptr, (SIZE_T_MAX - 1UL), "%02x", (unsigned char)buffer[idx]);
+	  snprintf(ptr, BUF_LEN_MAX_FOR_SNPRINTF, "%02x",
+		   (unsigned char)buffer[idx]);
 	  ptr += 2;
 	}
       ui_out_field_string(uiout, "value", buf);
@@ -1366,7 +1358,7 @@ mi_cmd_target_attach(char *command, char **argv, int argc)
   else if ((argc == 2) && (strcmp(argv[0], "-waitfor") == 0))
     {
       size_t arg_len;
-      arg_len = (strlen("-waitfor \"") + strlen(argv[1]) + 2UL);
+      arg_len = (strlen("-waitfor \"") + strlen(argv[1]) + 3UL);
       attach_arg = (char *)xmalloc(arg_len);
       cleanups = make_cleanup(xfree, attach_arg);
       snprintf(attach_arg, arg_len, "-waitfor \"%s\"", argv[1]);
@@ -2711,7 +2703,7 @@ mi_interp_sync_fake_running(void)
 
   if (current_command_token)
     {
-      size_t pfx_len = (strlen(current_command_token) + 2UL);
+      size_t pfx_len = (strlen(current_command_token) + 3UL);
       prefix = (char *)xmalloc(pfx_len);
       snprintf(prefix, pfx_len, "%s^", current_command_token);
       free_me = 1;

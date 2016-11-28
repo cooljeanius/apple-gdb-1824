@@ -462,7 +462,7 @@ add_matching_methods (int method_counter, struct type *t,
       if (phys_name[0] != '_')
         {
 	  const size_t d_n_len = (strlen(TYPE_NAME(t)) + strlen(phys_name)
-				  + 3UL);
+				  + 5UL);
           char *demangled_name = (char *)alloca(d_n_len);
           snprintf(demangled_name, d_n_len, "%s::%s", TYPE_NAME(t), phys_name);
 	  /* APPLE LOCAL begin return multiple symbols  */
@@ -2229,7 +2229,7 @@ collect_methods(char *copy, struct type *t,
 
 	  if (phys_name[0] != '_')
 	    {
-	      size_t d_n_len = (strlen(TYPE_NAME(t)) + strlen(phys_name) + 3UL);
+	      size_t d_n_len = (strlen(TYPE_NAME(t)) + strlen(phys_name) + 5UL);
 	      char *demangled_name = (char *)alloca(d_n_len);
 	      snprintf(demangled_name, d_n_len, "%s::%s", TYPE_NAME(t),
 		       phys_name);

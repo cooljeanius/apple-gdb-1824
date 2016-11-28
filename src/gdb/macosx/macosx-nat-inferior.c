@@ -1504,11 +1504,14 @@ macosx_process_completer_quoted(const char *text, char *word, int quote,
       /* Skip zombie processes: */
       if ((proc[i].kp_proc.p_stat == SZOMB) || proc[i].kp_proc.p_stat == 0)
         continue;
-      templen = (strlen(proc[i].kp_proc.p_comm) + 1UL + 16UL);
+      /* FIXME: should really be 2 strlens in here, but a pid_t is not a string,
+       * unfortunately: */
+      templen = (strlen(proc[i].kp_proc.p_comm) + (size_t)proc[i].kp_proc.p_pid
+		 + 1UL + 16UL);
       temp = (char *)xmalloc(templen);
       snprintf(temp, templen, "%s.%d", proc[i].kp_proc.p_comm,
 	       proc[i].kp_proc.p_pid);
-      found_procnames_len = (strlen(temp) * 2UL + 2UL + 1UL);
+      found_procnames_len = ((strlen(temp) * 2UL) + 2UL + 2UL);
       procnames[found] = (char *)xmalloc(found_procnames_len);
       if (quote)
         {
@@ -2027,7 +2030,7 @@ macosx_child_attach(const char *args, int from_tty ATTRIBUTE_UNUSED)
       {
 	char *decorated_dyld_start;
 	size_t dds_len = (strlen("_dyld_start") + strlen(dyld_symbols_prefix)
-			  + 1UL);
+			  + 2UL);
 	decorated_dyld_start = (char *)xmalloc(dds_len);
 	snprintf(decorated_dyld_start, dds_len, "%s_dyld_start",
 		 dyld_symbols_prefix);
