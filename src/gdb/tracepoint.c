@@ -156,6 +156,12 @@ static void trace_find_outside_command(const char *, int);
 static void tracepoint_save_command(const char *, int);
 static void trace_dump_command(const char *, int);
 
+/* Hook prototypes: */
+void (*deprecated_trace_find_hook)(const char *, int) = NULL;
+static void default_trace_find(const char *, int);
+void (*deprecated_trace_start_stop_hook)(int, int) = NULL;
+static void default_trace_start_stop(int, int);
+
 /* support routines */
 static void trace_mention(struct tracepoint *);
 
@@ -207,21 +213,19 @@ trace_error(char *buf)
 static char *
 remote_get_noisy_reply(char *buf, long sizeof_buf)
 {
-  do				/* Loop on reply from remote stub.  */
-    {
-      QUIT;			/* allow user to bail out with ^C */
-      getpkt (buf, sizeof_buf, 0);
-      if (buf[0] == 0)
-	error (_("Target does not support this command."));
-      else if (buf[0] == 'E')
-	trace_error (buf);
-      else if (buf[0] == 'O' &&
-	       buf[1] != 'K')
-	remote_console_output (buf + 1);	/* 'O' message from stub */
-      else
-	return buf;		/* here's the actual reply */
+  do {				/* Loop on reply from remote stub.  */
+    QUIT;			/* allow user to bail out with ^C */
+    getpkt(buf, sizeof_buf, 0);
+    if (buf[0] == 0) {
+      error(_("Target does not support this command."));
+    } else if (buf[0] == 'E') {
+      trace_error(buf);
+    } else if ((buf[0] == 'O') && (buf[1] != 'K')) {
+      remote_console_output(buf + 1);	/* 'O' message from stub */
+    } else {
+      return buf;		/* here is the actual reply */
     }
-  while (1);
+  } while (1);
 }
 
 /* Set tracepoint count to NUM.  */
@@ -2699,6 +2703,21 @@ get_traceframe_number(void)
   return traceframe_number;
 }
 
+/* Hooks: */
+static void
+default_trace_find(const char *arg ATTRIBUTE_UNUSED,
+		   int from_tty ATTRIBUTE_UNUSED)
+{
+  return;
+}
+
+static void
+default_trace_start_stop(int start ATTRIBUTE_UNUSED,
+			 int from_tty ATTRIBUTE_UNUSED)
+{
+  return;
+}
+
 
 /* module initialization: */
 void
@@ -2893,6 +2912,9 @@ Do \"help tracepoints\" for info on other tracepoint commands."));
   add_com_alias("tr", "trace", class_alias, 1);
   add_com_alias("tra", "trace", class_alias, 1);
   add_com_alias("trac", "trace", class_alias, 1);
+
+  deprecated_trace_find_hook = default_trace_find;
+  deprecated_trace_start_stop_hook = default_trace_start_stop;
 }
 
 /* EOF */

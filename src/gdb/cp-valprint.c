@@ -297,11 +297,15 @@ cp_print_value_fields (struct type *type, struct type *real_type,
     {
       if (dont_print_statmem == 0)
 	{
+	  void *thingummy;
 	  /* If we're at top level, carve out a completely fresh
 	     chunk of the obstack and use that until this particular
 	     invocation returns.  */
 	  tmp_obstack = dont_print_statmem_obstack;
-	  obstack_finish(&dont_print_statmem_obstack);
+	  thingummy = obstack_finish(&dont_print_statmem_obstack);
+	  if (thingummy == NULL) {
+	    warning(_("Unfinished obstack")); /* ??? */
+	  }
 	}
 
       for (i = n_baseclasses; i < len; i++)
@@ -532,12 +536,16 @@ cp_print_value (struct type *type, struct type *real_type,
 
   if (dont_print_vb == 0)
     {
+      void *thingamajigger;
       /* If we're at top level, carve out a completely fresh
          chunk of the obstack and use that until this particular
          invocation returns.  */
       tmp_obstack = dont_print_vb_obstack;
       /* Bump up the high-water mark.  Now alpha is omega: */
-      obstack_finish(&dont_print_vb_obstack);
+      thingamajigger = obstack_finish(&dont_print_vb_obstack);
+      if (thingamajigger == NULL) {
+	warning(_("Unfinished obstack")); /* ??? */
+      }
     }
 
   for (i = 0; i < n_baseclasses; i++)

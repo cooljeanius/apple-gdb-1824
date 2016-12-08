@@ -1292,8 +1292,8 @@ d_unary (const char *name, struct demangle_component *lhs)
 static struct demangle_component *
 d_binary (const char *name, struct demangle_component *lhs, struct demangle_component *rhs)
 {
-  return fill_comp (DEMANGLE_COMPONENT_BINARY, make_operator (name, 2),
-		      fill_comp (DEMANGLE_COMPONENT_BINARY_ARGS, lhs, rhs));
+  return fill_comp(DEMANGLE_COMPONENT_BINARY, make_operator(name, 2),
+		   fill_comp(DEMANGLE_COMPONENT_BINARY_ARGS, lhs, rhs));
 }
 
 /* Find the end of a symbol name starting at LEXPTR.  */
@@ -2089,6 +2089,12 @@ main(int argc, char **argv)
   const char *errmsg;
   void *memory;
   struct demangle_component *result;
+  
+  if (argc < 1)
+    {
+      fprintf(stderr, "Error: no arguments supplied.\n");
+      return 1;
+    }
 
   arg = 1;
   if (argv[arg] && (strcmp(argv[arg], "--debug") == 0))
@@ -2098,43 +2104,46 @@ main(int argc, char **argv)
     }
 
   if (argv[arg] == NULL)
-    while (fgets(buf, 65536, stdin) != NULL)
-      {
-	size_t len = (strlen(buf) - 1UL);
-	buf[len] = 0;
-	/* Use DMGL_VERBOSE to get expanded standard substitutions: */
-	c = trim_chars(buf, &extra_chars);
-	str2 = cplus_demangle(buf, DMGL_PARAMS | DMGL_ANSI | DMGL_VERBOSE);
-	if (str2 == NULL)
-	  {
-#if 0
-	    printf("Demangling error\n");
-#endif /* 0 */
- 	    if (c)
-	      printf("%s%c%s\n", buf, c, extra_chars);
-	    else
-	      printf("%s\n", buf);
-	    continue;
-	  }
-	result = cp_demangled_name_to_comp(str2, &memory, &errmsg);
-	if (result == NULL)
-	  {
-	    fputs(errmsg, stderr);
-	    fputc('\n', stderr);
-	    continue;
-	  }
+    {
+      printf("Reading from stdin.\n");
+      while (fgets(buf, 65536, stdin) != NULL)
+	{
+	  size_t len = (strlen(buf) - 1UL);
+	  buf[len] = 0;
+	  /* Use DMGL_VERBOSE to get expanded standard substitutions: */
+	  c = trim_chars(buf, &extra_chars);
+	  str2 = cplus_demangle(buf, DMGL_PARAMS | DMGL_ANSI | DMGL_VERBOSE);
+	  if (str2 == NULL)
+	    {
+#if defined(DMGL_VERBOSE) && (DMGL_VERBOSE > 1)
+	      printf("Demangling error\n");
+#endif /* DMGL_VERBOSE > 1 */
+	      if (c)
+		printf("%s%c%s\n", buf, c, extra_chars);
+	      else
+		printf("%s\n", buf);
+	      continue;
+	    }
+	  result = cp_demangled_name_to_comp(str2, &memory, &errmsg);
+	  if (result == NULL)
+	    {
+	      fputs(errmsg, stderr);
+	      fputc('\n', stderr);
+	      continue;
+	    }
 
-	cp_print(result);
-	free(memory);
+	  cp_print(result);
+	  free(memory);
 
-	free(str2);
-	if (c)
-	  {
-	    putchar(c);
-	    fputs(extra_chars, stdout);
-	  }
-	putchar('\n');
-      }
+	  free(str2);
+	  if (c)
+	    {
+	      putchar(c);
+	      fputs(extra_chars, stdout);
+	    }
+	  putchar('\n');
+	}
+    }
   else
     {
       result = cp_demangled_name_to_comp(argv[arg], &memory, &errmsg);

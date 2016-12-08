@@ -2568,8 +2568,8 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
 {
   int wordsize;
   int p;  /* pointers, uintptr_t */
-  int b = 1;         /* bools */
-  int i = 4;         /* ints */
+  const int b = 1;         /* bools */
+  const int i = 4;         /* ints */
   uint8_t version_buf[4];
   int version;
   size_t image_infos_size;
@@ -2776,6 +2776,7 @@ dyld_info_read_raw(struct macosx_dyld_thread_status *status,
   *rninfo = info.num_info;
 }
 
+/* */
 static void
 dyld_info_read(struct macosx_dyld_thread_status *status,
                struct dyld_objfile_info *info, int dyldonly)
@@ -2883,6 +2884,7 @@ dyld_info_read(struct macosx_dyld_thread_status *status,
     dyld_objfile_entry_clear(&info->entries[reserved]);
 }
 
+/* */
 int
 macosx_dyld_update(int dyldonly)
 {
@@ -3010,7 +3012,6 @@ macosx_dyld_mourn_inferior(void)
   removed_memory_objfiles = 0;
   DYLD_ALL_OBJFILE_INFO_ENTRIES (&status->current_info, e, i)
     {
-
       /* Anything in the shared cache, even if it is in-memory-only,
        * will be present on re-launch so just leave it be: */
       if (e->objfile && e->objfile->obfd
@@ -3171,7 +3172,8 @@ dyld_generic_command_with_helper(const char *args,
   struct cleanup *timer_cleanup = NULL;
 
   if (maint_use_timers)
-    timer_cleanup = start_timer(&timer_id,  "dyld_generic_command_with_helper", "");
+    timer_cleanup = start_timer(&timer_id,  "dyld_generic_command_with_helper",
+				"");
 
   dyld_objfile_info_init(&original_info);
   dyld_objfile_info_init(&modified_info);

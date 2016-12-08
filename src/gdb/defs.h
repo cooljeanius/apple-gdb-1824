@@ -539,11 +539,11 @@ struct cleanup
 #endif /* !ATTR_FORMAT_ARG */
 
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ >= 4)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 3))
 #  define ATTRIBUTE_OPTIMIZE(foo) __attribute__((optimize(#foo)))
 # else
 #  define ATTRIBUTE_OPTIMIZE(foo) /* nothing */
-# endif /* gcc 4+ */
+# endif /* gcc 4.3+ (is that the correct version?) */
 #else
 # define ATTRIBUTE_OPTIMIZE /* (nothing) */
 #endif /* any gcc */

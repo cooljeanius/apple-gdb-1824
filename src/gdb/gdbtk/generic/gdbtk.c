@@ -81,7 +81,15 @@ x_event_wrapper (int signo)
 
 char *external_editor_command = NULL;
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 extern int Tktable_Init (Tcl_Interp * interp);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif /* __cplusplus */
 
 void gdbtk_init (void);
 

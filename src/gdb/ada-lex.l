@@ -63,6 +63,18 @@ static int processReal(const char *);
 static int processId(const char *, int);
 static int processAttribute(const char *);
 static int find_dot_all(const char *);
+static void ada_yy_fatal_error(const char *) ATTR_NORETURN;
+
+/* Report a fatal error. */
+#ifndef YY_FATAL_ERROR
+# define YY_FATAL_ERROR(msg) ada_yy_fatal_error(msg)
+#endif /* !YY_FATAL_ERROR */
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__clang__)
+# if (__GNUC__ >= 4)
+#  pragma GCC diagnostic ignored "-Wmissing-noreturn"
+# endif /* gcc 4+ */
+#endif /* __GNUC__ && __GNUC_MINOR__ && __clang__ */
 
 #undef YY_DECL
 #define YY_DECL static int yylex(void)
@@ -359,12 +371,6 @@ xor		{ return XOR; }
 #ifndef _STRING_H_
 # include <string.h>
 #endif /* !_STRING_H_ */
-      
-#if defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__clang__)
-# if (__GNUC__ >= 4)
-#  pragma GCC diagnostic ignored "-Wmissing-noreturn"
-# endif /* gcc 4+ */
-#endif /* __GNUC__ && __GNUC_MINOR__ && __clang__ */
 
 /* Initialize the lexer for processing new expression */
 void
@@ -959,11 +965,23 @@ yywrap(void)
   return 1;
 }
 
+#ifndef YY_EXIT_FAILURE
+# define YY_EXIT_FAILURE 2
+#endif /* !YY_EXIT_FAILURE */
+
+static void ATTR_NORETURN
+ada_yy_fatal_error(const char *errormsg)
+{
+  (void)fprintf(stderr, "%s\n", errormsg);
+  exit(YY_EXIT_FAILURE);
+}
+
 /* Dummy definition to suppress warnings about unused static definitions: */
 typedef void (*dummy_function)(void);
 dummy_function ada_flex_use[] =
 {
-  (dummy_function)yyunput
+  (dummy_function)yyunput,
+  (dummy_function)yy_fatal_error
 #if defined(yyinput)
   , (dummy_function)yyinput
 #endif /* yyinput */

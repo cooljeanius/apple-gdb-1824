@@ -1621,8 +1621,7 @@
 /* Define to 1 if you have the `vprintf' function. */
 #undef HAVE_VPRINTF
 
-/* Define to 1 if you have the `wait3' system call. Deprecated, you should no
-   longer depend upon `wait3'. */
+/* Define to 1 if you have the `wait3' function. */
 #undef HAVE_WAIT3
 
 /* Define to 1 if you have the `waitpid' function. */

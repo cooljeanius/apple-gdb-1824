@@ -739,12 +739,10 @@ gdbtk_trace_find(const char *arg, int from_tty)
 static void
 gdbtk_trace_start_stop (int start, int from_tty)
 {
-
   if (start)
-    Tcl_GlobalEval (gdbtk_interp, "gdbtk_tcl_tstart");
+    Tcl_GlobalEval(gdbtk_interp, "gdbtk_tcl_tstart");
   else
-    Tcl_GlobalEval (gdbtk_interp, "gdbtk_tcl_tstop");
-
+    Tcl_GlobalEval(gdbtk_interp, "gdbtk_tcl_tstop");
 }
 
 static void

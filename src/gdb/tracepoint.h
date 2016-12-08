@@ -115,15 +115,15 @@ extern struct tracepoint *tracepoint_chain;
 extern unsigned long trace_running_p;
 
 /* A hook used to notify the UI of tracepoint operations: */
-void (*deprecated_create_tracepoint_hook)(struct tracepoint *)
+extern void (*deprecated_create_tracepoint_hook)(struct tracepoint *)
   ATTRIBUTE_DEPRECATED;
-void (*deprecated_delete_tracepoint_hook)(struct tracepoint *)
+extern void (*deprecated_delete_tracepoint_hook)(struct tracepoint *)
   ATTRIBUTE_DEPRECATED;
-void (*deprecated_modify_tracepoint_hook)(struct tracepoint *)
+extern void (*deprecated_modify_tracepoint_hook)(struct tracepoint *)
   ATTRIBUTE_DEPRECATED;
-void (*deprecated_trace_find_hook)(const char *arg, int from_tty)
+extern void (*deprecated_trace_find_hook)(const char *arg, int from_tty)
   ATTRIBUTE_DEPRECATED;
-void (*deprecated_trace_start_stop_hook)(int start, int from_tty)
+extern void (*deprecated_trace_start_stop_hook)(int start, int from_tty)
   ATTRIBUTE_DEPRECATED;
 
 struct tracepoint *get_tracepoint_by_number(const char **, int, int);

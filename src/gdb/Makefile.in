@@ -847,7 +847,7 @@ SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c  \
   solib.c solib-null.c source.c \
   stabsread.c stack.c std-regs.c symfile.c symfile-mem.c symmisc.c \
   symtab.c \
-  target.c thread.c top.c tracepoint.c \
+  target/target.c thread.c top.c tracepoint.c \
   trad-frame.c \
   tramp-frame.c \
   typeprint.c \
@@ -1636,7 +1636,7 @@ init.c: $(INIT_FILES)
 	@rm -f init.c-tmp init.l-tmp
 	@touch init.c-tmp
 	@echo "gdbtypes" > init.l-tmp
-	@-echo "$(INIT_FILES)" | \
+	$(AM_V_at)-echo "$(INIT_FILES)" | \
 	tr ' ' '\012' | \
 	$(SED) \
 	    -e '/^gdbtypes.[co]$$/d' \
@@ -1652,8 +1652,15 @@ init.c: $(INIT_FILES)
 	    -e '/[a-z0-9A-Z_]*-exp.tab.[co]$$/d' \
 	    -e 's/\.[co]$$/.c/' \
 	    -e 's,signals\.c,signals/signals\.c,' \
+	    -e 's,/target\.[co],/target/target\.c,' \
 	    -e 's|^\([^  /][^     ]*\)|$(srcdir)/\1|g' | \
 	while read f; do \
+	  if [ "x$${f}" = "x./target.c" ]; then \
+	    f=./target/target.c; \
+	  fi; \
+	  if [ "x$(AM_V_P)" != "xfalse" ]; then \
+	    echo "reading $${f} for init.c" 1>&2; \
+	  fi; \
 	  pathname=""; \
 	  if [ ! -z "$${f}" ]; then \
 	    filebase=`basename "$${f}"`; \
@@ -1663,7 +1670,7 @@ init.c: $(INIT_FILES)
 	    fi; \
 	  fi; \
 	  if [ ! -z "$${filebase}" ]; then \
-	  for prefix in . tui mi cli macosx signals gdbtk/generic; do \
+	  for prefix in . tui mi cli macosx signals target nat gdbtk/generic; do \
 	    if [ -f $(srcdir)/$${prefix}/$${filebase} ]; then \
 	      pathname="$(srcdir)/$${prefix}/$${filebase}"; \
 	    fi; \
@@ -2166,7 +2173,7 @@ ALLDEPFILES = \
   xstormy16-tdep.c
 
 # Some files need explict build rules (due to -Werror problems) or due
-# to sub-directory fun 'n' games.
+# to sub-directory fun-and-games.
 
 # Provide explicit rule/dependency - works for more makes.
 copying.o: $(srcdir)/copying.c @MAINT@ $(defs_h) $(command_h) $(gdbcmd_h)
@@ -3459,11 +3466,12 @@ symtab.o: symtab.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(gdbcore_h) \
   $(objc_lang_h) $(ada_lang_h) $(hashtab_h) $(gdb_obstack_h) \
   $(gdb_assert_h) $(block_h) $(dictionary_h) $(gdb_string_h) \
   $(gdb_stat_h) $(cp_abi_h) $(observer_h) $(complaints_h)
-target.o: target.c $(defs_h) $(gdb_string_h) $(target_h) $(gdbcmd_h) \
-  $(symtab_h) $(inferior_h) $(bfd_h) $(symfile_h) $(objfiles_h) \
-  $(gdb_wait_h) $(dcache_h) $(regcache_h) $(gdb_assert_h) $(event_loop_h) \
-  $(memattr_h) $(gdbcore_h) $(objc_lang_h) $(checkpoint_h) $(ui_out_h) \
-  $(dis_asm_h) $(gdbarch_h) $(exceptions_h) $(exec_h)
+target.o: target/target.c $(defs_h) $(gdb_string_h) $(target_h) \
+  $(gdbcmd_h) $(symtab_h) $(inferior_h) $(bfd_h) $(symfile_h) \
+  $(objfiles_h) $(gdb_wait_h) $(dcache_h) $(regcache_h) $(gdb_assert_h) \
+  $(event_loop_h) $(memattr_h) $(gdbcore_h) $(objc_lang_h) \
+  $(checkpoint_h) $(ui_out_h) $(dis_asm_h) $(gdbarch_h) $(exceptions_h) \
+  $(exec_h)
 # APPLE LOCAL begin subroutine inlining:
 thread.o: thread.c $(defs_h) $(symtab_h) $(frame_h) $(inferior_h) \
   $(environ_h) $(value_h) $(target_h) $(gdbthread_h) $(exceptions_h) \

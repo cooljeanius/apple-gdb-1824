@@ -1209,6 +1209,7 @@ AC_SUBST([LIBXML2_INCLUDES])dnl
 AC_SUBST([LIBXML2_LIBS])dnl
 # APPLE LOCAL end: Get the libxml2 headers and libraries
 
+UNIX03_UGH_CFLAGS=-D__MAYBE_UNIX03
 if test "x${COMMAND_MODE}" = "xlegacy"; then
   # APPLE LOCAL: Do NOT bother trying to make this copy of gdb work with
   # the "new" standards-conformant header environment:
@@ -2081,9 +2082,11 @@ if test -f Makefile.in; then
       AC_FUNC_ALLOCA
       if test "x${ac_cv_func_alloca_works}" = "xno"; then
         AC_SEARCH_LIBS([alloca],[iberty gnu gcc c alloca])
+      else
+        echo "alloca should work fine as it is"
       fi
     else
-      test -n "${ac_cv_working_alloca_h}"
+      test -n "${ac_cv_working_alloca_h}" && echo "Is alloca working? ${ac_cv_working_alloca_h}"
     fi
   else
     AC_MSG_NOTICE([skipping check for alloca])
@@ -2115,6 +2118,11 @@ m4_ifdef([AC_FUNC_WAIT3],[
   if test "x${GO_SLOWLY}" = "xyes"; then
     test -n "${GO_SLOWLY}" && echo "Going slowly."
     AC_FUNC_WAIT3
+  else
+    if test "x${ac_cv_func_wait3}" = "x"; then
+      test -z "${ac_cv_func_wait3}"
+      AC_CHECK_FUNCS([wait3])
+    fi
   fi
 ])dnl
 dnl# (why is 'realpath' up here, instead of in its alphabetical location?)
@@ -3149,7 +3157,7 @@ else
 -Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement \
 -Woverride-init -Woverride-init-side-effects -Wduplicate-decl-specifier \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
--Wstrict-prototypes -Wnested-externs -Wc99-c11-compat"
+-Wstrict-prototypes -Wnested-externs -Wc99-c11-compat -fno-common"
   if test -f /usr/X11/include/X11/Xlib.h && test "x${enable_gdbtk}" = "xyes"; then
     AC_MSG_WARN([Disabling C++ compatibility warnings for gdbtk])
   else
@@ -3234,10 +3242,15 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
   build_warnings="${build_warnings} -Wgcc-compat -Wasm \
 -Wmissing-variable-declarations -Wunneeded-internal-declaration \
 -Wstring-plus-int -Wstring-conversion -Wbool-conversion \
--Wconstant-logical-operand -Wunreachable-code-break"
+-Wconstant-logical-operand -Wunreachable-code-break -Wunused-comparison \
+-Wabsolute-value -Wtautological-constant-out-of-range-compare \
+-Wunevaluated-expression -Wextra-semi -Wunsequenced"
   if test "x${enable_build_with_cxx}" = "xyes"; then
     build_warnings="${build_warnings} -Wmismatched-tags \
--Wmissing-exception-spec -Wpessimizing-move -Wredundant-move"
+-Wmissing-exception-spec -Wpessimizing-move -Wredundant-move \
+-Wnon-literal-null-conversion -Wpredefined-identifier-outside-function \
+-Wvexing-parse -Wreturn-stack-address -Wshadow-field-in-constructor \
+-Wunused-private-field -Wnon-pod-varargs"
   fi
   ## mig typechecks cause paramaters that would otherwise be unused to be
   ## used, triggering this:

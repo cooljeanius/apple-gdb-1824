@@ -36532,6 +36532,7 @@ $as_echo "#define LIBXML2_IS_USABLE 1" >>confdefs.h
 fi
 # APPLE LOCAL end: Get the libxml2 headers and libraries
 
+UNIX03_UGH_CFLAGS=-D__MAYBE_UNIX03
 if test "x${COMMAND_MODE}" = "xlegacy"; then
   # APPLE LOCAL: Do NOT bother trying to make this copy of gdb work with
   # the "new" standards-conformant header environment:
@@ -43021,9 +43022,11 @@ if test "$ac_res" != no; then :
 
 fi
 
+      else
+        echo "alloca should work fine as it is"
       fi
     else
-      test -n "${ac_cv_working_alloca_h}"
+      test -n "${ac_cv_working_alloca_h}" && echo "Is alloca working? ${ac_cv_working_alloca_h}"
     fi
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: skipping check for alloca" >&5
@@ -44200,6 +44203,21 @@ $as_echo "#define HAVE_WAIT3 1" >>confdefs.h
 
 fi
 
+  else
+    if test "x${ac_cv_func_wait3}" = "x"; then
+      test -z "${ac_cv_func_wait3}"
+      for ac_func in wait3
+do :
+  ac_fn_c_check_func "$LINENO" "wait3" "ac_cv_func_wait3"
+if test "x$ac_cv_func_wait3" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_WAIT3 1
+_ACEOF
+
+fi
+done
+
+    fi
   fi
 for ac_func in canonicalize_file_name realpath
 do :
@@ -47017,7 +47035,7 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wdangling-else -Wmemset-elt-size -Wswitch-unreachable -Whsa \
 -Wscalar-storage-order -Wimplicit-fallthrough -Wformat-length=2 \
 -Wexpansion-to-defined -Wint-in-bool-context -Wbool-operation \
--Wduplicated-branches -Wstringop-overflow"
+-Wduplicated-branches -Wstringop-overflow -Wbuiltin-declaration-mismatch"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -47037,7 +47055,7 @@ else
 -Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement \
 -Woverride-init -Woverride-init-side-effects -Wduplicate-decl-specifier \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
--Wstrict-prototypes -Wnested-externs -Wc99-c11-compat"
+-Wstrict-prototypes -Wnested-externs -Wc99-c11-compat -fno-common"
   if test -f /usr/X11/include/X11/Xlib.h && test "x${enable_gdbtk}" = "xyes"; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Disabling C++ compatibility warnings for gdbtk" >&5
 $as_echo "$as_me: WARNING: Disabling C++ compatibility warnings for gdbtk" >&2;}
@@ -47122,7 +47140,16 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
   build_warnings="${build_warnings} -Wgcc-compat -Wasm \
 -Wmissing-variable-declarations -Wunneeded-internal-declaration \
 -Wstring-plus-int -Wstring-conversion -Wbool-conversion \
--Wconstant-logical-operand -Wunreachable-code-break"
+-Wconstant-logical-operand -Wunreachable-code-break -Wunused-comparison \
+-Wabsolute-value -Wtautological-constant-out-of-range-compare \
+-Wunevaluated-expression -Wextra-semi -Wunsequenced"
+  if test "x${enable_build_with_cxx}" = "xyes"; then
+    build_warnings="${build_warnings} -Wmismatched-tags \
+-Wmissing-exception-spec -Wpessimizing-move -Wredundant-move \
+-Wnon-literal-null-conversion -Wpredefined-identifier-outside-function \
+-Wvexing-parse -Wreturn-stack-address -Wshadow-field-in-constructor \
+-Wunused-private-field -Wnon-pod-varargs"
+  fi
   ## mig typechecks cause paramaters that would otherwise be unused to be
   ## used, triggering this:
   if test "x${MIG_CHECKING}" = "x"; then
