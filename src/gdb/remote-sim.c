@@ -232,47 +232,43 @@ gdb_os_flush_stderr (host_callback *p)
 }
 
 /* GDB version of printf_filtered callback.  */
-
-static void
-gdb_os_printf_filtered (host_callback * p, const char *format,...)
+static void ATTR_FORMAT(gnu_printf, 2, 3)
+gdb_os_printf_filtered(host_callback *p, const char *format, ...)
 {
   va_list args;
-  va_start (args, format);
+  va_start(args, format);
 
-  vfprintf_filtered (gdb_stdout, format, args);
+  vfprintf_filtered(gdb_stdout, format, args);
 
-  va_end (args);
+  va_end(args);
 }
 
 /* GDB version of error vprintf_filtered.  */
-
-static void
-gdb_os_vprintf_filtered (host_callback * p, const char *format, va_list ap)
+static void ATTR_FORMAT(gnu_printf, 2, 0)
+gdb_os_vprintf_filtered(host_callback * p, const char *format, va_list ap)
 {
-  vfprintf_filtered (gdb_stdout, format, ap);
+  vfprintf_filtered(gdb_stdout, format, ap);
 }
 
 /* GDB version of error evprintf_filtered.  */
-
-static void
-gdb_os_evprintf_filtered (host_callback * p, const char *format, va_list ap)
+static void ATTR_FORMAT(gnu_printf, 2, 0)
+gdb_os_evprintf_filtered(host_callback * p, const char *format, va_list ap)
 {
-  vfprintf_filtered (gdb_stderr, format, ap);
+  vfprintf_filtered(gdb_stderr, format, ap);
 }
 
 /* GDB version of error callback.  */
-
-static void
-gdb_os_error (host_callback * p, const char *format,...)
+static void ATTR_FORMAT(gnu_printf, 2, 3)
+gdb_os_error(host_callback *p, const char *format, ...)
 {
   if (deprecated_error_hook)
-    (*deprecated_error_hook) ();
+    (*deprecated_error_hook)();
   else
     {
       va_list args;
-      va_start (args, format);
-      verror (format, args);
-      va_end (args);
+      va_start(args, format);
+      verror(format, args);
+      va_end(args);
     }
 }
 
@@ -516,6 +512,8 @@ gdbsim_open(const char *args, int from_tty)
       break;
     case BFD_ENDIAN_UNKNOWN:
       break;
+    default:
+      break;
     }
   /* Specify the architecture of the target when it has been
      explicitly specified */
@@ -726,6 +724,8 @@ gdbsim_wait(ptid_t ptid, struct target_waitstatus *status,
     case sim_running:
     case sim_polling:
       /* FIXME: Is this correct? */
+      break;
+    default:
       break;
     }
 

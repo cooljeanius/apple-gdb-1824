@@ -617,6 +617,7 @@ INTERNAL_WARN_CFLAGS = \
 	$(BFD_CFLAGS) $(INCLUDE_CFLAGS) \
 	$(MMALLOC_CFLAGS) \
 	$(INTL_CFLAGS) $(ENABLE_CFLAGS) \
+	$(LIBDECNUMBER_CFLAGS) \
 	$(LIBXML2_CFLAGS) \
 	$(MIG_CHECKING) \
 	$(UNIX03_UGH_CFLAGS) \
@@ -1761,9 +1762,9 @@ libgdb.a: $(LIBGDB_OBS)
 	$(RANLIB) $(RANLIB_FLAGS) libgdb.a
 
 # A Mach 3.0 program to force gdb back to command level:
-stop-gdb: stop-gdb.o
-	$(AM_V_CCLD)${CC_LD} $(GLOBAL_CFLAGS) $(LDFLAGS) -o stop-gdb \
-	  stop-gdb.o $(CLIBS) $(LOADLIBES)
+stop-gdb$(EXEEXT): stop-gdb.o
+	$(AM_V_CCLD)${CC_LD} $(GLOBAL_CFLAGS) $(LDFLAGS) \
+	  -o stop-gdb$(EXEEXT) stop-gdb.o $(CLIBS) $(LOADLIBES)
 
 # This is useful when debugging GDB, because some Unices do NOT let you
 # run GDB on itself without copying the executable. So "make gdb1" will
@@ -1824,7 +1825,7 @@ clean mostlyclean:: $(CONFIG_CLEAN)
 	rm -f init.c-tmp init.l-tmp version.c-tmp init.c version.c
 	rm -f $(AM_V_v) gdb$(EXEEXT) core make.log
 	rm -f $(AM_V_v) gdb[0-9]$(EXEEXT)
-	rm -f stop-gdb
+	rm -f stop-gdb$(EXEEXT)
 	if test -e $(TUI)$(EXEEXT); then $(MAKE) clean-tui; fi
 	if test -e insight$(EXEEXT); then $(MAKE) clean-gdbtk; fi
 	rm -f $(AM_V_v) test-cp-name-parser$(EXEEXT)
@@ -2899,7 +2900,8 @@ inflow.o: inflow.c $(defs_h) $(frame_h) $(inferior_h) $(command_h) \
   $(inflow_h) $(ui_out_h)
 inf-ptrace.o: inf-ptrace.c $(defs_h) $(command_h) $(inferior_h) \
   $(inflow_h) $(gdbcore_h) $(observer_h) $(regcache_h) $(gdb_assert_h) \
-  $(gdb_string_h) $(gdb_ptrace_h) $(gdb_wait_h) $(inf_child_h)
+  $(gdb_string_h) $(gdb_ptrace_h) $(gdb_wait_h) $(inf_child_h) \
+  $(inf_ptrace_h)
 infptrace.o: infptrace.c $(defs_h) $(command_h) $(frame_h) $(gdbcore_h) \
   $(inferior_h) $(regcache_h) $(target_h) $(gdb_assert_h) \
   $(gdb_wait_h) $(gdb_string_h) $(gdb_dirent_h) $(gdb_ptrace_h)
@@ -4381,9 +4383,9 @@ MAC_WARNINGS = -Wno-deprecated-declarations -Wno-four-char-constants \
   -Wreturn-type -Wswitch -Wunused-label -Wshadow @MAINT@ -ansi # -pedantic
 ### ('-Wno-#warnings' has to stay separate because of the quoting required)
 
-mac-nat.o: $(srcdir)/mac-nat.c $(defs_h) $(frame_h) $(inferior_h)
+mac-nat.o: $(srcdir)/nat/mac-nat.c $(defs_h) $(frame_h) $(inferior_h)
 	$(AM_V_CC)$(MAC_CC) -c $(MAC_CFLAGS) $(MAC_DEFS) $(MAC_INCLUDES) \
-	  $(MAC_WARNINGS) '-Wno-#warnings' mac-nat.c
+	  $(MAC_WARNINGS) '-Wno-#warnings' nat/mac-nat.c
 
 mac-xdep.o: $(srcdir)/mac-xdep.c $(defs_h) $(srcdir)/config/xm-mpw.h
 	$(AM_V_CC)$(MAC_CC) -c $(MAC_CFLAGS) $(MAC_DEFS) $(MAC_INCLUDES) \

@@ -54,7 +54,15 @@ struct floatformat;
 typedef long double DOUBLEST;
 #else
 typedef double DOUBLEST;
-#endif
+#endif /* HAVE_LONG_DOUBLE */
+
+#ifndef DOUBLEST_PRINT_FORMAT
+# ifdef PRINTF_HAS_LONG_DOUBLE
+#  define DOUBLEST_PRINT_FORMAT "Lg"
+# else
+#  define DOUBLEST_PRINT_FORMAT "g"
+# endif /* PRINTF_HAS_LONG_DOUBLE */
+#endif /* !DOUBLEST_PRINT_FORMAT */
 
 extern void floatformat_to_doublest (const struct floatformat *,
 				     const void *in, DOUBLEST *out);
@@ -101,4 +109,6 @@ extern const struct floatformat *floatformat_ieee_quad[BFD_ENDIAN_UNKNOWN];
 extern const struct floatformat *floatformat_arm_ext[BFD_ENDIAN_UNKNOWN];
 extern const struct floatformat *floatformat_ia64_spill[BFD_ENDIAN_UNKNOWN];
 
-#endif
+#endif /* !DOUBLEST_H */
+
+/* EOF */

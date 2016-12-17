@@ -1,4 +1,4 @@
-/* Host support routines for MinGW, for GDB, the GNU debugger.
+/* posix-hdep.o: Host support routines for MinGW, for GDB, the GNU debugger.
 
    Copyright (C) 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
@@ -17,6 +17,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+/* Has to use poisoned function to implement replacement for it: */
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
 #include "defs.h"
 #include "event-loop.h"
 
@@ -24,10 +28,13 @@
 
 #include "gdb_select.h"
 
+#if defined(PROTOTYPES) || defined(__PROTOTYPES)
+extern void gdb_call_async_signal_handler(struct async_signal_handler *, int);
+#endif /* PROTOTYPES || __PROTOTYPES */
+
 /* The strerror() function can return NULL for errno values that are
    out of range.  Provide a "safe" version that always returns a
    printable string. */
-
 char *
 safe_strerror (int errnum)
 {
@@ -37,14 +44,13 @@ safe_strerror (int errnum)
   if (msg == NULL)
     {
       static char buf[32];
-      xsnprintf (buf, sizeof buf, "(undocumented errno %d)", errnum);
+      xsnprintf(buf, sizeof(buf), "(undocumented errno %d)", errnum);
       msg = buf;
     }
   return (msg);
 }
 
 /* Wrapper for select.  Nothing special needed on POSIX platforms.  */
-
 int
 gdb_select (int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 	    struct timeval *timeout)
@@ -54,13 +60,14 @@ gdb_select (int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 
 /* Wrapper for the body of signal handlers.  Nothing special needed on
    POSIX platforms.  */
-
 void
-gdb_call_async_signal_handler (struct async_signal_handler *handler,
-			       int immediate_p)
+gdb_call_async_signal_handler(struct async_signal_handler *handler,
+			      int immediate_p)
 {
   if (immediate_p)
     call_async_signal_handler (handler);
   else
     mark_async_signal_handler (handler);
 }
+
+/* EOF */

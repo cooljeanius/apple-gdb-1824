@@ -1,4 +1,4 @@
-/* Win32 termcap emulation.
+/* windows-termcap.c: Win32 termcap emulation.
 
    Copyright (C) 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
@@ -26,40 +26,42 @@
    console window.  */
 
 int
-tgetent (char *buffer, char *termtype)
+tgetent(char *buffer, char *termtype)
 {
   return -1;
 }
 
 int
-tgetnum (char *name)
+tgetnum(char *name)
 {
   return -1;
 }
 
 int
-tgetflag (char *name)
+tgetflag(char *name)
 {
   return -1;
 }
 
 char *
-tgetstr (char *name, char **area)
+tgetstr(char *name, char **area)
 {
   return NULL;
 }
 
 int
-tputs (char *string, int nlines, int (*outfun) ())
+tputs(char *string, int nlines, int (*outfun)(int))
 {
   while (*string)
-    outfun (*string++);
+    outfun(*string++);
 
   return 0;
 }
 
 char *
-tgoto (const char *cap, int col, int row)
+tgoto(const char *cap, int col, int row)
 {
   return NULL;
 }
+
+/* EOF */

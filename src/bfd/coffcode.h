@@ -3252,6 +3252,10 @@ coff_compute_section_file_positions(bfd *abfd)
 
       previous = current;
     }
+  
+  if (previous == (asection *)NULL) {
+    ; /* ??? */
+  }
 
   /* It is now safe to write to the output file. If we needed an
      alignment adjustment for the last section, then make sure that
@@ -3516,7 +3520,8 @@ coff_write_object_contents(bfd *abfd)
 	if (len > SCNNMLEN)
 	  {
 	    memset(section.s_name, 0, (size_t)SCNNMLEN);
-	    sprintf(section.s_name, "/%lu", (unsigned long)string_size);
+	    snprintf(section.s_name, (size_t)SCNNMLEN, "/%lu",
+		     (unsigned long)string_size);
 	    string_size += len + 1;
 	    long_section_names = TRUE;
 	  }
@@ -4747,6 +4752,7 @@ coff_slurp_symbol_table(bfd *abfd)
                   && (src->u.syment.n_scnum == 0)) {
                 break;
               }
+	      ATTRIBUTE_FALLTHROUGH;
               /* Fall through to: */
 	    case C_EXTDEF:    /* External definition.  */
 	    case C_ULABEL:    /* Undefined label.  */

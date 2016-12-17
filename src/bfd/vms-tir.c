@@ -7,9 +7,9 @@
    ETIR record handling functions
 
    go and read the openVMS linker manual (esp. appendix B)
-   if you don't know what's going on here :-)
+   if you are clueless as to what is going on here :-)
 
-   Written by Klaus K"ampf (kkaempf@rmi.de)
+   Written by Klaus Kaempf <kkaempf@rmi.de>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -790,13 +790,13 @@ static asection *
 new_section (bfd * abfd ATTRIBUTE_UNUSED, int idx)
 {
   asection *section;
-  char sname[16];
+  char sname[20];
   char *name;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug(5, "new_section %d\n", idx);
 #endif /* VMS_DEBUG */
-  sprintf(sname, SECTION_NAME_TEMPLATE, idx);
+  snprintf(sname, sizeof(sname), SECTION_NAME_TEMPLATE, idx);
 
   name = (char *)bfd_malloc((bfd_size_type)strlen(sname) + 1);
   if (name == 0) {

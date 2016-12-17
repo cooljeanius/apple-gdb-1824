@@ -1,4 +1,4 @@
-/* Decimal floating point support for GDB.
+/* dfp.c: Decimal floating point support for GDB.
 
    Copyright 2007, 2008, 2009 Free Software Foundation, Inc.
 
@@ -22,6 +22,7 @@
 #include "gdbtypes.h"
 #include "value.h"
 #include "dfp.h"
+#include "doublest.h"
 
 /* The order of the following headers is important for making sure
    decNumber structure is large enough to hold decimal128 digits.  */
@@ -71,6 +72,8 @@ set_decnumber_context (decContext *ctx, int len)
       case 16:
 	decContextDefault (ctx, DEC_INIT_DECIMAL128);
 	break;
+      default:
+	break;
     }
 
   ctx->traps = 0;
@@ -112,6 +115,8 @@ decimal_from_number (const decNumber *from, gdb_byte *to, int len)
 	break;
       case 16:
 	decimal128FromNumber ((decimal128 *) to, from, &set);
+	break;
+      default:
 	break;
     }
 }

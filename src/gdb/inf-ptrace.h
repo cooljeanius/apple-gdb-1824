@@ -1,4 +1,4 @@
-/* Low level child interface to ptrace.
+/* inf-ptrace.h: Low level child interface to ptrace.
 
    Copyright 2004, 2005 Free Software Foundation, Inc.
 
@@ -34,4 +34,9 @@ extern struct target_ops *inf_ptrace_target (void);
 extern struct target_ops *
   inf_ptrace_trad_target (CORE_ADDR (*register_u_offset)(int));
 
-#endif
+/* */
+extern void inf_ptrace_store_registers(int);
+
+#endif /* !INF_PTRACE_H */
+
+/* EOF */

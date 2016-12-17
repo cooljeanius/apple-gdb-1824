@@ -189,7 +189,7 @@
 /*
  * typedefs:
  */
-typedef void (*Function)();
+typedef void (*Function)(void);
 
 /*
  * Forward declarations:
@@ -203,10 +203,16 @@ static void putpacket(char *);
 static void handle_buserror(void);
 static int computeSignal(int exceptionVector);
 static void handle_exception(int exceptionVector);
-void init_serial();
+void init_serial(void);
 
 void putDebugChar(char);
 char getDebugChar(void);
+
+void doSStep(void);
+void undoSStep(void);
+
+void gdb_handle_exception(int exceptionVector);
+void gdb_mode(void);
 
 /* These are in the file, but in asm statements, so the compiler cannot
  * see them: */
@@ -233,8 +239,8 @@ int init_stack[init_stack_size] __attribute__ ((section ("stack"))) = {0};
 int stub_stack[stub_stack_size] __attribute__ ((section ("stack"))) = {0};
 
 
-void INIT();
-void BINIT();
+void INIT(void);
+void BINIT(void);
 
 #define CPU_BUS_ERROR_VEC  9
 #define DMA_BUS_ERROR_VEC 10
@@ -280,12 +286,12 @@ static const char hexchars[] = "0123456789abcdef";
 static char remcomInBuffer[BUFMAX];
 static char remcomOutBuffer[BUFMAX];
 
-char highhex(int  x)
+static char __attribute__((__const__)) highhex(int x)
 {
   return hexchars[(x >> 4) & 0xf];
 }
 
-char lowhex(int  x)
+static char __attribute__((__const__)) lowhex(int x)
 {
   return hexchars[x & 0xf];
 }
@@ -382,10 +388,10 @@ hexToInt (char **ptr, int *intValue)
 
 /* scan for the sequence $<data>#<checksum>     */
 
-char *
+unsigned char *
 getpacket (void)
 {
-  unsigned char *buffer = &remcomInBuffer[0];
+  unsigned char *buffer = (unsigned char *)&remcomInBuffer[0];
   unsigned char checksum;
   unsigned char xmitcsum;
   int count;
@@ -453,11 +459,10 @@ static void
 putpacket (char *buffer)
 {
   int checksum;
-  int count;
+  int count = 0;
 
   /*  $<packet info>#<checksum>. */
-  do
-    {
+  do {
       char *src = buffer;
       putDebugChar ('$');
       checksum = 0;
@@ -494,19 +499,22 @@ putpacket (char *buffer)
 	    }
 	}
 
-
       putDebugChar ('#');
       putDebugChar (highhex(checksum));
       putDebugChar (lowhex(checksum));
-    }
-  while  (getDebugChar() != '+');
+      count++;
+  } while  (getDebugChar() != '+');
+
+  if (count > 0) {
+    ; /* ??? */
+  }
 }
 
 
 /* a bus error has occurred, perform a longjmp
    to return execution and allow handling of the error */
 
-void
+void __attribute__((used))
 handle_buserror (void)
 {
   longjmp (remcomEnv, 1);
@@ -519,7 +527,7 @@ handle_buserror (void)
 static int
 computeSignal (int exceptionVector)
 {
-  int sigval;
+  volatile int sigval;
   switch (exceptionVector)
     {
     case INVALID_INSN_VEC:
@@ -550,8 +558,9 @@ computeSignal (int exceptionVector)
   return (sigval);
 }
 
+/* */
 void
-doSStep (void)
+doSStep(void)
 {
   short *instrMem;
   int displacement;
@@ -632,7 +641,7 @@ doSStep (void)
    restore the old instruction. */
 
 void
-undoSStep (void)
+undoSStep(void)
 {
   if (stepped)
     {  short *instrMem;
@@ -651,11 +660,11 @@ When in the monitor mode we talk a human on the serial line rather than gdb.
 
 */
 
-
 void
 gdb_handle_exception (int exceptionVector)
 {
-  int sigval, stepping;
+  volatile int sigval;
+  int stepping;
   int addr, length;
   char *ptr;
 
@@ -689,7 +698,7 @@ gdb_handle_exception (int exceptionVector)
   while (1)
     {
       remcomOutBuffer[0] = 0;
-      ptr = getpacket ();
+      ptr = (char *)getpacket();
 
       switch (*ptr++)
 	{
@@ -778,6 +787,7 @@ gdb_handle_exception (int exceptionVector)
 	  /* kill the program */
 	case 'k':		/* do nothing */
 	  break;
+	default:;
 	}			/* switch */
 
       /* reply to the request */
@@ -790,7 +800,7 @@ gdb_handle_exception (int exceptionVector)
 static int ingdbmode;
 /* We've had an exception - choose to go into the monitor or
    the gdb stub */
-void handle_exception(int exceptionVector)
+void __attribute__((used)) handle_exception(int exceptionVector)
 {
 #ifdef MONITOR
     if (ingdbmode != GDBCOOKIE)
@@ -802,11 +812,12 @@ void handle_exception(int exceptionVector)
 }
 
 void
-gdb_mode (void)
+gdb_mode(void)
 {
   ingdbmode = GDBCOOKIE;
   breakpoint();
 }
+
 /* This function will generate a breakpoint exception.  It is used at the
    beginning of a program to sync up with a debugger and can be used
    otherwise as a quick means to stop program execution and "break" into
@@ -1264,7 +1275,8 @@ restoreRegisters:
 }
 
 
-static __inline__ void code_for_catch_exception(int n)
+static __inline__ __attribute__((__always_inline__)) void
+code_for_catch_exception(int n)
 {
   asm("		.globl	_catch_exception_%O0" : : "i" (n) 				);
   asm("	_catch_exception_%O0:" :: "i" (n)      						);
@@ -1489,13 +1501,14 @@ exceptions (void)
 #define BPS			32	/* 9600 for 10 Mhz */
 #endif
 
-void handleError (char theSSR);
+void handleError(char theSSR);
 
 void
-nop (void)
+nop(void)
 {
-
+  asm("");
 }
+
 void
 init_serial (void)
 {

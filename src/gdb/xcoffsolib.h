@@ -47,8 +47,8 @@ struct vmap
     /* This is NULL for the exec-file.  */
     struct objfile *objfile;
 
-    unsigned loaded:1;		/* True if symbols are loaded           */
-    unsigned padding:15;
+    unsigned int loaded:1;	/* True if symbols are loaded           */
+    unsigned int padding:15;
   };
 
 struct vmap_and_bfd
@@ -59,7 +59,12 @@ struct vmap_and_bfd
 
 extern struct vmap *vmap;
 
+/* */
+extern char *xcoff_solib_address(CORE_ADDR addr);
+
 /* Add symbols for a vmap.  */
 extern int vmap_add_symbols (struct vmap *vp);
 
 #endif
+
+/* EOF */

@@ -585,7 +585,7 @@ dyld_entry_filename(const struct dyld_objfile_entry *e,
 char *
 dyld_offset_string (CORE_ADDR offset)
 {
-  CORE_ADDR CORE_ADDR_MAX = (CORE_ADDR) - 1;
+  CORE_ADDR CORE_ADDR_MAX = (CORE_ADDR)(-1UL);
   char *ret = NULL;
   if (offset > LONG_MAX)  /* FIXME: 64bit - I doubt this is right for a 64 bit inferior... */
     {

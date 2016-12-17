@@ -70,13 +70,13 @@ static int last_run_status;
    starts.  */
 static struct serial *ocd_desc = NULL;
 
-void
-ocd_error (char *s, int error_code)
+void ATTRIBUTE_NORETURN
+ocd_error(const char *s, int error_code)
 {
   char buf[100];
 
-  fputs_filtered (s, gdb_stderr);
-  fputs_filtered (" ", gdb_stderr);
+  fputs_filtered(s, gdb_stderr);
+  fputs_filtered(" ", gdb_stderr);
 
   switch (error_code)
     {
@@ -126,25 +126,23 @@ ocd_error (char *s, int error_code)
       s = "Flash erase error";
       break;
     default:
-      sprintf (buf, "Unknown error code %d", error_code);
+      snprintf(buf, sizeof(buf), "Unknown error code %d", error_code);
       s = buf;
     }
 
-  error (("%s"), s);
+  error(("%s"), s);
 }
 
 /*  Return nonzero if the thread TH is still alive on the remote system.  */
-
-int
-ocd_thread_alive (ptid_t th)
+int ATTRIBUTE_CONST
+ocd_thread_alive(ptid_t th ATTRIBUTE_UNUSED)
 {
   return 1;
 }
 
 /* Clean up connection to a remote debugger.  */
-
 void
-ocd_close (int quitting)
+ocd_close(int quitting)
 {
   if (ocd_desc)
     serial_close (ocd_desc);
@@ -261,8 +259,10 @@ void
 ocd_open (char *name, int from_tty, enum ocd_target_type target_type,
 	  struct target_ops *ops)
 {
+#ifdef ALLOW_UNUSED_VARIABLES
   unsigned char buf[10], *p;
   int pktlen;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   if (name == 0)
     error (_("To open an OCD connection, you need to specify the\n\
@@ -379,14 +379,14 @@ ocd_interrupt (int signo)
   {
     char buf[1];
 
-    ocd_stop ();
+    ocd_stop();
     buf[0] = OCD_AYT;
-    ocd_put_packet (buf, 1);
+    ocd_put_packet((unsigned char *)buf, 1);
     ocd_interrupt_flag = 1;
   }
 }
 
-static void (*ofunc) ();
+static void (*ofunc)(int);
 
 /* The user typed ^C twice.  */
 static void
@@ -441,11 +441,11 @@ ocd_wait (void)
   while (!(last_run_status & OCD_FLAG_BDM))
     {
       buf[0] = OCD_AYT;
-      ocd_put_packet (buf, 1);
-      p = ocd_get_packet (OCD_AYT, &pktlen, -1);
+      ocd_put_packet((unsigned char *)buf, 1);
+      p = ocd_get_packet(OCD_AYT, &pktlen, -1);
 
-      ofunc = (void (*)()) signal (SIGINT, ocd_interrupt);
-      signal (SIGINT, ofunc);
+      ofunc = (void (*)(int))signal(SIGINT, ocd_interrupt);
+      signal(SIGINT, ofunc);
 
       if (pktlen < 2)
 	error (_("Truncated response packet from OCD device"));
@@ -492,6 +492,9 @@ ocd_read_bdm_registers (int first_bdm_regno, int last_bdm_regno, int *reglen)
   p = ocd_get_packet (OCD_READ_REGS, &pktlen, remote_timeout);
 
   status = p[1];
+  if (status > 0) {
+    ; /* ??? */
+  }
   error_code = p[2];
 
   if (error_code != 0)
@@ -550,6 +553,9 @@ ocd_write_bdm_registers (int first_bdm_regno, unsigned char *regptr, int reglen)
     error (_("Truncated response packet from OCD device"));
 
   status = p[1];
+  if (status > 0) {
+    ; /* ??? */
+  }
   error_code = p[2];
 
   if (error_code != 0)
@@ -566,9 +572,11 @@ ocd_write_bdm_register (int bdm_regno, CORE_ADDR reg)
   ocd_write_bdm_registers (bdm_regno, buf, 4);
 }
 
-void
-ocd_prepare_to_store (void)
+/* */
+void ATTRIBUTE_CONST
+ocd_prepare_to_store(void)
 {
+  return;
 }
 
 /* Write memory data directly to the remote machine.
@@ -610,12 +618,15 @@ ocd_write_bytes (CORE_ADDR memaddr, char *myaddr, int len)
       buf[7] = numbytes;
 
       memcpy (&buf[8], myaddr, numbytes);
-      ocd_put_packet (buf, 8 + numbytes);
+      ocd_put_packet((unsigned char *)buf, (8 + numbytes));
       p = ocd_get_packet (OCD_WRITE_MEM, &pktlen, remote_timeout);
       if (pktlen < 3)
 	error (_("Truncated response packet from OCD device"));
 
       status = p[1];
+      if (status > 0) {
+	; /* ??? */
+      }
       error_code = p[2];
 
       if (error_code == 0x11)	/* Got a bus error? */
@@ -680,12 +691,15 @@ ocd_read_bytes (CORE_ADDR memaddr, char *myaddr, int len)
 
       buf[6] = numbytes;
 
-      ocd_put_packet (buf, 7);
+      ocd_put_packet((unsigned char *)buf, 7);
       p = ocd_get_packet (OCD_READ_MEM, &pktlen, remote_timeout);
       if (pktlen < 4)
 	error (_("Truncated response packet from OCD device"));
 
       status = p[1];
+      if (status > 0) {
+	; /* ??? */
+      }
       error_code = p[2];
 
       if (error_code == 0x11)	/* Got a bus error? */
@@ -798,8 +812,8 @@ ocd_put_packet (unsigned char *buf, int len)
     }
 
   *packet_ptr++ = -checksum;
-  if (serial_write (ocd_desc, packet, packet_ptr - packet))
-    perror_with_name (_("output_packet: write failed"));
+  if (serial_write(ocd_desc, (const char *)packet, (packet_ptr - packet)))
+    perror_with_name(_("output_packet: write failed"));
 }
 
 /* Get a packet from the OCD device.  Timeout is only enforced for the
@@ -807,7 +821,6 @@ ocd_put_packet (unsigned char *buf, int len)
    time <= remote_timeout.  Returns a pointer to a static buffer containing
    the payload of the packet.  *LENP contains the length of the packet.
  */
-
 static unsigned char *
 ocd_get_packet (int cmd, int *lenp, int timeout)
 {
@@ -976,8 +989,8 @@ ocd_do_command (int cmd, int *statusp, int *lenp)
 
   if (error_code != 0)
     {
-      sprintf (errbuf, "ocd_do_command (0x%x):", cmd);
-      ocd_error (errbuf, error_code);
+      snprintf(errbuf, sizeof(errbuf), "ocd_do_command (0x%x):", cmd);
+      ocd_error(errbuf, error_code);
     }
 
   if (status & OCD_FLAG_PWF)
@@ -1059,41 +1072,46 @@ ocd_load (char *args, int from_tty)
 
 #define BDM_BREAKPOINT {0x0,0x0,0x0,0x0}	/* For ppc 8xx */
 
-/* BDM (at least on CPU32) uses a different breakpoint */
-
+/* BDM (at least on CPU32) uses a different breakpoint: */
 int
-ocd_insert_breakpoint (CORE_ADDR addr, char *contents_cache)
+ocd_insert_breakpoint(CORE_ADDR addr, char *contents_cache)
 {
   static char break_insn[] = BDM_BREAKPOINT;
   int val;
 
-  val = target_read_memory (addr, contents_cache, sizeof (break_insn));
+  val = target_read_memory(addr, (gdb_byte *)contents_cache,
+			   sizeof(break_insn));
 
   if (val == 0)
-    val = target_write_memory (addr, break_insn, sizeof (break_insn));
+    val = target_write_memory(addr, (const gdb_byte *)break_insn,
+			      sizeof(break_insn));
 
   return val;
 }
 
+/* */
 int
-ocd_remove_breakpoint (CORE_ADDR addr, char *contents_cache)
+ocd_remove_breakpoint(CORE_ADDR addr, char *contents_cache)
 {
   static char break_insn[] = BDM_BREAKPOINT;
   int val;
 
-  val = target_write_memory (addr, contents_cache, sizeof (break_insn));
+  val = target_write_memory(addr, (const gdb_byte *)contents_cache,
+			    sizeof(break_insn));
 
   return val;
 }
 
+/* */
 static void
-bdm_command (char *args, int from_tty)
+bdm_command(const char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED)
 {
-  error (_("bdm command must be followed by `reset'"));
+  error(_("bdm command must be followed by `reset'"));
 }
 
+/* */
 static void
-bdm_reset_command (char *args, int from_tty)
+bdm_reset_command(const char *args, int from_tty)
 {
   int status, pktlen;
 
@@ -1105,8 +1123,9 @@ bdm_reset_command (char *args, int from_tty)
   registers_changed ();
 }
 
+/* */
 static void
-bdm_restart_command (char *args, int from_tty)
+bdm_restart_command(const char *args, int from_tty)
 {
   int status, pktlen;
 
@@ -1126,13 +1145,16 @@ bdm_restart_command (char *args, int from_tty)
 static void
 noop_store_registers (int regno)
 {
+  (void)regno;
 }
 
 static void
-bdm_update_flash_command (char *args, int from_tty)
+bdm_update_flash_command(const char *args, int from_tty)
 {
   int status, pktlen;
+#if 0
   struct cleanup *old_chain;
+#endif /* 0 */
   void (*store_registers_tmp) (int);
 
   if (!ocd_desc)
@@ -1141,7 +1163,9 @@ bdm_update_flash_command (char *args, int from_tty)
   if (!args)
     error (_("Must specify file containing new OCD code."));
 
-/*  old_chain = make_cleanup (flash_cleanup, 0); */
+#if 0
+  old_chain = make_cleanup(flash_cleanup, 0);
+#endif /* 0 */
 
   ocd_do_command (OCD_ENTER_MON, &status, &pktlen);
 
@@ -1164,11 +1188,10 @@ bdm_update_flash_command (char *args, int from_tty)
 }
 
 extern initialize_file_ftype _initialize_remote_ocd; /* -Wmissing-prototypes */
-
+extern struct cmd_list_element *cmdlist; /* -Wnested-externs */
 void
 _initialize_remote_ocd(void)
 {
-  extern struct cmd_list_element *cmdlist;
   static struct cmd_list_element *ocd_cmd_list = NULL;
 
   add_setshow_integer_cmd ("remotetimeout", no_class, &remote_timeout, _("\

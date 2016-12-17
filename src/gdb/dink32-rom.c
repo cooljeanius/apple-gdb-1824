@@ -28,10 +28,11 @@
 #include "inferior.h" /* For write_pc() */
 #include "regcache.h"
 
-static void dink32_open (char *args, int from_tty);
+static void dink32_open(const char *args, int from_tty);
 
+/* */
 static void
-dink32_supply_register (char *regname, int regnamelen, char *val, int vallen)
+dink32_supply_register(char *regname, int regnamelen, char *val, int vallen)
 {
   int regno = 0;
 
@@ -101,7 +102,7 @@ dink32_supply_register (char *regname, int regnamelen, char *val, int vallen)
    different names than GDB does, and don't support all the registers
    either.  */
 
-static char *dink32_regnames[] =
+static const char *dink32_regnames[] =
 {
   "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
   "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
@@ -118,21 +119,22 @@ static char *dink32_regnames[] =
 
 static struct target_ops dink32_ops;
 
-static char *dink32_inits[] =
+static const char *dink32_inits[] =
 {"\r", NULL};
 
 static struct monitor_ops dink32_cmds;
 
+/* */
 static void
-dink32_open (char *args, int from_tty)
+dink32_open(const char *args, int from_tty)
 {
-  monitor_open (args, &dink32_cmds, from_tty);
+  monitor_open(args, &dink32_cmds, from_tty);
 }
 
 extern initialize_file_ftype _initialize_dink32_rom; /* -Wmissing-prototypes */
 
 void
-_initialize_dink32_rom (void)
+_initialize_dink32_rom(void)
 {
   dink32_cmds.flags = MO_HEX_PREFIX | MO_GETMEM_NEEDS_RANGE | MO_FILL_USES_ADDR | MO_HANDLE_NL | MO_32_REGS_PAIRED | MO_SETREG_INTERACTIVE | MO_SETMEM_INTERACTIVE | MO_GETMEM_16_BOUNDARY | MO_CLR_BREAK_1_BASED | MO_SREC_ACK | MO_SREC_ACK_ROTATE;
   dink32_cmds.init = dink32_inits;
@@ -142,7 +144,7 @@ _initialize_dink32_rom (void)
   dink32_cmds.clr_break = "bp %d\r";
 #if 0				/* Would need to follow strict alignment rules.. */
   dink32_cmds.fill = "mf %x %x %x\r";
-#endif
+#endif /* 0 */
   dink32_cmds.setmem.cmdb = "mm -b %x\r";
   dink32_cmds.setmem.cmdw = "mm -w %x\r";
   dink32_cmds.setmem.cmdl = "mm %x\r";
@@ -176,3 +178,5 @@ Specify the serial device it is connected to (e.g. /dev/ttya).";
 
   add_target (&dink32_ops);
 }
+
+/* EOF */

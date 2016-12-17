@@ -184,6 +184,9 @@ static const struct addrmap_funcs addrmap_fixed_funcs =
 };
 
 
+#ifndef CORE_ADDR_MAX
+const CORE_ADDR CORE_ADDR_MAX = (CORE_ADDR)(-1UL);
+#endif /* !CORE_ADDR_MAX */
 
 /* Mutable address maps.  */
 
@@ -461,8 +464,8 @@ splay_obstack_alloc (int size, void *closure)
 
   /* We should only be asked to allocate nodes and larger things.
      (If, at some point in the future, this is no longer true, we can
-     just round up the size to sizeof (*n).)  */
-  gdb_assert (size >= sizeof (*n));
+      just round up the size to sizeof(*n).)  */
+  gdb_assert((size_t)size >= sizeof(*n));
 
   if (map->free_nodes)
     {
@@ -533,14 +536,19 @@ addrmap_create_mutable (struct obstack *obstack)
 
 /* Initialization.  */
 
+int addrmap_c_inited = 0;
+
 /* Provide a prototype to silence -Wmissing-prototypes.  */
 extern initialize_file_ftype _initialize_addrmap;
 
 void
-_initialize_addrmap (void)
+_initialize_addrmap(void)
 {
+  addrmap_c_inited = 1;
   /* Make sure splay trees can actually hold the values we want to 
      store in them.  */
-  gdb_assert (sizeof (splay_tree_key) >= sizeof (CORE_ADDR *));
-  gdb_assert (sizeof (splay_tree_value) >= sizeof (void *));
+  gdb_assert(sizeof(splay_tree_key) >= sizeof(CORE_ADDR *));
+  gdb_assert(sizeof(splay_tree_value) >= sizeof(void *));
 }
+
+/* EOF */

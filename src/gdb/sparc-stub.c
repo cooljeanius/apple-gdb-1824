@@ -99,7 +99,7 @@ extern int getDebugChar();	/* read and return a single char */
 
 static int initialized = 0;	/* !0 means we've been initialized */
 
-static void set_mem_fault_trap();
+static void set_mem_fault_trap(int);
 
 static const char hexchars[]="0123456789abcdef";
 
@@ -159,7 +159,7 @@ _trap_low:
 	nop
 
 ! At this point, we need to bring a 1 into the high order bit of the wim.
-! Since we don't want to make any assumptions about the number of register
+! Since we do NOT want to make any assumptions about the number of register
 ! windows, we figure it out dynamically so as to setup the wim correctly.
 
 	not	%g1			! Fill g1 with ones
@@ -171,7 +171,7 @@ _trap_low:
 	inc	%g1			! Now g1 has 1 just to left of wim
 	srl	%g1, 1, %g1		! Now put 1 at top of wim
 	mov	%g0, %wim		! Clear wim so that subsequent save
-	nop				!  won't trap
+	nop				!  will NOT trap
 	nop
 	nop
 
@@ -235,7 +235,7 @@ recursive_trap:
 	call	_handle_exception
 	add	%sp, 24 * 4, %o0	! Pass address of registers
 
-! Reload all of the registers that aren't on the stack
+! Reload all of the registers that are NOT on the stack
 
 	ld	[%sp + (24 + 1) * 4], %g1 ! registers[Gx]
 	ldd	[%sp + (24 + 2) * 4], %g2

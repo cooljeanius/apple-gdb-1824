@@ -187,7 +187,7 @@ write_e7000(const char *s)
 
 /* */
 static int
-normal(int x)
+normal_e7000(int x)
 {
   if (x == '\n')
     return '\r';
@@ -223,7 +223,7 @@ readchar (int timeout)
       gdb_flush (gdb_stdout);
     }
 
-  return normal (c);
+  return normal_e7000(c);
 }
 
 #ifdef ALLOW_UNUSED_FUNCTIONS
@@ -279,7 +279,7 @@ expect(const char *string)
 	    }
 	  gdb_flush (gdb_stdout);
 	}
-      if (normal (c) == normal (*p++))
+      if (normal_e7000(c) == normal_e7000(*p++))
 	{
 	  if (*p == '\0')
 	    return;
@@ -288,7 +288,7 @@ expect(const char *string)
 	{
 	  p = string;
 
-	  if (normal (c) == normal (string[0]))
+	  if (normal_e7000(c) == normal_e7000(string[0]))
 	    p++;
 	}
     }
@@ -1506,17 +1506,16 @@ fast_but_for_the_pause_e7000_read_inferior_memory(CORE_ADDR memaddr,
    Returns the number of bytes transferred. */
 
 static int
-e7000_xfer_inferior_memory(CORE_ADDR memaddr, const char *myaddr, int len,
+e7000_xfer_inferior_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len,
 			   int write, struct mem_attrib *attrib,
 			   struct target_ops *target)
 {
   if (write)
-    return e7000_write_inferior_memory(memaddr, (unsigned char *)myaddr, len);
+    return e7000_write_inferior_memory(memaddr, myaddr, len);
   else if (len < 16)
-    return e7000_read_inferior_memory(memaddr, (unsigned char *)myaddr, len);
+    return e7000_read_inferior_memory(memaddr, myaddr, len);
   else
-    return e7000_read_inferior_memory_large(memaddr, (unsigned char *)myaddr,
-					    len);
+    return e7000_read_inferior_memory_large(memaddr, myaddr, len);
 }
 
 /* */
@@ -2040,7 +2039,8 @@ static const char *estrings[] =
    STATUS just as `wait' would.  */
 
 static ptid_t
-e7000_wait(ptid_t ptid, struct target_waitstatus *status)
+e7000_wait(ptid_t ptid, struct target_waitstatus *status,
+	   gdb_client_data client_data ATTRIBUTE_UNUSED)
 {
   int stop_reason;
   int regno;

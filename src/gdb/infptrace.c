@@ -48,7 +48,7 @@
 #endif /* !FETCH_INFERIOR_REGISTERS */
 
 #if !defined(CHILD_XFER_MEMORY)
-static void udot_info(char *, int);
+static void udot_info(const char *, int);
 #endif /* !CHILD_XFER_MEMORY */
 
 void _initialize_infptrace(void);
@@ -454,7 +454,7 @@ child_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
 
 
 static void
-udot_info (char *dummy1, int dummy2)
+udot_info(const char *dummy1, int dummy2)
 {
 # if defined(KERNEL_U_SIZE)
   long udot_off;			/* Offset into user struct */

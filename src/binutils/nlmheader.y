@@ -52,7 +52,7 @@ char *custom_file;
 /* Whether to generate debugging information (DEBUG).  */
 bfd_boolean debug_info;
 /* Procedure named by EXIT.  */
-char *exit_procedure;
+const char *exit_procedure;
 /* Exported symbols (EXPORT).  */
 struct string_list *export_symbols;
 /* List of files from INPUT.  */
@@ -74,7 +74,7 @@ char *output_file;
 /* File named by SHARELIB.  */
 char *sharelib_file;
 /* Start procedure name (START).  */
-char *start_procedure;
+const char *start_procedure;
 /* VERBOSE.  */
 bfd_boolean verbose;
 /* RPC description file (XDCDATA).  */
@@ -491,10 +491,8 @@ string_list:
 
 %%
 
-/* If strerror is just a macro, we want to use the one from libiberty
-   since it will handle undefined values.  */
-#undef strerror
-extern char *strerror PARAMS ((int));
+/* Ensure we have declaration for xstrerror(): */
+#include "libiberty.h"
 
 /* The lexer is simple, too simple for flex.  Keywords are only
    recognized at the start of lines.  Everything else must be an
@@ -568,7 +566,7 @@ nlmlex_file_open (const char *name)
   current.file = fopen (name, "r");
   if (current.file == NULL)
     {
-      fprintf (stderr, "%s:%s: %s\n", program_name, name, strerror (errno));
+      fprintf(stderr, "%s:%s: %s\n", program_name, name, xstrerror(errno));
       ++parse_errors;
       return FALSE;
     }

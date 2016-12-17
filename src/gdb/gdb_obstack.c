@@ -1,4 +1,4 @@
-/* Obstack wrapper for GDB.
+/* gdb_obstack.c: Obstack wrapper for GDB.
 
    Copyright (C) 2013 Free Software Foundation, Inc.
 
@@ -18,6 +18,9 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "defs.h"
+#ifndef USE_VARIADIC_OBCONCAT
+# define USE_VARIADIC_OBCONCAT 1
+#endif /* !USE_VARIADIC_OBCONCAT */
 #include "gdb_obstack.h"
 
 /* Concatenate NULL terminated variable argument list of `const char *'
@@ -26,22 +29,24 @@
    NULL'.  */
 
 char *
-obconcat (struct obstack *obstackp, ...)
+obconcat(struct obstack *obstackp, ...)
 {
   va_list ap;
 
-  va_start (ap, obstackp);
+  va_start(ap, obstackp);
   for (;;)
     {
-      const char *s = va_arg (ap, const char *);
+      const char *s = va_arg(ap, const char *);
 
       if (s == NULL)
 	break;
 
-      obstack_grow_str (obstackp, s);
+      obstack_grow_str(obstackp, s);
     }
-  va_end (ap);
-  obstack_1grow (obstackp, 0);
+  va_end(ap);
+  obstack_1grow(obstackp, 0);
 
-  return obstack_finish (obstackp);
+  return obstack_finish(obstackp);
 }
+
+/* EOF */

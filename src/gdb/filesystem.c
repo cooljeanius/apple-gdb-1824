@@ -84,7 +84,7 @@ _initialize_filesystem (void)
 {
   add_setshow_enum_cmd ("target-file-system-kind",
 			class_files,
-			target_file_system_kinds,
+			(const char **)target_file_system_kinds,
 			&target_file_system_kind, _("\
 Set assumed file system kind for target reported file names"), _("\
 Show assumed file system kind for target reported file names"),
@@ -101,3 +101,5 @@ knowledge of the target operating system."),
 			show_target_file_system_kind_command,
 			&setlist, &showlist);
 }
+
+/* EOF */

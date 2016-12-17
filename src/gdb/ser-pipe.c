@@ -151,8 +151,8 @@ _initialize_ser_pipe(void)
   memset(ops, 0, sizeof(struct serial_ops));
   ops->name = "pipe";
   ops->next = 0;
-  ops->open = pipe_open;
-  ops->close = pipe_close;
+  ops->so_open = pipe_open;
+  ops->so_close = pipe_close;
   ops->readchar = ser_base_readchar;
   ops->write = ser_base_write;
   ops->flush_output = ser_base_flush_output;

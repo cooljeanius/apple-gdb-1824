@@ -75,6 +75,9 @@
 /* The name used to invoke the program: */
 const char *program_name;
 
+/* Map file: */
+char *g_map_file;
+
 /* Local variables.  */
 
 /* Whether to print out debugging information (currently just controls

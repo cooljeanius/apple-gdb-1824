@@ -180,3 +180,5 @@ Specify the serial device it is connected to (e.g. /dev/ttya).");
 
   add_target (&abug_ops);
 }
+
+/* EOF */

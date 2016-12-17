@@ -1,4 +1,4 @@
-/* Platform independent shared object routines for GDB.
+/* gdb-dlfcn.c: Platform independent shared object routines for GDB.
 
    Copyright (C) 2011-2013 Free Software Foundation, Inc.
 
@@ -130,10 +130,12 @@ make_cleanup_dlclose (void *handle)
   return make_cleanup (do_dlclose_cleanup, handle);
 }
 
-int
-is_dl_available (void)
+int ATTRIBUTE_CONST
+is_dl_available(void)
 {
   return 1;
 }
 
 #endif /* NO_SHARED_LIB */
+
+/* EOF */

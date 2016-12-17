@@ -1,4 +1,4 @@
-/* XMODEM support for GDB, the GNU debugger.
+/* xmodem.c: XMODEM support for GDB, the GNU debugger.
    Copyright 1995, 2000, 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -158,9 +158,8 @@ xmodem_init_xfer (struct serial *desc)
  * XMODEM header.  LEN is the length of the data portion of the packet (and
  * must be <= 128 bytes).  If it is < 128 bytes, ^Z padding will be added.
  */
-
 void
-xmodem_send_packet (struct serial *desc, unsigned char *packet, int len, int hashmark)
+xmodem_send_packet(struct serial *desc, unsigned char *packet, int len, int hashmark)
 {
   int i;
   int retries;
@@ -217,9 +216,9 @@ xmodem_send_packet (struct serial *desc, unsigned char *packet, int len, int has
     {
       int c;
 
-      serial_write (desc, packet, pktlen);
+      serial_write(desc, (const char *)packet, pktlen);
 
-      c = readchar (desc, 3);
+      c = readchar(desc, 3);
       switch (c)
 	{
 	case ACK:

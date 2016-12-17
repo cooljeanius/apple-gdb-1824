@@ -4,9 +4,9 @@
    Free Software Foundation, Inc.
 
    go and read the openVMS linker manual (esp. appendix B)
-   if you don't know what's going on here :-)
+   if you are clueless as to what is going on here :-)
 
-   Written by Klaus K"ampf (kkaempf@rmi.de)
+   Written by Klaus Kaempf <kkaempf@rmi.de>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -704,7 +704,7 @@ _bfd_vms_write_gsd (bfd *abfd, int objtype ATTRIBUTE_UNUSED)
   asymbol *symbol;
   unsigned int symnum;
   int last_index = -1;
-  char dummy_name[10];
+  char dummy_name[18];
   const char *sname;
   flagword new_flags, old_flags;
 
@@ -753,7 +753,7 @@ _bfd_vms_write_gsd (bfd *abfd, int objtype ATTRIBUTE_UNUSED)
 	  _bfd_vms_output_short (abfd, 0);
 	  _bfd_vms_output_short (abfd, 0);
 	  _bfd_vms_output_long (abfd, 0);
-	  sprintf (dummy_name, ".DUMMY%02d", last_index);
+	  snprintf(dummy_name, sizeof(dummy_name), ".DUMMY%02d", last_index);
 	  _bfd_vms_output_counted (abfd, dummy_name);
 	  _bfd_vms_output_flush (abfd);
 	  last_index++;

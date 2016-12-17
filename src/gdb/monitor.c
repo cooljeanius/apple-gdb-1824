@@ -103,7 +103,8 @@ static void monitor_interrupt_twice(int signo);
 static void monitor_interrupt_query(void);
 static void monitor_wait_cleanup(void *old_timeout);
 
-static ptid_t monitor_wait(ptid_t ptid, struct target_waitstatus *status);
+static ptid_t monitor_wait(ptid_t ptid, struct target_waitstatus *status,
+			   gdb_client_data client_data);
 static void monitor_fetch_registers(int regno);
 static void monitor_store_registers(int regno);
 static void monitor_prepare_to_store(void);
@@ -1119,7 +1120,8 @@ monitor_wait_filter(char *buf, int bufmax, int *ext_resp_len,
    status just as `wait' would.  */
 
 static ptid_t
-monitor_wait(ptid_t ptid, struct target_waitstatus *status)
+monitor_wait(ptid_t ptid, struct target_waitstatus *status,
+	     gdb_client_data client_data ATTRIBUTE_UNUSED)
 {
   int old_timeout = timeout;
   char buf[TARGET_BUF_SIZE];

@@ -1,3 +1,4 @@
+/* i386-stub.c */
 /****************************************************************************
 
 		THIS SOFTWARE IS NOT COPYRIGHTED
@@ -111,7 +112,7 @@ static char initialized;  /* boolean flag. != 0 means we've been initialized */
 int     remote_debug;
 /*  debug >  0 prints ill-formed commands in valid packets & checksum errors */
 
-static const char hexchars[]="0123456789abcdef";
+static const char hexchars[] = "0123456789abcdef";
 
 /* Number of registers.  */
 #define NUMREGS	16
@@ -130,14 +131,14 @@ enum regnames {EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI,
 int registers[NUMREGS];
 
 #define STACKSIZE 10000
-int remcomStack[STACKSIZE/sizeof(int)];
-static int* stackPtr = &remcomStack[STACKSIZE/sizeof(int) - 1];
+int remcomStack[STACKSIZE / sizeof(int)];
+static int *stackPtr = &remcomStack[(STACKSIZE / sizeof(int)) - 1UL];
 
 /***************************  ASSEMBLY CODE MACROS *************************/
 /* 									   */
 
 extern void
-return_to_prog ();
+return_to_prog();
 
 /* Restore the program's registers (including the stack pointer, which
    means we get the right stack and don't have to worry about popping our
@@ -430,14 +431,13 @@ asm("		pushl %eax");	/* push exception onto stack  */
 asm("		call  _handle_exception");    /* this never returns */
 
 void
-_returnFromException ()
+_returnFromException(void)
 {
-  return_to_prog ();
+  return_to_prog();
 }
 
 int
-hex (ch)
-     char ch;
+hex(char ch)
 {
   if ((ch >= 'a') && (ch <= 'f'))
     return (ch - 'a' + 10);
@@ -454,9 +454,9 @@ static char remcomOutBuffer[BUFMAX];
 /* scan for the sequence $<data>#<checksum>     */
 
 unsigned char *
-getpacket (void)
+getpacket(void)
 {
-  unsigned char *buffer = &remcomInBuffer[0];
+  unsigned char *buffer = (unsigned char *)&remcomInBuffer[0];
   unsigned char checksum;
   unsigned char xmitcsum;
   int count;
@@ -533,15 +533,15 @@ putpacket (unsigned char *buffer)
   char ch;
 
   /*  $<packet info>#<checksum>. */
-  do
-    {
+  do {
       putDebugChar ('$');
       checksum = 0;
       count = 0;
 
-      while (ch = buffer[count])
+      /* double parentheses for '-Wparentheses': */
+      while ((ch = buffer[count]))
 	{
-	  putDebugChar (ch);
+	  putDebugChar(ch);
 	  checksum += ch;
 	  count += 1;
 	}
@@ -549,13 +549,11 @@ putpacket (unsigned char *buffer)
       putDebugChar ('#');
       putDebugChar (hexchars[checksum >> 4]);
       putDebugChar (hexchars[checksum % 16]);
-
-    }
-  while (getDebugChar () != '+');
+  } while (getDebugChar () != '+');
 }
 
 void
-debug_error (format, parm)
+debug_error(format, parm)
      char *format;
      char *parm;
 {
@@ -597,11 +595,7 @@ set_char (char *addr, int val)
 /* If MAY_FAULT is non-zero, then we should set mem_err in response to
    a fault; if zero treat a fault like any other fault in the stub.  */
 char *
-mem2hex (mem, buf, count, may_fault)
-     char *mem;
-     char *buf;
-     int count;
-     int may_fault;
+mem2hex(char *mem, char *buf, int count, int may_fault)
 {
   int i;
   unsigned char ch;
@@ -625,11 +619,7 @@ mem2hex (mem, buf, count, may_fault)
 /* convert the hex array pointed to by buf into binary to be placed in mem */
 /* return a pointer to the character AFTER the last byte written */
 char *
-hex2mem (buf, mem, count, may_fault)
-     char *buf;
-     char *mem;
-     int count;
-     int may_fault;
+hex2mem(char *buf, char *mem, int count, int may_fault)
 {
   int i;
   unsigned char ch;
@@ -780,16 +770,16 @@ handle_exception (int exceptionVector)
   ptr = mem2hex((char *)&registers[PC], ptr, 4, 0); 	/* PC */
   *ptr++ = ';';
 
-  *ptr = '\0'
+  *ptr = '\0';
 
-  putpacket (remcomOutBuffer);
+  putpacket((unsigned char *)remcomOutBuffer);
 
   stepping = 0;
 
   while (1 == 1)
     {
       remcomOutBuffer[0] = 0;
-      ptr = getpacket ();
+      ptr = (char *)getpacket();
 
       switch (*ptr++)
 	{
@@ -805,11 +795,11 @@ handle_exception (int exceptionVector)
 	case 'g':		/* return the value of the CPU registers */
 	  mem2hex ((char *) registers, remcomOutBuffer, NUMREGBYTES, 0);
 	  break;
-	case 'G':		/* set the value of the CPU registers - return OK */
+	case 'G':	/* set the value of the CPU registers - return OK */
 	  hex2mem (ptr, (char *) registers, NUMREGBYTES, 0);
 	  strcpy (remcomOutBuffer, "OK");
 	  break;
-	case 'P':		/* set the value of a single CPU register - return OK */
+	case 'P':    /* set the value of a single CPU register - return OK */
 	  {
 	    int regno;
 
@@ -881,12 +871,16 @@ handle_exception (int exceptionVector)
 	  /* sAA..AA   Step one instruction from AA..AA(optional) */
 	case 's':
 	  stepping = 1;
+	  /*FALLTHRU*/
 	case 'c':
 	  /* try to read optional parameter, pc unchanged if no parm */
 	  if (hexToInt (&ptr, &addr))
 	    registers[PC] = addr;
 
 	  newPC = registers[PC];
+	  if (newPC > 0) {
+	    ; /* ??? */
+	  }
 
 	  /* clear the trace bit */
 	  registers[PS] &= 0xfffffeff;
@@ -904,21 +898,22 @@ handle_exception (int exceptionVector)
 	  /* Huh? This doesn't look like "nothing".
 	     m68k-stub.c and sparc-stub.c don't have it.  */
 	  BREAKPOINT ();
-#endif
+#endif /* 0 */
 	  break;
+	default:;
 	}			/* switch */
 
       /* reply to the request */
-      putpacket (remcomOutBuffer);
+      putpacket((unsigned char *)remcomOutBuffer);
     }
 }
 
 /* this function is used to set up exception handlers for tracing and
    breakpoints */
 void
-set_debug_traps (void)
+set_debug_traps(void)
 {
-  stackPtr = &remcomStack[STACKSIZE / sizeof (int) - 1];
+  stackPtr = &remcomStack[(STACKSIZE / sizeof(int)) - 1UL];
 
   exceptionHandler (0, _catchException0);
   exceptionHandler (1, _catchException1);
@@ -950,3 +945,5 @@ breakpoint (void)
   if (initialized)
     BREAKPOINT ();
 }
+
+/* EOF */

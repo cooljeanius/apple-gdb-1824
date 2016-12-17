@@ -1,4 +1,4 @@
-/* Handle OSF/1, Digital UNIX, and Tru64 shared libraries
+/* solib-osf.c: Handle OSF/1, Digital UNIX, and Tru64 shared libraries
    for GDB, the GNU Debugger.
    Copyright 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001
    Free Software Foundation, Inc.
@@ -143,6 +143,9 @@ struct read_map_ctxt
 #endif
   };
 
+/* from osfsolib.c: */
+extern void solib_add(char *, int, struct target_ops *, int);
+
 /* Forward declaration for this module's autoinit function.  */
 
 extern void _initialize_osf_solib (void);
@@ -216,16 +219,17 @@ fetch_sec_names (struct lm_info *lmi)
 
   for (i = 0; i < lmi->nsecs; i++)
     {
-      lms = lmi->secs + i;
-      target_read_string (lms->nameaddr, &name, PATH_MAX, &errcode);
+      lms = (lmi->secs + i);
+      target_read_string(lms->nameaddr, &name, PATH_MAX, &errcode);
       if (errcode != 0)
 	{
-	  warning (_("unable to read shared sec name at 0x%lx"), lms->nameaddr);
-	  name = xstrdup ("");
+	  warning(_("unable to read shared sec name at 0x%lx"),
+		  (unsigned long)lms->nameaddr);
+	  name = xstrdup("");
 	}
       lms->name = name;
     }
-  lm_secs_sort (lmi);
+  lm_secs_sort(lmi);
 #endif
 }
 
@@ -323,12 +327,10 @@ osf_solib_create_inferior_hook (void)
   clear_proceed_status ();
   stop_soon = STOP_QUIETLY;
   stop_signal = TARGET_SIGNAL_0;
-  do
-    {
-      target_resume (minus_one_ptid, 0, stop_signal);
-      wait_for_inferior ();
-    }
-  while (stop_signal != TARGET_SIGNAL_TRAP);
+  do {
+    target_resume(minus_one_ptid, 0, stop_signal);
+    wait_for_inferior();
+  } while (stop_signal != TARGET_SIGNAL_TRAP);
 
   /*  solib_add will call reinit_frame_cache.
      But we are stopped in the runtime loader and we do not have symbols
@@ -336,11 +338,11 @@ osf_solib_create_inferior_hook (void)
      and will put out an annoying warning.
      Delaying the resetting of stop_soon until after symbol loading
      suppresses the warning.  */
-  solib_add ((char *) 0, 0, (struct target_ops *) 0, auto_solib_add);
+  solib_add((char *)0, 0, (struct target_ops *)0, auto_solib_add);
   stop_soon = NO_STOP_QUIETLY;
 
   /* Enable breakpoints disabled (unnecessarily) by clear_solib().  */
-  re_enable_breakpoints_in_shlibs ();
+  re_enable_breakpoints_in_shlibs(0);
 }
 
 /* target_so_ops callback.  Do additional symbol handling, lookup, etc. after
@@ -371,16 +373,16 @@ open_map (struct read_map_ctxt *ctxt)
     return 0;
   ctxt->next = LDR_NULL_MODULE;
 #else
-  CORE_ADDR ldr_context_addr, prev, next;
+  CORE_ADDR ldr_context_addr;
   ldr_context_t ldr_context;
 
-  if (target_read_memory ((CORE_ADDR) RLD_CONTEXT_ADDRESS,
-			  (char *) &ldr_context_addr,
-			  sizeof (CORE_ADDR)) != 0)
+  if (target_read_memory((CORE_ADDR)RLD_CONTEXT_ADDRESS,
+			 (gdb_byte *)&ldr_context_addr,
+			 sizeof(CORE_ADDR)) != 0)
     return 0;
-  if (target_read_memory (ldr_context_addr,
-			  (char *) &ldr_context,
-			  sizeof (ldr_context_t)) != 0)
+  if (target_read_memory(ldr_context_addr,
+			 (gdb_byte *)&ldr_context,
+			 sizeof(ldr_context_t)) != 0)
     return 0;
   ctxt->next = ldr_context.head;
   ctxt->tail = ldr_context.tail;
@@ -475,7 +477,7 @@ read_map (struct read_map_ctxt *ctxt, struct so_list *so)
   /* Retrieve the next element.  */
   if (!ctxt->next)
     return 0;
-  if (target_read_memory (ctxt->next, (char *) &minf, sizeof minf) != 0)
+  if (target_read_memory(ctxt->next, (gdb_byte *)&minf, sizeof(minf)) != 0)
     return 0;
   if (ctxt->next == ctxt->tail)
     ctxt->next = 0;
@@ -492,8 +494,8 @@ read_map (struct read_map_ctxt *ctxt, struct so_list *so)
   /* Retrieve section names and offsets.  */
   for (i = 0; i < minf.region_count; i++)
     {
-      if (target_read_memory (minf.regioninfo_addr + i * sizeof rinf,
-			      (char *) &rinf, sizeof rinf) != 0)
+      if (target_read_memory(minf.regioninfo_addr + (i * sizeof(rinf)),
+			     (gdb_byte *)&rinf, sizeof(rinf)) != 0)
 	goto err;
       init_sec (so, i, rinf.regionname_addr, NULL, rinf.vaddr, rinf.mapaddr);
     }
@@ -620,3 +622,5 @@ _initialize_osf_solib (void)
   /* FIXME: Don't do this here.  *_gdbarch_init() should set so_ops. */
   current_target_so_ops = &osf_so_ops;
 }
+
+/* EOF */

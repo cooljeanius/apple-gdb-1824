@@ -1141,13 +1141,17 @@ inf_ttrace_target (void)
 
 
 /* Prevent warning from -Wmissing-prototypes.  */
-void _initialize_hppa_hpux_nat(void);
+void _initialize_inf_ttrace(void);
 
 void
 _initialize_inf_ttrace(void)
 {
 #ifdef HAVE_TTRACE
   inf_ttrace_page_dict.pagesize = getpagesize();
+#else
+# if defined(__GNUC_) && !defined(__STRICT_ANSI__)
+  __asm__("");
+# endif /* __GNUC_ && !__STRICT_ANSI__ */
 #endif /* HAVE_TTRACE */
 }
 

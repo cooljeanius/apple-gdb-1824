@@ -4462,6 +4462,7 @@ xcoff_link_input_bfd(struct xcoff_final_link_info *finfo, bfd *input_bfd)
 		      || (h->root.type == bfd_link_hash_defweak)
 		      || (h->root.type == bfd_link_hash_common))
 		    break;
+		  ATTRIBUTE_FALLTHROUGH;
 		  /* Fall through to: */
 		case R_POS:
 		case R_NEG:

@@ -775,7 +775,7 @@ b_out_slurp_reloc_table(bfd *abfd, sec_ptr asect, asymbol **symbols)
 	/* Sign-extend symnum from 24 bits to whatever host uses.  */
 	s = symnum;
 	if (s & (1 << 23))
-	  s |= (~0) << 24;
+	  s |= (~0U) << 24;
 
 	cache_ptr->sym_ptr_ptr = (asymbol **)NULL;
 	switch (s)

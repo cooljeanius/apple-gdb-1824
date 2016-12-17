@@ -1,4 +1,4 @@
-/* Prologue value handling for GDB.
+/* prologue-value.c: Prologue value handling for GDB.
    Copyright 2003, 2004, 2005, 2007, 2008, 2009 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -206,28 +206,28 @@ pv_is_identical (pv_t a, pv_t b)
     }
 }
 
-
-int
-pv_is_constant (pv_t a)
+/* */
+int ATTRIBUTE_CONST
+pv_is_constant(pv_t a)
 {
   return (a.kind == pvk_constant);
 }
 
-
-int
-pv_is_register (pv_t a, int r)
+/* */
+int ATTRIBUTE_CONST
+pv_is_register(pv_t a, int r)
 {
-  return (a.kind == pvk_register
-          && a.reg == r);
+  return ((a.kind == pvk_register)
+          && (a.reg == r));
 }
 
-
-int
-pv_is_register_k (pv_t a, int r, CORE_ADDR k)
+/* */
+int ATTRIBUTE_CONST
+pv_is_register_k(pv_t a, int r, CORE_ADDR k)
 {
-  return (a.kind == pvk_register
-          && a.reg == r
-          && a.k == k);
+  return ((a.kind == pvk_register)
+          && (a.reg == r)
+          && (a.k == k));
 }
 
 
@@ -532,31 +532,28 @@ pv_area_fetch (struct pv_area *area, pv_t addr, CORE_ADDR size)
     }
 }
 
-
+/* */
 int
-pv_area_find_reg (struct pv_area *area,
-                  struct gdbarch *gdbarch,
-                  int reg,
-                  CORE_ADDR *offset_p)
+pv_area_find_reg(struct pv_area *area, struct gdbarch *gdbarch, int reg,
+                 CORE_ADDR *offset_p)
 {
   struct area_entry *e = area->entry;
 
-  if (e)
-    do
-      {
-        if (e->value.kind == pvk_register
-            && e->value.reg == reg
-            && e->value.k == 0
-            && e->size == register_size (gdbarch, reg))
-          {
-            if (offset_p)
-              *offset_p = e->offset;
-            return 1;
-          }
+  if (e) {
+    do {
+      if ((e->value.kind == pvk_register)
+          && (e->value.reg == reg)
+          && (e->value.k == 0)
+          && (e->size == (CORE_ADDR)register_size(gdbarch, reg)))
+        {
+          if (offset_p)
+            *offset_p = e->offset;
+          return 1;
+        }
 
-        e = e->next;
-      }
-    while (e != area->entry);
+      e = e->next;
+    } while (e != area->entry);
+  }
 
   return 0;
 }
@@ -576,12 +573,13 @@ pv_area_scan (struct pv_area *area,
   addr.kind = pvk_register;
   addr.reg = area->base_reg;
 
-  if (e)
-    do
-      {
-        addr.k = e->offset;
-        func (closure, addr, e->size, e->value);
-        e = e->next;
-      }
-    while (e != area->entry);
+  if (e) {
+    do {
+      addr.k = e->offset;
+      func(closure, addr, e->size, e->value);
+      e = e->next;
+    } while (e != area->entry);
+  }
 }
+
+/* EOF */

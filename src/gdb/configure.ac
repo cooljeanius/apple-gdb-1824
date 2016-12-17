@@ -3137,7 +3137,8 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wdangling-else -Wmemset-elt-size -Wswitch-unreachable -Whsa \
 -Wscalar-storage-order -Wimplicit-fallthrough -Wformat-length=2 \
 -Wexpansion-to-defined -Wint-in-bool-context -Wbool-operation \
--Wduplicated-branches -Wstringop-overflow -Wbuiltin-declaration-mismatch"
+-Wduplicated-branches -Wstringop-overflow -Wbuiltin-declaration-mismatch \
+-Walloc-zero -Walloc-size-larger-than=2147483647"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then

@@ -340,12 +340,14 @@ bsd_uthread_xfer_partial (struct target_ops *ops, enum target_object object,
 
 /* */
 static ptid_t
-bsd_uthread_wait(ptid_t ptid, struct target_waitstatus *status)
+bsd_uthread_wait(ptid_t ptid, struct target_waitstatus *status,
+		 gdb_client_data client_data)
 {
   CORE_ADDR addr;
 
   /* Pass the request to the layer beneath: */
-  ptid = find_target_beneath(bsd_uthread_ops_hack)->to_wait(ptid, status);
+  ptid = find_target_beneath(bsd_uthread_ops_hack)->to_wait(ptid, status,
+							    client_data);
 
   /* Fetch the corresponding thread ID, and augment the returned
      process ID with it.  */

@@ -1,4 +1,4 @@
-/* Definitions for the Macraigor Systems BDM Wiggler
+/* ocd.h: Definitions for the Macraigor Systems BDM Wiggler
    Copyright 1996, 1997, 1998, 2000, 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -115,13 +115,13 @@ void ocd_mourn (void);
 void ocd_create_inferior (char *exec_file, char *args, char **env,
 			  int from_tty);
 
-int ocd_thread_alive (ptid_t th);
+int ocd_thread_alive(ptid_t th);
 
-void ocd_error (char *s, int error_code);
+void ocd_error(const char *s, int error_code);
 
-void ocd_kill (void);
+void ocd_kill(void);
 
-void ocd_load (char *args, int from_tty);
+void ocd_load(char *args, int from_tty);
 
 unsigned char *ocd_read_bdm_registers (int first_bdm_regno,
 				       int last_bdm_regno, int *reglen);
@@ -141,3 +141,5 @@ int ocd_remove_breakpoint (CORE_ADDR addr, char *contents_cache);
 int ocd_write_bytes (CORE_ADDR memaddr, char *myaddr, int len);
 
 #endif /* OCD_H */
+
+/* EOF */

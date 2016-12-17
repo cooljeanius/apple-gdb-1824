@@ -2236,6 +2236,7 @@ NAME (aout, find_nearest_line) (bfd *abfd,
   asymbol *func = 0;
   size_t filelen, funclen;
   char *buf;
+  bfd_size_type buf_len = 0UL;
 
   *filename_ptr = abfd->filename;
   *functionname_ptr = 0;
@@ -2367,7 +2368,8 @@ NAME (aout, find_nearest_line) (bfd *abfd,
     adata(abfd).line_buf = buf = NULL;
   else
     {
-      buf = (char *)bfd_malloc((bfd_size_type) filelen + funclen + 3);
+      buf_len = ((bfd_size_type)filelen + funclen + 3UL);
+      buf = (char *)bfd_malloc(buf_len);
       adata(abfd).line_buf = buf;
       if (buf == NULL)
 	return FALSE;
@@ -2379,7 +2381,8 @@ NAME (aout, find_nearest_line) (bfd *abfd,
 	*filename_ptr = main_file_name;
       else
 	{
-	  sprintf (buf, "%s%s", directory_name, main_file_name);
+	  snprintf(buf, (size_t)buf_len, "%s%s", directory_name,
+		   main_file_name);
 	  *filename_ptr = buf;
 	  buf += filelen + 1;
 	}

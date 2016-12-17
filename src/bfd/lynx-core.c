@@ -173,7 +173,7 @@ lynx_core_file_p(bfd *abfd)
                                   host.  */
 			       + pss.data_start % pagesize
 #endif
-			       );
+			       + 0);
   if (!newsect)
     goto fail;
 
@@ -246,6 +246,7 @@ lynx_core_file_matches_executable_p(bfd *core_bfd, bfd *exec_bfd)
 # endif /* __GNUC__ && !__STRICT_ANSI__ && !__STDC__ */
 typedef int lynx_core_c_dummy_t;
 extern lynx_core_c_dummy_t lynx_core_c_dummy_var;
+lynx_core_c_dummy_t lynx_core_c_dummy_var = 0;
 #endif /* LYNX_CORE */
 
 /* EOF */

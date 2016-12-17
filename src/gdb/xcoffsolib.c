@@ -29,13 +29,16 @@
 #include "frame.h"
 #include "gdb_regex.h"
 
+/* from nm-rs6000.h: */
+extern void xcoff_relocate_symtab(unsigned int);
+
 
 /* If ADDR lies in a shared library, return its name.
    Note that returned name points to static data whose content is overwritten
    by each call.  */
 
 char *
-xcoff_solib_address (CORE_ADDR addr)
+xcoff_solib_address(CORE_ADDR addr)
 {
   static char *buffer = NULL;
   struct vmap *vp = vmap;
@@ -58,11 +61,11 @@ xcoff_solib_address (CORE_ADDR addr)
   return NULL;
 }
 
-static void solib_info (char *, int);
-static void sharedlibrary_command (char *pattern, int from_tty);
+static void solib_info(const char *, int);
+static void sharedlibrary_command(const char *pattern, int from_tty);
 
 static void
-solib_info (char *args, int from_tty)
+solib_info(const char *args, int from_tty)
 {
   struct vmap *vp = vmap;
 
@@ -95,8 +98,9 @@ Text Range		Data Range		Syms	Shared Object Library\n");
     }
 }
 
+/* */
 static void
-sharedlibrary_command (char *pattern, int from_tty)
+sharedlibrary_command(const char *pattern, int from_tty)
 {
   dont_repeat ();
 
@@ -106,10 +110,10 @@ sharedlibrary_command (char *pattern, int from_tty)
 
   if (pattern)
     {
-      char *re_err = re_comp (pattern);
+      const char *re_err = re_comp(pattern);
 
       if (re_err)
-	error (_("Invalid regexp: %s"), re_err);
+	error(_("Invalid regexp: %s"), re_err);
     }
 
   /* Walk the list of currently loaded shared libraries, and read
@@ -157,8 +161,9 @@ sharedlibrary_command (char *pattern, int from_tty)
   }
 }
 
+extern void _initialize_xcoffsolib(void); /* -Wmissing-prototypes */
 void
-_initialize_xcoffsolib (void)
+_initialize_xcoffsolib(void)
 {
   add_com ("sharedlibrary", class_files, sharedlibrary_command,
 	   _("Load shared object library symbols for files matching REGEXP."));
@@ -177,3 +182,5 @@ inferior.  Otherwise, symbols must be loaded manually, using `sharedlibrary'."),
 			   NULL, /* FIXME: i18n: */
 			   &setlist, &showlist);
 }
+
+/* EOF */

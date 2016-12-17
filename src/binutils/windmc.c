@@ -233,7 +233,7 @@ usage(FILE *stream, int status)
   if (REPORT_BUGS_TO[0] && status == 0)
     fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
 
-  exit(status);
+  xexit(status);
 }
 
 static void

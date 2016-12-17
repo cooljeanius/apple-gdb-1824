@@ -48,64 +48,64 @@ extern void _initialize_remote_sds (void);
 
 /* Declarations of local functions. */
 
-static int sds_write_bytes (CORE_ADDR, char *, int);
+static int sds_write_bytes(CORE_ADDR, gdb_byte *, int);
 
-static int sds_read_bytes (CORE_ADDR, char *, int);
+static int sds_read_bytes(CORE_ADDR, gdb_byte *, int);
 
-static void sds_files_info (struct target_ops *ignore);
+static void sds_files_info(struct target_ops *ignore);
 
-static int sds_xfer_memory (CORE_ADDR, char *, int, int, 
-			    struct mem_attrib *, struct target_ops *);
+static int sds_xfer_memory(CORE_ADDR, gdb_byte *, int, int, 
+			   struct mem_attrib *, struct target_ops *);
 
-static void sds_prepare_to_store (void);
+static void sds_prepare_to_store(void);
 
-static void sds_fetch_registers (int);
+static void sds_fetch_registers(int);
 
-static void sds_resume (ptid_t, int, enum target_signal);
+static void sds_resume(ptid_t, int, enum target_signal);
 
-static int sds_start_remote (void *);
+static int sds_start_remote(void *);
 
-static void sds_open (char *, int);
+static void sds_open(const char *, int);
 
-static void sds_close (int);
+static void sds_close(int);
 
-static void sds_store_registers (int);
+static void sds_store_registers(int);
 
-static void sds_mourn (void);
+static void sds_mourn(void);
 
-static void sds_load (char *, int);
+static void sds_load(const char *, int);
 
-static int getmessage (unsigned char *, int);
+static int getmessage(unsigned char *, int);
 
-static int putmessage (unsigned char *, int);
+static int putmessage(unsigned char *, int);
 
-static int sds_send (unsigned char *, int);
+static int sds_send(unsigned char *, int);
 
-static int readchar (int);
+static int readchar(int);
 
-static ptid_t sds_wait (ptid_t, struct target_waitstatus *);
+static ptid_t sds_wait(ptid_t, struct target_waitstatus *, gdb_client_data);
 
-static void sds_kill (void);
+static void sds_kill(void);
 
-static int fromhex (int);
+static int fromhex(int);
 
-static void sds_detach (char *, int);
+static void sds_detach(const char *, int);
 
-static void sds_interrupt (int);
+static void sds_interrupt(int);
 
-static void sds_interrupt_twice (int);
+static void sds_interrupt_twice(int);
 
-static void interrupt_query (void);
+static void interrupt_query(void);
 
-static int read_frame (char *);
+static int read_frame(char *);
 
-static int sds_insert_breakpoint (CORE_ADDR, char *);
+static int sds_insert_breakpoint(CORE_ADDR, char *);
 
-static int sds_remove_breakpoint (CORE_ADDR, char *);
+static int sds_remove_breakpoint(CORE_ADDR, char *);
 
-static void init_sds_ops (void);
+static void init_sds_ops(void);
 
-static void sds_command (char *args, int from_tty);
+static void sds_command(const char *args, int from_tty);
 
 /* Define the target operations vector. */
 
@@ -185,7 +185,7 @@ sds_start_remote (void *dummy)
    NAME is the filename used for communication.  */
 
 static void
-sds_open (char *name, int from_tty)
+sds_open(const char *name, int from_tty)
 {
   if (name == 0)
     error ("To open a remote debug connection, you need to specify what serial\n\
@@ -240,18 +240,21 @@ device is attached to the remote system (e.g. /dev/ttya).");
    die when it hits one.  */
 
 static void
-sds_detach (char *args, int from_tty)
+sds_detach(const char *args, int from_tty)
 {
+  /* same condition as where it is used: */
+#if defined(PBUFSIZ) && defined(HAVE_STRCPY)
   char buf[PBUFSIZ];
+#endif /* PBUFSIZ && HAVE_STRCPY */
 
   if (args)
     error ("Argument given to \"detach\" when remotely debugging.");
 
-#if 0
+#if defined(PBUFSIZ) && defined(HAVE_STRCPY)
   /* Tell the remote target to detach.  */
-  strcpy (buf, "D");
-  sds_send (buf, 1);
-#endif
+  strcpy(buf, "D");
+  sds_send((unsigned char *)buf, 1);
+#endif /* PBUFSIZ && HAVE_STRCPY */
 
   pop_target ();
   if (from_tty)
@@ -361,7 +364,7 @@ sds_interrupt (int signo)
   sds_send (buf, 1);
 }
 
-static void (*ofunc) ();
+static void (*ofunc)(int);
 
 /* The user typed ^C twice.  */
 
@@ -400,7 +403,8 @@ int kill_kludge;
    what, if anything, that means in the case of this target).  */
 
 static ptid_t
-sds_wait (ptid_t ptid, struct target_waitstatus *status)
+sds_wait(ptid_t ptid, struct target_waitstatus *status,
+	 gdb_client_data client_data ATTRIBUTE_UNUSED)
 {
   unsigned char buf[PBUFSIZ];
   int retlen;
@@ -408,7 +412,7 @@ sds_wait (ptid_t ptid, struct target_waitstatus *status)
   status->kind = TARGET_WAITKIND_EXITED;
   status->value.integer = 0;
 
-  ofunc = (void (*)()) signal (SIGINT, sds_interrupt);
+  ofunc = (void (*)(int))signal(SIGINT, sds_interrupt);
 
   signal (SIGINT, ofunc);
 
@@ -427,6 +431,9 @@ sds_wait (ptid_t ptid, struct target_waitstatus *status)
 	{
 	  buf[0] = 26;
 	  retlen = sds_send (buf, 1);
+	  if (retlen > 0) {
+	    ; /* ??? */
+	  }
 	  if (remote_debug)
 	    {
 	      fprintf_unfiltered (gdb_stdlog, "Signals: %02x%02x %02x %02x\n",
@@ -487,10 +494,11 @@ sds_fetch_registers (int regno)
    read out the ones we don't want to change first.  */
 
 static void
-sds_prepare_to_store (void)
+sds_prepare_to_store(void)
 {
   /* Make sure the entire registers array is valid.  */
-  deprecated_read_register_bytes (0, (char *) NULL, deprecated_register_bytes ());
+  deprecated_read_register_bytes(0, (gdb_byte *)NULL,
+				 deprecated_register_bytes());
 }
 
 /* Store register REGNO, or all registers if REGNO == -1, from the contents
@@ -538,7 +546,7 @@ sds_store_registers (int regno)
    Returns number of bytes transferred, or 0 for error.  */
 
 static int
-sds_write_bytes (CORE_ADDR memaddr, char *myaddr, int len)
+sds_write_bytes(CORE_ADDR memaddr, gdb_byte *myaddr, int len)
 {
   int max_buf_size;		/* Max size of packet output buffer */
   int origlen;
@@ -586,7 +594,7 @@ sds_write_bytes (CORE_ADDR memaddr, char *myaddr, int len)
    Returns number of bytes transferred, or 0 for error.  */
 
 static int
-sds_read_bytes (CORE_ADDR memaddr, char *myaddr, int len)
+sds_read_bytes(CORE_ADDR memaddr, gdb_byte *myaddr, int len)
 {
   int max_buf_size;		/* Max size of packet output buffer */
   int origlen, retlen;
@@ -639,15 +647,15 @@ sds_read_bytes (CORE_ADDR memaddr, char *myaddr, int len)
    read; 0 for error.  TARGET is unused.  */
 
 static int
-sds_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int should_write,
-		 struct mem_attrib *attrib, struct target_ops *target)
+sds_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int should_write,
+		struct mem_attrib *attrib, struct target_ops *target)
 {
   int res;
 
   if (should_write)
-    res = sds_write_bytes (memaddr, myaddr, len);
+    res = sds_write_bytes(memaddr, myaddr, len);
   else
-    res = sds_read_bytes (memaddr, myaddr, len);
+    res = sds_read_bytes(memaddr, myaddr, len);
   
   return res;
 }
@@ -751,8 +759,8 @@ putmessage (unsigned char *buf, int len)
 
   header[2] = len;
 
-  csum = compute_checksum (csum, buf, len);
-  csum = compute_checksum (csum, header + 1, 2);
+  csum = compute_checksum(csum, (char *)buf, len);
+  csum = compute_checksum(csum, (char *)(header + 1), 2);
 
   header[0] = csum;
 
@@ -857,7 +865,7 @@ getmessage (unsigned char *buf, int forever)
   unsigned char header[3];
   unsigned char inbuf[500];
 
-  strcpy (buf, "timeout");
+  strcpy((char *)buf, "timeout");
 
   if (forever)
     {
@@ -879,8 +887,7 @@ getmessage (unsigned char *buf, int forever)
          After that, we expect characters to arrive at a brisk pace.  They
          should show up within sds_timeout intervals.  */
 
-      do
-	{
+      do {
 	  c = readchar (timeout);
 
 	  if (c == SERIAL_TIMEOUT)
@@ -894,8 +901,7 @@ getmessage (unsigned char *buf, int forever)
 		fputs_filtered ("Timed out.\n", gdb_stdlog);
 	      goto retry;
 	    }
-	}
-      while (c != '$' && c != '{');
+      } while ((c != '$') && (c != '{'));
 
       /* We might have seen a "trigraph", a sequence of three characters
          that indicate various sorts of communication state.  */
@@ -916,19 +922,20 @@ getmessage (unsigned char *buf, int forever)
 	  continue;
 	}
 
-      val = read_frame (inbuf);
+      val = read_frame((char *)inbuf);
 
       if (val == 1)
 	{
-	  fromb64 (inbuf, header, 4);
+	  fromb64((char *)inbuf, (char *)header, 4);
 	  /* (should check out other bits) */
-	  fromb64 (inbuf + 4, buf, strlen (inbuf) - 4);
+	  fromb64((char *)(inbuf + 4), (char *)buf,
+		  (strlen((const char *)inbuf) - 4UL));
 
 	  len = header[2];
 
 	  csum = 0;
-	  csum = compute_checksum (csum, buf, len);
-	  csum = compute_checksum (csum, header + 1, 2);
+	  csum = compute_checksum(csum, (char *)buf, len);
+	  csum = compute_checksum(csum, (char *)(header + 1), 2);
 
 	  if (csum != header[0])
 	    fprintf_unfiltered (gdb_stderr,
@@ -992,10 +999,11 @@ sds_create_inferior (char *exec_file, char *args, char **env, int from_tty)
   proceed (bfd_get_start_address (exec_bfd), TARGET_SIGNAL_0, 0);
 }
 
+/* */
 static void
-sds_load (char *filename, int from_tty)
+sds_load(const char *filename, int from_tty)
 {
-  generic_load (filename, from_tty);
+  generic_load(filename, from_tty);
 
   inferior_ptid = null_ptid;
 }
@@ -1020,6 +1028,10 @@ sds_insert_breakpoint (CORE_ADDR addr, char *contents_cache)
 
   retlen = sds_send (buf, p - buf);
 
+  if (retlen > 0) {
+    ; /* ??? */
+  }
+
   for (i = 0; i < 4; ++i)
     contents_cache[i] = buf[i + 2];
 
@@ -1043,6 +1055,10 @@ sds_remove_breakpoint (CORE_ADDR addr, char *contents_cache)
     *p++ = contents_cache[i];
 
   retlen = sds_send (buf, p - buf);
+
+  if (retlen > 0) {
+    ; /* ??? */
+  }
 
   return 0;
 }
@@ -1083,9 +1099,9 @@ Specify the serial device it is connected to (e.g. /dev/ttya).";
    reply message.  */
 
 static void
-sds_command (char *args, int from_tty)
+sds_command(const char *args, int from_tty)
 {
-  char *p;
+  const char *p;
   int i, len, retlen;
   unsigned char buf[1000];
 
@@ -1126,3 +1142,5 @@ Show timeout value for sds read."), NULL,
   add_com ("sds", class_obscure, sds_command,
 	   _("Send a command to the SDS monitor."));
 }
+
+/* EOF */

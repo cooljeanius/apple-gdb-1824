@@ -750,6 +750,7 @@ st2000_connect_command(const char *args, int fromtty)
 		return;
 	      else
 		cur_esc = 0;
+	    default:;
 	    }
 	}
 

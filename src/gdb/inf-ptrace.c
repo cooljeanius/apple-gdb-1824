@@ -36,6 +36,7 @@
 #include <signal.h>
 
 #include "inf-child.h"
+#include "inf-ptrace.h"
 
 /* HACK: Save the ptrace ops returned by inf_ptrace_target.  */
 static struct target_ops *ptrace_ops_hack;
@@ -184,7 +185,7 @@ inf_ptrace_mourn_inferior (void)
    be chatty about it.  */
 
 static void
-inf_ptrace_attach (char *args, int from_tty)
+inf_ptrace_attach(const char *args, int from_tty)
 {
   char *exec_file;
   pid_t pid;
@@ -193,7 +194,7 @@ inf_ptrace_attach (char *args, int from_tty)
   if (!args)
     error_no_arg (_("process-id to attach"));
 
-  dummy = args;
+  dummy = (char *)args;
   pid = strtol (args, &dummy, 0);
   /* Some targets don't set errno on errors, grrr!  */
   if (pid == 0 && args == dummy)
@@ -255,14 +256,14 @@ inf_ptrace_post_attach (int pid)
    specified ARGS.  If FROM_TTY is non-zero, be chatty about it.  */
 
 static void
-inf_ptrace_detach (char *args, int from_tty)
+inf_ptrace_detach(const char *args, int from_tty)
 {
   pid_t pid = ptid_get_pid (inferior_ptid);
   int sig = 0;
 
   if (from_tty)
     {
-      char *exec_file = get_exec_file (0);
+      const char *exec_file = get_exec_file(0);
       if (exec_file == 0)
 	exec_file = "";
       printf_unfiltered (_("Detaching from program: %s, %s\n"), exec_file,
@@ -359,25 +360,23 @@ inf_ptrace_resume (ptid_t ptid, int step, enum target_signal signal)
    the status in *OURSTATUS.  */
 
 static ptid_t
-inf_ptrace_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
+inf_ptrace_wait(ptid_t ptid, struct target_waitstatus *ourstatus,
+		gdb_client_data client_data ATTRIBUTE_UNUSED)
 {
   pid_t pid;
   int status, save_errno;
 
-  do
-    {
-      set_sigint_trap ();
-      set_sigio_trap ();
+  do {
+      set_sigint_trap();
+      set_sigio_trap();
 
-      do
-	{
-	  pid = waitpid (ptid_get_pid (ptid), &status, 0);
-	  save_errno = errno;
-	}
-      while (pid == -1 && errno == EINTR);
+      do {
+	pid = waitpid(ptid_get_pid(ptid), &status, 0);
+	save_errno = errno;
+      } while ((pid == -1) && (errno == EINTR));
 
-      clear_sigio_trap ();
-      clear_sigint_trap ();
+      clear_sigio_trap();
+      clear_sigint_trap();
 
       if (pid == -1)
 	{
@@ -394,8 +393,7 @@ inf_ptrace_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
       /* Ignore terminated detached child processes.  */
       if (!WIFSTOPPED (status) && pid != ptid_get_pid (inferior_ptid))
 	pid = -1;
-    }
-  while (pid == -1);
+  } while (pid == -1);
 
 #ifdef PT_GET_PROCESS_STATE
   if (WIFSTOPPED (status))
@@ -585,9 +583,9 @@ inf_ptrace_files_info (struct target_ops *ignore)
    local methods.  */
 
 struct target_ops *
-inf_ptrace_target (void)
+inf_ptrace_target(void)
 {
-  struct target_ops *t = inf_child_target ();
+  struct target_ops *t = inf_child_target();
 
   t->to_attach = inf_ptrace_attach;
   t->to_detach = inf_ptrace_detach;
@@ -600,7 +598,7 @@ inf_ptrace_target (void)
   t->to_follow_fork = inf_ptrace_follow_fork;
   t->to_post_startup_inferior = inf_ptrace_post_startup_inferior;
   t->to_post_attach = inf_ptrace_post_attach;
-#endif
+#endif /* PT_GET_PROCESS_STATE */
   t->to_mourn_inferior = inf_ptrace_mourn_inferior;
   t->to_thread_alive = inf_ptrace_thread_alive;
   t->to_pid_to_str = normal_pid_to_str;
@@ -624,7 +622,8 @@ inf_ptrace_fetch_register (int regnum)
   CORE_ADDR addr;
   size_t size;
   PTRACE_TYPE_RET *buf;
-  int pid, i;
+  int pid;
+  size_t i;
 
   /* Cater for systems like GNU/Linux, that implement threads as
      seperate processes.  */
@@ -640,7 +639,7 @@ inf_ptrace_fetch_register (int regnum)
   buf = alloca (size);
 
   /* Read the register contents from the inferior a chuck at the time.  */
-  for (i = 0; i < size / sizeof (PTRACE_TYPE_RET); i++)
+  for (i = 0UL; i < (size / sizeof(PTRACE_TYPE_RET)); i++)
     {
       errno = 0;
       buf[i] = ptrace (PT_READ_U, pid, (PTRACE_TYPE_ARG3)addr, 0);
@@ -674,7 +673,8 @@ inf_ptrace_store_register (int regnum)
   CORE_ADDR addr;
   size_t size;
   PTRACE_TYPE_RET *buf;
-  int pid, i;
+  int pid;
+  size_t i;
 
   /* Cater for systems like GNU/Linux, that implement threads as
      seperate processes.  */
@@ -691,7 +691,7 @@ inf_ptrace_store_register (int regnum)
 
   /* Write the register contents into the inferior a chunk at the time.  */
   regcache_raw_collect (current_regcache, regnum, buf);
-  for (i = 0; i < size / sizeof (PTRACE_TYPE_RET); i++)
+  for (i = 0UL; i < (size / sizeof(PTRACE_TYPE_RET)); i++)
     {
       errno = 0;
       ptrace (PT_WRITE_U, pid, (PTRACE_TYPE_ARG3)addr, buf[i]);
@@ -705,15 +705,16 @@ inf_ptrace_store_register (int regnum)
 
 /* Store register REGNUM back into the inferior.  If REGNUM is -1, do
    this for all registers.  */
-
 void
-inf_ptrace_store_registers (int regnum)
+inf_ptrace_store_registers(int regnum)
 {
   if (regnum == -1)
-    for (regnum = 0; regnum < NUM_REGS; regnum++)
-      inf_ptrace_store_register (regnum);
+    {
+      for (regnum = 0; regnum < NUM_REGS; regnum++)
+	inf_ptrace_store_register(regnum);
+    }
   else
-    inf_ptrace_store_register (regnum);
+    inf_ptrace_store_register(regnum);
 }
 
 /* Create a "traditional" ptrace target.  REGISTER_U_OFFSET should be

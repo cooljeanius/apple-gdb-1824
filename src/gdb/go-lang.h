@@ -56,9 +56,9 @@ enum go_type
 
 /* Defined in go-exp.y.  */
 
-extern int go_parse (void);
+extern int go_parse(void);
 
-extern void go_error (char *);
+extern void go_error(const char *);
 
 /* Defined in go-lang.c.  */
 

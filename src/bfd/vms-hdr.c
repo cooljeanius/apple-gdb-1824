@@ -9,7 +9,7 @@
    EOM record handling functions
    EEOM record handling functions
 
-   Written by Klaus K"ampf (kkaempf@rmi.de)
+   Written by Klaus Kaempf <kkaempf@rmi.de>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "bfdver.h"
@@ -31,6 +31,7 @@
 #include "bfdlink.h"
 #include "safe-ctype.h"
 #include "libbfd.h"
+#include "libiberty.h"
 
 #include "vms.h"
 
@@ -208,7 +209,7 @@ _bfd_vms_write_hdr (bfd *abfd, int objtype)
       char *fname, *fout, *fptr;
 
       fptr = bfd_get_filename (abfd);
-      fname = (char *)alloca(strlen(fptr) + 1);
+      fname = (char *)alloca(strnlen(fptr, (MAX_ALLOCA_SIZE - 1UL)) + 1UL);
       strcpy (fname, fptr);
       fout = strrchr (fname, ']');
       if (fout == 0)

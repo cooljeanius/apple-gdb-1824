@@ -91,4 +91,9 @@ struct addrmap *addrmap_create_fixed (struct addrmap *original,
    to either mutable or immutable maps.)  */
 void addrmap_relocate (struct addrmap *map, CORE_ADDR offset);
 
+/* */
+extern int addrmap_c_inited;
+
 #endif /* ADDRMAP_H */
+
+/* EOF */

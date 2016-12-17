@@ -1,4 +1,4 @@
-/* Remote debugging interface for Renesas HMS Monitor Version 1.0
+/* remote-hms.c: Remote debugging interface for Renesas HMS Monitor Version 1.0
    Copyright 1995, 1996, 1998, 1999, 2000, 2001
    Free Software Foundation, Inc.
    Contributed by Cygnus Support.  Written by Steve Chamberlain
@@ -30,9 +30,9 @@
 
 #define CCR_REGNUM 8
 
-static void hms_open (char *args, int from_tty);
+static void hms_open(const char *args, int from_tty);
 static void
-hms_supply_register (char *regname, int regnamelen, char *val, int vallen)
+hms_supply_register(char *regname, int regnamelen, char *val, int vallen)
 {
   int regno;
 
@@ -66,7 +66,7 @@ hms_supply_register (char *regname, int regnamelen, char *val, int vallen)
  * registers either. So, typing "info reg sp" becomes a "r30".
  */
 
-static char *hms_regnames[] =
+static const char *hms_regnames[] =
 {
   "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "CCR", "PC", "", "", "", ""
 };
@@ -79,7 +79,7 @@ static char *hms_regnames[] =
 
 static struct target_ops hms_ops;
 
-static char *hms_inits[] =
+static const char *hms_inits[] =
 {"\003",			/* Resets the prompt, and clears repeated cmds */
  NULL};
 
@@ -134,10 +134,11 @@ init_hms_cmds (void)
   hms_cmds.magic = MONITOR_OPS_MAGIC;	/* magic */
 }				/* init_hms-cmds */
 
+/* */
 static void
-hms_open (char *args, int from_tty)
+hms_open(const char *args, int from_tty)
 {
-  monitor_open (args, &hms_cmds, from_tty);
+  monitor_open(args, &hms_cmds, from_tty);
 }
 
 int write_dos_tick_delay;
@@ -159,3 +160,5 @@ Specify the serial device it is connected to (e.g. /dev/ttya).";
   write_dos_tick_delay = 1;
   add_target (&hms_ops);
 }
+
+/* EOF */

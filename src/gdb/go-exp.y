@@ -1,4 +1,4 @@
-/* YACC parser for Go expressions, for GDB.
+/* go-exp.y: YACC parser for Go expressions, for GDB.
 
    Copyright (C) 2012-2013 Free Software Foundation, Inc.
 
@@ -52,6 +52,7 @@
 %{
 
 #include "defs.h"
+#include "gdb_assert.h"
 #include "gdb_string.h"
 #include <ctype.h>
 #include "expression.h"
@@ -122,11 +123,11 @@
 
 #define YYFPRINTF parser_fprintf
 
-int yyparse (void);
+int yyparse(void);
 
-static int yylex (void);
+static int yylex(void);
 
-void yyerror (char *);
+void yyerror(const char *);
 
 %}
 
@@ -975,7 +976,7 @@ parse_string_or_char (const char *tokptr, const char **outptr,
 
 struct token
 {
-  char *operator;
+  const char *go_operator;
   int token;
   enum exp_opcode opcode;
 };
@@ -1062,7 +1063,7 @@ lex_one_token (void)
   tokstart = lexptr;
   /* See if it is a special token of length 3.  */
   for (i = 0; i < sizeof (tokentab3) / sizeof (tokentab3[0]); i++)
-    if (strncmp (tokstart, tokentab3[i].operator, 3) == 0)
+    if (strncmp (tokstart, tokentab3[i].go_operator, 3) == 0)
       {
 	lexptr += 3;
 	yylval.opcode = tokentab3[i].opcode;
@@ -1071,7 +1072,7 @@ lex_one_token (void)
 
   /* See if it is a special token of length 2.  */
   for (i = 0; i < sizeof (tokentab2) / sizeof (tokentab2[0]); i++)
-    if (strncmp (tokstart, tokentab2[i].operator, 2) == 0)
+    if (strncmp (tokstart, tokentab2[i].go_operator, 2) == 0)
       {
 	lexptr += 2;
 	yylval.opcode = tokentab2[i].opcode;
@@ -1246,7 +1247,8 @@ lex_one_token (void)
 	  }
 	return result;
       }
-    }
+    default:;
+    } /* end switch */
 
   if (!(c == '_' || c == '$'
 	|| (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')))
@@ -1301,7 +1303,7 @@ lex_one_token (void)
   /* Catch specific keywords.  */
   copy = copy_name (yylval.sval);
   for (i = 0; i < sizeof (ident_tokens) / sizeof (ident_tokens[0]); i++)
-    if (strcmp (copy, ident_tokens[i].operator) == 0)
+    if (strcmp (copy, ident_tokens[i].go_operator) == 0)
       {
 	/* It is ok to always set this, even though we don't always
 	   strictly need to.  */
@@ -1615,10 +1617,12 @@ go_parse (void)
 }
 
 void
-yyerror (char *msg)
+yyerror(const char *msg)
 {
   if (prev_lexptr)
     lexptr = prev_lexptr;
 
-  error (_("A %s in expression, near `%s'."), (msg ? msg : "error"), lexptr);
+  error(_("A %s in expression, near `%s'."), (msg ? msg : "error"), lexptr);
 }
+
+/* End of go-exp.y */

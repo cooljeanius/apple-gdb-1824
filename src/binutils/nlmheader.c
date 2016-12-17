@@ -118,7 +118,7 @@ char *custom_file;
 /* Whether to generate debugging information (DEBUG).  */
 bfd_boolean debug_info;
 /* Procedure named by EXIT.  */
-char *exit_procedure;
+const char *exit_procedure;
 /* Exported symbols (EXPORT).  */
 struct string_list *export_symbols;
 /* List of files from INPUT.  */
@@ -140,7 +140,7 @@ char *output_file;
 /* File named by SHARELIB.  */
 char *sharelib_file;
 /* Start procedure name (START).  */
-char *start_procedure;
+const char *start_procedure;
 /* VERBOSE.  */
 bfd_boolean verbose;
 /* RPC description file (XDCDATA).  */
@@ -248,43 +248,6 @@ extern int yydebug;
      QUOTED_STRING = 292
    };
 #endif
-/* Tokens.  */
-#define CHECK 258
-#define CODESTART 259
-#define COPYRIGHT 260
-#define CUSTOM 261
-#define DATE 262
-#define DEBUG 263
-#define DESCRIPTION 264
-#define EXIT 265
-#define EXPORT 266
-#define FLAG_ON 267
-#define FLAG_OFF 268
-#define FULLMAP 269
-#define HELP 270
-#define IMPORT 271
-#define INPUT 272
-#define MAP 273
-#define MESSAGES 274
-#define MODULE 275
-#define MULTIPLE 276
-#define OS_DOMAIN 277
-#define OUTPUT 278
-#define PSEUDOPREEMPTION 279
-#define REENTRANT 280
-#define SCREENNAME 281
-#define SHARELIB 282
-#define STACK 283
-#define START 284
-#define SYNCHRONIZE 285
-#define THREADNAME 286
-#define TYPE 287
-#define VERBOSE 288
-#define VERSIONK 289
-#define XDCDATA 290
-#define STRING 291
-#define QUOTED_STRING 292
-
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -298,7 +261,7 @@ typedef union YYSTYPE
 
 
 /* Line 387 of yacc.c  */
-#line 302 "nlmheader.c"
+#line 265 "nlmheader.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -326,7 +289,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 330 "nlmheader.c"
+#line 293 "nlmheader.c"
 
 #ifdef short
 # undef short
@@ -2086,7 +2049,7 @@ yyreduce:
 
 
 /* Line 1787 of yacc.c  */
-#line 2090 "nlmheader.c"
+#line 2053 "nlmheader.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2321,10 +2284,8 @@ yyreturn:
 #line 492 "nlmheader.y"
 
 
-/* If strerror is just a macro, we want to use the one from libiberty
-   since it will handle undefined values.  */
-#undef strerror
-extern char *strerror PARAMS ((int));
+/* Ensure we have declaration for xstrerror(): */
+#include "libiberty.h"
 
 /* The lexer is simple, too simple for flex.  Keywords are only
    recognized at the start of lines.  Everything else must be an
@@ -2398,7 +2359,7 @@ nlmlex_file_open (const char *name)
   current.file = fopen (name, "r");
   if (current.file == NULL)
     {
-      fprintf (stderr, "%s:%s: %s\n", program_name, name, strerror (errno));
+      fprintf(stderr, "%s:%s: %s\n", program_name, name, xstrerror(errno));
       ++parse_errors;
       return FALSE;
     }

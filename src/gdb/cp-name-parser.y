@@ -2064,6 +2064,7 @@ cp_print(struct demangle_component *result)
   free(str);
 }
 
+/* */
 static char
 trim_chars(char *lexptr, char **extra_chars)
 {
@@ -2080,6 +2081,7 @@ trim_chars(char *lexptr, char **extra_chars)
   return c;
 }
 
+/* Usage: Uh... */
 int
 main(int argc, char **argv)
 {

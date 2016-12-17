@@ -1,4 +1,4 @@
-/* Remote target glue for the Oki op50n based eval board.
+/* op50-rom.c: Remote target glue for the Oki op50n based eval board.
 
    Copyright 1995, 1998, 1999, 2000 Free Software Foundation, Inc.
 
@@ -34,7 +34,7 @@ static void op50n_open (char *args, int from_tty);
  * registers either. So, typing "info reg sp" becomes a "r30".
  */
 
-static char *op50n_regnames[NUM_REGS] =
+static const char *op50n_regnames[NUM_REGS] =
 {
   "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
   "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",

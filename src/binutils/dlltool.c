@@ -2269,7 +2269,7 @@ make_one_lib_file (export_type *exp, int i)
   bfd_set_arch_mach (abfd, HOW_BFD_ARCH, 0);
 
 #ifdef DLLTOOL_ARM
-  if (machine == MARM_INTERWORK || machine == MTHUMB)
+  if (g_machine == MARM_INTERWORK || g_machine == MTHUMB)
     bfd_set_private_flags (abfd, F_INTERWORK);
 #endif /* DLLTOOL_ARM */
 
@@ -2324,7 +2324,7 @@ make_one_lib_file (export_type *exp, int i)
       exp_label->value = 0;
 
 #ifdef DLLTOOL_ARM
-      if (machine == MTHUMB)
+      if (g_machine == MTHUMB)
 	bfd_coff_set_symbol_class (abfd, exp_label, C_THUMBEXTFUNC);
 #endif /* DLLTOOL_ARM */
       ptrs[oidx++] = exp_label;

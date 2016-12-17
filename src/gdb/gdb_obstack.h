@@ -1,4 +1,4 @@
-/* Obstack wrapper for GDB.
+/* gdb_obstack.h: Obstack wrapper for GDB.
 
    Copyright 2002 Free Software Foundation, Inc.
 
@@ -42,4 +42,11 @@
 #define obstack_chunk_alloc xmalloc
 #define obstack_chunk_free xfree
 
-#endif
+/* */
+#if !defined(SYMFILE_H) && defined(USE_VARIADIC_OBCONCAT)
+extern char *obconcat(struct obstack *, ...);
+#endif /* !SYMFILE_H && USE_VARIADIC_OBCONCAT */
+
+#endif /* !GDB_OBSTACK_H */
+
+/* EOF */

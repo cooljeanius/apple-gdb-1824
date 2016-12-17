@@ -132,7 +132,7 @@ child_wait(ptid_t ptid, struct target_waitstatus *ourstatus)
 
 /* Attach to process PID, then initialize for debugging it: */
 static void
-child_attach(char *args, int from_tty)
+child_attach(const char *args, int from_tty)
 {
   ProcessSerialNumber psn;
   ProcessInfoRec inforec;
@@ -179,7 +179,7 @@ child_attach(char *args, int from_tty)
 }
 
 static void
-child_detach(char *args, int from_tty)
+child_detach(const char *args, int from_tty)
 {
 #if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
 # pragma unused (args)
@@ -214,7 +214,7 @@ child_files_info(struct target_ops *ignore)
 
 /* ARGSUSED */
 static void
-child_open(char *arg, int from_tty)
+child_open(const char *arg, int from_tty)
 {
 #if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
 # pragma unused (arg, from_tty)
@@ -301,9 +301,9 @@ child_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len,
 
   for (i = 0; i < len; ++i) {
     if (writeit) {
-      ((gdb_byte *)memaddr)[i] = myaddr[i];
+      ((gdb_byte *)(uintptr_t)memaddr)[i] = myaddr[i];
     } else {
-      myaddr[i] = ((gdb_byte *)memaddr)[i];
+      myaddr[i] = ((gdb_byte *)(uintptr_t)memaddr)[i];
     }
   }
   return len;
@@ -368,7 +368,7 @@ child_close(int an_unused_arg)
 }
 
 static void
-info_proc(char *args, int from_tty)
+info_proc(const char *args, int from_tty)
 {
 #if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
 # pragma unused (args, from_tty)

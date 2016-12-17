@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA.  */
 #ifndef _TM_NEXTSTEP_H_
 #define _TM_NEXTSTEP_H_
 
+#include "macosx-nat-dyld.h" /* for macosx_solib_add() */
 #include "macosx-tdep.h"
 
 #define BLOCK_ADDRESS_ABSOLUTE 1
@@ -42,7 +43,7 @@ Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA.  */
 #define ATTACH_NO_WAIT
 
 #define SOLIB_ADD(filename, from_tty, targ, loadsyms) \
-  macosx_solib_add (filename, from_tty, targ, loadsyms)
+  macosx_solib_add(filename, from_tty, targ, loadsyms)
 
 #define SOLIB_IN_DYNAMIC_LINKER(pid,pc) 0
 

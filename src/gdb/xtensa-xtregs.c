@@ -25,8 +25,8 @@ typedef struct {
   int   size;
   int   coproc;
   int   dbnum;
-  char* name
-;} xtensa_regtable_t;
+  const char *name;
+} xtensa_regtable_t;
 
 #define XTENSA_ELF_XTREG_SIZE	4
 
@@ -36,3 +36,4 @@ const xtensa_regtable_t  xtensa_regmap_table[] = {
   { 0 }
 };
 
+/* EOF */

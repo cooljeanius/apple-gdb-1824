@@ -1,4 +1,4 @@
-/* Remote debugging interface for PPCbug (PowerPC) Rom monitor
+/* ppcbug-rom.c: Remote debugging interface for PPCbug (PowerPC) Rom monitor
    for GDB, the GNU debugger.
    Copyright 1995, 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
 
@@ -100,8 +100,7 @@ ppcbug_supply_register (char *regname, int regnamelen, char *val, int vallen)
  * different names than GDB does, and don't support all the
  * registers either. So, typing "info reg sp" becomes an "A7".
  */
-
-static char *ppcbug_regnames[] =
+static const char *ppcbug_regnames[] =
 {
   "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
   "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
@@ -126,13 +125,12 @@ static char *ppcbug_regnames[] =
 static struct target_ops ppcbug_ops0;
 static struct target_ops ppcbug_ops1;
 
-static char *ppcbug_inits[] =
+static const char *ppcbug_inits[] =
 {"\r", NULL};
 
 static void
-init_ppc_cmds (char *LOAD_CMD,
-	       struct monitor_ops *OPS,
-	       struct target_ops *targops)
+init_ppc_cmds(const char *LOAD_CMD, struct monitor_ops *OPS,
+	      struct target_ops *targops)
 {
   OPS->flags = MO_CLR_BREAK_USES_ADDR | MO_HANDLE_NL;
   OPS->init = ppcbug_inits;	/* Init strings */
@@ -165,7 +163,7 @@ init_ppc_cmds (char *LOAD_CMD,
   OPS->getreg.resp_delim = "=";	/* getreg.resp_delim */
   OPS->getreg.term = NULL;	/* getreg.term */
   OPS->getreg.term_cmd = NULL;	/* getreg.term_cmd */
-  OPS->register_pattern = "\\(\\w+\\) +=\\([0-9a-fA-F]+\\b\\)";		/* register_pattern */
+  OPS->register_pattern = "\\(\\w+\\) +=\\([0-9a-fA-F]+\\b\\)"; /* register_pattern */
   OPS->supply_register = ppcbug_supply_register;
   OPS->dump_registers = "rd\r";	/* dump all registers */
   OPS->load_routine = NULL;	/* load_routine (defaults to SRECs) */
@@ -184,22 +182,24 @@ init_ppc_cmds (char *LOAD_CMD,
 static struct monitor_ops ppcbug_cmds0;
 static struct monitor_ops ppcbug_cmds1;
 
+/* */
 static void
-ppcbug_open0 (char *args, int from_tty)
+ppcbug_open0(const char *args, int from_tty)
 {
-  monitor_open (args, &ppcbug_cmds0, from_tty);
+  monitor_open(args, &ppcbug_cmds0, from_tty);
 }
 
+/* */
 static void
-ppcbug_open1 (char *args, int from_tty)
+ppcbug_open1(const char *args, int from_tty)
 {
-  monitor_open (args, &ppcbug_cmds1, from_tty);
+  monitor_open(args, &ppcbug_cmds1, from_tty);
 }
 
 extern initialize_file_ftype _initialize_ppcbug_rom; /* -Wmissing-prototypes */
 
 void
-_initialize_ppcbug_rom (void)
+_initialize_ppcbug_rom(void)
 {
   init_ppc_cmds ("lo 0\r", &ppcbug_cmds0, &ppcbug_ops0);
   init_ppc_cmds ("lo 1\r", &ppcbug_cmds1, &ppcbug_ops1);
@@ -223,3 +223,5 @@ Specify the serial device it is connected to (e.g. /dev/ttya).";
 
   add_target (&ppcbug_ops1);
 }
+
+/* EOF */

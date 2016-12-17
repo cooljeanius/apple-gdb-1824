@@ -113,13 +113,12 @@ m32r_load_1 (void *dummy)
 /* 
  * Function: m32r_load (an alternate way to load) 
  */
-
 static void
-m32r_load (char *filename, int from_tty)
+m32r_load(const char *filename, int from_tty)
 {
   bfd *abfd;
-  asection *s;
-  unsigned int i, data_count = 0;
+  asection *s = NULL;
+  unsigned int i, data_count = 0U;
   struct timeval start_time, end_time;
 
   if (filename == NULL || filename[0] == 0)
@@ -158,12 +157,15 @@ m32r_load (char *filename, int from_tty)
 	monitor_expect_prompt (NULL, 0);
       }
 #else
+  i = 0;
   if (!(catch_errors (m32r_load_1, abfd, "Load aborted!\n", RETURN_MASK_ALL)))
     {
       monitor_printf ("q\n");
       return;
     }
-#endif
+  (void)s;
+  (void)i;
+#endif /* 0 */
   gettimeofday (&end_time, NULL);
   printf_filtered ("Start address 0x%lx\n", bfd_get_start_address (abfd));
   print_transfer_performance (gdb_stdout, data_count, 0, &start_time,
@@ -186,13 +188,13 @@ m32r_load (char *filename, int from_tty)
 }
 
 static void
-m32r_load_gen (char *filename, int from_tty)
+m32r_load_gen(const char *filename, int from_tty)
 {
-  generic_load (filename, from_tty);
+  generic_load(filename, from_tty);
 }
 
-static void m32r_open (char *args, int from_tty);
-static void mon2000_open (char *args, int from_tty);
+static void m32r_open(const char *args, int from_tty);
+static void mon2000_open(const char *args, int from_tty);
 
 /* This array of registers needs to match the indexes used by GDB. The
    whole reason this exists is because the various ROM monitors use
@@ -231,7 +233,7 @@ m32r_supply_register (char *regname, int regnamelen, char *val, int vallen)
       if (regno == PSW_REGNUM)
 	{
 	  unsigned long psw = strtoul (val, NULL, 16);
-	  char *zero = "00000000", *one = "00000001";
+	  const char *zero = "00000000", *one = "00000001";
 
 #ifdef SM_REGNUM
 	  /* Stack mode bit */
@@ -257,11 +259,15 @@ m32r_supply_register (char *regname, int regnamelen, char *val, int vallen)
 	  monitor_supply_register (CBR_REGNUM, (psw & 0x1) ? one : zero);
 #endif
 #ifdef BPC_REGNUM
-	  monitor_supply_register (BPC_REGNUM, zero);	/* KLUDGE:   (???????) */
+	  monitor_supply_register (BPC_REGNUM, zero); /* KLUDGE:   (???????) */
 #endif
 #ifdef BCARRY_REGNUM
-	  monitor_supply_register (BCARRY_REGNUM, zero);	/* KLUDGE: (??????) */
+	  monitor_supply_register (BCARRY_REGNUM, zero); /* KLUDGE: (??????) */
 #endif
+	  if (psw > 0UL) {
+	    (void)zero;
+	    (void)one;
+	  }
 	}
 
       if (regno == SPI_REGNUM || regno == SPU_REGNUM)
@@ -336,9 +342,9 @@ init_m32r_cmds (void)
 }				/* init_m32r_cmds */
 
 static void
-m32r_open (char *args, int from_tty)
+m32r_open(const char *args, int from_tty)
 {
-  monitor_open (args, &m32r_cmds, from_tty);
+  monitor_open(args, &m32r_cmds, from_tty);
 }
 
 /* Mon2000 monitor (MSA2000 board) */
@@ -395,14 +401,16 @@ init_mon2000_cmds (void)
   mon2000_cmds.magic = MONITOR_OPS_MAGIC;	/* magic */
 }				/* init_mon2000_cmds */
 
+/* */
 static void
-mon2000_open (char *args, int from_tty)
+mon2000_open(const char *args, int from_tty)
 {
-  monitor_open (args, &mon2000_cmds, from_tty);
+  monitor_open(args, &mon2000_cmds, from_tty);
 }
 
+/* */
 static void
-m32r_upload_command (char *args, int from_tty)
+m32r_upload_command(const char *args, int from_tty)
 {
   bfd *abfd;
   asection *s;
@@ -427,8 +435,7 @@ m32r_upload_command (char *args, int from_tty)
 	myIPaddress++;
 
       if (!strncmp (myIPaddress, "0.0.", 4))	/* empty */
-	error
-	  ("Please use 'set board-address' to set the M32R-EVA board's IP address.");
+	error(_("Please use 'set board-address' to set the M32R-EVA board's IP address."));
       if (strchr (myIPaddress, '('))
 	*(strchr (myIPaddress, '(')) = '\0';	/* delete trailing junk */
       board_addr = xstrdup (myIPaddress);
@@ -452,8 +459,7 @@ m32r_upload_command (char *args, int from_tty)
 	    }
 	}
       if (server_addr == 0)	/* failed? */
-	error
-	  ("Need to know gdb host computer's IP address (use 'set server-address')");
+	error(_("Need to know gdb host computer's IP address (use 'set server-address')"));
     }
 
   if (args == 0 || args[0] == 0)	/* no args: upload the current file */
@@ -464,31 +470,41 @@ m32r_upload_command (char *args, int from_tty)
       if (current_directory)
 	download_path = xstrdup (current_directory);
       else
-	error
-	  ("Need to know default download path (use 'set download-path')");
+	error(_("Need to know default download path (use 'set download-path')"));
     }
 
   gettimeofday (&start_time, NULL);
   monitor_printf ("uhip %s\r", server_addr);
   resp_len = monitor_expect_prompt (buf, sizeof (buf));	/* parse result? */
+  if (resp_len > 0) {
+    ; /* ??? */
+  }
   monitor_printf ("ulip %s\r", board_addr);
   resp_len = monitor_expect_prompt (buf, sizeof (buf));	/* parse result? */
+  if (resp_len > 0) {
+    ; /* ??? */
+  }
   if (args[0] != '/')
     monitor_printf ("up %s\r", download_path);	/* use default path */
   else
     monitor_printf ("up\r");	/* rooted filename/path */
   resp_len = monitor_expect_prompt (buf, sizeof (buf));	/* parse result? */
+  if (resp_len > 0) {
+    ; /* ??? */
+  }
 
   if (strrchr (args, '.') && !strcmp (strrchr (args, '.'), ".srec"))
     monitor_printf ("ul %s\r", args);
   else				/* add ".srec" suffix */
     monitor_printf ("ul %s.srec\r", args);
   resp_len = monitor_expect_prompt (buf, sizeof (buf));	/* parse result? */
+  if (resp_len > 0) {
+    ; /* ??? */
+  }
 
   if (buf[0] == 0 || strstr (buf, "complete") == 0)
-    error
-      ("Upload file not found: %s.srec\nCheck IP addresses and download path.",
-       args);
+    error(_("Upload file not found: %s.srec\nCheck IP addresses and download path."),
+	  args);
   else
     printf_filtered (" -- Ethernet load complete.\n");
 
@@ -505,7 +521,6 @@ m32r_upload_command (char *args, int from_tty)
 	  {
 	    bfd_size_type section_size = bfd_section_size (abfd, s);
 	    bfd_vma section_base = bfd_section_lma (abfd, s);
-	    unsigned int buffer;
 
 	    data_count += section_size;
 
@@ -591,3 +606,5 @@ Upload the srec file via the monitor's Ethernet upload capability."));
 
   add_com ("tload", class_obscure, m32r_load, _("test upload command."));
 }
+
+/* EOF */

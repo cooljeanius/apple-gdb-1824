@@ -109,6 +109,8 @@ Summary:
 #ifndef _OBSTACK_H
 #define _OBSTACK_H 1
 
+#include "ansidecl.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -174,61 +176,62 @@ struct obstack		/* control current object in current chunk */
   struct _obstack_chunk *(*chunkfun) (void *, long);
   void (*freefun) (void *, struct _obstack_chunk *);
   void *extra_arg;		/* first arg for chunk alloc/dealloc funcs */
-  unsigned use_extra_arg:1;	/* chunk alloc/dealloc funcs take extra arg */
-  unsigned maybe_empty_object:1; /* There is a possibility that the current
-				  * chunk contains a zero-length object. This
-				  * prevents freeing the chunk if we allocate
-				  * a bigger chunk to replace it. */
-  unsigned alloc_failed:1;	/* No longer used, as we now call the failed
+  unsigned int use_extra_arg:1;	/* chunk alloc/dealloc funcs take extra arg */
+  unsigned int maybe_empty_object:1; /* There is a possibility that the current
+				      * chunk contains a zero-length object.
+				      * This prevents freeing the chunk if we
+				      * allocate a bigger chunk to replace it.
+				      */
+  unsigned int alloc_failed:1;	/* No longer used, as we now call the failed
 				 * handler on error, but retained for binary
 				 * compatibility.  */
 };
 
 /* Declare the external functions we use; they are in obstack.c.  */
 
-extern void _obstack_newchunk (struct obstack *, int);
-extern void _obstack_free (struct obstack *, void *);
-extern int _obstack_begin (struct obstack *, int, int,
-			    void *(*) (long), void (*) (void *));
-extern int _obstack_begin_1 (struct obstack *, int, int,
-			     void *(*) (void *, long),
-			     void (*) (void *, void *), void *);
-extern int _obstack_memory_used (struct obstack *);
+extern void _obstack_newchunk(struct obstack *, int);
+extern void _obstack_free(struct obstack *, void *);
+extern int _obstack_begin(struct obstack *, int, int,
+			  void *(*)(long), void (*)(void *));
+extern int _obstack_begin_1(struct obstack *, int, int,
+			    void *(*)(void *, long),
+			    void (*)(void *, void *), void *);
+extern int _obstack_memory_used(struct obstack *);
 
 /* Do the function-decls after the structs, but before defining the macros: */
-void obstack_init (struct obstack *obstack);
+void obstack_init(struct obstack *obstack);
 
-void * obstack_alloc (struct obstack *obstack, int size);
+void *obstack_alloc(struct obstack *obstack, int size);
 
-void * obstack_copy (struct obstack *obstack, void *address, int size);
-void * obstack_copy0 (struct obstack *obstack, void *address, int size);
+void *obstack_copy(struct obstack *obstack, void *address, int size);
+void *obstack_copy0(struct obstack *obstack, void *address, int size);
 
-void obstack_free (struct obstack *obstack, void *block);
+void obstack_free(struct obstack *obstack, void *block);
   
 /* compatibility define for `sed` stupidity: */
 #ifndef obstack_xfree
 # define obstack_xfree(o, b) obstack_free(o, b)
 #endif /* !obstack_xfree */
 
-void obstack_blank (struct obstack *obstack, int size);
+void obstack_blank(struct obstack *obstack, int size);
 
-void obstack_grow (struct obstack *obstack, void *data, int size);
-void obstack_grow0 (struct obstack *obstack, void *data, int size);
+void obstack_grow(struct obstack *obstack, void *data, int size);
+void obstack_grow0(struct obstack *obstack, void *data, int size);
 
-void obstack_1grow (struct obstack *obstack, int data_char);
-void obstack_ptr_grow (struct obstack *obstack, void *data);
-void obstack_int_grow (struct obstack *obstack, int data);
+void obstack_1grow(struct obstack *obstack, int data_char);
+void obstack_ptr_grow(struct obstack *obstack, void *data);
+void obstack_int_grow(struct obstack *obstack, int data);
 
-void * obstack_finish (struct obstack *obstack);
+void *obstack_finish(struct obstack *obstack) ATTRIBUTE_W_U_R;
 
-int obstack_object_size (struct obstack *obstack);
+int obstack_object_size(struct obstack *obstack);
 
-int obstack_room (struct obstack *obstack);
-void obstack_make_room (struct obstack *obstack, int size);
-void obstack_1grow_fast (struct obstack *obstack, int data_char);
-void obstack_ptr_grow_fast (struct obstack *obstack, void *data);
-void obstack_int_grow_fast (struct obstack *obstack, int data);
-void obstack_blank_fast (struct obstack *obstack, int size);
+int obstack_room(struct obstack *obstack);
+void obstack_make_room(struct obstack *obstack, int size);
+void obstack_1grow_fast(struct obstack *obstack, int data_char);
+void obstack_ptr_grow_fast(struct obstack *obstack, void *data);
+void obstack_int_grow_fast(struct obstack *obstack, int data);
+void obstack_blank_fast(struct obstack *obstack, int size);
 
 void *obstack_base(struct obstack *obstack);
 void *obstack_next_free(struct obstack *obstack);

@@ -123,7 +123,7 @@ default_core_sniffer (struct core_fns *our_fns, bfd *abfd)
 {
   int result;
 
-  result = (bfd_get_flavour (abfd) == our_fns -> core_flavour);
+  result = (bfd_get_flavour(abfd) == our_fns->core_flavour);
   return (result);
 }
 

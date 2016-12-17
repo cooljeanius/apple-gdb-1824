@@ -786,10 +786,7 @@ bfd_set_file_flags(bfd *abfd, flagword flags)
 # define EXIT_FAILURE 1
 #endif /* !EXIT_FAILURE */
 
-void
-#if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ >= 7))
-ATTRIBUTE_NORETURN
-#endif /* __clang__ || gcc 7+ */
+void ATTRIBUTE_NORETURN
 bfd_assert(const char *file, int line)
 {
   (*_bfd_error_handler)(_("BFD %s assertion fail %s:%d"),
