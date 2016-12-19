@@ -339,7 +339,7 @@ size_t strnlen(const char *, size_t);
 # if defined(HAVE_STRTOK_R) && defined(_REENTRANT)
 #  pragma GCC poison strtok
 # endif /* HAVE_STRTOK_R && _REENTRANT */
-# pragma GCC poison setlinebuf bcmp bzero strsave strnicmp
+# pragma GCC poison setlinebuf bcmp bzero strsave strnicmp extra_func_to_poison
 #endif /* gcc3+ && !NO_POISON && !FLEX_SCANNER */
 
 #endif /* ! defined (BFD_SYSDEP_H) */

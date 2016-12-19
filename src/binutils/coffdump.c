@@ -514,7 +514,7 @@ coff_dump(struct coff_ofile *ptr)
 
 const char *program_name;
 
-static void
+static void ATTRIBUTE_NORETURN
 show_usage(FILE *file, int status)
 {
   fprintf(file, _("Usage: %s [option(s)] in-file\n"), program_name);

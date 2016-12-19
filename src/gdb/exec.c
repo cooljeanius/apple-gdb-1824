@@ -925,7 +925,7 @@ exec_set_find_memory_regions (int (*func) (int (*) (CORE_ADDR,
   exec_ops.to_find_memory_regions = func;
 }
 
-static char *exec_make_note_section (bfd *, int *);
+static char *exec_make_note_section(bfd *, int *) ATTRIBUTE_NORETURN;
 
 /* Fill in the exec file target vector.  Very few entries need to be
    defined.  */

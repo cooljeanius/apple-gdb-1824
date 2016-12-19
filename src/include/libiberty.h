@@ -720,7 +720,6 @@ extern unsigned long libiberty_len;
 }
 #endif /* __cplusplus */
 
-
 #endif /* ! defined (LIBIBERTY_H) */
 
 /* EOF */

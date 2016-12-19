@@ -2762,6 +2762,7 @@ request_dump (unsigned int section, int type)
   return;
 }
 
+/* */
 static void
 parse_args (int argc, char **argv)
 {
@@ -2811,12 +2812,12 @@ parse_args (int argc, char **argv)
 	    do_debugging = 1;
 	  else
 	    {
-	      unsigned int index = 0;
+	      unsigned int u_index = 0U;
 
 	      do_debugging = 0;
 
-	      while (optarg[index])
-		switch (optarg[index++])
+	      while (optarg[u_index])
+		switch (optarg[u_index++])
 		  {
 		  case 'i': /* fall through to: */
 		  case 'I': do_debug_info = 1; break;
@@ -3668,13 +3669,14 @@ get_elf_section_flags (bfd_vma sh_flags)
 {
   static char buff[1024];
   char *p = buff;
-  int index, size = sizeof (buff) - (8 + 4 + 1);
+  int iindex;
+  size_t size = (sizeof(buff) - (8UL + 4UL + 1UL));
   const struct
     {
       const char *str;
       int len;
     }
-  flags [] =
+  flags[] =
     {
 	{ "WRITE", 5 },
 	{ "ALLOC", 5 },
@@ -3690,7 +3692,7 @@ get_elf_section_flags (bfd_vma sh_flags)
 
   if (do_section_details)
     {
-      sprintf (buff, "[%8.8lx]: ", (unsigned long) sh_flags);
+      snprintf(buff, sizeof(buff), "[%8.8lx]: ", (unsigned long)sh_flags);
       p += 8 + 4;
     }
 
@@ -3698,26 +3700,26 @@ get_elf_section_flags (bfd_vma sh_flags)
     {
       bfd_vma flag;
 
-      flag = sh_flags & - sh_flags;
-      sh_flags &= ~ flag;
+      flag = sh_flags & -sh_flags;
+      sh_flags &= ~flag;
 
       if (do_section_details)
 	{
 	  switch (flag)
 	    {
-	    case SHF_WRITE:		index = 0; break;
-	    case SHF_ALLOC:		index = 1; break;
-	    case SHF_EXECINSTR:		index = 2; break;
-	    case SHF_MERGE:		index = 3; break;
-	    case SHF_STRINGS:		index = 4; break;
-	    case SHF_INFO_LINK:		index = 5; break;
-	    case SHF_LINK_ORDER:	index = 6; break;
-	    case SHF_OS_NONCONFORMING:	index = 7; break;
-	    case SHF_GROUP:		index = 8; break;
-	    case SHF_TLS:		index = 9; break;
+	    case SHF_WRITE:		iindex = 0; break;
+	    case SHF_ALLOC:		iindex = 1; break;
+	    case SHF_EXECINSTR:		iindex = 2; break;
+	    case SHF_MERGE:		iindex = 3; break;
+	    case SHF_STRINGS:		iindex = 4; break;
+	    case SHF_INFO_LINK:		iindex = 5; break;
+	    case SHF_LINK_ORDER:	iindex = 6; break;
+	    case SHF_OS_NONCONFORMING:	iindex = 7; break;
+	    case SHF_GROUP:		iindex = 8; break;
+	    case SHF_TLS:		iindex = 9; break;
 
 	    default:
-	      index = -1;
+	      iindex = -1;
 	      break;
 	    }
 
@@ -3730,10 +3732,10 @@ get_elf_section_flags (bfd_vma sh_flags)
 	      *p++ = ' ';
 	    }
 
-	  if (index != -1)
+	  if (iindex != -1)
 	    {
-	      size -= flags [index].len;
-	      p = stpcpy (p, flags [index].str);
+	      size -= flags [iindex].len;
+	      p = stpcpy (p, flags [iindex].str);
 	    }
 	  else if (flag & SHF_MASKOS)
 	    {
