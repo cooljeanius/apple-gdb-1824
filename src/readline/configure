@@ -9507,13 +9507,16 @@ if test "x${GCC}" = "xyes" && test "x${WERROR_CFLAGS}" = "x"; then
   WERROR_CFLAGS="-Werror"
 fi
 save_CFLAGS="${CFLAGS}"
-for real_option in -Wall -Wshadow -Wpointer-arith -Wcast-align \
-  -Wwrite-strings -Wtype-limits -Wstrict-prototypes -Wmissing-prototypes \
-  -Wno-implicit -Wold-style-declaration -Wold-style-definition \
-  -Wc++-compat -Wmissing-declarations -Wmissing-parameter-type \
-  -Wextra-tokens -Wnewline-eof -Wendif-labels -Wshorten-64-to-32 \
-  -Wsign-compare -Wtraditional-conversion -Wfloat-conversion \
-  -Wnested-externs -Wint-in-bool-context; do
+for real_option in -Wall -Wextra -Wno-unused-parameter -Wshadow \
+  -Wpointer-arith -Wcast-align -Wwrite-strings -Wstrict-prototypes \
+  -Wmissing-prototypes -Wno-implicit -Wold-style-declaration \
+  -Wold-style-definition -Wc++-compat -Wmissing-declarations \
+  -Wmissing-parameter-type -Wextra-tokens -Wnewline-eof -Wendif-labels \
+  -Wshorten-64-to-32 -Wsign-compare -Wtraditional-conversion \
+  -Wfloat-conversion -Wdouble-promotion -Wenum-conversion -Wenum-compare \
+  -Wbool-conversion -Wbool-operation -Wnested-externs -Wabi \
+  -Wint-in-bool-context -Wnull-dereference -Wmisleading-indentation \
+  -Wc99-c11-compat -Wswitch-unreachable -Wswitch-bool; do
   # Do the check with the no- prefix removed since gcc silently accepts
   # any -Wno-* option on purpose:
   case ${real_option} in

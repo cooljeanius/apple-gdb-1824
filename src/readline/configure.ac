@@ -310,13 +310,16 @@ AC_CHECK_HEADERS([arpa/inet.h errno.h fcntl.h features.h limits.h \
 # Checks for compiler flags.
 AC_MSG_CHECKING([compiler flags, for use by the lint target])
 AC_MSG_RESULT([ ])
-ACX_PROG_CC_WARNING_OPTS([-Wall -Wshadow -Wpointer-arith -Wcast-align \
-  -Wwrite-strings -Wtype-limits -Wstrict-prototypes -Wmissing-prototypes \
-  -Wno-implicit -Wold-style-declaration -Wold-style-definition \
-  -Wc++-compat -Wmissing-declarations -Wmissing-parameter-type \
-  -Wextra-tokens -Wnewline-eof -Wendif-labels -Wshorten-64-to-32 \
-  -Wsign-compare -Wtraditional-conversion -Wfloat-conversion \
-  -Wnested-externs -Wint-in-bool-context],[GCC_LINT_FLAGS])dnl
+ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wno-unused-parameter -Wshadow \
+  -Wpointer-arith -Wcast-align -Wwrite-strings -Wstrict-prototypes \
+  -Wmissing-prototypes -Wno-implicit -Wold-style-declaration \
+  -Wold-style-definition -Wc++-compat -Wmissing-declarations \
+  -Wmissing-parameter-type -Wextra-tokens -Wnewline-eof -Wendif-labels \
+  -Wshorten-64-to-32 -Wsign-compare -Wtraditional-conversion \
+  -Wfloat-conversion -Wdouble-promotion -Wenum-conversion -Wenum-compare \
+  -Wbool-conversion -Wbool-operation -Wnested-externs -Wabi \
+  -Wint-in-bool-context -Wnull-dereference -Wmisleading-indentation \
+  -Wc99-c11-compat -Wswitch-unreachable -Wswitch-bool],[GCC_LINT_FLAGS])dnl
 ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-ansi -Wno-long-long],
                                     [GCC_LINT_FLAGS])dnl
 
