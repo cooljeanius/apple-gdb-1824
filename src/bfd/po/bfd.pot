@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-05 13:50-0400\n"
+"POT-Creation-Date: 2017-01-04 00:43-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,7 +49,7 @@ msgstr ""
 msgid "*unknown*"
 msgstr ""
 
-#: aoutx.h:5305
+#: aoutx.h:5308
 #, c-format
 msgid "%s: relocatable link from %s to %s not supported"
 msgstr ""
@@ -146,22 +146,22 @@ msgstr ""
 msgid "#<Invalid error code>"
 msgstr ""
 
-#: bfd.c:795
+#: bfd.c:792
 #, c-format
 msgid "BFD %s assertion fail %s:%d"
 msgstr ""
 
-#: bfd.c:807
+#: bfd.c:804
 #, c-format
 msgid "BFD %s internal error, aborting at %s line %d in %s\n"
 msgstr ""
 
-#: bfd.c:811
+#: bfd.c:808
 #, c-format
 msgid "BFD %s internal error, aborting at %s line %d\n"
 msgstr ""
 
-#: bfd.c:813
+#: bfd.c:810
 msgid "Please report this bug.\n"
 msgstr ""
 
@@ -369,7 +369,7 @@ msgstr ""
 msgid "Relocation `%s' not yet implemented\n"
 msgstr ""
 
-#: coff-i860.c:588 coff-tic54x.c:347 coffcode.h:5004
+#: coff-i860.c:588 coff-tic54x.c:347 coffcode.h:5010
 msgid "%B: warning: illegal symbol index %ld in relocs"
 msgstr ""
 
@@ -456,27 +456,27 @@ msgstr ""
 msgid "Unrecognized TI COFF target id '0x%x'"
 msgstr ""
 
-#: coffcode.h:4366
+#: coffcode.h:4371
 msgid "%B: warning: line number table read failed"
 msgstr ""
 
-#: coffcode.h:4397
+#: coffcode.h:4402
 msgid "%B: warning: illegal symbol index %ld in line numbers"
 msgstr ""
 
-#: coffcode.h:4411
+#: coffcode.h:4416
 msgid "%B: warning: duplicate line number information for `%s'"
 msgstr ""
 
-#: coffcode.h:4769
+#: coffcode.h:4775
 msgid "%B: Unrecognized storage class %d for %s symbol `%s'"
 msgstr ""
 
-#: coffcode.h:4895
+#: coffcode.h:4901
 msgid "warning: %B: local symbol `%s' has no section"
 msgstr ""
 
-#: coffcode.h:5046
+#: coffcode.h:5052
 msgid "%B: illegal relocation type %d at address 0x%lx"
 msgstr ""
 
@@ -3508,7 +3508,7 @@ msgstr ""
 msgid "reserved cmd %d"
 msgstr ""
 
-#: vms-alpha.c:2332 vms-hdr.c:325
+#: vms-alpha.c:2332 vms-hdr.c:326
 msgid "Object module NOT error-free !\n"
 msgstr ""
 
@@ -5520,24 +5520,24 @@ msgstr ""
 msgid "TOC overflow: 0x%lx > 0x10000; try -mminimal-toc when compiling"
 msgstr ""
 
-#: xcofflink.c:4499
+#: xcofflink.c:4500
 msgid "%B: loader reloc in unrecognized section `%A'"
 msgstr ""
 
-#: xcofflink.c:4520
+#: xcofflink.c:4521
 msgid "%B: `%s' in loader reloc but not loader sym"
 msgstr ""
 
-#: xcofflink.c:4535
+#: xcofflink.c:4536
 msgid "%B: loader reloc in read-only section %A"
 msgstr ""
 
-#: xcofflink.c:4940 xcofflink.c:4998 xcofflink.c:5292
+#: xcofflink.c:4941 xcofflink.c:4999 xcofflink.c:5293
 #, c-format
 msgid "%s: loader reloc in unrecognized section `%s'"
 msgstr ""
 
-#: xcofflink.c:5303
+#: xcofflink.c:5304
 #, c-format
 msgid "%s: `%s' in loader reloc but not loader sym"
 msgstr ""

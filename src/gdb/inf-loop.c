@@ -28,13 +28,15 @@
 #include "remote.h"
 #include "exceptions.h"
 
-static int fetch_inferior_event_wrapper (gdb_client_data client_data);
-static void complete_execution (void);
+static int fetch_inferior_event_wrapper(gdb_client_data client_data)
+  ATTRIBUTE_USED;
+static void complete_execution(void);
 
+/* */
 void
-inferior_event_handler_wrapper (gdb_client_data client_data)
+inferior_event_handler_wrapper(gdb_client_data client_data)
 {
-  inferior_event_handler (INF_QUIT_REQ, client_data);
+  inferior_event_handler(INF_QUIT_REQ, client_data);
 }
 
 /* General function to handle events in the inferior. So far it just

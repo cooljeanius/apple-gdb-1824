@@ -1,4 +1,4 @@
-/* MI Command Set for GDB, the GNU debugger.
+/* mi-cmds.h: MI Command Set for GDB, the GNU debugger.
 
    Copyright 2000, 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -57,13 +57,14 @@ enum print_values {
 extern const char mi_no_values[];
 extern const char mi_simple_values[];
 extern const char mi_all_values[];
+extern int mi_cmds_debug_verbosity;
 
-typedef enum mi_cmd_result (mi_cmd_argv_ftype) (char *command, char **argv, int argc);
+typedef enum mi_cmd_result (mi_cmd_argv_ftype)(char *command, char **argv, int argc);
 
 /* Older MI commands have this interface. Retained until all old
    commands are flushed. */
-
-typedef enum mi_cmd_result (mi_cmd_args_ftype) ( /*ui */ char *args, int from_tty);
+typedef enum mi_cmd_result (mi_cmd_args_ftype)(char *args, int from_tty);
+/* args have something to do with ui? */
 
 /* Function implementing each command */
 extern mi_cmd_argv_ftype mi_cmd_break_insert;
@@ -170,8 +171,7 @@ struct mi_cmd
 };
 
 /* Lookup a command in the mi comand table */
-
-extern struct mi_cmd *mi_lookup (const char *command);
+extern struct mi_cmd *mi_lookup(const char *command);
 
 /* Debug flag */
 extern int mi_debug_p;
@@ -180,6 +180,8 @@ extern int mi_debug_p;
 extern struct ui_file *raw_stdout;
 
 extern char *mi_error_message;
-extern void mi_execute_command (char *cmd, int from_tty);
+extern void mi_execute_command(char *cmd, int from_tty);
 
 #endif
+
+/* EOF */

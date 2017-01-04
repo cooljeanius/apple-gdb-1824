@@ -91,7 +91,7 @@ CCFLAGS = $(XCCFLAGS) $(JUST_CFLAGS) $(C_ARCHFLAGS)
 
 # could(?) add -Werror here
 GCC_LINT_FLAGS = -ansi -Wall -Wshadow -Wpointer-arith -Wcast-qual \
-		 -Wwrite-strings -Wstrict-prototypes \
+		 -Wwrite-strings -Wtype-limits -Wstrict-prototypes \
 		 -Wmissing-prototypes -Wno-implicit -pedantic \
 		 -Wold-style-definition -Wc++-compat -Wmissing-declarations
 GCC_LINT_CFLAGS = $(XCCFLAGS) $(GCC_LINT_FLAGS) @CFLAGS@ @LOCAL_CFLAGS@

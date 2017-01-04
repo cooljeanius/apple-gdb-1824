@@ -984,7 +984,7 @@ extern void set_gdbarch_decr_pc_after_break (struct gdbarch *gdbarch, CORE_ADDR 
 #define DECR_PC_AFTER_BREAK (gdbarch_decr_pc_after_break (current_gdbarch))
 #endif
 
-/* A function can be addressed by either it's "pointer" (possibly a
+/* A function can be addressed by either its "pointer" (possibly a
    descriptor address) or "entry point" (first executable instruction).
    The method "convert_from_func_ptr_addr" converting the former to the
    latter.  DEPRECATED_FUNCTION_START_OFFSET is being used to implement
@@ -1646,7 +1646,8 @@ extern struct gdbarch *gdbarch_find_by_info (struct gdbarch_info info);
    multi-arch.  However, for now we're still stuck with the concept of
    a single active architecture.  */
 
-extern void deprecated_current_gdbarch_select_hack (struct gdbarch *gdbarch);
+extern void deprecated_current_gdbarch_select_hack(struct gdbarch *gdbarch)
+  ATTRIBUTE_DEPRECATED;
 
 
 /* Register per-architecture data-pointer.
@@ -1668,17 +1669,18 @@ extern void deprecated_current_gdbarch_select_hack (struct gdbarch *gdbarch);
 
 struct gdbarch_data;
 
-typedef void *(gdbarch_data_pre_init_ftype) (struct obstack *obstack);
-extern struct gdbarch_data *gdbarch_data_register_pre_init (gdbarch_data_pre_init_ftype *init);
-typedef void *(gdbarch_data_post_init_ftype) (struct gdbarch *gdbarch);
-extern struct gdbarch_data *gdbarch_data_register_post_init (gdbarch_data_post_init_ftype *init);
-extern void deprecated_set_gdbarch_data (struct gdbarch *gdbarch,
-                                         struct gdbarch_data *data,
-			                 void *pointer);
+typedef void *(gdbarch_data_pre_init_ftype)(struct obstack *obstack);
+extern struct gdbarch_data *gdbarch_data_register_pre_init(gdbarch_data_pre_init_ftype *init);
+typedef void *(gdbarch_data_post_init_ftype)(struct gdbarch *gdbarch);
+extern struct gdbarch_data *gdbarch_data_register_post_init(gdbarch_data_post_init_ftype *init);
+extern void deprecated_set_gdbarch_data(struct gdbarch *gdbarch,
+                                        struct gdbarch_data *data,
+                                        void *pointer)
+  ATTRIBUTE_DEPRECATED;
 
-extern void *gdbarch_data (struct gdbarch *gdbarch, struct gdbarch_data *);
+extern void *gdbarch_data(struct gdbarch *gdbarch, struct gdbarch_data *);
 
-#line 1122 "gdbarch.sh"
+#line 1124 "gdbarch.sh"
 
 /* Register per-architecture memory region.
 
@@ -1698,7 +1700,7 @@ extern void deprecated_register_gdbarch_swap(void *data, unsigned long size,
   ATTRIBUTE_DEPRECATED;
 #define DEPRECATED_REGISTER_GDBARCH_SWAP(VAR) deprecated_register_gdbarch_swap(&(VAR), sizeof((VAR)), NULL)
 
-#line 1142 "gdbarch.sh"
+#line 1144 "gdbarch.sh"
 
 /* Set the dynamic target-system-dependent parameters (architecture,
    byte-order, ...) using information found in the BFD */

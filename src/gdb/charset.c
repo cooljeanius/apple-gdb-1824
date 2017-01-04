@@ -539,11 +539,14 @@ check_iconv_cache(struct cached_iconv *ci, struct charset *from,
   return -1;
 }
 
-static int
-cached_iconv_convert(struct cached_iconv *ci, int from_char, int *to_char)
+static int ATTRIBUTE_UNUSED
+cached_iconv_convert(struct cached_iconv *ci ATTRIBUTE_UNUSED,
+		     int from_char ATTRIBUTE_UNUSED,
+		     int *to_char ATTRIBUTE_UNUSED)
 {
-  /* This function should never be called: */
+  /* This function should never be called if ICONV support is missing: */
   gdb_assert(0);
+  return 0;
 }
 
 static void
@@ -615,7 +618,13 @@ static int
 iconv_convert(void *baton, int from_char, int *to_char)
 {
   struct cached_iconv *ci = (struct cached_iconv *)baton;
+#if defined(HAVE_ICONV)
   return cached_iconv_convert(ci, from_char, to_char);
+#else
+  (void)ci;
+  warning(_("Cannot convert; iconv support is missing."));
+  return 0;
+#endif /* HAVE_ICONV */
 }
 
 

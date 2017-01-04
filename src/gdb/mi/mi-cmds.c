@@ -30,7 +30,7 @@ extern void _initialize_mi_cmds(void);
 struct mi_cmd;
 static struct mi_cmd **lookup_table(const char *command);
 static void build_table(struct mi_cmd *commands);
-
+int mi_cmds_debug_verbosity = 0;
 
 struct mi_cmd mi_cmds[] =
 {
@@ -270,6 +270,7 @@ lookup_table(const char *command)
     }
 }
 
+/* */
 static void
 build_table(struct mi_cmd *commands)
 {
@@ -288,7 +289,7 @@ build_table(struct mi_cmd *commands)
                        _("command `%s' appears to be duplicated"),
                        command->name);
       *entry = command;
-      if (0)
+      if (mi_cmds_debug_verbosity > 0)
 	{
 	  fprintf_unfiltered(gdb_stdlog, "%-30s %2d\n",
 			     command->name, (stats.rehash - nr_rehash));
@@ -298,11 +299,13 @@ build_table(struct mi_cmd *commands)
     }
   if ((nr_rehash > 0) && (nr_entries > 0))
     {
-      fprintf_filtered(gdb_stdlog, "Average %3.1f\n",
-                       ((double)nr_rehash / (double)nr_entries));
+      fprintf_filtered(gdb_stdlog, "%s in %s: Average nr: %3.1f\n",
+                       __CHECK_FUNCTION, __FILE__,
+		       ((double)nr_rehash / (double)nr_entries));
     }
 }
 
+/* Usual gdb initialization hook: */
 void
 _initialize_mi_cmds(void)
 {

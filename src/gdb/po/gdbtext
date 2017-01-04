@@ -1,5 +1,9 @@
 #!/bin/sh -e
 
+#
+# po/gdbtext, for use with `make diststuff`
+#
+
 if test $# -lt 3
 then
     echo "Usage: $0 <xgettext> <package>  <directory> ..." 1>&2

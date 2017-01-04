@@ -3156,6 +3156,7 @@
 		61AA229E1CD81C2A0045E89A /* umax-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "umax-xdep_old.c"; sourceTree = "<group>"; };
 		61AA229F1CD81C2A0045E89A /* vax-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "vax-opcode_old.h"; sourceTree = "<group>"; };
 		61AA22A01CD81C2A0045E89A /* vax-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "vax-pinsn_old.c"; sourceTree = "<group>"; };
+		61B459BC1E1ADD140057F612 /* gdbtext */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = gdbtext; path = "/var/root/apple-gdb-1824/src/gdb/po/gdbtext"; sourceTree = "<absolute>"; };
 		61D08A9D1CB7171B00998571 /* cpu-z80.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "cpu-z80.c"; path = "/var/root/apple-gdb-1824/src/bfd/cpu-z80.c"; sourceTree = "<absolute>"; };
 		61D22058192D60D100FA979E /* libbfd-shared.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libbfd-shared.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		61D8186E192FE3AB00E440C0 /* chew */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = chew; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6842,6 +6843,7 @@
 				2609D72E0E82C40C008125DE /* nlm */,
 				2609D7490E82C40C008125DE /* osf-share */,
 				A5159B6E198716B10079DD4F /* perl */,
+				61B459BA1E1ADD120057F612 /* po */,
 				A5159B78198716DD0079DD4F /* python */,
 				2609D77F0E82C40C008125DE /* rdi-share */,
 				2609D7B70E82C40C008125DE /* regformats */,
@@ -10003,6 +10005,15 @@
 			);
 			path = attic;
 			sourceTree = "<group>";
+		};
+		61B459BA1E1ADD120057F612 /* po */ = {
+			isa = PBXGroup;
+			children = (
+				61B459BC1E1ADD140057F612 /* gdbtext */,
+			);
+			name = po;
+			path = "/var/root/apple-gdb-1824/src/gdb/po";
+			sourceTree = "<absolute>";
 		};
 		61D22059192D60D100FA979E /* Products */ = {
 			isa = PBXGroup;

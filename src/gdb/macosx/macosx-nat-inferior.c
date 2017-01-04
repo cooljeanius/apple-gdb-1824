@@ -276,7 +276,8 @@ static int macosx_child_thread_alive(ptid_t tpid);
 static struct pid_list *find_existing_processes_by_name(const char *procname);
 static int pid_present_on_pidlist(pid_t pid, struct pid_list *proclist);
 
-static const char *get_bundle_executable_from_plist(const char *pathname);
+static const char *get_bundle_executable_from_plist(const char *pathname)
+  ATTRIBUTE_USED;
 
 #if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE
 static const char *find_executable_name_in_xml_tree(xmlNode * a_node);

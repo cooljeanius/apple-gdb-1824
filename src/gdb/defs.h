@@ -860,7 +860,8 @@ extern char *hex_string_custom(LONGEST, int);
 extern void fprintf_symbol_filtered(struct ui_file *, const char *,
 				    enum language, int);
 
-extern NORETURN void perror_with_name(const char *) ATTR_NORETURN;
+extern NORETURN void perror_with_name(const char *)
+  ATTR_NORETURN ATTRIBUTE_NOINLINE;
 
 extern void print_sys_errmsg(const char *, int);
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-08 15:27-0500\n"
+"POT-Creation-Date: 2017-01-02 14:07-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -684,11 +684,11 @@ msgstr ""
 msgid "addrmap_create_fixed is not implemented yet for fixed addrmaps"
 msgstr ""
 
-#: addrmap.c:369
+#: addrmap.c:372
 msgid "addrmap_find is not implemented yet for mutable addrmaps"
 msgstr ""
 
-#: addrmap.c:442
+#: addrmap.c:445
 msgid "addrmap_relocate is not implemented yet for mutable addrmaps"
 msgstr ""
 
@@ -1036,7 +1036,7 @@ msgstr ""
 msgid "auto-load: Stripped .exe suffix, retrying with \"%s\".\n"
 msgstr ""
 
-#: auto-load.c:959 solib.c:654 xcoffsolib.c:112
+#: auto-load.c:959 solib.c:654 xcoffsolib.c:116
 #, possible-c-format
 msgid "Invalid regexp: %s"
 msgstr ""
@@ -2868,10 +2868,10 @@ msgstr ""
 #: buildsym.c:822 buildsym.c:835 common/print-utils.c:86
 #: common/print-utils.c:129 common/print-utils.c:297 dbxread.c:5537 exec.c:519
 #: exec.c:607 inflow.c:724 inflow.c:731 language.c:586 language.c:1016
-#: mdebugread.c:3599 monitor.c:379 monitor.c:407 monitor.c:1340 printcmd.c:272
+#: mdebugread.c:3599 monitor.c:380 monitor.c:408 monitor.c:1342 printcmd.c:272
 #: printcmd.c:521 psymtab.c:698 psymtab.c:716 remote-e7000.c:899
 #: remote-e7000.c:2173 remote-mips.c:2569 remote-rdp.c:498 remote-rdp.c:504
-#: remote-sds.c:731 symtab.c:2555 symtab.c:2571 target/target.c:702
+#: remote-sds.c:739 symtab.c:2555 symtab.c:2571 target/target.c:702
 #: target/target.c:788 utils.c:2251 utils.c:3118 utils.c:3160 utils.c:3348
 #: valprint.c:382
 msgid "failed internal consistency check"
@@ -3008,45 +3008,49 @@ msgstr ""
 msgid "Error converting character `%d' from `%s' to `%s' character set: %s"
 msgstr ""
 
-#: charset.c:973
-#, possible-c-format
-msgid "GDB does NOT know of any character set named `%s'."
+#: charset.c:625
+msgid "Cannot convert; iconv support is missing."
 msgstr ""
 
 #: charset.c:982
 #, possible-c-format
+msgid "GDB does NOT know of any character set named `%s'."
+msgstr ""
+
+#: charset.c:991
+#, possible-c-format
 msgid "GDB cannot use `%s' as its host character set."
 msgstr ""
 
-#: charset.c:1012 charset.c:1019
+#: charset.c:1021 charset.c:1028
 #, possible-c-format
 msgid "GDB cannot convert from the `%s' character set to `%s'."
 msgstr ""
 
-#: charset.c:1130
+#: charset.c:1139
 #, possible-c-format
 msgid "The current host and target character set is `%s'.\n"
 msgstr ""
 
-#: charset.c:1134
+#: charset.c:1143
 #, possible-c-format
 msgid "The current host character set is `%s'.\n"
 msgstr ""
 
-#: charset.c:1136
+#: charset.c:1145
 #, possible-c-format
 msgid "The current target character set is `%s'.\n"
 msgstr ""
 
-#: charset.c:1271
+#: charset.c:1280
 msgid "Set the host and target character sets."
 msgstr ""
 
-#: charset.c:1272
+#: charset.c:1281
 msgid "Show the host and target character sets."
 msgstr ""
 
-#: charset.c:1273
+#: charset.c:1282
 msgid ""
 "The `host character set' is the one used by the system GDB is running on.\n"
 "The `target character set' is the one used by the program being debugged.\n"
@@ -3055,15 +3059,15 @@ msgid ""
 "To see a list of the character sets GDB supports, type `set charset <TAB>'."
 msgstr ""
 
-#: charset.c:1286
+#: charset.c:1295
 msgid "Set the host character set."
 msgstr ""
 
-#: charset.c:1287
+#: charset.c:1296
 msgid "Show the host character set."
 msgstr ""
 
-#: charset.c:1288
+#: charset.c:1297
 msgid ""
 "The `host character set' is the one used by the system GDB is running on.\n"
 "You may only use supersets of ASCII for your host character set; GDB does\n"
@@ -3072,15 +3076,15 @@ msgid ""
 "<TAB>'."
 msgstr ""
 
-#: charset.c:1298
+#: charset.c:1307
 msgid "Set the target character set."
 msgstr ""
 
-#: charset.c:1299
+#: charset.c:1308
 msgid "Show the target character set."
 msgstr ""
 
-#: charset.c:1300
+#: charset.c:1309
 msgid ""
 "The `target character set' is the one used by the program being debugged.\n"
 "GDB translates characters and strings between the host and target\n"
@@ -5516,30 +5520,30 @@ msgid ""
 "Use `set demangle-style' without arguments for a list of demangling styles."
 msgstr ""
 
-#: dfp.c:92
+#: dfp.c:95
 #, possible-c-format
 msgid "Cannot perform operation: %s"
 msgstr ""
 
-#: dfp.c:136
+#: dfp.c:141
 msgid "Unknown decimal floating point type.\n"
 msgstr ""
 
-#: dfp.c:164 dfp.c:193
+#: dfp.c:169 dfp.c:198
 msgid "Unknown decimal floating point type."
 msgstr ""
 
 #. libdecnumber can convert only 32-bit integers.
-#: dfp.c:220
+#: dfp.c:225
 msgid ""
 "Conversion of large integer to a decimal floating type is not supported."
 msgstr ""
 
-#: dfp.c:304
+#: dfp.c:309
 msgid "Unknown decimal floating point operation."
 msgstr ""
 
-#: dfp.c:357
+#: dfp.c:362
 msgid "Comparison with an invalid number (NaN)."
 msgstr ""
 
@@ -5602,12 +5606,12 @@ msgstr ""
 msgid "Packet header byte not found; %02x seen instead."
 msgstr ""
 
-#: dve3900-rom.c:886 m32r-rom.c:130
+#: dve3900-rom.c:886 m32r-rom.c:129
 #, possible-c-format
 msgid "Unable to open file %s."
 msgstr ""
 
-#: dve3900-rom.c:888 m32r-rom.c:132
+#: dve3900-rom.c:888 m32r-rom.c:131
 msgid "File is not an object file."
 msgstr ""
 
@@ -7241,39 +7245,39 @@ msgstr ""
 msgid "List the BFDs that are currently open."
 msgstr ""
 
-#: gdbarch.sh:1208
+#: gdbarch.sh:1210
 #, possible-c-format
 msgid "Architecture debugging is %s.\n"
 msgstr ""
 
-#: gdbarch.sh:1517
+#: gdbarch.sh:1519
 #, possible-c-format
 msgid "verify_gdbarch: the following are invalid ...%s"
 msgstr ""
 
-#: gdbarch.sh:2021
+#: gdbarch.sh:2023
 msgid "gdbarch_architecture_names: multi-arch unknown"
 msgstr ""
 
-#: gdbarch.sh:2046
+#: gdbarch.sh:2048
 #, possible-c-format
 msgid "gdbarch: Attempt to register unknown architecture (%d)"
 msgstr ""
 
-#: gdbarch.sh:2056
+#: gdbarch.sh:2058
 #, possible-c-format
 msgid "gdbarch: Duplicate registraration of architecture (%s)"
 msgstr ""
 
-#: gdbarch.sh:2284
+#: gdbarch.sh:2286
 msgid "Set architecture debugging."
 msgstr ""
 
-#: gdbarch.sh:2285
+#: gdbarch.sh:2287
 msgid "Show architecture debugging."
 msgstr ""
 
-#: gdbarch.sh:2286
+#: gdbarch.sh:2288
 msgid "When non-zero, architecture debugging is enabled."
 msgstr ""
 
@@ -8383,22 +8387,22 @@ msgstr ""
 msgid "Use the \"run\" command to start a Unix child process."
 msgstr ""
 
-#: inf-loop.c:53
+#: inf-loop.c:55
 msgid "error detected from target.\n"
 msgstr ""
 
-#: inf-loop.c:140
+#: inf-loop.c:142
 msgid "Event type not recognized.\n"
 msgstr ""
 
-#: inf-ptrace.c:194 inf-ttrace.c:706 inftarg.c:196 linux-thread.c:1091
-#: macosx/macosx-nat-inferior.c:1845 nat/darwin-nat.c:1520 nat/gnu-nat.c:2116
+#: inf-ptrace.c:195 inf-ttrace.c:706 inftarg.c:196 linux-thread.c:1091
+#: macosx/macosx-nat-inferior.c:1846 nat/darwin-nat.c:1520 nat/gnu-nat.c:2116
 #: nat/m3-nat.c:4057 nat/mac-nat.c:146 nat/win32-nat.c:1590
 #: nat/windows-nat.c:1674 nto-procfs.c:521 procfs.c:3515 remote-vx.c:1246
 msgid "process-id to attach"
 msgstr ""
 
-#: inf-ptrace.c:200 inf-ttrace.c:711 inftarg.c:202
+#: inf-ptrace.c:201 inf-ttrace.c:711 inftarg.c:202
 #, possible-c-format
 msgid "Illegal process-id: %s."
 msgstr ""
@@ -8406,47 +8410,47 @@ msgstr ""
 #. Trying to masturbate?
 #. Trying to masturbate? (?)
 #. Trying to masturbate?
-#: inf-ptrace.c:203 inf-ttrace.c:714 inftarg.c:205 nat/darwin-nat.c:1525
+#: inf-ptrace.c:204 inf-ttrace.c:714 inftarg.c:205 nat/darwin-nat.c:1525
 #: nat/gnu-nat.c:2121
 msgid "I refuse to debug myself!"
 msgstr ""
 
-#: inf-ptrace.c:210 inf-ttrace.c:721 inftarg.c:212 nat/darwin-nat.c:1532
+#: inf-ptrace.c:211 inf-ttrace.c:721 inftarg.c:212 nat/darwin-nat.c:1532
 #, possible-c-format
 msgid "Attaching to program: %s, %s\n"
 msgstr ""
 
-#: inf-ptrace.c:213 inf-ttrace.c:724 inftarg.c:215 nat/darwin-nat.c:1535
+#: inf-ptrace.c:214 inf-ttrace.c:724 inftarg.c:215 nat/darwin-nat.c:1535
 #: procfs.c:3529
 #, possible-c-format
 msgid "Attaching to %s\n"
 msgstr ""
 
-#: inf-ptrace.c:226 infptrace.c:165
+#: inf-ptrace.c:227 infptrace.c:165
 msgid "This system does not support attaching to a process"
 msgstr ""
 
-#: inf-ptrace.c:268 inf-ttrace.c:769 inftarg.c:258 nat/darwin-nat.c:1585
+#: inf-ptrace.c:269 inf-ttrace.c:769 inftarg.c:258 nat/darwin-nat.c:1585
 #: procfs.c:3555
 #, possible-c-format
 msgid "Detaching from program: %s, %s\n"
 msgstr ""
 
-#: inf-ptrace.c:286 infptrace.c:184
+#: inf-ptrace.c:287 infptrace.c:184
 msgid "This system does not support detaching from a process"
 msgstr ""
 
-#: inf-ptrace.c:385 nat/obsd-nat.c:102
+#: inf-ptrace.c:384 nat/obsd-nat.c:102
 #, possible-c-format
 msgid "Child process unexpectedly missing: %s.\n"
 msgstr ""
 
-#: inf-ptrace.c:579 inf-ttrace.c:1084 inftarg.c:289
+#: inf-ptrace.c:577 inf-ttrace.c:1084 inftarg.c:289
 #, possible-c-format
 msgid "\tUsing the running image of %s %s.\n"
 msgstr ""
 
-#: inf-ptrace.c:648 infptrace.c:238 nat/hppa-linux-nat.c:236
+#: inf-ptrace.c:647 infptrace.c:238 nat/hppa-linux-nat.c:236
 #: nat/i386-linux-nat.c:184
 #, possible-c-format
 msgid "Couldn't read register %s (#%d): %s."
@@ -8659,7 +8663,7 @@ msgid ""
 msgstr ""
 
 #: infcmd.c:178 inflow.c:615 infptrace.c:467 record-btrace.c:149
-#: remote-sim.c:607
+#: remote-sim.c:605
 msgid "The program is not being run."
 msgstr ""
 
@@ -10291,51 +10295,72 @@ msgstr ""
 msgid "internal error: no Modula fundamental type %d"
 msgstr ""
 
-#: m32r-rom.c:419
+#: m32r-rom.c:427
 msgid "No ethernet connection!"
 msgstr ""
 
-#: m32r-rom.c:565
+#. empty
+#: m32r-rom.c:438
+msgid "Please use 'set board-address' to set the M32R-EVA board's IP address."
+msgstr ""
+
+#. failed?
+#: m32r-rom.c:462
+msgid "Need to know gdb host computer's IP address (use 'set server-address')"
+msgstr ""
+
+#: m32r-rom.c:473
+msgid "Need to know default download path (use 'set download-path')"
+msgstr ""
+
+#: m32r-rom.c:506
+#, possible-c-format
+msgid ""
+"Upload file not found: %s.srec\n"
+"Check IP addresses and download path."
+msgstr ""
+
+#: m32r-rom.c:580
 msgid "Set the default path for downloadable SREC files."
 msgstr ""
 
-#: m32r-rom.c:566
+#: m32r-rom.c:581
 msgid "Show the default path for downloadable SREC files."
 msgstr ""
 
-#: m32r-rom.c:567
+#: m32r-rom.c:582
 msgid "Determines the default path for downloadable SREC files."
 msgstr ""
 
-#: m32r-rom.c:573
+#: m32r-rom.c:588
 msgid "Set IP address for M32R-EVA target board."
 msgstr ""
 
-#: m32r-rom.c:574
+#: m32r-rom.c:589
 msgid "Show IP address for M32R-EVA target board."
 msgstr ""
 
-#: m32r-rom.c:575
+#: m32r-rom.c:590
 msgid "Determine the IP address for M32R-EVA target board."
 msgstr ""
 
-#: m32r-rom.c:581
+#: m32r-rom.c:596
 msgid "Set IP address for download server (GDB's host computer)."
 msgstr ""
 
-#: m32r-rom.c:582
+#: m32r-rom.c:597
 msgid "Show IP address for download server (GDB's host computer)."
 msgstr ""
 
-#: m32r-rom.c:583
+#: m32r-rom.c:598
 msgid "Determine the IP address for download server (GDB's host computer)."
 msgstr ""
 
-#: m32r-rom.c:589
+#: m32r-rom.c:604
 msgid "Upload the srec file via the monitor's Ethernet upload capability."
 msgstr ""
 
-#: m32r-rom.c:592
+#: m32r-rom.c:607
 msgid "test upload command."
 msgstr ""
 
@@ -11010,44 +11035,44 @@ msgstr ""
 msgid "Show if printing inferior communication debugging statements."
 msgstr ""
 
-#: macosx/macosx-nat-inferior.c:1805
+#: macosx/macosx-nat-inferior.c:1806
 msgid "Usage: attach <-waitfor procname>|<pid>|<procname>."
 msgstr ""
 
-#: macosx/macosx-nat-inferior.c:1917
+#: macosx/macosx-nat-inferior.c:1918
 msgid "PTRACE_ATTACHEXC not defined for this configuration."
 msgstr ""
 
-#: macosx/macosx-nat-inferior.c:2309
+#: macosx/macosx-nat-inferior.c:2310
 msgid "PTRACE_SIGEXC not defined for this configuration."
 msgstr ""
 
-#: macosx/macosx-nat-inferior.c:2486
+#: macosx/macosx-nat-inferior.c:2487
 msgid "Null osabi name for current architecture."
 msgstr ""
 
-#: macosx/macosx-nat-inferior.c:3454
+#: macosx/macosx-nat-inferior.c:3455
 msgid "Set if GDB should bind the task exception port."
 msgstr ""
 
-#: macosx/macosx-nat-inferior.c:3455
+#: macosx/macosx-nat-inferior.c:3456
 msgid "Show if GDB should bind the task exception port."
 msgstr ""
 
-#: macosx/macosx-nat-inferior.c:3461 macosx/macosx-nat-inferior.c:3468
+#: macosx/macosx-nat-inferior.c:3462 macosx/macosx-nat-inferior.c:3469
 msgid "Set if GDB should attach to the subprocess using ptrace()."
 msgstr ""
 
-#: macosx/macosx-nat-inferior.c:3462 macosx/macosx-nat-inferior.c:3469
+#: macosx/macosx-nat-inferior.c:3463 macosx/macosx-nat-inferior.c:3470
 msgid "Show if GDB should attach to the subprocess using ptrace()."
 msgstr ""
 
-#: macosx/macosx-nat-infthread.c:542
+#: macosx/macosx-nat-infthread.c:543
 #, possible-c-format
 msgid "Error %d getting port names from mach_port_names"
 msgstr ""
 
-#: macosx/macosx-nat-infthread.c:1205
+#: macosx/macosx-nat-infthread.c:1206
 msgid "gdb was not built with support for printing thread details"
 msgstr ""
 
@@ -12411,7 +12436,7 @@ msgid ""
 "variable objects."
 msgstr ""
 
-#: mi/mi-cmds.c:288
+#: mi/mi-cmds.c:289
 #, possible-c-format
 msgid "command `%s' appears to be duplicated"
 msgstr ""
@@ -12494,131 +12519,131 @@ msgstr ""
 msgid "Error reading symbol table: %s"
 msgstr ""
 
-#: monitor.c:277
+#: monitor.c:278
 #, possible-c-format
 msgid "%s (0x%s): %s: %s%c"
 msgstr ""
 
-#: monitor.c:280
+#: monitor.c:281
 #, possible-c-format
 msgid "%s (0x%s): %s: %s"
 msgstr ""
 
-#: monitor.c:295 rom68k-rom.c:57
+#: monitor.c:296 rom68k-rom.c:57
 #, possible-c-format
 msgid "Invalid hex digit %d"
 msgstr ""
 
 #. Polls shouldn't generate timeout errors
-#: monitor.c:459 monitor.c:534 remote-e7000.c:215 remote-st.c:117
+#: monitor.c:460 monitor.c:535 remote-e7000.c:215 remote-st.c:117
 #: remote-utils.c:243
 msgid "Timeout reading from remote system."
 msgstr ""
 
-#: monitor.c:461 monitor.c:536
+#: monitor.c:462 monitor.c:537
 msgid "remote-monitor"
 msgstr ""
 
-#: monitor.c:530
+#: monitor.c:531
 msgid "GDB serial timeout has expired.  Target detached."
 msgstr ""
 
-#: monitor.c:758
+#: monitor.c:759
 #, possible-c-format
 msgid "compile_pattern: Cannot compile pattern string `%s': %s!"
 msgstr ""
 
-#: monitor.c:774
+#: monitor.c:775
 msgid "Magic number of monitor_ops struct wrong."
 msgstr ""
 
-#: monitor.c:780 remote-array.c:568
+#: monitor.c:781 remote-array.c:568
 #, possible-c-format
 msgid ""
 "Use `target %s DEVICE-NAME' to use a serial port, or \n"
 "`target %s HOST-NAME:PORT-NUMBER' to use a network connection."
 msgstr ""
 
-#: monitor.c:880
+#: monitor.c:881
 #, possible-c-format
 msgid "Remote target %s connected to %s\n"
 msgstr ""
 
-#: monitor.c:920
+#: monitor.c:921
 #, possible-c-format
 msgid "Ending remote %s debugging\n"
 msgstr ""
 
-#: monitor.c:958
+#: monitor.c:959
 #, possible-c-format
 msgid "monitor_supply_register (%d):  bad value from monitor: %s."
 msgstr ""
 
-#: monitor.c:1031
+#: monitor.c:1032
 msgid "Unable to parse.\n"
 msgstr ""
 
-#: monitor.c:1260
+#: monitor.c:1262
 #, possible-c-format
 msgid "Bad value returned from monitor while fetching register %x."
 msgstr ""
 
-#: monitor.c:1449
+#: monitor.c:1451
 #, possible-c-format
 msgid "\tAttached to %s at %d baud.\n"
 msgstr ""
 
-#: monitor.c:1986
+#: monitor.c:1988
 msgid "Failed to read via monitor"
 msgstr ""
 
-#: monitor.c:2066
+#: monitor.c:2068
 msgid "Args are not supported by the monitor."
 msgstr ""
 
-#: monitor.c:2095
+#: monitor.c:2097
 msgid "No set_break defined for this monitor"
 msgstr ""
 
-#: monitor.c:2116
+#: monitor.c:2118
 #, possible-c-format
 msgid "Too many breakpoints (> %d) for monitor."
 msgstr ""
 
-#: monitor.c:2128
+#: monitor.c:2130
 msgid "No clr_break defined for this monitor"
 msgstr ""
 
-#: monitor.c:2256 remote-os9k.c:1022
+#: monitor.c:2258 remote-os9k.c:1022
 msgid "monitor target not open."
 msgstr ""
 
-#: monitor.c:2287 remote-array.c:1469
+#: monitor.c:2289 remote-array.c:1469
 #, possible-c-format
 msgid "Reply contains invalid hex digit 0x%x"
 msgstr ""
 
-#: monitor.c:2346
+#: monitor.c:2348
 msgid "Set display of activity while downloading a file."
 msgstr ""
 
-#: monitor.c:2347
+#: monitor.c:2349
 msgid "Show display of activity while downloading a file."
 msgstr ""
 
-#: monitor.c:2348
+#: monitor.c:2350
 msgid "When enabled, a hashmark '#' is displayed."
 msgstr ""
 
-#: monitor.c:2354
+#: monitor.c:2356
 msgid "Set debugging of remote monitor communication."
 msgstr ""
 
-#: monitor.c:2355
+#: monitor.c:2357
 msgid "Show debugging of remote monitor communication."
 msgstr ""
 
-#: monitor.c:2356
+#: monitor.c:2358
 msgid ""
 "When enabled, communication between GDB and the remote monitor\n"
 "is displayed."
@@ -15255,15 +15280,15 @@ msgstr ""
 msgid "When non-zero, observer debugging is enabled."
 msgstr ""
 
-#: ocd.c:182 ocd.c:213 ocd.c:451 ocd.c:550 ocd.c:616 ocd.c:686 ocd.c:972
+#: ocd.c:180 ocd.c:211 ocd.c:451 ocd.c:553 ocd.c:624 ocd.c:697 ocd.c:985
 msgid "Truncated response packet from OCD device"
 msgstr ""
 
-#: ocd.c:188
+#: ocd.c:186
 msgid "OCD_INIT:"
 msgstr ""
 
-#: ocd.c:194
+#: ocd.c:192
 #, possible-c-format
 msgid "[Wiggler version %x.%x, capability 0x%x]\n"
 msgstr ""
@@ -15295,72 +15320,72 @@ msgstr ""
 msgid "OCD device cable appears to have been disconnected."
 msgstr ""
 
-#: ocd.c:506
+#: ocd.c:509
 #, possible-c-format
 msgid "Register block size bad:  %d"
 msgstr ""
 
-#: ocd.c:760 remote-m32r-sdi.c:715 remote-m32r-sdi.c:721 remote-m32r-sdi.c:737
+#: ocd.c:774 remote-m32r-sdi.c:715 remote-m32r-sdi.c:721 remote-m32r-sdi.c:737
 #: remote.c:4513
 msgid "Remote connection closed"
 msgstr ""
 
-#: ocd.c:762 remote.c:4516
+#: ocd.c:776 remote.c:4516
 msgid "Remote communication error"
 msgstr ""
 
-#: ocd.c:802
+#: ocd.c:816
 msgid "output_packet: write failed"
 msgstr ""
 
-#: ocd.c:823 ocd.c:826 ocd.c:838 ocd.c:848 ocd.c:857 ocd.c:926 ocd.c:939
+#: ocd.c:836 ocd.c:839 ocd.c:851 ocd.c:861 ocd.c:870 ocd.c:939 ocd.c:952
 #, possible-c-format
 msgid "ocd_get_packet (readchar): %d"
 msgstr ""
 
-#: ocd.c:917
+#: ocd.c:930
 #, possible-c-format
 msgid "ocd_get_packet: unknown packet type 0x%x."
 msgstr ""
 
-#: ocd.c:945
+#: ocd.c:958
 msgid "ocd_get_packet: bad packet checksum"
 msgstr ""
 
-#: ocd.c:948
+#: ocd.c:961
 #, possible-c-format
 msgid "Response phase error.  Got 0x%x, expected 0x%x"
 msgstr ""
 
-#: ocd.c:984
+#: ocd.c:997
 msgid "OCD device can't detect VCC at BDM interface."
 msgstr ""
 
-#: ocd.c:986
+#: ocd.c:999
 msgid "BDM cable appears to be disconnected."
 msgstr ""
 
-#: ocd.c:1034
+#: ocd.c:1047
 msgid "Args are not supported by BDM."
 msgstr ""
 
-#: ocd.c:1092
+#: ocd.c:1109
 msgid "bdm command must be followed by `reset'"
 msgstr ""
 
-#: ocd.c:1101 ocd.c:1114 ocd.c:1139
+#: ocd.c:1119 ocd.c:1133 ocd.c:1161
 msgid "Not connected to OCD device."
 msgstr ""
 
-#: ocd.c:1142
+#: ocd.c:1164
 msgid "Must specify file containing new OCD code."
 msgstr ""
 
-#: ocd.c:1174
+#: ocd.c:1197
 msgid "Set timeout value for remote read."
 msgstr ""
 
-#: ocd.c:1175
+#: ocd.c:1198
 msgid "Show timeout value for remote read."
 msgstr ""
 
@@ -17523,27 +17548,27 @@ msgstr ""
 msgid "Memory read error"
 msgstr ""
 
-#: remote-e7000.c:1585 symfile.c:2197 target/sparcl-tdep.c:585 tracefile.c:328
+#: remote-e7000.c:1584 symfile.c:2197 target/sparcl-tdep.c:585 tracefile.c:328
 #, possible-c-format
 msgid "unknown option `%s'"
 msgstr ""
 
-#: remote-e7000.c:1600 remote-m32r-sdi.c:1273 symfile.c:2614
+#: remote-e7000.c:1599 remote-m32r-sdi.c:1273 symfile.c:2614
 #, possible-c-format
 msgid "\"%s\" is not an object file: %s"
 msgstr ""
 
-#: remote-e7000.c:1776
+#: remote-e7000.c:1775
 #, possible-c-format
 msgid "Too many breakpoints ( > %d) for the E7000."
 msgstr ""
 
-#: remote-e7000.c:1818
+#: remote-e7000.c:1817
 #, possible-c-format
 msgid "Can't find breakpoint associated with 0x%s."
 msgstr ""
 
-#: remote-e7000.c:1834
+#: remote-e7000.c:1833
 msgid "e7000 target not open."
 msgstr ""
 
@@ -17814,7 +17839,7 @@ msgstr ""
 msgid "RDI_open failed."
 msgstr ""
 
-#: remote-rdi.c:348 remote-rdp.c:1351 remote-sim.c:439
+#: remote-rdi.c:348 remote-rdp.c:1351 remote-sim.c:435
 msgid "No executable file specified."
 msgstr ""
 
@@ -17886,35 +17911,35 @@ msgstr ""
 msgid "Unimplemented SWI argument"
 msgstr ""
 
-#: remote-sds.c:1119
+#: remote-sds.c:1135
 msgid "Set timeout value for sds read."
 msgstr ""
 
-#: remote-sds.c:1120
+#: remote-sds.c:1136
 msgid "Show timeout value for sds read."
 msgstr ""
 
-#: remote-sds.c:1127
+#: remote-sds.c:1143
 msgid "Send a command to the SDS monitor."
 msgstr ""
 
-#: remote-sim.c:372
+#: remote-sim.c:368
 msgid "Register size different to expected"
 msgstr ""
 
-#: remote-sim.c:415
+#: remote-sim.c:411
 msgid "unable to load program"
 msgstr ""
 
-#: remote-sim.c:441 remote-sim.c:759
+#: remote-sim.c:437 remote-sim.c:759
 msgid "No program loaded."
 msgstr ""
 
-#: remote-sim.c:535
+#: remote-sim.c:533
 msgid "Insufficient memory available to allocate simulator arg list."
 msgstr ""
 
-#: remote-sim.c:542
+#: remote-sim.c:540
 msgid "unable to create simulator instance"
 msgstr ""
 
@@ -17960,11 +17985,11 @@ msgstr ""
 msgid "Missing command."
 msgstr ""
 
-#: remote-st.c:812
+#: remote-st.c:813
 msgid "Send a command to the STDBUG monitor."
 msgstr ""
 
-#: remote-st.c:813
+#: remote-st.c:814
 msgid ""
 "Connect the terminal directly up to the STDBUG command monitor.\n"
 "Use <CR>~. or <CR>~^D to break out."
@@ -19441,7 +19466,7 @@ msgstr ""
 msgid "failed to read exec filename from attached file: %s"
 msgstr ""
 
-#: solib-osf.c:223
+#: solib-osf.c:226
 #, possible-c-format
 msgid "unable to read shared sec name at 0x%lx"
 msgstr ""
@@ -19634,7 +19659,7 @@ msgstr ""
 msgid "Autoloading of shared library symbols is %s.\n"
 msgstr ""
 
-#: solib.c:961 xcoffsolib.c:164
+#: solib.c:961 xcoffsolib.c:169
 msgid "Load shared object library symbols for files matching REGEXP."
 msgstr ""
 
@@ -19646,15 +19671,15 @@ msgstr ""
 msgid "Unload all shared object library symbols."
 msgstr ""
 
-#: solib.c:968 xcoffsolib.c:169
+#: solib.c:968 xcoffsolib.c:174
 msgid "Set autoloading of shared library symbols."
 msgstr ""
 
-#: solib.c:969 xcoffsolib.c:170
+#: solib.c:969 xcoffsolib.c:175
 msgid "Show autoloading of shared library symbols."
 msgstr ""
 
-#: solib.c:970 xcoffsolib.c:171
+#: solib.c:970 xcoffsolib.c:176
 msgid ""
 "If \"on\", symbols from all shared object libraries will be loaded\n"
 "automatically when the inferior begins execution, when the dynamic linker\n"
@@ -25119,7 +25144,7 @@ msgstr ""
 msgid "reading symbol table"
 msgstr ""
 
-#: xcoffsolib.c:166
+#: xcoffsolib.c:171
 msgid "Status of loaded shared object libraries"
 msgstr ""
 

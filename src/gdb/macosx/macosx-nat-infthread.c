@@ -53,7 +53,8 @@ extern macosx_inferior_status *macosx_status;
 
 extern void _initialize_threads(void);
 
-static int get_dispatch_queue_flags(CORE_ADDR dispatch_qaddr, uint32_t *flags);
+static int get_dispatch_queue_flags(CORE_ADDR dispatch_qaddr, uint32_t *flags)
+  ATTRIBUTE_USED;
 
 #define set_trace_bit(thread) modify_trace_bit(thread, 1)
 #define clear_trace_bit(thread) modify_trace_bit(thread, 0)

@@ -1116,7 +1116,7 @@ typedef void *(gdbarch_data_post_init_ftype)(struct gdbarch *gdbarch);
 extern struct gdbarch_data *gdbarch_data_register_post_init(gdbarch_data_post_init_ftype *init);
 extern void deprecated_set_gdbarch_data(struct gdbarch *gdbarch,
                                         struct gdbarch_data *data,
-			                void *pointer)
+                                        void *pointer)
   ATTRIBUTE_DEPRECATED;
 
 extern void *gdbarch_data(struct gdbarch *gdbarch, struct gdbarch_data *);
@@ -1641,7 +1641,7 @@ struct gdbarch_tdep *
 gdbarch_tdep (struct gdbarch *gdbarch)
 {
   if (gdbarch_debug >= 2)
-    fprintf_unfiltered (gdb_stdlog, "gdbarch_tdep called\\n");
+    fprintf_unfiltered(gdb_stdlog, "%s:%d: gdbarch_tdep called.\\n", __FILE__, __LINE__);
   return gdbarch->tdep;
 }
 EOF
@@ -1677,7 +1677,7 @@ do
 	    printf "  /* Do not check predicate: ${predicate}, allow call.  */\n"
 	fi
 	printf "  if (gdbarch_debug >= 2)\n"
-	printf "    fprintf_unfiltered (gdb_stdlog, \"gdbarch_${function} called\\\\n\");\n"
+	printf "    fprintf_unfiltered(gdb_stdlog, \"%%s:%%d: gdbarch_${function} called\\\\n\", __FILE__, __LINE__);\n"
 	if [ "x${actual}" = "x-" -o "x${actual}" = "x" ]
 	then
 	    if class_is_multiarch_p
@@ -1728,7 +1728,7 @@ do
 	    printf "  gdb_assert (gdbarch->${function} != ${predefault});\n"
 	fi
 	printf "  if (gdbarch_debug >= 2)\n"
-	printf "    fprintf_unfiltered (gdb_stdlog, \"gdbarch_${function} called\\\\n\");\n"
+	printf "    fprintf_unfiltered(gdb_stdlog, \"%%s:%%d: gdbarch_${function} called\\\\n\", __FILE__, __LINE__);\n"
 	printf "  return gdbarch->${function};\n"
 	printf "}\n"
 	printf "\n"
@@ -1746,7 +1746,7 @@ do
 	printf "{\n"
         printf "  gdb_assert (gdbarch != NULL);\n"
 	printf "  if (gdbarch_debug >= 2)\n"
-	printf "    fprintf_unfiltered (gdb_stdlog, \"gdbarch_${function} called\\\\n\");\n"
+	printf "    fprintf_unfiltered(gdb_stdlog, \"%%s:%%d: gdbarch_${function} called\\\\n\", __FILE__, __LINE__);\n"
 	printf "  return gdbarch->${function};\n"
 	printf "}\n"
     fi
