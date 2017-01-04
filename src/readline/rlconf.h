@@ -69,3 +69,5 @@
 #endif /* 0 */
 
 #endif /* _RLCONF_H_ */
+
+/* EOF */

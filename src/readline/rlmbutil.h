@@ -107,3 +107,5 @@ extern int _rl_is_mbchar_matched PARAMS((char *, int, int, char *, int));
 extern int rl_byte_oriented;
 
 #endif /* _RL_MBUTIL_H_ */
+
+/* EOF */

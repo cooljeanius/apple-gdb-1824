@@ -181,7 +181,7 @@ extern int write_history PARAMS((const char *));
 
 /* Append NELEMENT entries to FILENAME.  The entries appended are from
    the end of the list minus NELEMENTs up to the end of the list. */
-extern int append_history PARAMS((int, const char *));
+extern int append_history PARAMS((size_t, const char *));
 
 /* Truncate the history file, leaving only the last NLINES lines. */
 extern int history_truncate_file PARAMS((const char *, int));

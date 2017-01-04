@@ -166,7 +166,7 @@ read_history_range(const char *filename, int from, int to)
   file_size = (size_t)finfo.st_size;
 
   /* check for overflow on very large files */
-  if (file_size != finfo.st_size || file_size + 1 < file_size)
+  if ((file_size != finfo.st_size) || ((file_size + 1UL) < file_size))
     {
 #if defined (EFBIG)
       errno = EFBIG;
@@ -181,7 +181,8 @@ read_history_range(const char *filename, int from, int to)
 #ifdef HAVE_MMAP
   /* We map read/write and private so we can change newlines to NULs without
      affecting the underlying object. */
-  buffer = (char *)mmap (0, file_size, PROT_READ|PROT_WRITE, MAP_RFLAGS, file, 0);
+  buffer = (char *)mmap(0, file_size, (PROT_READ | PROT_WRITE), MAP_RFLAGS,
+			file, (off_t)0L);
   if ((void *)buffer == MAP_FAILED)
     goto error_and_exit;
   chars_read = file_size;
@@ -349,7 +350,7 @@ history_truncate_file(const char *fname, int lines)
      truncate to. */
   if (bp > buffer && ((file = open (filename, O_WRONLY|O_TRUNC|O_BINARY, 0600)) != -1))
     {
-      write (file, bp, chars_read - (bp - buffer));
+      write(file, bp, (size_t)(chars_read - (bp - buffer)));
 
 #if defined (__BEOS__)
       /* BeOS ignores O_TRUNC. */
@@ -371,9 +372,9 @@ history_truncate_file(const char *fname, int lines)
    from the history list to FILENAME.  OVERWRITE is non-zero if you
    wish to replace FILENAME with the entries. */
 static int
-history_do_write(const char *filename, int nelements, int overwrite)
+history_do_write(const char *filename, size_t nelements, int overwrite)
 {
-  register int i;
+  register size_t i;
   char *output;
   int file, mode, rv;
 #if defined(HAVE_MMAP) || defined(ALLOW_UNUSED_VARIABLES)
@@ -395,30 +396,31 @@ history_do_write(const char *filename, int nelements, int overwrite)
     }
 
 #ifdef HAVE_MMAP
-  cursize = (overwrite ? 0 : lseek(file, 0, SEEK_END));
+  cursize = (overwrite ? 0 : lseek(file, (off_t)0L, SEEK_END));
 #endif /* HAVE_MMAP */
 
   if (nelements > history_length)
     nelements = history_length;
 
   /* Build a buffer of all the lines to write, and write them in one syscall.
-     Suggested by Peter Ho (peter@robosts.oxford.ac.uk). */
+     Suggested by Peter Ho <peter@robosts.oxford.ac.uk>. */
   {
     HIST_ENTRY **the_history;	/* local */
-    register int j;
-    int buffer_size;
+    register size_t j;
+    size_t buffer_size;
     char *buffer;
 
-    the_history = history_list ();
+    the_history = history_list();
     /* Calculate the total number of bytes to write. */
-    for (buffer_size = 0, i = history_length - nelements; i < history_length; i++)
-      buffer_size += 1 + strlen (the_history[i]->line);
+    for (buffer_size = 0UL, i = (history_length - nelements); i < history_length; i++)
+      buffer_size += (1UL + strlen(the_history[i]->line));
 
     /* Allocate the buffer, and fill it. */
 #ifdef HAVE_MMAP
-    if (ftruncate (file, buffer_size+cursize) == -1)
+    if (ftruncate(file, (off_t)(buffer_size + cursize)) == -1)
       goto mmap_error;
-    buffer = (char *)mmap (0, buffer_size, PROT_READ|PROT_WRITE, MAP_WFLAGS, file, cursize);
+    buffer = (char *)mmap(0, buffer_size, (PROT_READ | PROT_WRITE), MAP_WFLAGS,
+			  file, (off_t)cursize);
     if ((void *)buffer == MAP_FAILED)
       {
 mmap_error:
@@ -438,10 +440,10 @@ mmap_error:
       }
 #endif
 
-    for (j = 0, i = history_length - nelements; i < history_length; i++)
+    for (j = 0UL, i = (history_length - nelements); i < history_length; i++)
       {
-	strcpy (buffer + j, the_history[i]->line);
-	j += strlen (the_history[i]->line);
+	strcpy(buffer + j, the_history[i]->line);
+	j += strlen(the_history[i]->line);
 	buffer[j++] = '\n';
       }
 
@@ -465,7 +467,7 @@ mmap_error:
 /* Append NELEMENT entries to FILENAME.  The entries appended are from
    the end of the list minus NELEMENTs up to the end of the list. */
 int
-append_history(int nelements, const char *filename)
+append_history(size_t nelements, const char *filename)
 {
   return (history_do_write(filename, nelements, HISTORY_APPEND));
 }

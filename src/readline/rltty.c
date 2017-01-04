@@ -561,7 +561,7 @@ set_tty_settings(int tty, TIOTYPE *tiop)
 static void
 prepare_terminal_settings(int meta_flag, TIOTYPE oldtio, TIOTYPE *tiop)
 {
-  readline_echoing_p = (oldtio.c_lflag & ECHO);
+  readline_echoing_p = (int)(oldtio.c_lflag & ECHO);
 
   tiop->c_lflag &= ~(ICANON | ECHO);
 

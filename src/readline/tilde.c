@@ -119,12 +119,12 @@ tilde_hook_func_t *tilde_expansion_failure_hook = (tilde_hook_func_t *)NULL;
 /* When non-null, this is a NULL terminated array of strings which
    are duplicates for a tilde prefix. Bash uses this to expand
    `=~' and `:~'. */
-char **tilde_additional_prefixes = (char **)default_prefixes;
+const char **tilde_additional_prefixes = default_prefixes;
 
 /* When non-null, this is a NULL terminated array of strings which match
    the end of a username, instead of just "/". Bash sets this to
    `:' and `=~'. */
-char **tilde_additional_suffixes = (char **)default_suffixes;
+const char **tilde_additional_suffixes = default_suffixes;
 
 static int tilde_find_prefix PARAMS((const char *, size_t *));
 static int tilde_find_suffix PARAMS((const char *));
@@ -139,7 +139,7 @@ tilde_find_prefix(const char *string, size_t *len)
 {
   register int i, j;
   size_t string_len;
-  register char **prefixes;
+  register const char **prefixes;
 
   prefixes = tilde_additional_prefixes;
 
@@ -173,7 +173,7 @@ tilde_find_suffix(const char *string)
 {
   register int i, j;
   size_t string_len;
-  register char **suffixes;
+  register const char **suffixes;
 
   suffixes = tilde_additional_suffixes;
   string_len = strlen(string);

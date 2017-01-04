@@ -32,3 +32,5 @@ extern char *sh_get_home_dir PARAMS((void));
 extern int sh_unset_nodelay_mode PARAMS((int));
 
 #endif /* _RL_SHELL_H_ */
+
+/* EOF */

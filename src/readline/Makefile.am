@@ -89,11 +89,13 @@ XCCFLAGS = $(DEFS) $(LOCAL_DEFS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS)
 JUST_CFLAGS = $(LOCAL_CFLAGS) $(CFLAGS) $(SHOBJ_CFLAGS)
 CCFLAGS = $(XCCFLAGS) $(JUST_CFLAGS) $(C_ARCHFLAGS)
 
+GCC_LINT_FLAGS = @GCC_LINT_FLAGS@
 # could(?) add -Werror here
-GCC_LINT_FLAGS = -ansi -Wall -Wshadow -Wpointer-arith -Wcast-qual \
-		 -Wwrite-strings -Wtype-limits -Wstrict-prototypes \
-		 -Wmissing-prototypes -Wno-implicit -pedantic \
-		 -Wold-style-definition -Wc++-compat -Wmissing-declarations
+GCC_HARDCODED_LINT_FLAGS = -ansi -Wall -Wshadow -Wpointer-arith \
+		 -Wcast-qual -Wwrite-strings -Wtype-limits \
+		 -Wstrict-prototypes -Wmissing-prototypes -Wno-implicit \
+		 -pedantic -Wold-style-definition -Wc++-compat \
+		 -Wmissing-declarations
 GCC_LINT_CFLAGS = $(XCCFLAGS) $(GCC_LINT_FLAGS) @CFLAGS@ @LOCAL_CFLAGS@
 
 .c.o:

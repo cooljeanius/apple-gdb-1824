@@ -8,6 +8,8 @@ AC_REVISION([for Readline 4.3, version 2.45, from autoconf version] AC_ACVERSION
 
 AC_INIT([readline],[4.3],[bug-readline@gnu.org])dnl
 
+ACX_BUGURL([chet@po.cwru.edu])dnl
+
 dnl# make sure we are using a "recent" autoconf version
 AC_PREREQ([2.61])dnl
 
@@ -304,6 +306,19 @@ AC_CHECK_HEADERS([arpa/inet.h errno.h fcntl.h features.h limits.h \
                   sys/ioctl.h sys/pte.h sys/ptem.h sys/select.h \
                   sys/socket.h sys/stream.h sys/time.h termcap.h \
                   termio.h termios.h time.h varargs.h wchar.h wctype.h])dnl
+
+# Checks for compiler flags.
+AC_MSG_CHECKING([compiler flags, for use by the lint target])
+AC_MSG_RESULT([ ])
+ACX_PROG_CC_WARNING_OPTS([-Wall -Wshadow -Wpointer-arith -Wcast-align \
+  -Wwrite-strings -Wtype-limits -Wstrict-prototypes -Wmissing-prototypes \
+  -Wno-implicit -Wold-style-declaration -Wold-style-definition \
+  -Wc++-compat -Wmissing-declarations -Wmissing-parameter-type \
+  -Wextra-tokens -Wnewline-eof -Wendif-labels -Wshorten-64-to-32 \
+  -Wsign-compare -Wtraditional-conversion -Wfloat-conversion \
+  -Wnested-externs -Wint-in-bool-context],[GCC_LINT_FLAGS])dnl
+ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-ansi -Wno-long-long],
+                                    [GCC_LINT_FLAGS])dnl
 
 # Checks using macros from Bash's configure script
 AC_MSG_NOTICE([running checks stolen from Bash's configure script])

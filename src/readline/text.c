@@ -102,8 +102,8 @@ rl_insert_text(const char *string)
 	rl_add_undo(UNDO_INSERT, rl_point, (int)(rl_point + (int)l),
                     (char *)NULL);
     }
-  rl_point += l;
-  rl_end += l;
+  rl_point += (int)l;
+  rl_end += (int)l;
   rl_line_buffer[rl_end] = '\0';
   return (int)l;
 }
@@ -161,8 +161,7 @@ rl_delete_text(int from, int to)
 	} while (0)
 
 void
-_rl_fix_point (fix_mark_too)
-     int fix_mark_too;
+_rl_fix_point(int fix_mark_too)
 {
   _RL_FIX_POINT (rl_point);
   if (fix_mark_too)
@@ -171,9 +170,7 @@ _rl_fix_point (fix_mark_too)
 #undef _RL_FIX_POINT
 
 int
-_rl_replace_text (text, start, end)
-     const char *text;
-     int start, end;
+_rl_replace_text(const char *text, int start, int end)
 {
   int n;
 
@@ -240,8 +237,7 @@ rl_replace_line(const char *text, int clear_undo)
 
 /* Move forward COUNT bytes. */
 int
-rl_forward_byte (count, key)
-     int count, key;
+rl_forward_byte(int count, int key)
 {
   if (count < 0)
     return (rl_backward_byte (-count, key));
@@ -273,8 +269,7 @@ rl_forward_byte (count, key)
 #if defined (HANDLE_MULTIBYTE)
 /* Move forward COUNT characters. */
 int
-rl_forward_char (count, key)
-     int count, key;
+rl_forward_char(int count, int key)
 {
   int point;
 
@@ -315,16 +310,14 @@ rl_forward_char (count, key)
 
 /* Backwards compatibility. */
 int
-rl_forward (count, key)
-     int count, key;
+rl_forward(int count, int key)
 {
   return (rl_forward_char (count, key));
 }
 
 /* Move backward COUNT bytes. */
 int
-rl_backward_byte (count, key)
-     int count, key;
+rl_backward_byte(int count, int key)
 {
   if (count < 0)
     return (rl_forward_byte (-count, key));
@@ -349,8 +342,7 @@ rl_backward_byte (count, key)
 #if defined (HANDLE_MULTIBYTE)
 /* Move backward COUNT characters. */
 int
-rl_backward_char (count, key)
-     int count, key;
+rl_backward_char(int count, int key)
 {
   int point;
 
@@ -391,16 +383,14 @@ rl_backward_char (count, key)
 
 /* Backwards compatibility. */
 int
-rl_backward (count, key)
-     int count, key;
+rl_backward(int count, int key)
 {
   return (rl_backward_char (count, key));
 }
 
 /* Move to the beginning of the line. */
 int
-rl_beg_of_line (count, key)
-     int count, key;
+rl_beg_of_line(int count, int key)
 {
   rl_point = 0;
   return 0;
@@ -408,8 +398,7 @@ rl_beg_of_line (count, key)
 
 /* Move to the end of the line. */
 int
-rl_end_of_line (count, key)
-     int count, key;
+rl_end_of_line(int count, int key)
 {
   rl_point = rl_end;
   return 0;
@@ -418,8 +407,7 @@ rl_end_of_line (count, key)
 /* XXX - these might need changes for multibyte characters */
 /* Move forward a word.  We do what Emacs does. */
 int
-rl_forward_word (count, key)
-     int count, key;
+rl_forward_word(int count, int key)
 {
   int c;
 
@@ -461,8 +449,7 @@ rl_forward_word (count, key)
 
 /* Move backward a word.  We do what Emacs does. */
 int
-rl_backward_word (count, key)
-     int count, key;
+rl_backward_word(int count, int key)
 {
   int c;
 
@@ -505,8 +492,7 @@ rl_backward_word (count, key)
 
 /* Clear the current line.  Numeric argument to C-l does this. */
 int
-rl_refresh_line (ignore1, ignore2)
-     int ignore1, ignore2;
+rl_refresh_line(int ignore1, int ignore2)
 {
   int curr_line;
 
@@ -527,8 +513,7 @@ rl_refresh_line (ignore1, ignore2)
    the prompt and the current input line.  Given a numeric arg, redraw only
    the current line. */
 int
-rl_clear_screen (count, key)
-     int count, key;
+rl_clear_screen(int count, int key)
 {
   if (rl_explicit_arg)
     {
@@ -544,8 +529,7 @@ rl_clear_screen (count, key)
 }
 
 int
-rl_arrow_keys (count, c)
-     int count, c;
+rl_arrow_keys(int count, int c)
 {
   int ch;
 
@@ -689,7 +673,7 @@ _rl_insert_char(int count, int c)
       while (i < (int)string_size)
 	{
 	  strncpy(string + i, incoming, incoming_length);
-	  i += incoming_length;
+	  i += (int)incoming_length;
 	}
       incoming_length = 0;
       stored_count = 0;
@@ -718,7 +702,7 @@ _rl_insert_char(int count, int c)
       while (i < (int)string_size)
 	{
 	  strncpy(string + i, incoming, incoming_length);
-	  i += incoming_length;
+	  i += (int)incoming_length;
 	}
 
       while (count)
@@ -790,11 +774,15 @@ _rl_overwrite_char(int count, int c)
   int i;
 #if defined(HANDLE_MULTIBYTE)
   char mbkey[MB_LEN_MAX];
-  int k;
+  int k = 0;
 
   /* Read an entire multibyte character sequence to insert COUNT times. */
-  if (count > 0 && MB_CUR_MAX > 1 && rl_byte_oriented == 0)
-    k = _rl_read_mbstring (c, mbkey, MB_LEN_MAX);
+  if ((count > 0) && (MB_CUR_MAX > 1) && (rl_byte_oriented == 0))
+    k = _rl_read_mbstring(c, mbkey, MB_LEN_MAX);
+  
+  if (k > 0) {
+    ; /* ??? */
+  }
 #endif
 
   for (i = 0; i < count; i++)
@@ -818,8 +806,7 @@ _rl_overwrite_char(int count, int c)
 }
 
 int
-rl_insert (count, c)
-     int count, c;
+rl_insert(int count, int c)
 {
   return (rl_insert_mode == RL_IM_INSERT ? _rl_insert_char (count, c)
   					 : _rl_overwrite_char (count, c));
@@ -827,8 +814,7 @@ rl_insert (count, c)
 
 /* Insert the next typed character verbatim. */
 int
-rl_quoted_insert (count, key)
-     int count, key;
+rl_quoted_insert(int count, int key)
 {
   int c;
 
@@ -849,8 +835,7 @@ rl_quoted_insert (count, key)
 
 /* Insert a tab character. */
 int
-rl_tab_insert (count, key)
-     int count, key;
+rl_tab_insert(int count, int key)
 {
   return (_rl_insert_char (count, '\t'));
 }
@@ -859,8 +844,7 @@ rl_tab_insert (count, key)
    KEY is the key that invoked this command.  I guess it could have
    meaning in the future. */
 int
-rl_newline (count, key)
-     int count, key;
+rl_newline(int count, int key)
 {
   rl_done = 1;
 
@@ -892,8 +876,7 @@ rl_newline (count, key)
    is just a stub, you bind keys to it and the code in _rl_dispatch ()
    is special cased. */
 int
-rl_do_lowercase_version (ignore1, ignore2)
-     int ignore1, ignore2;
+rl_do_lowercase_version(int ignore1, int ignore2)
 {
   return 0;
 }
@@ -902,8 +885,7 @@ rl_do_lowercase_version (ignore1, ignore2)
    rubout in overwrite mode has one oddity:  it replaces a control
    character that's displayed as two characters (^X) with two spaces. */
 int
-_rl_overwrite_rubout (count, key)
-     int count, key;
+_rl_overwrite_rubout(int count, int key)
 {
   int opoint;
   int i, l;
@@ -942,8 +924,7 @@ _rl_overwrite_rubout (count, key)
 
 /* Rubout the character behind point. */
 int
-rl_rubout (count, key)
-     int count, key;
+rl_rubout(int count, int key)
 {
   if (count < 0)
     return (rl_delete (-count, key));
@@ -1071,8 +1052,7 @@ rl_delete(int count, int key)
    behind the cursor is deleted.  COUNT is obeyed and may be used
    to delete forward or backward that many characters. */
 int
-rl_rubout_or_delete (count, key)
-     int count, key;
+rl_rubout_or_delete(int count, int key)
 {
   if (rl_end != 0 && rl_point == rl_end)
     return (_rl_rubout_char (count, key));
@@ -1082,8 +1062,7 @@ rl_rubout_or_delete (count, key)
 
 /* Delete all spaces and tabs around point. */
 int
-rl_delete_horizontal_space (count, ignore)
-     int count, ignore;
+rl_delete_horizontal_space(int count, int ignore)
 {
   int start = rl_point;
 
@@ -1154,30 +1133,29 @@ rl_insert_comment(int count, int key)
 /* **************************************************************** */
 
 /* The three kinds of things that we know how to do. */
-#define UpCase 1
-#define DownCase 2
-#define CapCase 3
+enum kinds_of_case_changes {
+  UpCase = 1,
+  DownCase = 2,
+  CapCase = 3
+};
 
 /* Uppercase the word at point. */
 int
-rl_upcase_word (count, key)
-     int count, key;
+rl_upcase_word(int count, int key)
 {
   return (rl_change_case (count, UpCase));
 }
 
 /* Lowercase the word at point. */
 int
-rl_downcase_word (count, key)
-     int count, key;
+rl_downcase_word(int count, int key)
 {
   return (rl_change_case (count, DownCase));
 }
 
 /* Upcase the first letter, downcase the rest. */
 int
-rl_capitalize_word (count, key)
-     int count, key;
+rl_capitalize_word(int count, int key)
 {
  return (rl_change_case (count, CapCase));
 }
@@ -1240,8 +1218,7 @@ rl_change_case(int count, int op)
 /* Transpose the words at point.  If point is at the end of the line,
    transpose the two words before point. */
 int
-rl_transpose_words (count, key)
-     int count, key;
+rl_transpose_words(int count, int key)
 {
   char *word1, *word2;
   int w1_beg, w1_end, w2_beg, w2_end;
@@ -1373,13 +1350,9 @@ rl_transpose_chars(int count, int key)
 
 int
 #if defined (HANDLE_MULTIBYTE)
-_rl_char_search_internal (count, dir, smbchar, len)
-     int count, dir;
-     char *smbchar;
-     int len;
+_rl_char_search_internal(int count, int dir, char *smbchar, int len)
 #else
-_rl_char_search_internal (count, dir, schar)
-     int count, dir, schar;
+_rl_char_search_internal(int count, int dir, int schar)
 #endif
 {
   int pos, inc;
@@ -1440,8 +1413,7 @@ _rl_char_search_internal (count, dir, schar)
    that there are two separate versions of this function. */
 #if defined (HANDLE_MULTIBYTE)
 static int
-_rl_char_search (count, fdir, bdir)
-     int count, fdir, bdir;
+_rl_char_search(int count, int fdir, int bdir)
 {
   char mbchar[MB_LEN_MAX];
   int mb_len;
@@ -1472,15 +1444,13 @@ _rl_char_search (count, fdir, bdir)
 #endif /* !HANDLE_MULTIBYTE */
 
 int
-rl_char_search (count, key)
-     int count, key;
+rl_char_search(int count, int key)
 {
   return (_rl_char_search (count, FFIND, BFIND));
 }
 
 int
-rl_backward_char_search (count, key)
-     int count, key;
+rl_backward_char_search(int count, int key)
 {
   return (_rl_char_search (count, BFIND, FFIND));
 }
@@ -1493,8 +1463,7 @@ rl_backward_char_search (count, key)
 
 /* Set the mark at POSITION. */
 int
-_rl_set_mark_at_pos (position)
-     int position;
+_rl_set_mark_at_pos(int position)
 {
   if (position > rl_end)
     return -1;
@@ -1505,16 +1474,14 @@ _rl_set_mark_at_pos (position)
 
 /* A bindable command to set the mark. */
 int
-rl_set_mark (count, key)
-     int count, key;
+rl_set_mark(int count, int key)
 {
   return (_rl_set_mark_at_pos (rl_explicit_arg ? count : rl_point));
 }
 
 /* Exchange the position of mark and point. */
 int
-rl_exchange_point_and_mark (count, key)
-     int count, key;
+rl_exchange_point_and_mark(int count, int key)
 {
   if (rl_mark > rl_end)
     rl_mark = -1;

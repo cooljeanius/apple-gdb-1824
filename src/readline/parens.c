@@ -34,6 +34,10 @@
 #  include <unistd.h>
 #endif
 
+#ifdef HAVE_ERRNO_H
+# include <errno.h>
+#endif /* HAVE_ERRNO_H */
+
 #if defined (FD_SET) && !defined (HAVE_SELECT)
 #  define HAVE_SELECT
 #endif
@@ -130,6 +134,10 @@ rl_insert_close(int count, int invoking_key)
       rl_point = match_point;
       (*rl_redisplay_function)();
       ready = select(1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &timer);
+      if (ready == -1) {
+	char *errstring = strerror(errno);
+	(void)errstring;
+      }
       rl_point = orig_point;
 #else /* !HAVE_SELECT */
       _rl_insert_char(count, invoking_key);

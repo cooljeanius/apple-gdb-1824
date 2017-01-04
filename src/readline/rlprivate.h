@@ -230,7 +230,7 @@ extern int _rl_page_completions;
 extern int _rl_vis_botlin;
 extern int _rl_last_c_pos;
 extern int _rl_suppress_redisplay;
-extern char *rl_display_prompt;
+extern const char *rl_display_prompt;
 
 /* isearch.c */
 extern char *_rl_isearch_terminators;
@@ -282,3 +282,5 @@ extern int _rl_doing_an_undo;
 extern int _rl_undo_group_level;
 
 #endif /* _RL_PRIVATE_H_ */
+
+/* EOF */

@@ -270,8 +270,7 @@ int _rl_meta_flag = 0;	/* Forward declaration */
 /* Set up the prompt and expand it.  Called from readline() and
    rl_callback_handler_install (). */
 int
-rl_set_prompt (prompt)
-     const char *prompt;
+rl_set_prompt(const char *prompt)
 {
   FREE (rl_prompt);
   rl_prompt = prompt ? savestring (prompt) : (char *)NULL;
@@ -283,8 +282,7 @@ rl_set_prompt (prompt)
 /* Read a line of input.  Prompt with PROMPT.  An empty PROMPT means
    none.  A return value of NULL means that EOF was encountered. */
 char *
-readline (prompt)
-     const char *prompt;
+readline(const char *prompt)
 {
   char *value;
 
@@ -321,7 +319,7 @@ readline (prompt)
 #endif /* READLINE_CALLBACKS */
 
 STATIC_CALLBACK void
-readline_internal_setup ()
+readline_internal_setup(void)
 {
   char *nprompt;
 
@@ -363,8 +361,7 @@ readline_internal_setup ()
 }
 
 STATIC_CALLBACK char *
-readline_internal_teardown (eof)
-     int eof;
+readline_internal_teardown(int eof)
 {
   char *temp;
   HIST_ENTRY *entry;
@@ -397,9 +394,9 @@ readline_internal_teardown (eof)
 
 STATIC_CALLBACK int
 #if defined (READLINE_CALLBACKS)
-readline_internal_char ()
+readline_internal_char(void)
 #else
-readline_internal_charloop ()
+readline_internal_charloop(void)
 #endif /* READLINE_CALLBACKS */
 {
   static int lastc, eof_found;
@@ -479,6 +476,7 @@ readline_internal_charloop ()
 	_rl_erase_entire_line ();
 
 #if defined (READLINE_CALLBACKS)
+      (void)eof_found;
       return 0;
 #else
     }
@@ -503,7 +501,7 @@ readline_internal_charloop(void)
    the global rl_outstream.
    If rl_prompt is non-null, then that is our prompt. */
 static char *
-readline_internal ()
+readline_internal(void)
 {
   int eof;
 
@@ -513,7 +511,7 @@ readline_internal ()
 }
 
 void
-_rl_init_line_state ()
+_rl_init_line_state(void)
 {
   rl_point = rl_end = rl_mark = 0;
   the_line = rl_line_buffer;
@@ -521,7 +519,7 @@ _rl_init_line_state ()
 }
 
 void
-_rl_set_the_line ()
+_rl_set_the_line(void)
 {
   the_line = rl_line_buffer;
 }
@@ -530,18 +528,13 @@ _rl_set_the_line ()
    If the associated command is really a keymap, then read
    another key, and dispatch into that map. */
 int
-_rl_dispatch (key, map)
-     register int key;
-     Keymap map;
+_rl_dispatch(register int key, Keymap map)
 {
   return _rl_dispatch_subseq (key, map, 0);
 }
 
 int
-_rl_dispatch_subseq (key, map, got_subseq)
-     register int key;
-     Keymap map;
-     int got_subseq;
+_rl_dispatch_subseq(register int key, Keymap map, int got_subseq)
 {
   int r, newkey;
   char *macro;
@@ -710,7 +703,7 @@ _rl_dispatch_subseq (key, map, got_subseq)
 
 /* Initialize readline (and terminal if not already). */
 int
-rl_initialize ()
+rl_initialize(void)
 {
   /* If we have never been called before, initialize the
      terminal and data structures. */
@@ -858,15 +851,14 @@ readline_initialize_everything(void)
    input editing characters, then bind them to their readline
    equivalents, iff the characters are not bound to keymaps. */
 static void
-readline_default_bindings ()
+readline_default_bindings(void)
 {
   rl_tty_set_default_bindings (_rl_keymap);
 }
 
 /* Bind some common arrow key sequences in MAP. */
 static void
-bind_arrow_keys_internal (map)
-     Keymap map;
+bind_arrow_keys_internal(Keymap map)
 {
   Keymap xkeymap;
 
@@ -917,7 +909,7 @@ bind_arrow_keys_internal (map)
    the inputrc file a chance to bind them and create `real' keymaps
    for the arrow key prefix. */
 static void
-bind_arrow_keys ()
+bind_arrow_keys(void)
 {
   bind_arrow_keys_internal (emacs_standard_keymap);
 

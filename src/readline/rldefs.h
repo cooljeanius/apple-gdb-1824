@@ -156,3 +156,5 @@ extern char *_rl_strpbrk PARAMS((const char *, const char *));
 #include "rlconf.h"
 
 #endif /* !_RLDEFS_H_ */
+
+/* EOF */

@@ -95,3 +95,5 @@ typedef void rl_vcppfunc_t PARAMS((char **));
 #endif /* __cplusplus */
 
 #endif /* _RL_TYPEDEFS_H_ */
+
+/* EOF */

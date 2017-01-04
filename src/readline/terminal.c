@@ -309,12 +309,7 @@ rl_resize_terminal(void)
 }
 
 struct _tc_string {
-#ifdef NCURSES_CONST
-     NCURSES_CONST
-#else
-     const
-#endif /* NCURSES_CONST */
-     char *tc_var;
+     const char *tc_var;
      char **tc_value;
 };
 
@@ -368,7 +363,11 @@ get_term_capabilities(char **bp)
 #  if defined(__LCC__) || (defined(NCURSES_EXPORT) && !defined(NCURSES_CONST))
     *(tc_strings[i].tc_value) = tgetstr((char *)tc_strings[i].tc_var, bp);
 #  else
+#   if defined(NCURSES_CONST)
+    *(tc_strings[i].tc_value) = tgetstr((NCURSES_CONST char *)tc_strings[i].tc_var, bp);
+#   else
     *(tc_strings[i].tc_value) = tgetstr(tc_strings[i].tc_var, bp);
+#   endif /* NCURSES_CONST */
 #  endif /* __LCC__ || (NCURSES_EXPORT && !NCURSES_CONST) */
 #endif /* !__DJGPP__ */
   tcap_initialized = 1;
@@ -416,10 +415,10 @@ _rl_init_terminal_io(const char *terminal_name)
   else
     {
       if (term_string_buffer == 0)
-	term_string_buffer = (char *)xmalloc(2032);
+	term_string_buffer = (char *)xmalloc((size_t)2032UL);
 
       if (term_buffer == 0)
-	term_buffer = (char *)xmalloc(4080);
+	term_buffer = (char *)xmalloc((size_t)4080UL);
 
       buffer = term_string_buffer;
 

@@ -119,7 +119,10 @@ am__aclocal_m4_deps =  \
 	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/signal.m4 \
 	$(top_srcdir)/m4/stdlib_h.m4 $(top_srcdir)/m4/ulonglong.m4 \
 	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xorg-macros.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/../config/acx.m4 \
+	$(top_srcdir)/../config/no-executables.m4 \
+	$(top_srcdir)/../config/picflag.m4 \
+	$(top_srcdir)/../config/warnings.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am
@@ -187,6 +190,7 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
+GCC_LINT_FLAGS = @GCC_LINT_FLAGS@
 GNULIB_ATOLL = @GNULIB_ATOLL@
 GNULIB_CALLOC_POSIX = @GNULIB_CALLOC_POSIX@
 GNULIB_CANONICALIZE_FILE_NAME = @GNULIB_CANONICALIZE_FILE_NAME@
@@ -307,6 +311,8 @@ REPLACE_SETENV = @REPLACE_SETENV@
 REPLACE_STRTOD = @REPLACE_STRTOD@
 REPLACE_UNSETENV = @REPLACE_UNSETENV@
 REPLACE_WCTOMB = @REPLACE_WCTOMB@
+REPORT_BUGS_TEXI = @REPORT_BUGS_TEXI@
+REPORT_BUGS_TO = @REPORT_BUGS_TO@
 RL_MAJOR = @RL_MAJOR@
 RL_MINOR = @RL_MINOR@
 RL_VERSION = @RL_VERSION@
@@ -336,6 +342,7 @@ TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 TERMCAP_LIB = @TERMCAP_LIB@
 TEX_BINARY = @TEX_BINARY@
 VERSION = @VERSION@
+WARN_CFLAGS = @WARN_CFLAGS@
 WCWIDTH_OBJ = @WCWIDTH_OBJ@
 XMALLOC_ZERO_CFLAGS = @XMALLOC_ZERO_CFLAGS@
 XORG_MALLOC_DEBUG_ENV = @XORG_MALLOC_DEBUG_ENV@

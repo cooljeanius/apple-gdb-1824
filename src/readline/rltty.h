@@ -80,3 +80,5 @@ typedef struct _rl_tty_chars {
 } _RL_TTY_CHARS;
 
 #endif /* _RLTTY_H_ */
+
+/* EOF */

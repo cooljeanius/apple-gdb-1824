@@ -79,8 +79,7 @@ static void rl_history_search_reinit PARAMS((void));
    current line.  This doesn't do anything with rl_point; the caller
    must set it. */
 static void
-make_history_line_current (entry)
-     HIST_ENTRY *entry;
+make_history_line_current(HIST_ENTRY *entry)
 {
   rl_replace_line (entry->line, 0);
   rl_undo_list = (UNDO_LIST *)entry->data;
@@ -96,9 +95,7 @@ make_history_line_current (entry)
    for STRING.  DIR < 0 means to search backwards through the history list,
    DIR >= 0 means to search forward. */
 static int
-noninc_search_from_pos (string, pos, dir)
-     char *string;
-     int pos, dir;
+noninc_search_from_pos(char *string, int pos, int dir)
 {
   int ret, old;
 
@@ -127,9 +124,7 @@ noninc_search_from_pos (string, pos, dir)
    search is backwards through previous entries, else through subsequent
    entries. */
 static void
-noninc_dosearch (string, dir)
-     char *string;
-     int dir;
+noninc_dosearch(char *string, int dir)
 {
   int oldpos, pos;
   HIST_ENTRY *entry;
@@ -293,8 +288,7 @@ noninc_search(int dir, int pchar)
 /* Search forward through the history list for a string.  If the vi-mode
    code calls this, KEY will be `?'. */
 int
-rl_noninc_forward_search (count, key)
-     int count, key;
+rl_noninc_forward_search(int count, int key)
 {
   noninc_search (1, (key == '?') ? '?' : 0);
   return 0;
@@ -303,8 +297,7 @@ rl_noninc_forward_search (count, key)
 /* Reverse search the history list for a string.  If the vi-mode code
    calls this, KEY will be `/'. */
 int
-rl_noninc_reverse_search (count, key)
-     int count, key;
+rl_noninc_reverse_search(int count, int key)
 {
   noninc_search (-1, (key == '/') ? '/' : 0);
   return 0;
@@ -313,8 +306,7 @@ rl_noninc_reverse_search (count, key)
 /* Search forward through the history list for the last string searched
    for.  If there is no saved search string, abort. */
 int
-rl_noninc_forward_search_again (count, key)
-     int count, key;
+rl_noninc_forward_search_again(int count, int key)
 {
   if (!noninc_search_string)
     {
@@ -328,8 +320,7 @@ rl_noninc_forward_search_again (count, key)
 /* Reverse search in the history list for the last string searched
    for.  If there is no saved search string, abort. */
 int
-rl_noninc_reverse_search_again (count, key)
-     int count, key;
+rl_noninc_reverse_search_again(int count, int key)
 {
   if (!noninc_search_string)
     {
@@ -341,8 +332,7 @@ rl_noninc_reverse_search_again (count, key)
 }
 
 static int
-rl_history_search_internal (count, dir)
-     int count, dir;
+rl_history_search_internal(int count, int dir)
 {
   HIST_ENTRY *temp;
   int ret, oldpos;
@@ -431,8 +421,7 @@ rl_history_search_reinit(void)
    from the start of the line to rl_point.  This is a non-incremental
    search. */
 int
-rl_history_search_forward (count, ignore)
-     int count, ignore;
+rl_history_search_forward(int count, int ignore)
 {
   if (count == 0)
     return (0);
@@ -450,8 +439,7 @@ rl_history_search_forward (count, ignore)
    from the start of the line to rl_point.  This is a non-incremental
    search. */
 int
-rl_history_search_backward (count, ignore)
-     int count, ignore;
+rl_history_search_backward(int count, int ignore)
 {
   if (count == 0)
     return (0);

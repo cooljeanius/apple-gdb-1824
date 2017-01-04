@@ -92,8 +92,8 @@ history_get_history_state(void)
   state = (HISTORY_STATE *)xmalloc(sizeof(HISTORY_STATE));
   state->entries = the_history;
   state->offset = history_offset;
-  state->length = history_length;
-  state->size = history_size;
+  state->length = (int)history_length;
+  state->size = (int)history_size;
   state->flags = 0;
   if (history_stifled)
     state->flags |= HS_STIFLED;
@@ -118,7 +118,7 @@ history_set_history_state(HISTORY_STATE *state)
 void
 using_history(void)
 {
-  history_offset = history_length;
+  history_offset = (int)history_length;
 }
 
 /* Return the number of bytes that the primary history entries are using.
@@ -129,7 +129,7 @@ history_total_bytes(void)
   register int i, result;
 
   for (i = result = 0; the_history && the_history[i]; i++)
-    result += strlen(the_history[i]->line);
+    result += (int)strlen(the_history[i]->line);
 
   return (result);
 }
@@ -147,7 +147,7 @@ where_history(void)
 int
 history_set_pos(int pos)
 {
-  if ((pos > history_length) || (pos < 0) || !the_history)
+  if ((pos > (int)history_length) || (pos < 0) || !the_history)
     return (0);
   history_offset = pos;
   return (1);
@@ -167,9 +167,9 @@ history_list(void)
 HIST_ENTRY *
 current_history(void)
 {
-  return ((history_offset == history_length) || the_history == 0)
-		? (HIST_ENTRY *)NULL
-		: the_history[history_offset];
+  return (((history_offset == (int)history_length) || (the_history == 0))
+	  ? (HIST_ENTRY *)NULL
+	  : the_history[history_offset]);
 }
 
 /* Back up history_offset to the previous history entry, and return
@@ -187,7 +187,8 @@ previous_history(void)
 HIST_ENTRY *
 next_history(void)
 {
-  return (history_offset == history_length) ? (HIST_ENTRY *)NULL : the_history[++history_offset];
+  return ((history_offset == (int)history_length)
+	  ? (HIST_ENTRY *)NULL : the_history[++history_offset]);
 }
 
 /* Return the history entry which is logically at OFFSET in the history array.
@@ -197,10 +198,11 @@ history_get(int offset)
 {
   int local_index;
 
-  local_index = offset - history_base;
-  return (local_index >= history_length || local_index < 0 || !the_history)
-		? (HIST_ENTRY *)NULL
-		: the_history[local_index];
+  local_index = (offset - history_base);
+  return (((local_index >= (int)history_length) || (local_index < 0)
+	   || !the_history)
+	  ? (HIST_ENTRY *)NULL
+	  : the_history[local_index]);
 }
 
 /* Place STRING at the end of the history list.  The data field
@@ -210,9 +212,9 @@ add_history(const char *string)
 {
   HIST_ENTRY *temp;
 
-  if (history_stifled && (history_length == history_max_entries))
+  if (history_stifled && ((int)history_length == history_max_entries))
     {
-      register int i;
+      register size_t i;
 
       /* If the history is stifled, and history_length is zero,
 	 and it equals history_max_entries, we don't save items. */
@@ -222,13 +224,13 @@ add_history(const char *string)
       /* If there is something in the slot, then remove it. */
       if (the_history[0])
 	{
-	  free (the_history[0]->line);
-	  free (the_history[0]);
+	  free(the_history[0]->line);
+	  free(the_history[0]);
 	}
 
       /* Copy the rest of the entries, moving down one slot. */
-      for (i = 0; i < history_length; i++)
-	the_history[i] = the_history[i + 1];
+      for (i = 0UL; i < history_length; i++)
+	the_history[i] = the_history[i + 1UL];
 
       history_base++;
     }
@@ -268,7 +270,7 @@ replace_history_entry(int which, const char *line, histdata_t data)
 {
   HIST_ENTRY *temp, *old_value;
 
-  if (which >= history_length)
+  if (which >= (int)history_length)
     return ((HIST_ENTRY *)NULL);
 
   temp = (HIST_ENTRY *)xmalloc(sizeof(HIST_ENTRY));
@@ -288,9 +290,9 @@ HIST_ENTRY *
 remove_history(int which)
 {
   HIST_ENTRY *return_value;
-  register int i;
+  register size_t i;
 
-  if ((which >= history_length) || !history_length)
+  if ((which >= (int)history_length) || !history_length)
     return_value = (HIST_ENTRY *)NULL;
   else
     {
@@ -314,17 +316,17 @@ stifle_history(int max)
   if (max < 0)
     max = 0;
 
-  if (history_length > max)
+  if ((int)history_length > max)
     {
       /* This loses because we cannot free the data. */
-      for (i = 0, j = history_length - max; i < j; i++)
+      for (i = 0, j = ((int)history_length - max); i < j; i++)
 	{
 	  free (the_history[i]->line);
 	  free (the_history[i]);
 	}
 
       history_base = i;
-      for (j = 0, i = history_length - max; j < max; i++, j++)
+      for (j = 0, i = ((int)history_length - max); j < max; i++, j++)
 	the_history[j] = the_history[i];
       the_history[j] = (HIST_ENTRY *)NULL;
       history_length = j;
@@ -358,15 +360,18 @@ history_is_stifled(void)
 void
 clear_history(void)
 {
-  register int i;
+  register size_t i;
 
   /* This loses because we cannot free the data. */
-  for (i = 0; i < history_length; i++)
+  for (i = 0UL; i < history_length; i++)
     {
-      free (the_history[i]->line);
-      free (the_history[i]);
+      free(the_history[i]->line);
+      free(the_history[i]);
       the_history[i] = (HIST_ENTRY *)NULL;
     }
 
-  history_offset = history_length = 0;
+  history_length = 0UL;
+  history_offset = (int)history_length;
 }
+
+/* EOF */

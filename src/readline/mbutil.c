@@ -110,7 +110,7 @@ _rl_find_next_mbchar_internal(char *string, int seed, int count,
       else
 	{
 	  /* valid bytes */
-	  point += tmp;
+	  point += (int)tmp;
 	  if (find_non_zero)
 	    {
 	      if (wcwidth (wc) == 0)
@@ -128,7 +128,7 @@ _rl_find_next_mbchar_internal(char *string, int seed, int count,
       tmp = mbrtowc (&wc, string + point, strlen (string + point), &ps);
       while (wcwidth (wc) == 0)
 	{
-	  point += tmp;
+	  point += (int)tmp;
 	  tmp = mbrtowc (&wc, string + point, strlen (string + point), &ps);
 	  if (tmp == (size_t)(0) || tmp == (size_t)(-1) || tmp == (size_t)(-2))
 	    break;
@@ -180,7 +180,7 @@ _rl_find_prev_mbchar_internal(char *string, int seed, int find_non_zero)
 	    prev = point;
 	}
 
-      point += tmp;
+      point += (int)tmp;
     }
 
   return prev;
@@ -274,7 +274,7 @@ _rl_adjust_point(char *string, int point, mbstate_t *ps)
       else if (tmp == 0)
 	pos++;
       else
-	pos += tmp;
+	pos += (int)tmp;
     }
 
   return (pos - point);

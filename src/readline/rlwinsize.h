@@ -55,3 +55,4 @@
 
 #endif /* _RL_WINSIZE_H */
 
+/* EOF */

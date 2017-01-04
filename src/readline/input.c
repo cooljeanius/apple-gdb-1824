@@ -195,7 +195,7 @@ rl_gather_tyi(void)
       tem = fcntl(tty, F_GETFL, 0);
 
       fcntl(tty, F_SETFL, (tem | O_NDELAY));
-      chars_avail = read(tty, &input, 1);
+      chars_avail = read(tty, &input, (size_t)1UL);
 
       fcntl(tty, F_SETFL, tem);
       if (chars_avail == -1 && errno == EAGAIN)
