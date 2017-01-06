@@ -1,3 +1,75 @@
+2017-01-05  cooljeanius  <egall@gwmail.gwu.edu>
+
+    electric-fence and intl tweaks
+
+    Change-Id: I9e30dbfacc4abef8455267e0eaf75c8e48dece04
+
+2017-01-04  cooljeanius  <egall@gwmail.gwu.edu>
+
+    more readline subdir warnings
+
+    Change-Id: I23f26870d148d2dc100b225e0ed84c080b0ecc89
+
+2017-01-04  cooljeanius  <egall@gwmail.gwu.edu>
+
+    readline subdir warnings
+
+    Change-Id: I29e20ce94105b2b0a97089dfa1a4bc9ad67d0024
+
+2017-01-04  cooljeanius  <egall@gwmail.gwu.edu>
+
+    I need a partner for pair programming
+
+    Change-Id: I001eddb0156400b648440f0eeda82f9ad8515a64
+
+2016-12-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+    help me
+
+    Change-Id: I33071903de390d6071e604fa92217e81cd757bd4
+
+2016-12-17  cooljeanius  <egall@gwmail.gwu.edu>
+
+    files that I usually forget to compile
+
+    Change-Id: I9ecc3784e291207808aae94d69cdc6d930cdf478
+
+2016-12-08  cooljeanius  <egall@gwmail.gwu.edu>
+
+    gdbtk now links as C++, and as C with -fno-common
+
+    Change-Id: Ia0cf1afd5c12fc8e7d63f13d000954e6f18a5631
+
+2016-11-28  cooljeanius  <egall@gwmail.gwu.edu>
+
+    more buflen tweaking for -Wformat-length
+
+    Change-Id: Ic77b1c34228d1858ab93aa5f51ec5e927412e8ad
+
+2016-11-28  cooljeanius  <egall@gwmail.gwu.edu>
+
+    mess around with buflens for -Wformat-length
+
+    Change-Id: I8c04edf7a59d0d75dbf1c233d7f634e8e049cd73
+
+2016-11-15  cooljeanius  <egall@gwmail.gwu.edu>
+
+    add bfd-stringcheck script
+
+    Change-Id: I6a9f905ff2c0cf66de5bf7aa46baf7bd176fbb80
+
+2016-11-02  cooljeanius  <egall@gwmail.gwu.edu>
+
+    Wednesday, November 2nd, 2016
+
+    Change-Id: I28f0fb87eea6850a35d41c172206046b7868afaf
+
+2016-10-06  cooljeanius  <egall@gwmail.gwu.edu>
+
+    Nothing much. idk. Please send help.
+
+    Change-Id: Ic005c757f6c50d83ceb893ab5e62f42b49c5d9e1
+
 2016-09-26  cooljeanius  <egall@gwmail.gwu.edu>
 
     distclean harder; should have noticed before prev. commit
