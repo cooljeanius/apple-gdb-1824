@@ -76,12 +76,7 @@ XCFLAGS = -DXCOMPILING @MAINT@ $(CFLAGS) # $(XC_ARCHFLAGS)
 LDFLAGS = @LDFLAGS@
 
 AM_CPPFLAGS = -I. -I$(srcdir)
-AM_ANSIFICATION_FLAGS = -Wstrict-prototypes -Wmissing-prototypes -Wconversion -Wold-style-definition -Wshadow -Wundef -Wextra -Wno-unused @MAINT@ -ansi -pedantic
-## others to add with newer versions of gcc:
-## * -Wtraditional-conversion
-## * -Wold-style-declaration
-## * -Wmissing-parameter-type
-## (should really check which warning flags are supported when configuring)
+AM_ANSIFICATION_FLAGS = -Wstrict-prototypes -Wmissing-prototypes -Wconversion -Wold-style-definition -Wshadow -Wundef -Wextra -Wno-unused @MAINT@ -ansi -pedantic @EXTRA_ANSIFICATION_FLAGS@
 AM_COMPILE_DEBUGFLAGS = -ggdb @MAINT@ -save-temps -fverbose-asm
 AM_WARNFLAGS = -Wall @MAINT@ $(AM_ANSIFICATION_FLAGS)
 AM_DEBUG_CFLAGS = $(AM_WARNFLAGS) @MAINT@ $(AM_COMPILE_DEBUGFLAGS)

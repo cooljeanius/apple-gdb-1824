@@ -122,7 +122,7 @@ DEFS =		@DEFS@
 INCDIR = 	$(srcdir)/../include
 
 RUN_CLANG_ANALYZER = $(CLANG_ANALYZER) $(DEFS) $(CPPFLAGS) $(CFLAGS) \
-	--analyze
+	-I. -I$(INCDIR) --analyze
 
 # The current default is to build a single object module with all the
 # electric-fence functions. To build a more traditional library, flip this

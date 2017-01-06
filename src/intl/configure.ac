@@ -142,6 +142,13 @@ AC_TYPE_SIZE_T
 AC_TYPE_UINTMAX_T
 AC_CHECK_TYPES([iconv_t])dnl
 
+# Checks for compiler flags.
+AC_MSG_CHECKING([compiler flags])
+AC_MSG_RESULT([ ])
+ACX_PROG_CC_WARNING_OPTS([-Wtraditional-conversion -Wnested-externs \
+  -Wmissing-parameter-type -Wold-style-declaration],
+                         [EXTRA_ANSIFICATION_FLAGS])dnl
+
 # Checks for library functions.
 AM_GNU_GETTEXT([external])dnl
 AM_GNU_GETTEXT_VERSION([0.19.4])dnl
