@@ -27,7 +27,7 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with libiberty; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+not, write to the Free Software Foundation, Inc., 51 Franklin St., 5th Floor,
 Boston, MA 02110-1301, USA.  */
 
 /* This file exports two functions; cplus_mangle_opname and cplus_demangle.
@@ -102,6 +102,9 @@ static char cplus_markers[] = { CPLUS_MARKER, '.', '$', '\0' };
 static char char_str[2] = { '\000', '\000' };
 
 #if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3))
+# ifdef sprintf
+#  undef sprintf
+# endif /* sprintf */
 # pragma GCC poison sprintf
 #endif /* gcc 3+ */
 

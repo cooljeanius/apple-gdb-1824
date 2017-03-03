@@ -2830,7 +2830,7 @@
 		618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Tcl.xcodeproj; path = "/var/root/apple-gdb-1824/src/tcl/macosx/Tcl.xcodeproj"; sourceTree = "<absolute>"; };
 		619631631C55A0B4001EA510 /* libmmalloc.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libmmalloc.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		619BECD61CF5F4C400FFE19D /* bfin-dis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "bfin-dis.c"; path = "/var/root/apple-gdb-1824/src/opcodes/bfin-dis.c"; sourceTree = "<absolute>"; };
-		619D55E21C6A56D900F07C54 /* copying.awk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = copying.awk; path = "/var/root/apple-gdb-1824/src/gdb/copying.awk"; sourceTree = "<absolute>"; };
+		619D55E21C6A56D900F07C54 /* copying.awk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = copying.awk; sourceTree = "<group>"; };
 		619D56831C6A5E4A00F07C54 /* dummy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dummy.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/dummy.c"; sourceTree = "<absolute>"; };
 		619D56851C6A5E4A00F07C54 /* link-warning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "link-warning.h"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/extra/link-warning.h"; sourceTree = "<absolute>"; };
 		619D56971C6A5E4A00F07C54 /* gnulib-tool */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "gnulib-tool"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/gnulib-tool"; sourceTree = "<absolute>"; };
@@ -3080,7 +3080,7 @@
 		619D588A1C6A5E4C00F07C54 /* wchar.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wchar.in.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/wchar.in.h"; sourceTree = "<absolute>"; };
 		61AA20741CD3F3F00045E89A /* m68hc11-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "m68hc11-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/m68hc11-tdep.h"; sourceTree = "<absolute>"; };
 		61AA20BF1CD647B50045E89A /* tm-mach3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-mach3.h"; sourceTree = "<group>"; };
-		61AA20C01CD6CC6B0045E89A /* remote-mips.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "remote-mips.h"; path = "/var/root/apple-gdb-1824/src/gdb/remote-mips.h"; sourceTree = "<absolute>"; };
+		61AA20C01CD6CC6B0045E89A /* remote-mips.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "remote-mips.h"; sourceTree = "<group>"; };
 		61AA22501CD81C2A0045E89A /* alloca_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = alloca_old.c; sourceTree = "<group>"; };
 		61AA22511CD81C2A0045E89A /* altos-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "altos-xdep_old.c"; sourceTree = "<group>"; };
 		61AA22521CD81C2A0045E89A /* am29k-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "am29k-opcode_old.h"; sourceTree = "<group>"; };
@@ -3156,7 +3156,7 @@
 		61AA229E1CD81C2A0045E89A /* umax-xdep_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "umax-xdep_old.c"; sourceTree = "<group>"; };
 		61AA229F1CD81C2A0045E89A /* vax-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "vax-opcode_old.h"; sourceTree = "<group>"; };
 		61AA22A01CD81C2A0045E89A /* vax-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "vax-pinsn_old.c"; sourceTree = "<group>"; };
-		61B459BC1E1ADD140057F612 /* gdbtext */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = gdbtext; path = "/var/root/apple-gdb-1824/src/gdb/po/gdbtext"; sourceTree = "<absolute>"; };
+		61B459BC1E1ADD140057F612 /* gdbtext */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = gdbtext; sourceTree = "<group>"; };
 		61D08A9D1CB7171B00998571 /* cpu-z80.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "cpu-z80.c"; path = "/var/root/apple-gdb-1824/src/bfd/cpu-z80.c"; sourceTree = "<absolute>"; };
 		61D22058192D60D100FA979E /* libbfd-shared.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libbfd-shared.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		61D8186E192FE3AB00E440C0 /* chew */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = chew; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3286,7 +3286,7 @@
 		61F330811CC7524300C05007 /* h8300-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "h8300-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/h8300-tdep.h"; sourceTree = "<absolute>"; };
 		61F331671CCDDE9D00C05007 /* cris-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "cris-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/cris-tdep.h"; sourceTree = "<absolute>"; };
 		61F331CB1CCF226400C05007 /* fr30-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "fr30-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/fr30-tdep.h"; sourceTree = "<absolute>"; };
-		61F333921CD3B44100C05007 /* remote-m32r-sdi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "remote-m32r-sdi.h"; path = "/var/root/apple-gdb-1824/src/gdb/remote-m32r-sdi.h"; sourceTree = "<absolute>"; };
+		61F333921CD3B44100C05007 /* remote-m32r-sdi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "remote-m32r-sdi.h"; sourceTree = "<group>"; };
 		A50DD7D41B30D2AC00F50318 /* AppleMakefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = AppleMakefile; sourceTree = "<group>"; };
 		A50DD7DF1B30D2AC00F50318 /* Dbg.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; path = Dbg.c; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; };
 		A50DD7E01B30D2AC00F50318 /* Dbg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dbg.h; sourceTree = "<group>"; };
@@ -5101,7 +5101,7 @@
 		A589D7881A31386400E717B9 /* gdb_private_interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gdb_private_interfaces.h; sourceTree = "<group>"; tabWidth = 8; };
 		A589D7891A31386400E717B9 /* gdb_set.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gdb_set.c; sourceTree = "<group>"; };
 		A589D78A1A31386400E717B9 /* gdb_special_events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gdb_special_events.c; sourceTree = "<group>"; };
-		A589D78B1A31386400E717B9 /* gdb_testing.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.interfacer; path = gdb_testing.i; sourceTree = "<group>"; tabWidth = 8; };
+		A589D78B1A31386400E717B9 /* gdb_testing.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; path = gdb_testing.i; sourceTree = "<group>"; tabWidth = 8; };
 		A589D78C1A31386400E717B9 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		A589D78F1A31386400E717B9 /* MacsBug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacsBug.h; sourceTree = "<group>"; };
 		A589D7901A31386400E717B9 /* MacsBug_cmdline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacsBug_cmdline.c; sourceTree = "<group>"; tabWidth = 8; };
@@ -5110,7 +5110,7 @@
 		A589D7931A31386400E717B9 /* MacsBug_plugins.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacsBug_plugins.c; sourceTree = "<group>"; tabWidth = 8; };
 		A589D7941A31386400E717B9 /* MacsBug_screen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacsBug_screen.c; sourceTree = "<group>"; tabWidth = 8; };
 		A589D7951A31386400E717B9 /* MacsBug_set.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacsBug_set.c; sourceTree = "<group>"; tabWidth = 8; };
-		A589D7961A31386400E717B9 /* MacsBug_testing.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.interfacer; path = MacsBug_testing.i; sourceTree = "<group>"; };
+		A589D7961A31386400E717B9 /* MacsBug_testing.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; path = MacsBug_testing.i; sourceTree = "<group>"; };
 		A589D7971A31386400E717B9 /* MacsBug_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacsBug_utils.c; sourceTree = "<group>"; tabWidth = 8; };
 		A589D7981A31386400E717B9 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		A589D7991A31386400E717B9 /* README.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = README.html; sourceTree = "<group>"; };
@@ -9641,9 +9641,8 @@
 				619D58891C6A5E4C00F07C54 /* update-gnulib.sh */,
 				619D588A1C6A5E4C00F07C54 /* wchar.in.h */,
 			);
-			name = gnulib;
-			path = "/var/root/apple-gdb-1824/src/gdb/gnulib";
-			sourceTree = "<absolute>";
+			path = gnulib;
+			sourceTree = "<group>";
 		};
 		619D56841C6A5E4A00F07C54 /* extra */ = {
 			isa = PBXGroup;
@@ -10011,9 +10010,8 @@
 			children = (
 				61B459BC1E1ADD140057F612 /* gdbtext */,
 			);
-			name = po;
-			path = "/var/root/apple-gdb-1824/src/gdb/po";
-			sourceTree = "<absolute>";
+			path = po;
+			sourceTree = "<group>";
 		};
 		61D22059192D60D100FA979E /* Products */ = {
 			isa = PBXGroup;
@@ -10134,9 +10132,8 @@
 				61F32DC71CC3730F00C05007 /* winpdo-sup.c */,
 				61F32DC81CC3730F00C05007 /* winpdo-sup.h */,
 			);
-			name = "gdb-next";
-			path = "/var/root/apple-gdb-1824/src/gdb-next";
-			sourceTree = "<absolute>";
+			path = "gdb-next";
+			sourceTree = "<group>";
 		};
 		61F32D531CC3730F00C05007 /* display-support */ = {
 			isa = PBXGroup;
@@ -13996,6 +13993,7 @@
 			isa = PBXProject;
 			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "gdb" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,

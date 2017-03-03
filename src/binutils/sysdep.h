@@ -232,6 +232,9 @@ extern int vsnprintf(char *, size_t, const char *, va_list);
 /* poison some unwanted functions: */
 #if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3)) && \
     !defined(NO_POISON) && !defined(FLEX_SCANNER)
+# ifdef vsprintf
+#  undef vsprintf
+# endif /* vsprintf */
 /* libiberty provides replacements: */
 # pragma GCC poison strdup strndup memdup strerror vsprintf atexit exit
 # if defined(HAVE_STRLCPY) && defined(PREFER_BSDISMS)
