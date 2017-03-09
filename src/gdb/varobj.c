@@ -1654,10 +1654,11 @@ varobj_update (struct varobj **varp, struct varobj_changelist **changelist)
 
   if (varobjdebug)
     {
+      /* -Wduplicated-branches may actually have been right here, so changed: */
       if (newval != NULL)
         fprintf_unfiltered(gdb_stdlog,
-                           "Updating variable: %s (%s) got new value.\n",
-                           (*varp)->name, (*varp)->obj_name);
+                           "Updating variable: %s (%s) got new value %p.\n",
+                           (*varp)->name, (*varp)->obj_name, newval);
       else
         fprintf_unfiltered(gdb_stdlog,
                            "Updating variable: %s (%s) got new value.\n",
@@ -3211,7 +3212,7 @@ c_make_name_of_child(struct varobj *parent, int index)
 
   type = get_type(parent);
   target = get_target_type(type);
-  
+
   gdb_assert(type != NULL);
   gdb_assert(TYPE_MAIN_TYPE(type) != NULL);
   gdb_assert(target != (struct type *)NULL);
@@ -3326,7 +3327,7 @@ c_path_expr_of_child(struct varobj *parent, int index)
       path_expr = (char *)xmalloc(len);
       snprintf(path_expr, len, "????");
       break;
-	
+
     default:
       /* This should not happen, either */
       len = 6UL;
@@ -3584,7 +3585,7 @@ varobj_get_type_index_from_fake_child(struct varobj *parent, int index)
     }
 
   gdb_assert(type != NULL);
-  
+
   if ((TYPE_CODE(type) != TYPE_CODE_STRUCT)
       && (TYPE_CODE(type) != TYPE_CODE_UNION))
     return index;
@@ -3866,16 +3867,16 @@ static int ATTRIBUTE_NONNULL(1)
 c_variable_editable(struct varobj *var)
 {
   struct type *vartype;
-  
+
 #ifndef ATTRIBUTE_NONNULL
   gdb_assert(var != NULL);
 #endif /* !ATTRIBUTE_NONNULL */
-  
+
   vartype = get_type(var);
-  
+
   gdb_assert(vartype != NULL);
   gdb_assert(TYPE_MAIN_TYPE(vartype) != NULL);
-  
+
   switch (TYPE_CODE(vartype))
     {
     case TYPE_CODE_STRUCT:
@@ -3897,16 +3898,16 @@ static char *ATTRIBUTE_NONNULL(1)
 c_value_of_variable(struct varobj *var)
 {
   struct type *vartype;
-  
+
 #ifndef ATTRIBUTE_NONNULL
   gdb_assert(var != NULL);
 #endif /* !ATTRIBUTE_NONNULL */
-  
+
   vartype = get_type(var);
-  
+
   gdb_assert(vartype != NULL);
   gdb_assert(TYPE_MAIN_TYPE(vartype) != NULL);
-  
+
   /* BOGUS: if val_print sees a struct/class, it will print out its
      children instead of "{...}" */
 
@@ -4643,7 +4644,7 @@ cplus_variable_editable(struct varobj *var)
     return 0;
 
   gdb_assert(var != (struct varobj *)NULL);
-  
+
   return c_variable_editable(var);
 }
 
@@ -4681,7 +4682,7 @@ java_make_name_of_child(struct varobj *parent, int index)
   p = (char *)name;
 
   gdb_assert(p != NULL);
-  
+
   while (*p != '\000')
     {
       if (*p == '.')

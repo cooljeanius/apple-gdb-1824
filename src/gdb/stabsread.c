@@ -381,7 +381,7 @@ dbx_fixup_type(int typenums[2], struct type *new_type, struct objfile *objfile)
   struct type **type_slot;
 
   type_slot = dbx_lookup_type(typenums, objfile);
-  
+
   gdb_assert(type_slot != NULL);
 
   if (*type_slot)
@@ -1802,11 +1802,12 @@ again:
               {
                 struct symbol *sym = ppt->symbol[i];
 
-                if (SYMBOL_CLASS (sym) == LOC_TYPEDEF
-                    && SYMBOL_DOMAIN (sym) == STRUCT_DOMAIN
-                    && SYMBOL_TYPE (sym) == this_slot_type
-                    && (TYPE_CODE (SYMBOL_TYPE (sym)) == code)
-                    && strcmp (DEPRECATED_SYMBOL_NAME (sym), type_name) == 0)
+                if ((SYMBOL_CLASS(sym) == LOC_TYPEDEF)
+                    && (SYMBOL_DOMAIN(sym) == STRUCT_DOMAIN)
+                    && (SYMBOL_TYPE(sym) == this_slot_type)
+		    && (sym != NULL) && (SYMBOL_TYPE(sym) != NULL)
+                    && (TYPE_CODE(SYMBOL_TYPE(sym)) == code)
+                    && (strcmp(DEPRECATED_SYMBOL_NAME(sym), type_name) == 0))
                   {
                     obstack_free (&objfile->objfile_obstack, type_name);
                     type = SYMBOL_TYPE (sym);
@@ -3383,6 +3384,7 @@ read_baseclasses(struct field_info *fip, const char **pp, struct type *type,
       FIELD_BITSIZE(newfield->field) = 0; /* this should be an unpacked field! */
 
       STABS_CONTINUE(pp, objfile);
+      gdb_assert(*pp != NULL);
       switch (**pp)
 	{
 	case '0':

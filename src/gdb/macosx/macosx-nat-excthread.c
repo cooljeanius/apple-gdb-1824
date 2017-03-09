@@ -267,7 +267,7 @@ static macosx_exception_thread_message *static_message = NULL;
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic ignored "-Wmissing-declarations"
-#  if !defined(__cplusplus) 
+#  if !defined(__cplusplus)
  #   pragma GCC diagnostic ignored "-Wmissing-prototypes"
 #  endif /* !__cplusplus */
 # endif /* gcc 4.6+ */
@@ -458,6 +458,7 @@ macosx_exception_thread_destroy(macosx_exception_thread_status *s)
 {
   unsigned char dummybuf[8] = { 0 };
   (void)dummybuf;
+  /* FIXME: -Wpointer-compare about THREAD_NULL? */
   if (s->exception_thread != THREAD_NULL)
     {
       /* Let us destroy the exception port here, so that we

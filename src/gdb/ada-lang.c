@@ -910,6 +910,7 @@ ada_decode(const char *encoded)
         len0 = i;
     }
 
+  gdb_assert(decoded != NULL);
   for (i = 0, j = 0; (i < len0) && !isalpha(encoded[i]); i += 1, j += 1)
     decoded[j] = encoded[i];
 
@@ -1388,7 +1389,7 @@ desc_bound_bitsize(struct type *type, int i, int which)
 {
   type = desc_base_type(type);
   gdb_assert(type != NULL);
-  
+
   if (TYPE_FIELD_BITSIZE(type, ((2 * i) + which - 2)) > 0)
     return TYPE_FIELD_BITSIZE(type, ((2 * i) + which - 2));
   else
@@ -1674,7 +1675,7 @@ decode_packed_array_type(struct type *type)
   long bits;
 
   type = desc_base_type(type);
-  
+
   if (type == (struct type *)NULL) {
     ; /* ??? */
   }
@@ -2250,7 +2251,7 @@ struct type *
 ada_array_element_type(struct type *type, int nindices)
 {
   type = desc_base_type(type);
-  
+
   gdb_assert(type != NULL);
 
   if (TYPE_CODE(type) == TYPE_CODE_STRUCT)
@@ -3466,7 +3467,7 @@ possible_user_operator_p (enum exp_opcode op, struct value *args[])
   struct type *type1 =
     (args[1] == NULL) ? NULL : ada_check_typedef (value_type (args[1]));
 
-  if (type0 == NULL)
+  if ((type0 == NULL) || (type1 == NULL))
     return 0;
 
   switch (op)
@@ -5811,7 +5812,7 @@ ada_lookup_struct_elt_type(struct type *type, const char *name, int refok,
         {
           int j;
           struct type *field_type = ada_check_typedef(TYPE_FIELD_TYPE(type, i));
-	  
+
 	  gdb_assert(field_type != NULL);
 
           for (j = (TYPE_NFIELDS(field_type) - 1); j >= 0; j -= 1)
@@ -6728,7 +6729,7 @@ to_static_fixed_type(struct type *type0)
   type0 = ada_check_typedef(type0);
 
   gdb_assert(type0 != NULL);
-  
+
   switch (TYPE_CODE(type0))
     {
     default:
@@ -6756,7 +6757,7 @@ static_unwrap_type(struct type *type)
   gdb_assert(checked_type != NULL);
   gdb_assert(TYPE_MAIN_TYPE(type) != NULL);
   gdb_assert(TYPE_MAIN_TYPE(checked_type) != NULL);
-  
+
   if (ada_is_aligner_type(type))
     {
       struct type *type1 = TYPE_FIELD_TYPE(checked_type, 0);
@@ -6993,7 +6994,7 @@ ada_is_aligner_type(struct type *type)
     return 0;
 
   gdb_assert(type != NULL);
-  
+
   return ((TYPE_CODE(type) == TYPE_CODE_STRUCT)
           && (TYPE_NFIELDS(type) == 1)
           && (strcmp(TYPE_FIELD_NAME(type, 0), "F") == 0));

@@ -1688,12 +1688,21 @@ macosx_locate_executable_by_dbg_shell_command(CFStringRef uuid)
       CFRelease(plist_data);
       xfree(data_buffer);
       xfree(shell_cmd_cstr);
+      /* Keep condition guarding release same as where we create it: */
+#if (MAC_OS_X_VERSION_MIN_REQUIRED >= 1060) || defined(HAVE_CFPROPERTYLISTCREATEWITHDATA)
+      if (plist)
+	CFRelease(plist);
+#endif /* 10.6+ || HAVE_CFPROPERTYLISTCREATEWITHDATA */
       return NULL;
     }
 
   /* Get the dictionary value under the UUID key: */
   per_arch_kv = ((CFDictionaryRef)
                  CFDictionaryGetValue((CFDictionaryRef)plist, uuid));
+  /* Keep condition guarding release same as where we create it: */
+#if (MAC_OS_X_VERSION_MIN_REQUIRED >= 1060) || defined(HAVE_CFPROPERTYLISTCREATEWITHDATA)
+  CFRelease(plist);
+#endif /* 10.6+ || HAVE_CFPROPERTYLISTCREATEWITHDATA */
   if ((per_arch_kv == NULL)
       || (CFGetTypeID(per_arch_kv) != CFDictionaryGetTypeID()))
     {
@@ -3086,7 +3095,7 @@ get_information_about_macho(const char *filename, CORE_ADDR mh_addr, bfd *abfd,
       filename = NULL;
       file_exists = 0;
     }
-  
+
   if (file_exists == 0) {
     ; /* ??? */
   }
@@ -3278,12 +3287,16 @@ add_all_kexts_command(const char *args ATTRIBUTE_UNUSED, int from_tty)
       dsym_path[0] = '\0';
       have_dsym_path = 0;
       if (dsym_url)
-        if (CFURLGetFileSystemRepresentation(dsym_url, 1, (UInt8*)dsym_path, PATH_MAX))
-          {
-            dsym_path[PATH_MAX - 1] = '\0';
-            if (file_exists_p(dsym_path))
-              have_dsym_path = 1;
-          }
+	{
+	  if (CFURLGetFileSystemRepresentation(dsym_url, 1, (UInt8 *)dsym_path,
+					       PATH_MAX))
+	    {
+	      dsym_path[PATH_MAX - 1] = '\0';
+	      if (file_exists_p(dsym_path))
+		have_dsym_path = 1;
+	    }
+	  CFRelease(dsym_url);
+	}
       CFRelease(kext_uuid_ref);
 
       /* At this point we may have the pathanme to the kext bundle executable

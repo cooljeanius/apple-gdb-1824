@@ -186,12 +186,15 @@ esac
 AM_CONDITIONAL([GMAKE],[test "x${MAKE_IS_GNU}" = "xyes"])dnl
 AC_PROG_MAKE_SET
 
-# Configure gnulib.  We can't use AC_CONFIG_SUBDIRS as that'd expect
-# to find the the source subdir to be configured directly under
-# gdbserver/.  We need to build gnulib under some other directory not
-# "gnulib", to avoid the problem of both GDB and GDBserver wanting to
-# build it in the same directory, when building in the source dir.
-ACX_CONFIGURE_DIR(["../gnulib"],["build-gnulib"])dnl
+if test "x${recurse_into_gnulib}" = "xyes"; then
+  # Configure gnulib.  We cannot use AC_CONFIG_SUBDIRS as that would expect
+  # to find the the source subdir to be configured directly under
+  # gdbserver/.  We need to build gnulib under some other directory not
+  # "gnulib", to avoid the problem of both GDB and GDBserver wanting to
+  # build it in the same directory, when building in the source dir.
+  ACX_CONFIGURE_DIR(["../gnulib"],["build-gnulib"])dnl
+  ##FIXME: broken
+fi
 
 # Check for a way of listing symbols:
 GDB_PATH_NM

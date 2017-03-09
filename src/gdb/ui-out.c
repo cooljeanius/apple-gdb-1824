@@ -1222,10 +1222,11 @@ append_header_to_list (struct ui_out *uiout,
     temphdr->colhdr = xstrdup (colhdr);
   else
     temphdr->colhdr = NULL;
+  /* -Wduplicated-branches may actually have been right here, so changed: */
   if (col_name != NULL)
-    temphdr->col_name = xstrdup (colhdr);
+    temphdr->col_name = xstrdup(col_name);
   else
-    temphdr->col_name = xstrdup (colhdr);
+    temphdr->col_name = xstrdup(colhdr);
   temphdr->next = NULL;
   if (uiout->table.header_first == NULL)
     {

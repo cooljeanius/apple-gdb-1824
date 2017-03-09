@@ -9,6 +9,12 @@ SHELL = @SHELL@
 srcdir = @srcdir@
 datarootdir = @datarootdir@
 
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+CFLAGS = @CFLAGS@ $(C_ARCHFLAGS)
+
 @SET_MAKE@
 
 all install install-binaries install-libraries install-minimal:

@@ -1774,7 +1774,7 @@ upgrade_type(int fd, struct type **tpp, int tq, union aux_ext *ax, int bigend,
       upper = AUX_GET_DNHIGH (bigend, ax);
       ax++;
       rf = AUX_GET_WIDTH (bigend, ax);	/* bit size of array element */
-	
+
       if (rf == 0) {
 	; /* ??? */
       }
@@ -4223,9 +4223,10 @@ psymtab_to_symtab_1 (struct partial_symtab *pst, char *filename)
 						GLOBAL_BLOCK);
       top_stack->blocktype = stFile;
 
-      ext_ptr = PST_PRIVATE (pst)->extern_tab;
-      for (i = PST_PRIVATE (pst)->extern_count; --i >= 0; ext_ptr++)
-	parse_external (ext_ptr, fh->fBigendian, pst->section_offsets, pst->objfile);
+      ext_ptr = PST_PRIVATE(pst)->extern_tab;
+      gdb_assert(fh != NULL);
+      for (i = PST_PRIVATE(pst)->extern_count; --i >= 0; ext_ptr++)
+	parse_external(ext_ptr, fh->fBigendian, pst->section_offsets, pst->objfile);
 
       /* If there are undefined symbols, tell the user.
          The alpha has an undefined symbol for every symbol that is

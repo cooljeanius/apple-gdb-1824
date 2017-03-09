@@ -4728,7 +4728,7 @@ process_full_comp_unit(struct dwarf2_per_cu_data *per_cu)
   struct cleanup *back_to;
   struct attribute *attr;
   CORE_ADDR baseaddr;
-  
+
   gdb_assert(abfd != NULL);
 
   baseaddr = objfile_text_section_offset(objfile);
@@ -4967,7 +4967,7 @@ read_file_scope(struct die_info *die, struct dwarf2_cu *cu)
   bfd *abfd = objfile->obfd;
   struct line_header *line_header = (struct line_header *)0;
   CORE_ADDR baseaddr;
-  
+
   gdb_assert(cu_header != NULL);
 
   baseaddr = objfile_text_section_offset(objfile);
@@ -9908,7 +9908,9 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 	fprintf_unfiltered(gdb_stdlog,
                       "dwarf2_record_line: record_line (%s:%i, 0x%s) for %s\n",
                            current_subfile->name, final_line,
-                           paddr_nz(final_addr), map->pst->filename);
+                           paddr_nz(final_addr),
+			   (((map != NULL) && (map->pst != NULL))
+			    ? map->pst->filename : "NULL"));
 
       record_line(current_subfile, final_line, final_addr, 0, NORMAL_LT_ENTRY);
       /* APPLE LOCAL begin subroutine inlining  */
@@ -12397,7 +12399,7 @@ dwarf_decode_macros(struct line_header *lh, unsigned int offset,
 {
   char *mac_ptr, *mac_end;
   struct macro_source_file *current_file = (struct macro_source_file *)0;
-  
+
   gdb_assert(dwarf2_per_objfile != NULL);
 
   if (dwarf2_per_objfile->macinfo_buffer == NULL)

@@ -16,6 +16,21 @@ TK_PATCH_LEVEL=".1"
 VERSION=${TK_VERSION}
 LOCALES="cs de el en en_gb es fr it nl ru"
 
+# architecture stuff:
+AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
+
 #------------------------------------------------------------------------
 # Handle the --prefix=... option
 #------------------------------------------------------------------------

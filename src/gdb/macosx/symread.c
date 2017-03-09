@@ -889,7 +889,7 @@ sym_read_contained_variables(struct objfile *objfile,
           if (cventry.entry.address.scstruct.sca_class ==
               BFD_SYM_STORAGE_CLASS_GLOBAL)
             {
-              localvec[nlocals] = lsym;
+              localvec[nlocals] = lsym; /* FIXME: -Wduplicated-branches */
             }
           else
             {
@@ -900,7 +900,7 @@ sym_read_contained_variables(struct objfile *objfile,
       if (cventry.entry.address.scstruct.sca_class ==
           BFD_SYM_STORAGE_CLASS_GLOBAL)
         {
-          nlocals++;
+          nlocals++; /* FIXME: -Wduplicated-branches */
         }
       else
         {
@@ -1149,7 +1149,7 @@ sym_symfile_read(struct objfile *objfile, int mainline)
 
   unsigned long i;
   CORE_ADDR text_section_offset = 0UL;
-  
+
   if (mainline == 0) {
     ; /* ??? */
   }
@@ -1188,7 +1188,7 @@ sym_symfile_read(struct objfile *objfile, int mainline)
       dict_add_symbol(BLOCK_DICT(gblock), funcvec[i]);
     }
 
-  bv = 
+  bv =
     ((struct blockvector *)
      obstack_alloc(&objfile->objfile_obstack,
 		   (sizeof(struct blockvector)
@@ -1287,7 +1287,7 @@ sym_symfile_read(struct objfile *objfile, int mainline)
                   curitem++;
                   linetable->nitems = curitem;
                 }
-	      
+
 	      if ((linetable == NULL) && (temp != NULL)) {
 		linetable = temp;
 	      }
@@ -1393,7 +1393,7 @@ sym_symfile_read(struct objfile *objfile, int mainline)
 		    {
 		      curitem++;
 		    }
-		  
+
 		  if (curitem >= linetable_maxentries)
 		    {
 		      sym_complaint();
@@ -1528,7 +1528,7 @@ sym_dump_command(const char *args, int from_tty)
 
   FILE *f = (FILE *)NULL;
   bfd *abfd = (bfd *)NULL;
-  
+
   if (from_tty == 0) {
     ; /* ??? */
   }

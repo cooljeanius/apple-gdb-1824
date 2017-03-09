@@ -850,7 +850,7 @@ hardwire_setstopbits(struct serial *scb, int num)
   if (!newbit)
     return 0;			/* sgtty does NOT support this */
   else
-    return 0;
+    return 0;			/* FIXME: -Wduplicated-branches */
 #endif /* HAVE_SGTTY */
 
   return set_tty_state(scb, &state);

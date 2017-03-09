@@ -1191,7 +1191,7 @@ enum gdb_osabi
   GDB_OSABI_QNXNTO = 26,
 
   GDB_OSABI_CYGWIN = 27,
-  
+
   GDB_OSABI_AIX = 28,
   GDB_OSABI_DICOS = 29,
   GDB_OSABI_SYMBIAN = 30,
@@ -1850,6 +1850,12 @@ extern struct cleanup *start_timer(int *timer_var, const char *timer_name,
 /* poison some unwanted functions: */
 #if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3)) && \
     !defined(NO_POISON) && !defined(FLEX_SCANNER)
+# ifdef sprintf
+#  undef sprintf
+# endif /* sprintf */
+# ifdef vsprintf
+#  undef vsprintf
+# endif /* vsprintf */
 /* gdbint.texinfo says to avoid these ones: */
 # pragma GCC poison malloc realloc calloc free strdup sprintf
 /* for similar reasons, such as libiberty also providing replacements: */

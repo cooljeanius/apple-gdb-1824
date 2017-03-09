@@ -573,7 +573,9 @@ cp_print_value (struct type *type, struct type *real_type,
 
       thisoffset = offset;
       thistype = real_type;
-      if (TYPE_HAS_VTABLE (type) && BASETYPE_VIA_VIRTUAL (type, i))
+      if (TYPE_HAS_VTABLE(type) && (type != NULL)
+	  && (TYPE_CPLUS_SPECIFIC_NONULL(type) != NULL)
+	  && BASETYPE_VIA_VIRTUAL(type, i))
 	{
 	  /* Assume HP/Taligent runtime convention */
 	  find_rt_vbase_offset (type, TYPE_BASECLASS (type, i),

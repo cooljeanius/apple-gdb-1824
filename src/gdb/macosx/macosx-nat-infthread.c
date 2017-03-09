@@ -23,6 +23,18 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(__cplusplus)
+# if !defined(__STDC_CONSTANT_MACROS)
+#  define __STDC_CONSTANT_MACROS 1
+# endif /* !__STDC_CONSTANT_MACROS */
+# if !defined(__STDC_FORMAT_MACROS)
+#  define __STDC_FORMAT_MACROS 1
+# endif /* !__STDC_FORMAT_MACROS */
+# if !defined(__STDC_LIMIT_MACROS)
+#  define __STDC_LIMIT_MACROS 1
+# endif /* !__STDC_LIMIT_MACROS */
+#endif /* __cplusplus */
+
 #include "defs.h"
 #include "inferior.h"
 #include "target.h"
@@ -800,6 +812,9 @@ print_thread_info(thread_t tid, int *gdb_thread_id)
     }
 
   printf_filtered("\tframe 0: ");
+  if (tp == NULL) {
+    error("tp is NULL");
+  }
   switch_to_thread(tp->ptid);
   print_stack_frame(get_selected_frame(NULL), 0, LOCATION);
   switch_to_thread(current_ptid);

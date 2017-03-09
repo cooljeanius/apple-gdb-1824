@@ -604,10 +604,11 @@ set_interpreter_cmd(const char *args, int from_tty, struct cmd_list_element *c)
       if (interp_ptr == current_interpreter)
 	return;
 
-      if (!interp_set (interp_ptr))
-	error ("\nCould not switch to interpreter \"%s\", %s%s\".\n",
-	       interp_ptr->name, "reverting to interpreter \"",
-	       current_interpreter->name);
+      if (!interp_set(interp_ptr))
+	error("\nCould not switch to interpreter \"%s\", %s%s\".\n",
+	      interp_ptr->name, "reverting to interpreter \"",
+	      ((current_interpreter != NULL)
+	       ? current_interpreter->name : "NULL"));
     }
   else
     {

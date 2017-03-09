@@ -10,7 +10,22 @@ AC_INIT([tk],[8.4.1],[http://tcl.sourceforge.net/])
 AC_CONFIG_SRCDIR([generic/tk.h])
 AC_CONFIG_HEADERS([config.h])
 
+# architecture stuff:
 AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
+
+# an automake bit:
 AM_MAINTAINER_MODE
 
 case "${host}" in

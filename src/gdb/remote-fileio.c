@@ -1308,6 +1308,8 @@ remote_fileio_func_system(char *buf)
       remote_fileio_ioerror();
       return;
     }
+
+  if (length <= 0) length = 1;
   /* Request commandline using 'm' packet: */
   cmdline = (char *)alloca(length);
   retlength = remote_read_bytes(ptrval, cmdline, length);

@@ -366,7 +366,7 @@ psymtab_to_symtab (struct partial_symtab *pst)
       struct cleanup *timer_cleanup =
 	start_timer(&timer, "psymtab-to-symtab",
 		    (pst->fullname ? pst->fullname : pst->filename));
-      
+
       gdb_assert(timer_cleanup != NULL);
 
       currently_reading_symtab++;
@@ -1050,7 +1050,7 @@ syms_from_objfile(struct objfile *objfile, struct section_addr_info *addrs,
 	}
     }
 #endif /* not DEPRECATED_IBM6000_TARGET */
-  
+
   gdb_assert(objfile != NULL);
 
   /* APPLE LOCAL If our load level is higher than container, call
@@ -5158,6 +5158,7 @@ list_overlays_command(const char *args, int from_tty)
 	bfd_vma lma, vma;
 	bfd_size_type size;
 
+	gdb_assert(osect != NULL);
 	vma = bfd_section_vma (objfile->obfd, osect->the_bfd_section);
 	lma = bfd_section_lma (objfile->obfd, osect->the_bfd_section);
 	size = bfd_get_section_size (osect->the_bfd_section);
@@ -5407,12 +5408,12 @@ read_target_long_array(CORE_ADDR memaddr, unsigned int *myaddr, int len)
 {
   char *buf;
   int i;
-  
+
   const size_t buflen = (len * TARGET_LONG_BYTES);
-  
+
   if (buflen > min(8192000UL, UINT_MAX))
     warning("array is very large; reading may be unsafe");
-  
+
   /* FIXME (alloca): Not safe if array is very large; is warning enough? */
   buf = (char *)alloca(buflen);
 
@@ -5968,7 +5969,7 @@ Show if GDB should use mmap() to read from external symbol files."), NULL,
  	       "Usage: reread-symbols\n\
  Re-load the symbols from all known object files.",
  	       &cmdlist);
-  
+
   if (c == NULL) {
     warning(_("possible issue adding command"));
   }
@@ -6016,14 +6017,14 @@ the matching UUID."),
 	      add_shared_symbol_files_command, _("\
 Load the symbols from shared objects in the dynamic linker's link map."),
 	      &cmdlist);
-  
+
   if (c == NULL) {
     warning(_("possible issue adding command"));
   }
-  
+
   c = add_alias_cmd("assf", "add-shared-symbol-files", class_files, 1,
 		    &cmdlist);
-  
+
   if (c == NULL) {
     warning(_("possible issue adding command"));
   }

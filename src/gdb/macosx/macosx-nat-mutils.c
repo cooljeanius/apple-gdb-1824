@@ -165,11 +165,11 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, gdb_byte *myaddr,
   CORE_ADDR pageaddr;
 
   kern_return_t kret;
-  
+
   if (pagesize == 0) {
     pagesize++;
   }
-  
+
   pageaddr = (memaddr - (memaddr % pagesize));
 
   CHECK_FATAL(((memaddr + len - 1) - ((memaddr + len - 1) % pagesize))
@@ -281,7 +281,7 @@ mach_xfer_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr,
   mach_msg_type_number_t memcopied;     /* for vm_read to use */
 
   kern_return_t kret;
-  
+
   if (pagesize == 0) {
     pagesize++;
   }
@@ -1538,7 +1538,7 @@ malloc_history_info_command(const char *arg, int from_tty)
       static int already_looked = 0;
 
       if (!already_looked)
-        logging_file_path_fn = 
+        logging_file_path_fn =
           __extension__ ((set_logging_file_path_ptr)
                          dlsym(RTLD_DEFAULT,
                                stack_logging_set_file_function));
@@ -1683,6 +1683,7 @@ build_path_to_element(struct type *type, CORE_ADDR offset, char **symbol_name)
   else if (TYPE_CODE(type) == TYPE_CODE_ARRAY)
     {
       /* FIXME: Did NOT do arrays yet: */
+      warning("Arrays are unhandled currently");
       return (int)offset;
     }
   else
@@ -2284,7 +2285,7 @@ gc_reference_tracing_command(const char *arg, int from_tty)
 	   paddr_nz (list_addr));
 
   list_addr = gc_print_references(list_addr, wordsize);
-  
+
   if (list_addr == INVALID_ADDRESS) {
     ; /* ??? */
   }

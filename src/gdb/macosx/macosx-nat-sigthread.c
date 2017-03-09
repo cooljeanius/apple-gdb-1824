@@ -110,6 +110,8 @@ macosx_signal_thread_create(macosx_signal_thread_status *s, int pid)
 void
 macosx_signal_thread_destroy(macosx_signal_thread_status *s)
 {
+  /* I think -Wpointer-compare is wrong here but I will need to preprocess
+   * to be sure: */
   if (s->signal_thread != THREAD_NULL)
     {
       gdb_thread_kill(s->signal_thread);

@@ -743,11 +743,15 @@ case ${host_os} in
   go32* | windows*)
     AC_MSG_WARN([gdbtk is NOT supported on ${host}; disabling])
     enable_gdbtk=no ;;
-  darwin*)
+  darwin9*)
     if test "x${enable_gdbtk}" = "xyes"; then
       AC_MSG_WARN([gdbtk support on darwin is tentative])
       echo "(but it is still okay to enable it though)"
     fi
+    ;;
+  darwin*)
+    AC_MSG_WARN([gdbtk is broken on ${host}; disabling])
+    enable_gdbtk=no
     ;;
 esac
 
@@ -3151,7 +3155,7 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wmultiple-inheritance -Wvirtual-inheritance -Wpmf-conversions \
 -Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++ \
 -Wsized-deallocation -Wplacement-new=2 -Wshadow-compatible-local \
--Wbuiltin-function-redefined -Wdeprecated -Waligned-new=all"
+-Wbuiltin-function-redefined -Waligned-new=all"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -3245,13 +3249,16 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
 -Wstring-plus-int -Wstring-conversion -Wbool-conversion \
 -Wconstant-logical-operand -Wunreachable-code-break -Wunused-comparison \
 -Wabsolute-value -Wtautological-constant-out-of-range-compare \
--Wunevaluated-expression -Wextra-semi -Wunsequenced"
+-Wunevaluated-expression -Wextra-semi -Wunsequenced -Wself-assign \
+-Wshift-sign-overflow -Wstatic-in-inline -Wparentheses-equality \
+-Wincompatible-pointer-types-discards-qualifiers -Winvalid-noreturn"
+  # possibly remove -Wmissing-variable-declarations
   if test "x${enable_build_with_cxx}" = "xyes"; then
     build_warnings="${build_warnings} -Wmismatched-tags \
 -Wmissing-exception-spec -Wpessimizing-move -Wredundant-move \
 -Wnon-literal-null-conversion -Wpredefined-identifier-outside-function \
 -Wvexing-parse -Wreturn-stack-address -Wshadow-field-in-constructor \
--Wunused-private-field -Wnon-pod-varargs"
+-Wunused-private-field -Wnon-pod-varargs -Wvla-extension"
   fi
   ## mig typechecks cause paramaters that would otherwise be unused to be
   ## used, triggering this:

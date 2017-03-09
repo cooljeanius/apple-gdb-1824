@@ -1173,7 +1173,7 @@ mfree(void *md ATTRIBUTE_UNUSED, void *ptr)
 #endif /* USE_MMALLOC */
 
 #if !defined(USE_MMALLOC) || !USE_MMALLOC
-void *
+void * ATTRIBUTE_CONST
 init_malloc(void *md)
 {
   return md;
