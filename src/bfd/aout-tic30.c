@@ -719,6 +719,11 @@ MY_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
   pad = (int)(align_power(vma, obj_bsssec (abfd)->alignment_power) - vma);
   obj_datasec(abfd)->size += pad;
   pos += obj_datasec(abfd)->size;
+
+  if (pos == 0) {
+    ; /* ??? */
+  }
+
   execp->a_data = obj_datasec(abfd)->size;
 
   /* BSS: */

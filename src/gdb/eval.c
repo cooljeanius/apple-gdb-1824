@@ -588,7 +588,6 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	goto nosideret;
       }
       return value_bitstring(&exp->elts[pc + 2].string, tem);
-      break; /* why break if we return?? */
     }
     case OP_ARRAY:
     {

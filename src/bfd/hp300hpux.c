@@ -601,6 +601,7 @@ MY(slurp_symbol_table)(bfd *abfd)
 	 sym_pointer < sym_end; sym_pointer++, cache_ptr++)
       {
 	unsigned int length;
+	BFD_ASSERT(cache_ptr != NULL);
 	cache_ptr->symbol.the_bfd = abfd;
 	cache_ptr->symbol.value = GET_SWORD (abfd, sym_pointer->e_value);
 	cache_ptr->desc = bfd_get_16 (abfd, sym_pointer->e_almod);

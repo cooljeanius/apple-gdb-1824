@@ -1281,12 +1281,14 @@ sh_elf64_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
       && bfd_is_und_section(symbol_in->section))
     return bfd_reloc_undefined;
 
-  if (bfd_is_com_section(symbol_in->section))
+  if ((symbol_in != NULL) && bfd_is_com_section(symbol_in->section))
     sym_value = 0UL;
-  else
+  else if (symbol_in != NULL)
     sym_value = (symbol_in->value
                  + symbol_in->section->output_section->vma
                  + symbol_in->section->output_offset);
+  else
+    sym_value = 0UL;
 
   switch (r_type)
     {

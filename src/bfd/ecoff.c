@@ -4249,7 +4249,11 @@ ecoff_reloc_link_order (bfd *output_bfd,
 	{ _RCONST, RELOC_SECTION_RCONST }
       };
 
-      name = bfd_get_section_name (output_bfd, section);
+      if (section != NULL) {
+	name = bfd_get_section_name(output_bfd, section);
+      } else {
+	name = NULL;
+      }
 
       for (i = 0; i < ARRAY_SIZE (section_symndx); i++)
 	if (streq (name, section_symndx[i].name))

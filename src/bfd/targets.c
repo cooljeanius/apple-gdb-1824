@@ -1674,15 +1674,15 @@ bfd_find_target (const char *target_name, bfd *abfd)
    tuples and triplets.  */
 static bfd_boolean
 _bfd_find_arch_match(const char *tname, const char **arch,
-                    const char **def_target_arch)
+		     const char **def_target_arch)
 {
   if (!arch)
     return FALSE;
 
   while (*arch != NULL)
     {
-      const char *in_a = strstr (*arch, tname);
-      char end_ch = (in_a ? in_a[strlen (tname)] : 0);
+      const char *in_a = strstr(*arch, tname);
+      char end_ch = (in_a ? in_a[strlen(tname)] : '\0');
 
       if (in_a && (in_a == *arch || in_a[-1] == ':')
           && end_ch == 0)

@@ -870,6 +870,7 @@ dummy_func_to_use_unused_top_c_funcs(void)
   float_handler(local_signo);
   /*NOTREACHED*/
   error(_("Reached end of noreturn function."));
+  gdb_unreachable();
 }
 
 /* The current saved history number from operate-and-get-next.
@@ -1316,7 +1317,7 @@ quit_force(const char *args, int from_tty)
   /* We want to handle any quit errors and exit regardless: */
   error_ret = catch_errors(quit_target, &qt,
 			   "Quitting: ", RETURN_MASK_ALL);
-  
+
   if (error_ret == 0) {
     ; /* ??? */
   }

@@ -843,6 +843,7 @@ m68hc11_elf_relax_section (bfd *abfd, asection *sec,
 	    continue;
 
           prev_insn_group = irel;
+	  BFD_ASSERT(isym != NULL);
           insn_group_value = isym->st_value;
           continue;
         }

@@ -576,7 +576,7 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
   int count = 1;
   enum address_class addrclass;
   TIR tir;
-  long svalue = sh->value;
+  long svalue = (long)sh->value;
   int bitsize;
 
   if (ext_sh == (char *)NULL)
@@ -917,7 +917,7 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 		  }
 		nfields++;
 		if ((long)tsym.value > max_value)
-		  max_value = tsym.value;
+		  max_value = (long)tsym.value;
 		break;
 
 	      case stBlock:
@@ -1026,7 +1026,7 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 				      "", "", name);
 
 	TYPE_CODE(t) = type_code;
-	TYPE_LENGTH_ASSIGN(t) = sh->value;
+	TYPE_LENGTH_ASSIGN(t) = (int)sh->value;
 	TYPE_NFIELDS(t) = (short)nfields;
 	TYPE_FIELDS(t) = f = ((struct field *)
 			      TYPE_ALLOC(t, (nfields * sizeof(struct field))));
@@ -1055,38 +1055,38 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 		SYMR tsym;
 		struct symbol *enum_sym;
 
-		(*swap_sym_in) (cur_bfd, ext_tsym, &tsym);
+		(*swap_sym_in)(cur_bfd, ext_tsym, &tsym);
 
 		if (tsym.st != stMember)
 		  break;
 
-		FIELD_BITPOS (*f) = tsym.value;
-		FIELD_TYPE (*f) = t;
-		FIELD_NAME (*f) = debug_info->ss + cur_fdr->issBase + tsym.iss;
-		FIELD_BITSIZE (*f) = 0;
-		FIELD_STATIC_KIND (*f) = 0;
+		FIELD_BITPOS(*f) = (int)tsym.value;
+		FIELD_TYPE(*f) = t;
+		FIELD_NAME(*f) = (debug_info->ss + cur_fdr->issBase + tsym.iss);
+		FIELD_BITSIZE(*f) = 0;
+		FIELD_STATIC_KIND(*f) = 0;
 
 		enum_sym = ((struct symbol *)
-			    obstack_alloc (&current_objfile->objfile_obstack,
-					   sizeof (struct symbol)));
-		memset (enum_sym, 0, sizeof (struct symbol));
-		DEPRECATED_SYMBOL_NAME (enum_sym) =
-		  obsavestring (f->name, strlen (f->name),
-				&current_objfile->objfile_obstack);
-		SYMBOL_CLASS (enum_sym) = LOC_CONST;
-		SYMBOL_TYPE (enum_sym) = t;
-		SYMBOL_DOMAIN (enum_sym) = VAR_DOMAIN;
-		SYMBOL_VALUE (enum_sym) = tsym.value;
-		if (SYMBOL_VALUE (enum_sym) < 0)
+			    obstack_alloc(&current_objfile->objfile_obstack,
+					  sizeof(struct symbol)));
+		memset(enum_sym, 0, sizeof(struct symbol));
+		DEPRECATED_SYMBOL_NAME(enum_sym) =
+		  obsavestring(f->name, strlen(f->name),
+			       &current_objfile->objfile_obstack);
+		SYMBOL_CLASS(enum_sym) = LOC_CONST;
+		SYMBOL_TYPE(enum_sym) = t;
+		SYMBOL_DOMAIN(enum_sym) = VAR_DOMAIN;
+		SYMBOL_VALUE(enum_sym) = (int)tsym.value;
+		if (SYMBOL_VALUE(enum_sym) < 0)
 		  unsigned_enum = 0;
-		add_symbol (enum_sym, top_stack->cur_block);
+		add_symbol(enum_sym, top_stack->cur_block);
 
-		/* Skip the stMembers that we've handled. */
+		/* Skip the stMembers that we have handled: */
 		count++;
 		f++;
 	      }
 	    if (unsigned_enum)
-	      TYPE_FLAGS (t) |= TYPE_FLAG_UNSIGNED;
+	      TYPE_FLAGS(t) |= TYPE_FLAG_UNSIGNED;
 	  }
 	/* make this the current type */
 	top_stack->cur_type = t;
@@ -1255,7 +1255,7 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
     case stMember:		/* member of struct or union */
       f = &TYPE_FIELDS(top_stack->cur_type)[top_stack->cur_field++];
       FIELD_NAME(*f) = name;
-      FIELD_BITPOS(*f) = sh->value;
+      FIELD_BITPOS(*f) = (int)sh->value;
       bitsize = 0;
       FIELD_TYPE(*f) = parse_type(cur_fd, ax, sh->index, &bitsize, bigend,
 				  name);
@@ -1487,7 +1487,7 @@ parse_type(int fd, union aux_ext *ax, unsigned int aux_index, int *bs,
 
   if (t->fBitfield)
     {
-      int width = AUX_GET_WIDTH (bigend, ax);
+      int width = (int)AUX_GET_WIDTH(bigend, ax);
       /* Inhibit core dumps if TIR is corrupted.  */
       if (bs == (int *) NULL)
 	{
@@ -1524,7 +1524,7 @@ parse_type(int fd, union aux_ext *ax, unsigned int aux_index, int *bs,
       ax++;
       if (rn->rfd == 0xfff)
 	{
-	  rf = AUX_GET_ISYM (bigend, ax);
+	  rf = (int)AUX_GET_ISYM(bigend, ax);
 	  ax++;
 	}
       else
@@ -1658,16 +1658,16 @@ parse_type(int fd, union aux_ext *ax, unsigned int aux_index, int *bs,
   /* Deal with range types */
   if (t->bt == btRange)
     {
-      TYPE_NFIELDS (tp) = 2;
-      TYPE_FIELDS (tp) = ((struct field *)
-			  TYPE_ALLOC (tp, 2 * sizeof (struct field)));
-      TYPE_FIELD_NAME (tp, 0) = obsavestring ("Low", strlen ("Low"),
+      TYPE_NFIELDS(tp) = 2;
+      TYPE_FIELDS(tp) = ((struct field *)
+			 TYPE_ALLOC(tp, 2 * sizeof(struct field)));
+      TYPE_FIELD_NAME(tp, 0) = obsavestring("Low", strlen("Low"),
 					    &current_objfile->objfile_obstack);
-      TYPE_FIELD_BITPOS_ASSIGN (tp, 0) = AUX_GET_DNLOW (bigend, ax);
+      TYPE_FIELD_BITPOS_ASSIGN(tp, 0) = (int)AUX_GET_DNLOW(bigend, ax);
       ax++;
-      TYPE_FIELD_NAME (tp, 1) = obsavestring ("High", strlen ("High"),
+      TYPE_FIELD_NAME(tp, 1) = obsavestring("High", strlen("High"),
 					    &current_objfile->objfile_obstack);
-      TYPE_FIELD_BITPOS_ASSIGN (tp, 1) = AUX_GET_DNHIGH (bigend, ax);
+      TYPE_FIELD_BITPOS_ASSIGN(tp, 1) = (int)AUX_GET_DNHIGH(bigend, ax);
       ax++;
     }
 
@@ -1749,7 +1749,7 @@ upgrade_type(int fd, struct type **tpp, int tq, union aux_ext *ax, int bigend,
       if (rf == 0xfff)
 	{
 	  ax++;
-	  rf = AUX_GET_ISYM (bigend, ax);
+	  rf = (int)AUX_GET_ISYM(bigend, ax);
 	  off++;
 	}
       fh = get_rfd (fd, rf);
@@ -1769,11 +1769,11 @@ upgrade_type(int fd, struct type **tpp, int tq, union aux_ext *ax, int bigend,
 
       /* Get the bounds, and create the array type.  */
       ax++;
-      lower = AUX_GET_DNLOW (bigend, ax);
+      lower = (int)AUX_GET_DNLOW(bigend, ax);
       ax++;
-      upper = AUX_GET_DNHIGH (bigend, ax);
+      upper = (int)AUX_GET_DNHIGH(bigend, ax);
       ax++;
-      rf = AUX_GET_WIDTH (bigend, ax);	/* bit size of array element */
+      rf = (int)AUX_GET_WIDTH(bigend, ax); /* bit size of array element */
 
       if (rf == 0) {
 	; /* ??? */
@@ -2689,10 +2689,10 @@ parse_partial_symbols (struct objfile *objfile)
 			}
 		      procaddr = sh.value;
 
-		      isym = AUX_GET_ISYM (fh->fBigendian,
-					   (debug_info->external_aux
-					    + fh->iauxBase
-					    + sh.index));
+		      isym = (long)AUX_GET_ISYM(fh->fBigendian,
+						(debug_info->external_aux
+						 + fh->iauxBase
+						 + sh.index));
 		      (*swap_sym_in) (cur_bfd,
 				      ((char *) debug_info->external_sym
 				       + ((fh->isymBase + isym - 1)
@@ -3078,19 +3078,19 @@ parse_partial_symbols (struct objfile *objfile)
 			    || (p == namestring + 1
 				&& namestring[0] != ' '))
 			  {
-			    add_psymbol_to_list (namestring, p - namestring,
-						 STRUCT_DOMAIN, LOC_TYPEDEF,
-						 &objfile->static_psymbols,
-						 sh.value, 0,
-						 psymtab_language, objfile);
+			    add_psymbol_to_list(namestring, (p - namestring),
+						STRUCT_DOMAIN, LOC_TYPEDEF,
+						&objfile->static_psymbols,
+						(long)sh.value, 0,
+						psymtab_language, objfile);
 			    if (p[2] == 't')
 			      {
 				/* Also a typedef with the same name.  */
-				add_psymbol_to_list (namestring, p - namestring,
-						     VAR_DOMAIN, LOC_TYPEDEF,
-						     &objfile->static_psymbols,
-						     sh.value, 0,
-						     psymtab_language, objfile);
+				add_psymbol_to_list(namestring, p - namestring,
+						    VAR_DOMAIN, LOC_TYPEDEF,
+						    &objfile->static_psymbols,
+						    (long)sh.value, 0,
+						    psymtab_language, objfile);
 				p += 1;
 			      }
 			  }
@@ -3101,7 +3101,7 @@ parse_partial_symbols (struct objfile *objfile)
 			    add_psymbol_to_list(namestring, p - namestring,
                                                 VAR_DOMAIN, LOC_TYPEDEF,
                                                 &objfile->static_psymbols,
-                                                sh.value, 0,
+                                                (long)sh.value, 0,
                                                 psymtab_language, objfile);
 			  }
 		      check_enum:
@@ -3179,8 +3179,9 @@ parse_partial_symbols (struct objfile *objfile)
 			/* Constant, e.g. from "const" in Pascal.  */
 			add_psymbol_to_list(namestring, (p - namestring),
 					    VAR_DOMAIN, LOC_CONST,
-					    &objfile->static_psymbols, sh.value,
-					    0, psymtab_language, objfile);
+					    &objfile->static_psymbols,
+					    (long)sh.value, 0,
+					    psymtab_language, objfile);
 			continue;
 
 		      case 'f':
@@ -3420,10 +3421,10 @@ parse_partial_symbols (struct objfile *objfile)
 		      new_sdx = cur_sdx + 1;	/* Don't skip at all */
 		    }
 		  else
-		    new_sdx = AUX_GET_ISYM(fh->fBigendian,
-					   (debug_info->external_aux
-					    + fh->iauxBase
-					    + sh.index));
+		    new_sdx = (int)AUX_GET_ISYM(fh->fBigendian,
+						(debug_info->external_aux
+						 + fh->iauxBase
+						 + sh.index));
 
 		  if (new_sdx <= cur_sdx)
 		    {
@@ -4277,7 +4278,7 @@ has_opaque_xref(FDR *fh, SYMR *sh)
   ax++;
   (*debug_swap->swap_rndx_in)(fh->fBigendian, &ax->a_rndx, rn);
   if (rn->rfd == 0xfff)
-    rf = AUX_GET_ISYM(fh->fBigendian, ax + 1);
+    rf = (unsigned int)AUX_GET_ISYM(fh->fBigendian, ax + 1);
   else
     rf = rn->rfd;
   if (rf != (unsigned int)-1)
@@ -4310,7 +4311,7 @@ cross_ref(int fd, union aux_ext *ax, struct type **tpp,
   /* Escape index means 'the next one': */
   if (rn->rfd == 0xfff) {
       result++;
-      rf = AUX_GET_ISYM(bigend, (ax + 1));
+      rf = (unsigned int)AUX_GET_ISYM(bigend, (ax + 1));
   } else {
       rf = rn->rfd;
   }
@@ -4575,16 +4576,16 @@ add_line (struct linetable *lt, int lineno, CORE_ADDR adr, int last)
 /* Blocks with a smaller low bound should come first */
 
 static int
-compare_blocks (const void *arg1, const void *arg2)
+compare_blocks(const void *arg1, const void *arg2)
 {
   LONGEST addr_diff;
-  struct block **b1 = (struct block **) arg1;
-  struct block **b2 = (struct block **) arg2;
+  struct block **b1 = (struct block **)arg1;
+  struct block **b2 = (struct block **)arg2;
 
-  addr_diff = (BLOCK_START ((*b1))) - (BLOCK_START ((*b2)));
+  addr_diff = (BLOCK_START((*b1))) - (BLOCK_START((*b2)));
   if (addr_diff == 0)
-    return (BLOCK_END ((*b2))) - (BLOCK_END ((*b1)));
-  return addr_diff;
+    return (int)((BLOCK_END((*b2))) - (BLOCK_END((*b1))));
+  return (int)addr_diff;
 }
 
 /* Sort the blocks of a symtab S.

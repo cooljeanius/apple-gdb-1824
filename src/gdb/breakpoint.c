@@ -832,7 +832,7 @@ commands_from_control_command(char *arg, struct command_line *cmd)
   struct breakpoint *b;
   const char *p;
   int bnum;
-  
+
   /* If we allowed this, then we would have problems with when to free the
    * storage, if we change the commands from which we are currently reading: */
   if (executing_breakpoint_commands)
@@ -844,10 +844,10 @@ commands_from_control_command(char *arg, struct command_line *cmd)
   else
     p = arg;
   bnum = get_number(&p);
-  
+
   if (p && *p)
     error(_("Unexpected extra arguments following breakpoint number."));
-  
+
   ALL_BREAKPOINTS(b)
     if (b->number == bnum)
       {
@@ -5180,6 +5180,7 @@ remove_solib_event_breakpoints(void)
 
   return; /* APPLE LOCAL: return early */
   /*NOTREACHED*/
+  gdb_unreachable();
   ALL_BREAKPOINTS_SAFE(b, temp)
     if (b->type == bp_shlib_event)
       delete_breakpoint(b);

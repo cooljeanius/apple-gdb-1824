@@ -268,6 +268,7 @@ unicode_from_ascii_len(rc_uint_type *length, unichar **unicode,
 {
   char *tmp, *p;
   rc_uint_type tlen, elen, idx = 0;
+  size_t a_extra_length;
 
   *unicode = NULL;
 
@@ -278,8 +279,9 @@ unicode_from_ascii_len(rc_uint_type *length, unichar **unicode,
       return;
     }
 
+  a_extra_length = min((a_length + 1), MAX_ALLOCA_SIZE);
   /* Make sure we have a zero-terminated string: */
-  p = tmp = (char *)alloca(a_length + 1);
+  p = tmp = (char *)alloca(a_extra_length);
   memcpy(tmp, ascii, a_length);
   tmp[a_length] = 0;
 

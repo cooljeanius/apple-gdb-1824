@@ -731,10 +731,11 @@ htab_remove_elt_with_hash (htab_t htab, PTR element, hashval_t hash)
   if ((slot != NULL) && (*slot == HTAB_EMPTY_ENTRY))
     return;
 
-  if (htab->del_f)
-    (*htab->del_f) (*slot);
+  if (htab->del_f && (slot != NULL))
+    (*htab->del_f)(*slot);
 
-  *slot = HTAB_DELETED_ENTRY;
+  if (slot != NULL)
+    *slot = HTAB_DELETED_ENTRY;
   htab->n_deleted++;
 }
 

@@ -658,7 +658,11 @@ alloc_failure:
 
   /* Now assign positions to the strings we want to keep.  */
   size = 0;
-  secinfo = sinfo->htab->first->secinfo;
+  if (sinfo->htab->first != NULL) {
+    secinfo = sinfo->htab->first->secinfo;
+  } else {
+    secinfo = NULL;
+  }
   for (e = sinfo->htab->first; e; e = e->next)
     {
       if (e->secinfo != secinfo)
@@ -678,8 +682,10 @@ alloc_failure:
 	  size += e->len;
 	}
     }
-  secinfo->sec->size = size;
-  if (secinfo->sec->alignment_power != 0)
+  if (secinfo != NULL) {
+    secinfo->sec->size = size;
+  }
+  if ((secinfo != NULL) && (secinfo->sec->alignment_power != 0))
     {
       bfd_size_type align = (bfd_size_type) 1 << secinfo->sec->alignment_power;
       secinfo->sec->size = (secinfo->sec->size + align - 1) & -align;

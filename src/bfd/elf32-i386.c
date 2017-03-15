@@ -3357,11 +3357,13 @@ elf_i386_finish_dynamic_sections (bfd *output_bfd,
 
 	    case DT_JMPREL:
 	      s = htab->srelplt;
+	      BFD_ASSERT(s != NULL);
 	      dyn.d_un.d_ptr = s->output_section->vma + s->output_offset;
 	      break;
 
 	    case DT_PLTRELSZ:
 	      s = htab->srelplt;
+	      BFD_ASSERT(s != NULL);
 	      dyn.d_un.d_val = s->size;
 	      break;
 

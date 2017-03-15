@@ -596,7 +596,10 @@ ihex_read_section(bfd *abfd, asection *section, bfd_byte *contents)
       }
 
       for (i = 0; i < len; i++) {
-	*p++ = (bfd_byte)HEX2(buf + (2 * i));
+	if (buf != NULL)
+	  *p++ = (bfd_byte)HEX2(buf + (2 * i));
+	else
+	  *p++ = 0;
       }
       if ((bfd_size_type)(p - contents) >= section->size)
 	{

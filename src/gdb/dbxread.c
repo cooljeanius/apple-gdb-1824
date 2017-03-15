@@ -1934,7 +1934,7 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 	    nlist.n_value += objfile_text_section_offset (objfile);
 	    /* APPLE LOCAL symbol prefixes */
 	    namestring = set_namestring (objfile, nlist, prefix);
-	    
+
 	    /* APPLE LOCAL begin load level */
 	    /* Here is where we implement the load level policy in
 	       symbol reading.  Note we also read in all things that
@@ -3115,7 +3115,7 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
       in_dwarf_debug_map = 0;
       missing_oso_file = 0;
     }
-  
+
   if (in_dwarf_debug_map == missing_oso_file) {
     ; /* ??? */
   }
@@ -3298,7 +3298,7 @@ end_psymtab(struct partial_symtab *pst, const char **include_list,
       subpst->textlow = subpst->texthigh;
       LDSYMLEN(subpst) = (int)subpst->textlow;
       LDSYMOFF(subpst) = LDSYMLEN(subpst);
-	
+
       /* APPLE LOCAL: These have to be set to NULL because we do
 	 check them later.  */
 
@@ -3845,7 +3845,7 @@ oso_scan_partial_symtab(struct partial_symtab *pst)
     clear_containing_archive_cache();
   else
     close_bfd_or_archive(oso_bfd);
-  
+
   (void)sect_p;
 }
 
@@ -3949,7 +3949,7 @@ read_oso_nlists(bfd *oso_bfd, struct partial_symtab *pst,
 	  case N_UNDF | N_EXT:
             record_common = 1;
             break;
-	    
+
 	  default:
 	    break;
         }
@@ -4111,7 +4111,8 @@ dbx_psymtab_to_symtab_1(struct partial_symtab *pst)
 	dbx_psymtab_to_symtab_1(pst->dependencies[i]);
       }
 
-  if (LDSYMLEN(pst))		/* Otherwise it's a dummy */
+  /* Otherwise it is a dummy: */
+  if ((pst != NULL) && (pst->read_symtab_private != NULL) && LDSYMLEN(pst))
     {
       /* Init stuff necessary for reading in symbols */
       stabsread_init();
@@ -4559,7 +4560,7 @@ read_ofile_symtab (struct partial_symtab *pst)
   pst->symtab = end_symtab(text_offset + text_size, objfile, SECT_OFF_TEXT(objfile));
 
   end_stabs();
-  
+
   (void)sect_p;
 }
 
@@ -4599,7 +4600,6 @@ lookup_psymbol_from_namestring(struct partial_symtab *pst,
     default:
       warning("Unknown type passed to lookup_psymbol_from_namestring");
       return NULL;
-      break;
     }
   name_len = (name - namestring);
   name = (char *)alloca(name_len + 1);
@@ -5053,7 +5053,7 @@ read_ofile_symtab_from_oso(struct partial_symtab *pst, struct bfd *oso_bfd)
     xfree(cur_fun_name);
 
   do_cleanups(oso_data_cleanup);
-  
+
   (void)sect_p;
 }
 

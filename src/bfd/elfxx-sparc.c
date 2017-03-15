@@ -3170,8 +3170,11 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	  bfd_vma x;
 
 	  relocation += rel->r_addend;
-	  relocation -= (input_section->output_section->vma
-			 + input_section->output_offset);
+	  if (input_section->output_section != NULL)
+	    relocation -= (input_section->output_section->vma
+			   + input_section->output_offset);
+	  else
+	    relocation -= (0 + input_section->output_offset);
 	  relocation -= rel->r_offset;
 
 	  x = bfd_get_32 (input_bfd, contents + rel->r_offset);
@@ -3290,8 +3293,11 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 		  bfd_vma reloc;
 
 		  reloc = relocation + rel->r_addend - rel->r_offset;
-		  reloc -= (input_section->output_section->vma
-			    + input_section->output_offset);
+		  if (input_section->output_section != NULL)
+		    reloc -= (input_section->output_section->vma
+			      + input_section->output_offset);
+		  else
+		    reloc -= (0 + input_section->output_offset);
 
 		  /* Ensure the branch fits into simm22.  */
 		  if ((reloc & 3) == 0

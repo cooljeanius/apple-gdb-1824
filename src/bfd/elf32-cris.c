@@ -968,7 +968,7 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 				   h, sec, relocation,
 				   unresolved_reloc, warned);
 
-	  if (unresolved_reloc
+	  if (unresolved_reloc && (sec != NULL)
 	      /* Perhaps we should detect the cases that
 		 sec->output_section is expected to be NULL like i386 and
 		 m68k, but apparently (and according to elfxx-ia64.c) all
@@ -1148,8 +1148,13 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 		      off &= ~1;
 		    else
 		      {
-			bfd_put_32 (output_bfd, relocation,
-				    sgot->contents + off);
+			if (sgot != NULL) {
+			  bfd_put_32(output_bfd, relocation,
+				     (sgot->contents + off));
+			} else {
+			  bfd_put_32(output_bfd, relocation,
+				     (void *)(uintptr_t)(0UL + off));
+			}
 			h->got.offset |= 1;
 		      }
 		  }
@@ -1193,7 +1198,11 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 		  }
 	      }
 
-	    relocation = sgot->output_offset + off;
+	    if (sgot != NULL) {
+	      relocation = (sgot->output_offset + off);
+	    } else {
+	      relocation = off;
+	    }
 	    if (rel->r_addend != 0)
 	      {
 		/* We can't do anything for a relocation which is against
@@ -1216,7 +1225,8 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 		     input_section,
 		     cris_elf_howto_table[r_type].name,
 		     rel->r_addend,
-		     symname[0] != '\0' ? symname : _("[whose name is lost]"));
+		     (((symname != NULL) && (symname[0] != '\0'))
+		      ? symname : _("[whose name is lost]")));
 
 		bfd_set_error (bfd_error_bad_value);
 		return FALSE;
@@ -1292,6 +1302,7 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	  break;
 
 	case R_CRIS_32_PLT_GOTREL:
+	  BFD_ASSERT(sgot != NULL);
 	  /* Like R_CRIS_32_PLT_PCREL, but the reference point is the
 	     start of the .got section.  See also comment at
 	     R_CRIS_32_GOT.  */
@@ -1428,8 +1439,9 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 			  asection *osec;
 
 			  osec = sec->output_section;
-			  indx = elf_section_data (osec)->dynindx;
-			  BFD_ASSERT (indx > 0);
+			  BFD_ASSERT(osec != NULL);
+			  indx = elf_section_data(osec)->dynindx;
+			  BFD_ASSERT(indx > 0);
 			}
 
 		      outrel.r_info = ELF32_R_INFO (indx, r_type);

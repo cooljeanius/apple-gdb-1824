@@ -2126,8 +2126,9 @@ mips_elf_initialize_tls_slots (bfd *abfd, bfd_vma got_offset,
   /* MINUS_ONE means the symbol is not defined in this object.  It may not
      be defined at all; assume that the value doesn't matter in that
      case.  Otherwise complain if we would use the value.  */
-  BFD_ASSERT (value != MINUS_ONE || (indx != 0 && need_relocs)
-	      || h->root.root.type == bfd_link_hash_undefweak);
+  BFD_ASSERT((value != MINUS_ONE) || ((indx != 0) && need_relocs)
+	     || ((h != NULL)
+		 && (h->root.root.type == bfd_link_hash_undefweak)));
 
   /* Emit necessary relocations.  */
   sreloc = mips_elf_rel_dyn_section (dynobj, FALSE);
@@ -3339,7 +3340,8 @@ mips_elf_multi_got (bfd *abfd, struct bfd_link_info *info,
      will become the last item in the circular linked list, so it
      points back to the master GOT.  */
   gg->local_gotno = -g->global_gotno;
-  gg->global_gotno = g->global_gotno;
+  if (gg->global_gotno != g->global_gotno)
+    gg->global_gotno = g->global_gotno;
   gg->tls_gotno = 0;
   assign = 0;
   gg->next = gg;
@@ -4260,7 +4262,10 @@ mips_elf_calculate_relocation(bfd *abfd, bfd *input_bfd,
       break;
 
     case R_MIPS_SCN_DISP:
-      value = symbol + addend - sec->output_offset;
+      if (sec != NULL)
+	value = (symbol + addend - sec->output_offset);
+      else
+	value = (symbol + addend - 0);
       value &= howto->dst_mask;
       break;
 

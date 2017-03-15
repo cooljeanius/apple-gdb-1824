@@ -957,7 +957,7 @@ packet_ok (const char *buf, struct packet_config *config)
 	case PACKET_DISABLE:
 	  internal_error (__FILE__, __LINE__,
 			  _("packet_ok: attempt to use a disabled packet"));
-	  break;
+	  gdb_unreachable();
 	case PACKET_ENABLE:
 	  break;
 	default:
@@ -3672,7 +3672,7 @@ remote_async_wait(ptid_t ptid, struct target_waitstatus *status,
 
 		/* If this packet is an awatch packet, then do NOT parse
                  * the 'a' as a register number: */
-		if (!strncmp(p, "awatch", strlen("awatch")) != 0)
+		if (!(strncmp(p, "awatch", strlen("awatch")) != 0))
 		  {
 		    /* Read the register number: */
 		    pnum = strtol(p, &p_temp, 16);
@@ -4114,7 +4114,7 @@ static int
 hexnumlen(ULONGEST num)
 {
   int i;
-  
+
 #if defined(__GNUC__) && defined(ATTRIBUTE_CONST) && !defined(__STRICT_ANSI__)
   __asm__("");
 #endif /* __GNUC__ && ATTRIBUTE_CONST && !__STRICT_ANSI__ */
@@ -5006,7 +5006,7 @@ remote_kill (void)
      speaking terms with the remote system.  */
   errors_ret = catch_errors((catch_errors_ftype *)putpkt, (void *)"k", "",
 			    RETURN_MASK_ERROR);
-  
+
   if (errors_ret == 0) {
     ; /* ??? */
   }
@@ -5038,7 +5038,7 @@ remote_async_kill (void)
      aren't on speaking terms with the remote system.  */
   errors_ret = catch_errors((catch_errors_ftype *)putpkt, (void *)"k", "",
 			    RETURN_MASK_ERROR);
-  
+
   if (errors_ret == 0) {
     ; /* ??? */
   }
@@ -5281,13 +5281,10 @@ watchpoint_to_Z_packet (int type)
     {
     case hw_write:
       return 2;
-      break;
     case hw_read:
       return 3;
-      break;
     case hw_access:
       return 4;
-      break;
     default:
       internal_error (__FILE__, __LINE__,
 		      _("hw_bp_to_z: bad watchpoint type %d"), type);
@@ -5309,7 +5306,7 @@ remote_insert_watchpoint(CORE_ADDR addr, int len, int type)
     error(_("Cannot set hardware watchpoints without the '%s' (%s) packet."),
 	  remote_protocol_Z[packet].name,
 	  remote_protocol_Z[packet].title);
-  
+
   u_packet = (unsigned int)packet;
   if (u_packet > (unsigned int)INT_MAX) {
     warning(_("packet is too big"));

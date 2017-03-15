@@ -115,31 +115,31 @@ bfd_boolean elf64_alpha_use_secureplt = FALSE;
 struct alpha_elf_got_entry
 {
   struct alpha_elf_got_entry *next;
-  
+
   /* Which .got subsection?  */
   bfd *gotobj;
-  
+
   /* The addend in effect for this entry: */
   bfd_vma addend;
-  
+
   /* The .got offset for this entry: */
   int got_offset;
-  
+
   /* The .plt offset for this entry: */
   int plt_offset;
-  
+
   /* How many references to this entry?  */
   int use_count;
-  
+
   /* The relocation type of this entry: */
   unsigned char reloc_type;
-  
+
   /* How a LITERAL is used: */
   unsigned char flags;
-  
+
   /* Have we initialized the dynamic relocation for this entry?  */
   unsigned char reloc_done;
-  
+
   /* Have we adjusted this entry for SEC_MERGE?  */
   unsigned char reloc_xlated;
 };
@@ -148,16 +148,16 @@ struct alpha_elf_got_entry
 struct alpha_elf_reloc_entry
 {
   struct alpha_elf_reloc_entry *next;
-  
+
   /* Which .reloc section? */
   asection *srel;
-  
+
   /* What kind of relocation? */
   unsigned int rtype;
-  
+
   /* Is this against read-only section? */
   unsigned int reltext : 1;
-  
+
   /* How many did we find?  */
   unsigned long count;
 };
@@ -4471,13 +4471,14 @@ elf64_alpha_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	  /* FALLTHRU */
 
 	case R_ALPHA_TLSGD:
-	  if (!gotent->reloc_done)
+	  if ((gotent != NULL) && !gotent->reloc_done)
 	    {
 	      gotent->reloc_done = 1;
 
+	      BFD_ASSERT(sgot != NULL);
 	      /* Note that the module index for the main program is 1.  */
-	      bfd_put_64 (output_bfd, !info->shared && !dynamic_symbol_p,
-			  sgot->contents + gotent->got_offset);
+	      bfd_put_64(output_bfd, !info->shared && !dynamic_symbol_p,
+			 (sgot->contents + gotent->got_offset));
 
 	      /* If the symbol has been forced local, output a
 		 DTPMOD64 reloc, otherwise it will be handled in
@@ -4498,9 +4499,15 @@ elf64_alpha_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 			  sgot->contents + gotent->got_offset + 8);
 	    }
 
-	  value = (sgot->output_section->vma
-		   + sgot->output_offset
-		   + gotent->got_offset);
+	  if (sgot != NULL) {
+	    value = (sgot->output_section->vma
+		     + sgot->output_offset
+		     + gotent->got_offset);
+	  } else if (gotent != NULL) {
+	    value = (0 + gotent->got_offset);
+	  } else {
+	    value = 0;
+	  }
 	  value -= gp;
 	  goto default_reloc;
 

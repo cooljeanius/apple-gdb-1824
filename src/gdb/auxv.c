@@ -172,6 +172,7 @@ target_auxv_search(struct target_ops *ops, CORE_ADDR match, CORE_ADDR *valp)
       }
 
   /*NOTREACHED*/
+  gdb_unreachable();
 }
 
 

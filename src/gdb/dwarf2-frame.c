@@ -1,4 +1,4 @@
-/* Frame unwinder for frames with DWARF Call Frame Information.
+/* dwarf2-frame.c: Frame unwinder for frames with DWARF Call Frame Information.
 
    Copyright (C) 2003, 2004, 2005, 2007 Free Software Foundation, Inc.
 
@@ -299,11 +299,11 @@ execute_stack_op(gdb_byte *exp, ULONGEST len,
   ctx->get_tls_address = no_get_tls_address;
 
   dwarf_expr_push(ctx, initial);
-  dwarf_expr_eval(ctx, exp, len, 1, NULL);
+  dwarf_expr_eval(ctx, exp, (size_t)len, 1, NULL);
   result = dwarf_expr_fetch(ctx, 0);
 
   if (ctx->in_reg)
-    result = read_reg(next_frame, result);
+    result = read_reg(next_frame, (int)result);
 
   free_dwarf_expr_context(ctx);
 
@@ -331,10 +331,10 @@ execute_cfa_program(gdb_byte *insn_ptr, gdb_byte *insn_end,
       else if ((insn & 0xc0) == DW_CFA_offset)
 	{
 	  reg = insn & 0x3f;
-	  reg = dwarf2_frame_adjust_regnum(gdbarch, reg, eh_frame_p);
+	  reg = dwarf2_frame_adjust_regnum(gdbarch, (int)reg, eh_frame_p);
 	  insn_ptr = read_uleb128(insn_ptr, insn_end, &utmp);
 	  offset = (utmp * fs->data_align);
-	  dwarf2_frame_state_alloc_regs(&fs->regs, (reg + 1));
+	  dwarf2_frame_state_alloc_regs(&fs->regs, (int)(reg + 1));
 	  fs->regs.reg[reg].how = DWARF2_FRAME_REG_SAVED_OFFSET;
 	  fs->regs.reg[reg].loc.offset = offset;
 	}
@@ -342,8 +342,8 @@ execute_cfa_program(gdb_byte *insn_ptr, gdb_byte *insn_end,
 	{
 	  gdb_assert(fs->initial.reg);
 	  reg = (insn & 0x3f);
-	  reg = dwarf2_frame_adjust_regnum(gdbarch, reg, eh_frame_p);
-	  dwarf2_frame_state_alloc_regs(&fs->regs, (reg + 1));
+	  reg = dwarf2_frame_adjust_regnum(gdbarch, (int)reg, eh_frame_p);
+	  dwarf2_frame_state_alloc_regs(&fs->regs, (int)(reg + 1));
 	  if (reg < (ULONGEST)fs->initial.num_regs)
 	    fs->regs.reg[reg] = fs->initial.reg[reg];
 	  else
@@ -355,8 +355,8 @@ incomplete CFI data; DW_CFA_restore unspecified\n\
 register %s (#%d) at 0x%s"),
                       gdbarch_register_name(current_gdbarch,
                                             gdbarch_dwarf2_reg_to_regnum(current_gdbarch,
-                                                                         reg)),
-                      gdbarch_dwarf2_reg_to_regnum(current_gdbarch, reg),
+                                                                         (int)reg)),
+                      gdbarch_dwarf2_reg_to_regnum(current_gdbarch, (int)reg),
                       paddr(fs->pc));
 	}
       else
@@ -364,64 +364,64 @@ register %s (#%d) at 0x%s"),
 	  switch (insn)
 	    {
 	    case DW_CFA_set_loc:
-	      fs->pc = dwarf2_read_address (insn_ptr, insn_end, &bytes_read);
+	      fs->pc = dwarf2_read_address(insn_ptr, insn_end, &bytes_read);
 	      insn_ptr += bytes_read;
 	      break;
 
 	    case DW_CFA_advance_loc1:
-	      utmp = extract_unsigned_integer (insn_ptr, 1);
-	      fs->pc += utmp * fs->code_align;
+	      utmp = extract_unsigned_integer(insn_ptr, 1);
+	      fs->pc += (utmp * fs->code_align);
 	      insn_ptr++;
 	      break;
 	    case DW_CFA_advance_loc2:
-	      utmp = extract_unsigned_integer (insn_ptr, 2);
-	      fs->pc += utmp * fs->code_align;
+	      utmp = extract_unsigned_integer(insn_ptr, 2);
+	      fs->pc += (utmp * fs->code_align);
 	      insn_ptr += 2;
 	      break;
 	    case DW_CFA_advance_loc4:
-	      utmp = extract_unsigned_integer (insn_ptr, 4);
-	      fs->pc += utmp * fs->code_align;
+	      utmp = extract_unsigned_integer(insn_ptr, 4);
+	      fs->pc += (utmp * fs->code_align);
 	      insn_ptr += 4;
 	      break;
 
 	    case DW_CFA_offset_extended:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &reg);
-	      reg = dwarf2_frame_adjust_regnum (gdbarch, reg, eh_frame_p);
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &utmp);
-	      offset = utmp * fs->data_align;
-	      dwarf2_frame_state_alloc_regs (&fs->regs, reg + 1);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &reg);
+	      reg = dwarf2_frame_adjust_regnum(gdbarch, (int)reg, eh_frame_p);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &utmp);
+	      offset = (utmp * fs->data_align);
+	      dwarf2_frame_state_alloc_regs(&fs->regs, (int)(reg + 1));
 	      fs->regs.reg[reg].how = DWARF2_FRAME_REG_SAVED_OFFSET;
 	      fs->regs.reg[reg].loc.offset = offset;
 	      break;
 
 	    case DW_CFA_restore_extended:
-	      gdb_assert (fs->initial.reg);
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &reg);
-	      reg = dwarf2_frame_adjust_regnum (gdbarch, reg, eh_frame_p);
-	      dwarf2_frame_state_alloc_regs (&fs->regs, reg + 1);
+	      gdb_assert(fs->initial.reg);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &reg);
+	      reg = dwarf2_frame_adjust_regnum(gdbarch, (int)reg, eh_frame_p);
+	      dwarf2_frame_state_alloc_regs(&fs->regs, (int)(reg + 1));
 	      fs->regs.reg[reg] = fs->initial.reg[reg];
 	      break;
 
 	    case DW_CFA_undefined:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &reg);
-	      reg = dwarf2_frame_adjust_regnum (gdbarch, reg, eh_frame_p);
-	      dwarf2_frame_state_alloc_regs (&fs->regs, reg + 1);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &reg);
+	      reg = dwarf2_frame_adjust_regnum(gdbarch, (int)reg, eh_frame_p);
+	      dwarf2_frame_state_alloc_regs(&fs->regs, (int)(reg + 1));
 	      fs->regs.reg[reg].how = DWARF2_FRAME_REG_UNDEFINED;
 	      break;
 
 	    case DW_CFA_same_value:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &reg);
-	      reg = dwarf2_frame_adjust_regnum (gdbarch, reg, eh_frame_p);
-	      dwarf2_frame_state_alloc_regs (&fs->regs, reg + 1);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &reg);
+	      reg = dwarf2_frame_adjust_regnum(gdbarch, (int)reg, eh_frame_p);
+	      dwarf2_frame_state_alloc_regs(&fs->regs, (int)(reg + 1));
 	      fs->regs.reg[reg].how = DWARF2_FRAME_REG_SAME_VALUE;
 	      break;
 
 	    case DW_CFA_register:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &reg);
-	      reg = dwarf2_frame_adjust_regnum (gdbarch, reg, eh_frame_p);
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &utmp);
-	      utmp = dwarf2_frame_adjust_regnum (gdbarch, utmp, eh_frame_p);
-	      dwarf2_frame_state_alloc_regs (&fs->regs, reg + 1);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &reg);
+	      reg = dwarf2_frame_adjust_regnum(gdbarch, (int)reg, eh_frame_p);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &utmp);
+	      utmp = dwarf2_frame_adjust_regnum(gdbarch, (int)utmp, eh_frame_p);
+	      dwarf2_frame_state_alloc_regs(&fs->regs, (int)(reg + 1));
 	      fs->regs.reg[reg].how = DWARF2_FRAME_REG_SAVED_REG;
 	      fs->regs.reg[reg].loc.reg = utmp;
 	      break;
@@ -430,9 +430,9 @@ register %s (#%d) at 0x%s"),
 	      {
 		struct dwarf2_frame_state_reg_info *new_rs;
 
-		new_rs = XMALLOC (struct dwarf2_frame_state_reg_info);
+		new_rs = XMALLOC(struct dwarf2_frame_state_reg_info);
 		*new_rs = fs->regs;
-		fs->regs.reg = dwarf2_frame_state_copy_regs (&fs->regs);
+		fs->regs.reg = dwarf2_frame_state_copy_regs(&fs->regs);
 		fs->regs.prev = new_rs;
 	      }
 	      break;
@@ -443,26 +443,27 @@ register %s (#%d) at 0x%s"),
 
 		if (old_rs == NULL)
 		  {
-		    complaint (&symfile_complaints, _("\
-bad CFI data; mismatched DW_CFA_restore_state at 0x%s"), paddr (fs->pc));
+		    complaint(&symfile_complaints, _("\
+bad CFI data; mismatched DW_CFA_restore_state at 0x%s"), paddr(fs->pc));
 		  }
 		else
 		  {
-		    xfree (fs->regs.reg);
+		    xfree(fs->regs.reg);
 		    fs->regs = *old_rs;
-		    xfree (old_rs);
+		    xfree(old_rs);
 		  }
 	      }
 	      break;
 
 	    case DW_CFA_def_cfa:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &fs->cfa_reg);
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &utmp);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &fs->cfa_reg);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &utmp);
 
               /* APPLE LOCAL: Don't forget to translate the CFA register
                  number... */
-              fs->cfa_reg = dwarf2_frame_adjust_regnum (gdbarch, fs->cfa_reg,
-                                                        eh_frame_p);
+              fs->cfa_reg = dwarf2_frame_adjust_regnum(gdbarch,
+						       (int)fs->cfa_reg,
+                                                       eh_frame_p);
 
 	      if (fs->armcc_cfa_offsets_sf)
 		utmp *= fs->data_align;
@@ -472,14 +473,15 @@ bad CFI data; mismatched DW_CFA_restore_state at 0x%s"), paddr (fs->pc));
 	      break;
 
 	    case DW_CFA_def_cfa_register:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &fs->cfa_reg);
-	      fs->cfa_reg = dwarf2_frame_adjust_regnum (gdbarch, fs->cfa_reg,
-							eh_frame_p);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &fs->cfa_reg);
+	      fs->cfa_reg = dwarf2_frame_adjust_regnum(gdbarch,
+						       (int)fs->cfa_reg,
+						       eh_frame_p);
 	      fs->cfa_how = CFA_REG_OFFSET;
 	      break;
 
 	    case DW_CFA_def_cfa_offset:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &utmp);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &utmp);
 
 	      if (fs->armcc_cfa_offsets_sf)
 		utmp *= fs->data_align;
@@ -492,17 +494,17 @@ bad CFI data; mismatched DW_CFA_restore_state at 0x%s"), paddr (fs->pc));
 	      break;
 
 	    case DW_CFA_def_cfa_expression:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &fs->cfa_exp_len);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &fs->cfa_exp_len);
 	      fs->cfa_exp = insn_ptr;
 	      fs->cfa_how = CFA_EXP;
 	      insn_ptr += fs->cfa_exp_len;
 	      break;
 
 	    case DW_CFA_expression:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &reg);
-	      reg = dwarf2_frame_adjust_regnum (gdbarch, reg, eh_frame_p);
-	      dwarf2_frame_state_alloc_regs (&fs->regs, reg + 1);
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &utmp);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &reg);
+	      reg = dwarf2_frame_adjust_regnum(gdbarch, (int)reg, eh_frame_p);
+	      dwarf2_frame_state_alloc_regs(&fs->regs, (int)(reg + 1));
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &utmp);
 	      fs->regs.reg[reg].loc.exp = insn_ptr;
 	      fs->regs.reg[reg].exp_len = utmp;
 	      fs->regs.reg[reg].how = DWARF2_FRAME_REG_SAVED_EXP;
@@ -510,37 +512,37 @@ bad CFI data; mismatched DW_CFA_restore_state at 0x%s"), paddr (fs->pc));
 	      break;
 
 	    case DW_CFA_offset_extended_sf:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &reg);
-	      reg = dwarf2_frame_adjust_regnum (gdbarch, reg, eh_frame_p);
-	      insn_ptr = read_sleb128 (insn_ptr, insn_end, &offset);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &reg);
+	      reg = dwarf2_frame_adjust_regnum(gdbarch, (int)reg, eh_frame_p);
+	      insn_ptr = read_sleb128(insn_ptr, insn_end, &offset);
 	      offset *= fs->data_align;
-	      dwarf2_frame_state_alloc_regs (&fs->regs, reg + 1);
+	      dwarf2_frame_state_alloc_regs(&fs->regs, (int)(reg + 1));
 	      fs->regs.reg[reg].how = DWARF2_FRAME_REG_SAVED_OFFSET;
 	      fs->regs.reg[reg].loc.offset = offset;
 	      break;
 
 	    case DW_CFA_val_offset:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &reg);
-	      dwarf2_frame_state_alloc_regs (&fs->regs, reg + 1);
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &utmp);
-	      offset = utmp * fs->data_align;
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &reg);
+	      dwarf2_frame_state_alloc_regs(&fs->regs, (int)(reg + 1));
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &utmp);
+	      offset = (utmp * fs->data_align);
 	      fs->regs.reg[reg].how = DWARF2_FRAME_REG_SAVED_VAL_OFFSET;
 	      fs->regs.reg[reg].loc.offset = offset;
 	      break;
 
 	    case DW_CFA_val_offset_sf:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &reg);
-	      dwarf2_frame_state_alloc_regs (&fs->regs, reg + 1);
-	      insn_ptr = read_sleb128 (insn_ptr, insn_end, &offset);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &reg);
+	      dwarf2_frame_state_alloc_regs(&fs->regs, (int)(reg + 1));
+	      insn_ptr = read_sleb128(insn_ptr, insn_end, &offset);
 	      offset *= fs->data_align;
 	      fs->regs.reg[reg].how = DWARF2_FRAME_REG_SAVED_VAL_OFFSET;
 	      fs->regs.reg[reg].loc.offset = offset;
 	      break;
 
 	    case DW_CFA_val_expression:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &reg);
-	      dwarf2_frame_state_alloc_regs (&fs->regs, reg + 1);
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &utmp);
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &reg);
+	      dwarf2_frame_state_alloc_regs(&fs->regs, (int)(reg + 1));
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &utmp);
 	      fs->regs.reg[reg].loc.exp = insn_ptr;
 	      fs->regs.reg[reg].exp_len = utmp;
 	      fs->regs.reg[reg].how = DWARF2_FRAME_REG_SAVED_VAL_EXP;
@@ -548,17 +550,18 @@ bad CFI data; mismatched DW_CFA_restore_state at 0x%s"), paddr (fs->pc));
 	      break;
 
 	    case DW_CFA_def_cfa_sf:
-	      insn_ptr = read_uleb128 (insn_ptr, insn_end, &fs->cfa_reg);
-	      fs->cfa_reg = dwarf2_frame_adjust_regnum (gdbarch, fs->cfa_reg,
-							eh_frame_p);
-	      insn_ptr = read_sleb128 (insn_ptr, insn_end, &offset);
-	      fs->cfa_offset = offset * fs->data_align;
+	      insn_ptr = read_uleb128(insn_ptr, insn_end, &fs->cfa_reg);
+	      fs->cfa_reg = dwarf2_frame_adjust_regnum(gdbarch,
+						       (int)fs->cfa_reg,
+						       eh_frame_p);
+	      insn_ptr = read_sleb128(insn_ptr, insn_end, &offset);
+	      fs->cfa_offset = (offset * fs->data_align);
 	      fs->cfa_how = CFA_REG_OFFSET;
 	      break;
 
 	    case DW_CFA_def_cfa_offset_sf:
-	      insn_ptr = read_sleb128 (insn_ptr, insn_end, &offset);
-	      fs->cfa_offset = offset * fs->data_align;
+	      insn_ptr = read_sleb128(insn_ptr, insn_end, &offset);
+	      fs->cfa_offset = (offset * fs->data_align);
 	      /* cfa_how deliberately not set.  */
 	      break;
 
@@ -594,11 +597,11 @@ bad CFI data; mismatched DW_CFA_restore_state at 0x%s"), paddr (fs->pc));
 
 	    case DW_CFA_GNU_negative_offset_extended:
 	      insn_ptr = read_uleb128(insn_ptr, insn_end, &reg);
-	      reg = dwarf2_frame_adjust_regnum(gdbarch, reg, eh_frame_p);
+	      reg = dwarf2_frame_adjust_regnum(gdbarch, (int)reg, eh_frame_p);
 	      insn_ptr = read_uleb128(insn_ptr, insn_end,
                                       (ULONGEST *)&offset);
 	      offset *= fs->data_align;
-	      dwarf2_frame_state_alloc_regs(&fs->regs, (reg + 1));
+	      dwarf2_frame_state_alloc_regs(&fs->regs, (int)(reg + 1));
 	      fs->regs.reg[reg].how = DWARF2_FRAME_REG_SAVED_OFFSET;
 	      fs->regs.reg[reg].loc.offset = -offset;
 	      break;
@@ -896,7 +899,7 @@ dwarf2_frame_cache(struct frame_info *next_frame, void **this_cache)
   switch (fs->cfa_how)
     {
     case CFA_REG_OFFSET:
-      cache->cfa = read_reg(next_frame, fs->cfa_reg);
+      cache->cfa = read_reg(next_frame, (int)fs->cfa_reg);
       if (fs->armcc_cfa_offsets_reversed)
 	cache->cfa -= fs->cfa_offset;
       else
@@ -1101,8 +1104,9 @@ dwarf2_frame_prev_register (struct frame_info *next_frame, void **this_cache,
       *optimizedp = opt_okay;
       *lvalp = lval_register;
       *addrp = 0;
-      *realnump = gdbarch_dwarf2_reg_to_regnum
-		    (current_gdbarch, cache->reg[regnum].loc.reg);
+      *realnump =
+	gdbarch_dwarf2_reg_to_regnum(current_gdbarch,
+				     (int)cache->reg[regnum].loc.reg);
       if (valuep)
 	frame_unwind_register (next_frame, (*realnump), valuep);
       break;
@@ -1207,7 +1211,7 @@ dwarf2_frame_prev_register (struct frame_info *next_frame, void **this_cache,
 
           regnum =
             gdbarch_dwarf2_reg_to_regnum(current_gdbarch,
-                                         cache->retaddr_reg.loc.reg);
+                                         (int)cache->retaddr_reg.loc.reg);
           pc += frame_unwind_register_unsigned(next_frame, regnum);
           pack_long(valuep, register_type(gdbarch, regnum), pc);
         }
@@ -1317,7 +1321,7 @@ struct comp_unit
   gdb_byte *dwarf_frame_buffer;
 
   /* Length of the loaded .debug_frame section.  */
-  unsigned long dwarf_frame_size;
+  bfd_size_type dwarf_frame_size;
 
   /* Pointer to the .debug_frame section.  */
   asection *dwarf_frame_section;
@@ -1332,25 +1336,25 @@ struct comp_unit
 const struct objfile_data *dwarf2_frame_objfile_data;
 
 static unsigned int
-read_1_byte (bfd *abfd, gdb_byte *buf)
+read_1_byte(bfd *abfd, gdb_byte *buf)
 {
-  return bfd_get_8 (abfd, buf);
+  return bfd_get_8(abfd, buf);
 }
 
 static unsigned int
-read_4_bytes (bfd *abfd, gdb_byte *buf)
+read_4_bytes(bfd *abfd, gdb_byte *buf)
 {
-  return bfd_get_32 (abfd, buf);
+  return (unsigned int)bfd_get_32(abfd, buf);
 }
 
 static ULONGEST
-read_8_bytes (bfd *abfd, gdb_byte *buf)
+read_8_bytes(bfd *abfd, gdb_byte *buf)
 {
-  return bfd_get_64 (abfd, buf);
+  return bfd_get_64(abfd, buf);
 }
 
 static ULONGEST
-read_unsigned_leb128 (bfd *abfd, gdb_byte *buf, unsigned int *bytes_read_ptr)
+read_unsigned_leb128(bfd *abfd, gdb_byte *buf, unsigned int *bytes_read_ptr)
 {
   ULONGEST result;
   unsigned int num_read;
@@ -1778,9 +1782,9 @@ decode_frame_entry_1(struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
 	cie->return_address_register = read_unsigned_leb128 (unit->abfd, buf,
 							     &bytes_read);
       cie->return_address_register
-	= dwarf2_frame_adjust_regnum (current_gdbarch,
-				      cie->return_address_register,
-				      eh_frame_p);
+	= dwarf2_frame_adjust_regnum(current_gdbarch,
+				     (int)cie->return_address_register,
+				     eh_frame_p);
 
       buf += bytes_read;
 
@@ -2091,3 +2095,5 @@ _initialize_dwarf2_frame (void)
   dwarf2_frame_data = gdbarch_data_register_pre_init (dwarf2_frame_init);
   dwarf2_frame_objfile_data = register_objfile_data ();
 }
+
+/* EOF */

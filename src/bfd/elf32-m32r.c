@@ -2997,19 +2997,19 @@ m32r_elf_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 	      {
 		const char *name;
 
-		BFD_ASSERT (sec != NULL);
-		name = bfd_get_section_name (abfd, sec);
+		BFD_ASSERT(sec != NULL);
+		name = bfd_get_section_name(abfd, sec);
+		BFD_ASSERT(sec->output_section != NULL);
 
-		if (   strcmp (name, ".sdata") == 0
-		    || strcmp (name, ".sbss") == 0
-		    || strcmp (name, ".scommon") == 0)
+		if ((strcmp(name, ".sdata") == 0)
+		    || (strcmp(name, ".sbss") == 0)
+		    || (strcmp(name, ".scommon") == 0))
 		  {
 		    bfd_vma sda_base;
 		    bfd *out_bfd = sec->output_section->owner;
 
-		    r = m32r_elf_final_sda_base (out_bfd, info,
-						 &errmsg,
-						 &sda_base);
+		    r = m32r_elf_final_sda_base(out_bfd, info, &errmsg,
+						&sda_base);
 		    if (r != bfd_reloc_ok)
 		      {
 			ret = FALSE;
@@ -3356,7 +3356,8 @@ m32r_elf_finish_dynamic_sections (bfd *output_bfd,
           const char *name;
           asection *s;
 
-          bfd_elf32_swap_dyn_in (dynobj, dyncon, &dyn);
+          bfd_elf32_swap_dyn_in(dynobj, dyncon, &dyn);
+	  BFD_ASSERT(htab->srelplt != NULL);
 
           switch (dyn.d_tag)
             {

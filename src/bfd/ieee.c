@@ -857,8 +857,8 @@ ieee_slurp_external_symbols (bfd *abfd)
                an absolute value.  Try to convert that back into a
                section relative value.  FIXME: This won't always to
                the right thing.  */
-	    if (bfd_is_abs_section (symbol->symbol.section)
-		&& (abfd->flags & HAS_RELOC) == 0)
+	    if ((symbol != NULL) && bfd_is_abs_section(symbol->symbol.section)
+		&& ((abfd->flags & HAS_RELOC) == 0))
 	      {
 		bfd_vma val;
 		asection *s;
@@ -875,8 +875,8 @@ ieee_slurp_external_symbols (bfd *abfd)
 		  }
 	      }
 
-	    symbol->symbol.flags = BSF_GLOBAL | BSF_EXPORT;
-
+	    if (symbol != NULL)
+	      symbol->symbol.flags = (BSF_GLOBAL | BSF_EXPORT);
 	  }
 	  break;
 	case ieee_weak_external_reference_enum:
@@ -892,6 +892,7 @@ ieee_slurp_external_symbols (bfd *abfd)
 	    /* Fetch the default value if available.  */
 	    if (! parse_int (&(ieee->h), &value))
 	      value = 0;
+	    BFD_ASSERT(symbol != NULL);
 	    /* This turns into a common.  */
 	    symbol->symbol.section = bfd_com_section_ptr;
 	    symbol->symbol.value = size;
@@ -1722,8 +1723,10 @@ ieee_slurp_section_data (bfd *abfd)
 				  &symbol,
 				  &pcrel, &extra,
 				  0);
-		current_map->pc = value;
-		BFD_ASSERT ((unsigned) (value - s->vma) <= s->size);
+		if (current_map != NULL)
+		  current_map->pc = value;
+		BFD_ASSERT(s != NULL);
+		BFD_ASSERT((unsigned int)(value - s->vma) <= s->size);
 	      }
 	      break;
 
@@ -1756,6 +1759,7 @@ ieee_slurp_section_data (bfd *abfd)
 	      {
 		while (iterations != 0)
 		  {
+		    BFD_ASSERT(current_map != NULL);
 		    location_ptr[current_map->pc++] = start[2];
 		    iterations--;
 		  }
@@ -2271,7 +2275,10 @@ do_with_relocs(bfd *abfd, asection *s)
 
 	  if (relocs_to_go)
 	    {
-	      run = (*p)->address - current_byte_index;
+	      if ((*p) != NULL)
+		run = ((*p)->address - current_byte_index);
+	      else
+		run = (0 - current_byte_index);
 	      if (run > MAXRUN)
 		run = MAXRUN;
 	    }
@@ -3129,6 +3136,9 @@ ieee_write_debug_part (bfd *abfd)
       if (s == NULL)
 	{
 	  ieee->w.r.debug_information_part = 0;
+	  output_ptr = NULL;
+	  output_ptr_start = NULL;
+	  output_ptr_end = NULL;
 	  return TRUE;
 	}
 

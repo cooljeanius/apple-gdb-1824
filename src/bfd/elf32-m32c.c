@@ -416,6 +416,7 @@ m32c_elf_relocate_section
 		/* If the symbol is out of range for a 16-bit address,
 		   we must have allocated a plt entry.  */
 		BFD_ASSERT(*plt_offset != (bfd_vma)-1L);
+		BFD_ASSERT(splt != NULL);
 
 		/* If this is the first time we have processed this symbol,
 		   fill in the plt entry with the correct symbol address.  */

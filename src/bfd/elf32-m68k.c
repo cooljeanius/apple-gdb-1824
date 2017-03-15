@@ -1649,8 +1649,9 @@ elf_m68k_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 			  asection *osec;
 
 			  osec = sec->output_section;
-			  indx = elf_section_data (osec)->dynindx;
-			  BFD_ASSERT (indx > 0);
+			  BFD_ASSERT(osec != NULL);
+			  indx = elf_section_data(osec)->dynindx;
+			  BFD_ASSERT(indx > 0);
 			}
 
 		      outrel.r_info = ELF32_R_INFO (indx, r_type);

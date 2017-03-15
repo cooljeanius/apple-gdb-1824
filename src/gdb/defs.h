@@ -1835,6 +1835,14 @@ extern void ATTR_NORETURN gdb_check_fatal(const char *str, const char *file,
 					  unsigned int line, const char *func);
 /* APPLE LOCAL end CHECK macro */
 
+/* Use gdb_unreachable() to mark unreachable locations, like an
+ * unreachable default case of a switch.  Do not use gdb_assert(0).  */
+#if (GCC_VERSION >= 4005) && (!defined(ENABLE_ASSERT_CHECKING) || !ENABLE_ASSERT_CHECKING)
+# define gdb_unreachable() __builtin_unreachable()
+#else
+# define gdb_unreachable() (gdb_check_fatal("unreachable location reached", __FILE__, __LINE__, __FUNCTION__))
+#endif
+
 /* APPLE LOCAL: Local timer stuff */
 extern int maint_use_timers;
 extern struct cleanup *start_timer(int *timer_var, const char *timer_name,

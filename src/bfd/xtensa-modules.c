@@ -1115,10 +1115,10 @@ Field_imm6_Slot_inst16a_set (xtensa_insnbuf insn, uint32 val)
   insn[0] = (insn[0] & ~0x300) | (tie_t << 8);
 }
 
-static unsigned
+static unsigned int
 Field_imm6_Slot_inst16b_get (const xtensa_insnbuf insn)
 {
-  unsigned tie_t = 0U;
+  unsigned int tie_t = 0U;
   tie_t = ((tie_t << 2) | ((insn[0] << 22) >> 30));
   tie_t = ((tie_t << 4) | ((insn[0] << 28) >> 28));
   return tie_t;
@@ -1134,10 +1134,10 @@ Field_imm6_Slot_inst16b_set (xtensa_insnbuf insn, uint32 val)
   insn[0] = (insn[0] & ~0x300) | (tie_t << 8);
 }
 
-static unsigned
+static unsigned int
 Field_imm7_Slot_inst16a_get (const xtensa_insnbuf insn)
 {
-  unsigned tie_t = 0U;
+  unsigned int tie_t = 0U;
   tie_t = ((tie_t << 3) | ((insn[0] << 21) >> 29));
   tie_t = ((tie_t << 4) | ((insn[0] << 28) >> 28));
   return tie_t;
@@ -1153,10 +1153,10 @@ Field_imm7_Slot_inst16a_set (xtensa_insnbuf insn, uint32 val)
   insn[0] = (insn[0] & ~0x700) | (tie_t << 8);
 }
 
-static unsigned
+static unsigned int
 Field_imm7_Slot_inst16b_get(const xtensa_insnbuf insn)
 {
-  unsigned tie_t = 0U;
+  unsigned int tie_t = 0U;
   tie_t = ((tie_t << 3) | ((insn[0] << 21) >> 29));
   tie_t = ((tie_t << 4) | ((insn[0] << 28) >> 28));
   return tie_t;

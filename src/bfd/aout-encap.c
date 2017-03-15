@@ -850,6 +850,9 @@ bfd_boolean encap_write_object_contents(bfd *abfd)
 #endif /* !COFF_ENCAPSULATE && N_TXTOFF && padfile */
 
   local_text_size -= N_TXTOFF(outheader);
+  if (local_text_size <= 0) {
+    ; /* ??? */
+  }
   WRITE_HEADERS(abfd, execp);
   return TRUE;
 }

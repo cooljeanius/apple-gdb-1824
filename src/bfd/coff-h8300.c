@@ -463,8 +463,12 @@ h8300_reloc16_estimate (bfd *abfd, asection *input_section, arelent *reloc,
       value = bfd_coff_reloc16_get_value (reloc, link_info, input_section);
 
       /* Get the address of the next instruction (not the reloc).  */
-      dot = (input_section->output_section->vma
-	     + input_section->output_offset + address);
+      if (input_section != NULL) {
+	dot = (input_section->output_section->vma
+	       + input_section->output_offset + address);
+      } else {
+	dot = address;
+      }
 
       /* Adjust for R_JMP1 vs R_JMPL1.  */
       dot += (reloc->howto->type == R_JMP1 ? 1 : 2);
@@ -553,8 +557,12 @@ h8300_reloc16_estimate (bfd *abfd, asection *input_section, arelent *reloc,
       value = bfd_coff_reloc16_get_value (reloc, link_info, input_section) + 1;
 
       /* Get the address of the next instruction if we were to relax.  */
-      dot = input_section->output_section->vma +
-	input_section->output_offset + address;
+      if (input_section != NULL) {
+	dot = (input_section->output_section->vma
+	       + input_section->output_offset + address);
+      } else {
+	dot = address;
+      }
 
       /* Compute the distance from this insn to the branch target.  */
       gap = value - dot;

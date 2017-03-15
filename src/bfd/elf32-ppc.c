@@ -7054,6 +7054,7 @@ ppc_elf_finish_dynamic_sections (bfd *output_bfd,
       unsigned char *p = htab->got->contents;
       bfd_vma val;
 
+      BFD_ASSERT(htab->elf.hgot != NULL);
       p += htab->elf.hgot->root.u.def.value;
       if (htab->old_plt && !htab->is_vxworks)
 	bfd_put_32 (output_bfd, 0x4e800021 /* blrl */, p - 4);

@@ -858,7 +858,9 @@ xstormy16_elf_relocate_section (bfd *                   output_bfd ATTRIBUTE_UNU
 	      {
 		/* If the symbol is out of range for a 16-bit address,
 		   we must have allocated a plt entry.  */
-		BFD_ASSERT (*plt_offset != (bfd_vma) -1);
+		BFD_ASSERT(*plt_offset != (bfd_vma)-1);
+
+		BFD_ASSERT(splt != NULL);
 
 		/* If this is the first time we've processed this symbol,
 		   fill in the plt entry with the correct symbol address.  */
@@ -869,7 +871,7 @@ xstormy16_elf_relocate_section (bfd *                   output_bfd ATTRIBUTE_UNU
 		    x = 0x00000200;  /* jmpf */
 		    x |= relocation & 0xff;
 		    x |= (relocation << 8) & 0xffff0000;
-		    bfd_put_32 (input_bfd, x, splt->contents + *plt_offset);
+		    bfd_put_32(input_bfd, x, (splt->contents + *plt_offset));
 		    *plt_offset |= 1;
 		  }
 

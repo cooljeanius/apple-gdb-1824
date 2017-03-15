@@ -2786,6 +2786,7 @@ elf64_x86_64_finish_dynamic_sections (bfd *output_bfd, struct bfd_link_info *inf
 
 	  bfd_elf64_swap_dyn_in (dynobj, dyncon, &dyn);
 
+	  BFD_ASSERT(htab->srelplt != NULL);
 	  switch (dyn.d_tag)
 	    {
 	    default:

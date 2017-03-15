@@ -1338,61 +1338,72 @@ dwarf2_locate_sections(bfd *ignore_abfd, asection *sectp, void *ignore_ptr)
 {
   if (strcmp(sectp->name, INFO_SECTION) == 0)
     {
-      dwarf2_per_objfile->info_size = bfd_get_section_size(sectp);
+      dwarf2_per_objfile->info_size =
+	(unsigned int)bfd_get_section_size(sectp);
       dwarf_info_section = sectp;
     }
   else if (strcmp(sectp->name, ABBREV_SECTION) == 0)
     {
-      dwarf2_per_objfile->abbrev_size = bfd_get_section_size(sectp);
+      dwarf2_per_objfile->abbrev_size =
+	(unsigned int)bfd_get_section_size(sectp);
       dwarf_abbrev_section = sectp;
     }
   else if (strcmp(sectp->name, LINE_SECTION) == 0)
     {
-      dwarf2_per_objfile->line_size = bfd_get_section_size(sectp);
+      dwarf2_per_objfile->line_size =
+	(unsigned int)bfd_get_section_size(sectp);
       dwarf_line_section = sectp;
     }
   else if (strcmp(sectp->name, PUBNAMES_SECTION) == 0)
     {
-      dwarf2_per_objfile->pubnames_size = bfd_get_section_size(sectp);
+      dwarf2_per_objfile->pubnames_size =
+	(unsigned int)bfd_get_section_size(sectp);
       dwarf_pubnames_section = sectp;
     }
   /* APPLE LOCAL: pubtypes */
   else if (strcmp(sectp->name, PUBTYPES_SECTION) == 0)
     {
-      dwarf2_per_objfile->pubtypes_size = bfd_get_section_size(sectp);
+      dwarf2_per_objfile->pubtypes_size =
+	(unsigned int)bfd_get_section_size(sectp);
       dwarf_pubtypes_section = sectp;
     }
   /* END APPLE LOCAL */
   /* APPLE LOCAL begin debug inlined section  */
   else if (strcmp(sectp->name, INLINED_SECTION) == 0)
     {
-      dwarf2_per_objfile->inlined_size = bfd_get_section_size(sectp);
+      dwarf2_per_objfile->inlined_size =
+	(unsigned int)bfd_get_section_size(sectp);
       dwarf_inlined_section = sectp;
     }
   /* APPLE LOCAL end debug inlined section */
   else if (strcmp(sectp->name, ARANGES_SECTION) == 0)
     {
-      dwarf2_per_objfile->aranges_size = bfd_get_section_size(sectp);
+      dwarf2_per_objfile->aranges_size =
+	(unsigned int)bfd_get_section_size(sectp);
       dwarf_aranges_section = sectp;
     }
   else if (strcmp(sectp->name, LOC_SECTION) == 0)
     {
-      dwarf2_per_objfile->loc_size = bfd_get_section_size(sectp);
+      dwarf2_per_objfile->loc_size =
+	(unsigned int)bfd_get_section_size(sectp);
       dwarf_loc_section = sectp;
     }
   else if (strcmp(sectp->name, MACINFO_SECTION) == 0)
     {
-      dwarf2_per_objfile->macinfo_size = bfd_get_section_size(sectp);
+      dwarf2_per_objfile->macinfo_size =
+	(unsigned int)bfd_get_section_size(sectp);
       dwarf_macinfo_section = sectp;
     }
   else if (strcmp(sectp->name, STR_SECTION) == 0)
     {
-      dwarf2_per_objfile->str_size = bfd_get_section_size(sectp);
+      dwarf2_per_objfile->str_size =
+	(unsigned int)bfd_get_section_size(sectp);
       dwarf_str_section = sectp;
     }
   else if (strcmp(sectp->name, FRAME_SECTION) == 0)
     {
-      dwarf2_per_objfile->frame_size = bfd_get_section_size(sectp);
+      dwarf2_per_objfile->frame_size =
+	(unsigned int)bfd_get_section_size(sectp);
       dwarf_frame_section = sectp;
     }
   else if (strcmp(sectp->name, EH_FRAME_SECTION) == 0)
@@ -1400,13 +1411,15 @@ dwarf2_locate_sections(bfd *ignore_abfd, asection *sectp, void *ignore_ptr)
       flagword aflag = bfd_get_section_flags(ignore_abfd, sectp);
       if (aflag & SEC_HAS_CONTENTS)
         {
-          dwarf2_per_objfile->eh_frame_size = bfd_get_section_size(sectp);
+          dwarf2_per_objfile->eh_frame_size =
+	    (unsigned int)bfd_get_section_size(sectp);
           dwarf_eh_frame_section = sectp;
         }
     }
   else if (strcmp(sectp->name, RANGES_SECTION) == 0)
     {
-      dwarf2_per_objfile->ranges_size = bfd_get_section_size(sectp);
+      dwarf2_per_objfile->ranges_size =
+	(unsigned int)bfd_get_section_size(sectp);
       dwarf_ranges_section = sectp;
     }
 }
@@ -1414,7 +1427,6 @@ dwarf2_locate_sections(bfd *ignore_abfd, asection *sectp, void *ignore_ptr)
 /* APPLE LOCAL debug map pull part of dwarf2_build_psymtabs() out into
    this function which is called while expanding a dwarf debug map
    psymtab.  */
-
 static void
 dwarf2_copy_dwarf_from_file(struct objfile *objfile, bfd *abfd)
 {
@@ -1965,13 +1977,13 @@ read_comp_unit_head(struct comp_unit_head *cu_header,
 		    char *info_ptr, bfd *abfd)
 {
   int bytes_read;
-  cu_header->length = read_initial_length(abfd, info_ptr, cu_header,
-                                          &bytes_read);
+  cu_header->length =
+    (unsigned long)read_initial_length(abfd, info_ptr, cu_header, &bytes_read);
   info_ptr += bytes_read;
   cu_header->version = read_2_bytes(abfd, info_ptr);
   info_ptr += 2;
-  cu_header->abbrev_offset = read_offset(abfd, info_ptr, cu_header,
-                                         &bytes_read);
+  cu_header->abbrev_offset =
+    (unsigned int)read_offset(abfd, info_ptr, cu_header, &bytes_read);
   info_ptr += bytes_read;
   cu_header->addr_size = read_1_byte(abfd, info_ptr);
   info_ptr += 1;
@@ -2547,8 +2559,9 @@ create_all_comp_units (struct objfile *objfile)
       /* Read just enough information to find out where the next
 	 compilation unit is.  */
       cu_header.initial_length_size = 0;
-      cu_header.length = read_initial_length(objfile->obfd, info_ptr,
-					     &cu_header, &bytes_read);
+      cu_header.length =
+	(unsigned long)read_initial_length(objfile->obfd, info_ptr,
+					   &cu_header, &bytes_read);
 
       /* Save the compilation unit for later lookup: */
       this_cu = ((struct dwarf2_per_cu_data *)
@@ -4039,7 +4052,7 @@ translate_debug_map_address(struct oso_to_final_addr_map *map,
      specially.  */
   if (map->tuples[0].oso_low_addr < oso_addr && map->entries == 1)
     {
-      int delta = (oso_addr - map->tuples[0].oso_low_addr);
+      int delta = (int)(oso_addr - map->tuples[0].oso_low_addr);
       *addr = (map->tuples[0].final_addr + delta);
       if (debug_debugmap)
         fprintf_unfiltered(gdb_stdlog,
@@ -4228,42 +4241,42 @@ dwarf2_kext_psymtab_to_symtab(struct partial_symtab *pst)
    * with this unusual mixmatch in some instances.  */
 
   /* match amount of "-1" means exact, full-string match: the normal behavior: */
-  kext_dsym_comp_unit_start = find_debug_info_for_pst (pst, -1);
+  kext_dsym_comp_unit_start = find_debug_info_for_pst(pst, -1);
 
   /* Try matching one directory name + base filename: */
   if (kext_dsym_comp_unit_start == NULL)
-    kext_dsym_comp_unit_start = find_debug_info_for_pst (pst, 1);
+    kext_dsym_comp_unit_start = find_debug_info_for_pst(pst, 1);
 
   /* Try matching just the base filename: */
   if (kext_dsym_comp_unit_start == NULL)
-    kext_dsym_comp_unit_start = find_debug_info_for_pst (pst, 0);
+    kext_dsym_comp_unit_start = find_debug_info_for_pst(pst, 0);
 
   if (kext_dsym_comp_unit_start == NULL)
-    error ("Searching for the DWARF debug info for source file '%s' but did not find a matching source file name in '%s'",
-           pst->filename, pst->objfile->name);
+    error("Searching for the DWARF debug info for source file '%s' but did not find a matching source file name in '%s'",
+          pst->filename, pst->objfile->name);
 
   /* Normally the struct dwarf2_per_cu_data is constructed as a part of
      the dwarf partial symtab creation.  So fake one up here.  */
-  this_cu = (struct dwarf2_per_cu_data *)
-                  obstack_alloc (&(pst->objfile->objfile_obstack),
-                                 sizeof (struct dwarf2_per_cu_data));
+  this_cu = ((struct dwarf2_per_cu_data *)
+	     obstack_alloc(&(pst->objfile->objfile_obstack),
+			   sizeof(struct dwarf2_per_cu_data)));
 
   this_cu->offset = kext_dsym_comp_unit_start - dwarf2_per_objfile->info_buffer;
-  this_cu->length = read_initial_length (oso_bfd,
-                                         kext_dsym_comp_unit_start,
-                                         NULL, &bytes_read);
+  this_cu->length =
+    (unsigned long)read_initial_length(oso_bfd, kext_dsym_comp_unit_start,
+				       NULL, &bytes_read);
   this_cu->queued = 0;
   this_cu->cu = NULL;
   this_cu->psymtab = pst;
   this_cu->type_hash = NULL;
 
-  load_full_comp_unit (this_cu, addr_map);
+  load_full_comp_unit(this_cu, addr_map);
 
-  process_full_comp_unit (this_cu);
+  process_full_comp_unit(this_cu);
 
   if (containing_archive != NULL)
-    bfd_close (containing_archive);
-  bfd_close (oso_bfd);
+    bfd_close(containing_archive);
+  bfd_close(oso_bfd);
 
   pst->readin = 1;
 }
@@ -4357,9 +4370,10 @@ dwarf2_debug_map_psymtab_to_symtab(struct partial_symtab *pst)
                            sizeof(struct dwarf2_per_cu_data)));
 
   this_cu->offset = 0;   /* First (and only) CU in the debug_info */
-  this_cu->length = read_initial_length(oso_bfd,
-                                        dwarf2_per_objfile->info_buffer,
-                                        NULL, &bytes_read);
+  this_cu->length =
+    (unsigned long)read_initial_length(oso_bfd,
+				       dwarf2_per_objfile->info_buffer,
+				       NULL, &bytes_read);
   this_cu->queued = 0;
   this_cu->cu = NULL;
   this_cu->psymtab = pst;
@@ -5845,8 +5859,8 @@ dwarf2_add_field(struct field_info *fip, struct die_info *die,
       attr = dwarf2_attr (die, DW_AT_data_member_location, cu);
       if (attr)
 	{
-	  FIELD_BITPOS (*fp) =
-	    decode_locdesc (DW_BLOCK (attr), cu) * bits_per_byte;
+	  FIELD_BITPOS(*fp) =
+	    (int)(decode_locdesc(DW_BLOCK(attr), cu) * bits_per_byte);
 	}
       else
 	FIELD_BITPOS (*fp) = 0;
@@ -5941,14 +5955,14 @@ dwarf2_add_field(struct field_info *fip, struct die_info *die,
   else if (die->tag == DW_TAG_inheritance)
     {
       /* C++ base class field.  */
-      attr = dwarf2_attr (die, DW_AT_data_member_location, cu);
+      attr = dwarf2_attr(die, DW_AT_data_member_location, cu);
       if (attr)
-	FIELD_BITPOS (*fp) = (decode_locdesc (DW_BLOCK (attr), cu)
-			      * bits_per_byte);
-      FIELD_BITSIZE (*fp) = 0;
-      FIELD_STATIC_KIND (*fp) = 0;
-      FIELD_TYPE (*fp) = die_type (die, cu);
-      FIELD_NAME (*fp) = type_name_no_tag (fp->type);
+	FIELD_BITPOS(*fp) = (int)(decode_locdesc(DW_BLOCK(attr), cu)
+				  * bits_per_byte);
+      FIELD_BITSIZE(*fp) = 0;
+      FIELD_STATIC_KIND(*fp) = 0;
+      FIELD_TYPE(*fp) = die_type(die, cu);
+      FIELD_NAME(*fp) = type_name_no_tag(fp->type);
       fip->nbaseclasses++;
     }
 }
@@ -6167,18 +6181,18 @@ dwarf2_add_member_fn (struct field_info *fip, struct die_info *die,
   if (attr)
     {
       /* Support the .debug_loc offsets */
-      if (attr_form_is_block (attr))
+      if (attr_form_is_block(attr))
         {
-          fnp->voffset = decode_locdesc (DW_BLOCK (attr), cu) + 2;
+          fnp->voffset = (unsigned int)(decode_locdesc(DW_BLOCK(attr), cu) + 2);
         }
       else if (attr->form == DW_FORM_data4 || attr->form == DW_FORM_data8)
         {
-	  dwarf2_complex_location_expr_complaint ();
+	  dwarf2_complex_location_expr_complaint();
         }
       else
         {
-	  dwarf2_invalid_attrib_class_complaint ("DW_AT_vtable_elem_location",
-						 fieldname);
+	  dwarf2_invalid_attrib_class_complaint("DW_AT_vtable_elem_location",
+						fieldname);
         }
    }
 }
@@ -7663,7 +7677,7 @@ dwarf2_read_section(struct objfile *objfile, bfd *abfd, asection *sectp)
   if (size == 0UL)
     return NULL;
 
-  buf = (char *)obstack_alloc(&objfile->objfile_obstack, size);
+  buf = (char *)obstack_alloc(&objfile->objfile_obstack, (int)size);
   retbuf = (char *)symfile_relocate_debug_section(abfd, sectp, (bfd_byte *)buf);
   if (retbuf != NULL)
     return retbuf;
@@ -8462,8 +8476,9 @@ read_full_die (struct die_info **diep, bfd *abfd, char *info_ptr,
 		  >= cu->header.offset + cu->header.length)))
 	{
 	  struct dwarf2_per_cu_data *per_cu;
-	  per_cu = dwarf2_find_containing_comp_unit (DW_ADDR (&die->attrs[i]),
-						     cu->objfile);
+	  per_cu =
+	    dwarf2_find_containing_comp_unit((unsigned long)DW_ADDR(&die->attrs[i]),
+					     cu->objfile);
 
 	  /* Mark the dependence relation so that we don't flush PER_CU
 	     too early.  */
@@ -8637,49 +8652,49 @@ static unsigned int
 read_1_byte(bfd *abfd, char *buf)
 {
   gdb_assert(buf != NULL);
-  return bfd_get_8(abfd, (bfd_byte *)buf);
+  return (unsigned int)bfd_get_8(abfd, (bfd_byte *)buf);
 }
 
 /* */
 static int
 read_1_signed_byte(bfd *abfd, char *buf)
 {
-  return bfd_get_signed_8(abfd, (bfd_byte *)buf);
+  return (int)bfd_get_signed_8(abfd, (bfd_byte *)buf);
 }
 
 /* */
 static unsigned int
 read_2_bytes(bfd *abfd, char *buf)
 {
-  return bfd_get_16(abfd, (bfd_byte *)buf);
+  return (unsigned int)bfd_get_16(abfd, (bfd_byte *)buf);
 }
 
 /* */
 static int
 read_2_signed_bytes(bfd *abfd, char *buf)
 {
-  return bfd_get_signed_16(abfd, (bfd_byte *)buf);
+  return (int)bfd_get_signed_16(abfd, (bfd_byte *)buf);
 }
 
 /* */
 static unsigned int
 read_4_bytes(bfd *abfd, char *buf)
 {
-  return bfd_get_32(abfd, (bfd_byte *)buf);
+  return (unsigned int)bfd_get_32(abfd, (bfd_byte *)buf);
 }
 
 /* */
 static int
 read_4_signed_bytes(bfd *abfd, char *buf)
 {
-  return bfd_get_signed_32(abfd, (bfd_byte *)buf);
+  return (int)bfd_get_signed_32(abfd, (bfd_byte *)buf);
 }
 
 /* */
 static unsigned long
 read_8_bytes(bfd *abfd, char *buf)
 {
-  return bfd_get_64(abfd, (bfd_byte *)buf);
+  return (unsigned long)bfd_get_64(abfd, (bfd_byte *)buf);
 }
 
 /* */
@@ -9214,7 +9229,8 @@ dwarf_decode_line_header(unsigned int offset, bfd *abfd,
   /* Read in the header.  */
   /* APPLE LOCAL Add cast to avoid type mismatch in arg4 warning.  */
   lh->total_length =
-    read_initial_length (abfd, line_ptr, &cu->header, (int *) &bytes_read);
+    (unsigned int)read_initial_length(abfd, line_ptr, &cu->header,
+				      (int *)&bytes_read);
   line_ptr += bytes_read;
   if (line_ptr + lh->total_length > (dwarf2_per_objfile->line_buffer
 				     + dwarf2_per_objfile->line_size))
@@ -9226,8 +9242,8 @@ dwarf_decode_line_header(unsigned int offset, bfd *abfd,
   lh->version = read_2_bytes (abfd, line_ptr);
   line_ptr += 2;
   /* APPLE LOCAL Add cast to avoid type mismatch in arg4 warning.  */
-  lh->header_length = read_offset (abfd, line_ptr, &cu->header,
-				   (int *) &bytes_read);
+  lh->header_length = (unsigned int)read_offset(abfd, line_ptr, &cu->header,
+						(int *)&bytes_read);
   line_ptr += bytes_read;
   lh->minimum_instruction_length = read_1_byte (abfd, line_ptr);
   line_ptr += 1;
@@ -9618,7 +9634,7 @@ translate_debug_map_address_with_tuple(struct oso_to_final_addr_map *map,
   CORE_ADDR final_addr;
   gdb_assert(map != NULL);
   gdb_assert((match != NULL) && match->present_in_final);
-  delta = (oso_addr - match->oso_low_addr);
+  delta = (int)(oso_addr - match->oso_low_addr);
   final_addr = (match->final_addr + delta);
 
   /* For the high pc address, find the next final address and make sure it
@@ -9649,8 +9665,8 @@ translate_debug_map_address_with_tuple(struct oso_to_final_addr_map *map,
 	    {
 	      if (map->tuples[*next_fa_idx_ptr].present_in_final)
 		{
-		  int new_delta = map->tuples[*next_fa_idx_ptr].final_addr -
-				  match->final_addr;
+		  int new_delta = (int)(map->tuples[*next_fa_idx_ptr].final_addr
+					- match->final_addr);
 		  if (new_delta < delta)
 		    {
 		      /* The next final address was less than our current end
@@ -10804,7 +10820,7 @@ dwarf2_const_value_data(struct attribute *attr, struct symbol *sym,
              >> ((sizeof(l) * 8UL) - bits));
     }
 
-  SYMBOL_VALUE(sym) = l;
+  SYMBOL_VALUE(sym) = (int)l;
   SYMBOL_CLASS(sym) = LOC_CONST;
 }
 
@@ -11751,31 +11767,28 @@ dwarf2_get_ref_die_offset (struct attribute *attr, struct dwarf2_cu *cu)
     case DW_FORM_ref4:
     case DW_FORM_ref8:
     case DW_FORM_ref_udata:
-      result = DW_ADDR (attr);
+      result = (unsigned int)DW_ADDR(attr);
       break;
     default:
-      complaint (&symfile_complaints,
-		 _("unsupported die ref attribute form: '%s'"),
-		 dwarf_form_name (attr->form));
+      complaint(&symfile_complaints,
+		_("unsupported die ref attribute form: '%s'"),
+		dwarf_form_name (attr->form));
     }
   return result;
 }
 
 /* Return the constant value held by the given attribute.  Return -1
    if the value held by the attribute is not constant.  */
-
 static int
-dwarf2_get_attr_constant_value (struct attribute *attr, int default_value)
+dwarf2_get_attr_constant_value(struct attribute *attr, int default_value)
 {
   if (attr->form == DW_FORM_sdata)
-    return DW_SND (attr);
-  else if (attr->form == DW_FORM_udata
-           || attr->form == DW_FORM_data1
-           || attr->form == DW_FORM_data2
-           || attr->form == DW_FORM_data4
-           || attr->form == DW_FORM_data8
-	   || attr->form == DW_FORM_APPLE_db_str)
-    return DW_UNSND (attr);
+    return DW_SND(attr);
+  else if ((attr->form == DW_FORM_udata) || (attr->form == DW_FORM_data1)
+           || (attr->form == DW_FORM_data2) || (attr->form == DW_FORM_data4)
+           || (attr->form == DW_FORM_data8)
+	   || (attr->form == DW_FORM_APPLE_db_str))
+    return DW_UNSND(attr);
   else
     {
       complaint(&symfile_complaints, _("Attribute value is not a constant (%s)"),
@@ -11803,8 +11816,8 @@ follow_die_ref(struct die_info *src_die, struct attribute *attr,
                            cu->header.initial_length_size)
     {
       struct dwarf2_per_cu_data *per_cu;
-      per_cu = dwarf2_find_containing_comp_unit (DW_ADDR (attr),
-                                                 cu->objfile);
+      per_cu = dwarf2_find_containing_comp_unit((unsigned long)DW_ADDR(attr),
+                                                cu->objfile);
       target_cu = per_cu->cu;
     }
   else

@@ -2384,6 +2384,10 @@ xcoff64_generate_rtinit(bfd *abfd, const char *init, const char *fini,
       memcpy(st_tmp, rtld_name, strlen(rtld_name));
       st_tmp += (strlen(rtld_name) + 1UL);
 
+      if (st_tmp == 0) {
+	; /* ???? */
+      }
+
       syment.n_sclass = C_EXT;
       syment.n_numaux = 1;
       bfd_coff_swap_sym_out(abfd, &syment,

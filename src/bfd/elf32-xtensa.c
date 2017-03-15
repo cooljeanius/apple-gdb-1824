@@ -6360,7 +6360,10 @@ compute_text_actions (bfd *abfd,
 
       if (irel && ELF32_R_TYPE (irel->r_info) != R_XTENSA_ASM_SIMPLIFY)
 	continue;
-      r_offset = irel->r_offset;
+      if (irel != NULL)
+	r_offset = irel->r_offset;
+      else
+	r_offset = 0;
 
       simplify_size = get_asm_simplify_size (contents, sec_size, r_offset);
       if (simplify_size == 0)
@@ -6373,8 +6376,10 @@ compute_text_actions (bfd *abfd,
 
       /* If the instruction table is not around, then don't do this
 	 relaxation.  */
-      the_entry = elf_xtensa_find_property_entry (prop_table, ptblsize,
-						  sec->vma + irel->r_offset);
+      the_entry =
+	elf_xtensa_find_property_entry(prop_table, ptblsize,
+				       ((irel != NULL) ? (sec->vma + irel->r_offset)
+					: (sec->vma + 0)));
       if (the_entry == NULL || XTENSA_NO_NOP_REMOVAL)
 	{
 	  text_action_add (&relax_info->action_list,

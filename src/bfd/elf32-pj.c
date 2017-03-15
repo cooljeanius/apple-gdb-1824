@@ -56,12 +56,14 @@ pj_elf_reloc (bfd *abfd,
       && bfd_is_und_section (symbol_in->section))
     return bfd_reloc_undefined;
 
-  if (bfd_is_com_section (symbol_in->section))
+  if ((symbol_in != NULL) && bfd_is_com_section(symbol_in->section))
     sym_value = 0;
+  else if (symbol_in != NULL)
+    sym_value = (symbol_in->value
+		 + symbol_in->section->output_section->vma
+		 + symbol_in->section->output_offset);
   else
-    sym_value = (symbol_in->value +
-		 symbol_in->section->output_section->vma +
-		 symbol_in->section->output_offset);
+    sym_value = 0;
 
   switch (r_type)
     {

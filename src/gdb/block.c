@@ -227,10 +227,10 @@ blockvector_for_pc_sect (CORE_ADDR pc, struct bfd_section *section,
     *pindex = 0;
 
   /* APPLE LOCAL begin cache lookup values for improved performance  */
-  if (pc == last_blockvector_lookup_pc
-      && pc == last_mapped_section_lookup_pc
-      && section == cached_mapped_section
-      && cached_blockvector)
+  if ((pc == last_blockvector_lookup_pc)
+      && (pc == last_mapped_section_lookup_pc)
+      && (section == cached_mapped_section)
+      && cached_blockvector && (pindex != NULL))
     {
       *pindex = cached_blockvector_index;
       return cached_blockvector;

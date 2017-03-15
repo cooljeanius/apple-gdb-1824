@@ -3425,7 +3425,7 @@ final_link_relocate (asection *input_section,
 	 input_bfd,
 	 input_section,
 	 offset,
-	 hsh->bh_root.string);
+	 ((hsh != NULL) ? hsh->bh_root.string : "hsh->bh_root.string"));
       bfd_set_error (bfd_error_bad_value);
       return bfd_reloc_notsupported;
     }
@@ -4129,11 +4129,13 @@ elf32_hppa_finish_dynamic_sections (bfd *output_bfd,
 
 	    case DT_JMPREL:
 	      s = htab->srelplt;
-	      dyn.d_un.d_ptr = s->output_section->vma + s->output_offset;
+	      BFD_ASSERT(s != NULL);
+	      dyn.d_un.d_ptr = (s->output_section->vma + s->output_offset);
 	      break;
 
 	    case DT_PLTRELSZ:
 	      s = htab->srelplt;
+	      BFD_ASSERT(s != NULL);
 	      dyn.d_un.d_val = s->size;
 	      break;
 
@@ -4192,11 +4194,12 @@ elf32_hppa_finish_dynamic_sections (bfd *output_bfd,
 		  + htab->splt->size - sizeof (plt_stub),
 		  plt_stub, sizeof (plt_stub));
 
-	  if ((htab->splt->output_offset
-	       + htab->splt->output_section->vma
-	       + htab->splt->size)
-	      != (htab->sgot->output_offset
-		  + htab->sgot->output_section->vma))
+	  if ((htab != NULL) && (htab->sgot != NULL)
+	      && ((htab->splt->output_offset
+		   + htab->splt->output_section->vma
+		   + htab->splt->size)
+		  != (htab->sgot->output_offset
+		      + htab->sgot->output_section->vma)))
 	    {
 	      (*_bfd_error_handler)
 		(_(".got section not immediately after .plt section"));

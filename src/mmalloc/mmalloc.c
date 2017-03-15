@@ -41,7 +41,7 @@ align(struct mdesc *mdp, size_t size)
   unsigned long int adj;
 
   result = mdp->morecore(mdp, (int)size);
-  adj = RESIDUAL(result, BLOCKSIZE);
+  adj = (unsigned long int)RESIDUAL(result, BLOCKSIZE);
   if (adj != 0)
     {
       adj = (BLOCKSIZE - adj);

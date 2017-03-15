@@ -229,6 +229,13 @@ extern int vsnprintf(char *, size_t, const char *, va_list);
 # endif /* !PATH_MAX */
 #endif /* !PATH_MAX */
 
+#ifndef min
+# define min(a, b) ((a) < (b) ? (a) : (b))
+#endif /* !min */
+#ifndef max
+# define max(a, b) ((a) > (b) ? (a) : (b))
+#endif /* !max */
+
 /* poison some unwanted functions: */
 #if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3)) && \
     !defined(NO_POISON) && !defined(FLEX_SCANNER)

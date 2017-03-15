@@ -892,7 +892,7 @@ main(int argc, char **argv)
   /* Resolve the stubs we build for PowerPC NetWare: */
   if (bfd_get_arch(inbfd) == bfd_arch_powerpc)
     powerpc_resolve_stubs(inbfd, outbfd);
-#endif /* NLMCONV_POWERPC */ 
+#endif /* NLMCONV_POWERPC */
 
   /* Copy over the sections.  */
   bfd_map_over_sections (inbfd, copy_sections, (void *) outbfd);
@@ -2062,12 +2062,14 @@ link_inputs(struct string_list *inputs, char *ld, char *the_map_file)
   int status;
   char *errfmt;
   char *errarg;
+  size_t len_for_argv;
 
   c = 0;
   for (q = inputs; q != NULL; q = q->next)
     ++c;
 
-  argv = (char **)alloca((c + 7) * sizeof(char *));
+  len_for_argv = min(((c + 7) * sizeof(char *)), MAX_ALLOCA_SIZE);
+  argv = (char **)alloca(len_for_argv);
 
 #ifndef __MSDOS__
   if (ld == NULL)

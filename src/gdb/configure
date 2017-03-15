@@ -47039,9 +47039,10 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wmisleading-indentation -Wlto-type-mismatch -Wtautological-compare \
 -Wduplicated-cond -Wwrite-strings -Wenum-compare -Wnonnull-compare \
 -Wdangling-else -Wmemset-elt-size -Wswitch-unreachable -Whsa \
--Wscalar-storage-order -Wimplicit-fallthrough -Wformat-length=2 \
+-Wscalar-storage-order -Wimplicit-fallthrough=3 \
+-Wformat-overflow=2 -Wformat-truncation=2 \
 -Wexpansion-to-defined -Wint-in-bool-context -Wbool-operation \
--Wduplicated-branches -Wstringop-overflow -Wbuiltin-declaration-mismatch \
+-Wduplicated-branches -Wstringop-overflow=2 -Wbuiltin-declaration-mismatch \
 -Walloc-zero -Walloc-size-larger-than=2147483647"
 link_warnings=""
 
@@ -47145,14 +47146,12 @@ fi
 # clang-specific warnings:
 if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
   build_warnings="${build_warnings} -Wgcc-compat -Wasm \
--Wmissing-variable-declarations -Wunneeded-internal-declaration \
--Wstring-plus-int -Wstring-conversion -Wbool-conversion \
--Wconstant-logical-operand -Wunreachable-code-break -Wunused-comparison \
+-Wunneeded-internal-declaration -Wstring-plus-int -Wstring-conversion \
+-Wbool-conversion -Wconstant-logical-operand -Wunused-comparison \
 -Wabsolute-value -Wtautological-constant-out-of-range-compare \
 -Wunevaluated-expression -Wextra-semi -Wunsequenced -Wself-assign \
 -Wshift-sign-overflow -Wstatic-in-inline -Wparentheses-equality \
 -Wincompatible-pointer-types-discards-qualifiers -Winvalid-noreturn"
-  # possibly remove -Wmissing-variable-declarations
   if test "x${enable_build_with_cxx}" = "xyes"; then
     build_warnings="${build_warnings} -Wmismatched-tags \
 -Wmissing-exception-spec -Wpessimizing-move -Wredundant-move \

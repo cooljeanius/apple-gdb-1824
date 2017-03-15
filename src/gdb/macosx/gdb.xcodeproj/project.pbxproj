@@ -554,7 +554,6 @@
 		A53F04D81B45F8A7005B5360 /* mkstemps.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE330E82C411008125DE /* mkstemps.c */; };
 		A53F04D91B45F8A7005B5360 /* msdos.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE340E82C411008125DE /* msdos.c */; };
 		A53F04DA1B45F8A7005B5360 /* objalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE350E82C411008125DE /* objalloc.c */; };
-		A53F04DB1B45F8A7005B5360 /* obstack.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE360E82C411008125DE /* obstack.c */; };
 		A53F04DC1B45F8A7005B5360 /* partition.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE380E82C411008125DE /* partition.c */; };
 		A53F04DD1B45F8A7005B5360 /* pex-common.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE390E82C411008125DE /* pex-common.c */; };
 		A53F04E01B45F8A7005B5360 /* pex-one.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609DE3D0E82C411008125DE /* pex-one.c */; };
@@ -658,69 +657,6 @@
 			remoteGlobalIDString = EF02A49D094A5623002B0BF1;
 			remoteInfo = test;
 		};
-		612ED1371CF5F08500C4DE04 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 618C88B01CEE81F1004BBE5E;
-			remoteInfo = "Wish (Upgraded)";
-		};
-		612ED1391CF5F08500C4DE04 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 618C89991CEE81F1004BBE5E;
-			remoteInfo = "TkLibrary (Upgraded)";
-		};
-		612ED13B1CF5F08500C4DE04 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 618C89A51CEE81F1004BBE5E;
-			remoteInfo = "TkStubLibrary (Upgraded)";
-		};
-		612ED13D1CF5F08500C4DE04 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = F537569F016C4DD401DC9062;
-			remoteInfo = Wish;
-		};
-		612ED13F1CF5F08500C4DE04 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = F53755DE016C38D201DC9062;
-			remoteInfo = TkLibrary;
-		};
-		612ED1411CF5F08500C4DE04 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = F548F8CF0313CEF0016F146B;
-			remoteInfo = TkStubLibrary;
-		};
-		618C84661CEA08C8004BBE5E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 618C845F1CEA08C8004BBE5E /* zlib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D2AAC0630554660B00DB518D;
-			remoteInfo = libz;
-		};
-		618C847A1CEA0901004BBE5E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A50F55621808CA1C008BA312;
-			remoteInfo = Tcl_Upgraded;
-		};
-		618C847C1CEA0901004BBE5E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 00E2F84D016E92110ACA28DC;
-			remoteInfo = Tcl;
-		};
 		61D2220C192D6D7C00FA979E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -734,6 +670,69 @@
 			proxyType = 1;
 			remoteGlobalIDString = 61D221C9192D63C200FA979E;
 			remoteInfo = configure;
+		};
+		A52EF2CB1E778DEB00866EDC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A50F55621808CA1C008BA312 /* Tcl.framework */;
+			remoteInfo = Tcl_Upgraded;
+		};
+		A52EF2CD1E778DEB00866EDC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00E2F84D016E92110ACA28DC /* Tcl.framework */;
+			remoteInfo = Tcl;
+		};
+		A52EF2F51E778E0C00866EDC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 618C88B01CEE81F1004BBE5E /* Wish Shell.app */;
+			remoteInfo = "Wish (Upgraded)";
+		};
+		A52EF2F71E778E0C00866EDC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 618C89991CEE81F1004BBE5E /* Tk.framework */;
+			remoteInfo = "TkLibrary (Upgraded)";
+		};
+		A52EF2F91E778E0C00866EDC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 618C89A51CEE81F1004BBE5E /* libtkstub8.4.a */;
+			remoteInfo = "TkStubLibrary (Upgraded)";
+		};
+		A52EF2FB1E778E0C00866EDC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F537569F016C4DD401DC9062 /* Wish Shell.app */;
+			remoteInfo = Wish;
+		};
+		A52EF2FD1E778E0C00866EDC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F53755DE016C38D201DC9062 /* Tk.framework */;
+			remoteInfo = TkLibrary;
+		};
+		A52EF2FF1E778E0C00866EDC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F548F8CF0313CEF0016F146B /* libtkstub8.4.a */;
+			remoteInfo = TkStubLibrary;
+		};
+		A52EF30F1E778E3900866EDC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 618C845F1CEA08C8004BBE5E /* zlib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC0630554660B00DB518D /* libz.1.2.8.dylib */;
+			remoteInfo = libz;
 		};
 		A53F07961B4636BE005B5360 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1215,8 +1214,8 @@
 		2609D2C50E82C409008125DE /* amd64-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "amd64-nat.c"; sourceTree = "<group>"; };
 		2609D2C60E82C409008125DE /* amd64-nat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "amd64-nat.h"; sourceTree = "<group>"; };
 		2609D2C70E82C409008125DE /* amd64-sol2-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "amd64-sol2-tdep.c"; path = "../amd64-sol2-tdep.c"; sourceTree = "<group>"; };
-		2609D2C80E82C409008125DE /* amd64-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "amd64-tdep.c"; path = "../amd64-tdep.c"; sourceTree = "<group>"; };
-		2609D2C90E82C409008125DE /* amd64-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "amd64-tdep.h"; path = "../amd64-tdep.h"; sourceTree = "<group>"; };
+		2609D2C80E82C409008125DE /* amd64-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "amd64-tdep.c"; sourceTree = "<group>"; };
+		2609D2C90E82C409008125DE /* amd64-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "amd64-tdep.h"; sourceTree = "<group>"; };
 		2609D2CA0E82C409008125DE /* amd64bsd-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "amd64bsd-nat.c"; sourceTree = "<group>"; };
 		2609D2CB0E82C409008125DE /* amd64fbsd-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "amd64fbsd-nat.c"; sourceTree = "<group>"; };
 		2609D2CC0E82C409008125DE /* amd64fbsd-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "amd64fbsd-tdep.c"; path = "../amd64fbsd-tdep.c"; sourceTree = "<group>"; };
@@ -2776,11 +2775,11 @@
 		2633ABCC101A22EC00337952 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../tot/gdb/Makefile; sourceTree = "<group>"; };
 		6108ED351BB0866700696685 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
 		611906D01CA5D4B900AD73D8 /* x86_64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x86_64.h; path = "/var/root/apple-gdb-1824/src/include/coff/x86_64.h"; sourceTree = "<absolute>"; };
-		6119070A1CA5E5E400AD73D8 /* elfnn-aarch64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "elfnn-aarch64.c"; path = "/var/root/apple-gdb-1824/src/bfd/elfnn-aarch64.c"; sourceTree = "<absolute>"; };
-		611907221CA6311F00AD73D8 /* elf-attrs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "elf-attrs.c"; path = "/var/root/apple-gdb-1824/src/bfd/elf-attrs.c"; sourceTree = "<absolute>"; };
-		611909B61CAB06A200AD73D8 /* cpu-aarch64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "cpu-aarch64.c"; path = "/var/root/apple-gdb-1824/src/bfd/cpu-aarch64.c"; sourceTree = "<absolute>"; };
-		61190A2B1CAB275E00AD73D8 /* coff-z80.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "coff-z80.c"; path = "/var/root/apple-gdb-1824/src/bfd/coff-z80.c"; sourceTree = "<absolute>"; };
-		61190B141CAB777300AD73D8 /* a29k-dis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "a29k-dis.h"; path = "/var/root/apple-gdb-1824/src/opcodes/a29k-dis.h"; sourceTree = "<absolute>"; };
+		6119070A1CA5E5E400AD73D8 /* elfnn-aarch64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elfnn-aarch64.c"; sourceTree = "<group>"; };
+		611907221CA6311F00AD73D8 /* elf-attrs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf-attrs.c"; sourceTree = "<group>"; };
+		611909B61CAB06A200AD73D8 /* cpu-aarch64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cpu-aarch64.c"; sourceTree = "<group>"; };
+		61190A2B1CAB275E00AD73D8 /* coff-z80.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "coff-z80.c"; sourceTree = "<group>"; };
+		61190B141CAB777300AD73D8 /* a29k-dis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "a29k-dis.h"; sourceTree = "<group>"; };
 		6125D9D91BD56BFE001CF3C9 /* CFDataFormatters.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CFDataFormatters.plist; sourceTree = "<group>"; };
 		6125D9DA1BD56BFE001CF3C9 /* CoreGraphics.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CoreGraphics.plist; sourceTree = "<group>"; };
 		6125D9DB1BD56BFE001CF3C9 /* CoreServices.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CoreServices.plist; sourceTree = "<group>"; };
@@ -2825,16 +2824,16 @@
 		61265A121BA8A37B000CA982 /* scm-type.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "scm-type.c"; sourceTree = "<group>"; };
 		61265A131BA8A37B000CA982 /* scm-utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "scm-utils.c"; sourceTree = "<group>"; };
 		61265A141BA8A37B000CA982 /* scm-value.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "scm-value.c"; sourceTree = "<group>"; };
-		612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Wish.xcodeproj; path = "/var/root/apple-gdb-1824/src/tk/macosx/Wish.xcodeproj"; sourceTree = "<absolute>"; };
-		618C845F1CEA08C8004BBE5E /* zlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = zlib.xcodeproj; path = "/var/root/apple-gdb-1824/src/zlib/zlib.xcodeproj"; sourceTree = "<absolute>"; };
-		618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Tcl.xcodeproj; path = "/var/root/apple-gdb-1824/src/tcl/macosx/Tcl.xcodeproj"; sourceTree = "<absolute>"; };
+		612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Wish.xcodeproj; path = ../tk/macosx/Wish.xcodeproj; sourceTree = "<group>"; };
+		618C845F1CEA08C8004BBE5E /* zlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = zlib.xcodeproj; path = ../zlib/zlib.xcodeproj; sourceTree = "<group>"; };
+		618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Tcl.xcodeproj; path = tcl/macosx/Tcl.xcodeproj; sourceTree = "<group>"; };
 		619631631C55A0B4001EA510 /* libmmalloc.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libmmalloc.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		619BECD61CF5F4C400FFE19D /* bfin-dis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "bfin-dis.c"; path = "/var/root/apple-gdb-1824/src/opcodes/bfin-dis.c"; sourceTree = "<absolute>"; };
+		619BECD61CF5F4C400FFE19D /* bfin-dis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "bfin-dis.c"; sourceTree = "<group>"; };
 		619D55E21C6A56D900F07C54 /* copying.awk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = copying.awk; sourceTree = "<group>"; };
-		619D56831C6A5E4A00F07C54 /* dummy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dummy.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/dummy.c"; sourceTree = "<absolute>"; };
-		619D56851C6A5E4A00F07C54 /* link-warning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "link-warning.h"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/extra/link-warning.h"; sourceTree = "<absolute>"; };
-		619D56971C6A5E4A00F07C54 /* gnulib-tool */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "gnulib-tool"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/gnulib-tool"; sourceTree = "<absolute>"; };
-		619D569A1C6A5E4A00F07C54 /* alignof.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = alignof.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/alignof.h"; sourceTree = "<absolute>"; };
+		619D56831C6A5E4A00F07C54 /* dummy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dummy.c; sourceTree = "<group>"; };
+		619D56851C6A5E4A00F07C54 /* link-warning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "link-warning.h"; sourceTree = "<group>"; };
+		619D56971C6A5E4A00F07C54 /* gnulib-tool */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "gnulib-tool"; sourceTree = "<group>"; };
+		619D569A1C6A5E4A00F07C54 /* alignof.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = alignof.h; sourceTree = "<group>"; };
 		619D569B1C6A5E4A00F07C54 /* alloca.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = alloca.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/alloca.c"; sourceTree = "<absolute>"; };
 		619D569C1C6A5E4A00F07C54 /* alloca.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = alloca.in.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/alloca.in.h"; sourceTree = "<absolute>"; };
 		619D569D1C6A5E4A00F07C54 /* assert.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = assert.in.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/assert.in.h"; sourceTree = "<absolute>"; };
@@ -2859,7 +2858,7 @@
 		619D56B01C6A5E4A00F07C54 /* cloexec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cloexec.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/cloexec.h"; sourceTree = "<absolute>"; };
 		619D56B11C6A5E4A00F07C54 /* close.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = close.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/close.c"; sourceTree = "<absolute>"; };
 		619D56B21C6A5E4A00F07C54 /* closedir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = closedir.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/closedir.c"; sourceTree = "<absolute>"; };
-		619D56B31C6A5E4A00F07C54 /* config.charset */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = config.charset; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/config.charset"; sourceTree = "<absolute>"; };
+		619D56B31C6A5E4A00F07C54 /* config.charset */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = config.charset; sourceTree = "<group>"; };
 		619D56B41C6A5E4A00F07C54 /* creat-safer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "creat-safer.c"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/creat-safer.c"; sourceTree = "<absolute>"; };
 		619D56B51C6A5E4A00F07C54 /* cycle-check.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "cycle-check.c"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/cycle-check.c"; sourceTree = "<absolute>"; };
 		619D56B61C6A5E4A00F07C54 /* cycle-check.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "cycle-check.h"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/cycle-check.h"; sourceTree = "<absolute>"; };
@@ -2968,8 +2967,8 @@
 		619D57F41C6A5E4B00F07C54 /* msvc-inval.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "msvc-inval.c"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/msvc-inval.c"; sourceTree = "<absolute>"; };
 		619D57F51C6A5E4B00F07C54 /* msvc-inval.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "msvc-inval.h"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/msvc-inval.h"; sourceTree = "<absolute>"; };
 		619D57F61C6A5E4B00F07C54 /* nl_langinfo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = nl_langinfo.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/nl_langinfo.c"; sourceTree = "<absolute>"; };
-		619D57F71C6A5E4B00F07C54 /* obstack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = obstack.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/obstack.c"; sourceTree = "<absolute>"; };
-		619D57F81C6A5E4B00F07C54 /* obstack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = obstack.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/obstack.h"; sourceTree = "<absolute>"; };
+		619D57F71C6A5E4B00F07C54 /* obstack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = obstack.c; sourceTree = "<group>"; };
+		619D57F81C6A5E4B00F07C54 /* obstack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = obstack.h; sourceTree = "<group>"; };
 		619D57F91C6A5E4B00F07C54 /* open-safer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "open-safer.c"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/open-safer.c"; sourceTree = "<absolute>"; };
 		619D57FA1C6A5E4B00F07C54 /* open.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = open.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/open.c"; sourceTree = "<absolute>"; };
 		619D57FB1C6A5E4B00F07C54 /* openat-die.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "openat-die.c"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/openat-die.c"; sourceTree = "<absolute>"; };
@@ -3050,8 +3049,8 @@
 		619D584A1C6A5E4B00F07C54 /* unistd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unistd.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/unistd.c"; sourceTree = "<absolute>"; };
 		619D584B1C6A5E4B00F07C54 /* unistd.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unistd.in.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/unistd.in.h"; sourceTree = "<absolute>"; };
 		619D584C1C6A5E4B00F07C54 /* unitypes.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unitypes.in.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/unitypes.in.h"; sourceTree = "<absolute>"; };
-		619D584E1C6A5E4B00F07C54 /* cjk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cjk.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/uniwidth/cjk.h"; sourceTree = "<absolute>"; };
-		619D584F1C6A5E4B00F07C54 /* width.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = width.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/uniwidth/width.c"; sourceTree = "<absolute>"; };
+		619D584E1C6A5E4B00F07C54 /* cjk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cjk.h; sourceTree = "<group>"; };
+		619D584F1C6A5E4B00F07C54 /* width.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = width.c; sourceTree = "<group>"; };
 		619D58501C6A5E4B00F07C54 /* uniwidth.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uniwidth.in.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/uniwidth.in.h"; sourceTree = "<absolute>"; };
 		619D58511C6A5E4B00F07C54 /* unlink.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unlink.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/unlink.c"; sourceTree = "<absolute>"; };
 		619D58521C6A5E4B00F07C54 /* usleep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = usleep.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/usleep.c"; sourceTree = "<absolute>"; };
@@ -3068,16 +3067,16 @@
 		619D585D1C6A5E4B00F07C54 /* xalloc-die.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "xalloc-die.c"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/xalloc-die.c"; sourceTree = "<absolute>"; };
 		619D585E1C6A5E4B00F07C54 /* xalloc-oversized.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "xalloc-oversized.h"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/xalloc-oversized.h"; sourceTree = "<absolute>"; };
 		619D585F1C6A5E4B00F07C54 /* xalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xalloc.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/xalloc.h"; sourceTree = "<absolute>"; };
-		619D58601C6A5E4B00F07C54 /* xmalloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = xmalloc.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/xmalloc.c"; sourceTree = "<absolute>"; };
-		619D58621C6A5E4B00F07C54 /* ldd.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ldd.sh; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/ldd.sh"; sourceTree = "<absolute>"; };
-		619D587F1C6A5E4C00F07C54 /* memchr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = memchr.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/memchr.c"; sourceTree = "<absolute>"; };
-		619D58801C6A5E4C00F07C54 /* memcmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = memcmp.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/memcmp.c"; sourceTree = "<absolute>"; };
-		619D58811C6A5E4C00F07C54 /* memmem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = memmem.c; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/memmem.c"; sourceTree = "<absolute>"; };
-		619D58851C6A5E4C00F07C54 /* stdint.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stdint.in.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/stdint.in.h"; sourceTree = "<absolute>"; };
-		619D58861C6A5E4C00F07C54 /* str-two-way.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "str-two-way.h"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/str-two-way.h"; sourceTree = "<absolute>"; };
-		619D58871C6A5E4C00F07C54 /* string.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string.in.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/string.in.h"; sourceTree = "<absolute>"; };
-		619D58891C6A5E4C00F07C54 /* update-gnulib.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "update-gnulib.sh"; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/update-gnulib.sh"; sourceTree = "<absolute>"; };
-		619D588A1C6A5E4C00F07C54 /* wchar.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wchar.in.h; path = "/var/root/apple-gdb-1824/src/gdb/gnulib/wchar.in.h"; sourceTree = "<absolute>"; };
+		619D58601C6A5E4B00F07C54 /* xmalloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xmalloc.c; sourceTree = "<group>"; };
+		619D58621C6A5E4B00F07C54 /* ldd.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = ldd.sh; sourceTree = "<group>"; };
+		619D587F1C6A5E4C00F07C54 /* memchr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memchr.c; sourceTree = "<group>"; };
+		619D58801C6A5E4C00F07C54 /* memcmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memcmp.c; sourceTree = "<group>"; };
+		619D58811C6A5E4C00F07C54 /* memmem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memmem.c; sourceTree = "<group>"; };
+		619D58851C6A5E4C00F07C54 /* stdint.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdint.in.h; sourceTree = "<group>"; };
+		619D58861C6A5E4C00F07C54 /* str-two-way.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "str-two-way.h"; sourceTree = "<group>"; };
+		619D58871C6A5E4C00F07C54 /* string.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = string.in.h; sourceTree = "<group>"; };
+		619D58891C6A5E4C00F07C54 /* update-gnulib.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "update-gnulib.sh"; sourceTree = "<group>"; };
+		619D588A1C6A5E4C00F07C54 /* wchar.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wchar.in.h; sourceTree = "<group>"; };
 		61AA20741CD3F3F00045E89A /* m68hc11-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "m68hc11-tdep.h"; path = "/var/root/apple-gdb-1824/src/gdb/m68hc11-tdep.h"; sourceTree = "<absolute>"; };
 		61AA20BF1CD647B50045E89A /* tm-mach3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-mach3.h"; sourceTree = "<group>"; };
 		61AA20C01CD6CC6B0045E89A /* remote-mips.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "remote-mips.h"; sourceTree = "<group>"; };
@@ -3157,7 +3156,7 @@
 		61AA229F1CD81C2A0045E89A /* vax-opcode_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "vax-opcode_old.h"; sourceTree = "<group>"; };
 		61AA22A01CD81C2A0045E89A /* vax-pinsn_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "vax-pinsn_old.c"; sourceTree = "<group>"; };
 		61B459BC1E1ADD140057F612 /* gdbtext */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = gdbtext; sourceTree = "<group>"; };
-		61D08A9D1CB7171B00998571 /* cpu-z80.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "cpu-z80.c"; path = "/var/root/apple-gdb-1824/src/bfd/cpu-z80.c"; sourceTree = "<absolute>"; };
+		61D08A9D1CB7171B00998571 /* cpu-z80.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cpu-z80.c"; sourceTree = "<group>"; };
 		61D22058192D60D100FA979E /* libbfd-shared.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libbfd-shared.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		61D8186E192FE3AB00E440C0 /* chew */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = chew; sourceTree = BUILT_PRODUCTS_DIR; };
 		61F32D341CC364EB00C05007 /* aux.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = aux.mt; path = "/var/root/apple-gdb-1824/src/gdb/config/m68k/aux.mt"; sourceTree = "<absolute>"; };
@@ -9577,19 +9576,6 @@
 			path = utils;
 			sourceTree = "<group>";
 		};
-		612ED12C1CF5F08500C4DE04 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				612ED1381CF5F08500C4DE04 /* Wish Shell.app */,
-				612ED13A1CF5F08500C4DE04 /* Tk.framework */,
-				612ED13C1CF5F08500C4DE04 /* libtkstub8.4.a */,
-				612ED13E1CF5F08500C4DE04 /* Wish Shell.app */,
-				612ED1401CF5F08500C4DE04 /* Tk.framework */,
-				612ED1421CF5F08500C4DE04 /* libtkstub8.4.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		618C83F11CEA0866004BBE5E /* zlib */ = {
 			isa = PBXGroup;
 			children = (
@@ -9599,29 +9585,12 @@
 			path = gdb;
 			sourceTree = "<group>";
 		};
-		618C84601CEA08C8004BBE5E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				618C84671CEA08C8004BBE5E /* libz.1.2.8.dylib */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		618C846C1CEA08D9004BBE5E /* tcl */ = {
 			isa = PBXGroup;
 			children = (
 				618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */,
 			);
 			name = tcl;
-			sourceTree = "<group>";
-		};
-		618C846F1CEA0901004BBE5E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				618C847B1CEA0901004BBE5E /* Tcl.framework */,
-				618C847D1CEA0901004BBE5E /* Tcl.framework */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		619D566B1C6A5E4A00F07C54 /* gnulib */ = {
@@ -9649,9 +9618,8 @@
 			children = (
 				619D56851C6A5E4A00F07C54 /* link-warning.h */,
 			);
-			name = extra;
-			path = "/var/root/apple-gdb-1824/src/gdb/gnulib/extra";
-			sourceTree = "<absolute>";
+			path = extra;
+			sourceTree = "<group>";
 		};
 		619D56981C6A5E4A00F07C54 /* import */ = {
 			isa = PBXGroup;
@@ -9883,9 +9851,8 @@
 				619D585F1C6A5E4B00F07C54 /* xalloc.h */,
 				619D58601C6A5E4B00F07C54 /* xmalloc.c */,
 			);
-			name = import;
-			path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import";
-			sourceTree = "<absolute>";
+			path = import;
+			sourceTree = "<group>";
 		};
 		619D56C81C6A5E4A00F07C54 /* extra */ = {
 			isa = PBXGroup;
@@ -9896,9 +9863,8 @@
 				619D56D41C6A5E4A00F07C54 /* update-copyright */,
 				619D56D51C6A5E4A00F07C54 /* vc-list-files */,
 			);
-			name = extra;
-			path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/extra";
-			sourceTree = "<absolute>";
+			path = extra;
+			sourceTree = "<group>";
 		};
 		619D56CD1C6A5E4A00F07C54 /* snippet */ = {
 			isa = PBXGroup;
@@ -9919,9 +9885,8 @@
 				619D584E1C6A5E4B00F07C54 /* cjk.h */,
 				619D584F1C6A5E4B00F07C54 /* width.c */,
 			);
-			name = uniwidth;
-			path = "/var/root/apple-gdb-1824/src/gdb/gnulib/import/uniwidth";
-			sourceTree = "<absolute>";
+			path = uniwidth;
+			sourceTree = "<group>";
 		};
 		61AA224F1CD81C2A0045E89A /* attic */ = {
 			isa = PBXGroup;
@@ -11357,6 +11322,36 @@
 			path = "vx-share";
 			sourceTree = "<group>";
 			tabWidth = 4;
+		};
+		A52EF2C31E778DEB00866EDC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A52EF2CC1E778DEB00866EDC /* Tcl.framework */,
+				A52EF2CE1E778DEB00866EDC /* Tcl.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A52EF2ED1E778E0C00866EDC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A52EF2F61E778E0C00866EDC /* Wish Shell.app */,
+				A52EF2F81E778E0C00866EDC /* Tk.framework */,
+				A52EF2FA1E778E0C00866EDC /* libtkstub8.4.a */,
+				A52EF2FC1E778E0C00866EDC /* Wish Shell.app */,
+				A52EF2FE1E778E0C00866EDC /* Tk.framework */,
+				A52EF3001E778E0C00866EDC /* libtkstub8.4.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A52EF30C1E778E3900866EDC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A52EF3101E778E3900866EDC /* libz.1.2.8.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
 		};
 		A53AC0491A3A8CBE002F20B2 /* mmalloc */ = {
 			isa = PBXGroup;
@@ -14006,7 +14001,7 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 618C846F1CEA0901004BBE5E /* Products */;
+					ProductGroup = A52EF2C31E778DEB00866EDC /* Products */;
 					ProjectRef = 618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */;
 				},
 				{
@@ -14014,11 +14009,11 @@
 					ProjectRef = 6125D9F71BD56BFF001CF3C9 /* unicode_formatter.xcodeproj */;
 				},
 				{
-					ProductGroup = 612ED12C1CF5F08500C4DE04 /* Products */;
+					ProductGroup = A52EF2ED1E778E0C00866EDC /* Products */;
 					ProjectRef = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
 				},
 				{
-					ProductGroup = 618C84601CEA08C8004BBE5E /* Products */;
+					ProductGroup = A52EF30C1E778E3900866EDC /* Products */;
 					ProjectRef = 618C845F1CEA08C8004BBE5E /* zlib.xcodeproj */;
 				},
 			);
@@ -14066,67 +14061,67 @@
 			remoteRef = 6125DA3C1BD56E11001CF3C9 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		612ED1381CF5F08500C4DE04 /* Wish Shell.app */ = {
+		A52EF2CC1E778DEB00866EDC /* Tcl.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Tcl.framework;
+			remoteRef = A52EF2CB1E778DEB00866EDC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A52EF2CE1E778DEB00866EDC /* Tcl.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Tcl.framework;
+			remoteRef = A52EF2CD1E778DEB00866EDC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A52EF2F61E778E0C00866EDC /* Wish Shell.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = "Wish Shell.app";
-			remoteRef = 612ED1371CF5F08500C4DE04 /* PBXContainerItemProxy */;
+			remoteRef = A52EF2F51E778E0C00866EDC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		612ED13A1CF5F08500C4DE04 /* Tk.framework */ = {
+		A52EF2F81E778E0C00866EDC /* Tk.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Tk.framework;
-			remoteRef = 612ED1391CF5F08500C4DE04 /* PBXContainerItemProxy */;
+			remoteRef = A52EF2F71E778E0C00866EDC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		612ED13C1CF5F08500C4DE04 /* libtkstub8.4.a */ = {
+		A52EF2FA1E778E0C00866EDC /* libtkstub8.4.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libtkstub8.4.a;
-			remoteRef = 612ED13B1CF5F08500C4DE04 /* PBXContainerItemProxy */;
+			remoteRef = A52EF2F91E778E0C00866EDC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		612ED13E1CF5F08500C4DE04 /* Wish Shell.app */ = {
+		A52EF2FC1E778E0C00866EDC /* Wish Shell.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = "Wish Shell.app";
-			remoteRef = 612ED13D1CF5F08500C4DE04 /* PBXContainerItemProxy */;
+			remoteRef = A52EF2FB1E778E0C00866EDC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		612ED1401CF5F08500C4DE04 /* Tk.framework */ = {
+		A52EF2FE1E778E0C00866EDC /* Tk.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Tk.framework;
-			remoteRef = 612ED13F1CF5F08500C4DE04 /* PBXContainerItemProxy */;
+			remoteRef = A52EF2FD1E778E0C00866EDC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		612ED1421CF5F08500C4DE04 /* libtkstub8.4.a */ = {
+		A52EF3001E778E0C00866EDC /* libtkstub8.4.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
 			path = libtkstub8.4.a;
-			remoteRef = 612ED1411CF5F08500C4DE04 /* PBXContainerItemProxy */;
+			remoteRef = A52EF2FF1E778E0C00866EDC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		618C84671CEA08C8004BBE5E /* libz.1.2.8.dylib */ = {
+		A52EF3101E778E3900866EDC /* libz.1.2.8.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
 			path = libz.1.2.8.dylib;
-			remoteRef = 618C84661CEA08C8004BBE5E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		618C847B1CEA0901004BBE5E /* Tcl.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Tcl.framework;
-			remoteRef = 618C847A1CEA0901004BBE5E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		618C847D1CEA0901004BBE5E /* Tcl.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Tcl.framework;
-			remoteRef = 618C847C1CEA0901004BBE5E /* PBXContainerItemProxy */;
+			remoteRef = A52EF30F1E778E3900866EDC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -14626,7 +14621,6 @@
 				A53F04D81B45F8A7005B5360 /* mkstemps.c in Sources */,
 				A53F04D91B45F8A7005B5360 /* msdos.c in Sources */,
 				A53F04DA1B45F8A7005B5360 /* objalloc.c in Sources */,
-				A53F04DB1B45F8A7005B5360 /* obstack.c in Sources */,
 				A53F04DC1B45F8A7005B5360 /* partition.c in Sources */,
 				A53F04DD1B45F8A7005B5360 /* pex-common.c in Sources */,
 				A53F04E01B45F8A7005B5360 /* pex-one.c in Sources */,
@@ -15106,6 +15100,7 @@
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				WARNING_CFLAGS = (
+					"-Wfatal-errors",
 					"-Wall",
 					"-Wimplicit",
 					"-Wformat=2",
@@ -15787,7 +15782,10 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "HAVE_CONFIG_H=1";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"HAVE_CONFIG_H=1",
+					_DARWIN_UNLIMITED_STREAMS,
+				);
 				GCC_STRICT_ALIASING = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = YES;
@@ -15823,7 +15821,7 @@
 				PREBINDING = NO;
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = libiberty;
-				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = NO;
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = "non-global";
 				VALIDATE_PRODUCT = YES;

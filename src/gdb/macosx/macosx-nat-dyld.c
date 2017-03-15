@@ -302,7 +302,7 @@ dyld_print_status_info(struct macosx_dyld_thread_status *s,
       break;
     default:
       internal_error(__FILE__, __LINE__, "invalid value for s->dyld_state");
-      break;
+      gdb_unreachable();
     }
 
   dyld_print_shlib_info(&s->current_info, mask, 1, args);
@@ -721,7 +721,7 @@ dyld_starts_here_p(mach_vm_address_t addr)
     }
 
   ret = vm_deallocate(mach_task_self(), data, data_count);
-  
+
   if (ret != KERN_SUCCESS) {
     warning(_("possible issue with vm_deallocate()"));
   }

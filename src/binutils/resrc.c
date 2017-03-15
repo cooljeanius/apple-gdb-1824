@@ -174,6 +174,7 @@ run_cmd(char *cmd, const char *redir)
   char sep;
   int redir_handle = -1;
   int stdout_save = -1;
+  size_t len_to_allocate;
 
   /* Count the args: */
   i = 0;
@@ -183,7 +184,8 @@ run_cmd(char *cmd, const char *redir)
       i++;
 
   i++;
-  argv = (const char **)alloca(sizeof(char *) * (i + 3));
+  len_to_allocate = min((sizeof(char *) * (i + 3)), MAX_ALLOCA_SIZE);
+  argv = (const char **)alloca(len_to_allocate);
   i = 0;
   s = cmd;
 
@@ -318,7 +320,7 @@ open_input_stream(char *cmd)
   if (xatexit_ret == -1) {
     fprintf(stderr, _("Failed to register close_input_stream with xatexit."));
   }
-  
+
   return cpp_pipe;
 }
 
@@ -413,7 +415,7 @@ read_rc_file(const char *filename, const char *preprocessor,
 	{
 	  if (*cp == '-')
 	    dash = cp;
-	  if ((cp != NULL) && 
+	  if ((cp != NULL) &&
 #if defined(__DJGPP__) || defined(__CYGWIN__) || defined(_WIN32)
 	      (*cp == ':') || (*cp == '\\') ||
 #endif /* __DJGPP__ || __CYGWIN__ || _WIN32 */
@@ -2522,7 +2524,7 @@ write_rc_versioninfo (FILE *e, const struct versioninfo *versioninfo)
 
 	    break;
 	  }
-	    
+
 	default:
 	  {
 	    fprintf(e, "%s", "");

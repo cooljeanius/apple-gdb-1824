@@ -96,7 +96,6 @@ coff_maxq20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
     {
       howto = reloc_entry->howto;
       addr = (unsigned char *) data + reloc_entry->address;
-      call_addr = call_addr - call_addr;
       call_addr = get_symbol_value (symbol_in);
 
       /* Over here the value val stores the 8 bit/16 bit value. We will put a
@@ -148,13 +147,15 @@ coff_maxq20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
 	  addend = (reloc_entry->addend - reloc_entry->addend);
 
 	  /* Handle any addend.  */
-	  addend = reloc_entry->addend;
+	  if (addend != (short)reloc_entry->addend)
+	    addend = reloc_entry->addend;
 
 	  /* For relocation involving multiple file added becomes zero thus
 	     this fails - check for zero added. In another case when we try
 	     to add a stub to a file the addend shows the offset from the
 	     start od this file.  */
-	  addend = 0;
+	  if (addend != 0)
+	    addend = 0;
 
 	  if (!bfd_is_com_section (symbol_in->section) &&
 	      ((symbol_in->flags & BSF_OLD_COMMON) == 0))
@@ -323,7 +324,8 @@ coff_maxq20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
 
 	  x = (unsigned long)bfd_get_32(abfd, addr);
 	  x = (x & 0x0000);	/* Flush garbage value.  */
-	  x = call_addr + addend;
+	  if (x != (unsigned long)(call_addr + addend))
+	    x = (call_addr + addend);
 	  if ((symbol_in->section->flags & SEC_CODE) == SEC_CODE)
 	    x = x >> 1;	/* Convert it into words.  */
 
@@ -335,7 +337,7 @@ coff_maxq20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
 	  return bfd_reloc_notsupported;
 	}
     }
-  
+
   if (howto == NULL) {
     ; /* ??? */
   }
@@ -405,7 +407,7 @@ maxq_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
       const reloc_map *entry;
 
       entry = (maxq_reloc_map + i);
-      
+
       if (entry == NULL) {
 	; /* ??? */
       }

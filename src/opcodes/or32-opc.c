@@ -848,6 +848,9 @@ static char disassembled_str[DISASSEMBLED_STR_LEN];
 char *disassembled = &disassembled_str[0];
 
 #if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3))
+# ifdef sprintf
+#  undef sprintf
+# endif /* sprintf */
 # pragma GCC poison sprintf
 #endif /* gcc 3+ */
 

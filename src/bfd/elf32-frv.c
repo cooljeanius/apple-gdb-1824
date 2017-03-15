@@ -1925,7 +1925,7 @@ _frvfdpic_emit_got_relocs_plt_entries (struct frvfdpic_relocs_info *entry,
 	    ;
 	  /* For other TLS symbols that bind locally, add the section
 	     TLS offset to the addend.  */
-	  else if (sec)
+	  else if (sec && (sec->output_section != NULL))
 	    ad += sec->output_section->vma - tls_biased_base (info);
 
 	  bfd_put_32 (output_bfd,
@@ -2045,7 +2045,7 @@ _frvfdpic_emit_got_relocs_plt_entries (struct frvfdpic_relocs_info *entry,
 	    ;
 	  /* For other TLS symbols that bind locally, add the section
 	     TLS offset to the addend.  */
-	  else if (sec)
+	  else if (sec && (sec->output_section != NULL))
 	    ad += sec->output_section->vma - tls_biased_base (info);
 
 	  if ((bfd_signed_vma)ad >= -(1 << (16 - 1))
@@ -3488,7 +3488,7 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	  check_segment[0] = isec_segment;
 	  if (! IS_FDPIC (output_bfd))
 	    check_segment[1] = isec_segment;
-	  else if (picrel->plt)
+	  else if ((picrel != NULL) && picrel->plt)
 	    {
 	      relocation = frvfdpic_plt_section (info)->output_section->vma
 		+ frvfdpic_plt_section (info)->output_offset
@@ -3499,13 +3499,13 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	     as calls to them must be protected by non-NULL tests
 	     anyway, and unprotected calls would invoke undefined
 	     behavior.  */
-	  else if (picrel->symndx == -1
-		   && picrel->d.h->root.type == bfd_link_hash_undefweak)
+	  else if ((picrel != NULL) && (picrel->symndx == -1)
+		   && (picrel->d.h->root.type == bfd_link_hash_undefweak))
 	    check_segment[1] = check_segment[0];
 	  else
 	    check_segment[1] = sec
 	      ? _frvfdpic_osec_to_segment (output_bfd, sec->output_section)
-	      : (unsigned)-1;
+	      : (unsigned int)-1;
 	  break;
 
 	case R_FRV_GOT12:
@@ -3798,19 +3798,21 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 			      + frvfdpic_got_initial_offset (info),
 			      contents + rel->r_offset + 4);
 		else
-		  /* A function descriptor used for lazy or local
-		     resolving is initialized such that its high word
-		     contains the output section index in which the
-		     PLT entries are located, and the low word
-		     contains the offset of the lazy PLT entry entry
-		     point into that section.  */
-		  bfd_put_32 (output_bfd,
-			      h && ! FRVFDPIC_SYM_LOCAL (info, h)
-			      ? 0
-			      : _frvfdpic_osec_to_segment (output_bfd,
-							   sec
-							   ->output_section),
-			      contents + rel->r_offset + 4);
+		  {
+		    BFD_ASSERT(sec != NULL);
+		    /* A function descriptor used for lazy or local
+		       resolving is initialized such that its high word
+		       contains the output section index in which the
+		       PLT entries are located, and the low word
+		       contains the offset of the lazy PLT entry entry
+		       point into that section.  */
+		    bfd_put_32(output_bfd,
+			       ((h && !FRVFDPIC_SYM_LOCAL(info, h))
+				? 0
+				: _frvfdpic_osec_to_segment(output_bfd,
+							    sec->output_section)),
+			       (contents + rel->r_offset + 4));
+		  }
 	      }
 	  }
 	  check_segment[0] = check_segment[1] = got_segment;
@@ -3822,9 +3824,10 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	case R_FRV_GPRELHI:
 	case R_FRV_GPRELLO:
 	  check_segment[0] = gprel_segment;
-	  check_segment[1] = sec
-	    ? _frvfdpic_osec_to_segment (output_bfd, sec->output_section)
-	    : (unsigned)-1;
+	  check_segment[1] = (sec
+			      ? _frvfdpic_osec_to_segment(output_bfd,
+							  sec->output_section)
+			      : (unsigned int)-1);
 	  break;
 
 	case R_FRV_GETTLSOFF:
@@ -3978,7 +3981,7 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
       switch (r_type)
 	{
 	case R_FRV_LABEL24:
-	  if (! IS_FDPIC (output_bfd) || ! picrel->plt)
+	  if (!IS_FDPIC(output_bfd) || ((picrel != NULL) && !picrel->plt))
 	    break;
 	  /* Fall through.  */
 
@@ -5412,9 +5415,11 @@ _frvfdpic_size_got_plt (bfd *output_bfd,
       * get_elf_backend_data (output_bfd)->s->sizeof_rel;
   else
     BFD_ASSERT (gpinfop->g.relocs == 0);
-  if (frvfdpic_gotrel_section (info)->size == 0)
-    frvfdpic_gotrel_section (info)->flags |= SEC_EXCLUDE;
-  else if (frvfdpic_gotrel_section (info)->contents == NULL)
+  if ((frvfdpic_gotrel_section(info) != NULL)
+      && (frvfdpic_gotrel_section(info)->size == 0))
+    frvfdpic_gotrel_section(info)->flags |= SEC_EXCLUDE;
+  else if ((frvfdpic_gotrel_section(info) != NULL)
+	   && (frvfdpic_gotrel_section(info)->contents == NULL))
     {
       frvfdpic_gotrel_section (info)->contents =
 	(bfd_byte *) bfd_zalloc (dynobj,
@@ -5482,8 +5487,8 @@ _frvfdpic_size_got_plt (bfd *output_bfd,
 
   /* Allocate a ret statement at plt_initial_offset, to be used by
      locally-resolved TLS descriptors.  */
-  if (gpinfop->g.tls_ret_refs)
-    frvfdpic_plt_section (info)->size += 4;
+  if (gpinfop->g.tls_ret_refs && (frvfdpic_plt_section(info) != NULL))
+    frvfdpic_plt_section(info)->size += 4;
 
   htab_traverse (frvfdpic_relocs_info (info), _frvfdpic_assign_plt_entries,
 		 gpinfop);
@@ -5849,22 +5854,26 @@ elf32_frvfdpic_finish_dynamic_sections (bfd *output_bfd,
 	      break;
 
 	    case DT_PLTGOT:
-	      dyn.d_un.d_ptr = frvfdpic_got_section (info)->output_section->vma
-		+ frvfdpic_got_section (info)->output_offset
-		+ frvfdpic_got_initial_offset (info);
-	      bfd_elf32_swap_dyn_out (output_bfd, &dyn, dyncon);
+	      BFD_ASSERT(frvfdpic_got_section(info) != NULL);
+	      dyn.d_un.d_ptr =
+		(frvfdpic_got_section(info)->output_section->vma
+		 + frvfdpic_got_section(info)->output_offset
+		 + frvfdpic_got_initial_offset(info));
+	      bfd_elf32_swap_dyn_out(output_bfd, &dyn, dyncon);
 	      break;
 
 	    case DT_JMPREL:
-	      dyn.d_un.d_ptr = frvfdpic_pltrel_section (info)
-		->output_section->vma
-		+ frvfdpic_pltrel_section (info)->output_offset;
-	      bfd_elf32_swap_dyn_out (output_bfd, &dyn, dyncon);
+	      BFD_ASSERT(frvfdpic_pltrel_section(info) != NULL);
+	      dyn.d_un.d_ptr =
+		(frvfdpic_pltrel_section(info)->output_section->vma
+		 + frvfdpic_pltrel_section(info)->output_offset);
+	      bfd_elf32_swap_dyn_out(output_bfd, &dyn, dyncon);
 	      break;
 
 	    case DT_PLTRELSZ:
-	      dyn.d_un.d_val = frvfdpic_pltrel_section (info)->size;
-	      bfd_elf32_swap_dyn_out (output_bfd, &dyn, dyncon);
+		BFD_ASSERT(frvfdpic_pltrel_section(info) != NULL);
+	      dyn.d_un.d_val = frvfdpic_pltrel_section(info)->size;
+	      bfd_elf32_swap_dyn_out(output_bfd, &dyn, dyncon);
 	      break;
 	    }
 	}
@@ -6183,6 +6192,7 @@ elf32_frv_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	  break;
 	}
 
+      BFD_ASSERT(picrel != NULL);
       switch (ELF32_R_TYPE (rel->r_info))
         {
 	case R_FRV_LABEL24:

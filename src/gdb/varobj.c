@@ -2341,7 +2341,6 @@ varobj_delete_objfiles_vars (struct objfile *ofile)
    obscured the typedef info.  Calling TYPE_TARGET_TYPE directly is more
    useful.
 */
-
 static struct type *
 get_type(struct varobj *var)
 {
@@ -3512,8 +3511,10 @@ varobj_value_struct_elt_by_index(struct varobj *parent, volatile int iindex,
 
   if (CPLUS_FAKE_CHILD(parent))
     parent_value = parent->parent->value;
-  else
+  else if (parent != NULL)
     parent_value = parent->value;
+  else
+    parent_value = NULL;
 
   parent_value = coerce_array(parent_value);
 
@@ -3785,7 +3786,7 @@ c_value_of_child(struct varobj *parent, int index, int *lookup_dynamic_type)
 }
 
 /* */
-static struct type *
+static ATTRIBUTE_NOINLINE struct type *
 c_type_of_child(struct varobj *parent, int index)
 {
   struct type *type;
@@ -3809,12 +3810,13 @@ c_type_of_child(struct varobj *parent, int index)
   switch (TYPE_CODE(parent_type))
     {
     case TYPE_CODE_ARRAY:
+      gdb_assert(parent != NULL);
       /* APPLE LOCAL: Don't call get_target_type here, that
 	 skips over typedefs, but what the variable was typedef'ed
 	 to be is often useful.  However, DO call check_typedef
          on the parent, or you won't get the real type of the
          child, you'll get what the parent was typedef'ed to.  */
-      type = TYPE_TARGET_TYPE (check_typedef(parent->type));
+      type = TYPE_TARGET_TYPE(check_typedef(parent->type));
       /* END APPLE LOCAL */
       break;
 
@@ -3824,7 +3826,7 @@ c_type_of_child(struct varobj *parent, int index)
 	 up by name which doesn't work for anonymous unions &
 	 structures.  */
 
-      type = varobj_lookup_struct_elt_type_by_index (parent, index);
+      type = varobj_lookup_struct_elt_type_by_index(parent, index);
       /* END APPLE LOCAL */
       break;
 
@@ -3833,15 +3835,15 @@ c_type_of_child(struct varobj *parent, int index)
       /* Be careful here, this might be a pointer pointing to a typedef,
 	 and we need to get the real thing here or the children will be
 	 wrong. */
-      target_type = check_typedef (get_target_type (parent_type));
-      switch (TYPE_CODE (target_type))
+      target_type = check_typedef(get_target_type(parent_type));
+      switch (TYPE_CODE(target_type))
 	{
 	case TYPE_CODE_STRUCT:
 	case TYPE_CODE_UNION:
 	  /* APPLE LOCAL: Can't use the lookup_struct_elt_type, since
 	     that looks up by name which doesn't work for anonymous
 	     unions & structures.  */
-	  type = varobj_lookup_struct_elt_type_by_index (parent, index);
+	  type = varobj_lookup_struct_elt_type_by_index(parent, index);
 	  break;
 
 	default:
@@ -3856,7 +3858,7 @@ c_type_of_child(struct varobj *parent, int index)
       /* FIXME: Can we still go on? */
       type = NULL;
       error("Child of parent: \"%s\" whose type: \"%d\" does not allow children",
-	    name_of_variable (parent), TYPE_CODE (parent_type));
+	    name_of_variable(parent), TYPE_CODE(parent_type));
       break;
     }
 
@@ -4562,7 +4564,7 @@ cplus_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type
 		}
 	      else
 		{
-		  /* We can't figure out what to cast the child to, so don't
+		  /* We cannot figure out what to cast the child to, so don't
 		     bother trying to print it...  */
 		  return NULL;
 		}
@@ -4577,13 +4579,14 @@ cplus_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type
   return value;
 }
 
-static struct type *
-cplus_type_of_child (struct varobj *parent, int index)
+/* */
+static ATTRIBUTE_NOINLINE struct type *
+cplus_type_of_child(struct varobj *parent, int index)
 {
   struct type *type, *t;
   int is_ptr;
 
-  if (CPLUS_FAKE_CHILD(parent))
+  if ((parent != NULL) && CPLUS_FAKE_CHILD(parent))
     t = get_type_deref(parent->parent, &is_ptr);
   else
     t = get_type_deref(parent, &is_ptr);
@@ -4631,7 +4634,7 @@ cplus_type_of_child (struct varobj *parent, int index)
     }
 
   if (type == NULL)
-    return c_type_of_child (parent, index);
+    return c_type_of_child(parent, index);
 
   return type;
 }
@@ -4693,42 +4696,51 @@ java_make_name_of_child(struct varobj *parent, int index)
   return name;
 }
 
+/* */
 static struct value *
-java_value_of_root (struct varobj **var_handle, enum varobj_type_change *type_changed)
+java_value_of_root(struct varobj **var_handle,
+		   enum varobj_type_change *type_changed)
 {
-  return cplus_value_of_root (var_handle, type_changed);
+  return cplus_value_of_root(var_handle, type_changed);
 }
 
+/* */
 static struct value *
-java_value_of_child (struct varobj *parent, int index, int *lookup_dynamic_type)
+java_value_of_child(struct varobj *parent, int index, int *lookup_dynamic_type)
 {
-  return cplus_value_of_child (parent, index, lookup_dynamic_type);
+  return cplus_value_of_child(parent, index, lookup_dynamic_type);
 }
 
+/* */
 static struct type *
-java_type_of_child (struct varobj *parent, int index)
+java_type_of_child(struct varobj *parent, int index)
 {
-  return cplus_type_of_child (parent, index);
+  gdb_assert(parent != NULL);
+  return cplus_type_of_child(parent, index);
 }
 
+/* */
 static int
-java_variable_editable (struct varobj *var)
+java_variable_editable(struct varobj *var)
 {
-  return cplus_variable_editable (var);
+  return cplus_variable_editable(var);
 }
 
+/* */
 static char *
-java_value_of_variable (struct varobj *var)
+java_value_of_variable(struct varobj *var)
 {
-  return cplus_value_of_variable (var);
+  return cplus_value_of_variable(var);
 }
 
+/* */
 static char *
-java_path_expr_of_child (struct varobj *parent, int index)
+java_path_expr_of_child(struct varobj *parent, int index)
 {
-  return cplus_path_expr_of_child (parent, index);
+  return cplus_path_expr_of_child(parent, index);
 }
 
+/* Usual gdb initialization hook: */
 extern void _initialize_varobj(void);
 void
 _initialize_varobj(void)

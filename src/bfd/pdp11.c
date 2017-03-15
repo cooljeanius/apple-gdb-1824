@@ -909,13 +909,20 @@ adjust_z_magic (bfd *abfd, struct internal_exec *execp)
 				: adata(abfd).zmagic_disk_block_size);
   if (! obj_textsec(abfd)->user_set_vma)
     {
-      /* ?? Do we really need to check for relocs here?  */
-      obj_textsec(abfd)->vma = ((abfd->flags & HAS_RELOC)
-				? 0
-				: (ztih
-				   ? (abdp->default_text_vma
-				      + adata (abfd).exec_bytes_size)
-				   : abdp->default_text_vma));
+      if (abdp != NULL) {
+	/* ?? Do we really need to check for relocs here?  */
+	obj_textsec(abfd)->vma = ((abfd->flags & HAS_RELOC)
+				  ? 0
+				  : (ztih
+				     ? (abdp->default_text_vma
+					+ adata(abfd).exec_bytes_size)
+				     : abdp->default_text_vma));
+      } else {
+	/* ?? Do we really need to check for relocs here?  */
+	obj_textsec(abfd)->vma = ((abfd->flags & HAS_RELOC)
+				  ? 0 : (ztih ? adata(abfd).exec_bytes_size
+					 : 0));
+      }
       text_pad = 0;
     }
   else
@@ -2398,7 +2405,7 @@ NAME (aout, find_nearest_line) (bfd *abfd,
 	 underscore back in, so that the caller gets a symbol name.  */
       if (bfd_get_symbol_leading_char (abfd) == '\0')
 	strcpy (buf, function);
-      else
+      else if (buf != NULL)
 	{
 	  buf[0] = bfd_get_symbol_leading_char (abfd);
 	  strcpy (buf + 1, function);

@@ -1459,6 +1459,7 @@ elf32_h8_get_relocated_section_contents (bfd *output_bfd,
 	  else
 	    isec = bfd_section_from_elf_index (input_bfd, isym->st_shndx);
 
+	  BFD_ASSERT(secpp != NULL);
 	  *secpp = isec;
 	}
 

@@ -373,9 +373,10 @@ elf64_sparc_write_relocs(bfd *abfd, asection *sec, PTR data)
 	  last_sym_idx = n;
 	}
 
-      if ((*ptr->sym_ptr_ptr)->the_bfd != NULL
-	  && (*ptr->sym_ptr_ptr)->the_bfd->xvec != abfd->xvec
-	  && ! _bfd_elf_validate_reloc (abfd, ptr))
+      if (((*ptr->sym_ptr_ptr) != NULL)
+	  && ((*ptr->sym_ptr_ptr)->the_bfd != NULL)
+	  && ((*ptr->sym_ptr_ptr)->the_bfd->xvec != abfd->xvec)
+	  && !_bfd_elf_validate_reloc(abfd, ptr))
 	{
 	  *failedp = TRUE;
 	  return;

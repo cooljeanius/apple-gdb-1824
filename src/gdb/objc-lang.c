@@ -927,12 +927,12 @@ objc_read_trampoline_region(CORE_ADDR addr)
   region =
     ((struct objc_trampoline_region *)
      xmalloc(sizeof(struct objc_trampoline_region)
-             + (num_records * sizeof(struct objc_trampoline_record))));
+             + ((size_t)num_records * sizeof(struct objc_trampoline_record))));
 
   region_cleanup = make_cleanup(xfree, region);
 
   region->next_region_start = read_memory_unsigned_integer(addr, wordsize);
-  region->num_records = num_records;
+  region->num_records = (int)num_records;
 
   /* Now skip to the start of the records using the header size: */
   addr = (orig_addr + header_size);
@@ -3100,7 +3100,7 @@ static unsigned long
 read_objc_method_list_nmethods(CORE_ADDR addr)
 {
   int addrsize = TARGET_ADDRESS_BYTES;
-  return read_memory_unsigned_integer((addr + addrsize), 4);
+  return (unsigned long)read_memory_unsigned_integer((addr + addrsize), 4);
 }
 
 static void
@@ -3322,11 +3322,11 @@ read_objc_class(CORE_ADDR addr, struct objc_class *inf_objc_class)
   inf_objc_class->name =
     read_memory_unsigned_integer((addr + (addrsize * 2)), addrsize);
   inf_objc_class->version =
-    read_memory_unsigned_integer((addr + (addrsize * 3)), addrsize);
+    (long)read_memory_unsigned_integer((addr + (addrsize * 3)), addrsize);
   inf_objc_class->info =
-    read_memory_unsigned_integer((addr + (addrsize * 4)), addrsize);
+    (long)read_memory_unsigned_integer((addr + (addrsize * 4)), addrsize);
   inf_objc_class->instance_size =
-    read_memory_unsigned_integer((addr + (addrsize * 5)), addrsize);
+    (long)read_memory_unsigned_integer((addr + (addrsize * 5)), addrsize);
   inf_objc_class->ivars =
     read_memory_unsigned_integer((addr + (addrsize * 6)), addrsize);
   inf_objc_class->methods =
@@ -3941,7 +3941,7 @@ resolve_newruntime_objc_msgsendsuper(CORE_ADDR pc, CORE_ADDR *new_pc,
 
   res = lookup_implementation_in_cache(object, sel);
   if (res != 0)
-    return res;
+    return (int)res;
   res = new_objc_runtime_find_impl(object, sel, 0);
 
   if (new_pc != 0)
@@ -4227,8 +4227,8 @@ objc_target_type_from_object(CORE_ADDR object_addr, struct block *block,
 	     MetaClass class, since then we are looking at the Class object
 	     which doesn't have the fields of an object of the class.  */
 	  info_field =
-            read_memory_unsigned_integer((isa_addr + (addrsize * 4)),
-                                         addrsize);
+            (long)read_memory_unsigned_integer((isa_addr + (addrsize * 4)),
+					       addrsize);
 	  if (info_field & CLS_META)
 	    return NULL;
 
@@ -4453,7 +4453,7 @@ objc_runtime_lock_taken_p(void)
       if (e.reason != (int)NO_ERROR)
 	return -1;
       else
-	return value_as_long(retval);
+	return (int)value_as_long(retval);
     }
   else
     return -1;
@@ -4676,7 +4676,7 @@ objc_fixup_ivar_offset(const struct type *type, int ivar)
     class_len = -class_len;
 
   if ((ivar_offset + (ULONGEST)ivar_len) > (ULONGEST)class_len)
-    TYPE_LENGTH_ASSIGN((struct type *)type) = (ivar_offset + ivar_len);
+    TYPE_LENGTH_ASSIGN((struct type *)type) = (int)(ivar_offset + ivar_len);
 
   /* The ObjC runtime stores the offset in bytes, but we want it in
      bits for the bitpos.  */
@@ -4703,7 +4703,7 @@ objc_fixup_ivar_offset(const struct type *type, int ivar)
 			     (unsigned long)ivar_offset);
 	}
     }
-  TYPE_FIELD_BITPOS_ASSIGN(type, ivar) = ivar_offset;
+  TYPE_FIELD_BITPOS_ASSIGN(type, ivar) = (int)ivar_offset;
 
  done:
   do_cleanups(name_cleanup);
@@ -5163,7 +5163,7 @@ make_cleanup_set_restore_debugger_mode(struct cleanup **cleanup, int level)
   if (e.reason != (int)NO_ERROR)
     throw_exception(e);
 
-  success = value_as_long(tmp_value);
+  success = (int)value_as_long(tmp_value);
 
   if (debug_handcall_setup)
     fprintf_filtered(gdb_stdout,

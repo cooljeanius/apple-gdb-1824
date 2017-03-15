@@ -592,7 +592,7 @@ amd64_return_value(struct gdbarch *gdbarch, struct type *type,
 	  continue;
 
 	default:
-	  gdb_assert(!"Unexpected register class.");
+	  internal_error(__FILE__, __LINE__, _("Unexpected register class."));
 	}
 
       gdb_assert(regnum != -1);
@@ -721,7 +721,8 @@ amd64_push_arguments(struct regcache *regcache, int nargs,
 		  break;
 
 		default:
-		  gdb_assert(!"Unexpected register class.");
+		  internal_error(__FILE__, __LINE__,
+				 _("Unexpected register class."));
 		}
 
 	      gdb_assert(regnum != -1);

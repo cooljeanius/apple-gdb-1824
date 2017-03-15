@@ -2861,6 +2861,7 @@ xcoff_build_ldsyms (struct xcoff_link_hash_entry *h, void * p)
 	  || (h->root.type == bfd_link_hash_undefweak)))
     {
       if (((h->flags & XCOFF_DESCRIPTOR) != 0)
+	  && (h != NULL) && (h->descriptor != NULL)
 	  && ((h->descriptor->root.type == bfd_link_hash_defined)
 	      || (h->descriptor->root.type == bfd_link_hash_defweak)))
 	{

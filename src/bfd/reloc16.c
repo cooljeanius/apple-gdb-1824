@@ -197,7 +197,8 @@ bfd_coff_reloc16_relax_section(bfd *abfd, asection *input_section,
 
 	  another_pass = 0;
 
-	  for (i = 0, parent = reloc_vector; *parent; parent++, i++)
+	  for (i = 0, parent = reloc_vector; (parent != NULL) && *parent;
+	       parent++, i++)
 	    {
               /* Let the target/machine dependent code examine each reloc
                * in this section and attempt to shrink it: */
@@ -283,7 +284,11 @@ bfd_coff_reloc16_get_relocated_section_contents(bfd *in_abfd,
       /* Find how long a run we can do: */
       while (dst_address < link_order->size)
 	{
-	  reloc = *parent;
+	  if (parent != NULL) {
+	    reloc = *parent;
+	  } else {
+	    reloc = NULL;
+	  }
 	  if (reloc)
 	    {
 	      /* Note that the relaxing did NOT tie up the addresses in the

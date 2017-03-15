@@ -1903,12 +1903,14 @@ sh_elf_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
   if ((symbol_in != NULL) && bfd_is_und_section(symbol_in->section))
     return bfd_reloc_undefined;
 
-  if (bfd_is_com_section(symbol_in->section))
+  if ((symbol_in != NULL) && bfd_is_com_section(symbol_in->section))
     sym_value = 0;
+  else if (symbol_in != NULL)
+    sym_value = (symbol_in->value
+		 + symbol_in->section->output_section->vma
+		 + symbol_in->section->output_offset);
   else
-    sym_value = (symbol_in->value +
-		 symbol_in->section->output_section->vma +
-		 symbol_in->section->output_offset);
+    sym_value = 0;
 
   switch (r_type)
     {
@@ -5148,7 +5150,7 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  if (rel->r_addend)
 		    local_got_offsets[symtab_hdr->sh_info + r_symndx] |= 1;
 		  else
-#endif
+#endif /* INCLUDE_SHMEDIA */
 		    local_got_offsets[r_symndx] |= 1;
 		}
 
@@ -5157,7 +5159,7 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 #ifdef GOT_BIAS
 	  relocation -= GOT_BIAS;
-#endif
+#endif /* GOT_BIAS */
 
 	  goto final_link_relocate;
 
@@ -5167,7 +5169,7 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_SH_GOTOFF_MEDLOW16:
 	case R_SH_GOTOFF_MEDHI16:
 	case R_SH_GOTOFF_HI16:
-#endif
+#endif /* INCLUDE_SHMEDIA */
 	  /* Relocation is relative to the start of the global offset
 	     table.  */
 
@@ -5182,7 +5184,7 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 #ifdef GOT_BIAS
 	  relocation -= GOT_BIAS;
-#endif
+#endif /* GOT_BIAS */
 
 	  addend = rel->r_addend;
 
@@ -5194,7 +5196,7 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_SH_GOTPC_MEDLOW16:
 	case R_SH_GOTPC_MEDHI16:
 	case R_SH_GOTPC_HI16:
-#endif
+#endif /* INCLUDE_SHMEDIA */
 	  /* Use global offset table as symbol value.  */
 
 	  BFD_ASSERT (sgot != NULL);
@@ -5202,7 +5204,7 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 #ifdef GOT_BIAS
 	  relocation += GOT_BIAS;
-#endif
+#endif /* GOT_BIAS */
 
 	  addend = rel->r_addend;
 
@@ -5214,7 +5216,7 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_SH_PLT_MEDLOW16:
 	case R_SH_PLT_MEDHI16:
 	case R_SH_PLT_HI16:
-#endif
+#endif /* INCLUDE_SHMEDIA */
 	  /* Relocation is to the entry for this symbol in the
 	     procedure linkage table.  */
 
@@ -5241,7 +5243,7 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 #ifdef INCLUDE_SHMEDIA
 	  relocation++;
-#endif
+#endif /* INCLUDE_SHMEDIA */
 
 	  addend = rel->r_addend;
 
@@ -5251,13 +5253,22 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  {
 	    static bfd_vma start, end;
 
+	    BFD_ASSERT(sec != NULL);
+	    BFD_ASSERT(sec->output_section != NULL);
+
 	    start = (relocation + rel->r_addend
 		     - (sec->output_section->vma + sec->output_offset));
 	    r = sh_elf_reloc_loop (r_type, input_bfd, input_section, contents,
 				   rel->r_offset, sec, start, end);
 	    break;
-
+	  }
 	case R_SH_LOOP_END:
+	  {
+	    static bfd_vma start, end;
+
+	    BFD_ASSERT(sec != NULL);
+	    BFD_ASSERT(sec->output_section != NULL);
+
 	    end = (relocation + rel->r_addend
 		   - (sec->output_section->vma + sec->output_offset));
 	    r = sh_elf_reloc_loop (r_type, input_bfd, input_section, contents,
@@ -5772,7 +5783,8 @@ sh_elf_get_relocated_section_contents (bfd *output_bfd,
 	  else
 	    isec = bfd_section_from_elf_index (input_bfd, isym->st_shndx);
 
-	  *secpp = isec;
+	  if (secpp != NULL)
+	    *secpp = isec;
 	}
 
       if (! sh_elf_relocate_section (output_bfd, link_info, input_bfd,
@@ -6394,7 +6406,8 @@ sh_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 		{
 		  (*_bfd_error_handler)
 		    (_("%B: `%s' accessed both as normal and thread local symbol"),
-		     abfd, h->root.root.string);
+		     abfd, ((h != NULL) ? h->root.root.string
+			    : "h->root.root.string"));
 		  return FALSE;
 		}
 	    }
@@ -7094,6 +7107,7 @@ sh_elf_finish_dynamic_sections(bfd *output_bfd, struct bfd_link_info *info)
 	      goto get_vma;
 
 	    case DT_JMPREL:
+	      BFD_ASSERT(htab->srelplt != NULL);
 	      s = htab->srelplt->output_section;
 	    get_vma:
 	      BFD_ASSERT(s != NULL);
@@ -7102,6 +7116,7 @@ sh_elf_finish_dynamic_sections(bfd *output_bfd, struct bfd_link_info *info)
 	      break;
 
 	    case DT_PLTRELSZ:
+	      BFD_ASSERT(htab->srelplt != NULL);
 	      s = htab->srelplt->output_section;
 	      BFD_ASSERT(s != NULL);
 	      dyn.d_un.d_val = s->size;

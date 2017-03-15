@@ -356,6 +356,7 @@ run(const char *what, char *args)
   char *temp_base = choose_temp_base();
   int in_quote;
   char sep;
+  size_t argvlen;
 
   if (verbose || dry_run)
     fprintf(stderr, "%s %s\n", what, args);
@@ -366,7 +367,8 @@ run(const char *what, char *args)
     if (*s == ' ')
       i++;
   i++;
-  argv = (const char **)alloca(sizeof(char *) * (i + 3));
+  argvlen = min((sizeof(char *) * (i + 3)), MAX_ALLOCA_SIZE);
+  argv = (const char **)alloca(argvlen);
   i = 0;
   argv[i++] = what;
   s = args;

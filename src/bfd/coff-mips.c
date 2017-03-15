@@ -1175,8 +1175,9 @@ mips_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	 instruction provides a 28 bit address (the two lower bits are
 	 implicit zeroes) which is combined with the upper four bits
 	 of the instruction address.  */
-      if (r == bfd_reloc_ok
-	  && int_rel.r_type == MIPS_R_JMPADDR
+      if ((r == bfd_reloc_ok)
+	  && (int_rel.r_type == MIPS_R_JMPADDR)
+	  && (s != NULL)
 	  && (((relocation
 		+ addend
 		+ (int_rel.r_extern ? 0 : s->vma))
@@ -1200,8 +1201,10 @@ mips_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 		if (int_rel.r_extern)
 		  name = NULL;
+		else if (s != NULL)
+		  name = bfd_section_name(input_bfd, s);
 		else
-		  name = bfd_section_name (input_bfd, s);
+		  name = NULL;
 		if (! ((*info->callbacks->reloc_overflow)
 		       (info, (h ? &h->root : NULL), name, howto->name,
 			(bfd_vma) 0, input_bfd, input_section,

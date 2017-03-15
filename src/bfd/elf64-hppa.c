@@ -2199,7 +2199,7 @@ elf64_hppa_finalize_dlt(struct elf64_hppa_dyn_hash_entry *dyn_h, PTR data)
 
   /* Create a relocation for the DLT entry associated with this symbol.
      When building a shared library the symbol does not have to be dynamic.  */
-  if (dyn_h->want_dlt
+  if ((dyn_h != NULL) && dyn_h->want_dlt
       && (elf64_hppa_dynamic_symbol_p (dyn_h->h, info) || info->shared))
     {
       Elf_Internal_Rela rel;
@@ -2460,8 +2460,10 @@ elf64_hppa_finish_dynamic_sections(bfd *output_bfd, struct bfd_link_info *info)
 
 	    case DT_RELASZ:
 	      s = hppa_info->other_rel_sec;
+	      BFD_ASSERT(s != NULL);
 	      dyn.d_un.d_val = s->size;
 	      s = hppa_info->dlt_rel_sec;
+	      BFD_ASSERT(s != NULL);
 	      dyn.d_un.d_val += s->size;
 	      s = hppa_info->opd_rel_sec;
 	      dyn.d_un.d_val += s->size;

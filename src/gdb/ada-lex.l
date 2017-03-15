@@ -376,6 +376,9 @@ xor		{ return XOR; }
 void
 lexer_init(FILE *inp)
 {
+  if (inp == NULL) {
+    YY_FATAL_ERROR("NULL inp");
+  }
   BEGIN INITIAL;
   yyrestart(inp);
 }

@@ -272,7 +272,6 @@ unqualified_name_from_comp (struct demangle_component *comp)
 	break;
       default:
 	return NULL;
-	break;
       }
 
   if (last_template)

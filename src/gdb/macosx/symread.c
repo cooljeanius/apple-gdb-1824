@@ -900,7 +900,8 @@ sym_read_contained_variables(struct objfile *objfile,
       if (cventry.entry.address.scstruct.sca_class ==
           BFD_SYM_STORAGE_CLASS_GLOBAL)
         {
-          nlocals++; /* FIXME: -Wduplicated-branches */
+	  /* FIXME: find better way to avoid -Wduplicated-branches: */
+          nlocals = nlocals + 1;
         }
       else
         {

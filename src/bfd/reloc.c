@@ -1607,7 +1607,7 @@ _bfd_clear_contents (reloc_howto_type *howto,
 
   /* Zero out the unwanted bits of X.  */
   x &= ~howto->dst_mask;
-  
+
   /* For a range list, use 1 instead of 0 as placeholder.  0
      would terminate the list, hiding any later entries.  */
   if (strcmp (bfd_get_section_name (input_bfd, input_section),
@@ -3039,7 +3039,7 @@ ENUMDOC
   ARC 26 bit absolute branch.  The lowest two bits must be zero and are not
   stored in the instruction.  The high 24 bits are installed in bits 23
   through 0.
- 
+
 ENUM
   BFD_RELOC_BFIN_16_IMM
 ENUMDOC
@@ -5997,9 +5997,11 @@ bfd_generic_get_relocated_section_contents(bfd *abfd,
   if (reloc_count > 0)
     {
       arelent **parent;
-      for (parent = reloc_vector; *parent != NULL; parent++)
+      for (parent = reloc_vector; (parent != NULL) && (*parent != NULL);
+	   parent++)
 	{
 	  const char *error_message = NULL;
+	  intptr_t parent_val = (intptr_t)parent;
 	  bfd_reloc_status_type r =
 	    bfd_perform_relocation(input_bfd, *parent, data, input_section,
                                    (relocatable ? abfd : NULL),
@@ -6052,6 +6054,11 @@ bfd_generic_get_relocated_section_contents(bfd *abfd,
 #endif /* !__clang__ */
 		}
 	    }
+
+	  /* FIXME: trying to silence -Wunsafe-loop-optimizations: */
+	  if ((parent_val < 0) || (parent_val >= INTPTR_MAX)) {
+	    break;
+	  }
 	}
     }
   if (reloc_vector != NULL)

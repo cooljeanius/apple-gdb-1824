@@ -2134,6 +2134,7 @@ mmo_canonicalize_symtab (bfd *abfd, asymbol **alocation)
 	   msp++, ++c)
 	{
 	  s = *msp;
+	  BFD_ASSERT(c != NULL);
 	  c->the_bfd = abfd;
 	  c->name = s->name;
 	  c->value = s->value;
@@ -2643,7 +2644,9 @@ mmo_internal_add_3_sym (bfd *abfd, struct mmo_symbol_trie *rootp,
       /* Create middle branches for the rest of the characters: */
       trie = (struct mmo_symbol_trie *)bfd_zalloc(abfd,
                                                   sizeof(struct mmo_symbol_trie));
-      *triep = trie;
+      if (triep != NULL) {
+	*triep = trie;
+      }
       trie->symchar = *name++;
       triep = &trie->middle;
     }

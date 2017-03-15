@@ -314,7 +314,8 @@ b_out_squirt_out_relocs (bfd *abfd, asection *section)
       asymbol *sym = *(g->sym_ptr_ptr);
       asection *output_section = sym->section->output_section;
 
-      H_PUT_32 (abfd, g->address, raw);
+      BFD_ASSERT(raw != NULL);
+      H_PUT_32(abfd, g->address, raw);
       /* Find a type in the output format which matches the input howto -
 	 at the moment we assume input format == output format FIXME!!  */
       r_idx = 0;
@@ -1233,7 +1234,7 @@ b_out_bfd_get_relocated_section_contents(bfd *output_bfd,
   if (reloc_count > 0)
     {
       arelent **parent = reloc_vector;
-      arelent *reloc ;
+      arelent *reloc;
       unsigned int dst_address = 0;
       unsigned int src_address = 0;
       unsigned int run;
@@ -1242,7 +1243,11 @@ b_out_bfd_get_relocated_section_contents(bfd *output_bfd,
       /* Find how long a run we can do: */
       while (dst_address < link_order->size)
 	{
-	  reloc = *parent;
+	  if (parent != NULL) {
+	    reloc = *parent;
+	  } else {
+	    reloc = NULL;
+	  }
 	  if (reloc)
 	    {
 	      /* Note that the relaxing didn't tie up the addresses in the

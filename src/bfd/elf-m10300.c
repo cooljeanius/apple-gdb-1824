@@ -3604,7 +3604,8 @@ mn10300_elf_get_relocated_section_contents(bfd *output_bfd,
 	  else
 	    isec = bfd_section_from_elf_index (input_bfd, isym->st_shndx);
 
-	  *secpp = isec;
+	  if (secpp != NULL)
+	    *secpp = isec;
 	}
 
       if (! mn10300_elf_relocate_section (output_bfd, link_info, input_bfd,

@@ -1400,13 +1400,16 @@ _bfd_elf_write_section_eh_frame_hdr (bfd *abfd, struct bfd_link_info *info)
 	     vma_compare);
       for (i = 0; i < hdr_info->fde_count; i++)
 	{
-	  bfd_put_32 (abfd,
-		      hdr_info->array[i].initial_loc
-		      - sec->output_section->vma,
-		      contents + EH_FRAME_HDR_SIZE + i * 8 + 4);
-	  bfd_put_32 (abfd,
-		      hdr_info->array[i].fde - sec->output_section->vma,
-		      contents + EH_FRAME_HDR_SIZE + i * 8 + 8);
+	  BFD_ASSERT(hdr_info != NULL);
+	  BFD_ASSERT(sec != NULL);
+	  BFD_ASSERT(sec->output_section != NULL);
+	  bfd_put_32(abfd,
+		     (hdr_info->array[i].initial_loc
+		      - sec->output_section->vma),
+		     (contents + EH_FRAME_HDR_SIZE + (i * 8) + 4));
+	  bfd_put_32(abfd,
+		     (hdr_info->array[i].fde - sec->output_section->vma),
+		     (contents + EH_FRAME_HDR_SIZE + (i * 8) + 8));
 	}
     }
 

@@ -776,7 +776,8 @@ elf_vax_check_relocs (bfd *abfd, struct bfd_link_info *info, asection *sec,
 		  struct elf_vax_link_hash_entry *eh;
 		  struct elf_vax_pcrel_relocs_copied *p;
 
-		  eh = (struct elf_vax_link_hash_entry *) h;
+		  eh = (struct elf_vax_link_hash_entry *)h;
+		  BFD_ASSERT(eh != NULL);
 
 		  for (p = eh->pcrel_relocs_copied; p != NULL; p = p->next)
 		    if (p->section == sreloc)

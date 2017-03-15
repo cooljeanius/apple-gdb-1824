@@ -38,6 +38,8 @@ clean: clean-recursive
 
 distclean-local:
 	rm -f Makefile config.status config.cache config.log
+	rm -fv *~
+	rm -rfv autom4te.cache || rmdir autom4te.cache
 
 distclean: distclean-recursive distclean-local
 

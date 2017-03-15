@@ -4182,7 +4182,7 @@ elf32_arm_relocate_section (bfd *                  output_bfd,
       /* Dynamic relocs are not propagated for SEC_DEBUGGING sections
 	 because such sections are not SEC_ALLOC and thus ld.so will
 	 not process them.  */
-      if (unresolved_reloc
+      if (unresolved_reloc && (h != NULL)
           && !((input_section->flags & SEC_DEBUGGING) != 0
                && h->def_dynamic))
 	{

@@ -72,7 +72,7 @@ mmalloc_sbrk_init(void)
   struct mdesc *ret = NULL;
 
   base = sbrk(0);
-  adj = RESIDUAL(base, BLOCKSIZE);
+  adj = (unsigned int)RESIDUAL(base, BLOCKSIZE);
   if (adj != 0)
     {
       sbrk((int)(BLOCKSIZE - adj));

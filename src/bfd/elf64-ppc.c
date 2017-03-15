@@ -4861,7 +4861,8 @@ opd_entry_value(asection *opd_sec, bfd_vma offset, asection **code_sec,
 		      || (sym->st_shndx > SHN_HIRESERVE))
 		    sec = bfd_section_from_elf_index(opd_bfd,
                                                      sym->st_shndx);
-		  BFD_ASSERT((sec->flags & SEC_MERGE) == 0);
+		  if (sec != NULL)
+		    BFD_ASSERT((sec->flags & SEC_MERGE) == 0);
 		}
 	      else
 		{
@@ -4977,7 +4978,7 @@ ppc64_elf_gc_mark_hook(asection *sec, struct bfd_link_info *info,
 
 	      /* Function descriptor syms cause the associated
 		 function code sym section to be marked.  */
-	      if (eh->is_func_descriptor
+	      if (eh->is_func_descriptor && (eh->oh != NULL)
 		  && ((eh->oh->elf.root.type == bfd_link_hash_defined)
 		      || (eh->oh->elf.root.type == bfd_link_hash_defweak)))
 		{

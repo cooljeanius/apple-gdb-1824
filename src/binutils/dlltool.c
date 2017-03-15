@@ -1121,7 +1121,8 @@ def_import(const char *app_name, const char *module, const char *dllext,
 
   if (dllext != NULL)
     {
-      const size_t buflen = (strlen(module) + strlen(dllext) + 4UL);
+      const size_t buflen = min((strlen(module) + strlen(dllext) + 4UL),
+				MAX_ALLOCA_SIZE);
       buf = (char *)alloca(buflen);
       snprintf(buf, buflen, "%s.%s", module, dllext);
       module = buf;
@@ -1191,6 +1192,7 @@ run(const char *what, char *args)
   const char **argv;
   char *errmsg_fmt, *errmsg_arg;
   char *temp_base = choose_temp_base();
+  size_t len_to_allocate;
 
   inform("run: %s %s", what, args);
 
@@ -1200,7 +1202,8 @@ run(const char *what, char *args)
     if (*s == ' ')
       i++;
   i++;
-  argv = (const char **)alloca(sizeof(const char *) * (i + 3UL));
+  len_to_allocate = min((sizeof(const char *) * (i + 3UL)), MAX_ALLOCA_SIZE);
+  argv = (const char **)alloca(len_to_allocate);
   i = 0;
   argv[i++] = what;
   s = args;
@@ -1794,8 +1797,9 @@ static void
 assemble_file(const char *source, const char *dest)
 {
   char *cmd;
-  const size_t cmdlen = (strlen(ASM_SWITCHES) + strlen(as_flags)
-			 + strlen(source) + strlen(dest) + 50UL);
+  const size_t cmdlen = min((strlen(ASM_SWITCHES) + strlen(as_flags)
+			     + strlen(source) + strlen(dest) + 50UL),
+			    MAX_ALLOCA_SIZE);
 
   cmd = (char *)alloca(cmdlen);
 
@@ -2604,7 +2608,7 @@ make_one_lib_file (export_type *exp, int i)
 	  sec->reloc_count = 2;
 	  break;
 #endif /* DLLTOOL_PPC */
-	    
+
 	default:
 	  break;
 	}
@@ -2855,9 +2859,9 @@ gen_lib_file(void)
   if (dontdeltemps < 2)
     {
       char *name;
-      const size_t namelen = (strlen(TMP_STUB) + 14UL);
+      const size_t namelen = min((strlen(TMP_STUB) + 14UL), MAX_ALLOCA_SIZE);
 
-      name = (char *)alloca(namelen);
+      name = (char *)alloca(min(namelen, MAX_ALLOCA_SIZE));
       for (i = 0; (exp = d_exports_lexically[i]); i++)
 	{
 	  /* Don't delete non-existent stubs for PRIVATE entries.  */

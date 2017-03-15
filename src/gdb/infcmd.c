@@ -1929,7 +1929,8 @@ jump_command(const char *arg, int from_tty)
       if (!query ("Line %d is not in `%s'.  Jump anyway? ", sal.line,
 		  SYMBOL_PRINT_NAME (fn)))
 	{
-	  error (_("Not confirmed."));
+	  error(_("Not confirmed."));
+	  gdb_unreachable();
 	  /* NOTREACHED */
 	}
     }
@@ -1940,9 +1941,10 @@ jump_command(const char *arg, int from_tty)
       if (section_is_overlay (SYMBOL_BFD_SECTION (sfn)) &&
 	  !section_is_mapped (SYMBOL_BFD_SECTION (sfn)))
 	{
-	  if (!query ("WARNING!!!  Destination is in unmapped overlay!  Jump anyway? "))
+	  if (!query("WARNING!!!  Destination is in unmapped overlay!  Jump anyway? "))
 	    {
-	      error (_("Not confirmed."));
+	      error(_("Not confirmed."));
+	      gdb_unreachable();
 	      /* NOTREACHED */
 	    }
 	}

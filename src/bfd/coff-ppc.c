@@ -1341,10 +1341,12 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		myh = coff_link_hash_lookup (coff_hash_table (info),
 					     "__idata5_magic__",
 					     FALSE, FALSE, TRUE);
-		first_thunk_address = myh->root.u.def.value +
-		  sec->output_section->vma +
-		    sec->output_offset -
-		      pe_data(output_bfd)->pe_opthdr.ImageBase;
+		BFD_ASSERT(sec != NULL);
+		first_thunk_address =
+		  (myh->root.u.def.value
+		   + sec->output_section->vma
+		   + sec->output_offset
+		   - pe_data(output_bfd)->pe_opthdr.ImageBase);
 
 		idata5offset = myh->root.u.def.value;
 		myh = coff_link_hash_lookup (coff_hash_table (info),
@@ -1390,6 +1392,7 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 			abort();
 		      }
 
+		    BFD_ASSERT(sec != NULL);
 		    val = (myh->root.u.def.value
                            + sec->output_section->vma
                            + sec->output_offset);
@@ -2291,15 +2294,15 @@ ppc_bfd_coff_final_link(bfd *abfd, struct bfd_link_info *info)
 
 #ifdef POWERPC_LE_PE
   {
-    bfd* last_one = ppc_get_last();
+    bfd *last_one = ppc_get_last();
     if (last_one)
       {
 	if (! _bfd_coff_link_input_bfd (&finfo, last_one))
 	  goto error_return;
+	last_one->output_has_begun = TRUE;
       }
-    last_one->output_has_begun = TRUE;
   }
-#endif
+#endif /* POWERPC_LE_PE */
 
   /* Free up the buffers used by _bfd_coff_link_input_bfd.  */
   coff_debug_merge_hash_table_free (&finfo.debug_merge);
