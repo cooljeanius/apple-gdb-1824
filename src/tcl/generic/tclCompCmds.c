@@ -1,8 +1,8 @@
-/* 
+/*
  * tclCompCmds.c --
  *
  *	This file contains compilation procedures that compile various
- *	Tcl commands into a sequence of instructions ("bytecodes"). 
+ *	Tcl commands into a sequence of instructions ("bytecodes").
  *
  * Copyright (c) 1997-1998 Sun Microsystems, Inc.
  * Copyright (c) 2001 by Kevin B. Kenny.  All rights reserved.
@@ -102,7 +102,7 @@ TclCompileAppendCmd(interp, parsePtr, envPtr)
      * need to emit code to compute and push the name at runtime. We use a
      * frame slot (entry in the array of local vars) if we are compiling a
      * procedure body and if the name is simple text that does not include
-     * namespace qualifiers. 
+     * namespace qualifiers.
      */
 
     varTokenPtr = parsePtr->tokenPtr
@@ -123,7 +123,7 @@ TclCompileAppendCmd(interp, parsePtr, envPtr)
     if (numWords > 2) {
 	valueTokenPtr = varTokenPtr + (varTokenPtr->numComponents + 1);
 	if (valueTokenPtr->type == TCL_TOKEN_SIMPLE_WORD) {
-	    TclEmitPush(TclRegisterNewLiteral(envPtr, 
+	    TclEmitPush(TclRegisterNewLiteral(envPtr,
 		    valueTokenPtr[1].start, valueTokenPtr[1].size), envPtr);
 	} else {
 	    code = TclCompileTokens(interp, valueTokenPtr+1,
@@ -280,7 +280,7 @@ TclCompileCatchCmd(interp, parsePtr, envPtr)
 		return TCL_OUT_LINE_COMPILE;
 	    }
 	    localIndex = TclFindCompiledLocal(nameTokenPtr[1].start,
-		    nameTokenPtr[1].size, /*create*/ 1, 
+		    nameTokenPtr[1].size, /*create*/ 1,
 		    /*flags*/ VAR_SCALAR, envPtr->procPtr);
 	} else {
 	   return TCL_OUT_LINE_COMPILE;
@@ -291,7 +291,7 @@ TclCompileCatchCmd(interp, parsePtr, envPtr)
      * We will compile the catch command. Emit a beginCatch instruction at
      * the start of the catch body: the subcommand it controls.
      */
-    
+
     envPtr->exceptDepth++;
     envPtr->maxExceptDepth =
 	TclMax(envPtr->exceptDepth, envPtr->maxExceptDepth);
@@ -301,9 +301,9 @@ TclCompileCatchCmd(interp, parsePtr, envPtr)
     /*
      * If the body is a simple word, compile the instructions to
      * eval it. Otherwise, compile instructions to substitute its
-     * text without catching, a catch instruction that resets the 
-     * stack to what it was before substituting the body, and then 
-     * an instruction to eval the body. Care has to be taken to 
+     * text without catching, a catch instruction that resets the
+     * stack to what it was before substituting the body, and then
+     * an instruction to eval the body. Care has to be taken to
      * register the correct startOffset for the catch range so that
      * errors in the substitution are not catched [Bug 219184]
      */
@@ -325,7 +325,7 @@ TclCompileCatchCmd(interp, parsePtr, envPtr)
     }
     envPtr->exceptArrayPtr[range].numCodeBytes =
 	    (envPtr->codeNext - envPtr->codeStart) - startOffset;
-		    
+
     /*
      * The "no errors" epilogue code: store the body's result into the
      * variable (if any), push "0" (TCL_OK) as the catch's "no error"
@@ -527,7 +527,7 @@ TclCompileForCmd(interp, parsePtr, envPtr)
 
     nextTokenPtr = testTokenPtr + (testTokenPtr->numComponents + 1);
     bodyTokenPtr = nextTokenPtr + (nextTokenPtr->numComponents + 1);
-    if ((nextTokenPtr->type != TCL_TOKEN_SIMPLE_WORD) 
+    if ((nextTokenPtr->type != TCL_TOKEN_SIMPLE_WORD)
 	    || (bodyTokenPtr->type != TCL_TOKEN_SIMPLE_WORD)) {
 	return TCL_OUT_LINE_COMPILE;
     }
@@ -558,7 +558,7 @@ TclCompileForCmd(interp, parsePtr, envPtr)
 	goto done;
     }
     TclEmitOpcode(INST_POP, envPtr);
-   
+
     /*
      * Jump to the evaluation of the condition. This code uses the "loop
      * rotation" optimisation (which eliminates one branch from the loop).
@@ -631,7 +631,7 @@ TclCompileForCmd(interp, parsePtr, envPtr)
 	nextCodeOffset += 3;
 	testCodeOffset += 3;
     }
-    
+
     envPtr->currStackDepth = savedStackDepth;
     code = TclCompileExprWords(interp, testTokenPtr, 1, envPtr);
     if (code != TCL_OK) {
@@ -642,14 +642,14 @@ TclCompileForCmd(interp, parsePtr, envPtr)
 	goto done;
     }
     envPtr->currStackDepth = savedStackDepth + 1;
-    
+
     jumpDist = (envPtr->codeNext - envPtr->codeStart) - bodyCodeOffset;
     if (jumpDist > 127) {
 	TclEmitInstInt4(INST_JUMP_TRUE4, -jumpDist, envPtr);
     } else {
 	TclEmitInstInt1(INST_JUMP_TRUE1, -jumpDist, envPtr);
     }
-    
+
     /*
      * Set the loop's offsets and break target.
      */
@@ -662,7 +662,7 @@ TclCompileForCmd(interp, parsePtr, envPtr)
     envPtr->exceptArrayPtr[bodyRange].breakOffset =
             envPtr->exceptArrayPtr[nextRange].breakOffset =
 	    (envPtr->codeNext - envPtr->codeStart);
-    
+
     /*
      * The for command's result is an empty string.
      */
@@ -777,10 +777,10 @@ TclCompileForeachCmd(interp, parsePtr, envPtr)
         varcList[loopIndex] = 0;
         varvList[loopIndex] = NULL;
     }
-    
+
     /*
      * Set the exception stack depth.
-     */ 
+     */
 
     envPtr->exceptDepth++;
     envPtr->maxExceptDepth =
@@ -847,7 +847,7 @@ TclCompileForeachCmd(interp, parsePtr, envPtr)
     }
     loopCtTemp = TclFindCompiledLocal(NULL, /*nameChars*/ 0,
 	    /*create*/ 1, /*flags*/ VAR_SCALAR, procPtr);
-    
+
     /*
      * Create and initialize the ForeachInfo and ForeachVarList data
      * structures describing this command. Then create a AuxData record
@@ -880,7 +880,7 @@ TclCompileForeachCmd(interp, parsePtr, envPtr)
      */
 
     range = TclCreateExceptRange(LOOP_EXCEPTION_RANGE, envPtr);
-    
+
     loopIndex = 0;
     for (i = 0, tokenPtr = parsePtr->tokenPtr;
 	    i < numWords-1;
@@ -908,7 +908,7 @@ TclCompileForeachCmd(interp, parsePtr, envPtr)
      */
 
     TclEmitInstInt4(INST_FOREACH_START4, infoIndex, envPtr);
-    
+
     /*
      * Top of loop code: assign each loop variable and check whether
      * to terminate the loop.
@@ -918,7 +918,7 @@ TclCompileForeachCmd(interp, parsePtr, envPtr)
 	    (envPtr->codeNext - envPtr->codeStart);
     TclEmitInstInt4(INST_FOREACH_STEP4, infoIndex, envPtr);
     TclEmitForwardJump(envPtr, TCL_FALSE_JUMP, &jumpFalseFixup);
-    
+
     /*
      * Inline compile the loop body.
      */
@@ -940,7 +940,7 @@ TclCompileForeachCmd(interp, parsePtr, envPtr)
 	    (envPtr->codeNext - envPtr->codeStart)
 	    - envPtr->exceptArrayPtr[range].codeOffset;
     TclEmitOpcode(INST_POP, envPtr);
-	
+
     /*
      * Jump back to the test at the top of the loop. Generate a 4 byte jump
      * if the distance to the test is > 120 bytes. This is conservative and
@@ -991,7 +991,7 @@ TclCompileForeachCmd(interp, parsePtr, envPtr)
 
     envPtr->exceptArrayPtr[range].breakOffset =
 	    (envPtr->codeNext - envPtr->codeStart);
-    
+
     /*
      * The foreach command's result is an empty string.
      */
@@ -1045,13 +1045,13 @@ DupForeachInfo(clientData)
     register ForeachVarList *srcListPtr, *dupListPtr;
     int numLists = srcPtr->numLists;
     int numVars, i, j;
-    
+
     dupPtr = (ForeachInfo *) ckalloc((unsigned)
 	    (sizeof(ForeachInfo) + (numLists * sizeof(ForeachVarList *))));
     dupPtr->numLists = numLists;
     dupPtr->firstValueTemp = srcPtr->firstValueTemp;
     dupPtr->loopCtTemp = srcPtr->loopCtTemp;
-    
+
     for (i = 0;  i < numLists;  i++) {
 	srcListPtr = srcPtr->varLists[i];
 	numVars = srcListPtr->numVars;
@@ -1150,7 +1150,7 @@ TclCompileIfCmd(interp, parsePtr, envPtr)
 				 * to this value at the start of each test. */
     int realCond = 1;           /* set to 0 for static conditions: "if 0 {..}" */
     int boolVal;                /* value of static condition */
-    int compileScripts = 1;            
+    int compileScripts = 1;
 
     /*
      * Only compile the "if" command if all arguments are simple
@@ -1175,7 +1175,7 @@ TclCompileIfCmd(interp, parsePtr, envPtr)
 
     /*
      * Each iteration of this loop compiles one "if expr ?then? body"
-     * or "elseif expr ?then? body" clause. 
+     * or "elseif expr ?then? body" clause.
      */
 
     tokenPtr = parsePtr->tokenPtr;
@@ -1206,18 +1206,18 @@ TclCompileIfCmd(interp, parsePtr, envPtr)
 
 	/*
 	 * Compile the test expression then emit the conditional jump
-	 * around the "then" part. 
+	 * around the "then" part.
 	 */
-	
+
 	envPtr->currStackDepth = savedStackDepth;
 	testTokenPtr = tokenPtr;
 
 
 	if (realCond) {
 	    /*
-	     * Find out if the condition is a constant. 
+	     * Find out if the condition is a constant.
 	     */
-	
+
 	    Tcl_Obj *boolObj = Tcl_NewStringObj(testTokenPtr[1].start,
 		    testTokenPtr[1].size);
 	    Tcl_IncrRefCount(boolObj);
@@ -1247,7 +1247,7 @@ TclCompileIfCmd(interp, parsePtr, envPtr)
 		jumpIndex = jumpFalseFixupArray.next;
 		jumpFalseFixupArray.next++;
 		TclEmitForwardJump(envPtr, TCL_FALSE_JUMP,
-			       &(jumpFalseFixupArray.fixup[jumpIndex]));	    
+			       &(jumpFalseFixupArray.fixup[jumpIndex]));
 	    }
 	}
 
@@ -1296,7 +1296,7 @@ TclCompileIfCmd(interp, parsePtr, envPtr)
 		    Tcl_AddObjErrorInfo(interp, buffer, -1);
 		}
 		goto done;
-	    }	
+	    }
 	}
 
 	if (realCond) {
@@ -1304,14 +1304,14 @@ TclCompileIfCmd(interp, parsePtr, envPtr)
 	     * Jump to the end of the "if" command. Both jumpFalseFixupArray and
 	     * jumpEndFixupArray are indexed by "jumpIndex".
 	     */
-	    
+
 	    if (jumpEndFixupArray.next >= jumpEndFixupArray.end) {
 		TclExpandJumpFixupArray(&jumpEndFixupArray);
 	    }
 	    jumpEndFixupArray.next++;
 	    TclEmitForwardJump(envPtr, TCL_UNCONDITIONAL_JUMP,
 	            &(jumpEndFixupArray.fixup[jumpIndex]));
-	    
+
 	    /*
 	     * Fix the target of the jumpFalse after the test. Generate a 4 byte
 	     * jump if the distance is > 120 bytes. This is conservative, and
@@ -1328,32 +1328,32 @@ TclCompileIfCmd(interp, parsePtr, envPtr)
 		 * Adjust the code offset for the proceeding jump to the end
 		 * of the "if" command.
 		 */
-		
+
 		jumpEndFixupArray.fixup[jumpIndex].codeOffset += 3;
 	    }
 	} else if (boolVal) {
-	    /* 
+	    /*
 	     *We were processing an "if 1 {...}"; stop compiling
 	     * scripts
 	     */
 
 	    compileScripts = 0;
 	} else {
-	    /* 
+	    /*
 	     *We were processing an "if 0 {...}"; reset so that
 	     * the rest (elseif, else) is compiled correctly
 	     */
 
 	    realCond = 1;
 	    compileScripts = 1;
-	} 
+	}
 
 	tokenPtr += (tokenPtr->numComponents + 1);
 	wordIdx++;
     }
 
     /*
-     * Restore the current stack depth in the environment; the 
+     * Restore the current stack depth in the environment; the
      * "else" clause (or its default) will add 1 to this.
      */
 
@@ -1388,7 +1388,7 @@ TclCompileIfCmd(interp, parsePtr, envPtr)
 	    /*
 	     * Compile the else command body.
 	     */
-	    
+
 	    code = TclCompileCmdWord(interp, tokenPtr+1,
 		    tokenPtr->numComponents, envPtr);
 	    if (code != TCL_OK) {
@@ -1404,7 +1404,7 @@ TclCompileIfCmd(interp, parsePtr, envPtr)
 	/*
 	 * Make sure there are no words after the else clause.
 	 */
-	
+
 	wordIdx++;
 	if (wordIdx < numWords) {
 	    Tcl_ResetResult(interp);
@@ -1426,7 +1426,7 @@ TclCompileIfCmd(interp, parsePtr, envPtr)
     /*
      * Fix the unconditional jumps to the end of the "if" command.
      */
-    
+
     for (j = jumpEndFixupArray.next;  j > 0;  j--) {
 	jumpIndex = (j - 1);	/* i.e. process the closest jump first */
 	jumpDist = (envPtr->codeNext - envPtr->codeStart)
@@ -1510,7 +1510,7 @@ TclCompileIncrCmd(interp, parsePtr, envPtr)
     varTokenPtr = parsePtr->tokenPtr
 	    + (parsePtr->tokenPtr->numComponents + 1);
 
-    code = TclPushVarName(interp, varTokenPtr, envPtr, 
+    code = TclPushVarName(interp, varTokenPtr, envPtr,
 	    (TCL_NO_LARGE_INDEX | TCL_CREATE_VAR),
 	    &localIndex, &simpleVarName, &isScalar);
     if (code != TCL_OK) {
@@ -1555,7 +1555,7 @@ TclCompileIncrCmd(interp, parsePtr, envPtr)
 			TclRegisterNewLiteral(envPtr, word, numBytes), envPtr);
 	    }
 	} else {
-	    code = TclCompileTokens(interp, incrTokenPtr+1, 
+	    code = TclCompileTokens(interp, incrTokenPtr+1,
 	            incrTokenPtr->numComponents, envPtr);
 	    if (code != TCL_OK) {
 		if (code == TCL_ERROR) {
@@ -1569,7 +1569,7 @@ TclCompileIncrCmd(interp, parsePtr, envPtr)
 	haveImmValue = 1;
 	immValue = 1;
     }
-    
+
     /*
      * Emit the instruction to increment the variable.
      */
@@ -1613,7 +1613,7 @@ TclCompileIncrCmd(interp, parsePtr, envPtr)
 	    TclEmitOpcode(INST_INCR_STK, envPtr);
 	}
     }
-	
+
     done:
     return code;
 }
@@ -1674,12 +1674,16 @@ TclCompileLappendCmd(interp, parsePtr, envPtr)
     }
     numValues = (numWords - 2);
 
+    if (numValues < 0) {
+	; /* ??? */
+    }
+
     /*
      * Decide if we can use a frame slot for the var/array name or if we
      * need to emit code to compute and push the name at runtime. We use a
      * frame slot (entry in the array of local vars) if we are compiling a
      * procedure body and if the name is simple text that does not include
-     * namespace qualifiers. 
+     * namespace qualifiers.
      */
 
     varTokenPtr = parsePtr->tokenPtr
@@ -1699,7 +1703,7 @@ TclCompileLappendCmd(interp, parsePtr, envPtr)
     if (numWords > 2) {
 	valueTokenPtr = varTokenPtr + (varTokenPtr->numComponents + 1);
 	if (valueTokenPtr->type == TCL_TOKEN_SIMPLE_WORD) {
-	    TclEmitPush(TclRegisterNewLiteral(envPtr, 
+	    TclEmitPush(TclRegisterNewLiteral(envPtr,
 		    valueTokenPtr[1].start, valueTokenPtr[1].size), envPtr);
 	} else {
 	    code = TclCompileTokens(interp, valueTokenPtr+1,
@@ -1802,11 +1806,11 @@ TclCompileLindexCmd(interp, parsePtr, envPtr)
 
     varTokenPtr = parsePtr->tokenPtr
 	+ (parsePtr->tokenPtr->numComponents + 1);
-    
+
     /*
      * Push the operands onto the stack.
      */
-	
+
     for ( i = 1 ; i < numWords ; i++ ) {
 	if (varTokenPtr->type == TCL_TOKEN_SIMPLE_WORD) {
 	    TclEmitPush(
@@ -1821,7 +1825,7 @@ TclCompileLindexCmd(interp, parsePtr, envPtr)
 	}
 	varTokenPtr = varTokenPtr + (varTokenPtr->numComponents + 1);
     }
-	
+
     /*
      * Emit INST_LIST_INDEX if objc==3, or INST_LIST_INDEX_MULTI
      * if there are multiple index args.
@@ -2043,12 +2047,12 @@ TclCompileLsetCmd( interp, parsePtr, envPtr )
      * need to emit code to compute and push the name at runtime. We use a
      * frame slot (entry in the array of local vars) if we are compiling a
      * procedure body and if the name is simple text that does not include
-     * namespace qualifiers. 
+     * namespace qualifiers.
      */
 
     varTokenPtr = parsePtr->tokenPtr
 	    + (parsePtr->tokenPtr->numComponents + 1);
-    result = TclPushVarName( interp, varTokenPtr, envPtr, 
+    result = TclPushVarName( interp, varTokenPtr, envPtr,
             TCL_CREATE_VAR, &localIndex, &simpleVarName, &isScalar );
     if (result != TCL_OK) {
 	return result;
@@ -2077,7 +2081,7 @@ TclCompileLsetCmd( interp, parsePtr, envPtr )
     }
 
     /*
-     * Duplicate the variable name if it's been pushed.  
+     * Duplicate the variable name if it's been pushed.
      */
 
     if ( !simpleVarName || localIndex < 0 ) {
@@ -2159,7 +2163,7 @@ TclCompileLsetCmd( interp, parsePtr, envPtr )
 	    TclEmitInstInt4( INST_STORE_ARRAY4, localIndex, envPtr );
 	}
     }
-    
+
     return TCL_OK;
 
 }
@@ -2496,7 +2500,7 @@ TclCompileSetCmd(interp, parsePtr, envPtr)
      * need to emit code to compute and push the name at runtime. We use a
      * frame slot (entry in the array of local vars) if we are compiling a
      * procedure body and if the name is simple text that does not include
-     * namespace qualifiers. 
+     * namespace qualifiers.
      */
 
     varTokenPtr = parsePtr->tokenPtr
@@ -2565,7 +2569,7 @@ TclCompileSetCmd(interp, parsePtr, envPtr)
     } else {
 	TclEmitOpcode((isAssignment? INST_STORE_STK : INST_LOAD_STK), envPtr);
     }
-	
+
     done:
     return code;
 }
@@ -2602,7 +2606,7 @@ TclCompileStringCmd(interp, parsePtr, envPtr)
     Tcl_Obj *opObj;
     int index;
     int code;
-    
+
     static CONST char *options[] = {
 	"bytelength",	"compare",	"equal",	"first",
 	"index",	"is",		"last",		"length",
@@ -2618,7 +2622,7 @@ TclCompileStringCmd(interp, parsePtr, envPtr)
 	STR_REPLACE,	STR_TOLOWER,	STR_TOUPPER,	STR_TOTITLE,
 	STR_TRIM,	STR_TRIMLEFT,	STR_TRIMRIGHT,
 	STR_WORDEND,	STR_WORDSTART
-    };	  
+    };
 
     if (parsePtr->numWords < 2) {
 	/* Fail at run time, not in compilation */
@@ -2660,7 +2664,7 @@ TclCompileStringCmd(interp, parsePtr, envPtr)
 	     */
 	    return TCL_OUT_LINE_COMPILE;
 
-	case STR_COMPARE: 
+	case STR_COMPARE:
 	case STR_EQUAL: {
 	    int i;
 	    /*
@@ -2824,7 +2828,7 @@ TclCompileStringCmd(interp, parsePtr, envPtr)
  *
  * TclCompileVariableCmd --
  *
- *	Procedure called to reserve the local variables for the 
+ *	Procedure called to reserve the local variables for the
  *      "variable" command. The command itself is *not* compiled.
  *
  * Results:
@@ -2845,13 +2849,13 @@ TclCompileVariableCmd(interp, parsePtr, envPtr)
     Tcl_Token *varTokenPtr;
     int i, numWords;
     CONST char *varName, *tail;
-    
+
     if (envPtr->procPtr == NULL) {
 	return TCL_OUT_LINE_COMPILE;
     }
 
     numWords = parsePtr->numWords;
-    
+
     varTokenPtr = parsePtr->tokenPtr
 	+ (parsePtr->tokenPtr->numComponents + 1);
     for (i = 1; i < numWords; i += 2) {
@@ -2939,7 +2943,7 @@ TclCompileWhileCmd(interp, parsePtr, envPtr)
     }
 
     /*
-     * Find out if the condition is a constant. 
+     * Find out if the condition is a constant.
      */
 
     boolObj = Tcl_NewStringObj(testTokenPtr[1].start, testTokenPtr[1].size);
@@ -2949,10 +2953,10 @@ TclCompileWhileCmd(interp, parsePtr, envPtr)
     if (code == TCL_OK) {
 	if (boolVal) {
 	    /*
-	     * it is an infinite loop 
+	     * it is an infinite loop
 	     */
 
-	    loopMayEnd = 0;  
+	    loopMayEnd = 0;
 	} else {
 	    /*
 	     * This is an empty loop: "while 0 {...}" or such.
@@ -2963,7 +2967,7 @@ TclCompileWhileCmd(interp, parsePtr, envPtr)
 	}
     }
 
-    /* 
+    /*
      * Create a ExceptionRange record for the loop body. This is used to
      * implement break and continue.
      */
@@ -2993,7 +2997,7 @@ TclCompileWhileCmd(interp, parsePtr, envPtr)
     } else {
 	testCodeOffset = (envPtr->codeNext - envPtr->codeStart);
     }
-    
+
 
     /*
      * Compile the loop body.
@@ -3037,7 +3041,7 @@ TclCompileWhileCmd(interp, parsePtr, envPtr)
 	    goto error;
 	}
 	envPtr->currStackDepth = savedStackDepth + 1;
-    
+
 	jumpDist = (envPtr->codeNext - envPtr->codeStart) - bodyCodeOffset;
 	if (jumpDist > 127) {
 	    TclEmitInstInt4(INST_JUMP_TRUE4, -jumpDist, envPtr);
@@ -3050,7 +3054,7 @@ TclCompileWhileCmd(interp, parsePtr, envPtr)
 	    TclEmitInstInt4(INST_JUMP4, -jumpDist, envPtr);
 	} else {
 	    TclEmitInstInt1(INST_JUMP1, -jumpDist, envPtr);
-	}	
+	}
     }
 
 
@@ -3062,7 +3066,7 @@ TclCompileWhileCmd(interp, parsePtr, envPtr)
     envPtr->exceptArrayPtr[range].codeOffset = bodyCodeOffset;
     envPtr->exceptArrayPtr[range].breakOffset =
 	    (envPtr->codeNext - envPtr->codeStart);
-    
+
     /*
      * The while command's result is an empty string.
      */
@@ -3126,7 +3130,7 @@ TclPushVarName(interp, varTokenPtr, envPtr, flags, localIndexPtr,
      * need to emit code to compute and push the name at runtime. We use a
      * frame slot (entry in the array of local vars) if we are compiling a
      * procedure body and if the name is simple text that does not include
-     * namespace qualifiers. 
+     * namespace qualifiers.
      */
 
     simpleVarName = 0;
@@ -3153,7 +3157,7 @@ TclPushVarName(interp, varTokenPtr, envPtr, flags, localIndexPtr,
 	name = varTokenPtr[1].start;
 	nameChars = varTokenPtr[1].size;
 	if ( *(name + nameChars - 1) == ')') {
-	    /* 
+	    /*
 	     * last char is ')' => potential array reference.
 	     */
 
@@ -3191,7 +3195,7 @@ TclPushVarName(interp, varTokenPtr, envPtr, flags, localIndexPtr,
 	 */
 
         simpleVarName = 0;
-        for (i = 0, p = varTokenPtr[1].start; 
+        for (i = 0, p = varTokenPtr[1].start;
 	     i < varTokenPtr[1].size; i++, p++) {
             if (*p == '(') {
                 simpleVarName = 1;
@@ -3222,7 +3226,7 @@ TclPushVarName(interp, varTokenPtr, envPtr, flags, localIndexPtr,
 
 	    if (remainingChars) {
 		/*
-		 * Make a first token with the extra characters in the first 
+		 * Make a first token with the extra characters in the first
 		 * token.
 		 */
 
@@ -3233,20 +3237,20 @@ TclPushVarName(interp, varTokenPtr, envPtr, flags, localIndexPtr,
 		elemTokenPtr->size = remainingChars;
 		elemTokenPtr->numComponents = 0;
 		elemTokenCount = n;
-		
+
 		/*
 		 * Copy the remaining tokens.
 		 */
-		
+
 		memcpy((void *) (elemTokenPtr+1), (void *) (&varTokenPtr[2]),
 		       ((n-1) * sizeof(Tcl_Token)));
 	    } else {
 		/*
 		 * Use the already available tokens.
 		 */
-		
+
 		elemTokenPtr = &varTokenPtr[2];
-		elemTokenCount = n - 1;	    
+		elemTokenCount = n - 1;
 	    }
 	}
     }

@@ -293,7 +293,8 @@ m4_ifdef([ACX_PROG_CC_WARNING_OPTS],[
   ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wc++-compat \
 -Wodr -Wstrict-prototypes -Wmissing-prototypes -Wmissing-parameter-type \
 -Wmissing-declarations -Wnested-externs -Wundef -Wshadow -Wformat=2 \
--Wformat-length=2 -Wold-style-definition -Wold-style-declaration \
+-Wformat-overflow=2 -Wformat-truncation=2 -Wstringop-overflow=2 \
+-Walloc-zero -Wrestrict -Wold-style-definition -Wold-style-declaration \
 -Wfloat-conversion -Wabi -Wc99-c11-compat -Wout-of-line-declaration \
 -Wno-extended-offsetof -Wmisleading-indentation -Wnull-dereference \
 -Wpointer-compare -Wbool-operation],[ac_libiberty_warn_cflags])dnl

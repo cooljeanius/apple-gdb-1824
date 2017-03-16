@@ -1,4 +1,4 @@
-/* 
+/*
  * tkCanvBmap.c --
  *
  *	This file implements bitmap items for canvas widgets.
@@ -361,7 +361,7 @@ ConfigureBitmap(interp, canvas, itemPtr, objc, objv, flags)
     }
     if (state==TK_STATE_HIDDEN) {
 	ComputeBitmapBbox(canvas, bmapPtr);
-	return TCL_OK;	
+	return TCL_OK;
     }
     fgColor = bmapPtr->fgColor;
     bgColor = bmapPtr->bgColor;
@@ -621,11 +621,14 @@ DisplayBitmap(canvas, itemPtr, display, drawable, x, y, width, height)
      * redisplay.
      */
 
-    if(state == TK_STATE_NULL) {
+    if (state == TK_STATE_NULL) {
 	state = ((TkCanvas *)canvas)->canvas_state;
     }
     fgColor = bmapPtr->fgColor;
     bgColor = bmapPtr->bgColor;
+    if (fgColor == bgColor) {
+	; /* ??? */
+    }
     bitmap = bmapPtr->bitmap;
     if (((TkCanvas *)canvas)->currentItemPtr == itemPtr) {
 	if (bmapPtr->activeFgColor!=NULL) {
@@ -682,7 +685,7 @@ DisplayBitmap(canvas, itemPtr, display, drawable, x, y, width, height)
 	 * to line up with the bitmap's origin (in order to make
 	 * bitmaps with "-background {}" work right).
 	 */
- 
+
 	XSetClipOrigin(display, bmapPtr->gc, drawableX - bmapX,
 		drawableY - bmapY);
 	XCopyPlane(display, bitmap, drawable,

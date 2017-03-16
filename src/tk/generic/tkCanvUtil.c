@@ -1,4 +1,4 @@
-/* 
+/*
  * tkCanvUtil.c --
  *
  *	This procedure contains a collection of utility procedures
@@ -525,7 +525,7 @@ TkCanvasDashPrintProc(clientData, tkwin, widgRec, offset, freeProcPtr)
 					 * information about how to reclaim
 					 * storage for return string. */
 {
-    Tk_Dash *dash = (Tk_Dash *) (widgRec+offset);
+    Tk_Dash *dash = (Tk_Dash *)(widgRec + offset);
     char *buffer;
     char *p;
     int i = dash->number;
@@ -533,22 +533,23 @@ TkCanvasDashPrintProc(clientData, tkwin, widgRec, offset, freeProcPtr)
     if (i < 0) {
 	i = -i;
 	*freeProcPtr = TCL_DYNAMIC;
-	buffer = (char *) ckalloc((unsigned int) (i+1));
-	p = (i > sizeof(char *)) ? dash->pattern.pt : dash->pattern.array;
-	memcpy(buffer, p, (unsigned int) i);
+	buffer = (char *)ckalloc((unsigned int)(i + 1U));
+	p = ((i > (int)sizeof(char *))
+	     ? dash->pattern.pt : dash->pattern.array);
+	memcpy(buffer, p, (unsigned int)i);
 	buffer[i] = 0;
 	return buffer;
     } else if (!i) {
-	*freeProcPtr = (Tcl_FreeProc *) NULL;
+	*freeProcPtr = (Tcl_FreeProc *)NULL;
 	return "";
     }
-    buffer = (char *)ckalloc((unsigned int) (4*i));
+    buffer = (char *)ckalloc((unsigned int)(4U * i));
     *freeProcPtr = TCL_DYNAMIC;
 
-    p = (i > sizeof(char *)) ? dash->pattern.pt : dash->pattern.array;
-    sprintf(buffer, "%d", *p++ & 0xff);
-    while(--i) {
-	sprintf(buffer+strlen(buffer), " %d", *p++ & 0xff);
+    p = ((i > (int)sizeof(char *)) ? dash->pattern.pt : dash->pattern.array);
+    sprintf(buffer, "%d", (*p++ & 0xff));
+    while (--i) {
+	sprintf((buffer + strlen(buffer)), " %d", (*p++ & 0xff));
     }
     return buffer;
 }
@@ -787,68 +788,69 @@ Tk_GetDash(interp, value, dash)
     CONST char **largv, **argv = NULL;
     char *pt;
 
-    if ((value==(char *) NULL) || (*value==0) ) {
+    if ((value == (char *)NULL) || (*value == 0)) {
 	dash->number = 0;
 	return TCL_OK;
     }
-    if ((*value == '.') || (*value == ',') ||
-	    (*value == '-') || (*value == '_')) {
-	i = DashConvert((char *) NULL, value, -1, 0.0);
-	if (i>0) {
+    if ((*value == '.') || (*value == ',')
+	|| (*value == '-') || (*value == '_')) {
+	i = DashConvert((char *)NULL, value, -1, 0.0);
+	if (i > 0) {
 	    i = strlen(value);
 	} else {
 	    goto badDashList;
 	}
-	if (i > sizeof(char *)) {
-	    dash->pattern.pt = pt = (char *) ckalloc(strlen(value));
+	if (i > (int)sizeof(char *)) {
+	    dash->pattern.pt = pt = (char *)ckalloc(strlen(value));
 	} else {
 	    pt = dash->pattern.array;
 	}
-	memcpy(pt,value, (unsigned int) i);
+	memcpy(pt, value, (unsigned int)i);
 	dash->number = -i;
 	return TCL_OK;
     }
-    if (Tcl_SplitList(interp, (char *) value, &argc, &argv) != TCL_OK) {
+    if (Tcl_SplitList(interp, (char *)value, &argc, &argv) != TCL_OK) {
 	Tcl_ResetResult(interp);
     badDashList:
 	Tcl_AppendResult(interp, "bad dash list \"", value,
-		"\": must be a list of integers or a format like \"-..\"",
-		(char *) NULL);
+		    "\": must be a list of integers or a format like \"-..\"",
+		    (char *)NULL);
     syntaxError:
 	if (argv != NULL) {
-	    ckfree((char *) argv);
+	    ckfree((char *)argv);
 	}
 	if (ABS(dash->number) > sizeof(char *))
-	    ckfree((char *) dash->pattern.pt);
+	    ckfree((char *)dash->pattern.pt);
 	dash->number = 0;
 	return TCL_ERROR;
     }
 
     if (ABS(dash->number) > sizeof(char *)) {
-	ckfree((char *) dash->pattern.pt);
+	ckfree((char *)dash->pattern.pt);
     }
-    if (argc > sizeof(char *)) {
-	dash->pattern.pt = pt = (char *) ckalloc((unsigned int) argc);
+    if (argc > (int)sizeof(char *)) {
+	dash->pattern.pt = pt = (char *)ckalloc((unsigned int)argc);
     } else {
 	pt = dash->pattern.array;
     }
     dash->number = argc;
 
     largv = argv;
-    while(argc>0) {
-	if (Tcl_GetInt(interp, *largv, &i) != TCL_OK ||
-	    i < 1 || i>255) {
+    while (argc > 0) {
+	if ((Tcl_GetInt(interp, *largv, &i) != TCL_OK)
+	    || (i < 1) || (i > 255)) {
 	    Tcl_ResetResult(interp);
-	    Tcl_AppendResult(interp, "expected integer in the range 1..255 but got \"",
-			 *largv, "\"", (char *) NULL);
+	    Tcl_AppendResult(interp,
+			     "expected integer in the range 1..255 but got \"",
+			     *largv, "\"", (char *)NULL);
 	    goto syntaxError;
 	}
 	*pt++ = i;
-	argc--; largv++; 
+	argc--; largv++;
     }
-  
+
     if (argv != NULL) {
-	ckfree((char *) argv);
+	ckfree((char *)argv);
     }
 
     return TCL_OK;
@@ -1131,26 +1133,30 @@ Tk_ChangeOutlineGC(canvas, item, outline)
 	    stipple = outline->disabledStipple;
 	}
     }
-    if (color==NULL) {
+    if (color == NULL) {
 	return 0;
     }
 
-    if ((dash->number<-1) || ((dash->number == -1) && (dash->pattern.array[1]!=','))) {
+    if ((dash->number < -1)
+	|| ((dash->number == -1) && (dash->pattern.array[1] != ','))) {
 	char *q;
 	int i = -dash->number;
 
-        p = (i > sizeof(char *)) ? dash->pattern.pt : dash->pattern.array;
-	q = (char *) ckalloc(2*(unsigned int)i);
+        p = ((i > (int)sizeof(char *)) ? dash->pattern.pt : dash->pattern.array);
+	q = (char *)ckalloc(2U * (unsigned int)i);
 	i = DashConvert(q, p, i, width);
 	XSetDashes(((TkCanvas *)canvas)->display, outline->gc, outline->offset, q, i);
 	ckfree(q);
-    } else if ( dash->number>2 || (dash->number==2 &&
-		(dash->pattern.array[0]!=dash->pattern.array[1]))) {
-        p = (char *) (dash->number > sizeof(char *)) ? dash->pattern.pt : dash->pattern.array;
-	XSetDashes(((TkCanvas *)canvas)->display, outline->gc, outline->offset, p, dash->number);
+    } else if ((dash->number > 2)
+	       || ((dash->number == 2)
+		   && (dash->pattern.array[0] != dash->pattern.array[1]))) {
+        p = (char *)((dash->number > (int)sizeof(char *))
+		     ? dash->pattern.pt : dash->pattern.array);
+	XSetDashes(((TkCanvas *)canvas)->display, outline->gc, outline->offset,
+		   p, dash->number);
     }
-    if (stipple!=None) {
-	int w=0; int h=0;
+    if (stipple != None) {
+	int w = 0; int h = 0;
 	Tk_TSOffset *tsoffset = &outline->tsoffset;
 	int flags = tsoffset->flags;
 	if (!(flags & TK_OFFSET_INDEX) && (flags & (TK_OFFSET_CENTER|TK_OFFSET_MIDDLE))) {
@@ -1182,7 +1188,7 @@ Tk_ChangeOutlineGC(canvas, item, outline)
  *
  * Tk_ResetOutlineGC
  *
- *	Restores the GC to the situation before 
+ *	Restores the GC to the situation before
  *	Tk_ChangeDashGC() was called.
  *	This function should be called just after the dashed
  *	item is drawn, because the GC is supposed to be

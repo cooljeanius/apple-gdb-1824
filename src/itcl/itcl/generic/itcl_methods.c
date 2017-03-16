@@ -616,11 +616,11 @@ Itcl_DeleteMemberFunc(cdata)
  */
 int
 Itcl_CreateMemberCode(interp, cdefn, arglist, body, mcodePtr)
-    Tcl_Interp* interp;            /* interpreter managing this action */
+    Tcl_Interp *interp;            /* interpreter managing this action */
     ItclClass *cdefn;              /* class containing this member */
-    char* arglist;                 /* space-separated list of arg names */
-    char* body;                    /* body of commands for the method */
-    ItclMemberCode** mcodePtr;     /* returns: pointer to new implementation */
+    char *arglist;                 /* space-separated list of arg names */
+    const char *body;              /* body of commands for the method */
+    ItclMemberCode **mcodePtr;     /* returns: pointer to new implementation */
 {
     int argc;
     CompiledLocal *args, *localPtr;
@@ -702,7 +702,8 @@ Itcl_CreateMemberCode(interp, cdefn, arglist, body, mcodePtr)
         Tcl_ObjCmdProc *objCmdProc;
         ClientData cdata;
 
-        if (!Itcl_FindC(interp, body+1, &argCmdProc, &objCmdProc, &cdata)) {
+        if (!Itcl_FindC(interp, (char *)(body + 1), &argCmdProc, &objCmdProc,
+						&cdata)) {
             Tcl_AppendStringsToObj(Tcl_GetObjResult(interp),
                 "no registered C procedure with name \"", body+1, "\"",
                 (char*)NULL);
@@ -988,8 +989,9 @@ Itcl_EvalMemberCode(interp, mfunc, member, contextObj, objc, objv)
             interp, objc, objv);
     }
     else if ((mcode->flags & ITCL_IMPLEMENT_ARGCMD) != 0) {
-        char **argv;
-        argv = (char**)ckalloc( (unsigned)(objc*sizeof(char*)) );
+        const char **argv;
+        argv =
+		  (const char **)ckalloc((unsigned int)(objc * sizeof(const char *)));
         for (i=0; i < objc; i++) {
             argv[i] = Tcl_GetStringFromObj(objv[i], (int*)NULL);
         }
@@ -997,7 +999,7 @@ Itcl_EvalMemberCode(interp, mfunc, member, contextObj, objc, objv)
         result = (*mcode->cfunc.argCmd)(mcode->clientData,
             interp, objc, argv);
 
-        ckfree((char*)argv);
+        ckfree((char *)argv);
     }
     else if ((mcode->flags & ITCL_IMPLEMENT_TCL) != 0) {
         result = Tcl_EvalObj(interp, mcode->procPtr->bodyPtr);
@@ -1057,7 +1059,8 @@ Itcl_CreateArgList(interp, decl, argcPtr, argPtr)
     int status = TCL_OK;  /* assume that this will succeed */
 
     int i, argc, fargc;
-    char **argv, **fargv;
+    const char **argv;
+	const char **fargv;
     CompiledLocal *localPtr, *last;
 
     *argPtr = last = NULL;
@@ -1142,8 +1145,8 @@ Itcl_CreateArgList(interp, decl, argcPtr, argPtr)
  */
 CompiledLocal*
 Itcl_CreateArg(name, init)
-    char* name;     /* name of new argument */
-    char* init;     /* initial value */
+    const char *name;     /* name of new argument */
+    const char *init;     /* initial value */
 {
     CompiledLocal *localPtr = NULL;
     int nameLen;
@@ -1815,7 +1818,7 @@ Itcl_AssignArgs(interp, objc, objv, mfunc)
     int result = TCL_OK;
 
     int defargc;
-    char **defargv = NULL;
+    const char **defargv = NULL;
     Tcl_Obj **defobjv = NULL;
     int configc = 0;
     ItclVarDefn **configVars = NULL;
@@ -2171,7 +2174,7 @@ ItclHandleConfig(interp, argc, vars, vals, contextObj)
     int result = TCL_OK;
 
     int i;
-    char *val;
+    const char *val;
     Tcl_DString lastval;
     ItclContext context;
     Tcl_CallFrame *oldFramePtr, *uplevelFramePtr;

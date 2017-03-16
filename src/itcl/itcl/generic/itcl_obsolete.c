@@ -732,7 +732,8 @@ ItclOldCommonCmd(clientData, interp, objc, objv)
     ItclClass *cdefnPtr = (ItclClass*)Itcl_PeekStack(&info->cdefnStack);
 
     int newEntry;
-    char *name, *init;
+    char *name;
+	const char *init;
     ItclVarDefn *vdefn;
     Tcl_HashEntry *entry;
     Namespace *nsPtr;
@@ -1433,7 +1434,8 @@ ItclOldBiInfoPublicsCmd(dummy, interp, objc, objv)
     int varCheck = 0;
     int varValue = 0;
 
-    char *token, *val;
+    char *token;
+	const char *val;
     ItclClass *contextClass;
     ItclObject *contextObj;
 
@@ -1616,7 +1618,8 @@ ItclOldBiInfoProtectedsCmd(dummy, interp, objc, objv)
     int varInit = 0;
     int varValue = 0;
 
-    char *token, *val;
+    char *token;
+	const char *val;
     ItclClass *contextClass;
     ItclObject *contextObj;
 
@@ -1808,7 +1811,8 @@ ItclOldBiInfoCommonsCmd(dummy, interp, objc, objv)
     int varInit = 0;
     int varValue = 0;
 
-    char *token, *val;
+    char *token;
+	const char *val;
     ItclClass *contextClass;
     ItclObject *contextObj;
 

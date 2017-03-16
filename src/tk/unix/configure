@@ -4843,9 +4843,13 @@ fi
     CFLAGS_DEBUG=-g
     CFLAGS_OPTIMIZE=""
     if test "$GCC" = "yes" ; then
-        # FIXME: -Wconversion changed meanings between GCC versions:
-	CFLAGS_WARNING="-Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -Wconversion -Wno-implicit-int -fno-strict-aliasing"
-	# (replace -Wconversion with -Wtraditional-conversion if need be)
+	# FIXME: '-Wconversion' changed semantics in newer gcc versions.
+	# '-Wtraditional-conversion' is the new name for the old
+	# '-Wconversion'.
+	# We need to choose which one to add based on gcc version.
+	# Also we should be checking these flags to see if they are
+	# actually supported or not:
+	CFLAGS_WARNING="-Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -Wno-implicit-int -fno-strict-aliasing"
     else
 	CFLAGS_WARNING=""
     fi

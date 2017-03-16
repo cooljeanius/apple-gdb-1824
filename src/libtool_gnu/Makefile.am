@@ -85,13 +85,17 @@ rebuild = rebuild=:; $(timestamp); correctver=$$1
 # ---------- #
 
 sh_files	= $(auxdir)/general.m4sh $(auxdir)/getopt.m4sh
+chydir		= Changelogs-yearly
 EXTRA_DIST     += bootstrap $(srcdir)/libtoolize.in $(auxdir)/ltmain.m4sh \
 		  $(auxdir)/mkstamp $(sh_files) \
-		  ChangeLog.1996 ChangeLog.1997 ChangeLog.1998 \
-		  ChangeLog.1999 ChangeLog.2000 ChangeLog.2001 \
-		  ChangeLog.2002 ChangeLog.2003 ChangeLog.2004 \
-		  ChangeLog.2005 ChangeLog.2006 ChangeLog.2007 \
-		  ChangeLog.2008 ChangeLog.2009 ChangeLog.2010
+		  $(chydir)/ChangeLog.1996 $(chydir)/ChangeLog.1997 \
+		  $(chydir)/ChangeLog.1998 $(chydir)/ChangeLog.1999 \
+		  $(chydir)/ChangeLog.2000 $(chydir)/ChangeLog.2001 \
+		  $(chydir)/ChangeLog.2002 $(chydir)/ChangeLog.2003 \
+		  $(chydir)/ChangeLog.2004 $(chydir)/ChangeLog.2005 \
+		  $(chydir)/ChangeLog.2006 $(chydir)/ChangeLog.2007 \
+		  $(chydir)/ChangeLog.2008 $(chydir)/ChangeLog.2009 \
+		  $(chydir)/ChangeLog.2010
 CLEANFILES     += libtool libtoolize libtoolize.tmp \
 		  $(auxdir)/ltmain.tmp $(m4dir)/ltversion.tmp
 

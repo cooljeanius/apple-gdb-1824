@@ -38,7 +38,7 @@ static void ItclReportObjectUsage _ANSI_ARGS_((Tcl_Interp *interp,
     ItclObject* obj));
 
 static char* ItclTraceThisVar _ANSI_ARGS_((ClientData cdata,
-    Tcl_Interp *interp, char *name1, char *name2, int flags));
+    Tcl_Interp *interp, const char *name1, const char *name2, int flags));
 
 static void ItclDestroyObject _ANSI_ARGS_((ClientData cdata));
 static void ItclFreeObject _ANSI_ARGS_((char* cdata));
@@ -704,7 +704,7 @@ Itcl_HandleInstance(clientData, interp, objc, objv)
  *  anything goes wrong, this returns NULL.
  * ------------------------------------------------------------------------
  */
-char*
+const char *
 Itcl_GetInstanceVar(interp, name, contextObj, contextClass)
     Tcl_Interp *interp;       /* current interpreter */
     char *name;               /* name of desired instance variable */
@@ -712,7 +712,7 @@ Itcl_GetInstanceVar(interp, name, contextObj, contextClass)
     ItclClass *contextClass;  /* name is interpreted in this scope */
 {
     ItclContext context;
-    char *val;
+    const char *val;
 
     /*
      *  Make sure that the current namespace context includes an
@@ -851,8 +851,8 @@ static char*
 ItclTraceThisVar(cdata, interp, name1, name2, flags)
     ClientData cdata;        /* object instance data */
     Tcl_Interp *interp;      /* interpreter managing this variable */
-    char *name1;             /* variable name */
-    char *name2;             /* unused */
+    const char *name1;       /* variable name */
+    const char *name2;       /* unused */
     int flags;               /* flags indicating read/write */
 {
     ItclObject *contextObj = (ItclObject*)cdata;
@@ -1144,13 +1144,13 @@ ItclCreateObjVar(interp, vdefn, contextObj)
 int
 Itcl_ScopedVarResolver(interp, name, contextNs, flags, rPtr)
     Tcl_Interp *interp;        /* current interpreter */
-    char *name;                /* variable name being resolved */
+    const char *name;          /* variable name being resolved */
     Tcl_Namespace *contextNs;  /* current namespace context */
     int flags;                 /* TCL_LEAVE_ERR_MSG => leave error message */
     Tcl_Var *rPtr;             /* returns: resolved variable */
 {
     int namec;
-    char **namev;
+    const char **namev;
     Tcl_Interp *errs;
     Tcl_CmdInfo cmdInfo;
     ItclObject *contextObj;

@@ -1,4 +1,4 @@
-/* 
+/*
  * tkTableUtil.c --
  *
  *	This module contains utility functions for table widgets.
@@ -47,7 +47,7 @@ TableOptionBdSet(clientData, interp, tkwin, value, widgRec, offset)
 {
     char **borderStr;
     int *bordersPtr, *bdPtr;
-    int type	= (int) clientData;
+    int type	= (int)(intptr_t)clientData;
     int result	= TCL_OK;
     int argc;
     const char **argv;
@@ -147,7 +147,7 @@ TableOptionBdGet(clientData, tkwin, widgRec, offset, freeProcPtr)
 					 * information about how to reclaim
 					 * storage for return string. */
 {
-    register int type	= (int) clientData;
+    register int type	= (int)(intptr_t)clientData;
 
     if (type == BD_TABLE) {
 	return ((TableTag *) (widgRec + offset))->borderStr;

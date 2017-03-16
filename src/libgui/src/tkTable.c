@@ -1,4 +1,4 @@
-/* 
+/*
  * tkTable.c --
  *
  *	This module implements table widgets for the Tk
@@ -61,7 +61,7 @@ static Tk_RestrictAction TableRestrictProc _ANSI_ARGS_((ClientData arg,
 
 /*
  * The following tables define the widget commands (and sub-
- * commands) and map the indexes into the string tables into 
+ * commands) and map the indexes into the string tables into
  * enumerated types used to dispatch the widget command.
  */
 
@@ -329,7 +329,7 @@ Tk_ConfigSpec tableSpecs[] = {
  */
 
 static const char *updateOpts[] = {
-    "-anchor",		"-background",	"-bg",		"-bd",	
+    "-anchor",		"-background",	"-bg",		"-bd",
     "-borderwidth",	"-cache",	"-command",	"-colorigin",
     "-cols",		"-colstretchmode",		"-coltagcommand",
     "-drawmode",	"-fg",		"-font",	"-foreground",
@@ -341,7 +341,7 @@ static const char *updateOpts[] = {
     "-padx",		"-pady",	"-relief",	"-roworigin",
     "-rows",		"-rowstretchmode",		"-rowtagcommand",
     "-showprocs",	"-state",	"-titlecols",	"-titlerows",
-    "-usecommand",	"-variable",	"-width",	"-wrap",	
+    "-usecommand",	"-variable",	"-width",	"-wrap",
     "-xscrollcommand",	"-yscrollcommand", (const char *)NULL
 };
 
@@ -387,7 +387,7 @@ typedef union {
  *
  *	Helper function to bridge the gap between an object-based procedure
  *	and an older string-based procedure.
- * 
+ *
  *	Given an array of objects, allocate an array that consists of the
  *	string representations of those objects.
  *
@@ -418,7 +418,7 @@ StringifyObjects(objc, objv)
 {
     int i;
     char **argv;
-    
+
     argv = (char **) ckalloc((objc + 1) * sizeof(char *));
     for (i = 0; i < objc; i++) {
     	argv[i] = Tcl_GetString(objv[i]);
@@ -1218,9 +1218,9 @@ TableConfigure(interp, tablePtr, objc, objv, flags, forceUpdate)
 	}
     }
     if (forceUpdate) {
-	/* 
-	 * Calculate the row and column starts 
-	 * Adjust the top left corner of the internal display 
+	/*
+	 * Calculate the row and column starts
+	 * Adjust the top left corner of the internal display
 	 */
 	TableAdjustParams(tablePtr);
 	/* reset the cursor */
@@ -1394,7 +1394,7 @@ TableCmdDeletedProc(ClientData clientData)
     }
 }
 
-/* 
+/*
  *----------------------------------------------------------------------
  *
  * TableRedrawHighlight --
@@ -1478,7 +1478,7 @@ TableRefresh(register Table *tablePtr, int row, int col, int mode)
     }
 }
 
-/* 
+/*
  *----------------------------------------------------------------------
  *
  * TableGetGc --
@@ -1647,8 +1647,8 @@ TableDisplay(ClientData clientdata)
     padx  = tablePtr->padX;
     pady  = tablePtr->padY;
 
-    /* 
-     * if we are using the slow drawing mode with a pixmap 
+    /*
+     * if we are using the slow drawing mode with a pixmap
      * create the pixmap and adjust x && y for offset in pixmap
      */
     if (tablePtr->drawMode == DRAW_MODE_SLOW) {
@@ -1686,12 +1686,12 @@ TableDisplay(ClientData clientdata)
 	    rowTo+tablePtr->rowOffset, colTo+tablePtr->colOffset);
 #endif
 
-    /* 
+    /*
      * Initialize colTagsCache hash table to cache column tag names.
      */
     colTagsCache = (Tcl_HashTable *) ckalloc(sizeof(Tcl_HashTable));
     Tcl_InitHashTable(colTagsCache, TCL_ONE_WORD_KEYS);
-    /* 
+    /*
      * Initialize drawnCache hash table to cache drawn cells.
      * This is necessary to prevent spanning cells being drawn multiple times.
      */
@@ -1707,9 +1707,9 @@ TableDisplay(ClientData clientdata)
 
     /* Cycle through the cells and display them */
     for (row = rowFrom; row <= rowTo; row++) {
-	/* 
+	/*
 	 * are we in the 'dead zone' between the
-	 * title rows and the first displayed row 
+	 * title rows and the first displayed row
 	 */
 	if (row < tablePtr->topRow && row >= tablePtr->titleRows) {
 	    row = tablePtr->topRow;
@@ -1723,7 +1723,7 @@ TableDisplay(ClientData clientdata)
 
 	for (col = colFrom; col <= colTo; col++) {
 	    activeCell = 0;
-	    /* 
+	    /*
 	     * Adjust to first viewable column if we are in the 'dead zone'
 	     * between the title cols and the first displayed column.
 	     */
@@ -1841,7 +1841,8 @@ TableDisplay(ClientData clientdata)
 	     * let's see if we have the value cached already
 	     * if not, run the findColTag routine and cache the value
 	     */
-	    entryPtr = Tcl_CreateHashEntry(colTagsCache, (char *)ucol, &new);
+	    entryPtr = Tcl_CreateHashEntry(colTagsCache,
+					   (char *)(intptr_t)ucol, &new);
 	    if (new) {
 		colPtr = FindRowColTag(tablePtr, ucol, COL);
 		Tcl_SetHashValue(entryPtr, colPtr);
@@ -2222,7 +2223,7 @@ TableDisplay(ClientData clientdata)
 				TK_3D_DARK_GC);
 			break;
 		}
-	
+
 		/* draw a line with single pixel width */
 		rect[0].x = x + width - 1;
 		rect[0].y = y;
@@ -2305,7 +2306,7 @@ TableDisplay(ClientData clientdata)
 	window = Tk_WindowId(tkwin);
     }
 
-    /* 
+    /*
      * If we are at the end of the table, clear the area after the last
      * row/col.  We discount spans here because we just need the coords
      * for the area that would be the last physical cell.
@@ -2339,7 +2340,7 @@ TableDisplay(ClientData clientdata)
 	TableFreeGc(display, tagGc);
     }
     TableRedrawHighlight(tablePtr);
-    /* 
+    /*
      * Free the hash table used to cache evaluations.
      */
     Tcl_DeleteHashTable(colTagsCache);
@@ -2348,7 +2349,7 @@ TableDisplay(ClientData clientdata)
     ckfree((char *) (drawnCache));
 }
 
-/* 
+/*
  *----------------------------------------------------------------------
  *
  * TableInvalidate --
@@ -2426,7 +2427,7 @@ TableInvalidate(Table * tablePtr, int x, int y,
     }
 }
 
-/* 
+/*
  *----------------------------------------------------------------------
  *
  * TableFlashEvent --
@@ -2453,7 +2454,7 @@ TableFlashEvent(ClientData clientdata)
     entries = 0;
     for (entryPtr = Tcl_FirstHashEntry(tablePtr->flashCells, &search);
 	 entryPtr != NULL; entryPtr = Tcl_NextHashEntry(&search)) {
-	count = (int) Tcl_GetHashValue(entryPtr);
+	count = (int)(intptr_t)Tcl_GetHashValue(entryPtr);
 	if (--count <= 0) {
 	    /* get the cell address and invalidate that region only */
 	    TableParseArrayIndex(&row, &col,
@@ -2465,7 +2466,7 @@ TableFlashEvent(ClientData clientdata)
 	    TableRefresh(tablePtr, row-tablePtr->rowOffset,
 		    col-tablePtr->colOffset, CELL);
 	} else {
-	    Tcl_SetHashValue(entryPtr, (ClientData) count);
+	    Tcl_SetHashValue(entryPtr, (ClientData)(intptr_t)count);
 	    entries++;
 	}
     }
@@ -2479,7 +2480,7 @@ TableFlashEvent(ClientData clientdata)
     }
 }
 
-/* 
+/*
  *----------------------------------------------------------------------
  *
  * TableAddFlash --
@@ -2510,7 +2511,7 @@ TableAddFlash(Table *tablePtr, int row, int col)
 
     /* add the flash to the hash table */
     entryPtr = Tcl_CreateHashEntry(tablePtr->flashCells, buf, &dummy);
-    Tcl_SetHashValue(entryPtr, tablePtr->flashTime);
+    Tcl_SetHashValue(entryPtr, (intptr_t)tablePtr->flashTime);
 
     /* now set the timer if it's not already going and invalidate the area */
     if (tablePtr->flashTimer == NULL) {
@@ -2587,7 +2588,7 @@ TableGetActiveBuf(register Table *tablePtr)
     TableSetActiveIndex(tablePtr);
 }
 
-/* 
+/*
  *----------------------------------------------------------------------
  *
  * TableVarProc --
@@ -2788,7 +2789,7 @@ TableAdjustActive(tablePtr)
     }
 
     if (tablePtr->oldActRow >= 0 && tablePtr->oldActCol >= 0) {
-	/* 
+	/*
 	 * Set the value of the old active cell to the active buffer
 	 * SetCellValue will check if the value actually changed
 	 */
@@ -2901,13 +2902,13 @@ TableAdjustParams(register Table *tablePtr)
     numPixels = 0;
     unpreset = 0;
     for (i = 0; i < tablePtr->cols; i++) {
-	entryPtr = Tcl_FindHashEntry(tablePtr->colWidths, (char *) i);
+	entryPtr = Tcl_FindHashEntry(tablePtr->colWidths, (char *)(intptr_t)i);
 	if (entryPtr == NULL) {
 	    tablePtr->colPixels[i] = -1;
 	    unpreset++;
 	    lastUnpreset = i;
 	} else {
-	    value = (int) Tcl_GetHashValue(entryPtr);
+	    value = (int)(intptr_t)Tcl_GetHashValue(entryPtr);
 	    if (value > 0) {
 		tablePtr->colPixels[i] = value * tablePtr->charWidth + px;
 	    } else {
@@ -2995,13 +2996,14 @@ TableAdjustParams(register Table *tablePtr)
 	numPixels	= 0;
 	unpreset	= 0;
 	for (i = 0; i < tablePtr->rows; i++) {
-	    entryPtr = Tcl_FindHashEntry(tablePtr->rowHeights, (char *) i);
+	    entryPtr = Tcl_FindHashEntry(tablePtr->rowHeights,
+					 (char *)(intptr_t)i);
 	    if (entryPtr == NULL) {
 		tablePtr->rowPixels[i] = -1;
 		unpreset++;
 		lastUnpreset = i;
 	    } else {
-		value = (int) Tcl_GetHashValue(entryPtr);
+		value = (int)(intptr_t)Tcl_GetHashValue(entryPtr);
 		if (value > 0) {
 		    tablePtr->rowPixels[i] = value * tablePtr->charHeight + py;
 		} else {
@@ -3098,9 +3100,9 @@ TableAdjustParams(register Table *tablePtr)
     leftCol = tablePtr->leftCol;
     w += hl;
     h += hl;
-    /* 
+    /*
      * If we use this value of topRow, will we fill the window?
-     * if not, decrease it until we will, or until it gets to titleRows 
+     * if not, decrease it until we will, or until it gets to titleRows
      * make sure we don't cut off the bottom row
      */
     for (; topRow > tablePtr->titleRows; topRow--) {
@@ -3109,9 +3111,9 @@ TableAdjustParams(register Table *tablePtr)
 	    break;
 	}
     }
-    /* 
+    /*
      * If we use this value of topCol, will we fill the window?
-     * if not, decrease it until we will, or until it gets to titleCols 
+     * if not, decrease it until we will, or until it gets to titleCols
      * make sure we don't cut off the left column
      */
     for (; leftCol > tablePtr->titleCols; leftCol--) {
@@ -3551,7 +3553,7 @@ TableRestrictProc(serial, eventPtr)
      XEvent *eventPtr;
 {
     if ((eventPtr->type == KeyRelease || eventPtr->type == KeyPress) &&
-	((eventPtr->xany.serial-(unsigned int)serial) > 0)) {
+	((eventPtr->xany.serial - (unsigned int)(uintptr_t)serial) > 0)) {
 	return TK_DEFER_EVENT;
     } else {
 	return TK_PROCESS_EVENT;
@@ -3590,7 +3592,7 @@ TableValidateChange(tablePtr, r, c, old, new, index)
     Tk_RestrictProc *rstrct;
     ClientData cdata;
     Tcl_DString script;
-    
+
     if (tablePtr->valCmd == NULL || tablePtr->validate == 0) {
 	return TCL_OK;
     }

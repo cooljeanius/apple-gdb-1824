@@ -117,18 +117,18 @@
 		F5F24F98016ECAFC01DC9062 /* tclCmdAH.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCmdAH.c; path = ../generic/tclCmdAH.c; sourceTree = SOURCE_ROOT; };
 		F5F24F99016ECAFC01DC9062 /* tclCmdIL.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCmdIL.c; path = ../generic/tclCmdIL.c; sourceTree = SOURCE_ROOT; };
 		F5F24F9A016ECAFC01DC9062 /* tclCmdMZ.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCmdMZ.c; path = ../generic/tclCmdMZ.c; sourceTree = SOURCE_ROOT; };
-		F5F24F9B016ECAFC01DC9062 /* tclCompCmds.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCompCmds.c; path = ../generic/tclCompCmds.c; sourceTree = SOURCE_ROOT; };
+		F5F24F9B016ECAFC01DC9062 /* tclCompCmds.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCompCmds.c; path = ../generic/tclCompCmds.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F5F24F9C016ECAFC01DC9062 /* tclCompExpr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCompExpr.c; path = ../generic/tclCompExpr.c; sourceTree = SOURCE_ROOT; };
-		F5F24F9D016ECAFC01DC9062 /* tclCompile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCompile.c; path = ../generic/tclCompile.c; sourceTree = SOURCE_ROOT; };
+		F5F24F9D016ECAFC01DC9062 /* tclCompile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCompile.c; path = ../generic/tclCompile.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F5F24F9E016ECAFC01DC9062 /* tclDate.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclDate.c; path = ../generic/tclDate.c; sourceTree = SOURCE_ROOT; };
 		F5F24F9F016ECAFC01DC9062 /* tclEncoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclEncoding.c; path = ../generic/tclEncoding.c; sourceTree = SOURCE_ROOT; };
 		F5F24FA0016ECAFC01DC9062 /* tclEnv.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclEnv.c; path = ../generic/tclEnv.c; sourceTree = SOURCE_ROOT; };
-		F5F24FA1016ECAFC01DC9062 /* tclEvent.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclEvent.c; path = ../generic/tclEvent.c; sourceTree = SOURCE_ROOT; };
-		F5F24FA2016ECAFC01DC9062 /* tclExecute.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclExecute.c; path = ../generic/tclExecute.c; sourceTree = SOURCE_ROOT; };
+		F5F24FA1016ECAFC01DC9062 /* tclEvent.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclEvent.c; path = ../generic/tclEvent.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
+		F5F24FA2016ECAFC01DC9062 /* tclExecute.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclExecute.c; path = ../generic/tclExecute.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F5F24FA3016ECAFC01DC9062 /* tclFCmd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclFCmd.c; path = ../generic/tclFCmd.c; sourceTree = SOURCE_ROOT; };
-		F5F24FA4016ECAFC01DC9062 /* tclFileName.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclFileName.c; path = ../generic/tclFileName.c; sourceTree = SOURCE_ROOT; };
+		F5F24FA4016ECAFC01DC9062 /* tclFileName.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclFileName.c; path = ../generic/tclFileName.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F5F24FA5016ECAFC01DC9062 /* tclGet.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclGet.c; path = ../generic/tclGet.c; sourceTree = SOURCE_ROOT; };
-		F5F24FA6016ECAFC01DC9062 /* tclHash.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclHash.c; path = ../generic/tclHash.c; sourceTree = SOURCE_ROOT; };
+		F5F24FA6016ECAFC01DC9062 /* tclHash.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclHash.c; path = ../generic/tclHash.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F5F24FA7016ECAFC01DC9062 /* tclHistory.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclHistory.c; path = ../generic/tclHistory.c; sourceTree = SOURCE_ROOT; };
 		F5F24FA8016ECAFC01DC9062 /* tclIndexObj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIndexObj.c; path = ../generic/tclIndexObj.c; sourceTree = SOURCE_ROOT; };
 		F5F24FA9016ECAFC01DC9062 /* tclInterp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclInterp.c; path = ../generic/tclInterp.c; sourceTree = SOURCE_ROOT; };
@@ -157,7 +157,7 @@
 		F5F24FC0016ECAFC01DC9062 /* tclResolve.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclResolve.c; path = ../generic/tclResolve.c; sourceTree = SOURCE_ROOT; };
 		F5F24FC1016ECAFC01DC9062 /* tclResult.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclResult.c; path = ../generic/tclResult.c; sourceTree = SOURCE_ROOT; };
 		F5F24FC2016ECAFC01DC9062 /* tclScan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclScan.c; path = ../generic/tclScan.c; sourceTree = SOURCE_ROOT; };
-		F5F24FC3016ECAFC01DC9062 /* tclStringObj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclStringObj.c; path = ../generic/tclStringObj.c; sourceTree = SOURCE_ROOT; };
+		F5F24FC3016ECAFC01DC9062 /* tclStringObj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclStringObj.c; path = ../generic/tclStringObj.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F5F24FC4016ECAFC01DC9062 /* tclStubInit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclStubInit.c; path = ../generic/tclStubInit.c; sourceTree = SOURCE_ROOT; };
 		F5F24FC5016ECAFC01DC9062 /* tclStubLib.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclStubLib.c; path = ../generic/tclStubLib.c; sourceTree = SOURCE_ROOT; };
 		F5F24FC6016ECAFC01DC9062 /* tclTest.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclTest.c; path = ../generic/tclTest.c; sourceTree = SOURCE_ROOT; };
@@ -662,6 +662,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			isa = PBXProject;
 			buildConfigurationList = A50F55481808CA12008BA312 /* Build configuration list for PBXProject "Tcl" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				English,

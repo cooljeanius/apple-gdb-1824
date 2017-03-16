@@ -147,39 +147,4 @@ ItclIntStubs itclIntStubs = {
     Itcl_Assert, /* 115 */
 };
 
-static ItclStubHooks itclStubHooks = {
-    &itclIntStubs
-};
-
-ItclStubs itclStubs = {
-    TCL_STUB_MAGIC,
-    &itclStubHooks,
-    Itcl_Init, /* 0 */
-    Itcl_SafeInit, /* 1 */
-    Itcl_RegisterC, /* 2 */
-    Itcl_RegisterObjC, /* 3 */
-    Itcl_FindC, /* 4 */
-    Itcl_InitStack, /* 5 */
-    Itcl_DeleteStack, /* 6 */
-    Itcl_PushStack, /* 7 */
-    Itcl_PopStack, /* 8 */
-    Itcl_PeekStack, /* 9 */
-    Itcl_GetStackValue, /* 10 */
-    Itcl_InitList, /* 11 */
-    Itcl_DeleteList, /* 12 */
-    Itcl_CreateListElem, /* 13 */
-    Itcl_DeleteListElem, /* 14 */
-    Itcl_InsertList, /* 15 */
-    Itcl_InsertListElem, /* 16 */
-    Itcl_AppendList, /* 17 */
-    Itcl_AppendListElem, /* 18 */
-    Itcl_SetListValue, /* 19 */
-    Itcl_EventuallyFree, /* 20 */
-    Itcl_PreserveData, /* 21 */
-    Itcl_ReleaseData, /* 22 */
-    Itcl_SaveInterpState, /* 23 */
-    Itcl_RestoreInterpState, /* 24 */
-    Itcl_DiscardInterpState, /* 25 */
-};
-
 /* !END!: Do not edit above this line. */

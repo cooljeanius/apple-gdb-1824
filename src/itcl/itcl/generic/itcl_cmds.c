@@ -791,7 +791,7 @@ Itcl_ProtectionCmd(clientData, interp, objc, objv)
     int objc;                /* number of arguments */
     Tcl_Obj *CONST objv[];   /* argument objects */
 {
-    int pLevel = (int)clientData;
+    int pLevel = (int)(intptr_t)clientData;
 
     int result;
     int oldLevel;

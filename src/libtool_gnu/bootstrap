@@ -24,8 +24,8 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 ####
 
-# Exit upon failure.
-set -e
+# Exit upon failure and trace subcommands:
+set -ex
 
 # It is okay for the bootstrap process to require unreleased autoconf
 # or automake, as long as any released libtool will work with at least
@@ -46,6 +46,7 @@ export SHELL
 : ${SED=sed}
 : ${LN_S='ln -s'}
 : ${MAKEINFO=makeinfo}
+: ${REMAKE=remake}
 
 case $1 in
 --help|-h*)

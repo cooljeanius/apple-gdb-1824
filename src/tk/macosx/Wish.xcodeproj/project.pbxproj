@@ -815,7 +815,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		F5375579016C37A601DC9062 /* tkMenubutton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tkMenubutton.h; path = ../generic/tkMenubutton.h; sourceTree = SOURCE_ROOT; };
 		F537557A016C37A601DC9062 /* tkPlatDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tkPlatDecls.h; path = ../generic/tkPlatDecls.h; sourceTree = SOURCE_ROOT; };
 		F537557B016C37A601DC9062 /* tkPort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tkPort.h; path = ../generic/tkPort.h; sourceTree = SOURCE_ROOT; };
-		F537557C016C37A601DC9062 /* tkScale.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tkScale.h; path = ../generic/tkScale.h; sourceTree = SOURCE_ROOT; };
+		F537557C016C37A601DC9062 /* tkScale.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tkScale.h; path = ../generic/tkScale.h; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F537557D016C37A601DC9062 /* tkScrollbar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tkScrollbar.h; path = ../generic/tkScrollbar.h; sourceTree = SOURCE_ROOT; };
 		F537557E016C37A601DC9062 /* tkSelect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tkSelect.h; path = ../generic/tkSelect.h; sourceTree = SOURCE_ROOT; };
 		F537557F016C37A601DC9062 /* tkText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tkText.h; path = ../generic/tkText.h; sourceTree = SOURCE_ROOT; };
@@ -827,13 +827,13 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		F5375585016C389901DC9062 /* tkButton.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkButton.c; path = ../generic/tkButton.c; sourceTree = SOURCE_ROOT; };
 		F5375586016C389901DC9062 /* tkCanvArc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvArc.c; path = ../generic/tkCanvArc.c; sourceTree = SOURCE_ROOT; };
 		F5375587016C389901DC9062 /* tkCanvas.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvas.c; path = ../generic/tkCanvas.c; sourceTree = SOURCE_ROOT; };
-		F5375588016C389901DC9062 /* tkCanvBmap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvBmap.c; path = ../generic/tkCanvBmap.c; sourceTree = SOURCE_ROOT; };
+		F5375588016C389901DC9062 /* tkCanvBmap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvBmap.c; path = ../generic/tkCanvBmap.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F5375589016C389901DC9062 /* tkCanvImg.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvImg.c; path = ../generic/tkCanvImg.c; sourceTree = SOURCE_ROOT; };
-		F537558A016C389901DC9062 /* tkCanvLine.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvLine.c; path = ../generic/tkCanvLine.c; sourceTree = SOURCE_ROOT; };
+		F537558A016C389901DC9062 /* tkCanvLine.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvLine.c; path = ../generic/tkCanvLine.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F537558B016C389901DC9062 /* tkCanvPoly.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvPoly.c; path = ../generic/tkCanvPoly.c; sourceTree = SOURCE_ROOT; };
-		F537558C016C389901DC9062 /* tkCanvPs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvPs.c; path = ../generic/tkCanvPs.c; sourceTree = SOURCE_ROOT; };
+		F537558C016C389901DC9062 /* tkCanvPs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvPs.c; path = ../generic/tkCanvPs.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F537558D016C389901DC9062 /* tkCanvText.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvText.c; path = ../generic/tkCanvText.c; sourceTree = SOURCE_ROOT; };
-		F537558E016C389901DC9062 /* tkCanvUtil.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvUtil.c; path = ../generic/tkCanvUtil.c; sourceTree = SOURCE_ROOT; };
+		F537558E016C389901DC9062 /* tkCanvUtil.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvUtil.c; path = ../generic/tkCanvUtil.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F537558F016C389901DC9062 /* tkCanvWind.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCanvWind.c; path = ../generic/tkCanvWind.c; sourceTree = SOURCE_ROOT; };
 		F5375590016C389901DC9062 /* tkClipboard.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkClipboard.c; path = ../generic/tkClipboard.c; sourceTree = SOURCE_ROOT; };
 		F5375591016C389901DC9062 /* tkCmds.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tkCmds.c; path = ../generic/tkCmds.c; sourceTree = SOURCE_ROOT; };
@@ -1748,7 +1748,14 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			isa = PBXProject;
 			buildConfigurationList = 618C86901CEE812F004BBE5E /* Build configuration list for PBXProject "Wish" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = F537552B016C352C01DC9062;
 			productRefGroup = F53755DD016C38D201DC9062 /* Products */;
 			projectDirPath = "";

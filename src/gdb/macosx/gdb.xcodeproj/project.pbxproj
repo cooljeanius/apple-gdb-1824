@@ -675,63 +675,63 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = A50F55621808CA1C008BA312 /* Tcl.framework */;
+			remoteGlobalIDString = A50F55621808CA1C008BA312;
 			remoteInfo = Tcl_Upgraded;
 		};
 		A52EF2CD1E778DEB00866EDC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 618C846E1CEA0901004BBE5E /* Tcl.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 00E2F84D016E92110ACA28DC /* Tcl.framework */;
+			remoteGlobalIDString = 00E2F84D016E92110ACA28DC;
 			remoteInfo = Tcl;
 		};
 		A52EF2F51E778E0C00866EDC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 618C88B01CEE81F1004BBE5E /* Wish Shell.app */;
+			remoteGlobalIDString = 618C88B01CEE81F1004BBE5E;
 			remoteInfo = "Wish (Upgraded)";
 		};
 		A52EF2F71E778E0C00866EDC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 618C89991CEE81F1004BBE5E /* Tk.framework */;
+			remoteGlobalIDString = 618C89991CEE81F1004BBE5E;
 			remoteInfo = "TkLibrary (Upgraded)";
 		};
 		A52EF2F91E778E0C00866EDC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 618C89A51CEE81F1004BBE5E /* libtkstub8.4.a */;
+			remoteGlobalIDString = 618C89A51CEE81F1004BBE5E;
 			remoteInfo = "TkStubLibrary (Upgraded)";
 		};
 		A52EF2FB1E778E0C00866EDC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = F537569F016C4DD401DC9062 /* Wish Shell.app */;
+			remoteGlobalIDString = F537569F016C4DD401DC9062;
 			remoteInfo = Wish;
 		};
 		A52EF2FD1E778E0C00866EDC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = F53755DE016C38D201DC9062 /* Tk.framework */;
+			remoteGlobalIDString = F53755DE016C38D201DC9062;
 			remoteInfo = TkLibrary;
 		};
 		A52EF2FF1E778E0C00866EDC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 612ED12B1CF5F08500C4DE04 /* Wish.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = F548F8CF0313CEF0016F146B /* libtkstub8.4.a */;
+			remoteGlobalIDString = F548F8CF0313CEF0016F146B;
 			remoteInfo = TkStubLibrary;
 		};
 		A52EF30F1E778E3900866EDC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 618C845F1CEA08C8004BBE5E /* zlib.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = D2AAC0630554660B00DB518D /* libz.1.2.8.dylib */;
+			remoteGlobalIDString = D2AAC0630554660B00DB518D;
 			remoteInfo = libz;
 		};
 		A53F07961B4636BE005B5360 /* PBXContainerItemProxy */ = {

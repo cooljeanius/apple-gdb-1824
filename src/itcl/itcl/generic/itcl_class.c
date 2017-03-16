@@ -993,7 +993,7 @@ Itcl_ClassCmdResolver(interp, name, context, flags, rPtr)
      *    it--as it is being resolved again by the compiler.
      */
     cmdPtr = (Command*)mfunc->accessCmd;
-    
+
     /*
      * The following #if is needed so itcl can be compiled with
      * all versions of Tcl.  The integer "deleted" was renamed to
@@ -1054,7 +1054,7 @@ Itcl_ClassCmdResolver(interp, name, context, flags, rPtr)
 int
 Itcl_ClassVarResolver(interp, name, context, flags, rPtr)
     Tcl_Interp *interp;       /* current interpreter */
-    char* name;               /* name of the variable being accessed */
+    const char *name;         /* name of the variable being accessed */
     Tcl_Namespace *context;   /* namespace performing the resolution */
     int flags;                /* TCL_LEAVE_ERR_MSG => leave error messages
                                *   in interp if anything goes wrong */
@@ -1207,7 +1207,7 @@ Itcl_ClassVarResolver(interp, name, context, flags, rPtr)
 int
 Itcl_ClassCompiledVarResolver(interp, name, length, context, rPtr)
     Tcl_Interp *interp;         /* current interpreter */
-    char* name;                 /* name of the variable being accessed */
+    const char *name;           /* name of the variable being accessed */
     int length;                 /* number of characters in name */
     Tcl_Namespace *context;     /* namespace performing the resolution */
     Tcl_ResolvedVarInfo **rPtr; /* returns: info that makes it possible to
@@ -1573,9 +1573,9 @@ int
 Itcl_CreateVarDefn(interp, cdefn, name, init, config, vdefnPtr)
     Tcl_Interp *interp;       /* interpreter managing this transaction */
     ItclClass* cdefn;         /* class containing this variable */
-    char* name;               /* variable name */
-    char* init;               /* initial value */
-    char* config;             /* code invoked when variable is configured */
+    const char *name;         /* variable name */
+    const char *init;         /* initial value */
+    const char *config;       /* code invoked when variable is configured */
     ItclVarDefn** vdefnPtr;   /* returns: new variable definition */
 {
     int newEntry;
@@ -1613,7 +1613,7 @@ Itcl_CreateVarDefn(interp, cdefn, name, init, config, vdefnPtr)
     else {
         mcode = NULL;
     }
-        
+
 
     /*
      *  If everything looks good, create the variable definition.
@@ -1676,13 +1676,13 @@ Itcl_DeleteVarDefn(vdefn)
  *  anything goes wrong, this returns NULL.
  * ------------------------------------------------------------------------
  */
-char*
+const char *
 Itcl_GetCommonVar(interp, name, contextClass)
     Tcl_Interp *interp;        /* current interpreter */
     char *name;                /* name of desired instance variable */
     ItclClass *contextClass;   /* name is interpreted in this scope */
 {
-    char *val = NULL;
+    const char *val = NULL;
     int result;
     Tcl_CallFrame frame;
 
@@ -1713,9 +1713,9 @@ Itcl_GetCommonVar(interp, name, contextClass)
  */
 ItclMember*
 Itcl_CreateMember(interp, cdefn, name)
-    Tcl_Interp* interp;            /* interpreter managing this action */
+    Tcl_Interp *interp;            /* interpreter managing this action */
     ItclClass *cdefn;              /* class definition */
-    char* name;                    /* name of new member */
+    const char *name;              /* name of new member */
 {
     ItclMember *memPtr;
     int fullsize;

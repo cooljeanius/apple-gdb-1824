@@ -237,6 +237,9 @@ COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CF
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
+# For dependencies:
+itclInt_h = $(GENERIC_DIR)/itclInt.h $(GENERIC_DIR)/itcl.h $(GENERIC_DIR)/itclIntDecls.h
+
 #========================================================================
 # Start of user-definable TARGETS section
 #========================================================================
@@ -354,43 +357,43 @@ dllEntryPoint.$(OBJEXT): $(WIN_DIR)/dllEntryPoint.c
 tclAppInit.$(OBJEXT): $(PLATFORM_DIR)/tclAppInit.c
 	$(COMPILE) -c `@CYGPATH@ $(PLATFORM_DIR)/tclAppInit.c` -o $@
 
-itclStubInit.$(OBJEXT): $(GENERIC_DIR)/itclStubInit.c
+itclStubInit.$(OBJEXT): $(GENERIC_DIR)/itclStubInit.c $(itclInt_h)
 	$(COMPILE) -c `@CYGPATH@ $(GENERIC_DIR)/itclStubInit.c` -o $@
 
-itclStubLib.$(OBJEXT): $(GENERIC_DIR)/itclStubLib.c
+itclStubLib.$(OBJEXT): $(GENERIC_DIR)/itclStubLib.c $(itclInt_h)
 	$(COMPILE) -c `@CYGPATH@ $(GENERIC_DIR)/itclStubLib.c` -o $@
 
-itcl_bicmds.$(OBJEXT): $(GENERIC_DIR)/itcl_bicmds.c
+itcl_bicmds.$(OBJEXT): $(GENERIC_DIR)/itcl_bicmds.c $(itclInt_h)
 	$(COMPILE) -c `@CYGPATH@ $(GENERIC_DIR)/itcl_bicmds.c` -o $@
 
-itcl_class.$(OBJEXT): $(GENERIC_DIR)/itcl_class.c
+itcl_class.$(OBJEXT): $(GENERIC_DIR)/itcl_class.c $(itclInt_h)
 	$(COMPILE) -c `@CYGPATH@ $(GENERIC_DIR)/itcl_class.c` -o $@
 
-itcl_cmds.$(OBJEXT): $(GENERIC_DIR)/itcl_cmds.c Makefile
+itcl_cmds.$(OBJEXT): $(GENERIC_DIR)/itcl_cmds.c Makefile $(itclInt_h)
 	$(COMPILE) -c `@CYGPATH@ $(GENERIC_DIR)/itcl_cmds.c` -o $@
 
-itcl_ensemble.$(OBJEXT): $(GENERIC_DIR)/itcl_ensemble.c Makefile
+itcl_ensemble.$(OBJEXT): $(GENERIC_DIR)/itcl_ensemble.c Makefile $(itclInt_h)
 	$(COMPILE) -c `@CYGPATH@ $(GENERIC_DIR)/itcl_ensemble.c` -o $@
 
-itcl_linkage.$(OBJEXT): $(GENERIC_DIR)/itcl_linkage.c
+itcl_linkage.$(OBJEXT): $(GENERIC_DIR)/itcl_linkage.c $(itclInt_h)
 	$(COMPILE) -c `@CYGPATH@ $(GENERIC_DIR)/itcl_linkage.c` -o $@
 
-itcl_methods.$(OBJEXT): $(GENERIC_DIR)/itcl_methods.c
+itcl_methods.$(OBJEXT): $(GENERIC_DIR)/itcl_methods.c $(itclInt_h)
 	$(COMPILE) -c `@CYGPATH@ $(GENERIC_DIR)/itcl_methods.c` -o $@
 
-itcl_migrate.$(OBJEXT): $(GENERIC_DIR)/itcl_migrate.c
+itcl_migrate.$(OBJEXT): $(GENERIC_DIR)/itcl_migrate.c $(itclInt_h)
 	$(COMPILE) -c `@CYGPATH@ $(GENERIC_DIR)/itcl_migrate.c` -o $@
 
-itcl_objects.$(OBJEXT): $(GENERIC_DIR)/itcl_objects.c
+itcl_objects.$(OBJEXT): $(GENERIC_DIR)/itcl_objects.c $(itclInt_h)
 	$(COMPILE) -c `@CYGPATH@ $(GENERIC_DIR)/itcl_objects.c` -o $@
 
-itcl_obsolete.$(OBJEXT): $(GENERIC_DIR)/itcl_obsolete.c
+itcl_obsolete.$(OBJEXT): $(GENERIC_DIR)/itcl_obsolete.c $(itclInt_h)
 	$(COMPILE) -c `@CYGPATH@ $(GENERIC_DIR)/itcl_obsolete.c` -o $@
 
-itcl_parse.$(OBJEXT): $(GENERIC_DIR)/itcl_parse.c
+itcl_parse.$(OBJEXT): $(GENERIC_DIR)/itcl_parse.c $(itclInt_h)
 	$(COMPILE) -c `@CYGPATH@ $(GENERIC_DIR)/itcl_parse.c` -o $@
 
-itcl_util.$(OBJEXT): $(GENERIC_DIR)/itcl_util.c
+itcl_util.$(OBJEXT): $(GENERIC_DIR)/itcl_util.c $(itclInt_h)
 	$(COMPILE) -c `@CYGPATH@ $(GENERIC_DIR)/itcl_util.c` -o $@
 
 

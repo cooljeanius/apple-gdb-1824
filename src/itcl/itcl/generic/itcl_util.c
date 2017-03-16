@@ -751,7 +751,7 @@ Itcl_SaveInterpState(interp, status)
     Interp *iPtr = (Interp*)interp;
 
     InterpState *info;
-    char *val;
+    const char *val;
 
     info = (InterpState*)ckalloc(sizeof(InterpState));
     info->validate = TCL_STATE_VALID;
@@ -1229,7 +1229,7 @@ Itcl_DecodeScopedCommand(interp, name, rNsPtr, rCmdPtr)
 
     char *pos;
     int listc, result;
-    char **listv;
+    const char **listv;
 
     if ((*name == 'n') && (len > 17) && (strncmp(name, "namespace", 9) == 0)) {
 	for (pos = (name + 9);  (*pos == ' ');  pos++) {

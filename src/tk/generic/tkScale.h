@@ -81,7 +81,7 @@ typedef struct TkScale {
 				 * in values.  0 means we get to choose the
 				 * number based on resolution and/or the
 				 * range of the scale. */
-    char format[10];		/* Sprintf conversion specifier computed from
+    char format[14];		/* Sprintf conversion specifier computed from
 				 * digits and other information. */
     double bigIncrement;	/* Amount to use for large increments to
 				 * scale value.	 (0 means we pick a value). */
@@ -95,7 +95,7 @@ typedef struct TkScale {
 				 * scale;  NULL means don't display a label. */
     int labelLength;		/* Number of non-NULL chars. in label. */
     enum state state;		/* Values are active, normal, or disabled.
-				 * Value of scale cannot be changed when 
+				 * Value of scale cannot be changed when
 				 * disabled. */
 
     /*
@@ -106,7 +106,7 @@ typedef struct TkScale {
     Tk_3DBorder bgBorder;	/* Used for drawing slider and other
 				 * background areas. */
     Tk_3DBorder activeBorder;	/* For drawing the slider when active. */
-    int sliderRelief;		/* Is slider to be drawn raised, sunken, 
+    int sliderRelief;		/* Is slider to be drawn raised, sunken,
 				 * etc. */
     XColor *troughColorPtr;	/* Color for drawing trough. */
     GC troughGC;		/* For drawing trough. */
@@ -231,7 +231,7 @@ typedef struct TkScale {
 
 /*
  * Declaration of procedures used in the implementation of the scale
- * widget. 
+ * widget.
  */
 
 EXTERN void		TkEventuallyRedrawScale _ANSI_ARGS_((TkScale *scalePtr,
@@ -245,7 +245,7 @@ EXTERN int		TkpScaleElement _ANSI_ARGS_((TkScale *scalePtr,
 			     int x, int y));
 EXTERN void		TkScaleSetValue _ANSI_ARGS_((TkScale *scalePtr,
 			    double value, int setVar, int invokeCommand));
-EXTERN double		TkScalePixelToValue _ANSI_ARGS_((TkScale *scalePtr, 
+EXTERN double		TkScalePixelToValue _ANSI_ARGS_((TkScale *scalePtr,
 			    int x, int y));
 EXTERN int		TkScaleValueToPixel _ANSI_ARGS_((TkScale *scalePtr,
 			    double value));

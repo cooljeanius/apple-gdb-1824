@@ -1,9 +1,9 @@
-/* 
+/*
  * tclEvent.c --
  *
  *	This file implements some general event related interfaces including
  *	background errors, exit handlers, and the "vwait" and "update"
- *	command procedures. 
+ *	command procedures.
  *
  * Copyright (c) 1990-1994 The Regents of the University of California.
  * Copyright (c) 1994-1998 Sun Microsystems, Inc.
@@ -111,7 +111,7 @@ static void		BgErrorDeleteProc _ANSI_ARGS_((ClientData clientData,
 			    Tcl_Interp *interp));
 static void		HandleBgErrors _ANSI_ARGS_((ClientData clientData));
 static char *		VwaitVarProc _ANSI_ARGS_((ClientData clientData,
-			    Tcl_Interp *interp, CONST char *name1, 
+			    Tcl_Interp *interp, CONST char *name1,
 			    CONST char *name2, int flags));
 
 /*
@@ -155,7 +155,7 @@ Tcl_BackgroundError(interp)
     Tcl_AddErrorInfo(interp, "");
 
     errResult = Tcl_GetStringFromObj(Tcl_GetObjResult(interp), &length);
-	
+
     errPtr = (BgError *) ckalloc(sizeof(BgError));
     errPtr->interp = interp;
     errPtr->errorMsg = (char *) ckalloc((unsigned) (length + 1));
@@ -229,7 +229,7 @@ HandleBgErrors(clientData)
     Tcl_Channel errChannel;
 
     Tcl_Preserve((ClientData) assocPtr);
-    
+
     while (assocPtr->firstBgPtr != NULL) {
 	interp = assocPtr->firstBgPtr->interp;
 	if (interp == NULL) {
@@ -252,7 +252,7 @@ HandleBgErrors(clientData)
 
 	argv[0] = "bgerror";
 	argv[1] = assocPtr->firstBgPtr->errorMsg;
-	
+
 	Tcl_AllowExceptions(interp);
         Tcl_Preserve((ClientData) interp);
 	code = TclGlobalInvoke(interp, 2, argv, 0);
@@ -271,19 +271,19 @@ HandleBgErrors(clientData)
 
             if (Tcl_IsSafe(interp)) {
 		Tcl_SavedResult save;
-		
+
 		Tcl_SaveResult(interp, &save);
                 TclGlobalInvoke(interp, 2, argv, TCL_INVOKE_HIDDEN);
 		Tcl_RestoreResult(interp, &save);
 
                 goto doneWithInterp;
-            } 
+            }
 
             /*
              * We have to get the error output channel at the latest possible
              * time, because the eval (above) might have changed the channel.
              */
-            
+
             errChannel = Tcl_GetStdChannel(TCL_STDERR);
             if (errChannel != (Tcl_Channel) NULL) {
 		char *string;
@@ -336,7 +336,7 @@ doneWithInterp:
 	    ckfree((char *) assocPtr->firstBgPtr);
 	    assocPtr->firstBgPtr = errPtr;
 	}
-        
+
         if (interp != NULL) {
             Tcl_Release((ClientData) interp);
         }
@@ -567,10 +567,10 @@ Tcl_Exit(status)
 
 /*
  *-------------------------------------------------------------------------
- * 
+ *
  * TclSetLibraryPath --
  *
- *	Set the path that will be used for searching for init.tcl and 
+ *	Set the path that will be used for searching for init.tcl and
  *	encodings when an interp is being created.
  *
  * Results:
@@ -581,7 +581,7 @@ Tcl_Exit(status)
  *	examined when looking for encodings for all interps from that
  *	point forward.
  *
- *	The refcount of the new library path is incremented and the 
+ *	The refcount of the new library path is incremented and the
  *	refcount of the old path is decremented.
  *
  *-------------------------------------------------------------------------
@@ -651,10 +651,10 @@ TclGetLibraryPath()
  *
  *	Initialize various subsytems in Tcl.  This should be called the
  *	first time an interp is created, or before any of the subsystems
- *	are used.  This function ensures an order for the initialization 
+ *	are used.  This function ensures an order for the initialization
  *	of subsystems:
  *
- *	1. that cannot be initialized in lazy order because they are 
+ *	1. that cannot be initialized in lazy order because they are
  *	mutually dependent.
  *
  *	2. so that they can be finalized in a known order w/o causing
@@ -691,7 +691,7 @@ TclInitSubsystems(argv0)
     tsdPtr = (ThreadSpecificData *) TclThreadDataKeyGet(&dataKey);
 
     if (subsystemsInitialized == 0) {
-	/* 
+	/*
 	 * Double check inside the mutex.  There are definitly calls
 	 * back into this routine from some of the procedures below.
 	 */
@@ -747,7 +747,7 @@ TclInitSubsystems(argv0)
  *
  *	Shut down Tcl.  First calls registered exit handlers, then
  *	carefully shuts down various subsystems.
- *	Called by Tcl_Exit or when the Tcl shared library is being 
+ *	Called by Tcl_Exit or when the Tcl shared library is being
  *	unloaded.
  *
  * Results:
@@ -770,6 +770,9 @@ Tcl_Finalize()
 	subsystemsInitialized = 0;
 
 	tsdPtr = TCL_TSD_INIT(&dataKey);
+	if (tsdPtr == NULL) {
+	    ; /* ??? */
+	}
 
 	/*
 	 * Invoke exit handlers first.
@@ -790,7 +793,7 @@ Tcl_Finalize()
 	    (*exitPtr->proc)(exitPtr->clientData);
 	    ckfree((char *) exitPtr);
 	    Tcl_MutexLock(&exitMutex);
-	}    
+	}
 	firstExitPtr = NULL;
 	Tcl_MutexUnlock(&exitMutex);
 
@@ -826,7 +829,7 @@ Tcl_Finalize()
 	    ckfree(tclDefaultEncodingDir);
 	    tclDefaultEncodingDir = NULL;
 	}
-	
+
 	Tcl_SetPanicProc(NULL);
 
 	/*
@@ -1072,7 +1075,7 @@ Tcl_UpdateObjCmd(clientData, interp, objc, objv)
         Tcl_WrongNumArgs(interp, 1, objv, "?idletasks?");
 	return TCL_ERROR;
     }
-    
+
     while (Tcl_DoOneEvent(flags) != 0) {
 	/* Empty loop body */
     }

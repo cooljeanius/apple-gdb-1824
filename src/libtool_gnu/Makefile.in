@@ -781,19 +781,23 @@ DIST_SUBDIRS = . $(CONF_SUBDIRS)
 # Use `$(srcdir)' for the benefit of non-GNU makes: this is
 # how libtoolize.in appears in our dependencies.
 EXTRA_DIST = bootstrap $(srcdir)/libtoolize.in $(auxdir)/ltmain.m4sh \
-	$(auxdir)/mkstamp $(sh_files) ChangeLog.1996 ChangeLog.1997 \
-	ChangeLog.1998 ChangeLog.1999 ChangeLog.2000 ChangeLog.2001 \
-	ChangeLog.2002 ChangeLog.2003 ChangeLog.2004 ChangeLog.2005 \
-	ChangeLog.2006 ChangeLog.2007 ChangeLog.2008 ChangeLog.2009 \
-	ChangeLog.2010 $(m4dir)/ltversion.in \
-	$(srcdir)/$(m4dir)/ltversion.m4 $(srcdir)/$(auxdir)/ltmain.sh \
-	libtoolize.m4sh libltdl/lt__dirent.c libltdl/lt__strl.c \
-	libltdl/COPYING.LIB libltdl/configure.ac libltdl/Makefile.am \
-	libltdl/aclocal.m4 libltdl/Makefile.in libltdl/configure \
-	libltdl/config-h.in libltdl/README libltdl/argz_.h \
-	libltdl/argz.c $(srcdir)/libltdl/stamp-mk \
-	$(m4dir)/lt~obsolete.m4 $(srcdir)/doc/notes.txt \
-	$(edit_readme_alpha) $(srcdir)/$(TESTSUITE) $(TESTSUITE_AT) \
+	$(auxdir)/mkstamp $(sh_files) $(chydir)/ChangeLog.1996 \
+	$(chydir)/ChangeLog.1997 $(chydir)/ChangeLog.1998 \
+	$(chydir)/ChangeLog.1999 $(chydir)/ChangeLog.2000 \
+	$(chydir)/ChangeLog.2001 $(chydir)/ChangeLog.2002 \
+	$(chydir)/ChangeLog.2003 $(chydir)/ChangeLog.2004 \
+	$(chydir)/ChangeLog.2005 $(chydir)/ChangeLog.2006 \
+	$(chydir)/ChangeLog.2007 $(chydir)/ChangeLog.2008 \
+	$(chydir)/ChangeLog.2009 $(chydir)/ChangeLog.2010 \
+	$(m4dir)/ltversion.in $(srcdir)/$(m4dir)/ltversion.m4 \
+	$(srcdir)/$(auxdir)/ltmain.sh libtoolize.m4sh \
+	libltdl/lt__dirent.c libltdl/lt__strl.c libltdl/COPYING.LIB \
+	libltdl/configure.ac libltdl/Makefile.am libltdl/aclocal.m4 \
+	libltdl/Makefile.in libltdl/configure libltdl/config-h.in \
+	libltdl/README libltdl/argz_.h libltdl/argz.c \
+	$(srcdir)/libltdl/stamp-mk $(m4dir)/lt~obsolete.m4 \
+	$(srcdir)/doc/notes.txt $(edit_readme_alpha) \
+	$(srcdir)/$(TESTSUITE) $(TESTSUITE_AT) \
 	$(srcdir)/tests/package.m4 $(srcdir)/tests/defs.in \
 	tests/defs.m4sh $(COMMON_TESTS) $(CXX_TESTS) $(F77_TESTS) \
 	$(FC_TESTS) $(INTERACTIVE_TESTS)
@@ -833,6 +837,7 @@ rebuild = rebuild=:; $(timestamp); correctver=$$1
 # Bootstrap. #
 # ---------- #
 sh_files = $(auxdir)/general.m4sh $(auxdir)/getopt.m4sh
+chydir = Changelogs-yearly
 bootstrap_edit = sed \
 		  -e 's,@MACRO_VERSION\@,$(VERSION),g' \
 		  -e "s,@MACRO_REVISION\@,$$correctver,g" \

@@ -1,4 +1,4 @@
-/* 
+/*
  * tkTableTag.c --
  *
  *	This module implements tags for table widgets.
@@ -92,7 +92,7 @@ typedef struct {
     unsigned int pstate, pjustify, pmultiline, pwrap, pshowtext;
 } TableJoinTag;
 
-/* 
+/*
  *----------------------------------------------------------------------
  *
  * TableImageProc --
@@ -556,7 +556,7 @@ FindRowColTag(Table *tablePtr, int cell, int mode)
     TableTag *tagPtr = NULL;
 
     entryPtr = Tcl_FindHashEntry((mode == ROW) ? tablePtr->rowStyles
-				 : tablePtr->colStyles, (char *) cell);
+				 : tablePtr->colStyles, (char *)(intptr_t)cell);
     if (entryPtr == NULL) {
 	char *cmd = (mode == ROW) ? tablePtr->rowTagCmd : tablePtr->colTagCmd;
 	if (cmd) {
@@ -592,7 +592,7 @@ FindRowColTag(Table *tablePtr, int cell, int mode)
     return tagPtr;
 }
 
-/* 
+/*
  *----------------------------------------------------------------------
  *
  * TableCleanupTag --
@@ -852,7 +852,7 @@ Table_TagCmd(ClientData clientData, register Tcl_Interp *interp,
 				Tcl_GetHashKey(hashTblPtr, scanPtr));
 			value = forRows ? row : col;
 			entryPtr = Tcl_CreateHashEntry(cacheTblPtr,
-				(char *)value, &newEntry);
+				(char *)(intptr_t)value, &newEntry);
 			if (newEntry) {
 			    Tcl_ListObjAppendElement(NULL, resultPtr,
 				    Tcl_NewIntObj(value));
@@ -884,8 +884,8 @@ Table_TagCmd(ClientData clientData, register Tcl_Interp *interp,
 			 scanPtr = Tcl_NextHashEntry(&search)) {
 			/* is this the tag pointer on this row */
 			if ((TableTag *) Tcl_GetHashValue(scanPtr) == tagPtr) {
-			    objPtr = Tcl_NewIntObj(
-				(int) Tcl_GetHashKey(hashTblPtr, scanPtr));
+			    objPtr =
+			      Tcl_NewIntObj((int)(intptr_t)Tcl_GetHashKey(hashTblPtr, scanPtr));
 			    Tcl_ListObjAppendElement(NULL, resultPtr, objPtr);
 			}
 		    }
@@ -907,7 +907,8 @@ Table_TagCmd(ClientData clientData, register Tcl_Interp *interp,
 		    /*
 		     * This is a deletion
 		     */
-		    entryPtr = Tcl_FindHashEntry(hashTblPtr, (char *)value);
+		    entryPtr = Tcl_FindHashEntry(hashTblPtr,
+						 (char *)(intptr_t)value);
 		    if (entryPtr != NULL) {
 			Tcl_DeleteHashEntry(entryPtr);
 			refresh = 1;
@@ -918,7 +919,7 @@ Table_TagCmd(ClientData clientData, register Tcl_Interp *interp,
 		     * Tag structure if it wasn't the same as an existing one
 		     */
 		    entryPtr = Tcl_CreateHashEntry(hashTblPtr,
-			    (char *) value, &newEntry);
+			    (char *)(intptr_t)value, &newEntry);
 		    if (newEntry || (tagPtr !=
 			    (TableTag *) Tcl_GetHashValue(entryPtr))) {
 			Tcl_SetHashValue(entryPtr, (ClientData) tagPtr);
@@ -968,7 +969,7 @@ Table_TagCmd(ClientData clientData, register Tcl_Interp *interp,
 	    tagPtr = TableTagGetEntry(tablePtr, Tcl_GetString(objv[3]),
 		    0, NULL);
 
-	    /* 
+	    /*
 	     * If there were less than 6 args, we return the configuration
 	     * (for all or just one option), even for new tags
 	     */
@@ -1131,7 +1132,7 @@ Table_TagCmd(ClientData clientData, register Tcl_Interp *interp,
 	    }
 	    /* create hash key */
 	    TableMakeArrayIndex(row, col, buf);
-    
+
 	    if (STREQ(tagname, "active")) {
 		result = (tablePtr->activeRow+tablePtr->rowOffset==row &&
 			tablePtr->activeCol+tablePtr->colOffset==col);

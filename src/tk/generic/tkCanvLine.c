@@ -1,4 +1,4 @@
-/* 
+/*
  * tkCanvLine.c --
  *
  *	This file implements line items for canvas widgets.
@@ -779,7 +779,7 @@ ComputeLineBbox(canvas, linePtr)
 		i--, coordPtr += 2) {
 	    double miter[4];
 	    int j;
-    
+
 	    if (TkGetMiterPoints(coordPtr, coordPtr+2, coordPtr+4,
 		    width, miter, miter+2)) {
 		for (j = 0; j < 4; j += 2) {
@@ -953,6 +953,7 @@ DisplayLine(canvas, itemPtr, display, drawable, x, y, width, height)
     if (Tk_ResetOutlineGC(canvas, itemPtr, &(linePtr->outline))) {
 	XSetTSOrigin(display, linePtr->arrowGC, 0, 0);
     }
+    (void)stipple; /* FIXME */
 }
 
 /*
@@ -1599,7 +1600,7 @@ LineToArea(canvas, itemPtr, rectPtr)
 	width = 1.0;
     }
 
-    result = TkThickPolyLineToArea(linePoints, numPoints, 
+    result = TkThickPolyLineToArea(linePoints, numPoints,
 	    width, linePtr->capStyle, linePtr->joinStyle,
 	    rectPtr);
     if (result == 0) {
@@ -2001,7 +2002,7 @@ ArrowParseProc(clientData, interp, tkwin, value, widgRec, offset)
 	return TCL_OK;
     }
 
-    Tcl_AppendResult(interp, "bad arrow spec \"", value, 
+    Tcl_AppendResult(interp, "bad arrow spec \"", value,
 	    "\": must be none, first, last, or both",
 	    (char *) NULL);
     *arrowPtr = ARROWS_NONE;
@@ -2250,7 +2251,7 @@ LineToPostscript(interp, canvas, itemPtr, prepass)
 					 * final Postscript is being created. */
 {
     LineItem *linePtr = (LineItem *) itemPtr;
-    char buffer[64 + TCL_INTEGER_SPACE];
+    char buffer[64 + TCL_INTEGER_SPACE + 14]; /* Grown for -Wformat-overflow */
     char *style;
 
     double width;

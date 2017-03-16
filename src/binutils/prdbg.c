@@ -560,30 +560,30 @@ pr_void_type (void *p)
 /* Push an integer type onto the type stack.  */
 
 static bfd_boolean
-pr_int_type (void *p, unsigned int size, bfd_boolean unsignedp)
+pr_int_type(void *p, unsigned int size, bfd_boolean unsignedp)
 {
-  struct pr_handle *info = (struct pr_handle *) p;
-  char ab[10];
+  struct pr_handle *info = (struct pr_handle *)p;
+  char ab[16];
 
-  sprintf (ab, "%sint%d", unsignedp ? "u" : "", size * 8);
-  return push_type (info, ab);
+  snprintf(ab, sizeof(ab), "%sint%d", (unsignedp ? "u" : ""), (size * 8));
+  return push_type(info, ab);
 }
 
 /* Push a floating type onto the type stack.  */
 
 static bfd_boolean
-pr_float_type (void *p, unsigned int size)
+pr_float_type(void *p, unsigned int size)
 {
-  struct pr_handle *info = (struct pr_handle *) p;
-  char ab[10];
+  struct pr_handle *info = (struct pr_handle *)p;
+  char ab[17];
 
   if (size == 4)
-    return push_type (info, "float");
+    return push_type(info, "float");
   else if (size == 8)
-    return push_type (info, "double");
+    return push_type(info, "double");
 
-  sprintf (ab, "float%d", size * 8);
-  return push_type (info, ab);
+  snprintf(ab, sizeof(ab), "float%d", (size * 8));
+  return push_type(info, ab);
 }
 
 /* Push a complex type onto the type stack.  */
@@ -604,12 +604,12 @@ pr_complex_type (void *p, unsigned int size)
 static bfd_boolean
 pr_bool_type (void *p, unsigned int size)
 {
-  struct pr_handle *info = (struct pr_handle *) p;
-  char ab[10];
+  struct pr_handle *info = (struct pr_handle *)p;
+  char ab[16];
 
-  sprintf (ab, "bool%d", size * 8);
+  snprintf(ab, sizeof(ab), "bool%d", (size * 8));
 
-  return push_type (info, ab);
+  return push_type(info, ab);
 }
 
 /* Push an enum type onto the type stack.  */

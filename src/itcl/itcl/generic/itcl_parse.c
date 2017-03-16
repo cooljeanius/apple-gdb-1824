@@ -893,7 +893,8 @@ Itcl_ClassCommonCmd(clientData, interp, objc, objv)
     ItclClass *cdefnPtr = (ItclClass*)Itcl_PeekStack(&info->cdefnStack);
 
     int newEntry;
-    char *name, *init;
+    char *name;
+	const char *init;
     ItclVarDefn *vdefn;
     Tcl_HashEntry *entry;
     Namespace *nsPtr;
@@ -1013,7 +1014,7 @@ Itcl_ClassCommonCmd(clientData, interp, objc, objv)
 int
 Itcl_ParseVarResolver(interp, name, contextNs, flags, rPtr)
     Tcl_Interp *interp;        /* current interpreter */
-    char* name;                /* name of the variable being accessed */
+    const char *name;          /* name of the variable being accessed */
     Tcl_Namespace *contextNs;  /* namespace context */
     int flags;                 /* TCL_GLOBAL_ONLY => global variable
                                 * TCL_NAMESPACE_ONLY => namespace variable */

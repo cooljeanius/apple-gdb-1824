@@ -1765,6 +1765,10 @@ UpdateStringOfString(objPtr)
 	unicode = stringPtr->unicode;
 	length = ((size_t)stringPtr->numChars * sizeof(Tcl_UniChar));
 
+	if (length == 0UL) {
+	    ; /* ??? */
+	}
+
 	/*
 	 * Translate the Unicode string to UTF.  "size" will hold the
 	 * amount of space the UTF string needs.

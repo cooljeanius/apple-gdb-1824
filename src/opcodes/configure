@@ -22156,7 +22156,8 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
 -Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough \
--Walloca-larger-than=4032 -Wvla-larger-than=4032 -Wformat-length=2"
+-Walloca-larger-than=4032 -Wvla-larger-than=4032 -Wformat-overflow=2 \
+-Wformat-truncation=2 -Wstringop-overflow=2"
 # (4032 is MAX_ALLOCA_SIZE in "libiberty.h")
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
@@ -22719,14 +22720,14 @@ fi
 
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-format-length" >&5
-$as_echo_n "checking whether C compiler handles -Wno-format-length... " >&6; }
-if ${gl_cv_warn_c__Wno_format_length+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-format-overflow" >&5
+$as_echo_n "checking whether C compiler handles -Wno-format-overflow... " >&6; }
+if ${gl_cv_warn_c__Wno_format_overflow+:} false; then :
   $as_echo_n "(cached) " >&6
 else
 
   gl_save_compiler_FLAGS="$CFLAGS"
-  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wformat-length"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wformat-overflow"
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -22739,19 +22740,56 @@ main ()
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  gl_cv_warn_c__Wno_format_length=yes
+  gl_cv_warn_c__Wno_format_overflow=yes
 else
-  gl_cv_warn_c__Wno_format_length=no
+  gl_cv_warn_c__Wno_format_overflow=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
   CFLAGS="$gl_save_compiler_FLAGS"
 
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_format_length" >&5
-$as_echo "$gl_cv_warn_c__Wno_format_length" >&6; }
-if test "x$gl_cv_warn_c__Wno_format_length" = xyes; then :
-  as_fn_append WARN_CFLAGS " -Wno-format-length"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_format_overflow" >&5
+$as_echo "$gl_cv_warn_c__Wno_format_overflow" >&6; }
+if test "x$gl_cv_warn_c__Wno_format_overflow" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wno-format-overflow"
+fi
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-format-truncation" >&5
+$as_echo_n "checking whether C compiler handles -Wno-format-truncation... " >&6; }
+if ${gl_cv_warn_c__Wno_format_truncation+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wformat-truncation"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wno_format_truncation=yes
+else
+  gl_cv_warn_c__Wno_format_truncation=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_format_truncation" >&5
+$as_echo "$gl_cv_warn_c__Wno_format_truncation" >&6; }
+if test "x$gl_cv_warn_c__Wno_format_truncation" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wno-format-truncation"
 fi
 
 

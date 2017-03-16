@@ -323,7 +323,8 @@ Itcl_BiConfigureCmd(clientData, interp, objc, objv)
     ItclObject *contextObj;
 
     int i, result;
-    char *token, *lastval;
+    char *token;
+	const char *lastval;
     ItclClass *cdPtr;
     Tcl_HashSearch place;
     Tcl_HashEntry *entry;
@@ -546,7 +547,8 @@ Itcl_BiCgetCmd(clientData, interp, objc, objv)
     ItclClass *contextClass;
     ItclObject *contextObj;
 
-    char *name, *val;
+    char *name;
+	const char *val;
     ItclVarLookup *vlookup;
     Tcl_HashEntry *entry;
 
@@ -588,7 +590,7 @@ Itcl_BiCgetCmd(clientData, interp, objc, objv)
         contextObj, contextObj->classDefn);
 
     if (val) {
-        Tcl_SetResult(interp, val, TCL_VOLATILE);
+        Tcl_SetResult(interp, (char *)val, TCL_VOLATILE);
     } else {
         Tcl_SetResult(interp, "<undefined>", TCL_STATIC);
     }
@@ -615,7 +617,7 @@ ItclReportPublicOpt(interp, vdefn, contextObj)
     ItclVarDefn *vdefn;      /* public variable to be reported */
     ItclObject *contextObj;  /* object containing this variable */
 {
-    char *val;
+    const char *val;
     ItclClass *cdefnPtr;
     Tcl_HashEntry *entry;
     ItclVarLookup *vlookup;
@@ -1022,9 +1024,9 @@ Itcl_BiInfoFunctionCmd(dummy, interp, objc, objv)
     Tcl_Obj *resultPtr = NULL;
     Tcl_Obj *objPtr = NULL;
 
-    static char *options[] = {
+    static const char *options[] = {
         "-args", "-body", "-name", "-protection", "-type",
-        (char*)NULL
+        (const char *)NULL
     };
     enum BIfIdx {
         BIfArgsIdx, BIfBodyIdx, BIfNameIdx, BIfProtectIdx, BIfTypeIdx
@@ -1217,9 +1219,9 @@ Itcl_BiInfoVariableCmd(dummy, interp, objc, objv)
     Tcl_Obj *resultPtr = NULL;
     Tcl_Obj *objPtr = NULL;
 
-    static char *options[] = {
+    static const char *options[] = {
         "-config", "-init", "-name", "-protection", "-type",
-        "-value", (char*)NULL
+        "-value", (const char *)NULL
     };
     enum BIvIdx {
         BIvConfigIdx, BIvInitIdx, BIvNameIdx, BIvProtectIdx,
@@ -1247,7 +1249,8 @@ Itcl_BiInfoVariableCmd(dummy, interp, objc, objv)
     ItclObject *contextObj;
 
     int i, result;
-    char *val, *name;
+    const char *val;
+	char *name;
     ItclClass *cdefn;
     Tcl_HashSearch place;
     Tcl_HashEntry *entry;
