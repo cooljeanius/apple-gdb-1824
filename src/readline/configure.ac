@@ -365,7 +365,8 @@ case "${host_cpu}" in
 esac
 
 case "${host_os}" in
-isc*)	LOCAL_CFLAGS=-Disc386 ;;
+isc*)	 LOCAL_CFLAGS=-Disc386 ;;
+darwin*) echo "FIXME: add some LOCAL_CFLAGS" ;;
 esac
 
 # Automake:
@@ -375,7 +376,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 dejagnu gnits -Wall])
+AM_INIT_AUTOMAKE([1.11.6 dejagnu foreign std-options -Wall])
 AM_MAINTAINER_MODE
 m4_ifdef([AC_REQUIRE_AUX_FILE],[
   AC_REQUIRE_AUX_FILE([compile])dnl

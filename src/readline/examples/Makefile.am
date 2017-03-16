@@ -108,10 +108,15 @@ histexamp: histexamp.o $(HISTORY_LIB)
 clean-local mostlyclean-local:
 	$(RM) $(OBJECTS)
 	$(RM) $(EXECUTABLES) *.exe
+	$(RM) -rv *.dSYM || rmdir *.dSYM
 	$(RM) rlfe.o rlfe
 
-distclean-local maintainer-clean-local: clean-local
-	$(RM) Makefile
+distclean-local: clean-local
+	if test -e Makefile_orig; then $(RM) Makefile_orig; fi
+
+maintainer-clean-local: distclean-local
+	if test -e Makefile.in; then $(RM) Makefile.in; \
+	elif test -e Makefile; then $(RM) Makefile; fi
 
 fileman.o: fileman.c
 rltest.o: rltest.c

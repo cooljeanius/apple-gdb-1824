@@ -554,7 +554,8 @@ clean-am: clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
-distclean-am: clean-am distclean-DEJAGNU distclean-generic
+distclean-am: clean-am distclean-DEJAGNU distclean-generic \
+	distclean-local
 
 dvi: dvi-am
 
@@ -598,7 +599,8 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 	-rm -f Makefile
-maintainer-clean-am: distclean-am maintainer-clean-generic
+maintainer-clean-am: distclean-am maintainer-clean-generic \
+	maintainer-clean-local
 
 mostlyclean: mostlyclean-am
 
@@ -618,14 +620,15 @@ uninstall-am:
 
 .PHONY: all all-am check check-DEJAGNU check-am clean clean-generic \
 	clean-libtool cscopelist-am ctags-am distclean \
-	distclean-DEJAGNU distclean-generic distclean-libtool dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	distclean-DEJAGNU distclean-generic distclean-libtool \
+	distclean-local dvi dvi-am html html-am info info-am install \
+	install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic \
+	maintainer-clean-local mostlyclean mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am tags-am uninstall \
 	uninstall-am
 
@@ -684,10 +687,15 @@ histexamp: histexamp.o $(HISTORY_LIB)
 clean-local mostlyclean-local:
 	$(RM) $(OBJECTS)
 	$(RM) $(EXECUTABLES) *.exe
+	$(RM) -rv *.dSYM || rmdir *.dSYM
 	$(RM) rlfe.o rlfe
 
-distclean-local maintainer-clean-local: clean-local
-	$(RM) Makefile
+distclean-local: clean-local
+	if test -e Makefile_orig; then $(RM) Makefile_orig; fi
+
+maintainer-clean-local: distclean-local
+	if test -e Makefile.in; then $(RM) Makefile.in; \
+	elif test -e Makefile; then $(RM) Makefile; fi
 
 fileman.o: fileman.c
 rltest.o: rltest.c

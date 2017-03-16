@@ -11062,7 +11062,8 @@ case "${host_cpu}" in
 esac
 
 case "${host_os}" in
-isc*)	LOCAL_CFLAGS=-Disc386 ;;
+isc*)	 LOCAL_CFLAGS=-Disc386 ;;
+darwin*) echo "FIXME: add some LOCAL_CFLAGS" ;;
 esac
 
 # Automake:

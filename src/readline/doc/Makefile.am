@@ -165,7 +165,6 @@ mostlyclean-local: clean-local
 
 distclean-local: clean-local maybe-clean
 	$(RM) $(INTERMEDIATE_OBJ)
-	$(RM) Makefile
 
 maybe-clean:
 	-if test "X$(topdir)" != "X$(BUILD_DIR)"; then \
@@ -175,7 +174,8 @@ maybe-clean:
 maintainer-clean-local: clean-local
 	$(RM) $(DIST_DOCS)
 	$(RM) $(INTERMEDIATE_OBJ)
-	$(RM) Makefile
+	if test -e Makefile_orig; then $(RM) Makefile_orig; \
+	elif test -e Makefile.in; then $(RM) Makefile.in; fi
 
 installdirs-local: $(topdir)/support/mkdirs
 	-$(SHELL) $(topdir)/support/mkdirs $(DESTDIR)$(infodir) $(DESTDIR)$(man3dir)

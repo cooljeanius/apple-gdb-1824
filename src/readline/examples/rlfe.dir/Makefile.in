@@ -93,13 +93,13 @@ kmapdef.c: term.h
 tty.c:	tty.sh 
 	sh $(srcdir)/tty.sh tty.c
 
-mostlyclean:
+mostlyclean mostlyclean-local:
 	rm -f $(OFILES) rlfe *.o
-.PHONY: mostlyclean
+.PHONY: mostlyclean mostlyclean-local
 
-clean: mostlyclean
+clean clean-local: mostlyclean
 	rm -f tty.c term.h comm.h osdef.h kmapdef.c core *~
-.PHONY: clean
+.PHONY: clean clean-local
 
 # Delete all files from the current directory that are created by 
 # configuring or building the program.
@@ -120,6 +120,10 @@ maintainer-clean:
 	@echo "This command is not even intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 .PHONY: maintainer-clean
+
+maintainer-clean-local: distclean-local
+	@echo "Try the realclean target"
+.PHONY: maintainer-clean-local
 
 # Delete everything from the current directory that can be
 # reconstructed with this Makefile.

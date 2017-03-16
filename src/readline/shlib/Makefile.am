@@ -197,8 +197,12 @@ clean-local mostlyclean-local:	force
 
 CLEANFILES = $(SHARED_OBJ) $(SHARED_LIBS)
 
-distclean-local maintainer-clean-local: clean-local
-	$(RM) Makefile
+distclean-local: clean-local
+	if test -e Makefile_orig; then $(RM) Makefile_orig; fi
+
+maintainer-clean-local: distclean-local
+	if test -e Makefile.in; then $(RM) Makefile.in; \
+	elif test -e Makefile; then $(RM) Makefile; fi
 
 force:
 

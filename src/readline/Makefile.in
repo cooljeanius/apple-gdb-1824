@@ -477,7 +477,7 @@ top_srcdir = @top_srcdir@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 ACLOCAL_AMFLAGS = -I m4 --install
-AUTOMAKE_OPTIONS = 1.11.6 dejagnu gnits no-dist
+AUTOMAKE_OPTIONS = 1.11.6 dejagnu foreign std-options no-dist
 SUBDIRS = . doc shlib examples
 RL_LIBRARY_VERSION = @LIBVERSION@
 RL_LIBRARY_NAME = readline
@@ -570,7 +570,7 @@ INSTALLED_HEADERS = readline.h chardefs.h keymaps.h history.h tilde.h \
 TARGETS = @STATIC_TARGET@ @SHARED_TARGET@
 INSTALL_TARGETS = @STATIC_INSTALL_TARGET@ @SHARED_INSTALL_TARGET@
 CLEANFILES = *~
-DISTCLEANFILES = .DS_Store
+DISTCLEANFILES = .DS_Store stamp-h
 NSLIBTOOL = cc -dynamiclib
 SYSTEM_FRAMEWORK = -framework System -lcurses
 FRAMEWORK = readline
@@ -594,15 +594,15 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnits'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnits \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnits Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnits Makefile
+	  $(AUTOMAKE) --foreign Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -888,7 +888,7 @@ distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
 distclean-am: clean-am distclean-DEJAGNU distclean-generic \
-	distclean-hdr distclean-libtool distclean-tags
+	distclean-hdr distclean-libtool distclean-local distclean-tags
 
 dvi: dvi-recursive
 
@@ -934,7 +934,8 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
 	-rm -f Makefile
-maintainer-clean-am: distclean-am maintainer-clean-generic
+maintainer-clean-am: distclean-am maintainer-clean-generic \
+	maintainer-clean-local
 
 mostlyclean: mostlyclean-recursive
 
@@ -958,18 +959,18 @@ uninstall-am: uninstall-INSTALLDATA uninstall-INSTALLEDHEADERS \
 	am--refresh check check-DEJAGNU check-am clean clean-cscope \
 	clean-generic clean-libtool clean-local cscope cscopelist-am \
 	ctags ctags-am distclean distclean-DEJAGNU distclean-generic \
-	distclean-hdr distclean-libtool distclean-tags dvi dvi-am html \
-	html-am info info-am install install-INSTALLDATA \
-	install-INSTALLEDHEADERS install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-info-local install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installcheck-local installdirs \
-	installdirs-am installdirs-local maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool mostlyclean-local pdf pdf-am ps ps-am tags \
-	tags-am uninstall uninstall-INSTALLDATA \
+	distclean-hdr distclean-libtool distclean-local distclean-tags \
+	dvi dvi-am html html-am info info-am install \
+	install-INSTALLDATA install-INSTALLEDHEADERS install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-info-local install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installcheck-local \
+	installdirs installdirs-am installdirs-local maintainer-clean \
+	maintainer-clean-generic maintainer-clean-local mostlyclean \
+	mostlyclean-generic mostlyclean-libtool mostlyclean-local pdf \
+	pdf-am ps ps-am tags tags-am uninstall uninstall-INSTALLDATA \
 	uninstall-INSTALLEDHEADERS uninstall-am uninstall-local
 
 .PRECIOUS: Makefile
@@ -1122,20 +1123,31 @@ clean-local: config.status force
 	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(MFLAGS) $@ ; fi )
 
 mostlyclean-local: clean-local config.status
 	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(MFLAGS) $@ ; fi )
 
-distclean-local maintainer-clean-local: clean-local config.status
+distclean-local: clean-local config.status
 	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
-	$(RM) Makefile
-	$(RM) $(CREATED_CONFIGURE)
+	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(MFLAGS) $@ ; fi )
 	$(RM) $(CREATED_TAGS)
 	$(RM) -r autom4te.cache || rmdir autom4te.cache
+
+maintainer-clean-local: distclean-local
+	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(MFLAGS) $@ ; fi )
+	if test -e config.h; then $(RM) config.h; \
+	elif test -e config.h.in; then $(RM) config.h.in; fi
+	if test -e Makefile_orig; then $(RM) Makefile_orig; \
+	elif test -e Makefile.in; then $(RM) Makefile.in; fi
 
 info dvi:
 	-( cd doc && $(MAKE) $(MFLAGS) $@ )

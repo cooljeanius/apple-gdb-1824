@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 ACLOCAL_AMFLAGS = -I m4 --install
 
-AUTOMAKE_OPTIONS = 1.11.6 dejagnu gnits no-dist
+AUTOMAKE_OPTIONS = 1.11.6 dejagnu foreign std-options no-dist
 
 SUBDIRS = . doc shlib examples
 
@@ -307,23 +307,34 @@ clean-local: config.status force
 	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(MFLAGS) $@ ; fi )
 
 mostlyclean-local: clean-local config.status
 	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(MFLAGS) $@ ; fi )
 
-distclean-local maintainer-clean-local: clean-local config.status
+distclean-local: clean-local config.status
 	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
-	$(RM) Makefile
-	$(RM) $(CREATED_CONFIGURE)
+	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(MFLAGS) $@ ; fi )
 	$(RM) $(CREATED_TAGS)
 	$(RM) -r autom4te.cache || rmdir autom4te.cache
 
+maintainer-clean-local: distclean-local
+	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(MFLAGS) $@ ; fi )
+	if test -e config.h; then $(RM) config.h; \
+	elif test -e config.h.in; then $(RM) config.h.in; fi
+	if test -e Makefile_orig; then $(RM) Makefile_orig; \
+	elif test -e Makefile.in; then $(RM) Makefile.in; fi
+
 CLEANFILES = *~
-DISTCLEANFILES = .DS_Store
+DISTCLEANFILES = .DS_Store stamp-h
 
 info dvi:
 	-( cd doc && $(MAKE) $(MFLAGS) $@ )
