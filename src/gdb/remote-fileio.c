@@ -1309,7 +1309,10 @@ remote_fileio_func_system(char *buf)
       return;
     }
 
-  if (length <= 0) length = 1;
+  if (length <= 0)
+    length = 1;
+  else if (length > MAX_ALLOCA_SIZE)
+    length = MAX_ALLOCA_SIZE;
   /* Request commandline using 'm' packet: */
   cmdline = (char *)alloca(length);
   retlength = remote_read_bytes(ptrval, cmdline, length);

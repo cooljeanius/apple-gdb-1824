@@ -3353,12 +3353,12 @@ find_kext_files_by_symfile(const char *filename,
 static void
 add_dsym_command(const char *args, int from_tty)
 {
-  struct objfile *objfile;
+  struct objfile *volatile objfile;
   volatile struct gdb_exception e;
-  char *full_name;
+  char *volatile full_name;
   char *dsym_path;
   char *objfile_name;
-  struct cleanup *full_name_cleanup;
+  struct cleanup *volatile full_name_cleanup;
   struct cleanup *argv_cleanup;
   struct stat stat_buf;
   char **arg_array;

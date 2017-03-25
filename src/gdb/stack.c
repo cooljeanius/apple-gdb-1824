@@ -1563,7 +1563,7 @@ backtrace_command(const char *arg, int from_tty)
   btargs.from_tty = from_tty;
   errors_ret = catch_errors(backtrace_command_stub, (char *)&btargs, "",
 			    RETURN_MASK_ERROR);
-  
+
   if (errors_ret == 0) {
     ; /* ??? */
   }
@@ -1721,6 +1721,7 @@ print_frame_label_vars (struct frame_info *fi, int this_level_only,
   int index, have_default = 0;
   char *blocks_printed;
   CORE_ADDR pc = get_frame_pc (fi);
+  size_t blockslen;
 
   if (block == 0)
     {
@@ -1736,8 +1737,9 @@ print_frame_label_vars (struct frame_info *fi, int this_level_only,
     bl = blockvector_for_pc (BLOCK_END (block) - 4, &index);
   /* APPLE LOCAL end address ranges  */
 
-  blocks_printed = (char *) alloca (BLOCKVECTOR_NBLOCKS (bl) * sizeof (char));
-  memset (blocks_printed, 0, BLOCKVECTOR_NBLOCKS (bl) * sizeof (char));
+  blockslen = min((BLOCKVECTOR_NBLOCKS(bl) * sizeof(char)), MAX_ALLOCA_SIZE);
+  blocks_printed = (char *)alloca(blockslen);
+  memset(blocks_printed, 0, blockslen);
 
   while (block != 0)
     {

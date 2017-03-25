@@ -1432,9 +1432,11 @@ ada_is_direct_array_type (struct type *type)
 {
   if (type == NULL)
     return 0;
-  type = ada_check_typedef (type);
-  return (TYPE_CODE (type) == TYPE_CODE_ARRAY
-          || ada_is_array_descriptor_type (type));
+  type = ada_check_typedef(type);
+  if (type == NULL)
+    return 0;
+  return ((TYPE_CODE(type) == TYPE_CODE_ARRAY)
+          || ada_is_array_descriptor_type(type));
 }
 
 /* Non-zero iff TYPE is a simple array type or pointer to one: */
@@ -1635,9 +1637,10 @@ packed_array_type(struct type *type, long *elt_bits)
   LONGEST low_bound, high_bound;
 
   type = ada_check_typedef(type);
-  if (TYPE_CODE(type) != TYPE_CODE_ARRAY)
+  if ((type != NULL) && (TYPE_CODE(type) != TYPE_CODE_ARRAY))
     return type;
 
+  gdb_assert(type != NULL);
   new_type = alloc_type(TYPE_OBJFILE(type));
   new_elt_type = packed_array_type(ada_check_typedef(TYPE_TARGET_TYPE(type)),
                                    elt_bits);
@@ -2905,21 +2908,24 @@ resolve_subexp (struct expression **expp, int *pos, int deprocedure_p,
    liberal.  FIXME: TOO liberal, in fact.  */
 
 static int
-ada_type_match (struct type *ftype, struct type *atype, int may_deref)
+ada_type_match(struct type *ftype, struct type *atype, int may_deref)
 {
-  ftype = ada_check_typedef (ftype);
-  atype = ada_check_typedef (atype);
+  ftype = ada_check_typedef(ftype);
+  atype = ada_check_typedef(atype);
 
-  if (TYPE_CODE (ftype) == TYPE_CODE_REF)
-    ftype = TYPE_TARGET_TYPE (ftype);
-  if (TYPE_CODE (atype) == TYPE_CODE_REF)
-    atype = TYPE_TARGET_TYPE (atype);
+  gdb_assert(ftype != NULL);
+  gdb_assert(atype != NULL);
 
-  if (TYPE_CODE (ftype) == TYPE_CODE_VOID
-      || TYPE_CODE (atype) == TYPE_CODE_VOID)
+  if (TYPE_CODE(ftype) == TYPE_CODE_REF)
+    ftype = TYPE_TARGET_TYPE(ftype);
+  if (TYPE_CODE(atype) == TYPE_CODE_REF)
+    atype = TYPE_TARGET_TYPE(atype);
+
+  if (TYPE_CODE(ftype) == TYPE_CODE_VOID
+      || TYPE_CODE(atype) == TYPE_CODE_VOID)
     return 1;
 
-  switch (TYPE_CODE (ftype))
+  switch (TYPE_CODE(ftype))
     {
     default:
       return 1;

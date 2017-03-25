@@ -1506,11 +1506,11 @@ yylex(void)
                                 &yylval);
         if (toktype == ERROR)
 	  {
-	    char *err_copy = (char *) alloca (p - tokstart + 1);
+	    char *err_copy = (char *)alloca(p - tokstart + 1UL);
 
-	    memcpy (err_copy, tokstart, p - tokstart);
+	    memcpy(err_copy, tokstart, p - tokstart);
 	    err_copy[p - tokstart] = 0;
-	    error ("Invalid number \"%s\".", err_copy);
+	    error("Invalid number \"%s\".", err_copy);
 	  }
 	lexptr = p;
 	return toktype;

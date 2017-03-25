@@ -2690,7 +2690,7 @@ path_expr_of_root(struct varobj *var)
       gdb_assert(root_type != NULL);
       if (root_is_ptr)
 	{
-	  const char *format = "(('%s' *) (%s))";
+	  const char *const format = "(('%s' *) (%s))";
 	  dynamic_expr = TYPE_NAME(root_type);
 	  /* I got one report of a crash here because dynamic_expr
 	     is NULL.  I don't know how that could happen, however.  */
@@ -4362,7 +4362,7 @@ cplus_path_expr_of_child (struct varobj *parent, int index)
 	    }
 	  if (dynamic_expr_len > 0)
 	    {
-	      const char *format = "(('%s' *) ((%s)%s%s))";
+	      const char *const format = "(('%s' *) ((%s)%s%s))";
 	      size_t path_expr_len = (dynamic_expr_len + parent_len
 				      + join_expr_len + child_len
 				      + strlen(format) - 6UL + 1UL);
@@ -4372,7 +4372,7 @@ cplus_path_expr_of_child (struct varobj *parent, int index)
 	    }
 	  else
 	    {
-	      const char *format = "((%s)%s%s)";
+	      const char *const format = "((%s)%s%s)";
 	      size_t path_expr_len = (parent_len + join_expr_len
 				      + child_len + strlen(format) - 4UL + 1UL);
 	      path_expr = (char *)xmalloc(path_expr_len);

@@ -470,7 +470,7 @@ remove_qualifiers (char *qid)
 				   '"' if we're in a double-quoted string;
 				   '\'' if we're in a single-quoted string.  */
   int depth = 0;		/* number of unclosed parens we've seen */
-  char *parenstack = (char *) alloca (strlen (qid));
+  char *parenstack = (char *)alloca(min(strlen(qid), MAX_ALLOCA_SIZE));
   char *scan;
   char *last = 0;		/* The character after the rightmost
 				   `::' token we've seen so far.  */

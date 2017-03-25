@@ -85,3 +85,6 @@ CodeResources
 # gdbarch.sh creates these:
 new-gdbarch.c
 new-gdbarch.h
+
+# Profiling junk:
+*.gcda

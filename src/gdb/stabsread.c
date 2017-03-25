@@ -418,12 +418,15 @@ dbx_alloc_type (int typenums[2], struct objfile *objfile)
   /* If we are referring to a type not known at all yet,
      allocate an empty type for it.
      We will fill it in later if we find out how.  */
-  if (*type_addr == 0)
+  if ((type_addr != NULL) && (*type_addr == 0))
     {
-      *type_addr = alloc_type (objfile);
+      *type_addr = alloc_type(objfile);
     }
 
-  return (*type_addr);
+  if (type_addr != NULL)
+    return (*type_addr);
+  else
+    return NULL;
 }
 
 /* for all the stabs in a given stab vector, build appropriate types

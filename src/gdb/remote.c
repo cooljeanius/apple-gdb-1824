@@ -1598,11 +1598,21 @@ struct gdb_ext_thread_info
    get_thread_info. FIXME: Make these TAG names more thread specific.
  */
 
-#define TAG_THREADID 1
-#define TAG_EXISTS 2
-#define TAG_DISPLAY 4
-#define TAG_THREADNAME 8
-#define TAG_MOREDISPLAY 16
+#ifndef TAG_THREADID
+# define TAG_THREADID 1
+#endif /* !TAG_THREADID */
+#ifndef TAG_EXISTS
+# define TAG_EXISTS 2
+#endif /* !TAG_EXISTS */
+#ifndef TAG_DISPLAY
+# define TAG_DISPLAY 4
+#endif /* !TAG_DISPLAY */
+#ifndef TAG_THREADNAME
+# define TAG_THREADNAME 8
+#endif /* !TAG_THREADNAME */
+#ifndef TAG_MOREDISPLAY
+# define TAG_MOREDISPLAY 16
+#endif /* !TAG_MOREDISPLAY */
 
 #define BUF_THREAD_ID_SIZE (OPAQUETHREADBYTES * 2)
 
@@ -7192,5 +7202,21 @@ with the same name as the exec-file, but in the location given by this variable.
   add_cmd("dump-packets", class_maintenance, dump_packets_command,
           "Print the packet log buffer.", &maintenancelist);
 }
+
+#ifdef TAG_THREADID
+# undef TAG_THREADID
+#endif /* TAG_THREADID */
+#ifdef TAG_EXISTS
+# undef TAG_EXISTS
+#endif /* TAG_EXISTS */
+#ifdef TAG_DISPLAY
+# undef TAG_DISPLAY
+#endif /* TAG_DISPLAY */
+#ifdef TAG_THREADNAME
+# undef TAG_THREADNAME
+#endif /* TAG_THREADNAME */
+#ifdef TAG_MOREDISPLAY
+# undef TAG_MOREDISPLAY
+#endif /* TAG_MOREDISPLAY */
 
 /* EOF */

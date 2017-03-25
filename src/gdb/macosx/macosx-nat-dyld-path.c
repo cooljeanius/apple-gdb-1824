@@ -631,13 +631,13 @@ dyld_init_paths(dyld_path_info * d)
 {
   char *home;
 
-  const char *default_fallback_framework_path =
+  const char *const default_fallback_framework_path =
     "%s/Library/Frameworks:"
     "/Local/Library/Frameworks:"
     "/Network/Library/Frameworks:"
     "/System/Library/Frameworks";
 
-  const char *default_fallback_library_path =
+  const char *const default_fallback_library_path =
     "%s/lib:"
     "/usr/local/lib:"
     "/lib:"

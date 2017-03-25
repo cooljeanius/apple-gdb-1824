@@ -1019,7 +1019,7 @@ yylex(void)
 	toktype = parse_number (tokstart, p - tokstart, got_dot|got_e, &yylval);
         if (toktype == ERROR)
 	  {
-	    char *err_copy = (char *) alloca (p - tokstart + 1);
+	    char *err_copy = (char *)alloca(p - tokstart + 1UL);
 
 	    memcpy (err_copy, tokstart, p - tokstart);
 	    err_copy[p - tokstart] = 0;

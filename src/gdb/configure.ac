@@ -3156,7 +3156,7 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wmultiple-inheritance -Wvirtual-inheritance -Wpmf-conversions \
 -Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++ \
 -Wsized-deallocation -Wplacement-new=2 -Wshadow-compatible-local \
--Wbuiltin-function-redefined -Waligned-new=all"
+-Wbuiltin-function-redefined -Waligned-new=all -Wsynth"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -3305,10 +3305,14 @@ if test x${CFLAGS+set} = xset; then
       build_warnings="${build_warnings} ${opt_warnings_plus}"
       AC_DEFINE([OPTIMIZATION_LEVEL],[2],
                 [0 is none, 1 is some, and 2 is anything higher])
-      ## Work around GCC bug 71009:
       case "${CFLAGS}" in
         *"-Ofast"* )
+          ## Work around GCC bug 71009:
           build_warnings="${build_warnings} -fmath-errno"
+          ## Not warnings, but from GCC testsuite:
+          build_warnings="${build_warnings} -funroll-loops -ftracer"
+          ## Other optimizations:
+          build_warnings="${build_warnings} -fgcse-sm -fgcse-las -fipa-pta"
         ;;
       esac
     ;;
@@ -3319,6 +3323,10 @@ if test x${CFLAGS+set} = xset; then
     ;;
     *"-Os"* | *"-Oz"* )
       build_warnings="${build_warnings} -Wlarger-than=262144"
+      ## Not all of these are warnings, but since we care about code size here:
+      build_warnings="${build_warnings} -Wframe-larger-than=65536 \
+-finline-limit=4 -Winline -fno-keep-static-functions -fno-keep-static-consts \
+-fno-keep-inline-functions -finline-small-functions -flimit-function-alignment"
       AC_DEFINE([OPTIMIZATION_LEVEL],[1],
                 [0 is none, 1 is some, and 2 is anything higher])
     ;;

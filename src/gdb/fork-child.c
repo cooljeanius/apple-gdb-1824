@@ -153,7 +153,7 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
   shell_command = (char *)alloca(shell_cmd_len);
   strcpy(shell_command, SHELL_COMMAND_CONCAT);
 #else
-  shell_cmd_len = len;
+  shell_cmd_len = min((size_t)len, MAX_ALLOCA_SIZE);
   shell_command = (char *)alloca(shell_cmd_len);
   shell_command[0] = '\0';
 #endif /* SHELL_COMMAND_CONCAT */
@@ -401,7 +401,7 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
          powers; we need to drop those privileges before executing the
          inferior process.  */
       setgid_ret = setgid(getgid());
-      
+
       if (setgid_ret == -1) {
 	/* Should be either EINVAL or EPERM: */
 	warning(_("Call to setgid() failed with errno %d: %s.\n"), errno,

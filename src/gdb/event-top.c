@@ -303,11 +303,10 @@ display_gdb_prompt (char *new_prompt)
   if (!new_prompt)
     {
       /* Just use the top of the prompt stack. */
-      prompt_length = strlen (PREFIX (0)) +
-	strlen (SUFFIX (0)) +
-	strlen (gdb_prompt) + 1;
+      prompt_length = (strlen(PREFIX(0)) + strlen(SUFFIX(0))
+		       + strlen(gdb_prompt) + 1UL);
 
-      new_prompt = (char *) alloca (prompt_length);
+      new_prompt = (char *)alloca(prompt_length);
 
       /* Prefix needs to have new line at end. */
       strcpy (new_prompt, PREFIX (0));

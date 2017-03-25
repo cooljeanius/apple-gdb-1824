@@ -189,7 +189,7 @@ mi_interpreter_suspend(void *data)
 static struct gdb_exception
 mi_interpreter_exec(void *data, const char *command)
 {
-  const size_t tmplen = (strlen(command) + 1UL);
+  const size_t tmplen = min((strlen(command) + 1UL), MAX_ALLOCA_SIZE);
   char *tmp = (char *)alloca(tmplen);
   strcpy(tmp, command);
   mi_execute_command_wrapper(tmp);

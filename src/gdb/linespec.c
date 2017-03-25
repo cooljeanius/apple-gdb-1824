@@ -1305,7 +1305,7 @@ decode_line_1(const char **argptr, int funfirstline, struct symtab *default_symt
       {
         int i;
         struct symtabs_and_lines final_result = {NULL, 0};
-        const char *start_here;
+        const char *start_here = NULL;
         for (i = 0; file_symtab_arr[i] != NULL; i++)
           {
             struct symtabs_and_lines this_result;
@@ -2657,7 +2657,7 @@ decode_all_digits_exhaustive(const char **argptr, int funfirstline,
 	  {
 	    struct symtab_and_line *val = &(values.sals[v_i]);
 	    struct symbol *volatile func_sym = (struct symbol *volatile)NULL;
-	    
+
 	    /* If we have an objfile for the pc, then be careful to only look
 	     * in that objfile for the function symbol.  This is important
 	     * because if you are running gdb on a program BEFORE it has been
@@ -2666,7 +2666,7 @@ decode_all_digits_exhaustive(const char **argptr, int funfirstline,
 	     * another of these libraries.  That might fool us into moving the
 	     * breakpoint over the prologue of this function, which is now
 	     * totally in the wrong place...  */
-	    
+
 	    if (val->symtab && val->symtab->objfile)
 	      {
 		struct cleanup *restrict_cleanup;
@@ -2692,19 +2692,19 @@ decode_all_digits_exhaustive(const char **argptr, int funfirstline,
 		{
 		  sal = find_function_start_sal((struct symbol *)func_sym, 1);
 		}
-	      
+
 		if (e.reason != (int)NO_ERROR)
 		  {
 		    if (not_found_ptr)
 		      *not_found_ptr = 1;
 		    throw_exception(e);
 		  }
-	      
+
 		/* Do NOT move the line, just set the pc to the right place. */
 		/* Also, do NOT move the linenumber if the symtabs are
 		 * different.  This will happen for inlined functions, and then
 		 * you do NOT want to move the pc.  */
-	      
+
 		if ((val->symtab == sal.symtab) && (val->line <= sal.line))
 		  val->pc = sal.pc;
 	      }

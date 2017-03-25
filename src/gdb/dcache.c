@@ -205,11 +205,11 @@ show_dcache_enabled_p (struct ui_file *file, int from_tty,
   fprintf_filtered (file, _("Cache use for remote targets is %s.\n"), value);
 }
 
-/* APPLE LOCAL: The dcache system didn't used to keep track of all the caches
-   made, only the last one.  This worked fine because it turns out only one cache
-   was ever made, but that was kind of hacky.  Since I need to know all the caches
-   that are out there so I can resize them, I made an array to store "them" in.  */
-
+/* APPLE LOCAL: The dcache system previously failed to keep track of all the
+ * caches made, only the last one.  This worked fine because it turns out only
+ * one cache was ever made, but that was kind of hacky.  Since I need to know
+ * all the caches that are out there so I can resize them, I made an array
+ * to store "them" in: */
 static DCACHE **g_cache_array = NULL;
 static int g_num_caches = 0;
 static int g_max_num_caches = 0;
@@ -574,6 +574,7 @@ dcache_free (DCACHE *dcache)
     }
 
   g_num_caches--;
+  /* FIXME: -Wstrict-overflow; possibly change everything to unsigned? */
   if (i < g_num_caches)
     {
       bcopy((g_cache_array + i + 1), (g_cache_array + i),

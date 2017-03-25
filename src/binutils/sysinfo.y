@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include <stdio.h>
 #include <stdlib.h>
-  
+
 #ifndef ATTRIBUTE_FALLTHROUGH
 # if defined(__GNUC__) && (__GNUC__ >= 7)
 #  define ATTRIBUTE_FALLTHROUGH __attribute__((fallthrough))
@@ -418,9 +418,8 @@ enum_list:
    -o write functions to swap into sysroff format out
    -c write code to print info in human form */
 
-#if !defined(__cplusplus) && defined(ALLOW_DUPLICATE_DECLARATIONS)
+/* FIXME: depends on whether or not we pass -t flag to bison when yaccing: */
 int yydebug;
-#endif /* !__cplusplus && ALLOW_DUPLICATE_DECLARATIONS */
 
 int
 main(int ac, char **av)
