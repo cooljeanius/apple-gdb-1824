@@ -1,5 +1,5 @@
 /* provide a chdir function that tries not to fail due to ENAMETOOLONG
-   Copyright (C) 2004-2016 Free Software Foundation, Inc.
+   Copyright (C) 2004-2017 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -212,8 +212,6 @@ chdir_long (char *dir)
 # include "closeout.h"
 # include "error.h"
 
-char *program_name;
-
 int
 main (int argc, char *argv[])
 {
@@ -221,7 +219,6 @@ main (int argc, char *argv[])
   size_t n = 0;
   int len;
 
-  program_name = argv[0];
   atexit (close_stdout);
 
   len = getline (&line, &n, stdin);

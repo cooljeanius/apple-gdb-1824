@@ -32,8 +32,8 @@
 IMPORTED_GNULIB_MODULES="\
     absolute-header alignof alloca alloca-opt ansi-c++-opt assert assert-h \
     assure autobuild \
-    bcopy bison-i18n btowc \
-    c-ctype c-strcase c-strcasestr chdir-long configmake connect closedir \
+    bcopy bison-i18n btowc builtin-expect \
+    c-ctype c-strcase c-strcasestr c99 chdir-long configmake connect closedir \
     dirent dirent-safer dirfd dosname double-slash-root dup2 \
     environ errno error exitfail extensions extern-inline \
     fcntl fcntl-h fcntl-safer fileblocks flexmember float fnmatch fnmatch-gnu \
@@ -43,7 +43,7 @@ IMPORTED_GNULIB_MODULES="\
     havelib host-cpu-c-abi host-os \
     ignore-value include_next inline intprops inttypes inttypes-incomplete \
     isnand-nolibm isnanl-nolibm iswctype \
-    largefile ldd localcharset locale lstat \
+    largefile ldd limits-h localcharset locale lstat \
     malloc-gnu malloc-posix manywarnings math mbrtowc mbsinit mbsrtowcs \
     memchr memcmp memmem memmem-simple \
     mempcpy memrchr mkdtemp multiarch \
@@ -78,7 +78,7 @@ IMPORTED_GNULIB_MODULES="\
 # below, though, so they may still get dragged in as dependencies)
 
 # The gnulib commit ID to use for the update.
-GNULIB_COMMIT_SHA1="c382e8d72a5e1b36a51d751b1aa6e6b0201d6189"
+GNULIB_COMMIT_SHA1="06d9e7302a736d7fa3db9cf1eb9850b60aee612f"
 # (feel free to update if you know that your version works and is newer)
 
 # The expected version number for the various auto tools we will

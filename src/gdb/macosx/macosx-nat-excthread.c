@@ -458,7 +458,10 @@ macosx_exception_thread_destroy(macosx_exception_thread_status *s)
 {
   unsigned char dummybuf[8] = { 0 };
   (void)dummybuf;
-  /* FIXME: -Wpointer-compare about THREAD_NULL? */
+  /* THREAD_NULL is 0 casted to thread_t, which if you follow the typedef chain
+   * deep enough, is actually an unsigned int and not a pointer, so
+   * -Wpointer-compare might actually be right here, I think, but trying to fix
+   * it leads to a different error... */
   if (s->exception_thread != THREAD_NULL)
     {
       /* Let us destroy the exception port here, so that we

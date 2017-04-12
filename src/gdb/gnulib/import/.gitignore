@@ -24,6 +24,8 @@ inttypes.h
 inttypes.h-t
 langinfo.h
 langinfo.h-t
+limits.h
+limits.h-t
 locale.h
 locale.h-t
 math.h

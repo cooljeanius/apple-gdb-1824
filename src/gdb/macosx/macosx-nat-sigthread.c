@@ -110,8 +110,10 @@ macosx_signal_thread_create(macosx_signal_thread_status *s, int pid)
 void
 macosx_signal_thread_destroy(macosx_signal_thread_status *s)
 {
-  /* I think -Wpointer-compare is wrong here but I will need to preprocess
-   * to be sure: */
+  /* THREAD_NULL is 0 casted to thread_t, which if you follow the typedef chain
+   * deep enough, is actually an unsigned int and not a pointer, so
+   * -Wpointer-compare might actually be right here, I think, but trying to fix
+   * it leads to a different error... */
   if (s->signal_thread != THREAD_NULL)
     {
       gdb_thread_kill(s->signal_thread);

@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2016 Free Software Foundation, Inc.
+# Copyright (C) 2002-2017 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,9 +59,11 @@ AC_DEFUN([gl_EARLY],
   # Code from module bison-i18n:
   # Code from module bitrotate:
   # Code from module btowc:
+  # Code from module builtin-expect:
   # Code from module c-ctype:
   # Code from module c-strcase:
   # Code from module c-strcasestr:
+  # Code from module c99:
   # Code from module chdir:
   # Code from module chdir-long:
   # Code from module cloexec:
@@ -113,6 +115,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module getcwd-lgpl:
   # Code from module getdtablesize:
   # Code from module getpagesize:
+  # Code from module getprogname:
   # Code from module gettext:
   # Code from module gettext-h:
   # Code from module gettimeofday:
@@ -140,6 +143,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module largefile:
   AC_REQUIRE([AC_SYS_LARGEFILE])
   # Code from module ldd:
+  # Code from module limits-h:
   # Code from module localcharset:
   # Code from module locale:
   # Code from module localeconv:
@@ -220,6 +224,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module stat-macros:
   # Code from module stat-size:
   # Code from module stat-time:
+  # Code from module std-gnu11:
   # Code from module stdalign:
   # Code from module stdbool:
   # Code from module stddef:
@@ -317,6 +322,7 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_BTOWC
   fi
   gl_WCHAR_MODULE_INDICATOR([btowc])
+  gl___BUILTIN_EXPECT
   gl_UNISTD_MODULE_INDICATOR([chdir])
   gl_FUNC_CHDIR_LONG
   if test $gl_cv_have_arbitrary_file_name_length_limit = yes; then
@@ -420,12 +426,12 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([fnmatch])
     gl_PREREQ_FNMATCH
   fi
-  gl_FUNC_FREXP
+  AC_REQUIRE([gl_FUNC_FREXP])
   if test $gl_func_frexp != yes; then
     AC_LIBOBJ([frexp])
   fi
   gl_MATH_MODULE_INDICATOR([frexp])
-  gl_FUNC_FREXPL
+  AC_REQUIRE([gl_FUNC_FREXPL])
   if test $HAVE_DECL_FREXPL = 0 || test $gl_func_frexpl = no; then
     AC_LIBOBJ([frexpl])
   fi
@@ -468,6 +474,7 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([getpagesize])
   fi
   gl_UNISTD_MODULE_INDICATOR([getpagesize])
+  gl_FUNC_GETPROGNAME
   dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
   AM_GNU_GETTEXT_VERSION([0.18.1])
   AC_SUBST([LIBINTL])
@@ -514,6 +521,7 @@ AC_DEFUN([gl_INIT],
   AC_REQUIRE([gl_LARGEFILE])
   gl_LDD
   AC_CONFIG_FILES([ldd.sh:import/extra/ldd.sh.in])
+  gl_LIMITS_H
   gl_LOCALCHARSET
   LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(abs_top_builddir)/$gl_source_base\""
   AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])
@@ -997,7 +1005,6 @@ changequote([, ])dnl
   AC_SUBST([gltests_WITNESS])
   gl_module_indicator_condition=$gltests_WITNESS
   m4_pushdef([gl_MODULE_INDICATOR_CONDITION], [$gl_module_indicator_condition])
-  AC_REQUIRE([gl_FEATURES_H])
   m4_popdef([gl_MODULE_INDICATOR_CONDITION])
   m4_ifval(gltests_LIBSOURCES_LIST, [
     m4_syscmd([test ! -d ]m4_defn([gltests_LIBSOURCES_DIR])[ ||
@@ -1096,18 +1103,16 @@ AC_DEFUN([gl_FILE_LIST], [
   build-aux/git-version-gen
   build-aux/gitlog-to-changelog
   build-aux/ldd.sh.in
-  build-aux/snippet/_Noreturn.h
-  build-aux/snippet/arg-nonnull.h
-  build-aux/snippet/c++defs.h
   build-aux/snippet/link-warning.h
-  build-aux/snippet/warn-on-use.h
   build-aux/update-copyright
   build-aux/vc-list-files
   doc/gpl-2.0.texi
   doc/regexprops-generic.texi
+  lib/_Noreturn.h
   lib/alignof.h
   lib/alloca.c
   lib/alloca.in.h
+  lib/arg-nonnull.h
   lib/assert.in.h
   lib/assure.h
   lib/at-func.c
@@ -1117,6 +1122,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/bitrotate.c
   lib/bitrotate.h
   lib/btowc.c
+  lib/c++defs.h
   lib/c-ctype.c
   lib/c-ctype.h
   lib/c-strcase.h
@@ -1165,6 +1171,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/filename.h
   lib/filenamecat-lgpl.c
   lib/filenamecat.h
+  lib/flexmember.h
   lib/float+.h
   lib/float.c
   lib/float.in.h
@@ -1183,6 +1190,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/getcwd.c
   lib/getdtablesize.c
   lib/getpagesize.c
+  lib/getprogname.c
+  lib/getprogname.h
   lib/gettext.h
   lib/gettimeofday.c
   lib/hard-locale.c
@@ -1204,6 +1213,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/iswctype.c
   lib/itold.c
   lib/langinfo.in.h
+  lib/limits.in.h
   lib/localcharset.c
   lib/localcharset.h
   lib/locale.in.h
@@ -1347,6 +1357,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/usleep.c
   lib/verify.h
   lib/w32sock.h
+  lib/warn-on-use.h
   lib/wchar.in.h
   lib/wcrtomb.c
   lib/wcsncasecmp-impl.h
@@ -1377,6 +1388,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/autobuild.m4
   m4/bison-i18n.m4
   m4/btowc.m4
+  m4/builtin-expect.m4
   m4/chdir-long.m4
   m4/close.m4
   m4/closedir.m4
@@ -1423,6 +1435,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/getcwd.m4
   m4/getdtablesize.m4
   m4/getpagesize.m4
+  m4/getprogname.m4
   m4/gettext.m4
   m4/gettimeofday.m4
   m4/glibc2.m4
@@ -1458,6 +1471,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/lib-link.m4
   m4/lib-prefix.m4
   m4/libunistring-base.m4
+  m4/limits-h.m4
   m4/localcharset.m4
   m4/locale-fr.m4
   m4/locale-ja.m4
@@ -1533,6 +1547,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/stat-size.m4
   m4/stat-time.m4
   m4/stat.m4
+  m4/std-gnu11.m4
   m4/stdalign.m4
   m4/stdbool.m4
   m4/stddef_h.m4

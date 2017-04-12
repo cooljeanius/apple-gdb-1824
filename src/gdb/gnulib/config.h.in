@@ -4,6 +4,9 @@
 #ifndef __i386__
 #undef __i386__
 #endif
+#ifndef __x86_64_x32__
+#undef __x86_64_x32__
+#endif
 #ifndef __x86_64__
 #undef __x86_64__
 #endif
@@ -13,8 +16,11 @@
 #ifndef __arm__
 #undef __arm__
 #endif
-#ifndef __armel__
-#undef __armel__
+#ifndef __armhf__
+#undef __armhf__
+#endif
+#ifndef __arm64__
+#undef __arm64__
 #endif
 #ifndef __hppa__
 #undef __hppa__
@@ -42,6 +48,9 @@
 #endif
 #ifndef __powerpc64__
 #undef __powerpc64__
+#endif
+#ifndef __powerpc64_elfv2__
+#undef __powerpc64_elfv2__
 #endif
 #ifndef __s390__
 #undef __s390__
@@ -520,6 +529,14 @@
    don't. */
 #undef HAVE_DECL_MEMRCHR
 
+/* Define to 1 if you have the declaration of `program_invocation_name', and
+   to 0 if you don't. */
+#undef HAVE_DECL_PROGRAM_INVOCATION_NAME
+
+/* Define to 1 if you have the declaration of `program_invocation_short_name',
+   and to 0 if you don't. */
+#undef HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME
+
 /* Define to 1 if you have the declaration of `setenv', and to 0 if you don't.
    */
 #undef HAVE_DECL_SETENV
@@ -536,9 +553,12 @@
    don't. */
 #undef HAVE_DECL_STRERROR
 
-/* Define to 1 if you have the declaration of `strerror_r', and to 0 if you
-   don't. */
+/* Define to 1, since you should have the declaration of strerror_r. */
 #undef HAVE_DECL_STRERROR_R
+
+/* Define to 1 if you have the declaration of 'strerror_r' in the system
+   include files, or to 0 otherwise. */
+#undef HAVE_DECL_STRERROR_R_ORIG
 
 /* Define to 1 if you have the declaration of `strndup', and to 0 if you
    don't. */
@@ -579,6 +599,10 @@
 /* Define to 1 if you have the declaration of `_putenv', and to 0 if you
    don't. */
 #undef HAVE_DECL__PUTENV
+
+/* Define to 1 if you have the declaration of `__argv', and to 0 if you don't.
+   */
+#undef HAVE_DECL___ARGV
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
@@ -642,11 +666,29 @@
 /* Define to 1 if you have the `getdtablesize' function. */
 #undef HAVE_GETDTABLESIZE
 
+/* Define to 1 if you have the `getegid' function. */
+#undef HAVE_GETEGID
+
+/* Define to 1 if you have the `geteuid' function. */
+#undef HAVE_GETEUID
+
+/* Define to 1 if you have the `getexecname' function. */
+#undef HAVE_GETEXECNAME
+
+/* Define to 1 if you have the `getgid' function. */
+#undef HAVE_GETGID
+
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
+/* Define to 1 if you have the `getprogname' function. */
+#undef HAVE_GETPROGNAME
+
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
+
+/* Define to 1 if you have the `getuid' function. */
+#undef HAVE_GETUID
 
 /* Define to 1 if you have the `gmtime' function. */
 #undef HAVE_GMTIME
@@ -1345,6 +1387,9 @@
 /* Define to 1 if pwrite is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_PWRITE
 
+/* Define to 1 if qsort_r is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_QSORT_R
+
 /* Define to 1 if random is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_RANDOM
 
@@ -1867,7 +1912,7 @@
 /* Define to 1 if you have the `strerror' function. */
 #undef HAVE_STRERROR
 
-/* Define to 1 if you have the `strerror_r' function. */
+/* Define to 1, since you should have the function strerror_r. */
 #undef HAVE_STRERROR_R
 
 /* Define to 1 if you have the <strings.h> header file. */
@@ -2044,6 +2089,9 @@
 /* Define to 1 if you have the `usleep' function. */
 #undef HAVE_USLEEP
 
+/* Define if you have a global __progname variable */
+#undef HAVE_VAR___PROGNAME
+
 /* Define to 1 if you have the `vprintf' function. */
 #undef HAVE_VPRINTF
 
@@ -2114,6 +2162,16 @@
 /* Define to 1 if you have the <_wctype.h> header file. */
 #undef HAVE__WCTYPE_H
 
+/* Define to 1 if the compiler supports __builtin_expect,
+   and to 2 if <builtins.h> does.  */
+#undef HAVE___BUILTIN_EXPECT
+#ifndef HAVE___BUILTIN_EXPECT
+# define __builtin_expect(e, c) (e)
+#elif HAVE___BUILTIN_EXPECT == 2
+# include <builtins.h>
+#endif
+    
+
 /* Define to 1 if the system has the type `__darwin_mbstate_t'. */
 #undef HAVE___DARWIN_MBSTATE_T
 
@@ -2164,6 +2222,12 @@
 
 /* Define if the mbrtowc function returns a wrong return value. */
 #undef MBRTOWC_RETVAL_BUG
+
+/* Use GNU style printf and scanf.  */
+#ifndef __USE_MINGW_ANSI_STDIO
+# undef __USE_MINGW_ANSI_STDIO
+#endif
+
 
 /* Define to 1 if assertions should be disabled. */
 #undef NDEBUG
@@ -2252,7 +2316,7 @@
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
-/* Define to 1 if strerror_r returns char *. */
+/* Define to 0, since strerror_r should not return char *. */
 #undef STRERROR_R_CHAR_P
 
 /* Define to 1 if time_t is signed. */

@@ -1,5 +1,5 @@
 /* Extended regular expression matching and search library.
-   Copyright (C) 2002-2016 Free Software Foundation, Inc.
+   Copyright (C) 2002-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Isamu Hasegawa <isamu@yamato.ibm.com>.
 
@@ -464,7 +464,7 @@ re_compile_fastmap_iter (regex_t *bufp, const re_dfastate_t *init_state,
    the return codes and their meanings.)  */
 
 int
-regcomp (regex_t *__restrict preg, const char *__restrict pattern, int cflags)
+regcomp (regex_t *_Restrict_ preg, const char *_Restrict_ pattern, int cflags)
 {
   reg_errcode_t ret;
   reg_syntax_t syntax = ((cflags & REG_EXTENDED) ? RE_SYNTAX_POSIX_EXTENDED
@@ -523,7 +523,7 @@ weak_alias (__regcomp, regcomp)
    from either regcomp or regexec.   We don't use PREG here.  */
 
 size_t
-regerror (int errcode, const regex_t *__restrict preg, char *__restrict errbuf,
+regerror (int errcode, const regex_t *_Restrict_ preg, char *_Restrict_ errbuf,
 	  size_t errbuf_size)
 {
   const char *msg;
@@ -3716,7 +3716,7 @@ build_charclass_op (re_dfa_t *dfa, RE_TRANSLATE_TYPE trans,
 #endif
 
   /* Build a tree for simple bracket.  */
-#ifdef lint
+#if defined GCC_LINT || defined lint
   memset (&br_token, 0, sizeof br_token);
 #endif
   br_token.type = SIMPLE_BRACKET;
@@ -3812,7 +3812,7 @@ create_tree (re_dfa_t *dfa, bin_tree_t *left, bin_tree_t *right,
 	     re_token_type_t type)
 {
   re_token_t t;
-#ifdef lint
+#if defined GCC_LINT || defined lint
   memset (&t, 0, sizeof t);
 #endif
   t.type = type;

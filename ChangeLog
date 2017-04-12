@@ -1,3 +1,59 @@
+2017-03-24  Eric Gallager  <egallager@comcast.net>
+
+	still breaks in gdbarch.sh #programminghelpwanted
+
+	Change-Id: Ib089f34f482ac20830beb9c1747f6c9f37cf2414
+
+2017-03-16  Eric Gallager  <egallager@comcast.net>
+
+	fix distcleaning in readline subdir
+
+	Change-Id: I6586a293088504aa6cae94ff7cf3ec37a98a9413
+
+2017-03-15  Eric Gallager  <egallager@comcast.net>
+
+	warning-silencing for tcl/tk/itcl and stuff
+
+	also fix fallout from moving libtool_gnu ChangeLogs
+	which for some stupid reason get parsed as part of the
+	build/bootstrap process
+
+	Change-Id: I00d8d71b19b45d9dcea22c95a0a2e4a142b09b06
+
+2017-03-15  Eric Gallager  <egallager@comcast.net>
+
+	move rotated ChangeLogs to subdirs
+
+	and fix their whitespace
+	and other warning silencing stuff in the actual code
+
+	Change-Id: Ibe6f3ff43f8ddf393dc638fa3948a6aad86fea91
+
+2017-03-09  Eric Gallager  <egallager@comcast.net>
+
+	have tk subdir handle archflags
+
+	also more static analysis with clang and stuff
+
+	Change-Id: I3fa7025ff7f90a58767dd817bec7db6a8e1588a8
+
+2017-03-03  Eric Gallager  <egallager@comcast.net>
+
+	Bring repo back to my Snow Leopard computer
+
+	The hard drive here is full and has a hosed environment,
+	so I am still in the process of bringing it back up to speed.
+	Build currently gets as far as the tk subdir before failing
+	due to archflags
+
+	Change-Id: Icc22c5e859aef87f3c049c744af932c232d9db3e
+
+2017-01-05  cooljeanius  <egall@gwmail.gwu.edu>
+
+	minor toplevel stuff
+
+	Change-Id: I02bc27016602a435a66a222f48f1850fdde8dbee
+
 2017-01-05  cooljeanius  <egall@gwmail.gwu.edu>
 
 	electric-fence and intl tweaks

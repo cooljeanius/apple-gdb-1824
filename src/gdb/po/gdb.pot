@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-02 14:07-0500\n"
+"POT-Creation-Date: 2017-03-27 00:06-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,383 +53,383 @@ msgstr ""
 msgid "invalid Ada operator name: %s"
 msgstr ""
 
-#: ada-lang.c:1243 ada-lang.c:1260 ada-lang.c:1330
+#: ada-lang.c:1244 ada-lang.c:1261 ada-lang.c:1331
 msgid "Bad GNAT array descriptor"
 msgstr ""
 
-#: ada-lang.c:1367
+#: ada-lang.c:1368
 msgid "Bad GNAT array descriptor bounds"
 msgstr ""
 
-#: ada-lang.c:1581
+#: ada-lang.c:1584
 msgid "Bounds unavailable for null array pointer."
 msgstr ""
 
-#: ada-lang.c:1688
+#: ada-lang.c:1692
 msgid "could not find bounds information on packed array"
 msgstr ""
 
-#: ada-lang.c:1695
+#: ada-lang.c:1699
 msgid "could not understand bounds information on packed array"
 msgstr ""
 
-#: ada-lang.c:1701
+#: ada-lang.c:1705
 msgid "failed to understand bit size info on packed array"
 msgstr ""
 
-#: ada-lang.c:1726
+#: ada-lang.c:1730
 msgid "can't unpack array"
 msgstr ""
 
-#: ada-lang.c:1778
+#: ada-lang.c:1782
 msgid "attempt to do packed indexing of something other than a packed array"
 msgstr ""
 
-#: ada-lang.c:1787
+#: ada-lang.c:1791
 msgid "do NOT know bounds of array"
 msgstr ""
 
-#: ada-lang.c:1793
+#: ada-lang.c:1797
 #, possible-c-format
 msgid "packed array index %ld out of bounds"
 msgstr ""
 
-#: ada-lang.c:1800
+#: ada-lang.c:1804
 msgid "NULL elt_type"
 msgstr ""
 
-#: ada-lang.c:1875
+#: ada-lang.c:1879
 msgid "Unable to allocate enough space for bytes.\n"
 msgstr ""
 
-#: ada-lang.c:2075 valops.c:647
+#: ada-lang.c:2079 valops.c:647
 msgid "Left operand of assignment is not a modifiable lvalue."
 msgstr ""
 
-#: ada-lang.c:2090
+#: ada-lang.c:2094
 msgid "Unable to allocate enough space for buffer.\n"
 msgstr ""
 
-#: ada-lang.c:2144 ada-lang.c:2166
+#: ada-lang.c:2148 ada-lang.c:2170
 #, possible-c-format
 msgid "too many subscripts (%d expected)"
 msgstr ""
 
-#: ada-lang.c:2475
+#: ada-lang.c:2479
 msgid "Could not find operator name for opcode"
 msgstr ""
 
-#: ada-lang.c:2644
+#: ada-lang.c:2648
 msgid "Unexpected operator during name resolution"
 msgstr ""
 
-#: ada-lang.c:2693
+#: ada-lang.c:2697
 msgid "Unexpected Ada operator during name resolution"
 msgstr ""
 
-#: ada-lang.c:2768
+#: ada-lang.c:2772
 #, possible-c-format
 msgid "No definition found for %s"
 msgstr ""
 
-#: ada-lang.c:2780 ada-lang.c:2832
+#: ada-lang.c:2784 ada-lang.c:2836
 #, possible-c-format
 msgid "Could not find a match for %s"
 msgstr ""
 
-#: ada-lang.c:2785 ada-lang.c:3082
+#: ada-lang.c:2789 ada-lang.c:3089
 #, possible-c-format
 msgid "Multiple matches for %s\n"
 msgstr ""
 
-#: ada-lang.c:3165
+#: ada-lang.c:3172
 msgid "Request to select 0 symbols!"
 msgstr ""
 
-#: ada-lang.c:3169
+#: ada-lang.c:3176
 msgid "[0] cancel\n"
 msgstr ""
 
-#: ada-lang.c:3171
+#: ada-lang.c:3178
 msgid "[1] all\n"
 msgstr ""
 
-#: ada-lang.c:3185
+#: ada-lang.c:3192
 #, possible-c-format
 msgid "[%d] %s at <no source file available>:%d\n"
 msgstr ""
 
-#: ada-lang.c:3190 ada-lang.c:3204
+#: ada-lang.c:3197 ada-lang.c:3211
 #, possible-c-format
 msgid "[%d] %s at %s:%d\n"
 msgstr ""
 
-#: ada-lang.c:3214
+#: ada-lang.c:3221
 #, possible-c-format
 msgid "'(%s) (enumeral)\n"
 msgstr ""
 
-#: ada-lang.c:3219
+#: ada-lang.c:3226
 #, possible-c-format
 msgid "[%d] %s in %s (enumeral)\n"
 msgstr ""
 
-#: ada-lang.c:3220
+#: ada-lang.c:3227
 #, possible-c-format
 msgid "[%d] %s at %s:?\n"
 msgstr ""
 
-#: ada-lang.c:3226
+#: ada-lang.c:3233
 #, possible-c-format
 msgid "[%d] %s (enumeral)\n"
 msgstr ""
 
-#: ada-lang.c:3227
+#: ada-lang.c:3234
 #, possible-c-format
 msgid "[%d] %s at ?\n"
 msgstr ""
 
-#: ada-lang.c:3277 ada-lang.c:3291 linespec.c:908
+#: ada-lang.c:3284 ada-lang.c:3298 linespec.c:908
 msgid "one or more choice numbers"
 msgstr ""
 
-#: ada-lang.c:3298
+#: ada-lang.c:3305
 msgid "Argument must be choice number"
 msgstr ""
 
-#: ada-lang.c:3302
+#: ada-lang.c:3309
 msgid "cancelled"
 msgstr ""
 
-#: ada-lang.c:3328
+#: ada-lang.c:3335
 #, possible-c-format
 msgid "Select no more than %d of the above"
 msgstr ""
 
-#: ada-lang.c:3572 ada-lang.c:3577
+#: ada-lang.c:3579 ada-lang.c:3584
 msgid "Improperly encoded renaming."
 msgstr ""
 
-#: ada-lang.c:3678
+#: ada-lang.c:3685
 msgid "formal_type is NULL."
 msgstr ""
 
-#: ada-lang.c:5644 ada-lang.c:5662
+#: ada-lang.c:5651 ada-lang.c:5669
 #, possible-c-format
 msgid "Bad value type in a %s."
 msgstr ""
 
-#: ada-lang.c:5680 valops.c:1834
+#: ada-lang.c:5687 valops.c:1834
 #, possible-c-format
 msgid "Attempt to extract a component of a value that is not a %s."
 msgstr ""
 
-#: ada-lang.c:5718 valops.c:1865
+#: ada-lang.c:5725 valops.c:1865
 #, possible-c-format
 msgid "There is no member named %s."
 msgstr ""
 
-#: ada-lang.c:5771
+#: ada-lang.c:5778
 msgid "Type (null) is not a structure or union type"
 msgstr ""
 
 #. XXX: type_sprint
-#: ada-lang.c:5775 ada-lang.c:5841 ada-lang.c:5848
+#: ada-lang.c:5782 ada-lang.c:5848 ada-lang.c:5855
 msgid "Type "
 msgstr ""
 
-#: ada-lang.c:5777
+#: ada-lang.c:5784
 msgid " is not a structure or union type"
 msgstr ""
 
-#: ada-lang.c:5843
+#: ada-lang.c:5850
 msgid " has no component named <null>"
 msgstr ""
 
-#: ada-lang.c:5850
+#: ada-lang.c:5857
 #, possible-c-format
 msgid " has no component named %s"
 msgstr ""
 
-#: ada-lang.c:5976
+#: ada-lang.c:5983
 msgid "No name for field; requires no alignment(?)\n"
 msgstr ""
 
-#: ada-lang.c:6369
+#: ada-lang.c:6376
 #, possible-c-format
 msgid "Invalid type size for `%s' detected: %d."
 msgstr ""
 
-#: ada-lang.c:6372
+#: ada-lang.c:6379
 #, possible-c-format
 msgid "Invalid type size for <unnamed> detected: %d."
 msgstr ""
 
-#: ada-lang.c:6383
+#: ada-lang.c:6390
 msgid "record type with dynamic size is larger than varsize-limit"
 msgstr ""
 
-#: ada-lang.c:6666
+#: ada-lang.c:6673
 msgid "array type with dynamic size is larger than varsize-limit"
 msgstr ""
 
-#: ada-lang.c:6893
+#: ada-lang.c:6900
 msgid "'POS only defined on discrete types"
 msgstr ""
 
-#: ada-lang.c:6905
+#: ada-lang.c:6912
 msgid "enumeration value is invalid: can't find 'POS"
 msgstr ""
 
-#: ada-lang.c:6923
+#: ada-lang.c:6930
 msgid "'VAL only defined on discrete types"
 msgstr ""
 
-#: ada-lang.c:6925
+#: ada-lang.c:6932
 msgid "'VAL requires integral argument"
 msgstr ""
 
-#: ada-lang.c:6931
+#: ada-lang.c:6938
 msgid "argument to 'VAL out of range"
 msgstr ""
 
-#: ada-lang.c:7236
+#: ada-lang.c:7243
 msgid "Incompatible types in assignment"
 msgstr ""
 
-#: ada-lang.c:7270
+#: ada-lang.c:7277
 #, possible-c-format
 msgid "second operand of %s must not be zero."
 msgstr ""
 
-#: ada-lang.c:7309
+#: ada-lang.c:7316
 msgid "Attempt to compare array with non-array"
 msgstr ""
 
-#: ada-lang.c:7401
+#: ada-lang.c:7408
 msgid "Fixed-point values must be assigned to fixed-point variables"
 msgstr ""
 
-#: ada-lang.c:7414
+#: ada-lang.c:7421
 msgid "Operands of fixed-point addition must have the same type"
 msgstr ""
 
-#: ada-lang.c:7425
+#: ada-lang.c:7432
 msgid "Operands of fixed-point subtraction must have the same type"
 msgstr ""
 
 #. Only encountered when an unresolved symbol occurs in a
 #. * context other than a function call, in which case, it is
 #. * illegal.
-#: ada-lang.c:7495 ada-lang.c:7524
+#: ada-lang.c:7502 ada-lang.c:7531
 #, possible-c-format
 msgid "Unexpected unresolved symbol, %s, during evaluation"
 msgstr ""
 
-#: ada-lang.c:7559
+#: ada-lang.c:7566
 #, possible-c-format
 msgid "cannot subscript or call something of type `%s'"
 msgstr ""
 
-#: ada-lang.c:7578
+#: ada-lang.c:7585
 msgid "cannot subscript or call a record"
 msgstr ""
 
-#: ada-lang.c:7580
+#: ada-lang.c:7587
 #, possible-c-format
 msgid "wrong number of subscripts; expecting %d"
 msgstr ""
 
-#: ada-lang.c:7593 ada-lang.c:7606
+#: ada-lang.c:7600 ada-lang.c:7613
 msgid "element type of array unknown"
 msgstr ""
 
-#: ada-lang.c:7615
+#: ada-lang.c:7622
 msgid ""
 "Attempt to index or call something other than an                       array "
 "or function"
 msgstr ""
 
-#: ada-lang.c:7644
+#: ada-lang.c:7651
 msgid "cannot slice a packed array"
 msgstr ""
 
-#: ada-lang.c:7672 valops.c:3044
+#: ada-lang.c:7679 valops.c:3044
 msgid "cannot take slice of non-array"
 msgstr ""
 
-#: ada-lang.c:7711
+#: ada-lang.c:7718
 msgid "invalid dimension number to 'range"
 msgstr ""
 
-#: ada-lang.c:7763
+#: ada-lang.c:7770
 msgid "Attempt to dereference null array pointer."
 msgstr ""
 
-#: ada-lang.c:7782 eval.c:2140 eval.c:2448 valops.c:1092
+#: ada-lang.c:7789 eval.c:2139 eval.c:2447 valops.c:1092
 msgid "Attempt to take contents of a non-pointer value."
 msgstr ""
 
-#: ada-lang.c:7840 eval.c:2274
+#: ada-lang.c:7847 eval.c:2273
 msgid "Attempt to use a type name as an expression"
 msgstr ""
 
-#: ada-lang.c:7887
+#: ada-lang.c:7894
 #, possible-c-format
 msgid "Invalid operand to '%s"
 msgstr ""
 
-#: ada-lang.c:7903 ada-lang.c:7960
+#: ada-lang.c:7910 ada-lang.c:7967
 #, possible-c-format
 msgid "invalid dimension number to '%s"
 msgstr ""
 
-#: ada-lang.c:7910 ada-lang.c:7965
+#: ada-lang.c:7917 ada-lang.c:7972
 msgid "attempt to take bound of something that is not an array"
 msgstr ""
 
 #. Should never happen.
-#: ada-lang.c:7917 ada-lang.c:7941 ada-lang.c:7972
+#: ada-lang.c:7924 ada-lang.c:7948 ada-lang.c:7979
 msgid "unexpected attribute encountered"
 msgstr ""
 
-#: ada-lang.c:7947
+#: ada-lang.c:7954
 msgid "the 'length attribute applies only to array types"
 msgstr ""
 
-#: ada-lang.c:7951
+#: ada-lang.c:7958
 msgid "unimplemented type attribute"
 msgstr ""
 
-#: ada-lang.c:8014
+#: ada-lang.c:8021
 msgid "'modulus must be applied to modular type"
 msgstr ""
 
-#: ada-lang.c:8081
+#: ada-lang.c:8088
 msgid ""
 "Membership test incompletely implemented;                               "
 "always returns true"
 msgstr ""
 
-#: ada-lang.c:8247
+#: ada-lang.c:8254
 msgid "invalid VAX floating-point type"
 msgstr ""
 
-#: ada-lang.c:8411
+#: ada-lang.c:8418
 msgid "Unknown lower bound, using 1."
 msgstr ""
 
-#: ada-lang.c:8429
+#: ada-lang.c:8436
 #, possible-c-format
 msgid "Unknown upper bound, using %ld."
 msgstr ""
 
 #. XXX: gdb_sprint_host_address, type_sprint
-#: ada-lang.c:8647
+#: ada-lang.c:8654
 msgid "Type @"
 msgstr ""
 
-#: ada-lang.c:8863
+#: ada-lang.c:8870
 #, possible-c-format
 msgid "internal error: no Ada fundamental type %d"
 msgstr ""
@@ -1208,167 +1208,167 @@ msgid ""
 "is displayed."
 msgstr ""
 
-#: auxv.c:204
+#: auxv.c:205
 msgid "End of vector"
 msgstr ""
 
-#: auxv.c:205 auxv.c:226
+#: auxv.c:206 auxv.c:227
 msgid "Entry should be ignored"
 msgstr ""
 
-#: auxv.c:206
+#: auxv.c:207
 msgid "File descriptor of program"
 msgstr ""
 
-#: auxv.c:207
+#: auxv.c:208
 msgid "Program headers for program"
 msgstr ""
 
-#: auxv.c:208
+#: auxv.c:209
 msgid "Size of program header entry"
 msgstr ""
 
-#: auxv.c:209
+#: auxv.c:210
 msgid "Number of program headers"
 msgstr ""
 
-#: auxv.c:210
+#: auxv.c:211
 msgid "System page size"
 msgstr ""
 
-#: auxv.c:211
+#: auxv.c:212
 msgid "Base address of interpreter"
 msgstr ""
 
-#: auxv.c:212
+#: auxv.c:213
 msgid "Flags"
 msgstr ""
 
-#: auxv.c:213
+#: auxv.c:214
 msgid "Entry point of program"
 msgstr ""
 
-#: auxv.c:214
+#: auxv.c:215
 msgid "Program is not ELF"
 msgstr ""
 
-#: auxv.c:215 auxv.c:231
+#: auxv.c:216 auxv.c:232
 msgid "Real user ID"
 msgstr ""
 
-#: auxv.c:216 auxv.c:230
+#: auxv.c:217 auxv.c:231
 msgid "Effective user ID"
 msgstr ""
 
-#: auxv.c:217 auxv.c:233
+#: auxv.c:218 auxv.c:234
 msgid "Real group ID"
 msgstr ""
 
-#: auxv.c:218 auxv.c:232
+#: auxv.c:219 auxv.c:233
 msgid "Effective group ID"
 msgstr ""
 
-#: auxv.c:219
+#: auxv.c:220
 msgid "Frequency of times()"
 msgstr ""
 
-#: auxv.c:220
+#: auxv.c:221
 msgid "String identifying platform"
 msgstr ""
 
-#: auxv.c:221 auxv.c:239
+#: auxv.c:222 auxv.c:240
 msgid "Machine-dependent CPU capability hints"
 msgstr ""
 
-#: auxv.c:222
+#: auxv.c:223
 msgid "Used FPU control word"
 msgstr ""
 
-#: auxv.c:223
+#: auxv.c:224
 msgid "Data cache block size"
 msgstr ""
 
-#: auxv.c:224
+#: auxv.c:225
 msgid "Instruction cache block size"
 msgstr ""
 
-#: auxv.c:225
+#: auxv.c:226
 msgid "Unified cache block size"
 msgstr ""
 
-#: auxv.c:227
+#: auxv.c:228
 msgid "Special system info/entry points"
 msgstr ""
 
-#: auxv.c:228
+#: auxv.c:229
 msgid "System-supplied DSO's ELF header"
 msgstr ""
 
-#: auxv.c:229
+#: auxv.c:230
 msgid "Boolean, was exec setuid-like?"
 msgstr ""
 
-#: auxv.c:234
+#: auxv.c:235
 msgid "Dynamic linker's ELF header"
 msgstr ""
 
-#: auxv.c:235
+#: auxv.c:236
 msgid "Dynamic linker's section headers"
 msgstr ""
 
-#: auxv.c:236
+#: auxv.c:237
 msgid "String giving name of dynamic linker"
 msgstr ""
 
-#: auxv.c:237
+#: auxv.c:238
 msgid "Large pagesize"
 msgstr ""
 
-#: auxv.c:238
+#: auxv.c:239
 msgid "Platform name string"
 msgstr ""
 
-#: auxv.c:240
+#: auxv.c:241
 msgid "Should flush icache?"
 msgstr ""
 
-#: auxv.c:241
+#: auxv.c:242
 msgid "CPU name string"
 msgstr ""
 
-#: auxv.c:242
+#: auxv.c:243
 msgid "COFF entry point address"
 msgstr ""
 
-#: auxv.c:243
+#: auxv.c:244
 msgid "COFF executable file descriptor"
 msgstr ""
 
-#: auxv.c:245
+#: auxv.c:246
 msgid "Canonicalized file name given to execve"
 msgstr ""
 
-#: auxv.c:246
+#: auxv.c:247
 msgid "String for name of MMU module"
 msgstr ""
 
-#: auxv.c:247
+#: auxv.c:248
 msgid "Dynamic linker's data segment address"
 msgstr ""
 
-#: auxv.c:285
+#: auxv.c:286
 msgid "The program has no auxiliary information now."
 msgstr ""
 
-#: auxv.c:290
+#: auxv.c:291
 msgid "No auxiliary vector found, or failed reading it."
 msgstr ""
 
-#: auxv.c:292
+#: auxv.c:293
 msgid "Auxiliary vector is empty."
 msgstr ""
 
-#: auxv.c:303
+#: auxv.c:304
 msgid ""
 "Display the inferior's auxiliary vector.\n"
 "This is information provided by the operating system at program startup."
@@ -1792,13 +1792,13 @@ msgid "invalid type-matching regexp"
 msgstr ""
 
 #. Free it before throwing the error
-#: break-catch-throw.c:474 breakpoint.c:7075 breakpoint.c:7951
-#: breakpoint.c:8154 breakpoint.c:8188 breakpoint.c:8233 breakpoint.c:8280
-#: breakpoint.c:8748 tracepoint.c:749
+#: break-catch-throw.c:474 breakpoint.c:7079 breakpoint.c:7955
+#: breakpoint.c:8158 breakpoint.c:8192 breakpoint.c:8237 breakpoint.c:8284
+#: breakpoint.c:8752 tracepoint.c:749
 msgid "Junk at end of arguments."
 msgstr ""
 
-#: break-catch-throw.c:479 breakpoint.c:8752
+#: break-catch-throw.c:479 breakpoint.c:8756
 msgid "Unsupported or unknown exception event; cannot catch it"
 msgstr ""
 
@@ -1854,7 +1854,7 @@ msgstr ""
 msgid "Bad breakpoint argument: '%s'"
 msgstr ""
 
-#: breakpoint.c:735 breakpoint.c:821 breakpoint.c:864 breakpoint.c:10131
+#: breakpoint.c:735 breakpoint.c:821 breakpoint.c:864 breakpoint.c:10135
 #, possible-c-format
 msgid "No breakpoint number %d."
 msgstr ""
@@ -1886,7 +1886,7 @@ msgstr ""
 msgid "reading through apparently deleted breakpoint #%d?"
 msgstr ""
 
-#: breakpoint.c:1034 breakpoint.c:4777
+#: breakpoint.c:1034 breakpoint.c:4780
 msgid "unknown breakpoint type"
 msgstr ""
 
@@ -1993,412 +1993,412 @@ msgstr ""
 msgid "Watchpoint %d deleted.\n"
 msgstr ""
 
-#: breakpoint.c:4011
+#: breakpoint.c:4014
 #, possible-c-format
 msgid "bptypes table does not describe type #%d."
 msgstr ""
 
-#: breakpoint.c:4041
+#: breakpoint.c:4044
 msgid "print_one_breakpoint: bp_none encountered\n"
 msgstr ""
 
-#: breakpoint.c:4505
+#: breakpoint.c:4508
 msgid "Note: breakpoint "
 msgstr ""
 
 #. if (others == ???)
-#: breakpoint.c:4507
+#: breakpoint.c:4510
 msgid "Note: breakpoints "
 msgstr ""
 
-#: breakpoint.c:4531
+#: breakpoint.c:4534
 msgid "also set at pc "
 msgstr ""
 
-#: breakpoint.c:4635
+#: breakpoint.c:4638
 msgid "allegedly permanent breakpoint is not actually inserted"
 msgstr ""
 
-#: breakpoint.c:4654 breakpoint.c:9237
+#: breakpoint.c:4657 breakpoint.c:9241
 msgid "another breakpoint was inserted on top of a permanent breakpoint"
-msgstr ""
-
-#: breakpoint.c:4673
-#, possible-c-format
-msgid "Breakpoint %d address previously adjusted from %s to %s."
 msgstr ""
 
 #: breakpoint.c:4676
 #, possible-c-format
+msgid "Breakpoint %d address previously adjusted from %s to %s."
+msgstr ""
+
+#: breakpoint.c:4679
+#, possible-c-format
 msgid "Breakpoint address adjusted from %s to %s."
 msgstr ""
 
-#: breakpoint.c:5229
+#: breakpoint.c:5233
 msgid "Temporarily disabling shared library breakpoints:"
 msgstr ""
 
-#: breakpoint.c:5232
+#: breakpoint.c:5236
 #, possible-c-format
 msgid "breakpoint #%d "
 msgstr ""
 
-#: breakpoint.c:5275
+#: breakpoint.c:5279
 #, possible-c-format
 msgid "Temporarily disabling breakpoints for unloaded shared library \"%s\""
 msgstr ""
 
-#: breakpoint.c:5362
+#: breakpoint.c:5366
 msgid ""
 "Unable to set a breakpoint on dynamic linker callback.\n"
 "Suggest linking with /opt/langtools/lib/end.o (if present).\n"
 "GDB will be unable to track shl_load/shl_unload calls."
 msgstr ""
 
-#: breakpoint.c:5369
+#: breakpoint.c:5373
 msgid ""
 "Unable to set unique breakpoint on dynamic linker callback.\n"
 "GDB will be unable to track shl_load/shl_unload calls."
 msgstr ""
 
-#: breakpoint.c:5753
+#: breakpoint.c:5757
 #, possible-c-format
 msgid "(apparently deleted?) Eventpoint %d: "
 msgstr ""
 
-#: breakpoint.c:5801
+#: breakpoint.c:5805
 #, possible-c-format
 msgid "Breakpoint %d"
 msgstr ""
 
-#: breakpoint.c:5811
+#: breakpoint.c:5815
 #, possible-c-format
 msgid "Breakpoint %d (inlined %s)"
 msgstr ""
 
-#: breakpoint.c:5822
+#: breakpoint.c:5826
 #, possible-c-format
 msgid "Hardware assisted breakpoint %d"
 msgstr ""
 
-#: breakpoint.c:5827
+#: breakpoint.c:5831
 #, possible-c-format
 msgid "Catchpoint %d (%s %s)"
 msgstr ""
 
-#: breakpoint.c:5835
+#: breakpoint.c:5839
 #, possible-c-format
 msgid "Catchpoint %d (%s)"
 msgstr ""
 
-#: breakpoint.c:5840
+#: breakpoint.c:5844
 #, possible-c-format
 msgid "Catchpoint %d (exec)"
 msgstr ""
 
-#: breakpoint.c:5885
+#: breakpoint.c:5889
 #, possible-c-format
 msgid " (%s) pending."
 msgstr ""
 
-#: breakpoint.c:6207 breakpoint.c:10298
+#: breakpoint.c:6211 breakpoint.c:10302
 msgid "No hardware breakpoint support in the target."
 msgstr ""
 
-#: breakpoint.c:6209 breakpoint.c:10300
+#: breakpoint.c:6213 breakpoint.c:10304
 msgid "Hardware breakpoints used exceeds limit."
 msgstr ""
 
-#: breakpoint.c:6453
+#: breakpoint.c:6457
 msgid "No default breakpoint address now."
 msgstr ""
 
-#: breakpoint.c:6477
+#: breakpoint.c:6481
 #, possible-c-format
 msgid "%s"
 msgstr ""
 
-#: breakpoint.c:6480
+#: breakpoint.c:6484
 #, possible-c-format
 msgid "Failed to locate shared library \"%s\" for breakpoint."
 msgstr ""
 
-#: breakpoint.c:6560
+#: breakpoint.c:6564
 msgid "Cannot break without a running program."
 msgstr ""
 
-#: breakpoint.c:6562
+#: breakpoint.c:6566
 #, possible-c-format
 msgid "Cannot break on %s without a running program."
 msgstr ""
 
-#: breakpoint.c:7070
+#: breakpoint.c:7074
 msgid "Junk after thread keyword."
 msgstr ""
 
-#: breakpoint.c:7072 thread.c:771
+#: breakpoint.c:7076 thread.c:771
 #, possible-c-format
 msgid "Unknown thread %d."
 msgstr ""
 
-#: breakpoint.c:7125
+#: breakpoint.c:7129
 msgid ""
 "Multiple breakpoints were set.\n"
 "Use the \"delete\" command to delete unwanted breakpoints."
 msgstr ""
 
-#: breakpoint.c:7215
+#: breakpoint.c:7219
 #, possible-c-format
 msgid "Garbage %s following breakpoint address"
 msgstr ""
 
-#: breakpoint.c:7229
+#: breakpoint.c:7233
 #, possible-c-format
 msgid "Garbage %s follows condition"
 msgstr ""
 
 #. APPLE LOCAL end
-#: breakpoint.c:7337
+#: breakpoint.c:7341
 #, possible-c-format
 msgid "No line %d in file \"%s\"."
 msgstr ""
 
-#: breakpoint.c:7435
+#: breakpoint.c:7439
 msgid ""
 "Specify the type of breakpoint to set.\n"
 "Usage: stop in <function | address>\n"
 "       stop at <line>\n"
 msgstr ""
 
-#: breakpoint.c:7469
+#: breakpoint.c:7473
 msgid "Usage: stop in <function | address>\n"
 msgstr ""
 
-#: breakpoint.c:7503
+#: breakpoint.c:7507
 msgid "Usage: stop at <line>\n"
 msgstr ""
 
-#: breakpoint.c:7627
+#: breakpoint.c:7631
 msgid "Junk at end of command."
 msgstr ""
 
-#: breakpoint.c:7638
+#: breakpoint.c:7642
 msgid "Expression cannot be implemented with read/access watchpoint."
 msgstr ""
 
-#: breakpoint.c:7646
+#: breakpoint.c:7650
 msgid "Target does not support this type of hardware watchpoint."
 msgstr ""
 
-#: breakpoint.c:7649
+#: breakpoint.c:7653
 msgid "Target can only support one kind of HW watchpoint at a time."
 msgstr ""
 
-#: breakpoint.c:7669
+#: breakpoint.c:7673
 msgid ""
 "cannot do that without a running program; try \"break main\"), \"run\" first"
 msgstr ""
 
-#: breakpoint.c:7815
+#: breakpoint.c:7819
 msgid "Invalid value address; maybe it was skipped?"
 msgstr ""
 
-#: breakpoint.c:8167
+#: breakpoint.c:8171
 msgid "unsupported or unknown fork kind; cannot catch it"
 msgstr ""
 
-#: breakpoint.c:8225 breakpoint.c:8272
+#: breakpoint.c:8229 breakpoint.c:8276
 msgid "Null pathname to dll."
 msgstr ""
 
 #. no exception support?
 #. APPLE LOCAL return a value
-#: breakpoint.c:8326
+#: breakpoint.c:8330
 msgid "Internal error -- no exception support"
 msgstr ""
 
 #. error condition
-#: breakpoint.c:8353
+#: breakpoint.c:8357
 msgid "Internal error -- invalid catchpoint kind"
 msgstr ""
 
-#: breakpoint.c:8474
+#: breakpoint.c:8478
 #, possible-c-format
 msgid "Catchpoint %d (throw)"
 msgstr ""
 
-#: breakpoint.c:8476
+#: breakpoint.c:8480
 #, possible-c-format
 msgid "Catchpoint %d (catch)"
 msgstr ""
 
-#: breakpoint.c:8765
+#: breakpoint.c:8769
 msgid "Could not enable exception callback"
 msgstr ""
 
 #. APPLE LOCAL end gnu v3 exceptions
-#: breakpoint.c:8770
+#: breakpoint.c:8774
 msgid "Unsupported with this platform/compiler combination."
 msgstr ""
 
 #. Now, this is not allowed:
-#: breakpoint.c:8806
+#: breakpoint.c:8810
 msgid "Catch requires an event name."
 msgstr ""
 
-#: breakpoint.c:8810
+#: breakpoint.c:8814
 msgid "catch requires an event"
 msgstr ""
 
-#: breakpoint.c:8816
+#: breakpoint.c:8820
 msgid "Catch of signal not yet implemented"
 msgstr ""
 
-#: breakpoint.c:8834
+#: breakpoint.c:8838
 msgid "Catch of thread_start not yet implemented"
 msgstr ""
 
-#: breakpoint.c:8838
+#: breakpoint.c:8842
 msgid "Catch of thread_exit not yet implemented"
 msgstr ""
 
-#: breakpoint.c:8842
+#: breakpoint.c:8846
 msgid "Catch of thread_join not yet implemented"
 msgstr ""
 
-#: breakpoint.c:8846
+#: breakpoint.c:8850
 msgid "Catch of start not yet implemented"
 msgstr ""
 
-#: breakpoint.c:8850
+#: breakpoint.c:8854
 msgid "Catch of exit not yet implemented"
 msgstr ""
 
-#: breakpoint.c:8874
+#: breakpoint.c:8878
 msgid "Catch of stop not yet implemented"
 msgstr ""
 
 #. Now this is not allowed
-#: breakpoint.c:8885
+#: breakpoint.c:8889
 msgid "Unknown event kind specified for catch"
 msgstr ""
 
-#: breakpoint.c:8998
+#: breakpoint.c:9002
 msgid "No source file specified."
 msgstr ""
 
-#: breakpoint.c:9076
+#: breakpoint.c:9080
 #, possible-c-format
 msgid "No breakpoint at %s."
 msgstr ""
 
-#: breakpoint.c:9078
+#: breakpoint.c:9082
 msgid "No breakpoint at this line."
 msgstr ""
 
-#: breakpoint.c:9086
+#: breakpoint.c:9090
 msgid "Deleted breakpoint "
 msgstr ""
 
-#: breakpoint.c:9088
+#: breakpoint.c:9092
 msgid "Deleted breakpoints "
 msgstr ""
 
-#: breakpoint.c:9375
+#: breakpoint.c:9379
 msgid "Delete all breakpoints? "
 msgstr ""
 
-#: breakpoint.c:9416
+#: breakpoint.c:9420
 #, possible-c-format
 msgid "attempted to reset apparently deleted breakpoint #%d?"
 msgstr ""
 
-#: breakpoint.c:9866
+#: breakpoint.c:9870
 #, possible-c-format
 msgid "Deleting unknown breakpoint type %d\n"
 msgstr ""
 
-#: breakpoint.c:10117
+#: breakpoint.c:10121
 #, possible-c-format
 msgid "Will stop next time breakpoint %d is reached."
 msgstr ""
 
-#: breakpoint.c:10120
+#: breakpoint.c:10124
 #, possible-c-format
 msgid "Will ignore next crossing of breakpoint %d."
 msgstr ""
 
-#: breakpoint.c:10123
+#: breakpoint.c:10127
 #, possible-c-format
 msgid "Will ignore next %d crossings of breakpoint %d."
 msgstr ""
 
-#: breakpoint.c:10152
+#: breakpoint.c:10156
 msgid "a breakpoint number"
 msgstr ""
 
-#: breakpoint.c:10156
+#: breakpoint.c:10160
 #, possible-c-format
 msgid "bad breakpoint number: '%s'"
 msgstr ""
 
-#: breakpoint.c:10158
+#: breakpoint.c:10162
 msgid "Second argument (specified ignore-count) is missing."
 msgstr ""
 
-#: breakpoint.c:10180
+#: breakpoint.c:10184
 msgid "one or more breakpoint numbers"
 msgstr ""
 
-#: breakpoint.c:10190
+#: breakpoint.c:10194
 #, possible-c-format
 msgid "bad breakpoint number at or near '%s'"
 msgstr ""
 
-#: breakpoint.c:10205
+#: breakpoint.c:10209
 #, possible-c-format
 msgid "No breakpoint number %d.\n"
 msgstr ""
 
-#: breakpoint.c:10252
+#: breakpoint.c:10256
 #, possible-c-format
 msgid "attempted to disable apparently deleted breakpoint #%d?"
 msgstr ""
 
-#: breakpoint.c:10347
+#: breakpoint.c:10351
 #, possible-c-format
 msgid ""
 "Cannot enable watchpoint %d because the block in which its expression\n"
 "is valid is not currently in scope.\n"
 msgstr ""
 
-#: breakpoint.c:10378
+#: breakpoint.c:10382
 #, possible-c-format
 msgid ""
 "Cannot enable watchpoint %d because target watch resources\n"
 "have been allocated for other watchpoints.\n"
 msgstr ""
 
-#: breakpoint.c:10422
+#: breakpoint.c:10426
 #, possible-c-format
 msgid "attempted to enable apparently deleted breakpoint #%d?"
 msgstr ""
 
-#: breakpoint.c:10764 symtab.c:5910
+#: breakpoint.c:10768 symtab.c:5910
 msgid "Empty line specification."
 msgstr ""
 
-#: breakpoint.c:10778 symtab.c:5923
+#: breakpoint.c:10782 symtab.c:5923
 #, possible-c-format
 msgid "Junk at end of line specification: %s"
 msgstr ""
 
-#: breakpoint.c:10942
+#: breakpoint.c:10946
 msgid ""
 "Set ignore-count of breakpoint number N to COUNT.\n"
 "Usage is `ignore N COUNT'."
 msgstr ""
 
-#: breakpoint.c:10948
+#: breakpoint.c:10952
 msgid ""
 "Set commands to be executed when a breakpoint is hit.\n"
 "Give breakpoint number as argument after \"commands\".\n"
@@ -2409,14 +2409,14 @@ msgid ""
 "then no output is printed when it is hit, except what the commands print."
 msgstr ""
 
-#: breakpoint.c:10957
+#: breakpoint.c:10961
 msgid ""
 "Specify breakpoint number N to break only if COND is true.\n"
 "Usage is `condition N COND', where N is an integer and COND is an\n"
 "expression to be evaluated whenever breakpoint N is reached."
 msgstr ""
 
-#: breakpoint.c:10962
+#: breakpoint.c:10966
 msgid ""
 "Set a temporary breakpoint.  Args like \"break\" command.\n"
 "Like \"break\" except the breakpoint is only temporary,\n"
@@ -2424,21 +2424,21 @@ msgid ""
 "by using \"enable delete\" on the breakpoint number."
 msgstr ""
 
-#: breakpoint.c:10969
+#: breakpoint.c:10973
 msgid ""
 "Set a hardware assisted  breakpoint. Args like \"break\" command.\n"
 "Like \"break\" except the breakpoint requires hardware support,\n"
 "some target hardware may not have this support."
 msgstr ""
 
-#: breakpoint.c:10975
+#: breakpoint.c:10979
 msgid ""
 "Set a temporary hardware assisted breakpoint. Args like \"break\" command.\n"
 "Like \"hbreak\" except the breakpoint is only temporary,\n"
 "so it will be deleted when hit."
 msgstr ""
 
-#: breakpoint.c:10981 breakpoint.c:10989
+#: breakpoint.c:10985 breakpoint.c:10993
 msgid ""
 "Enable some breakpoints.\n"
 "Give breakpoint numbers (separated by spaces) as arguments.\n"
@@ -2447,7 +2447,7 @@ msgid ""
 "With a subcommand you can enable temporarily."
 msgstr ""
 
-#: breakpoint.c:10998
+#: breakpoint.c:11002
 msgid ""
 "Enable some breakpoints.\n"
 "Give breakpoint numbers (separated by spaces) as arguments.\n"
@@ -2455,19 +2455,19 @@ msgid ""
 "May be abbreviated to simply \"enable\".\n"
 msgstr ""
 
-#: breakpoint.c:11005 breakpoint.c:11020
+#: breakpoint.c:11009 breakpoint.c:11024
 msgid ""
 "Enable breakpoints for one hit.  Give breakpoint numbers.\n"
 "If a breakpoint is hit while enabled in this fashion, it becomes disabled."
 msgstr ""
 
-#: breakpoint.c:11010 breakpoint.c:11015
+#: breakpoint.c:11014 breakpoint.c:11019
 msgid ""
 "Enable breakpoints and delete when hit.  Give breakpoint numbers.\n"
 "If a breakpoint is hit while enabled in this fashion, it is deleted."
 msgstr ""
 
-#: breakpoint.c:11025 breakpoint.c:11034
+#: breakpoint.c:11029 breakpoint.c:11038
 msgid ""
 "Disable some breakpoints.\n"
 "Arguments are breakpoint numbers with spaces in between.\n"
@@ -2475,7 +2475,7 @@ msgid ""
 "A disabled breakpoint is not forgotten, but has no effect until reenabled."
 msgstr ""
 
-#: breakpoint.c:11040
+#: breakpoint.c:11044
 msgid ""
 "Disable some breakpoints.\n"
 "Arguments are breakpoint numbers with spaces in between.\n"
@@ -2484,7 +2484,7 @@ msgid ""
 "This command may be abbreviated \"disable\"."
 msgstr ""
 
-#: breakpoint.c:11048
+#: breakpoint.c:11052
 msgid ""
 "Delete some breakpoints or auto-display expressions.\n"
 "Arguments are breakpoint numbers with spaces in between.\n"
@@ -2494,14 +2494,14 @@ msgid ""
 "The \"unset\" command is also an alias for \"delete\"."
 msgstr ""
 
-#: breakpoint.c:11058
+#: breakpoint.c:11062
 msgid ""
 "Delete some breakpoints.\n"
 "Arguments are breakpoint numbers with spaces in between.\n"
 "To delete all breakpoints, give no argument.\n"
 msgstr ""
 
-#: breakpoint.c:11063
+#: breakpoint.c:11067
 msgid ""
 "Delete some breakpoints or auto-display expressions.\n"
 "Arguments are breakpoint numbers with spaces in between.\n"
@@ -2509,7 +2509,7 @@ msgid ""
 "This command may be abbreviated \"delete\"."
 msgstr ""
 
-#: breakpoint.c:11070
+#: breakpoint.c:11074
 msgid ""
 "Clear breakpoint at specified line or function.\n"
 "Argument may be line number, function name, or \"*\" and an address.\n"
@@ -2525,7 +2525,7 @@ msgid ""
 msgstr ""
 
 #. APPLE LOCAL add to breakpoint help
-#: breakpoint.c:11083
+#: breakpoint.c:11087
 msgid ""
 "Set breakpoint at specified line or function.\n"
 "Argument may be line number, function name, or \"*\" and an address.\n"
@@ -2549,19 +2549,19 @@ msgid ""
 "Do \"help breakpoints\" for info on other commands dealing with breakpoints."
 msgstr ""
 
-#: breakpoint.c:11124
+#: breakpoint.c:11128
 msgid "Break in function/address or break at a line in the current file."
 msgstr ""
 
-#: breakpoint.c:11128
+#: breakpoint.c:11132
 msgid "Break in function or address."
 msgstr ""
 
-#: breakpoint.c:11130
+#: breakpoint.c:11134
 msgid "Break at a line in the current file."
 msgstr ""
 
-#: breakpoint.c:11131 breakpoint.c:11147 breakpoint.c:11163
+#: breakpoint.c:11135 breakpoint.c:11151 breakpoint.c:11167
 msgid ""
 "Status of user-settable breakpoints, or breakpoint number NUMBER.\n"
 "The \"Type\" column indicates one of:\n"
@@ -2582,7 +2582,7 @@ msgid ""
 "breakpoint set."
 msgstr ""
 
-#: breakpoint.c:11178
+#: breakpoint.c:11182
 msgid ""
 "Status of all breakpoints, or breakpoint number NUMBER.\n"
 "The \"Type\" column indicates one of:\n"
@@ -2607,7 +2607,7 @@ msgid ""
 "breakpoint set."
 msgstr ""
 
-#: breakpoint.c:11199
+#: breakpoint.c:11203
 msgid ""
 "Set catchpoints to catch events.\n"
 "Raised signals may be caught:\n"
@@ -2646,7 +2646,7 @@ msgid ""
 "Do \"help breakpoints\" for info on other commands dealing with breakpoints."
 msgstr ""
 
-#: breakpoint.c:11234
+#: breakpoint.c:11238
 msgid ""
 "Set temporary catchpoints to catch events.\n"
 "Args like \"catch\" command.\n"
@@ -2655,7 +2655,7 @@ msgid ""
 "by using \"enable delete\" on the catchpoint number."
 msgstr ""
 
-#: breakpoint.c:11262
+#: breakpoint.c:11266
 msgid ""
 "Set a watchpoint for an expression.\n"
 "A watchpoint stops execution of your program whenever the value of\n"
@@ -2665,7 +2665,7 @@ msgid ""
 "is watched."
 msgstr ""
 
-#: breakpoint.c:11271
+#: breakpoint.c:11275
 msgid ""
 "Set a read watchpoint for an expression.\n"
 "A watchpoint stops execution of your program whenever the value of\n"
@@ -2675,7 +2675,7 @@ msgid ""
 "is watched."
 msgstr ""
 
-#: breakpoint.c:11280
+#: breakpoint.c:11284
 msgid ""
 "Set a watchpoint for an expression.\n"
 "A watchpoint stops execution of your program whenever the value of\n"
@@ -2685,19 +2685,19 @@ msgid ""
 "is watched."
 msgstr ""
 
-#: breakpoint.c:11290
+#: breakpoint.c:11294
 msgid "Synonym for ``info breakpoints''."
 msgstr ""
 
-#: breakpoint.c:11295
+#: breakpoint.c:11299
 msgid "Set debugger's willingness to use watchpoint hardware."
 msgstr ""
 
-#: breakpoint.c:11296
+#: breakpoint.c:11300
 msgid "Show debugger's willingness to use watchpoint hardware."
 msgstr ""
 
-#: breakpoint.c:11297
+#: breakpoint.c:11301
 msgid ""
 "If zero, gdb will not use hardware for new watchpoints, even if\n"
 "such is available.  (However, any hardware watchpoints that were\n"
@@ -2705,7 +2705,7 @@ msgid ""
 "hardware.)"
 msgstr ""
 
-#: breakpoint.c:11310 breakpoint.c:11312
+#: breakpoint.c:11314 breakpoint.c:11316
 msgid ""
 "Set if GDB should show breakpoint hit counts.\n"
 "This will affect the output of 'info debug'"
@@ -2713,22 +2713,22 @@ msgstr ""
 
 #. APPLE LOCAL end save-breakpoints command
 #. allow-unknown
-#: breakpoint.c:11329 breakpoint.c:11335
+#: breakpoint.c:11333 breakpoint.c:11339
 msgid ""
 "Breakpoint specific settings\n"
 "Configure various breakpoint-specific variables such as\n"
 "pending breakpoint behavior"
 msgstr ""
 
-#: breakpoint.c:11343
+#: breakpoint.c:11347
 msgid "Set debugger's behavior regarding pending breakpoints."
 msgstr ""
 
-#: breakpoint.c:11344
+#: breakpoint.c:11348
 msgid "Show debugger's behavior regarding pending breakpoints."
 msgstr ""
 
-#: breakpoint.c:11345
+#: breakpoint.c:11349
 msgid ""
 "If on, an unrecognized breakpoint location will cause gdb to create a\n"
 "pending breakpoint.  If off, an unrecognized breakpoint location results in\n"
@@ -2868,7 +2868,7 @@ msgstr ""
 #: buildsym.c:822 buildsym.c:835 common/print-utils.c:86
 #: common/print-utils.c:129 common/print-utils.c:297 dbxread.c:5537 exec.c:519
 #: exec.c:607 inflow.c:724 inflow.c:731 language.c:586 language.c:1016
-#: mdebugread.c:3599 monitor.c:380 monitor.c:408 monitor.c:1342 printcmd.c:272
+#: mdebugread.c:3600 monitor.c:380 monitor.c:408 monitor.c:1342 printcmd.c:272
 #: printcmd.c:521 psymtab.c:698 psymtab.c:716 remote-e7000.c:899
 #: remote-e7000.c:2173 remote-mips.c:2569 remote-rdp.c:498 remote-rdp.c:504
 #: remote-sds.c:739 symtab.c:2555 symtab.c:2571 target/target.c:702
@@ -3164,7 +3164,7 @@ msgid "\"info\" must be followed by the name of an info command.\n"
 msgstr ""
 
 #. APPLE LOCAL end do NOT query if we are an MI command
-#: cli/cli-cmds.c:319 cli/cli-script.c:1290 infcmd.c:1932 infcmd.c:1945
+#: cli/cli-cmds.c:319 cli/cli-script.c:1290 infcmd.c:1932 infcmd.c:1946
 #: inflow.c:620 symfile.c:1537 symfile.c:1959 symfile.c:2906
 msgid "Not confirmed."
 msgstr ""
@@ -3242,7 +3242,7 @@ msgstr ""
 msgid "No default source file yet.  Do \"help list\"."
 msgstr ""
 
-#: cli/cli-cmds.c:954 python/py-symbol.c:379 stack.c:1840
+#: cli/cli-cmds.c:954 python/py-symbol.c:379 stack.c:1842
 msgid "No frame selected."
 msgstr ""
 
@@ -3613,22 +3613,22 @@ msgstr ""
 msgid "Show the max call depth for user-defined commands."
 msgstr ""
 
-#: cli/cli-decode.c:1119
+#: cli/cli-decode.c:1120
 #, possible-c-format
 msgid "Undefined %scommand: \"%s\".  Try \"help%s%.*s\"."
 msgstr ""
 
-#: cli/cli-decode.c:1154
+#: cli/cli-decode.c:1155
 #, possible-c-format
 msgid "Lack of needed %scommand"
 msgstr ""
 
-#: cli/cli-decode.c:1217
+#: cli/cli-decode.c:1218
 #, possible-c-format
 msgid "Ambiguous %scommand \"%s\": %s."
 msgstr ""
 
-#: cli/cli-decode.c:1592
+#: cli/cli-decode.c:1593
 msgid "Invalid command"
 msgstr ""
 
@@ -4080,9 +4080,9 @@ msgstr ""
 #: cli/cli-script.c:1330 common/common-exceptions.c:148
 #: common/common-exceptions.c:165 common/common-exceptions.c:192
 #: complaints.c:299 exceptions.c:155 exceptions.c:172 exceptions.c:203
-#: exceptions.c:265 infcall.c:711 infcmd.c:2195 infrun.c:1584 language.c:912
-#: language.c:938 mi/mi-out.c:401 mi/mi-out.c:422 reggroups.c:217
-#: remote.c:4293 remote.c:4363 target/hppa-tdep.c:2825 target/hppa-tdep.c:2838
+#: exceptions.c:265 infcall.c:711 infcmd.c:2197 infrun.c:1584 language.c:912
+#: language.c:938 mi/mi-out.c:401 mi/mi-out.c:422 reggroups.c:217 remote.c:4303
+#: remote.c:4373 target/hppa-tdep.c:2825 target/hppa-tdep.c:2838
 #: target/mips-tdep.c:273 target/mips-tdep.c:334 target/mips-tdep.c:698
 #: target/mips-tdep.c:1195 target/mips-tdep.c:3411 target/mips-tdep.c:4299
 #: target/mn10300-tdep.c:89 utils.c:951 utils.c:970
@@ -4502,7 +4502,7 @@ msgstr ""
 msgid "hex_string_custom: insufficient space to store result"
 msgstr ""
 
-#: common/rsp-low.c:42 remote.c:2923
+#: common/rsp-low.c:42 remote.c:2933
 #, possible-c-format
 msgid "Reply contains invalid hex digit %d"
 msgstr ""
@@ -5072,12 +5072,12 @@ msgstr ""
 
 #. APPLE LOCAL: Make this a complaint so developers aren't flooded
 #. with this not-helpful information.
-#: cp-support.c:821
+#: cp-support.c:820
 #, possible-c-format
 msgid "RTTI symbol not found for class '%s'"
 msgstr ""
 
-#: cp-support.c:828
+#: cp-support.c:827
 #, possible-c-format
 msgid "RTTI symbol for class '%s' is not a type"
 msgstr ""
@@ -5086,25 +5086,25 @@ msgstr ""
 #. symbols for namespaces with the same name as the struct.
 #. This warning is an indication of a bug in the lookup order
 #. or a bug in the way that the symbol tables are populated.
-#: cp-support.c:843
+#: cp-support.c:842
 #, possible-c-format
 msgid "RTTI symbol for class '%s' is a namespace"
 msgstr ""
 
-#: cp-support.c:846
+#: cp-support.c:845
 #, possible-c-format
 msgid "RTTI symbol for class '%s' has bad type"
 msgstr ""
 
-#: cp-support.c:857
+#: cp-support.c:856
 msgid "\"maintenance cplus\" must be followed by the name of a command.\n"
 msgstr ""
 
-#: cp-support.c:884
+#: cp-support.c:883
 msgid "C++ maintenance commands."
 msgstr ""
 
-#: cp-support.c:889
+#: cp-support.c:888
 msgid "Print the first class/namespace component of NAME."
 msgstr ""
 
@@ -5136,31 +5136,31 @@ msgstr ""
 msgid "FIXME: unimplemented"
 msgstr ""
 
-#: cp-valprint.c:582
+#: cp-valprint.c:584
 msgid "Virtual base class offset not found from vtable while printing"
 msgstr ""
 
-#: cp-valprint.c:846
+#: cp-valprint.c:848
 msgid "Set printing of C++ static members."
 msgstr ""
 
-#: cp-valprint.c:847
+#: cp-valprint.c:849
 msgid "Show printing of C++ static members."
 msgstr ""
 
-#: cp-valprint.c:855
+#: cp-valprint.c:857
 msgid "Set printing of C++ virtual function tables."
 msgstr ""
 
-#: cp-valprint.c:856
+#: cp-valprint.c:858
 msgid "Show printing of C++ virtual function tables."
 msgstr ""
 
-#: cp-valprint.c:862
+#: cp-valprint.c:864
 msgid "Set printing of object's derived type based on vtable info."
 msgstr ""
 
-#: cp-valprint.c:863
+#: cp-valprint.c:865
 msgid "Show printing of object's derived type based on vtable info."
 msgstr ""
 
@@ -5243,7 +5243,7 @@ msgstr ""
 
 #. If we haven't found it yet, ignore it.  It's probably some
 #. new type we don't know about yet.
-#: dbxread.c:209 mdebugread.c:3326
+#: dbxread.c:209 mdebugread.c:3327
 #, possible-c-format
 msgid "unknown symbol type %s"
 msgstr ""
@@ -5327,7 +5327,7 @@ msgstr ""
 #. nice if not, since we certainly don't want to spend the
 #. time searching to the end of every string looking for
 #. a backslash.
-#: dbxread.c:2936 mdebugread.c:3265 xcoffread.c:2856
+#: dbxread.c:2936 mdebugread.c:3266 xcoffread.c:2856
 #, possible-c-format
 msgid "unknown symbol descriptor `%c'"
 msgstr ""
@@ -5345,7 +5345,7 @@ msgstr ""
 msgid "Possible issue with objfile"
 msgstr ""
 
-#: dbxread.c:4483
+#: dbxread.c:4484
 msgid "First symbol in segment of executable not a source symbol"
 msgstr ""
 
@@ -5425,29 +5425,29 @@ msgstr ""
 msgid "Cache use for remote targets is %s.\n"
 msgstr ""
 
-#: dcache.c:633
+#: dcache.c:634
 #, possible-c-format
 msgid "Dcache line width %d, depth %d\n"
 msgstr ""
 
-#: dcache.c:638
+#: dcache.c:639
 msgid "Cache state:\n"
 msgstr ""
 
-#: dcache.c:643
+#: dcache.c:644
 #, possible-c-format
 msgid "Line at %s, referenced %d times\n"
 msgstr ""
 
-#: dcache.c:681
+#: dcache.c:682
 msgid "Set cache use for remote targets."
 msgstr ""
 
-#: dcache.c:682
+#: dcache.c:683
 msgid "Show cache use for remote targets."
 msgstr ""
 
-#: dcache.c:683
+#: dcache.c:684
 msgid ""
 "When on, use data caching for remote targets.  For many remote targets\n"
 "this option can offer better throughput for reading target memory.\n"
@@ -5456,7 +5456,7 @@ msgid ""
 "volatile registers are in use.  By default, this option is off."
 msgstr ""
 
-#: dcache.c:694
+#: dcache.c:695
 msgid "Print information on the dcache performance."
 msgstr ""
 
@@ -5635,46 +5635,46 @@ msgstr ""
 msgid "bad CFI data; mismatched DW_CFA_restore_state at 0x%s"
 msgstr ""
 
-#: dwarf2-frame.c:607
+#: dwarf2-frame.c:610
 msgid "Unknown CFI encountered."
 msgstr ""
 
-#: dwarf2-frame.c:913
+#: dwarf2-frame.c:916
 msgid "Unknown CFA rule."
 msgstr ""
 
-#: dwarf2-frame.c:961
+#: dwarf2-frame.c:964
 #, possible-c-format
 msgid "incomplete CFI data; unspecified registers (e.g., %s) at 0x%s"
 msgstr ""
 
-#: dwarf2-frame.c:1217
+#: dwarf2-frame.c:1221
 msgid "Unknown register rule."
 msgstr ""
 
-#: dwarf2-frame.c:1453
+#: dwarf2-frame.c:1457
 msgid "Unsupported address size"
 msgstr ""
 
-#: dwarf2-frame.c:1474 dwarf2-frame.c:1527 dwarf2-frame.c:1572
+#: dwarf2-frame.c:1478 dwarf2-frame.c:1531 dwarf2-frame.c:1576
 msgid "Invalid or unsupported encoding"
 msgstr ""
 
-#: dwarf2-frame.c:1490
+#: dwarf2-frame.c:1494
 msgid "Unsupported encoding: DW_EH_PE_indirect"
 msgstr ""
 
-#: dwarf2-frame.c:1993
+#: dwarf2-frame.c:1997
 #, possible-c-format
 msgid "Corrupt data in %s:%s; align 4 workaround apparently succeeded"
 msgstr ""
 
-#: dwarf2-frame.c:2000
+#: dwarf2-frame.c:2004
 #, possible-c-format
 msgid "Corrupt data in %s:%s; align 8 workaround apparently succeeded"
 msgstr ""
 
-#: dwarf2-frame.c:2007
+#: dwarf2-frame.c:2011
 #, possible-c-format
 msgid "Corrupt data in %s:%s"
 msgstr ""
@@ -5845,161 +5845,161 @@ msgstr ""
 msgid "invalid attribute class or form for '%s' in '%s'"
 msgstr ""
 
-#: dwarf2read.c:1992
+#: dwarf2read.c:2004
 #, possible-c-format
 msgid ""
 "Dwarf Error: wrong version in compilation unit header (is %d, should be %d) "
 "[in module %s]"
 msgstr ""
 
-#: dwarf2read.c:1997
+#: dwarf2read.c:2009
 #, possible-c-format
 msgid ""
 "Dwarf Error: bad offset (0x%lx) in compilation unit header (offset 0x%lx + "
 "6) [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:2005
+#: dwarf2read.c:2017
 #, possible-c-format
 msgid ""
 "Dwarf Error: bad length (0x%lx) in compilation unit header (offset 0x%lx + "
 "0) [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:2790
+#: dwarf2read.c:2803
 #, possible-c-format
 msgid "unhandled containing DIE tag %d for DIE at %d"
 msgstr ""
 
-#: dwarf2read.c:3103 dwarf2read.c:7965
+#: dwarf2read.c:3116 dwarf2read.c:7979
 msgid "malformed enumerator DIE ignored"
 msgstr ""
 
-#: dwarf2read.c:3142
+#: dwarf2read.c:3155
 #, possible-c-format
 msgid "Dwarf Error: Could not find abbrev number %d [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:3193 dwarf2read.c:8255
+#: dwarf2read.c:3206 dwarf2read.c:8269
 msgid "ignoring absolute DW_AT_sibling"
 msgstr ""
 
-#: dwarf2read.c:3261 dwarf2read.c:8618 dwarf2read.c:14724
+#: dwarf2read.c:3274 dwarf2read.c:8633 dwarf2read.c:14739
 #, possible-c-format
 msgid "Dwarf Error: Cannot handle %s in DWARF reader [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:3301
+#: dwarf2read.c:3314
 #, possible-c-format
 msgid "bug: psymtab for %s is already read in."
 msgstr ""
 
-#: dwarf2read.c:3308 dwarf2read.c:4171 dwarf2read.c:4317 dwarfread.c:2426
+#: dwarf2read.c:3321 dwarf2read.c:4184 dwarf2read.c:4330 dwarfread.c:2423
 #: mdebugread.c:314
 #, possible-c-format
 msgid "Reading in symbols for %s..."
 msgstr ""
 
-#: dwarf2read.c:3322 dwarf2read.c:4380 dwarfread.c:2445 mdebugread.c:327
+#: dwarf2read.c:3335 dwarf2read.c:4394 dwarfread.c:2442 mdebugread.c:327
 #: psymtab.c:102 symfile.c:1706
 msgid "done.\n"
 msgstr ""
 
-#: dwarf2read.c:5602
+#: dwarf2read.c:5616
 #, possible-c-format
 msgid "Offset %d out of bounds for DW_AT_ranges attribute"
 msgstr ""
 
-#: dwarf2read.c:5665
+#: dwarf2read.c:5679
 msgid "Invalid .debug_ranges data (no base address)"
 msgstr ""
 
-#: dwarf2read.c:6023
+#: dwarf2read.c:6037
 #, possible-c-format
 msgid "unsupported accessibility %d"
 msgstr ""
 
-#: dwarf2read.c:6133
+#: dwarf2read.c:6147
 #, possible-c-format
 msgid "member function type missing for '%s'"
 msgstr ""
 
-#: dwarf2read.c:6400
+#: dwarf2read.c:6414
 #, possible-c-format
 msgid "virtual function table pointer not found when defining class '%s'"
 msgstr ""
 
-#: dwarf2read.c:7113
+#: dwarf2read.c:7127
 #, possible-c-format
 msgid "invalid pointer size %d"
 msgstr ""
 
-#: dwarf2read.c:7463
+#: dwarf2read.c:7477
 #, possible-c-format
 msgid "unsupported DW_AT_encoding: '%s'"
 msgstr ""
 
-#: dwarf2read.c:7509
+#: dwarf2read.c:7523
 msgid "DW_AT_type missing from DW_TAG_subrange_type"
 msgstr ""
 
-#: dwarf2read.c:7673
+#: dwarf2read.c:7687
 #, possible-c-format
 msgid "Dwarf Error: Failed to read DWARF data from '%s'"
 msgstr ""
 
-#: dwarf2read.c:8429
+#: dwarf2read.c:8443
 #, possible-c-format
 msgid "Dwarf Error: could not find abbrev number %d [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:8701
+#: dwarf2read.c:8716
 #, possible-c-format
 msgid "read_address: bad switch, signed [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:8714
+#: dwarf2read.c:8729
 #, possible-c-format
 msgid "read_address: bad switch, unsigned [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:8797
+#: dwarf2read.c:8812
 msgid "intermixed 32-bit and 64-bit DWARF sections"
 msgstr ""
 
-#: dwarf2read.c:8827
+#: dwarf2read.c:8842
 #, possible-c-format
 msgid "read_offset: bad switch [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:8870
+#: dwarf2read.c:8885
 #, possible-c-format
 msgid "DW_FORM_strp used without .debug_str section [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:8876
+#: dwarf2read.c:8891
 #, possible-c-format
 msgid "DW_FORM_strp pointing outside of .debug_str section [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:9195
+#: dwarf2read.c:9210
 msgid "missing .debug_line section"
 msgstr ""
 
-#: dwarf2read.c:9281
+#: dwarf2read.c:9297
 msgid "line number info header doesn't fit in `.debug_line' section"
 msgstr ""
 
-#: dwarf2read.c:9327
+#: dwarf2read.c:9343
 #, possible-c-format
 msgid "misplaced first line number at 0x%lx for '%s'"
 msgstr ""
 
-#: dwarf2read.c:10005
+#: dwarf2read.c:10023
 msgid "Missing end sequence in DWARF2 line table."
 msgstr ""
 
-#: dwarf2read.c:10080
+#: dwarf2read.c:10098
 msgid "mangled .debug_line section"
 msgstr ""
 
@@ -6007,129 +6007,129 @@ msgstr ""
 #. trash data, but since we must specifically ignore things
 #. we don't recognize, there is nothing else we should do at
 #. this point.
-#: dwarf2read.c:10674
+#: dwarf2read.c:10692
 #, possible-c-format
 msgid "unsupported tag: '%s'"
 msgstr ""
 
-#: dwarf2read.c:10779
+#: dwarf2read.c:10797
 #, possible-c-format
 msgid "unsupported DWARF2 const value attribute form: '%s'"
 msgstr ""
 
-#: dwarf2read.c:10840
+#: dwarf2read.c:10858
 #, possible-c-format
 msgid ""
 "Dwarf Error: Problem turning type die at offset into gdb type [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:10866
+#: dwarf2read.c:10884
 #, possible-c-format
 msgid ""
 "Dwarf Error: Problem turning containing type into gdb type [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:10885
+#: dwarf2read.c:10903
 #, possible-c-format
 msgid "Dwarf Error: Cannot find type of die [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:10958
+#: dwarf2read.c:10976
 #, possible-c-format
 msgid "unexepected tag in read_type_die: '%s'"
 msgstr ""
 
-#: dwarf2read.c:11756
+#: dwarf2read.c:11774
 #, possible-c-format
 msgid "unsupported die ref attribute form: '%s'"
 msgstr ""
 
-#: dwarf2read.c:11779
+#: dwarf2read.c:11794
 #, possible-c-format
 msgid "Attribute value is not a constant (%s)"
 msgstr ""
 
-#: dwarf2read.c:11820
+#: dwarf2read.c:11835
 #, possible-c-format
 msgid ""
 "Dwarf Error: Cannot find DIE at 0x%lx referenced from DIE at 0x%lx [in "
 "module %s]"
 msgstr ""
 
-#: dwarf2read.c:11833
+#: dwarf2read.c:11848
 #, possible-c-format
 msgid ""
 "Dwarf Error: internal error - invalid fundamental type id %d [in module %s]"
 msgstr ""
 
-#: dwarf2read.c:12109
+#: dwarf2read.c:12124
 #, possible-c-format
 msgid "unsupported stack op: '%s'"
 msgstr ""
 
-#: dwarf2read.c:12116 dwarfread.c:2229
+#: dwarf2read.c:12131 dwarfread.c:2226
 #, possible-c-format
 msgid "location description stack too deep: %d"
 msgstr ""
 
-#: dwarf2read.c:12241
+#: dwarf2read.c:12256
 #, possible-c-format
 msgid ""
 "macro definition contains spaces in formal argument list:\n"
 "`%s'"
 msgstr ""
 
-#: dwarf2read.c:12408
+#: dwarf2read.c:12423
 #, possible-c-format
 msgid "missing .debug_macinfo section (a.k.a. \"%s\")"
 msgstr ""
 
-#: dwarf2read.c:12455
+#: dwarf2read.c:12470
 #, possible-c-format
 msgid "debug info gives macro %s outside of any file: %s"
 msgstr ""
 
-#: dwarf2read.c:12491
+#: dwarf2read.c:12506
 msgid "macro debug info has an unmatched `close_file' directive"
 msgstr ""
 
-#: dwarf2read.c:12517
+#: dwarf2read.c:12532
 msgid "no terminating 0-type entry for macros in `.debug_macinfo' section"
 msgstr ""
 
-#: dwarf2read.c:12540
+#: dwarf2read.c:12555
 msgid "unreadable (null) vendor extension string"
 msgstr ""
 
-#: dwarf2read.c:12596
+#: dwarf2read.c:12611
 msgid "Location list used without specifying the CU base address."
 msgstr ""
 
-#: dwarf2read.c:12668
+#: dwarf2read.c:12683
 #, possible-c-format
 msgid ""
 "Dwarf Error: could not find partial DIE containing offset 0x%lx [in module "
 "%s]"
 msgstr ""
 
-#: dwarf2read.c:12680
+#: dwarf2read.c:12695
 #, possible-c-format
 msgid "invalid dwarf2 offset %ld"
 msgstr ""
 
-#: dwarf2read.c:12695
+#: dwarf2read.c:12710
 #, possible-c-format
 msgid "no compilation unit with offset %ld."
 msgstr ""
 
-#: dwarf2read.c:13059
+#: dwarf2read.c:13074
 msgid ""
 "Set DWARF 2 specific variables.\n"
 "Configure DWARF 2 variables such as the cache size"
 msgstr ""
 
 #. allow-unknown
-#: dwarf2read.c:13065
+#: dwarf2read.c:13080
 msgid ""
 "Show DWARF 2 specific variables\n"
 "Show DWARF 2 variables such as the cache size"
@@ -6137,82 +6137,82 @@ msgstr ""
 
 #. allow-unknown
 #. APPLE LOCAL
-#: dwarf2read.c:13072
+#: dwarf2read.c:13087
 msgid "Set DWARF debug map debugging."
 msgstr ""
 
-#: dwarf2read.c:13073
+#: dwarf2read.c:13088
 msgid "Show DWARF debug map debugging."
 msgstr ""
 
-#: dwarf2read.c:13074
+#: dwarf2read.c:13089
 msgid "When non-zero, debug map specific debugging is enabled."
 msgstr ""
 
-#: dwarf2read.c:13080
+#: dwarf2read.c:13095
 msgid "Set the upper bound on the age of cached dwarf2 compilation units."
 msgstr ""
 
-#: dwarf2read.c:13081
+#: dwarf2read.c:13096
 msgid "Show the upper bound on the age of cached dwarf2 compilation units."
 msgstr ""
 
-#: dwarf2read.c:13082
+#: dwarf2read.c:13097
 msgid ""
 "A higher limit means that cached compilation units will be stored\n"
 "in memory longer, and more total memory will be used.  Zero disables\n"
 "caching, which can slow down startup."
 msgstr ""
 
-#: dwarf2read.c:13093
+#: dwarf2read.c:13108
 msgid ""
 "Set the ability to maneuver through inlined function calls as if they were "
 "normal calls."
 msgstr ""
 
-#: dwarf2read.c:13094
+#: dwarf2read.c:13109
 msgid ""
 "Show the ability to maneuver through inlined function calls as if they were "
 "normal calls."
 msgstr ""
 
-#: dwarf2read.c:13099
+#: dwarf2read.c:13114
 msgid ""
 "Set the extra information for debugging gdb's maneuvering through inlined "
 "function calls."
 msgstr ""
 
-#: dwarf2read.c:13100
+#: dwarf2read.c:13115
 msgid ""
 "Show the extra information for debugging gdb's maneuvering through inlined "
 "function calls."
 msgstr ""
 
-#: dwarf2read.c:13107
+#: dwarf2read.c:13122
 msgid "Set gdb informing you when you are debugging optimized code."
 msgstr ""
 
-#: dwarf2read.c:13108
+#: dwarf2read.c:13123
 msgid "Show gdb informing you when you are debugging optimized code."
 msgstr ""
 
-#: dwarf2read.c:13978
+#: dwarf2read.c:13993
 msgid "Cannot find open repository.\n"
 msgstr ""
 
-#: dwarf2read.c:14040
+#: dwarf2read.c:14055
 msgid "Multiple repositories found for a single cu\n"
 msgstr ""
 
-#: dwarf2read.c:14097
+#: dwarf2read.c:14112
 msgid "Too many databases open at once.\n"
 msgstr ""
 
-#: dwarf2read.c:14375
+#: dwarf2read.c:14390
 msgid "Recursive child id in repository?\n"
 msgstr ""
 
-#: dwarf2read.c:14753
+#: dwarf2read.c:14768
 msgid "Missing database.\n"
 msgstr ""
 
@@ -6236,124 +6236,124 @@ msgstr ""
 msgid "DIE @ 0x%x \"%s\", bad array element type attribute 0x%x"
 msgstr ""
 
-#: dwarfread.c:558 gdbtypes.c:2159
+#: dwarfread.c:553 gdbtypes.c:2159
 #, possible-c-format
 msgid "internal error - invalid fundamental type id %d"
 msgstr ""
 
-#: dwarfread.c:675
+#: dwarfread.c:670
 #, possible-c-format
 msgid "cannot read DWARF data from '%s'"
 msgstr ""
 
-#: dwarfread.c:815
+#: dwarfread.c:810
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", internal error: duplicate user type allocation"
 msgstr ""
 
-#: dwarfread.c:960
+#: dwarfread.c:954
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", missing class, structure, or union tag"
 msgstr ""
 
-#: dwarfread.c:1298
+#: dwarfread.c:1294
 #, possible-c-format
-msgid "DIE @ 0x%x \"%s\", can't decode subscript data items"
+msgid "DIE @ 0x%x \"%s\", cannot decode subscript data items"
 msgstr ""
 
-#: dwarfread.c:1314
+#: dwarfread.c:1310
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", array subscript format 0x%x not handled yet"
 msgstr ""
 
-#: dwarfread.c:1322
+#: dwarfread.c:1318
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", unknown array subscript format %x"
 msgstr ""
 
-#: dwarfread.c:1361
+#: dwarfread.c:1357
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", array not row major; not handled correctly"
 msgstr ""
 
-#: dwarfread.c:1773
+#: dwarfread.c:1769
 #, possible-c-format
 msgid "DIE @ 0x%x, AT_name tag missing"
 msgstr ""
 
-#: dwarfread.c:2209
+#: dwarfread.c:2206
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", OP_DEREF2 address 0x%lx not handled"
 msgstr ""
 
-#: dwarfread.c:2214
+#: dwarfread.c:2211
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", OP_DEREF4 address 0x%lx not handled"
 msgstr ""
 
-#: dwarfread.c:2233
+#: dwarfread.c:2230
 msgid "location description stack too shallow"
 msgstr ""
 
-#: dwarfread.c:2285
+#: dwarfread.c:2282
 msgid "cannot read DWARF data"
 msgstr ""
 
-#: dwarfread.c:2301
+#: dwarfread.c:2298
 msgid "cannot read DWARF line number table size"
 msgstr ""
 
-#: dwarfread.c:2310
+#: dwarfread.c:2307
 msgid "cannot read DWARF line numbers"
 msgstr ""
 
-#: dwarfread.c:2346 dwarfread.c:2415
+#: dwarfread.c:2343 dwarfread.c:2412
 #, possible-c-format
 msgid "psymtab for %s already read in.  Shouldn't happen."
 msgstr ""
 
-#: dwarfread.c:2380
+#: dwarfread.c:2377
 #, possible-c-format
 msgid "%d DIE's, sorting..."
 msgstr ""
 
-#: dwarfread.c:3189
+#: dwarfread.c:3186
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", botched modified type decoding (mtype 0x%x)"
 msgstr ""
 
-#: dwarfread.c:3209
+#: dwarfread.c:3206
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", type modifier 'const' ignored"
 msgstr ""
 
-#: dwarfread.c:3214
+#: dwarfread.c:3211
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", type modifier 'volatile' ignored"
 msgstr ""
 
-#: dwarfread.c:3226
+#: dwarfread.c:3223
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", unknown type modifier %u"
 msgstr ""
 
-#: dwarfread.c:3370
+#: dwarfread.c:3367
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", unexpected fundamental type 0x%x"
 msgstr ""
 
-#: dwarfread.c:3465
+#: dwarfread.c:3462
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", malformed DIE, bad length (%ld bytes)"
 msgstr ""
 
-#: dwarfread.c:3532
+#: dwarfread.c:3528
 #, possible-c-format
 msgid ""
 "DIE @ 0x%x \"%s\", unknown attribute length, skipped remaining attributes"
 msgstr ""
 
-#: dwarfread.c:3746
+#: dwarfread.c:3743
 #, possible-c-format
 msgid "DIE @ 0x%x \"%s\", no bfd support for %d byte data object"
 msgstr ""
@@ -6415,128 +6415,128 @@ msgid "Value of register %s not available."
 msgstr ""
 
 #. to avoid memory corruption:
-#: eval.c:650
+#: eval.c:649
 msgid "Too many array elements"
 msgstr ""
 
-#: eval.c:683
+#: eval.c:682
 msgid "(power)set type with unknown size"
 msgstr ""
 
 #. different element modes:
-#: eval.c:724
+#: eval.c:723
 msgid "POWERSET tuple elements of different mode"
 msgstr ""
 
-#: eval.c:730
+#: eval.c:729
 msgid "incompatible POWERSET tuple elements"
 msgstr ""
 
-#: eval.c:734
+#: eval.c:733
 msgid "empty POWERSET tuple range"
 msgstr ""
 
-#: eval.c:738
+#: eval.c:737
 msgid "POWERSET tuple element out of range"
 msgstr ""
 
-#: eval.c:998
+#: eval.c:997
 msgid "method address has symbol information with non-function type; skipping"
 msgstr ""
 
-#: eval.c:1043
+#: eval.c:1042
 msgid "Expression of type other than \"method returning ...\" used as a method"
 msgstr ""
 
-#: eval.c:1094
+#: eval.c:1093
 msgid ""
 "Not implemented: function invocation through pointer to method with HP aCC"
 msgstr ""
 
-#: eval.c:1148
+#: eval.c:1147
 #, possible-c-format
 msgid "virtual function at index %d not found"
 msgstr ""
 
-#: eval.c:1273 eval.c:1342
+#: eval.c:1272 eval.c:1341
 msgid ""
 "it makes no sense to assign types to argumentswhen there are no arguments to "
 "begin with."
 msgstr ""
 
-#: eval.c:1375
+#: eval.c:1374
 msgid "Cannot evaluate function -- may be inlined"
 msgstr ""
 
-#: eval.c:1397
+#: eval.c:1396
 msgid ""
 "Expression of type other than \"Function returning ...\" used as function"
 msgstr ""
 
-#: eval.c:1469
+#: eval.c:1468
 msgid "No args for argvec"
 msgstr ""
 
-#: eval.c:1475
+#: eval.c:1474
 msgid "Cannot perform substring on this type"
 msgstr ""
 
-#: eval.c:1583 eval.c:1596 valops.c:394
+#: eval.c:1582 eval.c:1595 valops.c:394
 msgid "Pointers to methods not supported with HP aCC"
 msgstr ""
 
 #. no bias -> really null
-#: eval.c:1606
+#: eval.c:1605
 msgid "Attempted dereference of null pointer-to-member"
 msgstr ""
 
-#: eval.c:1616
+#: eval.c:1615
 msgid "not implemented: pointer-to-method in pointer-to-member construct"
 msgstr ""
 
-#: eval.c:1626
+#: eval.c:1625
 msgid "non-pointer-to-member value used in pointer-to-member construct"
 msgstr ""
 
-#: eval.c:1652
+#: eval.c:1651
 msgid "Assignment to pointers to methods not implemented with HP aCC"
 msgstr ""
 
-#: eval.c:1735
+#: eval.c:1734
 msgid "':' operator used in invalid context"
 msgstr ""
 
-#: eval.c:1756 eval.c:1811 jv-lang.c:946
+#: eval.c:1755 eval.c:1810 jv-lang.c:946
 #, possible-c-format
 msgid "cannot subscript something of type `%s'"
 msgstr ""
 
-#: eval.c:1759 jv-lang.c:948
+#: eval.c:1758 jv-lang.c:948
 msgid "cannot subscript requested type"
 msgstr ""
 
-#: eval.c:1836
+#: eval.c:1835
 #, possible-c-format
 msgid "Too many subscripts for F77 (%d Max)"
 msgstr ""
 
-#: eval.c:1844
+#: eval.c:1843
 msgid "Wrong number of subscripts"
 msgstr ""
 
-#: eval.c:1867 f-valprint.c:244
+#: eval.c:1866 f-valprint.c:244
 msgid "Cannot obtain dynamic upper bound"
 msgstr ""
 
-#: eval.c:1872 f-valprint.c:248
+#: eval.c:1871 f-valprint.c:248
 msgid "Cannot obtain dynamic lower bound"
 msgstr ""
 
-#: eval.c:2061
+#: eval.c:2060
 msgid "Non-integral right operand for \"@\" operator."
 msgstr ""
 
-#: eval.c:2121
+#: eval.c:2120
 msgid "Attempt to dereference pointer to member without an object"
 msgstr ""
 
@@ -6549,23 +6549,23 @@ msgstr ""
 #. * If there are any cases landing here which mean a user error,
 #. * then they should be separate cases, with more descriptive
 #. * error messages.
-#: eval.c:2286
+#: eval.c:2285
 msgid "GDB does not (yet) know how to evaluate that kind of expression"
 msgstr ""
 
-#: eval.c:2342
+#: eval.c:2341
 msgid "Attempt to take address of register or constant."
 msgstr ""
 
-#: eval.c:2362
+#: eval.c:2361
 msgid "Attempt to take address of non-lval"
 msgstr ""
 
-#: eval.c:2488
+#: eval.c:2487
 msgid "Internal error in eval_type."
 msgstr ""
 
-#: eval.c:2499
+#: eval.c:2498
 msgid "Cannot get dimensions for a non-array type"
 msgstr ""
 
@@ -6596,27 +6596,27 @@ msgstr ""
 
 #. The prompt stack has not been initialized to "", we are
 #. using gdb w/o the --async switch
-#: event-top.c:364
+#: event-top.c:363
 msgid "Command has same effect as set annotate"
 msgstr ""
 
-#: event-top.c:449
+#: event-top.c:448
 msgid "error detected on stdin\n"
 msgstr ""
 
-#: event-top.c:601 event-top.c:639 top.c:615
+#: event-top.c:600 event-top.c:638 top.c:615
 #, possible-c-format
 msgid "Command execution time: %ld.%06ld\n"
 msgstr ""
 
-#: event-top.c:612 event-top.c:649 top.c:626
+#: event-top.c:611 event-top.c:648 top.c:626
 #, possible-c-format
 msgid "Space used: %ld (%c%ld for this command)\n"
 msgstr ""
 
 #. This message is based on ANSI C, section 4.7. Note that integer
 #. divide by zero causes this, so "float" is a misnomer.
-#: event-top.c:1158 top.c:845
+#: event-top.c:1157 top.c:845
 msgid "Erroneous arithmetic operation."
 msgstr ""
 
@@ -7719,8 +7719,8 @@ msgstr ""
 msgid "boolean"
 msgstr ""
 
-#: guile/scm-breakpoint.c:558 guile/scm-breakpoint.c:594
-#: guile/scm-ports.c:1178 guile/scm-ports.c:1219 guile/scm-type.c:1120
+#: guile/scm-breakpoint.c:558 guile/scm-breakpoint.c:594 guile/scm-ports.c:1178
+#: guile/scm-ports.c:1219 guile/scm-type.c:1120
 msgid "integer"
 msgstr ""
 
@@ -8680,7 +8680,7 @@ msgid "Program not restarted."
 msgstr ""
 
 #: infcmd.c:582 infcmd.c:695 infcmd.c:827 infcmd.c:964 infcmd.c:1765
-#: infcmd.c:1903 infcmd.c:2116 infcmd.c:2151 infcmd.c:2485
+#: infcmd.c:1903 infcmd.c:2118 infcmd.c:2153 infcmd.c:2487
 msgid "Asynchronous execution not supported on this target."
 msgstr ""
 
@@ -8697,7 +8697,7 @@ msgstr ""
 #. we get to the breakpoint.
 #. Avoid coredump here.  Why tho?
 #: infcmd.c:868 infcmd.c:1100 infcmd.c:1261 infcmd.c:1487 infcmd.c:1648
-#: infcmd.c:1786 infcmd.c:1855 infcmd.c:2380
+#: infcmd.c:1786 infcmd.c:1855 infcmd.c:2382
 msgid "No current frame"
 msgstr ""
 
@@ -8724,161 +8724,161 @@ msgstr ""
 msgid "No source file has been specified."
 msgstr ""
 
-#: infcmd.c:1955
+#: infcmd.c:1957
 msgid "Continuing at "
 msgstr ""
 
-#: infcmd.c:1999
+#: infcmd.c:2001
 msgid "signal number"
 msgstr ""
 
-#: infcmd.c:2020
+#: infcmd.c:2022
 msgid "Continuing with no signal.\n"
 msgstr ""
 
-#: infcmd.c:2022
+#: infcmd.c:2024
 #, possible-c-format
 msgid "Continuing with signal %s.\n"
 msgstr ""
 
-#: infcmd.c:2074
+#: infcmd.c:2076
 msgid "Execution is not within a known function."
 msgstr ""
 
-#: infcmd.c:2107 infcmd.c:2139 infcmd.c:2498
+#: infcmd.c:2109 infcmd.c:2141 infcmd.c:2500
 msgid "The program is not running."
 msgstr ""
 
-#: infcmd.c:2142
+#: infcmd.c:2144
 msgid "a location"
 msgstr ""
 
-#: infcmd.c:2251 infcmd.c:2574
+#: infcmd.c:2253 infcmd.c:2576
 msgid "finish_command: function has no target type"
 msgstr ""
 
-#: infcmd.c:2293 infcmd.c:2429
+#: infcmd.c:2295 infcmd.c:2431
 msgid "finish_inlined_subroutine_command: function has no target type"
 msgstr ""
 
-#: infcmd.c:2496
+#: infcmd.c:2498
 msgid "The \"finish\" command does not take any arguments."
 msgstr ""
 
-#: infcmd.c:2506
+#: infcmd.c:2508
 msgid "\"finish\" not meaningful in the outermost frame."
 msgstr ""
 
-#: infcmd.c:2530
+#: infcmd.c:2532
 msgid "Run till exit from "
 msgstr ""
 
-#: infcmd.c:2603
+#: infcmd.c:2605
 msgid "The program being debugged is not being run.\n"
 msgstr ""
 
-#: infcmd.c:2608
+#: infcmd.c:2610
 #, possible-c-format
 msgid "Program stopped at %s.\n"
 msgstr ""
 
-#: infcmd.c:2611
+#: infcmd.c:2613
 msgid "It stopped after being stepped.\n"
 msgstr ""
 
-#: infcmd.c:2620
+#: infcmd.c:2622
 msgid "It stopped at a breakpoint that has since been deleted.\n"
 msgstr ""
 
-#: infcmd.c:2624
+#: infcmd.c:2626
 #, possible-c-format
 msgid "It stopped at breakpoint %d.\n"
 msgstr ""
 
-#: infcmd.c:2630
+#: infcmd.c:2632
 #, possible-c-format
 msgid "It stopped with signal %s, %s.\n"
 msgstr ""
 
-#: infcmd.c:2637
+#: infcmd.c:2639
 msgid "Type \"info stack\" or \"info registers\" for more information.\n"
 msgstr ""
 
-#: infcmd.c:2649
+#: infcmd.c:2651
 msgid "The program being debugged is not being run."
 msgstr ""
 
-#: infcmd.c:2700
+#: infcmd.c:2702
 msgid "environment variable and value"
 msgstr ""
 
-#: infcmd.c:2724
+#: infcmd.c:2726
 msgid "environment variable to set"
 msgstr ""
 
-#: infcmd.c:2746
+#: infcmd.c:2748
 #, possible-c-format
 msgid "Setting environment variable \"%s\" to null value.\n"
 msgstr ""
 
 #. If there is no argument, delete all environment variables.
 #. Ask for confirmation if reading from the terminal.
-#: infcmd.c:2764
+#: infcmd.c:2766
 msgid "Delete all environment variables? "
 msgstr ""
 
-#: infcmd.c:2923 infcmd.c:3040 infcmd.c:3266
+#: infcmd.c:2925 infcmd.c:3042 infcmd.c:3268
 msgid "The program has no registers now."
 msgstr ""
 
-#: infcmd.c:2925 infcmd.c:3042 infcmd.c:3268 thread.c:868
+#: infcmd.c:2927 infcmd.c:3044 infcmd.c:3270 thread.c:868
 msgid "No selected frame."
 msgstr ""
 
-#: infcmd.c:2951
+#: infcmd.c:2953
 msgid "Missing register name"
 msgstr ""
 
 #. Nothing matched.
-#: infcmd.c:3016
+#: infcmd.c:3018
 #, possible-c-format
 msgid "Invalid register `%.*s'"
 msgstr ""
 
-#: infcmd.c:3102
+#: infcmd.c:3104
 msgid "Not killed."
 msgstr ""
 
-#: infcmd.c:3303
+#: infcmd.c:3305
 msgid "\"unset\" must be followed by the name of an unset subcommand.\n"
 msgstr ""
 
-#: infcmd.c:3316
+#: infcmd.c:3318
 msgid "Set terminal for future runs of program being debugged."
 msgstr ""
 
-#: infcmd.c:3317
+#: infcmd.c:3319
 msgid "Show terminal for future runs of program being debugged."
 msgstr ""
 
-#: infcmd.c:3318
+#: infcmd.c:3320
 msgid "Usage: set inferior-tty /dev/pts/1"
 msgstr ""
 
-#: infcmd.c:3327
+#: infcmd.c:3329
 msgid "Set argument list to give program being debugged when it is started."
 msgstr ""
 
-#: infcmd.c:3328
+#: infcmd.c:3330
 msgid "Show argument list to give program being debugged when it is started."
 msgstr ""
 
-#: infcmd.c:3329
+#: infcmd.c:3331
 msgid ""
 "Follow this command with any number of args, to be passed to the program."
 msgstr ""
 
-#: infcmd.c:3334
+#: infcmd.c:3336
 msgid ""
 "The environment to give the program, or one variable's value.\n"
 "With an argument VAR, prints the value of environment variable VAR to\n"
@@ -8886,17 +8886,17 @@ msgid ""
 "environment to be given to the program."
 msgstr ""
 
-#: infcmd.c:3342
+#: infcmd.c:3344
 msgid "Complement to certain \"set\" commands."
 msgstr ""
 
-#: infcmd.c:3345
+#: infcmd.c:3347
 msgid ""
 "Cancel environment variable VAR for the program.\n"
 "This does not affect the program until the next \"run\" command."
 msgstr ""
 
-#: infcmd.c:3351
+#: infcmd.c:3353
 msgid ""
 "Set environment variable value to give the program.\n"
 "Arguments are VAR VALUE where VAR is variable name and VALUE is value.\n"
@@ -8904,7 +8904,7 @@ msgid ""
 "This does not affect the program until the next \"run\" command."
 msgstr ""
 
-#: infcmd.c:3359
+#: infcmd.c:3361
 msgid ""
 "Add directory DIR(s) to beginning of search path for object files.\n"
 "$cwd in the path means the current working directory.\n"
@@ -8913,7 +8913,7 @@ msgid ""
 "fully linked executable files and separately compiled object files as needed."
 msgstr ""
 
-#: infcmd.c:3367
+#: infcmd.c:3369
 msgid ""
 "Current search path for finding object files.\n"
 "$cwd in the path means the current working directory.\n"
@@ -8923,7 +8923,7 @@ msgid ""
 msgstr ""
 
 #. APPLE LOCAL process completer
-#: infcmd.c:3377
+#: infcmd.c:3379
 msgid ""
 "Attach to a process or file outside of GDB.\n"
 "This command attaches to another target, of the same type as your last\n"
@@ -8944,45 +8944,45 @@ msgid ""
 "will poll and loop waiting for the process by that name to launch."
 msgstr ""
 
-#: infcmd.c:3401
+#: infcmd.c:3403
 msgid ""
 "Detach a process or file previously attached.\n"
 "If a process, it is no longer traced, and it continues its execution.  If\n"
 "you were debugging a file, the file is closed and gdb no longer accesses it."
 msgstr ""
 
-#: infcmd.c:3406
+#: infcmd.c:3408
 msgid ""
 "Disconnect from a target.\n"
 "The target will wait for another debugger to connect.  Not available for\n"
 "all targets."
 msgstr ""
 
-#: infcmd.c:3411
+#: infcmd.c:3413
 msgid ""
 "Continue program giving it signal specified by the argument.\n"
 "An argument of \"0\" means continue program without giving it a signal."
 msgstr ""
 
-#: infcmd.c:3415
+#: infcmd.c:3417
 msgid ""
 "Step one instruction exactly.\n"
 "Argument N means do this N times (or till program stops for another reason)."
 msgstr ""
 
-#: infcmd.c:3420
+#: infcmd.c:3422
 msgid ""
 "Step one instruction, but proceed through subroutine calls.\n"
 "Argument N means do this N times (or till program stops for another reason)."
 msgstr ""
 
-#: infcmd.c:3425
+#: infcmd.c:3427
 msgid ""
 "Execute until selected stack frame returns.\n"
 "Upon return, the value returned is printed and put in the value history."
 msgstr ""
 
-#: infcmd.c:3429
+#: infcmd.c:3431
 msgid ""
 "Step program, proceeding through subroutine calls.\n"
 "Like the \"step\" command as long as subroutine calls do not happen;\n"
@@ -8990,34 +8990,34 @@ msgid ""
 "Argument N means do this N times (or till program stops for another reason)."
 msgstr ""
 
-#: infcmd.c:3438
+#: infcmd.c:3440
 msgid ""
 "Step program until it reaches a different source line.\n"
 "Argument N means do this N times (or till program stops for another reason)."
 msgstr ""
 
-#: infcmd.c:3443
+#: infcmd.c:3445
 msgid ""
 "Execute until the program reaches a source line greater than the current\n"
 "or a specified location (same args as break command) within the current "
 "frame."
 msgstr ""
 
-#: infcmd.c:3449
+#: infcmd.c:3451
 msgid ""
 "Continue the program up to the given location (same form as args for break "
 "command).\n"
 "Execution will also stop upon exit from the current stack frame."
 msgstr ""
 
-#: infcmd.c:3454
+#: infcmd.c:3456
 msgid ""
 "Continue program being debugged at specified line or address.\n"
 "Give as argument either LINENUM or *ADDR, where ADDR is an expression\n"
 "for an address to start at."
 msgstr ""
 
-#: infcmd.c:3462
+#: infcmd.c:3464
 msgid ""
 "Usage: go <location>\n"
 "Continue program being debugged, stopping at specified line or \n"
@@ -9027,7 +9027,7 @@ msgid ""
 "This command is a combination of tbreak and jump."
 msgstr ""
 
-#: infcmd.c:3475
+#: infcmd.c:3477
 msgid ""
 "Continue program being debugged, after signal or breakpoint.\n"
 "If proceeding from breakpoint, a number N may be used as an argument,\n"
@@ -9035,7 +9035,7 @@ msgid ""
 "the breakpoint won't break until the Nth time it is reached)."
 msgstr ""
 
-#: infcmd.c:3483
+#: infcmd.c:3485
 msgid ""
 "Start debugged program.  You may specify arguments to give it.\n"
 "If 'start-with-shell' is set to 1, args may include \"*\", or \"[...]\";\n"
@@ -9048,42 +9048,42 @@ msgid ""
 "use \"set args\" without arguments."
 msgstr ""
 
-#: infcmd.c:3498
+#: infcmd.c:3500
 msgid "Start debugged program with no arguments."
 msgstr ""
 
-#: infcmd.c:3500
+#: infcmd.c:3502
 msgid ""
 "Run the debugged program until the beginning of the main procedure.\n"
 "You may specify arguments to give to your program, just as with the\n"
 "\"run\" command."
 msgstr ""
 
-#: infcmd.c:3507
+#: infcmd.c:3509
 msgid "Interrupt the execution of the debugged program."
 msgstr ""
 
-#: infcmd.c:3509 infcmd.c:3515
+#: infcmd.c:3511 infcmd.c:3517
 msgid ""
 "List of integer registers and their contents, for selected stack frame.\n"
 "Register name as argument means describe only that register."
 msgstr ""
 
-#: infcmd.c:3518
+#: infcmd.c:3520
 msgid ""
 "List of all registers and their contents, for selected stack frame.\n"
 "Register name as argument means describe only that register."
 msgstr ""
 
-#: infcmd.c:3523
+#: infcmd.c:3525
 msgid "Execution status of the program."
 msgstr ""
 
-#: infcmd.c:3533
+#: infcmd.c:3535
 msgid "Print the status of the floating point unit\n"
 msgstr ""
 
-#: infcmd.c:3536
+#: infcmd.c:3538
 msgid "Print the status of the vector unit\n"
 msgstr ""
 
@@ -9560,15 +9560,15 @@ msgstr ""
 msgid "error in command: \"%s\"."
 msgstr ""
 
-#: interps.c:628
+#: interps.c:629
 msgid "Set the interpreter for gdb."
 msgstr ""
 
-#: interps.c:629
+#: interps.c:630
 msgid "Show the interpreter for gdb."
 msgstr ""
 
-#: interps.c:643
+#: interps.c:644
 msgid ""
 "Execute a command in an interpreter.  It takes two arguments:\n"
 "The first argument is the name of the interpreter to use.\n"
@@ -10575,9 +10575,9 @@ msgstr ""
 msgid "Show level of verbosity for Darwin Kernel debugging information."
 msgstr ""
 
-#: macosx/darwin-kernel.c:360 macosx/remote-kdp.c:2378
-#: macosx/remote-kdp.c:2385 macosx/remote-kdp.c:2391 macosx/remote-kdp.c:2397
-#: macosx/remote-kdp.c:2403 macosx/remote-kdp.c:2409 macosx/remote-kdp.c:2415
+#: macosx/darwin-kernel.c:360 macosx/remote-kdp.c:2378 macosx/remote-kdp.c:2385
+#: macosx/remote-kdp.c:2391 macosx/remote-kdp.c:2397 macosx/remote-kdp.c:2403
+#: macosx/remote-kdp.c:2409 macosx/remote-kdp.c:2415
 msgid "No additional help."
 msgstr ""
 
@@ -10991,23 +10991,23 @@ msgid ""
 "use by default."
 msgstr ""
 
-#: macosx/macosx-nat-excthread.c:639
+#: macosx/macosx-nat-excthread.c:643
 msgid "problem setting up mach exception server"
 msgstr ""
 
-#: macosx/macosx-nat-excthread.c:750
+#: macosx/macosx-nat-excthread.c:754
 msgid "Set if printing exception thread debugging statements."
 msgstr ""
 
-#: macosx/macosx-nat-excthread.c:751
+#: macosx/macosx-nat-excthread.c:755
 msgid "Show if printing exception thread debugging statements."
 msgstr ""
 
-#: macosx/macosx-nat-excthread.c:756
+#: macosx/macosx-nat-excthread.c:760
 msgid "Set if we allow the EXC_BAD_ACCESS to be handled by the system."
 msgstr ""
 
-#: macosx/macosx-nat-excthread.c:757
+#: macosx/macosx-nat-excthread.c:761
 msgid "Show if we allow the EXC_BAD_ACCESS to be handled by the system."
 msgstr ""
 
@@ -11067,12 +11067,12 @@ msgstr ""
 msgid "Show if GDB should attach to the subprocess using ptrace()."
 msgstr ""
 
-#: macosx/macosx-nat-infthread.c:543
+#: macosx/macosx-nat-infthread.c:555
 #, possible-c-format
 msgid "Error %d getting port names from mach_port_names"
 msgstr ""
 
-#: macosx/macosx-nat-infthread.c:1206
+#: macosx/macosx-nat-infthread.c:1221
 msgid "gdb was not built with support for printing thread details"
 msgstr ""
 
@@ -11108,19 +11108,19 @@ msgstr ""
 msgid "Stack logging not supported for this target."
 msgstr ""
 
-#: macosx/macosx-nat-mutils.c:2303
+#: macosx/macosx-nat-mutils.c:2304
 msgid "Set if printing inferior memory debugging statements."
 msgstr ""
 
-#: macosx/macosx-nat-mutils.c:2304
+#: macosx/macosx-nat-mutils.c:2305
 msgid "Show if printing inferior memory debugging statements."
 msgstr ""
 
-#: macosx/macosx-nat-sigthread.c:247
+#: macosx/macosx-nat-sigthread.c:251
 msgid "Set if printing signal thread debugging statements."
 msgstr ""
 
-#: macosx/macosx-nat-sigthread.c:248
+#: macosx/macosx-nat-sigthread.c:252
 msgid "Show if printing signal thread debugging statements."
 msgstr ""
 
@@ -11138,56 +11138,56 @@ msgstr ""
 msgid "previous_page somehow became NULL."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4125
+#: macosx/macosx-tdep.c:4138
 msgid "Can only get dyld_shared_cache local symbols on ARM"
 msgstr ""
 
-#: macosx/macosx-tdep.c:4155
+#: macosx/macosx-tdep.c:4168
 msgid ""
 "Open the named source file in an application determined by LaunchServices.\n"
 "With no arguments, open the currently selected source file.\n"
 "Also takes file:line to hilight the file at the given line."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4172
+#: macosx/macosx-tdep.c:4185
 msgid "Set locate dSYM files using the DebugSymbols framework."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4173
+#: macosx/macosx-tdep.c:4186
 msgid "Show locate dSYM files using the DebugSymbols framework."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4174
+#: macosx/macosx-tdep.c:4187
 msgid ""
 "If set, gdb will try and locate dSYM files using the DebugSymbols framework."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4180
+#: macosx/macosx-tdep.c:4193
 msgid ""
 "Set whether gdb should do a search through memory for the kernel on 'target "
 "remote'."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4181
+#: macosx/macosx-tdep.c:4194
 msgid ""
 "Show whether gdb should do a search through memory for the kernel on 'target "
 "remote'."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4182
+#: macosx/macosx-tdep.c:4195
 msgid ""
 "If set, gdb may look through memory for a kernel when doing 'target remote'"
 msgstr ""
 
-#: macosx/macosx-tdep.c:4193
+#: macosx/macosx-tdep.c:4206
 msgid "Set if GDB should disable shared library address randomization."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4194
+#: macosx/macosx-tdep.c:4207
 msgid "Show if GDB should disable shared library address randomization."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4199
+#: macosx/macosx-tdep.c:4212
 msgid ""
 "Usage: add-all-kexts\n"
 "Load the dSYMs for all of the kexts loaded in a live kernel/kernel "
@@ -12021,54 +12021,54 @@ msgstr ""
 msgid "bad iss for external symbol: %ld (max %ld)"
 msgstr ""
 
-#: mdebugread.c:3432
+#: mdebugread.c:3433
 #, possible-c-format
 msgid "bad proc end in aux found from symbol %s"
 msgstr ""
 
-#: mdebugread.c:3550
+#: mdebugread.c:3551
 #, possible-c-format
 msgid "bad aux index at block symbol %s"
 msgstr ""
 
 #. Both complaints are valid:  one gives symbol name,
 #. the other the offending symbol type.
-#: mdebugread.c:3571
+#: mdebugread.c:3572
 #, possible-c-format
 msgid "unknown local symbol %s"
 msgstr ""
 
-#: mdebugread.c:3573
+#: mdebugread.c:3574
 #, possible-c-format
 msgid "with type %d"
 msgstr ""
 
-#: mdebugread.c:3742
+#: mdebugread.c:3743
 #, possible-c-format
 msgid "bad file number %ld"
 msgstr ""
 
-#: mdebugread.c:4053
+#: mdebugread.c:4054
 #, possible-c-format
 msgid "unknown stabs symbol %s"
 msgstr ""
 
-#: mdebugread.c:4235
+#: mdebugread.c:4237
 #, possible-c-format
 msgid "File %s contains %d unresolved references:"
 msgstr ""
 
-#: mdebugread.c:4405
+#: mdebugread.c:4407
 #, possible-c-format
 msgid "illegal tq0 in forward typedef for %s"
 msgstr ""
 
-#: mdebugread.c:4443
+#: mdebugread.c:4445
 #, possible-c-format
 msgid "illegal bt %d in forward typedef for %s"
 msgstr ""
 
-#: mdebugread.c:4817
+#: mdebugread.c:4819
 #, possible-c-format
 msgid "Error reading ECOFF debugging information: %s"
 msgstr ""
@@ -15304,7 +15304,7 @@ msgid "Failed to connect to OCD."
 msgstr ""
 
 #: ocd.c:333 remote-es.c:485 remote-es.c:1951 remote-mips.c:1682
-#: remote-utils.c:438 remote.c:2878
+#: remote-utils.c:438 remote.c:2888
 msgid "Argument given to \"detach\" when remotely debugging."
 msgstr ""
 
@@ -15326,11 +15326,11 @@ msgid "Register block size bad:  %d"
 msgstr ""
 
 #: ocd.c:774 remote-m32r-sdi.c:715 remote-m32r-sdi.c:721 remote-m32r-sdi.c:737
-#: remote.c:4513
+#: remote.c:4523
 msgid "Remote connection closed"
 msgstr ""
 
-#: ocd.c:776 remote.c:4516
+#: ocd.c:776 remote.c:4526
 msgid "Remote communication error"
 msgstr ""
 
@@ -17429,8 +17429,7 @@ msgstr ""
 msgid "Failed to transmit packet\n"
 msgstr ""
 
-#: remote-array.c:818 remote-array.c:875 remote-array.c:951
-#: remote-array.c:1013
+#: remote-array.c:818 remote-array.c:875 remote-array.c:951 remote-array.c:1013
 msgid "Failed to receive packet\n"
 msgstr ""
 
@@ -17621,20 +17620,20 @@ msgstr ""
 msgid "Use the \"run\" command to start a child process."
 msgstr ""
 
-#: remote-fileio.c:1412
+#: remote-fileio.c:1417
 msgid "Illegal argument for \"set remote system-call-allowed\" command"
 msgstr ""
 
-#: remote-fileio.c:1420
+#: remote-fileio.c:1425
 #, possible-c-format
 msgid "Garbage after \"show remote system-call-allowed\" command: `%s'"
 msgstr ""
 
-#: remote-fileio.c:1432
+#: remote-fileio.c:1437
 msgid "Set if the host system(3) call is allowed for the target."
 msgstr ""
 
-#: remote-fileio.c:1436
+#: remote-fileio.c:1441
 msgid "Show if the host system(3) call is allowed for the target."
 msgstr ""
 
@@ -18083,7 +18082,7 @@ msgstr ""
 msgid "Use the \"run\" command to start a VxWorks process."
 msgstr ""
 
-#: remote.c:603 remote.c:5613 remote.c:5870
+#: remote.c:603 remote.c:5620 remote.c:5877
 msgid "command can only be used with remote target"
 msgstr ""
 
@@ -18166,28 +18165,28 @@ msgstr ""
 msgid "Enabled packet %s (%s) not recognized by stub"
 msgstr ""
 
-#: remote.c:2001
+#: remote.c:2011
 msgid "Incomplete response to threadinfo request."
 msgstr ""
 
 #. This is an answer to a different request.
-#: remote.c:2004
+#: remote.c:2014
 msgid "ERROR RMT Thread info mismatch."
 msgstr ""
 
-#: remote.c:2018
+#: remote.c:2028
 msgid "ERROR RMT: threadinfo tag mismatch."
 msgstr ""
 
-#: remote.c:2026
+#: remote.c:2036
 msgid "ERROR RMT: length of threadid is not 16."
 msgstr ""
 
-#: remote.c:2041
+#: remote.c:2051
 msgid "ERROR RMT: 'exists' length too long."
 msgstr ""
 
-#: remote.c:2065
+#: remote.c:2075
 msgid "ERROR RMT: unknown thread info tag."
 msgstr ""
 
@@ -18199,150 +18198,150 @@ msgstr ""
 #. *  * exit
 #. *  * wait for packet, then exit
 #.
-#: remote.c:2166
+#: remote.c:2176
 msgid "HMM: threadlist did not echo arg thread, dropping it."
 msgstr ""
 
-#: remote.c:2173
+#: remote.c:2183
 msgid "RMT ERROR : failed to get remote thread list."
 msgstr ""
 
-#: remote.c:2181
+#: remote.c:2191
 msgid "RMT ERROR: threadlist response longer than requested."
 msgstr ""
 
-#: remote.c:2218
+#: remote.c:2228
 msgid "Remote fetch threadlist -infinite loop-."
 msgstr ""
 
 #. paranoia
-#: remote.c:2302
+#: remote.c:2312
 msgid "Command can only be used when connected to the remote target."
 msgstr ""
 
-#: remote.c:2360
+#: remote.c:2370
 msgid "remote_threads_extra_info"
 msgstr ""
 
 #. Error of some sort:
-#: remote.c:2454 remote.c:3421 remote.c:3645 remote.c:4536
+#: remote.c:2464 remote.c:3431 remote.c:3655 remote.c:4546
 #, possible-c-format
 msgid "Remote failure reply: %s"
 msgstr ""
 
-#: remote.c:2495
+#: remote.c:2505
 #, possible-c-format
 msgid "Malformed response to offset query, %s"
 msgstr ""
 
-#: remote.c:2684
+#: remote.c:2694
 msgid ""
 "The remote protocol may be unreliable over UDP.\n"
 "Some events may be lost, rendering further debugging impossible."
 msgstr ""
 
-#: remote.c:2700
+#: remote.c:2710
 msgid ""
 "To open a remote debug connection, you need to specify what\n"
 "serial device is attached to the remote system\n"
 "(e.g. /dev/ttyS0, /dev/ttya, COM1, etc.)."
 msgstr ""
 
-#: remote.c:2861
+#: remote.c:2871
 msgid "Skipping exhaustive search for kernel in this configuration."
 msgstr ""
 
-#: remote.c:2898
+#: remote.c:2908
 msgid "Argument given to \"disconnect\" when remotely debugging."
 msgstr ""
 
-#: remote.c:3468 remote.c:3688
+#: remote.c:3478 remote.c:3698
 #, possible-c-format
 msgid ""
 "Malformed packet(a) (missing colon): %s\n"
 "Packet: '%s'\n"
 msgstr ""
 
-#: remote.c:3524 remote.c:3719
+#: remote.c:3534 remote.c:3729
 #, possible-c-format
 msgid ""
 "Malformed packet(b) (missing colon): %s\n"
 "Packet: '%s'\n"
 msgstr ""
 
-#: remote.c:3529
+#: remote.c:3539
 #, possible-c-format
 msgid ""
 "Remote sent bad register number %s: %s\n"
 "Packet: '%s'\n"
 msgstr ""
 
-#: remote.c:3539 remote.c:3734 remote.c:3958
+#: remote.c:3549 remote.c:3744 remote.c:3968
 #, possible-c-format
 msgid "Remote reply is too short: %s"
 msgstr ""
 
-#: remote.c:3545 remote.c:3739
+#: remote.c:3555 remote.c:3749
 #, possible-c-format
 msgid ""
 "Remote register badly formatted: %s\n"
 "here: %s"
 msgstr ""
 
-#: remote.c:3596 remote.c:3793
+#: remote.c:3606 remote.c:3803
 #, possible-c-format
 msgid "Invalid remote reply: %s"
 msgstr ""
 
-#: remote.c:3724
+#: remote.c:3734
 #, possible-c-format
 msgid ""
 "Remote sent bad register number %ld: %s\n"
 "Packet: '%s'\n"
 msgstr ""
 
-#: remote.c:3845
+#: remote.c:3855
 msgid "fetch_register_using_p: early buf termination"
 msgstr ""
 
-#: remote.c:3874
+#: remote.c:3884
 msgid ""
 "Attempt to fetch a non G-packet register when this remote.c does not support "
 "the p-packet."
 msgstr ""
 
-#: remote.c:3885
+#: remote.c:3895
 msgid "Protocol error: p packet not recognized by stub"
 msgstr ""
 
-#: remote.c:3942
+#: remote.c:3952
 #, possible-c-format
 msgid "Remote reply is of odd length: %s"
 msgstr ""
 
-#: remote.c:4066
+#: remote.c:4076
 msgid "Protocol error: P packet not recognized by stub"
 msgstr ""
 
-#: remote.c:4291 remote.c:4361
+#: remote.c:4301 remote.c:4371
 msgid "remote_write_bytes: bad internal state"
 msgstr ""
 
-#: remote.c:4297
+#: remote.c:4307
 msgid "minumum packet size too small to write data"
 msgstr ""
 
-#: remote.c:4615
+#: remote.c:4625
 msgid "putpkt: write failed"
 msgstr ""
 
-#: remote.c:4828
+#: remote.c:4838
 #, possible-c-format
 msgid "Repeat count %d too large for buffer: "
 msgstr ""
 
 #. APPLE LOCAL: More explicit error message.
-#: remote.c:4922
+#: remote.c:4932
 msgid ""
 "Watchdog has expired.  Remote device was disconnected?  Debugging session "
 "terminated."
@@ -18350,169 +18349,169 @@ msgstr ""
 
 #. We have tried hard enough, and just can't receive the packet.
 #. Give up.
-#: remote.c:4977
+#: remote.c:4987
 msgid "Ignoring packet error, continuing...\n"
 msgstr ""
 
-#: remote.c:5293
+#: remote.c:5300
 #, possible-c-format
 msgid "hw_bp_to_z: bad watchpoint type %d"
 msgstr ""
 
-#: remote.c:5309
+#: remote.c:5316
 #, possible-c-format
 msgid "Cannot set hardware watchpoints without the '%s' (%s) packet."
 msgstr ""
 
-#: remote.c:5315 remote.c:5363
+#: remote.c:5322 remote.c:5370
 msgid "packet is too big"
 msgstr ""
 
-#: remote.c:5319 remote.c:5367
+#: remote.c:5326 remote.c:5374
 msgid "buflen is too big"
 msgstr ""
 
-#: remote.c:5342
+#: remote.c:5349
 msgid "remote_insert_watchpoint: reached end of function"
 msgstr ""
 
-#: remote.c:5357
+#: remote.c:5364
 #, possible-c-format
 msgid "Cannot clear hardware watchpoints without the '%s' (%s) packet."
 msgstr ""
 
-#: remote.c:5389
+#: remote.c:5396
 msgid "remote_remove_watchpoint: reached end of function"
 msgstr ""
 
-#: remote.c:5459
+#: remote.c:5466
 #, possible-c-format
 msgid "Cannot set hardware breakpoint without the '%s' (%s) packet."
 msgstr ""
 
-#: remote.c:5485
+#: remote.c:5492
 msgid "remote_insert_hw_breakpoint: reached end of function"
 msgstr ""
 
-#: remote.c:5503
+#: remote.c:5510
 #, possible-c-format
 msgid "Cannot clear hardware breakpoint without the '%s' (%s) packet."
 msgstr ""
 
-#: remote.c:5529
+#: remote.c:5536
 msgid "remote_remove_hw_breakpoint: reached end of function"
 msgstr ""
 
-#: remote.c:5545
+#: remote.c:5552
 msgid "Switching to remote protocol\n"
 msgstr ""
 
-#: remote.c:5610
+#: remote.c:5617
 msgid "command cannot be used without an exec file"
 msgstr ""
 
-#: remote.c:5644
+#: remote.c:5651
 #, possible-c-format
 msgid "target memory fault, section %s, range 0x%s -- 0x%s"
 msgstr ""
 
-#: remote.c:5647
+#: remote.c:5654
 msgid "remote target does not support this operation"
 msgstr ""
 
-#: remote.c:5665
+#: remote.c:5672
 msgid ""
 "One or more sections of the remote executable does not match\n"
 "the loaded file\n"
 msgstr ""
 
-#: remote.c:5668
+#: remote.c:5675
 #, possible-c-format
 msgid "No loaded section named '%s'.\n"
 msgstr ""
 
-#: remote.c:5772
+#: remote.c:5779
 msgid "remote query is only available after target open"
 msgstr ""
 
-#: remote.c:5814
+#: remote.c:5821
 msgid "remote rcmd is only available after target open"
 msgstr ""
 
 #. misc
-#: remote.c:5825
+#: remote.c:5832
 #, possible-c-format
 msgid "\"monitor\" command ``%s'' is too long."
 msgstr ""
 
-#: remote.c:5831
+#: remote.c:5838
 msgid "Communication problem with target."
 msgstr ""
 
-#: remote.c:5840 tracepoint.c:220 tracepoint.c:1776
+#: remote.c:5847 tracepoint.c:220 tracepoint.c:1776
 msgid "Target does not support this command."
 msgstr ""
 
-#: remote.c:5851
+#: remote.c:5858
 msgid "Protocol error with Rcmd"
 msgstr ""
 
-#: remote.c:5873
+#: remote.c:5880
 msgid "remote-packet command requires packet text as argument"
 msgstr ""
 
-#: remote.c:5920
+#: remote.c:5927
 msgid "Remote threadset test\n"
 msgstr ""
 
-#: remote.c:6027
+#: remote.c:6034
 msgid "Fetch and print the remote list of thread identifiers, one pkt only"
 msgstr ""
 
-#: remote.c:6030
+#: remote.c:6037
 msgid "Fetch and display info about one thread"
 msgstr ""
 
-#: remote.c:6032
+#: remote.c:6039
 msgid "Test setting to a different thread"
 msgstr ""
 
-#: remote.c:6034
+#: remote.c:6041
 msgid "Iterate through updating all remote thread info"
 msgstr ""
 
-#: remote.c:6036
+#: remote.c:6043
 msgid " Remote thread alive test "
 msgstr ""
 
-#: remote.c:6087
+#: remote.c:6094
 msgid "Remote target doesn't support qGetTLSAddr packet"
 msgstr ""
 
-#: remote.c:6090
+#: remote.c:6097
 msgid "Remote target failed to process qGetTLSAddr request"
 msgstr ""
 
-#: remote.c:6094
+#: remote.c:6101
 msgid "TLS not supported or disabled on this target"
 msgstr ""
 
-#: remote.c:6207
+#: remote.c:6214
 msgid "Calling remote_async when async is masked"
 msgstr ""
 
-#: remote.c:6685
+#: remote.c:6692
 msgid ""
 "an executable must be specified before attaching to a remote-macosx target"
 msgstr ""
 
-#: remote.c:6913
+#: remote.c:6920
 msgid "Switching to remote-macosx protocol\n"
 msgstr ""
 
 #. set/show remote ...
 #. allow-unknown
-#: remote.c:6964 remote.c:6970
+#: remote.c:6971 remote.c:6977
 msgid ""
 "Remote protocol specific variables\n"
 "Configure various remote-protocol specific variables such as\n"
@@ -18520,13 +18519,13 @@ msgid ""
 msgstr ""
 
 #. allow-unknown
-#: remote.c:6977
+#: remote.c:6984
 msgid ""
 "Compare section data on target to the exec file.\n"
 "Argument is a single section name (default: all loaded sections)."
 msgstr ""
 
-#: remote.c:6982
+#: remote.c:6989
 msgid ""
 "Send an arbitrary packet to a remote target.\n"
 "   maintenance packet TEXT\n"
@@ -18536,28 +18535,28 @@ msgid ""
 "terminating `#' character and checksum."
 msgstr ""
 
-#: remote.c:6991
+#: remote.c:6998
 msgid "Set whether to send break if interrupted."
 msgstr ""
 
-#: remote.c:6992
+#: remote.c:6999
 msgid "Show whether to send break if interrupted."
 msgstr ""
 
-#: remote.c:6993
+#: remote.c:7000
 msgid "If set, a break, instead of a cntrl-c, is sent to the remote target."
 msgstr ""
 
 #. Install commands for configuring memory read/write packets.
-#: remote.c:7000
+#: remote.c:7007
 msgid "Set the maximum number of bytes per memory write packet (deprecated)."
 msgstr ""
 
-#: remote.c:7003
+#: remote.c:7010
 msgid "Show the maximum number of bytes per memory write packet (deprecated)."
 msgstr ""
 
-#: remote.c:7007
+#: remote.c:7014
 msgid ""
 "Set the maximum remote packet size in bytes (must be set prior to target\n"
 "remote connection).\n"
@@ -18567,11 +18566,11 @@ msgid ""
 "value."
 msgstr ""
 
-#: remote.c:7013
+#: remote.c:7020
 msgid "Show the maximum remote packet size in bytes."
 msgstr ""
 
-#: remote.c:7017
+#: remote.c:7024
 msgid ""
 "Set the maximum number of bytes per memory-write packet.\n"
 "Specify the number of bytes in a packet or 0 (zero) for the\n"
@@ -18580,7 +18579,7 @@ msgid ""
 "further restriction and ``limit'' to enable that restriction."
 msgstr ""
 
-#: remote.c:7025
+#: remote.c:7032
 msgid ""
 "Set the maximum number of bytes per memory-read packet.\n"
 "Specify the number of bytes in a packet or 0 (zero) for the\n"
@@ -18589,65 +18588,65 @@ msgid ""
 "further restriction and ``limit'' to enable that restriction."
 msgstr ""
 
-#: remote.c:7034
+#: remote.c:7041
 msgid "Show the maximum number of bytes per memory-write packet."
 msgstr ""
 
-#: remote.c:7038
+#: remote.c:7045
 msgid "Show the maximum number of bytes per memory-read packet."
 msgstr ""
 
-#: remote.c:7042
+#: remote.c:7049
 msgid "Set the maximum number of target hardware watchpoints."
 msgstr ""
 
-#: remote.c:7043
+#: remote.c:7050
 msgid "Show the maximum number of target hardware watchpoints."
 msgstr ""
 
-#: remote.c:7044 remote.c:7051
+#: remote.c:7051 remote.c:7058
 msgid "Specify a negative limit for unlimited."
 msgstr ""
 
-#: remote.c:7049
+#: remote.c:7056
 msgid "Set the maximum number of target hardware breakpoints."
 msgstr ""
 
-#: remote.c:7050
+#: remote.c:7057
 msgid "Show the maximum number of target hardware breakpoints."
 msgstr ""
 
-#: remote.c:7057
+#: remote.c:7064
 msgid "Set the maximum size of the address (in bits) in a memory packet."
 msgstr ""
 
-#: remote.c:7058
+#: remote.c:7065
 msgid "Show the maximum size of the address (in bits) in a memory packet."
 msgstr ""
 
-#: remote.c:7149
+#: remote.c:7156
 msgid "Set use of remote protocol `Z' packets"
 msgstr ""
 
-#: remote.c:7150
+#: remote.c:7157
 msgid "Show use of remote protocol `Z' packets "
 msgstr ""
 
-#: remote.c:7151
+#: remote.c:7158
 msgid ""
 "When set, GDB will attempt to use the remote breakpoint and watchpoint\n"
 "packets."
 msgstr ""
 
-#: remote.c:7163
+#: remote.c:7170
 msgid "Set use of remote protocol without ACK packets, if available"
 msgstr ""
 
-#: remote.c:7164
+#: remote.c:7171
 msgid "Show use of remote protocol without ACK packets"
 msgstr ""
 
-#: remote.c:7165
+#: remote.c:7172
 msgid ""
 "When set, GDB will attempt to communicate with the remote stub without "
 "ACKing packets.\n"
@@ -19928,99 +19927,99 @@ msgstr ""
 msgid "GDB internal error: bad real_filenum"
 msgstr ""
 
-#: stabsread.c:871
+#: stabsread.c:874
 #, possible-c-format
 msgid "Unknown C++ symbol name `%s'"
 msgstr ""
 
-#: stabsread.c:1595
+#: stabsread.c:1598
 msgid "failed to parse type; debugger out of date?"
 msgstr ""
 
-#: stabsread.c:1735
+#: stabsread.c:1738
 #, possible-c-format
 msgid "Unrecognized cross-reference type `%c'"
 msgstr ""
 
-#: stabsread.c:1974
+#: stabsread.c:1978
 #, possible-c-format
 msgid ""
 "Prototyped function type didn't end arguments with `#':\n"
 "%s"
 msgstr ""
 
-#: stabsread.c:2095
+#: stabsread.c:2099
 #, possible-c-format
 msgid "invalid (minimal) member type data format at symtab pos %d."
 msgstr ""
 
-#: stabsread.c:2251
+#: stabsread.c:2255
 msgid "GDB internal error, type is NULL in stabsread.c."
 msgstr ""
 
-#: stabsread.c:2281
+#: stabsread.c:2285
 #, possible-c-format
 msgid "Unknown builtin type %d"
 msgstr ""
 
-#: stabsread.c:2664
+#: stabsread.c:2668
 #, possible-c-format
 msgid "const/volatile indicator missing, got '%c'"
 msgstr ""
 
-#: stabsread.c:2747
+#: stabsread.c:2751
 #, possible-c-format
 msgid "member function type missing, got '%c'"
 msgstr ""
 
-#: stabsread.c:3024
+#: stabsread.c:3028
 #, possible-c-format
 msgid "C++ abbreviated type name unknown at symtab pos %d"
 msgstr ""
 
-#: stabsread.c:3398
+#: stabsread.c:3403
 #, possible-c-format
 msgid "Unknown virtual character `%c' for baseclass"
 msgstr ""
 
-#: stabsread.c:3416
+#: stabsread.c:3421
 #, possible-c-format
 msgid "Unknown visibility `%c' for baseclass"
 msgstr ""
 
-#: stabsread.c:3525
+#: stabsread.c:3530
 #, possible-c-format
 msgid "virtual function table pointer not found when defining class `%s'"
 msgstr ""
 
-#: stabsread.c:3635
+#: stabsread.c:3640
 #, possible-c-format
 msgid "Unknown visibility `%c' for field"
 msgstr ""
 
-#: stabsread.c:3687
+#: stabsread.c:3692
 #, possible-c-format
 msgid "struct/union type gets multiply defined: %s%s"
 msgstr ""
 
-#: stabsread.c:4412
+#: stabsread.c:4417
 #, possible-c-format
 msgid "base type %d of range type is not defined"
 msgstr ""
 
-#: stabsread.c:4530
+#: stabsread.c:4535
 msgid "Invalid symbol data: common block within common block"
 msgstr ""
 
-#: stabsread.c:4556
+#: stabsread.c:4561
 msgid "ECOMM symbol unmatched by BCOMM"
 msgstr ""
 
-#: stabsread.c:4702
+#: stabsread.c:4707
 msgid "need a type name"
 msgstr ""
 
-#: stabsread.c:4895
+#: stabsread.c:4900
 #, possible-c-format
 msgid "%s: common block `%s' from global_sym_chain unresolved"
 msgstr ""
@@ -20042,15 +20041,15 @@ msgstr ""
 msgid "(More stack frames follow...)\n"
 msgstr ""
 
-#: stack.c:1757
+#: stack.c:1759
 msgid "blockvector blotch"
 msgstr ""
 
-#: stack.c:1759
+#: stack.c:1761
 msgid "blockvector botch"
 msgstr ""
 
-#: stack.c:2069
+#: stack.c:2071
 msgid "Initial frame selected; you cannot go up."
 msgstr ""
 
@@ -20058,36 +20057,36 @@ msgstr ""
 #. means to really go down (and let me know if that is
 #. impossible), but "down 9999" can be used to mean go all the way
 #. down without getting an error.
-#: stack.c:2111
+#: stack.c:2113
 msgid "Bottom (i.e., innermost) frame selected; you cannot go down."
 msgstr ""
 
-#: stack.c:2237
+#: stack.c:2239
 #, possible-c-format
 msgid "%sMake selected stack frame return now? "
 msgstr ""
 
-#: stack.c:2240
+#: stack.c:2242
 #, possible-c-format
 msgid "%sMake %s return now? "
 msgstr ""
 
-#: stack.c:2243
+#: stack.c:2245
 msgid "Not confirmed"
 msgstr ""
 
 #. Caught in the safety net, oops!  We've gone way past the
 #. selected frame.
-#: stack.c:2259
+#: stack.c:2261
 msgid "Problem while popping stack frames (corrupt stack?)"
 msgstr ""
 
-#: stack.c:2358
+#: stack.c:2360
 #, possible-c-format
 msgid "'%s' not within current stack frame.\n"
 msgstr ""
 
-#: stack.c:2414
+#: stack.c:2416
 msgid ""
 "Make selected stack frame return to its caller.\n"
 "Control remains in the debugger, but when you continue\n"
@@ -20095,31 +20094,31 @@ msgid ""
 "If an argument is given, it is an expression for the value to return."
 msgstr ""
 
-#: stack.c:2420
+#: stack.c:2422
 msgid ""
 "Select and print stack frame that called this one.\n"
 "An argument says how many frames up to go."
 msgstr ""
 
-#: stack.c:2423
+#: stack.c:2425
 msgid ""
 "Same as the `up' command, but does not print anything.\n"
 "This is useful in command scripts."
 msgstr ""
 
-#: stack.c:2427
+#: stack.c:2429
 msgid ""
 "Select and print stack frame called by this one.\n"
 "An argument says how many frames down to go."
 msgstr ""
 
-#: stack.c:2432
+#: stack.c:2434
 msgid ""
 "Same as the `down' command, but does not print anything.\n"
 "This is useful in command scripts."
 msgstr ""
 
-#: stack.c:2436
+#: stack.c:2438
 msgid ""
 "Select and print a stack frame.\n"
 "With no argument, print the selected stack frame.  (See also \"info frame"
@@ -20130,25 +20129,25 @@ msgid ""
 "a command file or a user-defined command."
 msgstr ""
 
-#: stack.c:2449
+#: stack.c:2451
 msgid "Print the current stack frame.\n"
 msgstr ""
 
-#: stack.c:2452
+#: stack.c:2454
 msgid ""
 "Select a stack frame without printing anything.\n"
 "An argument specifies the frame to select.\n"
 "It can be a stack frame number or the address of the frame.\n"
 msgstr ""
 
-#: stack.c:2457
+#: stack.c:2459
 msgid ""
 "Print backtrace of all stack frames, or innermost COUNT frames.\n"
 "With a negative argument, print outermost -COUNT frames.\n"
 "Use of the 'full' qualifier also prints the values of the local variables.\n"
 msgstr ""
 
-#: stack.c:2465
+#: stack.c:2467
 msgid ""
 "Print backtrace of all stack frames, or innermost COUNT frames \n"
 "and the values of the local variables.\n"
@@ -20156,41 +20155,41 @@ msgid ""
 "Usage: T <count>\n"
 msgstr ""
 
-#: stack.c:2474
+#: stack.c:2476
 msgid "Backtrace of the stack, or innermost COUNT frames."
 msgstr ""
 
-#: stack.c:2477
+#: stack.c:2479
 msgid "All about selected stack frame, or frame at ADDR."
 msgstr ""
 
-#: stack.c:2480
+#: stack.c:2482
 msgid "Local variables of current stack frame."
 msgstr ""
 
-#: stack.c:2482
+#: stack.c:2484
 msgid "Argument variables of current stack frame."
 msgstr ""
 
-#: stack.c:2485
+#: stack.c:2487
 msgid "Argument and local variables of current stack frame."
 msgstr ""
 
-#: stack.c:2488
+#: stack.c:2490
 msgid ""
 "Select the stack frame that contains <func>.\n"
 "Usage: func <name>\n"
 msgstr ""
 
-#: stack.c:2493
+#: stack.c:2495
 msgid "Exceptions that can be caught in the current stack frame."
 msgstr ""
 
-#: stack.c:2496
+#: stack.c:2498
 msgid "Specify maximum number of frames for \"backtrace\" to print by default."
 msgstr ""
 
-#: stack.c:2499
+#: stack.c:2501
 msgid "The maximum number of frames for \"backtrace\" to print by default."
 msgstr ""
 
@@ -20635,84 +20634,84 @@ msgstr ""
 msgid "free_named_symtabs() needs work."
 msgstr ""
 
-#: symfile.c:5179
+#: symfile.c:5180
 msgid "No sections are mapped.\n"
 msgstr ""
 
-#: symfile.c:5193 symfile.c:5243
+#: symfile.c:5194 symfile.c:5244
 msgid ""
 "Overlay debugging not enabled.  Use either the 'overlay auto' or\n"
 "the 'overlay manual' command."
 msgstr ""
 
-#: symfile.c:5198 symfile.c:5248
+#: symfile.c:5199 symfile.c:5249
 msgid "Argument required: name of an overlay section"
 msgstr ""
 
-#: symfile.c:5222
+#: symfile.c:5223
 #, possible-c-format
 msgid "Note: section %s unmapped by overlap\n"
 msgstr ""
 
-#: symfile.c:5229 symfile.c:5259
+#: symfile.c:5230 symfile.c:5260
 #, possible-c-format
 msgid "No overlay section called %s"
 msgstr ""
 
-#: symfile.c:5255
+#: symfile.c:5256
 #, possible-c-format
 msgid "Section %s is not mapped"
 msgstr ""
 
-#: symfile.c:5272
+#: symfile.c:5273
 msgid "Automatic overlay debugging enabled."
 msgstr ""
 
-#: symfile.c:5285
+#: symfile.c:5286
 msgid "Overlay debugging enabled."
 msgstr ""
 
-#: symfile.c:5298
+#: symfile.c:5299
 msgid "Overlay debugging disabled."
 msgstr ""
 
-#: symfile.c:5308
+#: symfile.c:5309
 msgid "This target does not know how to read its overlay state."
 msgstr ""
 
-#: symfile.c:5439
+#: symfile.c:5440
 msgid ""
 "Error reading inferior's overlay table: could NOT find `_novlys' variable\n"
 "in inferior. Use `overlay manual' mode."
 msgstr ""
 
-#: symfile.c:5448
+#: symfile.c:5449
 msgid ""
 "Error reading inferior's overlay table: could NOT find `_ovly_table' array\n"
 "in inferior. Use `overlay manual' mode."
 msgstr ""
 
-#: symfile.c:5960
+#: symfile.c:5961
 msgid "Set if GDB should use mmap() to read from external symbol files."
 msgstr ""
 
-#: symfile.c:5961
+#: symfile.c:5962
 msgid "Show if GDB should use mmap() to read from external symbol files."
 msgstr ""
 
-#: symfile.c:5973 symfile.c:6021 symfile.c:6028
+#: symfile.c:5974 symfile.c:6022 symfile.c:6029
 msgid "possible issue adding command"
 msgstr ""
 
 #. APPLE LOCAL end
-#: symfile.c:5983
+#: symfile.c:5984
 msgid ""
 "Load symbol table from executable file FILE.\n"
 "The `file' command can also load symbol tables, as well as setting the file\n"
 "to execute."
 msgstr ""
 
-#: symfile.c:5989
+#: symfile.c:5990
 msgid ""
 "Usage: add-symbol-file FILE ADDR [-s <SECT> <SECT_ADDR> -s <SECT> "
 "<SECT_ADDR> ...]\n"
@@ -20723,7 +20722,7 @@ msgid ""
 "with the text.  SECT is a section name to be loaded at SECT_ADDR."
 msgstr ""
 
-#: symfile.c:5999
+#: symfile.c:6000
 msgid ""
 "Usage: add-kext KEXTBUNDLE\n"
 "Load the symbols from KEXTBUNDLE, where KEXTBUNDLE is the bundle directory\n"
@@ -20733,88 +20732,88 @@ msgid ""
 "well.\n"
 msgstr ""
 
-#: symfile.c:6008
+#: symfile.c:6009
 msgid ""
 "Usage: add-dsym DSYM_FILE\n"
 "Load the symbols from DSYM_FILE, adding them to a library with\n"
 "the matching UUID."
 msgstr ""
 
-#: symfile.c:6016
+#: symfile.c:6017
 msgid "Load the symbols from shared objects in the dynamic linker's link map."
 msgstr ""
 
-#: symfile.c:6031
+#: symfile.c:6032
 msgid ""
 "Dynamically load FILE into the running program, and record its symbols\n"
 "for access from GDB."
 msgstr ""
 
-#: symfile.c:6040
+#: symfile.c:6041
 msgid "Set dynamic symbol table reloading multiple times in one run."
 msgstr ""
 
-#: symfile.c:6041
+#: symfile.c:6042
 msgid "Show dynamic symbol table reloading multiple times in one run."
 msgstr ""
 
-#: symfile.c:6048
+#: symfile.c:6049
 msgid "Commands for debugging overlays."
 msgstr ""
 
-#: symfile.c:6055
+#: symfile.c:6056
 msgid "Assert that an overlay section is mapped."
 msgstr ""
 
-#: symfile.c:6058
+#: symfile.c:6059
 msgid "Assert that an overlay section is unmapped."
 msgstr ""
 
-#: symfile.c:6061
+#: symfile.c:6062
 msgid "List mappings of overlay sections."
 msgstr ""
 
-#: symfile.c:6064
+#: symfile.c:6065
 msgid "Enable overlay debugging."
 msgstr ""
 
-#: symfile.c:6066
+#: symfile.c:6067
 msgid "Disable overlay debugging."
 msgstr ""
 
-#: symfile.c:6068
+#: symfile.c:6069
 msgid "Enable automatic overlay debugging."
 msgstr ""
 
-#: symfile.c:6070
+#: symfile.c:6071
 msgid "Read the overlay mapping state from the target."
 msgstr ""
 
-#: symfile.c:6075
+#: symfile.c:6076
 msgid "Set mapping between filename extension and source language."
 msgstr ""
 
-#: symfile.c:6076
+#: symfile.c:6077
 msgid "Show mapping between filename extension and source language."
 msgstr ""
 
-#: symfile.c:6077
+#: symfile.c:6078
 msgid "Usage: set extension-language .foo bar"
 msgstr ""
 
-#: symfile.c:6084
+#: symfile.c:6085
 msgid "All filename extensions associated with a source language."
 msgstr ""
 
-#: symfile.c:6087
+#: symfile.c:6088
 msgid "Set the write size used when downloading a program."
 msgstr ""
 
-#: symfile.c:6088
+#: symfile.c:6089
 msgid "Show the write size used when downloading a program."
 msgstr ""
 
-#: symfile.c:6089
+#: symfile.c:6090
 msgid ""
 "Only used when downloading a program onto a remote\n"
 "target. Specify zero, or a negative value, to disable\n"
@@ -20823,15 +20822,15 @@ msgid ""
 "cache."
 msgstr ""
 
-#: symfile.c:6101
+#: symfile.c:6102
 msgid "Set the directory where kextutil-generated sym files are searched for."
 msgstr ""
 
-#: symfile.c:6102
+#: symfile.c:6103
 msgid "Show the directory where kextutil-generated sym files are searched for."
 msgstr ""
 
-#: symfile.c:6103
+#: symfile.c:6104
 msgid ""
 "The kextutil-generated sym file is first searched for in the same\n"
 "directory as the kext bundle, then in the directory specified by \n"
@@ -20840,15 +20839,15 @@ msgid ""
 "bundle and dSYM in another location."
 msgstr ""
 
-#: symfile.c:6114
+#: symfile.c:6115
 msgid "Set the directory where separate debug symbols are searched for."
 msgstr ""
 
-#: symfile.c:6115
+#: symfile.c:6116
 msgid "Show the directory where separate debug symbols are searched for."
 msgstr ""
 
-#: symfile.c:6116
+#: symfile.c:6117
 msgid ""
 "Separate debug symbols are first searched for in the same\n"
 "directory as the binary, then in the `"
@@ -21119,10 +21118,13 @@ msgid "Wrong size FP register set in core file."
 msgstr ""
 
 #: target/amd64-tdep.c:221 target/cris-tdep.c:1854 target/hppa-linux-tdep.c:50
-#: target/msp430-tdep.c:588 target/s390-linux-tdep.c:203
-#: target/s390-tdep.c:204
+#: target/msp430-tdep.c:588 target/s390-linux-tdep.c:203 target/s390-tdep.c:204
 #, possible-c-format
 msgid "Unmapped DWARF Register #%d encountered."
+msgstr ""
+
+#: target/amd64-tdep.c:595 target/amd64-tdep.c:725
+msgid "Unexpected register class."
 msgstr ""
 
 #: target/arm-tdep.c:72
@@ -22971,43 +22973,43 @@ msgstr ""
 msgid "Reached end of noreturn function."
 msgstr ""
 
-#: top.c:1435
+#: top.c:1436
 msgid "History size must be non-negative"
 msgstr ""
 
-#: top.c:1443
+#: top.c:1444
 msgid "\"set history\" must be followed by the name of a history subcommand.\n"
 msgstr ""
 
-#: top.c:1528
+#: top.c:1529
 #, possible-c-format
 msgid "Gdb's prompt is \"%s\".\n"
 msgstr ""
 
-#: top.c:1536
+#: top.c:1537
 #, possible-c-format
 msgid "Editing of command lines as they are typed is %s.\n"
 msgstr ""
 
-#: top.c:1546
+#: top.c:1547
 #, possible-c-format
 msgid "Annotation_level is %s.\n"
 msgstr ""
 
-#: top.c:1554
+#: top.c:1555
 #, possible-c-format
 msgid "Notification of completion for asynchronous execution commands is %s.\n"
 msgstr ""
 
-#: top.c:1598
+#: top.c:1599
 msgid "Set gdb's prompt"
 msgstr ""
 
-#: top.c:1599
+#: top.c:1600
 msgid "Show gdb's prompt"
 msgstr ""
 
-#: top.c:1605
+#: top.c:1606
 msgid ""
 "Don't repeat this command.\n"
 "Primarily used inside of user-defined commands that should not be repeated "
@@ -23015,90 +23017,90 @@ msgid ""
 "hitting return."
 msgstr ""
 
-#: top.c:1611
+#: top.c:1612
 msgid "Set editing of command lines as they are typed."
 msgstr ""
 
-#: top.c:1612
+#: top.c:1613
 msgid "Show editing of command lines as they are typed."
 msgstr ""
 
-#: top.c:1613
+#: top.c:1614
 msgid ""
 "Use \"on\" to enable the editing, and \"off\" to disable it.\n"
 "Without an argument, command line editing is enabled.  To edit, use\n"
 "EMACS-like or VI-like commands like control-P or ESC."
 msgstr ""
 
-#: top.c:1626
+#: top.c:1627
 msgid "Set saving of the history record on exit."
 msgstr ""
 
-#: top.c:1627
+#: top.c:1628
 msgid "Show saving of the history record on exit."
 msgstr ""
 
-#: top.c:1628
+#: top.c:1629
 msgid ""
 "Use \"on\" to enable the saving, and \"off\" to disable it.\n"
 "Without an argument, saving is enabled."
 msgstr ""
 
-#: top.c:1635
+#: top.c:1636
 msgid "Set the size of the command history,"
 msgstr ""
 
-#: top.c:1636
+#: top.c:1637
 msgid "Show the size of the command history,"
 msgstr ""
 
-#: top.c:1637
+#: top.c:1638
 msgid "ie. the number of previous commands to keep a record of."
 msgstr ""
 
-#: top.c:1643
+#: top.c:1644
 msgid "Set the filename in which to record the command history"
 msgstr ""
 
-#: top.c:1644
+#: top.c:1645
 msgid "Show the filename in which to record the command history"
 msgstr ""
 
-#: top.c:1645
+#: top.c:1646
 msgid "(the list of previous commands of which a record is kept)."
 msgstr ""
 
-#: top.c:1651
+#: top.c:1652
 msgid "Set whether to confirm potentially dangerous operations."
 msgstr ""
 
-#: top.c:1652
+#: top.c:1653
 msgid "Show whether to confirm potentially dangerous operations."
 msgstr ""
 
-#: top.c:1658
+#: top.c:1659
 msgid "Set annotation_level."
 msgstr ""
 
-#: top.c:1659
+#: top.c:1660
 msgid "Show annotation_level."
 msgstr ""
 
-#: top.c:1660
+#: top.c:1661
 msgid ""
 "0 == normal;     1 == fullname (for use when running under emacs)\n"
 "2 == output annotated suitably for use by programs that control GDB."
 msgstr ""
 
-#: top.c:1668
+#: top.c:1669
 msgid "Set notification of completion for asynchronous execution commands."
 msgstr ""
 
-#: top.c:1669
+#: top.c:1670
 msgid "Show notification of completion for asynchronous execution commands."
 msgstr ""
 
-#: top.c:1670
+#: top.c:1671
 msgid "Use \"on\" to enable the notification, and \"off\" to disable it."
 msgstr ""
 
@@ -23947,13 +23949,13 @@ msgid ""
 "table_body."
 msgstr ""
 
-#: ui-out.c:1282
+#: ui-out.c:1283
 msgid ""
 "table_body missing; table fields must be specified after table_body and "
 "inside a list."
 msgstr ""
 
-#: ui-out.c:1299
+#: ui-out.c:1300
 msgid "ui-out internal error in handling headers."
 msgstr ""
 
@@ -24042,7 +24044,7 @@ msgstr ""
 #: utils.c:1904
 #, possible-c-format
 msgid ""
-"The escape sequence `\\%c' is equivalent to plain `%c', which has no "
+"The escape sequence `%c' is equivalent to plain `%c', which has no "
 "equivalent\n"
 "in the `%s' character set."
 msgstr ""
@@ -24907,7 +24909,7 @@ msgstr ""
 msgid "varobj_delete: assertion failed - mycount(=%d) <> 0"
 msgstr ""
 
-#: varobj.c:1931
+#: varobj.c:1932
 msgid "Duplicate variable object name"
 msgstr ""
 
@@ -24919,60 +24921,60 @@ msgstr ""
 msgid "c_path_expr_of_child: Tried to get path expression for a null child."
 msgstr ""
 
-#: varobj.c:3532
+#: varobj.c:3534
 msgid "not implemented: member type in varobj_value_struct_elt_by_index"
 msgstr ""
 
-#: varobj.c:3536
+#: varobj.c:3538
 msgid ""
 "Attempt to extract a component of a value that is not a struct or union."
 msgstr ""
 
-#: varobj.c:3695
+#: varobj.c:3697
 msgid "c_value_of_child: called with NULL child"
 msgstr ""
 
-#: varobj.c:3777
+#: varobj.c:3779
 #, possible-c-format
 msgid "%s: NULL type.\n"
 msgstr ""
 
-#: varobj.c:3799
+#: varobj.c:3801
 msgid "c_type_of_child: called with a NULL child."
 msgstr ""
 
 #. This should not happen, as only the above types have children:
-#: varobj.c:3854
+#: varobj.c:3857
 msgid "Child of parent whose type does not allow children"
 msgstr ""
 
 #. error!
-#: varobj.c:4430
+#: varobj.c:4433
 #, possible-c-format
 msgid "Unhandled case! (%d)"
 msgstr ""
 
-#: varobj.c:4742
+#: varobj.c:4755
 msgid "Set varobj to construct children using the most specific class type."
 msgstr ""
 
-#: varobj.c:4743
+#: varobj.c:4756
 msgid "abc"
 msgstr ""
 
-#: varobj.c:4749 varobj.c:4750
+#: varobj.c:4762 varobj.c:4763
 msgid "Set to run all threads when evaluating varobjs."
 msgstr ""
 
-#: varobj.c:4757
+#: varobj.c:4770
 msgid "Set varobj debugging."
 msgstr ""
 
-#: varobj.c:4758
+#: varobj.c:4771
 msgid "Show varobj debugging."
 msgstr ""
 
-#: varobj.c:4759
+#: varobj.c:4772
 msgid "When non-zero, varobj debugging is enabled."
 msgstr ""
 

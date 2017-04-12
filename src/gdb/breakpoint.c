@@ -3919,7 +3919,10 @@ bpstat_get_triggered_catchpoints(bpstat ep_list, bpstat *cp_list)
       if (ep->triggered_dll_pathname != NULL)
 	xfree(ep->triggered_dll_pathname);
       if (ep->type == bp_catch_load)
-	dll_pathname = SOLIB_LOADED_LIBRARY_PATHNAME(PIDGET(inferior_ptid));
+	{
+	  gdb_assert(ep != NULL); /* satisfies -Wduplicated-branches */
+	  dll_pathname = SOLIB_LOADED_LIBRARY_PATHNAME(PIDGET(inferior_ptid));
+	}
       else
 	dll_pathname = SOLIB_UNLOADED_LIBRARY_PATHNAME(PIDGET(inferior_ptid));
 #else

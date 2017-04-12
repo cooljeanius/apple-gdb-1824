@@ -1821,7 +1821,7 @@ clean mostlyclean:: $(CONFIG_CLEAN)
 	else \
 	  echo "CLEANDIRS and UNUSED_SUBDIRS are the same"; \
 	fi
-	rm -f $(AM_V_v) *.o *.a $(ADD_FILES) *~
+	rm -f $(AM_V_v) *.o *.a $(ADD_FILES) *~ *.gcda
 	rm -f init.c-tmp init.l-tmp version.c-tmp init.c version.c
 	rm -f $(AM_V_v) gdb$(EXEEXT) core make.log
 	rm -f $(AM_V_v) gdb[0-9]$(EXEEXT)

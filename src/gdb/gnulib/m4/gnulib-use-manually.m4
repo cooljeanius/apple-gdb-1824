@@ -39,6 +39,8 @@ if test ${HAVE_BTOWC} = 0 || test ${REPLACE_BTOWC} = 1; then
   gl_PREREQ_BTOWC
 fi
 gl_WCHAR_MODULE_INDICATOR([btowc])dnl
+dnl# from gnulib module builtin-expect:
+AC_REQUIRE([gl___BUILTIN_EXPECT])dnl
 dnl# from gnulib module chdir-long:
 AC_REQUIRE([gl_FUNC_CHDIR_LONG])dnl
   ## set up libobj if needed:
@@ -249,6 +251,8 @@ AC_REQUIRE([AC_SYS_LARGEFILE])dnl
 AC_REQUIRE([gl_LARGEFILE])dnl
 dnl# from gnulib module ldd:
 AC_REQUIRE([gl_LDD])dnl
+dnl# from gnulib module limits-h:
+AC_REQUIRE([gl_LIMITS_H])dnl
 dnl# from gnulib module link-warning:
 AC_REQUIRE([gl_FEATURES_H])dnl
 dnl# from gnulib module localcharset:

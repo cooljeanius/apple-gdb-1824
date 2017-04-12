@@ -1,5 +1,5 @@
 /* Extended regular expression matching and search library.
-   Copyright (C) 2002-2016 Free Software Foundation, Inc.
+   Copyright (C) 2002-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Isamu Hasegawa <isamu@yamato.ibm.com>.
 
@@ -1482,7 +1482,7 @@ re_acquire_state (reg_errcode_t *err, const re_dfa_t *dfa,
   re_dfastate_t *new_state;
   struct re_state_table_entry *spot;
   Idx i;
-#ifdef lint
+#if defined GCC_LINT || defined lint
   /* Suppress bogus uninitialized-variable warnings.  */
   *err = REG_NOERROR;
 #endif
@@ -1530,7 +1530,7 @@ re_acquire_state_context (reg_errcode_t *err, const re_dfa_t *dfa,
   re_dfastate_t *new_state;
   struct re_state_table_entry *spot;
   Idx i;
-#ifdef lint
+#if defined GCC_LINT || defined lint
   /* Suppress bogus uninitialized-variable warnings.  */
   *err = REG_NOERROR;
 #endif

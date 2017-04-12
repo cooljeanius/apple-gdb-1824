@@ -1,6 +1,6 @@
 /* Traverse a file hierarchy.
 
-   Copyright (C) 2004-2016 Free Software Foundation, Inc.
+   Copyright (C) 2004-2017 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -46,9 +46,9 @@
 
 #include <config.h>
 
-#if defined(LIBC_SCCS) && !defined(lint)
+#if defined LIBC_SCCS && !defined GCC_LINT && !defined lint
 static char sccsid[] = "@(#)fts.c       8.6 (Berkeley) 8/14/94";
-#endif /* LIBC_SCCS and not lint */
+#endif
 
 #include "fts_.h"
 
@@ -76,6 +76,7 @@ static char sccsid[] = "@(#)fts.c       8.6 (Berkeley) 8/14/94";
 /* FIXME - use fcntl(F_DUPFD_CLOEXEC)/openat(O_CLOEXEC) once they are
    supported.  */
 # include "cloexec.h"
+# include "flexmember.h"
 # include "openat.h"
 # include "same-inode.h"
 #endif
@@ -1461,9 +1462,18 @@ fts_build (register FTS *sp, int type)
         while (cur->fts_dirp) {
                 bool is_dir;
                 size_t d_namelen;
+                __set_errno (0);
                 struct dirent *dp = readdir(cur->fts_dirp);
-                if (dp == NULL)
+                if (dp == NULL) {
+                        if (errno) {
+                                cur->fts_errno = errno;
+                                /* If we've not read any items yet, treat
+                                   the error as if we can't access the dir.  */
+                                cur->fts_info = (continue_readdir || nitems)
+                                                ? FTS_ERR : FTS_DNR;
+                        }
                         break;
+                }
                 if (!ISSET(FTS_SEEDOT) && ISDOT(dp->d_name))
                         continue;
 
@@ -1622,7 +1632,8 @@ mem1:                           saved_errno = errno;
 
         /* If didn't find anything, return NULL. */
         if (!nitems) {
-                if (type == BREAD)
+                if (type == BREAD
+                    && cur->fts_info != FTS_DNR && cur->fts_info != FTS_ERR)
                         cur->fts_info = FTS_DP;
                 fts_lfree(head);
                 return (NULL);
@@ -1915,17 +1926,7 @@ fts_alloc (FTS *sp, const char *name, register size_t namelen)
          * The file name is a variable length array.  Allocate the FTSENT
          * structure and the file name in one chunk.
          */
-        len = offsetof(FTSENT, fts_name) + namelen + 1;
-        /* Align the allocation size so that it works for FTSENT,
-           so that trailing padding may be referenced by direct access
-           to the flexible array members, without triggering undefined behavior
-           by accessing bytes beyond the heap allocation.  This implicit access
-           was seen for example with ISDOT() and GCC 5.1.1 at -O2.
-           Do not use alignof (FTSENT) here, since C11 prohibits
-           taking the alignment of a structure containing a flexible
-           array member.  */
-        len += alignof (max_align_t) - 1;
-        len &= ~ (alignof (max_align_t) - 1);
+        len = FLEXSIZEOF(FTSENT, fts_name, namelen + 1);
         if ((p = malloc(len)) == NULL)
                 return (NULL);
 

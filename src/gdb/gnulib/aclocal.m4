@@ -928,23 +928,6 @@ AC_LANG_POP([C])])
 # For backward compatibility.
 AC_DEFUN_ONCE([AM_PROG_CC_C_O], [AC_REQUIRE([AC_PROG_CC])])
 
-# Copyright (C) 2001-2014 Free Software Foundation, Inc.
-#
-# This file is free software; the Free Software Foundation
-# gives unlimited permission to copy and/or distribute it,
-# with or without modifications, as long as this notice is preserved.
-
-# AM_RUN_LOG(COMMAND)
-# -------------------
-# Run COMMAND, save the exit status in ac_status, and log it.
-# (This has been adapted from Autoconf's _AC_RUN_LOG macro.)
-AC_DEFUN([AM_RUN_LOG],
-[{ echo "$as_me:$LINENO: $1" >&AS_MESSAGE_LOG_FD
-   ($1) >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
-   ac_status=$?
-   echo "$as_me:$LINENO: \$? = $ac_status" >&AS_MESSAGE_LOG_FD
-   (exit $ac_status); }])
-
 # Check to make sure that the build environment is sane.    -*- Autoconf -*-
 
 # Copyright (C) 1996-2014 Free Software Foundation, Inc.
@@ -1266,7 +1249,6 @@ AC_SUBST([am__tar])
 AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
-m4_include([m4/ax_check_gnu_make.m4])
 m4_include([m4/gnulib-use-manually.m4])
 m4_include([m4/lt_ac.m4])
 m4_include([m4/onceonly_2_57.m4])
@@ -1280,8 +1262,10 @@ m4_include([import/m4/assert.m4])
 m4_include([import/m4/assert_h.m4])
 m4_include([import/m4/atexit.m4])
 m4_include([import/m4/autobuild.m4])
+m4_include([import/m4/ax_check_gnu_make.m4])
 m4_include([import/m4/bison-i18n.m4])
 m4_include([import/m4/btowc.m4])
+m4_include([import/m4/builtin-expect.m4])
 m4_include([import/m4/chdir-long.m4])
 m4_include([import/m4/close.m4])
 m4_include([import/m4/closedir.m4])
@@ -1327,6 +1311,7 @@ m4_include([import/m4/getcwd-path-max.m4])
 m4_include([import/m4/getcwd.m4])
 m4_include([import/m4/getdtablesize.m4])
 m4_include([import/m4/getpagesize.m4])
+m4_include([import/m4/getprogname.m4])
 m4_include([import/m4/gettext.m4])
 m4_include([import/m4/gettimeofday.m4])
 m4_include([import/m4/glibc21.m4])
@@ -1351,6 +1336,7 @@ m4_include([import/m4/langinfo_h.m4])
 m4_include([import/m4/largefile.m4])
 m4_include([import/m4/ldd.m4])
 m4_include([import/m4/libunistring-base.m4])
+m4_include([import/m4/limits-h.m4])
 m4_include([import/m4/localcharset.m4])
 m4_include([import/m4/locale-fr.m4])
 m4_include([import/m4/locale-ja.m4])
@@ -1417,6 +1403,7 @@ m4_include([import/m4/ssize_t.m4])
 m4_include([import/m4/stat-size.m4])
 m4_include([import/m4/stat-time.m4])
 m4_include([import/m4/stat.m4])
+m4_include([import/m4/std-gnu11.m4])
 m4_include([import/m4/stdalign.m4])
 m4_include([import/m4/stdbool.m4])
 m4_include([import/m4/stddef_h.m4])

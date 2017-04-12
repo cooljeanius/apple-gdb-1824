@@ -293,8 +293,9 @@ static const struct debug_write_fns tg_fns =
 /* Print out the generic debugging information recorded in dhandle.  */
 
 bfd_boolean
-print_debugging_info (FILE *f, void *dhandle, bfd *abfd, asymbol **syms,
-		      void *demangler, bfd_boolean as_tags)
+print_debugging_info(FILE *f, void *dhandle, bfd *abfd, asymbol **syms,
+		     char *(*demangler)(struct bfd *, const char *),
+		     bfd_boolean as_tags)
 {
   struct pr_handle info;
 
@@ -305,7 +306,7 @@ print_debugging_info (FILE *f, void *dhandle, bfd *abfd, asymbol **syms,
   info.filename = NULL;
   info.abfd = abfd;
   info.syms = syms;
-  info.demangler = (char * (*)(struct bfd *, const char *))demangler;
+  info.demangler = demangler;
 
   if (as_tags)
     {
@@ -315,8 +316,8 @@ print_debugging_info (FILE *f, void *dhandle, bfd *abfd, asymbol **syms,
       fputs ("!_TAG_PROGRAM_NAME\tobjdump\t/From GNU binutils/\n", f);
     }
 
-  return as_tags ? debug_write (dhandle, &tg_fns, (void *) & info)
-    : debug_write (dhandle, &pr_fns, (void *) & info);
+  return (as_tags ? debug_write(dhandle, &tg_fns, (void *)&info)
+	  : debug_write(dhandle, &pr_fns, (void *)&info));
 }
 
 /* Indent to the current indentation level.  */

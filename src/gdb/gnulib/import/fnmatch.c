@@ -1,4 +1,4 @@
-/* Copyright (C) 1991-1993, 1996-2007, 2009-2016 Free Software Foundation, Inc.
+/* Copyright (C) 1991-1993, 1996-2007, 2009-2017 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,10 +20,6 @@
 /* Enable GNU extensions in fnmatch.h.  */
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE    1
-#endif
-
-#if ! defined __builtin_expect && __GNUC__ < 3
-# define __builtin_expect(expr, expected) (expr)
 #endif
 
 #include <fnmatch.h>
@@ -66,6 +62,8 @@ extern int fnmatch (const char *pattern, const char *string, int flags);
 #ifndef SIZE_MAX
 # define SIZE_MAX ((size_t) -1)
 #endif
+
+#include "flexmember.h"
 
 /* We often have to test for FNM_FILE_NAME and FNM_PERIOD being both set.  */
 #define NO_LEADING_PERIOD(flags) \
