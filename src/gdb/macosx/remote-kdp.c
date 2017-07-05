@@ -1472,6 +1472,7 @@ kdp_store_registers_i386(int regno)
       if (i386_macosx_store_fp_registers((gdb_i386_float_state_t *)&fp_regs) == 0)
         return;
 
+      /* FIXME: size: */
       memcpy(c.response->readregs_reply.data, &fp_regs.hw_fu_state,
              (GDB_i386_THREAD_FPSTATE_COUNT * 4));
 

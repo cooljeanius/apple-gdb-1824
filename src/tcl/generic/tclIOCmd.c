@@ -779,11 +779,11 @@ Tcl_ExecObjCmd(dummy, interp, objc, objv)
      * enough to hold the argc arguments plus 1 extra for the zero
      * end-of-argv word.
      */
-
+    /* FIXME: -Wsizeof-pointer-div */
     argv = argStorage;
-    argc = objc - skip;
-    if ((argc + 1) > sizeof(argv) / sizeof(argv[0])) {
-	argv = (CONST char **) ckalloc((unsigned)(argc + 1) * sizeof(char *));
+    argc = (objc - skip);
+    if ((argc + 1) > (sizeof(argv) / sizeof(argv[0]))) {
+	argv = (CONST char **)ckalloc((unsigned int)(argc + 1) * sizeof(char *));
     }
 
     /*

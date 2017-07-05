@@ -1011,11 +1011,9 @@ lookup_cmd_1(const char **text, struct cmd_list_element *clist,
 
   len = (p - *text);
 
-  /* *text and p now bracket the first command word to lookup (and
-     it's length is len).  We copy this into a local temporary */
-
-
-  command = (char *)alloca((const size_t)len + 1UL);
+  /* *text and p now bracket the first command word to lookup (and its length
+     is len).  We copy this into a local temporary: */
+  command = (char *)alloca((size_t)len + 1UL);
   for (tmp = 0; tmp < len; tmp++)
     {
       char x = (*text)[tmp];

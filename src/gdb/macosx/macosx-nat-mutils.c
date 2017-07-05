@@ -1560,7 +1560,7 @@ malloc_history_info_command(const char *arg, int from_tty)
                   read_memory_string(string_addr, malloc_path_string_buffer,
                                      2047);
                 }
-              if (except.reason == (volatile enum return_reason)NO_ERROR)
+              if (except.reason == (enum return_reason)NO_ERROR)
                 {
                   kern_return_t kern_ret =
                     logging_file_path_fn(macosx_status->task,

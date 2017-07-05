@@ -133,7 +133,7 @@
 		F5F24FA8016ECAFC01DC9062 /* tclIndexObj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIndexObj.c; path = ../generic/tclIndexObj.c; sourceTree = SOURCE_ROOT; };
 		F5F24FA9016ECAFC01DC9062 /* tclInterp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclInterp.c; path = ../generic/tclInterp.c; sourceTree = SOURCE_ROOT; };
 		F5F24FAA016ECAFC01DC9062 /* tclIO.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIO.c; path = ../generic/tclIO.c; sourceTree = SOURCE_ROOT; };
-		F5F24FAB016ECAFC01DC9062 /* tclIOCmd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIOCmd.c; path = ../generic/tclIOCmd.c; sourceTree = SOURCE_ROOT; };
+		F5F24FAB016ECAFC01DC9062 /* tclIOCmd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIOCmd.c; path = ../generic/tclIOCmd.c; sourceTree = SOURCE_ROOT; tabWidth = 8; };
 		F5F24FAC016ECAFC01DC9062 /* tclIOGT.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIOGT.c; path = ../generic/tclIOGT.c; sourceTree = SOURCE_ROOT; };
 		F5F24FAD016ECAFC01DC9062 /* tclIOSock.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIOSock.c; path = ../generic/tclIOSock.c; sourceTree = SOURCE_ROOT; };
 		F5F24FAE016ECAFC01DC9062 /* tclIOUtil.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIOUtil.c; path = ../generic/tclIOUtil.c; sourceTree = SOURCE_ROOT; };
@@ -662,7 +662,6 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			isa = PBXProject;
 			buildConfigurationList = A50F55481808CA12008BA312 /* Build configuration list for PBXProject "Tcl" */;
 			compatibilityVersion = "Xcode 2.4";
-			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				English,

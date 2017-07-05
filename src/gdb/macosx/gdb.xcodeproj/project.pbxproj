@@ -5100,7 +5100,7 @@
 		A589D7881A31386400E717B9 /* gdb_private_interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gdb_private_interfaces.h; sourceTree = "<group>"; tabWidth = 8; };
 		A589D7891A31386400E717B9 /* gdb_set.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gdb_set.c; sourceTree = "<group>"; };
 		A589D78A1A31386400E717B9 /* gdb_special_events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gdb_special_events.c; sourceTree = "<group>"; };
-		A589D78B1A31386400E717B9 /* gdb_testing.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; path = gdb_testing.i; sourceTree = "<group>"; tabWidth = 8; };
+		A589D78B1A31386400E717B9 /* gdb_testing.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.interfacer; path = gdb_testing.i; sourceTree = "<group>"; tabWidth = 8; };
 		A589D78C1A31386400E717B9 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		A589D78F1A31386400E717B9 /* MacsBug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacsBug.h; sourceTree = "<group>"; };
 		A589D7901A31386400E717B9 /* MacsBug_cmdline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacsBug_cmdline.c; sourceTree = "<group>"; tabWidth = 8; };
@@ -5109,7 +5109,7 @@
 		A589D7931A31386400E717B9 /* MacsBug_plugins.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacsBug_plugins.c; sourceTree = "<group>"; tabWidth = 8; };
 		A589D7941A31386400E717B9 /* MacsBug_screen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacsBug_screen.c; sourceTree = "<group>"; tabWidth = 8; };
 		A589D7951A31386400E717B9 /* MacsBug_set.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacsBug_set.c; sourceTree = "<group>"; tabWidth = 8; };
-		A589D7961A31386400E717B9 /* MacsBug_testing.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; path = MacsBug_testing.i; sourceTree = "<group>"; };
+		A589D7961A31386400E717B9 /* MacsBug_testing.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.interfacer; path = MacsBug_testing.i; sourceTree = "<group>"; };
 		A589D7971A31386400E717B9 /* MacsBug_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacsBug_utils.c; sourceTree = "<group>"; tabWidth = 8; };
 		A589D7981A31386400E717B9 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		A589D7991A31386400E717B9 /* README.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = README.html; sourceTree = "<group>"; };
@@ -13988,7 +13988,6 @@
 			isa = PBXProject;
 			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "gdb" */;
 			compatibilityVersion = "Xcode 3.1";
-			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,

@@ -905,14 +905,19 @@ HAVE_SYS_INTTYPES_H
 HAVE_STDINT_H
 NEXT_AS_FIRST_DIRECTIVE_STDINT_H
 NEXT_STDINT_H
-PRAGMA_COLUMNS
-PRAGMA_SYSTEM_HEADER
-INCLUDE_NEXT_AS_FIRST_DIRECTIVE
-INCLUDE_NEXT
 HAVE_SYS_TYPES_H
 HAVE_INTTYPES_H
 HAVE_UNSIGNED_LONG_LONG_INT
 HAVE_LONG_LONG_INT
+GL_GENERATE_LIMITS_H_FALSE
+GL_GENERATE_LIMITS_H_TRUE
+LIMITS_H
+NEXT_AS_FIRST_DIRECTIVE_LIMITS_H
+NEXT_LIMITS_H
+PRAGMA_COLUMNS
+PRAGMA_SYSTEM_HEADER
+INCLUDE_NEXT_AS_FIRST_DIRECTIVE
+INCLUDE_NEXT
 EXTRA_DEFS
 FCNTL_H_CFLAGS
 zlibinc
@@ -35618,7 +35623,6 @@ $as_echo "$as_me: WARNING: Using something other than bison is untested." >&2;}
 fi
 
 
-
 if test -n "$ac_tool_prefix"; then
   for ac_prog in dlltool gdlltool
   do
@@ -39086,6 +39090,244 @@ fi
 done
 # The gnulib subdirectory needs this:
 
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the preprocessor supports include_next" >&5
+$as_echo_n "checking whether the preprocessor supports include_next... " >&6; }
+if ${gl_cv_have_include_next+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  rm -rf conftestd1a conftestd1b conftestd2
+     mkdir conftestd1a conftestd1b conftestd2
+                                                  cat <<EOF > conftestd1a/conftest.h
+#define DEFINED_IN_CONFTESTD1
+#include_next <conftest.h>
+#ifdef DEFINED_IN_CONFTESTD2
+int foo;
+#else
+#error "include_next doesn't work"
+#endif
+EOF
+     cat <<EOF > conftestd1b/conftest.h
+#define DEFINED_IN_CONFTESTD1
+#include <stdio.h>
+#include_next <conftest.h>
+#ifdef DEFINED_IN_CONFTESTD2
+int foo;
+#else
+# error "include_next does not work"
+#endif
+EOF
+     cat <<EOF > conftestd2/conftest.h
+#ifndef DEFINED_IN_CONFTESTD1
+# error "include_next test does not work"
+#endif
+#define DEFINED_IN_CONFTESTD2
+EOF
+     gl_save_CPPFLAGS="${CPPFLAGS}"
+     CPPFLAGS="${gl_save_CPPFLAGS} -Iconftestd1b -Iconftestd2"
+     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <conftest.h>
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_have_include_next=yes
+else
+  CPPFLAGS="${gl_save_CPPFLAGS} -Iconftestd1a -Iconftestd2"
+        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <conftest.h>
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_have_include_next=buggy
+else
+  gl_cv_have_include_next=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+     CPPFLAGS="${gl_save_CPPFLAGS}"
+     rm -rf conftestd1a conftestd1b conftestd2
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_have_include_next" >&5
+$as_echo "$gl_cv_have_include_next" >&6; }
+  PRAGMA_SYSTEM_HEADER=
+  if test $gl_cv_have_include_next = yes; then
+    INCLUDE_NEXT=include_next
+    INCLUDE_NEXT_AS_FIRST_DIRECTIVE=include_next
+    if test -n "$GCC"; then
+      PRAGMA_SYSTEM_HEADER='#pragma GCC system_header'
+    fi
+  else
+    if test $gl_cv_have_include_next = buggy; then
+      INCLUDE_NEXT=include
+      INCLUDE_NEXT_AS_FIRST_DIRECTIVE=include_next
+    else
+      INCLUDE_NEXT=include
+      INCLUDE_NEXT_AS_FIRST_DIRECTIVE=include
+    fi
+  fi
+
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether system header files limit the line length" >&5
+$as_echo_n "checking whether system header files limit the line length... " >&6; }
+if ${gl_cv_pragma_columns+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifdef __TANDEM
+choke me
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "choke me" >/dev/null 2>&1; then :
+  gl_cv_pragma_columns=yes
+else
+  gl_cv_pragma_columns=no
+fi
+rm -f conftest*
+
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_pragma_columns" >&5
+$as_echo "$gl_cv_pragma_columns" >&6; }
+  if test $gl_cv_pragma_columns = yes; then
+    PRAGMA_COLUMNS="#pragma COLUMNS 10000"
+  else
+    PRAGMA_COLUMNS=
+  fi
+
+
+
+
+
+
+
+
+
+
+
+
+     if test $gl_cv_have_include_next = yes; then
+       gl_cv_next_limits_h='<'limits.h'>'
+     else
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking absolute name of <limits.h>" >&5
+$as_echo_n "checking absolute name of <limits.h>... " >&6; }
+if ${gl_cv_next_limits_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+             if test $ac_cv_header_limits_h = yes; then
+
+
+
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <limits.h>
+_ACEOF
+                case "$host_os" in
+    aix*) gl_absname_cpp="$ac_cpp -C" ;;
+    *)    gl_absname_cpp="$ac_cpp" ;;
+  esac
+
+  case "$host_os" in
+    mingw*)
+                                          gl_dirsep_regex='[/\\]'
+      ;;
+    *)
+      gl_dirsep_regex='\/'
+      ;;
+  esac
+      gl_make_literal_regex_sed='s,[]$^\\.*/[],\\&,g'
+  gl_header_literal_regex=`echo 'limits.h' \
+                           | sed -e "$gl_make_literal_regex_sed"`
+  gl_absolute_header_sed="/${gl_dirsep_regex}${gl_header_literal_regex}/"'{
+      s/.*"\(.*'"${gl_dirsep_regex}${gl_header_literal_regex}"'\)".*/\1/
+      s|^/[^/]|//&|
+      p
+      q
+    }'
+
+        gl_cv_absolute_limits_h=`(eval "$gl_absname_cpp conftest.$ac_ext") 2>&5 |
+  sed -n "$gl_absolute_header_sed"`
+
+           gl_header=$gl_cv_absolute_limits_h
+           gl_cv_next_limits_h='"'$gl_header'"'
+          else
+               gl_cv_next_limits_h='<'limits.h'>'
+             fi
+
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_next_limits_h" >&5
+$as_echo "$gl_cv_next_limits_h" >&6; }
+     fi
+     NEXT_LIMITS_H=$gl_cv_next_limits_h
+
+     if test $gl_cv_have_include_next = yes || test $gl_cv_have_include_next = buggy; then
+       # INCLUDE_NEXT_AS_FIRST_DIRECTIVE='include_next'
+       gl_next_as_first_directive='<'limits.h'>'
+     else
+       # INCLUDE_NEXT_AS_FIRST_DIRECTIVE='include'
+       gl_next_as_first_directive=$gl_cv_next_limits_h
+     fi
+     NEXT_AS_FIRST_DIRECTIVE_LIMITS_H=$gl_next_as_first_directive
+
+
+
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether limits.h has ULLONG_WIDTH etc." >&5
+$as_echo_n "checking whether limits.h has ULLONG_WIDTH etc.... " >&6; }
+if ${gl_cv_header_limits_width+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifndef __STDC_WANT_IEC_60559_BFP_EXT__
+                           #define __STDC_WANT_IEC_60559_BFP_EXT__ 1
+                          #endif
+                          #include <limits.h>
+                          int ullw = ULLONG_WIDTH;
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_header_limits_width=yes
+else
+  gl_cv_header_limits_width=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_header_limits_width" >&5
+$as_echo "$gl_cv_header_limits_width" >&6; }
+  if test "$gl_cv_header_limits_width" = yes; then
+    LIMITS_H=
+  else
+    LIMITS_H=limits.h
+  fi
+
+   if test -n "$LIMITS_H"; then
+  GL_GENERATE_LIMITS_H_TRUE=
+  GL_GENERATE_LIMITS_H_FALSE='#'
+else
+  GL_GENERATE_LIMITS_H_TRUE='#'
+  GL_GENERATE_LIMITS_H_FALSE=
+fi
+
+
+
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for long long int" >&5
 $as_echo_n "checking for long long int... " >&6; }
 if ${ac_cv_type_long_long_int+:} false; then :
@@ -39229,120 +39471,6 @@ $as_echo "$ac_cv_type_unsigned_long_long_int" >&6; }
 $as_echo "#define HAVE_UNSIGNED_LONG_LONG_INT 1" >>confdefs.h
 
   fi
-
-
-
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the preprocessor supports include_next" >&5
-$as_echo_n "checking whether the preprocessor supports include_next... " >&6; }
-if ${gl_cv_have_include_next+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  rm -rf conftestd1a conftestd1b conftestd2
-     mkdir conftestd1a conftestd1b conftestd2
-                                                  cat <<EOF > conftestd1a/conftest.h
-#define DEFINED_IN_CONFTESTD1
-#include_next <conftest.h>
-#ifdef DEFINED_IN_CONFTESTD2
-int foo;
-#else
-#error "include_next doesn't work"
-#endif
-EOF
-     cat <<EOF > conftestd1b/conftest.h
-#define DEFINED_IN_CONFTESTD1
-#include <stdio.h>
-#include_next <conftest.h>
-#ifdef DEFINED_IN_CONFTESTD2
-int foo;
-#else
-# error "include_next does not work"
-#endif
-EOF
-     cat <<EOF > conftestd2/conftest.h
-#ifndef DEFINED_IN_CONFTESTD1
-# error "include_next test does not work"
-#endif
-#define DEFINED_IN_CONFTESTD2
-EOF
-     gl_save_CPPFLAGS="${CPPFLAGS}"
-     CPPFLAGS="${gl_save_CPPFLAGS} -Iconftestd1b -Iconftestd2"
-     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <conftest.h>
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  gl_cv_have_include_next=yes
-else
-  CPPFLAGS="${gl_save_CPPFLAGS} -Iconftestd1a -Iconftestd2"
-        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <conftest.h>
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  gl_cv_have_include_next=buggy
-else
-  gl_cv_have_include_next=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-     CPPFLAGS="${gl_save_CPPFLAGS}"
-     rm -rf conftestd1a conftestd1b conftestd2
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_have_include_next" >&5
-$as_echo "$gl_cv_have_include_next" >&6; }
-  PRAGMA_SYSTEM_HEADER=
-  if test $gl_cv_have_include_next = yes; then
-    INCLUDE_NEXT=include_next
-    INCLUDE_NEXT_AS_FIRST_DIRECTIVE=include_next
-    if test -n "$GCC"; then
-      PRAGMA_SYSTEM_HEADER='#pragma GCC system_header'
-    fi
-  else
-    if test $gl_cv_have_include_next = buggy; then
-      INCLUDE_NEXT=include
-      INCLUDE_NEXT_AS_FIRST_DIRECTIVE=include_next
-    else
-      INCLUDE_NEXT=include
-      INCLUDE_NEXT_AS_FIRST_DIRECTIVE=include
-    fi
-  fi
-
-
-
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether system header files limit the line length" >&5
-$as_echo_n "checking whether system header files limit the line length... " >&6; }
-if ${gl_cv_pragma_columns+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-#ifdef __TANDEM
-choke me
-#endif
-
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "choke me" >/dev/null 2>&1; then :
-  gl_cv_pragma_columns=yes
-else
-  gl_cv_pragma_columns=no
-fi
-rm -f conftest*
-
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_pragma_columns" >&5
-$as_echo "$gl_cv_pragma_columns" >&6; }
-  if test $gl_cv_pragma_columns = yes; then
-    PRAGMA_COLUMNS="#pragma COLUMNS 10000"
-  else
-    PRAGMA_COLUMNS=
-  fi
-
 
 
 
@@ -47030,7 +47158,8 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wfree-nonheap-object -Wrestrict -Wsign-compare -Wpointer-compare \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Wpragmas \
--Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
+-Wreturn-local-addr -Wsequence-point \
+-Wsizeof-pointer-div -Wsizeof-pointer-memaccess \
 -Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc -Wlogical-op \
 -Wfloat-conversion -Wmissing-field-initializers \
 -Wno-deprecated-declarations -Wbool-compare -Wlogical-not-parentheses \
@@ -47042,8 +47171,10 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wscalar-storage-order -Wimplicit-fallthrough=3 \
 -Wformat-overflow=2 -Wformat-truncation=2 \
 -Wexpansion-to-defined -Wint-in-bool-context -Wbool-operation \
--Wduplicated-branches -Wstringop-overflow=2 -Wbuiltin-declaration-mismatch \
--Walloc-zero -Walloc-size-larger-than=2147483647"
+-Wduplicated-branches -Wstringop-overflow=2 \
+-Wenum-conversion -Wbuiltin-declaration-mismatch \
+-Walloc-zero -Walloc-size-larger-than=2147483647 \
+-Wmultistatement-macros"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -47056,7 +47187,8 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wmultiple-inheritance -Wvirtual-inheritance -Wpmf-conversions \
 -Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++ \
 -Wsized-deallocation -Wplacement-new=2 -Wshadow-compatible-local \
--Wbuiltin-function-redefined -Waligned-new=all -Wsynth"
+-Wbuiltin-function-redefined -Waligned-new=all -Wsynth -Wcatch-value \
+-Wclass-memaccess"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -51335,6 +51467,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepOBJCXX_TRUE}" && test -z "${am__fastdepOBJCXX_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepOBJCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${GL_GENERATE_LIMITS_H_TRUE}" && test -z "${GL_GENERATE_LIMITS_H_FALSE}"; then
+  as_fn_error $? "conditional \"GL_GENERATE_LIMITS_H\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${GL_GENERATE_STDINT_H_TRUE}" && test -z "${GL_GENERATE_STDINT_H_FALSE}"; then

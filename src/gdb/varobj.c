@@ -2702,7 +2702,7 @@ path_expr_of_root(struct varobj *var)
 		  size_t path_expr_len;
 		  root_name_len = strlen(var->name);
 		  path_expr_len = (dynamic_expr_len + root_name_len
-				   + strlen(format) - 3UL);
+				   + strlen(format) - 1UL);
 		  path_expr = (char *)xmalloc(path_expr_len);
 		  snprintf(path_expr, path_expr_len, format, dynamic_expr,
 			   var->name);

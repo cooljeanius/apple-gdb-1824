@@ -818,7 +818,7 @@ stab_enum_type (void *p, const char *tag, const char **names,
     }
 
   for (pn = names, pv = vals; *pn != NULL; pn++, pv++)
-    snprintf((buf + strlen(buf)), SIZE_T_MAX, "%s:%ld,", *pn, (long)*pv);
+    snprintf((buf + strlen(buf)), (SIZE_T_MAX / 2), "%s:%ld,", *pn, (long)*pv);
   strcat(buf, ";");
 
   if (tag == NULL)

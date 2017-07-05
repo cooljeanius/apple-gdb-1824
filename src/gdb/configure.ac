@@ -1608,6 +1608,7 @@ AC_CHECK_HEADERS([gettext.h],[],[],[
 #endif /* !HAVE_CONFDEFS_H */
 ])dnl
 # The gnulib subdirectory needs this:
+gl_LIMITS_H
 gl_STDINT_H
 AC_SUBST([STDINT_H])dnl
 gl_HEADER_STRING_H
@@ -3130,7 +3131,8 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wfree-nonheap-object -Wrestrict -Wsign-compare -Wpointer-compare \
 -Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Wpragmas \
--Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
+-Wreturn-local-addr -Wsequence-point \
+-Wsizeof-pointer-div -Wsizeof-pointer-memaccess \
 -Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc -Wlogical-op \
 -Wfloat-conversion -Wmissing-field-initializers \
 -Wno-deprecated-declarations -Wbool-compare -Wlogical-not-parentheses \
@@ -3142,8 +3144,10 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wscalar-storage-order -Wimplicit-fallthrough=3 \
 -Wformat-overflow=2 -Wformat-truncation=2 \
 -Wexpansion-to-defined -Wint-in-bool-context -Wbool-operation \
--Wduplicated-branches -Wstringop-overflow=2 -Wbuiltin-declaration-mismatch \
--Walloc-zero -Walloc-size-larger-than=2147483647"
+-Wduplicated-branches -Wstringop-overflow=2 \
+-Wenum-conversion -Wbuiltin-declaration-mismatch \
+-Walloc-zero -Walloc-size-larger-than=2147483647 \
+-Wmultistatement-macros"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -3156,7 +3160,8 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wmultiple-inheritance -Wvirtual-inheritance -Wpmf-conversions \
 -Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++ \
 -Wsized-deallocation -Wplacement-new=2 -Wshadow-compatible-local \
--Wbuiltin-function-redefined -Waligned-new=all -Wsynth"
+-Wbuiltin-function-redefined -Waligned-new=all -Wsynth -Wcatch-value \
+-Wclass-memaccess"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \

@@ -3164,7 +3164,7 @@ int
 user_select_syms(struct ada_symbol_info *syms, int nsyms, int max_results)
 {
   int i;
-  int *chosen = (int *)alloca(sizeof(int) * (const size_t)nsyms);
+  int *chosen = (int *)alloca(sizeof(int) * (size_t)nsyms);
   int n_chosen;
   int first_choice = ((max_results == 1) ? 1 : 2);
 
@@ -4887,7 +4887,7 @@ wild_match(const char *patn0, int patn_len, const char *name0)
     if ((dot != NULL) && is_dot_digits_suffix(dot))
       *dot = '\0';
 
-    patn = (char *)alloca(((const size_t)patn_len + 1UL) * sizeof(char));
+    patn = (char *)alloca(((size_t)patn_len + 1UL) * sizeof(char));
     gdb_assert(patn0 != NULL);
     strncpy(patn, patn0, (size_t)patn_len);
     patn[patn_len] = '\0';

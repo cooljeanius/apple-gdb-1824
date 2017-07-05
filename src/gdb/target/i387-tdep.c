@@ -581,7 +581,8 @@ i387_swap_fxsave (struct regcache *regcache, const uint8_t *fxsave)
    masks off any of the reserved bits in *FXSAVE.  */
 
 void
-i387_supply_fxsave(struct regcache *regcache, int regnum, const void *fxsave)
+i387_supply_fxsave(struct regcache *regcache, int regnumparam,
+		   const void *fxsave)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep(get_regcache_arch(regcache));
   const gdb_byte *regs = (const gdb_byte *)fxsave;
@@ -597,7 +598,7 @@ i387_supply_fxsave(struct regcache *regcache, int regnum, const void *fxsave)
 #define I387_NUM_XMM_REGS tdep->num_xmm_regs
 
   for (i = I387_ST0_REGNUM; i < I387_MXCSR_REGNUM; i++)
-    if (regnum == -1 || regnum == i)
+    if (regnumparam == -1 || regnumparam == i)
       {
 	if (regs == NULL)
 	  {
@@ -635,8 +636,8 @@ i387_supply_fxsave(struct regcache *regcache, int regnum, const void *fxsave)
 
 		    if (val[0] & (1 << fpreg))
 		      {
-			int regnum = (fpreg + 8 - top) % 8 + I387_ST0_REGNUM;
-			tag = i387_tag (FXSAVE_ADDR (regs, regnum));
+			int regnumvar = (fpreg + 8 - top) % 8 + I387_ST0_REGNUM;
+			tag = i387_tag(FXSAVE_ADDR(regs, regnumvar));
 		      }
 		    else
 		      tag = 3;		/* Empty */
@@ -652,7 +653,7 @@ i387_supply_fxsave(struct regcache *regcache, int regnum, const void *fxsave)
 	  regcache_raw_supply (regcache, i, FXSAVE_ADDR (regs, i));
       }
 
-  if (regnum == I387_MXCSR_REGNUM || regnum == -1)
+  if (regnumparam == I387_MXCSR_REGNUM || regnumparam == -1)
     {
       if (regs == NULL)
 	regcache_raw_supply (regcache, I387_MXCSR_REGNUM, NULL);

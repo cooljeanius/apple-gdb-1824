@@ -1407,7 +1407,7 @@ set_system_call_allowed(const char *args, int from_tty)
   if (args)
     {
       char *arg_end;
-      const int val = (const int)strtoul(args, &arg_end, 10);
+      const int val = (int)strtoul(args, &arg_end, 10);
       if (*args && (*arg_end == '\0'))
         {
 	  remote_fio_system_call_allowed = !!val;

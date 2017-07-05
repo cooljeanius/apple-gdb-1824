@@ -99,7 +99,7 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
 	      void (*traceme_fun)(void), void (*init_trace_fun)(int),
 	      void (*pre_trace_fun)(void), char *shell_file_arg)
 {
-  int pid;
+  int ipid;
   char *shell_command;
   size_t shell_cmd_len;
   static char default_shell_file[] = SHELL_FILE;
@@ -345,18 +345,18 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
      and the parent side, which doesn't work with vfork.  So I #if 0'ed out
      all the vfork stuff.  */
 
-  pid = fork();
+  ipid = fork();
 #if 0
   if (pre_trace_fun || debug_fork)
-    pid = fork();
+    ipid = fork();
   else
-    pid = vfork();
+    ipid = vfork();
 #endif /* 0 */
 
-  if (pid < 0)
+  if (ipid < 0)
     perror_with_name(("vfork"));
 
-  if (pid == 0)
+  if (ipid == 0)
     {
       int setgid_ret;
       if (debug_fork)
@@ -446,7 +446,7 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
 	    size_t copied;
 	    cpu_type_t cpu = 0;
 	    int count = 0;
-	    pid_t pid;
+	    pid_t ppid;
 	    const char *osabi_name = gdbarch_osabi_name(gdbarch_osabi(current_gdbarch));
 
 # if defined(TARGET_POWERPC)
@@ -559,7 +559,7 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
 		goto try_execvp;
 	      }
 
-	    retval = posix_spawnp(&pid, fileptr, NULL,  &attr, argv, env);
+	    retval = posix_spawnp(&ppid, fileptr, NULL,  &attr, argv, env);
 	    warning("posix_spawn failed, trying execvp, error: %d", retval);
 	  }
 # endif /* #if defined (TM_NEXTSTEP)  */
@@ -597,12 +597,12 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
   init_thread_list();
 
   /* Needed for wait_for_inferior stuff below: */
-  inferior_ptid = pid_to_ptid(pid);
+  inferior_ptid = pid_to_ptid(ipid);
 
   /* Now that we have a child process, make it our target, and
      initialize anything target-vector-specific that needs
      initializing.  */
-  (*init_trace_fun)(pid);
+  (*init_trace_fun)(ipid);
 
   /* We are now in the child process of interest, having exec'd the
      correct program, and are poised at the first instruction of the
@@ -611,10 +611,10 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
   /* Allow target dependent code to play with the new process.  This
      might be used to have target-specific code initialize a variable
      in the new process prior to executing the first instruction.  */
-  TARGET_CREATE_INFERIOR_HOOK(pid);
+  TARGET_CREATE_INFERIOR_HOOK(ipid);
 
 #ifdef SOLIB_CREATE_INFERIOR_HOOK
-  SOLIB_CREATE_INFERIOR_HOOK(pid);
+  SOLIB_CREATE_INFERIOR_HOOK(ipid);
 #else
   solib_create_inferior_hook();
 #endif /* SOLIB_CREATE_INFERIOR_HOOK */
