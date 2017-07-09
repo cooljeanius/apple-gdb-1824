@@ -3667,7 +3667,7 @@ Show resolution of opaque struct/class/union types (if set before loading symbol
 static struct gdbarch_data *gdbtypes_data;
 
 const struct builtin_type *
-builtin_type(struct gdbarch *gdbarch)
+get_builtin_type(struct gdbarch *gdbarch)
 {
   return (const struct builtin_type *)new_gdbarch_data(gdbarch, gdbtypes_data);
 }

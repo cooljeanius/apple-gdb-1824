@@ -122,13 +122,11 @@ int cli_out_c_inited = 0;
 /* (none yet) */
 
 /* Mark beginning of a table */
-
 void
-cli_table_begin (struct ui_out *uiout, int nbrofcols,
-		 int nr_rows,
-		 const char *tblid)
+cli_table_begin(struct ui_out *uiout, int nbrofcols, int nr_rows,
+		const char *tblid)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   if (nr_rows == 0)
     data->suppress_output = 1;
   else
@@ -138,11 +136,10 @@ cli_table_begin (struct ui_out *uiout, int nbrofcols,
 }
 
 /* Mark beginning of a table body */
-
 void
-cli_table_body (struct ui_out *uiout)
+cli_table_body(struct ui_out *uiout)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   /* first, close the table header line */
@@ -150,36 +147,30 @@ cli_table_body (struct ui_out *uiout)
 }
 
 /* Mark end of a table */
-
 void
-cli_table_end (struct ui_out *uiout)
+cli_table_end(struct ui_out *uiout)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   data->suppress_output = 0;
 }
 
 /* Specify table header */
-
 void
-cli_table_header (struct ui_out *uiout, int width, enum ui_align alignment,
-		  const char *col_name,
-		  const char *colhdr)
+cli_table_header(struct ui_out *uiout, int width, enum ui_align alignment,
+		 const char *col_name, const char *colhdr)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   cli_field_string (uiout, 0, width, alignment, 0, colhdr);
 }
 
 /* Mark beginning of a list */
-
 void
-cli_begin (struct ui_out *uiout,
-	   enum ui_out_type type,
-	   int level,
-	   const char *id)
+cli_begin(struct ui_out *uiout, enum ui_out_type type, int level,
+	  const char *id)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
 }
@@ -188,7 +179,7 @@ cli_begin (struct ui_out *uiout,
 void
 cli_end(struct ui_out *uiout, enum ui_out_type type, int level)
 {
-  cli_out_data *data = ui_out_data(uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
 }
@@ -201,7 +192,7 @@ cli_field_int(struct ui_out *uiout, int fldno, int width,
 {
   char buffer[20];	/* FIXME: how many chars long a %d can become? */
 
-  cli_out_data *data = ui_out_data(uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   snprintf(buffer, sizeof(buffer), "%d", value);
@@ -210,11 +201,10 @@ cli_field_int(struct ui_out *uiout, int fldno, int width,
 
 /* Used to omit a field: */
 void
-cli_field_skip (struct ui_out *uiout, int fldno, int width,
-		enum ui_align alignment,
-		const char *fldname)
+cli_field_skip(struct ui_out *uiout, int fldno, int width,
+	       enum ui_align alignment, const char *fldname)
 {
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   cli_field_string (uiout, fldno, width, alignment, fldname, "");
@@ -230,7 +220,7 @@ cli_field_string(struct ui_out *uiout, int fldno, int width,
   int before = 0;
   int after = 0;
 
-  cli_out_data *data = ui_out_data (uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
 
@@ -274,7 +264,7 @@ cli_field_fmt(struct ui_out *uiout, int fldno, int width,
               enum ui_align align, const char *fldname, const char *format,
               va_list args)
 {
-  cli_out_data *data = ui_out_data(uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
 
@@ -287,7 +277,7 @@ cli_field_fmt(struct ui_out *uiout, int fldno, int width,
 void
 cli_spaces(struct ui_out *uiout, int numspaces)
 {
-  cli_out_data *data = ui_out_data(uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   print_spaces_filtered(numspaces, data->stream);
@@ -296,7 +286,7 @@ cli_spaces(struct ui_out *uiout, int numspaces)
 void
 cli_text(struct ui_out *uiout, const char *string)
 {
-  cli_out_data *data = ui_out_data(uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   fputs_filtered(string, data->stream);
@@ -307,7 +297,7 @@ cli_text(struct ui_out *uiout, const char *string)
 void
 cli_text_fmt(struct ui_out *uiout, const char *format, va_list args)
 {
-  struct ui_out_data *data = ui_out_data(uiout);
+  struct ui_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   vfprintf_filtered(data->stream, format, args);
@@ -318,7 +308,7 @@ void
 cli_message(struct ui_out *uiout, int verbosity,
             const char *format, va_list args)
 {
-  cli_out_data *data = ui_out_data(uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   if (ui_out_get_verblvl(uiout) >= verbosity)
@@ -329,7 +319,7 @@ void
 /* APPLE LOCAL const */
 cli_wrap_hint(struct ui_out *uiout, const char *identstring)
 {
-  cli_out_data *data = ui_out_data(uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   wrap_here((char *)identstring);
@@ -338,14 +328,14 @@ cli_wrap_hint(struct ui_out *uiout, const char *identstring)
 void
 cli_flush(struct ui_out *uiout)
 {
-  cli_out_data *data = ui_out_data(uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   gdb_flush(data->stream);
 }
 
 int
 cli_redirect(struct ui_out *uiout, struct ui_file *outstream)
 {
-  struct ui_out_data *data = ui_out_data(uiout);
+  struct ui_out_data *data = access_ui_out_data(uiout);
   if (outstream != NULL)
     {
       data->original_stream = data->stream;
@@ -371,7 +361,7 @@ out_field_fmt(struct ui_out *uiout, int fldno,
 	      const char *fldname,
 	      const char *format, ...)
 {
-  cli_out_data *data = ui_out_data(uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   va_list args;
 
   va_start(args, format);
@@ -384,7 +374,7 @@ out_field_fmt(struct ui_out *uiout, int fldno,
 static void
 field_separator(void)
 {
-  cli_out_data *data = ui_out_data(uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   fputc_filtered(' ', data->stream);
 }
 
@@ -415,7 +405,7 @@ cli_quoted_out_new(struct ui_file *raw)
 struct ui_file *
 cli_out_set_stream(struct ui_out *uiout, struct ui_file *stream)
 {
-  cli_out_data *data = ui_out_data(uiout);
+  cli_out_data *data = access_ui_out_data(uiout);
   struct ui_file *old = data->stream;
   data->stream = stream;
   return old;

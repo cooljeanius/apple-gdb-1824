@@ -1112,7 +1112,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
       p[len] = saved_char;	/* restore the input stream */
       if (num == 1) 		/* check scanf found ONLY a float ... */
         putithere->typed_val_float.type =
-          builtin_type (current_gdbarch)->builtin_double;
+          get_builtin_type(current_gdbarch)->builtin_double;
       else if (num == 2)
 	{
 	  /* See if it has `f' or `l' suffix (float or long double).  */
@@ -1129,10 +1129,10 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 
 	  if (c_c == 'f')
 	    putithere->typed_val_float.type =
-	      builtin_type(current_gdbarch)->builtin_float;
+	      get_builtin_type(current_gdbarch)->builtin_float;
 	  else if (c_c == 'l')
 	    putithere->typed_val_float.type =
-	      builtin_type(current_gdbarch)->builtin_long_double;
+	      get_builtin_type(current_gdbarch)->builtin_long_double;
 	  else
 	    return ERROR;
 	}
@@ -1251,15 +1251,15 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 	 int.  This probably should be fixed.  GCC gives a warning on
 	 such constants.  */
 
-      unsigned_type = builtin_type(current_gdbarch)->builtin_unsigned_int;
-      signed_type = builtin_type(current_gdbarch)->builtin_int;
+      unsigned_type = get_builtin_type(current_gdbarch)->builtin_unsigned_int;
+      signed_type = get_builtin_type(current_gdbarch)->builtin_int;
     }
   else if ((long_p <= 1)
 	   && ((un >> (TARGET_LONG_BIT - 2)) == 0))
     {
       high_bit = (((ULONGEST)1UL) << (TARGET_LONG_BIT - 1));
-      unsigned_type = builtin_type(current_gdbarch)->builtin_unsigned_long;
-      signed_type = builtin_type(current_gdbarch)->builtin_long;
+      unsigned_type = get_builtin_type(current_gdbarch)->builtin_unsigned_long;
+      signed_type = get_builtin_type(current_gdbarch)->builtin_long;
     }
   else
     {
@@ -1270,8 +1270,8 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
       else
 	shift = (TARGET_LONG_LONG_BIT - 1);
       high_bit = ((ULONGEST)1UL << shift);
-      unsigned_type = builtin_type(current_gdbarch)->builtin_unsigned_long_long;
-      signed_type = builtin_type(current_gdbarch)->builtin_long_long;
+      unsigned_type = get_builtin_type(current_gdbarch)->builtin_unsigned_long_long;
+      signed_type = get_builtin_type(current_gdbarch)->builtin_long_long;
     }
 
    putithere->typed_val_int.val = n;

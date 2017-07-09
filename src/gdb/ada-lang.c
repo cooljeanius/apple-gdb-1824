@@ -8988,7 +8988,7 @@ static void
 ada_language_arch_info (struct gdbarch *current_gdbarch,
 			struct language_arch_info *lai)
 {
-  const struct builtin_type *builtin = builtin_type (current_gdbarch);
+  const struct builtin_type *builtin = get_builtin_type(current_gdbarch);
   lai->primitive_type_vector
     = GDBARCH_OBSTACK_CALLOC (current_gdbarch, nr_ada_primitive_types + 1,
 			      struct type *);

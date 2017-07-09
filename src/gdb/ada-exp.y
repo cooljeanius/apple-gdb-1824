@@ -928,37 +928,37 @@ convert_char_literal(struct type *type, LONGEST val)
 static struct type *
 type_int(void)
 {
-  return builtin_type(current_gdbarch)->builtin_int;
+  return get_builtin_type(current_gdbarch)->builtin_int;
 }
 
 static struct type *
 type_long(void)
 {
-  return builtin_type(current_gdbarch)->builtin_long;
+  return get_builtin_type(current_gdbarch)->builtin_long;
 }
 
 static struct type *
 type_long_long(void)
 {
-  return builtin_type(current_gdbarch)->builtin_long_long;
+  return get_builtin_type(current_gdbarch)->builtin_long_long;
 }
 
 static struct type *
 type_float(void)
 {
-  return builtin_type(current_gdbarch)->builtin_float;
+  return get_builtin_type(current_gdbarch)->builtin_float;
 }
 
 static struct type *
 type_double(void)
 {
-  return builtin_type(current_gdbarch)->builtin_double;
+  return get_builtin_type(current_gdbarch)->builtin_double;
 }
 
 static struct type *
 type_long_double(void)
 {
-  return builtin_type(current_gdbarch)->builtin_long_double;
+  return get_builtin_type(current_gdbarch)->builtin_long_double;
 }
 
 static struct type *

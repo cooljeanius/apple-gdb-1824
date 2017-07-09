@@ -594,7 +594,7 @@ exp	:	OBJC_SELECTOR
 
 exp	:	SIZEOF '(' type ')'	%prec UNARY
 			{ write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_type (builtin_type (current_gdbarch)->builtin_int);
+			  write_exp_elt_type (get_builtin_type(current_gdbarch)->builtin_int);
 			  CHECK_TYPEDEF ($3);
 			  write_exp_elt_longcst ((LONGEST) TYPE_LENGTH ($3));
 			  write_exp_elt_opcode (OP_LONG); }
@@ -610,12 +610,12 @@ exp	:	STRING
 			  while (count-- > 0)
 			    {
 			      write_exp_elt_opcode (OP_LONG);
-			      write_exp_elt_type (builtin_type (current_gdbarch)->builtin_char);
+			      write_exp_elt_type (get_builtin_type(current_gdbarch)->builtin_char);
 			      write_exp_elt_longcst ((LONGEST)(*sp++));
 			      write_exp_elt_opcode (OP_LONG);
 			    }
 			  write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_type (builtin_type (current_gdbarch)->builtin_char);
+			  write_exp_elt_type (get_builtin_type(current_gdbarch)->builtin_char);
 			  write_exp_elt_longcst ((LONGEST)'\0');
 			  write_exp_elt_opcode (OP_LONG);
 			  write_exp_elt_opcode (OP_ARRAY);
@@ -635,14 +635,14 @@ exp     :	OBJC_NSSTRING	/* ObjC NextStep NSString constant
 /* C++.  */
 exp     :       TRUEKEYWORD
                         { write_exp_elt_opcode (OP_LONG);
-                          write_exp_elt_type (builtin_type (current_gdbarch)->builtin_bool);
+                          write_exp_elt_type (get_builtin_type(current_gdbarch)->builtin_bool);
                           write_exp_elt_longcst ((LONGEST) 1);
                           write_exp_elt_opcode (OP_LONG); }
 	;
 
 exp     :       FALSEKEYWORD
                         { write_exp_elt_opcode (OP_LONG);
-                          write_exp_elt_type (builtin_type (current_gdbarch)->builtin_bool);
+                          write_exp_elt_type (get_builtin_type(current_gdbarch)->builtin_bool);
                           write_exp_elt_longcst ((LONGEST) 0);
                           write_exp_elt_opcode (OP_LONG); }
 	;
@@ -752,15 +752,15 @@ variable:	qualified_name
 			  msymbol = lookup_minimal_symbol (name, NULL, NULL);
 			  if (msymbol != NULL)
 			    {
-			      write_exp_msymbol (msymbol,
-						 lookup_function_type (builtin_type (current_gdbarch)->builtin_int),
-						 builtin_type (current_gdbarch)->builtin_int);
+			      write_exp_msymbol(msymbol,
+						lookup_function_type(get_builtin_type(current_gdbarch)->builtin_int),
+						get_builtin_type(current_gdbarch)->builtin_int);
 			    }
 			  else
-			    if (!have_full_symbols () && !have_partial_symbols ())
-			      error ("No symbol table is loaded.  Use the \"file\" command.");
+			    if (!have_full_symbols() && !have_partial_symbols())
+			      error("No symbol table is loaded.  Use the \"file\" command.");
 			    else
-			      error ("No symbol \"%s\" in current context.", name);
+			      error("No symbol \"%s\" in current context.", name);
 			}
 	;
 
@@ -817,15 +817,15 @@ variable:	name_not_typename
 				lookup_minimal_symbol (arg, NULL, NULL);
 			      if (msymbol != NULL)
 				{
-				  write_exp_msymbol (msymbol,
-						     lookup_function_type (builtin_type (current_gdbarch)->builtin_int),
-						     builtin_type (current_gdbarch)->builtin_int);
+				  write_exp_msymbol(msymbol,
+						    lookup_function_type(get_builtin_type(current_gdbarch)->builtin_int),
+						    get_builtin_type(current_gdbarch)->builtin_int);
 				}
-			      else if (!have_full_symbols () && !have_partial_symbols ())
-				error ("No symbol table is loaded.  Use the \"file\" command.");
+			      else if (!have_full_symbols() && !have_partial_symbols())
+				error("No symbol table is loaded.  Use the \"file\" command.");
 			      else
-				error ("No symbol \"%s\" in current context.",
-				       copy_name ($1.stoken));
+				error("No symbol \"%s\" in current context.",
+				      copy_name($1.stoken));
 			    }
 			}
 	;
@@ -905,7 +905,7 @@ func_mod:	'(' ')'
 
 type	:	ptype
 	|	typebase COLONCOLON '*'
-			{ $$ = lookup_member_type (builtin_type (current_gdbarch)->builtin_int, $1); }
+			{ $$ = lookup_member_type (get_builtin_type(current_gdbarch)->builtin_int, $1); }
 	;
 
 typebase  /* Implements (approximately): (type-qualifier)* type-specifier */
@@ -920,61 +920,61 @@ typebase  /* Implements (approximately): (type-qualifier)* type-specifier */
 			    $$ = $1.type;
 			}
 	|	INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_int; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_int; }
 	|	LONG
-			{ $$ = builtin_type (current_gdbarch)->builtin_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_long; }
 	|	SHORT
-			{ $$ = builtin_type (current_gdbarch)->builtin_short; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_short; }
 	|	LONG INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_long; }
 	|	LONG SIGNED_KEYWORD INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_long; }
 	|	LONG SIGNED_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_long; }
 	|	SIGNED_KEYWORD LONG INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_long; }
 	|	UNSIGNED LONG INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_unsigned_long; }
 	|	LONG UNSIGNED INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_unsigned_long; }
 	|	LONG UNSIGNED
-			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_unsigned_long; }
 	|	LONG LONG
-			{ $$ = builtin_type (current_gdbarch)->builtin_long_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_long_long; }
 	|	LONG LONG INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_long_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_long_long; }
 	|	LONG LONG SIGNED_KEYWORD INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_long_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_long_long; }
 	|	LONG LONG SIGNED_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_long_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_long_long; }
 	|	SIGNED_KEYWORD LONG LONG
-			{ $$ = builtin_type (current_gdbarch)->builtin_long_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_long_long; }
 	|	SIGNED_KEYWORD LONG LONG INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_long_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_long_long; }
 	|	UNSIGNED LONG LONG
-			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_long_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_unsigned_long_long; }
 	|	UNSIGNED LONG LONG INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_long_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_unsigned_long_long; }
 	|	LONG LONG UNSIGNED
-			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_long_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_unsigned_long_long; }
 	|	LONG LONG UNSIGNED INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_long_long; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_unsigned_long_long; }
 	|	SHORT INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_short; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_short; }
 	|	SHORT SIGNED_KEYWORD INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_short; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_short; }
 	|	SHORT SIGNED_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_short; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_short; }
 	|	UNSIGNED SHORT INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_short; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_unsigned_short; }
 	|	SHORT UNSIGNED
-			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_short; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_unsigned_short; }
 	|	SHORT UNSIGNED INT_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_short; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_unsigned_short; }
 	|	DOUBLE_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_double; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_double; }
 	|	LONG DOUBLE_KEYWORD
-			{ $$ = builtin_type (current_gdbarch)->builtin_long_double; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_long_double; }
 	|	STRUCT name
 			{ $$ = lookup_struct (copy_name ($2),
 					      expression_context_block); }
@@ -990,11 +990,11 @@ typebase  /* Implements (approximately): (type-qualifier)* type-specifier */
 	|	UNSIGNED typename
 			{ $$ = lookup_unsigned_typename(TYPE_NAME($2.type)); }
 	|	UNSIGNED
-			{ $$ = builtin_type(current_gdbarch)->builtin_unsigned_int; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_unsigned_int; }
 	|	SIGNED_KEYWORD typename
 			{ $$ = lookup_signed_typename(TYPE_NAME($2.type)); }
 	|	SIGNED_KEYWORD
-			{ $$ = builtin_type(current_gdbarch)->builtin_int; }
+			{ $$ = get_builtin_type(current_gdbarch)->builtin_int; }
                 /* It appears that this rule for templates is never
                    reduced; template recognition happens by lookahead
                    in the token processing code in yylex. */
@@ -1084,19 +1084,19 @@ typename:	TYPENAME
 		{
 		  $$.stoken.ptr = (char *)"int";
 		  $$.stoken.length = 3;
-		  $$.type = builtin_type(current_gdbarch)->builtin_int;
+		  $$.type = get_builtin_type(current_gdbarch)->builtin_int;
 		}
 	|	LONG
 		{
 		  $$.stoken.ptr = (char *)"long";
 		  $$.stoken.length = 4;
-		  $$.type = builtin_type(current_gdbarch)->builtin_long;
+		  $$.type = get_builtin_type(current_gdbarch)->builtin_long;
 		}
 	|	SHORT
 		{
 		  $$.stoken.ptr = (char *)"short";
 		  $$.stoken.length = 5;
-		  $$.type = builtin_type(current_gdbarch)->builtin_short;
+		  $$.type = get_builtin_type(current_gdbarch)->builtin_short;
 		}
 	;
 
@@ -1212,7 +1212,7 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
       p[len] = saved_char;	/* restore the input stream */
       if (num == 1) 		/* check scanf found ONLY a float ... */
         putithere->typed_val_float.type =
-          builtin_type(current_gdbarch)->builtin_double;
+          get_builtin_type(current_gdbarch)->builtin_double;
       else if (num == 2)
 	{
 	  /* See if it has `f' or `l' suffix (float or long double).  */
@@ -1229,10 +1229,10 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 
 	  if (c_c == 'f')
 	    putithere->typed_val_float.type =
-	      builtin_type(current_gdbarch)->builtin_float;
+	      get_builtin_type(current_gdbarch)->builtin_float;
 	  else if (c_c == 'l')
 	    putithere->typed_val_float.type =
-	      builtin_type(current_gdbarch)->builtin_long_double;
+	      get_builtin_type(current_gdbarch)->builtin_long_double;
 	  else
 	    return ERROR;
 	}
@@ -1351,15 +1351,15 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 	 int.  This probably should be fixed.  GCC gives a warning on
 	 such constants.  */
 
-      unsigned_type = builtin_type (current_gdbarch)->builtin_unsigned_int;
-      signed_type = builtin_type (current_gdbarch)->builtin_int;
+      unsigned_type = get_builtin_type(current_gdbarch)->builtin_unsigned_int;
+      signed_type = get_builtin_type(current_gdbarch)->builtin_int;
     }
   else if (long_p <= 1
 	   && (un >> (TARGET_LONG_BIT - 2)) == 0)
     {
       high_bit = ((ULONGEST)1UL) << (TARGET_LONG_BIT - 1);
-      unsigned_type = builtin_type(current_gdbarch)->builtin_unsigned_long;
-      signed_type = builtin_type(current_gdbarch)->builtin_long;
+      unsigned_type = get_builtin_type(current_gdbarch)->builtin_unsigned_long;
+      signed_type = get_builtin_type(current_gdbarch)->builtin_long;
     }
   else
     {
@@ -1370,8 +1370,8 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
       else
 	shift = (TARGET_LONG_LONG_BIT - 1);
       high_bit = ((ULONGEST)1UL << shift);
-      unsigned_type = builtin_type(current_gdbarch)->builtin_unsigned_long_long;
-      signed_type = builtin_type(current_gdbarch)->builtin_long_long;
+      unsigned_type = get_builtin_type(current_gdbarch)->builtin_unsigned_long_long;
+      signed_type = get_builtin_type(current_gdbarch)->builtin_long_long;
     }
 
    putithere->typed_val_int.val = n;
@@ -1529,7 +1529,7 @@ yylex(void)
         }
 
       yylval.typed_val_int.val = c;
-      yylval.typed_val_int.type = builtin_type (current_gdbarch)->builtin_char;
+      yylval.typed_val_int.type = get_builtin_type(current_gdbarch)->builtin_char;
 
       c = *lexptr++;
       if (c != '\'')

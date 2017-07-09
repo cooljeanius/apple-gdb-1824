@@ -573,10 +573,10 @@ struct bpstat_what
 /* The enum that was here has been moved higher up in the header. */
 
 /* Tell what to do about this bpstat.  */
-struct bpstat_what bpstat_what (bpstat);
+struct bpstat_what bpstat_what_to_do(bpstat);
 
 /* Find the bpstat associated with a breakpoint.  NULL otherwise. */
-bpstat bpstat_find_breakpoint (bpstat, struct breakpoint *);
+bpstat bpstat_find_breakpoint(bpstat, struct breakpoint *);
 
 /* Find a step_resume breakpoint associated with this bpstat.
    (If there are multiple step_resume bp's on the list, this function

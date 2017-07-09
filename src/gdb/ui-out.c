@@ -1317,7 +1317,7 @@ ui_out_get_field_separator(struct ui_out *uiout ATTRIBUTE_UNUSED)
 
 /* Access to ui-out members data: */
 struct ui_out_data *
-ui_out_data(struct ui_out *uiout)
+access_ui_out_data(struct ui_out *uiout)
 {
   return uiout->data;
 }

@@ -119,7 +119,7 @@ void
 mi_table_begin(struct ui_out *uiout, int nr_cols, int nr_rows,
                const char *tblid)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   mi_open(uiout, tblid, ui_out_type_tuple);
   if (data->mi_version == 0)
     {
@@ -140,7 +140,7 @@ mi_table_begin(struct ui_out *uiout, int nr_cols, int nr_rows,
 void
 mi_table_body(struct ui_out *uiout)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   /* close the table header line if there were any headers: */
@@ -154,7 +154,7 @@ mi_table_body(struct ui_out *uiout)
 void
 mi_table_end(struct ui_out *uiout)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   data->suppress_output = 0;
   if (data->mi_version == 0)
     {
@@ -170,7 +170,7 @@ void
 mi_table_header(struct ui_out *uiout, int width, enum ui_align alignment,
                 const char *col_name, const char *colhdr)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   if (data->mi_version == 0)
@@ -191,7 +191,7 @@ void
 mi_begin(struct ui_out *uiout, enum ui_out_type type, int level,
 	 const char *id)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   mi_open(uiout, id, type);
@@ -201,7 +201,7 @@ mi_begin(struct ui_out *uiout, enum ui_out_type type, int level,
 void
 mi_end(struct ui_out *uiout, enum ui_out_type type, int level)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   mi_close(uiout, type);
@@ -213,7 +213,7 @@ mi_field_int(struct ui_out *uiout, int fldno, int width,
              enum ui_align alignment, const char *fldname, int value)
 {
   char buffer[20];	/* FIXME: how many chars long a %d can become? */
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
 
@@ -226,7 +226,7 @@ void
 mi_field_skip(struct ui_out *uiout, int fldno, int width,
               enum ui_align alignment, const char *fldname)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   mi_field_string(uiout, fldno, width, alignment, fldname, "");
@@ -239,7 +239,7 @@ mi_field_string(struct ui_out *uiout, int fldno, int width,
                 enum ui_align align, const char *fldname,
                 const char *string)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   field_separator(uiout);
@@ -257,7 +257,7 @@ mi_field_fmt(struct ui_out *uiout, int fldno, int width,
              enum ui_align align, const char *fldname, const char *format,
 	     va_list args)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   field_separator(uiout);
@@ -312,7 +312,7 @@ mi_wrap_hint(struct ui_out *uiout ATTRIBUTE_UNUSED, const char *identstring)
 void
 mi_flush(struct ui_out *uiout)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   gdb_flush(data->buffer);
 }
 
@@ -324,7 +324,7 @@ static int notify_suspended = 0;
 static void
 mi_notify_begin(struct ui_out *uiout, const char *classp)
 {
-  struct ui_out_data *data = ui_out_data(uiout);
+  struct ui_out_data *data = access_ui_out_data(uiout);
   if (notify_buffer != NULL)
     {
       /* This should not happen, but try to recover... */
@@ -348,15 +348,16 @@ mi_notify_begin(struct ui_out *uiout, const char *classp)
   fprintf_unfiltered(data->buffer, "=%s", classp);
 }
 
+/* */
 static void
-mi_notify_end (struct ui_out *uiout)
+mi_notify_end(struct ui_out *uiout)
 {
-  struct ui_out_data *data = ui_out_data (uiout);
-  mi_out_put (uiout, raw_stdout);
-  fputs_unfiltered ("\n", raw_stdout);
-  gdb_flush (raw_stdout);
+  struct ui_out_data *data = access_ui_out_data(uiout);
+  mi_out_put(uiout, raw_stdout);
+  fputs_unfiltered("\n", raw_stdout);
+  gdb_flush(raw_stdout);
 
-  ui_file_delete (data->buffer);
+  ui_file_delete(data->buffer);
   notify_buffer = NULL;
   *data = notify_suspended_data;
   notify_suspended = 0;
@@ -365,31 +366,29 @@ mi_notify_end (struct ui_out *uiout)
 /* local functions */
 
 /* access to ui_out format private members */
-
 static void
-field_separator (struct ui_out *uiout)
+field_separator(struct ui_out *uiout)
 {
-  mi_out_data *data = ui_out_data (uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_field_separator)
     data->suppress_field_separator = 0;
   else
-    fputc_unfiltered (',', data->buffer);
+    fputc_unfiltered(',', data->buffer);
 }
 
+/* */
 static void
-mi_open (struct ui_out *uiout,
-	 const char *name,
-	 enum ui_out_type type)
+mi_open(struct ui_out *uiout, const char *name, enum ui_out_type type)
 {
-  mi_out_data *data = ui_out_data (uiout);
-  field_separator (uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
+  field_separator(uiout);
   data->suppress_field_separator = 1;
   if (name)
-    fprintf_unfiltered (data->buffer, "%s=", name);
+    fprintf_unfiltered(data->buffer, "%s=", name);
   switch (type)
     {
     case ui_out_type_tuple:
-      fputc_unfiltered ('{', data->buffer);
+      fputc_unfiltered('{', data->buffer);
       break;
     case ui_out_type_list:
       if (data->mi_version == 0)
@@ -402,15 +401,15 @@ mi_open (struct ui_out *uiout,
     }
 }
 
+/* */
 static void
-mi_close (struct ui_out *uiout,
-	  enum ui_out_type type)
+mi_close(struct ui_out *uiout, enum ui_out_type type)
 {
-  mi_out_data *data = ui_out_data (uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   switch (type)
     {
     case ui_out_type_tuple:
-      fputc_unfiltered ('}', data->buffer);
+      fputc_unfiltered('}', data->buffer);
       break;
     case ui_out_type_list:
       if (data->mi_version == 0)
@@ -428,7 +427,7 @@ mi_close (struct ui_out *uiout,
 void
 mi_out_buffered(struct ui_out *uiout, char *string)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   fprintf_unfiltered(data->buffer, "%s", string);
 }
 
@@ -436,7 +435,7 @@ mi_out_buffered(struct ui_out *uiout, char *string)
 void
 mi_out_rewind(struct ui_out *uiout)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   ui_file_rewind(data->buffer);
 }
 
@@ -450,7 +449,7 @@ do_write(void *data, const char *buffer, long length_buffer)
 void
 mi_out_put(struct ui_out *uiout, struct ui_file *stream)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   ui_file_put(data->buffer, do_write, stream);
   ui_file_rewind(data->buffer);
 }
@@ -459,7 +458,7 @@ mi_out_put(struct ui_out *uiout, struct ui_file *stream)
 int
 mi_version(struct ui_out *uiout)
 {
-  mi_out_data *data = ui_out_data(uiout);
+  mi_out_data *data = access_ui_out_data(uiout);
   return data->mi_version;
 }
 

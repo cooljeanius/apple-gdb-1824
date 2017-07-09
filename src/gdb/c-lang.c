@@ -555,7 +555,7 @@ void
 c_language_arch_info(struct gdbarch *gdbarch,
 		     struct language_arch_info *lai)
 {
-  const struct builtin_type *builtin = builtin_type(gdbarch);
+  const struct builtin_type *builtin = get_builtin_type(gdbarch);
   lai->string_char_type = builtin->builtin_char;
   lai->primitive_type_vector =
     GDBARCH_OBSTACK_CALLOC(gdbarch, (nr_c_primitive_types + 1),

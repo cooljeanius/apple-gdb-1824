@@ -293,20 +293,20 @@ struct ui_out_impl
     int is_mi_like_p;
   };
 
-extern struct ui_out_data *ui_out_data (struct ui_out *uiout);
+extern struct ui_out_data *access_ui_out_data(struct ui_out *uiout);
 
 
 /* Create a ui_out object */
 
-extern struct ui_out *ui_out_new (struct ui_out_impl *impl,
-				  struct ui_out_data *data,
-				  int flags);
+extern struct ui_out *ui_out_new(struct ui_out_impl *impl,
+				 struct ui_out_data *data,
+				 int flags);
 
 /* Redirect the ouptut of a ui_out object temporarily.  */
 
-extern int ui_out_redirect (struct ui_out *uiout, struct ui_file *outstream);
+extern int ui_out_redirect(struct ui_out *uiout, struct ui_file *outstream);
 
-void ui_out_delete (struct ui_out *uiout);
+void ui_out_delete(struct ui_out *uiout);
 
 #endif /* UI_OUT_H */
 

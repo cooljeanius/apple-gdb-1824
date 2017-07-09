@@ -2378,7 +2378,7 @@ process_event_stop_test:
     CORE_ADDR jmp_buf_pc;
     struct bpstat_what what;
 
-    what = bpstat_what(stop_bpstat);
+    what = bpstat_what_to_do(stop_bpstat);
 
     if (what.call_dummy)
       {

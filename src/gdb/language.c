@@ -1194,7 +1194,7 @@ static void
 unknown_language_arch_info(struct gdbarch *gdbarch,
 			   struct language_arch_info *lai)
 {
-  lai->string_char_type = builtin_type(gdbarch)->builtin_char;
+  lai->string_char_type = get_builtin_type(gdbarch)->builtin_char;
   lai->primitive_type_vector = GDBARCH_OBSTACK_CALLOC(gdbarch, 1,
 						      struct type *);
 }

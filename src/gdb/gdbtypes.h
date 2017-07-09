@@ -1135,7 +1135,7 @@ struct builtin_type
 };
 
 /* Return the type table for the specified architecture.  */
-extern const struct builtin_type *builtin_type (struct gdbarch *gdbarch);
+extern const struct builtin_type *get_builtin_type(struct gdbarch *gdbarch);
 
 /* Implicit sizes */
 extern struct type *builtin_type_void;

@@ -3561,7 +3561,7 @@ bpstat_stop_status(CORE_ADDR bp_addr, ptid_t ptid, int stopped_by_watchpoint)
 
 /* Tell what to do about this bpstat: */
 struct bpstat_what
-bpstat_what(bpstat bs)
+bpstat_what_to_do(bpstat bs)
 {
   /* Classify each bpstat as one of the following.  */
   enum bpstat_class
