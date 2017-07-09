@@ -66,6 +66,14 @@ if test ${HAVE_CLOSEDIR} = 0 || test ${REPLACE_CLOSEDIR} = 1; then
   ## end libobj
 fi
 gl_DIRENT_MODULE_INDICATOR([closedir])dnl
+dnl# from gnulib module ctime:
+AC_REQUIRE([gl_FUNC_CTIME])dnl
+  ## set up libobj if needed:
+if test ${REPLACE_CTIME} = 1; then
+  AC_LIBOBJ([ctime])dnl
+  ## end libobj
+fi
+gl_TIME_MODULE_INDICATOR([ctime])
 dnl# from gnulib module dirent:
 AC_REQUIRE([gl_DIRENT_H])dnl
 dnl# from gnulib module dirent-safer:
@@ -268,6 +276,24 @@ fi
 AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])dnl
 dnl# from gnulib module locale:
 AC_REQUIRE([gl_LOCALE_H])dnl
+dnl# from gnulib module localtime:
+AC_REQUIRE([gl_FUNC_LOCALTIME])dnl
+  ## set up libobj if needed:
+if test ${REPLACE_LOCALTIME} = 1; then
+  AC_LIBOBJ([localtime])dnl
+  ## end libobj
+fi
+gl_TIME_MODULE_INDICATOR([localtime])dnl
+dnl# from gnulib module localtime-buffer:
+AC_REQUIRE([gl_LOCALTIME_BUFFER_DEFAULTS])dnl
+  ## maybe set up libobj:
+if test -f localtime-buffer.c; then
+  AC_LIBOBJ([localtime-buffer])dnl
+  ## end libobj
+fi
+dnl# from gnulib module longlong:
+AC_REQUIRE([AC_TYPE_LONG_LONG_INT])dnl
+AC_REQUIRE([AC_TYPE_UNSIGNED_LONG_LONG_INT])dnl
 dnl# from gnulib module lstat:
 AC_REQUIRE([gl_FUNC_LSTAT])dnl
   ## set up libobj if needed:
@@ -434,6 +460,14 @@ if test "x${ac_cv_header_winsock2_h}" = "xyes"; then
   ## end libobj
 fi
 gl_SYS_SOCKET_MODULE_INDICATOR([send])dnl
+dnl# from gnulib module setenv:
+AC_REQUIRE([gl_FUNC_SETENV])dnl
+  ## set up libobj if needed:
+if test ${HAVE_SETENV} = 0 || test ${REPLACE_SETENV} = 1; then
+  AC_LIBOBJ([setenv])dnl
+  ## end libobj
+fi
+gl_STDLIB_MODULE_INDICATOR([setenv])dnl
 dnl# from gnulib module sig2str:
 AC_REQUIRE([gl_FUNC_SIG2STR])dnl
   ## set up libobj if needed:
@@ -533,6 +567,14 @@ if test -n "${ERRNO_H}" || test ${REPLACE_STRERROR_0} = 1; then
   AC_LIBOBJ([strerror-override])dnl
   gl_PREREQ_SYS_H_WINSOCK2
 fi
+dnl# from gnulib module strftime-fixes:
+AC_REQUIRE([gl_FUNC_STRFTIME])dnl
+  ## set up libobj if needed:
+if test ${REPLACE_STRFTIME} = 1; then
+  AC_LIBOBJ([strftime-fixes])dnl
+  ## end libobj
+fi
+gl_TIME_MODULE_INDICATOR([strftime])dnl
 dnl# from gnulib module string:
 AC_REQUIRE([gl_HEADER_STRING_H])dnl
 dnl# from gnulib module strncat:
@@ -625,10 +667,26 @@ if test ${HAVE_TIMEGM} = 0 || test ${REPLACE_TIMEGM} = 1; then
   gl_PREREQ_TIMEGM
 fi
 gl_TIME_MODULE_INDICATOR([timegm])dnl
+dnl# from gnulib module tzset:
+AC_REQUIRE([gl_FUNC_TZSET])dnl
+  ## set up libobj if needed:
+if test ${HAVE_TZSET} = 0 || test ${REPLACE_TZSET} = 1; then
+  AC_LIBOBJ([tzset])dnl
+  ## end libobj
+fi
+gl_TIME_MODULE_INDICATOR([tzset])dnl
 dnl# from gnulib module unistd:
 AC_REQUIRE([gl_UNISTD_H])dnl
 dnl# from gnulib module unistd-safer:
 AC_REQUIRE([gl_UNISTD_SAFER])dnl
+dnl# from gnulib module unsetenv:
+AC_REQUIRE([gl_FUNC_UNSETENV])dnl
+  ## set up libobj if needed:
+if test ${HAVE_UNSETENV} = 0 || test ${REPLACE_UNSETENV} = 1; then
+  AC_LIBOBJ([unsetenv])dnl
+  gl_PREREQ_UNSETENV
+fi
+gl_STDLIB_MODULE_INDICATOR([unsetenv])dnl
 dnl# from gnulib module usleep:
 AC_REQUIRE([gl_FUNC_USLEEP])dnl
   ## set up libobj if needed:

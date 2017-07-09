@@ -693,7 +693,7 @@ name_lookup(char *name0, char *err_name, int *token_type, int depth)
   for (segments = 0; ; segments += 1)
     {
       struct type *preferred_type;
-      int i, preferred_index;
+      int i0, preferred_index;
 
       if (left_block_context == NULL)
 	nsyms = ada_lookup_symbol_list(name, expression_context_block,
@@ -719,14 +719,14 @@ name_lookup(char *name0, char *err_name, int *token_type, int depth)
       /* Look for a symbol that does NOT denote void.  This is (I think) a
        * temporary kludge to get around problems in GNAT output.  */
       preferred_index = -1; preferred_type = NULL;
-      for (i = 0; i < nsyms; i += 1)
-	switch (SYMBOL_CLASS(syms[i].sym))
+      for (i0 = 0; i0 < nsyms; i0 += 1)
+	switch (SYMBOL_CLASS(syms[i0].sym))
 	  {
 	  case LOC_TYPEDEF:
-	    if (ada_prefer_type(SYMBOL_TYPE(syms[i].sym), preferred_type))
+	    if (ada_prefer_type(SYMBOL_TYPE(syms[i0].sym), preferred_type))
 	      {
-		preferred_index = i;
-		preferred_type = SYMBOL_TYPE(syms[i].sym);
+		preferred_index = i0;
+		preferred_type = SYMBOL_TYPE(syms[i0].sym);
 	      }
 	    break;
 	  case LOC_REGISTER:
@@ -820,7 +820,7 @@ name_lookup(char *name0, char *err_name, int *token_type, int depth)
 	  return segments;
 	}
       else if (nsyms == 0) {
-	int i;
+	int i_1;
 	yylval.ssym.msym = ada_lookup_simple_minsym(name);
 	if (yylval.ssym.msym != NULL)
 	  {
@@ -834,23 +834,23 @@ name_lookup(char *name0, char *err_name, int *token_type, int depth)
 	    && strncmp(name, "standard__", sizeof("standard__") - 1) == 0)
 	  error("No definition of \"%s\" found.", err_name);
 
-	for (i = (yylval.ssym.stoken.length - 1); i > 0; i -= 1)
+	for (i_1 = (yylval.ssym.stoken.length - 1); i_1 > 0; i_1 -= 1)
 	  {
-            if (name[i] == '.')
+            if (name[i_1] == '.')
 	      {
-		name[i] = '\0';
-		yylval.ssym.stoken.length = (size_t)i;
+		name[i_1] = '\0';
+		yylval.ssym.stoken.length = (size_t)i_1;
 		break;
 	      }
-	    else if ((name[i] == '_') && (name[i - 1] == '_'))
+	    else if ((name[i_1] == '_') && (name[i_1 - 1] == '_'))
 	      {
-		i -= 1;
-		name[i] = '\0';
-		yylval.ssym.stoken.length = (size_t)i;
+		i_1 -= 1;
+		name[i_1] = '\0';
+		yylval.ssym.stoken.length = (size_t)i_1;
 		break;
 	      }
 	  }
-	if (i <= 0)
+	if (i_1 <= 0)
 	  {
 	    if (!have_full_symbols() && !have_partial_symbols()
 		&& (left_block_context == NULL))

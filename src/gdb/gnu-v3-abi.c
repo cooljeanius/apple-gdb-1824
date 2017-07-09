@@ -178,8 +178,8 @@ static int
 vtable_address_point_offset(void)
 {
   struct type *vtable_type = ((struct type *)
-                              gdbarch_data(current_gdbarch,
-                                           vtable_type_gdbarch_data));
+                              new_gdbarch_data(current_gdbarch,
+					       vtable_type_gdbarch_data));
 
   return (TYPE_FIELD_BITPOS(vtable_type, vtable_field_virtual_functions)
           / TARGET_CHAR_BIT);
@@ -191,8 +191,8 @@ gnuv3_rtti_type(struct value *value,
                 int *full_p, int *top_p, int *using_enc_p)
 {
   struct type *vtable_type = ((struct type *)
-                              gdbarch_data(current_gdbarch,
-                                           vtable_type_gdbarch_data));
+                              new_gdbarch_data(current_gdbarch,
+					       vtable_type_gdbarch_data));
   struct type *values_type = check_typedef(value_type(value));
   CORE_ADDR vtable_address;
   struct value *vtable;
@@ -288,8 +288,8 @@ gnuv3_virtual_fn_field(struct value **value_p,
                        struct type *type, int offset)
 {
   struct type *vtable_type = ((struct type *)
-                              gdbarch_data(current_gdbarch,
-                                           vtable_type_gdbarch_data));
+                              new_gdbarch_data(current_gdbarch,
+					       vtable_type_gdbarch_data));
   struct value *value = *value_p;
   struct type *values_type = check_typedef(value_type(value));
   struct type *vfn_base;
@@ -371,8 +371,8 @@ gnuv3_baseclass_offset(struct type *type, int index, const bfd_byte *valaddr,
                        CORE_ADDR address)
 {
   struct type *vtable_type = ((struct type *)
-                              gdbarch_data(current_gdbarch,
-                                           vtable_type_gdbarch_data));
+                              new_gdbarch_data(current_gdbarch,
+					       vtable_type_gdbarch_data));
   struct value *vtable;
   struct type *vbasetype;
   struct value *offset_val, *vbase_array;

@@ -208,7 +208,7 @@ void
 i387_print_float_info(struct gdbarch *gdbarch, struct ui_file *file,
 		      struct frame_info *frame, const char *args)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(get_frame_arch(frame));
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(get_frame_arch(frame));
   ULONGEST fctrl;
   ULONGEST fstat;
   ULONGEST ftag;
@@ -385,7 +385,7 @@ static int fsave_offset[] =
 void
 i387_supply_fsave(struct regcache *regcache, int regnum, const void *fsave)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(get_regcache_arch(regcache));
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(get_regcache_arch(regcache));
   const gdb_byte *regs = (const gdb_byte *)fsave;
   int i;
 
@@ -447,7 +447,7 @@ i387_supply_fsave(struct regcache *regcache, int regnum, const void *fsave)
 void
 i387_collect_fsave(const struct regcache *regcache, int regnum, void *fsave)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   gdb_byte *regs = (gdb_byte *)fsave;
   int i;
 
@@ -546,13 +546,13 @@ static int fxsave_offset[] =
 
 #define FXSAVE_MXCSR_ADDR(fxsave) (fxsave + 24)
 
-static int i387_tag (const gdb_byte *raw);
+static int i387_tag(const gdb_byte *raw);
 
-
+/* */
 void
-i387_swap_fxsave (struct regcache *regcache, const uint8_t *fxsave)
+i387_swap_fxsave(struct regcache *regcache, const uint8_t *fxsave)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (get_regcache_arch (regcache));
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(get_regcache_arch(regcache));
   int i, j;
 
 #define I387_ST0_REGNUM tdep->st0_regnum
@@ -584,7 +584,7 @@ void
 i387_supply_fxsave(struct regcache *regcache, int regnumparam,
 		   const void *fxsave)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(get_regcache_arch(regcache));
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(get_regcache_arch(regcache));
   const gdb_byte *regs = (const gdb_byte *)fxsave;
   int i;
 
@@ -674,7 +674,7 @@ i387_supply_fxsave(struct regcache *regcache, int regnumparam,
 void
 i387_collect_fxsave(const struct regcache *regcache, int regnum, void *fxsave)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   gdb_byte *regs = (gdb_byte *)fxsave;
   int i;
 
@@ -799,12 +799,11 @@ i387_tag (const gdb_byte *raw)
     }
 }
 
-/* Prepare the FPU stack in REGCACHE for a function return.  */
-
+/* Prepare the FPU stack in REGCACHE for a function return: */
 void
-i387_return_value (struct gdbarch *gdbarch, struct regcache *regcache)
+i387_return_value(struct gdbarch *gdbarch, struct regcache *regcache)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   ULONGEST fstat;
 
   /* Define I387_ST0_REGNUM such that we use the proper

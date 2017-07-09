@@ -851,7 +851,7 @@ static struct x86_frame_cache *
 amd64_sigtramp_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct x86_frame_cache *cache;
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   CORE_ADDR addr;
   gdb_byte buf[8];
   int i;
@@ -914,10 +914,11 @@ static const struct frame_unwind amd64_sigtramp_frame_unwind =
   NULL    /* frame_prev_pc_ftype *prev_pc */
 };
 
+/* */
 static const struct frame_unwind *
-amd64_sigtramp_frame_sniffer (struct frame_info *next_frame)
+amd64_sigtramp_frame_sniffer(struct frame_info *next_frame)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (next_frame));
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(get_frame_arch(next_frame));
 
   /* We shouldn't even bother if we don't have a sigcontext_addr
      handler.  */
@@ -988,7 +989,7 @@ static void
 amd64_supply_fpregset (const struct regset *regset, struct regcache *regcache,
 		       int regnum, const void *fpregs, size_t len)
 {
-  const struct gdbarch_tdep *tdep = gdbarch_tdep (regset->arch);
+  const struct gdbarch_tdep *tdep = new_gdbarch_tdep(regset->arch);
 
   gdb_assert (len == tdep->sizeof_fpregset);
   amd64_supply_fxsave (regcache, regnum, fpregs);
@@ -1004,7 +1005,7 @@ amd64_collect_fpregset (const struct regset *regset,
 			const struct regcache *regcache,
 			int regnum, void *fpregs, size_t len)
 {
-  const struct gdbarch_tdep *tdep = gdbarch_tdep (regset->arch);
+  const struct gdbarch_tdep *tdep = new_gdbarch_tdep(regset->arch);
 
   gdb_assert (len == tdep->sizeof_fpregset);
   amd64_collect_fxsave (regcache, regnum, fpregs);
@@ -1037,7 +1038,7 @@ static const struct regset *
 amd64_regset_from_core_section (struct gdbarch *gdbarch,
 				const char *sect_name, size_t sect_size)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   if (strcmp (sect_name, ".reg2") == 0 && sect_size == tdep->sizeof_fpregset)
     {
@@ -1051,11 +1052,11 @@ amd64_regset_from_core_section (struct gdbarch *gdbarch,
   return i386_regset_from_core_section (gdbarch, sect_name, sect_size);
 }
 
-
+/* */
 void
-amd64_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+amd64_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* AMD64 generally uses `fxsave' instead of `fsave' for saving its
      floating-point registers.  */

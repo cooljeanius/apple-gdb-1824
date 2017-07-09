@@ -3512,7 +3512,7 @@ exhaustive_search_for_kernel_in_mem(struct objfile *ofile, CORE_ADDR *addr,
   stride = 0x100000;
   offset = 0x1000;
 
-  wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
+  wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
   if (wordsize == 4) /* 32-bit */
     {
       cur_addr = (1ULL << 31UL);
@@ -4065,7 +4065,7 @@ get_dyld_shared_cache_local_syms(void)
      this process is not using the system-wide shared cache and we should
      not import/use these nlist records.  */
 
-  int wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
+  int wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
   int nlist_entry_size;
   if (wordsize == 4)
     nlist_entry_size = 12;

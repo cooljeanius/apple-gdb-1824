@@ -988,20 +988,20 @@ dyld_shlib_info_basename_length (struct dyld_objfile_info *s,
   int i;
   int baselen = 0;
   struct objfile *objfile, *temp;
-  struct dyld_objfile_entry *j;
+  struct dyld_objfile_entry *j0;
 
-  DYLD_ALL_OBJFILE_INFO_ENTRIES (s, j, i)
+  DYLD_ALL_OBJFILE_INFO_ENTRIES(s, j0, i)
     {
       const char *name = NULL;
       const char *tfname = NULL;
       int tfnamelen = 0;
 
-      if (!(j->reason & reason_mask))
+      if (!(j0->reason & reason_mask))
         {
           continue;
         }
 
-      name = dyld_entry_filename(j, NULL,
+      name = dyld_entry_filename(j0, NULL,
                                  (enum dyld_entry_filename_type)0);
       if (name == NULL)
         {
@@ -1012,12 +1012,12 @@ dyld_shlib_info_basename_length (struct dyld_objfile_info *s,
         }
       else
         {
-          dyld_library_basename (name, &tfname, &tfnamelen, NULL, NULL);
+          dyld_library_basename(name, &tfname, &tfnamelen, NULL, NULL);
           if (baselen < tfnamelen)
             {
               baselen = tfnamelen;
             }
-          xfree ((char *) tfname);
+          xfree((char *)tfname);
         }
     }
 
@@ -1026,19 +1026,18 @@ dyld_shlib_info_basename_length (struct dyld_objfile_info *s,
       return baselen;
     }
 
-  ALL_OBJFILES_SAFE (objfile, temp)
+  ALL_OBJFILES_SAFE(objfile, temp)
   {
-
     const char *name = NULL;
     const char *tfname = NULL;
     int tfnamelen = 0;
-    struct dyld_objfile_entry *j;
+    struct dyld_objfile_entry *j1;
 
     int found = 0;
 
-    DYLD_ALL_OBJFILE_INFO_ENTRIES (s, j, i)
+    DYLD_ALL_OBJFILE_INFO_ENTRIES(s, j1, i)
       {
-        if (j->objfile == objfile || j->commpage_objfile == objfile)
+        if ((j1->objfile == objfile) || (j1->commpage_objfile == objfile))
           {
             found = 1;
           }
@@ -1046,7 +1045,6 @@ dyld_shlib_info_basename_length (struct dyld_objfile_info *s,
 
     if (!found)
       {
-
         struct dyld_objfile_entry tentry;
         dyld_convert_entry(objfile, &tentry);
 
@@ -1061,12 +1059,12 @@ dyld_shlib_info_basename_length (struct dyld_objfile_info *s,
           }
         else
           {
-            dyld_library_basename (name, &tfname, &tfnamelen, NULL, NULL);
+            dyld_library_basename(name, &tfname, &tfnamelen, NULL, NULL);
             if (baselen < tfnamelen)
               {
                 baselen = tfnamelen;
               }
-            xfree ((char *) tfname);
+            xfree((char *)tfname);
           }
       }
   }

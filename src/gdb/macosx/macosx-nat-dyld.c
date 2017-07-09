@@ -1903,7 +1903,7 @@ void
 macosx_init_dyld(struct macosx_dyld_thread_status *s,
 		 struct objfile *o, bfd *abfd)
 {
-  struct dyld_objfile_entry *e;
+  struct dyld_objfile_entry *e0;
   int i;
   struct dyld_objfile_info previous_info;
   static int timer_id = -1;
@@ -1912,9 +1912,9 @@ macosx_init_dyld(struct macosx_dyld_thread_status *s,
   if (maint_use_timers)
     timer_cleanup = start_timer(&timer_id, "macosx_init_dyld", "");
 
-  DYLD_ALL_OBJFILE_INFO_ENTRIES(&s->current_info, e, i)
-    if (e->reason & dyld_reason_executable_mask)
-      dyld_objfile_entry_clear(e);
+  DYLD_ALL_OBJFILE_INFO_ENTRIES(&s->current_info, e0, i)
+    if (e0->reason & dyld_reason_executable_mask)
+      dyld_objfile_entry_clear(e0);
 
   dyld_init_paths(&s->path_info);
 
@@ -1933,7 +1933,7 @@ macosx_init_dyld(struct macosx_dyld_thread_status *s,
   if (o != NULL)
     {
       const char *objfile_name = NULL;
-      struct dyld_objfile_entry *e;
+      struct dyld_objfile_entry *e1;
 
       /* Canonicalize the name: */
       if (bfd_get_filename(o->obfd) != NULL)
@@ -1947,17 +1947,17 @@ macosx_init_dyld(struct macosx_dyld_thread_status *s,
             objfile_name = bfd_get_filename(o->obfd);
         }
 
-      e = dyld_objfile_entry_alloc(&s->current_info);
-      e->text_name_valid = 1;
-      e->reason = dyld_reason_executable;
-      e->objfile = o;
-      /* No need to set e->abfd, since e->objfile is present. */
-      e->load_flag = o->symflags;
-      e->text_name = objfile_name;
-      e->loaded_from_memory = 0;
-      e->loaded_name = e->text_name;
-      e->loaded_addr = 0;
-      e->loaded_addrisoffset = 1;
+      e1 = dyld_objfile_entry_alloc(&s->current_info);
+      e1->text_name_valid = 1;
+      e1->reason = dyld_reason_executable;
+      e1->objfile = o;
+      /* No need to set e1->abfd, since e1->objfile is present. */
+      e1->load_flag = o->symflags;
+      e1->text_name = objfile_name;
+      e1->loaded_from_memory = 0;
+      e1->loaded_name = e1->text_name;
+      e1->loaded_addr = 0;
+      e1->loaded_addrisoffset = 1;
     }
 
   if (dyld_preload_libraries_flag)
@@ -2578,7 +2578,7 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
 
   gdb_assert(addr != INVALID_ADDRESS);
 
-  wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
+  wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
   p = wordsize;
 
   /* ignore '-Wdeclaration-after-statement' here, because trying to hack
@@ -2721,7 +2721,7 @@ dyld_info_read_raw_data(CORE_ADDR addr, int num, struct dyld_raw_info *rinfo)
   gdb_byte *buf;
   int i;
   int size_of_dyld_raw_info_in_inferior;
-  int wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
+  int wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
 
   size_of_dyld_raw_info_in_inferior = (wordsize * 3);  /* three fields */
 

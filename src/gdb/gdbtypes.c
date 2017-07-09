@@ -3669,7 +3669,7 @@ static struct gdbarch_data *gdbtypes_data;
 const struct builtin_type *
 builtin_type(struct gdbarch *gdbarch)
 {
-  return (const struct builtin_type *)gdbarch_data(gdbarch, gdbtypes_data);
+  return (const struct builtin_type *)new_gdbarch_data(gdbarch, gdbtypes_data);
 }
 
 /* */

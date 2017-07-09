@@ -324,23 +324,22 @@ prepare_threads_after_stop(struct macosx_inferior_status *inferior)
 {
   thread_array_t thread_list = NULL;
   unsigned int nthreads = 0;
-  kern_return_t kret;
+  kern_return_t kret0;
   unsigned int i;
 
   if (inferior->exception_status.saved_exceptions_stepping) {
-      kret = macosx_restore_exception_ports(inferior->task,
-					    &inferior->exception_status.saved_exceptions_step);
-      MACH_CHECK_ERROR(kret);
+      kret0 = macosx_restore_exception_ports(inferior->task,
+					     &inferior->exception_status.saved_exceptions_step);
+      MACH_CHECK_ERROR(kret0);
       inferior->exception_status.saved_exceptions_stepping = 0;
   }
 
-  kret = task_threads(inferior->task, &thread_list, &nthreads);
-  MACH_CHECK_ERROR(kret);
+  kret0 = task_threads(inferior->task, &thread_list, &nthreads);
+  MACH_CHECK_ERROR(kret0);
 
-  macosx_check_new_threads (thread_list, nthreads);
+  macosx_check_new_threads(thread_list, nthreads);
 
-  for ((i = 0); (i < nthreads); i++) {
-
+  for (i = 0; i < nthreads; i++) {
       ptid_t ptid;
       struct thread_info *tp = NULL;
 
@@ -350,12 +349,12 @@ prepare_threads_after_stop(struct macosx_inferior_status *inferior)
       if (inferior_debug_flag >= 2) {
           struct thread_basic_info info;
           unsigned int info_count = THREAD_BASIC_INFO_COUNT;
-          kern_return_t kret;
+          kern_return_t kret1;
 
-          kret =
+          kret1 =
             thread_info(thread_list[i], THREAD_BASIC_INFO,
 			(thread_info_t)&info, &info_count);
-          MACH_CHECK_ERROR(kret);
+          MACH_CHECK_ERROR(kret1);
 
 	  if (tp->privatedata->gdb_suspend_count > 0) {
             inferior_debug(3, "**  Resuming thread 0x%x, gdb suspend count: "
@@ -384,14 +383,14 @@ prepare_threads_after_stop(struct macosx_inferior_status *inferior)
 	  }
       }
 
-      kret = clear_trace_bit(thread_list[i]);
-      MACH_WARN_ERROR(kret);
+      kret0 = clear_trace_bit(thread_list[i]);
+      MACH_WARN_ERROR(kret0);
     }
 
-  kret =
+  kret0 =
     vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
 		  (nthreads * sizeof(int)));
-  MACH_WARN_ERROR(kret);
+  MACH_WARN_ERROR(kret0);
 }
 
 void
@@ -401,7 +400,7 @@ prepare_threads_before_run(struct macosx_inferior_status *inferior,
 {
   thread_array_t thread_list = NULL;
   unsigned int nthreads = 0;
-  kern_return_t kret;
+  kern_return_t kret0;
   unsigned int i;
 
   prepare_threads_after_stop (inferior);
@@ -409,12 +408,12 @@ prepare_threads_before_run(struct macosx_inferior_status *inferior,
   if (step || stop_others) {
       struct thread_basic_info info;
       unsigned int info_count = THREAD_BASIC_INFO_COUNT;
-      kern_return_t kret;
+      kern_return_t kret1;
 
-      kret =
+      kret1 =
         thread_info(current, THREAD_BASIC_INFO, (thread_info_t)&info,
 		    &info_count);
-      MACH_CHECK_ERROR (kret);
+      MACH_CHECK_ERROR(kret1);
 
       if (info.suspend_count != 0) {
           if (step) {
@@ -440,8 +439,8 @@ prepare_threads_before_run(struct macosx_inferior_status *inferior,
       }
   }
 
-  kret = task_threads(inferior->task, &thread_list, &nthreads);
-  MACH_CHECK_ERROR(kret);
+  kret0 = task_threads(inferior->task, &thread_list, &nthreads);
+  MACH_CHECK_ERROR(kret0);
 
   if (step) {
       inferior_debug(3, "*** Suspending threads to step: 0x%x\n", current);
@@ -452,9 +451,9 @@ prepare_threads_before_run(struct macosx_inferior_status *inferior,
       /* Do NOT need to do this either, since it is already done in
        * prepare_threads_after_stop:  */
 #if 0
-      kret = clear_trace_bit(thread_list[i]);
+      kret0 = clear_trace_bit(thread_list[i]);
 
-      MACH_CHECK_ERROR(kret);
+      MACH_CHECK_ERROR(kret0);
 #endif /* 0 */
 
       if ((stop_others) && (thread_list[i] != current)) {
@@ -479,8 +478,8 @@ prepare_threads_before_run(struct macosx_inferior_status *inferior,
 			     thread_list[i]);
 	      continue;
 	  }
-          kret = thread_suspend(thread_list[i]);
-          MACH_CHECK_ERROR(kret);
+          kret0 = thread_suspend(thread_list[i]);
+          MACH_CHECK_ERROR(kret0);
           tp->privatedata->gdb_suspend_count++;
           inferior_debug(3, "*** Suspending thread 0x%x, suspend count %d\n",
 			 thread_list[i], tp->privatedata->gdb_suspend_count);
@@ -490,21 +489,21 @@ prepare_threads_before_run(struct macosx_inferior_status *inferior,
       }
   }
 
-  kret =
+  kret0 =
     vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
 		  (nthreads * sizeof(int)));
-  MACH_CHECK_ERROR(kret);
+  MACH_CHECK_ERROR(kret0);
 
   if (step) {
       set_trace_bit(current);
   }
 
   if (step) {
-      kret =
+      kret0 =
         macosx_save_exception_ports(inferior->task,
 				    &inferior->exception_status.
 				    saved_exceptions_step);
-      MACH_CHECK_ERROR(kret);
+      MACH_CHECK_ERROR(kret0);
       inferior->exception_status.saved_exceptions_stepping = 1;
   }
 }

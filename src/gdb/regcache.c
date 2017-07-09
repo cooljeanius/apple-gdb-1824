@@ -147,11 +147,12 @@ init_regcache_descr (struct gdbarch *gdbarch)
   return descr;
 }
 
+/* */
 static struct regcache_descr *
 regcache_descr(struct gdbarch *gdbarch)
 {
-  return (struct regcache_descr *)gdbarch_data(gdbarch,
-                                               regcache_descr_handle);
+  return (struct regcache_descr *)new_gdbarch_data(gdbarch,
+						   regcache_descr_handle);
 }
 
 /* Utility functions returning useful register attributes stored in

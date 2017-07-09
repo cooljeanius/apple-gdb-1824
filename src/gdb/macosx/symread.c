@@ -1148,7 +1148,7 @@ sym_symfile_read(struct objfile *objfile, int mainline)
   unsigned long nfuncs;
   unsigned long maxtypes;
 
-  unsigned long i;
+  unsigned long uli0;
   CORE_ADDR text_section_offset = 0UL;
 
   if (mainline == 0) {
@@ -1175,18 +1175,18 @@ sym_symfile_read(struct objfile *objfile, int mainline)
   BLOCK_DICT(sblock) = dict_create_hashed_expandable();
   text_section_offset = objfile_text_section_offset(objfile);
 
-  for (i = 0UL; i < maxtypes; i++)
+  for (uli0 = 0UL; uli0 < maxtypes; uli0++)
     {
-      if (typedefvec[i] != NULL)
+      if (typedefvec[uli0] != NULL)
         {
-          dict_add_symbol(BLOCK_DICT(gblock), typedefvec[i]);
+          dict_add_symbol(BLOCK_DICT(gblock), typedefvec[uli0]);
         }
     }
 
-  for (i = 0UL; i < nfuncs; i++)
+  for (uli0 = 0UL; uli0 < nfuncs; uli0++)
     {
-      CHECK_FATAL(funcvec[i] != NULL);
-      dict_add_symbol(BLOCK_DICT(gblock), funcvec[i]);
+      CHECK_FATAL(funcvec[uli0] != NULL);
+      dict_add_symbol(BLOCK_DICT(gblock), funcvec[uli0]);
     }
 
   bv =
@@ -1201,40 +1201,45 @@ sym_symfile_read(struct objfile *objfile, int mainline)
   BLOCKVECTOR_BLOCK(bv, STATIC_BLOCK) = sblock;
 
   {
-    unsigned long i;
+    unsigned long uli1;
 
-    for (i = 0UL; i < nfuncs; i++)
+    for (uli1 = 0UL; uli1 < nfuncs; uli1++)
       {
-        BLOCKVECTOR_BLOCK(bv, (i + 2UL)) = SYMBOL_BLOCK_VALUE(funcvec[i]);
-        BLOCK_SUPERBLOCK(SYMBOL_BLOCK_VALUE(funcvec[i])) = sblock;
+        BLOCKVECTOR_BLOCK(bv, (uli1 + 2UL)) = SYMBOL_BLOCK_VALUE(funcvec[uli1]);
+        BLOCK_SUPERBLOCK(SYMBOL_BLOCK_VALUE(funcvec[uli1])) = sblock;
       }
   }
 
   {
     CORE_ADDR minaddr = (CORE_ADDR)(-1L);
     CORE_ADDR maxaddr = 0UL;
-    unsigned long i;
+    unsigned long uli2;
 
-    for (i = 0UL; i < nfuncs; i++)
+    for (uli2 = 0UL; uli2 < nfuncs; uli2++)
       {
 	/* APPLE LOCAL begin address ranges  */
-        if (BLOCK_LOWEST_PC(BLOCKVECTOR_BLOCK(bv, (i + 2UL))) < minaddr)
+        if (BLOCK_LOWEST_PC(BLOCKVECTOR_BLOCK(bv, (uli2 + 2UL))) < minaddr)
           {
-            minaddr = BLOCK_LOWEST_PC(BLOCKVECTOR_BLOCK(bv, (i + 2UL)));
+            minaddr = BLOCK_LOWEST_PC(BLOCKVECTOR_BLOCK(bv, (uli2 + 2UL)));
           }
-        if(!BLOCK_RANGES(BLOCKVECTOR_BLOCK(bv, (i + 2UL)))
-	   && BLOCK_END(BLOCKVECTOR_BLOCK(bv, (i + 2UL))) > maxaddr)
+        if(!BLOCK_RANGES(BLOCKVECTOR_BLOCK(bv, (uli2 + 2UL)))
+	   && BLOCK_END(BLOCKVECTOR_BLOCK(bv, (uli2 + 2UL))) > maxaddr)
           {
-            maxaddr = BLOCK_END(BLOCKVECTOR_BLOCK(bv, (i + 2UL)));
+            maxaddr = BLOCK_END(BLOCKVECTOR_BLOCK(bv, (uli2 + 2UL)));
           }
-	else if (BLOCK_RANGES(BLOCKVECTOR_BLOCK(bv, (i + 2UL))))
+	else if (BLOCK_RANGES(BLOCKVECTOR_BLOCK(bv, (uli2 + 2UL))))
 	  {
 	    int j;
 
-	    for (j = 0; j < BLOCK_RANGES(BLOCKVECTOR_BLOCK(bv, i + 2))->nelts;
+	    for (j = 0;
+		 j < BLOCK_RANGES(BLOCKVECTOR_BLOCK(bv, (uli2 + 2UL)))->nelts;
 		 j++)
-	      if (BLOCK_RANGE_END(BLOCKVECTOR_BLOCK(bv, i + 2), j) > maxaddr)
-		maxaddr = BLOCK_RANGE_END(BLOCKVECTOR_BLOCK(bv, i + 2), j);
+	      {
+		if (BLOCK_RANGE_END(BLOCKVECTOR_BLOCK(bv, (uli2 + 2UL)), j)
+		    > maxaddr)
+		  maxaddr = BLOCK_RANGE_END(BLOCKVECTOR_BLOCK(bv, (uli2 + 2UL)),
+					    j);
+	      }
 	  }
 	/* APPLE LOCAL end address ranges  */
       }
@@ -1258,12 +1263,12 @@ sym_symfile_read(struct objfile *objfile, int mainline)
     bfd_sym_file_references_table_entry frtentry;
     bfd_sym_modules_table_entry mtentry;
 
-    unsigned long i;
+    unsigned long uli3;
 
-    for (i = 1UL; i <= sdata->header.dshb_csnte.dti_object_count; i++)
+    for (uli3 = 1UL; uli3 <= sdata->header.dshb_csnte.dti_object_count; uli3++)
       {
         ret =
-          bfd_sym_fetch_contained_statements_table_entry(abfd, &entry, i);
+          bfd_sym_fetch_contained_statements_table_entry(abfd, &entry, uli3);
         if (ret < 0)
           {
             break;
@@ -1434,6 +1439,7 @@ sym_symfile_finish(struct objfile *objfile ATTRIBUTE_UNUSED)
   return;
 }
 
+/* */
 static void
 sym_symfile_offsets(struct objfile *objfile, struct section_addr_info *addrs)
 {
@@ -1467,6 +1473,7 @@ sym_symfile_offsets(struct objfile *objfile, struct section_addr_info *addrs)
   objfile->sect_index_rodata = 0;
 }
 
+/* */
 static void
 sym_symfile_display (bfd *abfd, FILE *f)
 {
@@ -1506,15 +1513,16 @@ sym_symfile_display (bfd *abfd, FILE *f)
   fprintf (f, "\n");
 }
 
+/* */
 static struct sym_fns sym_sym_fns = {
   bfd_target_sym_flavour,
 
-  sym_new_init,                 /* sym_new_init: init anything gbl to entire symtab */
-  sym_symfile_init,             /* sym_init: read initial info, setup for sym_read() */
-  sym_symfile_read,             /* sym_read: read a symbol file into symtab */
-  sym_symfile_finish,           /* sym_finish: finished with file, cleanup */
-  sym_symfile_offsets,          /* sym_offsets:  xlate external to internal form */
-  NULL                          /* next: pointer to next struct sym_fns */
+  sym_new_init,         /* sym_new_init: init anything gbl to entire symtab */
+  sym_symfile_init,     /* sym_init: read initial info, setup for sym_read() */
+  sym_symfile_read,     /* sym_read: read a symbol file into symtab */
+  sym_symfile_finish,   /* sym_finish: finished with file, cleanup */
+  sym_symfile_offsets,  /* sym_offsets:  xlate external to internal form */
+  NULL                  /* next: pointer to next struct sym_fns */
 };
 
 /* */

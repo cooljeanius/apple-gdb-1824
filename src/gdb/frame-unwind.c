@@ -1,4 +1,4 @@
-/* Definitions for frame unwinder, for GDB, the GNU debugger.
+/* frame-unwind.c: Definitions for frame unwinder, for GDB, the GNU debugger.
 
    Copyright 2003, 2004 Free Software Foundation, Inc.
 
@@ -74,7 +74,7 @@ frame_unwind_append_sniffer(struct gdbarch *gdbarch,
 			    frame_unwind_sniffer_ftype *sniffer)
 {
   struct frame_unwind_table *table =
-    (struct frame_unwind_table *)gdbarch_data(gdbarch, frame_unwind_data);
+    (struct frame_unwind_table *)new_gdbarch_data(gdbarch, frame_unwind_data);
   struct frame_unwind_table_entry **ip;
 
   /* Find the end of the list and insert the new entry there: */
@@ -88,7 +88,7 @@ frame_unwind_prepend_unwinder(struct gdbarch *gdbarch,
                               const struct frame_unwind *unwinder)
 {
   struct frame_unwind_table *table =
-    (struct frame_unwind_table *)gdbarch_data(gdbarch, frame_unwind_data);
+    (struct frame_unwind_table *)new_gdbarch_data(gdbarch, frame_unwind_data);
   struct frame_unwind_table_entry *entry;
 
   /* Insert the new entry at the start of the list: */
@@ -103,7 +103,7 @@ frame_unwind_find_by_frame(struct frame_info *next_frame, void **this_cache)
 {
   struct gdbarch *gdbarch = get_frame_arch(next_frame);
   struct frame_unwind_table *table =
-    (struct frame_unwind_table *)gdbarch_data(gdbarch, frame_unwind_data);
+    (struct frame_unwind_table *)new_gdbarch_data(gdbarch, frame_unwind_data);
   struct frame_unwind_table_entry *entry;
   for (entry = table->list; entry != NULL; entry = entry->next)
     {

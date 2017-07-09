@@ -65,11 +65,12 @@ solib_init(struct obstack *obstack)
   return ops;
 }
 
+/* */
 static struct target_so_ops *
 solib_ops(struct gdbarch *gdbarch)
 {
   struct target_so_ops **ops;
-  ops = (struct target_so_ops **)gdbarch_data(gdbarch, solib_data);
+  ops = (struct target_so_ops **)new_gdbarch_data(gdbarch, solib_data);
   return *ops;
 }
 

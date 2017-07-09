@@ -1190,7 +1190,7 @@ macosx_process_events(struct macosx_inferior_status *inferior,
 	  else
 	    {
 	      /* Otherwise pick one of the threads randomly, and report
-		   * the breakpoint hit for that one.  */
+	       * the breakpoint hit for that one.  */
 	      random_selector = ((int)
                                  ((breakpoint_count * (double)rand())
                                   / (double)((float)RAND_MAX + 1.0f)));
@@ -1206,6 +1206,7 @@ macosx_process_events(struct macosx_inferior_status *inferior,
   return event_count;
 }
 
+/* */
 void
 macosx_check_new_threads(thread_array_t thread_list, unsigned int nthreads)
 {
@@ -1222,25 +1223,25 @@ macosx_check_new_threads(thread_array_t thread_list, unsigned int nthreads)
   for (i = 0; i < nthreads; i++)
     {
       ptid_t ptid = ptid_build(macosx_status->pid, 0, thread_list[i]);
-      struct thread_info *tp;
+      struct thread_info *tp0;
 
-      tp = find_thread_pid(ptid);
+      tp0 = find_thread_pid(ptid);
 
-      if (tp == NULL)
+      if (tp0 == NULL)
         {
-          struct thread_info *tp;
-          tp = add_thread(ptid);
-          if (create_private_thread_info(tp))
-            tp->privatedata->app_thread_port =
+          struct thread_info *tp1;
+          tp1 = add_thread(ptid);
+          if (create_private_thread_info(tp1))
+            tp1->privatedata->app_thread_port =
               get_application_thread_port(thread_list[i]);
         }
-      else if (tp->privatedata && (tp->privatedata->app_thread_port == 0))
+      else if (tp0->privatedata && (tp0->privatedata->app_thread_port == 0))
 	{
 	  /* This seems a little odd, but it turns out when we stop
 	     early on in the program startup, the mach_thread_names
 	     call does NOT return any threads, even though task_threads
 	     does. So we keep trying and eventually it will work.  */
-	  tp->privatedata->app_thread_port =
+	  tp0->privatedata->app_thread_port =
 	    get_application_thread_port(thread_list[i]);
 	}
     }

@@ -919,7 +919,7 @@ done
 cat <<EOF
 #line 920 "gdbarch.sh"
 
-extern struct gdbarch_tdep *gdbarch_tdep (struct gdbarch *gdbarch);
+extern struct gdbarch_tdep *new_gdbarch_tdep (struct gdbarch *gdbarch);
 
 
 /* Mechanism for co-ordinating the selection of a specific
@@ -1119,7 +1119,7 @@ extern void deprecated_set_gdbarch_data(struct gdbarch *gdbarch,
                                         void *pointer)
   ATTRIBUTE_DEPRECATED;
 
-extern void *gdbarch_data(struct gdbarch *gdbarch, struct gdbarch_data *);
+extern void *new_gdbarch_data(struct gdbarch *gdbarch, struct gdbarch_data *);
 
 #line 1124 "gdbarch.sh"
 
@@ -1638,10 +1638,11 @@ printf "\n"
 cat <<EOF
 #line 1639 "gdbarch.sh"
 struct gdbarch_tdep *
-gdbarch_tdep (struct gdbarch *gdbarch)
+new_gdbarch_tdep(struct gdbarch *gdbarch)
 {
   if (gdbarch_debug >= 2)
-    fprintf_unfiltered(gdb_stdlog, "%s:%d: gdbarch_tdep called.\\n", __FILE__, __LINE__);
+    fprintf_unfiltered(gdb_stdlog, "%s:%d: new_gdbarch_tdep called.\\n",
+		       __FILE__, __LINE__);
   return gdbarch->tdep;
 }
 EOF
@@ -1761,7 +1762,7 @@ cat <<EOF
 
 struct gdbarch_data
 {
-  unsigned index;
+  unsigned int index;
   int init_p;
   gdbarch_data_pre_init_ftype *pre_init;
   gdbarch_data_post_init_ftype *post_init;
@@ -1775,7 +1776,7 @@ struct gdbarch_data_registration
 
 struct gdbarch_data_registry
 {
-  unsigned nr;
+  unsigned int nr;
   struct gdbarch_data_registration *registrations;
 };
 
@@ -1843,7 +1844,7 @@ deprecated_set_gdbarch_data (struct gdbarch *gdbarch,
    data-pointer. */
 
 void *
-gdbarch_data (struct gdbarch *gdbarch, struct gdbarch_data *data)
+new_gdbarch_data(struct gdbarch *gdbarch, struct gdbarch_data *data)
 {
   gdb_assert (data->index < gdbarch->nr_data);
   if (gdbarch->data[data->index] == NULL)

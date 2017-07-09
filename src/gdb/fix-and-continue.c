@@ -2266,39 +2266,39 @@ print_active_functions (struct fixinfo *cur)
 {
   struct active_threads *th;
   struct active_func *fn;
-  struct cleanup *uiout_cleanup;
+  struct cleanup *uiout_cleanup0;
 
-  if (!ui_out_is_mi_like_p (uiout))
+  if (!ui_out_is_mi_like_p(uiout))
     return;
 
-  uiout_cleanup =
-      make_cleanup_ui_out_list_begin_end (uiout, "replaced-functions");
+  uiout_cleanup0 =
+      make_cleanup_ui_out_list_begin_end(uiout, "replaced-functions");
 
   for (th = cur->active_functions; th != NULL; th = th->next)
     {
       struct cleanup *uiout_one_thread_cleanup;
       uiout_one_thread_cleanup =
-           make_cleanup_ui_out_tuple_begin_end (uiout, NULL);
-      ui_out_field_int (uiout, "thread-id", th->num);
-      make_cleanup_ui_out_list_begin_end (uiout, "replaced");
+           make_cleanup_ui_out_tuple_begin_end(uiout, NULL);
+      ui_out_field_int(uiout, "thread-id", th->num);
+      make_cleanup_ui_out_list_begin_end(uiout, "replaced");
 
       for (fn = th->active_func_chain; fn != NULL; fn = fn->next)
         {
-           struct cleanup *uiout_cleanup
-                        = make_cleanup_ui_out_tuple_begin_end (uiout, "frame");
-           ui_out_field_int (uiout, "level", fn->level);
-           ui_out_field_core_addr (uiout, "addr", fn->addr);
-           ui_out_field_core_addr (uiout, "fp", fn->fp);
-           ui_out_field_string (uiout, "func", SYMBOL_PRINT_NAME (fn->sym));
-           ui_out_field_string (uiout, "file", fn->file);
-           ui_out_field_int (uiout, "line", fn->line);
-           ui_out_field_string (uiout, "dir", fn->dir);
-           do_cleanups (uiout_cleanup);
+           struct cleanup *uiout_cleanup1 =
+	     make_cleanup_ui_out_tuple_begin_end(uiout, "frame");
+           ui_out_field_int(uiout, "level", fn->level);
+           ui_out_field_core_addr(uiout, "addr", fn->addr);
+           ui_out_field_core_addr(uiout, "fp", fn->fp);
+           ui_out_field_string(uiout, "func", SYMBOL_PRINT_NAME(fn->sym));
+           ui_out_field_string(uiout, "file", fn->file);
+           ui_out_field_int(uiout, "line", fn->line);
+           ui_out_field_string(uiout, "dir", fn->dir);
+           do_cleanups(uiout_cleanup1);
         }
-      do_cleanups (uiout_one_thread_cleanup);
+      do_cleanups(uiout_one_thread_cleanup);
     }
 
-  do_cleanups (uiout_cleanup);
+  do_cleanups(uiout_cleanup0);
 }
 
 

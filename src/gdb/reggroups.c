@@ -103,7 +103,7 @@ void
 reggroup_add (struct gdbarch *gdbarch, struct reggroup *group)
 {
   struct reggroups *groups;
-  groups = (struct reggroups *)gdbarch_data(gdbarch, reggroups_data);
+  groups = (struct reggroups *)new_gdbarch_data(gdbarch, reggroups_data);
 
   if (groups == NULL)
     {
@@ -130,7 +130,7 @@ reggroup_next(struct gdbarch *gdbarch, struct reggroup *last)
 
   /* Don't allow this function to be called during architecture
      creation.  If there are no groups, use the default groups list.  */
-  groups = (struct reggroups *)gdbarch_data(gdbarch, reggroups_data);
+  groups = (struct reggroups *)new_gdbarch_data(gdbarch, reggroups_data);
   gdb_assert(groups != NULL);
   if (groups->first == NULL)
     groups = &default_groups;

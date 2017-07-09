@@ -553,10 +553,11 @@ i386_macosx_frame_align (struct gdbarch *gdbarch, CORE_ADDR addr)
    return (addr & -16);
 }
 
+/* */
 static void
-i386_macosx_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+i386_macosx_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* We support the SSE registers.  */
   tdep->num_xmm_regs = I386_NUM_XREGS - 1;
@@ -579,10 +580,11 @@ i386_macosx_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   set_gdbarch_frame_align (gdbarch, i386_macosx_frame_align);
 }
 
+/* */
 static void
-x86_macosx_init_abi_64 (struct gdbarch_info info, struct gdbarch *gdbarch)
+x86_macosx_init_abi_64(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->wordsize = 8;
 
@@ -659,7 +661,7 @@ i386_fast_show_stack(unsigned int count_limit,
   struct frame_info *fi;
   ULONGEST next_fp = 0;
   ULONGEST pc = 0;
-  int wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
+  int wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
 
   more_frames = fast_show_stack_trace_prologue(count_limit, print_start, print_end, wordsize,
                                                &sigtramp_start, &sigtramp_end,
@@ -752,20 +754,21 @@ i386_count_finish:
   return (!err);
 }
 
+/* */
 static int
-i386_macosx_get_longjmp_target_helper (int offset, CORE_ADDR *pc)
+i386_macosx_get_longjmp_target_helper(int offset, CORE_ADDR *pc)
 {
-  CORE_ADDR jmp_buf;
+  CORE_ADDR local_jmp_buf;
   ULONGEST long_addr = 0;
 
   /* The first argument to longjmp is the pointer to the jump buf.
      The saved eip/rip there is offset by OFFSET as given above.  */
 
-  jmp_buf = FETCH_POINTER_ARGUMENT (get_current_frame (), 0,
-                                    builtin_type_void_func_ptr);
+  local_jmp_buf = FETCH_POINTER_ARGUMENT(get_current_frame(), 0,
+					 builtin_type_void_func_ptr);
 
-  if (safe_read_memory_unsigned_integer
-      (jmp_buf + offset, TARGET_PTR_BIT / 8, &long_addr))
+  if (safe_read_memory_unsigned_integer((local_jmp_buf + offset), 
+					(TARGET_PTR_BIT / 8), &long_addr))
     {
       *pc = long_addr;
       return 1;

@@ -258,18 +258,18 @@ static unsigned char *signal_program;
 
 #define SET_SIGS(nsigs,sigs,flags) \
   do { \
-    int signum = (nsigs); \
-    while (signum-- > 0) \
-      if ((sigs)[signum]) \
-	(flags)[signum] = 1; \
+    int signum0 = (nsigs); \
+    while (signum0-- > 0) \
+      if ((sigs)[signum0]) \
+	(flags)[signum0] = 1; \
   } while (0)
 
 #define UNSET_SIGS(nsigs,sigs,flags) \
   do { \
-    int signum = (nsigs); \
-    while (signum-- > 0) \
-      if ((sigs)[signum]) \
-	(flags)[signum] = 0; \
+    int signum1 = (nsigs); \
+    while (signum1-- > 0) \
+      if ((sigs)[signum1]) \
+	(flags)[signum1] = 0; \
   } while (0)
 
 /* Value to pass to target_resume() to cause all threads to resume */
@@ -4138,7 +4138,7 @@ handle_command(const char *args, int from_tty)
 {
   char **argv;
   int digits, wordlen;
-  int sigfirst, signum, siglast;
+  int sigfirst, signumber, siglast;
   enum target_signal oursig;
   int allsigs;
   int nsigs;
@@ -4147,23 +4147,21 @@ handle_command(const char *args, int from_tty)
 
   if (args == NULL)
     {
-      error_no_arg (_("signal to handle"));
+      error_no_arg(_("signal to handle"));
     }
 
-  /* Allocate and zero an array of flags for which signals to handle. */
+  /* Allocate and zero an array of flags for which signals to handle: */
+  nsigs = (int)TARGET_SIGNAL_LAST;
+  sigs = (unsigned char *)alloca(nsigs);
+  memset(sigs, 0, nsigs);
 
-  nsigs = (int) TARGET_SIGNAL_LAST;
-  sigs = (unsigned char *) alloca (nsigs);
-  memset (sigs, 0, nsigs);
-
-  /* Break the command line up into args. */
-
-  argv = buildargv (args);
+  /* Break the command line up into args: */
+  argv = buildargv(args);
   if (argv == NULL)
     {
-      nomem (0);
+      nomem(0);
     }
-  old_chain = make_cleanup_freeargv (argv);
+  old_chain = make_cleanup_freeargv(argv);
 
   /* Walk through the args, looking for signal oursigs, signal names, and
      actions.  Signal numbers and signal names may be interspersed with
@@ -4172,8 +4170,8 @@ handle_command(const char *args, int from_tty)
 
   while (*argv != NULL)
     {
-      wordlen = strlen (*argv);
-      for (digits = 0; isdigit ((*argv)[digits]); digits++)
+      wordlen = strlen(*argv);
+      for (digits = 0; isdigit((*argv)[digits]); digits++)
 	{;
 	}
       allsigs = 0;
@@ -4238,46 +4236,48 @@ handle_command(const char *args, int from_tty)
 	    }
 	  if (sigfirst > siglast)
 	    {
-	      /* Bet he didn't figure we'd think of this case... */
-	      signum = sigfirst;
+	      /* Bet he never figured we would think of this case... */
+	      signumber = sigfirst;
 	      sigfirst = siglast;
-	      siglast = signum;
+	      siglast = signumber;
 	    }
 	}
       else
 	{
-	  oursig = target_signal_from_name (*argv);
+	  oursig = target_signal_from_name(*argv);
 	  if (oursig != TARGET_SIGNAL_UNKNOWN)
 	    {
-	      sigfirst = siglast = (int) oursig;
+	      sigfirst = siglast = (int)oursig;
 	    }
 	  else
 	    {
 	      /* Not a number and not a recognized flag word => complain.  */
-	      error (_("Unrecognized or ambiguous flag word: \"%s\"."), *argv);
+	      error(_("Unrecognized or ambiguous flag word: \"%s\"."), *argv);
 	    }
 	}
 
       /* If any signal numbers or symbol names were found, set flags for
          which signals to apply actions to. */
 
-      for (signum = sigfirst; signum >= 0 && signum <= siglast; signum++)
+      for (signumber = sigfirst; (signumber >= 0) && (signumber <= siglast);
+	   signumber++)
 	{
-	  switch ((enum target_signal) signum)
+	  switch ((enum target_signal)signumber)
 	    {
 	    case TARGET_SIGNAL_TRAP:
 	    case TARGET_SIGNAL_INT:
-	      if (!allsigs && !sigs[signum])
+	      if (!allsigs && !sigs[signumber])
 		{
-		  if (query ("%s is used by the debugger.\n\
-Are you sure you want to change it? ", target_signal_to_name ((enum target_signal) signum)))
+		  if (query("%s is used by the debugger.\n\
+Are you sure you want to change it? ",
+			    target_signal_to_name((enum target_signal)signumber)))
 		    {
-		      sigs[signum] = 1;
+		      sigs[signumber] = 1;
 		    }
 		  else
 		    {
-		      printf_unfiltered (_("Not confirmed, unchanged.\n"));
-		      gdb_flush (gdb_stdout);
+		      printf_unfiltered(_("Not confirmed, unchanged.\n"));
+		      gdb_flush(gdb_stdout);
 		    }
 		}
 	      break;
@@ -4287,7 +4287,7 @@ Are you sure you want to change it? ", target_signal_to_name ((enum target_signa
 	      /* Make sure that "all" doesn't print these.  */
 	      break;
 	    default:
-	      sigs[signum] = 1;
+	      sigs[signumber] = 1;
 	      break;
 	    }
 	}
@@ -4295,17 +4295,17 @@ Are you sure you want to change it? ", target_signal_to_name ((enum target_signa
       argv++;
     }
 
-  target_notice_signals (inferior_ptid);
+  target_notice_signals(inferior_ptid);
 
   if (from_tty)
     {
       /* Show the results: */
       sig_print_header();
-      for (signum = 0; signum < nsigs; signum++)
+      for (signumber = 0; signumber < nsigs; signumber++)
 	{
-	  if (sigs[signum])
+	  if (sigs[signumber])
 	    {
-	      sig_print_info((enum target_signal)signum);
+	      sig_print_info((enum target_signal)signumber);
 	    }
 	}
     }

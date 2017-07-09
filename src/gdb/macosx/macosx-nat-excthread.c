@@ -529,13 +529,13 @@ macosx_exception_thread(void *arg)
       unsigned char buf[1];
       char backup_buffer[8];
       mach_msg_option_t receive_options;
-      kern_return_t kret;
+      kern_return_t kret0;
       int counter;
 
       backup_buffer[0] = '\0';
       (void)backup_buffer;
       excthread_debug_re(1, "waiting for exceptions\n");
-      receive_options = MACH_RCV_MSG | MACH_RCV_INTERRUPT;
+      receive_options = (MACH_RCV_MSG | MACH_RCV_INTERRUPT);
       next_msg_ctr = 0;
 
       /* This is the main loop where we wait for events, and send them to
@@ -573,7 +573,7 @@ macosx_exception_thread(void *arg)
 	      pthread_mutex_unlock(&excthread_mutex);
 	    }
 
-	  kret =
+	  kret0 =
 	    mach_msg(&msg_data[next_msg_ctr].msgin.hdr, receive_options, 0,
 		     sizeof(msg_data[next_msg_ctr].msgin.data),
 		     s->inferior_exception_port, 0,
@@ -582,14 +582,14 @@ macosx_exception_thread(void *arg)
 	  if (s->shutting_down)
 	    {
 	      excthread_debug_re(1, "Shutting down - got out of mach_msg with: : %s (0x%lx)\n",
-		   MACH_ERROR_STRING(kret), (unsigned long)kret);
+		   MACH_ERROR_STRING(kret0), (unsigned long)kret0);
 	      next_msg_ctr = -1;
-	      break;;
+	      break;
 	    }
 
-	  if (kret == MACH_RCV_INTERRUPTED)
+	  if (kret0 == MACH_RCV_INTERRUPTED)
 	    {
-	      kern_return_t kret;
+	      kern_return_t kret1;
 	      struct task_basic_info info;
 	      unsigned int info_count = TASK_BASIC_INFO_COUNT;
 
@@ -599,10 +599,10 @@ macosx_exception_thread(void *arg)
 		 task is still alive before we wait for it.  */
 
 	      excthread_debug_re(1, "receive interrupted\n");
-	      kret =
+	      kret1 =
 		task_info(s->task, TASK_BASIC_INFO,
 			  (task_info_t)&info, &info_count);
-	      if (kret != KERN_SUCCESS)
+	      if (kret1 != KERN_SUCCESS)
 		{
 		  excthread_debug_re(1, "task no longer valid\n");
 		  next_msg_ctr = -1;
@@ -611,15 +611,15 @@ macosx_exception_thread(void *arg)
 	      else
 		continue;
 	    }
-	  else if (kret == MACH_RCV_TIMED_OUT)
+	  else if (kret0 == MACH_RCV_TIMED_OUT)
 	    {
 	      excthread_debug_re(1, "no more exceptions\n");
 	      break;
 	    }
-	  else if (kret != KERN_SUCCESS)
+	  else if (kret0 != KERN_SUCCESS)
 	    {
 	      excthread_debug_re(0, "error receiving exception message: %s (0x%lx)\n",
-		   MACH_ERROR_STRING(kret), (unsigned long)kret);
+		   MACH_ERROR_STRING(kret0), (unsigned long)kret0);
 	      write(s->error_transmit_fd, "e", 1);
 	      next_msg_ctr = -1;
 	      break;
@@ -634,12 +634,12 @@ macosx_exception_thread(void *arg)
 	  static_message = &msg_data[next_msg_ctr].msgsend;
 	  /* FIXME: I have started seeing link errors about this: */
 #ifdef mach_exc_server
-	  kret = mach_exc_server(&msg_data[next_msg_ctr].msgin.hdr,
-                                 &msg_data[next_msg_ctr].msgout.hdr);
+	  kret0 = mach_exc_server(&msg_data[next_msg_ctr].msgin.hdr,
+				  &msg_data[next_msg_ctr].msgout.hdr);
 #else
-	  kret = KERN_FAILURE;
+	  kret0 = KERN_FAILURE;
 #endif /* mach_exc_server */
-	  if (kret == KERN_FAILURE) {
+	  if (kret0 == KERN_FAILURE) {
 	    warning(_("problem setting up mach exception server"));
 	  }
 	  static_message = NULL;
@@ -703,28 +703,30 @@ macosx_exception_thread(void *arg)
 	      excthread_debug_re_endline(2);
 	    }
 
-	  kret = mach_msg(&msg_data[counter].msgout.hdr, (MACH_SEND_MSG | MACH_SEND_INTERRUPT),
-			  msg_data[counter].msgout.hdr.msgh_size, 0,
-			  MACH_PORT_NULL, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
+	  kret0 = mach_msg(&msg_data[counter].msgout.hdr,
+			   (MACH_SEND_MSG | MACH_SEND_INTERRUPT),
+			   msg_data[counter].msgout.hdr.msgh_size, 0,
+			   MACH_PORT_NULL, MACH_MSG_TIMEOUT_NONE,
+			   MACH_PORT_NULL);
 
-	  if (kret == MACH_SEND_INTERRUPTED)
+	  if (kret0 == MACH_SEND_INTERRUPTED)
 	    {
 	      excthread_debug_re(1, "macosx_exceptions_thread: reply interrupted\n");
 	      continue;
 	    }
 
-	  if (kret != KERN_SUCCESS)
+	  if (kret0 != KERN_SUCCESS)
 	    {
 	      if (msg_data[counter].msgsend.task_port == s->task)
 		{
 		  excthread_debug_re(0, "error sending exception reply: %s (0x%lx)\n",
-		     MACH_ERROR_STRING(kret), (unsigned long)kret);
+		     MACH_ERROR_STRING(kret0), (unsigned long)kret0);
 		  abort();
 		}
 	      else
 		{
 		  excthread_debug_re(0, "error sending exception reply to child task: 0x%x: %s (0x%lx)\n",
-		     msg_data[counter].msgsend.task_port, MACH_ERROR_STRING(kret), (unsigned long)kret);
+		     msg_data[counter].msgsend.task_port, MACH_ERROR_STRING(kret0), (unsigned long)kret0);
 		}
 	    }
 	  /* Remember to free the copy of the exception data that we
@@ -733,7 +735,7 @@ macosx_exception_thread(void *arg)
 	}
       excthread_debug_re(2, "Resuming task\n");
       task_resume(s->task);
-      if (kret != KERN_SUCCESS)
+      if (kret0 != KERN_SUCCESS)
         {
           excthread_debug_re(2, "resumed task.\n");
         }

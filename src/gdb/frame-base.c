@@ -86,7 +86,7 @@ frame_base_append_sniffer(struct gdbarch *gdbarch,
 			  frame_base_sniffer_ftype *sniffer)
 {
   struct frame_base_table *table;
-  table = (struct frame_base_table*)gdbarch_data(gdbarch, frame_base_data);
+  table = (struct frame_base_table*)new_gdbarch_data(gdbarch, frame_base_data);
   (*table->tail) = GDBARCH_OBSTACK_ZALLOC(gdbarch, struct frame_base_table_entry);
   (*table->tail)->sniffer = sniffer;
   table->tail = &(*table->tail)->next;
@@ -97,7 +97,7 @@ frame_base_set_default(struct gdbarch *gdbarch,
                        const struct frame_base *default_base)
 {
   struct frame_base_table *table;
-  table = (struct frame_base_table*)gdbarch_data(gdbarch, frame_base_data);
+  table = (struct frame_base_table*)new_gdbarch_data(gdbarch, frame_base_data);
   table->default_base = default_base;
 }
 
@@ -108,7 +108,7 @@ frame_base_find_by_frame(struct frame_info *next_frame)
   struct frame_base_table *table;
   struct frame_base_table_entry *entry;
 
-  table = (struct frame_base_table*)gdbarch_data(gdbarch, frame_base_data);
+  table = (struct frame_base_table*)new_gdbarch_data(gdbarch, frame_base_data);
 
   for (entry = table->head; entry != NULL; entry = entry->next)
     {
@@ -122,8 +122,11 @@ frame_base_find_by_frame(struct frame_info *next_frame)
 
 extern initialize_file_ftype _initialize_frame_base; /* -Wmissing-prototypes */
 
+/* usual initialization hook: */
 void
-_initialize_frame_base (void)
+_initialize_frame_base(void)
 {
-  frame_base_data = gdbarch_data_register_pre_init (frame_base_init);
+  frame_base_data = gdbarch_data_register_pre_init(frame_base_init);
 }
+
+/* EOF */

@@ -700,7 +700,7 @@ dwarf2_frame_set_init_reg(struct gdbarch *gdbarch,
                                            struct frame_info *))
 {
   struct dwarf2_frame_ops *ops;
-  ops = (struct dwarf2_frame_ops*)gdbarch_data(gdbarch, dwarf2_frame_data);
+  ops = (struct dwarf2_frame_ops*)new_gdbarch_data(gdbarch, dwarf2_frame_data);
 
   ops->init_reg = init_reg;
 }
@@ -712,7 +712,7 @@ dwarf2_frame_init_reg(struct gdbarch *gdbarch, int regnum,
 		      struct frame_info *next_frame)
 {
   struct dwarf2_frame_ops *ops;
-  ops = (struct dwarf2_frame_ops*)gdbarch_data(gdbarch, dwarf2_frame_data);
+  ops = (struct dwarf2_frame_ops*)new_gdbarch_data(gdbarch, dwarf2_frame_data);
 
   ops->init_reg(gdbarch, regnum, reg, next_frame);
 }
@@ -726,7 +726,7 @@ dwarf2_frame_set_signal_frame_p(struct gdbarch *gdbarch,
                                                       struct frame_info *))
 {
   struct dwarf2_frame_ops *ops;
-  ops = (struct dwarf2_frame_ops*)gdbarch_data(gdbarch, dwarf2_frame_data);
+  ops = (struct dwarf2_frame_ops*)new_gdbarch_data(gdbarch, dwarf2_frame_data);
 
   ops->signal_frame_p = signal_frame_p;
 }
@@ -739,7 +739,7 @@ dwarf2_frame_signal_frame_p(struct gdbarch *gdbarch,
 			    struct frame_info *next_frame)
 {
   struct dwarf2_frame_ops *ops;
-  ops = (struct dwarf2_frame_ops*)gdbarch_data(gdbarch, dwarf2_frame_data);
+  ops = (struct dwarf2_frame_ops*)new_gdbarch_data(gdbarch, dwarf2_frame_data);
 
   if (ops->signal_frame_p == NULL)
     return 0;

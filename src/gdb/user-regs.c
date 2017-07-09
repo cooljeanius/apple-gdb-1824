@@ -1,4 +1,4 @@
-/* User visible, per-frame registers, for GDB, the GNU debugger.
+/* user-regs.c: User visible, per-frame registers, for GDB, the GNU debugger.
 
    Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
 
@@ -106,7 +106,7 @@ user_reg_add(struct gdbarch *gdbarch, const char *name,
              user_reg_read_ftype *read)
 {
   struct gdb_user_regs *regs;
-  regs = (struct gdb_user_regs *)gdbarch_data(gdbarch, user_regs_data);
+  regs = (struct gdb_user_regs *)new_gdbarch_data(gdbarch, user_regs_data);
   if (regs == (struct gdb_user_regs *)NULL)
     {
       /* ULGH, called during architecture initialization.  Patch
@@ -162,7 +162,7 @@ user_reg_replace(struct gdbarch *gdbarch, const char *name,
 		 user_reg_read_ftype *read)
 {
   struct gdb_user_regs *regs;
-  regs = (struct gdb_user_regs *)gdbarch_data(gdbarch, user_regs_data);
+  regs = (struct gdb_user_regs *)new_gdbarch_data(gdbarch, user_regs_data);
   if (regs == (struct gdb_user_regs *)NULL)
     {
       /* ULGH, called during architecture initialization.  Patch
@@ -213,7 +213,7 @@ user_reg_map_name_to_regnum(struct gdbarch *gdbarch, const char *name,
     struct gdb_user_regs *regs;
     struct user_reg *reg;
     int nr;
-    regs = (struct gdb_user_regs *)gdbarch_data(gdbarch, user_regs_data);
+    regs = (struct gdb_user_regs *)new_gdbarch_data(gdbarch, user_regs_data);
     for (nr = 0, reg = regs->first; reg != NULL; reg = reg->next, nr++)
       {
 	if ((len < 0 && strcmp(reg->name, name))
@@ -231,7 +231,7 @@ usernum_to_user_reg(struct gdbarch *gdbarch, int usernum)
 {
   struct gdb_user_regs *regs;
   struct user_reg *reg;
-  regs = (struct gdb_user_regs *)gdbarch_data(gdbarch, user_regs_data);
+  regs = (struct gdb_user_regs *)new_gdbarch_data(gdbarch, user_regs_data);
   for (reg = regs->first; reg != NULL; reg = reg->next)
     {
       if (usernum == 0)
@@ -279,8 +279,11 @@ value_of_user_reg (int regnum, struct frame_info *frame)
 
 extern initialize_file_ftype _initialize_user_regs; /* -Wmissing-prototypes */
 
+/* usual initialization hook: */
 void
-_initialize_user_regs (void)
+_initialize_user_regs(void)
 {
-  user_regs_data = gdbarch_data_register_post_init (user_regs_init);
+  user_regs_data = gdbarch_data_register_post_init(user_regs_init);
 }
+
+/* EOF */

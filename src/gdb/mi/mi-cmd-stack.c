@@ -176,7 +176,7 @@ mi_print_frame_info_lite_base(struct ui_out *uiout, int with_names,
 {
   char num_buf[12]; /* big enough for -Wformat-length */
   struct cleanup *list_cleanup;
-  struct obj_section *osect;
+  struct obj_section *osect0;
 
   print_inlined_frames_lite(uiout, with_names, frame_num, pc, fp);
 
@@ -188,62 +188,62 @@ mi_print_frame_info_lite_base(struct ui_out *uiout, int with_names,
   ui_out_field_core_addr(uiout, "pc", pc);
   ui_out_field_core_addr(uiout, "fp", fp);
 
-  osect = find_pc_sect_section(pc, NULL);
-  if ((osect != NULL) && (osect->objfile != NULL) && (osect->objfile->name != NULL))
-      ui_out_field_string(uiout, "shlibname", osect->objfile->name);
+  osect0 = find_pc_sect_section(pc, NULL);
+  if ((osect0 != NULL) && (osect0->objfile != NULL) && (osect0->objfile->name != NULL))
+      ui_out_field_string(uiout, "shlibname", osect0->objfile->name);
   else
       ui_out_field_string(uiout, "shlibname", "<UNKNOWN>");
 
   if (with_names)
     {
       struct minimal_symbol *msym ;
-      struct obj_section *osect;
+      struct obj_section *osect1;
       int has_debug_info = 0;
 
       /* APPLE LOCAL: if we are going to print names, we should raise
          the load level to ALL.  We will avoid doing psymtab to symtab,
          since we just want the function */
 
-      pc_set_load_state (pc, OBJF_SYM_ALL, 0);
+      pc_set_load_state(pc, OBJF_SYM_ALL, 0);
 
-      msym = lookup_minimal_symbol_by_pc (pc);
+      msym = lookup_minimal_symbol_by_pc(pc);
       if (msym == NULL)
-	ui_out_field_string (uiout, "func", "<\?\?\?\?>");
+	ui_out_field_string(uiout, "func", "<\?\?\?\?>");
       else
 	{
 	  const char *name = SYMBOL_NATURAL_NAME(msym);
 	  if (name == NULL)
-	    ui_out_field_string (uiout, "func", "<\?\?\?\?>");
+	    ui_out_field_string(uiout, "func", "<\?\?\?\?>");
 	  else
-	    ui_out_field_string (uiout, "func", name);
+	    ui_out_field_string(uiout, "func", name);
 	}
       /* This is a pretty quick and dirty way to check whether there
 	 are debug symbols for this PC...  I don't care WHAT symbol
-	 contains the PC, just that there's some psymtab that
+	 contains the PC, just that there is some psymtab that
 	 does.  */
-      osect = find_pc_sect_in_ordered_sections (pc, NULL);
-      if (osect != NULL && osect->the_bfd_section != NULL)
+      osect1 = find_pc_sect_in_ordered_sections(pc, NULL);
+      if ((osect1 != NULL) && (osect1->the_bfd_section != NULL))
 	{
-	  struct partial_symtab *psymtab_for_pc = find_pc_sect_psymtab (pc, osect->the_bfd_section);
+	  struct partial_symtab *psymtab_for_pc =
+	    find_pc_sect_psymtab(pc, osect1->the_bfd_section);
 	  if (psymtab_for_pc != NULL)
 	    has_debug_info = 1;
 	  else
 	    has_debug_info = 0;
 
 	}
-      ui_out_field_int (uiout, "has_debug", has_debug_info);
+      ui_out_field_int(uiout, "has_debug", has_debug_info);
     }
-  ui_out_text (uiout, "\n");
-  do_cleanups (list_cleanup);
+  ui_out_text(uiout, "\n");
+  do_cleanups(list_cleanup);
 }
 
+/* */
 static void
-mi_print_frame_info_with_names_lite (struct ui_out *uiout,
-			  int *frame_num,
-			  CORE_ADDR pc,
-			  CORE_ADDR fp)
+mi_print_frame_info_with_names_lite(struct ui_out *uiout, int *frame_num,
+				    CORE_ADDR pc, CORE_ADDR fp)
 {
-  mi_print_frame_info_lite_base (uiout, 1, frame_num, pc, fp);
+  mi_print_frame_info_lite_base(uiout, 1, frame_num, pc, fp);
 }
 
 static void
@@ -982,7 +982,7 @@ mi_cmd_file_list_globals (char *command, char **argv, int argc)
   enum print_values values;
   char *shlibname, *filename;
   struct partial_symtab *file_ps;
-  struct symtab *file_symtab;
+  struct symtab *file_symtab0;
   struct ui_stream *stb;
   regex_t *filterp;
   int consts = 1;
@@ -1028,15 +1028,15 @@ mi_cmd_file_list_globals (char *command, char **argv, int argc)
 
 
       if (file_ps == NULL)
-	error ("mi_cmd_file_list_statics: "
-	       "Could not get symtab for file \"%s\".",
-	       filename);
+	error(_("mi_cmd_file_list_statics: "
+		"Failed to get symtab for file \"%s\"."),
+	      filename);
 
-      do_cleanups (cleanup_list);
+      do_cleanups(cleanup_list);
 
-      file_symtab = PSYMTAB_TO_SYMTAB (file_ps);
-      print_globals_for_symtab (file_symtab, stb, values,
-				consts, filterp);
+      file_symtab0 = PSYMTAB_TO_SYMTAB(file_ps);
+      print_globals_for_symtab(file_symtab0, stb, values,
+			       consts, filterp);
     }
   else
     {
@@ -1054,32 +1054,32 @@ mi_cmd_file_list_globals (char *command, char **argv, int argc)
 		}
 	    }
 	  if (requested_ofile == NULL)
-	    error ("mi_file_list_globals: "
-		   "Couldn't find shared library \"%s\"\n",
-		   shlibname);
+	    error(_("mi_file_list_globals: "
+		    "Failed to find shared library \"%s\"\n"),
+		  shlibname);
 
 	  /* APPLE LOCAL: grab the dSYM file there is one.  */
 	  requested_ofile = separate_debug_objfile (requested_ofile);
 
 	  ALL_OBJFILE_PSYMTABS (requested_ofile, ps)
 	    {
-	      struct symtab *file_symtab;
+	      struct symtab *file_symtab1;
 
-	      file_symtab = PSYMTAB_TO_SYMTAB (ps);
-	      if (!file_symtab)
+	      file_symtab1 = PSYMTAB_TO_SYMTAB (ps);
+	      if (!file_symtab1)
 		continue;
 
-
-	      if (file_symtab->primary)
+	      /* */
+	      if (file_symtab1->primary)
 		{
 		  struct cleanup *file_cleanup;
 		  file_cleanup =
-		    make_cleanup_ui_out_list_begin_end (uiout, "file");
-		  ui_out_field_string (uiout, "filename",
-				       file_symtab->filename);
-		  print_globals_for_symtab (file_symtab, stb, values,
-					    consts, filterp);
-		  do_cleanups (file_cleanup);
+		    make_cleanup_ui_out_list_begin_end(uiout, "file");
+		  ui_out_field_string(uiout, "filename",
+				      file_symtab1->filename);
+		  print_globals_for_symtab(file_symtab1, stb, values,
+					   consts, filterp);
+		  do_cleanups(file_cleanup);
 		}
 	    }
 	}
@@ -1102,34 +1102,32 @@ mi_cmd_file_list_globals (char *command, char **argv, int argc)
 
 	      ALL_OBJFILE_PSYMTABS (ofile, ps)
 		{
-		  struct symtab *file_symtab;
+		  struct symtab *file_symtab2;
 
-		  file_symtab = PSYMTAB_TO_SYMTAB (ps);
-		  if (!file_symtab)
+		  file_symtab2 = PSYMTAB_TO_SYMTAB(ps);
+		  if (!file_symtab2)
 		    continue;
 
-		  if (file_symtab->primary)
+		  if (file_symtab2->primary)
 		    {
 		      struct cleanup *file_cleanup;
 		      file_cleanup =
-			make_cleanup_ui_out_list_begin_end (uiout, "file");
-		      ui_out_field_string (uiout, "filename",
-					   file_symtab->filename);
-		      print_globals_for_symtab (file_symtab, stb,
-						values,
-						consts, filterp);
-		      do_cleanups (file_cleanup);
+			make_cleanup_ui_out_list_begin_end(uiout, "file");
+		      ui_out_field_string(uiout, "filename",
+					  file_symtab2->filename);
+		      print_globals_for_symtab(file_symtab2, stb, values,
+					       consts, filterp);
+		      do_cleanups(file_cleanup);
 		    }
 		}
-	      do_cleanups (ofile_cleanup);
+	      do_cleanups(ofile_cleanup);
 	    }
 	}
     }
 
-  ui_out_stream_delete (stb);
+  ui_out_stream_delete(stb);
 
   return MI_CMD_DONE;
-
 }
 
 /* Print the variable symbols for block BLOCK.  VALUES is the

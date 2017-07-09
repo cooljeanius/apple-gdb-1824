@@ -1709,10 +1709,11 @@ gdbarch_dump (struct gdbarch *current_gdbarch, struct ui_file *file)
 
 #line 1639 "gdbarch.sh"
 struct gdbarch_tdep *
-gdbarch_tdep (struct gdbarch *gdbarch)
+new_gdbarch_tdep(struct gdbarch *gdbarch)
 {
   if (gdbarch_debug >= 2)
-    fprintf_unfiltered(gdb_stdlog, "%s:%d: gdbarch_tdep called.\n", __FILE__, __LINE__);
+    fprintf_unfiltered(gdb_stdlog, "%s:%d: new_gdbarch_tdep called.\n",
+		       __FILE__, __LINE__);
   return gdbarch->tdep;
 }
 
@@ -3847,7 +3848,7 @@ set_gdbarch_adjust_ehframe_regnum (struct gdbarch *gdbarch,
 
 struct gdbarch_data
 {
-  unsigned index;
+  unsigned int index;
   int init_p;
   gdbarch_data_pre_init_ftype *pre_init;
   gdbarch_data_post_init_ftype *post_init;
@@ -3861,7 +3862,7 @@ struct gdbarch_data_registration
 
 struct gdbarch_data_registry
 {
-  unsigned nr;
+  unsigned int nr;
   struct gdbarch_data_registration *registrations;
 };
 
@@ -3929,7 +3930,7 @@ deprecated_set_gdbarch_data (struct gdbarch *gdbarch,
    data-pointer. */
 
 void *
-gdbarch_data (struct gdbarch *gdbarch, struct gdbarch_data *data)
+new_gdbarch_data(struct gdbarch *gdbarch, struct gdbarch_data *data)
 {
   gdb_assert (data->index < gdbarch->nr_data);
   if (gdbarch->data[data->index] == NULL)

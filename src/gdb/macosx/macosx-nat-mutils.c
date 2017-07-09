@@ -2105,14 +2105,14 @@ gc_root_tracing_command(const char *arg, int from_tty)
   struct cleanup *cleanup_chain;
   CORE_ADDR addr, list_addr;
   LONGEST num_roots;
-  int wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
+  int wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
   int root_index;
 
   if (arg == NULL || *arg == '\0')
-    error("Address expression required.");
+    error(_("Address expression required."));
 
   if (!target_has_execution)
-    error("The program is not running.");
+    error(_("The program is not running."));
 
   addr = parse_and_eval_address(arg);
 
@@ -2121,7 +2121,7 @@ gc_root_tracing_command(const char *arg, int from_tty)
 
   if (objfile_name_set_load_state("libauto.dylib", OBJF_SYM_ALL, 1)
       == -1)
-    warning("Could NOT raise the load level of libauto.dylib.");
+    warning(_("Failed to raise the load level of libauto.dylib."));
 
 
   /* Now we have to cons up a gdb type for the root tracing
@@ -2218,13 +2218,13 @@ gc_reference_tracing_command(const char *arg, int from_tty)
   struct cleanup *cleanup_chain;
   CORE_ADDR addr, list_addr;
   LONGEST num_refs;
-  int wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
+  int wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
 
   if (arg == NULL || *arg == '\0')
-    error("Address expression required.");
+    error(_("Address expression required."));
 
   if (!target_has_execution)
-    error("The program is not running.");
+    error(_("The program is not running."));
 
   addr = parse_and_eval_address(arg);
 

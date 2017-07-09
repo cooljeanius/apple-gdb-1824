@@ -71,6 +71,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module closedir:
   # Code from module configmake:
   # Code from module connect:
+  # Code from module crc:
+  # Code from module ctime:
   # Code from module cycle-check:
   # Code from module d-ino:
   # Code from module d-type:
@@ -147,6 +149,9 @@ AC_DEFUN([gl_EARLY],
   # Code from module localcharset:
   # Code from module locale:
   # Code from module localeconv:
+  # Code from module localtime:
+  # Code from module localtime-buffer:
+  # Code from module longlong:
   # Code from module lstat:
   # Code from module malloc-gnu:
   # Code from module malloc-posix:
@@ -176,6 +181,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module nl_langinfo:
   # Code from module no-c++:
   # Code from module nocrash:
+  # Code from module noreturn:
   # Code from module obstack:
   # Code from module open:
   # Code from module openat:
@@ -237,6 +243,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module strerror:
   # Code from module strerror-override:
   # Code from module strerror_r-posix:
+  # Code from module strftime-fixes:
   # Code from module string:
   # Code from module strings:
   # Code from module strncat:
@@ -259,6 +266,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module time_r:
   # Code from module time_rz:
   # Code from module timegm:
+  # Code from module tzset:
   # Code from module unistd:
   # Code from module unistd-safer:
   # Code from module unitypes:
@@ -346,6 +354,11 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([connect])
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([connect])
+  gl_FUNC_CTIME
+  if test $REPLACE_CTIME = 1; then
+    AC_LIBOBJ([ctime])
+  fi
+  gl_TIME_MODULE_INDICATOR([ctime])
   gl_CYCLE_CHECK
   gl_CHECK_TYPE_STRUCT_DIRENT_D_INO
   gl_CHECK_TYPE_STRUCT_DIRENT_D_TYPE
@@ -439,6 +452,11 @@ AC_DEFUN([gl_INIT],
   gl_FUNC_FSTAT
   if test $REPLACE_FSTAT = 1; then
     AC_LIBOBJ([fstat])
+    case "$host_os" in
+      mingw*)
+        AC_LIBOBJ([stat-w32])
+        ;;
+    esac
     gl_PREREQ_FSTAT
   fi
   gl_SYS_STAT_MODULE_INDICATOR([fstat])
@@ -532,6 +550,15 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_LOCALECONV
   fi
   gl_LOCALE_MODULE_INDICATOR([localeconv])
+  gl_FUNC_LOCALTIME
+  if test $REPLACE_LOCALTIME = 1; then
+    AC_LIBOBJ([localtime])
+  fi
+  gl_TIME_MODULE_INDICATOR([localtime])
+  AC_REQUIRE([gl_LOCALTIME_BUFFER_DEFAULTS])
+  AC_LIBOBJ([localtime-buffer])
+  AC_REQUIRE([AC_TYPE_LONG_LONG_INT])
+  AC_REQUIRE([AC_TYPE_UNSIGNED_LONG_LONG_INT])
   gl_FUNC_LSTAT
   if test $REPLACE_LSTAT = 1; then
     AC_LIBOBJ([lstat])
@@ -628,7 +655,7 @@ AC_DEFUN([gl_INIT],
   fi
   gl_TIME_MODULE_INDICATOR([mktime])
   gl_FUNC_MKTIME_INTERNAL
-  if test $REPLACE_MKTIME = 1; then
+  if test $WANT_MKTIME_INTERNAL = 1; then
     AC_LIBOBJ([mktime])
     gl_PREREQ_MKTIME
   fi
@@ -793,6 +820,11 @@ AC_DEFUN([gl_INIT],
   gl_FUNC_STAT
   if test $REPLACE_STAT = 1; then
     AC_LIBOBJ([stat])
+    case "$host_os" in
+      mingw*)
+        AC_LIBOBJ([stat-w32])
+        ;;
+    esac
     gl_PREREQ_STAT
   fi
   gl_SYS_STAT_MODULE_INDICATOR([stat])
@@ -835,6 +867,13 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_STRERROR_R
   fi
   gl_STRING_MODULE_INDICATOR([strerror_r])
+  dnl For the modules argp, error.
+  gl_MODULE_INDICATOR([strerror_r-posix])
+  gl_FUNC_STRFTIME
+  if test $REPLACE_STRFTIME = 1; then
+    AC_LIBOBJ([strftime-fixes])
+  fi
+  gl_TIME_MODULE_INDICATOR([strftime])
   gl_HEADER_STRING_H
   gl_HEADER_STRINGS_H
   gl_FUNC_STRNCAT
@@ -875,7 +914,7 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_STRTOK_R
   fi
   gl_STRING_MODULE_INDICATOR([strtok_r])
-  gl_HEADER_SYS_SELECT
+  AC_REQUIRE([gl_HEADER_SYS_SELECT])
   AC_PROG_MKDIR_P
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   AC_PROG_MKDIR_P
@@ -898,7 +937,7 @@ AC_DEFUN([gl_INIT],
   fi
   gl_TIME_MODULE_INDICATOR([time_r])
   gl_TIME_RZ
-  if test "$HAVE_TIMEZONE_T" = 0; then
+  if test $HAVE_TIMEZONE_T = 0; then
     AC_LIBOBJ([time_rz])
   fi
   gl_TIME_MODULE_INDICATOR([time_rz])
@@ -908,6 +947,11 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_TIMEGM
   fi
   gl_TIME_MODULE_INDICATOR([timegm])
+  gl_FUNC_TZSET
+  if test $HAVE_TZSET = 0 || test $REPLACE_TZSET = 1; then
+    AC_LIBOBJ([tzset])
+  fi
+  gl_TIME_MODULE_INDICATOR([tzset])
   gl_UNISTD_H
   gl_UNISTD_SAFER
   gl_LIBUNISTRING_LIBHEADER([0.9.4], [unitypes.h])
@@ -1138,7 +1182,10 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/closedir.c
   lib/config.charset
   lib/connect.c
+  lib/crc.c
+  lib/crc.h
   lib/creat-safer.c
+  lib/ctime.c
   lib/cycle-check.c
   lib/cycle-check.h
   lib/dev-ino.h
@@ -1218,6 +1265,9 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/localcharset.h
   lib/locale.in.h
   lib/localeconv.c
+  lib/localtime-buffer.c
+  lib/localtime-buffer.h
+  lib/localtime.c
   lib/lstat.c
   lib/malloc.c
   lib/malloca.c
@@ -1249,6 +1299,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/msvc-inval.c
   lib/msvc-inval.h
   lib/nl_langinfo.c
+  lib/noreturn.h
   lib/obstack.c
   lib/obstack.h
   lib/open-safer.c
@@ -1303,6 +1354,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stat-size.h
   lib/stat-time.c
   lib/stat-time.h
+  lib/stat-w32.c
+  lib/stat-w32.h
   lib/stat.c
   lib/stdalign.in.h
   lib/stdbool.in.h
@@ -1318,6 +1371,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/strerror-override.h
   lib/strerror.c
   lib/strerror_r.c
+  lib/strftime-fixes.c
   lib/string.in.h
   lib/strings.in.h
   lib/stripslash.c
@@ -1344,6 +1398,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/time_r.c
   lib/time_rz.c
   lib/timegm.c
+  lib/tzset.c
   lib/unistd--.h
   lib/unistd-safer.h
   lib/unistd.c
@@ -1394,6 +1449,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/closedir.m4
   m4/codeset.m4
   m4/configmake.m4
+  m4/ctime.m4
   m4/cycle-check.m4
   m4/d-ino.m4
   m4/d-type.m4
@@ -1478,6 +1534,8 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/locale-zh.m4
   m4/locale_h.m4
   m4/localeconv.m4
+  m4/localtime-buffer.m4
+  m4/localtime.m4
   m4/lock.m4
   m4/longlong.m4
   m4/lstat.m4
@@ -1558,6 +1616,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/strdup.m4
   m4/strerror.m4
   m4/strerror_r.m4
+  m4/strftime-fixes.m4
   m4/string_h.m4
   m4/strings_h.m4
   m4/strncat.m4
@@ -1579,6 +1638,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/time_r.m4
   m4/time_rz.m4
   m4/timegm.m4
+  m4/tzset.m4
   m4/uintmax_t.m4
   m4/unistd-safer.m4
   m4/unistd_h.m4

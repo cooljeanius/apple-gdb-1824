@@ -34,6 +34,7 @@ IMPORTED_GNULIB_MODULES="\
     assure autobuild \
     bcopy bison-i18n btowc builtin-expect \
     c-ctype c-strcase c-strcasestr c99 chdir-long configmake connect closedir \
+    crc ctime \
     dirent dirent-safer dirfd dosname double-slash-root dup2 \
     environ errno error exitfail extensions extern-inline \
     fcntl fcntl-h fcntl-safer fileblocks flexmember float fnmatch fnmatch-gnu \
@@ -43,24 +44,25 @@ IMPORTED_GNULIB_MODULES="\
     havelib host-cpu-c-abi host-os \
     ignore-value include_next inline intprops inttypes inttypes-incomplete \
     isnand-nolibm isnanl-nolibm iswctype \
-    largefile ldd limits-h localcharset locale lstat \
+    largefile ldd limits-h localcharset locale localtime localtime-buffer \
+    longlong lstat \
     malloc-gnu malloc-posix manywarnings math mbrtowc mbsinit mbsrtowcs \
     memchr memcmp memmem memmem-simple \
     mempcpy memrchr mkdtemp multiarch \
-    nextafter no-c++ nocrash \
+    nextafter no-c++ nocrash noreturn \
     obstack openmp \
     pathmax pclose popen putenv \
     readdir readlink realloc-gnu realloc-posix recv regex regex-quote \
     regexprops-generic rmdir \
-    send sig2str sigaction signal signal-h sigpipe sigpipe-die sigprocmask \
-    snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning \
-    snippet/warn-on-use \
+    send setenv sig2str sigaction signal signal-h sigpipe sigpipe-die \
+    sigprocmask snippet/_Noreturn snippet/arg-nonnull snippet/c++defs \
+    snippet/link-warning snippet/warn-on-use \
     ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib \
-    streq strerror strerror_r-posix strerror-override string strncat strndup \
-    strnlen strnlen1 strstr strstr-simple strtok_r sys_select sys_stat \
-    sys_time sys_types sys_wait \
-    tempname time time_r time_rz timegm \
-    unistd unistd-safer unlink unlink-busy update-copyright usleep \
+    streq strerror strerror_r-posix strerror-override strftime-fixes string \
+    strncat strndup strnlen strnlen1 strstr strstr-simple strtok_r sys_select \
+    sys_stat sys_time sys_types sys_wait \
+    tempname time time_r time_rz timegm tzset \
+    unistd unistd-safer unlink unlink-busy unsetenv update-copyright usleep \
     vc-list-files verify \
     warnings wchar wcsncasecmp wctype-h winsz-ioctl winsz-termios \
     xalloc xalloc-die xalloc-oversized xmalloca xmemdup0 xstrndup"
@@ -78,8 +80,9 @@ IMPORTED_GNULIB_MODULES="\
 # below, though, so they may still get dragged in as dependencies)
 
 # The gnulib commit ID to use for the update.
-GNULIB_COMMIT_SHA1="06d9e7302a736d7fa3db9cf1eb9850b60aee612f"
+GNULIB_COMMIT_SHA1="7df04f9b8a0adb1575ca0555775ec10860143cbf"
 # (feel free to update if you know that your version works and is newer)
+# (last updated July 8, 2017)
 
 # The expected version number for the various auto tools we will
 # use after the import.
@@ -102,6 +105,8 @@ if [ ! -f "${gnulib_tool}" ]; then
    echo "       (${gnulib_tool})."
    echo "Aborting."
    exit 1
+else
+   echo "found ${gnulib_tool}"
 fi
 
 # Verify that we have the right version of gnulib...
@@ -111,6 +116,8 @@ if [ "${gnulib_head_sha1}" != "${GNULIB_COMMIT_SHA1}" ]; then
    echo "       (we expected it to be ${GNULIB_COMMIT_SHA1})"
    echo "Aborting."
    exit 1
+else
+   echo "using gnulib commit ${gnulib_head_sha1}"
 fi
 
 # Verify that we are in the gdb/gnulib/ subdirectory.
@@ -123,6 +130,7 @@ fi
 # (autotools checks moved to after the import; auto-regenerating with this
 # script is not strictly necessary)
 
+echo "actually importing now; this may take a while..."
 # Update our gnulib import.
 ${gnulib_prefix}/gnulib-tool --import --dir=. --lib=libgnu \
   --source-base=import --m4-base=import/m4 --doc-base=doc \

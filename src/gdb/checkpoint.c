@@ -260,7 +260,7 @@ collect_checkpoint(void)
 {
   struct checkpoint *cp;
   struct value *forkfn;
-  struct value *val;
+  struct value *val0;
   long retval;
 
   cp = start_checkpoint();
@@ -280,7 +280,7 @@ collect_checkpoint(void)
      subsystems would register themselves as part of target-specific
      checkpoint saving.  */
   if (subsystem_checkpointing) {
-    struct value *cgfn, *arg, *val;
+    struct value *cgfn, *arg, *val1;
 
     /* (It would seem more logical to use cp->number here, but it hasn't been
        assigned yet - revisit this issue later.)  */
@@ -288,9 +288,10 @@ collect_checkpoint(void)
     if (lookup_minimal_symbol(CP_CG_SAVE_NAME, 0, 0)
 	&& (cgfn = find_function_in_inferior(CP_CG_SAVE_NAME, builtin_type_int)))
       {
-	val = call_function_by_hand_expecting_type(cgfn,
-						   builtin_type_int, 1, &arg, 1);
-        if (val == NULL) {
+	val1 = call_function_by_hand_expecting_type(cgfn,
+						    builtin_type_int, 1,
+						    &arg, 1);
+        if (val1 == NULL) {
           ; /* ??? */
         }
       }
@@ -310,12 +311,13 @@ collect_checkpoint(void)
       if (lookup_minimal_symbol(CP_FORK_NAME, 0, 0)
 	  && (forkfn = find_function_in_inferior(CP_FORK_NAME, builtin_type_int)))
 	{
-	  val = call_function_by_hand_expecting_type(forkfn,
-						     builtin_type_int, 0, NULL, 1);
+	  val0 = call_function_by_hand_expecting_type(forkfn,
+						      builtin_type_int, 0,
+						      NULL, 1);
 
-	  retval = (long)value_as_long(val);
+	  retval = (long)value_as_long(val0);
 
-	  /* Keep the pid around, only dig through fork when rolling back.  */
+	  /* Keep the pid around, only dig through fork when rolling back: */
 	  cp->pid = retval;
 	}
       else

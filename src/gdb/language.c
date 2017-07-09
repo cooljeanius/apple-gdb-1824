@@ -1333,27 +1333,29 @@ language_gdbarch_post_init(struct gdbarch *gdbarch)
   return l;
 }
 
+/* */
 struct type *
 language_string_char_type(const struct language_defn *la,
 			  struct gdbarch *gdbarch)
 {
   struct language_gdbarch *ld;
-  ld = (struct language_gdbarch *)gdbarch_data(gdbarch,
-                                               language_gdbarch_data);
+  ld = (struct language_gdbarch *)new_gdbarch_data(gdbarch,
+						   language_gdbarch_data);
   if (ld->arch_info[la->la_language].string_char_type != NULL)
     return ld->arch_info[la->la_language].string_char_type;
   else
     return (*la->string_char_type);
 }
 
+/* */
 struct type *
 language_lookup_primitive_type_by_name(const struct language_defn *la,
                                        struct gdbarch *gdbarch,
                                        const char *name)
 {
   struct language_gdbarch *ld;
-  ld = (struct language_gdbarch *)gdbarch_data(gdbarch,
-                                               language_gdbarch_data);
+  ld = (struct language_gdbarch *)new_gdbarch_data(gdbarch,
+						   language_gdbarch_data);
   if (ld->arch_info[la->la_language].primitive_type_vector != NULL)
     {
       struct type *const *p;

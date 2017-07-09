@@ -1478,7 +1478,7 @@ extern int gdbarch_adjust_ehframe_regnum (struct gdbarch *gdbarch, int regnum, i
 extern void set_gdbarch_adjust_ehframe_regnum (struct gdbarch *gdbarch, gdbarch_adjust_ehframe_regnum_ftype *adjust_ehframe_regnum);
 #line 920 "gdbarch.sh"
 
-extern struct gdbarch_tdep *gdbarch_tdep (struct gdbarch *gdbarch);
+extern struct gdbarch_tdep *new_gdbarch_tdep (struct gdbarch *gdbarch);
 
 
 /* Mechanism for co-ordinating the selection of a specific
@@ -1678,7 +1678,7 @@ extern void deprecated_set_gdbarch_data(struct gdbarch *gdbarch,
                                         void *pointer)
   ATTRIBUTE_DEPRECATED;
 
-extern void *gdbarch_data(struct gdbarch *gdbarch, struct gdbarch_data *);
+extern void *new_gdbarch_data(struct gdbarch *gdbarch, struct gdbarch_data *);
 
 #line 1124 "gdbarch.sh"
 

@@ -549,7 +549,7 @@ dyld_resolve_filenames(const struct macosx_dyld_thread_status *s,
 static CORE_ADDR
 library_offset(struct dyld_objfile_entry *e)
 {
-  int wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
+  int wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
   NSTRACE(library_offset);
   CHECK_FATAL(e != NULL);
   if (e->image_addr_valid && e->dyld_valid)
@@ -610,7 +610,7 @@ int
 dyld_resolve_load_flag(const struct dyld_path_info *d,
                        struct dyld_objfile_entry *e, const char *rules)
 {
-  const char *name = NULL;
+  const char *name0 = NULL;
   const char *leaf = NULL;
 
   char **prules = NULL;
@@ -620,13 +620,13 @@ dyld_resolve_load_flag(const struct dyld_path_info *d,
 
   NSTRACE(dyld_resolve_load_flag);
 
-  name = dyld_entry_string(e, 1);
+  name0 = dyld_entry_string(e, 1);
 
-  if (name == NULL)
+  if (name0 == NULL)
     return OBJF_SYM_NONE;
 
-  leaf = strrchr(name, '/');
-  leaf = ((leaf != NULL) ? leaf : name);
+  leaf = strrchr(name0, '/');
+  leaf = ((leaf != NULL) ? leaf : name0);
   
   if (leaf == NULL) {
     warning(_("possible issue with leaf"));
@@ -667,7 +667,7 @@ dyld_resolve_load_flag(const struct dyld_path_info *d,
       char *setting = prules[(crule * 3) + 2];
 
       const char *reason = NULL;
-      const char *name = NULL;
+      const char *name1 = NULL;
 
       regex_t reasonbuf;
       regex_t namebuf;
@@ -700,21 +700,21 @@ dyld_resolve_load_flag(const struct dyld_path_info *d,
         {
           if (e->loaded_from_memory)
             {
-              name = "memory";
+              name1 = "memory";
             }
           else
             {
-              name = e->loaded_name;
+              name1 = e->loaded_name;
             }
         }
       else
         {
-          name = dyld_entry_filename(e, d, DYLD_ENTRY_FILENAME_LOADED);
-          if (name == NULL)
+          name1 = dyld_entry_filename(e, d, DYLD_ENTRY_FILENAME_LOADED);
+          if (name1 == NULL)
             {
               if (!(e->reason & dyld_reason_weak_mask))
                 {
-                  warning("Unable to resolve \"%s\"; not loading.", name);
+                  warning("Unable to resolve \"%s\"; not loading.", name1);
                 }
               return OBJF_SYM_NONE;
             }
@@ -740,7 +740,7 @@ dyld_resolve_load_flag(const struct dyld_path_info *d,
       if (ret != 0)
         continue;
 
-      ret = regexec(&namebuf, name, 0, 0, 0);
+      ret = regexec(&namebuf, name1, 0, 0, 0);
       if (ret != 0)
         continue;
 
@@ -969,7 +969,7 @@ create_pre_run_memory_map(struct bfd *abfd)
   NSTRACE(create_pre_run_memory_map);
   map = ((struct pre_run_memory_map *)
          xmalloc(sizeof(struct pre_run_memory_map)));
-  if (gdbarch_tdep(current_gdbarch)->wordsize == 4)
+  if (new_gdbarch_tdep(current_gdbarch)->wordsize == 4)
     {
       map->number_of_buckets = 400;
       map->bucket_size = (UINT_MAX / map->number_of_buckets);
@@ -1645,7 +1645,7 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
                            int preserving_objfile_p)
 {
   struct section_addr_info *volatile addrs;
-  size_t i;
+  size_t zi0;
   volatile int using_orig_objfile = 0;
 
   NSTRACE(dyld_load_symfile_internal);
@@ -1719,15 +1719,15 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
 	{
 	  addrs = alloc_section_addr_info(bfd_count_sections(e->abfd));
 
-	  for (i = 0UL; i < addrs->num_sections; i++)
+	  for (zi0 = 0UL; zi0 < addrs->num_sections; zi0++)
 	    {
-	      addrs->other[i].name = NULL;
+	      addrs->other[zi0].name = NULL;
               if ((e->dyld_valid == 0)
                   && (e->pre_run_slide_addr_valid == 1))
-	        addrs->other[i].addr = e->pre_run_slide_addr;
+	        addrs->other[zi0].addr = e->pre_run_slide_addr;
               else
-	        addrs->other[i].addr = e->dyld_slide;
-	      addrs->other[i].sectindex = 0;
+	        addrs->other[zi0].addr = e->dyld_slide;
+	      addrs->other[zi0].sectindex = 0;
 	    }
 
 	  addrs->addrs_are_offsets = 1;
@@ -1744,7 +1744,7 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
 	}
       else
 	{
-          size_t i;
+          size_t zi1;
           volatile int num_offsets;
 	  struct bfd_section *this_sect;
 
@@ -1755,9 +1755,9 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
 	  if (e->dyld_section_offsets != NULL)
 	    {
 	      this_sect = e->abfd->sections;
-	      for (i = 0UL;
-                   i < bfd_count_sections(e->abfd);
-                   i++, this_sect = this_sect->next)
+	      for (zi1 = 0UL;
+                   zi1 < bfd_count_sections(e->abfd);
+                   zi1++, this_sect = this_sect->next)
 		{
 		  if (objfile_keeps_section(e->abfd, this_sect))
 		    num_offsets++;

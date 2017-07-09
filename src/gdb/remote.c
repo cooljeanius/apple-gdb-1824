@@ -305,8 +305,8 @@ static struct gdbarch_data *remote_gdbarch_data_handle;
 static struct remote_state *
 get_remote_state(void)
 {
-  return (struct remote_state *)gdbarch_data(current_gdbarch,
-                                             remote_gdbarch_data_handle);
+  return (struct remote_state *)new_gdbarch_data(current_gdbarch,
+						 remote_gdbarch_data_handle);
 }
 
 /* Default maximum number of characters in a packet body. Many
