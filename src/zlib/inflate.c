@@ -166,14 +166,14 @@ int windowBits;
     /* set number of window bits, free window if different */
     if (windowBits && (windowBits < 8 || windowBits > 15))
         return Z_STREAM_ERROR;
-    if (state->window != Z_NULL && state->wbits != (unsigned)windowBits) {
+    if (state->window != Z_NULL && state->wbits != (unsigned int)windowBits) {
         ZFREE(strm, state->window);
         state->window = Z_NULL;
     }
 
     /* update state and reset the rest of it */
     state->wrap = wrap;
-    state->wbits = (unsigned)windowBits;
+    state->wbits = (unsigned int)windowBits;
     return inflateReset(strm);
 }
 
@@ -268,7 +268,7 @@ struct inflate_state FAR *state;
 
     /* build fixed huffman tables if first call (may not be thread safe) */
     if (virgin) {
-        unsigned sym, bits;
+        unsigned int sym, bits;
         static code *next;
 
         /* literal/length table */
@@ -498,19 +498,19 @@ unsigned copy;
    not enough available input to do that, then return from inflate(). */
 #define NEEDBITS(n) \
     do { \
-        while (bits < (unsigned)(n)) \
+        while (bits < (unsigned int)(n)) \
             PULLBYTE(); \
     } while (0)
 
 /* Return the low n bits of the bit accumulator (n < 16) */
 #define BITS(n) \
-    ((unsigned)hold & ((1U << (n)) - 1))
+    ((unsigned int)hold & ((1U << (n)) - 1))
 
 /* Remove n bits from the bit accumulator */
 #define DROPBITS(n) \
     do { \
         hold >>= (n); \
-        bits -= (unsigned)(n); \
+        bits -= (unsigned int)(n); \
     } while (0)
 
 /* Remove zero to seven bits as needed to go to a byte boundary */
@@ -731,12 +731,13 @@ int flush;
             if (state->flags & 0x0200) CRC2(state->check, hold);
             INITBITS();
             state->mode = EXLEN;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case EXLEN:
             if (state->flags & 0x0400) {
                 NEEDBITS(16);
-                state->length = (unsigned)(hold);
+                state->length = (unsigned int)(hold);
                 if (state->head != Z_NULL) {
-                    state->head->extra_len = (unsigned)hold;
+                    state->head->extra_len = (unsigned int)hold;
 				}
                 if (state->flags & 0x0200) {
 					CRC2(state->check, hold);
@@ -746,6 +747,7 @@ int flush;
                 state->head->extra = Z_NULL;
 			}
             state->mode = EXTRA;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case EXTRA:
             if (state->flags & 0x0400) {
                 copy = state->length;
@@ -768,6 +770,7 @@ int flush;
             }
             state->length = 0;
             state->mode = NAME;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case NAME:
             if (state->flags & 0x0800) {
                 if (have == 0) {
@@ -775,7 +778,7 @@ int flush;
 				}
                 copy = 0;
                 do {
-                    len = (unsigned)(next[copy++]);
+                    len = (unsigned int)(next[copy++]);
                     if ((state->head != Z_NULL) &&
 						(state->head->name != Z_NULL) &&
 						(state->length < state->head->name_max)) {
@@ -795,6 +798,7 @@ int flush;
 			}
             state->length = 0;
             state->mode = COMMENT;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case COMMENT:
             if (state->flags & 0x1000) {
                 if (have == 0) {
@@ -802,7 +806,7 @@ int flush;
 				}
                 copy = 0;
                 do {
-                    len = (unsigned)(next[copy++]);
+                    len = (unsigned int)(next[copy++]);
                     if ((state->head != Z_NULL) &&
 						(state->head->comment != Z_NULL) &&
 						(state->length < state->head->comm_max)) {
@@ -821,6 +825,7 @@ int flush;
                 state->head->comment = Z_NULL;
 			}
             state->mode = HCRC;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case HCRC:
             if (state->flags & 0x0200) {
                 NEEDBITS(16);
@@ -844,6 +849,7 @@ int flush;
             strm->adler = state->check = ZSWAP32(hold);
             INITBITS();
             state->mode = DICT;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case DICT:
             if (state->havedict == 0) {
                 RESTORE();
@@ -851,10 +857,12 @@ int flush;
             }
             strm->adler = state->check = adler32(0L, Z_NULL, 0);
             state->mode = TYPE;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case TYPE:
 			if ((flush == Z_BLOCK) || (flush == Z_TREES)) {
 				goto inf_leave;
 			}
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case TYPEDO:
             if (state->last) {
                 BYTEBITS();
@@ -901,14 +909,16 @@ int flush;
                 state->mode = BAD;
                 break;
             }
-            state->length = (unsigned)hold & 0xffff;
+            state->length = (unsigned int)hold & 0xffff;
             Tracev((stderr, "inflate:       stored length %u\n",
                     state->length));
             INITBITS();
             state->mode = COPY_;
             if (flush == Z_TREES) goto inf_leave;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case COPY_:
             state->mode = COPY;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case COPY:
             copy = state->length;
             if (copy) {
@@ -976,7 +986,7 @@ int flush;
             while (state->have < state->nlen + state->ndist) {
                 for (;;) {
                     here = state->lencode[BITS(state->lenbits)];
-                    if ((unsigned)(here.bits) <= bits) break;
+                    if ((unsigned int)(here.bits) <= bits) break;
                     PULLBYTE();
                 }
                 if (here.val < 16) {
@@ -1055,8 +1065,10 @@ int flush;
 			if (flush == Z_TREES) {
 				goto inf_leave;
 			}
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case LEN_:
             state->mode = LEN;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case LEN:
             if ((have >= 6) && (left >= 258)) {
                 RESTORE();
@@ -1069,7 +1081,7 @@ int flush;
             state->back = 0;
             for (;;) {
                 here = state->lencode[BITS(state->lenbits)];
-                if ((unsigned)(here.bits) <= bits) break;
+                if ((unsigned int)(here.bits) <= bits) break;
                 PULLBYTE();
             }
             if (here.op && ((here.op & 0xf0) == 0)) {
@@ -1077,7 +1089,7 @@ int flush;
                 for (;;) {
                     here = state->lencode[last.val +
                             (BITS(last.bits + last.op) >> last.bits)];
-                    if ((unsigned)(last.bits + here.bits) <= bits) break;
+                    if ((unsigned int)(last.bits + here.bits) <= bits) break;
                     PULLBYTE();
                 }
                 DROPBITS(last.bits);
@@ -1085,7 +1097,7 @@ int flush;
             }
             DROPBITS(here.bits);
             state->back += here.bits;
-            state->length = (unsigned)here.val;
+            state->length = (unsigned int)here.val;
             if ((int)(here.op) == 0) {
                 Tracevv((stderr, here.val >= 0x20 && here.val < 0x7f ?
                         "inflate:         literal '%c'\n" :
@@ -1104,8 +1116,9 @@ int flush;
                 state->mode = BAD;
                 break;
             }
-            state->extra = (unsigned)(here.op) & 15;
+            state->extra = (unsigned int)(here.op) & 15;
             state->mode = LENEXT;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case LENEXT:
             if (state->extra) {
                 NEEDBITS(state->extra);
@@ -1116,10 +1129,11 @@ int flush;
             Tracevv((stderr, "inflate:         length %u\n", state->length));
             state->was = state->length;
             state->mode = DIST;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case DIST:
             for (;;) {
                 here = state->distcode[BITS(state->distbits)];
-                if ((unsigned)(here.bits) <= bits) break;
+                if ((unsigned int)(here.bits) <= bits) break;
                 PULLBYTE();
             }
             if ((here.op & 0xf0) == 0) {
@@ -1127,7 +1141,7 @@ int flush;
                 for (;;) {
                     here = state->distcode[last.val +
                             (BITS(last.bits + last.op) >> last.bits)];
-                    if ((unsigned)(last.bits + here.bits) <= bits) break;
+                    if ((unsigned int)(last.bits + here.bits) <= bits) break;
                     PULLBYTE();
                 }
                 DROPBITS(last.bits);
@@ -1140,9 +1154,10 @@ int flush;
                 state->mode = BAD;
                 break;
             }
-            state->offset = (unsigned)here.val;
-            state->extra = ((unsigned)(here.op) & 15);
+            state->offset = (unsigned int)here.val;
+            state->extra = ((unsigned int)(here.op) & 15);
             state->mode = DISTEXT;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case DISTEXT:
             if (state->extra) {
                 NEEDBITS(state->extra);
@@ -1159,6 +1174,7 @@ int flush;
 #endif /* INFLATE_STRICT */
             Tracevv((stderr, "inflate:         distance %u\n", state->offset));
             state->mode = MATCH;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case MATCH:
 			if (left == 0) {
 				goto inf_leave;
@@ -1241,6 +1257,7 @@ int flush;
             }
 #ifdef GUNZIP
             state->mode = LENGTH;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case LENGTH:
             if (state->wrap && state->flags) {
                 NEEDBITS(32);
@@ -1254,6 +1271,7 @@ int flush;
             }
 #endif /* GUNZIP */
             state->mode = DONE;
+			ZLIB_FALLTHRU; /* FIXME: really? */
         case DONE:
             ret = Z_STREAM_END;
             goto inf_leave;

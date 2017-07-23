@@ -1,4 +1,4 @@
-/* Target-dependent code for PowerPC systems using the SVR4 ABI
+/* ppc-sysv-tdep.c: Target-dependent code for PowerPC systems using the SVR4 ABI
    for GDB, the GNU debugger.
 
    Copyright 2000, 2001, 2002, 2003, 2005 Free Software Foundation,
@@ -180,7 +180,7 @@ ppc_push_argument (struct ppc_stack_abi *abi,
 		   struct ppc_stack_context *c, struct value *arg,
 		   int argno, int do_copy, int floatonly)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   struct type *type = check_typedef (value_type (arg));
   int len = TYPE_LENGTH (type);
@@ -523,7 +523,7 @@ ppc_push_arguments (struct ppc_stack_abi *abi, int nargs, struct value **args,
     {
       store_unsigned_integer (buf, 4, struct_addr);
       ppc_copy_into_greg (current_regcache, write.greg,
-			  gdbarch_tdep (current_gdbarch)->wordsize, 4, buf);
+			  new_gdbarch_tdep(current_gdbarch)->wordsize, 4, buf);
       write.greg++;
       if (abi->regs_shadow_stack)
 	write.argoffset += 4;
@@ -555,7 +555,7 @@ ppc_sysv_abi_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 			      int nargs, struct value **args, CORE_ADDR sp,
 			      int struct_return, CORE_ADDR struct_addr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   struct ppc_stack_abi abi;
   CORE_ADDR ret;
 
@@ -603,7 +603,7 @@ ppc_darwin_abi_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 				int nargs, struct value **args, CORE_ADDR sp,
 				int struct_return, CORE_ADDR struct_addr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   struct ppc_stack_abi abi;
   CORE_ADDR ret;
 
@@ -652,7 +652,7 @@ do_ppc_sysv_return_value (struct gdbarch *gdbarch, struct type *type,
 			  /* APPLE LOCAL gdb_byte */
 			  const gdb_byte *writebuf, int broken_gcc)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   gdb_assert (tdep->wordsize == 4);
   if (TYPE_CODE (type) == TYPE_CODE_FLT
       && TYPE_LENGTH (type) <= 8
@@ -857,7 +857,7 @@ ppc_darwin_abi_return_value (struct gdbarch *gdbarch, struct type *valtype,
 			     struct regcache *regcache, gdb_byte *readbuf,
 			     const gdb_byte *writebuf)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   if (TYPE_CODE (valtype) == TYPE_CODE_STRUCT
       || TYPE_CODE (valtype) == TYPE_CODE_UNION)
@@ -976,7 +976,7 @@ ppc64_sysv_abi_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 				int struct_return, CORE_ADDR struct_addr)
 {
   CORE_ADDR func_addr = find_function_addr (function, NULL);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   /* By this stage in the proceedings, SP has been decremented by "red
      zone size" + "struct return size".  Fetch the stack-pointer from
      before this and use that as the BACK_CHAIN.  */
@@ -1270,7 +1270,7 @@ ppc64_sysv_abi_return_value (struct gdbarch *gdbarch, struct type *valtype,
 			     struct regcache *regcache, gdb_byte *readbuf,
 			     const gdb_byte *writebuf)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* This function exists to support a calling convention that
      requires floating-point registers.  It shouldn't be used on

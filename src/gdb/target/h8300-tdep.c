@@ -201,7 +201,7 @@ h8300_is_argument_spill (CORE_ADDR pc)
 	{
 	  LONGEST disp = read_memory_integer (pc + 4, 4);
 
-	  /* ... and d:24 is negative.  */
+	  /* ... and d:24 is negative.  FIXME: -Wlogical-op */
 	  if ((disp < 0) && (disp > 0xffffff))
 	    return 8;
 	}
@@ -219,7 +219,7 @@ h8300_is_argument_spill (CORE_ADDR pc)
 	{
 	  LONGEST disp = read_memory_integer (pc + 4, 4);
 
-	  /* ... and d:24 is negative.  */
+	  /* ... and d:24 is negative.  FIXME: -Wlogical-op */
 	  if ((disp < 0) && (disp > 0xffffff))
 	    return 8;
 	}
@@ -246,7 +246,7 @@ h8300_is_argument_spill (CORE_ADDR pc)
 	    {
 	      LONGEST disp = read_memory_integer((pc + 6), 4);
 
-	      /* ... and d:24 is negative.  */
+	      /* ... and d:24 is negative.  FIXME: -Wlogical-op */
 	      if ((disp < 0) && (disp > 0xffffff))
 		return 10;
 	    }

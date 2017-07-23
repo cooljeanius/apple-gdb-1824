@@ -581,8 +581,8 @@ CONFIG_UNINSTALL = @CONFIG_UNINSTALL@
 # your system does NOT have fcntl.h in /usr/include (which is where it
 # should be according to Posix).
 DEFS = @DEFS@ @EXTRA_DEFS@
-GDB_CFLAGS = -I. -I$(srcdir) -I$(srcdir)/config $(DEFS) \
-  -DLOCALEDIR="\"$(localedir)\"" @MAINT@ @FCNTL_H_CFLAGS@
+GDB_CFLAGS = -I. -I$(srcdir) -I$(srcdir)/config -I$(srcdir)/target \
+  $(DEFS) -DLOCALEDIR="\"$(localedir)\"" @MAINT@ @FCNTL_H_CFLAGS@
 
 # M{H,T}_CFLAGS, if defined, have host- and target-dependent CFLAGS
 # from the config directory.

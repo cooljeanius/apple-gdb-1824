@@ -739,15 +739,14 @@ mi_cmd_thread_set_pc(char *command, char **argv, int argc)
             contains the given source file so it can't expand the psymtabs, etc.,
             and the fix operation will fail.
  */
-
 enum mi_cmd_result
-mi_cmd_file_fix_file (char *command, char **argv, int argc)
+mi_cmd_file_fix_file(char *command, char **argv, int argc)
 {
   char *source_filename = NULL;
   char *bundle_filename = NULL;
   char *solib_filename = NULL;
-  int optind = 0;
-  char *optarg;
+  int local_optind = 0;
+  char *local_optarg;
   struct cleanup *wipe;
 
   enum fff_opt
@@ -777,31 +776,31 @@ mi_cmd_file_fix_file (char *command, char **argv, int argc)
   while (1)
     {
       int opt = mi_getopt ("mi_cmd_file_fix_file", argc, argv, fff_opts,
-                           &optind, &optarg);
+                           &local_optind, &local_optarg);
       if (opt < 0)
         break;
       switch ((enum fff_opt)opt)
         {
         case BUNDLE_OPT:
-          bundle_filename = xstrdup(optarg);
+          bundle_filename = xstrdup(local_optarg);
           make_cleanup(xfree, bundle_filename);
           break;
         case SOURCE_OPT:
-          source_filename = xstrdup(optarg);
+          source_filename = xstrdup(local_optarg);
           make_cleanup(xfree, source_filename);
           break;
         case OBJECT_OPT:
           break;
         case SOLIB_OPT:
-          solib_filename = xstrdup(optarg);
+          solib_filename = xstrdup(local_optarg);
           make_cleanup(xfree, solib_filename);
           break;
 	default:
 	  break;
         }
      }
-   argv += optind;
-   argc -= optind;
+   argv += local_optind;
+   argc -= local_optind;
   
    if ((argc < 0) || (argv == NULL)) {
      warning(_("mi_cmd_file_fix_file: bad arguments(?)\n"));
@@ -1539,8 +1538,8 @@ mi_cmd_data_read_memory(char *command, char **argv, int argc)
   char *mbuf;
   int nr_bytes;
   long offset = 0L;
-  int optind = 0;
-  char *optarg;
+  int local_optind = 0;
+  char *local_optarg;
   enum opt
     {
       OFFSET_OPT
@@ -1554,20 +1553,20 @@ mi_cmd_data_read_memory(char *command, char **argv, int argc)
   while (1)
     {
       int opt = mi_getopt("mi_cmd_data_read_memory", argc, argv, opts,
-			  &optind, &optarg);
+			  &local_optind, &local_optarg);
       if (opt < 0)
 	break;
       switch ((enum opt)opt)
 	{
 	case OFFSET_OPT:
-	  offset = atol(optarg);
+	  offset = atol(local_optarg);
 	  break;
 	default:
 	  break;
 	}
     }
-  argv += optind;
-  argc -= optind;
+  argv += local_optind;
+  argc -= local_optind;
 
   if ((argc < 5) || (argc > 6))
     {
@@ -1741,8 +1740,8 @@ mi_cmd_data_write_memory(char *command, char **argv, int argc)
   void *buffer;
   struct cleanup *old_chain;
   long offset = 0;
-  int optind = 0;
-  char *optarg;
+  int local_optind = 0;
+  char *local_optarg;
   enum opt
     {
       OFFSET_OPT
@@ -1756,20 +1755,20 @@ mi_cmd_data_write_memory(char *command, char **argv, int argc)
   while (1)
     {
       int opt = mi_getopt("mi_cmd_data_write_memory", argc, argv, opts,
-			  &optind, &optarg);
+			  &local_optind, &local_optarg);
       if (opt < 0)
 	break;
       switch ((enum opt)opt)
 	{
 	case OFFSET_OPT:
-	  offset = atol(optarg);
+	  offset = atol(local_optarg);
 	  break;
         default:
           break;
 	}
     }
-  argv += optind;
-  argc -= optind;
+  argv += local_optind;
+  argc -= local_optind;
 
   if (argc != 4)
     {
@@ -1894,7 +1893,7 @@ mi_cmd_mi_no_op(char *command, char **argv, int argc)
    prompt, display error). */
 
 static void
-captured_mi_execute_command (struct ui_out *uiout, void *data)
+captured_mi_execute_command(struct ui_out *uiout, void *data)
 {
   struct captured_mi_execute_command_args *args =
     (struct captured_mi_execute_command_args *) data;
@@ -2170,7 +2169,7 @@ mi_execute_command (char *cmd, int from_tty)
   if (cmd == 0)
     quit_force (NULL, from_tty);
 
-  command = mi_parse (cmd);
+  command = do_mi_parse(cmd);
 
   if (command != NULL)
     {

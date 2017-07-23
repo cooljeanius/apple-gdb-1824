@@ -55,6 +55,8 @@ struct target_ops;
 #include "dcache.h"
 #include "memattr.h"
 #include "value.h"  /* APPLE LOCAL - needed for enum check_which_threads.  */
+/* include chain to this file already comes from "defs.h" so no need to include
+ * it again */
 
 enum strata
   {
@@ -1049,9 +1051,9 @@ extern void (*deprecated_target_new_objfile_hook)(struct objfile *)
   ATTRIBUTE_DEPRECATED;
 
 #ifndef target_pid_or_tid_to_str
-#define target_pid_or_tid_to_str(ID) \
-     target_pid_to_str (ID)
-#endif
+# define target_pid_or_tid_to_str(ID) \
+      target_pid_to_str(ID)
+#endif /* !target_pid_or_tid_to_str */
 
 /* Attempts to find the pathname of the executable file
    that was run to create a specified process.

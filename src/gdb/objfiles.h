@@ -690,12 +690,12 @@ extern int is_in_import_list (char *, struct objfile *);
 /* Keep a registry of per-objfile data-pointers required by other GDB
    modules.  */
 
-extern const struct objfile_data *register_objfile_data (void);
-extern void clear_objfile_data (struct objfile *objfile);
-extern void set_objfile_data (struct objfile *objfile,
-			      const struct objfile_data *data, void *value);
-extern void *objfile_data (struct objfile *objfile,
-			   const struct objfile_data *data);
+extern const struct objfile_data *register_objfile_data(void);
+extern void clear_objfile_data(struct objfile *objfile);
+extern void set_objfile_data(struct objfile *objfile,
+			     const struct objfile_data *data, void *value);
+extern void *get_objfile_data(struct objfile *objfile,
+			      const struct objfile_data *data);
 
 
 /* Traverse all object files.  ALL_OBJFILES_SAFE works even if you delete

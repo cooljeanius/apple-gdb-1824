@@ -3302,14 +3302,14 @@ dtpoff_base (struct bfd_link_info *info)
 static bfd_vma
 tpoff_base (struct bfd_link_info *info)
 {
-  struct elf_link_hash_table *htab = elf_hash_table (info);
+  struct elf_link_hash_table *htab = elf_hash_table(info);
+  bfd_vma base;
 
   /* If tls_sec is NULL, we should have signalled an error already.  */
   if (htab->tls_sec == NULL)
     return 0;
 
-  bfd_vma base = align_power ((bfd_vma) TCB_SIZE,
-			      htab->tls_sec->alignment_power);
+  base = align_power((bfd_vma)TCB_SIZE, htab->tls_sec->alignment_power);
   return htab->tls_sec->vma - base;
 }
 
@@ -3499,7 +3499,7 @@ elfNN_aarch64_final_link_relocate (reloc_howto_type *howto,
 	  (*_bfd_error_handler)
 	    (_("%B: relocation %s against STT_GNU_IFUNC "
 	       "symbol `%s' isn't handled by %s"), input_bfd,
-	     howto->name, name, __FUNCTION__);
+	     howto->name, name, __extension__ __FUNCTION__);
 	  bfd_set_error (bfd_error_bad_value);
 	  return (bfd_reloc_status_type)FALSE;
 
@@ -4094,7 +4094,7 @@ elfNN_aarch64_relocate_section (bfd *output_bfd,
       arelent bfd_reloc;
       char sym_type;
       bfd_boolean unresolved_reloc = FALSE;
-      char *error_message = NULL;
+      const char *error_message = NULL;
 
       r_symndx = (unsigned long)ELFNN_R_SYM(rel->r_info);
       r_type = ELFNN_R_TYPE(rel->r_info);
@@ -4164,9 +4164,11 @@ elfNN_aarch64_relocate_section (bfd *output_bfd,
 	  sym_type = (char)h->type;
 	}
 
-      if (sec != NULL && discarded_section (sec))
-	RELOC_AGAINST_DISCARDED_SECTION (info, input_bfd, input_section,
-					 rel, 1, relend, howto, 0, contents);
+      if ((sec != NULL) && discarded_section(sec)) {
+	int i; /* needed inside macro */
+	RELOC_AGAINST_DISCARDED_SECTION(info, input_bfd, input_section,
+					rel, 1, relend, howto, 0, contents);
+      }
 
       if (info->relocatable)
 	{
@@ -4456,8 +4458,7 @@ elfNN_aarch64_relocate_section (bfd *output_bfd,
 				      +rel->r_offset) != (bfd_vma) - 1)
 	{
 	  (*_bfd_error_handler)
-	    (_
-	     ("%B(%A+0x%lx): unresolvable %s relocation against symbol `%s'"),
+	    (_("%B(%A+0x%lx): unresolvable %s relocation against symbol `%s'"),
 	     input_bfd, input_section, (long) rel->r_offset, howto->name,
 	     h->root.root.string);
 	  return FALSE;
@@ -5598,7 +5599,7 @@ record_section_with_aarch64_elf_section_data (asection *sec)
 {
   struct section_list *entry;
 
-  entry = bfd_malloc (sizeof (*entry));
+  entry = (struct section_list *)bfd_malloc(sizeof(*entry));
   if (entry == NULL)
     return;
   entry->sec = sec;
@@ -5863,9 +5864,9 @@ elfNN_aarch64_new_section_hook (bfd *abfd, asection *sec)
   if (!sec->used_by_bfd)
     {
       _aarch64_elf_section_data *sdata;
-      bfd_size_type amt = sizeof (*sdata);
+      bfd_size_type amt = sizeof(*sdata);
 
-      sdata = bfd_zalloc (abfd, amt);
+      sdata = (_aarch64_elf_section_data *)bfd_zalloc(abfd, amt);
       if (sdata == NULL)
 	return FALSE;
       sec->used_by_bfd = sdata;

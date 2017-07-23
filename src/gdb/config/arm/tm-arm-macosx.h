@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef _TM_ARM_MACOSX_H_
 #define _TM_ARM_MACOSX_H_
 
-#include "tm-macosx.h"
+/* removing include of "tm-macosx.h" here */
 
 
 struct arm_macosx_tdep_inf_status {

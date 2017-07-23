@@ -3592,6 +3592,7 @@ aout_link_write_other_symbol(struct aout_link_hash_entry *h, void * data)
     case bfd_link_hash_undefweak:
       type = N_WEAKU;
       val = 0;
+      ATTRIBUTE_FALLTHROUGH; /* XXX: really? */
     case bfd_link_hash_indirect:
       /* We ignore these symbols, since the indirected symbol is already
        * in the hash table: */

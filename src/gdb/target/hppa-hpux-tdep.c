@@ -59,7 +59,7 @@
 #endif
 
 #define IS_32BIT_TARGET(_gdbarch) \
-	((gdbarch_tdep (_gdbarch))->bytes_per_address == 4)
+	((new_gdbarch_tdep(_gdbarch))->bytes_per_address == 4)
 
 /* Forward declarations.  */
 extern void _initialize_hppa_hpux_tdep (void);
@@ -862,7 +862,7 @@ GDB will be unable to intercept exception events."),
       static const char message[] = "Error while finding exception callback hook:\n";
       int errors_ret = 0;
 
-      args.solib_handle = gdbarch_tdep(current_gdbarch)->solib_get_solib_by_pc(eh_notify_callback_addr);
+      args.solib_handle = new_gdbarch_tdep(current_gdbarch)->solib_get_solib_by_pc(eh_notify_callback_addr);
       args.msym = msym;
       args.return_val = 0;
 
@@ -1177,7 +1177,7 @@ hppa_hpux_sigtramp_frame_unwind_cache (struct frame_info *next_frame,
 
 {
   struct gdbarch *gdbarch = get_frame_arch (next_frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   struct hppa_hpux_sigtramp_unwind_cache *info;
   unsigned int flag;
   CORE_ADDR sp, scptr;
@@ -1308,7 +1308,7 @@ hppa32_hpux_find_global_pointer (struct value *function)
 	return extract_unsigned_integer (buf, sizeof (buf));
     }
 
-  return gdbarch_tdep (current_gdbarch)->solib_get_got_by_pc (faddr);
+  return new_gdbarch_tdep(current_gdbarch)->solib_get_got_by_pc(faddr);
 }
 
 static CORE_ADDR
@@ -1326,7 +1326,7 @@ hppa64_hpux_find_global_pointer (struct value *function)
     }
   else
     {
-      return gdbarch_tdep (current_gdbarch)->solib_get_got_by_pc (faddr);
+      return new_gdbarch_tdep(current_gdbarch)->solib_get_got_by_pc(faddr);
     }
 }
 
@@ -1385,7 +1385,7 @@ hppa32_hpux_search_dummy_call_sequence (struct gdbarch *gdbarch, CORE_ADDR pc,
 
   sec = find_pc_section (pc);
   obj = sec->objfile;
-  priv = objfile_data (obj, hppa_objfile_priv_data);
+  priv = get_objfile_data(obj, hppa_objfile_priv_data);
 
   if (!priv)
     priv = hppa_init_objfile_priv_data (obj);
@@ -1480,7 +1480,7 @@ hppa64_hpux_search_dummy_call_sequence (struct gdbarch *gdbarch, CORE_ADDR pc,
 
   sec = find_pc_section (pc);
   obj = sec->objfile;
-  priv = objfile_data (obj, hppa_objfile_priv_data);
+  priv = get_objfile_data(obj, hppa_objfile_priv_data);
 
   if (!priv)
     priv = hppa_init_objfile_priv_data (obj);
@@ -1584,7 +1584,7 @@ hppa_hpux_sr_for_addr (CORE_ADDR addr)
 {
   int sr;
   /* The space register to use is encoded in the top 2 bits of the address.  */
-  sr = addr >> (gdbarch_tdep (current_gdbarch)->bytes_per_address * 8 - 2);
+  sr = addr >> (new_gdbarch_tdep(current_gdbarch)->bytes_per_address * 8 - 2);
   return sr + 4;
 }
 
@@ -2029,7 +2029,7 @@ hppa_hpux_unwind_adjust_stub (struct frame_info *next_frame, CORE_ADDR base,
 static void
 hppa_hpux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   if (IS_32BIT_TARGET (gdbarch))
     tdep->in_solib_call_trampoline = hppa32_hpux_in_solib_call_trampoline;
@@ -2061,7 +2061,7 @@ hppa_hpux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 static void
 hppa_hpux_som_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->is_elf = 0;
 
@@ -2074,7 +2074,7 @@ hppa_hpux_som_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 static void
 hppa_hpux_elf_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->is_elf = 1;
   tdep->find_global_pointer = hppa64_hpux_find_global_pointer;

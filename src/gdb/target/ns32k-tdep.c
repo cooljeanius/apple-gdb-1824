@@ -81,7 +81,7 @@ umax_frame_num_args(struct frame_info *fi)
   int width;
 
   numargs = -1;
-  enter_addr = ns32k_get_enter_addr((fi)->pc);
+  enter_addr = ns32k_get_enter_addr(get_frame_pc(fi));
   if (enter_addr > 0)
     {
 #if defined(SAVED_PC_AFTER_CALL) && defined(FRAME_SAVED_PC)
@@ -124,12 +124,20 @@ sign_extend(int value, int bits)
 	  : value);
 }
 
-/* */
+/* FIXME: does this actually do anything? */
 void
 flip_bytes(void *p, int count)
 {
   char tmp;
   char *ptr = 0;
+  
+  if (p == NULL) {
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+    __asm__("");
+#else
+    (void)p;
+#endif /* __GNUC__ && !__STRICT_ANSI__ */
+  }
 
   while (count > 0)
     {

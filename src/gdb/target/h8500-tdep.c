@@ -79,6 +79,14 @@ static int data_size = 2;
 #define LINK_8 0x17
 #define LINK_16 0x1f
 
+#ifndef PTR_SIZE
+# ifdef SIZEOF_VOID_P
+#  define PTR_SIZE SIZEOF_VOID_P
+# else
+#  define PTR_SIZE 4
+# endif /* SIZEOF_VOID_P */
+#endif /* !PTR_SIZE */
+
 int minimum_mode = 1;
 
 /* */
@@ -119,10 +127,12 @@ h8500_addr_bits_remove(CORE_ADDR addr)
 CORE_ADDR
 h8500_frame_chain(struct frame_info *thisframe)
 {
-  if (!inside_entry_file(thisframe->pc))
+  if (!inside_entry_file(thisframe->pc)) {
     return (read_memory_integer(FRAME_FP(thisframe), PTR_SIZE));
-  else
+  } else {
     return 0;
+  }
+  return INVALID_ADDRESS; /* NOTREACHED */
 }
 
 /* Fetch the instruction at ADDR, returning 0 if ADDR is beyond LIM or
@@ -514,6 +524,8 @@ h8500_value_of_trapped_internalvar(struct internalvar *var)
     case '6':
     case '7':
       page_regnum = SEG_T_REGNUM;
+      break;
+    default:
       break;
     }
 

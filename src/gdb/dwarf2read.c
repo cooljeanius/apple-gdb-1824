@@ -3325,8 +3325,8 @@ dwarf2_psymtab_to_symtab(struct partial_symtab *pst)
 
 	  /* Restore our global data: */
 	  dwarf2_per_objfile = ((struct dwarf2_per_objfile *)
-                                objfile_data(pst->objfile,
-                                             dwarf2_objfile_data_key));
+                                get_objfile_data(pst->objfile,
+						 dwarf2_objfile_data_key));
 
 	  psymtab_to_symtab_1(pst);
 
@@ -3618,16 +3618,16 @@ convert_oso_map_to_final_map(struct nlist_rec *nlists,
              back out of the address because all the callers will re-apply the
              offset when they translate the address.  */
 
-          CORE_ADDR baseaddr = objfile_data_section_offset (pst->objfile);
+          CORE_ADDR baseaddr = objfile_data_section_offset(pst->objfile);
 
-          minsym = lookup_minimal_symbol (oso_common_symnames[i], NULL,
-                                          pst->objfile);
+          minsym = lookup_minimal_symbol(oso_common_symnames[i], NULL,
+                                         pst->objfile);
 
           /* We're only looking for data here */
           if (minsym && minsym->type == mst_data)
             {
-              CORE_ADDR actual_address = SYMBOL_VALUE_ADDRESS (minsym) -
-                                         baseaddr;
+              CORE_ADDR actual_address = (SYMBOL_VALUE_ADDRESS(minsym)
+					  - baseaddr);
 
               /* Assume that no *real* symbol can end up at address 0 in a
                  final linked executable/dylib/bundle.  */
@@ -4215,8 +4215,8 @@ dwarf2_kext_psymtab_to_symtab(struct partial_symtab *pst)
      addresses that need to be updated before they can be used.  */
 
   dwarf2_per_objfile = ((struct dwarf2_per_objfile *)
-                        objfile_data(pst->objfile,
-                                     dwarf2_objfile_data_key));
+                        get_objfile_data(pst->objfile,
+					 dwarf2_objfile_data_key));
   if (dwarf2_per_objfile == NULL)
     {
       dwarf2_has_info_1(pst->objfile, pst->objfile->obfd);

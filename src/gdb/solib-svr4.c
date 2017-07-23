@@ -1305,7 +1305,7 @@ set_solib_svr4_fetch_link_map_offsets(struct gdbarch *gdbarch,
                                       struct link_map_offsets *(*flmo)(void))
 {
   struct solib_svr4_ops *ops =
-    (struct solib_svr4_ops *)gdbarch_data(gdbarch, solib_svr4_data);
+    (struct solib_svr4_ops *)new_gdbarch_data(gdbarch, solib_svr4_data);
 
   ops->fetch_link_map_offsets = flmo;
 }
@@ -1317,7 +1317,7 @@ static struct link_map_offsets *
 svr4_fetch_link_map_offsets(void)
 {
   struct solib_svr4_ops *ops =
-    (struct solib_svr4_ops *)gdbarch_data(current_gdbarch, solib_svr4_data);
+    (struct solib_svr4_ops *)new_gdbarch_data(current_gdbarch, solib_svr4_data);
 
   gdb_assert(ops->fetch_link_map_offsets);
   return ops->fetch_link_map_offsets();
@@ -1328,7 +1328,7 @@ static int
 svr4_have_link_map_offsets(void)
 {
   struct solib_svr4_ops *ops =
-    (struct solib_svr4_ops *)gdbarch_data(current_gdbarch, solib_svr4_data);
+    (struct solib_svr4_ops *)new_gdbarch_data(current_gdbarch, solib_svr4_data);
   return (ops->fetch_link_map_offsets != NULL);
 }
 

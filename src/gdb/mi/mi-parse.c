@@ -33,6 +33,7 @@
 
 #include "gdb_string.h"
 
+/* */
 static void
 mi_parse_argv(char *args, struct mi_parse *parse)
 {
@@ -133,7 +134,7 @@ mi_parse_argv(char *args, struct mi_parse *parse)
     }
 }
 
-
+/* */
 void
 mi_parse_free(struct mi_parse *parse)
 {
@@ -152,9 +153,9 @@ mi_parse_free(struct mi_parse *parse)
   xfree(parse);
 }
 
-
+/* */
 struct mi_parse *
-mi_parse(char *cmd)
+do_mi_parse(char *cmd)
 {
   char *chp;
   struct mi_parse *parse = XMALLOC(struct mi_parse);

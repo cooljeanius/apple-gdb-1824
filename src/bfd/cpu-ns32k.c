@@ -104,6 +104,7 @@ _bfd_ns32k_put_displacement(bfd_vma value, bfd_byte *buffer, int size)
   return;
 }
 
+/* */
 bfd_vma
 _bfd_ns32k_get_immediate(bfd_byte *buffer, int size)
 {
@@ -114,8 +115,10 @@ _bfd_ns32k_get_immediate(bfd_byte *buffer, int size)
     case 4:
       value = ((value << 8) | (*buffer++ & 0xff));
       value = ((value << 8) | (*buffer++ & 0xff));
+      ATTRIBUTE_FALLTHROUGH; /* XXX: really? */
     case 2:
       value = ((value << 8) | (*buffer++ & 0xff));
+      ATTRIBUTE_FALLTHROUGH; /* XXX: really? */
     case 1:
       value = ((value << 8) | (*buffer++ & 0xff));
       break;
@@ -125,6 +128,7 @@ _bfd_ns32k_get_immediate(bfd_byte *buffer, int size)
   return value;
 }
 
+/* */
 void
 _bfd_ns32k_put_immediate(bfd_vma value, bfd_byte *buffer, int size)
 {
@@ -134,10 +138,13 @@ _bfd_ns32k_put_immediate(bfd_vma value, bfd_byte *buffer, int size)
     case 4:
       *buffer-- = (value & 0xff); value >>= 8;
       *buffer-- = (value & 0xff); value >>= 8;
+      ATTRIBUTE_FALLTHROUGH; /* XXX: really? */
     case 2:
       *buffer-- = (value & 0xff); value >>= 8;
+      ATTRIBUTE_FALLTHROUGH; /* XXX: really? */
     case 1:
       *buffer-- = (value & 0xff); value >>= 8;
+      ATTRIBUTE_FALLTHROUGH; /* XXX: really? */
     default:
       ; /* (do nothing) */
     }
@@ -649,8 +656,9 @@ _bfd_do_ns32k_reloc_contents(reloc_howto_type *howto,
 	 signed_add needs no adjustment to become negative in that
 	 case.  */
       signed_add = (bfd_signed_vma)add;
-      if ((add & (((~howto->src_mask) >> 1) & howto->src_mask)) != 0)
-	signed_add -= (((~howto->src_mask) >> 1) & howto->src_mask) << 1;
+      if ((add & (((~howto->src_mask) >> 1) & howto->src_mask)) != 0) {
+	signed_add -= (bfd_signed_vma)((((~howto->src_mask) >> 1) & howto->src_mask) << 1);
+      }
 
       /* Add the value from the object file, shifted so that it is a
 	 straight number.  */
@@ -666,12 +674,13 @@ _bfd_do_ns32k_reloc_contents(reloc_howto_type *howto,
 	  /* For the signed case we use ADD, rather than SIGNED_ADD,
 	     to avoid warnings from SVR4 cc.  This is OK since we
 	     explicitly handle the sign bits.  */
-	  if (signed_add >= 0)
-	    signed_check += add >> howto->bitpos;
-	  else
-	    signed_check += ((add >> howto->bitpos)
-			     | ((bfd_vma) - 1
-				& ~((bfd_vma) - 1 >> howto->bitpos)));
+	  if (signed_add >= 0) {
+	    signed_check += (bfd_signed_vma)(add >> howto->bitpos);
+	  } else {
+	    signed_check += (bfd_signed_vma)((add >> howto->bitpos)
+					     | ((bfd_vma)-1
+						& ~((bfd_vma)-1 >> howto->bitpos)));
+	  }
 	}
 
       switch (howto->complain_on_overflow)
@@ -804,6 +813,8 @@ _bfd_ns32k_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	relocation -= address;
     }
 
-  return _bfd_ns32k_relocate_contents (howto, input_bfd, relocation,
-				       contents + address);
+  return _bfd_ns32k_relocate_contents(howto, input_bfd, relocation,
+				      (contents + address));
 }
+
+/* EOF */

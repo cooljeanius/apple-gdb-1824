@@ -91,9 +91,29 @@ struct bfd_link_hash_entry
 {
   /* Base hash table entry structure: */
   struct bfd_hash_entry root;
+  
+#ifdef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+  /* Type of this entry: */
+  ENUM_BITFIELD(bfd_link_hash_type) type : 8;
 
+  /* Symbol is referenced in a normal regular object file,
+   * as distinct from a LTO IR object file: */
+  unsigned int non_ir_ref_regular : 1;
+  
+  /* Symbol is referenced in a normal dynamic object file,
+   * as distinct from a LTO IR object file: */
+  unsigned int non_ir_ref_dynamic : 1;
+
+  /* Symbol is a built-in define.  These will be overridden by PROVIDE
+   * in a linker script: */
+  unsigned int linker_def : 1;
+  
+  /* Symbol defined in a linker script: */
+  unsigned int ldscript_def : 1;
+#else
   /* Type of this entry: */
   enum bfd_link_hash_type type;
+#endif /* USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 
   /* A union of information depending upon the type: */
   union {
@@ -372,6 +392,18 @@ struct bfd_link_info
   /* Hash table of symbols which are being wrapped (the --wrap linker
      option).  If this is NULL, no symbols are being wrapped.  */
   struct bfd_hash_table *wrap_hash;
+
+#ifdef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+  /* Hash table of symbols which may be left unresolved during
+   * a link.  If this is NULL, no symbols can be left unresolved.  */
+  struct bfd_hash_table *ignore_hash;
+  
+  /* The output BFD.  */
+  bfd *output_bfd;
+  
+  /* The import library generated.  */
+  bfd *out_implib_bfd;
+#endif /* USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 
   /* The list of input BFD's involved in the link.  These are chained
      together via the link_next field.  */

@@ -241,7 +241,7 @@ internalize_unwinds(struct objfile *objfile, struct unwind_table_entry *table,
 	 Note that when loading a shared library (text_offset != 0) the
 	 unwinds are already relative to the text_offset that will be
 	 passed in.  */
-      if (gdbarch_tdep (current_gdbarch)->is_elf && text_offset == 0)
+      if (new_gdbarch_tdep(current_gdbarch)->is_elf && text_offset == 0)
 	{
           low_text_segment_address = -1;
 
@@ -251,9 +251,9 @@ internalize_unwinds(struct objfile *objfile, struct unwind_table_entry *table,
 
 	  text_offset = low_text_segment_address;
 	}
-      else if (gdbarch_tdep (current_gdbarch)->solib_get_text_base)
+      else if (new_gdbarch_tdep(current_gdbarch)->solib_get_text_base)
         {
-	  text_offset = gdbarch_tdep (current_gdbarch)->solib_get_text_base (objfile);
+	  text_offset = new_gdbarch_tdep(current_gdbarch)->solib_get_text_base(objfile);
 	}
 
       bfd_get_section_contents (objfile->obfd, section, buf, 0, size);
@@ -439,8 +439,8 @@ read_unwind_info (struct objfile *objfile)
 	 compare_unwind_entries);
 
   /* Keep a pointer to the unwind information.  */
-  obj_private = (struct hppa_objfile_private *)
-	        objfile_data (objfile, hppa_objfile_priv_data);
+  obj_private = ((struct hppa_objfile_private *)
+		 get_objfile_data(objfile, hppa_objfile_priv_data));
   if (obj_private == NULL)
     obj_private = hppa_init_objfile_priv_data (objfile);
 
@@ -476,7 +476,7 @@ find_unwind_entry (CORE_ADDR pc)
     struct hppa_unwind_info *ui;
     ui = NULL;
     priv = ((struct hppa_objfile_private *)
-	    objfile_data(objfile, hppa_objfile_priv_data));
+	    get_objfile_data(objfile, hppa_objfile_priv_data));
     if (priv)
       ui = ((struct hppa_objfile_private *)priv)->unwind_info;
 
@@ -484,7 +484,7 @@ find_unwind_entry (CORE_ADDR pc)
       {
 	read_unwind_info(objfile);
         priv = ((struct hppa_objfile_private *)
-		objfile_data(objfile, hppa_objfile_priv_data));
+		get_objfile_data(objfile, hppa_objfile_priv_data));
 	if (priv == NULL)
 	  error(_("Internal error reading unwind information."));
         ui = ((struct hppa_objfile_private *)priv)->unwind_info;
@@ -693,7 +693,7 @@ hppa32_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
   /* Global pointer (r19) of the function we are trying to call.  */
   CORE_ADDR gp;
 
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   for (write_pass = 0; write_pass < 2; write_pass++)
     {
@@ -890,7 +890,7 @@ hppa64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 			int nargs, struct value **args, CORE_ADDR sp,
 			int struct_return, CORE_ADDR struct_addr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   int i, offset = 0;
   CORE_ADDR gp;
 
@@ -2082,7 +2082,7 @@ hppa_frame_cache(struct frame_info *next_frame, void **this_cache)
     struct gdbarch_tdep *tdep;
 
     gdbarch = get_frame_arch (next_frame);
-    tdep = gdbarch_tdep (gdbarch);
+    tdep = new_gdbarch_tdep(gdbarch);
 
     if (tdep->unwind_adjust_stub)
       {
@@ -2357,7 +2357,7 @@ hppa_stub_unwind_sniffer (struct frame_info *next_frame)
 {
   CORE_ADDR pc = frame_pc_unwind (next_frame);
   struct gdbarch *gdbarch = get_frame_arch (next_frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   if (pc == 0
       || (tdep->in_solib_call_trampoline != NULL
@@ -2859,7 +2859,7 @@ hppa_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 static void
 hppa_dump_tdep (struct gdbarch *current_gdbarch, struct ui_file *file)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   fprintf_unfiltered (file, "bytes_per_address = %d\n",
                       tdep->bytes_per_address);

@@ -2217,7 +2217,7 @@ psymtab_get_next (struct partial_symtab *ps, int skip_obsolete)
 
 struct objfile_data
 {
-  unsigned index;
+  unsigned int index;
 };
 
 struct objfile_data_registration
@@ -2268,7 +2268,7 @@ objfile_free_data(struct objfile *objfile)
 }
 
 /* APPLE LOCAL begin dwarf repository  */
-unsigned
+unsigned int
 get_objfile_registry_num_registrations(void)
 {
   return objfile_data_registry.num_registrations;
@@ -2291,7 +2291,7 @@ set_objfile_data(struct objfile *objfile, const struct objfile_data *data,
 }
 
 void *
-objfile_data(struct objfile *objfile, const struct objfile_data *data)
+get_objfile_data(struct objfile *objfile, const struct objfile_data *data)
 {
   gdb_assert(data->index < objfile->num_data);
   return objfile->data[data->index];

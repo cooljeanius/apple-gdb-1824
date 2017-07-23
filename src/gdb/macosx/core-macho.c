@@ -25,6 +25,7 @@
 #if defined(TARGET_POWERPC)
 # include "ppc-macosx-thread-status.h"
 # include "ppc-macosx-regs.h"
+# include "ppc-macosx-tdep.h"
 #elif defined(TARGET_I386)
 # include "i386-macosx-thread-status.h"
 # include "i386-macosx-tdep.h"

@@ -1,4 +1,4 @@
-/* MI Command Set - MI Command Parser.
+/* mi-parse.h: MI Command Set - MI Command Parser.
    Copyright 2000 Free Software Foundation, Inc.
    Contributed by Cygnus Solutions (a Red Hat company).
 
@@ -57,10 +57,12 @@ struct mi_parse
    For an MI_COMMAND COMMAND, TOKEN, ARGS and OP are
    initialized. Un-initialized fields are zero. */
 
-extern struct mi_parse *mi_parse (char *cmd);
+extern struct mi_parse *do_mi_parse(char *cmd);
 
 /* Free a command returned by mi_parse_command. */
 
-extern void mi_parse_free (struct mi_parse *cmd);
+extern void mi_parse_free(struct mi_parse *cmd);
 
-#endif
+#endif /* !MI_PARSE_H */
+
+/* EOF */

@@ -150,7 +150,7 @@ static CORE_ADDR skip_prologue (CORE_ADDR, CORE_ADDR,
 int
 altivec_register_p (int regno)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   if (tdep->ppc_vr0_regnum < 0 || tdep->ppc_vrsave_regnum < 0)
     return 0;
   else
@@ -162,7 +162,7 @@ altivec_register_p (int regno)
 int
 spe_register_p (int regno)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   /* Is it a reference to EV0 -- EV31, and do we have those?  */
   if (tdep->ppc_ev0_regnum >= 0
@@ -196,7 +196,7 @@ spe_register_p (int regno)
 int
 ppc_floating_point_unit_p (struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   return (tdep->ppc_fp0_regnum >= 0
           && tdep->ppc_fpscr_regnum >= 0);
@@ -226,7 +226,7 @@ set_sim_regno (int *table, int gdb_regno, int sim_regno)
 static void
 init_sim_regno_table (struct gdbarch *arch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (arch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(arch);
   int total_regs = gdbarch_num_regs (arch) + gdbarch_num_pseudo_regs (arch);
   const struct reg *regs = tdep->regs;
   int *sim_regno = GDBARCH_OBSTACK_CALLOC (arch, total_regs, int);
@@ -309,7 +309,7 @@ init_sim_regno_table (struct gdbarch *arch)
 static int
 rs6000_register_sim_regno (int reg)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int sim_regno;
 
   gdb_assert (0 <= reg && reg <= NUM_REGS + NUM_PSEUDO_REGS);
@@ -350,7 +350,7 @@ ppc_supply_gregset(const struct regset *regset, struct regcache *regcache,
 		   int regnum, const void *gregs, size_t len)
 {
   struct gdbarch *gdbarch = get_regcache_arch(regcache);
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   const struct ppc_reg_offsets *offsets =
     (const struct ppc_reg_offsets *)regset->descr;
   size_t offset;
@@ -396,7 +396,7 @@ ppc_supply_fpregset(const struct regset *regset, struct regcache *regcache,
 		    int regnum, const void *fpregs, size_t len)
 {
   struct gdbarch *gdbarch = get_regcache_arch(regcache);
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   const struct ppc_reg_offsets *offsets =
     (const struct ppc_reg_offsets *)regset->descr;
   size_t offset;
@@ -429,7 +429,7 @@ ppc_collect_gregset(const struct regset *regset,
 		    int regnum, void *gregs, size_t len)
 {
   struct gdbarch *gdbarch = get_regcache_arch(regcache);
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   const struct ppc_reg_offsets *offsets =
     (const struct ppc_reg_offsets *)regset->descr;
   size_t offset;
@@ -478,7 +478,7 @@ ppc_collect_fpregset(const struct regset *regset,
 		     int regnum, void *fpregs, size_t len)
 {
   struct gdbarch *gdbarch = get_regcache_arch(regcache);
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   const struct ppc_reg_offsets *offsets =
     (const struct ppc_reg_offsets *)regset->descr;
   size_t offset;
@@ -572,7 +572,7 @@ branch_dest(int opcode, int instr, CORE_ADDR pc, CORE_ADDR safety)
 
       if (ext_op == 16)		/* br conditional register */
 	{
-          dest = (read_register(gdbarch_tdep(current_gdbarch)->ppc_lr_regnum) & ~3);
+          dest = (read_register(new_gdbarch_tdep(current_gdbarch)->ppc_lr_regnum) & ~3);
 
 	  /* If we are about to return from a signal handler, dest is
 	     something like 0x3c90.  The current frame is a signal handler
@@ -585,18 +585,18 @@ branch_dest(int opcode, int instr, CORE_ADDR pc, CORE_ADDR safety)
 	      fi = get_current_frame();
 	      if (fi != NULL)
 		dest = read_memory_addr(get_frame_base(fi) + SIG_FRAME_PC_OFFSET,
-                                        gdbarch_tdep(current_gdbarch)->wordsize);
+                                        new_gdbarch_tdep(current_gdbarch)->wordsize);
 	    }
 	}
       else if (ext_op == 528)	/* br cond to count reg */
 	{
-          dest = (read_register(gdbarch_tdep(current_gdbarch)->ppc_ctr_regnum) & ~3);
+          dest = (read_register(new_gdbarch_tdep(current_gdbarch)->ppc_ctr_regnum) & ~3);
 
 	  /* If we are about to execute a system call, dest is something
 	     like 0x22fc or 0x3b00.  Upon completion the system call
 	     will return to the address in the link register.  */
 	  if ((LONGEST)dest < TEXT_SEGMENT_BASE)
-            dest = (read_register(gdbarch_tdep(current_gdbarch)->ppc_lr_regnum) & ~3);
+            dest = (read_register(new_gdbarch_tdep(current_gdbarch)->ppc_lr_regnum) & ~3);
 	}
       else
 	return -1;
@@ -810,7 +810,7 @@ skip_prologue (CORE_ADDR pc, CORE_ADDR lim_pc, struct rs6000_framedata *fdata)
   int num_skip_non_prologue_insns = 0;
   int r0_contains_arg = 0;
   const struct bfd_arch_info *arch_info = gdbarch_bfd_arch_info (current_gdbarch);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   /* Attempt to find the end of the prologue when no limit is specified.
      Note that refine_prologue_limit() has been written so that it may
@@ -1376,14 +1376,14 @@ rs6000_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
                        int nargs, struct value **args, CORE_ADDR sp,
                        int struct_return, CORE_ADDR struct_addr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int ii;
   int len = 0;
   int argno;			/* current argument number */
   int argbytes;			/* current argument byte */
   gdb_byte tmp_buffer[50];
   int f_argno = 0;		/* current floating point argno */
-  int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
+  int wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
   CORE_ADDR func_addr = find_function_addr (function, NULL);
 
   struct value *arg = 0;
@@ -1623,7 +1623,7 @@ rs6000_extract_return_value (struct type *valtype, gdb_byte *regbuf,
 			     gdb_byte *valbuf)
 {
   int offset = 0;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   /* The calling convention this function implements assumes the
      processor has floating-point registers.  We shouldn't be using it
@@ -1755,7 +1755,7 @@ rs6000_skip_trampoline_code(CORE_ADDR pc)
 	return 0;
     }
   ii = (unsigned int)read_register(11);	/* r11 holds destination addr   */
-  pc = read_memory_addr(ii, gdbarch_tdep(current_gdbarch)->wordsize); /* (r11) value */
+  pc = read_memory_addr(ii, new_gdbarch_tdep(current_gdbarch)->wordsize); /* (r11) value */
   return pc;
 }
 
@@ -1774,7 +1774,7 @@ regsize (const struct reg *reg, int wordsize)
 static const char *
 rs6000_register_name (int n)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   const struct reg *reg = tdep->regs + n;
 
   if (!regsize (reg, tdep->wordsize))
@@ -1788,7 +1788,7 @@ rs6000_register_name (int n)
 static struct type *
 rs6000_register_type (struct gdbarch *gdbarch, int n)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   const struct reg *reg = tdep->regs + n;
 
   if (reg->fpr)
@@ -1823,7 +1823,7 @@ static int
 rs6000_register_reggroup_p (struct gdbarch *gdbarch, int regnum,
 			    struct reggroup *group)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   int float_p;
   int vector_p;
   int general_p;
@@ -1876,7 +1876,7 @@ rs6000_register_reggroup_p (struct gdbarch *gdbarch, int regnum,
 static int
 rs6000_convert_register_p(int regnum, struct type *type)
 {
-  const struct reg *reg = (gdbarch_tdep(current_gdbarch)->regs + regnum);
+  const struct reg *reg = (new_gdbarch_tdep(current_gdbarch)->regs + regnum);
 
   return (reg->fpr
           && TYPE_CODE(type) == TYPE_CODE_FLT
@@ -1888,7 +1888,7 @@ void
 rs6000_register_to_value(struct frame_info *frame, int regnum,
                          struct type *type, gdb_byte *to)
 {
-  const struct reg *reg = (gdbarch_tdep(current_gdbarch)->regs + regnum);
+  const struct reg *reg = (new_gdbarch_tdep(current_gdbarch)->regs + regnum);
   gdb_byte from[MAX_REGISTER_SIZE];
 
   gdb_assert(reg->fpr);
@@ -1903,7 +1903,7 @@ void
 rs6000_value_to_register(struct frame_info *frame, int regnum,
                          struct type *type, const gdb_byte *from)
 {
-  const struct reg *reg = (gdbarch_tdep(current_gdbarch)->regs + regnum);
+  const struct reg *reg = (new_gdbarch_tdep(current_gdbarch)->regs + regnum);
   gdb_byte to[MAX_REGISTER_SIZE];
 
   gdb_assert (reg->fpr);
@@ -1943,7 +1943,7 @@ e500_move_ev_register (void (*move) (struct regcache *regcache,
                        gdb_byte *buffer)
 {
   struct gdbarch *arch = get_regcache_arch (regcache);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (arch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(arch);
   int reg_index;
   gdb_byte *byte_buffer = buffer;
 
@@ -1969,7 +1969,7 @@ e500_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
 			   int reg_nr, gdb_byte *buffer)
 {
   struct gdbarch *regcache_arch = get_regcache_arch (regcache);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   gdb_assert (regcache_arch == gdbarch);
 
@@ -1988,7 +1988,7 @@ e500_pseudo_register_write (struct gdbarch *gdbarch, struct regcache *regcache,
 			    int reg_nr, const gdb_byte *buffer)
 {
   struct gdbarch *regcache_arch = get_regcache_arch (regcache);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   gdb_assert (regcache_arch == gdbarch);
 
@@ -2012,7 +2012,7 @@ e500_register_reggroup_p (struct gdbarch *gdbarch,
                           int regnum,
                           struct reggroup *group)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* The save and restore register groups need to include the
      upper-half registers, even though they're anonymous.  */
@@ -2030,7 +2030,7 @@ e500_register_reggroup_p (struct gdbarch *gdbarch,
 static int
 rs6000_stab_reg_to_regnum (int num)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   if (0 <= num && num <= 31)
     return tdep->ppc_gp0_regnum + num;
@@ -2080,7 +2080,7 @@ rs6000_stab_reg_to_regnum (int num)
 int
 rs6000_dwarf2_reg_to_regnum (int num)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   if (0 <= num && num <= 31)
     return tdep->ppc_gp0_regnum + num;
@@ -2142,7 +2142,7 @@ rs6000_store_return_value (struct type *type,
                            const gdb_byte *valbuf)
 {
   struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   int regnum = -1;
 
   /* The calling convention this function implements assumes the
@@ -2248,7 +2248,7 @@ rs6000_convert_from_func_ptr_addr (struct gdbarch *gdbarch,
     return addr;
 
   /* ADDR is in the data space, so it's a special function pointer. */
-  return read_memory_addr (addr, gdbarch_tdep (current_gdbarch)->wordsize);
+  return read_memory_addr (addr, new_gdbarch_tdep(current_gdbarch)->wordsize);
 }
 
 
@@ -2828,7 +2828,7 @@ rs6000_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct rs6000_frame_cache *cache;
   struct gdbarch *gdbarch = get_frame_arch(next_frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   struct rs6000_framedata fdata;
   int wordsize = tdep->wordsize;
 
@@ -3092,7 +3092,7 @@ rs6000_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
       /* Word size in the various PowerPC bfd_arch_info structs isn't
          meaningful, because 64-bit CPUs can run in 32-bit mode.  So, perform
          separate word size check.  */
-      tdep = gdbarch_tdep (arches->gdbarch);
+      tdep = new_gdbarch_tdep(arches->gdbarch);
       if (tdep && tdep->wordsize == wordsize)
 	return arches->gdbarch;
     }
@@ -3379,7 +3379,7 @@ rs6000_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
 static void
 rs6000_dump_tdep (struct gdbarch *current_gdbarch, struct ui_file *file)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   if (tdep == NULL)
     return;

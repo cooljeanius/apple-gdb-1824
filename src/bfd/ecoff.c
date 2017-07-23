@@ -3063,7 +3063,7 @@ _bfd_ecoff_write_armap(bfd *abfd, unsigned int elength, struct orl *map,
   hdr.ar_mode[1] = '4';
   hdr.ar_mode[2] = '4';
 
-  sprintf (hdr.ar_size, "%-10d", (int) mapsize);
+  snprintf(hdr.ar_size, sizeof(hdr.ar_size), "%-10d", (int)mapsize);
 
   hdr.ar_fmag[0] = '`';
   hdr.ar_fmag[1] = '\012';

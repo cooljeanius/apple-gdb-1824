@@ -1219,8 +1219,8 @@ mips_request(int cmd, ULONGEST addr, ULONGEST data, int *perr, int timeout,
       if (mips_need_reply)
 	internal_error(__FILE__, __LINE__,
 		       _("mips_request: Trying to send command before reply"));
-      snprintf(buff, SIZE_T_MAX, "0x0 %c 0x%s 0x%s", cmd, paddr_nz(addr),
-	       paddr_nz(data));
+      snprintf(buff, BUF_LEN_MAX_FOR_SNPRINTF, "0x0 %c 0x%s 0x%s", cmd,
+	       paddr_nz(addr), paddr_nz(data));
       mips_send_packet(buff, 1);
       mips_need_reply = 1;
     }
@@ -2850,10 +2850,13 @@ pmon_makeb64 (unsigned long v, char *p, int n, int *chksum)
 	{
 	case 36:
 	  *chksum += ((v >> 24) & 0xFFF);
+	  ATTRIBUTE_FALLTHROUGH; /* XXX: really? */
 	case 24:
 	  *chksum += ((v >> 12) & 0xFFF);
+	  ATTRIBUTE_FALLTHROUGH; /* XXX: really? */
 	case 12:
 	  *chksum += ((v >> 0) & 0xFFF);
+	  ATTRIBUTE_FALLTHROUGH; /* XXX: really? */
 	default:
 	  *chksum += 0;
 	}
@@ -2874,7 +2877,7 @@ pmon_zeroset(int recsize, char **buff, int *amount, unsigned int *chksum)
 {
   int count;
 
-  snprintf(*buff, SIZE_T_MAX, "/Z");
+  snprintf(*buff, BUF_LEN_MAX_FOR_SNPRINTF, "/Z");
   count = pmon_makeb64(*amount, (*buff + 2), 12, (int *)chksum);
   *buff += (count + 2);
   *amount = 0;
@@ -2888,10 +2891,10 @@ pmon_checkset(int recsize, char **buff, int *value)
   int count;
 
   /* Add the checksum (without updating the value): */
-  snprintf(*buff, SIZE_T_MAX, "/C");
-  count = pmon_makeb64 (*value, (*buff + 2), 12, NULL);
+  snprintf(*buff, BUF_LEN_MAX_FOR_SNPRINTF, "/C");
+  count = pmon_makeb64(*value, (*buff + 2), 12, NULL);
   *buff += (count + 2);
-  snprintf(*buff, SIZE_T_MAX, "\n");
+  snprintf(*buff, BUF_LEN_MAX_FOR_SNPRINTF, "\n");
   *buff += 2;			/* include zero terminator */
   /* Forcing a checksum validation clears the sum: */
   *value = 0;
@@ -2931,7 +2934,7 @@ pmon_make_fastrec(char **outbuf, unsigned char *inbuf, int *inptr,
 	{
 	  if (*zerofill != 0)
 	    *recsize = pmon_zeroset(*recsize, &p, (int *)zerofill, csum);
-	  snprintf(p, SIZE_T_MAX, "/B");
+	  snprintf(p, BUF_LEN_MAX_FOR_SNPRINTF, "/B");
 	  count = pmon_makeb64(inbuf[*inptr], &p[2], 12, (int *)csum);
 	  p += (2 + count);
 	  *recsize += (2 + count);
@@ -3158,13 +3161,13 @@ pmon_load_fast(const char *file)
      already defined to have the argument we give. The code doesn't
      care, since it just scans to the next prompt anyway. */
   /* Start the download: */
-  pmon_start_download ();
+  pmon_start_download();
 
   /* Zero the checksum */
-  snprintf(buffer, SIZE_T_MAX, "/Kxx\n");
-  reclen = strlen (buffer);
-  pmon_download (buffer, reclen);
-  finished = pmon_check_ack ("/Kxx");
+  snprintf(buffer, BUF_LEN_MAX_FOR_SNPRINTF, "/Kxx\n");
+  reclen = strlen(buffer);
+  pmon_download(buffer, reclen);
+  finished = pmon_check_ack("/Kxx");
 
   for (s = abfd->sections; s && !finished; s = s->next)
     if (s->flags & SEC_LOAD)	/* only deal with loadable sections */
@@ -3177,7 +3180,7 @@ pmon_load_fast(const char *file)
 	gdb_flush(gdb_stdout);
 
 	/* Output the starting address */
-	snprintf(buffer, SIZE_T_MAX, "/A");
+	snprintf(buffer, BUF_LEN_MAX_FOR_SNPRINTF, "/A");
 	reclen = pmon_makeb64(s->vma, &buffer[2], 36, (int *)&csum);
 	buffer[2 + reclen] = '\n';
 	buffer[3 + reclen] = '\0';
@@ -3251,22 +3254,22 @@ pmon_load_fast(const char *file)
 	      }
 	  }
 
-	putchar_unfiltered ('\n');
+	putchar_unfiltered('\n');
       }
 
   /* Terminate the transfer. We know that we have an empty output
      buffer at this point. */
-  snprintf(buffer, SIZE_T_MAX, "/E/E\n"); /* include dummy padding characters */
-  reclen = strlen (buffer);
-  pmon_download (buffer, reclen);
+  snprintf(buffer, BUF_LEN_MAX_FOR_SNPRINTF, "/E/E\n"); /* include dummy padding characters */
+  reclen = strlen(buffer);
+  pmon_download(buffer, reclen);
 
   if (finished)
     {				/* Ignore the termination message: */
-      serial_flush_input (udp_in_use ? udp_desc : mips_desc);
+      serial_flush_input(udp_in_use ? udp_desc : mips_desc);
     }
   else
     {				/* Deal with termination message: */
-      pmon_end_download (final, bintotal);
+      pmon_end_download(final, bintotal);
     }
 
   return;

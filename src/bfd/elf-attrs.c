@@ -59,18 +59,18 @@ is_default_attr (obj_attribute *attr)
 
 /* Return the size of a single attribute.  */
 static bfd_vma
-obj_attr_size (int tag, obj_attribute *attr)
+obj_attr_size(unsigned int tag, obj_attribute *attr)
 {
   bfd_vma size;
 
-  if (is_default_attr (attr))
+  if (is_default_attr(attr))
     return 0;
 
-  size = uleb128_size (tag);
-  if (ATTR_TYPE_HAS_INT_VAL (attr->type))
-    size += uleb128_size (attr->i);
-  if (ATTR_TYPE_HAS_STR_VAL (attr->type))
-    size += strlen ((char *)attr->s) + 1;
+  size = (bfd_vma)uleb128_size(tag);
+  if (ATTR_TYPE_HAS_INT_VAL(attr->type))
+    size += (bfd_vma)uleb128_size(attr->i);
+  if (ATTR_TYPE_HAS_STR_VAL(attr->type))
+    size += (strlen((char *)attr->s) + 1UL);
   return size;
 }
 
@@ -93,20 +93,20 @@ vendor_obj_attr_size (bfd *abfd, int vendor)
   obj_attribute *attr;
   obj_attribute_list *list;
   int i;
-  const char *vendor_name = vendor_obj_attr_name (abfd, vendor);
+  const char *vendor_name = vendor_obj_attr_name(abfd, vendor);
 
   if (!vendor_name)
     return 0;
 
-  attr = elf_known_obj_attributes (abfd)[vendor];
+  attr = elf_known_obj_attributes(abfd)[vendor];
   size = 0;
   for (i = LEAST_KNOWN_OBJ_ATTRIBUTE; i < NUM_KNOWN_OBJ_ATTRIBUTES; i++)
-    size += obj_attr_size (i, &attr[i]);
+    size += obj_attr_size((unsigned int)i, &attr[i]);
 
-  for (list = elf_other_obj_attributes (abfd)[vendor];
+  for (list = elf_other_obj_attributes(abfd)[vendor];
        list;
        list = list->next)
-    size += obj_attr_size (list->tag, &list->attr);
+    size += obj_attr_size(list->tag, &list->attr);
 
   /* <size> <vendor_name> NUL 0x1 <size> */
   return ((size || vendor == OBJ_ATTR_PROC)
@@ -130,25 +130,24 @@ bfd_elf_obj_attr_size (bfd *abfd)
 /* Write VAL in uleb128 format to P, returning a pointer to the
    following byte.  */
 static bfd_byte *
-write_uleb128 (bfd_byte *p, unsigned int val)
+write_uleb128(bfd_byte *p, unsigned int val)
 {
   bfd_byte c;
-  do
-    {
-      c = val & 0x7f;
-      val >>= 7;
-      if (val)
-	c |= 0x80;
-      *(p++) = c;
+  do {
+    c = (val & 0x7f);
+    val >>= 7;
+    if (val) {
+      c |= 0x80;
     }
-  while (val);
+    *(p++) = c;
+  } while (val);
   return p;
 }
 
 /* Write attribute ATTR to butter P, and return a pointer to the following
    byte.  */
 static bfd_byte *
-write_obj_attribute (bfd_byte *p, int tag, obj_attribute *attr)
+write_obj_attribute(bfd_byte *p, unsigned int tag, obj_attribute *attr)
 {
   /* Suppress default entries.  */
   if (is_default_attr (attr))
@@ -159,10 +158,10 @@ write_obj_attribute (bfd_byte *p, int tag, obj_attribute *attr)
     p = write_uleb128 (p, attr->i);
   if (ATTR_TYPE_HAS_STR_VAL (attr->type))
     {
-      int len;
+      size_t len;
 
-      len = strlen (attr->s) + 1;
-      memcpy (p, attr->s, len);
+      len = (strlen(attr->s) + 1UL);
+      memcpy(p, attr->s, len);
       p += len;
     }
 
@@ -191,16 +190,16 @@ vendor_set_obj_attr_contents (bfd *abfd, bfd_byte *contents, bfd_vma size,
   bfd_put_32 (abfd, size - 4 - vendor_length, p);
   p += 4;
 
-  attr = elf_known_obj_attributes (abfd)[vendor];
+  attr = elf_known_obj_attributes(abfd)[vendor];
   for (i = LEAST_KNOWN_OBJ_ATTRIBUTE; i < NUM_KNOWN_OBJ_ATTRIBUTES; i++)
     {
-      int tag = i;
-      if (get_elf_backend_data (abfd)->obj_attrs_order)
-	tag = get_elf_backend_data (abfd)->obj_attrs_order (i);
-      p = write_obj_attribute (p, tag, &attr[tag]);
+      unsigned int tag = (unsigned int)i;
+      if (get_elf_backend_data(abfd)->obj_attrs_order)
+	tag = (unsigned int)get_elf_backend_data(abfd)->obj_attrs_order(i);
+      p = write_obj_attribute(p, tag, &attr[tag]);
     }
 
-  for (list = elf_other_obj_attributes (abfd)[vendor];
+  for (list = elf_other_obj_attributes(abfd)[vendor];
        list;
        list = list->next)
     p = write_obj_attribute (p, list->tag, &list->attr);
@@ -232,7 +231,7 @@ bfd_elf_set_obj_attr_contents (bfd *abfd, bfd_byte *contents, bfd_vma size)
 
 /* Allocate/find an object attribute.  */
 static obj_attribute *
-elf_new_obj_attr (bfd *abfd, int vendor, int tag)
+elf_new_obj_attr(bfd *abfd, int vendor, unsigned int tag)
 {
   obj_attribute *attr;
   obj_attribute_list *list;
@@ -270,23 +269,23 @@ elf_new_obj_attr (bfd *abfd, int vendor, int tag)
 
 /* Return the value of an integer object attribute.  */
 int
-bfd_elf_get_obj_attr_int (bfd *abfd, int vendor, int tag)
+bfd_elf_get_obj_attr_int(bfd *abfd, int vendor, unsigned int tag)
 {
   obj_attribute_list *p;
 
   if (tag < NUM_KNOWN_OBJ_ATTRIBUTES)
     {
       /* Known tags are preallocated.  */
-      return elf_known_obj_attributes (abfd)[vendor][tag].i;
+      return (int)elf_known_obj_attributes(abfd)[vendor][tag].i;
     }
   else
     {
-      for (p = elf_other_obj_attributes (abfd)[vendor];
+      for (p = elf_other_obj_attributes(abfd)[vendor];
 	   p;
 	   p = p->next)
 	{
 	  if (tag == p->tag)
-	    return p->attr.i;
+	    return (int)p->attr.i;
 	  if (tag < p->tag)
 	    break;
 	}
@@ -296,7 +295,8 @@ bfd_elf_get_obj_attr_int (bfd *abfd, int vendor, int tag)
 
 /* Add an integer object attribute.  */
 void
-bfd_elf_add_obj_attr_int (bfd *abfd, int vendor, int tag, unsigned int i)
+bfd_elf_add_obj_attr_int(bfd *abfd, int vendor, unsigned int tag,
+			 unsigned int i)
 {
   obj_attribute *attr;
 
@@ -307,19 +307,20 @@ bfd_elf_add_obj_attr_int (bfd *abfd, int vendor, int tag, unsigned int i)
 
 /* Duplicate an object attribute string value.  */
 char *
-_bfd_elf_attr_strdup (bfd *abfd, const char * s)
+_bfd_elf_attr_strdup(bfd *abfd, const char * s)
 {
-  char * p;
-  int len;
+  char *p;
+  size_t len;
 
-  len = strlen (s) + 1;
-  p = (char *) bfd_alloc (abfd, len);
-  return (char *) memcpy (p, s, len);
+  len = (strlen(s) + 1UL);
+  p = (char *)bfd_alloc(abfd, len);
+  return (char *)memcpy(p, s, len);
 }
 
 /* Add a string object attribute.  */
 void
-bfd_elf_add_obj_attr_string (bfd *abfd, int vendor, int tag, const char *s)
+bfd_elf_add_obj_attr_string(bfd *abfd, int vendor, unsigned int tag,
+			    const char *s)
 {
   obj_attribute *attr;
 
@@ -330,8 +331,8 @@ bfd_elf_add_obj_attr_string (bfd *abfd, int vendor, int tag, const char *s)
 
 /* Add a int+string object attribute.  */
 void
-bfd_elf_add_obj_attr_int_string (bfd *abfd, int vendor, int tag,
-				 unsigned int i, const char *s)
+bfd_elf_add_obj_attr_int_string(bfd *abfd, int vendor, unsigned int tag,
+				unsigned int i, const char *s)
 {
   obj_attribute *attr;
 
@@ -399,7 +400,7 @@ _bfd_elf_copy_obj_attributes (bfd *ibfd, bfd *obfd)
 /* Determine whether a GNU object attribute tag takes an integer, a
    string or both.  */
 static int
-gnu_obj_attrs_arg_type (int tag)
+gnu_obj_attrs_arg_type(unsigned int tag)
 {
   /* Except for Tag_compatibility, for GNU attributes we follow the
      same rule ARM ones > 32 follow: odd-numbered tags take strings
@@ -414,18 +415,18 @@ gnu_obj_attrs_arg_type (int tag)
 
 /* Determine what arguments an attribute tag takes.  */
 int
-_bfd_elf_obj_attrs_arg_type (bfd *abfd, int vendor, int tag)
+_bfd_elf_obj_attrs_arg_type(bfd *abfd, int vendor, unsigned int tag)
 {
   switch (vendor)
     {
     case OBJ_ATTR_PROC:
-      return get_elf_backend_data (abfd)->obj_attrs_arg_type (tag);
+      return get_elf_backend_data(abfd)->obj_attrs_arg_type((int)tag);
       break;
     case OBJ_ATTR_GNU:
-      return gnu_obj_attrs_arg_type (tag);
+      return gnu_obj_attrs_arg_type(tag);
       break;
     default:
-      abort ();
+      abort();
     }
 }
 
@@ -454,7 +455,7 @@ _bfd_elf_parse_attributes (bfd *abfd, Elf_Internal_Shdr * hdr)
       len = hdr->sh_size - 1;
       while (len > 0)
 	{
-	  int namelen;
+	  size_t namelen;
 	  bfd_vma section_len;
 	  int vendor;
 
@@ -479,21 +480,21 @@ _bfd_elf_parse_attributes (bfd *abfd, Elf_Internal_Shdr * hdr)
 	  p += namelen;
 	  while (section_len > 0)
 	    {
-	      int tag;
+	      unsigned int tag;
 	      unsigned int n;
 	      unsigned int val;
 	      bfd_vma subsection_len;
 	      bfd_byte *end;
 
-	      tag = read_unsigned_leb128 (abfd, p, &n);
+	      tag = (unsigned int)read_unsigned_leb128(abfd, p, &n);
 	      p += n;
-	      subsection_len = bfd_get_32 (abfd, p);
+	      subsection_len = bfd_get_32(abfd, p);
 	      p += 4;
 	      if (subsection_len > section_len)
 		subsection_len = section_len;
 	      section_len -= subsection_len;
-	      subsection_len -= n + 4;
-	      end = p + subsection_len;
+	      subsection_len -= (n + 4UL);
+	      end = (p + subsection_len);
 	      switch (tag)
 		{
 		case Tag_File:
@@ -501,30 +502,30 @@ _bfd_elf_parse_attributes (bfd *abfd, Elf_Internal_Shdr * hdr)
 		    {
 		      int type;
 
-		      tag = read_unsigned_leb128 (abfd, p, &n);
+		      tag = (unsigned int)read_unsigned_leb128(abfd, p, &n);
 		      p += n;
-		      type = _bfd_elf_obj_attrs_arg_type (abfd, vendor, tag);
+		      type = _bfd_elf_obj_attrs_arg_type(abfd, vendor, tag);
 		      switch (type & (ATTR_TYPE_FLAG_INT_VAL | ATTR_TYPE_FLAG_STR_VAL))
 			{
 			case ATTR_TYPE_FLAG_INT_VAL | ATTR_TYPE_FLAG_STR_VAL:
-			  val = read_unsigned_leb128 (abfd, p, &n);
+			  val = (unsigned int)read_unsigned_leb128(abfd, p, &n);
 			  p += n;
-			  bfd_elf_add_obj_attr_int_string (abfd, vendor, tag,
-							   val, (char *)p);
-			  p += strlen ((char *)p) + 1;
+			  bfd_elf_add_obj_attr_int_string(abfd, vendor, tag,
+							  val, (char *)p);
+			  p += (strlen((char *)p) + 1UL);
 			  break;
 			case ATTR_TYPE_FLAG_STR_VAL:
-			  bfd_elf_add_obj_attr_string (abfd, vendor, tag,
-						       (char *)p);
-			  p += strlen ((char *)p) + 1;
+			  bfd_elf_add_obj_attr_string(abfd, vendor, tag,
+						      (char *)p);
+			  p += (strlen((char *)p) + 1UL);
 			  break;
 			case ATTR_TYPE_FLAG_INT_VAL:
-			  val = read_unsigned_leb128 (abfd, p, &n);
+			  val = (unsigned int)read_unsigned_leb128(abfd, p, &n);
 			  p += n;
-			  bfd_elf_add_obj_attr_int (abfd, vendor, tag, val);
+			  bfd_elf_add_obj_attr_int(abfd, vendor, tag, val);
 			  break;
 			default:
-			  abort ();
+			  abort();
 			}
 		    }
 		  break;
@@ -568,8 +569,8 @@ _bfd_elf_merge_object_attributes (bfd *ibfd, bfd *obfd)
       /* Handle Tag_compatibility.  The tags are only compatible if the flags
 	 are identical and, if the flags are '1', the strings are identical.
 	 If the flags are non-zero, then we can only use the string "gnu".  */
-      in_attr = &elf_known_obj_attributes (ibfd)[vendor][Tag_compatibility];
-      out_attr = &elf_known_obj_attributes (obfd)[vendor][Tag_compatibility];
+      in_attr = &elf_known_obj_attributes(ibfd)[vendor][Tag_compatibility];
+      out_attr = &elf_known_obj_attributes(obfd)[vendor][Tag_compatibility];
 
       if (in_attr->i > 0 && strcmp (in_attr->s, "gnu") != 0)
 	{
@@ -651,7 +652,7 @@ _bfd_elf_merge_unknown_attribute_list (bfd *ibfd, bfd *obfd)
   for (; in_list || out_list; )
     {
       bfd *err_bfd = NULL;
-      int err_tag = 0;
+      unsigned int err_tag = 0U;
 
       /* The tags for each list are in numerical order.  */
       /* If the tags are equal, then merge.  */
@@ -699,9 +700,11 @@ _bfd_elf_merge_unknown_attribute_list (bfd *ibfd, bfd *obfd)
 
       if (err_bfd)
 	result = result
-	  && get_elf_backend_data (err_bfd)->obj_attrs_handle_unknown (err_bfd,
-								       err_tag);
+	  && get_elf_backend_data(err_bfd)->obj_attrs_handle_unknown(err_bfd,
+								     err_tag);
     }
 
   return result;
 }
+
+/* EOF */

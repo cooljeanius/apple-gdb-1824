@@ -46,6 +46,10 @@
 #include "macosx-nat-dyld-info.h"
 #include "macosx-nat-dyld-io.h"
 
+#if !defined(_TM_NEXTSTEP_H_)
+# include "tm-macosx.h"
+#endif /* !_TM_NEXTSTEP_H_ */
+
 struct inferior_info
 {
   bfd_vma addr;

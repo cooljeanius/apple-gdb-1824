@@ -53,6 +53,10 @@
 
 #include "gdb_assert.h"
 
+#if defined(_TM_ARM_MACOSX_H_) && !defined(_TM_NEXTSTEP_H_)
+# include "tm-macosx.h"
+#endif /* _TM_ARM_MACOSX_H_ && !_TM_NEXTSTEP_H_ */
+
 /* Support routines for single stepping.  Calculate the next PC value.  */
 #define submask(x) ((1L << ((x) + 1)) - 1)
 #define bit(obj,st) (((obj) >> (st)) & 1)
@@ -3988,7 +3992,7 @@ arm_macosx_fast_show_stack(unsigned int count_limit,
   struct frame_info *fi;
   ULONGEST next_fp = 0UL;
   ULONGEST pc = 0UL;
-  int wordsize = gdbarch_tdep(current_gdbarch)->wordsize;
+  int wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
 
   more_frames = fast_show_stack_trace_prologue(count_limit, print_start,
                                                print_end, wordsize,
@@ -4087,6 +4091,7 @@ arm_macosx_fast_show_stack(unsigned int count_limit,
 		  done = 1; /* Could NOT read the previous FP.  */
 		}
 #else
+	      warning("Missing GP_REG_SIZE");
 	      done = 1;
 #endif /* GP_REG_SIZE */
 	    }
@@ -5054,7 +5059,7 @@ static const gdb_byte arm_default_thumb_be_breakpoint[] = THUMB_BE_BREAKPOINT;
 static const unsigned char *
 arm_breakpoint_from_pc (CORE_ADDR *pcptr, int *lenptr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   if (arm_pc_is_thumb (*pcptr))
     {
@@ -5087,7 +5092,7 @@ arm_extract_return_value(struct type *type, struct regcache *regs,
 {
   if (TYPE_CODE_FLT == TYPE_CODE(type))
     {
-      switch (gdbarch_tdep(current_gdbarch)->fp_model)
+      switch (new_gdbarch_tdep(current_gdbarch)->fp_model)
 	{
 	case ARM_FLOAT_FPA:
 	  {
@@ -5299,7 +5304,7 @@ arm_store_return_value(struct type *type, struct regcache *regs,
     {
       gdb_byte buf[MAX_REGISTER_SIZE];
 
-      switch (gdbarch_tdep(current_gdbarch)->fp_model)
+      switch (new_gdbarch_tdep(current_gdbarch)->fp_model)
 	{
 	case ARM_FLOAT_FPA:
 	  convert_to_extended(floatformat_from_type(type), buf, valbuf);
@@ -5431,7 +5436,7 @@ arm_get_longjmp_target (CORE_ADDR *pc)
 {
   CORE_ADDR jb_addr;
   gdb_byte buf[INT_REGISTER_SIZE];
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   jb_addr = read_register (ARM_A1_REGNUM);
 
@@ -5554,7 +5559,7 @@ show_fp_model(struct ui_file *file, int from_tty ATTRIBUTE_UNUSED,
 	      struct cmd_list_element *c ATTRIBUTE_UNUSED,
               const char *value ATTRIBUTE_UNUSED)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   if ((arm_fp_model == ARM_FLOAT_AUTO)
       && (gdbarch_bfd_arch_info(current_gdbarch)->arch == bfd_arch_arm))
@@ -5593,7 +5598,7 @@ arm_show_abi(struct ui_file *file, int from_tty ATTRIBUTE_UNUSED,
 	     struct cmd_list_element *c ATTRIBUTE_UNUSED,
              const char *value ATTRIBUTE_UNUSED)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   if (arm_abi_global == ARM_ABI_AUTO
       && gdbarch_bfd_arch_info(current_gdbarch)->arch == bfd_arch_arm)
@@ -5791,7 +5796,7 @@ int
 arm_register_reggroup_p(struct gdbarch *gdbarch, int regnum,
                         struct reggroup *group)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   if (tdep->fp_model == ARM_FLOAT_VFP)
     {
@@ -5905,10 +5910,10 @@ arm_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
   if (arches != NULL)
     {
       if (arm_abi == ARM_ABI_AUTO)
-	arm_abi = gdbarch_tdep(arches->gdbarch)->arm_abi;
+	arm_abi = new_gdbarch_tdep(arches->gdbarch)->arm_abi;
 
       if (fp_model == ARM_FLOAT_AUTO)
-	fp_model = gdbarch_tdep(arches->gdbarch)->fp_model;
+	fp_model = new_gdbarch_tdep(arches->gdbarch)->fp_model;
     }
   else
     {
@@ -5933,14 +5938,14 @@ arm_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
        best_arch != NULL;
        best_arch = gdbarch_list_lookup_by_info(best_arch->next, &info))
     {
-      if (arm_abi != gdbarch_tdep(best_arch->gdbarch)->arm_abi)
+      if (arm_abi != new_gdbarch_tdep(best_arch->gdbarch)->arm_abi)
 	continue;
 
-      if (fp_model != gdbarch_tdep(best_arch->gdbarch)->fp_model)
+      if (fp_model != new_gdbarch_tdep(best_arch->gdbarch)->fp_model)
 	continue;
 
       if (fp_model == ARM_FLOAT_VFP)
-	vfp_version = gdbarch_tdep(best_arch->gdbarch)->vfp_version;
+	vfp_version = new_gdbarch_tdep(best_arch->gdbarch)->vfp_version;
 
       /* Found a match: */
       break;
@@ -6132,7 +6137,7 @@ arm_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
 static void
 arm_dump_tdep(struct gdbarch *current_gdbarch, struct ui_file *file)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   if (tdep == NULL)
     return;

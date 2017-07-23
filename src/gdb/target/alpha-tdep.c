@@ -720,7 +720,7 @@ alpha_skip_prologue (CORE_ADDR pc)
 static int
 alpha_get_longjmp_target (CORE_ADDR *pc)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   CORE_ADDR jb_addr;
   char raw_buffer[ALPHA_REGISTER_SIZE];
 
@@ -761,7 +761,7 @@ alpha_sigtramp_frame_unwind_cache(struct frame_info *next_frame,
   info = FRAME_OBSTACK_ZALLOC(struct alpha_sigtramp_unwind_cache);
   *this_prologue_cache = info;
 
-  tdep = gdbarch_tdep(current_gdbarch);
+  tdep = new_gdbarch_tdep(current_gdbarch);
   info->sigcontext_addr = tdep->sigcontext_addr(next_frame);
 
   return info;
@@ -773,7 +773,7 @@ alpha_sigtramp_frame_unwind_cache(struct frame_info *next_frame,
 static CORE_ADDR
 alpha_sigtramp_register_address (CORE_ADDR sigcontext_addr, int regnum)
 { 
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   if (regnum >= 0 && regnum < 32)
     return sigcontext_addr + tdep->sc_regs_offset + regnum * 8;
@@ -805,7 +805,7 @@ alpha_sigtramp_frame_this_id (struct frame_info *next_frame,
   /* If we have dynamic signal trampolines, find their start.
      If we do not, then we must assume there is a symbol record
      that can provide the start address.  */
-  tdep = gdbarch_tdep (current_gdbarch);
+  tdep = new_gdbarch_tdep(current_gdbarch);
   if (tdep->dynamic_sigtramp_offset)
     {
       int offset;
@@ -889,14 +889,14 @@ alpha_sigtramp_frame_sniffer(struct frame_info *next_frame)
 
   /* We shouldn't even bother to try if the OSABI didn't register a
      sigcontext_addr handler or pc_in_sigtramp hander.  */
-  if (gdbarch_tdep(current_gdbarch)->sigcontext_addr == NULL)
+  if (new_gdbarch_tdep(current_gdbarch)->sigcontext_addr == NULL)
     return NULL;
-  if (gdbarch_tdep(current_gdbarch)->pc_in_sigtramp == NULL)
+  if (new_gdbarch_tdep(current_gdbarch)->pc_in_sigtramp == NULL)
     return NULL;
 
   /* Otherwise we should be in a signal frame.  */
   find_pc_partial_function(pc, (const char **)&name, NULL, NULL);
-  if (gdbarch_tdep(current_gdbarch)->pc_in_sigtramp(pc, name))
+  if (new_gdbarch_tdep(current_gdbarch)->pc_in_sigtramp(pc, name))
     return &alpha_sigtramp_frame_unwind;
 
   return NULL;
@@ -926,7 +926,7 @@ static unsigned int heuristic_fence_post = 0;
 static CORE_ADDR
 alpha_heuristic_proc_start (CORE_ADDR pc)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   CORE_ADDR last_non_nop = pc;
   CORE_ADDR fence = pc - heuristic_fence_post;
   CORE_ADDR orig_pc = pc;

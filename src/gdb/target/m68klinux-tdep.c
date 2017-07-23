@@ -204,7 +204,7 @@ m68k_linux_sigtramp_frame_cache(struct frame_info *next_frame,
 {
   struct frame_id this_id;
   struct trad_frame_cache *cache;
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   struct m68k_linux_sigtramp_info info;
   char buf[4];
   int i;
@@ -290,7 +290,7 @@ m68k_linux_sigtramp_frame_sniffer(struct frame_info *next_frame)
 static void
 m68k_linux_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->jb_pc = M68K_LINUX_JB_PC;
   tdep->jb_elt_size = M68K_LINUX_JB_ELEMENT_SIZE;

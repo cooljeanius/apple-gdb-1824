@@ -1088,7 +1088,7 @@ arm_macosx_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
   /* We actually do NOT have any software float registers, so let us remove
    * the float info printer so we do NOT crash on "info float" commands: */
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   tdep->fp_model = ARM_FLOAT_NONE;
   tdep->vfp_version = ARM_VFP_UNSUPPORTED;
 
@@ -1189,7 +1189,7 @@ arm_macosx_init_abi_v6 (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
   /* Set the floating point model to be VFP and also initialize the
      stab register number converter.  */
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   tdep->fp_model = ARM_FLOAT_VFP;
   tdep->vfp_version = ARM_VFP_VERSION_1;
   set_gdbarch_stab_reg_to_regnum (gdbarch, arm_macosx_stab_reg_to_regnum);
@@ -1250,7 +1250,7 @@ arm_macosx_init_abi_v7 (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
   /* Set the floating point model to be VFP and also initialize the
      stab register number converter.  */
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   tdep->fp_model = ARM_FLOAT_VFP;
   tdep->vfp_version = ARM_VFP_VERSION_3;
   set_gdbarch_stab_reg_to_regnum (gdbarch, arm_macosx_stab_reg_to_regnum);

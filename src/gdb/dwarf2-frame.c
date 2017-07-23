@@ -1617,8 +1617,8 @@ dwarf2_frame_find_fde(CORE_ADDR *pc)
       struct dwarf2_fde *fde;
       CORE_ADDR offset;
 
-      fde = (struct dwarf2_fde *)objfile_data(objfile,
-                                              dwarf2_frame_objfile_data);
+      fde = (struct dwarf2_fde *)get_objfile_data(objfile,
+						  dwarf2_frame_objfile_data);
       if (fde == NULL)
 	continue;
 
@@ -1644,8 +1644,8 @@ dwarf2_frame_find_fde(CORE_ADDR *pc)
 static void
 add_fde(struct comp_unit *unit, struct dwarf2_fde *fde)
 {
-  fde->next = (struct dwarf2_fde *)objfile_data(unit->objfile,
-                                                dwarf2_frame_objfile_data);
+  fde->next = (struct dwarf2_fde *)get_objfile_data(unit->objfile,
+						    dwarf2_frame_objfile_data);
   set_objfile_data(unit->objfile, dwarf2_frame_objfile_data, fde);
 }
 
@@ -2087,13 +2087,14 @@ dwarf2_build_frame_info(struct objfile *objfile)
 }
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_dwarf2_frame (void);
+void _initialize_dwarf2_frame(void);
 
+/* Usual initialization hook: */
 void
-_initialize_dwarf2_frame (void)
+_initialize_dwarf2_frame(void)
 {
-  dwarf2_frame_data = gdbarch_data_register_pre_init (dwarf2_frame_init);
-  dwarf2_frame_objfile_data = register_objfile_data ();
+  dwarf2_frame_data = gdbarch_data_register_pre_init(dwarf2_frame_init);
+  dwarf2_frame_objfile_data = register_objfile_data();
 }
 
 /* EOF */

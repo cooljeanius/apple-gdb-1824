@@ -848,6 +848,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
          * is signed; mask off the upper 32 bits if we are not a 64 bit
          * program.  */
         if (TARGET_PTR_BIT == 64) {
+	  /* FIXME: -Wduplicated-branches sometimes, depending on 32 vs. 64: */
 	  selector = exp->elts[pc + 1].longconst;
         } else {
 	  selector = (exp->elts[pc + 1].longconst & 0xffffffff);

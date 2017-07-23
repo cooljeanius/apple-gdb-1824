@@ -269,7 +269,7 @@ struct register_info
 typedef struct register_info register_info_t;
 
 #ifndef LOWEST_PC
-# define LOWEST_PC (gdbarch_tdep(current_gdbarch)->lowest_pc)
+# define LOWEST_PC (new_gdbarch_tdep(current_gdbarch)->lowest_pc)
 #endif /* !LOWEST_PC */
 
 /* Prototypes for internal interfaces needed by more than one MD file: */

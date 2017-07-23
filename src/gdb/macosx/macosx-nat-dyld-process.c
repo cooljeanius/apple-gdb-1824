@@ -63,6 +63,9 @@
 # include "target/i386-tdep.h"
 #elif defined(TARGET_ARM)
 # include "arm-tdep.h"
+# if !defined(_TM_NEXTSTEP_H_)
+#  include "tm-macosx.h"
+# endif /* !_TM_NEXTSTEP_H_ */
 #elif defined(TARGET_AARCH64)
 # include "aarch64-tdep.h"
 #endif /* TARGET_POWERPC || TARGET_I386 || TARGET_ARM || TARGET_AARCH64 */

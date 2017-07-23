@@ -1025,6 +1025,9 @@ maintainer-clean: local-maintainer-clean do-maintainer-clean local-clean
 maintainer-clean: local-distclean
 realclean: maintainer-clean
 
+reconfigure_with_new_args_clean: clean
+	-rm -fv ./*/config.cache
+
 # Extra dependency for clean-target, owing to the mixed nature of gcc
 clean-target: clean-target-libgcc
 clean-target-libgcc:

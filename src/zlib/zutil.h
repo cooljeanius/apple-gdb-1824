@@ -19,6 +19,12 @@
 #  define ZLIB_INTERNAL
 #endif
 
+#if defined(__GNUC__) && (__GNUC__ >= 7)
+#  define ZLIB_FALLTHRU __attribute__((fallthrough))
+#else
+#  define ZLIB_FALLTHRU /*FALLTHRU*/
+#endif /* GCC 7+ */
+
 #include "zlib.h"
 
 #if defined(STDC) && !defined(Z_SOLO)

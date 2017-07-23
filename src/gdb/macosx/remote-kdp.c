@@ -1538,7 +1538,7 @@ kdp_fetch_registers_arm(int regno)
   if ((regno == -1) || ARM_MACOSX_IS_VFP_RELATED_REGNUM (regno))
     {
       enum arm_vfp_version vfp_version;
-      vfp_version = gdbarch_tdep(current_gdbarch)->vfp_version;
+      vfp_version = new_gdbarch_tdep(current_gdbarch)->vfp_version;
 
       switch (vfp_version)
 	{
@@ -1611,7 +1611,7 @@ kdp_fetch_registers_arm(int regno)
     {
       /* Accesses to the fp registers are NOT currently supported in
          the kernel. */
-      if (gdbarch_tdep(current_gdbarch)->fp_model == ARM_FLOAT_VFP)
+      if (new_gdbarch_tdep(current_gdbarch)->fp_model == ARM_FLOAT_VFP)
 	{
 	  for (i = 0; i <= ARM_MACOSX_NUM_VFP_REGS; i++)
 	    set_register_cached(ARM_VFP_REGNUM_S0 + i, 1);
@@ -1667,7 +1667,7 @@ kdp_store_registers_arm(int regno)
     {
       kdp_return_t kdpret;
       enum arm_vfp_version vfp_version;
-      vfp_version = gdbarch_tdep(current_gdbarch)->vfp_version;
+      vfp_version = new_gdbarch_tdep(current_gdbarch)->vfp_version;
       int fp_data_size = -1;
       union vfp_regs
       {

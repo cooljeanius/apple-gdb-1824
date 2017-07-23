@@ -177,7 +177,7 @@ typedef unsigned long bfd_size_type;
 # endif /* !BFD_VMA_FMT */
 # define fprintf_vma(s,x) fprintf(s, "%08lx", x)
 # define sprintf_vma(s,x) sprintf(s, "%08lx", x)
-# define snprintf_vma(s,n,x) sprintf(s, n, "%08lx", x)
+# define snprintf_vma(s,n,x) snprintf(s, n, "%08lx", x)
 
 #endif /* not BFD64  */
 

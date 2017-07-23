@@ -5,6 +5,9 @@
 
 #include "defs.h"
 #include "reggroups.h" /* for struct reggroup */
+#ifndef __GDB_MACOSX_TDEP_H__
+# include "macosx-tdep.h"
+#endif /* !__GDB_MACOSX_TDEP_H__ */
 
 /* Used in frameinfo, and passed to ppc_parse_instructions it means
    keep looking as long as necessary... */

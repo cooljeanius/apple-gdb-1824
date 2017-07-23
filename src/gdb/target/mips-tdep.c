@@ -172,7 +172,7 @@ static const struct floatformat floatformat_n32n64_long_double_big =
 const struct mips_regnum *
 mips_regnum (struct gdbarch *gdbarch)
 {
-  return gdbarch_tdep (gdbarch)->regnum;
+  return new_gdbarch_tdep(gdbarch)->regnum;
 }
 
 static int
@@ -181,14 +181,14 @@ mips_fpa0_regnum (struct gdbarch *gdbarch)
   return mips_regnum (gdbarch)->fp0 + 12;
 }
 
-#define MIPS_EABI (gdbarch_tdep (current_gdbarch)->mips_abi == MIPS_ABI_EABI32 \
-		   || gdbarch_tdep (current_gdbarch)->mips_abi == MIPS_ABI_EABI64)
+#define MIPS_EABI (new_gdbarch_tdep(current_gdbarch)->mips_abi == MIPS_ABI_EABI32 \
+		   || new_gdbarch_tdep(current_gdbarch)->mips_abi == MIPS_ABI_EABI64)
 
-#define MIPS_LAST_FP_ARG_REGNUM (gdbarch_tdep (current_gdbarch)->mips_last_fp_arg_regnum)
+#define MIPS_LAST_FP_ARG_REGNUM (new_gdbarch_tdep(current_gdbarch)->mips_last_fp_arg_regnum)
 
-#define MIPS_LAST_ARG_REGNUM (gdbarch_tdep (current_gdbarch)->mips_last_arg_regnum)
+#define MIPS_LAST_ARG_REGNUM (new_gdbarch_tdep(current_gdbarch)->mips_last_arg_regnum)
 
-#define MIPS_FPU_TYPE (gdbarch_tdep (current_gdbarch)->mips_fpu_type)
+#define MIPS_FPU_TYPE (new_gdbarch_tdep(current_gdbarch)->mips_fpu_type)
 
 /* MIPS16 function addresses are odd (bit 0 is set).  Here are some
    functions to test, set, or clear bit 0 of addresses.  */
@@ -239,7 +239,7 @@ read_signed_register_pid (int regnum, ptid_t ptid)
 enum mips_abi
 mips_abi (struct gdbarch *gdbarch)
 {
-  return gdbarch_tdep (gdbarch)->mips_abi;
+  return new_gdbarch_tdep(gdbarch)->mips_abi;
 }
 
 int
@@ -481,7 +481,7 @@ static const char *mips_irix_reg_names[NUM_MIPS_PROCESSOR_REGS] = {
 static const char *
 mips_register_name (int regno)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   /* GPR names for all ABIs other than n32/n64.  */
   static const char *mips_gpr_names[] = {
     "zero", "at", "v0", "v1", "a0", "a1", "a2", "a3",
@@ -578,7 +578,7 @@ mips_pseudo_register_read (struct gdbarch *gdbarch, struct regcache *regcache,
   else if (register_size (gdbarch, rawnum) >
 	   register_size (gdbarch, cookednum))
     {
-      if (gdbarch_tdep (gdbarch)->mips64_transfers_32bit_regs_p
+      if (new_gdbarch_tdep(gdbarch)->mips64_transfers_32bit_regs_p
 	  || TARGET_BYTE_ORDER == BFD_ENDIAN_LITTLE)
 	regcache_raw_read_part (regcache, rawnum, 0, 4, buf);
       else
@@ -600,7 +600,7 @@ mips_pseudo_register_write (struct gdbarch *gdbarch,
   else if (register_size (gdbarch, rawnum) >
 	   register_size (gdbarch, cookednum))
     {
-      if (gdbarch_tdep (gdbarch)->mips64_transfers_32bit_regs_p
+      if (new_gdbarch_tdep(gdbarch)->mips64_transfers_32bit_regs_p
 	  || TARGET_BYTE_ORDER == BFD_ENDIAN_LITTLE)
 	regcache_raw_write_part (regcache, rawnum, 0, 4, buf);
       else
@@ -717,7 +717,7 @@ mips_register_type (struct gdbarch *gdbarch, int regnum)
 	/* The pseudo/cooked view of the embedded registers is always
 	   32-bit.  The raw view is handled below.  */
 	return builtin_type_int32;
-      else if (gdbarch_tdep (gdbarch)->mips64_transfers_32bit_regs_p)
+      else if (new_gdbarch_tdep(gdbarch)->mips64_transfers_32bit_regs_p)
 	/* The target, while possibly using a 64-bit register buffer,
 	   is only transfering 32-bits of each integer register.
 	   Reflect this in the cooked/pseudo (ABI) register value.  */
@@ -765,7 +765,7 @@ static void
 show_mask_address (struct ui_file *file, int from_tty,
 		   struct cmd_list_element *c, const char *value)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   deprecated_show_value_hack (file, from_tty, c, value);
   switch (mask_address_var)
@@ -2176,7 +2176,7 @@ read_next_frame_reg (struct frame_info *fi, int regno)
 static CORE_ADDR
 mips_addr_bits_remove (CORE_ADDR addr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   if (mips_mask_address_p (tdep) && (((ULONGEST) addr) >> 32 == 0xffffffffUL))
     /* This hack is a work-around for existing boards using PMON, the
        simulator, and any other 64-bit targets that doesn't have true
@@ -2411,7 +2411,7 @@ mips_eabi_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
   int argnum;
   int len = 0;
   int stack_offset = 0;
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   CORE_ADDR func_addr = find_function_addr(function, NULL);
   
   if (tdep == NULL) {
@@ -2697,7 +2697,7 @@ mips_n32n64_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
   int argnum;
   int len = 0;
   int stack_offset = 0;
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   CORE_ADDR func_addr = find_function_addr(function, NULL);
   
   if (tdep == NULL) {
@@ -2931,7 +2931,7 @@ mips_n32n64_return_value(struct gdbarch *gdbarch,
 			 struct type *type, struct regcache *regcache,
 			 gdb_byte *readbuf, const gdb_byte *writebuf)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   if ((TYPE_CODE(type) == TYPE_CODE_STRUCT)
       || (TYPE_CODE(type) == TYPE_CODE_UNION)
       || (TYPE_CODE(type) == TYPE_CODE_ARRAY)
@@ -3042,7 +3042,7 @@ mips_o32_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
   int argnum;
   int len = 0;
   int stack_offset = 0;
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   CORE_ADDR func_addr = find_function_addr(function, NULL);
   
   if (tdep == NULL) {
@@ -3356,7 +3356,7 @@ mips_o32_return_value(struct gdbarch *gdbarch, struct type *type,
 		      struct regcache *regcache, gdb_byte *readbuf,
 		      const gdb_byte *writebuf)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   if ((TYPE_CODE(type) == TYPE_CODE_STRUCT)
       || (TYPE_CODE(type) == TYPE_CODE_UNION)
@@ -3509,7 +3509,7 @@ mips_o64_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
   int argnum;
   int len = 0;
   int stack_offset = 0;
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   CORE_ADDR func_addr = find_function_addr(function, NULL);
   
   if (tdep == NULL) {
@@ -4375,7 +4375,7 @@ set_mipsfpu_auto_command(const char *args ATTRIBUTE_UNUSED,
 void
 deprecated_mips_set_processor_regs_hack (void)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   CORE_ADDR prid;
 
   prid = read_register (MIPS_PRID_REGNUM);
@@ -4398,7 +4398,7 @@ reinit_frame_cache_sfunc(const char *args ATTRIBUTE_UNUSED,
 static int
 gdb_print_insn_mips(bfd_vma memaddr, struct disassemble_info *info)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   /* FIXME: cagney/2003-06-26: Is this even necessary?  The
      disassembler needs to be able to locally determine the ISA, and
@@ -4730,7 +4730,7 @@ mips_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   if (info.abfd && bfd_get_flavour (info.abfd) == bfd_target_elf_flavour)
     elf_flags = elf_elfheader (info.abfd)->e_flags;
   else if (arches != NULL)
-    elf_flags = gdbarch_tdep (arches->gdbarch)->elf_flags;
+    elf_flags = new_gdbarch_tdep(arches->gdbarch)->elf_flags;
   else
     elf_flags = 0;
   if (gdbarch_debug)
@@ -4767,7 +4767,7 @@ mips_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* If we have no useful BFD information, use the ABI from the last
      MIPS architecture (if there is one).  */
   if (found_abi == MIPS_ABI_UNKNOWN && info.abfd == NULL && arches != NULL)
-    found_abi = gdbarch_tdep (arches->gdbarch)->found_abi;
+    found_abi = new_gdbarch_tdep(arches->gdbarch)->found_abi;
 
   /* Try the architecture for any hint of the correct ABI.  */
   if (found_abi == MIPS_ABI_UNKNOWN
@@ -4848,7 +4848,7 @@ mips_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	break;
       }
   else if (arches != NULL)
-    fpu_type = gdbarch_tdep (arches->gdbarch)->mips_fpu_type;
+    fpu_type = new_gdbarch_tdep(arches->gdbarch)->mips_fpu_type;
   else
     fpu_type = MIPS_FPU_DOUBLE;
   if (gdbarch_debug)
@@ -4862,17 +4862,17 @@ mips_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
     {
       /* MIPS needs to be pedantic about which ABI the object is
          using.  */
-      if (gdbarch_tdep (arches->gdbarch)->elf_flags != elf_flags)
+      if (new_gdbarch_tdep(arches->gdbarch)->elf_flags != elf_flags)
 	continue;
-      if (gdbarch_tdep (arches->gdbarch)->mips_abi != mips_abi)
+      if (new_gdbarch_tdep(arches->gdbarch)->mips_abi != mips_abi)
 	continue;
       /* Need to be pedantic about which register virtual size is
          used.  */
-      if (gdbarch_tdep (arches->gdbarch)->mips64_transfers_32bit_regs_p
+      if (new_gdbarch_tdep(arches->gdbarch)->mips64_transfers_32bit_regs_p
 	  != mips64_transfers_32bit_regs_p)
 	continue;
       /* Be pedantic about which FPU is selected.  */
-      if (gdbarch_tdep (arches->gdbarch)->mips_fpu_type != fpu_type)
+      if (new_gdbarch_tdep(arches->gdbarch)->mips_fpu_type != fpu_type)
 	continue;
       return arches->gdbarch;
     }
@@ -5170,7 +5170,7 @@ show_mips_abi (struct ui_file *file,
 static void
 mips_dump_tdep (struct gdbarch *current_gdbarch, struct ui_file *file)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   if (tdep != NULL)
     {
       int ef_mips_arch;

@@ -395,6 +395,7 @@ mt-*-*)			gdb_target=mt ;;
 none-*-*)		gdb_target=none ;;
 
 ns32k-*-mach3*)		gdb_target=ns32km3 ;;
+ns32k-pc532-mach)	gdb_target=ns32km3 ;;
 ns32k-*-netbsd*)	gdb_target=nbsd
 			build_gdbserver=yes
 			configdirs="${configdirs} gdbserver"

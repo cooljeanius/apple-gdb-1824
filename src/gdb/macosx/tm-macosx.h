@@ -21,11 +21,13 @@ Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA.  */
 #ifndef _TM_NEXTSTEP_H_
 #define _TM_NEXTSTEP_H_
 
-#include "macosx-nat-dyld.h" /* for macosx_solib_add() */
 #include "macosx-tdep.h"
+#include "macosx-nat-dyld.h" /* for macosx_solib_add() */
 
 #define BLOCK_ADDRESS_ABSOLUTE 1
-#define BELIEVE_PCC_PROMOTION 1
+#ifndef BELIEVE_PCC_PROMOTION
+# define BELIEVE_PCC_PROMOTION 1
+#endif /* !BELIEVE_PCC_PROMOTION */
 
 #define INTERNALIZE_SYMBOL(intern, sect_p, extern, abfd) \
   macosx_internalize_symbol(&intern, &sect_p, extern, abfd)
@@ -65,8 +67,10 @@ extern void macosx_add_shared_symbol_files(void);
 const char *macosx_pc_solib(CORE_ADDR addr);
 #define PC_SOLIB(addr) ((char *)macosx_pc_solib(addr))
 
-#define target_pid_or_tid_to_str(PTID) \
-  macosx_pid_or_tid_to_str(PTID)
+#ifndef target_pid_or_tid_to_str
+# define target_pid_or_tid_to_str(PTID) \
+   macosx_pid_or_tid_to_str(PTID)
+#endif /* !target_pid_or_tid_to_str */
 
 #endif /* _TM_NEXTSTEP_H_ */
 

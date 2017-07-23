@@ -1,4 +1,4 @@
-/* BFD back-end for OpenRISC 1000 COFF binaries.
+/* coff-or32.c: BFD back-end for OpenRISC 1000 COFF binaries.
    Copyright 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
    Contributed by Ivan Guzvinec  <ivang@opencores.org>
 
@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #define OR32 1
 
@@ -96,7 +96,7 @@ or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
   addr = (addr + input_section->vma);
 #endif /* 0 */
 
-  r_type = reloc_entry->howto->type;
+  r_type = (unsigned short)reloc_entry->howto->type;
 
   if (output_bfd)
     {
@@ -126,7 +126,7 @@ or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
       return bfd_reloc_dangerous;
     }
 
-  sym_value = get_symbol_value (symbol_in);
+  sym_value = (unsigned long)get_symbol_value(symbol_in);
 
   switch (r_type)
     {
@@ -298,28 +298,32 @@ reloc_processing(arelent *relent, struct internal_reloc *reloc,
 	 can't figure out what the address means for High C).  We can
 	 handle both gas and High C by ignoring the address here, and
 	 simply reusing the address saved for R_IHIHALF.  */
-      if (ihihalf_vaddr == (bfd_vma) -1)
-	abort ();
+      if (ihihalf_vaddr == (bfd_vma)-1)
+	abort();
 
       relent->address = ihihalf_vaddr;
-      ihihalf_vaddr = (bfd_vma) -1;
-      relent->addend = reloc->r_symndx;
+      ihihalf_vaddr = (bfd_vma)-1;
+      relent->addend = (bfd_vma)reloc->r_symndx;
       relent->sym_ptr_ptr= bfd_abs_section_ptr->symbol_ptr_ptr;
     }
   else
     {
       asymbol *ptr;
-      relent->sym_ptr_ptr = symbols + obj_convert (abfd)[reloc->r_symndx];
+      relent->sym_ptr_ptr = (symbols + obj_convert(abfd)[reloc->r_symndx]);
 
       ptr = *(relent->sym_ptr_ptr);
+      
+      if (ptr == NULL) {
+	; /* ??? */
+      }
 
       relent->addend = 0;
       relent->address-= section->vma;
 
       if (reloc->r_type == R_IHIHALF)
 	ihihalf_vaddr = relent->address;
-      else if (ihihalf_vaddr != (bfd_vma) -1)
-	abort ();
+      else if (ihihalf_vaddr != (bfd_vma)-1)
+	abort();
     }
 }
 
@@ -369,7 +373,7 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
       if (symndx == -1 || rel->r_type == R_IHCONST)
         h = NULL;
       else
-        h = obj_coff_sym_hashes (input_bfd)[symndx];
+        h = obj_coff_sym_hashes(input_bfd)[symndx];
 
       sym = NULL;
       sec = NULL;
@@ -406,18 +410,18 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
                 }
               else
                 {
-                  if (! ((*info->callbacks->undefined_symbol)
-                         (info, h->root.root.string, input_bfd, input_section,
-                          rel->r_vaddr - input_section->vma, TRUE)))
+                  if (!((*info->callbacks->undefined_symbol)
+                        (info, h->root.root.string, input_bfd, input_section,
+                         (rel->r_vaddr - input_section->vma), TRUE)))
                     return FALSE;
                 }
             }
 
           if (hihalf)
             {
-              if (! ((*info->callbacks->reloc_dangerous)
-                     (info, "missing IHCONST reloc", input_bfd,
-                      input_section, rel->r_vaddr - input_section->vma)))
+              if (!((*info->callbacks->reloc_dangerous)
+                    (info, "missing IHCONST reloc", input_bfd,
+                     input_section, (rel->r_vaddr - input_section->vma))))
                 return FALSE;
               hihalf = FALSE;
             }
@@ -476,18 +480,18 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
         case R_IHCONST:
           if (! hihalf)
             {
-              if (! ((*info->callbacks->reloc_dangerous)
-                     (info, "missing IHIHALF reloc", input_bfd,
-                      input_section, rel->r_vaddr - input_section->vma)))
+              if (!((*info->callbacks->reloc_dangerous)
+                    (info, "missing IHIHALF reloc", input_bfd,
+                     input_section, (rel->r_vaddr - input_section->vma))))
                 return FALSE;
               hihalf_val = 0;
             }
 
           insn = (unsigned long)bfd_get_32(input_bfd, loc);
-          unsigned_value = (unsigned long)(rel->r_symndx + hihalf_val);
+          unsigned_value = (unsigned long)((bfd_vma)rel->r_symndx + hihalf_val);
           unsigned_value >>= 16;
-          insn = INSERT_HWORD (insn, unsigned_value);
-          bfd_put_32 (input_bfd, (bfd_vma) insn, loc);
+          insn = INSERT_HWORD(insn, unsigned_value);
+          bfd_put_32(input_bfd, (bfd_vma)insn, loc);
 
           hihalf = FALSE;
           break;
@@ -495,12 +499,12 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
         case R_BYTE:
         case R_HWORD:
         case R_WORD:
-          rstat = _bfd_relocate_contents (howto_table + rel->r_type,
-                                          input_bfd, val, loc);
+          rstat = _bfd_relocate_contents((howto_table + rel->r_type),
+                                         input_bfd, val, loc);
           if (rstat == bfd_reloc_overflow)
             overflow = TRUE;
           else if (rstat != bfd_reloc_ok)
-            abort ();
+            abort();
           break;
         }
 

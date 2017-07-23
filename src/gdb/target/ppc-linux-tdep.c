@@ -165,7 +165,7 @@ ppc_linux_in_sigtramp(CORE_ADDR pc, char *func_name)
   gdb_byte buf[4];
   CORE_ADDR handler;
 
-  lr = read_register(gdbarch_tdep(current_gdbarch)->ppc_lr_regnum);
+  lr = read_register(new_gdbarch_tdep(current_gdbarch)->ppc_lr_regnum);
   if (!ppc_linux_at_sigtramp_return_path(lr))
     return 0;
 
@@ -742,7 +742,7 @@ static struct insn_pattern ppc64_standard_linkage[] =
 static CORE_ADDR
 ppc64_standard_linkage_target (CORE_ADDR pc, unsigned int *insn)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   /* The address of the function descriptor this linkage function
      references.  */
@@ -827,7 +827,7 @@ ppc_linux_supply_gregset(struct regcache *regcache,
 {
   int regi;
   struct gdbarch *regcache_arch = get_regcache_arch(regcache); 
-  struct gdbarch_tdep *regcache_tdep = gdbarch_tdep(regcache_arch);
+  struct gdbarch_tdep *regcache_tdep = new_gdbarch_tdep(regcache_arch);
   const bfd_byte *buf = (const bfd_byte *)gregs;
 
   for (regi = 0; regi < ppc_num_gprs; regi++)
@@ -891,7 +891,7 @@ ppc_linux_supply_fpregset(const struct regset *regset,
 {
   int regi;
   struct gdbarch *regcache_arch = get_regcache_arch(regcache); 
-  struct gdbarch_tdep *regcache_tdep = gdbarch_tdep(regcache_arch);
+  struct gdbarch_tdep *regcache_tdep = new_gdbarch_tdep(regcache_arch);
   const bfd_byte *buf = (const bfd_byte *)fpset;
 
   if (!ppc_floating_point_unit_p(regcache_arch))
@@ -920,7 +920,7 @@ static const struct regset *
 ppc_linux_regset_from_core_section(struct gdbarch *core_arch,
 				   const char *sect_name, size_t sect_size)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(core_arch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(core_arch);
   if (strcmp(sect_name, ".reg") == 0)
     {
       if (tdep->wordsize == 4)
@@ -945,7 +945,7 @@ ppc_linux_sigtramp_cache (struct frame_info *next_frame,
   CORE_ADDR fpregs;
   int i;
   struct gdbarch *gdbarch = get_frame_arch (next_frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   base = frame_unwind_register_unsigned (next_frame, SP_REGNUM);
   if (bias > 0 && frame_pc_unwind (next_frame) != func)
@@ -1082,7 +1082,7 @@ static void
 ppc_linux_init_abi (struct gdbarch_info info,
                     struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* NOTE: jimb/2004-03-26: The System V ABI PowerPC Processor
      Supplement says that long doubles are sixteen bytes long.

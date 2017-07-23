@@ -3,7 +3,6 @@
 #ifndef __GDB_MACOSX_NAT_DYLD_INFO_H__
 #define __GDB_MACOSX_NAT_DYLD_INFO_H__
 
-#include "defs.h"
 #include <mach/machine.h>       /* cpu_type_t, cpu_subtype_t */
 #include <mach-o/loader.h>    /* struct mach_header, struct load_command */
 
@@ -33,6 +32,9 @@ typedef enum dyld_objfile_reason
   dyld_reason_all_mask = 0xfffe
 } dyld_objfile_reason;
 
+#ifndef __GDB_DEFS_H__
+# include "defs.h" /* for CORE_ADDR */
+#endif /* !__GDB_DEFS_H__ */
 
 /* There is one struct dyld_objfile_entry for each file image that
    the program has loaded, or will load.  */

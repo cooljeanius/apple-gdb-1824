@@ -455,6 +455,14 @@ struct elf_link_hash_table
   /* The _GLOBAL_OFFSET_TABLE_ symbol.  */
   struct elf_link_hash_entry *hgot;
 
+#ifdef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+  /* The _PROCEDURE_LINKAGE_TABLE_ symbol.  */
+  struct elf_link_hash_entry *hplt;
+  
+  /* The _DYNAMIC symbol.  */
+  struct elf_link_hash_entry *hdynamic;
+#endif /* USE_NEW_ELF_BFD_STRUCT_MEMBERS */
+
   /* A pointer to information used to merge SEC_MERGE sections.  */
   void *merge_info;
 
@@ -1136,6 +1144,17 @@ struct elf_backend_data
 
   /* The section type to use for an attributes section.  */
   unsigned int obj_attrs_section_type;
+  
+  /* This function determines the order in which any attributes are
+   * written.  It must be defined for input in the range
+   * LEAST_KNOWN_OBJ_ATTRIBUTE..NUM_KNOWN_OBJ_ATTRIBUTES-1 (this range
+   * is used in order to make unity easy).  The returned value is the
+   * actual tag number to place in the input position.  */
+  int (*obj_attrs_order)(int);
+  
+  /* Handle merging unknown attributes; either warn and return TRUE,
+   * or give an error and return FALSE.  */
+  bfd_boolean (*obj_attrs_handle_unknown)(bfd *, int);
 #endif /* USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 
   /* This is TRUE if the linker should act like collect and gather
@@ -1271,6 +1290,13 @@ struct bfd_elf_section_data
   /* A linked list of sections in the group.  Circular when used by
      the linker.  */
   asection *next_in_group;
+  
+  /* The FDEs associated with this section.  The u.fde.next_in_section
+   * field acts as a chain pointer.  */
+  struct eh_cie_fde *fde_list;
+  
+  /* Link from a text section to its .eh_frame_entry section.  */
+  asection *eh_frame_entry;
 
   /* A pointer used for various section optimizations.  */
   void *sec_info;
@@ -1283,7 +1309,9 @@ struct bfd_elf_section_data
 #define elf_group_name(sec)    (elf_section_data(sec)->group.name)
 #define elf_group_id(sec)      (elf_section_data(sec)->group.id)
 #define elf_next_in_group(sec) (elf_section_data(sec)->next_in_group)
+#define elf_fde_list(sec)	(elf_section_data(sec)->fde_list)
 #define elf_sec_group(sec)	(elf_section_data(sec)->sec_group)
+#define elf_section_eh_frame_entry(sec)	(elf_section_data(sec)->eh_frame_entry)
 
 /* Return TRUE if section has been discarded.  */
 #define elf_discarded_section(sec)				\
@@ -1292,8 +1320,11 @@ struct bfd_elf_section_data
    && (sec)->sec_info_type != ELF_INFO_TYPE_MERGE		\
    && (sec)->sec_info_type != ELF_INFO_TYPE_JUST_SYMS)
 
+#define xvec_get_elf_backend_data(xvec) \
+  ((const struct elf_backend_data *)(xvec)->backend_data)
+
 #define get_elf_backend_data(abfd) \
-  ((const struct elf_backend_data *) (abfd)->xvec->backend_data)
+  xvec_get_elf_backend_data((abfd)->xvec)
 
 /* This struct is used to pass information to routines called via
    elf_link_hash_traverse which must return failure.  */
@@ -1335,8 +1366,15 @@ struct elf_find_verdep_info
   bfd_boolean failed;
 };
 
+/* The least object attributes (within an attributes subsection) known
+   for any target.  Some code assumes that the value 0 is not used and
+   the field for that attribute can instead be used as a marker to
+   indicate that attributes have been initialized.  */
+#define LEAST_KNOWN_OBJ_ATTRIBUTE 2
+
 /* The maximum number of known object attributes for any target.  */
 #define NUM_KNOWN_OBJ_ATTRIBUTES 32
+#define NEW_NUM_KNOWN_OBJ_ATTRIBUTES 71
 
 /* The value of an object attribute.  type & 1 indicates whether there
    is an integer value; type & 2 indicates whether there is a string
@@ -1344,6 +1382,14 @@ struct elf_find_verdep_info
 
 typedef struct obj_attribute
 {
+#define ATTR_TYPE_FLAG_INT_VAL    (1 << 0)
+#define ATTR_TYPE_FLAG_STR_VAL    (1 << 1)
+#define ATTR_TYPE_FLAG_NO_DEFAULT (1 << 2)
+  
+#define ATTR_TYPE_HAS_INT_VAL(TYPE)	((TYPE) & ATTR_TYPE_FLAG_INT_VAL)
+#define ATTR_TYPE_HAS_STR_VAL(TYPE)	((TYPE) & ATTR_TYPE_FLAG_STR_VAL)
+#define ATTR_TYPE_HAS_NO_DEFAULT(TYPE)	((TYPE) & ATTR_TYPE_FLAG_NO_DEFAULT)
+
   int type;
   unsigned int i;
   char *s;
@@ -1352,7 +1398,7 @@ typedef struct obj_attribute
 typedef struct obj_attribute_list
 {
   struct obj_attribute_list *next;
-  int tag;
+  unsigned int tag;
   obj_attribute attr;
 } obj_attribute_list;
 
@@ -1517,7 +1563,11 @@ struct elf_obj_tdata
      specific extensions to this structure.  */
   enum elf_target_id object_id;
   
+#ifdef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+  obj_attribute known_obj_attributes[2][NEW_NUM_KNOWN_OBJ_ATTRIBUTES];
+#else
   obj_attribute known_obj_attributes[2][NUM_KNOWN_OBJ_ATTRIBUTES];
+#endif /* USE_NEW_ELF_BFD_STRUCT_MEMBERS */
   obj_attribute_list *other_obj_attributes[2];
 };
 
@@ -1693,6 +1743,10 @@ extern long _bfd_elf_get_reloc_upper_bound
   (bfd *, sec_ptr);
 extern long _bfd_elf_canonicalize_reloc
   (bfd *, sec_ptr, arelent **, asymbol **);
+extern asection * _bfd_elf_get_dynamic_reloc_section
+  (bfd *, asection *, bfd_boolean);
+extern asection * _bfd_elf_make_dynamic_reloc_section
+  (asection *, bfd *, unsigned int, bfd *, bfd_boolean);
 extern long _bfd_elf_get_dynamic_reloc_upper_bound
   (bfd *);
 extern long _bfd_elf_canonicalize_dynamic_reloc
@@ -1824,6 +1878,14 @@ extern bfd_boolean _bfd_elf_create_dynamic_sections
   (bfd *, struct bfd_link_info *);
 extern bfd_boolean _bfd_elf_create_got_section
   (bfd *, struct bfd_link_info *);
+extern asection *_bfd_elf_section_for_symbol
+  (struct elf_reloc_cookie *, unsigned long, bfd_boolean);
+extern struct elf_link_hash_entry *_bfd_elf_define_linkage_sym
+  (bfd *, struct bfd_link_info *, asection *, const char *);
+extern void _bfd_elf_init_1_index_section
+  (bfd *, struct bfd_link_info *);
+extern void _bfd_elf_init_2_index_sections
+  (bfd *, struct bfd_link_info *);
 
 extern bfd_boolean _bfd_elfcore_make_pseudosection
   (bfd *, const char *, size_t, ufile_ptr);
@@ -1839,6 +1901,9 @@ extern bfd_boolean _bfd_elf_link_size_reloc_section
 extern bfd_boolean _bfd_elf_link_output_relocs
   (bfd *, asection *, Elf_Internal_Shdr *, Elf_Internal_Rela *,
    struct elf_link_hash_entry **);
+
+extern bfd_boolean _bfd_elf_adjust_dynamic_copy
+  (struct bfd_link_info *, struct elf_link_hash_entry *, asection *);
 
 extern bfd_boolean _bfd_elf_fix_symbol_flags
   (struct elf_link_hash_entry *, struct elf_info_failed *);
@@ -1898,6 +1963,8 @@ extern bfd_boolean bfd_elf32_write_shdrs_and_ehdr
   (bfd *);
 extern int bfd_elf32_write_out_phdrs
   (bfd *, const Elf_Internal_Phdr *, unsigned int);
+extern bfd_boolean bfd_elf32_checksum_contents
+  (bfd * , void (*) (const void *, size_t, void *), void *);
 extern void bfd_elf32_write_relocs
   (bfd *, asection *, void *);
 extern bfd_boolean bfd_elf32_slurp_reloc_table
@@ -2030,26 +2097,33 @@ extern bfd *_bfd_elf64_bfd_from_remote_memory
   (bfd *templ, bfd_vma ehdr_vma, bfd_vma *loadbasep,
    int (*target_read_memory) (bfd_vma, bfd_byte *, int));
   
-extern bfd_vma bfd_elf_obj_attr_size (bfd *);
-extern void bfd_elf_set_obj_attr_contents (bfd *, bfd_byte *, bfd_vma);
-extern int bfd_elf_get_obj_attr_int (bfd *, int, int);
-extern void bfd_elf_add_obj_attr_int (bfd *, int, int, unsigned int);
+extern bfd_vma bfd_elf_obj_attr_size(bfd *);
+extern void bfd_elf_set_obj_attr_contents(bfd *, bfd_byte *, bfd_vma);
+extern int bfd_elf_get_obj_attr_int(bfd *, int, unsigned int);
+extern void bfd_elf_add_obj_attr_int(bfd *, int, unsigned int, unsigned int);
 #define bfd_elf_add_proc_attr_int(BFD, TAG, VALUE) \
-  bfd_elf_add_obj_attr_int ((BFD), OBJ_ATTR_PROC, (TAG), (VALUE))
-extern void bfd_elf_add_obj_attr_string (bfd *, int, int, const char *);
+  bfd_elf_add_obj_attr_int((BFD), OBJ_ATTR_PROC, (TAG), (VALUE))
+extern void bfd_elf_add_obj_attr_string(bfd *, int, unsigned int, const char *);
 #define bfd_elf_add_proc_attr_string(BFD, TAG, VALUE) \
-  bfd_elf_add_obj_attr_string ((BFD), OBJ_ATTR_PROC, (TAG), (VALUE))
-extern void bfd_elf_add_obj_attr_compat (bfd *, int, unsigned int,
+  bfd_elf_add_obj_attr_string((BFD), OBJ_ATTR_PROC, (TAG), (VALUE))
+extern void bfd_elf_add_obj_attr_int_string(bfd *, int, unsigned int,
+					    unsigned int, const char *);
+#define bfd_elf_add_proc_attr_int_string(BFD, TAG, INTVAL, STRVAL) \
+  bfd_elf_add_obj_attr_int_string((BFD), OBJ_ATTR_PROC, (TAG), \
+				  (INTVAL), (STRVAL))
+extern void bfd_elf_add_obj_attr_compat(bfd *, int, unsigned int,
                                         const char *);
 #define bfd_elf_add_proc_attr_compat(BFD, INTVAL, STRVAL) \
-  bfd_elf_add_obj_attr_compat ((BFD), OBJ_ATTR_PROC, (INTVAL), (STRVAL))
+  bfd_elf_add_obj_attr_compat((BFD), OBJ_ATTR_PROC, (INTVAL), (STRVAL))
 
-extern char *_bfd_elf_attr_strdup (bfd *, const char *);
-extern void _bfd_elf_copy_obj_attributes (bfd *, bfd *);
-extern int _bfd_elf_obj_attrs_arg_type (bfd *, int, int);
-extern void _bfd_elf_parse_attributes (bfd *, Elf_Internal_Shdr *);
-extern bfd_boolean _bfd_elf_merge_object_attributes (bfd *, bfd *);
-extern Elf_Internal_Shdr *_bfd_elf_single_rel_hdr (asection *sec);
+extern char *_bfd_elf_attr_strdup(bfd *, const char *);
+extern void _bfd_elf_copy_obj_attributes(bfd *, bfd *);
+extern int _bfd_elf_obj_attrs_arg_type(bfd *, int, unsigned int);
+extern void _bfd_elf_parse_attributes(bfd *, Elf_Internal_Shdr *);
+extern bfd_boolean _bfd_elf_merge_object_attributes(bfd *, bfd *);
+extern bfd_boolean _bfd_elf_merge_unknown_attribute_low(bfd *, bfd *, int);
+extern bfd_boolean _bfd_elf_merge_unknown_attribute_list(bfd *, bfd *);
+extern Elf_Internal_Shdr *_bfd_elf_single_rel_hdr(asection *sec);
 
 /* The linker may need to keep track of the number of relocs that it
    decides to copy as dynamic relocs in check_relocs for each symbol.

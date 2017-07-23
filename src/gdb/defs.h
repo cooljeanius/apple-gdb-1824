@@ -1205,6 +1205,9 @@ enum gdb_osabi
   GDB_OSABI_INVALID		/* keep this last */
 };
 
+/* APPLE LOCAL gdb_client_data */
+/* Typedef for anonymous data type for event data: */
+typedef void *gdb_client_data;
 
 /* Optional host machine definition. Pure autoconf targets will not
    need a "xm.h" file. This will be a symlink to one of the xm-*.h
@@ -1589,9 +1592,7 @@ extern char *interpreter_p;
 struct target_waitstatus;
 struct cmd_list_element;
 
-/* APPLE LOCAL gdb_client_data */
-/* Typedef for anonymous data type for event data: */
-typedef void *gdb_client_data;
+/* gdb_client_data definition moved earlier */
 
 /* APPLE LOCAL Debugger_state */
 typedef enum {

@@ -304,11 +304,10 @@ m68k_svr4_store_return_value (struct type *type, struct regcache *regcache,
 /* Return non-zero if TYPE, which is assumed to be a structure or
    union type, should be returned in registers for architecture
    GDBARCH.  */
-
 static int
-m68k_reg_struct_return_p (struct gdbarch *gdbarch, struct type *type)
+m68k_reg_struct_return_p(struct gdbarch *gdbarch, struct type *type)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   enum type_code code = TYPE_CODE (type);
   int len = TYPE_LENGTH (type);
 
@@ -401,14 +400,14 @@ m68k_svr4_return_value (struct gdbarch *gdbarch, struct type *type,
   return RETURN_VALUE_REGISTER_CONVENTION;
 }
 
-
+/* */
 static CORE_ADDR
-m68k_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
-		      struct regcache *regcache, CORE_ADDR bp_addr, int nargs,
-		      struct value **args, CORE_ADDR sp, int struct_return,
-		      CORE_ADDR struct_addr)
+m68k_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
+		     struct regcache *regcache, CORE_ADDR bp_addr, int nargs,
+		     struct value **args, CORE_ADDR sp, int struct_return,
+		     CORE_ADDR struct_addr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   gdb_byte buf[4];
   int i;
 
@@ -1066,7 +1065,7 @@ m68k_get_longjmp_target(CORE_ADDR *pc)
 {
   gdb_byte *buf;
   CORE_ADDR sp, jb_addr;
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   if (tdep->jb_pc < 0)
     {
@@ -1094,11 +1093,10 @@ m68k_get_longjmp_target(CORE_ADDR *pc)
 
 
 /* System V Release 4 (SVR4).  */
-
 void
-m68k_svr4_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+m68k_svr4_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* SVR4 uses a different calling convention.  */
   set_gdbarch_return_value (gdbarch, m68k_svr4_return_value);
@@ -1190,11 +1188,11 @@ m68k_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   return gdbarch;
 }
 
-
+/* */
 static void
-m68k_dump_tdep (struct gdbarch *current_gdbarch, struct ui_file *file)
+m68k_dump_tdep(struct gdbarch *current_gdbarch, struct ui_file *file)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   if (tdep == NULL)
     return;

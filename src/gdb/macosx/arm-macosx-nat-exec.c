@@ -252,7 +252,7 @@ void fetch_inferior_registers(int regno)
   if ((regno == -1) || ARM_MACOSX_IS_VFP_RELATED_REGNUM(regno)) {
       enum arm_vfp_version vfp_version;
       int fp_byte_size;
-      vfp_version = gdbarch_tdep(current_gdbarch)->vfp_version;
+      vfp_version = new_gdbarch_tdep(current_gdbarch)->vfp_version;
       fp_byte_size = -1;
 
       switch (vfp_version) {
@@ -337,7 +337,7 @@ void store_inferior_registers(int regno)
   if ((regno == -1) || ARM_MACOSX_IS_VFP_RELATED_REGNUM(regno)) {
       enum arm_vfp_version vfp_version;
       int fp_byte_size;
-      vfp_version = gdbarch_tdep(current_gdbarch)->vfp_version;
+      vfp_version = new_gdbarch_tdep(current_gdbarch)->vfp_version;
       fp_byte_size = -1;
 
       switch (vfp_version) {

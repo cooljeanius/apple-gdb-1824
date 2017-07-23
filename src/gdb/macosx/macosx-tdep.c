@@ -112,6 +112,9 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # if !defined(_TM_ARM_MACOSX_H_)
 #  include "tm-arm-macosx.h"
 # endif /* !_TM_ARM_MACOSX_H_ */
+# if !defined(_TM_NEXTSTEP_H_)
+#  include "tm-macosx.h"
+# endif /* !_TM_NEXTSTEP_H_ */
 # if !defined(__GDB_TM_ARM_MACOSX_H__)
 #  include "macosx/tm-arm-macosx.h"
 # endif /* !__GDB_TM_ARM_MACOSX_H__ */
