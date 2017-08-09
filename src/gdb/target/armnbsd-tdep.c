@@ -34,16 +34,16 @@
 
 /* For compatibility with previous implemenations of GDB on arm/NetBSD,
    override the default little-endian breakpoint.  */
-static const char arm_nbsd_arm_le_breakpoint[] = {0x11, 0x00, 0x00, 0xe6};
-static const char arm_nbsd_arm_be_breakpoint[] = {0xe6, 0x00, 0x00, 0x11};
-static const char arm_nbsd_thumb_le_breakpoint[] = {0xfe, 0xde};
-static const char arm_nbsd_thumb_be_breakpoint[] = {0xde, 0xfe};
+static const gdb_byte arm_nbsd_arm_le_breakpoint[] = {0x11, 0x00, 0x00, 0xe6};
+static const gdb_byte arm_nbsd_arm_be_breakpoint[] = {0xe6, 0x00, 0x00, 0x11};
+static const gdb_byte arm_nbsd_thumb_le_breakpoint[] = {0xfe, 0xde};
+static const gdb_byte arm_nbsd_thumb_be_breakpoint[] = {0xde, 0xfe};
 
 static void
 arm_netbsd_init_abi_common (struct gdbarch_info info,
 			    struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->lowest_pc = 0x8000;
   switch (info.byte_order)
@@ -75,7 +75,7 @@ static void
 arm_netbsd_aout_init_abi (struct gdbarch_info info, 
 			  struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   arm_netbsd_init_abi_common (info, gdbarch);
   if (tdep->fp_model == ARM_FLOAT_AUTO)
@@ -86,7 +86,7 @@ static void
 arm_netbsd_elf_init_abi (struct gdbarch_info info, 
 			 struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   arm_netbsd_init_abi_common (info, gdbarch);
 

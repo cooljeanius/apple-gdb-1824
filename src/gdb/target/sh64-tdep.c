@@ -852,7 +852,7 @@ sh64_analyze_prologue(struct gdbarch *gdbarch, struct sh64_frame_cache *cache,
   int insn;
   int r0_val = 0;
   int insn_size;
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   
   if (tdep == NULL) {
     ; /* ??? */
@@ -2335,7 +2335,7 @@ sh64_frame_prev_register(struct frame_info *next_frame, void **this_cache,
       *lvalp = lval_memory;
       *addrp = cache->saved_regs[regnum];
       *realnump = -1;
-      if ((gdbarch_tdep(current_gdbarch)->sh_abi == SH_ABI_32)
+      if ((new_gdbarch_tdep(current_gdbarch)->sh_abi == SH_ABI_32)
           && ((regnum == MEDIA_FP_REGNUM) || (regnum == PR_REGNUM)))
 	size = 4;
       else

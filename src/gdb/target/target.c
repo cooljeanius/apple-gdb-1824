@@ -173,8 +173,8 @@ static char *debug_to_pid_to_str(ptid_t);
 static void debug_to_stop(void);
 
 /* NOTE: cagney/2004-09-29: Many targets reference this variable in
-   wierd and mysterious ways.  Putting the variable here lets those
-   wierd and mysterious ways keep building while they are being
+   weird and mysterious ways.  Putting the variable here lets those
+   weird and mysterious ways keep building while they are being
    converted to the inferior inheritance structure.  */
 struct target_ops deprecated_child_ops;
 
@@ -182,9 +182,9 @@ struct target_ops deprecated_child_ops;
    array; the current index into the array; the allocated size of the
    array.  */
 struct target_ops **target_structs;
-unsigned target_struct_size;
-unsigned target_struct_index;
-unsigned target_struct_allocsize;
+unsigned int target_struct_size;
+unsigned int target_struct_index;
+unsigned int target_struct_allocsize;
 #define	DEFAULT_ALLOCSIZE	10
 
 /* The initial current target, so that there is always a semi-valid

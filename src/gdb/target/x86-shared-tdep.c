@@ -593,22 +593,12 @@ x86_blocks_context_var_copy_pattern_p(CORE_ADDR memaddr, int wordsize)
   return 1;
 }
 
+/* removed duplicated definition of init_vector_type() here; it was exactly the
+ * same as the version in gdbtypes.c, which is now extern. */
 
-
-static struct type *
-init_vector_type (struct type *elt_type, int n)
-{
-  struct type *array_type;
-
-  array_type = create_array_type (0, elt_type,
-                                  create_range_type (0, builtin_type_int,
-                                                     0, n-1));
-  TYPE_FLAGS (array_type) |= TYPE_FLAG_VECTOR;
-  return array_type;
-}
-
+/* */
 struct type *
-build_builtin_type_vec128i_big (void)
+build_builtin_type_vec128i_big(void)
 {
   /* 128-bit Intel SIMD registers */
   struct type *t;

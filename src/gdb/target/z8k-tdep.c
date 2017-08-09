@@ -125,10 +125,14 @@ examine_frame(CORE_ADDR pc, CORE_ADDR *regs, CORE_ADDR sp)
     }
   else if (IS_SUB_SP (w))
     {
+#ifdef FP_REGNUM
       /* Subtracting a value from the sp, so were in a function
          which needs stack space for locals, but has no fp.  We fake up
          the values as if we had an fp */
       regs[FP_REGNUM] = sp;
+#else
+      internal_error(__FILE__, __LINE__, "missing FP_REGNUM");
+#endif /* FP_REGNUM */
     }
   else
     {
@@ -349,7 +353,8 @@ write_return_value(struct type *type, char *valbuf)
   int len;
 
   for (len = 0; len < TYPE_LENGTH(type); len += 2)
-    write_register_bytes(REGISTER_BYTE((len / 2) + 2), (valbuf + len), 2);
+    deprecated_write_register_bytes(REGISTER_BYTE((len / 2) + 2),
+				    (gdb_byte *)(valbuf + len), 2);
 }
 
 /* */

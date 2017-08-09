@@ -1,4 +1,4 @@
-/* Target-dependent code for GNU/Linux on Alpha.
+/* alpha-linux-tdep.c: Target-dependent code for GNU/Linux on Alpha.
    Copyright 2002, 2003 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -42,9 +42,9 @@
 */
 
 static long
-alpha_linux_sigtramp_offset_1 (CORE_ADDR pc)
+alpha_linux_sigtramp_offset_1(CORE_ADDR pc)
 {
-  switch (alpha_read_insn (pc))
+  switch (alpha_read_insn(pc))
     {
     case 0x47de0410:		/* bis $30,$30,$16 */
     case 0x47fe0410:		/* bis $31,$30,$16 */
@@ -63,50 +63,53 @@ alpha_linux_sigtramp_offset_1 (CORE_ADDR pc)
     }
 }
 
+/* */
 static LONGEST
-alpha_linux_sigtramp_offset (CORE_ADDR pc)
+alpha_linux_sigtramp_offset(CORE_ADDR pc)
 {
   long i, off;
 
   if (pc & 3)
     return -1;
 
-  /* Guess where we might be in the sequence.  */
-  off = alpha_linux_sigtramp_offset_1 (pc);
+  /* Guess where we might be in the sequence: */
+  off = alpha_linux_sigtramp_offset_1(pc);
   if (off < 0)
     return -1;
 
-  /* Verify that the other two insns of the sequence are as we expect.  */
+  /* Verify that the other two insns of the sequence are as we expect: */
   pc -= off;
   for (i = 0; i < 12; i += 4)
     {
       if (i == off)
 	continue;
-      if (alpha_linux_sigtramp_offset_1 (pc + i) != i)
+      if (alpha_linux_sigtramp_offset_1(pc + i) != i)
 	return -1;
     }
 
   return off;
 }
 
+/* */
 static int
-alpha_linux_pc_in_sigtramp (CORE_ADDR pc, char *func_name)
+alpha_linux_pc_in_sigtramp(CORE_ADDR pc, char *func_name)
 {
-  return alpha_linux_sigtramp_offset (pc) >= 0;
+  return (alpha_linux_sigtramp_offset(pc) >= 0);
 }
 
+/* */
 static CORE_ADDR
-alpha_linux_sigcontext_addr (struct frame_info *next_frame)
+alpha_linux_sigcontext_addr(struct frame_info *next_frame)
 {
   CORE_ADDR pc;
   ULONGEST sp;
   long off;
 
-  pc = frame_pc_unwind (next_frame);
-  frame_unwind_unsigned_register (next_frame, ALPHA_SP_REGNUM, &sp);
+  pc = frame_pc_unwind(next_frame);
+  frame_unwind_unsigned_register(next_frame, ALPHA_SP_REGNUM, &sp);
 
-  off = alpha_linux_sigtramp_offset (pc);
-  gdb_assert (off >= 0);
+  off = alpha_linux_sigtramp_offset(pc);
+  gdb_assert(off >= 0);
 
   /* __NR_rt_sigreturn has a couple of structures on the stack.  This is:
 
@@ -117,39 +120,44 @@ alpha_linux_sigcontext_addr (struct frame_info *next_frame)
 
 	offsetof (struct rt_sigframe, uc.uc_mcontext);
   */
-  if (alpha_read_insn (pc - off + 4) == 0x201f015f)
+  if (alpha_read_insn(pc - off + 4) == 0x201f015f)
     return sp + 176;
 
   /* __NR_sigreturn has the sigcontext structure at the top of the stack.  */
   return sp;
 }
 
+/* */
 static void
-alpha_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+alpha_linux_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
   struct gdbarch_tdep *tdep;
 
-  /* Hook into the DWARF CFI frame unwinder.  */
-  alpha_dwarf2_init_abi (info, gdbarch);
+  /* Hook into the DWARF CFI frame unwinder: */
+  alpha_dwarf2_init_abi(info, gdbarch);
 
-  /* Hook into the MDEBUG frame unwinder.  */
-  alpha_mdebug_init_abi (info, gdbarch);
+  /* Hook into the MDEBUG frame unwinder: */
+  alpha_mdebug_init_abi(info, gdbarch);
 
-  tdep = gdbarch_tdep (gdbarch);
+  tdep = new_gdbarch_tdep(gdbarch);
   tdep->dynamic_sigtramp_offset = alpha_linux_sigtramp_offset;
   tdep->sigcontext_addr = alpha_linux_sigcontext_addr;
   tdep->pc_in_sigtramp = alpha_linux_pc_in_sigtramp;
   tdep->jb_pc = 2;
   tdep->jb_elt_size = 8;
 
-  /* Enable TLS support.  */
-  set_gdbarch_fetch_tls_load_module_address (gdbarch,
-                                             svr4_fetch_objfile_link_map);
+  /* Enable TLS support: */
+  set_gdbarch_fetch_tls_load_module_address(gdbarch,
+					    svr4_fetch_objfile_link_map);
 }
 
+/* Usual gdb initialization hook: */
+void _initialize_alpha_linux_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_alpha_linux_tdep (void)
+_initialize_alpha_linux_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_alpha, 0, GDB_OSABI_LINUX,
-                          alpha_linux_init_abi);
+  gdbarch_register_osabi(bfd_arch_alpha, 0, GDB_OSABI_LINUX,
+			 alpha_linux_init_abi);
 }
+
+/* EOF */

@@ -41,13 +41,13 @@
    of the software interrupt the kernel stops the inferior with a
    SIGTRAP, and wakes the debugger.  */
 
-static const char arm_linux_arm_le_breakpoint[] = { 0x01, 0x00, 0x9f, 0xef };
+static const gdb_byte arm_linux_arm_le_breakpoint[] = {0x01, 0x00, 0x9f, 0xef};
 
-static const char arm_linux_arm_be_breakpoint[] = { 0xef, 0x9f, 0x00, 0x01 };
+static const gdb_byte arm_linux_arm_be_breakpoint[] = {0xef, 0x9f, 0x00, 0x01};
 
-static const char arm_linux_thumb_be_breakpoint[] = {0xde, 0x01};
+static const gdb_byte arm_linux_thumb_be_breakpoint[] = {0xde, 0x01};
 
-static const char arm_linux_thumb_le_breakpoint[] = {0x01, 0xde};
+static const gdb_byte arm_linux_thumb_le_breakpoint[] = {0x01, 0xde};
 
 /* Description of the longjmp buffer.  */
 #define ARM_LINUX_JB_ELEMENT_SIZE	INT_REGISTER_SIZE
@@ -469,7 +469,7 @@ static void
 arm_linux_init_abi(struct gdbarch_info info,
 		   struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->lowest_pc = 0x8000;
   if (info.byte_order == BFD_ENDIAN_BIG)

@@ -1306,7 +1306,21 @@ extern struct type *builtin_type_f_void;
     ? obstack_alloc(&TYPE_OBJFILE(t)->objfile_obstack, size) \
     : xmalloc(size))
 
+#define TYPE_ZALLOC(t,size)  \
+   (TYPE_OBJFILE_OWNED(t) \
+    ? memset(obstack_alloc(&TYPE_OBJFILE(t)->objfile_obstack, size),  \
+	      0, size)  \
+    : xzalloc(size))
+
 extern struct type *alloc_type(struct objfile *);
+extern struct type *alloc_type_arch(struct gdbarch *);
+extern struct type *alloc_type_copy(const struct type *);
+
+/* * Return the type's architecture.  For types owned by an
+ architecture, that architecture is returned.  For types owned by an
+ objfile, that objfile's architecture is returned.  */
+
+extern struct gdbarch *get_type_arch(const struct type *);
 
 extern struct type *init_type(enum type_code, int, int, const char *,
 			      struct objfile *);
@@ -1525,6 +1539,56 @@ int ftype_has_debug_info_p (struct type *type);
 
 /* APPLE LOCAL: needed for the MI resolved types.  */
 struct type *remove_all_typedefs (struct type *type);
+
+/* Needed for linux-tdep.c: */
+extern struct type *init_vector_type(struct type *elt_type, int n);
+
+/* FIXME: the rest of these all need work in gdbtypes.c to get to compile: */
+
+/* Helper functions to construct architecture-owned types.  */
+extern struct type *arch_type (struct gdbarch *, enum type_code, int,
+			       const char *);
+extern struct type *arch_integer_type (struct gdbarch *, int, int,
+				       const char *);
+extern struct type *arch_character_type (struct gdbarch *, int, int,
+					 const char *);
+extern struct type *arch_boolean_type (struct gdbarch *, int, int,
+				       const char *);
+extern struct type *arch_float_type (struct gdbarch *, int, const char *,
+				     const struct floatformat **);
+extern struct type *arch_decfloat_type (struct gdbarch *, int, const char *);
+extern struct type *arch_complex_type (struct gdbarch *, const char *,
+				       struct type *);
+extern struct type *arch_pointer_type (struct gdbarch *, int, const char *,
+				       struct type *);
+
+/* Helper functions to construct a struct or record type.  An
+ initially empty type is created using arch_composite_type().
+ Fields are then added using append_composite_type_field*().  A union
+ type has its size set to the largest field.  A struct type has each
+ field packed against the previous.  */
+
+extern struct type *arch_composite_type (struct gdbarch *gdbarch,
+					 const char *name, enum type_code code);
+extern void append_composite_type_field (struct type *t, const char *name,
+					 struct type *field);
+extern void append_composite_type_field_aligned (struct type *t,
+						 const char *name,
+						 struct type *field,
+						 int alignment);
+struct field *append_composite_type_field_raw (struct type *t, const char *name,
+					       struct type *field);
+
+/* Helper functions to construct a bit flags type.  An initially empty
+ type is created using arch_flag_type().  Flags are then added using
+ append_flag_type_field() and append_flag_type_flag().  */
+extern struct type *arch_flags_type (struct gdbarch *gdbarch,
+				     const char *name, int length);
+extern void append_flags_type_field (struct type *type,
+				     int start_bitpos, int nr_bits,
+				     struct type *field_type, const char *name);
+extern void append_flags_type_flag (struct type *type, int bitpos,
+				    const char *name);
 
 #endif /* GDBTYPES_H */
 

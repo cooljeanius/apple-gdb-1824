@@ -2850,8 +2850,14 @@ elf32_arm_final_link_relocate (reloc_howto_type *           howto,
       sgot = bfd_get_section_by_name (dynobj, ".got");
       splt = bfd_get_section_by_name (dynobj, ".plt");
     }
-  symtab_hdr = & elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  if (symtab_hdr == NULL) {
+    ; /* ??? */
+  }
+  sym_hashes = elf_sym_hashes(input_bfd);
+  if (sym_hashes == NULL) {
+    ; /* ??? */
+  }
   local_got_offsets = elf_local_got_offsets (input_bfd);
   r_symndx = ELF32_R_SYM (rel->r_info);
 
@@ -4134,12 +4140,12 @@ elf32_arm_relocate_section (bfd *                  output_bfd,
 	}
       else
 	{
-	  bfd_boolean warned;
+	  bfd_boolean warned ATTRIBUTE_UNUSED;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 
 	  sym_type = h->type;
 	}
@@ -4535,7 +4541,7 @@ elf32_arm_merge_private_bfd_data (bfd * ibfd, bfd * obfd)
 	      flags_compatible = FALSE;
 	    }
 	}
-#endif
+#endif /* EF_ARM_SOFT_FLOAT */
 
       /* Interworking mismatch is only a warning.  */
       if ((in_flags & EF_ARM_INTERWORK) != (out_flags & EF_ARM_INTERWORK))
@@ -5182,9 +5188,11 @@ elf32_arm_check_relocs(bfd *abfd, struct bfd_link_info *info,
 /* Treat mapping symbols as special target symbols.  */
 
 static bfd_boolean
-elf32_arm_is_target_special_symbol (bfd * abfd ATTRIBUTE_UNUSED, asymbol * sym)
+elf32_arm_is_target_special_symbol(bfd *abfd ATTRIBUTE_UNUSED, asymbol *sym)
 {
-  return bfd_is_arm_mapping_symbol_name (sym->name);
+  /* 2nd arg is guessed: */
+  return bfd_is_arm_special_symbol_name(sym->name,
+					BFD_ARM_SPECIAL_SYM_TYPE_MAP);
 }
 
 /* This is a copy of elf_find_function() from elf.c except that
@@ -5222,7 +5230,8 @@ arm_elf_find_function (bfd *         abfd ATTRIBUTE_UNUSED,
 	case STT_NOTYPE:
 	  /* Skip $a and $t symbols.  */
 	  if ((q->symbol.flags & BSF_LOCAL)
-	      && bfd_is_arm_mapping_symbol_name (q->symbol.name))
+	      && bfd_is_arm_special_symbol_name(q->symbol.name,
+						BFD_ARM_SPECIAL_SYM_TYPE_MAP))
 	    continue;
 	  /* Fall through.  */
 	  if (bfd_get_section (&q->symbol) == section
@@ -6618,7 +6627,7 @@ elf32_arm_output_symbol_hook (struct bfd_link_info *info,
     return TRUE;
 
   /* We only want mapping symbols: */
-  if (! bfd_is_arm_mapping_symbol_name(name))
+  if (! bfd_is_arm_special_symbol_name(name, BFD_ARM_SPECIAL_SYM_TYPE_MAP))
     return TRUE;
 
   /* If this section has not been allocated an _arm_elf_section_data

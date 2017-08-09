@@ -1965,6 +1965,8 @@ extern int bfd_elf32_write_out_phdrs
   (bfd *, const Elf_Internal_Phdr *, unsigned int);
 extern bfd_boolean bfd_elf32_checksum_contents
   (bfd * , void (*) (const void *, size_t, void *), void *);
+extern bfd_boolean bfd_elf64_checksum_contents
+  (bfd * , void (*) (const void *, size_t, void *), void *);
 extern void bfd_elf32_write_relocs
   (bfd *, asection *, void *);
 extern bfd_boolean bfd_elf32_slurp_reloc_table

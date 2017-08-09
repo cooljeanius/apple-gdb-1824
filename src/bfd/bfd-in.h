@@ -894,7 +894,8 @@ extern bfd_boolean bfd_elf32_arm_add_glue_sections_to_bfd
 extern bfd_boolean bfd_is_arm_special_symbol_name
   (const char * name, int type);
 
-extern bfd_boolean bfd_is_arm_mapping_symbol_name(const char * name);
+extern bfd_boolean bfd_is_arm_mapping_symbol_name(const char *name)
+  ATTRIBUTE_DEPRECATED_FOR(bfd_is_arm_special_symbol_name);
 
 /* ARM Note section processing: */
 extern bfd_boolean bfd_arm_merge_machines(bfd *, bfd *);

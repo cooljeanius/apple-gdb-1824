@@ -523,7 +523,7 @@ CORE_ADDR
 sparc_analyze_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
 			struct sparc_frame_cache *cache)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   unsigned long insn;
   int offset = 0;
   int dest = -1;
@@ -577,7 +577,7 @@ sparc_analyze_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
 static CORE_ADDR
 sparc_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   return frame_unwind_register_unsigned (next_frame, tdep->pc_regnum);
 }
 
@@ -1086,7 +1086,7 @@ sparc_analyze_control_transfer (CORE_ADDR pc, CORE_ADDR *npc)
 void
 sparc_software_single_step (enum target_signal sig, int insert_breakpoints_p)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   static CORE_ADDR npc, nnpc;
   static gdb_byte npc_save[4], nnpc_save[4];
 
@@ -1122,7 +1122,7 @@ sparc_software_single_step (enum target_signal sig, int insert_breakpoints_p)
 static void
 sparc_write_pc (CORE_ADDR pc, ptid_t ptid)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   write_register_pid (tdep->pc_regnum, pc, ptid);
   write_register_pid (tdep->npc_regnum, pc + 4, ptid);
@@ -1166,7 +1166,7 @@ const struct regset *
 sparc_regset_from_core_section(struct gdbarch *gdbarch,
 			       const char *sect_name, size_t sect_size)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   if (strcmp (sect_name, ".reg") == 0 && sect_size >= tdep->sizeof_gregset)
     return tdep->gregset;

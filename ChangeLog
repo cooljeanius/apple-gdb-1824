@@ -1,3 +1,33 @@
+2017-07-23  cooljeanius  <egall@gwmail.gwu.edu>
+
+	testing other targets for fallout from renaming stuff
+
+	Change-Id: I45b6dffa7f1e546d6cddceab897b08591779a542
+
+2017-07-08  cooljeanius  <egall@gwmail.gwu.edu>
+
+	rename some more functions for -Wshadow
+
+	Change-Id: I257db0b91724388fc719d7f848085f47a38c2fb2
+
+2017-07-08  cooljeanius  <egall@gwmail.gwu.edu>
+
+	update gnulib and start taking -Wshadow more seriously
+
+	Change-Id: Icd4af0a2fbbd4dc6579f3a5b0fe1b3d9066ff042
+
+2017-07-05  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Build with this month's gcc trunk
+
+	Change-Id: If8160946e2703e3d88a5cbde4c0ec23d31ba9065
+
+2017-04-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update #gnulib for 2017 in this repo, too
+
+	Change-Id: If221024d3b7f19d8b18861e2efa49cefa395296f
+
 2017-03-24  Eric Gallager  <egallager@comcast.net>
 
 	still breaks in gdbarch.sh #programminghelpwanted

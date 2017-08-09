@@ -1,4 +1,4 @@
-/* Common target dependent code for GDB on Alpha systems.
+/* alpha-tdep.h: Common target dependent code for GDB on Alpha systems.
    Copyright 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2002, 2003 Free
    Software Foundation, Inc.
 
@@ -76,17 +76,17 @@ struct gdbarch_tdep
   /* If PC is inside a dynamically-generated signal trampoline function
      (i.e. one copied onto the user stack at run-time), return how many
      bytes PC is beyond the start of that function.  Otherwise, return -1.  */
-  LONGEST (*dynamic_sigtramp_offset) (CORE_ADDR);
+  LONGEST (*dynamic_sigtramp_offset)(CORE_ADDR);
 
   /* Translate a signal handler stack base address into the address of
      the sigcontext structure for that signal handler.  */
-  CORE_ADDR (*sigcontext_addr) (struct frame_info *);
+  CORE_ADDR (*sigcontext_addr)(struct frame_info *);
 
   /* Does the PC fall in a signal trampoline.  */
   /* NOTE: cagney/2004-04-30: Do not copy/clone this code.  Instead
      look at tramp-frame.h and other simplier per-architecture
      sigtramp unwinders.  */
-  int (*pc_in_sigtramp) (CORE_ADDR pc, char *name);
+  int (*pc_in_sigtramp)(CORE_ADDR pc, char *name);
 
   /* Offset of registers in `struct sigcontext'.  */
   int sc_pc_offset;
@@ -99,17 +99,19 @@ struct gdbarch_tdep
   size_t jb_elt_size;		/* And the size of each entry in the buf. */
 };
 
-extern unsigned int alpha_read_insn (CORE_ADDR pc);
-extern void alpha_software_single_step (enum target_signal, int);
-extern CORE_ADDR alpha_after_prologue (CORE_ADDR pc);
+extern unsigned int alpha_read_insn(CORE_ADDR pc);
+extern void alpha_software_single_step(enum target_signal, int);
+extern CORE_ADDR alpha_after_prologue(CORE_ADDR pc);
 
-extern void alpha_mdebug_init_abi (struct gdbarch_info, struct gdbarch *);
-extern void alpha_dwarf2_init_abi (struct gdbarch_info, struct gdbarch *);
+extern void alpha_mdebug_init_abi(struct gdbarch_info, struct gdbarch *);
+extern void alpha_dwarf2_init_abi(struct gdbarch_info, struct gdbarch *);
 
-extern void alpha_supply_int_regs (int, const void *, const void *,
-				   const void *);
-extern void alpha_fill_int_regs (int, void *, void *, void *);
-extern void alpha_supply_fp_regs (int, const void *, const void *);
-extern void alpha_fill_fp_regs (int, void *, void *);
+extern void alpha_supply_int_regs(int, const void *, const void *,
+				  const void *);
+extern void alpha_fill_int_regs(int, void *, void *, void *);
+extern void alpha_supply_fp_regs(int, const void *, const void *);
+extern void alpha_fill_fp_regs(int, void *, void *);
 
 #endif /* ALPHA_TDEP_H */
+
+/* EOF */

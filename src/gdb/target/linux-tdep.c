@@ -43,54 +43,56 @@ linux_get_siginfo_type (struct gdbarch *gdbarch)
   struct type *sigval_type, *clock_type;
   struct type *siginfo_type, *sifields_type;
   struct type *type;
+  
+  /* TODO: muck around in gdbtypes.[ch] until this all works: */
 
-  int_type = arch_integer_type (gdbarch, gdbarch_int_bit (gdbarch),
-			 	0, "int");
-  uint_type = arch_integer_type (gdbarch, gdbarch_int_bit (gdbarch),
-				 1, "unsigned int");
-  long_type = arch_integer_type (gdbarch, gdbarch_long_bit (gdbarch),
-				 0, "long");
-  void_ptr_type = lookup_pointer_type (builtin_type (gdbarch)->builtin_void);
+  int_type = arch_integer_type(gdbarch, gdbarch_int_bit(gdbarch),
+			       0, "int");
+  uint_type = arch_integer_type(gdbarch, gdbarch_int_bit(gdbarch),
+				1, "unsigned int");
+  long_type = arch_integer_type(gdbarch, gdbarch_long_bit(gdbarch),
+				0, "long");
+  void_ptr_type = lookup_pointer_type(get_builtin_type(gdbarch)->builtin_void);
 
-  /* sival_t */
-  sigval_type = arch_composite_type (gdbarch, NULL, TYPE_CODE_UNION);
-  TYPE_NAME (sigval_type) = xstrdup ("sigval_t");
-  append_composite_type_field (sigval_type, "sival_int", int_type);
-  append_composite_type_field (sigval_type, "sival_ptr", void_ptr_type);
+  /* sigval_t */
+  sigval_type = arch_composite_type(gdbarch, NULL, TYPE_CODE_UNION);
+  TYPE_NAME(sigval_type) = xstrdup("sigval_t");
+  append_composite_type_field(sigval_type, "sival_int", int_type);
+  append_composite_type_field(sigval_type, "sival_ptr", void_ptr_type);
 
   /* __pid_t */
-  pid_type = arch_type (gdbarch, TYPE_CODE_TYPEDEF, TYPE_LENGTH (int_type),
-			xstrdup ("__pid_t"));
-  TYPE_TARGET_TYPE (pid_type) = int_type;
-  TYPE_TARGET_STUB (pid_type) = 1;
+  pid_type = arch_type(gdbarch, TYPE_CODE_TYPEDEF, TYPE_LENGTH(int_type),
+		       xstrdup("__pid_t"));
+  TYPE_TARGET_TYPE(pid_type) = int_type;
+  TYPE_TARGET_STUB(pid_type) = 1;
 
   /* __uid_t */
-  uid_type = arch_type (gdbarch, TYPE_CODE_TYPEDEF, TYPE_LENGTH (uint_type),
-			xstrdup ("__uid_t"));
-  TYPE_TARGET_TYPE (uid_type) = uint_type;
-  TYPE_TARGET_STUB (uid_type) = 1;
+  uid_type = arch_type(gdbarch, TYPE_CODE_TYPEDEF, TYPE_LENGTH(uint_type),
+		       xstrdup("__uid_t"));
+  TYPE_TARGET_TYPE(uid_type) = uint_type;
+  TYPE_TARGET_STUB(uid_type) = 1;
 
   /* __clock_t */
-  clock_type = arch_type (gdbarch, TYPE_CODE_TYPEDEF, TYPE_LENGTH (long_type),
-			  xstrdup ("__clock_t"));
-  TYPE_TARGET_TYPE (clock_type) = long_type;
-  TYPE_TARGET_STUB (clock_type) = 1;
+  clock_type = arch_type(gdbarch, TYPE_CODE_TYPEDEF, TYPE_LENGTH(long_type),
+			 xstrdup("__clock_t"));
+  TYPE_TARGET_TYPE(clock_type) = long_type;
+  TYPE_TARGET_STUB(clock_type) = 1;
 
   /* _sifields */
-  sifields_type = arch_composite_type (gdbarch, NULL, TYPE_CODE_UNION);
+  sifields_type = arch_composite_type(gdbarch, NULL, TYPE_CODE_UNION);
 
   {
     const int si_max_size = 128;
     int si_pad_size;
-    int size_of_int = gdbarch_int_bit (gdbarch) / HOST_CHAR_BIT;
+    int size_of_int = (gdbarch_int_bit(gdbarch) / HOST_CHAR_BIT);
 
     /* _pad */
-    if (gdbarch_ptr_bit (gdbarch) == 64)
-      si_pad_size = (si_max_size / size_of_int) - 4;
+    if (gdbarch_ptr_bit(gdbarch) == 64)
+      si_pad_size = ((si_max_size / size_of_int) - 4);
     else
-      si_pad_size = (si_max_size / size_of_int) - 3;
-    append_composite_type_field (sifields_type, "_pad",
-				 init_vector_type (int_type, si_pad_size));
+      si_pad_size = ((si_max_size / size_of_int) - 3);
+    append_composite_type_field(sifields_type, "_pad",
+				init_vector_type(int_type, si_pad_size));
   }
 
   /* _kill */

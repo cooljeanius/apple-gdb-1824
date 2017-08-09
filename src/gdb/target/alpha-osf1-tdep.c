@@ -1,4 +1,4 @@
-/* Target-dependent code for OSF/1 on Alpha.
+/* alpha-osf1-tdep.c: Target-dependent code for OSF/1 on Alpha.
    Copyright 2002, 2003 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -29,32 +29,33 @@
 #include "alpha-tdep.h"
 
 static int
-alpha_osf1_pc_in_sigtramp (CORE_ADDR pc, char *func_name)
+alpha_osf1_pc_in_sigtramp(CORE_ADDR pc, char *func_name)
 {
-  return (func_name != NULL && strcmp ("__sigtramp", func_name) == 0);
+  return ((func_name != NULL) && (strcmp("__sigtramp", func_name) == 0));
 }
 
+/* */
 static CORE_ADDR
-alpha_osf1_sigcontext_addr (struct frame_info *next_frame)
+alpha_osf1_sigcontext_addr(struct frame_info *next_frame)
 {
-  const struct frame_id next_id = get_frame_id (next_frame);
+  const struct frame_id next_id = get_frame_id(next_frame);
 
-  return (read_memory_integer (next_id.stack_addr, 8));
+  return (read_memory_integer(next_id.stack_addr, 8));
 }
 
+/* */
 static void
-alpha_osf1_init_abi (struct gdbarch_info info,
-                     struct gdbarch *gdbarch)
+alpha_osf1_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
-  /* Hook into the MDEBUG frame unwinder.  */
-  alpha_mdebug_init_abi (info, gdbarch);
+  /* Hook into the MDEBUG frame unwinder: */
+  alpha_mdebug_init_abi(info, gdbarch);
 
   /* The next/step support via procfs on OSF1 is broken when running
      on multi-processor machines. We need to use software single stepping
      instead.  */
-  set_gdbarch_software_single_step (gdbarch, alpha_software_single_step);
+  set_gdbarch_software_single_step(gdbarch, alpha_software_single_step);
 
   tdep->sigcontext_addr = alpha_osf1_sigcontext_addr;
   tdep->pc_in_sigtramp = alpha_osf1_pc_in_sigtramp;
@@ -63,9 +64,13 @@ alpha_osf1_init_abi (struct gdbarch_info info,
   tdep->jb_elt_size = 8;
 }
 
+/* usual gdb initialization hook: */
+extern void _initialize_alpha_osf1_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_alpha_osf1_tdep (void)
+_initialize_alpha_osf1_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_alpha, 0, GDB_OSABI_OSF1,
-			  alpha_osf1_init_abi);
+  gdbarch_register_osabi(bfd_arch_alpha, 0, GDB_OSABI_OSF1,
+			 alpha_osf1_init_abi);
 }
+
+/* EOF */

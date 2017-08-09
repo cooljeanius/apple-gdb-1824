@@ -1,4 +1,4 @@
-/* AArch64-specific support for ELF.
+/* elfxx-aarch64.c: AArch64-specific support for ELF.
    Copyright 2009-2013  Free Software Foundation, Inc.
    Contributed by ARM Ltd.
 
@@ -133,7 +133,7 @@ reencode_movzn_to_movz (uint32_t opcode)
 static inline uint32_t
 reencode_movzn_to_movn (uint32_t opcode)
 {
-  return opcode & ~(1 << 30);
+  return (opcode & ~(1U << 30U));
 }
 
 /* Return non-zero if the indicated VALUE has overflowed the maximum
@@ -520,3 +520,5 @@ _bfd_aarch64_elf_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
   return _bfd_elfcore_make_pseudosection (abfd, ".reg",
 					  size, note->descpos + offset);
 }
+
+/* EOF */

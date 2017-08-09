@@ -87,8 +87,11 @@
 #define PROC_FREG_OFFSET(proc) ((proc)->pdr.fregoffset)
 #define PROC_PC_REG(proc) ((proc)->pdr.pcreg)
 #define PROC_LOCALOFF(proc) ((proc)->pdr.localoff)
+
+/* Prototypes: */
+const struct frame_unwind *alpha_mdebug_frame_sniffer(struct frame_info *);
 
-/* Locate the mdebug PDR for the given PC.  Return null if one can't
+/* Locate the mdebug PDR for the given PC.  Return null if one cannot
    be found; you'll have to fall back to other methods in that case.  */
 
 static struct mdebug_extra_func_info *
@@ -306,13 +309,16 @@ alpha_mdebug_frame_prev_register (struct frame_info *next_frame,
 static const struct frame_unwind alpha_mdebug_frame_unwind = {
   NORMAL_FRAME,
   alpha_mdebug_frame_this_id,
-  alpha_mdebug_frame_prev_register
+  alpha_mdebug_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 const struct frame_unwind *
-alpha_mdebug_frame_sniffer (struct frame_info *next_frame)
+alpha_mdebug_frame_sniffer(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
   struct mdebug_extra_func_info *proc_desc;
 
   /* If this PC does not map to a PDR, then clearly this isn't an
@@ -381,12 +387,19 @@ alpha_mdebug_frame_base_sniffer (struct frame_info *next_frame)
   return &alpha_mdebug_frame_base;
 }
 
-
-void
-alpha_mdebug_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
-{
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-  frame_unwind_append_sniffer (gdbarch, alpha_mdebug_frame_sniffer);
-  frame_base_append_sniffer (gdbarch, alpha_mdebug_frame_base_sniffer);
+/* */
+void
+alpha_mdebug_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
+{
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
+
+  frame_unwind_append_sniffer(gdbarch, alpha_mdebug_frame_sniffer);
+  frame_base_append_sniffer(gdbarch, alpha_mdebug_frame_base_sniffer);
 }
+
+/* EOF */

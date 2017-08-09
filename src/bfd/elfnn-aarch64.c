@@ -1527,9 +1527,10 @@ elfNN_aarch64_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
   return NULL;
 }
 
+/* */
 static reloc_howto_type *
-elfNN_aarch64_reloc_name_lookup (bfd *abfd ATTRIBUTE_UNUSED,
-				 const char *r_name)
+elfNN_aarch64_reloc_name_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+				const char *r_name)
 {
   unsigned int i;
 
@@ -2065,21 +2066,22 @@ elfNN_aarch64_link_hash_table_create (bfd *abfd)
   if (ret == NULL)
     return NULL;
 
-  if (!_bfd_elf_link_hash_table_init
-      (&ret->root, abfd, elfNN_aarch64_link_hash_newfunc,
-       sizeof (struct elf_aarch64_link_hash_entry), AARCH64_ELF_DATA))
+  /* removed args 4 and 5: */
+  if (!_bfd_elf_link_hash_table_init(&ret->root, abfd,
+				     elfNN_aarch64_link_hash_newfunc))
     {
-      free (ret);
+      free(ret);
       return NULL;
     }
 
   ret->plt_header_size = PLT_ENTRY_SIZE;
   ret->plt_entry_size = PLT_SMALL_ENTRY_SIZE;
   ret->obfd = abfd;
-  ret->dt_tlsdesc_got = (bfd_vma) - 1;
+  ret->dt_tlsdesc_got = (bfd_vma)(-1);
 
-  if (!bfd_hash_table_init (&ret->stub_hash_table, stub_hash_newfunc,
-			    sizeof (struct elf_aarch64_stub_hash_entry)))
+  /* "_n" suffix implies size argument: */
+  if (!bfd_hash_table_init_n(&ret->stub_hash_table, stub_hash_newfunc,
+			     sizeof(struct elf_aarch64_stub_hash_entry)))
     {
       free (ret);
       return NULL;
@@ -2116,9 +2118,10 @@ elfNN_aarch64_hash_table_free (struct bfd_link_hash_table *hash)
   _bfd_elf_link_hash_table_free (hash);
 }
 
+/* */
 static bfd_boolean
-aarch64_relocate (unsigned int r_type, bfd *input_bfd, asection *input_section,
-		  bfd_vma offset, bfd_vma value)
+aarch64_relocate(bfd_reloc_code_real_type r_type, bfd *input_bfd,
+		 asection *input_section, bfd_vma offset, bfd_vma value)
 {
   reloc_howto_type *howto;
   bfd_vma place;
@@ -2923,7 +2926,7 @@ elfNN_aarch64_size_stubs (bfd *output_bfd,
 
 		  if (sym_name == NULL)
 		    sym_name = "unnamed";
-		  len = (sizeof(STUB_ENTRY_NAME) + strlen(sym_name));
+		  len = (sizeof(STUB_ENTRY_NAME) + strlen(sym_name) + 5UL);
 		  stub_entry->output_name = (char *)bfd_alloc(htab->stub_bfd,
 							      len);
 		  if (stub_entry->output_name == NULL)
@@ -4154,12 +4157,16 @@ elfNN_aarch64_relocate_section (bfd *output_bfd,
       else
 	{
 	  bfd_boolean warned ATTRIBUTE_UNUSED;
-	  bfd_boolean ignored ATTRIBUTE_UNUSED;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned, ignored);
+#ifdef RELOC_FOR_GLOBAL_SYMBOL
+	  /* removed: "ignored" argument" */
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
+#else
+# warning "RELOC_FOR_GLOBAL_SYMBOL missing"
+#endif /* RELOC_FOR_GLOBAL_SYMBOL */
 
 	  sym_type = (char)h->type;
 	}
@@ -4948,15 +4955,17 @@ elfNN_aarch64_adjust_dynamic_symbol (struct bfd_link_info *info,
 
   s = htab->sdynbss;
 
-  return _bfd_elf_adjust_dynamic_copy (h, s);
-
+  /* Takes 3 args in this fork of bfd: */
+  return _bfd_elf_adjust_dynamic_copy(NULL, h, s);
+  /*NOTREACHED*/
 }
 
+/* */
 static bfd_boolean
-elfNN_aarch64_allocate_local_symbols (bfd *abfd, unsigned number)
+elfNN_aarch64_allocate_local_symbols(bfd *abfd, unsigned number)
 {
   struct elf_aarch64_local_symbol *locals;
-  locals = elf_aarch64_locals (abfd);
+  locals = elf_aarch64_locals(abfd);
   if (locals == NULL)
     {
       locals = (struct elf_aarch64_local_symbol *)
@@ -4969,18 +4978,17 @@ elfNN_aarch64_allocate_local_symbols (bfd *abfd, unsigned number)
 }
 
 /* Create the .got section to hold the global offset table.  */
-
 static bfd_boolean
-aarch64_elf_create_got_section (bfd *abfd, struct bfd_link_info *info)
+aarch64_elf_create_got_section(bfd *abfd, struct bfd_link_info *info)
 {
-  const struct elf_backend_data *bed = get_elf_backend_data (abfd);
+  const struct elf_backend_data *bed = get_elf_backend_data(abfd);
   flagword flags;
   asection *s;
   struct elf_link_hash_entry *h;
-  struct elf_link_hash_table *htab = elf_hash_table (info);
+  struct elf_link_hash_table *htab = elf_hash_table(info);
 
-  /* This function may be called more than once.  */
-  s = bfd_get_linker_section (abfd, ".got");
+  /* This function may be called more than once: */
+  s = bfd_get_linker_section(abfd, ".got");
   if (s != NULL)
     return TRUE;
 
@@ -5107,11 +5115,12 @@ elfNN_aarch64_check_relocs (bfd *abfd, struct bfd_link_info *info,
 	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
 	  while (h->root.type == bfd_link_hash_indirect
 		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 
 	  /* PR15323, ref flags aren't set for references in the same
 	     object.  */
-	  h->root.non_ir_ref = 1;
+	  h->root.non_ir_ref_regular = 1;
+	  h->root.non_ir_ref_dynamic = 1;
 	}
 
       /* Could be done earlier, if h were already available.  */
@@ -5146,7 +5155,8 @@ elfNN_aarch64_check_relocs (bfd *abfd, struct bfd_link_info *info,
 
 	  /* It is referenced by a non-shared object. */
 	  h->ref_regular = 1;
-	  h->root.non_ir_ref = 1;
+	  h->root.non_ir_ref_regular = 1;
+	  h->root.non_ir_ref_dynamic = 1; /* ??? */
 	}
 
       switch (bfd_r_type)
@@ -5457,16 +5467,16 @@ elfNN_aarch64_find_nearest_line (bfd *abfd,
   /* We skip _bfd_dwarf1_find_nearest_line since no known AArch64
      toolchain uses it.  */
 
-  if (_bfd_dwarf2_find_nearest_line (abfd, dwarf_debug_sections,
-				     section, symbols, offset,
-				     filename_ptr, functionname_ptr,
-				     line_ptr, NULL, 0,
-				     &elf_tdata (abfd)->dwarf2_find_line_info))
+  /* Removed: dwarf_debug_sections argument (was 2nd) and NULL argument 
+   * (was 9th then 8th) to function: */
+  if (_bfd_dwarf2_find_nearest_line(abfd, section, symbols, offset,
+				    filename_ptr, functionname_ptr, line_ptr, 0,
+				    &elf_tdata(abfd)->dwarf2_find_line_info))
     {
       if (!*functionname_ptr)
-	aarch64_elf_find_function (abfd, section, symbols, offset,
-				   *filename_ptr ? NULL : filename_ptr,
-				   functionname_ptr);
+	aarch64_elf_find_function(abfd, section, symbols, offset,
+				  (*filename_ptr ? NULL : filename_ptr),
+				  functionname_ptr);
 
       return TRUE;
     }
@@ -5491,44 +5501,46 @@ elfNN_aarch64_find_nearest_line (bfd *abfd,
   return TRUE;
 }
 
+/* */
 static bfd_boolean
-elfNN_aarch64_find_inliner_info (bfd *abfd,
-				 const char **filename_ptr,
-				 const char **functionname_ptr,
-				 unsigned int *line_ptr)
+elfNN_aarch64_find_inliner_info(bfd *abfd, const char **filename_ptr,
+				const char **functionname_ptr,
+				unsigned int *line_ptr)
 {
   bfd_boolean found;
-  found = _bfd_dwarf2_find_inliner_info
-    (abfd, filename_ptr,
-     functionname_ptr, line_ptr, &elf_tdata (abfd)->dwarf2_find_line_info);
+  found =
+    _bfd_dwarf2_find_inliner_info(abfd, filename_ptr, functionname_ptr,
+				  line_ptr,
+				  &elf_tdata(abfd)->dwarf2_find_line_info);
   return found;
 }
 
-
+/* */
 static void
-elfNN_aarch64_post_process_headers (bfd *abfd,
-				    struct bfd_link_info *link_info)
+elfNN_aarch64_post_process_headers(bfd *abfd,
+				   struct bfd_link_info *link_info)
 {
   Elf_Internal_Ehdr *i_ehdrp;	/* ELF file header, internal form.  */
 
-  i_ehdrp = elf_elfheader (abfd);
+  i_ehdrp = elf_elfheader(abfd);
   i_ehdrp->e_ident[EI_ABIVERSION] = AARCH64_ELF_ABI_VERSION;
 
-  _bfd_elf_set_osabi (abfd, link_info);
+  _bfd_elf_set_osabi(abfd, link_info);
 }
 
+/* */
 static enum elf_reloc_type_class
-elfNN_aarch64_reloc_type_class (const struct bfd_link_info *info ATTRIBUTE_UNUSED,
-				const asection *rel_sec ATTRIBUTE_UNUSED,
-				const Elf_Internal_Rela *rela)
+elfNN_aarch64_reloc_type_class(const struct bfd_link_info *info ATTRIBUTE_UNUSED,
+			       const asection *rel_sec ATTRIBUTE_UNUSED,
+			       const Elf_Internal_Rela *rela)
 {
-  switch ((int) ELFNN_R_TYPE (rela->r_info))
+  switch ((int)ELFNN_R_TYPE(rela->r_info))
     {
-    case AARCH64_R (RELATIVE):
+    case AARCH64_R(RELATIVE):
       return reloc_class_relative;
-    case AARCH64_R (JUMP_SLOT):
+    case AARCH64_R(JUMP_SLOT):
       return reloc_class_plt;
-    case AARCH64_R (COPY):
+    case AARCH64_R(COPY):
       return reloc_class_copy;
     default:
       return reloc_class_normal;
@@ -5797,17 +5809,14 @@ aarch64_map_one_stub (struct bfd_hash_entry *gen_entry, void *in_arg)
   return TRUE;
 }
 
-/* Output mapping symbols for linker generated sections.  */
-
+/* Output mapping symbols for linker generated sections: */
 static bfd_boolean
-elfNN_aarch64_output_arch_local_syms (bfd *output_bfd,
-				      struct bfd_link_info *info,
-				      void *finfo,
-				      int (*func) (void *, const char *,
-						   Elf_Internal_Sym *,
-						   asection *,
-						   struct elf_link_hash_entry
-						   *))
+elfNN_aarch64_output_arch_local_syms(bfd *output_bfd,
+				     struct bfd_link_info *info,
+				     void *finfo,
+				     int (*func)(void *, const char *,
+						 Elf_Internal_Sym *, asection *,
+						 struct elf_link_hash_entry *))
 {
   output_arch_syminfo osi;
   struct elf_aarch64_link_hash_table *htab;
@@ -5896,14 +5905,16 @@ elfNN_aarch64_close_and_cleanup (bfd *abfd)
   return _bfd_elf_close_and_cleanup (abfd);
 }
 
+/* */
 static bfd_boolean
-elfNN_aarch64_bfd_free_cached_info (bfd *abfd)
+elfNN_aarch64_bfd_free_cached_info(bfd *abfd)
 {
   if (abfd->sections)
-    bfd_map_over_sections (abfd,
-			   unrecord_section_via_map_over_sections, NULL);
+    bfd_map_over_sections(abfd,
+			  unrecord_section_via_map_over_sections, NULL);
 
-  return _bfd_free_cached_info (abfd);
+  /* removed underscore prefix: */
+  return bfd_free_cached_info(abfd);
 }
 
 /* Create dynamic sections. This is different from the ARM backend in that
@@ -6433,7 +6444,7 @@ elfNN_aarch64_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	    }
 	  else
 	    {
-	      locals[i].got_refcount = (bfd_vma) - 1;
+	      locals[i].got_refcount = (bfd_vma)(-1U);
 	    }
 	}
     }

@@ -3520,8 +3520,8 @@ coff_write_object_contents(bfd *abfd)
 	if (len > SCNNMLEN)
 	  {
 	    memset(section.s_name, 0, (size_t)SCNNMLEN);
-	    snprintf(section.s_name, (size_t)SCNNMLEN, "/%lu",
-		     (unsigned long)string_size);
+	    /* FIXME: -Wformat-overflow... increase SNNMLEN? */
+	    snprintf(section.s_name, (size_t)SCNNMLEN, "/%zu", string_size);
 	    string_size += len + 1;
 	    long_section_names = TRUE;
 	  }
