@@ -743,12 +743,6 @@ case ${host_os} in
   go32* | windows*)
     AC_MSG_WARN([gdbtk is NOT supported on ${host}; disabling])
     enable_gdbtk=no ;;
-  darwin9*)
-    if test "x${enable_gdbtk}" = "xyes"; then
-      AC_MSG_WARN([gdbtk support on darwin is tentative])
-      echo "(but it is still okay to enable it though)"
-    fi
-    ;;
   darwin*)
     AC_MSG_WARN([gdbtk is broken on ${host}; disabling])
     enable_gdbtk=no
@@ -3147,7 +3141,7 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wduplicated-branches -Wstringop-overflow=2 \
 -Wenum-conversion -Wbuiltin-declaration-mismatch \
 -Walloc-zero -Walloc-size-larger-than=2147483647 \
--Wmultistatement-macros"
+-Wmultistatement-macros -Wpacked-not-aligned"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -3161,7 +3155,7 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++ \
 -Wsized-deallocation -Wplacement-new=2 -Wshadow-compatible-local \
 -Wbuiltin-function-redefined -Waligned-new=all -Wsynth -Wcatch-value \
--Wclass-memaccess"
+-Wclass-memaccess -Wnon-pod-varargs"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -3262,7 +3256,7 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
 -Wmissing-exception-spec -Wpessimizing-move -Wredundant-move \
 -Wnon-literal-null-conversion -Wpredefined-identifier-outside-function \
 -Wvexing-parse -Wreturn-stack-address -Wshadow-field-in-constructor \
--Wunused-private-field -Wnon-pod-varargs -Wvla-extension"
+-Wunused-private-field -Wvla-extension"
   fi
   ## mig typechecks cause paramaters that would otherwise be unused to be
   ## used, triggering this:

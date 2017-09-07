@@ -1,4 +1,4 @@
-/* Disassemble MSP430 instructions.
+/* msp430-dis.c: Disassemble MSP430 instructions.
    Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
    
    Contributed by Dmitry Diky <diwil@mail.ru>
@@ -64,7 +64,8 @@ msp430_nooperands (struct msp430_opcode_s *opcode,
 
   if (opcode->fmt == 0)
     {
-      if ((insn & 0x0f00) != 3 || (insn & 0x0f00) != 2)
+      /* FIXME: -Wtautological-compare: */
+      if (((insn & 0x0f00) != 3) || ((insn & 0x0f00) != 2))
 	return 0;
 
       strcpy (comm, "emulated...");

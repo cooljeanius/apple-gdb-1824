@@ -1831,6 +1831,8 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	int ndimensions = 1, i;
 	struct type *tmp_type;
 	int offset_item;    /* The array offset where the item lives */
+	
+	memset(subscript_array, 0, sizeof(subscript_array));
 
 	if (nargs > MAX_FORTRAN_DIMS) {
 	  error(_("Too many subscripts for F77 (%d Max)"),
