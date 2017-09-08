@@ -95,9 +95,6 @@ printf_monitor(const char *pattern, ...)
 {
   va_list args;
   char buf[200];
-#ifdef ALLOW_UNUSED_VARIABLES
-  int i;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   va_start(args, pattern);
 

@@ -429,9 +429,6 @@ static struct h8300_frame_cache *
 h8300_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct h8300_frame_cache *cache;
-#ifdef ALLOW_UNUSED_VARIABLES
-  char buf[4];
-#endif /* ALLOW_UNUSED_VARIABLES */
   int i;
   CORE_ADDR current_pc;
 
@@ -510,7 +507,7 @@ h8300_frame_prev_register(struct frame_info *next_frame, void **this_cache,
 			  /* APPLE LOCAL variable opt states.  */
 			  int regnum, enum opt_state *optimizedp,
 			  enum lval_type *lvalp, CORE_ADDR *addrp,
-			  int *realnump, void *valuep)
+			  int *realnump, gdb_byte *valuep)
 {
   struct h8300_frame_cache *cache =
     h8300_frame_cache(next_frame, this_cache);
@@ -815,9 +812,6 @@ h8300h_extract_return_value(struct type *type, struct regcache *regcache,
 {
   int len = TYPE_LENGTH(type);
   ULONGEST c;
-#ifdef ALLOW_UNUSED_VARIABLES
-  ULONGEST addr;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   switch (len)
     {
@@ -975,10 +969,6 @@ h8300h_return_value(struct gdbarch *gdbarch, struct type *type,
     h8300h_extract_return_value (type, regcache, readbuf);
   return RETURN_VALUE_REGISTER_CONVENTION;
 }
-
-#ifdef ALLOW_UNUSED_VARIABLES
-static struct cmd_list_element *setmachinelist;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
 static const char *
 h8300_register_name(int regno)
@@ -1258,18 +1248,11 @@ No floating-point info available for this processor.\n");
 static struct gdbarch *
 h8300_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct gdbarch_tdep *tdep = NULL;
-#endif /* ALLOW_UNUSED_VARIABLES */
   struct gdbarch *gdbarch;
 
   arches = gdbarch_list_lookup_by_info (arches, &info);
   if (arches != NULL)
     return arches->gdbarch;
-
-#if 0
-  tdep = (struct gdbarch_tdep *)xmalloc(sizeof(struct gdbarch_tdep));
-#endif /* 0 */
 
   if (info.bfd_arch_info->arch != bfd_arch_h8300)
     return NULL;
@@ -1411,7 +1394,7 @@ h8300_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
 
 }
 
-extern initialize_file_ftype _initialize_h8300_tdep;	/* -Wmissing-prototypes */
+extern initialize_file_ftype _initialize_h8300_tdep; /* -Wmissing-prototypes */
 
 void
 _initialize_h8300_tdep (void)

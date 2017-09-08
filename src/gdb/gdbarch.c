@@ -3841,7 +3841,7 @@ set_gdbarch_adjust_ehframe_regnum (struct gdbarch *gdbarch,
 {
   gdbarch->adjust_ehframe_regnum = adjust_ehframe_regnum;
 }
-#line 1757 "gdbarch.sh"
+#line 1758 "gdbarch.sh"
 
 /* Keep a registry of per-architecture data-pointers required by GDB
    modules. */
@@ -3965,7 +3965,7 @@ new_gdbarch_data(struct gdbarch *gdbarch, struct gdbarch_data *data)
   return gdbarch->data[data->index];
 }
 
-#line 1881 "gdbarch.sh"
+#line 1882 "gdbarch.sh"
 
 /* Keep a registry of swapped data required by GDB modules. */
 
@@ -4066,7 +4066,7 @@ current_gdbarch_swap_in_hack (struct gdbarch *new_gdbarch)
   current_gdbarch = new_gdbarch;
 }
 
-#line 1982 "gdbarch.sh"
+#line 1983 "gdbarch.sh"
 /* Keep a registry of the architectures known by GDB: */
 struct gdbarch_registration
 {
@@ -4077,7 +4077,7 @@ struct gdbarch_registration
   struct gdbarch_registration *next;
 };
 
-#line 1993 "gdbarch.sh"
+#line 1994 "gdbarch.sh"
 static struct gdbarch_registration *gdbarch_registry = NULL;
 
 static void
@@ -4088,15 +4088,12 @@ append_name(const char ***buf, int *nr, const char *name)
   *nr += 1;
 }
 
-#line 2004 "gdbarch.sh"
+#line 2005 "gdbarch.sh"
 const char **
 gdbarch_printable_names(void)
 {
   /* Accumulate a list of names based on the registed list of
      architectures. */
-#ifdef ALLOW_UNUSED_VARIABLES
-  enum bfd_architecture a;
-#endif /* ALLOW_UNUSED_VARIABLES */
   int nr_arches = 0;
   const char **arches = NULL;
   struct gdbarch_registration *rego;
@@ -4120,7 +4117,7 @@ gdbarch_printable_names(void)
   return arches;
 }
 
-#line 2036 "gdbarch.sh"
+#line 2034 "gdbarch.sh"
 void
 gdbarch_register (enum bfd_architecture bfd_architecture,
                   gdbarch_init_ftype *init,
@@ -4361,16 +4358,12 @@ deprecated_current_gdbarch_select_hack (struct gdbarch *new_gdbarch)
   flush_cached_frames ();
 }
 
-#line 2277 "gdbarch.sh"
+#line 2275 "gdbarch.sh"
 extern void _initialize_gdbarch (void);
 
 void
 _initialize_gdbarch (void)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct cmd_list_element *c;
-#endif /* ALLOW_UNUSED_VARIABLES */
-
   add_setshow_zinteger_cmd ("arch", class_maintenance, &gdbarch_debug, _("\
 Set architecture debugging."), _("\
 Show architecture debugging."), _("\
@@ -4380,6 +4373,6 @@ When non-zero, architecture debugging is enabled."),
                             &setdebuglist, &showdebuglist);
 }
 
-#line 2296 "gdbarch.sh"
+#line 2290 "gdbarch.sh"
 
 /* End of gdbarch.c */

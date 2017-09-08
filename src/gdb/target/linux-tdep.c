@@ -64,19 +64,19 @@ linux_get_siginfo_type (struct gdbarch *gdbarch)
   pid_type = arch_type(gdbarch, TYPE_CODE_TYPEDEF, TYPE_LENGTH(int_type),
 		       xstrdup("__pid_t"));
   TYPE_TARGET_TYPE(pid_type) = int_type;
-  TYPE_TARGET_STUB(pid_type) = 1;
+  TYPE_TARGET_STUB(pid_type) = (struct type *)1;
 
   /* __uid_t */
   uid_type = arch_type(gdbarch, TYPE_CODE_TYPEDEF, TYPE_LENGTH(uint_type),
 		       xstrdup("__uid_t"));
   TYPE_TARGET_TYPE(uid_type) = uint_type;
-  TYPE_TARGET_STUB(uid_type) = 1;
+  TYPE_TARGET_STUB(uid_type) = (struct type *)1;
 
   /* __clock_t */
   clock_type = arch_type(gdbarch, TYPE_CODE_TYPEDEF, TYPE_LENGTH(long_type),
 			 xstrdup("__clock_t"));
   TYPE_TARGET_TYPE(clock_type) = long_type;
-  TYPE_TARGET_STUB(clock_type) = 1;
+  TYPE_TARGET_STUB(clock_type) = (struct type *)1;
 
   /* _sifields */
   sifields_type = arch_composite_type(gdbarch, NULL, TYPE_CODE_UNION);
@@ -155,10 +155,6 @@ linux_get_siginfo_type (struct gdbarch *gdbarch)
 static void
 check_is_pie_binary(void *unused_data ATTRIBUTE_UNUSED)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  Elf_Internal_Ehdr *elf_hdr;
-#endif /* ALLOW_UNUSED_VARIABLES */
-
   if (!exec_bfd)
     return;
   else if (bfd_get_flavour(exec_bfd) != bfd_target_elf_flavour)

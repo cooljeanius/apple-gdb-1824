@@ -296,18 +296,7 @@ extern struct {
 int mac_init(void)
 {
   SysEnvRec se;
-#ifdef ALLOW_UNUSED_VARIABLES
-  NSInteger eventloopdone = 0;
-#endif /* ALLOW_UNUSED_VARIABLES */
   char *str;
-#ifdef ALLOW_UNUSED_VARIABLES
-  Boolean gotevent;
-  Point mouse;
-  EventRecord event;
-  WindowPtr win;
-  RgnHandle cursorRgn;
-  NSInteger i;
-#endif /* ALLOW_UNUSED_VARIABLES */
   Handle menubar;
   MenuHandle menu;
   Handle siow_resource;
@@ -427,23 +416,12 @@ enum { OSTrap, ToolTrap };
 /* */
 int mac_command_loop(void)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  SysEnvRec se;
-#endif /* ALLOW_UNUSED_VARIABLES */
   NSInteger eventloopdone = 0;
   Boolean gotevent;
   Point mouse;
   EventRecord event;
-#ifdef ALLOW_UNUSED_VARIABLES
-  WindowPtr win;
-#endif /* ALLOW_UNUSED_VARIABLES */
   RgnHandle cursorRgn;
   NSInteger tm;
-#ifdef ALLOW_UNUSED_VARIABLES
-  NSInteger i;
-  Handle menubar;
-  MenuHandle menu;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
 #ifdef ToolTrap
   /* Figure out if the WaitNextEvent Trap is available: */
@@ -514,9 +492,6 @@ int do_event(EventRecord *evt)
 {
   short part, err, rslt = 0;
   WindowPtr win;
-#ifdef ALLOW_UNUSED_VARIABLES
-  Boolean hit;
-#endif /* ALLOW_UNUSED_VARIABLES */
   char key;
   Point pnt;
 
@@ -857,20 +832,8 @@ int adjust_menus(void)
 int do_menu_command(long which)
 {
   short menuid, menuitem;
-#ifdef ALLOW_UNUSED_VARIABLES
-  short itemHit;
-#endif /* ALLOW_UNUSED_VARIABLES */
   Str255 daname;
   short daRefNum;
-#ifdef ALLOW_UNUSED_VARIABLES
-/* same condition as where this one is used: */
-# if 0
-  Boolean handledbyda;
-# endif /* 0 */
-  WindowPtr win;
-  short ditem;
-  NSInteger i;
-#endif /* ALLOW_UNUSED_VARIABLES */
   char cmdbuf[300];
 
   cmdbuf[0] = '\0';
@@ -910,9 +873,6 @@ int do_menu_command(long which)
       } /* end "switch (menuitem)" */
       break;
     case mEdit:
-#if 0
-      handledbyda = SystemEdit(menuitem - 1);
-#endif /* 0 */
       switch (menuitem) {
         case miEditCut:
           TECut(console_text);

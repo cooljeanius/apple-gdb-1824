@@ -189,11 +189,6 @@ end_callbacks (void)
 static int
 gdb_os_write_stdout(host_callback *p, const char *buf, int len)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  int i;
-  char b[2];
-#endif /* ALLOW_UNUSED_VARIABLES */
-
   ui_file_write(gdb_stdtarg, buf, len);
   return len;
 }
@@ -299,12 +294,9 @@ gdbsim_fetch_register (int regno)
 	/* For moment treat a `does not exist' register the same way
            as an ``unavailable'' register.  */
 	char buf[MAX_REGISTER_SIZE];
-#ifdef ALLOW_UNUSED_VARIABLES
-	int nr_bytes;
-#endif /* ALLOW_UNUSED_VARIABLES */
-	memset (buf, 0, MAX_REGISTER_SIZE);
-	regcache_raw_supply (current_regcache, regno, buf);
-	set_register_cached (regno, -1);
+	memset(buf, 0, MAX_REGISTER_SIZE);
+	regcache_raw_supply(current_regcache, regno, buf);
+	set_register_cached(regno, -1);
 	break;
       }
     default:

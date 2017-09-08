@@ -1672,10 +1672,6 @@ extern initialize_file_ftype _initialize_alpha_tdep; /* -Wmissing-prototypes */
 void
 _initialize_alpha_tdep(void)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct cmd_list_element *c;
-#endif /* ALLOW_UNUSED_VARIABLES */
-
   gdbarch_register(bfd_arch_alpha, alpha_gdbarch_init, NULL);
 
   /* Let the user set the fence post for heuristic_proc_start.  */

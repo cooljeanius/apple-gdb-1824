@@ -54,7 +54,7 @@ extern int isascii(int);
 
 static void arm_rdi_files_info(struct target_ops *ignore);
 
-static int arm_rdi_xfer_memory(CORE_ADDR memaddr, const char *myaddr,
+static int arm_rdi_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,
 			       int len, int should_write,
 			       struct mem_attrib *attrib,
 			       struct target_ops *target);
@@ -72,7 +72,8 @@ static void arm_rdi_close(int quitting);
 
 static void arm_rdi_store_registers(int regno);
 
-static ptid_t arm_rdi_wait(ptid_t ptid, struct target_waitstatus *status);
+static ptid_t arm_rdi_wait(ptid_t ptid, struct target_waitstatus *status,
+			   void *unusedarg);
 
 static void arm_rdi_kill(void);
 
@@ -194,9 +195,6 @@ static void
 arm_rdi_open(const char *name, int from_tty)
 {
   int rslt;
-#ifdef ALLOW_UNUSED_VARIABLES
-  int i;
-#endif /* ALLOW_UNUSED_VARIABLES */
   unsigned long arg1, arg2;
   char *openArgs = NULL;
   char *devName = NULL;
@@ -472,7 +470,8 @@ arm_rdi_resume (ptid_t ptid, int step, enum target_signal siggnal)
    what, if anything, that means in the case of this target).  */
 
 static ptid_t
-arm_rdi_wait (ptid_t ptid, struct target_waitstatus *status)
+arm_rdi_wait(ptid_t ptid, struct target_waitstatus *status,
+	     void *unusedarg ATTRIBUTE_UNUSED)
 {
   status->kind = (execute_status == RDIError_NoError ?
 		  TARGET_WAITKIND_EXITED : TARGET_WAITKIND_STOPPED);
@@ -584,14 +583,11 @@ arm_rdi_store_registers (int regno)
    read; 0 for error.  TARGET is unused.  */
 
 static int
-arm_rdi_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len,
+arm_rdi_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len,
 		    int should_write, struct mem_attrib *attrib,
 		    struct target_ops *target)
 {
   int rslt;
-#ifdef ALLOW_UNUSED_VARIABLES
-  int i;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   if (should_write)
     {
@@ -617,9 +613,6 @@ arm_rdi_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len,
 static void
 arm_rdi_files_info(struct target_ops *ignore)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  const char *file = "nothing";
-#endif /* ALLOW_UNUSED_VARIABLES */
   int rslt;
   unsigned long arg1, arg2;
 
@@ -710,9 +703,6 @@ static int
 arm_rdi_remove_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
 {
   int rslt;
-#ifdef ALLOW_UNUSED_VARIABLES
-  PointHandle point;
-#endif /* ALLOW_UNUSED_VARIABLES */
   struct local_bp_list_entry **entryp, *dead;
 
   for (entryp = &local_bp_list; *entryp != NULL; entryp = &(*entryp)->next)

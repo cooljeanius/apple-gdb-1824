@@ -256,14 +256,9 @@ ocd_start_remote (void *dummy)
    NAME is the filename used for communication.  */
 
 void
-ocd_open (char *name, int from_tty, enum ocd_target_type target_type,
-	  struct target_ops *ops)
+ocd_open(char *name, int from_tty, enum ocd_target_type target_type,
+	 struct target_ops *ops)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  unsigned char buf[10], *p;
-  int pktlen;
-#endif /* ALLOW_UNUSED_VARIABLES */
-
   if (name == 0)
     error (_("To open an OCD connection, you need to specify the\n\
 device the OCD device is attached to (e.g. /dev/ttya)."));
@@ -538,7 +533,7 @@ ocd_write_bdm_registers (int first_bdm_regno, unsigned char *regptr, int reglen)
   int error_code, status;
   int pktlen;
 
-  buf = alloca (4 + reglen);
+  buf = (unsigned char *)alloca(4 + reglen);
 
   buf[0] = OCD_WRITE_REGS;
   buf[1] = first_bdm_regno >> 8;
@@ -796,7 +791,7 @@ ocd_put_packet (unsigned char *buf, int len)
   unsigned char c;
   unsigned char *packet, *packet_ptr;
 
-  packet = alloca (len + 1 + 1);	/* packet + SYN + checksum */
+  packet = (unsigned char *)alloca(len + 1 + 1); /* packet + SYN + checksum */
   packet_ptr = packet;
 
   checksum = 0;

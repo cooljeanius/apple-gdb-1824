@@ -725,9 +725,6 @@ m68k_skip_prologue(CORE_ADDR start_pc)
 {
   struct m68k_frame_cache cache;
   CORE_ADDR pc;
-#ifdef ALLOW_UNUSED_VARIABLES
-  int op;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   cache.locals = -1;
   pc = m68k_analyze_prologue(start_pc, (CORE_ADDR)(-1L), &cache);

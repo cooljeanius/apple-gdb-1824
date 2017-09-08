@@ -6053,9 +6053,6 @@ update_inlined_function_line_table_entry(CORE_ADDR start_pc,
   int i;
   int done;
   struct linetable_entry *item;
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct linetablke_entry *prev;
-#endif /* ALLOW_UNUSED_VARIABLES */
   struct blockvector *bv;
 
   section = find_pc_overlay(start_pc);
@@ -6078,9 +6075,6 @@ update_inlined_function_line_table_entry(CORE_ADDR start_pc,
       if (len <= 0)
 	continue;
 
-#ifdef ALLOW_UNUSED_VARIABLES
-      prev = (struct linetablke_entry *)NULL;
-#endif /* ALLOW_UNUSED_VARIABLES */
       item = l->item;
 
       for (i = 0; (i < (int)len) && !done; i++, item++)

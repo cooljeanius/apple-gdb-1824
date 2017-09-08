@@ -928,9 +928,6 @@ macosx_locate_dyld_via_taskinfo(macosx_dyld_thread_status *s)
           && dyld_starts_here_p(raw_infos.dyld_actual_load_address))
         {
           CORE_ADDR dyld_file_vma;
-#ifdef ALLOW_UNUSED_VARIABLES
-          CORE_ADDR dyld_here;
-#endif /* ALLOW_UNUSED_VARIABLES */
           if (macosx_lookup_dyld_file_load_address(s->dyld_name, &dyld_file_vma) == 0)
             return 0;
           s->dyld_addr = raw_infos.dyld_actual_load_address;

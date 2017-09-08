@@ -175,10 +175,6 @@ get_ack (void)
 static int
 send_data(void *buf, int len)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  int ret;
-#endif /* ALLOW_UNUSED_VARIABLES */
-
   if (!sdi_desc)
     return -1;
 
@@ -261,20 +257,22 @@ send_three_arg_cmd (unsigned char cmd, unsigned long arg1, unsigned long arg2,
   return send_data (buf, 13);
 }
 
-static unsigned char
-recv_char_data (void)
+/* */
+static ATTRIBUTE_NOINLINE unsigned char
+recv_char_data(void)
 {
   unsigned char val;
-  recv_data (&val, 1);
+  recv_data(&val, 1);
   return val;
 }
 
+/* */
 static unsigned long
-recv_long_data (void)
+recv_long_data(void)
 {
   unsigned long val;
-  recv_data (&val, 4);
-  return ntohl (val);
+  recv_data(&val, 4);
+  return ntohl(val);
 }
 
 
@@ -351,13 +349,6 @@ m32r_create_inferior (char *execfile, char *args, char **env, int from_tty)
 static void
 m32r_open(const char *args, int from_tty)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct hostent *host_ent;
-  struct sockaddr_in server_addr;
-  int port;
-  int n;
-  int yes = 1;
-#endif /* ALLOW_UNUSED_VARIABLES */
   char *port_str, hostname[256];
   int i;
 
@@ -390,8 +381,8 @@ m32r_open(const char *args, int from_tty)
     error (_("Cannot connect to SDI target."));
 
   /* Get maximum number of ib breakpoints */
-  send_one_arg_cmd (SDI_GET_ATTR, SDI_ATTR_BRK);
-  max_ib_breakpoints = recv_char_data ();
+  send_one_arg_cmd(SDI_GET_ATTR, SDI_ATTR_BRK);
+  max_ib_breakpoints = recv_char_data();
   if (remote_debug)
     printf_filtered ("Max IB Breakpoints = %d\n", max_ib_breakpoints);
 
@@ -400,8 +391,8 @@ m32r_open(const char *args, int from_tty)
     bp_address[i] = 0xffffffff;
 
   /* Get maximum number of access breaks. */
-  send_one_arg_cmd (SDI_GET_ATTR, SDI_ATTR_ABRK);
-  max_access_breaks = recv_char_data ();
+  send_one_arg_cmd(SDI_GET_ATTR, SDI_ATTR_ABRK);
+  max_access_breaks = recv_char_data();
   if (remote_debug)
     printf_filtered ("Max Access Breaks = %d\n", max_access_breaks);
 
@@ -624,6 +615,8 @@ m32r_resume(ptid_t ptid, int step, enum target_signal sig)
 	      send_three_arg_cmd (SDI_WRITE_MEMORY, 0xffff8100 + 4 * i, 4,
 				  0x00000006);
 	      break;
+	    default:
+	      break;
 	    }
 	}
       else
@@ -641,6 +634,8 @@ m32r_resume(ptid_t ptid, int step, enum target_signal sig)
 	    case 2:		/* access watch */
 	      send_three_arg_cmd (SDI_WRITE_MEMORY, 0xffff8100 + 4 * i, 4,
 				  0x06000000);
+	      break;
+	    default:
 	      break;
 	    }
 	}
@@ -688,16 +683,14 @@ gdb_cntrl_c (int signo)
 
 /* */
 static ptid_t
-m32r_wait(ptid_t ptid, struct target_waitstatus *status)
+m32r_wait(ptid_t ptid, struct target_waitstatus *status,
+	  void *unusedarg ATTRIBUTE_UNUSED)
 {
   static RETSIGTYPE (*prev_sigint)(int);
   unsigned long bp_addr, pc_addr;
   int ib_breakpoints;
   long i;
   unsigned char buf[13];
-#ifdef ALLOW_UNUSED_VARIABLES
-  unsigned long val;
-#endif /* ALLOW_UNUSED_VARIABLES */
   int ret, c;
 
   if (remote_debug)
@@ -901,6 +894,8 @@ get_reg_id (int regno)
       return SDI_REG_ACCH;
     case 24:
       return SDI_REG_EVB;
+    default:
+      break;
     }
 
   return regno;
@@ -1041,7 +1036,7 @@ m32r_files_info (struct target_ops *target)
 
 /* Read/Write memory.  */
 static int
-m32r_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
+m32r_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
 		 struct mem_attrib *attrib, struct target_ops *target)
 {
   unsigned long taddr;

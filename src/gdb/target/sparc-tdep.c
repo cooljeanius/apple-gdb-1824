@@ -501,9 +501,6 @@ static struct sparc_frame_cache *
 sparc_alloc_frame_cache(void)
 {
   struct sparc_frame_cache *cache;
-#ifdef ALLOW_UNUSED_VARIABLES
-  int i;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   cache = FRAME_OBSTACK_ZALLOC(struct sparc_frame_cache);
 

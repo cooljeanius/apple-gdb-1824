@@ -1759,9 +1759,6 @@ locate_kext_executable_by_dsym_plist(CFDictionaryRef dsym_info,
   CFDictionaryRef uuid_info = NULL;
   CFStringRef kext_path = NULL;
   CFStringRef uuid_string = NULL;
-#ifdef ALLOW_UNUSED_VARIABLES
-  CFStringRef alt_exe_path = NULL;
-#endif /* ALLOW_UNUSED_VARIABLES */
   char *path = NULL;
   char temp_pathbuf[PATH_MAX];
 

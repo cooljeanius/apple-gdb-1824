@@ -183,9 +183,6 @@ printf_monitor(const char *pattern, ...)
 {
   va_list args;
   char buf[PBUFSIZ];
-#ifdef ALLOW_UNUSED_VARIABLES
-  int i;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   va_start(args, pattern);
 
@@ -489,9 +486,6 @@ static ATTRIBUTE_USED int
 get_hex_word(void)
 {
   long val;
-#ifdef ALLOW_UNUSED_VARIABLES
-  long newval;
-#endif /* ALLOW_UNUSED_VARIABLES */
   int i;
 
   val = 0;
@@ -714,9 +708,6 @@ static ptid_t
 array_wait(ptid_t ptid, struct target_waitstatus *status)
 {
   int old_timeout = timeout;
-#ifdef ALLOW_UNUSED_VARIABLES
-  int result;
-#endif /* ALLOW_UNUSED_VARIABLES */
   int i;
   char c;
   struct serial *tty_desc;
@@ -803,9 +794,6 @@ array_fetch_registers(int ignored)
 {
   char *reg = (char *)alloca(MAX_REGISTER_RAW_SIZE);
   int regno;
-#ifdef ALLOW_UNUSED_VARIABLES
-  char *p;
-#endif /* ALLOW_UNUSED_VARIABLES */
   char *packet = (char *)alloca(PBUFSIZ);
 
   debuglogs(1, "array_fetch_registers (ignored=%d)\n", ignored);
@@ -913,9 +901,6 @@ array_files_info(struct target_ops *unused_targops ATTRIBUTE_UNUSED)
 static int
 array_write_inferior_memory(CORE_ADDR memaddr, unsigned char *myaddr, int len)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  unsigned long i;
-#endif /* ALLOW_UNUSED_VARIABLES */
   int j;
   char packet[PBUFSIZ];
   char buf[PBUFSIZ];
@@ -1435,9 +1420,6 @@ static void
 hexword2ascii(unsigned char *mem, unsigned long num)
 {
   int i;
-#ifdef ALLOW_UNUSED_VARIABLES
-  unsigned char ch;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   debuglogs(4, "hexword2ascii() converting %x ", (unsigned int)num);
   for (i = 7; i >= 0; i--)

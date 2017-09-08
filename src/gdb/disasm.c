@@ -108,11 +108,6 @@ dump_insns(struct ui_out *uiout, struct disassemble_info * di,
   int line;
   
   struct cleanup *ui_out_chain;
-  
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct cleanup *table_chain;
-  struct cleanup *tuple_chain;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   for (pc = low; pc < high;)
     {

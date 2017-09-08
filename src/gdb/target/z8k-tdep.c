@@ -206,9 +206,6 @@ void
 z8k_frame_init_saved_regs(struct frame_info *frame_info)
 {
   CORE_ADDR pc;
-#ifdef ALLOW_UNUSED_VARIABLES
-  int w;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   frame_saved_regs_zalloc(frame_info);
   pc = get_pc_function_start(frame_info->pc);
@@ -347,9 +344,6 @@ extract_return_value(struct type *type, char *regbuf, char *valbuf)
 void
 write_return_value(struct type *type, char *valbuf)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  int reg;
-#endif /* ALLOW_UNUSED_VARIABLES */
   int len;
 
   for (len = 0; len < TYPE_LENGTH(type); len += 2)

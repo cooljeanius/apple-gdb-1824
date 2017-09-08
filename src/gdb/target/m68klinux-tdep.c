@@ -65,9 +65,6 @@
 static int
 m68k_linux_pc_in_sigtramp(CORE_ADDR pc, const char *name)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  CORE_ADDR sp;
-#endif /* ALLOW_UNUSED_VARIABLES */
   char buf[12];
   unsigned long insn0, insn1, insn2;
 
@@ -253,7 +250,7 @@ m68k_linux_sigtramp_frame_prev_register(struct frame_info *next_frame,
 					/* APPLE LOCAL variable opt states.  */
 					int regnum, enum opt_state *optimizedp,
 					enum lval_type *lvalp, CORE_ADDR *addrp,
-					int *realnump, void *valuep)
+					int *realnump, gdb_byte *valuep)
 {
   /* Make sure we have initialized the cache: */
   struct trad_frame_cache *cache =

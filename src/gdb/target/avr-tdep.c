@@ -690,9 +690,6 @@ avr_scan_prologue(CORE_ADDR pc, struct avr_unwind_cache *info)
 	0xcd, 0xb7,		/* in r28,__SP_L__ */
 	0xde, 0xb7		/* in r29,__SP_H__ */
       };
-#ifdef ALLOW_UNUSED_VARIABLES
-      unsigned short insn1;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
       if (memcmp((prologue + vpc), img, sizeof(img)) == 0)
 	{
@@ -836,10 +833,6 @@ static void
 avr_extract_return_value(struct type *type, struct regcache *regcache,
                          gdb_byte *valbuf)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  ULONGEST r24, r25;
-  int len;
-#endif /* ALLOW_UNUSED_VARIABLES */
   ULONGEST c;
   if (TYPE_LENGTH(type) == 1)
     {
@@ -984,21 +977,21 @@ avr_frame_this_id (struct frame_info *next_frame,
 }
 
 static void
-avr_frame_prev_register (struct frame_info *next_frame,
-			  void **this_prologue_cache,
-			 /* APPLE LOCAL variable opt states.  */
-			  int regnum, enum opt_state *optimizedp,
-			  enum lval_type *lvalp, CORE_ADDR *addrp,
-			  int *realnump, void *bufferp)
+avr_frame_prev_register(struct frame_info *next_frame,
+			void **this_prologue_cache,
+			/* APPLE LOCAL variable opt states.  */
+			int regnum, enum opt_state *optimizedp,
+			enum lval_type *lvalp, CORE_ADDR *addrp,
+			int *realnump, gdb_byte *bufferp)
 {
-  struct avr_unwind_cache *info
-    = avr_frame_unwind_cache (next_frame, this_prologue_cache);
+  struct avr_unwind_cache *info =
+    avr_frame_unwind_cache(next_frame, this_prologue_cache);
 
   if (regnum == AVR_PC_REGNUM)
     {
-      if (trad_frame_addr_p (info->saved_regs, regnum))
+      if (trad_frame_addr_p(info->saved_regs, regnum))
         {
-	  /* APPLE LOCAL variable opt states.  */
+	  /* APPLE LOCAL variable opt states: */
           *optimizedp = opt_okay;
           *lvalp = lval_memory;
           *addrp = info->saved_regs[regnum].addr;
@@ -1033,17 +1026,16 @@ avr_frame_prev_register (struct frame_info *next_frame,
               buf[0] = buf[1];
               buf[1] = tmp;
 
-              pc = (extract_unsigned_integer (buf, 2) * 2);
-              store_unsigned_integer((gdb_byte *)bufferp,
-                                     register_size(current_gdbarch, regnum),
+              pc = (extract_unsigned_integer(buf, 2) * 2);
+              store_unsigned_integer(bufferp, register_size(current_gdbarch,
+							    regnum),
                                      pc);
             }
         }
     }
   else
     trad_frame_get_prev_register(next_frame, info->saved_regs, regnum,
-				 optimizedp, lvalp, addrp, realnump,
-				 (gdb_byte *)bufferp);
+				 optimizedp, lvalp, addrp, realnump, bufferp);
 }
 
 static const struct frame_unwind avr_frame_unwind = {
@@ -1275,6 +1267,7 @@ avr_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
     case bfd_mach_avr4:
     case bfd_mach_avr5:
       break;
+    default:;
     }
 
   set_gdbarch_short_bit (gdbarch, 2 * TARGET_CHAR_BIT);

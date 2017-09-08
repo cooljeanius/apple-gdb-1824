@@ -3040,10 +3040,6 @@ rs6000_gdbarch_init(struct gdbarch_info info, struct gdbarch_list *arches)
   struct gdbarch *gdbarch;
   struct gdbarch_tdep *tdep;
   int wordsize, from_xcoff_exec, from_elf_exec;
-#ifdef ALLOW_UNUSED_VARIABLES
-  int i, off;
-  struct reg *regs;
-#endif /* ALLOW_UNUSED_VARIABLES */
   const struct variant *v;
   enum bfd_architecture arch;
   unsigned long mach;

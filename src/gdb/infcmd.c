@@ -2914,13 +2914,6 @@ default_print_registers_info (struct gdbarch *gdbarch,
 void
 registers_info(const char *addr_exp, int fpregs)
 {
-  /* APPLE LOCAL begin eliminate unused variable warnings  */
-#ifdef ALLOW_UNUSED_VARIABLES
-  int regnum, numregs;
-  char *end;
-#endif /* ALLOW_UNUSED_VARIABLES */
-  /* APPLE LOCAL end eliminate unused variable warnings  */
-
   if (!target_has_registers)
     error (_("The program has no registers now."));
   if (deprecated_selected_frame == NULL)

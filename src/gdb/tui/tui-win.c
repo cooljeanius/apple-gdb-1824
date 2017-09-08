@@ -356,9 +356,6 @@ tui_get_cmd_list(void)
 void
 _initialize_tui_win(void)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct cmd_list_element *c = (struct cmd_list_element *)NULL;
-#endif /* ALLOW_UNUSED_VARIABLES */
   static struct cmd_list_element *tui_setlist;
   static struct cmd_list_element *tui_showlist;
 

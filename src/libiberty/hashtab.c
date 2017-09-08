@@ -120,9 +120,6 @@ choose_multiplier(unsigned int d, unsigned int *mlp, unsigned char *shiftp)
   unsigned long long mhigh;
   double nx;
   int lgup;
-# ifdef ALLOW_UNUSED_VARIABLES
-  int post_shift;
-# endif /* ALLOW_UNUSED_VARIABLES */
   int pow, pow2;
   int n = 32, precision = 32;
 

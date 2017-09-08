@@ -1015,10 +1015,6 @@ frv_frame_unwind_cache(struct frame_info *next_frame,
 		       void **this_prologue_cache)
 {
   struct gdbarch *gdbarch = get_frame_arch(next_frame);
-#ifdef ALLOW_UNUSED_VARIABLES
-  CORE_ADDR pc;
-  ULONGEST this_base;
-#endif /* ALLOW_UNUSED_VARIABLES */
   struct frv_unwind_cache *info;
   
   if (gdbarch == NULL) {

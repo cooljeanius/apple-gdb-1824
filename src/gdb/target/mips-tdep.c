@@ -144,8 +144,8 @@ struct gdbarch_tdep
 };
 
 static int
-n32n64_floatformat_always_valid (const struct floatformat *fmt,
-                                 const char *from)
+n32n64_floatformat_always_valid(const struct floatformat *fmt ATTRIBUTE_UNUSED,
+				const void *from ATTRIBUTE_UNUSED)
 {
   return 1;
 }
@@ -5239,18 +5239,15 @@ void
 _initialize_mips_tdep(void)
 {
   static struct cmd_list_element *mipsfpulist = NULL;
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct cmd_list_element *c;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   mips_abi_string = mips_abi_strings[MIPS_ABI_UNKNOWN];
-  if (MIPS_ABI_LAST + 1
-      != sizeof (mips_abi_strings) / sizeof (mips_abi_strings[0]))
-    internal_error (__FILE__, __LINE__, _("mips_abi_strings out of sync"));
+  if ((MIPS_ABI_LAST + 1)
+      != (sizeof(mips_abi_strings) / sizeof(mips_abi_strings[0])))
+    internal_error(__FILE__, __LINE__, _("mips_abi_strings out of sync"));
 
-  gdbarch_register (bfd_arch_mips, mips_gdbarch_init, mips_dump_tdep);
+  gdbarch_register(bfd_arch_mips, mips_gdbarch_init, mips_dump_tdep);
 
-  mips_pdr_data = register_objfile_data ();
+  mips_pdr_data = register_objfile_data();
 
   /* Add root prefix command for all "set mips"/"show mips" commands */
   add_prefix_cmd ("mips", no_class, set_mips_command,

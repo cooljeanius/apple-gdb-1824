@@ -1646,9 +1646,9 @@ handle_inferior_event(struct execution_control_state *ecs)
 	    insert_breakpoints();
 	}
 #else
-# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(__DYNAMIC__)
 #  warning "gdb will be unable to handle adding solib events on the inferior."
-# endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* __GNUC__ && !__STRICT_ANSI__ && __DYNAMIC__ */
 #endif /* SOLIB_ADD */
       resume(0, TARGET_SIGNAL_0);
       prepare_to_wait(ecs);

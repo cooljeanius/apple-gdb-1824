@@ -6002,9 +6002,6 @@ threadinfo_test_cmd(char *cmd, int tty)
 {
   int athread = SAMPLE_THREAD;
   threadref thread;
-# ifdef ALLOW_UNUSED_VARIABLES
-  int set;
-# endif /* ALLOW_UNUSED_VARIABLES */
 
   int_to_threadref(&thread, athread);
   printf_filtered("Remote Threadinfo test\n");

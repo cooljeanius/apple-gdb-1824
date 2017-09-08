@@ -172,12 +172,6 @@ tui_display_data_from_line(int line_no)
   else
     {
       int regs_last_line = tui_last_regs_line_no();
-#ifdef ALLOW_UNUSED_VARIABLES
-      int element_no, start_line_no;
-
-      element_no = 0;
-      start_line_no = 0;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
       /* display regs if we can: */
       if (tui_display_registers_from_line(_line_no, FALSE) < 0)
@@ -197,7 +191,7 @@ tui_display_data_from_line(int line_no)
 	   ** _line_no
            */ ;
 	}
-      /* Now display the data , starting at element_no */
+      /* TODO: Now display the data, starting at element_no */
     }
 }
 
@@ -293,13 +287,6 @@ tui_vertical_data_scroll(enum tui_scroll_direction scroll_direction,
 
   if (first_line >= 0)
     {
-#ifdef ALLOW_UNUSED_VARIABLES
-      int last_element_no, last_line;
-
-      last_element_no = 0;
-      last_line = 0;
-#endif /* ALLOW_UNUSED_VARIABLES */
-
       if (scroll_direction == FORWARD_SCROLL)
 	first_line += num_to_scroll;
       else

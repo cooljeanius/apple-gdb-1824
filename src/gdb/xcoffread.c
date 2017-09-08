@@ -2150,9 +2150,6 @@ scan_xcoff_symtab(struct objfile *objfile)
   char *filestring = NULL;
 
   char *namestring;
-#ifdef ALLOW_UNUSED_VARIABLES
-  int past_first_source_file = 0;
-#endif /* ALLOW_UNUSED_VARIABLES */
   bfd *abfd;
   asection *bfd_sect;
   unsigned int nsyms;
