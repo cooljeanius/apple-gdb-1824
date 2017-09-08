@@ -6,7 +6,7 @@
    Foundation, Inc.
 
    Contributed by the Center for Software Science at the
-   University of Utah (pa-gdb-bugs@cs.utah.edu).
+   University of Utah <pa-gdb-bugs@cs.utah.edu>.
 
    This file is part of GDB.
 
@@ -25,7 +25,15 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef CONFIG_PA_TM_HPPA_H
+#define CONFIG_PA_TM_HPPA_H 1
+
+#include "target.h" /* "regcache.h" needs this for struct target_ops */
 #include "regcache.h"
 
-extern int hppa_pc_requires_run_before_use (CORE_ADDR pc);
-#define DEPRECATED_PC_REQUIRES_RUN_BEFORE_USE(pc) hppa_pc_requires_run_before_use (pc)
+extern int hppa_pc_requires_run_before_use(CORE_ADDR pc);
+#define DEPRECATED_PC_REQUIRES_RUN_BEFORE_USE(pc) hppa_pc_requires_run_before_use(pc)
+
+#endif /* !CONFIG_PA_TM_HPPA_H */
+
+/* EOF */

@@ -100,13 +100,13 @@ struct gdbarch_tdep
   const char **register_names;
 };
 
-#define CURRENT_VARIANT (gdbarch_tdep(current_gdbarch))
+#define CURRENT_VARIANT (new_gdbarch_tdep(current_gdbarch))
 
 /* Return the FR-V ABI associated with GDBARCH.  */
 enum frv_abi
 frv_abi(struct gdbarch *gdbarch)
 {
-  return gdbarch_tdep(gdbarch)->frv_abi;
+  return new_gdbarch_tdep(gdbarch)->frv_abi;
 }
 
 /* Fetch the interpreter and executable loadmap addresses (for shared
@@ -145,7 +145,6 @@ new_variant(void)
 {
   struct gdbarch_tdep *var;
   int r;
-  char buf[20];
 
   var = (struct gdbarch_tdep *)xmalloc(sizeof(*var));
   memset(var, 0, sizeof(*var));
@@ -158,9 +157,9 @@ new_variant(void)
 
   /* By default, don't supply any general-purpose or floating-point
      register names.  */
-  var->register_names
-    = (char **) xmalloc ((frv_num_regs + frv_num_pseudo_regs)
-                         * sizeof (char *));
+  var->register_names =
+    (const char **)xmalloc((frv_num_regs + frv_num_pseudo_regs)
+			   * sizeof(const char *));
   for (r = 0; r < frv_num_regs + frv_num_pseudo_regs; r++)
     var->register_names[r] = "";
 
@@ -351,7 +350,7 @@ frv_pseudo_register_write(struct gdbarch *gdbarch, struct regcache *regcache,
 
       int raw_regnum = accg0123_regnum + (reg - accg0_regnum) / 4;
       int byte_num = (reg - accg0_regnum) % 4;
-      char buf[4];
+      gdb_byte buf[4];
 
       regcache_raw_read (regcache, raw_regnum, buf);
       buf[byte_num] = ((bfd_byte *) buffer)[0];
@@ -413,8 +412,8 @@ frv_register_sim_regno (int reg)
   else if (pc_regnum == reg)
     return SIM_FRV_PC_REGNUM;
   else if ((reg >= first_spr_regnum)
-           && (reg < (first_spr_regnum + (sizeof(spr_map)
-					  / sizeof(spr_map[0])))))
+           && ((size_t)reg < (first_spr_regnum + (sizeof(spr_map)
+						  / sizeof(spr_map[0])))))
     {
       int spr_reg_offset = spr_map[reg - first_spr_regnum];
 
@@ -1391,14 +1390,13 @@ frv_frame_this_id (struct frame_info *next_frame,
 static void
 frv_frame_prev_register(struct frame_info *next_frame,
 			void **this_prologue_cache, int regnum,
-			int *optimizedp, enum lval_type *lvalp,
-			CORE_ADDR *addrp, int *realnump, void *bufferp)
+			enum opt_state *optimizedp, enum lval_type *lvalp,
+			CORE_ADDR *addrp, int *realnump, gdb_byte *bufferp)
 {
   struct frv_unwind_cache *info =
     frv_frame_unwind_cache(next_frame, this_prologue_cache);
   trad_frame_get_prev_register(next_frame, info->saved_regs, regnum,
-			       (enum opt_state *)optimizedp, lvalp, addrp,
-			       realnump, (gdb_byte *)bufferp);
+			       optimizedp, lvalp, addrp, realnump, bufferp);
 }
 
 static const struct frame_unwind frv_frame_unwind = {

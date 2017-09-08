@@ -38,9 +38,9 @@ enum {
 };
 
 static int
-frv_linux_pc_in_sigtramp (CORE_ADDR pc, char *name)
+frv_linux_pc_in_sigtramp(CORE_ADDR pc, const char *name)
 {
-  char buf[frv_instr_size];
+  gdb_byte buf[frv_instr_size];
   LONGEST instr;
   int retval = 0;
 
@@ -174,7 +174,7 @@ frv_linux_sigcontext_reg_addr (struct frame_info *next_frame, int regno,
   else
     {
       CORE_ADDR pc, sp;
-      char buf[4];
+      gdb_byte buf[4];
       int tramp_type;
 
       pc = frame_pc_unwind (next_frame);
@@ -200,7 +200,7 @@ frv_linux_sigcontext_reg_addr (struct frame_info *next_frame, int regno,
  	     padding) = 24.) */
 	  if (target_read_memory (sp + 12, buf, sizeof buf) != 0)
 	    {
-	      warning (_("Can't read realtime sigtramp frame."));
+	      warning(_("Cannot read realtime sigtramp frame."));
 	      return 0;
 	    }
 	  sc_addr = extract_unsigned_integer (buf, sizeof buf);
@@ -250,18 +250,21 @@ frv_linux_sigcontext_reg_addr (struct frame_info *next_frame, int regno,
 /* Signal trampolines.  */
 
 static struct trad_frame_cache *
-frv_linux_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cache)
+frv_linux_sigtramp_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
   struct trad_frame_cache *cache;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
-  CORE_ADDR addr;
-  char buf[4];
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
+  gdb_byte buf[4];
   int regnum;
   CORE_ADDR sc_addr_cache_val = 0;
   struct frame_id this_id;
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
   if (*this_cache)
-    return *this_cache;
+    return (struct trad_frame_cache *)*this_cache;
 
   cache = trad_frame_cache_zalloc (next_frame);
 
@@ -296,12 +299,12 @@ frv_linux_sigtramp_frame_this_id (struct frame_info *next_frame, void **this_cac
 }
 
 static void
-frv_linux_sigtramp_frame_prev_register (struct frame_info *next_frame,
+frv_linux_sigtramp_frame_prev_register(struct frame_info *next_frame,
 				   void **this_cache,
 				   /* APPLE LOCAL variable opt states.  */
 				   int regnum, enum opt_state *optimizedp,
 				   enum lval_type *lvalp, CORE_ADDR *addrp,
-				   int *realnump, void *valuep)
+				   int *realnump, gdb_byte *valuep)
 {
   /* Make sure we've initialized the cache.  */
   struct trad_frame_cache *cache =
@@ -314,14 +317,17 @@ static const struct frame_unwind frv_linux_sigtramp_frame_unwind =
 {
   SIGTRAMP_FRAME,
   frv_linux_sigtramp_frame_this_id,
-  frv_linux_sigtramp_frame_prev_register
+  frv_linux_sigtramp_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
 frv_linux_sigtramp_frame_sniffer (struct frame_info *next_frame)
 {
   CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  const char *name;
 
   find_pc_partial_function (pc, &name, NULL, NULL);
   if (frv_linux_pc_in_sigtramp (pc, name))

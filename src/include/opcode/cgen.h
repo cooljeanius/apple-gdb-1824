@@ -114,7 +114,7 @@ typedef int CGEN_ATTR_VALUE_TYPE;
 typedef struct
 {
   /* Boolean attributes.  */
-  unsigned int bool;
+  unsigned int boolattrs;
   /* Non-boolean integer attributes.  */
   CGEN_ATTR_VALUE_TYPE nonbool[1];
 } CGEN_ATTR;
@@ -125,12 +125,12 @@ typedef struct
    in one host int).  */
 
 #define CGEN_ATTR_TYPE(n) \
-struct { unsigned int bool; \
+struct { unsigned int boolattrs; \
 	 CGEN_ATTR_VALUE_TYPE nonbool[(n) ? (n) : 1]; }
 
 /* Return the boolean attributes.  */
 
-#define CGEN_ATTR_BOOLS(a) ((a)->bool)
+#define CGEN_ATTR_BOOLS(a) ((a)->boolattrs)
 
 /* Non-boolean attribute numbers are offset by this much.  */
 

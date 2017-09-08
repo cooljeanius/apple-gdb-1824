@@ -40,7 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include "regcache.h"
 #include "gdb_assert.h"
 
-/* To get entry_point_address.  */
+/* To get  new_gdbarch_tdep(.  */
 #include "objfiles.h"
 
 #include "solib.h"              /* Support for shared libraries.  */
@@ -182,13 +182,13 @@ struct gdbarch_tdep
 static int
 cris_version (void)
 {
-  return (gdbarch_tdep (current_gdbarch)->cris_version);
+  return (new_gdbarch_tdep(current_gdbarch)->cris_version);
 }
 
 static const char *
 cris_mode (void)
 {
-  return (gdbarch_tdep (current_gdbarch)->cris_mode);
+  return (new_gdbarch_tdep(current_gdbarch)->cris_mode);
 }
 
 /* Sigtramp identification code copied from i386-linux-tdep.c.  */
@@ -335,7 +335,7 @@ static struct cris_unwind_cache *
 cris_sigtramp_frame_unwind_cache(struct frame_info *next_frame,
 				 void **this_cache)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   struct cris_unwind_cache *info;
   CORE_ADDR addr;
   char buf[4];
@@ -477,7 +477,7 @@ int
 crisv32_single_step_through_delay(struct gdbarch *gdbarch,
 				  struct frame_info *this_frame)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   ULONGEST erp;
   int ret = 0;
   char buf[4];
@@ -515,7 +515,7 @@ crisv32_single_step_through_delay(struct gdbarch *gdbarch,
 int
 cris_can_use_hardware_watchpoint(int type, int count, int other)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   /* No bookkeeping is done here; it is handled by the remote debug agent.  */
 
@@ -1534,7 +1534,7 @@ cris_spec_reg_applicable (struct cris_spec_reg spec_reg)
 static int
 cris_register_size(int regno)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int i;
   int spec_regno;
   
@@ -2007,6 +2007,9 @@ constraint(unsigned int insn, const signed char *inst_args,
         if (cris_spec_regs[i].name == NULL)
           return -1;
         break;
+
+      default:
+	break;
       }
   return retval;
 }
@@ -3849,6 +3852,10 @@ cris_gdb_func (enum cris_op_type op_type, unsigned short inst,
     case cris_xor_op:
       xor_op (inst, inst_env);
       break;
+	
+    default:
+      warning(_("Unhandled cris op"));
+      break;
     }
 }
 
@@ -3883,7 +3890,7 @@ typedef elf_greg_t crisv32_elf_gregset_t[CRISV32_ELF_NGREG];
 static void 
 supply_gregset (elf_gregset_t *gregsetp)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int i;
   elf_greg_t *regp = *gregsetp;
 
@@ -4037,7 +4044,7 @@ Makes GDB use the NRP register instead of the ERP register in certain cases."),
 static void
 cris_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   if (tdep != NULL)
     {
       fprintf_unfiltered (file, "cris_dump_tdep: tdep->cris_version = %i\n",
@@ -4123,11 +4130,11 @@ cris_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
        arches != NULL;
        arches = gdbarch_list_lookup_by_info (arches->next, &info))
     {
-      if ((gdbarch_tdep (arches->gdbarch)->cris_version 
+      if ((new_gdbarch_tdep(arches->gdbarch)->cris_version 
 	   == usr_cmd_cris_version)
-	  && (gdbarch_tdep (arches->gdbarch)->cris_mode 
+	  && (new_gdbarch_tdep(arches->gdbarch)->cris_mode 
 	   == usr_cmd_cris_mode)
-	  && (gdbarch_tdep (arches->gdbarch)->cris_dwarf2_cfi 
+	  && (new_gdbarch_tdep(arches->gdbarch)->cris_dwarf2_cfi 
 	      == usr_cmd_cris_dwarf2_cfi))
         return arches->gdbarch;
     }

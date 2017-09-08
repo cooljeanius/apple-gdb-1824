@@ -72,7 +72,8 @@ const struct objfile_data *hppa_objfile_priv_data = NULL;
 
 /* FIXME: brobecker 2002-11-07: We will likely be able to make the
    following functions static, once we hppa is partially multiarched.  */
-int hppa_pc_requires_run_before_use(CORE_ADDR pc);
+extern int hppa_pc_requires_run_before_use(CORE_ADDR);
+extern int hppa_alignof(struct type *);
 
 /* Routines to extract various sized constants out of hppa
    instructions. */
@@ -541,9 +542,6 @@ hppa_in_function_epilogue_p(struct gdbarch *gdbarch, CORE_ADDR pc)
   unsigned long status;
   unsigned int inst;
   char buf[4];
-#ifdef ALLOW_UNUSED_VARIABLES
-  int off;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   status = deprecated_read_memory_nobpt(pc, (gdb_byte *)buf, 4);
   if (status != 0)
@@ -1227,30 +1225,29 @@ hppa_write_pc (CORE_ADDR pc, ptid_t ptid)
 /* return the alignment of a type in bytes. Structures have the maximum
    alignment required by their fields. */
 
-static int
-hppa_alignof (struct type *type)
+int
+hppa_alignof(struct type *type)
 {
   int max_align, align, i;
-  CHECK_TYPEDEF (type);
-  switch (TYPE_CODE (type))
+  CHECK_TYPEDEF(type);
+  switch (TYPE_CODE(type))
     {
     case TYPE_CODE_PTR:
     case TYPE_CODE_INT:
     case TYPE_CODE_FLT:
-      return TYPE_LENGTH (type);
+      return TYPE_LENGTH(type);
     case TYPE_CODE_ARRAY:
-      return hppa_alignof (TYPE_FIELD_TYPE (type, 0));
+      return hppa_alignof(TYPE_FIELD_TYPE(type, 0));
     case TYPE_CODE_STRUCT:
     case TYPE_CODE_UNION:
       max_align = 1;
-      for (i = 0; i < TYPE_NFIELDS (type); i++)
+      for (i = 0; i < TYPE_NFIELDS(type); i++)
 	{
-	  /* Bit fields have no real alignment. */
-	  /* if (!TYPE_FIELD_BITPOS (type, i)) */
-	  if (!TYPE_FIELD_BITSIZE (type, i))	/* elz: this should be bitsize */
+	  /* Bit fields have no real alignment: */
+	  if (!TYPE_FIELD_BITSIZE(type, i)) /* elz: this should be bitsize */
 	    {
-	      align = hppa_alignof (TYPE_FIELD_TYPE (type, i));
-	      max_align = max (max_align, align);
+	      align = hppa_alignof(TYPE_FIELD_TYPE(type, i));
+	      max_align = max(max_align, align);
 	    }
 	}
       return max_align;
@@ -1647,9 +1644,6 @@ after_prologue(CORE_ADDR pc)
 {
   struct symtab_and_line sal;
   CORE_ADDR func_addr, func_end;
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct symbol *f;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   /* If we can not find the symbol in the partial symbol table, then
      there is no hope we can determine the function's start address
@@ -1689,7 +1683,7 @@ after_prologue(CORE_ADDR pc)
 static CORE_ADDR
 hppa_skip_prologue(CORE_ADDR pc)
 {
-#ifdef ALLOW_U
+#ifdef ALLOW_UNUSED_VARIABLES
   unsigned long inst;
   int offset;
   char buf[4];
@@ -1726,9 +1720,6 @@ hppa_frame_cache(struct frame_info *next_frame, void **this_cache)
   struct hppa_frame_cache *cache;
   long saved_gr_mask;
   long saved_fr_mask;
-#ifdef ALLOW_UNUSED_VARIABLES
-  CORE_ADDR this_sp;
-#endif /* ALLOW_UNUSED_VARIABLES */
   long frame_size;
   struct unwind_table_entry *u;
   CORE_ADDR prologue_end;
@@ -2870,10 +2861,6 @@ extern void _initialize_hppa_tdep(void); /* -Wmissing-prototypes */
 void
 _initialize_hppa_tdep(void)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  struct cmd_list_element *c;
-#endif /* ALLOW_UNUSED_VARIABLES */
-
   gdbarch_register(bfd_arch_hppa, hppa_gdbarch_init, hppa_dump_tdep);
 
   hppa_objfile_priv_data = register_objfile_data();

@@ -169,19 +169,19 @@ hppabsd_find_global_pointer(struct value *function)
 void
 hppabsd_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* Core file support.  */
-  set_gdbarch_regset_from_core_section
-    (gdbarch, hppabsd_regset_from_core_section);
+  set_gdbarch_regset_from_core_section(gdbarch,
+				       hppabsd_regset_from_core_section);
 
   /* OpenBSD and NetBSD use ELF.  */
   tdep->find_global_pointer = hppabsd_find_global_pointer;
   tdep->is_elf = 1;
 
-  /* OpenBSD and NetBSD uses SVR4-style shared libraries.  */
-  set_solib_svr4_fetch_link_map_offsets
-    (gdbarch, svr4_ilp32_fetch_link_map_offsets);
+  /* OpenBSD and NetBSD uses SVR4-style shared libraries: */
+  set_solib_svr4_fetch_link_map_offsets(gdbarch,
+					svr4_ilp32_fetch_link_map_offsets);
 }
 
 
