@@ -1,4 +1,4 @@
-/* Target-dependent code for Morpho mt processor, for GDB.
+/* mt-tdep.c: Target-dependent code for Morpho mt processor, for GDB.
 
    Copyright (C) 2005, 2007, 2008, 2009 Free Software Foundation, Inc.
 
@@ -17,7 +17,7 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-/* Contributed by Michael Snyder, msnyder@redhat.com.  */
+/* Contributed by Michael Snyder, <msnyder@redhat.com>.  */
 
 #include "defs.h"
 #include "frame.h"
@@ -181,9 +181,9 @@ mt_register_name (struct gdbarch *gdbarch, int regnum)
   {
     char *name;
     const char *stub;
-    unsigned dim_1;
-    unsigned dim_2;
-    unsigned index;
+    unsigned int dim_1;
+    unsigned int dim_2;
+    unsigned int index;
     
     regnum -= MT_COPRO_PSEUDOREG_ARRAY;
     index = regnum % MT_COPRO_PSEUDOREG_REGS;
@@ -202,8 +202,8 @@ mt_register_name (struct gdbarch *gdbarch, int regnum)
 	array_names[regnum] = stub;
 	return stub;
       }
-    name = xmalloc (30);
-    sprintf (name, "copro_%d_%d_%s", dim_1, dim_2, stub);
+    name = (char *)xmalloc(30);
+    snprintf(name, 30, "copro_%d_%d_%s", dim_1, dim_2, stub);
     array_names[regnum] = name;
     return name;
   }
@@ -260,7 +260,7 @@ mt_copro_register_type (struct gdbarch *arch, int regnum)
 static struct type *
 mt_register_type (struct gdbarch *arch, int regnum)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (arch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(arch);
 
   if (regnum >= 0 && regnum < MT_NUM_REGS + MT_NUM_PSEUDO_REGS)
     {
@@ -335,11 +335,11 @@ mt_register_reggroup_p (struct gdbarch *gdbarch, int regnum,
    values.  */
 
 static enum return_value_convention
-mt_return_value (struct gdbarch *gdbarch, struct type *func_type,
-		 struct type *type, struct regcache *regcache,
-		 gdb_byte *readbuf, const gdb_byte *writebuf)
+mt_return_value(struct gdbarch *gdbarch, struct type *func_type,
+		struct type *type, struct regcache *regcache,
+		gdb_byte *readbuf, const gdb_byte *writebuf)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
 
   if (TYPE_LENGTH (type) > 4)
     {
@@ -406,12 +406,12 @@ mt_return_value (struct gdbarch *gdbarch, struct type *func_type,
 static CORE_ADDR
 mt_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   CORE_ADDR func_addr = 0, func_end = 0;
-  char *func_name;
+  const char *func_name;
   unsigned long instr;
 
-  if (find_pc_partial_function (pc, &func_name, &func_addr, &func_end))
+  if (find_pc_partial_function(pc, &func_name, &func_addr, &func_end))
     {
       struct symtab_and_line sal;
       struct symbol *sym;
@@ -475,11 +475,11 @@ mt_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR *bp_addr,
    regnum we really want to read.  */
 
 static int
-mt_select_coprocessor (struct gdbarch *gdbarch,
-			struct regcache *regcache, int regno)
+mt_select_coprocessor(struct gdbarch *gdbarch,
+		      struct regcache *regcache, int regno)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
-  unsigned index, base;
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
+  unsigned int index, base;
   gdb_byte copro[4];
 
   /* Get the copro pseudo regnum. */
@@ -524,10 +524,10 @@ mt_select_coprocessor (struct gdbarch *gdbarch,
    the coprocessor registers for each coprocessor.  */
 
 static void
-mt_pseudo_register_read (struct gdbarch *gdbarch,
-			  struct regcache *regcache, int regno, gdb_byte *buf)
+mt_pseudo_register_read(struct gdbarch *gdbarch,
+			struct regcache *regcache, int regno, gdb_byte *buf)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
 
   switch (regno)
     {
@@ -671,17 +671,16 @@ mt_registers_info (struct gdbarch *gdbarch,
 
 	  regsize = register_size (gdbarch, regnum);
 
-	  buff = alloca (regsize);
-	  bytes = alloca (regsize * sizeof (*bytes));
+	  buff = (unsigned char *)alloca(regsize);
+	  bytes = (unsigned int *)alloca(regsize * sizeof(*bytes));
 
-	  frame_register_read (frame, regnum, buff);
+	  frame_register_read(frame, regnum, buff);
 
-	  fputs_filtered (gdbarch_register_name
-			  (gdbarch, regnum), file);
-	  print_spaces_filtered (15 - strlen (gdbarch_register_name
-					        (gdbarch, regnum)),
-				 file);
-	  fputs_filtered ("0x", file);
+	  fputs_filtered(gdbarch_register_name(gdbarch, regnum), file);
+	  print_spaces_filtered(15 - strlen(gdbarch_register_name(gdbarch,
+								  regnum)),
+				file);
+	  fputs_filtered("0x", file);
 
 	  for (i = 0; i < regsize; i++)
 	    fprintf_filtered (file, "%02x", (unsigned int)
@@ -698,21 +697,21 @@ mt_registers_info (struct gdbarch *gdbarch,
 	  gdb_byte *buf;
 	  struct value_print_options opts;
 
-	  buf = alloca (register_size (gdbarch, MT_COPRO_REGNUM));
-	  frame_register_read (frame, MT_COPRO_REGNUM, buf);
+	  buf = (gdb_byte *)alloca(register_size(gdbarch, MT_COPRO_REGNUM));
+	  frame_register_read(frame, MT_COPRO_REGNUM, buf);
 	  /* And print.  */
 	  regnum = MT_COPRO_PSEUDOREG_REGNUM;
-	  fputs_filtered (gdbarch_register_name (gdbarch, regnum),
-			  file);
-	  print_spaces_filtered (15 - strlen (gdbarch_register_name
-					        (gdbarch, regnum)),
-				 file);
-	  get_raw_print_options (&opts);
+	  fputs_filtered(gdbarch_register_name(gdbarch, regnum),
+			 file);
+	  print_spaces_filtered(15 - strlen(gdbarch_register_name(gdbarch,
+								  regnum)),
+				file);
+	  get_raw_print_options(&opts);
 	  opts.deref_ref = 1;
-	  val_print (register_type (gdbarch, regnum), buf,
-		     0, 0, file, 0, &opts,
-		     current_language);
-	  fputs_filtered ("\n", file);
+	  val_print(register_type(gdbarch, regnum), buf,
+		    0, 0, file, 0, &opts,
+		    current_language);
+	  fputs_filtered("\n", file);
 	}
       else if (regnum == MT_MAC_REGNUM || regnum == MT_MAC_PSEUDOREG_REGNUM)
 	{
@@ -762,13 +761,13 @@ mt_registers_info (struct gdbarch *gdbarch,
    Returns the updated (and aligned) stack pointer.  */
 
 static CORE_ADDR
-mt_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
-		     struct regcache *regcache, CORE_ADDR bp_addr,
-		     int nargs, struct value **args, CORE_ADDR sp,
-		     int struct_return, CORE_ADDR struct_addr)
+mt_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
+		   struct regcache *regcache, CORE_ADDR bp_addr,
+		   int nargs, struct value **args, CORE_ADDR sp,
+		   int struct_return, CORE_ADDR struct_addr)
 {
 #define wordsize 4
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   gdb_byte buf[MT_MAX_STRUCT_SIZE];
   int argreg = MT_1ST_ARGREG;
   int split_param_len = 0;
@@ -838,7 +837,7 @@ mt_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
       /* Right-justify the value in an aligned-length buffer.  */
       typelen = TYPE_LENGTH (value_type (args[j]));
       slacklen = (wordsize - (typelen % wordsize)) % wordsize;
-      val = alloca (typelen + slacklen);
+      val = (gdb_byte *)alloca(typelen + slacklen);
       memcpy (val, value_contents (args[j]), typelen);
       memset (val + typelen, 0, slacklen);
       /* Now write this data to the stack.  */
@@ -891,8 +890,8 @@ struct mt_unwind_cache
    the frame.  */
 
 static struct mt_unwind_cache *
-mt_frame_unwind_cache (struct frame_info *this_frame,
-			void **this_prologue_cache)
+mt_frame_unwind_cache(struct frame_info *this_frame,
+		      void **this_prologue_cache)
 {
   struct gdbarch *gdbarch;
   struct mt_unwind_cache *info;
@@ -902,7 +901,7 @@ mt_frame_unwind_cache (struct frame_info *this_frame,
   ULONGEST sp, fp;
 
   if ((*this_prologue_cache))
-    return (*this_prologue_cache);
+    return (struct mt_unwind_cache *)(*this_prologue_cache);
 
   gdbarch = get_frame_arch (this_frame);
   info = FRAME_OBSTACK_ZALLOC (struct mt_unwind_cache);

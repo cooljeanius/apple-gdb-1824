@@ -64,7 +64,7 @@ i386nbsd_aout_supply_regset (const struct regset *regset,
 			     struct regcache *regcache, int regnum,
 			     const void *regs, size_t len)
 {
-  const struct gdbarch_tdep *tdep = gdbarch_tdep (regset->arch);
+  const struct gdbarch_tdep *tdep = new_gdbarch_tdep(regset->arch);
 
   gdb_assert (len >= tdep->sizeof_gregset + I387_SIZEOF_FSAVE);
 
@@ -77,7 +77,7 @@ i386nbsd_aout_regset_from_core_section (struct gdbarch *gdbarch,
 					const char *sect_name,
 					size_t sect_size)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* NetBSD a.out core dumps don't use seperate register sets for the
      general-purpose and floating-point registers.  */
@@ -137,9 +137,6 @@ i386nbsd_sigtramp_offset (struct frame_info *next_frame)
   CORE_ADDR pc = frame_pc_unwind (next_frame);
   unsigned char ret[sizeof(sigtramp_retcode)], insn;
   LONGEST off;
-#ifdef ALLOW_UNUSED_VARIABLES
-  int i;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   if (!safe_frame_unwind_memory (next_frame, pc, &insn, 1))
     return -1;
@@ -223,7 +220,7 @@ int i386nbsd_sc_reg_offset[] =
 static void 
 i386nbsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* Obviously NetBSD is BSD-based.  */
   i386bsd_init_abi (info, gdbarch);
@@ -264,7 +261,7 @@ i386nbsdaout_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 static void
 i386nbsdelf_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* It's still NetBSD.  */
   i386nbsd_init_abi (info, gdbarch);

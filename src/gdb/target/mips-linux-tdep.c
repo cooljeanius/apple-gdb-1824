@@ -94,6 +94,7 @@ static int
 mips_linux_get_longjmp_target (CORE_ADDR *pc)
 {
   CORE_ADDR jb_addr;
+  /* FIXME: -Wvla-larger-than=9999: */
   char buf[TARGET_PTR_BIT / TARGET_CHAR_BIT];
 
   jb_addr = read_register(MIPS_A0_REGNUM);
@@ -235,9 +236,6 @@ supply_fpregset(elf_fpregset_t *fpregsetp)
 void
 fill_fpregset(elf_fpregset_t *fpregsetp, int regno)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  char *from;
-#endif /* ALLOW_UNUSED_VARIABLES */
   char *to;
 
   if ((regno >= FP0_REGNUM) && (regno < (FP0_REGNUM + 32)))
@@ -444,14 +442,11 @@ mips64_supply_gregset(mips64_elf_gregset_t *gregsetp)
 }
 
 /* Pack our registers (or one register) into an elf_gregset_t: */
-static void
+static void ATTRIBUTE_USED
 mips64_fill_gregset(mips64_elf_gregset_t *gregsetp, int regno)
 {
   int regaddr, regi;
   mips64_elf_greg_t *regp = *gregsetp;
-#ifdef ALLOW_UNUSED_VARIABLES
-  void *src;
-#endif /* ALLOW_UNUSED_VARIABLES */
   void *dst;
 
   if (regno == -1)
@@ -503,35 +498,32 @@ mips64_fill_gregset(mips64_elf_gregset_t *gregsetp, int regno)
 /* Likewise, unpack an elf_fpregset_t.  */
 
 static void
-mips64_supply_fpregset (mips64_elf_fpregset_t *fpregsetp)
+mips64_supply_fpregset(mips64_elf_fpregset_t *fpregsetp)
 {
   int regi;
   char zerobuf[MAX_REGISTER_SIZE];
 
-  memset (zerobuf, 0, MAX_REGISTER_SIZE);
+  memset(zerobuf, 0, MAX_REGISTER_SIZE);
 
   for (regi = 0; regi < 32; regi++)
-    regcache_raw_supply (current_regcache, FP0_REGNUM + regi,
-			 (char *)(*fpregsetp + regi));
+    regcache_raw_supply(current_regcache, FP0_REGNUM + regi,
+			(char *)(*fpregsetp + regi));
 
-  regcache_raw_supply (current_regcache,
-		       mips_regnum (current_gdbarch)->fp_control_status,
-		       (char *)(*fpregsetp + 32));
+  regcache_raw_supply(current_regcache,
+		      mips_regnum(current_gdbarch)->fp_control_status,
+		      (char *)(*fpregsetp + 32));
 
   /* FIXME: how can we supply FCRIR?  The ABI doesn't tell us.  */
-  regcache_raw_supply (current_regcache,
-		       mips_regnum (current_gdbarch)->fp_implementation_revision,
-		       zerobuf);
+  regcache_raw_supply(current_regcache,
+		      mips_regnum(current_gdbarch)->fp_implementation_revision,
+		      zerobuf);
 }
 
 /* Likewise, pack one or all floating point registers into an
    elf_fpregset_t.  */
-static void
+static void ATTRIBUTE_USED
 mips64_fill_fpregset(mips64_elf_fpregset_t *fpregsetp, int regno)
 {
-#ifdef ALLOW_UNUSED_VARIABLES
-  char *from;
-#endif /* ALLOW_UNUSED_VARIABLES */
   char *to;
 
   if ((regno >= FP0_REGNUM) && (regno < (FP0_REGNUM + 32)))
@@ -704,8 +696,8 @@ CORE_ADDR
 register_addr(int regno, CORE_ADDR blockend)
 {
   CORE_ADDR (*register_addr_ptr)(int, CORE_ADDR) =
-    (CORE_ADDR (*)(int,  CORE_ADDR))gdbarch_data(current_gdbarch,
-						 register_addr_data);
+    (CORE_ADDR (*)(int,  CORE_ADDR))new_gdbarch_data(current_gdbarch,
+						     register_addr_data);
 
   gdb_assert(register_addr_ptr != 0);
 
@@ -810,16 +802,16 @@ mips_linux_in_dynsym_stub (CORE_ADDR pc, char *name)
    code or to a stub.  */
 
 int
-mips_linux_in_dynsym_resolve_code (CORE_ADDR pc)
+mips_linux_in_dynsym_resolve_code(CORE_ADDR pc)
 {
   /* Check whether PC is in the dynamic linker.  This also checks
      whether it is in the .plt section, which MIPS does not use.  */
-  if (in_solib_dynsym_resolve_code (pc))
+  if (in_solib_dynsym_resolve_code(pc))
     return 1;
 
   /* Pattern match for the stub.  It would be nice if there were a
      more efficient way to avoid this check.  */
-  if (mips_linux_in_dynsym_stub (pc, NULL))
+  if (mips_linux_in_dynsym_stub(pc, NULL))
     return 1;
 
   return 0;
@@ -999,9 +991,6 @@ mips_linux_o32_sigframe_init(const struct tramp_frame *self,
 			     CORE_ADDR func)
 {
   int ireg;
-#ifdef ALLOW_UNUSED_VARIABLES
-  int reg_position;
-#endif /* ALLOW_UNUSED_VARIABLES */
   CORE_ADDR sigcontext_base = (func - SIGFRAME_CODE_OFFSET);
   const struct mips_regnum *regs = mips_regnum(current_gdbarch);
   CORE_ADDR regs_base;
@@ -1151,9 +1140,6 @@ mips_linux_n32n64_sigframe_init (const struct tramp_frame *self,
 				 CORE_ADDR func)
 {
   int ireg;
-#ifdef ALLOW_UNUSED_VARIABLES
-  int reg_position;
-#endif /* ALLOW_UNUSED_VARIABLES */
   CORE_ADDR sigcontext_base = (func - SIGFRAME_CODE_OFFSET);
   const struct mips_regnum *regs = mips_regnum(current_gdbarch);
 
@@ -1203,7 +1189,7 @@ mips_linux_n32n64_sigframe_init (const struct tramp_frame *self,
 static void
 mips_linux_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   enum mips_abi abi = mips_abi(gdbarch);
   
   if (tdep == NULL) {

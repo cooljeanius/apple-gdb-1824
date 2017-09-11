@@ -688,9 +688,6 @@ m32r_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
   char *val;
   char valbuf[MAX_REGISTER_SIZE];
   int len;
-#ifdef ALLOW_UNUSED_VARIABLES
-  int odd_sized_struct;
-#endif /* ALLOW_UNUSED_VARIABLES */
 
   /* first force sp to a 4-byte alignment */
   sp = sp & ~3;
@@ -863,13 +860,13 @@ m32r_frame_prev_register(struct frame_info *next_frame,
 			 void **this_prologue_cache,
 			 int regnum, enum opt_state *optimizedp,
 			 enum lval_type *lvalp, CORE_ADDR *addrp,
-			 int *realnump, void *bufferp)
+			 int *realnump, gdb_byte *bufferp)
 {
   struct m32r_unwind_cache *info =
     m32r_frame_unwind_cache(next_frame, this_prologue_cache);
   trad_frame_get_prev_register(next_frame, info->saved_regs, regnum,
 			       optimizedp, lvalp, addrp, realnump,
-			       (gdb_byte *)bufferp);
+			       bufferp);
 }
 
 static const struct frame_unwind m32r_frame_unwind = {

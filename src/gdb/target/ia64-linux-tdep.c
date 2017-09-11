@@ -38,10 +38,10 @@
 /* Offset to sigcontext structure from frame of handler */
 #define IA64_LINUX_SIGCONTEXT_OFFSET 192
 
-int
-ia64_linux_in_sigtramp (CORE_ADDR pc, char *func_name)
+int ATTRIBUTE_CONST
+ia64_linux_in_sigtramp(CORE_ADDR pc, char *func_name)
 {
-  return (pc >= (CORE_ADDR) GATE_AREA_START && pc < (CORE_ADDR) GATE_AREA_END);
+  return ((pc >= (CORE_ADDR)GATE_AREA_START) && (pc < (CORE_ADDR)GATE_AREA_END));
 }
 
 /* IA-64 GNU/Linux specific function which, given a frame address and
@@ -52,7 +52,7 @@ ia64_linux_in_sigtramp (CORE_ADDR pc, char *func_name)
 static CORE_ADDR
 ia64_linux_sigcontext_register_address (CORE_ADDR sp, int regno)
 {
-  char buf[8];
+  gdb_byte buf[8];
   CORE_ADDR sigcontext_addr = 0;
 
   /* The address of the sigcontext area is found at offset 16 in the sigframe.  */
@@ -118,7 +118,7 @@ ia64_linux_write_pc (CORE_ADDR pc, ptid_t ptid)
 static void
 ia64_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* Set the method of obtaining the sigcontext addresses at which
      registers are saved.  */
@@ -131,9 +131,13 @@ ia64_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
                                              svr4_fetch_objfile_link_map);
 }
 
+extern void _initialize_ia64_linux_tdep(void); /* -Wmissing-prototypes */
+
 void
-_initialize_ia64_linux_tdep (void)
+_initialize_ia64_linux_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_ia64, 0, GDB_OSABI_LINUX,
-			  ia64_linux_init_abi);
+  gdbarch_register_osabi(bfd_arch_ia64, 0, GDB_OSABI_LINUX,
+			 ia64_linux_init_abi);
 }
+
+/* EOF */

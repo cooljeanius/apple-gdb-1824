@@ -39,6 +39,8 @@
 #include "opcode/msp430-decode.h"
 #include "elf-bfd.h"
 
+#include "gdb_assert.h"
+
 /* Register Numbers.  */
 
 enum
@@ -159,12 +161,14 @@ struct msp430_prologue
 static struct type *
 msp430_register_type (struct gdbarch *gdbarch, int reg_nr)
 {
-  if (reg_nr < MSP430_NUM_REGS)
-    return builtin_type (gdbarch)->builtin_uint32;
-  else if (reg_nr == MSP430_PC_REGNUM)
-    return builtin_type (gdbarch)->builtin_func_ptr;
-  else
-    return builtin_type (gdbarch)->builtin_uint16;
+  if (reg_nr < MSP430_NUM_REGS) {
+    return builtin_type(gdbarch)->builtin_uint32;
+  } else if (reg_nr == MSP430_PC_REGNUM) {
+    return builtin_type(gdbarch)->builtin_func_ptr;
+  } else {
+    return builtin_type(gdbarch)->builtin_uint16;
+  }
+  return NULL; /*NOTREACHED*/
 }
 
 /* Implement another version of the "register_type" gdbarch method
@@ -173,12 +177,14 @@ msp430_register_type (struct gdbarch *gdbarch, int reg_nr)
 static struct type *
 msp430x_register_type (struct gdbarch *gdbarch, int reg_nr)
 {
-  if (reg_nr < MSP430_NUM_REGS)
-    return builtin_type (gdbarch)->builtin_uint32;
-  else if (reg_nr == MSP430_PC_REGNUM)
-    return builtin_type (gdbarch)->builtin_func_ptr;
-  else
-    return builtin_type (gdbarch)->builtin_uint32;
+  if (reg_nr < MSP430_NUM_REGS) {
+    return builtin_type(gdbarch)->builtin_uint32;
+  } else if (reg_nr == MSP430_PC_REGNUM) {
+    return builtin_type(gdbarch)->builtin_func_ptr;
+  } else {
+    return builtin_type(gdbarch)->builtin_uint32;
+  }
+  return NULL; /*NOTREACHED*/
 }
 
 /* Implement the "register_name" gdbarch method.  */
@@ -226,8 +232,8 @@ msp430_pseudo_register_read (struct gdbarch *gdbarch,
   if (MSP430_NUM_REGS <= regnum && regnum < MSP430_NUM_TOTAL_REGS)
     {
       ULONGEST val;
-      enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
-      int regsize = register_size (gdbarch, regnum);
+      enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
+      int regsize = register_size(gdbarch, regnum);
       int raw_regnum = regnum - MSP430_NUM_REGS;
 
       status = regcache_raw_read_unsigned (regcache, raw_regnum, &val);
@@ -248,17 +254,16 @@ msp430_pseudo_register_write (struct gdbarch *gdbarch,
 			      struct regcache *regcache,
 			      int regnum, const gdb_byte *buffer)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  /* no need to also declare byte_order out here; already inside: */
   if (MSP430_NUM_REGS <= regnum && regnum < MSP430_NUM_TOTAL_REGS)
-
     {
       ULONGEST val;
-      enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
-      int regsize = register_size (gdbarch, regnum);
+      enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
+      int regsize = register_size(gdbarch, regnum);
       int raw_regnum = regnum - MSP430_NUM_REGS;
 
-      val = extract_unsigned_integer (buffer, regsize, byte_order);
-      regcache_raw_write_unsigned (regcache, raw_regnum, val);
+      val = extract_unsigned_integer(buffer, regsize, byte_order);
+      regcache_raw_write_unsigned(regcache, raw_regnum, val);
 
     }
   else
@@ -304,9 +309,10 @@ struct msp430_get_opcode_byte_handle
    is returned.  */
 
 static int
-msp430_get_opcode_byte (void *handle)
+msp430_get_opcode_byte(void *handle)
 {
-  struct msp430_get_opcode_byte_handle *opcdata = handle;
+  struct msp430_get_opcode_byte_handle *opcdata =
+    (struct msp430_get_opcode_byte_handle *)handle;
   int status;
   gdb_byte byte;
 
@@ -352,7 +358,7 @@ msp430_analyze_prologue (struct gdbarch *gdbarch, CORE_ADDR start_pc,
   struct pv_area *stack;
   struct cleanup *back_to;
   CORE_ADDR after_last_frame_setup_insn = start_pc;
-  int code_model = gdbarch_tdep (gdbarch)->code_model;
+  int code_model = new_gdbarch_tdep(gdbarch)->code_model;
   int sz;
 
   memset (result, 0, sizeof (*result));
@@ -501,11 +507,11 @@ msp430_analyze_frame_prologue (struct frame_info *this_frame,
       if (!func_start)
 	stop_addr = func_start;
 
-      msp430_analyze_prologue (get_frame_arch (this_frame), func_start,
-			       stop_addr, *this_prologue_cache);
+      msp430_analyze_prologue(get_frame_arch(this_frame), func_start, stop_addr,
+			      (struct msp430_prologue *)*this_prologue_cache);
     }
 
-  return *this_prologue_cache;
+  return (struct msp430_prologue *)*this_prologue_cache;
 }
 
 /* Given a frame and a prologue cache, return this frame's base.  */
@@ -599,9 +605,9 @@ msp430_return_value (struct gdbarch *gdbarch,
 		     struct regcache *regcache,
 		     gdb_byte *readbuf, const gdb_byte *writebuf)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   LONGEST valtype_len = TYPE_LENGTH (valtype);
-  int code_model = gdbarch_tdep (gdbarch)->code_model;
+  int code_model = new_gdbarch_tdep(gdbarch)->code_model;
 
   if (TYPE_LENGTH (valtype) > 8
       || TYPE_CODE (valtype) == TYPE_CODE_STRUCT
@@ -689,11 +695,11 @@ msp430_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 			int nargs, struct value **args, CORE_ADDR sp,
 			int struct_return, CORE_ADDR struct_addr)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   int write_pass;
   int sp_off = 0;
   CORE_ADDR cfa;
-  int code_model = gdbarch_tdep (gdbarch)->code_model;
+  int code_model = new_gdbarch_tdep(gdbarch)->code_model;
 
   struct type *func_type = value_type (function);
 
@@ -806,7 +812,7 @@ msp430_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 
   /* Push the return address.  */
   {
-    int sz = (gdbarch_tdep (gdbarch)->code_model == MSP_SMALL_CODE_MODEL)
+    int sz = (new_gdbarch_tdep(gdbarch)->code_model == MSP_SMALL_CODE_MODEL)
       ? 2 : 4;
     sp = sp - sz;
     write_memory_unsigned_integer (sp, sz, byte_order, bp_addr);
@@ -852,7 +858,7 @@ msp430_skip_trampoline_code (struct frame_info *frame, CORE_ADDR pc)
 
   stub_name = SYMBOL_LINKAGE_NAME (bms.minsym);
 
-  if (gdbarch_tdep (gdbarch)->code_model == MSP_SMALL_CODE_MODEL
+  if (new_gdbarch_tdep(gdbarch)->code_model == MSP_SMALL_CODE_MODEL
       && msp430_in_return_stub (gdbarch, pc, stub_name))
     {
       CORE_ADDR sp = get_frame_register_unsigned (frame, MSP430_SP_REGNUM);
@@ -914,7 +920,7 @@ msp430_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	  struct gdbarch *ca = get_current_arch ();
 	  if (ca && gdbarch_bfd_arch_info (ca)->arch == bfd_arch_msp430)
 	    {
-	      struct gdbarch_tdep *ca_tdep = gdbarch_tdep (ca);
+	      struct gdbarch_tdep *ca_tdep = new_gdbarch_tdep(ca);
 
 	      elf_flags = ca_tdep->elf_flags;
 	      isa = ca_tdep->isa;
@@ -940,7 +946,7 @@ msp430_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
        arches != NULL;
        arches = gdbarch_list_lookup_by_info (arches->next, &info))
     {
-      struct gdbarch_tdep *candidate_tdep = gdbarch_tdep (arches->gdbarch);
+      struct gdbarch_tdep *candidate_tdep = new_gdbarch_tdep(arches->gdbarch);
 
       if (candidate_tdep->elf_flags != elf_flags
 	  || candidate_tdep->isa != isa

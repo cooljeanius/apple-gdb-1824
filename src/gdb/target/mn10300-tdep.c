@@ -298,31 +298,34 @@ my_frame_is_in_fp (struct frame_info *fi, void **this_cache)
 }
 
 static void
-my_frame_is_last (struct frame_info *fi)
+my_frame_is_last(struct frame_info *fi ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
-static int
-is_my_frame_in_sp (struct frame_info *fi)
-{
-  return 0;
-}
-
-static int
-is_my_frame_in_fp (struct frame_info *fi)
+static int ATTRIBUTE_USED
+is_my_frame_in_sp(struct frame_info *fi ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
-static int
-is_my_frame_last (struct frame_info *fi)
+static int ATTRIBUTE_USED
+is_my_frame_in_fp(struct frame_info *fi ATTRIBUTE_UNUSED)
+{
+  return 0;
+}
+
+static int ATTRIBUTE_USED
+is_my_frame_last(struct frame_info *fi ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
 static void
-set_my_stack_size (struct frame_info *fi, CORE_ADDR size)
+set_my_stack_size(struct frame_info *fi ATTRIBUTE_UNUSED,
+		  CORE_ADDR size ATTRIBUTE_UNUSED)
 {
+  return;
 }
 
 
@@ -768,14 +771,14 @@ mn10300_frame_prev_register(struct frame_info *next_frame,
 			    /* APPLE LOCAL variable opt states.  */
 			    int regnum, enum opt_state *optimizedp,
 			    enum lval_type *lvalp, CORE_ADDR *addrp,
-			    int *realnump, void *bufferp)
+			    int *realnump, gdb_byte *bufferp)
 {
   struct trad_frame_cache *cache =
     mn10300_frame_unwind_cache(next_frame, this_prologue_cache);
 
 #if 1
   trad_frame_get_register(cache, next_frame, regnum, optimizedp, 
-			  lvalp, addrp, realnump, (gdb_byte *)bufferp);
+			  lvalp, addrp, realnump, bufferp);
 #else
   trad_frame_get_prev_register(next_frame, cache->prev_regs, regnum, 
 			       optimizedp, lvalp, addrp, realnump, bufferp);
@@ -1021,7 +1024,7 @@ mn10300_gdbarch_init(struct gdbarch_info info,
 static void
 mn10300_dump_tdep(struct gdbarch *current_gdbarch, struct ui_file *file)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   fprintf_unfiltered(file, "mn10300_dump_tdep: am33_mode = %d\n",
 		     tdep->am33_mode);
 }

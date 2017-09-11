@@ -432,7 +432,7 @@ gr_close(int quitting)
    with your gdb.  */
 
 void
-gr_detach(char *args, int from_tty)
+gr_detach(const char *args, int from_tty)
 {
   if (args)
     error(_("Argument given to \"detach\" when remotely debugging."));
@@ -487,7 +487,8 @@ gr_kill(void)
 /* This is called not only when we first attach, but also when the
    user types "run" after having attached.  */
 void
-gr_create_inferior(char *execfile, char *args, char **env)
+gr_create_inferior(char *execfile, char *args, char **env,
+		   int unusedarg ATTRIBUTE_UNUSED)
 {
   int entry_pt;
 

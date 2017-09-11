@@ -108,22 +108,22 @@ static ptid_t monitor_wait(ptid_t ptid, struct target_waitstatus *status,
 static void monitor_fetch_registers(int regno);
 static void monitor_store_registers(int regno);
 static void monitor_prepare_to_store(void);
-static int monitor_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len,
+static int monitor_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len,
                                int write, struct mem_attrib *attrib,
                                struct target_ops *target);
 static void monitor_files_info(struct target_ops *ops);
-static int monitor_insert_breakpoint(CORE_ADDR addr, const char *shadow);
-static int monitor_remove_breakpoint(CORE_ADDR addr, const char *shadow);
+static int monitor_insert_breakpoint(CORE_ADDR addr, gdb_byte *shadow);
+static int monitor_remove_breakpoint(CORE_ADDR addr, gdb_byte *shadow);
 static void monitor_kill(void);
 static void monitor_load(const char *file, int from_tty);
 static void monitor_mourn_inferior(void);
 static void monitor_stop(void);
 
-static int monitor_read_memory(CORE_ADDR addr, const char *myaddr, int len);
-static int monitor_write_memory(CORE_ADDR addr, const char *myaddr, int len);
-static int monitor_write_memory_bytes(CORE_ADDR addr, const char *myaddr,
+static int monitor_read_memory(CORE_ADDR addr, gdb_byte *myaddr, int len);
+static int monitor_write_memory(CORE_ADDR addr, gdb_byte *myaddr, int len);
+static int monitor_write_memory_bytes(CORE_ADDR addr, gdb_byte *myaddr,
 				      int len);
-static int monitor_write_memory_block(CORE_ADDR memaddr, const char *myaddr,
+static int monitor_write_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr,
 				      int len);
 static int monitor_expect_regexp(struct re_pattern_buffer *pat,
 				 const char *buf, int buflen);
@@ -1453,7 +1453,7 @@ monitor_files_info(struct target_ops *ops)
 
 /* */
 static int
-monitor_write_memory(CORE_ADDR memaddr, const char *myaddr, int len)
+monitor_write_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len)
 {
   unsigned int val, hostval;
   const char *cmd;
@@ -1554,7 +1554,7 @@ monitor_write_memory(CORE_ADDR memaddr, const char *myaddr, int len)
 
 /* */
 static int
-monitor_write_memory_bytes(CORE_ADDR memaddr, const char *myaddr, int len)
+monitor_write_memory_bytes(CORE_ADDR memaddr, gdb_byte *myaddr, int len)
 {
   unsigned char val;
   int written = 0;
@@ -1646,7 +1646,7 @@ longlong_hexchars(unsigned long long value,
    Which possably entails endian conversions
  */
 static int
-monitor_write_memory_longlongs(CORE_ADDR memaddr, const char *myaddr, int len)
+monitor_write_memory_longlongs(CORE_ADDR memaddr, gdb_byte *myaddr, int len)
 {
   static char hexstage[20]; /* At least 16 digits required, plus null */
   char *endstring;
@@ -1696,7 +1696,7 @@ monitor_write_memory_longlongs(CORE_ADDR memaddr, const char *myaddr, int len)
    monitor variations.
  */
 static int
-monitor_write_memory_block(CORE_ADDR memaddr, const char *myaddr, int len)
+monitor_write_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr, int len)
 {
   int written;
   written = 0;
@@ -1715,7 +1715,7 @@ monitor_write_memory_block(CORE_ADDR memaddr, const char *myaddr, int len)
    which can only read a single byte/word/etc. at a time.  */
 
 static int
-monitor_read_memory_single(CORE_ADDR memaddr, const char *myaddr, int len)
+monitor_read_memory_single(CORE_ADDR memaddr, gdb_byte *myaddr, int len)
 {
   unsigned int val;
   char membuf[(sizeof(int) * 2UL) + 1UL];
@@ -1841,7 +1841,7 @@ monitor_read_memory_single(CORE_ADDR memaddr, const char *myaddr, int len)
    than 16 bytes at a time.  */
 
 static int
-monitor_read_memory(CORE_ADDR memaddr, const char *myaddr, int len)
+monitor_read_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len)
 {
   unsigned int val;
   char buf[512];
@@ -2031,7 +2031,7 @@ monitor_read_memory(CORE_ADDR memaddr, const char *myaddr, int len)
    unused. */
 
 static int
-monitor_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
+monitor_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
 		    struct mem_attrib *attrib, struct target_ops *target)
 {
   int res;
@@ -2086,7 +2086,7 @@ monitor_mourn_inferior(void)
 
 /* Tell the monitor to add a breakpoint: */
 static int
-monitor_insert_breakpoint(CORE_ADDR addr, const char *shadow)
+monitor_insert_breakpoint(CORE_ADDR addr, gdb_byte *shadow)
 {
   int i;
   const unsigned char *bp;
@@ -2121,7 +2121,7 @@ monitor_insert_breakpoint(CORE_ADDR addr, const char *shadow)
 
 /* Tell the monitor to remove a breakpoint: */
 static int
-monitor_remove_breakpoint(CORE_ADDR addr, const char *shadow)
+monitor_remove_breakpoint(CORE_ADDR addr, gdb_byte *shadow)
 {
   int i;
 

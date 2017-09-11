@@ -41,6 +41,8 @@
 
 #include "m88k-tdep.h"
 
+#include "monitor.h"
+
 /* External data declarations */
 extern int stop_soon_quietly;	/* for wait_for_inferior */
 
@@ -281,7 +283,8 @@ static const char *wait_strings[] =
 };
 
 static ptid_t
-bug_wait(ptid_t ptid, struct target_waitstatus *status)
+bug_wait(ptid_t ptid, struct target_waitstatus *status,
+	 void *unusedarg ATTRIBUTE_UNUSED)
 {
   int old_timeout = sr_get_timeout();
   int old_immediate_quit = immediate_quit;
@@ -431,15 +434,25 @@ bug_srec_write_cr(const char *s)
   return (0);
 }
 
-#ifndef MAX_REGISTER_RAW_SIZE
-/* arbitrarily made-up default: */
-# define MAX_REGISTER_RAW_SIZE 12
-#endif /* !MAX_REGISTER_RAW_SIZE */
 #ifndef REGISTER_RAW_SIZE
 # ifdef DEPRECATED_REGISTER_RAW_SIZE
 #  define REGISTER_RAW_SIZE(foo) DEPRECATED_REGISTER_RAW_SIZE(foo)
+# else
+/* from tm-m88k.h: */
+#  ifdef XFP_REGNUM
+#   define REGISTER_RAW_SIZE(N) (((N) < XFP_REGNUM) ? 4 : 10)
+#  endif /* XFP_REGNUM */
 # endif /* DEPRECATED_REGISTER_RAW_SIZE */
 #endif /* !REGISTER_RAW_SIZE */
+#ifndef MAX_REGISTER_RAW_SIZE
+/* from tm-m88k.h: */
+# if defined(REGISTER_RAW_SIZE) && defined(XFP_REGNUM)
+#  define MAX_REGISTER_RAW_SIZE (REGISTER_RAW_SIZE(XFP_REGNUM))
+# else
+/* arbitrarily made-up default: */
+#  define MAX_REGISTER_RAW_SIZE 12
+# endif /* REGISTER_RAW_SIZE && XFP_REGNUM */
+#endif /* !MAX_REGISTER_RAW_SIZE */
 #ifndef SFIP_REGNUM
 # define SFIP_REGNUM M88K_SFIP_REGNUM
 #endif /* !SFIP_REGNUM */
@@ -870,7 +883,7 @@ static int num_brkpts = 0;
    is saved.  It is unused here since the bug is responsible for
    saving/restoring the original instruction. */
 static int
-bug_insert_breakpoint(CORE_ADDR addr, const char *save)
+bug_insert_breakpoint(CORE_ADDR addr, gdb_byte *save)
 {
   sr_check_open();
 
@@ -897,7 +910,7 @@ bug_insert_breakpoint(CORE_ADDR addr, const char *save)
    saved pattern, but is unused here since the bug is responsible
    for saving/restoring instructions. */
 static int
-bug_remove_breakpoint(CORE_ADDR addr, const char *save)
+bug_remove_breakpoint(CORE_ADDR addr, gdb_byte *save)
 {
   if (num_brkpts > 0)
     {

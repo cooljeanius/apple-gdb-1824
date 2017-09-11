@@ -70,9 +70,9 @@ m88k_register_name(int regnum)
 
 /* Return the GDB type object for the "standard" data type of data in
    register REGNUM. */
-
-static struct type *
-m88k_register_type (struct gdbarch *gdbarch, int regnum)
+/* Removed "static" to avoid conflict with "config/tm-m88k.h" */
+struct type *
+m88k_register_type(struct gdbarch *gdbarch, int regnum)
 {
   /* SXIP, SNIP, SFIP and R1 contain code addresses.  */
   if ((regnum >= M88K_SXIP_REGNUM && regnum <= M88K_SFIP_REGNUM)
@@ -86,14 +86,14 @@ m88k_register_type (struct gdbarch *gdbarch, int regnum)
   return builtin_type_int32;
 }
 
-
-static CORE_ADDR
-m88k_addr_bits_remove (CORE_ADDR addr)
+/* Removed "static" to avoid conflict with "config/tm-m88k.h" */
+CORE_ADDR ATTRIBUTE_CONST
+m88k_addr_bits_remove(CORE_ADDR addr)
 {
   /* All instructures are 4-byte aligned.  The lower 2 bits of SXIP,
      SNIP and SFIP are used for special purposes: bit 0 is the
      exception bit and bit 1 is the valid bit.  */
-  return addr & ~0x3;
+  return (addr & ~0x3);
 }
 
 /* Use the program counter to determine the contents and size of a
@@ -631,9 +631,9 @@ const int m88k_max_prologue_size = 128 * M88K_INSN_SIZE;
 
 /* Return the address of first real instruction of the function
    starting at PC.  */
-
-static CORE_ADDR
-m88k_skip_prologue (CORE_ADDR pc)
+/* Removed "static" to avoid conflict with "config/tm-m88k.h" */
+CORE_ADDR
+m88k_skip_prologue(CORE_ADDR pc)
 {
   struct symtab_and_line sal;
   CORE_ADDR func_start, func_end;

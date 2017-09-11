@@ -278,8 +278,10 @@ iq2000_scan_prologue(CORE_ADDR scan_start, CORE_ADDR scan_end,
 	  if (tgtreg == E_SP_REGNUM || tgtreg == E_FP_REGNUM)
 	    {
 	      /* "push" to stack (via SP or FP reg) */
-	      if (cache->saved_regs[srcreg] == -1) /* Don't save twice.  */
+	      if (cache->saved_regs[srcreg] == INVALID_ADDRESS) {
+		/* Do NOT save twice.  */
 		cache->saved_regs[srcreg] = offset;
+	      }
 	      continue;
 	    }
 	}
@@ -393,7 +395,7 @@ iq2000_frame_cache(struct frame_info *next_frame, void **this_cache)
   cache->saved_sp = cache->base + cache->framesize;
 
   for (i = 0; i < E_NUM_REGS; i++)
-    if (cache->saved_regs[i] != -1)
+    if (cache->saved_regs[i] != INVALID_ADDRESS)
       cache->saved_regs[i] += cache->base;
 
   return cache;
@@ -405,7 +407,7 @@ iq2000_frame_prev_register(struct frame_info *next_frame, void **this_cache,
 			   /* APPLE LOCAL variable opt states.  */
 			   int regnum, enum opt_state *optimizedp,
 			   enum lval_type *lvalp, CORE_ADDR *addrp,
-			   int *realnump, void *valuep)
+			   int *realnump, gdb_byte *valuep)
 {
   struct iq2000_frame_cache *cache = iq2000_frame_cache(next_frame, this_cache);
   if ((regnum == E_SP_REGNUM) && cache->saved_sp)
@@ -416,14 +418,14 @@ iq2000_frame_prev_register(struct frame_info *next_frame, void **this_cache,
       *addrp = 0;
       *realnump = -1;
       if (valuep)
-        store_unsigned_integer((gdb_byte *)valuep, 4, cache->saved_sp);
+        store_unsigned_integer(valuep, 4, cache->saved_sp);
       return;
     }
 
   if (regnum == E_PC_REGNUM)
     regnum = E_LR_REGNUM;
 
-  if ((regnum < E_NUM_REGS) && (cache->saved_regs[regnum] != -1))
+  if ((regnum < E_NUM_REGS) && (cache->saved_regs[regnum] != INVALID_ADDRESS))
     {
       /* APPLE LOCAL variable opt states.  */
       *optimizedp = opt_okay;
@@ -431,8 +433,7 @@ iq2000_frame_prev_register(struct frame_info *next_frame, void **this_cache,
       *addrp = cache->saved_regs[regnum];
       *realnump = -1;
       if (valuep)
-        read_memory(*addrp, (gdb_byte *)valuep,
-		    register_size(current_gdbarch, regnum));
+        read_memory(*addrp, valuep, register_size(current_gdbarch, regnum));
       return;
     }
 
@@ -442,7 +443,7 @@ iq2000_frame_prev_register(struct frame_info *next_frame, void **this_cache,
   *addrp = 0; 
   *realnump = regnum;
   if (valuep)
-    frame_unwind_register(next_frame, (*realnump), (gdb_byte *)valuep);
+    frame_unwind_register(next_frame, (*realnump), valuep);
 }
 
 /* */

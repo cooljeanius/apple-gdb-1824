@@ -73,7 +73,7 @@ bsd_uthread_set_supply_uthread(struct gdbarch *gdbarch,
 						      int, CORE_ADDR))
 {
   struct bsd_uthread_ops *ops =
-    (struct bsd_uthread_ops *)gdbarch_data(gdbarch, bsd_uthread_data);
+    (struct bsd_uthread_ops *)new_gdbarch_data(gdbarch, bsd_uthread_data);
   ops->supply_uthread = supply_uthread;
 }
 
@@ -85,7 +85,7 @@ bsd_uthread_set_collect_uthread(struct gdbarch *gdbarch,
 							int, CORE_ADDR))
 {
   struct bsd_uthread_ops *ops =
-    (struct bsd_uthread_ops *)gdbarch_data(gdbarch, bsd_uthread_data);
+    (struct bsd_uthread_ops *)new_gdbarch_data(gdbarch, bsd_uthread_data);
   ops->collect_uthread = collect_uthread;
 }
 
@@ -156,7 +156,7 @@ bsd_uthread_activate(struct objfile *objfile)
 {
   struct gdbarch *gdbarch = current_gdbarch;
   struct bsd_uthread_ops *ops =
-    (struct bsd_uthread_ops *)gdbarch_data(gdbarch, bsd_uthread_data);
+    (struct bsd_uthread_ops *)new_gdbarch_data(gdbarch, bsd_uthread_data);
 
   /* Skip if the thread stratum has already been activated.  */
   if (bsd_uthread_active)
@@ -276,7 +276,7 @@ bsd_uthread_fetch_registers(int regnum)
 {
   struct gdbarch *gdbarch = current_gdbarch;
   struct bsd_uthread_ops *ops =
-    (struct bsd_uthread_ops *)gdbarch_data(gdbarch, bsd_uthread_data);
+    (struct bsd_uthread_ops *)new_gdbarch_data(gdbarch, bsd_uthread_data);
   CORE_ADDR addr = ptid_get_tid(inferior_ptid);
   CORE_ADDR active_addr;
 
@@ -304,7 +304,7 @@ bsd_uthread_store_registers(int regnum)
 {
   struct gdbarch *gdbarch = current_gdbarch;
   struct bsd_uthread_ops *ops =
-    (struct bsd_uthread_ops *)gdbarch_data(gdbarch, bsd_uthread_data);
+    (struct bsd_uthread_ops *)new_gdbarch_data(gdbarch, bsd_uthread_data);
   CORE_ADDR addr = ptid_get_tid(inferior_ptid);
   CORE_ADDR active_addr;
 

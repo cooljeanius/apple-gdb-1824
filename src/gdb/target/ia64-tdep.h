@@ -1,4 +1,4 @@
-/* Target-dependent code for the ia64.
+/* ia64-tdep.h: Target-dependent code for the ia64.
 
    Copyright 2004, 2005 Free Software Foundation, Inc.
 
@@ -198,9 +198,20 @@
 
 struct gdbarch_tdep
 {
-  CORE_ADDR (*sigcontext_register_address) (CORE_ADDR, int);
+  CORE_ADDR (*sigcontext_register_address)(CORE_ADDR, int);
 };
 
-extern void ia64_write_pc (CORE_ADDR, ptid_t);
+extern void ia64_write_pc(CORE_ADDR, ptid_t);
+
+extern int ia64_register_reggroup_p(struct gdbarch *, int, struct reggroup *);
+
+extern int ia64_use_struct_convention(int, struct type *);
+
+extern void ia64_extract_return_value(struct type *, struct regcache *,
+				      gdb_byte *);
+
+extern CORE_ADDR ia64_extract_struct_value_address(struct regcache *);
 
 #endif /* ia64-tdep.h */
+
+/* EOF */

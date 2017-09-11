@@ -30,7 +30,7 @@
 #define SOFUN_ADDRESS_MAYBE_MISSING
 
 /* FIXME: where is this defined? */
-extern char *sunpro_static_transform_name(char *);
+extern char *sunpro_static_transform_name(const char *);
 #define STATIC_TRANSFORM_NAME(x) sunpro_static_transform_name(x)
 #define IS_STATIC_TRANSFORM_NAME(name) ((name)[0] == '.')
 

@@ -29,6 +29,8 @@
 #include "gdbcore.h"
 #include "inferior.h"
 
+#include "gdb_assert.h"
+
 /* A sequence of instructions pushed on the stack when we want to perform
    an inferior function call.  The main purpose of this code is to save
    the output region of the register frame belonging to the function
@@ -404,7 +406,7 @@ ia64_hpux_find_global_pointer_from_solib (struct gdbarch *gdbarch,
 static void
 ia64_hpux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->size_of_register_frame = ia64_hpux_size_of_register_frame;
 

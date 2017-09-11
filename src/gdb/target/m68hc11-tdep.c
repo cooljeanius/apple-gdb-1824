@@ -154,7 +154,7 @@ struct gdbarch_tdep
     int elf_flags;
   };
 
-#define M6811_TDEP gdbarch_tdep (current_gdbarch)
+#define M6811_TDEP new_gdbarch_tdep(current_gdbarch)
 #define STACK_CORRECTION (M6811_TDEP->stack_correction)
 #define USE_PAGE_REGISTER (M6811_TDEP->use_page_register)
 
@@ -512,8 +512,8 @@ m68hc11_analyze_instruction (struct insn_sequence *seq, CORE_ADDR pc,
                              CORE_ADDR *val)
 {
   unsigned char buffer[MAX_CODES];
-  unsigned bufsize;
-  unsigned j;
+  size_t bufsize;
+  unsigned int j;
   CORE_ADDR cur_val;
   short v = 0;
 
@@ -572,6 +572,9 @@ m68hc11_analyze_instruction (struct insn_sequence *seq, CORE_ADDR pc,
                 }
               cur_val = v;
               break;
+
+	    default:
+	      break;
             }
         }
 
@@ -637,7 +640,7 @@ m68hc11_scan_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
       return pc;
     }
 
-  seq_table = gdbarch_tdep (current_gdbarch)->prologue;
+  seq_table = new_gdbarch_tdep(current_gdbarch)->prologue;
 
   /* The 68hc11 stack is as follows:
 
@@ -909,14 +912,13 @@ m68hc11_frame_prev_register(struct frame_info *next_frame,
 			    /* APPLE LOCAL variable opt states.  */
                             int regnum, enum opt_state *optimizedp,
                             enum lval_type *lvalp, CORE_ADDR *addrp,
-                            int *realnump, void *bufferp)
+                            int *realnump, gdb_byte *bufferp)
 {
   struct m68hc11_unwind_cache *info =
     m68hc11_frame_unwind_cache(next_frame, this_prologue_cache);
 
   trad_frame_get_prev_register(next_frame, info->saved_regs, regnum,
-			       optimizedp, lvalp, addrp, realnump,
-			       (gdb_byte *)bufferp);
+			       optimizedp, lvalp, addrp, realnump, bufferp);
 
   if (regnum == HARD_PC_REGNUM)
     {
@@ -1040,7 +1042,7 @@ m68hc11_print_register (struct gdbarch *gdbarch, struct ui_file *file,
     }
   else
     {
-      if (regno == HARD_PC_REGNUM && gdbarch_tdep (gdbarch)->use_page_register)
+      if (regno == HARD_PC_REGNUM && new_gdbarch_tdep(gdbarch)->use_page_register)
         {
           ULONGEST page;
 
@@ -1143,7 +1145,7 @@ m68hc11_print_registers_info (struct gdbarch *gdbarch, struct ui_file *file,
       fprintf_filtered (file, " Y=");
       m68hc11_print_register (gdbarch, file, frame, HARD_Y_REGNUM);
 
-      if (gdbarch_tdep (gdbarch)->use_page_register)
+      if (new_gdbarch_tdep(gdbarch)->use_page_register)
         {
           fprintf_filtered (file, "\nPage=");
           m68hc11_print_register (gdbarch, file, frame, HARD_PAGE_REGNUM);
@@ -1466,7 +1468,7 @@ m68hc11_gdbarch_init (struct gdbarch_info info,
        arches != NULL;
        arches = gdbarch_list_lookup_by_info (arches->next, &info))
     {
-      if (gdbarch_tdep (arches->gdbarch)->elf_flags != elf_flags)
+      if (new_gdbarch_tdep(arches->gdbarch)->elf_flags != elf_flags)
 	continue;
 
       return arches->gdbarch;
@@ -1493,15 +1495,19 @@ m68hc11_gdbarch_init (struct gdbarch_info info,
       tdep->stack_correction = 0;
       tdep->use_page_register = elf_flags & E_M68HC12_BANKS;
       tdep->prologue = m6812_prologue;
-      set_gdbarch_addr_bit (gdbarch, elf_flags & E_M68HC12_BANKS ? 32 : 16);
-      set_gdbarch_num_pseudo_regs (gdbarch,
-                                   elf_flags & E_M68HC12_BANKS
-                                   ? M68HC12_NUM_PSEUDO_REGS
-                                   : M68HC11_NUM_PSEUDO_REGS);
-      set_gdbarch_pc_regnum (gdbarch, elf_flags & E_M68HC12_BANKS
-                             ? M68HC12_HARD_PC_REGNUM : HARD_PC_REGNUM);
-      set_gdbarch_num_regs (gdbarch, elf_flags & E_M68HC12_BANKS
-                            ? M68HC12_NUM_REGS : M68HC11_NUM_REGS);
+      set_gdbarch_addr_bit(gdbarch, ((elf_flags & E_M68HC12_BANKS) ? 32 : 16));
+      /* blah, trying to avoid -Wduplicated-branches here but failing: */
+      set_gdbarch_num_pseudo_regs(gdbarch,
+                                  ((M68HC11_NUM_PSEUDO_REGS == M68HC12_NUM_PSEUDO_REGS)
+				   ? M68HC11_NUM_PSEUDO_REGS
+				   : ((elf_flags & E_M68HC12_BANKS)
+				      ? M68HC12_NUM_PSEUDO_REGS
+				      : M68HC11_NUM_PSEUDO_REGS)));
+      set_gdbarch_pc_regnum(gdbarch, ((elf_flags & E_M68HC12_BANKS)
+				      ? M68HC12_HARD_PC_REGNUM
+				      : HARD_PC_REGNUM));
+      set_gdbarch_num_regs(gdbarch, ((elf_flags & E_M68HC12_BANKS)
+				     ? M68HC12_NUM_REGS : M68HC11_NUM_REGS));
       break;
 
     default:

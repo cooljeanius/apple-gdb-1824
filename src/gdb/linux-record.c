@@ -760,6 +760,7 @@ record_linux_system_call (enum gdb_syscall syscall,
         if (record_linux_sockaddr (regcache, tdep, tmpulongest, len))
           return -1;
       }
+      break; /* assuming this break was missing since other cases look alike */
     case gdb_sys_recv:
       {
         ULONGEST size;
@@ -829,8 +830,6 @@ record_linux_system_call (enum gdb_syscall syscall,
             if (tmpulongest)
               {
                 gdb_byte *a = (gdb_byte *)alloca(tdep->size_ulong * 2UL);
-                int addrlen;
-                gdb_byte *addrlenp;
                 ULONGEST len;
 
                 tmpulongest += tdep->size_ulong;
@@ -892,8 +891,6 @@ record_linux_system_call (enum gdb_syscall syscall,
           if (tmpulongest)
             {
               gdb_byte *a = (gdb_byte *)alloca(tdep->size_ulong * 2UL);
-              int addrlen;
-              gdb_byte *addrlenp;
               ULONGEST len;
 
               tmpulongest += tdep->size_ulong * 4;
@@ -915,6 +912,7 @@ record_linux_system_call (enum gdb_syscall syscall,
               if (record_linux_sockaddr (regcache, tdep, tmpulongest, len))
                 return -1;
             }
+	  ATTRIBUTE_FALLTHROUGH; /* XXX: really? */
         case RECORD_SYS_RECV:
           regcache_raw_read_unsigned (regcache, tdep->arg2,
                                       &tmpulongest);
@@ -1287,6 +1285,8 @@ record_linux_system_call (enum gdb_syscall syscall,
                                         tdep->size_fs_quota_stat))
             return -1;
           break;
+	default:
+	  break;
         }
       break;
 
@@ -1513,6 +1513,8 @@ record_linux_system_call (enum gdb_syscall syscall,
                                         tdep->size_TASK_COMM_LEN))
             return -1;
           break;
+	default:
+	  break;
         }
       break;
 

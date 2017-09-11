@@ -406,7 +406,7 @@ static int i386_linux_sc_reg_offset[] =
 static void
 i386_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* GNU/Linux uses ELF.  */
   i386_elf_init_abi (info, gdbarch);

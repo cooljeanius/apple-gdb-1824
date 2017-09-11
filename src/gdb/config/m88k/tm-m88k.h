@@ -22,9 +22,12 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "doublest.h"
+#include "target.h" /* needed because "regcache.h" needs struct target_ops */
 #include "regcache.h"
 
 /* g++ support is not yet included.  */
+
+/* FIXME: -Wstrict-prototypes in this file */
 
 /* We cache information about saved registers in the frame structure,
    to save us from having to re-scan function prologues every time
@@ -35,6 +38,13 @@
 	CORE_ADDR locals_pointer;	\
 	CORE_ADDR args_pointer;
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wstrict-prototypes"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* Zero the frame_saved_regs pointer when the frame is initialized,
    so that FRAME_FIND_SAVED_REGS () will know to allocate and
    initialize a frame_saved_regs struct the first time it is called.
@@ -42,8 +52,8 @@
    indicate real, cached values.  */
 
 #define INIT_EXTRA_FRAME_INFO(fromleaf, fi) \
-	init_extra_frame_info (fromleaf, fi)
-extern void init_extra_frame_info ();
+	init_extra_frame_info(fromleaf, fi)
+extern void init_extra_frame_info();
 
 /* Offset from address of function to start of its code.
    Zero on most machines.  */
@@ -53,8 +63,8 @@ extern void init_extra_frame_info ();
 /* Advance PC across any function entry prologue instructions
    to reach some "real" code.  */
 
-extern CORE_ADDR m88k_skip_prologue (CORE_ADDR);
-#define SKIP_PROLOGUE(frompc) (m88k_skip_prologue (frompc))
+extern CORE_ADDR m88k_skip_prologue(CORE_ADDR);
+#define SKIP_PROLOGUE(frompc) (m88k_skip_prologue(frompc))
 
 /* The m88k kernel aligns all instructions on 4-byte boundaries.  The
    kernel also uses the least significant two bits for its own hocus
@@ -63,8 +73,8 @@ extern CORE_ADDR m88k_skip_prologue (CORE_ADDR);
    to realize that those two bits are not really a part of the address
    of an instruction.  Shrug.  */
 
-extern CORE_ADDR m88k_addr_bits_remove (CORE_ADDR);
-#define ADDR_BITS_REMOVE(addr) m88k_addr_bits_remove (addr)
+extern CORE_ADDR m88k_addr_bits_remove(CORE_ADDR);
+#define ADDR_BITS_REMOVE(addr) m88k_addr_bits_remove(addr)
 
 /* Immediately after a function call, return the saved pc.
    Can't always go through the frames for this because on some machines
@@ -380,8 +390,8 @@ if (!target_is_m88110) \
 /* Return the GDB type object for the "standard" data type
    of data in register N.  */
 
-struct type *m88k_register_type (int regnum);
-#define REGISTER_VIRTUAL_TYPE(N) m88k_register_type (N)
+extern struct type *m88k_register_type(struct gdbarch *gdbarch, int regnum);
+#define REGISTER_VIRTUAL_TYPE(N) m88k_register_type(NULL, N)
 
 /* The 88k call/return conventions call for "small" values to be returned
    into consecutive registers starting from r2.  */
@@ -393,9 +403,18 @@ struct type *m88k_register_type (int regnum);
 
 /* Write into appropriate registers a function return value
    of type TYPE, given in virtual format.  */
-
-#define STORE_RETURN_VALUE(TYPE,VALBUF) \
-  write_register_bytes (2*REGISTER_RAW_SIZE(0), (VALBUF), TYPE_LENGTH (TYPE))
+#if !defined(STORE_RETURN_VALUE) && defined(BREAK_ARCH_STUFF)
+# define STORE_RETURN_VALUE(TYPE,VALBUF) \
+   write_register_bytes((2 * REGISTER_RAW_SIZE(0)), (VALBUF), TYPE_LENGTH(TYPE))
+#else
+# if !defined(DEPRECATED_STORE_RETURN_VALUE) && defined(MAKE_ARCH_UTILS_WARN)
+#  define DEPRECATED_STORE_RETURN_VALUE(TYPE,VALBUF) \
+   write_register_bytes((2 * REGISTER_RAW_SIZE(0)), (VALBUF), TYPE_LENGTH(TYPE))
+# else
+#  define REALLY_DEPRECATED_STORE_RETURN_VALUE(TYPE,VALBUF) \
+   write_register_bytes((2 * REGISTER_RAW_SIZE(0)), (VALBUF), TYPE_LENGTH(TYPE))
+# endif /* !DEPRECATED_STORE_RETURN_VALUE && MAKE_ARCH_UTILS_WARN */
+#endif /* !STORE_RETURN_VALUE && BREAK_ARCH_STUFF */
 
 /* In COFF, if PCC says a parameter is a short or a char, do not
    change it to int (it seems the convention is to change it). */
@@ -411,29 +430,29 @@ struct type *m88k_register_type (int regnum);
    However, if FRAME_CHAIN_VALID returns zero,
    it means the given frame is the outermost one and has no caller.  */
 
-extern CORE_ADDR frame_chain ();
-extern int frame_chain_valid ();
-extern int frameless_function_invocation ();
+extern CORE_ADDR frame_chain();
+extern int frame_chain_valid();
+extern int frameless_function_invocation();
 
 #define FRAME_CHAIN(thisframe) \
-	frame_chain (thisframe)
+	frame_chain(thisframe)
 
 #define	FRAMELESS_FUNCTION_INVOCATION(frame)	\
-	(frameless_function_invocation (frame))
+	(frameless_function_invocation(frame))
 
 /* Define other aspects of the stack frame.  */
 
 #define FRAME_SAVED_PC(FRAME)	\
-	frame_saved_pc (FRAME)
-extern CORE_ADDR frame_saved_pc ();
+	frame_saved_pc(FRAME)
+extern CORE_ADDR frame_saved_pc();
 
 #define FRAME_ARGS_ADDRESS(fi)	\
-	frame_args_address (fi)
-extern CORE_ADDR frame_args_address ();
+	frame_args_address(fi)
+extern CORE_ADDR frame_args_address();
 
 #define FRAME_LOCALS_ADDRESS(fi) \
-	frame_locals_address (fi)
-extern CORE_ADDR frame_locals_address ();
+	frame_locals_address(fi)
+extern CORE_ADDR frame_locals_address();
 
 /* Return number of args passed to a frame.
    Can return -1, meaning no way to tell.  */
@@ -484,18 +503,28 @@ void frame_find_saved_regs (struct frame_info *fi,
 			    struct frame_saved_regs *fsr);
 
 #define FRAME_FIND_SAVED_REGS(frame_info, frame_saved_regs) \
-        frame_find_saved_regs (frame_info, &frame_saved_regs)
+        frame_find_saved_regs(frame_info, &frame_saved_regs)
 
 
-#define POP_FRAME pop_frame ()
-extern void pop_frame ();
+#define POP_FRAME pop_frame()
+extern void pop_frame();
 
 /* Call function stuff contributed by Kevin Buettner of Motorola.  */
+#ifdef AFTER_TEXT_END
+# define CALL_DUMMY_LOCATION AFTER_TEXT_END
+#else
+# define CALL_DUMMY_LOCATION (gdbarch_call_dummy_location(current_gdbarch))
+#endif /* AFTER_TEXT_END */
 
-#define CALL_DUMMY_LOCATION AFTER_TEXT_END
-
-extern void m88k_push_dummy_frame ();
+extern void m88k_push_dummy_frame();
 #define PUSH_DUMMY_FRAME	m88k_push_dummy_frame()
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 #define CALL_DUMMY { 				\
 0x67ff00c0,	/*   0:   subu	#sp,#sp,0xc0 */ \
@@ -584,5 +613,7 @@ extern void m88k_push_dummy_frame ();
    -- Kevin Buettner
  */
 
-extern void m88k_target_write_pc (CORE_ADDR pc, ptid_t ptid);
-#define TARGET_WRITE_PC(VAL, PID) m88k_target_write_pc (VAL, PID)
+extern void m88k_target_write_pc(CORE_ADDR pc, ptid_t ptid);
+#define TARGET_WRITE_PC(VAL, PID) m88k_target_write_pc(VAL, PID)
+
+/* End of tm-m88k.h */

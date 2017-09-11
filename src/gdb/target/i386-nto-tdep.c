@@ -72,9 +72,10 @@ static int i386nto_gregset_reg_offset[] =
    Neutrino's register structure or -1 if the register is unknown.  */
 
 static int
-nto_reg_offset (int regnum)
+nto_reg_offset(int regnum)
 {
-  if (regnum >= 0 && regnum < ARRAY_SIZE (i386nto_gregset_reg_offset))
+  if ((regnum >= 0)
+      && ((size_t)regnum < ARRAY_SIZE(i386nto_gregset_reg_offset)))
     return i386nto_gregset_reg_offset[regnum];
 
   return -1;
@@ -83,7 +84,7 @@ nto_reg_offset (int regnum)
 static void
 i386nto_supply_gregset (char *gpregs)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   if(tdep->gregset == NULL)
     tdep->gregset = regset_alloc (current_gdbarch, i386_supply_gregset,
@@ -103,16 +104,19 @@ i386nto_supply_fpregset (char *fpregs)
     i387_supply_fsave (current_regcache, -1, fpregs);
 }
 
+/* */
 static void
-i386nto_supply_regset (int regset, char *data)
+i386nto_supply_regset(int regset, char *data)
 {
   switch (regset)
     {
     case NTO_REG_GENERAL:
-      i386nto_supply_gregset (data);
+      i386nto_supply_gregset(data);
       break;
     case NTO_REG_FLOAT:
-      i386nto_supply_fpregset (data);
+      i386nto_supply_fpregset(data);
+      break;
+    default:
       break;
     }
 }
@@ -131,18 +135,16 @@ i386nto_regset_id (int regno)
 }
 
 static int
-i386nto_register_area (int regno, int regset, unsigned *off)
+i386nto_register_area(int regno, int regset, unsigned int *off)
 {
-  int len;
-
   *off = 0;
   if (regset == NTO_REG_GENERAL)
     {
       if (regno == -1)
 	return NUM_GPREGS * 4;
 
-      *off = nto_reg_offset (regno);
-      if (*off == -1)
+      *off = nto_reg_offset(regno);
+      if (*off == -1U)
 	return 0;
       return 4;
     }
@@ -207,13 +209,13 @@ i386nto_regset_fill (int regset, char *data)
    Neutrino sigtramp routine.  */
 
 static int
-i386nto_sigtramp_p (struct frame_info *next_frame)
+i386nto_sigtramp_p(struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  const char *name;
 
-  find_pc_partial_function (pc, &name, NULL, NULL);
-  return name && strcmp ("__signalstub", name) == 0;
+  find_pc_partial_function(pc, &name, NULL, NULL);
+  return (name && (strcmp("__signalstub", name) == 0));
 }
 
 #define I386_NTO_SIGCONTEXT_OFFSET 136
@@ -222,19 +224,20 @@ i386nto_sigtramp_p (struct frame_info *next_frame)
    routine, return the address of the associated sigcontext structure.  */
 
 static CORE_ADDR
-i386nto_sigcontext_addr (struct frame_info *next_frame)
+i386nto_sigcontext_addr(struct frame_info *next_frame)
 {
-  char buf[4];
+  gdb_byte buf[4];
   CORE_ADDR sp;
 
-  frame_unwind_register (next_frame, I386_ESP_REGNUM, buf);
-  sp = extract_unsigned_integer (buf, 4);
+  frame_unwind_register(next_frame, I386_ESP_REGNUM, buf);
+  sp = extract_unsigned_integer(buf, 4);
 
-  return sp + I386_NTO_SIGCONTEXT_OFFSET;
+  return (sp + I386_NTO_SIGCONTEXT_OFFSET);
 }
 
+/* */
 static void
-init_i386nto_ops (void)
+init_i386nto_ops(void)
 {
   i386_nto_target.regset_id = i386nto_regset_id;
   i386_nto_target.supply_gregset = i386nto_supply_gregset;
@@ -250,7 +253,7 @@ init_i386nto_ops (void)
 static void
 i386nto_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* Deal with our strange signals.  */
   nto_initialize_signals ();

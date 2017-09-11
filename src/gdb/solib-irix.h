@@ -21,7 +21,7 @@
 #define SOLIB_IRIX_H
 
 struct target_so_ops;
-extern struct target_so_ops irix_so_ops;
+extern struct target_so_ops irix_so_ops; /* FIXME: where is this defined? */
 
 extern struct lm_info fetch_lm_info(CORE_ADDR);
 

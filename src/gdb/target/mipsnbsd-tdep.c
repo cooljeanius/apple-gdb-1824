@@ -235,7 +235,7 @@ static const unsigned char sigtramp_retcode_mipseb[RETCODE_SIZE] =
 };
 
 /* */
-static LONGEST
+static LONGEST ATTRIBUTE_USED
 mipsnbsd_sigtramp_offset(struct frame_info *next_frame)
 {
   CORE_ADDR pc = frame_pc_unwind(next_frame);
@@ -282,7 +282,7 @@ mipsnbsd_sigtramp_offset(struct frame_info *next_frame)
 					 NBSD_MIPS_JB_ELEMENT_SIZE)
 
 static int
-mipsnbsd_get_longjmp_target (CORE_ADDR *pc)
+mipsnbsd_get_longjmp_target(CORE_ADDR *pc)
 {
   CORE_ADDR jb_addr;
   char *buf;
@@ -306,14 +306,14 @@ static int
 mipsnbsd_cannot_fetch_register(int regno)
 {
   return (regno == MIPS_ZERO_REGNUM
-	  || regno == mips_regnum (current_gdbarch)->fp_implementation_revision);
+	  || regno == mips_regnum(current_gdbarch)->fp_implementation_revision);
 }
 
 static int
 mipsnbsd_cannot_store_register (int regno)
 {
   return (regno == MIPS_ZERO_REGNUM
-	  || regno == mips_regnum (current_gdbarch)->fp_implementation_revision);
+	  || regno == mips_regnum(current_gdbarch)->fp_implementation_revision);
 }
 
 /* Shared library support.  */
@@ -352,7 +352,7 @@ mipsnbsd_ilp32_fetch_link_map_offsets (void)
 }
 
 static struct link_map_offsets *
-mipsnbsd_lp64_fetch_link_map_offsets (void)
+mipsnbsd_lp64_fetch_link_map_offsets(void)
 {
   static struct link_map_offsets lmo;
   static struct link_map_offsets *lmp = NULL;
@@ -381,30 +381,29 @@ mipsnbsd_lp64_fetch_link_map_offsets (void)
   return lmp;
 }
 
-
+/* */
 static void
-mipsnbsd_init_abi (struct gdbarch_info info,
-                   struct gdbarch *gdbarch)
+mipsnbsd_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  set_gdbarch_regset_from_core_section
-    (gdbarch, mipsnbsd_regset_from_core_section);
+  set_gdbarch_regset_from_core_section(gdbarch,
+				       mipsnbsd_regset_from_core_section);
 
-  set_gdbarch_get_longjmp_target (gdbarch, mipsnbsd_get_longjmp_target);
+  set_gdbarch_get_longjmp_target(gdbarch, mipsnbsd_get_longjmp_target);
 
-  set_gdbarch_cannot_fetch_register (gdbarch, mipsnbsd_cannot_fetch_register);
-  set_gdbarch_cannot_store_register (gdbarch, mipsnbsd_cannot_store_register);
+  set_gdbarch_cannot_fetch_register(gdbarch, mipsnbsd_cannot_fetch_register);
+  set_gdbarch_cannot_store_register(gdbarch, mipsnbsd_cannot_store_register);
 
-  set_gdbarch_software_single_step (gdbarch, mips_software_single_step);
+  set_gdbarch_software_single_step(gdbarch, mips_software_single_step);
 
-  /* NetBSD/mips has SVR4-style shared libraries.  */
-  set_solib_svr4_fetch_link_map_offsets
-    (gdbarch, (gdbarch_ptr_bit (gdbarch) == 32 ?
-	       mipsnbsd_ilp32_fetch_link_map_offsets :
-	       mipsnbsd_lp64_fetch_link_map_offsets));
+  /* NetBSD/mips has SVR4-style shared libraries: */
+  set_solib_svr4_fetch_link_map_offsets(gdbarch,
+					((gdbarch_ptr_bit(gdbarch) == 32)
+					 ? mipsnbsd_ilp32_fetch_link_map_offsets
+					 : mipsnbsd_lp64_fetch_link_map_offsets));
 }
 
 /* */
-static enum gdb_osabi
+static enum gdb_osabi ATTRIBUTE_USED
 mipsnbsd_core_osabi_sniffer(bfd *abfd)
 {
   if (strcmp(bfd_get_target(abfd), "netbsd-core") == 0)

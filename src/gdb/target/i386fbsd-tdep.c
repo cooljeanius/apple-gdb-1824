@@ -131,7 +131,7 @@ i386fbsd_collect_uthread(const struct regcache *regcache,
 static void
 i386fbsdaout_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* Obviously FreeBSD is BSD-based.  */
   i386bsd_init_abi (info, gdbarch);
@@ -210,7 +210,7 @@ int i386fbsd4_sc_reg_offset[] =
 static void
 i386fbsd4_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* Inherit stuff from older releases.  We assume that FreeBSD
      4.0-RELEASE always uses ELF.  */

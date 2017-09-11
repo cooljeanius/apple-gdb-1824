@@ -82,7 +82,7 @@ i386_sol2_mcontext_addr (struct frame_info *next_frame)
 static void
 i386_sol2_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* Solaris is SVR4-based.  */
   i386_svr4_init_abi (info, gdbarch);

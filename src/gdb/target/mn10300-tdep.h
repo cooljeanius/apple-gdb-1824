@@ -75,6 +75,6 @@ struct gdbarch_tdep
   int am33_mode;
 };
 
-#define AM33_MODE (gdbarch_tdep (current_gdbarch)->am33_mode)
+#define AM33_MODE (new_gdbarch_tdep(current_gdbarch)->am33_mode)
 
 
