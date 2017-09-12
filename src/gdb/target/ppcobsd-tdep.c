@@ -123,7 +123,7 @@ ppcobsd_sigtramp_cache_init (const struct tramp_frame *self,
 			     CORE_ADDR func)
 {
   struct gdbarch *gdbarch = get_frame_arch (next_frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   CORE_ADDR addr, base;
   int i;
 

@@ -84,6 +84,8 @@
 #include <string.h>
 #include <signal.h>
 
+#include "stubs/gdbstubs.h"
+
 /************************************************************************
  *
  * external low-level support routines

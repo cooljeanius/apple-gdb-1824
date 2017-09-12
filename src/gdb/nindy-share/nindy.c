@@ -13,7 +13,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 
 /* This started out life as code shared between the nindy monitor and
    GDB.  For various reasons, this is no longer true.  Eventually, it
@@ -121,7 +121,7 @@ static int ninStrGet();
 /* VARARGS */
 static void
 #ifdef ANSI_PROTOTYPES
-say (char *fmt, ...)
+say (const char *fmt, ...)
 #else
 say (va_alist)
      va_dcl
@@ -135,7 +135,7 @@ say (va_alist)
 
   va_start (args);
   fmt = va_arg (args, char *);
-#endif /* ANSI_PROTOTYPES *//
+#endif /* ANSI_PROTOTYPES */
 
   if (!quiet)
     {
@@ -210,8 +210,8 @@ exists( base, c1, c2, c3, env )
 		}
 	}
 
-	if ( stat(path,&buf) != 0 ){
-		free( path );
+	if (stat(path, &buf) != 0) {
+		xfree(path);
 		path = NULL;
 	}
 	return path;
@@ -369,11 +369,11 @@ putpkt( msg, len )
 	 * case, each character would expand into a 2-character escape
 	 * sequence.
 	 */
-	if ( maxbuf < ((2*len)+10) ){
-		if ( buf ){
-			free( buf );
+	if (maxbuf < ((2 * len) + 10)){
+		if (buf) {
+			xfree(buf);
 		}
-		buf = xmalloc( maxbuf=((2*len)+10) );
+		buf = xmalloc(maxbuf = ((2 * len) + 10));
 	}
 
 	/* Attention, NINDY!
@@ -433,7 +433,7 @@ send( out, len, in )
 {
 	char *fmt;
 	int status;
-	static char *errmsg[] = {
+	static const char *errmsg[] = {
 		"",						/* 0 */
 		"Buffer overflow",				/* 1 */
 		"Unknown command",				/* 2 */
@@ -478,7 +478,7 @@ send( out, len, in )
  * appears both as character string and as a Unix baud rate constant.
  */
 struct baudrate {
-	char *string;
+	const char *string;
 	int rate;
 };
 
@@ -630,15 +630,15 @@ int ninBaud( baudrate )
 	{
 	  csum += *p;
 	}
-      sprintf (msg, "\020z%s#%02x", baudrate, csum);
-      serial_write (nindy_serial, msg, strlen (msg));
+      snprintf(msg, sizeof(msg), "\020z%s#%02x", baudrate, csum);
+      serial_write(nindy_serial, msg, strlen(msg));
     }
   else
     {
       /* Cannot use "send" because NINDY reply will be unreadable after
 	   * baud rate change.  */
-      sprintf( msg, "z%s", baudrate );
-      putpkt( msg, strlen(msg)+1 );	/* "+1" to send terminator too */
+      snprintf(msg, sizeof(msg), "z%s", baudrate);
+      putpkt(msg, (strlen(msg) + 1));	/* "+1" to send terminator too */
     }
 	return 0;
 }
@@ -723,7 +723,7 @@ ninConnect( name, baudrate, brk, silent, old_protocol )
 
 	/* We will try each of the following paths when trying to open the tty
 	 */
-	static char *prefix[] = { "", "/dev/", "/dev/tty", NULL };
+	static const char *prefix[] = { "", "/dev/", "/dev/tty", NULL };
 
 	if ( old_protocol ){
 		old_nindy = 1;
@@ -760,10 +760,10 @@ ninConnect( name, baudrate, brk, silent, old_protocol )
 			}
 			tty_flush (nindy_serial);
 			say( "Connected to %s\n", p );
-			free(p);
+			xfree(p);
 			break;
 		}
-		free(p);
+		xfree(p);
 	}
 	return 0;
 }
@@ -893,13 +893,13 @@ ninRegGet( regname )
 	unsigned char outbuf[10];
 	unsigned char inbuf[20];
 
-	if ( old_nindy ){
-		return OninRegGet( regname );
+	if (old_nindy) {
+		return OninRegGet(regname);
 	}
 
-	sprintf( outbuf, "u%s:", regname );
-	send( outbuf, strlen(outbuf), inbuf );
-	return extract_unsigned_integer (inbuf, 4);
+	snprintf(outbuf, sizeof(outbuf), "u%s:", regname);
+	send(outbuf, strlen(outbuf), inbuf);
+	return extract_unsigned_integer(inbuf, 4);
 }
 
 /******************************************************************************
@@ -926,7 +926,7 @@ int ninRegPut( regname, val )
 		return 1;
 	}
 
-	sprintf( buf, "U%s:", regname );
+	snprintf(buf, sizeof(buf), "U%s:", regname);
 	len = strlen(buf);
 	store_unsigned_integer (&buf[len], 4, val);
 	send( buf, len+4, NULL );

@@ -24,6 +24,8 @@
 
 /* Definitions to target GDB to any i960.  */
 
+/* FIXME: -Wstrict-prototypes in this file */
+
 #ifndef I80960
 # define I80960
 #endif /* !I80960 */
@@ -49,16 +51,30 @@
 /* Advance ip across any function entry prologue instructions
    to reach some "real" code.  */
 
-#define SKIP_PROLOGUE(ip)	(i960_skip_prologue (ip))
-extern CORE_ADDR i960_skip_prologue ();
+#define SKIP_PROLOGUE(ip)	(i960_skip_prologue(ip))
+extern CORE_ADDR i960_skip_prologue(CORE_ADDR);
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wstrict-prototypes"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* Immediately after a function call, return the saved ip.
    Cannot always go through the frames for this because on some machines
    the new frame is not set up until the new function
    executes some instructions.  */
 
-#define SAVED_PC_AFTER_CALL(frame) (saved_pc_after_call (frame))
-extern CORE_ADDR saved_pc_after_call ();
+#define SAVED_PC_AFTER_CALL(frame) (saved_pc_after_call(frame))
+extern CORE_ADDR saved_pc_after_call();
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 /* Stack grows upward */
 
@@ -149,7 +165,9 @@ extern void i960_get_saved_register (char *raw_buffer,
 
 #include "floatformat.h"
 
-#define TARGET_LONG_DOUBLE_FORMAT &floatformat_i960_ext
+#if !defined(TARGET_LONG_DOUBLE_FORMAT) && defined(BREAK_DOUBLEST_C)
+# define TARGET_LONG_DOUBLE_FORMAT &floatformat_i960_ext
+#endif /* !TARGET_LONG_DOUBLE_FORMAT && BREAK_DOUBLEST_C */
 
 /* Return the GDB type object for the "standard" data type
    of data in register N.  */
@@ -203,9 +221,18 @@ extern use_struct_convention_fn i960_use_struct_convention;
    of type TYPE, given in virtual format, for "value returning" functions.
 
    For 'return' command:  not (yet) implemented for i960.  */
-
-#define STORE_RETURN_VALUE(TYPE,VALBUF) \
-    error ("Returning values from functions is not implemented in i960 gdb")
+#if !defined(STORE_RETURN_VALUE) && defined(BREAK_ARCH_STUFF)
+# define STORE_RETURN_VALUE(TYPE,VALBUF) \
+    error("Returning values from functions is not implemented in i960 gdb")
+#else
+# if !defined(DEPRECATED_STORE_RETURN_VALUE) && defined(MAKE_ARCH_UTILS_WARN)
+#  define DEPRECATED_STORE_RETURN_VALUE(TYPE,VALBUF) \
+    error("Returning values from functions is not implemented in i960 gdb")
+# else
+#  define REALLY_DEPRECATED_STORE_RETURN_VALUE(TYPE,VALBUF) \
+    error("Returning values from functions is not implemented in i960 gdb")
+# endif /* !DEPRECATED_STORE_RETURN_VALUE && MAKE_ARCH_UTILS_WARN */
+#endif /* !STORE_RETURN_VALUE && BREAK_ARCH_STUFF */
 
 /* Store the address of the place in which to copy the structure the
    subroutine will return.  This is called from call_function. */
@@ -275,8 +302,8 @@ CORE_ADDR leafproc_return (CORE_ADDR ip);
    We cache this value in the frame info if we have already looked it up.  */
 
 #define FRAME_ARGS_ADDRESS(fi) 	\
-  (((fi)->arg_pointer != -1)? (fi)->arg_pointer: frame_args_address (fi, 0))
-extern CORE_ADDR frame_args_address ();		/* i960-tdep.c */
+  (((fi)->arg_pointer != -1) ? (fi)->arg_pointer : frame_args_address(fi, 0))
+extern CORE_ADDR frame_args_address(struct frame_info *, int); /* i960-tdep.c */
 
 /* This is the same except it should return 0 when
    it does not really know where the args are, rather than guessing.
@@ -298,8 +325,13 @@ extern CORE_ADDR frame_args_address ();		/* i960-tdep.c */
 /* Produce the positions of the saved registers in a stack frame.  */
 
 #define FRAME_FIND_SAVED_REGS(frame_info_addr, sr) \
-	frame_find_saved_regs (frame_info_addr, &sr)
-extern void frame_find_saved_regs ();	/* See i960-tdep.c */
+	frame_find_saved_regs(frame_info_addr, &sr)
+
+struct frame_saved_regs;
+
+/* See i960-tdep.c: */
+extern void frame_find_saved_regs(struct frame_info *,
+				  struct frame_saved_regs *);
 
 /* Things needed for making calls to functions in the inferior process */
 
@@ -313,9 +345,9 @@ error("Function calls into the inferior process are not supported on the i960")
 /* Discard from the stack the innermost frame, restoring all registers.  */
 
 
-void i960_pop_frame (void);
+void i960_pop_frame(void);
 #define POP_FRAME \
-	i960_pop_frame ()
+	i960_pop_frame()
 
 
 /* This sequence of words is the instructions:

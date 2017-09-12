@@ -1,4 +1,4 @@
-/* This file is part of GDB.
+/* ttyflush.c: This file is part of GDB.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 
 /* This started out life as code shared between the nindy monitor and
    GDB.  For various reasons, this is no longer true.  Eventually, it
@@ -22,12 +22,13 @@
 #include "defs.h"
 #include "serial.h"
 
+#include "ttyflush.h"
+
 /* Flush all pending input and output for SERIAL, wait for a second, and
    then if there is a character pending, discard it and flush again.  */
 
 int
-tty_flush (serial)
-     struct serial *serial;
+tty_flush(struct serial *serial)
 {
   while (1)
     {

@@ -147,6 +147,8 @@
 #include <string.h>
 #include <setjmp.h>
 
+#include "stubs/gdbstubs.h"
+
 /* Renesas SH architecture instruction encoding masks */
 
 #define COND_BR_MASK   0xff00
@@ -772,6 +774,7 @@ gdb_handle_exception (int exceptionVector)
 	  /* sAA..AA   Step one instruction from AA..AA(optional) */
 	case 's':
 	  stepping = 1;
+	  /*FALLTHRU(???)*/
 	case 'c':
 	  {
 	    /* tRY, to read optional parameter, pc unchanged if no parm */

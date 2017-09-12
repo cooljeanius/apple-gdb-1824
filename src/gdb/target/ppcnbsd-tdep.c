@@ -52,7 +52,7 @@
 void
 ppcnbsd_supply_reg (char *regs, int regno)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int i;
 
   for (i = 0; i < ppc_num_gprs; i++)
@@ -86,7 +86,7 @@ ppcnbsd_supply_reg (char *regs, int regno)
 void
 ppcnbsd_fill_reg (char *regs, int regno)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int i;
 
   for (i = 0; i < ppc_num_gprs; i++)
@@ -119,7 +119,7 @@ ppcnbsd_fill_reg (char *regs, int regno)
 void
 ppcnbsd_supply_fpreg (char *fpregs, int regno)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int i;
 
   /* FIXME: jimb/2004-05-05: Some PPC variants don't have floating
@@ -149,7 +149,7 @@ ppcnbsd_supply_fpreg (char *fpregs, int regno)
 void
 ppcnbsd_fill_fpreg (char *fpregs, int regno)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int i;
 
   /* FIXME: jimb/2004-05-05: Some PPC variants don't have floating
@@ -273,7 +273,7 @@ ppcnbsd_sigtramp_cache_init (const struct tramp_frame *self,
   CORE_ADDR offset;
   int i;
   struct gdbarch *gdbarch = get_frame_arch (next_frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   base = frame_unwind_register_unsigned (next_frame, SP_REGNUM);
   offset = base + 0x18 + 2 * tdep->wordsize;

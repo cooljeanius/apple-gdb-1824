@@ -91,6 +91,7 @@
  *
  ****************************************************************************/
 
+#include "stubs/gdbstubs.h"
 
 /************************************************************************
  *
@@ -718,6 +719,7 @@ mem_safe (unsigned char *addr)
     return 1;			/* safe */
   if (addr < BAD_RANGE_TWO_END)
     return 0;			/* unsafe */
+  return 0; /* assume unsafe */
 }
 
 /* These are separate functions so that they are so short and sweet

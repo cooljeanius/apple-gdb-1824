@@ -147,6 +147,8 @@
 #include <string.h>
 #include <setjmp.h>
 
+#include "gdbstubs.h"
+
 /* Renesas SH architecture instruction encoding masks */
 
 #define COND_BR_MASK   0xff00
@@ -382,10 +384,10 @@ hexToInt (char **ptr, int *intValue)
 
 /* scan for the sequence $<data>#<checksum>     */
 
-char *
-getpacket (void)
+unsigned char *
+getpacket(void)
 {
-  unsigned char *buffer = &remcomInBuffer[0];
+  unsigned char *buffer = (unsigned char *)&remcomInBuffer[0];
   unsigned char checksum;
   unsigned char xmitcsum;
   int count;
@@ -507,9 +509,9 @@ putpacket (char *buffer)
    to return execution and allow handling of the error */
 
 void
-handle_buserror (void)
+handle_buserror(void)
 {
-  longjmp (remcomEnv, 1);
+  longjmp(remcomEnv, 1);
 }
 
 /*
@@ -519,7 +521,7 @@ handle_buserror (void)
 static int
 computeSignal (int exceptionVector)
 {
-  int sigval;
+  volatile int sigval;
   switch (exceptionVector)
     {
     case INVALID_INSN_VEC:
@@ -655,7 +657,8 @@ When in the monitor mode we talk a human on the serial line rather than gdb.
 void
 gdb_handle_exception (int exceptionVector)
 {
-  int sigval, stepping;
+  volatile int sigval;
+  int stepping;
   int addr, length;
   char *ptr;
 
@@ -689,7 +692,7 @@ gdb_handle_exception (int exceptionVector)
   while (1)
     {
       remcomOutBuffer[0] = 0;
-      ptr = getpacket ();
+      ptr = (char *)getpacket();
 
       switch (*ptr++)
 	{
@@ -763,6 +766,7 @@ gdb_handle_exception (int exceptionVector)
 	  /* sAA..AA   Step one instruction from AA..AA(optional) */
 	case 's':
 	  stepping = 1;
+	  /*FALLTHRU(???)*/
 	case 'c':
 	  {
 	    /* tRY, to read optional parameter, pc unchanged if no parm */
@@ -778,10 +782,12 @@ gdb_handle_exception (int exceptionVector)
 	  /* kill the program */
 	case 'k':		/* do nothing */
 	  break;
-	}			/* switch */
+
+	default:;
+	}			/* end switch */
 
       /* reply to the request */
-      putpacket (remcomOutBuffer);
+      putpacket(remcomOutBuffer);
     }
 }
 
@@ -794,15 +800,15 @@ void handle_exception(int exceptionVector)
 {
 #ifdef MONITOR
     if (ingdbmode != GDBCOOKIE)
-      monitor_handle_exception (exceptionVector);
+      monitor_handle_exception(exceptionVector);
     else
-#endif
-      gdb_handle_exception (exceptionVector);
+#endif /* MONITOR */
+      gdb_handle_exception(exceptionVector);
 
 }
 
 void
-gdb_mode (void)
+gdb_mode(void)
 {
   ingdbmode = GDBCOOKIE;
   breakpoint();

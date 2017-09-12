@@ -92,6 +92,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "gdbstubs.h"
+
 /************************************************************************
  *
  * external low-level support routines
@@ -430,14 +432,13 @@ asm("		pushl %eax");	/* push exception onto stack  */
 asm("		call  _handle_exception");    /* this never returns */
 
 void
-_returnFromException ()
+_returnFromException(void)
 {
-  return_to_prog ();
+  return_to_prog();
 }
 
 int
-hex (ch)
-     char ch;
+hex(char ch)
 {
   if ((ch >= 'a') && (ch <= 'f'))
     return (ch - 'a' + 10);
@@ -454,9 +455,9 @@ static char remcomOutBuffer[BUFMAX];
 /* scan for the sequence $<data>#<checksum>     */
 
 unsigned char *
-getpacket (void)
+getpacket(void)
 {
-  unsigned char *buffer = &remcomInBuffer[0];
+  unsigned char *buffer = (unsigned char *)&remcomInBuffer[0];
   unsigned char checksum;
   unsigned char xmitcsum;
   int count;
@@ -526,7 +527,7 @@ getpacket (void)
 /* send the packet in buffer.  */
 
 void
-putpacket (unsigned char *buffer)
+putpacket(unsigned char *buffer)
 {
   unsigned char checksum;
   int count;
@@ -539,7 +540,7 @@ putpacket (unsigned char *buffer)
       checksum = 0;
       count = 0;
 
-      while (ch = buffer[count])
+      while ((ch = buffer[count]))
 	{
 	  putDebugChar (ch);
 	  checksum += ch;
@@ -597,11 +598,7 @@ set_char (char *addr, int val)
 /* If MAY_FAULT is non-zero, then we should set mem_err in response to
    a fault; if zero treat a fault like any other fault in the stub.  */
 char *
-mem2hex (mem, buf, count, may_fault)
-     char *mem;
-     char *buf;
-     int count;
-     int may_fault;
+mem2hex(char *mem, char *buf, int count, int may_fault)
 {
   int i;
   unsigned char ch;
@@ -625,11 +622,7 @@ mem2hex (mem, buf, count, may_fault)
 /* convert the hex array pointed to by buf into binary to be placed in mem */
 /* return a pointer to the character AFTER the last byte written */
 char *
-hex2mem (buf, mem, count, may_fault)
-     char *buf;
-     char *mem;
-     int count;
-     int may_fault;
+hex2mem(char *buf, char *mem, int count, int may_fault)
 {
   int i;
   unsigned char ch;
@@ -780,16 +773,16 @@ handle_exception (int exceptionVector)
   ptr = mem2hex((char *)&registers[PC], ptr, 4, 0); 	/* PC */
   *ptr++ = ';';
 
-  *ptr = '\0'
+  *ptr = '\0';
 
-  putpacket (remcomOutBuffer);
+  putpacket((unsigned char *)remcomOutBuffer);
 
   stepping = 0;
 
   while (1 == 1)
     {
       remcomOutBuffer[0] = 0;
-      ptr = getpacket ();
+      ptr = (char *)getpacket();
 
       switch (*ptr++)
 	{
@@ -881,12 +874,17 @@ handle_exception (int exceptionVector)
 	  /* sAA..AA   Step one instruction from AA..AA(optional) */
 	case 's':
 	  stepping = 1;
+	  /*FALLTHRU(???)*/
 	case 'c':
 	  /* try to read optional parameter, pc unchanged if no parm */
 	  if (hexToInt (&ptr, &addr))
 	    registers[PC] = addr;
 
 	  newPC = registers[PC];
+
+	  if (newPC == 0) {
+	    ; /* ??? */
+	  }
 
 	  /* clear the trace bit */
 	  registers[PS] &= 0xfffffeff;
@@ -903,14 +901,16 @@ handle_exception (int exceptionVector)
 #if 0
 	  /* Huh? This doesn't look like "nothing".
 	     m68k-stub.c and sparc-stub.c don't have it.  */
-	  BREAKPOINT ();
-#endif
+	  BREAKPOINT();
+#endif /* 0 */
 	  break;
-	}			/* switch */
+
+	default:;
+	}			/* end switch */
 
       /* reply to the request */
-      putpacket (remcomOutBuffer);
-    }
+      putpacket((unsigned char *)remcomOutBuffer);
+    } /* end "while" loop */
 }
 
 /* this function is used to set up exception handlers for tracing and

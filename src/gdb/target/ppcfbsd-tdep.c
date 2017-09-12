@@ -118,7 +118,8 @@ static const struct regset ppc64_fbsd_gregset = {
 static struct regset ppc32_fbsd_fpregset = {
   &ppc32_fbsd_reg_offsets,
   ppc_supply_fpregset,
-  ppc_collect_fpregset
+  ppc_collect_fpregset,
+  (struct gdbarch *)NULL
 };
 
 const struct regset *
@@ -140,7 +141,7 @@ static const struct regset *
 ppcfbsd_regset_from_core_section (struct gdbarch *gdbarch,
 				  const char *sect_name, size_t sect_size)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   if (strcmp (sect_name, ".reg") == 0 && sect_size >= 148)
     {
       if (tdep->wordsize == 4)
@@ -171,9 +172,9 @@ ppcfbsd_sigtramp_frame_sniffer (const struct frame_unwind *self,
 				struct frame_info *this_frame,
 				void **this_cache)
 {
-  struct gdbarch *gdbarch = get_frame_arch (this_frame);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
-  CORE_ADDR pc = get_frame_pc (this_frame);
+  struct gdbarch *gdbarch = get_frame_arch(this_frame);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
+  CORE_ADDR pc = get_frame_pc(this_frame);
   CORE_ADDR start_pc = (pc & ~(ppcfbsd_page_size - 1));
   const int *offset;
   const char *name;
@@ -190,7 +191,11 @@ ppcfbsd_sigtramp_frame_sniffer (const struct frame_unwind *self,
 
   for (offset = ppcfbsd_sigreturn_offset; *offset != -1; offset++)
     {
+#ifdef PPC_INSN_SIZE
       gdb_byte buf[2 * PPC_INSN_SIZE];
+#else
+      gdb_byte buf[2 * sizeof(unsigned long)];
+#endif /* PPC_INSN_SIZE */
       unsigned long insn;
 
       if (!safe_frame_unwind_memory (this_frame, start_pc + *offset,
@@ -217,16 +222,16 @@ ppcfbsd_sigtramp_frame_sniffer (const struct frame_unwind *self,
 static struct trad_frame_cache *
 ppcfbsd_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
 {
-  struct gdbarch *gdbarch = get_frame_arch (this_frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct gdbarch *gdbarch = get_frame_arch(this_frame);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   struct trad_frame_cache *cache;
   CORE_ADDR addr, base, func;
   gdb_byte buf[PPC_INSN_SIZE];
   int i;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct trad_frame_cache *)*this_cache;
 
   cache = trad_frame_cache_zalloc (this_frame);
   *this_cache = cache;
@@ -303,7 +308,7 @@ ppcfbsd_return_value (struct gdbarch *gdbarch, struct value *function,
 static void
 ppcfbsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* FreeBSD doesn't support the 128-bit `long double' from the psABI.  */
   set_gdbarch_long_double_bit (gdbarch, 64);

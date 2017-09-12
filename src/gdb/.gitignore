@@ -88,3 +88,6 @@ new-gdbarch.h
 
 # Profiling junk:
 *.gcda
+
+# Artifact of running copyright.sh:
+copytmp.el

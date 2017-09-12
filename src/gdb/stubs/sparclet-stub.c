@@ -72,7 +72,7 @@
  *
  * where
  * <packet info> :: <characters representing the command or response>
- * <checksum>    :: < two hex digits computed as modulo 256 sum of <packetinfo>>
+ * <checksum>    :: <two hex digits computed as modulo 256 sum of <packetinfo>>
  *
  * When a packet is received, it is first acknowledged with either '+' or '-'.
  * '+' indicates a successful transfer.  '-' indicates a failed transfer.
@@ -86,76 +86,66 @@
 
 #include <string.h>
 #include <signal.h>
-#include <sparclite.h>
+
+#include "gdbstubs.h"
 
 /************************************************************************
  *
  * external low-level support routines
  */
 
-extern void putDebugChar (int c); /* write a single character      */
-extern int getDebugChar (void);	/* read and return a single char */
+extern void putDebugChar();	/* write a single character      */
+extern int getDebugChar();	/* read and return a single char */
 
 /************************************************************************/
 /* BUFMAX defines the maximum number of characters in inbound/outbound buffers*/
 /* at least NUMREGBYTES*2 are needed for register packets */
 #define BUFMAX 2048
 
-static int initialized = 0;	/* !0 means we have been initialized */
+static int initialized = 0;	/* !0 means we've been initialized */
+static int remote_debug = 0;	/* turn on verbose debugging */
 
-extern void breakinst ();
-static void set_mem_fault_trap (int enable);
-static void get_in_break_mode (void);
+extern void breakinst();
+void _cprint();
+static void hw_breakpoint();
+static void set_mem_fault_trap();
+static void get_in_break_mode();
+static unsigned char *mem2hex();
 
 static const char hexchars[]="0123456789abcdef";
 
-#define NUMREGS 80
+#define NUMREGS 121
+
+static unsigned long saved_stack_pointer;
 
 /* Number of bytes of registers.  */
 #define NUMREGBYTES (NUMREGS * 4)
-enum regnames {G0, G1, G2, G3, G4, G5, G6, G7,
-		 O0, O1, O2, O3, O4, O5, SP, O7,
-		 L0, L1, L2, L3, L4, L5, L6, L7,
-		 I0, I1, I2, I3, I4, I5, FP, I7,
+enum regnames { G0, G1, G2, G3, G4, G5, G6, G7,
+		O0, O1, O2, O3, O4, O5, SP, O7,
+		L0, L1, L2, L3, L4, L5, L6, L7,
+		I0, I1, I2, I3, I4, I5, FP, I7,
 
-		 F0, F1, F2, F3, F4, F5, F6, F7,
-		 F8, F9, F10, F11, F12, F13, F14, F15,
-		 F16, F17, F18, F19, F20, F21, F22, F23,
-		 F24, F25, F26, F27, F28, F29, F30, F31,
-		 Y, PSR, WIM, TBR, PC, NPC, FPSR, CPSR,
-		 DIA1, DIA2, DDA1, DDA2, DDV1, DDV2, DCR, DSR };
+		F0, F1, F2, F3, F4, F5, F6, F7,
+		F8, F9, F10, F11, F12, F13, F14, F15,
+		F16, F17, F18, F19, F20, F21, F22, F23,
+		F24, F25, F26, F27, F28, F29, F30, F31,
+
+		Y, PSR, WIM, TBR, PC, NPC, FPSR, CPSR,
+		CCSR, CCPR, CCCRCR, CCOR, CCOBR, CCIBR, CCIR, UNUSED1,
+
+		ASR1, ASR15, ASR17, ASR18, ASR19, ASR20, ASR21, ASR22,
+		/* the following not actually implemented */
+		AWR0,  AWR1,  AWR2,  AWR3,  AWR4,  AWR5,  AWR6,  AWR7,
+		AWR8,  AWR9,  AWR10, AWR11, AWR12, AWR13, AWR14, AWR15,
+		AWR16, AWR17, AWR18, AWR19, AWR20, AWR21, AWR22, AWR23,
+		AWR24, AWR25, AWR26, AWR27, AWR28, AWR29, AWR30, AWR31,
+		APSR
+};
 
 /***************************  ASSEMBLY CODE MACROS *************************/
 /* 									   */
 
 extern void trap_low();
-
-/* Create private copies of common functions used by the stub.  This prevents
-   nasty interactions between app code and the stub (for instance if user steps
-   into strlen, etc..) */
-
-static char *
-strcpy (char *dst, const char *src)
-{
-  char *retval = dst;
-
-  while ((*dst++ = *src++) != '\000');
-
-  return retval;
-}
-
-static void *
-memcpy (void *vdst, const void *vsrc, int n)
-{
-  char *dst = vdst;
-  const char *src = vsrc;
-  char *retval = dst;
-
-  while (n-- > 0)
-    *dst++ = *src++;
-
-  return retval;
-}
 
 asm("
 	.reserve trapstack, 1000 * 4, \"bss\", 8
@@ -175,16 +165,6 @@ in_trap_handler:
 ! return from handle_exception.
 !
 ! On entry, trap_low expects l1 and l2 to contain pc and npc respectivly.
-! Register usage throughout the routine is as follows:
-!
-!	l0 - psr
-!	l1 - pc
-!	l2 - npc
-!	l3 - wim
-!	l4 - scratch and y reg
-!	l5 - scratch and tbr
-!	l6 - unused
-!	l7 - unused
 
 	.globl _trap_low
 _trap_low:
@@ -192,6 +172,7 @@ _trap_low:
 	mov	%wim, %l3
 
 	srl	%l3, %l0, %l4		! wim >> cwp
+	and	%l4, 0xff, %l4		! Mask off windows 28, 29
 	cmp	%l4, 1
 	bne	window_fine		! Branch if not in the invalid window
 	nop
@@ -200,6 +181,7 @@ _trap_low:
 
 	mov	%g1, %l4		! Save g1, we use it to hold the wim
 	srl	%l3, 1, %g1		! Rotate wim right
+	and	%g1, 0xff, %g1		! Mask off windows 28, 29
 	tst	%g1
 	bg	good_wim		! Branch if new wim is non-zero
 	nop
@@ -208,16 +190,25 @@ _trap_low:
 ! Since we do NOT want to make any assumptions about the number of register
 ! windows, we figure it out dynamically so as to setup the wim correctly.
 
-	not	%g1			! Fill g1 with ones
-	mov	%g1, %wim		! Fill the wim with ones
+	! The normal way does NOT work on the sparclet as register windows
+	! 28 and 29 are special purpose windows.
+	!not	%g1			! Fill g1 with ones
+	!mov	%g1, %wim		! Fill the wim with ones
+	!nop
+	!nop
+	!nop
+	!mov	%wim, %g1		! Read back the wim
+	!inc	%g1			! Now g1 has 1 just to left of wim
+	!srl	%g1, 1, %g1		! Now put 1 at top of wim
+
+	mov	0x80, %g1		! Hack for sparclet
+
+	! This does NOT work on the sparclet.
+	!mov	%g0, %wim		! Clear wim so that subsequent save
+					!  will NOT trap
+	andn	%l3, 0xff, %l5		! Clear wim but not windows 28, 29
+	mov	%l5, %wim
 	nop
-	nop
-	nop
-	mov	%wim, %g1		! Read back the wim
-	inc	%g1			! Now g1 has 1 just to left of wim
-	srl	%g1, 1, %g1		! Now put 1 at top of wim
-	mov	%g0, %wim		! Clear wim so that subsequent save
-	nop				!  will NOT trap
 	nop
 	nop
 
@@ -249,10 +240,10 @@ window_fine:
 
 recursive_trap:
 	st	%l5, [%lo(in_trap_handler) + %l4]
-	sub	%sp,(16+1+6+1+80)*4,%sp	! Make room for input & locals
+	sub	%sp,(16+1+6+1+88)*4,%sp ! Make room for input & locals
  					! + hidden arg + arg spill
 					! + doubleword alignment
-					! + registers[72] local var
+					! + registers[121]
 
 	std	%g0, [%sp + (24 + 0) * 4] ! registers[Gx]
 	std	%g2, [%sp + (24 + 2) * 4]
@@ -264,6 +255,8 @@ recursive_trap:
 	std	%i4, [%sp + (24 + 12) * 4]
 	std	%i6, [%sp + (24 + 14) * 4]
 
+	! FP regs (sparclet does NOT have fpu)
+
 	mov	%y, %l4
 	mov	%tbr, %l5
 	st	%l4, [%sp + (24 + 64) * 4] ! Y
@@ -272,37 +265,77 @@ recursive_trap:
 	st	%l5, [%sp + (24 + 67) * 4] ! TBR
 	st	%l1, [%sp + (24 + 68) * 4] ! PC
 	st	%l2, [%sp + (24 + 69) * 4] ! NPC
-
+					! CPSR and FPSR not impl
 	or	%l0, 0xf20, %l4
 	mov	%l4, %psr		! Turn on traps, disable interrupts
+	nop
+        nop
+        nop
 
-	set	0x1000, %l1
-	btst	%l1, %l0		! FP enabled?
-	be	no_fpstore
+! Save coprocessor state.
+! See SK/demo/hdlc_demo/ldc_swap_context.S.
+
+	mov	%psr, %l0
+	sethi	%hi(0x2000), %l5		! EC bit in PSR
+	or	%l5, %l0, %l5
+	mov	%l5, %psr			! enable coprocessor
+	nop			! 3 nops after write to %psr (needed?)
+	nop
+	nop
+	crdcxt	%ccsr, %l1			! capture CCSR
+	mov	0x6, %l2
+	cwrcxt	%l2, %ccsr	! set CCP state machine for CCFR
+	crdcxt	%ccfr, %l2			! capture CCOR
+	cwrcxt	%l2, %ccfr			! tickle  CCFR
+	crdcxt	%ccfr, %l3			! capture CCOBR
+	cwrcxt	%l3, %ccfr			! tickle  CCFR
+	crdcxt	%ccfr, %l4			! capture CCIBR
+	cwrcxt	%l4, %ccfr			! tickle  CCFR
+	crdcxt	%ccfr, %l5			! capture CCIR
+	cwrcxt	%l5, %ccfr			! tickle  CCFR
+	crdcxt	%ccpr, %l6			! capture CCPR
+	crdcxt	%cccrcr, %l7			! capture CCCRCR
+	st	%l1, [%sp + (24 + 72) * 4]	! save CCSR
+	st	%l2, [%sp + (24 + 75) * 4]	! save CCOR
+	st	%l3, [%sp + (24 + 76) * 4]	! save CCOBR
+	st	%l4, [%sp + (24 + 77) * 4]	! save CCIBR
+	st	%l5, [%sp + (24 + 78) * 4]	! save CCIR
+	st	%l6, [%sp + (24 + 73) * 4]	! save CCPR
+	st	%l7, [%sp + (24 + 74) * 4]	! save CCCRCR
+	mov	%l0, %psr 			! restore original PSR
+	nop			! 3 nops after write to %psr (needed?)
+	nop
 	nop
 
-! Must save fsr first, to flush the FQ.  This may cause a deferred fp trap, so
-! traps must be enabled to allow the trap handler to clean things up.
+! End of saving coprocessor state.
+! Save asr regs
 
-	st	%fsr, [%sp + (24 + 70) * 4]
+! Part of this is silly -- we should not display ASR15 or ASR19 at all.
 
-	std	%f0, [%sp + (24 + 32) * 4]
-	std	%f2, [%sp + (24 + 34) * 4]
-	std	%f4, [%sp + (24 + 36) * 4]
-	std	%f6, [%sp + (24 + 38) * 4]
-	std	%f8, [%sp + (24 + 40) * 4]
-	std	%f10, [%sp + (24 + 42) * 4]
-	std	%f12, [%sp + (24 + 44) * 4]
-	std	%f14, [%sp + (24 + 46) * 4]
-	std	%f16, [%sp + (24 + 48) * 4]
-	std	%f18, [%sp + (24 + 50) * 4]
-	std	%f20, [%sp + (24 + 52) * 4]
-	std	%f22, [%sp + (24 + 54) * 4]
-	std	%f24, [%sp + (24 + 56) * 4]
-	std	%f26, [%sp + (24 + 58) * 4]
-	std	%f28, [%sp + (24 + 60) * 4]
-	std	%f30, [%sp + (24 + 62) * 4]
-no_fpstore:
+	sethi	%hi(0x01000000), %l6
+	st	%l6, [%sp + (24 + 81) * 4]	! ASR15 == NOP
+	sethi	%hi(0xdeadc0de), %l6
+	or	%l6, %lo(0xdeadc0de), %l6
+	st	%l6, [%sp + (24 + 84) * 4]	! ASR19 == DEADC0DE
+
+	rd	%asr1, %l4
+	st	%l4, [%sp + (24 + 80) * 4]
+!	rd	%asr15, %l4			! must not read ASR15
+!	st	%l4, [%sp + (24 + 81) * 4]	! (illegal instr trap)
+	rd	%asr17, %l4
+	st	%l4, [%sp + (24 + 82) * 4]
+	rd	%asr18, %l4
+	st	%l4, [%sp + (24 + 83) * 4]
+!	rd	%asr19, %l4			! must not read asr19
+!	st	%l4, [%sp + (24 + 84) * 4]	! (halts the CPU)
+	rd	%asr20, %l4
+	st	%l4, [%sp + (24 + 85) * 4]
+	rd	%asr21, %l4
+	st	%l4, [%sp + (24 + 86) * 4]
+	rd	%asr22, %l4
+	st	%l4, [%sp + (24 + 87) * 4]
+
+! End of saving asr regs
 
 	call	_handle_exception
 	add	%sp, 24 * 4, %o0	! Pass address of registers
@@ -319,34 +352,68 @@ no_fpstore:
 	ldd	[%sp + (24 + 12) * 4], %i4
 	ldd	[%sp + (24 + 14) * 4], %i6
 
+	! FP regs (sparclet does NOT have fpu)
+
+! Update the coprocessor registers.
+! See SK/demo/hdlc_demo/ldc_swap_context.S.
+
+	mov	%psr, %l0
+	sethi	%hi(0x2000), %l5		! EC bit in PSR
+	or	%l5, %l0, %l5
+	mov	%l5, %psr			! enable coprocessor
+	nop			! 3 nops after write to %psr (needed?)
+	nop
+	nop
+
+	mov 0x6, %l2
+	cwrcxt	%l2, %ccsr	! set CCP state machine for CCFR
+
+	ld	[%sp + (24 + 72) * 4], %l1	! saved CCSR
+	ld	[%sp + (24 + 75) * 4], %l2	! saved CCOR
+	ld	[%sp + (24 + 76) * 4], %l3	! saved CCOBR
+	ld	[%sp + (24 + 77) * 4], %l4	! saved CCIBR
+	ld	[%sp + (24 + 78) * 4], %l5	! saved CCIR
+	ld	[%sp + (24 + 73) * 4], %l6	! saved CCPR
+	ld	[%sp + (24 + 74) * 4], %l7	! saved CCCRCR
+
+	cwrcxt	%l2, %ccfr			! restore CCOR
+	cwrcxt	%l3, %ccfr			! restore CCOBR
+	cwrcxt	%l4, %ccfr			! restore CCIBR
+	cwrcxt	%l5, %ccfr			! restore CCIR
+	cwrcxt	%l6, %ccpr			! restore CCPR
+	cwrcxt	%l7, %cccrcr			! restore CCCRCR
+	cwrcxt	%l1, %ccsr			! restore CCSR
+
+	mov %l0, %psr				! restore PSR
+	nop		! 3 nops after write to %psr (needed?)
+	nop
+	nop
+
+! End of coprocessor handling stuff.
+! Update asr regs
+
+	ld	[%sp + (24 + 80) * 4], %l4
+	wr	%l4, %asr1
+!	ld	[%sp + (24 + 81) * 4], %l4	! cannot write asr15
+!	wr	%l4, %asr15
+	ld	[%sp + (24 + 82) * 4], %l4
+	wr	%l4, %asr17
+	ld	[%sp + (24 + 83) * 4], %l4
+	wr	%l4, %asr18
+!	ld	[%sp + (24 + 84) * 4], %l4	! cannot write asr19
+!	wr	%l4, %asr19
+!	ld	[%sp + (24 + 85) * 4], %l4	! cannot write asr20
+!	wr	%l4, %asr20
+!	ld	[%sp + (24 + 86) * 4], %l4	! cannot write asr21
+!	wr	%l4, %asr21
+	ld	[%sp + (24 + 87) * 4], %l4
+	wr	%l4, %asr22
+
+! End of restoring asr regs
+
 
 	ldd	[%sp + (24 + 64) * 4], %l0 ! Y & PSR
 	ldd	[%sp + (24 + 68) * 4], %l2 ! PC & NPC
-
-	set	0x1000, %l5
-	btst	%l5, %l1		! FP enabled?
-	be	no_fpreload
-	nop
-
-	ldd	[%sp + (24 + 32) * 4], %f0
-	ldd	[%sp + (24 + 34) * 4], %f2
-	ldd	[%sp + (24 + 36) * 4], %f4
-	ldd	[%sp + (24 + 38) * 4], %f6
-	ldd	[%sp + (24 + 40) * 4], %f8
-	ldd	[%sp + (24 + 42) * 4], %f10
-	ldd	[%sp + (24 + 44) * 4], %f12
-	ldd	[%sp + (24 + 46) * 4], %f14
-	ldd	[%sp + (24 + 48) * 4], %f16
-	ldd	[%sp + (24 + 50) * 4], %f18
-	ldd	[%sp + (24 + 52) * 4], %f20
-	ldd	[%sp + (24 + 54) * 4], %f22
-	ldd	[%sp + (24 + 56) * 4], %f24
-	ldd	[%sp + (24 + 58) * 4], %f26
-	ldd	[%sp + (24 + 60) * 4], %f28
-	ldd	[%sp + (24 + 62) * 4], %f30
-
-	ld	[%sp + (24 + 70) * 4], %fsr
-no_fpreload:
 
 	restore				! Ensure that previous window is valid
 	save	%g0, %g0, %g0		!  by causing a window_underflow trap
@@ -354,6 +421,10 @@ no_fpreload:
 	mov	%l0, %y
 	mov	%l1, %psr		! Make sure that traps are disabled
 					! for rett
+	nop	! 3 nops after write to %psr (needed?)
+	nop
+	nop
+
 	sethi	%hi(in_trap_handler), %l4
 	ld	[%lo(in_trap_handler) + %l4], %l5
 	dec	%l5
@@ -406,8 +477,8 @@ retry:
       while (count < BUFMAX)
 	{
 	  ch = getDebugChar ();
-          if (ch == '$')
-            goto retry;
+	  if (ch == '$')
+	    goto retry;
 	  if (ch == '#')
 	    break;
 	  checksum = checksum + ch;
@@ -464,7 +535,7 @@ putpacket (unsigned char *buffer)
 
       while (ch = buffer[count])
 	{
-	  putDebugChar (ch);
+	  putDebugChar(ch);
 	  checksum += ch;
 	  count += 1;
 	}
@@ -545,21 +616,16 @@ static struct hard_trap_info
   unsigned char tt;		/* Trap type code for SPARClite */
   unsigned char signo;		/* Signal that we map this trap into */
 } hard_trap_info[] = {
-  {0x01, SIGSEGV},		/* instruction access error */
-  {0x02, SIGILL},		/* privileged instruction */
-  {0x03, SIGILL},		/* illegal instruction */
-  {0x04, SIGEMT},		/* fp disabled */
-  {0x07, SIGBUS},		/* mem address not aligned */
-  {0x09, SIGSEGV},		/* data access exception */
-  {0x0a, SIGEMT},		/* tag overflow */
-  {0x20, SIGBUS},		/* r register access error */
-  {0x21, SIGBUS},		/* instruction access error */
+  {1, SIGSEGV},			/* instruction access exception */
+  {0x3b, SIGSEGV},		/* instruction access error */
+  {2, SIGILL},			/* illegal    instruction */
+  {3, SIGILL},			/* privileged instruction */
+  {4, SIGEMT},			/* fp disabled */
   {0x24, SIGEMT},		/* cp disabled */
-  {0x29, SIGBUS},		/* data access error */
-  {0x2a, SIGFPE},		/* divide by zero */
-  {0x2b, SIGBUS},		/* data store error */
-  {0x80+1, SIGTRAP},		/* ta 1 - normal breakpoint instruction */
-  {0xff, SIGTRAP},		/* hardware breakpoint */
+  {7, SIGBUS},			/* mem address not aligned */
+  {0x29, SIGSEGV},		/* data access exception */
+  {10, SIGEMT},			/* tag overflow */
+  {128+1, SIGTRAP},		/* ta 1 - normal breakpoint instruction */
   {0, 0}			/* Must be last */
 };
 
@@ -570,13 +636,8 @@ set_debug_traps (void)
 {
   struct hard_trap_info *ht;
 
-/* Only setup fp traps if the FP is disabled.  */
-
-  for (ht = hard_trap_info;
-       ht->tt != 0 && ht->signo != 0;
-       ht++)
-    if (ht->tt != 4 || ! (read_psr () & 0x1000))
-      exceptionHandler(ht->tt, trap_low);
+  for (ht = hard_trap_info; ht->tt && ht->signo; ht++)
+    exceptionHandler(ht->tt, trap_low);
 
   initialized = 1;
 }
@@ -604,9 +665,9 @@ set_mem_fault_trap (int enable)
   mem_err = 0;
 
   if (enable)
-    exceptionHandler(9, fltr_set_mem_err);
+    exceptionHandler(0x29, fltr_set_mem_err);
   else
-    exceptionHandler(9, trap_low);
+    exceptionHandler(0x29, trap_low);
 }
 
 asm ("
@@ -621,15 +682,36 @@ _dummy_hw_breakpoint:
 ");
 
 static void
-get_in_break_mode (void)
+set_hw_breakpoint_trap (int enable)
 {
   extern void dummy_hw_breakpoint();
 
-  exceptionHandler (255, dummy_hw_breakpoint);
+  if (enable)
+    exceptionHandler(255, dummy_hw_breakpoint);
+  else
+    exceptionHandler(255, trap_low);
+}
 
-  asm ("ta 255");
+static void
+get_in_break_mode (void)
+{
+#if 0
+  int x;
+  mesg("get_in_break_mode, sp = ");
+  phex(&x);
+#endif
+  set_hw_breakpoint_trap(1);
 
-  exceptionHandler (255, trap_low);
+  asm("
+        sethi   %hi(0xff10), %l4
+        or      %l4, %lo(0xff10), %l4
+	sta 	%g0, [%l4]0x1
+	nop
+	nop
+	nop
+      ");
+
+  set_hw_breakpoint_trap(0);
 }
 
 /* Convert the SPARC hardware trap type code to a unix signal number. */
@@ -693,14 +775,32 @@ handle_exception (unsigned long *registers)
 
 /* First, we must force all of the windows to be spilled out */
 
-  asm("	save %sp, -64, %sp
-	save %sp, -64, %sp
-	save %sp, -64, %sp
-	save %sp, -64, %sp
-	save %sp, -64, %sp
-	save %sp, -64, %sp
-	save %sp, -64, %sp
-	save %sp, -64, %sp
+  asm("
+	! Ugh.  sparclet has broken save
+	!save %sp, -64, %sp
+	save
+	add %fp,-64,%sp
+	!save %sp, -64, %sp
+	save
+	add %fp,-64,%sp
+	!save %sp, -64, %sp
+	save
+	add %fp,-64,%sp
+	!save %sp, -64, %sp
+	save
+	add %fp,-64,%sp
+	!save %sp, -64, %sp
+	save
+	add %fp,-64,%sp
+	!save %sp, -64, %sp
+	save
+	add %fp,-64,%sp
+	!save %sp, -64, %sp
+	save
+	add %fp,-64,%sp
+	!save %sp, -64, %sp
+	save
+	add %fp,-64,%sp
 	restore
 	restore
 	restore
@@ -711,17 +811,6 @@ handle_exception (unsigned long *registers)
 	restore
 ");
 
-  get_in_break_mode ();		/* Enable DSU register writes */
-
-  registers[DIA1] = read_asi (1, 0xff00);
-  registers[DIA2] = read_asi (1, 0xff04);
-  registers[DDA1] = read_asi (1, 0xff08);
-  registers[DDA2] = read_asi (1, 0xff0c);
-  registers[DDV1] = read_asi (1, 0xff10);
-  registers[DDV2] = read_asi (1, 0xff14);
-  registers[DCR] = read_asi (1, 0xff18);
-  registers[DSR] = read_asi (1, 0xff1c);
-
   if (registers[PC] == (unsigned long)breakinst)
     {
       registers[PC] = registers[NPC];
@@ -729,11 +818,7 @@ handle_exception (unsigned long *registers)
     }
   sp = (unsigned long *)registers[SP];
 
-  dsr = (unsigned long)registers[DSR];
-  if (dsr & 0x3c)
-    tt = 255;
-  else
-    tt = (registers[TBR] >> 4) & 0xff;
+  tt = (registers[TBR] >> 4) & 0xff;
 
   /* reply to host that an exception has occurred */
   sigval = computeSignal(tt);
@@ -792,45 +877,76 @@ handle_exception (unsigned long *registers)
 	  break;
 
 	case 'd':
-				/* toggle debug flag */
+	  remote_debug = !(remote_debug);	/* toggle debug flag */
 	  break;
 
 	case 'g':		/* return the value of the CPU registers */
-	  memcpy (&registers[L0], sp, 16 * 4); /* Copy L & I regs from stack */
-	  mem2hex ((char *)registers, remcomOutBuffer, NUMREGBYTES, 0);
+	  {
+	    ptr = remcomOutBuffer;
+	    ptr = mem2hex((char *)registers, ptr, 16 * 4, 0); /* G & O regs */
+	    ptr = mem2hex(sp + 0, ptr, 16 * 4, 0); /* L & I regs */
+	    memset(ptr, '0', 32 * 8); /* Floating point */
+	    ptr = mem2hex((char *)&registers[Y],
+		    ptr + 32 * 4 * 2,
+		    8 * 4,
+		    0); /* Y, PSR, WIM, TBR, PC, NPC, FPSR, CPSR */
+	    ptr = mem2hex((char *)&registers[CCSR],
+		    ptr,
+		    8 * 4,
+		    0); /* CCSR, CCPR, CCCRCR, CCOR, CCOBR, CCIBR, CCIR */
+	    ptr = mem2hex((char *)&registers[ASR1],
+		    ptr,
+		    8 * 4,
+		    0); /* ASR1,ASR15,ASR17,ASR18,ASR19,ASR20,ASR21,ASR22 */
+#if 0 /* not implemented */
+	    ptr = mem2hex((char *) &registers[AWR0],
+		    ptr,
+		    32 * 4,
+		    0); /* Alternate Window Registers */
+#endif /* 0 */
+	  }
 	  break;
 
-	case 'G':		/* Set the value of all registers */
-	case 'P':		/* Set the value of one register */
+	case 'G':	/* set value of all the CPU registers - return OK */
+	case 'P':	/* set value of one CPU register      - return OK */
 	  {
 	    unsigned long *newsp, psr;
 
 	    psr = registers[PSR];
 
-	    if (ptr[-1] == 'P')
+	    if (ptr[-1] == 'P')	/* do a single register */
 	      {
 		int regno;
 
-		if (hexToInt (&ptr, &regno)
-		    && *ptr++ == '=')
-		  if (regno >= L0 && regno <= I7)
-		    hex2mem (ptr, sp + regno - L0, 4, 0);
-		  else
-		    hex2mem (ptr, (char *)&registers[regno], 4, 0);
-		else
-		  {
-		    strcpy (remcomOutBuffer, "E01");
-		    break;
-		  }
+                if (hexToInt (&ptr, &regno)
+                    && *ptr++ == '=')
+                  if (regno >= L0 && regno <= I7)
+                    hex2mem (ptr, sp + regno - L0, 4, 0);
+                  else
+                    hex2mem (ptr, (char *)&registers[regno], 4, 0);
+                else
+                  {
+                    strcpy (remcomOutBuffer, "E01");
+                    break;
+                  }
 	      }
 	    else
 	      {
-		hex2mem (ptr, (char *)registers, NUMREGBYTES, 0);
-		memcpy (sp, &registers[L0], 16 * 4); /* Copy L & I regs to stack */
+		hex2mem(ptr, (char *)registers, 16 * 4, 0); /* G & O regs */
+		hex2mem(ptr + 16 * 4 * 2, sp + 0, 16 * 4, 0); /* L & I regs */
+		hex2mem(ptr + 64 * 4 * 2, (char *)&registers[Y],
+			8 * 4, 0); /* Y,PSR,WIM,TBR,PC,NPC,FPSR,CPSR */
+		hex2mem(ptr + 72 * 4 * 2, (char *)&registers[CCSR],
+			8 * 4, 0); /* CCSR,CCPR,CCCRCR,CCOR,CCOBR,CCIBR,CCIR */
+		hex2mem(ptr + 80 * 4 * 2, (char *)&registers[ASR1],
+			8 * 4, 0); /* ASR1 ... ASR22 */
+#if 0 /* not implemented */
+		hex2mem(ptr + 88 * 4 * 2, (char *)&registers[AWR0],
+			8 * 4, 0); /* Alternate Window Registers */
+#endif /* 0 */
 	      }
-
-	    /* See if the stack pointer has moved. If so, then copy the saved
-	       locals and ins to the new location. This keeps the window
+	    /* See if the stack pointer has moved.  If so, then copy the saved
+	       locals and ins to the new location.  This keeps the window
 	       overflow and underflow routines happy.  */
 
 	    newsp = (unsigned long *)registers[SP];
@@ -881,6 +997,7 @@ handle_exception (unsigned long *registers)
 
 	case 'c':    /* cAA..AA    Continue at address AA..AA(optional) */
 	  /* try to read optional parameter, pc unchanged if no parm */
+
 	  if (hexToInt(&ptr, &addr))
 	    {
 	      registers[PC] = addr;
@@ -892,21 +1009,7 @@ handle_exception (unsigned long *registers)
    some location may have changed something that is in the instruction cache.
  */
 
-	  flush_i_cache ();
-
-	  if (!(registers[DSR] & 0x1) /* DSU enabled? */
-	      && !(registers[DCR] & 0x200)) /* Are we in break state? */
-	    {			/* Yes, set the DSU regs */
-	      write_asi (1, 0xff00, registers[DIA1]);
-	      write_asi (1, 0xff04, registers[DIA2]);
-	      write_asi (1, 0xff08, registers[DDA1]);
-	      write_asi (1, 0xff0c, registers[DDA2]);
-	      write_asi (1, 0xff10, registers[DDV1]);
-	      write_asi (1, 0xff14, registers[DDV2]);
-	      write_asi (1, 0xff1c, registers[DSR]);
-	      write_asi (1, 0xff18, registers[DCR] | 0x200); /* Clear break */
-	    }
-
+	  flush_i_cache();
 	  return;
 
 	  /* kill the program */
@@ -928,7 +1031,7 @@ handle_exception (unsigned long *registers)
     }
 }
 
-/* This function will generate a breakpoint exception. It is used at the
+/* This function will generate a breakpoint exception.  It is used at the
    beginning of a program to sync up with a debugger and can be used
    otherwise as a quick means to stop program execution and "break" into
    the debugger. */
@@ -944,5 +1047,125 @@ breakpoint (void)
 	_breakinst: ta 1
       ");
 }
+
+static void
+hw_breakpoint (void)
+{
+  asm("
+      ta 127
+      ");
+}
+
+#if 0 /* experimental and never finished, left here for reference */
+static void
+splet_temp(void)
+{
+  asm("	sub	%sp,(16+1+6+1+121)*4,%sp ! Make room for input & locals
+ 					! + hidden arg + arg spill
+					! + doubleword alignment
+					! + registers[121]
+
+! Leave a trail of breadcrumbs! (save register save area for debugging)
+	mov	%sp, %l0
+	add	%l0, 24*4, %l0
+	sethi	%hi(_debug_registers), %l1
+	st	%l0, [%lo(_debug_registers) + %l1]
+
+! Save the Alternate Register Set: (not implemented yet)
+!    To save the Alternate Register set, we must:
+!    1) Save the current SP in some global location.
+!    2) Swap the register sets.
+!    3) Save the Alternate SP in the Y register
+!    4) Fetch the SP that we saved in step 1.
+!    5) Use that to save the rest of the regs (not forgetting ASP in Y)
+!    6) Restore the Alternate SP from Y
+!    7) Swap the registers back.
+
+! 1) Copy the current stack pointer to global _SAVED_STACK_POINTER:
+	sethi	%hi(_saved_stack_pointer), %l0
+	st	%sp, [%lo(_saved_stack_pointer) + %l0]
+
+! 2) Swap the register sets:
+	mov	%psr, %l1
+	sethi	%hi(0x10000), %l2
+	xor	%l1, %l2, %l1
+	mov	%l1, %psr
+	nop			! 3 nops after write to %psr (needed?)
+	nop
+	nop
+
+! 3) Save Alternate L0 in Y
+	wr	%l0, 0, %y
+
+! 4) Load former SP into alternate SP, using L0
+	sethi	%hi(_saved_stack_pointer), %l0
+	or	%lo(_saved_stack_pointer), %l0, %l0
+	swap	[%l0], %sp
+
+! 4.5) Restore alternate L0
+	rd	%y, %l0
+
+! 5) Save the Alternate Window Registers
+	st	%r0, [%sp + (24 + 88) * 4]	! AWR0
+	st	%r1, [%sp + (24 + 89) * 4]	! AWR1
+	st	%r2, [%sp + (24 + 90) * 4]	! AWR2
+	st	%r3, [%sp + (24 + 91) * 4]	! AWR3
+	st	%r4, [%sp + (24 + 92) * 4]	! AWR4
+	st	%r5, [%sp + (24 + 93) * 4]	! AWR5
+	st	%r6, [%sp + (24 + 94) * 4]	! AWR6
+	st	%r7, [%sp + (24 + 95) * 4]	! AWR7
+	st	%r8, [%sp + (24 + 96) * 4]	! AWR8
+	st	%r9, [%sp + (24 + 97) * 4]	! AWR9
+	st	%r10, [%sp + (24 + 98) * 4]	! AWR10
+	st	%r11, [%sp + (24 + 99) * 4]	! AWR11
+	st	%r12, [%sp + (24 + 100) * 4]	! AWR12
+	st	%r13, [%sp + (24 + 101) * 4]	! AWR13
+!	st	%r14, [%sp + (24 + 102) * 4]	! AWR14	(SP)
+	st	%r15, [%sp + (24 + 103) * 4]	! AWR15
+	st	%r16, [%sp + (24 + 104) * 4]	! AWR16
+	st	%r17, [%sp + (24 + 105) * 4]	! AWR17
+	st	%r18, [%sp + (24 + 106) * 4]	! AWR18
+	st	%r19, [%sp + (24 + 107) * 4]	! AWR19
+	st	%r20, [%sp + (24 + 108) * 4]	! AWR20
+	st	%r21, [%sp + (24 + 109) * 4]	! AWR21
+	st	%r22, [%sp + (24 + 110) * 4]	! AWR22
+	st	%r23, [%sp + (24 + 111) * 4]	! AWR23
+	st	%r24, [%sp + (24 + 112) * 4]	! AWR24
+	st	%r25, [%sp + (24 + 113) * 4]	! AWR25
+	st	%r26, [%sp + (24 + 114) * 4]	! AWR26
+	st	%r27, [%sp + (24 + 115) * 4]	! AWR27
+	st	%r28, [%sp + (24 + 116) * 4]	! AWR28
+	st	%r29, [%sp + (24 + 117) * 4]	! AWR29
+	st	%r30, [%sp + (24 + 118) * 4]	! AWR30
+	st	%r31, [%sp + (24 + 119) * 4]	! AWR21
+
+! Get the Alternate PSR (I hope...)
+
+	rd	%psr, %l2
+	st	%l2, [%sp + (24 + 120) * 4]	! APSR
+
+! Do NOT forget the alternate stack pointer
+
+	rd	%y, %l3
+	st	%l3, [%sp + (24 + 102) * 4]	! AWR14 (SP)
+
+! 6) Restore the Alternate SP (saved in Y)
+
+	rd	%y, %o6
+
+
+! 7) Swap the registers back:
+
+	mov	%psr, %l1
+	sethi	%hi(0x10000), %l2
+	xor	%l1, %l2, %l1
+	mov	%l1, %psr
+	nop			! 3 nops after write to %psr (needed?)
+	nop
+	nop
+");
+}
+
+#endif /* 0 */
 
 /* EOF */

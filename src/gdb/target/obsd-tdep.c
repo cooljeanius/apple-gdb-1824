@@ -1,4 +1,4 @@
-/* Target-dependent code for OpenBSD.
+/* obsd-tdep.c: Target-dependent code for OpenBSD.
 
    Copyright (C) 2005-2013 Free Software Foundation, Inc.
 
@@ -24,13 +24,15 @@
 #include "obsd-tdep.h"
 
 CORE_ADDR
-obsd_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
+obsd_skip_solib_resolver(struct gdbarch *gdbarch, CORE_ADDR pc)
 {
   struct minimal_symbol *msym;
 
   msym = lookup_minimal_symbol("_dl_bind", NULL, NULL);
-  if (msym && SYMBOL_VALUE_ADDRESS (msym) == pc)
-    return frame_unwind_caller_pc (get_current_frame ());
+  if (msym && (SYMBOL_VALUE_ADDRESS(msym) == pc))
+    return frame_unwind_caller_pc(get_current_frame());
   else
-    return find_solib_trampoline_target (get_current_frame (), pc);
+    return find_solib_trampoline_target(get_current_frame(), pc);
 }
+
+/* EOF */

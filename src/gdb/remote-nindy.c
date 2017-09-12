@@ -119,9 +119,16 @@
 #include "nindy-share/stop.h"
 #include "remote-utils.h"
 
-extern int unlink ();
-extern char *getenv ();
-extern char *mktemp ();
+#include "exceptions.h"
+
+#include "nindy-share/ttyflush.h"
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+#if defined(HAVE_STDLIB_H) || (defined(STDC_HEADERS) && defined(__STDC__))
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H || (STDC_HEADERS && __STDC__) */
 
 extern void generic_mourn_inferior ();
 
@@ -172,7 +179,7 @@ nindy_close (int quitting)
    now specified with gdb command-line options (old_protocol,
    and initial_brk).  */
 void
-nindy_open(char *name,	/* "/dev/ttyXX", "ttyXX", or "XX": tty to be opened */
+nindy_open(const char *name, /* "/dev/ttyXX", "ttyXX", or "XX": tty to be opened */
 	   int from_tty)
 {
   char baudrate[1024];
@@ -192,7 +199,7 @@ nindy_open(char *name,	/* "/dev/ttyXX", "ttyXX", or "XX": tty to be opened */
   /* If baud_rate is -1, then ninConnect will not recognize the baud rate
      and will deal with the situation in a (more or less) reasonable
      fashion.  */
-  sprintf (baudrate, "%d", baud_rate);
+  snprintf(baudrate, sizeof(baudrate), "%d", baud_rate);
   ninConnect (name, baudrate,
 	      nindy_initial_brk, !from_tty, nindy_old_protocol);
   immediate_quit--;
@@ -216,7 +223,7 @@ nindy_open(char *name,	/* "/dev/ttyXX", "ttyXX", or "XX": tty to be opened */
 /* User-initiated quit of nindy operations.  */
 
 static void
-nindy_detach (char *name, int from_tty)
+nindy_detach(const char *name, int from_tty)
 {
   if (name)
     error ("Too many arguments");
@@ -292,13 +299,13 @@ clean_up_tty (PTR ptrarg)
 }
 
 /* Recover from ^Z or ^C while remote process is running */
-static void (*old_ctrlc) ();
+static void (*old_ctrlc)(int);
 #ifdef SIGTSTP
-static void (*old_ctrlz) ();
+static void (*old_ctrlz)(int);
 #endif
 
 static void
-clean_up_int (void)
+clean_up_int(int unusedarg ATTRIBUTE_UNUSED)
 {
   serial_set_tty_state (tty_args.serial, tty_args.state);
   xfree (tty_args.state);
@@ -320,10 +327,8 @@ clean_up_int (void)
 static ptid_t
 nindy_wait (ptid_t ptid, struct target_waitstatus *status)
 {
-  fd_set fds;
   int c;
   char buf[2];
-  int i, n;
   unsigned char stop_exit;
   unsigned char stop_code;
   struct cleanup *old_cleanups;
@@ -430,7 +435,9 @@ static void
 nindy_fetch_registers (int regno)
 {
   struct nindy_regs nindy_regs;
+#ifdef ALLOW_UNUSED_VARIABLES
   int regnum;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   immediate_quit++;
   ninRegsGet ((char *) &nindy_regs);
@@ -457,7 +464,9 @@ static void
 nindy_store_registers (int regno)
 {
   struct nindy_regs nindy_regs;
+#ifdef ALLOW_UNUSED_VARIABLES
   int regnum;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   memcpy (nindy_regs.local_regs, &registers[REGISTER_BYTE (R0_REGNUM)], 16 * 4);
   memcpy (nindy_regs.global_regs, &registers[REGISTER_BYTE (G0_REGNUM)], 16 * 4);
@@ -533,7 +542,7 @@ nindy_create_inferior (char *execfile, char *args, char **env)
 }
 
 static void
-reset_command (char *args, int from_tty)
+reset_command(const char *args, int from_tty)
 {
   if (nindy_serial == NULL)
     {
@@ -568,14 +577,14 @@ nindy_mourn_inferior (void)
 
 /* Pass the args the way catch_errors wants them.  */
 static int
-nindy_open_stub (char *arg)
+nindy_open_stub(void *arg)
 {
-  nindy_open (arg, 1);
+  nindy_open((const char *)arg, 1);
   return 1;
 }
 
 static void
-nindy_load (char *filename, int from_tty)
+nindy_load(const char *filename, int from_tty)
 {
   asection *s;
   /* Cannot do unix style forking on a VMS system, so we will use bfd to do
@@ -613,9 +622,9 @@ nindy_load (char *filename, int from_tty)
 }
 
 static int
-load_stub (char *arg)
+load_stub(void *arg)
 {
-  target_load (arg, 1);
+  target_load((char *)arg, 1);
   return 1;
 }
 
@@ -656,19 +665,22 @@ nindy_before_main_loop (void)
 	  ;
 	}
       *p2 = '\0';
-      if (STREQ ("quit", p))
+      if (DEPRECATED_STREQ("quit", p))
 	{
 	  exit (1);
 	}
 
-      if (catch_errors (nindy_open_stub, p, "", RETURN_MASK_ALL))
+      if (catch_errors(nindy_open_stub, p, "", RETURN_MASK_ALL))
 	{
 	  /* Now that we have a tty open for talking to the remote machine,
 	     download the executable file if one was specified.  */
 	  if (exec_bfd)
 	    {
-	      catch_errors (load_stub, bfd_get_filename (exec_bfd), "",
-			    RETURN_MASK_ALL);
+	      if (catch_errors(load_stub, bfd_get_filename(exec_bfd), "",
+			       RETURN_MASK_ALL))
+		{
+		  ; /* ??? */
+		}
 	    }
 	}
     }
@@ -750,8 +762,9 @@ specified when you started GDB.";
   nindy_ops.to_magic = OPS_MAGIC;	/* Always the last thing */
 }
 
+extern void _initialize_nindy(void); /* -Wmissing-prototypes */
 void
-_initialize_nindy (void)
+_initialize_nindy(void)
 {
   init_nindy_ops ();
   add_target (&nindy_ops);

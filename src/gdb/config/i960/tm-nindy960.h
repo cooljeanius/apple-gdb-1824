@@ -62,7 +62,7 @@ extern char *nindy_ttyname;	/* Name of serial port to talk to nindy */
 /* If specified on the command line, open tty for talking to nindy,
    and download the executable file if one was specified.  */
 
-extern void nindy_open (char *name, int from_tty);
+extern void nindy_open(const char *name, int from_tty);
 #define	ADDITIONAL_OPTION_HANDLER					\
 	if (nindy_ttyname != NULL)					\
           {								\
@@ -81,8 +81,7 @@ extern void nindy_open (char *name, int from_tty);
 #define	BEFORE_MAIN_LOOP_HOOK	\
   nindy_before_main_loop();
 
-extern void
-  nindy_before_main_loop ();	/* In remote-nindy.c */
+extern void nindy_before_main_loop(void);	/* In remote-nindy.c */
 
 /* FRAME_CHAIN_VALID returns zero if the given frame is the outermost one
    and has no caller.
@@ -91,11 +90,11 @@ extern void
    since it differs between NINDY and VxWorks, the two currently supported
    targets types.  */
 
-extern int nindy_frame_chain_valid (CORE_ADDR, struct frame_info *);
-#define	FRAME_CHAIN_VALID(chain, thisframe) nindy_frame_chain_valid (chain, thisframe)
+extern int nindy_frame_chain_valid(CORE_ADDR, struct frame_info *);
+#define	FRAME_CHAIN_VALID(chain, thisframe) nindy_frame_chain_valid(chain, thisframe)
 
-extern int
-  nindy_frame_chain_valid ();	/* See nindy-tdep.c */
+/* See nindy-tdep.c: */
+extern int nindy_frame_chain_valid(CORE_ADDR, struct frame_info *);
 
 /* Sequence of bytes for breakpoint instruction */
 

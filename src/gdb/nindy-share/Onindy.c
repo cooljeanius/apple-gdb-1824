@@ -13,7 +13,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 
 /* This started out life as code shared between the nindy monitor and
    GDB.  For various reasons, this is no longer true.  Eventually, it
@@ -46,6 +46,13 @@
 # include "ttycntl.h"
 #endif /* 0 */
 #include "defs.h"
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#else
+# ifdef HAVE_SYS_FCNTL_H
+#  include <sys/fcntl.h>
+# endif /* HAVE_SYS_FCNTL_H */
+#endif /* HAVE_FCNTL_H */
 #include "serial.h"
 
 #include "block_io.h"
@@ -61,7 +68,7 @@ extern int quiet;	/* 1 => stifle unnecessary messages */
 /* tty connected to 960/NINDY board.  */
 extern struct serial *nindy_serial;
 
-static int OninStrGet();
+static int OninStrGet(unsigned long, char *);
 
 		/****************************
 		 *                          *
@@ -74,10 +81,8 @@ static int OninStrGet();
  * fromhex:
  *	Convert a hex ascii digit h to a binary integer
  ******************************************************************************/
-static
-int
-fromhex( h )
-    int h;
+static int
+fromhex(int h)
 {
 	if (h >= '0' && h <= '9') {
 		h -= '0';
@@ -260,7 +265,7 @@ putpkt( cmd )
 	for ( s='\020', p=cmd; *p; p++ ) {
 		s += *p;
 	}
-	sprintf( checksum, "#%02x",  s & 0xff );
+	snprintf(checksum, sizeof(checksum), "#%02x",  (s & 0xff));
 
 	/* Send checksummed message over and over until we get a positive ack
 	 */
@@ -310,7 +315,7 @@ send( buf, ack_required )
 			           */
 {
 	int errnum;
-	static char *errmsg[] = {
+	static const char *errmsg[] = {
 		"",						/* X00 */
 		"Buffer overflow",				/* X01 */
 		"Unknown command",				/* X02 */
@@ -369,12 +374,12 @@ int OninBptDel( addr, data )
 {
 	char buf[100];
 
-	if ( addr == -1 ){
-		sprintf( buf, "b%c", data ? '1' : '0' );
+	if (addr == -1) {
+		snprintf(buf, sizeof(buf), "b%c", (data ? '1' : '0'));
 	} else {
-		sprintf( buf, "b%c%x", data ? '1' : '0', addr );
+		snprintf(buf, sizeof(buf), "b%c%x", (data ? '1' : '0'), addr);
 	}
-	return send( buf, 0 );
+	return send(buf, 0);
 }
 
 
@@ -389,8 +394,8 @@ int OninBptSet( addr, data )
 {
 	char buf[100];
 
-	sprintf( buf, "B%c%x", data ? '1' : '0', addr );
-	return send( buf, 0 );
+	snprintf(buf, sizeof(buf), "B%c%x", (data ? '1' : '0'), addr);
+	return send(buf, 0);
 }
 
 /******************************************************************************
@@ -432,16 +437,16 @@ int OninMemGet(ninaddr, hostaddr, len)
   /* How much do we send at a time?  */
 #define OLD_NINDY_MEMBYTES 1024
 	/* Buffer: hex in, binary out		*/
-	char buf[2*OLD_NINDY_MEMBYTES+20];
+	char buf[(2 * OLD_NINDY_MEMBYTES) + 20];
 
 	int cnt;		/* Number of bytes in next transfer	*/
 
-	for ( ; len > 0; len -= OLD_NINDY_MEMBYTES ){
-		cnt = len > OLD_NINDY_MEMBYTES ? OLD_NINDY_MEMBYTES : len;
+	for ( ; len > 0; len -= OLD_NINDY_MEMBYTES) {
+		cnt = ((len > OLD_NINDY_MEMBYTES) ? OLD_NINDY_MEMBYTES : len);
 
-		sprintf( buf, "m%x,%x", ninaddr, cnt );
-		send( buf, 0 );
-		hexbin( cnt, buf, hostaddr );
+		snprintf(buf, sizeof(buf), "m%x,%x", ninaddr, cnt);
+		send(buf, 0);
+		hexbin(cnt, buf, hostaddr);
 
 		ninaddr += cnt;
 		hostaddr += cnt;
@@ -467,7 +472,7 @@ int OninMemPut( destaddr, srcaddr, len )
 	for ( ; len > 0; len -= OLD_NINDY_MEMBYTES ){
 		cnt = len > OLD_NINDY_MEMBYTES ? OLD_NINDY_MEMBYTES : len;
 
-		sprintf( buf, "M%x,", destaddr );
+		snprintf(buf, sizeof(buf), "M%x,", destaddr);
 		p = buf + strlen(buf);
 		binhex( cnt, srcaddr, p );
 		*(p+(2*cnt)) = '\0';
@@ -497,9 +502,9 @@ OninRegGet( regname )
 	char buf[200];
 	long val;
 
-	sprintf( buf, "u%s", regname );
-	send( buf, 0 );
-	hexbin( 4, buf, (char *)&val );
+	snprintf(buf, sizeof(buf), "u%s", regname);
+	send(buf, 0);
+	hexbin(4, buf, (char *)&val);
 	return byte_order(val);
 }
 
@@ -520,8 +525,8 @@ int OninRegPut( regname, val )
 {
 	char buf[200];
 
-	sprintf( buf, "U%s,%08x", regname, byte_order(val) );
-	send( buf, 1 );
+	snprintf(buf, sizeof(buf), "U%s,%08x", regname, byte_order(val));
+	send(buf, 1);
 	return 0;
 }
 
@@ -585,7 +590,7 @@ int OninRegsPut( regp )
  *      Ask NINDY to perform a soft reset; wait for the reset to complete.
  * Returns 0 by default.
  ******************************************************************************/
-int OninReset()
+int OninReset(void)
 {
 
 	putpkt( "X" );
@@ -606,7 +611,7 @@ int OninReset()
  *
  * Returns 0 by default.
  ******************************************************************************/
-int OninSrq()
+int OninSrq(void)
 {
   /* FIXME: Imposes arbitrary limits on lengths of pathnames and such.  */
 	char buf[BUFSIZE];
@@ -684,8 +689,8 @@ int OninSrq()
 
 	/* Tell NINDY to continue
 	 */
-	sprintf( buf, "e%x", retcode );
-	send( buf, 1 );
+	snprintf(buf, sizeof(buf), "e%x", retcode);
+	send(buf, 1);
 	return 0;
 }
 
@@ -741,7 +746,7 @@ OninStrGet( ninaddr, hostaddr )
 	char buf[BUFSIZE];	/* String as 2 ASCII hex digits per byte */
 	int numchars;		/* Length of string in bytes.		*/
 
-	sprintf( buf, "\"%x", ninaddr );
+	snprintf(buf, sizeof(buf), "\"%x", ninaddr);
 	send( buf, 0 );
 	numchars = strlen(buf)/2;
 	hexbin( numchars, buf, hostaddr );

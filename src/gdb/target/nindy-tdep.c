@@ -53,15 +53,20 @@ nindy_frame_chain_valid (CORE_ADDR chain, struct frame_info *curframe)
   CORE_ADDR a;
 
 
-  chain &= ~0x3f;		/* Zero low 6 bits because previous frame pointers
-				   contain return status info in them.  */
+  chain &= ~0x3f;	/* Zero low 6 bits because previous frame pointers
+			   contain return status info in them.  */
   if (chain == 0)
     {
       return 0;
     }
 
-  sym = lookup_symbol (sf, 0, VAR_NAMESPACE, (int *) NULL,
-		       (struct symtab **) NULL);
+#ifdef VAR_NAMESPACE
+  sym = lookup_symbol(sf, 0, VAR_NAMESPACE, (int *)NULL,
+		      (struct symtab **)NULL);
+#else
+  sym = NULL;
+#endif /* VAR_NAMESPACE */
+
   if (sym != 0)
     {
       a = SYMBOL_VALUE (sym);

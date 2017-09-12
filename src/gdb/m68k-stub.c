@@ -109,6 +109,8 @@
 #include <string.h>
 #include <setjmp.h>
 
+#include "stubs/gdbstubs.h"
+
 /************************************************************************
  *
  * external low-level support routines 

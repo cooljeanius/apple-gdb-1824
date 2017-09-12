@@ -93,6 +93,18 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "stubs/gdbstubs.h"
+
+/* Only include the parts of "ansidecl.h"/"defs.h" we need: */
+/* Assume likewise about attribute `const': */
+#ifndef ATTRIBUTE_CONST
+# if defined(__GNUC__) && (__GNUC__ >= 3)
+#  define ATTRIBUTE_CONST __attribute__((__const__))
+# else
+#  define ATTRIBUTE_CONST
+# endif /* __GNUC__ >= 3 */
+#endif /* !ATTRIBUTE_CONST */
+
 /************************************************************************
  *
  * external low-level support routines
@@ -436,7 +448,7 @@ _returnFromException(void)
   return_to_prog();
 }
 
-int
+int ATTRIBUTE_CONST
 hex(char ch)
 {
   if ((ch >= 'a') && (ch <= 'f'))
@@ -552,17 +564,18 @@ putpacket (unsigned char *buffer)
   } while (getDebugChar () != '+');
 }
 
+/* FIXME: to transition from old-style, need to use varargs properly */
 void
 debug_error(format, parm)
-     char *format;
+     const char *format;
      char *parm;
 {
   if (remote_debug)
-    fprintf (stderr, format, parm);
+    fprintf(stderr, format, parm);
 }
 
 /* Address of a routine to RTE to if we get a memory fault.  */
-static void (*volatile mem_fault_routine) () = NULL;
+static void (*volatile mem_fault_routine)() = NULL;
 
 /* Indicate to caller of mem2hex or hex2mem that there has been an
    error.  */
@@ -641,8 +654,8 @@ hex2mem(char *buf, char *mem, int count, int may_fault)
 
 /* this function takes the 386 exception vector and attempts to
    translate this number into a unix compatible signal value */
-int
-computeSignal (int exceptionVector)
+int ATTRIBUTE_CONST
+computeSignal(int exceptionVector)
 {
   int sigval;
   switch (exceptionVector)
@@ -731,7 +744,7 @@ hexToInt (char **ptr, int *intValue)
  * This function does all command procesing for interfacing to gdb.
  */
 void
-handle_exception (int exceptionVector)
+handle_exception(int exceptionVector)
 {
   int sigval, stepping;
   int addr, length;

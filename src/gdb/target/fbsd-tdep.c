@@ -1,4 +1,4 @@
-/* Target-dependent code for FreeBSD, architecture-independent.
+/* fbsd-tdep.c: Target-dependent code for FreeBSD, architecture-independent.
 
    Copyright (C) 2002-2014 Free Software Foundation, Inc.
 
@@ -27,22 +27,27 @@
 #include "elf-bfd.h"
 #include "fbsd-tdep.h"
 
+#include "gdb_assert.h"
 
+/* Prototypes: */
+static enum gdb_signal find_stop_signal(void);
+
+/* */
 static int
-find_signalled_thread (struct thread_info *info, void *data)
+find_signalled_thread(struct thread_info *info, void *data)
 {
-  if (info->suspend.stop_signal != GDB_SIGNAL_0
-      && ptid_get_pid (info->ptid) == ptid_get_pid (inferior_ptid))
+  if ((info->suspend.stop_signal != GDB_SIGNAL_0)
+      && (ptid_get_pid(info->ptid) == ptid_get_pid(inferior_ptid)))
     return 1;
 
   return 0;
 }
 
 static enum gdb_signal
-find_stop_signal (void)
+find_stop_signal(void)
 {
   struct thread_info *info =
-    iterate_over_threads (find_signalled_thread, NULL);
+    iterate_over_threads(find_signalled_thread, NULL);
 
   if (info)
     return info->suspend.stop_signal;
@@ -64,23 +69,27 @@ fbsd_collect_regset_section_cb (const char *sect_name, int size,
 				const char *human_name, void *cb_data)
 {
   char *buf;
-  struct fbsd_collect_regset_section_cb_data *data = cb_data;
+  struct fbsd_collect_regset_section_cb_data *data =
+    (struct fbsd_collect_regset_section_cb_data *)cb_data;
 
-  gdb_assert (regset->collect_regset);
+  gdb_assert(regset->collect_regset);
 
-  buf = xmalloc (size);
-  regset->collect_regset (regset, data->regcache, -1, buf, size);
+  buf = (char *)xmalloc(size);
+  regset->collect_regset(regset, data->regcache, -1, buf, size);
 
-  /* PRSTATUS still needs to be treated specially.  */
-  if (strcmp (sect_name, ".reg") == 0)
-    data->note_data = (char *) elfcore_write_prstatus
-      (data->obfd, data->note_data, data->note_size,
-       ptid_get_pid (inferior_ptid), find_stop_signal (), buf);
+  /* PRSTATUS still needs to be treated specially: */
+  if (strcmp(sect_name, ".reg") == 0)
+    data->note_data =
+      ((char *)
+       elfcore_write_prstatus(data->obfd, data->note_data, data->note_size,
+			      ptid_get_pid(inferior_ptid), find_stop_signal(),
+			      buf));
   else
-    data->note_data = (char *) elfcore_write_register_note
-      (data->obfd, data->note_data, data->note_size,
-       sect_name, buf, size);
-  xfree (buf);
+    data->note_data =
+      ((char *)
+       elfcore_write_register_note(data->obfd, data->note_data, data->note_size,
+				   sect_name, buf, size));
+  xfree(buf);
 }
 
 /* Create appropriate note sections for a corefile, returning them in
