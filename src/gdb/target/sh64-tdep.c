@@ -684,7 +684,7 @@ sh64_use_struct_convention(struct type *type)
 static int
 gdb_print_insn_sh64(bfd_vma memaddr, disassemble_info *info)
 {
-  info->endian = TARGET_BYTE_ORDER;
+  info->endian = (enum bfd_endian)TARGET_BYTE_ORDER;
   return print_insn_sh(memaddr, info);
 }
 
@@ -1057,8 +1057,8 @@ sh64_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
   int argnum;
   struct type *type;
   CORE_ADDR regval;
-  char *val;
-  char valbuf[8];
+  const gdb_byte *val;
+  gdb_byte valbuf[8];
   int len;
   int argreg_size;
   int fp_args[12];
@@ -1110,7 +1110,7 @@ sh64_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
 	      val = valbuf;
 	    }
 	  else
-	    val = (char *) value_contents (args[argnum]);
+	    val = value_contents(args[argnum]);
 
 	  while (len > 0)
 	    {
@@ -1141,7 +1141,7 @@ sh64_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
 	}
       else
 	{
-	  val = (char *)value_contents(args[argnum]);
+	  val = value_contents(args[argnum]);
 	  if (len == 4)
 	    {
 	      /* Where is it going to be stored? */
@@ -1250,7 +1250,7 @@ sh64_extract_return_value (struct type *type, struct regcache *regcache,
       if (len <= 8)
 	{
 	  int offset;
-	  char buf[8];
+	  gdb_byte buf[8];
 	  /* Result is in register 2. If smaller than 8 bytes, it is padded
 	     at the most significant end.  */
 	  regcache_raw_read (regcache, DEFAULT_RETURN_REGNUM, buf);
@@ -1278,7 +1278,7 @@ static void
 sh64_store_return_value (struct type *type, struct regcache *regcache,
 			 const void *valbuf)
 {
-  char buf[64];	/* more than enough...  */
+  gdb_byte buf[64];	/* more than enough...  */
   int len = TYPE_LENGTH (type);
 
   if (TYPE_CODE (type) == TYPE_CODE_FLT)
@@ -1286,10 +1286,10 @@ sh64_store_return_value (struct type *type, struct regcache *regcache,
       int i, regnum = FP0_REGNUM;
       for (i = 0; i < len; i += 4)
 	if (TARGET_BYTE_ORDER == BFD_ENDIAN_LITTLE)
-	  regcache_raw_write (regcache, regnum++,
-			      (char *) valbuf + len - 4 - i);
+	  regcache_raw_write(regcache, regnum++,
+			     ((gdb_byte *)valbuf + len - 4 - i));
 	else
-	  regcache_raw_write (regcache, regnum++, (char *) valbuf + i);
+	  regcache_raw_write(regcache, regnum++, ((gdb_byte *)valbuf + i));
     }
   else
     {
@@ -1535,8 +1535,8 @@ sh64_register_type (struct gdbarch *gdbarch, int reg_nr)
 }
 
 static void
-sh64_register_convert_to_virtual (int regnum, struct type *type,
-				     char *from, char *to)
+sh64_register_convert_to_virtual(int regnum, struct type *type,
+				 gdb_byte *from, gdb_byte *to)
 {
   if (TARGET_BYTE_ORDER != BFD_ENDIAN_LITTLE)
     {
@@ -1591,7 +1591,7 @@ sh64_pseudo_register_read(struct gdbarch *gdbarch, struct regcache *regcache,
   int base_regnum;
   int portion;
   int offset = 0;
-  char temp_buffer[MAX_REGISTER_SIZE];
+  gdb_byte temp_buffer[MAX_REGISTER_SIZE];
 
   if (reg_nr >= DR0_REGNUM
       && reg_nr <= DR_LAST_REGNUM)
@@ -1623,8 +1623,8 @@ sh64_pseudo_register_read(struct gdbarch *gdbarch, struct regcache *regcache,
 	 concatenating 2 single precision floating point registers.  */
       for (portion = 0; portion < 2; portion++)
 	regcache_raw_read (regcache, base_regnum + portion,
-			   ((char *) buffer
-			    + register_size (gdbarch, base_regnum) * portion));
+			   (buffer
+			    + (register_size(gdbarch, base_regnum) * portion)));
     }
   else if (reg_nr >= FV0_REGNUM
 	   && reg_nr <= FV_LAST_REGNUM)
@@ -1636,8 +1636,8 @@ sh64_pseudo_register_read(struct gdbarch *gdbarch, struct regcache *regcache,
 	 concatenating 4 single precision floating point registers.  */
       for (portion = 0; portion < 4; portion++)
 	regcache_raw_read (regcache, base_regnum + portion,
-			   ((char *) buffer
-			    + register_size (gdbarch, base_regnum) * portion));
+			   (buffer
+			    + (register_size(gdbarch, base_regnum) * portion)));
     }
   /* sh compact pseudo registers. 1-to-1 with a shmedia register */
   else if (reg_nr >= R0_C_REGNUM
@@ -1689,8 +1689,8 @@ sh64_pseudo_register_read(struct gdbarch *gdbarch, struct regcache *regcache,
 	 concatenating 4 single precision floating point registers.  */
       for (portion = 0; portion < 4; portion++)
 	regcache_raw_read (regcache, base_regnum + portion,
-			   ((char *) buffer
-			    + register_size (gdbarch, base_regnum) * portion));
+			   (buffer
+			    + (register_size(gdbarch, base_regnum) * portion)));
     }
   else if (reg_nr == FPSCR_C_REGNUM)
     {
@@ -2295,7 +2295,7 @@ sh64_frame_prev_register(struct frame_info *next_frame, void **this_cache,
 			 /* APPLE LOCAL variable opt states.  */
 			 int regnum, enum opt_state *optimizedp,
 			 enum lval_type *lvalp, CORE_ADDR *addrp,
-			 int *realnump, void *valuep)
+			 int *realnump, gdb_byte *valuep)
 {
   struct sh64_frame_cache *cache = sh64_frame_cache(next_frame, this_cache);
 

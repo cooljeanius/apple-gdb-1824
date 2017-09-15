@@ -1,4 +1,4 @@
-/* Target-dependent code for GDB, the GNU debugger.
+/* s390-tdep.h: Target-dependent code for GDB, the GNU debugger.
    Copyright 2003 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -101,5 +101,10 @@ extern int s390x_regmap_gregset[S390_NUM_REGS];
 #define s390_sizeof_fpregset 0x88
 extern int s390_regmap_fpregset[S390_NUM_REGS];
 
-#endif
+/* Prototypes: */
+extern const struct regset *s390_regset_from_core_section(struct gdbarch *,
+							  const char *, size_t);
 
+#endif /* !S390_TDEP_H */
+
+/* EOF */

@@ -626,7 +626,7 @@ update_solib_list (int from_tty, struct target_ops *target)
 
    SYNOPSIS
 
-   void solib_add(const char *pattern, int from_tty, struct target_ops
+   int solib_add(const char *pattern, int from_tty, struct target_ops
    *TARGET, int readsyms)
 
    DESCRIPTION
@@ -673,8 +673,8 @@ solib_add(const char *pattern, int from_tty, struct target_ops *target,
 	}
 
     if (from_tty && pattern && ! any_matches)
-      printf_unfiltered
-	("No loaded shared libraries match the pattern `%s'.\n", pattern);
+      printf_unfiltered("No loaded shared libraries match the pattern `%s'.\n",
+			pattern);
 
     if (loaded_any_symbols)
       {

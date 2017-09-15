@@ -29,7 +29,7 @@
 #include "objfiles.h"
 #include "gdb_assert.h"
 
-extern void coff_solib_add(char *, int, struct target_ops *, int);
+extern int coff_solib_add(char *, int, struct target_ops *, int);
 extern void coff_solib_create_inferior_hook(void);
 
 /*
@@ -45,21 +45,21 @@ extern void coff_solib_create_inferior_hook(void);
 
    SYNOPSIS
 
-   void coff_solib_add(char *arg_string, int from_tty,
-                       struct target_ops *target, int readsyms)
+   int coff_solib_add(char *arg_string, int from_tty,
+		      struct target_ops *target, int readsyms)
 
    DESCRIPTION
 
    FIXME: fill this in...
  */
-void
+int
 coff_solib_add(char *arg_string, int from_tty, struct target_ops *target,
                int readsyms)
 {
   asection *libsect;
 
   if (!readsyms)
-    return;
+    return 0;
 
   libsect = bfd_get_section_by_name(exec_bfd, ".lib");
 
@@ -111,6 +111,8 @@ coff_solib_add(char *arg_string, int from_tty, struct target_ops *target,
          frameless.  */
       reinit_frame_cache();
     }
+
+  return 1;
 }
 
 

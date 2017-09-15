@@ -2566,7 +2566,7 @@ process_event_stop_test:
 	  if (was_sync_execution && !sync_execution)
 	    async_disable_stdin();
           /* APPLE LOCAL end async */
-	  target_terminal_inferior ();
+	  target_terminal_inferior();
 
 	  /* Try to reenable shared library breakpoints, additional
 	     code segments in shared libraries might be mapped in now. */

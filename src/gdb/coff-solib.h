@@ -25,26 +25,26 @@ struct target_ops;
    as well. */
 
 #if 0
-#define CLEAR_SOLIB			coff_clear_solib
+# define CLEAR_SOLIB coff_clear_solib
 
-extern void coff_clear_solib (void);
-#endif
+extern void coff_clear_solib(void);
+#endif /* 0 */
 
 /* Called to add symbols from a shared library to gdb's symbol table. */
 
 #define SOLIB_ADD(filename, from_tty, targ, readsyms) \
-    coff_solib_add (filename, from_tty, targ, readsyms)
+    coff_solib_add(filename, from_tty, targ, readsyms)
 
-extern void coff_solib_add (char *, int, struct target_ops *, int);
+extern int coff_solib_add(char *, int, struct target_ops *, int);
 
 /* Function to be called when the inferior starts up, to discover the
    names of shared libraries that are dynamically linked, the base
    addresses to which they are linked, and sufficient information to
    read in their symbols at a later time.  */
 
-#define SOLIB_CREATE_INFERIOR_HOOK(PID)	coff_solib_create_inferior_hook ()
+#define SOLIB_CREATE_INFERIOR_HOOK(PID)	coff_solib_create_inferior_hook()
 
-extern void coff_solib_create_inferior_hook (void);	/* solib.c */
+extern void coff_solib_create_inferior_hook(void);	/* solib.c */
 
 /* Function to be called to remove the connection between debugger and
    dynamic linker that was established by SOLIB_CREATE_INFERIOR_HOOK.
@@ -62,7 +62,7 @@ extern void coff_solib_create_inferior_hook (void);	/* solib.c */
    Presently, this functionality is not implemented.
  */
 #define SOLIB_CREATE_CATCH_LOAD_HOOK(pid, tempflag, filename, cond_string) \
-   error (_("catch of library loads/unloads not yet implemented on this platform"))
+   error(_("catch of library loads/unloads not yet implemented on this platform"))
 
 /* This function is called by the "catch unload" command.  It allows
    the debugger to be notified by the dynamic linker when a specified
@@ -71,7 +71,7 @@ extern void coff_solib_create_inferior_hook (void);	/* solib.c */
    Presently, this functionality is not implemented.
  */
 #define SOLIB_CREATE_CATCH_UNLOAD_HOOK(pid, tempflag, filename, cond_string) \
-   error (_("catch of library loads/unloads not yet implemented on this platform"))
+   error(_("catch of library loads/unloads not yet implemented on this platform"))
 
 /* This function returns TRUE if the dynamic linker has just reported
    a load of a library.
@@ -81,13 +81,13 @@ extern void coff_solib_create_inferior_hook (void);	/* solib.c */
 
    Presently, this functionality is not implemented.
  */
-/*
-   #define SOLIB_HAVE_LOAD_EVENT(pid) \
-   error("catch of library loads/unloads not yet implemented on this platform")
- */
-
-#define SOLIB_HAVE_LOAD_EVENT(pid) \
+#if 0
+# define SOLIB_HAVE_LOAD_EVENT(pid) \
+    error("catch of library loads/unloads not yet implemented on this platform")
+#else
+# define SOLIB_HAVE_LOAD_EVENT(pid) \
 (0)
+#endif /* 0 */
 
 /* This function returns a pointer to the string representation of the
    pathname of the dynamically-linked library that has just been loaded.
@@ -119,13 +119,13 @@ extern void coff_solib_create_inferior_hook (void);	/* solib.c */
 
    Presently, this functionality is not implemented.
  */
-/*
-   #define SOLIB_HAVE_UNLOAD_EVENT(pid) \
-   error("catch of library loads/unloads not yet implemented on this platform")
- */
-
-#define SOLIB_HAVE_UNLOAD_EVENT(pid) \
+#if 0
+# define SOLIB_HAVE_UNLOAD_EVENT(pid) \
+    error("catch of library loads/unloads not yet implemented on this platform")
+#else
+# define SOLIB_HAVE_UNLOAD_EVENT(pid) \
 (0)
+#endif /* 0 */
 
 /* This function returns a pointer to the string representation of the
    pathname of the dynamically-linked library that has just been unloaded.
@@ -140,13 +140,13 @@ extern void coff_solib_create_inferior_hook (void);	/* solib.c */
 
    Presently, this functionality is not implemented.
  */
-/*
-   #define SOLIB_UNLOADED_LIBRARY_PATHNAME(pid) \
-   error("catch of library loads/unloads not yet implemented on this platform")
- */
-
-#define SOLIB_UNLOADED_LIBRARY_PATHNAME(pid) \
-(0)
+#if 0
+# define SOLIB_UNLOADED_LIBRARY_PATHNAME(pid) \
+    error("catch of library loads/unloads not yet implemented on this platform")
+#else
+# define SOLIB_UNLOADED_LIBRARY_PATHNAME(pid) \
+""
+#endif /* 0 */
 
 /* This function returns TRUE if pc is the address of an instruction that
    lies within the dynamic linker (such as the event hook, or the dld
@@ -158,14 +158,13 @@ extern void coff_solib_create_inferior_hook (void);	/* solib.c */
 
    Presently, this functionality is not implemented.
  */
-
-/*
-   #define SOLIB_IN_DYNAMIC_LINKER(pid,pc) \
+#if 0
+# define SOLIB_IN_DYNAMIC_LINKER(pid,pc) \
    error("catch of library loads/unloads not yet implemented on this platform")
- */
-
-#define SOLIB_IN_DYNAMIC_LINKER(pid,pc) \
-(0)
+#else
+# define SOLIB_IN_DYNAMIC_LINKER(pid,pc) \
+  (0)
+#endif /* 0 */
 
 /* This function must be called when the inferior is killed, and the program
    restarted.  This is not the same as CLEAR_SOLIB, in that it doesn't discard
@@ -174,13 +173,15 @@ extern void coff_solib_create_inferior_hook (void);	/* solib.c */
    Presently, this functionality is not implemented.
  */
 #define SOLIB_RESTART() \
-  (0)
+  ((void)0)
 
-/* If we can't set a breakpoint, and it's in a shared library, just
+/* If we cannot set a breakpoint, and it is in a shared library, just
    disable it.  */
 
 #if 0
-#define DISABLE_UNSETTABLE_BREAK(addr)	coff_solib_address(addr)
+# define DISABLE_UNSETTABLE_BREAK(addr)	coff_solib_address(addr)
 
-extern int solib_address (CORE_ADDR);	/* solib.c */
-#endif
+extern int solib_address(CORE_ADDR);	/* solib.c */
+#endif /* 0 */
+
+/* EOF */

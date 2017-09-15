@@ -1065,7 +1065,7 @@ end_symtab (CORE_ADDR end_addr, struct objfile *objfile, int section)
 #ifndef PROCESS_LINENUMBER_HOOK
 # define PROCESS_LINENUMBER_HOOK()
 #endif /* !PROCESS_LINENUMBER_HOOK */
-  PROCESS_LINENUMBER_HOOK ();	/* Needed for xcoff. */
+  PROCESS_LINENUMBER_HOOK();	/* Needed for xcoff. */
 
   /* Now create the symtab objects proper, one for each subfile.  */
   /* (The main file is the last one on the chain.)  */

@@ -1979,7 +1979,7 @@ symbol_file_clear (int from_tty)
        descriptors as well.
      */
 #if defined(SOLIB_RESTART)
-    SOLIB_RESTART ();
+    SOLIB_RESTART();
 #endif /* SOLIB_RESTART */
 
     symfile_objfile = NULL;

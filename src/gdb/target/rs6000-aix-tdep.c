@@ -140,6 +140,7 @@ static struct regset rs6000_aix32_regset =
   &rs6000_aix32_reg_offsets,
   rs6000_aix_supply_regset,
   rs6000_aix_collect_regset,
+  (struct gdbarch *)NULL
 };
 
 static struct regset rs6000_aix64_regset =
@@ -147,6 +148,7 @@ static struct regset rs6000_aix64_regset =
   &rs6000_aix64_reg_offsets,
   rs6000_aix_supply_regset,
   rs6000_aix_collect_regset,
+  (struct gdbarch *)NULL
 };
 
 /* Return the appropriate register set for the core section identified
@@ -156,7 +158,7 @@ static const struct regset *
 rs6000_aix_regset_from_core_section (struct gdbarch *gdbarch,
 				     const char *sect_name, size_t sect_size)
 {
-  if (gdbarch_tdep (gdbarch)->wordsize == 4)
+  if (new_gdbarch_tdep(gdbarch)->wordsize == 4)
     {
       if (strcmp (sect_name, ".reg") == 0 && sect_size >= 592)
         return &rs6000_aix32_regset;
@@ -193,16 +195,16 @@ rs6000_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 			int nargs, struct value **args, CORE_ADDR sp,
 			int struct_return, CORE_ADDR struct_addr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   int ii;
   int len = 0;
   int argno;			/* current argument number */
   int argbytes;			/* current argument byte */
   gdb_byte tmp_buffer[50];
   int f_argno = 0;		/* current floating point argno */
-  int wordsize = gdbarch_tdep (gdbarch)->wordsize;
-  CORE_ADDR func_addr = find_function_addr (function, NULL);
+  int wordsize = new_gdbarch_tdep(gdbarch)->wordsize;
+  CORE_ADDR func_addr = find_function_addr(function, NULL);
 
   struct value *arg = 0;
   struct type *type;
@@ -297,13 +299,15 @@ rs6000_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
       else
 	{
 	  /* Argument can fit in one register.  No problem.  */
-	  int adj = gdbarch_byte_order (gdbarch)
-		    == BFD_ENDIAN_BIG ? reg_size - len : 0;
+	  int adj = ((gdbarch_byte_order(gdbarch) == BFD_ENDIAN_BIG)
+		     ? (reg_size - len) : 0);
 	  gdb_byte word[MAX_REGISTER_SIZE];
 
-	  memset (word, 0, reg_size);
-	  memcpy (word, value_contents (arg), len);
-	  regcache_cooked_write (regcache, tdep->ppc_gp0_regnum + 3 +ii, word);
+	  memset(word, 0, reg_size);
+	  memcpy(word, value_contents(arg), len);
+	  regcache_cooked_write(regcache, (tdep->ppc_gp0_regnum + 3 + ii),
+				word);
+	  (void)adj;
 	}
       ++argno;
     }
@@ -429,8 +433,8 @@ rs6000_return_value (struct gdbarch *gdbarch, struct type *func_type,
 		     struct type *valtype, struct regcache *regcache,
 		     gdb_byte *readbuf, const gdb_byte *writebuf)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   gdb_byte buf[8];
 
   /* The calling convention this function implements assumes the
@@ -543,6 +547,7 @@ rs6000_return_value (struct gdbarch *gdbarch, struct type *func_type,
       return RETURN_VALUE_REGISTER_CONVENTION;
     }
 
+  (void)buf;
   return RETURN_VALUE_STRUCT_CONVENTION;
 }
 
@@ -570,11 +575,11 @@ rs6000_convert_from_func_ptr_addr (struct gdbarch *gdbarch,
 				   CORE_ADDR addr,
 				   struct target_ops *targ)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   struct obj_section *s;
 
-  s = find_pc_section (addr);
+  s = find_pc_section(addr);
 
   /* Normally, functions live inside a section that is executable.
      So, if ADDR points to a non-executable section, then treat it
@@ -600,9 +605,9 @@ static CORE_ADDR
 branch_dest (struct frame_info *frame, int opcode, int instr,
 	     CORE_ADDR pc, CORE_ADDR safety)
 {
-  struct gdbarch *gdbarch = get_frame_arch (frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct gdbarch *gdbarch = get_frame_arch(frame);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   CORE_ADDR dest;
   int immediate;
   int absolute;
@@ -670,8 +675,8 @@ branch_dest (struct frame_info *frame, int opcode, int instr,
 static int
 rs6000_software_single_step (struct frame_info *frame)
 {
-  struct gdbarch *gdbarch = get_frame_arch (frame);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct gdbarch *gdbarch = get_frame_arch(frame);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   int ii, insn;
   CORE_ADDR loc;
   CORE_ADDR breaks[2];
@@ -706,10 +711,9 @@ rs6000_software_single_step (struct frame_info *frame)
 }
 
 static enum gdb_osabi
-rs6000_aix_osabi_sniffer (bfd *abfd)
+rs6000_aix_osabi_sniffer(bfd *abfd)
 {
-  
-  if (bfd_get_flavour (abfd) == bfd_target_xcoff_flavour);
+  if (bfd_get_flavour(abfd) == bfd_target_xcoff_flavour)
     return GDB_OSABI_AIX;
 
   return GDB_OSABI_UNKNOWN;
@@ -718,7 +722,7 @@ rs6000_aix_osabi_sniffer (bfd *abfd)
 static void
 rs6000_aix_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* RS6000/AIX does not support PT_STEP.  Has to be simulated.  */
   set_gdbarch_software_single_step (gdbarch, rs6000_software_single_step);

@@ -169,15 +169,16 @@ static struct core_fns shnbsd_elfcore_fns =
 };
 
 static void
-shnbsd_init_abi (struct gdbarch_info info,
-                  struct gdbarch *gdbarch)
+shnbsd_init_abi(struct gdbarch_info info,
+		struct gdbarch *gdbarch)
 {
   set_solib_svr4_fetch_link_map_offsets (gdbarch,
 		                nbsd_ilp32_solib_svr4_fetch_link_map_offsets);
 }
 
+extern void _initialize_shnbsd_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_shnbsd_tdep (void)
+_initialize_shnbsd_tdep(void)
 {
   deprecated_add_core_fns (&shnbsd_core_fns);
   deprecated_add_core_fns (&shnbsd_elfcore_fns);
@@ -185,3 +186,5 @@ _initialize_shnbsd_tdep (void)
   gdbarch_register_osabi (bfd_arch_sh, 0, GDB_OSABI_NETBSD_ELF,
 			  shnbsd_init_abi);
 }
+
+/* EOF */

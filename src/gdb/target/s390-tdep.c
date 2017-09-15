@@ -59,10 +59,10 @@ struct gdbarch_tdep
 
   /* Core file register sets.  */
   const struct regset *gregset;
-  int sizeof_gregset;
+  size_t sizeof_gregset;
 
   const struct regset *fpregset;
-  int sizeof_fpregset;
+  size_t sizeof_fpregset;
 };
 
 
@@ -197,7 +197,7 @@ s390_dwarf_reg_to_regnum (int reg)
 {
   int regnum = -1;
 
-  if (reg >= 0 && reg < ARRAY_SIZE (s390_dwarf_regmap))
+  if ((reg >= 0) && ((size_t)reg < ARRAY_SIZE(s390_dwarf_regmap)))
     regnum = s390_dwarf_regmap[reg];
 
   if (regnum == -1)
@@ -344,7 +344,7 @@ static int
 s390_register_reggroup_p(struct gdbarch *gdbarch, int regnum,
 			 struct reggroup *group)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   
   if (tdep == NULL) {
     ; /* ??? */
@@ -450,26 +450,32 @@ s390_supply_regset(const struct regset *regset, struct regcache *regcache,
 
 static const struct regset s390_gregset = {
   s390_regmap_gregset,
-  s390_supply_regset
+  s390_supply_regset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 static const struct regset s390x_gregset = {
   s390x_regmap_gregset,
-  s390_supply_regset
+  s390_supply_regset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 static const struct regset s390_fpregset = {
   s390_regmap_fpregset,
-  s390_supply_regset
+  s390_supply_regset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 /* Return the appropriate register set for the core section identified
    by SECT_NAME and SECT_SIZE.  */
 const struct regset *
-s390_regset_from_core_section (struct gdbarch *gdbarch,
-			       const char *sect_name, size_t sect_size)
+s390_regset_from_core_section(struct gdbarch *gdbarch,
+			      const char *sect_name, size_t sect_size)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   if (strcmp (sect_name, ".reg") == 0 && sect_size == tdep->sizeof_gregset)
     return tdep->gregset;
@@ -1055,8 +1061,8 @@ compute_x_addr (struct prologue_value *addr,
 struct s390_prologue_data {
 
   /* The size of a GPR or FPR.  */
-  int gpr_size;
-  int fpr_size;
+  size_t gpr_size;
+  size_t fpr_size;
 
   /* The general-purpose registers.  */
   struct prologue_value gpr[S390_NUM_GPRS];
@@ -1254,8 +1260,8 @@ s390_analyze_prologue (struct gdbarch *gdbarch,
       int insn_len = s390_readinstruction (insn, pc);
 
       /* Fields for various kinds of instructions.  */
-      unsigned int b2, r1, r2, x2, r3;
-      int i2, d2;
+      unsigned int b2, r1, r2, x2, r3, d2;
+      int i2;
 
       /* The values of SP and FP before this instruction,
          for detecting instructions that change them.  */
@@ -1550,8 +1556,9 @@ s390_analyze_prologue (struct gdbarch *gdbarch,
          Since r2 is zero, this saves the PC in r1, but doesn't branch.  */
       else if (is_rr (insn, op_basr, &r1, &r2)
                && r2 == 0)
+      {
         pv_set_to_constant (&data->gpr[r1], next_pc);
-
+      }
       /* BRAS r1, i2 --- branch relative and save */
       else if (is_ri (insn, op1_bras, op2_bras, &r1, &i2))
         {
@@ -1563,7 +1570,6 @@ s390_analyze_prologue (struct gdbarch *gdbarch,
           if (next_pc <= pc)
             break;
         }
-
       /* Terminate search when hitting any other branch instruction.  */
       else if (is_rr (insn, op_basr, &r1, &r2)
 	       || is_rx (insn, op_bas, &r1, &d2, &x2, &b2)
@@ -1572,9 +1578,11 @@ s390_analyze_prologue (struct gdbarch *gdbarch,
 	       || is_ri (insn, op1_brc, op2_brc, &r1, &i2)
 	       || is_ril (insn, op1_brcl, op2_brcl, &r1, &i2)
 	       || is_ril (insn, op1_brasl, op2_brasl, &r2, &i2))
+      {
 	break;
-
+      }
       else
+      {
         /* An instruction we don't know how to simulate.  The only
            safe thing to do would be to set every value we're tracking
            to 'unknown'.  Instead, we'll be optimistic: we assume that
@@ -1582,6 +1590,7 @@ s390_analyze_prologue (struct gdbarch *gdbarch,
 	   to manipulate any of the data we're interested in here --
 	   then we can just ignore anything else.  */
         ;
+      }
 
       /* Record the address after the last instruction that changed
          the FP, SP, or backlink.  Ignore instructions that changed
@@ -1642,8 +1651,7 @@ s390_in_function_epilogue_p (struct gdbarch *gdbarch, CORE_ADDR pc)
      is a slight chance of false positives here ...  */
 
   bfd_byte insn[6];
-  unsigned int r1, r3, b2;
-  int d2;
+  unsigned int r1, r3, b2, d2;
 
   if (word_size == 4
       && !deprecated_read_memory_nobpt (pc - 4, insn, 4)
@@ -1683,7 +1691,7 @@ s390_prologue_frame_unwind_cache (struct frame_info *next_frame,
 				  struct s390_unwind_cache *info)
 {
   struct gdbarch *gdbarch = get_frame_arch (next_frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   int word_size = gdbarch_ptr_bit (gdbarch) / 8;
   struct s390_prologue_data data;
   struct prologue_value *fp = &data.gpr[S390_FRAME_REGNUM - S390_R0_REGNUM];
@@ -1817,6 +1825,9 @@ s390_prologue_frame_unwind_cache (struct frame_info *next_frame,
 	if (data.fpr_slot[i] != 0)
 	  info->saved_regs[S390_F0_REGNUM + i].addr = cfa - data.fpr_slot[i];
       break;
+
+    default:
+      break;
     }
 
   /* Function return will set PC to %r14.  */
@@ -1845,9 +1856,9 @@ s390_prologue_frame_unwind_cache (struct frame_info *next_frame,
 
   /* We use the current value of the frame register as local_base,
      and the top of the register save area as frame_base.  */
-  if (prev_sp != -1)
+  if (prev_sp != INVALID_ADDRESS)
     {
-      info->frame_base = prev_sp + 16*word_size + 32;
+      info->frame_base = prev_sp + (16 * word_size) + 32;
       info->local_base = prev_sp - size;
     }
 
@@ -1901,7 +1912,7 @@ s390_frame_unwind_cache (struct frame_info *next_frame,
 {
   struct s390_unwind_cache *info;
   if (*this_prologue_cache)
-    return *this_prologue_cache;
+    return (struct s390_unwind_cache *)*this_prologue_cache;
 
   info = FRAME_OBSTACK_ZALLOC (struct s390_unwind_cache);
   *this_prologue_cache = info;
@@ -1926,7 +1937,7 @@ s390_frame_this_id (struct frame_info *next_frame,
   struct s390_unwind_cache *info
     = s390_frame_unwind_cache (next_frame, this_prologue_cache);
 
-  if (info->frame_base == -1)
+  if (info->frame_base == INVALID_ADDRESS)
     return;
 
   *this_id = frame_id_build (info->frame_base, info->func);
@@ -1949,7 +1960,10 @@ s390_frame_prev_register (struct frame_info *next_frame,
 static const struct frame_unwind s390_frame_unwind = {
   NORMAL_FRAME,
   s390_frame_this_id,
-  s390_frame_prev_register
+  s390_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
@@ -1979,7 +1993,7 @@ s390_stub_frame_unwind_cache (struct frame_info *next_frame,
   ULONGEST reg;
 
   if (*this_prologue_cache)
-    return *this_prologue_cache;
+    return (struct s390_stub_unwind_cache *)*this_prologue_cache;
 
   info = FRAME_OBSTACK_ZALLOC (struct s390_stub_unwind_cache);
   *this_prologue_cache = info;
@@ -2022,7 +2036,10 @@ s390_stub_frame_prev_register (struct frame_info *next_frame,
 static const struct frame_unwind s390_stub_frame_unwind = {
   NORMAL_FRAME,
   s390_stub_frame_this_id,
-  s390_stub_frame_prev_register
+  s390_stub_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
@@ -2060,7 +2077,7 @@ s390_sigtramp_frame_unwind_cache (struct frame_info *next_frame,
   int i;
 
   if (*this_prologue_cache)
-    return *this_prologue_cache;
+    return (struct s390_sigtramp_unwind_cache *)*this_prologue_cache;
 
   info = FRAME_OBSTACK_ZALLOC (struct s390_sigtramp_unwind_cache);
   *this_prologue_cache = info;
@@ -2166,7 +2183,10 @@ s390_sigtramp_frame_prev_register (struct frame_info *next_frame,
 static const struct frame_unwind s390_sigtramp_frame_unwind = {
   SIGTRAMP_FRAME,
   s390_sigtramp_frame_this_id,
-  s390_sigtramp_frame_prev_register
+  s390_sigtramp_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
@@ -2237,7 +2257,7 @@ s390_dwarf2_frame_init_reg(struct gdbarch *gdbarch, int regnum,
 			   struct dwarf2_frame_state_reg *reg,
 			   struct frame_info *unused_fi ATTRIBUTE_UNUSED)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   switch (tdep->abi)
     {
@@ -2273,6 +2293,9 @@ s390_dwarf2_frame_init_reg(struct gdbarch *gdbarch, int regnum,
       /* The return address column.  */
       else if (regnum == S390_PC_REGNUM)
 	reg->how = DWARF2_FRAME_REG_RA;
+      break;
+
+    default:
       break;
     }
 }
@@ -2494,8 +2517,8 @@ s390_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
 		     int nargs, struct value **args, CORE_ADDR sp,
 		     int struct_return, CORE_ADDR struct_addr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
-  int word_size = (gdbarch_ptr_bit(gdbarch) / 8);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
+  size_t word_size = (gdbarch_ptr_bit(gdbarch) / 8UL);
   int i;
 
   /* If the i'th argument is passed as a reference to a copy, then
@@ -2580,35 +2603,35 @@ s390_push_dummy_call(struct gdbarch *gdbarch, struct value *function,
 	      {
 		/* When we store a single-precision value in a stack slot,
 		   it occupies the rightmost bits.  */
-		starg = align_up (starg + length, word_size);
-                write_memory (starg - length, value_contents (arg), length);
+		starg = align_up(starg + length, word_size);
+                write_memory(starg - length, value_contents(arg), length);
 	      }
 	  }
-	else if (s390_function_arg_integer (type) && length <= word_size)
+	else if (s390_function_arg_integer(type) && (length <= word_size))
 	  {
 	    if (gr <= 6)
 	      {
 		/* Integer arguments are always extended to word size.  */
-		regcache_cooked_write_signed (regcache, S390_R0_REGNUM + gr,
-					      extend_simple_arg (arg));
+		regcache_cooked_write_signed(regcache, S390_R0_REGNUM + gr,
+					     extend_simple_arg(arg));
 		gr++;
 	      }
 	    else
 	      {
 		/* Integer arguments are always extended to word size.  */
-		write_memory_signed_integer (starg, word_size,
-                                             extend_simple_arg (arg));
+		write_memory_signed_integer(starg, word_size,
+                                            extend_simple_arg(arg));
                 starg += word_size;
 	      }
 	  }
-	else if (s390_function_arg_integer (type) && length == 2*word_size)
+	else if (s390_function_arg_integer(type) && (length == (2UL * word_size)))
 	  {
 	    if (gr <= 5)
 	      {
-		regcache_cooked_write (regcache, S390_R0_REGNUM + gr,
-				       value_contents (arg));
-		regcache_cooked_write (regcache, S390_R0_REGNUM + gr + 1,
-				       value_contents (arg) + word_size);
+		regcache_cooked_write(regcache, S390_R0_REGNUM + gr,
+				      value_contents(arg));
+		regcache_cooked_write(regcache, S390_R0_REGNUM + gr + 1,
+				      value_contents(arg) + word_size);
 		gr += 2;
 	      }
 	    else
@@ -3003,6 +3026,8 @@ s390_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
                                                     s390_address_class_type_flags_to_name);
       set_gdbarch_address_class_name_to_type_flags (gdbarch,
                                                     s390_address_class_name_to_type_flags);
+      break;
+    default:
       break;
     }
 

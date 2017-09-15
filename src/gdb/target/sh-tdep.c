@@ -91,7 +91,7 @@ sh_sh_register_name (int reg_nr)
   };
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -113,7 +113,7 @@ sh_sh3_register_name (int reg_nr)
   };
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -135,7 +135,7 @@ sh_sh3e_register_name (int reg_nr)
   };
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -157,7 +157,7 @@ sh_sh2e_register_name (int reg_nr)
   };
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -197,7 +197,7 @@ sh_sh2a_register_name (int reg_nr)
   };
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -237,7 +237,7 @@ sh_sh2a_nofpu_register_name (int reg_nr)
   };
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -259,7 +259,7 @@ sh_sh_dsp_register_name (int reg_nr)
   };
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -282,7 +282,7 @@ sh_sh3_dsp_register_name (int reg_nr)
   };
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -319,7 +319,7 @@ sh_sh4_register_name (int reg_nr)
   };
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -354,7 +354,7 @@ sh_sh4_nofpu_register_name (int reg_nr)
   };
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -377,7 +377,7 @@ sh_sh4al_dsp_register_name (int reg_nr)
   };
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (register_names) / sizeof (*register_names)))
+  if ((size_t)reg_nr >= (sizeof(register_names) / sizeof(*register_names)))
     return NULL;
   return register_names[reg_nr];
 }
@@ -483,7 +483,7 @@ sh_breakpoint_from_pc (CORE_ADDR *pcptr, int *lenptr)
 static int
 gdb_print_insn_sh (bfd_vma memaddr, disassemble_info * info)
 {
-  info->endian = TARGET_BYTE_ORDER;
+  info->endian = (enum bfd_endian)TARGET_BYTE_ORDER;
   return print_insn_sh (memaddr, info);
 }
 
@@ -867,22 +867,22 @@ sh_frame_align (struct gdbarch *ignore, CORE_ADDR sp)
    to R7.   */
 
 /* Helper function to justify value in register according to endianess. */
-static char *
-sh_justify_value_in_reg (struct value *val, int len)
+static const gdb_byte *
+sh_justify_value_in_reg(struct value *val, int len)
 {
-  static char valbuf[4];
+  static gdb_byte valbuf[4];
 
-  memset (valbuf, 0, sizeof (valbuf));
+  memset(valbuf, 0, sizeof(valbuf));
   if (len < 4)
     {
       /* value gets right-justified in the register or stack word */
       if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
-	memcpy (valbuf + (4 - len), (char *) value_contents (val), len);
+	memcpy(valbuf + (4 - len), (char *)value_contents(val), len);
       else
-	memcpy (valbuf, (char *) value_contents (val), len);
+	memcpy(valbuf, (char *)value_contents(val), len);
       return valbuf;
     }
-  return (char *) value_contents (val);
+  return value_contents(val);
 }
 
 /* Helper function to eval number of bytes to allocate on stack. */
@@ -1026,7 +1026,7 @@ sh_push_dummy_call_fpu (struct gdbarch *gdbarch,
   int argnum;
   struct type *type;
   CORE_ADDR regval;
-  char *val;
+  const gdb_byte *val;
   int len, reg_size = 0;
   int pass_on_stack = 0;
   int treat_as_flt;
@@ -1137,7 +1137,7 @@ sh_push_dummy_call_nofpu (struct gdbarch *gdbarch,
   int argnum;
   struct type *type;
   CORE_ADDR regval;
-  char *val;
+  const gdb_byte *val;
   int len, reg_size;
 
   /* first force sp to a 4-byte alignment */
@@ -1208,14 +1208,14 @@ sh_extract_return_value_nofpu (struct type *type, struct regcache *regcache,
     {
       ULONGEST c;
 
-      regcache_cooked_read_unsigned (regcache, return_register, &c);
-      store_unsigned_integer (valbuf, len, c);
+      regcache_cooked_read_unsigned(regcache, return_register, &c);
+      store_unsigned_integer((gdb_byte *)valbuf, len, c);
     }
   else if (len == 8)
     {
       int i, regnum = R0_REGNUM;
       for (i = 0; i < len; i += 4)
-	regcache_raw_read (regcache, regnum++, (char *) valbuf + i);
+	regcache_raw_read(regcache, regnum++, ((gdb_byte *)valbuf + i));
     }
   else
     error (_("bad size for return value"));
@@ -1231,9 +1231,11 @@ sh_extract_return_value_fpu (struct type *type, struct regcache *regcache,
       int i, regnum = FP0_REGNUM;
       for (i = 0; i < len; i += 4)
 	if (TARGET_BYTE_ORDER == BFD_ENDIAN_LITTLE)
-	  regcache_raw_read (regcache, regnum++, (char *) valbuf + len - 4 - i);
+	  regcache_raw_read(regcache, regnum++,
+			    ((gdb_byte *)valbuf + len - 4 - i));
 	else
-	  regcache_raw_read (regcache, regnum++, (char *) valbuf + i);
+	  regcache_raw_read(regcache, regnum++,
+			    ((gdb_byte *)valbuf + i));
     }
   else
     sh_extract_return_value_nofpu (type, regcache, valbuf);
@@ -1254,14 +1256,14 @@ sh_store_return_value_nofpu (struct type *type, struct regcache *regcache,
 
   if (len <= 4)
     {
-      val = extract_unsigned_integer (valbuf, len);
-      regcache_cooked_write_unsigned (regcache, R0_REGNUM, val);
+      val = extract_unsigned_integer((const gdb_byte *)valbuf, len);
+      regcache_cooked_write_unsigned(regcache, R0_REGNUM, val);
     }
   else
     {
       int i, regnum = R0_REGNUM;
       for (i = 0; i < len; i += 4)
-	regcache_raw_write (regcache, regnum++, (char *) valbuf + i);
+	regcache_raw_write(regcache, regnum++, ((gdb_byte *)valbuf + i));
     }
 }
 
@@ -1275,10 +1277,10 @@ sh_store_return_value_fpu (struct type *type, struct regcache *regcache,
       int i, regnum = FP0_REGNUM;
       for (i = 0; i < len; i += 4)
 	if (TARGET_BYTE_ORDER == BFD_ENDIAN_LITTLE)
-	  regcache_raw_write (regcache, regnum++,
-			      (char *) valbuf + len - 4 - i);
+	  regcache_raw_write(regcache, regnum++,
+			     ((gdb_byte *)valbuf + len - 4 - i));
 	else
-	  regcache_raw_write (regcache, regnum++, (char *) valbuf + i);
+	  regcache_raw_write(regcache, regnum++, ((gdb_byte *)valbuf + i));
     }
   else
     sh_store_return_value_nofpu (type, regcache, valbuf);
@@ -1489,7 +1491,9 @@ sh2a_show_regs (void)
 static void
 sh2a_nofpu_show_regs (void)
 {
+#ifdef ALLOW_UNUSED_VARIABLES
   int pr = read_register (FPSCR_REGNUM) & 0x80000;
+#endif /* ALLOW_UNUSED_VARIABLES */
   printf_filtered ("PC=%s SR=%08lx PR=%08lx MACH=%08lx MACHL=%08lx\n",
 		   paddr (read_register (PC_REGNUM)),
 		   (long) read_register (SR_REGNUM),
@@ -1847,7 +1851,7 @@ sh_default_register_type (struct gdbarch *gdbarch, int reg_nr)
 
 static void
 sh_register_convert_to_virtual (int regnum, struct type *type,
-				char *from, char *to)
+				gdb_byte *from, gdb_byte *to)
 {
   if (regnum >= DR0_REGNUM && regnum <= DR_LAST_REGNUM)
     {
@@ -1857,8 +1861,7 @@ sh_register_convert_to_virtual (int regnum, struct type *type,
       store_typed_floating (to, type, val);
     }
   else
-    error
-      ("sh_register_convert_to_virtual called with non DR register number");
+    error("sh_register_convert_to_virtual called with non DR register number");
 }
 
 static void
@@ -1872,7 +1875,7 @@ sh_register_convert_to_raw (struct type *type, int regnum,
 				 &val, to);
     }
   else
-    error (_("sh_register_convert_to_raw called with non DR register number"));
+    error(_("sh_register_convert_to_raw called with non DR register number"));
 }
 
 /* For vectors of 4 floating point registers. */
@@ -1901,7 +1904,7 @@ sh_pseudo_register_read(struct gdbarch *gdbarch, struct regcache *regcache,
 			int reg_nr, gdb_byte *buffer)
 {
   int base_regnum, portion;
-  char temp_buffer[MAX_REGISTER_SIZE];
+  gdb_byte temp_buffer[MAX_REGISTER_SIZE];
 
   if (reg_nr == PSEUDO_BANK_REGNUM)
     regcache_raw_read (regcache, BANK_REGNUM, buffer);
@@ -1929,7 +1932,7 @@ sh_pseudo_register_read(struct gdbarch *gdbarch, struct regcache *regcache,
       /* Read the real regs for which this one is an alias.  */
       for (portion = 0; portion < 4; portion++)
 	regcache_raw_read (regcache, base_regnum + portion,
-			   ((char *) buffer
+			   (buffer
 			    + register_size (gdbarch,
 					     base_regnum) * portion));
     }
@@ -1941,7 +1944,7 @@ sh_pseudo_register_write(struct gdbarch *gdbarch, struct regcache *regcache,
 			 int reg_nr, const gdb_byte *buffer)
 {
   int base_regnum, portion;
-  char temp_buffer[MAX_REGISTER_SIZE];
+  gdb_byte temp_buffer[MAX_REGISTER_SIZE];
 
   if (reg_nr == PSEUDO_BANK_REGNUM)
     {
@@ -1977,7 +1980,7 @@ sh_pseudo_register_write(struct gdbarch *gdbarch, struct regcache *regcache,
       /* Write the real regs for which this one is an alias.  */
       for (portion = 0; portion < 4; portion++)
 	regcache_raw_write (regcache, base_regnum + portion,
-			    ((char *) buffer
+			    (buffer
 			     + register_size (gdbarch,
 					      base_regnum) * portion));
     }
@@ -2289,7 +2292,7 @@ sh_frame_cache(struct frame_info *next_frame, void **this_cache)
   /* Adjust all the saved registers such that they contain addresses
      instead of offsets.  */
   for (i = 0; i < SH_NUM_REGS; i++)
-    if (cache->saved_regs[i] != -1)
+    if (cache->saved_regs[i] != INVALID_ADDRESS)
       cache->saved_regs[i] = cache->saved_sp - cache->saved_regs[i] - 4;
 
   return cache;
@@ -2300,7 +2303,7 @@ sh_frame_prev_register (struct frame_info *next_frame, void **this_cache,
 			/* APPLE LOCAL variable opt states.  */
 			int regnum, enum opt_state *optimizedp,
 			enum lval_type *lvalp, CORE_ADDR *addrp,
-			int *realnump, void *valuep)
+			int *realnump, gdb_byte *valuep)
 {
   struct sh_frame_cache *cache = sh_frame_cache (next_frame, this_cache);
 
@@ -2316,7 +2319,7 @@ sh_frame_prev_register (struct frame_info *next_frame, void **this_cache,
       if (valuep)
 	{
 	  /* Store the value.  */
-	  store_unsigned_integer((gdb_byte *)valuep, 4, cache->saved_sp);
+	  store_unsigned_integer(valuep, 4, cache->saved_sp);
 	}
       return;
     }
@@ -2327,7 +2330,7 @@ sh_frame_prev_register (struct frame_info *next_frame, void **this_cache,
   if (regnum == PC_REGNUM)
     regnum = PR_REGNUM;
 
-  if (regnum < SH_NUM_REGS && cache->saved_regs[regnum] != -1)
+  if ((regnum < SH_NUM_REGS) && (cache->saved_regs[regnum] != INVALID_ADDRESS))
     {
       /* APPLE LOCAL variable opt states.  */
       *optimizedp = opt_okay;
@@ -2337,7 +2340,7 @@ sh_frame_prev_register (struct frame_info *next_frame, void **this_cache,
       if (valuep)
 	{
 	  /* Read the value in from memory.  */
-	  read_memory(*addrp, (gdb_byte *)valuep,
+	  read_memory(*addrp, valuep,
 		      register_size(current_gdbarch, regnum));
 	}
       return;
@@ -2349,7 +2352,7 @@ sh_frame_prev_register (struct frame_info *next_frame, void **this_cache,
   *addrp = 0;
   *realnump = regnum;
   if (valuep)
-    frame_unwind_register(next_frame, (*realnump), (gdb_byte *)valuep);
+    frame_unwind_register(next_frame, (*realnump), valuep);
 }
 
 static void
@@ -2547,6 +2550,9 @@ sh_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       sh_show_regs = sh64_show_regs;
       /* SH5 is handled entirely in sh64-tdep.c */
       return sh64_gdbarch_init (info, arches);
+
+    default:
+      break;
     }
 
   /* If there is already a candidate, use it.  */
