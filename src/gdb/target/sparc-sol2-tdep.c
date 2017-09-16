@@ -179,12 +179,12 @@ sparc32_sol2_sigtramp_frame_sniffer (struct frame_info *next_frame)
 void
 sparc32_sol2_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* Solaris has SVR4-style shared libraries...  */
-  set_gdbarch_skip_trampoline_code (gdbarch, find_solib_trampoline_target);
-  set_solib_svr4_fetch_link_map_offsets
-    (gdbarch, svr4_ilp32_fetch_link_map_offsets);
+  set_gdbarch_skip_trampoline_code(gdbarch, find_solib_trampoline_target);
+  set_solib_svr4_fetch_link_map_offsets(gdbarch,
+					svr4_ilp32_fetch_link_map_offsets);
 
   /* ...which means that we need some special handling when doing
      prologue analysis.  */

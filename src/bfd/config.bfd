@@ -1767,7 +1767,7 @@ case "${targ}" in
     targ_defvec=tic6x_elf32_c6000_le_vec
     targ_selvecs="tic6x_elf32_c6000_be_vec tic6x_elf32_le_vec tic6x_elf32_be_vec"
     ;;
-  tic6x-*-uclinux)
+  tic6x-*-uclinux | tic6x-*-linux-gnu )
     targ_defvec=tic6x_elf32_linux_le_vec
     targ_selvecs="tic6x_elf32_linux_be_vec tic6x_elf32_le_vec tic6x_elf32_be_vec"
     ;;

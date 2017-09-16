@@ -150,7 +150,7 @@ sparc32obsd_sigtramp_frame_sniffer(struct frame_info *next_frame)
 static void
 sparc32obsd_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   
   if (tdep == NULL) {
     ; /* ??? */

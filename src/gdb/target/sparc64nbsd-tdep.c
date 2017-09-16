@@ -81,7 +81,7 @@ static const CORE_ADDR sparc64nbsd_sigtramp_start = 0xffffffffffffdee4ULL;
 static const CORE_ADDR sparc64nbsd_sigtramp_end = 0xffffffffffffe000ULL;
 
 static int
-sparc64nbsd_pc_in_sigtramp (CORE_ADDR pc, char *name)
+sparc64nbsd_pc_in_sigtramp (CORE_ADDR pc, const char *name)
 {
   if (pc >= sparc64nbsd_sigtramp_start && pc < sparc64nbsd_sigtramp_end)
     return 1;
@@ -160,7 +160,7 @@ sparc64nbsd_sigcontext_frame_cache (struct frame_info *next_frame,
   CORE_ADDR addr;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct sparc_frame_cache *)*this_cache;
 
   cache = sparc_frame_cache (next_frame, this_cache);
   gdb_assert (cache == *this_cache);
@@ -220,14 +220,17 @@ static const struct frame_unwind sparc64nbsd_sigcontext_frame_unwind =
 {
   SIGTRAMP_FRAME,
   sparc64nbsd_sigcontext_frame_this_id,
-  sparc64nbsd_sigcontext_frame_prev_register
+  sparc64nbsd_sigcontext_frame_prev_register,
+  (const struct frame_data *)NULL,
+  (frame_sniffer_ftype *)NULL,
+  (frame_prev_pc_ftype *)NULL
 };
 
 static const struct frame_unwind *
 sparc64nbsd_sigtramp_frame_sniffer (struct frame_info *next_frame)
 {
   CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  const char *name;
 
   find_pc_partial_function (pc, &name, NULL, NULL);
   if (sparc64nbsd_pc_in_sigtramp (pc, name))
@@ -243,7 +246,7 @@ sparc64nbsd_sigtramp_frame_sniffer (struct frame_info *next_frame)
 static void
 sparc64nbsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->gregset = regset_alloc (gdbarch, sparc64nbsd_supply_gregset, NULL);
   tdep->sizeof_gregset = 160;

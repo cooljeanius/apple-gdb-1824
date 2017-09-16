@@ -531,9 +531,17 @@ tic4x-*-*)		gdb_target=tic4x ;;
 
 tic54x-*-* | c54x-*-*)	gdb_target=tic54x ;;
 
+tic6x-*-*linux*)	gdb_target=linux ;;
+
+tic6x-*-*)		gdb_target=tic6x ;;
+
 tic80-*-*)		gdb_target=tic80
 			gdb_sim=../sim/tic80/libsim.a
 			;;
+
+tilegx-*-*linux*)	gdb_target=linux ;;
+
+tilegx-*-*)		gdb_target=tilegx ;;
 
 xstormy16-*-*)          gdb_target=xstormy16
 			# No simulator libs are needed: target uses SID.

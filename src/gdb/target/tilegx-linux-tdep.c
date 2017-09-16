@@ -50,6 +50,10 @@ tilegx_linux_sigframe_init (const struct tramp_frame *self,
   CORE_ADDR prev_pc = base + 56 * 8;
 
   int i;
+  
+  if (pc == INVALID_ADDRESS) {
+    ; /* ??? */
+  }
 
   for (i = 0; i < 56; i++)
     trad_frame_set_reg_addr (this_cache, i, base + i * 8);
@@ -81,8 +85,12 @@ tilegx_linux_supply_regset (const struct regset *regset,
 			    int regnum, const void *regs, size_t len)
 {
   struct gdbarch *arch = get_regcache_arch (regcache);
-  const char *ptr = regs;
+  const char *ptr = (const char *)regs;
   int i;
+  
+  if (arch == NULL) {
+    ; /* ??? */
+  }
 
   /* This logic must match that of struct pt_regs in "ptrace.h".  */
   for (i = 0; i < TILEGX_NUM_EASY_REGS + 2; i++, ptr += tilegx_reg_size)
@@ -100,7 +108,9 @@ tilegx_linux_supply_regset (const struct regset *regset,
 static struct regset tilegx_linux_regset =
 {
   NULL,
-  tilegx_linux_supply_regset
+  tilegx_linux_supply_regset,
+  (collect_regset_ftype *)NULL,
+  (struct gdbarch *)NULL
 };
 
 static const struct regset *

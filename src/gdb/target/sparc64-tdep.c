@@ -382,6 +382,8 @@ sparc64_pseudo_register_read (struct gdbarch *gdbarch,
 	case SPARC64_CCR_REGNUM:
 	  state = (state >> 32) & ((1 << 8) - 1);
 	  break;
+	default:
+	  break;
 	}
       store_unsigned_integer (buf, 8, state);
     }
@@ -441,6 +443,8 @@ sparc64_pseudo_register_write (struct gdbarch *gdbarch,
 	  break;
 	case SPARC64_CCR_REGNUM:
 	  state |= ((bits & ((1 << 8) - 1)) << 32);
+	  break;
+	default:
 	  break;
 	}
       regcache_raw_write_unsigned (regcache, SPARC64_STATE_REGNUM, state);
@@ -1137,13 +1141,15 @@ sparc64_dwarf2_frame_init_reg(struct gdbarch *gdbarch, int regnum,
       reg->how = DWARF2_FRAME_REG_RA_OFFSET;
       reg->loc.offset = 12;
       break;
+    default:
+      break;
     }
 }
 
 void
 sparc64_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->pc_regnum = SPARC64_PC_REGNUM;
   tdep->npc_regnum = SPARC64_NPC_REGNUM;

@@ -206,7 +206,7 @@ sparc64obsd_sigtramp_frame_sniffer (struct frame_info *next_frame)
 static void
 sparc64obsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->gregset = regset_alloc (gdbarch, sparc64obsd_supply_gregset, NULL);
   tdep->sizeof_gregset = 832;

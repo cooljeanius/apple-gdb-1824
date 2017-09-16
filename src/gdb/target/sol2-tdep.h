@@ -1,4 +1,4 @@
-/* Target-dependent code for Solaris.
+/* sol2-tdep.h: Target-dependent code for Solaris.
 
    Copyright (C) 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 

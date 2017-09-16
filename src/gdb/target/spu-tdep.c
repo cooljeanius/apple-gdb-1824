@@ -72,7 +72,7 @@ struct gdbarch_tdep
 static struct type *
 spu_builtin_type_vec128 (struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   if (!tdep->spu_builtin_type_vec128)
     {
@@ -113,7 +113,7 @@ static struct cmd_list_element *infospucmdlist = NULL;
 static const char *
 spu_register_name (struct gdbarch *gdbarch, int reg_nr)
 {
-  static char *register_names[] = 
+  static const char *register_names[] = 
     {
       "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
       "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
@@ -252,12 +252,12 @@ spu_pseudo_register_write_spu (struct regcache *regcache, const char *regname,
   char annex[32];
   ULONGEST id;
 
-  regcache_raw_read_unsigned (regcache, SPU_ID_REGNUM, &id);
-  xsnprintf (annex, sizeof annex, "%d/%s", (int) id, regname);
-  xsnprintf (reg, sizeof reg, "0x%s",
-	     phex_nz (extract_unsigned_integer (buf, 4, byte_order), 4));
-  target_write (&current_target, TARGET_OBJECT_SPU, annex,
-		reg, 0, strlen (reg));
+  regcache_raw_read_unsigned(regcache, SPU_ID_REGNUM, &id);
+  xsnprintf(annex, sizeof(annex), "%d/%s", (int)id, regname);
+  xsnprintf((char *)reg, sizeof(reg), "0x%s",
+	    phex_nz(extract_unsigned_integer(buf, 4, byte_order), 4));
+  target_write(&current_target, TARGET_OBJECT_SPU, annex,
+	       reg, 0, strlen((const char *)reg));
 }
 
 static void
@@ -349,7 +349,7 @@ spu_register_reggroup_p (struct gdbarch *gdbarch, int regnum,
 static int
 spu_gdbarch_id (struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   int id = tdep->id;
 
   /* The objfile architecture of a standalone SPU executable does not
@@ -385,7 +385,13 @@ static int
 spu_address_class_type_flags (int byte_size, int dwarf2_addr_class)
 {
   if (dwarf2_addr_class == 1)
+  {
+#ifdef TYPE_INSTANCE_FLAG_ADDRESS_CLASS_1
     return TYPE_INSTANCE_FLAG_ADDRESS_CLASS_1;
+#else
+    return 1;
+#endif /* TYPE_INSTANCE_FLAG_ADDRESS_CLASS_1 */
+  }
   else
     return 0;
 }
@@ -393,9 +399,11 @@ spu_address_class_type_flags (int byte_size, int dwarf2_addr_class)
 static const char *
 spu_address_class_type_flags_to_name (struct gdbarch *gdbarch, int type_flags)
 {
+#ifdef TYPE_INSTANCE_FLAG_ADDRESS_CLASS_1
   if (type_flags & TYPE_INSTANCE_FLAG_ADDRESS_CLASS_1)
     return "__ea";
   else
+#endif /* TYPE_INSTANCE_FLAG_ADDRESS_CLASS_1 */
     return NULL;
 }
 
@@ -940,7 +948,7 @@ spu_frame_unwind_cache (struct frame_info *this_frame,
 			void **this_prologue_cache)
 {
   struct gdbarch *gdbarch = get_frame_arch (this_frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
   struct spu_unwind_cache *info;
   struct spu_prologue_data data;
@@ -1101,7 +1109,7 @@ static const struct frame_base spu_frame_base = {
 static CORE_ADDR
 spu_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   CORE_ADDR pc = frame_unwind_register_unsigned (next_frame, SPU_PC_REGNUM);
   /* Mask off interrupt enable bit.  */
   return SPUADDR (tdep->id, pc & -4);
@@ -1110,7 +1118,7 @@ spu_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
 static CORE_ADDR
 spu_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   CORE_ADDR sp = frame_unwind_register_unsigned (next_frame, SPU_SP_REGNUM);
   return SPUADDR (tdep->id, sp);
 }
@@ -1118,7 +1126,7 @@ spu_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
 static CORE_ADDR
 spu_read_pc (struct regcache *regcache)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (get_regcache_arch (regcache));
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(get_regcache_arch (regcache));
   ULONGEST pc;
   regcache_cooked_read_unsigned (regcache, SPU_PC_REGNUM, &pc);
   /* Mask off interrupt enable bit.  */
@@ -1435,7 +1443,7 @@ spu_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 static struct frame_id
 spu_dummy_id (struct gdbarch *gdbarch, struct frame_info *this_frame)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   CORE_ADDR pc = get_frame_register_unsigned (this_frame, SPU_PC_REGNUM);
   CORE_ADDR sp = get_frame_register_unsigned (this_frame, SPU_SP_REGNUM);
   return frame_id_build (SPUADDR (tdep->id, sp), SPUADDR (tdep->id, pc & -4));
@@ -1460,11 +1468,15 @@ spu_return_value (struct gdbarch *gdbarch, struct type *func_type,
       switch (rvc)
 	{
 	case RETURN_VALUE_REGISTER_CONVENTION:
-	  spu_value_to_regcache (regcache, SPU_ARG1_REGNUM, type, in);
+	  spu_value_to_regcache(regcache, SPU_ARG1_REGNUM, type, in);
 	  break;
 
 	case RETURN_VALUE_STRUCT_CONVENTION:
-	  error ("Cannot set function return value.");
+	  error(_("Cannot set function return value."));
+	  break;
+
+	default:
+	  warning(_("Unhandled return value convention."));
 	  break;
 	}
     }
@@ -1473,11 +1485,15 @@ spu_return_value (struct gdbarch *gdbarch, struct type *func_type,
       switch (rvc)
 	{
 	case RETURN_VALUE_REGISTER_CONVENTION:
-	  spu_regcache_to_value (regcache, SPU_ARG1_REGNUM, type, out);
+	  spu_regcache_to_value(regcache, SPU_ARG1_REGNUM, type, out);
 	  break;
 
 	case RETURN_VALUE_STRUCT_CONVENTION:
-	  error ("Function return value unknown.");
+	  error(_("Function return value unknown."));
+	  break;
+
+	default:
+	  warning(_("Unhandled return value convention."));
 	  break;
 	}
     }
@@ -1554,7 +1570,7 @@ static int
 spu_get_longjmp_target (struct frame_info *frame, CORE_ADDR *pc)
 {
   struct gdbarch *gdbarch = get_frame_arch (frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
   gdb_byte buf[4];
   CORE_ADDR jb_addr;
@@ -1681,7 +1697,7 @@ spu_get_overlay_table (struct objfile *objfile)
   ovly_buf_table_base = SYMBOL_VALUE_ADDRESS (ovly_buf_table_msym);
   ovly_buf_table_size = MSYMBOL_SIZE (ovly_buf_table_msym);
 
-  ovly_table = xmalloc (ovly_table_size);
+  ovly_table = (char *)xmalloc(ovly_table_size);
   read_memory (ovly_table_base, ovly_table, ovly_table_size);
 
   tbl = OBSTACK_CALLOC (&objfile->objfile_obstack,
@@ -1864,7 +1880,7 @@ static struct objfile *
 spu_objfile_from_frame (struct frame_info *frame)
 {
   struct gdbarch *gdbarch = get_frame_arch (frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   struct objfile *obj;
 
   if (gdbarch_bfd_arch_info (gdbarch)->arch != bfd_arch_spu)
@@ -1929,7 +1945,7 @@ spu_attach_normal_stop (struct bpstats *bs, int print_frame)
 /* "info spu" commands.  */
 
 static void
-info_spu_event_command (char *args, int from_tty)
+info_spu_event_command(const char *args, int from_tty)
 {
   struct frame_info *frame = get_selected_frame (NULL);
   ULONGEST event_status = 0;
@@ -1979,8 +1995,9 @@ info_spu_event_command (char *args, int from_tty)
   do_cleanups (chain);
 }
 
+/* */
 static void
-info_spu_signal_command (char *args, int from_tty)
+info_spu_signal_command(const char *args, int from_tty)
 {
   struct frame_info *frame = get_selected_frame (NULL);
   struct gdbarch *gdbarch = get_frame_arch (frame);
@@ -2106,8 +2123,9 @@ info_spu_mailbox_list (gdb_byte *buf, int nr, enum bfd_endian byte_order,
   do_cleanups (chain);
 }
 
+/* */
 static void
-info_spu_mailbox_command (char *args, int from_tty)
+info_spu_mailbox_command(const char *args, int from_tty)
 {
   struct frame_info *frame = get_selected_frame (NULL);
   struct gdbarch *gdbarch = get_frame_arch (frame);
@@ -2165,7 +2183,7 @@ spu_mfc_get_bitfield (ULONGEST word, int first, int last)
 static void
 info_spu_dma_cmdlist (gdb_byte *buf, int nr, enum bfd_endian byte_order)
 {
-  static char *spu_mfc_opcode[256] =
+  static const char *spu_mfc_opcode[256] =
     {
     /* 00 */ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
              NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -2201,7 +2219,7 @@ info_spu_dma_cmdlist (gdb_byte *buf, int nr, enum bfd_endian byte_order)
              NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     };
 
-  int *seq = alloca (nr * sizeof (int));
+  int *seq = (int *)alloca(nr * sizeof(int));
   int done = 0;
   struct cleanup *chain;
   int i, j;
@@ -2342,8 +2360,9 @@ info_spu_dma_cmdlist (gdb_byte *buf, int nr, enum bfd_endian byte_order)
   do_cleanups (chain);
 }
 
+/* */
 static void
-info_spu_dma_command (char *args, int from_tty)
+info_spu_dma_command(const char *args, int from_tty)
 {
   struct frame_info *frame = get_selected_frame (NULL);
   struct gdbarch *gdbarch = get_frame_arch (frame);
@@ -2423,8 +2442,9 @@ info_spu_dma_command (char *args, int from_tty)
   do_cleanups (chain);
 }
 
+/* */
 static void
-info_spu_proxydma_command (char *args, int from_tty)
+info_spu_proxydma_command(const char *args, int from_tty)
 {
   struct frame_info *frame = get_selected_frame (NULL);
   struct gdbarch *gdbarch = get_frame_arch (frame);
@@ -2488,41 +2508,42 @@ info_spu_proxydma_command (char *args, int from_tty)
 }
 
 static void
-info_spu_command (char *args, int from_tty)
+info_spu_command(const char *args, int from_tty)
 {
-  printf_unfiltered (_("\"info spu\" must be followed by the name of an SPU facility.\n"));
-  help_list (infospucmdlist, "info spu ", -1, gdb_stdout);
+  printf_unfiltered(_("\"info spu\" must be followed by the name of an SPU facility.\n"));
+  help_list(infospucmdlist, "info spu ", (enum command_class)-1, gdb_stdout);
 }
 
 
 /* Root of all "set spu "/"show spu " commands.  */
 
 static void
-show_spu_command (char *args, int from_tty)
+show_spu_command(const char *args, int from_tty)
 {
-  help_list (showspucmdlist, "show spu ", all_commands, gdb_stdout);
+  help_list(showspucmdlist, "show spu ", all_commands, gdb_stdout);
 }
 
 static void
-set_spu_command (char *args, int from_tty)
+set_spu_command(const char *args, int from_tty)
 {
-  help_list (setspucmdlist, "set spu ", all_commands, gdb_stdout);
+  help_list(setspucmdlist, "set spu ", all_commands, gdb_stdout);
+}
+
+/* */
+static void
+show_spu_stop_on_load(struct ui_file *file, int from_tty,
+		      struct cmd_list_element *c, const char *value)
+{
+  fprintf_filtered(file, _("Stopping for new SPE threads is %s.\n"),
+		   value);
 }
 
 static void
-show_spu_stop_on_load (struct ui_file *file, int from_tty,
-                       struct cmd_list_element *c, const char *value)
+show_spu_auto_flush_cache(struct ui_file *file, int from_tty,
+			  struct cmd_list_element *c, const char *value)
 {
-  fprintf_filtered (file, _("Stopping for new SPE threads is %s.\n"),
-                    value);
-}
-
-static void
-show_spu_auto_flush_cache (struct ui_file *file, int from_tty,
-			   struct cmd_list_element *c, const char *value)
-{
-  fprintf_filtered (file, _("Automatic software-cache flush is %s.\n"),
-                    value);
+  fprintf_filtered(file, _("Automatic software-cache flush is %s.\n"),
+		   value);
 }
 
 
@@ -2552,7 +2573,7 @@ spu_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
        arches != NULL;
        arches = gdbarch_list_lookup_by_info (arches->next, &info))
     {
-      tdep = gdbarch_tdep (arches->gdbarch);
+      tdep = new_gdbarch_tdep(arches->gdbarch);
       if (tdep && tdep->id == id)
 	return arches->gdbarch;
     }
@@ -2660,16 +2681,16 @@ _initialize_spu_tdep (void)
   observer_attach_normal_stop (spu_attach_normal_stop);
 
   /* Add root prefix command for all "set spu"/"show spu" commands.  */
-  add_prefix_cmd ("spu", no_class, set_spu_command,
-		  _("Various SPU specific commands."),
-		  &setspucmdlist, "set spu ", 0, &setlist);
-  add_prefix_cmd ("spu", no_class, show_spu_command,
-		  _("Various SPU specific commands."),
-		  &showspucmdlist, "show spu ", 0, &showlist);
+  add_prefix_cmd("spu", no_class, set_spu_command,
+		 _("Various SPU specific commands."),
+		 &setspucmdlist, "set spu ", 0, &setlist);
+  add_prefix_cmd("spu", no_class, show_spu_command,
+		 _("Various SPU specific commands."),
+		 &showspucmdlist, "show spu ", 0, &showlist);
 
   /* Toggle whether or not to add a temporary breakpoint at the "main"
      function of new SPE contexts.  */
-  add_setshow_boolean_cmd ("stop-on-load", class_support,
+  add_setshow_boolean_cmd("stop-on-load", class_support,
                           &spu_stop_on_load_p, _("\
 Set whether to stop for new SPE threads."),
                            _("\
@@ -2684,7 +2705,7 @@ Use \"off\" to disable stopping for new SPE threads."),
 
   /* Toggle whether or not to automatically flush the software-managed
      cache whenever SPE execution stops.  */
-  add_setshow_boolean_cmd ("auto-flush-cache", class_support,
+  add_setshow_boolean_cmd("auto-flush-cache", class_support,
                           &spu_auto_flush_cache_p, _("\
 Set whether to automatically flush the software-managed cache."),
                            _("\
@@ -2698,24 +2719,26 @@ Use \"off\" to never automatically flush the software-managed cache."),
                           &setspucmdlist, &showspucmdlist);
 
   /* Add root prefix command for all "info spu" commands.  */
-  add_prefix_cmd ("spu", class_info, info_spu_command,
-		  _("Various SPU specific commands."),
-		  &infospucmdlist, "info spu ", 0, &infolist);
+  add_prefix_cmd("spu", class_info, info_spu_command,
+		 _("Various SPU specific commands."),
+		 &infospucmdlist, "info spu ", 0, &infolist);
 
   /* Add various "info spu" commands.  */
-  add_cmd ("event", class_info, info_spu_event_command,
-	   _("Display SPU event facility status.\n"),
-	   &infospucmdlist);
-  add_cmd ("signal", class_info, info_spu_signal_command,
-	   _("Display SPU signal notification facility status.\n"),
-	   &infospucmdlist);
-  add_cmd ("mailbox", class_info, info_spu_mailbox_command,
-	   _("Display SPU mailbox facility status.\n"),
-	   &infospucmdlist);
-  add_cmd ("dma", class_info, info_spu_dma_command,
-	   _("Display MFC DMA status.\n"),
-	   &infospucmdlist);
-  add_cmd ("proxydma", class_info, info_spu_proxydma_command,
-	   _("Display MFC Proxy-DMA status.\n"),
-	   &infospucmdlist);
+  add_cmd("event", class_info, info_spu_event_command,
+	  _("Display SPU event facility status.\n"),
+	  &infospucmdlist);
+  add_cmd("signal", class_info, info_spu_signal_command,
+	  _("Display SPU signal notification facility status.\n"),
+	  &infospucmdlist);
+  add_cmd("mailbox", class_info, info_spu_mailbox_command,
+	  _("Display SPU mailbox facility status.\n"),
+	  &infospucmdlist);
+  add_cmd("dma", class_info, info_spu_dma_command,
+	  _("Display MFC DMA status.\n"),
+	  &infospucmdlist);
+  add_cmd("proxydma", class_info, info_spu_proxydma_command,
+	  _("Display MFC Proxy-DMA status.\n"),
+	  &infospucmdlist);
 }
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* GNU/Linux on  TI C6x target support.
+/* tic6x-linux-tdep.c: GNU/Linux on  TI C6x target support.
    Copyright (C) 2011-2013 Free Software Foundation, Inc.
    Contributed by Yao Qi <yao@codesourcery.com>
 
@@ -49,7 +49,7 @@ static const gdb_byte tic6x_bkpt_bnop_le[] = { 0x22, 0xa1, 0x00, 0x00 };
 static unsigned int
 tic6x_register_sigcontext_offset (unsigned int regnum, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   if (regnum == TIC6X_A4_REGNUM || regnum == TIC6X_A4_REGNUM + 2
       || regnum == TIC6X_A4_REGNUM + 4)
@@ -96,7 +96,7 @@ tic6x_linux_rt_sigreturn_init (const struct tramp_frame *self,
 		    + TIC6X_SIGINFO_SIZE
 		    + 4 + 4 /* uc_flags and *uc_link in struct ucontext.  */
 		    + TIC6X_STACK_T_SIZE);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   unsigned int reg_offset;
   unsigned int i;
 
@@ -169,7 +169,7 @@ extern struct target_so_ops dsbt_so_ops;
 static void
 tic6x_uclinux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   linux_init_abi (info, gdbarch);
 
@@ -201,7 +201,7 @@ tic6x_uclinux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 	    tdep->breakpoint = tic6x_bkpt_bnop_le;
 	}
       }
-#endif
+#endif /* HAVE_ELF */
 
   /* Signal trampoline support.  */
   tramp_frame_prepend_unwinder (gdbarch,
@@ -221,3 +221,5 @@ _initialize_tic6x_linux_tdep (void)
   initialize_tdesc_tic6x_c64x_linux ();
   initialize_tdesc_tic6x_c62x_linux ();
 }
+
+/* EOF */

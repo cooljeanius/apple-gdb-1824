@@ -156,7 +156,7 @@ sparc64_sol2_sigtramp_frame_sniffer (struct frame_info *next_frame)
 void
 sparc64_sol2_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   frame_unwind_append_sniffer (gdbarch, sparc64_sol2_sigtramp_frame_sniffer);
 

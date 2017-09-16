@@ -1,4 +1,4 @@
-/* Target-dependent code for the Tilera TILE-Gx processor.
+/* tilegx-tdep.c: Target-dependent code for the Tilera TILE-Gx processor.
 
    Copyright (C) 2012-2013 Free Software Foundation, Inc.
 
@@ -336,7 +336,7 @@ tilegx_push_dummy_call (struct gdbarch *gdbarch,
 
       typelen = TYPE_LENGTH (value_enclosing_type (args[j]));
       slacklen = align_up (typelen, 8) - typelen;
-      val = xmalloc (typelen + slacklen);
+      val = (gdb_byte *)xmalloc(typelen + slacklen);
       back_to = make_cleanup (xfree, val);
       memcpy (val, contents, typelen);
       memset (val + typelen, 0, slacklen);
@@ -1085,3 +1085,5 @@ _initialize_tilegx_tdep (void)
 {
   register_gdbarch_init (bfd_arch_tilegx, tilegx_gdbarch_init);
 }
+
+/* EOF */

@@ -126,7 +126,7 @@ sparc32_linux_sigframe_init (const struct tramp_frame *self,
 static void
 sparc32_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tramp_frame_prepend_unwinder (gdbarch, &sparc32_linux_sigframe);
   tramp_frame_prepend_unwinder (gdbarch, &sparc32_linux_rt_sigframe);

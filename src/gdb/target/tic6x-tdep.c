@@ -1,4 +1,4 @@
-/* Target dependent code for GDB on TI C6x systems.
+/* tic6x-tdep.c: Target dependent code for GDB on TI C6x systems.
 
    Copyright (C) 2010-2013 Free Software Foundation, Inc.
    Contributed by Andrew Jenner <andrew@codesourcery.com>
@@ -123,15 +123,16 @@ tic6x_register_name (struct gdbarch *gdbarch, int regno)
 static struct type *
 tic6x_register_type (struct gdbarch *gdbarch, int regno)
 {
-
-  if (regno == TIC6X_PC_REGNUM)
-    return builtin_type (gdbarch)->builtin_func_ptr;
-  else
-    return builtin_type (gdbarch)->builtin_uint32;
+  if (regno == TIC6X_PC_REGNUM) {
+    return builtin_type(gdbarch)->builtin_func_ptr;
+  } else {
+    return builtin_type(gdbarch)->builtin_uint32;
+  }
+  return NULL; /* NOTREACHED */
 }
 
 static void
-tic6x_setup_default (struct tic6x_unwind_cache *cache)
+tic6x_setup_default(struct tic6x_unwind_cache *cache)
 {
   int i;
 
@@ -327,7 +328,7 @@ static const gdb_byte *
 tic6x_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR *bp_addr,
 			  int *bp_size)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   *bp_size = 4;
 
@@ -382,8 +383,8 @@ tic6x_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
 {
   gdb_byte buf[8];
 
-  frame_unwind_register (next_frame,  TIC6X_PC_REGNUM, buf);
-  return extract_typed_address (buf, builtin_type (gdbarch)->builtin_func_ptr);
+  frame_unwind_register(next_frame,  TIC6X_PC_REGNUM, buf);
+  return extract_typed_address(buf, builtin_type(gdbarch)->builtin_func_ptr);
 }
 
 /* This is the implementation of gdbarch method unwind_sp.  */
@@ -615,7 +616,7 @@ tic6x_get_next_pc (struct frame_info *frame, CORE_ADDR pc)
 
       if (inst == TIC6X_INST_SWE)
 	{
-	  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+	  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
 	  if (tdep->syscall_next_pc != NULL)
 	    return tdep->syscall_next_pc (frame);
@@ -883,6 +884,7 @@ tic6x_arg_type_alignment (struct type *type)
 	internal_error (__FILE__, __LINE__, _("unexpected length %d of type"),
 			len);
     }
+  return 0;
 }
 
 /* This is the implementation of gdbarch method push_dummy_call.  */
@@ -1260,7 +1262,7 @@ tic6x_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
        arches != NULL;
        arches = gdbarch_list_lookup_by_info (arches->next, &info))
     {
-      tdep = gdbarch_tdep (arches->gdbarch);
+      tdep = new_gdbarch_tdep(arches->gdbarch);
 
       if (has_gp != tdep->has_gp)
 	continue;
@@ -1269,7 +1271,7 @@ tic6x_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	return arches->gdbarch;
     }
 
-  tdep = xcalloc (1, sizeof (struct gdbarch_tdep));
+  tdep = (struct gdbarch_tdep *)xcalloc(1, sizeof(struct gdbarch_tdep));
 
   tdep->has_gp = has_gp;
   gdbarch = gdbarch_alloc (&info, tdep);
