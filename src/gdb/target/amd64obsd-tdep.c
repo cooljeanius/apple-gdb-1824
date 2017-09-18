@@ -42,7 +42,7 @@ amd64obsd_supply_regset (const struct regset *regset,
 			 struct regcache *regcache, int regnum,
 			 const void *regs, size_t len)
 {
-  const struct gdbarch_tdep *tdep = gdbarch_tdep (regset->arch);
+  const struct gdbarch_tdep *tdep = new_gdbarch_tdep(regset->arch);
 
   gdb_assert (len >= tdep->sizeof_gregset + I387_SIZEOF_FXSAVE);
 
@@ -55,7 +55,7 @@ static const struct regset *
 amd64obsd_regset_from_core_section (struct gdbarch *gdbarch,
 				    const char *sect_name, size_t sect_size)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* OpenBSD core dumps don't use seperate register sets for the
      general-purpose and floating-point registers.  */
@@ -214,7 +214,7 @@ static int amd64obsd_sc_reg_offset[] =
 static void
 amd64obsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   amd64_init_abi (info, gdbarch);
 

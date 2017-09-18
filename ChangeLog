@@ -1,3 +1,51 @@
+2017-09-16  cooljeanius  <egall@gwmail.gwu.edu>
+
+	do targets sparc thru tilegx. #tdep
+
+	Change-Id: I1f733570be521272a89a77c2be188a24a84016f4
+
+2017-09-14  cooljeanius  <egall@gwmail.gwu.edu>
+
+	targets rs6000 thru sh
+
+	Change-Id: I5892c22653eb22d16e24b671edd48766e5b40f9c
+
+2017-09-12  cooljeanius  <egall@gwmail.gwu.edu>
+
+	targets 'n' thru 'p', and all stubs
+
+	Change-Id: I4abe27e8b6b755631a5c306b6385cb11c90be12d
+
+2017-09-11  cooljeanius  <egall@gwmail.gwu.edu>
+
+	updates for targets starting with 'i' thru 'm' #tdep
+
+	Change-Id: If1efe6d9f57708619a56e22ac503593340aa7eef
+
+2017-09-08  cooljeanius  <egall@gwmail.gwu.edu>
+
+	remove code inside ALLOW_UNUSED_VARIABLES ifdefs
+
+	Change-Id: Id83c9221cb61ec3abdbeb99bd2a39cba3c573120
+
+2017-09-08  cooljeanius  <egall@gwmail.gwu.edu>
+
+	work on cris, frv, and hppa targets
+
+	Change-Id: I990b0125263622a5aae4143890cdef9477dfb988
+
+2017-09-07  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Minor update for September 2017
+
+	Change-Id: I517b6f7c5870db4f86640ed69833c906a2f1e0dc
+
+2017-08-09  cooljeanius  <egall@gwmail.gwu.edu>
+
+	more tdep changes, Aug 9 2017
+
+	Change-Id: Ica8879f7e127523ad2a38d51405b0f94ff54e2aa
+
 2017-07-23  cooljeanius  <egall@gwmail.gwu.edu>
 
 	testing other targets for fallout from renaming stuff

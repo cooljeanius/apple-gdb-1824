@@ -2353,7 +2353,7 @@ remote_threads_info(void)
  * Optional: targets are not required to implement this function.
  */
 
-static char *
+static const char *
 remote_threads_extra_info(struct thread_info *tp)
 {
   struct remote_state *rs = get_remote_state();

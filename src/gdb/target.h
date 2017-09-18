@@ -407,7 +407,7 @@ struct target_ops
     int (*to_thread_alive) (ptid_t ptid);
     void (*to_find_new_threads) (void);
     char *(*to_pid_to_str) (ptid_t);
-    char *(*to_extra_thread_info) (struct thread_info *);
+    const char *(*to_extra_thread_info)(struct thread_info *);
     void (*to_stop)(void);
     void (*to_rcmd)(const char *command, struct ui_file *output);
     int (*to_enable_exception_callback) (enum exception_event_kind, int);

@@ -464,7 +464,7 @@ info_threads_command(const char *arg, int from_tty)
   ptid_t current_ptid;
   struct frame_info *cur_frame;
   struct frame_id saved_frame_id = get_frame_id(get_selected_frame(NULL));
-  char *extra_info;
+  const char *extra_info;
   size_t longest_threadname = 0UL;
   int threadcount = 0;
 

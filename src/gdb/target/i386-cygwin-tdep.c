@@ -35,7 +35,7 @@ i386_cygwin_skip_trampoline_code (CORE_ADDR pc)
 static void
 i386_cygwin_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   set_gdbarch_skip_trampoline_code (gdbarch, i386_cygwin_skip_trampoline_code);
 
@@ -43,9 +43,9 @@ i386_cygwin_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 }
 
 static enum gdb_osabi
-i386_cygwin_osabi_sniffer (bfd * abfd)
+i386_cygwin_osabi_sniffer(bfd *abfd)
 { 
-  char *target_name = bfd_get_target (abfd);
+  const char *target_name = bfd_get_target(abfd);
 
   /* Interix also uses pei-i386. 
      We need a way to distinguish between the two. */
@@ -67,3 +67,5 @@ _initialize_i386_cygwin_tdep (void)
   gdbarch_register_osabi (bfd_arch_i386, 0, GDB_OSABI_CYGWIN,
                           i386_cygwin_init_abi);
 }
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Target-dependent code for NetBSD/amd64.
+/* amd64nbsd-tdep.c: Target-dependent code for NetBSD/amd64.
 
    Copyright 2003, 2004 Free Software Foundation, Inc.
 
@@ -40,11 +40,11 @@
 static int
 amd64nbsd_sigtramp_p (struct frame_info *next_frame)
 {
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
-  char *name;
+  CORE_ADDR pc = frame_pc_unwind(next_frame);
+  const char *name;
 
-  find_pc_partial_function (pc, &name, NULL, NULL);
-  return nbsd_pc_in_sigtramp (pc, name);
+  find_pc_partial_function(pc, &name, NULL, NULL);
+  return nbsd_pc_in_sigtramp(pc, name);
 }
 
 /* Assuming NEXT_FRAME is preceded by a frame corresponding to a
@@ -101,7 +101,7 @@ int amd64nbsd_r_reg_offset[] =
 static void
 amd64nbsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* Initialize general-purpose register set details first.  */
   tdep->gregset_reg_offset = amd64nbsd_r_reg_offset;
@@ -124,11 +124,11 @@ amd64nbsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 }
 
 
-/* Provide a prototype to silence -Wmissing-prototypes.  */
-void _initialize_amd64nbsd_tdep (void);
-
+/* Provide a prototype to silence -Wmissing-prototypes: */
+extern void _initialize_amd64nbsd_tdep(void);
+/* Prototype only works if you spell correctly! */
 void
-_initialize_amd64nbsd_ndep (void)
+_initialize_amd64nbsd_tdep(void)
 {
   /* The NetBSD/amd64 native dependent code makes this assumption.  */
   gdb_assert (ARRAY_SIZE (amd64nbsd_r_reg_offset) == AMD64_NUM_GREGS);

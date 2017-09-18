@@ -44,7 +44,7 @@ amd64_dicos_push_dummy_code(struct gdbarch *gdbarch, CORE_ADDR sp,
 static void
 amd64_dicos_init_abi(struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   
   if (tdep == NULL) {
     ; /* ??? */

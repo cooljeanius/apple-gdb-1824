@@ -1,3 +1,137 @@
+2017-09-16  cooljeanius  <egall@gwmail.gwu.edu>
+
+    do targets sparc thru tilegx. #tdep
+
+    Change-Id: I1f733570be521272a89a77c2be188a24a84016f4
+
+2017-09-14  cooljeanius  <egall@gwmail.gwu.edu>
+
+    targets rs6000 thru sh
+
+    Change-Id: I5892c22653eb22d16e24b671edd48766e5b40f9c
+
+2017-09-12  cooljeanius  <egall@gwmail.gwu.edu>
+
+    targets 'n' thru 'p', and all stubs
+
+    Change-Id: I4abe27e8b6b755631a5c306b6385cb11c90be12d
+
+2017-09-11  cooljeanius  <egall@gwmail.gwu.edu>
+
+    updates for targets starting with 'i' thru 'm' #tdep
+
+    Change-Id: If1efe6d9f57708619a56e22ac503593340aa7eef
+
+2017-09-08  cooljeanius  <egall@gwmail.gwu.edu>
+
+    remove code inside ALLOW_UNUSED_VARIABLES ifdefs
+
+    Change-Id: Id83c9221cb61ec3abdbeb99bd2a39cba3c573120
+
+2017-09-08  cooljeanius  <egall@gwmail.gwu.edu>
+
+    work on cris, frv, and hppa targets
+
+    Change-Id: I990b0125263622a5aae4143890cdef9477dfb988
+
+2017-09-07  cooljeanius  <egall@gwmail.gwu.edu>
+
+    Minor update for September 2017
+
+    Change-Id: I517b6f7c5870db4f86640ed69833c906a2f1e0dc
+
+2017-08-09  cooljeanius  <egall@gwmail.gwu.edu>
+
+    more tdep changes, Aug 9 2017
+
+    Change-Id: Ica8879f7e127523ad2a38d51405b0f94ff54e2aa
+
+2017-07-23  cooljeanius  <egall@gwmail.gwu.edu>
+
+    testing other targets for fallout from renaming stuff
+
+    Change-Id: I45b6dffa7f1e546d6cddceab897b08591779a542
+
+2017-07-08  cooljeanius  <egall@gwmail.gwu.edu>
+
+    rename some more functions for -Wshadow
+
+    Change-Id: I257db0b91724388fc719d7f848085f47a38c2fb2
+
+2017-07-08  cooljeanius  <egall@gwmail.gwu.edu>
+
+    update gnulib and start taking -Wshadow more seriously
+
+    Change-Id: Icd4af0a2fbbd4dc6579f3a5b0fe1b3d9066ff042
+
+2017-07-05  cooljeanius  <egall@gwmail.gwu.edu>
+
+    Build with this month's gcc trunk
+
+    Change-Id: If8160946e2703e3d88a5cbde4c0ec23d31ba9065
+
+2017-04-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    update #gnulib for 2017 in this repo, too
+
+    Change-Id: If221024d3b7f19d8b18861e2efa49cefa395296f
+
+2017-03-24  Eric Gallager  <egallager@comcast.net>
+
+    still breaks in gdbarch.sh #programminghelpwanted
+
+    Change-Id: Ib089f34f482ac20830beb9c1747f6c9f37cf2414
+
+2017-03-16  Eric Gallager  <egallager@comcast.net>
+
+    fix distcleaning in readline subdir
+
+    Change-Id: I6586a293088504aa6cae94ff7cf3ec37a98a9413
+
+2017-03-15  Eric Gallager  <egallager@comcast.net>
+
+    warning-silencing for tcl/tk/itcl and stuff
+
+    also fix fallout from moving libtool_gnu ChangeLogs
+    which for some stupid reason get parsed as part of the
+    build/bootstrap process
+
+    Change-Id: I00d8d71b19b45d9dcea22c95a0a2e4a142b09b06
+
+2017-03-15  Eric Gallager  <egallager@comcast.net>
+
+    move rotated ChangeLogs to subdirs
+
+    and fix their whitespace
+    and other warning silencing stuff in the actual code
+
+    Change-Id: Ibe6f3ff43f8ddf393dc638fa3948a6aad86fea91
+
+2017-03-09  Eric Gallager  <egallager@comcast.net>
+
+    have tk subdir handle archflags
+
+    also more static analysis with clang and stuff
+
+    Change-Id: I3fa7025ff7f90a58767dd817bec7db6a8e1588a8
+
+2017-03-03  Eric Gallager  <egallager@comcast.net>
+
+    Bring repo back to my Snow Leopard computer
+
+    The hard drive here is full and has a hosed environment,
+    so I am still in the process of bringing it back up to speed.
+    Build currently gets as far as the tk subdir before failing
+    due to archflags
+
+    Change-Id: Icc22c5e859aef87f3c049c744af932c232d9db3e
+
+2017-01-05  cooljeanius  <egall@gwmail.gwu.edu>
+
+    minor toplevel stuff
+
+    Change-Id: I02bc27016602a435a66a222f48f1850fdde8dbee
+
 2017-01-05  cooljeanius  <egall@gwmail.gwu.edu>
 
     electric-fence and intl tweaks

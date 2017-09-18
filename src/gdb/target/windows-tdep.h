@@ -1,4 +1,4 @@
-/* Copyright (C) 2008, 2009 Free Software Foundation, Inc.
+/* windows-tdep.h: Copyright (C) 2008, 2009 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -21,8 +21,10 @@
 struct obstack;
 struct gdbarch;
 
-extern void windows_xfer_shared_library (const char* so_name,
-					 CORE_ADDR load_addr,
-					 struct gdbarch *gdbarch,
-					 struct obstack *obstack);
-#endif
+extern void windows_xfer_shared_library(const char* so_name,
+					CORE_ADDR load_addr,
+					struct gdbarch *gdbarch,
+					struct obstack *obstack);
+#endif /* !WINDOWS_TDEP_H */
+
+/* EOF */

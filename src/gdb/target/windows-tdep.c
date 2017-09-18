@@ -1,4 +1,4 @@
-/* Copyright (C) 2008, 2009 Free Software Foundation, Inc.
+/* windows-tdep.c: Copyright (C) 2008, 2009 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -21,18 +21,20 @@
 #include "xml-support.h"
 
 void
-windows_xfer_shared_library (const char* so_name, CORE_ADDR load_addr,
-			     struct gdbarch *gdbarch, struct obstack *obstack)
+windows_xfer_shared_library(const char* so_name, CORE_ADDR load_addr,
+			    struct gdbarch *gdbarch, struct obstack *obstack)
 {
   char *p;
-  obstack_grow_str (obstack, "<library name=\"");
-  p = xml_escape_text (so_name);
-  obstack_grow_str (obstack, p);
-  xfree (p);
-  obstack_grow_str (obstack, "\"><segment address=\"");
+  obstack_grow_str(obstack, "<library name=\"");
+  p = xml_escape_text(so_name);
+  obstack_grow_str(obstack, p);
+  xfree(p);
+  obstack_grow_str(obstack, "\"><segment address=\"");
   /* The symbols in a dll are offset by 0x1000, which is the the
      offset from 0 of the first byte in an image - because of the file
      header and the section alignment. */
-  obstack_grow_str (obstack, paddress (gdbarch, load_addr + 0x1000));
-  obstack_grow_str (obstack, "\"/></library>");
+  obstack_grow_str(obstack, paddress(gdbarch, load_addr + 0x1000));
+  obstack_grow_str(obstack, "\"/></library>");
 }
+
+/* EOF */

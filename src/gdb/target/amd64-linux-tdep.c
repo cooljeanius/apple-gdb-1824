@@ -202,7 +202,7 @@ static int amd64_linux_sc_reg_offset[] =
 static void
 amd64_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->gregset_reg_offset = amd64_linux_gregset_reg_offset;
   tdep->gregset_num_regs = ARRAY_SIZE (amd64_linux_gregset_reg_offset);

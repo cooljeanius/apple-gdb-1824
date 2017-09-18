@@ -1,4 +1,4 @@
-/* Copyright (C) 2009 Free Software Foundation, Inc.
+/* amd64-windows-tdep.c: Copyright (C) 2009 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -32,10 +32,12 @@ amd64_windows_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   set_solib_ops (gdbarch, &solib_target_so_ops);
 }
 
+extern void _initialize_amd64_windows_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_amd64_windows_tdep (void)
+_initialize_amd64_windows_tdep(void)
 {
-  gdbarch_register_osabi (bfd_arch_i386, bfd_mach_x86_64, GDB_OSABI_CYGWIN,
-                          amd64_windows_init_abi);
+  gdbarch_register_osabi(bfd_arch_i386, bfd_mach_x86_64, GDB_OSABI_CYGWIN,
+                         amd64_windows_init_abi);
 }
 
+/* EOF */

@@ -65,13 +65,13 @@ vaxobsd_sigtramp_sniffer (const struct frame_unwind *self,
   CORE_ADDR start_pc = (pc & ~(vaxobsd_page_size - 1));
   CORE_ADDR sigreturn_addr = start_pc + vaxobsd_sigreturn_offset;
   gdb_byte *buf;
-  char *name;
+  const char *name;
 
   find_pc_partial_function (pc, &name, NULL, NULL);
   if (name)
     return 0;
 
-  buf = alloca(sizeof vaxobsd_sigreturn);
+  buf = (gdb_byte *)alloca(sizeof vaxobsd_sigreturn);
   if (!safe_frame_unwind_memory (this_frame, sigreturn_addr,
 				 buf, sizeof vaxobsd_sigreturn))
     return 0;
@@ -89,7 +89,7 @@ vaxobsd_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
   CORE_ADDR addr, base, func;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct trad_frame_cache *)*this_cache;
 
   cache = trad_frame_cache_zalloc (this_frame);
   *this_cache = cache;
@@ -137,7 +137,8 @@ static const struct frame_unwind vaxobsd_sigtramp_frame_unwind = {
   vaxobsd_sigtramp_frame_this_id,
   vaxobsd_sigtramp_frame_prev_register,
   NULL,
-  vaxobsd_sigtramp_sniffer
+  vaxobsd_sigtramp_sniffer,
+  (frame_prev_pc_ftype *)NULL
 };
 
 
