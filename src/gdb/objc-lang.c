@@ -3614,7 +3614,8 @@ find_implementation_from_class(CORE_ADDR objc_class, CORE_ADDR sel)
 		 and -1 for the end of an allocation block.  */
 
 	      if ((mlist == 0) || (mlist == 0xffffffff)
-                  || ((ULONGEST)mlist == 0xffffffffffffffffULL))
+                  || ((sizeof(ULONGEST) == sizeof(unsigned long long))
+		      && ((ULONGEST)mlist == 0xffffffffffffffffULL)))
 		break;
 	    }
 

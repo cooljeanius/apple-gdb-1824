@@ -66,11 +66,11 @@ int
 i386_length_of_this_instruction (CORE_ADDR memaddr)
 {
   static struct ui_stream *stb = NULL;
+  struct disassemble_info di;
   if (stb == NULL)
-    stb = ui_out_stream_new (uiout);
-  struct disassemble_info di = gdb_disassemble_info_noprint (current_gdbarch,
-                                                            stb->stream);
-  return TARGET_PRINT_INSN (memaddr, &di);
+    stb = ui_out_stream_new(uiout);
+  di = gdb_disassemble_info_noprint(current_gdbarch, stb->stream);
+  return TARGET_PRINT_INSN(memaddr, &di);
 }
 
 /* Return true if the i386/x86-64 instruction at MEMADDR is a
@@ -202,7 +202,8 @@ i386_sub_esp_pattern_p (CORE_ADDR memaddr)
   return 0;
 }
 
-static struct type *
+/* extern because proto in "gdbtypes.h" is extern: */
+struct type *
 init_vector_type (struct type *elt_type, int n)
 {
   struct type *array_type;

@@ -1,4 +1,4 @@
-/* Target-dependent code for Xilinx MicroBlaze.
+/* microblaze-tdep.c: Target-dependent code for Xilinx MicroBlaze.
 
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
@@ -81,8 +81,8 @@ static const char *microblaze_register_names[] =
 
 static unsigned int microblaze_debug_flag = 0;
 
-static void
-microblaze_debug (const char *fmt, ...)
+static void ATTRIBUTE_PRINTF_1
+microblaze_debug(const char *fmt, ...)
 { 
   if (microblaze_debug_flag)
     {
@@ -98,9 +98,9 @@ microblaze_debug (const char *fmt, ...)
 /* Return the name of register REGNUM.  */
 
 static const char *
-microblaze_register_name (struct gdbarch *gdbarch, int regnum)
+microblaze_register_name(struct gdbarch *gdbarch, int regnum)
 {
-  if (regnum >= 0 && regnum < MICROBLAZE_NUM_REGS)
+  if ((regnum >= 0) && ((size_t)regnum < MICROBLAZE_NUM_REGS))
     return microblaze_register_names[regnum];
   return NULL;
 }
@@ -109,12 +109,12 @@ static struct type *
 microblaze_register_type (struct gdbarch *gdbarch, int regnum)
 {
   if (regnum == MICROBLAZE_SP_REGNUM)
-    return builtin_type (gdbarch)->builtin_data_ptr;
+    return get_builtin_type(gdbarch)->builtin_data_ptr;
 
   if (regnum == MICROBLAZE_PC_REGNUM)
-    return builtin_type (gdbarch)->builtin_func_ptr;
+    return get_builtin_type(gdbarch)->builtin_func_ptr;
 
-  return builtin_type (gdbarch)->builtin_int;
+  return get_builtin_type(gdbarch)->builtin_int;
 }
 
 
@@ -123,14 +123,15 @@ microblaze_register_type (struct gdbarch *gdbarch, int regnum)
 static unsigned long
 microblaze_fetch_instruction (CORE_ADDR pc)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (target_gdbarch ());
+  enum bfd_endian byte_order =
+    (enum bfd_endian)gdbarch_byte_order(target_gdbarch());
   gdb_byte buf[4];
 
   /* If we can't read the instruction at PC, return zero.  */
   if (target_read_memory (pc, buf, sizeof (buf)))
     return 0;
 
-  return extract_unsigned_integer (buf, 4, byte_order);
+  return extract_unsigned_integer_with_byte_order(buf, 4, byte_order);
 }
 
 
@@ -270,15 +271,15 @@ microblaze_analyze_prologue (struct gdbarch *gdbarch, CORE_ADDR pc,
      current pc, or the end of the function, whichever is first.  */
   stop = (current_pc < func_end ? current_pc : func_end);
 
-  microblaze_debug ("Scanning prologue: name=%s, func_addr=%s, stop=%s\n", 
-		    name, paddress (gdbarch, func_addr), 
-		    paddress (gdbarch, stop));
+  microblaze_debug("Scanning prologue: name=%s, func_addr=%s, stop=%s\n", 
+		   name, paddress_with_arch(gdbarch, func_addr), 
+		   paddress_with_arch(gdbarch, stop));
 
   for (addr = func_addr; addr < stop; addr += INST_WORD_SIZE)
     {
       insn = microblaze_fetch_instruction (addr);
       op = microblaze_decode_insn (insn, &rd, &ra, &rb, &imm);
-      microblaze_debug ("%s %08lx\n", paddress (gdbarch, pc), insn);
+      microblaze_debug("%s %08lx\n", paddress_with_arch(gdbarch, pc), insn);
 
       /* This code is very sensitive to what functions are present in the
 	 prologue.  It assumes that the (addi, addik, swi, sw) can be the 
@@ -412,8 +413,8 @@ microblaze_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
   gdb_byte buf[4];
   CORE_ADDR pc;
 
-  frame_unwind_register (next_frame, MICROBLAZE_PC_REGNUM, buf);
-  pc = extract_typed_address (buf, builtin_type (gdbarch)->builtin_func_ptr);
+  frame_unwind_register(next_frame, MICROBLAZE_PC_REGNUM, buf);
+  pc = extract_typed_address(buf, get_builtin_type(gdbarch)->builtin_func_ptr);
   /* For sentinel frame, return address is actual PC.  For other frames,
      return address is pc+8.  This is a workaround because gcc does not
      generate correct return address in CIE.  */
@@ -464,7 +465,7 @@ microblaze_frame_cache (struct frame_info *next_frame, void **this_cache)
   int rn;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct microblaze_frame_cache *)*this_cache;
 
   cache = microblaze_alloc_frame_cache ();
   *this_cache = cache;
@@ -475,6 +476,10 @@ microblaze_frame_cache (struct frame_info *next_frame, void **this_cache)
     cache->register_offsets[rn] = -1;
 
   func = get_frame_func (next_frame);
+  
+  if (func == INVALID_ADDRESS) {
+    ; /* ??? */
+  }
 
   cache->pc = get_frame_address_in_block (next_frame);
 
@@ -659,9 +664,10 @@ static int dwarf2_to_reg_map[78] =
 };
 
 static int
-microblaze_dwarf2_reg_to_regnum (struct gdbarch *gdbarch, int reg)
+microblaze_dwarf2_reg_to_regnum(struct gdbarch *gdbarch, int reg)
 {
-  gdb_assert (reg < sizeof (dwarf2_to_reg_map));
+  gdb_assert(reg > 0);
+  gdb_assert((size_t)reg < sizeof(dwarf2_to_reg_map));
   return dwarf2_to_reg_map[reg];
 }
 

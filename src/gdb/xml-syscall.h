@@ -21,6 +21,8 @@
 #ifndef XML_SYSCALL_H
 #define XML_SYSCALL_H 1
 
+struct syscall; /* forward declaration */
+
 /* Function used to set the name of the file which contains
    information about the system calls present in the current
    architecture.

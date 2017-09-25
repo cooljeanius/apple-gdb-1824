@@ -22,6 +22,7 @@
 #ifndef TM_FR30_H
 #define TM_FR30_H 1
 
+#include "target.h" /* "regcache.h" needs this for struct target_ops */
 #include "regcache.h"
 
 #define FR30_GENREGS		16
@@ -193,10 +194,18 @@ extern CORE_ADDR fr30_skip_prologue(CORE_ADDR pc);
    are in the target's byte order.  */
 extern void fr30_store_return_value(struct type *type, char *valbuf);
 
-#ifndef STORE_RETURN_VALUE
+#if !defined(STORE_RETURN_VALUE) && defined(BREAK_ARCH_STUFF)
 # define STORE_RETURN_VALUE(TYPE,VALBUF) \
    (fr30_store_return_value((TYPE), (VALBUF)))
-#endif /* !STORE_RETURN_VALUE */
+#else
+# if !defined(DEPRECATED_STORE_RETURN_VALUE) && defined(MAKE_ARCH_UTILS_WARN)
+#  define DEPRECATED_STORE_RETURN_VALUE(TYPE,VALBUF) \
+    (fr30_store_return_value((TYPE), (VALBUF)))
+# else
+#  define REALLY_DEPRECATED_STORE_RETURN_VALUE(TYPE,VALBUF) \
+    (fr30_store_return_value((TYPE), (VALBUF)))
+# endif /* !DEPRECATED_STORE_RETURN_VALUE && MAKE_ARCH_UTILS_WARN */
+#endif /* !STORE_RETURN_VALUE && BREAK_ARCH_STUFF */
 
 /* Put here the code to store, into a struct frame_saved_regs,
    the addresses of the saved registers of frame described by FRAME_INFO.

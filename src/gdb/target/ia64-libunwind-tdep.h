@@ -35,6 +35,12 @@ struct frame_unwind;
    that ends up including the libunwind-$(arch).h for the host gdb is
    running on.  */
 #include "libunwind-ia64.h"
+/* (better to just get the fatal error from the missing include) */
+#ifndef HAVE_LIBUNWIND_IA64_H
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "ia64-libunwind-tdep.h expects libunwind-ia64.h to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* !HAVE_LIBUNWIND_IA64_H */
 
 struct libunwind_descr
 {

@@ -841,6 +841,12 @@ extern char *paddr_d(LONGEST addr);
 /* Like 0x%lx, replaces deprecated_print_address_numeric: */
 extern const char *paddress(CORE_ADDR addr);
 
+struct gdbarch; /* forward declaration for next prototype */
+
+/* Convert CORE_ADDR to string in platform-specific manner.
+ * This is usually formatted similar to 0x%lx.  */
+extern const char *paddress_with_arch(struct gdbarch *gdbarch, CORE_ADDR addr);
+
 extern char *phex(ULONGEST l, int sizeof_l);
 extern char *phex_nz(ULONGEST l, int sizeof_l);
 extern char *int_string(LONGEST, int, int, int, int);

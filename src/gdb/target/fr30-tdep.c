@@ -112,7 +112,7 @@ fr30_store_return_value(struct type *type, char *valbuf)
   int returned_size = (value_size + FR30_REGSIZE - 1) & ~(FR30_REGSIZE - 1);
   int offset = (REGISTER_BYTE (RETVAL_REG)
 		+ (returned_size - value_size));
-  char *zeros = alloca (returned_size);
+  char *zeros = (char *)alloca(returned_size);
   memset (zeros, 0, returned_size);
 
   write_register_bytes (REGISTER_BYTE (RETVAL_REG), zeros, returned_size);
@@ -171,12 +171,12 @@ fr30_push_arguments (int nargs, struct value **args, CORE_ADDR sp,
   int stack_offset;
   struct stack_arg
     {
-      char *val;
+      gdb_byte *val;
       int len;
       int offset;
     };
   struct stack_arg *stack_args =
-  (struct stack_arg *) alloca (nargs * sizeof (struct stack_arg));
+    (struct stack_arg *)alloca(nargs * sizeof(struct stack_arg));
   int nstack_args = 0;
 
   argreg = FIRST_ARGREG;
@@ -191,16 +191,22 @@ fr30_push_arguments (int nargs, struct value **args, CORE_ADDR sp,
      registers, save the rest to be pushed on the stack */
   for (argnum = 0; argnum < nargs; argnum++)
     {
-      char *val;
+      gdb_byte *val;
       struct value *arg = args[argnum];
-      struct type *arg_type = check_typedef (VALUE_TYPE (arg));
-      struct type *target_type = TYPE_TARGET_TYPE (arg_type);
-      int len = TYPE_LENGTH (arg_type);
-      enum type_code typecode = TYPE_CODE (arg_type);
+      struct type *arg_type = check_typedef(VALUE_TYPE(arg));
+      struct type *target_type = TYPE_TARGET_TYPE(arg_type);
+      int len = TYPE_LENGTH(arg_type);
+      enum type_code typecode = TYPE_CODE(arg_type);
       CORE_ADDR regval;
       int newarg;
 
-      val = (char *) VALUE_CONTENTS (arg);
+      if (target_type == NULL) {
+	; /* ??? */
+      }
+      if (typecode == TYPE_CODE_UNDEF) {
+	; /* ??? */
+      }
+      val = (gdb_byte *)VALUE_CONTENTS(arg);
 
       {
 	/* Copy the argument to general registers or the stack in
@@ -229,6 +235,7 @@ fr30_push_arguments (int nargs, struct value **args, CORE_ADDR sp,
 	      }
 	  }
       }
+      (void)newarg;
     }
   /* now do the real stack pushing, process args right to left */
   while (nstack_args--)
@@ -238,6 +245,7 @@ fr30_push_arguments (int nargs, struct value **args, CORE_ADDR sp,
 		    stack_args[nstack_args].len);
     }
 
+  (void)stack_offset;
   /* Return adjusted stack pointer.  */
   return sp;
 }
@@ -271,7 +279,7 @@ _initialize_fr30_tdep(void)
 static struct frame_info prologue_cache;
 
 static int
-check_prologue_cache (struct frame_info *fi)
+check_prologue_cache(struct frame_info *fi)
 {
   int i;
 
@@ -280,8 +288,10 @@ check_prologue_cache (struct frame_info *fi)
       fi->framereg = prologue_cache.framereg;
       fi->framesize = prologue_cache.framesize;
       fi->frameoffset = prologue_cache.frameoffset;
+#ifdef NUM_REGS
       for (i = 0; i <= NUM_REGS; i++)
 	fi->fsr.regs[i] = prologue_cache.fsr.regs[i];
+#endif /* NUM_REGS */
       return 1;
     }
   else
@@ -558,10 +568,12 @@ fr30_frame_chain(struct frame_info *fi)
 
   /* If the caller used a frame register, return its value.
      Otherwise, return the caller's stack pointer.  */
-  if (framereg == FP_REGNUM)
+  if (framereg == FP_REGNUM) {
     return fr30_find_callers_reg(fi, framereg);
-  else
+  } else {
     return (fi->frame + fi->framesize);
+  }
+  return INVALID_ADDRESS; /*NOTREACHED*/
 }
 
 /* Function: frame_saved_pc
@@ -574,10 +586,12 @@ fr30_frame_chain(struct frame_info *fi)
 CORE_ADDR
 fr30_frame_saved_pc(struct frame_info *fi)
 {
-  if (PC_IN_CALL_DUMMY(fi->pc, fi->frame, fi->frame))
+  if (PC_IN_CALL_DUMMY(fi->pc, fi->frame, fi->frame)) {
     return generic_read_register_dummy(fi->pc, fi->frame, PC_REGNUM);
-  else
+  } else {
     return fr30_find_callers_reg(fi, RP_REGNUM);
+  }
+  return INVALID_ADDRESS; /*NOTREACHED*/
 }
 
 /* Function: fix_call_dummy

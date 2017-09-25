@@ -3079,6 +3079,25 @@ paddress(CORE_ADDR addr)
   return hex_string((LONGEST)addr);
 }
 
+/* like previous, but with gdbarch: */
+const char *
+paddress_with_arch(struct gdbarch *gdbarch, CORE_ADDR addr)
+{
+  /* Truncate address to the size of a target address, avoiding shifts larger
+   * or equal than the width of a CORE_ADDR.  The local variable ADDR_BIT stops
+   * the compiler reporting a shift overflow when it will NOT occur.  */
+  /* NOTE: This assumes that the significant address information is kept in the
+   * least significant bits of ADDR - the upper bits were either zero or sign
+   * extended.  Should gdbarch_address_to_pointer or some
+   * ADDRESS_TO_PRINTABLE() be used to do the conversion?  */
+  
+  int addr_bit = gdbarch_addr_bit(gdbarch);
+  
+  if (addr_bit < (int)(sizeof(CORE_ADDR) * HOST_CHAR_BIT))
+    addr &= (((CORE_ADDR)1UL << addr_bit) - 1UL);
+  return hex_string(addr);
+}
+
 /* */
 static char *
 decimal2str(const char *sign, ULONGEST addr, int width)

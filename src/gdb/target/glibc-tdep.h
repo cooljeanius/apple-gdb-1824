@@ -1,4 +1,4 @@
-/* Target-dependent code for the GNU C Library (glibc).
+/* glibc-tdep.h: Target-dependent code for the GNU C Library (glibc).
 
    Copyright 2002, 2003 Free Software Foundation, Inc.
 
@@ -24,7 +24,9 @@
 
 struct gdbarch;
 
-extern CORE_ADDR glibc_skip_solib_resolver (struct gdbarch *gdbarch,
-					    CORE_ADDR);
+extern CORE_ADDR glibc_skip_solib_resolver(struct gdbarch *gdbarch,
+					   CORE_ADDR);
 
 #endif /* glibc-tdep.h */
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Darwin support for GDB, the GNU debugger.
+/* i386-darwin-tdep.c: Darwin support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2008, 2009
    Free Software Foundation, Inc.
 
@@ -73,25 +73,25 @@ const int i386_darwin_thread_state_num_regs =
 static CORE_ADDR
 i386_darwin_sigcontext_addr (struct frame_info *this_frame)
 {
-  struct gdbarch *gdbarch = get_frame_arch (this_frame);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct gdbarch *gdbarch = get_frame_arch(this_frame);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   CORE_ADDR bp;
   CORE_ADDR si;
   gdb_byte buf[4];
 
-  get_frame_register (this_frame, I386_EBP_REGNUM, buf);
-  bp = extract_unsigned_integer (buf, 4, byte_order);
+  get_frame_register(this_frame, I386_EBP_REGNUM, buf);
+  bp = extract_unsigned_integer_with_byte_order(buf, 4, byte_order);
 
   /* A pointer to the ucontext is passed as the fourth argument
      to the signal handler.  */
-  read_memory (bp + 24, buf, 4);
-  si = extract_unsigned_integer (buf, 4, byte_order);
+  read_memory(bp + 24, buf, 4);
+  si = extract_unsigned_integer_with_byte_order(buf, 4, byte_order);
 
   /* The pointer to mcontext is at offset 28.  */
-  read_memory (si + 28, buf, 4);
+  read_memory(si + 28, buf, 4);
 
   /* First register (eax) is at offset 12.  */
-  return extract_unsigned_integer (buf, 4, byte_order) + 12;
+  return extract_unsigned_integer_with_byte_order(buf, 4, byte_order) + 12;
 }
 
 /* Return true if the PC of THIS_FRAME is in a signal trampoline which
@@ -103,10 +103,10 @@ i386_darwin_sigcontext_addr (struct frame_info *this_frame)
    not expected.  */
 
 int
-darwin_dwarf_signal_frame_p (struct gdbarch *gdbarch,
-			     struct frame_info *this_frame)
+darwin_dwarf_signal_frame_p(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
+			    struct frame_info *this_frame)
 {
-  return i386_sigtramp_p (this_frame);
+  return i386_sigtramp_p(this_frame);
 }
 
 /* Check wether TYPE is a 128-bit vector (__m128, __m128d or __m128i).  */
@@ -156,8 +156,8 @@ i386_darwin_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 			     int nargs, struct value **args, CORE_ADDR sp,
 			     int struct_return, CORE_ADDR struct_addr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   gdb_byte buf[4];
   int i;
   int write_pass;
@@ -175,8 +175,9 @@ i386_darwin_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	  if (write_pass)
 	    {
 	      /* Push value address.  */
-	      store_unsigned_integer (buf, 4, byte_order, struct_addr);
-	      write_memory (sp, buf, 4);
+	      store_unsigned_integer_with_byte_order(buf, 4, struct_addr,
+						     byte_order);
+	      write_memory(sp, buf, 4);
 	    }
           args_space += 4;
 	}
@@ -225,15 +226,15 @@ i386_darwin_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 
   /* Store return address.  */
   sp -= 4;
-  store_unsigned_integer (buf, 4, byte_order, bp_addr);
-  write_memory (sp, buf, 4);
+  store_unsigned_integer_with_byte_order(buf, 4, bp_addr, byte_order);
+  write_memory(sp, buf, 4);
 
   /* Finally, update the stack pointer...  */
-  store_unsigned_integer (buf, 4, byte_order, sp);
-  regcache_cooked_write (regcache, I386_ESP_REGNUM, buf);
+  store_unsigned_integer_with_byte_order(buf, 4, sp, byte_order);
+  regcache_cooked_write(regcache, I386_ESP_REGNUM, buf);
 
   /* ...and fake a frame pointer.  */
-  regcache_cooked_write (regcache, I386_EBP_REGNUM, buf);
+  regcache_cooked_write(regcache, I386_EBP_REGNUM, buf);
 
   /* MarkK wrote: This "+ 8" is all over the place:
      (i386_frame_this_id, i386_sigtramp_frame_this_id,
@@ -250,7 +251,7 @@ i386_darwin_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 static void
 i386_darwin_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* We support the SSE registers.  */
   tdep->num_xmm_regs = I386_NUM_XREGS - 1;
@@ -271,29 +272,34 @@ i386_darwin_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   /* Although the i387 extended floating-point has only 80 significant
      bits, a `long double' actually takes up 128, probably to enforce
      alignment.  */
-  set_gdbarch_long_double_bit (gdbarch, 128);
+  set_gdbarch_long_double_bit(gdbarch, 128);
 
-  set_solib_ops (gdbarch, &darwin_so_ops);
+  set_solib_ops(gdbarch, &darwin_so_ops);
 }
 
+/* */
 static enum gdb_osabi
-i386_mach_o_osabi_sniffer (bfd *abfd)
+i386_mach_o_osabi_sniffer(bfd *abfd)
 {
-  if (!bfd_check_format (abfd, bfd_object))
+  if (!bfd_check_format(abfd, bfd_object))
     return GDB_OSABI_UNKNOWN;
   
-  if (bfd_get_arch (abfd) == bfd_arch_i386)
+  if (bfd_get_arch(abfd) == bfd_arch_i386)
     return GDB_OSABI_DARWIN;
 
   return GDB_OSABI_UNKNOWN;
 }
 
+/* Usual gdb initialization hook: */
+extern void _initialize_i386_darwin_tdep(void); /* -Wmissing-prototypes */
 void
-_initialize_i386_darwin_tdep (void)
+_initialize_i386_darwin_tdep(void)
 {
-  gdbarch_register_osabi_sniffer (bfd_arch_unknown, bfd_target_mach_o_flavour,
-                                  i386_mach_o_osabi_sniffer);
+  gdbarch_register_osabi_sniffer(bfd_arch_unknown, bfd_target_mach_o_flavour,
+                                 i386_mach_o_osabi_sniffer);
 
-  gdbarch_register_osabi (bfd_arch_i386, bfd_mach_i386_i386,
-			  GDB_OSABI_DARWIN, i386_darwin_init_abi);
+  gdbarch_register_osabi(bfd_arch_i386, bfd_mach_i386_i386,
+			 GDB_OSABI_DARWIN, i386_darwin_init_abi);
 }
+
+/* EOF */

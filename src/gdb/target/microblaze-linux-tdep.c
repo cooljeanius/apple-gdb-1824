@@ -1,4 +1,4 @@
-/* Target-dependent code for Xilinx MicroBlaze.
+/* microblaze-linux-tdep.c: Target-dependent code for Xilinx MicroBlaze.
 
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
@@ -37,11 +37,22 @@
 #include "tramp-frame.h"
 #include "linux-tdep.h"
 
+#include "breakpoint.h"
+
+/* Forward declaration here until I find the correct header where this is
+ * supposed to be: */
+struct bp_target_info;
+
+/* */
 static int
-microblaze_linux_memory_remove_breakpoint (struct gdbarch *gdbarch, 
-					   struct bp_target_info *bp_tgt)
+microblaze_linux_memory_remove_breakpoint(struct gdbarch *gdbarch, 
+					  struct bp_target_info *bp_tgt)
 {
+#ifdef BP_TARGET_INFO_IS_COMPLETE
   CORE_ADDR addr = bp_tgt->placed_address;
+#else
+  CORE_ADDR addr = INVALID_ADDRESS;
+#endif /* BP_TARGET_INFO_IS_COMPLETE */
   const gdb_byte *bp;
   int val;
   int bplen;
@@ -57,12 +68,19 @@ microblaze_linux_memory_remove_breakpoint (struct gdbarch *gdbarch,
   /* If our breakpoint is no longer at the address, this means that the
      program modified the code on us, so it is wrong to put back the
      old value.  */
-  if (val == 0 && memcmp (bp, old_contents, bplen) == 0)
-    val = target_write_raw_memory (addr, bp_tgt->shadow_contents, bplen);
+  if ((val == 0) && (memcmp(bp, old_contents, bplen) == 0))
+  {
+#ifdef BP_TARGET_INFO_IS_COMPLETE
+    val = target_write_raw_memory(addr, bp_tgt->shadow_contents, bplen);
+#else
+    val = target_write_memory(addr, NULL, bplen);
+#endif /* BP_TARGET_INFO_IS_COMPLETE */
+  }
 
   return val;
 }
 
+/* */
 static void
 microblaze_linux_sigtramp_cache (struct frame_info *next_frame,
 				 struct trad_frame_cache *this_cache,
@@ -73,7 +91,11 @@ microblaze_linux_sigtramp_cache (struct frame_info *next_frame,
   CORE_ADDR gpregs;
   int regnum;
   struct gdbarch *gdbarch = get_frame_arch (next_frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
   base = frame_unwind_register_unsigned (next_frame, MICROBLAZE_SP_REGNUM);
   if (bias > 0 && get_frame_address_in_block (next_frame) != func)
@@ -121,7 +143,11 @@ static void
 microblaze_linux_init_abi (struct gdbarch_info info,
 			   struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
+  
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
 
   linux_init_abi (info, gdbarch);
 

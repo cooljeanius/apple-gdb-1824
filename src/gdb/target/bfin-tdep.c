@@ -288,18 +288,18 @@ bfin_alloc_frame_cache (void)
 }
 
 static struct bfin_frame_cache *
-bfin_frame_cache (struct frame_info *this_frame, void **this_cache)
+bfin_frame_cache(struct frame_info *this_frame, void **this_cache)
 {
   struct bfin_frame_cache *cache;
   int i;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct bfin_frame_cache *)*this_cache;
 
-  cache = bfin_alloc_frame_cache ();
+  cache = bfin_alloc_frame_cache();
   *this_cache = cache;
 
-  cache->base = get_frame_register_unsigned (this_frame, BFIN_FP_REGNUM);
+  cache->base = get_frame_register_unsigned(this_frame, BFIN_FP_REGNUM);
   if (cache->base == 0)
     return cache;
 
@@ -310,7 +310,7 @@ bfin_frame_cache (struct frame_info *this_frame, void **this_cache)
   /* Adjust all the saved registers such that they contain addresses
      instead of offsets.  */
   for (i = 0; i < BFIN_NUM_REGS; i++)
-    if (cache->saved_regs[i] != -1)
+    if (cache->saved_regs[i] != INVALID_ADDRESS)
       cache->saved_regs[i] += cache->base;
 
   cache->pc = get_frame_func (this_frame) ;
@@ -359,17 +359,18 @@ bfin_frame_prev_register (struct frame_info *this_frame,
 			  void **this_cache,
 			  int regnum)
 {
-  struct gdbarch *gdbarch = get_frame_arch (this_frame);
-  struct bfin_frame_cache *cache = bfin_frame_cache (this_frame, this_cache);
+  struct gdbarch *gdbarch = get_frame_arch(this_frame);
+  struct bfin_frame_cache *cache = bfin_frame_cache(this_frame, this_cache);
 
-  if (regnum == gdbarch_sp_regnum (gdbarch) && cache->saved_sp)
-    return frame_unwind_got_constant (this_frame, regnum, cache->saved_sp);
+  if ((regnum == gdbarch_sp_regnum(gdbarch)) && cache->saved_sp)
+    return frame_unwind_got_constant(this_frame, regnum, cache->saved_sp);
 
-  if (regnum < BFIN_NUM_REGS && cache->saved_regs[regnum] != -1)
-    return frame_unwind_got_memory (this_frame, regnum,
-				    cache->saved_regs[regnum]);
+  if ((regnum < BFIN_NUM_REGS)
+      && (cache->saved_regs[regnum] != INVALID_ADDRESS))
+    return frame_unwind_got_memory(this_frame, regnum,
+				   cache->saved_regs[regnum]);
 
-  return frame_unwind_got_register (this_frame, regnum, regnum);
+  return frame_unwind_got_register(this_frame, regnum, regnum);
 }
 
 static const struct frame_unwind bfin_frame_unwind =
@@ -400,10 +401,10 @@ is_minus_minus_sp (int op)
 /* Skip all the insns that appear in generated function prologues.  */
 
 static CORE_ADDR
-bfin_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
+bfin_skip_prologue(struct gdbarch *gdbarch, CORE_ADDR pc)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
-  int op = read_memory_unsigned_integer (pc, 2, byte_order);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
+  int op = read_memory_unsigned_integer(pc, 2, byte_order);
   CORE_ADDR orig_pc = pc;
   int done = 0;
 
@@ -419,7 +420,7 @@ bfin_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 	  while (is_minus_minus_sp (op))
 	    {
 	      pc += 2;
-	      op = read_memory_unsigned_integer (pc, 2, byte_order);
+	      op = read_memory_unsigned_integer(pc, 2, byte_order);
 	    }
 
 	  if (op == P_LINKAGE)
@@ -478,16 +479,16 @@ bfin_register_type (struct gdbarch *gdbarch, int regnum)
 {
   if ((regnum >= BFIN_P0_REGNUM && regnum <= BFIN_FP_REGNUM)
       || regnum == BFIN_USP_REGNUM)
-    return builtin_type (gdbarch)->builtin_data_ptr;
+    return get_builtin_type(gdbarch)->builtin_data_ptr;
 
   if (regnum == BFIN_PC_REGNUM || regnum == BFIN_RETS_REGNUM
       || regnum == BFIN_RETI_REGNUM || regnum == BFIN_RETX_REGNUM
       || regnum == BFIN_RETN_REGNUM || regnum == BFIN_RETE_REGNUM
       || regnum == BFIN_LT0_REGNUM || regnum == BFIN_LB0_REGNUM
       || regnum == BFIN_LT1_REGNUM || regnum == BFIN_LB1_REGNUM)
-    return builtin_type (gdbarch)->builtin_func_ptr;
+    return get_builtin_type(gdbarch)->builtin_func_ptr;
 
-  return builtin_type (gdbarch)->builtin_int32;
+  return get_builtin_type(gdbarch)->builtin_int32;
 }
 
 static CORE_ADDR
@@ -502,7 +503,7 @@ bfin_push_dummy_call (struct gdbarch *gdbarch,
 		      CORE_ADDR struct_addr)
 {
   enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   gdb_byte buf[4];
   int i;
   long reg_r0, reg_r1, reg_r2;
@@ -538,12 +539,12 @@ bfin_push_dummy_call (struct gdbarch *gdbarch,
 
   /* Initialize R0, R1, and R2 to the first 3 words of parameters.  */
 
-  reg_r0 = read_memory_integer (sp, 4, byte_order);
-  regcache_cooked_write_unsigned (regcache, BFIN_R0_REGNUM, reg_r0);
-  reg_r1 = read_memory_integer (sp + 4, 4, byte_order);
-  regcache_cooked_write_unsigned (regcache, BFIN_R1_REGNUM, reg_r1);
-  reg_r2 = read_memory_integer (sp + 8, 4, byte_order);
-  regcache_cooked_write_unsigned (regcache, BFIN_R2_REGNUM, reg_r2);
+  reg_r0 = read_memory_integer(sp, 4, byte_order);
+  regcache_cooked_write_unsigned(regcache, BFIN_R0_REGNUM, reg_r0);
+  reg_r1 = read_memory_integer(sp + 4, 4, byte_order);
+  regcache_cooked_write_unsigned(regcache, BFIN_R1_REGNUM, reg_r1);
+  reg_r2 = read_memory_integer(sp + 8, 4, byte_order);
+  regcache_cooked_write_unsigned(regcache, BFIN_R2_REGNUM, reg_r2);
 
   /* Store struct value address.  */
 
@@ -781,7 +782,7 @@ bfin_frame_align (struct gdbarch *gdbarch, CORE_ADDR address)
 enum bfin_abi
 bfin_abi (struct gdbarch *gdbarch)
 {
-  return gdbarch_tdep (gdbarch)->bfin_abi;
+  return new_gdbarch_tdep(gdbarch)->bfin_abi;
 }
 
 /* Initialize the current architecture based on INFO.  If possible,
@@ -813,7 +814,7 @@ bfin_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
        arches != NULL;
        arches = gdbarch_list_lookup_by_info (arches->next, &info))
     {
-      if (gdbarch_tdep (arches->gdbarch)->bfin_abi != abi)
+      if (new_gdbarch_tdep(arches->gdbarch)->bfin_abi != abi)
 	continue;
       return arches->gdbarch;
     }
@@ -854,6 +855,8 @@ bfin_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   frame_base_set_default (gdbarch, &bfin_frame_base);
 
   frame_unwind_append_unwinder (gdbarch, &bfin_frame_unwind);
+  
+  (void)elf_flags;
 
   return gdbarch;
 }

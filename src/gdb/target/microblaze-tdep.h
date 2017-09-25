@@ -1,4 +1,4 @@
-/* Target-dependent code for Xilinx MicroBlaze.
+/* microblaze-tdep.h: Target-dependent code for Xilinx MicroBlaze.
 
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
@@ -24,6 +24,7 @@
 /* Microblaze architecture-specific information.  */
 struct gdbarch_tdep
 {
+  int dummy; /* so struct is non-empty for -Wc++-compat */
 };
 
 struct microblaze_frame_cache

@@ -60,6 +60,8 @@ sh3_supply_register(char *regname, int regnamelen, char *val, int vallen)
 	  else if (regname[1] == 'R')
 	    regno = PR_REGNUM;
 	  break;
+	default:
+	  break;
 	}
     }
   else if (regnamelen == 3)
@@ -82,6 +84,8 @@ sh3_supply_register(char *regname, int regnamelen, char *val, int vallen)
 	  else if (regname[1] == 'P' && regname[2] == 'C')
 	    regno = SPC_REGNUM;
 	  break;
+	default:
+	  break;
 	}
     }
   else if (regnamelen == 4)
@@ -103,6 +107,9 @@ sh3_supply_register(char *regname, int regnamelen, char *val, int vallen)
 	      regno = R0_REGNUM;
 	      numregs = 8;
 	    }
+	  break;
+	default:
+	  break;
 	}
     }
   else if (regnamelen == 5)
@@ -116,6 +123,7 @@ sh3_supply_register(char *regname, int regnamelen, char *val, int vallen)
     }
   else if (regnamelen == 17)
     {
+      ; /* ??? */
     }
 
   if (regno >= 0)

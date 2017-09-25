@@ -105,6 +105,10 @@ bfin_linux_sigframe_init (const struct tramp_frame *self,
   CORE_ADDR sigcontext = sp + SIGCONTEXT_OFFSET;
   const int *reg_offset = bfin_linux_sigcontext_reg_offset;
   int i;
+  
+  if (gdbarch == NULL) {
+    ; /* ??? */
+  }
 
   for (i = 0; i < BFIN_NUM_REGS; i++)
     if (reg_offset[i] != -1)
@@ -131,8 +135,8 @@ static LONGEST
 bfin_linux_get_syscall_number (struct gdbarch *gdbarch,
                                ptid_t ptid)
 {
-  struct regcache *regcache = get_thread_regcache (ptid);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct regcache *regcache = get_thread_regcache(ptid);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   /* The content of a register.  */
   gdb_byte buf[4];
   /* The result.  */
@@ -143,7 +147,7 @@ bfin_linux_get_syscall_number (struct gdbarch *gdbarch,
      is stored at %p0 register.  */
   regcache_cooked_read (regcache, BFIN_P0_REGNUM, buf);
 
-  ret = extract_signed_integer (buf, 4, byte_order);
+  ret = extract_signed_integer_with_byte_order(buf, 4, byte_order);
 
   return ret;
 }

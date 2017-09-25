@@ -112,6 +112,9 @@ avr-*-*)		gdb_target=avr
 			gdb_sim=../sim/avr/libsim.a
 			;;
 
+bfin-*-linux*)		gdb_target=linux ;;
+bfin-*-*)		gdb_target=bfin ;;
+
 c30-*-*)		gdb_target=c30 ;;
 
 cris*-*-*)		gdb_target=cris ;;
@@ -119,6 +122,7 @@ cris*-*-*)		gdb_target=cris ;;
 d10v-*-*)		gdb_target=d10v ;;
 d30v-*-*)		gdb_target=d30v ;;
 
+fr30-*-*)		gdb_target=fr30 ;;
 frv-*-*)		gdb_target=frv
 			gdb_sim=../sim/frv/libsim.a
 			;;
@@ -336,6 +340,8 @@ mcore*-*-*)		gdb_target=mcore ;;
 
 mep-*-*)		gdb_target=mep ;;
 
+microblaze-*-linux*)	gdb_target=linux ;;
+microblaze-*-*)		gdb_target=microblaze ;;
 mips64*-big-*)		gdb_target=bigmips64 ;;
 mips*-big-*)		gdb_target=bigmips ;;
 mips*-dec-mach3*)	gdb_target=mach3 ;;
