@@ -162,11 +162,11 @@ static struct type *
 msp430_register_type (struct gdbarch *gdbarch, int reg_nr)
 {
   if (reg_nr < MSP430_NUM_REGS) {
-    return builtin_type(gdbarch)->builtin_uint32;
+    return get_builtin_type(gdbarch)->builtin_uint32;
   } else if (reg_nr == MSP430_PC_REGNUM) {
-    return builtin_type(gdbarch)->builtin_func_ptr;
+    return get_builtin_type(gdbarch)->builtin_func_ptr;
   } else {
-    return builtin_type(gdbarch)->builtin_uint16;
+    return get_builtin_type(gdbarch)->builtin_uint16;
   }
   return NULL; /*NOTREACHED*/
 }
@@ -178,11 +178,11 @@ static struct type *
 msp430x_register_type (struct gdbarch *gdbarch, int reg_nr)
 {
   if (reg_nr < MSP430_NUM_REGS) {
-    return builtin_type(gdbarch)->builtin_uint32;
+    return get_builtin_type(gdbarch)->builtin_uint32;
   } else if (reg_nr == MSP430_PC_REGNUM) {
-    return builtin_type(gdbarch)->builtin_func_ptr;
+    return get_builtin_type(gdbarch)->builtin_func_ptr;
   } else {
-    return builtin_type(gdbarch)->builtin_uint32;
+    return get_builtin_type(gdbarch)->builtin_uint32;
   }
   return NULL; /*NOTREACHED*/
 }

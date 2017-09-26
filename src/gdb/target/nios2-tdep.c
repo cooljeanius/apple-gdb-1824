@@ -195,11 +195,11 @@ nios2_register_type (struct gdbarch *gdbarch, int regno)
     return tdesc_register_type (gdbarch, regno);
 
   if (regno == NIOS2_PC_REGNUM)
-    return builtin_type (gdbarch)->builtin_func_ptr;
+    return get_builtin_type(gdbarch)->builtin_func_ptr;
   else if (regno == NIOS2_SP_REGNUM)
-    return builtin_type (gdbarch)->builtin_data_ptr;
+    return get_builtin_type(gdbarch)->builtin_data_ptr;
   else
-    return builtin_type (gdbarch)->builtin_uint32;
+    return get_builtin_type(gdbarch)->builtin_uint32;
 }
 
 /* Given a return value in REGCACHE with a type VALTYPE,
@@ -1129,7 +1129,7 @@ nios2_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
   gdb_byte buf[4];
 
   frame_unwind_register (next_frame, NIOS2_PC_REGNUM, buf);
-  return extract_typed_address (buf, builtin_type (gdbarch)->builtin_func_ptr);
+  return extract_typed_address (buf, get_builtin_type(gdbarch)->builtin_func_ptr);
 }
 
 /* Implement the unwind_sp gdbarch method.  */
@@ -1379,7 +1379,7 @@ static CORE_ADDR
 nios2_get_next_pc (struct frame_info *frame, CORE_ADDR pc)
 {
   struct gdbarch *gdbarch = get_frame_arch (frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   unsigned long inst;
   int op;
   int imm16;
@@ -1485,7 +1485,7 @@ static int
 nios2_get_longjmp_target (struct frame_info *frame, CORE_ADDR *pc)
 {
   struct gdbarch *gdbarch = get_frame_arch (frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
   CORE_ADDR jb_addr = get_frame_register_unsigned (frame, NIOS2_R4_REGNUM);
   gdb_byte buf[4];

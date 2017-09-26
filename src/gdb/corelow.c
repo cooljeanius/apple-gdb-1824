@@ -50,6 +50,10 @@
 /* APPLE LOCAL - subroutine inlining  */
 #include "inlining.h"
 
+#ifdef MACOSX_DYLD
+# include "macosx-nat-dyld.h" /* for when SOLIB_ADD is macosx_solib_add() */
+#endif /* MACOSX_DYLD */
+
 #ifndef O_BINARY
 # define O_BINARY 0
 #endif /* !O_BINARY */

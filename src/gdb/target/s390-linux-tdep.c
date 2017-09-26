@@ -255,13 +255,13 @@ s390_pseudo_register_type (struct gdbarch *gdbarch, int regnum)
   struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   if (regnum == tdep->pc_regnum)
-    return builtin_type (gdbarch)->builtin_func_ptr;
+    return get_builtin_type(gdbarch)->builtin_func_ptr;
 
   if (regnum == tdep->cc_regnum)
-    return builtin_type (gdbarch)->builtin_int;
+    return get_builtin_type(gdbarch)->builtin_int;
 
   if (regnum_is_gpr_full (tdep, regnum))
-    return builtin_type (gdbarch)->builtin_uint64;
+    return get_builtin_type(gdbarch)->builtin_uint64;
 
   internal_error (__FILE__, __LINE__, _("invalid regnum"));
 }

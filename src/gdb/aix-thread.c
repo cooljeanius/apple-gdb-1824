@@ -1032,7 +1032,7 @@ aix_thread_wait (ptid_t ptid, struct target_waitstatus *status)
 static void
 supply_gprs64 (uint64_t *vals)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int regno;
 
   for (regno = 0; regno < ppc_num_gprs; regno++)
@@ -1053,7 +1053,7 @@ supply_reg32 (int regno, uint32_t val)
 static void
 supply_fprs (double *vals)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int regno;
 
   /* This function should never be called on architectures without
@@ -1069,7 +1069,7 @@ supply_fprs (double *vals)
 static int
 special_register_p (int regno)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   return regno == PC_REGNUM
       || regno == tdep->ppc_ps_regnum
@@ -1090,7 +1090,7 @@ supply_sprs64 (uint64_t iar, uint64_t msr, uint32_t cr,
 	       uint64_t lr, uint64_t ctr, uint32_t xer,
 	       uint32_t fpscr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   regcache_raw_supply (current_regcache, PC_REGNUM, (char *) &iar);
   regcache_raw_supply (current_regcache, tdep->ppc_ps_regnum, (char *) &msr);
@@ -1111,7 +1111,7 @@ supply_sprs32 (uint32_t iar, uint32_t msr, uint32_t cr,
 	       uint32_t lr, uint32_t ctr, uint32_t xer,
 	       uint32_t fpscr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   regcache_raw_supply (current_regcache, PC_REGNUM, (char *) &iar);
   regcache_raw_supply (current_regcache, tdep->ppc_ps_regnum, (char *) &msr);
@@ -1134,7 +1134,7 @@ supply_sprs32 (uint32_t iar, uint32_t msr, uint32_t cr,
 static void
 fetch_regs_user_thread (pthdb_pthread_t pdtid)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int status, i;
   pthdb_context_t ctx;
 
@@ -1187,7 +1187,7 @@ fetch_regs_user_thread (pthdb_pthread_t pdtid)
 static void
 fetch_regs_kernel_thread (int regno, pthdb_tid_t tid)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   uint64_t gprs64[ppc_num_gprs];
   uint32_t gprs32[ppc_num_gprs];
   double fprs[ppc_num_fprs];
@@ -1248,7 +1248,7 @@ fetch_regs_kernel_thread (int regno, pthdb_tid_t tid)
 	}
       else
 	{
-	  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+	  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
 	  if (!ptrace32 (PTT_READ_SPRS, tid, (int *) &sprs32, 0, NULL))
 	    memset (&sprs32, 0, sizeof (sprs32));
@@ -1291,7 +1291,7 @@ aix_thread_fetch_registers (int regno)
 static void
 fill_gprs64 (uint64_t *vals)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int regno;
 
   for (regno = 0; regno < ppc_num_gprs; regno++)
@@ -1303,7 +1303,7 @@ fill_gprs64 (uint64_t *vals)
 static void 
 fill_gprs32 (uint32_t *vals)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int regno;
 
   for (regno = 0; regno < ppc_num_gprs; regno++)
@@ -1316,7 +1316,7 @@ fill_gprs32 (uint32_t *vals)
 static void
 fill_fprs (double *vals)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int regno;
 
   /* This function should never be called on architectures without
@@ -1338,7 +1338,7 @@ fill_sprs64 (uint64_t *iar, uint64_t *msr, uint32_t *cr,
 	     uint64_t *lr, uint64_t *ctr, uint32_t *xer,
 	     uint32_t *fpscr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   /* Verify that the size of the size of the IAR buffer is the
      same as the raw size of the PC (in the register cache).  If
@@ -1369,7 +1369,7 @@ fill_sprs32 (unsigned long *iar, unsigned long *msr, unsigned long *cr,
 	     unsigned long *lr,  unsigned long *ctr, unsigned long *xer,
 	     unsigned long *fpscr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   /* Verify that the size of the size of the IAR buffer is the
      same as the raw size of the PC (in the register cache).  If
@@ -1409,7 +1409,7 @@ fill_sprs32 (unsigned long *iar, unsigned long *msr, unsigned long *cr,
 static void
 store_regs_user_thread (pthdb_pthread_t pdtid)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int status, i;
   pthdb_context_t ctx;
   uint32_t int32;
@@ -1500,7 +1500,7 @@ store_regs_user_thread (pthdb_pthread_t pdtid)
 static void
 store_regs_kernel_thread (int regno, pthdb_tid_t tid)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   uint64_t gprs64[ppc_num_gprs];
   uint32_t gprs32[ppc_num_gprs];
   double fprs[ppc_num_fprs];

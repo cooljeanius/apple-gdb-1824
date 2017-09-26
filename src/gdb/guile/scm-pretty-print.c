@@ -698,7 +698,7 @@ ppscm_print_string_repr (SCM printer, enum display_hint hint,
       cleanup = make_cleanup (xfree, string);
       if (hint == HINT_STRING)
 	{
-	  struct type *type = builtin_type (gdbarch)->builtin_char;
+	  struct type *type = get_builtin_type(gdbarch)->builtin_char;
 	  
 	  LA_PRINT_STRING (stream, type, (gdb_byte *) string,
 			   length, NULL, 0, options);

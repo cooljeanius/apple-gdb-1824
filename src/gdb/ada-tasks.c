@@ -633,7 +633,7 @@ read_known_tasks_array (void)
   for (i = 0; i < MAX_NUMBER_OF_KNOWN_TASKS; i++)
     {
       struct type *data_ptr_type =
-        builtin_type (target_gdbarch)->builtin_data_ptr;
+        get_builtin_type(target_gdbarch)->builtin_data_ptr;
       CORE_ADDR task_id =
         extract_typed_address (known_tasks + i * target_ptr_byte,
 			       data_ptr_type);

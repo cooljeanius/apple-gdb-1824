@@ -76,7 +76,7 @@ spu_builtin_type_vec128 (struct gdbarch *gdbarch)
 
   if (!tdep->spu_builtin_type_vec128)
     {
-      const struct builtin_type *bt = builtin_type (gdbarch);
+      const struct builtin_type *bt = get_builtin_type(gdbarch);
       struct type *t;
 
       t = arch_composite_type (gdbarch,
@@ -151,28 +151,28 @@ spu_register_type (struct gdbarch *gdbarch, int reg_nr)
   switch (reg_nr)
     {
     case SPU_ID_REGNUM:
-      return builtin_type (gdbarch)->builtin_uint32;
+      return get_builtin_type(gdbarch)->builtin_uint32;
 
     case SPU_PC_REGNUM:
-      return builtin_type (gdbarch)->builtin_func_ptr;
+      return get_builtin_type(gdbarch)->builtin_func_ptr;
 
     case SPU_SP_REGNUM:
-      return builtin_type (gdbarch)->builtin_data_ptr;
+      return get_builtin_type(gdbarch)->builtin_data_ptr;
 
     case SPU_FPSCR_REGNUM:
-      return builtin_type (gdbarch)->builtin_uint128;
+      return get_builtin_type(gdbarch)->builtin_uint128;
 
     case SPU_SRR0_REGNUM:
-      return builtin_type (gdbarch)->builtin_uint32;
+      return get_builtin_type(gdbarch)->builtin_uint32;
 
     case SPU_LSLR_REGNUM:
-      return builtin_type (gdbarch)->builtin_uint32;
+      return get_builtin_type(gdbarch)->builtin_uint32;
 
     case SPU_DECR_REGNUM:
-      return builtin_type (gdbarch)->builtin_uint32;
+      return get_builtin_type(gdbarch)->builtin_uint32;
 
     case SPU_DECR_STATUS_REGNUM:
-      return builtin_type (gdbarch)->builtin_uint32;
+      return get_builtin_type(gdbarch)->builtin_uint32;
 
     default:
       internal_error (__FILE__, __LINE__, "invalid regnum");

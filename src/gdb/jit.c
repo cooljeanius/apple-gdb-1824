@@ -1,4 +1,4 @@
-/* Handle JIT code generation in the inferior for GDB, the GNU Debugger.
+/* jit.c: Handle JIT code generation in the inferior for GDB, the GNU Debugger.
 
    Copyright (C) 2009
    Free Software Foundation, Inc.
@@ -122,7 +122,8 @@ static struct bfd *
 bfd_open_from_target_memory (CORE_ADDR addr, size_t size, char *target)
 {
   const char *filename = xstrdup ("<in-memory>");
-  struct target_buffer *buffer = xmalloc (sizeof (struct target_buffer));
+  struct target_buffer *buffer =
+    (struct target_buffer *)xmalloc(sizeof(struct target_buffer));
 
   buffer->base = addr;
   buffer->size = size;
@@ -145,13 +146,13 @@ jit_read_descriptor (struct gdbarch *gdbarch,
   int ptr_size;
   int desc_size;
   gdb_byte *desc_buf;
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
 
   /* Figure out how big the descriptor is on the remote and how to read it.  */
-  ptr_type = builtin_type (gdbarch)->builtin_data_ptr;
+  ptr_type = get_builtin_type(gdbarch)->builtin_data_ptr;
   ptr_size = TYPE_LENGTH (ptr_type);
   desc_size = 8 + 2 * ptr_size;  /* Two 32-bit ints and two pointers.  */
-  desc_buf = alloca (desc_size);
+  desc_buf = (gdb_byte *)alloca(desc_size);
 
   /* Read the descriptor.  */
   err = target_read_memory (jit_descriptor_addr, desc_buf, desc_size);
@@ -159,12 +160,13 @@ jit_read_descriptor (struct gdbarch *gdbarch,
     error (_("Unable to read JIT descriptor from remote memory!"));
 
   /* Fix the endianness to match the host.  */
-  descriptor->version = extract_unsigned_integer (&desc_buf[0], 4, byte_order);
+  descriptor->version = extract_unsigned_integer_with_byte_order(&desc_buf[0],
+								 4, byte_order);
   descriptor->action_flag =
-      extract_unsigned_integer (&desc_buf[4], 4, byte_order);
-  descriptor->relevant_entry = extract_typed_address (&desc_buf[8], ptr_type);
+    extract_unsigned_integer_with_byte_order(&desc_buf[4], 4, byte_order);
+  descriptor->relevant_entry = extract_typed_address(&desc_buf[8], ptr_type);
   descriptor->first_entry =
-      extract_typed_address (&desc_buf[8 + ptr_size], ptr_type);
+    extract_typed_address(&desc_buf[8 + ptr_size], ptr_type);
 }
 
 /* Helper function for reading a JITed code entry from remote memory.  */
@@ -178,13 +180,13 @@ jit_read_code_entry (struct gdbarch *gdbarch,
   int ptr_size;
   int entry_size;
   gdb_byte *entry_buf;
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
 
   /* Figure out how big the entry is on the remote and how to read it.  */
-  ptr_type = builtin_type (gdbarch)->builtin_data_ptr;
+  ptr_type = get_builtin_type(gdbarch)->builtin_data_ptr;
   ptr_size = TYPE_LENGTH (ptr_type);
   entry_size = 3 * ptr_size + 8;  /* Three pointers and one 64-bit int.  */
-  entry_buf = alloca (entry_size);
+  entry_buf = (gdb_byte *)alloca(entry_size);
 
   /* Read the entry.  */
   err = target_read_memory (code_addr, entry_buf, entry_size);
@@ -192,14 +194,15 @@ jit_read_code_entry (struct gdbarch *gdbarch,
     error (_("Unable to read JIT code entry from remote memory!"));
 
   /* Fix the endianness to match the host.  */
-  ptr_type = builtin_type (gdbarch)->builtin_data_ptr;
-  code_entry->next_entry = extract_typed_address (&entry_buf[0], ptr_type);
+  ptr_type = get_builtin_type(gdbarch)->builtin_data_ptr;
+  code_entry->next_entry = extract_typed_address(&entry_buf[0], ptr_type);
   code_entry->prev_entry =
-      extract_typed_address (&entry_buf[ptr_size], ptr_type);
+    extract_typed_address(&entry_buf[ptr_size], ptr_type);
   code_entry->symfile_addr =
-      extract_typed_address (&entry_buf[2 * ptr_size], ptr_type);
+    extract_typed_address(&entry_buf[2 * ptr_size], ptr_type);
   code_entry->symfile_size =
-      extract_unsigned_integer (&entry_buf[3 * ptr_size], 8, byte_order);
+    extract_unsigned_integer_with_byte_order(&entry_buf[3 * ptr_size], 8,
+					     byte_order);
 }
 
 /* This function registers code associated with a JIT code entry.  It uses the
@@ -270,7 +273,7 @@ JITed symbol file is not an object file, ignoring it.\n"));
   do_cleanups (my_cleanups);
 
   /* Remember a mapping from entry_addr to objfile.  */
-  entry_addr_ptr = xmalloc (sizeof (CORE_ADDR));
+  entry_addr_ptr = (CORE_ADDR *)xmalloc(sizeof(CORE_ADDR));
   *entry_addr_ptr = entry_addr;
   set_objfile_data (objfile, jit_objfile_data, entry_addr_ptr);
 
@@ -436,8 +439,8 @@ jit_event_handler (struct gdbarch *gdbarch)
     case JIT_UNREGISTER:
       objf = jit_find_objf_with_entry_addr (entry_addr);
       if (objf == NULL)
-	printf_unfiltered (_("Unable to find JITed code entry at address: %s\n"),
-			   paddress (gdbarch, entry_addr));
+	printf_unfiltered(_("Unable to find JITed code entry at address: %s\n"),
+			  paddress_with_arch(gdbarch, entry_addr));
       else
         jit_unregister_code (objf);
 

@@ -5791,7 +5791,7 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
 	       * to interpret the private shared-library data.
 	       */
 	      SYMBOL_VALUE_ADDRESS (sym) = dn_bufp->dsvar.location +
-	        gdbarch_tdep (current_gdbarch)->solib_thread_start_addr (so);
+	        new_gdbarch_tdep(current_gdbarch)->solib_thread_start_addr (so);
 	    }
 	}
       break;

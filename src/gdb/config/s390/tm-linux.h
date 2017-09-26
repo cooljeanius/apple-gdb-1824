@@ -1,9 +1,9 @@
-/* tm-linux.h
+/* s390/tm-linux.h
    Target definitions for GDB for a s390 running GNU/Linux.
 
    Copyright 2001, 2002 Free Software Foundation, Inc.
 
-   Contributed by D.J. Barrow (djbarrow@de.ibm.com,barrow_dj@yahoo.com)
+   Contributed by D.J. Barrow <djbarrow@de.ibm.com>,<barrow_dj@yahoo.com> 
    for IBM Deutschland Entwicklung GmbH, IBM Corporation.
 
    This file is part of GDB.
@@ -29,7 +29,7 @@
 # define S390_GNULINUX_TARGET
 #endif /* GDBSERVER */
 #undef  TARGET_ELF64
-#define TARGET_ELF64 (gdbarch_tdep (current_gdbarch)->intreg_size==8)
+#define TARGET_ELF64 (new_gdbarch_tdep(current_gdbarch)->intreg_size==8)
 
 #include "config/tm-linux.h"
 

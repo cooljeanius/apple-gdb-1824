@@ -29,7 +29,7 @@
 static void
 aarch64_newlib_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* Jump buffer - support for longjmp.
      Offset of original PC in jump buffer (in registers).  */

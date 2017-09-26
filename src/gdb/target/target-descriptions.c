@@ -495,40 +495,40 @@ tdesc_gdb_type (struct gdbarch *gdbarch, struct tdesc_type *tdesc_type)
     {
     /* Predefined types.  */
     case TDESC_TYPE_INT8:
-      return builtin_type (gdbarch)->builtin_int8;
+      return get_builtin_type(gdbarch)->builtin_int8;
 
     case TDESC_TYPE_INT16:
-      return builtin_type (gdbarch)->builtin_int16;
+      return get_builtin_type(gdbarch)->builtin_int16;
 
     case TDESC_TYPE_INT32:
-      return builtin_type (gdbarch)->builtin_int32;
+      return get_builtin_type(gdbarch)->builtin_int32;
 
     case TDESC_TYPE_INT64:
-      return builtin_type (gdbarch)->builtin_int64;
+      return get_builtin_type(gdbarch)->builtin_int64;
 
     case TDESC_TYPE_INT128:
-      return builtin_type (gdbarch)->builtin_int128;
+      return get_builtin_type(gdbarch)->builtin_int128;
 
     case TDESC_TYPE_UINT8:
-      return builtin_type (gdbarch)->builtin_uint8;
+      return get_builtin_type(gdbarch)->builtin_uint8;
 
     case TDESC_TYPE_UINT16:
-      return builtin_type (gdbarch)->builtin_uint16;
+      return get_builtin_type(gdbarch)->builtin_uint16;
 
     case TDESC_TYPE_UINT32:
-      return builtin_type (gdbarch)->builtin_uint32;
+      return get_builtin_type(gdbarch)->builtin_uint32;
 
     case TDESC_TYPE_UINT64:
-      return builtin_type (gdbarch)->builtin_uint64;
+      return get_builtin_type(gdbarch)->builtin_uint64;
 
     case TDESC_TYPE_UINT128:
-      return builtin_type (gdbarch)->builtin_uint128;
+      return get_builtin_type(gdbarch)->builtin_uint128;
 
     case TDESC_TYPE_CODE_PTR:
-      return builtin_type (gdbarch)->builtin_func_ptr;
+      return get_builtin_type(gdbarch)->builtin_func_ptr;
 
     case TDESC_TYPE_DATA_PTR:
-      return builtin_type (gdbarch)->builtin_data_ptr;
+      return get_builtin_type(gdbarch)->builtin_data_ptr;
 
     case TDESC_TYPE_IEEE_SINGLE:
       return arch_float_type (gdbarch, -1, "builtin_type_ieee_single",
@@ -769,7 +769,7 @@ tdesc_register_type (struct gdbarch *gdbarch, int regno)
 
   if (reg == NULL)
     /* Return "int0_t", since "void" has a misleading size of one.  */
-    return builtin_type (gdbarch)->builtin_int0;
+    return get_builtin_type(gdbarch)->builtin_int0;
 
   if (arch_reg->type == NULL)
     {
@@ -781,38 +781,38 @@ tdesc_register_type (struct gdbarch *gdbarch, int regno)
       else if (strcmp (reg->type, "float") == 0)
 	{
 	  if (reg->bitsize == gdbarch_float_bit (gdbarch))
-	    arch_reg->type = builtin_type (gdbarch)->builtin_float;
+	    arch_reg->type = get_builtin_type(gdbarch)->builtin_float;
 	  else if (reg->bitsize == gdbarch_double_bit (gdbarch))
-	    arch_reg->type = builtin_type (gdbarch)->builtin_double;
+	    arch_reg->type = get_builtin_type(gdbarch)->builtin_double;
 	  else if (reg->bitsize == gdbarch_long_double_bit (gdbarch))
-	    arch_reg->type = builtin_type (gdbarch)->builtin_long_double;
+	    arch_reg->type = get_builtin_type(gdbarch)->builtin_long_double;
 	  else
 	    {
 	      warning (_("Register \"%s\" has an unsupported size (%d bits)"),
 		       reg->name, reg->bitsize);
-	      arch_reg->type = builtin_type (gdbarch)->builtin_double;
+	      arch_reg->type = get_builtin_type(gdbarch)->builtin_double;
 	    }
 	}
       else if (strcmp (reg->type, "int") == 0)
 	{
 	  if (reg->bitsize == gdbarch_long_bit (gdbarch))
-	    arch_reg->type = builtin_type (gdbarch)->builtin_long;
+	    arch_reg->type = get_builtin_type(gdbarch)->builtin_long;
 	  else if (reg->bitsize == TARGET_CHAR_BIT)
-	    arch_reg->type = builtin_type (gdbarch)->builtin_char;
+	    arch_reg->type = get_builtin_type(gdbarch)->builtin_char;
 	  else if (reg->bitsize == gdbarch_short_bit (gdbarch))
-	    arch_reg->type = builtin_type (gdbarch)->builtin_short;
+	    arch_reg->type = get_builtin_type(gdbarch)->builtin_short;
 	  else if (reg->bitsize == gdbarch_int_bit (gdbarch))
-	    arch_reg->type = builtin_type (gdbarch)->builtin_int;
+	    arch_reg->type = get_builtin_type(gdbarch)->builtin_int;
 	  else if (reg->bitsize == gdbarch_long_long_bit (gdbarch))
-	    arch_reg->type = builtin_type (gdbarch)->builtin_long_long;
+	    arch_reg->type = get_builtin_type(gdbarch)->builtin_long_long;
 	  else if (reg->bitsize == gdbarch_ptr_bit (gdbarch))
 	  /* A bit desperate by this point... */
-	    arch_reg->type = builtin_type (gdbarch)->builtin_data_ptr;
+	    arch_reg->type = get_builtin_type(gdbarch)->builtin_data_ptr;
 	  else
 	    {
 	      warning (_("Register \"%s\" has an unsupported size (%d bits)"),
 		       reg->name, reg->bitsize);
-	      arch_reg->type = builtin_type (gdbarch)->builtin_long;
+	      arch_reg->type = get_builtin_type(gdbarch)->builtin_long;
 	    }
 	}
 

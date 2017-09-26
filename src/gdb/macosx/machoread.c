@@ -463,7 +463,7 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
             {
               int nlist_size;
               uint8_t *base;
-              if (gdbarch_tdep (current_gdbarch)->wordsize == 4)
+              if (new_gdbarch_tdep(current_gdbarch)->wordsize == 4)
                 nlist_size = 12;
               else
                 nlist_size = 16;

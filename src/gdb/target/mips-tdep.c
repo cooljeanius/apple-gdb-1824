@@ -404,6 +404,10 @@ mips_stack_argsize (struct gdbarch *gdbarch)
     return 4;
 }
 
+/* /usr/include/mach/i386/vm_param.h has a conflicting definition on darwin: */
+#ifdef VM_MIN_ADDRESS
+# undef VM_MIN_ADDRESS
+#endif /* VM_MIN_ADDRESS */
 #define VM_MIN_ADDRESS (CORE_ADDR)0x400000
 
 static CORE_ADDR heuristic_proc_start(CORE_ADDR);

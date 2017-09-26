@@ -124,9 +124,9 @@ static struct type *
 tic6x_register_type (struct gdbarch *gdbarch, int regno)
 {
   if (regno == TIC6X_PC_REGNUM) {
-    return builtin_type(gdbarch)->builtin_func_ptr;
+    return get_builtin_type(gdbarch)->builtin_func_ptr;
   } else {
-    return builtin_type(gdbarch)->builtin_uint32;
+    return get_builtin_type(gdbarch)->builtin_uint32;
   }
   return NULL; /* NOTREACHED */
 }
@@ -384,7 +384,7 @@ tic6x_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
   gdb_byte buf[8];
 
   frame_unwind_register(next_frame,  TIC6X_PC_REGNUM, buf);
-  return extract_typed_address(buf, builtin_type(gdbarch)->builtin_func_ptr);
+  return extract_typed_address(buf, get_builtin_type(gdbarch)->builtin_func_ptr);
 }
 
 /* This is the implementation of gdbarch method unwind_sp.  */

@@ -83,6 +83,8 @@ CORE_ADDR ppc_frame_find_prev_pc(struct frame_info *next_frame, void **this_cach
 CORE_ADDR ppc_fetch_pointer_argument(struct frame_info *frame, int argi,
                                      struct type *type);
 
+extern char *ppc_throw_catch_find_typeinfo(struct frame_info *, int);
+
 #endif /* __GDB_PPC_MACOSX_TDEP_H__ */
 
 /* EOF */

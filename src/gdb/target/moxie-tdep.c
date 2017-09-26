@@ -102,11 +102,11 @@ static struct type *
 moxie_register_type(struct gdbarch *gdbarch, int reg_nr)
 {
   if (reg_nr == MOXIE_PC_REGNUM)
-    return  builtin_type(gdbarch)->builtin_func_ptr;
+    return  get_builtin_type(gdbarch)->builtin_func_ptr;
   else if ((reg_nr == MOXIE_SP_REGNUM) || (reg_nr == MOXIE_FP_REGNUM))
-    return builtin_type(gdbarch)->builtin_data_ptr;
+    return get_builtin_type(gdbarch)->builtin_data_ptr;
   else
-    return builtin_type(gdbarch)->builtin_int32;
+    return get_builtin_type(gdbarch)->builtin_int32;
 }
 
 /* Write into appropriate registers a function return value

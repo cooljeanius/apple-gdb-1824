@@ -34,6 +34,11 @@
 #include <sys/param.h>
 #include "gdb_dirent.h"
 #include <ctype.h>
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif /* HAVE_SIGNAL_H */
+
+#include "target.h"
 
 struct fork_info *fork_list;
 static int highest_fork_num;
@@ -230,12 +235,12 @@ call_lseek (int fd, off_t offset, int whence)
   return (off_t) parse_and_eval_long (&exp[0]);
 }
 
-/* Load infrun state for the fork PTID.  */
+extern void nullify_last_target_wait_ptid(void); /* -Wnested-externs */
 
+/* Load infrun state for the fork PTID.  */
 static void
 fork_load_infrun_state (struct fork_info *fp)
 {
-  extern void nullify_last_target_wait_ptid ();
   int i;
 
   linux_nat_switch_fork (fp->ptid);
@@ -296,8 +301,9 @@ fork_save_infrun_state (struct fork_info *fp, int clobber_regs)
 		fp->maxfd = tmp;
 	    }
 	  /* Allocate array of file positions.  */
-	  fp->filepos = xrealloc (fp->filepos,
-				  (fp->maxfd + 1) * sizeof (*fp->filepos));
+	  fp->filepos = (off_t *)xrealloc(fp->filepos,
+					  ((fp->maxfd + 1)
+					   * sizeof(*fp->filepos)));
 
 	  /* Initialize to -1 (invalid).  */
 	  for (tmp = 0; tmp <= fp->maxfd; tmp++)
@@ -415,7 +421,7 @@ linux_fork_detach (char *args, int from_tty)
 /* Fork list <-> user interface.  */
 
 static void
-delete_checkpoint_command (char *args, int from_tty)
+delete_checkpoint_command(const char *args, int from_tty)
 {
   ptid_t ptid;
 
@@ -440,7 +446,7 @@ Please switch to another checkpoint before deleting the current one"));
 }
 
 static void
-detach_checkpoint_command (char *args, int from_tty)
+detach_checkpoint_command(const char *args, int from_tty)
 {
   ptid_t ptid;
 
@@ -467,7 +473,7 @@ Please switch to another checkpoint before detaching the current one"));
 /* Print information about currently known checkpoints.  */
 
 static void
-info_checkpoints_command (char *arg, int from_tty)
+info_checkpoints_command(const char *arg, int from_tty)
 {
   struct gdbarch *gdbarch = get_current_arch ();
   struct frame_info *cur_frame;
@@ -502,7 +508,7 @@ info_checkpoints_command (char *arg, int from_tty)
       if (fp->num == 0)
 	printf_filtered (_(" (main process)"));
       printf_filtered (_(" at "));
-      fputs_filtered (paddress (gdbarch, pc), gdb_stdout);
+      fputs_filtered(paddress_with_arch(gdbarch, pc), gdb_stdout);
 
       sal = find_pc_line (pc, 0);
       if (sal.symtab)
@@ -546,7 +552,7 @@ linux_fork_checkpointing_p (int pid)
 }
 
 static void
-checkpoint_command (char *args, int from_tty)
+checkpoint_command(const char *args, int from_tty)
 {
   struct objfile *fork_objf;
   struct gdbarch *gdbarch;
@@ -556,7 +562,9 @@ checkpoint_command (char *args, int from_tty)
   struct fork_info *fp;
   pid_t retpid;
   struct cleanup *old_chain;
+#ifdef ALLOW_UNUSED_VARIABLES
   long i;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   /* Make the inferior fork, record its (and gdb's) state.  */
 
@@ -569,7 +577,7 @@ checkpoint_command (char *args, int from_tty)
     error (_("checkpoint: can't find fork function in inferior."));
 
   gdbarch = get_objfile_arch (fork_objf);
-  ret = value_from_longest (builtin_type (gdbarch)->builtin_int, 0);
+  ret = value_from_longest(get_builtin_type(gdbarch)->builtin_int, 0);
 
   /* Tell linux-nat.c that we're checkpointing this inferior.  */
   old_chain = make_cleanup_restore_integer (&checkpointing_pid);
@@ -609,8 +617,10 @@ linux_fork_context (struct fork_info *newfp, int from_tty)
 {
   /* Now we attempt to switch processes.  */
   struct fork_info *oldfp;
+#ifdef ALLOW_UNUSED_VARIABLES
   ptid_t ptid;
   int id, i;
+#endif /* ALLOW_UNUSED_VARIABLES */
 
   gdb_assert (newfp != NULL);
 
@@ -630,7 +640,7 @@ linux_fork_context (struct fork_info *newfp, int from_tty)
 
 /* Switch inferior process (checkpoint) context, by checkpoint id.  */
 static void
-restart_command (char *args, int from_tty)
+restart_command(const char *args, int from_tty)
 {
   struct fork_info *fp;
 

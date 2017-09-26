@@ -323,21 +323,21 @@ stap_get_expected_argument_type (struct gdbarch *gdbarch,
     {
     case STAP_ARG_BITNESS_UNDEFINED:
       if (gdbarch_addr_bit (gdbarch) == 32)
-	return builtin_type (gdbarch)->builtin_uint32;
+	return get_builtin_type(gdbarch)->builtin_uint32;
       else
-	return builtin_type (gdbarch)->builtin_uint64;
+	return get_builtin_type(gdbarch)->builtin_uint64;
 
     case STAP_ARG_BITNESS_32BIT_SIGNED:
-      return builtin_type (gdbarch)->builtin_int32;
+      return get_builtin_type(gdbarch)->builtin_int32;
 
     case STAP_ARG_BITNESS_32BIT_UNSIGNED:
-      return builtin_type (gdbarch)->builtin_uint32;
+      return get_builtin_type(gdbarch)->builtin_uint32;
 
     case STAP_ARG_BITNESS_64BIT_SIGNED:
-      return builtin_type (gdbarch)->builtin_int64;
+      return get_builtin_type(gdbarch)->builtin_int64;
 
     case STAP_ARG_BITNESS_64BIT_UNSIGNED:
-      return builtin_type (gdbarch)->builtin_uint64;
+      return get_builtin_type(gdbarch)->builtin_uint64;
 
     default:
       internal_error (__FILE__, __LINE__,
@@ -430,7 +430,7 @@ stap_parse_register_operand (struct stap_parse_info *p)
 
       /* Generating the expression for the displacement.  */
       write_exp_elt_opcode (OP_LONG);
-      write_exp_elt_type (builtin_type (gdbarch)->builtin_long);
+      write_exp_elt_type(get_builtin_type(gdbarch)->builtin_long);
       write_exp_elt_longcst (displacement);
       write_exp_elt_opcode (OP_LONG);
       if (got_minus)
@@ -649,7 +649,7 @@ stap_parse_single_operand (struct stap_parse_info *p)
 	{
 	  /* We are dealing with a numeric constant.  */
 	  write_exp_elt_opcode (OP_LONG);
-	  write_exp_elt_type (builtin_type (gdbarch)->builtin_long);
+	  write_exp_elt_type(get_builtin_type(gdbarch)->builtin_long);
 	  write_exp_elt_longcst (number);
 	  write_exp_elt_opcode (OP_LONG);
 
@@ -683,7 +683,7 @@ stap_parse_single_operand (struct stap_parse_info *p)
       p->arg = endp;
 
       write_exp_elt_opcode (OP_LONG);
-      write_exp_elt_type (builtin_type (gdbarch)->builtin_long);
+      write_exp_elt_type(get_builtin_type(gdbarch)->builtin_long);
       write_exp_elt_longcst (number);
       write_exp_elt_opcode (OP_LONG);
 
@@ -1185,7 +1185,7 @@ compute_probe_arg (struct gdbarch *arch, struct internalvar *ivar,
 
   n_args = pc_probe_fns->sym_get_probe_argument_count (pc_probe);
   if (sel == -1)
-    return value_from_longest (builtin_type (arch)->builtin_int, n_args);
+    return value_from_longest(get_builtin_type(arch)->builtin_int, n_args);
 
   if (sel >= n_args)
     error (_("Invalid probe argument %d -- probe has %u arguments available"),
@@ -1225,7 +1225,7 @@ compile_probe_arg (struct internalvar *ivar, struct agent_expr *expr,
   if (sel == -1)
     {
       value->kind = axs_rvalue;
-      value->type = builtin_type (expr->gdbarch)->builtin_int;
+      value->type = get_builtin_type(expr->gdbarch)->builtin_int;
       ax_const_l (expr, n_args);
       return;
     }
@@ -1250,7 +1250,7 @@ stap_modify_semaphore (CORE_ADDR address, int set, struct gdbarch *gdbarch)
 {
   gdb_byte bytes[sizeof (LONGEST)];
   /* The ABI specifies "unsigned short".  */
-  struct type *type = builtin_type (gdbarch)->builtin_unsigned_short;
+  struct type *type = get_builtin_type(gdbarch)->builtin_unsigned_short;
   ULONGEST value;
 
   if (address == 0)
@@ -1338,7 +1338,7 @@ handle_stap_probe (struct objfile *objfile, struct sdt_note *el,
   bfd *abfd = objfile->obfd;
   int size = bfd_get_arch_size (abfd) / 8;
   struct gdbarch *gdbarch = get_objfile_arch (objfile);
-  struct type *ptr_type = builtin_type (gdbarch)->builtin_data_ptr;
+  struct type *ptr_type = get_builtin_type(gdbarch)->builtin_data_ptr;
   CORE_ADDR base_ref;
   const char *probe_args = NULL;
   struct stap_probe *ret;

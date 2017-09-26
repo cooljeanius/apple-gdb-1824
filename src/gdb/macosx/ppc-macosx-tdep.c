@@ -727,7 +727,7 @@ ppc_frame_prev_register(struct frame_info *next_frame, void **this_cache,
 	    }
 	  else
 	    {
-	      wordsize = (gdbarch_tdep (current_gdbarch))->wordsize;
+	      wordsize = (new_gdbarch_tdep(current_gdbarch))->wordsize;
 	      offset = register_size (current_gdbarch, regnum) - wordsize;
 	      *((int *) valuep) = 0;
 	    }
@@ -820,6 +820,7 @@ ppc_sigtramp_frame_cache(struct frame_info *next_frame, void **this_cache)
     read_memory_unsigned_integer(sigframe + 0xd4, TARGET_PTR_BIT / 8);
   length = read_memory_unsigned_integer(sigframe + 0xd0, TARGET_INT_BIT / 8);
 
+  /* FIXME: fallthrus??? */
   switch (length)
     {
     case (EXCSTATE + GPSTATE + FPSTATE + VPSTATE):
@@ -933,11 +934,18 @@ ppc_sigtramp_frame_prev_register(struct frame_info *next_frame,
           else
               size = reg_size;
 
-	  gdb_assert (reg_size >= size);
+	  gdb_assert(reg_size >= size);
 	  offset = reg_size - size;
 
-          if (reg_size > size)
-            bzero ((char *) valuep, reg_size - size);
+          if (reg_size > size) {
+#ifdef HAVE_MEMSET
+	    memset((char *)valuep, 0, (reg_size - size));
+#else
+# ifdef HAVE_BZERO
+            bzero((char *)valuep, (reg_size - size));
+# endif /* HAVE_BZERO */
+#endif /* HAVE_MEMSET */
+	  }
 
           read_memory(*addrp, valuep + offset, size);
         }
@@ -964,7 +972,7 @@ ppc_sigtramp_frame_sniffer(struct frame_info *next_frame)
   const char *name;
 
   find_pc_partial_function_no_inlined(pc, &name, NULL, NULL);
-  if (legacy_pc_in_sigtramp(pc, name))
+  if (legacy_pc_in_sigtramp(pc, (char *)name))
     return &ppc_sigtramp_frame_unwind;
 
   return NULL;
@@ -999,7 +1007,7 @@ ppc_fetch_pointer_argument(struct frame_info *frame, int argi,
 {
   CORE_ADDR addr;
   static unsigned long long mask = 0xffffffff;
-  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
 
   addr = get_frame_register_unsigned(frame, 3 + argi);
 
@@ -1175,10 +1183,9 @@ ppc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
    is in the typeinfo object, or call a function.  Getting the mangled
    name seems much safer & easier.
 */
-
 char *
-ppc_throw_catch_find_typeinfo (struct frame_info *curr_frame,
-                               int exception_type)
+ppc_throw_catch_find_typeinfo(struct frame_info *curr_frame,
+                              int exception_type)
 {
   struct minimal_symbol *typeinfo_sym = NULL;
   ULONGEST typeinfo_ptr;
@@ -1233,7 +1240,7 @@ ppc_throw_catch_find_typeinfo (struct frame_info *curr_frame,
 static int
 ppc_macosx_convert_register_p (int regno, struct type *type)
 {
-  int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
+  int wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
   if (PPC_MACOSX_IS_GP_REGNUM (regno)
       && (TYPE_LENGTH (type) > wordsize)
       && (register_size (current_gdbarch, regno) > wordsize))
@@ -1247,7 +1254,7 @@ ppc_macosx_value_to_register (struct frame_info *frame, int regno,
                               struct type *type, const gdb_byte *buf)
 {
   int len = TYPE_LENGTH (type);
-  int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
+  int wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
   int reg_size;
   int upper_half_size;
   int num_regs;
@@ -1278,7 +1285,7 @@ ppc_macosx_register_to_value (struct frame_info *frame, int regno,
                               struct type *type, gdb_byte *buf)
 {
   int len = TYPE_LENGTH (type);
-  int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
+  int wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
   int reg_size;
   int upper_half_size;
   int num_regs;
@@ -1323,7 +1330,7 @@ ppc_macosx_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 static void
 ppc_macosx_init_abi_64 (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->wordsize = 8;
 

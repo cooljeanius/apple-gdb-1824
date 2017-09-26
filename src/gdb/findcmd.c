@@ -1,4 +1,4 @@
-/* The find command.
+/* findcmd.c: The find command.
 
    Copyright (C) 2008-2013 Free Software Foundation, Inc.
 
@@ -25,6 +25,8 @@
 #include "value.h"
 #include "target.h"
 #include "cli/cli-utils.h"
+
+#include "gdb_assert.h"
 
 /* Copied from bfd_put_bits.  */
 
@@ -76,7 +78,7 @@ parse_find_args (char *args, ULONGEST *max_countp,
   if (args == NULL)
     error (_("Missing search parameters."));
 
-  pattern_buf = xmalloc (pattern_buf_size);
+  pattern_buf = (gdb_byte *)xmalloc(pattern_buf_size);
   pattern_buf_end = pattern_buf;
   old_cleanups = make_cleanup (free_current_contents, &pattern_buf);
 
@@ -185,7 +187,7 @@ parse_find_args (char *args, ULONGEST *max_countp,
 	  size_t current_offset = pattern_buf_end - pattern_buf;
 
 	  pattern_buf_size = pattern_buf_size_need * 2;
-	  pattern_buf = xrealloc (pattern_buf, pattern_buf_size);
+	  pattern_buf = (gdb_byte *)xrealloc(pattern_buf, pattern_buf_size);
 	  pattern_buf_end = pattern_buf + current_offset;
 	}
 
@@ -208,6 +210,8 @@ parse_find_args (char *args, ULONGEST *max_countp,
 	    case 'g':
 	      put_bits (x, pattern_buf_end, 64, big_p);
 	      pattern_buf_end += sizeof (int64_t);
+	      break;
+	    default:
 	      break;
 	    }
 	}
@@ -242,7 +246,7 @@ parse_find_args (char *args, ULONGEST *max_countp,
 }
 
 static void
-find_command (char *args, int from_tty)
+find_command(const char *args, int from_tty)
 {
   struct gdbarch *gdbarch = get_current_arch ();
   bfd_boolean big_p = gdbarch_byte_order (gdbarch) == BFD_ENDIAN_BIG;
@@ -301,7 +305,7 @@ find_command (char *args, int from_tty)
   set_internalvar_integer (lookup_internalvar ("numfound"), found_count);
   if (found_count > 0)
     {
-      struct type *ptr_type = builtin_type (gdbarch)->builtin_data_ptr;
+      struct type *ptr_type = get_builtin_type(gdbarch)->builtin_data_ptr;
 
       set_internalvar (lookup_internalvar ("_"),
 		       value_from_pointer (ptr_type, last_found_addr));
@@ -338,3 +342,5 @@ The address of the last match is stored as the value of \"$_\".\n\
 Convenience variable \"$numfound\" is set to the number of matches."),
 	   &cmdlist);
 }
+
+/* EOF */

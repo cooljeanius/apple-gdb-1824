@@ -264,7 +264,7 @@ me_module_register_set (CONFIG_ATTR me_module,
        mask contains any of the me_module's coprocessor ISAs,
        specifically excluding the generic coprocessor register sets.  */
 
-  CGEN_CPU_DESC desc = gdbarch_tdep (target_gdbarch)->cpu_desc;
+  CGEN_CPU_DESC desc = new_gdbarch_tdep(target_gdbarch)->cpu_desc;
   const CGEN_HW_ENTRY *hw;
 
   if (me_module == CONFIG_NONE)
@@ -855,7 +855,7 @@ current_me_module ()
       return regval;
     }
   else
-    return gdbarch_tdep (target_gdbarch)->me_module;
+    return new_gdbarch_tdep(target_gdbarch)->me_module;
 }
 
 
@@ -930,7 +930,7 @@ current_ccr_names ()
 static const char *
 mep_register_name (struct gdbarch *gdbarch, int regnr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);  
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);  
 
   /* General-purpose registers.  */
   static const char *gpr_names[] = {
@@ -1084,7 +1084,7 @@ mep_register_type (struct gdbarch *gdbarch, int reg_nr)
      keep the 'g' packet format fixed), and the pseudoregisters vary
      in length.  */
   if (IS_RAW_CR_REGNUM (reg_nr))
-    return builtin_type (gdbarch)->builtin_uint64;
+    return get_builtin_type(gdbarch)->builtin_uint64;
 
   /* Since GDB doesn't allow registers to change type, we have two
      banks of pseudoregisters for the coprocessor general-purpose
@@ -1097,16 +1097,16 @@ mep_register_type (struct gdbarch *gdbarch, int reg_nr)
       if (size == 32)
         {
           if (mep_pseudo_cr_is_float (reg_nr))
-            return builtin_type (gdbarch)->builtin_float;
+            return get_builtin_type(gdbarch)->builtin_float;
           else
-            return builtin_type (gdbarch)->builtin_uint32;
+            return get_builtin_type(gdbarch)->builtin_uint32;
         }
       else if (size == 64)
         {
           if (mep_pseudo_cr_is_float (reg_nr))
-            return builtin_type (gdbarch)->builtin_double;
+            return get_builtin_type(gdbarch)->builtin_double;
           else
-            return builtin_type (gdbarch)->builtin_uint64;
+            return get_builtin_type(gdbarch)->builtin_uint64;
         }
       else
         gdb_assert (0);
@@ -1114,7 +1114,7 @@ mep_register_type (struct gdbarch *gdbarch, int reg_nr)
 
   /* All other registers are 32 bits long.  */
   else
-    return builtin_type (gdbarch)->builtin_uint32;
+    return get_builtin_type(gdbarch)->builtin_uint32;
 }
 
 
@@ -2447,7 +2447,7 @@ mep_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   for (arches = gdbarch_list_lookup_by_info (arches, &info); 
        arches != NULL;
        arches = gdbarch_list_lookup_by_info (arches->next, &info))
-    if (gdbarch_tdep (arches->gdbarch)->me_module == me_module)
+    if (new_gdbarch_tdep(arches->gdbarch)->me_module == me_module)
       return arches->gdbarch;
 
   tdep = (struct gdbarch_tdep *) xmalloc (sizeof (struct gdbarch_tdep));

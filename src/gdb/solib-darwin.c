@@ -1,4 +1,4 @@
-/* Handle Darwin shared libraries for GDB, the GNU Debugger.
+/* solib-darwin.c: Handle Darwin shared libraries for GDB, the GNU Debugger.
 
    Copyright (C) 2009 Free Software Foundation, Inc.
 
@@ -80,8 +80,8 @@ darwin_load_image_infos (void)
 {
   gdb_byte buf[24];
   enum bfd_endian byte_order = gdbarch_byte_order (target_gdbarch);
-  struct type *ptr_type = builtin_type (target_gdbarch)->builtin_data_ptr;
-  int len;
+  struct type *ptr_type = get_builtin_type(target_gdbarch)->builtin_data_ptr;
+  size_t len;
 
   /* If the structure address is not known, don't continue.  */
   if (dyld_all_image_addr == 0)
@@ -89,7 +89,7 @@ darwin_load_image_infos (void)
 
   /* The structure has 4 fields: version (4 bytes), count (4 bytes),
      info (pointer) and notifier (pointer).  */
-  len = 4 + 4 + 2 * ptr_type->length;
+  len = (4 + 4 + (2 * ptr_type->length));
   gdb_assert (len <= sizeof (buf));
   memset (&dyld_all_image, 0, sizeof (dyld_all_image));
 
@@ -98,14 +98,16 @@ darwin_load_image_infos (void)
     return;
 
   /* Extract the fields.  */
-  dyld_all_image.version = extract_unsigned_integer (buf, 4, byte_order);
+  dyld_all_image.version = extract_unsigned_integer_with_byte_order(buf, 4,
+								    byte_order);
   if (dyld_all_image.version != DYLD_VERSION)
     return;
 
-  dyld_all_image.count = extract_unsigned_integer (buf + 4, 4, byte_order);
-  dyld_all_image.info = extract_typed_address (buf + 8, ptr_type);
-  dyld_all_image.notifier = extract_typed_address
-    (buf + 8 + ptr_type->length, ptr_type);
+  dyld_all_image.count = extract_unsigned_integer_with_byte_order(buf + 4, 4,
+								  byte_order);
+  dyld_all_image.info = extract_typed_address(buf + 8, ptr_type);
+  dyld_all_image.notifier = extract_typed_address(buf + 8 + ptr_type->length,
+						  ptr_type);
 }
 
 /* Link map info to include in an allocated so_list entry.  */
@@ -126,7 +128,7 @@ struct darwin_so_list
 
 /* Lookup the value for a specific symbol.  */
 static CORE_ADDR
-lookup_symbol_from_bfd (bfd *abfd, char *symname)
+lookup_symbol_from_bfd(bfd *abfd, const char *symname)
 {
   long storage_needed;
   asymbol **symbol_table;
@@ -193,7 +195,7 @@ open_symbol_file_object (void *from_ttyp)
 static struct so_list *
 darwin_current_sos (void)
 {
-  struct type *ptr_type = builtin_type (target_gdbarch)->builtin_data_ptr;
+  struct type *ptr_type = get_builtin_type(target_gdbarch)->builtin_data_ptr;
   int ptr_len = TYPE_LENGTH (ptr_type);
   unsigned int image_info_size;
   CORE_ADDR lm;
@@ -214,13 +216,13 @@ darwin_current_sos (void)
   for (i = 1; i < dyld_all_image.count; i++)
     {
       CORE_ADDR info = dyld_all_image.info + i * image_info_size;
-      char buf[image_info_size];
+      gdb_byte buf[image_info_size];
       CORE_ADDR load_addr;
       CORE_ADDR path_addr;
       char *file_path;
       int errcode;
       struct darwin_so_list *dnew;
-      struct so_list *new;
+      struct so_list *newlist;
       struct cleanup *old_chain;
 
       /* Read image info from inferior.  */
@@ -237,22 +239,22 @@ darwin_current_sos (void)
 
       /* Create and fill the new so_list element.  */
       dnew = XZALLOC (struct darwin_so_list);
-      new = &dnew->sl;
+      newlist = &dnew->sl;
       old_chain = make_cleanup (xfree, dnew);
 
-      new->lm_info = &dnew->li;
+      newlist->lm_info = &dnew->li;
 
-      strncpy (new->so_name, file_path, SO_NAME_MAX_PATH_SIZE - 1);
-      new->so_name[SO_NAME_MAX_PATH_SIZE - 1] = '\0';
-      strcpy (new->so_original_name, new->so_name);
+      strncpy (newlist->so_name, file_path, SO_NAME_MAX_PATH_SIZE - 1);
+      newlist->so_name[SO_NAME_MAX_PATH_SIZE - 1] = '\0';
+      strcpy (newlist->so_original_name, newlist->so_name);
       xfree (file_path);
-      new->lm_info->lm_addr = load_addr;
+      newlist->lm_info->lm_addr = load_addr;
 
       if (head == NULL)
-	head = new;
+	head = newlist;
       else
-	tail->next = new;
-      tail = new;
+	tail->next = newlist;
+      tail = newlist;
 
       discard_cleanups (old_chain);
     }
@@ -263,7 +265,7 @@ darwin_current_sos (void)
 /* Return 1 if PC lies in the dynamic symbol resolution code of the
    run time loader.  */
 int
-darwin_in_dynsym_resolve_code (CORE_ADDR pc)
+darwin_in_dynsym_resolve_code(CORE_ADDR pc ATTRIBUTE_UNUSED)
 {
   return 0;
 }
@@ -271,8 +273,9 @@ darwin_in_dynsym_resolve_code (CORE_ADDR pc)
 
 /* No special symbol handling.  */
 static void
-darwin_special_symbol_handling (void)
+darwin_special_symbol_handling(void)
 {
+  return;
 }
 
 /* Shared library startup support.  See documentation in solib-svr4.c  */
@@ -302,7 +305,7 @@ darwin_solib_create_inferior_hook (void)
 
   /* Create a bfd for the interpreter.  */
   sym_addr = 0;
-  dyld_bfd = bfd_openr (interp_name, gnutarget);
+  dyld_bfd = bfd_openr((const char *)interp_name, gnutarget);
   if (dyld_bfd)
     {
       bfd *sub;
@@ -353,16 +356,20 @@ darwin_solib_create_inferior_hook (void)
 }
 
 static void
-darwin_clear_solib (void)
+darwin_clear_solib(void)
 {
   dyld_all_image_addr = 0;
   dyld_all_image.version = 0;
 }
 
 static void
-darwin_free_so (struct so_list *so)
+darwin_free_so(struct so_list *so ATTRIBUTE_UNUSED)
 {
+  return;
 }
+
+/* Forward declaration for use in following function: */
+struct target_section;
 
 /* The section table is built from bfd sections using bfd VMAs.
    Relocate these VMAs according to solib info.  */
@@ -425,8 +432,9 @@ darwin_bfd_open (char *pathname)
 
 struct target_so_ops darwin_so_ops;
 
+extern void _initialize_darwin_solib(void); /* -Wmissing-prototypes */
 void
-_initialize_darwin_solib (void)
+_initialize_darwin_solib(void)
 {
   darwin_so_ops.relocate_section_addresses = darwin_relocate_section_addresses;
   darwin_so_ops.free_so = darwin_free_so;
@@ -439,3 +447,5 @@ _initialize_darwin_solib (void)
   darwin_so_ops.lookup_lib_global_symbol = darwin_lookup_lib_symbol;
   darwin_so_ops.bfd_open = darwin_bfd_open;
 }
+
+/* EOF */

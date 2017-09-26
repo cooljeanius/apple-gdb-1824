@@ -190,7 +190,7 @@ static const struct tramp_frame m68kobsd_sigtramp = {
 static void
 m68kbsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->jb_pc = 5;
   tdep->jb_elt_size = 4;
@@ -204,7 +204,7 @@ m68kbsd_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 static void
 m68kbsd_aout_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   m68kbsd_init_abi (info, gdbarch);
 
@@ -218,7 +218,7 @@ m68kbsd_aout_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 static void
 m68kbsd_elf_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   m68kbsd_init_abi (info, gdbarch);
 

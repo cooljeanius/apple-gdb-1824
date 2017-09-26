@@ -88,13 +88,13 @@ enum
 static int
 nr_dmap_regs (struct gdbarch *gdbarch)
 {
-  return gdbarch_tdep (gdbarch)->nr_dmap_regs;
+  return new_gdbarch_tdep(gdbarch)->nr_dmap_regs;
 }
 
 static int
 a0_regnum (struct gdbarch *gdbarch)
 {
-  return gdbarch_tdep (gdbarch)->a0_regnum;
+  return new_gdbarch_tdep(gdbarch)->a0_regnum;
 }
 
 /* Local functions */
@@ -286,9 +286,9 @@ static struct type *
 d10v_register_type (struct gdbarch *gdbarch, int reg_nr)
 {
   if (reg_nr == D10V_PC_REGNUM)
-    return builtin_type (gdbarch)->builtin_func_ptr;
+    return get_builtin_type(gdbarch)->builtin_func_ptr;
   if (reg_nr == D10V_SP_REGNUM || reg_nr == D10V_FP_REGNUM)
-    return builtin_type (gdbarch)->builtin_data_ptr;
+    return get_builtin_type(gdbarch)->builtin_data_ptr;
   else if (reg_nr >= a0_regnum (gdbarch)
 	   && reg_nr < (a0_regnum (gdbarch) + NR_A_REGS))
     return builtin_type_int64;
@@ -787,7 +787,7 @@ static void
 d10v_print_registers_info (struct gdbarch *gdbarch, struct ui_file *file,
 			   struct frame_info *frame, int regnum, int all)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   if (regnum >= 0)
     {
       default_print_registers_info (gdbarch, file, frame, regnum, all);
@@ -1060,7 +1060,7 @@ remote_d10v_translate_xfer_address(struct gdbarch *gdbarch,
 				   CORE_ADDR memaddr, int nr_bytes,
 				   CORE_ADDR *targ_addr, int *targ_len)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep(gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
   long out_addr;
   long out_len;
   out_len = sim_d10v_translate_addr(memaddr, nr_bytes,
@@ -1389,14 +1389,13 @@ d10v_frame_this_id (struct frame_info *next_frame,
 static void
 d10v_frame_prev_register(struct frame_info *next_frame,
 			 void **this_prologue_cache, int regnum,
-			 int *optimizedp, enum lval_type *lvalp,
-			 CORE_ADDR *addrp, int *realnump, void *bufferp)
+			 enum opt_state *optimizedp, enum lval_type *lvalp,
+			 CORE_ADDR *addrp, int *realnump, gdb_byte *bufferp)
 {
   struct d10v_unwind_cache *info =
     d10v_frame_unwind_cache(next_frame, this_prologue_cache);
   trad_frame_get_prev_register(next_frame, info->saved_regs, regnum,
-			       (enum opt_state *)optimizedp, lvalp, addrp,
-			       realnump, (gdb_byte *)bufferp);
+			       optimizedp, lvalp, addrp, realnump, bufferp);
 }
 
 static const struct frame_unwind d10v_frame_unwind = {

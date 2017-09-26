@@ -1117,20 +1117,20 @@ s390_store (struct prologue_value *addr,
 	 times, the stack slot with the highest address counts.  */
 
       for (i = 0; i < S390_NUM_GPRS; i++)
-	if (size == data->gpr_size
-	    && pv_is_register (value, S390_R0_REGNUM + i, 0))
-	  if (data->gpr_slot[i] == 0
-	      || data->gpr_slot[i] > offset.k)
+	if ((size == data->gpr_size)
+	    && pv_is_register(value, (S390_R0_REGNUM + i), 0))
+	  if ((data->gpr_slot[i] == 0)
+	      || (data->gpr_slot[i] > offset.k))
 	    {
 	      data->gpr_slot[i] = offset.k;
 	      return;
 	    }
 
       for (i = 0; i < S390_NUM_FPRS; i++)
-	if (size == data->fpr_size
-	    && pv_is_register (value, S390_F0_REGNUM + i, 0))
-	  if (data->fpr_slot[i] == 0
-	      || data->fpr_slot[i] > offset.k)
+	if ((size == data->fpr_size)
+	    && pv_is_register(value, (S390_F0_REGNUM + i), 0))
+	  if ((data->fpr_slot[i] == 0)
+	      || (data->fpr_slot[i] > offset.k))
 	    {
 	      data->fpr_slot[i] = offset.k;
 	      return;

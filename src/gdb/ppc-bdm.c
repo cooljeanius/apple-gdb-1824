@@ -1,4 +1,4 @@
-/* Remote target communications for the Macraigor Systems BDM Wiggler
+/* ppc-bdm.c: Remote target communications for the Macraigor Systems BDM Wiggler
    talking to a Motorola PPC 8xx ADS board
    Copyright 1996, 1997, 1998, 1999, 2000, 2001
    Free Software Foundation, Inc.
@@ -39,10 +39,11 @@
 #include "regcache.h"
 #include "gdb_assert.h"
 
-static void bdm_ppc_open (char *name, int from_tty);
+static void bdm_ppc_open(const char *name, int from_tty);
 
-static ptid_t bdm_ppc_wait (ptid_t ptid,
-                            struct target_waitstatus *target_status);
+static ptid_t bdm_ppc_wait(ptid_t ptid,
+			   struct target_waitstatus *target_status,
+			   void *unusedarg);
 
 static void bdm_ppc_fetch_registers (int regno);
 
@@ -73,25 +74,25 @@ extern struct target_ops bdm_ppc_ops;	/* Forward decl */
 	0,			/* mq (SPR 0) */
 
 
-char nowatchdog[4] =
+gdb_byte nowatchdog[4] =
 {0xff, 0xff, 0xff, 0x88};
 
 /* Open a connection to a remote debugger.
    NAME is the filename used for communication.  */
 
 static void
-bdm_ppc_open (char *name, int from_tty)
+bdm_ppc_open(const char *name, int from_tty)
 {
   CORE_ADDR watchdogaddr = 0xff000004;
 
-  ocd_open (name, from_tty, OCD_TARGET_MOTO_PPC, &bdm_ppc_ops);
+  ocd_open(name, from_tty, OCD_TARGET_MOTO_PPC, &bdm_ppc_ops);
 
   /* We want interrupts to drop us into debugging mode. */
   /* Modify the DER register to accomplish this. */
-  ocd_write_bdm_register (149, 0x20024000);
+  ocd_write_bdm_register(149, 0x20024000);
 
   /* Disable watchdog timer on the board */
-  ocd_write_bytes (watchdogaddr, nowatchdog, 4);
+  ocd_write_bytes(watchdogaddr, nowatchdog, 4);
 }
 
 /* Wait until the remote machine stops, then return,
@@ -100,7 +101,8 @@ bdm_ppc_open (char *name, int from_tty)
    means in the case of this target).  */
 
 static ptid_t
-bdm_ppc_wait (ptid_t ptid, struct target_waitstatus *target_status)
+bdm_ppc_wait(ptid_t ptid, struct target_waitstatus *target_status,
+	     void *unusedarg ATTRIBUTE_UNUSED)
 {
   int stop_reason;
 
@@ -124,7 +126,7 @@ bdm_ppc_wait (ptid_t ptid, struct target_waitstatus *target_status)
     der = ocd_read_bdm_register (149);	/* Read the debug enables register */
     fprintf_unfiltered (gdb_stdout, "ecr = 0x%x, der = 0x%x\n", ecr, der);
   }
-#endif
+#endif /* 0 */
 
   return inferior_ptid;
 }
@@ -154,7 +156,7 @@ static int bdm_regmap[] =
 static void
 bdm_ppc_fetch_registers (int regno)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int i;
   unsigned char *regs;
   int first_regno, last_regno;
@@ -195,15 +197,19 @@ bdm_ppc_fetch_registers (int regno)
      avoid asking for the mq register. */
   if (first_regno == last_regno)	/* only want one reg */
     {
-/*      printf("Asking for register %d\n", first_regno); */
+# if 0
+      printf("Asking for register %d\n", first_regno);
+# endif /* 0 */
 
       /* if asking for an invalid register */
-      if ((first_regno == gdbarch_tdep (current_gdbarch)->ppc_mq_regnum)
-          || (first_regno == gdbarch_tdep (current_gdbarch)->ppc_fpscr_regnum)
+      if ((first_regno == new_gdbarch_tdep(current_gdbarch)->ppc_mq_regnum)
+          || (first_regno == new_gdbarch_tdep(current_gdbarch)->ppc_fpscr_regnum)
 	  || ((first_regno >= tdep->ppc_fp0_regnum)
               && (first_regno < tdep->ppc_fp0_regnum + ppc_num_fprs)))
 	{
-/*          printf("invalid reg request!\n"); */
+# if 0
+          printf("invalid reg request!\n");
+# endif /* 0 */
 	  regcache_raw_supply (current_regcache, first_regno, NULL);
 	  return;		/* Unsupported register */
 	}
@@ -217,11 +223,10 @@ bdm_ppc_fetch_registers (int regno)
     internal_error (__FILE__, __LINE__,
                     _("ppc_bdm_fetch_registers: "
                     "'all registers' case not implemented"));
-
-#endif
+#endif /* 1 */
 #if 0
   regs = ocd_read_bdm_registers (first_bdm_regno, last_bdm_regno, &reglen);
-#endif
+#endif /* 0 */
 
   for (i = first_regno; i <= last_regno; i++)
     {
@@ -238,7 +243,7 @@ bdm_ppc_fetch_registers (int regno)
 	  regcache_raw_supply (current_regcache, i, regs + 4 * regoffset);
 	}
       else
-	regcache_raw_supply (current_regcache, i, NULL);	/* Unsupported register */
+	regcache_raw_supply(current_regcache, i, NULL); /* Unsupported register */
     }
 }
 
@@ -248,7 +253,7 @@ bdm_ppc_fetch_registers (int regno)
 static void
 bdm_ppc_store_registers (int regno)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(current_gdbarch);
   int i;
   int first_regno, last_regno;
   int first_bdm_regno, last_bdm_regno;
@@ -272,6 +277,10 @@ bdm_ppc_store_registers (int regno)
 
   if (first_bdm_regno == -1)
     return;			/* Unsupported register */
+  
+  if (last_bdm_regno == -1) {
+    ; /* ??? */
+  }
 
   /* FIXME: jimb/2004-05-04: I'm not sure how to adapt this code to
      processors that lack floating point registers, and I don't have
@@ -287,20 +296,22 @@ bdm_ppc_store_registers (int regno)
 
       /* only attempt to write if it's a valid ppc 8xx register */
       /* (need to avoid FP regs and MQ reg) */
-      if ((i != gdbarch_tdep (current_gdbarch)->ppc_mq_regnum) 
-          && (i != gdbarch_tdep (current_gdbarch)->ppc_fpscr_regnum) 
+      if ((i != new_gdbarch_tdep(current_gdbarch)->ppc_mq_regnum) 
+          && (i != new_gdbarch_tdep(current_gdbarch)->ppc_fpscr_regnum) 
           && ((i < tdep->ppc_fp0_regnum)
               || (i >= tdep->ppc_fp0_regnum + ppc_num_fprs)))
 	{
-/*          printf("write valid reg %d\n", bdm_regno); */
+#if 0
+          printf("write valid reg %d\n", bdm_regno);
+#endif /* 0 */
 	  ocd_write_bdm_registers (bdm_regno, deprecated_registers + DEPRECATED_REGISTER_BYTE (i), 4);
 	}
-/*
-   else if (i == gdbarch_tdep (current_gdbarch)->ppc_mq_regnum)
-   printf("don't write invalid reg %d (PPC_MQ_REGNUM)\n", bdm_regno);
-   else
-   printf("don't write invalid reg %d\n", bdm_regno);
- */
+#if 0
+      else if (i == new_gdbarch_tdep(current_gdbarch)->ppc_mq_regnum)
+	printf("don't write invalid reg %d (PPC_MQ_REGNUM)\n", bdm_regno);
+      else
+	printf("don't write invalid reg %d\n", bdm_regno);
+#endif /* 0 */
     }
 }
 
@@ -352,3 +363,5 @@ _initialize_bdm_ppc (void)
   init_bdm_ppc_ops ();
   add_target (&bdm_ppc_ops);
 }
+
+/* EOF */

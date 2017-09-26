@@ -1,4 +1,4 @@
-/* Ada Ravenscar thread support.
+/* ravenscar-thread.c: Ada Ravenscar thread support.
 
    Copyright (C) 2004-2013 Free Software Foundation, Inc.
 
@@ -30,6 +30,8 @@
 #include "gdbcmd.h"
 #include "top.h"
 #include "regcache.h"
+
+#include "gdb_assert.h"
 
 /* If non-null, ravenscar task support is enabled.  */
 static int ravenscar_task_support = 1;
@@ -158,7 +160,7 @@ get_running_thread_id (void)
   gdb_byte *buf;
   CORE_ADDR object_addr;
   struct type *builtin_type_void_data_ptr =
-    builtin_type (target_gdbarch ())->builtin_data_ptr;
+    get_builtin_type(target_gdbarch ())->builtin_data_ptr;
 
   if (!object_msym)
     return 0;
@@ -387,17 +389,18 @@ static struct cmd_list_element *show_ravenscar_list;
 /* Implement the "set ravenscar" prefix command.  */
 
 static void
-set_ravenscar_command (char *arg, int from_tty)
+set_ravenscar_command(const char *arg, int from_tty)
 {
   printf_unfiltered (_(\
 "\"set ravenscar\" must be followed by the name of a setting.\n"));
-  help_list (set_ravenscar_list, "set ravenscar ", -1, gdb_stdout);
+  help_list(set_ravenscar_list, "set ravenscar ", (enum command_class)-1,
+	    gdb_stdout);
 }
 
 /* Implement the "show ravenscar" prefix command.  */
 
 static void
-show_ravenscar_command (char *args, int from_tty)
+show_ravenscar_command(const char *args, int from_tty)
 {
   cmd_show_list (show_ravenscar_list, from_tty, "");
 }

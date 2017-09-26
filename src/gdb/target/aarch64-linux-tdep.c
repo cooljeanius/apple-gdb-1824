@@ -241,7 +241,7 @@ aarch64_linux_regset_from_core_section (struct gdbarch *gdbarch,
 					const char *sect_name,
 					size_t sect_size)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   if (strcmp (sect_name, ".reg") == 0
       && sect_size == AARCH64_LINUX_SIZEOF_GREGSET)
@@ -266,7 +266,7 @@ aarch64_linux_regset_from_core_section (struct gdbarch *gdbarch,
 static void
 aarch64_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->lowest_pc = 0x8000;
 

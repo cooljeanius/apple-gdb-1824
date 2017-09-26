@@ -585,7 +585,7 @@ extern initialize_file_ftype _initialize_hppa_linux_tdep;
 static void
 hppa_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* GNU/Linux is always ELF.  */
   tdep->is_elf = 1;

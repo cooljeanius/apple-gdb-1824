@@ -490,7 +490,7 @@ scan_dyntag (int dyntag, bfd *abfd, CORE_ADDR *ptr)
 	     gdb_byte ptr_buf[8];
 	     CORE_ADDR ptr_addr;
 
-	     ptr_type = builtin_type (target_gdbarch ())->builtin_data_ptr;
+	     ptr_type = get_builtin_type(target_gdbarch ())->builtin_data_ptr;
 	     ptr_addr = dyn_addr + (buf - bufstart) + arch_size / 8;
 	     if (target_read_memory (ptr_addr, ptr_buf, arch_size / 8) == 0)
 	       dyn_ptr = extract_typed_address (ptr_buf, ptr_type);

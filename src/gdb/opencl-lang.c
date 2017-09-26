@@ -816,7 +816,7 @@ evaluate_subexp_opencl (struct type *expect_type, struct expression *exp,
       arg1 = evaluate_subexp (type1, exp, pos, noside);
 
       if (noside == EVAL_SKIP)
-	return value_from_longest (builtin_type (exp->gdbarch)->
+	return value_from_longest(get_builtin_type(exp->gdbarch)->
 				   builtin_int, 1);
 
       return opencl_value_cast (type1, arg1);
@@ -828,7 +828,7 @@ evaluate_subexp_opencl (struct type *expect_type, struct expression *exp,
       arg1 = evaluate_subexp (type1, exp, pos, noside);
 
       if (noside == EVAL_SKIP)
-	return value_from_longest (builtin_type (exp->gdbarch)->
+	return value_from_longest(get_builtin_type(exp->gdbarch)->
 				   builtin_int, 1);
 
       return opencl_value_cast (type1, arg1);
@@ -846,7 +846,7 @@ evaluate_subexp_opencl (struct type *expect_type, struct expression *exp,
       arg2 = evaluate_subexp (value_type (arg1), exp, pos, noside);
 
       if (noside == EVAL_SKIP)
-	return value_from_longest (builtin_type (exp->gdbarch)->
+	return value_from_longest(get_builtin_type(exp->gdbarch)->
 				   builtin_int, 1);
 
       return opencl_relop (exp, arg1, arg2, op);
@@ -857,7 +857,7 @@ evaluate_subexp_opencl (struct type *expect_type, struct expression *exp,
       arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
 
       if (noside == EVAL_SKIP)
-	return value_from_longest (builtin_type (exp->gdbarch)->
+	return value_from_longest(get_builtin_type(exp->gdbarch)->
 				   builtin_int, 1);
 
       return opencl_logical_not (exp, arg1);
@@ -872,7 +872,7 @@ evaluate_subexp_opencl (struct type *expect_type, struct expression *exp,
 	{
 	  evaluate_subexp (NULL_TYPE, exp, pos, noside);
 
-	  return value_from_longest (builtin_type (exp->gdbarch)->
+	  return value_from_longest(get_builtin_type(exp->gdbarch)->
 				     builtin_int, 1);
 	}
       else
@@ -1026,7 +1026,7 @@ Cannot perform conditional operation on vectors with different sizes"));
 
 	if (noside == EVAL_SKIP)
 	  {
-	    return value_from_longest (builtin_type (exp->gdbarch)->
+	    return value_from_longest(get_builtin_type(exp->gdbarch)->
 				       builtin_int, 1);
 	  }
 	else if (TYPE_CODE (type1) == TYPE_CODE_ARRAY && TYPE_VECTOR (type1))

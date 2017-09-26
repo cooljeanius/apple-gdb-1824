@@ -43,7 +43,7 @@
 
 /* Prototypes for local functions */
 
-static int ocd_read_bytes (CORE_ADDR memaddr, char *myaddr, int len);
+static int ocd_read_bytes(CORE_ADDR memaddr, gdb_byte *myaddr, int len);
 
 static int ocd_start_remote (void *dummy);
 
@@ -256,7 +256,7 @@ ocd_start_remote (void *dummy)
    NAME is the filename used for communication.  */
 
 void
-ocd_open(char *name, int from_tty, enum ocd_target_type target_type,
+ocd_open(const char *name, int from_tty, enum ocd_target_type target_type,
 	 struct target_ops *ops)
 {
   if (name == 0)
@@ -322,7 +322,7 @@ device the OCD device is attached to (e.g. /dev/ttya)."));
    die when it hits one.  */
 
 void
-ocd_detach (char *args, int from_tty)
+ocd_detach(const char *args, int from_tty)
 {
   if (args)
     error (_("Argument given to \"detach\" when remotely debugging."));
@@ -585,7 +585,7 @@ ocd_prepare_to_store(void)
 static int write_mem_command = OCD_WRITE_MEM;
 
 int
-ocd_write_bytes (CORE_ADDR memaddr, char *myaddr, int len)
+ocd_write_bytes(CORE_ADDR memaddr, gdb_byte *myaddr, int len)
 {
   char buf[256 + 10];
   unsigned char *p;
@@ -660,7 +660,7 @@ ocd_write_bytes (CORE_ADDR memaddr, char *myaddr, int len)
    Returns number of bytes transferred, or 0 for error.  */
 
 static int
-ocd_read_bytes (CORE_ADDR memaddr, char *myaddr, int len)
+ocd_read_bytes(CORE_ADDR memaddr, gdb_byte *myaddr, int len)
 {
   char buf[256 + 10];
   unsigned char *p;
@@ -732,15 +732,15 @@ ocd_read_bytes (CORE_ADDR memaddr, char *myaddr, int len)
    is ignored.  */
 
 int
-ocd_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int should_write,
-		 struct mem_attrib *attrib, struct target_ops *target)
+ocd_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int should_write,
+		struct mem_attrib *attrib, struct target_ops *target)
 {
   int res;
 
   if (should_write)
-    res = ocd_write_bytes (memaddr, myaddr, len);
+    res = ocd_write_bytes(memaddr, myaddr, len);
   else
-    res = ocd_read_bytes (memaddr, myaddr, len);
+    res = ocd_read_bytes(memaddr, myaddr, len);
 
   return res;
 }
@@ -1046,7 +1046,7 @@ ocd_create_inferior (char *exec_file, char *args, char **env, int from_tty)
 }
 
 void
-ocd_load (char *args, int from_tty)
+ocd_load(const char *args, int from_tty)
 {
   generic_load (args, from_tty);
 
@@ -1069,13 +1069,12 @@ ocd_load (char *args, int from_tty)
 
 /* BDM (at least on CPU32) uses a different breakpoint: */
 int
-ocd_insert_breakpoint(CORE_ADDR addr, char *contents_cache)
+ocd_insert_breakpoint(CORE_ADDR addr, gdb_byte *contents_cache)
 {
   static char break_insn[] = BDM_BREAKPOINT;
   int val;
 
-  val = target_read_memory(addr, (gdb_byte *)contents_cache,
-			   sizeof(break_insn));
+  val = target_read_memory(addr, contents_cache, sizeof(break_insn));
 
   if (val == 0)
     val = target_write_memory(addr, (const gdb_byte *)break_insn,
@@ -1086,7 +1085,7 @@ ocd_insert_breakpoint(CORE_ADDR addr, char *contents_cache)
 
 /* */
 int
-ocd_remove_breakpoint(CORE_ADDR addr, char *contents_cache)
+ocd_remove_breakpoint(CORE_ADDR addr, gdb_byte *contents_cache)
 {
   static char break_insn[] = BDM_BREAKPOINT;
   int val;

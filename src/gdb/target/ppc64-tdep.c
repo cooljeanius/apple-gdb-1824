@@ -241,7 +241,7 @@ ppc64_standard_linkage1_target (struct frame_info *frame,
 				CORE_ADDR pc, unsigned int *insn)
 {
   struct gdbarch *gdbarch = get_frame_arch (frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* The address of the function descriptor this linkage function
      references.  */
@@ -260,7 +260,7 @@ ppc64_standard_linkage2_target (struct frame_info *frame,
 				CORE_ADDR pc, unsigned int *insn)
 {
   struct gdbarch *gdbarch = get_frame_arch (frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* The address of the function descriptor this linkage function
      references.  */
@@ -279,7 +279,7 @@ ppc64_standard_linkage3_target (struct frame_info *frame,
 				CORE_ADDR pc, unsigned int *insn)
 {
   struct gdbarch *gdbarch = get_frame_arch (frame);
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   /* The address of the function descriptor this linkage function
      references.  */

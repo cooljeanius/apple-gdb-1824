@@ -171,10 +171,12 @@ tilegx_register_name (struct gdbarch *gdbarch, int regnum)
 static struct type *
 tilegx_register_type (struct gdbarch *gdbarch, int regnum)
 {
-  if (regnum == TILEGX_PC_REGNUM)
-    return builtin_type (gdbarch)->builtin_func_ptr;
-  else
-    return builtin_type (gdbarch)->builtin_uint64;
+  if (regnum == TILEGX_PC_REGNUM) {
+    return get_builtin_type(gdbarch)->builtin_func_ptr;
+  } else {
+    return get_builtin_type(gdbarch)->builtin_uint64;
+  }
+  return NULL; /*NOTREACHED*/
 }
 
 /* This is the implementation of gdbarch method dwarf2_reg_to_regnum.  */
@@ -287,11 +289,11 @@ tilegx_push_dummy_call (struct gdbarch *gdbarch,
 			CORE_ADDR sp, int struct_return,
 			CORE_ADDR struct_addr)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   CORE_ADDR stack_dest = sp;
   int argreg = TILEGX_R0_REGNUM;
   int i, j;
-  int typelen, slacklen, alignlen;
+  int typelen, slacklen;
   static const gdb_byte four_zero_words[16] = { 0 };
 
   /* If struct_return is 1, then the struct return address will
@@ -317,7 +319,8 @@ tilegx_push_dummy_call (struct gdbarch *gdbarch,
 	  /* ISSUE: Why special handling for "typelen = 4x + 1"?
 	     I don't ever see "typelen" values except 4 and 8.	*/
 	  int n = (typelen - j == 1) ? 1 : tilegx_reg_size;
-	  ULONGEST w = extract_unsigned_integer (val + j, n, byte_order);
+	  ULONGEST w = extract_unsigned_integer_with_byte_order(val + j, n,
+								byte_order);
 
 	  regcache_cooked_write_unsigned (regcache, argreg++, w);
 	}
@@ -375,12 +378,14 @@ tilegx_analyze_prologue (struct gdbarch* gdbarch,
 			 struct tilegx_frame_cache *cache,
 			 struct frame_info *next_frame)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   CORE_ADDR next_addr;
   CORE_ADDR prolog_end = end_addr;
+#ifdef ALLOW_UNUSED_VARIABLES
   ULONGEST inst, inst2;
   LONGEST offset;
   int regnum;
+#endif /* ALLOW_UNUSED_VARIABLES */
   gdb_byte instbuf[32 * TILEGX_BUNDLE_SIZE_IN_BYTES];
   CORE_ADDR instbuf_start;
   unsigned int instbuf_size;
@@ -445,8 +450,9 @@ tilegx_analyze_prologue (struct gdbarch* gdbarch,
 
       reverse_frame_valid = 0;
 
-      bundle = extract_unsigned_integer (&instbuf[next_addr - instbuf_start],
-					 8, byte_order);
+      bundle =
+	extract_unsigned_integer_with_byte_order(&instbuf[next_addr - instbuf_start],
+						 8, byte_order);
 
       num_insns = parse_insn_tilegx (bundle, next_addr, decoded);
 
@@ -783,11 +789,13 @@ tilegx_in_function_epilogue_p (struct gdbarch *gdbarch, CORE_ADDR pc)
 
   if (find_pc_partial_function (pc, NULL, &func_addr, &func_end))
     {
+#ifdef ALLOW_UNUSED_VARIABLES
       ULONGEST inst, inst2;
+#endif /* ALLOW_UNUSED_VARIABLES */
       CORE_ADDR addr = func_end - TILEGX_BUNDLE_SIZE_IN_BYTES;
 
       /* FIXME: Find the actual epilogue.  */
-      /* HACK: Just assume the final bundle is the "ret" instruction".  */
+      /* HACK: Just assume the final bundle is the "ret" instruction.  */
       if (pc > addr)
 	return 1;
     }
@@ -799,8 +807,8 @@ tilegx_in_function_epilogue_p (struct gdbarch *gdbarch, CORE_ADDR pc)
 static int
 tilegx_get_longjmp_target (struct frame_info *frame, CORE_ADDR *pc)
 {
-  struct gdbarch *gdbarch = get_frame_arch (frame);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  struct gdbarch *gdbarch = get_frame_arch(frame);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   CORE_ADDR jb_addr;
   gdb_byte buf[8];
 
@@ -869,10 +877,9 @@ tilegx_frame_cache (struct frame_info *this_frame, void **this_cache)
   struct gdbarch *gdbarch = get_frame_arch (this_frame);
   struct tilegx_frame_cache *cache;
   CORE_ADDR current_pc;
-  int i;
 
   if (*this_cache)
-    return *this_cache;
+    return (struct tilegx_frame_cache *)*this_cache;
 
   cache = FRAME_OBSTACK_ZALLOC (struct tilegx_frame_cache);
   *this_cache = cache;

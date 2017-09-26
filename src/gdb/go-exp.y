@@ -67,7 +67,7 @@
 #include "charset.h"
 #include "block.h"
 
-#define parse_type builtin_type (parse_gdbarch)
+#define parse_type get_builtin_type(parse_gdbarch)
 
 /* Remap normal yacc parser interface names (yyparse, yylex, yyerror, etc),
    as well as gratuitiously global symbol names, so we can have multiple
@@ -684,7 +684,7 @@ parse_go_float (struct gdbarch *gdbarch, const char *p, int len,
 		DOUBLEST *d, struct type **t)
 {
   int result = parse_c_float (gdbarch, p, len, d, t);
-  const struct builtin_type *builtin_types = builtin_type (gdbarch);
+  const struct builtin_type *builtin_types = get_builtin_type(gdbarch);
   const struct builtin_go_type *builtin_go_types = builtin_go_type (gdbarch);
 
   if (*t == builtin_types->builtin_float)

@@ -238,7 +238,7 @@ gdbscm_arch_builtin_type (SCM self, const char *func_name)
     = arscm_get_arch_smob_arg_unsafe (self, SCM_ARG1, func_name);
   struct gdbarch *gdbarch = a_smob->gdbarch;
 
-  return builtin_type (gdbarch);
+  return get_builtin_type(gdbarch);
 }
 
 /* (arch-void-type <gdb:arch>) -> <gdb:type> */

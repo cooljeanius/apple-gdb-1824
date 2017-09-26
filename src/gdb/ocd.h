@@ -89,12 +89,12 @@ enum ocd_target_type
     OCD_TARGET_IBM_PPC = 0x3
   };				/* IBM PPC 4xx */
 
-void ocd_open (char *name, int from_tty, enum ocd_target_type,
-	       struct target_ops *ops);
+void ocd_open(const char *name, int from_tty, enum ocd_target_type,
+	      struct target_ops *ops);
 
-void ocd_close (int quitting);
+void ocd_close(int quitting);
 
-void ocd_detach (char *args, int from_tty);
+void ocd_detach(const char *args, int from_tty);
 
 void ocd_resume (ptid_t ptid, int step, enum target_signal siggnal);
 
@@ -105,10 +105,10 @@ void ocd_stop (void);
 void ocd_files_info (struct target_ops *ignore);
 
 
-int ocd_xfer_memory (CORE_ADDR memaddr, char *myaddr,
-		     int len, int should_write,
-		     struct mem_attrib *attrib,
-		     struct target_ops *target);
+int ocd_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,
+		    int len, int should_write,
+		    struct mem_attrib *attrib,
+		    struct target_ops *target);
 
 void ocd_mourn (void);
 
@@ -121,7 +121,7 @@ void ocd_error(const char *s, int error_code);
 
 void ocd_kill(void);
 
-void ocd_load(char *args, int from_tty);
+void ocd_load(const char *args, int from_tty);
 
 unsigned char *ocd_read_bdm_registers (int first_bdm_regno,
 				       int last_bdm_regno, int *reglen);
@@ -135,10 +135,10 @@ void ocd_write_bdm_register (int bdm_regno, CORE_ADDR reg);
 
 int ocd_wait (void);
 
-int ocd_insert_breakpoint (CORE_ADDR addr, char *contents_cache);
-int ocd_remove_breakpoint (CORE_ADDR addr, char *contents_cache);
+int ocd_insert_breakpoint(CORE_ADDR addr, gdb_byte *contents_cache);
+int ocd_remove_breakpoint(CORE_ADDR addr, gdb_byte *contents_cache);
 
-int ocd_write_bytes (CORE_ADDR memaddr, char *myaddr, int len);
+int ocd_write_bytes(CORE_ADDR memaddr, gdb_byte *myaddr, int len);
 
 #endif /* OCD_H */
 

@@ -114,7 +114,7 @@ arm_wince_skip_main_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 static void
 arm_wince_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   tdep->arm_breakpoint = arm_wince_le_breakpoint;
   tdep->arm_breakpoint_size = sizeof (arm_wince_le_breakpoint);

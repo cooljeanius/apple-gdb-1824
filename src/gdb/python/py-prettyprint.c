@@ -198,7 +198,7 @@ print_string_repr (PyObject *printer, const char *hint,
 	  int len = PyString_Size (string);
 	  
 	  if (hint && !strcmp (hint, "string"))
-	    LA_PRINT_STRING (stream, builtin_type (gdbarch)->builtin_char,
+	    LA_PRINT_STRING (stream, get_builtin_type(gdbarch)->builtin_char,
 			     output, len, 0, options);
 	  else
 	    fputs_filtered (output, stream);

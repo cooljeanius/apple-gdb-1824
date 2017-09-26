@@ -132,11 +132,11 @@ static struct type *
 rx_register_type (struct gdbarch *gdbarch, int reg_nr)
 {
   if (reg_nr == RX_PC_REGNUM)
-    return builtin_type (gdbarch)->builtin_func_ptr;
+    return get_builtin_type(gdbarch)->builtin_func_ptr;
   else if (reg_nr == RX_ACC_REGNUM)
-    return builtin_type (gdbarch)->builtin_unsigned_long_long;
+    return get_builtin_type(gdbarch)->builtin_unsigned_long_long;
   else
-    return builtin_type (gdbarch)->builtin_unsigned_long;
+    return get_builtin_type(gdbarch)->builtin_unsigned_long;
 }
 
 
@@ -786,7 +786,7 @@ rx_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
        arches != NULL;
        arches = gdbarch_list_lookup_by_info (arches->next, &info))
     {
-      if (gdbarch_tdep (arches->gdbarch)->elf_flags != elf_flags)
+      if (new_gdbarch_tdep(arches->gdbarch)->elf_flags != elf_flags)
 	continue;
 
       return arches->gdbarch;

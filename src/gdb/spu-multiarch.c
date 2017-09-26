@@ -1,4 +1,4 @@
-/* Cell SPU GNU/Linux multi-architecture debugging support.
+/* spu-multiarch.c: Cell SPU GNU/Linux multi-architecture debugging support.
    Copyright (C) 2009 Free Software Foundation, Inc.
 
    Contributed by Ulrich Weigand <uweigand@de.ibm.com>.
@@ -62,8 +62,10 @@ parse_spufs_run (ptid_t ptid, int *fd, CORE_ADDR *addr)
   enum bfd_endian byte_order = gdbarch_byte_order (target_gdbarch);
   struct gdbarch_tdep *tdep;
   struct regcache *regcache;
-  char buf[4];
+  gdb_byte buf[4];
+#ifdef ALLOW_UNUSED_VARIABLES
   CORE_ADDR pc;
+#endif /* ALLOW_UNUSED_VARIABLES */
   ULONGEST regval;
 
   /* If we're not on PPU, there's nothing to detect.  */
@@ -72,13 +74,13 @@ parse_spufs_run (ptid_t ptid, int *fd, CORE_ADDR *addr)
 
   /* Get PPU-side registers.  */
   regcache = get_thread_arch_regcache (ptid, target_gdbarch);
-  tdep = gdbarch_tdep (target_gdbarch);
+  tdep = new_gdbarch_tdep(target_gdbarch);
 
   /* Fetch instruction preceding current NIP.  */
   if (target_read_memory (regcache_read_pc (regcache) - 4, buf, 4) != 0)
     return 0;
   /* It should be a "sc" instruction.  */
-  if (extract_unsigned_integer (buf, 4, byte_order) != INSTR_SC)
+  if (extract_unsigned_integer_with_byte_order(buf, 4, byte_order) != INSTR_SC)
     return 0;
   /* System call number should be NR_spu_run.  */
   regcache_cooked_read_unsigned (regcache, tdep->ppc_gp0_regnum, &regval);
@@ -102,7 +104,7 @@ spu_gdbarch (int spufs_fd)
   info.bfd_arch_info = bfd_lookup_arch (bfd_arch_spu, bfd_mach_spu);
   info.byte_order = BFD_ENDIAN_BIG;
   info.osabi = GDB_OSABI_LINUX;
-  info.tdep_info = (void *) &spufs_fd;
+  info.tdep_info = (struct gdbarch_tdep_info *)&spufs_fd;
   return gdbarch_find_by_info (info);
 }
 
@@ -142,9 +144,9 @@ static void
 spu_fetch_registers (struct target_ops *ops,
 		     struct regcache *regcache, int regno)
 {
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
-  struct target_ops *ops_beneath = find_target_beneath (ops);
+  struct gdbarch *gdbarch = get_regcache_arch(regcache);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
+  struct target_ops *ops_beneath = find_target_beneath(ops);
   int spufs_fd;
   CORE_ADDR spufs_addr;
 
@@ -166,15 +168,15 @@ spu_fetch_registers (struct target_ops *ops,
   /* The ID register holds the spufs file handle.  */
   if (regno == -1 || regno == SPU_ID_REGNUM)
     {
-      char buf[4];
-      store_unsigned_integer (buf, 4, byte_order, spufs_fd);
-      regcache_raw_supply (regcache, SPU_ID_REGNUM, buf);
+      gdb_byte buf[4];
+      store_unsigned_integer_with_byte_order(buf, 4, spufs_fd, byte_order);
+      regcache_raw_supply(regcache, SPU_ID_REGNUM, buf);
     }
 
   /* The NPC register is found in PPC memory at SPUFS_ADDR.  */
   if (regno == -1 || regno == SPU_PC_REGNUM)
     {
-      char buf[4];
+      gdb_byte buf[4];
 
       if (target_read (ops_beneath, TARGET_OBJECT_MEMORY, NULL,
 		       buf, spufs_addr, sizeof buf) == sizeof buf)
@@ -184,7 +186,8 @@ spu_fetch_registers (struct target_ops *ops,
   /* The GPRs are found in the "regs" spufs file.  */
   if (regno == -1 || (regno >= 0 && regno < SPU_NUM_GPRS))
     {
-      char buf[16 * SPU_NUM_GPRS], annex[32];
+      gdb_byte buf[16 * SPU_NUM_GPRS];
+      char annex[32];
       int i;
 
       xsnprintf (annex, sizeof annex, "%d/regs", spufs_fd);
@@ -223,7 +226,7 @@ spu_store_registers (struct target_ops *ops,
   /* The NPC register is found in PPC memory at SPUFS_ADDR.  */
   if (regno == -1 || regno == SPU_PC_REGNUM)
     {
-      char buf[4];
+      gdb_byte buf[4];
       regcache_raw_collect (regcache, SPU_PC_REGNUM, buf);
 
       target_write (ops_beneath, TARGET_OBJECT_MEMORY, NULL,
@@ -233,7 +236,8 @@ spu_store_registers (struct target_ops *ops,
   /* The GPRs are found in the "regs" spufs file.  */
   if (regno == -1 || (regno >= 0 && regno < SPU_NUM_GPRS))
     {
-      char buf[16 * SPU_NUM_GPRS], annex[32];
+      gdb_byte buf[16 * SPU_NUM_GPRS];
+      char annex[32];
       int i;
 
       for (i = 0; i < SPU_NUM_GPRS; i++)
@@ -382,8 +386,9 @@ init_spu_ops (void)
   spu_ops.to_magic = OPS_MAGIC;
 }
 
+extern void _initialize_spu_multiarch(void); /* -Wmissing-prototypes */
 void
-_initialize_spu_multiarch (void)
+_initialize_spu_multiarch(void)
 {
   /* Install ourselves on the target stack.  */
   init_spu_ops ();
@@ -395,3 +400,4 @@ _initialize_spu_multiarch (void)
   observer_attach_solib_unloaded (spu_multiarch_solib_unloaded);
 }
 
+/* EOF */

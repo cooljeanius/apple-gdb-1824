@@ -240,7 +240,7 @@ struct rl78_prologue
 static struct type *
 rl78_register_type (struct gdbarch *gdbarch, int reg_nr)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
   if (reg_nr == RL78_PC_REGNUM)
     return tdep->rl78_code_pointer;
@@ -1104,7 +1104,7 @@ rl78_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
        arches != NULL;
        arches = gdbarch_list_lookup_by_info (arches->next, &info))
     {
-      if (gdbarch_tdep (arches->gdbarch)->elf_flags != elf_flags)
+      if (new_gdbarch_tdep(arches->gdbarch)->elf_flags != elf_flags)
 	continue;
 
       return arches->gdbarch;

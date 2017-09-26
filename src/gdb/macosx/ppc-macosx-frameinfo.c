@@ -989,7 +989,7 @@ ppc_frame_saved_regs (struct frame_info *next_frame, void **this_cache)
       for (i = props->saved_gpr; i < 32; i++)
         {
           int gpr = PPC_MACOSX_FIRST_GP_REGNUM + i;
-          int wordsize = (gdbarch_tdep (current_gdbarch))->wordsize;
+          int wordsize = (new_gdbarch_tdep(current_gdbarch))->wordsize;
           /* Need to use the wordsize here rather than the register
              size since the G5 always has 8 byte registers, but 32
              bit apps only store into the lower wordsize.  */

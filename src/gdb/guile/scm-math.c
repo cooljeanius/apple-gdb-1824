@@ -215,7 +215,7 @@ vlscm_binop (enum valscm_binary_opcode opcode, SCM x, SCM y,
 	      {
 		/* A ptrdiff_t for the target would be preferable here.  */
 		res_val
-		  = value_from_longest (builtin_type (gdbarch)->builtin_long,
+		  = value_from_longest(get_builtin_type(gdbarch)->builtin_long,
 					value_ptrdiff (arg1, arg2));
 	      }
 	    else if (TYPE_CODE (ltype) == TYPE_CODE_PTR
@@ -641,7 +641,7 @@ static struct value *
 vlscm_convert_number (const char *func_name, int obj_arg_pos, SCM obj,
 		      struct gdbarch *gdbarch, SCM *except_scmp)
 {
-  const struct builtin_type *bt = builtin_type (gdbarch);
+  const struct builtin_type *bt = get_builtin_type(gdbarch);
 
   /* One thing to keep in mind here is that we are interested in the
      target's representation of OBJ, not the host's.  */
@@ -696,7 +696,7 @@ vlscm_convert_bytevector (SCM bv, struct type *type, SCM type_scm,
 
   if (type == NULL)
     {
-      type = builtin_type (gdbarch)->builtin_uint8;
+      type = get_builtin_type(gdbarch)->builtin_uint8;
       type = lookup_array_range_type (type, 0, length);
       make_vector_type (type);
     }

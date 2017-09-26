@@ -35,13 +35,13 @@
    GDB (which uses target arithmetic).  */
 
 /* Python's integer type corresponds to C's long type.  */
-#define builtin_type_pyint builtin_type (python_gdbarch)->builtin_long
+#define builtin_type_pyint get_builtin_type(python_gdbarch)->builtin_long
 
 /* Python's float type corresponds to C's double type.  */
-#define builtin_type_pyfloat builtin_type (python_gdbarch)->builtin_double
+#define builtin_type_pyfloat get_builtin_type(python_gdbarch)->builtin_double
 
 /* Python's long type corresponds to C's long long type.  */
-#define builtin_type_pylong builtin_type (python_gdbarch)->builtin_long_long
+#define builtin_type_pylong get_builtin_type(python_gdbarch)->builtin_long_long
 
 #define builtin_type_pybool \
   language_bool_type (python_language, python_gdbarch)
