@@ -1249,6 +1249,24 @@ proc default_gdb_run { args } {
     return 0
 }
 
+# Examine the output of compilation to determine whether compilation
+# failed or not.  If it failed determine whether it is due to missing
+# compiler or due to compiler error.  Report pass, fail or unsupported
+# as appropriate
+
+proc gdb_compile_test {src output} {
+    if { $output == "" } {
+       pass "compilation [file tail $src]"
+    } elseif { [regexp {^[a-zA-Z_0-9]+: Cannot find [^ ]+\.$} $output] } {
+       unsupported "compilation [file tail $src]"
+    } elseif { [regexp {.*: command not found[\r|\n]*$} $output] } {
+       unsupported "compilation [file tail $src]"
+    } else {
+       verbose -log "compilation failed: $output" 2
+       fail "compilation [file tail $src]"
+    }
+}
+
 # Return a 1 for configurations for which we don't even want to try to
 # test C++.
 
@@ -1274,6 +1292,21 @@ proc skip_cplus_tests {} {
 # Return a 1 if I don't even want to try to test FORTRAN.
 
 proc skip_fortran_tests {} {
+    return 0
+}
+
+# Return a 1 if I don't even want to try to test ada.
+
+proc skip_ada_tests {} {
+    if { [istarget "*-apple-darwin*"] } {
+	return 1
+    }
+    return 0
+}
+
+# Return a 1 if I don't even want to try to test java.
+
+proc skip_java_tests {} {
     return 0
 }
 
@@ -1633,15 +1666,15 @@ proc gdb_compile {source dest type options} {
     if {$gdb_test_apple_dsym > 0} {
 		catch { 
 			# if $gdb_test_apple_dsym is non zero, run dsymutil 
-                        # on the dest file
+			# on the dest file
 
 			set ret [ remote_exec host "dsymutil \"${dest}\"" ]
 	  	
 			# strip the debug map if $gdb_test_apple_dsym is 
-                        # greater than 1 by first copying the original file 
-                        # by appending "_unstripped" to the $dest name and 
-                        # then stripping this new file and placing the result 
-                        # back into $dest
+			# greater than 1 by first copying the original file
+			# by appending "_unstripped" to the $dest name and
+			# then stripping this new file and placing the result
+			# back into $dest
 			if {$gdb_test_apple_dsym > 1} {
 				set dest_unstripped "${dest}_unstripped"
 				set ret [ remote_exec host "mv -f \"${dest}\" \"${dest_unstripped}\"" ]
@@ -2029,8 +2062,15 @@ proc gdb_continue { function } {
 
 proc default_gdb_init { args } {
     global gdb_wrapper_initialized
-    
+	global gdb_wrapper_target
+    global gdb_test_file_name
+	global cleanfiles
+
+	set cleanfiles {}
+
     gdb_clear_suppressed;
+
+	set gdb_test_file_name [file rootname [file tail [lindex $args 0]]]
 
     # Make sure that the wrapper is rebuilt
     # with the appropriate multilib option.
@@ -2053,6 +2093,70 @@ proc default_gdb_init { args } {
 	set gdb_prompt [target_info gdb_prompt];
     } else {
 	set gdb_prompt "\\(gdb\\)"
+    }
+}
+
+# Turn BASENAME into a full file name in the standard output
+# directory.
+
+proc standard_output_file {basename} {
+    global objdir subdir
+
+    return $objdir/$subdir/$basename
+}
+
+# Set 'testfile', 'srcfile', and 'binfile'.
+#
+# ARGS is a list of source file specifications.
+# Without any arguments, the .exp file's base name is used to
+# compute the source file name.  The ".c" extension is added in this case.
+# If ARGS is not empty, each entry is a source file specification.
+# If the specification starts with a ".", it is treated as a suffix
+# to append to the .exp file's base name.
+# If the specification is the empty string, it is treated as if it
+# were ".c".
+# Otherwise it is a file name.
+# The first file in the list is used to set the 'srcfile' global.
+# Each subsequent name is used to set 'srcfile2', 'srcfile3', etc.
+#
+# Most tests should call this without arguments.
+#
+# If a completely different binary file name is needed, then it
+# should be handled in the .exp file with a suitable comment.
+
+proc standard_testfile {args} {
+    global gdb_test_file_name
+    global objdir subdir
+
+    # Outputs.
+    global testfile binfile
+
+    set testfile $gdb_test_file_name
+    set binfile [standard_output_file ${testfile}]
+
+    if {[llength $args] == 0} {
+	set args .c
+    }
+
+    set suffix ""
+    foreach arg $args {
+	set varname srcfile$suffix
+	global $varname
+
+	# Handle an extension.
+	if {$arg == ""} {
+	    set arg $testfile.c
+	} elseif {[string range $arg 0 0] == "."} {
+	    set arg $testfile$arg
+	}
+
+	set $varname $arg
+
+	if {$suffix == ""} {
+	    set suffix 2
+	} else {
+	    incr suffix
+	}
     }
 }
 

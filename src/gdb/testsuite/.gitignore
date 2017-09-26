@@ -28,3 +28,4 @@ conf*/*.awk
 cell*.c
 cell*-spu.c
 !README
+gdb_cmd

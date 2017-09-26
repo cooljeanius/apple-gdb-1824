@@ -937,9 +937,9 @@ further debugging may prove unreliable.", file, line, problem->name, msg);
     {
     case AUTO_BOOLEAN_AUTO:
       /* Default (yes/batch case) is to quit GDB.  When in batch mode
-         this lessens the likelhood of GDB going into an infinate
+         this lessens the likelhood of GDB going into an infinite
          loop.  */
-      quit_p = query(_("%s\nQuit this debugging session? "), reason);
+      quit_p = yquery(_("%s\nQuit this debugging session? "), reason);
       break;
     case AUTO_BOOLEAN_TRUE:
       quit_p = 1;
