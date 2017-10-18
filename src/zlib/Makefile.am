@@ -9,14 +9,14 @@ TEXINFO_TEX = ../texinfo/texinfo.tex
 ACLOCAL_AMFLAGS = -I m4 -I.. -I../config --install
 
 ## configure should subst HOST_ARCHITECTURE for us:
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+C_ARCHFLAGS = @C_ARCHFLAGS@
 CXX_ARCHFLAGS = $(C_ARCHFLAGS)
 AM_CFLAGS = $(C_ARCHFLAGS) $(WARN_CFLAGS) $(WARN_PEDANTIC)
 AM_CXXFLAGS = $(CXX_ARCHFLAGS)
 
 ## likewise with the other archflags:
-C_BUILDARCHFLAGS = -arch $(BUILD_ARCHITECTURE)
-C_TARGARCHFLAGS = -arch $(TARGET_ARCHITECTURE)
+C_BUILDARCHFLAGS = @C_BUILDARCHFLAGS@
+C_TARGARCHFLAGS = @C_TARGARCHFLAGS@
 
 ZLIB_SOURCES = adler32.c compress.c crc32.c crc32.h deflate.c \
 deflate.h gzguts.h gzread.c gzclose.c gzwrite.c gzlib.c \

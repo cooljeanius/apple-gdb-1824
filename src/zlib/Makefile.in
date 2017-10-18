@@ -277,6 +277,9 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+C_ARCHFLAGS = @C_ARCHFLAGS@
+C_BUILDARCHFLAGS = @C_BUILDARCHFLAGS@
+C_TARGARCHFLAGS = @C_TARGARCHFLAGS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -404,12 +407,9 @@ AUTOMAKE_OPTIONS = 1.11.6 foreign dejagnu no-dist no-installinfo
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 TEXINFO_TEX = ../texinfo/texinfo.tex
 ACLOCAL_AMFLAGS = -I m4 -I.. -I../config --install
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 CXX_ARCHFLAGS = $(C_ARCHFLAGS)
 AM_CFLAGS = $(C_ARCHFLAGS) $(WARN_CFLAGS) $(WARN_PEDANTIC)
 AM_CXXFLAGS = $(CXX_ARCHFLAGS)
-C_BUILDARCHFLAGS = -arch $(BUILD_ARCHITECTURE)
-C_TARGARCHFLAGS = -arch $(TARGET_ARCHITECTURE)
 ZLIB_SOURCES = adler32.c compress.c crc32.c crc32.h deflate.c \
 deflate.h gzguts.h gzread.c gzclose.c gzwrite.c gzlib.c \
 infback.c inffast.c inffast.h inffixed.h inflate.c \

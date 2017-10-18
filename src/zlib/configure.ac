@@ -75,7 +75,23 @@ AC_ARG_WITH([system-zlib],
 GCC_NO_EXECUTABLES
 
 AC_EXEEXT
+AC_USE_SYSTEM_EXTENSIONS
 AC_SYS_LARGEFILE
+if test -n "${BUILD_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${BUILD_ARCHITECTURE}"],
+                           [C_BUILDARCHFLAGS])
+  AC_SUBST([C_BUILDARCHFLAGS])
+fi
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],
+                           [C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])
+fi
+if test -n "${TARGET_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${TARGET_ARCHITECTURE}"],
+                           [C_TARGARCHFLAGS])
+  AC_SUBST([C_TARGARCHFLAGS])
+fi
 
 # Checks for programs.
 if test "${ARFLAGS}" = "-o"; then
