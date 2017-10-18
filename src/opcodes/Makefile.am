@@ -44,7 +44,7 @@ HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
 ## not strictly necessary, but goes with the previous:
 TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 ## use the host one, because that is the one that matters:
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+C_ARCHFLAGS = @C_ARCHFLAGS@
 
 ## APPLE LOCAL: WARN_CFLAGS not handled by automake?
 ## (yes they are, actually... not sure what was going wrong for Apple...)
