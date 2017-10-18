@@ -121,7 +121,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/gettext-sister.m4 \
 	$(top_srcdir)/../config/zlib.m4 $(top_srcdir)/../libtool.m4 \
 	$(top_srcdir)/../gettext.m4 \
 	$(top_srcdir)/../config/ag_macros.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/../config/warnings.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -294,6 +294,7 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 DATADIRNAME = @DATADIRNAME@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -474,7 +475,6 @@ INTLDIR = $(srcdir)/../intl
 MKDEP = gcc -MM
 PATH_TO_MOVEIFCHANGE = $(srcdir)/../move-if-change
 RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_WARN_CFLAGS = -Wall $(WARN_WRITE_STRINGS)
 AM_CFLAGS = $(WARN_CFLAGS) $(WARN_WRITE_STRINGS) $(C_ARCHFLAGS)
 AM_WARNFLAGS = $(AM_WARN_CFLAGS) $(WARN_WRITE_STRINGS)

@@ -326,7 +326,10 @@ size_t strnlen(const char *, size_t);
 #if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3)) && \
     !defined(NO_POISON) && !defined(FLEX_SCANNER)
 /* libiberty provides replacements: */
-# pragma GCC poison strdup memdup strerror atexit exit
+# pragma GCC poison memdup strerror atexit exit
+# ifndef strdup
+#  pragma GCC poison strdup
+# endif /* !strdup */
 # ifndef strndup
 #  pragma GCC poison strndup
 # endif /* !strndup */
