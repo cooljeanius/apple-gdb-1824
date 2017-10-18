@@ -4,6 +4,7 @@ dnl#
 
 AC_PREREQ([2.59])
 m4_include([version.m4])
+m4_include([../config/warnings.m4])
 AC_INIT([bfd],[2.16.91],[jingham@apple.com])
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory.
@@ -38,6 +39,10 @@ if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
     AC_SUBST([BUILD_ARCHITECTURE])dnl
     ## (just in case)
   fi
+fi
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])
 fi
 
 # Automake:

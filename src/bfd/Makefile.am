@@ -67,7 +67,7 @@ HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
 ## not strictly necessary, but goes with the previous:
 TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 ## use the host one, because that is the one that matters:
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+C_ARCHFLAGS = @C_ARCHFLAGS@
 
 WARN_CFLAGS = @WARN_CFLAGS@
 NO_WERROR = @NO_WERROR@

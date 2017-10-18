@@ -124,7 +124,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_gnu_make.m4 \
 	$(top_srcdir)/../bfd/bfd.m4 $(top_srcdir)/../bfd/warning.m4 \
 	$(top_srcdir)/../config/zlib.m4 $(top_srcdir)/../libtool.m4 \
 	$(top_srcdir)/../gettext.m4 $(top_srcdir)/version.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/../config/warnings.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -326,6 +326,7 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+C_ARCHFLAGS = @C_ARCHFLAGS@
 DATADIRNAME = @DATADIRNAME@
 DEBUGDIR = @DEBUGDIR@
 DEFS = @DEFS@
@@ -543,7 +544,6 @@ libbfddir = @bfdlibdir@
 libbfdincludedir = @bfdincludedir@
 my_bfdlib_LIBTOOL_ARCHIVE = libbfd.la
 libbfd_LTLIBRARIES = libbfd.la
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(WARN_CFLAGS) $(WARN_WRITE_STRINGS) $(C_ARCHFLAGS)
 AM_DEFS = $(WARN_DEFS)
 MY_AM_CPPFLAGS_EXTRA = -DBINDIR='"$(bindir)"'

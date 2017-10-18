@@ -125,7 +125,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_gnu_make.m4 \
 	$(top_srcdir)/../bfd/bfd.m4 $(top_srcdir)/../bfd/warning.m4 \
 	$(top_srcdir)/../config/zlib.m4 $(top_srcdir)/../libtool.m4 \
 	$(top_srcdir)/../gettext.m4 $(top_srcdir)/version.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/../config/warnings.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(noinst_HEADERS)
@@ -314,6 +314,7 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+C_ARCHFLAGS = @C_ARCHFLAGS@
 DATADIRNAME = @DATADIRNAME@
 DEBUGDIR = @DEBUGDIR@
 DEFS = @DEFS@

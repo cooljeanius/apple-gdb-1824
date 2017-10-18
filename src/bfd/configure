@@ -726,7 +726,6 @@ NO_WERROR
 WARN_LDFLAGS
 WARN_DEFS
 WARN_CFLAGS_FOR_BUILD
-WARN_CFLAGS
 acl_cv_wl
 REPORT_BUGS_TEXI
 REPORT_BUGS_TO
@@ -816,6 +815,8 @@ am__isrc
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+C_ARCHFLAGS
+WARN_CFLAGS
 BUILD_ARCHITECTURE
 HOST_ARCHITECTURE
 EGREP
@@ -5183,6 +5184,83 @@ if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
     export BUILD_ARCHITECTURE="${build_cpu}"
         ## (just in case)
   fi
+fi
+if test -n "${HOST_ARCHITECTURE}"; then
+  ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+C_ARCHFLAGS=""
+if test "x${GCC}" = "xyes" && test "x${WERROR_CFLAGS}" = "x"; then
+  WERROR_CFLAGS="-Werror"
+fi
+save_CFLAGS="${CFLAGS}"
+for real_option in "-arch ${HOST_ARCHITECTURE}"; do
+  # Do the check with the no- prefix removed since gcc silently accepts
+  # any -Wno-* option on purpose:
+  case ${real_option} in
+    -Wno-*) option=-W`expr x${real_option} : 'x-Wno-\(.*\)'` ;;
+    *) option="${real_option}" ;;
+  esac
+  as_acx_Woption=`$as_echo "acx_cv_prog_cc_warning_$option" | $as_tr_sh`
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ${CC} supports ${option}" >&5
+$as_echo_n "checking whether ${CC} supports ${option}... " >&6; }
+if eval \${$as_acx_Woption+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  CFLAGS="${option} ${WERROR_CFLAGS}"
+     case ${option} in
+      -Wold-style-definition|-Wstrict-prototypes|-Wsuggest-attribute=const)
+                     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$as_acx_Woption=yes"
+else
+  eval "$as_acx_Woption=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+       ;;
+      *)
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$as_acx_Woption=yes"
+else
+  eval "$as_acx_Woption=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+       ;;
+     esac
+
+fi
+eval ac_res=\$$as_acx_Woption
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  if test `eval 'as_val=${'$as_acx_Woption'};$as_echo "$as_val"'` = yes; then :
+  C_ARCHFLAGS="$C_ARCHFLAGS${C_ARCHFLAGS:+ }$real_option"
+fi
+  done
+CFLAGS="${save_CFLAGS}"
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
 fi
 
 # Automake:
