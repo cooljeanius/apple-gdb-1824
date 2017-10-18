@@ -1655,6 +1655,8 @@ SECTION
 */
 
 /*
+SUBSECTION
+	Reloc Codes
 TYPEDEF
 	bfd_reloc_code_type
 
@@ -5941,6 +5943,10 @@ bfd_generic_merge_sections(bfd *abfd ATTRIBUTE_UNUSED,
   return TRUE;
 }
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
 /*
 INTERNAL_FUNCTION
 	bfd_generic_get_relocated_section_contents
@@ -6056,9 +6062,14 @@ bfd_generic_get_relocated_section_contents(bfd *abfd,
 	    }
 
 	  /* FIXME: trying to silence -Wunsafe-loop-optimizations: */
-	  if ((parent_val < 0) || (parent_val >= INTPTR_MAX)) {
+	  if (parent_val < 0) {
 	    break;
 	  }
+#ifdef INTPTR_MAX
+	  if (parent_val >= INTPTR_MAX) {
+	    break;
+	  }
+#endif /* INTPTR_MAX */
 	}
     }
   if (reloc_vector != NULL)

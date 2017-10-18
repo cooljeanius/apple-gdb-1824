@@ -364,6 +364,8 @@ bfd_zmalloc2(bfd_size_type nmemb, bfd_size_type size)
 }
 
 /*
+SUBSECTION
+	Functions
 INTERNAL_FUNCTION
 	bfd_write_bigendian_4byte_int
 
@@ -549,7 +551,7 @@ DESCRIPTION
 /* sign extension hackery triggers this, and fixing the warnings might
  * break the sign extension, so just ignore them instead: */
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 9))
  #  pragma GCC diagnostic push
 /* FIXME: gcc bug; it should be fixed the next time I pull from gcc trunk: */
 #  if (__GNUC__ > 6)
@@ -562,7 +564,7 @@ DESCRIPTION
  #   pragma GCC diagnostic ignored "-Wshorten-64-to-32"
  #   pragma GCC diagnostic ignored "-Wconversion"
 #  endif /* Apple gcc 4.2+ */
-# endif /* gcc 4.6+ */
+# endif /* gcc 4.9+ */
 #endif /* any gcc */
 
 /* Sign extension to bfd_signed_vma: */
@@ -840,9 +842,9 @@ bfd_putl64(bfd_uint64_t data, void *p)
 
 /* keep condition the same as where we push: */
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 9))
  #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
+# endif /* gcc 4.9+ */
 #endif /* any gcc */
 
 void
