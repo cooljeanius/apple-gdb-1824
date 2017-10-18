@@ -4,6 +4,7 @@
 @strong{Description}@*
 These are functions pertaining to core files.
 
+@subsection Functions
 @findex bfd_core_file_failing_command
 @subsubsection @code{bfd_core_file_failing_command}
 @strong{Synopsis}

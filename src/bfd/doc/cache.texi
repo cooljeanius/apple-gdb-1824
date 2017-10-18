@@ -10,6 +10,7 @@ the required BFD is open. If not, then it chooses a file to
 close, closes it and opens the one wanted, returning its file
 handle.
 
+@subsection Macros and Functions
 @findex BFD_CACHE_MAX_OPEN macro
 @subsubsection @code{BFD_CACHE_MAX_OPEN macro}
 @strong{Description}@*

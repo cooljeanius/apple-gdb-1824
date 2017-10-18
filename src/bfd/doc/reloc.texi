@@ -491,6 +491,7 @@ When an application wants to create a relocation, but doesn't
 know what the target machine might call it, it can find out by
 using this bit of code.
 
+@subsection Functions
 @findex bfd_reloc_code_type
 @subsubsection @code{bfd_reloc_code_type}
 @strong{Description}@*

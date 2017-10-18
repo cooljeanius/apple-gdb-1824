@@ -1,5 +1,4 @@
-@section 
-ELF backends
+@section ELF backends
 
 BFD support for ELF formats is being worked on.
 Currently, the best supported back ends are for sparc and i386
@@ -9,6 +8,7 @@ Documentation of the internals of the support code still needs
 to be written. The code is changing quickly enough that we
 have NOT bothered yet.
 
+@subsection Functions
 @findex bfd_elf_find_section
 @subsubsection @code{bfd_elf_find_section}
 @strong{Synopsis}

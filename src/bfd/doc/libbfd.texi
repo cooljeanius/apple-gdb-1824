@@ -6,6 +6,7 @@ These routines are used within BFD.
 They are not intended for export, but are documented here for
 completeness.
 
+@subsection Functions
 @findex bfd_write_bigendian_4byte_int
 @subsubsection @code{bfd_write_bigendian_4byte_int}
 @strong{Synopsis}

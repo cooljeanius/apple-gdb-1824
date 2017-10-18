@@ -223,6 +223,7 @@ typedef enum bfd_error
 bfd_error_type;
 
 @end example
+
 @findex bfd_get_error
 @subsubsection @code{bfd_get_error}
 @strong{Synopsis}
@@ -311,7 +312,7 @@ Return the BFD error handler function.
 
 @section Symbols
 
-
+@subsection Functions
 @findex bfd_get_reloc_upper_bound
 @subsubsection @code{bfd_get_reloc_upper_bound}
 @strong{Synopsis}
