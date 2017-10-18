@@ -32,6 +32,16 @@ fi
 AC_OBJEXT
 AC_EXEEXT
 AC_USE_SYSTEM_EXTENSIONS
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],
+                           [C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])
+fi
+if test -n "${TARGET_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${TARGET_ARCHITECTURE}"],
+                           [XC_ARCHFLAGS])
+  AC_SUBST([XC_ARCHFLAGS])
+fi
 if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status

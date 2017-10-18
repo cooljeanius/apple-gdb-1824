@@ -61,9 +61,9 @@ am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
 am__v_v_0 =
 am__v_v_1 = -v
 
-# architecture flags:
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
-XC_ARCHFLAGS = -arch $(TARGET_ARCHITECTURE)
+## architecture flags:
+C_ARCHFLAGS = @C_ARCHFLAGS@
+XC_ARCHFLAGS = @XC_ARCHFLAGS@
 ## (the variables should be automatically subst-ed by autoconf/automake)
 
 DEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\" \
