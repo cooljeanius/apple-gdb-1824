@@ -180,13 +180,30 @@ typedef struct
 
 } zip64_internal;
 
+/* These need to go here instead of in the header because they need the
+ * zip64_internal typedef: */
+extern int LoadCentralDirectoryRecord OF((zip64_internal* pziinit));
+extern int Write_LocalFileHeader OF((zip64_internal* zi, const char* filename,
+									 uInt size_extrafield_local,
+									 const void* extrafield_local));
+extern int Write_Zip64EndOfCentralDirectoryLocator OF((zip64_internal* zi,
+													   ZPOS64_T zip64eocd_pos_inzip));
+extern int Write_Zip64EndOfCentralDirectoryRecord OF((zip64_internal* zi,
+													  uLong size_centraldir,
+													  ZPOS64_T centraldir_pos_inzip));
+extern int Write_EndOfCentralDirectoryRecord OF((zip64_internal* zi,
+												 uLong size_centraldir,
+												 ZPOS64_T centraldir_pos_inzip));
+extern int Write_GlobalComment OF((zip64_internal* zi,
+								   const char* global_comment));
+
 
 #ifndef NOCRYPT
 #define INCLUDECRYPTINGCODE_IFCRYPTALLOWED
 #include "crypt.h"
 #endif
 
-local linkedlist_datablock_internal* allocate_new_datablock()
+local linkedlist_datablock_internal* allocate_new_datablock(void)
 {
     linkedlist_datablock_internal* ldi;
     ldi = (linkedlist_datablock_internal*)
@@ -526,8 +543,9 @@ local ZPOS64_T zip64local_SearchCentralDir(const zlib_filefunc64_32_def* pzlib_f
         break;
       }
 
-      if (uPosFound!=0)
-        break;
+	/* unindented for -Wmisleading-indentation: */
+	if (uPosFound!=0)
+	  break;
   }
   TRYFREE(buf);
   return uPosFound;
@@ -1813,6 +1831,7 @@ int Write_Zip64EndOfCentralDirectoryRecord(zip64_internal* zi, uLong size_centra
   }
   return err;
 }
+
 int Write_EndOfCentralDirectoryRecord(zip64_internal* zi, uLong size_centraldir, ZPOS64_T centraldir_pos_inzip)
 {
   int err = ZIP_OK;

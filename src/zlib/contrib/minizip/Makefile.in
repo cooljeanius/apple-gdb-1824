@@ -101,6 +101,7 @@ am__aclocal_m4_deps = $(top_srcdir)/../../m4/libtool.m4 \
 	$(top_srcdir)/../../m4/ltsugar.m4 \
 	$(top_srcdir)/../../m4/ltversion.m4 \
 	$(top_srcdir)/../../m4/lt~obsolete.m4 \
+	$(top_srcdir)/../../../config/warnings.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -248,6 +249,7 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+C_ARCHFLAGS = @C_ARCHFLAGS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -302,6 +304,9 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 VERSION = @VERSION@
+WARN_CFLAGS = @WARN_CFLAGS@
+WARN_PEDANTIC = @WARN_PEDANTIC@
+WERROR = @WERROR@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -364,8 +369,7 @@ zlib_top_srcdir = $(top_srcdir)/../..
 zlib_top_builddir = $(top_builddir)/../..
 ACLOCAL_AMFLAGS = -I../../m4 --install
 AUTOMAKE_OPTIONS = 1.11.6 foreign no-dist
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
-AM_CFLAGS = $(C_ARCHFLAGS)
+AM_CFLAGS = $(C_ARCHFLAGS) $(WARN_CFLAGS) $(WARN_PEDANTIC)
 AM_CPPFLAGS = -I$(zlib_top_srcdir)
 AM_LDFLAGS = -L$(zlib_top_builddir)
 @WIN32_TRUE@iowin32_src = iowin32.c

@@ -6,7 +6,9 @@ AC_CONFIG_SRCDIR([minizip.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR([../..])
 AC_CONFIG_MACRO_DIR([../../m4])
+m4_include([../../../config/warnings.m4])
 AC_CANONICAL_TARGET
+AC_USE_SYSTEM_EXTENSIONS
 AC_SYS_LARGEFILE
 AM_INIT_AUTOMAKE([1.11.6 foreign no-dist])
 AM_MAINTAINER_MODE
@@ -23,6 +25,12 @@ fi
 if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   export TARGET_ARCHITECTURE="${target_cpu}"
   AC_SUBST([TARGET_ARCHITECTURE])
+fi
+
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],
+                           [C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])
 fi
 
 # Checks for programs and libtool stuff:
@@ -78,6 +86,17 @@ AC_TYPE_UINT64_T
 AC_FUNC_MALLOC
 AC_FUNC_MKTIME
 AC_CHECK_FUNCS([memset mkdir utime])dnl
+
+# Checks for warning flags.
+ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wpointer-arith \
+-Wfloat-conversion -Wstrict-prototypes -Wmissing-prototypes -Wimplicit \
+-Wnested-externs -Wmissing-parameter-type -Wabi -Wswitch -Wparentheses \
+-Wold-style-definition -Wold-style-declaration -Wno-unused-parameter])
+ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])dnl
+
+# Only enable with --enable-werror-always until existing warnings are
+# corrected.
+ACX_PROG_CC_WARNINGS_ARE_ERRORS([manual])dnl
 
 # Output.
 AC_CONFIG_FILES([Makefile minizip.pc])

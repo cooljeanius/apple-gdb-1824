@@ -355,6 +355,11 @@ extern int ZEXPORT zipRemoveExtraInfoBlock OF((char* pData, int* dataLen, short 
         zipRemoveExtraInfoBlock(pLocalHeaderExtraFieldData, &nLocalHeaderExtraFieldDataLen, 0x0001);
 */
 
+/* rest are for -Wmissing-prototypes: */
+extern zipFile ZEXPORT zipOpen3 OF((const void *pathname, int append,
+									zipcharpc* globalcomment,
+									zlib_filefunc64_32_def* pzlib_filefunc64_32_def));
+
 #ifdef __cplusplus
 }
 #endif

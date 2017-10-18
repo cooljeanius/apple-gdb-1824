@@ -56,6 +56,21 @@
 		4CE5F21A107AB6D200DCB1EB /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
 		4CE5F21B107AB6D200DCB1EB /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zutil.c; sourceTree = "<group>"; };
 		4CE5F21C107AB6D200DCB1EB /* zutil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zutil.h; sourceTree = "<group>"; };
+		615A2EF51F977F1D008237C4 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		615A2EF61F977F1D008237C4 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		615A2EF71F977F1D008237C4 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		615A2EF81F977F1D008237C4 /* iowin32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iowin32.c; sourceTree = "<group>"; };
+		615A2EF91F977F1D008237C4 /* iowin32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iowin32.h; sourceTree = "<group>"; };
+		615A2EFE1F977F1D008237C4 /* miniunz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = miniunz.c; sourceTree = "<group>"; };
+		615A2EFF1F977F1D008237C4 /* miniunzip.1 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.man; path = miniunzip.1; sourceTree = "<group>"; };
+		615A2F001F977F1D008237C4 /* minizip.1 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.man; path = minizip.1; sourceTree = "<group>"; };
+		615A2F011F977F1D008237C4 /* minizip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = minizip.c; sourceTree = "<group>"; };
+		615A2F051F977F1D008237C4 /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		615A2F061F977F1D008237C4 /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		615A2F081F977F1D008237C4 /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		615A2F0A1F977F1D008237C4 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		615A2F0B1F977F1D008237C4 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		615A2F0D1F977F1D008237C4 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		7B1C25DB187A0979002FA6F7 /* adler32vec.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = adler32vec.s; sourceTree = "<group>"; };
 		7B1C25DC187A0979002FA6F7 /* inffast.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = inffast.s; sourceTree = "<group>"; };
 		7B1C25E6187A09AB002FA6F7 /* algorithm.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = algorithm.txt; sourceTree = "<group>"; };
@@ -108,6 +123,7 @@
 		08FB7794FE84155DC02AAC07 /* zlib */ = {
 			isa = PBXGroup;
 			children = (
+				615A2EE81F977EEE008237C4 /* contrib */,
 				7B1C25F4187A09F3002FA6F7 /* patches */,
 				7B1C25E5187A09AB002FA6F7 /* doc */,
 				08FB7795FE84155DC02AAC07 /* zlib */,
@@ -158,6 +174,37 @@
 				D2AAC0630554660B00DB518D /* libz.1.2.8.dylib */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		615A2EE81F977EEE008237C4 /* contrib */ = {
+			isa = PBXGroup;
+			children = (
+				615A2EED1F977F1D008237C4 /* minizip */,
+			);
+			name = contrib;
+			sourceTree = "<group>";
+		};
+		615A2EED1F977F1D008237C4 /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				615A2EF51F977F1D008237C4 /* crypt.h */,
+				615A2EF61F977F1D008237C4 /* ioapi.c */,
+				615A2EF71F977F1D008237C4 /* ioapi.h */,
+				615A2EF81F977F1D008237C4 /* iowin32.c */,
+				615A2EF91F977F1D008237C4 /* iowin32.h */,
+				615A2EFE1F977F1D008237C4 /* miniunz.c */,
+				615A2EFF1F977F1D008237C4 /* miniunzip.1 */,
+				615A2F001F977F1D008237C4 /* minizip.1 */,
+				615A2F011F977F1D008237C4 /* minizip.c */,
+				615A2F051F977F1D008237C4 /* mztools.c */,
+				615A2F061F977F1D008237C4 /* mztools.h */,
+				615A2F081F977F1D008237C4 /* unzip.c */,
+				615A2F0A1F977F1D008237C4 /* unzip.h */,
+				615A2F0B1F977F1D008237C4 /* zip.c */,
+				615A2F0D1F977F1D008237C4 /* zip.h */,
+			);
+			name = minizip;
+			path = contrib/minizip;
 			sourceTree = "<group>";
 		};
 		7B1C25DA187A0979002FA6F7 /* arm */ = {
