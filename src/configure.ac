@@ -31,6 +31,7 @@ m4_include([ltsugar.m4])
 m4_include([ltversion.m4])
 m4_include([lt~obsolete.m4])
 m4_include([config/isl.m4])
+m4_include([config/warnings.m4])
 
 AC_PREREQ([2.69])
 dnl# This is a hack because autoconf finds the AC\_INIT from
@@ -89,6 +90,21 @@ AC_ARG_PROGRAM
 AC_OBJEXT
 AC_EXEEXT
 AC_USE_SYSTEM_EXTENSIONS
+if test -n "${BUILD_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${BUILD_ARCHITECTURE}"],
+                           [C_BUILD_ARCHFLAGS])
+  AC_SUBST([C_BUILD_ARCHFLAGS])
+fi
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],
+                           [C_HOST_ARCHFLAGS])
+  AC_SUBST([C_HOST_ARCHFLAGS])
+fi
+if test -n "${TARGET_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${TARGET_ARCHITECTURE}"],
+                           [C_TARG_ARCHFLAGS])
+  AC_SUBST([C_TARG_ARCHFLAGS])
+fi
 
 # Autobuild:
 AB_INIT
@@ -1506,12 +1522,22 @@ case "${target}" in
     ;;
   *-*-linux* | *-*-gnu* | *-*-k*bsd*-gnu)
     noconfigdirs="${noconfigdirs} target-newlib target-libgloss"
+    # autogen support in this tree is still tentative, so disable if guile
+    # is not also present in this tree:
+    if test ! -d guile; then
+      noconfigdirs="${noconfigdirs} build-autogen autogen"
+    fi
     ;;
   *-*-lynxos*)
     noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
     ;;
   *-*-*)
     noconfigdirs="${noconfigdirs} ${libgcj}"
+    # autogen support in this tree is still tentative, so disable if guile
+    # is not also present in this tree:
+    if test ! -d guile; then
+      noconfigdirs="${noconfigdirs} build-autogen autogen"
+    fi
     ;;
 esac
 

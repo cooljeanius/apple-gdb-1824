@@ -121,14 +121,14 @@ BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
 HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
 ## finally target:
 TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
-## now transform them into archflags, starting with build:
-C_BUILD_ARCHFLAGS = -arch $(BUILD_ARCHITECTURE)
+## and their equivalent archflags, starting with build:
+C_BUILD_ARCHFLAGS = @C_BUILD_ARCHFLAGS@
 CXX_BUILD_ARCHFLAGS = $(C_BUILD_ARCHFLAGS)
 ## and host:
-C_HOST_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+C_HOST_ARCHFLAGS = @C_HOST_ARCHFLAGS@
 CXX_HOST_ARCHFLAGS = $(C_HOST_ARCHFLAGS)
 ## and finally target:
-C_TARG_ARCHFLAGS = -arch $(TARGET_ARCHITECTURE)
+C_TARG_ARCHFLAGS = @C_TARG_ARCHFLAGS@
 CXX_TARG_ARCHFLAGS = $(C_TARG_ARCHFLAGS)
 
 # This is the name of the environment variable used for the path to
