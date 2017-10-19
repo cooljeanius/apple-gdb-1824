@@ -31,6 +31,14 @@
 
 #include <stdarg.h>
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
+#ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif /* HAVE_INTTYPES_H */
+
 #ifdef USE_BINARY_FOPEN
 # include "fopen-bin.h"
 #else
@@ -243,7 +251,13 @@ extern int vsnprintf(char *, size_t, const char *, va_list);
 #  undef vsprintf
 # endif /* vsprintf */
 /* libiberty provides replacements: */
-# pragma GCC poison strdup strndup memdup strerror vsprintf atexit exit
+# pragma GCC poison memdup strerror vsprintf atexit exit
+# ifndef strdup
+#  pragma GCC poison strdup
+# endif /* !strdup */
+# ifndef strndup
+#  pragma GCC poison strndup
+# endif /* !strndup */
 # if defined(HAVE_STRLCPY) && defined(PREFER_BSDISMS)
 #  pragma GCC poison strcpy
 # endif /* HAVE_STRLCPY && PREFER_BSDISMS */

@@ -23,6 +23,7 @@
 /* This file contains code which writes out stabs debugging
    information.  */
 
+#include "config.h"
 #include <stdio.h>
 #include <assert.h>
 #include <limits.h>

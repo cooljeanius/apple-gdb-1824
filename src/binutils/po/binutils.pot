@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-18 23:38-0400\n"
+"POT-Creation-Date: 2017-10-19 07:33-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -487,96 +487,96 @@ msgstr ""
 msgid "no input file specified"
 msgstr ""
 
-#: debug.c:626
+#: debug.c:627
 msgid "debug_add_to_current_namespace: no current file"
 msgstr ""
 
-#: debug.c:705
+#: debug.c:706
 msgid "debug_start_source: no debug_set_filename call"
 msgstr ""
 
-#: debug.c:761
+#: debug.c:762
 msgid "debug_record_function: no debug_set_filename call"
 msgstr ""
 
-#: debug.c:813
+#: debug.c:814
 msgid "debug_record_parameter: no current function"
 msgstr ""
 
-#: debug.c:845
+#: debug.c:846
 msgid "debug_end_function: no current function"
 msgstr ""
 
-#: debug.c:851
+#: debug.c:852
 msgid "debug_end_function: some blocks were not closed"
 msgstr ""
 
-#: debug.c:879
+#: debug.c:880
 msgid "debug_start_block: no current block"
 msgstr ""
 
-#: debug.c:915
+#: debug.c:916
 msgid "debug_end_block: no current block"
 msgstr ""
 
-#: debug.c:922
+#: debug.c:923
 msgid "debug_end_block: attempt to close top level block"
 msgstr ""
 
-#: debug.c:945
+#: debug.c:946
 msgid "debug_record_line: no current unit"
 msgstr ""
 
 #. FIXME
-#: debug.c:998
+#: debug.c:999
 msgid "debug_start_common_block: not implemented"
 msgstr ""
 
 #. FIXME
-#: debug.c:1009
+#: debug.c:1010
 msgid "debug_end_common_block: not implemented"
 msgstr ""
 
 #. FIXME.
-#: debug.c:1093
+#: debug.c:1094
 msgid "debug_record_label: not implemented"
 msgstr ""
 
-#: debug.c:1115
+#: debug.c:1116
 msgid "debug_record_variable: no current file"
 msgstr ""
 
-#: debug.c:1643
+#: debug.c:1644
 msgid "debug_make_undefined_type: unsupported kind"
 msgstr ""
 
-#: debug.c:1820
+#: debug.c:1821
 msgid "debug_name_type: no current file"
 msgstr ""
 
-#: debug.c:1865
+#: debug.c:1866
 msgid "debug_tag_type: no current file"
 msgstr ""
 
-#: debug.c:1873
+#: debug.c:1874
 msgid "debug_tag_type: extra tag attempted"
 msgstr ""
 
-#: debug.c:1910
+#: debug.c:1911
 #, c-format
 msgid "Warning: changing type size from %d to %d\n"
 msgstr ""
 
-#: debug.c:1932
+#: debug.c:1933
 msgid "debug_find_named_type: no current compilation unit"
 msgstr ""
 
-#: debug.c:2035
+#: debug.c:2036
 #, c-format
 msgid "debug_get_real_type: circular debug information for %s\n"
 msgstr ""
 
-#: debug.c:2462
+#: debug.c:2463
 msgid "debug_write_type: illegal type encountered"
 msgstr ""
 
@@ -2809,238 +2809,238 @@ msgstr ""
 msgid "  [-X32_64]    - accepts 32 and 64 bit objects\n"
 msgstr ""
 
-#: ieee.c:313
+#: ieee.c:314
 msgid "unexpected end of debugging information"
 msgstr ""
 
-#: ieee.c:399
+#: ieee.c:400
 msgid "invalid number"
 msgstr ""
 
-#: ieee.c:452
+#: ieee.c:453
 msgid "invalid string length"
 msgstr ""
 
-#: ieee.c:507 ieee.c:548
+#: ieee.c:508 ieee.c:549
 msgid "expression stack overflow"
 msgstr ""
 
-#: ieee.c:527
+#: ieee.c:528
 msgid "unsupported IEEE expression operator"
 msgstr ""
 
-#: ieee.c:542
+#: ieee.c:543
 msgid "unknown section"
 msgstr ""
 
-#: ieee.c:563
+#: ieee.c:564
 msgid "expression stack underflow"
 msgstr ""
 
-#: ieee.c:577
+#: ieee.c:578
 msgid "expression stack mismatch"
 msgstr ""
 
-#: ieee.c:613
+#: ieee.c:614
 msgid "unknown builtin type"
 msgstr ""
 
-#: ieee.c:758
+#: ieee.c:759
 msgid "BCD float type not supported"
 msgstr ""
 
-#: ieee.c:895
+#: ieee.c:896
 msgid "unexpected number"
 msgstr ""
 
-#: ieee.c:902
+#: ieee.c:903
 msgid "unexpected record type"
 msgstr ""
 
-#: ieee.c:935
+#: ieee.c:936
 msgid "blocks left on stack at end"
 msgstr ""
 
-#: ieee.c:1198
+#: ieee.c:1199
 msgid "unknown BB type"
 msgstr ""
 
-#: ieee.c:1206
+#: ieee.c:1207
 msgid "stack overflow"
 msgstr ""
 
-#: ieee.c:1228
+#: ieee.c:1229
 msgid "stack underflow"
 msgstr ""
 
-#: ieee.c:1347 ieee.c:1417 ieee.c:2116
+#: ieee.c:1348 ieee.c:1418 ieee.c:2117
 msgid "illegal variable index"
 msgstr ""
 
-#: ieee.c:1395
+#: ieee.c:1396
 msgid "illegal type index"
 msgstr ""
 
-#: ieee.c:1405 ieee.c:1442
+#: ieee.c:1406 ieee.c:1443
 msgid "unknown TY code"
 msgstr ""
 
-#: ieee.c:1424
+#: ieee.c:1425
 msgid "undefined variable in TY"
 msgstr ""
 
 #. Pascal file name.  FIXME.
-#: ieee.c:1835
+#: ieee.c:1836
 msgid "Pascal file name not supported"
 msgstr ""
 
-#: ieee.c:1883
+#: ieee.c:1884
 msgid "unsupported qualifier"
 msgstr ""
 
-#: ieee.c:2154
+#: ieee.c:2155
 msgid "undefined variable in ATN"
 msgstr ""
 
-#: ieee.c:2198
+#: ieee.c:2199
 msgid "unknown ATN type"
 msgstr ""
 
 #. Reserved for FORTRAN common.
-#: ieee.c:2321
+#: ieee.c:2322
 msgid "unsupported ATN11"
 msgstr ""
 
 #. We have no way to record this information.  FIXME.
-#: ieee.c:2348
+#: ieee.c:2349
 msgid "unsupported ATN12"
 msgstr ""
 
-#: ieee.c:2408
+#: ieee.c:2409
 msgid "unexpected string in C++ misc"
 msgstr ""
 
-#: ieee.c:2420
+#: ieee.c:2421
 msgid "bad misc record"
 msgstr ""
 
-#: ieee.c:2461
+#: ieee.c:2462
 msgid "unrecognized C++ misc record"
 msgstr ""
 
-#: ieee.c:2575
+#: ieee.c:2576
 msgid "undefined C++ object"
 msgstr ""
 
-#: ieee.c:2609
+#: ieee.c:2610
 msgid "unrecognized C++ object spec"
 msgstr ""
 
-#: ieee.c:2645
+#: ieee.c:2646
 msgid "unsupported C++ object type"
 msgstr ""
 
-#: ieee.c:2655
+#: ieee.c:2656
 msgid "C++ base class not defined"
 msgstr ""
 
-#: ieee.c:2667 ieee.c:2772
+#: ieee.c:2668 ieee.c:2773
 msgid "C++ object has no fields"
 msgstr ""
 
-#: ieee.c:2686
+#: ieee.c:2687
 msgid "C++ base class not found in container"
 msgstr ""
 
-#: ieee.c:2793
+#: ieee.c:2794
 msgid "C++ data member not found in container"
 msgstr ""
 
-#: ieee.c:2834 ieee.c:2984
+#: ieee.c:2835 ieee.c:2985
 msgid "unknown C++ visibility"
 msgstr ""
 
-#: ieee.c:2868
+#: ieee.c:2869
 msgid "bad C++ field bit pos or size"
 msgstr ""
 
-#: ieee.c:2960
+#: ieee.c:2961
 msgid "bad type for C++ method function"
 msgstr ""
 
-#: ieee.c:2970
+#: ieee.c:2971
 msgid "no type information for C++ method function"
 msgstr ""
 
-#: ieee.c:3009
+#: ieee.c:3010
 msgid "C++ static virtual method"
 msgstr ""
 
-#: ieee.c:3104
+#: ieee.c:3105
 msgid "unrecognized C++ object overhead spec"
 msgstr ""
 
-#: ieee.c:3143
+#: ieee.c:3144
 msgid "undefined C++ vtable"
 msgstr ""
 
-#: ieee.c:3212
+#: ieee.c:3213
 msgid "C++ default values not in a function"
 msgstr ""
 
-#: ieee.c:3252
+#: ieee.c:3253
 msgid "unrecognized C++ default type"
 msgstr ""
 
-#: ieee.c:3283
+#: ieee.c:3284
 msgid "reference parameter is not a pointer"
 msgstr ""
 
-#: ieee.c:3365
+#: ieee.c:3366
 msgid "unrecognized C++ reference type"
 msgstr ""
 
-#: ieee.c:3447
+#: ieee.c:3448
 msgid "C++ reference not found"
 msgstr ""
 
-#: ieee.c:3455
+#: ieee.c:3456
 msgid "C++ reference is not pointer"
 msgstr ""
 
-#: ieee.c:3481 ieee.c:3489
+#: ieee.c:3482 ieee.c:3490
 msgid "missing required ASN"
 msgstr ""
 
-#: ieee.c:3516 ieee.c:3524
+#: ieee.c:3517 ieee.c:3525
 msgid "missing required ATN65"
 msgstr ""
 
-#: ieee.c:3538
+#: ieee.c:3539
 msgid "bad ATN65 record"
 msgstr ""
 
-#: ieee.c:4164
+#: ieee.c:4165
 #, c-format
 msgid "IEEE numeric overflow: 0x"
 msgstr ""
 
-#: ieee.c:4208
+#: ieee.c:4209
 #, c-format
 msgid "IEEE string length overflow: %u\n"
 msgstr ""
 
-#: ieee.c:5208
+#: ieee.c:5209
 #, c-format
 msgid "IEEE unsupported integer type size %u\n"
 msgstr ""
 
-#: ieee.c:5242
+#: ieee.c:5243
 #, c-format
 msgid "IEEE unsupported float type size %u\n"
 msgstr ""
 
-#: ieee.c:5276
+#: ieee.c:5277
 #, c-format
 msgid "IEEE unsupported complex type size %u\n"
 msgstr ""
@@ -6853,135 +6853,135 @@ msgstr ""
 msgid "unable to open output file %s"
 msgstr ""
 
-#: stabs.c:332 stabs.c:1717
+#: stabs.c:333 stabs.c:1718
 msgid "numeric overflow"
 msgstr ""
 
-#: stabs.c:342
+#: stabs.c:343
 #, c-format
 msgid "Bad stab: %s\n"
 msgstr ""
 
-#: stabs.c:350
+#: stabs.c:351
 #, c-format
 msgid "Warning: %s: %s\n"
 msgstr ""
 
-#: stabs.c:460
+#: stabs.c:461
 #, c-format
 msgid "N_LBRAC not within function\n"
 msgstr ""
 
-#: stabs.c:499
+#: stabs.c:500
 #, c-format
 msgid "Too many N_RBRACs\n"
 msgstr ""
 
-#: stabs.c:744
+#: stabs.c:745
 msgid "unknown C++ encoded name"
 msgstr ""
 
 #. Complain and keep going, so compilers can invent new
 #. cross-reference types.
-#: stabs.c:1261
+#: stabs.c:1262
 msgid "unrecognized cross reference type"
 msgstr ""
 
 #. Does this actually ever happen?  Is that why we are worrying
 #. about dealing with it rather than just calling error_type?
-#: stabs.c:1809
+#: stabs.c:1810
 msgid "missing index type"
 msgstr ""
 
-#: stabs.c:2126
+#: stabs.c:2127
 msgid "unknown virtual character for baseclass"
 msgstr ""
 
-#: stabs.c:2144
+#: stabs.c:2145
 msgid "unknown visibility character for baseclass"
 msgstr ""
 
-#: stabs.c:2328
+#: stabs.c:2329
 msgid "unnamed $vb type"
 msgstr ""
 
-#: stabs.c:2334
+#: stabs.c:2335
 msgid "unrecognized C++ abbreviation"
 msgstr ""
 
-#: stabs.c:2410
+#: stabs.c:2411
 msgid "unknown visibility character for field"
 msgstr ""
 
-#: stabs.c:2662
+#: stabs.c:2663
 msgid "const/volatile indicator missing"
 msgstr ""
 
-#: stabs.c:2898
+#: stabs.c:2899
 #, c-format
 msgid "No mangling for \"%s\"\n"
 msgstr ""
 
-#: stabs.c:3198
+#: stabs.c:3199
 msgid "Undefined N_EXCL"
 msgstr ""
 
-#: stabs.c:3278
+#: stabs.c:3279
 #, c-format
 msgid "Type file number %d out of range\n"
 msgstr ""
 
-#: stabs.c:3283
+#: stabs.c:3284
 #, c-format
 msgid "Type index number %d out of range\n"
 msgstr ""
 
-#: stabs.c:3362
+#: stabs.c:3363
 #, c-format
 msgid "Unrecognized XCOFF type %d\n"
 msgstr ""
 
-#: stabs.c:3655
+#: stabs.c:3656
 #, c-format
 msgid "bad mangled name `%s'\n"
 msgstr ""
 
-#: stabs.c:3750
+#: stabs.c:3751
 #, c-format
 msgid "no argument types in mangled string\n"
 msgstr ""
 
-#: stabs.c:5108
+#: stabs.c:5109
 #, c-format
 msgid "Demangled name is not a function\n"
 msgstr ""
 
-#: stabs.c:5150
+#: stabs.c:5151
 #, c-format
 msgid "Unexpected type in v3 arglist demangling\n"
 msgstr ""
 
-#: stabs.c:5217
+#: stabs.c:5218
 #, c-format
 msgid "Unrecognized demangle component %d\n"
 msgstr ""
 
-#: stabs.c:5269
+#: stabs.c:5270
 #, c-format
 msgid "Failed to print demangled template\n"
 msgstr ""
 
-#: stabs.c:5349
+#: stabs.c:5350
 #, c-format
 msgid "Couldn't get demangled builtin type\n"
 msgstr ""
 
-#: stabs.c:5398
+#: stabs.c:5399
 #, c-format
 msgid "Unexpected demangled varargs\n"
 msgstr ""
 
-#: stabs.c:5405
+#: stabs.c:5406
 #, c-format
 msgid "Unrecognized demangled builtin type\n"
 msgstr ""
@@ -7256,17 +7256,17 @@ msgstr ""
 msgid "no resources"
 msgstr ""
 
-#: wrstabs.c:356 wrstabs.c:1922
+#: wrstabs.c:357 wrstabs.c:1923
 #, c-format
 msgid "string_hash_lookup failed: %s"
 msgstr ""
 
-#: wrstabs.c:637
+#: wrstabs.c:638
 #, c-format
 msgid "stab_int_type: bad size %u"
 msgstr ""
 
-#: wrstabs.c:1397
+#: wrstabs.c:1398
 #, c-format
 msgid "%s: warning: unknown size for field `%s' in struct"
 msgstr ""

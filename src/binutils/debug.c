@@ -26,6 +26,7 @@
    this was writing a converter from stabs to HP IEEE-695 debugging
    format.  */
 
+#include "config.h"
 #include <stdio.h>
 #include <assert.h>
 

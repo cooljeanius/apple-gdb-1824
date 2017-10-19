@@ -3,8 +3,9 @@ dnl	This file is an input file used by the GNU "autoconf" program to
 dnl	generate the file "configure", which is run during Tk installation
 dnl	to configure the system for the local environment.
 #
-# RCS: @(#) $Id: configure.in,v 1.82 2002/09/27 18:09:53 dgp Exp $
+# RCS: @(#) $Id: configure.ac,v 1.82 2002/09/27 18:09:53 dgp Exp $
 
+m4_include([../../config/warnings.m4])
 AC_INIT([tcl-unix],[8.4.1],[BUG-REPORT-ADDRESS])
 AC_CONFIG_SRCDIR([../generic/tk.h])
 AC_PREREQ([2.13])
@@ -63,6 +64,11 @@ if test "${CFLAGS+set}" != "set" ; then
 fi
 
 AC_PROG_CC
+
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])
+fi
 
 #------------------------------------------------------------------------
 # Other programs

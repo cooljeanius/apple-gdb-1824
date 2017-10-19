@@ -25,6 +25,7 @@
    code.  The job it does is somewhat different, because it is not
    trying to identify the correct address for anything.  */
 
+#include "config.h"
 #include <stdio.h>
 
 #include "bfd.h"

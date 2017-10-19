@@ -4,6 +4,7 @@ dnl# changed in 7.5, and this change lets us avoid changing the
 dnl# configuration superstructure.
 dnl# Tom Tromey <tromey@cygnus.com>
 
+m4_include([../config/warnings.m4])
 AC_PREREQ([2.5])
 
 AC_INIT([tk],[8.4.1],[http://tcl.sourceforge.net/])
@@ -41,6 +42,16 @@ case "${host}" in
 esac
 
 AC_SUBST([CONFIGDIR])dnl
+
+# Other system-related checks:
+AC_USE_SYSTEM_EXTENSIONS
+AC_SYS_LARGEFILE
+AC_OBJEXT
+AC_EXEEXT
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])
+fi
 
 # Checks for programs.
 AC_PROG_CC

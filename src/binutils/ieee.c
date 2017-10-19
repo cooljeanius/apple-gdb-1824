@@ -22,6 +22,7 @@
 
 /* This file reads and writes IEEE-695 debugging information.  */
 
+#include "config.h"
 #include <stdio.h>
 #include <assert.h>
 #include <limits.h>
