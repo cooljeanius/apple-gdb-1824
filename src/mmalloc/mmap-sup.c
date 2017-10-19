@@ -272,7 +272,7 @@ __mmalloc_mmap_morecore(struct mdesc *mdp, int size)
   if (mdp->fd < 0)
     {
       char buf[64];
-      sprintf(buf, "/tmp/mmalloc.XXXXXX");
+      snprintf(buf, sizeof(buf), "/tmp/mmalloc.XXXXXX");
 
       mdp->fd = mkstemp(buf);
       if (mdp->fd < 0)
@@ -341,6 +341,7 @@ __mmalloc_mmap_morecore(struct mdesc *mdp, int size)
     }
   else
     {
+#ifdef __MACH__
       vm_address_t r_start;
       vm_size_t r_size;
       vm_region_basic_info_data_t r_data;
@@ -350,7 +351,11 @@ __mmalloc_mmap_morecore(struct mdesc *mdp, int size)
       kern_return_t kret;
 
       r_start = (vm_address_t)mdp->top;
+# ifdef VM_REGION_BASIC_INFO_COUNT
       r_info_size = VM_REGION_BASIC_INFO_COUNT;
+# else
+      r_info_size = 0;
+# endif /* VM_REGION_BASIC_INFO_COUNT */
       kret = mach_vm_region(mach_task_self(),
                             (mach_vm_address_t *)&r_start,
                             (mach_vm_address_t *)&r_size,
@@ -365,6 +370,7 @@ __mmalloc_mmap_morecore(struct mdesc *mdp, int size)
 	{
 	  return NULL;
 	}
+#endif /* __MACH__ */
 
       mapto = (caddr_t)mmap(mdp->top, mapbytes, (PROT_READ | PROT_WRITE),
                             (flags | MAP_FIXED), mdp->fd, foffset);
@@ -401,7 +407,11 @@ mmalloc_findbase(size_t size, void *base)
     kern_return_t kret;
 
     r_start = last;
+#ifdef VM_REGION_BASIC_INFO_COUNT
     r_info_size = VM_REGION_BASIC_INFO_COUNT;
+#else
+    r_info_size = 0;
+#endif /* VM_REGION_BASIC_INFO_COUNT */
 
     kret = mach_vm_region(mach_task_self(), (mach_vm_address_t *)&r_start,
                           (mach_vm_address_t *)&r_size,
@@ -450,7 +460,7 @@ mmalloc_findbase_hidden(size_t size)
 #ifndef MAP_ANONYMOUS
   {
     char buf[64];
-    sprintf(buf, "/tmp/mmalloc.XXXXXX");
+    snprintf(buf, sizeof(buf), "/tmp/mmalloc.XXXXXX");
 
     fd = mkstemp(buf);
     if (fd < 0)

@@ -3,6 +3,8 @@ dnl# This file is an input file used by the GNU "autoconf" program to
 dnl# generate the file "configure", which is run to configure the
 dnl# Makefile in this directory.
 
+m4_include([../../../config/warnings.m4])dnl
+
 dnl# CYGNUS LOCAL, need 2.5 or higher for --bindir et al
 AC_PREREQ([2.5])
 dnl# END CYGNUS LOCAL
@@ -23,6 +25,11 @@ fi
 if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   export TARGET_ARCHITECTURE="${target_cpu}"
   AC_SUBST([TARGET_ARCHITECTURE])
+fi
+
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])
 fi
 
 # RCS: @(#) configure.ac,v 1.4 2002/11/26 19:48:05 hunt Exp

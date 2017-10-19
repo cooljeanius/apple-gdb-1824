@@ -1,4 +1,4 @@
-/* Disassemble WDC 65816 instructions.
+/* w65-dis.c: Disassemble WDC 65816 instructions.
    Copyright 1995, 1998, 2000, 2001, 2002, 2005
    Free Software Foundation, Inc.
 
@@ -17,6 +17,7 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#include "config.h"
 #include <stdio.h>
 #include "sysdep.h"
 #define STATIC_TABLE
