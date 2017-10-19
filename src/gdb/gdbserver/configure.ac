@@ -24,6 +24,7 @@ dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.59])dnl
 
+m4_include([../../config/warnings.m4])
 AC_INIT([gdbserver],[1824],[gclayton@apple.com])
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
@@ -148,8 +149,12 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
 fi
 
 if test "x${HOST_ARCHITECTURE}" != "x"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],
+                           [C_ARCHFLAGS])
   test -n "${HOST_ARCHITECTURE}" && test -z "${C_ARCHFLAGS}" && export C_ARCHFLAGS="-arch ${HOST_ARCHITECTURE}"
 elif test "x${TARGET_ARCHITECTURE}" != "x"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${TARGET_ARCHITECTURE}"],
+                           [C_ARCHFLAGS])
   test -n "${TARGET_ARCHITECTURE}" && test -z "${C_ARCHFLAGS}" && export C_ARCHFLAGS="-arch ${TARGET_ARCHITECTURE}"
 fi
 AC_SUBST([C_ARCHFLAGS])dnl

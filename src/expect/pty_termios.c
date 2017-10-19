@@ -115,9 +115,10 @@ extern char *TclGetRegError();
 #if defined(HAVE_PTMX) && !defined(__CYGWIN__) && defined(HAVE_SYS_STROPTS_H)
 # include <sys/stropts.h>
 #else
-# if defined(__GNUC__) && defined(HAVE_PTMX) && !defined(__CYGWIN__) && !defined(__BSD__) && !defined(__APPLE__)
-#  warning "pty_termios.c expects <sys/stropts.h> to be included."
-# endif /* __GNUC__ && HAVE_PTMX && !__CYGWIN__ && !__BSD__ && !__APPLE__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(HAVE_PTMX) && \
+     !defined(__CYGWIN__) && !defined(__BSD__) && !defined(__APPLE__)
+#  warning "pty_termios.c expects <sys/stropts.h> to be included when HAVE_PTMX is defined."
+# endif /* __GNUC__ && !__STRICT_ANSI__ && HAVE_PTMX && !__CYGWIN__ && !__BSD__ && !__APPLE__ */
 #endif /* HAVE_PTMX && !__CYGWIN__ && HAVE_SYS_STROPTS_H */
 
 #include "exp_win.h"

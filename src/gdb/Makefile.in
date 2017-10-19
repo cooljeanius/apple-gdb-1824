@@ -591,9 +591,9 @@ GLOBAL_CFLAGS = $(MT_CFLAGS) $(MH_CFLAGS)
 PROFILE_CFLAGS = @PROFILE_CFLAGS@
 
 # architecture flags:
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
-C_BUILDARCHFLAGS = -arch $(BUILD_ARCHITECTURE)
-C_TARGARCHFLAGS = -arch $(TARGET_ARCHITECTURE)
+C_ARCHFLAGS = @C_ARCHFLAGS@
+C_BUILDARCHFLAGS = @C_BUILDARCHFLAGS@
+C_TARGARCHFLAGS = @C_TARGARCHFLAGS@
 
 # CFLAGS is specifically reserved for setting from the command line
 # when running make.  I.E.  "make CFLAGS=-Wmissing-prototypes".

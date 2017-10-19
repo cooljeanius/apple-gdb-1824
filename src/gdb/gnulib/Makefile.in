@@ -130,7 +130,8 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/absolute-header.m4 \
 	$(top_srcdir)/../libiberty/m4/libiberty.m4 \
 	$(top_srcdir)/m4/build-with-cxx.m4 \
 	$(top_srcdir)/../lcmessage.m4 $(top_srcdir)/../gettext.m4 \
-	$(top_srcdir)/m4/ccstdc.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/ccstdc.m4 $(top_srcdir)/../config/warnings.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(noinst_HEADERS)
@@ -286,6 +287,9 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+C_BUILDARCHFLAGS = @C_BUILDARCHFLAGS@
+C_TARGARCHFLAGS = @C_TARGARCHFLAGS@
 DATADIRNAME = @DATADIRNAME@
 DEBUG_SYMBOLS_LIBS = @DEBUG_SYMBOLS_LIBS@
 DEFAULT_SIM_OB = @DEFAULT_SIM_OB@
@@ -765,7 +769,6 @@ DISTCLEANFILES = .DS_Store *~ import/.DS_Store import/*~ m4/.DS_Store \
 MAINTAINERCLEANFILES = autoscan*.log configure.scan
 nodist_noinst_DATA = @MAINT@ configure.scan
 CC_LD = $(CC)
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(C_ARCHFLAGS)
 AM_CPPFLAGS = -Iimport -I$(top_srcdir)/import
 FLAGS_TO_PASS = \
