@@ -80,7 +80,8 @@ X11_LD_FLAGS =
 # tradition at some sites (e.g., Cygnus)!
 C_ARCHFLAGS = @C_ARCHFLAGS@
 CFLAGS = @CFLAGS@
-XCFLAGS = @CFLAGS@ @EXP_CFLAGS@ $(C_ARCHFLAGS) -std=gnu89
+WARN_CFLAGS = @WARN_CFLAGS@
+XCFLAGS = @CFLAGS@ @EXP_CFLAGS@ $(C_ARCHFLAGS) -std=gnu89 $(WARN_CFLAGS)
 
 # Flags to pass only to linker (after .o files but before libraries)
 LDFLAGS = @EXP_LDFLAGS@

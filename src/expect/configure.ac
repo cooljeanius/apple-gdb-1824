@@ -57,6 +57,8 @@ if test -n "${HOST_ARCHITECTURE}"; then
   AC_SUBST([C_ARCHFLAGS])
 fi
 
+ACX_PROG_CC_WARNING_OPTS([-Wreturn-type])
+
 AC_CONFIG_HEADERS([expect_cf.h])dnl
 
 AC_PROG_SED
@@ -986,24 +988,32 @@ if test -r /dev/ptmx -a "x${svr4_ptys_broken}" = "x" -a "x${cross_compiling}" !=
   AC_CHECK_FUNC([ptsname],[],[EXP_AND_TCL_LIBS="${EXP_AND_TCL_LIBS} -lpt"])
   unset ac_cv_func_ptsname
   AC_CHECK_FUNC([ptsname],[],[EXP_AND_TK_LIBS="${EXP_AND_TK_LIBS} -lpt"])
-  # CYGNUS LOCAL: IA-64
-  # On some systems (e.g., IA-64 Linux), we need to define _XOPEN_SOURCE
-  # in order to get a declaration for ptsname. It is safe to simply
-  # define that whenever we are using ptsname.
-  AC_MSG_CHECKING([for NSIG definition with _XOPEN_SOURCE])
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+  if test "x${ac_cv_header_features_h}" = "x"; then
+    test -z "${ac_cv_header_features_h}"
+    AC_CHECK_HEADERS([features.h])
+  fi
+  case "${host}" in
+    ia64-*-*linux*)
+    # CYGNUS LOCAL: IA-64
+    # On some systems (e.g., IA-64 Linux), we need to define _XOPEN_SOURCE
+    # in order to get a declaration for ptsname. It is safe to simply
+    # define that whenever we are using ptsname.
+    AC_MSG_CHECKING([for NSIG definition with _XOPEN_SOURCE])
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 /* _XOPEN_SOURCE can remove NSIG on UnixWare or OSF/1. */
-#define _XOPEN_SOURCE
+#define _XOPEN_SOURCE 1
 #include <signal.h>
 #ifndef NSIG
 # define NSIG _NSIG
 #endif /* !NSIG */
 char junk[NSIG];]],[[]])],[AC_DEFINE([_XOPEN_SOURCE],[1],
                                      [Some systems need this defined])
-	AC_MSG_RESULT([yes])
-    ],[AC_MSG_RESULT([no])
-    ])
-  # END CYGNUS LOCAL
+	  AC_MSG_RESULT([yes])
+      ],[AC_MSG_RESULT([no])
+      ])
+    # END CYGNUS LOCAL
+  ;;
+  esac
 else
   AC_MSG_RESULT([no])
 fi

@@ -3875,6 +3875,81 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 fi
 
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+WARN_CFLAGS=""
+if test "x${GCC}" = "xyes" && test "x${WERROR_CFLAGS}" = "x"; then
+  WERROR_CFLAGS="-Werror"
+fi
+save_CFLAGS="${CFLAGS}"
+for real_option in -Wreturn-type; do
+  # Do the check with the no- prefix removed since gcc silently accepts
+  # any -Wno-* option on purpose:
+  case ${real_option} in
+    -Wno-*) option=-W`expr x${real_option} : 'x-Wno-\(.*\)'` ;;
+    *) option="${real_option}" ;;
+  esac
+  as_acx_Woption=`$as_echo "acx_cv_prog_cc_warning_$option" | $as_tr_sh`
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ${CC} supports ${option}" >&5
+$as_echo_n "checking whether ${CC} supports ${option}... " >&6; }
+if eval \${$as_acx_Woption+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  CFLAGS="${option} ${WERROR_CFLAGS}"
+     case ${option} in
+      -Wold-style-definition|-Wstrict-prototypes|-Wsuggest-attribute=const)
+                     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$as_acx_Woption=yes"
+else
+  eval "$as_acx_Woption=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+       ;;
+      *)
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$as_acx_Woption=yes"
+else
+  eval "$as_acx_Woption=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+       ;;
+     esac
+
+fi
+eval ac_res=\$$as_acx_Woption
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  if test `eval 'as_val=${'$as_acx_Woption'};$as_echo "$as_val"'` = yes; then :
+  WARN_CFLAGS="$WARN_CFLAGS${WARN_CFLAGS:+ }$real_option"
+fi
+  done
+CFLAGS="${save_CFLAGS}"
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
 ac_config_headers="$ac_config_headers expect_cf.h"
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
@@ -9805,17 +9880,34 @@ else
   EXP_AND_TK_LIBS="${EXP_AND_TK_LIBS} -lpt"
 fi
 
-  # CYGNUS LOCAL: IA-64
-  # On some systems (e.g., IA-64 Linux), we need to define _XOPEN_SOURCE
-  # in order to get a declaration for ptsname. It is safe to simply
-  # define that whenever we are using ptsname.
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for NSIG definition with _XOPEN_SOURCE" >&5
+  if test "x${ac_cv_header_features_h}" = "x"; then
+    test -z "${ac_cv_header_features_h}"
+    for ac_header in features.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "features.h" "ac_cv_header_features_h" "$ac_includes_default"
+if test "x$ac_cv_header_features_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_FEATURES_H 1
+_ACEOF
+
+fi
+
+done
+
+  fi
+  case "${host}" in
+    ia64-*-*linux*)
+    # CYGNUS LOCAL: IA-64
+    # On some systems (e.g., IA-64 Linux), we need to define _XOPEN_SOURCE
+    # in order to get a declaration for ptsname. It is safe to simply
+    # define that whenever we are using ptsname.
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for NSIG definition with _XOPEN_SOURCE" >&5
 $as_echo_n "checking for NSIG definition with _XOPEN_SOURCE... " >&6; }
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 /* _XOPEN_SOURCE can remove NSIG on UnixWare or OSF/1. */
-#define _XOPEN_SOURCE
+#define _XOPEN_SOURCE 1
 #include <signal.h>
 #ifndef NSIG
 # define NSIG _NSIG
@@ -9833,7 +9925,7 @@ if ac_fn_c_try_compile "$LINENO"; then :
 
 $as_echo "#define _XOPEN_SOURCE 1" >>confdefs.h
 
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+	  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 
 else
@@ -9842,7 +9934,9 @@ $as_echo "no" >&6; }
 
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-  # END CYGNUS LOCAL
+    # END CYGNUS LOCAL
+  ;;
+  esac
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }

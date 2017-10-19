@@ -146,6 +146,9 @@ based on @code{expect}.  (@code{expect} script filenames conventionally
 use @samp{.exp} as a suffix; for example, the main implementation of the
 DejaGnu test driver is in the file @file{runtest.exp}.)
 
+@node What is New
+@chapter What is new in this release ?
+@cindex What is New
 
 @menu
 * Running Tests::               A first look at running DejaGnu tests
@@ -155,10 +158,6 @@ DejaGnu test driver is in the file @file{runtest.exp}.)
 * Future Directions::           Where is DejaGnu going?
 * Tcl and Expect::              Reading more about Tcl and Expect
 @end menu
-
-@node What is New
-@chapter What is new in this release ?
-@cindex What is New
 
 This release has a number of substantial changes over version 1.2. The
 most visible change is that the version of expect and Tcl included in
@@ -1122,6 +1121,7 @@ command line.
 @end menu
 
 @node Config Values, Master Config File, , Customizing
+@section Config
 @subsection Config Variables
 @cindex configuration dependent defaults
 @cindex setting defaults for DejaGnu variables
