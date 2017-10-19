@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 #ifndef DONTDECLARE_MALLOC
 # define DONTDECLARE_MALLOC 1
 #endif /* !DONTDECLARE_MALLOC */
+#include "config.h"
 #include "bfd.h"
 #include "bucomm.h"
 #include "arsup.h"

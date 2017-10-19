@@ -803,7 +803,11 @@ Itcl_ProtectionCmd(clientData, interp, objc, objv)
     int objc;                /* number of arguments */
     Tcl_Obj *CONST objv[];   /* argument objects */
 {
+#ifdef HAVE_INTPTR_T
     int pLevel = (int)(intptr_t)clientData;
+#else
+	int pLevel = (int)clientData;
+#endif /* HAVE_INTPTR_T */
 
     int result;
     int oldLevel;

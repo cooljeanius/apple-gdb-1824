@@ -39,9 +39,7 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 # define YY_MAIN 0
 #endif /* !YY_MAIN */
 
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif /* HAVE_CONFIG_H */
+#include "config.h"
 
 #include "ansidecl.h"
 #include "libiberty.h"
