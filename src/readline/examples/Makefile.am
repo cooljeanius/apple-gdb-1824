@@ -40,8 +40,8 @@ CPPFLAGS = @CPPFLAGS@
 
 AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir) -I..
 
-# architecture flags:
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+## architecture flags:
+C_ARCHFLAGS = @C_ARCHFLAGS@
 
 CCFLAGS = $(DEFS) $(LOCAL_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS) $(CFLAGS) $(C_ARCHFLAGS)
 AM_LDFLAGS = -ggdb -L.. -L../.. -L../../libiberty @LDFLAGS@

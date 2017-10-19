@@ -19,6 +19,10 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+#include "sysdep.h"
 /* We treat all letters the same in encode/decode routines so
    we need to assign some characteristics to them like signess etc.  */
 #include <string.h>
@@ -27,9 +31,6 @@
 #include "safe-ctype.h"
 #include "ansidecl.h"
 #include "libiberty.h"
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
 #include "opcode/or32.h"
 
 const struct or32_letter or32_letters[] =

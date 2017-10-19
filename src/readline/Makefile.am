@@ -81,8 +81,8 @@ TERMCAP_LIB = @TERMCAP_LIB@
 # For libraries which include headers from other libraries.
 AM_CPPFLAGS = -I. -I$(srcdir)
 
-# architecture flags:
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+## architecture flags:
+C_ARCHFLAGS = @C_ARCHFLAGS@
 
 # now combine all the flags:
 XCCFLAGS = $(DEFS) $(LOCAL_DEFS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS)

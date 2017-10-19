@@ -1,4 +1,4 @@
-/* Table of opcodes for the sparc.
+/* sparc-opc.c: Table of opcodes for the sparc.
    Copyright 1989, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2002, 2004, 2005
    Free Software Foundation, Inc.
@@ -24,6 +24,7 @@
    instruction's name rather than the args.  This would make gas faster, pinsn
    slower, but would mess up some macros a bit.  xoxorich. */
 
+#include "config.h"
 #include <stdio.h>
 #include "sysdep.h"
 #include "opcode/sparc.h"

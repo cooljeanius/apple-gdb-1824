@@ -208,6 +208,7 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+C_ARCHFLAGS = @C_ARCHFLAGS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -455,9 +456,6 @@ LN = ln
 
 # Support an alternate destination root directory for package building
 DESTDIR = 
-
-# architecture flags:
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 
 # For libraries which include headers from other libraries.
 AM_CPPFLAGS = -I. -I.. -I$(topdir)

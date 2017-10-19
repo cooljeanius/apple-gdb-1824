@@ -16,6 +16,7 @@ The main tasks of this script are to:
 @item Apply any post processing to the output files.
 @end enumerate
 
+@section Tasks
 @subsection Set up the arguments for cgen.
 
 CGEN takes several standard arguments.

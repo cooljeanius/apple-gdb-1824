@@ -179,6 +179,7 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+C_ARCHFLAGS = @C_ARCHFLAGS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -412,9 +413,6 @@ RM = rm -f
 # Support an alternate destination root directory for package building
 DESTDIR = 
 AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir) -I..
-
-# architecture flags:
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 CCFLAGS = $(DEFS) $(LOCAL_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS) $(CFLAGS) $(C_ARCHFLAGS)
 AM_LDFLAGS = -ggdb -L.. -L../.. -L../../libiberty @LDFLAGS@
 READLINE_LIB = ../libreadline.a

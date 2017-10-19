@@ -96,6 +96,7 @@ target_triplet = @target@
 subdir = dltest
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/../../config/warnings.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -156,6 +157,7 @@ CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 DDD_BIN = @DDD_BIN@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -266,6 +268,7 @@ TCL_VERSION = @TCL_VERSION@
 TCL_YEAR = @TCL_YEAR@
 TK_SHLIB_LD_EXTRAS = @TK_SHLIB_LD_EXTRAS@
 VERSION = @VERSION@
+WARN_CFLAGS = @WARN_CFLAGS@
 YACC = @YACC@
 YFLAGS = @YFLAGS@
 abs_builddir = @abs_builddir@
@@ -330,7 +333,6 @@ ACLOCAL_AMFLAGS = -I../m4 --install
 AUTOMAKE_OPTIONS = 1.14 foreign dejagnu no-dist info-in-builddir
 AC_FLAGS = @EXTRA_CFLAGS@
 SRC_DIR = @srcdir@
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 CC_SWITCHES = $(CFLAGS) -I${SRC_DIR}/../../generic -DTCL_MEM_DEBUG \
   ${SHLIB_CFLAGS} -DUSE_TCL_STUBS ${AC_FLAGS} $(C_ARCHFLAGS)
 

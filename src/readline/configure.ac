@@ -67,6 +67,12 @@ AC_OBJEXT
 AC_EXEEXT
 AC_USE_SYSTEM_EXTENSIONS
 
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
+  test -n "${C_ARCHFLAGS}" && export C_ARCHFLAGS
+  AC_SUBST([C_ARCHFLAGS])
+fi
+
 AC_PROG_MAKE_SET
 if test "x${CC}" = "x"; then
   test -z "${CC}"

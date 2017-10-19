@@ -1,4 +1,4 @@
-/* Disassembler code for CRIS.
+/* cris-dis.c: Disassembler code for CRIS.
    Copyright 2000, 2001, 2002, 2004, 2005 Free Software Foundation, Inc.
    Contributed by Axis Communications AB, Lund, Sweden.
    Written by Hans-Peter Nilsson.
@@ -20,6 +20,7 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#include "config.h"
 #include "dis-asm.h"
 #include "sysdep.h"
 #include "opcode/cris.h"

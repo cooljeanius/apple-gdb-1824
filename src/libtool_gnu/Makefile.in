@@ -112,7 +112,7 @@ am__aclocal_m4_deps = $(top_srcdir)/libltdl/m4/argz.m4 \
 	$(top_srcdir)/libltdl/m4/ltsugar.m4 \
 	$(top_srcdir)/libltdl/m4/ltversion.m4 \
 	$(top_srcdir)/libltdl/m4/lt~obsolete.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/../config/warnings.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -630,6 +630,7 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+C_ARCHFLAGS = @C_ARCHFLAGS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DIST_MAKEFILE_LIST = @DIST_MAKEFILE_LIST@
@@ -703,6 +704,7 @@ STRIP = @STRIP@
 TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 TIMESTAMP = @TIMESTAMP@
 VERSION = @VERSION@
+WARN_CFLAGS = @WARN_CFLAGS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -817,7 +819,6 @@ EXTRA_LTLIBRARIES = libltdl/dlopen.la libltdl/dld_link.la \
 	libltdl/shl_load.la
 auxdir = libltdl/config
 m4dir = libltdl/m4
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 symtab_cflags = $(AM_CFLAGS)
 LTCFLAGS = $(AM_CFLAGS)
 AM_LIBTOOL_DEBUG_FLAGS = @MAINT@ --debug

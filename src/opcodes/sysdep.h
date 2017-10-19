@@ -42,4 +42,16 @@
 # endif /* HAVE_STRINGS_H */
 #endif /* HAVE_STRING_H */
 
-/* EOf */
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# ifdef HAVE_MACHINE_TYPES_H
+#  include <machine/types.h>
+# else
+#  ifdef HAVE_MACH_MACH_TYPES_H
+#   include <mach/mach_types.h>
+#  endif /* HAVE_MACH_MACH_TYPES_H */
+# endif /* HAVE_MACHINE_TYPES_H */
+#endif /* HAVE_SYS_TYPES_H */
+
+/* EOF */

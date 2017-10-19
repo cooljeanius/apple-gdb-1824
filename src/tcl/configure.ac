@@ -6,6 +6,7 @@ dnl# configuration superstructure.
 dnl# Tom Tromey <tromey@cygnus.com>
 
 AC_PREREQ([2.5])dnl
+m4_include([../config/warnings.m4])dnl
 
 # initialize autoconf:
 AC_INIT([Tcl],[8.4.1],[tromey@cygnus.com])
@@ -78,6 +79,10 @@ AC_USE_SYSTEM_EXTENSIONS
 AC_SYS_LARGEFILE
 AC_OBJEXT
 AC_EXEEXT
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])
+fi
 
 # Checks for programs.
 if test "x${CC}" = "x"; then

@@ -23,6 +23,7 @@ Boston, MA 02111-1307, USA.  */
  * or (US mail) as Mike Haertel c/o Free Software Foundation.
  */
 
+#include "config.h"
 /* Prototypes for memcpy(), memmove(), memset(), and so on: */
 #include <string.h>
 

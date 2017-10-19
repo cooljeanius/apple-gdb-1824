@@ -35,7 +35,7 @@ dnl# Process this file with autoconf to create configure. -*- autoconf -*-
 # libltdl.
 
 AC_PREREQ([2.59])dnl# We use AS_HELP_STRING
-
+m4_include([../../config/warnings.m4])dnl
 
 ## ------------------------ ##
 ## Autoconf initialisation. ##
@@ -65,7 +65,13 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   AC_SUBST([TARGET_ARCHITECTURE])
 fi
 
-export C_ARCHFLAGS="-arch ${HOST_ARCHITECTURE}"
+AC_USE_SYSTEM_EXTENSIONS
+
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
+  test -n "${C_ARCHFLAGS}" && export C_ARCHFLAGS
+  AC_SUBST([C_ARCHFLAGS])
+fi
 if test "x${CFLAGS}" = "x"; then
   test -z "${CFLAGS}" && export CFLAGS="${C_ARCHFLAGS}"
 else

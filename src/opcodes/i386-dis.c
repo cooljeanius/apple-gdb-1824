@@ -31,6 +31,7 @@
    and the small letter tells about the operand size.  Refer to
    the Intel manual for details.  */
 
+#include "config.h"
 #include "dis-asm.h"
 #include "sysdep.h"
 #include "opintl.h"

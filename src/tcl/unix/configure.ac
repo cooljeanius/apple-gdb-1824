@@ -6,6 +6,8 @@ dnl#	to configure the system for the local environment.
 # RCS: @(#) configure.ac,v 1.9 2003/01/21 19:40:19 hunt Exp
 # -*- Autoconf -*-
 
+m4_include([../../config/warnings.m4])dnl
+
 AC_INIT([Tcl-unix],[8.4.1],[tromey@cygnus.com])
 AC_CONFIG_SRCDIR([../generic/tcl.h])
 AC_PREREQ([2.59])
@@ -53,6 +55,12 @@ m4_ifdef([AC_REQUIRE_AUX_FILE],[
 if test -z "${datarootdir}"; then
   export datarootdir=${prefix}/share
   AC_SUBST([datarootdir])
+fi
+
+AC_USE_SYSTEM_EXTENSIONS
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])
 fi
 
 dnl# This is only used when included from macosx/configure.ac

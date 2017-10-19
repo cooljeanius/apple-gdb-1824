@@ -1,4 +1,4 @@
-/* Disassemble V850 instructions.
+/* v850-dis.c: Disassemble V850 instructions.
    Copyright 1996, 1997, 1998, 2000, 2001, 2002, 2003, 2005
    Free Software Foundation, Inc.
 
@@ -17,7 +17,7 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
-
+#include "config.h"
 #include <stdio.h>
 
 #include "sysdep.h"

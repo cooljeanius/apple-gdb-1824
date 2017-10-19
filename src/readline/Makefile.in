@@ -246,6 +246,7 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+C_ARCHFLAGS = @C_ARCHFLAGS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -497,9 +498,6 @@ XMALLOCOBJ = xmalloc.o
 
 # For libraries which include headers from other libraries.
 AM_CPPFLAGS = -I. -I$(srcdir)
-
-# architecture flags:
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 
 # now combine all the flags:
 XCCFLAGS = $(DEFS) $(LOCAL_DEFS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS)

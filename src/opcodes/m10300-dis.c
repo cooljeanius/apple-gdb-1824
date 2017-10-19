@@ -1,4 +1,4 @@
-/* Disassemble MN10300 instructions.
+/* m10300-dis.c: Disassemble MN10300 instructions.
    Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2003, 2005
    Free Software Foundation, Inc.
 
@@ -17,6 +17,7 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#include "config.h"
 #include <stdio.h>
 
 #include "sysdep.h"

@@ -1,4 +1,4 @@
-/* Print TI TMS320C80 (MVP) instructions
+/* tic80-dis.c: Print TI TMS320C80 (MVP) instructions
    Copyright 1996, 1997, 1998, 2000, 2005 Free Software Foundation, Inc.
 
    This file is free software; you can redistribute it and/or modify
@@ -16,6 +16,7 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#include "config.h"
 #include <stdio.h>
 
 #include "sysdep.h"

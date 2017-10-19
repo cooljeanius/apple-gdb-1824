@@ -1,5 +1,6 @@
 /* mmalloc.cp -*- C++ -*- */
 
+#include "config.h"
 #include <cstring>
 #include <iostream>
 

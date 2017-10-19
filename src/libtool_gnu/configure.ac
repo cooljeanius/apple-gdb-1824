@@ -23,7 +23,7 @@ dnl# Process this file with autoconf to create configure. -*- autoconf -*-
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 ####
 
-
+m4_include([../config/warnings.m4])
 AC_PREREQ([2.62])dnl# Some m4sh scripts use ${as_echo}
 dnl# Oldest automake required for bootstrap is below in AM_INIT_AUTOMAKE.
 
@@ -138,7 +138,11 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   AC_SUBST([TARGET_ARCHITECTURE])
 fi
 
-export C_ARCHFLAGS="-arch ${HOST_ARCHITECTURE}"
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
+  test -n "${C_ARCHFLAGS}" && export C_ARCHFLAGS
+  AC_SUBST([C_ARCHFLAGS])
+fi
 if test "x${CFLAGS}" = "x"; then
   test -z "${CFLAGS}" && export CFLAGS="${C_ARCHFLAGS}"
 else

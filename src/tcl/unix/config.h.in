@@ -627,6 +627,28 @@
 /* Define to 1 to use sgtty */
 #undef USE_SGTTY
 
+/* Enable extensions on AIX 3, Interix.  */
+#ifndef _ALL_SOURCE
+# undef _ALL_SOURCE
+#endif
+/* Enable GNU extensions on systems that have them.  */
+#ifndef _GNU_SOURCE
+# undef _GNU_SOURCE
+#endif
+/* Enable threading extensions on Solaris.  */
+#ifndef _POSIX_PTHREAD_SEMANTICS
+# undef _POSIX_PTHREAD_SEMANTICS
+#endif
+/* Enable extensions on HP NonStop.  */
+#ifndef _TANDEM_SOURCE
+# undef _TANDEM_SOURCE
+#endif
+/* Enable general extensions on Solaris.  */
+#ifndef __EXTENSIONS__
+# undef __EXTENSIONS__
+#endif
+
+
 /* Define to 1 to use sys/exec_aout.h */
 #undef USE_SYS_EXEC_AOUT_H
 
@@ -669,11 +691,21 @@
 /* Define to 1 because ??? */
 #undef _LARGEFILE64_SOURCE
 
+/* Define to 1 if on MINIX. */
+#undef _MINIX
+
 /* needed in sys/socket.h */
 #undef _OE_SOCKETS
 
+/* Define to 2 if the system does not provide POSIX.1 features except with
+   this defined. */
+#undef _POSIX_1_SOURCE
+
 /* Define to 1 to use POSIX pthread semantics */
 #undef _POSIX_PTHREAD_SEMANTICS
+
+/* Define to 1 if you need to in order for `stat' and other things to work. */
+#undef _POSIX_SOURCE
 
 /* If this is not defined, then Solaris will not define thread-safe library
    routines. */

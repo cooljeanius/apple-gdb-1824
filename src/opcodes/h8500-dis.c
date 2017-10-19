@@ -1,4 +1,4 @@
-/* Disassemble h8500 instructions.
+/* h8500-dis.c: Disassemble h8500 instructions.
    Copyright 1993, 1998, 2000, 2001, 2002, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -17,6 +17,7 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#include "config.h"
 #include <stdio.h>
 
 #define DISASSEMBLER_TABLE
