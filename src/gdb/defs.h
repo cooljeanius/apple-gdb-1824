@@ -1871,6 +1871,9 @@ extern struct cleanup *start_timer(int *timer_var, const char *timer_name,
 # ifdef vsprintf
 #  undef vsprintf
 # endif /* vsprintf */
+# ifdef strdup
+#  undef strdup
+# endif /* strdup */
 /* gdbint.texinfo says to avoid these ones: */
 # pragma GCC poison malloc realloc calloc free strdup sprintf
 /* for similar reasons, such as libiberty also providing replacements: */

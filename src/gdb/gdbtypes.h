@@ -345,15 +345,7 @@ enum array_bound_type
   BOUND_CANNOT_BE_DETERMINED
 };
 
-/* Move this up here since the struct we un-nested is space-critical, too: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic warning "-Wpadded"
-#  pragma GCC diagnostic warning "-Wpacked"
-/* "-Wpacked-bitfield-compat" is already on by default. */
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
+/* Removed pushing of -Wpadded on here */
 
 /* un-nested for C++ usage: */
 struct field
@@ -522,12 +514,7 @@ typedef struct main_type
   } type_specific;
 } ATTRIBUTE_PACKED gdbtypes_h_main_type_t;
 
-/* keep this condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
-#  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
+/* Removed popping of -Wpadded off here */
 
 /* A ``struct type'' describes a particular instance of a type, with
    some particular qualification.  */

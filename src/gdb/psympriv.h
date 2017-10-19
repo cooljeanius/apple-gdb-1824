@@ -31,12 +31,7 @@ struct psymbol_allocation_list;
    on a  partial symtab list and which points to the corresponding 
    normal symtab once the partial_symtab has been referenced.  */
 
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic warning "-Wpadded"
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
+/* Removed pushing of -Wpadded on here */
 
 /* This structure is space critical.  See space comments at the top of
    symtab.h.  */
@@ -59,12 +54,7 @@ struct partial_symbol
 #define PSYMBOL_DOMAIN(psymbol)	(psymbol)->domain
 #define PSYMBOL_CLASS(psymbol)		(psymbol)->aclass
 
-/* keep this condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
-#  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
+/* Removed popping of -Wpadded off here */
 
 /* A convenience enum to give names to some constants used when
    searching psymtabs.  This is internal to psymtab and should not be

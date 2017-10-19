@@ -89,14 +89,7 @@ struct agent_expr;
    multilanguage environment, some language specific information may need to
    be recorded along with each symbol. */
 
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic warning "-Wpadded"
-#  pragma GCC diagnostic warning "-Wpacked"
-/* "-Wpacked-bitfield-compat" is already on by default. */
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
+/* Removed pushing of -Wpadded on here */
 
 /* This structure is space critical.  See space comments at the top. */
 
@@ -173,12 +166,7 @@ typedef struct general_symbol_info
   asection *bfd_section;
 } ATTRIBUTE_PACKED gensyminfo_t;
 
-/* keep this condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
-#  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
+/* Removed popping of -Wpadded off here */
 
 extern CORE_ADDR symbol_overlayed_address(CORE_ADDR, asection *)
   ATTRIBUTE_W_U_R;
@@ -622,16 +610,7 @@ struct symbol_ops
 			     struct axs_value *value);
 };
 
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
-#  pragma GCC diagnostic push
-#  if defined(__clang__)
-#   pragma GCC diagnostic warning "-Wpadded"
-#  endif /* __clang__ */
-#  pragma GCC diagnostic warning "-Wpacked"
-/* "-Wpacked-bitfield-compat" is already on by default. */
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
+/* Removed pushing of -Wpadded on here */
 
 /* This structure is space critical.  See space comments at the top. */
 
@@ -724,12 +703,7 @@ typedef struct partial_symbol
   /* FIXME: not packed hard enough; need some extra padding... */
 } ATTRIBUTE_PACKED partial_symbol_t;
 
-/* keep this condition the same as where we push: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
-#  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
+/* Removed popping of -Wpadded off here */
 
 #define PSYMBOL_DOMAIN(psymbol)	(psymbol)->domain
 #define PSYMBOL_CLASS(psymbol)		(psymbol)->aclass
