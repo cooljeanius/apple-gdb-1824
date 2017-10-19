@@ -117,7 +117,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_bison.m4 \
 	$(top_srcdir)/../bfd/warning.m4 \
 	$(top_srcdir)/../config/zlib.m4 $(top_srcdir)/../libtool.m4 \
 	$(top_srcdir)/../gettext.m4 $(top_srcdir)/../bfd/version.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/../config/warnings.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -571,6 +571,7 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CXXFLAGS_FOR_BUILD = @CXXFLAGS_FOR_BUILD@
 CYGPATH_W = @CYGPATH_W@
+C_ARCHFLAGS = @C_ARCHFLAGS@
 DATADIRNAME = @DATADIRNAME@
 DEFS = @DEFS@
 DEMANGLER_NAME = @DEMANGLER_NAME@
@@ -771,7 +772,6 @@ AM_LFLAGS = @MAINT@ -d
 # maintainer mode is disabled.  Avoid this.
 am__skiplex = 
 am__skipyacc = 
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(WARN_CFLAGS) $(C_ARCHFLAGS) @MAINT@ $(WARN_WRITE_STRINGS)
 AM_CFLAGS_FOR_BUILD = $(WARN_CFLAGS_FOR_BUILD) $(ZLIBINC)
 AM_DEFS = @WARN_DEFS@

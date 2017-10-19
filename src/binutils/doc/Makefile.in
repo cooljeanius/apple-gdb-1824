@@ -104,7 +104,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_bison.m4 \
 	$(top_srcdir)/../bfd/warning.m4 \
 	$(top_srcdir)/../config/zlib.m4 $(top_srcdir)/../libtool.m4 \
 	$(top_srcdir)/../gettext.m4 $(top_srcdir)/../bfd/version.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/../config/warnings.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am
@@ -245,6 +245,7 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CXXFLAGS_FOR_BUILD = @CXXFLAGS_FOR_BUILD@
 CYGPATH_W = @CYGPATH_W@
+C_ARCHFLAGS = @C_ARCHFLAGS@
 DATADIRNAME = @DATADIRNAME@
 DEFS = @DEFS@
 DEMANGLER_NAME = @DEMANGLER_NAME@

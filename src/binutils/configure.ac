@@ -4,6 +4,7 @@ dnl#
 
 AC_PREREQ([2.59])
 m4_include([../bfd/version.m4])
+m4_include([../config/warnings.m4])
 dnl# keep version number synced with the one in '../bfd':
 AC_INIT([binutils],[2.16.91],[jmolenda@apple.com])
 dnl# bug report address is email address of last person to touch this
@@ -30,6 +31,10 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
 fi
 AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 AC_USE_SYSTEM_EXTENSIONS
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])
+fi
 
 # Allow the user to override the flags for our build compiler if desired:
 if test x"${build}" = x"${host}"; then

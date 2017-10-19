@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-04 00:50-0500\n"
+"POT-Creation-Date: 2017-10-18 23:38-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -343,52 +343,52 @@ msgstr ""
 msgid "Can't open file %s\n"
 msgstr ""
 
-#: arsup.c:168
+#: arsup.c:169
 #, c-format
 msgid "%s: Can't open output archive %s\n"
 msgstr ""
 
-#: arsup.c:185
+#: arsup.c:186
 #, c-format
 msgid "%s: Can't open input archive %s\n"
 msgstr ""
 
-#: arsup.c:194
+#: arsup.c:195
 #, c-format
 msgid "%s: file %s is not an archive\n"
 msgstr ""
 
-#: arsup.c:233
+#: arsup.c:234
 #, c-format
 msgid "%s: no output archive specified yet\n"
 msgstr ""
 
-#: arsup.c:253 arsup.c:291 arsup.c:333 arsup.c:353 arsup.c:419
+#: arsup.c:254 arsup.c:292 arsup.c:334 arsup.c:354 arsup.c:420
 #, c-format
 msgid "%s: no open output archive\n"
 msgstr ""
 
-#: arsup.c:264 arsup.c:374 arsup.c:400
+#: arsup.c:265 arsup.c:375 arsup.c:401
 #, c-format
 msgid "%s: can't open file %s\n"
 msgstr ""
 
-#: arsup.c:318 arsup.c:396
+#: arsup.c:319 arsup.c:397
 #, c-format
 msgid "%s: can't find module file %s\n"
 msgstr ""
 
-#: arsup.c:428
+#: arsup.c:429
 #, c-format
 msgid "Current open archive is %s\n"
 msgstr ""
 
-#: arsup.c:452
+#: arsup.c:453
 #, c-format
 msgid "%s: no open archive\n"
 msgstr ""
 
-#: arsup.c:477
+#: arsup.c:478
 #, c-format
 msgid "%s: cannot find module file %s\n"
 msgstr ""
@@ -623,330 +623,330 @@ msgstr ""
 msgid "LIBRARY: %s base: %x"
 msgstr ""
 
-#: dlltool.c:1235 resrc.c:255
+#: dlltool.c:1238 resrc.c:257
 #, c-format
 msgid "wait: %s"
 msgstr ""
 
-#: dlltool.c:1240 dllwrap.c:432 resrc.c:260
+#: dlltool.c:1243 dllwrap.c:434 resrc.c:262
 #, c-format
 msgid "subprocess got fatal signal %d"
 msgstr ""
 
-#: dlltool.c:1246 dllwrap.c:439 resrc.c:267
+#: dlltool.c:1249 dllwrap.c:441 resrc.c:269
 #, c-format
 msgid "%s exited with status %d"
 msgstr ""
 
-#: dlltool.c:1284
+#: dlltool.c:1287
 #, c-format
 msgid "Sucking in info from %s section in %s"
 msgstr ""
 
-#: dlltool.c:1412
+#: dlltool.c:1415
 #, c-format
 msgid "Excluding symbol: %s"
 msgstr ""
 
-#: dlltool.c:1501 dlltool.c:1512 nm.c:1015 nm.c:1026
+#: dlltool.c:1504 dlltool.c:1515 nm.c:1015 nm.c:1026
 #, c-format
 msgid "%s: no symbols"
 msgstr ""
 
 #. FIXME: we ought to read in and block out the base relocations.
-#: dlltool.c:1538
+#: dlltool.c:1541
 #, c-format
 msgid "Done reading %s"
 msgstr ""
 
-#: dlltool.c:1548
+#: dlltool.c:1551
 #, c-format
 msgid "Unable to open object file: %s"
 msgstr ""
 
-#: dlltool.c:1551
+#: dlltool.c:1554
 #, c-format
 msgid "Scanning object file %s"
 msgstr ""
 
-#: dlltool.c:1566
+#: dlltool.c:1569
 #, c-format
 msgid "Cannot produce mcore-elf dll from archive file: %s"
 msgstr ""
 
-#: dlltool.c:1652
+#: dlltool.c:1655
 msgid "Adding exports to output file"
 msgstr ""
 
-#: dlltool.c:1694
+#: dlltool.c:1697
 msgid "Added exports to output file"
 msgstr ""
 
-#: dlltool.c:1817
+#: dlltool.c:1821
 #, c-format
 msgid "Generating export file: %s"
 msgstr ""
 
-#: dlltool.c:1822
+#: dlltool.c:1826
 #, c-format
 msgid "Unable to open temporary assembler file: %s"
 msgstr ""
 
-#: dlltool.c:1825
+#: dlltool.c:1829
 #, c-format
 msgid "Opened temporary file: %s"
 msgstr ""
 
-#: dlltool.c:2055
+#: dlltool.c:2059
 msgid "Generated exports file"
 msgstr ""
 
-#: dlltool.c:2263
+#: dlltool.c:2267
 #, c-format
 msgid "bfd_open failed open stub file: %s"
 msgstr ""
 
-#: dlltool.c:2266
+#: dlltool.c:2270
 #, c-format
 msgid "Creating stub file: %s"
 msgstr ""
 
-#: dlltool.c:2655
+#: dlltool.c:2659
 #, c-format
 msgid "failed to open temporary head file: %s"
 msgstr ""
 
-#: dlltool.c:2714
+#: dlltool.c:2718
 #, c-format
 msgid "failed to open temporary tail file: %s"
 msgstr ""
 
-#: dlltool.c:2782
+#: dlltool.c:2786
 #, c-format
 msgid "Cannot open .lib file: %s"
 msgstr ""
 
-#: dlltool.c:2785
+#: dlltool.c:2789
 #, c-format
 msgid "Creating library file: %s"
 msgstr ""
 
-#: dlltool.c:2869 dlltool.c:2876
+#: dlltool.c:2873 dlltool.c:2880
 #, c-format
 msgid "cannot delete %s: %s"
 msgstr ""
 
-#: dlltool.c:2881
+#: dlltool.c:2885
 msgid "Created lib file"
 msgstr ""
 
-#: dlltool.c:2960
+#: dlltool.c:2964
 #, c-format
 msgid "Warning, ignoring duplicate EXPORT %s %d,%d"
 msgstr ""
 
-#: dlltool.c:2966
+#: dlltool.c:2970
 #, c-format
 msgid "Error, duplicate EXPORT with oridinals: %s"
 msgstr ""
 
-#: dlltool.c:3072
+#: dlltool.c:3076
 msgid "Processing definitions"
 msgstr ""
 
-#: dlltool.c:3104
+#: dlltool.c:3108
 msgid "Processed definitions"
 msgstr ""
 
 #. xgetext:c-format
-#: dlltool.c:3112 dllwrap.c:493
+#: dlltool.c:3116 dllwrap.c:495
 #, c-format
 msgid "Usage %s <option(s)> <object-file(s)>\n"
 msgstr ""
 
 #. xgetext:c-format
-#: dlltool.c:3114
+#: dlltool.c:3118
 #, c-format
 msgid ""
 "   -m --machine <machine>    Create as DLL for <machine>.  [default: %s]\n"
 msgstr ""
 
-#: dlltool.c:3115
+#: dlltool.c:3119
 #, c-format
 msgid ""
 "        possible <machine>: arm[_interwork], i386, mcore[-elf]{-le|-be}, "
 "ppc, thumb\n"
 msgstr ""
 
-#: dlltool.c:3116
+#: dlltool.c:3120
 #, c-format
 msgid "   -e --output-exp <outname> Generate an export file.\n"
 msgstr ""
 
-#: dlltool.c:3117
+#: dlltool.c:3121
 #, c-format
 msgid "   -l --output-lib <outname> Generate an interface library.\n"
 msgstr ""
 
-#: dlltool.c:3118
+#: dlltool.c:3122
 #, c-format
 msgid "   -a --add-indirect         Add dll indirects to export file.\n"
 msgstr ""
 
-#: dlltool.c:3119
+#: dlltool.c:3123
 #, c-format
 msgid ""
 "   -D --dllname <name>       Name of input dll to put into interface lib.\n"
 msgstr ""
 
-#: dlltool.c:3120
+#: dlltool.c:3124
 #, c-format
 msgid "   -d --input-def <deffile>  Name of .def file to be read in.\n"
 msgstr ""
 
-#: dlltool.c:3121
+#: dlltool.c:3125
 #, c-format
 msgid "   -z --output-def <deffile> Name of .def file to be created.\n"
 msgstr ""
 
-#: dlltool.c:3122
+#: dlltool.c:3126
 #, c-format
 msgid "      --export-all-symbols   Export all symbols to .def\n"
 msgstr ""
 
-#: dlltool.c:3123
+#: dlltool.c:3127
 #, c-format
 msgid "      --no-export-all-symbols  Only export listed symbols\n"
 msgstr ""
 
-#: dlltool.c:3124
+#: dlltool.c:3128
 #, c-format
 msgid "      --exclude-symbols <list> Don't export <list>\n"
 msgstr ""
 
-#: dlltool.c:3125
+#: dlltool.c:3129
 #, c-format
 msgid "      --no-default-excludes  Clear default exclude symbols\n"
 msgstr ""
 
-#: dlltool.c:3126
+#: dlltool.c:3130
 #, c-format
 msgid "   -b --base-file <basefile> Read linker generated base file.\n"
 msgstr ""
 
-#: dlltool.c:3127
+#: dlltool.c:3131
 #, c-format
 msgid "   -x --no-idata4            Don't generate idata$4 section.\n"
 msgstr ""
 
-#: dlltool.c:3128
+#: dlltool.c:3132
 #, c-format
 msgid "   -c --no-idata5            Don't generate idata$5 section.\n"
 msgstr ""
 
-#: dlltool.c:3129
+#: dlltool.c:3133
 #, c-format
 msgid ""
 "   -U --add-underscore       Add underscores to symbols in interface "
 "library.\n"
 msgstr ""
 
-#: dlltool.c:3130
+#: dlltool.c:3134
 #, c-format
 msgid "   -k --kill-at              Kill @<n> from exported names.\n"
 msgstr ""
 
-#: dlltool.c:3131
+#: dlltool.c:3135
 #, c-format
 msgid "   -A --add-stdcall-alias    Add aliases without @<n>.\n"
 msgstr ""
 
-#: dlltool.c:3132
+#: dlltool.c:3136
 #, c-format
 msgid "   -p --ext-prefix-alias <prefix> Add aliases with <prefix>.\n"
 msgstr ""
 
-#: dlltool.c:3133
+#: dlltool.c:3137
 #, c-format
 msgid "   -S --as <name>            Use <name> for assembler.\n"
 msgstr ""
 
-#: dlltool.c:3134
+#: dlltool.c:3138
 #, c-format
 msgid "   -f --as-flags <flags>     Pass <flags> to the assembler.\n"
 msgstr ""
 
-#: dlltool.c:3135
+#: dlltool.c:3139
 #, c-format
 msgid ""
 "   -C --compat-implib        Create backward compatible import library.\n"
 msgstr ""
 
-#: dlltool.c:3136
+#: dlltool.c:3140
 #, c-format
 msgid ""
 "   -n --no-delete            Keep temp files (repeat for extra "
 "preservation).\n"
 msgstr ""
 
-#: dlltool.c:3137
+#: dlltool.c:3141
 #, c-format
 msgid ""
 "   -t --temp-prefix <prefix> Use <prefix> to construct temp file names.\n"
 msgstr ""
 
-#: dlltool.c:3138
+#: dlltool.c:3142
 #, c-format
 msgid "   -v --verbose              Be verbose.\n"
 msgstr ""
 
-#: dlltool.c:3139
+#: dlltool.c:3143
 #, c-format
 msgid "   -V --version              Display the program version.\n"
 msgstr ""
 
-#: dlltool.c:3140
+#: dlltool.c:3144
 #, c-format
 msgid "   -h --help                 Display this information.\n"
 msgstr ""
 
-#: dlltool.c:3142
+#: dlltool.c:3146
 #, c-format
 msgid ""
 "   -M --mcore-elf <outname>  Process mcore-elf object files into <outname>.\n"
 msgstr ""
 
-#: dlltool.c:3143
+#: dlltool.c:3147
 #, c-format
 msgid "   -L --linker <name>        Use <name> as the linker.\n"
 msgstr ""
 
-#: dlltool.c:3144
+#: dlltool.c:3148
 #, c-format
 msgid "   -F --linker-flags <flags> Pass <flags> to the linker.\n"
 msgstr ""
 
-#: dlltool.c:3258
+#: dlltool.c:3262
 #, c-format
 msgid "Path components stripped from dllname, '%s'."
 msgstr ""
 
-#: dlltool.c:3303
+#: dlltool.c:3307
 #, c-format
 msgid "Unable to open base-file: %s"
 msgstr ""
 
-#: dlltool.c:3335
+#: dlltool.c:3339
 #, c-format
 msgid "Machine '%s' not supported"
 msgstr ""
 
-#: dlltool.c:3439 dllwrap.c:205
+#: dlltool.c:3443 dllwrap.c:205
 #, c-format
 msgid "Tried file: %s"
 msgstr ""
 
-#: dlltool.c:3446 dllwrap.c:212
+#: dlltool.c:3450 dllwrap.c:212
 #, c-format
 msgid "Using file: %s"
 msgstr ""
@@ -981,207 +981,207 @@ msgstr ""
 msgid "Deleting temporary def file %s"
 msgstr ""
 
-#: dllwrap.c:494
+#: dllwrap.c:496
 #, c-format
 msgid "  Generic options:\n"
 msgstr ""
 
-#: dllwrap.c:495
+#: dllwrap.c:497
 #, c-format
 msgid "   --quiet, -q            Work quietly\n"
 msgstr ""
 
-#: dllwrap.c:496
+#: dllwrap.c:498
 #, c-format
 msgid "   --verbose, -v          Verbose\n"
 msgstr ""
 
-#: dllwrap.c:497
+#: dllwrap.c:499
 #, c-format
 msgid "   --version              Print dllwrap version\n"
 msgstr ""
 
-#: dllwrap.c:498
+#: dllwrap.c:500
 #, c-format
 msgid "   --implib <outname>     Synonym for --output-lib\n"
 msgstr ""
 
-#: dllwrap.c:499
+#: dllwrap.c:501
 #, c-format
 msgid "  Options for %s:\n"
 msgstr ""
 
-#: dllwrap.c:500
+#: dllwrap.c:502
 #, c-format
 msgid "   --driver-name <driver> Defaults to \"gcc\"\n"
 msgstr ""
 
-#: dllwrap.c:501
+#: dllwrap.c:503
 #, c-format
 msgid "   --driver-flags <flags> Override default ld flags\n"
 msgstr ""
 
-#: dllwrap.c:502
+#: dllwrap.c:504
 #, c-format
 msgid "   --dlltool-name <dlltool> Defaults to \"dlltool\"\n"
 msgstr ""
 
-#: dllwrap.c:503
+#: dllwrap.c:505
 #, c-format
 msgid "   --entry <entry>        Specify alternate DLL entry point\n"
 msgstr ""
 
-#: dllwrap.c:504
+#: dllwrap.c:506
 #, c-format
 msgid "   --image-base <base>    Specify image base address\n"
 msgstr ""
 
-#: dllwrap.c:505
+#: dllwrap.c:507
 #, c-format
 msgid "   --target <machine>     i386-cygwin32 or i386-mingw32\n"
 msgstr ""
 
-#: dllwrap.c:506
+#: dllwrap.c:508
 #, c-format
 msgid "   --dry-run              Show what needs to be run\n"
 msgstr ""
 
-#: dllwrap.c:507
+#: dllwrap.c:509
 #, c-format
 msgid "   --mno-cygwin           Create Mingw DLL\n"
 msgstr ""
 
-#: dllwrap.c:508
+#: dllwrap.c:510
 #, c-format
 msgid "  Options passed to DLLTOOL:\n"
 msgstr ""
 
-#: dllwrap.c:509
+#: dllwrap.c:511
 #, c-format
 msgid "   --machine <machine>\n"
 msgstr ""
 
-#: dllwrap.c:510
+#: dllwrap.c:512
 #, c-format
 msgid "   --output-exp <outname> Generate export file.\n"
 msgstr ""
 
-#: dllwrap.c:511
+#: dllwrap.c:513
 #, c-format
 msgid "   --output-lib <outname> Generate input library.\n"
 msgstr ""
 
-#: dllwrap.c:512
+#: dllwrap.c:514
 #, c-format
 msgid "   --add-indirect         Add dll indirects to export file.\n"
 msgstr ""
 
-#: dllwrap.c:513
+#: dllwrap.c:515
 #, c-format
 msgid "   --dllname <name>       Name of input dll to put into output lib.\n"
 msgstr ""
 
-#: dllwrap.c:514
+#: dllwrap.c:516
 #, c-format
 msgid "   --def <deffile>        Name input .def file\n"
 msgstr ""
 
-#: dllwrap.c:515
+#: dllwrap.c:517
 #, c-format
 msgid "   --output-def <deffile> Name output .def file\n"
 msgstr ""
 
-#: dllwrap.c:516
+#: dllwrap.c:518
 #, c-format
 msgid "   --export-all-symbols     Export all symbols to .def\n"
 msgstr ""
 
-#: dllwrap.c:517
+#: dllwrap.c:519
 #, c-format
 msgid "   --no-export-all-symbols  Only export .drectve symbols\n"
 msgstr ""
 
-#: dllwrap.c:518
+#: dllwrap.c:520
 #, c-format
 msgid "   --exclude-symbols <list> Exclude <list> from .def\n"
 msgstr ""
 
-#: dllwrap.c:519
+#: dllwrap.c:521
 #, c-format
 msgid "   --no-default-excludes    Zap default exclude symbols\n"
 msgstr ""
 
-#: dllwrap.c:520
+#: dllwrap.c:522
 #, c-format
 msgid "   --base-file <basefile> Read linker generated base file\n"
 msgstr ""
 
-#: dllwrap.c:521
+#: dllwrap.c:523
 #, c-format
 msgid "   --no-idata4           Don't generate idata$4 section\n"
 msgstr ""
 
-#: dllwrap.c:522
+#: dllwrap.c:524
 #, c-format
 msgid "   --no-idata5           Don't generate idata$5 section\n"
 msgstr ""
 
-#: dllwrap.c:523
+#: dllwrap.c:525
 #, c-format
 msgid "   -U                     Add underscores to .lib\n"
 msgstr ""
 
-#: dllwrap.c:524
+#: dllwrap.c:526
 #, c-format
 msgid "   -k                     Kill @<n> from exported names\n"
 msgstr ""
 
-#: dllwrap.c:525
+#: dllwrap.c:527
 #, c-format
 msgid "   --add-stdcall-alias    Add aliases without @<n>\n"
 msgstr ""
 
-#: dllwrap.c:526
+#: dllwrap.c:528
 #, c-format
 msgid "   --as <name>            Use <name> for assembler\n"
 msgstr ""
 
-#: dllwrap.c:527
+#: dllwrap.c:529
 #, c-format
 msgid "   --nodelete             Keep temp files.\n"
 msgstr ""
 
-#: dllwrap.c:528
+#: dllwrap.c:530
 #, c-format
 msgid "  Rest are passed unmodified to the language driver\n"
 msgstr ""
 
-#: dllwrap.c:798
+#: dllwrap.c:800
 msgid "Must provide at least one of -o or --dllname options"
 msgstr ""
 
-#: dllwrap.c:828
+#: dllwrap.c:830
 msgid ""
 "no export definition file provided.\n"
 "Creating one, but that may not be what you want"
 msgstr ""
 
-#: dllwrap.c:987
+#: dllwrap.c:989
 #, c-format
 msgid "DLLTOOL name    : %s\n"
 msgstr ""
 
-#: dllwrap.c:988
+#: dllwrap.c:990
 #, c-format
 msgid "DLLTOOL options : %s\n"
 msgstr ""
 
-#: dllwrap.c:989
+#: dllwrap.c:991
 #, c-format
 msgid "DRIVER name     : %s\n"
 msgstr ""
 
-#: dllwrap.c:990
+#: dllwrap.c:992
 #, c-format
 msgid "DRIVER options  : %s\n"
 msgstr ""
@@ -3226,12 +3226,12 @@ msgstr ""
 msgid "overflow when adjusting relocation against %s"
 msgstr ""
 
-#: nlmconv.c:2130
+#: nlmconv.c:2132
 #, c-format
 msgid "%s: execution of %s failed: "
 msgstr ""
 
-#: nlmconv.c:2145
+#: nlmconv.c:2147
 #, c-format
 msgid "Execution of %s failed"
 msgstr ""
@@ -6689,110 +6689,110 @@ msgstr ""
 msgid "cannot get BFD_RELOC_RVA relocation type"
 msgstr ""
 
-#: resrc.c:223 resrc.c:300
+#: resrc.c:225 resrc.c:302
 #, c-format
 msgid "cannot open temporary file `%s': %s"
 msgstr ""
 
-#: resrc.c:229
+#: resrc.c:231
 #, c-format
 msgid "cannot redirect stdout: `%s': %s"
 msgstr ""
 
-#: resrc.c:246
+#: resrc.c:248
 #, c-format
 msgid "%s %s: %s"
 msgstr ""
 
-#: resrc.c:296
+#: resrc.c:298
 #, c-format
 msgid "cannot execute `%s': %s"
 msgstr ""
 
-#: resrc.c:305
+#: resrc.c:307
 #, c-format
 msgid "Using temporary file `%s' to read preprocessor output\n"
 msgstr ""
 
-#: resrc.c:312
+#: resrc.c:314
 #, c-format
 msgid "cannot popen `%s': %s"
 msgstr ""
 
-#: resrc.c:314
+#: resrc.c:316
 #, c-format
 msgid "Using popen to read preprocessor output\n"
 msgstr ""
 
-#: resrc.c:319
+#: resrc.c:321
 #, c-format
 msgid "Failed to register close_input_stream with xatexit."
 msgstr ""
 
-#: resrc.c:357
+#: resrc.c:359
 #, c-format
 msgid "Tried `%s'\n"
 msgstr ""
 
-#: resrc.c:368
+#: resrc.c:370
 #, c-format
 msgid "Using `%s'\n"
 msgstr ""
 
-#: resrc.c:517
+#: resrc.c:519
 #, c-format
 msgid "%s:%d: %s\n"
 msgstr ""
 
-#: resrc.c:524
+#: resrc.c:526
 #, c-format
 msgid "%s: unexpected EOF"
 msgstr ""
 
-#: resrc.c:570
+#: resrc.c:572
 #, c-format
 msgid "%s: read of %lu returned %lu"
 msgstr ""
 
-#: resrc.c:606 resrc.c:1104
+#: resrc.c:608 resrc.c:1106
 #, c-format
 msgid "stat failed on bitmap file `%s': %s"
 msgstr ""
 
-#: resrc.c:656
+#: resrc.c:658
 #, c-format
 msgid "cursor file `%s' does not contain cursor data"
 msgstr ""
 
-#: resrc.c:686 resrc.c:976
+#: resrc.c:688 resrc.c:978
 #, c-format
 msgid "%s: fseek to %lu failed: %s"
 msgstr ""
 
-#: resrc.c:808
+#: resrc.c:810
 msgid "help ID requires DIALOGEX"
 msgstr ""
 
-#: resrc.c:810
+#: resrc.c:812
 msgid "control data requires DIALOGEX"
 msgstr ""
 
-#: resrc.c:837
+#: resrc.c:839
 #, c-format
 msgid "stat failed on font file `%s': %s"
 msgstr ""
 
-#: resrc.c:947
+#: resrc.c:949
 #, c-format
 msgid "icon file `%s' does not contain icon data"
 msgstr ""
 
-#: resrc.c:1239 resrc.c:1273
+#: resrc.c:1241 resrc.c:1275
 #, c-format
 msgid "stat failed on file `%s': %s"
 msgstr ""
 
-#: resrc.c:1457
+#: resrc.c:1459
 #, c-format
 msgid "cannot open `%s' for output: %s"
 msgstr ""

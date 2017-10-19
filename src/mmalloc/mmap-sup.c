@@ -392,6 +392,7 @@ __mmalloc_mmap_morecore(struct mdesc *mdp, int size)
 PTR
 mmalloc_findbase(size_t size, void *base)
 {
+#ifdef __MACH__
   vm_address_t last = (vm_address_t)base;
 
   if (last == 0) {
@@ -432,6 +433,11 @@ mmalloc_findbase(size_t size, void *base)
 
     last = (r_start + r_size);
   }
+#else
+  (void)size;
+  (void)base;
+  return NULL;
+#endif /* __MACH__ */
 }
 
 PTR
