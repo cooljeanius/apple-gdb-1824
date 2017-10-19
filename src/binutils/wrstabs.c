@@ -775,6 +775,16 @@ stab_bool_type (void *p, unsigned int size)
   return stab_push_defined_type (info, lindex, size);
 }
 
+#ifndef SIZE_T_MAX
+# ifdef SIZE_MAX
+#  define SIZE_T_MAX SIZE_MAX
+# else
+#  ifdef __SIZE_MAX__
+#   define SIZE_T_MAX __SIZE_MAX__
+#  endif /* __SIZE_MAX__ */
+# endif /* SIZE_MAX */
+#endif /* !SIZE_T_MAX */
+
 /* Push an enum type.  */
 
 static bfd_boolean

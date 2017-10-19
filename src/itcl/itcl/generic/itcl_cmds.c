@@ -30,6 +30,18 @@
  */
 #include "itclInt.h"
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
+#ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif /* HAVE_INTTYPES_H */
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif /* HAVE_SYS_TYPES_H */
+
 /*
  *  FORWARD DECLARATIONS
  */

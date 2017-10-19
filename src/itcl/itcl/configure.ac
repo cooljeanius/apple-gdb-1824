@@ -192,6 +192,7 @@ m4_ifdef([SC_PUBLIC_TCL_HEADERS],[
 ])dnl
   ## just these:
 SC_PRIVATE_TCL_HEADERS
+AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 
 #--------------------------------------------------------------------
 # __CHANGE__
@@ -230,6 +231,10 @@ AC_SUBST([CLEANFILES])dnl
 AC_SUBST([PLATFORM_SOURCES])dnl
 AC_SUBST([PLATFORM_OBJECTS])dnl
 AC_SUBST([PLATFORM_DIR])dnl
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_TYPE_INTPTR_T
+AC_TYPE_SIZE_T
 
 #--------------------------------------------------------------------
 # Check whether --enable-threads or --disable-threads was given.
@@ -278,6 +283,9 @@ if test "${SHARED_BUILD}" = "1" ; then
 else
     CFLAGS='${CFLAGS_DEFAULT} ${CFLAGS_WARNING}'
 fi
+
+# Checks for library functions.
+AC_CHECK_FUNCS([strstr])
 
 #--------------------------------------------------------------------
 # Everyone should be linking against the Tcl stub library.  If you

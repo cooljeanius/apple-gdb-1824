@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-19 07:33-0400\n"
+"POT-Creation-Date: 2017-10-19 07:44-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -7256,7 +7256,7 @@ msgstr ""
 msgid "no resources"
 msgstr ""
 
-#: wrstabs.c:357 wrstabs.c:1923
+#: wrstabs.c:357 wrstabs.c:1933
 #, c-format
 msgid "string_hash_lookup failed: %s"
 msgstr ""
@@ -7266,7 +7266,7 @@ msgstr ""
 msgid "stab_int_type: bad size %u"
 msgstr ""
 
-#: wrstabs.c:1398
+#: wrstabs.c:1408
 #, c-format
 msgid "%s: warning: unknown size for field `%s' in struct"
 msgstr ""
