@@ -25,6 +25,18 @@
 # include <X11/Xatom.h>
 #endif /* MAC_TCL */
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
+#ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif /* HAVE_INTTYPES_H */
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif /* HAVE_SYS_TYPES_H */
+
 #if (TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION == 0) /* Tcl8.0 stuff */
 #define Tcl_GetString(objPtr)	Tcl_GetStringFromObj(objPtr, (int *)NULL)
 #endif

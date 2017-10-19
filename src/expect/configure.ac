@@ -8,6 +8,8 @@ define([AC_CACHE_LOAD],[])
 define([AC_CACHE_SAVE],[])
 dnl# END CYGNUS LOCAL
 
+m4_include([../config/warnings.m4])dnl
+
 AC_PREREQ([2.69])
 AC_INIT([expect],[5.26],[libes@nist.gov])
 AC_CONFIG_SRCDIR([expect.h])dnl
@@ -49,6 +51,11 @@ fi
 
 AC_USE_SYSTEM_EXTENSIONS
 AC_EXEEXT
+
+if test -n "${HOST_ARCHITECTURE}"; then
+  ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])
+fi
 
 AC_CONFIG_HEADERS([expect_cf.h])dnl
 

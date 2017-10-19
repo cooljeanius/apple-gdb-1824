@@ -18,6 +18,18 @@
 #include <stdlib.h>
 #include <tk.h>
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
+#ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif /* HAVE_INTTYPES_H */
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif /* HAVE_SYS_TYPES_H */
+
 /* structure for use in parsing table commands/values */
 typedef struct {
   char *name;		/* name of the command/value */

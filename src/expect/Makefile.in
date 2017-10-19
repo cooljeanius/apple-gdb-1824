@@ -78,7 +78,7 @@ X11_LD_FLAGS =
 # computed by configure. Do this at your own risk - it obviously goes
 # against the idea of configure's interface, however this is established
 # tradition at some sites (e.g., Cygnus)!
-C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+C_ARCHFLAGS = @C_ARCHFLAGS@
 CFLAGS = @CFLAGS@
 XCFLAGS = @CFLAGS@ @EXP_CFLAGS@ $(C_ARCHFLAGS) -std=gnu89
 

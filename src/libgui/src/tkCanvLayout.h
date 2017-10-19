@@ -1,3 +1,5 @@
+/* tkCanvLayout.h */
+
 #ifndef LAYOUT_H
 #define LAYOUT_H 1
 

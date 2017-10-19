@@ -41,6 +41,8 @@ AC_CHECK_HEADERS([ctype.h stdio.h getopt.h fcntl.h sys/file.h])
 AC_C_CONST
 AC_TYPE_SIZE_T
 AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
+AC_TYPE_INTPTR_T
+AC_TYPE_UINTPTR_T
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
