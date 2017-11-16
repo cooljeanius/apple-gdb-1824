@@ -634,6 +634,7 @@ gl_LTLIBOBJS
 LTLIBOBJS
 EXTRA_DEFS
 acl_cv_wl
+ifnGNUmake
 ifGNUmake
 GMAKE_FALSE
 GMAKE_TRUE
@@ -38492,10 +38493,19 @@ else
   ifGNUmake=""
 fi
   if test "x$_cv_gnu_make_command" = x""; then :
+  ifnGNUmake=""
+else
+  ifGNUmake="#"
+fi
+  if test "x$_cv_gnu_make_command" = x""; then :
   { ax_cv_gnu_make_command=; unset ax_cv_gnu_make_command;}
 else
   ax_cv_gnu_make_command=${_cv_gnu_make_command}
 fi
+  if test "x$_cv_gnu_make_command" = x""; then :
+
+fi
+
 
 
 

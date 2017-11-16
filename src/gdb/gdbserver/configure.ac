@@ -25,6 +25,9 @@ dnl# Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.59])dnl
 
 m4_include([../../config/warnings.m4])
+m4_ifndef([libiberty_INIT],[
+m4_include([../../libiberty/m4/libiberty.m4])
+])
 AC_INIT([gdbserver],[1824],[gclayton@apple.com])
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
@@ -300,6 +303,16 @@ if test "x${ac_cv_have_decl_basename}" = "x"; then
 #endif /* HAVE_LIBGEN_H */
   ])dnl
   ## ...or maybe it is below?
+elif test "x${ac_cv_have_decl_basename}" = "xyes"; then
+  test -n "${ac_cv_have_decl_basename}"
+  AC_DEFINE([HAVE_DECL_BASENAME],[1],
+      [Define to 1 if you have the declaration of `basename', and to 0 if you
+       do not.])
+elif test "x${ac_cv_have_decl_basename}" = "xno"; then
+  test -n "${ac_cv_have_decl_basename}"
+  AC_DEFINE([HAVE_DECL_BASENAME],[0],
+      [Define to 1 if you have the declaration of `basename', and to 0 if you
+       do not.])
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.

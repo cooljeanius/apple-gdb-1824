@@ -6891,6 +6891,16 @@ cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_BASENAME $ac_have_decl
 _ACEOF
   ## ...or maybe it is below?
+elif test "x${ac_cv_have_decl_basename}" = "xyes"; then
+  test -n "${ac_cv_have_decl_basename}"
+
+$as_echo "#define HAVE_DECL_BASENAME 1" >>confdefs.h
+
+elif test "x${ac_cv_have_decl_basename}" = "xno"; then
+  test -n "${ac_cv_have_decl_basename}"
+
+$as_echo "#define HAVE_DECL_BASENAME 0" >>confdefs.h
+
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.

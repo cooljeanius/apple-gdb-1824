@@ -801,7 +801,7 @@ mi_cmd_file_fix_file(char *command, char **argv, int argc)
      }
    argv += local_optind;
    argc -= local_optind;
-  
+
    if ((argc < 0) || (argv == NULL)) {
      warning(_("mi_cmd_file_fix_file: bad arguments(?)\n"));
    }
@@ -1122,7 +1122,7 @@ get_register (int regnum, int format)
 	  int idx =
 	    ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
 	     ? j : (register_size(current_gdbarch, regnum) - 1 - j));
-	  snprintf(ptr, BUF_LEN_MAX_FOR_SNPRINTF, "%02x",
+	  snprintf(ptr, (sizeof(buf) - 2UL), "%02x",
 		   (unsigned char)buffer[idx]);
 	  ptr += 2;
 	}

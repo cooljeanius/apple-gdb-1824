@@ -29,6 +29,10 @@
 # include "wincecompat.h"
 #endif /* __MINGW32CE__ */
 
+/* FIXME: for -Wundef; should already be in "config.h": */
+#ifndef HAVE_DECL_BASENAME
+# define HAVE_DECL_BASENAME 0
+#endif /* !HAVE_DECL_BASENAME */
 #include "libiberty.h"
 #include "ansidecl.h"
 #include "version.h"

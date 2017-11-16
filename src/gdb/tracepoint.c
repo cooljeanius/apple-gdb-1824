@@ -614,7 +614,7 @@ tracepoint_operation (struct tracepoint *t, int from_tty,
 
       xfree(t);
       break;
-	
+
     default:
       break;
     }
@@ -1428,7 +1428,7 @@ stringify_collection_list(struct collection_list *list, char *string)
 	  QUIT;			/* allow user to bail out with ^C */
 	  if (info_verbose)
 	    printf_filtered ("%02X", list->regs_mask[i]);
-	  snprintf(end, BUF_LEN_MAX_FOR_SNPRINTF, "%02X", list->regs_mask[i]);
+	  snprintf(end, (sizeof(temp_buf) - 1UL), "%02X", list->regs_mask[i]);
 	  end += 2;
 	}
       (*str_list)[ndx] = savestring (temp_buf, end - temp_buf);

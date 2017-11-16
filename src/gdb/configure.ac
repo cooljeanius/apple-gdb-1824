@@ -3299,7 +3299,8 @@ opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wmaybe-uninitialized -Wstrict-overflow=1 -fno-strict-aliasing \
 -Wnull-dereference -Wframe-address -Wframe-larger-than=262144"
 if test "x${ax_cv_c_compiler_vendor}" != "xclang"; then
-  opt_warnings="${opt_warnings} -Wsuggest-attribute=const"
+  opt_warnings="${opt_warnings} -Wsuggest-attribute=const \
+-Wsuggest-attribute=cold"
 fi
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
