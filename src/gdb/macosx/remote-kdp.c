@@ -1475,6 +1475,7 @@ kdp_store_registers_i386(int regno)
       /* Subtract 8 from size to avoid -Wstringop-overflow: */
       memcpy(c.response->readregs_reply.data, &fp_regs.hw_fu_state,
              ((GDB_i386_THREAD_FPSTATE_COUNT * 4) - 8));
+      /* FIXME: ...but that leads to -Warray-bounds? */
 
       c.request->writeregs_req.hdr.request = KDP_WRITEREGS;
       c.request->writeregs_req.cpu = 0;

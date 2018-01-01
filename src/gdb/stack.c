@@ -929,9 +929,10 @@ print_frame(struct frame_info *fi, int print_level, enum print_what print_what,
 
 /* Show the frame info.  If this is the tui, it will be shown in
    the source display otherwise, nothing is done */
-void ATTRIBUTE_CONST
-show_stack_frame(struct frame_info *fi ATTRIBUTE_UNUSED)
+void
+show_stack_frame(struct frame_info *fi)
 {
+  (void)fi;
   return;
 }
 

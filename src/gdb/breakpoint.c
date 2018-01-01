@@ -6970,6 +6970,7 @@ break_command_2(const char *arg, int flag, int from_tty,
 	  pending = 1;
 	  break;
 	}
+      ATTRIBUTE_FALLTHROUGH; /* XXX really fallthrough? */
     default:
       if (!sals.nelts)
 	return GDB_RC_FAIL;

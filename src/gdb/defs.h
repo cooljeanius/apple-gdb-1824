@@ -611,7 +611,7 @@ extern int subset_compare(char *, const char *);
 extern char *safe_strerror(int) ATTRIBUTE_W_U_R ATTRIBUTE_RETURNS_NONNULL;
 
 /* APPLE LOCAL begin mmalloc */
-extern void *init_malloc(void *) ATTRIBUTE_W_U_R ATTRIBUTE_MALLOC;
+extern void *init_malloc(void *) ATTRIBUTE_W_U_R ATTRIBUTE_CONST;
 extern void init_mmalloc_default_pool(void *);
 /* APPLE LOCAL end mmalloc */
 

@@ -173,7 +173,7 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
 
   init_minimal_symbol_collection();
   mycleanup = make_cleanup_discard_minimal_symbols();
-  
+
   gdb_assert(mycleanup != NULL);
 
   stabsect = bfd_get_section_by_name(sym_bfd, stab_name);
@@ -784,9 +784,9 @@ macho_read_indirect_symbols(bfd *abfd,
 	  int printed;
 	  void *nameptr;
 	  struct minimal_symbol *myminsym = (struct minimal_symbol *)NULL;
-	  
+
 	  nameptr = memset((void *)&nname, 0, sizeof(nname));
-	  
+
 	  CHECK_FATAL(nameptr != NULL);
 
           if (cursym >= dysymtab->nindirectsyms)
@@ -825,6 +825,7 @@ macho_read_indirect_symbols(bfd *abfd,
 	      break;
 	    }
 	  }
+	  /* argh that no longer works; now we get -Wformat-truncation... */
           printed = snprintf(nname, sizeof(nname), "dyld_stub_%s", sname_arr);
 	  CHECK_FATAL((size_t)printed == strlen(nname));
 #if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG))
@@ -1102,7 +1103,7 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
 	     that from the section addr.
 	     I am not going to fix this right now. */
 
-	  *sym_offsets = 
+	  *sym_offsets =
 	    ((struct section_offsets *)
 	     xmalloc(SIZEOF_N_SECTION_OFFSETS(addrs->num_sections)));
 	  for (i = 0; i < (int)addrs->num_sections; i++)

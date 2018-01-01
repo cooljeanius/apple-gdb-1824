@@ -3086,8 +3086,8 @@
 		619D58871C6A5E4C00F07C54 /* string.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = string.in.h; sourceTree = "<group>"; };
 		619D58891C6A5E4C00F07C54 /* update-gnulib.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "update-gnulib.sh"; sourceTree = "<group>"; };
 		619D588A1C6A5E4C00F07C54 /* wchar.in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wchar.in.h; sourceTree = "<group>"; };
-		61A8E0C21F3A2129007493C8 /* elfxx-aarch64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "elfxx-aarch64.h"; path = "/var/root/apple-gdb-1824/src/bfd/elfxx-aarch64.h"; sourceTree = "<absolute>"; };
-		61A8E0C31F3A2129007493C8 /* elfxx-aarch64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "elfxx-aarch64.c"; path = "/var/root/apple-gdb-1824/src/bfd/elfxx-aarch64.c"; sourceTree = "<absolute>"; };
+		61A8E0C21F3A2129007493C8 /* elfxx-aarch64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elfxx-aarch64.c"; sourceTree = "<group>"; };
+		61A8E0C31F3A2129007493C8 /* elfxx-aarch64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "elfxx-aarch64.h"; sourceTree = "<group>"; };
 		61AA20741CD3F3F00045E89A /* m68hc11-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "m68hc11-tdep.h"; sourceTree = "<group>"; };
 		61AA20BF1CD647B50045E89A /* tm-mach3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-mach3.h"; sourceTree = "<group>"; };
 		61AA20C01CD6CC6B0045E89A /* remote-mips.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "remote-mips.h"; sourceTree = "<group>"; };
@@ -6551,8 +6551,8 @@
 				2609CF4D0E82C407008125DE /* elflink.h */,
 				2609CF4E0E82C407008125DE /* elfn32-mips.c */,
 				6119070A1CA5E5E400AD73D8 /* elfnn-aarch64.c */,
-				61A8E0C21F3A2129007493C8 /* elfxx-aarch64.h */,
-				61A8E0C31F3A2129007493C8 /* elfxx-aarch64.c */,
+				61A8E0C21F3A2129007493C8 /* elfxx-aarch64.c */,
+				61A8E0C31F3A2129007493C8 /* elfxx-aarch64.h */,
 				2609CF4F0E82C407008125DE /* elfxx-ia64.c */,
 				2609CF500E82C408008125DE /* elfxx-mips.c */,
 				2609CF510E82C408008125DE /* elfxx-mips.h */,

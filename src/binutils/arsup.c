@@ -153,7 +153,7 @@ maybequit (void)
 void
 ar_open (char *name, int t)
 {
-  const size_t tnamelen = (strlen(name) + 10UL);
+  const size_t tnamelen = (max(strlen(name), 1UL) + 10UL);
   char *tname = (char *)xmalloc(tnamelen);
   const char *bname = lbasename(name);
   real_name = name;
@@ -166,7 +166,7 @@ ar_open (char *name, int t)
   if (!obfd)
     {
       fprintf (stderr,
-	       _("%s: Can't open output archive %s\n"),
+	       _("%s: Cannot open output archive %s\n"),
 	       program_name,  tname);
 
       maybequit ();

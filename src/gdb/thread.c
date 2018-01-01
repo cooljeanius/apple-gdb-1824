@@ -518,7 +518,7 @@ info_threads_command(const char *arg, int from_tty)
           strlcpy(buf1, "\"", sizeof(buf1));
           strlcat(buf1, s, sizeof(buf1));
           strlcat(buf1, "\"", sizeof(buf1));
-          snprintf(buf2, (sizeof(buf2) - 1UL), "%-*s",
+          snprintf(buf2, sizeof(buf2), "%-*s",
                    (int)(longest_threadname + 2UL), buf1);
           buf2[sizeof(buf2) - 1UL] = '\0';
           ui_out_field_string(uiout, "target_thread_name", buf2);

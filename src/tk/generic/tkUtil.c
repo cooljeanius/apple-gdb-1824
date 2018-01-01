@@ -1,4 +1,4 @@
-/* 
+/*
  * tkUtil.c --
  *
  *	This file contains miscellaneous utility procedures that
@@ -297,6 +297,7 @@ TkOffsetParseProc(clientData, interp, tkwin, value, widgRec, offset)
 		    tsoffset.flags = INT_MAX;
 		    goto goodTSOffset;
 	    }
+	    /*FALLTHRU*/
 	case 'w':
 	    if (value[1] != '\0') {goto badTSOffset;}
 	    tsoffset.flags = TK_OFFSET_LEFT|TK_OFFSET_MIDDLE;
@@ -438,7 +439,7 @@ TkOffsetPrintProc(clientData, tkwin, widgRec, offset, freeProcPtr)
 	} else if ((offsetPtr->flags) & TK_OFFSET_RIGHT) {
 	    return "se";
 	}
-    } 
+    }
     q = p = (char *) ckalloc(32);
     if ((offsetPtr->flags) & TK_OFFSET_RELATIVE) {
 	*q++ = '#';
@@ -574,7 +575,7 @@ TkDrawInsetFocusHighlight(tkwin, gc, width, drawable, padding)
  *
  *      This function is now deprecated.  Use TkpDrawHighlightBorder instead,
  *      since this function does not handle drawing the Focus ring properly
- *      on the Macintosh - you need to know the background GC as well 
+ *      on the Macintosh - you need to know the background GC as well
  *      as the foreground since the Mac focus ring separated from the widget
  *      by a 1 pixel border.
  *
@@ -901,8 +902,8 @@ TkFindStateNum(interp, option, mapPtr, strKey)
 	Tcl_AppendResult(interp, "bad ", option, " value \"", strKey,
 		"\": must be ", mPtr->strKey, (char *) NULL);
 	for (mPtr++; mPtr->strKey != NULL; mPtr++) {
-	    Tcl_AppendResult(interp, 
-		    ((mPtr[1].strKey != NULL) ? ", " : ", or "), 
+	    Tcl_AppendResult(interp,
+		    ((mPtr[1].strKey != NULL) ? ", " : ", or "),
 		    mPtr->strKey, (char *) NULL);
 	}
     }
@@ -934,7 +935,7 @@ TkFindStateNumObj(interp, optionPtr, mapPtr, keyPtr)
 	    }
 	    keyPtr->internalRep.twoPtrValue.ptr1 = (VOID *) mapPtr;
 	    keyPtr->internalRep.twoPtrValue.ptr2 = (VOID *) mPtr->numKey;
-	    keyPtr->typePtr = &tkStateKeyObjType;	    
+	    keyPtr->typePtr = &tkStateKeyObjType;
 	    return mPtr->numKey;
 	}
     }
@@ -944,8 +945,8 @@ TkFindStateNumObj(interp, optionPtr, mapPtr, keyPtr)
 		Tcl_GetStringFromObj(optionPtr, NULL), " value \"", key,
 		"\": must be ", mPtr->strKey, (char *) NULL);
 	for (mPtr++; mPtr->strKey != NULL; mPtr++) {
-	    Tcl_AppendResult(interp, 
-		((mPtr[1].strKey != NULL) ? ", " : ", or "), 
+	    Tcl_AppendResult(interp,
+		((mPtr[1].strKey != NULL) ? ", " : ", or "),
 		mPtr->strKey, (char *) NULL);
 	}
     }

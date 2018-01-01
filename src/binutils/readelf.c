@@ -3361,7 +3361,7 @@ process_program_headers(FILE *file)
 		    program_interpreter);
 	    }
 	  break;
-	    
+
 	default:
 	  break;
 	}
@@ -6663,7 +6663,7 @@ get_symbol_binding(unsigned int binding)
 static const char *
 get_symbol_type (unsigned int type)
 {
-  static char buff[32];
+  static char buff[34]; /* 32 + 2, for -Wformat-truncation */
 
   switch (type)
     {
@@ -6686,7 +6686,7 @@ get_symbol_type (unsigned int type)
 	  if (elf_header.e_machine == EM_PARISC && type == STT_PARISC_MILLI)
 	    return "PARISC_MILLI";
 
-	  snprintf (buff, sizeof (buff), _("<processor specific>: %d"), type);
+	  snprintf(buff, sizeof(buff), _("<processor specific>: %d"), type);
 	}
       else if (type >= STT_LOOS && type <= STT_HIOS)
 	{

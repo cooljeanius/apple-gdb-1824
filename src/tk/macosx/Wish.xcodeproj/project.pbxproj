@@ -1748,6 +1748,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			isa = PBXProject;
 			buildConfigurationList = 618C86901CEE812F004BBE5E /* Build configuration list for PBXProject "Wish" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				English,
