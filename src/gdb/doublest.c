@@ -204,13 +204,13 @@ convert_floatformat_to_doublest(const struct floatformat *fmt,
   /* Build the result algebraically.  Might go infinite, underflow, etc;
      who cares. */
 
-/* If this format uses a hidden bit, explicitly add it in now.  Otherwise,
-   increment the exponent by one to account for the integer bit.  */
+  /* If this format uses a hidden bit, explicitly add it in now.  Otherwise,
+     increment the exponent by one to account for the integer bit.  */
 
   if (!special_exponent)
     {
       if (fmt->intbit == floatformat_intbit_no)
-	dto = ldexp((double)1.0f, exponent);
+	dto = ldexpl((long double)1.0f, exponent);
       else
 	exponent++;
     }
@@ -221,7 +221,7 @@ convert_floatformat_to_doublest(const struct floatformat *fmt,
 
       mant = get_field(ufrom, order, fmt->totalsize, mant_off, mant_bits);
 
-      dto += ldexp((double)mant, (exponent - mant_bits));
+      dto += ldexpl((long double)mant, (exponent - mant_bits));
       exponent -= mant_bits;
       mant_off += mant_bits;
       mant_bits_left -= mant_bits;
@@ -693,43 +693,43 @@ floatformat_to_doublest (const struct floatformat *fmt,
   if (fmt == host_float_format)
     {
       float val;
-      memcpy (&val, in, sizeof (val));
-      *out = val;
+      memcpy(&val, in, sizeof(val));
+      *out = (DOUBLEST)val;
     }
   else if (fmt == host_double_format)
     {
       double val;
-      memcpy (&val, in, sizeof (val));
-      *out = val;
+      memcpy(&val, in, sizeof(val));
+      *out = (DOUBLEST)val;
     }
   else if (fmt == host_long_double_format)
     {
       long double val;
-      memcpy (&val, in, sizeof (val));
+      memcpy(&val, in, sizeof(val));
       *out = val;
     }
-  else if (floatformats_same_except_for_byteorder (fmt, host_float_format)
-           && floatformat_byteorders_are_reversed (fmt->byteorder,
+  else if (floatformats_same_except_for_byteorder(fmt, host_float_format)
+           && floatformat_byteorders_are_reversed(fmt->byteorder,
                                                   host_float_format->byteorder))
     {
       float val;
-      swap_bytes ((gdb_byte *) in, (gdb_byte *) &val, sizeof (val));
-      *out = val;
+      swap_bytes((gdb_byte *)in, (gdb_byte *)&val, sizeof(val));
+      *out = (DOUBLEST)val;
     }
   else if (floatformats_same_except_for_byteorder (fmt, host_double_format)
            && floatformat_byteorders_are_reversed (fmt->byteorder,
                                                  host_double_format->byteorder))
     {
       double val;
-      swap_bytes ((gdb_byte *) in, (gdb_byte *) &val, sizeof (val));
-      *out = val;
+      swap_bytes((gdb_byte *)in, (gdb_byte *)&val, sizeof(val));
+      *out = (DOUBLEST)val;
     }
-  else if (floatformats_same_except_for_byteorder (fmt, host_long_double_format)
-           && floatformat_byteorders_are_reversed (fmt->byteorder,
+  else if (floatformats_same_except_for_byteorder(fmt, host_long_double_format)
+           && floatformat_byteorders_are_reversed(fmt->byteorder,
                                             host_long_double_format->byteorder))
     {
       long double val;
-      swap_bytes ((gdb_byte *) in, (gdb_byte *) &val, sizeof (val));
+      swap_bytes((gdb_byte *)in, (gdb_byte *)&val, sizeof(val));
       *out = val;
     }
   else

@@ -1,4 +1,4 @@
-/* Support for printing Ada types for GDB, the GNU debugger.
+/* ada-typeprint.c: Support for printing Ada types for GDB, the GNU debugger.
    Copyright 1986, 1988, 1989, 1991, 1997, 1998, 1999, 2000,
    2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
@@ -339,7 +339,7 @@ print_fixed_point_type(struct type *type, struct ui_file *stream)
   DOUBLEST delta = ada_delta(type);
   DOUBLEST small = ada_fixed_to_float(type, (LONGEST)1.0f);
 
-  if (delta < 0.0f)
+  if (delta < (DOUBLEST)0.0f)
     fprintf_filtered(stream, "delta ??");
   else
     {

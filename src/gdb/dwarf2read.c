@@ -8159,7 +8159,7 @@ read_partial_die(struct partial_die_info *part_die,
 		{
 		  const char *short_name;
 		  char *extension;
-		  char *short_end;
+		  char *short_end = NULL;
 		  const char *end = part_die->name + strlen(part_die->name);
 		  int is_equivalence_name = 1;
 
@@ -8168,13 +8168,11 @@ read_partial_die(struct partial_die_info *part_die,
 		  if (extension)
 		    {
 		      short_end = extension;
-		      while (extension[0] != '\0'
-			     && extension < end
+		      while ((extension[0] != '\0') && (extension < end)
 			     && is_equivalence_name)
 			{
-			  if (!isdigit(extension[0])
-			      && !isupper(extension[0])
-			      && extension[0] != '$')
+			  if (!isdigit(extension[0]) && !isupper(extension[0])
+			      && (extension[0] != '$'))
 			    is_equivalence_name = 0;
 			  extension++;
 			}

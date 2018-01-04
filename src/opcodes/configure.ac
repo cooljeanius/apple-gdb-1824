@@ -696,6 +696,9 @@ else
   dnl# warnings that will be silent about anything cgen-erated...
   test -d ../cgen
   m4_ifdef([gl_WARN_ADD],[
+    m4_ifdef([gl_UNKNOWN_WARNINGS_ARE_ERRORS],[
+      gl_UNKNOWN_WARNINGS_ARE_ERRORS
+    ])
     gl_WARN_ADD([-Wall])
     gl_WARN_ADD([-fno-strict-aliasing])
     gl_WARN_ADD([-Wno-unused-but-set-variable])

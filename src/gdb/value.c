@@ -1189,7 +1189,7 @@ unpack_double (struct type *type, const gdb_byte *valaddr, int *invp)
       if (!floatformat_is_valid (floatformat_from_type (type), valaddr))
 	{
 	  *invp = 1;
-	  return 0.0f;
+	  return (DOUBLEST)0.0f;
 	}
 
       return extract_typed_floating (valaddr, type);

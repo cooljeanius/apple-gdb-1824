@@ -1013,6 +1013,7 @@ static struct htab *decoded_names_store;
 char *
 ada_decode_symbol(const struct general_symbol_info *gsymbol)
 {
+  /* FIXME: -Waddress-of-packed-member: */
   char **resultp =
     (char **)&gsymbol->language_specific.cplus_specific.demangled_name;
   if (*resultp == NULL)

@@ -403,7 +403,7 @@ process_event (void)
 
   /* Look in the event queue to find an event that is ready
      to be processed. */
-
+  /* FIXME: -Wunreachable-code-loop-increment */
   for (event_ptr = event_queue.first_event; event_ptr != NULL;
        event_ptr = event_ptr->next_event)
     {
@@ -440,8 +440,8 @@ process_event (void)
 
       /* Now call the procedure associated with the event. */
       /* APPLE LOCAL async */
-      (*proc) (data);
-      return 1;
+      (*proc)(data);
+      return 1; /* FIXME: AFAICT, this makes the loop only run once */
     }
 
   /* this is the case if there are no event on the event queue. */
@@ -1007,7 +1007,7 @@ gdb_wait_for_event (void)
 	    }
 
 	  gdb_assert((gdb_notifier.poll_fds + i) != NULL);
-	  
+
 	  file_ptr->ready_mask = (gdb_notifier.poll_fds + i)->revents;
 	}
 #else

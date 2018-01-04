@@ -567,7 +567,7 @@ processReal (const char *num0)
     {
       double temp;
       sscanf(num0, "%lg", &temp);
-      yylval.typed_val_float.dval = temp;
+      yylval.typed_val_float.dval = (DOUBLEST)temp;
     }
 
   yylval.typed_val_float.type = type_float();

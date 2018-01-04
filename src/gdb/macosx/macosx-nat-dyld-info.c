@@ -419,12 +419,14 @@ dyld_objfile_info_compare(struct dyld_objfile_info *a,
   return 0;
 }
 
+/* */
 void
-dyld_objfile_info_copy_entries (struct dyld_objfile_info *d,
-                                struct dyld_objfile_info *s,
-                                unsigned int mask)
+dyld_objfile_info_copy_entries(struct dyld_objfile_info *d,
+			       struct dyld_objfile_info *s,
+                               unsigned int mask)
 {
-  struct dyld_objfile_entry *e, *n;
+  struct dyld_objfile_entry *e = NULL;
+  struct dyld_objfile_entry *n;
   int i;
 
   DYLD_ALL_OBJFILE_INFO_ENTRIES (s, e, i)
@@ -887,18 +889,17 @@ dyld_entry_info (struct dyld_objfile_entry *e, int print_basenames,
 
 }
 
+/* */
 int
-dyld_resolve_shlib_num (struct dyld_objfile_info *s,
-                        int num,
-                        struct dyld_objfile_entry **eptr,
-                        struct objfile **optr)
+dyld_resolve_shlib_num(struct dyld_objfile_info *s, int num,
+		       struct dyld_objfile_entry **eptr, struct objfile **optr)
 {
   struct objfile *objfile;
-  struct objfile *temp;
+  struct objfile *temp = NULL;
   int i;
 
-  CHECK_FATAL (eptr != NULL);
-  CHECK_FATAL (optr != NULL);
+  CHECK_FATAL(eptr != NULL);
+  CHECK_FATAL(optr != NULL);
 
   *eptr = NULL;
   *optr = NULL;
@@ -962,7 +963,7 @@ dyld_entry_shlib_num (struct dyld_objfile_info *s,
                       struct dyld_objfile_entry *eptr, int *numptr)
 {
   int i;
-  struct dyld_objfile_entry *j;
+  struct dyld_objfile_entry *j = NULL;
   CHECK_FATAL (numptr != NULL);
 
   DYLD_ALL_OBJFILE_INFO_ENTRIES(s, j, i)
@@ -987,8 +988,9 @@ dyld_shlib_info_basename_length (struct dyld_objfile_info *s,
 {
   int i;
   int baselen = 0;
-  struct objfile *objfile, *temp;
-  struct dyld_objfile_entry *j0;
+  struct objfile *objfile;
+  struct objfile *temp = NULL;
+  struct dyld_objfile_entry *j0 = NULL;
 
   DYLD_ALL_OBJFILE_INFO_ENTRIES(s, j0, i)
     {
@@ -1031,7 +1033,7 @@ dyld_shlib_info_basename_length (struct dyld_objfile_info *s,
     const char *name = NULL;
     const char *tfname = NULL;
     int tfnamelen = 0;
-    struct dyld_objfile_entry *j1;
+    struct dyld_objfile_entry *j1 = NULL;
 
     int found = 0;
 
@@ -1465,7 +1467,8 @@ dyld_print_shlib_info(struct dyld_objfile_info *s, unsigned int reason_mask,
   int baselen = 0;
   char *basepad = NULL;
   int shlibnum = 0;
-  struct objfile *objfile, *temp;
+  struct objfile *objfile;
+  struct objfile *temp = NULL;
   int i;
 
   baselen = dyld_shlib_info_basename_length(s, reason_mask);
@@ -1522,7 +1525,7 @@ dyld_print_shlib_info(struct dyld_objfile_info *s, unsigned int reason_mask,
   ALL_OBJFILES_SAFE(objfile, temp)
     {
       int found = 0;
-      struct dyld_objfile_entry *j;
+      struct dyld_objfile_entry *j = NULL;
 
       /* Don't print out the dSYM files here.  They are printed with
 	 the objfile in dyld_print_entry_info above.  */

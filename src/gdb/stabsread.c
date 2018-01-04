@@ -945,14 +945,14 @@ define_symbol(CORE_ADDR valu, const char *string, const char *prefix,
 	       Also, what should the name of this type be?  Should we
 	       be using 'S' constants (see stabs.texinfo) instead?  */
 
-	    SYMBOL_TYPE (sym) = lookup_fundamental_type (objfile,
-							 FT_DBL_PREC_FLOAT);
-	    dbl_valu = (char *)
-	      obstack_alloc (&objfile->objfile_obstack,
-			     TYPE_LENGTH (SYMBOL_TYPE (sym)));
-	    store_typed_floating (dbl_valu, SYMBOL_TYPE (sym), d);
-	    SYMBOL_VALUE_BYTES (sym) = dbl_valu;
-	    SYMBOL_CLASS (sym) = LOC_CONST_BYTES;
+	    SYMBOL_TYPE(sym) = lookup_fundamental_type(objfile,
+						       FT_DBL_PREC_FLOAT);
+	    dbl_valu = ((char *)
+			obstack_alloc(&objfile->objfile_obstack,
+				      TYPE_LENGTH(SYMBOL_TYPE(sym))));
+	    store_typed_floating(dbl_valu, SYMBOL_TYPE(sym), (DOUBLEST)d);
+	    SYMBOL_VALUE_BYTES(sym) = dbl_valu;
+	    SYMBOL_CLASS(sym) = LOC_CONST_BYTES;
 	  }
 	  break;
 	case 'i':

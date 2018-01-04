@@ -212,7 +212,7 @@ value_subscript(struct value *array, struct value *idx)
 	}
 
        array = value_coerce_array(array);
-      
+
        if (c_style == 1) {
 	 ; /* ??? */
        }
@@ -852,7 +852,7 @@ value_binop(struct value *arg1, struct value *arg2, enum exp_opcode op)
 
 	case BINOP_EXP:
 	  errno = 0;
-	  v = pow((double)v1, (double)v2);
+	  v = powl(v1, v2);
 	  if (errno)
 	    error(_("Cannot perform exponentiation: %s"),
                   safe_strerror(errno));

@@ -3786,8 +3786,9 @@ reread_symbols_for_objfile(struct objfile *objfile, long new_modtime,
 void
 reread_symbols(void)
 {
-  struct objfile *objfile, *next;
-  long new_modtime;
+  struct objfile *objfile;
+  struct objfile *next = NULL;
+  long new_modtime = 0L;
   int num_reread = 0;
 
   /* With the addition of shared libraries, this should be modified,
@@ -3884,7 +3885,8 @@ struct objfile *
 find_objfile(const char *name)
 {
   struct objfile *objfile = NULL;
-  struct objfile *o, *temp;
+  struct objfile *o;
+  struct objfile *temp = NULL;
 
   ALL_OBJFILES_SAFE(o, temp)
   {

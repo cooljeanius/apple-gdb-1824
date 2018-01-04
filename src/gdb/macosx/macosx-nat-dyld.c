@@ -1490,7 +1490,7 @@ macosx_dyld_remove_libraries(struct macosx_dyld_thread_status *dyld_status,
   int i;
   for (i = 0; i < num; i++)
     {
-      struct dyld_objfile_entry *e;
+      struct dyld_objfile_entry *e = NULL;
       int found_it = 0;
 
       int k;
@@ -1569,7 +1569,7 @@ macosx_dyld_add_libraries(struct macosx_dyld_thread_status *dyld_status,
 
   for (i = 0; i < num; i++)
     {
-      struct dyld_objfile_entry *entry;
+      struct dyld_objfile_entry *entry = NULL;
       int j;
       DYLD_ALL_OBJFILE_INFO_ENTRIES(&dyld_status->current_info, entry, j)
         if (dyld_libraries_compatible(&dyld_status->path_info, entry,
@@ -1612,6 +1612,7 @@ macosx_dyld_add_libraries(struct macosx_dyld_thread_status *dyld_status,
 
 }
 
+/* */
 int
 macosx_solib_add(const char *filename, int from_tty,
                  struct target_ops *targ, int loadsyms)
@@ -1807,6 +1808,7 @@ macosx_solib_add(const char *filename, int from_tty,
   return notify;
 }
 
+/* */
 void
 macosx_dyld_thread_init(macosx_dyld_thread_status *s)
 {
@@ -1822,6 +1824,7 @@ macosx_dyld_thread_init(macosx_dyld_thread_status *s)
   dyld_zero_path_info(&s->path_info);
 }
 
+/* */
 void
 macosx_dyld_thread_clear(macosx_dyld_thread_status *s)
 {
@@ -1844,12 +1847,14 @@ macosx_dyld_thread_clear(macosx_dyld_thread_status *s)
   macosx_dyld_thread_init(s);
 }
 
+/* */
 void
 macosx_add_shared_symbol_files(void)
 {
   macosx_dyld_update(0);
 }
 
+/* */
 void
 macosx_init_dyld_from_core(void)
 {
@@ -1859,7 +1864,7 @@ macosx_init_dyld_from_core(void)
      different binaries, we also could be cross debugging, so we need to
      take everything we can from the core image.  */
   struct dyld_objfile_info *info;
-  struct dyld_objfile_entry *e;
+  struct dyld_objfile_entry *e = NULL;
   struct target_ops *target;
   int i;
 
@@ -1903,7 +1908,7 @@ void
 macosx_init_dyld(struct macosx_dyld_thread_status *s,
 		 struct objfile *o, bfd *abfd)
 {
-  struct dyld_objfile_entry *e0;
+  struct dyld_objfile_entry *e0 = NULL;
   int i;
   struct dyld_objfile_info previous_info;
   static int timer_id = -1;
@@ -2978,7 +2983,7 @@ macosx_dyld_update(int dyldonly)
 void
 macosx_dyld_mourn_inferior(void)
 {
-  struct dyld_objfile_entry *e;
+  struct dyld_objfile_entry *e = NULL;
   int i;
   struct macosx_dyld_thread_status *status = &macosx_dyld_status;
   int removed_memory_objfiles;
@@ -3098,24 +3103,12 @@ map_shlib_numbers(const char *args,
 
   if (strcmp(p, "all") == 0)
     {
-      struct dyld_objfile_entry *e;
+      struct dyld_objfile_entry *e = NULL;
       unsigned int n;
 
-      /* FIXME: Silencing '-Wsign-compare' is impossible here, because
-       * the usual cast would cause 'n' to cease being an lvalue: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic push
- #  pragma GCC diagnostic ignored "-Wsign-compare"
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
+      /* Hacked this macro to fix -Wsign-compare: */
       DYLD_ALL_OBJFILE_INFO_ENTRIES(info, e, n)
         (*function)(d, e, e->objfile, (n + 1U), val);
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
- #  pragma GCC diagnostic pop
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
 
       do_cleanups(cleanups);
       return;
@@ -3244,7 +3237,7 @@ dyld_remove_symbol_file_command(const char *args, int from_tty)
 int
 dyld_objfile_set_load_state(struct objfile *o, int load_state)
 {
-  struct dyld_objfile_entry *e;
+  struct dyld_objfile_entry *e = NULL;
   int i, found_it = -1;
 
   DYLD_ALL_OBJFILE_INFO_ENTRIES(&macosx_dyld_status.current_info, e, i)
@@ -3708,7 +3701,7 @@ update_section_tables_dyld(struct dyld_objfile_info *s)
   struct obj_section *osection;
   int nsections, csection, osections;
   int i;
-  struct dyld_objfile_entry *j;
+  struct dyld_objfile_entry *j = NULL;
 
   target = &exec_ops;
 

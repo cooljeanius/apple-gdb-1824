@@ -1159,14 +1159,17 @@ print_syms_for_block (struct block *block,
   struct ui_stream *error_stb;
   struct cleanup *old_chain;
   struct frame_id stack_frame_id;
-  if (fi)
-    stack_frame_id = get_frame_id (fi);
+  int s_f_id_inited = 0;
+  if (fi) {
+    stack_frame_id = get_frame_id(fi);
+    s_f_id_inited = 1;
+  }
 
-  if (dict_empty (BLOCK_DICT (block)))
+  if (dict_empty(BLOCK_DICT(block)))
     return;
 
-  error_stb = ui_out_stream_new (uiout);
-  old_chain = make_cleanup_ui_out_stream_delete (error_stb);
+  error_stb = ui_out_stream_new(uiout);
+  old_chain = make_cleanup_ui_out_stream_delete(error_stb);
 
   ALL_BLOCK_SYMBOLS (block, iter, sym)
     {
@@ -1282,17 +1285,12 @@ print_syms_for_block (struct block *block,
 
 	      /* END APPLE LOCAL */
 	      if (fi)
-		new_var = varobj_create (varobj_gen_name (),
-				       expr,
-				       get_frame_base (fi),
-				       block,
-				       USE_BLOCK_IN_FRAME);
+		new_var = varobj_create(varobj_gen_name(), expr,
+					get_frame_base(fi), block,
+					USE_BLOCK_IN_FRAME);
 	      else
-		new_var = varobj_create (varobj_gen_name (),
-				       expr,
-				       0,
-				       block,
-				       NO_FRAME_NEEDED);
+		new_var = varobj_create(varobj_gen_name(), expr, 0, block,
+					NO_FRAME_NEEDED);
 
 	      do_cleanups (expr_cleanup);
 
@@ -1303,7 +1301,7 @@ print_syms_for_block (struct block *block,
 	      if (new_var == NULL)
 		continue;
 
-	      tuple_cleanup = make_cleanup_ui_out_tuple_begin_end (uiout, "varobj");
+	      tuple_cleanup = make_cleanup_ui_out_tuple_begin_end(uiout, "varobj");
 	      ui_out_field_string (uiout, "exp", SYMBOL_NATURAL_NAME (sym));
 	      if (new_var != NULL)
 		{
@@ -1330,7 +1328,7 @@ print_syms_for_block (struct block *block,
 
                   /* Re-fetch FI in case we ran the inferior and the frame cache
                      was flushed.  */
-                  if (fi)
+                  if (fi && (s_f_id_inited == 1))
                     {
                       fi = frame_find_by_id(stack_frame_id);
                       if (fi == NULL)

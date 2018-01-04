@@ -304,8 +304,10 @@ value_cast_1(struct type *type, struct value *arg2)
 	  struct type *range_type = TYPE_INDEX_TYPE(type);
 	  int val_length = TYPE_LENGTH(type2);
 	  LONGEST low_bound, high_bound, new_length;
-	  if (get_discrete_bounds(range_type, &low_bound, &high_bound) < 0)
-	    low_bound = 0, high_bound = 0;
+	  if (get_discrete_bounds(range_type, &low_bound, &high_bound) < 0) {
+	    low_bound = 0;
+	    high_bound = 0;
+	  }
 	  new_length = (val_length / element_length);
 	  if ((val_length % element_length) != 0)
 	    warning(_("array element type size does not divide object size in cast"));
@@ -738,7 +740,7 @@ value_assign(struct value *toval, struct value *fromval)
 	value_reg = VALUE_REGNUM(toval);
 	/* Figure out which frame this is in currently: */
 	frame = frame_find_by_id(VALUE_FRAME_ID(toval));
-	
+
 	if (!frame)
 	  frame = get_current_frame();
 
@@ -2072,14 +2074,14 @@ find_overload_match (struct type **arg_types, int nargs, char *name, int method,
 
   int oload_champ;		/* Index of best overloaded function */
 
-  struct badness_vector *oload_champ_bv = NULL;		/* The measure for the current best match */
+  struct badness_vector *oload_champ_bv = NULL; /* The measure for the current best match */
 
   struct value *temp = obj;
-  struct fn_field *fns_ptr = NULL;	/* For methods, the list of overloaded methods */
-  struct symbol **oload_syms = NULL;	/* For non-methods, the list of overloaded function symbols */
-  int num_fns = 0;		/* Number of overloaded instances being considered */
+  struct fn_field *fns_ptr = NULL; /* For methods, the list of overloaded methods */
+  struct symbol **oload_syms = NULL; /* For non-methods, the list of overloaded function symbols */
+  int num_fns = 0; /* Number of overloaded instances being considered */
   struct type *basetype = NULL;
-  int boffset;
+  int boffset = 0;
   struct cleanup *old_cleanups = NULL;
 
   const char *obj_type_name = NULL;
@@ -3257,7 +3259,7 @@ safe_check_is_thread_unsafe(struct thread_info *tp, void *data)
 
   errors_ret = catch_errors((catch_errors_ftype *)do_check_is_thread_unsafe,
 			    args, "", RETURN_MASK_ERROR);
-  
+
   if (errors_ret == 0) {
     ; /* ??? */
   }

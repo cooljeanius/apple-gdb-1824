@@ -908,7 +908,8 @@ void
 link_objfile (struct objfile *objfile)
 {
   struct objfile *last_one = NULL;
-  struct objfile *o, *temp;
+  struct objfile *o;
+  struct objfile *temp = NULL;
 
   ALL_OBJFILES_SAFE (o, temp)
     if (objfile == o)
@@ -1164,7 +1165,8 @@ make_cleanup_free_objfile(struct objfile *obj)
 void
 free_all_objfiles(void)
 {
-  struct objfile *objfile, *temp;
+  struct objfile *objfile;
+  struct objfile *temp = NULL;
 
   ALL_OBJFILES_SAFE(objfile, temp)
   {
@@ -1458,7 +1460,7 @@ void
 objfile_purge_solibs (void)
 {
   struct objfile *objf;
-  struct objfile *temp;
+  struct objfile *temp = NULL;
 
   ALL_OBJFILES_SAFE (objf, temp)
   {
@@ -1728,7 +1730,8 @@ make_cleanup_restrict_to_objfile(struct objfile *objfile)
 struct objfile *
 find_objfile_by_name(const char *name, int exact)
 {
-  struct objfile *o, *temp;
+  struct objfile *o;
+  struct objfile *temp = NULL;
   if ((name == NULL) || (*name == '\0'))
     return NULL;
 
@@ -1783,7 +1786,8 @@ find_objfile_by_name(const char *name, int exact)
 struct objfile *
 find_objfile_by_uuid(uuid_t uuid)
 {
-  struct objfile *o, *temp;
+  struct objfile *o;
+  struct objfile *temp = NULL;
 
   ALL_OBJFILES_SAFE(o, temp)
     {

@@ -652,12 +652,12 @@ parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
       /* [dD] is not understood as an exponent by atof, change it to 'e'.  */
       char *tmp, *tmp2;
 
-      tmp = xstrdup (p);
+      tmp = xstrdup(p);
       for (tmp2 = tmp; *tmp2; ++tmp2)
 	if (*tmp2 == 'd' || *tmp2 == 'D')
 	  *tmp2 = 'e';
-      putithere->dval = atof (tmp);
-      free (tmp);
+      putithere->dval = (DOUBLEST)atof(tmp);
+      free(tmp);
       return FLOAT;
     }
 

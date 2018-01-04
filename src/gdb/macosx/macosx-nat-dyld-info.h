@@ -252,7 +252,8 @@ enum gdb_osabi dyld_objfile_entry_osabi(const struct dyld_objfile_entry *e);
 */
 #define DYLD_ALL_OBJFILE_INFO_ENTRIES(info, o, n)                  \
   for ((n) = dyld_next_allocated_shlib((info), 0);                 \
-       ((n) < (info)->nents) ? (o = &(info)->entries[(n)], 1) : 0; \
+       (((n) < __extension__ (__typeof__(n))(info)->nents)       \
+	? (o = &(info)->entries[(n)], 1) : 0); \
        (n) = dyld_next_allocated_shlib(info, (n) + 1))
 
 #endif /* __GDB_MACOSX_NAT_DYLD_INFO_H__ */

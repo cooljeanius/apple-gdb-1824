@@ -68,6 +68,7 @@ java_value_print(struct value *val, struct ui_file *stream, int format,
     type_print(TYPE_TARGET_TYPE(type), "", stream, -1);
 
   name = TYPE_TAG_NAME(type);
+  /* FIXME: -Wcomma: */
   if ((TYPE_CODE(type) == TYPE_CODE_STRUCT) && (name != NULL)
       && ((i = strlen(name)), (name[i - 1] == ']')))
     {

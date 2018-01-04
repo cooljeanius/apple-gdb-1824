@@ -152,7 +152,7 @@ macosx_classic_create_inferior(pid_t pid)
       if (inferior_auto_start_dyld_flag)
         {
           int i;
-          struct dyld_objfile_entry *e;
+          struct dyld_objfile_entry *e = NULL;
 
           /* remove all the currently cached objfiles since we have started
            * a new session */

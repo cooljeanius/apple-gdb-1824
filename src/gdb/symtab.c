@@ -766,7 +766,7 @@ symbol_init_language_specific(struct general_symbol_info *gsymbol,
 #ifndef ATTRIBUTE_NONNULL
   gdb_assert(gsymbol != NULL);
 #endif /* !ATTRIBUTE_NONNULL */
-  
+
   gsymbol->language = language; /* FIXME: bad access? */
   if (gsymbol->language == language_cplus
       || gsymbol->language == language_java
@@ -4638,7 +4638,7 @@ search_symbols(const char *regexp, domain_enum kind, int nfiles, char *files[],
      when the old objfile is freed and a new one is created and we crash.  */
   if (nfiles == 0 && (kind == VARIABLES_DOMAIN || kind == FUNCTIONS_DOMAIN))
     {
-      struct objfile *tmp;
+      struct objfile *tmp = NULL;
       ALL_OBJFILES_SAFE (objfile, tmp)
         {
           ALL_OBJFILE_MSYMBOLS (objfile, msymbol)

@@ -6165,8 +6165,8 @@ init_extended_remote_ops (void)
     "Extended remote serial target in gdb-specific protocol";
   extended_remote_ops.to_doc =
     "Use a remote computer via a serial line, using a gdb-specific protocol.\n\
-Specify the serial device it is connected to (e.g. /dev/ttya).",
-    extended_remote_ops.to_open = extended_remote_open;
+Specify the serial device it is connected to (e.g. /dev/ttya).";
+  extended_remote_ops.to_open = extended_remote_open;
   extended_remote_ops.to_create_inferior = extended_remote_create_inferior;
   extended_remote_ops.to_mourn_inferior = extended_remote_mourn;
 }
@@ -6174,8 +6174,8 @@ Specify the serial device it is connected to (e.g. /dev/ttya).",
 static int
 remote_can_async_p (void)
 {
-  /* We're async whenever the serial device is.  */
-  return (current_target.to_async_mask_value) && serial_can_async_p (remote_desc);
+  /* We are async whenever the serial device is: */
+  return (current_target.to_async_mask_value) && serial_can_async_p(remote_desc);
 }
 
 static int
@@ -6294,8 +6294,8 @@ init_extended_async_remote_ops (void)
     "Extended remote serial target in async gdb-specific protocol";
   extended_async_remote_ops.to_doc =
     "Use a remote computer via a serial line, using an async gdb-specific protocol.\n\
-Specify the serial device it is connected to (e.g. /dev/ttya).",
-    extended_async_remote_ops.to_open = extended_remote_async_open;
+Specify the serial device it is connected to (e.g. /dev/ttya).";
+  extended_async_remote_ops.to_open = extended_remote_async_open;
   extended_async_remote_ops.to_create_inferior = extended_remote_async_create_inferior;
   extended_async_remote_ops.to_mourn_inferior = extended_remote_mourn;
 }

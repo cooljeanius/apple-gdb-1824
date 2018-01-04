@@ -962,7 +962,7 @@ gdb_DBGCopyMatchingUUIDsForURL(const char *path)
   return uuid_array;
 }
 
-
+/* */
 CFMutableDictionaryRef
 create_dsym_uuids_for_path(char *dsym_bundle_path)
 {
@@ -1043,7 +1043,8 @@ create_dsym_uuids_for_path(char *dsym_bundle_path)
 	  path_url = CFURLCreateWithFileSystemPath(NULL, path_cfstr,
                                                    kCFURLPOSIXPathStyle, 0);
 
-	  CFRelease(path_cfstr), path_cfstr = NULL;
+	  CFRelease(path_cfstr);
+	  path_cfstr = NULL;
 	  if (path_url == NULL)
 	    continue;
 
@@ -1051,12 +1052,12 @@ create_dsym_uuids_for_path(char *dsym_bundle_path)
 	  if (uuid_array != NULL)
 	    CFDictionarySetValue(paths_and_uuids, path_url, uuid_array);
 
-	  /* We are done with PATH_URL.  */
+	  /* We are done with PATH_URL: */
 	  CFRelease(path_url);
 	  path_url = NULL;
 
-	  /* Skip to next while loop iteration if we did NOT get any matches.  */
-	  /* Release the UUID array: */
+	  /* Skip to next while loop iteration if we did NOT get any matches;
+	   * release the UUID array: */
 	  if (uuid_array != NULL)
 	    CFRelease(uuid_array);
 	  uuid_array = NULL;
@@ -2541,13 +2542,13 @@ fast_show_stack_trace_prologue(unsigned int count_limit,
       const char *name;
       struct minimal_symbol *msymbol;
       struct objfile *ofile;
-      struct objfile *temp;
+      struct objfile *temp = NULL;
 
       /* Some environments use a "shim" libSystem that patches some functions.
-         So we need to search all libraries calling themselves libSystem for the
-         sigtramp function. I am still going to assume that only one of them
-         actually implements sigtramp, however. If that ever changes, we will have to
-         revise this...  */
+       * So we need to search all libraries calling themselves libSystem for the
+       * sigtramp function. I am still going to assume that only one of them
+       * actually implements sigtramp, however. If that ever changes, we will
+       * have to revise this...  */
 
       ALL_OBJFILES_SAFE (ofile, temp)
         {

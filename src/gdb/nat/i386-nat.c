@@ -277,11 +277,13 @@ i386_show_dr (const char *func, CORE_ADDR addr,
 		     dr_control_mirror, dr_status_mirror);
   ALL_DEBUG_REGISTERS(i)
     {
-      printf_unfiltered ("\
+      printf_unfiltered("\
 \tDR%d: addr=0x%s, ref.count=%d  DR%d: addr=0x%s, ref.count=%d\n",
-			 i, paddr(dr_mirror[i]), dr_ref_count[i],
-			 i+1, paddr(dr_mirror[i+1]), dr_ref_count[i+1]);
+			i, paddr(dr_mirror[i]), dr_ref_count[i],
+			i + 1, paddr(dr_mirror[i + 1]), dr_ref_count[i + 1]);
+#ifndef __clang__
       i++;
+#endif /* !__clang__ */
     }
 }
 

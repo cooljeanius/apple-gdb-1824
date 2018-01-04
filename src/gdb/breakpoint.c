@@ -1430,7 +1430,8 @@ in which its expression is valid.\n"),
 int
 insert_breakpoints(void)
 {
-  struct bp_location *b, *temp;
+  struct bp_location *b;
+  struct bp_location *temp = NULL;
   int return_val = 0;	/* return success code. */
   int i_val = 0;
   int disabled_breaks = 0;
@@ -1615,7 +1616,7 @@ void
 update_breakpoints_after_exec (void)
 {
   struct breakpoint *b;
-  struct breakpoint *temp;
+  struct breakpoint *temp = NULL;
 
   /* Doing this first prevents the badness of having delete_breakpoint()
      write a breakpoint's current "shadow contents" to lift the bp.  That
@@ -1972,7 +1973,8 @@ mark_breakpoints_out (void)
 void
 breakpoint_init_inferior (enum inf_context context)
 {
-  struct breakpoint *b, *temp;
+  struct breakpoint *b;
+  struct breakpoint *temp = NULL;
   struct bp_location *bpt;
   static int warning_needed = 0;
 
@@ -3101,7 +3103,8 @@ which its expression is valid.\n");
 bpstat
 bpstat_stop_status(CORE_ADDR bp_addr, ptid_t ptid, int stopped_by_watchpoint)
 {
-  struct breakpoint *b, *temp;
+  struct breakpoint *b;
+  struct breakpoint *temp = NULL;
   /* True if we have hit a breakpoint (as opposed to a watchpoint): */
   int real_breakpoint = 0;
   /* Root of the chain of bpstat's */
@@ -5068,7 +5071,8 @@ create_thread_event_breakpoint (CORE_ADDR address)
 void
 remove_thread_event_breakpoints (void)
 {
-  struct breakpoint *b, *temp;
+  struct breakpoint *b;
+  struct breakpoint *temp = NULL;
 
   ALL_BREAKPOINTS_SAFE (b, temp)
     if (b->type == bp_thread_event)
@@ -5290,7 +5294,8 @@ void
 /* APPLE LOCAL control silencing of breakpoint re-enable */
 re_enable_breakpoints_in_shlibs(int silent)
 {
-  struct breakpoint *b, *tmp;
+  struct breakpoint *b;
+  struct breakpoint *tmp = NULL;
   char buf8[8] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
   (void)buf8;
 
@@ -6470,7 +6475,8 @@ parse_breakpoint_sals(const char **address,
       /* APPLE LOCAL begin requested shlib */
       if (requested_shlib != NULL)
 	{
-	  struct objfile *obj, *objnext;
+	  struct objfile *obj;
+	  struct objfile *objnext = NULL;
 	  restrict_cleanup = make_cleanup_restrict_to_shlib (requested_shlib);
 	  if (restrict_cleanup == (void *) -1)
 	    {
@@ -8630,7 +8636,8 @@ update_exception_catchpoints(enum exception_event_kind ex_event,
 
       if (delete_it)
 	{
-	  struct breakpoint *b, *tmp;
+	  struct breakpoint *b;
+	  struct breakpoint *tmp = NULL;
 	  enum bptype type;
 	  int found_it;
 
@@ -8916,7 +8923,8 @@ exception_catchpoints_enabled (enum exception_event_kind ex_event)
 void
 disable_exception_catch (enum exception_event_kind ex_event)
 {
-  struct breakpoint *b, *temp;
+  struct breakpoint *b;
+  struct breakpoint *temp = NULL;
   enum bptype type, gnu_v3_type;
 
   if (! handle_gnu_v3_exceptions (ex_event))
@@ -8979,7 +8987,8 @@ tcatch_command(const char *arg, int from_tty)
 static void
 clear_command(const char *arg, int from_tty)
 {
-  struct breakpoint *b, *tmp, *prev, *found;
+  struct breakpoint *b, *prev, *found;
+  struct breakpoint *tmp = NULL;
   int default_match;
   struct symtabs_and_lines sals;
   struct symtab_and_line sal;
@@ -9112,7 +9121,8 @@ clear_command(const char *arg, int from_tty)
 void
 breakpoint_auto_delete (bpstat bs)
 {
-  struct breakpoint *b, *temp;
+  struct breakpoint *b;
+  struct breakpoint *temp = NULL;
 
   for (; bs; bs = bs->next)
     if (bs->breakpoint_at && bs->breakpoint_at->disposition == disp_del
@@ -9356,7 +9366,8 @@ make_exec_cleanup_delete_breakpoint(struct breakpoint *b)
 void
 delete_command(const char *arg, int from_tty)
 {
-  struct breakpoint *b, *temp;
+  struct breakpoint *b;
+  struct breakpoint *temp = NULL;
 
   dont_repeat();
 
@@ -9936,7 +9947,8 @@ breakpoint_update(void)
     {
       /* Always look for any breakpoints that are waiting for their libraries
 	 to reload.  */
-      struct breakpoint *b, *temp;
+      struct breakpoint *b;
+      struct breakpoint *temp = NULL;
 
       ALL_BREAKPOINTS_SAFE (b, temp)
       {
@@ -10008,7 +10020,8 @@ breakpoint_re_set (struct objfile *objfile)
 static void
 breakpoint_re_set_all (void)
 {
-  struct breakpoint *b, *temp;
+  struct breakpoint *b;
+  struct breakpoint *temp = NULL;
   enum language save_language;
   int save_input_radix;
 
@@ -10178,7 +10191,8 @@ map_breakpoint_numbers(const char *args, void (*function)(struct breakpoint *))
   const char *p = args;
   const char *p1;
   int num;
-  struct breakpoint *b, *tmp;
+  struct breakpoint *b;
+  struct breakpoint *tmp = NULL;
   int match;
 
   if (p == 0)
@@ -10415,7 +10429,7 @@ static void
 enable_command(const char *args, int from_tty)
 {
   struct breakpoint *bpt;
-  struct breakpoint *tmp;
+  struct breakpoint *tmp = NULL;
 
   if (args == 0)
     /* APPLE LOCAL: Use ALL_BREAKPOINTS_SAFE since enable_breakpoint
@@ -10833,7 +10847,8 @@ static void
 tell_breakpoints_objfile_changed_internal(struct objfile *objfile,
 					  int set_pending)
 {
-  struct breakpoint *b, *tmp;
+  struct breakpoint *b;
+  struct breakpoint *tmp = NULL;
 
   if (objfile != NULL)
     {

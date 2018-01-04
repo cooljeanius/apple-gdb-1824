@@ -694,7 +694,7 @@ parse_number(int olen)
       if ((p[c] == '.') && (base == 10))
         {
           /* It is a float since it contains a point: */
-          yylval.dval = atof(p);
+          yylval.dval = (DOUBLEST)atof(p);
           lexptr += len;
           return FLOAT;
         }
@@ -924,7 +924,7 @@ yylex(void)
         }
       else
 	 return STRING;
-	
+
     default:;
     } /* end switch */
 

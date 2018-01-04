@@ -1025,7 +1025,7 @@ sym_read_functions(struct objfile *objfile, struct type **typevec,
       BLOCK_END(fblock) += text_section_offset;
 
       BLOCK_DICT(fblock) = dict_create_hashed_expandable();
-      for (i = 0; i < nlocals; j++)
+      for (j = 0; j < nlocals; j++)
         {
           dict_add_symbol(BLOCK_DICT(fblock), localvec[i]);
         }

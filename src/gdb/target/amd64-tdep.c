@@ -474,13 +474,15 @@ amd64_classify(struct type *type, enum amd64_reg_class reg_class[2])
        || (code == TYPE_CODE_RANGE) || (code == TYPE_CODE_BOOL)
        || (code == TYPE_CODE_PTR) || (code == TYPE_CODE_REF))
       && ((len == 1) || (len == 2) || (len == 4) || (len == 8)))
-    reg_class[0] = AMD64_INTEGER;
-
+    {
+      reg_class[0] = AMD64_INTEGER;
+    }
   /* Arguments of types float, double and __m64 are in class SSE: */
   else if ((code == TYPE_CODE_FLT) && ((len == 4) || (len == 8)))
-    /* FIXME: __m64 .  */
-    reg_class[0] = AMD64_SSE;
-
+    {
+      /* FIXME: __m64 .  */
+      reg_class[0] = AMD64_SSE;
+    }
   /* Arguments of types __float128 and __m128 are split into two
      halves.  The least significant ones belong to class SSE, the most
      significant one to class SSEUP.  */
@@ -490,15 +492,20 @@ amd64_classify(struct type *type, enum amd64_reg_class reg_class[2])
      class X87, the 16-bit exponent plus 6 bytes of padding belongs to
      class X87UP.  */
   else if ((code == TYPE_CODE_FLT) && (len == 16))
-    /* Class X87 and X87UP: */
-    reg_class[0] = AMD64_X87, reg_class[1] = AMD64_X87UP;
-
+    {
+      /* Class X87 and X87UP: */
+      reg_class[0] = AMD64_X87;
+      reg_class[1] = AMD64_X87UP;
+    }
   /* Aggregates: */
   else if ((code == TYPE_CODE_ARRAY) || (code == TYPE_CODE_STRUCT)
 	   || (code == TYPE_CODE_UNION))
-    amd64_classify_aggregate(type, reg_class);
+    {
+      amd64_classify_aggregate(type, reg_class);
+    }
 }
 
+/* */
 static enum return_value_convention
 amd64_return_value(struct gdbarch *gdbarch, struct type *type,
 		   struct regcache *regcache,

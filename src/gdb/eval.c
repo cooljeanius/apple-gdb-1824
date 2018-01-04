@@ -452,7 +452,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
   int ix;
   long mem_offset;
   struct type **arg_types;
-  int save_pos1;
+  int save_pos1 = (*pos); /* -Wconditional-uninitialized suggested 0 instead */
 
   pc = (*pos)++;
   op = exp->elts[pc].opcode;
@@ -1351,7 +1351,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
                                         NULL, &symp, NULL);
 
 	      /* Now fix the expression being evaluated: */
-	      exp->elts[save_pos1+2].symbol = symp;
+	      exp->elts[save_pos1 + 2].symbol = symp;
 	      argvec[0] = evaluate_subexp_with_coercion(exp, &save_pos1,
                                                         noside);
 	    }
@@ -1831,7 +1831,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	int ndimensions = 1, i;
 	struct type *tmp_type;
 	int offset_item;    /* The array offset where the item lives */
-	
+
 	memset(subscript_array, 0, sizeof(subscript_array));
 
 	if (nargs > MAX_FORTRAN_DIMS) {

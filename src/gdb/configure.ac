@@ -3267,7 +3267,13 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
 -Wabsolute-value -Wtautological-constant-out-of-range-compare \
 -Wunevaluated-expression -Wextra-semi -Wunsequenced -Wself-assign \
 -Wshift-sign-overflow -Wstatic-in-inline -Wparentheses-equality \
--Wincompatible-pointer-types-discards-qualifiers -Winvalid-noreturn"
+-Wincompatible-pointer-types-discards-qualifiers -Winvalid-noreturn \
+-Wfor-loop-analysis -Wcomma -Wconditional-uninitialized \
+-Wunreachable-code-loop-increment"
+  # Up for debate:
+  # * -Wunreachable-code and its suboptions for returns and breaks
+  # * -Wgnu-redeclared-enum
+  # * -Wextended-offsetof
   if test "x${enable_build_with_cxx}" = "xyes"; then
     build_warnings="${build_warnings} -Wmismatched-tags \
 -Wmissing-exception-spec -Wpessimizing-move -Wredundant-move \
@@ -3300,7 +3306,7 @@ opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wnull-dereference -Wframe-address -Wframe-larger-than=262144"
 if test "x${ax_cv_c_compiler_vendor}" != "xclang"; then
   opt_warnings="${opt_warnings} -Wsuggest-attribute=const \
--Wsuggest-attribute=cold"
+-Wsuggest-attribute=cold -Wsuggest-attribute=hot"
 fi
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
@@ -3380,6 +3386,7 @@ fi
 #  * -Wconditionally-supported (for C++)
 #  * -Wunused-local-typedefs (`mig` sometimes generates code triggering
 #    this, but it is inconsistent though)
+#  * -Wfloat-equal
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)

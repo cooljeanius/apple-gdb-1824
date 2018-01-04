@@ -1433,7 +1433,7 @@ end_msglist(void)
 }
 
 /*
- * Function: specialcmp(char *a, char *b)
+ * Function: specialcmp(const char *a, const char *b)
  *
  * Special strcmp: treats ']' and ' ' as end-of-string.
  * Used for qsorting lists of objc methods (either by class or selector).

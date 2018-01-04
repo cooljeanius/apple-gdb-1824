@@ -232,7 +232,7 @@ dyld_add_image_libraries(struct dyld_objfile_info *info, bfd *abfd)
 {
   struct mach_o_data_struct *mdata = NULL;
   unsigned int i;
-  
+
   NSTRACE(dyld_add_image_libraries);
 
   CHECK_FATAL(info != NULL);
@@ -486,7 +486,7 @@ dyld_find_dylib_name(CORE_ADDR addr, int cputype, int ncmds)
   CORE_ADDR curpos;
   int i;
   char *image_name = NULL;
-  
+
   NSTRACE(dyld_find_dylib_name);
 
   if ((cputype == CPU_TYPE_X86_64) || (cputype == CPU_TYPE_POWERPC64))
@@ -533,8 +533,8 @@ dyld_resolve_filenames(const struct macosx_dyld_thread_status *s,
                        struct dyld_objfile_info *newinfo)
 {
   int i;
-  struct dyld_objfile_entry *e;
-  
+  struct dyld_objfile_entry *e = NULL;
+
   NSTRACE(dyld_resolve_filenames);
 
   CHECK_FATAL(s != NULL);
@@ -630,7 +630,7 @@ dyld_resolve_load_flag(const struct dyld_path_info *d,
 
   leaf = strrchr(name0, '/');
   leaf = ((leaf != NULL) ? leaf : name0);
-  
+
   if (leaf == NULL) {
     warning(_("possible issue with leaf"));
   }
@@ -1608,7 +1608,7 @@ dyld_load_libraries(const struct dyld_path_info *d,
                     struct dyld_objfile_info *result)
 {
   int i;
-  struct dyld_objfile_entry *e;
+  struct dyld_objfile_entry *e = NULL;
   NSTRACE(dyld_load_libraries);
   CHECK_FATAL(result != NULL);
 
@@ -1824,7 +1824,7 @@ dyld_load_symfile_internal(struct dyld_objfile_entry *e,
 
           snprintf(bfdname, bfdnamelen, "%s[%s]", e->objfile->obfd->filename,
 		   segname);
-	  
+
 #if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG))
 	  printf_filtered(_("bfdname: %s.\n"), bfdname);
 #endif /* DEBUG || _DEBUG || GDB_DEBUG */
@@ -1965,7 +1965,8 @@ dyld_load_symfiles(struct dyld_objfile_info *result)
 struct objfile *
 dyld_lookup_objfile_safe(struct dyld_objfile_entry *e)
 {
-  struct objfile *o, *temp;
+  struct objfile *o;
+  struct objfile *temp = NULL;
 
   NSTRACE(dyld_lookup_objfile_safe);
 
@@ -1980,7 +1981,8 @@ dyld_lookup_objfile_safe(struct dyld_objfile_entry *e)
 int
 dyld_objfile_allocated(struct objfile *o)
 {
-  struct objfile *objfile, *temp;
+  struct objfile *objfile;
+  struct objfile *temp = NULL;
 
   NSTRACE(dyld_objfile_allocated);
 
@@ -1998,7 +2000,7 @@ dyld_objfile_allocated(struct objfile *o)
 void
 dyld_purge_objfiles(struct dyld_objfile_info *info)
 {
-  struct dyld_objfile_entry *e;
+  struct dyld_objfile_entry *e = NULL;
   int i;
 
   NSTRACE(dyld_purge_objfiles);
@@ -2015,7 +2017,7 @@ struct dyld_objfile_entry *
 dyld_lookup_objfile_entry(struct dyld_objfile_info *info, struct objfile *o)
 {
   int i;
-  struct dyld_objfile_entry *e;
+  struct dyld_objfile_entry *e = NULL;
 
   NSTRACE(dyld_lookup_objfile_entry);
 
@@ -2070,7 +2072,7 @@ void
 remove_objfile_from_dyld_records(struct objfile *obj)
 {
   struct dyld_objfile_info *info = &macosx_dyld_status.current_info;
-  struct dyld_objfile_entry *e;
+  struct dyld_objfile_entry *e = NULL;
   int i;
 
   NSTRACE(remove_objfile_from_dyld_records);
@@ -2090,7 +2092,7 @@ extern int inferior_auto_start_dyld_flag;
 ATTRIBUTE_W_U_R int
 dyld_is_objfile_loaded(struct objfile *obj)
 {
-  struct dyld_objfile_entry *e;
+  struct dyld_objfile_entry *e = NULL;
   int i;
   struct macosx_dyld_thread_status *status = &macosx_dyld_status;
 
@@ -2237,7 +2239,7 @@ dyld_remove_objfiles(const struct dyld_path_info *d,
 {
   int i;
   int first = 1;
-  struct dyld_objfile_entry *e;
+  struct dyld_objfile_entry *e = NULL;
   NSTRACE(dyld_remove_objfiles);
   CHECK_FATAL(result != NULL);
 
@@ -2574,7 +2576,7 @@ dyld_merge_shlib(const struct macosx_dyld_thread_status *s,
                  struct dyld_objfile_entry *newent)
 {
   int i;
-  struct dyld_objfile_entry *oldent;
+  struct dyld_objfile_entry *oldent = NULL;
 
   NSTRACE(dyld_merge_shlib);
 
@@ -2615,7 +2617,7 @@ dyld_prune_shlib(struct dyld_path_info *d,
 		 struct dyld_objfile_info *obj_info,
                  struct dyld_objfile_entry *newobj)
 {
-  struct dyld_objfile_entry *o;
+  struct dyld_objfile_entry *o = NULL;
   int i;
 
   NSTRACE(dyld_prune_shlib);
@@ -2679,7 +2681,7 @@ dyld_merge_shlibs(const struct macosx_dyld_thread_status *s,
       e = dyld_objfile_entry_alloc(newobj);
       *e = *o;
 
-      e->reason = 
+      e->reason =
 	((enum dyld_objfile_reason)
 	 (e->reason | (enum dyld_objfile_reason)dyld_reason_cached_mask));
 
@@ -2729,7 +2731,7 @@ void
 dyld_purge_cached_libraries(struct dyld_objfile_info *info)
 {
   int i;
-  struct dyld_objfile_entry *e;
+  struct dyld_objfile_entry *e = NULL;
   NSTRACE(dyld_purge_cached_libraries);
   CHECK_FATAL(info != NULL);
 

@@ -1032,11 +1032,11 @@ varobj_create(char *objname, const char *expression, CORE_ADDR frame,
 	     Since select_frame is so benign, just call it for all cases. */
 	  if (fi != NULL)
 	    {
-	      fi = frame_find_by_id (var_frame_id);
+	      fi = frame_find_by_id(var_frame_id);
 
 	      var->root->frame = var_frame_id;
-	      old_frame_id = get_frame_id (get_selected_frame (NULL));
-	      select_frame (fi);
+	      old_frame_id = get_frame_id(get_selected_frame(NULL));
+	      select_frame(fi);
 	    }
 
 	  /* We definitively need to catch errors here.

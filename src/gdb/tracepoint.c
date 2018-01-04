@@ -670,7 +670,8 @@ static void
 map_args_over_tracepoints(const char *args, int from_tty,
 			  enum tracepoint_opcode opcode)
 {
-  struct tracepoint *t, *tmp;
+  struct tracepoint *t;
+  struct tracepoint *tmp = NULL;
 
   if (args == 0 || *args == 0)	/* do them all */
     ALL_TRACEPOINTS_SAFE(t, tmp)

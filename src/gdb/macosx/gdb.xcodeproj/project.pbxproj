@@ -2160,7 +2160,7 @@
 		2609D8370E82C40D008125DE /* symtab.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = symtab.c; sourceTree = "<group>"; };
 		2609D8380E82C40D008125DE /* symtab.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = symtab.h; sourceTree = "<group>"; };
 		2609D8390E82C40D008125DE /* target.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = target.c; sourceTree = "<group>"; };
-		2609D83A0E82C40D008125DE /* target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = target.h; path = "/var/root/apple-gdb-1824/src/gdb/target.h"; sourceTree = "<absolute>"; };
+		2609D83A0E82C40D008125DE /* target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = target.h; path = ../target.h; sourceTree = "<group>"; };
 		2609D83B0E82C40D008125DE /* terminal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = terminal.h; sourceTree = "<group>"; };
 		2609DC930E82C410008125DE /* thread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = thread.c; sourceTree = "<group>"; };
 		2609DC940E82C410008125DE /* top.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = top.c; sourceTree = "<group>"; };
@@ -3185,7 +3185,7 @@
 		61B6CE7D1F7955CA00A607A6 /* mep-opc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "mep-opc.h"; sourceTree = "<group>"; };
 		61B6CE7E1F7955CA00A607A6 /* mep-opc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mep-opc.c"; sourceTree = "<group>"; };
 		61C1DDF41F67633C0026619F /* gdbstubs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gdbstubs.h; sourceTree = "<group>"; };
-		61C1DE131F6765BC0026619F /* i960-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "i960-tdep.c"; path = "/var/root/apple-gdb-1824/src/gdb/target/i960-tdep.c"; sourceTree = "<absolute>"; };
+		61C1DE131F6765BC0026619F /* i960-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "i960-tdep.c"; sourceTree = "<group>"; };
 		61C1DE941F677C7A0026619F /* ttyflush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ttyflush.h; sourceTree = "<group>"; };
 		61C1DEBA1F6786090026619F /* fbsd.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = fbsd.mt; sourceTree = "<group>"; };
 		61C1DEBE1F6786D00026619F /* ppc64.mt */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = ppc64.mt; sourceTree = "<group>"; };
