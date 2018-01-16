@@ -223,14 +223,14 @@ extern void child_resume(ptid_t, int, enum target_signal);
 # define PTRACE_ARG3_TYPE PTRACE_TYPE_ARG3
 #endif /* !PTRACE_ARG3_TYPE */
 
-#if defined(PTRACE_ARG3_TYPE) && (PTRACE_ARG3_TYPE == caddr_t) && (!defined(_SYS_TYPES_H_) || !defined(caddr_t))
+#if defined(PTRACE_ARG3_TYPE) && defined(PTRACE_ARG3_IS_CADDR_T) && (!defined(_SYS_TYPES_H_) || !defined(caddr_t))
 # include <sys/types.h>
-#endif /* (PTRACE_ARG3_TYPE == caddr_t) && !caddr_t */
+#endif /* PTRACE_ARG3_IS_CADDR_T && !caddr_t */
 
 /* if that still failed, try again: */
-#if defined(PTRACE_ARG3_TYPE) && (PTRACE_ARG3_TYPE == caddr_t) && !defined(caddr_t)
+#if defined(PTRACE_ARG3_TYPE) && defined(PTRACE_ARG3_IS_CADDR_T) && !defined(caddr_t)
 typedef char * caddr_t;
-#endif /* (PTRACE_ARG3_TYPE == caddr_t) && !caddr_t */
+#endif /* PTRACE_ARG3_IS_CADDR_T && !caddr_t */
 
 extern int call_ptrace(int, int, PTRACE_ARG3_TYPE, int);
 

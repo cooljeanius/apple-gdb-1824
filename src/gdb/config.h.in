@@ -1763,6 +1763,10 @@
 /* Define to 1 if the C compiler supports function prototypes. */
 #undef PROTOTYPES
 
+/* Use this define in preprocessor conditionals instead of trying to do
+   strcmp() at preproccessing time. */
+#undef PTRACE_ARG3_IS_CADDR_T
+
 /* Define to the type of arg 3 for ptrace. */
 #undef PTRACE_TYPE_ARG3
 

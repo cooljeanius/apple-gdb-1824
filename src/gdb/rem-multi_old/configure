@@ -5941,6 +5941,9 @@ IFS=${ac_save_IFS}
 shift
 if test "x$3" = "xcaddr_t"; then
   :
+
+$as_echo "#define PTRACE_ARG3_IS_CADDR_T 1" >>confdefs.h
+
   fi
 
 cat >>confdefs.h <<_ACEOF

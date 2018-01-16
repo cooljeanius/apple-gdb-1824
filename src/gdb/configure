@@ -45134,6 +45134,9 @@ IFS=${ac_save_IFS}
 shift
 if test "x$3" = "xcaddr_t"; then
   :
+
+$as_echo "#define PTRACE_ARG3_IS_CADDR_T 1" >>confdefs.h
+
   fi
 
 cat >>confdefs.h <<_ACEOF
@@ -47466,7 +47469,7 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wduplicated-branches -Wstringop-overflow=2 \
 -Wenum-conversion -Wbuiltin-declaration-mismatch \
 -Walloc-zero -Walloc-size-larger-than=2147483647 \
--Wmultistatement-macros -Wpacked-not-aligned"
+-Wmultistatement-macros -Wpacked-not-aligned -Wundef -Wunused-macros"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -47691,8 +47694,6 @@ fi
 #  * -Wsign-conversion (likewise)
 #  * -Wtraditional-conversion (likewise) (C-only, not C++)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
-#  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
-#  * -Wunused-macros (if we also add back -Wundef as per above)
 #  * -Wunsafe-loop-optimizations (lex/yacc generate code that triggers it)
 #  * -Waggregate-return (too noisy and hard to avoid)
 #  * -Wformat-signedness (too noisy)
@@ -47722,6 +47723,8 @@ fi
 #    others such as -Wformat-nonliteral, so I added it back)
 #  * -Wnested-externs (if it gets redundant with -Wimplicit again)
 #  * -Wwrite-strings (in case all the const-ifying gets to be too much)
+#  * -Wundef (if issues like the one with caddr_t crop up again)
+#  * -Wunused-macros (if we have to re-remove -Wundef again)
 # Up for debate in some other way:
 #  * -Wstrict-overflow (i.e., could change the value assigned to it. We use
 #    "1" now because that is the default for "-Wall", but "2" is the

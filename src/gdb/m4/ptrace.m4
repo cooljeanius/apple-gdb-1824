@@ -73,6 +73,9 @@ IFS=${ac_save_IFS}
 shift
 if test "x$[3]" = "xcaddr_t"; then
   :
+  AC_DEFINE([PTRACE_ARG3_IS_CADDR_T],[1],
+            [Use this define in preprocessor conditionals instead of trying
+             to do strcmp() at preproccessing time.])
   AH_VERBATIM([01_HEADER_FOR_CADDR_T],[
 /* make sure that caddr_t is defined for us: */
 #if defined(HAVE_SYS_TYPES_H) && HAVE_SYS_TYPES_H
