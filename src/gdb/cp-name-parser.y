@@ -1279,18 +1279,17 @@ d_int_type (int flags)
   return make_builtin_type (name);
 }
 
-/* Wrapper to create a unary operation.  */
-
+/* Wrapper to create a unary operation: */
 static struct demangle_component *
-d_unary (const char *name, struct demangle_component *lhs)
+d_unary(const char *name, struct demangle_component *lhs)
 {
-  return fill_comp (DEMANGLE_COMPONENT_UNARY, make_operator (name, 1), lhs);
+  return fill_comp(DEMANGLE_COMPONENT_UNARY, make_operator(name, 1), lhs);
 }
 
-/* Wrapper to create a binary operation.  */
-
+/* Wrapper to create a binary operation: */
 static struct demangle_component *
-d_binary (const char *name, struct demangle_component *lhs, struct demangle_component *rhs)
+d_binary(const char *name, struct demangle_component *lhs,
+	 struct demangle_component *rhs)
 {
   return fill_comp(DEMANGLE_COMPONENT_BINARY, make_operator(name, 2),
 		   fill_comp(DEMANGLE_COMPONENT_BINARY_ARGS, lhs, rhs));
@@ -1422,10 +1421,10 @@ static char represented[] = __extension__ "\a\b\e\f\n\r\t\v";
 
 /* Translate the backslash the way we would in the host character set.  */
 static int
-c_parse_backslash (int host_char, int *target_char)
+c_parse_backslash(int host_char, int *target_char)
 {
   const char *ix;
-  ix = strchr (backslashable, host_char);
+  ix = strchr(backslashable, host_char);
   if (! ix)
     return 0;
   else
@@ -1514,9 +1513,9 @@ parse_escape (const char **string_ptr)
 }
 
 #define HANDLE_SPECIAL(string, comp)				\
-  if (strncmp (tokstart, string, sizeof (string) - 1) == 0)	\
+  if (strncmp(tokstart, string, (sizeof(string) - 1UL)) == 0)	\
     {								\
-      lexptr = tokstart + sizeof (string) - 1;			\
+      lexptr = (tokstart + sizeof(string) - 1UL);		\
       yylval.lval = comp;					\
       return DEMANGLER_SPECIAL;					\
     }
@@ -2038,6 +2037,7 @@ cp_demangled_name_to_comp(const char *demangled_name, void **memory,
 }
 
 #ifdef TEST_CPNAMES
+/* */
 static void
 cp_print(struct demangle_component *result)
 {
@@ -2091,7 +2091,7 @@ main(int argc, char **argv)
   const char *errmsg;
   void *memory;
   struct demangle_component *result;
-  
+
   if (argc < 1)
     {
       fprintf(stderr, "Error: no arguments supplied.\n");

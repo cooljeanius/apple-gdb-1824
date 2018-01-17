@@ -659,6 +659,9 @@
 /* Define if your locale.h file contains LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES
 
+/* Define to 1 if you have the `ldexpl' function. */
+#undef HAVE_LDEXPL
+
 /* Define if you have the libbabeltrace library. */
 #undef HAVE_LIBBABELTRACE
 
@@ -980,6 +983,9 @@
 
 /* Define to 1 if you have the `pow' function. */
 #undef HAVE_POW
+
+/* Define to 1 if you have the `powl' function. */
+#undef HAVE_POWL
 
 /* Define to 1 if you have the `pread' function. */
 #undef HAVE_PREAD

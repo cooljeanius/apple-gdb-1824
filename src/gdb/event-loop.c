@@ -441,7 +441,7 @@ process_event (void)
       /* Now call the procedure associated with the event. */
       /* APPLE LOCAL async */
       (*proc)(data);
-      return 1; /* FIXME: AFAICT, this makes the loop only run once */
+      return 1; /* FIXME: AFAICT, this return makes the loop only run once */
     }
 
   /* this is the case if there are no event on the event queue. */

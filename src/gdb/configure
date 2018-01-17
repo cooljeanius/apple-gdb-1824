@@ -44915,10 +44915,10 @@ for ac_func in atof alarm assert atexit bcopy bsearch bzero \
                 clnt_pcreateerror dup2 exit fflush fgets fprintf fwrite \
                 getcwd gethostbyaddr gethostbyname gethostname getpass \
                 gets gettimeofday gmtime inet_addr inet_ntoa isascii \
-                ishexnumber isnumber isspace localtime localtime_r \
+                ishexnumber isnumber isspace ldexpl localtime localtime_r \
                 mach_error_string memchr memcmp memcpy memmove mempcpy \
                 memset mkdir netname_look_up nl_langinfo pathconf pclose \
-                popen pow qsort qsort_r readdir recv re_comp regcomp \
+                popen pow powl qsort qsort_r readdir recv re_comp regcomp \
                 select send setitimer socket strcasecmp strcat strchr \
                 strcpy strcspn strdup strerror strlcat strlcpy strlen \
                 strncasecmp strncat strncmp strncpy strndup strpbrk \
@@ -47579,12 +47579,13 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
 -Wunevaluated-expression -Wextra-semi -Wunsequenced -Wself-assign \
 -Wshift-sign-overflow -Wstatic-in-inline -Wparentheses-equality \
 -Wincompatible-pointer-types-discards-qualifiers -Winvalid-noreturn \
--Wfor-loop-analysis -Wcomma -Wconditional-uninitialized \
--Wunreachable-code-loop-increment"
-  # Up for debate:
+-Wfor-loop-analysis -Wconditional-uninitialized \
+-Wunreachable-code-loop-increment -Wtautological-pointer-compare"
+  # Up for debate (i.e. for debating adding to existing flags here):
   # * -Wunreachable-code and its suboptions for returns and breaks
   # * -Wgnu-redeclared-enum
   # * -Wextended-offsetof
+  # * -Wcomma (false positives)
   if test "x${enable_build_with_cxx}" = "xyes"; then
     build_warnings="${build_warnings} -Wmismatched-tags \
 -Wmissing-exception-spec -Wpessimizing-move -Wredundant-move \
