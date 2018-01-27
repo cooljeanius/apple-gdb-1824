@@ -172,7 +172,8 @@ const char *dyld_entry_filename(const struct dyld_objfile_entry *e,
 
 char *dyld_offset_string(CORE_ADDR offset);
 
-char *dyld_entry_string(struct dyld_objfile_entry *e, int use_shortnames);
+char *dyld_entry_string(struct dyld_objfile_entry *e, int use_shortnames)
+  ATTRIBUTE_MALLOC;
 
 const char *dyld_reason_string(dyld_objfile_reason r);
 

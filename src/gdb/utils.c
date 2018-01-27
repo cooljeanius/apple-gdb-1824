@@ -632,7 +632,7 @@ free_current_contents(void *ptr)
    with cleanups that need to be done as a result of a call to error().
    In such cases, we may not be certain where the first cleanup is, unless
    we have a do-nothing one to always use as the base. */
-void ATTRIBUTE_CONST
+void
 null_cleanup(void *arg ATTRIBUTE_UNUSED)
 {
   return;
@@ -1144,12 +1144,15 @@ request_quit(int signo)
 
 /* Memory management stuff (malloc friends): */
 #if !defined(USE_MMALLOC) || !USE_MMALLOC
-static void *
+static ATTRIBUTE_NOCLONE ATTRIBUTE_MALLOC void *
 mmalloc(void *md ATTRIBUTE_UNUSED, size_t size)
 {
   return malloc(size);		/* NOTE: GDB's only call to malloc() */
 }
 
+/* FIXME: -Wsuggest-attribute=malloc, but "libiberty.h" says that realloc type
+ * functions are not suitable for attribute malloc since they may return the
+ * same address across multiple calls...  */
 static void *
 mrealloc(void *md, void *ptr, size_t size)
 {
@@ -1159,7 +1162,7 @@ mrealloc(void *md, void *ptr, size_t size)
     return realloc(ptr, size);	/* NOTE: GDB's only call to realloc() */
 }
 
-static void *
+static ATTRIBUTE_NOCLONE ATTRIBUTE_MALLOC void *
 mcalloc(void *md ATTRIBUTE_UNUSED, size_t number, size_t size)
 {
   return calloc(number, size);	/* NOTE: GDB's only call to calloc() */
@@ -1404,9 +1407,9 @@ xfree(void *ptr)
    "libiberty.h".  xfree() is GDB local.  */
 
 /* forward declarations first: */
-extern PTR gmalloc PARAMS((size_t));
-extern PTR grealloc PARAMS((PTR, size_t));
-extern PTR gcalloc PARAMS((size_t, size_t));
+extern PTR gmalloc PARAMS((size_t)) ATTRIBUTE_MALLOC;
+extern PTR grealloc PARAMS((PTR, size_t)); /* see note about realloc above */
+extern PTR gcalloc PARAMS((size_t, size_t)) ATTRIBUTE_MALLOC;
 extern void gfree PARAMS((void *));
 
 PTR				/* OK: PTR */
@@ -1418,6 +1421,9 @@ gmalloc(size_t size)
 PTR				/* OK: PTR */
 grealloc(PTR ptr, size_t size)	/* OK: PTR */
 {
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+#endif /* __GNUC__ && !__STRICT_ANSI__ */
   return xmrealloc(NULL, ptr, size);
 }
 
@@ -3090,9 +3096,9 @@ paddress_with_arch(struct gdbarch *gdbarch, CORE_ADDR addr)
    * least significant bits of ADDR - the upper bits were either zero or sign
    * extended.  Should gdbarch_address_to_pointer or some
    * ADDRESS_TO_PRINTABLE() be used to do the conversion?  */
-  
+
   int addr_bit = gdbarch_addr_bit(gdbarch);
-  
+
   if (addr_bit < (int)(sizeof(CORE_ADDR) * HOST_CHAR_BIT))
     addr &= (((CORE_ADDR)1UL << addr_bit) - 1UL);
   return hex_string(addr);
@@ -3427,12 +3433,15 @@ string_to_core_addr(const char *my_string)
 char *
 gdb_realpath(const char *filename)
 {
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+#endif /* __GNUC__ && !__STRICT_ANSI__ */
   /* Method 1: The system has a compile time upper bound on a filename
      path.  Use that and realpath() to canonicalize the name.  This is
      the most common case.  Note that, if there isn't a compile time
      upper bound, you want to avoid realpath() at all costs.  */
 #if defined(HAVE_REALPATH)
-  {
+  if (HAVE_REALPATH) {
 # if defined(PATH_MAX)
     char buf[PATH_MAX];
 #  define USE_REALPATH
@@ -3453,7 +3462,7 @@ gdb_realpath(const char *filename)
      canonicalize_file_name() which malloc's a chunk of memory and
      returns that, use that.  */
 #if defined(HAVE_CANONICALIZE_FILE_NAME)
-  {
+  if (HAVE_CANONICALIZE_FILE_NAME) {
     char *rp = canonicalize_file_name(filename);
     if (rp == NULL)
       return xstrdup(filename);
@@ -3479,7 +3488,7 @@ gdb_realpath(const char *filename)
      to realpath() (it could always overflow).  On those systems, we
      skip this.  */
 #if defined(HAVE_REALPATH) && defined(HAVE_UNISTD_H) && defined(HAVE_ALLOCA)
-  {
+  if (HAVE_REALPATH && HAVE_UNISTD_H && HAVE_ALLOCA) {
     /* Find out the max path size: */
     long path_max = pathconf("/", _PC_PATH_MAX);
     if (path_max > 0)

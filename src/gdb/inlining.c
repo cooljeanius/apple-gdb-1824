@@ -2807,9 +2807,9 @@ inlined_subroutine_adjust_position_for_breakpoint (struct breakpoint *b)
     {
       /* APPLE LOCAL begin radar 6366048 search both minsyms & syms for bps  */
       char *long_name = NULL;
-      int len = 0;
+      size_t len = 2UL;
 
-      len += strlen (global_inlined_call_stack.records[i].fn_name) + 4;
+      len += (strlen(global_inlined_call_stack.records[i].fn_name) + 4UL);
 
       if (global_inlined_call_stack.records[i].s
 	  && global_inlined_call_stack.records[i].s->filename)

@@ -435,7 +435,7 @@ extern struct symbol *lookup_symbol_in_language(const char *,
                                                 int *, struct symtab **);
 
 /* '-Wmissing-declarations': */
-extern char *ada_la_decode(const char *encoded, int options);
+extern char *ada_la_decode(const char *encoded, int options) ATTRIBUTE_MALLOC;
 
 extern int ada_match_name(const char *, const char *, int);
 

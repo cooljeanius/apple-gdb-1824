@@ -478,7 +478,7 @@ gr_mourn(void)
 }
 
 /* FIXME: add comment: */
-void ATTRIBUTE_CONST
+void
 gr_kill(void)
 {
   return;
@@ -547,7 +547,7 @@ gr_multi_scan(const char *list[], int passthrough)
   /* if we have no strings, then something is wrong. */
   if (string_count == 0)
     return (-1);
-  
+
   if ((max_length == 0) || ((max_length << 1) == 0)) {
     max_length++;
   }
@@ -619,8 +619,7 @@ gr_multi_scan(const char *list[], int passthrough)
    which store all the registers in one fell swoop, this makes sure
    that registers contains all the registers from the program being
    debugged.  */
-
-void ATTRIBUTE_CONST
+void
 gr_prepare_to_store(void)
 {
   return; /* Do nothing, since we assume we can store individual regs */

@@ -163,7 +163,7 @@ parse_host_type(const char *host)
 {
   if ((strcasecmp(host, "powerpc") == 0) || (strcasecmp(host, "ppc") == 0))
     {
-#if KDP_TARGET_POWERPC
+#if defined(KDP_TARGET_POWERPC) && KDP_TARGET_POWERPC
       return CPU_TYPE_POWERPC;
 #else
       return -2;
@@ -175,7 +175,7 @@ parse_host_type(const char *host)
            || (strcasecmp(host, "i586") == 0)
            || (strcasecmp(host, "pentium") == 0))
     {
-#if KDP_TARGET_I386
+#if defined(KDP_TARGET_I386) && KDP_TARGET_I386
       return CPU_TYPE_I386;
 #else
       return -2;
@@ -183,7 +183,7 @@ parse_host_type(const char *host)
     }
   else if (strcasecmp(host, "arm") == 0)
     {
-#if KDP_TARGET_ARM
+#if defined(KDP_TARGET_ARM) && KDP_TARGET_ARM
       return CPU_TYPE_ARM;
 #else
       return -2;
@@ -210,7 +210,7 @@ logger(kdp_log_level l, const char *format, ...)
   va_end(ap);
 }
 
-#if KDP_TARGET_ARM
+#if defined(KDP_TARGET_ARM) && KDP_TARGET_ARM
 extern int set_arm_single_step_mode(struct gdbarch *, int);
 #endif /* KDP_TARGET_ARM */
 
@@ -220,7 +220,7 @@ kdp_open(const char *name, int from_tty)
   push_target(&kdp_ops);
   /* KDP cannot do inferior function calls: */
   inferior_function_calls_disabled_p = 1;
-#if KDP_TARGET_ARM
+#if defined(KDP_TARGET_ARM) && KDP_TARGET_ARM
   set_arm_single_step_mode(current_gdbarch, arm_single_step_mode_software);
 #endif /* KDP_TARGET_ARM */
 }
@@ -656,11 +656,11 @@ kdp_attach(const char *args, int from_tty)
             kdp_return_string(kdpret));
     }
 
-#if KDP_TARGET_POWERPC
+#if defined(KDP_TARGET_POWERPC) && KDP_TARGET_POWERPC
   kdp_set_little_endian (&c);
-#elif KDP_TARGET_I386
+#elif defined(KDP_TARGET_I386) && KDP_TARGET_I386
   kdp_set_big_endian (&c);
-#elif KDP_TARGET_ARM
+#elif defined(KDP_TARGET_ARM) && KDP_TARGET_ARM
   kdp_set_big_endian (&c);
 #else
 # error "unsupported architecture"
@@ -807,11 +807,11 @@ kdp_reattach_command(const char *args, int from_tty)
     error("unable to create connection for host \"%s\": %s", args,
           kdp_return_string(kdpret));
 
-#if KDP_TARGET_POWERPC
+#if defined(KDP_TARGET_POWERPC) && KDP_TARGET_POWERPC
   kdp_set_little_endian (&c);
-#elif KDP_TARGET_I386
+#elif defined(KDP_TARGET_I386) && KDP_TARGET_I386
   kdp_set_big_endian (&c);
-#elif KDP_TARGET_ARM
+#elif defined(KDP_TARGET_ARM) && KDP_TARGET_ARM
   kdp_set_big_endian (&c);
 #else
 # error "unsupported architecture"
@@ -954,7 +954,7 @@ kdp_set_trace_bit(int step)
 
     case CPU_TYPE_POWERPC:
       {
-#if KDP_TARGET_POWERPC
+#if defined(KDP_TARGET_POWERPC) && KDP_TARGET_POWERPC
         LONGEST srr1 = read_register (PS_REGNUM);
         if (step)
           {
@@ -973,7 +973,7 @@ kdp_set_trace_bit(int step)
 
     case CPU_TYPE_I386:
       {
-#if KDP_TARGET_I386
+#if defined(KDP_TARGET_I386) && KDP_TARGET_I386
         LONGEST eflags = read_register (PS_REGNUM);
         if (step)
           {
@@ -991,7 +991,7 @@ kdp_set_trace_bit(int step)
       break;
     case CPU_TYPE_X86_64:
       {
-#if KDP_TARGET_I386
+#if defined(KDP_TARGET_I386) && KDP_TARGET_I386
         LONGEST rflags = read_register (PS_REGNUM);
         if (step)
           {
@@ -1009,7 +1009,7 @@ kdp_set_trace_bit(int step)
       break;
     case CPU_TYPE_ARM:
       /* We just ignore requests to set the trace bit on ARM.
-	   * For now, we are always using software single stepping.  */
+       * For now, we are always using software single stepping.  */
       break;
     default:
       error ("kdp_set_trace_bit: unknown host type 0x%lx",
@@ -1106,7 +1106,7 @@ kdp_wait (ptid_t pid,
   return pid;
 }
 
-#if KDP_TARGET_POWERPC
+#if defined(KDP_TARGET_POWERPC) && KDP_TARGET_POWERPC
 static void
 kdp_fetch_registers_ppc (int regno)
 {
@@ -1213,7 +1213,7 @@ kdp_fetch_registers_ppc (int regno)
 }
 #endif /* KDP_TARGET_POWERPC */
 
-#if KDP_TARGET_POWERPC
+#if defined(KDP_TARGET_POWERPC) && KDP_TARGET_POWERPC
 static void
 kdp_store_registers_ppc (int regno)
 {
@@ -1272,15 +1272,14 @@ kdp_store_registers_ppc (int regno)
                          "kdp_store_registers_ppc");
       if (kdpret != RR_SUCCESS)
         {
-          error
-            ("kdp_store_registers_ppc: unable to store PPC_THREAD_FPSTATE: %s",
-             kdp_return_string (kdpret));
+          error("kdp_store_registers_ppc: unable to store PPC_THREAD_FPSTATE: %s",
+		kdp_return_string(kdpret));
         }
     }
 }
 #endif /* KDP_TARGET_POWERPC */
 
-#if KDP_TARGET_I386
+#if defined(KDP_TARGET_I386) && KDP_TARGET_I386
 static void
 kdp_fetch_registers_i386(int regno)
 {
@@ -1355,7 +1354,7 @@ kdp_fetch_registers_i386(int regno)
 }
 #endif /* KDP_TARGET_I386 */
 
-#if KDP_TARGET_I386
+#if defined(KDP_TARGET_I386) && KDP_TARGET_I386
 static void
 kdp_fetch_registers_x86_64(int regno)
 {
@@ -1430,7 +1429,7 @@ kdp_fetch_registers_x86_64(int regno)
 }
 #endif /* KDP_TARGET_I386 */
 
-#if KDP_TARGET_I386
+#if defined(KDP_TARGET_I386) && KDP_TARGET_I386
 static void
 kdp_store_registers_i386(int regno)
 {
@@ -1494,7 +1493,7 @@ kdp_store_registers_i386(int regno)
 }
 #endif /* KDP_TARGET_I386 */
 
-#if KDP_TARGET_ARM
+#if defined(KDP_TARGET_ARM) && KDP_TARGET_ARM
 static void
 kdp_fetch_registers_arm(int regno)
 {
@@ -1630,7 +1629,7 @@ kdp_fetch_registers_arm(int regno)
 }
 #endif /* KDP_TARGET_ARM */
 
-#if KDP_TARGET_ARM
+#if defined(KDP_TARGET_ARM) && KDP_TARGET_ARM
 static void
 kdp_store_registers_arm(int regno)
 {
@@ -1727,7 +1726,7 @@ kdp_store_registers_arm(int regno)
 }
 #endif /* KDP_TARGET_ARM */
 
-#if KDP_TARGET_I386
+#if defined(KDP_TARGET_I386) && KDP_TARGET_I386
 static void
 kdp_store_registers_x86_64(int regno)
 {
@@ -1774,7 +1773,7 @@ kdp_store_registers(int regno)
   switch (kdp_cpu_type)
     {
     case CPU_TYPE_POWERPC:
-#if KDP_TARGET_POWERPC
+#if defined(KDP_TARGET_POWERPC) && KDP_TARGET_POWERPC
       kdp_store_registers_ppc(regno);
 #else
       error("kdp_store_registers: not configured to support powerpc");
@@ -1782,7 +1781,7 @@ kdp_store_registers(int regno)
       break;
 
     case CPU_TYPE_X86_64:
-#if KDP_TARGET_I386
+#if defined(KDP_TARGET_I386) && KDP_TARGET_I386
       kdp_store_registers_x86_64(regno);
 #else
       error("kdp_store_registers: not configured to support x86_64");
@@ -1790,7 +1789,7 @@ kdp_store_registers(int regno)
       break;
 
     case CPU_TYPE_I386:
-#if KDP_TARGET_I386
+#if defined(KDP_TARGET_I386) && KDP_TARGET_I386
       kdp_store_registers_i386(regno);
 #else
       error("kdp_store_registers: not configured to support i386");
@@ -1798,7 +1797,7 @@ kdp_store_registers(int regno)
       break;
 
     case CPU_TYPE_ARM:
-#if KDP_TARGET_ARM
+#if defined(KDP_TARGET_ARM) && KDP_TARGET_ARM
       kdp_store_registers_arm(regno);
 #else
       error("kdp_store_registers: not configured to support arm");
@@ -1822,7 +1821,7 @@ kdp_fetch_registers(int regno)
   switch (kdp_cpu_type)
     {
     case CPU_TYPE_POWERPC:
-#if KDP_TARGET_POWERPC
+#if defined(KDP_TARGET_POWERPC) && KDP_TARGET_POWERPC
       kdp_fetch_registers_ppc(regno);
 #else
       error("kdp_fetch_registers: not configured to support powerpc");
@@ -1830,7 +1829,7 @@ kdp_fetch_registers(int regno)
       break;
 
     case CPU_TYPE_I386:
-#if KDP_TARGET_I386
+#if defined(KDP_TARGET_I386) && KDP_TARGET_I386
       kdp_fetch_registers_i386(regno);
 #else
       error("kdp_fetch_registers: not configured to support i386");
@@ -1838,7 +1837,7 @@ kdp_fetch_registers(int regno)
       break;
 
     case CPU_TYPE_ARM:
-#if KDP_TARGET_ARM
+#if defined(KDP_TARGET_ARM) && KDP_TARGET_ARM
       kdp_fetch_registers_arm(regno);
 #else
       error("kdp_fetch_registers: not configured to support arm");
@@ -1846,7 +1845,7 @@ kdp_fetch_registers(int regno)
       break;
 
     case CPU_TYPE_X86_64:
-#if KDP_TARGET_I386
+#if defined(KDP_TARGET_I386) && KDP_TARGET_I386
       kdp_fetch_registers_x86_64(regno);
 #else
       error("kdp_fetch_registers: not configured to support i386");

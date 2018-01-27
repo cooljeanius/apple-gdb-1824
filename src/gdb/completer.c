@@ -74,7 +74,7 @@ static const char *gdb_completer_command_word_break_characters =
    break characters any characters that are commonly used in file
    names, such as '-', '+', '~', etc.  Otherwise, readline displays
    incorrect completion candidates.  */
-#ifdef HAVE_DOS_BASED_FILE_SYSTEM
+#if defined(HAVE_DOS_BASED_FILE_SYSTEM) && HAVE_DOS_BASED_FILE_SYSTEM
 /* MS-DOS and MS-Windows use colon as part of the drive spec, and most
    programs support @foo style response files.  */
 static const char *gdb_completer_file_name_break_characters = " \t\n*|\"';?><@";
@@ -236,7 +236,7 @@ location_completer(const char *text, char *word)
 	  else
 	    break;		/* hit the end of text */
 	}
-#if HAVE_DOS_BASED_FILE_SYSTEM
+#if defined(HAVE_DOS_BASED_FILE_SYSTEM) && HAVE_DOS_BASED_FILE_SYSTEM
       /* If we have a DOS-style absolute file name at the beginning of
 	 TEXT, and the colon after the drive letter is the only colon
 	 we found, pretend the colon is not there.  */

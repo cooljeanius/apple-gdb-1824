@@ -2085,7 +2085,7 @@ stab_variable (void *p, const char *name, enum debug_var_kind kind,
       break;
     }
 
-  buf_len = (strlen(name) + strlen(s) + 4UL);
+  buf_len = (strlen(name) + strlen(s) + 4UL + 1UL);
   buf = (char *)xmalloc(buf_len);
   snprintf(buf, buf_len, "%s:%s%s", name, kindstr, s);
   free(s);

@@ -229,7 +229,7 @@ child_attach(const char *args, int from_tty)
 }
 
 #if !defined(CHILD_POST_ATTACH)
-void ATTRIBUTE_CONST
+void
 child_post_attach(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT require a meaningful "post attach"
@@ -355,7 +355,7 @@ child_post_startup_inferior(ptid_t ptid ATTRIBUTE_UNUSED)
 #endif /* !CHILD_POST_STARTUP_INFERIOR */
 
 #if !defined(CHILD_ACKNOWLEDGE_CREATED_INFERIOR)
-void ATTRIBUTE_CONST
+void
 child_acknowledge_created_inferior(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT require a meaningful
@@ -366,7 +366,7 @@ child_acknowledge_created_inferior(int pid ATTRIBUTE_UNUSED)
 
 
 #if !defined(CHILD_INSERT_FORK_CATCHPOINT)
-void ATTRIBUTE_CONST
+void
 child_insert_fork_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT support notification of fork events: */
@@ -384,7 +384,7 @@ child_remove_fork_catchpoint(int pid ATTRIBUTE_UNUSED)
 #endif /* !CHILD_REMOVE_FORK_CATCHPOINT */
 
 #if !defined(CHILD_INSERT_VFORK_CATCHPOINT)
-void ATTRIBUTE_CONST
+void
 child_insert_vfork_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT support notification of vfork events: */
@@ -412,7 +412,7 @@ child_follow_fork(int follow_child ATTRIBUTE_UNUSED)
 #endif /* !CHILD_FOLLOW_FORK */
 
 #if !defined(CHILD_INSERT_EXEC_CATCHPOINT)
-void ATTRIBUTE_CONST
+void
 child_insert_exec_catchpoint(int pid ATTRIBUTE_UNUSED)
 {
   /* This version of Unix does NOT support notification of exec events: */

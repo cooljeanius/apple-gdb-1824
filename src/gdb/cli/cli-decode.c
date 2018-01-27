@@ -286,7 +286,7 @@ add_abbrev_prefix_cmd(const char *name, enum command_class the_class,
 }
 
 /* This is an empty "cfunc".  */
-void ATTRIBUTE_CONST
+void
 not_just_help_class_command(const char *args ATTRIBUTE_UNUSED,
                             int from_tty ATTRIBUTE_UNUSED)
 {
@@ -296,7 +296,7 @@ not_just_help_class_command(const char *args ATTRIBUTE_UNUSED,
 /* This is an empty "sfunc".  */
 static void empty_sfunc(const char *, int, struct cmd_list_element *);
 
-static void ATTRIBUTE_CONST
+static void
 empty_sfunc(const char *args ATTRIBUTE_UNUSED, int from_tty ATTRIBUTE_UNUSED,
             struct cmd_list_element *c ATTRIBUTE_UNUSED)
 {

@@ -1,4 +1,4 @@
-/* GDB-friendly replacement for <vfork.h>.
+/* gdb_vfork.h: GDB-friendly replacement for <vfork.h>.
    Copyright 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -21,8 +21,10 @@
 #ifndef GDB_VFORK_H
 #define GDB_VFORK_H
 
-#if HAVE_VFORK_H
-#include <vfork.h>
-#endif
+#if defined(HAVE_VFORK_H) && HAVE_VFORK_H
+# include <vfork.h>
+#endif /* HAVE_VFORK_H */
 
 #endif /* GDB_VFORK_H */
+
+/* EOF */

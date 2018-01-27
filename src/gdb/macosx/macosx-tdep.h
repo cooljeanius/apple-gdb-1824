@@ -186,7 +186,7 @@ int dir_exists_p(const char *dir);
 
 char *strtrunc(char *str, const char *substr);
 
-char *expand_kext_cstr(const char *kext_path);
+char *expand_kext_cstr(const char *kext_path) ATTRIBUTE_MALLOC;
 
 #if defined(__COREFOUNDATION__) || defined(__COREFOUNDATION_COREFOUNDATION__)
 char *macosx_locate_executable_by_dbg_shell_command(CFStringRef uuid);

@@ -841,7 +841,7 @@ main(int argc, char **argv)
 	      size_t nlen;
 
 	      quotedarg = quot(optarg);
-	      nlen = (strlen(preprocargs) + strlen(quotedarg) + 4UL);
+	      nlen = (strlen(preprocargs) + strlen(quotedarg) + 4UL + 2UL);
 	      n = (char *)xmalloc(nlen);
 	      snprintf(n, nlen, "%s -%c%s", preprocargs, c, quotedarg);
 	      free(preprocargs);
@@ -880,7 +880,7 @@ main(int argc, char **argv)
 	      size_t nlen;
 
 	      quotedarg = quot(optarg);
-	      nlen = (strlen(preprocargs) + strlen(quotedarg) + 4UL);
+	      nlen = (strlen(preprocargs) + strlen(quotedarg) + 4UL + 2UL);
 	      n = (char *)xmalloc(nlen);
 	      snprintf(n, nlen, "%s -I%s", preprocargs, quotedarg);
 	      free(preprocargs);

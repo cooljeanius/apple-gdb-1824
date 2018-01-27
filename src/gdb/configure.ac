@@ -1791,6 +1791,12 @@ if test "x${ac_cv_have_decl_basename}" = "x" && test "x${ac_cv_have_decl_basenam
 #endif /* HAVE_LIBGEN_H */
   ])dnl
   ## blah... darn it, basename...
+else
+  if test "x${ac_cv_have_decl_basename}" != "x"; then
+    test -n "${ac_cv_have_decl_basename}" && echo "already checked for basename: ${ac_cv_have_decl_basename}"
+  elif test "x${ac_cv_have_decl_basename_char_p_}" != "x"; then
+    test -n "${ac_cv_have_decl_basename_char_p_}" && echo "already checked for basename(char *): ${ac_cv_have_decl_basename_char_p_}"
+  fi
 fi
 AC_CHECK_DECLS([name_server_port],[],[],[
 #ifdef HAVE_MACH_MACH_INIT_H
@@ -3307,7 +3313,7 @@ opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wnull-dereference -Wframe-address -Wframe-larger-than=262144"
 if test "x${ax_cv_c_compiler_vendor}" != "xclang"; then
   opt_warnings="${opt_warnings} -Wsuggest-attribute=const \
--Wsuggest-attribute=cold -Wsuggest-attribute=hot"
+-Wsuggest-attribute=cold -Wsuggest-attribute=hot -Wsuggest-attribute=malloc"
 fi
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
@@ -3417,6 +3423,7 @@ fi
 #  * -Wformat-nonliteral (as to the conditions in which we enable it)
 #  * -Wcast-align (as to whether to un-disable for clang as well)
 #  * -Wtype-limits (as to whether to also use it for 32-bit BFD)
+#  * -Wsuggest-attribute=const (changing how to detect if GCC handles it right)
 # NOT actually up for debate:
 #  * -Werror (never actually add this, even though upstream GDB does...)
 #  * -pedantic-errors (likewise, never add this)
@@ -3474,7 +3481,7 @@ then
     for w in ${build_warnings}; do
         AC_MSG_CHECKING([if compiler supports ${w}])
 	case ${w} in
-          -Wold-style-definition|-Wstrict-prototypes|-Wsuggest-attribute=const)
+          -Wold-style-definition|-Wstrict-prototypes)
 	    saved_CFLAGS="${CFLAGS}"
 	    CFLAGS="${CFLAGS} ${w} -Werror"
             dnl# Use "_SOURCE" instead of "_PROGRAM" here to keep us from

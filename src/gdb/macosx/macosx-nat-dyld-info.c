@@ -129,7 +129,7 @@ dyld_reason_string(dyld_objfile_reason r)
 }
 
 /* */
-void ATTRIBUTE_CONST
+void
 dyld_check_entry(struct dyld_objfile_entry *e ATTRIBUTE_UNUSED)
 {
   return;

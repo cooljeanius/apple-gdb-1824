@@ -165,6 +165,11 @@
 # endif /* HAVE_VARARGS_H */
 #endif /* HAVE_STDARG_H */
 
+/* 0 means unavailable; needs to go before "libiberty.h" for -Wundef: */
+#ifndef HAVE_DECL_BASENAME
+# define HAVE_DECL_BASENAME 0
+#endif /* !HAVE_DECL_BASENAME */
+
 #include "libiberty.h"
 
 /* Rather than duplicate all the logic in BFD for figuring out what types

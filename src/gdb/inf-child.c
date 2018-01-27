@@ -71,7 +71,7 @@ inf_child_post_attach(int pid ATTRIBUTE_UNUSED)
    makes sure that registers contains all the registers from the
    program being debugged.  */
 
-static void ATTRIBUTE_CONST
+static void
 inf_child_prepare_to_store(void)
 {
   return;

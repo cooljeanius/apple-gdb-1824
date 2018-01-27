@@ -1175,7 +1175,7 @@ parse_expression_in_context(const char *string, int void_context_p)
 }
 
 /* A post-parser that does nothing, besides return: */
-void ATTRIBUTE_CONST
+void
 null_post_parser(struct expression **exp ATTRIBUTE_UNUSED,
 		 int void_context_p ATTRIBUTE_UNUSED)
 {

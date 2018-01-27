@@ -1604,7 +1604,7 @@ malloc_history_info_command(const char *arg, int from_tty)
 # endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
     }
 
-# if HAVE_32_BIT_STACK_LOGGING
+# if defined(HAVE_32_BIT_STACK_LOGGING) && HAVE_32_BIT_STACK_LOGGING
   /* Remember to reset the memory copy areas.  */
   free_malloc_history_buffers();
 # endif /* HAVE_32_BIT_STACK_LOGGING */

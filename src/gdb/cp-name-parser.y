@@ -40,6 +40,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include <string.h>
 
 #include "safe-ctype.h"
+/* 0 means unavailable; needs to go before "libiberty.h" for -Wundef: */
+#ifndef HAVE_DECL_BASENAME
+# define HAVE_DECL_BASENAME 0
+#endif /* !HAVE_DECL_BASENAME */
 #include "libiberty.h"
 #include "demangle.h"
 

@@ -104,6 +104,7 @@
 
 #include <mach/mach_vm.h>
 
+/* FIXME: redefines ATTRIBUTE_PRINTF on us: */
 #if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE
 # include <libxml/parser.h>
 # include <libxml/tree.h>
@@ -1509,7 +1510,7 @@ macosx_process_completer_quoted(const char *text, char *word, int quote,
       /* FIXME: check math: */
       templen = (strlen(proc[i].kp_proc.p_comm)
 		 + strlen(target_pid_to_str(pid_to_ptid(proc[i].kp_proc.p_pid)))
-		 + 1UL + 16UL);
+		 + 1UL + 16UL + 12UL);
       temp = (char *)xmalloc(templen);
       snprintf(temp, templen, "%s.%d", proc[i].kp_proc.p_comm,
 	       proc[i].kp_proc.p_pid);
@@ -2483,7 +2484,7 @@ macosx_child_create_inferior(char *exec_file, char *allargs, char **env,
   const char *osabi_name = gdbarch_osabi_name(gdbarch_osabi(current_gdbarch));
   struct gdb_exception e;
   int ps_flags;
-  
+
   if (osabi_name == NULL) {
     warning(_("Null osabi name for current architecture."));
   }

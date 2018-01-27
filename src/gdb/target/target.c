@@ -294,7 +294,7 @@ information on the arguments for a particular protocol, type\n\
 
 /* Stub functions */
 
-void ATTRIBUTE_CONST
+void
 target_ignore(void)
 {
   return;

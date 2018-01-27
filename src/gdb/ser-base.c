@@ -407,14 +407,14 @@ ser_base_drain_output(struct serial *scb ATTRIBUTE_UNUSED)
 }
 
 /* */
-void ATTRIBUTE_CONST
+void
 ser_base_raw(struct serial *scb ATTRIBUTE_UNUSED)
 {
   return;			/* Always in raw mode */
 }
 
 /* */
-serial_ttystate
+serial_ttystate ATTRIBUTE_MALLOC
 ser_base_get_tty_state(struct serial *scb)
 {
   /* allocate a dummy: */
@@ -439,7 +439,7 @@ ser_base_noflush_set_tty_state(struct serial *scb ATTRIBUTE_UNUSED,
 }
 
 /* */
-void ATTRIBUTE_CONST
+void
 ser_base_print_tty_state(struct serial *scb ATTRIBUTE_UNUSED,
 			 serial_ttystate ttystate ATTRIBUTE_UNUSED,
 			 struct ui_file *stream ATTRIBUTE_UNUSED)

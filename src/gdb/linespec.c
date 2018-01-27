@@ -696,7 +696,7 @@ build_canonical_line_spec(struct symtab_and_line *sal, const char *symname,
   filename = s->filename;
   if (symname != NULL)
     {
-      size_t canon_name_len0 = (strlen(filename) + strlen(symname) + 2UL + 2UL);
+      size_t canon_name_len0 = (strlen(filename) + strlen(symname) + 4UL + 2UL);
       /* APPLE LOCAL: put single quotes around the symbol otherwise we'll
 	 fail to parse it correctly if it has parens or "::".  */
       canonical_name = (char *)xmalloc(canon_name_len0);
@@ -3333,7 +3333,7 @@ symbols_found (int funfirstline, char ***canonical, char *copy,
 		      if (copy)
 			{
 			  size_t c_n_len0 = (strlen(s->filename) + strlen(copy)
-					     + 4UL);
+					     + 4UL + 2UL);
 			  canonical_name = (char *)xmalloc(c_n_len0);
 			  snprintf(canonical_name, c_n_len0, "%s:'%s'",
 				   s->filename, copy);

@@ -1309,7 +1309,7 @@ specified after table_body and inside a list."));
 
 
 /* Access to ui_out format private members: */
-void ATTRIBUTE_CONST
+void
 ui_out_get_field_separator(struct ui_out *uiout ATTRIBUTE_UNUSED)
 {
   return;

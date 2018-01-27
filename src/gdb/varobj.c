@@ -3289,7 +3289,8 @@ c_path_expr_of_child(struct varobj *parent, int index)
 
   parent_len = strlen(parent_expr);
   child_len = strlen(name);
-  len = (parent_len + child_len + 2UL + 1UL); /* 2 for (), and 1 for null */
+  /* 2 for (), 2 for -Wformat-truncation, and 1 for null: */
+  len = (parent_len + child_len + 2UL + 2UL + 1UL);
 
   switch (parent->join_in_expr)
     {

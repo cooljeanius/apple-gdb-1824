@@ -5680,7 +5680,7 @@ make_source_files_completion_list(const char *text, const char *word)
       if (not_interesting_fname (s->filename))
 	continue;
       if (!filename_seen(s->filename, 1, &first)
-#if HAVE_DOS_BASED_FILE_SYSTEM
+#if defined(HAVE_DOS_BASED_FILE_SYSTEM) && HAVE_DOS_BASED_FILE_SYSTEM
 	  && (strncasecmp(s->filename, text, text_len) == 0)
 #else
 	  && (strncmp(s->filename, text, text_len) == 0)
@@ -5701,7 +5701,7 @@ make_source_files_completion_list(const char *text, const char *word)
 	  base_name = lbasename (s->filename);
 	  if ((base_name != s->filename)
 	      && !filename_seen(base_name, 1, &first)
-#if HAVE_DOS_BASED_FILE_SYSTEM
+#if defined(HAVE_DOS_BASED_FILE_SYSTEM) && HAVE_DOS_BASED_FILE_SYSTEM
 	      && (strncasecmp(base_name, text, text_len) == 0)
 #else
 	      && (strncmp(base_name, text, text_len) == 0)
@@ -5719,7 +5719,7 @@ make_source_files_completion_list(const char *text, const char *word)
       if (!ps->readin)
 	{
 	  if (!filename_seen(ps->filename, 1, &first)
-#if HAVE_DOS_BASED_FILE_SYSTEM
+#if defined(HAVE_DOS_BASED_FILE_SYSTEM) && HAVE_DOS_BASED_FILE_SYSTEM
 	      && (strncasecmp(ps->filename, text, text_len) == 0)
 #else
 	      && (strncmp(ps->filename, text, text_len) == 0)
@@ -5737,7 +5737,7 @@ make_source_files_completion_list(const char *text, const char *word)
 	      base_name = lbasename(ps->filename);
 	      if ((base_name != ps->filename)
 		  && !filename_seen (base_name, 1, &first)
-#if HAVE_DOS_BASED_FILE_SYSTEM
+#if defined(HAVE_DOS_BASED_FILE_SYSTEM) && HAVE_DOS_BASED_FILE_SYSTEM
 		  && (strncasecmp(base_name, text, text_len) == 0)
 #else
 		  && (strncmp(base_name, text, text_len) == 0)

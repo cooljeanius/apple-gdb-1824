@@ -254,7 +254,7 @@ default_adjust_ehframe_regnum(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
 }
 
 /* */
-void ATTRIBUTE_CONST
+void
 default_elf_make_msymbol_special(asymbol *sym ATTRIBUTE_UNUSED,
 				 struct minimal_symbol *msym ATTRIBUTE_UNUSED)
 {
@@ -262,7 +262,7 @@ default_elf_make_msymbol_special(asymbol *sym ATTRIBUTE_UNUSED,
 }
 
 /* */
-void ATTRIBUTE_CONST
+void
 default_coff_make_msymbol_special(int val ATTRIBUTE_UNUSED,
 				  struct minimal_symbol *msym ATTRIBUTE_UNUSED)
 {
@@ -270,7 +270,7 @@ default_coff_make_msymbol_special(int val ATTRIBUTE_UNUSED,
 }
 
 /* */
-void ATTRIBUTE_CONST
+void
 default_dbx_make_msymbol_special(int16_t val ATTRIBUTE_UNUSED,
 				 struct minimal_symbol *msym ATTRIBUTE_UNUSED)
 {

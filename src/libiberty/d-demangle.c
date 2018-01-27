@@ -1138,7 +1138,7 @@ dlang_call_convention_p (const char *mangled)
         default:
           break;
 	}
-
+      /*FALLTHRU*/
     default:
       return 0;
     }

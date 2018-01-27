@@ -1057,6 +1057,7 @@ ada_decode_symbol(const struct general_symbol_info *gsymbol)
   return *resultp;
 }
 
+/* xstrdup provides xmalloc()'ed memory */
 char *
 ada_la_decode(const char *encoded, int options)
 {

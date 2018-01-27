@@ -51,6 +51,10 @@ cisco_kod_open(kod_display_callback_ftype *display_func,
   int bufsiz = PBUFSIZ;
   int i, count;
 
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+#endif /* __GNUC__ && !__STRICT_ANSI__ */
+
   gdb_kod_display = display_func;
   gdb_kod_query = query_func;
 
@@ -89,7 +93,7 @@ cisco_kod_open(kod_display_callback_ftype *display_func,
 }
 
 /* Close the connection: */
-void ATTRIBUTE_CONST
+void
 cisco_kod_close(void)
 {
   return;

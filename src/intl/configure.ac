@@ -160,7 +160,7 @@ ACX_PROG_CC_WARNING_OPTS([-Wtraditional-conversion -Wnested-externs \
                          [EXTRA_ANSIFICATION_FLAGS])dnl
 
 # Checks for library functions.
-AM_GNU_GETTEXT([external])dnl
+AM_GNU_GETTEXT([external],[need-ngettext])dnl
 AM_GNU_GETTEXT_VERSION([0.19.4])dnl
 AC_SUBST([GT_YES],['#'])dnl
 AC_SUBST([GT_NO])dnl
