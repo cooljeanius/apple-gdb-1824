@@ -1,1 +1,18 @@
 *.{c,C,cc,h} whitespace=trailing-space
+
+# Some files should not be treated as text when diffing or merging.
+*.chm binary
+*.cur binary
+*.gif binary
+*.gmo binary
+*.helpindex binary
+*.icns binary
+*.ico binary
+*.jin binary
+*.jpg binary
+*.pdf binary
+*.png binary
+*.pnm binary
+*.raw binary
+*.webarchive binary
+*.xcplugindata binary

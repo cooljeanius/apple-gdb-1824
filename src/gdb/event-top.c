@@ -721,7 +721,7 @@ command_line_handler(char *rl)
       got_eof = 1;
       command_handler(0);
     }
-  if ((strlen(rl) + 1 + (p - linebuffer)) > linelength)
+  if ((((rl != NULL) ? strlen(rl) : 0) + 1 + (p - linebuffer)) > linelength)
     {
       linelength = (strlen(rl) + 1UL + (p - linebuffer));
       nline = (char *)xrealloc(linebuffer, linelength);
@@ -731,8 +731,9 @@ command_line_handler(char *rl)
   p1 = rl;
   /* Copy line.  Do NOT copy null at end.  (Leaves line alone
      if this was just a newline)  */
-  while (*p1)
-    *p++ = *p1++;
+  if (p1 != NULL)
+    while (*p1)
+      *p++ = *p1++;
 
   xfree(rl);			/* Allocated in readline.  */
 

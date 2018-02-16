@@ -1,4 +1,4 @@
-/*
+/* -*- Objective-C -*-
  * GuiGdbManager.h
  * (This is an Objective-C header; i.e. NOT just-plain-C)
  */

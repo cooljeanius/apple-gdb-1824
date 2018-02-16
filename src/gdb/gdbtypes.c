@@ -2548,20 +2548,23 @@ has_vtable (struct type *dclass)
   /* First check for the presence of virtual bases */
   if (TYPE_FIELD_VIRTUAL_BITS(dclass))
     for (i = 0; i < TYPE_N_BASECLASSES(dclass); i++)
-      if (B_TST(TYPE_FIELD_VIRTUAL_BITS(dclass), i))
+      if ((dclass != NULL) && (TYPE_FIELD_VIRTUAL_BITS(dclass) != NULL)
+	  && (B_TST(TYPE_FIELD_VIRTUAL_BITS(dclass), i)))
 	return 1;
 
   /* Next check for virtual functions */
   if (TYPE_FN_FIELDLISTS(dclass))
     for (i = 0; i < TYPE_NFN_FIELDS(dclass); i++)
-      if ((TYPE_FN_FIELDLIST1(dclass, i) != NULL)
+      if ((dclass != NULL) && (TYPE_CPLUS_SPECIFIC_NONULL(dclass) != NULL)
+	  && (TYPE_CPLUS_SPECIFIC_NONULL(dclass)->fn_fieldlists != NULL)
+	  && (TYPE_FN_FIELDLIST1(dclass, i) != NULL)
 	  && TYPE_FN_FIELD_VIRTUAL_P(TYPE_FN_FIELDLIST1(dclass, i), 0))
 	return 1;
 
   /* Recurse on non-virtual bases to see if any of them needs a vtable */
   if (TYPE_FIELD_VIRTUAL_BITS(dclass))
     for (i = 0; i < TYPE_N_BASECLASSES(dclass); i++)
-      if ((TYPE_FIELD_VIRTUAL_BITS(dclass) != NULL)
+      if ((dclass != NULL) && (TYPE_FIELD_VIRTUAL_BITS(dclass) != NULL)
 	  && (!B_TST(TYPE_FIELD_VIRTUAL_BITS(dclass), i))
 	  && (has_vtable(TYPE_FIELD_TYPE(dclass, i))))
 	return 1;

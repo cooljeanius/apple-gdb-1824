@@ -1535,6 +1535,8 @@ handle_inferior_event(struct execution_control_state *ecs)
   /* Cache the last pid/waitstatus. */
   target_last_wait_ptid = ecs->ptid;
   target_last_waitstatus = *ecs->wp;
+  
+  memset(&prev_frame_id, 0, sizeof(prev_frame_id));
 
   adjust_pc_after_break(ecs);
 
@@ -3270,11 +3272,11 @@ process_event_stop_test:
      at the unwound frame ID has that should give a more robust
      indication of what happened.  */
   if ((step - ID) == (current - ID))
-    still stepping in same function;
+    /*(still stepping in same function)*/;
   else if ((step - ID) == unwind(current - ID))
-    stepped into a function;
+    /*(stepped into a function)*/;
   else
-    stepped out of a function;
+    /*(stepped out of a function)*/;
   /* Of course this assumes that the frame ID unwind code is robust
      and we're willing to introduce frame unwind logic into this
      function.  Fortunately, those days are nearly upon us.  */

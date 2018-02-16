@@ -1,5 +1,7 @@
-/*
+/*  -*- Objective-C -*-
  * nextstep-core.c
+ * FIXME: see if we need to change the file extension or if we can just get away
+ * with a bunch of #ifdef __OBJC__ preprocessor conditionals...
  */
 
 #include "nextstep-nat-mutils.h"

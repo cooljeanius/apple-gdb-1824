@@ -1,4 +1,4 @@
-/* debug.h created by rhagy on Fri 21-Apr-1995 */
+/* debug.h created by rhagy on Fri 21-Apr-1995 -*- Objective-C -*- */
 
 #import <stdio.h>
 #import <Foundation/NSLock.h>

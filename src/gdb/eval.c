@@ -1331,7 +1331,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 
 	      /* Prepare list of argument types for overload resolution: */
 	      arg_types = (struct type **)alloca(nargs * (sizeof(struct type *)));
-              if (nargs >= 1) {
+              if ((argvec != NULL) && (nargs >= 1)) {
                 for (ix = 1; ix < (nargs + 1); ix++) {
                   arg_types[ix - 1] = value_type(argvec[ix]);
                   if (ix == INFINITY) {

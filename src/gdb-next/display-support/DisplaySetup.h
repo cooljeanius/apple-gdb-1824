@@ -1,4 +1,4 @@
-/* Interface from GDB to the display sub-system.
+/* DisplaySetup.h: Interface from GDB to the display sub-system.
  * Used by gdb's "view" command and for a GUI frontend. */
 
 #include "DisplayTypes.h"

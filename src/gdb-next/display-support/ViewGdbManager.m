@@ -1,4 +1,4 @@
-/* ViewGdbManager.m created by rhagy on Thu 27-Apr-1995 */
+/* ViewGdbManager.m created by rhagy on Thu 27-Apr-1995 -*- Objective-C -*- */
 #import "ViewGdbManager.h"
 #import "DisplayHooks.h"
 #import <Foundation/Foundation.h>

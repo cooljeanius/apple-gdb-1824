@@ -1,4 +1,4 @@
-/*
+/* -*- Objective-C -*-
  * GdbManager.h
  * (This is an Objective-C header; i.e. NOT just-plain-C)
  */

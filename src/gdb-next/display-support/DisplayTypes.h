@@ -1,4 +1,4 @@
-/*
+/* -*- Objective-C -*-
  * DisplayTypes.h
  */
 

@@ -1,4 +1,4 @@
-/*
+/* -*- Objective-C -*-
  * DebuggerController_Protocol.h
  * (This is an Objective-C header; i.e. NOT just-plain-C)
  * Protocol used by client app (e.g. PB) to communicate with

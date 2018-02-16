@@ -1,4 +1,4 @@
-/*
+/* -*- Objective-C -*-
  * nextstep-nat-display.m
  * (Does this file really need to be Objective-C? Looks like it could
  * pass as just-plain C to me...)

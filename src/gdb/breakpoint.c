@@ -8083,6 +8083,8 @@ ep_parse_optional_if_clause(const char **arg)
 {
   const char *cond_string;
 
+  if ((arg == NULL) || ((*arg) == NULL))
+    return NULL;
   if (((*arg)[0] != 'i') || ((*arg)[1] != 'f') || !isspace((*arg)[2]))
     return NULL;
 

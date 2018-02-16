@@ -1,4 +1,4 @@
-/*
+/* -*- Objective-C -*-
  * GuiDisplayProvider.h
  * (This is an Objective-C header; i.e. NOT just-plain-C)
  */
