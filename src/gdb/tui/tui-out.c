@@ -125,7 +125,7 @@ tui_table_begin (struct ui_out *uiout, int nbrofcols,
 		 int nr_rows,
 		 const char *tblid)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   if (nr_rows == 0)
     data->suppress_output = 1;
   else
@@ -139,7 +139,7 @@ tui_table_begin (struct ui_out *uiout, int nbrofcols,
 void
 tui_table_body (struct ui_out *uiout)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   /* first, close the table header line */
@@ -151,7 +151,7 @@ tui_table_body (struct ui_out *uiout)
 void
 tui_table_end (struct ui_out *uiout)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   data->suppress_output = 0;
 }
 
@@ -162,7 +162,7 @@ tui_table_header (struct ui_out *uiout, int width, enum ui_align alignment,
 		  const char *col_name,
 		  const char *colhdr)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   tui_field_string (uiout, 0, width, alignment, 0, colhdr);
@@ -176,7 +176,7 @@ tui_begin (struct ui_out *uiout,
 	   int level,
 	   const char *id)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
 }
@@ -188,7 +188,7 @@ tui_end (struct ui_out *uiout,
 	 enum ui_out_type type,
 	 int level)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
 }
@@ -202,7 +202,7 @@ tui_field_int (struct ui_out *uiout, int fldno, int width,
 {
   char buffer[20];	/* FIXME: how many chars long a %d can become? */
 
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
 
@@ -224,7 +224,7 @@ tui_field_skip (struct ui_out *uiout, int fldno, int width,
 		enum ui_align alignment,
 		const char *fldname)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   tui_field_string (uiout, fldno, width, alignment, fldname, "");
@@ -244,7 +244,7 @@ tui_field_string (struct ui_out *uiout,
   int before = 0;
   int after = 0;
 
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
 
@@ -302,7 +302,7 @@ tui_field_fmt (struct ui_out *uiout, int fldno,
 	       const char *format,
 	       va_list args)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
 
@@ -316,7 +316,7 @@ tui_field_fmt (struct ui_out *uiout, int fldno,
 void
 tui_spaces (struct ui_out *uiout, int numspaces)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   print_spaces_filtered (numspaces, data->stream);
@@ -325,7 +325,7 @@ tui_spaces (struct ui_out *uiout, int numspaces)
 void
 tui_text (struct ui_out *uiout, const char *string)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   data->start_of_line ++;
@@ -347,7 +347,7 @@ void
 tui_message (struct ui_out *uiout, int verbosity,
 	     const char *format, va_list args)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   if (ui_out_get_verblvl (uiout) >= verbosity)
@@ -357,7 +357,7 @@ tui_message (struct ui_out *uiout, int verbosity,
 void
 tui_wrap_hint(struct ui_out *uiout, const char *identstring)
 {
-  tui_out_data *data = ui_out_data(uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   if (data->suppress_output)
     return;
   wrap_here((char *)identstring);
@@ -366,7 +366,7 @@ tui_wrap_hint(struct ui_out *uiout, const char *identstring)
 void
 tui_flush (struct ui_out *uiout)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   gdb_flush (data->stream);
 }
 
@@ -381,7 +381,7 @@ out_field_fmt (struct ui_out *uiout, int fldno,
 	       const char *fldname,
 	       const char *format,...)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   va_list args;
 
   va_start (args, format);
@@ -395,7 +395,7 @@ out_field_fmt (struct ui_out *uiout, int fldno,
 static void
 field_separator (void)
 {
-  tui_out_data *data = ui_out_data (uiout);
+  tui_out_data *data = access_ui_out_data(uiout);
   fputc_filtered (' ', data->stream);
 }
 
@@ -415,7 +415,7 @@ tui_out_new(struct ui_file *stream)
 }
 
 /* standard gdb initialization hook: */
-void 
+void
 _initialize_tui_out(void)
 {
   tui_out_c_inited = 1;

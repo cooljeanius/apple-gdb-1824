@@ -47624,7 +47624,7 @@ opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wnull-dereference -Wframe-address -Wframe-larger-than=262144"
 if test "x${ax_cv_c_compiler_vendor}" != "xclang"; then
   opt_warnings="${opt_warnings} -Wsuggest-attribute=const \
--Wsuggest-attribute=cold -Wsuggest-attribute=hot -Wsuggest-attribute=malloc"
+-Wsuggest-attribute=cold -Wsuggest-attribute=hot"
 fi
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
@@ -47711,6 +47711,8 @@ fi
 #  * -Wunused-local-typedefs (`mig` sometimes generates code triggering
 #    this, but it is inconsistent though)
 #  * -Wfloat-equal
+#  * -Wsuggest-attribute=malloc (triggers on generated code; unsure how to
+#    silence false positives)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)

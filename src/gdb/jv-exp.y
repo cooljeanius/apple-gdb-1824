@@ -345,8 +345,10 @@ QualifiedName:
 		      size_t thinglen = ($$.length + 1UL);
 		      $$.ptr = (char *)malloc(thinglen);
 		      make_cleanup(free, $$.ptr);
+		      /* FIXME: did I fix -Wformat-truncation correctly? */
 		      snprintf($$.ptr, thinglen, "%.*s.%.*s",
-			       (int)$1.length, $1.ptr, (int)$3.length, $3.ptr);
+			       (uint8_t)$1.length, $1.ptr,
+			       (uint8_t)$3.length, $3.ptr);
 		} }
 ;
 

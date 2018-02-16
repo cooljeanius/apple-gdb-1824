@@ -825,8 +825,9 @@ macho_read_indirect_symbols(bfd *abfd,
 	      break;
 	    }
 	  }
-	  /* argh that no longer works; now we get -Wformat-truncation... */
-          printed = snprintf(nname, sizeof(nname), "dyld_stub_%s", sname_arr);
+	  /* The ".4085" in the format string is for -Wformat-truncation: */
+          printed = snprintf(nname, sizeof(nname), "dyld_stub_%.4085s",
+			     sname_arr);
 	  CHECK_FATAL((size_t)printed == strlen(nname));
 #if (defined(DEBUG) || defined(_DEBUG) || defined(GDB_DEBUG))
 	  if (i == 0) {

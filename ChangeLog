@@ -1,3 +1,194 @@
+2018-01-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Warning silencing for Jan 2018
+
+	Change-Id: Ib844dc62ff33f49dc43bd090eb4baa970f2dfffc
+
+2018-01-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	merge uncommitted changes from other computer
+
+	Change-Id: I11b41cc9305097eb039a170033809d0b1e1e0a41
+
+2018-01-16  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Fix issue with -Wundef on caddr_t
+
+	Change-Id: Idf424a861835bc3e69a91cded8f743822a4d1c1d
+
+2018-01-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	handle clang-5.0 warnings
+
+	Change-Id: Ia6360e70bb921031d7f1cbb4c5a6320cf3629d05
+
+2018-01-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	start to fix warnings from new build of gcc8, but…
+
+	I had to file gcc bug 83559:
+	https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83559
+
+	Change-Id: I5e7f9790dbfe8428a3676dcd2a869815e69cf938
+
+2017-11-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	autoreconf, and silence some warnings from November's gcc8
+
+	Change-Id: Id8361a3847a032879cf9959bee68f2495c6ab7ab
+
+2017-11-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	regenerate libtool_gnu autotools files
+
+	Change-Id: Ia1d3b15486728ab940c41fbaf3b2c9f621abc57e
+
+2017-10-19  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Remove -Wpadded usage in gdb headers
+
+	Change-Id: I1652194b8b39412467074d1e9150ab65d5669fb5
+
+2017-10-19  cooljeanius  <egall@gwmail.gwu.edu>
+
+	archflags for gdb itself
+
+	Change-Id: I317a1dad010dd7d3c139c1c1a4b4024ecd0d18b2
+
+2017-10-19  cooljeanius  <egall@gwmail.gwu.edu>
+
+	expect configure tweak; dejagnu doc update for newer texinfo
+
+	Change-Id: I73ad50eeba1ded4fc868e562e8912ace69ec11bf
+
+2017-10-19  cooljeanius  <egall@gwmail.gwu.edu>
+
+	archflags for expect and intptr_t stuff for libgui
+
+	Change-Id: I3088a03530fede0e2e9b822e3aba5684528bb4d3
+
+2017-10-19  cooljeanius  <egall@gwmail.gwu.edu>
+
+	a bit more header reordering for binutils
+
+	Change-Id: I2c1d97caf291c001306a053dc611cd1aa1097c5a
+
+2017-10-19  cooljeanius  <egall@gwmail.gwu.edu>
+
+	binutils/wrstabs.c: SIZE_T_MAX; libtool_gnu: missing help2man; itcl: intptr_t
+
+	Change-Id: I3fc48edcfb04c8f9317777153e95d82cf517dd74
+
+2017-10-19  cooljeanius  <egall@gwmail.gwu.edu>
+
+	fix up include order for binutils, and archflags for tk
+
+	Change-Id: Ieebf50eec90ad1084f5497251e46e0ff5157bae6
+
+2017-10-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	I lied again; THIS will be my last commit for the night
+
+	Change-Id: I642ee656b3b751dc19b3211502b0a219156df8b4
+
+2017-10-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	one more try at fixing stuff for tonight
+
+	Change-Id: Ia1b5275ebf0b4b38c239186b773c46d6bb98119b
+
+2017-10-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	ok I lied I can actually work on multiple subdirs at once
+
+	Change-Id: I3d0f90f3979fc905daf3f89d5f169582a9012955
+
+2017-10-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	sorry for all these minor commits in a row, but I have to fix things from compile farm 1 at a time
+
+	Change-Id: I8f576a04356af2efcff044ce6f08030ba211cfc3
+
+2017-10-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	oops, do opcodes/Makefile.am changes I meant to do as part of prev. commit
+
+	Change-Id: I3827d881b3aa9e603949b9a9b7b578d4605e1699
+
+2017-10-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	test archflags before use in opcodes subdir
+
+	Change-Id: I2aead590868c2f0340398ce71d0b3eebe8d3e460
+
+2017-10-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	minor bfd portability tweaks
+
+	Change-Id: Ibc422968bab92d0592a2bc6369d9fa9e16cca33a
+
+2017-10-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	back to making sure archflags are tested before use, now in bfd subdir
+
+	Change-Id: Iadf883acbcba0d8784a5d8eb1b49b68eef55eb6f
+
+2017-10-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	fix build of bfd texinfo docs with newer makeinfo
+
+	Change-Id: I8d306c0a0bfeca33576aa28486af77c44493650f
+
+2017-10-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	cleanups in minizip subsubdir of zlib subdir
+
+	Change-Id: I09936e575ca4c2e00747088874e9dfb14eac1926
+
+2017-10-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	same as previous commits, but in zlib subdir this time
+
+	Change-Id: If9d229621210c130c86879b67c1d0653a6bbe4ed
+
+2017-10-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	same as previous commit, but in intl subdir this time
+
+	Change-Id: I2aa838d26c17f98a9bdc8e73eec2b3ddc3493988
+
+2017-10-18  cooljeanius  <egall@gwmail.gwu.edu>
+
+	test to see if archflags actually work instead of hardcoding them
+
+	Change-Id: I04173a65fa99f6c29b2be65c4030763d4d3d21d4
+
+2017-09-26  cooljeanius  <egall@gwmail.gwu.edu>
+
+	copy over missing #testsuite procs (still broken)
+
+	Change-Id: Ie79f7e6e32d55d66024d63c7c8719caff6df0632
+
+2017-09-25  cooljeanius  <egall@gwmail.gwu.edu>
+
+	more find-and-replace of renamed functions (mostly untested)
+
+	Change-Id: Ieb7e4a2faeb90c81fd4f77c656dc73df0bb5b401
+
+2017-09-25  cooljeanius  <egall@gwmail.gwu.edu>
+
+	locate final tdeps 'missing' from xcodeproj after moving to target subdir
+
+	Change-Id: I89ab3f8ae5786ac6c52be83374e7e07b62001c37
+
+2017-09-17  cooljeanius  <egall@gwmail.gwu.edu>
+
+	Targets starting with 'v' thru 'x' #tdep
+
+	"amd64" comes now because it is actually x86_64 which starts with 'x'
+
+	Change-Id: I40977a75ba958affe6428caf1d59db310e49d578
+
 2017-09-16  cooljeanius  <egall@gwmail.gwu.edu>
 
 	do targets sparc thru tilegx. #tdep
