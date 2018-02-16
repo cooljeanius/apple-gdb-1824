@@ -11,11 +11,11 @@ install:
 before_script: test -e ./.profile_generic && source ./.profile_generic
 
 # try to build
-script: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules && make
+script: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules && make V=0
 
 compiler:
   - clang
   - gcc
 
 after_success: pwd
-after_failure: find . -name config.log | xargs cat | grep -i error
+after_failure: find . -name config.log | xargs cat | grep -i error | sort | uniq

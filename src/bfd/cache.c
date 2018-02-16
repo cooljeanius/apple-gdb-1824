@@ -151,6 +151,8 @@ static const struct bfd_iovec cache_iovec = {
 };
 
 /*
+SUBSECTION
+	Macros and Functions
 INTERNAL_FUNCTION
 	BFD_CACHE_MAX_OPEN macro
 

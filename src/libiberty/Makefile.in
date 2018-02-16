@@ -296,14 +296,14 @@ $(TARGETLIB): $(REQUIRED_OFILES) $(EXTRA_OFILES) $(LIBOBJS)
 	    $(REQUIRED_OFILES) $(EXTRA_OFILES) $(LIBOBJS); \
 	  $(RANLIB) $(TARGETLIB); \
 	  cd ..; \
-	else echo "skipping PIC-specific rules for $@"; fi; \
+	elif test $(V) -ge 1; then echo "skipping PIC-specific rules for $@"; fi; \
 	if [ x"$(NOASANFLAG)" != x"" ]; then \
 	  cd noasan; \
 	  $(AR) $(AR_FLAGS) $(TARGETLIB) \
 	    $(REQUIRED_OFILES) $(EXTRA_OFILES) $(LIBOBJS); \
 	  $(RANLIB) $(TARGETLIB); \
 	  cd ..; \
-	else echo "echo skipping NOASAN-specific rules for $@"; fi
+	elif test $(V) -ge 1; then echo "skipping NOASAN-specific rules for $@"; fi
 
 # APPLE LOCAL begin framework building:
 SYSTEM_FRAMEWORK = -framework System
@@ -514,13 +514,13 @@ required-list: Makefile
 stamp-picdir: config.h
 	if [ x"$(PICFLAG)" != x ] && [ ! -d pic ]; then \
 	  mkdir pic; \
-	else echo "picdir is unnecessary"; fi
+	elif test $(V) -ge 1; then echo "picdir is unnecessary"; fi
 	touch stamp-picdir
 
 stamp-noasandir: config.h
 	if [ x"$(NOASANFLAG)" != x ] && [ ! -d noasan ]; then \
 	  mkdir noasan; \
-	else echo "noasandir is unnecessary"; fi
+	elif test $(V) -ge 1; then echo "noasandir is unnecessary"; fi
 	touch stamp-noasandir
 
 .PHONY: all etags tags ls clean stage1 stage2
@@ -768,97 +768,97 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	$(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/_doprnt.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/_doprnt.c $(OUTPUT_OPTION)
 
 ./alloca.$(objext): $(srcdir)/alloca.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/alloca.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/alloca.c $(OUTPUT_OPTION)
 
 ./argv.$(objext): $(srcdir)/argv.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/argv.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/argv.c $(OUTPUT_OPTION)
 
 ./asprintf.$(objext): $(srcdir)/asprintf.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/asprintf.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/asprintf.c $(OUTPUT_OPTION)
 
 ./atexit.$(objext): $(srcdir)/atexit.c config.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/atexit.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/atexit.c $(OUTPUT_OPTION)
 
 ./basename.$(objext): $(srcdir)/basename.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/basename.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/basename.c $(OUTPUT_OPTION)
 
 ./bcmp.$(objext): $(srcdir)/bcmp.c
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/bcmp.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/bcmp.c $(OUTPUT_OPTION)
 
 ./bcopy.$(objext): $(srcdir)/bcopy.c
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/bcopy.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/bcopy.c $(OUTPUT_OPTION)
 
 ./bsearch.$(objext): $(srcdir)/bsearch.c config.h $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/bsearch.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/bsearch.c $(OUTPUT_OPTION)
 
 ./bzero.$(objext): $(srcdir)/bzero.c
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/bzero.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/bzero.c $(OUTPUT_OPTION)
 
 ./calloc.$(objext): $(srcdir)/calloc.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/calloc.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/calloc.c $(OUTPUT_OPTION)
 
 ./choose-temp.$(objext): $(srcdir)/choose-temp.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/choose-temp.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/choose-temp.c $(OUTPUT_OPTION)
 
 ./clock.$(objext): $(srcdir)/clock.c config.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/clock.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/clock.c $(OUTPUT_OPTION)
 
 ./concat.$(objext): $(srcdir)/concat.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/concat.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/concat.c $(OUTPUT_OPTION)
 
 ./copysign.$(objext): $(srcdir)/copysign.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/copysign.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/copysign.c $(OUTPUT_OPTION)
 
 ./cp-demangle.$(objext): $(srcdir)/cp-demangle.c config.h $(INCDIR)/ansidecl.h \
@@ -866,7 +866,7 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	$(INCDIR)/dyn-string.h $(INCDIR)/getopt.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/cp-demangle.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/cp-demangle.c $(OUTPUT_OPTION)
 
 ./cp-demint.$(objext): $(srcdir)/cp-demint.c config.h $(INCDIR)/ansidecl.h \
@@ -874,7 +874,7 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/cp-demint.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/cp-demint.c $(OUTPUT_OPTION)
 
 ./cplus-dem.$(objext): $(srcdir)/cplus-dem.c config.h $(INCDIR)/ansidecl.h \
@@ -882,14 +882,14 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	$(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/cplus-dem.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/cplus-dem.c $(OUTPUT_OPTION)
 
 ./crc32.$(objext): $(srcdir)/crc32.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/crc32.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/crc32.c $(OUTPUT_OPTION)
 
 ./d-demangle.$(objext): $(srcdir)/d-demangle.c config.h \
@@ -897,41 +897,41 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	$(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/d-demangle.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/d-demangle.c $(OUTPUT_OPTION)
 
 ./dwarfnames.$(objext): $(srcdir)/dwarfnames.c $(INCDIR)/dwarf2.def \
 	$(INCDIR)/dwarf2.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/dwarfnames.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/dwarfnames.c $(OUTPUT_OPTION)
 
 ./dyn-string.$(objext): $(srcdir)/dyn-string.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/dyn-string.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/dyn-string.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/dyn-string.c $(OUTPUT_OPTION)
 
 ./fdmatch.$(objext): $(srcdir)/fdmatch.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/fdmatch.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/fdmatch.c $(OUTPUT_OPTION)
 
 ./ffs.$(objext): $(srcdir)/ffs.c
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/ffs.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/ffs.c $(OUTPUT_OPTION)
 
 ./fibheap.$(objext): $(srcdir)/fibheap.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/fibheap.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/fibheap.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/fibheap.c $(OUTPUT_OPTION)
 
 ./filename_cmp.$(objext): $(srcdir)/filename_cmp.c config.h \
@@ -939,99 +939,99 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	$(INCDIR)/safe-ctype.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/filename_cmp.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/filename_cmp.c $(OUTPUT_OPTION)
 
 ./floatformat.$(objext): $(srcdir)/floatformat.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/floatformat.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/floatformat.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/floatformat.c $(OUTPUT_OPTION)
 
 ./fnmatch.$(objext): $(srcdir)/fnmatch.c config.h $(INCDIR)/fnmatch.h \
 	$(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/fnmatch.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/fnmatch.c $(OUTPUT_OPTION)
 
 ./fopen_unlocked.$(objext): $(srcdir)/fopen_unlocked.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/fopen_unlocked.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/fopen_unlocked.c $(OUTPUT_OPTION)
 
 ./getcwd.$(objext): $(srcdir)/getcwd.c config.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/getcwd.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/getcwd.c $(OUTPUT_OPTION)
 
 ./getopt.$(objext): $(srcdir)/getopt.c config.h $(INCDIR)/getopt.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/getopt.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/getopt.c $(OUTPUT_OPTION)
 
 ./getopt1.$(objext): $(srcdir)/getopt1.c config.h $(INCDIR)/getopt.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/getopt1.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/getopt1.c $(OUTPUT_OPTION)
 
 ./getpagesize.$(objext): $(srcdir)/getpagesize.c config.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/getpagesize.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/getpagesize.c $(OUTPUT_OPTION)
 
 ./getpwd.$(objext): $(srcdir)/getpwd.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/getpwd.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/getpwd.c $(OUTPUT_OPTION)
 
 ./getruntime.$(objext): $(srcdir)/getruntime.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/getruntime.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/getruntime.c $(OUTPUT_OPTION)
 
 ./gettimeofday.$(objext): $(srcdir)/gettimeofday.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/gettimeofday.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/gettimeofday.c $(OUTPUT_OPTION)
 
 ./hashtab.$(objext): $(srcdir)/hashtab.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/hashtab.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/hashtab.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/hashtab.c $(OUTPUT_OPTION)
 
 ./hex.$(objext): $(srcdir)/hex.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/hex.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/hex.c $(OUTPUT_OPTION)
 
 ./index.$(objext): $(srcdir)/index.c
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/index.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/index.c $(OUTPUT_OPTION)
 
 ./insque.$(objext): $(srcdir)/insque.c
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/insque.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/insque.c $(OUTPUT_OPTION)
 
 ./lbasename.$(objext): $(srcdir)/lbasename.c config.h $(INCDIR)/ansidecl.h \
@@ -1039,128 +1039,128 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	$(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/lbasename.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/lbasename.c $(OUTPUT_OPTION)
 
 ./lrealpath.$(objext): $(srcdir)/lrealpath.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/lrealpath.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/lrealpath.c $(OUTPUT_OPTION)
 
 ./make-relative-prefix.$(objext): $(srcdir)/make-relative-prefix.c config.h \
 	$(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/make-relative-prefix.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/make-relative-prefix.c $(OUTPUT_OPTION)
 
 ./make-temp-file.$(objext): $(srcdir)/make-temp-file.c config.h \
 	$(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/make-temp-file.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/make-temp-file.c $(OUTPUT_OPTION)
 
 ./malloca.$(objext): $(srcdir)/malloca.c config.h malloca.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/malloca.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/malloca.c $(OUTPUT_OPTION)
 
 ./md5.$(objext): $(srcdir)/md5.c config.h $(INCDIR)/ansidecl.h $(INCDIR)/md5.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/md5.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) -fno-strict-aliasing $(srcdir)/md5.c $(OUTPUT_OPTION)
 
 ./memchr.$(objext): $(srcdir)/memchr.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/memchr.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/memchr.c $(OUTPUT_OPTION)
 
 ./memcmp.$(objext): $(srcdir)/memcmp.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/memcmp.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/memcmp.c $(OUTPUT_OPTION)
 
 ./memcpy.$(objext): $(srcdir)/memcpy.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/memcpy.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/memcpy.c $(OUTPUT_OPTION)
 
 ./memmem.$(objext): $(srcdir)/memmem.c config.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/memmem.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/memmem.c $(OUTPUT_OPTION)
 
 ./memmove.$(objext): $(srcdir)/memmove.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/memmove.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/memmove.c $(OUTPUT_OPTION)
 
 ./mempcpy.$(objext): $(srcdir)/mempcpy.c config.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/mempcpy.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/mempcpy.c $(OUTPUT_OPTION)
 
 ./memset.$(objext): $(srcdir)/memset.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/memset.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/memset.c $(OUTPUT_OPTION)
 
 ./mkstemps.$(objext): $(srcdir)/mkstemps.c config.h $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/mkstemps.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/mkstemps.c $(OUTPUT_OPTION)
 
 ./msdos.$(objext): $(srcdir)/msdos.c config.h $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/msdos.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/msdos.c $(OUTPUT_OPTION)
 
 ./objalloc.$(objext): $(srcdir)/objalloc.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/objalloc.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/objalloc.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/objalloc.c $(OUTPUT_OPTION)
 
 ./obstack.$(objext): $(srcdir)/obstack.c config.h $(INCDIR)/obstack.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/obstack.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/obstack.c $(OUTPUT_OPTION)
 
 ./partition.$(objext): $(srcdir)/partition.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(INCDIR)/partition.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/partition.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/partition.c $(OUTPUT_OPTION)
 
 ./pex-common.$(objext): $(srcdir)/pex-common.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(srcdir)/pex-common.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/pex-common.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/pex-common.c $(OUTPUT_OPTION)
 
 ./pex-djgpp.$(objext): $(srcdir)/pex-djgpp.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(srcdir)/pex-common.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/pex-djgpp.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/pex-djgpp.c $(OUTPUT_OPTION)
 
 ./pex-msdos.$(objext): $(srcdir)/pex-msdos.c config.h $(INCDIR)/ansidecl.h \
@@ -1168,104 +1168,104 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	$(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/pex-msdos.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/pex-msdos.c $(OUTPUT_OPTION)
 
 ./pex-one.$(objext): $(srcdir)/pex-one.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/pex-one.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/pex-one.c $(OUTPUT_OPTION)
 
 ./pex-unix.$(objext): $(srcdir)/pex-unix.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(srcdir)/pex-common.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/pex-unix.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/pex-unix.c $(OUTPUT_OPTION)
 
 ./pex-win32.$(objext): $(srcdir)/pex-win32.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(srcdir)/pex-common.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/pex-win32.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/pex-win32.c $(OUTPUT_OPTION)
 
 ./pexecute.$(objext): $(srcdir)/pexecute.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/pexecute.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/pexecute.c $(OUTPUT_OPTION)
 
 ./physmem.$(objext): $(srcdir)/physmem.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/physmem.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/physmem.c $(OUTPUT_OPTION)
 
 ./putenv.$(objext): $(srcdir)/putenv.c config.h $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/putenv.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/putenv.c $(OUTPUT_OPTION)
 
 ./random.$(objext): $(srcdir)/random.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/random.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/random.c $(OUTPUT_OPTION)
 
 ./regex.$(objext): $(srcdir)/regex.c config.h $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/regex.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/regex.c $(OUTPUT_OPTION)
 
 ./rename.$(objext): $(srcdir)/rename.c config.h $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/rename.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/rename.c $(OUTPUT_OPTION)
 
 ./rindex.$(objext): $(srcdir)/rindex.c
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/rindex.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/rindex.c $(OUTPUT_OPTION)
 
 ./safe-ctype.$(objext): $(srcdir)/safe-ctype.c $(INCDIR)/ansidecl.h \
 	$(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/safe-ctype.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/safe-ctype.c $(OUTPUT_OPTION)
 
 ./setenv.$(objext): $(srcdir)/setenv.c config.h $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/setenv.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/setenv.c $(OUTPUT_OPTION)
 
 ./setproctitle.$(objext): $(srcdir)/setproctitle.c config.h $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/setproctitle.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/setproctitle.c $(OUTPUT_OPTION)
 
 ./sha1.$(objext): $(srcdir)/sha1.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/sha1.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/sha1.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/sha1.c $(OUTPUT_OPTION)
 
 ./sigsetmask.$(objext): $(srcdir)/sigsetmask.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/sigsetmask.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/sigsetmask.c $(OUTPUT_OPTION)
 
 ./simple-object-coff.$(objext): $(srcdir)/simple-object-coff.c config.h \
@@ -1273,7 +1273,7 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	$(srcdir)/simple-object-common.h $(INCDIR)/simple-object.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/simple-object-coff.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/simple-object-coff.c $(OUTPUT_OPTION)
 
 ./simple-object-elf.$(objext): $(srcdir)/simple-object-elf.c config.h \
@@ -1281,7 +1281,7 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	$(srcdir)/simple-object-common.h $(INCDIR)/simple-object.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/simple-object-elf.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/simple-object-elf.c $(OUTPUT_OPTION)
 
 ./simple-object-mach-o.$(objext): $(srcdir)/simple-object-mach-o.c config.h \
@@ -1289,7 +1289,7 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	$(srcdir)/simple-object-common.h $(INCDIR)/simple-object.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/simple-object-mach-o.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/simple-object-mach-o.c $(OUTPUT_OPTION)
 
 ./simple-object-xcoff.$(objext): $(srcdir)/simple-object-xcoff.c config.h \
@@ -1297,7 +1297,7 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	$(srcdir)/simple-object-common.h $(INCDIR)/simple-object.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/simple-object-xcoff.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/simple-object-xcoff.c $(OUTPUT_OPTION)
 
 ./simple-object.$(objext): $(srcdir)/simple-object.c config.h \
@@ -1305,306 +1305,306 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	$(srcdir)/simple-object-common.h $(INCDIR)/simple-object.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/simple-object.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/simple-object.c $(OUTPUT_OPTION)
 
 ./snprintf.$(objext): $(srcdir)/snprintf.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/snprintf.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/snprintf.c $(OUTPUT_OPTION)
 
 ./sort.$(objext): $(srcdir)/sort.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(INCDIR)/sort.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/sort.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/sort.c $(OUTPUT_OPTION)
 
 ./spaces.$(objext): $(srcdir)/spaces.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/spaces.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/spaces.c $(OUTPUT_OPTION)
 
 ./splay-tree.$(objext): $(srcdir)/splay-tree.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(INCDIR)/splay-tree.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/splay-tree.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/splay-tree.c $(OUTPUT_OPTION)
 
 ./stack-limit.$(objext): $(srcdir)/stack-limit.c config.h $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/stack-limit.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/stack-limit.c $(OUTPUT_OPTION)
 
 ./stpcpy.$(objext): $(srcdir)/stpcpy.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/stpcpy.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/stpcpy.c $(OUTPUT_OPTION)
 
 ./stpncpy.$(objext): $(srcdir)/stpncpy.c config.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/stpncpy.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/stpncpy.c $(OUTPUT_OPTION)
 
 ./strcasecmp.$(objext): $(srcdir)/strcasecmp.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strcasecmp.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strcasecmp.c $(OUTPUT_OPTION)
 
 ./strchr.$(objext): $(srcdir)/strchr.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strchr.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strchr.c $(OUTPUT_OPTION)
 
 ./strdup.$(objext): $(srcdir)/strdup.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strdup.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strdup.c $(OUTPUT_OPTION)
 
 ./strerror.$(objext): $(srcdir)/strerror.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strerror.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strerror.c $(OUTPUT_OPTION)
 
 ./strncasecmp.$(objext): $(srcdir)/strncasecmp.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strncasecmp.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strncasecmp.c $(OUTPUT_OPTION)
 
 ./strncmp.$(objext): $(srcdir)/strncmp.c config.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strncmp.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strncmp.c $(OUTPUT_OPTION)
 
 ./strnlen.$(objext): $(srcdir)/strnlen.c config.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strnlen.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strnlen.c $(OUTPUT_OPTION)
 
 ./strndup.$(objext): $(srcdir)/strndup.c config.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strndup.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strndup.c $(OUTPUT_OPTION)
 
 ./strrchr.$(objext): $(srcdir)/strrchr.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strrchr.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strrchr.c $(OUTPUT_OPTION)
 
 ./strsignal.$(objext): $(srcdir)/strsignal.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strsignal.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strsignal.c $(OUTPUT_OPTION)
 
 ./strstr.$(objext): $(srcdir)/strstr.c
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strstr.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strstr.c $(OUTPUT_OPTION)
 
 ./strtod.$(objext): $(srcdir)/strtod.c $(INCDIR)/ansidecl.h \
 	$(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strtod.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strtod.c $(OUTPUT_OPTION)
 
 ./strtol.$(objext): $(srcdir)/strtol.c config.h $(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strtol.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strtol.c $(OUTPUT_OPTION)
 
 ./strtoll.$(objext): $(srcdir)/strtoll.c config.h $(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strtoll.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strtoll.c $(OUTPUT_OPTION)
 
 ./strtoul.$(objext): $(srcdir)/strtoul.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strtoul.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strtoul.c $(OUTPUT_OPTION)
 
 ./strtoull.$(objext): $(srcdir)/strtoull.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strtoull.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strtoull.c $(OUTPUT_OPTION)
 
 ./strverscmp.$(objext): $(srcdir)/strverscmp.c  $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strverscmp.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strverscmp.c $(OUTPUT_OPTION)
 
 ./ternary.$(objext): $(srcdir)/ternary.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(INCDIR)/ternary.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/ternary.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/ternary.c $(OUTPUT_OPTION)
 
 ./timeval-utils.$(objext): $(srcdir)/timeval-utils.c config.h \
 	$(INCDIR)/timeval-utils.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/timeval-utils.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/timeval-utils.c $(OUTPUT_OPTION)
 
 ./tmpnam.$(objext): $(srcdir)/tmpnam.c
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/tmpnam.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/tmpnam.c $(OUTPUT_OPTION)
 
 ./unlink-if-ordinary.$(objext): $(srcdir)/unlink-if-ordinary.c config.h \
 	$(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/unlink-if-ordinary.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/unlink-if-ordinary.c $(OUTPUT_OPTION)
 
 ./vasprintf.$(objext): $(srcdir)/vasprintf.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(srcdir)/vprintf-support.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/vasprintf.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/vasprintf.c $(OUTPUT_OPTION)
 
 ./vfork.$(objext): $(srcdir)/vfork.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/vfork.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/vfork.c $(OUTPUT_OPTION)
 
 ./vfprintf.$(objext): $(srcdir)/vfprintf.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/vfprintf.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/vfprintf.c $(OUTPUT_OPTION)
 
 ./vprintf.$(objext): $(srcdir)/vprintf.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/vprintf.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/vprintf.c $(OUTPUT_OPTION)
 
 ./vprintf-support.$(objext): $(srcdir)/vprintf-support.c config.h \
 	$(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/vprintf-support.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/vprintf-support.c $(OUTPUT_OPTION)
 
 ./vsnprintf.$(objext): $(srcdir)/vsnprintf.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/vsnprintf.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/vsnprintf.c $(OUTPUT_OPTION)
 
 ./vsprintf.$(objext): $(srcdir)/vsprintf.c $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/vsprintf.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/vsprintf.c $(OUTPUT_OPTION)
 
 ./waitpid.$(objext): $(srcdir)/waitpid.c config.h $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/waitpid.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/waitpid.c $(OUTPUT_OPTION)
 
 ./xasprintf.$(objext): $(srcdir)/xasprintf.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/xasprintf.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/xasprintf.c $(OUTPUT_OPTION)
 
 ./xatexit.$(objext): $(srcdir)/xatexit.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/xatexit.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/xatexit.c $(OUTPUT_OPTION)
 
 ./xexit.$(objext): $(srcdir)/xexit.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/xexit.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/xexit.c $(OUTPUT_OPTION)
 
 ./xmalloc.$(objext): $(srcdir)/xmalloc.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/xmalloc.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/xmalloc.c $(OUTPUT_OPTION)
 
 ./xmalloca.$(objext): $(srcdir)/xmalloca.c config.h malloca.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/xmalloca.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/xmalloca.c $(OUTPUT_OPTION)
 
 ./xmemdup.$(objext): $(srcdir)/xmemdup.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/xmemdup.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/xmemdup.c $(OUTPUT_OPTION)
 
 ./xstrdup.$(objext): $(srcdir)/xstrdup.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/xstrdup.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/xstrdup.c $(OUTPUT_OPTION)
 
 ./xstrerror.$(objext): $(srcdir)/xstrerror.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/xstrerror.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/xstrerror.c $(OUTPUT_OPTION)
 
 ./xstrndup.$(objext): $(srcdir)/xstrndup.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/xstrndup.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/xstrndup.c $(OUTPUT_OPTION)
 
 ./xvasprintf.$(objext): $(srcdir)/xvasprintf.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(srcdir)/vprintf-support.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/xvasprintf.c -o pic/$@; \
-	else echo "only doing non-PIC build for $@"; fi
+	elif test $(V) -ge 1; then echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/xvasprintf.c $(OUTPUT_OPTION)
 

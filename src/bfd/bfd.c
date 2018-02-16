@@ -653,6 +653,8 @@ SECTION
 */
 
 /*
+SUBSECTION
+	Functions
 FUNCTION
 	bfd_get_reloc_upper_bound
 

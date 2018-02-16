@@ -217,6 +217,8 @@ _bfd_generic_mkarchive(bfd *abfd)
 }
 
 /*
+SUBSECTION
+	Functions
 FUNCTION
 	bfd_get_next_mapent
 
