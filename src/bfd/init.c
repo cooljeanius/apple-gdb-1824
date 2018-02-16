@@ -32,6 +32,8 @@ SECTION
 */
 
 /*
+SUBSECTION
+	Functions
 FUNCTION
 	bfd_init
 

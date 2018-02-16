@@ -1,6 +1,9 @@
 @section Opening and closing BFDs
 
+
 @subsection Functions
+
+
 @findex bfd_fopen
 @subsubsection @code{bfd_fopen}
 @strong{Synopsis}

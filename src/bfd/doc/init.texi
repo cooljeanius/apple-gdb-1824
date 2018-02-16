@@ -2,6 +2,8 @@
 These are the functions that handle initializing a BFD.
 
 @subsection Functions
+
+
 @findex bfd_init
 @subsubsection @code{bfd_init}
 @strong{Synopsis}

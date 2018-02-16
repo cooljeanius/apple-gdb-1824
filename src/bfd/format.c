@@ -51,6 +51,8 @@ extern const size_t _bfd_target_vector_entries;
 extern const bfd_target binary_vec;
 
 /*
+SUBSECTION
+	Functions
 FUNCTION
 	bfd_check_format
 

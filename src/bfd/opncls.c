@@ -174,6 +174,8 @@ SECTION
 */
 
 /*
+SUBSECTION
+	Functions
 FUNCTION
 	bfd_fopen
 

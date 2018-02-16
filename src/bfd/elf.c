@@ -20,8 +20,8 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street - 5th Floor, Boston, MA 02110-1301, USA. */
 
-/*  SECTION
-
+/*
+SECTION
 	ELF backends
 
 	BFD support for ELF formats is being worked on.
@@ -842,14 +842,14 @@ _bfd_elf_make_section_from_shdr (bfd *abfd,
 	  for (i = 0; i < elf_elfheader (abfd)->e_phnum; i++, phdr++)
 	    {
 	      /* This section is part of this segment if its file
-		   * offset plus size lies within the segment's memory
-		   * span and, if the section is loaded, the extent of the
-		   * loaded data lies within the extent of the segment.
-           *
-		   * Note - we used to check the p_paddr field as well, and
-		   * refuse to set the LMA if it was 0.  This is wrong
-		   * though, as a perfectly valid initialised segment can
-		   * have a p_paddr of zero.  Some architectures, eg ARM,
+	       * offset plus size lies within the segment's memory
+	       * span and, if the section is loaded, the extent of the
+	       * loaded data lies within the extent of the segment.
+	       *
+	       * Note - we used to check the p_paddr field as well, and
+	       * refuse to set the LMA if it was 0.  This is wrong
+	       * though, as a perfectly valid initialised segment can
+	       * have a p_paddr of zero.  Some architectures, eg ARM,
 	       * place special significance on the address 0 and
 	       * executables need to be able to have a segment which
 	       * covers this address.  */
@@ -893,6 +893,8 @@ _bfd_elf_make_section_from_shdr (bfd *abfd,
 }
 
 /*
+SUBSECTION
+	Functions
 INTERNAL_FUNCTION
 	bfd_elf_find_section
 
