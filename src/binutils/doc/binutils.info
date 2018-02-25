@@ -1,4 +1,4 @@
-This is binutils.info, produced by makeinfo version 5.1 from
+This is binutils.info, produced by makeinfo version 6.5 from
 binutils.texi.
 
 START-INFO-DIR-ENTRY
@@ -2827,8 +2827,8 @@ same type as the target system).
 
 * Menu:
 
-* Target Selection::            
-* Architecture Selection::      
+* Target Selection::
+* Architecture Selection::
 
 
 File: binutils.info,  Node: Target Selection,  Next: Architecture Selection,  Up: Selecting The Target System
@@ -3510,7 +3510,7 @@ Index
 * address to file name and line number:  addr2line.           (line   6)
 * all header information, object file:   objdump.             (line 354)
 * ar:                                    ar.                  (line   6)
-* 'ar' compatibility:                    ar.                  (line  40)
+* ar compatibility:                      ar.                  (line  40)
 * architecture:                          objdump.             (line 175)
 * architectures available:               objdump.             (line 160)
 * archive contents:                      ranlib.              (line   6)
@@ -3528,7 +3528,7 @@ Index
 * changing section VMA:                  objcopy.             (line 294)
 * changing start address:                objcopy.             (line 259)
 * collections of files:                  ar.                  (line   6)
-* compatibility, 'ar':                   ar.                  (line  40)
+* compatibility, ar:                     ar.                  (line  40)
 * contents of archive:                   ar cmdline.          (line  88)
 * crash:                                 Bug Criteria.        (line   9)
 * creating archives:                     ar cmdline.          (line 126)
@@ -3579,14 +3579,14 @@ Index
 * listings strings:                      strings.             (line   6)
 * machine instructions:                  objdump.             (line 109)
 * moving in archive:                     ar cmdline.          (line  34)
-* MRI compatibility, 'ar':               ar scripts.          (line   8)
+* MRI compatibility, ar:                 ar scripts.          (line   8)
 * name duplication in archive:           ar cmdline.          (line  97)
 * name length:                           ar.                  (line  18)
 * nm:                                    nm.                  (line   6)
-* 'nm' compatibility:                    nm.                  (line 120)
-* 'nm' compatibility <1>:                nm.                  (line 142)
-* 'nm' format:                           nm.                  (line 120)
-* 'nm' format <1>:                       nm.                  (line 142)
+* nm compatibility:                      nm.                  (line 120)
+* nm compatibility <1>:                  nm.                  (line 142)
+* nm format:                             nm.                  (line 120)
+* nm format <1>:                         nm.                  (line 142)
 * not writing archive index:             ar cmdline.          (line 172)
 * objdump:                               objdump.             (line   6)
 * object code format:                    nm.                  (line 212)
@@ -3611,15 +3611,15 @@ Index
 * repeated names in archive:             ar cmdline.          (line  97)
 * replacement in archive:                ar cmdline.          (line  70)
 * reporting bugs:                        Reporting Bugs.      (line   6)
-* scripts, 'ar':                         ar scripts.          (line   8)
+* scripts, ar:                           ar scripts.          (line   8)
 * section addresses in objdump:          objdump.             (line  65)
 * section headers:                       objdump.             (line 142)
 * section information:                   objdump.             (line 165)
 * section sizes:                         size.                (line   6)
 * sections, full contents:               objdump.             (line 295)
 * size:                                  size.                (line   6)
-* 'size' display format:                 size.                (line  26)
-* 'size' number format:                  size.                (line  65)
+* size display format:                   size.                (line  26)
+* size number format:                    size.                (line  65)
 * sorting symbols:                       nm.                  (line 167)
 * source code context:                   objdump.             (line 135)
 * source disassembly:                    objdump.             (line 300)
@@ -3640,7 +3640,7 @@ Index
 * symbols, discarding:                   strip.               (line   6)
 * undefined symbols:                     nm.                  (line 217)
 * undefined symbols <1>:                 nm.                  (line 221)
-* Unix compatibility, 'ar':              ar cmdline.          (line   8)
+* Unix compatibility, ar:                ar cmdline.          (line   8)
 * unwind information:                    readelf.             (line  96)
 * updating an archive:                   ar cmdline.          (line 179)
 * version:                               Top.                 (line   6)
@@ -3671,12 +3671,12 @@ Node: dlltool90112
 Node: def file format100421
 Node: readelf102154
 Node: Selecting The Target System106608
-Node: Target Selection107551
-Node: Architecture Selection109532
-Node: Reporting Bugs110360
-Node: Bug Criteria111139
-Node: Bug Reporting111692
-Node: GNU Free Documentation License118786
-Node: Index138422
+Node: Target Selection107533
+Node: Architecture Selection109514
+Node: Reporting Bugs110342
+Node: Bug Criteria111121
+Node: Bug Reporting111674
+Node: GNU Free Documentation License118768
+Node: Index138405
 
 End Tag Table

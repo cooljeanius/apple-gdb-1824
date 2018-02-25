@@ -1,6 +1,6 @@
-#=========================================================================
-#  http://www.gnu.org/software/autoconf-archive/ax_check_page_aligned_malloc.html
-#==========================================================================
+# =================================================================================
+#  https://www.gnu.org/software/autoconf-archive/ax_check_page_aligned_malloc.html
+# =================================================================================
 #
 # SYNOPSIS
 #
@@ -12,16 +12,16 @@
 #   posix_memalign function, a memalign function, and a working (meaning,
 #   the memory can be freed) valloc function. To make up for it, the malloc
 #   function promises to return page-aligned addresses if more than one
-#   page's worth of memory is allocated. AX_CHECK_PAGE_ALIGNED_MALLOC
-#   checks for this condition and defines HAVE_PAGE_ALIGNED_MALLOC if the
-#   condition holds.
+#   page's worth of memory is allocated. AX_CHECK_PAGE_ALIGNED_MALLOC checks
+#   for this condition and defines HAVE_PAGE_ALIGNED_MALLOC if the condition
+#   holds.
 #
 #   As an aside, note that valloc'd memory cannot safely be freed on all
 #   operating systems. (Again, some flavors of BSD are the troublemakers.)
-#   It is best to avoid using valloc in favor of posix_memalign, memalign,
-#   or an aligned malloc as detected by AX_CHECK_PAGE_ALIGNED_MALLOC.
+#   It's best to avoid using valloc in favor of posix_memalign, memalign, or
+#   an aligned malloc as detected by AX_CHECK_PAGE_ALIGNED_MALLOC.
 #
-#   Caveat: AX_CHECK_PAGE_ALIGNED_MALLOC takes a probabalistic approach. If
+#   Caveat: AX_CHECK_PAGE_ALIGNED_MALLOC takes a probabilistic approach. If
 #   100 calls to malloc all return page-aligned addresses, it assumes that
 #   all calls will behave likewise. It is therefore possible -- albeit
 #   extremely unlikely -- that AX_CHECK_PAGE_ALIGNED_MALLOC can return a
@@ -31,24 +31,22 @@
 #
 #   Copyright (c) 2008 Scott Pakin <pakin@uiuc.edu>
 #
-#   Copying & distribution of this file, with or without modification, are
+#   Copying and distribution of this file, with or without modification, are
 #   permitted in any medium without royalty provided the copyright notice
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 7
+#serial 10
 
 AC_DEFUN([AX_CHECK_PAGE_ALIGNED_MALLOC],
 [AC_CACHE_CHECK([if large mallocs guarantee page-alignment],
   [ax_cv_func_malloc_aligned],
-  [AC_RUN_IFELSE([AC_LANG_SOURCE([[
+  [AC_TRY_RUN([
 #include <stdio.h>
 #include <stdlib.h>
 #if HAVE_UNISTD_H
 # include <unistd.h>
-#else
-# warning this conftest expects <unistd.h> to be included.
-#endif /* HAVE_UNISTD_H */
+#endif
 
 int main()
 {
@@ -60,13 +58,13 @@ int main()
       exit (1);
   exit (0);
 }
-              ]])],
+              ],
      [ax_cv_func_malloc_aligned=yes],
      [ax_cv_func_malloc_aligned=no],
-     [ax_cv_func_malloc_aligned=cross])
+     [ax_cv_func_malloc_aligned=no])
   ])
 if test "$ax_cv_func_malloc_aligned" = yes ; then
-  AC_DEFINE([HAVE_PAGE_ALIGNED_MALLOC],[1],
+  AC_DEFINE([HAVE_PAGE_ALIGNED_MALLOC], [1],
     [Define if `malloc'ing more than one page always returns a page-aligned address.])
 fi
 ])

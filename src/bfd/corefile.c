@@ -32,6 +32,8 @@ DESCRIPTION
 #include "libbfd.h"
 
 /*
+SUBSECTION
+	Functions
 FUNCTION
 	bfd_core_file_failing_command
 

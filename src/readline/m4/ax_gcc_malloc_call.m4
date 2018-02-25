@@ -1,6 +1,6 @@
-#==========================================================================
-#    http://www.gnu.org/software/autoconf-archive/ax_gcc_malloc_call.html
-#==========================================================================
+# ===========================================================================
+#    https://www.gnu.org/software/autoconf-archive/ax_gcc_malloc_call.html
+# ===========================================================================
 #
 # SYNOPSIS
 #
@@ -26,7 +26,7 @@
 #   Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License along
-#   with this program. If not, see <http://www.gnu.org/licenses/>.
+#   with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 #   As a special exception, the respective Autoconf Macro's copyright owner
 #   gives unlimited permission to copy, distribute and modify the configure
@@ -41,16 +41,16 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 7
+#serial 8
 
 AC_DEFUN([AX_GCC_MALLOC_CALL],[dnl
 AC_CACHE_CHECK(
  [whether the compiler supports function __attribute__((__malloc__))],
- [ax_cv_gcc_malloc_call],[
- AC_COMPILE_IFELSE([AC_LANG_SOURCE([[__attribute__((__malloc__))
- int f(int i) { return i; }]],
- [[]])],
- [ax_cv_gcc_malloc_call=yes],[ax_cv_gcc_malloc_call=no])])
+ ax_cv_gcc_malloc_call,[
+ AC_TRY_COMPILE([__attribute__((__malloc__))
+ int f(int i) { return i; }],
+ [],
+ ax_cv_gcc_malloc_call=yes, ax_cv_gcc_malloc_call=no)])
  if test "$ax_cv_gcc_malloc_call" = yes; then
    AC_DEFINE([GCC_MALLOC_CALL],[__attribute__((__malloc__))],
     [most gcc compilers know a function __attribute__((__malloc__))])

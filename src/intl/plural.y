@@ -32,6 +32,8 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
+  
+#include "ansidecl.h"
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -89,6 +91,11 @@ struct expression *new_exp_3 PARAMS((enum operator op,
                                      struct expression *bexp,
                                      struct expression *tbranch,
                                      struct expression *fbranch));
+#if defined(YYBISON) && defined(YYBISON_VERSION)
+# ifndef my_yylex
+#  define yylex my_yylex
+# endif
+#endif /* YYBISON && YYBISON_VERSION */
 static int yylex PARAMS((YYSTYPE *lval, const char **pexp));
 static void yyerror PARAMS((const char *str));
 
@@ -198,7 +205,7 @@ start:	  exp
 	    if ($1 == NULL) {
 	      YYABORT;
             }
-	    ((struct parse_args *)arg)->res = $1;
+	    ((struct parse_args *)YYPARSE_PARAM)->res = $1;
 	  }
 	;
 
@@ -264,13 +271,22 @@ FREE_EXPRESSION(struct expression *exp)
   switch (exp->nargs) {
     case 3:
       FREE_EXPRESSION(exp->val.args[2]);
-      /* FALLTHROUGH */
+#ifdef ATTRIBUTE_FALLTHROUGH
+      ATTRIBUTE_FALLTHROUGH;
+#endif /* ATTRIBUTE_FALLTHROUGH */
+      /*FALLTHRU*/
     case 2:
       FREE_EXPRESSION(exp->val.args[1]);
-      /* FALLTHROUGH */
+#ifdef ATTRIBUTE_FALLTHROUGH
+      ATTRIBUTE_FALLTHROUGH;
+#endif /* ATTRIBUTE_FALLTHROUGH */
+      /*FALLTHRU*/
     case 1:
       FREE_EXPRESSION(exp->val.args[0]);
-      /* FALLTHROUGH */
+#ifdef ATTRIBUTE_FALLTHROUGH
+      ATTRIBUTE_FALLTHROUGH;
+#endif /* ATTRIBUTE_FALLTHROUGH */
+      /*FALLTHRU*/
     default:
       break;
   }
