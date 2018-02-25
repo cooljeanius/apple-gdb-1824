@@ -867,17 +867,17 @@ OPENMP_CFLAGS
 NO_CXX
 NEXTAFTER_LIBM
 UNDEFINE_STRTOK_R
-REPLACE_STRTOK_R
 REPLACE_STRSIGNAL
+REPLACE_STRERROR_R
+REPLACE_STRERROR
+REPLACE_STRTOK_R
+REPLACE_STRCASESTR
+REPLACE_STRSTR
 REPLACE_STRNLEN
 REPLACE_STRNDUP
 REPLACE_STRNCAT
-REPLACE_STRERROR_R
-REPLACE_STRERROR
-REPLACE_STRCHRNUL
-REPLACE_STRCASESTR
-REPLACE_STRSTR
 REPLACE_STRDUP
+REPLACE_STRCHRNUL
 REPLACE_STPNCPY
 REPLACE_MEMMEM
 REPLACE_MEMCHR
@@ -901,6 +901,7 @@ HAVE_DECL_MEMMEM
 HAVE_MEMCHR
 HAVE_FFSLL
 HAVE_FFSL
+HAVE_EXPLICIT_BZERO
 HAVE_MBSLEN
 GNULIB_STRVERSCMP
 GNULIB_STRSIGNAL
@@ -939,6 +940,7 @@ GNULIB_MEMMEM
 GNULIB_MEMCHR
 GNULIB_FFSLL
 GNULIB_FFSL
+GNULIB_EXPLICIT_BZERO
 LOCALE_FR_UTF8
 LOCALE_ZH_CN
 LOCALE_JA
@@ -967,11 +969,13 @@ HAVE_STRUCT_RANDOM_DATA
 HAVE_STRTOULL
 HAVE_STRTOLL
 HAVE_STRTOD
+HAVE_DECL_SETSTATE
 HAVE_DECL_SETENV
 HAVE_SETENV
 HAVE_SECURE_GETENV
 HAVE_RPMATCH
 HAVE_REALPATH
+HAVE_REALLOCARRAY
 HAVE_RANDOM_R
 HAVE_RANDOM_H
 HAVE_RANDOM
@@ -984,6 +988,7 @@ HAVE_MKSTEMP
 HAVE_MKOSTEMPS
 HAVE_MKOSTEMP
 HAVE_MKDTEMP
+HAVE_DECL_INITSTATE
 HAVE_GRANTPT
 HAVE_GETSUBOPT
 HAVE_DECL_GETLOADAVG
@@ -1002,6 +1007,7 @@ GNULIB_SECURE_GETENV
 GNULIB_RPMATCH
 GNULIB_REALPATH
 GNULIB_REALLOC_POSIX
+GNULIB_REALLOCARRAY
 GNULIB_RANDOM_R
 GNULIB_RANDOM
 GNULIB_QSORT_R
@@ -1049,6 +1055,7 @@ LDDPROG
 OBJDUMP
 HAVE_LANGINFO_YESEXPR
 HAVE_LANGINFO_ERA
+HAVE_LANGINFO_ALTMON
 HAVE_LANGINFO_T_FMT_AMPM
 HAVE_LANGINFO_CODESET
 HAVE_LANGINFO_H
@@ -1220,6 +1227,7 @@ REPLACE_LDEXPL
 REPLACE_ISNAN
 REPLACE_ISINF
 REPLACE_ISFINITE
+REPLACE_ILOGBL
 REPLACE_ILOGBF
 REPLACE_ILOGB
 REPLACE_HYPOTL
@@ -1585,6 +1593,7 @@ REPLACE_GETDOMAINNAME
 REPLACE_GETCWD
 REPLACE_FTRUNCATE
 REPLACE_FCHOWNAT
+REPLACE_FACCESSAT
 REPLACE_DUP2
 REPLACE_DUP
 REPLACE_CLOSE
@@ -6486,7 +6495,7 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
     alpha*)
       # On Alpha systems, a compiler option provides the behaviour.
       # See the ieee(3) manual page, also available at
-      # <http://h30097.www3.hp.com/docs/base_doc/DOCUMENTATION/V51B_HTML/MAN/MAN3/0600____.HTM>
+      # <https://backdrift.org/man/tru64/man3/ieee.3.html>
       if test -n "$GCC"; then
         # GCC has the option -mieee.
         # For full IEEE compliance (rarely needed), use option -mieee-with-inexact.
@@ -6800,6 +6809,7 @@ $as_echo "$as_me: autobuild timestamp... $date" >&6;}
   # Code from module fcntl-h:
   # Code from module fcntl-safer:
   # Code from module fd-hook:
+  # Code from module fd-safer-flag:
   # Code from module fdopendir:
   # Code from module fileblocks:
   # Code from module filename:
@@ -7799,7 +7809,7 @@ This is a known interoperability problem of glibc <= 2.5 with gcc >= 4.3 in
 C99 mode. You have four options:
   - Add the flag -fgnu89-inline to CC and reconfigure, or
   - Fix your include files, using parts of
-    <http://sourceware.org/git/?p=glibc.git;a=commitdiff;h=b037a293a48718af30d706c2e18c929d0e69a621>, or
+    <https://sourceware.org/git/?p=glibc.git;a=commitdiff;h=b037a293a48718af30d706c2e18c929d0e69a621>, or
   - Use a gcc version older than 4.3, or
   - Don't use the flags -std=c99 or -std=gnu99.
 Configuration aborted." "$LINENO" 5
@@ -7881,8 +7891,14 @@ else
 struct tm t;
 char buf[16];
 int main () {
+  /* On BeOS and Haiku, locales are not implemented in libc.  Rather, libintl
+     imitates locale dependent behaviour by looking at the environment
+     variables, and all locales use the UTF-8 encoding.  */
+#if defined __BEOS__ || defined __HAIKU__
+  return 1;
+#else
   /* Check whether the given locale name is recognized by the system.  */
-#if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__
+# if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__
   /* On native Windows, setlocale(category, "") looks at the system settings,
      not at the environment variables.  Also, when an encoding suffix such
      as ".65001" or ".54936" is specified, it succeeds but sets the LC_CTYPE
@@ -7890,9 +7906,9 @@ int main () {
   if (setlocale (LC_ALL, getenv ("LC_ALL")) == NULL
       || strcmp (setlocale (LC_CTYPE, NULL), "C") == 0)
     return 1;
-#else
+# else
   if (setlocale (LC_ALL, "") == NULL) return 1;
-#endif
+# endif
   /* Check whether nl_langinfo(CODESET) is nonempty and not "ASCII" or "646".
      On Mac OS X 10.3.5 (Darwin 7.5) in the fr_FR locale, nl_langinfo(CODESET)
      is empty, and the behaviour of Tcl 8.4 in this locale is not useful.
@@ -7901,32 +7917,33 @@ int main () {
      some unit tests fail.
      On MirBSD 10, when an unsupported locale is specified, setlocale()
      succeeds but then nl_langinfo(CODESET) is "UTF-8".  */
-#if HAVE_LANGINFO_CODESET
+# if HAVE_LANGINFO_CODESET
   {
     const char *cs = nl_langinfo (CODESET);
     if (cs[0] == '\0' || strcmp (cs, "ASCII") == 0 || strcmp (cs, "646") == 0
         || strcmp (cs, "UTF-8") == 0)
       return 1;
   }
-#endif
-#ifdef __CYGWIN__
+# endif
+# ifdef __CYGWIN__
   /* On Cygwin, avoid locale names without encoding suffix, because the
      locale_charset() function relies on the encoding suffix.  Note that
      LC_ALL is set on the command line.  */
   if (strchr (getenv ("LC_ALL"), '.') == NULL) return 1;
-#endif
+# endif
   /* Check whether in the abbreviation of the second month, the second
      character (should be U+00E9: LATIN SMALL LETTER E WITH ACUTE) is only
      one byte long. This excludes the UTF-8 encoding.  */
   t.tm_year = 1975 - 1900; t.tm_mon = 2 - 1; t.tm_mday = 4;
   if (strftime (buf, sizeof (buf), "%b", &t) < 3 || buf[2] != 'v') return 1;
-#if !defined __BIONIC__ /* Bionic libc's 'struct lconv' is just a dummy.  */
+# if !defined __BIONIC__ /* Bionic libc's 'struct lconv' is just a dummy.  */
   /* Check whether the decimal separator is a comma.
      On NetBSD 3.0 in the fr_FR.ISO8859-1 locale, localeconv()->decimal_point
      are nl_langinfo(RADIXCHAR) are both ".".  */
   if (localeconv () ->decimal_point[0] != ',') return 1;
-#endif
+# endif
   return 0;
+#endif
 }
 
 _ACEOF
@@ -8092,6 +8109,7 @@ $as_echo "$gt_cv_locale_fr" >&6; }
   REPLACE_CLOSE=0;
   REPLACE_DUP=0;
   REPLACE_DUP2=0;
+  REPLACE_FACCESSAT=0;
   REPLACE_FCHOWNAT=0;
   REPLACE_FTRUNCATE=0;
   REPLACE_GETCWD=0;
@@ -9255,7 +9273,12 @@ if ${gl_cv_header_working_fcntl_h+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   if test "$cross_compiling" = yes; then :
-  gl_cv_header_working_fcntl_h=cross-compiling
+  case "$host_os" in
+                  # Guess 'no' on native Windows.
+          mingw*) gl_cv_header_working_fcntl_h='no' ;;
+          *)      gl_cv_header_working_fcntl_h=cross-compiling ;;
+        esac
+
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -9365,6 +9388,7 @@ fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
+
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_header_working_fcntl_h" >&5
@@ -9759,6 +9783,7 @@ $as_echo "#define mbstate_t int" >>confdefs.h
   REPLACE_HYPOTL=0;
   REPLACE_ILOGB=0;
   REPLACE_ILOGBF=0;
+  REPLACE_ILOGBL=0;
   REPLACE_ISFINITE=0;
   REPLACE_ISINF=0;
   REPLACE_ISNAN=0;
@@ -9906,8 +9931,26 @@ else
 
       if test "$cross_compiling" = yes; then :
   case "$host_os" in
-           netbsd* | irix* | mingw*) gl_cv_func_frexp_works="guessing no";;
-           *)                        gl_cv_func_frexp_works="guessing yes";;
+           netbsd* | irix*) gl_cv_func_frexp_works="guessing no" ;;
+           mingw*) # Guess yes with MSVC, no with mingw.
+             cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifdef _MSC_VER
+ Good
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "Good" >/dev/null 2>&1; then :
+  gl_cv_func_frexp_works="guessing yes"
+else
+  gl_cv_func_frexp_works="guessing no"
+fi
+rm -f conftest*
+
+             ;;
+           *) gl_cv_func_frexp_works="guessing yes" ;;
          esac
 
 else
@@ -10606,7 +10649,7 @@ fi
 
 
 
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether lstat correctly handles trailing slash" >&5
+         { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether lstat correctly handles trailing slash" >&5
 $as_echo_n "checking whether lstat correctly handles trailing slash... " >&6; }
 if ${gl_cv_func_lstat_dereferences_slashed_symlink+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -10615,9 +10658,12 @@ else
      echo >conftest.file
      if test "$cross_compiling" = yes; then :
   case "$host_os" in
-          *-gnu*)
+          *-gnu* | gnu*)
             # Guess yes on glibc systems.
             gl_cv_func_lstat_dereferences_slashed_symlink="guessing yes" ;;
+          mingw*)
+            # Guess no on native Windows.
+            gl_cv_func_lstat_dereferences_slashed_symlink="guessing no" ;;
           *)
             # If we don't know, assume the worst.
             gl_cv_func_lstat_dereferences_slashed_symlink="guessing no" ;;
@@ -10677,6 +10723,37 @@ _ACEOF
 
 
 
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for O_CLOEXEC" >&5
+$as_echo_n "checking for O_CLOEXEC... " >&6; }
+if ${gl_cv_macro_O_CLOEXEC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <fcntl.h>
+                          #ifndef O_CLOEXEC
+                            choke me;
+                          #endif
+
+int
+main ()
+{
+return O_CLOEXEC;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_macro_O_CLOEXEC=yes
+else
+  gl_cv_macro_O_CLOEXEC=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_macro_O_CLOEXEC" >&5
+$as_echo "$gl_cv_macro_O_CLOEXEC" >&6; }
+
+
 
 
 
@@ -10701,12 +10778,12 @@ if ${gl_cv_func_getcwd_null+:} false; then :
 else
   if test "$cross_compiling" = yes; then :
   case "$host_os" in
-                     # Guess yes on glibc systems.
-            *-gnu*)  gl_cv_func_getcwd_null="guessing yes";;
-                     # Guess yes on Cygwin.
-            cygwin*) gl_cv_func_getcwd_null="guessing yes";;
-                     # If we don't know, assume the worst.
-            *)       gl_cv_func_getcwd_null="guessing no";;
+                           # Guess yes on glibc systems.
+            *-gnu* | gnu*) gl_cv_func_getcwd_null="guessing yes";;
+                           # Guess yes on Cygwin.
+            cygwin*)       gl_cv_func_getcwd_null="guessing yes";;
+                           # If we don't know, assume the worst.
+            *)             gl_cv_func_getcwd_null="guessing no";;
           esac
 
 else
@@ -11186,6 +11263,319 @@ else
 
 fi
 rm -f conftest*
+
+
+
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking host CPU and C ABI" >&5
+$as_echo_n "checking host CPU and C ABI... " >&6; }
+if ${gl_cv_host_cpu_c_abi+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case "$host_cpu" in
+
+       i[4567]86 )
+         gl_cv_host_cpu_c_abi=i386
+         ;;
+
+       x86_64 )
+         # On x86_64 systems, the C compiler may be generating code in one of
+         # these ABIs:
+         # - 64-bit instruction set, 64-bit pointers, 64-bit 'long': x86_64.
+         # - 64-bit instruction set, 64-bit pointers, 32-bit 'long': x86_64
+         #   with native Windows (mingw, MSVC).
+         # - 64-bit instruction set, 32-bit pointers, 32-bit 'long': x86_64-x32.
+         # - 32-bit instruction set, 32-bit pointers, 32-bit 'long': i386.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if (defined __x86_64__ || defined __amd64__ \
+                     || defined _M_X64 || defined _M_AMD64)
+                 int ok;
+                #else
+                 error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __ILP32__ || defined _ILP32
+                    int ok;
+                   #else
+                    error fail
+                   #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_host_cpu_c_abi=x86_64-x32
+else
+  gl_cv_host_cpu_c_abi=x86_64
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+else
+  gl_cv_host_cpu_c_abi=i386
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+         ;;
+
+       alphaev[4-8] | alphaev56 | alphapca5[67] | alphaev6[78] )
+         gl_cv_host_cpu_c_abi=alpha
+         ;;
+
+       arm* | aarch64 )
+         # Assume arm with EABI.
+         # On arm64 systems, the C compiler may be generating code in one of
+         # these ABIs:
+         # - aarch64 instruction set, 64-bit pointers, 64-bit 'long': arm64.
+         # - aarch64 instruction set, 32-bit pointers, 32-bit 'long': arm64-ilp32.
+         # - 32-bit instruction set, 32-bit pointers, 32-bit 'long': arm or armhf.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifdef __aarch64__
+                 int ok;
+                #else
+                 error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __ILP32__ || defined _ILP32
+                   int ok;
+                  #else
+                   error fail
+                  #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_host_cpu_c_abi=arm64-ilp32
+else
+  gl_cv_host_cpu_c_abi=arm64
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+else
+  # Don't distinguish little-endian and big-endian arm, since they
+            # don't require different machine code for simple operations and
+            # since the user can distinguish them through the preprocessor
+            # defines __ARMEL__ vs. __ARMEB__.
+            # But distinguish arm which passes floating-point arguments and
+            # return values in integer registers (r0, r1, ...) - this is
+            # gcc -mfloat-abi=soft or gcc -mfloat-abi=softfp - from arm which
+            # passes them in float registers (s0, s1, ...) and double registers
+            # (d0, d1, ...) - this is gcc -mfloat-abi=hard. GCC 4.6 or newer
+            # sets the preprocessor defines __ARM_PCS (for the first case) and
+            # __ARM_PCS_VFP (for the second case), but older GCC does not.
+            echo 'double ddd; void func (double dd) { ddd = dd; }' > conftest.c
+            # Look for a reference to the register d0 in the .s file.
+            { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $gl_c_asm_opt conftest.c'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; } >/dev/null 2>&1
+            if LC_ALL=C grep 'd0,' conftest.$gl_asmext >/dev/null; then
+              gl_cv_host_cpu_c_abi=armhf
+            else
+              gl_cv_host_cpu_c_abi=arm
+            fi
+            rm -f conftest*
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+         ;;
+
+       hppa1.0 | hppa1.1 | hppa2.0* | hppa64 )
+         # On hppa, the C compiler may be generating 32-bit code or 64-bit
+         # code. In the latter case, it defines _LP64 and __LP64__.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifdef __LP64__
+                 int ok;
+                #else
+                 error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_host_cpu_c_abi=hppa64
+else
+  gl_cv_host_cpu_c_abi=hppa
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+         ;;
+
+       ia64* )
+         # On ia64 on HP-UX, the C compiler may be generating 64-bit code or
+         # 32-bit code. In the latter case, it defines _ILP32.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifdef _ILP32
+                 int ok;
+                #else
+                 error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_host_cpu_c_abi=ia64-ilp32
+else
+  gl_cv_host_cpu_c_abi=ia64
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+         ;;
+
+       mips* )
+         # We should also check for (_MIPS_SZPTR == 64), but gcc keeps this
+         # at 32.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined _MIPS_SZLONG && (_MIPS_SZLONG == 64)
+                 int ok;
+                #else
+                 error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_host_cpu_c_abi=mips64
+else
+  # In the n32 ABI, _ABIN32 is defined, _ABIO32 is not defined (but
+            # may later get defined by <sgidefs.h>), and _MIPS_SIM == _ABIN32.
+            # In the 32 ABI, _ABIO32 is defined, _ABIN32 is not defined (but
+            # may later get defined by <sgidefs.h>), and _MIPS_SIM == _ABIO32.
+            cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if (_MIPS_SIM == _ABIN32)
+                    int ok;
+                   #else
+                    error fail
+                   #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_host_cpu_c_abi=mipsn32
+else
+  gl_cv_host_cpu_c_abi=mips
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+         ;;
+
+       powerpc* )
+         # Different ABIs are in use on AIX vs. Mac OS X vs. Linux,*BSD.
+         # No need to distinguish them here; the caller may distinguish
+         # them based on the OS.
+         # On powerpc64 systems, the C compiler may still be generating
+         # 32-bit code. And on powerpc-ibm-aix systems, the C compiler may
+         # be generating 64-bit code.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __powerpc64__ || defined _ARCH_PPC64
+                 int ok;
+                #else
+                 error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  # On powerpc64, there are two ABIs on Linux: The AIX compatible
+            # one and the ELFv2 one. The latter defines _CALL_ELF=2.
+            cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined _CALL_ELF && _CALL_ELF == 2
+                    int ok;
+                   #else
+                    error fail
+                   #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_host_cpu_c_abi=powerpc64-elfv2
+else
+  gl_cv_host_cpu_c_abi=powerpc64
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+else
+  gl_cv_host_cpu_c_abi=powerpc
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+         ;;
+
+       rs6000 )
+         gl_cv_host_cpu_c_abi=powerpc
+         ;;
+
+       s390* )
+         # On s390x, the C compiler may be generating 64-bit (= s390x) code
+         # or 31-bit (= s390) code.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __LP64__ || defined __s390x__
+                  int ok;
+                #else
+                  error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_host_cpu_c_abi=s390x
+else
+  gl_cv_host_cpu_c_abi=s390
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+         ;;
+
+       sparc | sparc64 )
+         # UltraSPARCs running Linux have `uname -m` = "sparc64", but the
+         # C compiler still generates 32-bit code.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __sparcv9 || defined __arch64__
+                 int ok;
+                #else
+                 error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_host_cpu_c_abi=sparc64
+else
+  gl_cv_host_cpu_c_abi=sparc
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+         ;;
+
+       *)
+         gl_cv_host_cpu_c_abi="$host_cpu"
+         ;;
+     esac
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_host_cpu_c_abi" >&5
+$as_echo "$gl_cv_host_cpu_c_abi" >&6; }
+
+    HOST_CPU=`echo "$gl_cv_host_cpu_c_abi" | sed -e 's/-.*//'`
+  HOST_CPU_C_ABI="$gl_cv_host_cpu_c_abi"
+
+
+
+  # This was
+  #   AC_DEFINE_UNQUOTED([__${HOST_CPU}__])
+  #   AC_DEFINE_UNQUOTED([__${HOST_CPU_C_ABI}__])
+  # earlier, but KAI C++ 3.2d doesn't like this.
+  sed -e 's/-/_/g' >> confdefs.h <<EOF
+#ifndef __${HOST_CPU}__
+#define __${HOST_CPU}__ 1
+#endif
+#ifndef __${HOST_CPU_C_ABI}__
+#define __${HOST_CPU_C_ABI}__ 1
+#endif
+EOF
+
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for inline" >&5
@@ -11938,7 +12328,12 @@ main ()
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
                                                     if test "$cross_compiling" = yes; then :
-                 gl_cv_header_working_stdint_h=yes
+  case "$host_os" in
+                         # Guess yes on native Windows.
+                 mingw*) gl_cv_header_working_stdint_h="guessing yes" ;;
+                         # In general, assume it works.
+                 *)      gl_cv_header_working_stdint_h="guessing yes" ;;
+               esac
 
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -12038,15 +12433,16 @@ $as_echo "$gl_cv_header_working_stdint_h" >&6; }
   HAVE_SYS_BITYPES_H=0
   HAVE_SYS_INTTYPES_H=0
   STDINT_H=stdint.h
-  if test "$gl_cv_header_working_stdint_h" = yes; then
-    HAVE_C99_STDINT_H=1
-            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stdint.h predates C++11" >&5
+  case "$gl_cv_header_working_stdint_h" in
+    *yes)
+      HAVE_C99_STDINT_H=1
+                  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stdint.h predates C++11" >&5
 $as_echo_n "checking whether stdint.h predates C++11... " >&6; }
 if ${gl_cv_header_stdint_predates_cxx11_h+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   gl_cv_header_stdint_predates_cxx11_h=yes
-       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 
@@ -12084,29 +12480,29 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_header_stdint_predates_cxx11_h" >&5
 $as_echo "$gl_cv_header_stdint_predates_cxx11_h" >&6; }
 
-    if test "$gl_cv_header_stdint_predates_cxx11_h" = yes; then
+      if test "$gl_cv_header_stdint_predates_cxx11_h" = yes; then
 
 $as_echo "#define __STDC_CONSTANT_MACROS 1" >>confdefs.h
 
 
 $as_echo "#define __STDC_LIMIT_MACROS 1" >>confdefs.h
 
-    fi
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stdint.h has UINTMAX_WIDTH etc." >&5
+      fi
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stdint.h has UINTMAX_WIDTH etc." >&5
 $as_echo_n "checking whether stdint.h has UINTMAX_WIDTH etc.... " >&6; }
 if ${gl_cv_header_stdint_width+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   gl_cv_header_stdint_width=no
-       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-            /* Work if build is not clean.  */
-            #define _GL_JUST_INCLUDE_SYSTEM_STDINT_H 1
-            #ifndef __STDC_WANT_IEC_60559_BFP_EXT__
-             #define __STDC_WANT_IEC_60559_BFP_EXT__ 1
-            #endif
-            #include <stdint.h>
+              /* Work if build is not clean.  */
+              #define _GL_JUST_INCLUDE_SYSTEM_STDINT_H 1
+              #ifndef __STDC_WANT_IEC_60559_BFP_EXT__
+               #define __STDC_WANT_IEC_60559_BFP_EXT__ 1
+              #endif
+              #include <stdint.h>
 
   /* BSD/OS 4.0.1 has a bug: <stddef.h>, <stdio.h> and <time.h> must be
      included before <wchar.h>.  */
@@ -12118,7 +12514,7 @@ else
   # include <wchar.h>
   #endif
 
-            int iw = UINTMAX_WIDTH;
+              int iw = UINTMAX_WIDTH;
 
 int
 main ()
@@ -12135,11 +12531,12 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_header_stdint_width" >&5
 $as_echo "$gl_cv_header_stdint_width" >&6; }
-    if test "$gl_cv_header_stdint_width" = yes; then
-      STDINT_H=
-    fi
-  else
-            for ac_header in sys/inttypes.h sys/bitypes.h
+      if test "$gl_cv_header_stdint_width" = yes; then
+        STDINT_H=
+      fi
+      ;;
+    *)
+                  for ac_header in sys/inttypes.h sys/bitypes.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -12152,12 +12549,12 @@ fi
 
 done
 
-    if test $ac_cv_header_sys_inttypes_h = yes; then
-      HAVE_SYS_INTTYPES_H=1
-    fi
-    if test $ac_cv_header_sys_bitypes_h = yes; then
-      HAVE_SYS_BITYPES_H=1
-    fi
+      if test $ac_cv_header_sys_inttypes_h = yes; then
+        HAVE_SYS_INTTYPES_H=1
+      fi
+      if test $ac_cv_header_sys_bitypes_h = yes; then
+        HAVE_SYS_BITYPES_H=1
+      fi
 
 
   if test $APPLE_UNIVERSAL_BUILD = 0; then
@@ -12457,7 +12854,8 @@ _ACEOF
     BITSIZEOF_WINT_T=32
   fi
 
-  fi
+      ;;
+  esac
 
     LIMITS_H=limits.h
    if test -n "$LIMITS_H"; then
@@ -13432,7 +13830,7 @@ if ${gl_cv_func_iswcntrl_works+:} false; then :
 else
 
           if test "$cross_compiling" = yes; then :
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+               cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <stdlib.h>
                           #if __GNU_LIBRARY__ == 1
@@ -13962,6 +14360,7 @@ $as_echo "$gl_cv_next_stddef_h" >&6; }
   GNULIB_QSORT_R=0;
   GNULIB_RANDOM=0;
   GNULIB_RANDOM_R=0;
+  GNULIB_REALLOCARRAY=0;
   GNULIB_REALLOC_POSIX=0;
   GNULIB_REALPATH=0;
   GNULIB_RPMATCH=0;
@@ -13980,6 +14379,7 @@ $as_echo "$gl_cv_next_stddef_h" >&6; }
   HAVE_DECL_GETLOADAVG=1;
   HAVE_GETSUBOPT=1;
   HAVE_GRANTPT=1;
+  HAVE_DECL_INITSTATE=1;
   HAVE_MKDTEMP=1;
   HAVE_MKOSTEMP=1;
   HAVE_MKOSTEMPS=1;
@@ -13992,11 +14392,13 @@ $as_echo "$gl_cv_next_stddef_h" >&6; }
   HAVE_RANDOM=1;
   HAVE_RANDOM_H=1;
   HAVE_RANDOM_R=1;
+  HAVE_REALLOCARRAY=1;
   HAVE_REALPATH=1;
   HAVE_RPMATCH=1;
   HAVE_SECURE_GETENV=1;
   HAVE_SETENV=1;
   HAVE_DECL_SETENV=1;
+  HAVE_DECL_SETSTATE=1;
   HAVE_STRTOD=1;
   HAVE_STRTOLL=1;
   HAVE_STRTOULL=1;
@@ -14075,7 +14477,7 @@ else
   if test "$cross_compiling" = yes; then :
   case "$host_os" in
           # Guess yes on platforms where we know the result.
-          *-gnu* | freebsd* | netbsd* | openbsd* \
+          *-gnu* | gnu* | freebsd* | netbsd* | openbsd* \
           | hpux* | solaris* | cygwin* | mingw*)
             ac_cv_func_malloc_0_nonnull=yes ;;
           # If we don't know, assume the worst.
@@ -14166,9 +14568,14 @@ struct tm t;
 char buf[16];
 int main ()
 {
-  const char *p;
+  /* On BeOS and Haiku, locales are not implemented in libc.  Rather, libintl
+     imitates locale dependent behaviour by looking at the environment
+     variables, and all locales use the UTF-8 encoding.  */
+#if defined __BEOS__ || defined __HAIKU__
+  return 1;
+#else
   /* Check whether the given locale name is recognized by the system.  */
-#if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__
+# if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__
   /* On native Windows, setlocale(category, "") looks at the system settings,
      not at the environment variables.  Also, when an encoding suffix such
      as ".65001" or ".54936" is specified, it succeeds but sets the LC_CTYPE
@@ -14176,9 +14583,9 @@ int main ()
   if (setlocale (LC_ALL, getenv ("LC_ALL")) == NULL
       || strcmp (setlocale (LC_CTYPE, NULL), "C") == 0)
     return 1;
-#else
+# else
   if (setlocale (LC_ALL, "") == NULL) return 1;
-#endif
+# endif
   /* Check whether nl_langinfo(CODESET) is nonempty and not "ASCII" or "646".
      On Mac OS X 10.3.5 (Darwin 7.5) in the fr_FR locale, nl_langinfo(CODESET)
      is empty, and the behaviour of Tcl 8.4 in this locale is not useful.
@@ -14187,32 +14594,36 @@ int main ()
      some unit tests fail.
      On MirBSD 10, when an unsupported locale is specified, setlocale()
      succeeds but then nl_langinfo(CODESET) is "UTF-8".  */
-#if HAVE_LANGINFO_CODESET
+# if HAVE_LANGINFO_CODESET
   {
     const char *cs = nl_langinfo (CODESET);
     if (cs[0] == '\0' || strcmp (cs, "ASCII") == 0 || strcmp (cs, "646") == 0
         || strcmp (cs, "UTF-8") == 0)
       return 1;
   }
-#endif
-#ifdef __CYGWIN__
+# endif
+# ifdef __CYGWIN__
   /* On Cygwin, avoid locale names without encoding suffix, because the
      locale_charset() function relies on the encoding suffix.  Note that
      LC_ALL is set on the command line.  */
   if (strchr (getenv ("LC_ALL"), '.') == NULL) return 1;
-#endif
+# endif
   /* Check whether MB_CUR_MAX is > 1.  This excludes the dysfunctional locales
      on Cygwin 1.5.x.  */
   if (MB_CUR_MAX == 1)
     return 1;
   /* Check whether in a month name, no byte in the range 0x80..0x9F occurs.
      This excludes the UTF-8 encoding (except on MirBSD).  */
-  t.tm_year = 1975 - 1900; t.tm_mon = 2 - 1; t.tm_mday = 4;
-  if (strftime (buf, sizeof (buf), "%B", &t) < 2) return 1;
-  for (p = buf; *p != '\0'; p++)
-    if ((unsigned char) *p >= 0x80 && (unsigned char) *p < 0xa0)
-      return 1;
+  {
+    const char *p;
+    t.tm_year = 1975 - 1900; t.tm_mon = 2 - 1; t.tm_mday = 4;
+    if (strftime (buf, sizeof (buf), "%B", &t) < 2) return 1;
+    for (p = buf; *p != '\0'; p++)
+      if ((unsigned char) *p >= 0x80 && (unsigned char) *p < 0xa0)
+        return 1;
+  }
   return 0;
+#endif
 }
 
 _ACEOF
@@ -14306,9 +14717,14 @@ struct tm t;
 char buf[16];
 int main ()
 {
-  const char *p;
+  /* On BeOS and Haiku, locales are not implemented in libc.  Rather, libintl
+     imitates locale dependent behaviour by looking at the environment
+     variables, and all locales use the UTF-8 encoding.  */
+#if defined __BEOS__ || defined __HAIKU__
+  return 1;
+#else
   /* Check whether the given locale name is recognized by the system.  */
-#if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__
+# if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__
   /* On native Windows, setlocale(category, "") looks at the system settings,
      not at the environment variables.  Also, when an encoding suffix such
      as ".65001" or ".54936" is specified, it succeeds but sets the LC_CTYPE
@@ -14316,9 +14732,9 @@ int main ()
   if (setlocale (LC_ALL, getenv ("LC_ALL")) == NULL
       || strcmp (setlocale (LC_CTYPE, NULL), "C") == 0)
     return 1;
-#else
+# else
   if (setlocale (LC_ALL, "") == NULL) return 1;
-#endif
+# endif
   /* Check whether nl_langinfo(CODESET) is nonempty and not "ASCII" or "646".
      On Mac OS X 10.3.5 (Darwin 7.5) in the fr_FR locale, nl_langinfo(CODESET)
      is empty, and the behaviour of Tcl 8.4 in this locale is not useful.
@@ -14327,32 +14743,36 @@ int main ()
      some unit tests fail.
      On MirBSD 10, when an unsupported locale is specified, setlocale()
      succeeds but then nl_langinfo(CODESET) is "UTF-8".  */
-#if HAVE_LANGINFO_CODESET
+# if HAVE_LANGINFO_CODESET
   {
     const char *cs = nl_langinfo (CODESET);
     if (cs[0] == '\0' || strcmp (cs, "ASCII") == 0 || strcmp (cs, "646") == 0
         || strcmp (cs, "UTF-8") == 0)
       return 1;
   }
-#endif
-#ifdef __CYGWIN__
+# endif
+# ifdef __CYGWIN__
   /* On Cygwin, avoid locale names without encoding suffix, because the
      locale_charset() function relies on the encoding suffix.  Note that
      LC_ALL is set on the command line.  */
   if (strchr (getenv ("LC_ALL"), '.') == NULL) return 1;
-#endif
+# endif
   /* Check whether in a month name, no byte in the range 0x80..0x9F occurs.
      This excludes the UTF-8 encoding (except on MirBSD).  */
-  t.tm_year = 1975 - 1900; t.tm_mon = 2 - 1; t.tm_mday = 4;
-  if (strftime (buf, sizeof (buf), "%B", &t) < 2) return 1;
-  for (p = buf; *p != '\0'; p++)
-    if ((unsigned char) *p >= 0x80 && (unsigned char) *p < 0xa0)
-      return 1;
+  {
+    const char *p;
+    t.tm_year = 1975 - 1900; t.tm_mon = 2 - 1; t.tm_mday = 4;
+    if (strftime (buf, sizeof (buf), "%B", &t) < 2) return 1;
+    for (p = buf; *p != '\0'; p++)
+      if ((unsigned char) *p >= 0x80 && (unsigned char) *p < 0xa0)
+        return 1;
+  }
   /* Check whether a typical GB18030 multibyte sequence is recognized as a
      single wide character.  This excludes the GB2312 and GBK encodings.  */
   if (mblen ("\203\062\332\066", 5) != 4)
     return 1;
   return 0;
+#endif
 }
 
 _ACEOF
@@ -14554,6 +14974,7 @@ $as_echo "$gt_cv_locale_fr_utf8" >&6; }
 
 
 
+  GNULIB_EXPLICIT_BZERO=0;
   GNULIB_FFSL=0;
   GNULIB_FFSLL=0;
   GNULIB_MEMCHR=0;
@@ -14592,7 +15013,8 @@ $as_echo "$gt_cv_locale_fr_utf8" >&6; }
   GNULIB_STRSIGNAL=0;
   GNULIB_STRVERSCMP=0;
   HAVE_MBSLEN=0;
-    HAVE_FFSL=1;
+    HAVE_EXPLICIT_BZERO=1;
+  HAVE_FFSL=1;
   HAVE_FFSLL=1;
   HAVE_MEMCHR=1;
   HAVE_DECL_MEMMEM=1;
@@ -14615,18 +15037,19 @@ $as_echo "$gt_cv_locale_fr_utf8" >&6; }
   REPLACE_MEMCHR=0;
   REPLACE_MEMMEM=0;
   REPLACE_STPNCPY=0;
-  REPLACE_STRDUP=0;
-  REPLACE_STRSTR=0;
-  REPLACE_STRCASESTR=0;
   REPLACE_STRCHRNUL=0;
-  REPLACE_STRERROR=0;
-  REPLACE_STRERROR_R=0;
+  REPLACE_STRDUP=0;
   REPLACE_STRNCAT=0;
   REPLACE_STRNDUP=0;
   REPLACE_STRNLEN=0;
-  REPLACE_STRSIGNAL=0;
+  REPLACE_STRSTR=0;
+  REPLACE_STRCASESTR=0;
   REPLACE_STRTOK_R=0;
+  REPLACE_STRERROR=0;
+  REPLACE_STRERROR_R=0;
+  REPLACE_STRSIGNAL=0;
   UNDEFINE_STRTOK_R=0;
+
 
 
 
@@ -14728,10 +15151,10 @@ $as_echo "#define HAVE_MAP_ANONYMOUS 1" >>confdefs.h
   if test $HAVE_MEMCHR = 1; then
     # Detect platform-specific bugs in some versions of glibc:
     # memchr should not dereference anything with length 0
-    #   http://bugzilla.redhat.com/499689
+    #   https://bugzilla.redhat.com/show_bug.cgi?id=499689
     # memchr should not dereference overestimated length after a match
-    #   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=521737
-    #   http://sourceware.org/bugzilla/show_bug.cgi?id=10162
+    #   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=521737
+    #   https://sourceware.org/bugzilla/show_bug.cgi?id=10162
     # Assume that memchr works on platforms that lack mprotect.
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether memchr works" >&5
 $as_echo_n "checking whether memchr works... " >&6; }
@@ -14739,7 +15162,13 @@ if ${gl_cv_func_memchr_works+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   if test "$cross_compiling" = yes; then :
-         gl_cv_func_memchr_works="guessing no"
+  case "$host_os" in
+                    # Guess yes on native Windows.
+            mingw*) gl_cv_func_memchr_works="guessing yes" ;;
+                    # Be pessimistic for now.
+            *)      gl_cv_func_memchr_works="guessing no" ;;
+          esac
+
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -14805,12 +15234,14 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
+
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_memchr_works" >&5
 $as_echo "$gl_cv_func_memchr_works" >&6; }
-    if test "$gl_cv_func_memchr_works" != yes; then
-      REPLACE_MEMCHR=1
-    fi
+    case "$gl_cv_func_memchr_works" in
+      *yes) ;;
+      *) REPLACE_MEMCHR=1 ;;
+    esac
   fi
 
 
@@ -15030,7 +15461,12 @@ if ${gl_cv_func_working_mktime+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   if test "$cross_compiling" = yes; then :
-  gl_cv_func_working_mktime="guessing no"
+  case "$host_os" in
+                  # Guess no on native Windows.
+          mingw*) gl_cv_func_working_mktime="guessing no" ;;
+          *)      gl_cv_func_working_mktime="guessing no" ;;
+        esac
+
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -15045,6 +15481,10 @@ else
 
 #if HAVE_DECL_ALARM
 # include <signal.h>
+#endif
+
+#ifndef TIME_T_IS_SIGNED
+# define TIME_T_IS_SIGNED 0
 #endif
 
 /* Work around redefinition to rpl_putenv by other config tests.  */
@@ -15590,6 +16030,7 @@ fi
 
 
 
+
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C symbols are prefixed with underscore at the linker level" >&5
 $as_echo_n "checking whether C symbols are prefixed with underscore at the linker level... " >&6; }
 if ${gl_cv_prog_as_underscore+:} false; then :
@@ -15608,7 +16049,7 @@ EOF
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; } >/dev/null 2>&1
-     if LC_ALL=C grep -E '(^|[^a-zA-Z0-9_])_foo([^a-zA-Z0-9_]|$)' conftest.$gl_asmext >/dev/null; then
+     if LC_ALL=C $EGREP '(^|[^a-zA-Z0-9_])_foo([^a-zA-Z0-9_]|$)' conftest.$gl_asmext >/dev/null; then
        gl_cv_prog_as_underscore=yes
      else
        gl_cv_prog_as_underscore=no
@@ -15736,7 +16177,7 @@ $as_echo "#define WINDOWS_SOCKETS 1" >>confdefs.h
       LIBSOCKET='-lws2_32'
     fi
   else
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing setsockopt" >&5
+                                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing setsockopt" >&5
 $as_echo_n "checking for library containing setsockopt... " >&6; }
 if ${gl_cv_lib_socket+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -15900,8 +16341,8 @@ else
              char o[sizeof n == m * sizeof n[0] ? 1 : -1];
              char p[-1 - (Bool) 0 < 0 && -1 - (bool) 0 < 0 ? 1 : -1];
              /* Catch a bug in an HP-UX C compiler.  See
-                http://gcc.gnu.org/ml/gcc-patches/2003-12/msg02303.html
-                http://lists.gnu.org/archive/html/bug-coreutils/2005-11/msg00161.html
+                https://gcc.gnu.org/ml/gcc-patches/2003-12/msg02303.html
+                https://lists.gnu.org/r/bug-coreutils/2005-11/msg00161.html
               */
              Bool q = true;
              Bool *pq = &q;
@@ -15969,10 +16410,12 @@ if ${gl_cv_func_strerror_0_works+:} false; then :
 else
   if test "$cross_compiling" = yes; then :
   case "$host_os" in
-                 # Guess yes on glibc systems.
-         *-gnu*) gl_cv_func_strerror_0_works="guessing yes" ;;
-                 # If we don't know, assume the worst.
-         *)      gl_cv_func_strerror_0_works="guessing no" ;;
+                        # Guess yes on glibc systems.
+         *-gnu* | gnu*) gl_cv_func_strerror_0_works="guessing yes" ;;
+                        # Guess yes on native Windows.
+         mingw*)        gl_cv_func_strerror_0_works="guessing yes" ;;
+                        # If we don't know, assume the worst.
+         *)             gl_cv_func_strerror_0_works="guessing no" ;;
        esac
 
 else
@@ -16587,9 +17030,11 @@ else
 
         case "$host_os" in
                     # Guess no on Solaris.
-          solaris*) gl_cv_func_strncat_works="guessing no";;
+          solaris*) gl_cv_func_strncat_works="guessing no" ;;
+                    # Guess yes on native Windows.
+          mingw*)   gl_cv_func_strncat_works="guessing yes" ;;
                     # Guess yes otherwise.
-          *)        gl_cv_func_strncat_works="guessing yes";;
+          *)        gl_cv_func_strncat_works="guessing yes" ;;
         esac
 
 else
@@ -16716,7 +17161,7 @@ _ACEOF
 
 
 
-  if test "$gl_cv_func_memchr_works" != yes; then
+  if test $HAVE_MEMCHR = 0 || test $REPLACE_MEMCHR = 1; then
     REPLACE_STRSTR=1
   else
         { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether strstr works" >&5
@@ -18392,6 +18837,8 @@ else
            case "$host_os" in
                       # Guess no on Cygwin.
              cygwin*) gl_cv_func_btowc_nul="guessing no" ;;
+                      # Guess yes on native Windows.
+             mingw*)  gl_cv_func_btowc_nul="guessing yes" ;;
                       # Guess yes otherwise.
              *)       gl_cv_func_btowc_nul="guessing yes" ;;
            esac
@@ -18437,10 +18884,12 @@ if ${gl_cv_func_btowc_eof+:} false; then :
 else
 
                         case "$host_os" in
-                 # Guess no on IRIX.
-          irix*) gl_cv_func_btowc_eof="guessing no" ;;
-                 # Guess yes otherwise.
-          *)     gl_cv_func_btowc_eof="guessing yes" ;;
+                  # Guess no on IRIX.
+          irix*)  gl_cv_func_btowc_eof="guessing no" ;;
+                  # Guess yes on native Windows.
+          mingw*) gl_cv_func_btowc_eof="guessing yes" ;;
+                  # Guess yes otherwise.
+          *)      gl_cv_func_btowc_eof="guessing yes" ;;
         esac
         if test $LOCALE_FR != none; then
           if test "$cross_compiling" = yes; then :
@@ -18932,6 +19381,8 @@ else
   case "$host_os" in
                            # Guess yes on glibc systems with Linux kernel.
               linux*-gnu*) gl_cv_struct_dirent_d_ino="guessing yes" ;;
+                           # Guess no on native Windows.
+              mingw*)      gl_cv_struct_dirent_d_ino="guessing no" ;;
                            # If we don't know, assume the worst.
               *)           gl_cv_struct_dirent_d_ino="guessing no" ;;
             esac
@@ -19397,7 +19848,12 @@ if ${gl_cv_func_dup_works+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   if test "$cross_compiling" = yes; then :
-  gl_cv_func_dup_works='guessing yes'
+  case "$host_os" in
+                 # Guess no on native Windows.
+         mingw*) gl_cv_func_dup_works="guessing no" ;;
+         *)      gl_cv_func_dup_works="guessing yes" ;;
+       esac
+
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -19759,10 +20215,12 @@ if ${gl_cv_func_open_directory_works+:} false; then :
 else
   if test "$cross_compiling" = yes; then :
   case "$host_os" in
-                   # Guess yes on glibc systems.
-           *-gnu*) gl_cv_func_open_directory_works="guessing yes" ;;
-                   # If we don't know, assume the worst.
-           *)      gl_cv_func_open_directory_works="guessing no" ;;
+                          # Guess yes on glibc systems.
+           *-gnu* | gnu*) gl_cv_func_open_directory_works="guessing yes" ;;
+                          # Guess no on native Windows.
+           mingw*)        gl_cv_func_open_directory_works="guessing no" ;;
+                          # If we don't know, assume the worst.
+           *)             gl_cv_func_open_directory_works="guessing no" ;;
          esac
 
 else
@@ -20197,6 +20655,13 @@ _ACEOF
 
 
 
+cat >>confdefs.h <<_ACEOF
+#define GNULIB_FD_SAFER_FLAG 1
+_ACEOF
+
+
+
+
 
 
 
@@ -20441,17 +20906,18 @@ $as_echo "#define FLEXIBLE_ARRAY_MEMBER /**/" >>confdefs.h
           cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #if defined __LP64__ || defined __x86_64__ || defined __amd64__
-             yes
-             #endif
+                  int ok;
+                 #else
+                  error fail
+                 #endif
+
 _ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
+if ac_fn_c_try_compile "$LINENO"; then :
 
 else
   FLOAT_H=float.h
 fi
-rm -f conftest*
-
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
           ;;
       esac
       ;;
@@ -20484,19 +20950,22 @@ else
              cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #if defined __LP64__ || defined __arch64__
-                yes
-                #endif
+                    int ok;
+                   #else
+                    error fail
+                   #endif
+
 _ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
+if ac_fn_c_try_compile "$LINENO"; then :
   gl_cv_func_itold_works="guessing no"
 else
   gl_cv_func_itold_works="guessing yes"
 fi
-rm -f conftest*
-
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
              ;;
-           *) gl_cv_func_itold_works="guessing yes" ;;
+                   # Guess yes on native Windows.
+           mingw*) gl_cv_func_itold_works="guessing yes" ;;
+           *)      gl_cv_func_itold_works="guessing yes" ;;
          esac
 
 else
@@ -20982,8 +21451,8 @@ $as_echo "#define GNULIB_TEST_FREXPL 1" >>confdefs.h
 
 
   case "$host_os" in
-    mingw*)
-                  REPLACE_FSTAT=1
+    mingw* | solaris*)
+                        REPLACE_FSTAT=1
       ;;
   esac
 
@@ -21061,6 +21530,7 @@ $as_echo "#define GNULIB_TEST_FSTAT 1" >>confdefs.h
 
 
 
+
   :
 
 
@@ -21112,15 +21582,20 @@ $as_echo "$gl_cv_func_fstatat_zero_flag" >&6; }
 
     case $gl_cv_func_fstatat_zero_flag+$gl_cv_func_lstat_dereferences_slashed_symlink in
     *yes+*yes) ;;
-    *) REPLACE_FSTATAT=1
-       case $gl_cv_func_fstatat_zero_flag in
-       *yes)
+    *) REPLACE_FSTATAT=1 ;;
+    esac
+
+    case $host_os in
+      solaris*)
+        REPLACE_FSTATAT=1 ;;
+    esac
+
+    case $REPLACE_FSTATAT,$gl_cv_func_fstatat_zero_flag in
+      1,*yes)
 
 $as_echo "#define HAVE_WORKING_FSTATAT_ZERO_FLAG 1" >>confdefs.h
 
          ;;
-       esac
-       ;;
     esac
   fi
 
@@ -21164,10 +21639,12 @@ $as_echo "#define GNULIB_TEST_FSTATAT 1" >>confdefs.h
 
 
 
-  case $ac_cv_func_openat+$gl_cv_func_lstat_dereferences_slashed_symlink in
-  yes+*yes)
+
+  case $ac_cv_func_openat+$gl_cv_func_lstat_dereferences_slashed_symlink+$gl_cv_macro_O_CLOEXEC in
+  yes+*yes+yes)
     ;;
   yes+*)
+    # Solaris 10 lacks O_CLOEXEC.
     # Solaris 9 has *at functions, but uniformly mishandles trailing
     # slash in all of them.
     REPLACE_OPENAT=1
@@ -21194,8 +21671,10 @@ $as_echo "#define GNULIB_TEST_FSTATAT 1" >>confdefs.h
 
 
 
-  ac_fn_c_check_member "$LINENO" "struct statfs" "f_type" "ac_cv_member_struct_statfs_f_type" "$ac_includes_default
-     #include <sys/vfs.h>
+  if test "$ac_cv_func_fstatfs,$ac_cv_header_sys_vfs_h" = yes,yes; then
+    ac_fn_c_check_member "$LINENO" "struct statfs" "f_type" "ac_cv_member_struct_statfs_f_type" "$ac_includes_default
+        #include <sys/vfs.h>
+
 "
 if test "x$ac_cv_member_struct_statfs_f_type" = xyes; then :
 
@@ -21206,6 +21685,22 @@ _ACEOF
 
 fi
 
+    if test "$ac_cv_member_struct_statfs_f_type" = yes; then
+      ac_fn_c_check_type "$LINENO" "__fsword_t" "ac_cv_type___fsword_t" "$ac_includes_default
+          #include <sys/vfs.h>
+
+"
+if test "x$ac_cv_type___fsword_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE___FSWORD_T 1
+_ACEOF
+
+
+fi
+
+    fi
+  fi
 
 
 
@@ -21255,9 +21750,9 @@ else
      ac_clean_files="$ac_clean_files confdir3"
           if test "$cross_compiling" = yes; then :
   case "$host_os" in
-       aix*) gl_cv_func_getcwd_path_max='no, it has the AIX bug';;
-       *) gl_cv_func_getcwd_path_max=no;;
-     esac
+          aix*) gl_cv_func_getcwd_path_max='no, it has the AIX bug';;
+          *) gl_cv_func_getcwd_path_max=no;;
+        esac
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -21461,11 +21956,11 @@ if ac_fn_c_try_run "$LINENO"; then :
   gl_cv_func_getcwd_path_max=yes
 else
   case $? in
-     10|11|12) gl_cv_func_getcwd_path_max='no, but it is partly working';;
-     31) gl_cv_func_getcwd_path_max='no, it has the AIX bug';;
-     32) gl_cv_func_getcwd_path_max='yes, but with shorter paths';;
-     *) gl_cv_func_getcwd_path_max=no;;
-     esac
+        10|11|12) gl_cv_func_getcwd_path_max='no, but it is partly working';;
+        31) gl_cv_func_getcwd_path_max='no, it has the AIX bug';;
+        32) gl_cv_func_getcwd_path_max='yes, but with shorter paths';;
+        *) gl_cv_func_getcwd_path_max=no;;
+        esac
 fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
@@ -21638,12 +22133,12 @@ _ACEOF
 if ac_fn_c_try_run "$LINENO"; then :
   gl_cv_func_getcwd_abort_bug=no
 else
-                                ret=$?
-     if test $ret -ge 128 || test $ret = 4; then
-       gl_cv_func_getcwd_abort_bug=yes
-     else
-       gl_cv_func_getcwd_abort_bug=no
-     fi
+                                                  ret=$?
+        if test $ret -ge 128 || test $ret = 4; then
+          gl_cv_func_getcwd_abort_bug=yes
+        else
+          gl_cv_func_getcwd_abort_bug=no
+        fi
 fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
@@ -21786,33 +22281,34 @@ $as_echo "#define GNULIB_TEST_GETCWD 1" >>confdefs.h
 
   if test $ac_cv_func_getdtablesize = yes &&
      test $ac_cv_have_decl_getdtablesize = yes; then
-    # Cygwin 1.7.25 automatically increases the RLIMIT_NOFILE soft limit
-    # up to an unchangeable hard limit; all other platforms correctly
-    # require setrlimit before getdtablesize() can report a larger value.
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether getdtablesize works" >&5
 $as_echo_n "checking whether getdtablesize works... " >&6; }
 if ${gl_cv_func_getdtablesize_works+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test "$cross_compiling" = yes; then :
+                                                   case "$host_os" in
+         vms*) gl_cv_func_getdtablesize_works="no (limitation)" ;;
+         *)
+                                                       if test "$cross_compiling" = yes; then :
   case "$host_os" in
-          cygwin*) # on cygwin 1.5.25, getdtablesize() automatically grows
-            gl_cv_func_getdtablesize_works="guessing no" ;;
-          *) gl_cv_func_getdtablesize_works="guessing yes" ;;
-         esac
+                cygwin*) # on cygwin 1.5.25, getdtablesize() automatically grows
+                  gl_cv_func_getdtablesize_works="guessing no" ;;
+                *) gl_cv_func_getdtablesize_works="guessing yes" ;;
+              esac
+
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-        #include <unistd.h>
+             #include <unistd.h>
 int
 main ()
 {
 int size = getdtablesize();
-           if (dup2 (0, getdtablesize()) != -1)
-             return 1;
-           if (size != getdtablesize())
-             return 2;
+                if (dup2 (0, getdtablesize()) != -1)
+                  return 1;
+                if (size != getdtablesize())
+                  return 2;
 
   ;
   return 0;
@@ -21827,12 +22323,14 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
+           ;;
+       esac
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_getdtablesize_works" >&5
 $as_echo "$gl_cv_func_getdtablesize_works" >&6; }
     case "$gl_cv_func_getdtablesize_works" in
-      *yes) ;;
+      *yes | "no (limitation)") ;;
       *) REPLACE_GETDTABLESIZE=1 ;;
     esac
   else
@@ -22086,10 +22584,12 @@ else
   if test "$cross_compiling" = yes; then :
   # When cross-compiling:
       case "$host_os" in
-                # Guess all is fine on glibc systems.
-        *-gnu*) gl_cv_func_gettimeofday_clobber="guessing no" ;;
-                # If we don't know, assume the worst.
-        *)      gl_cv_func_gettimeofday_clobber="guessing yes" ;;
+                       # Guess all is fine on glibc systems.
+        *-gnu* | gnu*) gl_cv_func_gettimeofday_clobber="guessing no" ;;
+                       # Guess no on native Windows.
+        mingw*)        gl_cv_func_gettimeofday_clobber="guessing no" ;;
+                       # If we don't know, assume the worst.
+        *)             gl_cv_func_gettimeofday_clobber="guessing yes" ;;
       esac
 
 else
@@ -22259,286 +22759,6 @@ fi
 
 
   :
-
-
-
-
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking host CPU and C ABI" >&5
-$as_echo_n "checking host CPU and C ABI... " >&6; }
-if ${gl_cv_host_cpu_c_abi+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case "$host_cpu" in
-
-       i[4567]86 )
-         gl_cv_host_cpu_c_abi=i386
-         ;;
-
-       x86_64 )
-         # On x86_64 systems, the C compiler may be generating code in one of
-         # these ABIs:
-         # - 64-bit instruction set, 64-bit pointers, 64-bit 'long': x86_64.
-         # - 64-bit instruction set, 64-bit pointers, 32-bit 'long': x86_64
-         #   with native Windows (mingw, MSVC).
-         # - 64-bit instruction set, 32-bit pointers, 32-bit 'long': x86_64-x32.
-         # - 32-bit instruction set, 32-bit pointers, 32-bit 'long': i386.
-         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined __x86_64__ || defined __amd64__ || defined _M_X64 || defined _M_AMD64
-            yes
-            #endif
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined __ILP32__ || defined _ILP32
-               yes
-               #endif
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
-  gl_cv_host_cpu_c_abi=x86_64-x32
-else
-  gl_cv_host_cpu_c_abi=x86_64
-fi
-rm -f conftest*
-
-else
-  gl_cv_host_cpu_c_abi=i386
-fi
-rm -f conftest*
-
-         ;;
-
-       alphaev[4-8] | alphaev56 | alphapca5[67] | alphaev6[78] )
-         gl_cv_host_cpu_c_abi=alpha
-         ;;
-
-       arm* | aarch64 )
-         # Assume arm with EABI.
-         # On arm64 systems, the C compiler may be generating code in one of
-         # these ABIs:
-         # - aarch64 instruction set, 64-bit pointers, 64-bit 'long': arm64.
-         # - aarch64 instruction set, 32-bit pointers, 32-bit 'long': arm64-ilp32.
-         # - 32-bit instruction set, 32-bit pointers, 32-bit 'long': arm or armhf.
-         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined(__aarch64__) || defined(__ARM_64BIT_STATE) || defined(__ARM_PCS_AAPCS64)
-            yes
-            #endif
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined __ILP32__ || defined _ILP32
-               yes
-               #endif
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
-  gl_cv_host_cpu_c_abi=arm64-ilp32
-else
-  gl_cv_host_cpu_c_abi=arm64
-fi
-rm -f conftest*
-
-else
-  # Don't distinguish little-endian and big-endian arm, since they
-            # don't require different machine code for simple operations and
-            # since the user can distinguish them through the preprocessot
-            # defines __ARMEL__ vs. __ARMEB__.
-            # But distinguish arm which passes floating-point arguments and
-            # return values in integer registers (r0, r1, ...) - this is
-            # gcc -mfloat-abi=soft or gcc -mfloat-abi=softfp - from arm which
-            # passes them in float registers (s0, s1, ...) and double registers
-            # (d0, d1, ...) - rhis is gcc -mfloat-abi=hard. GCC 4.6 or newer
-            # sets the preprocessor defines __ARM_PCS (for the first case) and
-            # __ARM_PCS_VFP (for the second case), but older GCC does not.
-            echo 'double ddd; void func (double dd) { ddd = dd; }' > conftest.c
-            # Look for a reference to the register d0 in the .s file.
-            { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $gl_c_asm_opt conftest.c'
-  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; } >/dev/null 2>&1
-            if LC_ALL=C grep -E 'd0,' conftest.$gl_asmext >/dev/null; then
-              gl_cv_host_cpu_c_abi=armhf
-            else
-              gl_cv_host_cpu_c_abi=arm
-            fi
-            rm -f conftest*
-
-fi
-rm -f conftest*
-
-         ;;
-
-       hppa1.0 | hppa1.1 | hppa2.0* | hppa64 )
-         # On hppa, the C compiler may be generating 32-bit code or 64-bit
-         # code. In the latter case, it defines _LP64 and __LP64__.
-         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined(__LP64__)
-            yes
-            #endif
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
-  gl_cv_host_cpu_c_abi=hppa64
-else
-  gl_cv_host_cpu_c_abi=hppa
-fi
-rm -f conftest*
-
-         ;;
-
-       mips* )
-         # We should also check for (_MIPS_SZPTR == 64), but gcc keeps this
-         # at 32.
-         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined _MIPS_SZLONG && (_MIPS_SZLONG == 64)
-            yes
-            #endif
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
-  gl_cv_host_cpu_c_abi=mips64
-else
-  # Strictly speaking, the MIPS ABI (-32 or -n32) is independent
-            # from the CPU identification (-mips[12] or -mips[34]). But -n32
-            # is commonly used together with -mips3, and it's easier to test
-            # the CPU identification.
-            cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if __mips >= 3
-               yes
-               #endif
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
-  gl_cv_host_cpu_c_abi=mipsn32
-else
-  gl_cv_host_cpu_c_abi=mips
-fi
-rm -f conftest*
-
-fi
-rm -f conftest*
-
-         ;;
-
-       powerpc* )
-         # Different ABIs are in use on AIX vs. Mac OS X vs. Linux,*BSD.
-         # No need to distinguish them here; the caller may distinguish
-         # them based on the OS.
-         # On powerpc64 systems, the C compiler may still be generating
-         # 32-bit code. And on powerpc-ibm-aix systems, the C compiler may
-         # be generating 64-bit code.
-         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined __powerpc64__ || defined _ARCH_PPC64
-            yes
-            #endif
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
-  # On powerpc64, there are two ABIs on Linux: The AIX compatible
-            # one and the ELFv2 one. The latter defines _CALL_ELF=2.
-            cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined _CALL_ELF && _CALL_ELF == 2
-               yes
-               #endif
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
-  gl_cv_host_cpu_c_abi=powerpc64-elfv2
-else
-  gl_cv_host_cpu_c_abi=powerpc64
-fi
-rm -f conftest*
-
-
-else
-  gl_cv_host_cpu_c_abi=powerpc
-fi
-rm -f conftest*
-
-         ;;
-
-       rs6000 )
-         gl_cv_host_cpu_c_abi=powerpc
-         ;;
-
-       s390* )
-         # On s390x, the C compiler may be generating 64-bit (= s390x) code
-         # or 31-bit (= s390) code.
-         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined(__LP64__) || defined(__s390x__)
-            yes
-            #endif
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
-  gl_cv_host_cpu_c_abi=s390x
-else
-  gl_cv_host_cpu_c_abi=s390
-fi
-rm -f conftest*
-
-         ;;
-
-       sparc | sparc64 )
-         # UltraSPARCs running Linux have `uname -m` = "sparc64", but the
-         # C compiler still generates 32-bit code.
-         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined __sparcv9 || defined __arch64__
-            yes
-            #endif
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
-  gl_cv_host_cpu_c_abi=sparc64
-else
-  gl_cv_host_cpu_c_abi=sparc
-fi
-rm -f conftest*
-
-         ;;
-
-       *)
-         gl_cv_host_cpu_c_abi="$host_cpu"
-         ;;
-     esac
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_host_cpu_c_abi" >&5
-$as_echo "$gl_cv_host_cpu_c_abi" >&6; }
-
-    HOST_CPU=`echo "$gl_cv_host_cpu_c_abi" | sed -e 's/-.*//'`
-  HOST_CPU_C_ABI="$gl_cv_host_cpu_c_abi"
-
-
-
-  # This was
-  #   AC_DEFINE_UNQUOTED([__${HOST_CPU}__])
-  #   AC_DEFINE_UNQUOTED([__${HOST_CPU_C_ABI}__])
-  # earlier, but KAI C++ 3.2d doesn't like this.
-  sed -e 's/-/_/g' >> confdefs.h <<EOF
-#ifndef __${HOST_CPU}__
-#define __${HOST_CPU}__ 1
-#endif
-#ifndef __${HOST_CPU_C_ABI}__
-#define __${HOST_CPU_C_ABI}__ 1
-#endif
-EOF
-
 
 
 
@@ -23026,7 +23246,28 @@ if ${gl_cv_func_isnanl_works+:} false; then :
 else
 
       if test "$cross_compiling" = yes; then :
+  case "$host_os" in
+           mingw*) # Guess yes on mingw, no on MSVC.
+             cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifdef __MINGW32__
+ Known
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "Known" >/dev/null 2>&1; then :
   gl_cv_func_isnanl_works="guessing yes"
+else
+  gl_cv_func_isnanl_works="guessing no"
+fi
+rm -f conftest*
+
+             ;;
+           *) gl_cv_func_isnanl_works="guessing yes" ;;
+         esac
+
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -23180,7 +23421,7 @@ $as_echo "#define HAVE_ISNANL_IN_LIBC 1" >>confdefs.h
 
 
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the exponent in a 'long double'" >&5
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the exponent in a 'long double'" >&5
 $as_echo_n "checking where to find the exponent in a 'long double'... " >&6; }
 if ${gl_cv_cc_long_double_expbit0+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -23189,6 +23430,39 @@ else
       if test "$cross_compiling" = yes; then :
 
                               gl_cv_cc_long_double_expbit0="unknown"
+          case "$host_os" in
+            mingw*) # On native Windows (little-endian), we know the result
+                    # in two cases: mingw, MSVC.
+              cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifdef __MINGW32__
+ Known
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "Known" >/dev/null 2>&1; then :
+  gl_cv_cc_long_double_expbit0="word 2 bit 0"
+fi
+rm -f conftest*
+
+              cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifdef _MSC_VER
+ Known
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "Known" >/dev/null 2>&1; then :
+  gl_cv_cc_long_double_expbit0="word 1 bit 20"
+fi
+rm -f conftest*
+
+              ;;
+          esac
 
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -23496,6 +23770,7 @@ $as_echo "$gl_cv_next_langinfo_h" >&6; }
 
     HAVE_LANGINFO_CODESET=0
   HAVE_LANGINFO_T_FMT_AMPM=0
+  HAVE_LANGINFO_ALTMON=0
   HAVE_LANGINFO_ERA=0
   HAVE_LANGINFO_YESEXPR=0
 
@@ -23507,7 +23782,7 @@ $as_echo "$gl_cv_next_langinfo_h" >&6; }
 
   if test $ac_cv_header_langinfo_h = yes; then
     HAVE_LANGINFO_H=1
-            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether langinfo.h defines CODESET" >&5
+                { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether langinfo.h defines CODESET" >&5
 $as_echo_n "checking whether langinfo.h defines CODESET... " >&6; }
 if ${gl_cv_header_langinfo_codeset+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -23568,6 +23843,37 @@ fi
 $as_echo "$gl_cv_header_langinfo_t_fmt_ampm" >&6; }
     if test $gl_cv_header_langinfo_t_fmt_ampm = yes; then
       HAVE_LANGINFO_T_FMT_AMPM=1
+    fi
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether langinfo.h defines ALTMON_1" >&5
+$as_echo_n "checking whether langinfo.h defines ALTMON_1... " >&6; }
+if ${gl_cv_header_langinfo_altmon+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <langinfo.h>
+int a = ALTMON_1;
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_header_langinfo_altmon=yes
+else
+  gl_cv_header_langinfo_altmon=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_header_langinfo_altmon" >&5
+$as_echo "$gl_cv_header_langinfo_altmon" >&6; }
+    if test $gl_cv_header_langinfo_altmon = yes; then
+      HAVE_LANGINFO_ALTMON=1
     fi
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether langinfo.h defines ERA" >&5
 $as_echo_n "checking whether langinfo.h defines ERA... " >&6; }
@@ -23634,6 +23940,7 @@ $as_echo "$gl_cv_header_langinfo_yesexpr" >&6; }
   else
     HAVE_LANGINFO_H=0
   fi
+
 
 
 
@@ -24180,6 +24487,7 @@ $as_echo "#define GNULIB_TEST_LOCALTIME 1" >>confdefs.h
 
 
 
+
   :
 
 
@@ -24188,8 +24496,8 @@ $as_echo "#define GNULIB_TEST_LOCALTIME 1" >>confdefs.h
 
   if test $ac_cv_func_lstat = yes; then
 
-    case "$gl_cv_func_lstat_dereferences_slashed_symlink" in
-      *no)
+    case $host_os,$gl_cv_func_lstat_dereferences_slashed_symlink in
+      solaris* | *no)
         REPLACE_LSTAT=1
         ;;
     esac
@@ -24248,7 +24556,7 @@ else
   if test "$cross_compiling" = yes; then :
   case "$host_os" in
           # Guess yes on platforms where we know the result.
-          *-gnu* | freebsd* | netbsd* | openbsd* \
+          *-gnu* | gnu* | freebsd* | netbsd* | openbsd* \
           | hpux* | solaris* | cygwin* | mingw*)
             ac_cv_func_malloc_0_nonnull=yes ;;
           # If we don't know, assume the worst.
@@ -25113,10 +25421,11 @@ if ${gl_cv_func_mbrtowc_empty_input+:} false; then :
 else
 
                   case "$host_os" in
-                     # Guess no on AIX and glibc systems.
-        aix* | *-gnu*)
-                    gl_cv_func_mbrtowc_empty_input="guessing no" ;;
-        *)          gl_cv_func_mbrtowc_empty_input="guessing yes" ;;
+                              # Guess no on AIX and glibc systems.
+        aix* | *-gnu* | gnu*) gl_cv_func_mbrtowc_empty_input="guessing no" ;;
+                              # Guess yes on native Windows.
+        mingw*)               gl_cv_func_mbrtowc_empty_input="guessing yes" ;;
+        *)                    gl_cv_func_mbrtowc_empty_input="guessing yes" ;;
       esac
       if test "$cross_compiling" = yes; then :
   :
@@ -25148,7 +25457,7 @@ fi
 $as_echo "$gl_cv_func_mbrtowc_empty_input" >&6; }
 
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the C locale is free of encoding errors" >&5
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the C locale is free of encoding errors" >&5
 $as_echo_n "checking whether the C locale is free of encoding errors... " >&6; }
 if ${gl_cv_C_locale_sans_EILSEQ+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -25157,7 +25466,11 @@ else
                gl_cv_C_locale_sans_EILSEQ="guessing no"
 
      if test "$cross_compiling" = yes; then :
-  :
+  case "$host_os" in
+                 # Guess yes on native Windows.
+         mingw*) gl_cv_C_locale_sans_EILSEQ="guessing yes" ;;
+       esac
+
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -25196,6 +25509,7 @@ fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
+
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_C_locale_sans_EILSEQ" >&5
@@ -26757,8 +27071,11 @@ cat >>confdefs.h <<_ACEOF
 #define FUNC_NL_LANGINFO_YESEXPR_WORKS $FUNC_NL_LANGINFO_YESEXPR_WORKS
 _ACEOF
 
-    if test $HAVE_LANGINFO_CODESET = 1 && test $HAVE_LANGINFO_ERA = 1 \
-        && test $FUNC_NL_LANGINFO_YESEXPR_WORKS = 1; then
+    if test $HAVE_LANGINFO_CODESET = 1 \
+       && test $HAVE_LANGINFO_T_FMT_AMPM = 1 \
+       && test $HAVE_LANGINFO_ALTMON = 1 \
+       && test $HAVE_LANGINFO_ERA = 1 \
+       && test $FUNC_NL_LANGINFO_YESEXPR_WORKS = 1; then
       :
     else
       REPLACE_NL_LANGINFO=1
@@ -26803,12 +27120,12 @@ $as_echo "#define GNULIB_TEST_NL_LANGINFO 1" >>confdefs.h
 /* end confdefs.h.  */
 
 #if defined __GNUC__ && defined __cplusplus
-  Is g++
+  Is_g_plus_plus
 #endif
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "Is g++" >/dev/null 2>&1; then :
+  $EGREP "Is_g_plus_plus" >/dev/null 2>&1; then :
   NO_CXX="-x c"
 fi
 rm -f conftest*
@@ -26880,6 +27197,7 @@ $as_echo "#define HAVE_OBSTACK 1" >>confdefs.h
 
 
 
+
   case "$host_os" in
     mingw* | pw*)
       REPLACE_OPEN=1
@@ -26892,6 +27210,9 @@ $as_echo "#define HAVE_OBSTACK 1" >>confdefs.h
 
 
 
+      if test "$gl_cv_macro_O_CLOEXEC" != yes; then
+        REPLACE_OPEN=1
+      fi
       { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether open recognizes a trailing slash" >&5
 $as_echo_n "checking whether open recognizes a trailing slash... " >&6; }
 if ${gl_cv_func_open_slash+:} false; then :
@@ -27019,10 +27340,12 @@ $as_echo "#define GNULIB_TEST_OPEN 1" >>confdefs.h
 
 
 
-  case $ac_cv_func_openat+$gl_cv_func_lstat_dereferences_slashed_symlink in
-  yes+*yes)
+
+  case $ac_cv_func_openat+$gl_cv_func_lstat_dereferences_slashed_symlink+$gl_cv_macro_O_CLOEXEC in
+  yes+*yes+yes)
     ;;
   yes+*)
+    # Solaris 10 lacks O_CLOEXEC.
     # Solaris 9 has *at functions, but uniformly mishandles trailing
     # slash in all of them.
     REPLACE_OPENAT=1
@@ -27285,7 +27608,14 @@ if ${gl_cv_func_popen_works+:} false; then :
 else
 
         if test "$cross_compiling" = yes; then :
-            gl_cv_func_popen_works='guessing yes'
+  case "$host_os" in
+                      # For now, only cygwin 1.5 or older is known to be broken.
+             cygwin*) gl_cv_func_popen_works="guessing no" ;;
+                      # Guess yes on native Windows.
+             mingw*)  gl_cv_func_popen_works="guessing yes" ;;
+             *)       gl_cv_func_popen_works="guessing yes" ;;
+           esac
+
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -27321,9 +27651,10 @@ fi
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_popen_works" >&5
 $as_echo "$gl_cv_func_popen_works" >&6; }
-    if test "$gl_cv_func_popen_works" = no; then
-      REPLACE_POPEN=1
-    fi
+    case "$gl_cv_func_popen_works" in
+      *yes) ;;
+      *) REPLACE_POPEN=1 ;;
+    esac
   fi
 
   if test $HAVE_POPEN = 0 || test $REPLACE_POPEN = 1; then
@@ -27365,10 +27696,12 @@ if ${gl_cv_func_svid_putenv+:} false; then :
 else
   if test "$cross_compiling" = yes; then :
                case "$host_os" in
-                        # Guess yes on glibc systems.
-                *-gnu*) gl_cv_func_svid_putenv="guessing yes" ;;
-                        # If we don't know, assume the worst.
-                *)      gl_cv_func_svid_putenv="guessing no" ;;
+                               # Guess yes on glibc systems.
+                *-gnu* | gnu*) gl_cv_func_svid_putenv="guessing yes" ;;
+                               # Guess no on native Windows.
+                mingw*)        gl_cv_func_svid_putenv="guessing no" ;;
+                               # If we don't know, assume the worst.
+                *)             gl_cv_func_svid_putenv="guessing no" ;;
               esac
 
 else
@@ -27630,10 +27963,10 @@ else
        ln -s conftest.link conftest.lnk2
        if test "$cross_compiling" = yes; then :
   case "$host_os" in
-                    # Guess yes on glibc systems.
-            *-gnu*) gl_cv_func_readlink_works="guessing yes" ;;
-                    # If we don't know, assume the worst.
-            *)      gl_cv_func_readlink_works="guessing no" ;;
+                           # Guess yes on glibc systems.
+            *-gnu* | gnu*) gl_cv_func_readlink_works="guessing yes" ;;
+                           # If we don't know, assume the worst.
+            *)             gl_cv_func_readlink_works="guessing no" ;;
           esac
 
 else
@@ -27731,7 +28064,7 @@ else
   if test "$cross_compiling" = yes; then :
   case "$host_os" in
           # Guess yes on platforms where we know the result.
-          *-gnu* | freebsd* | netbsd* | openbsd* \
+          *-gnu* | gnu* | freebsd* | netbsd* | openbsd* \
           | hpux* | solaris* | cygwin* | mingw*)
             ac_cv_func_realloc_0_nonnull=yes ;;
           # If we don't know, assume the worst.
@@ -27905,7 +28238,13 @@ if ${gl_cv_func_re_compile_pattern_working+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   if test "$cross_compiling" = yes; then :
-         gl_cv_func_re_compile_pattern_working=no
+  case "$host_os" in
+                   # Guess no on native Windows.
+           mingw*) gl_cv_func_re_compile_pattern_working="guessing no" ;;
+                   # Otherwise, assume it is not working.
+           *)      gl_cv_func_re_compile_pattern_working="guessing no" ;;
+         esac
+
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -27954,7 +28293,7 @@ int result = 0;
             if (setlocale (LC_ALL, "en_US.UTF-8"))
               {
                 {
-                  /* http://sourceware.org/ml/libc-hacker/2006-09/msg00008.html
+                  /* https://sourceware.org/ml/libc-hacker/2006-09/msg00008.html
                      This test needs valgrind to catch the bug on Debian
                      GNU/Linux 3.1 x86, but it might catch the bug better
                      on other platforms and it shouldn't hurt to try the
@@ -27978,7 +28317,7 @@ int result = 0;
                 {
                   /* This test is from glibc bug 15078.
                      The test case is from Andreas Schwab in
-                     <http://www.sourceware.org/ml/libc-alpha/2013-01/msg00967.html>.
+                     <https://sourceware.org/ml/libc-alpha/2013-01/msg00967.html>.
                      */
                   static char const pat[] = "[^x]x";
                   static char const data[] =
@@ -28076,7 +28415,7 @@ int result = 0;
               result |= 16;
 
             /* Catch a bug reported by Vin Shelton in
-               http://lists.gnu.org/archive/html/bug-coreutils/2007-06/msg00089.html
+               https://lists.gnu.org/r/bug-coreutils/2007-06/msg00089.html
                */
             re_set_syntax (RE_SYNTAX_POSIX_BASIC
                            & ~RE_CONTEXT_INVALID_DUP
@@ -28118,12 +28457,13 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
+
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_re_compile_pattern_working" >&5
 $as_echo "$gl_cv_func_re_compile_pattern_working" >&6; }
-    case $gl_cv_func_re_compile_pattern_working in #(
-    yes) ac_use_included_regex=no;; #(
-    no) ac_use_included_regex=yes;;
+    case "$gl_cv_func_re_compile_pattern_working" in #(
+      *yes) ac_use_included_regex=no;; #(
+      *no) ac_use_included_regex=yes;;
     esac
     ;;
   *) as_fn_error $? "Invalid value for --with-included-regex: $with_included_regex" "$LINENO" 5
@@ -28301,10 +28641,12 @@ else
      touch conftest.file
      if test "$cross_compiling" = yes; then :
   case "$host_os" in
-                  # Guess yes on glibc systems.
-          *-gnu*) gl_cv_func_rmdir_works="guessing yes" ;;
-                  # If we don't know, assume the worst.
-          *)      gl_cv_func_rmdir_works="guessing no" ;;
+                         # Guess yes on glibc systems.
+          *-gnu* | gnu*) gl_cv_func_rmdir_works="guessing yes" ;;
+                         # Guess no on native Windows.
+          mingw*)        gl_cv_func_rmdir_works="guessing no" ;;
+                         # If we don't know, assume the worst.
+          *)             gl_cv_func_rmdir_works="guessing no" ;;
         esac
 
 else
@@ -28514,10 +28856,10 @@ if ${gl_cv_func_setenv_works+:} false; then :
 else
   if test "$cross_compiling" = yes; then :
   case "$host_os" in
-                 # Guess yes on glibc systems.
-         *-gnu*) gl_cv_func_setenv_works="guessing yes" ;;
-                 # If we don't know, assume the worst.
-         *)      gl_cv_func_setenv_works="guessing no" ;;
+                        # Guess yes on glibc systems.
+         *-gnu* | gnu*) gl_cv_func_setenv_works="guessing yes" ;;
+                        # If we don't know, assume the worst.
+         *)             gl_cv_func_setenv_works="guessing no" ;;
        esac
 
 else
@@ -28948,10 +29290,12 @@ if ${gl_cv_func_sleep_works+:} false; then :
 else
   if test "$cross_compiling" = yes; then :
   case "$host_os" in
-                 # Guess yes on glibc systems.
-         *-gnu*) gl_cv_func_sleep_works="guessing yes" ;;
-                 # If we don't know, assume the worst.
-         *)      gl_cv_func_sleep_works="guessing no" ;;
+                        # Guess yes on glibc systems.
+         *-gnu* | gnu*) gl_cv_func_sleep_works="guessing yes" ;;
+                        # Guess no on native Windows.
+         mingw*)        gl_cv_func_sleep_works="guessing no" ;;
+                        # If we don't know, assume the worst.
+         *)             gl_cv_func_sleep_works="guessing no" ;;
        esac
 
 else
@@ -29161,10 +29505,10 @@ else
          fi
          if test "$cross_compiling" = yes; then :
   case "$host_os" in
-                      # Guess yes on glibc systems.
-              *-gnu*) gl_cv_func_stat_file_slash="guessing yes" ;;
-                      # If we don't know, assume the worst.
-              *)      gl_cv_func_stat_file_slash="guessing no" ;;
+                             # Guess yes on glibc systems.
+              *-gnu* | gnu*) gl_cv_func_stat_file_slash="guessing yes" ;;
+                             # If we don't know, assume the worst.
+              *)             gl_cv_func_stat_file_slash="guessing no" ;;
             esac
 
 else
@@ -29208,6 +29552,10 @@ $as_echo "$gl_cv_func_stat_file_slash" >&6; }
 
 $as_echo "#define REPLACE_FUNC_STAT_FILE 1" >>confdefs.h
 ;;
+      esac
+      case $host_os in
+                solaris*)
+          REPLACE_FSTAT=1 ;;
       esac
       ;;
   esac
@@ -29259,7 +29607,7 @@ $as_echo "#define GNULIB_TEST_STAT 1" >>confdefs.h
 
 
   # Don't call AC_STRUCT_ST_BLOCKS because it causes bugs.  Details at
-  # http://lists.gnu.org/archive/html/bug-gnulib/2011-06/msg00051.html
+  # https://lists.gnu.org/r/bug-gnulib/2011-06/msg00051.html
 
   :
 
@@ -29431,7 +29779,7 @@ else
 
             /* Test that alignof yields a result consistent with offsetof.
                This catches GCC bug 52023
-               <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52023>.  */
+               <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52023>.  */
             #ifdef __cplusplus
                template <class t> struct alignof_helper { char a; t b; };
             # define ao(type) offsetof (alignof_helper<type>, b)
@@ -29937,7 +30285,7 @@ $as_echo "$gl_cv_next_stdlib_h" >&6; }
 
 
 
-    for gl_func in _Exit atoll canonicalize_file_name getloadavg getsubopt grantpt     initstate initstate_r mkdtemp mkostemp mkostemps mkstemp mkstemps     posix_openpt ptsname ptsname_r qsort_r random random_r realpath rpmatch     secure_getenv setenv setstate setstate_r srandom srandom_r     strtod strtoll strtoull unlockpt unsetenv; do
+    for gl_func in _Exit atoll canonicalize_file_name getloadavg getsubopt grantpt     initstate initstate_r mkdtemp mkostemp mkostemps mkstemp mkstemps     posix_openpt ptsname ptsname_r qsort_r random random_r reallocarray     realpath rpmatch secure_getenv setenv setstate setstate_r srandom     srandom_r strtod strtoll strtoull unlockpt unsetenv; do
     as_gl_Symbol=`$as_echo "gl_cv_have_raw_decl_$gl_func" | $as_tr_sh`
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $gl_func is declared without a macro" >&5
 $as_echo_n "checking whether $gl_func is declared without a macro... " >&6; }
@@ -29948,6 +30296,9 @@ else
 /* end confdefs.h.  */
 #include <stdlib.h>
 #if HAVE_SYS_LOADAVG_H
+/* OpenIndiana has a bug: <sys/time.h> must be included before
+   <sys/loadavg.h>.  */
+# include <sys/time.h>
 # include <sys/loadavg.h>
 #endif
 #if HAVE_RANDOM_H
@@ -30100,10 +30451,10 @@ if ${gl_cv_func_working_strerror+:} false; then :
 else
   if test "$cross_compiling" = yes; then :
   case "$host_os" in
-                   # Guess yes on glibc systems.
-           *-gnu*) gl_cv_func_working_strerror="guessing yes" ;;
-                   # If we don't know, assume the worst.
-           *)      gl_cv_func_working_strerror="guessing no" ;;
+                          # Guess yes on glibc systems.
+           *-gnu* | gnu*) gl_cv_func_working_strerror="guessing yes" ;;
+                          # If we don't know, assume the worst.
+           *)             gl_cv_func_working_strerror="guessing no" ;;
          esac
 
 else
@@ -30769,7 +31120,7 @@ $as_echo "$gl_cv_func_strstr_linear" >&6; }
 
 
 
-  if test "$gl_cv_func_memchr_works" != yes; then
+  if test $HAVE_MEMCHR = 0 || test $REPLACE_MEMCHR = 1; then
     REPLACE_STRSTR=1
   else
         { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether strstr works" >&5
@@ -30895,11 +31246,12 @@ if ${gl_cv_func_strtok_r_works+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   if test "$cross_compiling" = yes; then :
-
-          case "$host_os" in
-                    # Guess no on glibc systems.
-            *-gnu*) gl_cv_func_strtok_r_works="guessing no";;
-            *)      gl_cv_func_strtok_r_works="guessing yes";;
+  case "$host_os" in
+                           # Guess no on glibc systems.
+            *-gnu* | gnu*) gl_cv_func_strtok_r_works="guessing no" ;;
+                           # Guess yes on native Windows.
+            mingw*)        gl_cv_func_strtok_r_works="guessing yes" ;;
+            *)             gl_cv_func_strtok_r_works="guessing yes" ;;
           esac
 
 else
@@ -31611,13 +31963,14 @@ $as_echo_n "checking whether tzset clobbers localtime buffer... " >&6; }
 if ${gl_cv_func_tzset_clobber+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-
   if test "$cross_compiling" = yes; then :
   case "$host_os" in
-                  # Guess all is fine on glibc systems.
-          *-gnu*) gl_cv_func_tzset_clobber="guessing no" ;;
-                  # If we don't know, assume the worst.
-          *)      gl_cv_func_tzset_clobber="guessing yes" ;;
+                         # Guess all is fine on glibc systems.
+          *-gnu* | gnu*) gl_cv_func_tzset_clobber="guessing no" ;;
+                         # Guess no on native Windows.
+          mingw*)        gl_cv_func_tzset_clobber="guessing no" ;;
+                         # If we don't know, assume the worst.
+          *)             gl_cv_func_tzset_clobber="guessing yes" ;;
         esac
 
 else
@@ -31654,6 +32007,7 @@ fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
+
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_tzset_clobber" >&5
@@ -31935,7 +32289,7 @@ fi
             || { test $LIBUNISTRING_VERSION_MAJOR -eq 0 \
                  && { test $LIBUNISTRING_VERSION_MINOR -lt 9 \
                       || { test $LIBUNISTRING_VERSION_MINOR -eq 9 \
-                           && test $LIBUNISTRING_VERSION_SUBMINOR -lt 6
+                           && test $LIBUNISTRING_VERSION_SUBMINOR -lt 8
                          }
                     }
                }
@@ -31978,6 +32332,8 @@ else
   case "$host_os" in
                  # Guess yes on glibc systems.
          *-gnu*) gl_cv_func_unlink_honors_slashes="guessing yes" ;;
+                 # Guess no on native Windows.
+         mingw*) gl_cv_func_unlink_honors_slashes="guessing no" ;;
                  # If we don't know, assume the worst.
          *)      gl_cv_func_unlink_honors_slashes="guessing no" ;;
        esac
@@ -32148,7 +32504,12 @@ if ${gl_cv_func_unlink_busy_text+:} false; then :
 else
 
       if test "$cross_compiling" = yes; then :
-  gl_cv_func_unlink_busy_text=no
+  case "$host_os" in
+                   # Guess no on native Windows.
+           mingw*) gl_cv_func_unlink_busy_text="guessing no" ;;
+           *)      gl_cv_func_unlink_busy_text="guessing no" ;;
+         esac
+
 
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -32180,9 +32541,9 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_unlink_busy_text" >&5
 $as_echo "$gl_cv_func_unlink_busy_text" >&6; }
 
-  if test $gl_cv_func_unlink_busy_text = no; then
-    INSTALL=$ac_install_sh
-  fi
+  case "$gl_cv_func_unlink_busy_text" in
+    *no) INSTALL=$ac_install_sh ;;
+  esac
 
 
 
@@ -32383,10 +32744,12 @@ if ${gl_cv_func_usleep_works+:} false; then :
 else
   if test "$cross_compiling" = yes; then :
   case "$host_os" in
-                   # Guess yes on glibc systems.
-           *-gnu*) gl_cv_func_usleep_works="guessing yes" ;;
-                   # If we don't know, assume the worst.
-           *)      gl_cv_func_usleep_works="guessing no" ;;
+                          # Guess yes on glibc systems.
+           *-gnu* | gnu*) gl_cv_func_usleep_works="guessing yes" ;;
+                          # Guess no on native Windows.
+           mingw*)        gl_cv_func_usleep_works="guessing no" ;;
+                          # If we don't know, assume the worst.
+           *)             gl_cv_func_usleep_works="guessing no" ;;
          esac
 
 else
@@ -32825,6 +33188,8 @@ else
                               case "$host_os" in
                                      # Guess no on AIX 4, OSF/1 and Solaris.
             aix4* | osf* | solaris*) gl_cv_func_wcrtomb_retval="guessing no" ;;
+                                     # Guess yes on native Windows.
+            mingw*)                  gl_cv_func_wcrtomb_retval="guessing yes" ;;
                                      # Guess yes otherwise.
             *)                       gl_cv_func_wcrtomb_retval="guessing yes" ;;
           esac
@@ -33115,7 +33480,7 @@ if ${gl_cv_func_iswcntrl_works+:} false; then :
 else
 
           if test "$cross_compiling" = yes; then :
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+               cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <stdlib.h>
                           #if __GNU_LIBRARY__ == 1
@@ -33419,7 +33784,35 @@ _ACEOF
     HAVE_DECL_WCWIDTH=0
   fi
 
-  if test $ac_cv_func_wcwidth = yes; then
+  if test $ac_cv_func_wcwidth != yes; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether wcwidth is a macro" >&5
+$as_echo_n "checking whether wcwidth is a macro... " >&6; }
+if ${gl_cv_func_wcwidth_macro+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <wchar.h>
+#ifdef wcwidth
+ wchar_header_defines_wcwidth
+#endif
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "wchar_header_defines_wcwidth" >/dev/null 2>&1; then :
+  gl_cv_func_wcwidth_macro=yes
+else
+  gl_cv_func_wcwidth_macro=no
+fi
+rm -f conftest*
+
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_wcwidth_macro" >&5
+$as_echo "$gl_cv_func_wcwidth_macro" >&6; }
+  fi
+
+  if test $ac_cv_func_wcwidth = yes || test $gl_cv_func_wcwidth_macro = yes; then
     HAVE_WCWIDTH=1
                         { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether wcwidth works reasonably in UTF-8 locales" >&5
 $as_echo_n "checking whether wcwidth works reasonably in UTF-8 locales... " >&6; }
@@ -33430,9 +33823,9 @@ else
         if test "$cross_compiling" = yes; then :
 
            case "$host_os" in
-                     # Guess yes on glibc and AIX 7 systems.
-             *-gnu* | aix[7-9]*) gl_cv_func_wcwidth_works="guessing yes";;
-             *)                  gl_cv_func_wcwidth_works="guessing no";;
+                                        # Guess yes on glibc and AIX 7 systems.
+             *-gnu* | gnu* | aix[7-9]*) gl_cv_func_wcwidth_works="guessing yes";;
+             *)                         gl_cv_func_wcwidth_works="guessing no";;
            esac
 
 else
@@ -33530,14 +33923,14 @@ if ${gl_cv_sys_tiocgwinsz_needs_sys_ioctl_h+:} false; then :
 else
   gl_cv_sys_tiocgwinsz_needs_sys_ioctl_h=no
 
-  if test $gl_cv_sys_tiocgwinsz_needs_termios_h = no; then
-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+   if test $gl_cv_sys_tiocgwinsz_needs_termios_h = no; then
+     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <sys/types.h>
-#     include <sys/ioctl.h>
-#     ifdef TIOCGWINSZ
-        yes
-#     endif
+#        include <sys/ioctl.h>
+#        ifdef TIOCGWINSZ
+           yes
+#        endif
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
@@ -33546,7 +33939,7 @@ if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
 fi
 rm -f conftest*
 
-  fi
+   fi
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_sys_tiocgwinsz_needs_sys_ioctl_h" >&5
@@ -33586,6 +33979,7 @@ rm -f conftest*
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_sys_tiocgwinsz_needs_termios_h" >&5
 $as_echo "$gl_cv_sys_tiocgwinsz_needs_termios_h" >&6; }
+
 
 
    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether use of struct winsize requires sys/ptem.h" >&5
@@ -33640,6 +34034,7 @@ $as_echo "$gl_cv_sys_struct_winsize_needs_sys_ptem_h" >&6; }
 $as_echo "#define WINSIZE_IN_PTEM 1" >>confdefs.h
 
    fi
+
   :
 
 
@@ -34502,8 +34897,8 @@ else
              char o[sizeof n == m * sizeof n[0] ? 1 : -1];
              char p[-1 - (Bool) 0 < 0 && -1 - (bool) 0 < 0 ? 1 : -1];
              /* Catch a bug in an HP-UX C compiler.  See
-                http://gcc.gnu.org/ml/gcc-patches/2003-12/msg02303.html
-                http://lists.gnu.org/archive/html/bug-coreutils/2005-11/msg00161.html
+                https://gcc.gnu.org/ml/gcc-patches/2003-12/msg02303.html
+                https://lists.gnu.org/r/bug-coreutils/2005-11/msg00161.html
               */
              Bool q = true;
              Bool *pq = &q;
@@ -35640,7 +36035,7 @@ esac
 
 
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the exponent in a 'long double'" >&5
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the exponent in a 'long double'" >&5
 $as_echo_n "checking where to find the exponent in a 'long double'... " >&6; }
 if ${gl_cv_cc_long_double_expbit0+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -35649,6 +36044,39 @@ else
       if test "$cross_compiling" = yes; then :
 
                               gl_cv_cc_long_double_expbit0="unknown"
+          case "$host_os" in
+            mingw*) # On native Windows (little-endian), we know the result
+                    # in two cases: mingw, MSVC.
+              cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifdef __MINGW32__
+ Known
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "Known" >/dev/null 2>&1; then :
+  gl_cv_cc_long_double_expbit0="word 2 bit 0"
+fi
+rm -f conftest*
+
+              cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifdef _MSC_VER
+ Known
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "Known" >/dev/null 2>&1; then :
+  gl_cv_cc_long_double_expbit0="word 1 bit 20"
+fi
+rm -f conftest*
+
+              ;;
+          esac
 
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -36274,6 +36702,70 @@ _ACEOF
 
 
 fi
+  ## set up libobj if needed:
+if test ${HAVE_SECURE_GETENV} = 0; then
+  case " $LIBOBJS " in
+  *" secure_getenv.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS secure_getenv.$ac_objext"
+ ;;
+esac
+
+  for ac_func in __secure_getenv
+do :
+  ac_fn_c_check_func "$LINENO" "__secure_getenv" "ac_cv_func___secure_getenv"
+if test "x$ac_cv_func___secure_getenv" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE___SECURE_GETENV 1
+_ACEOF
+
+fi
+done
+
+  if test $ac_cv_func___secure_getenv = no; then
+    for ac_func in issetugid
+do :
+  ac_fn_c_check_func "$LINENO" "issetugid" "ac_cv_func_issetugid"
+if test "x$ac_cv_func_issetugid" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_ISSETUGID 1
+_ACEOF
+
+fi
+done
+
+  fi
+
+  :
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+fi
+
+
+
+
+
+          GNULIB_SECURE_GETENV=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_SECURE_GETENV 1" >>confdefs.h
+
+
 if test "x${ac_cv_header_winsock2_h}" = "xyes"; then
   case " $LIBOBJS " in
   *" send.$ac_objext "* ) ;;
@@ -38943,8 +39435,8 @@ else
              char o[sizeof n == m * sizeof n[0] ? 1 : -1];
              char p[-1 - (Bool) 0 < 0 && -1 - (bool) 0 < 0 ? 1 : -1];
              /* Catch a bug in an HP-UX C compiler.  See
-                http://gcc.gnu.org/ml/gcc-patches/2003-12/msg02303.html
-                http://lists.gnu.org/archive/html/bug-coreutils/2005-11/msg00161.html
+                https://gcc.gnu.org/ml/gcc-patches/2003-12/msg02303.html
+                https://lists.gnu.org/r/bug-coreutils/2005-11/msg00161.html
               */
              Bool q = true;
              Bool *pq = &q;
@@ -40251,7 +40743,7 @@ else
   if test "$cross_compiling" = yes; then :
   case "$host_os" in
           # Guess yes on platforms where we know the result.
-          *-gnu* | freebsd* | netbsd* | openbsd* \
+          *-gnu* | gnu* | freebsd* | netbsd* | openbsd* \
           | hpux* | solaris* | cygwin* | mingw*)
             ac_cv_func_malloc_0_nonnull=yes ;;
           # If we don't know, assume the worst.
@@ -40494,7 +40986,7 @@ else
   if test "$cross_compiling" = yes; then :
   case "$host_os" in
           # Guess yes on platforms where we know the result.
-          *-gnu* | freebsd* | netbsd* | openbsd* \
+          *-gnu* | gnu* | freebsd* | netbsd* | openbsd* \
           | hpux* | solaris* | cygwin* | mingw*)
             ac_cv_func_realloc_0_nonnull=yes ;;
           # If we don't know, assume the worst.

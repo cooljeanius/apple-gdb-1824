@@ -453,6 +453,14 @@ if test "x${ac_use_included_regex}" = "xyes"; then
   AC_LIBOBJ([regex])dnl
   gl_PREREQ_REGEX
 fi
+dnl# from gnulib module secure_getenv:
+AC_REQUIRE([gl_FUNC_SECURE_GETENV])dnl
+  ## set up libobj if needed:
+if test ${HAVE_SECURE_GETENV} = 0; then
+  AC_LIBOBJ([secure_getenv])dnl
+  gl_PREREQ_SECURE_GETENV
+fi
+gl_STDLIB_MODULE_INDICATOR([secure_getenv])dnl
 dnl# from gnulib module send:
 dnl# (already required header check above)
 if test "x${ac_cv_header_winsock2_h}" = "xyes"; then

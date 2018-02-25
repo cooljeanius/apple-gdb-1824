@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2017 Free Software Foundation, Inc.
+# Copyright (C) 2002-2018 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this file.  If not, see <http://www.gnu.org/licenses/>.
+# along with this file.  If not, see <https://www.gnu.org/licenses/>.
 #
 # As a special exception to the GNU General Public License,
 # this file may be distributed as part of a program that
@@ -97,6 +97,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module fcntl-h:
   # Code from module fcntl-safer:
   # Code from module fd-hook:
+  # Code from module fd-safer-flag:
   # Code from module fdopendir:
   # Code from module fileblocks:
   # Code from module filename:
@@ -409,6 +410,7 @@ AC_DEFUN([gl_INIT],
   gl_FCNTL_H
   gl_FCNTL_SAFER
   gl_MODULE_INDICATOR([fcntl-safer])
+  gl_MODULE_INDICATOR([fd-safer-flag])
   gl_FUNC_FDOPENDIR
   if test $HAVE_FDOPENDIR = 0 || test $REPLACE_FDOPENDIR = 1; then
     AC_LIBOBJ([fdopendir])
@@ -505,7 +507,7 @@ AC_DEFUN([gl_INIT],
   gl_SYS_TIME_MODULE_INDICATOR([gettimeofday])
   gl_GNU_MAKE
   gl_HARD_LOCALE
-  gl_HOST_CPU_C_ABI
+  AC_REQUIRE([gl_HOST_CPU_C_ABI])
   gl_HOST_OS
   gl_I_RING
   gl_INLINE
@@ -956,7 +958,7 @@ AC_DEFUN([gl_INIT],
   gl_UNISTD_SAFER
   gl_LIBUNISTRING_LIBHEADER([0.9.4], [unitypes.h])
   gl_LIBUNISTRING_LIBHEADER([0.9.4], [uniwidth.h])
-  gl_LIBUNISTRING_MODULE([0.9.6], [uniwidth/width])
+  gl_LIBUNISTRING_MODULE([0.9.8], [uniwidth/width])
   gl_FUNC_UNLINK
   if test $REPLACE_UNLINK = 1; then
     AC_LIBOBJ([unlink])
@@ -1197,6 +1199,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/dirname-lgpl.c
   lib/dirname.h
   lib/dosname.h
+  lib/dup-safer-flag.c
   lib/dup-safer.c
   lib/dup.c
   lib/dup2.c
@@ -1212,6 +1215,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/fcntl.in.h
   lib/fd-hook.c
   lib/fd-hook.h
+  lib/fd-safer-flag.c
   lib/fd-safer.c
   lib/fdopendir.c
   lib/fileblocks.c
@@ -1272,7 +1276,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/malloc.c
   lib/malloca.c
   lib/malloca.h
-  lib/malloca.valgrind
   lib/math.c
   lib/math.in.h
   lib/mbchar.c
@@ -1541,6 +1544,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/lstat.m4
   m4/malloc.m4
   m4/malloca.m4
+  m4/manywarnings-c++.m4
   m4/manywarnings.m4
   m4/math_h.m4
   m4/mathfunc.m4
@@ -1570,6 +1574,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/nocrash.m4
   m4/obstack.m4
   m4/off_t.m4
+  m4/open-cloexec.m4
   m4/open.m4
   m4/openat.m4
   m4/opendir.m4

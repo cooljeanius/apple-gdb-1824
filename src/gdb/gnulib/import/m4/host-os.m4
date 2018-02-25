@@ -1,6 +1,6 @@
-# serial 9
+# serial 10
 
-# Copyright (C) 2001, 2003-2004, 2006, 2009-2017 Free Software Foundation, Inc.
+# Copyright (C) 2001, 2003-2004, 2006, 2009-2018 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -14,7 +14,7 @@ AC_DEFUN([gl_HOST_OS],
 [
   AC_REQUIRE([AC_CANONICAL_HOST])dnl
   AC_CACHE_CHECK([host operating system],
-    gl_cv_host_operating_system,
+    [gl_cv_host_operating_system],
 
     [[case $host_os in
 

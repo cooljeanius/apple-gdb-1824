@@ -1,6 +1,6 @@
 /* Traverse a file hierarchy.
 
-   Copyright (C) 2004-2017 Free Software Foundation, Inc.
+   Copyright (C) 2004-2018 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /*
  * Copyright (c) 1989, 1993
@@ -220,7 +220,11 @@ typedef struct _ftsent {
         ptrdiff_t fts_level;            /* depth (-1 to N) */
 
         size_t fts_namelen;             /* strlen(fts_name) */
-        nlink_t fts_n_dirs_remaining;   /* count down from st_nlink */
+
+        /* If not (nlink_t) -1, an upper bound on the number of
+           remaining subdirectories of interest.  If this becomes
+           zero, some work can be avoided.  */
+        nlink_t fts_n_dirs_remaining;
 
 # define FTS_D           1              /* preorder directory */
 # define FTS_DC          2              /* directory that causes cycles */

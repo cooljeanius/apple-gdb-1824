@@ -1,5 +1,5 @@
 /* A C macro for emitting link time warnings.
-   Copyright (C) 1995, 1997, 2000, 2002-2003, 2007, 2009-2017 Free Software
+   Copyright (C) 1995, 1997, 2000, 2002-2003, 2007, 2009-2018 Free Software
    Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify it
@@ -13,7 +13,7 @@
    General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #if @HAVE_FEATURES_H@
 # include <features.h> /* for __GLIBC__, __UCLIBC__ */

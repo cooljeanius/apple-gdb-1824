@@ -1,5 +1,5 @@
 /* Safe automatic memory allocation with out of memory checking.
-   Copyright (C) 2003, 2005, 2007, 2009-2017 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2005, 2007, 2009-2018 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2003.
 
    This program is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #ifndef _XMALLOCA_H
 #define _XMALLOCA_H
@@ -32,8 +32,10 @@ extern "C" {
    the function returns.  Upon failure, it exits with an error message.  */
 #if HAVE_ALLOCA
 # define xmalloca(N) \
-  ((N) < 4032 - sa_increment                                        \
-   ? (void *) ((char *) alloca ((N) + sa_increment) + sa_increment) \
+  ((N) < 4032 - (2 * sa_alignment_max - 1)                          \
+   ? (void *) (((uintptr_t) alloca ((N) + 2 * sa_alignment_max - 1) \
+                + (2 * sa_alignment_max - 1))                       \
+               & ~(uintptr_t)(2 * sa_alignment_max - 1))            \
    : xmmalloca (N))
 extern void * xmmalloca (size_t n);
 #else
