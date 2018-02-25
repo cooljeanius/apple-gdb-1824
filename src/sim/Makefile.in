@@ -130,7 +130,7 @@ all:
 			true; \
 		elif [ -d $$dir ]; then \
 			(cd $$dir; $(MAKE) $(FLAGS_TO_PASS)); \
-		else true; fi; \
+		else echo "nothing to be done for $@"; fi; \
 	done
 
 clean mostlyclean: Makefile
@@ -140,7 +140,7 @@ clean mostlyclean: Makefile
 			true; \
 		elif [ -d $$dir ]; then \
 			(cd $$dir; $(MAKE) $(FLAGS_TO_PASS) $@); \
-		else true; fi; \
+		else "nothing to be done for $@"; fi; \
 	done
 	rm -f *~
 
@@ -151,7 +151,7 @@ distclean maintainer-clean realclean:
 			true; \
 		elif [ -d $$dir ]; then \
 			(cd $$dir; $(MAKE) $(FLAGS_TO_PASS) $@); \
-		else true; fi; \
+		else "nothing to be done for $@"; fi; \
 	done
 	rm -f Makefile config.cache config.log config.status
 
@@ -162,7 +162,7 @@ install:
 			true; \
 		elif [ -d $$dir ]; then \
 			(cd $$dir; $(MAKE) $(FLAGS_TO_PASS) install); \
-		else true; fi; \
+		else "nothing to be done for $@"; fi; \
 	done
 
 installcheck:
@@ -178,7 +178,7 @@ check: force
 	  rootsrc=`cd $(srcdir); pwd`; export rootsrc; \
 	  cd testsuite; \
 	  $(MAKE) $(TARGET_FLAGS_TO_PASS) check; \
-	else true; fi
+	else echo "nothing to be done for $@"; fi
 
 
 

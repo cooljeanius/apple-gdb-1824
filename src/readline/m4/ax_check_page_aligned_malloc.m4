@@ -1,6 +1,6 @@
-# =================================================================================
+#==============================================================================
 #  https://www.gnu.org/software/autoconf-archive/ax_check_page_aligned_malloc.html
-# =================================================================================
+#==============================================================================
 #
 # SYNOPSIS
 #
@@ -36,17 +36,21 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 10
+#serial 11
 
 AC_DEFUN([AX_CHECK_PAGE_ALIGNED_MALLOC],
 [AC_CACHE_CHECK([if large mallocs guarantee page-alignment],
   [ax_cv_func_malloc_aligned],
-  [AC_TRY_RUN([
+  [AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 #include <stdlib.h>
 #if HAVE_UNISTD_H
 # include <unistd.h>
-#endif
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "this conftest expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_UNISTD_H */
 
 int main()
 {
@@ -58,10 +62,7 @@ int main()
       exit (1);
   exit (0);
 }
-              ],
-     [ax_cv_func_malloc_aligned=yes],
-     [ax_cv_func_malloc_aligned=no],
-     [ax_cv_func_malloc_aligned=no])
+              ]])],[ax_cv_func_malloc_aligned=yes],[ax_cv_func_malloc_aligned=no],[ax_cv_func_malloc_aligned=no])
   ])
 if test "$ax_cv_func_malloc_aligned" = yes ; then
   AC_DEFINE([HAVE_PAGE_ALIGNED_MALLOC], [1],

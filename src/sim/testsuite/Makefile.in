@@ -100,7 +100,7 @@ check-recursive:
 				cd ./$$i; \
 				$(MAKE) $(TARGET_FLAGS_TO_PASS) check) ; then true ; \
 			else exit 1 ; fi ; \
-		else true ; fi ; \
+		else "nothing to be done for $@"; fi ; \
 	done
 
 #test2:	

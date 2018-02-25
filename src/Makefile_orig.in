@@ -1888,7 +1888,7 @@ install-info: do-install-info dir.info
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	if [ -f dir.info ] ; then \
 	  $(INSTALL_DATA) dir.info $(DESTDIR)$(infodir)/dir.info ; \
-	else true ; fi
+	else "nothing to be done for $@"; fi
 
 local-clean:
 	-rm -f *.a TEMP errs core *.o *~ \#* TAGS *.E *.log
@@ -1898,11 +1898,11 @@ local-distclean:
 	-rm -f multilib.out multilib.tmp maybedep.tmp serdep.tmp
 	-if [ "$(TARGET_SUBDIR)" != "." ]; then \
 	  rm -rf $(TARGET_SUBDIR); \
-	else true; fi
+	else "nothing to be done for $(TARGET_SUBDIR)"; fi
 	-rm -rf $(BUILD_SUBDIR)
 	-if [ "$(HOST_SUBDIR)" != "." ]; then \
 	  rm -rf $(HOST_SUBDIR); \
-	else true; fi
+	else "nothing to be done for $(HOST_SUBDIR)"; fi
 	-rm -f texinfo/po/Makefile texinfo/po/Makefile.in texinfo/info/Makefile
 	-rm -f texinfo/doc/Makefile texinfo/po/POTFILES
 	-rmdir texinfo/doc texinfo/info texinfo/intl texinfo/lib 2>/dev/null
@@ -2243,7 +2243,7 @@ dir.info: do-install-info
 	if [ -f $(srcdir)/texinfo/gen-info-dir ] ; then \
 	  $(srcdir)/texinfo/gen-info-dir $(DESTDIR)$(infodir) $(srcdir)/texinfo/dir.info-template > dir.info.new ; \
 	  mv -f dir.info.new dir.info ; \
-	else true ; \
+	else "nothing to be done for $@"; \
 	fi
 
 dist:
@@ -33779,7 +33779,7 @@ gcc-no-fixedincludes:
 	   $(MAKE) $(GCC_FLAGS_TO_PASS) install); \
 	  rm -rf gcc/include; \
 	  mv gcc/tmp-include gcc/include 2>/dev/null; \
-	else true; fi
+	else "nothing to be done for $@"; fi
 @endif gcc
 
 # ---------------------

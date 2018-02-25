@@ -148,7 +148,7 @@ clean mostlyclean:
 #			    (cd $$dir; $(MAKE) clean); \
 #		    fi; \
 #	    done ; \
-#	else true; fi
+#	else "nothing to be done for $@"; fi
 
 distclean maintainer-clean realclean: clean
 	-rm -f *~ core
@@ -162,7 +162,7 @@ distclean maintainer-clean realclean: clean
 #			    (cd $$dir; $(MAKE) distclean); \
 #		    fi; \
 #	    done ; \
-#	else true; fi
+#	else "nothing to be done for $@"; fi
 
 Makefile : Makefile.in config.status
 	$(SHELL) config.status

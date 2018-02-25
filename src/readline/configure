@@ -8796,7 +8796,11 @@ else
 #include <stdlib.h>
 #if HAVE_UNISTD_H
 # include <unistd.h>
-#endif
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "this conftest expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_UNISTD_H */
 
 int main()
 {
