@@ -17,7 +17,7 @@ PACKAGES = combobox.tcl
 
 ## This directory is also referenced in paths.c, which see.
 guidir = $(datadir)/redhat/gui
-gui_DATA = tclIndex pkgIndex.tcl $(TCL) $(PACKAGES)
+gui_DATA = tclIndex pkgIndex.tcl $(TCL) @MAINT@ $(PACKAGES)
 
 if TCL_SHARED
 SET_LIB_PATH = 	$(RPATH_ENVVAR)=$$here/../../tcl/unix:$$here/../../itcl/itcl/unix:$$$(RPATH_ENVVAR); export $(RPATH_ENVVAR);

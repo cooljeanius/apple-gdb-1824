@@ -36,6 +36,8 @@ all:
 
 doc: ${README} ${DEJAGNU}
 
+pdf: dejagnu.pdf notice.pdf
+.PHONY: pdf
 dejagnu.pdf: dejagnu.dvi
 
 READMEtxt.dvi: READMEtxt.tex README.tex
@@ -50,6 +52,8 @@ notice.ps: READMEdvi.dvi
 notice.pdf: READMEdvi.dvi
 	dvipdfm -o $@ $<
 
+html: notice.html
+.PHONY: html
 notice.html: READMEdvi.dvi
 	rm -fr $(basename $<)
 	rm -f $@
@@ -59,13 +63,18 @@ notice.html: READMEdvi.dvi
 ######################################################################
 # DOCUMENTATION TARGETS
 # TeX output
+dvi: dejagnu.dvi READMEtxt.dvi READMEdvi.dvi
+.PHONY: dvi
 dejagnu.dvi: $(srcdir)/dejagnu.texi
 	$(TEXI2DVI) $(srcdir)/dejagnu.texi
 
 # info file for online browsing
+info: dejagnu.info
+.PHONY: info
 dejagnu.info: $(srcdir)/dejagnu.texi
 	$(MAKEINFO) -I $(srcdir) -o dejagnu.info $(srcdir)/dejagnu.texi
 
+ps: dejagnu.ps notice.ps
 dejagnu.ps: dejagnu.dvi
 	dvips -f dejagnu.dvi > dejagnu.ps
 
@@ -155,7 +164,7 @@ maintainer-clean realclean: clean clean-info
 	-rm -f *.pdf *.ps *.html
 .PHONY: maintainer-clean realclean
 
-install:
+install: info
 	$(srcdir)/../mkinstalldirs $(man1dir)
 	for i in $(MANPAGES) ; do \
 		$(INSTALL_DATA) $$i \
@@ -171,7 +180,7 @@ Makefile: $(srcdir)/Makefile.in $(host_makefile_frag) config.status
 	@echo "Rebuilding the Makefile..."
 	$(SHELL) ./config.status
 
-configure:
+configure: configure.ac
 	@echo "Rebuilding configure..."
 	@cd ${srcdir}; autoconf --force
      

@@ -1044,6 +1044,7 @@ command line.
 @end menu
 
 @node Config Values, Master Config File, , Customizing
+@section Config
 @subsection Config Variables
 @cindex configuration dependent defaults
 @cindex setting defaults for DejaGnu variables

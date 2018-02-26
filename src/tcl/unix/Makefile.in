@@ -587,7 +587,7 @@ install-binaries: binaries
 		echo "Making directory $$i"; \
 		mkdir -p $$i; \
 		chmod 755 $$i; \
-		else true; \
+		else echo "$$i already exists"; \
 		fi; \
 	    done;
 	@if test ! -x $(SRC_DIR)/install-sh; then \
@@ -617,7 +617,7 @@ install-libraries: libraries
 		echo "Making directory $$i"; \
 		mkdir -p $$i; \
 		chmod 755 $$i; \
-		else true; \
+		else echo "$$i already exists"; \
 		fi; \
 	    done;
 	@for i in http2.4 http1.0 opt0.4 encoding msgcat1.3 tcltest2.2; \
@@ -626,7 +626,7 @@ install-libraries: libraries
 		echo "Making directory $(SCRIPT_INSTALL_DIR)/$$i"; \
 		mkdir -p $(SCRIPT_INSTALL_DIR)/$$i; \
 		chmod 755 $(SCRIPT_INSTALL_DIR)/$$i; \
-		else true; \
+		else echo "$(SCRIPT_INSTALL_DIR)/$$i already exists"; \
 		fi; \
 	    done;
 	@if test ! -x $(SRC_DIR)/install-sh; then \
@@ -683,7 +683,7 @@ install-doc: doc
 		echo "Making directory $$i"; \
 		mkdir -p $$i; \
 		chmod 755 $$i; \
-		else true; \
+		else echo "$$i already exists"; \
 		fi; \
 	    done;
 	@echo "Installing top-level (.1) docs";

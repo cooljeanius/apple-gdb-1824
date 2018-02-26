@@ -39,7 +39,7 @@ Free Documentation License''.
 @page
 @tex
 \def\$#1${{#1}}  % Kluge: collect RCS revision info without $...$
-\xdef\manvers{\1.230}  % For use in headers, footers too
+% \xdef\manvers{\1.230}  % For use in headers, footers too
 {\parskip=0pt
 \hfill Cygnus Solutions\par
 \hfill \manvers\par
@@ -5006,13 +5006,13 @@ Likewise (default).
 Likewise, but only relevant when using @option{-fprofile-use}.
 
 @item -Wformat
-Only part of this flag is actually used, specifically:
-@itemx -Wformat-nonliteral
+Only part of this flag is actually used.
+@item -Wformat-nonliteral
 Since @value{GDBN} uses the @code{format printf} attribute on all
 @code{printf} like functions these check not just @code{printf} calls
 but also calls to functions such as @code{fprintf_unfiltered}.
 
-@itemx -Wno-format-security
+@item -Wno-format-security
 This subset of format checks is left out because it is annoying.
 
 @item -Wparentheses

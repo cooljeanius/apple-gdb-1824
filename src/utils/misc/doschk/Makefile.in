@@ -44,6 +44,7 @@ CFLAGS = -ggdb
 ALL_CFLAGS = $(CFLAGS) $(CWARNFLAGS)
 LDFLAGS = -ggdb
 
+##FIXME: this sometimes ends up wrong:
 prefix = @prefix@
 default_prefix = /usr/local
 exec_prefix = $(prefix)
@@ -116,8 +117,10 @@ dist: $(DISTFILES)
 	tar --gzip -chf $(DISTNAME).tar.z $(DISTNAME)
 	rm -rf $(DISTNAME)
 
+##FIXME: see note above about prefix:
 install: all
-	$(INSTALL_PROGRAM) doschk $(bindir)/doschk
+	if test -w $(DESTDIR)$(bindir); then \
+	  $(INSTALL_PROGRAM) doschk $(DESTDIR)$(bindir)/doschk; fi
 
 install-info:
 

@@ -524,7 +524,7 @@ install-binaries: $(TK_LIB_FILE) $(TK_STUB_LIB_FILE) $(TK_BUILD_EXP_FILE) wish
 		echo "Making directory $$i"; \
 		mkdir -p $$i; \
 		chmod 755 $$i; \
-		else true; \
+		else echo "$$i already exists"; \
 		fi; \
 	    done;
 	@if test ! -x $(UNIX_DIR)/install-sh; then \
@@ -539,6 +539,8 @@ install-binaries: $(TK_LIB_FILE) $(TK_STUB_LIB_FILE) $(TK_BUILD_EXP_FILE) wish
 	    echo "package ifneeded Tk $(VERSION)\
 		[list load [file join \$$dir .. $(TK_LIB_FILE)] Tk]";\
 	    ) > $(PKG_INDEX); \
+	    else echo "No need to re-create package index." \
+	              | tee $(PKG_INSTALL_DIR)/stamp-install; \
 	    fi
 	@echo "Installing $(LIB_FILE) to $(LIB_INSTALL_DIR)/"
 	@@INSTALL_LIB@
@@ -566,7 +568,7 @@ install-libraries:
 		echo "Making directory $$i"; \
 		mkdir -p $$i; \
 		chmod 755 $$i; \
-		else true; \
+		else echo "$$i already exists"; \
 		fi; \
 	    done;
 	@if test ! -x $(UNIX_DIR)/install-sh; then \
@@ -608,7 +610,7 @@ install-demos:
 		echo "Making directory $$i"; \
 		mkdir -p $$i; \
 		chmod 755 $$i; \
-		else true; \
+		else echo "$$i already exists"; \
 		fi; \
 	    done;
 	@echo "Installing demos to $(SCRIPT_INSTALL_DIR)/demos/";
@@ -641,7 +643,7 @@ install-doc:
 		echo "Making directory $$i"; \
 		mkdir -p $$i; \
 		chmod 755 $$i; \
-		else true; \
+		else echo "$$i already exists"t; \
 		fi; \
 	    done;
 	@echo "Installing top-level (.1) docs";

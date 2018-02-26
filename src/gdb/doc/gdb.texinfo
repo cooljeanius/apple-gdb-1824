@@ -3850,7 +3850,7 @@ invocations have returned.
 
 
 @kindex advance @var{location}
-@itemx advance @var{location}
+@item advance @var{location}
 Continue running the program up to the given @var{location}.  An argument is
 required, which should be of the same form as arguments for the @code{break}
 command.  Execution will also stop upon exit from the current stack
@@ -4262,8 +4262,8 @@ Similar, but print only the innermost @var{n} frames.
 Similar, but print only the outermost @var{n} frames.
 
 @item backtrace full
-Print the values of the local variables also.
 @itemx bt full
+Print the values of the local variables also.
 @end table
 
 @kindex where
@@ -6638,11 +6638,11 @@ for both host and target.
 @kindex show charset
 Show the names of the current host and target charsets.
 
-@itemx show host-charset
+@item show host-charset
 @kindex show host-charset
 Show the name of the current host charset.
 
-@itemx show target-charset
+@item show target-charset
 @kindex show target-charset
 Show the name of the current target charset.
 
