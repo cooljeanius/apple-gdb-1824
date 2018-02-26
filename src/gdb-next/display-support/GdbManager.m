@@ -73,6 +73,7 @@
 
 - (int) establishConnection
 {
+  return 0;
 }
 
 - (void) engageHookFunctions
@@ -90,6 +91,9 @@
 - (void) processOutput: (NSString *) outputStr
             outputType: (GdbOutputType) t
 {
+  if (outputStr == NULL) {
+    (void)t;
+  }
 }
 
 - (const char  *) waitForLineOfInput

@@ -16,11 +16,9 @@ enum display_system {
 };
 
 int setup_display_system
-PARAMS ((enum display_system t,
-	 const char *host,
-	 const char *port));
+PARAMS((enum display_system t, const char *host, const char *port));
 
 void shut_down_display_system
-PARAMS (());
+PARAMS((void));
 
 /* EOF */

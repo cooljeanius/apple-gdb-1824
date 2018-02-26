@@ -13,9 +13,9 @@
 
 /* internal functions */
 
-extern char *get_view_connection();
-extern char *get_view_host();
-extern void turn_off_viewing();
+extern char *get_view_connection(void);
+extern char *get_view_host(void);
+extern void turn_off_viewing(void);
 
 /* gdbManager is the object which manages GDB and the thread it runs in.
  * This object communicates with the client (in another process)
@@ -66,7 +66,7 @@ int setup_display_system
 }
 
 void
-shut_down_display_system ()
+shut_down_display_system(void)
 {
   [gdbManager disengageHookFunctions];
 

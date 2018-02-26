@@ -3240,7 +3240,7 @@
 		61F32D7A1CC3730F00C05007 /* macosx-metrowerks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "macosx-metrowerks.c"; sourceTree = "<group>"; };
 		61F32D7B1CC3730F00C05007 /* macosx-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "macosx-nat.c"; sourceTree = "<group>"; };
 		61F32D7C1CC3730F00C05007 /* macosx.defs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.mig; path = macosx.defs; sourceTree = "<group>"; };
-		61F32D7D1CC3730F00C05007 /* nextstep-core.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = "nextstep-core.c"; sourceTree = "<group>"; };
+		61F32D7D1CC3730F00C05007 /* nextstep-core.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = "nextstep-core.m"; sourceTree = "<group>"; };
 		61F32D7E1CC3730F00C05007 /* nextstep-nat-cfm-io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "nextstep-nat-cfm-io.c"; sourceTree = "<group>"; };
 		61F32D7F1CC3730F00C05007 /* nextstep-nat-cfm-io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "nextstep-nat-cfm-io.h"; sourceTree = "<group>"; };
 		61F32D801CC3730F00C05007 /* nextstep-nat-cfm-process.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "nextstep-nat-cfm-process.c"; sourceTree = "<group>"; };
@@ -10157,7 +10157,7 @@
 				61F32D7A1CC3730F00C05007 /* macosx-metrowerks.c */,
 				61F32D7B1CC3730F00C05007 /* macosx-nat.c */,
 				61F32D7C1CC3730F00C05007 /* macosx.defs */,
-				61F32D7D1CC3730F00C05007 /* nextstep-core.c */,
+				61F32D7D1CC3730F00C05007 /* nextstep-core.m */,
 				61F32D7E1CC3730F00C05007 /* nextstep-nat-cfm-io.c */,
 				61F32D7F1CC3730F00C05007 /* nextstep-nat-cfm-io.h */,
 				61F32D801CC3730F00C05007 /* nextstep-nat-cfm-process.c */,

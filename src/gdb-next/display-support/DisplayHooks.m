@@ -21,6 +21,7 @@
 #include "DisplayTypes.h"
 #include "DisplayHooks.h"
 #include "DisplayMisc.h"
+#include "DisplaySetup.h"
 
 #ifndef ROOTED_P
 # define SLASH_P(X) ((X)=='\\' || (X) == '/')
@@ -33,16 +34,17 @@
 NSLog (@"Exception sending remote message \"%@\": name: \"%@\", reason: \"%@\"", \
        func, [localException name], [localException reason]);
 
+extern int lines_to_list; /* from source.c */
 void
-tell_displayer_display_lines
-(struct symtab *symtab, int first_line, int last_line)
+tell_displayer_display_lines(struct symtab *symtab, int first_line,
+			     int last_line)
 {
     id <ViewDisplayProvider> displayProvider = nil;
 
     if (gdbManager == nil) { return; }
 
     if (symtab->fullname == NULL) {
-      symtab_to_filename (symtab);
+      symtab_to_filename(symtab);
       if (symtab->fullname == NULL) {
 	return;
       }
@@ -56,7 +58,6 @@ tell_displayer_display_lines
       last_line -= 1;	/* I think last_line means up to but not including */
     }
     if (first_line != last_line) {
-      extern int lines_to_list; /* from source.c */
       first_line = first_line + (lines_to_list / 2);
       last_line = first_line;
     }
@@ -77,12 +78,12 @@ tell_displayer_display_lines
     }
     NS_HANDLER {
       EXCEPTION_MSG (@"display_lines");
-      shut_down_display_system ();
+      shut_down_display_system();
     }
     NS_ENDHANDLER;
 }
 
-void displayer_command_loop ()
+void displayer_command_loop(void)
 {
   if (gdbManager == nil) { return; }
   [gdbManager doCommandLoop];
@@ -95,7 +96,7 @@ tell_displayer_do_query (char *query, va_list args)
   char *buf;
   int result = -1;
 
-  if (gdbManager == nil) { return; }
+  if (gdbManager == nil) { return 0; }
 
   vasprintf(&buf, query, args);
   if (buf == NULL) {
@@ -150,7 +151,7 @@ tell_displayer_state_changed(Debugger_state newState)
 
       displayProvider = [gdbManager displayProviderForProtocol: @protocol (ViewDisplayProvider)];
       if (displayProvider != nil) {
-	DebuggerState s;
+	volatile DebuggerState s;
 	switch (newState) {
 	case STATE_NOT_ACTIVE:
 	  s = DBG_STATE_NOT_ACTIVE;
@@ -170,6 +171,8 @@ tell_displayer_state_changed(Debugger_state newState)
 	case STATE_INFERIOR_STOPPED:
 	  s = DBG_STATE_INFERIOR_STOPPED;
 	  break;
+	default:
+	  break;
 	}
 	[displayProvider inferiorStateChanged: s];
       }
@@ -182,10 +185,11 @@ tell_displayer_state_changed(Debugger_state newState)
     return;
 }
 
+extern char *source_path; /* out here for -Wnested-externs */
+
 static void
 get_full_path_name (char *filename, char **fullname)
 {
-  extern char *source_path;
   int fd;
 
   fd = openp (source_path, 0, filename, O_RDONLY, 0, fullname);
@@ -301,7 +305,7 @@ tell_displayer_frame_changed (int newFrame)
   return;
 }
 
-void tell_displayer_stack_changed ()
+void tell_displayer_stack_changed(void)
 {
   id <GuiDisplayProvider> displayProvider = NULL;
   int numFrames = -1;
@@ -334,6 +338,7 @@ char *
 tell_displayer_get_input(const char *prompt, int repeat, const char *anno)
 {
   const char *retstring = "";
+  if ((repeat == 0) || (anno == NULL)) { ; /* ??? */ }
   if (gdbManager == nil) { return (char *)retstring; }
 
   if (prompt != NULL) {

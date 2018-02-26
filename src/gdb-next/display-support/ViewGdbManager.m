@@ -6,6 +6,9 @@
 
 static void view_display_window_hook (FILE *instream, char *prompt)
 {
+  if ((instream == NULL) || (prompt == NULL)) {
+    ; /* ??? */
+  }
   if ((++pool_num_times) >= POOL_RELEASE_MAX_TIMES) {
     [pool release];
     pool_num_times = 0;
@@ -13,7 +16,7 @@ static void view_display_window_hook (FILE *instream, char *prompt)
   }
 }
 
-GdbManager* make_view_gdb_manager()
+GdbManager* make_view_gdb_manager(void)
 {
   return [[ViewGdbManager alloc] init];
 }

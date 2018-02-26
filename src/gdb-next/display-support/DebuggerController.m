@@ -17,12 +17,14 @@
 
 #import "debug.h"
 
-static DebuggerController	*debuggerController;
+static DebuggerController *debuggerController;
 
 extern int inferior_pid;
 extern next_inferior_status *next_status;
 
-void fork_and_start_debugger_controller (GdbManager *gm)
+extern void fork_and_start_debugger_controller(GdbManager *);
+
+void fork_and_start_debugger_controller(GdbManager *gm)
 {
   /* workaround: force RunLoop to go thru +initialize
    * and setup support for multithreading */
@@ -179,12 +181,12 @@ void fork_and_start_debugger_controller (GdbManager *gm)
 - (void) handleConnectionDeath: (NSNotification *) notification
 {
   if ([notification object] == displayProviderConnection) {
-    /* client has gone away */
+    ; /* client has gone away */
   } else {
-    /* gdb connection has died */
+    ; /* gdb connection has died */
   }
   /* FIXME: do a better job of cleanning up */
-  exit (22);
+  exit(22);
 }
 @end
 

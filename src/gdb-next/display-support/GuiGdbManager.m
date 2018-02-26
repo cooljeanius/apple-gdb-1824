@@ -6,9 +6,11 @@
 #import "DisplayHooks.h"
 #import "GuiDisplayProvider_Protocol.h"
 #import "DisplayMisc.h"
+#import "DisplaySetup.h"
 #import <Foundation/Foundation.h>
 #include "inferior.h"
 #include "exceptions.h"
+#include "gdbcmd.h"
 
 #define DEBUG_MAIN
 #import "debug.h"
@@ -175,11 +177,11 @@ useAnnotation:(BOOL)anno
              rootProxyForConnectionWithRegisteredName: controllerConnectionName
                                                  host: nil];
         if (c)
-	    break;
+			break;
     }
     if (c == nil) {
-	NSLog(@"GuiGdbManager: could not get connection to debugger controller");
-	return 0;
+		NSLog(@"GuiGdbManager: failed to get connection to debugger controller");
+		return 0;
     }
 
     [c setProtocolForProxy:@protocol(DebuggerControllerInternal)];
@@ -331,20 +333,21 @@ static int useTty = 0;
 static int annotatedOutput = 0;
 
 static int
-execute_command_for_PB (char *command)
+execute_command_for_PB(void *command)
 {
-  execute_command (command, useTty);
-  bpstat_do_actions (&stop_bpstat);
+  execute_command(command, useTty);
+  bpstat_do_actions(&stop_bpstat);
   return 0;
 }
 
+extern int info_verbose; /* out here for -Wnested-externs */
+extern int annotation_level; /* likewise */
+
 -(void)executeCommand: (GdbCmd *)command
 {
-    int 	wasError;
-    const char	*cmd;
-    int		old_verbose;
-    extern int	info_verbose;
-    extern	annotation_level;
+    int wasError;
+    const char *cmd;
+    int old_verbose;
 
     cmd = [[command getCmd] cString];
 
@@ -533,8 +536,8 @@ execute_command_for_PB (char *command)
     DEBUG_PRINT ("in Command Loop\n");
 
     if (!startedCommandLoop) {
-	startedCommandLoop = 1;
-	[self engageQueryHookFunction];
+		startedCommandLoop = 1;
+		[self engageQueryHookFunction];
     }
 
 
@@ -546,7 +549,7 @@ execute_command_for_PB (char *command)
     [self cleanupCommandState];
 
     /* process cmds from server; will block waiting for cmds */
-    while (cmd = [self dequeueCmd]) {
+    while ((cmd = [self dequeueCmd]) != NULL) {
 
         if ((++pool_num_times) >= POOL_RELEASE_MAX_TIMES) {
             [pool release];
@@ -590,7 +593,7 @@ execute_command_for_PB (char *command)
 
 static GuiGdbManager	*guiGdbManager;
 
-GdbManager * make_gui_gdb_manager()
+GdbManager *make_gui_gdb_manager(void)
 {
      return (guiGdbManager = [[GuiGdbManager alloc] init]);
 }

@@ -1623,9 +1623,7 @@ _initialize_next_inferior(void)
   next_child_ops.to_thread_alive = next_child_thread_alive;
   next_child_ops.to_pid_to_str = next_mach_pid_to_str;
   next_child_ops.to_load = NULL;
-#ifndef TARGET_H
-  next_child_ops.to_xfer_memory = mach_xfer_memory;
-#endif /* !TARGET_H */
+  next_child_ops.deprecated_xfer_memory = mach_xfer_memory;
   next_child_ops.to_can_async_p = standard_can_async_p;
   next_child_ops.to_is_async_p = standard_is_async_p;
   next_child_ops.to_terminal_inferior = next_terminal_inferior;

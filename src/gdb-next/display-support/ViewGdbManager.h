@@ -26,4 +26,6 @@
 
 @end
 
+extern GdbManager *make_view_gdb_manager(void);
+
 /* EOF */

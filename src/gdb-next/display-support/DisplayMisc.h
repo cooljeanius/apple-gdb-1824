@@ -15,8 +15,8 @@ extern int pool_num_times;
 
 extern GdbManager *gdbManager;
 
-extern GdbManager *make_gui_gdb_manager ();
-extern GdbManager *make_view_gdb_manager ();
+extern GdbManager *make_gui_gdb_manager(void);
+extern GdbManager *make_view_gdb_manager(void);
 
 void fork_and_start_debugger_controller (GdbManager *);
 

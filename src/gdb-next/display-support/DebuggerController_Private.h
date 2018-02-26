@@ -35,6 +35,9 @@
     NSConnection		*gdbConnection;
 }
 
+- (void) startController: gm;
+- (void) handleConnectionDeath: (NSNotification *) notification;
+
 @end
 
 /* EOF */
