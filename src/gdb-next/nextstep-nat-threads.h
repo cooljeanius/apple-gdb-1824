@@ -36,7 +36,9 @@ typedef pthread_cond_t gdb_cond_t;
 
 #else /* ! USE_PTHREADS */
 
-#include <mach/cthreads.h>
+#ifdef HAVE_MACH_CTHREADS_H
+# include <mach/cthreads.h>
+#endif /* HAVE_MACH_CTHREADS_H */
 
 void gdb_cthread_kill (cthread_t cthread);
 

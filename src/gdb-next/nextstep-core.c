@@ -6,7 +6,7 @@
 
 #include "nextstep-nat-mutils.h"
 #include "nextstep-nat-inferior.h"
-#include "nextstep-threads.h"
+#include "nextstep-nat-threads.h"
 
 #include "defs.h"
 #include "inferior.h"
@@ -16,7 +16,13 @@
 #include "target.h"
 #include "gdbcore.h"
 
-#import "SegmentManagerThreads.h"
+#if 0
+# if (defined(__GNUC__) && !defined(__STRICT_ANSI__)) || defined(__OBJC__)
+#  import "SegmentManagerThreads.h"
+# else
+#  include "SegmentManagerThreads.h"
+# endif /* (__GNUC__ && !__STRICT_ANSI__) || __OBJC__ */
+#endif /* 0 */
 
 #include <sys/time.h>
 

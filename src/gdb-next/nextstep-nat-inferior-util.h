@@ -12,7 +12,7 @@ const char *ptrace_request_unparse PARAMS ((int request));
 
 /* call system ptrace(), logging debugging information as appropriate */
 
-int call_ptrace PARAMS ((int request, int pid, int arg3, int arg4));
+int call_ptrace PARAMS((int request, int pid, PTRACE_ARG3_TYPE arg3, int arg4));
 
 /* clear all values in a next_inferior_status structure */
 

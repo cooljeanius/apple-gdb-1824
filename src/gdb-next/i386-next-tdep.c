@@ -171,7 +171,7 @@ i386_next_skip_trampoline_code(CORE_ADDR pc)
 /* */
 int ATTRIBUTE_CONST
 i386_next_in_solib_return_trampoline(CORE_ADDR pc ATTRIBUTE_UNUSED,
-				     char *name ATTRIBUTE_UNUSED)
+				     const char *name ATTRIBUTE_UNUSED)
 {
   return 0;
 }

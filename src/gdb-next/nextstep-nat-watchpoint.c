@@ -7,6 +7,7 @@
 #include "nextstep-nat-mutils.h"
 #include "nextstep-nat-sigthread.h"
 #include "nextstep-nat-threads.h"
+#include "nextstep-nat-watchpoint.h"
 #include "nextstep-xdep.h"
 
 #include "defs.h"

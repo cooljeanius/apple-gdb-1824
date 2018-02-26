@@ -3,31 +3,38 @@
 MMALLOC =
 MMALLOC_CFLAGS = -DNO_MMALLOC
 
-MH_CFLAGS = -D_POSIX_SOURCE -traditional-cpp
+MH_CFLAGS = -DUSE_PTHREADS # -D_POSIX_SOURCE -traditional-cpp
+MH_CFLAGS += -I$(srcdir)/../gdb-next/display-support
 TERMCAP = -ltermcap
 
 SER_HARDWIRE = ser-unix.o ser-tcp.o 
 
 XM_FILE = xm-i386-next.h
-XDEPFILES = # $(DISPLAY)
+XDEPFILES = $(DISPLAY)
+
+VPATH += ../gdb-next
+VPATH += ../gdb-next/display-support
 
 DISPLAY = \
 	nextstep-nat-display.o \
 	DebuggerController.o DisplaySetup.o GuiGdbManager.o \
 	DisplayHooks.o GdbManager.o ViewGdbManager.o
 
-DISPLAY = nextstep-nat-display-stubs.o
+#DISPLAY += nextstep-nat-display-stubs.o
 
 NAT_FILE = nm-i386-next.h
 NATDEPFILES = fork-child.o inftarg.o $(PPC) $(NEXT)
 
 NEXTNAMES = \
-	databreak dyld exec \
-	inferior sigthread kernel mutils stubs threads \
-	# core loadsymbols
+	dyld inferior sigthread mutils threads # core loadsymbols
 
-NEXT = $(patsubst %,nextstep-nat-%.o,$(NEXTNAMES)) nextstep-xdep.o nextstep-xdep2.o
+NEXT = $(patsubst %,nextstep-nat-%.o,$(NEXTNAMES)) nextstep-xdep.o
 
 MACHO = SegmentManagerThreads.o LazyRegionManager.o RegionManager.o RelocManager.o SegmentManager.o
 
 I386 = i386-next-tdep.o i386-next-nat-float.o i386-next-nat-exec.o
+
+.SUFFIXES: .m .o
+.m.o:
+	$(AM_V_OBJC)$(OBJC) -c $(INTERNAL_OBJCFLAGS) $<
+	$(POSTCOMPILE)

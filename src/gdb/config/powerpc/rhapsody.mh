@@ -52,6 +52,9 @@ NATDEPFILES = \
 
 XM_CLIBS = -framework Foundation $(CFM_LIBS)
 
+VPATH += $(srcdir)/../gdb-next
+VPATH += $(srcdir)/../gdb-next/display-support
+
 MH_CFLAGS = \
 	-DNS_TARGET_MAJOR=5 \
 	-I$(srcdir)/../gdb-next \

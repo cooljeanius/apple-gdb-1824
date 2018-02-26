@@ -1593,13 +1593,14 @@ AC_CHECK_HEADERS([Availability.h AvailabilityMacros.h \
                   bits/endian.h crt_externs.h dl.h libgen.h libgettext.h \
                   linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach.h mach_error.h \
-                  mach/kern_return.h mach/mach_error.h mach/mach_init.h \
-                  mach/mach_port.h mach/message.h mach/port.h \
-                  mach/thread_info.h mach/thread_status.h mach/vm_types.h \
-                  mach-o/loader.h mach-o/nlist.h machine/save_state.h \
-                  math.h memory.h pc.h pthread.h rpc/rpc.h \
-                  servers/netname.h servers/netname_defs.h setjmp.h \
-                  sys/uio.h sys/utsname.h uuid/uuid.h])dnl
+                  mach/cthreads.h mach/kern_return.h mach/mach_error.h \
+                  mach/mach_init.h mach/mach_port.h mach/message.h \
+                  mach/port.h mach/thread_info.h mach/thread_status.h \
+                  mach/vm_types.h mach-o/dyld.h mach-o/dyld_debug.h \
+                  mach-o/dyld_images.h mach-o/loader.h mach-o/nlist.h \
+                  machine/save_state.h math.h memory.h pc.h pthread.h \
+                  rpc/rpc.h sched.h servers/netname.h servers/netname_defs.h \
+                  setjmp.h sys/uio.h sys/utsname.h uuid/uuid.h])dnl
   ## needs other headers first on some systems:
 AC_CHECK_HEADERS([mach/kmod.h],[],[],[[
 #ifdef HAVE_MACH_VM_TYPES_H

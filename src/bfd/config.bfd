@@ -1422,6 +1422,16 @@ case "${targ}" in
     targ_archs="${targ_archs} bfd_powerpc_arch bfd_rs6000_arch bfd_i386_arch bfd_arm_arch"
     targ_underscore=yes
     ;;
+  powerpc-*-nextstep* | powerpc-apple-rhapsody* | powerpc-apple-macos10* | powerpc-apple-darwin*)
+    targ_defvec=mach_o_be_vec
+    targ_selvecs="mach_o_be_vec mach_o_le_vec mach_o_fat_vec pef_vec pef_xlib_vec sym_vec"
+    targ_archs="bfd_powerpc_arch bfd_rs6000_arch bfd_i386_arch"
+    ;;
+  i386-*-nextstep* | i386-apple-rhapsody* | i386-apple-macos10* | powerpc-apple-darwin*)
+    targ_defvec=mach_o_le_vec
+    targ_selvecs="mach_o_le_vec mach_o_be_vec mach_o_fat_vec pef_vec pef_xlib_vec sym_vec"
+    targ_archs="bfd_i386_arch bfd_powerpc_arch bfd_rs6000_arch"
+    ;;
 #ifdef BFD64
   powerpc64-*-darwin* | powerpc64-*-macos10* | powerpc64-*-rhapsody*)
     targ_defvec=mach_o_be_vec
@@ -1431,7 +1441,7 @@ case "${targ}" in
     want64=true
     ;;
 #endif /* BFD64 */
-  powerpc-*-macos*)
+  powerpc-*-macos* | powerpc-*-mpw*)
     targ_defvec=pmac_xcoff_vec
     ;;
 #ifdef BFD64
@@ -1471,6 +1481,22 @@ case "${targ}" in
   powerpcle-*-pe | powerpcle-*-winnt* | powerpcle-*-cygwin*)
     targ_defvec=bfd_powerpcle_pe_vec
     targ_selvecs="bfd_powerpcle_pei_vec bfd_powerpc_pei_vec bfd_powerpcle_pe_vec bfd_powerpc_pe_vec"
+    ;;
+
+
+  m68k-*-nextstep*)
+    targ_defvec=mach_o_be_vec
+    targ_selvecs="mach_o_le_vec mach_o_be_vec mach_o_fat_vec pef_vec pef_xlib_vec sym_vec"
+    ;;
+
+  sparc-*-nextstep*)
+    targ_defvec=mach_o_le_vec
+    targ_selvecs="mach_o_le_vec mach_o_be_vec mach_o_fat_vec pef_vec pef_xlib_vec sym_vec"
+    ;;
+
+  hppa-*-nextstep*)
+    targ_defvec=mach_o_le_vec
+    targ_selvecs="mach_o_le_vec mach_o_be_vec mach_o_fat_vec pef_vec pef_xlib_vec sym_vec"
     ;;
 
   rl78-*-elf)

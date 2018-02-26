@@ -29,7 +29,7 @@
 #include "nextstep-nat-dyld-path.h"
 #include "nextstep-nat-dyld-process.h"
 
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
 # include "nextstep-nat-cfm.h"
 #endif /* WITH_CFM */
 
@@ -45,15 +45,16 @@ CORE_ADDR dyld_slide = 0;
 
 extern int inferior_auto_start_cfm_flag;
 
-static int dyld_starts_here_p (vm_address_t addr);
-static void next_locate_dyld (bfd *exec_bfd);
+static int dyld_starts_here_p(vm_address_t addr);
+static void next_locate_dyld(bfd *exec_bfd);
 
-void dyld_debug (const char *fmt, ...)
+void ATTRIBUTE_PRINTF_1
+dyld_debug(const char *fmt, ...)
 {
   va_list ap;
   if (dyld_debug_flag >= 1) {
     va_start (ap, fmt);
-    fprintf (dyld_stderr, "[%d dyld]: ", getpid ());
+    fprintf (dyld_stderr, "[%d dyld]: ", getpid());
     vfprintf (dyld_stderr, fmt, ap);
     va_end (ap);
     fflush (dyld_stderr);
@@ -69,7 +70,7 @@ extern next_inferior_status *next_status;
 int dyld_preload_libraries_flag = 1;
 int dyld_filter_events_flag = 1;
 int dyld_always_read_from_memory_flag = 0;
-char *dyld_symbols_prefix = "__dyld_";
+const char *dyld_symbols_prefix = "__dyld_";
 int dyld_load_dyld_symbols_flag = 1;
 int dyld_load_dyld_shlib_symbols_flag = 1;
 int dyld_load_cfm_shlib_symbols_flag = 1;
@@ -77,11 +78,17 @@ int dyld_print_basenames_flag = 0;
 char *dyld_load_rules = NULL;
 char *dyld_minimal_load_rules = NULL;
 
-int next_dyld_update ();
+int next_dyld_update(int);
 
-const char
-*dyld_debug_error_string (enum dyld_debug_return ret)
+#ifndef HAVE_MACH_O_DYLD_DEBUG_H
+enum dyld_debug_return {
+  DYLD_NOT_A_CODE = 0
+};
+#endif /* !HAVE_MACH_O_DYLD_DEBUG_H */
+const char *
+dyld_debug_error_string(enum dyld_debug_return ret)
 {
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
   switch (ret) {
   case DYLD_SUCCESS: return "DYLD_SUCCESS";
   case DYLD_INCONSISTENT_DATA: return "DYLD_INCONSISTENT_DATA";
@@ -89,11 +96,21 @@ const char
   case DYLD_FAILURE: return "DYLD_FAILURE";
   default: return "[UNKNOWN]";
   }
+  return ""; /*NOTREACHED*/
+#else
+  return "[UNKNOWN]";
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
 }
 
-const char
-*dyld_debug_event_string (enum dyld_event_type type)
+#ifndef HAVE_MACH_O_DYLD_DEBUG_H
+enum dyld_event_type {
+  DYLD_NOT_AN_EVENT = 0
+};
+#endif /* !HAVE_MACH_O_DYLD_DEBUG_H */
+const char *
+dyld_debug_event_string(enum dyld_event_type type)
 {
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
   switch (type) {
   case DYLD_IMAGE_ADDED: return "DYLD_IMAGE_ADDED";
   case DYLD_MODULE_BOUND: return "DYLD_MODULE_BOUND";
@@ -103,20 +120,43 @@ const char
   case DYLD_IMAGE_REMOVED: return "DYLD_IMAGE_REMOVED";
   default: return "[UNKNOWN]";
   }
+  return ""; /*NOTREACHED*/
+#else
+  return "[UNKNOWN]";
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
 }
 
+struct _dyld_event_message_request;
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
 static void
-debug_dyld_event_request (FILE *f, struct _dyld_event_message_request *request)
+debug_dyld_event_request(FILE *f, struct _dyld_event_message_request *request)
 {
-  next_debug_message (&request->head);
-  fprintf (f, "               type: %s (0x%lx)\n",
-              dyld_debug_event_string (request->event.type),
-              (unsigned long) request->event.type);
-  fprintf (f, "arg[0].vmaddr_slide: 0x%lx\n", (unsigned long) request->event.arg[0].vmaddr_slide);
-  fprintf (f, "arg[0].module_index: 0x%lx\n", (unsigned long) request->event.arg[0].module_index);
-  fprintf (f, "arg[1].vmaddr_slide: 0x%lx\n", (unsigned long) request->event.arg[1].vmaddr_slide);
-  fprintf (f, "arg[1].module_index: 0x%lx\n", (unsigned long) request->event.arg[1].module_index);
+  next_debug_message(&request->head);
+  fprintf(f, "               type: %s (0x%lx)\n",
+             dyld_debug_event_string(request->event.type),
+             (unsigned long)request->event.type);
+  fprintf(f, "arg[0].vmaddr_slide: 0x%lx\n",
+	  (unsigned long)request->event.arg[0].vmaddr_slide);
+  fprintf(f, "arg[0].module_index: 0x%lx\n",
+	  (unsigned long)request->event.arg[0].module_index);
+  fprintf(f, "arg[1].vmaddr_slide: 0x%lx\n",
+	  (unsigned long)request->event.arg[1].vmaddr_slide);
+  fprintf(f, "arg[1].module_index: 0x%lx\n",
+	  (unsigned long)request->event.arg[1].module_index);
 }
+#else
+static void
+debug_dyld_event_request(FILE *f, void *request)
+{
+  next_debug_message(NULL);
+  fprintf(f, "               type: %s (0x%lx)\n",
+	  dyld_debug_event_string(0), 0UL);
+  fprintf(f, "arg[0].vmaddr_slide: 0x%lx\n", 0UL);
+  fprintf(f, "arg[0].module_index: 0x%lx\n", 0UL);
+  fprintf(f, "arg[1].vmaddr_slide: 0x%lx\n", 0UL);
+  fprintf(f, "arg[1].module_index: 0x%lx\n", 0UL);
+}
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
 
 void
 dyld_print_status_info (struct next_dyld_thread_status *s, unsigned int mask)
@@ -145,12 +185,12 @@ dyld_print_status_info (struct next_dyld_thread_status *s, unsigned int mask)
 }
 
 void
-next_clear_start_breakpoint ()
+next_clear_start_breakpoint(void)
 {
-  remove_solib_event_breakpoints ();
+  remove_solib_event_breakpoints();
 }
 
-extern char *dyld_symbols_prefix;
+extern const char *dyld_symbols_prefix;
 
 static
 CORE_ADDR lookup_dyld_address (const char *s)
@@ -177,9 +217,8 @@ unsigned int lookup_dyld_value (const char *s)
 }
 
 void
-next_init_addresses ()
+next_init_addresses(void)
 {
-
   next_status->dyld_status.object_images = lookup_dyld_address ("object_images");
   next_status->dyld_status.library_images = lookup_dyld_address ("library_images");
   next_status->dyld_status.state_changed_hook
@@ -224,7 +263,7 @@ dyld_starts_here_p (vm_address_t addr)
   ret = vm_read (next_status->task, address, size, &data, &data_count);
 
   if (ret != KERN_SUCCESS) {
-    ret = vm_deallocate (mach_task_self (), data, data_count);
+    ret = vm_deallocate (mach_task_self(), data, data_count);
     return 0;
   }
 
@@ -232,7 +271,7 @@ dyld_starts_here_p (vm_address_t addr)
    * where dyld is loaded */
 
   if (data_count < sizeof (struct mach_header)){
-    ret = vm_deallocate (mach_task_self (), data, data_count);
+    ret = vm_deallocate (mach_task_self(), data, data_count);
     return 0;
   }
 
@@ -243,11 +282,10 @@ dyld_starts_here_p (vm_address_t addr)
    * load commands assume it is correct.
    */
 
-  if (mh->magic != MH_MAGIC ||
-      mh->filetype != MH_DYLINKER ||
-      data_count < sizeof (struct mach_header) +
-      mh->sizeofcmds) {
-    ret = vm_deallocate (mach_task_self (), data, data_count);
+  if ((mh->magic != MH_MAGIC)
+      || (mh->filetype != MH_DYLINKER)
+      || (data_count < (sizeof(struct mach_header) + mh->sizeofcmds))) {
+    ret = vm_deallocate(mach_task_self(), data, data_count);
     return 0;
   }
 
@@ -268,7 +306,7 @@ dyld_starts_here_p (vm_address_t addr)
 static void
 next_locate_dyld (bfd *exec_bfd)
 {
-  char *dyld_name = NULL;
+  const char *dyld_name = NULL;
   CORE_ADDR dyld_default_addr = 0x0;
   int got_default_address;
   struct cleanup *old_cleanups = NULL;
@@ -361,34 +399,33 @@ next_locate_dyld (bfd *exec_bfd)
     {
       kern_return_t ret_val;
       vm_region_basic_info_data_t info;
-      int info_cnt;
+      mach_msg_type_number_t info_cnt;
       vm_address_t test_addr = VM_MIN_ADDRESS;
       vm_size_t size;
       mach_port_t object_name;
       task_t target_task = next_status->task;
 
-      do
-	{
-	  ret_val = vm_region (target_task, &test_addr,
-			       &size, VM_REGION_BASIC_INFO,
-			       (vm_region_info_t) &info, &info_cnt,
-			       &object_name);
+      do {
+	ret_val = vm_region(target_task, &test_addr,
+			    &size, VM_REGION_BASIC_INFO,
+			    (vm_region_info_t)&info, &info_cnt,
+			    &object_name);
 
-	  if (ret_val != KERN_SUCCESS) {
-	    /* Implies end of vm_region, usually. */
+	if (ret_val != KERN_SUCCESS) {
+	  /* Implies end of vm_region, usually. */
+	  break;
+	}
+
+	if (dyld_starts_here_p (test_addr))
+	  {
+	    dyld_addr = test_addr;
+	    dyld_slide = test_addr - dyld_default_addr;
 	    break;
 	  }
 
-	  if (dyld_starts_here_p (test_addr))
-	    {
-	      dyld_addr = test_addr;
-	      dyld_slide = test_addr - dyld_default_addr;
-	      break;
-	    }
+	test_addr += size;
 
-	  test_addr += size;
-
-	} while (size != 0);
+      } while (size != 0);
     }
 
   if (old_cleanups)
@@ -406,43 +443,43 @@ next_set_start_breakpoint (bfd *exec_bfd)
   asprintf (&ns, "%s%s", dyld_symbols_prefix, "gdb_dyld_state_changed");
 
   next_locate_dyld (exec_bfd);
-  next_init_addresses ();
+  next_init_addresses();
 
   INIT_SAL (&sal);
   sal.pc = next_status->dyld_status.state_changed_hook;
-  b = set_momentary_breakpoint (sal, NULL, bp_shlib_event);
+  b = set_momentary_breakpoint(sal, null_frame_id, bp_shlib_event);
   b->disposition = disp_donttouch;
   b->thread = -1;
   b->addr_string = ns;
 
-  breakpoints_changed ();
+  breakpoints_changed();
 
 }
 
 int
-next_mach_try_start_dyld ()
+next_mach_try_start_dyld(void)
 {
   CHECK_FATAL (next_status != NULL);
 
-  return next_dyld_update (0);
+  return next_dyld_update(0);
 }
 
 static
-void info_dyld_command (char *args, int from_tty)
+void info_dyld_command (const char *args, int from_tty)
 {
   CHECK_FATAL (next_status != NULL);
   dyld_print_status_info (&next_status->dyld_status, dyld_reason_dyld);
 }
 
 static
-void info_sharedlibrary_command (char *args, int from_tty)
+void info_sharedlibrary_command (const char *args, int from_tty)
 {
   CHECK_FATAL (next_status != NULL);
   dyld_print_status_info (&next_status->dyld_status, dyld_reason_all);
 }
 
 void
-next_mach_add_shared_symbol_files ()
+next_mach_add_shared_symbol_files(void)
 {
   struct dyld_objfile_info *result = NULL;
 
@@ -454,8 +491,8 @@ next_mach_add_shared_symbol_files ()
   update_section_tables (&current_target);
   update_section_tables (&exec_ops);
 
-  reread_symbols ();
-  breakpoint_re_set ();
+  reread_symbols();
+  breakpoint_re_set(NULL);
   re_enable_breakpoints_in_shlibs (0);
 }
 
@@ -517,14 +554,14 @@ next_init_dyld_symfile (struct objfile *o)
 }
 
 static
-void next_dyld_init_command (char *args, int from_tty)
+void next_dyld_init_command (const char *args, int from_tty)
 {
   CHECK_FATAL (next_status != NULL);
   next_init_dyld (&next_status->dyld_status, symfile_objfile);
 }
 
 static
-void dyld_cache_purge_command (char *exp, int from_tty)
+void dyld_cache_purge_command (const char *exp, int from_tty)
 {
   CHECK_FATAL (next_status != NULL);
   dyld_purge_cached_libraries (&next_status->dyld_status.current_info);
@@ -540,13 +577,16 @@ void dyld_info_process_raw
   char *namebuf = NULL;
 
   struct dyld_objfile_entry *entry;
+#ifndef errno
   int errno;
+#endif /* !errno */
 
   name = extract_unsigned_integer (buf, 4);
   slide = extract_unsigned_integer (buf + 4, 4);
   header = extract_unsigned_integer (buf + 8, 4);
 
-  target_read_memory (header, (char *) &headerbuf, sizeof (struct mach_header));
+  target_read_memory(header, (gdb_byte *)&headerbuf,
+		     sizeof(struct mach_header));
 
   switch (headerbuf.filetype) {
   case 0:
@@ -564,8 +604,9 @@ void dyld_info_process_raw
     target_read_string (name, &namebuf, 1024, &errno);
     return;
   default:
-    warning ("Ignored unknown object module at 0x%lx (offset 0x%lx) with type 0x%lx\n",
-             (unsigned long) header, (unsigned long) slide, (unsigned long) headerbuf.filetype);
+    warning("Ignored unknown object module at 0x%lx (offset 0x%lx) with type 0x%lx\n",
+            (unsigned long)header, (unsigned long)slide,
+	    (unsigned long)headerbuf.filetype);
     return;
   }
 
@@ -608,14 +649,17 @@ void dyld_info_process_raw
     entry->reason = dyld_reason_dyld;
     break;
   default:
-    internal_error (__FILE__, __LINE__, "Unknown object module at 0x%lx (offset 0x%lx) with type 0x%lx\n",
-                    (unsigned long) header, (unsigned long) slide, (unsigned long) headerbuf.filetype);
+    internal_error(__FILE__, __LINE__,
+		   "Unknown object module at 0x%lx (offset 0x%lx) with type 0x%lx\n",
+                   (unsigned long)header, (unsigned long)slide,
+		   (unsigned long)headerbuf.filetype);
   }
 }
 
-static
-void dyld_info_read_raw
-(struct next_dyld_thread_status *status, struct dyld_objfile_info *info, int dyldonly)
+/* */
+static void
+dyld_info_read_raw(struct next_dyld_thread_status *status,
+		   struct dyld_objfile_info *info, int dyldonly)
 {
   CORE_ADDR library_images_addr;
   CORE_ADDR object_images_addr;
@@ -642,13 +686,12 @@ void dyld_info_read_raw
     return;
   }
 
-  next_init_addresses ();
+  next_init_addresses();
 
   library_images_addr = status->library_images;
 
-  while (library_images_addr != NULL) {
-
-    size_t size = status->nlibrary_images * status->library_image_size;
+  while (library_images_addr != INVALID_ADDRESS) {
+    size_t size = (status->nlibrary_images * status->library_image_size);
     unsigned char *buf = NULL;
     size_t nimages = 0;
 
@@ -659,7 +702,7 @@ void dyld_info_read_raw
     library_images_addr = extract_unsigned_integer (buf + size + 4, 4);
 
     if (nimages > status->nlibrary_images) {
-      error ("image specifies an invalid number of libraries (%d)", nimages);
+      error("image specifies an invalid number of libraries (%zu)", nimages);
     }
 
     for (i = 0, nread = 0; i < nimages; i++, nread++) {
@@ -671,9 +714,8 @@ void dyld_info_read_raw
 
   object_images_addr = status->object_images;
 
-  while (object_images_addr != NULL) {
-
-    size_t size = status->nobject_images * status->object_image_size;
+  while (object_images_addr != INVALID_ADDRESS) {
+    size_t size = (status->nobject_images * status->object_image_size);
     unsigned char *buf = NULL;
     size_t nimages = 0;
 
@@ -684,14 +726,14 @@ void dyld_info_read_raw
     object_images_addr = extract_unsigned_integer (buf + size + 4, 4);
 
     if (nimages > status->nobject_images) {
-      error ("image specifies an invalid number of objects (%d)", nimages);
+      error("image specifies an invalid number of objects (%zu)", nimages);
     }
 
     for (i = 0, nread = 0; i < nimages; i++, nread++) {
       dyld_info_process_raw (info, (buf + (i * status->object_image_size)));
     }
 
-    xfree (buf);
+    xfree(buf);
   }
 }
 
@@ -715,10 +757,19 @@ next_dyld_update (int dyldonly)
   dyld_objfile_info_init (&next_status->dyld_status.current_info);
 
   dyld_info_read_raw (&next_status->dyld_status, &next_status->dyld_status.current_info, dyldonly);
-  if (inferior_auto_start_cfm_flag)
-    ret = cfm_update (next_status->task, &next_status->dyld_status.current_info);
-  dyld_update_shlibs (&next_status->dyld_status, &next_status->dyld_status.path_info,
-                      &previous_info, &next_status->dyld_status.current_info, &new_info);
+  if (inferior_auto_start_cfm_flag) {
+#if defined(WITH_CFM) && WITH_CFM
+    ret = cfm_update(next_status->task, &next_status->dyld_status.current_info);
+#else
+    ret = -1;
+#endif /* WITH_CFM */
+  }
+  if (ret > 0) {
+    ; /* ??? */
+  }
+  dyld_update_shlibs(&next_status->dyld_status,
+		     &next_status->dyld_status.path_info, &previous_info,
+		     &next_status->dyld_status.current_info, &new_info);
 
   if (dyld_filter_events_flag) {
     libraries_changed = dyld_objfile_info_compare (&saved_info, &new_info);
@@ -735,20 +786,23 @@ next_dyld_update (int dyldonly)
 }
 
 static
-void next_dyld_update_command (char *args, int from_tty)
+void next_dyld_update_command (const char *args, int from_tty)
 {
-  next_dyld_update (0);
+  next_dyld_update(0);
 }
 
-extern int dyld_resolve_shlib_num
-(struct dyld_objfile_info *s, unsigned int num, struct dyld_objfile_entry **eptr, struct objfile **optr);
+extern int dyld_resolve_shlib_num(struct dyld_objfile_info *s, unsigned int num,
+				  struct dyld_objfile_entry **eptr,
+				  struct objfile **optr);
 
 static void
-map_shlib_numbers
-(char *args, void (*function) (struct dyld_path_info *, struct dyld_objfile_entry *, struct objfile *, const char *param),
- struct dyld_path_info *d, struct dyld_objfile_info *info)
+map_shlib_numbers(const char *args,
+		  void (*function)(struct dyld_path_info *,
+				   struct dyld_objfile_entry *,
+				   struct objfile *, const char *param),
+		  struct dyld_path_info *d, struct dyld_objfile_info *info)
 {
-  char *p, *p1, *val;
+  const char *p, *p1, *val;
   int num, match;
 
   if (args == 0)
@@ -765,7 +819,7 @@ map_shlib_numbers
   }
   val = p;
   if ((*p != '\0') && (p > args)) {
-    p[-1] = '\0';
+    *(char *)(p - 1) = '\0';
   }
 
   p = args;
@@ -790,6 +844,7 @@ map_shlib_numbers
       (* function) (d, e, o, val);
 
       p = p1;
+      (void)match;
     }
 }
 
@@ -801,7 +856,7 @@ add_helper (struct dyld_path_info *d, struct dyld_objfile_entry *e, struct objfi
 }
 
 static
-void dyld_add_symbol_file_command (char *args, int from_tty)
+void dyld_add_symbol_file_command (const char *args, int from_tty)
 {
   struct dyld_objfile_info original_info, modified_info, new_info;
 
@@ -832,7 +887,7 @@ void remove_helper (struct dyld_path_info *d, struct dyld_objfile_entry *e, stru
 }
 
 static
-void dyld_remove_symbol_file_command (char *args, int from_tty)
+void dyld_remove_symbol_file_command (const char *args, int from_tty)
 {
   struct dyld_objfile_info original_info, modified_info, new_info;
 
@@ -866,7 +921,7 @@ set_load_state_helper (struct dyld_path_info *d, struct dyld_objfile_entry *e, s
 }
 
 static void
-dyld_set_load_state_command (char *args, int from_tty)
+dyld_set_load_state_command (const char *args, int from_tty)
 {
   struct dyld_objfile_info original_info, modified_info, new_info;
 
@@ -892,17 +947,19 @@ dyld_set_load_state_command (char *args, int from_tty)
 static void
 section_info_helper (struct dyld_path_info *d, struct dyld_objfile_entry *e, struct objfile *o, const char *arg)
 {
+#if defined(WITH_CFM) && WITH_CFM
   int ret;
+#endif /* WITH_CFM */
 
   if (o != NULL) {
     print_section_info_objfile (o);
   } else {
-    ui_out_list_begin (uiout, "section-info");
-    ui_out_list_end (uiout);
+    ui_out_list_begin(uiout, "section-info");
+    ui_out_list_end(uiout);
   }
 
   if (e != NULL) {
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
     if (e->cfm_connection != 0) {
 
       NCFragConnectionInfo connection;
@@ -963,34 +1020,40 @@ section_info_helper (struct dyld_path_info *d, struct dyld_objfile_entry *e, str
 }
 
 static void
-dyld_section_info_command (char *args, int from_tty)
+dyld_section_info_command(const char *args, int from_tty)
 {
-  map_shlib_numbers (args, section_info_helper, &next_status->dyld_status.path_info, &next_status->dyld_status.current_info);
+  map_shlib_numbers(args, section_info_helper,
+		    &next_status->dyld_status.path_info,
+		    &next_status->dyld_status.current_info);
 }
 
 
 static void
-info_cfm_command (char *args, int from_tty)
+info_cfm_command (const char *args, int from_tty)
 {
   CHECK_FATAL (next_status != NULL);
   dyld_print_status_info (&next_status->dyld_status, dyld_reason_cfm);
 }
 
 static void
-info_raw_cfm_command (char *args, int from_tty)
+info_raw_cfm_command (const char *args, int from_tty)
 {
   task_t task = next_status->task;
   struct dyld_objfile_info info;
 
   dyld_objfile_info_init (&info);
+#if defined(WITH_CFM) && WITH_CFM
   cfm_update (task, &info);
+#else
+  (void)task;
+#endif /* WITH_CFM */
 
   dyld_print_shlib_info (&info, dyld_reason_cfm);
 }
 
 #if 0
 static void
-set_shlib (char *arg, int from_tty)
+set_shlib (const char *arg, int from_tty)
 {
   printf_unfiltered (
      "\"set shlib\" must be followed by the name of a shlib subcommand.\n");
@@ -998,7 +1061,7 @@ set_shlib (char *arg, int from_tty)
 }
 
 static void
-show_shlib (char *args, int from_tty)
+show_shlib (const char *args, int from_tty)
 {
   cmd_show_list (showshliblist, from_tty, "");
 }
@@ -1010,8 +1073,9 @@ struct cmd_list_element *showshliblist = NULL;
 struct cmd_list_element *infoshliblist = NULL;
 struct cmd_list_element *shliblist = NULL;
 
+extern void _initialize_nextstep_nat_dyld(void); /* -Wmissing-prototypes */
 void
-_initialize_nextstep_nat_dyld ()
+_initialize_nextstep_nat_dyld(void)
 {
   struct cmd_list_element *cmd = NULL;
 

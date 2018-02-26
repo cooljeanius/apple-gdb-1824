@@ -1695,7 +1695,7 @@ decode_frame_entry_1(struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
   /* In a .eh_frame section, zero is used to distinguish CIEs from FDEs.  */
   if (eh_frame_p)
     cie_id = 0;
-  else if (dwarf64_p)
+  else if (dwarf64_p && (DW64_CIE_ID != 0) && (DW64_CIE_ID != DW_CIE_ID))
     cie_id = DW64_CIE_ID;
   else
     cie_id = DW_CIE_ID;

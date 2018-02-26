@@ -34,7 +34,7 @@ extern void i386_next_fetch_fp_registers(unsigned char *,
 extern void i386_next_store_fp_registers(unsigned char *,
 					 gdb_i386_thread_fpstate_t *);
 extern CORE_ADDR i386_next_skip_trampoline_code(CORE_ADDR);
-extern int i386_next_in_solib_return_trampoline(CORE_ADDR, char *);
+extern int i386_next_in_solib_return_trampoline(CORE_ADDR, const char *);
 extern int i386_next_in_solib_call_trampoline(CORE_ADDR, char *);
 extern CORE_ADDR sigtramp_saved_pc(struct frame_info *);
 

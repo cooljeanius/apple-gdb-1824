@@ -46,3 +46,4 @@ config*.lineno
 s390-mkopc
 s390-opc.tab
 conf*/*.awk
+ia64-gen

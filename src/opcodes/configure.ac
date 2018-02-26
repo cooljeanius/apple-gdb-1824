@@ -706,6 +706,7 @@ else
     gl_WARN_ADD([-Wextra])
     gl_WARN_ADD([-Wno-missing-field-initializers])
     gl_WARN_ADD([-Wno-shift-negative-value])
+    gl_WARN_ADD([-Wno-shift-count-overflow])
     gl_WARN_ADD([-Wno-format-overflow])
     gl_WARN_ADD([-Wno-format-truncation])
   ])

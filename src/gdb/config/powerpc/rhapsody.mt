@@ -5,6 +5,8 @@ MT_CFLAGS = \
 	-DTARGET_POWERPC \
 	-I../gdb-next
 
+VPATH += ../gdb-next
+
 TDEPFILES = \
 	core-macho.o \
 	xcoffread.o \

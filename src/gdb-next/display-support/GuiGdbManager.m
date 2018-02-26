@@ -8,6 +8,7 @@
 #import "DisplayMisc.h"
 #import <Foundation/Foundation.h>
 #include "inferior.h"
+#include "exceptions.h"
 
 #define DEBUG_MAIN
 #import "debug.h"
@@ -15,6 +16,8 @@
 #ifdef DEBUG
 FILE	*debug_stream;
 #endif /* DEBUG */
+
+extern char *get_prompt(void);
 
 
 @implementation GdbCmd
@@ -49,6 +52,7 @@ useAnnotation:(BOOL)anno
 - (void) dealloc
 {
     [cmd release];
+	[super dealloc];
 }
 
 
@@ -194,38 +198,50 @@ useAnnotation:(BOOL)anno
 {
     print_source_lines_hook = tell_displayer_display_lines;
     command_loop_hook = displayer_command_loop;
+#if 0
     fputs_unfiltered_hook = tell_displayer_fputs_output;
+#endif /* 0 */
 
     state_change_hook = tell_displayer_state_changed;
     frame_changed_hook = tell_displayer_frame_changed;
     stack_changed_hook = tell_displayer_stack_changed;
 
+#if 0
     create_breakpoint_hook = displayer_create_breakpoint_hook;
     delete_breakpoint_hook = displayer_delete_breakpoint_hook;
     modify_breakpoint_hook = displayer_modify_breakpoint_hook;
+#endif /* 0 */
 }
 
 - (void) engageQueryHookFunction
 {
+#if 0
     query_hook = tell_displayer_do_query;
+#endif /* 0 */
     command_line_input_hook = tell_displayer_get_input;
 }
 
 - (void) disengageHookFunctions
 {
+#if 0
     print_frame_info_listing_hook = NULL;
+#endif /* 0 */
 
     command_loop_hook = NULL;
+#if 0
     query_hook = NULL;
     fputs_unfiltered_hook = NULL;
+#endif /* 0 */
 
     state_change_hook = NULL;
     frame_changed_hook = NULL;
     stack_changed_hook = NULL;
 
+#if 0
     create_breakpoint_hook = NULL;
     delete_breakpoint_hook = NULL;
     modify_breakpoint_hook = NULL;
+#endif /* 0 */
 }
 
 
@@ -343,7 +359,9 @@ execute_command_for_PB (char *command)
 
     wasError = catch_errors(execute_command_for_PB, (char *)cmd,
                             NULL, RETURN_MASK_ALL);
-    /*execute_command_for_PB((char *)cmd);*/
+#if 0
+    execute_command_for_PB((char *)cmd);
+#endif /* 0 */
 
     info_verbose = old_verbose;
 
@@ -510,7 +528,7 @@ execute_command_for_PB (char *command)
     char *prompt = NULL;
     int do_prompt = 0;
 
-    prompt = get_prompt ();
+    prompt = get_prompt();
 
     DEBUG_PRINT ("in Command Loop\n");
 

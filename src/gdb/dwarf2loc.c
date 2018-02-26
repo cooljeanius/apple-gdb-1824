@@ -42,7 +42,11 @@
 #include "gdb_string.h"
 
 #if defined(TM_NEXTSTEP) && !defined(__GDB_MACOSX_TDEP_H__)
-# include "macosx-tdep.h"
+# ifdef __NeXT__
+#  include "macosx/macosx-tdep.h"
+# else
+#  include "macosx-tdep.h"
+# endif /* __NeXT__ */
 #endif /* TM_NEXTSTEP && !__GDB_MACOSX_TDEP_H__ */
 
 #ifndef DWARF2_REG_TO_REGNUM

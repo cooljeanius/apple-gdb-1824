@@ -50,13 +50,17 @@ GdbManager* make_view_gdb_manager()
 - (void) engageHookFunctions
 {
   window_hook = view_display_window_hook;
+#if 0
   print_frame_info_listing_hook = tell_displayer_display_lines;
+#endif /* 0 */
 }
 
 - (void) disengageHookFunctions
 {
   window_hook = NULL;
+#if 0
   print_frame_info_listing_hook = NULL;
+#endif /* 0 */
 }
 
 @end

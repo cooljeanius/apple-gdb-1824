@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-18 10:48-0400\n"
+"POT-Creation-Date: 2018-02-25 22:47-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: alpha-opc.c:155
+#: alpha-opc.c:156
 msgid "branch operand unaligned"
 msgstr ""
 
-#: alpha-opc.c:171 alpha-opc.c:187
+#: alpha-opc.c:172 alpha-opc.c:188
 msgid "jump hint unaligned"
 msgstr ""
 
@@ -135,17 +135,17 @@ msgid ""
 "the -M switch:\n"
 msgstr ""
 
-#: avr-dis.c:110 avr-dis.c:120
+#: avr-dis.c:111 avr-dis.c:121
 #, c-format
 msgid "undefined"
 msgstr ""
 
-#: avr-dis.c:177
+#: avr-dis.c:178
 #, c-format
 msgid "Internal disassembler error"
 msgstr ""
 
-#: avr-dis.c:226
+#: avr-dis.c:227
 #, c-format
 msgid "unknown constraint `%c'"
 msgstr ""
@@ -162,7 +162,7 @@ msgstr ""
 msgid "operand out of range (%lu not between %lu and %lu)"
 msgstr ""
 
-#: d30v-dis.c:252
+#: d30v-dis.c:253
 #, c-format
 msgid "<unknown register %d>"
 msgstr ""
@@ -212,11 +212,11 @@ msgstr ""
 #: frv-asm.c:1449 frv-asm.c:1536 frv-asm.c:1637 ip2k-asm.c:693 ip2k-asm.c:697
 #: ip2k-asm.c:784 ip2k-asm.c:885 iq2000-asm.c:639 iq2000-asm.c:643
 #: iq2000-asm.c:730 iq2000-asm.c:831 m32c-asm.c:1659 m32c-asm.c:1663
-#: m32c-asm.c:1750 m32c-asm.c:1851 m32r-asm.c:510 m32r-asm.c:514
-#: m32r-asm.c:601 m32r-asm.c:702 ms1-asm.c:729 ms1-asm.c:733 ms1-asm.c:820
-#: ms1-asm.c:921 openrisc-asm.c:423 openrisc-asm.c:427 openrisc-asm.c:514
-#: openrisc-asm.c:615 xstormy16-asm.c:458 xstormy16-asm.c:462
-#: xstormy16-asm.c:549 xstormy16-asm.c:650
+#: m32c-asm.c:1750 m32c-asm.c:1851 m32r-asm.c:510 m32r-asm.c:514 m32r-asm.c:601
+#: m32r-asm.c:702 ms1-asm.c:729 ms1-asm.c:733 ms1-asm.c:820 ms1-asm.c:921
+#: openrisc-asm.c:423 openrisc-asm.c:427 openrisc-asm.c:514 openrisc-asm.c:615
+#: xstormy16-asm.c:458 xstormy16-asm.c:462 xstormy16-asm.c:549
+#: xstormy16-asm.c:650
 msgid "unrecognized instruction"
 msgstr ""
 
@@ -362,22 +362,22 @@ msgstr ""
 msgid "Don't understand 0x%x \n"
 msgstr ""
 
-#: h8500-dis.c:122
+#: h8500-dis.c:123
 #, c-format
 msgid "can't cope with insert %d\n"
 msgstr ""
 
 #. Couldn't understand anything.
-#: h8500-dis.c:322
+#: h8500-dis.c:323
 #, c-format
 msgid "%02x\t\t*unknown*"
 msgstr ""
 
-#: i386-dis.c:3145
+#: i386-dis.c:3146
 msgid "<internal disassembler error>"
 msgstr ""
 
-#: i386-dis.c:3372
+#: i386-dis.c:3373
 #, c-format
 msgid ""
 "\n"
@@ -386,57 +386,57 @@ msgid ""
 "with the -M switch (multiple options should be separated by commas):\n"
 msgstr ""
 
-#: i386-dis.c:3376
+#: i386-dis.c:3377
 #, c-format
 msgid "  x86-64      Disassemble in 64bit mode\n"
 msgstr ""
 
-#: i386-dis.c:3377
+#: i386-dis.c:3378
 #, c-format
 msgid "  i386        Disassemble in 32bit mode\n"
 msgstr ""
 
-#: i386-dis.c:3378
+#: i386-dis.c:3379
 #, c-format
 msgid "  i8086       Disassemble in 16bit mode\n"
 msgstr ""
 
-#: i386-dis.c:3379
+#: i386-dis.c:3380
 #, c-format
 msgid "  att         Display instruction in AT&T syntax\n"
 msgstr ""
 
-#: i386-dis.c:3380
+#: i386-dis.c:3381
 #, c-format
 msgid "  intel       Display instruction in Intel syntax\n"
 msgstr ""
 
-#: i386-dis.c:3381
+#: i386-dis.c:3382
 #, c-format
 msgid "  addr64      Assume 64bit address size\n"
 msgstr ""
 
-#: i386-dis.c:3382
+#: i386-dis.c:3383
 #, c-format
 msgid "  addr32      Assume 32bit address size\n"
 msgstr ""
 
-#: i386-dis.c:3383
+#: i386-dis.c:3384
 #, c-format
 msgid "  addr16      Assume 16bit address size\n"
 msgstr ""
 
-#: i386-dis.c:3384
+#: i386-dis.c:3385
 #, c-format
 msgid "  data32      Assume 32bit data size\n"
 msgstr ""
 
-#: i386-dis.c:3385
+#: i386-dis.c:3386
 #, c-format
 msgid "  data16      Assume 16bit data size\n"
 msgstr ""
 
-#: i386-dis.c:3386
+#: i386-dis.c:3387
 #, c-format
 msgid "  suffix      Always display instruction suffix in AT&T syntax\n"
 msgstr ""
@@ -611,12 +611,12 @@ msgstr ""
 msgid "21-bit offset out of range"
 msgstr ""
 
-#: m10200-dis.c:156 m10300-dis.c:580
+#: m10200-dis.c:157 m10300-dis.c:581
 #, c-format
 msgid "unknown\t0x%04lx"
 msgstr ""
 
-#: m10200-dis.c:326
+#: m10200-dis.c:327
 #, c-format
 msgid "unknown\t0x%02lx"
 msgstr ""
@@ -842,111 +842,111 @@ msgstr ""
 msgid "$<undefined>"
 msgstr ""
 
-#: ppc-opc.c:806 ppc-opc.c:834
+#: ppc-opc.c:807 ppc-opc.c:835
 msgid "invalid conditional option"
 msgstr ""
 
-#: ppc-opc.c:836
+#: ppc-opc.c:837
 msgid "attempt to set y bit when using + or - modifier"
 msgstr ""
 
-#: ppc-opc.c:864
+#: ppc-opc.c:865
 msgid "offset not a multiple of 16"
 msgstr ""
 
-#: ppc-opc.c:883
+#: ppc-opc.c:884
 msgid "offset not a multiple of 2"
 msgstr ""
 
-#: ppc-opc.c:885
+#: ppc-opc.c:886
 msgid "offset greater than 62"
 msgstr ""
 
-#: ppc-opc.c:904 ppc-opc.c:949 ppc-opc.c:993
+#: ppc-opc.c:905 ppc-opc.c:950 ppc-opc.c:994
 msgid "offset not a multiple of 4"
 msgstr ""
 
-#: ppc-opc.c:906
+#: ppc-opc.c:907
 msgid "offset greater than 124"
 msgstr ""
 
-#: ppc-opc.c:925
+#: ppc-opc.c:926
 msgid "offset not a multiple of 8"
 msgstr ""
 
-#: ppc-opc.c:927
+#: ppc-opc.c:928
 msgid "offset greater than 248"
 msgstr ""
 
-#: ppc-opc.c:970
+#: ppc-opc.c:971
 msgid "offset not between -2048 and 2047"
 msgstr ""
 
-#: ppc-opc.c:991
+#: ppc-opc.c:992
 msgid "offset not between -8192 and 8191"
 msgstr ""
 
-#: ppc-opc.c:1019
+#: ppc-opc.c:1020
 msgid "invalid mask field"
 msgstr ""
 
-#: ppc-opc.c:1045
+#: ppc-opc.c:1046
 msgid "ignoring invalid mfcr mask"
 msgstr ""
 
-#: ppc-opc.c:1087
+#: ppc-opc.c:1088
 msgid "ignoring least significant bits in branch offset"
 msgstr ""
 
-#: ppc-opc.c:1117 ppc-opc.c:1152
+#: ppc-opc.c:1118 ppc-opc.c:1153
 msgid "illegal bitmask"
 msgstr ""
 
-#: ppc-opc.c:1217
+#: ppc-opc.c:1218
 msgid "value out of range"
 msgstr ""
 
-#: ppc-opc.c:1285
+#: ppc-opc.c:1286
 msgid "index register in load range"
 msgstr ""
 
-#: ppc-opc.c:1301
+#: ppc-opc.c:1302
 msgid "source and target register operands must be different"
 msgstr ""
 
-#: ppc-opc.c:1316
+#: ppc-opc.c:1317
 msgid "invalid register operand when updating"
 msgstr ""
 
-#: ppc-opc.c:1355
+#: ppc-opc.c:1356
 msgid "target register operand must be even"
 msgstr ""
 
-#: ppc-opc.c:1369
+#: ppc-opc.c:1370
 msgid "source register operand must be even"
 msgstr ""
 
-#: ppc-opc.c:1426
+#: ppc-opc.c:1427
 msgid "invalid sprg number"
 msgstr ""
 
-#: sparc-dis.c:269
+#: sparc-dis.c:270
 #, c-format
 msgid "Internal error:  bad sparc-opcode.h: \"%s\", %#.8lx, %#.8lx\n"
 msgstr ""
 
-#: sparc-dis.c:280
+#: sparc-dis.c:281
 #, c-format
 msgid "Internal error: bad sparc-opcode.h: \"%s\", %#.8lx, %#.8lx\n"
 msgstr ""
 
-#: sparc-dis.c:330
+#: sparc-dis.c:331
 #, c-format
 msgid "Internal error: bad sparc-opcode.h: \"%s\" == \"%s\"\n"
 msgstr ""
 
 #. Mark as non-valid instruction.
-#: sparc-dis.c:988
+#: sparc-dis.c:989
 msgid "unknown"
 msgstr ""
 

@@ -71,7 +71,7 @@ typedef mach_port_type_t port_type_t;
 # define _NSIG NSIG
 #endif /* (!_NSIG && NSIG) */
 
-#if (NS_TARGET_MAJOR < 5)
+#if defined(NS_TARGET_MAJOR) && (NS_TARGET_MAJOR < 5)
 # undef HAVE_TERMIOS_H
 #endif /* NS_TARGET_MAJOR < 5 */
 
@@ -99,10 +99,20 @@ void next_resize_window_handler (int signal) \
 char *strchr (const char *s, int c);
 char *strpbrk (const char *s1, const char *s2);
 
+#ifndef __GDB_DEFS_H__
 extern void xfree (void *v);
 extern void xmfree (void *md, void *v);
+#endif /* !__GDB_DEFS_H__ */
 
-#define free xfree
-#define mfree xmfree
+#ifndef free
+# define free xfree
+#endif /* !free */
+#ifndef mfree
+# ifdef USE_MMALLOC
+#  define mfree xmfree
+# endif /* USE_MMALLOC */
+#endif /* !mfree */
 
 #endif /* _XM_NEXTSTEP_H_ */
+
+/* EOF */

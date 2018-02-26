@@ -31,7 +31,7 @@ extern CORE_ADDR i386_next_skip_trampoline_code (CORE_ADDR pc);
 extern int i386_next_in_solib_call_trampoline (CORE_ADDR pc, char *name);
 #define IN_SOLIB_CALL_TRAMPOLINE(pc, name) i386_next_in_solib_call_trampoline (pc, name)
 
-extern int i386_next_in_solib_return_trampoline (CORE_ADDR pc, char *name);
+extern int i386_next_in_solib_return_trampoline (CORE_ADDR pc, const char *name);
 #define IN_SOLIB_RETURN_TRAMPOLINE(pc,name) i386_next_in_solib_return_trampoline (pc, name)
 
 #endif /* TM_I386NEXT_H */

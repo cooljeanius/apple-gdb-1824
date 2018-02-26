@@ -51,7 +51,7 @@ CORE_ADDR allocate_space_in_inferior_mach(int len);
 
 CORE_ADDR macosx_allocate_space_in_inferior(int len);
 
-# if HAVE_64_BIT_STACK_LOGGING
+# if defined(HAVE_64_BIT_STACK_LOGGING) && HAVE_64_BIT_STACK_LOGGING
 void macosx_clear_logging_path(void);
 # endif /* HAVE_64_BIT_STACK_LOGGING */
 

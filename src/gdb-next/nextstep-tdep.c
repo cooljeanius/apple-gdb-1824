@@ -142,9 +142,12 @@ next_symbol_type(unsigned char macho_type, unsigned char macho_other)
 
 /* */
 void
-next_internalize_symbol(struct internal_nlist *in, struct external_nlist *ext,
-			bfd *abfd)
+next_internalize_symbol(struct internal_nlist *in, int *sect_p,
+			struct external_nlist *ext, bfd *abfd)
 {
+#if (defined(__APPLE_CC__) && (__APPLE_CC__ > 1)) || defined(__MWERKS__)
+# pragma unused (sect_p)
+#endif /* __APPLE_CC__ || __MWERKS__ */
   if (bfd_header_big_endian (abfd)) {
     in->n_strx = BFD_GETB32 (ext->e_strx);
     in->n_desc = BFD_GETB16 (ext->e_desc);

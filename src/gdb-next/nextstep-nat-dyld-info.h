@@ -83,7 +83,7 @@ struct dyld_objfile_info {
   struct obj_section *sections_end;
 };
 
-const int dyld_entry_source_filename_is_absolute
+int dyld_entry_source_filename_is_absolute
 PARAMS ((struct dyld_objfile_entry *e));
 
 const char *dyld_entry_source_filename

@@ -623,6 +623,7 @@
 		A53F05201B45F8A7005B5360 /* xvasprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC1801A3F4517002F20B2 /* xvasprintf.c */; };
 		A53F07981B4636C9005B5360 /* libiberty.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A53F04941B45F52C005B5360 /* libiberty.a */; };
 		A53F07991B4636E1005B5360 /* test-expandargv.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC3431A410A84002F20B2 /* test-expandargv.c */; };
+		A57C98182043C97400D09754 /* nextstep-nat-watchpoint.h in Headers */ = {isa = PBXBuildFile; fileRef = A57C98172043C97400D09754 /* nextstep-nat-watchpoint.h */; };
 		A589CB5B1A30F16700E717B9 /* cpcg.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB4F1A30EF6400E717B9 /* cpcg.c */; };
 		A589CB5C1A30F16700E717B9 /* cpfork.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB501A30EF6400E717B9 /* cpfork.c */; };
 		A589CB681A30F23F00E717B9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A589CB671A30F23F00E717B9 /* ApplicationServices.framework */; };
@@ -3215,7 +3216,7 @@
 		61F32D621CC3730F00C05007 /* GuiDisplayProvider_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuiDisplayProvider_Protocol.h; sourceTree = "<group>"; };
 		61F32D631CC3730F00C05007 /* GuiGdbCmd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuiGdbCmd.h; sourceTree = "<group>"; };
 		61F32D641CC3730F00C05007 /* GuiGdbManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuiGdbManager.h; sourceTree = "<group>"; };
-		61F32D651CC3730F00C05007 /* GuiGdbManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GuiGdbManager.m; sourceTree = "<group>"; };
+		61F32D651CC3730F00C05007 /* GuiGdbManager.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = GuiGdbManager.m; sourceTree = "<group>"; tabWidth = 4; };
 		61F32D661CC3730F00C05007 /* GuiGdbManagerExecLock_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuiGdbManagerExecLock_Protocol.h; sourceTree = "<group>"; };
 		61F32D671CC3730F00C05007 /* GuiGdbManagerInternal_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuiGdbManagerInternal_Protocol.h; sourceTree = "<group>"; };
 		61F32D681CC3730F00C05007 /* ViewDisplayProvider_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewDisplayProvider_Protocol.h; sourceTree = "<group>"; };
@@ -4816,6 +4817,16 @@
 		A56E59D61B210132005E1D43 /* stub-loader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "stub-loader.c"; sourceTree = "<group>"; };
 		A56E59D81B210132005E1D43 /* testglue.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = testglue.c; sourceTree = "<group>"; };
 		A56E59E51B210132005E1D43 /* unit.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = unit.cc; sourceTree = "<group>"; };
+		A57C97E42043C71100D09754 /* tm-i386-next.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-i386-next.h"; sourceTree = "<group>"; };
+		A57C980D2043C8BB00D09754 /* tm-obsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-obsd.h"; sourceTree = "<group>"; };
+		A57C980E2043C8BB00D09754 /* tm-ptx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-ptx.h"; sourceTree = "<group>"; };
+		A57C980F2043C8BB00D09754 /* tm-ptx4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-ptx4.h"; sourceTree = "<group>"; };
+		A57C98102043C8BB00D09754 /* tm-sun386.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-sun386.h"; sourceTree = "<group>"; };
+		A57C98112043C8BB00D09754 /* tm-symmetry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-symmetry.h"; sourceTree = "<group>"; };
+		A57C98122043C8BB00D09754 /* tm-vxworks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-vxworks.h"; sourceTree = "<group>"; };
+		A57C98132043C8BB00D09754 /* tm-winpdo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-winpdo.h"; sourceTree = "<group>"; };
+		A57C98142043C8BB00D09754 /* tm-x86-64linux.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-x86-64linux.h"; sourceTree = "<group>"; };
+		A57C98172043C97400D09754 /* nextstep-nat-watchpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-watchpoint.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb-next/nextstep-nat-watchpoint.h"; sourceTree = "<absolute>"; };
 		A589C8DC1A30EC3100E717B9 /* .profile_generic */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_generic; path = ../../../.profile_generic; sourceTree = "<group>"; };
 		A589C8DD1A30EC3100E717B9 /* .profile_leopard */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_leopard; path = ../../../.profile_leopard; sourceTree = "<group>"; };
 		A589C8DE1A30EC3100E717B9 /* .profile_leopard_universal */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_leopard_universal; path = ../../../.profile_leopard_universal; sourceTree = "<group>"; };
@@ -7803,9 +7814,18 @@
 				A5965A6C1988947C00404B03 /* symmetry.mt */,
 				2609D39A0E82C40A008125DE /* tm-cygwin.h */,
 				2609D39B0E82C40A008125DE /* tm-i386-macosx.h */,
+				A57C97E42043C71100D09754 /* tm-i386-next.h */,
 				2609D39C0E82C40A008125DE /* tm-i386sol2.h */,
 				2609D39D0E82C40A008125DE /* tm-linux.h */,
 				2609D39E0E82C40A008125DE /* tm-nto.h */,
+				A57C980D2043C8BB00D09754 /* tm-obsd.h */,
+				A57C980E2043C8BB00D09754 /* tm-ptx.h */,
+				A57C980F2043C8BB00D09754 /* tm-ptx4.h */,
+				A57C98102043C8BB00D09754 /* tm-sun386.h */,
+				A57C98112043C8BB00D09754 /* tm-symmetry.h */,
+				A57C98122043C8BB00D09754 /* tm-vxworks.h */,
+				A57C98132043C8BB00D09754 /* tm-winpdo.h */,
+				A57C98142043C8BB00D09754 /* tm-x86-64linux.h */,
 				A5965A6D1988948F00404B03 /* vxworks.mt */,
 				A5965A6E1988948F00404B03 /* x86-64dicos.mt */,
 				A5965A6F1988948F00404B03 /* x86-64linux.mh */,
@@ -10184,6 +10204,7 @@
 				61F32DA91CC3730F00C05007 /* nextstep-nat-utils-pb.c */,
 				61F32DAA1CC3730F00C05007 /* nextstep-nat-utils-pb.h */,
 				61F32DAB1CC3730F00C05007 /* nextstep-nat-watchpoint.c */,
+				A57C98172043C97400D09754 /* nextstep-nat-watchpoint.h */,
 				61F32DAC1CC3730F00C05007 /* nextstep-tdep.c */,
 				61F32DAD1CC3730F00C05007 /* nextstep-tdep.h */,
 				61F32DAE1CC3730F00C05007 /* nextstep-xdep.c */,
@@ -13833,6 +13854,7 @@
 				A53B87821AE585E10067328B /* tcap.h in Headers */,
 				A53B87831AE585E10067328B /* tilde.h in Headers */,
 				A53B87841AE585E10067328B /* xmalloc.h in Headers */,
+				A57C98182043C97400D09754 /* nextstep-nat-watchpoint.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

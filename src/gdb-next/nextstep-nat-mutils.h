@@ -6,6 +6,8 @@
 #define _NEXTSTEP_NAT_MUTILS_H_
 
 #include "defs.h"
+#include "memattr.h"
+#include "inferior.h"
 
 struct target_ops;
 
@@ -30,13 +32,10 @@ mach_warn_error (ret, __FILE__, __LINE__, __MACH_CHECK_FUNCTION);
 void gdb_check (const char *str, const char *file, unsigned int line, const char *func);
 void gdb_check_fatal (const char *str, const char *file, unsigned int line, const char *func);
 
-unsigned int child_get_pagesize PARAMS (());
+unsigned int child_get_pagesize PARAMS((void));
 
-int
-mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
-		  int len, int write,
-		  struct mem_attrib *attrib,
-		  struct target_ops *target);
+extern int mach_xfer_memory(CORE_ADDR, unsigned char *, int, int,
+			    struct mem_attrib *, struct target_ops *);
 
 void mach_check_error (kern_return_t ret, const char *file, unsigned int line, const char *func);
 void mach_warn_error (kern_return_t ret, const char *file, unsigned int line, const char *func);
@@ -50,7 +49,9 @@ thread_t next_primary_thread_of_task PARAMS ((task_t task));
 
 kern_return_t next_mach_msg_receive PARAMS ((msg_header_t *msgin, size_t msgsize, unsigned long timeout, port_t port));
 
-int call_ptrace PARAMS ((int request, int pid, int arg3, int arg4));
+int call_ptrace PARAMS((int request, int pid, PTRACE_ARG3_TYPE arg3, int arg4));
+
+extern void mutils_debug(const char *, ...) ATTRIBUTE_PRINTF_1;
 
 #endif /* _NEXTSTEP_NAT_MUTILS_H_ */
 

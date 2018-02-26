@@ -2271,7 +2271,7 @@ dir.info: do-install-info
 	if [ -f $(srcdir)/texinfo/gen-info-dir ] ; then \
 	  $(srcdir)/texinfo/gen-info-dir $(DESTDIR)$(infodir) $(srcdir)/texinfo/dir.info-template > dir.info.new ; \
 	  mv -f dir.info.new dir.info ; \
-	else "nothing to be done for $@"; \
+	else echo "nothing to be done for $@"; \
 	fi
 
 dist_target:
@@ -33240,7 +33240,7 @@ gcc-no-fixedincludes:
 	   $(MAKE) $(GCC_FLAGS_TO_PASS) install); \
 	  rm -rf gcc/include; \
 	  mv gcc/tmp-include gcc/include 2>/dev/null; \
-	else "nothing to be done for $@"; fi
+	else echo "nothing to be done for $@"; fi
 @endif gcc
 
 # ---------------------

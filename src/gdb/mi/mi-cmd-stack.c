@@ -42,7 +42,9 @@
 
 #if (defined(__i386__) && !defined(THROW_CATCH_FIND_TYPEINFO) && \
      defined(MACOSX_DYLD)) || defined(TARGET_I386)
-# include "tm-i386-macosx.h"
+# ifndef __NeXT__
+#  include "tm-i386-macosx.h"
+# endif /* !__NeXT__ */
 # if !defined(TM_I386NEXT_H) && !defined(HAVE_I387_REGS)
 #  include "config/i386/tm-i386-macosx.h"
 # endif /* !TM_I386NEXT_H && !HAVE_I387_REGS */

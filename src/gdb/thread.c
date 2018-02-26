@@ -49,7 +49,9 @@
 #include "inlining.h"
 
 #if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
-# include "macosx-nat-infthread.h"
+# ifndef __NeXT__
+#  include "macosx-nat-infthread.h"
+# endif /* !__NeXT__ */
 /* make sure we got the correct one: */
 # ifndef __GDB_MACOSX_NAT_INFTHREAD_H__
 #  include "macosx/macosx-nat-infthread.h"

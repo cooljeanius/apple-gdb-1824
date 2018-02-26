@@ -16,10 +16,17 @@
 #include "environ.h"
 #include "event-top.h"
 #include "event-loop.h"
+#include "exceptions.h"
 #include "inf-loop.h"
 
 #include "bfd.h"
 
+#ifndef _DARWIN_C_SOURCE
+# define _DARWIN_C_SOURCE 1
+#endif /* !_DARWIN_C_SOURCE */
+#ifdef __ASSEMBLER__
+# undef __ASSEMBLER__
+#endif /* __ASSEMBLER__ */
 #include <sys/ptrace.h>
 #include <sys/signal.h>
 #include <machine/setjmp.h>
@@ -42,7 +49,7 @@
 #include "nextstep-xdep.h"
 #include "nextstep-nat-inferior-util.h"
 
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
 # include "nextstep-nat-cfm.h"
 #endif /* WITH_CFM */
 
@@ -78,7 +85,7 @@ struct target_ops next_exec_ops;
 extern void init_child_ops (void);
 extern void init_exec_ops (void);
 
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
 int inferior_auto_start_cfm_flag = 1;
 #endif /* WITH_CFM */
 
@@ -133,7 +140,7 @@ static ptid_t next_process_pending_event (struct next_inferior_status *ns,
 					  struct target_waitstatus *status,
 					  gdb_client_data client_data);
 
-static void next_clear_pending_events ();
+static void next_clear_pending_events(void);
 
 static void next_child_stop (void);
 
@@ -142,7 +149,7 @@ static void next_child_resume (ptid_t ptid, int step, enum target_signal signal)
 static ptid_t next_mach_wait (ptid_t ptid, struct target_waitstatus *status,
 			      gdb_client_data client_data);
 
-static void next_mourn_inferior ();
+static void next_mourn_inferior(void);
 
 static int next_lookup_task (char *args, task_t *ptask, int *ppid);
 
@@ -151,9 +158,9 @@ static void next_child_attach (char *args, int from_tty);
 static void next_child_detach (char *args, int from_tty);
 
 static int next_kill_inferior (kern_return_t *);
-static void next_kill_inferior_safe ();
+static void next_kill_inferior_safe(void);
 
-static void next_ptrace_me ();
+static void next_ptrace_me(void);
 
 static void next_ptrace_him (int pid);
 
@@ -167,7 +174,10 @@ static int next_child_thread_alive (ptid_t tpid);
 
 static void next_set_auto_start_dyld (char *args, int from_tty,
 				      struct cmd_list_element *c);
+extern void update_command(const char *args, int from_tty);
+extern char **next_process_completer_quoted(const char *, char *, int);
 
+/* */
 static void
 next_handle_signal (next_signal_thread_message *msg,
 		    struct target_waitstatus *status)
@@ -251,7 +261,11 @@ next_handle_exception (next_exception_thread_message *msg,
       kret = thread_resume (msg->thread_port);
       MACH_CHECK_ERROR (kret);
 
+#ifdef TARGET_WAITKIND_SUBPROCESS
       status->kind = TARGET_WAITKIND_SUBPROCESS;
+#else
+      status->kind = TARGET_WAITKIND_EXITED;
+#endif /* TARGET_WAITKIND_SUBPROCESS */
       return;
     }
 
@@ -263,7 +277,7 @@ next_handle_exception (next_exception_thread_message *msg,
   kret = thread_resume (msg->thread_port);
   MACH_CHECK_ERROR (kret);
 
-  next_mach_check_new_threads ();
+  next_mach_check_new_threads();
 
   prepare_threads_after_stop (next_status);
 
@@ -356,7 +370,8 @@ next_fetch_event (struct next_inferior_status *inferior,
       continue;
     }
     if (ret < 0) {
-      internal_error (__FILE__, __LINE__, "unable to select: %s", strerror (errno));
+      internal_error(__FILE__, __LINE__, "unable to select: %s (%d)",
+		     xstrerror(errno), errno);
     }
     if (ret == 0) {
       return NEXT_SOURCE_NONE;
@@ -386,10 +401,9 @@ static void
 next_add_to_pending_events (enum next_source_type type, unsigned char *buf)
 {
   struct next_pending_event *new_event;
-  struct next_pending_event *last_event;
 
-  new_event = (struct next_pending_event *)
-    xmalloc (sizeof(struct next_pending_event));
+  new_event = ((struct next_pending_event *)
+	       xmalloc(sizeof(struct next_pending_event)));
 
   new_event->type = type;
 
@@ -427,7 +441,7 @@ next_add_to_pending_events (enum next_source_type type, unsigned char *buf)
 }
 
 static void
-next_clear_pending_events ()
+next_clear_pending_events(void)
 {
   struct next_pending_event *event_ptr = pending_event_chain;
 
@@ -575,12 +589,12 @@ next_process_events (struct next_inferior_status *inferior,
 	  }
       }
 
-    inferior_debug (2, "next_process_events: returning with (status->kind == %d)\n",
-		  status->kind);
+    inferior_debug(2, "next_process_events: returning with (status->kind == %d)\n",
+		   status->kind);
     return event_count;
 }
 
-void next_mach_check_new_threads ()
+void next_mach_check_new_threads(void)
 {
   thread_array_t thread_list = NULL;
   unsigned int nthreads = 0;
@@ -611,14 +625,16 @@ void next_mach_check_new_threads ()
    I think all the job control stuff in inflow.c looks bogus to me, we ought to use
    MacOS X specific versions everywhere we can, and avoid that mess...
 */
-
 static void
 next_child_stop (void)
 {
   extern pid_t inferior_process_group;
   int ret;
 
-  ret = kill (inferior_process_group, SIGINT);
+  ret = kill(inferior_process_group, SIGINT);
+  if (ret == -1) {
+    warning("failed to kill child: %s (%d)", xstrerror(errno), errno);
+  }
 }
 
 static void
@@ -629,7 +645,6 @@ next_child_resume (ptid_t ptid, int step, enum target_signal signal)
 
   int pid;
   thread_t thread;
-  int num_events;
 
   if (ptid_equal (ptid, minus_one_ptid)) {
     ptid = inferior_ptid;
@@ -638,7 +653,9 @@ next_child_resume (ptid_t ptid, int step, enum target_signal signal)
   pid = ptid_get_pid (ptid);
   thread = ptid_get_tid (ptid);
 
+#if 0
   CHECK_FATAL (tm_print_insn != NULL);
+#endif /* 0 */
   CHECK_FATAL (next_status != NULL);
 
   next_inferior_check_stopped (next_status);
@@ -658,24 +675,34 @@ next_child_resume (ptid_t ptid, int step, enum target_signal signal)
 		  step ? "stepping" : "continuing", nsignal);
 
   if (inferior_debug_flag > 2) {
-    CORE_ADDR pc = read_register (PC_REGNUM);
-    fprintf (stdout, "[%d inferior]: next_child_resume: about to execute instruction at ", getpid ());
-    print_address (pc, gdb_stdout);
-    fprintf (stdout, " (");
-    pc += (*tm_print_insn) (pc, &tm_print_insn_info);
-    fprintf (stdout, ")\n");
-    fprintf (stdout, "[%d inferior]: next_child_resume: subsequent instruction is ", getpid ());
-    print_address (pc, gdb_stdout);
-    fprintf (stdout, " (");
-    pc += (*tm_print_insn) (pc, &tm_print_insn_info);
-    fprintf (stdout, ")\n");
+    CORE_ADDR pc = read_register(PC_REGNUM);
+    fprintf(stdout, "[%d inferior]: next_child_resume: about to execute instruction at ",
+	    getpid());
+    print_address(pc, gdb_stdout);
+    fprintf(stdout, " (");
+#if 0
+    pc += (*tm_print_insn)(pc, &tm_print_insn_info);
+#else
+    pc += 0;
+#endif /* 0 */
+    fprintf(stdout, ")\n");
+    fprintf(stdout, "[%d inferior]: next_child_resume: subsequent instruction is ",
+	    getpid());
+    print_address(pc, gdb_stdout);
+    fprintf(stdout, " (");
+#if 0
+    pc += (*tm_print_insn)(pc, &tm_print_insn_info);
+#else
+    pc += 0;
+#endif /* 0 */
+    fprintf(stdout, ")\n");
   }
 
   if (next_post_pending_event())
     {
       /* QUESTION: Do I need to lie about target_executing here? */
       next_fake_resume = 1;
-      if (target_is_async_p ())
+      if (target_is_async_p())
 	target_executing = 1;
       return;
     }
@@ -696,11 +723,18 @@ next_child_resume (ptid_t ptid, int step, enum target_signal signal)
 
   next_inferior_resume_mach (next_status, -1);
 
-  if (event_loop_p && target_can_async_p ())
+#ifndef event_loop_p
+# define event_loop_p 0
+#endif /* !event_loop_p */
+  if (event_loop_p && target_can_async_p())
     target_async (inferior_event_handler, 0);
 
-  if (target_is_async_p ())
+  if (target_is_async_p())
     target_executing = 1;
+
+  if (pid == 0) {
+    ; /* ??? */
+  }
 }
 
 static ptid_t
@@ -722,14 +756,11 @@ next_process_pending_event (struct next_inferior_status *ns,
  * descriptors.  If client_data is not NULL, then the client data must
  * hold a next_pending_event structure, and in that case, this just
  * processes that event.  */
-
 ptid_t
 next_wait (struct next_inferior_status *ns,
 	   struct target_waitstatus *status,
 	   gdb_client_data client_data)
 {
-  int thread_id;
-
   CHECK_FATAL (ns != NULL);
 
   if (client_data != NULL)
@@ -737,18 +768,22 @@ next_wait (struct next_inferior_status *ns,
       return next_process_pending_event (ns, status, client_data);
     }
 
-  set_sigint_trap ();
-  set_sigio_trap ();
+  set_sigint_trap();
+  set_sigio_trap();
 
   for (;;) {
     status->kind = TARGET_WAITKIND_SPURIOUS;
     next_process_events (ns, status, -1, 1);
+#ifdef TARGET_WAITKIND_SUBPROCESS
     if (status->kind != TARGET_WAITKIND_SUBPROCESS)
       break;
+#else
+    break;
+#endif /* TARGET_WAITKIND_SUBPROCESS */
   }
   CHECK_FATAL (status->kind != TARGET_WAITKIND_SPURIOUS);
 
-  clear_sigio_trap ();
+  clear_sigio_trap();
   clear_sigint_trap();
 
   if ((status->kind == TARGET_WAITKIND_EXITED)
@@ -757,7 +792,7 @@ next_wait (struct next_inferior_status *ns,
       return null_ptid;
     }
 
-  next_mach_check_new_threads ();
+  next_mach_check_new_threads();
 
   if (! next_thread_valid (next_status->task, next_status->last_thread))
     {
@@ -779,10 +814,10 @@ next_mach_wait (ptid_t pid, struct target_waitstatus *status,
   return next_wait (next_status, status, client_data);
 }
 
-static void next_mourn_inferior ()
+static void next_mourn_inferior(void)
 {
   unpush_target (&next_child_ops);
-  child_ops.to_mourn_inferior ();
+  child_ops.to_mourn_inferior();
   next_inferior_destroy (next_status);
 
   inferior_ptid = null_ptid;
@@ -827,15 +862,15 @@ void next_fetch_task_info (struct kinfo_proc **info, size_t *count)
   CHECK_FATAL (info != NULL);
   CHECK_FATAL (count != NULL);
 
-  sysctl (control, 3, NULL, &length, NULL, 0);
-  proc = (struct kinfo_proc *) xmalloc (length);
-  sysctl (control, 3, proc, &length, NULL, 0);
+  sysctl((int *)control, 3, NULL, &length, NULL, 0);
+  proc = (struct kinfo_proc *)xmalloc(length);
+  sysctl((int *)control, 3, proc, &length, NULL, 0);
 
   *count = length / sizeof (struct kinfo_proc);
   *info = proc;
 }
 
-char **next_process_completer_quoted (char *text, char *word, int quote)
+char **next_process_completer_quoted(const char *text, char *word, int quote)
 {
   struct kinfo_proc *proc = NULL;
   size_t count, i;
@@ -850,15 +885,19 @@ char **next_process_completer_quoted (char *text, char *word, int quote)
 
   next_fetch_task_info (&proc, &count);
 
-  procnames = (char **) xmalloc ((count + 1) * sizeof (char *));
+  procnames = (char **)xmalloc((count + 1UL) * sizeof(char *));
 
   for (i = 0; i < count; i++) {
-    char *temp = (char *) xmalloc (strlen (proc[i].kp_proc.p_comm) + 1 + 16);
-    sprintf (temp, "%s.%d", proc[i].kp_proc.p_comm, proc[i].kp_proc.p_pid);
-    procnames[i] = (char *) xmalloc (strlen (temp) * 2 + 2 + 1);
+    const size_t templen = (strlen(proc[i].kp_proc.p_comm) + 1UL + 16UL);
+    char *temp = (char *)xmalloc(templen);
+    size_t procnames_i_len;
+    snprintf(temp, templen, "%s.%d", proc[i].kp_proc.p_comm,
+	     proc[i].kp_proc.p_pid);
+    procnames_i_len = ((strlen(temp) * 2UL) + 2UL + 1UL);
+    procnames[i] = (char *)xmalloc(procnames_i_len);
     if (quote) {
       if (quoted) {
-	sprintf (procnames[i], "\"%s\"", temp);
+	snprintf(procnames[i], procnames_i_len, "\"%s\"", temp);
       } else {
 	char *s = temp;
 	char *t = procnames[i];
@@ -873,18 +912,18 @@ char **next_process_completer_quoted (char *text, char *word, int quote)
 	*t++ = '\0';
       }
     } else {
-      sprintf (procnames[i], "%s", temp);
+      snprintf(procnames[i], procnames_i_len, "%s", temp);
     }
   }
   procnames[i] = NULL;
 
-  ret = complete_on_enum (procnames, text, word);
+  ret = complete_on_enum((const char **)procnames, text, word);
 
   xfree (proc);
   return ret;
 }
 
-char **next_process_completer (char *text, char *word)
+char **next_process_completer (const char *text, char *word)
 {
   return next_process_completer_quoted (text, word, 1);
 }
@@ -894,7 +933,7 @@ static void next_lookup_task_remote (char *host_str, char *pid_str, int pid, tas
   CHECK_FATAL (ptask != NULL);
   CHECK_FATAL (ppid != NULL);
 
-  error ("Unable to attach to remote processes on Mach 3.0 (no netname_look_up ()).");
+  error ("Unable to attach to remote processes on Mach 3.0 (no netname_look_up()).");
 }
 
 static void next_lookup_task_local (char *pid_str, int pid, task_t *ptask, int *ppid)
@@ -925,7 +964,7 @@ static void next_lookup_task_local (char *pid_str, int pid, task_t *ptask, int *
     task_t itask;
     kern_return_t kret;
 
-    cleanups = make_cleanup (free, ret);
+    cleanups = make_cleanup(xfree, ret);
 
     if ((ret == NULL) || (ret[0] == NULL)) {
       error ("Unable to locate process named \"%s\".", pid_str);
@@ -1045,7 +1084,7 @@ next_set_auto_start_dyld (char *args, int from_tty,
 
   if (!inferior_auto_start_dyld_flag)
     {
-      next_clear_start_breakpoint ();
+      next_clear_start_breakpoint();
       return;
     }
 
@@ -1078,7 +1117,7 @@ static void next_child_attach (char *args, int from_tty)
     error ("unable to locate task");
   }
 
-  if (itask == mach_task_self ()) {
+  if (itask == mach_task_self()) {
     error ("unable to debug self");
   }
 
@@ -1093,14 +1132,14 @@ static void next_child_attach (char *args, int from_tty)
     if (ret != 0) {
       next_inferior_destroy (next_status);
       if (errno == EPERM) {
-	error ("Unable to attach to process-id %d: %s (%d).\n"
-	       "This request requires that the target process be neither setuid nor "
-	       "setgid and have the same real userid as the debugger, or that the "
-	       "debugger be running with adminstrator privileges.",
-	       pid, strerror (errno), errno);
+	error("Unable to attach to process-id %d: %s (%d).\n"
+	      "This request requires that the target process be neither setuid nor "
+	      "setgid and have the same real userid as the debugger, or that the "
+	      "debugger be running with adminstrator privileges.",
+	      pid, xstrerror(errno), errno);
       } else {
-	error ("Unable to attach to process-id %d: %s (%d)",
-	       pid, strerror (errno), errno);
+	error("Unable to attach to process-id %d: %s (%d)",
+	      pid, xstrerror(errno), errno);
       }
     }
 
@@ -1121,7 +1160,7 @@ static void next_child_attach (char *args, int from_tty)
     }
   }
 
-  next_mach_check_new_threads ();
+  next_mach_check_new_threads();
 
   inferior_ptid = ptid_build (pid, 0, next_status->last_thread);
   attach_flag = 1;
@@ -1149,7 +1188,7 @@ static void next_child_detach (char *args, int from_tty)
   }
 
   if (! next_inferior_valid (next_status)) {
-    target_mourn_inferior ();
+    target_mourn_inferior();
     return;
   }
 
@@ -1170,21 +1209,21 @@ static void next_child_detach (char *args, int from_tty)
   }
 
   if (! next_inferior_valid (next_status)) {
-    target_mourn_inferior ();
+    target_mourn_inferior();
     return;
   }
 
   next_inferior_suspend_mach (next_status);
 
   if (! next_inferior_valid (next_status)) {
-    target_mourn_inferior ();
+    target_mourn_inferior();
     return;
   }
 
   prepare_threads_before_run (next_status, 0, THREAD_NULL, 0);
   next_inferior_resume_mach (next_status, -1);
 
-  target_mourn_inferior ();
+  target_mourn_inferior();
   return;
 }
 
@@ -1198,7 +1237,7 @@ static int next_kill_inferior (kern_return_t *errval)
   }
 
   if (! next_inferior_valid (next_status)) {
-    target_mourn_inferior ();
+    target_mourn_inferior();
     return 1;
   }
 
@@ -1217,23 +1256,23 @@ static int next_kill_inferior (kern_return_t *errval)
     CHECK_FATAL (next_status->stopped_in_ptrace);
     if (call_ptrace (PTRACE_KILL, next_status->pid, 0, 0) != 0) {
 	  error ("next_child_detach: ptrace (%d, %d, %d, %d): %s",
-		 PTRACE_KILL, next_status->pid, 0, 0, strerror (errno));
+		 PTRACE_KILL, next_status->pid, 0, 0, xstrerror(errno));
     }
     next_status->stopped_in_ptrace = 0;
   }
 
   if (! next_inferior_valid (next_status)) {
-    target_mourn_inferior ();
+    target_mourn_inferior();
     return 1;
   }
 
   next_inferior_resume_mach (next_status, -1);
-  target_mourn_inferior ();
+  target_mourn_inferior();
 
   return 1;
 }
 
-static void next_kill_inferior_safe ()
+static void next_kill_inferior_safe(void)
 {
   kern_return_t kret;
   int ret;
@@ -1244,11 +1283,11 @@ static void next_kill_inferior_safe ()
   if (ret == 0) {
     kret = task_terminate (next_status->task);
     MACH_WARN_ERROR (kret);
-    target_mourn_inferior ();
+    target_mourn_inferior();
   }
 }
 
-static void next_ptrace_me ()
+static void next_ptrace_me(void)
 {
   call_ptrace (PTRACE_TRACEME, 0, 0, 0);
 }
@@ -1258,21 +1297,20 @@ static void next_ptrace_him (int pid)
   task_t itask;
   kern_return_t kret;
   int traps_expected;
-  int pret;
 
   CHECK_FATAL (! next_status->attached_in_ptrace);
   CHECK_FATAL (! next_status->stopped_in_ptrace);
   CHECK_FATAL (next_status->suspend_count == 0);
 
-  kret = task_by_unix_pid (task_self (), pid, &itask);
+  kret = task_by_unix_pid(task_self(), pid, &itask);
   {
     char buf[1000];
-    sprintf (buf, "%s=%d", "TASK", itask);
-    putenv (buf);
+    snprintf(buf, sizeof(buf), "%s=%d", "TASK", itask);
+    putenv(buf);
   }
   if (kret != KERN_SUCCESS) {
-    error ("Unable to find Mach task port for process-id %d: %s (0x%lx).",
-	   pid, MACH_ERROR_STRING (kret), kret);
+    error("Unable to find Mach task port for process-id %d: %s (0x%lx).",
+	  pid, MACH_ERROR_STRING(kret), (unsigned long)kret);
   }
 
   inferior_debug (2, "inferior task: 0x%08x, pid: %d\n", itask, pid);
@@ -1295,7 +1333,7 @@ static void next_ptrace_him (int pid)
   }
 
   if (! next_task_valid (next_status->task)) {
-    target_mourn_inferior ();
+    target_mourn_inferior();
     return;
   }
 
@@ -1318,18 +1356,18 @@ static void next_child_create_inferior (char *exec_file, char *allargs, char **e
   if (ptid_equal (inferior_ptid, null_ptid))
     return;
 
-  next_clear_start_breakpoint ();
+  next_clear_start_breakpoint();
   if (inferior_auto_start_dyld_flag) {
     next_set_start_breakpoint (exec_bfd);
   }
 
   attach_flag = 0;
 
-  if (event_loop_p && target_can_async_p ())
+  if (event_loop_p && target_can_async_p())
     target_async (inferior_event_handler, 0);
 
-  clear_proceed_status ();
-  proceed ((CORE_ADDR) -1, TARGET_SIGNAL_0, 0);
+  clear_proceed_status();
+  proceed((CORE_ADDR)-1, TARGET_SIGNAL_0, 0);
 }
 
 static void next_child_files_info (struct target_ops *ops)
@@ -1344,7 +1382,8 @@ static char *next_mach_pid_to_str (ptid_t ptid)
   int pid = ptid_get_pid (ptid);
   thread_t thread = ptid_get_tid (ptid);
 
-  sprintf (buf, "process %d thread 0x%lx", pid, (unsigned long) thread);
+  snprintf(buf, sizeof(buf), "process %d thread 0x%lx", pid,
+	   (unsigned long)thread);
   return buf;
 }
 
@@ -1354,10 +1393,10 @@ next_child_thread_alive (ptid_t ptid)
   return next_thread_valid (next_status->task, ptid_get_tid (ptid));
 }
 
-void update_command (char *args, int from_tty)
+void update_command(const char *args, int from_tty)
 {
-  registers_changed ();
-  reinit_frame_cache ();
+  registers_changed();
+  reinit_frame_cache();
 }
 
 void next_create_inferior_for_task
@@ -1393,23 +1432,23 @@ static void async_remote_interrupt (gdb_client_data arg);
 static void
 interrupt_query (void)
 {
-  target_terminal_ours ();
+  target_terminal_ours();
 
   if (query ("Interrupted while waiting for the program.\n\
 Give up (and stop debugging it)? "))
     {
-      target_mourn_inferior ();
-      return_to_top_level (RETURN_QUIT);
+      target_mourn_inferior();
+      return_to_top_level(RETURN_QUIT);
     }
 
-  target_terminal_inferior ();
+  target_terminal_inferior();
 }
 
 static void
 remote_interrupt_twice (int signo)
 {
   signal (signo, ofunc);
-  interrupt_query ();
+  interrupt_query();
   signal (signo, remote_interrupt);
 }
 
@@ -1417,7 +1456,7 @@ static void
 remote_interrupt (int signo)
 {
   signal (signo, remote_interrupt_twice);
-  target_stop ();
+  target_stop();
 }
 
 static void
@@ -1443,7 +1482,7 @@ async_remote_interrupt_twice (gdb_client_data arg)
 {
   if (target_executing)
     {
-      interrupt_query ();
+      interrupt_query();
       signal (SIGINT, handle_remote_sigint);
     }
 }
@@ -1451,7 +1490,7 @@ async_remote_interrupt_twice (gdb_client_data arg)
 static void
 async_remote_interrupt (gdb_client_data arg)
 {
-  target_stop ();
+  target_stop();
 }
 
 static void
@@ -1475,7 +1514,7 @@ initialize_sigint_signal_handler (void)
 static void
 next_terminal_inferior (void)
 {
-  terminal_inferior ();
+  terminal_inferior();
 
   if (!sync_execution)
     return;
@@ -1485,13 +1524,13 @@ next_terminal_inferior (void)
   CHECK_FATAL (remote_async_terminal_ours_p);
   delete_file_handler (input_fd);
   remote_async_terminal_ours_p = 0;
-  initialize_sigint_signal_handler ();
+  initialize_sigint_signal_handler();
 }
 
 static void
 next_terminal_ours (void)
 {
-  terminal_ours ();
+  terminal_ours();
 
   if (!sync_execution)
     return;
@@ -1540,9 +1579,9 @@ next_async (void (*callback) (enum inferior_event_type event_type,
 
 }
 
-
+extern void _initialize_next_inferior(void); /* -Wmissing-prototypes */
 void
-_initialize_next_inferior ()
+_initialize_next_inferior(void)
 {
   struct cmd_list_element *cmd;
 
@@ -1555,11 +1594,11 @@ _initialize_next_inferior ()
   dyld_init_paths (&next_status->dyld_status.path_info);
   dyld_objfile_info_init (&next_status->dyld_status.current_info);
 
-  init_child_ops ();
+  init_child_ops();
   next_child_ops = child_ops;
   child_ops.to_can_run = NULL;
 
-  init_exec_ops ();
+  init_exec_ops();
   next_exec_ops = exec_ops;
   exec_ops.to_can_run = NULL;
 
@@ -1584,7 +1623,9 @@ _initialize_next_inferior ()
   next_child_ops.to_thread_alive = next_child_thread_alive;
   next_child_ops.to_pid_to_str = next_mach_pid_to_str;
   next_child_ops.to_load = NULL;
+#ifndef TARGET_H
   next_child_ops.to_xfer_memory = mach_xfer_memory;
+#endif /* !TARGET_H */
   next_child_ops.to_can_async_p = standard_can_async_p;
   next_child_ops.to_is_async_p = standard_is_async_p;
   next_child_ops.to_terminal_inferior = next_terminal_inferior;
@@ -1619,13 +1660,13 @@ _initialize_next_inferior ()
 
   cmd = add_set_cmd ("inferior-ptrace", class_obscure, var_boolean,
 		     (char *) &inferior_ptrace_flag,
-		     "Set if GDB should attach to the subprocess using ptrace ().",
+		     "Set if GDB should attach to the subprocess using ptrace().",
 		     &setlist);
   add_show_from_set (cmd, &showlist);
 
   cmd = add_set_cmd ("inferior-ptrace-on-attach", class_obscure, var_boolean,
 		     (char *) &inferior_ptrace_on_attach_flag,
-		     "Set if GDB should attach to the subprocess using ptrace ().",
+		     "Set if GDB should attach to the subprocess using ptrace().",
 		     &setlist);
   add_show_from_set (cmd, &showlist);
 
@@ -1634,9 +1675,13 @@ _initialize_next_inferior ()
 		     "Set if GDB should enable debugging of dyld shared libraries.",
 		     &setlist);
   add_show_from_set (cmd, &showlist);
+#if 0
   cmd->function.sfunc = next_set_auto_start_dyld;
+#else
+  (void)next_set_auto_start_dyld;
+#endif /* 0 */
 
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
   cmd = add_set_cmd ("inferior-auto-start-cfm", class_obscure, var_boolean,
 		     (char *) &inferior_auto_start_cfm_flag,
 		     "Set if GDB should enable debugging of CFM shared libraries.",

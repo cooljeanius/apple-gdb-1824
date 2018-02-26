@@ -67,6 +67,9 @@ BFD_H = ../bfd/bfd.h
 # This is where libiberty lives:
 LIBIBERTY = ../libiberty/libiberty.a
 
+# This is where libintl lives:
+LIBINTL = ../intl/libintl.a
+
 AM_LDFLAGS = -L../libiberty -L../bfd -L../intl -L../mmalloc
 
 # Header files.
@@ -667,7 +670,7 @@ i386-opc.o: $(I386_OPC_O_DEPS)
 i386-opc.lo: $(I386_OPC_O_DEPS)
   
 ia64-gen: ia64-gen.o @MAINT@ $(LIBIBERTY) @MAINT@ ia64-gen.lo
-	$(AM_V_CCLD)$(LINK) ia64-gen.o $(LIBIBERTY)
+	$(AM_V_CCLD)$(LINK) ia64-gen.o $(LIBIBERTY) $(LIBINTL)
 
 IA64_GEN_O_DEPS = $(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h \
   $(INCDIR)/safe-ctype.h sysdep.h config.h $(INCDIR)/getopt.h \
@@ -900,7 +903,7 @@ ia64-opc-m.lo: ia64-opc-m.c ia64-opc.h $(INCDIR)/opcode/ia64.h \
 ia64-opc-d.lo: ia64-opc-d.c
 ia64-opc.lo: ia64-opc.c $(INCDIR)/ansidecl.h sysdep.h \
   config.h $(INCDIR)/libiberty.h ia64-asmtab.h $(INCDIR)/opcode/ia64.h \
-  $(BFD_H) $(INCDIR)/symcat.h ia64-asmtab.c
+  $(BFD_H) $(INCDIR)/symcat.h @MAINT@# ia64-asmtab.c
 ia64-gen.lo: ia64-gen.c $(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h \
   $(INCDIR)/safe-ctype.h sysdep.h config.h $(INCDIR)/getopt.h \
   ia64-opc.h $(INCDIR)/opcode/ia64.h $(BFD_H) $(INCDIR)/symcat.h \

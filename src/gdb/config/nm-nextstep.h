@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef _NM_NEXTSTEP_H_
 #define _NM_NEXTSTEP_H_
 
+#include "nextstep-nat-watchpoint.h"
+
 #define ATTACH_DETACH
 #define ATTACH_NO_WAIT
 
@@ -33,12 +35,16 @@ extern int child_wait (int, struct target_waitstatus *, void *);
 
 #define FETCH_INFERIOR_REGISTERS
 
+#ifndef REGISTER_BYTES
+# define REGISTER_BYTES (NUM_REGS * 4) /* Total size of registers array */
+#endif /* !REGISTER_BYTES */
+
 #define CHILD_PREPARE_TO_STORE() \
 	read_register_bytes (0, (char *) NULL, REGISTER_BYTES)
 
 #define DISABLE_UNSETTABLE_BREAK(addr) 1
 
-extern int next_mach_try_start_dyld ();
+extern int next_mach_try_start_dyld(void);
 
 #define SOLIB_ADD(filename, from_tty, targ, loadsyms) \
   next_mach_try_start_dyld ()
@@ -58,7 +64,7 @@ extern int next_mach_try_start_dyld ();
 #define SOLIB_CREATE_CATCH_UNLOAD_HOOK(pid,tempflag,filename,cond_string) \
    error("catch of library loads/unloads not yet implemented on this platform")
 
-extern void next_mach_add_shared_symbol_files ();
+extern void next_mach_add_shared_symbol_files(void);
 #define ADD_SHARED_SYMBOL_FILES(args, from_tty) \
   next_mach_add_shared_symbol_files ()
 
@@ -94,7 +100,7 @@ int next_mach_insert_watchpoint (CORE_ADDR addr, size_t len, int type);
 int next_mach_remove_watchpoint (CORE_ADDR addr, size_t len, int type);
 int next_mach_stopped_by_watchpoint (struct target_waitstatus *w, int, int);
 
-char **next_process_completer (char *text, char *word);
+char **next_process_completer(const char *text, char *word);
 
 #define TARGET_HAS_HARDWARE_WATCHPOINTS
 
@@ -108,7 +114,7 @@ next_mach_range_profitable_for_hw_watchpoint (pid, start, len)
 next_mach_stopped_by_watchpoint (&w, stop_signal, stepped_after_stopped_by_watchpoint)
 
 #undef HAVE_STEPPABLE_WATCHPOINT
-#define HAVE_NONSTEPPABLE_WATCHPOINT
+#define HAVE_NONSTEPPABLE_WATCHPOINT 1
 #undef HAVE_CONTINUABLE_WATCHPOINT
 
 #define TARGET_ENABLE_HW_WATCHPOINTS(pid) \

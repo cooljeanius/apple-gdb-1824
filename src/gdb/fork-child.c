@@ -563,7 +563,8 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
 	    warning("posix_spawn failed, trying execvp, error: %d", retval);
 	  }
 # endif /* #if defined (TM_NEXTSTEP)  */
-
+#else /* !USE_POSIX_SPAWN: */
+	  goto try_execvp;
 #endif /* USE_POSIX_SPAWN */
 	try_execvp:
 	  execvp(fileptr, argv);

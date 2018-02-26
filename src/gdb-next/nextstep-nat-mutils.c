@@ -17,7 +17,27 @@
 #include "nextstep-nat-inferior-debug.h"
 
 #include <mach-o/nlist.h>
-#include <mach-o/dyld_debug.h>
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
+# include <mach-o/dyld_debug.h>
+#else
+# ifdef HAVE_MACH_O_DYLD_H
+#  include <mach-o/dyld.h>
+# endif /* HAVE_MACH_O_DYLD_H */
+# ifdef HAVE_MACH_O_DYLD_IMAGES_H
+#  include <mach-o/dyld_images.h>
+# endif /* HAVE_MACH_O_DYLD_IMAGES_H */
+# ifdef HAVE_DLFCN_H
+#  include <dlfcn.h>
+# endif /* HAVE_DLFCN_H */
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
+
+#if defined(HAVE_SIGNAL_H) || (defined(STDC_HEADERS) && defined(__STDC__))
+# include <signal.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "nextstep-nat-mutils.c expects <signal.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SIGNAL_H || (STDC_HEADERS && __STDC__) */
 
 #include <sys/ptrace.h>
 #include <sys/signal.h>
@@ -31,7 +51,8 @@ static int mutils_debugflag = 0;
 
 extern next_inferior_status *next_status;
 
-void mutils_debug (const char *fmt, ...)
+void ATTRIBUTE_PRINTF_1
+mutils_debug(const char *fmt, ...)
 {
   va_list ap;
   if (mutils_debugflag) {
@@ -43,12 +64,12 @@ void mutils_debug (const char *fmt, ...)
   }
 }
 
-unsigned int child_get_pagesize ()
+unsigned int child_get_pagesize(void)
 {
   kern_return_t	status;
-  int result;
+  vm_size_t result;
 
-  status = host_page_size (mach_host_self(), &result);
+  status = host_page_size(mach_host_self(), &result);
   MACH_CHECK_ERROR (status);
   return result;
 }
@@ -59,12 +80,11 @@ unsigned int child_get_pagesize ()
  *
  * Returns the length copied.
  */
-
 static int
-mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
-			    int len, int write,
-			    struct mem_attrib *attrib,
-			    struct target_ops *target)
+mach_xfer_memory_remainder(CORE_ADDR memaddr, unsigned char *myaddr,
+			   int len, int write,
+			   struct mem_attrib *attrib,
+			   struct target_ops *target)
 {
   unsigned int pagesize = child_get_pagesize ();
 
@@ -81,9 +101,9 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
   kret = vm_read (next_status->task, pageaddr, pagesize,
 		  &mempointer, &memcopied);
   if (kret != KERN_SUCCESS) {
-    mutils_debug ("Unable to read page for region at 0x%lx with length %lu from inferior: %s (0x%lx)\n",
-		  (unsigned long) pageaddr, (unsigned long) len,
-		  MACH_ERROR_STRING (kret), kret);
+    mutils_debug("Unable to read page for region at 0x%lx with length %lu from inferior: %s (0x%lx)\n",
+		 (unsigned long)pageaddr, (unsigned long)len,
+		 MACH_ERROR_STRING(kret), (unsigned long)kret);
     return 0;
   }
   if (memcopied != pagesize) {
@@ -109,15 +129,15 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
     kret = vm_machine_attribute (task_self(), mempointer,
 				 pagesize, MATTR_CACHE, &flush);
     if (kret != KERN_SUCCESS) {
-      mutils_debug ("Unable to flush GDB's address space after memcpy prior to vm_write: %s (0x%lx)\n",
-		    MACH_ERROR_STRING (kret), kret);
+      mutils_debug("Unable to flush GDB's address space after memcpy prior to vm_write: %s (0x%lx)\n",
+		   MACH_ERROR_STRING(kret), (unsigned long)kret);
     }
     kret = vm_write (next_status->task, pageaddr, (pointer_t) mempointer,
 		     pagesize);
     if (kret != KERN_SUCCESS) {
-      mutils_debug ("Unable to write region at 0x%lx with length %lu to inferior: %s (0x%lx)\n",
-		    (unsigned long) memaddr, (unsigned long) len,
-		    MACH_ERROR_STRING (kret), kret);
+      mutils_debug("Unable to write region at 0x%lx with length %lu to inferior: %s (0x%lx)\n",
+		   (unsigned long)memaddr, (unsigned long)len,
+		   MACH_ERROR_STRING(kret), (unsigned long)kret);
       return 0;
     }
   }
@@ -133,12 +153,12 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
 }
 
 static int
-mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
-			int len, int write,
-			struct mem_attrib *attrib,
-			struct target_ops *target)
+mach_xfer_memory_block(CORE_ADDR memaddr, unsigned char *myaddr,
+		       int len, int write,
+		       struct mem_attrib *attrib,
+		       struct target_ops *target)
 {
-  unsigned int pagesize = child_get_pagesize ();
+  unsigned int pagesize = child_get_pagesize();
 
   unsigned int mempointer;	/* local copy of inferior's memory */
   unsigned int memcopied;	/* for vm_read to use */
@@ -151,9 +171,9 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
   if (! write) {
     kret = vm_read (next_status->task, memaddr, len, &mempointer, &memcopied);
     if (kret != KERN_SUCCESS) {
-      mutils_debug ("Unable to read region at 0x%lx with length %lu from inferior: %s (0x%lx)\n",
-		    (unsigned long) memaddr, (unsigned long) len,
-		    MACH_ERROR_STRING (kret), kret);
+      mutils_debug("Unable to read region at 0x%lx with length %lu from inferior: %s (0x%lx)\n",
+		   (unsigned long)memaddr, (unsigned long)len,
+		   MACH_ERROR_STRING(kret), (unsigned long)kret);
       return 0;
     }
     if (memcopied != len) {
@@ -178,9 +198,9 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
   } else {
     kret = vm_write (next_status->task, memaddr, (pointer_t) myaddr, len);
     if (kret != KERN_SUCCESS) {
-      mutils_debug ("Unable to write region at 0x%lx with length %lu from inferior: %s (0x%lx)\n",
-		    (unsigned long) memaddr, (unsigned long) len,
-		    MACH_ERROR_STRING (kret), kret);
+      mutils_debug("Unable to write region at 0x%lx with length %lu from inferior: %s (0x%lx)\n",
+		   (unsigned long)memaddr, (unsigned long)len,
+		   MACH_ERROR_STRING(kret), (unsigned long)kret);
       return 0;
     }
   }
@@ -188,11 +208,12 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
   return len;
 }
 
+/* */
 int
-mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
-		  int len, int write,
-		  struct mem_attrib *attrib,
-		  struct target_ops *target)
+mach_xfer_memory(CORE_ADDR memaddr, unsigned char *myaddr,
+		 int len, int write,
+		 struct mem_attrib *attrib,
+		 struct target_ops *target)
 {
   vm_address_t r_start;
   vm_address_t r_end;
@@ -251,18 +272,19 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
     r_start = cur_memaddr;
 
     r_info_size = VM_REGION_BASIC_INFO_COUNT;
-    kret = vm_region (next_status->task, &r_start, &r_size,
-                      VM_REGION_BASIC_INFO, (vm_region_info_t) &r_data,
-                      &r_info_size, &r_object_name);
+    kret = vm_region(next_status->task, &r_start, &r_size,
+                     VM_REGION_BASIC_INFO, (vm_region_info_t)&r_data,
+                     &r_info_size, &r_object_name);
     if (kret != KERN_SUCCESS) {
-      mutils_debug ("Unable to read region information for memory at 0x%lx: %s (0x%lx)\n",
-		    (unsigned long) cur_memaddr, MACH_ERROR_STRING (kret), kret);
+      mutils_debug("Unable to read region information for memory at 0x%lx: %s (0x%lx)\n",
+		   (unsigned long)cur_memaddr, MACH_ERROR_STRING(kret),
+		   (unsigned long)kret);
       break;
     }
 
     if (r_start > cur_memaddr) {
-      mutils_debug ("Next available region for address at 0x%lx is 0x%lx\n",
-		    (unsigned long) cur_memaddr, r_start);
+      mutils_debug("Next available region for address at 0x%lx is 0x%lx\n",
+		   (unsigned long)cur_memaddr, (unsigned long)r_start);
       break;
     }
 
@@ -274,8 +296,9 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
 			   0x10 | VM_PROT_READ | VM_PROT_WRITE);
       }
       if (kret != KERN_SUCCESS) {
-	mutils_debug ("Unable to add write access to region at 0x%lx: %s (0x%lx)",
-		      (unsigned long) r_start, MACH_ERROR_STRING (kret), kret);
+	mutils_debug("Unable to add write access to region @ 0x%lx: %s (0x%lx)",
+		     (unsigned long)r_start, MACH_ERROR_STRING(kret),
+		     (unsigned long)kret);
 	break;
       }
     }
@@ -407,8 +430,8 @@ int next_pid_valid (int pid)
 {
   int ret;
   ret = kill (pid, 0);
-  mutils_debug ("kill (%d, 0) : ret = %d, errno = %d (%s)\n", pid,
-		ret, errno, strerror (errno));
+  mutils_debug("kill (%d, 0) : ret = %d, errno = %d (%s)\n", pid,
+	       ret, errno, xstrerror(errno));
   return ((ret == 0) || ((errno != ESRCH) && (errno != ECHILD)));
 }
 
@@ -421,8 +444,8 @@ mach_check_error (kern_return_t ret, const char *file,
     func = "[UNKNOWN]";
   }
 
-  error ("error on line %u of \"%s\" in function \"%s\": %s (0x%lx)\n",
-	 line, file, func, MACH_ERROR_STRING (ret), ret);
+  error("error on line %u of \"%s\" in function \"%s\": %s (0x%lx)\n",
+	line, file, func, MACH_ERROR_STRING(ret), (unsigned long)ret);
 }
 
 void
@@ -460,6 +483,7 @@ next_primary_thread_of_task (task_t task)
   return tret;
 }
 
+/* */
 kern_return_t
 next_mach_msg_receive (msg_header_t *msgin, size_t msg_size,
 		       unsigned long timeout, port_t port)
@@ -480,16 +504,17 @@ next_mach_msg_receive (msg_header_t *msgin, size_t msg_size,
       if (kret == KERN_SUCCESS) {
 	next_debug_message (msgin);
       } else {
-	mutils_debug ("next_mach_msg_receive: returning %s (0x%lx)\n",
-		      MACH_ERROR_STRING (kret), kret);
+	mutils_debug("next_mach_msg_receive: returning %s (0x%lx)\n",
+		     MACH_ERROR_STRING(kret), (unsigned long)kret);
       }
     }
 
     return kret;
 }
 
+extern void _initialize_next_mutils(void); /* -Wmissing-prototypes */
 void
-_initialize_next_mutils ()
+_initialize_next_mutils(void)
 {
   struct cmd_list_element *cmd;
 

@@ -2,6 +2,10 @@
  * DisplayHooks.m
  */
 
+/* headers out of our control: */
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
 #include "defs.h"
 #include "frame.h"
 #include "symtab.h"
@@ -93,7 +97,7 @@ tell_displayer_do_query (char *query, va_list args)
 
   if (gdbManager == nil) { return; }
 
-  vasprintf (&buf, query, args);
+  vasprintf(&buf, query, args);
   if (buf == NULL) {
     return 0;
   }
@@ -113,7 +117,7 @@ tell_displayer_do_query (char *query, va_list args)
   }
   NS_ENDHANDLER;
 
-  free (buf);
+  xfree(buf);
   return result;
 }
 
@@ -270,7 +274,7 @@ tell_displayer_breakpoint_changed (struct breakpoint *bp, BreakpointState newSta
   NS_ENDHANDLER;
 
   if (to_free_fp) {
-    free (to_free_fp);
+    xfree(to_free_fp);
   }
 
   return;
@@ -326,17 +330,19 @@ void tell_displayer_stack_changed ()
   NS_ENDHANDLER;
 }
 
-const char *
-tell_displayer_get_input (char *prompt, int repeat, char *anno)
+char *
+tell_displayer_get_input(const char *prompt, int repeat, const char *anno)
 {
-  if (gdbManager == nil) { return ""; }
+  const char *retstring = "";
+  if (gdbManager == nil) { return (char *)retstring; }
 
   if (prompt != NULL) {
     [gdbManager processOutput: [NSString stringWithCString: prompt]
 		outputType: GDB_OUTPUT_STDOUT];
   }
 
-  return [gdbManager waitForLineOfInput];
+  retstring = [gdbManager waitForLineOfInput];
+  return (char *)retstring;
 }
 
 /* EOF */

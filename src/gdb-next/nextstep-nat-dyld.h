@@ -9,7 +9,19 @@
 #include "nextstep-nat-mutils.h"
 #include "nextstep-nat-threads.h"
 
-#include <mach-o/dyld_debug.h>
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
+# include <mach-o/dyld_debug.h>
+#else
+# ifdef HAVE_MACH_O_DYLD_H
+#  include <mach-o/dyld.h>
+# endif /* HAVE_MACH_O_DYLD_H */
+# ifdef HAVE_MACH_O_DYLD_IMAGES_H
+#  include <mach-o/dyld_images.h>
+# endif /* HAVE_MACH_O_DYLD_IMAGES_H */
+# ifdef HAVE_DLFCN_H
+#  include <dlfcn.h>
+# endif /* HAVE_DLFCN_H */
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
 
 struct objfile;
 struct target_waitstatus;
@@ -49,20 +61,21 @@ struct next_dyld_thread_status {
 };
 typedef struct next_dyld_thread_status next_dyld_thread_status;
 
-void dyld_debug (const char *fmt, ...);
+void dyld_debug(const char *fmt, ...) ATTRIBUTE_PRINTF_1;
 
+enum dyld_debug_return;
 const char *dyld_debug_error_string (enum dyld_debug_return ret);
 void dyld_print_status_info (struct next_dyld_thread_status *s, unsigned int mask);
 
 void next_init_dyld (struct next_dyld_thread_status *s, struct objfile *o);
 
-void next_clear_start_breakpoint ();
+void next_clear_start_breakpoint(void);
 void next_set_start_breakpoint (bfd *exec_bfd);
 
-int next_mach_try_start_dyld ();
+int next_mach_try_start_dyld(void);
 int next_mach_start_dyld (struct next_inferior_status *s);
 
-void next_mach_add_shared_symbol_files ();
+void next_mach_add_shared_symbol_files(void);
 
 void next_init_dyld_symfile (struct objfile *o);
 

@@ -542,6 +542,7 @@ make_ia64_opcode (ia64_insn opcode, const char *name, int place, int depind)
   res->flags = main_table[place].flags;
   res->ent_index = place;
   res->dependencies = &op_dependencies[depind];
+  (void)depind;
   return res;
 }
 
@@ -601,6 +602,7 @@ ia64_dis_opcode (ia64_insn insn, enum ia64_insn_type type)
       return make_ia64_opcode (insn, name, place,
                                completer_table[ci].dependencies);
     }
+  return NULL; /*NOTREACHED*/
 }
 
 /* Search the main_opcode table starting from PLACE for an opcode that
@@ -720,11 +722,18 @@ ia64_free_opcode (struct ia64_opcode *ent)
 const struct ia64_dependency *
 ia64_find_dependency (int index)
 {
+  const struct ia64_dependency *mydep;
   index = DEP(index);
 
   if (index < 0
       || index >= (int)(sizeof(dependencies) / sizeof(dependencies[0])))
     return NULL;
 
-  return &dependencies[index];
+  mydep = &dependencies[index];
+  if (mydep != NULL)
+    return mydep;
+  else
+    return NULL;
 }
+
+/* EOF */

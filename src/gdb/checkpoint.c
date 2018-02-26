@@ -46,7 +46,11 @@ extern void rollback_stop(void);
 /* keep this condition the same as in the 2 places below: */
 #ifdef NM_NEXTSTEP /* in lieu of target vectory */
 /* has protos for fork_memcache_put() and direct_memcache_get() in it: */
-# include "macosx-nat-inferior.h"
+# ifdef __NeXT__
+#  include "macosx/macosx-nat-inferior.h"
+# else
+#  include "macosx-nat-inferior.h"
+# endif /* __NeXT__ */
 #endif /* NM_NEXTSTEP */
 
 #define LIBCHECKPOINT_NAME "/usr/libexec/gdb/libcheckpoint.dylib"

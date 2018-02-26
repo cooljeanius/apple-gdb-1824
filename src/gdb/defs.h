@@ -41,6 +41,21 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
+#ifdef __NeXT__
+# ifdef __restrict
+#  undef __restrict
+# endif /* __restrict */
+# ifdef _FORTIFY_SOURCE
+#  undef _FORTIFY_SOURCE
+# endif /* _FORTIFY_SOURCE */
+# ifdef _USE_FORTIFY_LEVEL
+#  undef _USE_FORTIFY_LEVEL
+# endif /* _USE_FORTIFY_LEVEL */
+# ifndef _SECURE__STDIO_H_
+#  define _SECURE__STDIO_H_ 1
+# endif /* !_SECURE__STDIO_H_ */
+#endif /* __NeXT__ */
+
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
@@ -1879,6 +1894,9 @@ extern struct cleanup *start_timer(int *timer_var, const char *timer_name,
 # ifdef strdup
 #  undef strdup
 # endif /* strdup */
+# ifdef free
+#  undef free
+# endif /* free */
 /* gdbint.texinfo says to avoid these ones: */
 # pragma GCC poison malloc realloc calloc free strdup sprintf
 /* for similar reasons, such as libiberty also providing replacements: */

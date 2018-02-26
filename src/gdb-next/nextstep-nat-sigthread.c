@@ -2,6 +2,9 @@
  * nextstep-nat-sigthread.c
  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -10,17 +13,19 @@
 #include <sys/time.h>
 #include <sys/select.h>
 
+#include "defs.h"
+
 #include "nextstep-nat-sigthread.h"
 #include "nextstep-nat-mutils.h"
 
-#include "defs.h"
 #include "gdbcmd.h"
 
 static FILE *sigthread_stderr = NULL;
 static FILE *sigthread_stderr_re = NULL;
 static int sigthread_debugflag = 0;
 
-static int sigthread_debug (const char *fmt, ...)
+int ATTRIBUTE_PRINTF_1
+sigthread_debug(const char *fmt, ...)
 {
   va_list ap;
   if (sigthread_debugflag) {
@@ -36,7 +41,8 @@ static int sigthread_debug (const char *fmt, ...)
 
 /* A re-entrant version for use by the signal handling thread */
 
-void sigthread_debug_re (const char *fmt, ...)
+static void ATTRIBUTE_PRINTF_1
+sigthread_debug_re(const char *fmt, ...)
 {
   va_list ap;
   if (sigthread_debugflag) {
@@ -143,8 +149,9 @@ static void next_signal_thread (void *arg)
     }
 
     if (pid < 0) {
-      fprintf (sigthread_stderr_re, "next_signal_thread: unexpected error: %s\n", strerror (errno));
-      abort ();
+      fprintf(sigthread_stderr_re, "next_signal_thread: unexpected error: %s\n",
+	      xstrerror(errno));
+      abort();
     }
 
     if (sigthread_debugflag) {
@@ -166,8 +173,9 @@ static void next_signal_thread (void *arg)
   }
 }
 
+extern void _initialize_nextstep_nat_sigthread(void); /* -Wmissing-prototypes */
 void
-_initialize_nextstep_nat_sigthread ()
+_initialize_nextstep_nat_sigthread(void)
 {
   struct cmd_list_element *cmd = NULL;
 

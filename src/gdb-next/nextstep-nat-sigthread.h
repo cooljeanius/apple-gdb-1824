@@ -32,6 +32,7 @@ struct next_signal_thread_status
 typedef struct next_signal_thread_message next_signal_thread_message;
 typedef struct next_signal_thread_status next_signal_thread_status;
 
+extern int sigthread_debug(const char *fmt, ...) ATTRIBUTE_PRINTF_1;
 void next_signal_thread_debug (FILE *f, struct next_signal_thread_status *s);
 void next_signal_thread_debug_status (FILE *f, WAITSTATUS status);
 

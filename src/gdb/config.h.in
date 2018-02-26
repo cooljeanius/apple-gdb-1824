@@ -788,6 +788,9 @@
 /* Define to 1 if you have the <machine/save_state.h> header file. */
 #undef HAVE_MACHINE_SAVE_STATE_H
 
+/* Define to 1 if you have the <mach/cthreads.h> header file. */
+#undef HAVE_MACH_CTHREADS_H
+
 /* Define to 1 if you have the <mach_error.h> header file. */
 #undef HAVE_MACH_ERROR_H
 
@@ -823,6 +826,15 @@
 
 /* Define to 1 if the system has the type `mach_msg_header_t'. */
 #undef HAVE_MACH_MSG_HEADER_T
+
+/* Define to 1 if you have the <mach-o/dyld_debug.h> header file. */
+#undef HAVE_MACH_O_DYLD_DEBUG_H
+
+/* Define to 1 if you have the <mach-o/dyld.h> header file. */
+#undef HAVE_MACH_O_DYLD_H
+
+/* Define to 1 if you have the <mach-o/dyld_images.h> header file. */
+#undef HAVE_MACH_O_DYLD_IMAGES_H
 
 /* Define if mach-o support should be included. */
 #undef HAVE_MACH_O_IN_BFD
@@ -1176,6 +1188,9 @@
 
 /* Define to 1 if you have the `sbrk' function. */
 #undef HAVE_SBRK
+
+/* Define to 1 if you have the <sched.h> header file. */
+#undef HAVE_SCHED_H
 
 /* Define to 1 if you have the <Security/Security.h> header file. */
 #undef HAVE_SECURITY_SECURITY_H

@@ -10,7 +10,7 @@
 
 #include "nextstep-nat-sigthread.h"
 #include "nextstep-nat-excthread.h"
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
 # include "nextstep-nat-cfmthread.h"
 #endif /* WITH_CFM */
 #include "nextstep-nat-dyld.h"
@@ -34,14 +34,14 @@ struct next_inferior_status
 
   next_signal_thread_status signal_status;
   next_exception_thread_status exception_status;
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
   next_cfm_thread_status cfm_status;
 #endif /* WITH_CFM */
   next_dyld_thread_status dyld_status;
 };
 typedef struct next_inferior_status next_inferior_status;
 
-void next_mach_check_new_threads ();
+void next_mach_check_new_threads(void);
 ptid_t next_wait (struct next_inferior_status *inferior,
                   struct target_waitstatus *status,
 		  gdb_client_data client_data);
@@ -57,6 +57,6 @@ void next_create_inferior_for_task
 
 void next_fetch_task_info PARAMS ((struct kinfo_proc **info, size_t *count));
 
-char **next_process_completer PARAMS ((char *text, char *word));
+char **next_process_completer PARAMS((const char *text, char *word));
 
 #endif /* _NEXTSTEP_NAT_INFERIOR_H_ */

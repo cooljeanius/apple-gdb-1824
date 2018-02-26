@@ -57,7 +57,9 @@
 #include "macosx/macosx-nat-dyld.h"
 
 #if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
-# include "macosx-nat-inferior.h"
+# ifndef __NeXT__
+#  include "macosx-nat-inferior.h"
+# endif /* !__NeXT__ */
 # if !defined(TARGET_CAN_USE_HARDWARE_WATCHPOINT) && \
      !defined(STOPPED_BY_WATCHPOINT) && \
      !defined(HAVE_NONSTEPPABLE_WATCHPOINT) && \

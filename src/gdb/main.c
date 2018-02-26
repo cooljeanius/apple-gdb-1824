@@ -175,7 +175,7 @@ captured_main(void *data)
   int i;
 
   long time_at_startup = get_run_time();
-  
+
   int command_errors_ret = 0;
 
 #if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)
@@ -842,6 +842,7 @@ captured_main(void *data)
 # endif /* TARGET_ARM && NM_NEXTSTEP */
 
 #else
+  (void)initial_arch;
   warning("--arch option not supported in this gdb.");
 #endif /* USE_POSIX_SPAWN || USE_ARCH_FOR_EXEC */
 
@@ -979,7 +980,7 @@ captured_main(void *data)
 						RETURN_MASK_ALL);
     }
   xfree(cmdarg);
-  
+
   if (command_errors_ret == 0) {
     ; /* ??? */
   }
