@@ -94,9 +94,9 @@
 # include "macosx-nat-dyld-process.h"
 #endif /* MACOSX_DYLD */
 
-#if defined(TM_NEXTSTEP) && (defined(__NeXT__) || defined(TARGET_POWERPC))
+#if defined(TM_NEXTSTEP) && (defined(__NeXT__) || defined(TARGET_POWERPC) || defined(TARGET_I386))
 # include "macosx/macosx-tdep.h"
-#endif /* TM_NEXTSTEP && __NeXT__ || TARGET_POWERPC */
+#endif /* TM_NEXTSTEP && (__NeXT__ || TARGET_POWERPC || TARGET_I386) */
 
 #ifndef O_BINARY
 # define O_BINARY 0

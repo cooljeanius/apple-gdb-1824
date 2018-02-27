@@ -21,8 +21,9 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include "macosx-nat-dyld-info.h"
 #include "macosx-nat-dyld.h"
+/* for some reason reordering this fixed a compile error: */
+#include "macosx-nat-dyld-info.h"
 #include "macosx-nat-dyld-path.h"
 #include "macosx-nat-dyld-process.h"
 

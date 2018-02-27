@@ -156,6 +156,7 @@ struct dyld_objfile_info
   struct obj_section *sections;
   struct obj_section *sections_end;
 };
+/* FIXME: why might this be incomplete? */
 
 struct dyld_path_info;
 

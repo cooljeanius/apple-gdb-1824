@@ -121,10 +121,10 @@ metrowerks_step(CORE_ADDR range_start, CORE_ADDR range_stop, int step_into)
   make_exec_cleanup(metrowerks_stepping_cleanup, NULL);
 }
 
-extern int strip_bg_char(char **);
+extern int strip_bg_char(const char **);
 
 static void
-metrowerks_step_command(char *args, int from_tty)
+metrowerks_step_command(const char *args, int from_tty)
 {
   int async_exec = 0;
   CORE_ADDR range_start = 0;
@@ -136,6 +136,9 @@ metrowerks_step_command(char *args, int from_tty)
   if (args != NULL)
     async_exec = strip_bg_char(&args);
 
+#ifndef event_loop_p
+# define event_loop_p 0
+#endif /* !event_loop_p */
   if (event_loop_p && async_exec && !target_can_async_p())
     error("Asynchronous execution not supported on this target.");
 
@@ -201,7 +204,7 @@ bfd *FindContainingBFD(CORE_ADDR address)
 	 sectionTable++)
       {
 	if ((address >= sectionTable->addr) && (address < sectionTable->endaddr)) {
-	  result = sectionTable->bfd;
+	  result = sectionTable->abfd;
 	}
       }
   }
@@ -210,7 +213,7 @@ bfd *FindContainingBFD(CORE_ADDR address)
 }
 
 static void
-metrowerks_address_to_name_command(char* args, int from_tty)
+metrowerks_address_to_name_command(const char* args, int from_tty)
 {
   CORE_ADDR address;
   bfd *aBFD;

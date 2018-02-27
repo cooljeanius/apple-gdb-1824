@@ -351,7 +351,8 @@ mi_cmd_stack_list_frames_lite (char *command, char **argv, int argc)
       print_fun = mi_print_frame_info_lite;
 
 #ifdef FAST_COUNT_STACK_DEPTH
-    valid = FAST_COUNT_STACK_DEPTH(count_limit, start, limit, (int *)&count,
+    /* FIXME: count needs to be a different type depending on target: */
+    valid = FAST_COUNT_STACK_DEPTH(count_limit, start, limit, &count,
 				   print_fun);
 #else
     /* Start at the inner most frame */
@@ -464,7 +465,8 @@ mi_cmd_stack_info_depth(char *command, char **argv, int argc)
     frame_high = -1;
 
 #ifdef FAST_COUNT_STACK_DEPTH
-  if (! FAST_COUNT_STACK_DEPTH(frame_high, 0, frame_high, (int *)&i, NULL))
+  /* FIXME: see FIXME above a call to FAST_COUNT_STACK_DEPTH above: */
+  if (! FAST_COUNT_STACK_DEPTH(frame_high, 0, frame_high, &i, NULL))
 #endif /* FAST_COUNT_STACK_DEPTH */
     {
       for (i = 0U, fi = get_current_frame();

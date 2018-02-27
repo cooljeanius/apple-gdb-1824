@@ -52,8 +52,9 @@
 
 extern macosx_inferior_status *macosx_status;
 
+/* */
 void
-cfm_init (void)
+cfm_init(void)
 {
   struct minimal_symbol *hooksym, *system, *context;
   struct cfm_parser *parser = &macosx_status->cfm_status.parser;
@@ -148,8 +149,9 @@ cfm_init (void)
               paddr_nz (SYMBOL_VALUE_ADDRESS (hooksym)), parser->version);
 }
 
+/* */
 long
-cfm_update (task_t task, struct dyld_objfile_info *info)
+cfm_update(task_t task, struct dyld_objfile_info *info)
 {
   long ret;
 
@@ -239,9 +241,8 @@ cfm_update (task_t task, struct dyld_objfile_info *info)
      debugging... */
   if (n_container_ids != nread_container_ids)
     {
-      warning (
-              "gdb expected to read %d CFM container IDs, but actually read %d",
-               (int) n_container_ids, (int) nread_container_ids);
+      warning("gdb expected to read %d CFM container IDs, but actually read %d",
+              (int)n_container_ids, (int)nread_container_ids);
       return -1;
     }
 
@@ -289,10 +290,10 @@ cfm_update (task_t task, struct dyld_objfile_info *info)
   return CFM_NO_ERROR;
 }
 
+/* */
 long
-cfm_parse_universe_info (struct cfm_parser *parser,
-                         unsigned char *buf,
-                         size_t len, NCFragUniverseInfo *info)
+cfm_parse_universe_info(struct cfm_parser *parser, unsigned char *buf,
+                        size_t len, NCFragUniverseInfo *info)
 {
   if (parser->universe_container_offset + 12 > len)
     {
@@ -328,11 +329,12 @@ cfm_parse_universe_info (struct cfm_parser *parser,
   return 0;
 }
 
+/* */
 long
 cfm_fetch_universe_info (struct cfm_parser *parser,
                          CORE_ADDR addr, NCFragUniverseInfo *info)
 {
-  int ret, err;
+  int ret;
 
   unsigned char buf[CFM_MAX_UNIVERSE_LENGTH];
   if (parser->universe_length > CFM_MAX_UNIVERSE_LENGTH)
@@ -350,6 +352,7 @@ cfm_fetch_universe_info (struct cfm_parser *parser,
   return cfm_parse_universe_info (parser, buf, parser->universe_length, info);
 }
 
+/* */
 long
 cfm_parse_container_info (struct cfm_parser *parser,
                           unsigned char *buf,
@@ -364,11 +367,12 @@ cfm_parse_container_info (struct cfm_parser *parser,
   return 0;
 }
 
+/* */
 long
-cfm_fetch_container_info (struct cfm_parser *parser,
-                          CORE_ADDR addr, NCFragContainerInfo *info)
+cfm_fetch_container_info(struct cfm_parser *parser, CORE_ADDR addr,
+			 NCFragContainerInfo *info)
 {
-  int ret, err;
+  int ret;
   unsigned long name_length, name_addr;
 
   unsigned char buf[CFM_MAX_CONTAINER_LENGTH];
@@ -410,10 +414,10 @@ cfm_fetch_container_info (struct cfm_parser *parser,
   return 0;
 }
 
+/* */
 long
-cfm_parse_connection_info (struct cfm_parser *parser,
-                           unsigned char *buf,
-                           size_t len, NCFragConnectionInfo *info)
+cfm_parse_connection_info(struct cfm_parser *parser, unsigned char *buf,
+                          size_t len, NCFragConnectionInfo *info)
 {
   if (parser->connection_next_offset + 4 > len)
     {
@@ -430,11 +434,12 @@ cfm_parse_connection_info (struct cfm_parser *parser,
   return 0;
 }
 
+/* */
 long
 cfm_fetch_connection_info (struct cfm_parser *parser,
                            CORE_ADDR addr, NCFragConnectionInfo *info)
 {
-  int ret, err;
+  int ret;
 
   unsigned char buf[CFM_MAX_CONNECTION_LENGTH];
   if (parser->connection_length > CFM_MAX_CONNECTION_LENGTH)
@@ -453,6 +458,7 @@ cfm_fetch_connection_info (struct cfm_parser *parser,
                                     info);
 }
 
+/* */
 long
 cfm_parse_section_info(struct cfm_parser *parser,
                        unsigned char *buf,
@@ -468,6 +474,7 @@ cfm_parse_section_info(struct cfm_parser *parser,
   return 0;
 }
 
+/* */
 long
 cfm_parse_instance_info(struct cfm_parser *parser,
                         unsigned char *buf,
@@ -483,13 +490,13 @@ cfm_parse_instance_info(struct cfm_parser *parser,
   return 0;
 }
 
+/* */
 long
-cfm_fetch_context_containers (struct cfm_parser *parser,
-                              CORE_ADDR contextAddr,
-                              unsigned long requestedCount,
-                              unsigned long skipCount,
-                              unsigned long *totalCount_o,
-                              unsigned long *containerIDs_o)
+cfm_fetch_context_containers(struct cfm_parser *parser, CORE_ADDR contextAddr,
+                             unsigned long requestedCount,
+                             unsigned long skipCount,
+                             unsigned long *totalCount_o,
+                             unsigned long *containerIDs_o)
 {
   int ret;
 
@@ -504,6 +511,10 @@ cfm_fetch_context_containers (struct cfm_parser *parser,
   *totalCount_o = 0;
 
   ret = cfm_fetch_universe_info (parser, contextAddr, &universe);
+
+  if (ret == -1) {
+    ; /* ??? */
+  }
 
   localTotal = universe.containers.length;
 
@@ -544,13 +555,13 @@ cfm_fetch_context_containers (struct cfm_parser *parser,
   return CFM_NO_ERROR;
 }
 
+/* */
 long
-cfm_fetch_container_section_info (struct cfm_parser *parser,
-                                  CORE_ADDR addr,
-                                  unsigned long sectionIndex,
-                                  NCFragSectionInfo *section)
+cfm_fetch_container_section_info(struct cfm_parser *parser, CORE_ADDR addr,
+                                 unsigned long sectionIndex,
+                                 NCFragSectionInfo *section)
 {
-  int ret, err;
+  int ret;
   unsigned long offset;
 
   NCFragContainerInfo container;

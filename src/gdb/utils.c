@@ -512,7 +512,7 @@ static void
 do_my_cleanups(struct cleanup **pmy_chain,
                struct cleanup *old_chain)
 {
-  struct cleanup *ptr;
+  struct cleanup *volatile ptr;
   while ((ptr = *pmy_chain) != old_chain)
     {
       *pmy_chain = ptr->next;	/* Do this first incase recursion */
@@ -555,11 +555,11 @@ void
 discard_my_cleanups(struct cleanup **pmy_chain,
 		    struct cleanup *old_chain)
 {
-  struct cleanup *ptr;
+  struct cleanup *volatile ptr;
   while ((ptr = *pmy_chain) != old_chain)
     {
       *pmy_chain = ptr->next;
-      xfree (ptr);
+      xfree(ptr);
     }
 }
 
@@ -1154,7 +1154,7 @@ mmalloc(void *md ATTRIBUTE_UNUSED, size_t size)
  * functions are not suitable for attribute malloc since they may return the
  * same address across multiple calls...  */
 static void *
-mrealloc(void *md, void *ptr, size_t size)
+mrealloc(void *md, void *volatile ptr, size_t size)
 {
   if (ptr == 0)			/* Guard against old realloc's */
     return mmalloc(md, size);
@@ -1169,7 +1169,7 @@ mcalloc(void *md ATTRIBUTE_UNUSED, size_t number, size_t size)
 }
 
 static void
-mfree(void *md ATTRIBUTE_UNUSED, void *ptr)
+mfree(void *md ATTRIBUTE_UNUSED, void *volatile ptr)
 {
   free(ptr);  /* NOTE: this should be GDB's only call to free() */
 }

@@ -31,17 +31,18 @@
 
 #include "gdb_assert.h"
 
-static char *default_gcore_target(void);
+static const char *default_gcore_target(void);
 static enum bfd_architecture default_gcore_arch(void);
 static unsigned long default_gcore_mach(void);
 static int gcore_memory_sections(bfd *);
 
 /* Generate a core file from the inferior process: */
 static void
-gcore_command(char *args, int from_tty)
+gcore_command(const char *args, int from_tty)
 {
   struct cleanup *old_chain;
-  char *corefilename, corefilename_buffer[40];
+  const char *corefilename;
+  char corefilename_buffer[40];
   asection *note_sec = NULL;
   bfd *obfd;
   void *note_data = NULL;
@@ -56,7 +57,8 @@ gcore_command(char *args, int from_tty)
   else
     {
       /* Default corefile name is "core.PID".  */
-      sprintf (corefilename_buffer, "core.%d", PIDGET (inferior_ptid));
+      snprintf(corefilename_buffer, sizeof(corefilename_buffer), "core.%d",
+	       PIDGET(inferior_ptid));
       corefilename = corefilename_buffer;
     }
 
@@ -86,11 +88,15 @@ gcore_command(char *args, int from_tty)
 	error (_("Failed to create 'note' section for corefile: %s"),
 	       bfd_errmsg (bfd_get_error ()));
 
-      bfd_set_section_vma (obfd, note_sec, 0);
-      bfd_set_section_flags (obfd, note_sec,
-			     SEC_HAS_CONTENTS | SEC_READONLY | SEC_ALLOC);
-      bfd_set_section_alignment (obfd, note_sec, 0);
-      bfd_set_section_size (obfd, note_sec, note_size);
+      if (bfd_set_section_vma(obfd, note_sec, 0)) {
+	; /* ??? */
+      }
+      bfd_set_section_flags(obfd, note_sec,
+			    (SEC_HAS_CONTENTS | SEC_READONLY | SEC_ALLOC));
+      if (bfd_set_section_alignment(obfd, note_sec, 0)) {
+	; /* ??? */
+      }
+      bfd_set_section_size(obfd, note_sec, note_size);
     }
 
   /* Now create the memory/load sections.  */
@@ -146,14 +152,14 @@ default_gcore_arch (void)
   return bfd_get_arch (exec_bfd);
 }
 
-static char *
+static const char *
 default_gcore_target (void)
 {
   /* FIXME: This may only work for ELF targets.  */
   if (exec_bfd == NULL)
     return NULL;
   else
-    return bfd_get_target (exec_bfd);
+    return bfd_get_target(exec_bfd);
 }
 
 /* Derive a reasonable stack segment by unwinding the target stack,
@@ -309,9 +315,9 @@ static int
 gcore_create_callback (CORE_ADDR vaddr, unsigned long size,
 		       int read, int write, int exec, void *data)
 {
-  bfd *obfd = data;
+  bfd *obfd = (bfd *)data;
   asection *osec;
-  flagword flags = SEC_ALLOC | SEC_HAS_CONTENTS | SEC_LOAD;
+  flagword flags = (SEC_ALLOC | SEC_HAS_CONTENTS | SEC_LOAD);
 
   /* If the memory segment has no permissions set, ignore it, otherwise
      when we later try to access it for read/write, we'll get an error
@@ -382,7 +388,9 @@ gcore_create_callback (CORE_ADDR vaddr, unsigned long size,
     }
 
   bfd_set_section_size (obfd, osec, size);
-  bfd_set_section_vma (obfd, osec, vaddr);
+  if (bfd_set_section_vma(obfd, osec, vaddr)) {
+    ; /* ??? */
+  }
   bfd_section_lma (obfd, osec) = 0; /* ??? bfd_set_section_lma?  */
   bfd_set_section_flags (obfd, osec, flags);
   return 0;
@@ -404,18 +412,24 @@ objfile_find_memory_regions (int (*func) (CORE_ADDR, unsigned long,
       bfd *ibfd = objfile->obfd;
       asection *isec = objsec->the_bfd_section;
       flagword flags = bfd_get_section_flags (ibfd, isec);
-      int ret;
+
+      if (ibfd == NULL) {
+	; /* ??? */
+      }
 
       if ((flags & SEC_ALLOC) || (flags & SEC_LOAD))
 	{
-	  int size = bfd_section_size (ibfd, isec);
+	  int size = bfd_section_size(ibfd, isec);
 	  int ret;
 
-	  ret = (*func) (objsec->addr, bfd_section_size (ibfd, isec),
-			 1, /* All sections will be readable.  */
-			 (flags & SEC_READONLY) == 0, /* Writable.  */
-			 (flags & SEC_CODE) != 0, /* Executable.  */
-			 obfd);
+	  if (size <= 0) {
+	    ; /* ??? */
+	  }
+	  ret = (*func)(objsec->addr, bfd_section_size(ibfd, isec),
+			1, /* All sections will be readable.  */
+			((flags & SEC_READONLY) == 0), /* Writable.  */
+			((flags & SEC_CODE) != 0), /* Executable.  */
+			obfd);
 	  if (ret != 0)
 	    return ret;
 	}
@@ -461,8 +475,8 @@ gcore_copy_callback (bfd *obfd, asection *osec, void *ignored)
     error (_("Not enough memory to create corefile."));
   old_chain = make_cleanup (xfree, memhunk);
 
-  if (target_read_memory (bfd_section_vma (obfd, osec),
-			  memhunk, size) != 0)
+  if (target_read_memory(bfd_section_vma (obfd, osec),
+			 (gdb_byte *)memhunk, size) != 0)
     warning (_("Memory read failed for corefile section, %s bytes at 0x%s."),
 	     paddr_d (size), paddr (bfd_section_vma (obfd, osec)));
   if (!bfd_set_section_contents (obfd, osec, memhunk, 0, size))
@@ -487,6 +501,7 @@ gcore_memory_sections(bfd *obfd)
   return 1;
 }
 
+extern void _initialize_gcore(void); /* -Wmissing-prototypes */
 void
 _initialize_gcore(void)
 {

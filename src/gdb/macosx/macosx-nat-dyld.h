@@ -8,6 +8,11 @@
 #include "defs.h"
 #include "macosx-nat-mutils.h"
 #include "macosx-nat-threads.h"
+/* "macosx-nat-dyld-info.h" is below */
+
+#if defined(WITH_CFM) && WITH_CFM
+# include "macosx-nat-cfmthread.h"
+#endif /* WITH_CFM */
 
 #include <mach/machine.h>       /* cpu_type_t, cpu_subtype_t */
 #include <mach-o/loader.h>   /* struct mach_header, struct load_command */
@@ -155,6 +160,10 @@ int target_get_mach_header_size(struct mach_header *mh);
 int target_read_load_command(CORE_ADDR addr,
                              struct load_command *load_cmd);
 int target_read_uuid(CORE_ADDR addr, unsigned char *uuid);
+
+#if defined(WITH_CFM) && WITH_CFM
+extern int macosx_cfm_init(macosx_cfm_thread_status *s);
+#endif /* WITH_CFM */
 
 /* From macosx-nat-dyld.c.  */
 extern struct cmd_list_element *setshliblist;

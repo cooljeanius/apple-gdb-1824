@@ -752,24 +752,22 @@ trace_pass_command(const char *args, int from_tty)
   else
     t1 = get_tracepoint_by_number (&args, 1, 1);
 
-  do
-    {
-      if (t1)
-	{
-	  ALL_TRACEPOINTS (t2)
-	    if (t1 == (struct tracepoint *) -1 || t1 == t2)
-	      {
-		t2->pass_count = count;
-		tracepoint_modify_event (t2->number);
-		if (from_tty)
-		  printf_filtered ("Setting tracepoint %d's passcount to %d\n",
-				   t2->number, count);
-	      }
-	  if (! all && *args)
-	    t1 = get_tracepoint_by_number (&args, 1, 0);
-	}
-    }
-  while (*args);
+  do {
+    if (t1)
+      {
+	ALL_TRACEPOINTS (t2)
+	  if ((t1 == (struct tracepoint *)-1) || (t1 == t2))
+	    {
+	      t2->pass_count = count;
+	      tracepoint_modify_event(t2->number);
+	      if (from_tty)
+		printf_filtered("Setting tracepoint %d's passcount to %d\n",
+				t2->number, count);
+	    }
+	if (! all && *args)
+	  t1 = get_tracepoint_by_number(&args, 1, 0);
+      }
+  } while (*args);
 }
 
 /* ACTIONS functions: */

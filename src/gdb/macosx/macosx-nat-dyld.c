@@ -2923,6 +2923,9 @@ macosx_dyld_update(int dyldonly)
   CHECK_FATAL(macosx_status != NULL);
   if (inferior_auto_start_cfm_flag)
     ret = cfm_update(macosx_status->task, current_info);
+  if (ret == -1) {
+    ; /* ??? */
+  }
 #endif /* WITH_CFM && NM_NEXTSTEP */
 
   dyld_merge_shlibs(status, &status->path_info, &previous_info, current_info);
@@ -3618,14 +3621,14 @@ info_sharedlibrary_dyld_command(const char *args, int from_tty)
 
 #if (WITH_CFM && defined(NM_NEXTSTEP))
 static void
-info_sharedlibrary_cfm_command(char *args, int from_tty)
+info_sharedlibrary_cfm_command(const char *args, int from_tty)
 {
   dyld_print_shlib_info(&macosx_dyld_status.current_info,
                         dyld_reason_cfm, 1, args);
 }
 
 static void
-info_sharedlibrary_raw_cfm_command(char *args, int from_tty)
+info_sharedlibrary_raw_cfm_command(const char *args, int from_tty)
 {
   task_t task = macosx_status->task;
   struct dyld_objfile_info info;

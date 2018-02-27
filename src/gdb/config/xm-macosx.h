@@ -43,13 +43,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 extern void macosx_resize_window_handler(void *);
 extern void macosx_resize_window(int *width, int *height);
 
-#define	SIGWINCH_HANDLER macosx_resize_window_handler
+#ifndef SIGWINCH_HANDLER
+# define SIGWINCH_HANDLER macosx_resize_window_handler
+#endif /* !SIGWINCH_HANDLER */
 
-#define	SIGWINCH_HANDLER_BODY \
+#ifndef SIGWINCH_HANDLER_BODY
+# define SIGWINCH_HANDLER_BODY \
 void macosx_resize_window_handler(void *d) \
 { \
   macosx_resize_window(&lines_per_page, &chars_per_line); \
 }
+#endif /* !SIGWINCH_HANDLER_BODY */
 
 char *strchr(const char *s, int c);
 char *strpbrk(const char *s1, const char *s2);

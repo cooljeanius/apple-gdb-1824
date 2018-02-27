@@ -45,29 +45,29 @@ typedef mach_msg_header_t msg_header_t;
 typedef mach_port_t port_set_name_t;
 typedef mach_port_type_t port_type_t;
 
-#define PORT_NULL MACH_PORT_NULL
+# define PORT_NULL MACH_PORT_NULL
 
-#define RCV_TIMED_OUT MACH_RCV_TIMED_OUT
-#define RCV_TIMEOUT MACH_RCV_TIMED_OUT
-#define RCV_LARGE MACH_RCV_TOO_LARGE
-#define RCV_TOO_LARGE MACH_RCV_TOO_LARGE
-#define RCV_INVALID_PORT MACH_RCV_INVALID_NAME
+# define RCV_TIMED_OUT MACH_RCV_TIMED_OUT
+# define RCV_TIMEOUT MACH_RCV_TIMED_OUT
+# define RCV_LARGE MACH_RCV_TOO_LARGE
+# define RCV_TOO_LARGE MACH_RCV_TOO_LARGE
+# define RCV_INVALID_PORT MACH_RCV_INVALID_NAME
 
-#define SEND_INVALID_PORT MACH_SEND_INVALID_RIGHT /* check this one */
-#define SEND_TIMED_OUT MACH_SEND_TIMED_OUT
+# define SEND_INVALID_PORT MACH_SEND_INVALID_RIGHT /* check this one */
+# define SEND_TIMED_OUT MACH_SEND_TIMED_OUT
 
-#define port_allocate mach_port_allocate
-#define port_set_allocate mach_port_allocate
-#define port_deallocate mach_port_deallocate
-#define port_set_deallocate mach_port_deallocate
-#define port_set_add(task, port_set, port) mach_port_move_member(task, port, port_set)
-#define port_type mach_port_type
-#define task_self mach_task_self
-#define task_by_unix_pid task_for_pid
+# define port_allocate mach_port_allocate
+# define port_set_allocate mach_port_allocate
+# define port_deallocate mach_port_deallocate
+# define port_set_deallocate mach_port_deallocate
+# define port_set_add(task, port_set, port) mach_port_move_member(task, port, port_set)
+# define port_type mach_port_type
+# define task_self mach_task_self
+# define task_by_unix_pid task_for_pid
 
 #endif /* __MACH30__ */
 
-#if (!defined (_NSIG) && defined (NSIG))
+#if (!defined(_NSIG) && defined(NSIG))
 # define _NSIG NSIG
 #endif /* (!_NSIG && NSIG) */
 
@@ -82,26 +82,32 @@ typedef mach_port_type_t port_type_t;
 
 #define ADDITIONAL_OPTION_CASES \
   case 18: \
-    connect_to (optarg); \
+    connect_to(optarg); \
     break;
 
-extern void next_resize_window_handler (int signal);
-extern void next_resize_window (int *width, int *height);
+extern void next_resize_window_handler(int signal);
+extern void next_resize_window(int *width, int *height);
 
+#ifdef SIGWINCH_HANDLER
+# undef SIGWINCH_HANDLER
+#endif /* SIGWINCH_HANDLER */
 #define	SIGWINCH_HANDLER next_resize_window_handler
 
+#ifdef SIGWINCH_HANDLER_BODY
+# undef SIGWINCH_HANDLER_BODY
+#endif /* SIGWINCH_HANDLER_BODY */
 #define	SIGWINCH_HANDLER_BODY \
-void next_resize_window_handler (int signal) \
+void next_resize_window_handler(int signal) \
 { \
-  next_resize_window (&lines_per_page, &chars_per_line); \
+  next_resize_window((int *)&lines_per_page, (int *)&chars_per_line); \
 }
 
-char *strchr (const char *s, int c);
-char *strpbrk (const char *s1, const char *s2);
+char *strchr(const char *s, int c);
+char *strpbrk(const char *s1, const char *s2);
 
 #ifndef __GDB_DEFS_H__
-extern void xfree (void *v);
-extern void xmfree (void *md, void *v);
+extern void xfree(void *v);
+extern void xmfree(void *md, void *v);
 #endif /* !__GDB_DEFS_H__ */
 
 #ifndef free

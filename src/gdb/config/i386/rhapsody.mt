@@ -2,7 +2,10 @@
 
 MT_CFLAGS = \
 	-DTARGET_I386 \
-	-I../gdb-next
+	-I../gdb-next \
+	-Imacosx
+
+VPATH += ../gdb-next
 
 TDEPFILES = \
 	core-macho.o \
@@ -17,3 +20,4 @@ TDEPFILES = \
 	nextstep-tdep.o
 
 TM_FILE= tm-i386-next.h
+DEPRECATED_TM_FILE= tm-i386-next.h

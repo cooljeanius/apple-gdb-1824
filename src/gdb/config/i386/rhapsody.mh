@@ -2,7 +2,7 @@
 
 TERMCAP =
 
-SER_HARDWIRE = ser-unix.o ser-tcp.o 
+SER_HARDWIRE = ser-unix.o ser-tcp.o
 
 XM_FILE = xm-i386-next.h
 
@@ -35,7 +35,7 @@ NEXT_FILES = \
 	nextstep-nat-infthread.o \
 	nextstep-nat-info.o
 
-I386_FILES = i386-next-nat-exec.o 
+I386_FILES = i386-next-nat-exec.o
 
 RHAPSODY_FILES = rhapsody-nat.o
 
@@ -50,7 +50,11 @@ NATDEPFILES = \
 
 XM_CLIBS = -framework Foundation $(CFM_CLIBS)
 
+VPATH += $(srcdir)/../gdb-next
+VPATH += $(srcdir)/../gdb-next/display-support
+
 MH_CFLAGS = \
+	-DUSE_PTHREADS \
 	-DNS_TARGET_MAJOR=5 \
 	-I$(srcdir)/../gdb-next \
 	-I$(srcdir)/../gdb-next/display-support
@@ -58,3 +62,9 @@ MH_CFLAGS = \
 ifneq ("$(USE_PTHREADS)", "")
 MH_CFLAGS += -DUSE_PTHREADS=1
 endif
+
+.SUFFIXES: .m .o
+.m.o:
+	$(AM_V_OBJC)$(OBJC) -c $(INTERNAL_OBJCFLAGS) $<
+	$(POSTCOMPILE)
+

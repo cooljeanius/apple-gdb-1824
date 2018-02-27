@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* ppc-macosx-nat-exec.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -132,7 +132,10 @@ store_inferior_registers(int regno)
   current_pid = ptid_get_pid(inferior_ptid);
   current_thread = ptid_get_tid(inferior_ptid);
 
-  validate_inferior_registers (regno);
+  if (current_pid == 0) {
+    ; /* ??? */
+  }
+  validate_inferior_registers(regno);
 
   if ((regno == -1) || PPC_MACOSX_IS_GP_REGNUM(regno)
       || PPC_MACOSX_IS_GSP_REGNUM(regno))

@@ -31,7 +31,7 @@ MACOSX_FILES = \
 	$(MACH_EXC_SERVER_PREFACE)excUser.o \
 	darwin-kernel.o
 
-PPC_FILES = ppc-macosx-nat-exec.o 
+PPC_FILES = ppc-macosx-nat-exec.o
 
 NAT_FILE = nm-ppc-macosx.h
 
@@ -57,7 +57,8 @@ CFM_FILES = \
 
 CFM_CFLAGS = \
 	-DWITH_CFM=1 \
-	-I/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers \
+	-I/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers
+CFM_BAD_CFLAGS = \
 	-Wno-four-char-constants \
 	-traditional-cpp
 
