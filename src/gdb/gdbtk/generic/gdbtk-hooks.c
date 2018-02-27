@@ -513,6 +513,8 @@ gdbtk_readline (char *prompt)
       gdbtk_fputs ("\n", gdb_stdout);
       return (NULL);
     }
+
+  return NULL; /*NOTREACHED*/
 }
 
 /* */
@@ -629,12 +631,14 @@ int
 gdbtk_load_hash(const char *section, unsigned long num)
 {
   char *buf;
+  int retv;
   xasprintf(&buf, "Download::download_hash %s %ld", section, num);
   if (Tcl_Eval(gdbtk_interp, buf) != TCL_OK)
     report_error();
   xfree(buf);
 
-  return atoi(gdbtk_interp->result);
+  retv = atoi(gdbtk_interp->result);
+  return retv;
 }
 
 

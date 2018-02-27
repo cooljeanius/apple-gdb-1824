@@ -1535,7 +1535,7 @@ handle_inferior_event(struct execution_control_state *ecs)
   /* Cache the last pid/waitstatus. */
   target_last_wait_ptid = ecs->ptid;
   target_last_waitstatus = *ecs->wp;
-  
+
   memset(&prev_frame_id, 0, sizeof(prev_frame_id));
 
   adjust_pc_after_break(ecs);
@@ -2600,7 +2600,7 @@ process_event_stop_test:
 		    new_bp = solib_step_bp;
 		  else
 		    new_bp = solib_finish_bp;
-		  
+
 		  gdb_assert(new_bp != NULL);
 
 		  init_sal(&fsr_sal);
@@ -2674,7 +2674,7 @@ process_event_stop_test:
 
       case BPSTAT_WHAT_KEEP_CHECKING:
 	break;
-	  
+
       default:;
       } /* end switch */
   }
@@ -3097,7 +3097,7 @@ process_event_stop_test:
 
   /* If we're in the return path from a shared library trampoline,
      we want to proceed through the trampoline when stepping.  */
-  if (IN_SOLIB_RETURN_TRAMPOLINE(stop_pc, ecs->stop_func_name))
+  if (IN_SOLIB_RETURN_TRAMPOLINE(stop_pc, (char *)ecs->stop_func_name))
     {
       /* Determine where this trampoline returns.  */
       CORE_ADDR real_stop_pc = SKIP_TRAMPOLINE_CODE(stop_pc);

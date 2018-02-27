@@ -3,7 +3,8 @@
 
 MT_CFLAGS = \
 	-DTARGET_POWERPC \
-	-I../gdb-next
+	-I../gdb-next \
+	-Imacosx
 
 VPATH += ../gdb-next
 
@@ -21,3 +22,4 @@ TDEPFILES = \
 	nextstep-tdep.o
 
 TM_FILE = tm-ppc-next.h
+DEPRECATED_TM_FILE = tm-ppc-next.h

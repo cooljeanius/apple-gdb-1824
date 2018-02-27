@@ -1,4 +1,4 @@
-/* macosx/remote-kdp.c
+/* gdb/macosx/remote-kdp.c
    Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
@@ -54,6 +54,7 @@
 # include "ppc-macosx-thread-status.h"
 # include "ppc-macosx-regs.h"
 # include "ppc-macosx-regnums.h"
+# include "ppc-macosx-tdep.h"
 #endif /* KDP_TARGET_POWERPC */
 
 #if defined(KDP_TARGET_I386) && KDP_TARGET_I386

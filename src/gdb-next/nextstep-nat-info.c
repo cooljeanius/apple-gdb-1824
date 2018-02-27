@@ -2,10 +2,12 @@
  * nextstep-nat-info.c
  */
 
+#include <stdlib.h>
 #include <sys/param.h>
 #include <sys/sysctl.h>
 
 #include "defs.h"
+#include "cli/cli-decode.h"
 #include "symtab.h"
 #include "gdbtypes.h"
 #include "gdbcore.h"
@@ -13,6 +15,7 @@
 
 #include "nextstep-nat-mutils.h"
 #include "nextstep-nat-inferior.h"
+#include "nextstep-nat-inferior-debug.h"
 
 extern next_inferior_status *next_status;
 
@@ -20,9 +23,9 @@ extern next_inferior_status *next_status;
 { if ((NULL == args) || ((args[0] != '0') && (args[1] != 'x'))) error(what" must be specified with 0x..."); }
 
 #define PRINT_FIELD(structure, field) \
-printf_unfiltered(#field":\t%#x\n", (structure)->field)
+  printf_unfiltered(#field":\t%#x\n", (unsigned int)(structure)->field)
 
-#if defined (__MACH30__)
+#if defined(__MACH30__)
 # define task_self mach_task_self
 # define port_names mach_port_names
 # define task_by_unix_pid task_for_pid
@@ -30,8 +33,14 @@ printf_unfiltered(#field":\t%#x\n", (structure)->field)
 # define port_type_array_t mach_port_array_t
 #endif /* __MACH30__ */
 
+/* Prototypes: */
+extern void info_mach_region_command(const char *, int);
+extern void info_mach_regions_command(const char *, int);
+
+/* Functions: */
+
 static void
-info_mach_tasks_command(char* args, int from_tty)
+info_mach_tasks_command(const char *args, int from_tty)
 {
     int	sysControl[4];
     int	count, index;
@@ -43,7 +52,7 @@ info_mach_tasks_command(char* args, int from_tty)
     sysControl[2] = KERN_PROC_ALL;
 
     sysctl(sysControl, 3, NULL, &length, NULL, 0);
-    procInfo = (struct kinfo_proc*) malloc(length);
+    procInfo = (struct kinfo_proc *)xmalloc(length);
     sysctl(sysControl, 3, procInfo, &length, NULL, 0);
 
     count = (length / sizeof(struct kinfo_proc));
@@ -69,11 +78,11 @@ info_mach_tasks_command(char* args, int from_tty)
         }
     }
 
-    free(procInfo);
+    xfree(procInfo);
 }
 
 static void
-info_mach_task_command(char* args, int from_tty)
+info_mach_task_command(const char* args, int from_tty)
 {
     union {
         struct task_basic_info		basic;
@@ -102,8 +111,8 @@ info_mach_task_command(char* args, int from_tty)
 #endif /* !__MACH30__ */
     PRINT_FIELD(&task_info_data.basic, virtual_size);
     PRINT_FIELD(&task_info_data.basic, resident_size);
-    PRINT_FIELD(&task_info_data.basic, user_time);
-    PRINT_FIELD(&task_info_data.basic, system_time);
+    PRINT_FIELD(&task_info_data.basic, user_time.seconds);
+    PRINT_FIELD(&task_info_data.basic, system_time.seconds);
 #if 0
     printf_unfiltered("\nTASK_EVENTS_INFO:\n");
     info_count = TASK_EVENTS_INFO_COUNT;
@@ -129,12 +138,12 @@ info_mach_task_command(char* args, int from_tty)
                        &info_count);
     MACH_CHECK_ERROR(result);
 
-    PRINT_FIELD(&task_info_data.thread_times, user_time);
-    PRINT_FIELD(&task_info_data.thread_times, system_time);
+    PRINT_FIELD(&task_info_data.thread_times, user_time.seconds);
+    PRINT_FIELD(&task_info_data.thread_times, system_time.seconds);
 }
 
 static void
-info_mach_ports_command(char* args, int from_tty)
+info_mach_ports_command(const char* args, int from_tty)
 {
     port_name_array_t	port_names_data;
     port_type_array_t	port_types_data;
@@ -162,12 +171,14 @@ info_mach_ports_command(char* args, int from_tty)
                           port_names_data[index], port_types_data[index]);
       }
 
-    vm_deallocate(task_self(), port_names_data, (name_count * sizeof(port_t)));
-    vm_deallocate(task_self(), port_types_data, (type_count * sizeof(port_type_t)));
+    vm_deallocate(task_self(), (vm_address_t)port_names_data,
+		  (name_count * sizeof(port_t)));
+    vm_deallocate(task_self(), (vm_address_t)port_types_data,
+		  (type_count * sizeof(port_type_t)));
 }
 
 static void
-info_mach_port_command (char* args, int from_tty)
+info_mach_port_command(const char* args, int from_tty)
 {
     task_t task;
     port_t port;
@@ -175,11 +186,11 @@ info_mach_port_command (char* args, int from_tty)
     CHECK_ARGS ("Task and port", args);
     sscanf (args, "0x%x 0x%x", &task, &port);
 
-    next_debug_port_info (task, port);
+    next_debug_port_info(task, port);
 }
 
 static void
-info_mach_threads_command(char* args, int from_tty)
+info_mach_threads_command(const char* args, int from_tty)
 {
     thread_array_t	thread_array;
     unsigned int	thread_count;
@@ -201,11 +212,12 @@ info_mach_threads_command(char* args, int from_tty)
         printf_unfiltered("    %#x\n", thread_array[i]);
       }
 
-    vm_deallocate(task_self(), thread_array, (thread_count * sizeof(thread_t)));
+    vm_deallocate(task_self(), (vm_address_t)thread_array,
+		  (thread_count * sizeof(thread_t)));
 }
 
 static void
-info_mach_thread_command(char* args, int from_tty)
+info_mach_thread_command(const char* args, int from_tty)
 {
     union {
         struct thread_basic_info	basic;
@@ -226,8 +238,8 @@ info_mach_thread_command(char* args, int from_tty)
                          &info_count);
     MACH_CHECK_ERROR(result);
 
-    PRINT_FIELD(&thread_info_data.basic, user_time);
-    PRINT_FIELD(&thread_info_data.basic, system_time);
+    PRINT_FIELD(&thread_info_data.basic, user_time.seconds);
+    PRINT_FIELD(&thread_info_data.basic, system_time.seconds);
     PRINT_FIELD(&thread_info_data.basic, cpu_usage);
 #if !defined(__MACH30__)
     PRINT_FIELD(&thread_info_data.basic, base_priority);
@@ -276,16 +288,16 @@ info_mach_thread_command(char* args, int from_tty)
 #endif /* __ppc__ */
 }
 
-void info_mach_regions_command (char *exp, int from_tty)
+void info_mach_regions_command(const char *exp, int from_tty)
 {
   if ((! next_status) || (next_status->task == TASK_NULL)) {
     error ("Inferior not available");
   }
 
-  next_debug_regions (next_status->task);
+  next_debug_regions(next_status->task);
 }
 
-void info_mach_region_command (char *exp, int from_tty)
+void info_mach_region_command(const char *exp, int from_tty)
 {
   struct expression *expr;
   struct value *val;
@@ -294,6 +306,7 @@ void info_mach_region_command (char *exp, int from_tty)
 
   expr = parse_expression (exp);
   val = evaluate_expression (expr);
+#ifdef VALUE_TYPE
   if (TYPE_CODE (VALUE_TYPE (val)) == TYPE_CODE_REF) {
     val = value_ind (val);
   }
@@ -305,16 +318,24 @@ void info_mach_region_command (char *exp, int from_tty)
   } else {
     address = value_as_address (val);
   }
+#else
+  if (0 && (VALUE_LVAL(val) == lval_memory)) {
+    address = VALUE_ADDRESS(val);
+  } else {
+    address = value_as_address(val);
+  }
+#endif /* VALUE_TYPE */
 
   if ((! next_status) || (next_status->task == TASK_NULL)) {
     error ("Inferior not available");
   }
 
-  next_debug_region (next_status->task, address);
+  next_debug_region(next_status->task, address);
 }
 
+extern void _initialize_next_info_commands(void); /* -Wmissing-prototypes */
 void
-_initialize_next_info_commands (void)
+_initialize_next_info_commands(void)
 {
   add_info ("mach-tasks", info_mach_tasks_command, "Get list of tasks in system.");
   add_info ("mach-ports", info_mach_ports_command, "Get list of ports in a task.");

@@ -36,7 +36,7 @@ NEXT_FILES = \
 	nextstep-nat-infthread.o \
 	nextstep-nat-info.o
 
-PPC_FILES = ppc-next-nat-exec.o 
+PPC_FILES = ppc-next-nat-exec.o
 
 RHAPSODY_FILES = rhapsody-nat.o
 
@@ -56,6 +56,7 @@ VPATH += $(srcdir)/../gdb-next
 VPATH += $(srcdir)/../gdb-next/display-support
 
 MH_CFLAGS = \
+	-DUSE_PTHREADS \
 	-DNS_TARGET_MAJOR=5 \
 	-I$(srcdir)/../gdb-next \
 	-I$(srcdir)/../gdb-next/display-support \
@@ -87,3 +88,8 @@ endif
 ifneq ("$(USE_PTHREADS)", "")
 MH_CFLAGS += -DUSE_PTHREADS=1
 endif
+
+.SUFFIXES: .m .o
+.m.o:
+	$(AM_V_OBJC)$(OBJC) -c $(INTERNAL_OBJCFLAGS) $<
+	$(POSTCOMPILE)

@@ -1,4 +1,4 @@
-/* Manages interpreters for gdb.
+/* interpreter.h: Manages interpreters for gdb.
    Copyright 2000 Free Software Foundation, Inc.
    Written by Jim Ingham <jingham@apple.com> of Apple Computer, Inc.
 
@@ -58,32 +58,30 @@ struct gdb_interpreter
  };
 
 extern struct gdb_interpreter
-*gdb_new_interpreter (char *name,
-		      void *data,
-		      struct ui_out *uiout,
-		      interp_init_ftype init_proc,
-		      interp_resume_ftype  resume_proc,
-		      interp_do_one_event_ftype do_one_event_proc,
-		      interp_suspend_ftype suspend_proc,
-		      interp_delete_ftype delete_proc,
-		      interp_exec_ftype   exec_proc,
-		      interp_prompt_ftype prompt_proc);
+*gdb_new_interpreter(char *name, void *data, struct ui_out *uiout,
+		     interp_init_ftype init_proc,
+		     interp_resume_ftype resume_proc,
+		     interp_do_one_event_ftype do_one_event_proc,
+		     interp_suspend_ftype suspend_proc,
+		     interp_delete_ftype delete_proc,
+		     interp_exec_ftype exec_proc,
+		     interp_prompt_ftype prompt_proc);
 
 extern int gdb_add_interpreter (struct gdb_interpreter *interp);
 extern int gdb_delete_interpreter(struct gdb_interpreter *interp);
 extern int gdb_set_interpreter (struct gdb_interpreter *interp);
 extern struct gdb_interpreter *gdb_lookup_interpreter (char *name);
-extern struct gdb_interpreter *gdb_current_interpreter ();
+extern struct gdb_interpreter *gdb_current_interpreter(void);
 extern struct ui_out *gdb_interpreter_ui_out (struct gdb_interpreter *interp);
 extern int gdb_current_interpreter_is_named(char *interp_name);
 extern int gdb_interpreter_exec (char *command_str);
 extern int gdb_interpreter_display_prompt (char *new_prompt);
-extern int gdb_interpreter_set_quiet (struct gdb_interpreter *interp,
-				       int quiet);
-extern int gdb_interpreter_is_quiet (struct gdb_interpreter *interp);
-extern int interpreter_do_one_event ();
+extern int gdb_interpreter_set_quiet(struct gdb_interpreter *interp,
+				     int quiet);
+extern int gdb_interpreter_is_quiet(struct gdb_interpreter *interp);
+extern int interpreter_do_one_event(void);
 
-void clear_interpreter_hooks ();
+void clear_interpreter_hooks(void);
 
 /* well-known interpreters */
 #define GDB_INTERPRETER_CONSOLE		"console"

@@ -37,6 +37,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 extern next_inferior_status *next_status;
 
 #include <mach/machine/thread_status.h>
+#ifdef HAVE_MACH_THREAD_STATUS_H
+# include <mach/thread_status.h>
+#endif /* HAVE_MACH_THREAD_STATUS_H */
+
+#include "nextstep-nat-infthread.h"
 
 #if defined (TARGET_I386)
 
@@ -49,7 +54,9 @@ extern next_inferior_status *next_status;
 # define CLEAR_TRACE_BIT(s) ((s).eflags &= ~0x100UL)
 
 #elif defined (TARGET_POWERPC)
-
+# ifdef HAVE_MACH_PPC_THREAD_STATUS_H
+#  include <mach/ppc/thread_status.h>
+# endif /* HAVE_MACH_PPC_THREAD_STATUS_H */
 # define THREAD_STATE PPC_THREAD_STATE
 # define THREAD_STRUCT struct ppc_thread_state
 # define THREAD_COUNT PPC_THREAD_STATE_COUNT
@@ -77,6 +84,7 @@ kern_return_t set_trace_bit (thread_t thread)
     MACH_PROPAGATE_ERROR (kret);
   }
 
+  (void)state;
   return KERN_SUCCESS;
 }
 
@@ -95,6 +103,7 @@ kern_return_t clear_trace_bit (thread_t thread)
     MACH_PROPAGATE_ERROR (kret);
   }
 
+  (void)state;
   return KERN_SUCCESS;
 }
 
@@ -197,7 +206,7 @@ void prepare_threads_before_run
   }
 }
 
-char *unparse_run_state (int run_state)
+const char *unparse_run_state (int run_state)
 {
   switch (run_state) {
   case TH_STATE_RUNNING: return "RUNNING";
@@ -229,7 +238,7 @@ void print_thread_info (thread_t tid)
   }
 }
 
-void info_task_command (char *args, int from_tty)
+void info_task_command(const char *args, int from_tty)
 {
   struct task_basic_info info;
   unsigned int info_count = TASK_BASIC_INFO_COUNT;
@@ -243,7 +252,8 @@ void info_task_command (char *args, int from_tty)
   kret = task_info (next_status->task, TASK_BASIC_INFO, (task_info_t) &info, &info_count);
   MACH_CHECK_ERROR (kret);
 
-  printf_filtered ("Inferior task 0x%lx has a suspend count of %d.\n", next_status->task, info.suspend_count);
+  printf_filtered("Inferior task 0x%lx has a suspend count of %d.\n",
+		  (unsigned long)next_status->task, info.suspend_count);
 
   kret = task_threads (next_status->task, &thread_list, &nthreads);
   MACH_CHECK_ERROR (kret);
@@ -257,7 +267,7 @@ void info_task_command (char *args, int from_tty)
   MACH_CHECK_ERROR (kret);
 }
 
-static thread_t parse_thread (char *tidstr)
+static thread_t parse_thread(const char *tidstr)
 {
   int num;
   ptid_t ptid;
@@ -286,13 +296,13 @@ static thread_t parse_thread (char *tidstr)
   return ptid_get_tid (ptid);
 }
 
-void info_thread_command (char *tidstr, int from_tty)
+void info_thread_command(const char *tidstr, int from_tty)
 {
   thread_t thread = parse_thread (tidstr);
   print_thread_info (thread);
 }
 
-static void thread_suspend_command (char *tidstr, int from_tty)
+static void thread_suspend_command(const char *tidstr, int from_tty)
 {
   kern_return_t kret;
   thread_t thread;
@@ -303,7 +313,7 @@ static void thread_suspend_command (char *tidstr, int from_tty)
   MACH_CHECK_ERROR (kret);
 }
 
-static void thread_resume_command (char *tidstr, int from_tty)
+static void thread_resume_command(const char *tidstr, int from_tty)
 {
   kern_return_t kret;
   thread_t thread;
@@ -314,20 +324,21 @@ static void thread_resume_command (char *tidstr, int from_tty)
   MACH_CHECK_ERROR (kret);
 }
 
+extern void _initialize_threads(void); /* -Wmissing-prototypes */
 void
-_initialize_threads ()
+_initialize_threads(void)
 {
-  add_cmd ("suspend", class_run, thread_suspend_command,
+  add_cmd("suspend", class_run, thread_suspend_command,
 	  "Suspend a thread.", &thread_cmd_list);
 
-  add_cmd ("resume", class_run, thread_resume_command,
+  add_cmd("resume", class_run, thread_resume_command,
 	  "Resume a thread.", &thread_cmd_list);
 
-  add_info ("thread", info_thread_command,
-	    "Get information on thread.");
+  add_info("thread", info_thread_command,
+	   "Get information on thread.");
 
-  add_info ("task", info_task_command,
-	    "Get information on task.");
+  add_info("task", info_task_command,
+	   "Get information on task.");
 }
 
 /* EOF */

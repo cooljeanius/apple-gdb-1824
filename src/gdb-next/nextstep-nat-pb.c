@@ -10,10 +10,14 @@
 #include "objfiles.h"
 #include "breakpoint.h"
 
-static void annotation_level_command (char *arg, int from_tty)
-{
-  extern int annotation_level;
+extern void print_sel_frame(int);
+extern void print_selected_frame(void);
+extern void pb_breakpoint_move_command(const char *, int);
 
+extern int annotation_level; /* moved out here for -Wnested-externs */
+
+static void annotation_level_command(const char *arg, int from_tty)
+{
   if (strcmp (arg, "AnnotateForPB") == 0) {
     annotation_level = 2;
   } else {
@@ -26,7 +30,7 @@ static void annotation_level_command (char *arg, int from_tty)
 #define ALL_BREAKPOINTS(b)  for (b = breakpoint_chain; b; b = b->next)
 extern struct breakpoint *breakpoint_chain;
 
-void pb_breakpoint_move_command (char *arg, int from_tty)
+void pb_breakpoint_move_command(const char *arg, int from_tty)
 {
   int bp_number;
   int line_number;
@@ -45,30 +49,34 @@ void pb_breakpoint_move_command (char *arg, int from_tty)
     }
   }
   if (bp) {
+#if 0
     do_breakpoint_move (bp, line_number);
+#else
+    (void)line_number;
+#endif /* 0 */
   } else {
     printf_unfiltered ("No breakpoint number %d.\n", bp_number);
   }
 }
 
 void
-print_sel_frame (just_source)
-     int just_source;
+print_sel_frame(int just_source)
 {
-  print_stack_frame (selected_frame, -1, just_source ? -1 : 1);
+  print_stack_frame(selected_frame, -1, (just_source ? SRC_LINE : SRC_AND_LOC));
 }
 
 /* Print info on the selected frame, including level number
    but not source.  */
 
 void
-print_selected_frame ()
+print_selected_frame(void)
 {
-  print_stack_frame (selected_frame, selected_frame_level, 0);
+  print_stack_frame(selected_frame, selected_frame_level, LOCATION);
 }
 
+extern void _initialize_pb(void); /* -Wmissing-prototypes */
 void
-_initialize_pb ()
+_initialize_pb(void)
 {
   add_com ("annotation_level", class_support, annotation_level_command,
 	   "Sets the annotation level.");

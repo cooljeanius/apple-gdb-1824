@@ -854,6 +854,9 @@
 /* Define to 1 if the system has the type `mach_port_t'. */
 #undef HAVE_MACH_PORT_T
 
+/* Define to 1 if you have the <mach/ppc/thread_status.h> header file. */
+#undef HAVE_MACH_PPC_THREAD_STATUS_H
+
 /* Define to 1 if you have the <mach/task.h> header file. */
 #undef HAVE_MACH_TASK_H
 
@@ -1525,6 +1528,9 @@
 
 /* Define to 1 if you have the <sys/wait.h> header file. */
 #undef HAVE_SYS_WAIT_H
+
+/* Define to 1 if you have the `task_set_exception_port' function. */
+#undef HAVE_TASK_SET_EXCEPTION_PORT
 
 /* Define to 1 to use task_set_state. */
 #undef HAVE_TASK_SET_STATE

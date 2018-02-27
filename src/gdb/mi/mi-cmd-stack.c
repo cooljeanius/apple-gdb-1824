@@ -44,6 +44,8 @@
      defined(MACOSX_DYLD)) || defined(TARGET_I386)
 # ifndef __NeXT__
 #  include "tm-i386-macosx.h"
+# else
+#  include "tm-1386-next.h"
 # endif /* !__NeXT__ */
 # if !defined(TM_I386NEXT_H) && !defined(HAVE_I387_REGS)
 #  include "config/i386/tm-i386-macosx.h"
@@ -273,17 +275,17 @@ mi_cmd_stack_list_frames_lite (char *command, char **argv, int argc)
     int names;
     int valid;
     unsigned int count = 0;
-    void (*print_fun) (struct ui_out*, int*, CORE_ADDR, CORE_ADDR);
+    void (*print_fun)(struct ui_out*, int*, CORE_ADDR, CORE_ADDR);
 
 #ifndef FAST_COUNT_STACK_DEPTH
     int i;
     struct frame_info *fi;
-#endif
+#endif /*  !FAST_COUNT_STACK_DEPTH */
 
     if (!target_has_stack)
         error ("mi_cmd_stack_list_frames_lite: No stack.");
 
-    if ((argc > 8))
+    if ((argc > 8) || (argc < 0))
         error ("mi_cmd_stack_list_frames_lite: Usage: [-names (0|1)] [-start start-num] "
                "[-limit max_frame_number] [-count_limit how_many_to_count]");
 
@@ -349,7 +351,8 @@ mi_cmd_stack_list_frames_lite (char *command, char **argv, int argc)
       print_fun = mi_print_frame_info_lite;
 
 #ifdef FAST_COUNT_STACK_DEPTH
-    valid = FAST_COUNT_STACK_DEPTH (count_limit, start, limit, &count, print_fun);
+    valid = FAST_COUNT_STACK_DEPTH(count_limit, start, limit, (int *)&count,
+				   print_fun);
 #else
     /* Start at the inner most frame */
     {
@@ -390,7 +393,7 @@ mi_cmd_stack_list_frames_lite (char *command, char **argv, int argc)
       valid = 1;
       do_cleanups (list_cleanup);
     }
-#endif
+#endif /* FAST_COUNT_STACK_DEPTH */
 
     ui_out_text (uiout, "Valid: ");
     ui_out_field_int (uiout, "valid", valid);
@@ -398,13 +401,19 @@ mi_cmd_stack_list_frames_lite (char *command, char **argv, int argc)
     ui_out_field_int (uiout, "count", count);
     ui_out_text (uiout, "\n");
 
+    if (start > limit) {
+      (void)count_limit;
+    } else if (count_limit > limit) {
+      (void)print_fun;
+    }
+
     return MI_CMD_DONE;
 }
 
 void
 mi_print_frame_more_info (struct ui_out *uiout,
-				struct symtab_and_line *sal,
-				struct frame_info *fi)
+			  struct symtab_and_line *sal,
+			  struct frame_info *fi)
 {
   struct objfile *ofile = NULL;
   /* I would feel happier if we used ui_out_field_skip for all the fields
@@ -455,7 +464,7 @@ mi_cmd_stack_info_depth(char *command, char **argv, int argc)
     frame_high = -1;
 
 #ifdef FAST_COUNT_STACK_DEPTH
-  if (! FAST_COUNT_STACK_DEPTH(frame_high, 0, frame_high, &i, NULL))
+  if (! FAST_COUNT_STACK_DEPTH(frame_high, 0, frame_high, (int *)&i, NULL))
 #endif /* FAST_COUNT_STACK_DEPTH */
     {
       for (i = 0U, fi = get_current_frame();

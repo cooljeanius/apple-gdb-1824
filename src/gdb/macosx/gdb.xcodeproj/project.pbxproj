@@ -4827,6 +4827,8 @@
 		A57C98132043C8BB00D09754 /* tm-winpdo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-winpdo.h"; sourceTree = "<group>"; };
 		A57C98142043C8BB00D09754 /* tm-x86-64linux.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-x86-64linux.h"; sourceTree = "<group>"; };
 		A57C98172043C97400D09754 /* nextstep-nat-watchpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-watchpoint.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb-next/nextstep-nat-watchpoint.h"; sourceTree = "<absolute>"; };
+		A57C9A3820445B8400D09754 /* nextstep-nat-dyld-section.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-dyld-section.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb-next/nextstep-nat-dyld-section.h"; sourceTree = "<absolute>"; };
+		A57C9B132045437F00D09754 /* nextstep-nat-inferior-stubs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "nextstep-nat-inferior-stubs.h"; sourceTree = "<group>"; };
 		A589C8DC1A30EC3100E717B9 /* .profile_generic */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_generic; path = ../../../.profile_generic; sourceTree = "<group>"; };
 		A589C8DD1A30EC3100E717B9 /* .profile_leopard */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_leopard; path = ../../../.profile_leopard; sourceTree = "<group>"; };
 		A589C8DE1A30EC3100E717B9 /* .profile_leopard_universal */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_leopard_universal; path = ../../../.profile_leopard_universal; sourceTree = "<group>"; };
@@ -10180,6 +10182,7 @@
 				61F32D911CC3730F00C05007 /* nextstep-nat-dyld-process.c */,
 				61F32D921CC3730F00C05007 /* nextstep-nat-dyld-process.h */,
 				61F32D931CC3730F00C05007 /* nextstep-nat-dyld-section.c */,
+				A57C9A3820445B8400D09754 /* nextstep-nat-dyld-section.h */,
 				61F32D941CC3730F00C05007 /* nextstep-nat-dyld.c */,
 				61F32D951CC3730F00C05007 /* nextstep-nat-dyld.h */,
 				61F32D961CC3730F00C05007 /* nextstep-nat-excthread.c */,
@@ -10187,6 +10190,7 @@
 				61F32D981CC3730F00C05007 /* nextstep-nat-inferior-debug.c */,
 				61F32D991CC3730F00C05007 /* nextstep-nat-inferior-debug.h */,
 				61F32D9A1CC3730F00C05007 /* nextstep-nat-inferior-stubs.c */,
+				A57C9B132045437F00D09754 /* nextstep-nat-inferior-stubs.h */,
 				61F32D9B1CC3730F00C05007 /* nextstep-nat-inferior-util.c */,
 				61F32D9C1CC3730F00C05007 /* nextstep-nat-inferior-util.h */,
 				61F32D9D1CC3730F00C05007 /* nextstep-nat-inferior.c */,

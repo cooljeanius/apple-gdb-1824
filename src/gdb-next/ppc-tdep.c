@@ -7,6 +7,8 @@
 #include "ppc-frameops.h"
 
 #include "defs.h"
+#include "ax.h"
+#include "exceptions.h"
 #include "frame.h"
 #include "inferior.h"
 #include "symtab.h"
@@ -37,8 +39,23 @@
 # define CPU_TYPE_POWERPC (18)
 #endif /* !CPU_TYPE_POWERPC */
 
+#ifndef store_floating
+# define store_floating(a, l, v) deprecated_store_floating(a, l, v)
+#endif /* !store_floating */
+
+#ifndef extract_floating
+# define extract_floating(a, l) deprecated_extract_floating(a, l)
+#endif /* !extract_floating */
+
+#ifndef REGISTER_BYTE
+# ifdef DEPRECATED_REGISTER_BYTE
+#  define REGISTER_BYTE(foo) DEPRECATED_REGISTER_BYTE(foo)
+# endif /* DEPRECATED_REGISTER_BYTE */
+#endif /* REGISTER_BYTE */
+
 struct gdbarch_tdep
 {
+  void *unused;
 };
 
 /* external functions and globals */
@@ -50,8 +67,6 @@ extern int stop_stack_dummy;
 /* local definitions */
 
 static int ppc_debugflag = 0;
-
-extern void ppc_debug(const char *, ...) ATTR_FORMAT(gnu_printf, 1, 2);
 
 void ppc_debug(const char *fmt, ...)
 {
@@ -74,45 +89,55 @@ ppc_init_extra_frame_info(int fromleaf, struct frame_info *frame)
 {
   CHECK_FATAL (frame != NULL);
 
-  frame->extra_info = (struct frame_extra_info *)
-    frame_obstack_alloc (sizeof (struct frame_extra_info));
+#if 0
+  frame->extra_info = ((struct frame_extra_info *)
+		       frame_obstack_alloc(sizeof(struct frame_extra_info)));
 
   frame->extra_info->initial_sp = 0;
   frame->extra_info->bounds = NULL;
   frame->extra_info->props = 0;
   frame->signal_handler_caller = 0;
+#endif /* 0 */
 }
 
 void
 ppc_print_extra_frame_info(struct frame_info *frame)
 {
+#if 0
   if (frame->signal_handler_caller) {
     printf_filtered (" This function was called from a signal handler.\n");
   } else {
     printf_filtered (" This function was not called from a signal handler.\n");
   }
+#endif /* 0 */
 
   ppc_frame_cache_initial_stack_address (frame);
+#if 0
   if (frame->extra_info->initial_sp) {
     printf_filtered (" The initial stack pointer for this frame was 0x%lx.\n",
 		     (unsigned long) frame->extra_info->initial_sp);
   } else {
     printf_filtered (" Unable to determine initial stack pointer for this frame.\n");
   }
+#endif /* 0 */
 
   ppc_frame_cache_boundaries (frame, NULL);
+#if 0
   if (frame->extra_info->bounds != NULL) {
     ppc_print_boundaries (frame->extra_info->bounds);
   } else {
     printf_filtered (" Unable to determine function boundary information.\n");
   }
+#endif /* 0 */
 
   ppc_frame_cache_properties (frame, NULL);
+#if 0
   if (frame->extra_info->props != NULL) {
     ppc_print_properties (frame->extra_info->props);
   } else {
     printf_filtered (" Unable to determine function property information.\n");
   }
+#endif /* 0 */
 }
 /* We need to make sure that ppc_init_frame_pc_first will NOT longjmp,
  * since if it does it can leave a frame structure with no extra_info
@@ -126,7 +151,7 @@ struct ppc_init_frame_pc_args
 };
 
 int
-ppc_init_frame_pc_first_unsafe (struct ppc_init_frame_pc_args *args)
+ppc_init_frame_pc_first_unsafe(struct ppc_init_frame_pc_args *args)
 {
   struct frame_info *frame = args->frame;
   struct frame_info *next;
@@ -134,13 +159,15 @@ ppc_init_frame_pc_first_unsafe (struct ppc_init_frame_pc_args *args)
   CHECK_FATAL (frame != NULL);
   next = get_next_frame (frame);
   CHECK_FATAL (next != NULL);
+#if 0
   frame->pc = ppc_frame_saved_pc (next);
+#endif /* 0 */
 
   return 1;
 }
 
-void
-ppc_init_frame_pc_first (int fromleaf, struct frame_info *frame)
+CORE_ADDR
+ppc_init_frame_pc_first(int fromleaf, struct frame_info *frame)
 {
   struct ppc_init_frame_pc_args args;
 
@@ -153,12 +180,14 @@ ppc_init_frame_pc_first (int fromleaf, struct frame_info *frame)
       ppc_debug ("ppc_init_frame_pc_first: got an error calling %s.\n",
 		 "ppc_frame_saved_pc.\n");
     }
+  return 0UL;
 }
 
-void
+CORE_ADDR
 ppc_init_frame_pc(int fromleaf, struct frame_info *frame)
 {
   CHECK_FATAL (frame != NULL);
+  return 0UL;
 }
 
 /* ppc_get_unsaved_pc
@@ -170,32 +199,50 @@ ppc_init_frame_pc(int fromleaf, struct frame_info *frame)
  * setting call - which does "blc pc+4; mflr r31" so the lr is wrong for
  * a little while.
  */
-
 CORE_ADDR
-ppc_get_unsaved_pc (struct frame_info *frame, ppc_function_properties *props)
+ppc_get_unsaved_pc(struct frame_info *frame, ppc_function_properties *props)
 {
   struct frame_info *cur_frame;
   CORE_ADDR retval;
 
   if ((props->lr_reg == -1)
       || ((props->lr_invalid == 0)
+#if 0
 	  || (frame->pc <= props->lr_invalid)
-	  || (frame->pc > props->lr_valid_again)))
+	  || (frame->pc > props->lr_valid_again)
+#endif
+	  || 0))
     {
       ppc_debug ("ppc_get_unsaved_pc: link register was not saved.\n");
       cur_frame = get_current_frame ();
+#if 0
       set_current_frame (frame);
+#endif /* 0 */
       retval = read_register (LR_REGNUM);
+#if 0
       set_current_frame (cur_frame);
+#else
+      if (cur_frame == NULL) {
+	(void)cur_frame;
+      }
+#endif /* 0 */
     }
   else
     {
       ppc_debug ("ppc_get_unsaved_pc: link register stashed in register %d.\n",
 		 props->lr_reg);
       cur_frame = get_current_frame ();
+#if 0
       set_current_frame (frame);
+#endif /* 0 */
       retval = read_register (props->lr_reg);
+#if 0
       set_current_frame (cur_frame);
+#else
+      if (cur_frame == NULL) {
+	(void)cur_frame;
+      }
+#endif /* 0 */
     }
   return retval;
 }
@@ -207,6 +254,7 @@ ppc_frame_find_pc(struct frame_info *frame)
 
   CHECK_FATAL (frame != NULL);
 
+#if 0
   if (frame->signal_handler_caller) {
     CORE_ADDR psp = read_memory_unsigned_integer (frame->frame, 4);
     CORE_ADDR retval;
@@ -218,6 +266,17 @@ ppc_frame_find_pc(struct frame_info *frame)
     ppc_debug ("Signal frame at: 0x%lx, saved pc at: 0x%lx.\n", psp, retval);
     return retval;
   }
+#else
+  if (frame != NULL) {
+    CORE_ADDR psp = 0UL;
+    CORE_ADDR retval;
+    ppc_debug("ppc_frame_saved_pc: determing previous pc from signal context\n");
+
+    retval = read_memory_unsigned_integer((psp + 0x70), 4);
+    ppc_debug("Signal frame at: 0x%lx, saved pc at: 0x%lx.\n", psp, retval);
+    return retval;
+  }
+#endif /* 0 */
 
   prev = ppc_frame_chain (frame);
   if ((prev == 0) || (! ppc_frame_chain_valid (prev, frame))) {
@@ -228,9 +287,13 @@ ppc_frame_find_pc(struct frame_info *frame)
 
   if (ppc_frame_cache_properties (frame, NULL) != 0)
     {
-      ppc_debug ("ppc_frame_find_pc: unable to find properties of function containing 0x%lx\n",
-		 (unsigned long) frame->pc);
-      ppc_debug ("ppc_frame_find_pc: assuming link register saved in normal location\n");
+#if 0
+      ppc_debug("ppc_frame_find_pc: unable to find properties of function containing 0x%lx\n",
+		(unsigned long)frame->pc);
+#else
+      ppc_debug("ppc_frame_find_pc: unable to find properties of function\n");
+#endif /* 0 */
+      ppc_debug("ppc_frame_find_pc: assuming link register saved in normal location\n");
 
       if (ppc_frameless_function_invocation (frame))
 	{
@@ -246,8 +309,17 @@ ppc_frame_find_pc(struct frame_info *frame)
 	{
 	  ppc_function_properties lprops;
 	  CORE_ADDR body_start;
-	  body_start = ppc_parse_instructions (frame->pc, INVALID_ADDRESS,
-					       &lprops);
+#if 0
+	  body_start = ppc_parse_instructions(frame->pc, INVALID_ADDRESS,
+					      &lprops);
+#else
+	  body_start = ppc_parse_instructions(INVALID_ADDRESS, INVALID_ADDRESS,
+					      &lprops);
+#endif /* 0 */
+
+	  if (body_start == INVALID_ADDRESS) {
+	    ; /* ??? */
+	  }
 
 	  /* We get here if we are a bit lost: after all we were NOT
 	   * able to successfully run ppc_frame_cache_properties.  So
@@ -256,9 +328,9 @@ ppc_frame_find_pc(struct frame_info *frame)
 	   * (since un-interpretible prologue and frameless prologue
 	   * look kind of the same). So add this obvious check
 	   * here for being a leaf fn. in the first branch... */
-
-	  if ((frame->next == NULL && lprops.lr_saved == 0) ||
-	      (lprops.lr_saved >= frame->pc))
+#if 0
+	  if (((frame->next == NULL) && (lprops.lr_saved == 0))
+	      || (lprops.lr_saved >= frame->pc))
 	    {
       	      /* Either we are NOT saving the link register, or our scan
       	       * shows that the link register WILL be saved, but has not
@@ -273,17 +345,25 @@ ppc_frame_find_pc(struct frame_info *frame)
 	      /* The link register is safely on the stack... */
 	      return read_memory_unsigned_integer (prev + DEFAULT_LR_SAVE, 4);
 	    }
+#else
+	  return read_memory_unsigned_integer((prev + DEFAULT_LR_SAVE), 4);
+#endif /* 0 */
 	}
     }
   else
     {
       ppc_function_properties *props;
 
+#if 0
       props = frame->extra_info->props;
+#else
+      props = (ppc_function_properties *)frame;
+#endif /* 0 */
       CHECK_FATAL (props != NULL);
 
       if (props->lr_saved)
 	{
+#if 0
 	  if (props->lr_saved < frame->pc)
 	    {
 	      /* The link register is safely on the stack... */
@@ -295,6 +375,9 @@ ppc_frame_find_pc(struct frame_info *frame)
 	      ppc_debug ("ppc_frame_find_pc: function did not save link register\n");
 	      return ppc_get_unsaved_pc (frame, props);
 	    }
+#else
+	  return INVALID_ADDRESS;
+#endif /* 0 */
         }
       else if (frame->next && frame->next->signal_handler_caller)
 	{
@@ -416,7 +499,11 @@ ppc_is_dummy_frame(struct frame_info *frame)
   }
 
   if (chain == 0) { return 0; }
+#ifdef PC_IN_CALL_DUMMY
   return (PC_IN_CALL_DUMMY (frame->pc, frame->frame, chain));
+#else
+  return -1;
+#endif /* PC_IN_CALL_DUMMY */
 }
 
 /* Return the address of a frame. This is the inital %sp value when the frame
@@ -427,12 +514,16 @@ CORE_ADDR
 ppc_frame_cache_initial_stack_address(struct frame_info *frame)
 {
   CHECK_FATAL (frame != NULL);
+#if 0
   CHECK_FATAL (frame->extra_info != NULL);
 
   if (frame->extra_info->initial_sp == 0) {
     frame->extra_info->initial_sp = ppc_frame_initial_stack_address (frame);
   }
   return frame->extra_info->initial_sp;
+#else
+  return INVALID_ADDRESS;
+#endif /* 0 */
 }
 
 /* */
@@ -493,15 +584,19 @@ ppc_frame_initial_stack_address(struct frame_info *frame)
       }
 
       /* Go look into deeper levels of the frame chain to see if any one of
-	   * the callees has saved the frame pointer register. */
+       * the callees has saved the frame pointer register. */
     }
 
+#if 0
   /* If frame pointer register was not saved, by the callee (or any of
    * its callees) then the value in the register is still good. */
 
   frame->extra_info->initial_sp
     = read_register (frame->extra_info->props->frameptr_reg);
   return frame->extra_info->initial_sp;
+#else
+  return -1;
+#endif /* 0 */
 }
 
 int
@@ -544,13 +639,26 @@ int ppc_use_struct_convention(int gccp, struct type *valtype)
 CORE_ADDR
 ppc_extract_struct_value_address(char regbuf[REGISTER_BYTES])
 {
-  return extract_unsigned_integer (&regbuf[REGISTER_BYTE (GP0_REGNUM + 3)], 4);
+  return extract_unsigned_integer((const gdb_byte *)&regbuf[REGISTER_BYTE(GP0_REGNUM + 3)], 4);
 }
+
+#ifndef MAX_REGISTER_RAW_SIZE
+/* arbitrarily made-up default: */
+# define MAX_REGISTER_RAW_SIZE 4
+#endif /* !MAX_REGISTER_RAW_SIZE */
+#ifndef REGISTER_RAW_SIZE
+# ifdef DEPRECATED_REGISTER_RAW_SIZE
+#  define REGISTER_RAW_SIZE(foo) DEPRECATED_REGISTER_RAW_SIZE(foo)
+# else
+#  define REGISTER_RAW_SIZE(foo) MAX_REGISTER_RAW_SIZE
+# endif /* DEPRECATED_REGISTER_RAW_SIZE */
+#endif /* !REGISTER_RAW_SIZE */
 
 /* */
 void
-ppc_extract_return_value(struct type *valtype, char regbuf[REGISTER_BYTES],
-			 char *valbuf)
+ppc_extract_return_value(struct type *valtype,
+			 struct regcache *regbuf,
+			 gdb_byte *valbuf)
 {
   int offset = 0;
 
@@ -563,29 +671,31 @@ ppc_extract_return_value(struct type *valtype, char regbuf[REGISTER_BYTES],
     double dd;
     float ff;
 
-    switch (TYPE_LENGTH (valtype)) {
+    switch (TYPE_LENGTH(valtype)) {
     case 8: /* double */
-      memcpy (valbuf, &regbuf[REGISTER_BYTE (FP0_REGNUM + 1)], 8);
+      memcpy(valbuf, &regbuf[REGISTER_BYTE(FP0_REGNUM + 1)], 8);
       break;
     case 4:
-      memcpy (&dd, &regbuf[REGISTER_BYTE (FP0_REGNUM + 1)], 8);
-      ff = (float) dd;
-      memcpy (valbuf, &ff, sizeof (float));
+      memcpy(&dd, &regbuf[REGISTER_BYTE(FP0_REGNUM + 1)], 8);
+      ff = (float)dd;
+      memcpy(valbuf, &ff, sizeof(float));
       break;
     default:
-      error ("unknown TYPE_LENGTH for return type %d", TYPE_LENGTH (valtype));
+      error("unknown TYPE_LENGTH for return type %d", TYPE_LENGTH(valtype));
     }
 
   } else {
 
     unsigned int gpretreg = GP0_REGNUM + 3;
     /* return value is copied starting from r3. */
-    if (TARGET_BYTE_ORDER == BFD_ENDIAN_BIG
-	&& TYPE_LENGTH (valtype) < REGISTER_RAW_SIZE (gpretreg))
-      offset = REGISTER_RAW_SIZE (gpretreg) - TYPE_LENGTH (valtype);
+    if ((TARGET_BYTE_ORDER == BFD_ENDIAN_BIG)
+	&& (TYPE_LENGTH(valtype) < REGISTER_RAW_SIZE(gpretreg)))
+      offset = (REGISTER_RAW_SIZE(gpretreg) - TYPE_LENGTH(valtype));
 
-    memcpy (valbuf, regbuf + REGISTER_BYTE (gpretreg) + offset,
-	    TYPE_LENGTH (valtype));
+#if defined(HAVE_MEMCPY) && defined(REGISTER_BYTE) && defined(TYPE_LENGTH)
+    memcpy(valbuf, (regbuf + REGISTER_BYTE(gpretreg) + offset),
+	   TYPE_LENGTH(valtype));
+#endif /* HAVE_MEMCPY && REGISTER_BYTE && TYPE_LENGTH */
   }
 }
 
@@ -629,7 +739,11 @@ ppc_frameless_function_invocation(struct frame_info *frame)
     return 0;
   }
 
+#if 0
   return frame->extra_info->props->frameless;
+#else
+  return -1;
+#endif /* 0 */
 }
 
 const char *gdb_register_names[] =
@@ -652,31 +766,41 @@ const char *gdb_register_names[] =
   "vrsave"
 };
 
-char *
-ppc_register_name (int reg_nr)
+const char *
+ppc_register_name(int reg_nr)
 {
   if (reg_nr < 0)
     return NULL;
-  if (reg_nr >= (sizeof (gdb_register_names) / sizeof (*gdb_register_names)))
+  if ((size_t)reg_nr >= (sizeof(gdb_register_names)
+			 / sizeof(*gdb_register_names)))
     return NULL;
   return gdb_register_names[reg_nr];
 }
 
+/* */
 void ppc_store_struct_return (CORE_ADDR addr, CORE_ADDR sp)
 {
   write_register (SRA_REGNUM, addr);
 }
 
-void ppc_store_return_value (struct type *type, char *valbuf)
+/* */
+void ppc_store_return_value(struct type *type, struct regcache *unused,
+			    const gdb_byte *valbuf)
 {
+#if 0
   /* Floating point values are returned starting from FPR1 and up.
      Say a double_double_double type could be returned in
      FPR1/FPR2/FPR3 triple. */
 
   if (TYPE_CODE (type) == TYPE_CODE_FLT)
-    write_register_bytes (REGISTER_BYTE (FPRV_REGNUM), (valbuf), TYPE_LENGTH (type));
+    write_register_bytes(REGISTER_BYTE(FPRV_REGNUM), (valbuf), TYPE_LENGTH(type));
   else
-    write_register_bytes (REGISTER_BYTE (RV_REGNUM), (valbuf), TYPE_LENGTH (type));
+    write_register_bytes(REGISTER_BYTE(RV_REGNUM), (valbuf), TYPE_LENGTH(type));
+#else
+  (void)type;
+  (void)valbuf;
+#endif /* 0 */
+  (void)unused;
 }
 
 CORE_ADDR ppc_push_return_address (CORE_ADDR pc, CORE_ADDR sp)
@@ -697,31 +821,32 @@ int ppc_register_convertible (int regno)
 /* Convert data from raw format for register REGNUM in buffer FROM
    to virtual format with type TYPE in buffer TO.  */
 
-void ppc_register_convert_to_virtual
-(int regno, struct type *type, char *from, char *to)
+void
+ppc_register_convert_to_virtual(int regno, struct type *type, char *from,
+				char *to)
 {
-  if (TYPE_LENGTH (type) != REGISTER_RAW_SIZE (regno))
+  if (TYPE_LENGTH(type) != REGISTER_RAW_SIZE(regno))
     {
-      double val = extract_floating (from, REGISTER_RAW_SIZE (regno));
-      store_floating (to, TYPE_LENGTH (type), val);
+      double val = (double)extract_floating(from, REGISTER_RAW_SIZE(regno));
+      store_floating(to, TYPE_LENGTH(type), val);
     }
   else
-    memcpy (to, from, REGISTER_RAW_SIZE (regno));
+    memcpy(to, from, REGISTER_RAW_SIZE(regno));
 }
 
 /* Convert data from virtual format with type TYPE in buffer FROM
    to raw format for register REGNUM in buffer TO.  */
 
-void ppc_register_convert_to_raw
-(struct type *type, int regno, char *from, char *to)
+void
+ppc_register_convert_to_raw(struct type *type, int regno, char *from, char *to)
 {
-  if (TYPE_LENGTH (type) != REGISTER_RAW_SIZE (regno))
+  if (TYPE_LENGTH(type) != REGISTER_RAW_SIZE(regno))
     {
-      double val = extract_floating (from, TYPE_LENGTH (type));
-      store_floating (to, REGISTER_RAW_SIZE (regno), val);
+      double val = (double)extract_floating(from, TYPE_LENGTH(type));
+      store_floating(to, REGISTER_RAW_SIZE(regno), val);
     }
   else
-    memcpy (to, from, REGISTER_RAW_SIZE (regno));
+    memcpy(to, from, REGISTER_RAW_SIZE(regno));
 }
 
 /* Sequence of bytes for breakpoint instruction.  */
@@ -729,7 +854,7 @@ void ppc_register_convert_to_raw
 #define BIG_BREAKPOINT { 0x7f, 0xe0, 0x00, 0x08 }
 #define LITTLE_BREAKPOINT { 0x08, 0x00, 0xe0, 0x7f }
 
-static unsigned char *
+static const gdb_byte *
 ppc_breakpoint_from_pc (CORE_ADDR *addr, int *size)
 {
   static unsigned char big_breakpoint[] = BIG_BREAKPOINT;
@@ -836,19 +961,26 @@ ppc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   tdep = XMALLOC (struct gdbarch_tdep);
   gdbarch = gdbarch_alloc (&info, tdep);
 
+#if 0
   set_gdbarch_read_pc (gdbarch, generic_target_read_pc);
+#endif /* 0 */
   set_gdbarch_write_pc (gdbarch, generic_target_write_pc);
+#if 0
   set_gdbarch_read_fp (gdbarch, generic_target_read_fp);
   set_gdbarch_write_fp (gdbarch, generic_target_write_fp);
   set_gdbarch_read_sp (gdbarch, generic_target_read_sp);
   set_gdbarch_write_sp (gdbarch, generic_target_write_sp);
+#endif /* 0 */
 
   set_gdbarch_num_regs (gdbarch, NUM_REGS);
   set_gdbarch_sp_regnum (gdbarch, SP_REGNUM);
+#if defined(FP_REGNUM) && (FP_REGNUM != SP_REGNUM)
   set_gdbarch_fp_regnum (gdbarch, FP_REGNUM);
+#endif /* FP_REGNUM != SP_REGNUM */
   set_gdbarch_pc_regnum (gdbarch, PC_REGNUM);
 
   set_gdbarch_register_name (gdbarch, ppc_register_name);
+#if 0
   set_gdbarch_register_size (gdbarch, 4);
   set_gdbarch_register_bytes (gdbarch, REGISTER_BYTES);
   set_gdbarch_register_byte (gdbarch, ppc_register_byte);
@@ -857,6 +989,12 @@ ppc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_register_virtual_size (gdbarch, ppc_register_virtual_size);
   set_gdbarch_max_register_virtual_size (gdbarch, 16);
   set_gdbarch_register_virtual_type (gdbarch, ppc_register_virtual_type);
+#else
+  (void)ppc_register_byte;
+  (void)ppc_register_raw_size;
+  (void)ppc_register_virtual_size;
+  (void)ppc_register_virtual_type;
+#endif /* 0 */
 
   set_gdbarch_ptr_bit (gdbarch, 4 * TARGET_CHAR_BIT);
   set_gdbarch_short_bit (gdbarch, 2 * TARGET_CHAR_BIT);
@@ -884,11 +1022,16 @@ ppc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       internal_error (__FILE__, __LINE__, "ppc_gdbarch_init: bad byte order for float format");
     }
 
+#if 0
   set_gdbarch_call_dummy_words (gdbarch, ppc_call_dummy_words);
   set_gdbarch_sizeof_call_dummy_words (gdbarch, sizeof (ppc_call_dummy_words));
   set_gdbarch_use_generic_dummy_frames (gdbarch, 0);
   set_gdbarch_call_dummy_length (gdbarch, (32 + 16 + 32) * INSTRUCTION_SIZE);
+#else
+  (void)ppc_call_dummy_words;
+#endif /* 0 */
   set_gdbarch_call_dummy_location (gdbarch, ON_STACK);
+#if 0
   set_gdbarch_call_dummy_address (gdbarch, 0);
   set_gdbarch_call_dummy_start_offset (gdbarch, (32 + 6) * INSTRUCTION_SIZE);
   set_gdbarch_call_dummy_breakpoint_offset_p (gdbarch, 1);
@@ -901,31 +1044,41 @@ ppc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_push_dummy_frame (gdbarch, ppc_push_dummy_frame);
 
   set_gdbarch_push_return_address (gdbarch, ppc_push_return_address);
+#endif /* 0 */
   set_gdbarch_believe_pcc_promotion (gdbarch, 1);
+#if 0
   set_gdbarch_coerce_float_to_double (gdbarch, standard_coerce_float_to_double);
 
   set_gdbarch_register_convertible (gdbarch, ppc_register_convertible);
   set_gdbarch_register_convert_to_virtual (gdbarch, ppc_register_convert_to_virtual);
   set_gdbarch_register_convert_to_raw (gdbarch, ppc_register_convert_to_raw);
+#endif /* 0 */
 
   set_gdbarch_extract_return_value (gdbarch, ppc_extract_return_value);
 
+#if 0
   set_gdbarch_push_arguments (gdbarch, ppc_push_arguments);
 
   set_gdbarch_store_struct_return (gdbarch, ppc_store_struct_return);
+#endif /* 0 */
   set_gdbarch_store_return_value (gdbarch, ppc_store_return_value);
+#if 0
   set_gdbarch_extract_struct_value_address (gdbarch, ppc_extract_struct_value_address);
   set_gdbarch_use_struct_convention (gdbarch, ppc_use_struct_convention);
   set_gdbarch_pop_frame (gdbarch, ppc_pop_frame);
+#endif /* 0 */
 
   set_gdbarch_skip_prologue (gdbarch, ppc_skip_prologue);
   set_gdbarch_inner_than (gdbarch, core_addr_lessthan);
   set_gdbarch_decr_pc_after_break (gdbarch, 0);
+#if 0
   set_gdbarch_function_start_offset (gdbarch, 0);
+#endif /* 0 */
   set_gdbarch_breakpoint_from_pc (gdbarch, ppc_breakpoint_from_pc);
 
   set_gdbarch_frame_args_skip (gdbarch, 0);
 
+#if 0
   set_gdbarch_frame_chain_valid (gdbarch, ppc_frame_chain_valid);
   set_gdbarch_frameless_function_invocation (gdbarch, ppc_frameless_function_invocation);
   set_gdbarch_frame_chain (gdbarch, ppc_frame_chain);
@@ -937,21 +1090,24 @@ ppc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_saved_pc_after_call (gdbarch, ppc_frame_saved_pc_after_call);
 
   set_gdbarch_frame_num_args (gdbarch, frame_num_args_unknown);
+#endif /* 0 */
 
   return gdbarch;
 }
 
 void
-ppc_print_count_info (int frame, CORE_ADDR fp, CORE_ADDR pc, int get_names)
+ppc_print_count_info(int frame, CORE_ADDR fp, CORE_ADDR pc, int get_names)
 {
   char num_buf[8];
-  char *name;
+  const char *name;
 
-  sprintf (num_buf, "%d", frame);
+  snprintf(num_buf, sizeof(num_buf), "%d", frame);
   ui_out_text (uiout, "Frame ");
   ui_out_text(uiout, num_buf);
   ui_out_text(uiout, ": ");
+#if 0
   ui_out_list_begin (uiout, num_buf);
+#endif /* 0 */
   ui_out_field_core_addr (uiout, "pc", pc);
 
   if (get_names)
@@ -968,8 +1124,9 @@ ppc_print_count_info (int frame, CORE_ADDR fp, CORE_ADDR pc, int get_names)
   ui_out_text (uiout, " fp: ");
   ui_out_field_core_addr (uiout, "fp", fp);
   ui_out_text (uiout, "\n");
+#if 0
   ui_out_list_end (uiout);
-
+#endif /* 0 */
 }
 
 /*
@@ -977,13 +1134,11 @@ ppc_print_count_info (int frame, CORE_ADDR fp, CORE_ADDR pc, int get_names)
  * prints the stack depth, a valid bit, and list
  * of the frames showing the pc & fp for each frame
  */
-
 void
-ppc_fast_show_stack (char *args, int from_tty)
+ppc_fast_show_stack(const char *args, int from_tty)
 {
   int get_names = 0;
   int show_frames = 1;
-  char *argptr;
   int valid, count;
 
   if (args != NULL)
@@ -1034,7 +1189,7 @@ ppc_fast_show_stack_helper (int show_frames, int get_names, int *count)
   static CORE_ADDR sigtramp_end = 0;
   struct frame_info *fi;
   int i = 0, valid = 0;
-  unsigned long cur_fp, next_fp, pc;
+  unsigned long next_fp, pc;
 
   /* Get the first two frames. If anything funky is going on, it will
    * be here. The second frame helps us get above frameless functions
@@ -1044,7 +1199,7 @@ ppc_fast_show_stack_helper (int show_frames, int get_names, int *count)
 
   if (sigtramp_start == 0)
     {
-      char *name;
+      const char *name;
       struct minimal_symbol *msymbol;
 
       msymbol = lookup_minimal_symbol ("_sigtramp", NULL, NULL);
@@ -1061,8 +1216,13 @@ ppc_fast_show_stack_helper (int show_frames, int get_names, int *count)
 	}
     }
 
-  if (show_frames)
+  if (show_frames) {
+#if 0
     ui_out_list_begin (uiout, "frames");
+#else
+    ; /* ??? */
+#endif /* 0 */
+  }
 
   i = 0;
 
@@ -1136,8 +1296,13 @@ ppc_fast_show_stack_helper (int show_frames, int get_names, int *count)
     }
 
  ppc_count_finish:
-  if (show_frames)
+  if (show_frames) {
+#if 0
     ui_out_list_end (uiout);
+#else
+    (void)uiout;
+#endif /* 0 */
+  }
 
   *count = i;
   return valid;
@@ -1149,20 +1314,21 @@ extern void _initialize_ppc_tdep(void); /* -Wmissing-prototypes */
 void
 _initialize_ppc_tdep(void)
 {
+  struct gdbarch *gdbarch = NULL;
   struct cmd_list_element *cmd = NULL;
 
-  register_gdbarch_init (bfd_arch_powerpc, ppc_gdbarch_init);
+  register_gdbarch_init(bfd_arch_powerpc, ppc_gdbarch_init);
 
-  tm_print_insn = print_insn_big_powerpc;
+  set_gdbarch_print_insn(gdbarch, print_insn_big_powerpc);
 
-  cmd = add_set_cmd ("debug-ppc", class_obscure, var_boolean,
-                   (char *) &ppc_debugflag,
-                   "Set if printing PPC stack analysis debugging statements.",
-                   &setlist),
-  add_show_from_set (cmd, &showlist);
+  cmd = add_set_cmd("debug-ppc", class_obscure, var_boolean,
+		    (char *)&ppc_debugflag,
+		    "Set if printing PPC stack analysis debugging statements.",
+		    &setlist),
+  add_show_from_set(cmd, &showlist);
 
-  add_com ("ppc-fast-show-stack", class_obscure, ppc_fast_show_stack,
-	   "List stack pc & frame pointers without building the stack info.\n\
+  add_com("ppc-fast-show-stack", class_obscure, ppc_fast_show_stack,
+	  "List stack pc & frame pointers without building the stack info.\n\
 If you pass the \"-name\" argument, it will also return function names.");
 }
 

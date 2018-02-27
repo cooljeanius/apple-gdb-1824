@@ -150,7 +150,7 @@ void next_debug_region (task_t task, vm_address_t address)
 
 #if defined (__MACH30__)
 
-void next_debug_regions (task)
+void next_debug_regions(vm_map_t task)
 {
   kern_return_t kret;
   struct vm_region_basic_info info;
@@ -194,7 +194,7 @@ void next_debug_regions (task)
 
 #else /* ! __MACH30__ */
 
-void next_debug_regions (task)
+void next_debug_regions(vm_map_t task)
 {
   kern_return_t kret;
   vm_size_t size;
@@ -238,7 +238,7 @@ void next_debug_regions (task)
 
 #if defined (__MACH30__)
 
-void next_debug_port_info (task_t task, port_t port)
+void next_debug_port_info(task_t task, port_t port)
 {
 #if 0
   kern_return_t	kret;

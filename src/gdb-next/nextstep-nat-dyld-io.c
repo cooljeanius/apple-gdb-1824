@@ -12,13 +12,29 @@
 #include "gdbcmd.h"
 #include "objfiles.h"
 
+#include "libbfd.h"
+
 #include <string.h>
 
 #include <mach-o/nlist.h>
 #include <mach-o/loader.h>
-#include <mach-o/dyld_debug.h>
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
+# include <mach-o/dyld_debug.h>
+#else
+# ifdef HAVE_MACH_O_DYLD_H
+#  include <mach-o/dyld.h>
+# endif /* HAVE_MACH_O_DYLD_H */
+# ifdef HAVE_MACH_O_DYLD_IMAGES_H
+#  include <mach-o/dyld_images.h>
+# endif /* HAVE_MACH_O_DYLD_IMAGES_H */
+# ifdef HAVE_DLFCN_H
+#  include <dlfcn.h>
+# endif /* HAVE_DLFCN_H */
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
 
 #include "mach-o.h"
+
+#include "nextstep-nat-dyld-io.h"
 
 struct inferior_info {
   bfd_vma addr;
@@ -27,8 +43,8 @@ struct inferior_info {
 };
 
 static bfd_size_type
-inferior_read
-(PTR iodata, PTR data, bfd_size_type size, bfd_size_type nitems, bfd *abfd, bfd_vma where)
+inferior_read(PTR iodata, PTR data, bfd_size_type size, bfd_size_type nitems,
+	      bfd *abfd, bfd_vma where)
 {
   struct inferior_info *iptr = (struct inferior_info *) iodata;
   int ret;
@@ -45,8 +61,10 @@ inferior_read
     return 0;
   }
 
-  ret = current_target.to_xfer_memory (iptr->addr + where, data, (size * nitems),
-				       NULL, 0, &current_target);
+  ret = current_target.deprecated_xfer_memory((iptr->addr + where),
+					      (gdb_byte *)data,
+					      (size * nitems),
+					      0, 0, &current_target);
   if (ret <= 0) {
     bfd_set_error (bfd_error_system_call);
     return 0;
@@ -55,8 +73,8 @@ inferior_read
 }
 
 static bfd_size_type
-mach_o_inferior_read
-(PTR iodata, PTR data, bfd_size_type size, bfd_size_type nitems, bfd *abfd, bfd_vma where)
+mach_o_inferior_read(PTR iodata, PTR data, bfd_size_type size,
+		     bfd_size_type nitems, bfd *abfd, bfd_vma where)
 {
   struct inferior_info *iptr = (struct inferior_info *) iodata;
   unsigned int i;
@@ -87,8 +105,10 @@ mach_o_inferior_read
 	if ((where >= segment->fileoff)
 	    && (where < (segment->fileoff + segment->filesize))) {
 	  bfd_vma infaddr = (segment->vmaddr + iptr->offset + (where - segment->fileoff));
-	  ret = current_target.to_xfer_memory
-	    (infaddr, data, (size * nitems), 0, NULL, &current_target);
+	  ret =
+	    current_target.deprecated_xfer_memory(infaddr, (gdb_byte *)data,
+						  (size * nitems), 0, NULL,
+						  &current_target);
 	  if (ret <= 0) {
 	    bfd_set_error (bfd_error_system_call);
 	    return 0;
@@ -105,8 +125,8 @@ mach_o_inferior_read
 }
 
 static bfd_size_type
-inferior_write
-(PTR iodata, const PTR data, bfd_size_type size, bfd_size_type nitems, bfd *abfd, bfd_vma where)
+inferior_write(PTR iodata, const PTR data, bfd_size_type size,
+	       bfd_size_type nitems, bfd *abfd, bfd_vma where)
 {
   error ("unable to write to in-memory images");
 }
@@ -117,7 +137,7 @@ inferior_flush (PTR iodata, bfd *abfd)
   return 0;
 }
 
-static boolean
+static bool
 inferior_close (PTR iodata, bfd *abfd)
 {
   xfree (iodata);
@@ -167,7 +187,7 @@ inferior_bfd_generic
     return NULL;
   }
 
-  ret = bfd_funopenr (filename, NULL, &fdata);
+  ret = bfd_fdopenr(filename, NULL, &fdata);
   if (ret == NULL) {
     warning ("Unable to open memory image for \"%s\"; skipping", name);
     return NULL;
@@ -177,11 +197,11 @@ inferior_bfd_generic
     {
       bfd *abfd = NULL;
 #if defined (__ppc__)
-      const bfd_arch_info_type *thisarch = bfd_lookup_arch (bfd_arch_powerpc, 0);
+      const bfd_arch_info_type *thisarch = bfd_lookup_arch(bfd_arch_powerpc, 0);
 #elif defined (__i386__)
-      const bfd_arch_info_type *thisarch = bfd_lookup_arch (bfd_arch_i386, 0);
+      const bfd_arch_info_type *thisarch = bfd_lookup_arch(bfd_arch_i386, 0);
 #else
-      const bfd_arch_info_type *thisarch = bfd_lookup_arch (bfd_arch_powerpc, 0);
+      const bfd_arch_info_type *thisarch = bfd_lookup_arch(bfd_arch_powerpc, 0);
 #endif /* __ppc__ || __i386__ */
       for (;;) {
 	abfd = bfd_openr_next_archived_file (ret, abfd);
@@ -189,7 +209,9 @@ inferior_bfd_generic
 	if (! bfd_check_format (abfd, bfd_object)) { abfd = NULL; break; }
 	if (thisarch == NULL) { abfd = NULL; break; }
 
-	if (bfd_default_compatible (bfd_get_arch_info (abfd), thisarch)) { break; }
+	if (bfd_default_compatible(bfd_get_arch_info(abfd), thisarch)) {
+	  break;
+	}
       }
       if (abfd != NULL) {
 	ret = abfd;
@@ -200,17 +222,18 @@ inferior_bfd_generic
    * error it does not free all the storage associated with the bfd).  */
 
   if (! bfd_check_format (ret, bfd_object)) {
-    warning ("Unable to read symbols from %s: %s.", bfd_get_filename (ret), bfd_errmsg (bfd_get_error ()));
-    bfd_close (ret);
+    warning("Unable to read symbols from %s: %s.", bfd_get_filename(ret),
+	    bfd_errmsg(bfd_get_error()));
+    bfd_close(ret);
     return NULL;
   }
 
+  (void)fdata;
   return ret;
 }
 
 bfd *
-inferior_bfd
-(const char *name, CORE_ADDR addr, CORE_ADDR offset, CORE_ADDR len)
+inferior_bfd(const char *name, CORE_ADDR addr, CORE_ADDR offset, CORE_ADDR len)
 {
   bfd *ret = inferior_bfd_generic (name, addr, offset, len);
   if (ret == NULL)

@@ -1,4 +1,4 @@
-/*
+/* -*- C -*-
  * nextstep-nat-dyld-section.c
  */
 
@@ -18,21 +18,37 @@
 
 #include <mach-o/nlist.h>
 #include <mach-o/loader.h>
-#include <mach-o/dyld_debug.h>
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
+# include <mach-o/dyld_debug.h>
+#else
+# ifdef HAVE_MACH_O_DYLD_H
+#  include <mach-o/dyld.h>
+# endif /* HAVE_MACH_O_DYLD_H */
+# ifdef HAVE_MACH_O_DYLD_IMAGES_H
+#  include <mach-o/dyld_images.h>
+# endif /* HAVE_MACH_O_DYLD_IMAGES_H */
+# ifdef HAVE_DLFCN_H
+#  include <dlfcn.h>
+# endif /* HAVE_DLFCN_H */
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
 
 #include <string.h>
 
 #include "mach-o.h"
 
+#include "nextstep-nat-dyld-section.h"
+
 extern bfd *exec_bfd;
 
-void dyld_update_section_tables (struct dyld_objfile_info *result, struct target_ops *target)
+void dyld_update_section_tables(struct dyld_objfile_info *result,
+				struct target_ops *target)
 {
-  update_section_tables (result, target);
+  update_section_tables(result, target);
 }
 
-void dyld_merge_section_tables (struct dyld_objfile_info *result)
+void dyld_merge_section_tables(struct dyld_objfile_info *result)
 {
+  (void)result;
 }
 
 /* EOF */

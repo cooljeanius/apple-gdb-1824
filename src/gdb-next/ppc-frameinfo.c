@@ -8,6 +8,7 @@
 #include "ppc-tdep.h"
 
 #include "defs.h"
+#include "exceptions.h"
 #include "frame.h"
 #include "inferior.h"
 #include "symtab.h"
@@ -262,6 +263,12 @@ ppc_parse_instructions(CORE_ADDR start, CORE_ADDR end,
 	msymbol = lookup_minimal_symbol_by_pc (branch_target);
 	if (msymbol)
 	  {
+#ifndef SYMBOL_SOURCE_NAME
+# define SYMBOL_SOURCE_NAME(symbol) \
+ ((SYMBOL_DEMANGLED_NAME(symbol) != NULL) \
+  ? SYMBOL_DEMANGLED_NAME(symbol)       \
+  : DEPRECATED_SYMBOL_NAME(symbol))
+#endif /* !SYMBOL_SOURCE_NAME */
 		if (strcmp (SYMBOL_SOURCE_NAME (msymbol), "save_world") == 0)
 		  {
 		    /* save_world currently saves all the volatile registers,
@@ -294,8 +301,8 @@ ppc_parse_instructions(CORE_ADDR start, CORE_ADDR end,
 
 		    /* Decode the actual branch target to find the
 		     * lowest register that is stored: */
-		if (!safe_read_memory_unsigned_integer (branch_target, 4,
-                                                            &store_insn))
+		    if (!safe_read_memory_unsigned_integer (branch_target, 4,
+							    &store_insn))
                        {
                          ppc_debug ("ppc_parse_instructions: Got an error reading at 0x%lx",
                                     pc);
@@ -370,6 +377,7 @@ ppc_parse_instructions(CORE_ADDR start, CORE_ADDR end,
           {
             props->lr_valid_again = pc;
           }
+	(void)target_reg;
 	continue;
       }
     else if ((op & 0xfc1fffff) == 0x7c000026)  /* mfcr Rx */
@@ -643,6 +651,7 @@ int
 ppc_frame_cache_boundaries(struct frame_info *frame,
 			   struct ppc_function_boundaries *retbounds)
 {
+#if 0
   if (!frame->extra_info->bounds) {
 
     if (ppc_is_dummy_frame (frame)) {
@@ -679,6 +688,7 @@ ppc_frame_cache_boundaries(struct frame_info *frame,
   if (retbounds != NULL) {
     memcpy (retbounds, frame->extra_info->bounds, sizeof (ppc_function_boundaries));
   }
+#endif /* 0 */
 
   return 0;
 }
@@ -694,6 +704,7 @@ int
 ppc_frame_cache_properties(struct frame_info *frame,
 			   struct ppc_function_properties *retprops)
 {
+#if 0
   /* FIXME: I have seen a couple of cases where this function gets
      called with a frame whose extra_info has not been set yet.  It is
      always when the stack is mauled, and you try to run "up" or some
@@ -791,6 +802,7 @@ ppc_frame_cache_properties(struct frame_info *frame,
   if (retprops != NULL) {
     memcpy (retprops, frame->extra_info->props, sizeof (ppc_function_properties));
   }
+#endif /* 0 */
 
   return 0;
 }

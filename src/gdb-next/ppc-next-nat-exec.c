@@ -21,6 +21,8 @@
 
 extern next_inferior_status *next_status;
 
+extern unsigned char registers[REGISTER_BYTES];
+
 static void validate_inferior_registers (int regno)
 {
   int i;
@@ -46,6 +48,9 @@ void fetch_inferior_registers (int regno)
   current_pid = ptid_get_pid (inferior_ptid);
   current_thread = ptid_get_tid (inferior_ptid);
 
+  if (current_pid == 0) {
+    ; /* ??? */
+  }
   if ((regno == -1) || IS_GP_REGNUM (regno) || IS_GSP_REGNUM (regno)) {
     int i;
     gdb_ppc_thread_state_t gp_regs;
@@ -109,6 +114,10 @@ void store_inferior_registers (int regno)
   current_thread = ptid_get_tid (inferior_ptid);
 
   validate_inferior_registers (regno);
+
+  if (current_pid == 0) {
+    ; /* ??? */
+  }
 
   if ((regno == -1) || IS_GP_REGNUM (regno) || IS_GSP_REGNUM (regno)) {
     gdb_ppc_thread_state_t gp_regs;

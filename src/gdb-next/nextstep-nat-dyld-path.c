@@ -4,6 +4,7 @@
 
 #include "nextstep-nat-dyld-path.h"
 
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/file.h>
@@ -145,7 +146,7 @@ search_for_name_in_path
           dylib_name[curlen + 1 + name_with_suffix_len] = '\0';
           if (stat(dylib_name, &stat_buf) == 0)
             {
-               free (name_with_suffix);
+               xfree(name_with_suffix);
                return dylib_name;
             }
         }
@@ -156,7 +157,7 @@ search_for_name_in_path
         if (stat (dylib_name, &stat_buf) == 0)
           {
             if (name_with_suffix)
-              free (name_with_suffix);
+              xfree(name_with_suffix);
             return dylib_name;
           }
       }
@@ -170,10 +171,10 @@ search_for_name_in_path
     }
   }
 
-  free (dylib_name);
-	if (name_with_suffix) {
-		free (name_with_suffix);
-	}
+  xfree(dylib_name);
+  if (name_with_suffix) {
+    xfree(name_with_suffix);
+  }
 
   return NULL;
 }
@@ -392,7 +393,7 @@ char *dyld_resolve_image (const struct dyld_path_info *d, const char *dylib_name
         }
       else
         {
-          free (suffix_name);
+          xfree(suffix_name);
         }
     }
 
@@ -450,13 +451,13 @@ void dyld_init_paths (dyld_path_info *d)
 {
   char *home;
 
-  const char *default_fallback_framework_path =
+  const char *const default_fallback_framework_path =
     "%s/Library/Frameworks:"
     "/Local/Library/Frameworks:"
     "/Network/Library/Frameworks:"
     "/System/Library/Frameworks";
 
-  const char *default_fallback_library_path =
+  const char *const default_fallback_library_path =
     "%s/lib:"
     "/usr/local/lib:"
     "/lib:"
@@ -521,19 +522,20 @@ void dyld_init_paths (dyld_path_info *d)
 
   if (d->fallback_framework_path == NULL)
     {
-      d->fallback_framework_path =
-	xmalloc (strlen (default_fallback_framework_path)
-                                            + strlen (home) + 1);
-      sprintf (d->fallback_framework_path, default_fallback_framework_path,
-	       home);
+      const size_t d_f_f_p_len = (strlen(default_fallback_framework_path)
+				  + strlen(home) + 1UL);
+      d->fallback_framework_path = xmalloc(d_f_f_p_len);
+      snprintf(d->fallback_framework_path, d_f_f_p_len,
+	       default_fallback_framework_path, home);
     }
 
   if (d->fallback_library_path == NULL)
     {
-      d->fallback_library_path =
-	xmalloc (strlen (default_fallback_library_path)
-                                          + strlen (home) + 1);
-      sprintf (d->fallback_library_path, default_fallback_library_path, home);
+      const size_t d_f_l_p_len = (strlen(default_fallback_library_path)
+				  + strlen(home) + 1UL);
+      d->fallback_library_path = xmalloc(d_f_l_p_len);
+      snprintf(d->fallback_library_path, d_f_l_p_len,
+	       default_fallback_library_path, home);
     }
 }
 

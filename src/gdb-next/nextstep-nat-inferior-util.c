@@ -22,7 +22,19 @@
 
 #include <mach-o/nlist.h>
 #include <mach-o/loader.h>
-#include <mach-o/dyld_debug.h>
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
+# include <mach-o/dyld_debug.h>
+#else
+# ifdef HAVE_MACH_O_DYLD_H
+#  include <mach-o/dyld.h>
+# endif /* HAVE_MACH_O_DYLD_H */
+# ifdef HAVE_MACH_O_DYLD_IMAGES_H
+#  include <mach-o/dyld_images.h>
+# endif /* HAVE_MACH_O_DYLD_IMAGES_H */
+# ifdef HAVE_DLFCN_H
+#  include <dlfcn.h>
+# endif /* HAVE_DLFCN_H */
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
 
 #include <string.h>
 #include <signal.h>
@@ -43,15 +55,16 @@ const char *ptrace_request_unparse (int request)
   }
 }
 
-int call_ptrace (int request, int pid, int arg3, int arg4)
+int call_ptrace(int request, int pid, PTRACE_ARG3_TYPE arg3, int arg4)
 {
   int ret;
   errno = 0;
-  ret = ptrace (request, pid, (caddr_t) arg3, arg4);
+  ret = ptrace(request, pid, (caddr_t)arg3, arg4);
 
-  inferior_debug (2, "ptrace (%s, %d, %d, %d): %d (%s)\n",
-		  ptrace_request_unparse (request),
-		  pid, arg3, arg4, ret, (ret != 0) ? strerror (errno) : "no error");
+  inferior_debug(2, "ptrace (%s, %d, %d, %d): %d (%s)\n",
+		 ptrace_request_unparse(request),
+		 pid, arg3, arg4, ret,
+		 ((ret != 0) ? xstrerror(errno) : "no error"));
   return ret;
 }
 
@@ -71,7 +84,7 @@ void next_inferior_reset (next_inferior_status *s)
 
   next_exception_thread_init (&s->exception_status);
 
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
   next_cfm_thread_init (&s->cfm_status);
 #endif /* WITH_CFM */
 }
@@ -80,7 +93,7 @@ void next_inferior_destroy (next_inferior_status *s)
 {
   next_signal_thread_destroy (&s->signal_status);
   next_exception_thread_destroy (&s->exception_status);
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
   next_cfm_thread_destroy (&s->cfm_status);
 #endif /* WITH_CFM */
 
@@ -200,9 +213,9 @@ void next_inferior_resume_ptrace (next_inferior_status *s, int nsignal, int val)
 
   next_inferior_suspend_mach (s);
 
-  if (call_ptrace (val, s->pid, 1, nsignal) != 0) {
-    error ("Error calling ptrace (%d, %d, %d, %d): %s\n",
-	   val, s->pid, 1, nsignal, strerror (errno));
+  if (call_ptrace(val, s->pid, (caddr_t)1, nsignal) != 0) {
+    error("Error calling ptrace (%d, %d, %d, %d): %s\n",
+	  val, s->pid, 1, nsignal, xstrerror(errno));
   }
 
   s->stopped_in_ptrace = 0;

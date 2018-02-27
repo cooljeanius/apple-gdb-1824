@@ -1321,7 +1321,7 @@ extern char *msavestring(void *, const char *, size_t)
   ATTRIBUTE_W_U_R;
 
 extern char *strsave(const char *ptr)
-  ATTRIBUTE_W_U_R;
+  ATTRIBUTE_W_U_R ATTRIBUTE_DEPRECATED;
 
 extern char *mstrsave(void *, const char *)
   ATTRIBUTE_W_U_R;
@@ -1918,8 +1918,8 @@ extern struct cleanup *start_timer(int *timer_var, const char *timer_name,
 #  pragma GCC poison strtok
 # endif /* HAVE_STRTOK_R && _REENTRANT */
 /* gdb_ari.sh says to avoid these: */
-# pragma GCC poison setlinebuf bcmp bzero strsave strnicmp
-/* also consider poisoning: assert abort basename bcopy */
+# pragma GCC poison setlinebuf bcmp bzero strnicmp
+/* also consider poisoning: assert abort basename bcopy strsave */
 #endif /* gcc3+ && !NO_POISON && !FLEX_SCANNER */
 
 #endif /* #ifndef DEFS_H */

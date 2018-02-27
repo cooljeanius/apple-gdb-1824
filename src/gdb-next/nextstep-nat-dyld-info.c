@@ -105,7 +105,7 @@ void dyld_objfile_info_free (struct dyld_objfile_info *i)
 {
   CHECK_FATAL (i != NULL);
   if (i->entries != NULL) {
-    free (i->entries);
+    xfree (i->entries);
     i->entries = NULL;
   }
   i->nents = 0;
@@ -347,7 +347,7 @@ char *dyld_entry_string (struct dyld_objfile_entry *e, int print_basenames)
       if (prefix != NULL)
 	{
 	  asprintf (&ret2, "%s with prefix \"%s\"", ret, prefix);
-	  free (ret);
+	  xfree (ret);
 	  ret = ret2;
 	}
     }

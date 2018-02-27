@@ -22,8 +22,21 @@
 
 #include <mach-o/nlist.h>
 #include <mach-o/loader.h>
-#include <mach-o/dyld_debug.h>
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
+# include <mach-o/dyld_debug.h>
+#else
+# ifdef HAVE_MACH_O_DYLD_H
+#  include <mach-o/dyld.h>
+# endif /* HAVE_MACH_O_DYLD_H */
+# ifdef HAVE_MACH_O_DYLD_IMAGES_H
+#  include <mach-o/dyld_images.h>
+# endif /* HAVE_MACH_O_DYLD_IMAGES_H */
+# ifdef HAVE_DLFCN_H
+#  include <dlfcn.h>
+# endif /* HAVE_DLFCN_H */
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "mach-o.h"
@@ -43,21 +56,24 @@ extern int dyld_print_basenames_flag;
 extern char *dyld_load_rules;
 extern char *dyld_minimal_load_rules;
 
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
 extern int inferior_auto_start_cfm_flag;
 #endif /* WITH_CFM */
 
 extern next_inferior_status *next_status;
 
+/* */
 static int
-dyld_print_status()
+dyld_print_status(void)
 {
     /* do not print status dots when executing MI */
-    return !gdb_current_interpreter_is_named(GDB_INTERPRETER_MI);
+    return !gdb_current_interpreter_is_named((char *)GDB_INTERPRETER_MI);
 }
 
-void dyld_add_inserted_libraries
-  (struct dyld_objfile_info *info, const struct dyld_path_info *d)
+/* */
+void
+dyld_add_inserted_libraries(struct dyld_objfile_info *info,
+			    const struct dyld_path_info *d)
 {
   const char *s1, *s2;
 
@@ -89,8 +105,9 @@ void dyld_add_inserted_libraries
   }
 }
 
-void dyld_add_image_libraries
-  (struct dyld_objfile_info *info, bfd *abfd)
+/* */
+void
+dyld_add_image_libraries(struct dyld_objfile_info *info, bfd *abfd)
 {
   struct mach_o_data_struct *mdata = NULL;
   unsigned int i;
@@ -126,12 +143,12 @@ void dyld_add_image_libraries
       case BFD_MACH_O_LC_ID_DYLINKER: {
 	bfd_mach_o_dylinker_command *dcmd = &cmd->command.dylinker;
 
-	name = xmalloc (dcmd->name_len + 1);
+	name = (char *)xmalloc(dcmd->name_len + 1);
 
 	bfd_seek (abfd, dcmd->name_offset, SEEK_SET);
 	if (bfd_bread (name, dcmd->name_len, abfd) != dcmd->name_len) {
 	  warning ("Unable to find library name for LC_LOAD_DYLINKER or LD_ID_DYLINKER command; ignoring");
-	  free (name);
+	  xfree(name);
 	  continue;
 	}
 	break;
@@ -140,12 +157,12 @@ void dyld_add_image_libraries
       case BFD_MACH_O_LC_ID_DYLIB: {
 	bfd_mach_o_dylib_command *dcmd = &cmd->command.dylib;
 
-	name = xmalloc (dcmd->name_len + 1);
+	name = (char *)xmalloc(dcmd->name_len + 1);
 
 	bfd_seek (abfd, dcmd->name_offset, SEEK_SET);
 	if (bfd_bread (name, dcmd->name_len, abfd) != dcmd->name_len) {
 	  warning ("Unable to find library name for LC_LOAD_DYLIB or LD_ID_DYLIB command; ignoring");
-	  free (name);
+	  xfree(name);
 	  continue;
 	}
 	break;
@@ -156,7 +173,7 @@ void dyld_add_image_libraries
 
       if (name[0] == '\0') {
 	warning ("No image name specified by LC_LOAD or LC_ID command; ignoring");
-	free (name);
+	xfree(name);
 	name = NULL;
       }
 
@@ -184,8 +201,10 @@ void dyld_add_image_libraries
   }
 }
 
-void dyld_resolve_filename_image
-(const struct next_dyld_thread_status *s, struct dyld_objfile_entry *e)
+/* */
+void
+dyld_resolve_filename_image(const struct next_dyld_thread_status *s,
+			    struct dyld_objfile_entry *e)
 {
   struct mach_header header;
 
@@ -197,7 +216,8 @@ void dyld_resolve_filename_image
 
   if (! e->dyld_valid) { return; }
 
-  target_read_memory (e->dyld_addr, (char *) &header, sizeof (struct mach_header));
+  target_read_memory(e->dyld_addr, (gdb_byte *)&header,
+		     sizeof(struct mach_header));
 
   switch (header.filetype) {
   case MH_DYLINKER:
@@ -217,17 +237,20 @@ void dyld_resolve_filename_image
     struct dylinker_command dlcmd;
     char name[256];
 
-    target_read_memory (curpos, (char *) &cmd, sizeof (struct load_command));
+    target_read_memory(curpos, (gdb_byte *)&cmd, sizeof(struct load_command));
     if (cmd.cmd == LC_ID_DYLIB) {
-      target_read_memory (curpos, (char *) &dcmd, sizeof (struct dylib_command));
-      target_read_memory (curpos + dcmd.dylib.name.offset, name, 256);
+      target_read_memory(curpos, (gdb_byte *)&dcmd,
+			 sizeof(struct dylib_command));
+      target_read_memory((curpos + dcmd.dylib.name.offset), (gdb_byte *)name,
+			 256);
       e->image_name = strsave (name);
       e->image_name_valid = 1;
       break;
     } else if (cmd.cmd == LC_ID_DYLINKER) {
-      target_read_memory (curpos, (char *) &dlcmd, sizeof (struct dylinker_command));
-      target_read_memory (curpos + dlcmd.name.offset, name, 256);
-      e->image_name = strsave (name);
+      target_read_memory(curpos, (gdb_byte *)&dlcmd,
+			 sizeof(struct dylinker_command));
+      target_read_memory((curpos + dlcmd.name.offset), (gdb_byte *)name, 256);
+      e->image_name = strsave(name);
       e->image_name_valid = 1;
       break;
     }
@@ -242,23 +265,27 @@ void dyld_resolve_filename_image
   }
 }
 
-void dyld_resolve_filenames
-(const struct next_dyld_thread_status *s, struct dyld_objfile_info *new)
+/* */
+void
+dyld_resolve_filenames(const struct next_dyld_thread_status *s,
+		       struct dyld_objfile_info *newone)
 {
   unsigned int i;
 
   CHECK_FATAL (s != NULL);
-  CHECK_FATAL (new != NULL);
+  CHECK_FATAL (newone != NULL);
 
-  for (i = 0; i < new->nents; i++) {
-    struct dyld_objfile_entry *e = &new->entries[i];
+  for (i = 0; i < newone->nents; i++) {
+    struct dyld_objfile_entry *e = &newone->entries[i];
     if (! e->allocated) { continue; }
     if (e->dyld_name_valid) { continue; }
     dyld_resolve_filename_image (s, e);
   }
 }
 
-static CORE_ADDR library_offset (struct dyld_objfile_entry *e)
+/* */
+static CORE_ADDR
+library_offset(struct dyld_objfile_entry *e)
 {
   CHECK_FATAL (e != NULL);
   if (e->image_addr_valid && e->dyld_valid) {
@@ -274,8 +301,9 @@ static CORE_ADDR library_offset (struct dyld_objfile_entry *e)
   }
 }
 
+/* */
 unsigned int
-dyld_parse_load_level (const char *s)
+dyld_parse_load_level(const char *s)
 {
   if (strcmp (s, "all") == 0) {
     return OBJF_SYM_ALL;
@@ -291,8 +319,10 @@ dyld_parse_load_level (const char *s)
   }
 }
 
+/* */
 int
-dyld_resolve_load_flag (struct dyld_path_info *d, struct dyld_objfile_entry *e, const char *rules)
+dyld_resolve_load_flag(const struct dyld_path_info *d,
+		       struct dyld_objfile_entry *e, const char *rules)
 {
   const char *name = NULL;
   const char *leaf = NULL;
@@ -396,15 +426,21 @@ dyld_resolve_load_flag (struct dyld_path_info *d, struct dyld_objfile_entry *e, 
   return -1;
 }
 
-int dyld_minimal_load_flag (struct dyld_path_info *d, struct dyld_objfile_entry *e)
+/* */
+int
+dyld_minimal_load_flag(const struct dyld_path_info *d,
+		       struct dyld_objfile_entry *e)
 {
-  int ret = dyld_resolve_load_flag (d, e, dyld_minimal_load_rules);
-  return (ret > 0) ? ret : OBJF_SYM_NONE;
+  int ret = dyld_resolve_load_flag(d, e, dyld_minimal_load_rules);
+  return ((ret > 0) ? ret : OBJF_SYM_NONE);
 }
 
-int dyld_default_load_flag (struct dyld_path_info *d, struct dyld_objfile_entry *e)
+/* */
+int
+dyld_default_load_flag(const struct dyld_path_info *d,
+		       struct dyld_objfile_entry *e)
 {
-  int ret = dyld_resolve_load_flag (d, e, dyld_load_rules);
+  int ret = dyld_resolve_load_flag(d, e, dyld_load_rules);
   if (ret >= 0)
     return ret;
 
@@ -419,7 +455,9 @@ int dyld_default_load_flag (struct dyld_path_info *d, struct dyld_objfile_entry 
   return OBJF_SYM_NONE;
 }
 
-void dyld_load_library (const struct dyld_path_info *d, struct dyld_objfile_entry *e)
+/* */
+void
+dyld_load_library(const struct dyld_path_info *d, struct dyld_objfile_entry *e)
 {
   int read_from_memory = 0;
   const char *name = NULL;
@@ -431,7 +469,7 @@ void dyld_load_library (const struct dyld_path_info *d, struct dyld_objfile_entr
   if (e->loaded_error) { return; }
 
   if ((e->reason == dyld_reason_executable) && (symfile_objfile != NULL)) {
-    e->abfd = symfile_objfile->obfd;
+    e->abfd = (struct _bfd *)symfile_objfile->obfd;
     return;
   }
 
@@ -448,7 +486,7 @@ void dyld_load_library (const struct dyld_path_info *d, struct dyld_objfile_entr
     if (name == NULL) {
       char *s = dyld_entry_string (e, 1);
       warning ("No image filename available for %s; reading from memory", s);
-      free (s);
+      xfree(s);
       read_from_memory = 1;
     }
   }
@@ -461,7 +499,7 @@ void dyld_load_library (const struct dyld_path_info *d, struct dyld_objfile_entr
     if (name2 == NULL) {
       char *s = dyld_entry_string (e, 1);
       warning ("Unable to resolve source pathname for %s; reading from memory", s);
-      free (s);
+      xfree(s);
       read_from_memory = 1;
     }
   }
@@ -474,11 +512,11 @@ void dyld_load_library (const struct dyld_path_info *d, struct dyld_objfile_entr
 
   if (! read_from_memory) {
     CHECK_FATAL (name2 != NULL);
-    e->abfd = symfile_bfd_open_safe (name2);
+    e->abfd = (struct _bfd *)symfile_bfd_open_safe(name2, 0, GDB_OSABI_DARWIN);
     if (e->abfd == NULL) {
-      char *s = dyld_entry_string (e, 1);
-      warning ("Unable to read symbols from %s; reading from memory.", s);
-      free (s);
+      char *s = dyld_entry_string(e, 1);
+      warning("Unable to read symbols from %s; reading from memory.", s);
+      xfree(s);
     }
     e->loaded_name = name2;
     e->loaded_from_memory = 0;
@@ -486,7 +524,8 @@ void dyld_load_library (const struct dyld_path_info *d, struct dyld_objfile_entr
 
   if (e->abfd == NULL) {
     CHECK_FATAL (e->dyld_valid);
-    e->abfd = inferior_bfd (name, e->dyld_addr, e->dyld_slide, e->dyld_length);
+    e->abfd = (struct _bfd *)inferior_bfd(name, e->dyld_addr, e->dyld_slide,
+					  e->dyld_length);
     e->loaded_memaddr = e->dyld_addr;
     e->loaded_from_memory = 1;
   }
@@ -495,13 +534,14 @@ void dyld_load_library (const struct dyld_path_info *d, struct dyld_objfile_entr
     char *s = dyld_entry_string (e, 1);
     e->loaded_error = 1;
     warning ("Unable to read symbols from %s; skipping.", s);
-    free (s);
+    xfree(s);
     return;
   }
 
   if (e->reason & dyld_reason_image)
     {
-      asection *text_sect = bfd_get_section_by_name (e->abfd, "LC_SEGMENT.__TEXT");
+      asection *text_sect = bfd_get_section_by_name((bfd *)e->abfd,
+						    "LC_SEGMENT.__TEXT");
       if (text_sect != NULL) {
 	e->image_addr = bfd_section_vma (e->abfd, text_sect);
 	e->image_addr_valid = 1;
@@ -512,7 +552,10 @@ void dyld_load_library (const struct dyld_path_info *d, struct dyld_objfile_entr
     }
 }
 
-void dyld_load_libraries (const struct dyld_path_info *d, struct dyld_objfile_info *result)
+/* */
+void
+dyld_load_libraries(const struct dyld_path_info *d,
+		    struct dyld_objfile_info *result)
 {
   unsigned int i;
   CHECK_FATAL (result != NULL);
@@ -529,7 +572,19 @@ void dyld_load_libraries (const struct dyld_path_info *d, struct dyld_objfile_in
   }
 }
 
-void dyld_load_symfile (struct dyld_objfile_entry *e)
+#ifndef MAX_SECTIONS
+# ifdef MAX_SECT
+#  if (MAX_SECT > 1)
+#   define MAX_SECTIONS MAX_SECT
+#  else
+#   define MAX_SECTIONS (MAX_SECT + 1)
+#  endif /* (MAX_SECT > 1) */
+# endif /* MAX_SECT */
+#endif /* !MAX_SECTIONS */
+
+/* */
+void
+dyld_load_symfile(struct dyld_objfile_entry *e)
 {
   char *name = NULL;
   char *leaf = NULL;
@@ -547,7 +602,7 @@ void dyld_load_symfile (struct dyld_objfile_entry *e)
 
   if ((e->reason == dyld_reason_executable) && (symfile_objfile != NULL)) {
     e->objfile = symfile_objfile;
-    e->abfd = symfile_objfile->obfd;
+    e->abfd = (struct _bfd *)symfile_objfile->obfd;
     e->loaded_from_memory = 0;
     e->loaded_name = e->text_name;
     e->loaded_addr = 0;
@@ -570,6 +625,8 @@ void dyld_load_symfile (struct dyld_objfile_entry *e)
     e->loaded_addrisoffset = 1;
   }
 
+  /* FIXME: -Waggressive-loop-optimizations */
+  /* Also tried sizeof(addrs.other) instead of MAX_SECTIONS; that failed too */
   for (i = 0; i < MAX_SECTIONS; i++) {
     addrs.other[i].name = NULL;
     addrs.other[i].addr = e->dyld_slide;
@@ -578,9 +635,10 @@ void dyld_load_symfile (struct dyld_objfile_entry *e)
 
   addrs.addrs_are_offsets = 1;
 
-  e->objfile = symbol_file_add_bfd_safe (e->abfd, 0, &addrs, 0, 0, e->load_flag, 0, e->prefix);
+  e->objfile = symbol_file_add_bfd_safe((bfd *)e->abfd, 0, &addrs, NULL, 0, 0,
+					e->load_flag, 0, e->prefix, NULL);
 
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
   while (strstr (leaf, "CarbonCore") != NULL) {
 
     struct minimal_symbol *hooksym = lookup_minimal_symbol ("gPCFMInfoHooks", NULL, NULL);
@@ -671,7 +729,7 @@ void dyld_load_symfile (struct dyld_objfile_entry *e)
   }
 #endif /* WITH_CFM */
 
-  free (name);
+  xfree(name);
 
   if (e->objfile != NULL) {
     CHECK_FATAL (e->objfile->obfd != NULL);
@@ -680,7 +738,7 @@ void dyld_load_symfile (struct dyld_objfile_entry *e)
   if (e->objfile == NULL) {
     e->loaded_error = 1;
     e->abfd = NULL;
-    free (name);
+    xfree(name);
     return;
   }
 
@@ -691,7 +749,9 @@ void dyld_load_symfile (struct dyld_objfile_entry *e)
   }
 }
 
-void dyld_load_symfiles (struct dyld_objfile_info *result)
+/* */
+void
+dyld_load_symfiles(struct dyld_objfile_info *result)
 {
   unsigned int i;
   unsigned int first = 1;
@@ -728,7 +788,9 @@ void dyld_load_symfiles (struct dyld_objfile_info *result)
   }
 }
 
-static int dyld_objfile_allocated (struct objfile *o)
+/* */
+static int
+dyld_objfile_allocated(struct objfile *o)
 {
   struct objfile *objfile, *temp;
 
@@ -740,7 +802,9 @@ static int dyld_objfile_allocated (struct objfile *o)
   return 0;
 }
 
-void dyld_remove_objfile (struct dyld_objfile_entry *e)
+/* */
+void
+dyld_remove_objfile(struct dyld_objfile_entry *e)
 {
   char *s = NULL;
 
@@ -758,7 +822,7 @@ void dyld_remove_objfile (struct dyld_objfile_entry *e)
   if (info_verbose) {
     printf_filtered ("Removing symbols for %s\n", s);
   }
-  free (s);
+  xfree(s);
   gdb_flush (gdb_stdout);
   free_objfile (e->objfile);
   e->objfile = NULL;
@@ -770,7 +834,10 @@ void dyld_remove_objfile (struct dyld_objfile_entry *e)
   }
 }
 
-void dyld_remove_objfiles (const struct dyld_path_info *d, struct dyld_objfile_info *result)
+/* */
+void
+dyld_remove_objfiles(const struct dyld_path_info *d,
+		     struct dyld_objfile_info *result)
 {
   unsigned int i;
   unsigned int first = 1;
@@ -781,7 +848,8 @@ void dyld_remove_objfiles (const struct dyld_path_info *d, struct dyld_objfile_i
     struct objfile *o = NULL;
     if (! e->allocated) { continue; }
     if (e->load_flag < 0) {
-      e->load_flag = dyld_default_load_flag (d, e) | dyld_minimal_load_flag (d, e);
+      e->load_flag = (dyld_default_load_flag(d, e)
+		      | dyld_minimal_load_flag(d, e));
     }
     if ((e->reason == dyld_reason_executable) && (e->objfile == NULL)) {
       o = symfile_objfile;
@@ -807,8 +875,10 @@ void dyld_remove_objfiles (const struct dyld_path_info *d, struct dyld_objfile_i
   }
 }
 
-static int dyld_libraries_similar
-(struct dyld_objfile_entry *f, struct dyld_objfile_entry *l)
+/* */
+static int
+dyld_libraries_similar(struct dyld_objfile_entry *f,
+		       struct dyld_objfile_entry *l)
 {
   const char *fname = NULL;
   const char *lname = NULL;
@@ -853,9 +923,11 @@ static int dyld_libraries_similar
   return 0;
 }
 
-static int dyld_libraries_compatible
-(struct dyld_path_info *d,
- struct dyld_objfile_entry *f, struct dyld_objfile_entry *l)
+/* */
+static int
+dyld_libraries_compatible(struct dyld_path_info *d,
+			  struct dyld_objfile_entry *f,
+			  struct dyld_objfile_entry *l)
 {
   const char *fname = NULL;
   const char *lname = NULL;
@@ -913,8 +985,10 @@ static int dyld_libraries_compatible
   return 1;
 }
 
-void dyld_objfile_move_load_data
-(struct dyld_objfile_entry *f, struct dyld_objfile_entry *l)
+/* */
+void
+dyld_objfile_move_load_data(struct dyld_objfile_entry *f,
+			    struct dyld_objfile_entry *l)
 {
   l->objfile = f->objfile;
   l->abfd = f->abfd;
@@ -946,7 +1020,9 @@ void dyld_objfile_move_load_data
   f->loaded_error = 0;
 }
 
-void dyld_check_discarded (struct dyld_objfile_info *info)
+/* */
+void
+dyld_check_discarded(struct dyld_objfile_info *info)
 {
   unsigned int j;
   for (j = 0; j < info->nents; j++) {
@@ -957,28 +1033,29 @@ void dyld_check_discarded (struct dyld_objfile_info *info)
   }
 }
 
-void dyld_merge_shlibs
-(const struct next_dyld_thread_status *s,
- struct dyld_path_info *d,
- struct dyld_objfile_info *old,
- struct dyld_objfile_info *new,
- struct dyld_objfile_info *result)
+/* */
+void
+dyld_merge_shlibs(const struct next_dyld_thread_status *s,
+		  struct dyld_path_info *d,
+		  struct dyld_objfile_info *old,
+		  struct dyld_objfile_info *newone,
+		  struct dyld_objfile_info *result)
 {
   unsigned int i;
   unsigned int j;
 
   CHECK_FATAL (old != NULL);
-  CHECK_FATAL (new != NULL);
+  CHECK_FATAL (newone != NULL);
   CHECK_FATAL (result != NULL);
-  CHECK_FATAL (old != new);
+  CHECK_FATAL (old != newone);
   CHECK_FATAL (old != result);
-  CHECK_FATAL (new != result);
+  CHECK_FATAL (newone != result);
 
-  dyld_resolve_filenames (s, new);
+  dyld_resolve_filenames (s, newone);
 
-  for (i = 0; i < new->nents; i++) {
+  for (i = 0; i < newone->nents; i++) {
 
-    struct dyld_objfile_entry *n = &new->entries[i];
+    struct dyld_objfile_entry *n = &newone->entries[i];
     if (! n->allocated) { continue; }
 
     for (j = 0; j < old->nents; j++) {
@@ -1005,19 +1082,21 @@ void dyld_merge_shlibs
 
 	  CHECK_FATAL (dyld_objfile_allocated (o->objfile));
 
-	  if (dyld_libraries_compatible (d, n, o)) {
-	    dyld_debug ("Symbols for %s already loaded; not re-processing\n", os);
-	    dyld_objfile_move_load_data (o, n);
+	  if (dyld_libraries_compatible(d, n, o)) {
+	    dyld_debug("Symbols for %s already loaded; not re-processing\n", os);
+	    dyld_objfile_move_load_data(o, n);
 	  } else if (n->reason == dyld_reason_init) {
-	    dyld_debug ("Symbols for %s incompatible with %s, but may need to be re-loaded; deferring\n", os);
-	    dyld_objfile_move_load_data (o, n);
+	    dyld_debug("Symbols for %s incompatible with %s, but may need to be re-loaded; deferring\n",
+		       os, ns);
+	    dyld_objfile_move_load_data(o, n);
 	  } else {
-	    dyld_debug ("Symbols for %s incompatible with %s; reloading\n", os, ns);
-	    dyld_remove_objfile (o);
+	    dyld_debug("Symbols for %s incompatible with %s; reloading\n",
+		       os, ns);
+	    dyld_remove_objfile(o);
 	  }
 
-	  xfree (ns);
-	  xfree (os);
+	  xfree(ns);
+	  xfree(os);
 
 	} else {
 
@@ -1048,9 +1127,9 @@ void dyld_merge_shlibs
   }
 
   /* all remaining files in 'new' will need to be loaded */
-  for (i = 0; i < new->nents; i++) {
+  for (i = 0; i < newone->nents; i++) {
 
-    struct dyld_objfile_entry *n = &new->entries[i];
+    struct dyld_objfile_entry *n = &newone->entries[i];
     struct dyld_objfile_entry *e = NULL;
 
     if (! n->allocated) { continue; }
@@ -1066,108 +1145,144 @@ void dyld_merge_shlibs
   dyld_objfile_info_pack (result);
 }
 
-void dyld_update_shlibs
-(const struct next_dyld_thread_status *s,
- struct dyld_path_info *d,
- struct dyld_objfile_info *old,
- struct dyld_objfile_info *new,
- struct dyld_objfile_info *result)
+/* */
+void
+dyld_update_shlibs(const struct next_dyld_thread_status *s,
+		   struct dyld_path_info *d,
+		   struct dyld_objfile_info *old,
+		   struct dyld_objfile_info *newone,
+		   struct dyld_objfile_info *result)
 {
-  CHECK_FATAL (old != NULL);
-  CHECK_FATAL (new != NULL);
-  CHECK_FATAL (result != NULL);
+  CHECK_FATAL(old != NULL);
+  CHECK_FATAL(newone != NULL);
+  CHECK_FATAL(result != NULL);
 
-  dyld_debug ("dyld_update_shlibs: updating shared library information\n");
+  dyld_debug("dyld_update_shlibs: updating shared library information\n");
 
-  dyld_merge_shlibs (s, d, old, new, result);
+  dyld_merge_shlibs(s, d, old, newone, result);
 
-  dyld_load_libraries (d, result);
-  dyld_load_symfiles (result);
+  dyld_load_libraries(d, result);
+  dyld_load_symfiles(result);
 
-  update_section_tables (&current_target);
-  update_section_tables (&exec_ops);
+  update_section_tables(&current_target);
+  update_section_tables(&exec_ops);
 
-  reread_symbols ();
-  breakpoint_re_set ();
-  breakpoint_update ();
-  re_enable_breakpoints_in_shlibs (0);
+  reread_symbols();
+  breakpoint_re_set(NULL);
+  breakpoint_update();
+  re_enable_breakpoints_in_shlibs(0);
 }
 
-static void dyld_process_image_event
-(struct dyld_objfile_info *info,
- const struct dyld_event *event)
+/* */
+void
+dyld_process_image_event(struct dyld_objfile_info *info,
+			 const struct dyld_event *event)
 {
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
   struct dyld_debug_module module;
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
   struct mach_header header;
   CORE_ADDR addr, slide;
 
-  CHECK_FATAL (info != NULL);
-  CHECK_FATAL (event != NULL);
+  CHECK_FATAL(info != NULL);
+  CHECK_FATAL(event != NULL);
 
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
   module = event->arg[0];
+  addr = (unsigned long)(((unsigned char *)module.header)
+			 - ((unsigned char *)0));
+  slide = (unsigned long)module.vmaddr_slide;
+#else
+  addr = INVALID_ADDRESS;
+  slide = 0UL;
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
 
-  addr = (unsigned long) (((unsigned char *) module.header) - ((unsigned char *) 0));
-  slide = (unsigned long) module.vmaddr_slide;
-
-  target_read_memory (addr, (char *) &header, sizeof (struct mach_header));
+  target_read_memory(addr, (gdb_byte *)&header, sizeof(struct mach_header));
 
   switch (header.filetype) {
   case MH_EXECUTE: {
-    struct dyld_objfile_entry *e = dyld_objfile_entry_alloc (info);
+    struct dyld_objfile_entry *e = dyld_objfile_entry_alloc(info);
     e->dyld_addr = addr;
     e->dyld_slide = slide;
     e->dyld_valid = 1;
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
     e->dyld_index = module.module_index;
+#else
+    e->dyld_index = 0;
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
     e->reason = dyld_reason_executable;
-    dyld_debug ("Noted executable at 0x%lx (offset 0x%lx)\n", (unsigned long) addr, slide);
+    dyld_debug("Noted executable at 0x%lx (offset 0x%lx)\n",
+	       (unsigned long)addr, slide);
     break;
   }
   case MH_FVMLIB:
-    dyld_debug ("Ignored fixed virtual memory shared library at 0x%lx (offset 0x%lx)\n",
-		(unsigned long) addr, slide);
+    dyld_debug("Ignored fixed virtual memory shared library at 0x%lx (offset 0x%lx)\n",
+	       (unsigned long)addr, slide);
     break;
   case MH_PRELOAD:
-    dyld_debug ("Ignored preloaded executable at 0x%lx (offset 0x%lx)\n", (unsigned long) addr, slide);
+    dyld_debug("Ignored preloaded executable at 0x%lx (offset 0x%lx)\n",
+	       (unsigned long)addr, slide);
     break;
   case MH_DYLIB: {
-    struct dyld_objfile_entry *e = dyld_objfile_entry_alloc (info);
+    struct dyld_objfile_entry *e = dyld_objfile_entry_alloc(info);
     e->dyld_addr = addr;
     e->dyld_slide = slide;
     e->dyld_valid = 1;
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
     e->dyld_index = module.module_index;
+#else
+    e->dyld_index = 0;
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
     e->reason = dyld_reason_dyld;
-    dyld_debug ("Noted dynamic library at 0x%lx (offset 0x%lx)\n", (unsigned long) addr, slide);
+    dyld_debug("Noted dynamic library at 0x%lx (offset 0x%lx)\n",
+	       (unsigned long)addr, slide);
     break;
   }
   case MH_DYLINKER: {
-    struct dyld_objfile_entry *e = dyld_objfile_entry_alloc (info);
+    struct dyld_objfile_entry *e = dyld_objfile_entry_alloc(info);
     e->dyld_addr = addr;
     e->dyld_slide = slide;
     e->dyld_valid = 1;
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
     e->dyld_index = module.module_index;
+#else
+    e->dyld_index = 0;
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
     e->prefix = dyld_symbols_prefix;
     e->reason = dyld_reason_dyld;
-    dyld_debug ("Noted dynamic link editor at 0x%lx (offset 0x%lx)\n", (unsigned long) addr, slide);
+    dyld_debug("Noted dynamic link editor at 0x%lx (offset 0x%lx)\n",
+	       (unsigned long)addr, slide);
     break;
   }
   case MH_BUNDLE: {
-    struct dyld_objfile_entry *e = dyld_objfile_entry_alloc (info);
+    struct dyld_objfile_entry *e = dyld_objfile_entry_alloc(info);
     e->dyld_addr = addr;
     e->dyld_slide = slide;
     e->dyld_valid = 1;
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
     e->dyld_index = module.module_index;
+#else
+    e->dyld_index = 0;
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
     e->reason = dyld_reason_dyld;
-    dyld_debug ("Noted bundle at 0x%lx (offset 0x%lx)\n", (unsigned long) addr, slide);
+    dyld_debug("Noted bundle at 0x%lx (offset 0x%lx)\n", (unsigned long)addr,
+	       slide);
     break;
   }
   default:
-    warning ("Ignored unknown object module at 0x%lx (offset 0x%lx) with type 0x%lx\n",
-	     (unsigned long) addr, (unsigned long) slide, (unsigned long) header.filetype);
+    warning("Ignored unknown object module at 0x%lx (offset 0x%lx) with type 0x%lx\n",
+	    (unsigned long)addr, (unsigned long)slide,
+	    (unsigned long)header.filetype);
     break;
   }
+#ifdef HAVE_MACH_O_DYLD_DEBUG_H
+  (void)module;
+#endif /* HAVE_MACH_O_DYLD_DEBUG_H */
 }
 
-void dyld_purge_cached_libraries (struct dyld_objfile_info *info)
+/* */
+void
+dyld_purge_cached_libraries(struct dyld_objfile_info *info)
 {
   unsigned int i;
   CHECK_FATAL (info != NULL);
@@ -1176,24 +1291,27 @@ void dyld_purge_cached_libraries (struct dyld_objfile_info *info)
     struct dyld_objfile_entry *e = &info->entries[i];
     if (! e->allocated) { continue; }
     if (e->reason == dyld_reason_cached) {
-      dyld_remove_objfile (e);
-      dyld_objfile_entry_clear (e);
+      dyld_remove_objfile(e);
+      dyld_objfile_entry_clear(e);
     }
   }
 
-  dyld_objfile_info_pack (info);
-  update_section_tables (&current_target);
-  update_section_tables (&exec_ops);
+  dyld_objfile_info_pack(info);
+  update_section_tables(&current_target);
+  update_section_tables(&exec_ops);
 
-  reread_symbols ();
-  breakpoint_re_set ();
-  breakpoint_update ();
-  re_enable_breakpoints_in_shlibs (0);
+  reread_symbols();
+  breakpoint_re_set(NULL);
+  breakpoint_update();
+  re_enable_breakpoints_in_shlibs(0);
 }
 
+/* */
+extern void _initialize_nextstep_nat_dyld_process(void); /* -Wmissing-prototypes */
 void
-_initialize_nextstep_nat_dyld_process ()
+_initialize_nextstep_nat_dyld_process(void)
 {
+  /* FIXME: put something here */
 }
 
 /* EOF */

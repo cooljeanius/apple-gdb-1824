@@ -1,7 +1,8 @@
-/* Remote debugging interface for NeXT / Mac OS X via KDP, for GDB.
-   Copyright 1997  Free Software Foundation, Inc.
-   Written by Klee Dienes.  Contributed by Apple Computer, Inc.
-
+/* gdb-next/remote-kdp.c
+ * Remote debugging interface for NeXT / Mac OS X via KDP, for GDB.
+ * Copyright 1997  Free Software Foundation, Inc.
+ * Written by Klee Dienes.  Contributed by Apple Computer, Inc.  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify

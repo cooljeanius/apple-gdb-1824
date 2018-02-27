@@ -350,7 +350,7 @@ esac
 
 dnl# APPLE LOCAL check for task_get_state.
 case "${host}" in
-  *-apple-darwin* | *-apple-macosx*)
+  *-apple-darwin* | *-apple-macosx* | *-apple-rhapsody* | *-next-nextstep*)
     dnl# we are inside a conditional; no "_ONCE" allowed:
     AC_CHECK_HEADERS([mach/task.h])
     AC_MSG_CHECKING([whether task_set_state is available])
@@ -381,6 +381,8 @@ case "${host}" in
 #endif /* HAVE_MACH_TASK_H */
     ])dnl
     ## maybe also try it with MACH_EXC_SERVER_PREFACE in front of it...
+    ## also check this, while we are here:
+    AC_CHECK_FUNCS([task_set_exception_port])
     ;;
 esac
 
@@ -1595,12 +1597,13 @@ AC_CHECK_HEADERS([Availability.h AvailabilityMacros.h \
                   linux/byteorder/little_endian.h mach.h mach_error.h \
                   mach/cthreads.h mach/kern_return.h mach/mach_error.h \
                   mach/mach_init.h mach/mach_port.h mach/message.h \
-                  mach/port.h mach/thread_info.h mach/thread_status.h \
-                  mach/vm_types.h mach-o/dyld.h mach-o/dyld_debug.h \
-                  mach-o/dyld_images.h mach-o/loader.h mach-o/nlist.h \
-                  machine/save_state.h math.h memory.h pc.h pthread.h \
-                  rpc/rpc.h sched.h servers/netname.h servers/netname_defs.h \
-                  setjmp.h sys/uio.h sys/utsname.h uuid/uuid.h])dnl
+                  mach/port.h mach/ppc/thread_status.h mach/thread_info.h \
+                  mach/thread_status.h mach/vm_types.h mach-o/dyld.h \
+                  mach-o/dyld_debug.h mach-o/dyld_images.h mach-o/loader.h \
+                  mach-o/nlist.h machine/save_state.h math.h memory.h pc.h \
+                  pthread.h rpc/rpc.h sched.h servers/netname.h \
+                  servers/netname_defs.h setjmp.h sys/uio.h sys/utsname.h \
+                  uuid/uuid.h])dnl
   ## needs other headers first on some systems:
 AC_CHECK_HEADERS([mach/kmod.h],[],[],[[
 #ifdef HAVE_MACH_VM_TYPES_H

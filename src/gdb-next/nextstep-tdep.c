@@ -214,7 +214,7 @@ dyld_symbol_stub_function_name(CORE_ADDR pc)
   if (strncmp (SYMBOL_NAME (msymbol), DYLD_PREFIX, strlen (DYLD_PREFIX)) != 0)
     return NULL;
 
-  return SYMBOL_NAME (msymbol) + strlen (DYLD_PREFIX);
+  return (SYMBOL_NAME(msymbol) + strlen(DYLD_PREFIX));
 }
 
 /* */

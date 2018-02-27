@@ -27,7 +27,7 @@ struct type *check_typedef PARAMS ((struct type *type));
 
 /* static function declarations */
 
-static void ppc_pop_dummy_frame PARAMS (());
+static void ppc_pop_dummy_frame PARAMS((void));
 
 static void ppc_fill_region PARAMS
   ((CORE_ADDR addr, CORE_ADDR nwords, unsigned long value));
@@ -35,7 +35,7 @@ static void ppc_fill_region PARAMS
 static void ppc_frame_dummy_saved_regs PARAMS
   ((struct frame_info *frame, CORE_ADDR *saved_regs));
 
-extern int ppc_debug (const char *fmt, ...);
+/* ppc_debug is now declared in "ppc-tdep.h" */
 
 #define	DEFAULT_LR_SAVE 8	/* Default offset from SP where the LR is stored */
 #define LINK_AREA_SIZE 24
@@ -50,6 +50,11 @@ extern int ppc_debug (const char *fmt, ...);
 #define DUMMY_REG_OFFSET \
   (MINIMUM_FRAME_SIZE + ROUND_UP (REGISTER_BYTES, MINIMUM_RECOMMENDED_STACK_ALIGNMENT) - LINK_AREA_SIZE)
 
+#ifndef REGISTER_BYTES
+# define REGISTER_BYTES 420
+#endif /* !REGISTER_BYTES */
+extern char registers[REGISTER_BYTES];
+
 /* Be careful! If the stack pointer is not decremented first, then
    the kernel thinks it is free to use the space underneath it. And
    kernel actually uses that area for IPC purposes when executing
@@ -59,10 +64,7 @@ extern int ppc_debug (const char *fmt, ...);
 /* function definitions */
 
 static void
-ppc_fill_region (addr, nwords, value)
-     CORE_ADDR addr;
-     CORE_ADDR nwords;
-     unsigned long value;
+ppc_fill_region(CORE_ADDR addr, CORE_ADDR nwords, unsigned long value)
 {
   CORE_ADDR i;
   unsigned char *buf;
@@ -98,7 +100,7 @@ ppc_fill_region (addr, nwords, value)
    good enough.  FIXME. */
 
 void
-ppc_push_dummy_frame ()
+ppc_push_dummy_frame(void)
 {
   CORE_ADDR newsp;		/* address of new stack frame */
   CORE_ADDR start;		/* address of local storage for registers */
@@ -145,14 +147,14 @@ ppc_push_dummy_frame ()
 
   /* save pc */
   store_address (buf, 4, pc);
-  write_memory (sp + DEFAULT_LR_SAVE, buf, 4);
+  write_memory(sp + DEFAULT_LR_SAVE, (const gdb_byte *)buf, 4);
 
   /* clear new stack frame */
   ppc_fill_region (newsp, MINIMUM_FRAME_SIZE / 4, 0xbeefbeef);
 
   /* write stack chain */
   store_address (buf, 4, sp);
-  write_memory (newsp, buf, 4);
+  write_memory(newsp, (const gdb_byte *)buf, 4);
 
   /* store register state */
   ppc_debug ("ppc_push_dummy_frame: allocating stack space for storing registers\n");
@@ -173,7 +175,7 @@ ppc_push_dummy_frame ()
 
 /* pop a dummy frame */
 
-static void ppc_pop_dummy_frame ()
+static void ppc_pop_dummy_frame(void)
 {
   struct frame_info *frame;
   struct frame_info *prev;
@@ -185,18 +187,38 @@ static void ppc_pop_dummy_frame ()
   CHECK_FATAL (prev != NULL);
 
   /* read register data */
-  ppc_debug ("pop_dummy_frame: restoring registers from range from 0x%lx to 0x%lx\n",
-	     (unsigned long) (prev->frame - DUMMY_REG_OFFSET), (unsigned long) prev->frame);
-  read_memory (prev->frame - DUMMY_REG_OFFSET, registers, REGISTER_BYTES);
+#if (DUMMY_REG_OFFSET > 0) && (REGISTER_BYTES > DUMMY_REG_OFFSET)
+  ppc_debug("pop_dummy_frame: restoring registers from range from 0x%lx to 0x%lx\n",
+	    (unsigned long)(prev->frame - DUMMY_REG_OFFSET),
+	    (unsigned long)prev->frame);
+  read_memory(prev->frame - DUMMY_REG_OFFSET, registers, REGISTER_BYTES);
+#endif /* (DUMMY_REG_OFFSET > 0) && (REGISTER_BYTES > DUMMY_REG_OFFSET) */
 
   target_store_registers (-1);
   flush_cached_frames ();
 }
 
-/* pop the innermost frame from the stack, restoring all saved registers.  */
+#ifndef REGISTER_BYTE
+# ifdef DEPRECATED_REGISTER_BYTE
+#  define REGISTER_BYTE(foo) DEPRECATED_REGISTER_BYTE(foo)
+# endif /* DEPRECATED_REGISTER_BYTE */
+#endif /* REGISTER_BYTE */
 
+#ifndef MAX_REGISTER_RAW_SIZE
+/* arbitrarily made-up default: */
+# define MAX_REGISTER_RAW_SIZE 4
+#endif /* !MAX_REGISTER_RAW_SIZE */
+#ifndef REGISTER_RAW_SIZE
+# ifdef DEPRECATED_REGISTER_RAW_SIZE
+#  define REGISTER_RAW_SIZE(foo) DEPRECATED_REGISTER_RAW_SIZE(foo)
+# else
+#  define REGISTER_RAW_SIZE(foo) MAX_REGISTER_RAW_SIZE
+# endif /* DEPRECATED_REGISTER_RAW_SIZE */
+#endif /* !REGISTER_RAW_SIZE */
+
+/* pop the innermost frame from the stack, restoring all saved registers.  */
 void
-ppc_pop_frame ()
+ppc_pop_frame(void)
 {
   struct frame_info *frame;
   struct frame_info *prev;
@@ -219,13 +241,22 @@ ppc_pop_frame ()
   ppc_frame_cache_saved_regs (frame);
 
   for (i = 0; i < NUM_REGS; i++) {
+#if 0
     if (frame->saved_regs[i] != 0) {
-      read_memory (frame->saved_regs[i], &registers [REGISTER_BYTE (i)], REGISTER_RAW_SIZE (i));
+      read_memory(frame->saved_regs[i], &registers[REGISTER_BYTE(i)],
+		  REGISTER_RAW_SIZE(i));
     }
+#else
+    if (frame != 0) {
+      (void)frame;
+    }
+#endif /* 0 */
   }
 
+#if 0
   write_register (PC_REGNUM, prev->pc);
   write_register (SP_REGNUM, prev->frame);
+#endif /* 0 */
 
   target_store_registers (-1);
   flush_cached_frames ();
@@ -239,11 +270,17 @@ ppc_pop_frame ()
 
 #define INSTRUCTION_SIZE 4
 
-#define	TOC_ADDR_OFFSET              CALL_DUMMY_START_OFFSET
-#define	TARGET_ADDR_OFFSET           (CALL_DUMMY_START_OFFSET + (2 * INSTRUCTION_SIZE))
+#ifdef CALL_DUMMY_START_OFFSET
+# define TOC_ADDR_OFFSET             CALL_DUMMY_START_OFFSET
+# define TARGET_ADDR_OFFSET   (CALL_DUMMY_START_OFFSET + (2 * INSTRUCTION_SIZE))
+#else
+# define TOC_ADDR_OFFSET 0
+# define TARGET_ADDR_OFFSET (2 * INSTRUCTION_SIZE)
+#endif /* CALL_DUMMY_START_OFFSET */
 
 void
-ppc_fix_call_dummy (char *dummy, CORE_ADDR pc, CORE_ADDR addr, int nargs, struct value **args, struct type *type, int gcc_p)
+ppc_fix_call_dummy(char *dummy, CORE_ADDR pc, CORE_ADDR addr, int nargs,
+		   struct value **args, struct type *type, int gcc_p)
 {
   int i;
   CORE_ADDR tocvalue;
@@ -281,15 +318,10 @@ ppc_fix_call_dummy (char *dummy, CORE_ADDR pc, CORE_ADDR addr, int nargs, struct
  * starting from r4. */
 
 CORE_ADDR
-ppc_push_arguments (nargs, args, sp, struct_return, struct_addr)
-     int nargs;
-     struct value **args;
-     CORE_ADDR sp;
-     int struct_return;
-     CORE_ADDR struct_addr;
+ppc_push_arguments(int nargs, struct value **args, CORE_ADDR sp,
+		   int struct_return, CORE_ADDR struct_addr)
 {
   unsigned int arg_bytes_required = 0;
-  unsigned int cur_offset = 0;
   unsigned int cur_gpr = 0;
   unsigned int cur_fpr = 0;
 
@@ -348,38 +380,35 @@ ppc_push_arguments (nargs, args, sp, struct_return, struct_addr)
     error ("function arguments too large (must be less than 32 bytes)");
   }
 
-  cur_offset = 0;
   cur_gpr = 3;
   cur_fpr = 1;
   for (argno = 0; argno < nfargs; argno++) {
-
     struct value *arg = fargs[argno];
     struct type *type = check_typedef (VALUE_TYPE (arg));
     int len = TYPE_LENGTH (type);
 
     if (TYPE_CODE (type) == TYPE_CODE_FLT) {
-
       if (len != 8) {
 	/* currently only doubles are supported (floats should have
            been cast to doubles already) */
 	error ("invalid TYPE_LENGTH %u for argument %u", len, argno);
       }
       CHECK_FATAL (cur_gpr <= 10);
-      memcpy (&registers[REGISTER_BYTE (FP0_REGNUM + cur_gpr)], VALUE_CONTENTS (arg), len);
+      memcpy(&registers[REGISTER_BYTE(FP0_REGNUM + cur_gpr)],
+	     VALUE_CONTENTS(arg), len);
       CHECK_FATAL (cur_fpr <= 13);
-      memcpy (&registers[REGISTER_BYTE (FP0_REGNUM + cur_fpr)], VALUE_CONTENTS (arg), len);
+      memcpy(&registers[REGISTER_BYTE(FP0_REGNUM + cur_fpr)],
+	     VALUE_CONTENTS(arg), len);
       cur_fpr++;
       cur_gpr++;
-
     } else {
-
       int argbytes = 0;
       while (argbytes < len) {
 	*((int*) &registers[REGISTER_BYTE (GP0_REGNUM + cur_gpr)]) = 0;
 	CHECK_FATAL (cur_gpr <= 10);
-	memcpy (&registers[REGISTER_BYTE (GP0_REGNUM + cur_gpr)],
-		((char *) VALUE_CONTENTS (arg)) + argbytes,
-		(len - argbytes) > 4 ? 4 : len - argbytes);
+	memcpy(&registers[REGISTER_BYTE(GP0_REGNUM + cur_gpr)],
+	       ((char *)VALUE_CONTENTS(arg)) + argbytes,
+	       ((len - argbytes) > 4) ? 4 : (len - argbytes));
 	cur_gpr++;
 	argbytes += 4;
       }
@@ -387,18 +416,15 @@ ppc_push_arguments (nargs, args, sp, struct_return, struct_addr)
     }
   }
 
-  ppc_debug ("ppc_push_arguments: new stack pointer is 0x%lx\n", (unsigned long) sp);
+  ppc_debug("ppc_push_arguments: new stack pointer is 0x%lx\n",
+	    (unsigned long)sp);
 
   target_store_registers (-1);
   return sp;
 }
 
 void
-ppc_stack_alloc (sp, start, argsize, len)
-     CORE_ADDR *sp;
-     CORE_ADDR *start;
-     size_t argsize;
-     size_t len;
+ppc_stack_alloc(CORE_ADDR *sp, CORE_ADDR *start, size_t argsize, size_t len)
 {
   char *linkbuf;
   size_t space = ROUND_UP (len, MINIMUM_RECOMMENDED_STACK_ALIGNMENT);
@@ -414,12 +440,12 @@ ppc_stack_alloc (sp, start, argsize, len)
   }
 
   /* save link and argument area */
-  linkbuf = alloca (LINK_AREA_SIZE + argsize);
+  linkbuf = (char *)alloca(LINK_AREA_SIZE + argsize);
   if (linkbuf == NULL) {
     fprintf (stderr, "ppc_stack_alloc: unable to alloc space to store link area\n");
     abort ();
   }
-  read_memory (*sp, linkbuf, LINK_AREA_SIZE + argsize);
+  read_memory(*sp, (gdb_byte *)linkbuf, LINK_AREA_SIZE + argsize);
 
   /* first expand stack frame --- see note 1 */
   *sp = *sp - space;
@@ -430,7 +456,7 @@ ppc_stack_alloc (sp, start, argsize, len)
   ppc_fill_region (*sp, space / 4, 0xfeebfeeb);
 
   /* store pointer to previous stack frame */
-  write_memory (*sp, linkbuf, LINK_AREA_SIZE + argsize);
+  write_memory(*sp, (const gdb_byte *)linkbuf, LINK_AREA_SIZE + argsize);
 
   /* available space is right after link area */
   *start = *sp + LINK_AREA_SIZE;
@@ -443,16 +469,19 @@ ppc_stack_alloc (sp, start, argsize, len)
 }
 
 void
-ppc_frame_cache_saved_regs (frame)
-     struct frame_info *frame;
+ppc_frame_cache_saved_regs(struct frame_info *frame)
 {
+#if 0
   if (frame->saved_regs) {
     return;
   }
+#endif /* 0 */
 
   frame_saved_regs_zalloc (frame);
 
+#if 0
   ppc_frame_saved_regs (frame, frame->saved_regs);
+#endif /* 0 */
 }
 
 /* Put here the code to store, into a struct frame_saved_regs,
@@ -462,9 +491,7 @@ ppc_frame_cache_saved_regs (frame)
    the address we return for it IS the sp for the next frame.  */
 
 static void
-ppc_frame_dummy_saved_regs (frame, saved_regs)
-     struct frame_info *frame;
-     CORE_ADDR *saved_regs;
+ppc_frame_dummy_saved_regs(struct frame_info *frame, CORE_ADDR *saved_regs)
 {
   int i;
   struct frame_info *prev;
@@ -475,14 +502,16 @@ ppc_frame_dummy_saved_regs (frame, saved_regs)
   CHECK_FATAL (prev != NULL);
 
   for (i = 0; i < NUM_REGS; i++) {
+#if 0
     saved_regs[i] = prev->frame - DUMMY_REG_OFFSET + REGISTER_BYTE (i);
+#else
+    saved_regs[i] = 0 - DUMMY_REG_OFFSET + REGISTER_BYTE(i);
+#endif /* 0 */
   }
 }
 
 void
-ppc_frame_saved_regs (frame, saved_regs)
-     struct frame_info *frame;
-     CORE_ADDR *saved_regs;
+ppc_frame_saved_regs(struct frame_info *frame, CORE_ADDR *saved_regs)
 {
   CORE_ADDR prev_sp = 0;
   ppc_function_properties *props;
@@ -494,18 +523,32 @@ ppc_frame_saved_regs (frame, saved_regs)
   }
 
   if (ppc_frame_cache_properties (frame, NULL)) {
+#if 0
     ppc_debug ("frame_initial_stack_address: unable to find properties of "
 	       "function containing 0x%lx\n", (unsigned long) frame->pc);
+#endif /* 0 */
     return;
   }
+#if 0
   props = frame->extra_info->props;
+#else
+  props = NULL;
+#endif /* 0 */
   CHECK_FATAL (props != NULL);
 
   /* record stored stack pointer */
   if (! props->frameless) {
-    prev_sp = saved_regs[SP_REGNUM] = read_memory_unsigned_integer (frame->frame, 4);
+#if 0
+    prev_sp = saved_regs[SP_REGNUM] = read_memory_unsigned_integer(frame->frame, 4);
+#else
+    prev_sp = saved_regs[SP_REGNUM] = INVALID_ADDRESS;
+#endif /* 0 */
   } else {
+#if 0
     prev_sp = saved_regs[SP_REGNUM] = frame->frame;
+#else
+    prev_sp = saved_regs[SP_REGNUM] = INVALID_ADDRESS;
+#endif /* 0 */
   }
 
   saved_regs[PC_REGNUM] = ppc_frame_saved_pc (frame);

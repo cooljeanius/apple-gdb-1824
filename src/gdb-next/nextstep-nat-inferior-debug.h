@@ -27,6 +27,10 @@ const char *unparse_exception_type PARAMS ((unsigned int i));
 const char *unparse_protection PARAMS ((vm_prot_t p));
 const char *unparse_inheritance PARAMS ((vm_inherit_t i));
 
+extern void next_debug_region(task_t task, vm_address_t address);
+extern void next_debug_regions(vm_map_t task);
+extern void next_debug_port_info(task_t task, port_t port);
+
 #endif /* _NEXTSTEP_NAT_INFERIOR_DEBUG_H_ */
 
 /* EOF */
