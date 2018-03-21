@@ -187,11 +187,19 @@ main(int argc, char **argv)
   int statuses[10];
 
   trace = 0;
-  if ((argc > 1) && (strcmp(argv[1], "-t") == 0))
+  if (argc > 1)
     {
-      trace = 1;
-      --argc;
-      ++argv;
+      if (strcmp(argv[1], "-t") == 0)
+	{
+	  trace = 1;
+	  --argc;
+	  ++argv;
+	}
+      else if (strcmp(argv[1], "--version") == 0)
+	{
+	  fprintf(stderr, "test-pexecute version %d\n", 0);
+	  exit(EXIT_SUCCESS);
+	}
     }
 
   if (argc > 1)

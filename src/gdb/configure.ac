@@ -25,13 +25,13 @@ dnl# Process this file with autoconf to produce a configure script.
 
 dnl# in case autoupdate changes this, the number is supposed to be "2.61":
 AC_PREREQ([2.61])dnl
-AC_INIT([gdb],[1824],[jmolenda@apple.com])
-m4_include([../config/warnings.m4])
+AC_INIT([gdb],[1824],[jmolenda@apple.com])dnl
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
-AC_CONFIG_SRCDIR([main.c])
-AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADER([config.h])
+m4_include([../config/warnings.m4])dnl
+AC_CONFIG_SRCDIR([main.c])dnl
+AC_CONFIG_MACRO_DIR([m4])dnl
+AC_CONFIG_HEADER([config.h])dnl
 AM_MAINTAINER_MODE
 
 ## Oops I had this backwards at first:
@@ -79,15 +79,18 @@ AC_CONFIG_AUX_DIR([..])
 AC_CANONICAL_TARGET
 if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
   export BUILD_ARCHITECTURE="${build_cpu}"
-  AC_SUBST([BUILD_ARCHITECTURE])
+  AC_SUBST([BUILD_ARCHITECTURE])dnl
+  ## 2...
 fi
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
-  AC_SUBST([HOST_ARCHITECTURE])
+  AC_SUBST([HOST_ARCHITECTURE])dnl
+  ## 2...
 fi
 if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   export TARGET_ARCHITECTURE="${target_cpu}"
-  AC_SUBST([TARGET_ARCHITECTURE])
+  AC_SUBST([TARGET_ARCHITECTURE])dnl
+  ## 2...
 fi
 
 m4_ifdef([ACX_NONCANONICAL_BUILD],[
@@ -109,18 +112,21 @@ m4_ifdef([gl_HOST_CPU_C_ABI],[
 
 if test -n "${BUILD_ARCHITECTURE}"; then
   ACX_PROG_CC_WARNING_OPTS(["-arch ${BUILD_ARCHITECTURE}"],
-                           [C_BUILDARCHFLAGS])
-  AC_SUBST([C_BUILDARCHFLAGS])
+                           [C_BUILDARCHFLAGS])dnl
+  AC_SUBST([C_BUILDARCHFLAGS])dnl
+  ## 2...
 fi
 if test -n "${HOST_ARCHITECTURE}"; then
   ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],
-                           [C_ARCHFLAGS])
-  AC_SUBST([C_ARCHFLAGS])
+                           [C_ARCHFLAGS])dnl
+  AC_SUBST([C_ARCHFLAGS])dnl
+  ## 2...
 fi
 if test -n "${TARGET_ARCHITECTURE}"; then
   ACX_PROG_CC_WARNING_OPTS(["-arch ${TARGET_ARCHITECTURE}"],
-                           [C_TARGARCHFLAGS])
-  AC_SUBST([C_TARGARCHFLAGS])
+                           [C_TARGARCHFLAGS])dnl
+  AC_SUBST([C_TARGARCHFLAGS])dnl
+  ## 2...
 fi
 
 # Check for the 'make' the user wants to use:
@@ -130,7 +136,8 @@ MAKE_IS_GNU=""
 case "`${MAKE} --version 2>&1 | sed 1q`" in
   *GNU*)
     MAKE_IS_GNU=yes
-    AC_SUBST([MAKE_IS_GNU])
+    AC_SUBST([MAKE_IS_GNU])dnl
+    ## 4....
     ;;
 esac
 AM_CONDITIONAL([GMAKE],[test "x${MAKE_IS_GNU}" = "xyes"])dnl
@@ -660,7 +667,7 @@ if test "x${targ_defvec}" != "x"; then
   ## end def
 fi
 
-AC_ARG_PROGRAM
+AC_ARG_PROGRAM dnl# might have already been called...
 
 # See if we are building with C++, and substitute COMPILER:
 GDB_AC_BUILD_WITH_CXX
@@ -680,7 +687,7 @@ m4_ifdef([ACX_LARGEFILE],[
   AC_SYS_LARGEFILE
 ])dnl
 AC_SYS_LONG_FILE_NAMES
-AC_OBJEXT
+AC_OBJEXT dnl# .o
 
 # The CLI cannot be disabled yet, but may be in the future.
 
@@ -881,12 +888,13 @@ AC_MSG_RESULT([ ])
 AN_PROGRAM([ar],[AM_PROG_AR])dnl
 AN_MAKEVAR([AR],[AM_PROG_AR])dnl
   ## automake has a better check for the proper archiver:
-if test -x `which automake`; then
+if test -x "`which automake`"; then
   test -z "${AR}"
   AM_PROG_AR
 else
   test -z "${AR}"
-  AC_CHECK_TOOLS([AR],[ar gar],[],[${PATH}:./../binutils])
+  AC_CHECK_TOOLS([AR],[ar gar],[],[${PATH}:./../binutils])dnl
+  ## 2...
 fi
 if test -e ./config.cache; then
   echo "hacking ./config.cache"
@@ -898,7 +906,7 @@ if test -e ./config.cache; then
 fi
 AN_PROGRAM([as],[AM_PROG_AS])dnl
 AN_MAKEVAR([AS],[AM_PROG_AS])dnl
-AM_PROG_AS
+AM_PROG_AS dnl# one way to do it; also try:
 m4_ifdef([NCN_STRICT_CHECK_TOOLS],[
   NCN_STRICT_CHECK_TOOLS([ASSEMBLER],[as gas],[],[${PATH}:./../binutils])
 ])dnl
@@ -945,10 +953,10 @@ fi
 AC_PROG_INSTALL
 AM_PROG_INSTALL_STRIP
 AM_PROG_LEX
-AM_PATH_LISPDIR
-AC_PROG_LN_S
-AC_PROG_MKDIR_P
-AM_PATH_PYTHON
+AM_PATH_LISPDIR dnl# emacs
+AC_PROG_LN_S dnl# ok
+AC_PROG_MKDIR_P dnl# might have already been called
+AM_PATH_PYTHON dnl# for python integration
 AC_PROG_OBJC
 if test "x${OBJCPP}" = "x" && test -e /lib/cpp; then
   test -z "${OBJCPP}" && test -x /lib/cpp
@@ -1015,7 +1023,7 @@ dnl# matches the version of the cctools and linker used by the compiler
 
 # A few more compiler-y things
 AM_PROG_VALAC([],[],[])
-AC_PROG_YACC
+AC_PROG_YACC dnl# more specifically:
 AX_PROG_BISON([
   # (might want to check the bison version first before warning)
   AC_MSG_NOTICE([Actually using bison in this case.])
@@ -1040,8 +1048,8 @@ m4_ifdef([BISON_I18N],[
       test -z "${USE_NLS}" && export USE_NLS="no"
     fi
     BISON_I18N
-  ])dnl
-])dnl
+  ],[echo "Skipping i18n for bison without gettext"])dnl
+],[echo "Skipping i18n for bison"])dnl
 
 AC_CHECK_TOOLS([DLLTOOL],[dlltool gdlltool],[],[${PATH}:./../binutils])dnl
   ## duplicate that:
@@ -1424,7 +1432,7 @@ AC_MSG_CHECKING([headers])
 AC_MSG_RESULT([ ])dnl
 
 AC_HEADER_DIRENT
-AC_HEADER_STAT
+AC_HEADER_STAT dnl# alphabetically next:
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
   AC_REQUIRE([AC_HEADER_STDC])dnl
 ])dnl
@@ -1623,10 +1631,10 @@ AC_CHECK_HEADERS([gettext.h],[],[],[
 #endif /* !HAVE_CONFDEFS_H */
 ])dnl
 # The gnulib subdirectory needs this:
-gl_LIMITS_H
-gl_STDINT_H
+gl_LIMITS_H dnl# and this:
+gl_STDINT_H dnl# in case failed to subst:
 AC_SUBST([STDINT_H])dnl
-gl_HEADER_STRING_H
+gl_HEADER_STRING_H dnl# yeah
 # Just in case:
 if test "x${NEXT_STRING_H}" = "x"; then
   test -z "${NEXT_STRING_H}" && export NEXT_STRING_H="<string.h>"
@@ -1681,7 +1689,7 @@ AC_CHECK_DECLS([strcasecmp, strncasecmp],[],[],[
 ])dnl
 
 m4_ifdef([libiberty_INIT],[
-  libiberty_INIT
+  libiberty_INIT dnl# should get stuff
 ],[
   AC_MSG_NOTICE([skipping extra checks for libiberty things])dnl
 ])dnl

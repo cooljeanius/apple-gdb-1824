@@ -589,6 +589,7 @@ ITCL_RELEASE_LEVEL
 ITCL_MINOR_VERSION
 ITCL_MAJOR_VERSION
 ITCL_VERSION
+IWIDGETS_SRC_DIR
 WISH_PROG
 TCLSH_PROG
 SHLIB_LD_LIBS
@@ -1365,7 +1366,7 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-tcl              directory containing tcl configuration (tclConfig.sh)
   --with-tk               directory containing tk configuration (tkConfig.sh)
-  --with-itclinclude=DIR          use Itcl headers from DIR
+  --with-itclinclude=DIR  use Itcl headers from DIR
   --with-itclconfig           directory containing itcl configuration (itclConfig.sh)
 
 Some influential environment variables:
@@ -1925,11 +1926,10 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 # END CYGNUS LOCAL
 
-
 #--------------------------------------------------------------------
 # __CHANGE__
 # Set your package name and version numbers here.  The NODOT_VERSION is
-# required for constructing the library name on systems that don't like
+# required for constructing the library name on systems that do not like
 # dots in library names (Windows).  The VERSION variable is used on the
 # other systems.
 #--------------------------------------------------------------------
@@ -1942,9 +1942,6 @@ PATCHLEVEL=.1
 
 VERSION=${MAJOR_VERSION}.${MINOR_VERSION}
 NODOT_VERSION=${MAJOR_VERSION}${MINOR_VERSION}
-
-
-
 
 
 #--------------------------------------------------------------------
@@ -3145,8 +3142,6 @@ fi
 esac
 
 
-
-
 #--------------------------------------------------------------------
 # Includes for this package
 #--------------------------------------------------------------------
@@ -3169,10 +3164,6 @@ case "${host}" in
 esac
 
 ITK_INCLUDES="-I\"${ITK_GENERIC_DIR_NATIVE}\" -I\"${ITK_PLATFORM_DIR_NATIVE}\""
-
-
-
-
 
 
 #--------------------------------------------------------------------
@@ -3429,18 +3420,17 @@ $as_echo "could not find $TK_BIN_DIR/tkConfig.sh" >&6; }
 
 # Check whether --with-itcl was given.
 if test "${with_itcl+set}" = set; then :
-  withval=$with_itcl; ITCL_LIB_DIR=$withval
+  withval=$with_itcl; ITCL_LIB_DIR=${withval}
 else
   ITCL_LIB_DIR=`cd ${srcdir}/../itcl; pwd`
 fi
 
 
 if test ! -r "${ITCL_LIB_DIR}/generic/itclInt.h" ; then
-    as_fn_error $? "Can't find Itcl private header files.  Use --with-itclinclude to specify the directory containing the Itcl private headers on your system." "$LINENO" 5
+    as_fn_error $? "Cannot find Itcl private header files.  Use --with-itclinclude to specify the directory containing the Itcl private headers on your system." "$LINENO" 5
 fi
 
 ITCL_INCLUDES=-I\"`${CYGPATH} ${ITCL_LIB_DIR}/generic`\"
-
 
 # CYGNUS LOCAL
 
@@ -3540,9 +3530,7 @@ fi
 
 itclstub_LIB_FILE=${ITCL_STUB_LIB_FILE}
 
-
 tkstub_LIB_SPEC=${TK_STUB_LIB_SPEC}
-
 # END CYGNUS LOCAL
 
 #--------------------------------------------------------------------
@@ -3663,16 +3651,12 @@ _ACEOF
 	PLATFORM_DIR='$(WIN_DIR)'
     ;;
     *)
-	CLEANFILES=
+	CLEANFILES=""
 	PLATFORM_SOURCES='$(UNIX_SOURCES)'
 	PLATFORM_OBJECTS='$(UNIX_OBJECTS)'
 	PLATFORM_DIR='$(UNIX_DIR)'
     ;;
 esac
-
-
-
-
 
 
 #--------------------------------------------------------------------
@@ -3824,12 +3808,6 @@ STLIB_LD=${TCL_STLIB_LD}
 SHLIB_CFLAGS=${TCL_SHLIB_CFLAGS}
 
 
-
-
-
-
-
-
 #--------------------------------------------------------------------
 # Set the default compiler switches based on the --enable-symbols
 # option.
@@ -3883,7 +3861,7 @@ fi
 
 #--------------------------------------------------------------------
 # Everyone should be linking against the Tcl stub library.  If you
-# can't for some reason, remove this definition.  If you aren't using
+# cannot for some reason, remove this definition.  If you are not using
 # stubs, you also need to modify the SHLIB_LD_LIBS setting below to
 # link against the non-stubbed Tcl library.
 #--------------------------------------------------------------------
@@ -4088,8 +4066,6 @@ fi
 
 
 
-
-
   libname=${PACKAGE}
   version=${VERSION}
 
@@ -4258,8 +4234,6 @@ fi
 
 
 
-
-
   case "${host}" in
     *windows32* | *mingw32*)
       if test "$GCC" != yes; then
@@ -4404,8 +4378,6 @@ fi
 
 
 
-
-
   val="`pwd`/${ITK_LIB_FILE}"
 
   if test "$val" = "" ; then
@@ -4467,8 +4439,6 @@ fi
 
 
 
-
-
 itkstub_LIB_FILE=${ITK_STUB_LIB_FILE}
 itk_LIB_FILE=${ITK_TARGET_FILE}
 
@@ -4482,13 +4452,10 @@ itk_LIB_FILE=${ITK_TARGET_FILE}
 #--------------------------------------------------------------------
 
 
-
-
-
 #--------------------------------------------------------------------
 # Find tclsh so that we can run pkg_mkIndex to generate the pkgIndex.tcl
-# file during the install process.  Don't run the TCLSH_PROG through
-# ${CYGPATH} because it's being used directly by make.
+# file during the install process.  Do not run the TCLSH_PROG through
+# ${CYGPATH} because it is being used directly by make.
 # Require that we use a tclsh shell version 8.2 or later since earlier
 # versions have bugs in the pkg_mkIndex routine.
 #--------------------------------------------------------------------
@@ -4613,6 +4580,10 @@ fi
 # Finally, substitute all of the various values into the Makefile.
 #--------------------------------------------------------------------
 
+if test "x${IWIDGETS_SRC_DIR}" = "x"; then
+  test -z "${IWIDGETS_SRC_DIR}" && export IWIDGETS_SRC_DIR=../iwidgets
+fi
+
 # CYGNUS LOCAL
 
 # Note: The itkConfig.sh file below is not included in the net release.
@@ -4621,18 +4592,13 @@ fi
 
 ITCL_VERSION=${VERSION}
 
-
 ITCL_MAJOR_VERSION=${MAJOR_VERSION}
-
 
 ITCL_MINOR_VERSION=${MINOR_VERSION}
 
-
 ITCL_RELEASE_LEVEL=${PATCHLEVEL}
 
-
 ITK_SRC_DIR=${ITK_SRC_DIR_NATIVE}
-
 
 ac_config_files="$ac_config_files Makefile itkConfig.sh pkgIndex.tcl"
 

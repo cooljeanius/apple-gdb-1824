@@ -1,5 +1,5 @@
-# Autoconf M4 include file defining utility macros for complex Canadian
-# cross builds.
+dnl# Autoconf M4 include file defining utility macros for complex Canadian
+dnl# cross builds.
 
 dnl ####
 dnl # _GCC_TOPLEV_NONCANONICAL_BUILD

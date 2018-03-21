@@ -1,4 +1,4 @@
-/* BFD backend for Extended Tektronix Hex Format  objects.
+/* tekhex.c: BFD backend for Extended Tektronix Hex Format  objects.
    Copyright 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001, 2002,
    2003, 2004 Free Software Foundation, Inc.
    Written by Steve Chamberlain of Cygnus Support <sac@cygnus.com>.
@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* SUBSECTION
 	Tektronix Hex Format handling
@@ -596,7 +596,7 @@ move_section_contents (bfd *abfd,
   for (addr = section->vma; count != 0; count--, addr++)
     {
       /* Get high bits of address.  */
-      bfd_vma chunk_number = addr & ~(bfd_vma) CHUNK_MASK;
+      bfd_vma chunk_number = addr & ~(bfd_vma)CHUNK_MASK;
       bfd_vma low_bits = addr & CHUNK_MASK;
 
       if (chunk_number != prev_number)
@@ -610,10 +610,15 @@ move_section_contents (bfd *abfd,
 	  else
 	    *location = 0;
 	}
-      else
+      else if (d != NULL)
 	{
 	  d->chunk_data[low_bits] = *location;
 	  d->chunk_init[low_bits] = (*location != 0);
+	}
+      else
+	{
+	  /* FIXME: error or something */
+	  (void)d;
 	}
 
       location++;

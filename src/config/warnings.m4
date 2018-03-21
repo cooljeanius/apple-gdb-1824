@@ -1,6 +1,6 @@
-# warnings.m4 serial 2                                     -*- Autoconf -*-
+dnl# warnings.m4 serial 2                                     -*- Autoconf -*-
 
-# Autoconf include file defining macros related to compile-time warnings.
+dnl# Autoconf include file defining macros related to compile-time warnings.
 
 # Copyright 2004, 2005 Free Software Foundation, Inc.
 

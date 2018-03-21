@@ -15,12 +15,12 @@
 # <http://www.gnu.org/licenses/>.
 #
 # Contributed by Richard Guenther <rguenther@suse.de>
-# Based on cloog.m4
+dnl# Based on cloog.m4
 
-# ISL_INIT_FLAGS([])
-# -------------------------
-# Provide configure switches for ISL support.
-# Initialize isllibs/islinc according to the user input.
+dnl# ISL_INIT_FLAGS([])
+dnl# -------------------------
+dnl# Provide configure switches for ISL support.
+dnl# Initialize isllibs/islinc according to the user input.
 AC_DEFUN([ISL_INIT_FLAGS],
 [
   AC_ARG_WITH([isl-include],
@@ -68,11 +68,11 @@ AC_DEFUN([ISL_INIT_FLAGS],
     ENABLE_ISL_CHECK=no
     AC_MSG_WARN([using in-tree ISL, disabling version check])
   fi
-])
+])dnl
 
-# ISL_REQUESTED (ACTION-IF-REQUESTED, ACTION-IF-NOT)
-# ----------------------------------------------------
-# Provide actions for failed ISL detection.
+dnl# ISL_REQUESTED (ACTION-IF-REQUESTED, ACTION-IF-NOT)
+dnl# ----------------------------------------------------
+dnl# Provide actions for failed ISL detection.
 AC_DEFUN([ISL_REQUESTED],
 [
   AC_REQUIRE([ISL_INIT_FLAGS])
@@ -86,23 +86,23 @@ AC_DEFUN([ISL_REQUESTED],
   else
     $2
   fi
-])
+])dnl
 
-# _ISL_CHECK_CT_PROG([MAJOR],[MINOR])
-# --------------------------------------------
-# Helper for verifying ISL compile time version.
+dnl# _ISL_CHECK_CT_PROG([MAJOR],[MINOR])
+dnl# --------------------------------------------
+dnl# Helper for verifying ISL compile time version.
 m4_define([_ISL_CHECK_CT_PROG],[AC_LANG_PROGRAM(
   [#include <isl/version.h>
    #include <string.h>],
   [if (strncmp (isl_version (), "isl-$1.$2", strlen ("isl-$1.$2")) != 0)
      return 1;
    ])
-])
+])dnl
 
-# ISL_CHECK_VERSION ISL_CHECK_VERSION([MAJOR],[MINOR])
-# ----------------------------------------------------------------
-# Test the found ISL to be exact of version MAJOR.MINOR and at least
-# REVISION.
+dnl# ISL_CHECK_VERSION ISL_CHECK_VERSION([MAJOR],[MINOR])
+dnl# ----------------------------------------------------------------
+dnl# Test the found ISL to be exact of version MAJOR.MINOR and at least
+dnl# REVISION.
 AC_DEFUN([ISL_CHECK_VERSION],
 [
   if test "${ENABLE_ISL_CHECK}" = yes ; then
@@ -125,12 +125,12 @@ AC_DEFUN([ISL_CHECK_VERSION],
     LDFLAGS=$_isl_saved_LDFLAGS
     LIBS=$_isl_saved_LIBS
   fi
-])
+])dnl
 
-# ISL_IF_FAILED([ACTION-IF-FAILED])
-# ----------------------------------
-# Executes ACTION-IF-FAILED, if GRAPHITE was requested and
-# the checks failed.
+dnl# ISL_IF_FAILED([ACTION-IF-FAILED])
+dnl# ----------------------------------
+dnl# Executes ACTION-IF-FAILED, if GRAPHITE was requested and
+dnl# the checks failed.
 AC_DEFUN([ISL_IF_FAILED],
 [
   ISL_REQUESTED([graphite_requested=yes], [graphite_requested=no])
@@ -145,4 +145,4 @@ AC_DEFUN([ISL_IF_FAILED],
     && test "x${islinc}" = x ; then
     $1
   fi
-])
+])dnl

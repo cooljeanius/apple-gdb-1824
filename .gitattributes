@@ -16,3 +16,7 @@
 *.raw binary
 *.webarchive binary
 *.xcplugindata binary
+
+# Tell GitHub to ignore when calculating language stats:
+aclocal.m4 linguist-vendored
+libcheckpoint/Makefile.in linguist-vendored

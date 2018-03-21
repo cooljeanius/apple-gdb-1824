@@ -92,17 +92,17 @@ AC_EXEEXT
 AC_USE_SYSTEM_EXTENSIONS
 if test -n "${BUILD_ARCHITECTURE}"; then
   ACX_PROG_CC_WARNING_OPTS(["-arch ${BUILD_ARCHITECTURE}"],
-                           [C_BUILD_ARCHFLAGS])
+                           [C_BUILD_ARCHFLAGS])dnl
   AC_SUBST([C_BUILD_ARCHFLAGS])
 fi
 if test -n "${HOST_ARCHITECTURE}"; then
   ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],
-                           [C_HOST_ARCHFLAGS])
+                           [C_HOST_ARCHFLAGS])dnl
   AC_SUBST([C_HOST_ARCHFLAGS])
 fi
 if test -n "${TARGET_ARCHITECTURE}"; then
   ACX_PROG_CC_WARNING_OPTS(["-arch ${TARGET_ARCHITECTURE}"],
-                           [C_TARG_ARCHFLAGS])
+                           [C_TARG_ARCHFLAGS])dnl
   AC_SUBST([C_TARG_ARCHFLAGS])
 fi
 

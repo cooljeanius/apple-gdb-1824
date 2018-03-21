@@ -1,3 +1,5 @@
+# Tell GitHub to ignore when calculating language stats:
+aclocal.m4 linguist-vendored
 ar-lib linguist-vendored
 compile linguist-vendored
 config.guess linguist-vendored
@@ -6,3 +8,6 @@ config.sub linguist-vendored
 depcomp linguist-vendored
 install-sh linguist-vendored
 missing linguist-vendored
+test-driver linguist-vendored
+texinfo.tex linguist-vendored
+ylwrap linguist-vendored

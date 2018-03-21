@@ -584,12 +584,16 @@ PACKAGE_URL=''
 ac_unique_file="generic/buttonbox.itk"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+IWIDGETS_SRC_DIR
+IWIDGETS_LIBRARY
+IWIDGETS_VERSION
 ITK_SRC_DIR
 ITK_LIB_DIR
 ITCL_SRC_DIR
 ITCL_LIB_DIR
 TK_LIB_DIR
 TCL_LIB_DIR
+BUILD_DIR
 TCLSH_PROG
 TK_XINCLUDES
 TK_LIB_FILE
@@ -2249,15 +2253,14 @@ $as_echo "could not find $TK_BIN_DIR/tkConfig.sh" >&6; }
 
 # Check whether --with-itcl was given.
 if test "${with_itcl+set}" = set; then :
-  withval=$with_itcl; itcl_search=$withval
+  withval=$with_itcl; itcl_search=${withval}
 else
   itcl_search=`cd ${srcdir}/../itcl; pwd`
 fi
 
-
 ITCL_LIB_DIR=""
-for dir in $exec_prefix/lib $TCL_LIB_DIR $itcl_search ; do
-    if test -r $dir/library/itcl.tcl; then
+for dir in ${exec_prefix}/lib $TCL_LIB_DIR $itcl_search ; do
+    if test -r ${dir}/library/itcl.tcl; then
         ITCL_LIB_DIR=$dir
         ITCL_SRC_DIR=$dir
         break
@@ -2265,7 +2268,7 @@ for dir in $exec_prefix/lib $TCL_LIB_DIR $itcl_search ; do
 done
 
 if test -z "$ITCL_LIB_DIR"; then
-    as_fn_error $? "Can't find Itcl libraries.  Use --with-itcl to specify the directory containing itcl.tcl on your system." "$LINENO" 5
+    as_fn_error $? "Cannot find Itcl libraries.  Use --with-itcl to specify the directory containing itcl.tcl on your system." "$LINENO" 5
 fi
 
 #--------------------------------------------------------------------
@@ -2276,15 +2279,14 @@ fi
 
 # Check whether --with-itk was given.
 if test "${with_itk+set}" = set; then :
-  withval=$with_itk; itk_search=$withval
+  withval=$with_itk; itk_search=${withval}
 else
   itk_search=`cd ${srcdir}/../itk; pwd`
 fi
 
-
 ITK_LIB_DIR=""
-for dir in $exec_prefix/lib $TCL_LIB_DIR $itk_search ; do
-    if test -r $dir/library/itk.tcl; then
+for dir in ${exec_prefix}/lib $TCL_LIB_DIR $itk_search ; do
+    if test -r ${dir}/library/itk.tcl; then
         ITK_LIB_DIR=$dir
         ITK_SRC_DIR=$dir
         break
@@ -2292,7 +2294,7 @@ for dir in $exec_prefix/lib $TCL_LIB_DIR $itk_search ; do
 done
 
 if test -z "$ITK_LIB_DIR"; then
-    as_fn_error $? "Can't find Itk libraries.  Use --with-itk to specify the directory containing itk.tcl on your system." "$LINENO" 5
+    as_fn_error $? "Cannot find Itk libraries.  Use --with-itk to specify the directory containing itk.tcl on your system." "$LINENO" 5
 fi
 
 #--------------------------------------------------------------------
@@ -2342,20 +2344,10 @@ fi
 #--------------------------------------------------------------------
 #   Fill in template files with the proper info.
 #--------------------------------------------------------------------
-#AC_SUBST(BUILD_DIR)
 
-
-
-
-
-
-
-
-
-#AC_SUBST(ITCL_VERSION)
-#AC_SUBST(IWIDGETS_VERSION)
-#AC_SUBST(IWIDGETS_LIBRARY)
-#AC_SUBST(IWIDGETS_SRC_DIR)
+if test "x${IWIDGETS_SRC_DIR}" = "x"; then
+  test -z "${IWIDGETS_SRC_DIR}" && export IWIDGETS_SRC_DIR="`cd ${srcdir}; pwd`"
+fi
 
 ac_config_files="$ac_config_files Makefile iwidgets.tcl pkgIndex.tcl"
 

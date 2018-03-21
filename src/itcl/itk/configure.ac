@@ -1,5 +1,5 @@
 #--------------------------------------------------------------------
-# Sample configure.in for Tcl Extensions.  The only places you should
+# Sample configure.ac for Tcl Extensions.  The only places you should
 # need to modify this file are marked by the string __CHANGE__
 #--------------------------------------------------------------------
 
@@ -21,12 +21,12 @@ AC_CONFIG_SRCDIR([generic/itk.h])
 # CYGNUS LOCAL
 AC_CONFIG_AUX_DIR([../..])
 # END CYGNUS LOCAL
-AC_CONFIG_MACRO_DIR([..])
+AC_CONFIG_MACRO_DIR([..])dnl
 
 #--------------------------------------------------------------------
 # __CHANGE__
 # Set your package name and version numbers here.  The NODOT_VERSION is
-# required for constructing the library name on systems that don't like
+# required for constructing the library name on systems that do not like
 # dots in library names (Windows).  The VERSION variable is used on the
 # other systems.
 #--------------------------------------------------------------------
@@ -40,9 +40,8 @@ PATCHLEVEL=.1
 VERSION=${MAJOR_VERSION}.${MINOR_VERSION}
 NODOT_VERSION=${MAJOR_VERSION}${MINOR_VERSION}
 
-
-AC_SUBST(PACKAGE)
-AC_SUBST(VERSION)
+AC_SUBST([PACKAGE])dnl
+AC_SUBST([VERSION])dnl
 
 #--------------------------------------------------------------------
 # We put this here so that you can compile with -DVERSION="1.2" to
@@ -133,8 +132,8 @@ case "${host}" in
     ;;
 esac
 
-AC_SUBST(CYGPATH)
-AC_SUBST(RELPATH)
+AC_SUBST([CYGPATH])dnl
+AC_SUBST([RELPATH])dnl
 
 #--------------------------------------------------------------------
 # Includes for this package
@@ -159,10 +158,10 @@ esac
 
 ITK_INCLUDES="-I\"${ITK_GENERIC_DIR_NATIVE}\" -I\"${ITK_PLATFORM_DIR_NATIVE}\""
 
-AC_SUBST(ITK_GENERIC_DIR_NATIVE)
-AC_SUBST(ITK_WIN_DIR_NATIVE)
-AC_SUBST(ITK_UNIX_DIR_NATIVE)
-AC_SUBST(ITK_INCLUDES)
+AC_SUBST([ITK_GENERIC_DIR_NATIVE])dnl
+AC_SUBST([ITK_WIN_DIR_NATIVE])dnl
+AC_SUBST([ITK_UNIX_DIR_NATIVE])dnl
+AC_SUBST([ITK_INCLUDES])dnl
 
 #--------------------------------------------------------------------
 # Load the tclConfig.sh file
@@ -178,25 +177,26 @@ SC_LOAD_TCLCONFIG
 SC_PATH_TKCONFIG
 SC_LOAD_TKCONFIG
 
-AC_ARG_WITH(itcl, [  --with-itclinclude=DIR          use Itcl headers from DIR],
-        ITCL_LIB_DIR=$withval, ITCL_LIB_DIR=`cd ${srcdir}/../itcl; pwd`)
+AC_ARG_WITH([itcl],
+        [AS_HELP_STRING([--with-itclinclude=DIR],[use Itcl headers from DIR])],
+        [ITCL_LIB_DIR=${withval}],[ITCL_LIB_DIR=`cd ${srcdir}/../itcl; pwd`])
 
 if test ! -r "${ITCL_LIB_DIR}/generic/itclInt.h" ; then
-    AC_MSG_ERROR(Can't find Itcl private header files.  Use --with-itclinclude to specify the directory containing the Itcl private headers on your system.)
+    AC_MSG_ERROR([Cannot find Itcl private header files.  Use --with-itclinclude to specify the directory containing the Itcl private headers on your system.])
 fi
 
 ITCL_INCLUDES=-I\"`${CYGPATH} ${ITCL_LIB_DIR}/generic`\"
-AC_SUBST(ITCL_INCLUDES)
+AC_SUBST([ITCL_INCLUDES])dnl
 
 # CYGNUS LOCAL
 CYG_AC_PATH_ITCLCONFIG
 CYG_AC_LOAD_ITCLCONFIG
 
 itclstub_LIB_FILE=${ITCL_STUB_LIB_FILE}
-AC_SUBST(itclstub_LIB_FILE)
+AC_SUBST([itclstub_LIB_FILE])dnl
 
 tkstub_LIB_SPEC=${TK_STUB_LIB_SPEC}
-AC_SUBST(tkstub_LIB_SPEC)
+AC_SUBST([tkstub_LIB_SPEC])dnl
 # END CYGNUS LOCAL
 
 #--------------------------------------------------------------------
@@ -248,17 +248,17 @@ case "${host}" in
 	PLATFORM_DIR='$(WIN_DIR)'
     ;;
     *)
-	CLEANFILES=
+	CLEANFILES=""
 	PLATFORM_SOURCES='$(UNIX_SOURCES)'
 	PLATFORM_OBJECTS='$(UNIX_OBJECTS)'
 	PLATFORM_DIR='$(UNIX_DIR)'
     ;;
 esac
 
-AC_SUBST(CLEANFILES)
-AC_SUBST(PLATFORM_SOURCES)
-AC_SUBST(PLATFORM_OBJECTS)
-AC_SUBST(PLATFORM_DIR)
+AC_SUBST([CLEANFILES])dnl
+AC_SUBST([PLATFORM_SOURCES])dnl
+AC_SUBST([PLATFORM_OBJECTS])dnl
+AC_SUBST([PLATFORM_DIR])dnl
 
 #--------------------------------------------------------------------
 # Check whether --enable-threads or --disable-threads was given.
@@ -288,12 +288,12 @@ SHLIB_LD=${TCL_SHLIB_LD}
 STLIB_LD=${TCL_STLIB_LD}
 SHLIB_CFLAGS=${TCL_SHLIB_CFLAGS}
 
-AC_SUBST(CFLAGS_DEBUG)
-AC_SUBST(CFLAGS_OPTIMIZE)
-AC_SUBST(STLIB_LD)
-AC_SUBST(SHLIB_LD)
-AC_SUBST(SHLIB_CFLAGS)
-AC_SUBST(SHLIB_LDFLAGS)
+AC_SUBST([CFLAGS_DEBUG])dnl
+AC_SUBST([CFLAGS_OPTIMIZE])dnl
+AC_SUBST([STLIB_LD])dnl
+AC_SUBST([SHLIB_LD])dnl
+AC_SUBST([SHLIB_CFLAGS])dnl
+AC_SUBST([SHLIB_LDFLAGS])dnl
 
 #--------------------------------------------------------------------
 # Set the default compiler switches based on the --enable-symbols 
@@ -310,15 +310,15 @@ fi
 
 #--------------------------------------------------------------------
 # Everyone should be linking against the Tcl stub library.  If you
-# can't for some reason, remove this definition.  If you aren't using
+# cannot for some reason, remove this definition.  If you are not using
 # stubs, you also need to modify the SHLIB_LD_LIBS setting below to
 # link against the non-stubbed Tcl library.
 #--------------------------------------------------------------------
 
 if test "${SHARED_BUILD}" = "1" ; then
-    AC_DEFINE(USE_TCL_STUBS)
-    AC_DEFINE(USE_TK_STUBS)
-    AC_DEFINE(USE_ITCL_STUBS)
+    AC_DEFINE([USE_TCL_STUBS])
+    AC_DEFINE([USE_TK_STUBS])
+    AC_DEFINE([USE_ITCL_STUBS])
 fi
 
 #--------------------------------------------------------------------
@@ -367,26 +367,26 @@ fi
 
 TCL_TOOL_STATIC_LIB_LONGNAME(ITK_STUB_LIB_FILE, ${PACKAGE}stub, ${UNSHARED_LIB_SUFFIX})
 
-AC_SUBST(ITK_LIB_FILE)
-AC_SUBST(ITK_STUB_LIB_FILE)
+AC_SUBST([ITK_LIB_FILE])dnl
+AC_SUBST([ITK_STUB_LIB_FILE])dnl
 
 TCL_TOOL_LIB_SHORTNAME(ITK_LIB_FLAG, ${PACKAGE}, ${VERSION})
 TCL_TOOL_LIB_SHORTNAME(ITK_STUB_LIB_FLAG, ${PACKAGE}stub, ${VERSION})
 
 TCL_TOOL_LIB_SPEC(ITK_BUILD_LIB_SPEC, `pwd`, ${ITK_LIB_FLAG})
 TCL_TOOL_LIB_SPEC(ITK_BUILD_STUB_LIB_SPEC, `pwd`, ${ITK_STUB_LIB_FLAG})
-AC_SUBST(ITK_BUILD_LIB_SPEC)
-AC_SUBST(ITK_BUILD_STUB_LIB_SPEC)
+AC_SUBST([ITK_BUILD_LIB_SPEC])dnl
+AC_SUBST([ITK_BUILD_STUB_LIB_SPEC])dnl
 
 TCL_TOOL_LIB_SPEC(ITK_LIB_SPEC, ${exec_prefix}/lib, ${ITK_LIB_FLAG})
 TCL_TOOL_LIB_SPEC(ITK_STUB_LIB_SPEC, ${exec_prefix}/lib, ${ITK_STUB_LIB_FLAG})
-AC_SUBST(ITK_LIB_SPEC)
-AC_SUBST(ITK_STUB_LIB_SPEC)
+AC_SUBST([ITK_LIB_SPEC])dnl
+AC_SUBST([ITK_STUB_LIB_SPEC])dnl
 
 TCL_TOOL_LIB_PATH(ITK_LIB_FULL_PATH, `pwd`, ${ITK_LIB_FILE})
 TCL_TOOL_LIB_PATH(ITK_STUB_LIB_FULL_PATH, `pwd`, ${ITK_STUB_LIB_FILE})
-AC_SUBST(ITK_LIB_FULL_PATH)
-AC_SUBST(ITK_STUB_LIB_FULL_PATH)
+AC_SUBST([ITK_LIB_FULL_PATH])dnl
+AC_SUBST([ITK_STUB_LIB_FULL_PATH])dnl
 
 itkstub_LIB_FILE=${ITK_STUB_LIB_FILE}
 itk_LIB_FILE=${ITK_TARGET_FILE}
@@ -400,14 +400,14 @@ itk_LIB_FILE=${ITK_TARGET_FILE}
 # library.
 #--------------------------------------------------------------------
 
-AC_SUBST(itkstub_LIB_FILE)
-AC_SUBST(itk_LIB_FILE)
-AC_SUBST(SHLIB_LD_LIBS)
+AC_SUBST([itkstub_LIB_FILE])dnl
+AC_SUBST([itk_LIB_FILE])dnl
+AC_SUBST([SHLIB_LD_LIBS])dnl
 
 #--------------------------------------------------------------------
 # Find tclsh so that we can run pkg_mkIndex to generate the pkgIndex.tcl
-# file during the install process.  Don't run the TCLSH_PROG through
-# ${CYGPATH} because it's being used directly by make.
+# file during the install process.  Do not run the TCLSH_PROG through
+# ${CYGPATH} because it is being used directly by make.
 # Require that we use a tclsh shell version 8.2 or later since earlier
 # versions have bugs in the pkg_mkIndex routine.
 #--------------------------------------------------------------------
@@ -454,6 +454,11 @@ fi
 # Finally, substitute all of the various values into the Makefile.
 #--------------------------------------------------------------------
 
+if test "x${IWIDGETS_SRC_DIR}" = "x"; then
+  test -z "${IWIDGETS_SRC_DIR}" && export IWIDGETS_SRC_DIR=../iwidgets
+fi
+AC_SUBST([IWIDGETS_SRC_DIR])dnl
+
 # CYGNUS LOCAL
 
 # Note: The itkConfig.sh file below is not included in the net release.
@@ -461,19 +466,19 @@ fi
 # version of itkConfig.sh.
 
 ITCL_VERSION=${VERSION}
-AC_SUBST(ITCL_VERSION)
+AC_SUBST([ITCL_VERSION])dnl
 
 ITCL_MAJOR_VERSION=${MAJOR_VERSION}
-AC_SUBST(ITCL_MAJOR_VERSION)
+AC_SUBST([ITCL_MAJOR_VERSION])dnl
 
 ITCL_MINOR_VERSION=${MINOR_VERSION}
-AC_SUBST(ITCL_MINOR_VERSION)
+AC_SUBST([ITCL_MINOR_VERSION])dnl
 
 ITCL_RELEASE_LEVEL=${PATCHLEVEL}
-AC_SUBST(ITCL_RELEASE_LEVEL)
+AC_SUBST([ITCL_RELEASE_LEVEL])dnl
 
 ITK_SRC_DIR=${ITK_SRC_DIR_NATIVE}
-AC_SUBST(ITK_SRC_DIR)
+AC_SUBST([ITK_SRC_DIR])dnl
 
 AC_CONFIG_FILES([Makefile \
 	itkConfig.sh \

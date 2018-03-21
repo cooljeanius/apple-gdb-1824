@@ -46,8 +46,8 @@ case "`uname -s`" in
     ;;
 esac
 
-AC_SUBST(CYGPATH)
-AC_SUBST(RELPATH)
+AC_SUBST([CYGPATH])
+AC_SUBST([RELPATH])
 
 #--------------------------------------------------------------------
 #   See if there was a command-line option for where Tcl is;  if
@@ -70,12 +70,13 @@ SC_LOAD_TKCONFIG
 #   not, search for Itcl.
 #--------------------------------------------------------------------
 
-AC_ARG_WITH(itcl, [  --with-itcl=DIR         use Itcl 3.0 binaries from DIR],
-        itcl_search=$withval, itcl_search=`cd ${srcdir}/../itcl; pwd`)
+AC_ARG_WITH([itcl],
+        [AS_HELP_STRING([--with-itcl=DIR],[use Itcl 3.0 binaries from DIR])],
+        [itcl_search=${withval}],[itcl_search=`cd ${srcdir}/../itcl; pwd`])dnl
 
 ITCL_LIB_DIR=""
-for dir in $exec_prefix/lib $TCL_LIB_DIR $itcl_search ; do
-    if test -r $dir/library/itcl.tcl; then
+for dir in ${exec_prefix}/lib $TCL_LIB_DIR $itcl_search ; do
+    if test -r ${dir}/library/itcl.tcl; then
         ITCL_LIB_DIR=$dir
         ITCL_SRC_DIR=$dir
         break
@@ -83,7 +84,7 @@ for dir in $exec_prefix/lib $TCL_LIB_DIR $itcl_search ; do
 done
 
 if test -z "$ITCL_LIB_DIR"; then
-    AC_MSG_ERROR(Can't find Itcl libraries.  Use --with-itcl to specify the directory containing itcl.tcl on your system.)
+    AC_MSG_ERROR([Cannot find Itcl libraries.  Use --with-itcl to specify the directory containing itcl.tcl on your system.])
 fi
 
 #--------------------------------------------------------------------
@@ -91,12 +92,13 @@ fi
 #   not, search for Itk.
 #--------------------------------------------------------------------
 
-AC_ARG_WITH(itk, [  --with-itk=DIR          use Itk 3.0 binaries from DIR],
-        itk_search=$withval, itk_search=`cd ${srcdir}/../itk; pwd`)
+AC_ARG_WITH([itk],
+        [AS_HELP_STRING([--with-itk=DIR],[use Itk 3.0 binaries from DIR])],
+        [itk_search=${withval}],[itk_search=`cd ${srcdir}/../itk; pwd`])dnl
 
 ITK_LIB_DIR=""
-for dir in $exec_prefix/lib $TCL_LIB_DIR $itk_search ; do
-    if test -r $dir/library/itk.tcl; then
+for dir in ${exec_prefix}/lib $TCL_LIB_DIR $itk_search ; do
+    if test -r ${dir}/library/itk.tcl; then
         ITK_LIB_DIR=$dir
         ITK_SRC_DIR=$dir
         break
@@ -104,7 +106,7 @@ for dir in $exec_prefix/lib $TCL_LIB_DIR $itk_search ; do
 done
 
 if test -z "$ITK_LIB_DIR"; then
-    AC_MSG_ERROR(Can't find Itk libraries.  Use --with-itk to specify the directory containing itk.tcl on your system.)
+    AC_MSG_ERROR([Cannot find Itk libraries.  Use --with-itk to specify the directory containing itk.tcl on your system.])
 fi
 
 #--------------------------------------------------------------------
@@ -130,20 +132,23 @@ fi
 #--------------------------------------------------------------------
 #   Fill in template files with the proper info.
 #--------------------------------------------------------------------
-#AC_SUBST(BUILD_DIR)
-AC_SUBST(TCL_LIB_DIR)
-AC_SUBST(TCL_SRC_DIR)
-AC_SUBST(TK_LIB_DIR)
-AC_SUBST(TK_SRC_DIR)
-AC_SUBST(ITCL_LIB_DIR)
-AC_SUBST(ITCL_SRC_DIR)
-AC_SUBST(ITK_LIB_DIR)
-AC_SUBST(ITK_SRC_DIR)
+AC_SUBST([BUILD_DIR])dnl
+AC_SUBST([TCL_LIB_DIR])dnl
+AC_SUBST([TCL_SRC_DIR])dnl
+AC_SUBST([TK_LIB_DIR])dnl
+AC_SUBST([TK_SRC_DIR])dnl
+AC_SUBST([ITCL_LIB_DIR])dnl
+AC_SUBST([ITCL_SRC_DIR])dnl
+AC_SUBST([ITK_LIB_DIR])dnl
+AC_SUBST([ITK_SRC_DIR])dnl
 
-#AC_SUBST(ITCL_VERSION)
-#AC_SUBST(IWIDGETS_VERSION)
-#AC_SUBST(IWIDGETS_LIBRARY)
-#AC_SUBST(IWIDGETS_SRC_DIR)
+if test "x${IWIDGETS_SRC_DIR}" = "x"; then
+  test -z "${IWIDGETS_SRC_DIR}" && export IWIDGETS_SRC_DIR="`cd ${srcdir}; pwd`"
+fi
+AC_SUBST([ITCL_VERSION])dnl
+AC_SUBST([IWIDGETS_VERSION])dnl
+AC_SUBST([IWIDGETS_LIBRARY])dnl
+AC_SUBST([IWIDGETS_SRC_DIR])dnl
 
 AC_CONFIG_FILES([Makefile \
 	iwidgets.tcl \

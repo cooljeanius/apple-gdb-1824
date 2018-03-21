@@ -102,7 +102,7 @@ if test "x${ac_cv_prog_ac_ct_RANLIB}" = "x" -a "x${RANLIB}" = "x"; then
 fi
 
 m4_ifdef([AM_PROG_AR],[
-  AM_PROG_AR
+  AM_PROG_AR dnl# for libgnu.a
 ],[
   AC_CHECK_TOOLS([AR],[ar gar])dnl
 ])dnl
