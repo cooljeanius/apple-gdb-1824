@@ -491,6 +491,8 @@ end:
     }
 }
 
+/* FIXME: ld: warning: could not create compact unwind for _sym_read_type:
+ * stack subq instruction is too different from dwarf stack size */
 static void
 sym_read_type(struct objfile *objfile, struct type **typevec,
               unsigned long ntypes, struct type *itype,

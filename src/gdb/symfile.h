@@ -25,6 +25,8 @@
 
 #include "ansidecl.h"
 
+#include "defs.h" /* for sect_a_i_t */
+
 /* APPLE LOCAL: Need domain_enum decl from symtab.h */
 #include "symtab.h"
 
@@ -215,9 +217,7 @@ extern struct section_addr_info *alloc_section_addr_info (size_t
 
 /* Return a freshly allocated copy of ADDRS.  The section names, if
    any, are also freshly allocated copies of those in ADDRS.  */
-extern struct section_addr_info *(copy_section_addr_info
-                                  (struct section_addr_info *addrs))
-  ATTRIBUTE_W_U_R;
+extern sect_a_i_t *copy_section_addr_info(sect_a_i_t *addrs) ATTRIBUTE_W_U_R;
 
 /* Build (allocate and populate) a section_addr_info struct from an
    existing section table.  */

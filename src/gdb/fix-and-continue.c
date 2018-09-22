@@ -376,9 +376,9 @@ fix_command(const char *args, int from_tty)
   bundle_filename = argv[0];
   source_filename = argv[1];
 
-  if (!source_filename || (strlen(source_filename) == 0) ||
-      !bundle_filename || (strlen(bundle_filename) == 0))
-    error ("%s", usage);
+  if (!source_filename || (strlen(source_filename) == 0)
+      || !bundle_filename || (strlen(bundle_filename) == 0))
+    error("%s", usage);
 
   /* Ignore the third argument:  Object file name
    * This was needed for ZeroLink suport back when ZeroLink existed: */
@@ -400,14 +400,16 @@ void
 fix_command_1(const char *source_filename, const char *bundle_filename,
               const char *solib_filename)
 {
+  /* FIXME: ld: warning: could not create compact unwind for _fix_command_1:
+   * stack subq instruction is too different from dwarf stack size */
   struct fixinfo *cur;
   struct cleanup *wipe;
   char tmpbuf[MAXPATHLEN];
   char *fn;
 
   /* source_filename and bundle_filename must both be set: */
-  if (source_filename == NULL || *source_filename == '\0' ||
-      bundle_filename == NULL || *bundle_filename == '\0')
+  if ((source_filename == NULL) || (*source_filename == '\0')
+      || (bundle_filename == NULL) || (*bundle_filename == '\0'))
     error(_("Source or bundle filename not provided."));
 
   if (bundle_filename && *bundle_filename == '\0')
@@ -421,9 +423,9 @@ fix_command_1(const char *source_filename, const char *bundle_filename,
      To text, copy a project like Sketch into /tmp and try fixing it over
      there.  (with /tmp really being a soft-link to /private/tmp). */
 
-  /* tilde_expand () from readline returns xmalloc'ed memory.  */
+  /* tilde_expand() from readline returns xmalloc'ed memory.  */
 
-  source_filename = tilde_expand (source_filename);
+  source_filename = tilde_expand(source_filename);
   if (source_filename == NULL)
     error ("Source filename not found.");
 
@@ -485,7 +487,7 @@ fix_command_1(const char *source_filename, const char *bundle_filename,
 
   wipe = set_current_language (source_filename);
 
-  /* FIXME: Should use a cleanup to free cur if it's a newly allocated
+  /* FIXME: Should use a cleanup to free cur if it is/was a newly allocated
      fixinfo and we bail before the end.  cf the documentation around
      the 'complete' field and free_half_finished_fixinfo().  */
 
@@ -493,24 +495,25 @@ fix_command_1(const char *source_filename, const char *bundle_filename,
   cur->bundle_filename = bundle_filename;
   cur->bundle_basename = getbasename (bundle_filename);
 
-  /* Make sure the original objfile that we're 'fixing'
-     has its load level set so debug info is being read in.. */
+  /* Make sure the original objfile that we are 'fixing'
+     has its load level set so debug info is being read in: */
   if (solib_filename)
-    raise_objfile_load_level (find_objfile_by_name (solib_filename, 1));
+    raise_objfile_load_level(find_objfile_by_name(solib_filename, 1));
 
-  find_original_object_file_name (cur);
+  find_original_object_file_name(cur);
 
-  pre_load_and_check_file (cur);
+  pre_load_and_check_file(cur);
 
-  get_fixed_file (cur);
+  get_fixed_file(cur);
 
-  mark_previous_fixes_obsolete (cur);
+  mark_previous_fixes_obsolete(cur);
 
-  do_final_fix_fixups (cur);
+  do_final_fix_fixups(cur);
 
-  print_active_functions (cur);
+  print_active_functions(cur);
 
-  do_cleanups (wipe);
+  do_cleanups(wipe);
+  return;
 }
 
 /* Step through all previously fixed versions of this .o file and
@@ -1026,7 +1029,7 @@ find_orig_static_symbols (struct fixinfo *cur,
       f_symtab = find_symtab_by_name(f_objfile, cur->canonical_source_filename);
 
       gdb_assert(f_symtab != NULL);
-      
+
       static_bl = BLOCKVECTOR_BLOCK(BLOCKVECTOR(f_symtab), STATIC_BLOCK);
       global_bl = BLOCKVECTOR_BLOCK(BLOCKVECTOR(f_symtab), GLOBAL_BLOCK);
 

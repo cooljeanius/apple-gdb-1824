@@ -425,7 +425,7 @@ static bfd_boolean
 stab_push_defined_type (struct stab_write_handle *info, long lindex,
 			unsigned int size)
 {
-  char buf[20];
+  char buf[21];
 
   snprintf(buf, sizeof(buf), "%ld", lindex);
   return stab_push_string (info, buf, lindex, FALSE, size);
@@ -589,7 +589,7 @@ stab_empty_type (void *p)
   else
     {
       long lindex;
-      char buf[40];
+      char buf[42];
 
       lindex = info->type_index;
       ++info->type_index;
@@ -612,7 +612,7 @@ stab_void_type (void *p)
   else
     {
       long lindex;
-      char buf[40];
+      char buf[42];
 
       lindex = info->type_index;
       ++info->type_index;
@@ -732,7 +732,7 @@ static bfd_boolean
 stab_complex_type (void *p, unsigned int size)
 {
   struct stab_write_handle *info = (struct stab_write_handle *) p;
-  char buf[50];
+  char buf[57];
   long lindex;
 
   lindex = info->type_index;
@@ -1484,7 +1484,7 @@ stab_start_class_type (void *p, const char *tag, unsigned int id, bfd_boolean st
       if (ownvptr)
 	{
 	  assert(info->type_stack->index > 0);
-	  vtable_len = 20UL;
+	  vtable_len = 23UL;
 	  vtable = (char *)xmalloc(vtable_len);
 	  snprintf(vtable, vtable_len, "~%%%ld", info->type_stack->index);
 	}

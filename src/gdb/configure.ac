@@ -3173,10 +3173,11 @@ build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
 -Wscalar-storage-order -Wimplicit-fallthrough=3 \
 -Wformat-overflow=2 -Wformat-truncation=2 \
 -Wexpansion-to-defined -Wint-in-bool-context -Wbool-operation \
--Wduplicated-branches -Wstringop-overflow=2 \
+-Wduplicated-branches -Wstringop-overflow=2 -Wstringop-truncation=2 \
 -Wenum-conversion -Wbuiltin-declaration-mismatch \
 -Walloc-zero -Walloc-size-larger-than=2147483647 \
--Wmultistatement-macros -Wpacked-not-aligned -Wundef -Wunused-macros"
+-Wmultistatement-macros -Wif-not-aligned -Wpacked-not-aligned \
+-Wundef -Wunused-macros"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -3190,7 +3191,7 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++ \
 -Wsized-deallocation -Wplacement-new=2 -Wshadow-compatible-local \
 -Wbuiltin-function-redefined -Waligned-new=all -Wsynth -Wcatch-value \
--Wclass-memaccess -Wnon-pod-varargs"
+-Wclass-memaccess -Wnon-pod-varargs -Wmissing-attributes -Wdeprecated-copy"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -3406,6 +3407,7 @@ fi
 #  * -Wfloat-equal
 #  * -Wsuggest-attribute=malloc (triggers on generated code; unsure how to
 #    silence false positives)
+#  * -Wcast-function-type (I dislike it)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)

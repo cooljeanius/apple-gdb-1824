@@ -65,11 +65,11 @@
 # include "macosx-tdep.h"
 #endif /* MACOSX_DYLD */
 
-#if !(defined(__i386) || defined(__i386__) || defined(_I386))
+#if !(defined(__i386) || defined(__i386__) || defined(_I386) || defined(TARGET_I386))
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(__APPLE__)
 #  warning "i386-tdep.c is an i386-specific file but __i386__ is undefined"
 # endif /* __GNUC__ && !__STRICT_ANSI__ && __APPLE__ */
-#endif /* !(__i386 || __i386__ || _I386) */
+#endif /* !(__i386 || __i386__ || _I386 || TARGET_I386) */
 
 /* Register names: */
 static const char *i386_register_names[] =

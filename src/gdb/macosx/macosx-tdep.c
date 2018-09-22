@@ -1614,7 +1614,7 @@ expand_kext_cstr(const char *kext_path)
 
    DebugSymbols only traffics in finding dSYMs via UUIDs - reflecting what
    we can get from Spotlight. But the DBGShellCommands may be capable of
-   returning additional informatin, such as the location to an unstripped
+   returning additional information, such as the location to an unstripped
    executable binary. We try to use that ability in this function to find
    an executable given a UUID.
 
@@ -2370,9 +2370,7 @@ EXTERN_C const bfd_arch_info_type *bfd_default_compatible
    fat file) is the one that we want. This function does NOT do that, and
    instead the code in generic_mach_o_osabi_sniffer_use_dyld does that job.
    So this function really only looks at fat archives.
-
 */
-
 static enum gdb_osabi
 generic_mach_o_osabi_sniffer_use_dyld_hint(bfd *abfd,
 					   enum bfd_architecture arch,

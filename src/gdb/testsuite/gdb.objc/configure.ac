@@ -30,22 +30,8 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
 fi
 
 # Compilers.
-AS_IF([test "x${CC}" = "x"  || test "x${CC}" != "x${MY_CC}"],[
-  test -z "${CC}"
-  AC_PROG_CC
-],[
-  test ! -z "${CC}"
-  if test "x${ac_cv_c_compiler_gnu}" = "x"; then
-    test -z "${ac_cv_c_compiler_gnu}"
-    if test "x${GCC}" = "xyes" || test "x${CC}" = "xgcc"; then
-      export ac_cv_c_compiler_gnu=yes
-    else
-      export ac_cv_c_compiler_gnu=no
-    fi
-  fi
-  AC_PROG_GCC_TRADITIONAL
-])dnl
-
+AC_PROG_CC
+AC_PROG_GCC_TRADITIONAL
 AC_PROG_OBJC
 AC_PROG_OBJCPP
 

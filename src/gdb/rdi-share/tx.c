@@ -93,6 +93,7 @@ te_status Angel_TxEngine(const struct data_packet *packet,
           }
         return TS_IN_PKT;
       }
+    /*FALLTHRU*/
     case F_DATA:
 #ifdef DO_TRACE
     __rt_trace("txe-data ");
@@ -122,6 +123,7 @@ te_status Angel_TxEngine(const struct data_packet *packet,
       return TS_IN_PKT;
     }
   }
+  /*FALLTHRU*/
   case N_ETX:
 #ifdef DO_TRACE
     __rt_trace("txe-etx\n");

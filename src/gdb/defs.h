@@ -675,8 +675,8 @@ struct cleanup *make_cleanup_ui_out_suppress_output(struct ui_out *cur_uiout);
 /* APPLE LOCAL end cleanup */
 
 struct section_addr_info;
-extern struct cleanup *(make_cleanup_free_section_addr_info
-                        (struct section_addr_info *));
+typedef struct section_addr_info sect_a_i_t;
+extern struct cleanup *make_cleanup_free_section_addr_info(sect_a_i_t *);
 
 extern struct cleanup *make_cleanup_close(int fd);
 

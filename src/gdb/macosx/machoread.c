@@ -711,6 +711,9 @@ macho_read_indirect_symbols(bfd *abfd,
                             struct bfd_mach_o_symtab_command *symtab,
                             struct objfile *objfile)
 {
+  /* FIXME: ld: warning: could not create compact unwind for
+   * _macho_read_indirect_symbols: stack subq instruction is too different from
+   * dwarf stack size */
   unsigned int i, nsyms, ret;
   asymbol sym;
   asection *bfdsec = (asection *)NULL;

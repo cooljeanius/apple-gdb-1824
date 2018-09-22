@@ -614,7 +614,7 @@ const struct language_defn c_language_defn =
   LANG_MAGIC
 };
 
-struct type **const (cplus_builtin_types[]) =
+struct type **const cplus_builtin_types[] =
 {
   &builtin_type_int,
   &builtin_type_long,

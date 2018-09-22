@@ -698,6 +698,7 @@ process_symbol_types_only(const char *string, const char *prefix,
       p += 2;
       p = strchr(p, ':');
       if (p == NULL) {
+	/* FIXME: but if p is NULL... is something backwards here? */
 	STABS_CONTINUE(&p, objfile);
 	p = strchr(p, ':');
       }

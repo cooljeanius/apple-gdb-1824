@@ -570,7 +570,7 @@ floatformat_mantissa (const struct floatformat *fmt,
   unsigned int mant_bits, mant_off;
   int mant_bits_left;
   static char res[50];
-  char buf[9];
+  char buf[17];
   enum floatformat_byteorders order;
   unsigned char newfrom[FLOATFORMAT_LARGEST_BYTES];
 

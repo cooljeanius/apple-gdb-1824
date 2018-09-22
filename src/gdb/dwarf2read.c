@@ -1065,9 +1065,9 @@ static void free_line_header(struct line_header *lh);
 static void add_file_name(struct line_header *, char *, unsigned int,
                           unsigned int, unsigned int);
 
-static struct line_header *(dwarf_decode_line_header
-                            (unsigned int offset,
-                             bfd *abfd, struct dwarf2_cu *cu));
+static struct line_header *dwarf_decode_line_header(unsigned int offset,
+						    bfd *abfd,
+						    struct dwarf2_cu *cu);
 
 static void dwarf_decode_lines(struct line_header *, char *, bfd *,
                                struct dwarf2_cu *, struct partial_symtab *);

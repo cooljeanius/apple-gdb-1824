@@ -45,7 +45,7 @@ extern void pascal_type_print_method_args(char *, const char *,
 
 /* These are in p-lang.c: */
 
-extern int 
+extern int
   is_pascal_string_type(struct type *, int *, int *, int *, int *, char **);
 
 extern void pascal_printchar(int, struct ui_file *);
@@ -55,7 +55,7 @@ extern void pascal_printstr(struct ui_file *, const gdb_byte *,
 
 extern struct type *pascal_create_fundamental_type(struct objfile *, int);
 
-extern struct type **const (pascal_builtin_types[]);
+extern struct type **const pascal_builtin_types[];
 
 /* These are in p-typeprint.c: */
 

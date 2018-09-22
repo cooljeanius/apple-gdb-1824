@@ -437,7 +437,7 @@ const struct op_print pascal_op_print_tab[] =
   {NULL, (enum exp_opcode)0, (enum precedence)0, 0}
 };
 
-struct type **const (pascal_builtin_types[]) =
+struct type **const pascal_builtin_types[] =
 {
   &builtin_type_int,
     &builtin_type_long,
