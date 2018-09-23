@@ -1486,6 +1486,7 @@ find_stab_function_addr(const char *namestring, const char *filename,
     p = (char *)namestring;
   n = (p - namestring);
   p = (char *)alloca(n + 2UL);
+  gdb_assert(p != NULL);
   strncpy(p, namestring, (n - 1UL));
   p[n] = 0;
 
@@ -3287,13 +3288,13 @@ end_psymtab(struct partial_symtab *pst, const char **include_list,
   for (i = 0; i < num_includes; i++)
     {
       struct partial_symtab *subpst =
-      allocate_psymtab (include_list[i], objfile);
+	allocate_psymtab(include_list[i], objfile);
 
       /* Copy the sesction_offsets array from the main psymtab. */
       subpst->section_offsets = pst->section_offsets;
       subpst->read_symtab_private =
-	(char *) obstack_alloc (&objfile->objfile_obstack,
-				sizeof (struct symloc));
+	(char *)obstack_alloc(&objfile->objfile_obstack,
+			      sizeof(struct symloc));
       subpst->texthigh = 0;
       subpst->textlow = subpst->texthigh;
       LDSYMLEN(subpst) = (int)subpst->textlow;
@@ -3302,16 +3303,18 @@ end_psymtab(struct partial_symtab *pst, const char **include_list,
       /* APPLE LOCAL: These have to be set to NULL because we do
 	 check them later.  */
 
-      PSYMTAB_OSO_NAME (subpst) = NULL;
-      PSYMTAB_OSO_PST_LIST (subpst) = NULL;
-      PSYMTAB_OSO_STATICS (subpst) = NULL;
+      PSYMTAB_OSO_NAME(subpst) = NULL;
+      PSYMTAB_OSO_PST_LIST(subpst) = NULL;
+      PSYMTAB_OSO_STATICS(subpst) = NULL;
       /* END APPLE LOCAL  */
 
       /* We could save slight bits of space by only making one of these,
          shared by the entire set of include files.  FIXME-someday.  */
-      subpst->dependencies = (struct partial_symtab **)
-	obstack_alloc (&objfile->objfile_obstack,
-		       sizeof (struct partial_symtab *));
+      subpst->dependencies =
+	((struct partial_symtab **)
+	 obstack_alloc(&objfile->objfile_obstack,
+		       sizeof(struct partial_symtab *)));
+      gdb_assert(subpst->dependencies != NULL);
       subpst->dependencies[0] = pst;
       subpst->number_of_dependencies = 1;
 
@@ -4869,6 +4872,10 @@ read_ofile_symtab_from_oso(struct partial_symtab *pst, struct bfd *oso_bfd)
 
 	      offset = (SYMBOL_VALUE_ADDRESS(fun_psym) - nlist.n_value
 			- objfile_text_section_offset(objfile));
+
+	      if (offset == INVALID_ADDRESS) {
+		warning(_("Invalid offset"));
+	      }
 
 	      symbuf_idx = old_symbuf_idx;
 	    }

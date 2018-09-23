@@ -856,10 +856,11 @@ static struct frame_info *current_frame;
 static struct obstack frame_cache_obstack;
 
 void *
-frame_obstack_zalloc (unsigned long size)
+frame_obstack_zalloc(unsigned long size)
 {
-  void *data = obstack_alloc (&frame_cache_obstack, size);
-  memset (data, 0, size);
+  void *data = obstack_alloc(&frame_cache_obstack, size);
+  gdb_assert(data != NULL);
+  memset(data, 0, size);
   return data;
 }
 
@@ -1634,10 +1635,10 @@ get_frame_type(struct frame_info *frame)
        provides the frame's type.  */
     frame->unwind = frame_unwind_find_by_frame(frame->next,
 					       &frame->prologue_cache);
-  
+
   gdb_assert(frame != NULL);
   gdb_assert(frame->unwind != NULL);
-  
+
   return frame->unwind->type;
 }
 

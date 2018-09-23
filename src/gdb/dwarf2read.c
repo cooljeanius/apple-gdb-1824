@@ -2567,6 +2567,7 @@ create_all_comp_units (struct objfile *objfile)
       this_cu = ((struct dwarf2_per_cu_data *)
                  obstack_alloc(&objfile->objfile_obstack,
                                sizeof(struct dwarf2_per_cu_data)));
+      gdb_assert(this_cu != NULL);
       memset(this_cu, 0, sizeof(*this_cu));
       this_cu->offset = offset;
       this_cu->length = (cu_header.length + cu_header.initial_length_size);
@@ -2589,6 +2590,7 @@ create_all_comp_units (struct objfile *objfile)
     ((struct dwarf2_per_cu_data **)
      obstack_alloc(&objfile->objfile_obstack,
                    (n_comp_units * sizeof(struct dwarf2_per_cu_data *))));
+  gdb_assert(dwarf2_per_objfile->all_comp_units != NULL);
   memcpy(dwarf2_per_objfile->all_comp_units, all_comp_units,
 	 (n_comp_units * sizeof(struct dwarf2_per_cu_data *)));
   xfree(all_comp_units);

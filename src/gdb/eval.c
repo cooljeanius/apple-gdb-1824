@@ -759,6 +759,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	}
 
       argvec = (struct value **)alloca(sizeof(struct value *) * nargs);
+      memset(argvec, 0, sizeof(struct value *));
       for (tem = 0; tem < nargs; tem++)
 	{
 	  /* Ensure that array expressions are coerced into pointer
@@ -856,7 +857,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	nargs = (int)exp->elts[pc + 2].longconst;
 	argvec = (struct value **)alloca(sizeof(struct value *)
                                          * (nargs + 5UL));
-
+	memset(argvec, 0, sizeof(struct value *));
 	(*pos) += 3;
 
 	selector_type = lookup_pointer_type(builtin_type_void_data_ptr);
@@ -1082,6 +1083,7 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
       /* Allocate arg vector, including space for the function to be
        * called in argvec[0] and a terminating NULL: */
       argvec = (struct value **)alloca(sizeof(struct value *) * (nargs + 3));
+      memset(argvec, 0, sizeof(struct value *));
       if ((op == STRUCTOP_MEMBER) || (op == STRUCTOP_MPTR))
 	{
 	  LONGEST fnptr;
@@ -1891,7 +1893,9 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	  }
 
 	/* Now let us calculate the offset for this item: */
-	offset_item = subscript_array[ndimensions - 1];
+	if (offset_item != subscript_array[ndimensions - 1]) {
+	  offset_item = subscript_array[ndimensions - 1];
+	}
 
         /* ">= 1" should be the same as "> 0": */
 	for (i = (ndimensions - 1); i >= 1; --i) {
@@ -2094,6 +2098,10 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
     case UNOP_COMPLEMENT:
       /* C++: check for and handle destructor names.  */
       op = exp->elts[*pos].opcode;
+
+      if (op == OP_NULL) {
+	; /* ??? */
+      }
 
       arg1 = evaluate_subexp(NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)

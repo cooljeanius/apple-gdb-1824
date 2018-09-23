@@ -732,7 +732,7 @@ command_line_handler(char *rl)
   /* Copy line.  Do NOT copy null at end.  (Leaves line alone
      if this was just a newline)  */
   if (p1 != NULL)
-    while (*p1)
+    while ((p1 != NULL) && *p1)
       *p++ = *p1++;
 
   xfree(rl);			/* Allocated in readline.  */

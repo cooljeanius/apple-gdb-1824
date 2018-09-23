@@ -1766,7 +1766,7 @@ decode_type (struct coff_symbol *cs, unsigned int c_type,
 
 	  /* shift the indices down */
 	  dim = &aux->x_sym.x_fcnary.x_ary.x_dimen[0];
-	  i = 1;
+	  /* no need to set i to 1 here when it is set to 0 immediately after */
 	  n = dim[0];
 	  for (i = 0; *dim && i < DIMNUM - 1; i++, dim++)
 	    *dim = *(dim + 1);

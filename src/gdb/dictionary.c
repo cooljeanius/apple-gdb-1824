@@ -372,6 +372,7 @@ dict_create_hashed(struct obstack *obstack,
   DICT_HASHED_NBUCKETS(retval) = nbuckets;
   buckets = ((struct symbol **)
              obstack_alloc(obstack, nbuckets * sizeof(struct symbol *)));
+  gdb_assert(buckets != NULL);
   memset(buckets, 0, nbuckets * sizeof(struct symbol *));
   DICT_HASHED_BUCKETS(retval) = buckets;
 
@@ -446,8 +447,8 @@ dict_create_linear(struct obstack *obstack,
        list_counter != NULL;
        list_counter = list_counter->next)
     {
-      for (i = list_counter->nsyms - 1;
-	   i >= 0;
+      for (i = (list_counter->nsyms - 1);
+	   (i >= 0) && (syms != NULL);
 	   --i, --j)
 	{
 	  syms[j] = list_counter->symbol[i];
@@ -691,8 +692,12 @@ insert_symbol_hashed(struct dictionary *dict, struct symbol *sym)
   }
 
   hash_index = (msymbol_hash_iw(SYMBOL_SEARCH_NAME(sym)) % i);
-  sym->hash_next = buckets[hash_index];
-  buckets[hash_index] = sym;
+  sym->hash_next = ((buckets != NULL) ? buckets[hash_index] : NULL);
+  if (buckets != NULL) {
+    buckets[hash_index] = sym;
+  } else {
+    (void)sym;
+  }
 }
 
 static int

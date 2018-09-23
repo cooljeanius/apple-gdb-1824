@@ -1122,10 +1122,13 @@ end_symtab (CORE_ADDR end_addr, struct objfile *objfile, int section)
 	  if (subfile->dirname)
 	    {
 	      /* Reallocate the dirname on the symbol obstack */
-	      symtab->dirname = (char *)
-		obstack_alloc (&objfile->objfile_obstack,
-			       strlen (subfile->dirname) + 1);
-	      strcpy (symtab->dirname, subfile->dirname);
+	      symtab->dirname = ((char *)
+				 obstack_alloc(&objfile->objfile_obstack,
+					       (strlen(subfile->dirname)
+						+ 1UL)));
+	      gdb_assert(symtab != NULL);
+	      gdb_assert(symtab->dirname != NULL);
+	      strcpy(symtab->dirname, subfile->dirname);
 	    }
 	  else
 	    {

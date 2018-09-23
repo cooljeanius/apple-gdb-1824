@@ -264,6 +264,8 @@ f_type_print_varspec_suffix(struct type *type, struct ui_file *stream,
     default:
       break;
     }
+
+  (void)lower_bound_was_default;
 }
 
 static void

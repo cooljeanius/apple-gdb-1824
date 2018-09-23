@@ -141,8 +141,12 @@ c_val_print (struct type *type, const gdb_byte *valaddr, int embedded_offset,
 		  len = temp_len;
 		}
 
-	      LA_PRINT_STRING (stream, valaddr + embedded_offset, len, eltlen, 0);
+	      LA_PRINT_STRING(stream, (valaddr + embedded_offset), len, eltlen,
+			      0);
 	      i = len;
+	      if (i == 0U) {
+		; /* ??? */
+	      }
 	    }
 	  else
 	    {

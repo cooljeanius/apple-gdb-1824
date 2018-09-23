@@ -86,7 +86,7 @@ print_subexp_standard (struct expression *exp, int *pos,
 
     case OP_SCOPE:
       myprec = PREC_PREFIX;
-      assoc = 0;
+      /* assoc was already set to 0 above; no need to do it again here */
       fputs_filtered(type_name_no_tag(exp->elts[pc + 1].type), stream);
       fputs_filtered("::", stream);
       nargs = longest_to_int(exp->elts[pc + 2].longconst);
@@ -536,6 +536,8 @@ print_subexp_standard (struct expression *exp, int *pos,
 
   if ((int) myprec < (int) prec)
     fputs_filtered (")", stream);
+
+  (void)assoc;
 }
 
 /* Return the operator corresponding to opcode OP as

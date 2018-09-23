@@ -1873,10 +1873,11 @@ decode_frame_entry_1(struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
       if (cie_pointer >= unit->dwarf_frame_size)
 	return NULL;
 
-      fde = (struct dwarf2_fde *)
-	obstack_alloc (&unit->objfile->objfile_obstack,
-		       sizeof (struct dwarf2_fde));
-      fde->cie = find_cie (unit, cie_pointer);
+      fde = ((struct dwarf2_fde *)
+	     obstack_alloc(&unit->objfile->objfile_obstack,
+			   sizeof(struct dwarf2_fde)));
+      gdb_assert(fde != NULL);
+      fde->cie = find_cie(unit, cie_pointer);
       if (fde->cie == NULL)
 	{
 	  decode_frame_entry (unit, unit->dwarf_frame_buffer + cie_pointer,

@@ -1727,7 +1727,11 @@ enum_type(struct dieinfo *dip, struct objfile *objfile)
 	  /* Copy the saved-up fields into the field vector: */
 	  for (n = 0; (n < nfields) && (list != NULL); list = list->next)
 	    {
-	      TYPE_FIELD(type, n++) = list->field;
+	      if ((TYPE_MAIN_TYPE(type) != NULL)
+		  && (TYPE_MAIN_TYPE(type)->fields != NULL))
+		{
+		  TYPE_FIELD(type, n++) = list->field;
+		}
 	    }
 	}
     }
@@ -3385,6 +3389,8 @@ create_name(const char *name, struct obstack *obstackp)
 
   length = (strlen(name) + 1UL);
   newname = (char *)obstack_alloc(obstackp, length);
+  gdb_assert(newname != NULL);
+  gdb_assert(name != NULL);
   strcpy(newname, name);
   return (newname);
 }

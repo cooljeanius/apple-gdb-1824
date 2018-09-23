@@ -336,6 +336,7 @@ location_completer(const char *text, char *word)
       list = make_symbol_completion_list(orig_text, word);
     }
 
+  (void)quote_found;
   return list;
 }
 

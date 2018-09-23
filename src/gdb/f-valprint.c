@@ -513,7 +513,8 @@ f_val_print (struct type *type, const gdb_byte *valaddr, int embedded_offset,
 	print_scalar_formatted(valaddr, type, format, 0, stream);
       else
 	{
-	  val = 0;
+	  /* val is always set in each of the breaking cases, so there is no
+	   * need to set it to 0 before the switch */
 	  switch (TYPE_LENGTH(type))
 	    {
 	    case 1:

@@ -1845,7 +1845,7 @@ has_negatives(struct type *type)
 
 struct value *
 ada_value_primitive_packed_val(struct value *obj, const gdb_byte *valaddr,
-			       long offset, int bit_offset, int bit_size,
+			       long offset, int bit_offset, size_t bit_size,
                                struct type *type)
 {
   struct value *v;
@@ -1853,9 +1853,9 @@ ada_value_primitive_packed_val(struct value *obj, const gdb_byte *valaddr,
     targ,                       /* Index into the target area */
     srcBitsLeft,                /* Number of source bits left to move */
     nsrc, ntarg,                /* Number of source and target bytes */
-    unusedLS,                   /* Number of bits in next significant
+    unusedLS;                   /* Number of bits in next significant
                                    byte of source that are unused */
-    accumSize;                  /* Number of meaningful bits in accum */
+  size_t accumSize;             /* Number of meaningful bits in accum */
   unsigned char *bytes;         /* First byte containing data to unpack */
   unsigned char *unpacked;
   unsigned long accum;          /* Staging area for bits being transferred */
@@ -1913,7 +1913,7 @@ ada_value_primitive_packed_val(struct value *obj, const gdb_byte *valaddr,
   gdb_assert(type != NULL);
   ntarg = TYPE_LENGTH(type);
   sign = 0;
-  if (bit_size == 0)
+  if (bit_size == 0UL)
     {
       memset(unpacked, 0, TYPE_LENGTH(type));
       return v;
@@ -1921,28 +1921,35 @@ ada_value_primitive_packed_val(struct value *obj, const gdb_byte *valaddr,
   else if (BITS_BIG_ENDIAN)
     {
       src = (len - 1);
-      if (has_negatives(type)
+      if (has_negatives(type) && (bytes != NULL)
           && ((bytes[0] << bit_offset) & (1 << (HOST_CHAR_BIT - 1))))
         sign = ~0;
 
       unusedLS =
-        (HOST_CHAR_BIT - (bit_size + bit_offset) % HOST_CHAR_BIT)
-        % HOST_CHAR_BIT;
+        ((HOST_CHAR_BIT - ((bit_size + bit_offset) % HOST_CHAR_BIT))
+	 % HOST_CHAR_BIT);
 
       switch (TYPE_CODE (type))
         {
         case TYPE_CODE_ARRAY:
         case TYPE_CODE_UNION:
         case TYPE_CODE_STRUCT:
-          /* Non-scalar values must be aligned at a byte boundary...  */
-          accumSize =
-            (HOST_CHAR_BIT - bit_size % HOST_CHAR_BIT) % HOST_CHAR_BIT;
-          /* ... And are placed at the beginning (most-significant) bytes
-             of the target.  */
-          targ = src;
+	  {
+	    const size_t subtrahend = (bit_size % HOST_CHAR_BIT);
+	    if (subtrahend < HOST_CHAR_BIT) {
+	      /* Non-scalar values must be aligned at a byte boundary...  */
+	      accumSize =
+		((HOST_CHAR_BIT - subtrahend) % HOST_CHAR_BIT);
+	    } else {
+	      accumSize = ((HOST_CHAR_BIT - 0) % HOST_CHAR_BIT);
+	    }
+	    /* ... And are placed at the beginning (most-significant) bytes
+	       of the target.  */
+	    targ = src;
+	  }
           break;
         default:
-          accumSize = 0;
+          accumSize = 0UL;
           targ = TYPE_LENGTH (type) - 1;
           break;
         }
@@ -1953,9 +1960,10 @@ ada_value_primitive_packed_val(struct value *obj, const gdb_byte *valaddr,
 
       src = targ = 0;
       unusedLS = bit_offset;
-      accumSize = 0;
+      accumSize = 0UL;
 
-      if (has_negatives (type) && (bytes[len - 1] & (1 << sign_bit_offset)))
+      if (has_negatives(type) && (bytes != NULL)
+	  && (bytes[len - 1] & (1 << sign_bit_offset)))
         sign = ~0;
     }
 
@@ -1969,13 +1977,24 @@ ada_value_primitive_packed_val(struct value *obj, const gdb_byte *valaddr,
                  ? HOST_CHAR_BIT : srcBitsLeft)) - 1U);
       /* Sign-extend bits for this byte: */
       unsigned int signMask = (sign & ~unusedMSMask);
+      gdb_assert(bytes != NULL);
       accum |=
         ((((bytes[src] >> unusedLS) & unusedMSMask) | signMask) << accumSize);
-      accumSize += (HOST_CHAR_BIT - unusedLS);
-      if (accumSize >= HOST_CHAR_BIT)
+      if ((HOST_CHAR_BIT - unusedLS) > 0) {
+	accumSize += (HOST_CHAR_BIT - unusedLS);
+      } else if (HOST_CHAR_BIT > 0) {
+	accumSize += HOST_CHAR_BIT;
+      } else {
+	accumSize += 0;
+      }
+      if ((accumSize >= HOST_CHAR_BIT) && (accumSize > 0))
         {
           unpacked[targ] = (accum & ~(~0UL << HOST_CHAR_BIT));
-          accumSize -= HOST_CHAR_BIT;
+	  if (HOST_CHAR_BIT < accumSize) {
+	    accumSize -= HOST_CHAR_BIT;
+	  } else {
+	    accumSize -= 0;
+	  }
           accum >>= HOST_CHAR_BIT;
           ntarg -= 1;
           targ += delta;
@@ -1985,11 +2004,15 @@ ada_value_primitive_packed_val(struct value *obj, const gdb_byte *valaddr,
       nsrc -= 1;
       src += delta;
     }
-  while (ntarg > 0)
+  while ((ntarg > 0) && (accumSize > 0UL))
     {
       accum |= (sign << accumSize);
       unpacked[targ] = (accum & ~(~0UL << HOST_CHAR_BIT));
-      accumSize -= HOST_CHAR_BIT;
+      if (HOST_CHAR_BIT < accumSize) {
+	accumSize -= HOST_CHAR_BIT;
+      } else {
+	accumSize -= 0;
+      }
       accum >>= HOST_CHAR_BIT;
       ntarg -= 1;
       targ += delta;
