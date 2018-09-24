@@ -1902,6 +1902,9 @@ captured_mi_execute_command(struct ui_out *uiout, void *data)
   struct ui_out *saved_uiout = uiout;
   struct mi_timestamp cmd_finished;
 
+  /* This memset() solves an unintialized usage in wallclock_diff(): */
+  memset(&cmd_finished, 0, sizeof(struct mi_timestamp));
+
   switch (context->op)
     {
     case MI_COMMAND:
@@ -2911,6 +2914,7 @@ static long
 wallclock_diff(struct mi_timestamp *start, struct mi_timestamp *end)
 {
   struct timeval result;
+  memset(&result, 0, sizeof(struct timeval));
   timersub(&end->wallclock, &start->wallclock, &result);
   return result.tv_sec * 1000000 + result.tv_usec;
 }

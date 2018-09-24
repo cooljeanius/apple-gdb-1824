@@ -2787,6 +2787,7 @@ actually_do_stack_frame_prologue(unsigned int count_limit,
  count_finish:
   *out_fi = fi;
   *count = frames_printed;
+  (void)pc;
   return more_frames;
 }
 

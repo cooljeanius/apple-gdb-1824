@@ -49,6 +49,8 @@
 
 #include "symread.h"
 
+#include "gdb_assert.h"
+
 #if defined(HAVE_LIMITS_H) && !defined(_I386_LIMITS_H_)
 # include <limits.h>
 #endif /* HAVE_LIMITS_H && !_I386_LIMITS_H_ */
@@ -804,7 +806,7 @@ sym_read_contained_variables(struct objfile *objfile,
           lsym =
             (struct symbol *)obstack_alloc(&objfile->objfile_obstack,
                                            sizeof(struct symbol));
-
+	  gdb_assert(lsym != NULL);
           SYMBOL_TYPE(lsym) = typevec[cventry.entry.tte_index];
           SYMBOL_LINKAGE_NAME(lsym) =
             (char *)obstack_alloc(&objfile->objfile_obstack, nname[0] + 1);

@@ -37,6 +37,7 @@
 #include "completer.h"
 #include "dwarf2read.h"
 #include "macosx-tdep.h"
+/* "gdb_assert.h" is included later */
 
 /* For the gdbarch_tdep structure so we can get the wordsize. */
 #if defined(TARGET_POWERPC)
@@ -293,9 +294,11 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
       asection *data_sect = bfd_get_section_by_name(sym_bfd, data_name);
       if (data_sect)
         {
-          DBX_DATA_SECTION(objfile) = (struct obj_section *)
-                            obstack_alloc(&objfile->objfile_obstack,
-                                    sizeof(struct obj_section));
+          DBX_DATA_SECTION(objfile) =
+	    ((struct obj_section *)
+	     obstack_alloc(&objfile->objfile_obstack,
+			   sizeof(struct obj_section)));
+	  gdb_assert(DBX_DATA_SECTION(objfile) != NULL);
           DBX_DATA_SECTION(objfile)->addr =
                                  bfd_section_vma(sym_bfd, data_sect);
           DBX_DATA_SECTION(objfile)->endaddr =
@@ -311,9 +314,11 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
 	     DBX_DATA_SECTION()->the_bfd_section without checking that
 	     DBX_DATA_SECTION exists. It is easier to just fake up one
 	     here.  */
-          DBX_DATA_SECTION(objfile) = (struct obj_section *)
-                            obstack_alloc(&objfile->objfile_obstack,
-                                    sizeof(struct obj_section));
+          DBX_DATA_SECTION(objfile) =
+	    ((struct obj_section *)
+	     obstack_alloc(&objfile->objfile_obstack,
+			   sizeof(struct obj_section)));
+	  gdb_assert(DBX_DATA_SECTION(objfile) != NULL);
           DBX_DATA_SECTION(objfile)->addr = INVALID_ADDRESS;
           DBX_DATA_SECTION(objfile)->endaddr = INVALID_ADDRESS;
           DBX_DATA_SECTION(objfile)->objfile = objfile;
@@ -329,9 +334,11 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
                                                         coalesced_text_name);
       if (textcoal_sect)
         {
-          DBX_COALESCED_TEXT_SECTION(objfile) = (struct obj_section *)
-                             obstack_alloc(&objfile->objfile_obstack,
-                                     sizeof(struct obj_section));
+          DBX_COALESCED_TEXT_SECTION(objfile) =
+	    ((struct obj_section *)
+	     obstack_alloc(&objfile->objfile_obstack,
+			   sizeof(struct obj_section)));
+	  gdb_assert(DBX_COALESCED_TEXT_SECTION(objfile) != NULL);
           DBX_COALESCED_TEXT_SECTION(objfile)->addr =
                                   bfd_section_vma(sym_bfd, textcoal_sect);
           DBX_COALESCED_TEXT_SECTION(objfile)->endaddr =
@@ -348,9 +355,11 @@ macho_build_psymtabs(struct objfile *objfile, int mainline,
 	     DBX_COALESCED_TEXT_SECTION()->the_bfd_section without
 	     checking that DBX_COALESCED_TEXT_SECTION exists. It is
 	     easier to just fake up one here.  */
-          DBX_COALESCED_TEXT_SECTION(objfile) = (struct obj_section *)
-                             obstack_alloc(&objfile->objfile_obstack,
-                                     sizeof(struct obj_section));
+          DBX_COALESCED_TEXT_SECTION(objfile) =
+	    ((struct obj_section *)
+	     obstack_alloc(&objfile->objfile_obstack,
+			   sizeof(struct obj_section)));
+	  gdb_assert(DBX_COALESCED_TEXT_SECTION(objfile) != NULL);
           DBX_COALESCED_TEXT_SECTION(objfile)->addr = INVALID_ADDRESS;
           DBX_COALESCED_TEXT_SECTION(objfile)->endaddr = INVALID_ADDRESS;
           DBX_COALESCED_TEXT_SECTION(objfile)->objfile = objfile;

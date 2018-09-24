@@ -2347,10 +2347,11 @@ parse_partial_symbols (struct objfile *objfile)
   /* Allocate the global pending list.  */
   pending_list =
     ((struct mdebug_pending **)
-     obstack_alloc (&objfile->objfile_obstack,
-		    hdr->ifdMax * sizeof (struct mdebug_pending *)));
-  memset (pending_list, 0,
-	  hdr->ifdMax * sizeof (struct mdebug_pending *));
+     obstack_alloc(&objfile->objfile_obstack,
+		   (hdr->ifdMax * sizeof(struct mdebug_pending *))));
+  gdb_assert(pending_list != NULL);
+  memset(pending_list, 0,
+	 (hdr->ifdMax * sizeof(struct mdebug_pending *)));
 
   /* Pass 0 over external syms: swap them in.  */
   ext_block = (EXTR *) xmalloc (hdr->iextMax * sizeof (EXTR));
@@ -4773,7 +4774,7 @@ new_symbol(const char *name)
   struct symbol *s = ((struct symbol *)
 		      obstack_alloc(&current_objfile->objfile_obstack,
 				    sizeof(struct symbol)));
-
+  gdb_assert(s != NULL);
   memset(s, 0, sizeof (*s));
   SYMBOL_LANGUAGE(s) = psymtab_language;
   SYMBOL_SET_NAMES(s, name, strlen(name), current_objfile);

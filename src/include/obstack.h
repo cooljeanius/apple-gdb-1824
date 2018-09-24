@@ -201,13 +201,15 @@ extern int _obstack_memory_used(struct obstack *);
 /* Do the function-decls after the structs, but before defining the macros: */
 void obstack_init(struct obstack *obstack);
 
-void *obstack_alloc(struct obstack *obstack, int size);
+/* Not sure if ATTRIBUTE_RETURNS_NONNULL is right, but assume it is: */
+void *obstack_alloc(struct obstack *obstack, int size)
+  ATTRIBUTE_RETURNS_NONNULL;
 
 void *obstack_copy(struct obstack *obstack, void *address, int size);
 void *obstack_copy0(struct obstack *obstack, void *address, int size);
 
 void obstack_free(struct obstack *obstack, void *block);
-  
+
 /* compatibility define for `sed` stupidity: */
 #ifndef obstack_xfree
 # define obstack_xfree(o, b) obstack_free(o, b)

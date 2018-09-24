@@ -573,6 +573,8 @@ shell_escape(const char *arg, int from_tty)
       const char *user_shell;
       int setgid_ret;
 
+      /* FIXME: clang static analyzer also complains about getenv() after
+       * vfork(): */
       if ((user_shell = (const char *)getenv("SHELL")) == NULL)
 	user_shell = "/bin/sh";
 
@@ -586,7 +588,7 @@ shell_escape(const char *arg, int from_tty)
          powers; we need to drop those privileges before executing the
          inferior process.  */
       setgid_ret = setgid(getgid());
-      
+
       if (setgid_ret == -1) {
 	/* Should be either EINVAL or EPERM: */
 	warning(_("Call to setgid() failed with errno %d: %s.\n"), errno,
@@ -708,7 +710,7 @@ edit_command(const char *arg, int from_tty)
     ; /* (do nothing) */
   log10 = (1 + (int)((float)(log10 + (0 == ((m - 1) & sal.line)))
 		     / 3.32192809f));
-  
+
   if (log10 == 0) {
     ; /* ??? */
   }

@@ -553,6 +553,7 @@ kdp_uuid_and_load_addr(void)
     }
   else
     {
+      (void)actual_load_address;
       return;
     }
 

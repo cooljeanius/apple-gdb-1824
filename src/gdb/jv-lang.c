@@ -395,18 +395,24 @@ java_link_class_type(struct type *type, struct value *clas)
 
   TYPE_FIELD_PRIVATE_BITS(type) =
     (B_TYPE *)TYPE_ALLOC(type, B_BYTES(nfields));
+  gdb_assert(type != NULL);
+  gdb_assert(TYPE_CPLUS_SPECIFIC_NONULL(type) != NULL);
+  gdb_assert(TYPE_FIELD_PRIVATE_BITS(type) != NULL);
   B_CLRALL(TYPE_FIELD_PRIVATE_BITS(type), nfields);
 
   TYPE_FIELD_PROTECTED_BITS(type) =
     (B_TYPE *)TYPE_ALLOC(type, B_BYTES(nfields));
+  gdb_assert(TYPE_FIELD_PROTECTED_BITS(type) != NULL);
   B_CLRALL(TYPE_FIELD_PROTECTED_BITS(type), nfields);
 
   TYPE_FIELD_IGNORE_BITS(type) =
     (B_TYPE *)TYPE_ALLOC(type, B_BYTES(nfields));
+  gdb_assert(TYPE_FIELD_IGNORE_BITS(type) != NULL);
   B_CLRALL(TYPE_FIELD_IGNORE_BITS(type), nfields);
 
   TYPE_FIELD_VIRTUAL_BITS(type) =
     (B_TYPE *)TYPE_ALLOC(type, B_BYTES(TYPE_N_BASECLASSES(type)));
+  gdb_assert(TYPE_FIELD_VIRTUAL_BITS(type) != NULL);
   B_CLRALL(TYPE_FIELD_VIRTUAL_BITS(type), TYPE_N_BASECLASSES(type));
 
   if (tsuper != NULL)

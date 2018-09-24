@@ -554,6 +554,7 @@ add_matching_methods (int method_counter, struct type *t,
 	}
     }
 
+  (void)syms_found;
   return i1;
 }
 
@@ -2896,7 +2897,7 @@ decode_dollar(char *copy, int funfirstline, struct symtab *default_symtab,
       /* Look up entire name as a symbol first: */
       sym = lookup_symbol(copy, 0, VAR_DOMAIN, 0, &sym_symtab);
       file_symtab = (struct symtab *)0;
-      need_canonical = 1;
+      /* No need to set need_canonical here */
       /* Symbol was found --> jump to normal symbol processing: */
       if (sym)
 	return symbol_found(funfirstline, canonical, copy, sym,
@@ -2905,9 +2906,10 @@ decode_dollar(char *copy, int funfirstline, struct symtab *default_symtab,
       /* If symbol was not found, look in minimal symbol tables: */
       msymbol = lookup_minimal_symbol(copy, NULL, NULL);
       /* Min symbol was found --> jump to minsym processing: */
-      if (msymbol)
+      if (msymbol) {
 	/* APPLE LOCAL: We have to pass in canonical as well: */
 	return minsym_found(funfirstline, 0, msymbol, canonical);
+      }
 
       /* Not a user variable or function -- must be convenience variable: */
       need_canonical = ((file_symtab == 0) ? 1 : 0);

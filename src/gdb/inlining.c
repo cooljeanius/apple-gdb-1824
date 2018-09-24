@@ -2045,22 +2045,22 @@ at_inlined_call_site_p(char **file_name, int *line_num, int *column)
 
   if (low > 0)
     {
-      i = 0;
-
-      if (low == high
+      /* i is always set in the following if/else; no need to set it to 0
+       * beforehand... */
+      if ((low == high)
 	  && !global_inlined_call_stack.records[low].stepped_into)
 	i = low;
-      else if (low <= current_inlined_subroutine_stack_position ()
-	       && current_inlined_subroutine_stack_position() <= high)
-	i = current_inlined_subroutine_stack_position ();
+      else if ((low <= current_inlined_subroutine_stack_position())
+	       && (current_inlined_subroutine_stack_position() <= high))
+	i = current_inlined_subroutine_stack_position();
       else
 	i = low;
 
       if (i > 0)
 	{
 	  *file_name = global_inlined_call_stack.records[i].call_site_filename;
-	  *line_num  = global_inlined_call_stack.records[i].call_site_line;
-	  *column    = global_inlined_call_stack.records[i].call_site_column;
+	  *line_num = global_inlined_call_stack.records[i].call_site_line;
+	  *column = global_inlined_call_stack.records[i].call_site_column;
 	  ret_val = i;
 	}
     }
@@ -3047,25 +3047,24 @@ rest_of_line_contains_inlined_subroutine (CORE_ADDR *end_of_line)
   if (sal.line == 0)
     {
       inlined_subroutine_found = 0;
-      current_end = 0;
+      /* current_end is always set unconditionally later; no need to set it
+       * here, too... */
       *end_of_line = 0;
       return inlined_subroutine_found;
     }
 
-  cur_pos = current_inlined_subroutine_stack_position ();
-  if (cur_pos > 0
+  cur_pos = current_inlined_subroutine_stack_position();
+  if ((cur_pos > 0)
       && !global_inlined_call_stack.records[cur_pos].stepped_into)
     cur_pos--;
 
-  if (cur_pos > 0
-      && sal.next)
+  if ((cur_pos > 0) && sal.next)
     {
       for (cur = &sal; cur; cur = cur->next)
 	{
 	  if (cur->entry_type == INLINED_SUBROUTINE_LT_ENTRY
 	      && cur->pc == global_inlined_call_stack.records[cur_pos].start_pc
-	      && cur->end == record_end_pc
-	                            (global_inlined_call_stack.records[cur_pos]))
+	      && cur->end == record_end_pc(global_inlined_call_stack.records[cur_pos]))
 	    {
 	      sal.symtab = cur->symtab;
 	      sal.line = cur->line;
@@ -3143,9 +3142,8 @@ rest_of_line_contains_inlined_subroutine (CORE_ADDR *end_of_line)
       struct rb_tree_node *tmp_node;
       struct inlined_call_stack_record *tmp_record;
 
-      rb_tree_find_all_nodes_in_between
-	                         (sal.symtab->objfile->inlined_subroutine_data,
-				  stop_pc, current_end, &matches);
+      rb_tree_find_all_nodes_in_between(sal.symtab->objfile->inlined_subroutine_data,
+					stop_pc, current_end, &matches);
 
       for (current = matches; current; current = current->next)
 	{
@@ -3178,6 +3176,7 @@ rest_of_line_contains_inlined_subroutine (CORE_ADDR *end_of_line)
 
   *end_of_line = current_end;
 
+  (void)current_end;
   return inlined_subroutine_found;
 }
 

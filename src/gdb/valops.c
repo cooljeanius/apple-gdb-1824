@@ -2326,6 +2326,7 @@ find_oload_champ_namespace_loop (struct type **arg_types, int nargs,
   gdb_assert(old_cleanups != NULL);
   old_cleanups = make_cleanup(xfree, *oload_champ_bv);
   new_namespace = (char *)alloca(namespace_len + 1UL);
+  gdb_assert(new_namespace != NULL);
   strncpy(new_namespace, qualified_name, (namespace_len - 1UL));
   new_namespace[namespace_len] = '\0';
   new_oload_syms = make_symbol_overload_list(func_name,

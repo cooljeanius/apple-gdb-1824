@@ -1726,11 +1726,11 @@ stub_unpack_int (char *buff, int fieldlength)
 
   while (fieldlength)
     {
-      nibble = stubhex (*buff++);
+      nibble = stubhex(*buff++);
       retval |= nibble;
       fieldlength--;
-      if (fieldlength)
-	retval = retval << 4;
+      if (fieldlength && (retval >= 0))
+	retval = (retval << 4);
     }
   return retval;
 }
@@ -1880,7 +1880,10 @@ unpack_threadid(char *inbuf, threadref *id)
     {
       x = stubhex(*inbuf++);
       y = stubhex(*inbuf++);
-      *altref++ = (char)((x << 4) | y);
+      if (x >= 0)
+	*altref++ = (char)((x << 4) | y);
+      else
+	*altref++ = '\0'; /* FIXME: is this right? */
     }
   return inbuf;
 }

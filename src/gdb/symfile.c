@@ -316,9 +316,10 @@ obsavestring (const char *ptr, int size, struct obstack *obstackp)
     const char *p1 = ptr;
     char *p2 = p;
     const char *end = ptr + size;
-    while (p1 != end)
+    while ((p1 != end) && (p1 != NULL) && (p2 != NULL))
       *p2++ = *p1++;
   }
+  gdb_assert(p != NULL);
   p[size] = 0;
   return p;
 }
@@ -1423,11 +1424,12 @@ replace_psymbols_with_correct_psymbols(struct objfile *exe_obj)
                                        exe_pst->filename, exe_pst->textlow,
                                        dsym_obj->global_psymbols.next,
                                        dsym_obj->static_psymbols.next);
-      dsym_pst->read_symtab_private = (char *)
-        obstack_alloc (&dsym_obj->objfile_obstack,
-                       sizeof (struct dbxread_symloc));
-
-      LDSYMOFF (dsym_pst) = LDSYMOFF (exe_pst);
+      dsym_pst->read_symtab_private =
+	((char *)obstack_alloc(&dsym_obj->objfile_obstack,
+			       sizeof(struct dbxread_symloc)));
+      gdb_assert(dsym_pst != NULL);
+      gdb_assert(dsym_pst->read_symtab_private != NULL);
+      LDSYMOFF(dsym_pst) = LDSYMOFF(exe_pst);
 
       dsym_pst->read_symtab = dwarf2_kext_psymtab_to_symtab;
       SYMBOL_SIZE (dsym_pst) = SYMBOL_SIZE (exe_pst);
@@ -4289,13 +4291,16 @@ allocate_psymtab(const char *filename, struct objfile *objfile)
       objfile->free_psymtabs = psymtab->next;
     }
   else
-    psymtab = (struct partial_symtab *)
-      obstack_alloc (&objfile->objfile_obstack,
-		     sizeof (struct partial_symtab));
+    {
+      psymtab = ((struct partial_symtab *)
+		 obstack_alloc(&objfile->objfile_obstack,
+			       sizeof(struct partial_symtab)));
+    }
 
-  memset (psymtab, 0, sizeof (struct partial_symtab));
-  psymtab->filename = obsavestring (filename, strlen (filename),
-				    &objfile->objfile_obstack);
+  gdb_assert(psymtab != NULL);
+  memset(psymtab, 0, sizeof(struct partial_symtab));
+  psymtab->filename = obsavestring(filename, strlen(filename),
+				   &objfile->objfile_obstack);
   psymtab->symtab = NULL;
 
   /* Prepend it to the psymtab list for the objfile it belongs to.

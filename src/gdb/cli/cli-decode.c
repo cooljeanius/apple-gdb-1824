@@ -1160,6 +1160,7 @@ lookup_cmd(const char **line, struct cmd_list_element *list, const char *cmdtype
 		p++;
 
 	      q = (char *)alloca((p - *line) + 1UL);
+	      gdb_assert(q != NULL);
 	      strncpy(q, *line, ((p - *line) - 1UL));
 	      q[p - *line] = '\0';
 	      undef_cmd_error(cmdtype, q);

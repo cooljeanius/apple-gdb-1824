@@ -191,6 +191,7 @@ alloc_type(struct objfile *objfile)
                                             sizeof(struct main_type)));
       OBJSTAT(objfile, n_types++);
     }
+  gdb_assert(TYPE_MAIN_TYPE(type) != NULL);
   memset(TYPE_MAIN_TYPE(type), 0, sizeof(struct main_type));
 
   /* Initialize the fields that might not be zero: */
@@ -797,10 +798,12 @@ create_range_type (struct type *result_type, struct type *index_type,
     TYPE_FLAGS (result_type) |= TYPE_FLAG_TARGET_STUB;
   else
     TYPE_LENGTH_ASSIGN (result_type) = TYPE_LENGTH (check_typedef (index_type));
-  TYPE_NFIELDS (result_type) = 3;
-  TYPE_FIELDS (result_type) = (struct field *)
-    TYPE_ALLOC (result_type, 3 * sizeof (struct field));
-  memset (TYPE_FIELDS (result_type), 0, 3 * sizeof (struct field));
+  TYPE_NFIELDS(result_type) = 3;
+  TYPE_FIELDS(result_type) = ((struct field *)
+			      TYPE_ALLOC(result_type,
+					 (3UL * sizeof(struct field))));
+  gdb_assert(TYPE_FIELDS(result_type) != NULL);
+  memset(TYPE_FIELDS(result_type), 0, (3UL * sizeof(struct field)));
 
   TYPE_FIELD_BITPOS_ASSIGN (result_type, 0) = low_bound;
   TYPE_FIELD_BITPOS_ASSIGN (result_type, 1) = high_bound;
@@ -2110,14 +2113,14 @@ arch_type (struct gdbarch *gdbarch,
 	   enum type_code code, int length, const char *name)
 {
   struct type *type;
-  
+
   type = alloc_type_arch (gdbarch);
   set_type_code (type, code);
   TYPE_LENGTH_ASSIGN(type) = length;
-  
+
   if (name)
     TYPE_NAME (type) = gdbarch_obstack_strdup (gdbarch, name);
-  
+
   return type;
 }
 
@@ -2130,11 +2133,11 @@ arch_integer_type (struct gdbarch *gdbarch,
 		   int bit, int unsigned_p, const char *name)
 {
   struct type *t;
-  
+
   t = arch_type (gdbarch, TYPE_CODE_INT, bit / TARGET_CHAR_BIT, name);
   if (unsigned_p)
     TYPE_UNSIGNED (t) = 1;
-  
+
   return t;
 }
 
@@ -2147,11 +2150,11 @@ arch_character_type (struct gdbarch *gdbarch,
 		     int bit, int unsigned_p, const char *name)
 {
   struct type *t;
-  
+
   t = arch_type (gdbarch, TYPE_CODE_CHAR, bit / TARGET_CHAR_BIT, name);
   if (unsigned_p)
     TYPE_UNSIGNED (t) = 1;
-  
+
   return t;
 }
 
@@ -2164,11 +2167,11 @@ arch_boolean_type (struct gdbarch *gdbarch,
 		   int bit, int unsigned_p, const char *name)
 {
   struct type *t;
-  
+
   t = arch_type (gdbarch, TYPE_CODE_BOOL, bit / TARGET_CHAR_BIT, name);
   if (unsigned_p)
     TYPE_UNSIGNED (t) = 1;
-  
+
   return t;
 }
 
@@ -2183,11 +2186,11 @@ arch_float_type (struct gdbarch *gdbarch,
 		 const struct floatformat **floatformats)
 {
   struct type *t;
-  
+
   bit = verify_floatformat (bit, floatformats);
   t = arch_type (gdbarch, TYPE_CODE_FLT, bit / TARGET_CHAR_BIT, name);
   TYPE_FLOATFORMAT (t) = floatformats;
-  
+
   return t;
 }
 
@@ -2198,7 +2201,7 @@ struct type *
 arch_decfloat_type (struct gdbarch *gdbarch, int bit, const char *name)
 {
   struct type *t;
-  
+
   t = arch_type (gdbarch, TYPE_CODE_DECFLOAT, bit / TARGET_CHAR_BIT, name);
   return t;
 }
@@ -2211,7 +2214,7 @@ arch_complex_type (struct gdbarch *gdbarch,
 		   const char *name, struct type *target_type)
 {
   struct type *t;
-  
+
   t = arch_type (gdbarch, TYPE_CODE_COMPLEX,
 		 2 * TYPE_LENGTH (target_type), name);
   TYPE_TARGET_TYPE (t) = target_type;
@@ -2228,7 +2231,7 @@ arch_pointer_type (struct gdbarch *gdbarch,
 		   int bit, const char *name, struct type *target_type)
 {
   struct type *t;
-  
+
   t = arch_type (gdbarch, TYPE_CODE_PTR, bit / TARGET_CHAR_BIT, name);
   TYPE_TARGET_TYPE (t) = target_type;
   TYPE_UNSIGNED (t) = 1;
@@ -2243,14 +2246,14 @@ arch_flags_type (struct gdbarch *gdbarch, const char *name, int length)
 {
   int max_nfields = length * TARGET_CHAR_BIT;
   struct type *type;
-  
+
   type = arch_type (gdbarch, TYPE_CODE_FLAGS, length, name);
   TYPE_UNSIGNED (type) = 1;
   TYPE_NFIELDS (type) = 0;
   /* Pre-allocate enough space assuming every field is one bit.  */
   TYPE_FIELDS (type)
   = (struct field *) TYPE_ZALLOC (type, max_nfields * sizeof (struct field));
-  
+
   return type;
 }
 
@@ -2264,13 +2267,13 @@ append_flags_type_field (struct type *type, int start_bitpos, int nr_bits,
 {
   int type_bitsize = TYPE_LENGTH (type) * TARGET_CHAR_BIT;
   int field_nr = TYPE_NFIELDS (type);
-  
+
   gdb_assert (TYPE_CODE (type) == TYPE_CODE_FLAGS);
   gdb_assert (TYPE_NFIELDS (type) + 1 <= type_bitsize);
   gdb_assert (start_bitpos >= 0 && start_bitpos < type_bitsize);
   gdb_assert (nr_bits >= 1 && nr_bits <= type_bitsize);
   gdb_assert (name != NULL);
-  
+
   TYPE_FIELD_NAME (type, field_nr) = xstrdup (name);
   TYPE_FIELD_TYPE (type, field_nr) = field_type;
   SET_FIELD_BITPOS (TYPE_FIELD (type, field_nr), start_bitpos);
@@ -2286,7 +2289,7 @@ void
 append_flags_type_flag(struct type *type, int bitpos, const char *name)
 {
   struct gdbarch *gdbarch = get_type_arch(type);
-  
+
   append_flags_type_field(type, bitpos, 1,
 			  get_builtin_type(gdbarch)->builtin_bool,
 			  name);
@@ -2300,7 +2303,7 @@ arch_composite_type (struct gdbarch *gdbarch, const char *name,
 		     enum type_code code)
 {
   struct type *t;
-  
+
   gdb_assert (code == TYPE_CODE_STRUCT || code == TYPE_CODE_UNION);
   t = arch_type (gdbarch, code, 0, NULL);
   TYPE_TAG_NAME (t) = name;
@@ -2317,7 +2320,7 @@ append_composite_type_field_raw (struct type *t, const char *name,
 				 struct type *field)
 {
   struct field *f;
-  
+
   TYPE_NFIELDS (t) = TYPE_NFIELDS (t) + 1;
   TYPE_FIELDS (t) = XRESIZEVEC (struct field, TYPE_FIELDS (t),
 				TYPE_NFIELDS (t));
@@ -2336,7 +2339,7 @@ append_composite_type_field_aligned (struct type *t, const char *name,
 				     struct type *field, int alignment)
 {
   struct field *f = append_composite_type_field_raw (t, name, field);
-  
+
   if (TYPE_CODE (t) == TYPE_CODE_UNION)
   {
     if (TYPE_LENGTH (t) < TYPE_LENGTH (field))
@@ -2351,14 +2354,14 @@ append_composite_type_field_aligned (struct type *t, const char *name,
 			(FIELD_BITPOS (f[-1])
 			 + (TYPE_LENGTH (FIELD_TYPE (f[-1]))
 			    * TARGET_CHAR_BIT)));
-      
+
       if (alignment)
       {
 	int left;
-	
+
 	alignment *= TARGET_CHAR_BIT;
 	left = FIELD_BITPOS (f[0]) % alignment;
-	
+
 	if (left)
 	{
 	  SET_FIELD_BITPOS (f[0], FIELD_BITPOS (f[0]) + (alignment - left));
@@ -2539,7 +2542,7 @@ has_vtable (struct type *dclass)
      has virtual functions or virtual bases.  */
 
   int i;
-  
+
   gdb_assert(dclass != NULL);
 
   if (TYPE_CODE(dclass) != TYPE_CODE_CLASS)
