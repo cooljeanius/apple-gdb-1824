@@ -38,7 +38,7 @@ IMPORTED_GNULIB_MODULES="\
     dirent dirent-safer dirfd dosname double-slash-root dup2 \
     environ errno error exitfail extensions extern-inline \
     fcntl fcntl-h fcntl-safer fileblocks flexmember float fnmatch fnmatch-gnu \
-    fpieee fpucw frexp frexpl fstatat fts \
+    fnmatch-h fpieee fpucw frexp frexpl fstatat fts \
     getcwd getcwd-lgpl getpagesize gettext-h gettimeofday git-version-gen \
     gitlog-to-changelog gnu-make gpl-2.0 \
     havelib host-cpu-c-abi host-os \
@@ -51,7 +51,7 @@ IMPORTED_GNULIB_MODULES="\
     mempcpy memrchr mkdtemp multiarch \
     nextafter no-c++ nocrash noreturn \
     obstack openmp \
-    pathmax pclose popen putenv \
+    pathmax pclose popen posixcheck putenv \
     readdir readlink realloc-gnu realloc-posix recv regex regex-quote \
     regexprops-generic rmdir \
     secure_getenv send setenv sig2str sigaction signal signal-h sigpipe \
@@ -80,9 +80,9 @@ IMPORTED_GNULIB_MODULES="\
 # below, though, so they may still get dragged in as dependencies)
 
 # The gnulib commit ID to use for the update.
-GNULIB_COMMIT_SHA1="3b1e0bcd35f006ea401d3dbd2169fd75f31bee3b"
+GNULIB_COMMIT_SHA1="635beea5deb0426d14e3639993a1d45dfeb8cf5f"
 # (feel free to update if you know that your version works and is newer)
-# (last updated February 24, 2018)
+# (last updated October 4, 2018)
 
 # The expected version number for the various auto tools we will
 # use after the import.

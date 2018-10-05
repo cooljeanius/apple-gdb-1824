@@ -27,7 +27,205 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --lib=libgnu --source-base=import --m4-base=import/m4 --doc-base=doc --tests-base=tests --aux-dir=import/extra --with-obsolete --avoid=lock --avoid=msvc-nothrow --avoid=threadlib --no-conditional-dependencies --no-libtool --macro-prefix=gl --no-vc-files absolute-header alignof alloca alloca-opt ansi-c++-opt assert assert-h assure autobuild bcopy bison-i18n btowc builtin-expect c-ctype c-strcase c-strcasestr c99 chdir-long closedir configmake connect crc ctime dirent dirent-safer dirfd dosname double-slash-root dup2 environ errno error exitfail extensions extern-inline fcntl fcntl-h fcntl-safer fileblocks flexmember float fnmatch fnmatch-gnu fpieee fpucw frexp frexpl fstatat fts getcwd getcwd-lgpl getpagesize gettext-h gettimeofday git-version-gen gitlog-to-changelog gnu-make gpl-2.0 havelib host-cpu-c-abi host-os ignore-value include_next inline intprops inttypes inttypes-incomplete isnand-nolibm isnanl-nolibm iswctype largefile ldd limits-h localcharset locale localtime localtime-buffer longlong lstat malloc-gnu malloc-posix manywarnings math mbrtowc mbsinit mbsrtowcs memchr memcmp memmem memmem-simple mempcpy memrchr mkdtemp multiarch nextafter no-c++ nocrash noreturn obstack openmp pathmax pclose popen putenv readdir readlink realloc-gnu realloc-posix recv regex regex-quote regexprops-generic rmdir secure_getenv send setenv sig2str sigaction signal signal-h sigpipe sigpipe-die sigprocmask snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning snippet/warn-on-use ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib streq strerror strerror-override strerror_r-posix strftime-fixes string strncat strndup strnlen strnlen1 strstr strstr-simple strtok_r sys_select sys_stat sys_time sys_types sys_wait tempname time time_r time_rz timegm tzset unistd unistd-safer unlink unlink-busy unsetenv update-copyright usleep vc-list-files verify warnings wchar wcsncasecmp wctype-h winsz-ioctl winsz-termios xalloc xalloc-die xalloc-oversized xmalloca xmemdup0 xstrndup
+# gnulib-tool --import \
+#  --lib=libgnu \
+#  --source-base=import \
+#  --m4-base=import/m4 \
+#  --doc-base=doc \
+#  --tests-base=tests \
+#  --aux-dir=import/extra \
+#  --with-obsolete \
+#  --no-conditional-dependencies \
+#  --no-libtool \
+#  --macro-prefix=gl \
+#  --no-vc-files \
+#  --avoid=lock \
+#  --avoid=msvc-nothrow \
+#  --avoid=threadlib \
+#  absolute-header \
+#  alignof \
+#  alloca \
+#  alloca-opt \
+#  ansi-c++-opt \
+#  assert \
+#  assert-h \
+#  assure \
+#  autobuild \
+#  bcopy \
+#  bison-i18n \
+#  btowc \
+#  builtin-expect \
+#  c-ctype \
+#  c-strcase \
+#  c-strcasestr \
+#  c99 \
+#  chdir-long \
+#  closedir \
+#  configmake \
+#  connect \
+#  crc \
+#  ctime \
+#  dirent \
+#  dirent-safer \
+#  dirfd \
+#  dosname \
+#  double-slash-root \
+#  dup2 \
+#  environ \
+#  errno \
+#  error \
+#  exitfail \
+#  extensions \
+#  extern-inline \
+#  fcntl \
+#  fcntl-h \
+#  fcntl-safer \
+#  fileblocks \
+#  flexmember \
+#  float \
+#  fnmatch \
+#  fnmatch-gnu \
+#  fnmatch-h \
+#  fpieee \
+#  fpucw \
+#  frexp \
+#  frexpl \
+#  fstatat \
+#  fts \
+#  getcwd \
+#  getcwd-lgpl \
+#  getpagesize \
+#  gettext-h \
+#  gettimeofday \
+#  git-version-gen \
+#  gitlog-to-changelog \
+#  gnu-make \
+#  gpl-2.0 \
+#  havelib \
+#  host-cpu-c-abi \
+#  host-os \
+#  ignore-value \
+#  include_next \
+#  inline \
+#  intprops \
+#  inttypes \
+#  inttypes-incomplete \
+#  isnand-nolibm \
+#  isnanl-nolibm \
+#  iswctype \
+#  largefile \
+#  ldd \
+#  limits-h \
+#  localcharset \
+#  locale \
+#  localtime \
+#  localtime-buffer \
+#  longlong \
+#  lstat \
+#  malloc-gnu \
+#  malloc-posix \
+#  manywarnings \
+#  math \
+#  mbrtowc \
+#  mbsinit \
+#  mbsrtowcs \
+#  memchr \
+#  memcmp \
+#  memmem \
+#  memmem-simple \
+#  mempcpy \
+#  memrchr \
+#  mkdtemp \
+#  multiarch \
+#  nextafter \
+#  no-c++ \
+#  nocrash \
+#  noreturn \
+#  obstack \
+#  openmp \
+#  pathmax \
+#  pclose \
+#  popen \
+#  posixcheck \
+#  putenv \
+#  readdir \
+#  readlink \
+#  realloc-gnu \
+#  realloc-posix \
+#  recv \
+#  regex \
+#  regex-quote \
+#  regexprops-generic \
+#  rmdir \
+#  secure_getenv \
+#  send \
+#  setenv \
+#  sig2str \
+#  sigaction \
+#  signal \
+#  signal-h \
+#  sigpipe \
+#  sigpipe-die \
+#  sigprocmask \
+#  snippet/_Noreturn \
+#  snippet/arg-nonnull \
+#  snippet/c++defs \
+#  snippet/link-warning \
+#  snippet/warn-on-use \
+#  ssize_t \
+#  stat \
+#  stat-macros \
+#  stat-size \
+#  stat-time \
+#  stdbool \
+#  stddef \
+#  stdint \
+#  stdlib \
+#  streq \
+#  strerror \
+#  strerror-override \
+#  strerror_r-posix \
+#  strftime-fixes \
+#  string \
+#  strncat \
+#  strndup \
+#  strnlen \
+#  strnlen1 \
+#  strstr \
+#  strstr-simple \
+#  strtok_r \
+#  sys_select \
+#  sys_stat \
+#  sys_time \
+#  sys_types \
+#  sys_wait \
+#  tempname \
+#  time \
+#  time_r \
+#  time_rz \
+#  timegm \
+#  tzset \
+#  unistd \
+#  unistd-safer \
+#  unlink \
+#  unlink-busy \
+#  unsetenv \
+#  update-copyright \
+#  usleep \
+#  vc-list-files \
+#  verify \
+#  warnings \
+#  wchar \
+#  wcsncasecmp \
+#  wctype-h \
+#  winsz-ioctl \
+#  winsz-termios \
+#  xalloc \
+#  xalloc-die \
+#  xalloc-oversized \
+#  xmalloca \
+#  xmemdup0 \
+#  xstrndup
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
@@ -75,6 +273,7 @@ gl_MODULES([
   float
   fnmatch
   fnmatch-gnu
+  fnmatch-h
   fpieee
   fpucw
   frexp
@@ -135,6 +334,7 @@ gl_MODULES([
   pathmax
   pclose
   popen
+  posixcheck
   putenv
   readdir
   readlink

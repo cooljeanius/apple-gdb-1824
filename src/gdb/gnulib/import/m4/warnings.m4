@@ -1,4 +1,4 @@
-# warnings.m4 serial 13
+# warnings.m4 serial 14
 dnl Copyright (C) 2008-2018 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
