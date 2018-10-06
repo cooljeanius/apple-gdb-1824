@@ -59,6 +59,7 @@
 #  c-strcase \
 #  c-strcasestr \
 #  c99 \
+#  calloc-posix \
 #  chdir-long \
 #  closedir \
 #  configmake \
@@ -77,9 +78,11 @@
 #  exitfail \
 #  extensions \
 #  extern-inline \
+#  faccessat \
 #  fcntl \
 #  fcntl-h \
 #  fcntl-safer \
+#  fflush \
 #  fileblocks \
 #  flexmember \
 #  float \
@@ -87,6 +90,7 @@
 #  fnmatch-gnu \
 #  fnmatch-h \
 #  fpieee \
+#  fprintf-posix \
 #  fpucw \
 #  frexp \
 #  frexpl \
@@ -127,8 +131,11 @@
 #  manywarnings \
 #  math \
 #  mbrtowc \
+#  mbschr \
 #  mbsinit \
+#  mbsrchr \
 #  mbsrtowcs \
+#  mbsspn \
 #  memchr \
 #  memcmp \
 #  memmem \
@@ -145,6 +152,7 @@
 #  openmp \
 #  pathmax \
 #  pclose \
+#  pipe-posix \
 #  popen \
 #  posixcheck \
 #  putenv \
@@ -160,6 +168,7 @@
 #  secure_getenv \
 #  send \
 #  setenv \
+#  setlocale \
 #  sig2str \
 #  sigaction \
 #  signal \
@@ -172,6 +181,8 @@
 #  snippet/c++defs \
 #  snippet/link-warning \
 #  snippet/warn-on-use \
+#  snprintf \
+#  sprintf-posix \
 #  ssize_t \
 #  stat \
 #  stat-macros \
@@ -214,12 +225,18 @@
 #  usleep \
 #  vc-list-files \
 #  verify \
+#  vfprintf-posix \
 #  warnings \
 #  wchar \
+#  wcscat \
+#  wcslen \
 #  wcsncasecmp \
+#  wctype \
 #  wctype-h \
 #  winsz-ioctl \
 #  winsz-termios \
+#  wmemchr \
+#  wmemcpy \
 #  xalloc \
 #  xalloc-die \
 #  xalloc-oversized \
@@ -247,6 +264,7 @@ gl_MODULES([
   c-strcase
   c-strcasestr
   c99
+  calloc-posix
   chdir-long
   closedir
   configmake
@@ -265,9 +283,11 @@ gl_MODULES([
   exitfail
   extensions
   extern-inline
+  faccessat
   fcntl
   fcntl-h
   fcntl-safer
+  fflush
   fileblocks
   flexmember
   float
@@ -275,6 +295,7 @@ gl_MODULES([
   fnmatch-gnu
   fnmatch-h
   fpieee
+  fprintf-posix
   fpucw
   frexp
   frexpl
@@ -315,8 +336,11 @@ gl_MODULES([
   manywarnings
   math
   mbrtowc
+  mbschr
   mbsinit
+  mbsrchr
   mbsrtowcs
+  mbsspn
   memchr
   memcmp
   memmem
@@ -333,6 +357,7 @@ gl_MODULES([
   openmp
   pathmax
   pclose
+  pipe-posix
   popen
   posixcheck
   putenv
@@ -348,6 +373,7 @@ gl_MODULES([
   secure_getenv
   send
   setenv
+  setlocale
   sig2str
   sigaction
   signal
@@ -360,6 +386,8 @@ gl_MODULES([
   snippet/c++defs
   snippet/link-warning
   snippet/warn-on-use
+  snprintf
+  sprintf-posix
   ssize_t
   stat
   stat-macros
@@ -402,12 +430,18 @@ gl_MODULES([
   usleep
   vc-list-files
   verify
+  vfprintf-posix
   warnings
   wchar
+  wcscat
+  wcslen
   wcsncasecmp
+  wctype
   wctype-h
   winsz-ioctl
   winsz-termios
+  wmemchr
+  wmemcpy
   xalloc
   xalloc-die
   xalloc-oversized

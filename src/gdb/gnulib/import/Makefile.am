@@ -54,6 +54,7 @@
 #  c-strcase \
 #  c-strcasestr \
 #  c99 \
+#  calloc-posix \
 #  chdir-long \
 #  closedir \
 #  configmake \
@@ -72,9 +73,11 @@
 #  exitfail \
 #  extensions \
 #  extern-inline \
+#  faccessat \
 #  fcntl \
 #  fcntl-h \
 #  fcntl-safer \
+#  fflush \
 #  fileblocks \
 #  flexmember \
 #  float \
@@ -82,6 +85,7 @@
 #  fnmatch-gnu \
 #  fnmatch-h \
 #  fpieee \
+#  fprintf-posix \
 #  fpucw \
 #  frexp \
 #  frexpl \
@@ -122,8 +126,11 @@
 #  manywarnings \
 #  math \
 #  mbrtowc \
+#  mbschr \
 #  mbsinit \
+#  mbsrchr \
 #  mbsrtowcs \
+#  mbsspn \
 #  memchr \
 #  memcmp \
 #  memmem \
@@ -140,6 +147,7 @@
 #  openmp \
 #  pathmax \
 #  pclose \
+#  pipe-posix \
 #  popen \
 #  posixcheck \
 #  putenv \
@@ -155,6 +163,7 @@
 #  secure_getenv \
 #  send \
 #  setenv \
+#  setlocale \
 #  sig2str \
 #  sigaction \
 #  signal \
@@ -167,6 +176,8 @@
 #  snippet/c++defs \
 #  snippet/link-warning \
 #  snippet/warn-on-use \
+#  snprintf \
+#  sprintf-posix \
 #  ssize_t \
 #  stat \
 #  stat-macros \
@@ -209,12 +220,18 @@
 #  usleep \
 #  vc-list-files \
 #  verify \
+#  vfprintf-posix \
 #  warnings \
 #  wchar \
+#  wcscat \
+#  wcslen \
 #  wcsncasecmp \
+#  wctype \
 #  wctype-h \
 #  winsz-ioctl \
 #  winsz-termios \
+#  wmemchr \
+#  wmemcpy \
 #  xalloc \
 #  xalloc-die \
 #  xalloc-oversized \
@@ -435,6 +452,15 @@ libgnu_a_SOURCES += c-strcasestr.h c-strcasestr.c
 EXTRA_DIST += str-two-way.h
 
 ## end   gnulib module c-strcasestr
+
+## begin gnulib module calloc-posix
+
+
+EXTRA_DIST += calloc.c
+
+EXTRA_libgnu_a_SOURCES += calloc.c
+
+## end   gnulib module calloc-posix
 
 ## begin gnulib module chdir-long
 
@@ -725,6 +751,15 @@ EXTRA_libgnu_a_SOURCES += error.c
 
 ## end   gnulib module error
 
+## begin gnulib module euidaccess
+
+
+EXTRA_DIST += euidaccess.c
+
+EXTRA_libgnu_a_SOURCES += euidaccess.c
+
+## end   gnulib module euidaccess
+
 ## begin gnulib module exitfail
 
 libgnu_a_SOURCES += exitfail.c
@@ -732,6 +767,15 @@ libgnu_a_SOURCES += exitfail.c
 EXTRA_DIST += exitfail.h
 
 ## end   gnulib module exitfail
+
+## begin gnulib module faccessat
+
+
+EXTRA_DIST += at-func.c faccessat.c
+
+EXTRA_libgnu_a_SOURCES += at-func.c faccessat.c
+
+## end   gnulib module faccessat
 
 ## begin gnulib module fchdir
 
@@ -816,6 +860,15 @@ EXTRA_DIST += fdopendir.c
 EXTRA_libgnu_a_SOURCES += fdopendir.c
 
 ## end   gnulib module fdopendir
+
+## begin gnulib module fflush
+
+
+EXTRA_DIST += fflush.c stdio-impl.h
+
+EXTRA_libgnu_a_SOURCES += fflush.c
+
+## end   gnulib module fflush
 
 ## begin gnulib module fileblocks
 
@@ -922,12 +975,38 @@ EXTRA_DIST += fnmatch.in.h
 
 ## end   gnulib module fnmatch-h
 
+## begin gnulib module fprintf-posix
+
+
+EXTRA_DIST += fprintf.c
+
+EXTRA_libgnu_a_SOURCES += fprintf.c
+
+## end   gnulib module fprintf-posix
+
 ## begin gnulib module fpucw
 
 
 EXTRA_DIST += fpucw.h
 
 ## end   gnulib module fpucw
+
+## begin gnulib module fpurge
+
+
+EXTRA_DIST += fpurge.c stdio-impl.h
+
+EXTRA_libgnu_a_SOURCES += fpurge.c
+
+## end   gnulib module fpurge
+
+## begin gnulib module freading
+
+libgnu_a_SOURCES += freading.c
+
+EXTRA_DIST += freading.h stdio-impl.h
+
+## end   gnulib module freading
 
 ## begin gnulib module frexp
 
@@ -938,6 +1017,15 @@ EXTRA_libgnu_a_SOURCES += frexp.c
 
 ## end   gnulib module frexp
 
+## begin gnulib module frexp-nolibm
+
+
+EXTRA_DIST += frexp.c
+
+EXTRA_libgnu_a_SOURCES += frexp.c
+
+## end   gnulib module frexp-nolibm
+
 ## begin gnulib module frexpl
 
 
@@ -946,6 +1034,42 @@ EXTRA_DIST += frexp.c frexpl.c
 EXTRA_libgnu_a_SOURCES += frexp.c frexpl.c
 
 ## end   gnulib module frexpl
+
+## begin gnulib module frexpl-nolibm
+
+
+EXTRA_DIST += frexp.c frexpl.c
+
+EXTRA_libgnu_a_SOURCES += frexp.c frexpl.c
+
+## end   gnulib module frexpl-nolibm
+
+## begin gnulib module fseek
+
+
+EXTRA_DIST += fseek.c
+
+EXTRA_libgnu_a_SOURCES += fseek.c
+
+## end   gnulib module fseek
+
+## begin gnulib module fseeko
+
+
+EXTRA_DIST += fseeko.c stdio-impl.h
+
+EXTRA_libgnu_a_SOURCES += fseeko.c
+
+## end   gnulib module fseeko
+
+## begin gnulib module fseterr
+
+
+EXTRA_DIST += fseterr.c fseterr.h stdio-impl.h
+
+EXTRA_libgnu_a_SOURCES += fseterr.c
+
+## end   gnulib module fseterr
 
 ## begin gnulib module fstat
 
@@ -964,6 +1088,24 @@ EXTRA_DIST += at-func.c fstatat.c
 EXTRA_libgnu_a_SOURCES += at-func.c fstatat.c
 
 ## end   gnulib module fstatat
+
+## begin gnulib module ftell
+
+
+EXTRA_DIST += ftell.c
+
+EXTRA_libgnu_a_SOURCES += ftell.c
+
+## end   gnulib module ftell
+
+## begin gnulib module ftello
+
+
+EXTRA_DIST += ftello.c stdio-impl.h
+
+EXTRA_libgnu_a_SOURCES += ftello.c
+
+## end   gnulib module ftello
 
 ## begin gnulib module fts
 
@@ -1000,6 +1142,15 @@ EXTRA_DIST += getdtablesize.c
 EXTRA_libgnu_a_SOURCES += getdtablesize.c
 
 ## end   gnulib module getdtablesize
+
+## begin gnulib module getgroups
+
+
+EXTRA_DIST += getgroups.c
+
+EXTRA_libgnu_a_SOURCES += getgroups.c
+
+## end   gnulib module getgroups
 
 ## begin gnulib module getpagesize
 
@@ -1110,6 +1261,15 @@ EXTRA_DIST += glob-libc.h glob.in.h
 #endif
 
 ## end   gnulib module gnu-make
+
+## begin gnulib module group-member
+
+
+EXTRA_DIST += group-member.c
+
+EXTRA_libgnu_a_SOURCES += group-member.c
+
+## end   gnulib module group-member
 
 ## begin gnulib module hard-locale
 
@@ -1246,6 +1406,15 @@ EXTRA_DIST += float+.h isnan.c isnand-nolibm.h isnand.c
 EXTRA_libgnu_a_SOURCES += isnan.c isnand.c
 
 ## end   gnulib module isnand-nolibm
+
+## begin gnulib module isnanf-nolibm
+
+
+EXTRA_DIST += float+.h isnan.c isnanf-nolibm.h isnanf.c
+
+EXTRA_libgnu_a_SOURCES += isnan.c isnanf.c
+
+## end   gnulib module isnanf-nolibm
 
 ## begin gnulib module isnanl-nolibm
 
@@ -1402,6 +1571,14 @@ EXTRA_libgnu_a_SOURCES += localeconv.c
 
 ## end   gnulib module localeconv
 
+## begin gnulib module localename
+
+libgnu_a_SOURCES += localename.c
+
+EXTRA_DIST += localename.h
+
+## end   gnulib module localename
+
 ## begin gnulib module localtime
 
 
@@ -1419,6 +1596,15 @@ EXTRA_DIST += localtime-buffer.c localtime-buffer.h
 EXTRA_libgnu_a_SOURCES += localtime-buffer.c
 
 ## end   gnulib module localtime-buffer
+
+## begin gnulib module lseek
+
+
+EXTRA_DIST += lseek.c
+
+EXTRA_libgnu_a_SOURCES += lseek.c
+
+## end   gnulib module lseek
 
 ## begin gnulib module lstat
 
@@ -1769,6 +1955,12 @@ EXTRA_libgnu_a_SOURCES += mbrtowc.c
 
 ## end   gnulib module mbrtowc
 
+## begin gnulib module mbschr
+
+libgnu_a_SOURCES += mbschr.c
+
+## end   gnulib module mbschr
+
 ## begin gnulib module mbsinit
 
 
@@ -1778,6 +1970,12 @@ EXTRA_libgnu_a_SOURCES += mbsinit.c
 
 ## end   gnulib module mbsinit
 
+## begin gnulib module mbsrchr
+
+libgnu_a_SOURCES += mbsrchr.c
+
+## end   gnulib module mbsrchr
+
 ## begin gnulib module mbsrtowcs
 
 
@@ -1786,6 +1984,12 @@ EXTRA_DIST += mbsrtowcs-impl.h mbsrtowcs-state.c mbsrtowcs.c
 EXTRA_libgnu_a_SOURCES += mbsrtowcs-state.c mbsrtowcs.c
 
 ## end   gnulib module mbsrtowcs
+
+## begin gnulib module mbsspn
+
+libgnu_a_SOURCES += mbsspn.c
+
+## end   gnulib module mbsspn
 
 ## begin gnulib module mbtowc
 
@@ -2051,6 +2255,15 @@ EXTRA_libgnu_a_SOURCES += pclose.c
 
 ## end   gnulib module pclose
 
+## begin gnulib module pipe-posix
+
+
+EXTRA_DIST += pipe.c
+
+EXTRA_libgnu_a_SOURCES += pipe.c
+
+## end   gnulib module pipe-posix
+
 ## begin gnulib module poll-h
 
 BUILT_SOURCES += poll.h
@@ -2088,6 +2301,24 @@ EXTRA_DIST += popen.c
 EXTRA_libgnu_a_SOURCES += popen.c
 
 ## end   gnulib module popen
+
+## begin gnulib module printf-frexp
+
+libgnu_a_SOURCES += printf-frexp.c
+
+EXTRA_DIST += printf-frexp.h
+
+## end   gnulib module printf-frexp
+
+## begin gnulib module printf-frexpl
+
+libgnu_a_SOURCES += printf-frexpl.c
+
+EXTRA_DIST += printf-frexp.c printf-frexpl.h
+
+EXTRA_libgnu_a_SOURCES += printf-frexp.c
+
+## end   gnulib module printf-frexpl
 
 ## begin gnulib module pty
 
@@ -2221,6 +2452,13 @@ EXTRA_libgnu_a_SOURCES += rmdir.c
 
 ## end   gnulib module rmdir
 
+## begin gnulib module root-uid
+
+
+EXTRA_DIST += root-uid.h
+
+## end   gnulib module root-uid
+
 ## begin gnulib module same-inode
 
 
@@ -2326,6 +2564,15 @@ EXTRA_libgnu_a_SOURCES += setenv.c
 
 ## end   gnulib module setenv
 
+## begin gnulib module setlocale
+
+
+EXTRA_DIST += setlocale.c
+
+EXTRA_libgnu_a_SOURCES += setlocale.c
+
+## end   gnulib module setlocale
+
 ## begin gnulib module sig2str
 
 
@@ -2387,6 +2634,15 @@ EXTRA_DIST += signal.in.h
 
 ## end   gnulib module signal-h
 
+## begin gnulib module signbit
+
+
+EXTRA_DIST += float+.h signbitd.c signbitf.c signbitl.c
+
+EXTRA_libgnu_a_SOURCES += signbitd.c signbitf.c signbitl.c
+
+## end   gnulib module signbit
+
 ## begin gnulib module sigpipe
 
 
@@ -2410,6 +2666,12 @@ EXTRA_DIST += sigprocmask.c
 EXTRA_libgnu_a_SOURCES += sigprocmask.c
 
 ## end   gnulib module sigprocmask
+
+## begin gnulib module size_max
+
+libgnu_a_SOURCES += size_max.h
+
+## end   gnulib module size_max
 
 ## begin gnulib module sleep
 
@@ -2483,6 +2745,18 @@ EXTRA_DIST += $(top_srcdir)/import/extra/snippet/link-warning.h
 
 ## end   gnulib module snippet/link-warning
 
+## begin gnulib module snippet/unused-parameter
+
+# Because this Makefile snippet defines a variable used by other
+# gnulib Makefile snippets, it must be present in all makefiles that
+# need it. This is ensured by the applicability 'all' defined above.
+
+UNUSED_PARAMETER_H=$(srcdir)/unused-parameter.h
+
+EXTRA_DIST += unused-parameter.h
+
+## end   gnulib module snippet/unused-parameter
+
 ## begin gnulib module snippet/warn-on-use
 
 # Because this Makefile snippet defines a variable used by other
@@ -2494,6 +2768,15 @@ WARN_ON_USE_H=$(srcdir)/warn-on-use.h
 EXTRA_DIST += warn-on-use.h
 
 ## end   gnulib module snippet/warn-on-use
+
+## begin gnulib module snprintf
+
+
+EXTRA_DIST += snprintf.c
+
+EXTRA_libgnu_a_SOURCES += snprintf.c
+
+## end   gnulib module snprintf
 
 ## begin gnulib module spawn
 
@@ -2552,6 +2835,15 @@ MOSTLYCLEANFILES += spawn.h spawn.h-t
 EXTRA_DIST += spawn.in.h
 
 ## end   gnulib module spawn
+
+## begin gnulib module sprintf-posix
+
+
+EXTRA_DIST += sprintf.c
+
+EXTRA_libgnu_a_SOURCES += sprintf.c
+
+## end   gnulib module sprintf-posix
 
 ## begin gnulib module stat
 
@@ -4030,6 +4322,15 @@ EXTRA_DIST += utime.in.h
 
 ## end   gnulib module utime-h
 
+## begin gnulib module vasnprintf
+
+
+EXTRA_DIST += asnprintf.c float+.h printf-args.c printf-args.h printf-parse.c printf-parse.h vasnprintf.c vasnprintf.h
+
+EXTRA_libgnu_a_SOURCES += asnprintf.c printf-args.c printf-parse.c vasnprintf.c
+
+## end   gnulib module vasnprintf
+
 ## begin gnulib module vc-list-files
 
 
@@ -4043,6 +4344,15 @@ EXTRA_DIST += $(top_srcdir)/import/extra/vc-list-files
 EXTRA_DIST += verify.h
 
 ## end   gnulib module verify
+
+## begin gnulib module vfprintf-posix
+
+
+EXTRA_DIST += vfprintf.c
+
+EXTRA_libgnu_a_SOURCES += vfprintf.c
+
+## end   gnulib module vfprintf-posix
 
 ## begin gnulib module wchar
 
@@ -4179,6 +4489,24 @@ EXTRA_libgnu_a_SOURCES += wcrtomb.c
 
 ## end   gnulib module wcrtomb
 
+## begin gnulib module wcscat
+
+
+EXTRA_DIST += wcscat-impl.h wcscat.c
+
+EXTRA_libgnu_a_SOURCES += wcscat.c
+
+## end   gnulib module wcscat
+
+## begin gnulib module wcslen
+
+
+EXTRA_DIST += wcslen-impl.h wcslen.c
+
+EXTRA_libgnu_a_SOURCES += wcslen.c
+
+## end   gnulib module wcslen
+
 ## begin gnulib module wcsncasecmp
 
 
@@ -4248,6 +4576,24 @@ EXTRA_libgnu_a_SOURCES += wcwidth.c
 
 ## end   gnulib module wcwidth
 
+## begin gnulib module wmemchr
+
+
+EXTRA_DIST += wmemchr-impl.h wmemchr.c
+
+EXTRA_libgnu_a_SOURCES += wmemchr.c
+
+## end   gnulib module wmemchr
+
+## begin gnulib module wmemcpy
+
+
+EXTRA_DIST += wmemcpy-impl.h wmemcpy.c
+
+EXTRA_libgnu_a_SOURCES += wmemcpy.c
+
+## end   gnulib module wmemcpy
+
 ## begin gnulib module xalloc
 
 libgnu_a_SOURCES += xmalloc.c
@@ -4285,6 +4631,12 @@ EXTRA_DIST += xmemdup0.c xmemdup0.h
 EXTRA_libgnu_a_SOURCES += xmemdup0.c
 
 ## end   gnulib module xmemdup0
+
+## begin gnulib module xsize
+
+libgnu_a_SOURCES += xsize.h xsize.c
+
+## end   gnulib module xsize
 
 ## begin gnulib module xstrndup
 

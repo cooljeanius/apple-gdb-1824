@@ -33,12 +33,13 @@ IMPORTED_GNULIB_MODULES="\
     absolute-header alignof alloca alloca-opt ansi-c++-opt assert assert-h \
     assure autobuild \
     bcopy bison-i18n btowc builtin-expect \
-    c-ctype c-strcase c-strcasestr c99 chdir-long configmake connect closedir \
-    crc ctime \
+    c-ctype c-strcase c-strcasestr c99 calloc-posix chdir-long configmake \
+    connect closedir crc ctime \
     dirent dirent-safer dirfd dosname double-slash-root dup2 \
     environ errno error exitfail extensions extern-inline \
-    fcntl fcntl-h fcntl-safer fileblocks flexmember float fnmatch fnmatch-gnu \
-    fnmatch-h fpieee fpucw frexp frexpl fstatat fts \
+    faccessat fcntl fcntl-h fcntl-safer fflush fileblocks flexmember float \
+    fnmatch fnmatch-gnu fnmatch-h fpieee fprintf-posix fpucw frexp frexpl \
+    fstatat fts \
     getcwd getcwd-lgpl getpagesize gettext-h gettimeofday git-version-gen \
     gitlog-to-changelog gnu-make gpl-2.0 \
     havelib host-cpu-c-abi host-os \
@@ -46,25 +47,26 @@ IMPORTED_GNULIB_MODULES="\
     isnand-nolibm isnanl-nolibm iswctype \
     largefile ldd limits-h localcharset locale localtime localtime-buffer \
     longlong lstat \
-    malloc-gnu malloc-posix manywarnings math mbrtowc mbsinit mbsrtowcs \
-    memchr memcmp memmem memmem-simple \
+    malloc-gnu malloc-posix manywarnings math mbrtowc mbschr mbsinit mbsrchr \
+    mbsrtowcs mbsspn memchr memcmp memmem memmem-simple \
     mempcpy memrchr mkdtemp multiarch \
     nextafter no-c++ nocrash noreturn \
     obstack openmp \
-    pathmax pclose popen posixcheck putenv \
+    pathmax pclose pipe-posix popen posixcheck putenv \
     readdir readlink realloc-gnu realloc-posix recv regex regex-quote \
     regexprops-generic rmdir \
-    secure_getenv send setenv sig2str sigaction signal signal-h sigpipe \
-    sigpipe-die sigprocmask snippet/_Noreturn snippet/arg-nonnull \
-    snippet/c++defs snippet/link-warning snippet/warn-on-use \
-    ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib \
-    streq strerror strerror_r-posix strerror-override strftime-fixes string \
-    strncat strndup strnlen strnlen1 strstr strstr-simple strtok_r sys_select \
-    sys_stat sys_time sys_types sys_wait \
+    secure_getenv send setenv setlocale sig2str sigaction signal signal-h \
+    sigpipe sigpipe-die sigprocmask snippet/_Noreturn snippet/arg-nonnull \
+    snippet/c++defs snippet/link-warning snippet/warn-on-use snprintf \
+    sprintf-posix ssize_t stat stat-macros stat-size stat-time stdbool stddef \
+    stdint stdlib streq strerror strerror_r-posix strerror-override \
+    strftime-fixes string strncat strndup strnlen strnlen1 strstr \
+    strstr-simple strtok_r sys_select sys_stat sys_time sys_types sys_wait \
     tempname time time_r time_rz timegm tzset \
     unistd unistd-safer unlink unlink-busy unsetenv update-copyright usleep \
-    vc-list-files verify \
-    warnings wchar wcsncasecmp wctype-h winsz-ioctl winsz-termios \
+    vc-list-files verify vfprintf-posix \
+    warnings wchar wcscat wcslen wcsncasecmp wctype wctype-h winsz-ioctl \
+    winsz-termios wmemchr wmemcpy \
     xalloc xalloc-die xalloc-oversized xmalloca xmemdup0 xstrndup"
 # (might want to check to see if any of the libiberty/gettext duplicates cause
 # any conflicts...)
@@ -75,7 +77,6 @@ IMPORTED_GNULIB_MODULES="\
 # - memchr-obsolete
 # - memmove
 # - strdup (or strdup-posix)
-# - wctype
 # (even though I cannot add them, there is no need to explicitly ignore them
 # below, though, so they may still get dragged in as dependencies)
 
