@@ -29,7 +29,7 @@
 # define __GDB_DEFS_H__ 1
 #endif /* !__GDB_DEFS_H__ */
 
-#ifdef WITH_GNULIB_BUILDDIR
+#if defined(WITH_GNULIB_BUILDDIR)
 # include "build-gnulib/../config.h"
 #endif /* WITH_GNULIB_BUILDDIR */
 
