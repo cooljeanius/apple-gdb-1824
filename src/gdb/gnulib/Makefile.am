@@ -64,7 +64,7 @@ CC_LD=$(CC)
 
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(C_ARCHFLAGS)
-AM_CPPFLAGS = -Iimport -I$(top_srcdir)/import
+AM_CPPFLAGS = -Iimport -I$(top_srcdir)/import -UGNULIB_POSIXCHECK
 
 FLAGS_TO_PASS = \
 	"prefix=$(prefix)" \
@@ -160,6 +160,17 @@ EXTRA_DIST += memmem.c str-two-way.h
 EXTRA_libgnu_a_SOURCES += memmem.c
 
 ## end gnulib module memmem-simple
+
+## begin gnulib module snippet/warn-on-use:
+
+# Because this Makefile snippet defines a variable used by other
+# gnulib Makefile snippets, it must be present in all makefiles that
+# need it. This is ensured by the applicability 'all' defined above.
+
+WARN_ON_USE_H=$(srcdir)/warn-on-use.h
+AM_CPPFLAGS += -include $(WARN_ON_USE_H)
+
+## end gnulib module snippet/warn-on-use:
 
 ## begin gnulib module stdint
 
@@ -609,6 +620,11 @@ unlink.c: $(srcdir)/import/unlink.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += unlink.c
+
+warn-on-use.h: $(srcdir)/import/warn-on-use.h
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += warn-on-use.h
 
 wcsncasecmp.c: $(srcdir)/import/wcsncasecmp.c
 	if test ! -e $@; then $(LN_S) $< $@; fi

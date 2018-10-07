@@ -520,6 +520,8 @@ fi
 gl_SIGNAL_MODULE_INDICATOR([sigprocmask])dnl
 dnl# from gnulib module snippet/link-warning:
 AC_REQUIRE([gl_FEATURES_H])dnl
+dnl# from gnulib module snippet/warn-on-use:
+AC_REQUIRE([gl_WARN_ON_USE_PREPARE])dnl
 dnl# from gnulib module ssize_t:
 AC_REQUIRE([gt_TYPE_SSIZE_T])dnl
 dnl# from gnulib module stat:

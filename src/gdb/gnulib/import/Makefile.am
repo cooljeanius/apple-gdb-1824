@@ -34,8 +34,10 @@
 #  --no-libtool \
 #  --macro-prefix=gl \
 #  --no-vc-files \
+#  --avoid=localename \
 #  --avoid=lock \
 #  --avoid=msvc-nothrow \
+#  --avoid=setlocale \
 #  --avoid=threadlib \
 #  absolute-header \
 #  alignof \
@@ -163,7 +165,6 @@
 #  secure_getenv \
 #  send \
 #  setenv \
-#  setlocale \
 #  sig2str \
 #  sigaction \
 #  signal \
@@ -1571,14 +1572,6 @@ EXTRA_libgnu_a_SOURCES += localeconv.c
 
 ## end   gnulib module localeconv
 
-## begin gnulib module localename
-
-libgnu_a_SOURCES += localename.c
-
-EXTRA_DIST += localename.h
-
-## end   gnulib module localename
-
 ## begin gnulib module localtime
 
 
@@ -2563,15 +2556,6 @@ EXTRA_DIST += setenv.c
 EXTRA_libgnu_a_SOURCES += setenv.c
 
 ## end   gnulib module setenv
-
-## begin gnulib module setlocale
-
-
-EXTRA_DIST += setlocale.c
-
-EXTRA_libgnu_a_SOURCES += setlocale.c
-
-## end   gnulib module setlocale
 
 ## begin gnulib module sig2str
 

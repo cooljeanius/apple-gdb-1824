@@ -55,8 +55,8 @@ IMPORTED_GNULIB_MODULES="\
     pathmax pclose pipe-posix popen posixcheck putenv \
     readdir readlink realloc-gnu realloc-posix recv regex regex-quote \
     regexprops-generic rmdir \
-    secure_getenv send setenv setlocale sig2str sigaction signal signal-h \
-    sigpipe sigpipe-die sigprocmask snippet/_Noreturn snippet/arg-nonnull \
+    secure_getenv send setenv sig2str sigaction signal signal-h sigpipe \
+    sigpipe-die sigprocmask snippet/_Noreturn snippet/arg-nonnull \
     snippet/c++defs snippet/link-warning snippet/warn-on-use snprintf \
     sprintf-posix ssize_t stat stat-macros stat-size stat-time stdbool stddef \
     stdint stdlib streq strerror strerror_r-posix strerror-override \
@@ -79,6 +79,9 @@ IMPORTED_GNULIB_MODULES="\
 # - strdup (or strdup-posix)
 # (even though I cannot add them, there is no need to explicitly ignore them
 # below, though, so they may still get dragged in as dependencies)
+# Reasons for explicitly ignoring some:
+# - setlocale: depends on localename, which depends on lock, which is
+#   explicitly ignored.
 
 # The gnulib commit ID to use for the update.
 GNULIB_COMMIT_SHA1="635beea5deb0426d14e3639993a1d45dfeb8cf5f"
@@ -136,9 +139,9 @@ echo "actually importing now; this may take a while..."
 ${gnulib_prefix}/gnulib-tool --import --dir=. --lib=libgnu \
   --source-base=import --m4-base=import/m4 --doc-base=doc \
   --tests-base=tests --aux-dir=import/extra \
-  --avoid=lock --avoid=msvc-nothrow --avoid=threadlib \
-  --no-conditional-dependencies --no-libtool --macro-prefix=gl \
-  --no-vc-files --with-obsolete \
+  --avoid=localename --avoid=lock --avoid=msvc-nothrow --avoid=setlocale \
+  --avoid=threadlib --no-conditional-dependencies --no-libtool \
+  --macro-prefix=gl --no-vc-files --with-obsolete \
   ${IMPORTED_GNULIB_MODULES}
 if [ $? -ne 0 ]; then
    echo "Error: gnulib import failed.  Aborting."

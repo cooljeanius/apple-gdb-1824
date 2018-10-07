@@ -176,7 +176,6 @@ AC_DEFUN([gl_EARLY],
   # Code from module localcharset:
   # Code from module locale:
   # Code from module localeconv:
-  # Code from module localename:
   # Code from module localtime:
   # Code from module localtime-buffer:
   # Code from module longlong:
@@ -254,7 +253,6 @@ AC_DEFUN([gl_EARLY],
   # Code from module secure_getenv:
   # Code from module send:
   # Code from module setenv:
-  # Code from module setlocale:
   # Code from module sig2str:
   # Code from module sigaction:
   # Code from module signal:
@@ -710,7 +708,6 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_LOCALECONV
   fi
   gl_LOCALE_MODULE_INDICATOR([localeconv])
-  gl_LOCALENAME
   gl_FUNC_LOCALTIME
   if test $REPLACE_LOCALTIME = 1; then
     AC_LIBOBJ([localtime])
@@ -961,12 +958,6 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([setenv])
   fi
   gl_STDLIB_MODULE_INDICATOR([setenv])
-  gl_FUNC_SETLOCALE
-  if test $REPLACE_SETLOCALE = 1; then
-    AC_LIBOBJ([setlocale])
-    gl_PREREQ_SETLOCALE
-  fi
-  gl_LOCALE_MODULE_INDICATOR([setlocale])
   gl_FUNC_SIG2STR
   if test $ac_cv_func_sig2str = no; then
     AC_LIBOBJ([sig2str])
@@ -1533,8 +1524,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/localcharset.h
   lib/locale.in.h
   lib/localeconv.c
-  lib/localename.c
-  lib/localename.h
   lib/localtime-buffer.c
   lib/localtime-buffer.h
   lib/localtime.c
@@ -1627,7 +1616,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/secure_getenv.c
   lib/send.c
   lib/setenv.c
-  lib/setlocale.c
   lib/sig-handler.c
   lib/sig-handler.h
   lib/sig2str.c
@@ -1874,7 +1862,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/locale-zh.m4
   m4/locale_h.m4
   m4/localeconv.m4
-  m4/localename.m4
   m4/localtime-buffer.m4
   m4/localtime.m4
   m4/lock.m4
@@ -1946,7 +1933,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/search_h.m4
   m4/secure_getenv.m4
   m4/setenv.m4
-  m4/setlocale.m4
   m4/sig2str.m4
   m4/sigaction.m4
   m4/signal_h.m4

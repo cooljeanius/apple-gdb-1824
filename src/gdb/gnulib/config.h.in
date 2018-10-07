@@ -519,9 +519,6 @@
 /* Define to 1 when the gnulib module setenv should be tested. */
 #undef GNULIB_TEST_SETENV
 
-/* Define to 1 when the gnulib module setlocale should be tested. */
-#undef GNULIB_TEST_SETLOCALE
-
 /* Define to 1 when the gnulib module sigaction should be tested. */
 #undef GNULIB_TEST_SIGACTION
 
@@ -658,18 +655,6 @@
 
 /* Define to 1 if you have the `catgets' function. */
 #undef HAVE_CATGETS
-
-/* Define to 1 if you have the Mac OS X function CFLocaleCopyCurrent in the
-   CoreFoundation framework. */
-#undef HAVE_CFLOCALECOPYCURRENT
-
-/* Define to 1 if you have the Mac OS X function
-   CFLocaleCopyPreferredLanguages in the CoreFoundation framework. */
-#undef HAVE_CFLOCALECOPYPREFERREDLANGUAGES
-
-/* Define to 1 if you have the Mac OS X function CFPreferencesCopyAppValue in
-   the CoreFoundation framework. */
-#undef HAVE_CFPREFERENCESCOPYAPPVALUE
 
 /* Define to 1 if you have the `closedir' function. */
 #undef HAVE_CLOSEDIR
@@ -965,9 +950,6 @@
 /* Define to 1 if your system has a working `getgroups' function. */
 #undef HAVE_GETGROUPS
 
-/* Define to 1 if you have the `getlocalename_l' function. */
-#undef HAVE_GETLOCALENAME_L
-
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
@@ -1039,9 +1021,6 @@
 
 /* Define to 1 if you have the <langinfo.h> header file. */
 #undef HAVE_LANGINFO_H
-
-/* Define if your <locale.h> file defines LC_MESSAGES. */
-#undef HAVE_LC_MESSAGES
 
 /* Define if the ldexpl function is available in libc. */
 #undef HAVE_LDEXPL_IN_LIBC
@@ -2655,9 +2634,6 @@
 
 /* Define to 1 if the system has the type 'unsigned long long int'. */
 #undef HAVE_UNSIGNED_LONG_LONG_INT
-
-/* Define to 1 if you have the `uselocale' function. */
-#undef HAVE_USELOCALE
 
 /* Define to 1 if you have the `usleep' function. */
 #undef HAVE_USLEEP

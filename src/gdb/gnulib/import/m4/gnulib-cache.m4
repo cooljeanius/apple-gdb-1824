@@ -39,8 +39,10 @@
 #  --no-libtool \
 #  --macro-prefix=gl \
 #  --no-vc-files \
+#  --avoid=localename \
 #  --avoid=lock \
 #  --avoid=msvc-nothrow \
+#  --avoid=setlocale \
 #  --avoid=threadlib \
 #  absolute-header \
 #  alignof \
@@ -168,7 +170,6 @@
 #  secure_getenv \
 #  send \
 #  setenv \
-#  setlocale \
 #  sig2str \
 #  sigaction \
 #  signal \
@@ -373,7 +374,6 @@ gl_MODULES([
   secure_getenv
   send
   setenv
-  setlocale
   sig2str
   sigaction
   signal
@@ -450,7 +450,7 @@ gl_MODULES([
   xstrndup
 ])
 gl_WITH_OBSOLETE
-gl_AVOID([ lock msvc-nothrow threadlib])
+gl_AVOID([ localename lock msvc-nothrow setlocale threadlib])
 gl_SOURCE_BASE([import])
 gl_M4_BASE([import/m4])
 gl_PO_BASE([])

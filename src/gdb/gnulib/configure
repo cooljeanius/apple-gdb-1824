@@ -966,7 +966,6 @@ LOCALE_ZH_CN
 LOCALE_JA
 NEXT_AS_FIRST_DIRECTIVE_MATH_H
 NEXT_MATH_H
-INTL_MACOSX_LIBS
 NEXT_AS_FIRST_DIRECTIVE_LOCALE_H
 NEXT_LOCALE_H
 HAVE_XLOCALE_H
@@ -7160,7 +7159,6 @@ $as_echo "$as_me: autobuild timestamp... $date" >&6;}
   # Code from module localcharset:
   # Code from module locale:
   # Code from module localeconv:
-  # Code from module localename:
   # Code from module localtime:
   # Code from module localtime-buffer:
   # Code from module longlong:
@@ -7238,7 +7236,6 @@ $as_echo "$as_me: autobuild timestamp... $date" >&6;}
   # Code from module secure_getenv:
   # Code from module send:
   # Code from module setenv:
-  # Code from module setlocale:
   # Code from module sig2str:
   # Code from module sigaction:
   # Code from module signal:
@@ -18264,150 +18261,6 @@ $as_echo "$gl_cv_next_stddef_h" >&6; }
 
 
 
-
-
-
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LC_MESSAGES" >&5
-$as_echo_n "checking for LC_MESSAGES... " >&6; }
-if ${gt_cv_val_LC_MESSAGES+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <locale.h>
-int
-main ()
-{
-return LC_MESSAGES
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  gt_cv_val_LC_MESSAGES=yes
-else
-  gt_cv_val_LC_MESSAGES=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gt_cv_val_LC_MESSAGES" >&5
-$as_echo "$gt_cv_val_LC_MESSAGES" >&6; }
-  if test $gt_cv_val_LC_MESSAGES = yes; then
-
-$as_echo "#define HAVE_LC_MESSAGES 1" >>confdefs.h
-
-  fi
-
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for CFPreferencesCopyAppValue" >&5
-$as_echo_n "checking for CFPreferencesCopyAppValue... " >&6; }
-if ${gt_cv_func_CFPreferencesCopyAppValue+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  gt_save_LIBS="$LIBS"
-     LIBS="$LIBS -Wl,-framework -Wl,CoreFoundation"
-     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <CoreFoundation/CFPreferences.h>
-int
-main ()
-{
-CFPreferencesCopyAppValue(NULL, NULL)
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  gt_cv_func_CFPreferencesCopyAppValue=yes
-else
-  gt_cv_func_CFPreferencesCopyAppValue=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-     LIBS="$gt_save_LIBS"
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gt_cv_func_CFPreferencesCopyAppValue" >&5
-$as_echo "$gt_cv_func_CFPreferencesCopyAppValue" >&6; }
-  if test $gt_cv_func_CFPreferencesCopyAppValue = yes; then
-
-$as_echo "#define HAVE_CFPREFERENCESCOPYAPPVALUE 1" >>confdefs.h
-
-  fi
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for CFLocaleCopyCurrent" >&5
-$as_echo_n "checking for CFLocaleCopyCurrent... " >&6; }
-if ${gt_cv_func_CFLocaleCopyCurrent+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  gt_save_LIBS="$LIBS"
-     LIBS="$LIBS -Wl,-framework -Wl,CoreFoundation"
-     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <CoreFoundation/CFLocale.h>
-int
-main ()
-{
-CFLocaleCopyCurrent();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  gt_cv_func_CFLocaleCopyCurrent=yes
-else
-  gt_cv_func_CFLocaleCopyCurrent=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-     LIBS="$gt_save_LIBS"
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gt_cv_func_CFLocaleCopyCurrent" >&5
-$as_echo "$gt_cv_func_CFLocaleCopyCurrent" >&6; }
-  if test $gt_cv_func_CFLocaleCopyCurrent = yes; then
-
-$as_echo "#define HAVE_CFLOCALECOPYCURRENT 1" >>confdefs.h
-
-  fi
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for CFLocaleCopyPreferredLanguages" >&5
-$as_echo_n "checking for CFLocaleCopyPreferredLanguages... " >&6; }
-if ${gt_cv_func_CFLocaleCopyPreferredLanguages+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  gt_save_LIBS="$LIBS"
-     LIBS="$LIBS -Wl,-framework -Wl,CoreFoundation"
-     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <CoreFoundation/CFLocale.h>
-int
-main ()
-{
-CFLocaleCopyPreferredLanguages();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  gt_cv_func_CFLocaleCopyPreferredLanguages=yes
-else
-  gt_cv_func_CFLocaleCopyPreferredLanguages=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-     LIBS="$gt_save_LIBS"
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gt_cv_func_CFLocaleCopyPreferredLanguages" >&5
-$as_echo "$gt_cv_func_CFLocaleCopyPreferredLanguages" >&6; }
-  if test $gt_cv_func_CFLocaleCopyPreferredLanguages = yes; then
-
-$as_echo "#define HAVE_CFLOCALECOPYPREFERREDLANGUAGES 1" >>confdefs.h
-
-  fi
-  INTL_MACOSX_LIBS=
-  if test $gt_cv_func_CFPreferencesCopyAppValue = yes \
-     || test $gt_cv_func_CFLocaleCopyCurrent = yes \
-     || test $gt_cv_func_CFLocaleCopyPreferredLanguages = yes; then
-    INTL_MACOSX_LIBS="-Wl,-framework -Wl,CoreFoundation"
-  fi
 
 
 
@@ -31342,42 +31195,6 @@ $as_echo "#define GNULIB_TEST_LOCALECONV 1" >>confdefs.h
 
 
 
-
-  :
-
-
-
-
-
-  for ac_func in setlocale uselocale
-do :
-  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
-ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
-if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-done
-
-      if test $ac_cv_func_uselocale = yes; then
-    for ac_func in getlocalename_l
-do :
-  ac_fn_c_check_func "$LINENO" "getlocalename_l" "ac_cv_func_getlocalename_l"
-if test "x$ac_cv_func_getlocalename_l" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_GETLOCALENAME_L 1
-_ACEOF
-
-fi
-done
-
-  fi
-
-
-
-
   case "$host_os" in
     mingw*) REPLACE_LOCALTIME=1 ;;
   esac
@@ -37190,48 +37007,6 @@ $as_echo "$gl_cv_func_setenv_works" >&6; }
 
 
 $as_echo "#define GNULIB_TEST_SETENV 1" >>confdefs.h
-
-
-
-
-
-
-  case "$host_os" in
-            mingw*) REPLACE_SETLOCALE=1 ;;
-            cygwin*)
-      case `uname -r` in
-        1.5.*) REPLACE_SETLOCALE=1 ;;
-      esac
-      ;;
-  esac
-
-  if test $REPLACE_SETLOCALE = 1; then
-
-
-
-
-
-
-
-
-  gl_LIBOBJS="$gl_LIBOBJS setlocale.$ac_objext"
-
-
-        :
-
-  fi
-
-
-
-
-
-          GNULIB_SETLOCALE=1
-
-
-
-
-
-$as_echo "#define GNULIB_TEST_SETLOCALE 1" >>confdefs.h
 
 
 
