@@ -1032,6 +1032,7 @@ LINKER
 COMPILER
 MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE
 MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE
+POSIXCHECK_CPPFLAGS
 subdirs
 MAKEINFO_EXTRA_FLAGS
 MAKEINFOFLAGS
@@ -9825,6 +9826,10 @@ fi
   ## now use that flag:
 if test -d ${srcdir}/gnulib && test "x${recurse_into_gnulib}" = "xyes"; then
   test -n "${recurse_into_gnulib}"
+  if test -f ${GNULIB_IMPORT_DIR}/m4/posixcheck.m4; then
+    export POSIXCHECK_CPPFLAGS="-DGNULIB_POSIXCHECK"
+        ## just to see...
+  fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: using gnulib" >&5
 $as_echo "$as_me: using gnulib" >&6;}
   subdirs="$subdirs gnulib"

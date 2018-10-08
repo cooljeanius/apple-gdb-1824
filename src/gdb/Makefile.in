@@ -605,7 +605,7 @@ CFLAGS = @CFLAGS@
 
 # Set by configure
 INTERNAL_CPPFLAGS = @CPPFLAGS@ -Iattic -I. -Itarget -I$(srcdir)/target \
-  -Inat -Icommon
+  -Inat -Icommon @MAINT@ @POSIXCHECK_CPPFLAGS@
 
 # Need to pass this to testsuite for "make check". Probably should be
 # consistent with top-level Makefile.in and gdb/testsuite/Makefile.in

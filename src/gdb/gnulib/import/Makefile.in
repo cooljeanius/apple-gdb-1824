@@ -130,6 +130,7 @@
 #  iswctype \
 #  largefile \
 #  ldd \
+#  ldexpl \
 #  limits-h \
 #  localcharset \
 #  locale \
@@ -441,6 +442,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/gnulib-use-manually.m4 \
 	$(top_srcdir)/import/m4/langinfo_h.m4 \
 	$(top_srcdir)/import/m4/largefile.m4 \
 	$(top_srcdir)/import/m4/ldd.m4 \
+	$(top_srcdir)/import/m4/ldexp.m4 \
 	$(top_srcdir)/import/m4/ldexpl.m4 \
 	$(top_srcdir)/import/m4/libunistring-base.m4 \
 	$(top_srcdir)/import/m4/limits-h.m4 \
@@ -705,66 +707,66 @@ am__depfiles_remade = ./$(DEPDIR)/alloca.Po ./$(DEPDIR)/asnprintf.Po \
 	./$(DEPDIR)/isnand.Po ./$(DEPDIR)/isnanf.Po \
 	./$(DEPDIR)/isnanl.Po ./$(DEPDIR)/iswblank.Po \
 	./$(DEPDIR)/iswctype.Po ./$(DEPDIR)/itold.Po \
-	./$(DEPDIR)/localcharset.Po ./$(DEPDIR)/localeconv.Po \
-	./$(DEPDIR)/localtime-buffer.Po ./$(DEPDIR)/localtime.Po \
-	./$(DEPDIR)/lseek.Po ./$(DEPDIR)/lstat.Po \
-	./$(DEPDIR)/malloc.Po ./$(DEPDIR)/malloca.Po \
-	./$(DEPDIR)/math.Po ./$(DEPDIR)/mbchar.Po \
-	./$(DEPDIR)/mbrtowc.Po ./$(DEPDIR)/mbschr.Po \
-	./$(DEPDIR)/mbsinit.Po ./$(DEPDIR)/mbsrchr.Po \
-	./$(DEPDIR)/mbsrtowcs-state.Po ./$(DEPDIR)/mbsrtowcs.Po \
-	./$(DEPDIR)/mbsspn.Po ./$(DEPDIR)/mbtowc.Po \
-	./$(DEPDIR)/mbuiter.Po ./$(DEPDIR)/memchr.Po \
-	./$(DEPDIR)/memcmp.Po ./$(DEPDIR)/memmem.Po \
-	./$(DEPDIR)/memmove.Po ./$(DEPDIR)/mempcpy.Po \
-	./$(DEPDIR)/memrchr.Po ./$(DEPDIR)/mkdtemp.Po \
-	./$(DEPDIR)/mktime.Po ./$(DEPDIR)/msvc-inval.Po \
-	./$(DEPDIR)/nl_langinfo.Po ./$(DEPDIR)/obstack.Po \
-	./$(DEPDIR)/open-safer.Po ./$(DEPDIR)/open.Po \
-	./$(DEPDIR)/openat-die.Po ./$(DEPDIR)/openat-proc.Po \
-	./$(DEPDIR)/openat-safer.Po ./$(DEPDIR)/openat.Po \
-	./$(DEPDIR)/opendir-safer.Po ./$(DEPDIR)/opendir.Po \
-	./$(DEPDIR)/pclose.Po ./$(DEPDIR)/pipe-safer.Po \
-	./$(DEPDIR)/pipe.Po ./$(DEPDIR)/popen.Po \
-	./$(DEPDIR)/printf-args.Po ./$(DEPDIR)/printf-frexp.Po \
-	./$(DEPDIR)/printf-frexpl.Po ./$(DEPDIR)/printf-parse.Po \
-	./$(DEPDIR)/putenv.Po ./$(DEPDIR)/raise.Po \
-	./$(DEPDIR)/readdir.Po ./$(DEPDIR)/readlink.Po \
-	./$(DEPDIR)/realloc.Po ./$(DEPDIR)/recv.Po \
-	./$(DEPDIR)/regcomp.Po ./$(DEPDIR)/regex-quote.Po \
-	./$(DEPDIR)/regex.Po ./$(DEPDIR)/regex_internal.Po \
-	./$(DEPDIR)/regexec.Po ./$(DEPDIR)/rewinddir.Po \
-	./$(DEPDIR)/rmdir.Po ./$(DEPDIR)/save-cwd.Po \
-	./$(DEPDIR)/secure_getenv.Po ./$(DEPDIR)/send.Po \
-	./$(DEPDIR)/setenv.Po ./$(DEPDIR)/sig-handler.Po \
-	./$(DEPDIR)/sig2str.Po ./$(DEPDIR)/sigaction.Po \
-	./$(DEPDIR)/signbitd.Po ./$(DEPDIR)/signbitf.Po \
-	./$(DEPDIR)/signbitl.Po ./$(DEPDIR)/sigpipe-die.Po \
-	./$(DEPDIR)/sigprocmask.Po ./$(DEPDIR)/sleep.Po \
-	./$(DEPDIR)/snprintf.Po ./$(DEPDIR)/sprintf.Po \
-	./$(DEPDIR)/stat-time.Po ./$(DEPDIR)/stat-w32.Po \
-	./$(DEPDIR)/stat.Po ./$(DEPDIR)/stdio-write.Po \
-	./$(DEPDIR)/strdup.Po ./$(DEPDIR)/strerror-override.Po \
-	./$(DEPDIR)/strerror.Po ./$(DEPDIR)/strerror_r.Po \
-	./$(DEPDIR)/strftime-fixes.Po ./$(DEPDIR)/stripslash.Po \
-	./$(DEPDIR)/strncat.Po ./$(DEPDIR)/strndup.Po \
-	./$(DEPDIR)/strnlen.Po ./$(DEPDIR)/strnlen1.Po \
-	./$(DEPDIR)/strpbrk.Po ./$(DEPDIR)/strstr.Po \
-	./$(DEPDIR)/strtok_r.Po ./$(DEPDIR)/sys_socket.Po \
-	./$(DEPDIR)/tempname.Po ./$(DEPDIR)/time_r.Po \
-	./$(DEPDIR)/time_rz.Po ./$(DEPDIR)/timegm.Po \
-	./$(DEPDIR)/tzset.Po ./$(DEPDIR)/unistd.Po \
-	./$(DEPDIR)/unlink.Po ./$(DEPDIR)/unsetenv.Po \
-	./$(DEPDIR)/usleep.Po ./$(DEPDIR)/vasnprintf.Po \
-	./$(DEPDIR)/vfprintf.Po ./$(DEPDIR)/wcrtomb.Po \
-	./$(DEPDIR)/wcscat.Po ./$(DEPDIR)/wcslen.Po \
-	./$(DEPDIR)/wcsncasecmp.Po ./$(DEPDIR)/wctype-h.Po \
-	./$(DEPDIR)/wctype.Po ./$(DEPDIR)/wcwidth.Po \
-	./$(DEPDIR)/wmemchr.Po ./$(DEPDIR)/wmemcpy.Po \
-	./$(DEPDIR)/xalloc-die.Po ./$(DEPDIR)/xmalloc.Po \
-	./$(DEPDIR)/xmalloca.Po ./$(DEPDIR)/xmemdup0.Po \
-	./$(DEPDIR)/xsize.Po ./$(DEPDIR)/xstrndup.Po \
-	uniwidth/$(DEPDIR)/width.Po
+	./$(DEPDIR)/ldexpl.Po ./$(DEPDIR)/localcharset.Po \
+	./$(DEPDIR)/localeconv.Po ./$(DEPDIR)/localtime-buffer.Po \
+	./$(DEPDIR)/localtime.Po ./$(DEPDIR)/lseek.Po \
+	./$(DEPDIR)/lstat.Po ./$(DEPDIR)/malloc.Po \
+	./$(DEPDIR)/malloca.Po ./$(DEPDIR)/math.Po \
+	./$(DEPDIR)/mbchar.Po ./$(DEPDIR)/mbrtowc.Po \
+	./$(DEPDIR)/mbschr.Po ./$(DEPDIR)/mbsinit.Po \
+	./$(DEPDIR)/mbsrchr.Po ./$(DEPDIR)/mbsrtowcs-state.Po \
+	./$(DEPDIR)/mbsrtowcs.Po ./$(DEPDIR)/mbsspn.Po \
+	./$(DEPDIR)/mbtowc.Po ./$(DEPDIR)/mbuiter.Po \
+	./$(DEPDIR)/memchr.Po ./$(DEPDIR)/memcmp.Po \
+	./$(DEPDIR)/memmem.Po ./$(DEPDIR)/memmove.Po \
+	./$(DEPDIR)/mempcpy.Po ./$(DEPDIR)/memrchr.Po \
+	./$(DEPDIR)/mkdtemp.Po ./$(DEPDIR)/mktime.Po \
+	./$(DEPDIR)/msvc-inval.Po ./$(DEPDIR)/nl_langinfo.Po \
+	./$(DEPDIR)/obstack.Po ./$(DEPDIR)/open-safer.Po \
+	./$(DEPDIR)/open.Po ./$(DEPDIR)/openat-die.Po \
+	./$(DEPDIR)/openat-proc.Po ./$(DEPDIR)/openat-safer.Po \
+	./$(DEPDIR)/openat.Po ./$(DEPDIR)/opendir-safer.Po \
+	./$(DEPDIR)/opendir.Po ./$(DEPDIR)/pclose.Po \
+	./$(DEPDIR)/pipe-safer.Po ./$(DEPDIR)/pipe.Po \
+	./$(DEPDIR)/popen.Po ./$(DEPDIR)/printf-args.Po \
+	./$(DEPDIR)/printf-frexp.Po ./$(DEPDIR)/printf-frexpl.Po \
+	./$(DEPDIR)/printf-parse.Po ./$(DEPDIR)/putenv.Po \
+	./$(DEPDIR)/raise.Po ./$(DEPDIR)/readdir.Po \
+	./$(DEPDIR)/readlink.Po ./$(DEPDIR)/realloc.Po \
+	./$(DEPDIR)/recv.Po ./$(DEPDIR)/regcomp.Po \
+	./$(DEPDIR)/regex-quote.Po ./$(DEPDIR)/regex.Po \
+	./$(DEPDIR)/regex_internal.Po ./$(DEPDIR)/regexec.Po \
+	./$(DEPDIR)/rewinddir.Po ./$(DEPDIR)/rmdir.Po \
+	./$(DEPDIR)/save-cwd.Po ./$(DEPDIR)/secure_getenv.Po \
+	./$(DEPDIR)/send.Po ./$(DEPDIR)/setenv.Po \
+	./$(DEPDIR)/sig-handler.Po ./$(DEPDIR)/sig2str.Po \
+	./$(DEPDIR)/sigaction.Po ./$(DEPDIR)/signbitd.Po \
+	./$(DEPDIR)/signbitf.Po ./$(DEPDIR)/signbitl.Po \
+	./$(DEPDIR)/sigpipe-die.Po ./$(DEPDIR)/sigprocmask.Po \
+	./$(DEPDIR)/sleep.Po ./$(DEPDIR)/snprintf.Po \
+	./$(DEPDIR)/sprintf.Po ./$(DEPDIR)/stat-time.Po \
+	./$(DEPDIR)/stat-w32.Po ./$(DEPDIR)/stat.Po \
+	./$(DEPDIR)/stdio-write.Po ./$(DEPDIR)/strdup.Po \
+	./$(DEPDIR)/strerror-override.Po ./$(DEPDIR)/strerror.Po \
+	./$(DEPDIR)/strerror_r.Po ./$(DEPDIR)/strftime-fixes.Po \
+	./$(DEPDIR)/stripslash.Po ./$(DEPDIR)/strncat.Po \
+	./$(DEPDIR)/strndup.Po ./$(DEPDIR)/strnlen.Po \
+	./$(DEPDIR)/strnlen1.Po ./$(DEPDIR)/strpbrk.Po \
+	./$(DEPDIR)/strstr.Po ./$(DEPDIR)/strtok_r.Po \
+	./$(DEPDIR)/sys_socket.Po ./$(DEPDIR)/tempname.Po \
+	./$(DEPDIR)/time_r.Po ./$(DEPDIR)/time_rz.Po \
+	./$(DEPDIR)/timegm.Po ./$(DEPDIR)/tzset.Po \
+	./$(DEPDIR)/unistd.Po ./$(DEPDIR)/unlink.Po \
+	./$(DEPDIR)/unsetenv.Po ./$(DEPDIR)/usleep.Po \
+	./$(DEPDIR)/vasnprintf.Po ./$(DEPDIR)/vfprintf.Po \
+	./$(DEPDIR)/wcrtomb.Po ./$(DEPDIR)/wcscat.Po \
+	./$(DEPDIR)/wcslen.Po ./$(DEPDIR)/wcsncasecmp.Po \
+	./$(DEPDIR)/wctype-h.Po ./$(DEPDIR)/wctype.Po \
+	./$(DEPDIR)/wcwidth.Po ./$(DEPDIR)/wmemchr.Po \
+	./$(DEPDIR)/wmemcpy.Po ./$(DEPDIR)/xalloc-die.Po \
+	./$(DEPDIR)/xmalloc.Po ./$(DEPDIR)/xmalloca.Po \
+	./$(DEPDIR)/xmemdup0.Po ./$(DEPDIR)/xsize.Po \
+	./$(DEPDIR)/xstrndup.Po uniwidth/$(DEPDIR)/width.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -1754,8 +1756,11 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INT32_MAX_LT_INTMAX_MAX = @INT32_MAX_LT_INTMAX_MAX@
 INT64_MAX_EQ_LONG_MAX = @INT64_MAX_EQ_LONG_MAX@
+ISNANL_LIBM = @ISNANL_LIBM@
 LDDPOSTPROC = @LDDPOSTPROC@
 LDDPROG = @LDDPROG@
+LDEXPL_LIBM = @LDEXPL_LIBM@
+LDEXP_LIBM = @LDEXP_LIBM@
 LDFLAGS = @LDFLAGS@
 LIBGNU_LIBDEPS = @LIBGNU_LIBDEPS@
 LIBGNU_LTLIBDEPS = @LIBGNU_LTLIBDEPS@
@@ -2294,12 +2299,12 @@ EXTRA_DIST = m4/gnulib-cache.m4 alignof.h alloca.c alloca.in.h \
 	$(top_srcdir)/import/extra/config.rpath i-ring.h iconv.in.h \
 	ignore-value.h intprops.h inttypes.in.h float+.h isnan.c \
 	isnand-nolibm.h isnand.c float+.h isnan.c isnanf-nolibm.h \
-	isnanf.c float+.h isnan.c isnanl-nolibm.h isnanl.c iswblank.c \
-	iswctype-impl.h iswctype.c langinfo.in.h \
-	$(top_srcdir)/import/extra/ldd.sh.in cdefs.h libc-config.h \
-	limits.in.h localcharset.h locale.in.h localeconv.c \
-	localtime.c localtime-buffer.c localtime-buffer.h lseek.c \
-	lstat.c malloc.c malloc.c malloca.h math.in.h mbchar.h \
+	isnanf.c float+.h isnan.c isnanl.c float+.h isnan.c \
+	isnanl-nolibm.h isnanl.c iswblank.c iswctype-impl.h iswctype.c \
+	langinfo.in.h $(top_srcdir)/import/extra/ldd.sh.in ldexpl.c \
+	cdefs.h libc-config.h limits.in.h localcharset.h locale.in.h \
+	localeconv.c localtime.c localtime-buffer.c localtime-buffer.h \
+	lseek.c lstat.c malloc.c malloc.c malloca.h math.in.h mbchar.h \
 	mbrtowc.c mbsinit.c mbsrtowcs-impl.h mbsrtowcs-state.c \
 	mbsrtowcs.c mbtowc-impl.h mbtowc.c memchr.c memchr.valgrind \
 	memcmp.c memmem.c str-two-way.h memmove.c mempcpy.c memrchr.c \
@@ -2416,24 +2421,24 @@ EXTRA_libgnu_a_SOURCES = alloca.c openat-proc.c atexit.c bcopy.c \
 	ftell.c ftello.c fts-cycle.c fts.c getcwd.c getcwd-lgpl.c \
 	getdtablesize.c getgroups.c getpagesize.c gettimeofday.c \
 	group-member.c isnan.c isnand.c isnan.c isnanf.c isnan.c \
-	isnanl.c iswblank.c iswctype.c localeconv.c localtime.c \
-	localtime-buffer.c lseek.c lstat.c malloc.c malloc.c mbrtowc.c \
-	mbsinit.c mbsrtowcs-state.c mbsrtowcs.c mbtowc.c memchr.c \
-	memcmp.c memmem.c memmove.c mempcpy.c memrchr.c mkdtemp.c \
-	mktime.c mktime.c msvc-inval.c nl_langinfo.c obstack.c open.c \
-	openat.c opendir.c pclose.c pipe.c popen.c printf-frexp.c \
-	putenv.c raise.c readdir.c readlink.c realloc.c realloc.c \
-	recv.c regcomp.c regex.c regex_internal.c regexec.c \
-	rewinddir.c rmdir.c secure_getenv.c send.c setenv.c sig2str.c \
-	sigaction.c signbitd.c signbitf.c signbitl.c stdio-write.c \
-	sigprocmask.c sleep.c snprintf.c sprintf.c stat-w32.c stat.c \
-	strdup.c strdup.c strerror.c strerror-override.c strerror_r.c \
-	strftime-fixes.c strncat.c strndup.c strnlen.c strpbrk.c \
-	strstr.c strtok_r.c time_r.c time_rz.c timegm.c tzset.c \
-	unlink.c unsetenv.c usleep.c asnprintf.c printf-args.c \
-	printf-parse.c vasnprintf.c vfprintf.c wcrtomb.c wcscat.c \
-	wcslen.c wcsncasecmp.c wctype.c wcwidth.c wmemchr.c wmemcpy.c \
-	xmemdup0.c
+	isnanl.c isnan.c isnanl.c iswblank.c iswctype.c ldexpl.c \
+	localeconv.c localtime.c localtime-buffer.c lseek.c lstat.c \
+	malloc.c malloc.c mbrtowc.c mbsinit.c mbsrtowcs-state.c \
+	mbsrtowcs.c mbtowc.c memchr.c memcmp.c memmem.c memmove.c \
+	mempcpy.c memrchr.c mkdtemp.c mktime.c mktime.c msvc-inval.c \
+	nl_langinfo.c obstack.c open.c openat.c opendir.c pclose.c \
+	pipe.c popen.c printf-frexp.c putenv.c raise.c readdir.c \
+	readlink.c realloc.c realloc.c recv.c regcomp.c regex.c \
+	regex_internal.c regexec.c rewinddir.c rmdir.c secure_getenv.c \
+	send.c setenv.c sig2str.c sigaction.c signbitd.c signbitf.c \
+	signbitl.c stdio-write.c sigprocmask.c sleep.c snprintf.c \
+	sprintf.c stat-w32.c stat.c strdup.c strdup.c strerror.c \
+	strerror-override.c strerror_r.c strftime-fixes.c strncat.c \
+	strndup.c strnlen.c strpbrk.c strstr.c strtok_r.c time_r.c \
+	time_rz.c timegm.c tzset.c unlink.c unsetenv.c usleep.c \
+	asnprintf.c printf-args.c printf-parse.c vasnprintf.c \
+	vfprintf.c wcrtomb.c wcscat.c wcslen.c wcsncasecmp.c wctype.c \
+	wcwidth.c wmemchr.c wmemcpy.c xmemdup0.c
 
 # Use this preprocessor expression to decide whether #include_next works.
 # Do not rely on a 'configure'-time test for this, since the expression
@@ -2610,6 +2615,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/iswblank.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/iswctype.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/itold.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ldexpl.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/localcharset.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/localeconv.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/localtime-buffer.Po@am__quote@ # am--include-marker
@@ -3080,6 +3086,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/iswblank.Po
 	-rm -f ./$(DEPDIR)/iswctype.Po
 	-rm -f ./$(DEPDIR)/itold.Po
+	-rm -f ./$(DEPDIR)/ldexpl.Po
 	-rm -f ./$(DEPDIR)/localcharset.Po
 	-rm -f ./$(DEPDIR)/localeconv.Po
 	-rm -f ./$(DEPDIR)/localtime-buffer.Po
@@ -3320,6 +3327,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/iswblank.Po
 	-rm -f ./$(DEPDIR)/iswctype.Po
 	-rm -f ./$(DEPDIR)/itold.Po
+	-rm -f ./$(DEPDIR)/ldexpl.Po
 	-rm -f ./$(DEPDIR)/localcharset.Po
 	-rm -f ./$(DEPDIR)/localeconv.Po
 	-rm -f ./$(DEPDIR)/localtime-buffer.Po

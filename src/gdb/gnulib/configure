@@ -986,6 +986,8 @@ GNULIB_DUPLOCALE
 GNULIB_SETLOCALE
 GNULIB_LOCALECONV
 LOCALCHARSET_TESTS_ENVIRONMENT
+LDEXPL_LIBM
+LDEXP_LIBM
 LDDPOSTPROC
 LDDPROG
 OBJDUMP
@@ -1017,6 +1019,7 @@ GNULIB_WCTRANS
 GNULIB_ISWCTYPE
 GNULIB_WCTYPE
 GNULIB_ISWBLANK
+ISNANL_LIBM
 NEXT_AS_FIRST_DIRECTIVE_INTTYPES_H
 NEXT_INTTYPES_H
 UINT64_MAX_EQ_ULONG_MAX
@@ -7147,6 +7150,7 @@ $as_echo "$as_me: autobuild timestamp... $date" >&6;}
   # Code from module inttypes-incomplete:
   # Code from module isnand-nolibm:
   # Code from module isnanf-nolibm:
+  # Code from module isnanl:
   # Code from module isnanl-nolibm:
   # Code from module iswblank:
   # Code from module iswctype:
@@ -7154,6 +7158,8 @@ $as_echo "$as_me: autobuild timestamp... $date" >&6;}
   # Code from module largefile:
 
   # Code from module ldd:
+  # Code from module ldexp:
+  # Code from module ldexpl:
   # Code from module libc-config:
   # Code from module limits-h:
   # Code from module localcharset:
@@ -18080,6 +18086,41 @@ fi
 
 
 
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ldexp() can be used without linking with libm" >&5
+$as_echo_n "checking whether ldexp() can be used without linking with libm... " >&6; }
+if ${gl_cv_func_ldexp_no_libm+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifndef __NO_MATH_INLINES
+                           # define __NO_MATH_INLINES 1 /* for glibc */
+                           #endif
+                           #include <math.h>
+                           double (*funcptr) (double, int) = ldexp;
+                           double x;
+int
+main ()
+{
+return ldexp (x, -1) > 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_func_ldexp_no_libm=yes
+else
+  gl_cv_func_ldexp_no_libm=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_ldexp_no_libm" >&5
+$as_echo "$gl_cv_func_ldexp_no_libm" >&6; }
 
 
   GNULIB_LOCALECONV=0;
@@ -29927,6 +29968,448 @@ _ACEOF
   fi
 
 
+  ISNANL_LIBM=
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether isnan(long double) can be used without linking with libm" >&5
+$as_echo_n "checking whether isnan(long double) can be used without linking with libm... " >&6; }
+if ${gl_cv_func_isnanl_no_libm+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <math.h>
+             #if __GNUC__ >= 4
+             # undef isnanl
+             # define isnanl(x) __builtin_isnanl ((long double)(x))
+             #elif defined isnan
+             # undef isnanl
+             # define isnanl(x) isnan ((long double)(x))
+             #endif
+             long double x;
+int
+main ()
+{
+return isnanl (x);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_func_isnanl_no_libm=yes
+else
+  gl_cv_func_isnanl_no_libm=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_isnanl_no_libm" >&5
+$as_echo "$gl_cv_func_isnanl_no_libm" >&6; }
+
+  if test $gl_cv_func_isnanl_no_libm = no; then
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether isnan(long double) can be used with libm" >&5
+$as_echo_n "checking whether isnan(long double) can be used with libm... " >&6; }
+if ${gl_cv_func_isnanl_in_libm+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+      save_LIBS="$LIBS"
+      LIBS="$LIBS -lm"
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <math.h>
+             #if __GNUC__ >= 4
+             # undef isnanl
+             # define isnanl(x) __builtin_isnanl ((long double)(x))
+             #elif defined isnan
+             # undef isnanl
+             # define isnanl(x) isnan ((long double)(x))
+             #endif
+             long double x;
+int
+main ()
+{
+return isnanl (x);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_func_isnanl_in_libm=yes
+else
+  gl_cv_func_isnanl_in_libm=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+      LIBS="$save_LIBS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_isnanl_in_libm" >&5
+$as_echo "$gl_cv_func_isnanl_in_libm" >&6; }
+
+    if test $gl_cv_func_isnanl_in_libm = yes; then
+      ISNANL_LIBM=-lm
+    fi
+  fi
+    if test $gl_cv_func_isnanl_no_libm = yes \
+     || test $gl_cv_func_isnanl_in_libm = yes; then
+    save_LIBS="$LIBS"
+    LIBS="$LIBS $ISNANL_LIBM"
+
+
+
+
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether isnanl works" >&5
+$as_echo_n "checking whether isnanl works... " >&6; }
+if ${gl_cv_func_isnanl_works+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+      if test "$cross_compiling" = yes; then :
+  case "$host_os" in
+           mingw*) # Guess yes on mingw, no on MSVC.
+             cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifdef __MINGW32__
+ Known
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "Known" >/dev/null 2>&1; then :
+  gl_cv_func_isnanl_works="guessing yes"
+else
+  gl_cv_func_isnanl_works="guessing no"
+fi
+rm -f conftest*
+
+             ;;
+           *) gl_cv_func_isnanl_works="guessing yes" ;;
+         esac
+
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <float.h>
+#include <limits.h>
+#include <math.h>
+#if __GNUC__ >= 4
+# undef isnanl
+# define isnanl(x) __builtin_isnanl ((long double)(x))
+#elif defined isnan
+# undef isnanl
+# define isnanl(x) isnan ((long double)(x))
+#endif
+#define NWORDS \
+  ((sizeof (long double) + sizeof (unsigned int) - 1) / sizeof (unsigned int))
+typedef union { unsigned int word[NWORDS]; long double value; }
+        memory_long_double;
+/* On Irix 6.5, gcc 3.4.3 can't compute compile-time NaN, and needs the
+   runtime type conversion.  */
+#ifdef __sgi
+static long double NaNl ()
+{
+  double zero = 0.0;
+  return zero / zero;
+}
+#else
+# define NaNl() (0.0L / 0.0L)
+#endif
+int main ()
+{
+  int result = 0;
+
+  if (!isnanl (NaNl ()))
+    result |= 1;
+
+  {
+    memory_long_double m;
+    unsigned int i;
+
+    /* The isnanl function should be immune against changes in the sign bit and
+       in the mantissa bits.  The xor operation twiddles a bit that can only be
+       a sign bit or a mantissa bit (since the exponent never extends to
+       bit 31).  */
+    m.value = NaNl ();
+    m.word[NWORDS / 2] ^= (unsigned int) 1 << (sizeof (unsigned int) * CHAR_BIT - 1);
+    for (i = 0; i < NWORDS; i++)
+      m.word[i] |= 1;
+    if (!isnanl (m.value))
+      result |= 1;
+  }
+
+#if ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
+/* Representation of an 80-bit 'long double' as an initializer for a sequence
+   of 'unsigned int' words.  */
+# ifdef WORDS_BIGENDIAN
+#  define LDBL80_WORDS(exponent,manthi,mantlo) \
+     { ((unsigned int) (exponent) << 16) | ((unsigned int) (manthi) >> 16), \
+       ((unsigned int) (manthi) << 16) | ((unsigned int) (mantlo) >> 16),   \
+       (unsigned int) (mantlo) << 16                                        \
+     }
+# else
+#  define LDBL80_WORDS(exponent,manthi,mantlo) \
+     { mantlo, manthi, exponent }
+# endif
+  { /* Quiet NaN.  */
+    static memory_long_double x =
+      { LDBL80_WORDS (0xFFFF, 0xC3333333, 0x00000000) };
+    if (!isnanl (x.value))
+      result |= 2;
+  }
+  {
+    /* Signalling NaN.  */
+    static memory_long_double x =
+      { LDBL80_WORDS (0xFFFF, 0x83333333, 0x00000000) };
+    if (!isnanl (x.value))
+      result |= 2;
+  }
+  /* isnanl should return something even for noncanonical values.  */
+  { /* Pseudo-NaN.  */
+    static memory_long_double x =
+      { LDBL80_WORDS (0xFFFF, 0x40000001, 0x00000000) };
+    if (isnanl (x.value) && !isnanl (x.value))
+      result |= 4;
+  }
+  { /* Pseudo-Infinity.  */
+    static memory_long_double x =
+      { LDBL80_WORDS (0xFFFF, 0x00000000, 0x00000000) };
+    if (isnanl (x.value) && !isnanl (x.value))
+      result |= 8;
+  }
+  { /* Pseudo-Zero.  */
+    static memory_long_double x =
+      { LDBL80_WORDS (0x4004, 0x00000000, 0x00000000) };
+    if (isnanl (x.value) && !isnanl (x.value))
+      result |= 16;
+  }
+  { /* Unnormalized number.  */
+    static memory_long_double x =
+      { LDBL80_WORDS (0x4000, 0x63333333, 0x00000000) };
+    if (isnanl (x.value) && !isnanl (x.value))
+      result |= 32;
+  }
+  { /* Pseudo-Denormal.  */
+    static memory_long_double x =
+      { LDBL80_WORDS (0x0000, 0x83333333, 0x00000000) };
+    if (isnanl (x.value) && !isnanl (x.value))
+      result |= 64;
+  }
+#endif
+
+  return result;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gl_cv_func_isnanl_works=yes
+else
+  gl_cv_func_isnanl_works=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_isnanl_works" >&5
+$as_echo "$gl_cv_func_isnanl_works" >&6; }
+
+    LIBS="$save_LIBS"
+    case "$gl_cv_func_isnanl_works" in
+      *yes) gl_func_isnanl=yes ;;
+      *)    gl_func_isnanl=no; ISNANL_LIBM= ;;
+    esac
+  else
+    gl_func_isnanl=no
+  fi
+  if test $gl_func_isnanl != yes; then
+    HAVE_ISNANL=0
+  fi
+
+
+
+  if test $HAVE_ISNANL = 0 || test $REPLACE_ISNAN = 1; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS isnanl.$ac_objext"
+
+
+
+
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the exponent in a 'long double'" >&5
+$as_echo_n "checking where to find the exponent in a 'long double'... " >&6; }
+if ${gl_cv_cc_long_double_expbit0+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+      if test "$cross_compiling" = yes; then :
+
+                              gl_cv_cc_long_double_expbit0="unknown"
+          case "$host_os" in
+            mingw*) # On native Windows (little-endian), we know the result
+                    # in two cases: mingw, MSVC.
+              cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifdef __MINGW32__
+ Known
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "Known" >/dev/null 2>&1; then :
+  gl_cv_cc_long_double_expbit0="word 2 bit 0"
+fi
+rm -f conftest*
+
+              cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifdef _MSC_VER
+ Known
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "Known" >/dev/null 2>&1; then :
+  gl_cv_cc_long_double_expbit0="word 1 bit 20"
+fi
+rm -f conftest*
+
+              ;;
+          esac
+
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <float.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <string.h>
+#define NWORDS \
+  ((sizeof (long double) + sizeof (unsigned int) - 1) / sizeof (unsigned int))
+typedef union { long double value; unsigned int word[NWORDS]; }
+        memory_long_double;
+static unsigned int ored_words[NWORDS];
+static unsigned int anded_words[NWORDS];
+static void add_to_ored_words (long double x)
+{
+  memory_long_double m;
+  size_t i;
+  /* Clear it first, in case
+     sizeof (long double) < sizeof (memory_long_double).  */
+  memset (&m, 0, sizeof (memory_long_double));
+  m.value = x;
+  for (i = 0; i < NWORDS; i++)
+    {
+      ored_words[i] |= m.word[i];
+      anded_words[i] &= m.word[i];
+    }
+}
+int main ()
+{
+  size_t j;
+  FILE *fp = fopen ("conftest.out", "w");
+  if (fp == NULL)
+    return 1;
+  for (j = 0; j < NWORDS; j++)
+    anded_words[j] = ~ (unsigned int) 0;
+  add_to_ored_words (0.25L);
+  add_to_ored_words (0.5L);
+  add_to_ored_words (1.0L);
+  add_to_ored_words (2.0L);
+  add_to_ored_words (4.0L);
+  /* Remove bits that are common (e.g. if representation of the first mantissa
+     bit is explicit).  */
+  for (j = 0; j < NWORDS; j++)
+    ored_words[j] &= ~anded_words[j];
+  /* Now find the nonzero word.  */
+  for (j = 0; j < NWORDS; j++)
+    if (ored_words[j] != 0)
+      break;
+  if (j < NWORDS)
+    {
+      size_t i;
+      for (i = j + 1; i < NWORDS; i++)
+        if (ored_words[i] != 0)
+          {
+            fprintf (fp, "unknown");
+            return (fclose (fp) != 0);
+          }
+      for (i = 0; ; i++)
+        if ((ored_words[j] >> i) & 1)
+          {
+            fprintf (fp, "word %d bit %d", (int) j, (int) i);
+            return (fclose (fp) != 0);
+          }
+    }
+  fprintf (fp, "unknown");
+  return (fclose (fp) != 0);
+}
+
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gl_cv_cc_long_double_expbit0=`cat conftest.out`
+else
+  gl_cv_cc_long_double_expbit0="unknown"
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+      rm -f conftest.out
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_cc_long_double_expbit0" >&5
+$as_echo "$gl_cv_cc_long_double_expbit0" >&6; }
+  case "$gl_cv_cc_long_double_expbit0" in
+    word*bit*)
+      word=`echo "$gl_cv_cc_long_double_expbit0" | sed -e 's/word //' -e 's/ bit.*//'`
+      bit=`echo "$gl_cv_cc_long_double_expbit0" | sed -e 's/word.*bit //'`
+
+cat >>confdefs.h <<_ACEOF
+#define LDBL_EXPBIT0_WORD $word
+_ACEOF
+
+
+cat >>confdefs.h <<_ACEOF
+#define LDBL_EXPBIT0_BIT $bit
+_ACEOF
+
+      ;;
+  esac
+
+
+
+  fi
+
+
+
+
+
+          GNULIB_ISNANL=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_ISNANL 1" >>confdefs.h
+
+
+
+
+
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether isnan(long double) can be used without linking with libm" >&5
 $as_echo_n "checking whether isnan(long double) can be used without linking with libm... " >&6; }
 if ${gl_cv_func_isnanl_no_libm+:} false; then :
@@ -30862,6 +31345,251 @@ fi
 
 
   ac_config_files="$ac_config_files ldd.sh:import/extra/ldd.sh.in"
+
+
+
+  LDEXP_LIBM=
+  if test $gl_cv_func_ldexp_no_libm = no; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ldexp() can be used with libm" >&5
+$as_echo_n "checking whether ldexp() can be used with libm... " >&6; }
+if ${gl_cv_func_ldexp_in_libm+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+        save_LIBS="$LIBS"
+        LIBS="$LIBS -lm"
+        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifndef __NO_MATH_INLINES
+                             # define __NO_MATH_INLINES 1 /* for glibc */
+                             #endif
+                             #include <math.h>
+                             double (*funcptr) (double, int) = ldexp;
+                             double x;
+int
+main ()
+{
+return ldexp (x, -1) > 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_func_ldexp_in_libm=yes
+else
+  gl_cv_func_ldexp_in_libm=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+        LIBS="$save_LIBS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_ldexp_in_libm" >&5
+$as_echo "$gl_cv_func_ldexp_in_libm" >&6; }
+    if test $gl_cv_func_ldexp_in_libm = yes; then
+      LDEXP_LIBM=-lm
+    fi
+  fi
+
+
+
+
+
+
+
+
+      ac_fn_c_check_decl "$LINENO" "ldexpl" "ac_cv_have_decl_ldexpl" "#include <math.h>
+"
+if test "x$ac_cv_have_decl_ldexpl" = xyes; then :
+
+else
+  HAVE_DECL_LDEXPL=0
+fi
+
+
+  LDEXPL_LIBM=
+  if test $HAVE_DECL_LDEXPL = 1; then
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ldexpl() can be used without linking with libm" >&5
+$as_echo_n "checking whether ldexpl() can be used without linking with libm... " >&6; }
+if ${gl_cv_func_ldexpl_no_libm+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <math.h>
+             long double x;
+int
+main ()
+{
+return ldexpl (x, -1) > 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_func_ldexpl_no_libm=yes
+else
+  gl_cv_func_ldexpl_no_libm=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_ldexpl_no_libm" >&5
+$as_echo "$gl_cv_func_ldexpl_no_libm" >&6; }
+
+    if test $gl_cv_func_ldexpl_no_libm = no; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ldexpl() can be used with libm" >&5
+$as_echo_n "checking whether ldexpl() can be used with libm... " >&6; }
+if ${gl_cv_func_ldexpl_in_libm+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+          save_LIBS="$LIBS"
+          LIBS="$LIBS -lm"
+          cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <math.h>
+                 long double x;
+int
+main ()
+{
+return ldexpl (x, -1) > 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_func_ldexpl_in_libm=yes
+else
+  gl_cv_func_ldexpl_in_libm=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+          LIBS="$save_LIBS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_ldexpl_in_libm" >&5
+$as_echo "$gl_cv_func_ldexpl_in_libm" >&6; }
+      if test $gl_cv_func_ldexpl_in_libm = yes; then
+        LDEXPL_LIBM=-lm
+      fi
+    fi
+    if test $gl_cv_func_ldexpl_no_libm = yes \
+       || test $gl_cv_func_ldexpl_in_libm = yes; then
+      save_LIBS="$LIBS"
+      LIBS="$LIBS $LDEXPL_LIBM"
+
+
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ldexpl works" >&5
+$as_echo_n "checking whether ldexpl works... " >&6; }
+if ${gl_cv_func_ldexpl_works+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+      if test "$cross_compiling" = yes; then :
+
+         case "$host_os" in
+           aix | aix[3-6]*) gl_cv_func_ldexpl_works="guessing no" ;;
+                            # Guess yes on native Windows.
+           mingw*)          gl_cv_func_ldexpl_works="guessing yes" ;;
+           *)               gl_cv_func_ldexpl_works="guessing yes" ;;
+         esac
+
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <math.h>
+extern
+#ifdef __cplusplus
+"C"
+#endif
+long double ldexpl (long double, int);
+int main()
+{
+  int result = 0;
+  {
+    volatile long double x = 1.0;
+    volatile long double y = ldexpl (x, -1);
+    if (y != 0.5L)
+      result |= 1;
+  }
+  {
+    volatile long double x = 1.73205L;
+    volatile long double y = ldexpl (x, 0);
+    if (y != x)
+      result |= 2;
+  }
+  return result;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gl_cv_func_ldexpl_works=yes
+else
+  gl_cv_func_ldexpl_works=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_ldexpl_works" >&5
+$as_echo "$gl_cv_func_ldexpl_works" >&6; }
+
+      LIBS="$save_LIBS"
+      case "$gl_cv_func_ldexpl_works" in
+        *yes) gl_func_ldexpl=yes ;;
+        *)    gl_func_ldexpl=no; REPLACE_LDEXPL=1 ;;
+      esac
+    else
+      gl_func_ldexpl=no
+    fi
+    if test $gl_func_ldexpl = yes; then
+
+$as_echo "#define HAVE_LDEXPL 1" >>confdefs.h
+
+    fi
+  fi
+  if test $HAVE_DECL_LDEXPL = 0 || test $gl_func_ldexpl = no; then
+        if test $HAVE_SAME_LONG_DOUBLE_AS_DOUBLE = 1; then
+
+      LDEXPL_LIBM="$LDEXP_LIBM"
+    else
+      LDEXPL_LIBM="$ISNANL_LIBM"
+    fi
+  fi
+
+
+  if test $HAVE_DECL_LDEXPL = 0 || test $gl_func_ldexpl = no; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS ldexpl.$ac_objext"
+
+  fi
+
+
+
+
+
+          GNULIB_LDEXPL=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_LDEXPL 1" >>confdefs.h
+
+
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the compiler supports the __inline keyword" >&5
@@ -47681,6 +48409,29 @@ fi
 
 
 $as_echo "#define GNULIB_TEST_ISWCTYPE 1" >>confdefs.h
+
+
+  ## set up libobj if needed:
+if test ${HAVE_DECL_LDEXPL} = 0 || test "x${gl_func_ldexpl}" = "xno"; then
+  case " $LIBOBJS " in
+  *" ldexpl.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS ldexpl.$ac_objext"
+ ;;
+esac
+  ## end libobj
+fi
+
+
+
+
+
+          GNULIB_LDEXPL=1
+
+
+
+
+
+$as_echo "#define GNULIB_TEST_LDEXPL 1" >>confdefs.h
 
 
   ## set up envvar if needed:

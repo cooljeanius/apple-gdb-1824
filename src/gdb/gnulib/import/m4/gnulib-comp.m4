@@ -164,6 +164,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module inttypes-incomplete:
   # Code from module isnand-nolibm:
   # Code from module isnanf-nolibm:
+  # Code from module isnanl:
   # Code from module isnanl-nolibm:
   # Code from module iswblank:
   # Code from module iswctype:
@@ -171,6 +172,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module largefile:
   AC_REQUIRE([AC_SYS_LARGEFILE])
   # Code from module ldd:
+  # Code from module ldexp:
+  # Code from module ldexpl:
   # Code from module libc-config:
   # Code from module limits-h:
   # Code from module localcharset:
@@ -672,6 +675,15 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([isnanf])
     gl_PREREQ_ISNANF
   fi
+  gl_FUNC_ISNANL
+  m4_ifdef([gl_ISNAN], [
+    AC_REQUIRE([gl_ISNAN])
+  ])
+  if test $HAVE_ISNANL = 0 || test $REPLACE_ISNAN = 1; then
+    AC_LIBOBJ([isnanl])
+    gl_PREREQ_ISNANL
+  fi
+  gl_MATH_MODULE_INDICATOR([isnanl])
   gl_FUNC_ISNANL_NO_LIBM
   if test $gl_func_isnanl_no_libm != yes; then
     AC_LIBOBJ([isnanl])
@@ -695,6 +707,12 @@ AC_DEFUN([gl_INIT],
   AC_REQUIRE([gl_LARGEFILE])
   gl_LDD
   AC_CONFIG_FILES([ldd.sh:import/extra/ldd.sh.in])
+  gl_FUNC_LDEXP
+  gl_FUNC_LDEXPL
+  if test $HAVE_DECL_LDEXPL = 0 || test $gl_func_ldexpl = no; then
+    AC_LIBOBJ([ldexpl])
+  fi
+  gl_MATH_MODULE_INDICATOR([ldexpl])
   gl___INLINE
   gl_LIMITS_H
   gl_LOCALCHARSET
@@ -1518,6 +1536,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/iswctype.c
   lib/itold.c
   lib/langinfo.in.h
+  lib/ldexpl.c
   lib/libc-config.h
   lib/limits.in.h
   lib/localcharset.c
@@ -1850,6 +1869,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/largefile.m4
   m4/lcmessage.m4
   m4/ldd.m4
+  m4/ldexp.m4
   m4/ldexpl.m4
   m4/lib-ld.m4
   m4/lib-link.m4

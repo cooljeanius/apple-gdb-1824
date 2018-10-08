@@ -121,6 +121,7 @@
 #  iswctype \
 #  largefile \
 #  ldd \
+#  ldexpl \
 #  limits-h \
 #  localcharset \
 #  locale \
@@ -325,6 +326,7 @@ gl_MODULES([
   iswctype
   largefile
   ldd
+  ldexpl
   limits-h
   localcharset
   locale

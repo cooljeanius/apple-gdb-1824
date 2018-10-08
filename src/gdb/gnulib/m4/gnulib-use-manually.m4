@@ -259,6 +259,14 @@ AC_REQUIRE([AC_SYS_LARGEFILE])dnl
 AC_REQUIRE([gl_LARGEFILE])dnl
 dnl# from gnulib module ldd:
 AC_REQUIRE([gl_LDD])dnl
+dnl# from gnulib module ldexpl:
+AC_REQUIRE([gl_FUNC_LDEXPL])dnl
+  ## set up libobj if needed:
+if test ${HAVE_DECL_LDEXPL} = 0 || test "x${gl_func_ldexpl}" = "xno"; then
+  AC_LIBOBJ([ldexpl])dnl
+  ## end libobj
+fi
+gl_MATH_MODULE_INDICATOR([ldexpl])dnl
 dnl# from gnulib module limits-h:
 AC_REQUIRE([gl_LIMITS_H])dnl
 dnl# from gnulib module link-warning:

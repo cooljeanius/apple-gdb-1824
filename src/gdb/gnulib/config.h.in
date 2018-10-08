@@ -405,11 +405,17 @@
 /* Define to 1 when the gnulib module group-member should be tested. */
 #undef GNULIB_TEST_GROUP_MEMBER
 
+/* Define to 1 when the gnulib module isnanl should be tested. */
+#undef GNULIB_TEST_ISNANL
+
 /* Define to 1 when the gnulib module iswblank should be tested. */
 #undef GNULIB_TEST_ISWBLANK
 
 /* Define to 1 when the gnulib module iswctype should be tested. */
 #undef GNULIB_TEST_ISWCTYPE
+
+/* Define to 1 when the gnulib module ldexpl should be tested. */
+#undef GNULIB_TEST_LDEXPL
 
 /* Define to 1 when the gnulib module localeconv should be tested. */
 #undef GNULIB_TEST_LOCALECONV
@@ -1021,6 +1027,9 @@
 
 /* Define to 1 if you have the <langinfo.h> header file. */
 #undef HAVE_LANGINFO_H
+
+/* Define if the ldexpl() function is available. */
+#undef HAVE_LDEXPL
 
 /* Define if the ldexpl function is available in libc. */
 #undef HAVE_LDEXPL_IN_LIBC

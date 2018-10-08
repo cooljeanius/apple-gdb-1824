@@ -612,6 +612,11 @@ AC_ARG_WITH([gnulib],
   ## now use that flag:
 if test -d ${srcdir}/gnulib && test "x${recurse_into_gnulib}" = "xyes"; then
   test -n "${recurse_into_gnulib}"
+  if test -f ${GNULIB_IMPORT_DIR}/m4/posixcheck.m4; then
+    export POSIXCHECK_CPPFLAGS="-DGNULIB_POSIXCHECK"
+    AC_SUBST([POSIXCHECK_CPPFLAGS])dnl
+    ## just to see...
+  fi
   AC_MSG_NOTICE([using gnulib])
   AC_CONFIG_SUBDIRS([gnulib])dnl
   ## (this way we can avoid any build failures associated with it)

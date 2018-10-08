@@ -45,8 +45,8 @@ IMPORTED_GNULIB_MODULES="\
     havelib host-cpu-c-abi host-os \
     ignore-value include_next inline intprops inttypes inttypes-incomplete \
     isnand-nolibm isnanl-nolibm iswctype \
-    largefile ldd limits-h localcharset locale localtime localtime-buffer \
-    longlong lstat \
+    largefile ldd ldexpl limits-h localcharset locale localtime \
+    localtime-buffer longlong lstat \
     malloc-gnu malloc-posix manywarnings math mbrtowc mbschr mbsinit mbsrchr \
     mbsrtowcs mbsspn memchr memcmp memmem memmem-simple \
     mempcpy memrchr mkdtemp multiarch \

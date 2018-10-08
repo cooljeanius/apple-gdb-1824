@@ -116,6 +116,7 @@
 #  iswctype \
 #  largefile \
 #  ldd \
+#  ldexpl \
 #  limits-h \
 #  localcharset \
 #  locale \
@@ -1417,6 +1418,15 @@ EXTRA_libgnu_a_SOURCES += isnan.c isnanf.c
 
 ## end   gnulib module isnanf-nolibm
 
+## begin gnulib module isnanl
+
+
+EXTRA_DIST += float+.h isnan.c isnanl.c
+
+EXTRA_libgnu_a_SOURCES += isnan.c isnanl.c
+
+## end   gnulib module isnanl
+
 ## begin gnulib module isnanl-nolibm
 
 
@@ -1484,6 +1494,15 @@ EXTRA_DIST += langinfo.in.h
 EXTRA_DIST += $(top_srcdir)/import/extra/ldd.sh.in
 
 ## end   gnulib module ldd
+
+## begin gnulib module ldexpl
+
+
+EXTRA_DIST += ldexpl.c
+
+EXTRA_libgnu_a_SOURCES += ldexpl.c
+
+## end   gnulib module ldexpl
 
 ## begin gnulib module libc-config
 
