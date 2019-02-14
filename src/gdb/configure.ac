@@ -471,10 +471,17 @@ AC_CHECK_LIB([intl],[gettext],[:],[
 if test -x "`which ld`" && test "x${LD}" != "xld-136"; then
   if test "x${ac_cv_lib_intl_libintl_dgettext}" = "x"; then
     test -z "${ac_cv_lib_intl_libintl_dgettext}"
+    ## like above:
+    PRE_LIBINTL_LDFLAGS="${LDFLAGS}"
+    LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
     AC_SEARCH_LIBS([libintl_dgettext],[intl asprintf gettextlib gettextpo \
                                        gettextsrc gettext libintl lintl \
                                        gnu c iberty iconv])dnl
     ## ...or is it here where the linker crashes?
+    ## reset:
+    LDFLAGS="${PRE_LIBINTL_LDFLAGS}"
+    AC_SUBST([PRE_LIBINTL_LDFLAGS])dnl
+    ## in case LDFLAGS get mixed up
   fi
 fi
 
@@ -1376,11 +1383,17 @@ if test "x${ac_cv_search_tgetent}" = "xno"; then
 fi
 
 # Other misc. libraries that autoscan added to configure.scan, and such:
+## verify arch:
+PRE_ASPRINTF_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 AC_CHECK_LIB([asprintf],[asprintf],[
   if test "x${INTLLIBS}" != "x"; then
     test -n "${INTLLIBS}" && export INTLLIBS="${INTLLIBS} -lasprintf"
   fi
 ])dnl
+  ## reset:
+LDFLAGS="${PRE_ASPRINTF_LDFLAGS}"
+AC_SUBST([PRE_ASPRINTF_LDFLAGS])dnl
   ## might want to ensure we find the in-tree one:
 AC_CHECK_LIB([bfd],[bfd_set_reloc],[],[
   PRE_BFD_LDFLAGS="${LDFLAGS}"
@@ -1920,6 +1933,10 @@ AC_CHECK_TYPES([wchar_t],[
 ],[],[])dnl
 AC_CHECK_SIZEOF([long])dnl
 AC_CHECK_ALIGNOF([long])dnl
+AC_CHECK_SIZEOF([float])dnl
+AC_CHECK_ALIGNOF([float])dnl
+AC_CHECK_SIZEOF([double])dnl
+AC_CHECK_ALIGNOF([double])dnl
 AC_CHECK_TYPES([caddr_t])dnl
 AC_CHECK_TYPES([thread_t])dnl
 AC_CHECK_TYPES([sa_family_t],[],[],[
@@ -2146,6 +2163,7 @@ fi
 AC_FUNC_MEMCMP
 AM_WITH_DMALLOC
 AC_FUNC_OBSTACK
+AC_CHECK_FUNCS([obstack_xfree])dnl
 AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_STAT
@@ -2290,6 +2308,8 @@ if test "x${gdb_with_regex}" = "xyes"; then
   AC_DEFINE([USE_INCLUDED_REGEX],[1],
     [Define to 1 if the regex included in libiberty should be used.])
 fi
+
+AC_CHECK_FUNCS([re_set_syntax])dnl
 
 # Check if <sys/proc.h> defines `struct thread' with a td_pcb member:
 AC_CHECK_MEMBERS([struct thread.td_pcb],[],[],[
@@ -2706,6 +2726,7 @@ switch (foo & 2) { case 0: return 1; }
                 ]])],[gdb_cv_c_long_long=yes],
                      [gdb_cv_c_long_long=no])])
 if test "x${gdb_cv_c_long_long}" = "xyes"; then
+  ## (sizeof and alignof are already checked by some other macro)
   AC_DEFINE([CC_HAS_LONG_LONG],[1],
             [Define to 1 if the compiler supports long long.])
 elif "x${gdb_cv_c_long_long}" != "xyes"; then
@@ -2781,8 +2802,10 @@ AC_CACHE_CHECK([for long double support in compiler],
                [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[long double foo;]])],
                                   [gdb_cv_c_long_double=yes],
                                   [gdb_cv_c_long_double=no])])dnl
-  ## now define based on that:
+  ## now define and stuff based on that:
 if test "x${gdb_cv_c_long_double}" = "xyes"; then
+  AC_CHECK_SIZEOF([long double])
+  AC_CHECK_ALIGNOF([long double])
   AC_DEFINE([HAVE_LONG_DOUBLE],[1],
             [Define to 1 if the compiler supports long double.])dnl
   ## end def
@@ -3196,7 +3219,8 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++ \
 -Wsized-deallocation -Wplacement-new=2 -Wshadow-compatible-local \
 -Wbuiltin-function-redefined -Waligned-new=all -Wsynth -Wcatch-value \
--Wclass-memaccess -Wnon-pod-varargs -Wmissing-attributes -Wdeprecated-copy"
+-Wclass-memaccess -Wnon-pod-varargs -Wmissing-attributes \
+-Wdeprecated-copy -Wdeprecated-copy-dtor"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \

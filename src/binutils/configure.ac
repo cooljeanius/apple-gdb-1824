@@ -385,7 +385,7 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
 ])dnl
 AC_REQUIRE_HEADER_STDC dnl# should be called anyways, but whatever...
 AC_CHECK_HEADERS([AvailabilityMacros.h assert.h binary-io.h errno.h \
-                  fcntl.h gettext.h iconv.h langinfo.h libgettext.h \
+                  fcntl.h gettext.h iconv.h langinfo.h libgen.h libgettext.h \
                   libintl.h limits.h locale.h mach/i386/thread_status.h \
                   mach/mach.h mach-o/loader.h malloc.h malloc/malloc.h \
                   math.h stdarg.h stddef.h stdio.h sys/file.h sys/ioctl.h \
@@ -564,7 +564,7 @@ AC_FUNC_STRTOD
 AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 unset ac_cv_func_setlocale
-AC_CHECK_FUNCS([atexit bindtextdomain ctime dcgettext dup2 expandargv \
+AC_CHECK_FUNCS([atexit bindtextdomain ctime dcgettext dirname dup2 expandargv \
                 fclose floor fopen fprintf fputs fread free getc_unlocked \
                 gettimeofday isascii localeconv mblen memchr memcmp \
                 memcpy memmove memset modf pow re_comp regcomp rint rmdir \
@@ -727,7 +727,7 @@ fi
 
 # checks for declarations (keep alphabetized please):
 unset ac_cv_have_decl_getenv
-AC_CHECK_DECLS([basename, environ, fprintf, getc_unlocked, getenv,
+AC_CHECK_DECLS([basename, dirname, environ, fprintf, getc_unlocked, getenv,
 		sbrk, snprintf, stpcpy, strnlen, strstr, vsnprintf])dnl
 
 # Link in zlib if we can. This allows us to read compressed debug

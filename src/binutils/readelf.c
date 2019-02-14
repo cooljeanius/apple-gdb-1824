@@ -5802,13 +5802,13 @@ process_dynamic_section (FILE *file)
 	{
 	  const char *dtype;
 
-	  putchar (' ');
-	  print_vma (entry->d_tag, FULL_HEX);
-	  dtype = get_dynamic_type (entry->d_tag);
-	  printf (" (%s)%*s", dtype,
-		  ((is_32bit_elf ? 27 : 19)
-		   - (int) strlen (dtype)),
-		  " ");
+	  putchar(' ');
+	  print_vma(entry->d_tag, FULL_HEX);
+	  dtype = get_dynamic_type(entry->d_tag);
+	  printf(" (%s)%*s", dtype,
+		 ((is_32bit_elf ? 27 : 19)
+		  - (int)strlen(dtype)),
+		 " ");
 	}
 
       switch (entry->d_tag)
@@ -6556,8 +6556,7 @@ process_version_sections (FILE *file)
 				  ivna.vna_name = BYTE_GET(evna.vna_name);
 
 				  name = strtab + ivna.vna_name;
-				  nn += printf("(%s%-*s",
-                                               name,
+				  nn += printf("(%s%-*s", name,
                                                12 - (int)strlen(name),
                                                ")");
 				  check_def = 0;

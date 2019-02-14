@@ -37,6 +37,20 @@
 
 #include "sysdep.h"
 
+#ifdef HAVE_ASSERT_H
+# include <assert.h>
+#endif /* HAVE_ASSERT_H */
+#ifdef HAVE_ERRNO_H
+# include <errno.h>
+#endif /* HAVE_ERRNO_H */
+#ifdef HAVE_LIBGEN_H
+# include <libgen.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "arsup.c expects <libgen.h> to be included for dirname()."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_LIBGEN_H */
+
 static void map_over_list
   (bfd *, void (*function) (bfd *, bfd *), struct list *);
 static void ar_directory_doer (bfd *, bfd *);
@@ -45,7 +59,7 @@ static void ar_addlib_doer (bfd *, bfd *);
 extern int verbose;
 
 static bfd *obfd;
-static char *real_name;
+static const char *real_name;
 static FILE *outfile;
 
 static void
@@ -115,7 +129,7 @@ ar_directory (char *ar_name, struct list *list, char *output)
       if (outfile == 0)
 	{
 	  outfile = stdout;
-	  fprintf (stderr,_("Can't open file %s\n"), output);
+	  fprintf(stderr,_("Cannot open file %s\n"), output);
 	  output = 0;
 	}
     }
@@ -143,33 +157,43 @@ prompt (void)
 }
 
 void
-maybequit (void)
+maybequit(void)
 {
   if (! interactive)
-    xexit (9);
+    xexit(9);
 }
 
-
+/* */
 void
-ar_open (char *name, int t)
+ar_open(char *name, int t)
 {
   const size_t tnamelen = (max(strlen(name), 1UL) + 10UL);
   char *tname = (char *)xmalloc(tnamelen);
   const char *bname = lbasename(name);
+
+  /* Instead of hackily getting dirname via intentional truncation in sprintf(),
+   * get it like this instead: */
+  const char *dname = dirname(name);
+
+  if (dname == NULL) {
+    assert(errno == ENAMETOOLONG);
+    fprintf(stderr, _("Cannot get directory name of archive to open\n"));
+    maybequit();
+  }
+
   real_name = name;
 
   /* Prepend tmp- to the beginning, to avoid file-name clashes after
      truncation on filesystems with limited namespaces (DOS).  */
-  snprintf(tname, tnamelen, "%.*stmp-%s", (int)(bname - name), name, bname);
-  obfd = bfd_openw (tname, NULL);
+  snprintf(tname, tnamelen, "%s/tmp-%s", dname, bname);
+  obfd = bfd_openw(tname, NULL);
 
   if (!obfd)
     {
-      fprintf (stderr,
-	       _("%s: Cannot open output archive %s\n"),
-	       program_name,  tname);
+      fprintf(stderr, _("%s: Cannot open output archive %s\n"),
+	      program_name, tname);
 
-      maybequit ();
+      maybequit();
     }
   else
     {
@@ -179,44 +203,44 @@ ar_open (char *name, int t)
 	  bfd *element;
 	  bfd *ibfd;
 
-	  ibfd = bfd_openr (name, NULL);
+	  ibfd = bfd_openr(name, NULL);
 
 	  if (!ibfd)
 	    {
-	      fprintf (stderr,_("%s: Can't open input archive %s\n"),
-		       program_name, name);
-	      maybequit ();
+	      fprintf(stderr,_("%s: Cannot open input archive %s\n"),
+		      program_name, name);
+	      maybequit();
 	      return;
 	    }
 
 	  if (!bfd_check_format(ibfd, bfd_archive))
 	    {
-	      fprintf (stderr,
-		       _("%s: file %s is not an archive\n"),
-		       program_name, name);
-	      maybequit ();
+	      fprintf(stderr, _("%s: file %s is not an archive\n"),
+		      program_name, name);
+	      maybequit();
 	      return;
 	    }
 
 	  ptr = &(obfd->archive_head);
-	  element = bfd_openr_next_archived_file (ibfd, NULL);
+	  element = bfd_openr_next_archived_file(ibfd, NULL);
 
 	  while (element)
 	    {
 	      *ptr = element;
 	      ptr = &element->next;
-	      element = bfd_openr_next_archived_file (ibfd, element);
+	      element = bfd_openr_next_archived_file(ibfd, element);
 	    }
 	}
 
-      bfd_set_format (obfd, bfd_archive);
+      bfd_set_format(obfd, bfd_archive);
 
       obfd->has_armap = 1;
     }
 }
 
+/* */
 static void
-ar_addlib_doer (bfd *abfd, bfd *prev)
+ar_addlib_doer(bfd *abfd, bfd *prev)
 {
   /* Add this module to the output bfd.  */
   if (prev != NULL)

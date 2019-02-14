@@ -2411,10 +2411,10 @@ dump_reloc_set (bfd *abfd, asection *sec, arelent **relpp, long relcount)
       {
 	char buf[30];
 
-	bfd_sprintf_vma (abfd, buf, (bfd_vma) -1);
-	width = strlen (buf) - 7;
+	bfd_sprintf_vma(abfd, buf, (bfd_vma)-1);
+	width = (strlen(buf) - 7UL);
       }
-    printf ("OFFSET %*s TYPE %*s VALUE \n", width, "", 12, "");
+    printf("OFFSET %*s TYPE %*s VALUE \n", width, "", 12, "");
   }
 
   last_filename = NULL;

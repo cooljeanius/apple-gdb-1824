@@ -23051,7 +23051,7 @@ unset ac_cv_header_unistd_h
 unset ac_cv_header_utime_h
 
    for ac_header in AvailabilityMacros.h assert.h binary-io.h errno.h \
-                  fcntl.h gettext.h iconv.h langinfo.h libgettext.h \
+                  fcntl.h gettext.h iconv.h langinfo.h libgen.h libgettext.h \
                   libintl.h limits.h locale.h mach/i386/thread_status.h \
                   mach/mach.h mach-o/loader.h malloc.h malloc/malloc.h \
                   math.h stdarg.h stddef.h stdio.h sys/file.h sys/ioctl.h \
@@ -26137,7 +26137,7 @@ done
 
 
 unset ac_cv_func_setlocale
-for ac_func in atexit bindtextdomain ctime dcgettext dup2 expandargv \
+for ac_func in atexit bindtextdomain ctime dcgettext dirname dup2 expandargv \
                 fclose floor fopen fprintf fputs fread free getc_unlocked \
                 gettimeofday isascii localeconv mblen memchr memcmp \
                 memcpy memmove memset modf pow re_comp regcomp rint rmdir \
@@ -26647,6 +26647,16 @@ fi
 
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_BASENAME $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "dirname" "ac_cv_have_decl_dirname" "$ac_includes_default"
+if test "x$ac_cv_have_decl_dirname" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_DIRNAME $ac_have_decl
 _ACEOF
 ac_fn_c_check_decl "$LINENO" "environ" "ac_cv_have_decl_environ" "$ac_includes_default"
 if test "x$ac_cv_have_decl_environ" = xyes; then :

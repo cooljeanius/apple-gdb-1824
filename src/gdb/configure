@@ -919,6 +919,7 @@ INCLUDE_NEXT_AS_FIRST_DIRECTIVE
 INCLUDE_NEXT
 EXTRA_DEFS
 FCNTL_H_CFLAGS
+PRE_ASPRINTF_LDFLAGS
 zlibinc
 zlibdir
 HAVE_ZLIB_SOURCE
@@ -1037,6 +1038,7 @@ subdirs
 MAKEINFO_EXTRA_FLAGS
 MAKEINFOFLAGS
 GNULIB_STDINT_H
+PRE_LIBINTL_LDFLAGS
 l
 MKINSTALLDIRS
 GT_YES
@@ -9614,6 +9616,9 @@ fi
 if test -x "`which ld`" && test "x${LD}" != "xld-136"; then
   if test "x${ac_cv_lib_intl_libintl_dgettext}" = "x"; then
     test -z "${ac_cv_lib_intl_libintl_dgettext}"
+    ## like above:
+    PRE_LIBINTL_LDFLAGS="${LDFLAGS}"
+    LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing libintl_dgettext" >&5
 $as_echo_n "checking for library containing libintl_dgettext... " >&6; }
 if ${ac_cv_search_libintl_dgettext+:} false; then :
@@ -9672,6 +9677,9 @@ if test "$ac_res" != no; then :
 
 fi
     ## ...or is it here where the linker crashes?
+    ## reset:
+    LDFLAGS="${PRE_LIBINTL_LDFLAGS}"
+        ## in case LDFLAGS get mixed up
   fi
 fi
 
@@ -37646,6 +37654,9 @@ if test "x${ac_cv_search_tgetent}" = "xno"; then
 fi
 
 # Other misc. libraries that autoscan added to configure.scan, and such:
+## verify arch:
+PRE_ASPRINTF_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for asprintf in -lasprintf" >&5
 $as_echo_n "checking for asprintf in -lasprintf... " >&6; }
 if ${ac_cv_lib_asprintf_asprintf+:} false; then :
@@ -37689,6 +37700,8 @@ if test "x$ac_cv_lib_asprintf_asprintf" = xyes; then :
   fi
 
 fi
+  ## reset:
+LDFLAGS="${PRE_ASPRINTF_LDFLAGS}"
   ## might want to ensure we find the in-tree one:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for bfd_set_reloc in -lbfd" >&5
 $as_echo_n "checking for bfd_set_reloc in -lbfd... " >&6; }
@@ -42287,6 +42300,138 @@ cat >>confdefs.h <<_ACEOF
 #define ALIGNOF_LONG $ac_cv_alignof_long
 _ACEOF
 
+# The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of float" >&5
+$as_echo_n "checking size of float... " >&6; }
+if ${ac_cv_sizeof_float+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (float))" "ac_cv_sizeof_float"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_float" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (float)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_float=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_float" >&5
+$as_echo "$ac_cv_sizeof_float" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_FLOAT $ac_cv_sizeof_float
+_ACEOF
+
+# The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of float" >&5
+$as_echo_n "checking alignment of float... " >&6; }
+if ${ac_cv_alignof_float+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_float"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; float y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_float" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of float
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_float=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_float" >&5
+$as_echo "$ac_cv_alignof_float" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_FLOAT $ac_cv_alignof_float
+_ACEOF
+
+# The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of double" >&5
+$as_echo_n "checking size of double... " >&6; }
+if ${ac_cv_sizeof_double+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (double))" "ac_cv_sizeof_double"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_double" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (double)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_double=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_double" >&5
+$as_echo "$ac_cv_sizeof_double" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_DOUBLE $ac_cv_sizeof_double
+_ACEOF
+
+# The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of double" >&5
+$as_echo_n "checking alignment of double... " >&6; }
+if ${ac_cv_alignof_double+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_double"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; double y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_double" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of double
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_double=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_double" >&5
+$as_echo "$ac_cv_alignof_double" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_DOUBLE $ac_cv_alignof_double
+_ACEOF
+
 ac_fn_c_check_type "$LINENO" "caddr_t" "ac_cv_type_caddr_t" "$ac_includes_default"
 if test "x$ac_cv_type_caddr_t" = xyes; then :
 
@@ -44131,6 +44276,16 @@ esac
 
 fi
 
+for ac_func in obstack_xfree
+do :
+  ac_fn_c_check_func "$LINENO" "obstack_xfree" "ac_cv_func_obstack_xfree"
+if test "x$ac_cv_func_obstack_xfree" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_OBSTACK_XFREE 1
+_ACEOF
+
+fi
+done
 for ac_header in stdlib.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_includes_default"
@@ -45347,6 +45502,17 @@ $as_echo "#define USE_INCLUDED_REGEX 1" >>confdefs.h
 
 fi
 
+for ac_func in re_set_syntax
+do :
+  ac_fn_c_check_func "$LINENO" "re_set_syntax" "ac_cv_func_re_set_syntax"
+if test "x$ac_cv_func_re_set_syntax" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_RE_SET_SYNTAX 1
+_ACEOF
+
+fi
+done
+
 # Check if <sys/proc.h> defines `struct thread' with a td_pcb member:
 ac_fn_c_check_member "$LINENO" "struct thread" "td_pcb" "ac_cv_member_struct_thread_td_pcb" "
 #include <sys/param.h>
@@ -46561,6 +46727,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gdb_cv_c_long_long" >&5
 $as_echo "$gdb_cv_c_long_long" >&6; }
 if test "x${gdb_cv_c_long_long}" = "xyes"; then
+  ## (sizeof and alignof are already checked by some other macro)
 
 $as_echo "#define CC_HAS_LONG_LONG 1" >>confdefs.h
 
@@ -46687,8 +46854,76 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gdb_cv_c_long_double" >&5
-$as_echo "$gdb_cv_c_long_double" >&6; }  ## now define based on that:
+$as_echo "$gdb_cv_c_long_double" >&6; }  ## now define and stuff based on that:
 if test "x${gdb_cv_c_long_double}" = "xyes"; then
+  # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of long double" >&5
+$as_echo_n "checking size of long double... " >&6; }
+if ${ac_cv_sizeof_long_double+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (long double))" "ac_cv_sizeof_long_double"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_long_double" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (long double)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_long_double=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_long_double" >&5
+$as_echo "$ac_cv_sizeof_long_double" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_LONG_DOUBLE $ac_cv_sizeof_long_double
+_ACEOF
+
+
+  # The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of long double" >&5
+$as_echo_n "checking alignment of long double... " >&6; }
+if ${ac_cv_alignof_long_double+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_long_double"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; long double y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_long_double" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of long double
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_long_double=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_long_double" >&5
+$as_echo "$ac_cv_alignof_long_double" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_LONG_DOUBLE $ac_cv_alignof_long_double
+_ACEOF
+
+
 
 $as_echo "#define HAVE_LONG_DOUBLE 1" >>confdefs.h
   ## end def
@@ -47486,7 +47721,8 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++ \
 -Wsized-deallocation -Wplacement-new=2 -Wshadow-compatible-local \
 -Wbuiltin-function-redefined -Waligned-new=all -Wsynth -Wcatch-value \
--Wclass-memaccess -Wnon-pod-varargs -Wmissing-attributes -Wdeprecated-copy"
+-Wclass-memaccess -Wnon-pod-varargs -Wmissing-attributes \
+-Wdeprecated-copy -Wdeprecated-copy-dtor"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \

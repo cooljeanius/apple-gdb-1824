@@ -2358,7 +2358,8 @@ func_command(const char *arg, int from_tty)
     xfree(func_bounds);
 
   if (!found)
-    printf_filtered(_("'%s' not within current stack frame.\n"), arg);
+    printf_filtered(_("'%s' not within current stack frame.\n"),
+		    ((arg != NULL) ? arg : "arg"));
   else if (fp != deprecated_selected_frame)
     select_and_print_frame(fp);
 }

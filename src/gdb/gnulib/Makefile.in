@@ -521,6 +521,8 @@ POSUB = @POSUB@
 POW_LIB = @POW_LIB@
 PRAGMA_COLUMNS = @PRAGMA_COLUMNS@
 PRAGMA_SYSTEM_HEADER = @PRAGMA_SYSTEM_HEADER@
+PRE_ASPRINTF_LDFLAGS = @PRE_ASPRINTF_LDFLAGS@
+PRE_LIBINTL_LDFLAGS = @PRE_LIBINTL_LDFLAGS@
 PROFILE_CFLAGS = @PROFILE_CFLAGS@
 PTRDIFF_T_SUFFIX = @PTRDIFF_T_SUFFIX@
 PYTHON = @PYTHON@
@@ -1612,6 +1614,9 @@ mostlyclean-local: mostlyclean-generic
 distclean-local:
 	rm -rf autom4te.cache || rmdir autom4te.cache
 	if test -e config.h.in~; then rm -f config.h.in~; fi
+	-rm -rf import/.deps || rmdir import/.deps
+	-rm -rf import/uniwidth/.deps || rmdir import/uniwidth/.deps
+	-if test -L fnmatch.h; then unlink fnmatch.h; fi
 
 maintainer-clean-local:
 	-(unlink fnmatch.h || rm fnmatch.h)

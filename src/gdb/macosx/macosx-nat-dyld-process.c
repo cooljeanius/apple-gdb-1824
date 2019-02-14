@@ -717,7 +717,8 @@ dyld_resolve_load_flag(const struct dyld_path_info *d,
             {
               if (!(e->reason & dyld_reason_weak_mask))
                 {
-                  warning("Unable to resolve \"%s\"; not loading.", name1);
+                  warning(_("Unable to resolve \"%s\"; not loading."),
+			  ((name1 != NULL) ? name1 : "name1"));
                 }
               return OBJF_SYM_NONE;
             }

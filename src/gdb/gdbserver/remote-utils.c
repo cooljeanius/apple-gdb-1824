@@ -694,7 +694,8 @@ prepare_resume_reply (char *buf, char status, unsigned char signo)
 	  CORE_ADDR addr;
 	  int i;
 
-	  strncpy (buf, "watch:", 6);
+	  /* remember to leave space to nul-terminate: */
+	  strncpy(buf, "watch:", 7UL);
 	  buf += 6;
 
 	  addr = (*the_target->stopped_data_address) ();

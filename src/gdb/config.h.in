@@ -94,11 +94,20 @@
 /* The normal alignment of `char', in bytes. */
 #undef ALIGNOF_CHAR
 
+/* The normal alignment of `double', in bytes. */
+#undef ALIGNOF_DOUBLE
+
+/* The normal alignment of `float', in bytes. */
+#undef ALIGNOF_FLOAT
+
 /* The normal alignment of `int', in bytes. */
 #undef ALIGNOF_INT
 
 /* The normal alignment of `long', in bytes. */
 #undef ALIGNOF_LONG
+
+/* The normal alignment of `long double', in bytes. */
+#undef ALIGNOF_LONG_DOUBLE
 
 /* The normal alignment of `long long', in bytes. */
 #undef ALIGNOF_LONG_LONG
@@ -960,6 +969,9 @@
 /* Define to 1 if libc includes obstacks. */
 #undef HAVE_OBSTACK
 
+/* Define to 1 if you have the `obstack_xfree' function. */
+#undef HAVE_OBSTACK_XFREE
+
 /* Define to 1 if you have the `pathconf' function. */
 #undef HAVE_PATHCONF
 
@@ -1176,6 +1188,9 @@
 
 /* Define to 1 if you have the `re_comp' function. */
 #undef HAVE_RE_COMP
+
+/* Define to 1 if you have the `re_set_syntax' function. */
+#undef HAVE_RE_SET_SYNTAX
 
 /* Define to 1 if you have the <rpc/clnt.h> header file. */
 #undef HAVE_RPC_CLNT_H
@@ -1835,11 +1850,20 @@
 /* The size of `char', as computed by sizeof. */
 #undef SIZEOF_CHAR
 
+/* The size of `double', as computed by sizeof. */
+#undef SIZEOF_DOUBLE
+
+/* The size of `float', as computed by sizeof. */
+#undef SIZEOF_FLOAT
+
 /* The size of `int', as computed by sizeof. */
 #undef SIZEOF_INT
 
 /* The size of `long', as computed by sizeof. */
 #undef SIZEOF_LONG
+
+/* The size of `long double', as computed by sizeof. */
+#undef SIZEOF_LONG_DOUBLE
 
 /* The size of `long long', as computed by sizeof. */
 #undef SIZEOF_LONG_LONG

@@ -16,47 +16,54 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.  */
+
+#ifndef BINUTILS_ARSUP_H
+#define BINUTILS_ARSUP_H 1
 
 struct list {
 	char *name;
 	struct list *next;
 };
 
-void maybequit (void);
+void maybequit(void);
 
-void prompt (void);
+void prompt(void);
 
-void ar_clear (void);
+void ar_clear(void);
 
-void ar_replace (struct list *);
+void ar_replace(struct list *);
 
-void ar_delete (struct list *);
+void ar_delete(struct list *);
 
-void ar_save (void);
+void ar_save(void);
 
-void ar_list (void);
+void ar_list(void);
 
-void ar_open (char *, int);
+void ar_open(char *, int);
 
-void ar_directory (char *, struct list *, char *);
+void ar_directory(char *, struct list *, char *);
 
-void ar_addmod (struct list *);
+void ar_addmod(struct list *);
 
-void ar_addlib (char *, struct list *);
+void ar_addlib(char *, struct list *);
 
-void ar_end (void);
+void ar_end(void);
 
-void ar_extract (struct list *);
+void ar_extract(struct list *);
 
-bfd *open_inarch (const char *archive_filename, const char *);
+bfd *open_inarch(const char *archive_filename, const char *);
 
-extern int yylex (void);
+extern int yylex(void);
 
-int yyparse (void);
+int yyparse(void);
 
 /* Functions from ar.c */
 
-void extract_file (bfd * abfd);
+void extract_file(bfd *abfd);
 
 extern int interactive;
+
+#endif /* !BINUTILS_ARSUP_H */
+
+/* EOF */

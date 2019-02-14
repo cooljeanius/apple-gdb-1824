@@ -3010,7 +3010,7 @@ registers_info(const char *addr_exp, int fpregs)
       }
 
       /* Nothing matched.  */
-      error (_("Invalid register `%.*s'"), (int) (end - start), start);
+      error(_("Invalid register `%.*s'"), (int)(end - start), start);
     }
 }
 

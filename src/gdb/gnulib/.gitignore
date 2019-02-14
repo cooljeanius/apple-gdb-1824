@@ -7,6 +7,8 @@ site.exp
 site.bak
 core
 *.stackdump
+fnmatch.h
+fnmatch.h-t
 stdint.h
 stdint.h-t
 string.h
