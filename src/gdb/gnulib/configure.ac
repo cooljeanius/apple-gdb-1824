@@ -68,6 +68,9 @@ m4_ifdef([BISON_I18N],[
   fi
 ])dnl
 
+## avoid message from one configure test:
+export gl_cv_func_localtime_infloop_bug=yes
+
 AC_MSG_NOTICE([initializing gnulib for real now])
 gl_INIT
 AC_MSG_NOTICE([doing some extra gnulib initialization checks])
@@ -93,7 +96,8 @@ fi
 # --------------------- #
 # Checks for programs.  #
 # --------------------- #
-
+AC_MSG_CHECKING([programs for gnulib])
+AC_MSG_RESULT([ ])
 AC_PROG_INSTALL
 AC_PROG_LN_S
 if test "x${ac_cv_prog_ac_ct_RANLIB}" = "x" -a "x${RANLIB}" = "x"; then
@@ -136,6 +140,8 @@ AX_CHECK_GNU_MAKE
 # Checks for libraries.  #
 # ---------------------- #
 
+AC_MSG_CHECKING([libraries for gnulib])
+AC_MSG_RESULT([ ])
 if test "x${acl_cv_wl}" = "x"; then
   test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
 fi
@@ -157,6 +163,8 @@ unset ac_cv_lib_intl_gettext
 # ------------------------- #
 # Checks for header files.  #
 # ------------------------- #
+AC_MSG_CHECKING([headers for gnulib])
+AC_MSG_RESULT([ ])
 gl_STDINT_H
 AC_SUBST([STDINT_H])dnl
 gl_HEADER_STRING_H
@@ -178,10 +186,14 @@ if test "x${ac_cv_header_time}" = "x"; then
   test -z "${ac_cv_header_time}"
   AC_HEADER_TIME
 fi
-AC_CHECK_HEADERS([OS.h crtdefs.h ctype.h errno.h fcntl.h float.h limits.h \
-                  locale.h malloc/malloc.h netdb.h nl_types.h \
-                  shlib-compat.h stddef.h stdio.h time.h _wctype.h])dnl
+AC_CHECK_HEADERS([OS.h ctype.h errno.h fcntl.h float.h locale.h \
+                  malloc/malloc.h nl_types.h shlib-compat.h stddef.h stdio.h \
+                  stdio_ext.h time.h _wctype.h])dnl
   ## dummies to keep autoscan happy:
+if test "x${ac_cv_header_crtdefs_h}" = "x"; then
+  test -z "${ac_cv_header_crtdefs_h}"
+  AC_CHECK_HEADERS([crtdefs.h])
+fi
 if test "x${ac_cv_header_langinfo_h}" = "x"; then
   test -z "${ac_cv_header_langinfo_h}"
   AC_CHECK_HEADERS([langinfo.h])
@@ -190,9 +202,21 @@ if test "x${ac_cv_header_libintl_h}" = "x"; then
   test -z "${ac_cv_header_libintl_h}"
   AC_CHECK_HEADERS([libintl.h])
 fi
+if test "x${ac_cv_header_limits_h}" = "x"; then
+  test -z "${ac_cv_header_limits_h}"
+  AC_CHECK_HEADERS([limits.h])
+fi
 if test "x${ac_cv_header_malloc_h}" = "x"; then
   test -z "${ac_cv_header_malloc_h}"
   AC_CHECK_HEADERS([malloc.h])
+fi
+if test "x${ac_cv_header_netdb_h}" = "x"; then
+  test -z "${ac_cv_header_netdb_h}"
+  AC_CHECK_HEADERS([netdb.h])
+fi
+if test "x${ac_cv_header_sys_ioctl_h}" = "x"; then
+  test -z "${ac_cv_header_sys_ioctl_h}"
+  AC_CHECK_HEADERS([sys/ioctl.h])
 fi
 if test "x${ac_cv_header_sys_param_h}" = "x"; then
   test -z "${ac_cv_header_sys_param_h}"
@@ -209,6 +233,10 @@ fi
 if test "x${ac_cv_header_sys_vfs_h}" = "x"; then
   test -z "${ac_cv_header_sys_vfs_h}"
   AC_CHECK_HEADERS([sys/vfs.h])
+fi
+if test "x${ac_cv_header_termios_h}" = "x"; then
+  test -z "${ac_cv_header_termios_h}"
+  AC_CHECK_HEADERS([termios.h])
 fi
 if test "x${ac_cv_header_wchar_h}" = "x"; then
   test -z "${ac_cv_header_wchar_h}"
@@ -230,6 +258,9 @@ AC_SUBST([EXTRA_DEFS])dnl
 # --------------------------------------------------------------- #
 # Checks for typedefs, structures, and compiler characteristics.  #
 # --------------------------------------------------------------- #
+  ## 1
+AC_MSG_CHECKING([compiler characteristics for gnulib])
+AC_MSG_RESULT([ ])
 if test "x${ac_cv_c_bigendian}" = "x"; then
   test -z "${ac_cv_c_bigendian}"
   AC_C_BIGENDIAN
@@ -244,6 +275,9 @@ if test "x${ac_cv_c_inline}" = "x"; then
 fi
 AC_C_PROTOTYPES
 AC_C_VOLATILE
+  ## 2
+AC_MSG_CHECKING([types for gnulib])
+AC_MSG_RESULT([ ])
 AC_TYPE_INT32_T
 if test "x${ac_cv_type_mbstate_t}" = "x"; then
   test -z "${ac_cv_type_mbstate_t}"
@@ -259,7 +293,11 @@ if test "x${ac_cv_type_pid_t}" = "x"; then
   test -z "${ac_cv_type_pid_t}"
   AC_TYPE_PID_T
 fi
-AC_CHECK_TYPES([ptrdiff_t])dnl
+if test "x${ac_cv_type_ptrdiff_t}" = "x"; then
+  test -z "${ac_cv_type_ptrdiff_t}"
+  AC_CHECK_TYPES([ptrdiff_t])dnl
+  ## keeps autoscan happy
+fi
 AC_TYPE_SSIZE_T
 if test "x${ac_cv_type_uid_t}" = "x"; then
   test -z "${ac_cv_type_uid_t}"
@@ -309,17 +347,30 @@ export HAVE_WCTRANS_T=0
 #endif /* HAVE_WCTYPE_H */
 ])dnl
 AC_CHECK_TYPES([__darwin_wctrans_t])dnl
+  ## 3
+AC_MSG_CHECKING([structures for gnulib])
+AC_MSG_RESULT([ ])
 AC_CHECK_MEMBERS([struct stat.st_blksize])dnl
+AC_CHECK_MEMBERS([struct stat.st_rdev])dnl
  ## check cache value for this:
 if test "x${ac_cv_member_struct_stat_st_blocks}" = "x"; then
   test -z "${ac_cv_member_struct_stat_st_blocks}"
   AC_STRUCT_ST_BLOCKS
 fi
-AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
+ ## and this:
+if test "x${ac_cv_member_struct_tm_tm_zone}" = "x"; then
+  test -z "${ac_cv_member_struct_tm_tm_zone}"
+  AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
+elif test "x${ac_cv_struct_tm}" = "x"; then
+  test -z "${ac_cv_struct_tm}"
+  AC_STRUCT_TM
+fi
 
 # ------------------------------ #
 # Checks for library functions.  #
 # ------------------------------ #
+AC_MSG_CHECKING([functions for gnulib])
+AC_MSG_RESULT([ ])
 if test "x${ac_cv_lib_error_at_line}" = "x"; then
   test -z "${ac_cv_lib_error_at_line}"
   AC_FUNC_ERROR_AT_LINE dnl# (might create libobj)
@@ -358,10 +409,10 @@ if test "x${ac_cv_func_strerror_r}" = "x" && test "x${ac_cv_func_strerror_r_char
 fi
 AC_FUNC_STRNLEN dnl# (might create libobj)
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([getcwd isascii iswprint localeconv memset putenv re_comp \
-                regcomp rmdir setlocale stpcpy strcasecmp strchr strcmp \
-                strcspn strerror strncasecmp strrchr strspn strstr \
-                tzset tzunset])dnl
+AC_CHECK_FUNCS([getcwd isascii iswprint localeconv mblen mbrlen memset mkdir \
+                putenv re_comp regcomp rmdir setlocale stpcpy strcasecmp \
+                strchr strcmp strcspn strerror strncasecmp strrchr strspn \
+                strstr tzunset uname])dnl
   ## dummies to keep autoscan happy:
 if test "x${ac_cv_func_atexit}" = "x"; then
   test -z "${ac_cv_func_atexit}"
@@ -438,6 +489,10 @@ fi
 if test "x${ac_cv_func_strtol}" = "x"; then
   test -z "${ac_cv_func_strtol}"
   AC_CHECK_FUNCS([strtol])
+fi
+if test "x${ac_cv_func_tzset}" = "x"; then
+  test -z "${ac_cv_func_tzset}"
+  AC_CHECK_FUNCS([tzset])
 fi
 if test "x${ac_cv_func_wcwidth}" = "x"; then
   test -z "${ac_cv_func_wcwidth}"

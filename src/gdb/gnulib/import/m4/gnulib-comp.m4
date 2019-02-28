@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2018 Free Software Foundation, Inc.
+# Copyright (C) 2002-2019 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module bcopy:
   # Code from module bison-i18n:
   # Code from module bitrotate:
+  # Code from module bitset:
   # Code from module btowc:
   # Code from module builtin-expect:
   # Code from module c-ctype:
@@ -98,6 +99,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module extern-inline:
   # Code from module faccessat:
   # Code from module fchdir:
+  # Code from module fclose:
   # Code from module fcntl:
   # Code from module fcntl-h:
   # Code from module fcntl-safer:
@@ -114,6 +116,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module fnmatch:
   # Code from module fnmatch-gnu:
   # Code from module fnmatch-h:
+  # Code from module fopen:
   # Code from module fpieee:
   AC_REQUIRE([gl_FP_IEEE])
   # Code from module fprintf-posix:
@@ -206,6 +209,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module memmove:
   # Code from module mempcpy:
   # Code from module memrchr:
+  # Code from module mkdir:
   # Code from module mkdtemp:
   # Code from module mktime:
   # Code from module mktime-internal:
@@ -225,9 +229,11 @@ AC_DEFUN([gl_EARLY],
   # Code from module openat-h:
   # Code from module openat-safer:
   # Code from module opendir:
+  # Code from module opendirat:
   # Code from module openmp:
   # Code from module pathmax:
   # Code from module pclose:
+  # Code from module perror:
   # Code from module pipe-posix:
   # Code from module poll-h:
   # Code from module popen:
@@ -256,6 +262,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module secure_getenv:
   # Code from module send:
   # Code from module setenv:
+  # Code from module sh-filename:
   # Code from module sig2str:
   # Code from module sigaction:
   # Code from module signal:
@@ -488,6 +495,11 @@ AC_DEFUN([gl_INIT],
   gl_UNISTD_MODULE_INDICATOR([faccessat])
   gl_FUNC_FCHDIR
   gl_UNISTD_MODULE_INDICATOR([fchdir])
+  gl_FUNC_FCLOSE
+  if test $REPLACE_FCLOSE = 1; then
+    AC_LIBOBJ([fclose])
+  fi
+  gl_STDIO_MODULE_INDICATOR([fclose])
   gl_FUNC_FCNTL
   if test $HAVE_FCNTL = 0 || test $REPLACE_FCNTL = 1; then
     AC_LIBOBJ([fcntl])
@@ -537,6 +549,12 @@ AC_DEFUN([gl_INIT],
   fi
   gl_MODULE_INDICATOR([fnmatch-gnu])
   gl_FNMATCH_H
+  gl_FUNC_FOPEN
+  if test $REPLACE_FOPEN = 1; then
+    AC_LIBOBJ([fopen])
+    gl_PREREQ_FOPEN
+  fi
+  gl_STDIO_MODULE_INDICATOR([fopen])
   gl_FUNC_FPRINTF_POSIX
   gl_STDIO_MODULE_INDICATOR([fprintf-posix])
   gl_FUNC_FPURGE
@@ -782,7 +800,7 @@ AC_DEFUN([gl_INIT],
   gl_WCHAR_MODULE_INDICATOR([mbsrtowcs])
   gl_STRING_MODULE_INDICATOR([mbsspn])
   gl_FUNC_MBTOWC
-  if test $REPLACE_MBTOWC = 1; then
+  if test $HAVE_MBTOWC = 0 || test $REPLACE_MBTOWC = 1; then
     AC_LIBOBJ([mbtowc])
     gl_PREREQ_MBTOWC
   fi
@@ -826,6 +844,10 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_MEMRCHR
   fi
   gl_STRING_MODULE_INDICATOR([memrchr])
+  gl_FUNC_MKDIR
+  if test $REPLACE_MKDIR = 1; then
+    AC_LIBOBJ([mkdir])
+  fi
   gl_FUNC_MKDTEMP
   if test $HAVE_MKDTEMP = 0; then
     AC_LIBOBJ([mkdtemp])
@@ -887,6 +909,11 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_PCLOSE
   fi
   gl_STDIO_MODULE_INDICATOR([pclose])
+  gl_FUNC_PERROR
+  if test $REPLACE_PERROR = 1; then
+    AC_LIBOBJ([perror])
+  fi
+  gl_STRING_MODULE_INDICATOR([perror])
   gl_FUNC_PIPE
   if test $HAVE_PIPE = 0; then
     AC_LIBOBJ([pipe])
@@ -976,6 +1003,7 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([setenv])
   fi
   gl_STDLIB_MODULE_INDICATOR([setenv])
+  gl_SH_FILENAME
   gl_FUNC_SIG2STR
   if test $ac_cv_func_sig2str = no; then
     AC_LIBOBJ([sig2str])
@@ -1417,6 +1445,19 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/bcopy.c
   lib/bitrotate.c
   lib/bitrotate.h
+  lib/bitset.c
+  lib/bitset.h
+  lib/bitset/array.c
+  lib/bitset/array.h
+  lib/bitset/base.h
+  lib/bitset/list.c
+  lib/bitset/list.h
+  lib/bitset/stats.c
+  lib/bitset/stats.h
+  lib/bitset/table.c
+  lib/bitset/table.h
+  lib/bitset/vector.c
+  lib/bitset/vector.h
   lib/btowc.c
   lib/c++defs.h
   lib/c-ctype.c
@@ -1463,6 +1504,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/exitfail.h
   lib/faccessat.c
   lib/fchdir.c
+  lib/fclose.c
   lib/fcntl--.h
   lib/fcntl-safer.h
   lib/fcntl.c
@@ -1484,6 +1526,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/fnmatch.c
   lib/fnmatch.in.h
   lib/fnmatch_loop.c
+  lib/fopen.c
   lib/fprintf.c
   lib/fpucw.h
   lib/fpurge.c
@@ -1574,6 +1617,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/memmove.c
   lib/mempcpy.c
   lib/memrchr.c
+  lib/mkdir.c
   lib/mkdtemp.c
   lib/mktime-internal.h
   lib/mktime.c
@@ -1595,8 +1639,11 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/openat.h
   lib/opendir-safer.c
   lib/opendir.c
+  lib/opendirat.c
+  lib/opendirat.h
   lib/pathmax.h
   lib/pclose.c
+  lib/perror.c
   lib/pipe-safer.c
   lib/pipe.c
   lib/poll.in.h
@@ -1801,6 +1848,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/extern-inline.m4
   m4/faccessat.m4
   m4/fchdir.m4
+  m4/fclose.m4
   m4/fcntl-o.m4
   m4/fcntl-safer.m4
   m4/fcntl.m4
@@ -1813,6 +1861,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/float_h.m4
   m4/fnmatch.m4
   m4/fnmatch_h.m4
+  m4/fopen.m4
   m4/fpieee.m4
   m4/fprintf-posix.m4
   m4/fpurge.m4
@@ -1850,6 +1899,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/include_next.m4
   m4/inline.m4
   m4/intdiv0.m4
+  m4/intl-thread-locale.m4
   m4/intl.m4
   m4/intldir.m4
   m4/intlmacosx.m4
@@ -1908,6 +1958,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/memmove.m4
   m4/mempcpy.m4
   m4/memrchr.m4
+  m4/mkdir.m4
   m4/mkdtemp.m4
   m4/mktime.m4
   m4/mmap-anon.m4
@@ -1926,9 +1977,9 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/open.m4
   m4/openat.m4
   m4/opendir.m4
-  m4/openmp.m4
   m4/pathmax.m4
   m4/pclose.m4
+  m4/perror.m4
   m4/pipe.m4
   m4/po.m4
   m4/poll_h.m4
@@ -1953,6 +2004,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/search_h.m4
   m4/secure_getenv.m4
   m4/setenv.m4
+  m4/sh-filename.m4
   m4/sig2str.m4
   m4/sigaction.m4
   m4/signal_h.m4

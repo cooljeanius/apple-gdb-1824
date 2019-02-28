@@ -1,5 +1,5 @@
 /* Extended regular expression matching and search library.
-   Copyright (C) 2002-2018 Free Software Foundation, Inc.
+   Copyright (C) 2002-2019 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Isamu Hasegawa <isamu@yamato.ibm.com>.
 
@@ -33,23 +33,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-/* Properties of integers.  Although Gnulib has intprops.h, glibc does
-   without for now.  */
-#ifndef _LIBC
-# include "intprops.h"
-#else
-/* True if the real type T is signed.  */
-# define TYPE_SIGNED(t) (! ((t) 0 < (t) -1))
-
-/* True if adding the nonnegative Idx values A and B would overflow.
-   If false, set *R to A + B.  A, B, and R may be evaluated more than
-   once, or zero times.  Although this is not a full implementation of
-   Gnulib INT_ADD_WRAPV, it is good enough for glibc regex code.
-   FIXME: This implementation is a fragile stopgap, and this file would
-   be simpler and more robust if intprops.h were migrated into glibc.  */
-# define INT_ADD_WRAPV(a, b, r) \
-   (IDX_MAX - (a) < (b) ? true : (*(r) = (a) + (b), false))
-#endif
+#include <intprops.h>
 
 #ifdef _LIBC
 # include <libc-lock.h>
@@ -132,8 +116,6 @@
 # define RE_ENABLE_I18N
 #endif
 
-#define BE(expr, val) __builtin_expect (expr, val)
-
 /* Number of ASCII characters.  */
 #define ASCII_CHARS 0x80
 
@@ -162,12 +144,7 @@
 # define __mbrtowc mbrtowc
 # define __wcrtomb wcrtomb
 # define __regfree regfree
-# define attribute_hidden
 #endif /* not _LIBC */
-
-#if __GNUC__ < 3 + (__GNUC_MINOR__ < 1)
-# define __attribute__(arg)
-#endif
 
 #ifndef SSIZE_MAX
 # define SSIZE_MAX ((ssize_t) (SIZE_MAX / 2))
@@ -885,23 +862,6 @@ re_string_elem_size_at (const re_string_t *pstr, Idx idx)
     return 1;
 }
 #endif /* RE_ENABLE_I18N */
-
-#ifndef __GNUC_PREREQ
-# if defined __GNUC__ && defined __GNUC_MINOR__
-#  define __GNUC_PREREQ(maj, min) \
-         ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
-# else
-#  define __GNUC_PREREQ(maj, min) 0
-# endif
-#endif
-
-#if __GNUC_PREREQ (3,4)
-# undef __attribute_warn_unused_result__
-# define __attribute_warn_unused_result__ \
-   __attribute__ ((__warn_unused_result__))
-#else
-# define __attribute_warn_unused_result__ /* empty */
-#endif
 
 #ifndef FALLTHROUGH
 # if __GNUC__ < 7

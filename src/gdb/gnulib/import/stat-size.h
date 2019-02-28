@@ -1,5 +1,5 @@
 /* macros useful in interpreting size-related values in struct stat.
-   Copyright (C) 1989, 1991-2018 Free Software Foundation, Inc.
+   Copyright (C) 1989, 1991-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -62,8 +62,7 @@
    st_blocks ((statbuf).st_size) : 0)
 # endif
 #else
-/* Some systems, like Sequents, return st_blksize of 0 on pipes.
-   Also, when running 'rsh hpux11-system cat any-file', cat would
+/* When running 'rsh hpux11-system cat any-file', cat would
    determine that the output stream had an st_blksize of 2147421096.
    Conversely st_blksize can be 2 GiB (or maybe even larger) with XFS
    on 64-bit hosts.  Somewhat arbitrarily, limit the "optimal" block
@@ -79,15 +78,10 @@
      This loses when mixing HP-UX and BSD file systems with NFS.  */
 #  define ST_NBLOCKSIZE 1024
 # else /* !hpux */
-#  if defined _AIX && defined _I386
-    /* AIX PS/2 counts st_blocks in 4K units.  */
-#   define ST_NBLOCKSIZE (4 * 1024)
-#  else
-#   if defined _CRAY
-#    define ST_NBLOCKS(statbuf) \
+#  if defined _CRAY
+#   define ST_NBLOCKS(statbuf) \
   (S_ISREG ((statbuf).st_mode) || S_ISDIR ((statbuf).st_mode) \
    ? (statbuf).st_blocks * ST_BLKSIZE (statbuf) / ST_NBLOCKSIZE : 0)
-#   endif
 #  endif
 # endif
 #endif

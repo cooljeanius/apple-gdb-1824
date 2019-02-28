@@ -1,6 +1,6 @@
 /* Run-time assert-like macros.
 
-   Copyright (C) 2014-2018 Free Software Foundation, Inc.
+   Copyright (C) 2014-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 #include <assert.h>
 
 /* Check E's value at runtime, and report an error and abort if not.
-   However, do nothng if NDEBUG is defined.
+   However, do nothing if NDEBUG is defined.
 
    Unlike standard 'assert', this macro always compiles E even when NDEBUG
    is defined, so as to catch typos and avoid some GCC warnings.  */

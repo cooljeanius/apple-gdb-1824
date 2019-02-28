@@ -32,14 +32,14 @@
 IMPORTED_GNULIB_MODULES="\
     absolute-header alignof alloca alloca-opt ansi-c++-opt assert assert-h \
     assure autobuild \
-    bcopy bison-i18n btowc builtin-expect \
+    bcopy bison-i18n bitset btowc builtin-expect \
     c-ctype c-strcase c-strcasestr c99 calloc-posix chdir-long configmake \
     connect closedir crc ctime \
     dirent dirent-safer dirfd dosname double-slash-root dup2 \
-    environ errno error exitfail extensions extern-inline \
-    faccessat fcntl fcntl-h fcntl-safer fflush fileblocks flexmember float \
-    fnmatch fnmatch-gnu fnmatch-h fpieee fprintf-posix fpucw frexp frexpl \
-    fstatat fts \
+    environ errno error euidaccess exitfail extensions extern-inline \
+    faccessat fclose fcntl fcntl-h fcntl-safer fflush fileblocks flexmember \
+    float fnmatch fnmatch-gnu fnmatch-h fopen fpieee fprintf-posix fpucw \
+    frexp frexpl fstatat fts \
     getcwd getcwd-lgpl getpagesize gettext-h gettimeofday git-version-gen \
     gitlog-to-changelog gnu-make gpl-2.0 \
     havelib host-cpu-c-abi host-os \
@@ -49,14 +49,14 @@ IMPORTED_GNULIB_MODULES="\
     localtime-buffer longlong lstat \
     malloc-gnu malloc-posix manywarnings math mbrtowc mbschr mbsinit mbsrchr \
     mbsrtowcs mbsspn memchr memcmp memmem memmem-simple \
-    mempcpy memrchr mkdtemp multiarch \
+    mempcpy memrchr mkdir mkdtemp multiarch \
     nextafter no-c++ nocrash noreturn \
-    obstack openmp \
-    pathmax pclose pipe-posix popen posixcheck putenv \
+    obstack opendirat openmp \
+    pathmax pclose perror pipe-posix popen posixcheck putenv \
     readdir readlink realloc-gnu realloc-posix recv regex regex-quote \
     regexprops-generic rmdir \
-    secure_getenv send setenv sig2str sigaction signal signal-h sigpipe \
-    sigpipe-die sigprocmask snippet/_Noreturn snippet/arg-nonnull \
+    secure_getenv send setenv sh-filename sig2str sigaction signal signal-h \
+    sigpipe sigpipe-die sigprocmask snippet/_Noreturn snippet/arg-nonnull \
     snippet/c++defs snippet/link-warning snippet/warn-on-use snprintf \
     sprintf-posix ssize_t stat stat-macros stat-size stat-time stdbool stddef \
     stdint stdlib streq strerror strerror_r-posix strerror-override \
@@ -84,9 +84,9 @@ IMPORTED_GNULIB_MODULES="\
 #   explicitly ignored.
 
 # The gnulib commit ID to use for the update.
-GNULIB_COMMIT_SHA1="635beea5deb0426d14e3639993a1d45dfeb8cf5f"
+GNULIB_COMMIT_SHA1="1e5153d4ecc50f9258b384b7c616831bbaa6af33"
 # (feel free to update if you know that your version works and is newer)
-# (last updated October 4, 2018)
+# (last updated February 26, 2019)
 
 # The expected version number for the various auto tools we will
 # use after the import.
@@ -180,3 +180,4 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
+# EOF

@@ -1,4 +1,4 @@
-/* Copyright (C) 1991, 1993, 1995, 1997-1998, 2003, 2006, 2009-2018 Free
+/* Copyright (C) 1991, 1993, 1995, 1997-1998, 2003, 2006, 2009-2019 Free
    Software Foundation, Inc.
 
    Contributed by Torbjorn Granlund (tege@sics.se).
@@ -27,9 +27,9 @@
 
 #include <stdint.h>
 
-#undef memcmp
-
 #ifdef _LIBC
+
+# undef memcmp
 
 # include <memcopy.h>
 # include <endian.h>

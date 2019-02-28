@@ -110,10 +110,26 @@ if test "x${ac_cv_lib_error_at_line}" = "xno"; then
   gl_PREREQ_ERROR
 fi
 dnl# (skip the pointless gettext stuff for it)
+dnl# from gnulib module euidaccess:
+AC_REQUIRE([gl_FUNC_EUIDACCESS])dnl
+  ## set up libobj if needed:
+if test ${HAVE_EUIDACCESS} = 0; then
+  AC_LIBOBJ([euidaccess])dnl
+  gl_PREREQ_EUIDACCESS
+fi
+gl_UNISTD_MODULE_INDICATOR([euidaccess])dnl
 dnl# from gnulib module extensions:
 AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])dnl
 dnl# from gnulib module extern-inline:
 AC_REQUIRE([gl_EXTERN_INLINE])dnl
+dnl# from gnulib module fclose:
+AC_REQUIRE([gl_FUNC_FCLOSE])dnl
+  ## set up libobj if needed:
+if test ${REPLACE_FCLOSE} = 1; then
+  AC_LIBOBJ([fclose])dnl
+  ## end libobj
+fi
+gl_STDIO_MODULE_INDICATOR([fclose])dnl
 dnl# from gnulib module fcntl:
 AC_REQUIRE([gl_FUNC_FCNTL])dnl
   ## set up libobj if needed:
@@ -160,6 +176,14 @@ if test -n "${FNMATCH_H}"; then
   AC_LIBOBJ([fnmatch])dnl
   gl_PREREQ_FNMATCH
 fi
+dnl# from gnulib module fopen:
+AC_REQUIRE([gl_FUNC_FOPEN])dnl
+  ## set up libobj if needed:
+if test ${REPLACE_FOPEN} = 1; then
+  AC_LIBOBJ([fopen])dnl
+  gl_PREREQ_FOPEN
+fi
+gl_STDIO_MODULE_INDICATOR([fopen])dnl
 dnl# from gnulib module fpieee:
 AC_REQUIRE([gl_FP_IEEE])dnl
 dnl# from gnulib module frexp:
@@ -393,6 +417,13 @@ if test "x${ac_cv_func_memrchr}" = "xno"; then
   gl_PREREQ_MEMRCHR
 fi
 gl_STRING_MODULE_INDICATOR([memrchr])dnl
+dnl# from gnulib module mkdir:
+AC_REQUIRE([gl_FUNC_MKDIR])dnl
+  ## set up libobj if needed:
+if test ${REPLACE_MKDIR} = 1; then
+  AC_LIBOBJ([mkdir])dnl
+  ## end libobj
+fi
 dnl# from gnulib module multiarch:
 AC_REQUIRE([gl_MULTIARCH])dnl
 dnl# from gnulib module no-c++:
@@ -411,6 +442,14 @@ if test ${HAVE_PCLOSE} = 0; then
   gl_PREREQ_PCLOSE
 fi
 gl_STDIO_MODULE_INDICATOR([pclose])dnl
+dnl# from gnulib module perror:
+AC_REQUIRE([gl_FUNC_PERROR])dnl
+  ## set up libobj if needed:
+if test ${REPLACE_PERROR} = 1; then
+  AC_LIBOBJ([perror])dnl
+  ## end libobj
+fi
+gl_STRING_MODULE_INDICATOR([perror])dnl
 dnl# from gnulib module popen:
 AC_REQUIRE([gl_FUNC_POPEN])dnl
   ## set up libobj if needed:
@@ -484,6 +523,8 @@ if test ${HAVE_SETENV} = 0 || test ${REPLACE_SETENV} = 1; then
   ## end libobj
 fi
 gl_STDLIB_MODULE_INDICATOR([setenv])dnl
+dnl# from gnulib module sh-filename:
+AC_REQUIRE([gl_SH_FILENAME])dnl
 dnl# from gnulib module sig2str:
 AC_REQUIRE([gl_FUNC_SIG2STR])dnl
   ## set up libobj if needed:

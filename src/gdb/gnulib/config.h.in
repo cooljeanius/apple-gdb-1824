@@ -195,12 +195,19 @@
 /* Define as the word index where to find the sign of 'float'. */
 #undef FLT_SIGNBIT_WORD
 
+/* Define to 1 if fopen() fails to recognize a trailing slash. */
+#undef FOPEN_TRAILING_SLASH_BUG
+
 /* Define to 1 if the system's ftello function has the Solaris bug. */
 #undef FTELLO_BROKEN_AFTER_SWITCHING_FROM_READ_TO_WRITE
 
 /* Define to 1 if fflush is known to work on stdin as per POSIX.1-2008, 0 if
    fflush is known to not work, -1 if unknown. */
 #undef FUNC_FFLUSH_STDIN
+
+/* Define to 1 if mkdir mistakenly creates a directory given with a trailing
+   dot component. */
+#undef FUNC_MKDIR_DOT_BUG
 
 /* Define to 1 if nl_langinfo (YESEXPR) returns a non-empty string. */
 #undef FUNC_NL_LANGINFO_YESEXPR_WORKS
@@ -345,6 +352,9 @@
 /* Define to 1 when the gnulib module fchdir should be tested. */
 #undef GNULIB_TEST_FCHDIR
 
+/* Define to 1 when the gnulib module fclose should be tested. */
+#undef GNULIB_TEST_FCLOSE
+
 /* Define to 1 when the gnulib module fcntl should be tested. */
 #undef GNULIB_TEST_FCNTL
 
@@ -356,6 +366,9 @@
 
 /* Define to 1 when the gnulib module fnmatch should be tested. */
 #undef GNULIB_TEST_FNMATCH
+
+/* Define to 1 when the gnulib module fopen should be tested. */
+#undef GNULIB_TEST_FOPEN
 
 /* Define to 1 when the gnulib module fprintf-posix should be tested. */
 #undef GNULIB_TEST_FPRINTF_POSIX
@@ -485,6 +498,9 @@
 
 /* Define to 1 when the gnulib module pclose should be tested. */
 #undef GNULIB_TEST_PCLOSE
+
+/* Define to 1 when the gnulib module perror should be tested. */
+#undef GNULIB_TEST_PERROR
 
 /* Define to 1 when the gnulib module pipe should be tested. */
 #undef GNULIB_TEST_PIPE
@@ -1105,6 +1121,12 @@
 /* Define to 1 if you have the <math.h> header file. */
 #undef HAVE_MATH_H
 
+/* Define to 1 if you have the `mblen' function. */
+#undef HAVE_MBLEN
+
+/* Define to 1 if you have the `mbrlen' function. */
+#undef HAVE_MBRLEN
+
 /* Define to 1 if mbrtowc and mbstate_t are properly declared. */
 #undef HAVE_MBRTOWC
 
@@ -1116,6 +1138,9 @@
 
 /* Define to 1 if <wchar.h> declares mbstate_t. */
 #undef HAVE_MBSTATE_T
+
+/* Define to 1 if you have the `mbtowc' function. */
+#undef HAVE_MBTOWC
 
 /* Define to 1 if you have the `memchr' function. */
 #undef HAVE_MEMCHR
@@ -1144,6 +1169,9 @@
 
 /* Define to 1 if you have the <minix/config.h> header file. */
 #undef HAVE_MINIX_CONFIG_H
+
+/* Define to 1 if you have the `mkdir' function. */
+#undef HAVE_MKDIR
 
 /* Define to 1 if you have the `mkdtemp' function. */
 #undef HAVE_MKDTEMP
@@ -1430,6 +1458,9 @@
 /* Define to 1 if freeaddrinfo is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_FREEADDRINFO
 
+/* Define to 1 if freelocale is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_FREELOCALE
+
 /* Define to 1 if frexpf is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_FREXPF
 
@@ -1679,6 +1710,9 @@
 /* Define to 1 if mbsrtowcs is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_MBSRTOWCS
 
+/* Define to 1 if mbtowc is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_MBTOWC
+
 /* Define to 1 if memmem is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_MEMMEM
 
@@ -1726,6 +1760,9 @@
 
 /* Define to 1 if modfl is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_MODFL
+
+/* Define to 1 if newlocale is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_NEWLOCALE
 
 /* Define to 1 if nl_langinfo is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_NL_LANGINFO
@@ -2086,6 +2123,9 @@
 /* Define to 1 if strtok_r is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_STRTOK_R
 
+/* Define to 1 if strtold is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_STRTOLD
+
 /* Define to 1 if strtoll is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_STRTOLL
 
@@ -2416,6 +2456,9 @@
    uintmax_t. */
 #undef HAVE_STDINT_H_WITH_UINTMAX
 
+/* Define to 1 if you have the <stdio_ext.h> header file. */
+#undef HAVE_STDIO_EXT_H
+
 /* Define to 1 if you have the <stdio.h> header file. */
 #undef HAVE_STDIO_H
 
@@ -2524,6 +2567,9 @@
 
 /* Define to 1 if `st_blocks' is a member of `struct stat'. */
 #undef HAVE_STRUCT_STAT_ST_BLOCKS
+
+/* Define to 1 if `st_rdev' is a member of `struct stat'. */
+#undef HAVE_STRUCT_STAT_ST_RDEV
 
 /* Define to 1 if the system has the type `struct tms'. */
 #undef HAVE_STRUCT_TMS
@@ -2634,6 +2680,9 @@
 
 /* Define to 1 if you have the `tzunset' function. */
 #undef HAVE_TZUNSET
+
+/* Define to 1 if you have the `uname' function. */
+#undef HAVE_UNAME
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
@@ -2964,6 +3013,17 @@
    implementation. */
 #undef REPLACE_VFPRINTF_POSIX
 
+/* File name of the Bourne shell.  */
+#if defined __CYGWIN__ || defined __ANDROID__
+/* Omit the directory part because
+   - For 32-bit Cygwin programs in a 64-bit Cygwin environment, the Cygwin
+     mounts are not visible.
+   - On Android, /bin/sh does not exist. It's /system/bin/sh instead.  */
+# define BOURNE_SHELL "sh"
+#else
+# define BOURNE_SHELL "/bin/sh"
+#endif
+
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'sig_atomic_t'. */
 #undef SIG_ATOMIC_T_SUFFIX
@@ -3113,12 +3173,15 @@
 #undef _NETBSD_SOURCE
 
 /* The _Noreturn keyword of C11.  */
-#if ! (defined _Noreturn \
-       || (defined __STDC_VERSION__ && 201112 <= __STDC_VERSION__))
-# if (3 <= __GNUC__ || (__GNUC__ == 2 && 8 <= __GNUC_MINOR__) \
-      || 0x5110 <= __SUNPRO_C)
+#ifndef _Noreturn
+# if 201103 <= (defined __cplusplus ? __cplusplus : 0)
+#  define _Noreturn [[noreturn]]
+# elif (201112 <= (defined __STDC_VERSION__ ? __STDC_VERSION__ : 0) \
+        || 4 < __GNUC__ + (7 <= __GNUC_MINOR__))
+   /* _Noreturn works as-is.  */
+# elif 2 < __GNUC__ + (8 <= __GNUC_MINOR__) || 0x5110 <= __SUNPRO_C
 #  define _Noreturn __attribute__ ((__noreturn__))
-# elif defined _MSC_VER && 1200 <= _MSC_VER
+# elif 1200 <= (defined _MSC_VER ? _MSC_VER : 0)
 #  define _Noreturn __declspec (noreturn)
 # else
 #  define _Noreturn
@@ -3277,6 +3340,24 @@
 # define _GL_INLINE_HEADER_BEGIN
 # define _GL_INLINE_HEADER_END
 #endif
+
+/* Define to the overridden function name */
+#undef fts_children
+
+/* Define to the overridden function name */
+#undef fts_close
+
+/* Define to the overridden function name */
+#undef fts_cross_check
+
+/* Define to the overridden function name */
+#undef fts_open
+
+/* Define to the overridden function name */
+#undef fts_read
+
+/* Define to the overridden function name */
+#undef fts_set
 
 /* Define to `int' if <sys/types.h> doesn't define. */
 #undef gid_t

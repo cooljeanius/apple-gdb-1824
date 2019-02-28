@@ -1,6 +1,6 @@
 /* Traverse a file hierarchy.
 
-   Copyright (C) 2004-2018 Free Software Foundation, Inc.
+   Copyright (C) 2004-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@ static char sccsid[] = "@(#)fts.c       8.6 (Berkeley) 8/14/94";
 # include "fcntl--.h"
 # include "flexmember.h"
 # include "openat.h"
+# include "opendirat.h"
 # include "same-inode.h"
 #endif
 
@@ -294,31 +295,6 @@ fts_set_stat_required (FTSENT *p, bool required)
                            : FTS_NO_STAT_REQUIRED);
 }
 
-/* file-descriptor-relative opendir.  */
-/* FIXME: if others need this function, move it into lib/openat.c */
-static DIR *
-internal_function
-opendirat (int fd, char const *dir, int extra_flags, int *pdir_fd)
-{
-  int open_flags = (O_RDONLY | O_CLOEXEC | O_DIRECTORY | O_NOCTTY
-                    | O_NONBLOCK | extra_flags);
-  int new_fd = openat (fd, dir, open_flags);
-  DIR *dirp;
-
-  if (new_fd < 0)
-    return NULL;
-  dirp = fdopendir (new_fd);
-  if (dirp)
-    *pdir_fd = new_fd;
-  else
-    {
-      int saved_errno = errno;
-      close (new_fd);
-      errno = saved_errno;
-    }
-  return dirp;
-}
-
 /* Virtual fchdir.  Advance SP's working directory file descriptor,
    SP->fts_cwd_fd, to FD, and push the previous value onto the fd_ring.
    CHDIR_DOWN_ONE is true if FD corresponds to an entry in the directory
@@ -370,8 +346,7 @@ internal_function
 diropen (FTS const *sp, char const *dir)
 {
   int open_flags = (O_SEARCH | O_CLOEXEC | O_DIRECTORY | O_NOCTTY | O_NONBLOCK
-                    | (ISSET (FTS_PHYSICAL) ? O_NOFOLLOW : 0)
-                    | (ISSET (FTS_NOATIME) ? O_NOATIME : 0));
+                    | (ISSET (FTS_PHYSICAL) ? O_NOFOLLOW : 0));
 
   int fd = (ISSET (FTS_CWDFD)
             ? openat (sp->fts_cwd_fd, dir, open_flags)
@@ -426,8 +401,7 @@ fts_open (char * const *argv,
                early, doing it here saves us the trouble of ensuring
                later (where it'd be messier) that "." can in fact
                be opened.  If not, revert to FTS_NOCHDIR mode.  */
-            int fd = open (".",
-                           O_SEARCH | (ISSET (FTS_NOATIME) ? O_NOATIME : 0));
+            int fd = open (".", O_SEARCH);
             if (fd < 0)
               {
                 /* Even if "." is unreadable, don't revert to FTS_NOCHDIR mode
@@ -679,7 +653,7 @@ enum leaf_optimization
     NOSTAT_LEAF_OPTIMIZATION
   };
 
-#if defined __linux__ \
+#if (defined __linux__ || defined __ANDROID__) \
   && HAVE_SYS_VFS_H && HAVE_FSTATFS && HAVE_STRUCT_STATFS_F_TYPE
 
 # include <sys/vfs.h>
@@ -1304,8 +1278,7 @@ set_stat_type (struct stat *st, unsigned int dtype)
                   (((ISSET(FTS_PHYSICAL)                        \
                      && ! (ISSET(FTS_COMFOLLOW)                 \
                            && cur->fts_level == FTS_ROOTLEVEL)) \
-                    ? O_NOFOLLOW : 0)                           \
-                   | (ISSET (FTS_NOATIME) ? O_NOATIME : 0)),    \
+                    ? O_NOFOLLOW : 0)),                         \
                   Pdir_fd)
 
 /*
@@ -1796,7 +1769,7 @@ fd_ring_check (FTS const *sp)
       int fd = i_ring_pop (&fd_w);
       if (0 <= fd)
         {
-          int open_flags = O_SEARCH | O_CLOEXEC | O_NOATIME;
+          int open_flags = O_SEARCH | O_CLOEXEC;
           int parent_fd = openat (cwd_fd, "..", open_flags);
           if (parent_fd < 0)
             {

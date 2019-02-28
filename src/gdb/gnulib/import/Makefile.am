@@ -1,6 +1,6 @@
 ## DO NOT EDIT! GENERATED AUTOMATICALLY!
 ## Process this file with automake to produce Makefile.in.
-# Copyright (C) 2002-2018 Free Software Foundation, Inc.
+# Copyright (C) 2002-2019 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@
 #  autobuild \
 #  bcopy \
 #  bison-i18n \
+#  bitset \
 #  btowc \
 #  builtin-expect \
 #  c-ctype \
@@ -72,10 +73,12 @@
 #  environ \
 #  errno \
 #  error \
+#  euidaccess \
 #  exitfail \
 #  extensions \
 #  extern-inline \
 #  faccessat \
+#  fclose \
 #  fcntl \
 #  fcntl-h \
 #  fcntl-safer \
@@ -86,6 +89,7 @@
 #  fnmatch \
 #  fnmatch-gnu \
 #  fnmatch-h \
+#  fopen \
 #  fpieee \
 #  fprintf-posix \
 #  fpucw \
@@ -140,6 +144,7 @@
 #  memmem-simple \
 #  mempcpy \
 #  memrchr \
+#  mkdir \
 #  mkdtemp \
 #  multiarch \
 #  nextafter \
@@ -147,9 +152,11 @@
 #  nocrash \
 #  noreturn \
 #  obstack \
+#  opendirat \
 #  openmp \
 #  pathmax \
 #  pclose \
+#  perror \
 #  pipe-posix \
 #  popen \
 #  posixcheck \
@@ -166,6 +173,7 @@
 #  secure_getenv \
 #  send \
 #  setenv \
+#  sh-filename \
 #  sig2str \
 #  sigaction \
 #  signal \
@@ -241,7 +249,7 @@
 #  xmemdup0 \
 #  xstrndup
 
-AUTOMAKE_OPTIONS = 1.9.6 gnits subdir-objects
+AUTOMAKE_OPTIONS = 1.11 gnits subdir-objects
 
 SUBDIRS =
 noinst_HEADERS =
@@ -425,6 +433,14 @@ EXTRA_libgnu_a_SOURCES += bcopy.c
 libgnu_a_SOURCES += bitrotate.h bitrotate.c
 
 ## end   gnulib module bitrotate
+
+## begin gnulib module bitset
+
+libgnu_a_SOURCES += bitset.c bitset/array.c bitset/stats.c    bitset/table.c bitset/list.c bitset/vector.c
+
+EXTRA_DIST += bitset.h bitset/array.h bitset/base.h bitset/list.h bitset/stats.h bitset/table.h bitset/vector.h
+
+## end   gnulib module bitset
 
 ## begin gnulib module btowc
 
@@ -788,6 +804,15 @@ EXTRA_libgnu_a_SOURCES += fchdir.c
 
 ## end   gnulib module fchdir
 
+## begin gnulib module fclose
+
+
+EXTRA_DIST += fclose.c
+
+EXTRA_libgnu_a_SOURCES += fclose.c
+
+## end   gnulib module fclose
+
 ## begin gnulib module fcntl
 
 
@@ -976,6 +1001,15 @@ MOSTLYCLEANFILES += fnmatch.h fnmatch.h-t
 EXTRA_DIST += fnmatch.in.h
 
 ## end   gnulib module fnmatch-h
+
+## begin gnulib module fopen
+
+
+EXTRA_DIST += fopen.c
+
+EXTRA_libgnu_a_SOURCES += fopen.c
+
+## end   gnulib module fopen
 
 ## begin gnulib module fprintf-posix
 
@@ -1564,11 +1598,16 @@ locale.h: locale.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H
 	      -e 's/@''GNULIB_LOCALECONV''@/$(GNULIB_LOCALECONV)/g' \
 	      -e 's/@''GNULIB_SETLOCALE''@/$(GNULIB_SETLOCALE)/g' \
 	      -e 's/@''GNULIB_DUPLOCALE''@/$(GNULIB_DUPLOCALE)/g' \
+	      -e 's/@''GNULIB_LOCALENAME''@/$(GNULIB_LOCALENAME)/g' \
+	      -e 's|@''HAVE_NEWLOCALE''@|$(HAVE_NEWLOCALE)|g' \
 	      -e 's|@''HAVE_DUPLOCALE''@|$(HAVE_DUPLOCALE)|g' \
+	      -e 's|@''HAVE_FREELOCALE''@|$(HAVE_FREELOCALE)|g' \
 	      -e 's|@''HAVE_XLOCALE_H''@|$(HAVE_XLOCALE_H)|g' \
 	      -e 's|@''REPLACE_LOCALECONV''@|$(REPLACE_LOCALECONV)|g' \
 	      -e 's|@''REPLACE_SETLOCALE''@|$(REPLACE_SETLOCALE)|g' \
+	      -e 's|@''REPLACE_NEWLOCALE''@|$(REPLACE_NEWLOCALE)|g' \
 	      -e 's|@''REPLACE_DUPLOCALE''@|$(REPLACE_DUPLOCALE)|g' \
+	      -e 's|@''REPLACE_FREELOCALE''@|$(REPLACE_FREELOCALE)|g' \
 	      -e 's|@''REPLACE_STRUCT_LCONV''@|$(REPLACE_STRUCT_LCONV)|g' \
 	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
 	      -e '/definition of _GL_ARG_NONNULL/r $(ARG_NONNULL_H)' \
@@ -1874,8 +1913,10 @@ math.h: math.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H) $(
 	      -e 's|@''REPLACE_COSF''@|$(REPLACE_COSF)|g' \
 	      -e 's|@''REPLACE_COSHF''@|$(REPLACE_COSHF)|g' \
 	      -e 's|@''REPLACE_EXPF''@|$(REPLACE_EXPF)|g' \
+	      -e 's|@''REPLACE_EXPL''@|$(REPLACE_EXPL)|g' \
 	      -e 's|@''REPLACE_EXPM1''@|$(REPLACE_EXPM1)|g' \
 	      -e 's|@''REPLACE_EXPM1F''@|$(REPLACE_EXPM1F)|g' \
+	      -e 's|@''REPLACE_EXPM1L''@|$(REPLACE_EXPM1L)|g' \
 	      -e 's|@''REPLACE_EXP2''@|$(REPLACE_EXP2)|g' \
 	      -e 's|@''REPLACE_EXP2L''@|$(REPLACE_EXP2L)|g' \
 	      -e 's|@''REPLACE_FABSL''@|$(REPLACE_FABSL)|g' \
@@ -1925,6 +1966,7 @@ math.h: math.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H) $(
 	      -e 's|@''REPLACE_REMAINDER''@|$(REPLACE_REMAINDER)|g' \
 	      -e 's|@''REPLACE_REMAINDERF''@|$(REPLACE_REMAINDERF)|g' \
 	      -e 's|@''REPLACE_REMAINDERL''@|$(REPLACE_REMAINDERL)|g' \
+	      -e 's|@''REPLACE_RINTL''@|$(REPLACE_RINTL)|g' \
 	      -e 's|@''REPLACE_ROUND''@|$(REPLACE_ROUND)|g' \
 	      -e 's|@''REPLACE_ROUNDF''@|$(REPLACE_ROUNDF)|g' \
 	      -e 's|@''REPLACE_ROUNDL''@|$(REPLACE_ROUNDL)|g' \
@@ -2071,6 +2113,15 @@ EXTRA_DIST += memrchr.c
 EXTRA_libgnu_a_SOURCES += memrchr.c
 
 ## end   gnulib module memrchr
+
+## begin gnulib module mkdir
+
+
+EXTRA_DIST += mkdir.c
+
+EXTRA_libgnu_a_SOURCES += mkdir.c
+
+## end   gnulib module mkdir
 
 ## begin gnulib module mkdtemp
 
@@ -2251,6 +2302,14 @@ EXTRA_libgnu_a_SOURCES += opendir.c
 
 ## end   gnulib module opendir
 
+## begin gnulib module opendirat
+
+libgnu_a_SOURCES += opendirat.c
+
+EXTRA_DIST += opendirat.h
+
+## end   gnulib module opendirat
+
 ## begin gnulib module pathmax
 
 
@@ -2266,6 +2325,15 @@ EXTRA_DIST += pclose.c
 EXTRA_libgnu_a_SOURCES += pclose.c
 
 ## end   gnulib module pclose
+
+## begin gnulib module perror
+
+
+EXTRA_DIST += perror.c
+
+EXTRA_libgnu_a_SOURCES += perror.c
+
+## end   gnulib module perror
 
 ## begin gnulib module pipe-posix
 
@@ -3179,6 +3247,7 @@ stdlib.h: stdlib.in.h $(top_builddir)/config.status $(CXXDEFS_H) \
 	      -e 's/@''GNULIB_SECURE_GETENV''@/$(GNULIB_SECURE_GETENV)/g' \
 	      -e 's/@''GNULIB_SETENV''@/$(GNULIB_SETENV)/g' \
 	      -e 's/@''GNULIB_STRTOD''@/$(GNULIB_STRTOD)/g' \
+	      -e 's/@''GNULIB_STRTOLD''@/$(GNULIB_STRTOLD)/g' \
 	      -e 's/@''GNULIB_STRTOLL''@/$(GNULIB_STRTOLL)/g' \
 	      -e 's/@''GNULIB_STRTOULL''@/$(GNULIB_STRTOULL)/g' \
 	      -e 's/@''GNULIB_SYSTEM_POSIX''@/$(GNULIB_SYSTEM_POSIX)/g' \
@@ -3192,7 +3261,9 @@ stdlib.h: stdlib.in.h $(top_builddir)/config.status $(CXXDEFS_H) \
 	      -e 's|@''HAVE_DECL_GETLOADAVG''@|$(HAVE_DECL_GETLOADAVG)|g' \
 	      -e 's|@''HAVE_GETSUBOPT''@|$(HAVE_GETSUBOPT)|g' \
 	      -e 's|@''HAVE_GRANTPT''@|$(HAVE_GRANTPT)|g' \
+	      -e 's|@''HAVE_INITSTATE''@|$(HAVE_INITSTATE)|g' \
 	      -e 's|@''HAVE_DECL_INITSTATE''@|$(HAVE_DECL_INITSTATE)|g' \
+	      -e 's|@''HAVE_MBTOWC''@|$(HAVE_MBTOWC)|g' \
 	      -e 's|@''HAVE_MKDTEMP''@|$(HAVE_MKDTEMP)|g' \
 	      -e 's|@''HAVE_MKOSTEMP''@|$(HAVE_MKOSTEMP)|g' \
 	      -e 's|@''HAVE_MKOSTEMPS''@|$(HAVE_MKOSTEMPS)|g' \
@@ -3210,8 +3281,10 @@ stdlib.h: stdlib.in.h $(top_builddir)/config.status $(CXXDEFS_H) \
 	      -e 's|@''HAVE_RPMATCH''@|$(HAVE_RPMATCH)|g' \
 	      -e 's|@''HAVE_SECURE_GETENV''@|$(HAVE_SECURE_GETENV)|g' \
 	      -e 's|@''HAVE_DECL_SETENV''@|$(HAVE_DECL_SETENV)|g' \
+	      -e 's|@''HAVE_SETSTATE''@|$(HAVE_SETSTATE)|g' \
 	      -e 's|@''HAVE_DECL_SETSTATE''@|$(HAVE_DECL_SETSTATE)|g' \
 	      -e 's|@''HAVE_STRTOD''@|$(HAVE_STRTOD)|g' \
+	      -e 's|@''HAVE_STRTOLD''@|$(HAVE_STRTOLD)|g' \
 	      -e 's|@''HAVE_STRTOLL''@|$(HAVE_STRTOLL)|g' \
 	      -e 's|@''HAVE_STRTOULL''@|$(HAVE_STRTOULL)|g' \
 	      -e 's|@''HAVE_STRUCT_RANDOM_DATA''@|$(HAVE_STRUCT_RANDOM_DATA)|g' \
@@ -3220,6 +3293,7 @@ stdlib.h: stdlib.in.h $(top_builddir)/config.status $(CXXDEFS_H) \
 	      -e 's|@''HAVE_DECL_UNSETENV''@|$(HAVE_DECL_UNSETENV)|g' \
 	      -e 's|@''REPLACE_CALLOC''@|$(REPLACE_CALLOC)|g' \
 	      -e 's|@''REPLACE_CANONICALIZE_FILE_NAME''@|$(REPLACE_CANONICALIZE_FILE_NAME)|g' \
+	      -e 's|@''REPLACE_INITSTATE''@|$(REPLACE_INITSTATE)|g' \
 	      -e 's|@''REPLACE_MALLOC''@|$(REPLACE_MALLOC)|g' \
 	      -e 's|@''REPLACE_MBTOWC''@|$(REPLACE_MBTOWC)|g' \
 	      -e 's|@''REPLACE_MKSTEMP''@|$(REPLACE_MKSTEMP)|g' \
@@ -3227,11 +3301,14 @@ stdlib.h: stdlib.in.h $(top_builddir)/config.status $(CXXDEFS_H) \
 	      -e 's|@''REPLACE_PTSNAME_R''@|$(REPLACE_PTSNAME_R)|g' \
 	      -e 's|@''REPLACE_PUTENV''@|$(REPLACE_PUTENV)|g' \
 	      -e 's|@''REPLACE_QSORT_R''@|$(REPLACE_QSORT_R)|g' \
+	      -e 's|@''REPLACE_RANDOM''@|$(REPLACE_RANDOM)|g' \
 	      -e 's|@''REPLACE_RANDOM_R''@|$(REPLACE_RANDOM_R)|g' \
 	      -e 's|@''REPLACE_REALLOC''@|$(REPLACE_REALLOC)|g' \
 	      -e 's|@''REPLACE_REALPATH''@|$(REPLACE_REALPATH)|g' \
 	      -e 's|@''REPLACE_SETENV''@|$(REPLACE_SETENV)|g' \
+	      -e 's|@''REPLACE_SETSTATE''@|$(REPLACE_SETSTATE)|g' \
 	      -e 's|@''REPLACE_STRTOD''@|$(REPLACE_STRTOD)|g' \
+	      -e 's|@''REPLACE_STRTOLD''@|$(REPLACE_STRTOLD)|g' \
 	      -e 's|@''REPLACE_UNSETENV''@|$(REPLACE_UNSETENV)|g' \
 	      -e 's|@''REPLACE_WCTOMB''@|$(REPLACE_WCTOMB)|g' \
 	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \

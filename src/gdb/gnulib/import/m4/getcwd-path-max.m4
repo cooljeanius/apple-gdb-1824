@@ -1,4 +1,4 @@
-# serial 21
+# serial 22
 # Check for several getcwd bugs with long file names.
 # If so, arrange to compile the wrapper function.
 
@@ -6,7 +6,7 @@
 # I've heard that this is due to a Linux kernel bug, and that it has
 # been fixed between 2.4.21-pre3 and 2.4.21-pre4.
 
-# Copyright (C) 2003-2007, 2009-2018 Free Software Foundation, Inc.
+# Copyright (C) 2003-2007, 2009-2019 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -111,12 +111,20 @@ main ()
       /* If mkdir or chdir fails, it could be that this system cannot create
          any file with an absolute name longer than PATH_MAX, such as cygwin.
          If so, leave fail as 0, because the current working directory can't
-         be too long for getcwd if it can't even be created.  For other
-         errors, be pessimistic and consider that as a failure, too.  */
+         be too long for getcwd if it can't even be created.  On Linux with
+         the 9p file system, mkdir fails with error EINVAL when cwd_len gets
+         too long; ignore this failure because the getcwd() system call
+         produces good results whereas the gnulib substitute calls getdents64
+         which fails with error EPROTO.
+         For other errors, be pessimistic and consider that as a failure,
+         too.  */
       if (mkdir (DIR_NAME, S_IRWXU) < 0 || chdir (DIR_NAME) < 0)
         {
           if (! (errno == ERANGE || is_ENAMETOOLONG (errno)))
-            fail = 20;
+            #ifdef __linux__
+            if (! (errno == EINVAL))
+            #endif
+              fail = 20;
           break;
         }
 

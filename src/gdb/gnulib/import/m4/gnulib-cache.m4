@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2018 Free Software Foundation, Inc.
+# Copyright (C) 2002-2019 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@
 #  autobuild \
 #  bcopy \
 #  bison-i18n \
+#  bitset \
 #  btowc \
 #  builtin-expect \
 #  c-ctype \
@@ -77,10 +78,12 @@
 #  environ \
 #  errno \
 #  error \
+#  euidaccess \
 #  exitfail \
 #  extensions \
 #  extern-inline \
 #  faccessat \
+#  fclose \
 #  fcntl \
 #  fcntl-h \
 #  fcntl-safer \
@@ -91,6 +94,7 @@
 #  fnmatch \
 #  fnmatch-gnu \
 #  fnmatch-h \
+#  fopen \
 #  fpieee \
 #  fprintf-posix \
 #  fpucw \
@@ -145,6 +149,7 @@
 #  memmem-simple \
 #  mempcpy \
 #  memrchr \
+#  mkdir \
 #  mkdtemp \
 #  multiarch \
 #  nextafter \
@@ -152,9 +157,11 @@
 #  nocrash \
 #  noreturn \
 #  obstack \
+#  opendirat \
 #  openmp \
 #  pathmax \
 #  pclose \
+#  perror \
 #  pipe-posix \
 #  popen \
 #  posixcheck \
@@ -171,6 +178,7 @@
 #  secure_getenv \
 #  send \
 #  setenv \
+#  sh-filename \
 #  sig2str \
 #  sigaction \
 #  signal \
@@ -260,6 +268,7 @@ gl_MODULES([
   autobuild
   bcopy
   bison-i18n
+  bitset
   btowc
   builtin-expect
   c-ctype
@@ -282,10 +291,12 @@ gl_MODULES([
   environ
   errno
   error
+  euidaccess
   exitfail
   extensions
   extern-inline
   faccessat
+  fclose
   fcntl
   fcntl-h
   fcntl-safer
@@ -296,6 +307,7 @@ gl_MODULES([
   fnmatch
   fnmatch-gnu
   fnmatch-h
+  fopen
   fpieee
   fprintf-posix
   fpucw
@@ -350,6 +362,7 @@ gl_MODULES([
   memmem-simple
   mempcpy
   memrchr
+  mkdir
   mkdtemp
   multiarch
   nextafter
@@ -357,9 +370,11 @@ gl_MODULES([
   nocrash
   noreturn
   obstack
+  opendirat
   openmp
   pathmax
   pclose
+  perror
   pipe-posix
   popen
   posixcheck
@@ -376,6 +391,7 @@ gl_MODULES([
   secure_getenv
   send
   setenv
+  sh-filename
   sig2str
   sigaction
   signal
