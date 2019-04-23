@@ -588,17 +588,22 @@ AC_CHECK_LIB([gnu],[rpl_malloc],[],[
 AC_MSG_CHECKING([headers])
 AC_MSG_RESULT([ ])
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
+if test "x${acl_cv_wp}" = "x"; then
+  test -z "${acl_cv_wp}" && export acl_cv_wp='-Wp,'
+fi
+AC_SUBST([acl_cv_wp])dnl
+
 if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I. -I../intl"
+    export CPPFLAGS="${acl_cv_wp}-I. ${acl_cv_wp}-I../intl"
   else
-    export CPPFLAGS="${CPPFLAGS} -I../intl"
+    export CPPFLAGS="${CPPFLAGS} ${acl_cv_wp}-I../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I. -I../libintl"
+    export CPPFLAGS="${acl_cv_wp}-I. ${acl_cv_wp}-I../libintl"
   else
-    export CPPFLAGS="${CPPFLAGS} -I../libintl"
+    export CPPFLAGS="${CPPFLAGS} ${acl_cv_wp}-I../libintl"
   fi
 fi
 unset ac_cv_header_libintl_h

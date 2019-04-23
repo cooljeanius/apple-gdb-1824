@@ -612,6 +612,7 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
       break;
     }
 
+  /* This switch is lengthy: */
   switch (sh->st)
     {
     case stNil:
@@ -822,6 +823,7 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
       /* Beginning of code for structure, union, and enum definitions.
          They all share a common set of local variables, defined here.  */
       {
+	/* FIXME: splint chokes on this block */
 	enum type_code type_code;
 	char *ext_tsym;
 	int nfields;
@@ -1114,7 +1116,7 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 
 	/* End of local variables shared by struct, union, enum, and
 	   block (as yet unknown struct/union/enum) processing.  */
-      }
+      } /* end scope */
 
     case_stBlock_code:
       found_ecoff_debugging_info = 1;
@@ -1343,16 +1345,16 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 	         for anything except pointers or functions.  */
 	    }
 	  else
-	    TYPE_NAME (SYMBOL_TYPE (s)) = DEPRECATED_SYMBOL_NAME (s);
+	    TYPE_NAME(SYMBOL_TYPE(s)) = DEPRECATED_SYMBOL_NAME(s);
 	}
       break;
 
     case stFile:		/* file name */
-      push_parse_stack ();
+      push_parse_stack();
       top_stack->blocktype = sh->st;
       break;
 
-      /* I`ve never seen these for C */
+      /* I have never seen these for C */
     case stRegReloc:
       break;			/* register relocation */
     case stForward:
@@ -1360,9 +1362,9 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
     case stConstant:
       break;			/* constant */
     default:
-      complaint (&symfile_complaints, _("unknown symbol type 0x%x"), sh->st);
+      complaint(&symfile_complaints, _("unknown symbol type 0x%x"), sh->st);
       break;
-    }
+    } /* end switch on sh->st */
 
   return count;
 }
@@ -2704,10 +2706,11 @@ parse_partial_symbols (struct objfile *objfile)
 			  CORE_ADDR high = procaddr + sh.value;
 
 			  /* Kludge for Irix 5.2 zero fh->adr.  */
-			  if (!relocatable
-			  && (pst->textlow == 0 || procaddr < pst->textlow))
+			  if (!relocatable && (pst != NULL)
+			      && ((pst->textlow == 0)
+				  || (procaddr < pst->textlow)))
 			    pst->textlow = procaddr;
-			  if (high > pst->texthigh)
+			  if ((pst != NULL) && (high > pst->texthigh))
 			    pst->texthigh = high;
 			}
 		    }

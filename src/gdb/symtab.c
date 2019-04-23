@@ -5057,6 +5057,8 @@ rbreak_command(const char *regexp, int from_tty)
 	  strcat(string, p->symtab->filename);
 	  strcat(string, ":");
 	  gdb_assert(p->symbol != NULL);
+	  gdb_assert(string != NULL);
+	  gdb_assert(SYMBOL_LINKAGE_NAME(p->symbol) != NULL);
           /* FIXME: not sure if min or max is better for len here: */
 	  strlcat(string, SYMBOL_LINKAGE_NAME(p->symbol),
                   max(shlib_len, 4096UL));
@@ -5099,6 +5101,7 @@ rbreak_command(const char *regexp, int from_tty)
 	      strcpy(string, "'");
 	    }
 
+	  gdb_assert(SYMBOL_LINKAGE_NAME(p->msymbol) != NULL);
           /* FIXME: not sure if min or max is better for len here: */
 	  strlcat(string, SYMBOL_LINKAGE_NAME(p->msymbol),
                   max(shlib_len, 4096UL));

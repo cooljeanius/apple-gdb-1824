@@ -1,4 +1,4 @@
-/* Scheme/Guile language support routines for GDB, the GNU debugger.
+/* scm-exp.c: Scheme/Guile language support routines for GDB, the GNU debugger.
 
    Copyright 1995, 1996, 2000, 2003, 2005 Free Software Foundation,
    Inc.

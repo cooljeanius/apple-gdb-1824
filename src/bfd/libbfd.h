@@ -675,7 +675,11 @@ extern void _bfd_abort(const char *, int, const char *) ATTRIBUTE_NORETURN;
 #endif /* gcc pre-2.6 */
 
 #undef abort
-#define abort() _bfd_abort(__FILE__, __LINE__, __extension__ __PRETTY_FUNCTION__)
+#ifndef S_SPLINT_S
+# define abort() _bfd_abort(__FILE__, __LINE__, __extension__ __PRETTY_FUNCTION__)
+#else
+# define abort() _bfd_abort(__FILE__, __LINE__, "FIXME: __PRETTY_FUNCTION__ is unsupported")
+#endif /* !S_SPLINT_S */
 
 /* Manipulate a system FILE but using BFD's "file_ptr", rather than
  * the system "off_t" or "off64_t", as the offset.  */
@@ -730,7 +734,7 @@ extern bfd_boolean _bfd_sh_align_load_span
 
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__clang__) && \
     !defined(__cplusplus)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2)) 
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
  #  pragma GCC diagnostic ignored "-Wtraditional"
 # endif /* gcc 4.2+ */
 #endif /* gcc && !__clang__ && !__cplusplus */

@@ -268,6 +268,7 @@ find_text_range(bfd *sym_bfd, struct objfile *objfile)
   if (!found_any)
     error(_("Cannot find any code sections in symbol file"));
 
+  gdb_assert(DBX_SYMFILE_INFO(objfile) != NULL);
   DBX_TEXT_ADDR(objfile) = start;
   DBX_TEXT_SIZE(objfile) = (int)(end - start);
 }
@@ -2618,7 +2619,7 @@ read_dbx_symtab(struct objfile *objfile, int dbx_symcount)
 	    /* APPLE LOCAL: If we are reading stabs from a .o file, then we need
 	       to record the local statics in a special list so we can track
 	       the ones we see in the .o file...  */
-	    if (PSYMTAB_OSO_NAME (pst))
+	    if ((pst != NULL) && PSYMTAB_OSO_NAME(pst))
 	      {
 		struct oso_fun_static *new_static;
 		int sym_name_len;
@@ -5808,6 +5809,7 @@ coffstab_build_psymtabs(struct objfile *objfile, int mainline,
     warning(_("Possible issue with dbx_symfile_info here"));
   }
 
+  gdb_assert(DBX_SYMFILE_INFO(objfile) != NULL);
   DBX_TEXT_ADDR(objfile) = textaddr;
   DBX_TEXT_SIZE(objfile) = textsize;
 

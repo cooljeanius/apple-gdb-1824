@@ -308,10 +308,11 @@ AUTOMAKE_OPTIONS = 1.11.6 foreign no-dist no-installinfo
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 upsrcdir = ${srcdir}/..
 upupsrcdir = ${upsrcdir}/..
-AM_CPPFLAGS = -I. -I.. -I${upsrcdir} -I${upupsrcdir} -I${upsrcdir}/common \
--I${upsrcdir}/config -I${upsrcdir}/macosx -I${upsrcdir}/signals \
--I${upupsrcdir}/config -I${upupsrcdir}/include -I${upupsrcdir}/bfd \
--I${upupsrcdir}/intl -I${upsrcdir}/attic
+AM_CPPFLAGS = -Wp,-I. -Wp,-I.. -Wp,-I${upsrcdir} -Wp,-I${upupsrcdir} \
+-Wp,-I${upsrcdir}/common -Wp,-I${upsrcdir}/config -Wp,-I${upsrcdir}/macosx \
+-Wp,-I${upsrcdir}/signals -Wp,-I${upupsrcdir}/config \
+-Wp,-I${upupsrcdir}/include -Wp,-I${upupsrcdir}/bfd -Wp,-I${upupsrcdir}/intl \
+-Wp,-I${upsrcdir}/attic
 
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(C_ARCHFLAGS) -ggdb -fno-strict-aliasing -std=gnu99 -Wall \

@@ -1078,7 +1078,7 @@ rb_tree_find_all_matching_nodes (struct rb_tree_node *root, CORE_ADDR key,
    START_PC and END_PC, search the rest of the tree to see if there is another
    tree node that matches (this is a possibility).  */
 
-static ATTRIBUTE_USED struct rb_tree_node *
+/*@unused@*/ static ATTRIBUTE_USED struct rb_tree_node *
 rb_tree_find_next_node(struct rb_tree_node *root, long long key, int secondary_key,
                        long long third_key)
 {

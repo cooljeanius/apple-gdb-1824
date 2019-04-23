@@ -125,8 +125,8 @@ LDFLAGS =
 PATH_TO_MOVEIFCHANGE = $(srcdir_high)/move-if-change
 RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
 
-AM_CPPFLAGS = -I.. -I$(srcdir)/.. -I$(srcdir_high)/include \
-	-I$(srcdir_high)/intl -I../../intl
+AM_CPPFLAGS = -Wp,-I.. -Wp,-I$(srcdir)/.. -Wp,-I$(srcdir_high)/include \
+	-Wp,-I$(srcdir_high)/intl -Wp,-I../../intl
 
 BUILD_HFILES = libbfd.h libcoff.h bfd.h
 noinst_HEADERS = $(BUILD_HFILES)

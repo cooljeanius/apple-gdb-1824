@@ -1154,7 +1154,7 @@ esac],[want_mmalloc=false])dnl
 
 if test "x${want_mmalloc}" = "xtrue"; then
    AC_DEFINE([USE_MMALLOC],[1],[Define to 1 to use mmalloc])
-   MMALLOC_CFLAGS="-I${srcdir}/../mmalloc"
+   MMALLOC_CFLAGS="-Wp,-I${srcdir}/../mmalloc"
    MMALLOC='../mmalloc/libmmalloc.a'
    MMALLOC_OK=''
 else

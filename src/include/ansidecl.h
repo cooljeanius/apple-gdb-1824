@@ -306,7 +306,7 @@ So instead we use the macro below and test it against specific values.  */
 #  endif /* MSVC */
 # endif /* gcc 4.5+ */
 #endif /* ATTRIBUTE_DEPRECATED_FOR */
-  
+
 
 #ifndef ATTRIBUTE_GNU_INLINE
 # if defined(__GNUC__) && defined(__GNUC_VERSION__)
@@ -343,7 +343,7 @@ So instead we use the macro below and test it against specific values.  */
 #else /* !__cplusplus || GNUC >= 3.4 */
 # define ARG_UNUSED(NAME) NAME
 #endif /* !__cplusplus || GNUC >= 3.4 */
-  
+
 #ifndef ATTRIBUTE_NOCLONE
 # if (GCC_VERSION >= 4005)
 #  define ATTRIBUTE_NOCLONE __attribute__((__noclone__))
@@ -351,7 +351,7 @@ So instead we use the macro below and test it against specific values.  */
 #  define ATTRIBUTE_NOCLONE /* (nothing) */
 # endif /* gcc 4.5+ */
 #endif /* !ATTRIBUTE_NOCLONE */
-  
+
 #ifndef ATTRIBUTE_NOINLINE
 # define ATTRIBUTE_NOINLINE __attribute__((__noinline__))
 #endif /* !ATTRIBUTE_NOINLINE */
@@ -386,7 +386,7 @@ So instead we use the macro below and test it against specific values.  */
 #  define ATTRIBUTE_PURE
 # endif /* GNUC >= 3.0 */
 #endif /* ATTRIBUTE_PURE */
-  
+
 /* Assume likewise about attribute `const': */
 #ifndef ATTRIBUTE_CONST
 # if (GCC_VERSION >= 3000)
@@ -493,12 +493,12 @@ So instead we use the macro below and test it against specific values.  */
 #  define ATTRIBUTE_NO_SANITIZE_UNDEFINED
 # endif /* GNUC >= 4.9 */
 #endif /* ATTRIBUTE_NO_SANITIZE_UNDEFINED */
-  
+
 /* FIXME: check version of gcc: */
 #ifndef ATTRIBUTE_W_U_R
 # define ATTRIBUTE_W_U_R __attribute__((warn_unused_result))
 #endif /* ATTRIBUTE_W_U_R */
-  
+
 /* Added in gcc 7: */
 #ifndef ATTRIBUTE_FALLTHROUGH
 # if (GCC_VERSION >= 7000)
@@ -536,6 +536,85 @@ So instead we use the macro below and test it against specific values.  */
 # else
 #  define ENUM_BITFIELD(TYPE) unsigned int
 # endif /* gcc 2+ */
+#endif /* __cplusplus */
+
+#ifndef CONSTEXPR
+# if defined(__cpp_constexpr) && (__cpp_constexpr >= 200704)
+#  define CONSTEXPR constexpr
+# else
+#  define CONSTEXPR
+# endif /* can use constexpr */
+#endif /* !CONSTEXPR */
+
+/* C++11 adds the ability to add "override" after an implementation of a
+   virtual function in a subclass, to:
+     (A) document that this is an override of a virtual function
+     (B) allow the compiler to issue a warning if it isn't (e.g. a mismatch
+         of the type signature).
+
+   Similarly, it allows us to add a "final" to indicate that no subclass
+   may subsequently override the vfunc.
+
+   Provide OVERRIDE and FINAL as macros, allowing us to get these benefits
+   when compiling with C++11 support, but without requiring C++11.
+
+   For gcc, use "-std=c++11" to enable C++11 support; gcc 6 onwards enables
+   this by default (actually GNU++14).  */
+
+#if defined __cplusplus
+# if (__cplusplus >= 201103)
+   /* C++11 claims to be available: use it.  Final/override were only
+      implemented in 4.7, though.  */
+#  if GCC_VERSION < 4007
+#   define OVERRIDE
+#   define FINAL
+#  else
+#   define OVERRIDE override
+#   define FINAL final
+#  endif /* GCC pre-4.7 */
+# else
+#  if GCC_VERSION >= 4007
+   /* G++ 4.7 supports __final in C++98.  */
+#   define OVERRIDE
+#   define FINAL __final
+#  else
+   /* No C++11 support; leave the macros empty.  */
+#   define OVERRIDE
+#   define FINAL
+#  endif /* GCC 4.7+ */
+# endif /* C++11 */
+#else
+  /* No C++11 support; leave the macros empty.  */
+# define OVERRIDE
+# define FINAL
+#endif /* C++ */
+
+/* A macro to disable the copy constructor and assignment operator.
+   When building with C++11 and above, the methods are explicitly
+   deleted, causing a compile-time error if something tries to copy.
+   For C++03, this just declares the methods, causing a link-time
+   error if the methods end up called (assuming you don't
+   define them).  For C++03, for best results, place the macro
+   under the private: access specifier, like this,
+
+   class name_lookup
+   {
+     private:
+       DISABLE_COPY_AND_ASSIGN (name_lookup);
+   };
+
+   so that most attempts at copy are caught at compile-time.  */
+
+#if defined(__cplusplus)
+# if __cplusplus >= 201103
+#  define DISABLE_COPY_AND_ASSIGN(TYPE)		\
+    TYPE (const TYPE&) = delete;		\
+    void operator= (const TYPE &) = delete
+# else
+#  define DISABLE_COPY_AND_ASSIGN(TYPE)		\
+    TYPE (const TYPE&);				\
+    void operator= (const TYPE &)
+# endif /* __cplusplus >= 201103 */
 #endif /* __cplusplus */
 
 /* keep condition the same as where we push: */

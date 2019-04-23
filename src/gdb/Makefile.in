@@ -225,6 +225,16 @@ am__v_ARFLAGS_ = $(am__v_ARFLAGS_@AM_DEFAULT_V@)
 am__v_ARFLAGS_0 = qc
 am__v_ARFLAGS_1 = qv
 
+AM_V_splint = $(am__v_splint_@AM_V@)
+am__v_splint_ = $(am__v_splint_@AM_DEFAULT_V@)
+am__v_splint_0 =
+am__v_splint_1 = +showscan +forcehints
+
+AM_V_CLANG = $(am__v_CLANG_@AM_V@)
+am__v_CLANG_ = $(am__v_CLANG_@AM_DEFAULT_V@)
+am__v_CLANG_0 = @echo "  CLANG      " $@;
+am__v_CLANG_1 =
+
 AR_FLAGS = $(AM_V_ARFLAGS)
 
 # configure our bison/yacc usage:
@@ -264,23 +274,26 @@ CC_LD=$(CC)
 CXX_LD=$(CXX)
 COMPILER_LD=$(COMPILER)
 
+acl_cv_wp=@acl_cv_wp@
+
 GNULIB_BUILDDIR = build-gnulib
-GNULIB_CFLAGS=-I$(srcdir)/gnulib/gnulib -I$(srcdir)/gnulib/import \
-  -I$(GNULIB_BUILDDIR)/import -DWITH_GNULIB_BUILDDIR
+GNULIB_CFLAGS=${acl_cv_wp}-I$(srcdir)/gnulib/gnulib \
+  ${acl_cv_wp}-I$(srcdir)/gnulib/import \
+  ${acl_cv_wp}-I$(GNULIB_BUILDDIR)/import -DWITH_GNULIB_BUILDDIR
 
 # Where is our "include" directory?  Typically $(srcdir)/../include.
 # This is essentially the header file directory for the library
 # routines in libiberty.
 INCLUDE_DIR =  $(srcdir)/../include
-@MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE@INCLUDE_CFLAGS = -I$(INCLUDE_DIR) \
-@MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE@ -I. @MAINT@ $(GNULIB_CFLAGS)
-@MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE@INCLUDE_CFLAGS = -I$(INCLUDE_DIR)
+@MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE@INCLUDE_CFLAGS = ${acl_cv_wp}-I$(INCLUDE_DIR) \
+@MAKE_SHOULD_RECURSE_INTO_GNULIB_TRUE@ ${acl_cv_wp}-I. @MAINT@ $(GNULIB_CFLAGS)
+@MAKE_SHOULD_RECURSE_INTO_GNULIB_FALSE@INCLUDE_CFLAGS = ${acl_cv_wp}-I$(INCLUDE_DIR)
 
 # Where is the "-liberty" library?  Typically in ../libiberty.
 LIBIBERTY_DIR = ../libiberty
 LIBIBERTY_DEP = $(LIBIBERTY_DIR)/libiberty.a
 LIBIBERTY = -L$(LIBIBERTY_DIR) -liberty
-LIBIBERTY_CFLAGS = -I$(LIBIBERTY_DIR)
+LIBIBERTY_CFLAGS = ${acl_cv_wp}-I$(LIBIBERTY_DIR)
 
 # Configured by the --with-mmalloc option to configure.
 MMALLOC_DIR = ../mmalloc
@@ -294,7 +307,7 @@ BFD_DIR = ../bfd
 BFD_DEP = $(BFD_DIR)/libbfd.la
 BFD = -L../bfd -L../bfd/.libs -lbfd
 BFD_SRC = $(srcdir)/$(BFD_DIR)
-BFD_CFLAGS = -I$(BFD_DIR) -I$(BFD_SRC)
+BFD_CFLAGS = ${acl_cv_wp}-I$(BFD_DIR) ${acl_cv_wp}-I$(BFD_SRC)
 
 # Where is zlib?  Typically in ../zlib, but the configure script will subst
 # that for us:
@@ -305,14 +318,14 @@ ZLIBINC = @zlibinc@
 LIBDECNUMBER_DIR = ../libdecnumber
 LIBDECNUMBER = $(LIBDECNUMBER_DIR)/libdecnumber.a
 LIBDECNUMBER_SRC = $(srcdir)/$(LIBDECNUMBER_DIR)
-LIBDECNUMBER_CFLAGS = -I$(LIBDECNUMBER_DIR) -I$(LIBDECNUMBER_SRC)
+LIBDECNUMBER_CFLAGS = ${acl_cv_wp}-I$(LIBDECNUMBER_DIR) ${acl_cv_wp}-I$(LIBDECNUMBER_SRC)
 
 # Where is the READLINE library?  Typically in ../readline.
 READLINE_DIR = ../readline
 READLINE_DEP = ../readline/libreadline.a
 READLINE = $(READLINE_DIR)/libreadline.a
 READLINE_SRC = $(srcdir)/$(READLINE_DIR)
-READLINE_CFLAGS = -I$(READLINE_SRC)/..
+READLINE_CFLAGS = ${acl_cv_wp}-I$(READLINE_SRC)/..
 
 WARN_CFLAGS = @WARN_CFLAGS@
 WERROR_CFLAGS = @WERROR_CFLAGS@
@@ -336,7 +349,7 @@ INTL_DIR = ../intl
 INTL = @INTLLIBS@
 INTL_DEP = @INTLDEPS@
 INTL_SRC = $(srcdir)/$(INTL_DIR)
-INTL_CFLAGS = -I$(INTL_DIR) -I$(INTL_SRC)
+INTL_CFLAGS = ${acl_cv_wp}-I$(INTL_DIR) ${acl_cv_wp}-I$(INTL_SRC)
 INTL_LDFLAGS = -L$(INTL_DIR)
 
 # Where is the ICONV library?  This can be empty if libc has iconv.
@@ -390,7 +403,7 @@ GDBFLAGS =
 # Helper code from gnulib.
 ## $(GNULIB_BUILDDIR) is already set above
 LIBGNU = $(GNULIB_BUILDDIR)/import/libgnu.a
-INCGNU = -I$(srcdir)/gnulib/import -I$(GNULIB_BUILDDIR)/import
+INCGNU = ${acl_cv_wp}-I$(srcdir)/gnulib/import ${acl_cv_wp}-I$(GNULIB_BUILDDIR)/import
 
 # Generated headers in the gnulib directory.  These must be listed
  # so that they are generated before other files are compiled.
@@ -497,7 +510,7 @@ OPCODES = -L../opcodes -L../opcodes/.libs -lopcodes
 # Where are the other opcode tables which only have header file
 # versions?
 OP_INCLUDE = $(INCLUDE_DIR)/opcode
-OPCODES_CFLAGS = -I$(OP_INCLUDE)
+OPCODES_CFLAGS = ${acl_cv_wp}-I$(OP_INCLUDE)
 
 # The simulator is usually nonexistent; targets that include one
 # should set this to list all the .o or .a files to be linked in.
@@ -577,15 +590,16 @@ CONFIG_CLEAN = @CONFIG_CLEAN@
 CONFIG_INSTALL = @CONFIG_INSTALL@
 CONFIG_UNINSTALL = @CONFIG_UNINSTALL@
 
-# -I. for config files.
-# -I$(srcdir) for gdb internal headers.
-# -I$(srcdir)/config for more generic config files.
+# ${acl_cv_wp}-I. for config files.
+# ${acl_cv_wp}-I$(srcdir) for gdb internal headers.
+# ${acl_cv_wp}-I$(srcdir)/config for more generic config files.
 
-# It is also possible that you will need to add -I/usr/include/sys if
-# your system does NOT have fcntl.h in /usr/include (which is where it
+# It is also possible that you will need to add ${acl_cv_wp}-I/usr/include/sys
+# if your system does NOT have fcntl.h in /usr/include (which is where it
 # should be according to Posix).
 DEFS = @DEFS@ @EXTRA_DEFS@
-GDB_CFLAGS = -I. -I$(srcdir) -I$(srcdir)/config -I$(srcdir)/target \
+GDB_CFLAGS = ${acl_cv_wp}-I. ${acl_cv_wp}-I$(srcdir) \
+  ${acl_cv_wp}-I$(srcdir)/config ${acl_cv_wp}-I$(srcdir)/target \
   $(DEFS) -DLOCALEDIR="\"$(localedir)\"" @MAINT@ @FCNTL_H_CFLAGS@
 
 # M{H,T}_CFLAGS, if defined, have host- and target-dependent CFLAGS
@@ -604,8 +618,9 @@ C_TARGARCHFLAGS = @C_TARGARCHFLAGS@
 CFLAGS = @CFLAGS@
 
 # Set by configure
-INTERNAL_CPPFLAGS = @CPPFLAGS@ -Iattic -I. -Itarget -I$(srcdir)/target \
-  -Inat -Icommon @MAINT@ @POSIXCHECK_CPPFLAGS@
+INTERNAL_CPPFLAGS = @CPPFLAGS@ ${acl_cv_wp}-Iattic ${acl_cv_wp}-I. \
+  ${acl_cv_wp}-Itarget ${acl_cv_wp}-I$(srcdir)/target \
+  ${acl_cv_wp}-Inat ${acl_cv_wp}-Icommon @MAINT@ @POSIXCHECK_CPPFLAGS@
 
 # Need to pass this to testsuite for "make check". Probably should be
 # consistent with top-level Makefile.in and gdb/testsuite/Makefile.in
@@ -681,10 +696,12 @@ ADD_DEPS = $(XM_ADD_FILES) $(TM_ADD_FILES) $(NAT_ADD_FILES)
 
 DIST=gdb
 
-CXREF_FLAGS= $(GDB_CFLAGS) $(OPCODES_CFLAGS) $(READLINE_CFLAGS) \
+CXREF_FLAGS_1 = $(GDB_CFLAGS) $(OPCODES_CFLAGS) $(READLINE_CFLAGS) \
 	$(BFD_CFLAGS) $(INCLUDE_CFLAGS) \
 	$(INTL_CFLAGS) $(LIBXML2_CFLAGS) $(MIG_CHECKING) \
 	$(UNIX03_UGH_CFLAGS)
+
+CXREF_FLAGS = `echo $(CXREF_FLAGS_1) | $(SED) "s/-Wp,//g"`
 
 LINT=/usr/5bin/lint
 LINT_CONFIGURED=@LINT@
@@ -697,7 +714,7 @@ RUN_CLANG_ANALYZER = $(CLANG_ANALYZER) $(DEFS) $(INCLUDE_CFLAGS) \
   $(C_ARCHFLAGS) $(MMALLOC_CFLAGS) $(TCL_CFLAGS) $(TK_CFLAGS) \
   $(ITCL_CFLAGS) $(ITK_CFLAGS) $(X11_CFLAGS) $(IDE_CFLAGS) \
   -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\" -DSRC_DIR=\"$(GDBTK_SRC_DIR)\" \
-  -DDEBUG -D_DEBUG -Dlint -I. --analyze
+  -DDEBUG -D_DEBUG -Dlint ${acl_cv_wp}-I. --analyze
 
 RUNTEST = `if [ -f $${rootsrc}/../dejagnu/runtest ]; then \
 		echo $${rootsrc}/../dejagnu/runtest; else echo runtest; \
@@ -1850,6 +1867,7 @@ clean mostlyclean:: $(CONFIG_CLEAN)
 	rm -f $(AM_V_v) *.rsrc
 	-rm -f $(AM_V_v) gnulib/*.o gdbserver/*.o
 	-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
+	rm -f $(AM_V_v) stamp-clang stamp-splint
 
 .PHONY: clean-tui
 clean-tui:
@@ -1878,6 +1896,7 @@ distclean: clean clean-tui clean-gdbtk @MAINT@ clean-po
 	rm -f data-directory/Makefile
 	rm -f nm.h tm.h xm.h config.status config.h stamp-h .gdbinit
 	rm -f $(AM_V_v) stamp-h* stamp-*1 gdb-gdb.gdb gcore ./*/*~
+	rm -f $(AM_V_v) stamp-clang stamp-splint
 	rm -f $(AM_V_v) gdbserver/stamp-*
 	rm -f y.output yacc.acts yacc.tmp y.tab.h
 	rm -f config.log config.cache
@@ -2059,46 +2078,56 @@ lint: $(LINTFILES)
 	$(LINT) $(INCLUDE_CFLAGS) $(LINTFLAGS) $(LINTFILES) \
 	   `echo $(DEPFILES) | uniq | $(SED) 's/\.o /\.c /g'`
 
-SPLINTFLAGS = $(LINTFLAGS) -posix-lib -weak -unrecogcomments \
+SPLINTFLAGS = $(LINTFLAGS) $(AM_V_splint) +posix-lib -weak -unrecogcomments \
   +matchanyintegral -redef -fixedformalarray +ignoresigns -sysunrecog \
-  -type -retvalother -Imacosx $(MMALLOC_CFLAGS)
-configured_lint: $(LINTFILES)
-	for f in \
+  -type -retvalother -unrecog -stackref \
+  -Imacosx `echo $(MMALLOC_CFLAGS) | $(SED) "s/-Wp,//g"`
+INCLUDE_CFLAGS_FOR_SPLINT = `echo $(INCLUDE_CFLAGS) | $(SED) "s/-Wp,//g"`
+configured_lint: stamp-splint
+stamp-splint: $(LINTFILES)
+	set -e; for f in \
 	   `echo $(LINTFILES) | uniq | $(SED) 's/\.y /\.c /g'` \
 	   `echo "$(DEPFILES) init.c" | uniq | $(SED) 's/\.o /\.c /g'`; do \
 	  echo ""; \
 	  echo "attempting to splint $${f}"; \
 	  if test -e $${f}; then \
-	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) $${f}; \
+	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS_FOR_SPLINT) $(SPLINTFLAGS) \
+	      -DIN_TOP_SRCDIR $${f}; \
 	  elif test -e ${srcdir}/mi/$${f}; then \
-	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) \
+	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS_FOR_SPLINT) $(SPLINTFLAGS) \
 	      -DIN_MI_SUBDIR ${srcdir}/mi/$${f}; \
 	  elif test -e ${srcdir}/cli/$${f}; then \
-	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) \
+	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS_FOR_SPLINT) $(SPLINTFLAGS) \
 	      -DIN_CLI_SUBDIR ${srcdir}/cli/$${f}; \
 	  elif test -e ${srcdir}/macosx/$${f}; then \
-	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) \
+	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS_FOR_SPLINT) $(SPLINTFLAGS) \
 	      -DIN_MACOSX_SUBDIR ${srcdir}/macosx/$${f}; \
 	  elif test -e ${srcdir}/gdbtk/generic/$${f}; then \
-	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS) $(SPLINTFLAGS) \
+	    $(LINT_CONFIGURED) $(INCLUDE_CFLAGS_FOR_SPLINT) $(SPLINTFLAGS) \
 	      $(X11_CFLAGS) $(IDE_CFLAGS) \
 	      -DGDBTK_LIBRARY=\"$(GDBTK_LIBRARY)\" \
 	      -DSRC_DIR=\"$(GDBTK_SRC_DIR)\" \
 	      ${srcdir}/gdbtk/generic/$${f}; \
 	  fi; \
 	  echo "done with $${f}"; \
-	done
+	done; \
+	touch $@
+
+.PHONY: configured_lint
 
 # clang analysis output:
 .SUFFIXES: .c .plist
 .c.plist:
 	@if test ! -d $(analysisdir); then $(MKDIR_P) $(analysisdir); fi
-	$(RUN_CLANG_ANALYZER) -Wall -Wextra -o $(analysisdir)/$@ $<
+	$(AM_V_CLANG)$(RUN_CLANG_ANALYZER) -Wall -Wextra \
+	  -o $(analysisdir)/$@ $<
 
 # To actually run clang:
-lint-local: $(LINTFILES) $(DEPFILES)
+lint-local: stamp-clang
+stamp-clang: $(LINTFILES) $(DEPFILES)
 	$(MAKE) `echo "$(LINTFILES) init.c" | uniq | $(SED) 's/\.c /\.plist /g' | $(SED) 's/\.y /\.plist /g'`
 	$(MAKE) `echo "$(DEPFILES) init.o" | uniq | $(SED) 's/\.o /\.plist /g'`
+	touch $@
 .PHONY: lint-local
 
 #FIXME: cxref has trouble with frameworks...
@@ -2208,9 +2237,10 @@ copying.o: $(srcdir)/copying.c @MAINT@ $(defs_h) $(command_h) $(gdbcmd_h)
 	$(POSTCOMPILE)
 
 hpux-thread.o: $(srcdir)/hpux-thread.c @MAINT@ $(defs_h)
-	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) -I$(srcdir)/osf-share \
-	  -I$(srcdir)/osf-share/HP800 -I/usr/include/dce \
-	  $(srcdir)/hpux-thread.c
+	$(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) \
+	  ${acl_cv_wp}-I$(srcdir)/osf-share \
+	  ${acl_cv_wp}-I$(srcdir)/osf-share/HP800 \
+	  ${acl_cv_wp}-I/usr/include/dce $(srcdir)/hpux-thread.c
 	$(POSTCOMPILE)
 
 # main.o needs an explicit build rule to get TARGET_SYSTEM_ROOT and BINDIR.
@@ -4394,11 +4424,14 @@ MAC_DEFS = -DWITH_CFM=1 -DTARGET_RT_MAC_CFM=1 -DTARGET_CPU_68K=1 \
   -D__MigTypeCheck=1
 ##FIXME: make configurable:
 MAC_SDKROOT = -iwithsysroot /Developer/SDKs/MacOSX10.4u.sdk
-MAC_INCLUDES = -I./macosx -I. -I./config -I./../include/mpw \
-  -I./../include/mpw/CIncludes-needed -I./../include/opcode \
-  -I./../readline/.. -I../bfd -I./../bfd -I./../include -I../intl \
-  -I./../intl -I/Developer/Headers/FlatCarbon \
-  -I/Developer/usr/local/include $(MAC_SDKROOT)
+MAC_INCLUDES = ${acl_cv_wp}-I./macosx ${acl_cv_wp}-I. ${acl_cv_wp}-I./config \
+  ${acl_cv_wp}-I./../include/mpw \
+  ${acl_cv_wp}-I./../include/mpw/CIncludes-needed \
+  ${acl_cv_wp}-I./../include/opcode ${acl_cv_wp}-I./../readline/.. \
+  ${acl_cv_wp}-I../bfd ${acl_cv_wp}-I./../bfd ${acl_cv_wp}-I./../include \
+  ${acl_cv_wp}-I../intl ${acl_cv_wp}-I./../intl \
+  ${acl_cv_wp}-I/Developer/Headers/FlatCarbon \
+  ${acl_cv_wp}-I/Developer/usr/local/include $(MAC_SDKROOT)
 MAC_WARNINGS = -Wno-deprecated-declarations -Wno-four-char-constants \
   -Wno-multichar -Wno-system-headers -Wimplicit -Wmain -Wparentheses \
   -Wmissing-include-dirs -Wdeclaration-after-statement -Wlong-long \

@@ -2,7 +2,7 @@ dnl# zlib.m4                                               -*- Autoconf -*-
 dnl# A function to check for zlib availability. zlib is used by default
 dnl# unless the user configured with --without-zlib.
 
-#serial 2
+#serial 3
 
 AC_DEFUN([AM_ZLIB],[
   # See if the user specified whether he or she wants zlib support or not:
@@ -27,8 +27,12 @@ AC_DEFUN([AM_ZLIB],[
         test -z "${zlibdir}" && zlibdir=-L${srcdir}/../zlib
       fi
     fi
+    if test "x${acl_cv_wp}" = "x"; then
+      test -z "${acl_cv_wp}" && export acl_cv_wp='-Wp,'
+    fi
+    AC_SUBST([acl_cv_wp])
     if test "x${zlibinc}" = "x"; then
-      test -z "${zlibinc}" && zlibinc="-I\$(srcdir)/../zlib"
+      test -z "${zlibinc}" && zlibinc="${acl_cv_wp}-I\$(srcdir)/../zlib"
     fi
     export HAVE_ZLIB_SOURCE=1
     AC_SUBST([HAVE_ZLIB_SOURCE])dnl

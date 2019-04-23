@@ -539,7 +539,7 @@ check_iconv_cache(struct cached_iconv *ci, struct charset *from,
   return -1;
 }
 
-static int ATTRIBUTE_UNUSED
+/*@unused@*/ static int ATTRIBUTE_UNUSED
 cached_iconv_convert(struct cached_iconv *ci ATTRIBUTE_UNUSED,
 		     int from_char ATTRIBUTE_UNUSED,
 		     int *to_char ATTRIBUTE_UNUSED)

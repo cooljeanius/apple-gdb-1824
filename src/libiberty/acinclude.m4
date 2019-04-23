@@ -87,7 +87,7 @@ int main(void)
 }
 ]])],[ac_cv_func_strncmp_works=yes],[ac_cv_func_strncmp_works=no],
   [ac_cv_func_strncmp_works=no])
-rm -f core core.* *.core])
+rm -rf core core.* *.core])
 if test "x${ac_cv_func_strncmp_works}" = "xno"; then
   AC_LIBOBJ([strncmp])
 fi

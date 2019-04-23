@@ -2480,17 +2480,16 @@ oload_method_static (int method, struct fn_field *fns_ptr, int index)
 /* Check how good an overload match OLOAD_CHAMP_BV represents.  */
 
 static enum oload_classification
-classify_oload_match (struct badness_vector *oload_champ_bv,
-		      int nargs,
-		      int static_offset)
+classify_oload_match(struct badness_vector *oload_champ_bv, int nargs,
+		     int static_offset)
 {
   int ix;
 
-  for (ix = 1; ix <= nargs - static_offset; ix++)
+  for (ix = 1; ix <= (nargs - static_offset); ix++)
     {
-      if (oload_champ_bv->rank[ix] >= 100)
+      if ((oload_champ_bv != NULL) && (oload_champ_bv->rank[ix] >= 100))
 	return INCOMPATIBLE;	/* truly mismatched types */
-      else if (oload_champ_bv->rank[ix] >= 10)
+      else if ((oload_champ_bv != NULL) && (oload_champ_bv->rank[ix] >= 10))
 	return NON_STANDARD;	/* non-standard type conversions needed */
     }
 

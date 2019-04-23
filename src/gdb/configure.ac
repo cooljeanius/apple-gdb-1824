@@ -1218,18 +1218,25 @@ esac
 # I like forcing a link against -lc:
 AC_CHECK_LIB([c],[printf])dnl
 
+# For later:
+if test "x${acl_cv_wp}" = "x"; then
+  test -z "${acl_cv_wp}" && export acl_cv_wp='-Wp,'
+fi
+AC_SUBST([acl_cv_wp])dnl
+
 # APPLE LOCAL begin: Get the libxml2 headers and libraries
 AC_PATH_PROG([LIBXML2_CONFIG],[xml2-config],[no])
 if test "x${LIBXML2_CONFIG}" != "xno"
 then
   AC_MSG_CHECKING([for libxml2 includes])
-  LIBXML2_INCLUDES=`${LIBXML2_CONFIG} --cflags`
+  # extra space is so the pipe thru sed works correctly:
+  LIBXML2_INCLUDES=$(echo " `${LIBXML2_CONFIG} --cflags`" | ${SED} "s/ -I/ ${acl_cv_wp}-I/g")
   AC_MSG_RESULT([${LIBXML2_INCLUDES}])
   AC_MSG_CHECKING([for libxml2 libraries])
   LIBXML2_LIBS=`${LIBXML2_CONFIG} --libs`
   AC_MSG_RESULT([${LIBXML2_LIBS}])
   if test "x${CPPFLAGS}" = "x"; then
-    test -z "${CPPFLAGS}" && CPPFLAGS="-I. ${LIBXML2_INCLUDES}"
+    test -z "${CPPFLAGS}" && CPPFLAGS="${acl_cv_wp}-I. ${LIBXML2_INCLUDES}"
   else
     test -n "${CPPFLAGS}" && CPPFLAGS="${CPPFLAGS} ${LIBXML2_INCLUDES}"
   fi
@@ -1285,7 +1292,7 @@ if test -d ../zlib -o -d ${srcdir}/../zlib; then
     fi
   fi
   if test "x${zlibinc}" = "x"; then
-    test -z "${zlibinc}" && zlibinc="-I\$(srcdir)/../zlib"
+    test -z "${zlibinc}" && zlibinc="${acl_cv_wp}-I\$(srcdir)/../zlib"
   fi
   export HAVE_ZLIB_SOURCE=1
   AC_SUBST([HAVE_ZLIB_SOURCE])dnl
@@ -1555,15 +1562,15 @@ AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_TIME
 if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
-    CPPFLAGS="-I. -I../intl"
+    CPPFLAGS="${acl_cv_wp}-I. ${acl_cv_wp}-I../intl"
   else
-    CPPFLAGS="${CPPFLAGS} -I../intl"
+    CPPFLAGS="${CPPFLAGS} ${acl_cv_wp}-I../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${CPPFLAGS}"; then
-    CPPFLAGS="-I. -I../libintl"
+    CPPFLAGS="${acl_cv_wp}-I. ${acl_cv_wp}-I../libintl"
   else
-    CPPFLAGS="${CPPFLAGS} -I../libintl"
+    CPPFLAGS="${CPPFLAGS} ${acl_cv_wp}-I../libintl"
   fi
 fi
 unset ac_cv_header_libintl_h
@@ -1587,7 +1594,7 @@ AC_CHECK_HEADERS([fcntl.h],[
   : # (OK, no special flags needed)
 ],[
   AC_CHECK_HEADERS([sys/fcntl.h],[
-    FCNTL_H_CFLAGS="-I/usr/include/sys"
+    FCNTL_H_CFLAGS="${acl_cv_wp}-I/usr/include/sys"
   ],[
     AC_MSG_WARN([fcntl.h is in neither of the places where we might expect it to be])
   ])dnl
@@ -2862,7 +2869,7 @@ aix*)
     SAVE_LDFLAGS="${LDFLAGS}"
 
     case ${GCC} in
-    yes) gdb_cv_bigtoc=-Wl,-bbigtoc ;;
+    yes) gdb_cv_bigtoc=${acl_cv_wl}-bbigtoc ;;
     *) gdb_cv_bigtoc=-bbigtoc ;;
     esac
 
@@ -2886,14 +2893,14 @@ if test "x${gdb_native}" = "xyes"; then
    # may not be supported there.
    old_LDFLAGS="${LDFLAGS}"
    # Older GNU ld supports --export-dynamic but --dynamic-list it does not.
-   RDYNAMIC="-Wl,--dynamic-list=${srcdir}/proc-service.list"
+   RDYNAMIC="${acl_cv_wl}--dynamic-list=${srcdir}/proc-service.list"
    LDFLAGS="${LDFLAGS} ${RDYNAMIC}"
    if test "x${have_libpython}" = "xno"; then
      AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[dynamic_list=true],[])
    elif test -n "${PYTHON_CFLAGS}" && test -n "${PYTHON_LIBS}" && test -n "${have_libpython}"; then
      # Workaround http://bugs.python.org/issue4434 where static
      # libpythonX.Y.a would get its symbols required for
-     # pythonX.Y/lib-dynload/*.so modules hidden by -Wl,--dynamic-list.
+     # pythonX.Y/lib-dynload/*.so modules hidden by ${acl_cv_wl}--dynamic-list.
      # Problem does not happen for the recommended libpythonX.Y.so linkage.
      old_CFLAGS="${CFLAGS}"
      CFLAGS="${CFLAGS} ${PYTHON_CFLAGS}"
@@ -2913,8 +2920,8 @@ if test "x${gdb_native}" = "xyes"; then
    LDFLAGS="${old_LDFLAGS}"
 fi
 if ${dynamic_list}; then
-  found="-Wl,--dynamic-list"
-  RDYNAMIC='-Wl,--dynamic-list=$(srcdir)/proc-service.list'
+  found="${acl_cv_wl}--dynamic-list"
+  RDYNAMIC='${acl_cv_wl}--dynamic-list=$(srcdir)/proc-service.list'
 else
   found="-rdynamic"
   RDYNAMIC="-rdynamic"
@@ -2964,13 +2971,13 @@ if test "x${build}" = "x${host}" -a "x${host}" = "x${target}"; then
             # all symbols visible in the dynamic symbol table.
             hold_ldflags=${LDFLAGS}
             AC_MSG_CHECKING([for the ld -export-dynamic flag])
-            LDFLAGS="${LDFLAGS} -Wl,-export-dynamic"
+            LDFLAGS="${LDFLAGS} ${acl_cv_wl}-export-dynamic"
             AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[int i;]])],
                            [found=yes],[found=no])
             LDFLAGS=${hold_ldflags}
             AC_MSG_RESULT([${found}])
             if test "x${found}" = "xyes"; then
-               CONFIG_LDFLAGS="${CONFIG_LDFLAGS} -Wl,-export-dynamic"
+               CONFIG_LDFLAGS="${CONFIG_LDFLAGS} ${acl_cv_wl}-export-dynamic"
             fi
          fi
 	 # Sun randomly tweaked the prototypes in <proc_service.h>
@@ -3220,7 +3227,8 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wsized-deallocation -Wplacement-new=2 -Wshadow-compatible-local \
 -Wbuiltin-function-redefined -Waligned-new=all -Wsynth -Wcatch-value \
 -Wclass-memaccess -Wnon-pod-varargs -Wmissing-attributes \
--Wdeprecated-copy -Wdeprecated-copy-dtor"
+-Wdeprecated-copy -Wdeprecated-copy-dtor -Wpessimizing-move -Wredundant-move \
+-Wclass-conversion"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -3309,7 +3317,7 @@ fi
 
 # clang-specific warnings:
 if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
-  build_warnings="${build_warnings} -Wgcc-compat -Wasm \
+  build_warnings="${build_warnings} -Qunused-arguments -Wgcc-compat -Wasm \
 -Wunneeded-internal-declaration -Wstring-plus-int -Wstring-conversion \
 -Wbool-conversion -Wconstant-logical-operand -Wunused-comparison \
 -Wabsolute-value -Wtautological-constant-out-of-range-compare \
@@ -3325,10 +3333,10 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
   # * -Wcomma (false positives)
   if test "x${enable_build_with_cxx}" = "xyes"; then
     build_warnings="${build_warnings} -Wmismatched-tags \
--Wmissing-exception-spec -Wpessimizing-move -Wredundant-move \
--Wnon-literal-null-conversion -Wpredefined-identifier-outside-function \
--Wvexing-parse -Wreturn-stack-address -Wshadow-field-in-constructor \
--Wunused-private-field -Wvla-extension"
+-Wmissing-exception-spec -Wnon-literal-null-conversion \
+-Wpredefined-identifier-outside-function -Wvexing-parse \
+-Wreturn-stack-address -Wshadow-field-in-constructor -Wunused-private-field \
+-Wvla-extension"
   fi
   ## mig typechecks cause paramaters that would otherwise be unused to be
   ## used, triggering this:
@@ -3341,6 +3349,15 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
 else
   ## really only noisy with clang:
   build_warnings="${build_warnings} -Wcast-align"
+fi
+
+if test "x${acl_cv_wa}" = "x"; then
+  test -z "${acl_cv_wa}" && export acl_cv_wa='-Wa,'
+fi
+AC_SUBST([acl_cv_wa])dnl
+
+if test "x${acl_cv_wa}" != "x"; then
+  test -n "${acl_cv_wa}" && build_warnings="${build_warnings} ${acl_cv_wa}-Qunused-arguments"
 fi
 
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
@@ -3637,7 +3654,7 @@ esac],[want_mmalloc=${mmalloc_default_value}])dnl
 if test "x${want_mmalloc}" = "xtrue" && test -d ../mmalloc; then
    AC_DEFINE([USE_MMALLOC],[1],[Define to 1 to use mmalloc])
    AC_DEFINE([MMCHECK_FORCE],[1],[Define to 1 to force mmcheck])
-   MMALLOC_CFLAGS="-I${srcdir}/../mmalloc -I../mmalloc"
+   MMALLOC_CFLAGS="${acl_cv_wp}-I${srcdir}/../mmalloc ${acl_cv_wp}-I../mmalloc"
    MMALLOC='../mmalloc/libmmalloc.a'
    if test ! -e ${MMALLOC}; then
      AC_MSG_WARN([${MMALLOC} is wanted, but missing])
@@ -3758,7 +3775,7 @@ if test "x${gdb_cv_var_elf}" = "xyes"; then
 fi
 
 LIBGUI="../libgui/src/libgui.a"
-GUI_CFLAGS_X="-I${srcdir}/../libgui/src"
+GUI_CFLAGS_X="${acl_cv_wp}-I${srcdir}/../libgui/src"
 AC_SUBST([LIBGUI])dnl
 AC_SUBST([GUI_CFLAGS_X])dnl
 
@@ -3851,7 +3868,7 @@ if test "x${enable_gdbtk}" = "xyes"; then
 
 	   if test "x${gdb_cv_os_cygwin}" = "xyes"; then
 	      WIN32LIBS="${WIN32LIBS} -lshell32 -lgdi32 -lcomdlg32 -ladvapi32"
-	      WIN32LDAPP="-Wl,--subsystem,console"
+	      WIN32LDAPP="${acl_cv_wl}--subsystem,console"
 	      CONFIG_OBS="${CONFIG_OBS} gdbres.o"
 	   fi
         else

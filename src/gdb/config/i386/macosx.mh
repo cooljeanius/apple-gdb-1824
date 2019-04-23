@@ -44,7 +44,7 @@ NATDEPFILES = \
 
 XM_CLIBS = $(CFM_LIBS)
 
-MH_CFLAGS = -I$(srcdir)/macosx $(CFM_CFLAGS)
+MH_CFLAGS = ${acl_cv_wp}-I$(srcdir)/macosx $(CFM_CFLAGS)
 
 CFM_FILES = 
 

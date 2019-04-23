@@ -3,8 +3,8 @@
 
 MT_CFLAGS = \
 	-DTARGET_POWERPC \
-	-I../gdb-next \
-	-Imacosx
+	${acl_cv_wp}-I../gdb-next \
+	${acl_cv_wp}-Imacosx
 
 VPATH += ../gdb-next
 

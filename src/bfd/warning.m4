@@ -33,7 +33,7 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
 -Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough \
 -Walloca-larger-than=4032 -Wvla-larger-than=4032 -Wformat-overflow=2 \
--Wformat-truncation=2 -Wstringop-overflow=2"
+-Wformat-truncation=2 -Wstringop-overflow=2 -Qunused-arguments"
 # (4032 is MAX_ALLOCA_SIZE in "libiberty.h")
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
@@ -80,6 +80,20 @@ if test "x${acl_cv_wl}" = "x"; then
   test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
 fi
 AC_SUBST([acl_cv_wl])dnl
+
+if test "x${acl_cv_wa}" = "x"; then
+  test -z "${acl_cv_wa}" && export acl_cv_wa='-Wa,'
+fi
+AC_SUBST([acl_cv_wa])dnl
+
+if test "x${acl_cv_wp}" = "x"; then
+  test -z "${acl_cv_wp}" && export acl_cv_wp='-Wp,'
+fi
+AC_SUBST([acl_cv_wp])dnl
+
+if test "x${acl_cv_wa}" != "x"; then
+  test -n "${acl_cv_wa}" && WARN_CFLAGS="${WARN_CFLAGS} ${acl_cv_wa}-Qunused-arguments"
+fi
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)

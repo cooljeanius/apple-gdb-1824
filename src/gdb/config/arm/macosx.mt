@@ -3,7 +3,7 @@
 
 MT_CFLAGS = \
 	-DTARGET_ARM \
-	-I$(srcdir)/macosx
+	${acl_cv_wp}-I$(srcdir)/macosx
 
 TDEPFILES = \
 	core-macho.o \

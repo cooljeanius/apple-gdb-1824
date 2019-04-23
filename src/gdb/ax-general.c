@@ -415,6 +415,7 @@ ax_reqs(struct agent_expr *ax, struct agent_reqs *reqs)
   memset(reg_mask, 0, (reg_mask_len * sizeof(reg_mask[0])));
   memset(targets, 0, (ax->len * sizeof(targets[0])));
   memset(boundary, 0, (ax->len * sizeof(boundary[0])));
+  memset(heights, 0, (ax->len * sizeof(heights[0])));
 
   reqs->max_height = reqs->min_height = height = 0;
   reqs->flaw = agent_flaw_none;

@@ -44,7 +44,7 @@ struct frame_unwind_table
   struct frame_unwind_table_entry **osabi_head;
 };
 
-static void *
+static ATTRIBUTE_NONNULL(1) void *
 frame_unwind_init(struct obstack *obstack)
 {
   struct frame_unwind_table *table =

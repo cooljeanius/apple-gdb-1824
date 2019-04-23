@@ -46,7 +46,7 @@ NATDEPFILES = \
 XM_CLIBS = -framework Foundation $(CFM_LIBS) -framework Security
 
 MH_CFLAGS = \
-	-I$(srcdir)/macosx \
+	${acl_cv_wp}-I$(srcdir)/macosx \
 	$(CFM_CFLAGS)
 
 CFM_FILES = \
@@ -57,7 +57,7 @@ CFM_FILES = \
 
 CFM_CFLAGS = \
 	-DWITH_CFM=1 \
-	-I/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers
+	${acl_cv_wp}-I/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers
 CFM_BAD_CFLAGS = \
 	-Wno-four-char-constants \
 	-traditional-cpp

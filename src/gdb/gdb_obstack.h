@@ -19,16 +19,16 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (GDB_OBSTACK_H)
+#if !defined(GDB_OBSTACK_H)
 #define GDB_OBSTACK_H 1
 
 #include "obstack.h"
 
 /* Utility macros - wrap obstack alloc into something more robust.  */
 
-#define OBSTACK_ZALLOC(OBSTACK,TYPE) (memset (obstack_alloc ((OBSTACK), sizeof (TYPE)), 0, sizeof (TYPE)))
+#define OBSTACK_ZALLOC(OBSTACK,TYPE) (memset(obstack_alloc((OBSTACK), sizeof(TYPE)), 0, sizeof(TYPE)))
 
-#define OBSTACK_CALLOC(OBSTACK,NUMBER,TYPE) (memset (obstack_alloc ((OBSTACK), (NUMBER) * sizeof (TYPE)), 0, (NUMBER) * sizeof (TYPE)))
+#define OBSTACK_CALLOC(OBSTACK,NUMBER,TYPE) (memset(obstack_alloc((OBSTACK), (NUMBER) * sizeof(TYPE)), 0, (NUMBER) * sizeof(TYPE)))
 
 /* Unless explicitly specified, GDB obstacks always use xmalloc() and
    xfree().  */

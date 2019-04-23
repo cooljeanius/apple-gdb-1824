@@ -22,8 +22,8 @@ To do so, use the procedure documented by the package, typically 'autoreconf'.])
 
 # bison-i18n.m4 serial 2
 
-dnl Copyright (C) 2005-2006, 2009-2015, 2018 Free Software Foundation,
-dnl Inc.
+dnl Copyright (C) 2005-2006, 2009-2015, 2018-2019 Free Software
+dnl Foundation, Inc.
 
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -2318,10 +2318,10 @@ except ImportError:
      am_cv_python_pythondir=`$PYTHON -c "
 $am_python_setup_sysconfig
 if can_use_sysconfig:
-    sitedir = sysconfig.get_path('purelib', vars={'base':'$am_py_prefix'})
+    sitedir = sysconfig.get_path('purelib')
 else:
     from distutils import sysconfig
-    sitedir = sysconfig.get_python_lib(0, 0, prefix='$am_py_prefix')
+    sitedir = sysconfig.get_python_lib(0, 0)
 sys.stdout.write(sitedir)"`
      case $am_cv_python_pythondir in
      $am_py_prefix*)
@@ -2360,10 +2360,10 @@ sys.stdout.write(sitedir)"`
      am_cv_python_pyexecdir=`$PYTHON -c "
 $am_python_setup_sysconfig
 if can_use_sysconfig:
-    sitedir = sysconfig.get_path('platlib', vars={'platbase':'$am_py_prefix'})
+    sitedir = sysconfig.get_path('platlib')
 else:
     from distutils import sysconfig
-    sitedir = sysconfig.get_python_lib(1, 0, prefix='$am_py_prefix')
+    sitedir = sysconfig.get_python_lib(1, 0)
 sys.stdout.write(sitedir)"`
      case $am_cv_python_pyexecdir in
      $am_py_exec_prefix*)

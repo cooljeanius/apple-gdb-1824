@@ -404,7 +404,9 @@ ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 ac_ct_RANLIB = @ac_ct_RANLIB@
+acl_cv_wa = @acl_cv_wa@
 acl_cv_wl = @acl_cv_wl@
+acl_cv_wp = @acl_cv_wp@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
@@ -786,8 +788,8 @@ OFILES = @BFD_MACHINES@
 # We should reconfigure whenever bfd/configure.ac changes, because
 # that is where the version number in Makefile comes from.
 CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac
-AM_CPPFLAGS = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) \
--I$(BFDDIR) @HDEFINES@ -I$(INTLDIR) -I../intl
+AM_CPPFLAGS = -D_GNU_SOURCE -Wp,-I. -Wp,-I$(srcdir) -Wp,-I../bfd \
+-Wp,-I$(INCDIR) -Wp,-I$(BFDDIR) @HDEFINES@ -Wp,-I$(INTLDIR) -Wp,-I../intl
 
 AM_V_redir = $(am__v_redir_@AM_V@)
 am__v_redir_ = $(am__v_redir_@AM_DEFAULT_V@)

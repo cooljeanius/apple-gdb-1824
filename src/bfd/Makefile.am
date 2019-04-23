@@ -35,7 +35,7 @@ NSLIBTOOL = cc -dynamiclib
 srcdir = @srcdir@
 
 INCDIR = $(srcdir)/../include
-CSEARCH = -I. -I$(srcdir) -I$(INCDIR)
+CSEARCH = -Wp,-I. -Wp,-I$(srcdir) -Wp,-I$(INCDIR)
 MKDEP = gcc -MM
 
 PATH_TO_MOVEIFCHANGE = $(srcdir)/../move-if-change

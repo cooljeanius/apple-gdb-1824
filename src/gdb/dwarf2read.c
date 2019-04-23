@@ -6225,7 +6225,8 @@ dwarf2_attach_fn_fields_to_type(struct field_info *fip, struct type *type,
         ((struct fn_field *)
          TYPE_ALLOC(type, (sizeof(struct fn_field) * flp->length)));
       for (k = flp->length; (k--, nfp); nfp = nfp->next)
-	fn_flp->fn_fields[k] = nfp->fnfield;
+	if ((fn_flp != NULL) && (fn_flp->fn_fields != NULL))
+	  fn_flp->fn_fields[k] = nfp->fnfield;
 
       total_length += flp->length;
     }
@@ -7782,6 +7783,8 @@ dwarf2_read_abbrevs(bfd *abfd, struct dwarf2_cu *cu)
                            obstack_alloc(&cu->abbrev_obstack,
                                          (cur_abbrev->num_attrs
                                           * sizeof(struct attr_abbrev))));
+      gdb_assert(cur_abbrev->attrs != NULL);
+      gdb_assert(cur_attrs != NULL);
       memcpy(cur_abbrev->attrs, cur_attrs,
 	     (cur_abbrev->num_attrs * sizeof(struct attr_abbrev)));
 
@@ -12137,23 +12140,25 @@ decode_locdesc(struct dwarf_block *blk, struct dwarf2_cu *cu)
 /* memory allocation interface */
 
 static struct dwarf_block *
-dwarf_alloc_block (struct dwarf2_cu *cu)
+dwarf_alloc_block(struct dwarf2_cu *cu)
 {
   struct dwarf_block *blk;
 
-  blk = (struct dwarf_block *)
-    obstack_alloc (&cu->comp_unit_obstack, sizeof (struct dwarf_block));
+  blk = ((struct dwarf_block *)
+	 obstack_alloc(&cu->comp_unit_obstack, sizeof(struct dwarf_block)));
   return (blk);
 }
 
+/* */
 static struct abbrev_info *
-dwarf_alloc_abbrev (struct dwarf2_cu *cu)
+dwarf_alloc_abbrev(struct dwarf2_cu *cu)
 {
   struct abbrev_info *abbrev;
 
-  abbrev = (struct abbrev_info *)
-    obstack_alloc (&cu->abbrev_obstack, sizeof (struct abbrev_info));
-  memset (abbrev, 0, sizeof (struct abbrev_info));
+  abbrev = ((struct abbrev_info *)
+	    obstack_alloc(&cu->abbrev_obstack, sizeof(struct abbrev_info)));
+  gdb_assert(abbrev != NULL);
+  memset(abbrev, 0, sizeof(struct abbrev_info));
   return (abbrev);
 }
 

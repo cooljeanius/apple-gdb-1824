@@ -75,7 +75,7 @@ LIBCFLAGS = $(CFLAGS) $(C_ARCHFLAGS)
 XCFLAGS = -DXCOMPILING @MAINT@ $(CFLAGS) # $(XC_ARCHFLAGS)
 LDFLAGS = @LDFLAGS@
 
-AM_CPPFLAGS = -I. -I$(srcdir)
+AM_CPPFLAGS = -Wp,-I. -Wp,-I$(srcdir)
 AM_ANSIFICATION_FLAGS = -Wstrict-prototypes -Wmissing-prototypes -Wconversion -Wold-style-definition -Wshadow -Wundef -Wextra -Wno-unused @MAINT@ -ansi -pedantic @EXTRA_ANSIFICATION_FLAGS@
 AM_COMPILE_DEBUGFLAGS = -ggdb @MAINT@ -save-temps -fverbose-asm
 AM_WARNFLAGS = -Wall @MAINT@ $(AM_ANSIFICATION_FLAGS)
@@ -129,7 +129,7 @@ SUFFIXES = .c .y .o .lo
 
 EXTRA_DIST += plural.c
 
-AM_INCLUDES = -I. -I$(srcdir)
+AM_INCLUDES = -Wp,-I. -Wp,-I$(srcdir)
 
 all: all-@USE_INCLUDED_LIBINTL@ @MAINT@ config.status po/Makefile
 .PHONY: all all-@USE_INCLUDED_LIBINTL@

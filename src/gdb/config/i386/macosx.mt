@@ -3,7 +3,7 @@
 
 MT_CFLAGS = \
 	-DTARGET_I386 \
-	-I$(srcdir)/macosx
+	${acl_cv_wp}-I$(srcdir)/macosx
 
 TDEPFILES = \
 	amd64-tdep.o \

@@ -1035,7 +1035,8 @@ evaluate_subexp_standard(struct type *expect_type, struct expression *exp,
 	    }
 
 	    if (type) {
-              if ((TYPE_CODE(type) == TYPE_CODE_ERROR) && expect_type) {
+              if ((TYPE_MAIN_TYPE(type) != NULL)
+		  && (TYPE_CODE(type) == TYPE_CODE_ERROR) && expect_type) {
                 return allocate_value(expect_type);
               } else {
                 return allocate_value(type);

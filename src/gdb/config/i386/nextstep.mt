@@ -1,6 +1,6 @@
 # Target: Intel 386 running NeXTStep
 
-MT_CFLAGS = -DTARGET_I386 -D__NeXT__ -I$(srcdir)/../gdb-next
+MT_CFLAGS = -DTARGET_I386 -D__NeXT__ ${acl_cv_wp}-I$(srcdir)/../gdb-next
 
 VPATH += $(srcdir)/../gdb-next
 

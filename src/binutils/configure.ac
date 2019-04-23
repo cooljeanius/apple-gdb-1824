@@ -350,23 +350,23 @@ AC_CHECK_LIB([gnu],[gl_dummy_symbol],[],[
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I. -I../intl"
+    export CPPFLAGS="-Wp,-I. -Wp,-I../intl"
   else
-    export CPPFLAGS="${CPPFLAGS} -I../intl"
+    export CPPFLAGS="${CPPFLAGS} -Wp,-I../intl"
   fi
   if test -z "${INCINTL}"; then
-    export INCINTL="-I../intl"
+    export INCINTL="-Wp,-I../intl"
     AC_SUBST([INCINTL])dnl
     ## ok
   fi
 elif test -d ../libintl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I. -I../libintl"
+    export CPPFLAGS="-Wp,-I. -Wp,-I../libintl"
   else
-    export CPPFLAGS="${CPPFLAGS} -I../libintl"
+    export CPPFLAGS="${CPPFLAGS} -Wp,-I../libintl"
   fi
   if test -z "${INCINTL}"; then
-    export INCINTL="-I../libintl"
+    export INCINTL="-Wp,-I../libintl"
     AC_SUBST([INCINTL])dnl
     ## similar to above
   fi

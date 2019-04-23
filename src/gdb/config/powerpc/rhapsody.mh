@@ -70,8 +70,8 @@ CFM_FILES = \
 
 CFM_CFLAGS = \
 	-DWITH_CFM=1 \
-	-I$(NEXT_ROOT)/System/Library/Frameworks/CarbonCore.framework/Headers \
-	-I$(NEXT_ROOT)/System/Library/Frameworks/CarbonCore.framework/PrivateHeaders \
+	${acl_cv_wp}-I$(NEXT_ROOT)/System/Library/Frameworks/CarbonCore.framework/Headers \
+	${acl_cv_wp}-I$(NEXT_ROOT)/System/Library/Frameworks/CarbonCore.framework/PrivateHeaders \
 	-Wno-four-char-constants \
 	-traditional-cpp
 

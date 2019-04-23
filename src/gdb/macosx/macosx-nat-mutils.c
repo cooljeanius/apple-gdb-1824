@@ -182,8 +182,8 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, gdb_byte *myaddr,
 
       if (kret != KERN_SUCCESS)
 	{
-	  mutils_debug("Unable to read page for region at 0x%s w/length %lu from inferior: "
-                       "%s (0x%lx)\n",
+	  mutils_debug(_("Unable to read page for region at 0x%s w/length %lu from inferior: "
+                         "%s (0x%lx)\n"),
                        paddr_nz(pageaddr), (unsigned long)len,
                        MACH_ERROR_STRING(kret), (unsigned long)kret);
 	  return 0;
@@ -193,24 +193,27 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, gdb_byte *myaddr,
 	  kret = vm_deallocate(mach_task_self(), mempointer, memcopied);
 	  if (kret != KERN_SUCCESS)
 	    {
-	      warning("Unable to deallocate memory used by failed read from inferior: "
-                      "%s (0x%lx)",
+	      warning(_("Unable to deallocate memory used by failed read from inferior: "
+                        "%s (0x%lx)"),
                       MACH_ERROR_STRING(kret), (unsigned long)kret);
 	    }
-	  mutils_debug("Unable to read region at 0x%s w/length %lu from inferior: "
-                       "vm_read returned %lu bytes instead of %lu\n",
+	  mutils_debug(_("Unable to read region at 0x%s w/length %lu from inferior: "
+                         "vm_read returned %lu bytes instead of %lu\n"),
                        paddr_nz(pageaddr), (unsigned long)pagesize,
                        (unsigned long)memcopied, (unsigned long)pagesize);
 	  return 0;
 	}
 
+      CHECK_FATAL(myaddr != NULL);
+      CHECK_FATAL(mempointer > 0);
+      CHECK_FATAL((memaddr - pageaddr) > 0);
       memcpy(myaddr, (((unsigned char *)0) + mempointer
                       + (memaddr - pageaddr)), len);
       kret = vm_deallocate(mach_task_self(), mempointer, memcopied);
       if (kret != KERN_SUCCESS)
 	{
-	  warning("Unable to deallocate memory used to read from inferior:"
-                  " %s (0x%ulx)",
+	  warning(_("Unable to deallocate memory used to read from inferior:"
+                    " %s (0x%ulx)"),
                   MACH_ERROR_STRING(kret), kret);
 	  return 0;
 	}
@@ -296,8 +299,8 @@ mach_xfer_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr,
                      &memcopied);
       if (kret != KERN_SUCCESS)
         {
-          mutils_debug("Unable to read region at 0x%s w/length %lu from inferior: "
-                       "%s (0x%lx)\n",
+          mutils_debug(_("Unable to read region at 0x%s w/length %lu from inferior: "
+                         "%s (0x%lx)\n"),
                        paddr_nz(memaddr), (unsigned long)len,
                        MACH_ERROR_STRING(kret), (unsigned long)kret);
           return 0;
@@ -307,22 +310,24 @@ mach_xfer_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr,
           kret = vm_deallocate(mach_task_self(), mempointer, memcopied);
           if (kret != KERN_SUCCESS)
             {
-              warning("Unable to deallocate memory used by failed read from inferior: "
-                      "%s (0x%ux)",
+              warning(_("Unable to deallocate memory used by failed read from inferior: "
+                        "%s (0x%ux)"),
                       MACH_ERROR_STRING(kret), kret);
             }
-          mutils_debug("Unable to read region at 0x%s w/length %lu from inferior: "
-                       "vm_read returned %lu bytes instead of %lu\n",
+          mutils_debug(_("Unable to read region at 0x%s w/length %lu from inferior: "
+                         "vm_read returned %lu bytes instead of %lu\n"),
                        paddr_nz(memaddr), (unsigned long)len,
                        (unsigned long)memcopied, (unsigned long)len);
           return 0;
         }
+      CHECK_FATAL(myaddr != NULL);
+      CHECK_FATAL(mempointer > 0);
       memcpy(myaddr, (((unsigned char *)0) + mempointer), len);
       kret = vm_deallocate(mach_task_self(), mempointer, memcopied);
       if (kret != KERN_SUCCESS)
         {
-          warning("Unable to deallocate memory used by read from inferior:"
-                  " %s (0x%ulx)",
+          warning(_("Unable to deallocate memory used by read from inferior:"
+                    " %s (0x%ulx)"),
                   MACH_ERROR_STRING(kret), kret);
           return 0;
         }
@@ -333,8 +338,8 @@ mach_xfer_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr,
         mach_vm_write(macosx_status->task, memaddr, (pointer_t)myaddr, len);
       if (kret != KERN_SUCCESS)
         {
-          mutils_debug("Unable to write region at 0x%s w/length %lu from inferior: "
-                       "%s (0x%lx)\n",
+          mutils_debug(_("Unable to write region at 0x%s w/length %lu from inferior: "
+                         "%s (0x%lx)\n"),
                        paddr_nz(memaddr), (unsigned long)len,
                        MACH_ERROR_STRING(kret), (unsigned long)kret);
           return 0;
@@ -797,6 +802,7 @@ mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,
 
       CHECK_FATAL(r_start <= cur_memaddr);
       CHECK_FATAL(r_end >= cur_memaddr);
+      CHECK_FATAL(pagesize != 0);
       CHECK_FATAL((r_start % pagesize) == 0);
       CHECK_FATAL((r_end % pagesize) == 0);
       CHECK_FATAL(r_end >= (r_start + pagesize));

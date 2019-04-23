@@ -275,7 +275,7 @@ if test "x${USE_INCLUDED_LIBINTL}" != "x"; then
       LIBINTL=`echo ${LIBINTL} | sed 's,${top_builddir},&/..,' `
       LTLIBINTL=`echo ${LTLIBINTL} | sed 's,${top_builddir},&/..,' `
       LIBINTL_DEP='${top_builddir}/../intl/libintl.a'
-      INCINTL='-I${top_builddir}/../intl'
+      INCINTL='-Wp,-I${top_builddir}/../intl'
       ;;
   esac
 fi
@@ -297,8 +297,10 @@ if test "x${srcdir}" != "x."; then
     fi
   else
     # this can happen during distcheck, so check for that:
-    if test "x${srcdir}" != "x.."; then
+    if test "x${srcdir}" != "x" -a ! -w "${srcdir}"; then
       echo "warning: srcdir '${srcdir}' is unwritable"
+    elif test "x${srcdir}" != "x.."; then
+      echo "warning: unexpected srcdir '${srcdir}'"
     fi
   fi
 fi
@@ -314,8 +316,10 @@ if test "x${srcdir}" != "x."; then
       cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
     else
       # this can happen during distcheck, so check for that:
-      if test "x${srcdir}" != "x.."; then
+      if test "x${srcdir}" != "x" -a ! -w "${srcdir}"; then
         echo "warning: srcdir '${srcdir}' is unwritable"
+      elif test "x${srcdir}" != "x.."; then
+        echo "warning: unexpected srcdir '${srcdir}'"
       fi
     fi
   fi

@@ -558,7 +558,7 @@ discard_my_cleanups(struct cleanup **pmy_chain,
   struct cleanup *volatile ptr;
   while ((ptr = *pmy_chain) != old_chain)
     {
-      *pmy_chain = ptr->next;
+      *pmy_chain = ((ptr != NULL) ? ptr->next : NULL);
       xfree(ptr);
     }
 }

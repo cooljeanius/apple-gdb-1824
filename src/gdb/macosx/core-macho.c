@@ -601,7 +601,7 @@ core_fetch_cached_thread_registers(void)
 }
 
 
-static void
+static void ATTRIBUTE_NONNULL(3)
 core_cache_section_registers(asection *sec, int flavour,
 			     core_cached_registers_raw_t *cached_regs_raw)
 {
@@ -647,7 +647,7 @@ core_cache_section_registers(asection *sec, int flavour,
       cached_regs_raw->ppc64_gp_regs = (gdb_ppc_thread_state_64_t *)regs;
       regs = NULL;
       break;
-	
+
     default:
       break;
     }
@@ -737,7 +737,7 @@ core_cache_section_registers(asection *sec, int flavour,
     case BFD_MACH_O_i386_EXCEPTION_STATE:
     case BFD_MACH_O_x86_EXCEPTION_STATE64:
       break;
-	
+
     default:
       break;
     } /* end switch */
@@ -980,9 +980,12 @@ core_fetch_registers(int regno)
 		  if (flavour != 0)
 		    {
 		      if (create_core_thread_state_cache(thrd_info))
-			core_cache_section_registers(sec, flavour,
-                                                     ((core_cached_registers_raw_t *)
-                                                      thrd_info->privatedata->core_thread_state));
+			if ((thrd_info != NULL)
+			    && (thrd_info->privatedata != NULL)
+			    && (thrd_info->privatedata->core_thread_state != NULL))
+			  core_cache_section_registers(sec, flavour,
+						       ((core_cached_registers_raw_t *)
+							thrd_info->privatedata->core_thread_state));
 		    }
 		}
 	    }

@@ -364,8 +364,8 @@ OFILES = @BFD_MACHINES@
 # that is where the version number in Makefile comes from.
 CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac
 
-AM_CPPFLAGS = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) \
--I$(BFDDIR) @HDEFINES@ -I$(INTLDIR) -I../intl
+AM_CPPFLAGS = -D_GNU_SOURCE -Wp,-I. -Wp,-I$(srcdir) -Wp,-I../bfd \
+-Wp,-I$(INCDIR) -Wp,-I$(BFDDIR) @HDEFINES@ -Wp,-I$(INTLDIR) -Wp,-I../intl
 
 ## hacks to extend the verbosity control:
 AM_V_redir = $(am__v_redir_@AM_V@)

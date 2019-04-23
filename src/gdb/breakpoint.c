@@ -8121,7 +8121,7 @@ ep_parse_optional_filename(const char **arg)
   int i;
   char c;
 
-  if ((*arg_p == '\0') || isspace(*arg_p))
+  if ((arg_p == NULL) || (*arg_p == '\0') || isspace(*arg_p))
     return NULL;
 
   for (i = 0; i < 1024; i++)
@@ -8452,16 +8452,18 @@ print_exception_catchpoint(struct breakpoint *b)
     }
 }
 
+/* */
 static void
-print_one_exception_catchpoint (struct breakpoint *b, CORE_ADDR *last_addr)
+print_one_exception_catchpoint(struct breakpoint *b, CORE_ADDR *last_addr)
 {
   if (addressprint)
     {
-      annotate_field (4);
-      ui_out_field_core_addr (uiout, "addr", b->loc->address);
+      annotate_field(4);
+      ui_out_field_core_addr(uiout, "addr", b->loc->address);
     }
+  gdb_assert(last_addr != NULL);
   *last_addr = b->loc->address;
-  annotate_field (5);
+  annotate_field(5);
 
   switch (b->type)
     {
@@ -8477,7 +8479,7 @@ print_one_exception_catchpoint (struct breakpoint *b, CORE_ADDR *last_addr)
       break;
     }
 
-  ui_out_spaces (uiout, 1);
+  ui_out_spaces(uiout, 1);
 }
 
 static void
@@ -9070,7 +9072,7 @@ clear_command(const char *arg, int from_tty)
 		  /* b is at the head of the list */
 		  breakpoint_chain = b->next;
 		}
-	      else
+	      else if (prev != NULL)
 		{
 		  prev->next = b->next;
 		}

@@ -36,7 +36,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
    times by the parser generator.  */
 
 %{
-  
+
 /* define this because of flex: */
 #ifndef NO_POISON
 # define NO_POISON 1
@@ -52,6 +52,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifndef _STRING_H_
 # include <string.h>
 #endif /* !_STRING_H_ */
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif /* HAVE_STRINGS_H */
 #include <ctype.h>
 #include "expression.h"
 #include "value.h"
@@ -64,7 +67,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "frame.h"
 #include "block.h"
 #include "../include/obstack.h"
-  
+
 #ifndef ADA_EXP_Y
 # define ADA_EXP_Y 1
 #endif /* !ADA_EXP_Y */
@@ -111,7 +114,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define yytoks	ada_toks		/* With YYDEBUG defined */
 #define yyname	ada_name		/* With YYDEBUG defined */
 #define yyrule	ada_rule		/* With YYDEBUG defined */
-  
+
 #ifndef yyinput
 # define yyinput input
 #endif /* !yyinput */

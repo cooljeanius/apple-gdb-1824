@@ -7,7 +7,7 @@ TM_FILE= tm-mac.h
 
 MT_CFLAGS = \
 	-DTARGET_M68K \
-	-I$(srcdir)/macosx \
+	${acl_cv_wp}-I$(srcdir)/macosx \
 	-DBELIEVE_PCC_PROMOTION=1
 ##FIXME: this file is mostly just copied from macos.mt; need to tweak this copy
 ## a bit more

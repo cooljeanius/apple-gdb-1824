@@ -641,6 +641,8 @@ NO_WERROR
 WARN_LDFLAGS
 WARN_DEFS
 WARN_CFLAGS_FOR_BUILD
+acl_cv_wp
+acl_cv_wa
 acl_cv_wl
 GUILE_VERSION
 GUILE
@@ -20560,17 +20562,21 @@ $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 fi
 
 
+# this is also done in ../bfd/warning.m4, but make sure it is done here first:
+if test "x${acl_cv_wp}" = "x"; then
+  test -z "${acl_cv_wp}" && export acl_cv_wp='-Wp,'
+fi
 if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I. -I../intl"
+    export CPPFLAGS="${acl_cv_wp}-I. ${acl_cv_wp}-I../intl"
   else
-    export CPPFLAGS="${CPPFLAGS} -I../intl"
+    export CPPFLAGS="${CPPFLAGS} ${acl_cv_wp}-I../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I. -I../libintl"
+    export CPPFLAGS="${acl_cv_wp}-I. ${acl_cv_wp}-I../libintl"
   else
-    export CPPFLAGS="${CPPFLAGS} -I../libintl"
+    export CPPFLAGS="${CPPFLAGS} ${acl_cv_wp}-I../libintl"
   fi
 fi
 unset ac_cv_header_libintl_h
@@ -22297,7 +22303,7 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
 -Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough \
 -Walloca-larger-than=4032 -Wvla-larger-than=4032 -Wformat-overflow=2 \
--Wformat-truncation=2 -Wstringop-overflow=2"
+-Wformat-truncation=2 -Wstringop-overflow=2 -Qunused-arguments"
 # (4032 is MAX_ALLOCA_SIZE in "libiberty.h")
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
@@ -22377,6 +22383,18 @@ rm -f conftest*
 
 if test "x${acl_cv_wl}" = "x"; then
   test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+
+if test "x${acl_cv_wa}" = "x"; then
+  test -z "${acl_cv_wa}" && export acl_cv_wl='-Wa,'
+fi
+
+if test "x${acl_cv_wp}" = "x"; then
+  test -z "${acl_cv_wp}" && export acl_cv_wl='-Wp,'
+fi
+
+if test "x${acl_cv_wa}" != "x"; then
+  test -n "${acl_cv_wa}" && WARN_CFLAGS="${WARN_CFLAGS} ${acl_cv_wa}-Qunused-arguments"
 fi
 
 case "${host}" in

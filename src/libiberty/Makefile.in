@@ -145,7 +145,7 @@ installcheck: installcheck-subdir
 INCDIR=$(srcdir)/$(MULTISRCTOP)../include
 
 LIBIBERTY_WARN_CFLAGS = @ac_libiberty_warn_cflags@
-COMPILE.c = $(CC) -c @DEFS@ $(LIBCFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) $(HDEFINES) $(LIBIBERTY_WARN_CFLAGS)
+COMPILE.c = $(CC) -c @DEFS@ $(LIBCFLAGS) $(CPPFLAGS) -Wp,-I. -Wp,-I$(INCDIR) $(HDEFINES) $(LIBIBERTY_WARN_CFLAGS)
 
 # Just to make sure we do NOT use a built-in rule with VPATH:
 .c.$(objext):
@@ -537,29 +537,32 @@ demangle$(exeext): $(srcdir)/cp-demangle.c config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/dyn-string.h $(INCDIR)/getopt.h $(INCDIR)/libiberty.h
 	@echo "The standalone demangler, now named c++filt, is now"
 	@echo "a part of binutils."
-	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) \
-	  $(HDEFINES) $(srcdir)/cp-demangle.c -DSTANDALONE_DEMANGLER \
-	  -DCP_DEMANGLE_DEBUG -Wall -Wextra -Wformat=2 -Wc++-compat \
-	  -Wwrite-strings -Wundef -pedantic -Wstrict-aliasing \
-	  -Wstrict-prototypes -Wcast-qual -Wshadow -Wswitch-default \
-	  $(TARGETLIB) -o $@
+	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -Wp,-I. \
+	  -Wp,-I$(INCDIR) $(HDEFINES) $(srcdir)/cp-demangle.c \
+	  -DSTANDALONE_DEMANGLER -DCP_DEMANGLE_DEBUG -Wall -Wextra \
+	  -Wformat=2 -Wc++-compat  -Wwrite-strings -Wundef -pedantic \
+	  -Wstrict-aliasing -Wstrict-prototypes -Wcast-qual -Wshadow \
+	  -Wswitch-default $(TARGETLIB) -o $@
 
 # Other source files can also be turned into standalone programs:
 _doprnt$(exeext): $(srcdir)/_doprnt.c config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/safe-ctype.h $(TARGETLIB)
-	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) \
-	  $(HDEFINES) $(srcdir)/_doprnt.c -DTEST $(TARGETLIB) -o $@
+	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -Wp,-I. \
+	  -Wp,-I$(INCDIR) $(HDEFINES) $(srcdir)/_doprnt.c -DTEST \
+	  $(TARGETLIB) -o $@
 
 argv$(exeext): $(srcdir)/argv.c config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/libiberty.h $(INCDIR)/safe-ctype.h $(TARGETLIB)
-	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) \
-	  $(HDEFINES) $(srcdir)/argv.c -Wall -Wextra -Wformat=2 \
-	  -Wwrite-strings -Wundef -pedantic -DMAIN $(TARGETLIB) -o $@
+	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -Wp,-I. \
+	  -Wp,-I$(INCDIR) $(HDEFINES) $(srcdir)/argv.c -Wall -Wextra \
+	  -Wformat=2 -Wwrite-strings -Wundef -pedantic -DMAIN $(TARGETLIB) \
+	  -o $@
 
 concat$(exeext): $(srcdir)/concat.c config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/libiberty.h
-	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) \
-	  $(HDEFINES) $(srcdir)/concat.c -Wall -DMAIN $(TARGETLIB) -o $@
+	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -Wp,-I. \
+	  -Wp,-I$(INCDIR) $(HDEFINES) $(srcdir)/concat.c -Wall -DMAIN \
+	  $(TARGETLIB) -o $@
 
 ## Floating point stuff could benefit from various special compiler flags.
 ## Unfortunately, many of them are compiler-specific.
@@ -580,54 +583,56 @@ concat$(exeext): $(srcdir)/concat.c config.h $(INCDIR)/ansidecl.h \
 ## * -Woverflow (via -Wall/-Wextra, enabled by default in newer versions)
 floatformat$(exeext): $(srcdir)/floatformat.c config.h \
   $(INCDIR)/ansidecl.h $(INCDIR)/floatformat.h $(INCDIR)/libiberty.h
-	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) \
-	  $(HDEFINES) $(srcdir)/floatformat.c -DIEEE_DEBUG=2 -pedantic \
-	  -Wwrite-strings -Wstrict-aliasing -Wstrict-prototypes -Wundef \
-	  -fno-omit-frame-pointer -fmath-errno -ftrapv -o $@
+	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -Wp,-I. \
+	  -Wp,-I$(INCDIR) $(HDEFINES) $(srcdir)/floatformat.c -DIEEE_DEBUG=2 \
+	  -pedantic -Wwrite-strings -Wstrict-aliasing -Wstrict-prototypes \
+	  -Wundef -fno-omit-frame-pointer -fmath-errno -ftrapv -o $@
 
 getopt$(exeext): $(srcdir)/getopt.c config.h $(INCDIR)/getopt.h
-	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) \
-	  $(HDEFINES) $(srcdir)/getopt.c -DTEST -o $@
+	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -Wp,-I. \
+	  -Wp,-I$(INCDIR) $(HDEFINES) $(srcdir)/getopt.c -DTEST -o $@
 
 getopt1$(exeext): $(srcdir)/getopt1.c config.h $(INCDIR)/getopt.h \
   $(TARGETLIB) @MAINT@ Makefile
-	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) \
-	  $(HDEFINES) $(srcdir)/getopt1.c -DTEST $(TARGETLIB) -o $@
+	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -Wp,-I. \
+	  -Wp,-I$(INCDIR) $(HDEFINES) $(srcdir)/getopt1.c -DTEST $(TARGETLIB) \
+	  -o $@
 
 physmem$(exeext): $(srcdir)/physmem.c config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/libiberty.h @MAINT@ Makefile
-	$(CC) -DDEBUG @DEFS@ -I. -I.. -I$(INCDIR) -ggdb -O1 -Wall -Wextra \
-	  -pedantic -Wwrite-strings -Wstrict-aliasing -Wstrict-prototypes \
-	  -Wundef -Wcast-qual -Wunreachable-code -Wuninitialized \
-	  $(srcdir)/physmem.c -o $@
+	$(CC) -DDEBUG @DEFS@ -Wp,-I. -Wp,-I.. -Wp,-I$(INCDIR) -ggdb -O1 \
+	  -Wall -Wextra -pedantic -Wwrite-strings -Wstrict-aliasing \
+	  -Wstrict-prototypes -Wundef -Wcast-qual -Wunreachable-code \
+	  -Wuninitialized $(srcdir)/physmem.c -o $@
 
 ## just calling this 'sort' could cause it to conflict with the system
 ## executable of the same name, so add a suffix:
 sorttest$(exeext): $(srcdir)/sort.c config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/libiberty.h $(INCDIR)/sort.h
-	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) \
-	  $(HDEFINES) $(srcdir)/sort.c -DUNIT_TEST -o $@
+	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -Wp,-I. \
+	  -Wp,-I$(INCDIR) $(HDEFINES) $(srcdir)/sort.c -DUNIT_TEST -o $@
 
 strerror$(exeext): $(srcdir)/strerror.c config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/libiberty.h
-	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) \
-	  $(HDEFINES) $(srcdir)/strerror.c -DMAIN -o $@
+	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -Wp,-I. \
+	  -Wp,-I$(INCDIR) $(HDEFINES) $(srcdir)/strerror.c -DMAIN -o $@
 
 strsignal$(exeext): $(srcdir)/strsignal.c config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/libiberty.h
-	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) \
-	  $(HDEFINES) $(srcdir)/strsignal.c -DMAIN -o $@
+	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -Wp,-I. \
+	  -Wp,-I$(INCDIR) $(HDEFINES) $(srcdir)/strsignal.c -DMAIN -o $@
 
 vasprintf$(exeext): $(srcdir)/vasprintf.c config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/libiberty.h $(srcdir)/vprintf-support.h $(TARGETLIB)
-	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) \
-	  $(HDEFINES) $(srcdir)/vasprintf.c -DTEST $(TARGETLIB) -o $@
+	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -Wp,-I. \
+	  -Wp,-I$(INCDIR) $(HDEFINES) $(srcdir)/vasprintf.c -DTEST \
+	  $(TARGETLIB) -o $@
 
 vsnprintf$(exeext): $(srcdir)/vsnprintf.c config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/libiberty.h $(srcdir)/vprintf-support.h @MAINT@ Makefile
-	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) \
-	  $(HDEFINES) -Wall -Wextra -Wformat=2 -Wmissing-format-attribute \
-	  $(srcdir)/vsnprintf.c -DTEST -o $@
+	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -Wp,-I. \
+	  -Wp,-I$(INCDIR) $(HDEFINES) -Wall -Wextra -Wformat=2 \
+	  -Wmissing-format-attribute $(srcdir)/vsnprintf.c -DTEST -o $@
 
 TEST_PROGRAMS = demangle$(exeext) _doprnt$(exeext) argv$(exeext) \
   concat$(exeext) floatformat$(exeext) getopt$(exeext) getopt1$(exeext) \

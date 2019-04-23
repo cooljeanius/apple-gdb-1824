@@ -28,7 +28,7 @@
 #include "remote.h"
 #include "exceptions.h"
 
-static int fetch_inferior_event_wrapper(gdb_client_data client_data)
+/*@unused@*/static int fetch_inferior_event_wrapper(gdb_client_data client_data)
   ATTRIBUTE_USED;
 static void complete_execution(void);
 
@@ -44,7 +44,7 @@ inferior_event_handler_wrapper(gdb_client_data client_data)
    otherwise it assumes that all is OK, and goes on reading data from
    the fd. This however may not always be what we want to do. */
 void
-inferior_event_handler (enum inferior_event_type event_type, 
+inferior_event_handler (enum inferior_event_type event_type,
 			gdb_client_data client_data)
 {
   struct gdb_exception e;
@@ -80,7 +80,7 @@ inferior_event_handler (enum inferior_event_type event_type,
 
 	  /* pop_target (); */
 	  discard_all_continuations ();
-	  
+
 	  do_exec_error_cleanups (ALL_CLEANUPS);
 
           /* FIXME: We don't really have enough information to know
@@ -91,14 +91,14 @@ inferior_event_handler (enum inferior_event_type event_type,
              the case.  For instance, we messed up in insert_breakpoints
              and errored out to here.  */
 
-          target_executing = 0;	  
+          target_executing = 0;
 	  display_gdb_prompt (0);
 	}
       break;
 
     case INF_EXEC_COMPLETE:
       /* Is there anything left to do for the command issued to
-         complete? 
+         complete?
 	 One tricky point.  The continuations may start the inferior
 	 going again.  So we do complete_execution before running
 	 them, and then print the prompt afterwards if we haven't
@@ -106,13 +106,13 @@ inferior_event_handler (enum inferior_event_type event_type,
       */
       target_executing = 0;
       complete_execution ();
-      
+
       do_all_continuations ();
-      /* Reset things after target has stopped for the async commands. 
+      /* Reset things after target has stopped for the async commands.
        */
       if (!target_executing)
 	{
-	  if (sync_execution) 
+	  if (sync_execution)
 	    {
 	      display_gdb_prompt (0);
 	    }
@@ -130,7 +130,7 @@ inferior_event_handler (enum inferior_event_type event_type,
       do_all_intermediate_continuations ();
       break;
 
-    case INF_QUIT_REQ: 
+    case INF_QUIT_REQ:
       /* FIXME: ezannoni 1999-10-04. This call should really be a
 	 target vector entry, so that it can be used for any kind of
 	 targets. */
@@ -145,7 +145,7 @@ inferior_event_handler (enum inferior_event_type event_type,
 }
 
 /* */
-static ATTRIBUTE_USED int 
+static ATTRIBUTE_USED int
 fetch_inferior_event_wrapper(gdb_client_data client_data)
 {
   fetch_inferior_event(client_data);
@@ -160,7 +160,7 @@ static void
 complete_execution (void)
 {
   target_executing = 0;
-  
+
   /* Unregister the inferior from the event loop. This is done so that
      when the inferior is not running we don't get distracted by
      spurious inferior output. */

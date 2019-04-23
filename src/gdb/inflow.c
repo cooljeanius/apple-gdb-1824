@@ -91,7 +91,7 @@ PROCESS_GROUP_TYPE inferior_process_group;
    to SIG_IGN.  */
 
 static void (*sigint_ours)(int);
-static void (*sigquit_ours)(int);
+/*@unused@*/ static void (*sigquit_ours)(int);
 
 /* The name of the tty (from the `tty' command) that we gave to the inferior
    when it was last started.  */

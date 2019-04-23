@@ -45,7 +45,7 @@ NATDEPFILES = \
 	$(ARM_FILES) \
 	$(MACOSX_FILES)
 
-MH_CFLAGS = -I$(srcdir)/macosx
+MH_CFLAGS = ${acl_cv_wp}-I$(srcdir)/macosx
 
 # APPLE LOCAL - Allow more than 256 streams to be open at a time.
 

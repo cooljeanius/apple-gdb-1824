@@ -709,6 +709,8 @@ coff_symtab_read(long symtab_offset, unsigned int nsyms,
   int val;
   CORE_ADDR tmpaddr;
 
+  memset(&fcn_cs_saved, 0, sizeof(struct coff_symbol));
+
   /* Work around a stdio bug in SunOS4.1.1 (this makes me nervous....
      it is hard to know I have really worked around it.  The fix should be
      harmless, anyway).  The symptom of the bug is that the first

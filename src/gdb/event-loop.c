@@ -1007,7 +1007,7 @@ gdb_wait_for_event (void)
 	    }
 
 	  gdb_assert((gdb_notifier.poll_fds + i) != NULL);
-
+	  gdb_assert(file_ptr != NULL);
 	  file_ptr->ready_mask = (gdb_notifier.poll_fds + i)->revents;
 	}
 #else

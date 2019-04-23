@@ -720,7 +720,9 @@ ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
+acl_cv_wa = @acl_cv_wa@
 acl_cv_wl = @acl_cv_wl@
+acl_cv_wp = @acl_cv_wp@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
@@ -861,9 +863,9 @@ MKDEP = gcc -MM @DEFS@
 PATH_TO_MOVEIFCHANGE = $(srcdir)/../move-if-change
 RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
 AM_CPPFLAGS = -D_GNU_SOURCE \
-	 -I. -I$(srcdir) -I../bfd -I$(BFDDIR) -I$(INCDIR) \
+	 -Wp,-I. -Wp,-I$(srcdir) -Wp,-I../bfd -Wp,-I$(BFDDIR) -Wp,-I$(INCDIR) \
 	 @HDEFINES@ \
-	 -I$(srcdir)/../intl -I../intl \
+	 -Wp,-I$(srcdir)/../intl -Wp,-I../intl \
 	 -DLOCALEDIR="\"$(datadir)/locale\"" \
 	 -Dbin_dummy_emulation=@EMULATION_VECTOR@
 
@@ -2218,21 +2220,21 @@ sysinfo$(EXEEXT_FOR_BUILD): sysinfo.@OBJEXT@ syslex_wrap.@OBJEXT@ sysinfo.h
 
 syslex.@OBJEXT@: config.h syslex.c sysinfo.h
 	$(AM_V_CC)if [ -r syslex.c ]; then \
-	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(DEFS) syslex.c -Wno-error; \
+	  $(CC_FOR_BUILD) -c -Wp,-I. $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(DEFS) syslex.c -Wno-error; \
 	else \
-	  $(CC_FOR_BUILD) -c -I. -I$(srcdir) $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(DEFS) $(srcdir)/syslex.c -Wno-error; \
+	  $(CC_FOR_BUILD) -c -Wp,-I. -Wp,-I$(srcdir) $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(DEFS) $(srcdir)/syslex.c -Wno-error; \
 	fi
 
 syslex_wrap.@OBJEXT@: syslex_wrap.c syslex.c sysinfo.h config.h
-	$(AM_V_CC)$(CC_FOR_BUILD) -c -I. -I$(srcdir) $(DEFS) \
+	$(AM_V_CC)$(CC_FOR_BUILD) -c  -Wp,-I. -Wp,-I$(srcdir) $(DEFS) \
 	  $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(C_ARCHFLAGS) \
 	  $(NO_WERROR) $(srcdir)/syslex_wrap.c -Wno-error
 
 sysinfo.@OBJEXT@: sysinfo.c @MAINT@ sysinfo.h
 	$(AM_V_CC)if [ -r sysinfo.c ]; then \
-	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(C_ARCHFLAGS) $(DEFS) $(NO_WERROR) sysinfo.c; \
+	  $(CC_FOR_BUILD) -c -Wp,-I. $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(C_ARCHFLAGS) $(DEFS) $(NO_WERROR) sysinfo.c; \
 	else \
-	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(C_ARCHFLAGS) $(DEFS) $(NO_WERROR) $(srcdir)/sysinfo.c; \
+	  $(CC_FOR_BUILD) -c -Wp,-I. $(AM_CFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(C_ARCHFLAGS) $(DEFS) $(NO_WERROR) $(srcdir)/sysinfo.c; \
 	fi
 
 bin2c$(EXEEXT_FOR_BUILD): bin2c.c $(INCDIR)/binary-io.h

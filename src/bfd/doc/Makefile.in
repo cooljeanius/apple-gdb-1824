@@ -428,7 +428,9 @@ ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 ac_ct_RANLIB = @ac_ct_RANLIB@
 ac_cv_func_mmap_fixed_mapped = @ac_cv_func_mmap_fixed_mapped@
+acl_cv_wa = @acl_cv_wa@
 acl_cv_wl = @acl_cv_wl@
+acl_cv_wp = @acl_cv_wp@
 all_backends = @all_backends@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
@@ -586,8 +588,8 @@ chew_am_LDFLAGS = -L$(srcdir_high)/intl -L../../intl $(LDFLAGS_FOR_BUILD) \
 EXTRA_chew_am_DEPENDENCIES = Makefile $(srcdir_up)/config.h
 PATH_TO_MOVEIFCHANGE = $(srcdir_high)/move-if-change
 RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
-AM_CPPFLAGS = -I.. -I$(srcdir)/.. -I$(srcdir_high)/include \
-	-I$(srcdir_high)/intl -I../../intl
+AM_CPPFLAGS = -Wp,-I.. -Wp,-I$(srcdir)/.. -Wp,-I$(srcdir_high)/include \
+	-Wp,-I$(srcdir_high)/intl -Wp,-I../../intl
 
 BUILD_HFILES = libbfd.h libcoff.h bfd.h
 noinst_HEADERS = $(BUILD_HFILES)

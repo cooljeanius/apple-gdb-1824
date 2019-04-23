@@ -986,7 +986,8 @@ Suppress:
   GROW_VECT(decoding_buffer, decoding_buffer_size, (strlen(encoded) + 3UL),
             char);
   decoded = decoding_buffer;
-  if (encoded[0] == '<')
+  gdb_assert(decoded != NULL);
+  if ((encoded != NULL) && (encoded[0] == '<'))
     strcpy(decoded, encoded);
   else
     snprintf(decoded, BUF_LEN_MAX_FOR_SNPRINTF, "<%s>", encoded);

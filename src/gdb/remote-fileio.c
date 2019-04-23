@@ -1078,6 +1078,8 @@ remote_fileio_func_stat(char *buf)
   struct stat st;
   struct fio_stat fst;
 
+  memset(&st, 0, sizeof(struct stat));
+
   /* 1. Parameter: Ptr to pathname / length incl. trailing zero: */
   if (remote_fileio_extract_ptr_w_len(&buf, &ptrval, &length))
     {
@@ -1141,6 +1143,8 @@ remote_fileio_func_fstat(char *buf)
   struct stat st;
   struct fio_stat fst;
   struct timeval tv;
+
+  memset(&st, 0, sizeof(struct stat));
 
   /* 1. Parameter: file descriptor: */
   if (remote_fileio_extract_int(&buf, &target_fd))

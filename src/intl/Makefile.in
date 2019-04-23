@@ -468,7 +468,7 @@ am__v_v_0 =
 am__v_v_1 = -v
 LIBCFLAGS = $(CFLAGS) $(C_ARCHFLAGS)
 XCFLAGS = -DXCOMPILING @MAINT@ $(CFLAGS) # $(XC_ARCHFLAGS)
-AM_CPPFLAGS = -I. -I$(srcdir)
+AM_CPPFLAGS = -Wp,-I. -Wp,-I$(srcdir)
 AM_ANSIFICATION_FLAGS = -Wstrict-prototypes -Wmissing-prototypes -Wconversion -Wold-style-definition -Wshadow -Wundef -Wextra -Wno-unused @MAINT@ -ansi -pedantic @EXTRA_ANSIFICATION_FLAGS@
 AM_COMPILE_DEBUGFLAGS = -ggdb @MAINT@ -save-temps -fverbose-asm
 AM_WARNFLAGS = -Wall @MAINT@ $(AM_ANSIFICATION_FLAGS)
@@ -509,7 +509,7 @@ xopen-msg.sed $(HEADERS) $(SOURCES)
 DISTFILES.normal = VERSION
 DISTFILES.gettext = libintl.glibc intlh.inst.in
 SUFFIXES = .c .y .o .lo
-AM_INCLUDES = -I. -I$(srcdir)
+AM_INCLUDES = -Wp,-I. -Wp,-I$(srcdir)
 
 # GNU gettext needs not contain the file `VERSION' but contains some
 # other files which should not be distributed in other packages.

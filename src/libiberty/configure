@@ -21867,7 +21867,7 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
-rm -f core core.* *.core
+rm -rf core core.* *.core
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_strncmp_works" >&5
 $as_echo "$ac_cv_func_strncmp_works" >&6; }
@@ -21932,7 +21932,7 @@ if test "x${want_mmalloc}" = "xtrue"; then
 
 $as_echo "#define USE_MMALLOC 1" >>confdefs.h
 
-   MMALLOC_CFLAGS="-I${srcdir}/../mmalloc"
+   MMALLOC_CFLAGS="-Wp,-I${srcdir}/../mmalloc"
    MMALLOC='../mmalloc/libmmalloc.a'
    MMALLOC_OK=''
 else

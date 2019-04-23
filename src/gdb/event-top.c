@@ -723,7 +723,7 @@ command_line_handler(char *rl)
     }
   if ((((rl != NULL) ? strlen(rl) : 0) + 1 + (p - linebuffer)) > linelength)
     {
-      linelength = (strlen(rl) + 1UL + (p - linebuffer));
+      linelength = (((rl != NULL) ? strlen(rl) : 0UL) + 1UL + (p - linebuffer));
       nline = (char *)xrealloc(linebuffer, linelength);
       p += (nline - linebuffer);
       linebuffer = nline;
@@ -1069,7 +1069,7 @@ handle_sigquit (int sig)
 #endif /* SIGQUIT */
 
 /* Called by the event loop in response to a SIGQUIT. */
-static void
+/*@unused@*/ static void
 async_do_nothing(gdb_client_data arg ATTRIBUTE_UNUSED)
 {
   return; /* Empty function body. */

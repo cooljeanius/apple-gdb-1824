@@ -4,7 +4,7 @@ MMALLOC =
 MMALLOC_CFLAGS = -DNO_MMALLOC
 
 MH_CFLAGS = -DUSE_PTHREADS # -D_POSIX_SOURCE -traditional-cpp
-MH_CFLAGS += -I$(srcdir)/../gdb-next/display-support
+MH_CFLAGS += ${acl_cv_wp}-I$(srcdir)/../gdb-next/display-support
 TERMCAP = -ltermcap
 
 SER_HARDWIRE = ser-unix.o ser-tcp.o 

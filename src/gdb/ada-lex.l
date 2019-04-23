@@ -45,6 +45,10 @@ POSEXP  (e"+"?{NUM10})
 
 /* `comment in old quoting style to fix syntax highlighting' // */
 
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif /* HAVE_STRINGS_H */
+
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
 #  pragma GCC diagnostic push

@@ -987,7 +987,7 @@ local-clean:
 
 local-distclean:
 	-rm -f Makefile Makefile*orig
-	-rm -f config.status config.cache
+	-rm -f config.status config.cache ./*/config.cache
 	-rm -f mh-frag mt-frag
 	-rm -f multilib.out multilib.tmp maybedep.tmp serdep.tmp
 	-if [ "$(TARGET_SUBDIR)" != "." ]; then \
