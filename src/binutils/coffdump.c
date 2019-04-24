@@ -467,6 +467,7 @@ dump_coff_section(struct coff_section *ptr)
   int i;
 
   tab(1);
+  /* FIXME: need an equivalent of BFD_VMA_FMT for bfd_size_type */
 #if defined(__BFD_H_SEEN__) && defined(__STDC_VERSION__) && !defined(__STRICT_ANSI__)
   printf("section %s %d %d address %x size %llx number %d nrelocs %d",
          ptr->name, ptr->code, ptr->data, ptr->address, ptr->size,

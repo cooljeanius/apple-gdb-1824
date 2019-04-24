@@ -664,6 +664,7 @@ LTLIBICONV
 LIBICONV
 INTL_MACOSX_LIBS
 LIBM
+LD_ARCHFLAGS
 DEMANGLER_NAME
 EXEEXT_FOR_BUILD
 CC_FOR_BUILD
@@ -17373,7 +17374,8 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
 -Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough \
 -Walloca-larger-than=4032 -Wvla-larger-than=4032 -Wformat-overflow=2 \
--Wformat-truncation=2 -Wstringop-overflow=2 -Qunused-arguments"
+-Wformat-truncation=2 -Wstringop-overflow=2 -Wno-cast-function-type \
+-Qunused-arguments"
 # (4032 is MAX_ALLOCA_SIZE in "libiberty.h")
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
@@ -17456,11 +17458,11 @@ if test "x${acl_cv_wl}" = "x"; then
 fi
 
 if test "x${acl_cv_wa}" = "x"; then
-  test -z "${acl_cv_wa}" && export acl_cv_wl='-Wa,'
+  test -z "${acl_cv_wa}" && export acl_cv_wa='-Wa,'
 fi
 
 if test "x${acl_cv_wp}" = "x"; then
-  test -z "${acl_cv_wp}" && export acl_cv_wl='-Wp,'
+  test -z "${acl_cv_wp}" && export acl_cv_wp='-Wp,'
 fi
 
 if test "x${acl_cv_wa}" != "x"; then
@@ -20925,6 +20927,48 @@ case "${host}" in
 esac
 
 # Checks for libraries.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for linker flag to verify linked libraries have the correct architecture" >&5
+$as_echo_n "checking for linker flag to verify linked libraries have the correct architecture... " >&6; }
+# this is also done in warning.m4, but make sure it is done up here first:
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LD_ARCHFLAGS}" >&5
+$as_echo "${LD_ARCHFLAGS}" >&6; }
+  if test "x${ERROR_ON_WARNING}" = "xyes"; then
+    if test "x${WARN_LDFLAGS}" != "x"; then
+      test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_ARCHFLAGS}"
+    else
+      test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_ARCHFLAGS}"
+    fi
+  fi
+    ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: none" >&5
+$as_echo "none" >&6; }
+fi
 LIBM=
 case $host in
 *-*-beos* | *-*-cegcc* | *-*-cygwin* | *-*-haiku* | *-*-pw32* | *-*-darwin*)
@@ -21268,6 +21312,9 @@ _ACEOF
 
 else
 
+  # check arch when "main()" is the only function for which we check:
+  PRE_INTL_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lintl" >&5
 $as_echo_n "checking for main in -lintl... " >&6; }
 if ${ac_cv_lib_intl_main+:} false; then :
@@ -21306,6 +21353,8 @@ _ACEOF
   LIBS="-lintl $LIBS"
 
 fi
+  # reset:
+  LDFLAGS="${PRE_INTL_LDFLAGS}"
 
 fi
 
@@ -22476,6 +22525,9 @@ _ACEOF
 
 else
 
+      # check arch when "main()" is the only function for which we check:
+      PRE_ICONV_LDFLAGS="${LDFLAGS}"
+      LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -liconv" >&5
 $as_echo_n "checking for main in -liconv... " >&6; }
 if ${ac_cv_lib_iconv_main+:} false; then :
@@ -22514,6 +22566,8 @@ _ACEOF
   LIBS="-liconv $LIBS"
 
 fi
+      # reset:
+      LDFLAGS="${PRE_ICONV_LDFLAGS}"
 
 fi
 
@@ -22564,6 +22618,9 @@ _ACEOF
 
 fi
 
+# check arch when "main()" is the only function for which we check:
+ARCHLESS_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 # FIXME: Replace `main' with a function in `-lcc_dynamic':
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lcc_dynamic" >&5
 $as_echo_n "checking for main in -lcc_dynamic... " >&6; }
@@ -22684,8 +22741,64 @@ _ACEOF
 
 fi
 
-# FIXME: Replace `main' with a function in `-lhistory':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lhistory" >&5
+  ## reset these:
+LDFLAGS="${ARCHLESS_LDFLAGS}"
+if test -d ../readline -a -e ../readline/Makefile; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L. -L../readline"
+  else
+    export LDFLAGS="${LDFLAGS} -L../readline"
+  fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for add_history in -lhistory" >&5
+$as_echo_n "checking for add_history in -lhistory... " >&6; }
+if ${ac_cv_lib_history_add_history+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lhistory  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char add_history ();
+int
+main ()
+{
+return add_history ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_history_add_history=yes
+else
+  ac_cv_lib_history_add_history=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_history_add_history" >&5
+$as_echo "$ac_cv_lib_history_add_history" >&6; }
+if test "x$ac_cv_lib_history_add_history" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBHISTORY 1
+_ACEOF
+
+  LIBS="-lhistory $LIBS"
+
+else
+
+  # check arch when "main()" is the only function for which we check:
+  PRE_HISTORY_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lhistory" >&5
 $as_echo_n "checking for main in -lhistory... " >&6; }
 if ${ac_cv_lib_history_main+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -22723,7 +22836,10 @@ _ACEOF
   LIBS="-lhistory $LIBS"
 
 fi
+  # reset:
+  LDFLAGS="${PRE_HISTORY_LDFLAGS}"
 
+fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for rl_initialize in -lreadline" >&5
 $as_echo_n "checking for rl_initialize in -lreadline... " >&6; }
 if ${ac_cv_lib_readline_rl_initialize+:} false; then :
@@ -22814,6 +22930,9 @@ _ACEOF
 
 else
 
+  # check arch when "main()" is the only function for which we check:
+  PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -liberty" >&5
 $as_echo_n "checking for main in -liberty... " >&6; }
 if ${ac_cv_lib_iberty_main+:} false; then :
@@ -22852,6 +22971,8 @@ _ACEOF
   LIBS="-liberty $LIBS"
 
 fi
+  # reset:
+  LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gl_dummy_symbol in -lgnu" >&5
@@ -22899,6 +23020,9 @@ _ACEOF
 
 else
 
+  # check arch when "main()" is the only function for which we check:
+  PRE_GNULIB_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgnu" >&5
 $as_echo_n "checking for main in -lgnu... " >&6; }
 if ${ac_cv_lib_gnu_main+:} false; then :
@@ -22937,6 +23061,8 @@ _ACEOF
   LIBS="-lgnu $LIBS"
 
 fi
+  # reset:
+  LDFLAGS="${PRE_GNULIB_LDFLAGS}"
 
 fi
 
@@ -26870,8 +26996,12 @@ $as_echo_n "checking if there is a zlib sister directory in our source tree... "
         test -z "${zlibdir}" && zlibdir=-L${srcdir}/../zlib
       fi
     fi
+    if test "x${acl_cv_wp}" = "x"; then
+      test -z "${acl_cv_wp}" && export acl_cv_wp='-Wp,'
+    fi
+
     if test "x${zlibinc}" = "x"; then
-      test -z "${zlibinc}" && zlibinc="-I\$(srcdir)/../zlib"
+      test -z "${zlibinc}" && zlibinc="${acl_cv_wp}-I\$(srcdir)/../zlib"
     fi
     export HAVE_ZLIB_SOURCE=1
         ## print:

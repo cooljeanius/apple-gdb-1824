@@ -2405,14 +2405,14 @@ dump_reloc_set (bfd *abfd, asection *sec, arelent **relpp, long relcount)
 
   /* Get column headers lined up reasonably.  */
   {
-    static int width;
+    static short width;
 
     if (width == 0)
       {
 	char buf[30];
 
 	bfd_sprintf_vma(abfd, buf, (bfd_vma)-1);
-	width = (strlen(buf) - 7UL);
+	width = (short)(strlen(buf) - 7UL);
       }
     printf("OFFSET %*s TYPE %*s VALUE \n", width, "", 12, "");
   }

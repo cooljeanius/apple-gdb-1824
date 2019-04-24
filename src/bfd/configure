@@ -19011,7 +19011,8 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
 -Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough \
 -Walloca-larger-than=4032 -Wvla-larger-than=4032 -Wformat-overflow=2 \
--Wformat-truncation=2 -Wstringop-overflow=2 -Qunused-arguments"
+-Wformat-truncation=2 -Wstringop-overflow=2 -Wno-cast-function-type \
+-Qunused-arguments"
 # (4032 is MAX_ALLOCA_SIZE in "libiberty.h")
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
@@ -25498,8 +25499,12 @@ $as_echo_n "checking if there is a zlib sister directory in our source tree... "
         test -z "${zlibdir}" && zlibdir=-L${srcdir}/../zlib
       fi
     fi
+    if test "x${acl_cv_wp}" = "x"; then
+      test -z "${acl_cv_wp}" && export acl_cv_wp='-Wp,'
+    fi
+
     if test "x${zlibinc}" = "x"; then
-      test -z "${zlibinc}" && zlibinc="-I\$(srcdir)/../zlib"
+      test -z "${zlibinc}" && zlibinc="${acl_cv_wp}-I\$(srcdir)/../zlib"
     fi
     export HAVE_ZLIB_SOURCE=1
         ## print:

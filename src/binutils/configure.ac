@@ -297,13 +297,44 @@ esac
 AC_SUBST([DEMANGLER_NAME])dnl
 
 # Checks for libraries.
+AC_MSG_CHECKING([for linker flag to verify linked libraries have the correct architecture])
+# this is also done in warning.m4, but make sure it is done up here first:
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+               [LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"],[])
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([${LD_ARCHFLAGS}])
+  if test "x${ERROR_ON_WARNING}" = "xyes"; then
+    if test "x${WARN_LDFLAGS}" != "x"; then
+      test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_ARCHFLAGS}"
+    else
+      test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_ARCHFLAGS}"
+    fi
+  fi
+  AC_SUBST([LD_ARCHFLAGS])dnl
+  ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([none])
+fi
 LT_LIB_M
 # ('../intl' is added to LDFLAGS above)
 AC_SEARCH_LIBS([dcgettext],[intl])dnl
 AC_SEARCH_LIBS([bindtextdomain],[intl])dnl
 AC_SEARCH_LIBS([textdomain],[intl])dnl
 AC_CHECK_LIB([intl],[gettext],[],[
+  # check arch when "main()" is the only function for which we check:
+  PRE_INTL_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   AC_CHECK_LIB([intl],[main],[],[])dnl
+  # reset:
+  LDFLAGS="${PRE_INTL_LDFLAGS}"
 ])dnl
 AC_DEFUN([AC_GETTEXT_SUBCHECKS],[
   AC_REQUIRE([gt_INTL_MACOSX])dnl
@@ -322,7 +353,12 @@ AC_DEFUN([AC_GETTEXT_SUBCHECKS],[
   ])dnl
   AC_CHECK_LIB([iconv],[iconv],[],[
     AC_CHECK_LIB([iconv],[libiconv],[],[
+      # check arch when "main()" is the only function for which we check:
+      PRE_ICONV_LDFLAGS="${LDFLAGS}"
+      LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
       AC_CHECK_LIB([iconv],[main],[],[])dnl
+      # reset:
+      LDFLAGS="${PRE_ICONV_LDFLAGS}"
     ])dnl
   ])dnl
 ])dnl
@@ -330,20 +366,48 @@ AC_GETTEXT_SUBCHECKS
 dnl# I forget, why am I not just using AM\_GNU\_GETTEXT?
 dnl# Anyways... continuing with library checks:
 AC_CHECK_LIB([c],[printf])
+# check arch when "main()" is the only function for which we check:
+ARCHLESS_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 # FIXME: Replace `main' with a function in `-lcc_dynamic':
 AC_CHECK_LIB([cc_dynamic],[main])
 # FIXME: Replace `main' with a function in `-lgcc':
 AC_CHECK_LIB([gcc],[main])
 # FIXME: Replace `main' with a function in `-lcurses':
 AC_CHECK_LIB([curses],[main])
-# FIXME: Replace `main' with a function in `-lhistory':
-AC_CHECK_LIB([history],[main])
+  ## reset these:
+LDFLAGS="${ARCHLESS_LDFLAGS}"
+if test -d ../readline -a -e ../readline/Makefile; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L. -L../readline"
+  else
+    export LDFLAGS="${LDFLAGS} -L../readline"
+  fi
+fi
+AC_CHECK_LIB([history],[add_history],[],[
+  # check arch when "main()" is the only function for which we check:
+  PRE_HISTORY_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+  AC_CHECK_LIB([history],[main])dnl
+  # reset:
+  LDFLAGS="${PRE_HISTORY_LDFLAGS}"
+])dnl
 AC_CHECK_LIB([readline],[rl_initialize])
 AC_CHECK_LIB([iberty],[xmalloc],[],[
+  # check arch when "main()" is the only function for which we check:
+  PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   AC_CHECK_LIB([iberty],[main])dnl
+  # reset:
+  LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
 ])dnl
 AC_CHECK_LIB([gnu],[gl_dummy_symbol],[],[
+  # check arch when "main()" is the only function for which we check:
+  PRE_GNULIB_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   AC_CHECK_LIB([gnu],[main],[],[])dnl
+  # reset:
+  LDFLAGS="${PRE_GNULIB_LDFLAGS}"
 ])dnl
 
 # Checks for header files.

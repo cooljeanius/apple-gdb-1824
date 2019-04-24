@@ -864,9 +864,9 @@ concat_filename(struct line_info_table *table, unsigned int file)
 
   filename = table->files[file - 1].name;
 
-  if (! IS_ABSOLUTE_PATH (filename))
+  if (!IS_ABSOLUTE_PATH(filename) && (table != NULL))
     {
-      char *dirname = (table->files[file - 1].dir
+      char *dirname = (((table->dirs != NULL) && table->files[file - 1].dir)
 		       ? table->dirs[table->files[file - 1].dir - 1]
 		       : table->comp_dir);
 
@@ -1859,6 +1859,8 @@ parse_comp_unit(bfd *abfd, struct dwarf2_debug *stash, bfd_vma unit_length,
   bfd_size_type amt;
   bfd_vma low_pc = 0UL;
   bfd_vma high_pc = 0UL;
+
+  memset(&attr, 0, sizeof(struct attribute));
 
   version = read_2_bytes(abfd, info_ptr);
   info_ptr += 2;

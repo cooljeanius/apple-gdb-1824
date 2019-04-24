@@ -1030,7 +1030,7 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 	{
 	  arelent **pr;
 
-	  for (pr = reloc_vector; *pr != NULL; pr++)
+	  for (pr = reloc_vector; (pr != NULL) && (*pr != NULL); pr++)
 	    {
 	      arelent *r;
 	      unsigned long val;

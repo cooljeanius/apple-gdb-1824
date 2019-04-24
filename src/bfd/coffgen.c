@@ -1016,7 +1016,7 @@ coff_write_alien_symbol(bfd *abfd, asymbol *symbol, bfd_vma *written,
       native->u.syment.n_value = 0;
       native->u.syment.n_flags = 0;
     }
-    
+
 
   native->u.syment.n_type = 0;
   if ((symbol != NULL) && (symbol->flags & BSF_LOCAL))
@@ -1593,12 +1593,11 @@ coff_get_normalized_symtab(bfd *abfd)
        raw_src < raw_end;
        raw_src += symesz, internal_ptr++)
     {
-
       unsigned int i;
-      bfd_coff_swap_sym_in (abfd, (void *) raw_src,
-			    (void *) & internal_ptr->u.syment);
+      bfd_coff_swap_sym_in(abfd, (void *)raw_src,
+			   (void *)&internal_ptr->u.syment);
       symbol_ptr = internal_ptr;
-
+      BFD_ASSERT(symbol_ptr != NULL);
       for (i = 0;
 	   i < symbol_ptr->u.syment.n_numaux;
 	   i++)

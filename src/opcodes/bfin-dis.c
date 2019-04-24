@@ -126,8 +126,15 @@ static struct
 static char comment = 0;
 static char parallel = 0;
 
+#if defined(__GNUC__)
+# ifdef sprintf
+#  undef sprintf
+# endif /* sprintf */
+# pragma GCC poison sprintf
+#endif /* __GNUC__ */
+
 static char *
-fmtconst (const_forms_t cf, TIword x, bfd_vma pc, disassemble_info * outf)
+fmtconst(const_forms_t cf, TIword x, bfd_vma pc, disassemble_info * outf)
 {
   static char buf[60];
 
@@ -145,7 +152,7 @@ fmtconst (const_forms_t cf, TIword x, bfd_vma pc, disassemble_info * outf)
        }
      else
        {
-	  sprintf (buf, "%lx", (unsigned long) x);
+	  snprintf(buf, sizeof(buf), "%lx", (unsigned long)x);
 	  return buf;
        }
     }
@@ -172,18 +179,18 @@ fmtconst (const_forms_t cf, TIword x, bfd_vma pc, disassemble_info * outf)
       if (constant_formats[cf].leading)
 	{
 	  char ps[10];
-	  sprintf (ps, "%%%ii", constant_formats[cf].leading);
-	  sprintf (buf, ps, x);
+	  snprintf(ps, sizeof(ps), "%%%ii", constant_formats[cf].leading);
+	  snprintf(buf, sizeof(buf), ps, x);
 	}
       else
-	sprintf (buf, "%li", x);
+	snprintf(buf, sizeof(buf), "%li", x);
     }
   else
     {
-      if (constant_formats[cf].issigned && x < 0)
-	sprintf (buf, "-0x%x", abs (x));
+      if (constant_formats[cf].issigned && (x < 0))
+	snprintf(buf, sizeof(buf), "-0x%lx", labs(x));
       else
-	sprintf (buf, "0x%lx", (unsigned long) x);
+	snprintf(buf, sizeof(buf), "0x%lx", (unsigned long)x);
     }
 
   return buf;

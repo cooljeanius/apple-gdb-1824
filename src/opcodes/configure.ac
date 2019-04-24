@@ -394,7 +394,7 @@ AC_FUNC_MALLOC
 AC_FUNC_MEMCMP
 AC_FUNC_REALLOC
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([chdir err memmove memset regcomp strdup strerror \
+AC_CHECK_FUNCS([abs chdir err labs memmove memset regcomp strdup strerror \
                 strncasecmp strstr strtol strtoul strtoull])dnl
 
 # Checks for declarations.
@@ -698,7 +698,7 @@ if test "x${cgen_maint}" = "xyes" && test "x${using_cgen}" = "xno"; then
 else
   dnl# FIXME: come up with some sort of scheme to use a smaller set of
   dnl# warnings that will be silent about anything cgen-erated...
-  test -d ../cgen
+  test -d ../cgen && echo "cgen sister dir present; mess with it if necessary"
   m4_ifdef([gl_WARN_ADD],[
     m4_ifdef([gl_UNKNOWN_WARNINGS_ARE_ERRORS],[
       gl_UNKNOWN_WARNINGS_ARE_ERRORS

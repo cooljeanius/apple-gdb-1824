@@ -787,8 +787,8 @@ srec_read_section(bfd *abfd, asection *section, bfd_byte *contents)
 }
 
 /* Get the contents of a section in an S-record file: */
-static bfd_boolean
-srec_get_section_contents(bfd *abfd, asection *section, void * location,
+static bfd_boolean ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+srec_get_section_contents(bfd *abfd, asection *section, void *location,
                           file_ptr offset, bfd_size_type count)
 {
   if (section->used_by_bfd == NULL)
@@ -802,6 +802,8 @@ srec_get_section_contents(bfd *abfd, asection *section, void * location,
 	return FALSE;
     }
 
+  if ((bfd_byte *)section->used_by_bfd == NULL)
+    BFD_ASSERT(offset > 0L);
   memcpy(location, ((bfd_byte *)section->used_by_bfd + offset),
          (size_t)count);
 

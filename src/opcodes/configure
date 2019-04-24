@@ -21639,7 +21639,7 @@ fi
 done
 
 
-for ac_func in chdir err memmove memset regcomp strdup strerror \
+for ac_func in abs chdir err labs memmove memset regcomp strdup strerror \
                 strncasecmp strstr strtol strtoul strtoull
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -22303,7 +22303,8 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
 -Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough \
 -Walloca-larger-than=4032 -Wvla-larger-than=4032 -Wformat-overflow=2 \
--Wformat-truncation=2 -Wstringop-overflow=2 -Qunused-arguments"
+-Wformat-truncation=2 -Wstringop-overflow=2 -Wno-cast-function-type \
+-Qunused-arguments"
 # (4032 is MAX_ALLOCA_SIZE in "libiberty.h")
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
@@ -22386,11 +22387,11 @@ if test "x${acl_cv_wl}" = "x"; then
 fi
 
 if test "x${acl_cv_wa}" = "x"; then
-  test -z "${acl_cv_wa}" && export acl_cv_wl='-Wa,'
+  test -z "${acl_cv_wa}" && export acl_cv_wa='-Wa,'
 fi
 
 if test "x${acl_cv_wp}" = "x"; then
-  test -z "${acl_cv_wp}" && export acl_cv_wl='-Wp,'
+  test -z "${acl_cv_wp}" && export acl_cv_wp='-Wp,'
 fi
 
 if test "x${acl_cv_wa}" != "x"; then
@@ -22616,7 +22617,7 @@ fi
 
 
 else
-      test -d ../cgen
+      test -d ../cgen && echo "cgen sister dir present; mess with it if necessary"
 
 
       { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Werror -Wunknown-warning-option" >&5

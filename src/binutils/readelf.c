@@ -5807,7 +5807,7 @@ process_dynamic_section (FILE *file)
 	  dtype = get_dynamic_type(entry->d_tag);
 	  printf(" (%s)%*s", dtype,
 		 ((is_32bit_elf ? 27 : 19)
-		  - (int)strlen(dtype)),
+		  - (short)strlen(dtype)),
 		 " ");
 	}
 
@@ -6557,8 +6557,7 @@ process_version_sections (FILE *file)
 
 				  name = strtab + ivna.vna_name;
 				  nn += printf("(%s%-*s", name,
-                                               12 - (int)strlen(name),
-                                               ")");
+					       (12 - (short)strlen(name)), ")");
 				  check_def = 0;
 				  break;
 				}
@@ -6606,15 +6605,13 @@ process_version_sections (FILE *file)
 			      ivda.vda_name = BYTE_GET(evda.vda_name);
 
 			      name = (strtab + ivda.vda_name);
-			      nn += printf("(%s%-*s",
-                                           name,
-                                           12 - (int)strlen(name),
-                                           ")");
+			      nn += printf("(%s%-*s", name,
+					   (12 - (short)strlen(name)), ")");
 			    }
 			}
 
 		      if (nn < 18)
-			printf("%*c", 18 - nn, ' ');
+			printf("%*c", (18 - (short)nn), ' ');
 		    }
 
 		putchar('\n');

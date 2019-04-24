@@ -1184,7 +1184,6 @@
 		2609D06F0E82C408008125DE /* stabs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stabs.c; sourceTree = "<group>"; };
 		2609D0710E82C408008125DE /* strings.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strings.c; sourceTree = "<group>"; };
 		2609D0720E82C408008125DE /* sysdump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sysdump.c; sourceTree = "<group>"; };
-		2609D0880E82C408008125DE /* readelf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = readelf.h; sourceTree = "<group>"; };
 		2609D0920E82C408008125DE /* testprog.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = testprog.c; sourceTree = "<group>"; };
 		2609D0CB0E82C408008125DE /* unwind-ia64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "unwind-ia64.c"; sourceTree = "<group>"; };
 		2609D0CC0E82C408008125DE /* unwind-ia64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "unwind-ia64.h"; sourceTree = "<group>"; };
@@ -6861,7 +6860,6 @@
 		2609D0770E82C408008125DE /* binutils-all */ = {
 			isa = PBXGroup;
 			children = (
-				2609D0880E82C408008125DE /* readelf.h */,
 				2609D0920E82C408008125DE /* testprog.c */,
 			);
 			path = "binutils-all";

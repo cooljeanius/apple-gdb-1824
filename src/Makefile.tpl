@@ -985,6 +985,8 @@ install-html: do-install-html
 local-clean:
 	-rm -f *.a TEMP errs core *.o *~ \#* TAGS *.E *.log
 
+distclean-local: local-distclean
+.PHONY: distclean-local
 local-distclean:
 	-rm -f Makefile Makefile*orig
 	-rm -f config.status config.cache ./*/config.cache
@@ -1005,11 +1007,13 @@ local-distclean:
 	-find . -name config.cache -exec rm -f {} \; \; 2>/dev/null
 	-rm -rf autom4te.cache || rmdir autom4te.cache
 	-rm -f .DS_Store
-	-for dir in @notsupp@; do \
+	-for dir in @build_configdirs@ @configdirs@ @target_configdirs@ @notsupp@; do \
 	  if test -d $${dir} && test -e $${dir}/Makefile; then \
 	    cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) distclean; \
-	  else \
-	    echo "Skipping making $${dir} be distclean"; \
+	  elif test ! -d $${dir}; then \
+	    echo "Skipping making nonexistent $${dir} be distclean"; \
+	  elif test ! -e $${dir}/Makefile; then \
+	    echo "Skipping making $${dir} be distclean (missing Makefile)"; \
 	  fi; \
 	done
 

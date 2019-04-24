@@ -26,6 +26,9 @@
 /* define to Guile version expression */
 #undef GUILE_VERSION
 
+/* Define to 1 if you have the `abs' function. */
+#undef HAVE_ABS
+
 /* Define to 1 if you have `alloca', as a function or macro. */
 #undef HAVE_ALLOCA
 
@@ -97,6 +100,9 @@
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `labs' function. */
+#undef HAVE_LABS
 
 /* Define if your <locale.h> file defines LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES

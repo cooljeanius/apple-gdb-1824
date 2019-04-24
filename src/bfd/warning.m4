@@ -33,7 +33,8 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
 -Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough \
 -Walloca-larger-than=4032 -Wvla-larger-than=4032 -Wformat-overflow=2 \
--Wformat-truncation=2 -Wstringop-overflow=2 -Qunused-arguments"
+-Wformat-truncation=2 -Wstringop-overflow=2 -Wno-cast-function-type \
+-Qunused-arguments"
 # (4032 is MAX_ALLOCA_SIZE in "libiberty.h")
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"

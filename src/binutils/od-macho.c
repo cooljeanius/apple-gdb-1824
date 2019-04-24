@@ -41,7 +41,7 @@
 #    define BFD_MACH_O_MH_KEXT_BUNDLE 0x0b
 #   else
 #    if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(_MACH_O_LOADER_H)
-#     warning "You hurt yourself confusion!"
+#     warning "You hurt yourself in confusion!"
 #    endif /* __GNUC__ && !__STRICT_ANSI__ && _MACH_O_LOADER_H */
 #   endif /* !_ENUM_BFD_MACH_O_FILETYPE_DEFINED */
 #  endif /* 0 */
