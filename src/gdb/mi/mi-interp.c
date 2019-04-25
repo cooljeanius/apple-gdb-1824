@@ -627,7 +627,7 @@ mi_command_loop(int mi_version)
 }
 
 /* "USED" means "not UNUSED", at least in terms of silencing warnings: */
-static char * ATTRIBUTE_USED
+/*@unused@*/ static char * ATTRIBUTE_USED
 mi_input(char *buf)
 {
   return gdb_readline(NULL);

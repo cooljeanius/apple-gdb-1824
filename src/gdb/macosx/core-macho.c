@@ -531,6 +531,11 @@ struct core_cached_registers_raw
       gdb_arm_thread_vfpv1_state_t *arm_vfpv1_regs;
       gdb_arm_thread_vfpv3_state_t *arm_vfpv3_regs;
 };
+#elif defined(S_SPLINT_S)
+struct core_cached_registers_raw
+{
+  void *generic_regs;
+};
 #else
 # error "unsupported target architecture"
 #endif /* TARGET_foo */
@@ -592,6 +597,10 @@ core_fetch_cached_thread_registers(void)
   }
   if (cached_regs_raw->arm_vfpv3_regs) {
     arm_macosx_fetch_vfpv3_regs_raw(cached_regs_raw->arm_vfpv3_regs);
+  }
+#elif defined(S_SPLINT_S)
+  if (cached_regs_raw->generic_regs) {
+    (void)cached_regs_raw;
   }
 #else
 # error "unsupported target architecture"
@@ -766,6 +775,8 @@ core_cache_section_registers(asection *sec, int flavour,
     default:
       break;
     }
+#elif defined(S_SPLINT_S)
+  (void)flavour;
 #else
 # error "unsupported target architecture"
 #endif /* TARGET_foo */
@@ -897,6 +908,10 @@ delete_core_thread_state_cache(struct thread_info *thrd_info)
       if (cached_regs_raw->arm_vfpv3_regs) {
 	xfree(cached_regs_raw->arm_vfpv3_regs);
       }
+#elif defined(S_SPLINT_S)
+      if (cached_regs_raw->generic_regs) {
+	xfree(cached_regs_raw->generic_regs);
+      }
 #else
 # error "unsupported target architecture"
 #endif /* TARGET_foo */
@@ -971,6 +986,15 @@ core_fetch_registers(int regno)
 							   flavour_str);
 #elif defined(TARGET_ARM)
 		  flavour = bfd_mach_o_flavour_from_string(BFD_MACH_O_CPU_TYPE_ARM,
+							   flavour_str);
+#elif defined(TARGET_POWERPC64)
+		  flavour = bfd_mach_o_flavour_from_string(BFD_MACH_O_CPU_TYPE_POWERPC_64,
+							   flavour_str);
+#elif defined(TARGET_X86_64)
+		  flavour = bfd_mach_o_flavour_from_string(BFD_MACH_O_CPU_TYPE_X86_64,
+							   flavour_str);
+#elif defined(S_SPLINT_S)
+		  flavour = bfd_mach_o_flavour_from_string(BFD_MACH_O_CPU_TYPE_VAX,
 							   flavour_str);
 #else
 # error "unsupported target architecture"
@@ -1075,6 +1099,10 @@ core_store_registers(int regno)
   }
   if (cached_regs_raw->arm_vfpv3_regs) {
     arm_macosx_store_vfpv3_regs_raw(cached_regs_raw->arm_vfpv3_regs);
+  }
+#elif defined(S_SPLINT_S)
+  if (cached_regs_raw->generic_regs) {
+    (void)cached_regs_raw;
   }
 #else
 # error "unsupported target architecture"

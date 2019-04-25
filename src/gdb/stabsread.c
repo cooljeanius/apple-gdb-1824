@@ -700,7 +700,9 @@ process_symbol_types_only(const char *string, const char *prefix,
       if (p == NULL) {
 	/* FIXME: but if p is NULL... is something backwards here? */
 	STABS_CONTINUE(&p, objfile);
-	p = strchr(p, ':');
+	if (p != NULL) {
+	  p = strchr(p, ':');
+	}
       }
     }
 
@@ -803,7 +805,9 @@ define_symbol(CORE_ADDR valu, const char *string, const char *prefix,
       if (p == NULL) {
 	/* FIXME: but if p is NULL... is something backwards here? */
 	STABS_CONTINUE(&p, objfile);
-	p = strchr(p, ':');
+	if (p != NULL) {
+	  p = strchr(p, ':');
+	}
       }
       /* APPLE LOCAL end huh? */
     }

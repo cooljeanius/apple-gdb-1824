@@ -662,6 +662,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			isa = PBXProject;
 			buildConfigurationList = A50F55481808CA12008BA312 /* Build configuration list for PBXProject "Tcl" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				English,

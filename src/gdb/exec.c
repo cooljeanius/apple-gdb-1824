@@ -52,6 +52,10 @@
 
 #include "xcoffsolib.h"
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
 /* APPLE LOCAL begin dyld */
 #ifdef MACOSX_DYLD
 # include "macosx-nat-dyld.h"
@@ -772,33 +776,30 @@ print_section_info (struct target_ops *t, bfd *abfd)
   do_cleanups (info_cleanup); /* "sections" & "section-info" */
 }
 
+/* */
 static void
-exec_files_info (struct target_ops *t)
+exec_files_info(struct target_ops *t)
 {
-  print_section_info (t, exec_bfd);
+  print_section_info(t, exec_bfd);
 
   if (vmap)
     {
       struct vmap *vp;
 
-      printf_unfiltered (_("\tMapping info for file `%s'.\n"), vmap->name);
-      printf_unfiltered ("\t  %*s   %*s   %*s   %*s %8.8s %s\n",
-			 strlen_paddr (), "tstart",
-			 strlen_paddr (), "tend",
-			 strlen_paddr (), "dstart",
-			 strlen_paddr (), "dend",
-			 "section",
-			 "file(member)");
+      printf_unfiltered(_("\tMapping info for file `%s'.\n"), vmap->name);
+      printf_unfiltered("\t  %*s   %*s   %*s   %*s %8.8s %s\n",
+			(int8_t)strlen_paddr(), "tstart",
+			(int8_t)strlen_paddr(), "tend",
+			(int8_t)strlen_paddr(), "dstart",
+			(int8_t)strlen_paddr(), "dend",
+			"section", "file(member)");
 
       for (vp = vmap; vp; vp = vp->nxt)
-	printf_unfiltered ("\t0x%s 0x%s 0x%s 0x%s %s%s%s%s\n",
-			   paddr (vp->tstart),
-			   paddr (vp->tend),
-			   paddr (vp->dstart),
-			   paddr (vp->dend),
-			   vp->name,
-			   *vp->member ? "(" : "", vp->member,
-			   *vp->member ? ")" : "");
+	printf_unfiltered("\t0x%s 0x%s 0x%s 0x%s %s%s%s%s\n",
+			  paddr(vp->tstart), paddr(vp->tend),
+			  paddr(vp->dstart), paddr(vp->dend),
+			  vp->name, (*vp->member ? "(" : ""), vp->member,
+			  (*vp->member ? ")" : ""));
     }
 }
 

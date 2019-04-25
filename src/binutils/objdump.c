@@ -67,6 +67,10 @@
 
 #include "sysdep.h"
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
 /* Internal headers for the ELF .stab-dump code - sorry.  */
 #define	BYTES_IN_WORD	32
 #include "aout/aout64.h"
@@ -2405,14 +2409,14 @@ dump_reloc_set (bfd *abfd, asection *sec, arelent **relpp, long relcount)
 
   /* Get column headers lined up reasonably.  */
   {
-    static short width;
+    static int8_t width;
 
     if (width == 0)
       {
 	char buf[30];
 
 	bfd_sprintf_vma(abfd, buf, (bfd_vma)-1);
-	width = (short)(strlen(buf) - 7UL);
+	width = (int8_t)(strlen(buf) - 7UL);
       }
     printf("OFFSET %*s TYPE %*s VALUE \n", width, "", 12, "");
   }

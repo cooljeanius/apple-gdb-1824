@@ -2080,7 +2080,7 @@ lint: $(LINTFILES)
 
 SPLINTFLAGS = $(LINTFLAGS) $(AM_V_splint) +posix-lib -weak -unrecogcomments \
   +matchanyintegral -redef -fixedformalarray +ignoresigns -sysunrecog \
-  -type -retvalother -unrecog -stackref \
+  -type -retvalother -unrecog -stackref -initallelements -castfcnptr \
   -Imacosx `echo $(MMALLOC_CFLAGS) | $(SED) "s/-Wp,//g"`
 INCLUDE_CFLAGS_FOR_SPLINT = `echo $(INCLUDE_CFLAGS) | $(SED) "s/-Wp,//g"`
 configured_lint: stamp-splint

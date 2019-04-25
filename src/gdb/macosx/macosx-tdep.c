@@ -86,8 +86,10 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # define MAC_OS_X_VERSION_MIN_REQUIRED 1010
 #endif /* !MAC_OS_X_VERSION_MIN_REQUIRED */
 
-#include <CoreFoundation/CoreFoundation.h>
-#include <CoreFoundation/CFPropertyList.h>
+#ifndef S_SPLINT_S
+# include <CoreFoundation/CoreFoundation.h>
+# include <CoreFoundation/CFPropertyList.h>
+#endif /* !S_SPLINT_S */
 
 #include "readline/tilde.h" /* For tilde_expand */
 #include "arch-utils.h"
@@ -139,7 +141,7 @@ CORE_ADDR kernel_slide = INVALID_ADDRESS;
 static char *find_info_plist_filename_from_bundle_name(const char *bundle,
                                                      const char *bundle_suffix);
 
-#if defined(USE_DEBUG_SYMBOLS_FRAMEWORK) && USE_DEBUG_SYMBOLS_FRAMEWORK
+#if defined(USE_DEBUG_SYMBOLS_FRAMEWORK) && USE_DEBUG_SYMBOLS_FRAMEWORK && !defined(S_SPLINT_S)
 # ifndef EXTERN_C
 #  ifdef __cplusplus
 #   define EXTERN_C extern "C"
@@ -152,9 +154,13 @@ extern CFArrayRef DBGCopyMatchingUUIDsForURL(CFURLRef path,
                                            int /* cpu_subtype_t */ cpuSubtype);
 EXTERN_C CFURLRef DBGCopyDSYMURLForUUID(CFUUIDRef uuid);
 EXTERN_C CFDictionaryRef DBGCopyDSYMPropertyLists(CFURLRef dsym_url);
-#endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
+#endif /* USE_DEBUG_SYMBOLS_FRAMEWORK && !S_SPLINT_S */
 
+#ifndef S_SPLINT_S
 static void get_uuid_t_for_uuidref(CFUUIDRef uuid_in, uuid_t *uuid_out);
+#else
+static void get_uuid_t_for_uuidref(void *uuid_in, uuid_t *uuid_out);
+#endif /* !S_SPLINT_S */
 
 static const char dsym_extension[] = ".dSYM";
 static const char dsym_bundle_subdir[] = "Contents/Resources/DWARF/";

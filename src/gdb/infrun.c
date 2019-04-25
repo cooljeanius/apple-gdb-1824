@@ -49,6 +49,10 @@
 #include "language.h"
 #include "solib.h"
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
 #include "gdb_assert.h"
 #include "mi/mi-common.h"
 /* APPLE LOCAL - subroutine inlining  */
@@ -4121,7 +4125,7 @@ static void
 sig_print_info(enum target_signal oursig)
 {
   const char *name = target_signal_to_name(oursig);
-  int name_padding = (int)(13UL - strlen(name));
+  int8_t name_padding = (int8_t)(13UL - strlen(name));
 
   if (name_padding <= 0)
     name_padding = 0;

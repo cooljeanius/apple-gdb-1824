@@ -126,6 +126,10 @@
 # endif /* HAVE_MATH_H || (STDC_HEADERS && __STDC__) */
 #endif /* !INFINITY */
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
 #if defined(__GNUC__) && (__GNUC__ >= 2)
 /* Define BFD64 here, even if our default architecture is 32 bit ELF
  * as this will allow us to read in and parse 64bit and 32bit ELF files.
@@ -5807,7 +5811,7 @@ process_dynamic_section (FILE *file)
 	  dtype = get_dynamic_type(entry->d_tag);
 	  printf(" (%s)%*s", dtype,
 		 ((is_32bit_elf ? 27 : 19)
-		  - (short)strlen(dtype)),
+		  - (int8_t)strlen(dtype)),
 		 " ");
 	}
 
@@ -6557,7 +6561,8 @@ process_version_sections (FILE *file)
 
 				  name = strtab + ivna.vna_name;
 				  nn += printf("(%s%-*s", name,
-					       (12 - (short)strlen(name)), ")");
+					       (12 - (int8_t)strlen(name)),
+					       ")");
 				  check_def = 0;
 				  break;
 				}
@@ -6606,12 +6611,12 @@ process_version_sections (FILE *file)
 
 			      name = (strtab + ivda.vda_name);
 			      nn += printf("(%s%-*s", name,
-					   (12 - (short)strlen(name)), ")");
+					   (12 - (int8_t)strlen(name)), ")");
 			    }
 			}
 
 		      if (nn < 18)
-			printf("%*c", (18 - (short)nn), ' ');
+			printf("%*c", (18 - (int8_t)nn), ' ');
 		    }
 
 		putchar('\n');

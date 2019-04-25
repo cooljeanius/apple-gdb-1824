@@ -54,6 +54,10 @@ Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 #include "block.h"
 #include "completer.h"
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
 /* Remap normal yacc parser interface names (yyparse, yylex, yyerror, etc),
    as well as gratuitiously global symbol names, so we can have multiple
    yacc generated parsers in gdb.  Note that these are only the variables
@@ -1370,7 +1374,7 @@ push_qualified_expression_name(struct stoken name, int dot_index)
       while ((dot_index < (int)name.length) && (name.ptr[dot_index] != '.'))
 	dot_index++;
     }
-  error(_("unknown type `%.*s'"), (int)name.length, name.ptr);
+  error(_("unknown type `%.*s'"), (int8_t)name.length, name.ptr);
 }
 
 /* Handle Name in an expression (or LHS).

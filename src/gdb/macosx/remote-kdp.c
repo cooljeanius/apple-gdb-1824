@@ -82,8 +82,10 @@
 
 #include "remote-kdp.h"
 
-#include <CoreFoundation/CoreFoundation.h>
-#include <CoreFoundation/CFPropertyList.h>
+#ifndef S_SPLINT_S
+# include <CoreFoundation/CoreFoundation.h>
+# include <CoreFoundation/CFPropertyList.h>
+#endif /* !S_SPLINT_S */
 
 #ifndef CPU_TYPE_I386
 # define CPU_TYPE_I386 (7)
@@ -108,12 +110,9 @@
 
 #define KDP_MAX_BREAKPOINTS 100
 
-/* When major changes are made to the
- * level of KDP support (such as new built-in
- * commands, or new target support, please
- * increment this so that kgmacros can adopt
- * the new support and keep old support for
- * older gdb's
+/* When major changes are made to the level of KDP support (such as new
+ * built-in commands, or new target support), please increment this so that
+ * kgmacros can adopt the new support and keep old support for older gdb's:
  */
 #define GDB_KDP_SUPPORT_LEVEL 1
 
@@ -382,25 +381,23 @@ kdp_hostinfo(void)
 
   c.request->readregs_req.hdr.request = KDP_HOSTINFO;
 
-  kdpret = kdp_transaction (&c, c.request, c.response, "kdp_hostinfo");
+  kdpret = kdp_transaction(&c, c.request, c.response, "kdp_hostinfo");
   if (kdpret != RR_SUCCESS)
     {
       kdpret2 = kdp_disconnect (&c);
       if (kdpret2 != RR_SUCCESS)
         {
-          warning
-            ("unable to disconnect from host after error determining cpu type: %s",
-             kdp_return_string (kdpret2));
+          warning(_("unable to disconnect from host after error determining cpu type: %s"),
+		  kdp_return_string(kdpret2));
         }
       kdpret2 = kdp_destroy (&c);
       if (kdpret2 != RR_SUCCESS)
         {
-          warning
-            ("unable to destroy host connection after error determining cpu type: %s",
-             kdp_return_string (kdpret2));
+          warning(_("unable to destroy host connection after error determining cpu type: %s"),
+		  kdp_return_string(kdpret2));
         }
-      error ("kdp_attach: unable to determine host type: %s",
-             kdp_return_string (kdpret));
+      error(_("kdp_attach: unable to determine host type: %s"),
+	    kdp_return_string(kdpret));
     }
 
   if (c.response->hostinfo_reply.cpu_type == CPU_TYPE_X86_64)
@@ -419,12 +416,11 @@ kdp_hostinfo(void)
 
   if (kdp_host_type == -1)
     {
-      warning
-        ("kdp_attach: unknown host type 0x%lx; trying default (0x%lx)\n",
-         (unsigned long) c.response->hostinfo_reply.cpu_type,
-         (unsigned long) kdp_default_cpu_type);
-	kdp_cpu_type = kdp_default_cpu_type;
-      kdp_host_type = convert_host_type (kdp_default_cpu_type);
+      warning(_("kdp_attach: unknown host type 0x%lx; trying default (0x%lx)\n"),
+	      (unsigned long)c.response->hostinfo_reply.cpu_type,
+	      (unsigned long)kdp_default_cpu_type);
+      kdp_cpu_type = kdp_default_cpu_type;
+      kdp_host_type = convert_host_type(kdp_default_cpu_type);
     }
 
   if (kdp_host_type == -1)
@@ -432,18 +428,16 @@ kdp_hostinfo(void)
       kdpret2 = kdp_disconnect (&c);
       if (kdpret2 != RR_SUCCESS)
         {
-          warning
-            ("unable to disconnect from host after error determining cpu type: %s",
-             kdp_return_string (kdpret2));
+          warning(_("unable to disconnect from host after error determining cpu type: %s"),
+		  kdp_return_string(kdpret2));
         }
       kdpret2 = kdp_destroy (&c);
       if (kdpret2 != RR_SUCCESS)
         {
-          warning
-            ("unable to destroy host connection after error determining cpu type: %s",
-             kdp_return_string (kdpret2));
+          warning(_("unable to destroy host connection after error determining cpu type: %s"),
+		  kdp_return_string(kdpret2));
         }
-      error ("kdp_attach: unknown host type");
+      error("kdp_attach: unknown host type");
     }
 }
 
@@ -470,16 +464,16 @@ kdp_uuid_and_load_addr(void)
       kdpret2 = kdp_disconnect(&c);
       if (kdpret2 != RR_SUCCESS)
         {
-          warning("unable to disconnect from host after requesting kernel version string: %s",
+          warning(_("unable to disconnect from host after requesting kernel version string: %s"),
                   kdp_return_string(kdpret2));
         }
       kdpret2 = kdp_destroy(&c);
       if (kdpret2 != RR_SUCCESS)
         {
-          warning("unable to destroy host connection after error requesting kernel version string: %s",
+          warning(_("unable to destroy host connection after error requesting kernel version string: %s"),
                   kdp_return_string(kdpret2));
         }
-      error("kdp_attach: unable to determine kernel version string: %s",
+      error(_("kdp_attach: unable to determine kernel version string: %s"),
             kdp_return_string(kdpret));
     }
 
@@ -519,8 +513,8 @@ kdp_uuid_and_load_addr(void)
             {
               if (memcmp(remote_uuid, local_kernel_uuid, sizeof(uuid_t)) != 0)
                 {
-                  warning("Host-side kernel file has Mach-O UUID of %s but remote kernel has a UUID of %s "
-                          "-- a mismatched kernel file will result in a poor debugger experience.",
+                  warning(_("Host-side kernel file has Mach-O UUID of %s but remote kernel has a UUID of %s "
+			    "-- a mismatched kernel file will result in a poor debugger experience."),
                           puuid(local_kernel_uuid), puuid(remote_uuid));
                 }
               else
@@ -659,11 +653,13 @@ kdp_attach(const char *args, int from_tty)
     }
 
 #if defined(KDP_TARGET_POWERPC) && KDP_TARGET_POWERPC
-  kdp_set_little_endian (&c);
+  kdp_set_little_endian(&c);
 #elif defined(KDP_TARGET_I386) && KDP_TARGET_I386
-  kdp_set_big_endian (&c);
+  kdp_set_big_endian(&c);
 #elif defined(KDP_TARGET_ARM) && KDP_TARGET_ARM
-  kdp_set_big_endian (&c);
+  kdp_set_big_endian(&c);
+#elif defined(S_SPLINT_S)
+  ; /* ??? */
 #else
 # error "unsupported architecture"
 #endif /* KDP_TARGET_foo */
@@ -671,18 +667,17 @@ kdp_attach(const char *args, int from_tty)
   c.seqno = old_seqno;
   c.exc_seqno = old_exc_seqno;
 
-  kdpret = kdp_connect (&c);
+  kdpret = kdp_connect(&c);
   if (kdpret != RR_SUCCESS)
     {
-      kdpret2 = kdp_destroy (&c);
+      kdpret2 = kdp_destroy(&c);
       if (kdpret2 != RR_SUCCESS)
         {
-          warning
-            ("unable to destroy host connection after error connecting: %s",
-             kdp_return_string (kdpret2));
+          warning(_("unable to destroy host connection after error connecting: %s"),
+		  kdp_return_string(kdpret2));
         }
-      error ("unable to connect to host \"%s\": %s", args,
-             kdp_return_string (kdpret));
+      error(_("unable to connect to host \"%s\": %s"), args,
+	    kdp_return_string(kdpret));
     }
 
   c.request->readregs_req.hdr.request = KDP_VERSION;
@@ -693,29 +688,27 @@ kdp_attach(const char *args, int from_tty)
       kdpret2 = kdp_disconnect (&c);
       if (kdpret2 != RR_SUCCESS)
         {
-          warning
-            ("unable to disconnect from host after error determining protocol version: %s",
-             kdp_return_string (kdpret2));
+          warning(_("unable to disconnect from host after error determining protocol version: %s"),
+		  kdp_return_string(kdpret2));
         }
       kdpret2 = kdp_destroy (&c);
       if (kdpret2 != RR_SUCCESS)
         {
-          warning
-            ("unable to destroy host connection after error determining protocol version: %s",
-             kdp_return_string (kdpret2));
+          warning(_("unable to destroy host connection after error determining protocol version: %s"),
+		  kdp_return_string(kdpret2));
         }
-      error ("kdp_attach: unable to determine protocol version: %s",
-             kdp_return_string (kdpret));
+      error(_("kdp_attach: unable to determine protocol version: %s"),
+	    kdp_return_string(kdpret));
     }
 
   remote_kdp_version = c.response->version_reply.version;
   remote_kdp_feature = c.response->version_reply.feature;
 
-  set_internalvar (lookup_internalvar ("kdp_protocol_version"),
-                   value_from_longest (builtin_type_int, (LONGEST)remote_kdp_version));
+  set_internalvar(lookup_internalvar("kdp_protocol_version"),
+		  value_from_longest(builtin_type_int, (LONGEST)remote_kdp_version));
 
-  set_internalvar (lookup_internalvar ("gdb_kdp_support_level"),
-                   value_from_longest (builtin_type_int, (LONGEST)GDB_KDP_SUPPORT_LEVEL));
+  set_internalvar(lookup_internalvar("gdb_kdp_support_level"),
+		  value_from_longest(builtin_type_int, (LONGEST)GDB_KDP_SUPPORT_LEVEL));
 
   /* retrieve the cpu type & cpusubtype, set kdp_cpu_type kdp_host_type
    * globals: */
@@ -756,8 +749,8 @@ kdp_detach(const char *args, int from_tty)
       kdpret = kdp_disconnect(&c);
       if (kdpret != RR_SUCCESS)
         {
-          warning ("unable to disconnect from host: %s",
-                   kdp_return_string (kdpret));
+          warning(_("unable to disconnect from host: %s"),
+		  kdp_return_string(kdpret));
         }
     }
 
@@ -810,11 +803,13 @@ kdp_reattach_command(const char *args, int from_tty)
           kdp_return_string(kdpret));
 
 #if defined(KDP_TARGET_POWERPC) && KDP_TARGET_POWERPC
-  kdp_set_little_endian (&c);
+  kdp_set_little_endian(&c);
 #elif defined(KDP_TARGET_I386) && KDP_TARGET_I386
-  kdp_set_big_endian (&c);
+  kdp_set_big_endian(&c);
 #elif defined(KDP_TARGET_ARM) && KDP_TARGET_ARM
-  kdp_set_big_endian (&c);
+  kdp_set_big_endian(&c);
+#elif defined(S_SPLINT_S)
+  ; /* ??? */
 #else
 # error "unsupported architecture"
 #endif /* KDP_TARGET_foo */
@@ -822,13 +817,13 @@ kdp_reattach_command(const char *args, int from_tty)
   kdpret = kdp_reattach (&c);
 
   if (kdpret != RR_SUCCESS)
-    warning ("unable to disconnect host: %s", kdp_return_string (kdpret));
-  if (kdp_is_bound (&c))
+    warning(_("unable to disconnect host: %s"), kdp_return_string(kdpret));
+  if (kdp_is_bound(&c))
     {
-      kdpret = kdp_destroy (&c);
+      kdpret = kdp_destroy(&c);
       if (kdpret != RR_SUCCESS)
-        error ("unable to deallocate KDP connection: %s",
-               kdp_return_string (kdpret));
+        error(_("unable to deallocate KDP connection: %s"),
+	      kdp_return_string(kdpret));
     }
 
   kdp_ops.to_has_all_memory = 0;
@@ -855,23 +850,23 @@ kdp_reboot_command(const char *args, int from_tty)
 
   argv = buildargv(args);
   if (!c.connected)
-    error("Must already be connected to the remote machine.");
+    error(_("Must already be connected to the remote machine."));
 
   if (!((argv == NULL) || (argv[0] == NULL)))
     {
-      error ("usage: kdp-reboot");
+      error(_("usage: kdp-reboot"));
     }
 
   kdpret = kdp_hostreboot (&c);
 
   if (kdpret != RR_SUCCESS)
-    warning ("unable to disconnect host: %s", kdp_return_string (kdpret));
+    warning(_("unable to disconnect host: %s"), kdp_return_string(kdpret));
   if (kdp_is_bound (&c))
     {
       kdpret = kdp_destroy (&c);
       if (kdpret != RR_SUCCESS)
-        error ("unable to deallocate KDP connection: %s",
-               kdp_return_string (kdpret));
+        error(_("unable to deallocate KDP connection: %s"),
+	      kdp_return_string(kdpret));
     }
 
   kdp_ops.to_has_all_memory = 0;
@@ -1134,17 +1129,15 @@ kdp_fetch_registers_ppc (int regno)
                          "kdp_fetch_registers_ppc");
       if (kdpret != RR_SUCCESS)
         {
-          error
-            ("kdp_fetch_registers_ppc: unable to fetch PPC_THREAD_STATE: %s",
-             kdp_return_string (kdpret));
+          error("kdp_fetch_registers_ppc: unable to fetch PPC_THREAD_STATE: %s",
+		kdp_return_string(kdpret));
         }
       if (c.response->readregs_reply.nbytes !=
           (GDB_PPC_THREAD_STATE_COUNT * 4))
         {
-          error
-            ("kdp_fetch_registers_ppc: kdp returned %lu bytes of register data (expected %lu)",
-             c.response->readregs_reply.nbytes,
-             (GDB_PPC_THREAD_STATE_COUNT * 4));
+          error("kdp_fetch_registers_ppc: kdp returned %lu bytes of register data (expected %lu)",
+		c.response->readregs_reply.nbytes,
+		(GDB_PPC_THREAD_STATE_COUNT * 4));
         }
 
       memcpy (&gp_regs, c.response->readregs_reply.data,
@@ -1168,17 +1161,15 @@ kdp_fetch_registers_ppc (int regno)
                          "kdp_fetch_registers_ppc");
       if (kdpret != RR_SUCCESS)
         {
-          error
-            ("kdp_fetch_registers_ppc: unable to fetch PPC_THREAD_FPSTATE: %s",
-             kdp_return_string (kdpret));
+          error("kdp_fetch_registers_ppc: unable to fetch PPC_THREAD_FPSTATE: %s",
+		kdp_return_string(kdpret));
         }
       if (c.response->readregs_reply.nbytes !=
           (GDB_PPC_THREAD_FPSTATE_COUNT * 4))
         {
-          error
-            ("kdp_fetch_registers_ppc: kdp returned %lu bytes of register data (expected %lu)",
-             c.response->readregs_reply.nbytes,
-             (GDB_PPC_THREAD_FPSTATE_COUNT * 4));
+          error("kdp_fetch_registers_ppc: kdp returned %lu bytes of register data (expected %lu)",
+		c.response->readregs_reply.nbytes,
+		(GDB_PPC_THREAD_FPSTATE_COUNT * 4));
         }
 
       memcpy (&fp_regs, c.response->readregs_reply.data,
@@ -1246,9 +1237,8 @@ kdp_store_registers_ppc (int regno)
                          "kdp_store_registers_ppc");
       if (kdpret != RR_SUCCESS)
         {
-          error
-            ("kdp_store_registers_ppc: unable to store PPC_THREAD_STATE: %s",
-             kdp_return_string (kdpret));
+          error("kdp_store_registers_ppc: unable to store PPC_THREAD_STATE: %s",
+		kdp_return_string(kdpret));
         }
     }
 

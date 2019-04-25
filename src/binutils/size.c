@@ -35,6 +35,10 @@
 
 #include "sysdep.h"
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
 #ifndef BSD_DEFAULT
 # define BSD_DEFAULT 1
 #endif /* !BSD_DEFAULT */
@@ -70,7 +74,7 @@ static void display_file(const char *);
 static void display_bfd(bfd *);
 static void display_archive(bfd *);
 static size_t size_number(bfd_size_type);
-static void rprint_number(short, bfd_size_type);
+static void rprint_number(int8_t, bfd_size_type);
 static void print_berkeley_format(bfd *);
 static void sysv_internal_sizer(bfd *, asection *, void *);
 static void sysv_internal_printer(bfd *, asection *, void *);
@@ -403,7 +407,7 @@ size_number(bfd_size_type num)
 }
 
 static void
-rprint_number(short width, bfd_size_type num)
+rprint_number(int8_t width, bfd_size_type num)
 {
   char buffer[40];
 
@@ -532,10 +536,10 @@ sysv_internal_printer(bfd *file ATTRIBUTE_UNUSED, sec_ptr sec,
     {
       svi_total += size;
 
-      printf("%-*s   ", (int)svi_namelen, bfd_section_name(file, sec));
-      rprint_number((short)svi_sizelen, size);
+      printf("%-*s   ", (int8_t)svi_namelen, bfd_section_name(file, sec));
+      rprint_number((int8_t)svi_sizelen, size);
       printf("   ");
-      rprint_number((short)svi_vmalen, bfd_section_vma(file, sec));
+      rprint_number((int8_t)svi_vmalen, bfd_section_vma(file, sec));
       printf("\n");
     }
 }
@@ -566,13 +570,13 @@ print_sysv_format(bfd *file)
     printf(" (ex %s)", bfd_get_filename(bfd_my_archive(file)));
   }
 
-  printf(":\n%-*s   %*s   %*s\n", (short)svi_namelen, "section",
-         (short)svi_sizelen, "size", (short)svi_vmalen, "addr");
+  printf(":\n%-*s   %*s   %*s\n", (int8_t)svi_namelen, "section",
+         (int8_t)svi_sizelen, "size", (int8_t)svi_vmalen, "addr");
 
   bfd_map_over_sections(file, sysv_internal_printer, NULL);
 
-  printf("%-*s   ", (short)svi_namelen, "Total");
-  rprint_number((short)svi_sizelen, svi_total);
+  printf("%-*s   ", (int8_t)svi_namelen, "Total");
+  rprint_number((int8_t)svi_sizelen, svi_total);
   printf("\n\n");
 }
 

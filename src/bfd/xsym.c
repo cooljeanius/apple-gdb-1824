@@ -26,6 +26,10 @@
 # include "libiberty.h"
 #endif /* !LIBIBERTY_H */
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
 #define bfd_sym_close_and_cleanup                   _bfd_generic_close_and_cleanup
 #define bfd_sym_bfd_free_cached_info                _bfd_generic_bfd_free_cached_info
 #define bfd_sym_new_section_hook                    _bfd_generic_new_section_hook

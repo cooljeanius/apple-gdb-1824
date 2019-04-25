@@ -56,6 +56,10 @@
 #include "inlining.h"
 #include "macosx/macosx-nat-dyld.h"
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
 #if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
 # ifndef __NeXT__
 #  include "macosx-nat-inferior.h"
@@ -2984,33 +2988,33 @@ registers_info(const char *addr_exp, int fpregs)
       /* A register group?  */
       {
 	struct reggroup *group;
-	for (group = reggroup_next (current_gdbarch, NULL);
+	for (group = reggroup_next(current_gdbarch, NULL);
 	     group != NULL;
-	     group = reggroup_next (current_gdbarch, group))
+	     group = reggroup_next(current_gdbarch, group))
 	  {
 	    /* Don't bother with a length check.  Should the user
 	       enter a short register group name, go with the first
 	       group that matches.  */
-	    if (strncmp (start, reggroup_name (group), end - start) == 0)
+	    if (strncmp(start, reggroup_name(group), (end - start)) == 0)
 	      break;
 	  }
 	if (group != NULL)
 	  {
 	    int regnum;
-	    for (regnum = 0; regnum < NUM_REGS + NUM_PSEUDO_REGS; regnum++)
+	    for (regnum = 0; regnum < (NUM_REGS + NUM_PSEUDO_REGS); regnum++)
 	      {
-		if (gdbarch_register_reggroup_p (current_gdbarch, regnum,
-						 group))
-		  gdbarch_print_registers_info (current_gdbarch,
-						gdb_stdout, deprecated_selected_frame,
-						regnum, fpregs);
+		if (gdbarch_register_reggroup_p(current_gdbarch, regnum,
+						group))
+		  gdbarch_print_registers_info(current_gdbarch, gdb_stdout,
+					       deprecated_selected_frame,
+					       regnum, fpregs);
 	      }
 	    continue;
 	  }
       }
 
       /* Nothing matched.  */
-      error(_("Invalid register `%.*s'"), (int)(end - start), start);
+      error(_("Invalid register `%.*s'"), (int8_t)(end - start), start);
     }
 }
 

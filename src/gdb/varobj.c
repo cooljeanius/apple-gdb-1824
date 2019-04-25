@@ -3597,12 +3597,16 @@ varobj_get_type_index_from_fake_child(struct varobj *parent, int index)
     {
       while (index >= 0)
 	{
-	  if (TYPE_VPTR_BASETYPE (type) == type
-	      && type_index == TYPE_VPTR_FIELDNO (type))
-                    ; /* ignore vptr */
-	  else if (TYPE_FIELD_STATIC (type, type_index))
+	  if ((TYPE_VPTR_BASETYPE(type) == type)
+	      && (type_index == TYPE_VPTR_FIELDNO(type)))
+	  {
+	    ; /* ignore vptr */
+	  }
+	  else if (TYPE_FIELD_STATIC(type, type_index))
+	  {
 	    ; /* APPLE LOCAL: ignore static fields.  */
-	  else if (TYPE_FIELD_PRIVATE (type, type_index))
+	  }
+	  else if (TYPE_FIELD_PRIVATE(type, type_index))
 	    --index;
 	  ++type_index;
 	}

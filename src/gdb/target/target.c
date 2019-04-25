@@ -84,11 +84,12 @@ static LONGEST default_xfer_partial(struct target_ops *ops,
 				    const gdb_byte *writebuf,
 				    ULONGEST offset, LONGEST len);
 
-static LONGEST current_xfer_partial(struct target_ops *ops,
-				    enum target_object object,
-				    const char *annex, gdb_byte *readbuf,
-				    const gdb_byte *writebuf,
-				    ULONGEST offset, LONGEST len);
+/*@unused@*/static LONGEST current_xfer_partial(struct target_ops *ops,
+						enum target_object object,
+						const char *annex,
+						gdb_byte *readbuf,
+						const gdb_byte *writebuf,
+						ULONGEST offset, LONGEST len);
 
 static LONGEST target_xfer_partial(struct target_ops *ops,
 				   enum target_object object,

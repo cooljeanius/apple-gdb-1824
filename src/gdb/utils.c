@@ -40,6 +40,10 @@
 #include <uuid/uuid.h>
 #include <regex.h>
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
 #ifdef TUI
 # include "tui/tui.h"		/* For tui_get_command_dimension.   */
 #endif /* TUI */
@@ -3106,7 +3110,7 @@ paddress_with_arch(struct gdbarch *gdbarch, CORE_ADDR addr)
 
 /* */
 static char *
-decimal2str(const char *sign, ULONGEST addr, int width)
+decimal2str(const char *sign, ULONGEST addr, int8_t width)
 {
   /* Steal code from valprint.c:print_decimal().  Should this worry
      about the real size of addr as the above does? */
@@ -3148,7 +3152,7 @@ decimal2str(const char *sign, ULONGEST addr, int width)
 
 /* */
 static char *
-octal2str(ULONGEST addr, int width)
+octal2str(ULONGEST addr, int8_t width)
 {
   unsigned long temp[3];
   char *str = get_cell();

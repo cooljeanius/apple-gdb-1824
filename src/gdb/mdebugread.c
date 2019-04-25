@@ -572,7 +572,6 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
   struct block *b;
   struct mdebug_pending *pend;
   struct type *t;
-  struct field *f;
   int count = 1;
   enum address_class addrclass;
   TIR tir;
@@ -612,281 +611,279 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
       break;
     }
 
-  /* This switch is lengthy: */
-  switch (sh->st)
+  /* The "if" is probably unnecessary; just an excuse to add scoping braces: */
+  if (sh != NULL)
     {
-    case stNil:
-      break;
-
-    case stGlobal:		/* external symbol, goes into global block */
-      addrclass = LOC_STATIC;
-      b = BLOCKVECTOR_BLOCK(BLOCKVECTOR(top_stack->cur_st),
-			    GLOBAL_BLOCK);
-      s = new_symbol(name);
-      SYMBOL_VALUE_ADDRESS(s) = (CORE_ADDR)sh->value;
-      goto data;
-
-    case stStatic:		/* static data, goes into current block. */
-      addrclass = LOC_STATIC;
-      b = top_stack->cur_block;
-      s = new_symbol(name);
-      if (SC_IS_COMMON(sh->sc))
-	{
-	  /* It is a FORTRAN common block.  At least for SGI Fortran the
-	     address is not in the symbol; we need to fix it later in
-	     scan_file_globals.  */
-	  int bucket = hashname(DEPRECATED_SYMBOL_NAME(s));
-	  SYMBOL_VALUE_CHAIN(s) = global_sym_chain[bucket];
-	  global_sym_chain[bucket] = s;
-	}
-      else
-	SYMBOL_VALUE_ADDRESS(s) = (CORE_ADDR)sh->value;
-      goto data;
-
-    case stLocal:	/* local variable, goes into current block */
-      if (sh->sc == scRegister)
-	{
-	  addrclass = LOC_REGISTER;
-	  svalue = ECOFF_REG_TO_REGNUM(svalue);
-	}
-      else
-	addrclass = LOC_LOCAL;
-      b = top_stack->cur_block;
-      s = new_symbol(name);
-      SYMBOL_VALUE(s) = svalue;
-
-    data:			/* Common code for symbols describing data */
-      SYMBOL_DOMAIN(s) = VAR_DOMAIN;
-      SYMBOL_CLASS(s) = addrclass;
-      add_symbol(s, b);
-
-      /* Type could be missing if file is compiled without debugging info.  */
-      if (SC_IS_UNDEF(sh->sc)
-	  || (sh->sc == scNil) || (sh->index == indexNil))
-	SYMBOL_TYPE(s) = nodebug_var_symbol_type;
-      else
-	SYMBOL_TYPE(s) = parse_type(cur_fd, ax, sh->index, 0, bigend, name);
-      /* Value of a data symbol is its memory address */
-      break;
-
-    case stParam:	/* arg to procedure, goes into current block */
-      max_gdbinfo++;
-      found_ecoff_debugging_info = 1;
-      top_stack->numargs++;
-
-      /* Special GNU C++ name.  */
-      if (is_cplus_marker(name[0]) && (name[1] == 't') && (name[2] == 0))
-	name = "this";		/* FIXME, not alloc'd in obstack */
-      s = new_symbol (name);
-
-      SYMBOL_DOMAIN (s) = VAR_DOMAIN;
-      switch (sh->sc)
-	{
-	case scRegister:
-	  /* Pass by value in register.  */
-	  SYMBOL_CLASS (s) = LOC_REGPARM;
-	  svalue = ECOFF_REG_TO_REGNUM (svalue);
+      enum type_code type_code;
+      char *ext_tsym;
+      int nfields;
+      long max_value;
+      struct field *f;
+      /* This switch is lengthy: */
+      switch (sh->st)
+      {
+	case stNil:
 	  break;
-	case scVar:
-	  /* Pass by reference on stack.  */
-	  SYMBOL_CLASS (s) = LOC_REF_ARG;
-	  break;
-	case scVarRegister:
-	  /* Pass by reference in register.  */
-	  SYMBOL_CLASS (s) = LOC_REGPARM_ADDR;
-	  svalue = ECOFF_REG_TO_REGNUM (svalue);
-	  break;
-	default:
-	  /* Pass by value on stack.  */
-	  SYMBOL_CLASS (s) = LOC_ARG;
-	  break;
-	}
-      SYMBOL_VALUE (s) = svalue;
-      SYMBOL_TYPE (s) = parse_type (cur_fd, ax, sh->index, 0, bigend, name);
-      add_symbol (s, top_stack->cur_block);
-      break;
 
-    case stLabel:		/* label, goes into current block */
-      s = new_symbol (name);
-      SYMBOL_DOMAIN (s) = VAR_DOMAIN;	/* so that it can be used */
-      SYMBOL_CLASS (s) = LOC_LABEL;	/* but not misused */
-      SYMBOL_VALUE_ADDRESS (s) = (CORE_ADDR) sh->value;
-      SYMBOL_TYPE (s) = mdebug_type_int;
-      add_symbol (s, top_stack->cur_block);
-      break;
+	case stGlobal:		/* external symbol, goes into global block */
+	  addrclass = LOC_STATIC;
+	  b = BLOCKVECTOR_BLOCK(BLOCKVECTOR(top_stack->cur_st),
+				GLOBAL_BLOCK);
+	  s = new_symbol(name);
+	  SYMBOL_VALUE_ADDRESS(s) = (CORE_ADDR)sh->value;
+	  goto data;
 
-    case stProc:		/* Procedure, usually goes into global block */
-    case stStaticProc:		/* Static procedure, goes into current block */
-      /* For stProc symbol records, we need to check the storage class
-         as well, as only (stProc, scText) entries represent "real"
-         procedures - See the Compaq document titled "Object File /
-         Symbol Table Format Specification" for more information.
-         If the storage class is not scText, we discard the whole block
-         of symbol records for this stProc.  */
-      if (sh->st == stProc && sh->sc != scText)
-        {
-          char *ext_tsym = ext_sh;
-          int keep_counting = 1;
-          SYMR tsym;
+	case stStatic:		/* static data, goes into current block. */
+	  addrclass = LOC_STATIC;
+	  b = top_stack->cur_block;
+	  s = new_symbol(name);
+	  if (SC_IS_COMMON(sh->sc))
+	  {
+	    /* It is a FORTRAN common block.  At least for SGI Fortran the
+	     * address is not in the symbol; we need to fix it later in
+	     * scan_file_globals.  */
+	    int bucket = hashname(DEPRECATED_SYMBOL_NAME(s));
+	    SYMBOL_VALUE_CHAIN(s) = global_sym_chain[bucket];
+	    global_sym_chain[bucket] = s;
+	  }
+	  else
+	    SYMBOL_VALUE_ADDRESS(s) = (CORE_ADDR)sh->value;
+	  goto data;
 
-          while (keep_counting)
+	case stLocal:	/* local variable, goes into current block */
+	  if (sh->sc == scRegister)
+	  {
+	    addrclass = LOC_REGISTER;
+	    svalue = ECOFF_REG_TO_REGNUM(svalue);
+	  }
+	  else
+	    addrclass = LOC_LOCAL;
+	  b = top_stack->cur_block;
+	  s = new_symbol(name);
+	  SYMBOL_VALUE(s) = svalue;
+
+	data:			/* Common code for symbols describing data */
+	  SYMBOL_DOMAIN(s) = VAR_DOMAIN;
+	  SYMBOL_CLASS(s) = addrclass;
+	  add_symbol(s, b);
+
+	  /* Type could be missing if file is compiled w/out debugging info: */
+	  if (SC_IS_UNDEF(sh->sc)
+	      || (sh->sc == scNil) || (sh->index == indexNil))
+	    SYMBOL_TYPE(s) = nodebug_var_symbol_type;
+	  else
+	    SYMBOL_TYPE(s) = parse_type(cur_fd, ax, sh->index, 0, bigend, name);
+	  /* Value of a data symbol is its memory address */
+	  break;
+
+	case stParam:	/* arg to procedure, goes into current block */
+	  max_gdbinfo++;
+	  found_ecoff_debugging_info = 1;
+	  top_stack->numargs++;
+
+	  /* Special GNU C++ name.  */
+	  if (is_cplus_marker(name[0]) && (name[1] == 't') && (name[2] == 0))
+	    name = "this";		/* FIXME, not alloc-ed in obstack */
+	  s = new_symbol (name);
+
+	  SYMBOL_DOMAIN (s) = VAR_DOMAIN;
+	  switch (sh->sc)
+	  {
+	  case scRegister:
+	    /* Pass by value in register.  */
+	    SYMBOL_CLASS (s) = LOC_REGPARM;
+	    svalue = ECOFF_REG_TO_REGNUM (svalue);
+	    break;
+	  case scVar:
+	    /* Pass by reference on stack.  */
+	    SYMBOL_CLASS (s) = LOC_REF_ARG;
+	    break;
+	  case scVarRegister:
+	    /* Pass by reference in register.  */
+	    SYMBOL_CLASS (s) = LOC_REGPARM_ADDR;
+	    svalue = ECOFF_REG_TO_REGNUM (svalue);
+	    break;
+	  default:
+	    /* Pass by value on stack.  */
+	    SYMBOL_CLASS (s) = LOC_ARG;
+	    break;
+	  }
+	  SYMBOL_VALUE (s) = svalue;
+	  SYMBOL_TYPE (s) = parse_type (cur_fd, ax, sh->index, 0, bigend, name);
+	  add_symbol (s, top_stack->cur_block);
+	  break;
+
+	case stLabel:		/* label, goes into current block */
+	  s = new_symbol (name);
+	  SYMBOL_DOMAIN (s) = VAR_DOMAIN;	/* so that it can be used */
+	  SYMBOL_CLASS (s) = LOC_LABEL;	/* but not misused */
+	  SYMBOL_VALUE_ADDRESS (s) = (CORE_ADDR) sh->value;
+	  SYMBOL_TYPE (s) = mdebug_type_int;
+	  add_symbol (s, top_stack->cur_block);
+	  break;
+
+	case stProc:		/* Procedure, usually goes into global block */
+	case stStaticProc:		/* Static procedure, goes into current block */
+	  /* For stProc symbol records, we need to check the storage class as
+	   * well, as only (stProc, scText) entries represent "real" procedures.
+	   * See the Compaq document titled "Object File / Symbol Table Format
+	   * Specification" for more information.  If the storage class is not
+	   * scText, we discard the whole block of symbol records for this
+	   * stProc.  */
+	  if (sh->st == stProc && sh->sc != scText)
+	  {
+	    char *ext_tsym = ext_sh;
+	    int keep_counting = 1;
+	    SYMR tsym;
+
+	    while (keep_counting)
             {
               ext_tsym += external_sym_size;
               (*swap_sym_in)(cur_bfd, ext_tsym, &tsym);
               count++;
               switch (tsym.st)
-                {
-                  case stParam:
-                    break;
-                  case stEnd:
-                    keep_counting = 0;
-                    break;
-                  default:
-                    complaint(&symfile_complaints,
-                              _("unknown symbol type 0x%x"), sh->st);
-                    break;
-                }
+	      {
+		case stParam:
+		  break;
+		case stEnd:
+		  keep_counting = 0;
+		  break;
+		default:
+		  complaint(&symfile_complaints,
+			    _("unknown symbol type 0x%x"), sh->st);
+		  break;
+	      }
             }
-          break;
-        }
-      s = new_symbol(name);
-      SYMBOL_DOMAIN(s) = VAR_DOMAIN;
-      SYMBOL_CLASS(s) = LOC_BLOCK;
-      /* Type of the return value */
-      if (SC_IS_UNDEF(sh->sc) || (sh->sc == scNil))
-	t = mdebug_type_int;
-      else
-	{
-	  t = parse_type(cur_fd, ax, sh->index + 1, 0, bigend, name);
-	  if ((strcmp(name, "malloc") == 0)
-	      && (TYPE_CODE(t) == TYPE_CODE_VOID))
+	    break;
+	  }
+	  s = new_symbol(name);
+	  SYMBOL_DOMAIN(s) = VAR_DOMAIN;
+	  SYMBOL_CLASS(s) = LOC_BLOCK;
+	  /* Type of the return value */
+	  if (SC_IS_UNDEF(sh->sc) || (sh->sc == scNil))
+	    t = mdebug_type_int;
+	  else
+	  {
+	    t = parse_type(cur_fd, ax, sh->index + 1, 0, bigend, name);
+	    if ((strcmp(name, "malloc") == 0)
+		&& (TYPE_CODE(t) == TYPE_CODE_VOID))
 	    {
-	      /* I don't know why, but, at least under Alpha GNU/Linux,
-	         when linking against a malloc without debugging
-	         symbols, its read as a function returning void---this
-	         is bad because it means we cannot call functions with
-	         string arguments interactively; i.e., "call
-	         printf("howdy\n")" would fail with the error message
-	         "program has no memory available".  To avoid this, we
-	         patch up the type and make it void*
-	         instead. <davidm@azstarnet.com>
-	       */
+	      /* I do NOT know why, but, at least under Alpha GNU/Linux, when
+	       * linking against a malloc without debugging symbols, it gets
+	       * read as a function returning void---this is bad because it
+	       * means we cannot call functions with string arguments
+	       * interactively; i.e., "call printf("howdy\n")" would fail with
+	       * the error message "program has no memory available".  To avoid
+	       * this, we patch up the type and make it void* instead.
+	       * <davidm@azstarnet.com> */
 	      t = make_pointer_type(t, NULL);
 	    }
-	}
-      b = top_stack->cur_block;
-      if (sh->st == stProc)
-	{
-	  struct blockvector *bv = BLOCKVECTOR(top_stack->cur_st);
-	  /* The next test should normally be true, but provides a
-	     hook for nested functions (which we don't want to make
-	     global).  */
-	  if (b == BLOCKVECTOR_BLOCK(bv, STATIC_BLOCK))
-	    b = BLOCKVECTOR_BLOCK(bv, GLOBAL_BLOCK);
-	  /* Irix 5 sometimes has duplicate names for the same
-	     function.  We want to add such names up at the global
-	     level, not as a nested function.  */
-	  else if (sh->value == top_stack->procadr)
-	    b = BLOCKVECTOR_BLOCK(bv, GLOBAL_BLOCK);
-	}
-      add_symbol(s, b);
+	  }
+	  b = top_stack->cur_block;
+	  if (sh->st == stProc)
+	  {
+	    struct blockvector *bv = BLOCKVECTOR(top_stack->cur_st);
+	    /* The next test should normally be true, but provides a hook for
+	     * nested functions (which we do NOT want to make global).  */
+	    if (b == BLOCKVECTOR_BLOCK(bv, STATIC_BLOCK))
+	      b = BLOCKVECTOR_BLOCK(bv, GLOBAL_BLOCK);
+	    /* Irix 5 sometimes has duplicate names for the same function.  We
+	     * want to add such names up at the global level, not as a nested
+	     * function.  */
+	    else if (sh->value == top_stack->procadr)
+	      b = BLOCKVECTOR_BLOCK(bv, GLOBAL_BLOCK);
+	  }
+	  add_symbol(s, b);
 
-      /* Make a type for the procedure itself */
-      SYMBOL_TYPE(s) = lookup_function_type(t);
+	  /* Make a type for the procedure itself */
+	  SYMBOL_TYPE(s) = lookup_function_type(t);
 
-      /* All functions in C++ have prototypes.  For C we don't have enough
-         information in the debug info.  */
-      if (SYMBOL_LANGUAGE(s) == language_cplus)
-	TYPE_FLAGS(SYMBOL_TYPE(s)) |= TYPE_FLAG_PROTOTYPED;
+	  /* All functions in C++ have prototypes.  For C we do NOT have enough
+	   * information in the debug info.  */
+	  if (SYMBOL_LANGUAGE(s) == language_cplus)
+	    TYPE_FLAGS(SYMBOL_TYPE(s)) |= TYPE_FLAG_PROTOTYPED;
 
-      /* Create and enter a new lexical context */
-      b = new_block(FUNCTION_BLOCK);
-      SYMBOL_BLOCK_VALUE(s) = b;
-      BLOCK_FUNCTION(b) = s;
-      BLOCK_START(b) = BLOCK_END(b) = sh->value;
-      BLOCK_SUPERBLOCK(b) = top_stack->cur_block;
-      add_block(b, top_stack->cur_st);
+	  /* Create and enter a new lexical context */
+	  b = new_block(FUNCTION_BLOCK);
+	  SYMBOL_BLOCK_VALUE(s) = b;
+	  BLOCK_FUNCTION(b) = s;
+	  BLOCK_START(b) = BLOCK_END(b) = sh->value;
+	  BLOCK_SUPERBLOCK(b) = top_stack->cur_block;
+	  add_block(b, top_stack->cur_st);
 
-      /* Not if we only have partial info */
-      if (SC_IS_UNDEF(sh->sc) || (sh->sc == scNil))
-	break;
+	  /* Not if we only have partial info */
+	  if (SC_IS_UNDEF(sh->sc) || (sh->sc == scNil))
+	    break;
 
-      push_parse_stack();
-      top_stack->cur_block = b;
-      top_stack->blocktype = sh->st;
-      top_stack->cur_type = SYMBOL_TYPE(s);
-      top_stack->cur_field = -1;
-      top_stack->procadr = sh->value;
-      top_stack->numargs = 0;
-      break;
+	  push_parse_stack();
+	  top_stack->cur_block = b;
+	  top_stack->blocktype = sh->st;
+	  top_stack->cur_type = SYMBOL_TYPE(s);
+	  top_stack->cur_field = -1;
+	  top_stack->procadr = sh->value;
+	  top_stack->numargs = 0;
+	  break;
 
-      /* Beginning of code for structure, union, and enum definitions.
-         They all share a common set of local variables, defined here.  */
-      {
-	/* FIXME: splint chokes on this block */
-	enum type_code type_code;
-	char *ext_tsym;
-	int nfields;
-	long max_value;
-	struct field *f;
+	/* Removed extra scoping braces for this next set of cases, and moved
+	 * the local variable declarations above, because (ab)using braces like
+	 * that was hackish and bad, and splint choked on it.  */
 
-    case stStruct:		/* Start a block defining a struct type */
-	type_code = TYPE_CODE_STRUCT;
-	goto structured_common;
+	case stStruct:		/* Start a block defining a struct type */
+	  type_code = TYPE_CODE_STRUCT;
+	  goto structured_common;
 
-    case stUnion:		/* Start a block defining a union type */
-	type_code = TYPE_CODE_UNION;
-	goto structured_common;
+	case stUnion:		/* Start a block defining a union type */
+	  type_code = TYPE_CODE_UNION;
+	  goto structured_common;
 
-    case stEnum:		/* Start a block defining an enum type */
-	type_code = TYPE_CODE_ENUM;
-	goto structured_common;
+	case stEnum:		/* Start a block defining an enum type */
+	  type_code = TYPE_CODE_ENUM;
+	  goto structured_common;
 
-    case stBlock:		/* Either a lexical block, or some type */
-	if ((sh->sc != scInfo) && !SC_IS_COMMON (sh->sc))
-	  goto case_stBlock_code;	/* Lexical block */
+	case stBlock:		/* Either a lexical block, or some type */
+	  if ((sh->sc != scInfo) && !SC_IS_COMMON (sh->sc))
+	    goto case_stBlock_code;	/* Lexical block */
 
-	type_code = TYPE_CODE_UNDEF;	/* We have a type.  */
+	  type_code = TYPE_CODE_UNDEF;	/* We have a type.  */
 
-	/* Common code for handling struct, union, enum, and/or as-yet-
-	   unknown-type blocks of info about structured data.  `type_code'
-	   has been set to the proper TYPE_CODE, if we know it.  */
-      structured_common:
-	found_ecoff_debugging_info = 1;
-	push_parse_stack();
-	top_stack->blocktype = stBlock;
+	/* Common code for handling struct, union, enum, and/or
+	 * as-yet-unknown-type blocks of info about structured data.
+	 * `type_code' has been set to the proper TYPE_CODE, if we know it: */
+	structured_common:
+	  found_ecoff_debugging_info = 1;
+	  push_parse_stack();
+	  top_stack->blocktype = stBlock;
 
-	/* First count the number of fields and the highest value. */
-	nfields = 0;
-	max_value = 0L;
-	for (ext_tsym = (ext_sh + external_sym_size);
-	     ;
-	     ext_tsym += external_sym_size)
+	  /* First count the number of fields and the highest value. */
+	  nfields = 0;
+	  max_value = 0L;
+	  for (ext_tsym = (ext_sh + external_sym_size);
+	       ;
+	       ext_tsym += external_sym_size)
 	  {
 	    SYMR tsym;
 
 	    (*swap_sym_in)(cur_bfd, ext_tsym, &tsym);
 
 	    switch (tsym.st)
-	      {
+	    {
 	      case stEnd:
                 /* C++ encodes class types as structures where there the
-                   methods are encoded as stProc. The scope of stProc
-                   symbols also ends with stEnd, thus creating a risk of
-                   taking the wrong stEnd symbol record as the end of
-                   the current struct, which would cause GDB to undercount
-                   the real number of fields in this struct.  To make sure
-                   we really reached the right stEnd symbol record, we
-                   check the associated name, and match it against the
-                   struct name.  Since method names are mangled while
-                   the class name is not, there is no risk of having a
-                   method whose name is identical to the class name
-                   (in particular constructor method names are different
-                   from the class name).  There is therefore no risk that
-                   this check stops the count on the StEnd of a method.
-
-		   Also, assume that we're really at the end when tsym.iss
-		   is 0 (issNull).  */
+		 * methods are encoded as stProc. The scope of stProc symbols
+		 * also ends with stEnd, thus creating a risk of taking the
+		 * wrong stEnd symbol record as the end of the current struct,
+		 * which would cause GDB to undercount the real number of
+		 * fields in this struct.  To make sure we really reached the
+		 * right stEnd symbol record, we check the associated name, and
+		 * match it against the struct name.  Since method names are
+		 * mangled while the class name is not, there is no risk of
+		 * having a method whose name is identical to the class name
+		 * (in particular constructor method names are different from
+		 * the class name).  There is therefore no risk that this check
+		 * stops the count on the StEnd of a method.
+		 *
+		 * Also, assume that we are really at the end when tsym.iss
+		 * is 0 (issNull).  */
                 if ((tsym.iss == issNull)
 		    || strcmp(debug_info->ss + cur_fdr->issBase + tsym.iss,
                               name) == 0)
@@ -895,28 +892,27 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 
 	      case stMember:
 		if ((nfields == 0) && (type_code == TYPE_CODE_UNDEF))
+		{
+		  /* If the type of the member is Nil (or Void), without
+		   * qualifiers, assume the tag is an enumeration.
+		   * Alpha cc -migrate enums are recognized by a zero index and
+		   * a zero symbol value.
+		   * DU 4.0 cc enums are recognized by a member type of btEnum
+		   * without qualifiers and a zero symbol value.  */
+		  if ((tsym.index == indexNil)
+		      || ((tsym.index == 0) && (sh->value == 0)))
+		    type_code = TYPE_CODE_ENUM;
+		  else
 		  {
-		    /* If the type of the member is Nil (or Void),
-		       without qualifiers, assume the tag is an
-		       enumeration.
-		       Alpha cc -migrate enums are recognized by a zero
-		       index and a zero symbol value.
-		       DU 4.0 cc enums are recognized by a member type of
-		       btEnum without qualifiers and a zero symbol value.  */
-		    if ((tsym.index == indexNil)
-			|| ((tsym.index == 0) && (sh->value == 0)))
+		    (*debug_swap->swap_tir_in)(bigend,
+					       &ax[tsym.index].a_ti,
+					       &tir);
+		    if (((tir.bt == btNil) || (tir.bt == btVoid)
+			 || ((tir.bt == btEnum) && (sh->value == 0)))
+			&& (tir.tq0 == tqNil))
 		      type_code = TYPE_CODE_ENUM;
-		    else
-		      {
-			(*debug_swap->swap_tir_in)(bigend,
-						   &ax[tsym.index].a_ti,
-						   &tir);
-			if (((tir.bt == btNil) || (tir.bt == btVoid)
-			     || ((tir.bt == btEnum) && (sh->value == 0)))
-			    && (tir.tq0 == tqNil))
-			  type_code = TYPE_CODE_ENUM;
-		      }
 		  }
+		}
 		nfields++;
 		if ((long)tsym.value > max_value)
 		  max_value = (long)tsym.value;
@@ -926,81 +922,77 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 	      case stUnion:
 	      case stEnum:
 	      case stStruct:
-		{
+	      {
 #if defined(scVariant)
-		  /* This is a no-op; is it trying to tell us something
-		     we should be checking?  */
-		  if (tsym.sc == scVariant) { ;	/*UNIMPLEMENTED */ };
+		/* This is a no-op; is it trying to tell us something we should
+		 * be checking?  */
+		if (tsym.sc == scVariant) { ;	/*UNIMPLEMENTED */ };
 #endif /* scVariant */
-		  if (tsym.index != 0)
-		    {
-		      /* This is something like a struct within a
-		         struct.  Skip over the fields of the inner
-		         struct.  The -1 is because the for loop will
-		         increment ext_tsym.  */
-		      ext_tsym = ((char *) debug_info->external_sym
-				  + ((cur_fdr->isymBase + tsym.index - 1)
-				     * external_sym_size));
-		    }
+		if (tsym.index != 0)
+		{
+		  /* This is something like a struct within a struct.  Skip
+		   * over the fields of the inner struct.  The -1 is because
+		   * the for loop will increment ext_tsym.  */
+		  ext_tsym = ((char *) debug_info->external_sym
+			      + ((cur_fdr->isymBase + tsym.index - 1)
+				 * external_sym_size));
 		}
+	      }
 		break;
 
 	      case stTypedef:
 		/* mips cc puts out a typedef for struct x if it is not yet
-		   defined when it encounters
-		   struct y { struct x *xp; };
-		   Just ignore it. */
+		 * defined when it encounters
+		 * struct y { struct x *xp; };
+		 * Just ignore it. */
 		break;
 
 	      case stIndirect:
-		/* Irix5 cc puts out a stIndirect for struct x if it is not
-		   yet defined when it encounters
-		   struct y { struct x *xp; };
-		   Just ignore it. */
+		/* Irix5 cc puts out a stIndirect for struct x if it is not yet
+		 * defined when it encounters
+		 * struct y { struct x *xp; };
+		 * Just ignore it. */
 		break;
 
 	      default:
 		complaint (&symfile_complaints,
 			   _("declaration block contains unhandled symbol type %d"),
 			   tsym.st);
-	      }
+	    }
 	  }
-      end_of_fields:;
+	end_of_fields:;
 
-	/* In an stBlock, there is no way to distinguish structs,
-	   unions, and enums at this point.  This is a bug in the
-	   original design (that has been fixed with the recent
-	   addition of the stStruct, stUnion, and stEnum symbol
-	   types.)  The way you can tell is if/when you see a variable
-	   or field of that type.  In that case the variable's type
-	   (in the AUX table) says if the type is struct, union, or
-	   enum, and points back to the stBlock here.  So you can
-	   patch the tag kind up later - but only if there actually is
-	   a variable or field of that type.
+	  /* In an stBlock, there is no way to distinguish structs, unions, and
+	   * enums at this point.  This is a bug in the original design (that
+	   * has been fixed with the recent addition of the stStruct, stUnion,
+	   * and stEnum symbol types.)  The way you can tell is if/when you see
+	   * a variable or field of that type.  In that case the variable's type
+	   * (in the AUX table) says if the type is struct, union, or enum, and
+	   * points back to the stBlock here.  So you can patch the tag kind up
+	   * later - but only if there actually is a variable or field of that
+	   * type.
+	   *
+	   * So until we know for sure, we will guess at this point.
+	   * The heuristic is:
+	   * If the first member has index==indexNil or a void type, assume we
+	   * have an enumeration.
+	   * Otherwise, if there is more than one member, and all the members
+	   * have offset 0, assume we have a union.
+	   * Otherwise, assume we have a struct.
+	   *
+	   * The heuristic could guess wrong in the case of of an enumeration
+	   * with no members or a union with one (or zero) members, or when all
+	   * except the last field of a struct have width zero.  These are
+	   * uncommon and/or illegal situations, and in any case guessing wrong
+	   * probably does NOT matter much.
+	   *
+	   * But if we later do find out we were wrong, we fixup the tag kind.
+	   * Members of an enumeration must be handled differently from
+	   * struct/union fields, and that is harder to patch up, but luckily
+	   * we should NOT need to.  (If there are any enumeration members, we
+	   * can tell for sure it is/was an enum here.) */
 
-	   So until we know for sure, we will guess at this point.
-	   The heuristic is:
-	   If the first member has index==indexNil or a void type,
-	   assume we have an enumeration.
-	   Otherwise, if there is more than one member, and all
-	   the members have offset 0, assume we have a union.
-	   Otherwise, assume we have a struct.
-
-	   The heuristic could guess wrong in the case of of an
-	   enumeration with no members or a union with one (or zero)
-	   members, or when all except the last field of a struct have
-	   width zero.  These are uncommon and/or illegal situations,
-	   and in any case guessing wrong probably doesn't matter
-	   much.
-
-	   But if we later do find out we were wrong, we fixup the tag
-	   kind.  Members of an enumeration must be handled
-	   differently from struct/union fields, and that is harder to
-	   patch up, but luckily we shouldn't need to.  (If there are
-	   any enumeration members, we can tell for sure it's an enum
-	   here.) */
-
-	if (type_code == TYPE_CODE_UNDEF)
+	  if (type_code == TYPE_CODE_UNDEF)
 	  {
 	    if (nfields > 1 && max_value == 0)
 	      type_code = TYPE_CODE_UNION;
@@ -1008,363 +1000,358 @@ parse_symbol(SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
 	      type_code = TYPE_CODE_STRUCT;
 	  }
 
-	/* Create a new type or use the pending type.  */
-	pend = is_pending_symbol (cur_fdr, ext_sh);
-	if (pend == (struct mdebug_pending *) NULL)
+	  /* Create a new type or use the pending type.  */
+	  pend = is_pending_symbol (cur_fdr, ext_sh);
+	  if (pend == (struct mdebug_pending *) NULL)
 	  {
 	    t = new_type (NULL);
 	    add_pending (cur_fdr, ext_sh, t);
 	  }
-	else
-	  t = pend->t;
+	  else
+	    t = pend->t;
 
-	/* Do not set the tag name if it is a compiler generated tag name
-	   (.Fxx or .xxfake or empty) for unnamed struct/union/enums.
-	   Alpha cc puts out an sh->iss of zero for those.  */
-	if (sh->iss == 0 || name[0] == '.' || name[0] == '\0')
-	  TYPE_TAG_NAME(t) = NULL;
-	else
-	  TYPE_TAG_NAME(t) = obconcat(&current_objfile->objfile_obstack,
-				      "", "", name);
+	  /* Do not set the tag name if it is a compiler generated tag name
+	   * (.Fxx or .xxfake or empty) for unnamed struct/union/enums.
+	   * Alpha cc puts out an sh->iss of zero for those.  */
+	  if (sh->iss == 0 || name[0] == '.' || name[0] == '\0')
+	    TYPE_TAG_NAME(t) = NULL;
+	  else
+	    TYPE_TAG_NAME(t) = obconcat(&current_objfile->objfile_obstack,
+					"", "", name);
 
-	TYPE_CODE(t) = type_code;
-	TYPE_LENGTH_ASSIGN(t) = (int)sh->value;
-	TYPE_NFIELDS(t) = (short)nfields;
-	TYPE_FIELDS(t) = f = ((struct field *)
-			      TYPE_ALLOC(t, (nfields * sizeof(struct field))));
+	  TYPE_CODE(t) = type_code;
+	  TYPE_LENGTH_ASSIGN(t) = (int)sh->value;
+	  TYPE_NFIELDS(t) = (short)nfields;
+	  TYPE_FIELDS(t) = f = ((struct field *)
+				TYPE_ALLOC(t, (nfields * sizeof(struct field))));
 
-	if (type_code == TYPE_CODE_ENUM)
+	  if (type_code == TYPE_CODE_ENUM)
 	  {
 	    int unsigned_enum = 1;
 
 	    /* This is a non-empty enum. */
 
 	    /* DEC c89 has the number of enumerators in the sh.value field,
-	       not the type length, so we have to compensate for that
-	       incompatibility quirk.
-	       This might do the wrong thing for an enum with one or two
-	       enumerators and gcc -gcoff -fshort-enums, but these cases
-	       are hopefully rare enough.
-	       Alpha cc -migrate has a sh.value field of zero, we adjust
-	       that too.  */
+	     * not the type length, so we have to compensate for that
+	     * incompatibility quirk.
+	     * This might do the wrong thing for an enum with one or two
+	     * enumerators and gcc -gcoff -fshort-enums, but these cases
+	     * are hopefully rare enough.
+	     * Alpha cc -migrate has a sh.value field of zero, we adjust
+	     * that too.  */
 	    if (TYPE_LENGTH (t) == TYPE_NFIELDS (t)
 		|| TYPE_LENGTH (t) == 0)
 	      TYPE_LENGTH_ASSIGN (t) = TARGET_INT_BIT / HOST_CHAR_BIT;
 	    for (ext_tsym = ext_sh + external_sym_size;
 		 ;
 		 ext_tsym += external_sym_size)
-	      {
-		SYMR tsym;
-		struct symbol *enum_sym;
+	    {
+	      SYMR tsym;
+	      struct symbol *enum_sym;
 
-		(*swap_sym_in)(cur_bfd, ext_tsym, &tsym);
+	      (*swap_sym_in)(cur_bfd, ext_tsym, &tsym);
 
-		if (tsym.st != stMember)
-		  break;
+	      if (tsym.st != stMember)
+		break;
 
-		FIELD_BITPOS(*f) = (int)tsym.value;
-		FIELD_TYPE(*f) = t;
-		FIELD_NAME(*f) = (debug_info->ss + cur_fdr->issBase + tsym.iss);
-		FIELD_BITSIZE(*f) = 0;
-		FIELD_STATIC_KIND(*f) = 0;
+	      FIELD_BITPOS(*f) = (int)tsym.value;
+	      FIELD_TYPE(*f) = t;
+	      FIELD_NAME(*f) = (debug_info->ss + cur_fdr->issBase + tsym.iss);
+	      FIELD_BITSIZE(*f) = 0;
+	      FIELD_STATIC_KIND(*f) = 0;
 
-		enum_sym = ((struct symbol *)
-			    obstack_alloc(&current_objfile->objfile_obstack,
-					  sizeof(struct symbol)));
-		memset(enum_sym, 0, sizeof(struct symbol));
-		DEPRECATED_SYMBOL_NAME(enum_sym) =
-		  obsavestring(f->name, strlen(f->name),
-			       &current_objfile->objfile_obstack);
-		SYMBOL_CLASS(enum_sym) = LOC_CONST;
-		SYMBOL_TYPE(enum_sym) = t;
-		SYMBOL_DOMAIN(enum_sym) = VAR_DOMAIN;
-		SYMBOL_VALUE(enum_sym) = (int)tsym.value;
-		if (SYMBOL_VALUE(enum_sym) < 0)
-		  unsigned_enum = 0;
-		add_symbol(enum_sym, top_stack->cur_block);
+	      enum_sym = ((struct symbol *)
+			  obstack_alloc(&current_objfile->objfile_obstack,
+					sizeof(struct symbol)));
+	      memset(enum_sym, 0, sizeof(struct symbol));
+	      DEPRECATED_SYMBOL_NAME(enum_sym) =
+	      obsavestring(f->name, strlen(f->name),
+			   &current_objfile->objfile_obstack);
+	      SYMBOL_CLASS(enum_sym) = LOC_CONST;
+	      SYMBOL_TYPE(enum_sym) = t;
+	      SYMBOL_DOMAIN(enum_sym) = VAR_DOMAIN;
+	      SYMBOL_VALUE(enum_sym) = (int)tsym.value;
+	      if (SYMBOL_VALUE(enum_sym) < 0)
+		unsigned_enum = 0;
+	      add_symbol(enum_sym, top_stack->cur_block);
 
-		/* Skip the stMembers that we have handled: */
-		count++;
-		f++;
-	      }
+	      /* Skip the stMembers that we have handled: */
+	      count++;
+	      f++;
+	    }
 	    if (unsigned_enum)
 	      TYPE_FLAGS(t) |= TYPE_FLAG_UNSIGNED;
 	  }
-	/* make this the current type */
-	top_stack->cur_type = t;
-	top_stack->cur_field = 0;
+	  /* make this the current type */
+	  top_stack->cur_type = t;
+	  top_stack->cur_field = 0;
 
-	/* Do not create a symbol for alpha cc unnamed structs.  */
-	if (sh->iss == 0)
-	  break;
+	  /* Do not create a symbol for alpha cc unnamed structs.  */
+	  if (sh->iss == 0)
+	    break;
 
-	/* gcc puts out an empty struct for an opaque struct definitions,
-	   do not create a symbol for it either.  */
-	if (TYPE_NFIELDS (t) == 0)
+	  /* gcc puts out an empty struct for an opaque struct definitions,
+	   * do not create a symbol for it either.  */
+	  if (TYPE_NFIELDS (t) == 0)
 	  {
 	    TYPE_FLAGS (t) |= TYPE_FLAG_STUB;
 	    break;
 	  }
 
-	s = new_symbol (name);
-	SYMBOL_DOMAIN (s) = STRUCT_DOMAIN;
-	SYMBOL_CLASS (s) = LOC_TYPEDEF;
-	SYMBOL_VALUE (s) = 0;
-	SYMBOL_TYPE (s) = t;
-	add_symbol (s, top_stack->cur_block);
-	break;
-
-	/* End of local variables shared by struct, union, enum, and
-	   block (as yet unknown struct/union/enum) processing.  */
-      } /* end scope */
-
-    case_stBlock_code:
-      found_ecoff_debugging_info = 1;
-      /* beginnning of (code) block. Value of symbol
-         is the displacement from procedure start */
-      push_parse_stack ();
-
-      /* Do not start a new block if this is the outermost block of a
-         procedure.  This allows the LOC_BLOCK symbol to point to the
-         block with the local variables, so funcname::var works.  */
-      if (top_stack->blocktype == stProc
-	  || top_stack->blocktype == stStaticProc)
-	{
-	  top_stack->blocktype = stNil;
-	  break;
-	}
-
-      top_stack->blocktype = stBlock;
-      b = new_block (NON_FUNCTION_BLOCK);
-      BLOCK_START (b) = sh->value + top_stack->procadr;
-      BLOCK_SUPERBLOCK (b) = top_stack->cur_block;
-      top_stack->cur_block = b;
-      add_block (b, top_stack->cur_st);
-      break;
-
-    case stEnd:		/* end (of anything) */
-      if (sh->sc == scInfo || SC_IS_COMMON (sh->sc))
-	{
-	  /* Finished with type */
-	  top_stack->cur_type = 0;
-	}
-      else if (sh->sc == scText &&
-	       (top_stack->blocktype == stProc ||
-		top_stack->blocktype == stStaticProc))
-	{
-	  /* Finished with procedure */
-	  struct blockvector *bv = BLOCKVECTOR (top_stack->cur_st);
-	  struct mdebug_extra_func_info *e;
-	  struct block *b = top_stack->cur_block;
-	  struct type *ftype = top_stack->cur_type;
-	  int i;
-
-	  BLOCK_END (top_stack->cur_block) += sh->value;	/* size */
-
-	  /* Make up special symbol to contain procedure specific info */
-	  s = new_symbol (MDEBUG_EFI_SYMBOL_NAME);
-	  SYMBOL_DOMAIN (s) = LABEL_DOMAIN;
-	  SYMBOL_CLASS (s) = LOC_CONST;
-	  SYMBOL_TYPE (s) = mdebug_type_void;
-	  e = ((struct mdebug_extra_func_info *)
-	       obstack_alloc (&current_objfile->objfile_obstack,
-			      sizeof (struct mdebug_extra_func_info)));
-	  memset (e, 0, sizeof (struct mdebug_extra_func_info));
-	  SYMBOL_VALUE (s) = (long) e;
-	  e->numargs = top_stack->numargs;
-	  e->pdr.framereg = -1;
+	  s = new_symbol (name);
+	  SYMBOL_DOMAIN (s) = STRUCT_DOMAIN;
+	  SYMBOL_CLASS (s) = LOC_TYPEDEF;
+	  SYMBOL_VALUE (s) = 0;
+	  SYMBOL_TYPE (s) = t;
 	  add_symbol (s, top_stack->cur_block);
+	  break;
 
-	  /* f77 emits proc-level with address bounds==[0,0],
-	     So look for such child blocks, and patch them.  */
-	  for (i = 0; i < BLOCKVECTOR_NBLOCKS (bv); i++)
+	case_stBlock_code:
+	  found_ecoff_debugging_info = 1;
+	  /* beginnning of (code) block. Value of symbol
+	   * is the displacement from procedure start */
+	  push_parse_stack ();
+
+	  /* Do not start a new block if this is the outermost block of a
+	   * procedure.  This allows the LOC_BLOCK symbol to point to the
+	   * block with the local variables, so funcname::var works.  */
+	  if (top_stack->blocktype == stProc
+	      || top_stack->blocktype == stStaticProc)
+	  {
+	    top_stack->blocktype = stNil;
+	    break;
+	  }
+
+	  top_stack->blocktype = stBlock;
+	  b = new_block (NON_FUNCTION_BLOCK);
+	  BLOCK_START (b) = sh->value + top_stack->procadr;
+	  BLOCK_SUPERBLOCK (b) = top_stack->cur_block;
+	  top_stack->cur_block = b;
+	  add_block (b, top_stack->cur_st);
+	  break;
+
+	case stEnd:		/* end (of anything) */
+	  if (sh->sc == scInfo || SC_IS_COMMON (sh->sc))
+	  {
+	    /* Finished with type */
+	    top_stack->cur_type = 0;
+	  }
+	  else if (sh->sc == scText &&
+		   (top_stack->blocktype == stProc ||
+		    top_stack->blocktype == stStaticProc))
+	  {
+	    /* Finished with procedure */
+	    struct blockvector *bv = BLOCKVECTOR (top_stack->cur_st);
+	    struct mdebug_extra_func_info *e;
+	    struct block *b = top_stack->cur_block;
+	    struct type *ftype = top_stack->cur_type;
+	    int i;
+
+	    BLOCK_END (top_stack->cur_block) += sh->value;	/* size */
+
+	    /* Make up special symbol to contain procedure specific info */
+	    s = new_symbol (MDEBUG_EFI_SYMBOL_NAME);
+	    SYMBOL_DOMAIN (s) = LABEL_DOMAIN;
+	    SYMBOL_CLASS (s) = LOC_CONST;
+	    SYMBOL_TYPE (s) = mdebug_type_void;
+	    e = ((struct mdebug_extra_func_info *)
+		 obstack_alloc (&current_objfile->objfile_obstack,
+				sizeof (struct mdebug_extra_func_info)));
+	    memset (e, 0, sizeof (struct mdebug_extra_func_info));
+	    SYMBOL_VALUE (s) = (long) e;
+	    e->numargs = top_stack->numargs;
+	    e->pdr.framereg = -1;
+	    add_symbol (s, top_stack->cur_block);
+
+	    /* f77 emits proc-level with address bounds==[0,0],
+	     * So look for such child blocks, and patch them.  */
+	    for (i = 0; i < BLOCKVECTOR_NBLOCKS (bv); i++)
 	    {
 	      struct block *b_bad = BLOCKVECTOR_BLOCK (bv, i);
 	      if (BLOCK_SUPERBLOCK (b_bad) == b
 		  && BLOCK_START (b_bad) == top_stack->procadr
 		  && BLOCK_END (b_bad) == top_stack->procadr)
-		{
-		  BLOCK_START (b_bad) = BLOCK_START (b);
-		  BLOCK_END (b_bad) = BLOCK_END (b);
-		}
+	      {
+		BLOCK_START (b_bad) = BLOCK_START (b);
+		BLOCK_END (b_bad) = BLOCK_END (b);
+	      }
 	    }
 
-	  if (TYPE_NFIELDS (ftype) <= 0)
+	    if (TYPE_NFIELDS (ftype) <= 0)
 	    {
 	      /* No parameter type information is recorded with the function's
-	         type.  Set that from the type of the parameter symbols. */
+	       * type.  Set that from the type of the parameter symbols. */
 	      int nparams = top_stack->numargs;
 	      int iparams;
 	      struct symbol *sym;
 
 	      if (nparams > 0)
+	      {
+		struct dict_iterator iter;
+		TYPE_NFIELDS(ftype) = (short)nparams;
+		TYPE_FIELDS(ftype) =
+		  ((struct field *)
+		   TYPE_ALLOC(ftype, (nparams * sizeof(struct field))));
+
+		iparams = 0;
+		ALL_BLOCK_SYMBOLS (b, iter, sym)
 		{
-		  struct dict_iterator iter;
-		  TYPE_NFIELDS(ftype) = (short)nparams;
-		  TYPE_FIELDS(ftype) =
-		    ((struct field *)
-		     TYPE_ALLOC(ftype, (nparams * sizeof(struct field))));
+		  if (iparams == nparams)
+		    break;
 
-		  iparams = 0;
-		  ALL_BLOCK_SYMBOLS (b, iter, sym)
-		    {
-		      if (iparams == nparams)
-			break;
-
-		      switch (SYMBOL_CLASS (sym))
-			{
-			case LOC_ARG:
-			case LOC_REF_ARG:
-			case LOC_REGPARM:
-			case LOC_REGPARM_ADDR:
-			  TYPE_FIELD_TYPE (ftype, iparams) = SYMBOL_TYPE (sym);
-			  TYPE_FIELD_ARTIFICIAL (ftype, iparams) = 0;
-			  iparams++;
-			  break;
-			default:
-			  break;
-			}
-		    }
+		  switch (SYMBOL_CLASS (sym))
+		  {
+		    case LOC_ARG:
+		    case LOC_REF_ARG:
+		    case LOC_REGPARM:
+		    case LOC_REGPARM_ADDR:
+		      TYPE_FIELD_TYPE (ftype, iparams) = SYMBOL_TYPE (sym);
+		      TYPE_FIELD_ARTIFICIAL (ftype, iparams) = 0;
+		      iparams++;
+		      break;
+		    default:
+		      break;
+		  }
 		}
+	      }
 	    }
-	}
-      else if (sh->sc == scText && top_stack->blocktype == stBlock)
-	{
-	  /* End of (code) block. The value of the symbol is the
-	     displacement from the procedure`s start address of the
-	     end of this block. */
-	  BLOCK_END (top_stack->cur_block) = sh->value + top_stack->procadr;
-	}
-      else if (sh->sc == scText && top_stack->blocktype == stNil)
-	{
-	  /* End of outermost block.  Pop parse stack and ignore.  The
-	     following stEnd of stProc will take care of the block.  */
-	  ;
-	}
-      else if (sh->sc == scText && top_stack->blocktype == stFile)
-	{
-	  /* End of file.  Pop parse stack and ignore.  Higher
-	     level code deals with this.  */
-	  ;
-	}
-      else
-	complaint (&symfile_complaints,
-		   _("stEnd with storage class %d not handled"), sh->sc);
-
-      pop_parse_stack ();	/* restore previous lexical context */
-      break;
-
-    case stMember:		/* member of struct or union */
-      f = &TYPE_FIELDS(top_stack->cur_type)[top_stack->cur_field++];
-      FIELD_NAME(*f) = name;
-      FIELD_BITPOS(*f) = (int)sh->value;
-      bitsize = 0;
-      FIELD_TYPE(*f) = parse_type(cur_fd, ax, sh->index, &bitsize, bigend,
-				  name);
-      FIELD_BITSIZE(*f) = bitsize;
-      FIELD_STATIC_KIND(*f) = 0;
-      break;
-
-    case stIndirect:		/* forward declaration on Irix5 */
-      /* Forward declarations from Irix5 cc are handled by cross_ref,
-         skip them.  */
-      break;
-
-    case stTypedef:		/* type definition */
-      found_ecoff_debugging_info = 1;
-
-      /* Typedefs for forward declarations and opaque structs from alpha cc
-         are handled by cross_ref, skip them.  */
-      if (sh->iss == 0)
-	break;
-
-      /* Parse the type or use the pending type.  */
-      pend = is_pending_symbol (cur_fdr, ext_sh);
-      if (pend == (struct mdebug_pending *) NULL)
-	{
-	  t = parse_type (cur_fd, ax, sh->index, (int *) NULL, bigend, name);
-	  add_pending (cur_fdr, ext_sh, t);
-	}
-      else
-	t = pend->t;
-
-      /* mips cc puts out a typedef with the name of the struct for forward
-         declarations. These should not go into the symbol table and
-         TYPE_NAME should not be set for them.
-         They can't be distinguished from an intentional typedef to
-         the same name however:
-         x.h:
-         struct x { int ix; int jx; };
-         struct xx;
-         x.c:
-         typedef struct x x;
-         struct xx {int ixx; int jxx; };
-         generates a cross referencing stTypedef for x and xx.
-         The user visible effect of this is that the type of a pointer
-         to struct foo sometimes is given as `foo *' instead of `struct foo *'.
-         The problem is fixed with alpha cc and Irix5 cc.  */
-
-      /* However if the typedef cross references to an opaque aggregate, it
-         is safe to omit it from the symbol table.  */
-
-      if (has_opaque_xref (cur_fdr, sh))
-	break;
-      s = new_symbol (name);
-      SYMBOL_DOMAIN (s) = VAR_DOMAIN;
-      SYMBOL_CLASS (s) = LOC_TYPEDEF;
-      SYMBOL_BLOCK_VALUE (s) = top_stack->cur_block;
-      SYMBOL_TYPE (s) = t;
-      add_symbol (s, top_stack->cur_block);
-
-      /* Incomplete definitions of structs should not get a name.  */
-      if (TYPE_NAME (SYMBOL_TYPE (s)) == NULL
-	  && (TYPE_NFIELDS (SYMBOL_TYPE (s)) != 0
-	      || (TYPE_CODE (SYMBOL_TYPE (s)) != TYPE_CODE_STRUCT
-		  && TYPE_CODE (SYMBOL_TYPE (s)) != TYPE_CODE_UNION)))
-	{
-	  if (TYPE_CODE (SYMBOL_TYPE (s)) == TYPE_CODE_PTR
-	      || TYPE_CODE (SYMBOL_TYPE (s)) == TYPE_CODE_FUNC)
-	    {
-	      /* If we are giving a name to a type such as "pointer to
-	         foo" or "function returning foo", we better not set
-	         the TYPE_NAME.  If the program contains "typedef char
-	         *caddr_t;", we don't want all variables of type char
-	         * to print as caddr_t.  This is not just a
-	         consequence of GDB's type management; CC and GCC (at
-	         least through version 2.4) both output variables of
-	         either type char * or caddr_t with the type
-	         refering to the stTypedef symbol for caddr_t.  If a future
-	         compiler cleans this up it GDB is not ready for it
-	         yet, but if it becomes ready we somehow need to
-	         disable this check (without breaking the PCC/GCC2.4
-	         case).
-
-	         Sigh.
-
-	         Fortunately, this check seems not to be necessary
-	         for anything except pointers or functions.  */
-	    }
+	  }
+	  else if (sh->sc == scText && top_stack->blocktype == stBlock)
+	  {
+	    /* End of (code) block. The value of the symbol is the
+	     * displacement from the procedure`s start address of the
+	     * end of this block. */
+	    BLOCK_END (top_stack->cur_block) = sh->value + top_stack->procadr;
+	  }
+	  else if (sh->sc == scText && top_stack->blocktype == stNil)
+	  {
+	    /* End of outermost block.  Pop parse stack and ignore.  The
+	     * following stEnd of stProc will take care of the block.  */
+	    ;
+	  }
+	  else if (sh->sc == scText && top_stack->blocktype == stFile)
+	  {
+	    /* End of file.  Pop parse stack and ignore.  Higher
+	     * level code deals with this.  */
+	    ;
+	  }
 	  else
-	    TYPE_NAME(SYMBOL_TYPE(s)) = DEPRECATED_SYMBOL_NAME(s);
-	}
-      break;
+	    complaint (&symfile_complaints,
+		       _("stEnd with storage class %d not handled"), sh->sc);
 
-    case stFile:		/* file name */
-      push_parse_stack();
-      top_stack->blocktype = sh->st;
-      break;
+	  pop_parse_stack ();	/* restore previous lexical context */
+	  break;
 
-      /* I have never seen these for C */
-    case stRegReloc:
-      break;			/* register relocation */
-    case stForward:
-      break;			/* forwarding address */
-    case stConstant:
-      break;			/* constant */
-    default:
-      complaint(&symfile_complaints, _("unknown symbol type 0x%x"), sh->st);
-      break;
-    } /* end switch on sh->st */
+	case stMember:		/* member of struct or union */
+	  f = &TYPE_FIELDS(top_stack->cur_type)[top_stack->cur_field++];
+	  FIELD_NAME(*f) = name;
+	  FIELD_BITPOS(*f) = (int)sh->value;
+	  bitsize = 0;
+	  FIELD_TYPE(*f) = parse_type(cur_fd, ax, sh->index, &bitsize, bigend,
+				      name);
+	  FIELD_BITSIZE(*f) = bitsize;
+	  FIELD_STATIC_KIND(*f) = 0;
+	  break;
+
+	case stIndirect:		/* forward declaration on Irix5 */
+	  /* Forward declarations from Irix5 cc are handled by cross_ref,
+	   * skip them.  */
+	  break;
+
+	case stTypedef:		/* type definition */
+	  found_ecoff_debugging_info = 1;
+
+	  /* Typedefs for forward declarations and opaque structs from alpha cc
+	   * are handled by cross_ref, skip them.  */
+	  if (sh->iss == 0)
+	    break;
+
+	  /* Parse the type or use the pending type.  */
+	  pend = is_pending_symbol (cur_fdr, ext_sh);
+	  if (pend == (struct mdebug_pending *) NULL)
+	  {
+	    t = parse_type (cur_fd, ax, sh->index, (int *) NULL, bigend, name);
+	    add_pending (cur_fdr, ext_sh, t);
+	  }
+	  else
+	    t = pend->t;
+
+	  /* mips cc puts out a typedef with the name of the struct for forward
+	   * declarations. These should not go into the symbol table and
+	   * TYPE_NAME should not be set for them.
+	   * They cannot be distinguished from an intentional typedef to
+	   * the same name however:
+	   * x.h:
+	   * struct x { int ix; int jx; };
+	   * struct xx;
+	   * x.c:
+	   * typedef struct x x;
+	   * struct xx {int ixx; int jxx; };
+	   * generates a cross referencing stTypedef for x and xx.
+	   * The user visible effect of this is that the type of a pointer to
+	   * struct foo sometimes is given as `foo *' instead of `struct foo *'.
+	   * The problem is fixed with alpha cc and Irix5 cc.  */
+
+	  /* However if the typedef cross references to an opaque aggregate, it
+	   * is safe to omit it from the symbol table.  */
+
+	  if (has_opaque_xref (cur_fdr, sh))
+	    break;
+	  s = new_symbol (name);
+	  SYMBOL_DOMAIN (s) = VAR_DOMAIN;
+	  SYMBOL_CLASS (s) = LOC_TYPEDEF;
+	  SYMBOL_BLOCK_VALUE (s) = top_stack->cur_block;
+	  SYMBOL_TYPE (s) = t;
+	  add_symbol (s, top_stack->cur_block);
+
+	  /* Incomplete definitions of structs should not get a name.  */
+	  if (TYPE_NAME (SYMBOL_TYPE (s)) == NULL
+	      && (TYPE_NFIELDS (SYMBOL_TYPE (s)) != 0
+		  || (TYPE_CODE (SYMBOL_TYPE (s)) != TYPE_CODE_STRUCT
+		      && TYPE_CODE (SYMBOL_TYPE (s)) != TYPE_CODE_UNION)))
+	  {
+	    if (TYPE_CODE (SYMBOL_TYPE (s)) == TYPE_CODE_PTR
+		|| TYPE_CODE (SYMBOL_TYPE (s)) == TYPE_CODE_FUNC)
+	    {
+	      /* If we are giving a name to a type such as "pointer to foo" or
+	       * "function returning foo", we better not set the TYPE_NAME.
+	       * If the program contains "typedef char *caddr_t;", we do NOT
+	       * want all variables of type char * to print as caddr_t.
+	       * This is not just a consequence of GDB's type management;
+	       * CC and GCC (at least through version 2.4) both output
+	       * variables of either type char * or caddr_t with the type
+	       * refering to the stTypedef symbol for caddr_t.  If a future
+	       * compiler cleans this up it GDB is not ready for it yet, but if
+	       * it becomes ready we somehow need to disable this check
+	       * (without breaking the PCC/GCC2.4 case).
+	       *
+	       * Sigh.
+	       *
+	       * Fortunately, this check seems not to be necessary for anything
+	       * except pointers or functions.  */
+	    }
+	    else
+	      TYPE_NAME(SYMBOL_TYPE(s)) = DEPRECATED_SYMBOL_NAME(s);
+	  }
+	  break;
+
+	case stFile:		/* file name */
+	  push_parse_stack();
+	  top_stack->blocktype = sh->st;
+	  break;
+
+	  /* I have never seen these for C */
+	case stRegReloc:
+	  break;			/* register relocation */
+	case stForward:
+	  break;			/* forwarding address */
+	case stConstant:
+	  break;			/* constant */
+	default:
+	  complaint(&symfile_complaints, _("unknown symbol type 0x%x"), sh->st);
+	  break;
+      } /* end switch on sh->st */
+    } /* end if */
 
   return count;
 }
