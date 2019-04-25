@@ -89,6 +89,40 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #ifndef S_SPLINT_S
 # include <CoreFoundation/CoreFoundation.h>
 # include <CoreFoundation/CFPropertyList.h>
+#else
+typedef void *CFAllocatorRef;
+typedef void *CFArrayRef;
+typedef const void *CFDataRef;
+typedef void *CFDictionaryRef;
+typedef signed long CFIndex;
+typedef void *CFMutableArrayRef;
+typedef void *CFMutableDictionaryRef;
+typedef void *CFStringRef;
+typedef const void *CFTypeRef;
+typedef CFTypeRef CFPropertyListRef;
+typedef void *CFURLRef;
+typedef void *CFUUIDRef;
+# if !defined(__MACTYPES__) && !defined(__TYPES__)
+typedef unsigned char UInt8;
+# endif /* !__MACTYPES__ && !__TYPES__ */
+typedef struct {
+  UInt8 byte0;
+  UInt8 byte1;
+  UInt8 byte2;
+  UInt8 byte3;
+  UInt8 byte4;
+  UInt8 byte5;
+  UInt8 byte6;
+  UInt8 byte7;
+  UInt8 byte8;
+  UInt8 byte9;
+  UInt8 byte10;
+  UInt8 byte11;
+  UInt8 byte12;
+  UInt8 byte13;
+  UInt8 byte14;
+  UInt8 byte15;
+} CFUUIDBytes;
 #endif /* !S_SPLINT_S */
 
 #include "readline/tilde.h" /* For tilde_expand */
@@ -141,7 +175,7 @@ CORE_ADDR kernel_slide = INVALID_ADDRESS;
 static char *find_info_plist_filename_from_bundle_name(const char *bundle,
                                                      const char *bundle_suffix);
 
-#if defined(USE_DEBUG_SYMBOLS_FRAMEWORK) && USE_DEBUG_SYMBOLS_FRAMEWORK && !defined(S_SPLINT_S)
+#if defined(USE_DEBUG_SYMBOLS_FRAMEWORK) && USE_DEBUG_SYMBOLS_FRAMEWORK
 # ifndef EXTERN_C
 #  ifdef __cplusplus
 #   define EXTERN_C extern "C"
@@ -154,13 +188,9 @@ extern CFArrayRef DBGCopyMatchingUUIDsForURL(CFURLRef path,
                                            int /* cpu_subtype_t */ cpuSubtype);
 EXTERN_C CFURLRef DBGCopyDSYMURLForUUID(CFUUIDRef uuid);
 EXTERN_C CFDictionaryRef DBGCopyDSYMPropertyLists(CFURLRef dsym_url);
-#endif /* USE_DEBUG_SYMBOLS_FRAMEWORK && !S_SPLINT_S */
+#endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
 
-#ifndef S_SPLINT_S
 static void get_uuid_t_for_uuidref(CFUUIDRef uuid_in, uuid_t *uuid_out);
-#else
-static void get_uuid_t_for_uuidref(void *uuid_in, uuid_t *uuid_out);
-#endif /* !S_SPLINT_S */
 
 static const char dsym_extension[] = ".dSYM";
 static const char dsym_bundle_subdir[] = "Contents/Resources/DWARF/";
@@ -890,7 +920,7 @@ get_uuid_t_for_uuidref(CFUUIDRef uuid_in, uuid_t *uuid_out)
 
   assert(sizeof(uuid_t) == sizeof(CFUUIDBytes));
 
-  ret = CFUUIDGetUUIDBytes (uuid_in);
+  ret = CFUUIDGetUUIDBytes(uuid_in);
 
   memcpy((uint8_t *)uuid_out, (uint8_t *)&ret, sizeof(uuid_t));
 }

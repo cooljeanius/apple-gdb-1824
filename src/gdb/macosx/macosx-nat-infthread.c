@@ -314,6 +314,8 @@ modify_trace_bit(thread_t thread, int value)
 
   return KERN_SUCCESS;
 }
+#elif defined(S_SPLINT_S)
+# include "macosx-nat-threads.h"
 #else
 # error "unknown target architecture"
 #endif /* TARGET */
@@ -857,11 +859,16 @@ print_thread_info(thread_t tid, int *gdb_thread_id)
                         tident.thread_handle, &pth, sizeof(pth));
   if (retval != 0)
     {
-      if (pth.pth_name[0] != '\0')
+      if (pth.pth_name[0] != '\0') {
         printf_filtered("\tthread name: \"%s\"\n", pth.pth_name);
-
+      }
+#ifdef PRIu64
       printf_filtered("\ttotal user time: %" PRIu64 "\n", pth.pth_user_time);
       printf_filtered("\ttotal system time: %" PRIu64 "\n", pth.pth_system_time);
+#else
+      printf_filtered("\ttotal user time: %u\n", pth.pth_user_time);
+      printf_filtered("\ttotal system time: %u\n", pth.pth_system_time);
+#endif /* PRIu64 */
       printf_filtered("\tscaled cpu usage percentage: %d\n", pth.pth_cpu_usage);
       printf_filtered("\tscheduling policy in effect: 0x%x\n", pth.pth_policy);
       printf_filtered("\trun state: 0x%x", pth.pth_run_state);

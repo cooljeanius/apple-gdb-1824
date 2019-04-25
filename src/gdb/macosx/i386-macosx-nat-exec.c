@@ -346,6 +346,9 @@ store_inferior_registers(int regno)
 #endif /* !DR_CONTROL */
 
 
+#if defined(S_SPLINT_S) && !defined(_MACH_I386_THREAD_STATUS_H_)
+typedef struct x86_debug_state x86_debug_state_t;
+#endif /* S_SPLINT_S && !_MACH_I386_THREAD_STATUS_H_ */
 /* This function handles the case of an i386 or an x86_64 inferior.
  * In the i386 case, only the lower 32 bits of the argument VALUE are
  * used: */

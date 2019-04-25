@@ -272,7 +272,7 @@ dyld_debug(const char *fmt, ...)
   if (dyld_debug_flag >= 1)
     {
       va_start(ap, fmt);
-      fprintf(dyld_stderr, "[%d dyld]: ", getpid());
+      fprintf(dyld_stderr, "[%d dyld]: ", (int)getpid());
       vfprintf(dyld_stderr, fmt, ap);
       va_end(ap);
       fflush(dyld_stderr);
@@ -2580,6 +2580,18 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
   size_t image_infos_size;
   gdb_byte *buf;
   CORE_ADDR adjustment;
+  /* keep this conditional the inverse of below: */
+#ifdef S_SPLINT_S
+  struct dyld_all_image_infos_offsets offsets =
+  {
+    0, i, i + i, i + i + 1, i + i + 2, i + i + 2 + b, (2 * i) + (2 * b),
+    (2 * i) + (2 * b) + 1, (2 * i) + (2 * b) + 2, (2 * i) + (2 * b) + 3,
+    (2 * i) + (2 * b) + 4, (2 * i) + (2 * b) + 5, (2 * i) + (2 * b) + 6,
+    (2 * i) + (2 * b) + 7, (2 * i) + (2 * b) + 8, (2 * i) + (2 * b) + 9,
+    (2 * i) + (2 * b) + 10, (2 * i) + (2 * b) + 11, (2 * i) + (2 * b) + 12,
+    (2 * i) + (2 * b) + 13, (2 * i) + (2 * b) + 14, (2 * i) + (2 * b) + 15,
+  };
+#endif /* S_SPLINT_S */
 
   gdb_assert(addr != INVALID_ADDRESS);
 
@@ -2595,8 +2607,10 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
  #  pragma GCC diagnostic ignored "-Wdeclaration-after-statement"
 # endif /* gcc 4.6+ */
 #endif /* any gcc, but not g++ */
+#ifndef S_SPLINT_S
   struct dyld_all_image_infos_offsets offsets =
-    { .version                         = 0,
+    {
+      .version                         = 0,
       .infoArrayCount                  = i,
       .infoArray                       = i + i,
       .notification                    = i + i + p,
@@ -2620,6 +2634,7 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
       .errorSymbol                     = i + i + p + p + b + b + (p - 2 * b) + p + p + p + p + p + p + p + p + p + p + p + p + p + p,
       .sharedCacheSlide                = i + i + p + p + b + b + (p - 2 * b) + p + p + p + p + p + p + p + p + p + p + p + p + p + p + p,
     };
+#endif /* !S_SPLINT_S */
 /* keep the condition the same as where we push: */
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))

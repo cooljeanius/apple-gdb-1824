@@ -5778,6 +5778,7 @@
 		A5965C7C198897D700404B03 /* xm-vaxbsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-vaxbsd.h"; sourceTree = "<group>"; };
 		A5965C7D198897D700404B03 /* xm-vaxult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-vaxult.h"; sourceTree = "<group>"; };
 		A5965C7E198897D700404B03 /* xm-vaxult2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-vaxult2.h"; sourceTree = "<group>"; };
+		A5992E5F22719892009498A3 /* symfile-mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "symfile-mem.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/symfile-mem.h"; sourceTree = "<absolute>"; };
 		A5A66DD31A54CA6000EDD221 /* trad-user.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "trad-user.h"; sourceTree = "<group>"; };
 		A5A673AE1A589D7700EDD221 /* aarch64-linux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "aarch64-linux-nat.c"; sourceTree = "<group>"; };
 		A5A673AF1A589D7700EDD221 /* aarch64-linux-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "aarch64-linux-tdep.c"; sourceTree = "<group>"; };
@@ -7412,6 +7413,7 @@
 				2609D8320E82C40D008125DE /* stop-gdb.c */,
 				A5AFD14A1A58ADE9006C21FE /* symfile-debug.c */,
 				2609D8330E82C40D008125DE /* symfile-mem.c */,
+				A5992E5F22719892009498A3 /* symfile-mem.h */,
 				2609D8340E82C40D008125DE /* symfile.c */,
 				2609D8350E82C40D008125DE /* symfile.h */,
 				2609D8360E82C40D008125DE /* symmisc.c */,

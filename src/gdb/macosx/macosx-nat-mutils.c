@@ -119,7 +119,7 @@ mutils_debug(const char *fmt, ...)
   if (mutils_debugflag)
     {
       va_start(ap, fmt);
-      fprintf(mutils_stderr, "[%d mutils]: ", getpid());
+      fprintf(mutils_stderr, "[%d mutils]: ", (int)getpid());
       vfprintf(mutils_stderr, fmt, ap);
       va_end(ap);
       fflush(mutils_stderr);
@@ -420,7 +420,7 @@ mach_xfer_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr,
 /* The old Tiger code used to call mach_vm_region to get the region
    info, but this would return a very large region of memory and we
    would be modifying permissions on this large chunk.  */
-static ATTRIBUTE_USED kern_return_t
+/*@unused@*/ static ATTRIBUTE_USED kern_return_t
 macosx_vm_region(task_t task, mach_vm_address_t addr,
 		 mach_vm_address_t *r_start, mach_vm_size_t *r_size,
 		 vm_prot_t *prot, vm_prot_t *max_prot)
@@ -595,7 +595,7 @@ macosx_vm_protect_range(task_t task, mach_vm_address_t region_start,
 }
 
 /* */
-static ATTRIBUTE_USED kern_return_t
+/*@unused@*/ static ATTRIBUTE_USED kern_return_t
 macosx_vm_protect_region(task_t task, mach_vm_address_t region_start,
 			 mach_vm_size_t region_size,
                          mach_vm_address_t addr, mach_vm_size_t size,
@@ -624,7 +624,7 @@ macosx_vm_protect_region(task_t task, mach_vm_address_t region_start,
 }
 
 /* */
-static ATTRIBUTE_USED kern_return_t
+/*@unused@*/ static ATTRIBUTE_USED kern_return_t
 macosx_get_region_info_both(task_t task, mach_vm_address_t addr,
                             mach_vm_address_t *r_start,
                             mach_vm_size_t *r_size,

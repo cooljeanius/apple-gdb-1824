@@ -53,6 +53,7 @@
 #include "target.h"
 #include "value.h"
 #include "symfile.h"
+#include "symfile-mem.h"
 #include "observer.h"
 #include "auxv.h"
 #include "elf/common.h"

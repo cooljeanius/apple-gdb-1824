@@ -277,7 +277,7 @@ static int macosx_child_thread_alive(ptid_t tpid);
 static struct pid_list *find_existing_processes_by_name(const char *procname);
 static int pid_present_on_pidlist(pid_t pid, struct pid_list *proclist);
 
-static const char *get_bundle_executable_from_plist(const char *pathname)
+/*@unused@*/static const char *get_bundle_executable_from_plist(const char *pnm)
   ATTRIBUTE_USED;
 
 #if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE
@@ -1513,7 +1513,7 @@ macosx_process_completer_quoted(const char *text, char *word, int quote,
 		 + 1UL + 16UL + 12UL);
       temp = (char *)xmalloc(templen);
       snprintf(temp, templen, "%s.%d", proc[i].kp_proc.p_comm,
-	       proc[i].kp_proc.p_pid);
+	       (int)proc[i].kp_proc.p_pid);
       found_procnames_len = ((strlen(temp) * 2UL) + 2UL + 2UL);
       procnames[found] = (char *)xmalloc(found_procnames_len);
       if (quote)
@@ -2271,7 +2271,7 @@ macosx_ptrace_me(void)
      the exception thread has started up before I exec.  The child
      side gets to create it, and also destroys it.  */
 
-  snprintf(sem_name, 63, "gdb-%d", getpid());
+  snprintf(sem_name, 63, "gdb-%d", (int)getpid());
   sem = sem_open(sem_name, (O_CREAT | O_EXCL), 0644, 0);
   if (sem == (sem_t *)SEM_FAILED)
     {
@@ -2320,7 +2320,7 @@ post_to_semaphore(void *input)
   sem_t *sem;
   char sem_name[64];
 
-  snprintf(sem_name, 63, "gdb-%d", pid);
+  snprintf(sem_name, 63, "gdb-%d", (int)pid);
   while (1)
     {
       sem = sem_open(sem_name, 0);
@@ -2371,7 +2371,7 @@ macosx_ptrace_him(int pid)
 
   {
     char buf[64];
-    snprintf(buf, sizeof(buf), "%s=%d", "TASK", itask);
+    snprintf(buf, sizeof(buf), "%s=%d", "TASK", (int)itask);
     putenv(buf);
   }
   if (kret != KERN_SUCCESS)
@@ -2616,7 +2616,35 @@ macosx_child_create_inferior(char *exec_file, char *allargs, char **env,
 }
 #else /* #if defined(TARGET_ARM)  */
 
-# include <Security/Security.h>
+# ifndef S_SPLINT_S
+#  include <Security/Security.h>
+# else
+#  if !defined(__MACTYPES__) && !defined(__TYPES__)
+#   if defined(__LP64__) && __LP64__
+typedef unsigned int UInt32;
+typedef signed int SInt32;
+#   else
+typedef unsigned long UInt32;
+typedef signed long SInt32;
+#   endif /* __LP64__ */
+typedef SInt32 OSStatus;
+#  endif /* !__MACTYPES__ && !__TYPES__ */
+typedef const char *AuthorizationString;
+typedef struct {
+  AuthorizationString name;
+  size_t valueLength;
+  void *value;
+  UInt32 flags;
+} AuthorizationItem;
+typedef struct {
+  UInt32 count;
+  AuthorizationItem *items;
+} AuthorizationItemSet;
+typedef AuthorizationItemSet AuthorizationRights;
+typedef AuthorizationItemSet AuthorizationEnvironment;
+typedef const void *AuthorizationRef;
+typedef UInt32 AuthorizationFlags;
+# endif /* !S_SPLINT_S */
 
 int
 macosx_get_task_for_pid_rights(void)

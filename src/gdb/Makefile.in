@@ -687,9 +687,9 @@ CLIBS = $(SIM) $(READLINE) $(OPCODES) $(BFD) $(ZLIB) $(INTL) $(LIBIBERTY) \
 	$(DEBUG_SYMBOLS_LDFLAGS) \
 	$(MMALLOC) $(WITH_MMALLOC) $(WIN32LIBS) $(LIBSQLITE3)
 
-CDEPS = $(XM_CDEPS) $(TM_CDEPS) $(NAT_CDEPS) $(SIM) $(BFD_DEP) $(READLINE_DEP) \
-	$(OPCODES_DEP) $(MMALLOC_DEP) $(INTL_DEP) $(LIBIBERTY_DEP) $(CONFIG_DEPS) \
-	$(LIBIBERTY_DEP) $(WIN32LIBS)
+CDEPS = $(XM_CDEPS) $(TM_CDEPS) $(NAT_CDEPS) $(SIM) $(BFD_DEP) \
+	$(READLINE_DEP) $(OPCODES_DEP) $(MMALLOC_DEP) $(INTL_DEP) \
+	$(LIBIBERTY_DEP) $(CONFIG_DEPS) $(LIBIBERTY_DEP) $(WIN32LIBS)
 
 ADD_FILES = $(XM_ADD_FILES) $(TM_ADD_FILES) $(NAT_ADD_FILES)
 ADD_DEPS = $(XM_ADD_FILES) $(TM_ADD_FILES) $(NAT_ADD_FILES)
@@ -890,7 +890,7 @@ SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c  \
   ui-out.c utils.c ui-file.h ui-file.c \
   user-regs.c \
   valarith.c valops.c valprint.c value.c varobj.c \
-  wrapper.c x86-shared-tdep.c
+  wrapper.c target/x86-shared-tdep.c
 # APPLE LOCAL end subroutine inlining
 
 LINTFILES = $(SFILES) $(YYFILES) $(CONFIG_SRCS) init.c
@@ -1824,12 +1824,30 @@ TAGS: $(TAGFILES_NO_SRCDIR) $(TAGFILES_WITH_SRCDIR)
 	  $(srcdir)/$(NAT_FILE) \
 	`(for i in $(DEPFILES) $(TAGFILES_NO_SRCDIR); do \
 	    j=$${i/\.o/\.c}; \
-	    if [ -f $(srcdir)/$${j} ] ; then \
-	      echo $(srcdir)/$${j}; else echo $(macosxsrcdir)/$${j}; fi; \
+	    if [ -f $(srcdir)/$${j} ]; then \
+	      echo $(srcdir)/$${j}; \
+	    elif [ -f $(srcdir)/target/$${j} ]; then \
+	      echo $(srcdir)/target/$${j}; \
+	    elif [ -f $(srcdir)/nat/$${j} ]; then \
+	      echo $(srcdir)/nat/$${j}; \
+	    elif [ -f $(srcdir)/cli/$${j} ]; then \
+	      echo $(srcdir)/cli/$${j}; \
+	    elif [ -f $(srcdir)/mi/$${j} ]; then \
+	      echo $(srcdir)/mi/$${j}; \
+	    elif [ -f $(srcdir)/attic/$${j} ]; then \
+	      echo $(srcdir)/attic/$${j}; \
+	    else echo $(macosxsrcdir)/$${j}; fi; \
 	done; for i in $(TAGFILES_WITH_SRCDIR); do \
 		echo $${i}; \
 	done)` \
 	`find $(srcdir)/config -name '*.h' -print`
+
+# FIXME: still missing:
+# - amdfbsd-nat.c
+# - mcore-tdep.c
+# - mipsm3-nat.c
+# - symm-tdep.c
+# - symm-nat.c
 
 tags: TAGS
 
@@ -2130,9 +2148,15 @@ stamp-clang: $(LINTFILES) $(DEPFILES)
 	touch $@
 .PHONY: lint-local
 
-#FIXME: cxref has trouble with frameworks...
-gdb.cxref: $(SFILES)
-	cxref -I. -Imacosx $(CXREF_FLAGS) $(SFILES) >gdb.cxref
+# cxref has many of the same limitations as splint, so reuse the same
+# preprocessor define that splint uses:
+gdb.cxref.bz2: $(SFILES)
+	if test ! -d doc/cxref; then $(MKDIR_P) doc/cxref; fi
+	cxref -Odoc/cxref -Ngdb.cxref -R. -xref -I. -Imacosx $(CXREF_FLAGS) \
+	  `echo $(SFILES) | $(SED) 's/\.y /\.c /g'` -DS_SPLINT_S -warn-xref \
+	  -U__BLOCKS__ -index -latex -html -rtf -sgml -raw -no-comments \
+	  -DRUNNING_CXREF >gdb.cxref
+	bzip2 gdb.cxref
 
 force_update:
 

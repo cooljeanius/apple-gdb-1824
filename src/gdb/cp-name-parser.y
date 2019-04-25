@@ -39,6 +39,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include <unistd.h>
 #include <string.h>
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
 #include "safe-ctype.h"
 /* 0 means unavailable; needs to go before "libiberty.h" for -Wundef: */
 #ifndef HAVE_DECL_BASENAME
@@ -2121,11 +2125,18 @@ main(int argc, char **argv)
 	  str2 = cplus_demangle(buf, DMGL_PARAMS | DMGL_ANSI | DMGL_VERBOSE);
 	  if (str2 == NULL)
 	    {
+	      char smaller_buf[4095];
+	      int bufindx = 0;
+	      while (bufindx < 4095)
+	      {
+		smaller_buf[bufindx] = buf[bufindx];
+		bufindx++;
+	      }
 #if defined(DMGL_VERBOSE) && (DMGL_VERBOSE > 1)
 	      printf("Demangling error\n");
 #endif /* DMGL_VERBOSE > 1 */
 	      if (c)
-		printf("%s%c%s\n", buf, c, extra_chars);
+		printf("%s%c%s\n", smaller_buf, c, extra_chars);
 	      else
 		printf("%s\n", buf);
 	      continue;

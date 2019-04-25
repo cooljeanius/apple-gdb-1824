@@ -52,8 +52,22 @@
 #include <ctype.h>
 #include <libintl.h>
 
-#include <CoreFoundation/CFURLAccess.h>
-#include <CoreFoundation/CFPropertyList.h>
+#ifndef S_SPLINT_S
+# include <CoreFoundation/CFURLAccess.h>
+# include <CoreFoundation/CFPropertyList.h>
+#else
+typedef void *CFAllocatorRef;
+typedef const void *CFDataRef;
+typedef void *CFDictionaryRef;
+typedef signed long CFIndex;
+typedef void *CFStringRef;
+typedef const void *CFTypeRef;
+typedef CFTypeRef CFPropertyListRef;
+typedef void *CFURLRef;
+# if !defined(__MACTYPES__) && !defined(__TYPES__)
+typedef unsigned char UInt8;
+# endif /* !__MACTYPES__ && !__TYPES__ */
+#endif /* !S_SPLINT_S */
 #include "macosx-nat-utils.h"
 #include "macosx-nat-dyld.h"
 

@@ -1,0 +1,350 @@
+varobj.c # struct varobj_root
+varobj.c # enum varobj_join_type
+varobj.c # struct varobj
+varobj.c # struct varobj_child
+varobj.c # struct vstack
+varobj.c # struct cpstack
+varobj.c # struct vlist
+varobj.c # struct varobj_changelist_elem
+varobj.c # struct varobj_changelist
+varobj.c # struct language_specific
+varobj.c # enum vsections
+value.c # struct value
+value.c # struct cached_value
+value.c # struct value_history_chunk
+valops.c # enum oload_classification
+valops.c # struct string_in_child
+valops.c # struct thread_is_safe_args
+user-regs.c # struct user_reg
+user-regs.c # struct gdb_user_regs
+ui-file.c # struct ui_file
+ui-file.c # struct accumulated_ui_file
+ui-file.c # struct mem_file
+ui-file.c # struct stdio_file
+ui-file.c # struct tee_file
+ui-file.h ui_file_flush_ftype void ( ui_file_flush_ftype)(struct ui_file* stream)
+ui-file.h ui_file_write_ftype void ( ui_file_write_ftype)(struct ui_file* stream,const char* buf,long length_buf)
+ui-file.h ui_file_fputs_ftype void ( ui_file_fputs_ftype)(const char*,struct ui_file* stream)
+ui-file.h ui_file_read_ftype long ( ui_file_read_ftype)(struct ui_file* stream,char* buf,long length_buf)
+ui-file.h ui_file_isatty_ftype int ( ui_file_isatty_ftype)(struct ui_file* stream)
+ui-file.h ui_file_rewind_ftype void ( ui_file_rewind_ftype)(struct ui_file* stream)
+ui-file.h ui_file_put_method_ftype void ( ui_file_put_method_ftype)(void* object,const char* buffer,long length_buffer)
+ui-file.h ui_file_put_ftype void ( ui_file_put_ftype)(struct ui_file* stream,ui_file_put_method_ftype* method,void* context)
+ui-file.h ui_file_delete_ftype void ( ui_file_delete_ftype)(struct ui_file* stream)
+utils.c # struct internal_problem
+ui-out.c # struct ui_out_hdr
+ui-out.c # struct ui_out_level
+ui-out.c # struct ui_out_table
+ui-out.c # struct ui_out
+ui-out.c # struct ui_out_end_cleanup_data
+tramp-frame.c # struct frame_data
+tramp-frame.c # struct tramp_frame_cache
+trad-frame.c # struct trad_frame_cache
+tracepoint.c # enum tracepoint_opcode
+tracepoint.c # struct memrange
+tracepoint.c # struct collection_list
+top.c # struct qt_args
+thread.c # struct current_thread_cleanup
+thread.c # struct select_thread_args
+symmisc.c # struct print_symbol_args
+symmisc.c # struct equivalence_entry
+symfile-mem.c # struct symbol_file_add_from_memory_args
+symfile.c # struct place_section_arg
+symfile.c # struct dbxread_symloc
+symfile.c # struct load_section_data
+symfile.c # struct sect_opt
+symfile.c filename_language struct {...} filename_language
+symfile.c # enum ovly_index
+symfile.c # struct symbol_file_info
+symfile.c # struct bfd_file_info
+stack.c # struct print_stack_frame_args
+stack.c # struct print_args_args
+stack.c # struct backtrace_command_args
+stack.c # struct function_bounds
+stabsread.c # struct nextfield
+stabsread.c # struct next_fnfieldlist
+stabsread.c # struct field_info
+stabsread.c # struct ref_map
+stabsread.c # struct type_list
+stabsread.c # struct next_fnfield
+ser-unix.c # struct hardwire_ttystate
+sentinel-frame.c # struct frame_unwind_cache
+remote.c # struct packet_reg
+remote.c # struct remote_state
+remote.c # enum pkt_direction
+remote.c # struct protocol_log_entry
+remote.c # struct protocol_log
+remote.c # struct memory_packet_config
+remote.c # enum packet_support
+remote.c # struct packet_config
+remote.c # enum packet_result
+remote.c # enum Z_packet_type
+remote.c threadref unsigned char threadref[8]
+remote.c gdb_threadref int gdb_threadref
+remote.c # struct gdb_ext_thread_info
+remote.c rmt_thread_action int (*rmt_thread_action)(threadref* ref,void* context)
+reggroups.c # struct reggroup
+reggroups.c # struct reggroup_el
+reggroups.c # struct reggroups
+regcache.c # struct regcache_descr
+regcache.c # struct regcache
+regcache.c regcache_read_ftype void ( regcache_read_ftype)(struct regcache* regcache,int regnum,void* buf)
+regcache.c regcache_write_ftype void ( regcache_write_ftype)(struct regcache* regcache,int regnum,const void* buf)
+regcache.c # enum regcache_dump_what
+printcmd.c # struct format_data
+printcmd.c # struct display
+printcmd.c # enum argclass
+parse.c # struct funcall
+p-exp.c # enum yytokentype
+p-exp.c # union YYSTYPE
+p-exp.c YYSTYPE union YYSTYPE YYSTYPE
+p-exp.c yytype_uint8 unsigned char yytype_uint8
+p-exp.c yytype_int8 signed char yytype_int8
+p-exp.c yytype_uint16 unsigned short int yytype_uint16
+p-exp.c yytype_int16 short int yytype_int16
+p-exp.c # union yyalloc
+p-exp.c # struct type_push
+p-exp.c # struct token
+observer.c generic_observer_notification_ftype void ( generic_observer_notification_ftype)(const void* data,const void* args)
+observer.c # struct observer
+observer.c # struct observer_list
+osabi.c # struct gdb_osabi_handler
+osabi.c # struct gdb_osabi_sniffer
+objfiles.c # struct ordered_obj_section
+objfiles.c # struct obj_section_with_index
+objfiles.c # struct swap_objfile_list_cleanup
+objfiles.c # struct objfile_data
+objfiles.c # struct objfile_data_registration
+objfiles.c # struct objfile_data_registry
+objfiles.c # struct objfile_hitlist
+objc-lang.c # struct objc_object
+objc-lang.c # struct objc_class
+objc-lang.c # struct objc_super
+objc-lang.c # struct objc_method
+objc-lang.c # enum debug_modes
+objc-lang.c # struct selector_entry
+objc-lang.c # struct objc_trampoline_record
+objc-lang.c # struct objc_trampoline_region
+objc-lang.c # struct objc_trampolines
+objc-lang.c # struct selname
+objc-lang.c # struct objc_methcall
+objc-lang.c # struct objc_submethod_helper_data
+objc-exp.c # enum yytokentype
+objc-exp.c # union YYSTYPE
+objc-exp.c YYSTYPE union YYSTYPE YYSTYPE
+objc-exp.c yytype_uint8 unsigned char yytype_uint8
+objc-exp.c yytype_int8 signed char yytype_int8
+objc-exp.c yytype_uint16 unsigned short int yytype_uint16
+objc-exp.c yytype_int16 short int yytype_int16
+objc-exp.c # union yyalloc
+objc-exp.c # struct token
+mipsread.c Elfalpha_External_Sym struct {...} Elfalpha_External_Sym
+mipsread.c Elfalpha_External_Dyn struct {...} Elfalpha_External_Dyn
+mipsread.c # struct alphacoff_dynsecinfo
+minsyms.c # struct msym_bunch
+mdebugread.c # struct symloc
+mdebugread.c # enum block_type
+mdebugread.c # struct pst_map
+mdebugread.c # struct parse_stack
+mdebugread.c # struct mdebug_pending
+maint.c # struct gdb_timer
+maint.c # struct gdb_timer_stack
+macroexp.c # struct macro_buffer
+macroexp.c # struct macro_name_list
+macrotab.c # struct macro_table
+macrotab.c # struct macro_key
+m2-exp.c # enum yytokentype
+m2-exp.c # union YYSTYPE
+m2-exp.c YYSTYPE union YYSTYPE YYSTYPE
+m2-exp.c yytype_uint8 unsigned char yytype_uint8
+m2-exp.c yytype_int8 signed char yytype_int8
+m2-exp.c yytype_uint16 unsigned short int yytype_uint16
+m2-exp.c yytype_int16 short int yytype_int16
+m2-exp.c # union yyalloc
+m2-exp.c # struct keyword
+linespec.c # enum sign
+linespec.c # enum sign
+language.c # struct language_gdbarch
+jv-exp.c # enum yytokentype
+jv-exp.c # union YYSTYPE
+jv-exp.c YYSTYPE union YYSTYPE YYSTYPE
+jv-exp.c yytype_uint8 unsigned char yytype_uint8
+jv-exp.c yytype_int8 signed char yytype_int8
+jv-exp.c yytype_uint16 unsigned short yytype_uint16
+jv-exp.c yytype_int16 short yytype_int16
+jv-exp.c # union yyalloc
+jv-exp.c # struct token
+interps.c # struct interp
+inlining.c # struct rb_tree_node_list
+inlining.c # struct record_list
+inlining.c # struct pending_node
+infrun.c # enum infwait_states
+infrun.c # enum inferior_stop_reason
+infrun.c # struct execution_control_state
+infrun.c # struct inferior_status
+inflow.c # enum terminal_flag_possibilities
+gdbtypes.c # struct extra
+arch-utils.c # enum set_arch
+gdbarch.c # struct gdbarch
+gdbarch.c # struct gdbarch_data
+gdbarch.c # struct gdbarch_data_registration
+gdbarch.c # struct gdbarch_data_registry
+gdbarch.c # struct gdbarch_swap
+gdbarch.c # struct gdbarch_swap_registration
+gdbarch.c # struct gdbarch_swap_registry
+gdbarch.c # struct gdbarch_registration
+frame-unwind.c # struct frame_unwind_table_entry
+frame-unwind.c # struct frame_unwind_table
+frame-base.c # struct frame_base_table_entry
+frame-base.c # struct frame_base_table
+frame.c # struct frame_info
+f-lang.c # struct saved_fcn
+f-lang.c # struct saved_bf_symnum
+f-lang.c SAVED_FUNCTION struct saved_fcn SAVED_FUNCTION
+f-lang.c SAVED_FUNCTION_PTR struct saved_fcn* SAVED_FUNCTION_PTR
+f-lang.c SAVED_BF struct saved_bf_symnum SAVED_BF
+f-lang.c SAVED_BF_PTR struct saved_bf_symnum* SAVED_BF_PTR
+f-exp.c # enum yytokentype
+f-exp.c # union YYSTYPE
+f-exp.c YYSTYPE union YYSTYPE YYSTYPE
+f-exp.c yytype_uint8 unsigned char yytype_uint8
+f-exp.c yytype_int8 signed char yytype_int8
+f-exp.c yytype_uint16 unsigned short int yytype_uint16
+f-exp.c yytype_int16 short int yytype_int16
+f-exp.c # union yyalloc
+f-exp.c # struct token
+f-exp.c # struct f77_boolean_val
+event-top.c # struct readline_input_state
+event-loop.c gdb_event struct gdb_event gdb_event
+event-loop.c # struct gdb_event
+event-loop.c file_handler struct file_handler file_handler
+event-loop.c async_signal_handler struct async_signal_handler async_signal_handler
+event-loop.c # struct gdb_timer
+environ.c # struct dyld_smuggle_pairs
+elfread.c # struct elfinfo
+dwarf2-frame.c # struct dwarf2_cie
+dwarf2-frame.c # struct dwarf2_fde
+dwarf2-frame.c # struct dwarf2_frame_state_reg_info
+dwarf2-frame.c # enum cfa_ways
+dwarf2-frame.c # struct dwarf2_frame_state
+dwarf2-frame.c # struct dwarf2_frame_ops
+dwarf2-frame.c # struct dwarf2_frame_cache
+dwarf2-frame.c # struct comp_unit
+dwarf2read.c _COMP_UNIT_HEADER struct comp_unit_header _COMP_UNIT_HEADER
+dwarf2read.c _PUBNAMES_HEADER struct pubnames_header _PUBNAMES_HEADER
+dwarf2read.c _PUBTYPES_HEADER struct pubtypes_header _PUBTYPES_HEADER
+dwarf2read.c _ARANGES_HEADER struct aranges_header _ARANGES_HEADER
+dwarf2read.c _STATEMENT_PROLOGUE struct statement_prologue _STATEMENT_PROLOGUE
+dwarf2read.c # struct dwarf2_per_objfile
+dwarf2read.c # struct rb_repository_data
+dwarf2read.c # struct comp_unit_head
+dwarf2read.c # struct dwarf2_cu
+dwarf2read.c # struct dwarf2_per_cu_data
+dwarf2read.c # struct file_entry
+dwarf2read.c # struct line_header
+dwarf2read.c # struct partial_die_info
+dwarf2read.c # struct abbrev_info
+dwarf2read.c # struct attr_abbrev
+dwarf2read.c # struct die_info
+dwarf2read.c # struct attribute
+dwarf2read.c # struct function_range
+dwarf2read.c # struct dwarf_block
+dwarf2read.c # struct nextfield
+dwarf2read.c # struct nextfnfield
+dwarf2read.c # struct fnfieldlist
+dwarf2read.c # struct field_info
+dwarf2read.c # struct dwarf2_queue_item
+dwarf2read.c # enum db_status
+dwarf2read.c # struct objfile_list_node
+dwarf2read.c # struct database_info
+dwarf2read.c # struct final_addr_key
+dwarf2read.c # struct dwarf2_offset_and_type
+dwarf2read.c # struct attr_pair
+dwarf2loc.c # struct dwarf_expr_baton
+dwarf2loc.c # struct needs_frame_baton
+dwarfread.c DIE_REF unsigned int DIE_REF
+dwarfread.c BLOCK char BLOCK
+dwarfread.c # struct dieinfo
+dwarfread.c # struct dwfinfo
+dwarfread.c # struct nextfield
+dwarfread.c # struct nextfield
+dummy-frame.c # struct dummy_frame
+dummy-frame.c # struct dummy_frame_cache
+disasm.c # struct dis_line_entry
+dictionary.c # enum dict_type
+dictionary.c # struct dict_vector
+dictionary.c # struct dictionary_hashed
+dictionary.c # struct dictionary_hashed_expandable
+dictionary.c # struct dictionary_linear
+dictionary.c # struct dictionary_linear_expandable
+dictionary.c # struct dictionary
+dbxread.c # struct symloc
+dbxread.c # struct header_file_location
+dbxread.c # struct partial_symtab_list
+dbxread.c # struct oso_data_cleanup
+cp-name-parser.c # struct demangle_info
+cp-name-parser.c # enum yytokentype
+cp-name-parser.c # struct nested
+cp-name-parser.c # union YYSTYPE
+cp-name-parser.c YYSTYPE union YYSTYPE YYSTYPE
+cp-name-parser.c # enum demangle_component_type_extensions
+cp-name-parser.c yytype_uint8 unsigned char yytype_uint8
+cp-name-parser.c yytype_int8 signed char yytype_int8
+cp-name-parser.c yytype_uint16 unsigned short yytype_uint16
+cp-name-parser.c yytype_int16 short yytype_int16
+cp-name-parser.c # union yyalloc
+corefile.c hook_type void (*hook_type)(const char*)
+corefile.c # struct captured_read_memory_integer_arguments
+complaints.c # enum complaint_series
+complaints.c # struct complain
+complaints.c # struct explanation
+complaints.c # struct complaints
+coff-pe-read.c # struct read_pe_section_data
+coffread.c # struct coff_symfile_info
+coffread.c # struct coff_symbol
+coffread.c # struct find_targ_sec_arg
+coffread.c # struct nextfield
+cli-out.c # struct ui_out_data
+cli-out.c cli_out_data struct ui_out_data cli_out_data
+charset.c # struct charset
+charset.c # struct translation
+charset.c # struct cached_iconv
+c-typeprint.c # enum possible_secttypes_e
+c-lang.c # enum c_primitive_types
+c-exp.c # enum yytokentype
+c-exp.c # union YYSTYPE
+c-exp.c YYSTYPE union YYSTYPE YYSTYPE
+c-exp.c yytype_uint8 unsigned char yytype_uint8
+c-exp.c yytype_int8 signed char yytype_int8
+c-exp.c yytype_uint16 unsigned short int yytype_uint16
+c-exp.c yytype_int16 short int yytype_int16
+c-exp.c # union yyalloc
+c-exp.c # struct token
+breakpoint.c # struct breakpoint_list
+breakpoint.c insertion_state_t enum {...} insertion_state_t
+breakpoint.c args_for_catchpoint_enable struct {...} args_for_catchpoint_enable
+breakpoint.c # enum bpstat_class
+breakpoint.c # struct ep_type_description
+breakpoint.c # struct captured_breakpoint_query_args
+breakpoint.c # struct captured_parse_breakpoint_args
+breakpoint.c # struct lang_and_radix
+breakpoint.c # struct safe_sals_to_pc_args
+breakpoint.c # struct captured_breakpoint_args
+breakpoint.c catch_fork_kind enum {...} catch_fork_kind
+breakpoint.c # struct sal_chain
+block.c # struct block_namespace_info
+bfd-target.c # struct section_closure
+bcache.c # struct bstring
+bcache.c # struct bcache
+ada-valprint.c # struct ada_val_print_args
+ada-lang.c # struct tag_args
+ada-lang.c # enum ada_primitive_types
+ada-exp.c # struct name_info
+ada-exp.c # enum yytokentype
+ada-exp.c # union YYSTYPE
+ada-exp.c YYSTYPE union YYSTYPE YYSTYPE
+ada-exp.c yytype_uint8 unsigned char yytype_uint8
+ada-exp.c yytype_int8 signed char yytype_int8
+ada-exp.c yytype_uint16 unsigned short yytype_uint16
+ada-exp.c yytype_int16 short yytype_int16
+ada-exp.c # union yyalloc

@@ -21,6 +21,10 @@
 #ifndef UI_FILE_H
 #define UI_FILE_H
 
+#if defined(HAVE_STDIO_H) || (defined(__STDC__) && defined(__STDC_VERSION__))
+# include <stdio.h>
+#endif /* HAVE_STDIO_H || (__STDC__ && __STDC_VERSION__) */
+
 struct ui_file;
 
 /* Create a generic ui_file object with null methods. */
