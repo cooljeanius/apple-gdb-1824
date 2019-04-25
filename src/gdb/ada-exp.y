@@ -678,7 +678,8 @@ string_to_operator(struct stoken string)
 	  return string;
 	}
     }
-  error("Invalid operator symbol `%s'", string.ptr);
+  error(_("Invalid operator symbol `%s'"), string.ptr);
+  /*NOTREACHED*/
 }
 
 /* Emit expression to access an instance of SYM, in block BLOCK (if

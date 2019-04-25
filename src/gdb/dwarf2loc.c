@@ -132,6 +132,7 @@ find_location_expression(struct dwarf2_address_translation *baton,
 
       loc_ptr += length;
     }
+  return NULL; /*NOTREACHED*/
 }
 
 /* This is the baton used when performing dwarf2 expression

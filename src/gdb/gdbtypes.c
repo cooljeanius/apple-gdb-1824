@@ -443,17 +443,20 @@ address_space_name_to_int (char *space_identifier)
   struct gdbarch *gdbarch = current_gdbarch;
   int type_flags;
   /* Check for known address space delimiters. */
-  if (!strcmp (space_identifier, "code"))
+  if (!strcmp(space_identifier, "code"))
     return TYPE_FLAG_CODE_SPACE;
-  else if (!strcmp (space_identifier, "data"))
+  else if (!strcmp(space_identifier, "data"))
     return TYPE_FLAG_DATA_SPACE;
-  else if (gdbarch_address_class_name_to_type_flags_p (gdbarch)
-           && gdbarch_address_class_name_to_type_flags (gdbarch,
-							space_identifier,
-							&type_flags))
+  else if (gdbarch_address_class_name_to_type_flags_p(gdbarch)
+           && gdbarch_address_class_name_to_type_flags(gdbarch,
+						       space_identifier,
+						       &type_flags))
     return type_flags;
   else
-    error (_("Unknown address space specifier: \"%s\""), space_identifier);
+  {
+    error(_("Unknown address space specifier: \"%s\""), space_identifier);
+  }
+  return TYPE_FLAG_STUB; /*NOTREACHED*/
 }
 
 /* Identify address space identifier by integer flag as defined in
@@ -1399,6 +1402,7 @@ lookup_union(char *name, struct block *block)
   /* If we get here, then it is not a union: */
   error(_("This context has class, struct or enum %s, not a union."),
         name);
+  /*NOTREACHED*/
 }
 
 
@@ -3326,6 +3330,7 @@ rank_one_type (struct type *parm, struct type *arg)
     default:
       return INCOMPATIBLE_TYPE_BADNESS;
     }				/* switch (TYPE_CODE (arg)) */
+  return INCOMPATIBLE_TYPE_BADNESS; /*NOTREACHED*/
 }
 
 

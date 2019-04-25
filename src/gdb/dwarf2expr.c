@@ -248,7 +248,7 @@ dwarf2_read_address (gdb_byte *buf, gdb_byte *buf_end, int *bytes_read)
 
 /* APPLE LOCAL variable initialized status.  */
 struct type *
-unsigned_address_type (void)
+unsigned_address_type(void)
 {
   switch (TARGET_ADDR_BIT / TARGET_CHAR_BIT)
     {
@@ -259,9 +259,9 @@ unsigned_address_type (void)
     case 8:
       return builtin_type_uint64;
     default:
-      internal_error (__FILE__, __LINE__,
-		      _("Unsupported address size.\n"));
+      internal_error(__FILE__, __LINE__, _("Unsupported address size.\n"));
     }
+  return NULL; /*NOTREACHED*/
 }
 
 
@@ -269,7 +269,7 @@ unsigned_address_type (void)
 
 /* APPLE LOCAL variable initialized status  */
 struct type *
-signed_address_type (void)
+signed_address_type(void)
 {
   switch (TARGET_ADDR_BIT / TARGET_CHAR_BIT)
     {
@@ -280,9 +280,9 @@ signed_address_type (void)
     case 8:
       return builtin_type_int64;
     default:
-      internal_error (__FILE__, __LINE__,
-		      _("Unsupported address size.\n"));
+      internal_error(__FILE__, __LINE__, _("Unsupported address size.\n"));
     }
+  return NULL; /*NOTREACHED*/
 }
 
 /* The engine for the expression evaluator.  Using the context in CTX,

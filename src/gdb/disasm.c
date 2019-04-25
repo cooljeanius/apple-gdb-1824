@@ -106,7 +106,7 @@ dump_insns(struct ui_out *uiout, struct disassemble_info * di,
   int unmapped;
   int offset;
   int line;
-  
+
   struct cleanup *ui_out_chain;
 
   for (pc = low; pc < high;)
@@ -154,7 +154,7 @@ dump_insns(struct ui_out *uiout, struct disassemble_info * di,
 	  bfd_byte data;
 	  int status;
 	  int i;
-      
+
 	  /* This will return the disassembled instructions, but it will be
 	   * buffered into the stream pc will hold the final address after the
 	   * disassembly, so we can compute the length of the instruction the
@@ -175,7 +175,7 @@ dump_insns(struct ui_out *uiout, struct disassemble_info * di,
 	}
       else
 	warning("invalid address for disassembly");
-      
+
       /* now we can finally print the buffered stream: */
       ui_out_field_stream(uiout, "inst", stb);
       ui_file_rewind(stb->stream);
@@ -205,19 +205,20 @@ do_mixed_source_and_assembly (struct ui_out *uiout,
   int next_line = 0;
   int num_displayed = 0;
   struct cleanup *ui_out_chain;
-  struct cleanup *ui_out_tuple_chain = make_cleanup (null_cleanup, 0);
-  struct cleanup *ui_out_list_chain = make_cleanup (null_cleanup, 0);
+  struct cleanup *ui_out_tuple_chain = make_cleanup(null_cleanup, 0);
+  struct cleanup *ui_out_list_chain = make_cleanup(null_cleanup, 0);
 
-  mle = (struct dis_line_entry *) alloca (nlines
-					  * sizeof (struct dis_line_entry));
+  mle = (struct dis_line_entry *)alloca(nlines * sizeof(struct dis_line_entry));
 
   /* Copy linetable entries for this function into our data
      structure, creating end_pc's and setting out_of_order as
      appropriate.  */
 
-  /* First, skip all the preceding functions.  */
-
-  for (i = 0; i < nlines - 1 && le[i].pc < low; i++);
+  /* First, skip all the preceding functions: */
+  for (i = 0; (i < (nlines - 1)) && (le[i].pc < low); i++)
+  {
+    ; /* (do nothing, just loop thru) */
+  }
 
   /* Now, copy all entries before the end of this function.  */
 
@@ -700,7 +701,7 @@ gdb_print_insn(CORE_ADDR memaddr, struct ui_file *stream)
   CORE_ADDR oldmemaddr;
   bfd_byte data;
   int status;
-  
+
   ui_out_chain = make_cleanup_ui_out_tuple_begin_end(uiout, NULL);
   old_pc = memaddr;
   oldmemaddr = memaddr;
@@ -721,7 +722,7 @@ gdb_print_insn(CORE_ADDR memaddr, struct ui_file *stream)
   ui_file_rewind(stb->stream);
   do_cleanups(ui_out_chain);
   do_cleanups(cleanups);
-  
+
   return (int)memaddr;
 #if defined(DO_THINGS_THE_OLD_WAY) && defined(TARGET_PRINT_INSN)
   return TARGET_PRINT_INSN(memaddr, &di);

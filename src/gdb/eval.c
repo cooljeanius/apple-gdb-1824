@@ -2324,56 +2324,52 @@ evaluate_subexp_for_address(struct expression *exp, int *pos,
     {
     case UNOP_IND:
       (*pos)++;
-      return evaluate_subexp (NULL_TYPE, exp, pos, noside);
+      return evaluate_subexp(NULL_TYPE, exp, pos, noside);
 
     case UNOP_MEMVAL:
       (*pos) += 3;
-      return value_cast (lookup_pointer_type (exp->elts[pc + 1].type),
-			 evaluate_subexp (NULL_TYPE, exp, pos, noside));
+      return value_cast(lookup_pointer_type (exp->elts[pc + 1].type),
+			evaluate_subexp(NULL_TYPE, exp, pos, noside));
 
     case OP_VAR_VALUE:
       var = exp->elts[pc + 2].symbol;
 
       /* C++: The "address" of a reference should yield the address
        * of the object pointed to. Let value_addr() deal with it. */
-      if (TYPE_CODE (SYMBOL_TYPE (var)) == TYPE_CODE_REF)
+      if (TYPE_CODE(SYMBOL_TYPE(var)) == TYPE_CODE_REF)
 	goto default_case;
 
       (*pos) += 4;
       if (noside == EVAL_AVOID_SIDE_EFFECTS)
 	{
-	  struct type *type =
-	  lookup_pointer_type (SYMBOL_TYPE (var));
-	  enum address_class sym_class = SYMBOL_CLASS (var);
+	  struct type *type = lookup_pointer_type(SYMBOL_TYPE(var));
+	  enum address_class sym_class = SYMBOL_CLASS(var);
 
 	  if (sym_class == LOC_CONST
 	      || sym_class == LOC_CONST_BYTES
 	      || sym_class == LOC_REGISTER
 	      || sym_class == LOC_REGPARM)
-	    error (_("Attempt to take address of register or constant."));
+	    error(_("Attempt to take address of register or constant."));
 
-	  return
-	    value_zero (type, not_lval);
+	  return value_zero(type, not_lval);
 	}
       else
-	return
-	  locate_var_value
-	  (var,
-	   block_innermost_frame (exp->elts[pc + 1].block));
+	return locate_var_value(var,
+				block_innermost_frame(exp->elts[pc + 1].block));
 
     default:
     default_case:
       if (noside == EVAL_AVOID_SIDE_EFFECTS)
 	{
-	  struct value *x = evaluate_subexp (NULL_TYPE, exp, pos, noside);
-	  if (VALUE_LVAL (x) == lval_memory)
-	    return value_zero (lookup_pointer_type (value_type (x)),
-			       not_lval);
+	  struct value *x = evaluate_subexp(NULL_TYPE, exp, pos, noside);
+	  if (VALUE_LVAL(x) == lval_memory)
+	    return value_zero(lookup_pointer_type(value_type(x)), not_lval);
 	  else
-	    error (_("Attempt to take address of non-lval"));
+	    error(_("Attempt to take address of non-lval"));
 	}
-      return value_addr (evaluate_subexp (NULL_TYPE, exp, pos, noside));
+      return value_addr(evaluate_subexp(NULL_TYPE, exp, pos, noside));
     }
+  return NULL; /*NOTREACHED*/
 }
 
 /* Evaluate like `evaluate_subexp' except coercing arrays to pointers.

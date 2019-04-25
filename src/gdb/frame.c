@@ -1798,6 +1798,7 @@ frame_sp_unwind(struct frame_info *next_frame)
       return sp;
     }
   internal_error(__FILE__, __LINE__, _("Missing unwind SP method"));
+  /*NOTREACHED*/
 }
 
 extern initialize_file_ftype _initialize_frame; /* -Wmissing-prototypes */

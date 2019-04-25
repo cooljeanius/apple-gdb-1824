@@ -220,26 +220,26 @@ static int one_block_contains_other (struct blockvector *, int, int);
    error.  */
 
 static NORETURN void
-cplusplus_error (const char *name, const char *fmt, ...)
+cplusplus_error(const char *name, const char *fmt, ...)
 {
   struct ui_file *tmp_stream;
-  tmp_stream = mem_fileopen ();
-  make_cleanup_ui_file_delete (tmp_stream);
+  tmp_stream = mem_fileopen();
+  make_cleanup_ui_file_delete(tmp_stream);
 
   {
     va_list args;
-    va_start (args, fmt);
-    vfprintf_unfiltered (tmp_stream, fmt, args);
-    va_end (args);
+    va_start(args, fmt);
+    vfprintf_unfiltered(tmp_stream, fmt, args);
+    va_end(args);
   }
 
   while (*name == '\'')
     name++;
-  fprintf_unfiltered (tmp_stream,
-		      ("Hint: try '%s<TAB> or '%s<ESC-?>\n"
-		       "(Note leading single quote.)"),
-		      name, name);
-  error_stream (tmp_stream);
+  fprintf_unfiltered(tmp_stream,
+		     ("Hint: try '%s<TAB> or '%s<ESC-?>\n"
+		      "(Note leading single quote.)"),
+		     name, name);
+  error_stream(tmp_stream);
 }
 
 /* Return the number of methods described for TYPE, including the
@@ -2058,15 +2058,16 @@ decode_compound(const char **argptr, int funfirstline, char ***canonical,
   }
   /* APPLE LOCAL end return multiple symbols  */
 
-  /* Couldn't find any interpretation as classes/namespaces, so give
+  /* Failed to find any interpretation as classes/namespaces, so give
      up.  The quotes are important if copy is empty.  */
   /* APPLE LOCAL: Need to set the not_found_ptr or future-break
      won't work.  */
   if (not_found_ptr)
     *not_found_ptr = 1;
-  cplusplus_error (saved_arg,
-		   "Can't find member of namespace, class, struct, or union named \"%s\"\n",
-		   copy);
+  cplusplus_error(saved_arg,
+		  "Cannot find member of namespace, class, struct, or union named \"%s\"\n",
+		  copy);
+  /*NOTREACHED*/
 }
 
 /* Next come some helper functions for decode_compound.  */
@@ -2197,6 +2198,7 @@ find_method(int funfirstline, char ***canonical, const char *saved_arg,
                         "the class %s does not have any method named %s\n",
                         SYMBOL_PRINT_NAME(sym_class), tmp);
     }
+  return values; /*NOTREACHED*/
 }
 
 /* APPLE LOCAL begin return multiple symbols  */
@@ -2944,9 +2946,9 @@ decode_dollar(char *copy, int funfirstline, struct symtab *default_symtab,
 
 static struct symtabs_and_lines
 /* APPLE LOCAL equivalences */
-decode_variable (char *copy, int funfirstline, int equivalencies,
-                 char ***canonical, struct symtab *file_symtab,
-                 int *not_found_ptr)
+decode_variable(char *copy, int funfirstline, int equivalencies,
+                char ***canonical, struct symtab *file_symtab,
+                int *not_found_ptr)
 {
   struct symbol *sym;
   /* The symtab that SYM was found in.  */
@@ -2954,45 +2956,46 @@ decode_variable (char *copy, int funfirstline, int equivalencies,
 
   struct minimal_symbol *msymbol;
 
-  sym = lookup_symbol (copy,
-		       (file_symtab
-			? BLOCKVECTOR_BLOCK (BLOCKVECTOR (file_symtab),
-					     STATIC_BLOCK)
-			: get_selected_block (0)),
-		       VAR_DOMAIN, 0, &sym_symtab);
+  sym = lookup_symbol(copy,
+		      (file_symtab
+		       ? BLOCKVECTOR_BLOCK(BLOCKVECTOR(file_symtab),
+					   STATIC_BLOCK)
+		       : get_selected_block(0)),
+		      VAR_DOMAIN, 0, &sym_symtab);
 
   if (sym != NULL)
-    return symbol_found (funfirstline, canonical, copy, sym,
-			 file_symtab, sym_symtab);
+    return symbol_found(funfirstline, canonical, copy, sym,
+			file_symtab, sym_symtab);
 
-  msymbol = lookup_minimal_symbol (copy, NULL, NULL);
+  msymbol = lookup_minimal_symbol(copy, NULL, NULL);
 
   if (msymbol != NULL)
     /* APPLE LOCAL: We pass in the "canonical" argument.  */
-    return minsym_found (funfirstline, equivalencies, msymbol, canonical);
+    return minsym_found(funfirstline, equivalencies, msymbol, canonical);
 
-  if (!have_full_symbols () &&
-      !have_partial_symbols () && !have_minimal_symbols ())
+  if (!have_full_symbols() &&
+      !have_partial_symbols() && !have_minimal_symbols())
     /* APPLE LOCAL begin */
     {
       /* This is properly a "file not found" error as well.  */
       if (not_found_ptr)
 	*not_found_ptr = 1;
       /* APPLE LOCAL end */
-    error (_("No symbol table is loaded.  Use the \"file\" command."));
-    /* APPLE LOCAL */
+      error(_("No symbol table is loaded.  Use the \"file\" command."));
+      /* APPLE LOCAL */
     }
 
   if (not_found_ptr)
     *not_found_ptr = 1;
   /* APPLE LOCAL more helpful error */
   if (file_symtab == NULL)
-  throw_error (NOT_FOUND_ERROR, _("Function \"%s\" not defined."), copy);
+    throw_error(NOT_FOUND_ERROR, _("Function \"%s\" not defined."), copy);
   /* APPLE LOCAL begin more helpful error */
   else
-    throw_error (NOT_FOUND_ERROR, _("Function \"%s\" not defined in file %s."),
-		 copy, file_symtab->filename);
+    throw_error(NOT_FOUND_ERROR, _("Function \"%s\" not defined in file %s."),
+		copy, file_symtab->filename);
   /* APPLE LOCAL end more helpful error */
+  exit(EXIT_FAILURE);
 }
 
 
@@ -3375,18 +3378,18 @@ symbols_found (int funfirstline, char ***canonical, char *copy,
    corresponding struct symtabs_and_lines.  */
 
 static struct symtabs_and_lines
-symbol_found (int funfirstline, char ***canonical, char *copy,
-	      struct symbol *sym, struct symtab *file_symtab,
-	      struct symtab *sym_symtab)
+symbol_found(int funfirstline, char ***canonical, char *copy,
+	     struct symbol *sym, struct symtab *file_symtab,
+	     struct symtab *sym_symtab)
 {
   struct symtabs_and_lines values;
 
-  if (SYMBOL_CLASS (sym) == LOC_BLOCK)
+  if (SYMBOL_CLASS(sym) == LOC_BLOCK)
     {
       /* Arg is the name of a function */
-      values.sals = (struct symtab_and_line *)
-	xmalloc (sizeof (struct symtab_and_line));
-      values.sals[0] = find_function_start_sal (sym, funfirstline);
+      values.sals = ((struct symtab_and_line *)
+		     xmalloc(sizeof(struct symtab_and_line)));
+      values.sals[0] = find_function_start_sal(sym, funfirstline);
       values.nelts = 1;
 
       /* Don't use the SYMBOL_LINE; if used at all it points to
@@ -3425,8 +3428,9 @@ symbol_found (int funfirstline, char ***canonical, char *copy,
 	/* FIXME: Shouldn't we just set .line and .symtab to zero
 	   and return?  For example, "info line foo" could print
 	   the address.  */
-	error (_("Line number not known for symbol \"%s\""), copy);
+	error(_("Line number not known for symbol \"%s\""), copy);
     }
+  return values; /*NOTREACHED*/
 }
 
 /* APPLE LOCAL begin return multiple symbols  */
@@ -3459,7 +3463,9 @@ minsyms_found (int funfirstline, int equivalencies,
       if (equiv_msymbols != NULL)
 	{
 	  for (pointer = equiv_msymbols; *pointer != NULL; eq_symbols++, pointer++)
-	    ;
+	  {
+	    ; /* (do nothing, just loop thru) */
+	  }
 	  equiv_cleanup = make_cleanup (xfree, equiv_msymbols);
 	}
       else
@@ -3586,7 +3592,9 @@ minsym_found (int funfirstline, int equivalencies,
     {
       for (pointer = equiv_msymbols; *pointer != NULL;
 	   nsymbols++, pointer++)
-	;
+      {
+	; /* (do nothing, just loop thru) */
+      }
       equiv_cleanup = make_cleanup (xfree, equiv_msymbols);
     }
   else

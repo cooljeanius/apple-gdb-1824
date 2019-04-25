@@ -6848,17 +6848,14 @@ read_array_order(struct die_info *die, struct dwarf2_cu *cu)
 
   if (attr) return (enum dwarf_array_dim_ordering)DW_SND(attr);
 
-  /*
-    GNU F77 is a special case, as at 08/2004 array type info is the
-    opposite order to the dwarf2 specification, but data is still
-    laid out as per normal fortran.
-
-    FIXME: dsl/2004-8-20: If G77 is ever fixed, this will also need
-    version checking.
-  */
-
-  if (cu->language == language_fortran &&
-      cu->producer && strstr (cu->producer, "GNU F77"))
+  /* GNU F77 is a special case, as at 08/2004 array type info is the opposite
+   * order to the dwarf2 specification, but data is still laid out as per
+   * normal fortran.
+   *
+   * FIXME: dsl/2004-8-20: If G77 is ever fixed, this will also need version
+   * checking: */
+  if ((cu->language == language_fortran) && cu->producer
+      && strstr(cu->producer, "GNU F77"))
     {
       return DW_ORD_row_major;
     }
@@ -6871,6 +6868,7 @@ read_array_order(struct die_info *die, struct dwarf2_cu *cu)
     default:
       return DW_ORD_row_major;
     };
+  return DW_ORD_row_major; /*NOTREACHED*/
 }
 
 /* Extract all information from a DW_TAG_set_type DIE and put it in
@@ -8067,6 +8065,7 @@ load_partial_dies(bfd *abfd, char *info_ptr, int building_psymtab,
 
       /* Back to the top, do it again.  */
     }
+  return NULL; /*NOTREACHED*/
 }
 
 /* Read a minimal amount of information into the minimal die structure: */
@@ -10993,20 +10992,19 @@ read_type_die (struct die_info *die, struct dwarf2_cu *cu)
    DW_AT_specification.  */
 
 static char *
-determine_prefix (struct die_info *die, struct dwarf2_cu *cu)
+determine_prefix(struct die_info *die, struct dwarf2_cu *cu)
 {
   struct die_info *parent;
 
-  if (cu->language != language_cplus
-      && cu->language != language_objcplus
-      && cu->language != language_java)
+  if ((cu->language != language_cplus) && (cu->language != language_objcplus)
+      && (cu->language != language_java))
     return NULL;
 
   parent = die->parent;
 
   if (parent == NULL)
     {
-      return xstrdup ("");
+      return xstrdup("");
     }
   else
     {
@@ -11015,19 +11013,18 @@ determine_prefix (struct die_info *die, struct dwarf2_cu *cu)
 	{
 	  /* FIXME: carlton/2004-03-05: Should I follow extension dies
 	     before doing this check?  */
-	  if (parent->type != NULL && TYPE_TAG_NAME (parent->type) != NULL)
+	  if ((parent->type != NULL) && (TYPE_TAG_NAME(parent->type) != NULL))
 	    {
-	      return xstrdup (TYPE_TAG_NAME (parent->type));
+	      return xstrdup(TYPE_TAG_NAME(parent->type));
 	    }
 	  else
 	    {
 	      int dummy;
-	      char *parent_prefix = determine_prefix (parent, cu);
-	      char *retval = typename_concat (NULL, parent_prefix,
-					      namespace_name (parent, &dummy,
-							      cu),
-					      cu);
-	      xfree (parent_prefix);
+	      char *parent_prefix = determine_prefix(parent, cu);
+	      char *retval = typename_concat(NULL, parent_prefix,
+					     namespace_name(parent, &dummy, cu),
+					     cu);
+	      xfree(parent_prefix);
 	      return retval;
 	    }
 	}
@@ -11035,28 +11032,29 @@ determine_prefix (struct die_info *die, struct dwarf2_cu *cu)
       case DW_TAG_class_type:
       case DW_TAG_structure_type:
 	{
-	  if (parent->type != NULL && TYPE_TAG_NAME (parent->type) != NULL)
+	  if ((parent->type != NULL) && (TYPE_TAG_NAME(parent->type) != NULL))
 	    {
-	      return xstrdup (TYPE_TAG_NAME (parent->type));
+	      return xstrdup(TYPE_TAG_NAME(parent->type));
 	    }
 	  else
 	    {
 	      const char *old_prefix = processing_current_prefix;
-	      char *new_prefix = determine_prefix (parent, cu);
+	      char *new_prefix = determine_prefix(parent, cu);
 	      char *retval;
 
 	      processing_current_prefix = new_prefix;
-	      retval = determine_class_name (parent, cu);
+	      retval = determine_class_name(parent, cu);
 	      processing_current_prefix = old_prefix;
 
-	      xfree (new_prefix);
+	      xfree(new_prefix);
 	      return retval;
 	    }
 	}
       default:
-	return determine_prefix (parent, cu);
+	return determine_prefix(parent, cu);
       }
     }
+  return NULL; /*NOTREACHED*/
 }
 
 /* Return a newly-allocated string formed by concatenating PREFIX and

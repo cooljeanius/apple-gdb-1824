@@ -862,6 +862,7 @@ commands_from_control_command(char *arg, struct command_line *cmd)
 	return simple_control;
       }
   error(_("No breakpoint number %d."), bnum);
+  /*NOTREACHED*/
 }
 
 /* APPLE LOCAL begin breakpoint MI */
@@ -2321,7 +2322,8 @@ bpstat_find_step_resume_breakpoint (bpstat bsp)
 	return bsp->breakpoint_at;
     }
 
-  internal_error (__FILE__, __LINE__, _("No step_resume breakpoint found."));
+  internal_error(__FILE__, __LINE__, _("No step_resume breakpoint found."));
+  /*NOTREACHED*/
 }
 
 
@@ -2764,6 +2766,7 @@ print_it_typical (bpstat bs)
     default:
       return PRINT_UNKNOWN;
     }
+  return PRINT_UNKNOWN; /*NOTREACHED*/
 }
 
 /* APPLE LOCAL: This prints catch exception information, using the current
@@ -2846,16 +2849,17 @@ print_bp_stop_message (bpstat bs)
 	 print_it_typical.  */
       if (bs->breakpoint_at != NULL && bs->breakpoint_at->ops != NULL
 	  && bs->breakpoint_at->ops->print_it != NULL)
-	return bs->breakpoint_at->ops->print_it (bs->breakpoint_at);
+	return bs->breakpoint_at->ops->print_it(bs->breakpoint_at);
       else
-	return print_it_typical (bs);
+	return print_it_typical(bs);
       break;
 
     default:
-      internal_error (__FILE__, __LINE__,
-		      _("print_bp_stop_message: unrecognized enum value"));
+      internal_error(__FILE__, __LINE__,
+		     _("print_bp_stop_message: unrecognized enum value"));
       break;
     }
+  return PRINT_UNKNOWN; /*NOTREACHED*/
 }
 
 /* Print a message indicating what happened.  This is called from
@@ -8450,6 +8454,7 @@ print_exception_catchpoint(struct breakpoint *b)
     default:
       return PRINT_SRC_AND_LOC;
     }
+  return PRINT_UNKNOWN; /*NOTREACHED*/
 }
 
 /* */
@@ -8907,7 +8912,7 @@ catch_command_1(const char *arg, int tempflag, int from_tty)
 /* Helper functions for the mi mi_cmd_break_catch.  */
 
 int
-exception_catchpoints_enabled (enum exception_event_kind ex_event)
+exception_catchpoints_enabled(enum exception_event_kind ex_event)
 {
   switch (ex_event)
     {
@@ -8918,10 +8923,11 @@ exception_catchpoints_enabled (enum exception_event_kind ex_event)
       return exception_catchpoint_throw_enabled;
       break;
     default:
-      internal_error (__FILE__, __LINE__,
-		      "Unknown event kind for execption_catchpoints_enabled");
+      internal_error(__FILE__, __LINE__,
+		     "Unknown event kind for execption_catchpoints_enabled");
       return 0;
     }
+  return -1; /*NOTREACHED*/
 }
 
 void

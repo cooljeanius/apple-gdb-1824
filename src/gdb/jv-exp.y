@@ -1131,7 +1131,9 @@ yylex(void)
       if (c == '<')
 	{
 	  int i_i = namelen;
-	  while (tokstart[++i_i] && (tokstart[i_i] != '>'));
+	  while (tokstart[++i_i] && (tokstart[i_i] != '>')) {
+	    ; /* FIXME: is empty body intentional? */
+	  }
 	  if (tokstart[i_i] == '>')
 	    namelen = i_i;
 	}

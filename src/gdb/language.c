@@ -1136,6 +1136,7 @@ unk_lang_create_fundamental_type(struct objfile *objfile ATTRIBUTE_UNUSED,
                                  int unktypeid ATTRIBUTE_UNUSED)
 {
   error(_("internal error - unimplemented function unk_lang_create_fundamental_type called."));
+  /*NOTREACHED*/
 }
 
 static void ATTR_NORETURN
@@ -1158,6 +1159,7 @@ unk_lang_val_print(struct type *type ATTRIBUTE_UNUSED,
 		   enum val_prettyprint pretty ATTRIBUTE_UNUSED)
 {
   error(_("internal error - unimplemented function unk_lang_val_print called."));
+  /*NOTREACHED*/
 }
 
 static NORETURN int ATTR_NORETURN
@@ -1167,6 +1169,7 @@ unk_lang_value_print(struct value *val ATTRIBUTE_UNUSED,
 		     enum val_prettyprint pretty ATTRIBUTE_UNUSED)
 {
   error(_("internal error - unimplemented function unk_lang_value_print called."));
+  /*NOTREACHED*/
 }
 
 static CORE_ADDR unk_lang_trampoline(CORE_ADDR pc ATTRIBUTE_UNUSED)

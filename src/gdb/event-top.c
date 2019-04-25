@@ -815,7 +815,10 @@ command_line_handler(char *rl)
       return;
     }
 
-  for (p1 = linebuffer; (*p1 == ' ') || (*p1 == '\t'); p1++);
+  for (p1 = linebuffer; (*p1 == ' ') || (*p1 == '\t'); p1++)
+  {
+    ; /* FIXME: ensure this loop body is actually supposed to be empty */
+  }
   if (repeat && !*p1)
     {
       command_handler(line);

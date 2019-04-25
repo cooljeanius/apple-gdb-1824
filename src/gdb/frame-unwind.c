@@ -78,7 +78,10 @@ frame_unwind_append_sniffer(struct gdbarch *gdbarch,
   struct frame_unwind_table_entry **ip;
 
   /* Find the end of the list and insert the new entry there: */
-  for (ip = table->osabi_head; (*ip) != NULL; ip = &(*ip)->next);
+  for (ip = table->osabi_head; (*ip) != NULL; ip = &(*ip)->next)
+  {
+    ; /* FIXME: was this loop actually supposed to be empty? */
+  }
   (*ip) = GDBARCH_OBSTACK_ZALLOC(gdbarch, struct frame_unwind_table_entry);
   (*ip)->sniffer = sniffer;
 }
@@ -122,6 +125,7 @@ frame_unwind_find_by_frame(struct frame_info *next_frame, void **this_cache)
 	}
     }
   internal_error(__FILE__, __LINE__, _("frame_unwind_find_by_frame failed"));
+  /*NOTREACHED*/
 }
 
 extern initialize_file_ftype _initialize_frame_unwind; /* -Wmissing-prototypes */

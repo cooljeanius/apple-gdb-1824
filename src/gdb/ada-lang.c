@@ -575,41 +575,43 @@ min_of_type (struct type *t)
 
 /* The largest value in the domain of TYPE, a discrete type, as an integer.  */
 static struct value *
-discrete_type_high_bound (struct type *type)
+discrete_type_high_bound(struct type *type)
 {
-  switch (TYPE_CODE (type))
+  switch (TYPE_CODE(type))
     {
     case TYPE_CODE_RANGE:
-      return value_from_longest (TYPE_TARGET_TYPE (type),
-                                 TYPE_HIGH_BOUND (type));
+      return value_from_longest(TYPE_TARGET_TYPE(type),
+                                TYPE_HIGH_BOUND(type));
     case TYPE_CODE_ENUM:
       return
-        value_from_longest (type,
-                            TYPE_FIELD_BITPOS_ASSIGN (type,
-                                               TYPE_NFIELDS (type) - 1));
+        value_from_longest(type,
+                           TYPE_FIELD_BITPOS_ASSIGN(type,
+						    (TYPE_NFIELDS(type) - 1)));
     case TYPE_CODE_INT:
-      return value_from_longest (type, max_of_type (type));
+      return value_from_longest(type, max_of_type(type));
     default:
-      error (_("Unexpected type in discrete_type_high_bound."));
+      error(_("Unexpected type in discrete_type_high_bound."));
     }
+  return NULL; /*NOTREACHED*/
 }
 
 /* The largest value in the domain of TYPE, a discrete type, as an integer.  */
 static struct value *
-discrete_type_low_bound (struct type *type)
+discrete_type_low_bound(struct type *type)
 {
-  switch (TYPE_CODE (type))
+  switch (TYPE_CODE(type))
     {
     case TYPE_CODE_RANGE:
-      return value_from_longest (TYPE_TARGET_TYPE (type),
-                                 TYPE_LOW_BOUND (type));
+      return value_from_longest(TYPE_TARGET_TYPE(type),
+				TYPE_LOW_BOUND(type));
     case TYPE_CODE_ENUM:
-      return value_from_longest (type, TYPE_FIELD_BITPOS (type, 0));
+      return value_from_longest(type, TYPE_FIELD_BITPOS(type, 0));
     case TYPE_CODE_INT:
-      return value_from_longest (type, min_of_type (type));
+      return value_from_longest(type, min_of_type(type));
     default:
-      error (_("Unexpected type in discrete_type_low_bound."));
+      error(_("Unexpected type in discrete_type_low_bound."));
     }
+  return NULL; /*NOTREACHED*/
 }
 
 /* The identity on non-range types.  For range types, the underlying
@@ -777,7 +779,9 @@ ada_encode(const char *decoded)
                (mapping->encoded != NULL)
 	       && (strncmp(mapping->decoded, p,
 			   strlen(mapping->decoded)) != 0); mapping += 1)
-            ;
+	  {
+            ; /* ??? */
+	  }
           if (mapping->encoded == NULL)
             error(_("invalid Ada operator name: %s"), p);
           strcpy((encoding_buffer + k), mapping->encoded);
@@ -2493,7 +2497,7 @@ empty_array (struct type *arr_type, int low)
    to OP.  */
 
 static const char *
-ada_decoded_op_name (enum exp_opcode op)
+ada_decoded_op_name(enum exp_opcode op)
 {
   int i;
 
@@ -2502,7 +2506,8 @@ ada_decoded_op_name (enum exp_opcode op)
       if (ada_opname_table[i].op == op)
         return ada_opname_table[i].decoded;
     }
-  error (_("Could not find operator name for opcode"));
+  error(_("Could not find operator name for opcode"));
+  /*NOTREACHED*/
 }
 
 
@@ -3135,10 +3140,14 @@ encoded_ordered_before(const char *N0, const char *N1)
   else
     {
       int k0, k1;
-      for (k0 = strlen (N0) - 1; k0 > 0 && isdigit (N0[k0]); k0 -= 1)
-        ;
-      for (k1 = strlen (N1) - 1; k1 > 0 && isdigit (N1[k1]); k1 -= 1)
-        ;
+      for (k0 = (strlen(N0) - 1); (k0 > 0) && isdigit(N0[k0]); k0 -= 1)
+      {
+        ; /* ??? */
+      }
+      for (k1 = (strlen(N1) - 1); (k1 > 0) && isdigit(N1[k1]); k1 -= 1)
+      {
+        ; /* ??? */
+      }
       if ((N0[k0] == '_' || N0[k0] == '$') && N0[k0 + 1] != '\000'
           && (N1[k1] == '_' || N1[k1] == '$') && N1[k1 + 1] != '\000')
         {
@@ -6920,25 +6929,28 @@ ada_attribute_name(enum exp_opcode n)
 static LONGEST
 pos_atr(struct value *arg)
 {
-  struct type *type = value_type (arg);
+  struct type *type = value_type(arg);
 
-  if (!discrete_type_p (type))
-    error (_("'POS only defined on discrete types"));
+  if (!discrete_type_p(type))
+    error(_("'POS only defined on discrete types"));
 
-  if (TYPE_CODE (type) == TYPE_CODE_ENUM)
+  if (TYPE_CODE(type) == TYPE_CODE_ENUM)
     {
       int i;
-      LONGEST v = value_as_long (arg);
+      LONGEST v = value_as_long(arg);
 
-      for (i = 0; i < TYPE_NFIELDS (type); i += 1)
+      for (i = 0; i < TYPE_NFIELDS(type); i += 1)
         {
-          if (v == TYPE_FIELD_BITPOS (type, i))
+          if (v == TYPE_FIELD_BITPOS(type, i))
             return i;
         }
-      error (_("enumeration value is invalid: can't find 'POS"));
+      error(_("enumeration value is invalid: cannot find 'POS"));
     }
   else
-    return value_as_long (arg);
+    {
+      return value_as_long(arg);
+    }
+  return 0L; /*NOTREACHED*/
 }
 
 static struct value *
@@ -8266,19 +8278,20 @@ ada_vax_float_type_suffix (struct type *type)
    ada_is_vax_floating_type (TYPE).  */
 
 struct value *
-ada_vax_float_print_function (struct type *type)
+ada_vax_float_print_function(struct type *type)
 {
-  switch (ada_vax_float_type_suffix (type))
+  switch (ada_vax_float_type_suffix(type))
     {
     case 'F':
-      return get_var_value ("DEBUG_STRING_F", 0);
+      return get_var_value("DEBUG_STRING_F", 0);
     case 'D':
-      return get_var_value ("DEBUG_STRING_D", 0);
+      return get_var_value("DEBUG_STRING_D", 0);
     case 'G':
-      return get_var_value ("DEBUG_STRING_G", 0);
+      return get_var_value("DEBUG_STRING_G", 0);
     default:
-      error (_("invalid VAX floating-point type"));
+      error(_("invalid VAX floating-point type"));
     }
+  return NULL; /*NOTREACHED*/
 }
 
 

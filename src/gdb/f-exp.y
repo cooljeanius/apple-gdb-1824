@@ -1096,7 +1096,10 @@ yylex(void)
   for (c = tokstart[namelen];
        (c == '_' || c == '$' || (c >= '0' && c <= '9')
 	|| (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
-       c = tokstart[++namelen]);
+       c = tokstart[++namelen])
+  {
+    ; /* (do nothing, just loop thru) */
+  }
 
   /* The token "if" terminates the expression and is NOT
      removed from the input stream.  */

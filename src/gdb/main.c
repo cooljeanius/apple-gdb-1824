@@ -44,6 +44,8 @@
 #include "interps.h"
 #include "main.h"
 
+#include "gdb_locale.h"
+
 #include <pthread.h>
 
 /* If nonzero, display time usage both at startup and for each command: */

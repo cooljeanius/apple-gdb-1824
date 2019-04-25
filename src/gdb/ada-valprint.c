@@ -107,7 +107,7 @@ print_optional_low_bound(struct ui_file *stream, struct type *type)
       (void)low_bound;
       return 0;
     }
-  
+
   if (low_bound > 0L) {
     ; /* ??? */
   }
@@ -824,7 +824,10 @@ ada_val_print_1(struct type *type, const gdb_byte *valaddr0,
 	      for (temp_len = 0U;
 		   (temp_len < ulen) && (temp_len < print_max)
                    && (char_at(valaddr, temp_len, eltlen) != 0);
-		   temp_len += 1U);
+		   temp_len += 1U)
+	      {
+		; /* FIXME: ensure loop body is actually supposed to be empty */
+	      }
 	      ulen = temp_len;
 	    }
 

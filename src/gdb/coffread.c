@@ -232,8 +232,9 @@ coff_locate_sections (bfd *abfd, asection *sectp, void *csip)
 	       xmalloc (sizeof (struct stab_section_list)));
 	  n->section = sectp;
 	  n->next = NULL;
-	  for (pn = &csi->stabsects; *pn != NULL; pn = &(*pn)->next)
-	    ;
+	  for (pn = &csi->stabsects; *pn != NULL; pn = &(*pn)->next) {
+	    ; /* (do nothing, just loop thru) */
+	  }
 	  *pn = n;
 
 	  /* This will be run after coffstab_build_psymtabs is called

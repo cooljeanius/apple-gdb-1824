@@ -137,7 +137,10 @@ c_val_print (struct type *type, const gdb_byte *valaddr, int embedded_offset,
 		  for (temp_len = 0;
 		       (valaddr + embedded_offset)[temp_len]
 		       && temp_len < len && temp_len < print_max;
-		       temp_len++);
+		       temp_len++)
+		  {
+		    ; /* FIXME: ensure this loop body is supposed to be empty */
+		  }
 		  len = temp_len;
 		}
 

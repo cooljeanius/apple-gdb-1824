@@ -2099,6 +2099,10 @@ lint: $(LINTFILES)
 SPLINTFLAGS = $(LINTFLAGS) $(AM_V_splint) +posix-lib -weak -unrecogcomments \
   +matchanyintegral -redef -fixedformalarray +ignoresigns -sysunrecog \
   -type -retvalother -unrecog -stackref -initallelements -castfcnptr \
+  +oldstyle +noret +firstcase +whileempty +incondefslib +overload \
+  +nestedextern +imptype +nullterminated +macroparens +sefparams +sefuncon \
+  +bufferoverflow +multithreaded +portability +superuser +toctou \
+  +its4mostrisky +its4veryrisky +its4risky +legacy \
   -Imacosx `echo $(MMALLOC_CFLAGS) | $(SED) "s/-Wp,//g"`
 INCLUDE_CFLAGS_FOR_SPLINT = `echo $(INCLUDE_CFLAGS) | $(SED) "s/-Wp,//g"`
 configured_lint: stamp-splint
@@ -2157,6 +2161,8 @@ gdb.cxref.bz2: $(SFILES)
 	  -U__BLOCKS__ -index -latex -html -rtf -sgml -raw -no-comments \
 	  -DRUNNING_CXREF >gdb.cxref
 	bzip2 gdb.cxref
+
+# TODO: add more doc subdir targets here
 
 force_update:
 

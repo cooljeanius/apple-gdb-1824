@@ -73,7 +73,9 @@ init_environ(struct gdb_environ *e)
   if (environ == NULL)
     return;
 
-  for (i = 0; environ[i]; i++) /*EMPTY */ ;
+  for (i = 0; environ[i]; i++) {
+    /*EMPTY */ ;
+  }
 
   if (e->allocated < i)
     {

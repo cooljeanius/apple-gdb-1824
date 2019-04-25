@@ -746,7 +746,9 @@ delete_file_handler(int fd)
       for (prev_ptr = gdb_notifier.first_file_handler;
 	   prev_ptr->next_file != file_ptr;
 	   prev_ptr = prev_ptr->next_file)
-	;
+      {
+	; /* (do nothing, just loop thru) */
+      }
       prev_ptr->next_file = file_ptr->next_file;
     }
   xfree (file_ptr);
@@ -1241,7 +1243,9 @@ create_timer (int milliseconds, timer_handler_func * proc, gdb_client_data clien
       for (prev_timer = timer_list.first_timer;
 	   prev_timer->next != timer_index;
 	   prev_timer = prev_timer->next)
-	;
+      {
+	; /* (do nothing, just loop thru) */
+      }
 
       prev_timer->next = timer_ptr;
       timer_ptr->next = timer_index;
@@ -1277,7 +1281,9 @@ delete_timer (int id)
       for (prev_timer = timer_list.first_timer;
 	   prev_timer->next != timer_ptr;
 	   prev_timer = prev_timer->next)
-	;
+      {
+	; /* (do nothing, just loop thru) */
+      }
       prev_timer->next = timer_ptr->next;
     }
   xfree (timer_ptr);

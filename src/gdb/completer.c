@@ -289,12 +289,16 @@ location_completer(const char *text, char *word)
     }
 
   /* How many completions do we have in both lists?  */
-  if (fn_list)
-    for ( ; fn_list[n_files]; n_files++)
-      ;
-  if (list)
-    for ( ; list[n_syms]; n_syms++)
-      ;
+  if (fn_list) {
+    for ( ; fn_list[n_files]; n_files++) {
+      ; /* (do nothing, just loop thru) */
+    }
+  }
+  if (list) {
+    for ( ; list[n_syms]; n_syms++) {
+      ; /* (do nothing, just loop thru) */
+    }
+  }
 
   /* Make list[] large enough to hold both lists, then catenate
      fn_list[] onto the end of list[].  */
@@ -516,10 +520,12 @@ complete_line(const char *text, const char *line_buffer, int point)
 			 file name by starting at `word' and going
 			 backwards.  */
 		      for (p = word;
-			   p > tmp_command
-			     && strchr (gdb_completer_file_name_break_characters, p[-1]) == NULL;
+			   (p > tmp_command)
+			   && (strchr(gdb_completer_file_name_break_characters, p[-1]) == NULL);
 			   p--)
-			;
+		      {
+			; /* (do nothing, just loop thru */
+		      }
 		      rl_completer_word_break_characters =
 			gdb_completer_file_name_break_characters;
 		    }
@@ -528,10 +534,12 @@ complete_line(const char *text, const char *line_buffer, int point)
 		      /* Commands which complete on locations want to
 			 see the entire argument.  */
 		      for (p = word;
-			   p > tmp_command
-			     && p[-1] != ' ' && p[-1] != '\t';
+			   (p > tmp_command) && (p[-1] != ' ')
+			   && (p[-1] != '\t');
 			   p--)
-			;
+		      {
+			; /* (do nothing, just loop thru) */
+		      }
 		    }
 		  list = (*c->completer)(p, word);
 		}
@@ -589,22 +597,25 @@ complete_line(const char *text, const char *line_buffer, int point)
 		     complete_command.  You are supposed to be
 		     completing the word ending at the cursor, so back
 		     up from the cursor instead...  */
-		  for (p = tmp_command + point - 1;
+		  for (p = (tmp_command + point - 1);
 		       /* APPLE LOCAL end completer */
-		       p > tmp_command
-			 && strchr (gdb_completer_file_name_break_characters, p[-1]) == NULL;
+		       (p > tmp_command)
+		       && (strchr(gdb_completer_file_name_break_characters, p[-1]) == NULL);
 		       p--)
-		    ;
+		  {
+		    ; /* (do nothing, just loop thru) */
+		  }
 		  rl_completer_word_break_characters =
 		    gdb_completer_file_name_break_characters;
 		}
 	      else if (c->completer == location_completer)
 		{
 		  for (p = word;
-		       p > tmp_command
-			 && p[-1] != ' ' && p[-1] != '\t';
+		       (p > tmp_command) && (p[-1] != ' ') && (p[-1] != '\t');
 		       p--)
-		    ;
+		  {
+		    ; /* (do nothing, just loop thru) */
+		  }
 		}
 	      list = (*c->completer)(p, word);
 	    }

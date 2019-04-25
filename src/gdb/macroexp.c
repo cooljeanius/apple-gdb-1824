@@ -213,9 +213,9 @@ set_token(struct macro_buffer *tok, const char *start, const char *end)
   tok->is_identifier = 0;
 }
 
-
+/* */
 static int
-get_comment (struct macro_buffer *tok, char *p, char *end)
+get_comment(struct macro_buffer *tok, char *p, char *end)
 {
   if (p + 2 > end)
     return 0;
@@ -252,7 +252,10 @@ get_comment (struct macro_buffer *tok, char *p, char *end)
       return 1;
     }
   else
-    return 0;
+    {
+      return 0;
+    }
+  return 0; /*NOTREACHED*/
 }
 
 
@@ -894,13 +897,9 @@ substitute_args (struct macro_buffer *dest,
    function-like macro name that isn't followed by an argument list,
    we don't expand it.)  If we return zero, leave SRC unchanged.  */
 static int
-expand (const char *id,
-        struct macro_definition *def,
-        struct macro_buffer *dest,
-        struct macro_buffer *src,
-        struct macro_name_list *no_loop,
-        macro_lookup_ftype *lookup_func,
-        void *lookup_baton)
+expand(const char *id, struct macro_definition *def, struct macro_buffer *dest,
+       struct macro_buffer *src, struct macro_name_list *no_loop,
+       macro_lookup_ftype *lookup_func, void *lookup_baton)
 {
   struct macro_name_list new_no_loop;
 
@@ -990,7 +989,10 @@ expand (const char *id,
       return 1;
     }
   else
-    internal_error (__FILE__, __LINE__, _("bad macro definition kind"));
+    {
+      internal_error(__FILE__, __LINE__, _("bad macro definition kind"));
+    }
+  return 0; /*NOTREACHED*/
 }
 
 
@@ -1121,6 +1123,7 @@ macro_expand_once(const char *source, macro_lookup_ftype *lookup_func,
                   void *lookup_func_baton)
 {
   error(_("Expand-once not implemented yet."));
+  /*NOTREACHED*/
 }
 
 

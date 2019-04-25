@@ -222,8 +222,9 @@ register_charset (struct charset *cs)
 
   /* Put the new charset on the end, so that the list ends up in the
      same order as the registrations in the _initialize function.  */
-  for (ptr = &all_charsets; *ptr; ptr = &(*ptr)->next)
-    ;
+  for (ptr = &all_charsets; *ptr; ptr = &(*ptr)->next) {
+    ; /* (do nothing, just loop thru) */
+  }
 
   cs->next = 0;
   *ptr = cs;

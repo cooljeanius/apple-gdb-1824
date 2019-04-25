@@ -190,7 +190,9 @@ _initialize_demangler(void)
   for (ndems = 0;
        libiberty_demanglers[ndems].demangling_style != unknown_demangling;
        ndems++)
-    ;
+  {
+    ; /* (do nothing, just loop thru) */
+  }
   demangling_style_names = (const char **)xcalloc(ndems + 1, sizeof(char *));
   for (i = 0;
        libiberty_demanglers[i].demangling_style != unknown_demangling;

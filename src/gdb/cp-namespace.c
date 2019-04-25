@@ -504,11 +504,10 @@ lookup_symbol_file(const char *name, const char *linkage_name,
    given by BLOCK.  Return NULL if there is no such nested type.  */
 
 struct type *
-cp_lookup_nested_type (struct type *parent_type,
-		       const char *nested_name,
-		       const struct block *block)
+cp_lookup_nested_type(struct type *parent_type, const char *nested_name,
+		      const struct block *block)
 {
-  switch (TYPE_CODE (parent_type))
+  switch (TYPE_CODE(parent_type))
     {
     case TYPE_CODE_STRUCT:
     case TYPE_CODE_NAMESPACE:
@@ -520,22 +519,21 @@ cp_lookup_nested_type (struct type *parent_type,
 	   just like members of namespaces; in particular,
 	   lookup_symbol_namespace works when looking them up.  */
 
-	const char *parent_name = TYPE_TAG_NAME (parent_type);
-	struct symbol *sym = cp_lookup_symbol_namespace (parent_name,
-							 nested_name,
-							 NULL,
-							 block,
-							 VAR_DOMAIN,
-							 NULL);
-	if (sym == NULL || SYMBOL_CLASS (sym) != LOC_TYPEDEF)
+	const char *parent_name = TYPE_TAG_NAME(parent_type);
+	struct symbol *sym = cp_lookup_symbol_namespace(parent_name,
+							nested_name, NULL,
+							block, VAR_DOMAIN,
+							NULL);
+	if ((sym == NULL) || (SYMBOL_CLASS(sym) != LOC_TYPEDEF))
 	  return NULL;
 	else
-	  return SYMBOL_TYPE (sym);
+	  return SYMBOL_TYPE(sym);
       }
     default:
-      internal_error (__FILE__, __LINE__,
-		      _("cp_lookup_nested_type called on a non-aggregate type."));
+      internal_error(__FILE__, __LINE__,
+		     _("cp_lookup_nested_type called on a non-aggregate type."));
     }
+  return NULL; /*NOTREACHED*/
 }
 
 /* The C++-version of lookup_transparent_type.  */

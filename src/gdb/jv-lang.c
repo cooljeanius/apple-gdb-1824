@@ -675,6 +675,7 @@ java_primitive_type(int signature)
       break;
     }
   error(_("unknown signature '%c' for primitive type"), (char)signature);
+  /*NOTREACHED*/
 }
 
 /* If name[0 .. namelen-1] is the name of a primitive Java type,
@@ -821,6 +822,7 @@ static struct value *
 java_value_string(char *ptr, int len)
 {
   error(_("not implemented - java_value_string")); /* FIXME: implement */
+  /*NOTREACHED*/
 }
 
 /* Print the character C on STREAM as part of the contents of a literal

@@ -281,6 +281,7 @@ no_get_tls_address(void *baton ATTRIBUTE_UNUSED,
 {
   internal_error(__FILE__, __LINE__,
 		 _("Support for DW_OP_GNU_push_tls_address is unimplemented"));
+  /*NOTREACHED*/
 }
 
 static CORE_ADDR
@@ -1443,7 +1444,7 @@ read_initial_length(bfd *abfd, gdb_byte *buf, unsigned int *bytes_read_ptr)
    should be dereferenced.  */
 
 static gdb_byte
-encoding_for_size (unsigned int size)
+encoding_for_size(unsigned int size)
 {
   switch (size)
     {
@@ -1454,12 +1455,13 @@ encoding_for_size (unsigned int size)
     case 8:
       return DW_EH_PE_udata8;
     default:
-      internal_error (__FILE__, __LINE__, _("Unsupported address size"));
+      internal_error(__FILE__, __LINE__, _("Unsupported address size"));
     }
+  return DW_EH_PE_omit; /*NOTREACHED*/
 }
 
 static unsigned int
-size_of_encoded_value (gdb_byte encoding)
+size_of_encoded_value(gdb_byte encoding)
 {
   if (encoding == DW_EH_PE_omit)
     return 0;
@@ -1467,7 +1469,7 @@ size_of_encoded_value (gdb_byte encoding)
   switch (encoding & 0x07)
     {
     case DW_EH_PE_absptr:
-      return TYPE_LENGTH (builtin_type_void_data_ptr);
+      return TYPE_LENGTH(builtin_type_void_data_ptr);
     case DW_EH_PE_udata2:
       return 2;
     case DW_EH_PE_udata4:
@@ -1475,8 +1477,9 @@ size_of_encoded_value (gdb_byte encoding)
     case DW_EH_PE_udata8:
       return 8;
     default:
-      internal_error (__FILE__, __LINE__, _("Invalid or unsupported encoding"));
+      internal_error(__FILE__, __LINE__, _("Invalid or unsupported encoding"));
     }
+  return 0; /*NOTREACHED*/
 }
 
 static CORE_ADDR
@@ -1573,8 +1576,9 @@ read_encoded_value (struct comp_unit *unit, gdb_byte encoding,
       *bytes_read_ptr += 8;
       return (base + bfd_get_signed_64 (unit->abfd, (bfd_byte *) buf));
     default:
-      internal_error (__FILE__, __LINE__, _("Invalid or unsupported encoding"));
+      internal_error(__FILE__, __LINE__, _("Invalid or unsupported encoding"));
     }
+  return INVALID_ADDRESS; /*NOTREACHED*/
 }
 
 
