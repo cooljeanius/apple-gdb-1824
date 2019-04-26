@@ -35,31 +35,32 @@ attach(int pid)
 {
 #ifdef ATTR_NORETURN
   internal_error(__FILE__, __LINE__,
-                 "macosx_nat_inferior: unexpected call to attach()");
+                 _("macosx_nat_inferior: unexpected call to attach()"));
 #else
   return 0;
 #endif /* ATTR_NORETURN */
+  /*NOTREACHED*/
 }
 
 void ATTR_NORETURN
 detach(int sig)
 {
   internal_error(__FILE__, __LINE__,
-                 "macosx_nat_inferior: unexpected call to detach()");
+                 _("macosx_nat_inferior: unexpected call to detach()"));
 }
 
 void ATTR_NORETURN
 kill_inferior(void)
 {
   internal_error(__FILE__, __LINE__,
-                 "macosx_nat_inferior: unexpected call to kill_inferior()");
+                 _("macosx_nat_inferior: unexpected call to kill_inferior()"));
 }
 
 void ATTR_NORETURN
 child_resume(ptid_t ptid, int step, enum target_signal sig)
 {
   internal_error(__FILE__, __LINE__,
-                 "macosx_nat_inferior: unexpected call to child_resume()");
+                 _("macosx_nat_inferior: unexpected call to child_resume()"));
 }
 
 int ATTR_NORETURN
@@ -68,10 +69,11 @@ child_wait(int pid, struct target_waitstatus *status,
 {
 #ifdef ATTR_NORETURN
   internal_error(__FILE__, __LINE__,
-                 "macosx_nat_inferior: unexpected call to child_wait()");
+                 _("macosx_nat_inferior: unexpected call to child_wait()"));
 #else
   return 0;
 #endif /* ATTR_NORETURN */
+  /*NOTREACHED*/
 }
 
 int ATTR_NORETURN
@@ -79,7 +81,8 @@ child_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
                   struct mem_attrib *attrib, struct target_ops *target)
 {
   internal_error(__FILE__, __LINE__,
-                 "macosx_nat_inferior: unexpected call to child_xfer_memory()");
+                 _("macosx_nat_inferior: unexpected call to child_xfer_memory()"));
+  /*NOTREACHED*/
 }
 
 /* EOF */

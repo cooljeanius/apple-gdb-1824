@@ -2935,6 +2935,7 @@ fromhex(int a)
       dump_protocol_log("recent remote packet log at point of error:\n");
       error(_("Reply contains invalid hex digit %d"), a);
     }
+  return -1; /*NOTREACHED*/
 }
 
 /* FIXME: add comment: */
@@ -5287,8 +5288,9 @@ remote_remove_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
 #endif /* DEPRECATED_REMOTE_BREAKPOINT */
 }
 
+/* */
 static int
-watchpoint_to_Z_packet (int type)
+watchpoint_to_Z_packet(int type)
 {
   switch (type)
     {
@@ -5299,9 +5301,10 @@ watchpoint_to_Z_packet (int type)
     case hw_access:
       return 4;
     default:
-      internal_error (__FILE__, __LINE__,
-		      _("hw_bp_to_z: bad watchpoint type %d"), type);
+      internal_error(__FILE__, __LINE__,
+		     _("hw_bp_to_z: bad watchpoint type %d"), type);
     }
+  return -1; /*NOTREACHED*/
 }
 
 /* */
@@ -5350,6 +5353,7 @@ remote_insert_watchpoint(CORE_ADDR addr, int len, int type)
     }
   internal_error(__FILE__, __LINE__,
 		 _("remote_insert_watchpoint: reached end of function"));
+  /*NOTREACHED*/
 }
 
 /* */
@@ -5397,6 +5401,7 @@ remote_remove_watchpoint(CORE_ADDR addr, int len, int type)
     }
   internal_error(__FILE__, __LINE__,
 		 _("remote_remove_watchpoint: reached end of function"));
+  /*NOTREACHED*/
 }
 
 
@@ -5491,8 +5496,9 @@ remote_insert_hw_breakpoint(CORE_ADDR addr, gdb_byte *shadow)
     default:
       break;
     }
-  internal_error (__FILE__, __LINE__,
-		  _("remote_insert_hw_breakpoint: reached end of function"));
+  internal_error(__FILE__, __LINE__,
+		 _("remote_insert_hw_breakpoint: reached end of function"));
+  /*NOTREACHED*/
 }
 
 
@@ -5535,8 +5541,9 @@ remote_remove_hw_breakpoint(CORE_ADDR addr, gdb_byte *shadow)
     default:
       break;
     }
-  internal_error (__FILE__, __LINE__,
-		  _("remote_remove_hw_breakpoint: reached end of function"));
+  internal_error(__FILE__, __LINE__,
+		 _("remote_remove_hw_breakpoint: reached end of function"));
+  /*NOTREACHED*/
 }
 
 /* Some targets are only capable of doing downloads, and afterwards

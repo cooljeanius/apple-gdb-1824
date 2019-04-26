@@ -661,6 +661,7 @@ get_join_type(struct type *in_type)
     default:
       return VAROBJ_AS_DUNNO;
     }
+  return VAROBJ_AS_DUNNO; /*NOTREACHED*/
 }
 
 
@@ -2645,9 +2646,9 @@ variable_language (struct varobj *var)
    is the number of children that the user will see in the variable
    display. */
 static int
-number_of_children (struct varobj *var)
+number_of_children(struct varobj *var)
 {
-  return (*var->root->lang->number_of_children) (var);;
+  return (*var->root->lang->number_of_children)(var);
 }
 
 /* APPLE LOCAL begin */
@@ -3899,6 +3900,7 @@ c_variable_editable(struct varobj *var)
       return 1;
       break;
     }
+  return -1; /*NOTREACHED*/
 }
 
 static char *ATTRIBUTE_NONNULL(1)

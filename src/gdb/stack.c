@@ -1048,11 +1048,14 @@ parse_frame_specification_1(const char *frame_exp, const char *message,
   /* We couldn't identify the frame as an existing frame, but
      perhaps we can create one with a single argument.  */
   if (numargs == 1)
-    return create_new_frame (addrs[0], 0);
+    return create_new_frame(addrs[0], 0);
   else if (numargs == 2)
-    return create_new_frame (addrs[0], addrs[1]);
+    return create_new_frame(addrs[0], addrs[1]);
   else
-    error (_("Too many args in frame specification"));
+    {
+      error(_("Too many args in frame specification"));
+    }
+  return NULL; /*NOTREACHED*/
 }
 
 /* */

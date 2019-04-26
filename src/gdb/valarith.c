@@ -272,10 +272,12 @@ value_subscript(struct value *array, struct value *idx)
       return v;
     }
 
-  if (c_style)
+  if (c_style) {
     return value_ind(value_add(array, idx));
-  else
+  } else {
     error(_("not an array or string"));
+  }
+  return NULL; /*NOTREACHED*/
 }
 
 /* Return the value of EXPR[IDX], expr an aggregate rvalue
@@ -539,10 +541,10 @@ value_x_binop (struct value *arg1, struct value *arg2, enum exp_opcode op,
 	}
       return call_function_by_hand (argvec[0], 2 - static_memfuncp, argvec + 1);
     }
-  error (_("member function %s not found"), tstr);
-#ifdef lint
-  return call_function_by_hand (argvec[0], 2 - static_memfuncp, argvec + 1);
-#endif
+  error(_("member function %s not found"), tstr);
+#if defined(lint) || defined(S_SPLINT_S)
+  return call_function_by_hand(argvec[0], 2 - static_memfuncp, argvec + 1);
+#endif /* lint || S_SPLINT_S */
 }
 
 /* We know that arg1 is a structure, so try to find a unary user

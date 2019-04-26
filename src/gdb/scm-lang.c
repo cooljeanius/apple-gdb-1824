@@ -1,4 +1,4 @@
-/* Scheme/Guile language support routines for GDB, the GNU debugger.
+/* scm-lang.c: Scheme/Guile language support routines for GDB, the GNU debugger.
 
    Copyright 1995, 1996, 1998, 2000, 2001, 2002, 2003, 2004, 2005 Free
    Software Foundation, Inc.
@@ -180,6 +180,7 @@ scm_lookup_name(char *str)
   if (sym)
     return value_of_variable(sym, NULL);
   error(_("No symbol \"%s\" in current context."), str);
+  /*NOTREACHED*/
 }
 
 /* */

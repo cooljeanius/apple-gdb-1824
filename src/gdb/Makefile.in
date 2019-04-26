@@ -2096,12 +2096,14 @@ lint: $(LINTFILES)
 	$(LINT) $(INCLUDE_CFLAGS) $(LINTFLAGS) $(LINTFILES) \
 	   `echo $(DEPFILES) | uniq | $(SED) 's/\.o /\.c /g'`
 
+## it might be tempting to add -Dlint here but that triggers warnings in
+## generated code:
 SPLINTFLAGS = $(LINTFLAGS) $(AM_V_splint) +posix-lib -weak -unrecogcomments \
   +matchanyintegral -redef -fixedformalarray +ignoresigns -sysunrecog \
   -type -retvalother -unrecog -stackref -initallelements -castfcnptr \
-  +oldstyle +noret +firstcase +whileempty +incondefslib +overload \
-  +nestedextern +imptype +nullterminated +macroparens +sefparams +sefuncon \
-  +bufferoverflow +multithreaded +portability +superuser +toctou \
+  +oldstyle +noret +firstcase +incondefslib +overload +nestedextern +imptype \
+  +nullterminated +macroparens +sefparams +sefuncon +bufferoverflow \
+  +multithreaded +portability +superuser +toctou \
   +its4mostrisky +its4veryrisky +its4risky +legacy \
   -Imacosx `echo $(MMALLOC_CFLAGS) | $(SED) "s/-Wp,//g"`
 INCLUDE_CFLAGS_FOR_SPLINT = `echo $(INCLUDE_CFLAGS) | $(SED) "s/-Wp,//g"`

@@ -618,6 +618,7 @@ do_hardwire_readchar (struct serial *scb, int timeout)
       scb->bufp = scb->buf;
       return *scb->bufp++;
     }
+  return SERIAL_ERROR; /*NOTREACHED*/
 }
 
 static int
@@ -865,8 +866,9 @@ hardwire_close(struct serial *scb)
   close(scb->fd);
   scb->fd = -1;
 }
-
-/* */
+
+
+/* */
 void
 _initialize_ser_hardwire(void)
 {

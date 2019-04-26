@@ -226,6 +226,7 @@ remote_get_noisy_reply(char *buf, long sizeof_buf)
       return buf;		/* here is the actual reply */
     }
   } while (1);
+  return NULL; /*NOTREACHED*/
 }
 
 /* Set tracepoint count to NUM.  */

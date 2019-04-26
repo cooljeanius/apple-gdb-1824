@@ -2742,6 +2742,7 @@ parse_partial_symbols (struct objfile *objfile)
 	      {
 		char *stabstring = (debug_info->ss + fh->issBase + sh.iss);
 		size_t len = strlen(stabstring);
+		const char *p; /* moved out of switch below */
 		while (stabstring[len - 1] == '\\')
 		  {
 		    SYMR sh2;
@@ -2778,7 +2779,6 @@ parse_partial_symbols (struct objfile *objfile)
 
 		switch (type_code)
 		  {
-		    const char *p;
 		    /*
 		     * Standard, external, non-debugger, symbols
 		     */
@@ -3332,6 +3332,9 @@ parse_partial_symbols (struct objfile *objfile)
 	    {
 	      char *name;
 	      enum address_class addrclass;
+	      CORE_ADDR high;
+	      CORE_ADDR procaddr;
+	      int new_sdx;
 
 	      (*swap_sym_in)(cur_bfd,
 			     ((char *)debug_info->external_sym
@@ -3387,10 +3390,6 @@ parse_partial_symbols (struct objfile *objfile)
 
 	      switch (sh.st)
 		{
-		  CORE_ADDR high;
-		  CORE_ADDR procaddr;
-		  int new_sdx;
-
 		case stStaticProc:
 		  {
 		    struct minimal_symbol *themsym =

@@ -218,6 +218,7 @@ ser_base_wait_for(struct serial *scb, int timeout)
 
       return 0;
     }
+  return SERIAL_ERROR; /*NOTREACHED*/
 }
 
 /* Read a character with user-specified timeout.  TIMEOUT is number of seconds

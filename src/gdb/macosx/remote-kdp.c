@@ -2276,6 +2276,7 @@ static NORETURN CORE_ADDR ATTR_NORETURN
 kdp_allocate_memory(int size ATTRIBUTE_UNUSED)
 {
   error(_("KDP cannot allocate memory in the kernel being debugged."));
+  /*NOTREACHED*/
 }
 
 static void

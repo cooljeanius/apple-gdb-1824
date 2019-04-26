@@ -630,19 +630,25 @@ mi_cmd_var_info_num_children (char *command, char **argv, int argc)
 static enum print_values
 mi_parse_values_option(const char *arg)
 {
-  if ((strcmp(arg, "0") == 0)
-      || (strcmp(arg, mi_no_values) == 0))
-    return PRINT_NO_VALUES;
-  else if ((strcmp(arg, "1") == 0)
-	   || (strcmp(arg, mi_all_values) == 0))
-    return PRINT_ALL_VALUES;
-  else if ((strcmp(arg, "2") == 0)
-	   || (strcmp(arg, mi_simple_values) == 0))
-    return PRINT_SIMPLE_VALUES;
+  if ((strcmp(arg, "0") == 0) || (strcmp(arg, mi_no_values) == 0))
+    {
+      return PRINT_NO_VALUES;
+    }
+  else if ((strcmp(arg, "1") == 0) || (strcmp(arg, mi_all_values) == 0))
+    {
+      return PRINT_ALL_VALUES;
+    }
+  else if ((strcmp(arg, "2") == 0) || (strcmp(arg, mi_simple_values) == 0))
+    {
+      return PRINT_SIMPLE_VALUES;
+    }
   else
-    error(_("Unknown value for PRINT_VALUES\n\
+    {
+      error(_("Unknown value for PRINT_VALUES\n\
 Must be: 0 or \"%s\", 1 or \"%s\", 2 or \"%s\""),
-	  mi_no_values, mi_simple_values, mi_all_values);
+	    mi_no_values, mi_simple_values, mi_all_values);
+    }
+  return PRINT_BAD_INPUT; /*NOTREACHED*/
 }
 
 /* Return 1 if given the argument PRINT_VALUES we should display

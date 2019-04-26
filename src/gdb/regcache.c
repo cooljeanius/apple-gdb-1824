@@ -519,7 +519,7 @@ deprecated_read_register_bytes (int in_start, gdb_byte *in_buf, int in_len)
   int regnum;
   gdb_byte reg_buf[MAX_REGISTER_SIZE];
   int reg_index = 0;
-  
+
   while (reg_index < MAX_REGISTER_SIZE) {
     reg_buf[reg_index] = 0;
     reg_index++;
@@ -1147,6 +1147,7 @@ read_sp(void)
        about the architecture so put it at the end.  */
     return read_register(SP_REGNUM);
   internal_error(__FILE__, __LINE__, _("read_sp: Unable to find SP"));
+  /*NOTREACHED*/
 }
 
 /* */

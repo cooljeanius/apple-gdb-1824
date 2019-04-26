@@ -115,24 +115,28 @@ value_of_builtin_frame_pc_reg (struct frame_info *frame)
     }
 }
 
+/* */
 static struct value *
-value_of_builtin_frame_sp_reg (struct frame_info *frame)
+value_of_builtin_frame_sp_reg(struct frame_info *frame)
 {
 #ifdef SP_REGNUM
   if (SP_REGNUM >= 0)
-    return value_of_register (SP_REGNUM, frame);
-#endif
-  error (_("Standard register ``$sp'' is not available for this target"));
+    return value_of_register(SP_REGNUM, frame);
+#endif /* SP_REGNUM */
+  error(_("Standard register ``$sp'' is not available for this target"));
+  /*NOTREACHED*/
 }
 
+/* */
 static struct value *
-value_of_builtin_frame_ps_reg (struct frame_info *frame)
+value_of_builtin_frame_ps_reg(struct frame_info *frame)
 {
 #ifdef PS_REGNUM
   if (PS_REGNUM >= 0)
-    return value_of_register (PS_REGNUM, frame);
-#endif
-  error (_("Standard register ``$ps'' is not available for this target"));
+    return value_of_register(PS_REGNUM, frame);
+#endif /* PS_REGNUM */
+  error(_("Standard register ``$ps'' is not available for this target"));
+  /*NOTREACHED*/
 }
 
 extern initialize_file_ftype _initialize_frame_reg; /* -Wmissing-prototypes */

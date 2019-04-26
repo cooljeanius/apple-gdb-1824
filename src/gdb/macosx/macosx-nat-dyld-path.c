@@ -339,8 +339,8 @@ get_framework_pathname (const char *name, const char *type, int with_suffix)
    IS_BUNDLE is true if PATH appears to be a bundle.  */
 
 void
-dyld_library_basename (const char *path, const char **s, int *len,
-                       int *is_framework, int *is_bundle)
+dyld_library_basename(const char *path, const char **s, int *len,
+                      int *is_framework, int *is_bundle)
 {
   const char *p = NULL;
   const char *q = NULL;
@@ -362,15 +362,15 @@ dyld_library_basename (const char *path, const char **s, int *len,
       *is_bundle = 0;
     }
 
-  p = get_framework_pathname (path, ".framework/", 1);
+  p = get_framework_pathname(path, ".framework/", 1);
   if (p != NULL)
     {
-
-      q = strrchr (path, '/');
-      assert (q != NULL);
-      assert (*q++ == '/');
-      *s = xstrdup (q);
-      *len = strlen (q);
+      q = strrchr(path, '/');
+      assert(q != NULL);
+      /* FIXME: ensure this is equivalent to the *q++ that was here before: */
+      assert(q[1] == '/');
+      *s = xstrdup(q);
+      *len = strlen(q);
       if (is_framework != NULL)
         {
           *is_framework = 1;
@@ -387,10 +387,11 @@ dyld_library_basename (const char *path, const char **s, int *len,
   if (p != NULL)
     {
       q = strrchr(path, '/');
-      assert (q != NULL);
-      assert (*q++ == '/');
-      *s = xstrdup (q);
-      *len = strlen (q);
+      assert(q != NULL);
+      /* FIXME: ensure this is equivalent to the *q++ that was here before: */
+      assert(q[1] == '/');
+      *s = xstrdup(q);
+      *len = strlen(q);
       if (is_framework != NULL)
         {
           *is_framework = 0;

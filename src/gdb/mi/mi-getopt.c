@@ -71,6 +71,7 @@ mi_getopt(const char *prefix, int argc, char **argv, struct mi_opt *opts,
 	}
     }
   error(_("%s: Unknown option ``%s''"), prefix, arg + 1);
+  /*NOTREACHED*/
 }
 
 int

@@ -157,13 +157,13 @@ Overload resolution in evaluating C++ functions is %s.\n"),
 /* Find the address of function name NAME in the inferior.  */
 
 struct value *
-find_function_in_inferior (const char *name, struct type *type)
+find_function_in_inferior(const char *name, struct type *type)
 {
   struct symbol *sym = NULL;
   int syms_found = 0;
   struct symbol_search *sym_list = NULL;
-  syms_found = lookup_symbol_all (name, NULL, VAR_DOMAIN, (int *) NULL,
-                                  (struct symtab **) NULL, &sym_list);
+  syms_found = lookup_symbol_all(name, NULL, VAR_DOMAIN, (int *)NULL,
+                                 (struct symtab **)NULL, &sym_list);
 
   if (syms_found > 0)
     {
@@ -205,6 +205,7 @@ find_function_in_inferior (const char *name, struct type *type)
 	    error (_("evaluation of this expression requires the program to have a function named \"%s\"."), name);
 	}
     }
+  return NULL; /*NOTREACHED*/
 }
 
 /* Allocate NBYTES of space in the inferior using the inferior's malloc
@@ -781,7 +782,10 @@ value_assign(struct value *toval, struct value *fromval)
 	      int offset;
 	      for (reg_offset = value_reg, offset = 0;
 		   (offset + register_size(current_gdbarch, reg_offset)) <= value_offset(toval);
-		   reg_offset++);
+		   reg_offset++)
+	      {
+		; /* FIXME: intentionally empty? */
+	      }
 	      byte_offset = (value_offset(toval) - offset);
 	    }
 
@@ -1897,9 +1901,10 @@ value_struct_elt(struct value **argp, struct value **args,
   else
     v = search_struct_method (name, argp, args, 0, static_memfuncp, t);
 
-  if (v == (struct value *) - 1)
+  if (v == (struct value *)-1)
     {
-      error (_("One of the arguments you tried to pass to %s could not be converted to what the function wants."), name);
+      error(_("One of the arguments you tried to pass to %s could not be converted to what the function wants."),
+	    name);
     }
   else if (v == 0)
     {
@@ -2453,12 +2458,18 @@ find_oload_champ (struct type **arg_types, int nargs, int method,
       if (overload_debug)
 	{
 	  if (method)
-	    fprintf_filtered (gdb_stderr,"Overloaded method instance %s, # of parms %d\n", fns_ptr[ix].physname, nparms);
+	    fprintf_filtered(gdb_stderr,
+			     "Overloaded method instance %s, # of parms %d\n",
+			     fns_ptr[ix].physname, nparms);
 	  else
-	    fprintf_filtered (gdb_stderr,"Overloaded function instance %s # of parms %d\n", SYMBOL_DEMANGLED_NAME (oload_syms[ix]), nparms);
-	  for (jj = 0; jj < nargs - static_offset; jj++)
-	    fprintf_filtered (gdb_stderr,"...Badness @ %d : %d\n", jj, bv->rank[jj]);
-	  fprintf_filtered (gdb_stderr,"Overload resolution champion is %d, ambiguous? %d\n", oload_champ, oload_ambiguous);
+	    fprintf_filtered(gdb_stderr,
+			     "Overloaded function instance %s # of parms %d\n",
+			     SYMBOL_DEMANGLED_NAME (oload_syms[ix]), nparms);
+	  for (jj = 0; jj < (nargs - static_offset); jj++)
+	    fprintf_filtered(gdb_stderr, "...Badness @ %d : %d\n", jj,
+			     bv->rank[jj]);
+	  fprintf_filtered(gdb_stderr, "Overload resolution champion is %d, ambiguous? %d\n",
+			   oload_champ, oload_ambiguous);
 	}
     }
 
@@ -2644,22 +2655,21 @@ check_field (struct value *arg1, const char *name)
    value_struct_elt_for_reference.  */
 
 struct value *
-value_aggregate_elt (struct type *curtype,
-		     char *name,
-		     enum noside noside)
+value_aggregate_elt(struct type *curtype, char *name, enum noside noside)
 {
-  switch (TYPE_CODE (curtype))
+  switch (TYPE_CODE(curtype))
     {
     case TYPE_CODE_STRUCT:
     case TYPE_CODE_UNION:
-      return value_struct_elt_for_reference (curtype, 0, curtype, name, NULL,
-					     noside);
+      return value_struct_elt_for_reference(curtype, 0, curtype, name, NULL,
+					    noside);
     case TYPE_CODE_NAMESPACE:
       return value_namespace_elt (curtype, name, noside);
     default:
-      internal_error (__FILE__, __LINE__,
-		      _("non-aggregate type in value_aggregate_elt"));
+      internal_error(__FILE__, __LINE__,
+		     _("non-aggregate type in value_aggregate_elt"));
     }
+  return NULL; /*NOTREACHED*/
 }
 
 /* C++: Given an aggregate type CURTYPE, and a member name NAME,
@@ -3002,32 +3012,35 @@ value_of_local (const char *name, int complain)
    made in an inappropriate context.  */
 
 struct value *
-value_of_this (int complain)
+value_of_this(int complain)
 {
   if (current_language->la_language == language_objc)
-    return value_of_local ("self", complain);
+    return value_of_local("self", complain);
   else if (current_language->la_language == language_objcplus)
     {
       /* INIT_SYMBOL_DEMANGLED_NAME sets the language of a function
-	 symbol to C++ if it's name passes the C++ demangler.  So
-	 let's use that to get the frame's language... */
+	 symbol to C++ if its name passes the C++ demangler.  So
+	 let us use that to get the frame's language... */
       struct symbol *sym =
-	get_frame_function (get_selected_frame (NULL));
+	get_frame_function(get_selected_frame (NULL));
       if (sym)
-	if (SYMBOL_LANGUAGE (sym) == language_cplus)
-	  return value_of_local ("this", complain);
+	if (SYMBOL_LANGUAGE(sym) == language_cplus)
+	  return value_of_local("this", complain);
 	else
-	  return value_of_local ("self", complain);
+	  return value_of_local("self", complain);
       else
 	/* Not sure why we would not be able to get the function
 	   here. */
 	if (complain)
-	  error ("Couldn't find symbol for current pc.");
+	  error(_("Failed to find symbol for current pc."));
 	else
 	  return NULL;
     }
   else
-    return value_of_local ("this", complain);
+    {
+      return value_of_local("this", complain);
+    }
+  return NULL; /*NOTREACHED*/
 }
 
 /* Create a slice (sub-string, sub-array) of ARRAY, that is LENGTH elements
@@ -3135,28 +3148,33 @@ value_literal_complex (struct value *arg1, struct value *arg2, struct type *type
 /* Cast a value into the appropriate complex data type. */
 
 static struct value *
-cast_into_complex (struct type *type, struct value *val)
+cast_into_complex(struct type *type, struct value *val)
 {
-  struct type *real_type = TYPE_TARGET_TYPE (type);
-  if (TYPE_CODE (value_type (val)) == TYPE_CODE_COMPLEX)
+  struct type *real_type = TYPE_TARGET_TYPE(type);
+  if (TYPE_CODE(value_type(val)) == TYPE_CODE_COMPLEX)
     {
-      struct type *val_real_type = TYPE_TARGET_TYPE (value_type (val));
-      struct value *re_val = allocate_value (val_real_type);
-      struct value *im_val = allocate_value (val_real_type);
+      struct type *val_real_type = TYPE_TARGET_TYPE(value_type(val));
+      struct value *re_val = allocate_value(val_real_type);
+      struct value *im_val = allocate_value(val_real_type);
 
-      memcpy (value_contents_raw (re_val),
-	      value_contents (val), TYPE_LENGTH (val_real_type));
-      memcpy (value_contents_raw (im_val),
-	      value_contents (val) + TYPE_LENGTH (val_real_type),
-	      TYPE_LENGTH (val_real_type));
+      memcpy(value_contents_raw(re_val),
+	     value_contents(val), TYPE_LENGTH(val_real_type));
+      memcpy(value_contents_raw(im_val),
+	     (value_contents(val) + TYPE_LENGTH(val_real_type)),
+	     TYPE_LENGTH(val_real_type));
 
-      return value_literal_complex (re_val, im_val, type);
+      return value_literal_complex(re_val, im_val, type);
     }
-  else if (TYPE_CODE (value_type (val)) == TYPE_CODE_FLT
-	   || TYPE_CODE (value_type (val)) == TYPE_CODE_INT)
-    return value_literal_complex (val, value_zero (real_type, not_lval), type);
+  else if ((TYPE_CODE(value_type(val)) == TYPE_CODE_FLT)
+	   || (TYPE_CODE(value_type(val)) == TYPE_CODE_INT))
+    {
+      return value_literal_complex(val, value_zero(real_type, not_lval), type);
+    }
   else
-    error (_("cannot cast non-number to complex"));
+    {
+      error(_("cannot cast non-number to complex"));
+    }
+  return NULL; /*NOTREACHED*/
 }
 
 /* APPLE LOCAL: This mechanism allows you to check if a call is currently
@@ -3313,23 +3331,25 @@ check_safe_call(regex_t unsafe_functions[], int npatterns, int stack_depth,
     {
       struct frame_info *old_frame = frame_find_by_id (old_frame_id);
       if (old_frame == NULL)
-	warning ("check_safe_call: could not restore current frame\n");
+	warning(_("check_safe_call: could not restore current frame\n"));
       else
-	select_frame (old_frame);
+	select_frame(old_frame);
     }
 
   return !args.unsafe_p;
 }
 
+/* */
 void
-_initialize_valops (void)
+_initialize_valops(void)
 {
-  add_setshow_boolean_cmd ("overload-resolution", class_support,
-			   &overload_resolution, _("\
+  add_setshow_boolean_cmd("overload-resolution", class_support,
+			  &overload_resolution, _("\
 Set overload resolution in evaluating C++ functions."), _("\
 Show overload resolution in evaluating C++ functions."), NULL,
-			   NULL,
-			   show_overload_resolution,
-			   &setlist, &showlist);
+			  NULL, show_overload_resolution,
+			  &setlist, &showlist);
   overload_resolution = 1;
 }
+
+/* EOF */

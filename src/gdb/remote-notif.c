@@ -1,4 +1,4 @@
-/* Remote notification in GDB protocol
+/* remote-notif.c: Remote notification in GDB protocol
 
    Copyright (C) 1988-2013 Free Software Foundation, Inc.
 

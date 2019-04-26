@@ -897,7 +897,7 @@ internal_vproblem(struct internal_problem *problem,
       default:
 	dejavu = 3;
 	write(STDERR_FILENO, msg, sizeof(msg));
-	exit(1);
+	exit(EXIT_FAILURE);
       }
   }
 
@@ -985,7 +985,7 @@ further debugging may prove unreliable.", file, line, problem->name, msg);
             our parent (like Xcode) can pick up the error.  */
          if (quit_p == 2)
            printf_filtered("%s\n",reason);
-         exit(1);
+         exit(EXIT_FAILURE);
        }
     }
   else
@@ -1773,10 +1773,12 @@ int
 nquery(const char *ctlstr, ...)
 {
   va_list args;
+  int retn;
 
   va_start(args, ctlstr);
-  return defaulted_query(ctlstr, 'n', args);
+  retn = defaulted_query(ctlstr, 'n', args);
   va_end(args);
+  return retn;
 }
 
 /* Ask user a y-or-n question and return 0 if answer is no, 1 if
@@ -1789,10 +1791,12 @@ int
 yquery(const char *ctlstr, ...)
 {
   va_list args;
+  int rety;
 
   va_start(args, ctlstr);
-  return defaulted_query(ctlstr, 'y', args);
+  rety = defaulted_query(ctlstr, 'y', args);
   va_end(args);
+  return rety;
 }
 
 /* Print an error message saying that we couldn't make sense of a
@@ -1810,6 +1814,7 @@ no_control_char_error(const char *start, const char *end)
 
   error(_("There is no control character `\\%s' in the `%s' character set."),
         copy, target_charset());
+  /*NOTREACHED*/
 }
 
 /* Parse a C escape sequence.  STRING_PTR points to a variable
@@ -3376,6 +3381,7 @@ int_string(LONGEST val, int radix, int is_signed, int width,
       internal_error(__FILE__, __LINE__,
 		     _("failed internal consistency check"));
     }
+  return NULL; /*NOTREACHED*/
 }
 
 /* Convert a CORE_ADDR into a string: */
@@ -3625,7 +3631,7 @@ gnu_debuglink_crc32(unsigned long crc, unsigned char *buf, size_t len)
   crc = (~crc & 0xffffffff);
   for (end = (buf + len); buf < end; ++buf)
     crc = (crc32_table[(crc ^ *buf) & 0xff] ^ (crc >> 8));
-  return (~crc & 0xffffffff);;
+  return (~crc & 0xffffffff);
 }
 
 ULONGEST
