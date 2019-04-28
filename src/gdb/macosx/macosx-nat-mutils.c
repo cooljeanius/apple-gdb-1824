@@ -152,9 +152,8 @@ child_get_pagesize(void)
 
    Returns the length copied. */
 static int
-mach_xfer_memory_remainder(CORE_ADDR memaddr, gdb_byte *myaddr,
-                           int len, int write,
-                           struct mem_attrib *attrib,
+mach_xfer_memory_remainder(CORE_ADDR memaddr, gdb_byte *myaddr, size_t len,
+                           int write, struct mem_attrib *attrib,
                            struct target_ops *target)
 {
   vm_size_t pagesize = child_get_pagesize();
@@ -233,7 +232,8 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, gdb_byte *myaddr,
        * If we figure out that not writing whole pages causes problems
        * of its own, then we will have to revisit this.  */
       kret =
-        mach_vm_write(macosx_status->task, memaddr, (pointer_t)myaddr, len);
+        mach_vm_write(macosx_status->task, memaddr, (pointer_t)myaddr,
+                      (mach_msg_type_number_t)len);
       if (kret != KERN_SUCCESS)
         {
           mutils_debug("Unable to write region at 0x%s w/length %lu to inferior: "
@@ -270,13 +270,14 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, gdb_byte *myaddr,
         }
     }
 
-  return len;
+  return (int)len;
 }
 
+/* block version of mach_xfer_memory(): */
 static int
-mach_xfer_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr,
-                       int len, int write,
-                       struct mem_attrib *attrib, struct target_ops *target)
+mach_xfer_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr, size_t len,
+                       int write, struct mem_attrib *attrib,
+                       struct target_ops *target)
 {
   vm_size_t pagesize = child_get_pagesize();
 
@@ -335,7 +336,8 @@ mach_xfer_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr,
   else
     {
       kret =
-        mach_vm_write(macosx_status->task, memaddr, (pointer_t)myaddr, len);
+        mach_vm_write(macosx_status->task, memaddr, (pointer_t)myaddr,
+                      (mach_msg_type_number_t)len);
       if (kret != KERN_SUCCESS)
         {
           mutils_debug(_("Unable to write region at 0x%s w/length %lu from inferior: "
@@ -346,7 +348,7 @@ mach_xfer_memory_block(CORE_ADDR memaddr, gdb_byte *myaddr,
         }
     }
 
-  return len;
+  return (int)len;
 }
 
 
@@ -657,9 +659,10 @@ macosx_get_region_info_both(task_t task, mach_vm_address_t addr,
   return kret;
 }
 
+/* Unfortunately len has to be int instead of size_t due to this function being
+ * passed as a function pointer: */
 int
-mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,
-                 int len, int write,
+mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
                  struct mem_attrib *attrib, struct target_ops *target)
 {
   mach_vm_address_t r_start = 0;
@@ -706,15 +709,15 @@ mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,
       {
         if ((r_start - memaddr) <= MINUS_INT_MIN)
           {
-            mutils_debug("First available address near 0x%s is at 0x%s; "
-                         "returning\n",
+            mutils_debug(_("First available address near 0x%s is at 0x%s; "
+                           "returning\n"),
                          paddr_nz(memaddr), paddr_nz((CORE_ADDR)r_start));
             return (int)(-(r_start - memaddr));
           }
         else
           {
-            mutils_debug("First available address near 0x%s is at 0x%s "
-                         "(too far; returning 0)\n",
+            mutils_debug(_("First available address near 0x%s is at 0x%s "
+                           "(too far; returning 0)\n"),
                          paddr_nz(memaddr), paddr_nz((CORE_ADDR)r_start));
             return 0;
           }
@@ -908,9 +911,9 @@ mach_xfer_partial(struct target_ops *ops, enum target_object object,
 	ssize_t nbytes = (ssize_t)len;
 
 	if (readbuf)
-	  nbytes = mach_xfer_memory(offset, readbuf, nbytes, 0, NULL, ops);
+	  nbytes = mach_xfer_memory(offset, readbuf, (int)nbytes, 0, NULL, ops);
 	if (writebuf && (nbytes > 0))
-	  nbytes = mach_xfer_memory(offset, (gdb_byte *)writebuf, nbytes,
+	  nbytes = mach_xfer_memory(offset, (gdb_byte *)writebuf, (int)nbytes,
                                     1, NULL, ops);
 	return nbytes;
       }
@@ -1014,21 +1017,21 @@ macosx_primary_thread_of_task(task_t task)
 }
 
 kern_return_t
-macosx_msg_receive (mach_msg_header_t * msgin, size_t msg_size,
+macosx_msg_receive (mach_msg_header_t *msgin, size_t msg_size,
                     unsigned long timeout, mach_port_t port)
 {
   kern_return_t kret;
   mach_msg_option_t options;
 
-  mutils_debug("macosx_msg_receive: waiting for message\n");
+  mutils_debug(_("macosx_msg_receive: waiting for message\n"));
 
   options = MACH_RCV_MSG;
   if (timeout > 0)
     {
       options |= MACH_RCV_TIMEOUT;
     }
-  kret = mach_msg(msgin, options, 0, msg_size, port,
-                  timeout, MACH_PORT_NULL);
+  kret = mach_msg(msgin, options, 0, (mach_msg_size_t)msg_size, port,
+                  (mach_msg_timeout_t)timeout, MACH_PORT_NULL);
 
   if (mutils_debugflag)
     {
@@ -1652,10 +1655,10 @@ build_path_to_element(struct type *type, CORE_ADDR offset, char **symbol_name)
 	      && (offset < (CORE_ADDR)((TYPE_FIELD_BITPOS(type, i) / 8)
                                        + TYPE_LENGTH(TYPE_FIELD_TYPE(type, i)))))
 	    {
-	      int orig_len;
+	      size_t orig_len;
 	      if (*symbol_name == NULL)
 		{
-		  orig_len = 0;
+		  orig_len = 0UL;
 		  *symbol_name = (char *)xmalloc(strlen(TYPE_FIELD_NAME(type, i)) + 1UL);
 		  strcpy(*symbol_name, TYPE_FIELD_NAME(type, i));
 		}

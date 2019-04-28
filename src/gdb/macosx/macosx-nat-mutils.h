@@ -24,8 +24,7 @@ void ATTR_NORETURN gdb_check_fatal(const char *str, const char *file,
 				   unsigned int line, const char *func);
 
 int
-mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr,
-                 int len, int write,
+mach_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
                  struct mem_attrib *attrib, struct target_ops *target);
 
 LONGEST

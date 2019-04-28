@@ -405,36 +405,36 @@ enum mi_cmd_result
 mi_cmd_interpreter_complete (char *command, char **argv, int argc)
 {
   struct interp *interp_to_use;
-  int cursor;
+  size_t cursor;
   int limit = 200;
 
   if ((argc < 2) || (argc > 3))
     {
-      asprintf (&mi_error_message,
-		"Wrong # or arguments, should be \"%s interp command <cursor>\".",
-		command);
+      asprintf(&mi_error_message,
+	       "Wrong # or arguments, should be \"%s interp command <cursor>\".",
+	       command);
       return MI_CMD_ERROR;
     }
 
   interp_to_use = interp_lookup (argv[0]);
   if (interp_to_use == NULL)
     {
-      asprintf (&mi_error_message,
-		"Could not find interpreter \"%s\".", argv[0]);
+      asprintf(&mi_error_message,
+	       "Could not find interpreter \"%s\".", argv[0]);
       return MI_CMD_ERROR;
     }
 
   if (argc == 3)
     {
-      cursor = atoi (argv[2]);
+      cursor = atol(argv[2]);
     }
   else
     {
-      cursor = strlen (argv[1]);
+      cursor = strlen(argv[1]);
     }
 
-  if (interp_complete (interp_to_use, argv[1], argv[1], cursor, limit) == 0)
-      return MI_CMD_ERROR;
+  if (interp_complete(interp_to_use, argv[1], argv[1], (int)cursor, limit) == 0)
+    return MI_CMD_ERROR;
   else
     return MI_CMD_DONE;
 
@@ -643,15 +643,15 @@ mi_load_progress(const char *section_name, unsigned long sent_so_far,
   static char *previous_sect_name = NULL;
   int new_section;
 
-  if (!interpreter_p || strncmp (interpreter_p, "mi", 2) != 0)
+  if (!interpreter_p || (strncmp(interpreter_p, "mi", 2) != 0))
     return;
 
   update_threshold.tv_sec = 0;
   update_threshold.tv_usec = 500000;
-  gettimeofday (&time_now, NULL);
+  gettimeofday(&time_now, NULL);
 
-  delta.tv_usec = time_now.tv_usec - last_update.tv_usec;
-  delta.tv_sec = time_now.tv_sec - last_update.tv_sec;
+  delta.tv_usec = (time_now.tv_usec - last_update.tv_usec);
+  delta.tv_sec = (time_now.tv_sec - last_update.tv_sec);
 
   if (delta.tv_usec < 0)
     {
@@ -659,46 +659,46 @@ mi_load_progress(const char *section_name, unsigned long sent_so_far,
       delta.tv_usec += 1000000;
     }
 
-  new_section = (previous_sect_name ?
-		 strcmp (previous_sect_name, section_name) : 1);
+  new_section = (previous_sect_name
+		 ? strcmp(previous_sect_name, section_name) : 1);
   if (new_section)
     {
       struct cleanup *cleanup_tuple;
-      xfree (previous_sect_name);
-      previous_sect_name = xstrdup (section_name);
+      xfree(previous_sect_name);
+      previous_sect_name = xstrdup(section_name);
 
       if (current_command_token)
-	fputs_unfiltered (current_command_token, raw_stdout);
-      fputs_unfiltered ("+download", raw_stdout);
-      cleanup_tuple = make_cleanup_ui_out_tuple_begin_end (uiout, NULL);
-      ui_out_field_string (uiout, "section", section_name);
-      ui_out_field_int (uiout, "section-size", total_section);
-      ui_out_field_int (uiout, "total-size", grand_total);
-      do_cleanups (cleanup_tuple);
-      mi_out_put (uiout, raw_stdout);
-      fputs_unfiltered ("\n", raw_stdout);
-      gdb_flush (raw_stdout);
+	fputs_unfiltered(current_command_token, raw_stdout);
+      fputs_unfiltered("+download", raw_stdout);
+      cleanup_tuple = make_cleanup_ui_out_tuple_begin_end(uiout, NULL);
+      ui_out_field_string(uiout, "section", section_name);
+      ui_out_field_int(uiout, "section-size", (int)total_section);
+      ui_out_field_int(uiout, "total-size", (int)grand_total);
+      do_cleanups(cleanup_tuple);
+      mi_out_put(uiout, raw_stdout);
+      fputs_unfiltered("\n", raw_stdout);
+      gdb_flush(raw_stdout);
     }
 
-  if (delta.tv_sec >= update_threshold.tv_sec &&
-      delta.tv_usec >= update_threshold.tv_usec)
+  if ((delta.tv_sec >= update_threshold.tv_sec)
+      && (delta.tv_usec >= update_threshold.tv_usec))
     {
       struct cleanup *cleanup_tuple;
       last_update.tv_sec = time_now.tv_sec;
       last_update.tv_usec = time_now.tv_usec;
       if (current_command_token)
-	fputs_unfiltered (current_command_token, raw_stdout);
-      fputs_unfiltered ("+download", raw_stdout);
-      cleanup_tuple = make_cleanup_ui_out_tuple_begin_end (uiout, NULL);
-      ui_out_field_string (uiout, "section", section_name);
-      ui_out_field_int (uiout, "section-sent", sent_so_far);
-      ui_out_field_int (uiout, "section-size", total_section);
-      ui_out_field_int (uiout, "total-sent", total_sent);
-      ui_out_field_int (uiout, "total-size", grand_total);
-      do_cleanups (cleanup_tuple);
-      mi_out_put (uiout, raw_stdout);
-      fputs_unfiltered ("\n", raw_stdout);
-      gdb_flush (raw_stdout);
+	fputs_unfiltered(current_command_token, raw_stdout);
+      fputs_unfiltered("+download", raw_stdout);
+      cleanup_tuple = make_cleanup_ui_out_tuple_begin_end(uiout, NULL);
+      ui_out_field_string(uiout, "section", section_name);
+      ui_out_field_int(uiout, "section-sent", (int)sent_so_far);
+      ui_out_field_int(uiout, "section-size", (int)total_section);
+      ui_out_field_int(uiout, "total-sent", (int)total_sent);
+      ui_out_field_int(uiout, "total-size", (int)grand_total);
+      do_cleanups(cleanup_tuple);
+      mi_out_put(uiout, raw_stdout);
+      fputs_unfiltered("\n", raw_stdout);
+      gdb_flush(raw_stdout);
     }
 }
 

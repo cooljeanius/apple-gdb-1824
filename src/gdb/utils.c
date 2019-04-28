@@ -4177,8 +4177,8 @@ re_exec(const char *str)
  * This is a one-shot re_search impl.  */
 int
 re_search_oneshot(regex_t *patbuf, const char *str,
-                  int size ATTRIBUTE_UNUSED, int start ATTRIBUTE_UNUSED,
-                  int range ATTRIBUTE_UNUSED, void *regs ATTRIBUTE_UNUSED)
+                  size_t size ATTRIBUTE_UNUSED, int start ATTRIBUTE_UNUSED,
+                  size_t range ATTRIBUTE_UNUSED, void *regs ATTRIBUTE_UNUSED)
 {
   regmatch_t matches[10];
   memset(matches, 0, (sizeof(regmatch_t) * 10UL));

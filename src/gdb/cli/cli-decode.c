@@ -40,7 +40,7 @@
 
 static void undef_cmd_error(const char *, const char *);
 
-static struct cmd_list_element *find_cmd(char *command, int len,
+static struct cmd_list_element *find_cmd(char *command, size_t len,
 					 struct cmd_list_element *clist,
 					 int ignore_help_classes,
 					 int *nfound);
@@ -919,8 +919,8 @@ help_cmd_list(struct cmd_list_element *list, enum command_class cmd_class,
    found in nfound */
 
 static struct cmd_list_element *
-find_cmd (char *command, int len, struct cmd_list_element *clist,
-	  int ignore_help_classes, int *nfound)
+find_cmd(char *command, size_t len, struct cmd_list_element *clist,
+	 int ignore_help_classes, int *nfound)
 {
   struct cmd_list_element *found, *c;
 
@@ -1336,7 +1336,8 @@ lookup_cmd_composition(const char *text, struct cmd_list_element **alias,
 		       struct cmd_list_element **cmd)
 {
   char *p, *command;
-  int len, tmp, nfound;
+  ptrdiff_t len;
+  int tmp, nfound;
   struct cmd_list_element *cur_list;
   struct cmd_list_element *prev_cmd;
   *alias = NULL;
@@ -1376,8 +1377,8 @@ lookup_cmd_composition(const char *text, struct cmd_list_element **alias,
 
       len = (p - text);
 
-      /* text and p now bracket the first command word to lookup (and
-       it's length is len).  We copy this into a local temporary */
+      /* text and p now bracket the first command word to lookup (and its
+       * length is len).  We copy this into a local temporary */
 
       command = (char *)alloca(len + 1UL);
       for (tmp = 0; tmp < len; tmp++)

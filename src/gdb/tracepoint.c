@@ -268,7 +268,7 @@ set_traceframe_context(CORE_ADDR trace_pc)
   struct value *func_val;
   struct value *file_val;
   static struct type *charstar;
-  int len;
+  size_t len;
 
   if (charstar == (struct type *)NULL)
     charstar = lookup_pointer_type(builtin_type_char);
@@ -278,68 +278,66 @@ set_traceframe_context(CORE_ADDR trace_pc)
       traceframe_fun = 0;
       traceframe_sal.pc = traceframe_sal.line = 0;
       traceframe_sal.symtab = NULL;
-      set_internalvar (lookup_internalvar ("trace_func"),
-		       value_from_pointer (charstar, (LONGEST) 0));
-      set_internalvar (lookup_internalvar ("trace_file"),
-		       value_from_pointer (charstar, (LONGEST) 0));
-      set_internalvar (lookup_internalvar ("trace_line"),
-		       value_from_longest (builtin_type_int,
-					   (LONGEST) - 1));
+      set_internalvar(lookup_internalvar("trace_func"),
+		      value_from_pointer(charstar, (LONGEST)0L));
+      set_internalvar(lookup_internalvar("trace_file"),
+		      value_from_pointer(charstar, (LONGEST)0L));
+      set_internalvar(lookup_internalvar("trace_line"),
+		      value_from_longest(builtin_type_int,
+					 (LONGEST)-1L));
       return;
     }
 
-  /* Save as globals for internal use.  */
-  traceframe_sal = find_pc_line (trace_pc, 0);
-  traceframe_fun = find_pc_function (trace_pc);
+  /* Save as globals for internal use: */
+  traceframe_sal = find_pc_line(trace_pc, 0);
+  traceframe_fun = find_pc_function(trace_pc);
 
   /* Save linenumber as "$trace_line", a debugger variable visible to
      users.  */
-  set_internalvar (lookup_internalvar ("trace_line"),
-		   value_from_longest (builtin_type_int,
-				       (LONGEST) traceframe_sal.line));
+  set_internalvar(lookup_internalvar("trace_line"),
+		  value_from_longest(builtin_type_int,
+				     (LONGEST)traceframe_sal.line));
 
   /* Save func name as "$trace_func", a debugger variable visible to
      users.  */
-  if (traceframe_fun == NULL ||
-      DEPRECATED_SYMBOL_NAME (traceframe_fun) == NULL)
-    set_internalvar (lookup_internalvar ("trace_func"),
-		     value_from_pointer (charstar, (LONGEST) 0));
+  if ((traceframe_fun == NULL)
+      || (DEPRECATED_SYMBOL_NAME(traceframe_fun) == NULL))
+    set_internalvar(lookup_internalvar("trace_func"),
+		    value_from_pointer(charstar, (LONGEST)0L));
   else
     {
-      len = strlen (DEPRECATED_SYMBOL_NAME (traceframe_fun));
-      func_range = create_range_type (func_range,
-				      builtin_type_int, 0, len - 1);
-      func_string = create_array_type (func_string,
-				       builtin_type_char, func_range);
-      func_val = allocate_value (func_string);
-      deprecated_set_value_type (func_val, func_string);
-      memcpy (value_contents_raw (func_val),
-	      DEPRECATED_SYMBOL_NAME (traceframe_fun),
-	      len);
-      deprecated_set_value_modifiable (func_val, 0);
-      set_internalvar (lookup_internalvar ("trace_func"), func_val);
+      len = strlen(DEPRECATED_SYMBOL_NAME(traceframe_fun));
+      func_range = create_range_type(func_range, builtin_type_int, 0,
+				     (int)(len - 1UL));
+      func_string = create_array_type(func_string, builtin_type_char,
+				      func_range);
+      func_val = allocate_value(func_string);
+      deprecated_set_value_type(func_val, func_string);
+      memcpy(value_contents_raw(func_val),
+	     DEPRECATED_SYMBOL_NAME(traceframe_fun), len);
+      deprecated_set_value_modifiable(func_val, 0);
+      set_internalvar(lookup_internalvar("trace_func"), func_val);
     }
 
   /* Save file name as "$trace_file", a debugger variable visible to
      users.  */
-  if (traceframe_sal.symtab == NULL ||
-      traceframe_sal.symtab->filename == NULL)
-    set_internalvar (lookup_internalvar ("trace_file"),
-		     value_from_pointer (charstar, (LONGEST) 0));
+  if ((traceframe_sal.symtab == NULL)
+      || (traceframe_sal.symtab->filename == NULL))
+    set_internalvar(lookup_internalvar("trace_file"),
+		    value_from_pointer(charstar, (LONGEST)0L));
   else
     {
-      len = strlen (traceframe_sal.symtab->filename);
-      file_range = create_range_type (file_range,
-				      builtin_type_int, 0, len - 1);
-      file_string = create_array_type (file_string,
-				       builtin_type_char, file_range);
-      file_val = allocate_value (file_string);
-      deprecated_set_value_type (file_val, file_string);
-      memcpy (value_contents_raw (file_val),
-	      traceframe_sal.symtab->filename,
-	      len);
-      deprecated_set_value_modifiable (file_val, 0);
-      set_internalvar (lookup_internalvar ("trace_file"), file_val);
+      len = strlen(traceframe_sal.symtab->filename);
+      file_range = create_range_type(file_range, builtin_type_int, 0,
+				     (int)(len - 1UL));
+      file_string = create_array_type(file_string, builtin_type_char,
+				      file_range);
+      file_val = allocate_value(file_string);
+      deprecated_set_value_type(file_val, file_string);
+      memcpy(value_contents_raw(file_val), traceframe_sal.symtab->filename,
+	     len);
+      deprecated_set_value_modifiable(file_val, 0);
+      set_internalvar(lookup_internalvar("trace_file"), file_val);
     }
 }
 
@@ -738,7 +736,8 @@ trace_pass_command(const char *args, int from_tty)
   if (args == 0 || *args == 0)
     error(_("passcount command requires an argument (count + optional TP num)"));
 
-  count = strtoul(args, (char **)&args, 10); /* Count comes 1st, then TP num. */
+  /* Count comes 1st, then TP num: */
+  count = (unsigned int)strtoul(args, (char **)&args, 10);
 
   while (*args && isspace((int)*args))
     args++;
@@ -1266,41 +1265,41 @@ collect_symbol(struct collection_list *collect,
 		      DEPRECATED_SYMBOL_NAME(sym));
       break;
     case LOC_ARG:
-      reg = frame_regno;
+      reg = (unsigned int)frame_regno;
       offset = (frame_offset + SYMBOL_VALUE(sym));
       if (info_verbose)
 	{
-	  printf_filtered ("LOC_LOCAL %s: Collect %ld bytes at offset ",
-			   DEPRECATED_SYMBOL_NAME (sym), len);
-	  printf_vma (offset);
-	  printf_filtered (" from frame ptr reg %d\n", reg);
+	  printf_filtered("LOC_LOCAL %s: Collect %ld bytes at offset ",
+			  DEPRECATED_SYMBOL_NAME(sym), len);
+	  printf_vma(offset);
+	  printf_filtered(" from frame ptr reg %d\n", reg);
 	}
-      add_memrange (collect, reg, offset, len);
+      add_memrange(collect, reg, offset, len);
       break;
     case LOC_REGPARM_ADDR:
-      reg = SYMBOL_VALUE (sym);
+      reg = SYMBOL_VALUE(sym);
       offset = 0;
       if (info_verbose)
 	{
-	  printf_filtered ("LOC_REGPARM_ADDR %s: Collect %ld bytes at offset ",
-			   DEPRECATED_SYMBOL_NAME (sym), len);
-	  printf_vma (offset);
-	  printf_filtered (" from reg %d\n", reg);
+	  printf_filtered("LOC_REGPARM_ADDR %s: Collect %ld bytes at offset ",
+			  DEPRECATED_SYMBOL_NAME(sym), len);
+	  printf_vma(offset);
+	  printf_filtered(" from reg %d\n", reg);
 	}
-      add_memrange (collect, reg, offset, len);
+      add_memrange(collect, reg, offset, len);
       break;
     case LOC_LOCAL:
     case LOC_LOCAL_ARG:
-      reg = frame_regno;
-      offset = frame_offset + SYMBOL_VALUE (sym);
+      reg = (unsigned int)frame_regno;
+      offset = (frame_offset + SYMBOL_VALUE(sym));
       if (info_verbose)
 	{
-	  printf_filtered ("LOC_LOCAL %s: Collect %ld bytes at offset ",
-			   DEPRECATED_SYMBOL_NAME (sym), len);
-	  printf_vma (offset);
-	  printf_filtered (" from frame ptr reg %d\n", reg);
+	  printf_filtered("LOC_LOCAL %s: Collect %ld bytes at offset ",
+			  DEPRECATED_SYMBOL_NAME(sym), len);
+	  printf_vma(offset);
+	  printf_filtered(" from frame ptr reg %d\n", reg);
 	}
-      add_memrange (collect, reg, offset, len);
+      add_memrange(collect, reg, offset, len);
       break;
     case LOC_BASEREG:
     case LOC_BASEREG_ARG:
@@ -1405,13 +1404,13 @@ stringify_collection_list(struct collection_list *list, char *string)
 {
   char temp_buf[2048];
   char tmp2[40];
-  int count;
+  long count;
   int ndx = 0;
   char *(*str_list)[];
   char *end;
   long i;
 
-  count = 1 + list->next_memrange + list->next_aexpr_elt + 1;
+  count = (1L + list->next_memrange + list->next_aexpr_elt + 1L);
   str_list = (char *(*)[])xmalloc(count * sizeof(char *));
 
   for (i = sizeof (list->regs_mask) - 1; i > 0; i--)
@@ -1479,8 +1478,8 @@ stringify_collection_list(struct collection_list *list, char *string)
       end += 10;		/* 'X' + 8 hex digits + ',' */
       count += 10;
 
-      end = mem2hex(list->aexpr_list[i]->buf,
-		    end, list->aexpr_list[i]->len);
+      end = mem2hex(list->aexpr_list[i]->buf, end,
+		    (int)list->aexpr_list[i]->len);
       count += (2 * list->aexpr_list[i]->len);
     }
 

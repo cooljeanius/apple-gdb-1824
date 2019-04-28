@@ -1168,8 +1168,8 @@ extern int re_exec(const char *str);
 extern int re_set_syntax(int newflags);
 #endif /* !(_REGEX_H && (_GNU_SOURCE || __USE_GNU)) */
 
-extern int re_search_oneshot(regex_t *patbuf, const char *str, int size,
-			     int start, int range, void *regs);
+extern int re_search_oneshot(regex_t *patbuf, const char *str, size_t size,
+			     int start, size_t range, void *regs);
 
 #ifndef REG_BASIC
 # if !defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE)

@@ -923,12 +923,12 @@ which has no line number information.\n"), name);
      and handle them one at the time, through step_once(). */
   else
     {
-      if (target_can_async_p ())
+      if (target_can_async_p())
 	/* APPLE LOCAL begin step command hook */
 	{
 	  if (stepping_command_hook)
-            stepping_command_hook ();
-	  step_once (skip_subroutines, single_inst, count);
+            stepping_command_hook();
+	  step_once(skip_subroutines, single_inst, (int)count);
 	}
 	/* APPLE LOCAL end step command hook */
     }
@@ -1333,12 +1333,12 @@ which has no line number information.\n"), name);
      and handle them one at the time, through step_once(). */
   else
     {
-      if (target_can_async_p ())
+      if (target_can_async_p())
 	/* APPLE LOCAL begin step command hook */
 	{
 	  if (stepping_command_hook)
-            stepping_command_hook ();
-	  step_once (skip_subroutines, single_inst, count);
+            stepping_command_hook();
+	  step_once(skip_subroutines, single_inst, (int)count);
 	}
 	/* APPLE LOCAL end step command hook */
     }
@@ -1740,11 +1740,11 @@ re_execute_command(const char *args, int from_tty)
 {
   long cpn = (args ? (long)parse_and_eval_long(args) : 1L);
 
-  rx_cp = find_checkpoint(cpn);
+  rx_cp = find_checkpoint((int)cpn);
 
   if (rx_cp == NULL)
     {
-      printf("Checkpoint not found\n");
+      printf(_("Checkpoint not found\n"));
       return;
     }
 
@@ -2019,7 +2019,7 @@ signal_command(const char *signum_exp, int from_tty)
       if (num == 0L)
 	oursig = TARGET_SIGNAL_0;
       else
-	oursig = target_signal_from_command(num);
+	oursig = target_signal_from_command((int)num);
     }
 
   if (from_tty)
@@ -2856,17 +2856,17 @@ default_print_registers_info (struct gdbarch *gdbarch,
 	}
 
       /* If the register name is empty, it is undefined for this
-         processor, so don't display anything.  */
-      if (REGISTER_NAME (i) == NULL || *(REGISTER_NAME (i)) == '\0')
+         processor, so do NOT display anything.  */
+      if ((REGISTER_NAME(i) == NULL) || (*(REGISTER_NAME(i)) == '\0'))
 	continue;
 
-      fputs_filtered (REGISTER_NAME (i), file);
-      print_spaces_filtered (15 - strlen (REGISTER_NAME (i)), file);
+      fputs_filtered(REGISTER_NAME(i), file);
+      print_spaces_filtered((15 - (int)strlen(REGISTER_NAME(i))), file);
 
       /* Get the data in raw format.  */
-      if (! frame_register_read (frame, i, buffer))
+      if (! frame_register_read(frame, i, buffer))
 	{
-	  fprintf_filtered (file, "*value not available*\n");
+	  fprintf_filtered(file, "*value not available*\n");
 	  continue;
 	}
 
@@ -2953,20 +2953,21 @@ registers_info(const char *addr_exp, int fpregs)
 
       /* Find the start/end of this register name/num/group.  */
       start = addr_exp;
-      while ((*addr_exp) != '\0' && !isspace ((*addr_exp)))
+      while (((*addr_exp) != '\0') && !isspace((*addr_exp)))
 	addr_exp++;
       end = addr_exp;
 
-      /* Figure out what we've found and display it.  */
+      /* Figure out what we have found and display it.  */
 
       /* A register name?  */
       {
-	int regnum = frame_map_name_to_regnum (deprecated_selected_frame,
-					       start, end - start);
+	int regnum = frame_map_name_to_regnum(deprecated_selected_frame,
+					      start, (int)(end - start));
 	if (regnum >= 0)
 	  {
-	    gdbarch_print_registers_info (current_gdbarch, gdb_stdout,
-					  deprecated_selected_frame, regnum, fpregs);
+	    gdbarch_print_registers_info(current_gdbarch, gdb_stdout,
+					 deprecated_selected_frame, regnum,
+					 fpregs);
 	    continue;
 	  }
       }
@@ -2974,13 +2975,13 @@ registers_info(const char *addr_exp, int fpregs)
       /* A register number?  (how portable is this one?).  */
       {
 	char *endptr;
-	int regnum = strtol (start, &endptr, 0);
-	if (endptr == end
-	    && regnum >= 0
-	    && regnum < NUM_REGS + NUM_PSEUDO_REGS)
+	long regnum = strtol(start, &endptr, 0);
+	if ((endptr == end) && (regnum >= 0)
+	    && (regnum < (NUM_REGS + NUM_PSEUDO_REGS)))
 	  {
-	    gdbarch_print_registers_info (current_gdbarch, gdb_stdout,
-					  deprecated_selected_frame, regnum, fpregs);
+	    gdbarch_print_registers_info(current_gdbarch, gdb_stdout,
+					 deprecated_selected_frame, (int)regnum,
+					 fpregs);
 	    continue;
 	  }
       }

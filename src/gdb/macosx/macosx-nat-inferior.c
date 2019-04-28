@@ -1297,7 +1297,7 @@ macosx_child_resume(ptid_t ptid, int step, enum target_signal signal)
   int nsignal = target_signal_to_host(signal);
   struct target_waitstatus status;
   int stop_others = 1;
-  int pid;
+  pid_t pid;
   thread_t thread;
 
   status.code = -1;
@@ -1309,7 +1309,7 @@ macosx_child_resume(ptid_t ptid, int step, enum target_signal signal)
     }
 
   pid = ptid_get_pid(ptid);
-  thread = ptid_get_tid(ptid);
+  thread = (thread_t)ptid_get_tid(ptid);
 
   /* pid 0 is reserved for kernel_task on OS X: */
   if (pid == 0) {
@@ -1573,11 +1573,11 @@ macosx_process_completer(const char *text, char *word)
 
 /* */
 static void
-macosx_lookup_task_local(char *pid_str, int pid, task_t *ptask, int *ppid,
+macosx_lookup_task_local(char *pid_str, pid_t pid, task_t *ptask, int *ppid,
                          struct pid_list *ignorepids)
 {
-  CHECK_FATAL (ptask != NULL);
-  CHECK_FATAL (ppid != NULL);
+  CHECK_FATAL(ptask != NULL);
+  CHECK_FATAL(ppid != NULL);
 
   if (pid_str == NULL)
     {
@@ -1585,17 +1585,17 @@ macosx_lookup_task_local(char *pid_str, int pid, task_t *ptask, int *ppid,
       task_t itask;
       kern_return_t kret;
 
-      kret = task_for_pid (mach_task_self (), pid, &itask);
+      kret = task_for_pid(mach_task_self(), pid, &itask);
       if (kret != KERN_SUCCESS)
 	{
-	  if (macosx_get_task_for_pid_rights () == 1)
-	    kret = task_for_pid (mach_task_self (), pid, &itask);
+	  if (macosx_get_task_for_pid_rights() == 1)
+	    kret = task_for_pid(mach_task_self(), pid, &itask);
 	}
 
       if (kret != KERN_SUCCESS)
         {
-          error ("Unable to access task for process-id %d: %s.", pid,
-                 MACH_ERROR_STRING (kret));
+          error(_("Unable to access task for process-id %d: %s."), pid,
+		MACH_ERROR_STRING(kret));
         }
 
       *ptask = itask;
@@ -1605,8 +1605,8 @@ macosx_lookup_task_local(char *pid_str, int pid, task_t *ptask, int *ppid,
   else
     {
       struct cleanup *cleanups = NULL;
-      char **ret = macosx_process_completer_quoted (pid_str, pid_str, 0,
-                                                    ignorepids);
+      char **ret = macosx_process_completer_quoted(pid_str, pid_str, 0,
+                                                   ignorepids);
       char *tmp = NULL;
       char *tmp2 = NULL;
       unsigned long lpid = 0UL;
@@ -1618,51 +1618,50 @@ macosx_lookup_task_local(char *pid_str, int pid, task_t *ptask, int *ppid,
 
       if ((ret == NULL) || (ret[0] == NULL))
         {
-          error ("Unable to locate process named \"%s\".", pid_str);
+          error(_("Unable to locate process named \"%s\"."), pid_str);
         }
       if (ret[1] != NULL)
         {
-          error ("Multiple processes exist with the name \"%s\".", pid_str);
+          error(_("Multiple processes exist with the name \"%s\"."), pid_str);
         }
 
-      tmp = strrchr (ret[0], '.');
+      tmp = strrchr(ret[0], '.');
       if (tmp == NULL)
         {
-          error
-            ("Unable to parse process-specifier \"%s\" (does not contain process-id)",
-             ret[0]);
+          error(_("Unable to parse process-specifier \"%s\" "
+		  "(does not contain process-id)"), ret[0]);
         }
       tmp++;
       lpid = strtoul(tmp, &tmp2, 10);
       if (!isdigit(*tmp) || (*tmp2 != '\0'))
         {
-          error("Unable to parse process-specifier \"%s\" (does not contain process-id)",
-                ret[0]);
+          error(_("Unable to parse process-specifier \"%s\" "
+		  "(does not contain process-id)"), ret[0]);
         }
       if ((lpid > INT_MAX) || ((lpid == ULONG_MAX) && (errno == ERANGE)))
         {
-          error("Unable to parse process-id \"%s\" (integer overflow).",
+          error(_("Unable to parse process-id \"%s\" (integer overflow)."),
                 ret[0]);
         }
-      pid = lpid;
+      pid = (pid_t)lpid;
 
       kret = task_for_pid(mach_task_self(), pid, &itask);
       if (kret != KERN_SUCCESS)
 	{
-	  if (macosx_get_task_for_pid_rights () == 1)
-	    kret = task_for_pid (mach_task_self (), pid, &itask);
+	  if (macosx_get_task_for_pid_rights() == 1)
+	    kret = task_for_pid(mach_task_self(), pid, &itask);
 	}
 
       if (kret != KERN_SUCCESS)
         {
-          error ("Unable to locate task for process-id %d: %s.", pid,
-                 MACH_ERROR_STRING (kret));
+          error(_("Unable to locate task for process-id %d: %s."), pid,
+                MACH_ERROR_STRING(kret));
         }
 
       *ptask = itask;
       *ppid = pid;
 
-      do_cleanups (cleanups);
+      do_cleanups(cleanups);
     }
 }
 
@@ -1671,7 +1670,7 @@ macosx_lookup_task_local(char *pid_str, int pid, task_t *ptask, int *ppid,
    include the pathname of the process.  */
 
 static void
-wait_for_process_by_name (const char *procname, struct pid_list *ignorepids)
+wait_for_process_by_name(const char *procname, struct pid_list *ignorepids)
 {
   struct kinfo_proc *proc = NULL;
   size_t count, i;
@@ -1679,24 +1678,24 @@ wait_for_process_by_name (const char *procname, struct pid_list *ignorepids)
   if (procname == NULL || procname[0] == '\0')
     return;
 
-  printf_filtered ("Waiting for process '%s' to launch.\n", procname);
+  printf_filtered(_("Waiting for process '%s' to launch.\n"), procname);
 
   while (1)
     {
       QUIT;
-      macosx_fetch_task_info (&proc, &count);
+      macosx_fetch_task_info(&proc, &count);
       for (i = 0; i < count; i++)
         {
-          if (pid_present_on_pidlist (proc[i].kp_proc.p_pid, ignorepids))
+          if (pid_present_on_pidlist(proc[i].kp_proc.p_pid, ignorepids))
             continue;
-          if (strncmp (proc[i].kp_proc.p_comm, procname, MAXCOMLEN) == 0)
+          if (strncmp(proc[i].kp_proc.p_comm, procname, MAXCOMLEN) == 0)
             {
-              xfree (proc);
+              xfree(proc);
               return;
             }
         }
-      usleep (400);
-      xfree (proc);
+      usleep(400);
+      xfree(proc);
     }
 }
 
@@ -1765,7 +1764,7 @@ macosx_lookup_task(const char *args, task_t *ptask, int *ppid)
   unsigned int argc;
 
   unsigned long lpid = 0;
-  int pid = 0;
+  pid_t pid = 0;
 
   CHECK_FATAL (ptask != NULL);
   CHECK_FATAL (ppid != NULL);
@@ -1827,7 +1826,7 @@ macosx_lookup_task(const char *args, task_t *ptask, int *ppid)
           error("Unable to locate pid \"%s\" (integer overflow).", pid_str);
         }
       pid_str = NULL;
-      pid = lpid;
+      pid = (pid_t)lpid;
     }
 
   macosx_lookup_task_local(pid_str, pid, ptask, ppid, ignorepids);
@@ -2815,8 +2814,8 @@ macosx_get_thread_name(ptid_t ptid)
 {
 #if defined(THREAD_IDENTIFIER_INFO) && defined(THREAD_IDENTIFIER_INFO_COUNT)
   static char buf[128];
-  int pid = ptid_get_pid (ptid);
-  thread_t tid = ptid_get_tid (ptid);
+  pid_t pid = ptid_get_pid(ptid);
+  thread_t tid = (thread_t)ptid_get_tid(ptid);
   struct thread_info *tp;
 
   thread_identifier_info_data_t tident;
@@ -2872,7 +2871,7 @@ macosx_get_thread_id_str(ptid_t ptid)
   tp = find_thread_pid(ptid);
   if ((tp->privatedata == NULL) || (tp->privatedata->app_thread_port == 0))
     {
-      thread_t thread = ptid_get_tid(ptid);
+      thread_t thread = (thread_t)ptid_get_tid(ptid);
       snprintf(buf, sizeof(buf), "local thread 0x%lx", (unsigned long)thread);
       return buf;
     }
@@ -2887,7 +2886,7 @@ macosx_get_thread_id_str(ptid_t ptid)
 static int
 macosx_child_thread_alive(ptid_t ptid)
 {
-  return macosx_thread_valid(macosx_status->task, ptid_get_tid(ptid));
+  return macosx_thread_valid(macosx_status->task, (thread_t)ptid_get_tid(ptid));
 }
 
 /* FIXME: needs comment */
@@ -3209,7 +3208,7 @@ direct_memcache_get(struct checkpoint *cp)
 
       if (info.protection & VM_PROT_WRITE)
 	{
-	  memcache_get(cp, address, size);
+	  memcache_get(cp, address, (int)size);
 	}
 
       if (info.is_submap)

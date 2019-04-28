@@ -99,13 +99,14 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 		  /* Look for a NULL char. */
 		  for (temp_len = 0;
 		       (valaddr + embedded_offset)[temp_len]
-		       && temp_len < len && temp_len < print_max;
+		       && (temp_len < len) && (temp_len < print_max);
 		       temp_len++);
 		  len = temp_len;
 		}
 
-	      LA_PRINT_STRING (stream, valaddr + embedded_offset, len, 1, 0);
-	      u_i = len;
+	      LA_PRINT_STRING(stream, (valaddr + embedded_offset),
+			      (unsigned int)len, 1, 0);
+	      u_i = (unsigned int)len;
 	      if (u_i > 0U) {
 		; /* ??? */
 	      }
@@ -341,7 +342,7 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
                                               length_size));
 	      LA_PRINT_STRING(stream,
                               (valaddr + embedded_offset + string_pos),
-                              len, char_size, 0);
+                              (unsigned int)len, char_size, 0);
 	    }
 	  else
 	    pascal_object_print_value_fields(type,
@@ -498,7 +499,7 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 	    {
 	      int element;
               element = value_bit_index(type,
-                                        (valaddr + embedded_offset), l_i);
+                                        (valaddr + embedded_offset), (int)l_i);
 	      if (element < 0)
 		{
 		  l_i = element;
@@ -515,14 +516,15 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 
 		  if (((l_i + 1L) <= high_bound)
                       && value_bit_index(type, (valaddr + embedded_offset),
-                                         ++l_i))
+                                         (int)(++l_i)))
 		    {
 		      int j = (int)l_i;
 		      fputs_filtered("..", stream);
 		      while (((l_i + 1L) <= high_bound)
 			     && value_bit_index(type,
                                                 (valaddr
-                                                 + embedded_offset), ++l_i))
+                                                 + embedded_offset),
+						(int)(++l_i)))
 			j = (int)l_i;
 		      print_type_scalar(range, j, stream);
 		    }
@@ -979,7 +981,7 @@ pascal_object_print_value (struct type *type, const gdb_byte *valaddr,
 	  struct type **first_dont_print =
 	    (struct type **)obstack_base(&dont_print_vb_obstack);
 
-	  ptrdiff_t j = 
+	  ptrdiff_t j =
 	    ((struct type **)obstack_next_free(&dont_print_vb_obstack)
 	     - first_dont_print);
 
@@ -1058,28 +1060,27 @@ pascal_object_print_value (struct type *type, const gdb_byte *valaddr,
    have the same meanings as in c_val_print.  */
 
 static void
-pascal_object_print_static_field (struct value *val,
-				  struct ui_file *stream, int format,
-				  int recurse, enum val_prettyprint pretty)
+pascal_object_print_static_field(struct value *val, struct ui_file *stream,
+				 int format, int recurse,
+				 enum val_prettyprint pretty)
 {
-  struct type *type = value_type (val);
+  struct type *type = value_type(val);
 
-  if (TYPE_CODE (type) == TYPE_CODE_STRUCT)
+  if (TYPE_CODE(type) == TYPE_CODE_STRUCT)
     {
       CORE_ADDR *first_dont_print;
-      int i;
+      ptrdiff_t i;
 
-      first_dont_print
-	= (CORE_ADDR *) obstack_base (&dont_print_statmem_obstack);
-      i = (CORE_ADDR *) obstack_next_free (&dont_print_statmem_obstack)
-	- first_dont_print;
+      first_dont_print = (CORE_ADDR *)obstack_base(&dont_print_statmem_obstack);
+      i = ((CORE_ADDR *)obstack_next_free(&dont_print_statmem_obstack)
+	   - first_dont_print);
 
       while (--i >= 0)
 	{
-	  if (VALUE_ADDRESS (val) == first_dont_print[i])
+	  if (VALUE_ADDRESS(val) == first_dont_print[i])
 	    {
-	      fputs_filtered ("<same as static member of an already seen type>",
-			      stream);
+	      fputs_filtered("<same as static member of an already seen type>",
+			     stream);
 	      return;
 	    }
 	}

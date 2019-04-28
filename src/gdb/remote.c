@@ -2155,7 +2155,7 @@ remote_get_threadlist(int startflag, threadref *nextthread, int result_limit,
 
   /* Trancate result limit to be smaller than the packet size: */
   if ((size_t)(((result_limit + 1) * BUF_THREAD_ID_SIZE) + 10UL) >= (rs->remote_packet_size))
-    result_limit = (((rs->remote_packet_size) / BUF_THREAD_ID_SIZE) - 2);
+    result_limit = (int)(((rs->remote_packet_size) / BUF_THREAD_ID_SIZE) - 2UL);
 
   pack_threadlist_request(threadlist_packet, startflag, result_limit,
                           nextthread);
@@ -2273,12 +2273,12 @@ remote_current_thread(ptid_t oldpid)
   putpkt("qC");
   getpkt(buf, (rs->remote_packet_size), 0);
   if (buf[0] == 'Q' && buf[1] == 'C')
-    /* Use strtoul here, so we'll correctly parse values whose highest
+    /* Use strtoul here, so we can correctly parse values whose highest
        bit is set.  The protocol carries them as a simple series of
        hex digits; in the absence of a sign, strtol will see such
        values as positive numbers out of range for signed 'long', and
        return LONG_MAX to indicate an overflow.  */
-    return pid_to_ptid (strtoul (&buf[2], NULL, 16));
+    return pid_to_ptid((int)strtoul(&buf[2], NULL, 16));
   else
     return oldpid;
 }
@@ -2329,7 +2329,7 @@ remote_threads_info(void)
 		 * series of hex digits; in the absence of a sign, strtol will
 		 * see such values as positive numbers out of range for signed
 		 * 'long', and return LONG_MAX to indicate an overflow.  */
-		tid = strtoul(bufp, &bufp, 16);
+		tid = (int)strtoul(bufp, &bufp, 16);
 		if ((tid != 0) && !in_thread_list(ptid_build(tid, 0, tid)))
 		  add_thread(ptid_build(tid, 0, tid));
 	      } while (*bufp++ == ',');	/* comma-separated list */
@@ -2380,7 +2380,7 @@ remote_threads_extra_info(struct thread_info *tp)
       getpkt(bufp, (rs->remote_packet_size), 0);
       if (bufp[0] != 0)
 	{
-	  n = min((strlen(bufp) / 2UL), sizeof(display_buf));
+	  n = (int)min((strlen(bufp) / 2UL), sizeof(display_buf));
 	  result = hex2bin(bufp, display_buf, n);
 	  display_buf[result] = '\0';
 	  return display_buf;
@@ -2665,10 +2665,10 @@ remote_check_symbols (struct objfile *objfile)
   getpkt(reply, (rs->remote_packet_size), 0);
   packet_ok(reply, &remote_protocol_qSymbol);
 
-  while (strncmp (reply, "qSymbol:", 8) == 0)
+  while (strncmp(reply, "qSymbol:", 8UL) == 0)
     {
       tmp = &reply[8];
-      end = hex2bin(tmp, msg, (strlen(tmp) / 2));
+      end = hex2bin(tmp, msg, (int)(strlen(tmp) / 2UL));
       msg[end] = '\0';
       sym = lookup_minimal_symbol(msg, NULL, NULL);
       if (sym == NULL)
@@ -2975,7 +2975,7 @@ bin2hex(const char *bin, char *hex, int count)
   int i;
   /* May use a length, or a nul-terminated string as input.  */
   if (count == 0)
-    count = strlen(bin);
+    count = (int)strlen(bin);
 
   for (i = 0; i < count; i++)
     {
@@ -3546,13 +3546,13 @@ Packet: '%s'\n"),
 
 		    fieldsize = hex2bin(p, regs,
                                         register_size(current_gdbarch,
-                                                      reg->regnum));
-		    p += 2 * fieldsize;
+                                                      (int)reg->regnum));
+		    p += (2 * fieldsize);
 		    if (fieldsize < register_size(current_gdbarch,
-						  reg->regnum))
+						  (int)reg->regnum))
 		      warning(_("Remote reply is too short: %s"), buf);
 		    regcache_raw_supply(current_regcache,
-                                        reg->regnum, regs);
+                                        (int)reg->regnum, regs);
 		  }
 
 		if (*p++ != ';')
@@ -3741,12 +3741,13 @@ Packet: '%s'\n"),
 
 		    fieldsize = hex2bin(p, regs,
                                         register_size(current_gdbarch,
-                                                      reg->regnum));
+                                                      (int)reg->regnum));
 		    p += 2 * fieldsize;
 		    if (fieldsize < register_size(current_gdbarch,
-						  reg->regnum))
+						  (int)reg->regnum))
 		      warning(_("Remote reply is too short: %s"), buf);
-		    regcache_raw_supply(current_regcache, reg->regnum, regs);
+		    regcache_raw_supply(current_regcache, (int)reg->regnum,
+					regs);
 		  }
 
 		if (*p++ != ';')
@@ -3967,7 +3968,7 @@ remote_fetch_registers(int regnum)
 
   if (sz_i != (size_t)register_bytes_found)
     {
-      register_bytes_found = sz_i;
+      register_bytes_found = (int)sz_i;
       if (REGISTER_BYTES_OK_P() && !REGISTER_BYTES_OK(sz_i))
 	warning(_("Remote reply is too short: %s"), buf);
     }
@@ -3985,17 +3986,17 @@ remote_fetch_registers(int regnum)
                  value, this implies that the register is zero (and
                  not that the register is unavailable).  Supply that
                  zero value.  */
-	      regcache_raw_supply(current_regcache, r->regnum, NULL);
+	      regcache_raw_supply(current_regcache, (int)r->regnum, NULL);
 	    else if (buf[r->offset * 2UL] == 'x')
 	      {
 		gdb_assert((r->offset * 2UL) < strlen(buf));
 		/* The register is NOT available, mark it as such (at
                    the same time setting the value to zero).  */
-		regcache_raw_supply(current_regcache, r->regnum, NULL);
+		regcache_raw_supply(current_regcache, (int)r->regnum, NULL);
 		set_register_cached(i_i, -1);
 	      }
 	    else
-	      regcache_raw_supply(current_regcache, r->regnum,
+	      regcache_raw_supply(current_regcache, (int)r->regnum,
 				  (regs + r->offset));
 	  }
       }
@@ -4021,7 +4022,7 @@ remote_prepare_to_store (void)
       /* Make sure all the necessary registers are cached.  */
       for (i = 0; i < NUM_REGS; i++)
 	if (rs->regs[i].in_g_packet)
-	  regcache_raw_read (current_regcache, rs->regs[i].regnum, buf);
+	  regcache_raw_read(current_regcache, (int)rs->regs[i].regnum, buf);
       break;
     case PACKET_ENABLE:
       break;
@@ -4046,8 +4047,8 @@ store_register_using_P(int regnum)
   gdb_assert(reg != NULL);
   xsnprintf(buf, rs->remote_packet_size, "P%s=", phex_nz(reg->pnum, 0));
   p = (buf + strlen(buf));
-  regcache_raw_collect(current_regcache, reg->regnum, regp);
-  bin2hex(regp, p, register_size(current_gdbarch, reg->regnum));
+  regcache_raw_collect(current_regcache, (int)reg->regnum, regp);
+  bin2hex(regp, p, register_size(current_gdbarch, (int)reg->regnum));
   remote_send(buf, rs->remote_packet_size);
 
   return (buf[0] != '\0');
@@ -4104,11 +4105,12 @@ remote_store_registers (int regnum)
     int i;
     regs = (char *)alloca(rs->sizeof_g_packet);
     memset(regs, 0, rs->sizeof_g_packet);
-    for (i = 0; i < NUM_REGS + NUM_PSEUDO_REGS; i++)
+    for (i = 0; i < (NUM_REGS + NUM_PSEUDO_REGS); i++)
       {
 	struct packet_reg *r = &rs->regs[i];
 	if (r->in_g_packet)
-	  regcache_raw_collect (current_regcache, r->regnum, regs + r->offset);
+	  regcache_raw_collect(current_regcache, (int)r->regnum,
+			       (regs + r->offset));
       }
   }
 
@@ -4251,33 +4253,33 @@ check_binary_download(CORE_ADDR addr)
    error.  Only transfer a single packet.  */
 
 int
-remote_write_bytes (CORE_ADDR memaddr, const gdb_byte *myaddr, int len)
+remote_write_bytes(CORE_ADDR memaddr, const gdb_byte *myaddr, size_t len)
 {
   char *buf;
   char *p;
   char *plen;
   long sizeof_buf;
   int plenlen;
-  int todo;
+  size_t todo;
   int nr_bytes;
-  int payload_size;
+  size_t payload_size;
   char *payload_start;
 
-  /* Verify that the target can support a binary download.  */
-  check_binary_download (memaddr);
+  /* Verify that the target can support a binary download: */
+  check_binary_download(memaddr);
 
-  payload_size = get_memory_write_packet_size ();
+  payload_size = get_memory_write_packet_size();
 
   /* Compute the size, and then allocate space for the largest
      possible packet.  Include space for an extra trailing NUL.  */
-  sizeof_buf = payload_size + 1;
+  sizeof_buf = (payload_size + 1UL);
   buf = (char *)alloca(sizeof_buf);
 
   /* Compute the size of the actual payload by subtracting out the
      packet header and footer overhead: "$M<memaddr>,<len>:...#nn".
      */
-  payload_size -= strlen ("$M,:#NN");
-  payload_size -= hexnumlen (memaddr);
+  payload_size -= strlen("$M,:#NN");
+  payload_size -= hexnumlen(memaddr);
 
   /* Construct the packet header: "[MX]<memaddr>,<len>:".   */
 
@@ -4289,26 +4291,26 @@ remote_write_bytes (CORE_ADDR memaddr, const gdb_byte *myaddr, int len)
     case PACKET_ENABLE:
       *p++ = 'X';
       /* Best guess at number of bytes that will fit.  */
-      todo = min (len, payload_size);
+      todo = min(len, payload_size);
       payload_size -= hexnumlen (todo);
-      todo = min (todo, payload_size);
+      todo = min(todo, payload_size);
       break;
     case PACKET_DISABLE:
       *p++ = 'M';
       /* Num bytes that will fit.  */
-      todo = min (len, payload_size / 2);
-      payload_size -= hexnumlen (todo);
-      todo = min (todo, payload_size / 2);
+      todo = min(len, (payload_size / 2UL));
+      payload_size -= hexnumlen(todo);
+      todo = min(todo, (payload_size / 2UL));
       break;
     case PACKET_SUPPORT_UNKNOWN:
-      internal_error (__FILE__, __LINE__,
-		      _("remote_write_bytes: bad internal state"));
+      internal_error(__FILE__, __LINE__,
+		     _("remote_write_bytes: bad internal state"));
     default:
-      internal_error (__FILE__, __LINE__, _("bad switch"));
+      internal_error(__FILE__, __LINE__, _("bad switch"));
     }
   if (todo <= 0)
-    internal_error (__FILE__, __LINE__,
-		    _("minumum packet size too small to write data"));
+    internal_error(__FILE__, __LINE__,
+		   _("minumum packet size too small to write data"));
 
   /* Append "<memaddr>".  */
   memaddr = remote_address_masked (memaddr);
@@ -4336,7 +4338,8 @@ remote_write_bytes (CORE_ADDR memaddr, const gdb_byte *myaddr, int len)
 	 increasing byte addresses.  Only escape certain critical
 	 characters.  */
       for (nr_bytes = 0;
-	   (nr_bytes < todo) && (p - payload_start) < payload_size;
+	   (nr_bytes < (int)todo)
+	   && ((p - payload_start) < (ptrdiff_t)payload_size);
 	   nr_bytes++)
 	{
 	  switch (myaddr[nr_bytes] & 0xff)
@@ -4353,13 +4356,13 @@ remote_write_bytes (CORE_ADDR memaddr, const gdb_byte *myaddr, int len)
 	      break;
 	    }
 	}
-      if (nr_bytes < todo)
+      if (nr_bytes < (int)todo)
 	{
 	  /* Escape chars have filled up the buffer prematurely,
 	     and we have actually sent fewer bytes than planned.
 	     Fix-up the length field of the packet.  Use the same
 	     number of characters as before.  */
-	  plen += hexnumnstr (plen, (ULONGEST) nr_bytes, plenlen);
+	  plen += hexnumnstr(plen, (ULONGEST)nr_bytes, plenlen);
 	  *plen = ':';  /* overwrite \0 from hexnumnstr() */
 	}
       break;
@@ -4367,14 +4370,14 @@ remote_write_bytes (CORE_ADDR memaddr, const gdb_byte *myaddr, int len)
       /* Normal mode: Send target system values byte by byte, in
 	 increasing byte addresses.  Each byte is encoded as a two hex
 	 value.  */
-      nr_bytes = bin2hex ((char *) myaddr, p, todo);
-      p += 2 * nr_bytes;
+      nr_bytes = bin2hex((char *)myaddr, p, (int)todo);
+      p += (2 * nr_bytes);
       break;
     case PACKET_SUPPORT_UNKNOWN:
-      internal_error (__FILE__, __LINE__,
-		      _("remote_write_bytes: bad internal state"));
+      internal_error(__FILE__, __LINE__,
+		     _("remote_write_bytes: bad internal state"));
     default:
-      internal_error (__FILE__, __LINE__, _("bad switch"));
+      internal_error(__FILE__, __LINE__, _("bad switch"));
     }
 
   putpkt_binary(buf, (int)(p - buf));
@@ -4411,16 +4414,16 @@ remote_write_bytes (CORE_ADDR memaddr, const gdb_byte *myaddr, int len)
    handling partial reads.  */
 
 int
-remote_read_bytes(CORE_ADDR memaddr, char *myaddr, int len)
+remote_read_bytes(CORE_ADDR memaddr, char *myaddr, size_t len)
 {
   char *buf;
-  int max_buf_size;		/* Max size of packet output buffer.  */
+  size_t max_buf_size;		/* Max size of packet output buffer.  */
   long sizeof_buf;
-  int origlen;
+  size_t origlen;
 
   /* Create a buffer big enough for this packet: */
   max_buf_size = get_memory_read_packet_size();
-  sizeof_buf = max_buf_size + 1; /* Space for trailing NULL.  */
+  sizeof_buf = (max_buf_size + 1UL); /* Space for trailing NULL.  */
   buf = (char *)alloca(sizeof_buf);
 
   origlen = len;
@@ -4430,7 +4433,7 @@ remote_read_bytes(CORE_ADDR memaddr, char *myaddr, int len)
       int todo;
       int i;
 
-      todo = min(len, (max_buf_size / 2));	/* num bytes that will fit */
+      todo = (int)min(len, (max_buf_size / 2));	/* num bytes that will fit */
 
       /* construct "m"<memaddr>","<len>" */
 #if 0
@@ -4464,17 +4467,17 @@ remote_read_bytes(CORE_ADDR memaddr, char *myaddr, int len)
          each byte encoded as two hex characters.  */
 
       p = buf;
-      if ((i = hex2bin (p, myaddr, todo)) < todo)
+      if ((i = hex2bin(p, myaddr, todo)) < todo)
 	{
 	  /* Reply is short.  This means that we were able to read
 	     only part of what we wanted to.  */
-	  return i + (origlen - len);
+	  return (int)(i + (origlen - len));
 	}
       myaddr += todo;
       memaddr += todo;
       len -= todo;
     }
-  return origlen;
+  return (int)origlen;
 }
 
 /* Read or write LEN bytes from inferior memory at MEMADDR,
@@ -4483,9 +4486,9 @@ remote_read_bytes(CORE_ADDR memaddr, char *myaddr, int len)
    read; 0 for error.  TARGET is unused.  */
 
 static int
-remote_xfer_memory (CORE_ADDR mem_addr, gdb_byte *buffer, int mem_len,
-		    int should_write, struct mem_attrib *attrib,
-		    struct target_ops *target)
+remote_xfer_memory(CORE_ADDR mem_addr, gdb_byte *buffer, int mem_len,
+		   int should_write, struct mem_attrib *attrib,
+		   struct target_ops *target)
 {
   int res;
 
@@ -4565,7 +4568,7 @@ print_packet(const char *buf)
 int
 putpkt(const char *buf)
 {
-  return putpkt_binary(buf, strlen(buf));
+  return putpkt_binary(buf, (int)strlen(buf));
 }
 
 /* Send a packet to the remote machine, with error checking.  The data
@@ -4614,13 +4617,13 @@ putpkt_binary(const char *buf, int cnt)
 	{
 	  *p = '\0';
 	  fprintf_unfiltered(gdb_stdlog, "Sending packet: ");
-	  fputstrn_unfiltered(buf2, (p - buf2), 0, gdb_stdlog);
+	  fputstrn_unfiltered(buf2, (int)(p - buf2), 0, gdb_stdlog);
 	  fprintf_unfiltered(gdb_stdlog, "...");
 	  gdb_flush(gdb_stdlog);
 	}
       /* APPLE LOCAL */
       start_remote_timer();
-      if (serial_write(remote_desc, buf2, (p - buf2)))
+      if (serial_write(remote_desc, buf2, (int)(p - buf2)))
 	{
 	  /* APPLE LOCAL: dump the stack trace and packet log in case this sheds
 	     some light on what caused us to fail. */
@@ -4897,15 +4900,14 @@ getpkt_sane(char *buf, long sizeof_buf, int forever)
   int c;
   int tries;
   int timeout;
-  int val;
+  long val;
 
-  strcpy (buf, "timeout");
+  strcpy(buf, "timeout");
 
   if (forever)
     {
-      timeout = watchdog > 0 ? watchdog : -1;
+      timeout = ((watchdog > 0) ? watchdog : -1);
     }
-
   else
     timeout = remote_timeout;
 
@@ -4941,9 +4943,9 @@ getpkt_sane(char *buf, long sizeof_buf, int forever)
 	    }
       } while (c != '$');
 
-      /* We've found the start of a packet, now collect the data.  */
+      /* We have found the start of a packet, now collect the data.  */
 
-      val = read_frame (buf, sizeof_buf);
+      val = read_frame(buf, sizeof_buf);
 
       if (val >= 0)
 	{
@@ -5586,7 +5588,7 @@ crc32 (unsigned char *buf, int len, unsigned int crc)
 
   while (len--)
     {
-      crc = (crc << 8) ^ crc32_table[((crc >> 24) ^ *buf) & 255];
+      crc = (unsigned int)((crc << 8) ^ crc32_table[((crc >> 24) ^ *buf) & 255]);
       buf++;
     }
   return crc;
@@ -6480,7 +6482,7 @@ void
 remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int from_tty)
 {
   struct remote_state *rs = get_remote_state();
-  int exec_len;
+  size_t exec_len;
   int argnum;
   int print_len;
   char *ptr;
@@ -6490,12 +6492,12 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
   const char *env_pkt_hdr;
   int timed_out;
   int env_is_hex_encoded;
-  int buf_size;
+  size_t buf_size;
   char *buf;
   struct cleanup *cleanup;
   int envnum;
   char *allargs_copy;
-  int allargs_string_length;
+  size_t allargs_string_length;
   size_t exe_and_args_buffer_length = 0UL;
   char *exe_and_args_buffer;
   char *exe_and_args_buffer_end;
@@ -6525,16 +6527,17 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
 
   while (env[envnum] != NULL)
     {
-      int packet_len;
+      size_t packet_len;
 
       if (env_is_hex_encoded)
-        packet_len = strlen(env_pkt_hdr) + (strlen(env[envnum]) * 2 + 1);
+        packet_len = (strlen(env_pkt_hdr) + ((strlen(env[envnum]) * 2UL)
+					     + 1UL));
       else
-        packet_len = strlen(env_pkt_hdr) + strlen(env[envnum]) + 1;
+        packet_len = (strlen(env_pkt_hdr) + strlen(env[envnum]) + 1UL);
 
       if (packet_len > buf_size)
         {
-          warning ("Environment variable too long, skipping: %s", env[envnum]);
+          warning(_("Environment variable too long, skipping: %s"), env[envnum]);
           envnum++;
           continue;
         }
@@ -6584,7 +6587,7 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
 
   /* The largest possible array - every character is a separate argument.  */
 
-  argv = (char **)xmalloc((allargs_string_length + 1) * sizeof(char *));
+  argv = (char **)xmalloc((allargs_string_length + 1UL) * sizeof(char *));
   make_cleanup(xfree, argv);
   breakup_args(allargs_copy, &argc, argv);
 
@@ -6620,7 +6623,7 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
   make_cleanup(xfree, exe_and_args_buffer);
 
   print_len = snprintf(exe_and_args_buffer, exe_and_args_buffer_length,
-                       "A%d,0,", 2 * exec_len);
+                       "A%d,0,", (2 * (int)exec_len));
   ptr = (exe_and_args_buffer + print_len);
 
   ptr = pack_string_as_ascii_hex(ptr, remote_exec_file,
@@ -6630,15 +6633,15 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
     {
       char *oldptr = ptr;
       char *arg = argv[argnum];
-      int arglen = strlen (arg);
+      size_t arglen = strlen(arg);
       *ptr++ = ',';
       if (ptr >= exe_and_args_buffer_end)
         {
           ptr = oldptr;
           break;
         }
-      print_len = snprintf(ptr, exe_and_args_buffer_end - ptr, "%d,%d,",
-                           2 * arglen, argnum + 1);
+      print_len = snprintf(ptr, (exe_and_args_buffer_end - ptr), "%d,%d,",
+                           (2 * (int)arglen), (argnum + 1));
       ptr += print_len;
       if (ptr >= exe_and_args_buffer_end)
         {
@@ -6713,12 +6716,12 @@ remote_macosx_attach(const char *args, int from_tty)
   if (strstr(args, "-waitfor") == args)
     {
       const char *process = (args + strlen("-waitfor"));
-      int name_len;
+      size_t name_len;
       int prepend_path = 0;
       char *out_ptr;
 
       if (*process == '\0')
-	error("No process name supplied for \"-waitfor\"");
+	error(_("No process name supplied for \"-waitfor\""));
 
       while (*process == ' ')
         process++;
@@ -6759,9 +6762,9 @@ remote_macosx_attach(const char *args, int from_tty)
     }
   else
     {
-      remote_pid = strtol(args, &endptr, 0);
+      remote_pid = (pid_t)strtol(args, &endptr, 0);
       if (*endptr != '\0')
-	error("Junk at the end of pid string: \"%s\".", endptr);
+	error(_("Junk at the end of pid string: \"%s\"."), endptr);
 
       snprintf(buf, buflen, "vAttach;%x", remote_pid);
 

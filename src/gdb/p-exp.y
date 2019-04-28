@@ -464,7 +464,8 @@ exp	:	INT
 
 exp	:	NAME_OR_INT
 			{ YYSTYPE val;
-			  parse_number($1.stoken.ptr, $1.stoken.length, 0, &val);
+			  parse_number($1.stoken.ptr, (int)$1.stoken.length, 0,
+				       &val);
 			  write_exp_elt_opcode(OP_LONG);
 			  write_exp_elt_type(val.typed_val_int.type);
 			  write_exp_elt_longcst((LONGEST)val.typed_val_int.val);
@@ -501,7 +502,7 @@ exp	:	STRING
 			     the array upper bound is the string length.
 			     There is no such thing in C as a completely empty
 			     string. */
-			  char *sp = $1.ptr; int count = $1.length;
+			  char *sp = $1.ptr; size_t count = $1.length;
 			  while (count-- > 0)
 			    {
 			      write_exp_elt_opcode(OP_LONG);
@@ -1078,7 +1079,8 @@ yylex(void)
   char *tokstart;
   char *uptokstart;
   const char *tokptr;
-  int explen, tempbufindex;
+  size_t explen;
+  int tempbufindex;
   static char *tempbuf;
   static int tempbufsize;
 
@@ -1145,13 +1147,13 @@ yylex(void)
 	    {
 	      lexptr = (tokstart + namelen);
 	      if (lexptr[-1] != '\'')
-		error("Unmatched single quote.");
+		error(_("Unmatched single quote."));
 	      namelen -= 2;
               tokstart++;
-              uptokstart = uptok(tokstart, namelen);
+              uptokstart = uptok(tokstart, (int)namelen);
 	      goto tryname;
 	    }
-	  error("Invalid character constant.");
+	  error(_("Invalid character constant."));
 	}
       return INT;
 
@@ -1231,7 +1233,7 @@ yylex(void)
                          && ((*p < 'A') || (*p > 'Z'))))
 	      break;
 	  }
-	toktype = parse_number(tokstart, (p - tokstart), (got_dot | got_e),
+	toktype = parse_number(tokstart, (int)(p - tokstart), (got_dot | got_e),
                                &yylval);
         if (toktype == ERROR)
 	  {
@@ -1360,7 +1362,7 @@ yylex(void)
       c = tokstart[++namelen];
     }
 
-  uptokstart = uptok(tokstart, namelen);
+  uptokstart = uptok(tokstart, (int)namelen);
 
   /* The token "if" terminates the expression and is NOT
      removed from the input stream.  */
@@ -1635,7 +1637,7 @@ yylex(void)
          || ((tokstart[0] >= 'A') && (tokstart[0] < (char)('A' + input_radix - 10)))))
       {
  	YYSTYPE newlval;	/* Its value is ignored.  */
-	hextype = parse_number(tokstart, namelen, 0, &newlval);
+	hextype = parse_number(tokstart, (int)namelen, 0, &newlval);
 	if (hextype == INT)
 	  {
 	    yylval.ssym.sym = sym;
