@@ -1866,7 +1866,17 @@ clean mostlyclean:: $(CONFIG_CLEAN)
 	-if test "x$(CLEANDIRS)" != "x$(UNUSED_SUBDIRS)"; then \
 	  for dir in $(UNUSED_SUBDIRS); do \
 	    if test -d $${dir} && test -e $${dir}/Makefile; then \
-	      cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) clean; \
+	      if test "x$${dir}" = "xgnulib"; then \
+	        if test -e $${dir}/import/Makefile; then \
+	          echo "$${dir} exists and it and its subdir both have Makefiles; attempting to clean it..."; \
+	          cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) clean; \
+	        else \
+	          echo "skipping cleaning $${dir}; no Makefile in its import subdir"; \
+	        fi; \
+	      else \
+	        echo "$${dir} exists and has a Makefile; attempting to clean it..."; \
+	        cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) clean; \
+	      fi; \
 	    else \
 	      echo "skipping cleaning $${dir}"; \
 	    fi; \

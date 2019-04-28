@@ -261,7 +261,7 @@ read_reg(void *baton, int reg)
 static void
 read_mem(void *baton, gdb_byte *buf, CORE_ADDR addr, size_t len)
 {
-  read_memory(addr, buf, len);
+  read_memory(addr, buf, (int)len);
 }
 
 /* */

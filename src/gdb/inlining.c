@@ -2354,7 +2354,7 @@ print_inlined_frame (struct frame_info *fi, int print_level,
   char *tmp_name;
   enum language funlang = language_unknown;
   int i;
-  int buffer_len;
+  size_t buffer_len;
   int line;
   struct inlined_function_data *stack_ptr;
   /* APPLE LOCAL begin Inform users about debugging optimized code  */

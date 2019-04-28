@@ -160,7 +160,7 @@ solib_open (char *in_pathname, char **found_pathname)
         temp_pathname = in_pathname;
       else
 	{
-	  int prefix_len = strlen(solib_absolute_prefix);
+	  size_t prefix_len = strlen(solib_absolute_prefix);
 
 	  /* Remove trailing slashes from absolute prefix: */
 	  while ((prefix_len > 0)
@@ -591,7 +591,7 @@ update_solib_list (int from_tty, struct target_ops *target)
 	  errors_ret = catch_errors(solib_map_sections, i,
 				    "Error while mapping shared library sections:\n",
 				    RETURN_MASK_ALL);
-	  
+
 	  if (errors_ret == 0) {
 	    ; /* ??? */
 	  }
@@ -602,19 +602,18 @@ update_solib_list (int from_tty, struct target_ops *target)
 	     in solib-osf.c.  */
 	  if (target)
 	    {
-	      int count = (i->sections_end - i->sections);
+	      ptrdiff_t count = (i->sections_end - i->sections);
 	      if (count > 0)
 		{
-		  int space = target_resize_to_sections (target, count);
-		  memcpy (target->to_sections + space,
-			  i->sections,
-			  count * sizeof (i->sections[0]));
+		  int targspace = target_resize_to_sections(target, (int)count);
+		  memcpy((target->to_sections + targspace), i->sections,
+			 (count * sizeof(i->sections[0])));
 		}
 	    }
 
 	  /* Notify any observer that the shared object has been
-             loaded now that we've added it to GDB's tables.  */
-	  observer_notify_solib_loaded (i);
+             loaded now that we have added it to GDB's tables.  */
+	  observer_notify_solib_loaded(i);
 	}
     }
 }

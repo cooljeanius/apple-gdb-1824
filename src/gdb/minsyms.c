@@ -971,7 +971,7 @@ static void
 do_discard_minimal_symbols_cleanup(void *arg)
 {
   struct msym_bunch *next;
-  
+
   if (arg == NULL) {
     ; /* ??? */
   }
@@ -1035,7 +1035,7 @@ compact_minimal_symbols(struct minimal_symbol *msymbol, int mcount,
 {
   struct minimal_symbol *copyfrom;
   struct minimal_symbol *copyto;
-  
+
   if (objfile == NULL) {
     ; /* ??? */
   }
@@ -1060,7 +1060,7 @@ compact_minimal_symbols(struct minimal_symbol *msymbol, int mcount,
 	    *copyto++ = *copyfrom++;
 	}
       *copyto++ = *copyfrom++;
-      mcount = copyto - msymbol;
+      mcount = (int)(copyto - msymbol);
     }
   return (mcount);
 }

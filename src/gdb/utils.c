@@ -1519,14 +1519,14 @@ xsnprintf(char *str, size_t size, const char *format, ...)
 int
 myread(int desc, char *addr, int len)
 {
-  int val;
+  ssize_t val;
   int orglen = len;
 
   while (len > 0)
     {
       val = read(desc, addr, (size_t)len);
       if (val < 0)
-	return val;
+	return (int)val;
       if (val == 0)
 	return (orglen - len);
       len -= val;
@@ -2444,15 +2444,15 @@ fputs_maybe_filtered(const char *linebuffer, struct ui_file *stream,
 		  fputs_unfiltered(wrap_indent, stream);
 		  *wrap_pointer = '\0';	/* Null-terminate saved stuff... */
 		  fputs_unfiltered(wrap_buffer, stream); /* and eject it */
-		  /* FIXME, this strlen is what prevents wrap_indent from
+		  /* FIXME: this strlen is what prevents wrap_indent from
 		     containing tabs.  However, if we recurse to print it
 		     and count its chars, we risk trouble if wrap_indent is
 		     longer than (the user settable) chars_per_line.
 		     Note also that this can set chars_printed > chars_per_line
 		     if we are printing a long string.  */
-		  chars_printed = (strlen(wrap_indent)
-                                   + (save_chars
-                                      - (unsigned int)wrap_column));
+		  chars_printed = (unsigned int)(strlen(wrap_indent)
+						 + (size_t)(save_chars
+							    - (unsigned int)wrap_column));
 		  wrap_pointer = wrap_buffer;	/* Reset buffer */
 		  wrap_buffer[0] = '\0';
 		  wrap_column = 0;	/* And disable fancy wrap */

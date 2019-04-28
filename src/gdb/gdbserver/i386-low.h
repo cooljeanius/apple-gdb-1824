@@ -46,7 +46,7 @@ struct i386_debug_reg_state
   /* Mirror the inferior's DRi registers.  We keep the status and
      control registers separated because they don't hold addresses.  */
   CORE_ADDR dr_mirror[DR_NADDR];
-  unsigned dr_status_mirror, dr_control_mirror;
+  unsigned int dr_status_mirror, dr_control_mirror;
 
   /* Reference counts for each debug register.  */
   int dr_ref_count[DR_NADDR];

@@ -431,7 +431,7 @@ gnuv3_baseclass_offset(struct type *type, int index, const bfd_byte *valaddr,
   vbase_array = value_field(vtable, vtable_field_vcall_and_vbase_offsets);
   base_offset = (long int)value_as_long(value_subscript(vbase_array,
                                                         offset_val));
-  return base_offset;
+  return (int)base_offset;
 }
 
 static void

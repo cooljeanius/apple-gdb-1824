@@ -886,9 +886,9 @@ macosx_load_dylib(char *name, char *flags)
       objc_retval = objc_debugger_mode_success;
 
   if (objc_retval != objc_debugger_mode_success)
-    error("Not safe to call dlopen at this time.");
+    error(_("Not safe to call dlopen at this time."));
 
-  arg_val[0] = value_coerce_array(value_string(name, strlen(name) + 1UL));
+  arg_val[0] = value_coerce_array(value_string(name, ((int)strlen(name) + 1)));
 
   ret_val = call_function_by_hand(lookup_cached_function(dlopen_function),
 				  2, arg_val);

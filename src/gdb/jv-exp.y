@@ -237,23 +237,23 @@ StringLiteral:
 
 Literal:
 	INTEGER_LITERAL
-		{ write_exp_elt_opcode (OP_LONG);
-		  write_exp_elt_type ($1.type);
-		  write_exp_elt_longcst ((LONGEST)($1.val));
-		  write_exp_elt_opcode (OP_LONG); }
+		{ write_exp_elt_opcode(OP_LONG);
+		  write_exp_elt_type($1.type);
+		  write_exp_elt_longcst((LONGEST)($1.val));
+		  write_exp_elt_opcode(OP_LONG); }
 |	NAME_OR_INT
 		{ YYSTYPE val;
-		  parse_number ($1.ptr, $1.length, 0, &val);
-		  write_exp_elt_opcode (OP_LONG);
-		  write_exp_elt_type (val.typed_val_int.type);
-		  write_exp_elt_longcst ((LONGEST)val.typed_val_int.val);
-		  write_exp_elt_opcode (OP_LONG);
+		  parse_number($1.ptr, (int)$1.length, 0, &val);
+		  write_exp_elt_opcode(OP_LONG);
+		  write_exp_elt_type(val.typed_val_int.type);
+		  write_exp_elt_longcst((LONGEST)val.typed_val_int.val);
+		  write_exp_elt_opcode(OP_LONG);
 		}
 |	FLOATING_POINT_LITERAL
-		{ write_exp_elt_opcode (OP_DOUBLE);
-		  write_exp_elt_type ($1.type);
-		  write_exp_elt_dblcst ($1.dval);
-		  write_exp_elt_opcode (OP_DOUBLE); }
+		{ write_exp_elt_opcode(OP_DOUBLE);
+		  write_exp_elt_type($1.type);
+		  write_exp_elt_dblcst($1.dval);
+		  write_exp_elt_opcode(OP_DOUBLE); }
 |	BOOLEAN_LITERAL
 		{ write_exp_elt_opcode (OP_LONG);
 		  write_exp_elt_type (java_boolean_type);
@@ -875,7 +875,7 @@ static int
 yylex(void)
 {
   int c;
-  int namelen;
+  ptrdiff_t namelen;
   unsigned int u_i;
   char *tokstart;
   const char *tokptr;
@@ -934,7 +934,7 @@ yylex(void)
       c = *lexptr++;
       if (c != '\'')
 	{
-	  namelen = skip_quoted (tokstart) - tokstart;
+	  namelen = (skip_quoted(tokstart) - tokstart);
 	  if (namelen > 2)
 	    {
 	      lexptr = tokstart + namelen;
@@ -1022,7 +1022,8 @@ yylex(void)
 				  && (*p < 'A' || *p > 'Z')))
 	      break;
 	  }
-	toktype = parse_number (tokstart, p - tokstart, got_dot|got_e, &yylval);
+	toktype = parse_number(tokstart, (int)(p - tokstart),
+			       (got_dot | got_e), &yylval);
         if (toktype == ERROR)
 	  {
 	    char *err_copy = (char *)alloca(p - tokstart + 1UL);
@@ -1130,7 +1131,7 @@ yylex(void)
     {
       if (c == '<')
 	{
-	  int i_i = namelen;
+	  int i_i = (int)namelen;
 	  while (tokstart[++i_i] && (tokstart[i_i] != '>')) {
 	    ; /* FIXME: is empty body intentional? */
 	  }
@@ -1214,7 +1215,7 @@ yylex(void)
        || ((tokstart[0] >= 'A') && (tokstart[0] < (char)('A' + input_radix - 10)))))
     {
       YYSTYPE newlval;	/* Its value is ignored.  */
-      int hextype = parse_number(tokstart, namelen, 0, &newlval);
+      int hextype = parse_number(tokstart, (int)namelen, 0, &newlval);
       if (hextype == INTEGER_LITERAL)
 	return NAME_OR_INT;
     }

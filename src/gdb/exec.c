@@ -213,7 +213,8 @@ exec_close(int quitting)
     {
       /* APPLE LOCAL section resize */
       target_resize_to_sections(&exec_ops,
-                                (exec_ops.to_sections_end - exec_ops.to_sections));
+                                (int)(exec_ops.to_sections_end
+				      - exec_ops.to_sections));
     }
 
   /* use an unused variable: */
@@ -845,7 +846,7 @@ set_section_command(const char *args, int from_tty)
 {
   struct section_table *p;
   const char *secname;
-  unsigned int seclen;
+  size_t seclen;
   CORE_ADDR secaddr;
   char secprint[127]; /* formerly just 100; seeing if I can increase it... */
   off_t offset;

@@ -106,6 +106,15 @@
 
 /* FIXME: redefines ATTRIBUTE_PRINTF on us: */
 #if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE
+/* try to prevent C++ headers from being dragged in via icu headers; our
+ * our definition of min() and max() macros breaks them: */
+# ifdef U_HAVE_STD_STRING
+#  undef U_HAVE_STD_STRING
+# endif /* U_HAVE_STD_STRING */
+# define U_HAVE_STD_STRING 0 /* '0' means "missing" */
+# if defined(__cplusplus) && !defined(__STD_STRING_H__)
+#  define __STD_STRING_H__ 1
+# endif /* __cplusplus && !__STD_STRING_H__ */
 # include <libxml/parser.h>
 # include <libxml/tree.h>
 #endif /* LIBXML2_IS_USABLE */

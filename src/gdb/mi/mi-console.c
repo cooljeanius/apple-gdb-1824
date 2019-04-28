@@ -96,12 +96,13 @@ mi_console_raw_packet(void *data, const char *buf, long length_buf)
       if (mi_console->quote)
 	{
 	  fputs_unfiltered("\"", mi_console->raw);
-	  fputstrn_unfiltered(buf, length_buf, mi_console->quote, mi_console->raw);
+	  fputstrn_unfiltered(buf, (int)length_buf, mi_console->quote,
+			      mi_console->raw);
 	  fputs_unfiltered("\"\n", mi_console->raw);
 	}
       else
 	{
-	  fputstrn_unfiltered(buf, length_buf, 0, mi_console->raw);
+	  fputstrn_unfiltered(buf, (int)length_buf, 0, mi_console->raw);
 	  fputs_unfiltered("\n", mi_console->raw);
 	}
       gdb_flush(mi_console->raw);

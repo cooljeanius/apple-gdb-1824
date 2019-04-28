@@ -1596,9 +1596,9 @@ yylex (void)
 	 presumably the same one that appears in manglings - the decimal
 	 representation.  But if that isn't in our input then we have to
 	 allocate memory for it somewhere.  */
-      yylval.comp = fill_comp (DEMANGLE_COMPONENT_LITERAL,
-				 make_builtin_type ("char"),
-				 make_name (tokstart, lexptr - tokstart));
+      yylval.comp = fill_comp(DEMANGLE_COMPONENT_LITERAL,
+			      make_builtin_type("char"),
+			      make_name(tokstart, (int)(lexptr - tokstart)));
 
       return INT;
 
@@ -1705,7 +1705,8 @@ yylex (void)
 	    else if (!ISALNUM(*p))
 	      break;
 	  }
-	toktype = parse_number(tokstart, (p - tokstart), (got_dot | got_e));
+	toktype = parse_number(tokstart, (int)(p - tokstart),
+			       (got_dot | got_e));
         if (toktype == ERROR)
 	  {
 	    char *err_copy = (char *)alloca((size_t)(p - tokstart) + 1UL);
@@ -1862,8 +1863,8 @@ yylex (void)
 	  lexptr = tokstart + 29;
 	  yylval.typed_val_int.val = GLOBAL_CONSTRUCTORS;
 	  /* Find the end of the symbol.  */
-	  p = symbol_end (lexptr);
-	  yylval.typed_val_int.type = make_name (lexptr, p - lexptr);
+	  p = symbol_end(lexptr);
+	  yylval.typed_val_int.type = make_name(lexptr, (int)(p - lexptr));
 	  lexptr = p;
 	  return GLOBAL;
 	}
@@ -1873,8 +1874,8 @@ yylex (void)
 	  lexptr = tokstart + 28;
 	  yylval.typed_val_int.val = GLOBAL_DESTRUCTORS;
 	  /* Find the end of the symbol.  */
-	  p = symbol_end (lexptr);
-	  yylval.typed_val_int.type = make_name (lexptr, p - lexptr);
+	  p = symbol_end(lexptr);
+	  yylval.typed_val_int.type = make_name(lexptr, (int)(p - lexptr));
 	  lexptr = p;
 	  return GLOBAL;
 	}

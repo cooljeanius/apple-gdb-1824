@@ -161,13 +161,13 @@ mi_cmd_break_insert (char *command, char **argv, int argc)
 	  condition = optarg;
 	  break;
 	case IGNORE_COUNT_OPT:
-	  ignore_count = atol(optarg);
+	  ignore_count = atoi(optarg);
           /* APPLE LOCAL: Same behavior as set_ignore_count().  */
           if (ignore_count < 0)
             ignore_count = 0;
 	  break;
 	case THREAD_OPT:
-	  thread = atol(optarg);
+	  thread = atoi(optarg);
 	  break;
         case SHLIB_OPT:
           requested_shlib = optarg;
@@ -204,9 +204,10 @@ mi_cmd_break_insert (char *command, char **argv, int argc)
 	    errno = 0;
 	    while (*numptr != '\0')
 	      {
-		indices[i++] = strtol (numptr, &numptr, 10);
+		indices[i++] = (int)strtol(numptr, &numptr, 10);
 		if (errno == EINVAL)
-		    error ("mi_cmd_break_insert: bad index at \"%s\"", numptr);
+		    error(_("mi_cmd_break_insert: bad index at \"%s\""),
+			  numptr);
 	      }
 
 	    /* Since we aren't passing a number of elements, we terminate the
@@ -386,8 +387,9 @@ mi_read_next_line(void)
     }
 }
 
+/* */
 enum mi_cmd_result
-mi_cmd_break_commands (char *command, char **argv, int argc)
+mi_cmd_break_commands(char *command, char **argv, int argc)
 {
   struct command_line *break_command;
   char *endptr;
@@ -395,9 +397,10 @@ mi_cmd_break_commands (char *command, char **argv, int argc)
   struct breakpoint *b;
 
   if (argc < 1)
-    error ("%s: USAGE: %s <BKPT> [<COMMAND> [<COMMAND>...]]", command, command);
+    error(_("%s: USAGE: %s <BKPT> [<COMMAND> [<COMMAND>...]]"), command,
+	  command);
 
-  bnum = strtol (argv[0], &endptr, 0);
+  bnum = (int)strtol(argv[0], &endptr, 0);
   if (endptr == argv[0])
     {
       xasprintf (&mi_error_message,

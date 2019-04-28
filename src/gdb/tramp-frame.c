@@ -103,10 +103,10 @@ tramp_frame_start(const struct tramp_frame *tramp,
 	  if ((LONGEST)tramp->insn[i].bytes == TRAMP_SENTINEL_INSN)
 	    return func;
 	  if (!safe_frame_unwind_memory(next_frame,
-                                        (func + i * tramp->insn_size),
-                                        buf, tramp->insn_size))
+                                        (func + (i * tramp->insn_size)),
+                                        buf, (int)tramp->insn_size))
 	    break;
-	  insn = extract_unsigned_integer(buf, tramp->insn_size);
+	  insn = extract_unsigned_integer(buf, (int)tramp->insn_size);
 	  if (tramp->insn[i].bytes != (insn & tramp->insn[i].mask))
 	    break;
 	}

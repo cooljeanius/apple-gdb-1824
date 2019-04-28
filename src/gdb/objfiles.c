@@ -474,7 +474,7 @@ objfile_delete_from_ordered_sections (struct objfile *objfile)
 {
   int i;
   int ndeleted;
-  int delete_list_size;
+  ptrdiff_t delete_list_size;
   int static_delete_list[STATIC_DELETE_LIST_SIZE];
   int *delete_list = static_delete_list;
 
@@ -484,17 +484,17 @@ objfile_delete_from_ordered_sections (struct objfile *objfile)
      remove the sections to the ordered list if so. The backlink will not be
      setup when the separate debug objfile is in the process of being created,
      so a flag was added to make sure we can tell.  */
-  if (objfile->separate_debug_objfile_backlink ||
-      objfile->flags & OBJF_SEPARATE_DEBUG_FILE)
+  if (objfile->separate_debug_objfile_backlink
+      || (objfile->flags & OBJF_SEPARATE_DEBUG_FILE))
 	return;
 
   /* Do deletion of the sections by building up an array of
      "to be removed" indices, and then block compact the array using
      these indices.  */
 
-  delete_list_size = objfile->sections_end - objfile->sections;
+  delete_list_size = (objfile->sections_end - objfile->sections);
   if (delete_list_size > STATIC_DELETE_LIST_SIZE)
-    delete_list = (int *) xmalloc (delete_list_size * sizeof (int));
+    delete_list = (int *)xmalloc(delete_list_size * sizeof(int));
 
   ndeleted = 0;
 
@@ -609,27 +609,28 @@ objfile_add_to_ordered_sections (struct objfile *objfile)
   int i, num_left, total;
   struct obj_section_with_index static_insert_list[STATIC_INSERT_LIST_SIZE];
   struct obj_section_with_index *insert_list = static_insert_list;
-  int insert_list_size;
+  ptrdiff_t insert_list_size;
 
   /* APPLE LOCAL: we need to check if this is a separate debug files and not
      add the sections to the ordered list if so. The backlink will not be setup
      when the separate debug objfile is in the process of being created, so a
      flag was added to make sure it never gets added.  */
-  if (objfile->separate_debug_objfile_backlink ||
-      objfile->flags & OBJF_SEPARATE_DEBUG_FILE)
+  if (objfile->separate_debug_objfile_backlink
+      || (objfile->flags & OBJF_SEPARATE_DEBUG_FILE))
 	return;
 
-  CHECK_FATAL (objfile != NULL);
+  CHECK_FATAL(objfile != NULL);
 
   /* First find the index for insertion of all the sections in
      this objfile.  The sort that array in reverse order by address,
      then go through the ordered list block moving the bits between
      the insert points, then adding the pieces we need to add.  */
 
-  insert_list_size = objfile->sections_end - objfile->sections;
+  insert_list_size = (objfile->sections_end - objfile->sections);
   if (insert_list_size > STATIC_INSERT_LIST_SIZE)
-    insert_list = (struct obj_section_with_index *)
-      xmalloc (insert_list_size * sizeof (struct obj_section_with_index));
+    insert_list =
+      ((struct obj_section_with_index *)
+       xmalloc(insert_list_size * sizeof(struct obj_section_with_index)));
 
   total = 0;
   ALL_OBJFILE_OSECTIONS (objfile, s)

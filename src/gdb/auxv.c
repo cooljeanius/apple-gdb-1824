@@ -150,7 +150,7 @@ target_auxv_search(struct target_ops *ops, CORE_ADDR match, CORE_ADDR *valp)
   gdb_byte *ptr = data;
 
   if (n <= 0)
-    return n;
+    return (int)n;
 
   while (1)
     switch (target_auxv_parse(ops, &ptr, (data + n), &type, &val))
@@ -190,7 +190,7 @@ fprint_target_auxv(struct ui_file *file, struct target_ops *ops)
   int ents = 0;
 
   if (len <= 0L)
-    return len;
+    return (int)len;
 
   while (target_auxv_parse(ops, &ptr, (data + len), &type, &val) > 0)
     {

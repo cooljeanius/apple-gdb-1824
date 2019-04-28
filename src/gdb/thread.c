@@ -741,11 +741,11 @@ thread_apply_command(const char *tidlist, int from_tty)
   while (tidlist < cmd)
     {
       struct thread_info *tp;
-      int start, end;
+      long start, end;
 
-      start = strtol (tidlist, &p, 10);
+      start = strtol(tidlist, &p, 10);
       if (p == tidlist)
-	error (_("Error parsing %s"), tidlist);
+	error(_("Error parsing %s"), tidlist);
       tidlist = p;
 
       while (*tidlist == ' ' || *tidlist == '\t')
@@ -754,7 +754,7 @@ thread_apply_command(const char *tidlist, int from_tty)
       if (*tidlist == '-')	/* Got a range of IDs? */
 	{
 	  tidlist++;		/* Skip the - */
-	  end = strtol (tidlist, &p, 10);
+	  end = strtol(tidlist, &p, 10);
 	  if (p == tidlist)
 	    error (_("Error parsing %s"), tidlist);
 	  tidlist = p;
@@ -767,12 +767,12 @@ thread_apply_command(const char *tidlist, int from_tty)
 
       for (; (start <= end) && (start < INT_MAX); start++)
 	{
-	  tp = find_thread_id (start);
+	  tp = find_thread_id((int)start);
 
 	  if (!tp)
-	    warning (_("Unknown thread %d."), start);
+	    warning(_("Unknown thread %ld."), start);
 	  else if (!thread_alive (tp))
-	    warning (_("Thread %d has terminated."), start);
+	    warning(_("Thread %ld has terminated."), start);
 	  else
 	    {
 	      switch_to_thread (tp->ptid);
@@ -828,7 +828,7 @@ do_captured_thread_select(struct ui_out *uiout,
 
   num = (long)value_as_long(parse_and_eval(args->tidstr));
 
-  tp = find_thread_id(num);
+  tp = find_thread_id((int)num);
 
   if (!tp)
     error(_("Thread ID %ld not known."), num);

@@ -341,7 +341,7 @@ gen_traced_pop(struct agent_expr *ax, struct axs_value *value)
 	ax_reg(ax, value->u.reg);
 	ax_simple(ax, aop_pop);
 	break;
-	  
+
       default:
 	break;
       }
@@ -689,7 +689,7 @@ require_rvalue (struct agent_expr *ax, struct axs_value *value)
       ax_reg(ax, value->u.reg);
       gen_extend(ax, value->type);
       break;
-	
+
     default:
       break;
     }
@@ -1153,7 +1153,7 @@ gen_address_of (struct agent_expr *ax, struct axs_value *value)
 	value->kind = axs_rvalue;
 	value->type = lookup_pointer_type(value->type);
 	break;
-	  
+
       default:
 	break;
       }
@@ -1449,9 +1449,9 @@ gen_repeat (union exp_element **pc, struct agent_expr *ax,
     {
       /* FIXME-type-allocation: need a way to free this type when we are
          done with it.  */
-      struct type *range
-      = create_range_type (0, builtin_type_int, 0, length - 1);
-      struct type *array = create_array_type (0, value1.type, range);
+      struct type *range = create_range_type(0, builtin_type_int, 0,
+					     (int)(length - 1));
+      struct type *array = create_array_type(0, value1.type, range);
 
       value->kind = axs_lvalue_memory;
       value->type = array;

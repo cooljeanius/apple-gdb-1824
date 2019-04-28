@@ -80,7 +80,7 @@ kdp_transmit_fd(kdp_connection *c, kdp_pkt_t *packet, int fd)
   char buf[KDP_MAX_PACKET_SIZE];
   size_t plen = 0UL;
   kdp_return_t kret;
-  int ret = -1;
+  ssize_t ret = -1;
 
   CHECK_FATAL(kdp_is_bound(c));
 
@@ -134,7 +134,8 @@ kdp_return_t
 kdp_receive_fd(kdp_connection *c, kdp_pkt_t * packet, int fd, int timeout)
 {
   socklen_t fromlen = sizeof(c->target_sin);
-  int ret = -1, rlen = -1;
+  int ret = -1;
+  ssize_t rlen = -1;
   kdp_return_t kret;
   char buf[KDP_MAX_PACKET_SIZE];
 
@@ -142,7 +143,6 @@ kdp_receive_fd(kdp_connection *c, kdp_pkt_t * packet, int fd, int timeout)
 
   if (timeout)
     {
-
       fd_set readfds;
       struct timeval timeoutv;
 

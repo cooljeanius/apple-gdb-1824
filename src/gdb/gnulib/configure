@@ -649,6 +649,8 @@ am__fastdepCCAS_TRUE
 CCASDEPMODE
 CCASFLAGS
 CCAS
+CAN_MAKE_IN_IMPORT_FALSE
+CAN_MAKE_IN_IMPORT_TRUE
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -51429,6 +51431,13 @@ fi
 AM_BACKSLASH='\'
   ## (might want to pass it the flag anyways, just in case)
 fi
+ if test -e import/Makefile; then
+  CAN_MAKE_IN_IMPORT_TRUE=
+  CAN_MAKE_IN_IMPORT_FALSE='#'
+else
+  CAN_MAKE_IN_IMPORT_TRUE='#'
+  CAN_MAKE_IN_IMPORT_FALSE=
+fi
 
 # --------------------- #
 # Checks for programs.  #
@@ -55365,6 +55374,10 @@ else
   am__EXEEXT_FALSE=
 fi
 
+if test -z "${CAN_MAKE_IN_IMPORT_TRUE}" && test -z "${CAN_MAKE_IN_IMPORT_FALSE}"; then
+  as_fn_error $? "conditional \"CAN_MAKE_IN_IMPORT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${am__fastdepCCAS_TRUE}" && test -z "${am__fastdepCCAS_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCCAS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5

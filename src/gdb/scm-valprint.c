@@ -220,20 +220,20 @@ taloop:
 	  break;
 	case scm_tc7_string:
 	  {
-	    int len = SCM_LENGTH (svalue);
-	    CORE_ADDR addr = (CORE_ADDR) SCM_CDR (svalue);
-	    int i;
-	    int done = 0;
-	    int buf_size;
+	    size_t len = SCM_LENGTH(svalue);
+	    CORE_ADDR addr = (CORE_ADDR)SCM_CDR(svalue);
+	    size_t i;
+	    size_t done = 0UL;
+	    size_t buf_size;
 	    gdb_byte buffer[64];
-	    int truncate = print_max && len > (int) print_max;
+	    int truncate = (print_max && (len > print_max));
 	    if (truncate)
 	      len = print_max;
 	    fputs_filtered ("\"", stream);
 	    for (; done < len; done += buf_size)
 	      {
-		buf_size = min (len - done, 64);
-		read_memory (addr + done, buffer, buf_size);
+		buf_size = min((len - done), 64);
+		read_memory((addr + done), buffer, (int)buf_size);
 
 		for (i = 0; i < buf_size; ++i)
 		  switch (buffer[i])
@@ -256,7 +256,7 @@ taloop:
 	    const size_t len = min(SCM_LENGTH(svalue), MAX_ALLOCA_SIZE);
 
 	    char *str = (char *)alloca(min(len, MAX_ALLOCA_SIZE));
-	    read_memory(SCM_CDR(svalue), (gdb_byte *)str, (len + 1));
+	    read_memory(SCM_CDR(svalue), (gdb_byte *)str, (int)(len + 1));
 	    /* Should handle weird characters, FIXME: do it. */
 	    str[len] = '\0';
 	    fputs_filtered(str, stream);
@@ -264,9 +264,9 @@ taloop:
 	  }
 	case scm_tc7_vector:
 	  {
-	    int len = SCM_LENGTH (svalue);
+	    long len = SCM_LENGTH(svalue);
 	    int i;
-	    LONGEST elements = SCM_CDR (svalue);
+	    LONGEST elements = SCM_CDR(svalue);
 	    fputs_filtered ("#(", stream);
 	    for (i = 0; i < len; ++i)
 	      {

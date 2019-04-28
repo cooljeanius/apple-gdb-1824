@@ -428,6 +428,8 @@ static const struct op_print f_op_print_tab[] =
   {NULL, (enum exp_opcode)0, (enum precedence)0, 0}
 };
 
+/* -Wparentheses says these parentheses are unnecessary in C++, but they might
+ * be needed in C? I dunno... */
 struct type **const (f_builtin_types[]) =
 {
   &builtin_type_f_character,

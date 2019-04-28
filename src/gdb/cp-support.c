@@ -90,9 +90,9 @@ cp_canonicalize_string(const char *string)
   if (ret_comp == NULL)
     return NULL;
 
-  ret = cp_comp_to_string (ret_comp, len);
+  ret = cp_comp_to_string(ret_comp, (int)len);
 
-  xfree (storage);
+  xfree(storage);
 
   return ret;
 }
@@ -472,7 +472,7 @@ cp_find_first_component_aux (const char *name, int permissive)
 	      if (name[index] != ':')
 		{
 		  demangled_name_complaint (name);
-		  return strlen (name);
+		  return (int)strlen(name);
 		}
 	      index += 2;
 	    }
@@ -487,8 +487,8 @@ cp_find_first_component_aux (const char *name, int permissive)
 	    {
 	      if (name[index] != ':')
 		{
-		  demangled_name_complaint (name);
-		  return strlen (name);
+		  demangled_name_complaint(name);
+		  return (int)strlen(name);
 		}
 	      index += 2;
 	    }
@@ -500,8 +500,8 @@ cp_find_first_component_aux (const char *name, int permissive)
 	    return index;
 	  else
 	    {
-	      demangled_name_complaint (name);
-	      return strlen (name);
+	      demangled_name_complaint(name);
+	      return (int)strlen(name);
 	    }
 	case '\0':
 	case ':':

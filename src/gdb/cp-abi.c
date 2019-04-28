@@ -222,25 +222,25 @@ list_cp_abis (int from_tty)
   int i;
   ui_out_text (uiout, "The available C++ ABIs are:\n");
 
-  cleanup_chain = make_cleanup_ui_out_tuple_begin_end (uiout, "cp-abi-list");
+  cleanup_chain = make_cleanup_ui_out_tuple_begin_end(uiout, "cp-abi-list");
   for (i = 0; i < num_cp_abis; i++)
     {
       char pad[14];
-      int padcount;
+      size_t padcount;
 
-      ui_out_text (uiout, "  ");
-      ui_out_field_string (uiout, "cp-abi", cp_abis[i]->shortname);
+      ui_out_text(uiout, "  ");
+      ui_out_field_string(uiout, "cp-abi", cp_abis[i]->shortname);
 
-      padcount = 16 - 2 - strlen (cp_abis[i]->shortname);
+      padcount = (16UL - 2UL - strlen(cp_abis[i]->shortname));
       pad[padcount] = 0;
       while (padcount > 0)
 	pad[--padcount] = ' ';
-      ui_out_text (uiout, pad);
+      ui_out_text(uiout, pad);
 
-      ui_out_field_string (uiout, "doc", cp_abis[i]->doc);
-      ui_out_text (uiout, "\n");
+      ui_out_field_string(uiout, "doc", cp_abis[i]->doc);
+      ui_out_text(uiout, "\n");
     }
-  do_cleanups (cleanup_chain);
+  do_cleanups(cleanup_chain);
 }
 
 /* Set the current C++ ABI, or display the list of options if no

@@ -1755,6 +1755,12 @@
 /* Define to 1 if assertions should be disabled. */
 #undef NDEBUG
 
+/* Define to 1 for C++ */
+#undef NEED_TO_REYACC_TO_CXX
+
+/* Define to 1 for C */
+#undef NEED_TO_REYACC_TO_PLAIN_C
+
 /* Define if you want to use new multi-fd /proc interface (replaces
    HAVE_MULTIPLE_PROC_FDS and other macros) */
 #undef NEW_PROC_API

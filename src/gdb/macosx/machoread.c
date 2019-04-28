@@ -882,13 +882,14 @@ macho_symfile_offsets(struct objfile *objfile,
                       struct section_addr_info *addrs)
 {
   unsigned int i;
-  unsigned int num_sections;
+  size_t num_sections;
   struct obj_section *osect;
 
-  objfile->num_sections = objfile->sections_end - objfile->sections;
-  objfile->section_offsets = (struct section_offsets *)
-    obstack_alloc(&objfile->objfile_obstack,
-                  SIZEOF_N_SECTION_OFFSETS(objfile->num_sections));
+  objfile->num_sections = (int)(objfile->sections_end - objfile->sections);
+  objfile->section_offsets =
+    ((struct section_offsets *)
+     obstack_alloc(&objfile->objfile_obstack,
+		   SIZEOF_N_SECTION_OFFSETS(objfile->num_sections)));
   memset(objfile->section_offsets, 0,
          SIZEOF_N_SECTION_OFFSETS(objfile->num_sections));
 
@@ -1133,14 +1134,14 @@ macho_calculate_offsets_for_dsym(struct objfile *main_objfile,
                   if (addrs->other[i].name)
                     {
                       asection *exe_sect;
-                      exe_sect = bfd_get_section_by_name (main_objfile->obfd,
-                                 addrs->other[i].name);
-                      (*sym_offsets)->offsets[i] = addrs->other[i].addr -
-                                                   exe_sect->vma;
+                      exe_sect = bfd_get_section_by_name(main_objfile->obfd,
+							 addrs->other[i].name);
+                      (*sym_offsets)->offsets[i] = (addrs->other[i].addr
+						    - exe_sect->vma);
                     }
                 }
 	    }
-	  *sym_num_offsets = addrs->num_sections;
+	  *sym_num_offsets = (int)addrs->num_sections;
 	}
 #endif /* TEXT_SEGMENT_NAME */
     }

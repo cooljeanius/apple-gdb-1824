@@ -796,7 +796,7 @@ remote_fileio_func_read(char *buf)
 
   if (ret > 0)
     {
-      retlength = remote_fileio_write_bytes(ptrval, buffer, ret);
+      retlength = remote_fileio_write_bytes(ptrval, buffer, (int)ret);
       if (retlength != ret)
 	ret = -1; /* errno has been set to EIO in remote_fileio_write_bytes() */
     }
@@ -804,7 +804,7 @@ remote_fileio_func_read(char *buf)
   if (ret < 0L)
     remote_fileio_return_errno(-1);
   else
-    remote_fileio_return_success(ret);
+    remote_fileio_return_success((int)ret);
 
   xfree(buffer);
 }
@@ -847,7 +847,7 @@ remote_fileio_func_write(char *buf)
   length = (size_t)num;
 
   buffer = (char *)xmalloc(length);
-  retlength = remote_read_bytes(ptrval, buffer, length);
+  retlength = remote_read_bytes(ptrval, buffer, (int)length);
   if ((size_t)retlength != length)
     {
       xfree(buffer);
@@ -865,10 +865,10 @@ remote_fileio_func_write(char *buf)
 	ui_file_write((target_fd == 1) ? gdb_stdtarg : gdb_stdtargerr,
                       buffer, length);
 	gdb_flush((target_fd == 1) ? gdb_stdtarg : gdb_stdtargerr);
-	ret = length;
+	ret = (int)length;
 	break;
       default:
-	ret = write(fd, buffer, length);
+	ret = (int)write(fd, buffer, length);
 	if ((ret < 0) && (errno == EACCES))
 	  errno = EBADF; /* Cygwin returns EACCESS when writing to a R/O file.*/
 	break;

@@ -13,7 +13,7 @@
 # Reproduce an unmodified copy with: gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --doc-base=doc --aux-dir=gnulib/extra --no-libtool --macro-prefix=gl memmem
 
 ACLOCAL_AMFLAGS = -I./import/m4 -I./m4 --install
-AUTOMAKE_OPTIONS = 1.11.6 gnits -Wall no-dist no-define info-in-builddir
+AUTOMAKE_OPTIONS = 1.11.6 gnits -Wall -Wno-portability no-dist no-define info-in-builddir
 
 # Keep these in sync with the includes in acinclude.m4.
 aclocal_m4_deps = \
@@ -37,7 +37,11 @@ DESTDIR =
 AR_FLAGS = qv
 
 SUBDIRS = import
+## yes, automake, this is indeed a GNU make extension; that is why I hid it
+## behind the "ifGNUmake" substitution, so that you would ignore it:
+@ifGNUmake@ifeq ($(if test -e import/Makefile, "yes", "no"),yes)
 CLEANDIRS = $(SUBDIRS)
+@ifGNUmake@endif
 REQUIRED_SUBDIRS = $(SUBDIRS)
 
 noinst_HEADERS = str-two-way.h

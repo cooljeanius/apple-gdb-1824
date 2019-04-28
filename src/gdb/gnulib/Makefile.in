@@ -716,7 +716,7 @@ xm_h = @xm_h@
 zlibdir = @zlibdir@
 zlibinc = @zlibinc@
 ACLOCAL_AMFLAGS = -I./import/m4 -I./m4 --install
-AUTOMAKE_OPTIONS = 1.11.6 gnits -Wall no-dist no-define info-in-builddir
+AUTOMAKE_OPTIONS = 1.11.6 gnits -Wall -Wno-portability no-dist no-define info-in-builddir
 
 # Keep these in sync with the includes in acinclude.m4.
 aclocal_m4_deps = \
@@ -1215,6 +1215,8 @@ uninstall-am:
 
 .PRECIOUS: Makefile
 
+@ifGNUmake@ifeq ($(if test -e import/Makefile, "yes", "no"),yes)
+@ifGNUmake@endif
 
 @ifGNUmake@ifndef gl_include_guard_prefix
 @ifGNUmake@endif

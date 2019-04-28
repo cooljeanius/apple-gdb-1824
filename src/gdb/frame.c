@@ -858,7 +858,7 @@ static struct obstack frame_cache_obstack;
 void *
 frame_obstack_zalloc(unsigned long size)
 {
-  void *data = obstack_alloc(&frame_cache_obstack, size);
+  void *data = obstack_alloc(&frame_cache_obstack, (int)size);
   gdb_assert(data != NULL);
   memset(data, 0, size);
   return data;

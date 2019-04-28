@@ -448,109 +448,110 @@ exp	:	'(' exp1 ')'
 /* Binary operators in order of decreasing precedence.  */
 
 exp	:	exp '@' exp
-			{ write_exp_elt_opcode (BINOP_REPEAT); }
+			{ write_exp_elt_opcode(BINOP_REPEAT); }
 	;
 
 exp	:	exp '*' exp
-			{ write_exp_elt_opcode (BINOP_MUL); }
+			{ write_exp_elt_opcode(BINOP_MUL); }
 	;
 
 exp	:	exp '/' exp
-			{ write_exp_elt_opcode (BINOP_DIV); }
+			{ write_exp_elt_opcode(BINOP_DIV); }
 	;
 
 exp	:	exp '%' exp
-			{ write_exp_elt_opcode (BINOP_REM); }
+			{ write_exp_elt_opcode(BINOP_REM); }
 	;
 
 exp	:	exp '+' exp
-			{ write_exp_elt_opcode (BINOP_ADD); }
+			{ write_exp_elt_opcode(BINOP_ADD); }
 	;
 
 exp	:	exp '-' exp
-			{ write_exp_elt_opcode (BINOP_SUB); }
+			{ write_exp_elt_opcode(BINOP_SUB); }
 	;
 
 exp	:	exp LSH exp
-			{ write_exp_elt_opcode (BINOP_LSH); }
+			{ write_exp_elt_opcode(BINOP_LSH); }
 	;
 
 exp	:	exp RSH exp
-			{ write_exp_elt_opcode (BINOP_RSH); }
+			{ write_exp_elt_opcode(BINOP_RSH); }
 	;
 
 exp	:	exp EQUAL exp
-			{ write_exp_elt_opcode (BINOP_EQUAL); }
+			{ write_exp_elt_opcode(BINOP_EQUAL); }
 	;
 
 exp	:	exp NOTEQUAL exp
-			{ write_exp_elt_opcode (BINOP_NOTEQUAL); }
+			{ write_exp_elt_opcode(BINOP_NOTEQUAL); }
 	;
 
 exp	:	exp LEQ exp
-			{ write_exp_elt_opcode (BINOP_LEQ); }
+			{ write_exp_elt_opcode(BINOP_LEQ); }
 	;
 
 exp	:	exp GEQ exp
-			{ write_exp_elt_opcode (BINOP_GEQ); }
+			{ write_exp_elt_opcode(BINOP_GEQ); }
 	;
 
 exp	:	exp '<' exp
-			{ write_exp_elt_opcode (BINOP_LESS); }
+			{ write_exp_elt_opcode(BINOP_LESS); }
 	;
 
 exp	:	exp '>' exp
-			{ write_exp_elt_opcode (BINOP_GTR); }
+			{ write_exp_elt_opcode(BINOP_GTR); }
 	;
 
 exp	:	exp '&' exp
-			{ write_exp_elt_opcode (BINOP_BITWISE_AND); }
+			{ write_exp_elt_opcode(BINOP_BITWISE_AND); }
 	;
 
 exp	:	exp '^' exp
-			{ write_exp_elt_opcode (BINOP_BITWISE_XOR); }
+			{ write_exp_elt_opcode(BINOP_BITWISE_XOR); }
 	;
 
 exp	:	exp '|' exp
-			{ write_exp_elt_opcode (BINOP_BITWISE_IOR); }
+			{ write_exp_elt_opcode(BINOP_BITWISE_IOR); }
 	;
 
 exp	:	exp ANDAND exp
-			{ write_exp_elt_opcode (BINOP_LOGICAL_AND); }
+			{ write_exp_elt_opcode(BINOP_LOGICAL_AND); }
 	;
 
 exp	:	exp OROR exp
-			{ write_exp_elt_opcode (BINOP_LOGICAL_OR); }
+			{ write_exp_elt_opcode(BINOP_LOGICAL_OR); }
 	;
 
 exp	:	exp '?' exp ':' exp	%prec '?'
-			{ write_exp_elt_opcode (TERNOP_COND); }
+			{ write_exp_elt_opcode(TERNOP_COND); }
 	;
 
 exp	:	exp '=' exp
-			{ write_exp_elt_opcode (BINOP_ASSIGN); }
+			{ write_exp_elt_opcode(BINOP_ASSIGN); }
 	;
 
 exp	:	exp ASSIGN_MODIFY exp
-			{ write_exp_elt_opcode (BINOP_ASSIGN_MODIFY);
-			  write_exp_elt_opcode ($2);
-			  write_exp_elt_opcode (BINOP_ASSIGN_MODIFY); }
+			{ write_exp_elt_opcode(BINOP_ASSIGN_MODIFY);
+			  write_exp_elt_opcode($2);
+			  write_exp_elt_opcode(BINOP_ASSIGN_MODIFY); }
 	;
 
 exp	:	INT
-			{ write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_type ($1.type);
-			  write_exp_elt_longcst ((LONGEST)($1.val));
-			  write_exp_elt_opcode (OP_LONG); }
+			{ write_exp_elt_opcode(OP_LONG);
+			  write_exp_elt_type($1.type);
+			  write_exp_elt_longcst((LONGEST)($1.val));
+			  write_exp_elt_opcode(OP_LONG); }
 	;
 
 exp	:	NAME_OR_INT
 			{ YYSTYPE val;
-			  parse_number ($1.stoken.ptr, $1.stoken.length, 0, &val);
-			  write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_type (val.typed_val_int.type);
-			  write_exp_elt_longcst ((LONGEST)val.typed_val_int.val);
-			  write_exp_elt_opcode (OP_LONG);
+			  parse_number($1.stoken.ptr, (int)$1.stoken.length, 0,
+				       &val);
+			  write_exp_elt_opcode(OP_LONG);
+			  write_exp_elt_type(val.typed_val_int.type);
+			  write_exp_elt_longcst((LONGEST)val.typed_val_int.val);
+			  write_exp_elt_opcode(OP_LONG);
 			}
 	;
 
@@ -591,22 +592,22 @@ exp	:	STRING
 			     bound is the string length.  There is no
 			     such thing in C as a completely empty
 			     string.  */
-			  char *sp = $1.ptr; int count = $1.length;
-			  while (count-- > 0)
+			  char *sp = $1.ptr; size_t count = $1.length;
+			  while (count-- > 0UL)
 			    {
-			      write_exp_elt_opcode (OP_LONG);
-			      write_exp_elt_type (builtin_type_char);
-			      write_exp_elt_longcst ((LONGEST)(*sp++));
-			      write_exp_elt_opcode (OP_LONG);
+			      write_exp_elt_opcode(OP_LONG);
+			      write_exp_elt_type(builtin_type_char);
+			      write_exp_elt_longcst((LONGEST)(*sp++));
+			      write_exp_elt_opcode(OP_LONG);
 			    }
-			  write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_type (builtin_type_char);
-			  write_exp_elt_longcst ((LONGEST)'\0');
-			  write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_opcode (OP_ARRAY);
-			  write_exp_elt_longcst ((LONGEST) 0);
-			  write_exp_elt_longcst ((LONGEST) ($1.length));
-			  write_exp_elt_opcode (OP_ARRAY); }
+			  write_exp_elt_opcode(OP_LONG);
+			  write_exp_elt_type(builtin_type_char);
+			  write_exp_elt_longcst((LONGEST)'\0');
+			  write_exp_elt_opcode(OP_LONG);
+			  write_exp_elt_opcode(OP_ARRAY);
+			  write_exp_elt_longcst((LONGEST)0L);
+			  write_exp_elt_longcst((LONGEST)($1.length));
+			  write_exp_elt_opcode(OP_ARRAY); }
 	;
 
 exp     :	NSSTRING	/* ObjC NextStep NSString constant
@@ -1398,17 +1399,17 @@ yylex(void)
       c = *lexptr++;
       if (c != '\'')
 	{
-	  namelen = skip_quoted (tokstart) - tokstart;
+	  namelen = (int)(skip_quoted(tokstart) - tokstart);
 	  if (namelen > 2)
 	    {
 	      lexptr = tokstart + namelen;
 	      if (lexptr[-1] != '\'')
-		error ("Unmatched single quote.");
+		error(_("Unmatched single quote."));
 	      namelen -= 2;
 	      tokstart++;
 	      goto tryname;
 	    }
-	  error ("Invalid character constant.");
+	  error(_("Invalid character constant."));
 	}
       return INT;
 
@@ -1502,8 +1503,8 @@ yylex(void)
 				  && (*p < 'A' || *p > 'Z')))
 	      break;
 	  }
-	toktype = parse_number (tokstart, p - tokstart, got_dot|got_e|got_p,
-                                &yylval);
+	toktype = parse_number(tokstart, (int)(p - tokstart),
+			       (got_dot | got_e | got_p), &yylval);
         if (toktype == ERROR)
 	  {
 	    char *err_copy = (char *)alloca(p - tokstart + 1UL);
@@ -1675,7 +1676,7 @@ yylex(void)
 
 	   const char *p = find_template_name_end(tokstart + namelen);
 	   if (p)
-	     namelen = p - tokstart;
+	     namelen = (int)(p - tokstart);
 	   break;
 	   /* END APPLE LOCAL */
 	 }

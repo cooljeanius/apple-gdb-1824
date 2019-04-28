@@ -226,7 +226,7 @@ cli_field_string(struct ui_out *uiout, int fldno, int width,
 
   if ((align != ui_noalign) && string)
     {
-      before = width - strlen (string);
+      before = (width - (int)strlen(string));
       if (before <= 0)
 	before = 0;
       else

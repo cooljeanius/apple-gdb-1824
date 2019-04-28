@@ -395,18 +395,19 @@ serial_write (struct serial *scb, const char *str, int len)
   return (scb->ops->write (scb, str, len));
 }
 
+/* */
 void
-serial_printf (struct serial *desc, const char *format,...)
+serial_printf(struct serial *desc, const char *format,...)
 {
   va_list args;
   char *buf;
-  va_start (args, format);
+  va_start(args, format);
 
-  buf = xstrvprintf (format, args);
-  serial_write (desc, buf, strlen (buf));
+  buf = xstrvprintf(format, args);
+  serial_write(desc, buf, (int)strlen(buf));
 
-  xfree (buf);
-  va_end (args);
+  xfree(buf);
+  va_end(args);
 }
 
 int

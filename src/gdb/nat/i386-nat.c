@@ -587,13 +587,13 @@ i386_region_ok_for_watchpoint (CORE_ADDR addr, int len)
    Otherwise, return zero.  */
 
 int
-i386_stopped_data_address (CORE_ADDR *addr_p)
+i386_stopped_data_address(CORE_ADDR *addr_p)
 {
   CORE_ADDR addr = 0;
   int i;
   int rc = 0;
 
-  dr_status_mirror = I386_DR_LOW_GET_STATUS ();
+  dr_status_mirror = (unsigned int)I386_DR_LOW_GET_STATUS();
 
   ALL_DEBUG_REGISTERS(i)
     {
@@ -630,11 +630,11 @@ i386_stopped_by_watchpoint (void)
    triggered.  */
 
 int
-i386_stopped_by_hwbp (void)
+i386_stopped_by_hwbp(void)
 {
   int i;
 
-  dr_status_mirror = I386_DR_LOW_GET_STATUS ();
+  dr_status_mirror = (unsigned int)I386_DR_LOW_GET_STATUS();
   if (maint_show_dr)
     i386_show_dr ("stopped_by_hwbp", 0, 0, hw_execute);
 

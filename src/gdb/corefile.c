@@ -433,7 +433,7 @@ read_memory_string(CORE_ADDR memaddr, char *buffer, int max_len)
 {
   char *cp;
   int i;
-  int cnt;
+  long cnt;
 
   cp = buffer;
   while (1)
@@ -446,7 +446,7 @@ read_memory_string(CORE_ADDR memaddr, char *buffer, int max_len)
       cnt = (max_len - (cp - buffer));
       if (cnt > 8)
 	cnt = 8;
-      read_memory(memaddr + (int)(cp - buffer), (gdb_byte *)cp, cnt);
+      read_memory(memaddr + (int)(cp - buffer), (gdb_byte *)cp, (int)cnt);
       for (i = 0; (i < cnt) && *cp; i++, cp++) {
 	;			/* null body */
       }

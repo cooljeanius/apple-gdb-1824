@@ -92,6 +92,7 @@ if test "x${am_cv_make_support_nested_variables}" = "x"; then
   m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
   ## (might want to pass it the flag anyways, just in case)
 fi
+AM_CONDITIONAL([CAN_MAKE_IN_IMPORT],[test -e import/Makefile])dnl
 
 # --------------------- #
 # Checks for programs.  #

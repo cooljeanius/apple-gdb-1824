@@ -174,9 +174,9 @@ dwarf_expr_read_reg(void *baton, int dwarf_regnum)
 /* Read memory at ADDR (length LEN) into BUF.  */
 
 static void
-dwarf_expr_read_mem (void *baton, gdb_byte *buf, CORE_ADDR addr, size_t len)
+dwarf_expr_read_mem(void *baton, gdb_byte *buf, CORE_ADDR addr, size_t len)
 {
-  read_memory (addr, buf, len);
+  read_memory(addr, buf, (int)len);
 }
 
 /* Using the frame specified in BATON, find the location expression
@@ -1353,7 +1353,7 @@ loclist_tracepoint_var_ref(struct symbol *symbol, struct agent_expr *ax,
     error(_("Variable \"%s\" is not available."),
           SYMBOL_NATURAL_NAME(symbol));
 
-  dwarf2_tracepoint_var_ref(symbol, ax, value, data, size);
+  dwarf2_tracepoint_var_ref(symbol, ax, value, data, (int)size);
 }
 
 /* The set of location functions used with the DWARF-2 expression

@@ -491,30 +491,30 @@ processInt (const char *base0, const char *num0, const char *exp0)
 {
   ULONGEST result;
   long exp;
-  int base;
+  long base;
 
   char *trailer;
 
   if (base0 == NULL)
-    base = 10;
+    base = 10L;
   else
     {
-      base = strtol (base0, (char **) NULL, 10);
-      if (base < 2 || base > 16)
-	error ("Invalid base: %d.", base);
+      base = strtol(base0, (char **)NULL, 10);
+      if ((base < 2L) || (base > 16L))
+	error(_("Invalid base: %ld."), base);
     }
 
   if (exp0 == NULL)
     exp = 0;
   else
-    exp = strtol(exp0, (char **) NULL, 10);
+    exp = strtol(exp0, (char **)NULL, 10);
 
   errno = 0;
-  result = strtoulst (num0, (const char **) &trailer, base);
+  result = strtoulst(num0, (const char **)&trailer, (int)base);
   if (errno == ERANGE)
-    error ("Integer literal out of range");
+    error(_("Integer literal out of range"));
   if (isxdigit(*trailer))
-    error ("Invalid digit `%c' in based literal", *trailer);
+    error(_("Invalid digit `%c' in based literal"), *trailer);
 
   while (exp > 0)
     {
@@ -684,8 +684,8 @@ name_lookup(char *name0, char *err_name, int *token_type, int depth)
 {
   struct ada_symbol_info *syms;
   struct type *type;
-  int len0 = strlen(name0);
-  char *name = obsavestring(name0, len0, &temp_parse_space);
+  size_t len0 = strlen(name0);
+  char *name = obsavestring(name0, (int)len0, &temp_parse_space);
   int nsyms;
   int segments;
 
@@ -767,9 +767,9 @@ name_lookup(char *name0, char *err_name, int *token_type, int depth)
 		= ada_simple_renamed_entity(syms[preferred_index].sym);
 	      char *new_name
                 = (char *)obstack_alloc(&temp_parse_space,
-                                        (strlen(renaming) + len0
-                                         - yylval.ssym.stoken.length
-                                         + 1UL));
+                                        (int)(strlen(renaming) + len0
+					      - yylval.ssym.stoken.length
+					      + 1UL));
 	      strcpy(new_name, renaming);
               xfree(renaming);
 	      strcat(new_name, (name0 + yylval.ssym.stoken.length));
@@ -838,7 +838,7 @@ name_lookup(char *name0, char *err_name, int *token_type, int depth)
 	    && strncmp(name, "standard__", sizeof("standard__") - 1) == 0)
 	  error("No definition of \"%s\" found.", err_name);
 
-	for (i_1 = (yylval.ssym.stoken.length - 1); i_1 > 0; i_1 -= 1)
+	for (i_1 = ((int)yylval.ssym.stoken.length - 1); i_1 > 0; i_1 -= 1)
 	  {
             if (name[i_1] == '.')
 	      {

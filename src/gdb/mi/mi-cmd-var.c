@@ -147,7 +147,7 @@ mi_cmd_var_create(char *command, char **argv, int argc)
 
 	  if (colon)
 	    {
-	      struct symtabs_and_lines sals = { NULL, 0 };
+	      struct symtabs_and_lines sals = { NULL, 0, 0 };
 	      struct cleanup *old_chain = NULL;
 
 	      TRY_CATCH(except, RETURN_MASK_ALL)
@@ -541,54 +541,57 @@ enum mi_cmd_result
 mi_cmd_var_set_format (char *command, char **argv, int argc)
 {
   enum varobj_display_formats format;
-  int len;
+  size_t len;
   struct varobj *var;
   char *formspec;
 
   if (argc != 2)
-    error (_("mi_cmd_var_set_format: Usage: NAME FORMAT."));
+    error(_("mi_cmd_var_set_format: Usage: NAME FORMAT."));
 
   /* Get varobj handle, if a valid var obj name was specified */
-  var = varobj_get_handle (argv[0]);
+  var = varobj_get_handle(argv[0]);
 
   if (var == NULL)
-    error (_("mi_cmd_var_set_format: Variable object not found"));
+    error(_("mi_cmd_var_set_format: Variable object not found"));
 
-  formspec = xstrdup (argv[1]);
+  formspec = xstrdup(argv[1]);
   if (formspec == NULL)
-    error (_("mi_cmd_var_set_format: Must specify the format as: \"natural\", \"binary\", \"decimal\", \"hexadecimal\", \"unsigned\", or \"octal\""));
+    error(_("mi_cmd_var_set_format: Must specify the format as: \
+\"natural\", \"binary\", \"decimal\", \"hexadecimal\", \"unsigned\", or \"octal\""));
 
-  len = strlen (formspec);
+  len = strlen(formspec);
 
-  if (strncmp (formspec, "natural", len) == 0)
+  if (strncmp(formspec, "natural", len) == 0)
     format = FORMAT_NATURAL;
-  else if (strncmp (formspec, "binary", len) == 0)
+  else if (strncmp(formspec, "binary", len) == 0)
     format = FORMAT_BINARY;
-  else if (strncmp (formspec, "decimal", len) == 0)
+  else if (strncmp(formspec, "decimal", len) == 0)
     format = FORMAT_DECIMAL;
-  else if (strncmp (formspec, "hexadecimal", len) == 0)
+  else if (strncmp(formspec, "hexadecimal", len) == 0)
     format = FORMAT_HEXADECIMAL;
-  else if (strncmp (formspec, "octal", len) == 0)
+  else if (strncmp(formspec, "octal", len) == 0)
     format = FORMAT_OCTAL;
   /* APPLE LOCAL */
-  else if (strncmp (formspec, "unsigned", len) == 0)
-        format = FORMAT_UNSIGNED;
+  else if (strncmp(formspec, "unsigned", len) == 0)
+    format = FORMAT_UNSIGNED;
   /* APPLE LOCAL */
-  else if (strncmp (formspec, "OSType", len) == 0)
-        format = FORMAT_OSTYPE;
+  else if (strncmp(formspec, "OSType", len) == 0)
+    format = FORMAT_OSTYPE;
   else
-    error (_("mi_cmd_var_set_format: Unknown display format: must be: \"natural\", \"binary\", \"decimal\", \"hexadecimal\",  \"unsigned\", or \"octal\""));
+    error(_("mi_cmd_var_set_format: Unknown display format: must be: \
+\"natural\", \"binary\", \"decimal\", \"hexadecimal\",  \"unsigned\", or \"octal\""));
 
   /* Set the format of VAR to given format */
-  varobj_set_display_format (var, format);
+  varobj_set_display_format(var, format);
 
   /* Report the new current format */
-  ui_out_field_string (uiout, "format", varobj_format_string[(int) format]);
+  ui_out_field_string(uiout, "format", varobj_format_string[(int)format]);
   return MI_CMD_DONE;
 }
 
+/* */
 enum mi_cmd_result
-mi_cmd_var_show_format (char *command, char **argv, int argc)
+mi_cmd_var_show_format(char *command, char **argv, int argc)
 {
   enum varobj_display_formats format;
   struct varobj *var;

@@ -262,7 +262,7 @@ elf_symtab_read(struct objfile *objfile, int dynamic)
 	      filesym = sym;
 #ifdef SOFUN_ADDRESS_MAYBE_MISSING
 	      filesymname =
-		obsavestring((char *)filesym->name, strlen(filesym->name),
+		obsavestring((char *)filesym->name, (int)strlen(filesym->name),
 			     &objfile->objfile_obstack);
 #endif /* SOFUN_ADDRESS_MAYBE_MISSING */
 	    }

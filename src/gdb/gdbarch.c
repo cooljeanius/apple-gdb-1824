@@ -481,7 +481,7 @@ gdbarch_alloc (const struct gdbarch_info *info,
 void *
 gdbarch_obstack_zalloc(struct gdbarch *arch, long size)
 {
-  void *data = obstack_alloc(arch->obstack, size);
+  void *data = obstack_alloc(arch->obstack, (int)size);
   gdb_assert(data != NULL);
   memset(data, 0, size);
   return data;

@@ -81,7 +81,8 @@ static int
 net_open (struct serial *scb, const char *name)
 {
   char *port_str, hostname[100];
-  int n, port, tmp;
+  int n, port;
+  ptrdiff_t tmp;
   int use_udp;
   struct hostent *hostent;
   struct sockaddr_in sockaddr;
@@ -97,24 +98,24 @@ net_open (struct serial *scb, const char *name)
       use_udp = 1;
       name = name + 4;
     }
-  else if (strncmp (name, "tcp:", 4) == 0)
-    name = name + 4;
+  else if (strncmp(name, "tcp:", 4) == 0)
+    name = (name + 4);
 
-  port_str = strchr (name, ':');
+  port_str = strchr(name, ':');
 
   if (!port_str)
     error(_("net_open: No colon in host name!")); /* Should NOT ever happen */
 
-  tmp = min (port_str - name, (int) sizeof hostname - 1);
-  strncpy (hostname, name, tmp);	/* Don't want colon */
+  tmp = min((port_str - name), (ptrdiff_t)(sizeof(hostname) - 1UL));
+  strncpy(hostname, name, tmp);	/* Do NOT want colon */
   hostname[tmp] = '\000';	/* Tie off host name */
-  port = atoi (port_str + 1);
+  port = atoi(port_str + 1);
 
   /* default hostname is localhost */
   if (!hostname[0])
-    strcpy (hostname, "localhost");
+    strcpy(hostname, "localhost");
 
-  hostent = gethostbyname (hostname);
+  hostent = gethostbyname(hostname);
   if (!hostent)
     {
       fprintf_unfiltered (gdb_stderr, "%s: unknown host\n", hostname);
@@ -252,16 +253,16 @@ net_close (struct serial *scb)
 
 /* */
 static int
-net_read_prim (struct serial *scb, size_t count)
+net_read_prim(struct serial *scb, size_t count)
 {
-  return recv (scb->fd, scb->buf, count, 0);
+  return (int)recv(scb->fd, scb->buf, count, 0);
 }
 
 /* */
 static int
-net_write_prim (struct serial *scb, const void *buf, size_t count)
+net_write_prim(struct serial *scb, const void *buf, size_t count)
 {
-  return send (scb->fd, buf, count, 0);
+  return (int)send(scb->fd, buf, count, 0);
 }
 
 /* */

@@ -2517,17 +2517,17 @@ destructor_name_p (const char *name, const struct type *type)
 
   if (name[0] == '~')
     {
-      const char *dname = type_name_no_tag (type);
-      char *cp = strchr (dname, '<');
-      unsigned int len;
+      const char *dname = type_name_no_tag(type);
+      char *cp = strchr(dname, '<');
+      size_t len;
 
       /* Do not compare the template part for template classes.  */
       if (cp == NULL)
-	len = strlen (dname);
+	len = strlen(dname);
       else
-	len = cp - dname;
-      if (strlen (name + 1) != len || strncmp (dname, name + 1, len) != 0)
-	error (_("name of destructor must equal name of class"));
+	len = (cp - dname);
+      if ((strlen(name + 1) != len) || (strncmp(dname, (name + 1), len) != 0))
+	error(_("name of destructor must equal name of class"));
       else
 	return 1;
     }

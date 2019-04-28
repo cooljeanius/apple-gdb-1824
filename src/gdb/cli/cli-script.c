@@ -76,7 +76,7 @@ struct user_args
     struct
       {
 	const char *arg;
-	int len;
+	ptrdiff_t len;
       }
     a[MAXUSERARGS];
     int count;
@@ -216,7 +216,7 @@ print_command_lines (struct ui_out *uiout, struct command_line *cmd,
 	  list = list->next;
 	  continue;
 	}
-      
+
       /* A commands command.  Print the breakpoint commands and continue.  */
       if (list->control_type == commands_control)
 	{
@@ -508,7 +508,7 @@ execute_control_command(struct command_line *cmd)
 
 	break;
       }
-	
+
     case commands_control:
       {
 	/* Breakpoint commands list, record the commands in the breakpoint's
@@ -655,7 +655,7 @@ setup_user_args(const char *p)
 	    }
 	}
 
-      user_args->a[arg_count].len = p - start_arg;
+      user_args->a[arg_count].len = (p - start_arg);
       arg_count++;
       user_args->count++;
     }
@@ -733,7 +733,8 @@ insert_args(char *line)
 
   while ((p = locate_arg(line)) != NULL)
     {
-      int i_i, newlen;
+      int i_i;
+      size_t newlen;
 
       memcpy(new_line, line, (p - line));
       new_line += (p - line);

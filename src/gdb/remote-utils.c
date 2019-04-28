@@ -111,7 +111,7 @@ where DEVICE is the name of a device or HOST:PORT"), proto);
 void
 sr_scan_args(const char *proto, char *args)
 {
-  int n;
+  long n;
   char *p;
   char *q;
 
@@ -138,14 +138,14 @@ sr_scan_args(const char *proto, char *args)
 
   /* check for missing or empty baud rate: */
   CHECKDONE(p, q);
-  baud_rate = n;
+  baud_rate = (int)n;
 
   /* look for debug value: */
   n = strtol(p, &q, 10);
 
   /* check for missing or empty debug value: */
   CHECKDONE(p, q);
-  sr_set_debug(n);
+  sr_set_debug((int)n);
 
   /* scan off remaining white space: */
   for (p = q; isspace(*p); ++p) {
@@ -311,7 +311,7 @@ sr_write(const char *a, int l)
 void
 sr_write_cr(const char *s)
 {
-  sr_write(s, strlen(s));
+  sr_write(s, (int)strlen(s));
   sr_write("\r", 1);
   return;
 }

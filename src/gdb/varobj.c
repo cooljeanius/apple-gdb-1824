@@ -887,7 +887,7 @@ varobj_create(char *objname, const char *expression, CORE_ADDR frame,
   struct frame_id var_frame_id;
   struct frame_id old_frame_id = null_frame_id;
   struct cleanup *old_chain, *schedlock_chain;
-  int expr_len;
+  size_t expr_len;
   /* APPLE LOCAL radar 6529939  */
   struct block *superblock;
 
@@ -2673,8 +2673,8 @@ path_expr_of_root(struct varobj *var)
 {
   char *path_expr = var->name;
   const char *dynamic_expr;
-  int dynamic_expr_len;
-  int root_name_len;
+  size_t dynamic_expr_len;
+  size_t root_name_len;
 
   if ((var->root->lang->language != vlang_cplus)
       && (var->root->lang->language != vlang_c))
@@ -4262,7 +4262,7 @@ cplus_path_expr_of_child (struct varobj *parent, int index)
   struct varobj *child = child_exists(parent, index);
   char *parent_expr = path_expr_of_variable(parent);
   size_t parent_len = strlen(parent_expr);
-  int child_len;
+  size_t child_len;
   const char *child_name;
   int is_ptr;
 
@@ -4309,7 +4309,7 @@ cplus_path_expr_of_child (struct varobj *parent, int index)
           enum vsections prot;
 	  char *parent_name = name_of_variable(parent);
 	  int child_is_ptr;
-	  int dynamic_expr_len, join_expr_len;
+	  size_t dynamic_expr_len, join_expr_len;
 	  const char *dynamic_expr = (const char *)NULL;
 	  const char *join_expr;
 

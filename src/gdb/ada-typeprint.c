@@ -212,19 +212,19 @@ print_range_bound (struct type *type, char *bounds, int *n,
     }
   else
     {
-      int bound_len;
-      char *bound = bounds + *n;
+      size_t bound_len;
+      char *bound = (bounds + *n);
       char *pend;
 
-      pend = strstr (bound, "__");
+      pend = strstr(bound, "__");
       if (pend == NULL)
-	*n += bound_len = strlen (bound);
+	*n += bound_len = strlen(bound);
       else
 	{
-	  bound_len = pend - bound;
-	  *n += bound_len + 2;
+	  bound_len = (pend - bound);
+	  *n += (bound_len + 2);
 	}
-      fprintf_filtered (stream, "%.*s", bound_len, bound);
+      fprintf_filtered(stream, "%.*s", (int)bound_len, bound);
     }
 }
 
@@ -276,30 +276,30 @@ print_range_type_named(const char *name, struct ui_file *stream)
     print_range (raw_type, stream);
   else
     {
-      int prefix_len = subtype_info - name;
+      ptrdiff_t prefix_len = (subtype_info - name);
       char *bounds_str;
       int n;
 
       subtype_info += 5;
-      bounds_str = strchr (subtype_info, '_');
+      bounds_str = strchr(subtype_info, '_');
       n = 1;
 
       if (*subtype_info == 'L')
 	{
-	  print_range_bound (base_type, bounds_str, &n, stream);
+	  print_range_bound(base_type, bounds_str, &n, stream);
 	  subtype_info += 1;
 	}
       else
-	print_dynamic_range_bound (base_type, name, prefix_len, "___L",
-				   stream);
+	print_dynamic_range_bound(base_type, name, (int)prefix_len, "___L",
+				  stream);
 
-      fprintf_filtered (stream, " .. ");
+      fprintf_filtered(stream, " .. ");
 
       if (*subtype_info == 'U')
-	print_range_bound (base_type, bounds_str, &n, stream);
+	print_range_bound(base_type, bounds_str, &n, stream);
       else
-	print_dynamic_range_bound (base_type, name, prefix_len, "___U",
-				   stream);
+	print_dynamic_range_bound(base_type, name, (int)prefix_len, "___U",
+				  stream);
     }
 }
 

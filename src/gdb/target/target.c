@@ -844,7 +844,7 @@ target_read_string(CORE_ADDR memaddr, char **string, int len, int *errnop)
       if (((bufptr - buffer) + (ptrdiff_t)tlen) > buffer_allocated)
 	{
 	  unsigned int bytes;
-	  bytes = (bufptr - buffer);
+	  bytes = (unsigned int)(bufptr - buffer);
 	  buffer_allocated *= 2;
 	  buffer = (char *)xrealloc(buffer, buffer_allocated);
 	  bufptr = (buffer + bytes);
@@ -965,13 +965,13 @@ memory_xfer_partial(struct target_ops *ops, void *readbuf,
 	 memory request will start back at current_target.  */
       if (readbuf != NULL)
 	res = dcache_xfer_memory(target_dcache, memaddr,
-                                 (gdb_byte *)readbuf, reg_len, 0);
+                                 (gdb_byte *)readbuf, (int)reg_len, 0);
       else
 	/* FIXME drow/2006-08-09: If we are going to preserve const
 	   correctness dcache_xfer_memory should take readbuf and
 	   writebuf.  */
 	res = dcache_xfer_memory(target_dcache, memaddr,
-				 (gdb_byte *)writebuf, reg_len, 1);
+				 (gdb_byte *)writebuf, (int)reg_len, 1);
       if (res <= 0)
 	return -1;
       else
@@ -1514,16 +1514,17 @@ target_resize_to_sections (struct target_ops *target, int num_added)
 {
   struct target_ops **t;
   struct section_table *old_value;
-  int old_count;
+  ptrdiff_t old_count;
 
   old_value = target->to_sections;
 
   if (target->to_sections)
     {
-      old_count = target->to_sections_end - target->to_sections;
-      target->to_sections = (struct section_table *)
-	xrealloc ((char *) target->to_sections,
-		  (sizeof (struct section_table)) * (num_added + old_count));
+      old_count = (target->to_sections_end - target->to_sections);
+      target->to_sections =
+	((struct section_table *)
+	 xrealloc((char *)target->to_sections,
+		  (sizeof(struct section_table)) * (num_added + old_count)));
     }
   else
     {
@@ -1556,7 +1557,7 @@ target_resize_to_sections (struct target_ops *target, int num_added)
 	}
     }
 
-  return old_count;
+  return (int)old_count;
 
 }
 
@@ -1584,9 +1585,9 @@ remove_target_sections (bfd *abfd)
 	    dest++;
 	  }
 
-      /* If we've dropped any sections, resize the section table.  */
+      /* If we have dropped any sections, then resize the section table: */
       if (dest < src)
-	target_resize_to_sections (*t, dest - src);
+	target_resize_to_sections(*t, (int)(dest - src));
     }
 }
 

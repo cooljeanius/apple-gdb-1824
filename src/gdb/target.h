@@ -406,15 +406,15 @@ struct target_ops
     void (*to_notice_signals) (ptid_t ptid);
     int (*to_thread_alive) (ptid_t ptid);
     void (*to_find_new_threads) (void);
-    char *(*to_pid_to_str) (ptid_t);
+    char *(*to_pid_to_str)(ptid_t);
     const char *(*to_extra_thread_info)(struct thread_info *);
     void (*to_stop)(void);
     void (*to_rcmd)(const char *command, struct ui_file *output);
-    int (*to_enable_exception_callback) (enum exception_event_kind, int);
-    struct symtabs_and_lines *
-    (*to_find_exception_catchpoints) (enum exception_event_kind, struct objfile *);
-    struct exception_event_record *(*to_get_current_exception_event) (void);
-    char *(*to_pid_to_exec_file) (int pid);
+    int (*to_enable_exception_callback)(enum exception_event_kind, int);
+struct symtabs_and_lines *(*to_find_exception_catchpoints)(enum exception_event_kind,
+							   struct objfile *);
+    struct exception_event_record *(*to_get_current_exception_event)(void);
+    char *(*to_pid_to_exec_file)(int pid);
     enum strata to_stratum;
     int to_has_all_memory;
     int to_has_memory;
@@ -422,10 +422,8 @@ struct target_ops
     int to_has_registers;
     int to_has_execution;
     int to_has_thread_control;	/* control thread execution */
-    struct section_table
-     *to_sections;
-    struct section_table
-     *to_sections_end;
+    struct section_table *to_sections;
+    struct section_table *to_sections_end;
     /* ASYNC target controls */
     int (*to_can_async_p)(void);
     int (*to_is_async_p)(void);
@@ -462,14 +460,14 @@ struct target_ops
 
     /* APPLE LOCAL: Return a string that uniquely identifies a given thread
        in a way meaningful to the given target. */
-   char *(*to_get_thread_id_str) (ptid_t ptid);
+   char *(*to_get_thread_id_str)(ptid_t ptid);
 
     /* APPLE LOCAL: Check whether calling a function on the current
        thread is advisable (for instance, does the thread hold a
        malloc lock that is going to cause a deadlock.)  Returns 1 if
        safe to call 0 if unsafe, and -1 if there was an error
        checking.  */
-    int (*to_check_safe_call) (int subsystem, enum check_which_threads thread_mode);
+    int (*to_check_safe_call)(int subsystem, enum check_which_threads thread_mode);
 
     /* APPLE LOCAL: Try to arrange to make printing as safe as
        possible e.g. running only the current thread if possible,
@@ -479,15 +477,15 @@ struct target_ops
        should do when done printing.  If you pass in a non-NULL
        cleanup handle, it will be set to the old_chain point.
      */
-    int (*to_setup_safe_print) (struct cleanup **);
+    int (*to_setup_safe_print)(struct cleanup **);
 
     /* APPLE LOCAL: Allocate SIZE bytes in the target. */
-    CORE_ADDR (*to_allocate_memory) (int size);
+    CORE_ADDR (*to_allocate_memory)(int size);
 
     /* APPLE LOCAL: Check whether the objfile has been loaded into
        the inferior's process (so it is safe to set breakpoints
        from that objfile.)  */
-    int (*to_check_is_objfile_loaded) (struct objfile *objfile);
+    int (*to_check_is_objfile_loaded)(struct objfile *objfile);
 
     /* APPLE LOCAL: How do we load a shared library into the target?
        Returns a value containing the return value of the native
@@ -498,7 +496,7 @@ struct target_ops
        circumstances. This was added for ARM (Thumb actually) seeing as a
        32 bit thumb instruction can stop half way through itself when using
        IMVA mismatch stepping.  */
-    int (*to_keep_going) (CORE_ADDR stop_pc);
+    int (*to_keep_going)(CORE_ADDR stop_pc);
 
     /* APPLE LOCAL: Added support for target specific information to be
        stored in the thread specific inferior_status to allow targets to
@@ -510,6 +508,7 @@ struct target_ops
     int to_magic;
     /* Need sub-structure for target machine related rather than comm related?
      */
+    unsigned int padding;
   };
 
 /* Magic number for checking ops size.  If a struct doesn't end with this

@@ -202,7 +202,7 @@ static void
 complete_command(const char *arg, int from_tty)
 {
   /* APPLE LOCAL refactor command completion */
-  int argpoint;
+  size_t argpoint;
 
   dont_repeat();
 
@@ -210,7 +210,7 @@ complete_command(const char *arg, int from_tty)
     arg = "";
   argpoint = strlen(arg);
   /* APPLE LOCAL refactor command completion */
-  cli_interpreter_complete(NULL, arg, arg, argpoint, -1);
+  cli_interpreter_complete(NULL, arg, arg, (int)argpoint, -1);
 }
 
 /* APPLE LOCAL begin refactor command completion */

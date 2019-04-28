@@ -70,7 +70,7 @@ java_value_print(struct value *val, struct ui_file *stream, int format,
   name = TYPE_TAG_NAME(type);
   /* FIXME: -Wcomma: */
   if ((TYPE_CODE(type) == TYPE_CODE_STRUCT) && (name != NULL)
-      && ((i = strlen(name)), (name[i - 1] == ']')))
+      && ((i = (int)strlen(name)), (name[i - 1] == ']')))
     {
       gdb_byte buf4[4];
       long length;
@@ -230,7 +230,7 @@ java_value_print(struct value *val, struct ui_file *stream, int format,
 
       value_free_to_mark(mark);	/* Release unnecessary values */
 
-      val_print_string((data + boffset), count, 2, stream);
+      val_print_string((data + boffset), (int)count, 2, stream);
 
       return 0;
     }

@@ -303,7 +303,7 @@ write_exp_elt_intern (struct internalvar *expelt)
 void
 write_exp_string (struct stoken str)
 {
-  int len = str.length;
+  size_t len = str.length;
   int lenelt;
   char *strdata;
 
@@ -312,7 +312,7 @@ write_exp_string (struct stoken str)
      at each end to record the actual string length (not including the
      null byte terminator). */
 
-  lenelt = 2 + BYTES_TO_EXP_ELEM (len + 1);
+  lenelt = (2 + (int)BYTES_TO_EXP_ELEM(len + 1UL));
 
   /* Ensure that we have enough available expression elements to store
      everything. */
@@ -352,8 +352,8 @@ write_exp_string (struct stoken str)
 void
 write_exp_bitstring (struct stoken str)
 {
-  int bits = str.length;	/* length in bits */
-  int len = (bits + HOST_CHAR_BIT - 1) / HOST_CHAR_BIT;
+  size_t bits = str.length;	/* length in bits */
+  size_t len = ((bits + HOST_CHAR_BIT - 1UL) / HOST_CHAR_BIT);
   int lenelt;
   char *strdata;
 
@@ -361,7 +361,7 @@ write_exp_bitstring (struct stoken str)
      along with one expression element at each end to record the actual
      bitstring length in bits. */
 
-  lenelt = 2 + BYTES_TO_EXP_ELEM (len);
+  lenelt = (2 + (int)BYTES_TO_EXP_ELEM(len));
 
   /* Ensure that we have enough available expression elements to store
      everything. */
@@ -498,8 +498,8 @@ write_dollar_variable (struct stoken str)
 
   /* Handle tokens that refer to machine registers:
      $ followed by a register name.  */
-  i = frame_map_name_to_regnum (deprecated_selected_frame,
-				str.ptr + 1, str.length - 1);
+  i = frame_map_name_to_regnum(deprecated_selected_frame,
+			       (str.ptr + 1), (int)(str.length - 1));
   if (i >= 0)
     goto handle_register;
 
@@ -604,7 +604,7 @@ parse_nested_classes_for_hpacc(char *name, int len, char **token,
   struct symbol *sym_class = NULL;
   struct symbol *sym_var = NULL;
   struct type *t;
-  int prefix_len = 0;
+  size_t prefix_len = 0;
   int done = 0;
   const char *q;
 
@@ -674,7 +674,7 @@ parse_nested_classes_for_hpacc(char *name, int len, char **token,
 	}
 
       prefix = tmp;
-      prefix_len = strlen (prefix);
+      prefix_len = strlen(prefix);
 
       /* See if the prefix we have now is something we know about */
 

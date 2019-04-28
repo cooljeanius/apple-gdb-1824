@@ -412,7 +412,8 @@ exp	:	INT
 
 exp	:	NAME_OR_INT
 			{ YYSTYPE val;
-			  parse_number($1.stoken.ptr, $1.stoken.length, 0, &val);
+			  parse_number($1.stoken.ptr, (int)$1.stoken.length, 0,
+				       &val);
 			  write_exp_elt_opcode (OP_LONG);
 			  write_exp_elt_type (val.typed_val.type);
 			  write_exp_elt_longcst((LONGEST)val.typed_val.val);
@@ -1047,8 +1048,8 @@ yylex(void)
 			 && (*p < 'A' || *p > 'Z')))
 	      break;
 	  }
-	toktype = parse_number (tokstart, p - tokstart, got_dot|got_e|got_d,
-				&yylval);
+	toktype = parse_number(tokstart, (int)(p - tokstart),
+			       (got_dot | got_e | got_d), &yylval);
         if (toktype == ERROR)
           {
 	    char *err_copy = (char *)alloca(p - tokstart + 1UL);

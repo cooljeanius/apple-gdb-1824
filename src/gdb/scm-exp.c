@@ -316,11 +316,12 @@ tryagain:
       scm_lreadr(skipping);
       if (!skipping)
 	{
-	  struct value *val = scm_evaluate_string (str.ptr, lexptr - str.ptr);
-	  if (!is_scmvalue_type (value_type (val)))
-	    error ("quoted scm form yields non-SCM value");
-	  svalue = extract_signed_integer (value_contents (val),
-					   TYPE_LENGTH (value_type (val)));
+	  struct value *val = scm_evaluate_string(str.ptr,
+						  (int)(lexptr - str.ptr));
+	  if (!is_scmvalue_type(value_type(val)))
+	    error(_("quoted scm form yields non-SCM value"));
+	  svalue = extract_signed_integer(value_contents(val),
+					  TYPE_LENGTH(value_type(val)));
 	  goto handle_immediate;
 	}
       return;
@@ -445,7 +446,7 @@ tryagain:
 	scm_read_token(c, 0);
 	if (!skipping)
 	  {
-	    svalue = scm_istring2number(str.ptr, (lexptr - str.ptr), 10);
+	    svalue = scm_istring2number(str.ptr, (int)(lexptr - str.ptr), 10);
 	    if (svalue != SCM_BOOL_F)
 	      goto handle_immediate;
 	    goto tok;

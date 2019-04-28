@@ -1177,7 +1177,7 @@ val_print_string(CORE_ADDR addr, int len, int width, struct ui_file *stream)
      because finding the null byte (or available memory) is what actually
      limits the fetch. */
 
-  fetchlimit = ((len == -1) ? print_max : min((size_t)len, print_max));
+  fetchlimit = (int)((len == -1) ? print_max : min((size_t)len, print_max));
 
   /* Now decide how large of chunks to try to read in one operation.  This
      is also pretty simple.  If LEN >= zero, then we want fetchlimit chars,
@@ -1212,7 +1212,7 @@ val_print_string(CORE_ADDR addr, int len, int width, struct ui_file *stream)
       unsigned long bufsize = 0UL;
       do {
         QUIT;
-        nfetch = min(chunksize, fetchlimit - bufsize);
+        nfetch = (unsigned int)min(chunksize, (fetchlimit - bufsize));
 
         if (buffer == NULL)
           buffer = (char *)xmalloc(nfetch * width);
@@ -1307,7 +1307,7 @@ val_print_string(CORE_ADDR addr, int len, int width, struct ui_file *stream)
 	  fputs_filtered(" ", stream);
 	}
       LA_PRINT_STRING(stream, (const gdb_byte *)buffer,
-                      ((bufptr - buffer) / width), width, force_ellipsis);
+                      (int)((bufptr - buffer) / width), width, force_ellipsis);
     }
 
   if (errcode != 0)
@@ -1325,9 +1325,9 @@ val_print_string(CORE_ADDR addr, int len, int width, struct ui_file *stream)
 	  fprintf_filtered (stream, ": %s>", safe_strerror (errcode));
 	}
     }
-  gdb_flush (stream);
-  do_cleanups (old_chain);
-  return ((bufptr - buffer) / width);
+  gdb_flush(stream);
+  do_cleanups(old_chain);
+  return (int)((bufptr - buffer) / width);
 }
 
 
@@ -1422,8 +1422,8 @@ set_radix(const char *arg, int from_tty)
   unsigned long radix;
 
   radix = ((arg == NULL) ? 10UL : (unsigned long)parse_and_eval_long(arg));
-  set_output_radix_1(0, radix);
-  set_input_radix_1(0, radix);
+  set_output_radix_1(0, (unsigned int)radix);
+  set_input_radix_1(0, (unsigned int)radix);
   if (from_tty)
     {
       printf_filtered(_("Input and output radices now set to decimal %lu, hex %lx, octal %lo.\n"),

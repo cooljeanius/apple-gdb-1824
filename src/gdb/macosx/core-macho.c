@@ -146,7 +146,7 @@ check_thread(bfd *abfd, asection *asect, unsigned int num)
   }
 
   /* Extract the thread index: */
-  i = strtol(sname + strlen(expected), NULL, 0);
+  i = (int)strtol(sname + strlen(expected), NULL, 0);
 
   add_thread(ptid_build(1, i, num));
   if (ptid_equal(inferior_ptid, null_ptid))
@@ -951,7 +951,7 @@ core_fetch_registers(int regno)
     {
       for (tid = ptid_get_tid(inferior_ptid);
 	   (tid < (long)bfd_count_sections(abfd))
-	   && ((sec = lookup_section(abfd, tid)) != NULL);
+	   && ((sec = lookup_section(abfd, (unsigned int)tid)) != NULL);
 	   tid++)
 	{
 	  const char *sname = bfd_section_name(abfd, sec);

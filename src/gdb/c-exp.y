@@ -606,22 +606,22 @@ exp	:	STRING
 			     the array upper bound is the string length.
 			     There is no such thing in C as a completely empty
 			     string. */
-			  char *sp = $1.ptr; int count = $1.length;
-			  while (count-- > 0)
+			  char *sp = $1.ptr; size_t count = $1.length;
+			  while (count-- > 0UL)
 			    {
-			      write_exp_elt_opcode (OP_LONG);
-			      write_exp_elt_type (get_builtin_type(current_gdbarch)->builtin_char);
-			      write_exp_elt_longcst ((LONGEST)(*sp++));
-			      write_exp_elt_opcode (OP_LONG);
+			      write_exp_elt_opcode(OP_LONG);
+			      write_exp_elt_type(get_builtin_type(current_gdbarch)->builtin_char);
+			      write_exp_elt_longcst((LONGEST)(*sp++));
+			      write_exp_elt_opcode(OP_LONG);
 			    }
-			  write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_type (get_builtin_type(current_gdbarch)->builtin_char);
-			  write_exp_elt_longcst ((LONGEST)'\0');
-			  write_exp_elt_opcode (OP_LONG);
-			  write_exp_elt_opcode (OP_ARRAY);
-			  write_exp_elt_longcst ((LONGEST) 0);
-			  write_exp_elt_longcst ((LONGEST) ($1.length));
-			  write_exp_elt_opcode (OP_ARRAY); }
+			  write_exp_elt_opcode(OP_LONG);
+			  write_exp_elt_type(get_builtin_type(current_gdbarch)->builtin_char);
+			  write_exp_elt_longcst((LONGEST)'\0');
+			  write_exp_elt_opcode(OP_LONG);
+			  write_exp_elt_opcode(OP_ARRAY);
+			  write_exp_elt_longcst((LONGEST)0L);
+			  write_exp_elt_longcst((LONGEST)($1.length));
+			  write_exp_elt_opcode(OP_ARRAY); }
 	;
 
 exp     :	OBJC_NSSTRING	/* ObjC NextStep NSString constant
@@ -1534,18 +1534,18 @@ yylex(void)
       c = *lexptr++;
       if (c != '\'')
 	{
-	  namelen = skip_quoted (tokstart) - tokstart;
+	  namelen = (int)(skip_quoted(tokstart) - tokstart);
 	  if (namelen > 2)
 	    {
 	      lexptr = tokstart + namelen;
               unquoted_expr = 0;
 	      if (lexptr[-1] != '\'')
-		error ("Unmatched single quote.");
+		error(_("Unmatched single quote."));
 	      namelen -= 2;
 	      tokstart++;
 	      goto tryname;
 	    }
-	  error ("Invalid character constant.");
+	  error(_("Invalid character constant."));
 	}
       return INT;
 
@@ -1633,7 +1633,7 @@ yylex(void)
 				  && (*p < 'A' || *p > 'Z')))
 	      break;
 	  }
-	toktype = parse_number(tokstart, (p - tokstart),
+	toktype = parse_number(tokstart, (int)(p - tokstart),
 			       (got_dot | got_e | got_p), &yylval);
         if (toktype == ERROR)
 	  {
@@ -1809,7 +1809,7 @@ yylex(void)
 
                const char *p = find_template_name_end(tokstart + namelen);
                if (p)
-                 namelen = p - tokstart;
+                 namelen = (int)(p - tokstart);
                break;
 	}
       c = tokstart[++namelen];
@@ -1912,8 +1912,10 @@ yylex(void)
   if (unquoted_expr)
     {
       /* Only do it if not inside single quotes: */
-      sym_class = parse_nested_classes_for_hpacc(yylval.sval.ptr, yylval.sval.length,
-                                                 &token_string, &class_prefix, &lexptr);
+      sym_class = parse_nested_classes_for_hpacc(yylval.sval.ptr,
+						 (int)yylval.sval.length,
+                                                 &token_string, &class_prefix,
+						 &lexptr);
       if (sym_class)
         {
           /* Replace the current token with the bigger one we found */

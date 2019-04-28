@@ -443,7 +443,7 @@ mi_cmd_exec_safe_call (char *command, char **argv, int argc)
 
 /* APPLE LOCAL: Have a show version that returns something useful...
 
-   Takes one argument PRINT-BANNER, which should be 0 ro 1.
+   Takes one argument PRINT-BANNER, which should be 0 or 1.
    If 1 (the default) we print the standard FSF banner to gdb_stdout.
    If 0 we don't.
 
@@ -458,17 +458,17 @@ mi_cmd_show_version (char *command, char **argv, int argc)
 
   if (argc > 1)
     {
-      mi_error_message = xstrprintf ("mi_cmd_show_version: Usage: [PRINT-BANNER]");
+      mi_error_message = xstrprintf("mi_cmd_show_version: Usage: [PRINT-BANNER]");
       return MI_CMD_ERROR;
     }
   if (argc == 0)
     print_banner = 1;
   else
     {
-      print_banner = strtol (argv[0], &endptr, 0);
+      print_banner = (int)strtol(argv[0], &endptr, 0);
       if (*endptr != '\0')
 	{
-	  mi_error_message = xstrprintf ("mi_cmd_show_version: PRINT-BANNER must be 0 or 1");
+	  mi_error_message = xstrprintf("mi_cmd_show_version: PRINT-BANNER must be 0 or 1");
 	  return MI_CMD_ERROR;
 	}
     }
@@ -615,7 +615,7 @@ mi_cmd_thread_set_pc(char *command, char **argv, int argc)
           argv[1]);
 
   errno = 0;
-  lineno = strtol(c + 1, NULL, 10);
+  lineno = (int)strtol(c + 1, NULL, 10);
   if (errno != 0)
     error("mi_cmd_thread_set_pc: Error parsing line number part of argument, '%s'.",
           argv[1]);
@@ -634,7 +634,8 @@ mi_cmd_thread_set_pc(char *command, char **argv, int argc)
   if (sal.symtab != s)
     {
       if ((s == NULL) || (sal.symtab == NULL))
-        error("mi_cmd_thread_set_pc: Found one symtab by filename lookup, but symtab another by PC lookup, and one of them is null.");
+        error("mi_cmd_thread_set_pc: \
+Found one symtab by filename lookup, but symtab another by PC lookup, and one of them is null.");
       else
         error("mi_cmd_thread_set_pc: Found symtab '%s' by filename lookup, but symtab '%s' by PC lookup.",
               s->filename, sal.symtab->filename);
@@ -941,8 +942,8 @@ mi_cmd_data_list_changed_registers (char *command, char **argv, int argc)
 	  changed = register_changed_p (regnum);
 	  if (changed < 0)
 	    {
-	      do_cleanups (cleanup);
-	      mi_error_message = xstrprintf ("mi_cmd_data_list_changed_registers: Unable to read register contents.");
+	      do_cleanups(cleanup);
+	      mi_error_message = xstrprintf("mi_cmd_data_list_changed_registers: Unable to read register contents.");
 	      return MI_CMD_ERROR;
 	    }
 	  else if (changed)
@@ -964,7 +965,7 @@ mi_cmd_data_list_changed_registers (char *command, char **argv, int argc)
 	  if (changed < 0)
 	    {
 	      do_cleanups (cleanup);
-	      mi_error_message = xstrprintf ("mi_cmd_data_list_register_change: Unable to read register contents.");
+	      mi_error_message = xstrprintf("mi_cmd_data_list_register_change: Unable to read register contents.");
 	      return MI_CMD_ERROR;
 	    }
 	  else if (changed)
@@ -1025,7 +1026,8 @@ mi_cmd_data_list_register_values (char *command, char **argv, int argc)
 
   if (argc == 0)
     {
-      mi_error_message = xstrprintf ("mi_cmd_data_list_register_values: Usage: -data-list-register-values <format> [<regnum1>...<regnumN>]");
+      mi_error_message = xstrprintf("mi_cmd_data_list_register_values: \
+Usage: -data-list-register-values <format> [<regnum1>...<regnumN>]");
       return MI_CMD_ERROR;
     }
 
@@ -1164,7 +1166,8 @@ mi_cmd_data_write_register_values(char *command, char **argv, int argc)
   if (argc == 0)
     {
       mi_error_message =
-	xstrprintf("mi_cmd_data_write_register_values: Usage: -data-write-register-values <format> [<regnum1> <value1>...<regnumN> <valueN>]");
+	xstrprintf("mi_cmd_data_write_register_values: \
+Usage: -data-write-register-values <format> [<regnum1> <value1>...<regnumN> <valueN>]");
       return MI_CMD_ERROR;
     }
 
@@ -1303,7 +1306,7 @@ mi_cmd_data_evaluate_expression (char *command, char **argv, int argc)
     {
       /* APPLE LOCAL Disable breakpoints while updating data formatters.  */
       do_cleanups (bp_cleanup);
-      mi_error_message = xstrprintf ("mi_cmd_data_evaluate_expression: Usage: -data-evaluate-expression [-u] expression");
+      mi_error_message = xstrprintf("mi_cmd_data_evaluate_expression: Usage: -data-evaluate-expression [-u] expression");
       return MI_CMD_ERROR;
     }
 
@@ -1570,7 +1573,8 @@ mi_cmd_data_read_memory(char *command, char **argv, int argc)
 
   if ((argc < 5) || (argc > 6))
     {
-      mi_error_message = xstrprintf("mi_cmd_data_read_memory: Usage: ADDR WORD-FORMAT WORD-SIZE NR-ROWS NR-COLS [ASCHAR].");
+      mi_error_message = xstrprintf("mi_cmd_data_read_memory: \
+Usage: ADDR WORD-FORMAT WORD-SIZE NR-ROWS NR-COLS [ASCHAR].");
       return MI_CMD_ERROR;
     }
 
@@ -1641,12 +1645,12 @@ mi_cmd_data_read_memory(char *command, char **argv, int argc)
 
   /* output the header information. */
   ui_out_field_core_addr (uiout, "addr", addr);
-  ui_out_field_int (uiout, "nr-bytes", nr_bytes);
-  ui_out_field_int (uiout, "total-bytes", total_bytes);
-  ui_out_field_core_addr (uiout, "next-row", addr + word_size * nr_cols);
-  ui_out_field_core_addr (uiout, "prev-row", addr - word_size * nr_cols);
-  ui_out_field_core_addr (uiout, "next-page", addr + total_bytes);
-  ui_out_field_core_addr (uiout, "prev-page", addr - total_bytes);
+  ui_out_field_int(uiout, "nr-bytes", nr_bytes);
+  ui_out_field_int(uiout, "total-bytes", (int)total_bytes);
+  ui_out_field_core_addr(uiout, "next-row", addr + word_size * nr_cols);
+  ui_out_field_core_addr(uiout, "prev-row", addr - word_size * nr_cols);
+  ui_out_field_core_addr(uiout, "next-page", addr + total_bytes);
+  ui_out_field_core_addr(uiout, "prev-page", addr - total_bytes);
 
   /* Build the result as a two dimentional table. */
   {
@@ -1797,9 +1801,9 @@ mi_cmd_data_write_memory(char *command, char **argv, int argc)
   /* Get the value into an array: */
   buffer = xmalloc((size_t)word_size);
   old_chain = make_cleanup(xfree, buffer);
-  store_signed_integer((gdb_byte *)buffer, word_size, value);
+  store_signed_integer((gdb_byte *)buffer, (int)word_size, value);
   /* Write it down to memory: */
-  write_memory(addr, (const bfd_byte *)buffer, word_size);
+  write_memory(addr, (const bfd_byte *)buffer, (int)word_size);
   /* Free the buffer: */
   do_cleanups(old_chain);
 

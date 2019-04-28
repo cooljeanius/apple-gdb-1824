@@ -1305,7 +1305,7 @@ decode_line_1(const char **argptr, int funfirstline, struct symtab *default_symt
       if (file_symtab_arr)
       {
         int i;
-        struct symtabs_and_lines final_result = {NULL, 0};
+        struct symtabs_and_lines final_result = { NULL, 0, 0 };
         const char *start_here = NULL;
         for (i = 0; file_symtab_arr[i] != NULL; i++)
           {

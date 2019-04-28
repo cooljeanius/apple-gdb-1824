@@ -73,7 +73,7 @@ struct checkpoint
   struct regcache *regs;
   struct memcache *mem;
 
-  int pid;
+  pid_t pid;
 
   /* Flag used to decide which ones to keep: */
   int keep;

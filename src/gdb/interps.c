@@ -511,7 +511,7 @@ static char **
 interpreter_completer(const char *text, char *word)
 {
   int alloced = 0;
-  int textlen;
+  size_t textlen;
   int num_matches;
   char **matches;
   struct interp *interp;
@@ -520,29 +520,29 @@ interpreter_completer(const char *text, char *word)
      allocate room for all of them. */
   for (interp = interp_list; interp != NULL; interp = interp->next)
     ++alloced;
-  matches = (char **) xmalloc (alloced * sizeof (char *));
+  matches = (char **)xmalloc(alloced * sizeof(char *));
 
   num_matches = 0;
-  textlen = strlen (text);
+  textlen = strlen(text);
   for (interp = interp_list; interp != NULL; interp = interp->next)
     {
-      if (strncmp (interp->name, text, textlen) == 0)
+      if (strncmp(interp->name, text, textlen) == 0)
 	{
 	  matches[num_matches] =
-	    (char *) xmalloc (strlen (word) + strlen (interp->name) + 1);
+	    (char *)xmalloc(strlen(word) + strlen(interp->name) + 1UL);
 	  if (word == text)
-	    strcpy (matches[num_matches], interp->name);
+	    strcpy(matches[num_matches], interp->name);
 	  else if (word > text)
 	    {
 	      /* Return some portion of interp->name */
-	      strcpy (matches[num_matches], interp->name + (word - text));
+	      strcpy(matches[num_matches], interp->name + (word - text));
 	    }
 	  else
 	    {
 	      /* Return some of text plus interp->name */
-	      strncpy (matches[num_matches], word, text - word);
+	      strncpy(matches[num_matches], word, text - word);
 	      matches[num_matches][text - word] = '\0';
-	      strcat (matches[num_matches], interp->name);
+	      strcat(matches[num_matches], interp->name);
 	    }
 	  ++num_matches;
 	}
@@ -550,13 +550,13 @@ interpreter_completer(const char *text, char *word)
 
   if (num_matches == 0)
     {
-      xfree (matches);
+      xfree(matches);
       matches = NULL;
     }
   else if (num_matches < alloced)
     {
-      matches = (char **) xrealloc ((char *) matches, ((num_matches + 1)
-						       * sizeof (char *)));
+      matches = (char **)xrealloc((char *)matches, ((num_matches + 1)
+						    * sizeof(char *)));
       matches[num_matches] = NULL;
     }
 
@@ -564,7 +564,7 @@ interpreter_completer(const char *text, char *word)
 }
 
 /* APPLE LOCAL: I guess Keith eliminated this because they added
- * an interpreter completer?  Don't see why, though...
+ * an interpreter completer?  I do NOT see why, though...
  * list_interpreter_cmd - This implements "info interpreters".
  */
 void

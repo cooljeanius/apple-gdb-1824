@@ -156,9 +156,9 @@ scm_lookup_name(char *str)
   struct value *func;
   struct value *val;
   struct symbol *sym;
-  args[0] = value_allocate_space_in_inferior(len);
+  args[0] = value_allocate_space_in_inferior((int)len);
   args[1] = value_from_longest(builtin_type_int, len);
-  write_memory(value_as_long(args[0]), (gdb_byte *)str, len);
+  write_memory(value_as_long(args[0]), (gdb_byte *)str, (int)len);
 
   if (in_eval_c()
       && (sym = lookup_symbol("env", expression_context_block, VAR_DOMAIN,

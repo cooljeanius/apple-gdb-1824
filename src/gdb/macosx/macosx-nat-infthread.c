@@ -82,7 +82,7 @@ struct ptid_list
 void
 macosx_setup_registers_before_hand_call(void)
 {
-  thread_t current_thread = ptid_get_tid(inferior_ptid);
+  thread_t current_thread = (thread_t)ptid_get_tid(inferior_ptid);
 
   thread_abort_safely(current_thread);
 }
@@ -982,7 +982,7 @@ parse_thread(const char *tidstr, int *gdb_thread_id)
   if (gdb_thread_id)
     *gdb_thread_id = pid_to_thread_id(ptid);
 
-  return ptid_get_tid(ptid);
+  return (thread_t)ptid_get_tid(ptid);
 }
 
 /* FIXME: needs comment: */
@@ -1059,7 +1059,7 @@ thread_dont_suspend_while_stepping_command(const char *arg, int from_tty)
 	arg++;
 
       if (*arg == '\0')
-	error("No expression of -port flag.");
+	error(_("No expression of -port flag."));
 
       thread_no = parse_and_eval_long(arg);
 
@@ -1067,17 +1067,17 @@ thread_dont_suspend_while_stepping_command(const char *arg, int from_tty)
     }
   else
     {
-      int threadno;
+      long threadno;
       char *endptr;
 
       threadno = strtol(arg, &endptr, 0);
       if (*endptr != '\0')
-	error("Junk at end of thread id: \"%s\".", endptr);
-      tp = find_thread_id(threadno);
+	error(_("Junk at end of thread id: \"%s\"."), endptr);
+      tp = find_thread_id((int)threadno);
     }
 
   if (tp == NULL)
-    error("Failed to find thread matching: \"%s\".", arg);
+    error(_("Failed to find thread matching: \"%s\"."), arg);
   else
     {
       printf_unfiltered("Setting thread %d to %s while stepping other threads.\n",
@@ -1171,7 +1171,7 @@ void
 macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
 {
 #if defined(THREAD_IDENTIFIER_INFO) && defined(THREAD_IDENTIFIER_INFO_COUNT)
-  thread_t tid = ptid_get_tid(ptid);
+  thread_t tid = (thread_t)ptid_get_tid(ptid);
   struct thread_basic_info info;
   unsigned int info_count = THREAD_BASIC_INFO_COUNT;
   kern_return_t kret;

@@ -944,7 +944,7 @@ command_line_input(const char *prompt_arg, int repeat,
 		   const char *annotation_suffix)
 {
   static char *linebuffer = (char *)0;
-  static unsigned int linelength = 0U;
+  static size_t linelength = 0UL;
   char *p;
   char *p1;
   char *rl;
@@ -983,7 +983,7 @@ command_line_input(const char *prompt_arg, int repeat,
 
   if (linebuffer == 0)
     {
-      linelength = 80;
+      linelength = 80UL;
       linebuffer = (char *)xmalloc(linelength);
     }
 

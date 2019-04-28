@@ -561,8 +561,9 @@ cp_print_value (struct type *type, struct type *real_type,
 	  struct type **first_dont_print =
 	    (struct type **)obstack_base(&dont_print_vb_obstack);
 
-	  int j = (struct type **) obstack_next_free (&dont_print_vb_obstack)
-	    - first_dont_print;
+	  ptrdiff_t j =
+	    ((struct type **)obstack_next_free(&dont_print_vb_obstack)
+	     - first_dont_print);
 
 	  while (--j >= 0)
 	    if (baseclass == first_dont_print[j])
@@ -680,12 +681,11 @@ cp_print_static_field (struct type *type,
   if (TYPE_CODE (type) == TYPE_CODE_STRUCT)
     {
       CORE_ADDR *first_dont_print;
-      int i;
+      ptrdiff_t i;
 
-      first_dont_print
-	= (CORE_ADDR *) obstack_base (&dont_print_statmem_obstack);
-      i = (CORE_ADDR *) obstack_next_free (&dont_print_statmem_obstack)
-	- first_dont_print;
+      first_dont_print = (CORE_ADDR *)obstack_base(&dont_print_statmem_obstack);
+      i = ((CORE_ADDR *)obstack_next_free(&dont_print_statmem_obstack)
+	   - first_dont_print);
 
       while (--i >= 0)
 	{

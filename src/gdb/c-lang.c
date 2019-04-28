@@ -163,8 +163,8 @@ c_printstr(struct ui_file *stream, const gdb_byte *string,
 		fputs_filtered ("\", ", stream);
 	      in_quotes = 0;
 	    }
-	  LA_PRINT_CHAR (current_char, stream);
-	  fprintf_filtered (stream, _(" <repeats %u times>"), reps);
+	  LA_PRINT_CHAR((int)current_char, stream);
+	  fprintf_filtered(stream, _(" <repeats %u times>"), reps);
 	  i = rep1 - 1;
 	  things_printed += repeat_count_threshold;
 	  need_comma = 1;
@@ -179,7 +179,7 @@ c_printstr(struct ui_file *stream, const gdb_byte *string,
 		fputs_filtered ("\"", stream);
 	      in_quotes = 1;
 	    }
-	  LA_EMIT_CHAR (current_char, stream, '"');
+	  LA_EMIT_CHAR((int)current_char, stream, '"');
 	  ++things_printed;
 	}
     }

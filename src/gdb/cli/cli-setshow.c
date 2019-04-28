@@ -231,7 +231,7 @@ do_setshow_command(const char *arg, int from_tty, struct cmd_list_element *c)
 	case var_enum:
 	  {
 	    int i;
-	    int len;
+	    size_t len;
 	    int nmatches = 0;
 	    const char *match = NULL;
 	    char *p;

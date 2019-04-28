@@ -66,9 +66,9 @@ extern void _initialize_fork_child(void);
    command-line argument.  */
 
 static int
-escape_bang_in_quoted_argument (const char *shell_file)
+escape_bang_in_quoted_argument(const char *shell_file)
 {
-  const int shell_file_len = strlen (shell_file);
+  const size_t shell_file_len = strlen(shell_file);
 
   /* Bang should be escaped only in C Shells.  For now, simply check
      that the shell name ends with 'csh', which covers at least csh

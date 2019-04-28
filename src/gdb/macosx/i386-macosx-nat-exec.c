@@ -121,7 +121,7 @@ fetch_inferior_registers(int regno)
   int fetched = 0;
 
   current_pid = ptid_get_pid(inferior_ptid);
-  current_thread = ptid_get_tid(inferior_ptid);
+  current_thread = (thread_t)ptid_get_tid(inferior_ptid);
 
   if (current_pid == 0) {
     ; /* do nothing; just use value stored to current_pid */
@@ -255,7 +255,7 @@ store_inferior_registers(int regno)
   thread_t current_thread;
 
   current_pid = ptid_get_pid(inferior_ptid);
-  current_thread = ptid_get_tid(inferior_ptid);
+  current_thread = (thread_t)ptid_get_tid(inferior_ptid);
 
   if (current_pid == 0) {
     ; /* do nothing; just use value stored to current_pid */
@@ -527,7 +527,7 @@ i386_macosx_dr_get(int regnum)
   gdb_assert((regnum >= 0) && (regnum <= DR_CONTROL));
 
   current_pid = ptid_get_pid(inferior_ptid);
-  current_thread = ptid_get_tid(inferior_ptid);
+  current_thread = (thread_t)ptid_get_tid(inferior_ptid);
 
   if (current_pid == 0) {
     ; /* do nothing; just use value stored to current_pid */

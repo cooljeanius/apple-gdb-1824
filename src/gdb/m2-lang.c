@@ -395,14 +395,16 @@ struct type *builtin_type_m2_card;
 struct type *builtin_type_m2_real;
 struct type *builtin_type_m2_bool;
 
+/* -Wparentheses says these parentheses are unnecessary in C++, but they might
+ * be needed in C? I dunno... */
 struct type **const (m2_builtin_types[]) =
 {
   &builtin_type_m2_char,
-    &builtin_type_m2_int,
-    &builtin_type_m2_card,
-    &builtin_type_m2_real,
-    &builtin_type_m2_bool,
-    0
+  &builtin_type_m2_int,
+  &builtin_type_m2_card,
+  &builtin_type_m2_real,
+  &builtin_type_m2_bool,
+  0
 };
 
 const struct language_defn m2_language_defn =

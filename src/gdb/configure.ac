@@ -1043,8 +1043,10 @@ AX_PROG_BISON([
   BISON_CXX_FLAG=''
   if test "x${enable_build_with_cxx}" = "xyes"; then
     BISON_CXX_FLAG='--language=c++'
+    AC_DEFINE([NEED_TO_REYACC_TO_CXX],[1],[Define to 1 for C++])
   elif test "x${enable_build_with_cxx}" = "xno"; then
     BISON_CXX_FLAG='--language=c'
+    AC_DEFINE([NEED_TO_REYACC_TO_PLAIN_C],[1],[Define to 1 for C])
   fi
   AC_SUBST([BISON_CXX_FLAG])dnl
 ],[
@@ -3324,7 +3326,7 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
 -Wunevaluated-expression -Wextra-semi -Wunsequenced -Wself-assign \
 -Wshift-sign-overflow -Wstatic-in-inline -Wparentheses-equality \
 -Wincompatible-pointer-types-discards-qualifiers -Winvalid-noreturn \
--Wfor-loop-analysis -Wconditional-uninitialized \
+-Wfor-loop-analysis -Wloop-analysis -Wconditional-uninitialized \
 -Wunreachable-code-loop-increment -Wtautological-pointer-compare"
   # Up for debate (i.e. for debating adding to existing flags here):
   # * -Wunreachable-code and its suboptions for returns and breaks
@@ -3336,9 +3338,9 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
 -Wmissing-exception-spec -Wnon-literal-null-conversion \
 -Wpredefined-identifier-outside-function -Wvexing-parse \
 -Wreturn-stack-address -Wshadow-field-in-constructor -Wunused-private-field \
--Wvla-extension"
+-Wvla-extension -Wno-deprecated"
   fi
-  ## mig typechecks cause paramaters that would otherwise be unused to be
+  ## mig typechecks cause parameters that would otherwise be unused to be
   ## used, triggering this:
   if test "x${MIG_CHECKING}" = "x"; then
     test -z "${MIG_CHECKING}"

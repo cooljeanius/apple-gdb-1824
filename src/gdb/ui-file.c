@@ -302,8 +302,8 @@ struct mem_file
   {
     int *magic;
     char *buffer;
-    int sizeof_buffer;
-    int length_buffer;
+    size_t sizeof_buffer;
+    long length_buffer;
   };
 
 static ui_file_rewind_ftype mem_file_rewind;
@@ -386,8 +386,8 @@ mem_file_write(struct ui_file *file, const char *buffer,
     }
   else
     {
-      int new_length = (stream->length_buffer + length_buffer);
-      if (new_length >= stream->sizeof_buffer)
+      long new_length = (stream->length_buffer + length_buffer);
+      if (new_length >= (long)stream->sizeof_buffer)
 	{
 	  stream->sizeof_buffer = new_length;
 	  stream->buffer = (char *)xrealloc(stream->buffer,

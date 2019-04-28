@@ -806,7 +806,7 @@ show_values(const char *num_exp, int from_tty)
   if (num <= 0L)
     num = 1L;
 
-  for (i = num; (i < (num + 10L)) && (i <= value_history_count); i++)
+  for (i = (int)num; (i < (num + 10L)) && (i <= value_history_count); i++)
     {
       val = access_value_history(i);
       printf_filtered(("$%d = "), i);
@@ -1644,30 +1644,29 @@ value_from_pointer (struct type *type, CORE_ADDR addr)
    use inferior memory.  String shall NOT contain embedded nulls.  */
 
 struct value *
-value_from_string (char *ptr)
+value_from_string(char *ptr)
 {
   struct value *val;
-  int len = strlen (ptr);
+  size_t len = strlen(ptr);
   int lowbound = current_language->string_lower_bound;
   struct type *string_char_type;
   struct type *rangetype;
   struct type *stringtype;
 
-  rangetype = create_range_type ((struct type *) NULL,
-				 builtin_type_int,
-				 lowbound, len + lowbound - 1);
-  string_char_type = language_string_char_type (current_language,
-						current_gdbarch);
-  stringtype = create_array_type ((struct type *) NULL,
-				  string_char_type,
-				  rangetype);
-  val = allocate_value (stringtype);
-  memcpy (value_contents_raw (val), ptr, len);
+  rangetype = create_range_type((struct type *)NULL, builtin_type_int,
+				lowbound, ((int)len + lowbound - 1));
+  string_char_type = language_string_char_type(current_language,
+					       current_gdbarch);
+  stringtype = create_array_type((struct type *)NULL, string_char_type,
+				 rangetype);
+  val = allocate_value(stringtype);
+  memcpy(value_contents_raw(val), ptr, len);
   return val;
 }
 
+/* */
 struct value *
-value_from_double (struct type *type, DOUBLEST num)
+value_from_double(struct type *type, DOUBLEST num)
 {
   struct value *val = allocate_value (type);
   struct type *base_type = check_typedef (type);

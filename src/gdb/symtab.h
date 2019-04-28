@@ -699,7 +699,7 @@ typedef struct partial_symbol
 
   /* Address class (for info_symbols): */
   ENUM_BITFIELD(address_class) aclass : 6;
-  
+
   /* FIXME: not packed hard enough; need some extra padding... */
 } ATTRIBUTE_PACKED partial_symbol_t;
 
@@ -727,7 +727,6 @@ enum line_table_entry_type
    somewhat more wasteful of space than one might wish, but since only
    the files which are actually debugged are read in to core, we don't
    waste much space.  */
-
 struct linetable_entry
 {
   int line;
@@ -742,7 +741,8 @@ struct linetable_entry
 /* For use as we expand the types of information that are stored in
    the line table, to keep track of which entry is of which type.  */
 
-  enum line_table_entry_type  entry_type;
+  enum line_table_entry_type entry_type;
+  unsigned int padding;
   /* APPLE LOCAL end subroutine inlining  */
 };
 
@@ -807,7 +807,6 @@ enum free_codes
 
 /* Each source file or header is represented by a struct symtab.
    These objects are chained through the `next' field.  */
-
 struct symtab
 {
   /* Chain of all existing symtabs: */
@@ -816,23 +815,19 @@ struct symtab
   /* List of all symbol scope blocks for this symtab.  May be shared
      between different symtabs (and normally is for all the symtabs
      in a given compilation unit).  */
-
   struct blockvector *blockvector;
 
   /* Table mapping core addresses to line numbers for this file.
      Can be NULL if none.  Never shared between different symtabs.  */
-
   struct linetable *linetable;
 
   /* Section in objfile->section_offsets for the blockvector and
      the linetable.  Probably always SECT_OFF_TEXT.  */
-
   int block_line_section;
 
   /* If several symtabs share a blockvector, exactly one of them
      should be designated the primary, so that the blockvector
      is relocated exactly once by objfile_relocate.  */
-
   int primary;
 
   /* The macro table for this symtab.  Like the blockvector, this
@@ -840,12 +835,10 @@ struct symtab
      all the symtabs in a given compilation unit.  */
   struct macro_table *macro_table;
 
-  /* Name of this source file.  */
-
+  /* Name of this source file: */
   char *filename;
 
-  /* Directory in which it was compiled, or NULL if we don't know.  */
-
+  /* Directory in which it was compiled, or NULL if we do NOT know: */
   char *dirname;
 
   /* This component says how to free the data we point to:
@@ -854,56 +847,50 @@ struct symtab
      the data this one uses.
      free_linetable => free just the linetable.  FIXME: Is this redundant
      with the primary field?  */
-
   enum free_codes free_code;
 
   /* A function to call to free space, if necessary.  This is IN
      ADDITION to the action indicated by free_code.  */
-
   void (*free_func)(struct symtab *symtab);
 
-  /* Total number of lines found in source file.  */
-
+  /* Total number of lines found in source file: */
   int nlines;
 
   /* line_charpos[N] is the position of the (N-1)th line of the
      source file.  "position" means something we can lseek() to; it
      is not guaranteed to be useful any other way.  */
-
   int *line_charpos;
 
-  /* Language of this source file.  */
-
+  /* Language of this source file: */
   enum language language;
 
   /* String that identifies the format of the debugging information, such
      as "stabs", "dwarf 1", "dwarf 2", "coff", etc.  This is mostly useful
      for automated testing of gdb but may also be information that is
      useful to the user. */
-
   char *debugformat;
 
-  /* String of producer version information.  May be zero.  */
-
+  /* String of producer version information.  May be zero: */
   char *producer;
 
-  /* String of version information.  May be zero.  */
-
+  /* String of version information.  May be zero: */
   char *version;
 
   /* Full name of file as found by searching the source path.
      NULL if not yet known.  */
-
   char *fullname;
 
-  /* Object file from which this symbol information was read.  */
-
+  /* Object file from which this symbol information was read: */
   struct objfile *objfile;
 
   /* APPLE LOCAL fix-and-continue */
   /* If this symtab is 'obsolete', i.e. there exists a symtab which
      has more up-to-date information.  */
   unsigned char obsolete;
+
+  unsigned int padding_1;
+  unsigned short padding_2;
+  unsigned char padding_3;
 };
 
 #define BLOCKVECTOR(symtab)	(symtab)->blockvector
@@ -1052,8 +1039,15 @@ struct partial_symtab
      improve access.  Binary search will be the usual method of
      finding a symbol within it. globals_offset is an integer offset
      within global_psymbols[].  */
-
-  int globals_offset;
+#ifdef HAVE_OFF_T
+  off_t globals_offset;
+#else
+# ifdef HAVE_PTRDIFF_T
+  ptrdiff_t globals_offset;
+# else
+  long globals_offset;
+# endif /* HAVE_PTRDIFF_T */
+#endif /* HAVE_OFF_T */
   int n_global_syms;
 
   /* Static symbol list.  This list will *not* be sorted after readin;
@@ -1063,8 +1057,15 @@ struct partial_symtab
      to take a *lot* of time; check) or an error (and we don't care
      how long errors take).  This is an offset and size within
      static_psymbols[].  */
-
-  int statics_offset;
+#ifdef HAVE_OFF_T
+  off_t statics_offset;
+#else
+# ifdef HAVE_PTRDIFF_T
+  ptrdiff_t statics_offset;
+# else
+  long statics_offset;
+# endif /* HAVE_PTRDIFF_T */
+#endif /* HAVE_OFF_T */
   int n_static_syms;
 
   /* Pointer to symtab eventually allocated for this source file, 0 if
@@ -1075,7 +1076,7 @@ struct partial_symtab
   /* Pointer to function which will read in the symtab corresponding to
      this psymtab.  */
 
-  void (*read_symtab) (struct partial_symtab *);
+  void (*read_symtab)(struct partial_symtab *);
 
   /* Information that lets read_symtab() locate the part of the symbol table
      that this psymtab corresponds to.  This information is private to the
@@ -1133,7 +1134,7 @@ struct partial_symtab
 
 /* A fast way to get from a psymtab to its symtab (after the first time).  */
 #define	PSYMTAB_TO_SYMTAB(pst)  \
-    ((pst) -> symtab != NULL ? (pst) -> symtab : psymtab_to_symtab (pst))
+    (((pst)->symtab != NULL) ? (pst)->symtab : psymtab_to_symtab(pst))
 
 
 /* The virtual function table is now an array of structures which have the
@@ -1434,6 +1435,7 @@ struct symtabs_and_lines
 {
   struct symtab_and_line *sals;
   int nelts;
+  unsigned int padding;
 };
 
 

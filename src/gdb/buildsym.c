@@ -1124,8 +1124,8 @@ end_symtab (CORE_ADDR end_addr, struct objfile *objfile, int section)
 	      /* Reallocate the dirname on the symbol obstack */
 	      symtab->dirname = ((char *)
 				 obstack_alloc(&objfile->objfile_obstack,
-					       (strlen(subfile->dirname)
-						+ 1UL)));
+					       (int)(strlen(subfile->dirname)
+						     + 1UL)));
 	      gdb_assert(symtab != NULL);
 	      gdb_assert(symtab->dirname != NULL);
 	      strcpy(symtab->dirname, subfile->dirname);
@@ -1148,16 +1148,16 @@ end_symtab (CORE_ADDR end_addr, struct objfile *objfile, int section)
 	  /* Save the debug format string (if any) in the symtab */
 	  if (subfile->debugformat != NULL)
 	    {
-	      symtab->debugformat = obsavestring (subfile->debugformat,
-					      strlen (subfile->debugformat),
-						  &objfile->objfile_obstack);
+	      symtab->debugformat = obsavestring(subfile->debugformat,
+						 (int)strlen(subfile->debugformat),
+						 &objfile->objfile_obstack);
 	    }
 
           /* Similarly for the producer.  */
           if (subfile->producer != NULL)
-            symtab->producer = obsavestring (subfile->producer,
-                                             strlen (subfile->producer),
-                                             &objfile->objfile_obstack);
+            symtab->producer = obsavestring(subfile->producer,
+                                            (int)strlen(subfile->producer),
+                                            &objfile->objfile_obstack);
 
 	  /* All symtabs for the main file and the subfiles share a
 	     blockvector, so we need to clear primary for everything
@@ -1248,7 +1248,7 @@ pop_context (void)
 int
 hashname(const char *name)
 {
-  return (hash(name, strlen(name)) % HASHSIZE);
+  return (hash(name, (int)strlen(name)) % HASHSIZE);
 }
 
 /* FIXME: add comment: */

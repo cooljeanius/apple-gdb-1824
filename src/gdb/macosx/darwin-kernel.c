@@ -186,7 +186,7 @@ darwin_kernel_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len,
                           int write, struct mem_attrib *attrib,
                           struct target_ops *target)
 {
-  int ret = 0;
+  ssize_t ret = 0;
   if (write) {
     darwin_kernel_logger(DARWIN_KERNEL_LOG_ERROR, "",
                          "Writes not supported\n");
@@ -198,7 +198,7 @@ darwin_kernel_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len,
     } else {
       if (ret != len) {
         darwin_kernel_logger(DARWIN_KERNEL_LOG_WARNING, "",
-                             "Read %d bytes, requested %d\n", ret, len);
+                             "Read %d bytes, requested %d\n", (int)ret, len);
       }
     }
   }

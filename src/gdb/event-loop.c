@@ -940,9 +940,9 @@ gdb_wait_for_event (void)
     {
 #ifdef HAVE_POLL
       num_found =
-	poll (gdb_notifier.poll_fds,
-	      (unsigned long) gdb_notifier.num_fds,
-	      gdb_notifier.timeout_valid ? gdb_notifier.poll_timeout : -1);
+	poll(gdb_notifier.poll_fds,
+	     (nfds_t)gdb_notifier.num_fds,
+	     (gdb_notifier.timeout_valid ? gdb_notifier.poll_timeout : -1));
 
       /* Don't print anything if we get out of poll because of a
          signal. */
@@ -1373,7 +1373,7 @@ poll_timers(void)
       if (use_poll)
 	{
 #ifdef HAVE_POLL
-	  gdb_notifier.poll_timeout = (delta.tv_sec * 1000);
+	  gdb_notifier.poll_timeout = (int)(delta.tv_sec * 1000);
 #else
 	  internal_error(__FILE__, __LINE__,
 			 _("use_poll without HAVE_POLL"));

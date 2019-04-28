@@ -62,13 +62,13 @@ open_unix_socket(const char *name)
 {
   struct sockaddr_un sockaddr;
   int source_fd;
-  int len;
+  size_t len;
   int retval;
 
   source_fd = socket(AF_UNIX, SOCK_STREAM, 0);
   if (source_fd < 0)
     {
-      warning("Failed to open a unix domain socket: %d.\n", source_fd);
+      warning(_("Failed to open a unix domain socket: %d.\n"), source_fd);
       return -1;
     }
 
@@ -77,10 +77,10 @@ open_unix_socket(const char *name)
   strcpy(sockaddr.sun_path, name);
   len = (offsetof(struct sockaddr_un, sun_path) + strlen(name));
 
-  retval = connect(source_fd, (struct sockaddr *)&sockaddr, len);
+  retval = connect(source_fd, (struct sockaddr *)&sockaddr, (socklen_t)len);
   if (retval == -1)
     {
-      warning("Failed to connect to unix service: \"%s\", error: \"%s\".",
+      warning(_("Failed to connect to unix service: \"%s\", error: \"%s\"."),
 	      name, safe_strerror(errno));
       close(source_fd);
       return -1;
@@ -103,7 +103,7 @@ receive_fd(int source_fd)
   struct iovec iov[1];
   char buf[4096];
   int return_fd = -1;
-  int nbytes;
+  ssize_t nbytes;
   int numerrors = 0;
   int control_len = CMSG_LEN(sizeof(int));
 
@@ -126,11 +126,11 @@ receive_fd(int source_fd)
       nbytes = recvmsg(source_fd, &msg, 0);
       if (nbytes < 0)
 	{
-	  warning("Error from recvmsg.\n");
+	  warning(_("Error from recvmsg.\n"));
 	  numerrors++;
 	  if (numerrors < 10)
 	    {
-	      warning("More than 10 errors, giving up.");
+	      warning(_("More than 10 errors, giving up."));
 	      return -1;
 	    }
 	  else
@@ -215,11 +215,11 @@ static int
 filedesc_open(struct serial *sb, const char *name)
 {
   char *num_end;
-  int fd;
+  long fd;
 
   if (strstr(name, "filedesc:") != name)
     {
-      warning("filedesc_open passed non-filedesc name: \"%s\".", name);
+      warning(_("filedesc_open passed non-filedesc name: \"%s\"."), name);
       return -1;
     }
 
@@ -227,18 +227,18 @@ filedesc_open(struct serial *sb, const char *name)
 
   if (*name == '\0')
     {
-      warning("No file descriptor for filedesc_open.");
+      warning(_("No file descriptor for filedesc_open."));
       return -1;
     }
 
   fd = strtol(name, &num_end, 0);
   if (*num_end != '\0')
     {
-      warning("Junk at end of file descriptor: \"%s\".\n", name);
+      warning(_("Junk at end of file descriptor: \"%s\".\n"), name);
       return -1;
     }
 
-  sb->fd = fd;
+  sb->fd = (int)fd;
   /* Do I need to do this? */
   signal(SIGPIPE, SIG_IGN);
 

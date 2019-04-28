@@ -75,7 +75,7 @@ dwarf_expr_grow_stack(struct dwarf_expr_context *ctx, size_t need)
       size_t newlen = (ctx->stack_len + need + 10UL);
       ctx->stack = (CORE_ADDR *)xrealloc(ctx->stack,
                                          (newlen * sizeof(CORE_ADDR)));
-      ctx->stack_allocated = newlen;
+      ctx->stack_allocated = (int)newlen;
     }
 }
 

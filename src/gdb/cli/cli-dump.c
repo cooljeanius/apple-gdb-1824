@@ -209,7 +209,7 @@ dump_binary_file(const char *filename, const char *mode,
 		 const bfd_byte *buf, int len)
 {
   FILE *file;
-  int status;
+  size_t status;
 
   file = fopen_with_cleanup(filename, mode);
   status = fwrite(buf, len, 1, file);
@@ -553,8 +553,9 @@ restore_binary_file(char *filename, struct callback_data *data)
 {
   FILE *file = fopen_with_cleanup(filename, FOPEN_RB);
   gdb_byte *buf;
-  int len, total_file_bytes;
-  int bytes_to_read_from_file;
+  long len;
+  long total_file_bytes;
+  long bytes_to_read_from_file;
 
   CORE_ADDR addrp;
 
@@ -613,17 +614,17 @@ restore_binary_file(char *filename, struct callback_data *data)
       max_errors = 2;
       while (max_errors > 0)
         {
-           printf_unfiltered ("Writing 0x%s bytes to 0x%s\n", paddr_nz (len),
-			      paddr_nz (addrp));
+           printf_unfiltered(_("Writing 0x%s bytes to 0x%s\n"), paddr_nz(len),
+			     paddr_nz(addrp));
            gdb_flush (gdb_stdout);
-           if (target_write_memory (addrp, buf, len) == 0)
+           if (target_write_memory(addrp, buf, (int)len) == 0)
              {
                addrp += len;
                break;
              }
            else
              {
-	       warning ("restore: memory write failed - retrying.");
+	       warning(_("restore: memory write failed - retrying."));
                max_errors--;
              }
         }

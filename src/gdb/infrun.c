@@ -4143,7 +4143,8 @@ static void
 handle_command(const char *args, int from_tty)
 {
   char **argv;
-  int digits, wordlen;
+  int digits;
+  size_t wordlen;
   int sigfirst, signumber, siglast;
   enum target_signal oursig;
   int allsigs;
@@ -4336,7 +4337,7 @@ xdb_handle_command(const char *args, int from_tty)
   if (argv[1] != (char *)NULL)
     {
       char *argBuf;
-      int bufLen;
+      size_t bufLen;
 
       bufLen = (strlen(argv[0]) + 20UL);
       argBuf = (char *)xmalloc(bufLen);

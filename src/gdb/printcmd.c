@@ -969,12 +969,12 @@ do_examine (struct format_data fmt, CORE_ADDR addr)
   else if (format == 'l')
     {
       last_examine_address = next_address;
-    
+
       if (last_examine_value)
 	value_free(last_examine_value);
-    
+
       last_examine_value = value_at_lazy(val_type, next_address);
-    
+
       if (last_examine_value)
 	release_value(last_examine_value);
       print_formatted(last_examine_value, format, size, gdb_null);
@@ -1324,76 +1324,77 @@ address_info(const char *exp, int from_tty)
 	 Unfortunately DWARF 2 stores the frame-base (instead of the
 	 function) location in a function's symbol.  Oops!  For the
 	 moment enable this when/where applicable.  */
-      SYMBOL_OPS (sym)->describe_location (sym, gdb_stdout);
+      SYMBOL_OPS(sym)->describe_location(sym, gdb_stdout);
       break;
 
     case LOC_REGISTER:
-      printf_filtered (_("a variable in register %s"), REGISTER_NAME (val));
+      printf_filtered(_("a variable in register %s"), REGISTER_NAME((int)val));
       break;
 
     case LOC_STATIC:
-      printf_filtered (_("static storage at address "));
-      deprecated_print_address_numeric (load_addr = SYMBOL_VALUE_ADDRESS (sym),
-			     1, gdb_stdout);
-      if (section_is_overlay (section))
+      printf_filtered(_("static storage at address "));
+      deprecated_print_address_numeric(load_addr = SYMBOL_VALUE_ADDRESS(sym),
+				       1, gdb_stdout);
+      if (section_is_overlay(section))
 	{
-	  load_addr = overlay_unmapped_address (load_addr, section);
-	  printf_filtered (_(",\n -- loaded at "));
-	  deprecated_print_address_numeric (load_addr, 1, gdb_stdout);
-	  printf_filtered (_(" in overlay section %s"), section->name);
+	  load_addr = overlay_unmapped_address(load_addr, section);
+	  printf_filtered(_(",\n -- loaded at "));
+	  deprecated_print_address_numeric(load_addr, 1, gdb_stdout);
+	  printf_filtered(_(" in overlay section %s"), section->name);
 	}
       break;
 
     case LOC_INDIRECT:
-      printf_filtered (_("external global (indirect addressing), at address *("));
-      deprecated_print_address_numeric (load_addr = SYMBOL_VALUE_ADDRESS (sym),
-			     1, gdb_stdout);
-      printf_filtered (")");
-      if (section_is_overlay (section))
+      printf_filtered(_("external global (indirect addressing), at address *("));
+      deprecated_print_address_numeric(load_addr = SYMBOL_VALUE_ADDRESS(sym),
+				       1, gdb_stdout);
+      printf_filtered(")");
+      if (section_is_overlay(section))
 	{
-	  load_addr = overlay_unmapped_address (load_addr, section);
-	  printf_filtered (_(",\n -- loaded at "));
-	  deprecated_print_address_numeric (load_addr, 1, gdb_stdout);
-	  printf_filtered (_(" in overlay section %s"), section->name);
+	  load_addr = overlay_unmapped_address(load_addr, section);
+	  printf_filtered(_(",\n -- loaded at "));
+	  deprecated_print_address_numeric(load_addr, 1, gdb_stdout);
+	  printf_filtered(_(" in overlay section %s"), section->name);
 	}
       break;
 
     case LOC_REGPARM:
-      printf_filtered (_("an argument in register %s"), REGISTER_NAME (val));
+      printf_filtered(_("an argument in register %s"), REGISTER_NAME((int)val));
       break;
 
     case LOC_REGPARM_ADDR:
-      printf_filtered (_("address of an argument in register %s"), REGISTER_NAME (val));
+      printf_filtered(_("address of an argument in register %s"),
+		      REGISTER_NAME((int)val));
       break;
 
     case LOC_ARG:
-      printf_filtered (_("an argument at offset %ld"), val);
+      printf_filtered(_("an argument at offset %ld"), val);
       break;
 
     case LOC_LOCAL_ARG:
-      printf_filtered (_("an argument at frame offset %ld"), val);
+      printf_filtered(_("an argument at frame offset %ld"), val);
       break;
 
     case LOC_LOCAL:
-      printf_filtered (_("a local variable at frame offset %ld"), val);
+      printf_filtered(_("a local variable at frame offset %ld"), val);
       break;
 
     case LOC_REF_ARG:
-      printf_filtered (_("a reference argument at offset %ld"), val);
+      printf_filtered(_("a reference argument at offset %ld"), val);
       break;
 
     case LOC_BASEREG:
-      printf_filtered (_("a variable at offset %ld from register %s"),
-		       val, REGISTER_NAME (basereg));
+      printf_filtered(_("a variable at offset %ld from register %s"),
+		      val, REGISTER_NAME((int)basereg));
       break;
 
     case LOC_BASEREG_ARG:
-      printf_filtered (_("an argument at offset %ld from register %s"),
-		       val, REGISTER_NAME (basereg));
+      printf_filtered(_("an argument at offset %ld from register %s"),
+		      val, REGISTER_NAME((int)basereg));
       break;
 
     case LOC_TYPEDEF:
-      printf_filtered (_("a typedef"));
+      printf_filtered(_("a typedef"));
       break;
 
     case LOC_BLOCK:
@@ -1446,17 +1447,16 @@ address_info(const char *exp, int from_tty)
       break;
 
     case LOC_HP_THREAD_LOCAL_STATIC:
-      printf_filtered (
-			"a thread-local variable at offset %ld from the thread base register %s",
-			val, REGISTER_NAME (basereg));
+      printf_filtered(_("a thread-local variable at offset %ld from the thread base register %s"),
+		      val, REGISTER_NAME((int)basereg));
       break;
 
     case LOC_OPTIMIZED_OUT:
-      printf_filtered (_("optimized out"));
+      printf_filtered(_("optimized out"));
       break;
 
     default:
-      printf_filtered (_("of unknown (botched) type"));
+      printf_filtered(_("of unknown (botched) type"));
       break;
     }
   printf_filtered (".\n");
@@ -1550,7 +1550,7 @@ x_command(const char *exp, int from_tty)
       /* lookup_internalvar will create the variable if it does not exist
        * (and initialize it to void) here: */
       set_internalvar(lookup_internalvar("insnsize"),
-		      (struct value *)(uintptr_t)next_address);  
+		      (struct value *)(uintptr_t)next_address);
     }
 }
 

@@ -1402,15 +1402,14 @@ equivalence_table_delete (struct objfile *ofile)
 /* This registers the msymbol MSYMBOL as an equivalent of the symbol
    whose name is the substring of NAME that starts at NAME and ends
    with NAME_END in the objfile OBJFILE.  */
-
 void
-equivalence_table_add (struct objfile *ofile, const char *name,
-		       const char *name_end, struct minimal_symbol *msymbol)
+equivalence_table_add(struct objfile *ofile, const char *name,
+		      const char *name_end, struct minimal_symbol *msymbol)
 {
   struct equivalence_entry *new_entry;
   struct equivalence_entry **table;
   int hash;
-  int len = name_end - name;
+  ptrdiff_t len = (name_end - name);
 
   gdb_assert (ofile->equivalence_table != NULL);
   table = (struct equivalence_entry **) ofile->equivalence_table;

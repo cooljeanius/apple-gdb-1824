@@ -322,7 +322,7 @@ collect_checkpoint(void)
 	  retval = (long)value_as_long(val0);
 
 	  /* Keep the pid around, only dig through fork when rolling back: */
-	  cp->pid = retval;
+	  cp->pid = (pid_t)retval;
 	}
       else
 	{

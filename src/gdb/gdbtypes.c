@@ -1942,7 +1942,7 @@ check_stub_method (struct type *type, int method_id, int signature_id)
 		  && strncmp (argtypetext, "void", p - argtypetext) != 0)
 		{
 		  argtypes[argcount].type =
-		    safe_parse_type (argtypetext, p - argtypetext);
+		    safe_parse_type(argtypetext, (int)(p - argtypetext));
 		  argcount += 1;
 		}
 	      argtypetext = p + 1;
@@ -2018,7 +2018,7 @@ check_stub_method_group(struct type *type, int method_id)
       if (ret)
 	{
 	  TYPE_FN_FIELDLIST_NAME(type, method_id) =
-	    (char *)TYPE_ALLOC(type, (strlen(dem_opname) + 1UL));
+	    (char *)TYPE_ALLOC(type, (int)(strlen(dem_opname) + 1UL));
 	  strcpy((char *)TYPE_FN_FIELDLIST_NAME(type, method_id), dem_opname);
 	}
     }
@@ -2059,7 +2059,7 @@ init_type (enum type_code code, int length, int flags, const char *name,
   if ((name != NULL) && (objfile != NULL))
     {
       TYPE_NAME(type) =
-	obsavestring(name, strlen(name), &objfile->objfile_obstack);
+	obsavestring(name, (int)strlen(name), &objfile->objfile_obstack);
     }
   else
     {
@@ -3562,11 +3562,11 @@ recursive_dump_type (struct type *type, int spaces)
   if (TYPE_NFIELDS (type) > 0
       || (TYPE_CPLUS_SPECIFIC (type) && TYPE_NFN_FIELDS (type) > 0))
     {
-      struct type **first_dont_print
-      = (struct type **) obstack_base (&dont_print_type_obstack);
+      struct type **first_dont_print =
+	(struct type **)obstack_base(&dont_print_type_obstack);
 
-      int i = (struct type **) obstack_next_free (&dont_print_type_obstack)
-      - first_dont_print;
+      ptrdiff_t i = ((struct type **)obstack_next_free(&dont_print_type_obstack)
+		     - first_dont_print);
 
       while (--i >= 0)
 	{

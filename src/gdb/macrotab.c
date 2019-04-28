@@ -115,9 +115,9 @@ macro_bcache (struct macro_table *t, const void *addr, int len)
    S there, and return a pointer to the cached copy.  Otherwise,
    xmalloc a copy and return that.  */
 static const char *
-macro_bcache_str (struct macro_table *t, const char *s)
+macro_bcache_str(struct macro_table *t, const char *s)
 {
-  return (char *) macro_bcache (t, s, strlen (s) + 1);
+  return (char *)macro_bcache(t, s, (int)(strlen(s) + 1UL));
 }
 
 
@@ -478,15 +478,15 @@ macro_lookup_inclusion(struct macro_source_file *source, const char *name)
   /* The filename in the source structure is probably a full path, but
      NAME could be just the final component of the name.  */
   {
-    int name_len = strlen (name);
-    int src_name_len = strlen (source->filename);
+    size_t name_len = strlen(name);
+    size_t src_name_len = strlen(source->filename);
 
     /* We do mean < here, and not <=; if the lengths are the same,
        then the strcmp above should have triggered, and we need to
        check for a slash here.  */
-    if (name_len < src_name_len
-        && source->filename[src_name_len - name_len - 1] == '/'
-        && strcmp (name, source->filename + src_name_len - name_len) == 0)
+    if ((name_len < src_name_len)
+        && (source->filename[src_name_len - name_len - 1UL] == '/')
+        && (strcmp(name, (source->filename + src_name_len - name_len)) == 0))
       return source;
   }
 
@@ -550,7 +550,7 @@ new_macro_definition(struct macro_table *t, enum macro_kind kind,
 
       /* Now bcache the array of argument pointers itself: */
       d->argv = (const char * const*)macro_bcache(t, cached_argv,
-                                                  cached_argv_size);
+                                                  (int)cached_argv_size);
       d->argc = argc;
     }
 

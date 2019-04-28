@@ -792,7 +792,7 @@ write_object_renaming (struct block *orig_left_context,
   if (suffix == NULL)
     goto BadEncoding;
 
-  name = (char *) obstack_alloc (&temp_parse_space, suffix - expr + 1);
+  name = (char *)obstack_alloc(&temp_parse_space, (int)(suffix - expr + 1));
   strncpy(name, expr, (size_t)(suffix - expr));
   name[suffix-expr] = '\000';
   sym = lookup_symbol (name, orig_left_context, VAR_DOMAIN, 0, NULL);

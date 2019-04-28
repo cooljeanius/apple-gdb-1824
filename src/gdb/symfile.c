@@ -328,14 +328,14 @@ obsavestring (const char *ptr, int size, struct obstack *obstackp)
    in the obstack pointed to by OBSTACKP.  */
 
 char *
-obconcat (struct obstack *obstackp, const char *s1, const char *s2,
-	  const char *s3)
+obconcat(struct obstack *obstackp, const char *s1, const char *s2,
+	 const char *s3)
 {
-  int len = strlen (s1) + strlen (s2) + strlen (s3) + 1;
-  char *val = (char *) obstack_alloc (obstackp, len);
-  strcpy (val, s1);
-  strcat (val, s2);
-  strcat (val, s3);
+  size_t len = (strlen(s1) + strlen(s2) + strlen(s3) + 1UL);
+  char *val = (char *)obstack_alloc(obstackp, len);
+  strcpy(val, s1);
+  strcat(val, s2);
+  strcat(val, s3);
   return val;
 }
 
@@ -4661,7 +4661,7 @@ add_psymbol_to_list(const char *name, int namelength, domain_enum domain,
   /* val and coreaddr are mutually exclusive; one of them *will* be 0: */
   if (val != 0)
     {
-      SYMBOL_VALUE(&psymbol) = val;
+      SYMBOL_VALUE(&psymbol) = (int)val;
     }
   else
     {
@@ -4744,7 +4744,7 @@ add_psymbol_with_dem_name_to_list(char *name, int namelength,
   /* val and coreaddr are mutually exclusive, one of them *will* be zero */
   if (val != 0)
     {
-      SYMBOL_VALUE(&psymbol) = val;
+      SYMBOL_VALUE(&psymbol) = (int)val;
     }
   else
     {
@@ -5423,12 +5423,12 @@ read_target_long_array(CORE_ADDR memaddr, unsigned int *myaddr, int len)
   const size_t buflen = (len * TARGET_LONG_BYTES);
 
   if (buflen > min(8192000UL, UINT_MAX))
-    warning("array is very large; reading may be unsafe");
+    warning(_("array is very large; reading may be unsafe"));
 
   /* FIXME (alloca): Not safe if array is very large; is warning enough? */
   buf = (char *)alloca(buflen);
 
-  read_memory(memaddr, (gdb_byte *)buf, buflen);
+  read_memory(memaddr, (gdb_byte *)buf, (int)buflen);
   for (i = 0; i < len; i++) {
     myaddr[i] =
       (unsigned int)extract_unsigned_integer(((const gdb_byte *)

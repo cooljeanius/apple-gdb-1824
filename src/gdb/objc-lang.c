@@ -268,7 +268,7 @@ lookup_objc_class(const char *classname)
 
   if (objc_retval == objc_debugger_mode_success)
     {
-      classval = value_string(classname, (strlen(classname) + 1UL));
+      classval = value_string(classname, (int)(strlen(classname) + 1UL));
       classval = value_coerce_array(classval);
 
       ret_value = call_function_by_hand(lookup_cached_function(function),
@@ -313,7 +313,7 @@ lookup_child_selector_nocache(const char *selname)
     }
 
   selstring = value_coerce_array(value_string(selname,
-                                              (strlen(selname) + 1UL)));
+                                              (int)(strlen(selname) + 1UL)));
   retval = call_function_by_hand(lookup_cached_function(function),
 				 1, &selstring);
   return value_as_long(retval);
@@ -1368,7 +1368,7 @@ start_msglist(void)
     (struct selname *)xmalloc(sizeof(struct selname));
 
   newsel->next = selname_chain;
-  newsel->msglist_len = msglist_len;
+  newsel->msglist_len = (int)msglist_len;
   newsel->msglist_sel = msglist_sel;
   msglist_len = 0UL;
   msglist_sel = (char *)xmalloc(1UL);
@@ -1413,7 +1413,7 @@ add_msglist(struct stoken *str, int addcolon)
 int
 end_msglist(void)
 {
-  int val = msglist_len;
+  int val = (int)msglist_len;
   struct selname *sel = selname_chain;
   char *p = msglist_sel;
   CORE_ADDR selid;
@@ -1600,7 +1600,7 @@ selectors_info(const char *regexp, int from_tty)
 	    *p++ = *name++;
 	  *p++ = '\0';
 	  /* Print in columns: */
-	  puts_filtered_tabular(asel, (maxlen + 1UL), 0);
+	  puts_filtered_tabular(asel, (int)(maxlen + 1UL), 0);
 	}
       begin_line();
     }
@@ -1725,7 +1725,7 @@ classes_info(const char *regexp, int from_tty)
 	    *p++ = *name++;
 	  *p++ = '\0';
 	  /* Print in columns: */
-	  puts_filtered_tabular(aclass, (maxlen + 1UL), 0);
+	  puts_filtered_tabular(aclass, (int)(maxlen + 1UL), 0);
 	}
       begin_line();
     }

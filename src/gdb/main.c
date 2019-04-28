@@ -514,7 +514,7 @@ captured_main(void *data)
 	      int i;
 	      char *p;
 
-	      i = strtol(optarg, &p, 0);
+	      i = (int)strtol(optarg, &p, 0);
 	      if ((i == 0) && (p == optarg))
 		/* Do NOT use *_filtered or warning() (which relies on
 		   current_target) until after initialize_all_files(). */
@@ -530,7 +530,7 @@ captured_main(void *data)
 	      int i;
 	      char *p;
 
-	      i = strtol(optarg, &p, 0);
+	      i = (int)strtol(optarg, &p, 0);
 	      if ((i == 0) && (p == optarg))
 		/* Do NOT use *_filtered or warning() (which relies on
 		   current_target) until after initialize_all_files(). */

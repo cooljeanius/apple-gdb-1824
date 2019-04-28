@@ -231,7 +231,7 @@ cp_set_block_scope(const struct symbol *symbol, struct block *block,
 	{
 	  block_set_scope(block,
                           obsavestring(processing_current_prefix,
-                                       strlen(processing_current_prefix),
+                                       (int)strlen(processing_current_prefix),
                                        obstack),
                           obstack);
 	}
@@ -303,9 +303,9 @@ cp_copy_usings(struct using_direct *usingd, struct obstack *obstack)
       struct using_direct *retval =
         (struct using_direct *)obstack_alloc(obstack,
                                              sizeof(struct using_direct));
-      retval->inner = obsavestring(usingd->inner, strlen(usingd->inner),
+      retval->inner = obsavestring(usingd->inner, (int)strlen(usingd->inner),
 				   obstack);
-      retval->outer = obsavestring(usingd->outer, strlen(usingd->outer),
+      retval->outer = obsavestring(usingd->outer, (int)strlen(usingd->outer),
 				   obstack);
       retval->next = cp_copy_usings(usingd->next, obstack);
 

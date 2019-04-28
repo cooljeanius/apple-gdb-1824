@@ -188,7 +188,7 @@ rl_callback_read_char_wrapper(gdb_client_data client_data)
 void
 cli_command_loop(void *data /* unused */)
 {
-  int length;
+  size_t length;
   char *a_prompt;
   const char *gdb_prompt = get_prompt();
 
@@ -199,18 +199,19 @@ cli_command_loop(void *data /* unused */)
       /* Tell readline what the prompt to display is and what function it
          will need to call after a whole line is read. This also displays
          the first prompt. */
-      length = strlen (PREFIX (0)) + strlen (gdb_prompt) + strlen (SUFFIX (0)) + 1;
-      a_prompt = (char *) xmalloc (length);
-      strcpy (a_prompt, PREFIX (0));
-      strcat (a_prompt, gdb_prompt);
-      strcat (a_prompt, SUFFIX (0));
-      rl_callback_handler_install (a_prompt, input_handler);
+      length = (strlen(PREFIX(0)) + strlen(gdb_prompt) + strlen(SUFFIX(0))
+		+ 1UL);
+      a_prompt = (char *)xmalloc (length);
+      strcpy(a_prompt, PREFIX(0));
+      strcat(a_prompt, gdb_prompt);
+      strcat(a_prompt, SUFFIX(0));
+      rl_callback_handler_install(a_prompt, input_handler);
     }
   else
-    display_gdb_prompt (0);
+    display_gdb_prompt(0);
 
-  /* Now it's time to start the event loop. */
-  start_event_loop ();
+  /* Now it is time to start the event loop: */
+  start_event_loop();
 }
 
 /* Change the function to be invoked every time there is a character
@@ -303,8 +304,8 @@ display_gdb_prompt (char *new_prompt)
   if (!new_prompt)
     {
       /* Just use the top of the prompt stack. */
-      prompt_length = (strlen(PREFIX(0)) + strlen(SUFFIX(0))
-		       + strlen(gdb_prompt) + 1UL);
+      prompt_length = (int)(strlen(PREFIX(0)) + strlen(SUFFIX(0))
+			    + strlen(gdb_prompt) + 1UL);
 
       new_prompt = (char *)alloca(prompt_length);
 
@@ -723,7 +724,8 @@ command_line_handler(char *rl)
     }
   if ((((rl != NULL) ? strlen(rl) : 0) + 1 + (p - linebuffer)) > linelength)
     {
-      linelength = (((rl != NULL) ? strlen(rl) : 0UL) + 1UL + (p - linebuffer));
+      linelength = (unsigned int)(((rl != NULL) ? strlen(rl) : 0UL) + 1UL
+				  + (p - linebuffer));
       nline = (char *)xrealloc(linebuffer, linelength);
       p += (nline - linebuffer);
       linebuffer = nline;
@@ -785,10 +787,10 @@ command_line_handler(char *rl)
       expanded = history_expand(linebuffer, &history_value);
       if (expanded)
 	{
-	  /* Print the changes.  */
+	  /* Print the changes: */
 	  printf_unfiltered("%s\n", history_value);
 
-	  /* If there was an error, call this function again.  */
+	  /* If there was an error, then call this function again: */
 	  if (expanded < 0)
 	    {
 	      xfree(history_value);
@@ -796,7 +798,7 @@ command_line_handler(char *rl)
 	    }
 	  if (strlen(history_value) > linelength)
 	    {
-	      linelength = (strlen(history_value) + 1UL);
+	      linelength = (unsigned int)(strlen(history_value) + 1UL);
 	      linebuffer = (char *)xrealloc(linebuffer, linelength);
 	    }
 	  strcpy(linebuffer, history_value);

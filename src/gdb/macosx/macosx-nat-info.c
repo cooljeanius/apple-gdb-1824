@@ -77,9 +77,9 @@ info_mach_tasks_command(const char *args, int from_tty)
 
   sysctl(sysControl, 3, NULL, &length, NULL, 0);
   procInfo = (struct kinfo_proc *)xmalloc(length);
-  sysctl (sysControl, 3, procInfo, &length, NULL, 0);
+  sysctl(sysControl, 3, procInfo, &length, NULL, 0);
 
-  count = (length / sizeof(struct kinfo_proc));
+  count = (int)(length / sizeof(struct kinfo_proc));
   printf_unfiltered("%d processes:\n", count);
   for (index = 0; index < count; ++index)
     {

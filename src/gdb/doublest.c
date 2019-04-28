@@ -210,7 +210,7 @@ convert_floatformat_to_doublest(const struct floatformat *fmt,
   if (!special_exponent)
     {
       if (fmt->intbit == floatformat_intbit_no)
-	dto = ldexpl((long double)1.0f, exponent);
+	dto = ldexpl((long double)1.0f, (int)exponent);
       else
 	exponent++;
     }
@@ -221,7 +221,7 @@ convert_floatformat_to_doublest(const struct floatformat *fmt,
 
       mant = get_field(ufrom, order, fmt->totalsize, mant_off, mant_bits);
 
-      dto += ldexpl((long double)mant, (exponent - mant_bits));
+      dto += ldexpl((long double)mant, (int)(exponent - mant_bits));
       exponent -= mant_bits;
       mant_off += mant_bits;
       mant_bits_left -= mant_bits;
@@ -482,24 +482,23 @@ convert_doublest_to_floatformat(CONST struct floatformat *fmt,
 
 /* Check if VAL (which is assumed to be a floating point number whose
    format is described by FMT) is negative.  */
-
 int
-floatformat_is_negative (const struct floatformat *fmt,
-			 const bfd_byte *uval)
+floatformat_is_negative(const struct floatformat *fmt,
+			const bfd_byte *uval)
 {
   enum floatformat_byteorders order;
   unsigned char newfrom[FLOATFORMAT_LARGEST_BYTES];
 
-  gdb_assert (fmt != NULL);
-  gdb_assert (fmt->totalsize
-	      <= FLOATFORMAT_LARGEST_BYTES * FLOATFORMAT_CHAR_BIT);
+  gdb_assert(fmt != NULL);
+  gdb_assert(fmt->totalsize
+	     <= (FLOATFORMAT_LARGEST_BYTES * FLOATFORMAT_CHAR_BIT));
 
-  order = floatformat_normalize_byteorder (fmt, uval, newfrom);
+  order = floatformat_normalize_byteorder(fmt, uval, newfrom);
 
   if (order != fmt->byteorder)
     uval = newfrom;
 
-  return get_field (uval, order, fmt->totalsize, fmt->sign_start, 1);
+  return (int)get_field(uval, order, fmt->totalsize, fmt->sign_start, 1);
 }
 
 /* Check if VAL is "not a number" (NaN) for FMT.  */

@@ -1250,8 +1250,8 @@ print_syms_for_block (struct block *block,
 	  /* If we are about to print, compare against the regexp.
              If there's a match, skip this symbol.  */
 	  if (filter
-	      && re_search_oneshot(filter, SYMBOL_NATURAL_NAME(sym), ilen,
-				   0, ilen, (struct re_registers *)0) >= 0)
+	      && re_search_oneshot(filter, SYMBOL_NATURAL_NAME(sym), (int)ilen,
+				   0, (int)ilen, (struct re_registers *)0) >= 0)
 	    continue;
 
 	  if (values == PRINT_NO_VALUES)
@@ -1429,7 +1429,7 @@ enum mi_cmd_result
 mi_cmd_stack_check_threads (char *command, char **argv, int argc)
 {
   enum check_which_threads which_threads;
-  int stack_depth;
+  long stack_depth;
   char *endptr;
   int safe_p;
   int num_patterns;
@@ -1438,55 +1438,56 @@ mi_cmd_stack_check_threads (char *command, char **argv, int argc)
   regex_t *patterns;
 
   if (argc < 3)
-    error ("mi_cmd_stack_check_threads: wrong number of arguments, "
-	   "USAGE %s MODE STACK_DEPTH FUNCTION [FUNCTION...]",
-	   command);
+    error(_("mi_cmd_stack_check_threads: wrong number of arguments, "
+	    "USAGE %s MODE STACK_DEPTH FUNCTION [FUNCTION...]"),
+	  command);
 
-  if (strcmp (argv[0], "current") == 0)
+  if (strcmp(argv[0], "current") == 0)
     which_threads = CHECK_CURRENT_THREAD;
-  else if (strcmp (argv[0], "all") == 0)
+  else if (strcmp(argv[0], "all") == 0)
     which_threads = CHECK_ALL_THREADS;
-  else if (strcmp (argv[0], "scheduler") == 0)
+  else if (strcmp(argv[0], "scheduler") == 0)
     which_threads = CHECK_SCHEDULER_VALUE;
   else
-    error ("mi_cmd_stack_check_threads: Wrong value \"%s\" for MODE, "
-	   "should be \"current\", \"all\" or \"scheduler\"", argv[0]);
+    error(_("mi_cmd_stack_check_threads: Wrong value \"%s\" for MODE, "
+	    "should be \"current\", \"all\" or \"scheduler\""), argv[0]);
 
   if (*argv[1] == '\0')
-    error ("mi_cmd_stack_check_threads: Empty value for STACK_DEPTH");
+    error(_("mi_cmd_stack_check_threads: Empty value for STACK_DEPTH"));
 
-  stack_depth = strtol (argv[1], &endptr, 0);
+  stack_depth = strtol(argv[1], &endptr, 0);
   if (*endptr != '\0')
-    error ("mi_cmd_stack_check_threads: Junk at end of STACK_DEPTH: %s", endptr);
+    error(_("mi_cmd_stack_check_threads: Junk at end of STACK_DEPTH: %s"),
+	  endptr);
   if (stack_depth < 0)
-    error ("mi_cmd_stack_check_threads: Negative values for STACK_DEPTH not allowed.");
+    error(_("mi_cmd_stack_check_threads: Negative values for STACK_DEPTH not allowed."));
 
-  /* Allocate space for the patterns, then make them.  */
-  num_patterns = argc - 2;
+  /* Allocate space for the patterns, then make them: */
+  num_patterns = (argc - 2);
   argv += 2;
 
-  patterns = (regex_t *) xcalloc (num_patterns,
-						   sizeof (regex_t));
-  patterns_cleanup = make_cleanup (xfree, patterns);
+  patterns = (regex_t *)xcalloc(num_patterns, sizeof(regex_t));
+  patterns_cleanup = make_cleanup(xfree, patterns);
 
   for (i = 0; i < num_patterns; i++)
     {
       int err_code;
 
-      err_code = regcomp (patterns + i, argv[i], REG_EXTENDED|REG_NOSUB);
-      make_cleanup ((make_cleanup_ftype *) regfree, patterns + i);
+      err_code = regcomp((patterns + i), argv[i], (REG_EXTENDED | REG_NOSUB));
+      make_cleanup((make_cleanup_ftype *)regfree, (patterns + i));
 
       if (err_code != 0)
 	{
 	  char err_str[512];
-	  regerror (err_code, patterns + i, err_str, 512);
-	  error ("Couldn't compile pattern %s, error: %s", argv[i], err_str);
+	  regerror(err_code, (patterns + i), err_str, 512);
+	  error(_("Failed to compile pattern %s, error: %s"), argv[i], err_str);
 	}
     }
 
-  safe_p = check_safe_call (patterns, num_patterns, stack_depth, which_threads);
-  ui_out_field_int (uiout, "safe", safe_p);
-  do_cleanups (patterns_cleanup);
+  safe_p = check_safe_call(patterns, num_patterns, (int)stack_depth,
+			   which_threads);
+  ui_out_field_int(uiout, "safe", safe_p);
+  do_cleanups(patterns_cleanup);
 
   return MI_CMD_DONE;
 }

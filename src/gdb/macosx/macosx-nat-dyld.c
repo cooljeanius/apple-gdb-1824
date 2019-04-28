@@ -2655,7 +2655,7 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
     image_infos_size = offsets.libSystemInitialized;  /* version 1 */
 
   buf = (gdb_byte *)alloca(image_infos_size);
-  target_read_memory(addr, buf, image_infos_size);
+  target_read_memory(addr, buf, (int)image_infos_size);
 
   info->version = (uint32_t)extract_unsigned_integer(buf, 4);
   info->num_info =
@@ -2802,7 +2802,7 @@ dyld_info_read(struct macosx_dyld_thread_status *status,
                struct dyld_objfile_info *info, int dyldonly)
 {
   struct dyld_raw_info *rinfo = NULL;
-  int reserved = -1;
+  ptrdiff_t reserved = -1;
   int nrinfo = 0;
   int i = 0;
 
@@ -3717,7 +3717,8 @@ update_section_tables_dyld(struct dyld_objfile_info *s)
   struct target_ops *target;
   struct objfile *o;
   struct obj_section *osection;
-  int nsections, csection, osections;
+  int nsections, csection;
+  ptrdiff_t osections;
   int i;
   struct dyld_objfile_entry *j = NULL;
 
@@ -3731,7 +3732,7 @@ update_section_tables_dyld(struct dyld_objfile_info *s)
       nsections++;
 
   osections = (target->to_sections_end - target->to_sections);
-  target_resize_to_sections(target, nsections - osections);
+  target_resize_to_sections(target, (int)(nsections - osections));
   gdb_assert((target->to_sections + nsections) == target->to_sections_end);
 
 #define ADD_SECTION(osection) \

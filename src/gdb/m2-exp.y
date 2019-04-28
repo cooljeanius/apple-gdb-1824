@@ -954,7 +954,7 @@ yylex(void)
 		   (*p != 'H'))  /* Modula-2 hexadecimal number */
 	    break;
 	}
-	toktype = parse_number(p - tokstart);
+	toktype = parse_number((int)(p - tokstart));
         if (toktype == ERROR)
 	  {
 	    char *err_copy = (char *)alloca(p - tokstart + 1UL);

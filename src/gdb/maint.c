@@ -199,7 +199,7 @@ maintenance_time_display(const char *args, int from_tty)
   if (args == NULL || *args == '\0')
     printf_unfiltered(_("\"maintenance time\" takes a numeric argument.\n"));
   else
-    display_time = strtol(args, NULL, 10);
+    display_time = (int)strtol(args, NULL, 10);
 }
 
 extern int display_space;
@@ -210,7 +210,7 @@ maintenance_space_display(const char *args, int from_tty)
   if (args == NULL || *args == '\0')
     printf_unfiltered("\"maintenance space\" takes a numeric argument.\n");
   else
-    display_space = strtol(args, NULL, 10);
+    display_space = (int)strtol(args, NULL, 10);
 }
 
 /* The "maintenance info" command is defined as a prefix, with
@@ -570,7 +570,7 @@ maintenance_do_deprecate(const char *text, int deprecate)
 
   char *start_ptr = NULL;
   char *end_ptr = NULL;
-  int len;
+  ptrdiff_t len;
   char *replacement = NULL;
 
   if (text == NULL)
@@ -585,16 +585,16 @@ maintenance_do_deprecate(const char *text, int deprecate)
   if (deprecate)
     {
       /* look for a replacement command */
-      start_ptr = strchr (text, '\"');
+      start_ptr = strchr(text, '\"');
       if (start_ptr != NULL)
 	{
 	  start_ptr++;
-	  end_ptr = strrchr (start_ptr, '\"');
+	  end_ptr = strrchr(start_ptr, '\"');
 	  if (end_ptr != NULL)
 	    {
-	      len = end_ptr - start_ptr;
+	      len = (end_ptr - start_ptr);
 	      start_ptr[len] = '\0';
-	      replacement = xstrdup (start_ptr);
+	      replacement = xstrdup(start_ptr);
 	    }
 	}
     }

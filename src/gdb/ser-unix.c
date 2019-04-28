@@ -551,9 +551,10 @@ wait_for (struct serial *scb, int timeout)
    that. */
 
 static int
-do_hardwire_readchar (struct serial *scb, int timeout)
+do_hardwire_readchar(struct serial *scb, int timeout)
 {
-  int status, delta;
+  int status;
+  int delta;
   int detach = 0;
 
   if (timeout > 0)
@@ -569,27 +570,26 @@ do_hardwire_readchar (struct serial *scb, int timeout)
   delta = (timeout == 0 ? 0 : 1);
   while (1)
     {
-
       /* N.B. The UI may destroy our world (for instance by calling
-         remote_stop,) in which case we want to get out of here as
+         remote_stop), in which case we want to get out of here as
          quickly as possible.  It is not safe to touch scb, since
          someone else might have freed it.  The
          deprecated_ui_loop_hook signals that we should exit by
          returning 1.  */
 
       if (deprecated_ui_loop_hook)
-	detach = deprecated_ui_loop_hook (0);
+	detach = deprecated_ui_loop_hook(0);
 
       if (detach)
 	return SERIAL_TIMEOUT;
 
-      scb->timeout_remaining = (timeout < 0 ? timeout : timeout - delta);
-      status = wait_for (scb, delta);
+      scb->timeout_remaining = ((timeout < 0) ? timeout : (timeout - delta));
+      status = wait_for(scb, delta);
 
       if (status < 0)
 	return status;
 
-      status = read (scb->fd, scb->buf, BUFSIZ);
+      status = (int)read(scb->fd, scb->buf, BUFSIZ);
 
       if (status <= 0)
 	{
@@ -903,23 +903,23 @@ _initialize_ser_hardwire(void)
 int
 ser_unix_read_prim (struct serial *scb, size_t count)
 {
-  int status;
+  ssize_t status;
 
   while (1)
     {
-      status = read (scb->fd, scb->buf, count);
-      if (status != -1 || errno != EINTR)
+      status = read(scb->fd, scb->buf, count);
+      if ((status != -1) || (errno != EINTR))
 	break;
     }
-  return status;
+  return (int)status;
 }
 
 int
-ser_unix_write_prim (struct serial *scb, const void *buf, size_t len)
+ser_unix_write_prim(struct serial *scb, const void *buf, size_t len)
 {
-  /* ??? Historically, GDB has not retried calls to "write" that
-     result in EINTR.  */
-  return write (scb->fd, buf, len);
+  /* ???: Historically, GDB has not retried calls to "write" that result in
+   * EINTR.  */
+  return (int)write(scb->fd, buf, len);
 }
 
 /* EOF */

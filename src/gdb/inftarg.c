@@ -189,14 +189,14 @@ static void
 child_attach(const char *args, int from_tty)
 {
   char *exec_file;
-  int pid;
+  pid_t pid;
   const char *dummy;
 
   if (!args)
     error_no_arg(_("process-id to attach"));
 
   dummy = args;
-  pid = strtol(args, (char **)&dummy, 0);
+  pid = (pid_t)strtol(args, (char **)&dummy, 0);
   /* Some targets do NOT set errno on errors, grrr! */
   if ((pid == 0) && (args == dummy))
     error(_("Illegal process-id: %s."), args);
