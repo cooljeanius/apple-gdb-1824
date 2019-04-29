@@ -4480,7 +4480,7 @@ breakpoints_info(const char *bnum_exp, int from_tty)
   if (bnum_exp)
     bnum = (long)parse_and_eval_long(bnum_exp);
 
-  breakpoint_1(bnum, 0);
+  breakpoint_1((int)bnum, 0);
 }
 
 /* */
@@ -4492,7 +4492,7 @@ maintenance_info_breakpoints(const char *bnum_exp, int from_tty)
   if (bnum_exp)
     bnum = (long)parse_and_eval_long(bnum_exp);
 
-  breakpoint_1(bnum, 1);
+  breakpoint_1((int)bnum, 1);
 }
 
 /* Print a message describing any breakpoints set at PC: */
@@ -6656,13 +6656,13 @@ break_command_1(const char *arg, int flag, int from_tty,
 	  && (strstr(arg, "-shlib") == arg))
 	{
 	  const char *begin;
-	  int len;
+	  ptrdiff_t len;
 
 	  arg += 6;
 	  while (isspace(*arg))
 	    arg++;
 	  if (*arg == '\0')
-	    error("No value for \"-shlib\"");
+	    error(_("No value for \"-shlib\""));
 	  if (*arg == '"')
 	    {
 	      int bs = 0;
@@ -6671,7 +6671,7 @@ break_command_1(const char *arg, int flag, int from_tty,
 	      while ((*arg != '"') || bs)
 		{
 		  if (*arg == '\0')
-		    error("No close quote in \"-shlib\" argument.");
+		    error(_("No close quote in \"-shlib\" argument."));
 		  if (*arg == '\\')
 		    {
 		      if (bs)
@@ -7050,7 +7050,7 @@ break_command_2(const char *arg, int flag, int from_tty,
 	  while (tok && *tok)
 	    {
 	      const char *end_tok;
-	      int toklen;
+	      ptrdiff_t toklen;
 	      const char *cond_start = NULL;
 	      const char *cond_end = NULL;
 	      while (*tok == ' ' || *tok == '\t')
@@ -7080,7 +7080,7 @@ break_command_2(const char *arg, int flag, int from_tty,
 
 		  tok = (end_tok + 1);
 		  tmptok = tok;
-		  thread = strtol(tok, (char **)&tok, 0);
+		  thread = (int)strtol(tok, (char **)&tok, 0);
 		  if (tok == tmptok)
 		    error(_("Junk after thread keyword."));
 		  if (!valid_thread_id(thread))
@@ -7540,7 +7540,7 @@ watch_command_1(const char *arg, int accessflag, int by_location, int from_tty)
   const char *exp_start = NULL;
   const char *exp_end = NULL;
   const char *tok, *end_tok;
-  int toklen;
+  ptrdiff_t toklen;
   const char *cond_start = NULL;
   const char *cond_end = NULL;
   char *exp_string = NULL;
@@ -7615,7 +7615,7 @@ watch_command_1(const char *arg, int accessflag, int by_location, int from_tty)
   mark = value_mark();
   val = evaluate_expression(exp);
   if (TYPE_CODE(value_type(val)) == TYPE_CODE_ERROR)
-    error("Can not watch an expression of unknown type.");
+    error(_("Cannot watch an expression of unknown type."));
   release_value(val);
   if (value_lazy(val))
     value_fetch_lazy(val);
@@ -10623,7 +10623,7 @@ write_one_breakpoint(struct breakpoint *b, struct ui_file *stream,
 
 	if (b->addr_string)
 	  {
-	    int len = strlen (b->addr_string) - 1;
+	    size_t len = (strlen(b->addr_string) - 1UL);
 	    if (b->addr_string[len] == ' ')
 	      b->addr_string[len] = 0;
 	    else

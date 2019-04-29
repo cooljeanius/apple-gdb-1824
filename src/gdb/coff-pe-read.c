@@ -143,7 +143,7 @@ read_pe_truncate_name(char *dll_name)
 
 /* Low-level support functions, direct from the ld module pe-dll.c. */
 static unsigned int
-pe_get16(bfd *abfd, int where)
+pe_get16(bfd *abfd, unsigned long where)
 {
   unsigned char b[2];
   char buf8[8] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
@@ -155,7 +155,7 @@ pe_get16(bfd *abfd, int where)
 }
 
 static unsigned int
-pe_get32(bfd *abfd, int where)
+pe_get32(bfd *abfd, unsigned long where)
 {
   unsigned char b[4];
   char buf8[8] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };

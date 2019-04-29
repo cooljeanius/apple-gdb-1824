@@ -2301,8 +2301,8 @@ dyld_libraries_similar(struct dyld_path_info *d,
 
   const char *fbase = NULL;
   const char *lbase = NULL;
-  int flen = 0;
-  int llen = 0;
+  size_t flen = 0UL;
+  size_t llen = 0UL;
 
   NSTRACE(dyld_libraries_similar);
 

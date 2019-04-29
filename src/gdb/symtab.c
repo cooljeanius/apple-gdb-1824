@@ -676,9 +676,9 @@ lookup_partial_symtab_all (const char *name, int only_unread)
    specified by SIGNATURE_ID.  Note that this function is g++ specific. */
 
 char *
-gdb_mangle_name (struct type *type, int method_id, int signature_id)
+gdb_mangle_name(struct type *type, int method_id, int signature_id)
 {
-  int mangled_name_len;
+  size_t mangled_name_len;
   char *mangled_name;
   struct fn_field *f = TYPE_FN_FIELDLIST1(type, method_id);
   struct fn_field *method = &f[signature_id];
@@ -691,31 +691,32 @@ gdb_mangle_name (struct type *type, int method_id, int signature_id)
   int is_full_physname_constructor;
 
   int is_constructor;
-  int is_destructor = is_destructor_name (physname);
+  int is_destructor = is_destructor_name(physname);
   /* Need a new type prefix.  */
-  const char *const_prefix = method->is_const ? "C" : "";
-  const char *volatile_prefix = method->is_volatile ? "V" : "";
+  const char *const_prefix = (method->is_const ? "C" : "");
+  const char *volatile_prefix = (method->is_volatile ? "V" : "");
   char buf[20];
-  int len = (newname == NULL ? 0 : strlen (newname));
+  size_t len = ((newname == NULL) ? 0UL : strlen(newname));
 
   /* Nothing to do if physname already contains a fully mangled v3 abi name
      or an operator name.  */
-  if ((physname[0] == '_' && physname[1] == 'Z')
-      || is_operator_name (field_name))
-    return xstrdup (physname);
+  if (((physname[0] == '_') && (physname[1] == 'Z'))
+      || is_operator_name(field_name))
+    return xstrdup(physname);
 
-  is_full_physname_constructor = is_constructor_name (physname);
+  is_full_physname_constructor = is_constructor_name(physname);
 
   is_constructor =
-    is_full_physname_constructor || (newname && strcmp (field_name, newname) == 0);
+    (is_full_physname_constructor
+     || (newname && (strcmp(field_name, newname) == 0)));
 
   if (!is_destructor)
-    is_destructor = (strncmp (physname, "__dt", 4) == 0);
+    is_destructor = (strncmp(physname, "__dt", 4UL) == 0);
 
   if (is_destructor || is_full_physname_constructor)
     {
-      mangled_name = (char *) xmalloc (strlen (physname) + 1);
-      strcpy (mangled_name, physname);
+      mangled_name = (char *)xmalloc(strlen(physname) + 1UL);
+      strcpy(mangled_name, physname);
       return mangled_name;
     }
 
@@ -733,10 +734,11 @@ gdb_mangle_name (struct type *type, int method_id, int signature_id)
     }
   else
     {
-      snprintf(buf, sizeof(buf), "__%s%s%d", const_prefix, volatile_prefix, len);
+      snprintf(buf, sizeof(buf), "__%s%s%d", const_prefix, volatile_prefix,
+	       (int)len);
     }
-  mangled_name_len = ((is_constructor ? 0 : strlen (field_name))
-		      + strlen (buf) + len + strlen (physname) + 1);
+  mangled_name_len = ((is_constructor ? 0UL : strlen(field_name))
+		      + strlen(buf) + len + strlen(physname) + 1UL);
 
     {
       mangled_name = (char *)xmalloc(mangled_name_len);
@@ -961,7 +963,7 @@ symbol_set_names(struct general_symbol_info *gsymbol, const char *linkage_name,
 	 Otherwise, just place a second zero byte after the end of the mangled
 	 name.  */
       *slot = (char *)obstack_alloc(&objfile->objfile_obstack,
-                                    (lookup_len + demangled_len + 3UL));
+                                    (int)(lookup_len + demangled_len + 3UL));
       memcpy(*slot, lookup_name, (lookup_len + 1UL));
       if (demangled_name != NULL)
 	{
@@ -1008,9 +1010,9 @@ symbol_init_demangled_name (struct general_symbol_info *gsymbol,
     {
       if (demangled)
 	{
-	  gsymbol->language_specific.cplus_specific.demangled_name
-	    = obsavestring (demangled, strlen (demangled), obstack);
-	  xfree (demangled);
+	  gsymbol->language_specific.cplus_specific.demangled_name =
+	    obsavestring(demangled, (int)strlen(demangled), obstack);
+	  xfree(demangled);
 	}
       else
 	gsymbol->language_specific.cplus_specific.demangled_name = NULL;
@@ -1447,10 +1449,10 @@ fixup_section (struct general_symbol_info *ginfo, struct objfile *objfile)
 	     use pointer math to get the correct index. OBJFILE->SECTION_OFFSETS
 	     is created using the number of OBJFILE->SECTIONS that made it into
 	     the final list so the index will always be correct.  */
-	  int idx = s - objfile->sections;
-	  CORE_ADDR offset = objfile_section_offset (objfile, idx);
+	  ptrdiff_t idx = (s - objfile->sections);
+	  CORE_ADDR offset = objfile_section_offset(objfile, (int)idx);
 
-	  if (s->addr - offset <= addr && addr < s->endaddr - offset)
+	  if (((s->addr - offset) <= addr) && (addr < (s->endaddr - offset)))
 	    {
 	      ginfo->bfd_section = s->the_bfd_section;
 	      ginfo->section = (short)idx;
@@ -2053,26 +2055,26 @@ lookup_symbol_aux_symtabs (int block_index,
    if they are string-compare equal.  */
 
 int
-psym_name_match (const char *alternate_name, const char *name)
+psym_name_match(const char *alternate_name, const char *name)
 {
-  int len1, len2;
+  size_t len1, len2;
 
-  if (strcmp (alternate_name, name) == 0)
+  if (strcmp(alternate_name, name) == 0)
     return 1;
 
   /* Make sure the alternate_name is at least 3 chars longer than name  */
-  len1 = strlen (alternate_name);
-  len2 = strlen (name);
-  if (len1 < len2 + 3)
+  len1 = strlen(alternate_name);
+  len2 = strlen(name);
+  if (len1 < (len2 + 3UL))
     return 0;
 
   /* Equivalence symbols start with *_ */
-  if (alternate_name[0] != '*' || alternate_name[1] != '_')
+  if ((alternate_name[0] != '*') || (alternate_name[1] != '_'))
     return 0;
   alternate_name += 2;
 
   /* Following the *_, a copy of the symbol name */
-  if (strncmp (alternate_name, name, len2) != 0)
+  if (strncmp(alternate_name, name, len2) != 0)
     return 0;
 
   /* Following the *_, the symbol name, expect a '$' */
@@ -2082,9 +2084,9 @@ psym_name_match (const char *alternate_name, const char *name)
 
   while (*alternate_name != '\0')
     {
-      if (!isupper (*alternate_name)
-          &&!isdigit (*alternate_name)
-          && *alternate_name != '$')
+      if (!isupper(*alternate_name)
+          &&!isdigit(*alternate_name)
+          && (*alternate_name != '$'))
         return 0;
       alternate_name++;
     }
@@ -5319,7 +5321,7 @@ make_symbol_completion_list(const char *text, char *word)
   struct partial_symbol **psym;
   /* The symbol on which we are completing.  Points in same buffer as text: */
   const char *sym_text;
-  /* Length of sym_text.  */
+  /* Length of sym_text: */
   int sym_text_len;
 
   /* Now look for the symbol we are supposed to complete on.
@@ -5377,13 +5379,13 @@ make_symbol_completion_list(const char *text, char *word)
 
   return_val_size = 100;
   return_val_index = 0;
-  return_val = (char **) xmalloc ((return_val_size + 1) * sizeof (char *));
+  return_val = (char **)xmalloc((return_val_size + 1UL) * sizeof(char *));
   return_val[0] = NULL;
 
   /* Look through the partial symtabs for all symbols which begin
      by matching SYM_TEXT.  Add each one that you find to the list.  */
 
-  sym_text_len = strlen (sym_text);
+  sym_text_len = (int)strlen(sym_text);
 
   ALL_PSYMTABS (objfile, ps)
   {
@@ -5504,7 +5506,7 @@ make_file_symbol_completion_list(const char *text, char *word, char *srcfile)
   /* The symbol on which we are completing.  Points in same buffer as text: */
   const char *sym_text;
   /* Length of sym_text.  */
-  int sym_text_len;
+  size_t sym_text_len;
 
   /* Now look for the symbol we are supposed to complete on.
      FIXME: This should be language-specific.  */
@@ -5553,25 +5555,25 @@ make_file_symbol_completion_list(const char *text, char *word, char *srcfile)
 
   return_val_size = 10;
   return_val_index = 0;
-  return_val = (char **) xmalloc ((return_val_size + 1) * sizeof (char *));
+  return_val = (char **)xmalloc((return_val_size + 1UL) * sizeof(char *));
   return_val[0] = NULL;
 
   /* Look through the partial symtabs for all symbols which begin
      by matching SYM_TEXT.  Add each one that you find to the list.  */
 
-  sym_text_len = strlen (sym_text);
+  sym_text_len = strlen(sym_text);
 
   /* Find the symtab for SRCFILE (this loads it if it was not yet read
      in).  */
-  s = lookup_symtab (srcfile);
+  s = lookup_symtab(srcfile);
   if (s == NULL)
     {
       /* Maybe they typed the file with leading directories, while the
 	 symbol tables record only its basename.  */
-      const char *tail = lbasename (srcfile);
+      const char *tail = lbasename(srcfile);
 
       if (tail > srcfile)
-	s = lookup_symtab (tail);
+	s = lookup_symtab(tail);
     }
 
   /* If we have no symtab for that file, return an empty list.  */
@@ -5581,16 +5583,16 @@ make_file_symbol_completion_list(const char *text, char *word, char *srcfile)
   /* Go through this symtab and check the externs and statics for
      symbols which match.  */
 
-  b = BLOCKVECTOR_BLOCK (BLOCKVECTOR (s), GLOBAL_BLOCK);
-  ALL_BLOCK_SYMBOLS (b, iter, sym)
+  b = BLOCKVECTOR_BLOCK(BLOCKVECTOR(s), GLOBAL_BLOCK);
+  ALL_BLOCK_SYMBOLS(b, iter, sym)
     {
-      COMPLETION_LIST_ADD_SYMBOL (sym, sym_text, sym_text_len, text, word);
+      COMPLETION_LIST_ADD_SYMBOL(sym, sym_text, (int)sym_text_len, text, word);
     }
 
-  b = BLOCKVECTOR_BLOCK (BLOCKVECTOR (s), STATIC_BLOCK);
-  ALL_BLOCK_SYMBOLS (b, iter, sym)
+  b = BLOCKVECTOR_BLOCK(BLOCKVECTOR(s), STATIC_BLOCK);
+  ALL_BLOCK_SYMBOLS(b, iter, sym)
     {
-      COMPLETION_LIST_ADD_SYMBOL (sym, sym_text, sym_text_len, text, word);
+      COMPLETION_LIST_ADD_SYMBOL(sym, sym_text, (int)sym_text_len, text, word);
     }
 
   return (return_val);

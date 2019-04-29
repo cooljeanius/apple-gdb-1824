@@ -997,7 +997,7 @@ dyld_shlib_info_basename_length (struct dyld_objfile_info *s,
     {
       const char *name = NULL;
       const char *tfname = NULL;
-      int tfnamelen = 0;
+      size_t tfnamelen = 0UL;
 
       if (!(j0->reason & reason_mask))
         {
@@ -1033,7 +1033,7 @@ dyld_shlib_info_basename_length (struct dyld_objfile_info *s,
   {
     const char *name = NULL;
     const char *tfname = NULL;
-    int tfnamelen = 0;
+    size_t tfnamelen = 0UL;
     struct dyld_objfile_entry *j1 = NULL;
 
     int found = 0;
@@ -1129,7 +1129,7 @@ dyld_print_entry_info(struct dyld_objfile_entry *j, int shlibnum,
   char *prefix;
 
   const char *tfname = NULL;
-  int tfnamelen = 0;
+  size_t tfnamelen = 0UL;
   int is_framework, is_bundle;
   char *fname = NULL;
   char addrbuf[24];

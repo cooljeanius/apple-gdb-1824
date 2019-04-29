@@ -412,7 +412,7 @@ void
 add_path(const char *dirname, char **which_path, int parse_separators)
 {
   char *old = *which_path;
-  int prefix = 0;
+  size_t prefix = 0UL;
 
   if (dirname == 0)
     return;
@@ -575,7 +575,7 @@ add_path(const char *dirname, char **which_path, int parse_separators)
 		/* Found it in the search path, remove old copy */
 		if (p > *which_path)
 		  p--;		/* Back over leading separator */
-		if (prefix > (p - *which_path))
+		if ((ptrdiff_t)prefix > (p - *which_path))
 		  goto skip_dup;	/* Same dir twice in one cmd */
 		strcpy(p, &p[len + 1]);	/* Copy from next \0 or  : */
 	      }
@@ -701,8 +701,8 @@ openp(const char *path, int opts, const char *string,
   char *filename;
   const char *p;
   const char *p1;
-  int len;
-  int alloclen;
+  size_t len;
+  size_t alloclen;
 
   if (!path)
     path = ".";
@@ -764,7 +764,7 @@ openp(const char *path, int opts, const char *string,
 	  && (p[2] == 'w') && (p[3] == 'd'))
 	{
 	  /* Name is $cwd -- insert current directory name instead.  */
-	  int newlen;
+	  size_t newlen;
 
 	  /* First, realloc the filename buffer if too short. */
 	  len = strlen(current_directory);
@@ -1086,18 +1086,18 @@ find_and_open_source(struct objfile *objfile, const char *filename,
 #define	cdir_len	5
       /* We cast strstr's result in case an ANSIhole has made it const,
          which produces a "required warning" when assigned to a nonconst. */
-      p = (char *) strstr (source_path, "$cdir");
+      p = (char *)strstr(source_path, "$cdir");
       if (p && (p == path || p[-1] == DIRNAME_SEPARATOR)
 	  && (p[cdir_len] == DIRNAME_SEPARATOR || p[cdir_len] == '\0'))
 	{
-	  int len;
+	  ptrdiff_t len;
 
-	  path = (char *)
-	    alloca (strlen (source_path) + 1 + strlen (dirname) + 1);
-	  len = p - source_path;
-	  strncpy (path, source_path, len);	/* Before $cdir */
-	  strcpy (path + len, dirname);	/* new stuff */
-	  strcat (path + len, source_path + len + cdir_len);	/* After $cdir */
+	  path = ((char *)
+		  alloca(strlen(source_path) + 1UL + strlen(dirname) + 1UL));
+	  len = (p - source_path);
+	  strncpy(path, source_path, len);	/* Before $cdir */
+	  strcpy((path + len), dirname);	/* new stuff */
+	  strcat((path + len), (source_path + len + cdir_len));	/* After $cdir */
 	}
     }
 
@@ -1303,10 +1303,10 @@ find_source_lines (struct symtab *s, int desc)
 	      {
 		lines_allocated *= 2;
 		line_charpos =
-		  (int *) xrealloc ((char *) line_charpos,
-				    sizeof (int) * lines_allocated);
+		  (int *)xrealloc((char *)line_charpos,
+				  (sizeof(int) * lines_allocated));
 	      }
-	    line_charpos[nlines++] = p - data - 1;
+	    line_charpos[nlines++] = (int)(p - data - 1);
 	  }
 	if ((c == '\n') || (c == '\r'))
 	  {

@@ -16,7 +16,7 @@ typedef struct dyld_path_info
   char *insert_libraries;
 } dyld_path_info;
 
-void dyld_library_basename(const char *path, const char **s, int *len,
+void dyld_library_basename(const char *path, const char **s, size_t *len,
                            int *is_framework, int *is_bundle);
 
 char *dyld_resolve_image(const struct dyld_path_info *d,

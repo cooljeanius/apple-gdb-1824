@@ -144,12 +144,12 @@ expand_hash_table (struct bcache *bcache)
   bcache->expand_count++;
   bcache->expand_hash_count += bcache->unique_count;
 
-  /* Find the next size.  */
-  new_num_buckets = bcache->num_buckets * 2;
-  for (i = 0; i < (sizeof (sizes) / sizeof (sizes[0])); i++)
+  /* Find the next size: */
+  new_num_buckets = (bcache->num_buckets * 2);
+  for (i = 0; i < (sizeof(sizes) / sizeof(sizes[0])); i++)
     if (sizes[i] > bcache->num_buckets)
       {
-	new_num_buckets = sizes[i];
+	new_num_buckets = (unsigned int)sizes[i];
 	break;
       }
 
@@ -323,7 +323,7 @@ compare_ints(const void *ap, const void *bp)
 
 
 static void
-print_percentage(int portion, int total)
+print_percentage(long portion, long total)
 {
   if (total == 0)
     /* i18n: Like "Percentage of duplicates, by count: (not applicable)" */

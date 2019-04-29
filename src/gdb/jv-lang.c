@@ -314,7 +314,7 @@ type_from_class(struct value *clas)
       size_t namelen = java_demangled_signature_length(signature);
       if (namelen > strlen(name))
 	name = (char *)obstack_alloc(&objfile->objfile_obstack,
-                                     (namelen + 1));
+                                     (int)(namelen + 1));
       java_demangled_signature_copy(name, signature);
       name[namelen] = '\0';
       is_array = 1;
@@ -389,24 +389,25 @@ java_link_class_type(struct type *type, struct value *clas)
   nfields++;			/* Add one for dummy "class" field. */
   TYPE_NFIELDS(type) = (short)nfields;
   TYPE_FIELDS(type) = ((struct field *)
-                       TYPE_ALLOC(type, (sizeof(struct field) * nfields)));
+                       TYPE_ALLOC(type,
+				  (int)(sizeof(struct field) * nfields)));
 
   memset(TYPE_FIELDS(type), 0, (sizeof(struct field) * nfields));
 
   TYPE_FIELD_PRIVATE_BITS(type) =
-    (B_TYPE *)TYPE_ALLOC(type, B_BYTES(nfields));
+    (B_TYPE *)TYPE_ALLOC(type, (int)B_BYTES(nfields));
   gdb_assert(type != NULL);
   gdb_assert(TYPE_CPLUS_SPECIFIC_NONULL(type) != NULL);
   gdb_assert(TYPE_FIELD_PRIVATE_BITS(type) != NULL);
   B_CLRALL(TYPE_FIELD_PRIVATE_BITS(type), nfields);
 
   TYPE_FIELD_PROTECTED_BITS(type) =
-    (B_TYPE *)TYPE_ALLOC(type, B_BYTES(nfields));
+    (B_TYPE *)TYPE_ALLOC(type, (int)B_BYTES(nfields));
   gdb_assert(TYPE_FIELD_PROTECTED_BITS(type) != NULL);
   B_CLRALL(TYPE_FIELD_PROTECTED_BITS(type), nfields);
 
   TYPE_FIELD_IGNORE_BITS(type) =
-    (B_TYPE *)TYPE_ALLOC(type, B_BYTES(nfields));
+    (B_TYPE *)TYPE_ALLOC(type, (int)B_BYTES(nfields));
   gdb_assert(TYPE_FIELD_IGNORE_BITS(type) != NULL);
   B_CLRALL(TYPE_FIELD_IGNORE_BITS(type), nfields);
 
@@ -423,7 +424,7 @@ java_link_class_type(struct type *type, struct value *clas)
     }
 
   gdb_assert(name != NULL);
-  i = strlen(name);
+  i = (int)strlen(name);
   if ((i > 2) && (name[i - 1] == ']') && (tsuper != NULL))
     {
       /* FIXME: ??? */
@@ -489,7 +490,7 @@ java_link_class_type(struct type *type, struct value *clas)
       if (accflags & 0x0008)	/* ACC_STATIC */
 	SET_FIELD_PHYSADDR(TYPE_FIELD(type, i), boffset);
       else
-	TYPE_FIELD_BITPOS_ASSIGN(type, i) = (8 * boffset);
+	TYPE_FIELD_BITPOS_ASSIGN(type, i) = (8 * (int)boffset);
       if (accflags & 0x8000)	/* FIELD_UNRESOLVED_FLAG */
 	{
 	  TYPE_FIELD_TYPE(type, i) = get_java_object_type(); /* FIXME: ? */
@@ -511,7 +512,7 @@ java_link_class_type(struct type *type, struct value *clas)
                                                   "method_count", NULL,
                                                   "structure"));
   TYPE_NFN_FIELDS_TOTAL(type) = (short)nmethods;
-  j = (nmethods * sizeof(struct fn_field));
+  j = (int)(nmethods * sizeof(struct fn_field));
   fn_fields = ((struct fn_field *)
                obstack_alloc(&dynamics_objfile->objfile_obstack, j));
   memset(fn_fields, 0, j);
@@ -774,7 +775,7 @@ java_demangled_signature_copy(char *result, const char *signature)
       break;
     default:
       ptr = (char *)TYPE_NAME(java_primitive_type(signature[0]));
-      i = strlen(ptr);
+      i = (int)strlen(ptr);
       strcpy(result, ptr);
       ptr = (result + i);
       break;
@@ -901,16 +902,16 @@ evaluate_subexp_java (struct type *expect_type, struct expression *exp,
          array or pointer type (like a plain int variable for example),
          then report this as an error. */
 
-      arg1 = coerce_ref (arg1);
-      type = check_typedef (value_type (arg1));
-      if (TYPE_CODE (type) == TYPE_CODE_PTR)
-	type = check_typedef (TYPE_TARGET_TYPE (type));
-      name = TYPE_NAME (type);
+      arg1 = coerce_ref(arg1);
+      type = check_typedef(value_type(arg1));
+      if (TYPE_CODE(type) == TYPE_CODE_PTR)
+	type = check_typedef(TYPE_TARGET_TYPE(type));
+      name = TYPE_NAME(type);
       if (name == NULL)
-	name = TYPE_TAG_NAME (type);
-      i = name == NULL ? 0 : strlen (name);
-      if (TYPE_CODE (type) == TYPE_CODE_STRUCT
-	  && i > 2 && name[i - 1] == ']')
+	name = TYPE_TAG_NAME(type);
+      i = (int)((name == NULL) ? 0 : strlen(name));
+      if ((TYPE_CODE(type) == TYPE_CODE_STRUCT)
+	  && (i > 2) && (name[i - 1] == ']'))
 	{
 	  CORE_ADDR address;
 	  long length, index;
@@ -918,7 +919,7 @@ evaluate_subexp_java (struct type *expect_type, struct expression *exp,
 	  gdb_byte buf4[4];
 	  gdb_byte buf8[8];
 
-	  struct value *clas = java_class_from_object (arg1);
+	  struct value *clas = java_class_from_object(arg1);
 	  struct value *temp = clas;
 	  buf8[0] = '\0';
 	  (void)buf8;

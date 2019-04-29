@@ -121,11 +121,11 @@ search_for_name_in_path(const char *name, const char *path, const char *suffix)
 {
   char *dylib_name;
   char *name_with_suffix;
-  int name_with_suffix_len;
+  size_t name_with_suffix_len;
   const char *p, *cur;
-  int curlen;
-  int namelen;
-  int pathlen;
+  ptrdiff_t curlen;
+  size_t namelen;
+  size_t pathlen;
   struct stat stat_buf;
 
   namelen = strlen(name);
@@ -136,13 +136,13 @@ search_for_name_in_path(const char *name, const char *path, const char *suffix)
     {
       name_with_suffix = build_suffix_name(name, suffix);
       name_with_suffix_len = strlen(name_with_suffix);
-      dylib_name = (char *)xmalloc(name_with_suffix_len + pathlen + 2);
+      dylib_name = (char *)xmalloc(name_with_suffix_len + pathlen + 2UL);
     }
   else
     {
       name_with_suffix = NULL;
       name_with_suffix_len = 0;
-      dylib_name = (char *)xmalloc(namelen + pathlen + 2);
+      dylib_name = (char *)xmalloc(namelen + pathlen + 2UL);
     }
 
 
@@ -153,14 +153,13 @@ search_for_name_in_path(const char *name, const char *path, const char *suffix)
 
   for (;;)
     {
-
-      p = strchr (cur, ':');
+      p = strchr(cur, ':');
       if (p == NULL)
         {
-          p = strchr (cur, '\0');
+          p = strchr(cur, '\0');
         }
-      assert (p != NULL);
-      curlen = p - cur;
+      assert(p != NULL);
+      curlen = (p - cur);
 
       /* Skip empty path elements... */
 
@@ -223,30 +222,30 @@ search_for_name_in_path(const char *name, const char *path, const char *suffix)
    If WITH_SUFFIX is set, suffixes like _debug are omitted.  */
 
 static const char *
-get_framework_pathname (const char *name, const char *type, int with_suffix)
+get_framework_pathname(const char *name, const char *type, int with_suffix)
 {
   const char *basename, *a, *b, *c, *d, *suffix;
-  int baselen, s;
+  size_t baselen, s;
 
   /* pull off the last component and make basename point to it
      A will point to the last / character in NAME.  */
 
-  a = strrchr (name, '/');
+  a = strrchr(name, '/');
   if (a == NULL)
     return (NULL);
   if (a == name)
     return (NULL);
-  basename = a + 1;
-  baselen = strlen (basename);
+  basename = (a + 1UL);
+  baselen = strlen(basename);
 
   /* look for suffix starting with a '_', e.g. ...Versions/A/Carbon_debug */
   if (with_suffix)
     {
-      suffix = strrchr (basename, '_');
+      suffix = strrchr(basename, '_');
       if (suffix != NULL)
         {
-          s = strlen (suffix);
-          if (suffix == basename || s < 2)
+          s = strlen(suffix);
+          if ((suffix == basename) || (s < 2UL))
             suffix = NULL;
           else
             baselen -= s;
@@ -339,7 +338,7 @@ get_framework_pathname (const char *name, const char *type, int with_suffix)
    IS_BUNDLE is true if PATH appears to be a bundle.  */
 
 void
-dyld_library_basename(const char *path, const char **s, int *len,
+dyld_library_basename(const char *path, const char **s, size_t *len,
                       int *is_framework, int *is_bundle)
 {
   const char *p = NULL;
@@ -417,7 +416,7 @@ dyld_library_basename(const char *path, const char **s, int *len,
   newstr = xstrdup(path);
   if (dyld_image_suffix != NULL)
     {
-      char *suffixptr = strstr (newstr, dyld_image_suffix);
+      char *suffixptr = strstr(newstr, dyld_image_suffix);
 
   /* If we have a suffix, copy anything AFTER the suffix ("_debug") on top
      of the suffix.  */
@@ -429,19 +428,20 @@ dyld_library_basename(const char *path, const char **s, int *len,
 
       if (suffixptr != NULL)
         {
-          char *tmpbuf = xstrdup (suffixptr + strlen (dyld_image_suffix));
-          strcpy (suffixptr, tmpbuf);
-          xfree (tmpbuf);
+          char *tmpbuf = xstrdup(suffixptr + strlen(dyld_image_suffix));
+          strcpy(suffixptr, tmpbuf);
+          xfree(tmpbuf);
         }
     }
 
-  *s = (const char *) newstr;
-  *len = strlen (newstr);
+  *s = (const char *)newstr;
+  *len = strlen(newstr);
   return;
 }
 
+/* */
 char *
-dyld_resolve_image (const struct dyld_path_info *d, const char *dylib_name)
+dyld_resolve_image(const struct dyld_path_info *d, const char *dylib_name)
 {
   struct stat stat_buf;
 
@@ -577,12 +577,12 @@ dyld_resolve_image (const struct dyld_path_info *d, const char *dylib_name)
       const char *relative_name = dylib_name + cookie_len;
       if (exec_bfd != NULL && exec_bfd->filename != NULL)
         {
-          int relative_name_len = strlen (relative_name);
+          size_t relative_name_len = strlen(relative_name);
           char *executable_path_end = strrchr(exec_bfd->filename, '/');
           if (executable_path_end != NULL)
             {
-              int executable_path_len =
-                executable_path_end - exec_bfd->filename;
+              ptrdiff_t executable_path_len =
+                (executable_path_end - exec_bfd->filename);
               char *final_name =
                 (char *)xmalloc(relative_name_len + executable_path_len
                                 + 1UL);
