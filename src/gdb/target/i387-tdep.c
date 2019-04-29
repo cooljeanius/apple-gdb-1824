@@ -235,12 +235,12 @@ i387_print_float_info(struct gdbarch *gdbarch, struct ui_file *file,
   fooff = get_frame_register_unsigned(frame, I387_FOOFF_REGNUM);
   fop = get_frame_register_unsigned(frame, I387_FOP_REGNUM);
 
-  top = ((fstat >> 11) & 7);
+  top = ((int)(fstat >> 11) & 7);
 
   for (fpreg = 7; fpreg >= 0; fpreg--)
     {
       gdb_byte raw[I386_MAX_REGISTER_SIZE];
-      int tag = ((ftag >> (fpreg * 2)) & 3);
+      int tag = (int)((ftag >> (fpreg * 2)) & 3);
       int i;
 
       fprintf_filtered(file, "%sR%d: ",

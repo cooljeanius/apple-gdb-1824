@@ -71,7 +71,7 @@ AC_C_VOLATILE
 # Checks for library functions.
 AC_FUNC_MEMCMP
 AC_CHECK_FUNCS([exit fprintf isspace memcpy memset \
-                sprintf strcmp strcpy strnicmp strtol])
+                sprintf strcmp strcpy strnicmp strtol])dnl
 
 # Checks for declarations.
 AC_CHECK_DECLS([TERMINATE_BY_UNLOAD])
@@ -79,7 +79,7 @@ AC_CHECK_DECLS([LONG])
 AC_CHECK_DECLS([BYTE])
 AC_CHECK_DECLS([REGISTER_BYTES])
 AC_CHECK_DECLS([BREAKPOINT])
-AC_CHECK_DECLS([BREAKPOINT_SIZE])
+AC_CHECK_DECLS([BREAKPOINT_SIZE])dnl
 
 # Map target cpu into the config cpu subdirectory name.
 # The default is ${target_cpu}.
@@ -181,7 +181,7 @@ else
 fi
 
 AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate'
-cleanly from AC_LINK_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
+cleanly from AC\_LINK\_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
 functional but inelegant update, you should probably tune the result
 yourself.])dnl
 ac_sources="${files}"

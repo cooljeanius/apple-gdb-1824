@@ -217,7 +217,7 @@ bcache_data(const void *addr, int length, struct bcache *bcache)
 
   full_hash = hash(addr, length);
   half_hash = (full_hash >> 16);
-  hash_index = (full_hash % bcache->num_buckets);
+  hash_index = (int)(full_hash % bcache->num_buckets);
 
   /* Search the hash bucket for a string identical to the caller's.
      As a short-circuit first compare the upper part of each hash
@@ -236,9 +236,9 @@ bcache_data(const void *addr, int length, struct bcache *bcache)
 
   /* The user's string is NOT in the list.  Insert it after *ps: */
   {
-    struct bstring *newbstr
-      = (struct bstring *)obstack_alloc(&bcache->cache,
-                                        BSTRING_SIZE(length));
+    struct bstring *newbstr =
+      (struct bstring *)obstack_alloc(&bcache->cache,
+				      (int)BSTRING_SIZE(length));
     memcpy(&newbstr->d.data, addr, length);
     newbstr->length = (unsigned short)length;
     newbstr->next = bcache->bucket[hash_index];

@@ -53,26 +53,25 @@ struct ada_val_print_args
   enum val_prettyprint pretty;
 };
 
-static void print_record (struct type *, const gdb_byte *, struct ui_file *,
-			  int, int, enum val_prettyprint);
+static void print_record(struct type *, const gdb_byte *, struct ui_file *,
+			 int, int, enum val_prettyprint);
 
-static int print_field_values (struct type *, const gdb_byte *,
-			       struct ui_file *, int, int,
-			       enum val_prettyprint, int, struct type *,
-			       const gdb_byte *);
+static int print_field_values(struct type *, const gdb_byte *,
+			      struct ui_file *, int, int, enum val_prettyprint,
+			      int, struct type *, const gdb_byte *);
 
-static void adjust_type_signedness (struct type *);
+static void adjust_type_signedness(struct type *);
 
-static int ada_val_print_stub (void *args0);
+static int ada_val_print_stub(void *args0);
 
-static int ada_val_print_1 (struct type *, const gdb_byte *, int, CORE_ADDR,
-			    struct ui_file *, int, int, int,
-			    enum val_prettyprint);
+static int ada_val_print_1(struct type *, const gdb_byte *, off_t, CORE_ADDR,
+			   struct ui_file *, int, int, int,
+			   enum val_prettyprint);
 
 
 /* Make TYPE unsigned if its range of values includes no negatives.  */
 static void
-adjust_type_signedness (struct type *type)
+adjust_type_signedness(struct type *type)
 {
   if (type != NULL && TYPE_CODE (type) == TYPE_CODE_RANGE
       && TYPE_LOW_BOUND (type) >= 0)
@@ -140,10 +139,10 @@ print_optional_low_bound(struct ui_file *stream, struct type *type)
     by ada_coerce_to_simple_array).  */
 
 static void
-val_print_packed_array_elements (struct type *type, const gdb_byte *valaddr,
-				 int bitoffset, struct ui_file *stream,
-				 int format, int recurse,
-				 enum val_prettyprint pretty)
+val_print_packed_array_elements(struct type *type, const gdb_byte *valaddr,
+				int bitoffset, struct ui_file *stream,
+				int format, int recurse,
+				enum val_prettyprint pretty)
 {
   unsigned int i;
   unsigned int things_printed = 0U;
@@ -176,42 +175,41 @@ val_print_packed_array_elements (struct type *type, const gdb_byte *valaddr,
 	{
 	  if (prettyprint_arrays)
 	    {
-	      fprintf_filtered (stream, ",\n");
-	      print_spaces_filtered (2 + 2 * recurse, stream);
+	      fprintf_filtered(stream, ",\n");
+	      print_spaces_filtered((2 + (2 * recurse)), stream);
 	    }
 	  else
 	    {
-	      fprintf_filtered (stream, ", ");
+	      fprintf_filtered(stream, ", ");
 	    }
 	}
-      wrap_here (n_spaces (2 + 2 * recurse));
+      wrap_here(n_spaces(2 + (2 * recurse)));
 
       i0 = i;
-      v0 = ada_value_primitive_packed_val (NULL, valaddr,
-					   (i0 * bitsize) / HOST_CHAR_BIT,
-					   (i0 * bitsize) % HOST_CHAR_BIT,
-					   bitsize, elttype);
+      v0 = ada_value_primitive_packed_val(NULL, valaddr,
+					  ((i0 * bitsize) / HOST_CHAR_BIT),
+					  ((i0 * bitsize) % HOST_CHAR_BIT),
+					  bitsize, elttype);
       while (1)
 	{
 	  i += 1;
 	  if (i >= len)
 	    break;
-	  v1 = ada_value_primitive_packed_val (NULL, valaddr,
-					       (i * bitsize) / HOST_CHAR_BIT,
-					       (i * bitsize) % HOST_CHAR_BIT,
-					       bitsize, elttype);
-	  if (memcmp (value_contents (v0), value_contents (v1), eltlen) != 0)
+	  v1 = ada_value_primitive_packed_val(NULL, valaddr,
+					      ((i * bitsize) / HOST_CHAR_BIT),
+					      ((i * bitsize) % HOST_CHAR_BIT),
+					      bitsize, elttype);
+	  if (memcmp(value_contents(v0), value_contents(v1), eltlen) != 0)
 	    break;
 	}
 
-      if (i - i0 > repeat_count_threshold)
+      if ((i - i0) > repeat_count_threshold)
 	{
-	  val_print (elttype, value_contents (v0), 0, 0, stream, format,
-		     0, recurse + 1, pretty);
-	  annotate_elt_rep (i - i0);
-	  fprintf_filtered (stream, _(" <repeats %u times>"), i - i0);
-	  annotate_elt_rep_end ();
-
+	  val_print(elttype, value_contents(v0), 0, 0, stream, format,
+		    0, (recurse + 1), pretty);
+	  annotate_elt_rep(i - i0);
+	  fprintf_filtered(stream, _(" <repeats %u times>"), (i - i0));
+	  annotate_elt_rep_end();
 	}
       else
 	{
@@ -573,19 +571,19 @@ ada_val_print (struct type *type, const gdb_byte *valaddr0,
   args.recurse = recurse;
   args.pretty = pretty;
 
-  return catch_errors (ada_val_print_stub, &args, NULL, RETURN_MASK_ALL);
+  return catch_errors(ada_val_print_stub, &args, NULL, RETURN_MASK_ALL);
 }
 
 /* Helper for ada_val_print; used as argument to catch_errors to
    unmarshal the arguments to ada_val_print_1, which does the work.  */
 static int
-ada_val_print_stub (void *args0)
+ada_val_print_stub(void *args0)
 {
-  struct ada_val_print_args *argsp = (struct ada_val_print_args *) args0;
-  return ada_val_print_1 (argsp->type, argsp->valaddr0,
-			  argsp->embedded_offset, argsp->address,
-			  argsp->stream, argsp->format, argsp->deref_ref,
-			  argsp->recurse, argsp->pretty);
+  struct ada_val_print_args *argsp = (struct ada_val_print_args *)args0;
+  return ada_val_print_1(argsp->type, argsp->valaddr0,
+			 argsp->embedded_offset, argsp->address,
+			 argsp->stream, argsp->format, argsp->deref_ref,
+			 argsp->recurse, argsp->pretty);
 }
 
 /* See the comment on ada_val_print.  This function differs in that it
@@ -593,7 +591,7 @@ ada_val_print_stub (void *args0)
 
 static int
 ada_val_print_1(struct type *type, const gdb_byte *valaddr0,
-                int embedded_offset, CORE_ADDR address,
+                off_t embedded_offset, CORE_ADDR address,
                 struct ui_file *stream, int format,
                 int deref_ref, int recurse, enum val_prettyprint pretty)
 {

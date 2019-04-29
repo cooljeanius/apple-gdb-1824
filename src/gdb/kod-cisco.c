@@ -118,19 +118,19 @@ cisco_kod_request(const char *arg, int from_tty)
   int fail = 0;
 
   char **sync_ids = NULL;
-  int sync_len = 0;
+  size_t sync_len = 0UL;
   int sync_next = 0;
   char *prev_id = NULL;
 
-  if (! arg || strcmp (arg, "any"))
+  if (! arg || strcmp(arg, "any"))
     {
       /* "Top-level" command.  This is really silly, but it also seems
 	 to be how KOD is defined.  */
       /* Even sillier is the fact that this first line must start
 	 with the word "List".  See kod.tcl.  */
-      (*gdb_kod_display) ("List of Cisco Kernel Objects\n");
-      (*gdb_kod_display) ("Object\tDescription\n");
-      (*gdb_kod_display) ("any\tAny and all objects\n");
+      (*gdb_kod_display)("List of Cisco Kernel Objects\n");
+      (*gdb_kod_display)("Object\tDescription\n");
+      (*gdb_kod_display)("any\tAny and all objects\n");
       return;
     }
 
@@ -141,47 +141,47 @@ cisco_kod_request(const char *arg, int from_tty)
       int bufsiz = PBUFSIZ;
       char *s_end;
 
-      strcpy (command, "aL");
+      strcpy(command, "aL");
       if (prev_id)
 	{
-	  strcat (command, ",");
-	  strcat (command, prev_id);
+	  strcat(command, ",");
+	  strcat(command, prev_id);
 	}
-      strcat (command, ";");
+      strcat(command, ";");
 
 #ifndef FAKE_PACKET
       /* We talk to the target by calling through the query function
 	 passed to us when we were initialized.  */
-      (*gdb_kod_query) (command, buffer, &bufsiz);
+      (*gdb_kod_query)(command, buffer, &bufsiz);
 #else
-      /* Fake up a multi-part packet.  */
-      if (! strncmp (&command[3], "a500005a", 8))
-	strcpy (buffer, "KAL,01,1,f500005f;f500005f;");
+      /* Fake up a multi-part packet: */
+      if (! strncmp(&command[3], "a500005a", 8UL))
+	strcpy(buffer, "KAL,01,1,f500005f;f500005f;");
       else
-	strcpy (buffer, "KAL,02,0,a500005a;a500005a;de02869f;");
-#endif
+	strcpy(buffer, "KAL,02,0,a500005a;a500005a;de02869f;");
+#endif /* !FAKE_PACKET */
 
-      /* Empty response is an error.  */
-      if (strlen (buffer) == 0)
+      /* Empty response is an error: */
+      if (strlen(buffer) == 0)
 	{
-	  (*gdb_kod_display) ("Remote target did not recognize kernel object query command.\n");
+	  (*gdb_kod_display)("Remote target did not recognize kernel object query command.\n");
 	  fail = 1;
 	  break;
 	}
 
-      /* If we don't get a `K' response then the buffer holds the
+      /* If we do NOT get a `K' response then the buffer holds the
 	 target's error message.  */
       if (buffer[0] != 'K')
 	{
-	  (*gdb_kod_display) (buffer);
+	  (*gdb_kod_display)(buffer);
 	  fail = 1;
 	  break;
 	}
 
-      /* Make sure we get the response we expect.  */
-      if (strncmp (buffer, "KAL,", 4))
+      /* Make sure we get the response we expect: */
+      if (strncmp(buffer, "KAL,", 4UL))
 	{
-	  bad_packet ();
+	  bad_packet();
 	  fail = 1;
 	  break;
 	}

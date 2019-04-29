@@ -187,11 +187,11 @@ print_range(struct type *the_type, struct ui_file *stream)
    set *N past the bound and its delimiter, if any.  */
 
 static void
-print_range_bound (struct type *type, char *bounds, int *n,
-		   struct ui_file *stream)
+print_range_bound(struct type *type, char *bounds, int *n,
+		  struct ui_file *stream)
 {
   LONGEST B;
-  if (ada_scan_number (bounds, *n, &B, n))
+  if (ada_scan_number(bounds, *n, &B, n))
     {
       /* STABS decodes all range types which bounds are 0 .. -1 as
          unsigned integers (ie. the type code is TYPE_CODE_INT, not
@@ -218,11 +218,14 @@ print_range_bound (struct type *type, char *bounds, int *n,
 
       pend = strstr(bound, "__");
       if (pend == NULL)
-	*n += bound_len = strlen(bound);
+	{
+	  bound_len = strlen(bound);
+	  *n += (int)bound_len;
+	}
       else
 	{
 	  bound_len = (pend - bound);
-	  *n += (bound_len + 2);
+	  *n += ((int)bound_len + 2);
 	}
       fprintf_filtered(stream, "%.*s", (int)bound_len, bound);
     }

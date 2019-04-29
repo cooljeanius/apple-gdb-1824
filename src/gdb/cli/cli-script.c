@@ -1357,12 +1357,12 @@ document_command(const char *comname, int from_tty)
 
   {
     struct command_line *cl1;
-    int len = 0;
+    size_t len = 0UL;
 
     for (cl1 = doclines; cl1; cl1 = cl1->next)
-      len += (strlen(cl1->line) + 1);
+      len += (strlen(cl1->line) + 1UL);
 
-    c->doc = (const char *)xmalloc(len + 1);
+    c->doc = (const char *)xmalloc(len + 1UL);
     *(char *)c->doc = 0;
 
     for (cl1 = doclines; cl1; cl1 = cl1->next)

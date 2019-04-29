@@ -274,13 +274,16 @@ print_frame_args (struct symbol *func, struct frame_info *fi, int num,
 		  ((current_offset + arg_size + sizeof (int) - 1)
 		   & ~(sizeof (int) - 1));
 
-		/* If this is the highest offset seen yet, set highest_offset.  */
+		/* If this is the highest offset seen yet, then set
+		 * highest_offset: */
 		if (highest_offset == -1
 		    || (current_offset > highest_offset))
 		  highest_offset = current_offset;
 
-		/* Add the number of ints we're about to print to args_printed.  */
-		args_printed += (arg_size + sizeof (int) - 1) / sizeof (int);
+		/* Add the number of ints we are about to print to
+		 * args_printed: */
+		args_printed += ((arg_size + (int)sizeof(int) - 1)
+				 / (int)sizeof(int));
 	      }
 
 	      /* We care about types of symbols, but don't need to keep track of
@@ -1509,7 +1512,9 @@ backtrace_command(const char *arg, int from_tty)
 {
   struct cleanup *old_chain = (struct cleanup *)NULL;
   char **argv = (char **)NULL;
-  int argIndicatingFullTrace = (-1), totArgLen = 0, argc = 0;
+  int argIndicatingFullTrace = (-1);
+  size_t totArgLen = 0UL;
+  int argc = 0;
   const char *argPtr = arg;
   struct backtrace_command_args btargs;
   int errors_ret = 0;
@@ -1533,7 +1538,7 @@ backtrace_command(const char *arg, int from_tty)
 	  else
 	    {
 	      argc++;
-	      totArgLen += strlen (argv[i]);
+	      totArgLen += strlen(argv[i]);
 	    }
 	}
       totArgLen += argc;

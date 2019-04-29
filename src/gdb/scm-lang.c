@@ -211,7 +211,7 @@ evaluate_subexp_scm(struct type *expect_type, struct expression *exp,
     case OP_NAME:
       pc = (*pos)++;
       len = longest_to_int(exp->elts[pc + 1].longconst);
-      (*pos) += (3 + BYTES_TO_EXP_ELEM(len + 1));
+      (*pos) += (3 + (int)BYTES_TO_EXP_ELEM(len + 1));
       if (noside == EVAL_SKIP)
 	goto nosideret;
       str = &exp->elts[pc + 2].string;
@@ -219,7 +219,7 @@ evaluate_subexp_scm(struct type *expect_type, struct expression *exp,
     case OP_EXPRSTRING:
       pc = (*pos)++;
       len = longest_to_int(exp->elts[pc + 1].longconst);
-      (*pos) += (3 + BYTES_TO_EXP_ELEM(len + 1));
+      (*pos) += (3 + (int)BYTES_TO_EXP_ELEM(len + 1));
       if (noside == EVAL_SKIP)
 	goto nosideret;
       str = &exp->elts[pc + 2].string;

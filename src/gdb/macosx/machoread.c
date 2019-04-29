@@ -889,7 +889,7 @@ macho_symfile_offsets(struct objfile *objfile,
   objfile->section_offsets =
     ((struct section_offsets *)
      obstack_alloc(&objfile->objfile_obstack,
-		   SIZEOF_N_SECTION_OFFSETS(objfile->num_sections)));
+		   (int)SIZEOF_N_SECTION_OFFSETS(objfile->num_sections)));
   memset(objfile->section_offsets, 0,
          SIZEOF_N_SECTION_OFFSETS(objfile->num_sections));
 

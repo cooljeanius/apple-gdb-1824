@@ -585,9 +585,10 @@ java_link_class_type(struct type *type, struct value *clas)
       TYPE_CODE(fn_fields[k].type) = TYPE_CODE_METHOD;
     }
 
-  j = TYPE_NFN_FIELDS(type) * sizeof(struct fn_fieldlist);
-  TYPE_FN_FIELDLISTS(type) = (struct fn_fieldlist *)
-    obstack_alloc(&dynamics_objfile->objfile_obstack, j);
+  j = (int)(TYPE_NFN_FIELDS(type) * sizeof(struct fn_fieldlist));
+  TYPE_FN_FIELDLISTS(type) =
+    ((struct fn_fieldlist *)
+     obstack_alloc(&dynamics_objfile->objfile_obstack, j));
   memcpy(TYPE_FN_FIELDLISTS(type), fn_fieldlists, j);
 
   return type;
@@ -958,14 +959,14 @@ evaluate_subexp_java (struct type *expect_type, struct expression *exp,
 
     case OP_STRING:
       (*pos)++;
-      i = longest_to_int (exp->elts[pc + 1].longconst);
-      (*pos) += 3 + BYTES_TO_EXP_ELEM (i + 1);
+      i = longest_to_int(exp->elts[pc + 1].longconst);
+      (*pos) += (3 + (int)BYTES_TO_EXP_ELEM(i + 1));
       if (noside == EVAL_SKIP)
 	goto nosideret;
-      return java_value_string (&exp->elts[pc + 2].string, i);
+      return java_value_string(&exp->elts[pc + 2].string, i);
 
     case STRUCTOP_STRUCT:
-      arg1 = evaluate_subexp_standard (expect_type, exp, pos, noside);
+      arg1 = evaluate_subexp_standard(expect_type, exp, pos, noside);
       /* Convert object field (such as TYPE.class) to reference. */
       if (TYPE_CODE (value_type (arg1)) == TYPE_CODE_STRUCT)
 	arg1 = value_addr (arg1);

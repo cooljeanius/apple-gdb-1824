@@ -2681,9 +2681,10 @@ check_for_additional_inlined_breakpoint_locations (struct symtabs_and_lines sals
   struct symtabs_and_lines new_sals;
   struct rb_tree_node *function_name_records;
 
-  new_sals.sals = (struct symtab_and_line *)
-                                     xmalloc (max_size *
-					      sizeof (struct symtab_and_line));
+  memset(&new_sals, 0, sizeof(struct symtabs_and_lines));
+
+  new_sals.sals = ((struct symtab_and_line *)
+		   xmalloc(max_size * sizeof(struct symtab_and_line)));
 
   new_sals.nelts = 0;
   indices = (int *) xmalloc (sals.nelts * sizeof (int));
@@ -2791,6 +2792,7 @@ check_for_additional_inlined_breakpoint_locations (struct symtabs_and_lines sals
   return new_sals;
 }
 
+/* */
 void
 inlined_subroutine_adjust_position_for_breakpoint (struct breakpoint *b)
 {
@@ -2914,10 +2916,11 @@ inlined_subroutine_adjust_position_for_breakpoint (struct breakpoint *b)
     global_inlined_call_stack.current_pos++;
 }
 
+/* */
 void
-inlined_subroutine_restore_after_dummy_call (void)
+inlined_subroutine_restore_after_dummy_call(void)
 {
-  int stack_size;
+  size_t stack_size;
   int i;
 
   if (saved_call_stack.nelts > 0)
@@ -2925,9 +2928,10 @@ inlined_subroutine_restore_after_dummy_call (void)
       /* Blank out the invalid records before filling in the correct
 	 (restored) values.  */
 
-      stack_size = global_inlined_call_stack.max_array_size *
-	                              sizeof (struct inlined_call_stack_record);
-      memset (global_inlined_call_stack.records, 0, stack_size);
+      stack_size =
+	((size_t)global_inlined_call_stack.max_array_size
+	 * sizeof(struct inlined_call_stack_record));
+      memset(global_inlined_call_stack.records, 0, stack_size);
 
       /* Copy back everything except max_array_size, which we don't
 	 want to change, because it should still accurately reflect
@@ -3423,19 +3427,20 @@ save_thread_inlined_call_stack (ptid_t ptid)
   tp->thread_inlined_call_stack->current_pos =
                                        global_inlined_call_stack.current_pos;
 
-  num_bytes = global_inlined_call_stack.max_array_size *
-                                sizeof (struct inlined_call_stack_record);
+  num_bytes = (global_inlined_call_stack.max_array_size
+	       * (int)sizeof(struct inlined_call_stack_record));
 
-  tp->thread_inlined_call_stack->records = (struct inlined_call_stack_record *)
-                                                           xmalloc (num_bytes);
+  tp->thread_inlined_call_stack->records =
+    (struct inlined_call_stack_record *)xmalloc(num_bytes);
 
-  memcpy (tp->thread_inlined_call_stack->records,
-	  global_inlined_call_stack.records, num_bytes);
+  memcpy(tp->thread_inlined_call_stack->records,
+	 global_inlined_call_stack.records, num_bytes);
 
 }
 
+/* */
 void
-restore_thread_inlined_call_stack (ptid_t ptid)
+restore_thread_inlined_call_stack(ptid_t ptid)
 {
   struct thread_info *tp;
   int num_bytes;
@@ -3468,8 +3473,8 @@ restore_thread_inlined_call_stack (ptid_t ptid)
                                    tp->thread_inlined_call_stack->current_pos;
 
 
-  num_bytes = global_inlined_call_stack.max_array_size *
-                                   sizeof (struct inlined_call_stack_record);
+  num_bytes = (global_inlined_call_stack.max_array_size
+	       * (int)sizeof(struct inlined_call_stack_record));
 
   memset (global_inlined_call_stack.records, 0, num_bytes);
   for (i = 1;

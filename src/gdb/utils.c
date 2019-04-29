@@ -1529,7 +1529,7 @@ myread(int desc, char *addr, int len)
 	return (int)val;
       if (val == 0)
 	return (orglen - len);
-      len -= val;
+      len -= (int)val;
       addr += val;
     }
   return orglen;

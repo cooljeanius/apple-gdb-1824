@@ -776,8 +776,8 @@ captured_main(void *data)
 	  osabi_string = "Darwin64";
 	}
       else
-	  warning("invalid argument \"%s\" for \"--arch\", should be one of "
-                  "\"ppc\" or \"ppc64\"\n", initial_arch);
+	warning(_("invalid argument \"%s\" for \"--arch\", should be one of "
+		  "\"ppc\" or \"ppc64\"\n"), initial_arch);
 # elif defined(TARGET_I386)
       if (strcmp(initial_arch, "i386") == 0)
 	{
@@ -845,7 +845,7 @@ captured_main(void *data)
 
 #else
   (void)initial_arch;
-  warning("--arch option not supported in this gdb.");
+  warning(_("--arch option not supported in this gdb."));
 #endif /* USE_POSIX_SPAWN || USE_ARCH_FOR_EXEC */
 
   /* APPLE LOCAL BEGIN: Set the osabi via option.  */
@@ -984,7 +984,11 @@ captured_main(void *data)
   xfree(cmdarg);
 
   if (command_errors_ret == 0) {
-    ; /* ??? */
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+    __asm__("");
+#else
+    (void)command_errors_ret;
+#endif /* __GNUC__ && !__STRICT_ANSI__ */
   }
 
   /* Read in the old history after all the command files have been read. */
@@ -1066,10 +1070,15 @@ captured_main(void *data)
       int errors_ret = catch_errors(captured_command_loop, 0, "",
 				    RETURN_MASK_ALL);
       if (errors_ret == 0) {
-	; /* ??? */
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+	__asm__("");
+#else
+	(void)errors_ret;
+#endif /* __GNUC__ && !__STRICT_ANSI__ */
       }
     }
   /* No exit -- exit is through quit_command.  */
+  return -1; /*NOTREACHED*/
 }
 
 /* */
@@ -1080,7 +1089,11 @@ gdb_main(struct captured_main_args *args)
   use_windows = args->use_windows;
   errors_ret = catch_errors(captured_main, args, "", RETURN_MASK_ALL);
   if (errors_ret == 0) {
-    ; /* ??? */
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+    __asm__("");
+#else
+    (void)errors_ret;
+#endif /* __GNUC__ && !__STRICT_ANSI__ */
   }
   /* The only way to end up here is by an error (normal exit is
      handled by quit_force()), hence always return an error status.  */

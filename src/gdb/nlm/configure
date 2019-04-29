@@ -4340,7 +4340,6 @@ _ACEOF
 fi
 done
 
-
 # Checks for declarations.
 ac_fn_c_check_decl "$LINENO" "TERMINATE_BY_UNLOAD" "ac_cv_have_decl_TERMINATE_BY_UNLOAD" "$ac_includes_default"
 if test "x$ac_cv_have_decl_TERMINATE_BY_UNLOAD" = xyes; then :
@@ -4407,7 +4406,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_BREAKPOINT_SIZE $ac_have_decl
 _ACEOF
-
 
 # Map target cpu into the config cpu subdirectory name.
 # The default is ${target_cpu}.

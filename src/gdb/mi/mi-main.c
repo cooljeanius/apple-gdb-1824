@@ -1654,37 +1654,39 @@ Usage: ADDR WORD-FORMAT WORD-SIZE NR-ROWS NR-COLS [ASCHAR].");
 
   /* Build the result as a two dimentional table. */
   {
-    struct ui_stream *stream = ui_out_stream_new (uiout);
+    struct ui_stream *stream = ui_out_stream_new(uiout);
     struct cleanup *cleanup_list_memory;
     int row;
     int row_byte;
-    cleanup_list_memory = make_cleanup_ui_out_list_begin_end (uiout, "memory");
+    cleanup_list_memory = make_cleanup_ui_out_list_begin_end(uiout, "memory");
     for (row = 0, row_byte = 0;
 	 row < nr_rows;
-	 row++, row_byte += nr_cols * word_size)
+	 row++, row_byte += (int)(nr_cols * word_size))
       {
 	int col;
 	int col_byte;
 	struct cleanup *cleanup_tuple;
 	struct cleanup *cleanup_list_data;
-	cleanup_tuple = make_cleanup_ui_out_tuple_begin_end (uiout, NULL);
-	ui_out_field_core_addr (uiout, "addr", addr + row_byte);
-	/* ui_out_field_core_addr_symbolic (uiout, "saddr", addr + row_byte); */
-	cleanup_list_data = make_cleanup_ui_out_list_begin_end (uiout, "data");
+	cleanup_tuple = make_cleanup_ui_out_tuple_begin_end(uiout, NULL);
+	ui_out_field_core_addr(uiout, "addr", (addr + row_byte));
+#if 0
+	ui_out_field_core_addr_symbolic(uiout, "saddr", (addr + row_byte));
+#endif /* 0 */
+	cleanup_list_data = make_cleanup_ui_out_list_begin_end(uiout, "data");
 	for (col = 0, col_byte = row_byte;
 	     col < nr_cols;
-	     col++, col_byte += word_size)
+	     col++, col_byte += (int)word_size)
 	  {
-	    if (col_byte + word_size > nr_bytes)
+	    if ((col_byte + word_size) > nr_bytes)
 	      {
-		ui_out_field_string (uiout, NULL, "N/A");
+		ui_out_field_string(uiout, NULL, "N/A");
 	      }
 	    else
 	      {
-		ui_file_rewind (stream->stream);
-		print_scalar_formatted (mbuf + col_byte, word_type, word_format,
-					word_asize, stream->stream);
-		ui_out_field_stream (uiout, NULL, stream);
+		ui_file_rewind(stream->stream);
+		print_scalar_formatted(mbuf + col_byte, word_type, word_format,
+				       word_asize, stream->stream);
+		ui_out_field_stream(uiout, NULL, stream);
 	      }
 	  }
 	do_cleanups (cleanup_list_data);

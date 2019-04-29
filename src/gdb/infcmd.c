@@ -381,14 +381,15 @@ construct_inferior_arguments (struct gdbarch *gdbarch, int argc, char **argv)
 	 /bin/sh treats it as a synonym for `|'.  */
       const char *special = "\"!#$&*()\\|[]{}<>?'\"`~^; \t\n";
       int i;
-      int length = 0;
+      size_t length = 0UL;
       char *out, *cp;
 
-      /* We over-compute the size.  It shouldn't matter.  */
+      /* We over-compute the size.  It should NOT matter: */
       for (i = 0; i < argc; ++i)
-	length += 2 * strlen (argv[i]) + 1 + 2 * (argv[i][0] == '\0');
+	length += ((2UL * strlen(argv[i])) + 1UL
+		   + (2UL * (argv[i][0] == '\0')));
 
-      result = (char *) xmalloc (length);
+      result = (char *)xmalloc(length);
       out = result;
 
       for (i = 0; i < argc; ++i)
@@ -419,21 +420,21 @@ construct_inferior_arguments (struct gdbarch *gdbarch, int argc, char **argv)
       /* In this case we can't handle arguments that contain spaces,
 	 tabs, or newlines -- see breakup_args().  */
       int i;
-      int length = 0;
+      size_t length = 0UL;
 
       for (i = 0; i < argc; ++i)
 	{
-	  char *cp = strchr (argv[i], ' ');
+	  char *cp = strchr(argv[i], ' ');
 	  if (cp == NULL)
-	    cp = strchr (argv[i], '\t');
+	    cp = strchr(argv[i], '\t');
 	  if (cp == NULL)
-	    cp = strchr (argv[i], '\n');
+	    cp = strchr(argv[i], '\n');
 	  if (cp != NULL)
-	    error (_("can't handle command-line argument containing whitespace"));
-	  length += strlen (argv[i]) + 1;
+	    error(_("cannot handle command-line argument containing whitespace"));
+	  length += (strlen(argv[i]) + 1UL);
 	}
 
-      result = (char *) xmalloc (length);
+      result = (char *)xmalloc(length);
       result[0] = '\0';
       for (i = 0; i < argc; ++i)
 	{

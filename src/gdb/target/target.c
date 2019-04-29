@@ -89,7 +89,8 @@ static LONGEST default_xfer_partial(struct target_ops *ops,
 						const char *annex,
 						gdb_byte *readbuf,
 						const gdb_byte *writebuf,
-						ULONGEST offset, LONGEST len);
+						ULONGEST offset, LONGEST len)
+  ATTRIBUTE_UNUSED;
 
 static LONGEST target_xfer_partial(struct target_ops *ops,
 				   enum target_object object,
@@ -802,7 +803,9 @@ int
 target_read_string(CORE_ADDR memaddr, char **string, int len, int *errnop)
 {
   size_t tlen;
-  int origlen, offset, i;
+  int origlen;
+  off_t offset;
+  int i;
   gdb_byte buf[4];
   int errcode = 0;
   char *buffer;
@@ -861,8 +864,8 @@ target_read_string(CORE_ADDR memaddr, char **string, int len, int *errnop)
 	}
 
       memaddr += tlen;
-      len -= tlen;
-      nbytes_read += tlen;
+      len -= (int)tlen;
+      nbytes_read += (unsigned int)tlen;
     }
 done:
   if (errnop != NULL)
@@ -1796,21 +1799,28 @@ length_of_this_instruction(CORE_ADDR memaddr)
 }
 
 /* Error-catcher for target_find_memory_regions: */
-static int dummy_find_memory_regions(int (*ignore1)(CORE_ADDR unused01,
-                                                    unsigned long uu02,
-                                                    int uu03, int uu04,
-                                                    int uu05, void *uu06),
-                                     void *ignore2)
+static int ATTRIBUTE_NORETURN
+dummy_find_memory_regions(int (*ignore1)(CORE_ADDR unused01,
+					 unsigned long uu02,
+					 int uu03, int uu04,
+					 int uu05, void *uu06),
+			  void *ignore2 ATTRIBUTE_UNUSED)
 {
   error(_("No target."));
-  return 0;
+#if !defined(ATTRIBUTE_NORETURN) || defined(S_SPLINT_S)
+  return 0; /*NOTREACHED*/
+#endif /* !ATTRIBUTE_NORETURN || S_SPLINT_S */
 }
 
 /* Error-catcher for target_make_corefile_notes */
-static char *dummy_make_corefile_notes(bfd *ignore1, int *ignore2)
+static char * ATTRIBUTE_NORETURN
+dummy_make_corefile_notes(bfd *ignore1 ATTRIBUTE_UNUSED,
+			  int *ignore2 ATTRIBUTE_UNUSED)
 {
   error(_("No target."));
-  return NULL;
+#if !defined(ATTRIBUTE_NORETURN) || defined(S_SPLINT_S)
+  return NULL; /*NOTREACHED*/
+#endif /* !ATTRIBUTE_NORETURN || S_SPLINT_S */
 }
 
 /* Set up the handful of non-empty slots needed by the dummy target

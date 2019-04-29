@@ -1681,11 +1681,12 @@ value_bit_index(struct type *type, const gdb_byte *valaddr, int index)
   rel_index %= TARGET_CHAR_BIT;
   if (BITS_BIG_ENDIAN)
     rel_index = (TARGET_CHAR_BIT - 1UL - rel_index);
-  return ((word >> rel_index) & 1);
+  return (int)((word >> rel_index) & 1);
 }
 
+/* */
 struct value *
-value_in (struct value *element, struct value *set)
+value_in(struct value *element, struct value *set)
 {
   int member;
   struct type *settype = check_typedef (value_type (set));

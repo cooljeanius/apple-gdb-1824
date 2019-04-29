@@ -47697,7 +47697,7 @@ fi
 ##  everywhere...)
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
-build_warnings="-Wreturn-type -Wcomment -Wtrigraphs \
+build_warnings="-fdiagnostics-show-option -Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wpointer-arith -Wchar-subscripts \
 -Wunused-value -Wunused-label -Wunused-result \
 -Wunused-variable -Wunused-but-set-variable -Wunused-but-set-parameter \

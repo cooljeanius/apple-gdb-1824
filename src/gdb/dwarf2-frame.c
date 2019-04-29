@@ -1483,20 +1483,20 @@ size_of_encoded_value(gdb_byte encoding)
 }
 
 static CORE_ADDR
-read_encoded_value (struct comp_unit *unit, gdb_byte encoding,
-		    gdb_byte *buf, unsigned int *bytes_read_ptr)
+read_encoded_value(struct comp_unit *unit, gdb_byte encoding,
+		   gdb_byte *buf, unsigned int *bytes_read_ptr)
 {
-  int ptr_len = size_of_encoded_value (DW_EH_PE_absptr);
+  int ptr_len = size_of_encoded_value(DW_EH_PE_absptr);
   ptrdiff_t offset;
   CORE_ADDR base;
 
-  /* GCC currently doesn't generate DW_EH_PE_indirect encodings for
+  /* GCC currently does NOT generate DW_EH_PE_indirect encodings for
      FDE's.  */
   if (encoding & DW_EH_PE_indirect)
-    internal_error (__FILE__, __LINE__,
-		    _("Unsupported encoding: DW_EH_PE_indirect"));
+    internal_error(__FILE__, __LINE__,
+		   _("Unsupported encoding: DW_EH_PE_indirect"));
 
-  *bytes_read_ptr = 0;
+  *bytes_read_ptr = 0U;
 
   switch (encoding & 0x70)
     {
@@ -1504,7 +1504,7 @@ read_encoded_value (struct comp_unit *unit, gdb_byte encoding,
       base = 0;
       break;
     case DW_EH_PE_pcrel:
-      base = bfd_get_section_vma (unit->abfd, unit->dwarf_frame_section);
+      base = bfd_get_section_vma(unit->abfd, unit->dwarf_frame_section);
       base += (buf - unit->dwarf_frame_buffer);
       break;
     case DW_EH_PE_datarel:
@@ -1523,21 +1523,21 @@ read_encoded_value (struct comp_unit *unit, gdb_byte encoding,
       break;
     case DW_EH_PE_aligned:
       base = 0;
-      offset = buf - unit->dwarf_frame_buffer;
+      offset = (buf - unit->dwarf_frame_buffer);
       if ((offset % ptr_len) != 0)
 	{
-	  *bytes_read_ptr = ptr_len - (offset % ptr_len);
+	  *bytes_read_ptr = (unsigned int)(ptr_len - (offset % ptr_len));
 	  buf += *bytes_read_ptr;
 	}
       break;
     default:
-      internal_error (__FILE__, __LINE__, _("Invalid or unsupported encoding"));
+      internal_error(__FILE__, __LINE__, _("Invalid or unsupported encoding"));
     }
 
   if ((encoding & 0x07) == 0x00)
     {
-      encoding |= encoding_for_size (ptr_len);
-      if (bfd_get_sign_extend_vma (unit->abfd))
+      encoding |= encoding_for_size(ptr_len);
+      if (bfd_get_sign_extend_vma(unit->abfd))
 	encoding |= DW_EH_PE_signed;
     }
 
@@ -1546,35 +1546,37 @@ read_encoded_value (struct comp_unit *unit, gdb_byte encoding,
     case DW_EH_PE_uleb128:
       {
 	ULONGEST value;
-	gdb_byte *end_buf = buf + (sizeof (value) + 1) * 8 / 7;
-	*bytes_read_ptr += read_uleb128 (buf, end_buf, &value) - buf;
-	return base + value;
+	gdb_byte *end_buf = (buf + ((sizeof(value) + 1UL) * 8UL / 7UL));
+	*bytes_read_ptr += (unsigned int)(read_uleb128(buf, end_buf, &value)
+					  - buf);
+	return (base + value);
       }
     case DW_EH_PE_udata2:
       *bytes_read_ptr += 2;
-      return (base + bfd_get_16 (unit->abfd, (bfd_byte *) buf));
+      return (base + bfd_get_16(unit->abfd, (bfd_byte *)buf));
     case DW_EH_PE_udata4:
       *bytes_read_ptr += 4;
-      return (base + bfd_get_32 (unit->abfd, (bfd_byte *) buf));
+      return (base + bfd_get_32(unit->abfd, (bfd_byte *)buf));
     case DW_EH_PE_udata8:
       *bytes_read_ptr += 8;
-      return (base + bfd_get_64 (unit->abfd, (bfd_byte *) buf));
+      return (base + bfd_get_64(unit->abfd, (bfd_byte *)buf));
     case DW_EH_PE_sleb128:
       {
 	LONGEST value;
-	gdb_byte *end_buf = buf + (sizeof (value) + 1) * 8 / 7;
-	*bytes_read_ptr += read_sleb128 (buf, end_buf, &value) - buf;
-	return base + value;
+	gdb_byte *end_buf = (buf + ((sizeof(value) + 1UL) * 8UL / 7UL));
+	*bytes_read_ptr += (unsigned int)(read_sleb128(buf, end_buf, &value)
+					  - buf);
+	return (base + value);
       }
     case DW_EH_PE_sdata2:
       *bytes_read_ptr += 2;
-      return (base + bfd_get_signed_16 (unit->abfd, (bfd_byte *) buf));
+      return (base + bfd_get_signed_16(unit->abfd, (bfd_byte *)buf));
     case DW_EH_PE_sdata4:
       *bytes_read_ptr += 4;
-      return (base + bfd_get_signed_32 (unit->abfd, (bfd_byte *) buf));
+      return (base + bfd_get_signed_32(unit->abfd, (bfd_byte *)buf));
     case DW_EH_PE_sdata8:
       *bytes_read_ptr += 8;
-      return (base + bfd_get_signed_64 (unit->abfd, (bfd_byte *) buf));
+      return (base + bfd_get_signed_64(unit->abfd, (bfd_byte *)buf));
     default:
       internal_error(__FILE__, __LINE__, _("Invalid or unsupported encoding"));
     }

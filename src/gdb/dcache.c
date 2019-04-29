@@ -273,7 +273,7 @@ dcache_write_line(DCACHE *dcache, struct dcache_block *db)
 {
   CORE_ADDR memaddr;
   gdb_byte *myaddr;
-  int len;
+  size_t len;
   int res;
   long reg_len;
   struct mem_region *region;
@@ -286,7 +286,7 @@ dcache_write_line(DCACHE *dcache, struct dcache_block *db)
   memaddr = db->addr;
   myaddr = db->data;
 
-  while (len > 0)
+  while (len > 0UL)
     {
       int s;
       int e;
@@ -352,7 +352,7 @@ dcache_read_line(DCACHE *dcache, struct dcache_block *db)
 {
   CORE_ADDR memaddr;
   gdb_byte *myaddr;
-  int len;
+  size_t len;
   int res;
   size_t reg_len;
   struct mem_region *region;
@@ -369,7 +369,7 @@ dcache_read_line(DCACHE *dcache, struct dcache_block *db)
   memaddr = db->addr;
   myaddr = db->data;
 
-  while (len > 0)
+  while (len > 0UL)
     {
       region = lookup_mem_region(memaddr);
       if ((memaddr + len) < region->hi)
@@ -563,7 +563,7 @@ dcache_init(void)
 
 /* Free a data cache */
 void
-dcache_free (DCACHE *dcache)
+dcache_free(DCACHE *dcache)
 {
   int i;
 

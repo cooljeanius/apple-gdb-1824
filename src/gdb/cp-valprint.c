@@ -90,7 +90,9 @@ static void cp_print_hpacc_virtual_table_entries(struct type *, int *,
 						 struct ui_file *, int, int,
 						 enum val_prettyprint);
 
+/* end of prototypes; begin actual functions */
 
+/* */
 void
 cp_print_class_method(const gdb_byte *valaddr, struct type *type,
 		      struct ui_file *stream)
@@ -99,31 +101,31 @@ cp_print_class_method(const gdb_byte *valaddr, struct type *type,
   struct fn_field *f = NULL;
   int j = 0;
   int len2;
-  int offset;
+  off_t offset;
   const char *kind = "";
   CORE_ADDR addr;
   struct symbol *sym;
   unsigned len;
   unsigned int i;
-  struct type *target_type = check_typedef (TYPE_TARGET_TYPE (type));
+  struct type *target_type = check_typedef(TYPE_TARGET_TYPE(type));
 
-  domain = TYPE_DOMAIN_TYPE (target_type);
-  if (domain == (struct type *) NULL)
+  domain = TYPE_DOMAIN_TYPE(target_type);
+  if (domain == (struct type *)NULL)
     {
-      fprintf_filtered (stream, "<unknown>");
+      fprintf_filtered(stream, "<unknown>");
       return;
     }
-  addr = unpack_pointer (type, valaddr);
-  if (METHOD_PTR_IS_VIRTUAL (addr))
+  addr = unpack_pointer(type, valaddr);
+  if (METHOD_PTR_IS_VIRTUAL(addr))
     {
-      offset = METHOD_PTR_TO_VOFFSET (addr);
-      len = TYPE_NFN_FIELDS (domain);
+      offset = METHOD_PTR_TO_VOFFSET(addr);
+      len = TYPE_NFN_FIELDS(domain);
       for (i = 0; i < len; i++)
 	{
-	  f = TYPE_FN_FIELDLIST1 (domain, i);
-	  len2 = TYPE_FN_FIELDLIST_LENGTH (domain, i);
+	  f = TYPE_FN_FIELDLIST1(domain, i);
+	  len2 = TYPE_FN_FIELDLIST_LENGTH(domain, i);
 
-	  check_stub_method_group (domain, i);
+	  check_stub_method_group(domain, i);
 	  for (j = 0; j < len2; j++)
 	    {
 	      if (TYPE_FN_FIELD_VOFFSET (f, j) == offset)
@@ -257,11 +259,11 @@ cp_is_vtbl_member (struct type *type)
    should not print, or zero if called from top level.  */
 
 void
-cp_print_value_fields (struct type *type, struct type *real_type,
-		       const gdb_byte *valaddr, int offset, CORE_ADDR address,
-		       struct ui_file *stream, int format, int recurse,
-		       enum val_prettyprint pretty,
-		       struct type **dont_print_vb,int dont_print_statmem)
+cp_print_value_fields(struct type *type, struct type *real_type,
+		      const gdb_byte *valaddr, int offset, CORE_ADDR address,
+		      struct ui_file *stream, int format, int recurse,
+		      enum val_prettyprint pretty,
+		      struct type **dont_print_vb,int dont_print_statmem)
 {
   int i, len, n_baseclasses;
   struct obstack tmp_obstack;
@@ -269,13 +271,15 @@ cp_print_value_fields (struct type *type, struct type *real_type,
     (char *)obstack_next_free(&dont_print_statmem_obstack);
   int fields_seen = 0;
 
-  CHECK_TYPEDEF (type);
+  memset(&tmp_obstack, 0, sizeof(tmp_obstack));
 
-  fprintf_filtered (stream, "{");
-  len = TYPE_NFIELDS (type);
-  n_baseclasses = TYPE_N_BASECLASSES (type);
+  CHECK_TYPEDEF(type);
 
-  /* First, print out baseclasses such that we don't print
+  fprintf_filtered(stream, "{");
+  len = TYPE_NFIELDS(type);
+  n_baseclasses = TYPE_N_BASECLASSES(type);
+
+  /* First, print out baseclasses such that we do NOT print
      duplicates of virtual baseclasses.  */
 
   if (n_baseclasses > 0)
@@ -522,22 +526,24 @@ cp_print_value_fields (struct type *type, struct type *real_type,
    baseclasses.  */
 
 static void
-cp_print_value (struct type *type, struct type *real_type,
-		const gdb_byte *valaddr, int offset, CORE_ADDR address,
-		struct ui_file *stream, int format, int recurse,
-		enum val_prettyprint pretty, struct type **dont_print_vb)
+cp_print_value(struct type *type, struct type *real_type,
+	       const gdb_byte *valaddr, int offset, CORE_ADDR address,
+	       struct ui_file *stream, int format, int recurse,
+	       enum val_prettyprint pretty, struct type **dont_print_vb)
 {
   struct obstack tmp_obstack;
-  struct type **last_dont_print
-    = (struct type **) obstack_next_free (&dont_print_vb_obstack);
-  int i, n_baseclasses = TYPE_N_BASECLASSES (type);
+  struct type **last_dont_print =
+    (struct type **)obstack_next_free(&dont_print_vb_obstack);
+  int i, n_baseclasses = TYPE_N_BASECLASSES(type);
   int thisoffset;
   struct type *thistype;
+
+  memset(&tmp_obstack, 0, sizeof(struct obstack));
 
   if (dont_print_vb == 0)
     {
       void *thingamajigger;
-      /* If we're at top level, carve out a completely fresh
+      /* If we are/were at top level, then carve out a completely fresh
          chunk of the obstack and use that until this particular
          invocation returns.  */
       tmp_obstack = dont_print_vb_obstack;

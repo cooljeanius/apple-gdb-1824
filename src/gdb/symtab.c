@@ -5146,7 +5146,7 @@ static void
 completion_list_add_name(const char *symname, const char *sym_text,
 			 int sym_text_len, const char *text, char *word)
 {
-  int newsize;
+  size_t newsize;
 
   /* clip symbols that cannot match: */
   if (strncmp(symname, sym_text, sym_text_len) != 0)

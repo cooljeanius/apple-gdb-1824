@@ -1137,17 +1137,17 @@ install_minimal_symbols (struct objfile *objfile)
          compact out the duplicate entries.  Once we have a final table,
          we will give back the excess space.  */
 
-      alloc_count = msym_count + objfile->minimal_symbol_count + 1;
-      obstack_blank (&objfile->objfile_obstack,
-		     alloc_count * sizeof (struct minimal_symbol));
-      msymbols = (struct minimal_symbol *)
-	obstack_base (&objfile->objfile_obstack);
+      alloc_count = (msym_count + objfile->minimal_symbol_count + 1);
+      obstack_blank(&objfile->objfile_obstack,
+		    (alloc_count * (int)sizeof(struct minimal_symbol)));
+      msymbols = ((struct minimal_symbol *)
+		  obstack_base(&objfile->objfile_obstack));
 
       /* Copy in the existing minimal symbols, if there are any.  */
 
       if (objfile->minimal_symbol_count)
-	memcpy ((char *) msymbols, (char *) objfile->msymbols,
-	    objfile->minimal_symbol_count * sizeof (struct minimal_symbol));
+	memcpy((char *)msymbols, (char *)objfile->msymbols,
+	       (objfile->minimal_symbol_count * sizeof(struct minimal_symbol)));
 
       /* Walk through the list of minimal symbol bunches, adding each symbol
          to the new contiguous array of symbols.  Note that we start with the
@@ -1165,20 +1165,20 @@ install_minimal_symbols (struct objfile *objfile)
 	  cur_bunch_index = BUNCH_SIZE;
 	}
 
-      /* Sort the minimal symbols by address.  */
-
-      qsort (msymbols, mcount, sizeof (struct minimal_symbol),
-	     compare_minimal_symbols);
+      /* Sort the minimal symbols by address: */
+      qsort(msymbols, mcount, sizeof(struct minimal_symbol),
+	    compare_minimal_symbols);
 
       /* Compact out any duplicates, and free up whatever space we are
          no longer using.  */
 
-      mcount = compact_minimal_symbols (msymbols, mcount, objfile);
+      mcount = compact_minimal_symbols(msymbols, mcount, objfile);
 
-      obstack_blank (&objfile->objfile_obstack,
-	       (mcount + 1 - alloc_count) * sizeof (struct minimal_symbol));
-      msymbols = (struct minimal_symbol *)
-	obstack_finish (&objfile->objfile_obstack);
+      obstack_blank(&objfile->objfile_obstack,
+		    ((mcount + 1 - alloc_count)
+		     * (int)sizeof(struct minimal_symbol)));
+      msymbols = ((struct minimal_symbol *)
+		  obstack_finish(&objfile->objfile_obstack));
 
       /* We also terminate the minimal symbol table with a "null symbol",
          which is *not* included in the size of the table.  This makes it
@@ -1188,14 +1188,14 @@ install_minimal_symbols (struct objfile *objfile)
          symbol count does *not* include this null symbol, which is why it
          is indexed by mcount and not mcount-1. */
 
-      SYMBOL_LINKAGE_NAME (&msymbols[mcount]) = NULL;
-      SYMBOL_VALUE_ADDRESS (&msymbols[mcount]) = 0;
-      MSYMBOL_INFO (&msymbols[mcount]) = NULL;
-      MSYMBOL_SIZE (&msymbols[mcount]) = 0;
+      SYMBOL_LINKAGE_NAME(&msymbols[mcount]) = NULL;
+      SYMBOL_VALUE_ADDRESS(&msymbols[mcount]) = 0;
+      MSYMBOL_INFO(&msymbols[mcount]) = NULL;
+      MSYMBOL_SIZE(&msymbols[mcount]) = 0;
       /* APPLE LOCAL fix-and-continue */
-      MSYMBOL_OBSOLETED (&msymbols[mcount]) = 0;
-      MSYMBOL_TYPE (&msymbols[mcount]) = mst_unknown;
-      SYMBOL_INIT_LANGUAGE_SPECIFIC (&msymbols[mcount], language_unknown);
+      MSYMBOL_OBSOLETED(&msymbols[mcount]) = 0;
+      MSYMBOL_TYPE(&msymbols[mcount]) = mst_unknown;
+      SYMBOL_INIT_LANGUAGE_SPECIFIC(&msymbols[mcount], language_unknown);
 
       /* Attach the minimal symbol table to the specified objfile.
          The strings themselves are also located in the objfile_obstack

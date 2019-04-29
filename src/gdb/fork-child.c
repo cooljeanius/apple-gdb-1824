@@ -103,7 +103,7 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
   char *shell_command;
   size_t shell_cmd_len;
   static char default_shell_file[] = SHELL_FILE;
-  int len;
+  size_t len;
   /* Set debug_fork then attach to the child while it sleeps, to debug. */
   static int debug_fork = 0;
   /* This is set to the result of setpgrp, which if vforked, will be visible
@@ -141,11 +141,12 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
   /* APPLE LOCAL 5 = "exec ", but we have "exec /usr/bin/arch -arch x86_64 "
      at most.  so 5->33.  */
 #ifdef USE_ARCH_FOR_EXEC
-  len = 33;
+  len = 33UL;
 #else
-  len = 5;
+  len = 5UL;
 #endif /* USE_ARCH_FOR_EXEC */
-  len += 4 * strlen(exec_file) + 1 + strlen(allargs) + 1 + /*slop */ 12;
+  len += ((4UL * strlen(exec_file)) + 1UL + strlen(allargs) + 1UL
+	  + /*slop */ 12UL);
   /* If desired, concat something onto the front of ALLARGS.
      SHELL_COMMAND is the result.  */
 #ifdef SHELL_COMMAND_CONCAT
@@ -153,7 +154,7 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
   shell_command = (char *)alloca(shell_cmd_len);
   strcpy(shell_command, SHELL_COMMAND_CONCAT);
 #else
-  shell_cmd_len = min((size_t)len, MAX_ALLOCA_SIZE);
+  shell_cmd_len = min(len, MAX_ALLOCA_SIZE);
   shell_command = (char *)alloca(shell_cmd_len);
   shell_command[0] = '\0';
 #endif /* SHELL_COMMAND_CONCAT */

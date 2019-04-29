@@ -340,7 +340,8 @@ finish_block(struct symbol *symbol, struct pending **listhead,
 	      TYPE_NFIELDS(ftype) = (short)nparams;
 	      TYPE_FIELDS(ftype) =
 		(struct field *)TYPE_ALLOC(ftype,
-					   (nparams * sizeof(struct field)));
+					   (nparams
+					    * (int)sizeof(struct field)));
 	      /* APPLE LOCAL ??? */
 	      memset(TYPE_FIELDS(ftype), 0, (sizeof(struct field) * nparams));
 
@@ -586,22 +587,22 @@ compare_blocks(const void *v1, const void *v2)
 /* APPLE LOCAL end sort objfile blocks */
 
 static struct blockvector *
-make_blockvector (struct objfile *objfile)
+make_blockvector(struct objfile *objfile)
 {
   struct pending_block *next;
   struct blockvector *blockvector;
   int i;
 
-  /* Count the length of the list of blocks.  */
-
+  /* Count the length of the list of blocks: */
   for (next = pending_blocks, i = 0; next; next = next->next, i++)
     {;
     }
 
-  blockvector = (struct blockvector *)
-    obstack_alloc (&objfile->objfile_obstack,
-		   (sizeof (struct blockvector)
-		    + (i - 1) * sizeof (struct block *)));
+  blockvector =
+    ((struct blockvector *)
+     obstack_alloc(&objfile->objfile_obstack,
+		    (int)(sizeof(struct blockvector)
+			  + ((i - 1) * sizeof(struct block *)))));
 
   /* Copy the blocks into the blockvector. This is done in reverse
      order, which happens to put the blocks into the proper order
@@ -1072,7 +1073,7 @@ end_symtab (CORE_ADDR end_addr, struct objfile *objfile, int section)
 
   for (subfile = subfiles; subfile; subfile = nextsub)
     {
-      int linetablesize = 0;
+      size_t linetablesize = 0UL;
       symtab = NULL;
 
       /* If we have blocks of symbols, make a symtab. Otherwise, just
@@ -1081,8 +1082,10 @@ end_symtab (CORE_ADDR end_addr, struct objfile *objfile, int section)
 	{
 	  if (subfile->line_vector)
 	    {
-	      linetablesize = sizeof (struct linetable) +
-	        subfile->line_vector->nitems * sizeof (struct linetable_entry);
+	      linetablesize =
+		(sizeof(struct linetable)
+		 + (subfile->line_vector->nitems
+		    * sizeof(struct linetable_entry)));
 #if 0
 	      /* I think this is artifact from before it went on the
 	         obstack. I doubt we'll need the memory between now
@@ -1110,9 +1113,10 @@ end_symtab (CORE_ADDR end_addr, struct objfile *objfile, int section)
 	  if (subfile->line_vector)
 	    {
 	      /* Reallocate the line table on the symbol obstack */
-	      symtab->linetable = (struct linetable *)
-		obstack_alloc (&objfile->objfile_obstack, linetablesize);
-	      memcpy (symtab->linetable, subfile->line_vector, linetablesize);
+	      symtab->linetable =
+		((struct linetable *)
+		 obstack_alloc(&objfile->objfile_obstack, (int)linetablesize));
+	      memcpy(symtab->linetable, subfile->line_vector, linetablesize);
 	    }
 	  else
 	    {
@@ -1248,7 +1252,7 @@ pop_context (void)
 int
 hashname(const char *name)
 {
-  return (hash(name, (int)strlen(name)) % HASHSIZE);
+  return (int)(hash(name, (int)strlen(name)) % HASHSIZE);
 }
 
 /* FIXME: add comment: */

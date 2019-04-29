@@ -743,7 +743,7 @@ elfstab_offset_sections(struct objfile *objfile, struct partial_symtab *pst)
       pst->section_offsets =
         ((struct section_offsets *)
          obstack_alloc(&objfile->objfile_obstack,
-                       SIZEOF_N_SECTION_OFFSETS(objfile->num_sections)));
+                       (int)SIZEOF_N_SECTION_OFFSETS(objfile->num_sections)));
       for (i = 0UL; i < maybe->num_sections; i++)
 	(pst->section_offsets)->offsets[i] = maybe->sections[i];
       return;

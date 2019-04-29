@@ -110,8 +110,8 @@ kdp_transmit_fd(kdp_connection *c, kdp_pkt_t *packet, int fd)
       else
         {
           c->logger(KDP_LOG_ERROR,
-                    "kdp_transmit_fd: sendto returns %d: %s (%d)\n", ret,
-                    safe_strerror(errno), errno);
+                    "kdp_transmit_fd: sendto returns %d: %s (%d)\n",
+		    (int)ret, safe_strerror(errno), errno);
           return RR_IP_ERROR;
         }
     }
@@ -181,8 +181,8 @@ kdp_receive_fd(kdp_connection *c, kdp_pkt_t * packet, int fd, int timeout)
       else
         {
           c->logger(KDP_LOG_ERROR,
-                    "kdp_receive_fd: recvfrom returns %d: %s (%d)\n", rlen,
-                    safe_strerror(errno), errno);
+                    "kdp_receive_fd: recvfrom returns %d: %s (%d)\n",
+		    (int)rlen, safe_strerror(errno), errno);
           return RR_IP_ERROR;
         }
     }

@@ -1086,10 +1086,10 @@ i386_mmx_regnum_to_fp_regnum(struct regcache *regcache, int regnum)
      for REGCACHE's architecture.  */
 #define I387_ST0_REGNUM tdep->st0_regnum
 
-  mmxreg = regnum - tdep->mm0_regnum;
-  regcache_raw_read_unsigned (regcache, I387_FSTAT_REGNUM, &fstat);
-  tos = (fstat >> 11) & 0x7;
-  fpreg = (mmxreg + tos) % 8;
+  mmxreg = (regnum - tdep->mm0_regnum);
+  regcache_raw_read_unsigned(regcache, I387_FSTAT_REGNUM, &fstat);
+  tos = (int)((fstat >> 11) & 0x7);
+  fpreg = ((mmxreg + tos) % 8);
 
   return (I387_ST0_REGNUM + fpreg);
 

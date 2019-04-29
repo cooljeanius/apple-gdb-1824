@@ -813,7 +813,7 @@ copy_name(struct stoken token)
 static void
 prefixify_expression(struct expression *expr)
 {
-  int len =
+  size_t len =
     (sizeof(struct expression) + EXP_ELEM_TO_BYTES(expr->nelts));
   struct expression *temp;
   int inpos = expr->nelts, outpos = 0;
@@ -859,30 +859,30 @@ operator_length (struct expression *expr, int endpos, int *oplenp, int *argsp)
 /* Default value for operator_length in exp_descriptor vectors.  */
 
 void
-operator_length_standard (struct expression *expr, int endpos,
-			  int *oplenp, int *argsp)
+operator_length_standard(struct expression *expr, int endpos,
+			 int *oplenp, int *argsp)
 {
-  int oplen = 1;
+  size_t oplen = 1UL;
   int args = 0;
   int i;
 
   if (endpos < 1)
-    error (_("?error in operator_length_standard"));
+    error(_("?error in operator_length_standard"));
 
-  i = (int) expr->elts[endpos - 1].opcode;
+  i = (int)expr->elts[endpos - 1].opcode;
 
   switch (i)
     {
       /* C++  */
     case OP_SCOPE:
-      oplen = longest_to_int (expr->elts[endpos - 2].longconst);
-      oplen = 5 + BYTES_TO_EXP_ELEM (oplen + 1);
+      oplen = longest_to_int(expr->elts[endpos - 2].longconst);
+      oplen = (5UL + BYTES_TO_EXP_ELEM(oplen + 1));
       break;
 
     case OP_LONG:
     case OP_DOUBLE:
     case OP_VAR_VALUE:
-      oplen = 4;
+      oplen = 4UL;
       break;
 
     case OP_TYPE:
@@ -890,34 +890,34 @@ operator_length_standard (struct expression *expr, int endpos,
     case OP_LAST:
     case OP_REGISTER:
     case OP_INTERNALVAR:
-      oplen = 3;
+      oplen = 3UL;
       break;
 
     case OP_COMPLEX:
-      oplen = 1;
+      oplen = 1UL;
       args = 2;
       break;
 
     case OP_FUNCALL:
     case OP_F77_UNDETERMINED_ARGLIST:
-      oplen = 3;
-      args = 1 + longest_to_int (expr->elts[endpos - 2].longconst);
+      oplen = 3UL;
+      args = (1 + longest_to_int(expr->elts[endpos - 2].longconst));
       break;
 
     case OP_OBJC_MSGCALL:	/* Objective C message (method) call */
-      oplen = 4;
-      args = 1 + longest_to_int (expr->elts[endpos - 2].longconst);
+      oplen = 4UL;
+      args = (1 + longest_to_int(expr->elts[endpos - 2].longconst));
       break;
 
     case UNOP_MAX:
     case UNOP_MIN:
-      oplen = 3;
+      oplen = 3UL;
       break;
 
     case BINOP_VAL:
     case UNOP_CAST:
     case UNOP_MEMVAL:
-      oplen = 3;
+      oplen = 3UL;
       args = 1;
       break;
 
@@ -929,7 +929,7 @@ operator_length_standard (struct expression *expr, int endpos,
     case UNOP_ODD:
     case UNOP_ORD:
     case UNOP_TRUNC:
-      oplen = 1;
+      oplen = 1UL;
       args = 1;
       break;
 
@@ -940,24 +940,24 @@ operator_length_standard (struct expression *expr, int endpos,
       /* fall through */
     case OP_M2_STRING:
     case OP_STRING:
-    case OP_OBJC_NSSTRING:	/* Objective C Foundation Class NSString constant */
-    case OP_OBJC_SELECTOR:	/* Objective C "@selector" pseudo-op */
+    case OP_OBJC_NSSTRING: /* Objective C Foundation Class NSString constant */
+    case OP_OBJC_SELECTOR: /* Objective C "@selector" pseudo-op */
     case OP_NAME:
     case OP_EXPRSTRING:
-      oplen = longest_to_int (expr->elts[endpos - 2].longconst);
-      oplen = 4 + BYTES_TO_EXP_ELEM (oplen + 1);
+      oplen = longest_to_int(expr->elts[endpos - 2].longconst);
+      oplen = (4UL + BYTES_TO_EXP_ELEM(oplen + 1));
       break;
 
     case OP_BITSTRING:
-      oplen = longest_to_int (expr->elts[endpos - 2].longconst);
-      oplen = (oplen + HOST_CHAR_BIT - 1) / HOST_CHAR_BIT;
-      oplen = 4 + BYTES_TO_EXP_ELEM (oplen);
+      oplen = longest_to_int(expr->elts[endpos - 2].longconst);
+      oplen = ((oplen + HOST_CHAR_BIT - 1UL) / HOST_CHAR_BIT);
+      oplen = (4UL + BYTES_TO_EXP_ELEM(oplen));
       break;
 
     case OP_ARRAY:
-      oplen = 4;
-      args = longest_to_int (expr->elts[endpos - 2].longconst);
-      args -= longest_to_int (expr->elts[endpos - 3].longconst);
+      oplen = 4UL;
+      args = longest_to_int(expr->elts[endpos - 2].longconst);
+      args -= longest_to_int(expr->elts[endpos - 3].longconst);
       args += 1;
       break;
 
@@ -969,26 +969,26 @@ operator_length_standard (struct expression *expr, int endpos,
 
       /* Modula-2 */
     case MULTI_SUBSCRIPT:
-      oplen = 3;
-      args = 1 + longest_to_int (expr->elts[endpos - 2].longconst);
+      oplen = 3UL;
+      args = (1 + longest_to_int(expr->elts[endpos - 2].longconst));
       break;
 
     case BINOP_ASSIGN_MODIFY:
-      oplen = 3;
+      oplen = 3UL;
       args = 2;
       break;
 
       /* C++ */
     case OP_THIS:
     case OP_OBJC_SELF:
-      oplen = 2;
+      oplen = 2UL;
       break;
 
     default:
-      args = 1 + (i < (int) BINOP_END);
+      args = (1 + (i < (int)BINOP_END));
     }
 
-  *oplenp = oplen;
+  *oplenp = (int)oplen;
   *argsp = args;
 }
 

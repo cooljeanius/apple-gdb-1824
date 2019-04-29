@@ -40,15 +40,15 @@
 
 /* Functions related to demangled name parsing.  */
 
-static unsigned int cp_find_first_component_aux (const char *name,
-						 int permissive);
+static unsigned int cp_find_first_component_aux(const char *name,
+						int permissive);
 
-static void demangled_name_complaint (const char *name);
+static void demangled_name_complaint(const char *name);
 
 /* Functions/variables related to overload resolution.  */
 
-static int sym_return_val_size;
-static int sym_return_val_index;
+static size_t sym_return_val_size;
+static size_t sym_return_val_index;
 static struct symbol **sym_return_val;
 
 static void overload_list_add_symbol(struct symbol *sym,
@@ -604,7 +604,7 @@ cp_entire_prefix_len (const char *name)
 static void
 overload_list_add_symbol(struct symbol *sym, const char *oload_name)
 {
-  int newsize;
+  size_t newsize;
   int i;
   char *sym_name;
 
@@ -613,7 +613,7 @@ overload_list_add_symbol(struct symbol *sym, const char *oload_name)
     return;
 
   /* skip any symbols that we have already considered: */
-  for (i = 0; i < sym_return_val_index; ++i)
+  for (i = 0; i < (int)sym_return_val_index; ++i)
     if (strcmp(SYMBOL_LINKAGE_NAME(sym),
                SYMBOL_LINKAGE_NAME(sym_return_val[i])) == 0)
       return;
@@ -634,9 +634,9 @@ overload_list_add_symbol(struct symbol *sym, const char *oload_name)
 
   /* We have a match for an overload instance, so add SYM to the current list
    * of overload instances */
-  if ((sym_return_val_index + 3) > sym_return_val_size)
+  if ((sym_return_val_index + 3UL) > sym_return_val_size)
     {
-      newsize = ((sym_return_val_size *= 2) * sizeof(struct symbol *));
+      newsize = ((sym_return_val_size *= 2UL) * sizeof(struct symbol *));
       sym_return_val = (struct symbol **)xrealloc((char *)sym_return_val,
                                                   newsize);
     }

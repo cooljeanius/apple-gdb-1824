@@ -1476,23 +1476,23 @@ value_fn_field(struct value **arg1p, struct fn_field *f, int j,
    If the field is signed, we also do sign extension. */
 
 LONGEST
-unpack_field_as_long (struct type *type, const gdb_byte *valaddr, int fieldno)
+unpack_field_as_long(struct type *type, const gdb_byte *valaddr, int fieldno)
 {
   ULONGEST val;
   ULONGEST valmask;
-  int bitpos = TYPE_FIELD_BITPOS (type, fieldno);
-  int bitsize = TYPE_FIELD_BITSIZE (type, fieldno);
-  int lsbcount;
+  int bitpos = TYPE_FIELD_BITPOS(type, fieldno);
+  size_t bitsize = TYPE_FIELD_BITSIZE(type, fieldno);
+  size_t lsbcount;
   struct type *field_type;
 
-  val = extract_unsigned_integer (valaddr + bitpos / 8, sizeof (val));
-  field_type = TYPE_FIELD_TYPE (type, fieldno);
-  CHECK_TYPEDEF (field_type);
+  val = extract_unsigned_integer((valaddr + (bitpos / 8)), sizeof(val));
+  field_type = TYPE_FIELD_TYPE(type, fieldno);
+  CHECK_TYPEDEF(field_type);
 
   /* Extract bits.  See comment above. */
 
   if (BITS_BIG_ENDIAN)
-    lsbcount = (sizeof val * 8 - bitpos % 8 - bitsize);
+    lsbcount = ((sizeof(val) * 8UL) - (bitpos % 8) - bitsize);
   else
     lsbcount = (bitpos % 8);
   val >>= lsbcount;
@@ -1500,11 +1500,11 @@ unpack_field_as_long (struct type *type, const gdb_byte *valaddr, int fieldno)
   /* If the field does not entirely fill a LONGEST, then zero the sign bits.
      If the field is signed, and is negative, then sign extend. */
 
-  if ((bitsize > 0) && (bitsize < 8 * (int) sizeof (val)))
+  if ((bitsize > 0) && (bitsize < (8 * (int)sizeof(val))))
     {
-      valmask = (((ULONGEST) 1) << bitsize) - 1;
+      valmask = ((((ULONGEST)1UL) << bitsize) - 1UL);
       val &= valmask;
-      if (!TYPE_UNSIGNED (field_type))
+      if (!TYPE_UNSIGNED(field_type))
 	{
 	  if (val & (valmask ^ (valmask >> 1)))
 	    {
@@ -1523,10 +1523,10 @@ unpack_field_as_long (struct type *type, const gdb_byte *valaddr, int fieldno)
    0 <= BITPOS, where lbits is the size of a LONGEST in bits.  */
 
 void
-modify_field (gdb_byte *addr, LONGEST fieldval, int bitpos, int bitsize)
+modify_field(gdb_byte *addr, LONGEST fieldval, int bitpos, int bitsize)
 {
   ULONGEST oword;
-  ULONGEST mask = (ULONGEST) -1 >> (8 * sizeof (ULONGEST) - bitsize);
+  ULONGEST mask = ((ULONGEST)-1 >> ((8UL * sizeof(ULONGEST)) - bitsize));
 
   /* If a negative fieldval fits in the field in question, chop
      off the sign extension bits.  */
@@ -1538,22 +1538,22 @@ modify_field (gdb_byte *addr, LONGEST fieldval, int bitpos, int bitsize)
     {
       /* FIXME: would like to include fieldval in the message, but
          we lack a sprintf_longest.  */
-      warning (_("Value does not fit in %d bits."), bitsize);
+      warning(_("Value does not fit in %d bits."), bitsize);
 
       /* Truncate it, otherwise adjoining fields may be corrupted.  */
       fieldval &= mask;
     }
 
-  oword = extract_unsigned_integer (addr, sizeof oword);
+  oword = extract_unsigned_integer(addr, sizeof(oword));
 
   /* Shifting for bit field depends on endianness of the target machine.  */
   if (BITS_BIG_ENDIAN)
-    bitpos = sizeof (oword) * 8 - bitpos - bitsize;
+    bitpos = (int)((sizeof(oword) * 8UL) - bitpos - bitsize);
 
   oword &= ~(mask << bitpos);
-  oword |= fieldval << bitpos;
+  oword |= (fieldval << bitpos);
 
-  store_unsigned_integer (addr, sizeof oword, oword);
+  store_unsigned_integer(addr, sizeof(oword), oword);
 }
 
 /* Pack NUM into BUF using a target format of TYPE.  */

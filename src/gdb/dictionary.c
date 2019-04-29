@@ -371,9 +371,9 @@ dict_create_hashed(struct obstack *obstack,
   nbuckets = DICT_HASHTABLE_SIZE(nsyms);
   DICT_HASHED_NBUCKETS(retval) = nbuckets;
   buckets = ((struct symbol **)
-             obstack_alloc(obstack, nbuckets * sizeof(struct symbol *)));
+             obstack_alloc(obstack, (nbuckets * (int)sizeof(struct symbol *))));
   gdb_assert(buckets != NULL);
-  memset(buckets, 0, nbuckets * sizeof(struct symbol *));
+  memset(buckets, 0, (nbuckets * sizeof(struct symbol *)));
   DICT_HASHED_BUCKETS(retval) = buckets;
 
   /* Now fill the buckets: */
@@ -381,7 +381,7 @@ dict_create_hashed(struct obstack *obstack,
        list_counter != NULL;
        list_counter = list_counter->next)
     {
-      for (i = list_counter->nsyms - 1; i >= 0; --i)
+      for (i = (list_counter->nsyms - 1); i >= 0; --i)
 	{
 	  insert_symbol_hashed(retval, list_counter->symbol[i]);
 	}
@@ -438,7 +438,7 @@ dict_create_linear(struct obstack *obstack,
     }
   DICT_LINEAR_NSYMS(retval) = nsyms;
   syms = ((struct symbol **)
-          obstack_alloc(obstack, nsyms * sizeof(struct symbol *)));
+          obstack_alloc(obstack, (nsyms * (int)sizeof(struct symbol *))));
   DICT_LINEAR_SYMS(retval) = syms;
 
   /* Now fill in the symbols.  Start filling in from the back, so as

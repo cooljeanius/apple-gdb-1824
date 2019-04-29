@@ -634,7 +634,7 @@ pascal_object_print_class_method(const gdb_byte *valaddr, struct type *type,
   struct fn_field *f = NULL;
   int j = 0;
   int len2;
-  int offset;
+  off_t offset;
   const char *kind = "";
   CORE_ADDR addr;
   struct symbol *sym;
@@ -768,17 +768,19 @@ pascal_object_is_vtbl_member (struct type *type)
    should not print, or zero if called from top level.  */
 
 void
-pascal_object_print_value_fields (struct type *type, const gdb_byte *valaddr,
-				  CORE_ADDR address, struct ui_file *stream,
-				  int format, int recurse,
-				  enum val_prettyprint pretty,
-				  struct type **dont_print_vb,
-				  int dont_print_statmem)
+pascal_object_print_value_fields(struct type *type, const gdb_byte *valaddr,
+				 CORE_ADDR address, struct ui_file *stream,
+				 int format, int recurse,
+				 enum val_prettyprint pretty,
+				 struct type **dont_print_vb,
+				 int dont_print_statmem)
 {
   int i, len, n_baseclasses;
   struct obstack tmp_obstack;
   char *last_dont_print =
     (char *)obstack_next_free(&dont_print_statmem_obstack);
+
+  memset(&tmp_obstack, 0, sizeof(struct obstack));
 
   CHECK_TYPEDEF(type);
 
@@ -789,11 +791,11 @@ pascal_object_print_value_fields (struct type *type, const gdb_byte *valaddr,
   /* Print out baseclasses such that we don't print
      duplicates of virtual baseclasses.  */
   if (n_baseclasses > 0)
-    pascal_object_print_value (type, valaddr, address, stream,
-			       format, recurse + 1, pretty, dont_print_vb);
+    pascal_object_print_value(type, valaddr, address, stream, format,
+			      (recurse + 1), pretty, dont_print_vb);
 
   if (!len && n_baseclasses == 1)
-    fprintf_filtered (stream, "<No data fields>");
+    fprintf_filtered(stream, "<No data fields>");
   else
     {
       int fields_seen = 0;
@@ -944,21 +946,23 @@ pascal_object_print_value_fields (struct type *type, const gdb_byte *valaddr,
    baseclasses.  */
 
 void
-pascal_object_print_value (struct type *type, const gdb_byte *valaddr,
-			   CORE_ADDR address, struct ui_file *stream,
-			   int format, int recurse,
-			   enum val_prettyprint pretty,
-			   struct type **dont_print_vb)
+pascal_object_print_value(struct type *type, const gdb_byte *valaddr,
+			  CORE_ADDR address, struct ui_file *stream,
+			  int format, int recurse,
+			  enum val_prettyprint pretty,
+			  struct type **dont_print_vb)
 {
   struct obstack tmp_obstack;
-  struct type **last_dont_print
-  = (struct type **) obstack_next_free (&dont_print_vb_obstack);
-  int i, n_baseclasses = TYPE_N_BASECLASSES (type);
+  struct type **last_dont_print =
+    (struct type **)obstack_next_free(&dont_print_vb_obstack);
+  int i, n_baseclasses = TYPE_N_BASECLASSES(type);
+
+  memset(&tmp_obstack, 0, sizeof(tmp_obstack));
 
   if (dont_print_vb == 0)
     {
       void *thingamajigger;
-      /* If we're at top level, carve out a completely fresh
+      /* If we are/were at top level, then carve out a completely fresh
          chunk of the obstack and use that until this particular
          invocation returns.  */
       tmp_obstack = dont_print_vb_obstack;

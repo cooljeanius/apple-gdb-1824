@@ -434,7 +434,7 @@ i386_macosx_dr_set(int regnum, uint64_t value)
         }
       else
         {
-          uint32_t val_32 = (value & 0xffffffff);
+          uint32_t val_32 = ((uint32_t)value & 0xffffffff);
 
           dr_regs.dsh.flavor = x86_DEBUG_STATE32;
           dr_regs.dsh.count = x86_DEBUG_STATE32_COUNT;
