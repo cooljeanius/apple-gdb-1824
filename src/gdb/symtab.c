@@ -3174,9 +3174,9 @@ copy_sal(struct symtab_and_line *orig)
    find the one whose first PC is closer than that of the next line in this
    symtab.  */
 
-/* If it's worth the effort, we could be using a binary search.  */
+/* If it is deemed worth the effort, we could be using a binary search.  */
 struct symtab_and_line
-find_pc_sect_line (CORE_ADDR pc, struct bfd_section *section, int notcurrent)
+find_pc_sect_line(CORE_ADDR pc, struct bfd_section *section, int notcurrent)
 {
   struct symtab *s;
   struct linetable *l;

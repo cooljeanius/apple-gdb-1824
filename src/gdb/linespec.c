@@ -934,21 +934,22 @@ decode_line_2(struct symbol *sym_arr[], int nelts, int nsyms,
 		{
 		  if (canonical_arr[i] == NULL)
 		    {
-		      symname = DEPRECATED_SYMBOL_NAME (sym_arr[i]);
-		      canonical_arr[i] = savestring (symname, strlen (symname));
+		      symname = DEPRECATED_SYMBOL_NAME(sym_arr[i]);
+		      canonical_arr[i] = savestring(symname, strlen (symname));
 		    }
 		}
 	    }
-	  memcpy (return_values.sals, values.sals,
-		  (nelts * sizeof (struct symtab_and_line)));
+	  memcpy(return_values.sals, values.sals,
+		 (nelts * sizeof(struct symtab_and_line)));
 	  return_values.nelts = nelts;
-	  discard_cleanups (old_chain);
+	  return_values.padding = 0;
+	  discard_cleanups(old_chain);
 	  return return_values;
 	}
 
-      if (num >= nelts + 2)
+      if (num >= (nelts + 2))
 	{
-	  printf_unfiltered (_("No choice number %d.\n"), num);
+	  printf_unfiltered(_("No choice number %d.\n"), num);
 	}
       else
 	{
@@ -966,16 +967,17 @@ decode_line_2(struct symbol *sym_arr[], int nelts, int nsyms,
 	    }
 	  else
 	    {
-	      printf_unfiltered (_("duplicate request for %d ignored.\n"), num);
+	      printf_unfiltered(_("duplicate request for %d ignored.\n"), num);
 	    }
 	}
 
       args = arg1;
-      while (*args == ' ' || *args == '\t')
+      while ((*args == ' ') || (*args == '\t'))
 	args++;
     }
   return_values.nelts = i;
-  discard_cleanups (old_chain);
+  return_values.padding = 0;
+  discard_cleanups(old_chain);
   return return_values;
 }
 
@@ -1591,17 +1593,18 @@ decode_indirect(const char **argptr)
   CORE_ADDR pc;
 
   (*argptr)++;
-  pc = parse_and_eval_address_1 (argptr);
+  pc = parse_and_eval_address_1(argptr);
 
-  values.sals = (struct symtab_and_line *)
-    xmalloc (sizeof (struct symtab_and_line));
+  values.sals = ((struct symtab_and_line *)
+		 xmalloc(sizeof(struct symtab_and_line)));
 
   values.nelts = 1;
-  values.sals[0] = find_pc_line (pc, 0);
+  values.sals[0] = find_pc_line(pc, 0);
   values.sals[0].pc = pc;
-  values.sals[0].section = find_pc_overlay (pc);
+  values.sals[0].section = find_pc_overlay(pc);
   values.sals[0].entry_type = NORMAL_LT_ENTRY;
   values.sals[0].next = NULL;
+  values.padding = 0;
 
   return values;
 }
@@ -1742,6 +1745,8 @@ decode_objc(const char **argptr, int funfirstline, struct symtab *file_symtab,
   int i1 = 0;
   int i2 = 0;
 
+  memset(&values, 0, sizeof(struct symtabs_and_lines));
+
   values.sals = NULL;
   values.nelts = 0;
 
@@ -1797,6 +1802,7 @@ decode_objc(const char **argptr, int funfirstline, struct symtab *file_symtab,
 
       values.sals = (struct symtab_and_line *)xmalloc(sizeof(struct symtab_and_line));
       values.nelts = 1;
+      values.padding = 0;
 
       if (sym && (SYMBOL_CLASS(sym) == LOC_BLOCK))
 	{
@@ -1819,23 +1825,23 @@ decode_objc(const char **argptr, int funfirstline, struct symtab *file_symtab,
 	      /* APPLE LOCAL begin address context.  */
 	      /* Check if the current gdbarch supports a safer and more accurate
 		 version of prologue skipping that takes an address context.  */
-	      if (SKIP_PROLOGUE_ADDR_CTX_P ())
+	      if (SKIP_PROLOGUE_ADDR_CTX_P())
 		{
 		  struct address_context sym_addr_ctx;
-		  init_address_context (&sym_addr_ctx);
+		  init_address_context(&sym_addr_ctx);
 		  sym_addr_ctx.address = values.sals[0].pc;
 		  sym_addr_ctx.symbol = sym;
-		  sym_addr_ctx.bfd_section = SYMBOL_BFD_SECTION (sym_arr[0]);
-		  values.sals[0].pc = SKIP_PROLOGUE_ADDR_CTX (&sym_addr_ctx);
+		  sym_addr_ctx.bfd_section = SYMBOL_BFD_SECTION(sym_arr[0]);
+		  values.sals[0].pc = SKIP_PROLOGUE_ADDR_CTX(&sym_addr_ctx);
 		}
 	      else
 		{
-		  values.sals[0].pc = SKIP_PROLOGUE (values.sals[0].pc);
+		  values.sals[0].pc = SKIP_PROLOGUE(values.sals[0].pc);
 		}
 	      /* APPLE LOCAL end address context.  */
 	    }
 
-	  values.sals[0].section = SYMBOL_BFD_SECTION (sym_arr[0]);
+	  values.sals[0].section = SYMBOL_BFD_SECTION(sym_arr[0]);
 	}
       return values;
     }
@@ -1849,7 +1855,8 @@ decode_objc(const char **argptr, int funfirstline, struct symtab *file_symtab,
 	accept_all = 0;
 
       /* More than one match. The user must choose one or more.  */
-      return decode_line_2 (sym_arr, i1, i2, funfirstline, accept_all, canonical);
+      return decode_line_2(sym_arr, i1, i2, funfirstline, accept_all,
+			   canonical);
     }
 
   return values;
@@ -2123,6 +2130,8 @@ find_method(int funfirstline, char ***canonical, const char *saved_arg,
                              xcalloc(sym_arr_size,
                                      sizeof(struct symbol *)));
   /* APPLE LOCAL end return multiple symbols  */
+
+  memset(&values, 0, sizeof(struct symtabs_and_lines));
 
   /* Find all methods with a matching name, and put them in
      sym_arr.  */
@@ -2455,6 +2464,8 @@ decode_all_digits_exhaustive(const char **argptr, int funfirstline,
   /* We might need a canonical line spec if no file was specified.  */
   int need_canonical = ((file_symtab == 0) ? 1 : 0);
 
+  memset(&values, 0, sizeof(struct symtabs_and_lines));
+
   /* This is where we need to make sure that we have good defaults.
      We must guarantee that this section of code is never executed
      when we are called with just a function name, since
@@ -2716,8 +2727,8 @@ decode_all_digits_exhaustive(const char **argptr, int funfirstline,
       }
   }
 
-  if (need_canonical && values.nelts > 0)
-    build_canonical_line_spec (values.sals, NULL, canonical);
+  if (need_canonical && (values.nelts > 0))
+    build_canonical_line_spec(values.sals, NULL, canonical);
   return values;
 }
 
@@ -2853,12 +2864,13 @@ decode_all_digits(const char **argptr, int funfirstline,
     }
   /* APPLE LOCAL begin function first line */
 
-  values.sals = (struct symtab_and_line *)
-    xmalloc (sizeof (struct symtab_and_line));
+  values.sals = ((struct symtab_and_line *)
+		 xmalloc(sizeof(struct symtab_and_line)));
   values.sals[0] = val;
   values.nelts = 1;
+  values.padding = 0;
   if (need_canonical)
-    build_canonical_line_spec (values.sals, NULL, canonical);
+    build_canonical_line_spec(values.sals, NULL, canonical);
   return values;
 }
 
@@ -2927,9 +2939,10 @@ decode_dollar(char *copy, int funfirstline, struct symtab *default_symtab,
   val.line = (int)value_as_long(valx);
   val.pc = 0;
 
-  values.sals = (struct symtab_and_line *)xmalloc(sizeof val);
+  values.sals = (struct symtab_and_line *)xmalloc(sizeof(val));
   values.sals[0] = val;
   values.nelts = 1;
+  values.padding = 0;
 
   if (need_canonical)
     build_canonical_line_spec(values.sals, NULL, canonical);
@@ -3009,9 +3022,9 @@ decode_variable(char *copy, int funfirstline, int equivalencies,
    occurrences.  This is used to set breakpoints by name.  */
 
 static struct symtabs_and_lines
-decode_all_variables (char *copy, int funfirstline, int equivalencies,
-                      char ***canonical, struct symtab *file_symtab,
-                      int *not_found_ptr)
+decode_all_variables(char *copy, int funfirstline, int equivalencies,
+                     char ***canonical, struct symtab *file_symtab,
+                     int *not_found_ptr)
 {
   /* The symtab that SYM was found in.  */
   struct symtab *sym_symtab = NULL;
@@ -3034,42 +3047,46 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
   char **canonical_arr;
   /* APPLE LOCAL end radar 6366048 search both minsyms & syms for bps.  */
 
-  syms_found = lookup_symbol_all
-                     (copy, (file_symtab
-			    ? BLOCKVECTOR_BLOCK (BLOCKVECTOR (file_symtab),
+  memset(&minsym_sals, 0, sizeof(struct symtabs_and_lines));
+  memset(&sym_sals, 0, sizeof(struct symtabs_and_lines));
+  memset(&ret_sals, 0, sizeof(struct symtabs_and_lines));
+
+  syms_found =
+    lookup_symbol_all(copy, (file_symtab
+			     ? BLOCKVECTOR_BLOCK(BLOCKVECTOR(file_symtab),
 						 STATIC_BLOCK)
-			    : get_selected_block (0)),
+			     : get_selected_block(0)),
 		      VAR_DOMAIN, 0, &sym_symtab, &sym_list);
 
   /* APPLE LOCAL begin radar 6366048 search both minsyms & syms for bps.  */
   /* If we are supposed to look in a particular symbol table, then
-     we don't want minimal symbols.  */
+     we do NOT want minimal symbols.  */
   if (!file_symtab)
-    msymbol = lookup_minimal_symbol_all (copy, NULL, NULL, &minsym_list);
+    msymbol = lookup_minimal_symbol_all(copy, NULL, NULL, &minsym_list);
   /* APPLE LOCAL end radar 6366048 search both minsyms & syms for bps.  */
 
   if (!syms_found && !msymbol)
     {
-      if (!have_full_symbols () &&
-	  !have_partial_symbols () && !have_minimal_symbols ())
+      if (!have_full_symbols() && !have_partial_symbols()
+	  && !have_minimal_symbols())
 	{
 	  /* This is properly a "file not found" error as well.  */
 	  if (not_found_ptr)
 	    *not_found_ptr = 1;
-	  error (_("No symbol table is loaded.  Use the \"file\" command."));
+	  error(_("No symbol table is loaded.  Use the \"file\" command."));
 	}
 
       if (not_found_ptr)
 	*not_found_ptr = 1;
       if (file_symtab == NULL)
-	throw_error (NOT_FOUND_ERROR, _("Function \"%s\" not defined."), copy);
+	throw_error(NOT_FOUND_ERROR, _("Function \"%s\" not defined."), copy);
       else
-	throw_error (NOT_FOUND_ERROR, _("Function \"%s\" not defined in file %s."),
-		     copy, file_symtab->filename);
+	throw_error(NOT_FOUND_ERROR, _("Function \"%s\" not defined in file %s."),
+		    copy, file_symtab->filename);
     }
 
   /* APPLE LOCAL radar 6366048 search both minsyms & syms for bps.  */
-  gdb_assert ((sym_list != NULL) || (minsym_list != NULL));
+  gdb_assert((sym_list != NULL) || (minsym_list != NULL));
 
   /* APPLE LOCAL begin radar 6366048 search both minsyms & syms for bps.  */
 
@@ -3101,8 +3118,8 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
   while (cur)
     {
       if ((!cur->symbol)
-	  || !(SYMBOL_TYPE (cur->symbol))
-	  || (TYPE_CODE (SYMBOL_TYPE (cur->symbol)) != TYPE_CODE_FUNC))
+	  || !(SYMBOL_TYPE(cur->symbol))
+	  || (TYPE_CODE(SYMBOL_TYPE(cur->symbol)) != TYPE_CODE_FUNC))
 	{
 	  /* delete 'cur' from sym_list  */
 	  if (prev != NULL)
@@ -3124,26 +3141,27 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
     for (prev = outer_current, cur = prev->next; cur; )
       {
 	int duplicate = 0;
-	if (cur->symbol && cur->symbol == prev->symbol)
+	if (cur->symbol && (cur->symbol == prev->symbol))
 	  duplicate = 1;
 	else
 	  {
 	    /* Also check if the symbols have the same block start and
 	       end and the same name.  Then they are coming from two .o
-	       files, and they've been coalesced into one function.  */
-	    struct block *prev_b = SYMBOL_BLOCK_VALUE (prev->symbol);
-	    struct block *cur_b = SYMBOL_BLOCK_VALUE (cur->symbol);
+	       files, and they have been coalesced into one function.  */
+	    struct block *prev_b = SYMBOL_BLOCK_VALUE(prev->symbol);
+	    struct block *cur_b = SYMBOL_BLOCK_VALUE(cur->symbol);
 	    if (cur_b && prev_b
-		&& cur_b->startaddr == prev_b->startaddr
-		&& cur_b->endaddr == prev_b->endaddr
-		&& strcmp (SYMBOL_LINKAGE_NAME (cur->symbol), SYMBOL_LINKAGE_NAME (prev->symbol)) == 0)
+		&& (cur_b->startaddr == prev_b->startaddr)
+		&& (cur_b->endaddr == prev_b->endaddr)
+		&& (strcmp(SYMBOL_LINKAGE_NAME(cur->symbol),
+			   SYMBOL_LINKAGE_NAME(prev->symbol)) == 0))
 	      duplicate = 1;
 	  }
 
 	if (duplicate)
 	  prev->next = cur->next;
 	else
-	    prev = cur;
+	  prev = cur;
 
 	cur = cur->next;
       }
@@ -3156,7 +3174,7 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
        outer_current = outer_current->next)
     for (prev = outer_current, cur = prev->next; cur; )
       {
-	if (cur->msymbol && cur->msymbol == prev->msymbol)
+	if (cur->msymbol && (cur->msymbol == prev->msymbol))
 	  prev->next = cur->next;
 	else
 	  prev = cur;
@@ -3199,29 +3217,28 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
 
   /* Convert symbol lists into sals.  */
 
-
   if (sym_list)
-    sym_sals =  symbols_found (funfirstline, &sym_canonical, copy, sym_list,
-			       file_symtab);
+    sym_sals = symbols_found(funfirstline, &sym_canonical, copy, sym_list,
+			     file_symtab);
   else
     sym_sals.nelts = 0;
 
   if (minsym_list)
-    minsym_sals =  minsyms_found (funfirstline, equivalencies, minsym_list,
-				  &minsym_canonical);
+    minsym_sals = minsyms_found(funfirstline, equivalencies, minsym_list,
+				&minsym_canonical);
   else
     minsym_sals.nelts = 0;
 
   /* Eliminate entries from minsym_list if they are also in sym_list.  */
 
   if ((minsym_sals.nelts > 0) && (sym_sals.nelts > 0))
-    remove_duplicate_sals (&minsym_sals, sym_sals, minsym_canonical);
+    remove_duplicate_sals(&minsym_sals, sym_sals, minsym_canonical);
 
   /* Combine sals from syms & minsyms, and return.  */
 
-  ret_sals.nelts = minsym_sals.nelts + sym_sals.nelts;
-  ret_sals.sals = (struct symtab_and_line *)
-                    xmalloc (ret_sals.nelts * sizeof (struct symtab_and_line));
+  ret_sals.nelts = (minsym_sals.nelts + sym_sals.nelts);
+  ret_sals.sals = ((struct symtab_and_line *)
+		   xmalloc(ret_sals.nelts * sizeof(struct symtab_and_line)));
 
   for (i = 0; i < minsym_sals.nelts; i++)
     {
@@ -3249,7 +3266,7 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
 
   /* Fix up "canonical" (to be used for breakpoint addr_string field).  */
 
-  canonical_arr = (char **) xmalloc (ret_sals.nelts * sizeof (char *));
+  canonical_arr = (char **)xmalloc(ret_sals.nelts * sizeof(char *));
 
   for (i = 0; i < minsym_sals.nelts; i++)
     {
@@ -3285,8 +3302,8 @@ decode_all_variables (char *copy, int funfirstline, int equivalencies,
    build a corresponding struct symtabs_and_lines.  */
 
 static struct symtabs_and_lines
-symbols_found (int funfirstline, char ***canonical, char *copy,
-	       struct symbol_search *sym_list, struct symtab *file_symtab)
+symbols_found(int funfirstline, char ***canonical, char *copy,
+	      struct symbol_search *sym_list, struct symtab *file_symtab)
 {
   struct symbol_search *current;
   struct symtabs_and_lines values;
@@ -3294,17 +3311,19 @@ symbols_found (int funfirstline, char ***canonical, char *copy,
   int num_syms = 0;
   int i;
 
+  memset(&values, 0, sizeof(struct symtabs_and_lines));
+
   for (current = sym_list; current; current = current->next)
     num_syms++;
 
-  values.sals = (struct symtab_and_line *) xmalloc (num_syms *
-						    sizeof (struct symtab_and_line));
+  values.sals = ((struct symtab_and_line *)
+		 xmalloc(num_syms * sizeof(struct symtab_and_line)));
   values.nelts = num_syms;
 
   if (canonical != NULL)
     {
-      canonical_arr = (char **) xmalloc (num_syms * sizeof (char *));
-      memset (canonical_arr, 0, num_syms * sizeof (char *));
+      canonical_arr = (char **)xmalloc(num_syms * sizeof(char *));
+      memset(canonical_arr, 0, num_syms * sizeof(char *));
       *canonical = canonical_arr;
     }
 
@@ -3312,9 +3331,9 @@ symbols_found (int funfirstline, char ***canonical, char *copy,
     {
       struct symbol *sym = current->symbol;
 
-      if (SYMBOL_CLASS (sym) == LOC_BLOCK)
+      if (SYMBOL_CLASS(sym) == LOC_BLOCK)
 	{
-	  values.sals[i] = find_function_start_sal (sym, funfirstline);
+	  values.sals[i] = find_function_start_sal(sym, funfirstline);
 
           /* APPLE LOCAL: This seems to be happening in a fix & continue
              situation where we get a symbol that should have been obsoleted;
@@ -3322,7 +3341,7 @@ symbols_found (int funfirstline, char ***canonical, char *copy,
              all a bad match for the symbol so we return a symtab of null.
              At the very least, let's not crash in this situation. */
           if (values.sals[i].symtab == 0)
-            error (_("Line number not known for symbol \"%s\""), copy);
+            error(_("Line number not known for symbol \"%s\""), copy);
 
 	  if ((file_symtab == 0) && (canonical != NULL))
 	    {
@@ -3359,14 +3378,14 @@ symbols_found (int funfirstline, char ***canonical, char *copy,
       else
 	{
 	  if (funfirstline)
-	    error (_("\"%s\" is not a function"), copy);
-	  else if (SYMBOL_LINE (sym) != 0)
+	    error(_("\"%s\" is not a function"), copy);
+	  else if (SYMBOL_LINE(sym) != 0)
 	    {
 	      values.sals[i].symtab = current->symtab;
-	      values.sals[i].line = SYMBOL_LINE (sym);
+	      values.sals[i].line = SYMBOL_LINE(sym);
 	    }
 	  else
-	    error (_("Line number not known for symbol \"%s\""), copy);
+	    error(_("Line number not known for symbol \"%s\""), copy);
 	}
     } /* for */
 
@@ -3383,6 +3402,8 @@ symbol_found(int funfirstline, char ***canonical, char *copy,
 	     struct symtab *sym_symtab)
 {
   struct symtabs_and_lines values;
+
+  memset(&values, 0, sizeof(struct symtabs_and_lines));
 
   if (SYMBOL_CLASS(sym) == LOC_BLOCK)
     {
@@ -3434,12 +3455,12 @@ symbol_found(int funfirstline, char ***canonical, char *copy,
 }
 
 /* APPLE LOCAL begin return multiple symbols  */
-/* We've found a list of minimal symbols SYM_LIST to associate with
+/* We have found a list of minimal symbols SYM_LIST to associate with
    our linespec; build a corresponding struct symtabs_and_lines.  */
 
 static struct symtabs_and_lines
-minsyms_found (int funfirstline, int equivalencies,
-	       struct symbol_search *sym_list,  char ***canonical)
+minsyms_found(int funfirstline, int equivalencies,
+	      struct symbol_search *sym_list,  char ***canonical)
 {
   struct symbol_search *current;
   struct minimal_symbol **equiv_msymbols;
@@ -3450,6 +3471,8 @@ minsyms_found (int funfirstline, int equivalencies,
   int eq_symbols = 0;
   int i;
   int j;
+
+  memset(&values, 0, sizeof(struct symtabs_and_lines));
 
   for (current = sym_list; current; current = current->next)
     nsymbols++;
@@ -3472,16 +3495,18 @@ minsyms_found (int funfirstline, int equivalencies,
 	equiv_cleanup = make_cleanup (null_cleanup, NULL);
     }
   else
-    equiv_cleanup = make_cleanup (null_cleanup, NULL);
+    equiv_cleanup = make_cleanup(null_cleanup, NULL);
 
-  values.sals = (struct symtab_and_line *)
-    xmalloc ((nsymbols + eq_symbols) * sizeof (struct symtab_and_line));
+  values.sals =
+    ((struct symtab_and_line *)
+     xmalloc((nsymbols + eq_symbols) * sizeof(struct symtab_and_line)));
 
   for (current = sym_list, i = 0; current; current = current->next, i++)
     {
-      values.sals[i] = find_pc_sect_line (SYMBOL_VALUE_ADDRESS (current->msymbol),
-					  current->msymbol->ginfo.bfd_section, 0);
-      values.sals[i].section = SYMBOL_BFD_SECTION (current->msymbol);
+      values.sals[i] = find_pc_sect_line(SYMBOL_VALUE_ADDRESS(current->msymbol),
+					 current->msymbol->ginfo.bfd_section,
+					 0);
+      values.sals[i].section = SYMBOL_BFD_SECTION(current->msymbol);
       if (funfirstline)
 	{
 	  values.sals[i].pc += DEPRECATED_FUNCTION_START_OFFSET;
@@ -3659,6 +3684,7 @@ minsym_found (int funfirstline, int equivalencies,
     }
 
   values.nelts = nsymbols;
+  values.padding = 0;
   do_cleanups(equiv_cleanup);
   /* APPLE LOCAL end equivalences */
   return values;

@@ -982,13 +982,12 @@ dyld_entry_shlib_num (struct dyld_objfile_info *s,
 
 /* Returns the length of the longest field that would be printed when
    displaying 's' according to 'reason_mask'. */
-
 int
-dyld_shlib_info_basename_length (struct dyld_objfile_info *s,
-                                 unsigned int reason_mask)
+dyld_shlib_info_basename_length(struct dyld_objfile_info *s,
+                                unsigned int reason_mask)
 {
   int i;
-  int baselen = 0;
+  size_t baselen = 0UL;
   struct objfile *objfile;
   struct objfile *temp = NULL;
   struct dyld_objfile_entry *j0 = NULL;

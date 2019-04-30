@@ -339,18 +339,17 @@ core_open(const char *filename, int from_tty)
               uiclean = make_cleanup_ui_out_suppress_output(uiout);
               prev_stderr = gdb_stderr;
               gdb_stderr = gdb_null;
-              mem_read_ret = safe_read_memory_unsigned_integer(0xffffff8000002010ULL,
-                                                               4, &possible_kernel_address);
+              mem_read_ret =
+		safe_read_memory_unsigned_integer(0xffffff8000002010ULL,
+						  4, &possible_kernel_address);
               gdb_stderr = prev_stderr;
-              do_cleanups (uiclean);
+              do_cleanups(uiclean);
 
               if (mem_read_ret
-                  && get_information_about_macho(NULL,
-                                                 possible_kernel_address,
-                                                 NULL, 1, 1,
-                                                 &in_memory_uuid,
-                                                 &in_memory_osabi,
-                                                 NULL, NULL, NULL, NULL))
+                  && get_information_about_macho(NULL, possible_kernel_address,
+                                                 NULL, 1, 1, &in_memory_uuid,
+                                                 &in_memory_osabi, NULL, NULL,
+						 NULL, NULL))
                 {
                   got_info = found_kernel = 1;
                   in_memory_addr = possible_kernel_address;

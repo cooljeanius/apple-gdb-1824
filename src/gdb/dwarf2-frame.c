@@ -1665,7 +1665,7 @@ add_fde(struct comp_unit *unit, struct dwarf2_fde *fde)
 #if defined(CC_HAS_LONG_LONG) && !defined(__STRICT_ANSI__)
 # define DW64_CIE_ID 0xffffffffffffffffULL
 #else
-# define DW64_CIE_ID ~0
+# define DW64_CIE_ID (~0UL)
 #endif /* CC_HAS_LONG_LONG && !__STRICT_ANSI__ */
 
 static gdb_byte *decode_frame_entry(struct comp_unit *unit, gdb_byte *start,
@@ -1702,7 +1702,7 @@ decode_frame_entry_1(struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
   if (eh_frame_p)
     cie_id = 0;
   else if (dwarf64_p && (DW64_CIE_ID != 0) && (DW64_CIE_ID != DW_CIE_ID))
-    cie_id = DW64_CIE_ID;
+    cie_id = (ULONGEST)DW64_CIE_ID;
   else
     cie_id = DW_CIE_ID;
 

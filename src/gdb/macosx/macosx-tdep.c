@@ -3557,7 +3557,7 @@ exhaustive_search_for_kernel_in_mem(struct objfile *ofile, CORE_ADDR *addr,
   else if (wordsize == 8) /* 64-bit */
     {
       cur_addr = (1ULL << 63UL);
-      stop_addr = UINT64_MAX;
+      stop_addr = (CORE_ADDR)UINT64_MAX;
     }
 
   /* First, if we have a symbol file, see if the kernel was loaded unslid */
