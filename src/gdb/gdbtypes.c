@@ -1487,10 +1487,10 @@ lookup_struct_elt_type(struct type *type, const char *name, int noerr)
       gdb_flush(gdb_stdout);
       type_for_printing = type_sprint(type, "", -1);
       make_cleanup(xfree, type_for_printing);
-      error("Type %s is not a structure or union type.", type_for_printing);
+      error(_("Type %s is not a structure or union type."), type_for_printing);
     }
 
-#if 0
+#if defined(I_AM_MICHAEL) && !defined(I_AM_FNF)
   /* FIXME:  This change put in by Michael seems incorrect for the case where
      the structure tag name is the same as the member name.  I.E. when doing
      "ptype bell->bar" for "struct foo { int bar; int foo; } bell;"
@@ -1498,11 +1498,11 @@ lookup_struct_elt_type(struct type *type, const char *name, int noerr)
   {
     char *typename;
 
-    typename = type_name_no_tag (type);
-    if (typename != NULL && strcmp (typename, name) == 0)
+    typename = type_name_no_tag(type);
+    if ((typename != NULL) && (strcmp(typename, name) == 0))
       return type;
   }
-#endif /* 0 */
+#endif /* I_AM_MICHAEL && !I_AM_FNF */
 
   for (i = (TYPE_NFIELDS(type) - 1); i >= TYPE_N_BASECLASSES(type); i--)
     {
@@ -1514,12 +1514,12 @@ lookup_struct_elt_type(struct type *type, const char *name, int noerr)
 	}
     }
 
-  /* OK, it's not in this class.  Recursively check the baseclasses.  */
-  for (i = TYPE_N_BASECLASSES (type) - 1; i >= 0; i--)
+  /* OK, it is not in this class.  Recursively check the baseclasses.  */
+  for (i = (TYPE_N_BASECLASSES(type) - 1); i >= 0; i--)
     {
       struct type *t;
 
-      t = lookup_struct_elt_type (TYPE_BASECLASS (type, i), name, noerr);
+      t = lookup_struct_elt_type(TYPE_BASECLASS(type, i), name, noerr);
       if (t != NULL)
 	{
 	  return t;
@@ -1531,14 +1531,21 @@ lookup_struct_elt_type(struct type *type, const char *name, int noerr)
       return NULL;
     }
 
-  target_terminal_ours ();
-  gdb_flush (gdb_stdout);
+  target_terminal_ours();
+  gdb_flush(gdb_stdout);
 
-  type_for_printing = type_sprint (type, "", -1);
-  make_cleanup (xfree, type_for_printing);
-  error ("Type %s has no component named %s.", type_for_printing, name);
+  type_for_printing = type_sprint(type, "", -1);
+  make_cleanup(xfree, type_for_printing);
+  error(_("Type %s has no component named %s."), type_for_printing, name);
 
-  return (struct type *) -1;	/* For lint */
+  /* For lint: */
+#if defined(lint) || defined(S_SPLINT_S) || defined(__APPLE__) || !defined(ATTRIBUTE_NORETURN)
+  return (struct type *)-1; /*NOTREACHED*/
+#else
+# if defined(gdb_unreachable)
+  gdb_unreachable();
+# endif /* gdb_unreachable */
+#endif /* lint || S_SPLINT_S || __APPLE__ || !ATTRIBUTE_NORETURN */
 }
 
 /* If possible, make the vptr_fieldno and vptr_basetype fields of TYPE

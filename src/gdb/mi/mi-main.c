@@ -1938,7 +1938,7 @@ captured_mi_execute_command(struct ui_out *uiout, void *data)
       /* Set this to 0 so we don't mistakenly think this command
         caused the target to run under interpreter-exec.  */
       mi_interp_exec_cmd_did_run = 0;
-      args->rc = mi_cmd_execute (context);
+      args->rc = mi_cmd_execute(context);
 
       /* Check if CURRENT_COMMAND_TS has been nulled out ... if the
          mi_cmd_execute command completed the command and printed out
@@ -2252,56 +2252,59 @@ mi_command_completes_while_target_executing (char *command)
     return 1;
 }
 
+/* */
 static enum mi_cmd_result
-mi_cmd_execute (struct mi_parse *parse)
+mi_cmd_execute(struct mi_parse *parse)
 {
-  if (parse->cmd->argv_func != NULL
-      || parse->cmd->args_func != NULL)
+  if ((parse->cmd->argv_func != NULL)
+      || (parse->cmd->args_func != NULL))
     {
 
       if (target_executing)
 	{
 	  if (!mi_command_completes_while_target_executing(parse->command))
 	    {
-	      fputs_unfiltered (parse->token, raw_stdout);
-	      fputs_unfiltered ("^error,msg=\"", raw_stdout);
-	      fputs_unfiltered ("Cannot execute command ", raw_stdout);
-	      fputstr_unfiltered (parse->command, '"', raw_stdout);
-	      fputs_unfiltered (" while target running", raw_stdout);
-	      fputs_unfiltered ("\"\n", raw_stdout);
+	      fputs_unfiltered(parse->token, raw_stdout);
+	      fputs_unfiltered("^error,msg=\"", raw_stdout);
+	      fputs_unfiltered("Cannot execute command ", raw_stdout);
+	      fputstr_unfiltered(parse->command, '"', raw_stdout);
+	      fputs_unfiltered(" while target running", raw_stdout);
+	      fputs_unfiltered("\"\n", raw_stdout);
 	      return MI_CMD_ERROR;
 	    }
 	}
 
       /* FIXME: DELETE THIS! */
       if (parse->cmd->args_func != NULL)
-	return parse->cmd->args_func (parse->args, 0 /*from_tty */ );
-      return parse->cmd->argv_func (parse->command, parse->argv, parse->argc);
+	return parse->cmd->args_func(parse->args, 0 /*from_tty */ );
+      return parse->cmd->argv_func(parse->command, parse->argv, parse->argc);
     }
   else if (parse->cmd->cli.cmd != 0)
     {
       /* FIXME: DELETE THIS. */
       /* The operation is still implemented by a cli command */
       /* Must be a synchronous one */
-      mi_execute_cli_command (parse->cmd->cli.cmd, parse->cmd->cli.args_p,
-			      parse->args);
+      mi_execute_cli_command(parse->cmd->cli.cmd, parse->cmd->cli.args_p,
+			     parse->args);
       return MI_CMD_DONE;
     }
   else
     {
       /* FIXME: DELETE THIS. */
-      fputs_unfiltered (parse->token, raw_stdout);
-      fputs_unfiltered ("^error,msg=\"", raw_stdout);
-      fputs_unfiltered ("Undefined mi command: ", raw_stdout);
-      fputstr_unfiltered (parse->command, '"', raw_stdout);
-      fputs_unfiltered (" (missing implementation)", raw_stdout);
-      fputs_unfiltered ("\"\n", raw_stdout);
+      fputs_unfiltered(parse->token, raw_stdout);
+      fputs_unfiltered("^error,msg=\"", raw_stdout);
+      fputs_unfiltered("Undefined mi command: ", raw_stdout);
+      fputstr_unfiltered(parse->command, '"', raw_stdout);
+      fputs_unfiltered(" (missing implementation)", raw_stdout);
+      fputs_unfiltered("\"\n", raw_stdout);
       return MI_CMD_ERROR;
     }
+  return MI_CMD_ERROR; /*NOTREACHED */
 }
 
- void
-mi_execute_command_wrapper (char *cmd)
+/* */
+void
+mi_execute_command_wrapper(char *cmd)
 {
   mi_execute_command (cmd, stdin == instream);
 }

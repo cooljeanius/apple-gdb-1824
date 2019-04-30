@@ -1840,23 +1840,23 @@ trace_start_command(const char *args, int from_tty)
 	    do_cleanups (old_chain);
 	  }
       }
-      /* Tell target to treat text-like sections as transparent.  */
-      remote_set_transparent_ranges ();
-      /* Now insert traps and begin collecting data.  */
-      putpkt ("QTStart");
-      remote_get_noisy_reply (target_buf, sizeof (target_buf));
-      if (strcmp (target_buf, "OK"))
-	error (_("Bogus reply from target: %s"), target_buf);
-      set_traceframe_num (-1);	/* All old traceframes invalidated.  */
-      set_tracepoint_num (-1);
-      set_traceframe_context (-1);
+      /* Tell target to treat text-like sections as transparent: */
+      remote_set_transparent_ranges();
+      /* Now insert traps and begin collecting data: */
+      putpkt("QTStart");
+      remote_get_noisy_reply(target_buf, sizeof(target_buf));
+      if (strcmp(target_buf, "OK"))
+	error(_("Bogus reply from target: %s"), target_buf);
+      set_traceframe_num(-1);	/* All old traceframes invalidated.  */
+      set_tracepoint_num(-1);
+      set_traceframe_context(INVALID_ADDRESS);
       trace_running_p = 1;
       if (deprecated_trace_start_stop_hook)
-	deprecated_trace_start_stop_hook (1, from_tty);
+	deprecated_trace_start_stop_hook(1, from_tty);
 
     }
   else
-    error (_("Trace can only be run on remote targets."));
+    error(_("Trace can only be run on remote targets."));
 }
 
 /* tstop command */
@@ -1965,21 +1965,21 @@ finish_tfind_command (char *msg,
 	if (reply[1] == 'K' && reply[2] == '\0')
 	  reply += 2;
 	else
-	  error (_("Bogus reply from target: %s"), reply);
+	  error(_("Bogus reply from target: %s"), reply);
 	break;
       default:
-	error (_("Bogus reply from target: %s"), reply);
+	error(_("Bogus reply from target: %s"), reply);
       }
 
-  flush_cached_frames ();
-  registers_changed ();
-  select_frame (get_current_frame ());
-  set_traceframe_num (target_frameno);
-  set_tracepoint_num (target_tracept);
+  flush_cached_frames();
+  registers_changed();
+  select_frame(get_current_frame());
+  set_traceframe_num(target_frameno);
+  set_tracepoint_num(target_tracept);
   if (target_frameno == -1)
-    set_traceframe_context (-1);
+    set_traceframe_context(INVALID_ADDRESS);
   else
-    set_traceframe_context (read_pc ());
+    set_traceframe_context(read_pc());
 
   if (from_tty)
     {

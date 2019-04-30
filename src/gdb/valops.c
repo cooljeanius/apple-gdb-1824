@@ -329,9 +329,9 @@ value_cast_1(struct type *type, struct value *arg2)
 	}
     }
 
-  if (current_language->c_style_arrays &&
-      (TYPE_CODE(type2) == TYPE_CODE_ARRAY ||
-       TYPE_CODE(type2) == TYPE_CODE_STRING))	/* a string is an array */
+  if (current_language->c_style_arrays
+      && ((TYPE_CODE(type2) == TYPE_CODE_ARRAY)
+	  || (TYPE_CODE(type2) == TYPE_CODE_STRING))) /* a string is an array */
     arg2 = value_coerce_array(arg2);
 
   if (TYPE_CODE(type2) == TYPE_CODE_FUNC)
@@ -355,9 +355,9 @@ value_cast_1(struct type *type, struct value *arg2)
   scalar = (code2 == TYPE_CODE_INT || code2 == TYPE_CODE_FLT
 	    || code2 == TYPE_CODE_ENUM || code2 == TYPE_CODE_RANGE);
 
-  if (code1 == TYPE_CODE_STRUCT
-      && code2 == TYPE_CODE_STRUCT
-      && TYPE_NAME(type) != 0)
+  if ((code1 == TYPE_CODE_STRUCT)
+      && (code2 == TYPE_CODE_STRUCT)
+      && (TYPE_NAME(type) != 0))
     {
       /* Look in the type of the source to see if it contains the
          type of the target as a superclass.  If so, we'll need to
@@ -370,11 +370,11 @@ value_cast_1(struct type *type, struct value *arg2)
 	  return v;
 	}
     }
-  if (code1 == TYPE_CODE_FLT && scalar)
+  if ((code1 == TYPE_CODE_FLT) && scalar)
     return value_from_double(type, value_as_double(arg2));
-  else if ((code1 == TYPE_CODE_INT || code1 == TYPE_CODE_ENUM
-	    || code1 == TYPE_CODE_RANGE)
-	   && (scalar || code2 == TYPE_CODE_PTR))
+  else if (((code1 == TYPE_CODE_INT) || (code1 == TYPE_CODE_ENUM)
+	    || (code1 == TYPE_CODE_RANGE))
+	   && (scalar || (code2 == TYPE_CODE_PTR)))
     {
       LONGEST longest;
 
@@ -417,9 +417,9 @@ value_cast_1(struct type *type, struct value *arg2)
       return value_from_longest(type, convert_to_boolean ?
                                 (LONGEST)(longest ? 1L : 0L) : longest);
     }
-  else if (code1 == TYPE_CODE_PTR && (code2 == TYPE_CODE_INT ||
-				      code2 == TYPE_CODE_ENUM ||
-				      code2 == TYPE_CODE_RANGE))
+  else if ((code1 == TYPE_CODE_PTR) && ((code2 == TYPE_CODE_INT)
+					|| (code2 == TYPE_CODE_ENUM)
+					|| (code2 == TYPE_CODE_RANGE)))
     {
       /* TYPE_LENGTH (type) is the length of a pointer, but we really
 	 want the length of an address! -- we are really dealing with
@@ -444,39 +444,39 @@ value_cast_1(struct type *type, struct value *arg2)
     }
   else if (TYPE_LENGTH(type) == TYPE_LENGTH(type2))
     {
-      if ((code1 == TYPE_CODE_PTR && code2 == TYPE_CODE_PTR)
-      /* APPLE LOCAL - handle the case where we're casting up or
+      if (((code1 == TYPE_CODE_PTR) && (code2 == TYPE_CODE_PTR))
+      /* APPLE LOCAL - handle the case where we are/were casting up or
 	 down the class hierarchy with reference types.  */
-	  || (code1 == TYPE_CODE_REF && code2 == TYPE_CODE_REF))
+	  || ((code1 == TYPE_CODE_REF) && (code2 == TYPE_CODE_REF)))
 	/* END APPLE LOCAL */
 	{
-	  struct type *t1 = check_typedef (TYPE_TARGET_TYPE (type));
-	  struct type *t2 = check_typedef (TYPE_TARGET_TYPE (type2));
-	  if (TYPE_CODE (t1) == TYPE_CODE_STRUCT
-	      && TYPE_CODE (t2) == TYPE_CODE_STRUCT
-	      && !value_logical_not (arg2))
+	  struct type *t1 = check_typedef(TYPE_TARGET_TYPE(type));
+	  struct type *t2 = check_typedef(TYPE_TARGET_TYPE(type2));
+	  if ((TYPE_CODE(t1) == TYPE_CODE_STRUCT)
+	      && (TYPE_CODE(t2) == TYPE_CODE_STRUCT)
+	      && !value_logical_not(arg2))
 	    {
 	      struct value *v;
 	      struct value *tmparg2;
 	      /* APPLE LOCAL - reference types */
 	      if (code2 == TYPE_CODE_REF)
-		tmparg2 = value_addr (arg2);
+		tmparg2 = value_addr(arg2);
 	      else
 		tmparg2 = arg2;
 	      /* END APPLE LOCAL */
 	      /* Look in the type of the source to see if it contains the
 	         type of the target as a superclass.  If so, we'll need to
 	         offset the pointer rather than just change its type.  */
-	      if (TYPE_NAME (t1) != NULL)
+	      if (TYPE_NAME(t1) != NULL)
 		{
 		  /* APPLE LOCAL - reference types */
-		  v = search_struct_field (type_name_no_tag (t1),
-					   value_ind (tmparg2), 0, t2, 1);
+		  v = search_struct_field(type_name_no_tag(t1),
+					  value_ind(tmparg2), 0, t2, 1);
 		  /* END APPLE LOCAL */
 		  if (v)
 		    {
-		      v = value_addr (v);
-		      deprecated_set_value_type (v, type);
+		      v = value_addr(v);
+		      deprecated_set_value_type(v, type);
 		      return v;
 		    }
 		}
@@ -485,40 +485,41 @@ value_cast_1(struct type *type, struct value *arg2)
 	         type of the source as a superclass.  If so, we'll need to
 	         offset the pointer rather than just change its type.
 	         FIXME: This fails silently with virtual inheritance.  */
-	      if (TYPE_NAME (t2) != NULL)
+	      if (TYPE_NAME(t2) != NULL)
 		{
-		  v = search_struct_field (type_name_no_tag (t2),
-				       value_zero (t1, not_lval), 0, t1, 1);
+		  v = search_struct_field(type_name_no_tag(t2),
+					  value_zero(t1, not_lval), 0, t1, 1);
 		  if (v)
 		    {
 		      /* APPLE LOCAL - reference types */
-                      CORE_ADDR addr2 = value_as_address (tmparg2);
+                      CORE_ADDR addr2 = value_as_address(tmparg2);
 		      /* END APPLE LOCAL */
-                      addr2 -= (VALUE_ADDRESS (v)
-                                + value_offset (v)
-                                + value_embedded_offset (v));
-                      return value_from_pointer (type, addr2);
+                      addr2 -= (VALUE_ADDRESS(v)
+                                + value_offset(v)
+                                + value_embedded_offset(v));
+                      return value_from_pointer(type, addr2);
 		    }
 		}
 	    }
 	  /* No superclass found, just fall through to change ptr type.  */
 	}
-      deprecated_set_value_type (arg2, type);
-      arg2 = value_change_enclosing_type (arg2, type);
-      set_value_pointed_to_offset (arg2, 0);	/* pai: chk_val */
+      deprecated_set_value_type(arg2, type);
+      arg2 = value_change_enclosing_type(arg2, type);
+      set_value_pointed_to_offset(arg2, 0);	/* pai: chk_val */
       return arg2;
     }
-  else if (VALUE_LVAL (arg2) == lval_memory)
-    return value_at_lazy (type, VALUE_ADDRESS (arg2) + value_offset (arg2));
+  else if (VALUE_LVAL(arg2) == lval_memory)
+    return value_at_lazy(type, (VALUE_ADDRESS(arg2) + value_offset(arg2)));
   else if (code1 == TYPE_CODE_VOID)
     {
-      return value_zero (builtin_type_void, not_lval);
+      return value_zero(builtin_type_void, not_lval);
     }
   else
     {
-      error (_("Invalid cast."));
+      error(_("Invalid cast."));
       return 0;
     }
+  return NULL; /*NOTREACHED*/
 }
 
 /* APPLE LOCAL: The real value_cast returns in too many places to
@@ -527,18 +528,18 @@ value_cast_1(struct type *type, struct value *arg2)
    which is a shame, but for now it will have to do.  */
 
 struct value *
-value_cast (struct type *type, struct value *arg2)
+value_cast(struct type *type, struct value *arg2)
 {
-  struct value *ret_val = value_cast_1 (type, arg2);
+  struct value *ret_val = value_cast_1(type, arg2);
 
   /* If the incoming type was a typedef, undo the
      "check_typedef" since we want to actually cast this
      to the type we were asked to cast it to, not what
      that type resolves to.
-     N.B. Don't do this in all cases, because we may have
+     N.B. Do NOT do this in all cases, because we may have
      fixed up a valid type...  */
-  if (TYPE_CODE (type) == TYPE_CODE_TYPEDEF)
-    deprecated_set_value_type (ret_val, type);
+  if (TYPE_CODE(type) == TYPE_CODE_TYPEDEF)
+    deprecated_set_value_type(ret_val, type);
   return ret_val;
 }
 

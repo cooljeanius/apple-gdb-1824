@@ -5108,53 +5108,53 @@ remote_mourn_1 (struct target_ops *target)
    we're debugging, arguments and an environment.  */
 
 static void
-extended_remote_create_inferior (char *exec_file, char *args,
-				 char **env, int from_tty)
+extended_remote_create_inferior(char *exec_file, char *args,
+				char **env, int from_tty)
 {
   /* Rip out the breakpoints; we'll reinsert them after restarting
      the remote server.  */
-  remove_breakpoints ();
+  remove_breakpoints();
 
-  /* Now restart the remote server.  */
-  extended_remote_restart ();
+  /* Now restart the remote server: */
+  extended_remote_restart();
 
   /* Now put the breakpoints back in.  This way we're safe if the
      restart function works via a unix fork on the remote side.  */
-  insert_breakpoints ();
+  insert_breakpoints();
 
-  /* Clean up from the last time we were running.  */
-  clear_proceed_status ();
+  /* Clean up from the last time we were running: */
+  clear_proceed_status();
 
-  /* Let the remote process run.  */
-  proceed (-1, TARGET_SIGNAL_0, 0);
+  /* Let the remote process run: */
+  proceed(INVALID_ADDRESS, TARGET_SIGNAL_0, 0);
 }
 
 /* Async version of extended_remote_create_inferior.  */
 static void
-extended_remote_async_create_inferior (char *exec_file, char *args,
-				       char **env, int from_tty)
+extended_remote_async_create_inferior(char *exec_file, char *args,
+				      char **env, int from_tty)
 {
   /* Rip out the breakpoints; we'll reinsert them after restarting
      the remote server.  */
-  remove_breakpoints ();
+  remove_breakpoints();
 
   /* If running asynchronously, register the target file descriptor
      with the event loop.  */
-  if (target_can_async_p ())
-    target_async (inferior_event_handler, 0);
+  if (target_can_async_p())
+    target_async(inferior_event_handler, 0);
 
-  /* Now restart the remote server.  */
-  extended_remote_restart ();
+  /* Now restart the remote server: */
+  extended_remote_restart();
 
   /* Now put the breakpoints back in.  This way we're safe if the
      restart function works via a unix fork on the remote side.  */
-  insert_breakpoints ();
+  insert_breakpoints();
 
-  /* Clean up from the last time we were running.  */
-  clear_proceed_status ();
+  /* Clean up from the last time we were running: */
+  clear_proceed_status();
 
-  /* Let the remote process run.  */
-  proceed (-1, TARGET_SIGNAL_0, 0);
+  /* Let the remote process run: */
+  proceed(INVALID_ADDRESS, TARGET_SIGNAL_0, 0);
 }
 
 

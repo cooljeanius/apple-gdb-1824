@@ -948,7 +948,7 @@ static CORE_ADDR prev_pc;
    You should call clear_proceed_status before calling proceed.  */
 
 void
-proceed (CORE_ADDR addr, enum target_signal siggnal, int step)
+proceed(CORE_ADDR addr, enum target_signal siggnal, int step)
 {
   int oneproc = 0;
 

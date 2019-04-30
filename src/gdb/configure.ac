@@ -3493,6 +3493,9 @@ fi
 #  * -Wsuggest-attribute=const (changing how to detect if GCC handles it right)
 #  * -Wmissing-declarations (some compilers accept it only in C and others
 #    accept it only in C++; find a way to handle it that accommodates both)
+#  * -Wdiv-by-zero (only for C and not C++ in Apple GCC 4.0; that is probably
+#    old enough that we do not need to worry about it, though)
+#  * -Wnonnull (likewise)
 # NOT actually up for debate:
 #  * -Werror (never actually add this, even though upstream GDB does...)
 #  * -pedantic-errors (likewise, never add this)

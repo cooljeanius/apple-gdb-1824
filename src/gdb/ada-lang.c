@@ -1411,10 +1411,15 @@ desc_index_type(struct type *type, int i)
 {
   type = desc_base_type(type);
 
-  if ((type != NULL) && (TYPE_CODE(type) == TYPE_CODE_STRUCT))
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+  __asm__("");
+#endif /* __GNUC__ && !__STRICT_ANSI__ */
+  if ((type != NULL) && (TYPE_CODE(type) == TYPE_CODE_STRUCT)) {
     return lookup_struct_elt_type(type, bound_name[(2 * i) - 2], 1);
-  else
+  } else {
     return NULL;
+  }
+  return NULL;
 }
 
 /* The number of index positions in the array-bounds type TYPE.
@@ -2346,13 +2351,13 @@ ada_index_type (struct type *type, int n)
       /* FIXME: The stabs type r(0,0);bound;bound in an array type
          has a target type of TYPE_CODE_UNDEF.  We compensate here, but
          perhaps stabsread.c would make more sense.  */
-      if (result_type == NULL || TYPE_CODE (result_type) == TYPE_CODE_UNDEF)
+      if ((result_type == NULL) || (TYPE_CODE(result_type) == TYPE_CODE_UNDEF))
         result_type = builtin_type_int;
 
       return result_type;
     }
   else
-    return desc_index_type (desc_bounds_type (type), n);
+    return desc_index_type(desc_bounds_type(type), n);
 }
 
 /* Given that arr is an array type, returns the lower bound of the

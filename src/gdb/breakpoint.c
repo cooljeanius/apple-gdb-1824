@@ -8017,21 +8017,21 @@ until_break_command(const char *arg, int from_tty, int anywhere)
      one.  */
   if (prev_frame)
     {
-      sal = find_pc_line (get_frame_pc (prev_frame), 0);
-      sal.pc = get_frame_pc (prev_frame);
-      breakpoint = set_momentary_breakpoint (sal, get_frame_id (prev_frame),
-					     bp_until);
-      if (!target_can_async_p ())
-	make_cleanup_delete_breakpoint (breakpoint);
+      sal = find_pc_line(get_frame_pc(prev_frame), 0);
+      sal.pc = get_frame_pc(prev_frame);
+      breakpoint = set_momentary_breakpoint(sal, get_frame_id(prev_frame),
+					    bp_until);
+      if (!target_can_async_p())
+	make_cleanup_delete_breakpoint(breakpoint);
       else
-	make_exec_cleanup_delete_breakpoint (breakpoint);
+	make_exec_cleanup_delete_breakpoint(breakpoint);
     }
 
-  proceed (-1, TARGET_SIGNAL_DEFAULT, 0);
+  proceed(INVALID_ADDRESS, TARGET_SIGNAL_DEFAULT, 0);
   /* Do the cleanups now, anly if we are not running asynchronously,
      of if we are, but the target is still synchronous. */
-  if (!target_can_async_p ())
-    do_cleanups (old_chain);
+  if (!target_can_async_p())
+    do_cleanups(old_chain);
 }
 
 /* */
