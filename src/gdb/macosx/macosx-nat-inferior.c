@@ -1777,15 +1777,18 @@ macosx_lookup_task(const char *args, task_t *ptask, int *ppid)
       return 0;
     }
 
-  argv = buildargv (args);
+  argv = buildargv(args);
   if (argv == NULL)
     {
-      nomem (0);
+      nomem(0);
     }
 
-  cleanups = make_cleanup_freeargv (argv);
+  cleanups = make_cleanup_freeargv(argv);
 
-  for (argc = 0; argv[argc] != NULL; argc++);
+  for (argc = 0; argv[argc] != NULL; argc++)
+  {
+    ; /* (empty) */
+  }
 
   switch (argc)
     {

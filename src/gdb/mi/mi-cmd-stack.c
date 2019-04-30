@@ -137,14 +137,17 @@ mi_cmd_stack_list_frames (char *command, char **argv, int argc)
   /* Let's position fi on the frame at which to start the
      display. Could be the innermost frame if the whole stack needs
      displaying, or if frame_low is 0. */
-  for (i = 0, fi = get_current_frame ();
-       fi && i < frame_low;
-       i++, fi = get_prev_frame (fi));
+  for (i = 0, fi = get_current_frame();
+       fi && (i < frame_low);
+       i++, fi = get_prev_frame(fi))
+  {
+    ; /* (empty body) */
+  }
 
   if (fi == NULL)
-    error (_("mi_cmd_stack_list_frames: Not enough frames in stack."));
+    error(_("mi_cmd_stack_list_frames: Not enough frames in stack."));
 
-  cleanup_stack = make_cleanup_ui_out_list_begin_end (uiout, "stack");
+  cleanup_stack = make_cleanup_ui_out_list_begin_end(uiout, "stack");
 
   /* Now let;s print the frames up to frame_high, or until there are
      frames in the stack. */
@@ -572,19 +575,22 @@ mi_cmd_stack_list_args (char *command, char **argv, int argc)
 
   values = mi_decode_print_values (argv[0]);
   if (values == PRINT_BAD_INPUT)
-    error ("%s", print_values_bad_input_string);
+    error("%s", print_values_bad_input_string);
 
   /* Let's position fi on the frame at which to start the
      display. Could be the innermost frame if the whole stack needs
      displaying, or if frame_low is 0. */
-  for (i = 0, fi = get_current_frame ();
-       fi && i < frame_low;
-       i++, fi = get_prev_frame (fi));
+  for (i = 0, fi = get_current_frame();
+       fi && (i < frame_low);
+       i++, fi = get_prev_frame(fi))
+  {
+    ; /* (empty body) */
+  }
 
   if (fi == NULL)
-    error (_("mi_cmd_stack_list_args: Not enough frames in stack."));
+    error(_("mi_cmd_stack_list_args: Not enough frames in stack."));
 
-  cleanup_stack_args = make_cleanup_ui_out_list_begin_end (uiout, "stack-args");
+  cleanup_stack_args = make_cleanup_ui_out_list_begin_end(uiout, "stack-args");
 
   /* Now let us print the frames up to frame_high, or until there are
      frames in the stack. */

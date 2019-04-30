@@ -167,11 +167,11 @@ fork_inferior(char *exec_file_arg, char *allargs, char **env,
       argt = buildargv(allargs);
       if (argt == NULL)
 	{
-	  error("unable to build argument vector for inferior process (out of memory)");
+	  error(_("unable to build argument vector for inferior process (out of memory)"));
 	}
       if ((allargs == NULL) || (allargs[0] == '\0'))
 	argt[0] = NULL;
-      for (i = 0; argt[i] != NULL; i++);
+      for (i = 0; argt[i] != NULL; i++) { ; /* (empty body) */ }
       argv = (char **)xmalloc((i + 1 + 1) * (sizeof(*argt)));
       argv[0] = exec_file;
       if (exec_argv0[0] != '\0')

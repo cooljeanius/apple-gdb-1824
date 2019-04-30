@@ -930,7 +930,11 @@ link_objfile (struct objfile *objfile)
     {
       for (last_one = object_files;
 	   last_one->next;
-	   last_one = last_one->next);
+	   last_one = last_one->next)
+      {
+	; /* FIXME: is this loop intended to be empty, or was the next
+	   * statement supposed to be part of it? */
+      }
       last_one->next = objfile;
     }
 }
@@ -2246,7 +2250,10 @@ register_objfile_data(void)
 
   /* Append new registration: */
   for (curr = &objfile_data_registry.registrations;
-       *curr != NULL; curr = &(*curr)->next);
+       *curr != NULL; curr = &(*curr)->next)
+  {
+    ; /* (just loop thru) */
+  }
 
   *curr = XMALLOC(struct objfile_data_registration);
   (*curr)->next = NULL;

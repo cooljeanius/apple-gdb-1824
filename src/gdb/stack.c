@@ -973,8 +973,8 @@ parse_frame_specification_1(const char *frame_exp, const char *message,
 	  /* Parse the argument, extract it, save it.  */
 	  for (p = frame_exp;
 	       *p && !isspace(*p);
-	       p++);
-	  addr_string = savestring(frame_exp, p - frame_exp);
+	       p++) { ; /* (just loop thru) */ }
+	  addr_string = savestring(frame_exp, (p - frame_exp));
 	  frame_exp = p;
 	  cleanup = make_cleanup(xfree, addr_string);
 

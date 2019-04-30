@@ -1119,9 +1119,12 @@ command_line_input(const char *prompt_arg, int repeat,
   /* If we just got an empty line, and that is supposed
      to repeat the previous command, return the value in the
      global buffer.  */
-  if (repeat && p == linebuffer)
+  if (repeat && (p == linebuffer))
     return line;
-  for (p1 = linebuffer; *p1 == ' ' || *p1 == '\t'; p1++);
+  for (p1 = linebuffer; (*p1 == ' ') || (*p1 == '\t'); p1++)
+  {
+    ; /* (just loop thru, I guess) */
+  }
   if (repeat && !*p1)
     return line;
 

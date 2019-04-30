@@ -757,7 +757,10 @@ initialize_current_architecture(void)
   {
     /* Append ``auto''. */
     int nr;
-    for (nr = 0; arches[nr] != NULL; nr++);
+    for (nr = 0; arches[nr] != NULL; nr++)
+    {
+      ; /* (just loop thru, I think?) */
+    }
     arches = (const char **)xrealloc(arches, sizeof(char *) * (nr + 2));
     arches[nr + 0] = "auto";
     arches[nr + 1] = NULL;

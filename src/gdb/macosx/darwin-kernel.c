@@ -91,10 +91,10 @@ extern void _initialize_remote_darwin_kernel(void);
 
 typedef enum
 {
-  DARWIN_KERNEL_LOG_ERROR = 1,
-  DARWIN_KERNEL_LOG_WARNING = 2,
-  DARWIN_KERNEL_LOG_INFO = 3,
-  DARWIN_KERNEL_LOG_DEBUG = 4
+  DARWIN_KERNEL_LOG_ERROR = 1U,
+  DARWIN_KERNEL_LOG_WARNING = 2U,
+  DARWIN_KERNEL_LOG_INFO = 3U,
+  DARWIN_KERNEL_LOG_DEBUG = 4U
 } darwin_kernel_log_level;
 
 /* prototype: */

@@ -855,7 +855,10 @@ set_section_command(const char *args, int from_tty)
     error(_("Must specify section name and its virtual address"));
 
   /* Parse out section name: */
-  for (secname = args; !isspace(*args); args++);
+  for (secname = args; !isspace(*args); args++)
+  {
+    ; /* (just loop thru) */
+  }
   seclen = (args - secname);
 
   /* Parse out new virtual address: */

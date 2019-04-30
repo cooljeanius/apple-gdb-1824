@@ -3186,7 +3186,10 @@ AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 ##  everywhere...)
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
-build_warnings="-fdiagnostics-show-option -Wreturn-type -Wcomment -Wtrigraphs \
+diag_formatting_opts="-fdiagnostics-show-option -fdiagnostics-color=auto \
+-fdiagnostics-show-caret -fdiagnostics-show-labels -fshow-column \
+-fdiagnostics-show-line-numbers -fcolor-diagnostics"
+build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wpointer-arith -Wchar-subscripts \
 -Wunused-value -Wunused-label -Wunused-result \
 -Wunused-variable -Wunused-but-set-variable -Wunused-but-set-parameter \
@@ -3195,7 +3198,7 @@ build_warnings="-fdiagnostics-show-option -Wreturn-type -Wcomment -Wtrigraphs \
 -Wignored-attributes -Wswitch -Wswitch-default -Wclobbered \
 -Wcoverage-mismatch -Wdiv-by-zero -Wdouble-promotion \
 -Wfree-nonheap-object -Wrestrict -Wsign-compare -Wpointer-compare \
--Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
+-Winvalid-memory-model -Winvalid-pch -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Wpragmas \
 -Wreturn-local-addr -Wsequence-point \
 -Wsizeof-pointer-div -Wsizeof-pointer-memaccess \
@@ -3234,7 +3237,7 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
--Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement \
+-Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement -Wmain \
 -Woverride-init -Woverride-init-side-effects -Wduplicate-decl-specifier \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
 -Wstrict-prototypes -Wnested-externs -Wc99-c11-compat -fno-common"
@@ -3488,6 +3491,8 @@ fi
 #  * -Wcast-align (as to whether to un-disable for clang as well)
 #  * -Wtype-limits (as to whether to also use it for 32-bit BFD)
 #  * -Wsuggest-attribute=const (changing how to detect if GCC handles it right)
+#  * -Wmissing-declarations (some compilers accept it only in C and others
+#    accept it only in C++; find a way to handle it that accommodates both)
 # NOT actually up for debate:
 #  * -Werror (never actually add this, even though upstream GDB does...)
 #  * -pedantic-errors (likewise, never add this)

@@ -100,7 +100,10 @@ pascal_val_print(struct type *type, const gdb_byte *valaddr,
 		  for (temp_len = 0;
 		       (valaddr + embedded_offset)[temp_len]
 		       && (temp_len < len) && (temp_len < print_max);
-		       temp_len++);
+		       temp_len++)
+		  {
+		    ; /* (just loop thru) */
+		  }
 		  len = temp_len;
 		}
 

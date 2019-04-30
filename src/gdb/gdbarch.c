@@ -3880,7 +3880,7 @@ gdbarch_data_register (gdbarch_data_pre_init_ftype *pre_init,
   /* Append the new registraration.  */
   for (curr = &gdbarch_data_registry.registrations;
        (*curr) != NULL;
-       curr = &(*curr)->next);
+       curr = &(*curr)->next) { ; /* (empty body) */ }
   (*curr) = XMALLOC (struct gdbarch_data_registration);
   (*curr)->next = NULL;
   (*curr)->data = XMALLOC (struct gdbarch_data);
@@ -4004,7 +4004,7 @@ deprecated_register_gdbarch_swap (void *data,
   struct gdbarch_swap_registration **rego;
   for (rego = &gdbarch_swap_registry.registrations;
        (*rego) != NULL;
-       rego = &(*rego)->next);
+       rego = &(*rego)->next) { ; /* (empty body) */ }
   (*rego) = XMALLOC (struct gdbarch_swap_registration);
   (*rego)->next = NULL;
   (*rego)->init = init;
@@ -4275,7 +4275,7 @@ find_arch_by_info (struct gdbarch *old_gdbarch, struct gdbarch_info info)
       /* Find the existing arch in the list.  */
       for (list = &rego->arches;
 	   ((*list) != NULL) && ((*list)->gdbarch != new_gdbarch);
-	   list = &(*list)->next);
+	   list = &(*list)->next) { ; /* (empty body) */ }
       /* It had better be in the list of architectures: */
       gdb_assert((*list) != NULL && (*list)->gdbarch == new_gdbarch);
       /* Unlink THIS.  */

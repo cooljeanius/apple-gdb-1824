@@ -725,14 +725,17 @@ thread_apply_command(const char *tidlist, int from_tty)
   char *saved_cmd;
 
   if (tidlist == NULL || *tidlist == '\000')
-    error (_("Please specify a thread ID list"));
+    error(_("Please specify a thread ID list"));
 
-  for (cmd = tidlist; (*cmd != '\000') && !isalpha(*cmd); cmd++);
+  for (cmd = tidlist; (*cmd != '\000') && !isalpha(*cmd); cmd++)
+  {
+    ; /* (just loop thru) */
+  }
 
   if (*cmd == '\000')
-    error (_("Please specify a command following the thread ID list"));
+    error(_("Please specify a command following the thread ID list"));
 
-  old_chain = make_cleanup_restore_current_thread (inferior_ptid, 0);
+  old_chain = make_cleanup_restore_current_thread(inferior_ptid, 0);
 
   /* Save a copy of the command in case it is clobbered by
      execute_command */

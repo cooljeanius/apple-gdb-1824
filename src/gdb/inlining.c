@@ -2297,19 +2297,19 @@ inlined_frame_this_id (struct frame_info *next_frame,
 
   if (global_inlined_call_stack.nelts > 0)
     {
-      if (cur_pos > 1
+      if ((cur_pos > 1)
 	  && !global_inlined_call_stack.records[cur_pos].stepped_into)
 	cur_pos--;
-      i = cur_pos - this_level;
+      i = (cur_pos - this_level);
       if (i < 1)
 	i = 1;
     }
   else
     {
       for (cur_pos = 1;
-	   cur_pos <= temp_frame_stack.nelts
+	   (cur_pos <= temp_frame_stack.nelts)
 	     && !temp_frame_stack.records[cur_pos].stack_frame_created;
-	   cur_pos++);
+	   cur_pos++) { ; /* (just loop thru) */ }
       i = cur_pos;
     }
 
