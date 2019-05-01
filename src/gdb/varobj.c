@@ -3505,7 +3505,7 @@ static int
 varobj_value_struct_elt_by_index(struct varobj *parent, volatile int iindex,
 				 struct value **ret_val)
 {
-  struct type *t;
+  struct type *volatile t;
   struct value *volatile value = NULL;
   struct value *volatile parent_value;
   int type_index;

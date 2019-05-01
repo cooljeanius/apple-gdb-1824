@@ -3947,7 +3947,7 @@ get_binary_file_uuids(const char *filename)
   uint8_t uuid[16];
   volatile int current_uuids_slot;
   volatile size_t uuids_size;
-  uint8_t **uuids;
+  uint8_t **uuids; /* FIXME: where should the volatile go for -Wclobbered? */
   bfd *abfd;
   struct gdb_exception e;
 

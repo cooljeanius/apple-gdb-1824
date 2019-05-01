@@ -1385,10 +1385,10 @@ kdp_fetch_registers_x86_64(int regno)
       x86_64_macosx_fetch_gp_registers(&gp_regs);
     }
 
-  if ((regno == -1) || IS_FP_REGNUM (regno))
+  if ((regno == -1) || IS_FP_REGNUM(regno))
     {
       kdp_return_t kdpret;
-      __extension__ gdb_x86_float_state64_t fp_regs = { };
+      __extension__ gdb_x86_float_state64_t fp_regs = { }; /* FIXME: blah */
 
       /* FIXME: For now we hang the kdp stub asking for FP registers,
          so till the kernel can handle the request, do NOT send it.  */

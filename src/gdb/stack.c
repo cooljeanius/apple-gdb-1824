@@ -1360,8 +1360,8 @@ backtrace_command_1(const char *count_exp, int show_locals, int from_tty)
 {
   struct frame_info *fi;
   int count;
-  int i;
-  struct frame_info *trailing;
+  volatile int i;
+  struct frame_info *volatile trailing;
   int trailing_level;
 
   /* APPLE LOCAL: Save/restore current source line around the frame printing.

@@ -2788,7 +2788,7 @@ new_objc_runtime_class_getClass(struct value *infargs)
   static int already_warned = 0;
   struct value *volatile ret_value = (struct value *volatile)NULL;
 
-  CORE_ADDR in_class_address = (CORE_ADDR)value_as_address(infargs);
+  volatile CORE_ADDR in_class_address = (CORE_ADDR)value_as_address(infargs);
 
   /* We might have already looked up this class, in which case don't bother
      looking it up again.  Classes can't move.  */

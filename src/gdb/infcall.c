@@ -427,7 +427,7 @@ hand_function_call(struct value *function, struct type *expect_type,
 {
   CORE_ADDR sp;
   CORE_ADDR dummy_addr;
-  struct type *values_type;
+  struct type *volatile values_type;
   struct type *orig_return_type = NULL;
   unsigned char struct_return;
   volatile CORE_ADDR struct_addr = 0UL;
@@ -469,7 +469,7 @@ hand_function_call(struct value *function, struct type *expect_type,
     {
       const char *sym_name;
       int foundit = find_pc_partial_function(funaddr, &sym_name, NULL, NULL);
-      
+
       if (foundit == 0) {
 	warning(_("Unable to even find function \"%s\" at 0x%s."),
 		(sym_name ? sym_name : "<unknown>"),
@@ -942,7 +942,7 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
 
   {
     struct cleanup *old_cleanups = make_cleanup (null_cleanup, 0);
-    int saved_async = 0;
+    volatile int saved_async = 0;
     static int hand_call_function_timer = -1;
     struct cleanup *hand_call_cleanup;
 
