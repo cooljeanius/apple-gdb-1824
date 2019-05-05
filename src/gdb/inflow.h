@@ -37,4 +37,7 @@ extern PROCESS_GROUP_TYPE our_process_group;
 extern PROCESS_GROUP_TYPE inferior_process_group;
 #endif
 
+/* see inflow.c: */
+extern int terminal_is_ours;
+
 #endif /* inflow.h */

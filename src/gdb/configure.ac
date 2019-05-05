@@ -3217,7 +3217,7 @@ build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wenum-conversion -Wbuiltin-declaration-mismatch \
 -Walloc-zero -Walloc-size-larger-than=2147483647 \
 -Wmultistatement-macros -Wif-not-aligned -Wpacked-not-aligned \
--Wundef -Wunused-macros"
+-Wattribute-alias -Wmissing-attributes -Wundef -Wunused-macros"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -3231,16 +3231,16 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wtemplates -Wvirtual-move-assign -Wconversion-null -Weffc++ \
 -Wsized-deallocation -Wplacement-new=2 -Wshadow-compatible-local \
 -Wbuiltin-function-redefined -Waligned-new=all -Wsynth -Wcatch-value \
--Wclass-memaccess -Wnon-pod-varargs -Wmissing-attributes \
--Wdeprecated-copy -Wdeprecated-copy-dtor -Wpessimizing-move -Wredundant-move \
--Wclass-conversion"
+-Wclass-memaccess -Wnon-pod-varargs -Wdeprecated-copy -Wdeprecated-copy-dtor \
+-Wpessimizing-move -Wredundant-move -Wclass-conversion"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
 -Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement -Wmain \
 -Woverride-init -Woverride-init-side-effects -Wduplicate-decl-specifier \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
--Wstrict-prototypes -Wnested-externs -Wc99-c11-compat -fno-common"
+-Wstrict-prototypes -Wnested-externs -Wabsolute-value -Wc99-c11-compat \
+-fno-common"
   if test -f /usr/X11/include/X11/Xlib.h && test "x${enable_gdbtk}" = "xyes"; then
     AC_MSG_WARN([Disabling C++ compatibility warnings for gdbtk])
   else
@@ -3322,15 +3322,16 @@ fi
 
 # clang-specific warnings:
 if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
-  build_warnings="${build_warnings} -Qunused-arguments -Wgcc-compat -Wasm \
+  build_warnings="${build_warnings} -Qunused-arguments -Wgcc-compat \
 -Wunneeded-internal-declaration -Wstring-plus-int -Wstring-conversion \
 -Wbool-conversion -Wconstant-logical-operand -Wunused-comparison \
--Wabsolute-value -Wtautological-constant-out-of-range-compare \
--Wunevaluated-expression -Wextra-semi -Wunsequenced -Wself-assign \
--Wshift-sign-overflow -Wstatic-in-inline -Wparentheses-equality \
--Wincompatible-pointer-types-discards-qualifiers -Winvalid-noreturn \
+-Wtautological-constant-out-of-range-compare -Wunevaluated-expression \
+-Wextra-semi -Wunsequenced -Wself-assign -Wshift-sign-overflow \
+-Wstatic-in-inline -Wparentheses-equality -Winvalid-noreturn \
+-Wincompatible-pointer-types-discards-qualifiers -Wasm \
 -Wfor-loop-analysis -Wloop-analysis -Wconditional-uninitialized \
--Wunreachable-code-loop-increment -Wtautological-pointer-compare"
+-Wunreachable-code-loop-increment -Wtautological-pointer-compare \
+-Wmissing-variable-declarations -Wdocumentation"
   # Up for debate (i.e. for debating adding to existing flags here):
   # * -Wunreachable-code and its suboptions for returns and breaks
   # * -Wgnu-redeclared-enum

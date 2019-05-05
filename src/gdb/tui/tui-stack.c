@@ -41,6 +41,10 @@
 
 #include "gdb_curses.h"
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
 /* Get a printable name for the function at the address.
    The symbol name is demangled if demangling is turned on.
    Returns a pointer to a static area holding the result.  */
@@ -185,10 +189,10 @@ tui_make_status_line(struct tui_locator_element* loc)
     {
       if (strlen(pname) > proc_width)
         snprintf(buf, string_and_buflen, "%s%*.*s* ", PROC_PREFIX,
-		 (int)(1 - proc_width), (int)(proc_width - 1), pname);
+		 (int8_t)(1 - proc_width), (int8_t)(proc_width - 1), pname);
       else
         snprintf(buf, string_and_buflen, "%s%*.*s ", PROC_PREFIX,
-		 (int)(-proc_width), (int)proc_width, pname);
+		 (int8_t)(-proc_width), (int8_t)proc_width, pname);
       strcat_to_buf(string, status_size, buf);
     }
 

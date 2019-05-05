@@ -4773,6 +4773,8 @@ read_ofile_symtab_from_oso(struct partial_symtab *pst, struct bfd *oso_bfd)
 	  int old_symbuf_idx = symbuf_idx;
 	  int found_it = 0;
 
+	  memset(&tmp_nlist, 0, sizeof(struct internal_nlist));
+
 	  while (scan_ptr < num_syms)
 	    {
 	      NEXT_SYMBOL(tmp_nlist, sect_p, oso_bfd);

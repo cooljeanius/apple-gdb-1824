@@ -31,6 +31,14 @@
 
 #include <signal.h>
 
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "signals.c expects <string.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRING_H */
+
 /* Always use __SIGRTMIN if it is available.  SIGRTMIN is the lowest
    _available_ realtime signal, not the lowest supported; glibc takes
    several for its own use.  */
@@ -506,7 +514,7 @@ target_signal_from_host(int hostsig)
 	error("GDB bug: signals/signals.c (target_signal_from_host): unrecognized real-time signal");
     }
 #endif /* REALTIME_LO */
-  
+
 #if defined(__GNUC__) && (defined(ATTRIBUTE_CONST) || !defined(__STRICT_ANSI__))
   __asm__("");
 #endif /* __GNUC__ && (ATTRIBUTE_CONST || !__STRICT_ANSI__) */

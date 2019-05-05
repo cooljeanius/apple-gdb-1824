@@ -2299,7 +2299,7 @@ mi_cmd_execute(struct mi_parse *parse)
       fputs_unfiltered("\"\n", raw_stdout);
       return MI_CMD_ERROR;
     }
-  return MI_CMD_ERROR; /*NOTREACHED */
+  return MI_CMD_ERROR; /*NOTREACHED*/
 }
 
 /* */

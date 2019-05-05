@@ -3276,6 +3276,7 @@ extrasub_build=""
 for module in ${build_configdirs}; do
   if test -z "${no_recursion}" \
      && test -f ${build_subdir}/${module}/Makefile; then
+    ##FIXME: might want to do more than this:
     echo 1>&2 "*** removing ${build_subdir}/${module}/Makefile to force reconfigure"
     rm -f ${build_subdir}/${module}/Makefile
   fi
@@ -3288,6 +3289,7 @@ done
 for module in ${configdirs} ; do
   if test -z "${no_recursion}" \
      && test -f ${module}/Makefile; then
+    ##FIXME: might want to do more than this:
     echo 1>&2 "*** removing ${module}/Makefile to force reconfigure"
     rm -f ${module}/Makefile
   fi
@@ -3300,6 +3302,7 @@ done
 for module in ${target_configdirs} ; do
   if test -z "${no_recursion}" \
      && test -f ${target_subdir}/${module}/Makefile; then
+    ##FIXME: might want to do more than this:
     echo 1>&2 "*** removing ${target_subdir}/${module}/Makefile to force reconfigure"
     rm -f ${target_subdir}/${module}/Makefile
   fi
@@ -3868,6 +3871,8 @@ GCC_TARGET_TOOL([strip],[STRIP_FOR_TARGET],[STRIP],[binutils/strip-new])dnl
 GCC_TARGET_TOOL([windres],[WINDRES_FOR_TARGET],[WINDRES],
                 [binutils/windres])dnl
 GCC_TARGET_TOOL([windmc],[WINDMC_FOR_TARGET],[WINDMC],[binutils/windmc])dnl
+],[
+AC_MSG_NOTICE([skipping additional tests for target tools])
 ])dnl
 
 # extra aliases for variables:

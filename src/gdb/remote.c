@@ -275,6 +275,7 @@ struct protocol_log_entry {
   char packet[PROTOCOL_LOG_BUFSIZE];
 };
 
+/* TODO: move to header: */
 struct protocol_log {
   int head;
   int max_ent;
@@ -6479,7 +6480,8 @@ remote_macosx_complete_create_or_attach(int from_tty)
    20 is the length of 0xffffffffffffffff as an int.  Probably big enough.  */
 #define INT_PRINT_MAX 20
 void
-remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int from_tty)
+remote_macosx_create_inferior(char *exec_file, char *allargs, char **env,
+			      int from_tty)
 {
   struct remote_state *rs = get_remote_state();
   size_t exec_len;
@@ -6502,6 +6504,7 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
   char *exe_and_args_buffer;
   char *exe_and_args_buffer_end;
   int old_remote_timeout;
+  size_t max_env_str_len = 1UL;
 
   if (remote_macosx_query_qenvironment_hex_packet_supported())
     env_is_hex_encoded = 1;
@@ -6513,14 +6516,29 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
   else
     env_pkt_hdr = "QEnvironment:";
 
+  /* use this loop to make sure buf_size is big enough later: */
+  envnum = 0;
+  while (env[envnum] != NULL)
+    {
+      if (strlen(env[envnum]) > max_env_str_len)
+	max_env_str_len = strlen(env[envnum]);
+      else if (sizeof(env[envnum]) > max_env_str_len)
+	max_env_str_len = sizeof(env[envnum]);
+      else
+	max_env_str_len++;
+      envnum++;
+    }
   /* First send down the environment array.  We are using packets of the form:
          QEnvironment:KEY=VALUE
      where the KEY and VALUE string is a hex-encoded form.
      Send each env var individually.
      FIXME: These really need to be hex-encoded - we need to create a new
      QEnvironmentEscaped which expects hex-encoded strings.  */
-
-  buf_size = rs->remote_packet_size;
+  /* FIXME: I get min and max mixed up sometimes; verify I have the right ones
+   * here:*/
+  buf_size = max((strlen(env_pkt_hdr) + sizeof(env_pkt_hdr)
+		  + (max(max_env_str_len, 25UL) * 2UL) + 1UL),
+		 max(rs->remote_packet_size, 25UL));
   buf = (char *)xmalloc(buf_size);
   cleanup = make_cleanup(xfree, buf);
   envnum = 0;
@@ -6537,7 +6555,8 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
 
       if (packet_len > buf_size)
         {
-          warning(_("Environment variable too long, skipping: %s"), env[envnum]);
+          warning(_("Environment variable too long, skipping: %s"),
+		  env[envnum]);
           envnum++;
           continue;
         }
@@ -6563,9 +6582,9 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
 
       getpkt(buf, buf_size, 0);
       if (buf[0] == 'E')
-        error("Got an error \"%s\" sending environment to remote.", buf);
+        error(_("Got an error \"%s\" sending environment to remote."), buf);
       else if ((buf[0] != '\0') && ((buf[0] != 'O') && (buf[1] != 'K')))
-        error("Unknown packet reply: \"%s\" to environment packet.", buf);
+        error(_("Unknown packet reply: \"%s\" to environment packet."), buf);
 
       envnum++;
     }
@@ -6609,11 +6628,12 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
   exec_len = strlen(remote_exec_file);
   /* This is likely an overestimate, since if there is more than one
      argument, then we will NOT include the spaces...  */
-  exe_and_args_buffer_length = (1 + INT_PRINT_MAX
-                                + 1 + INT_PRINT_MAX
-                                + 1 + 2 * exec_len
-                                + argc * (1 + INT_PRINT_MAX + 1 + INT_PRINT_MAX + 1)
-                                + 2 * allargs_string_length + 1);
+  exe_and_args_buffer_length = (1UL + INT_PRINT_MAX
+                                + 1UL + INT_PRINT_MAX
+                                + 1UL + (2UL * exec_len)
+                                + (argc * (1UL + INT_PRINT_MAX + 1UL
+					   + INT_PRINT_MAX + 1UL))
+                                + (2UL * allargs_string_length) + 1UL);
 
   if (exe_and_args_buffer_length > rs->remote_packet_size)
     exe_and_args_buffer_length = rs->remote_packet_size;
@@ -6627,9 +6647,9 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
   ptr = (exe_and_args_buffer + print_len);
 
   ptr = pack_string_as_ascii_hex(ptr, remote_exec_file,
-                                 remote_exec_file + exec_len);
+                                 (remote_exec_file + exec_len));
 
-  for (argnum = 0; argnum < argc && ptr < exe_and_args_buffer_end; argnum++)
+  for (argnum = 0; (argnum < argc) && (ptr < exe_and_args_buffer_end); argnum++)
     {
       char *oldptr = ptr;
       char *arg = argv[argnum];
@@ -6648,7 +6668,7 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
           ptr = oldptr;
           break;
         }
-      ptr = pack_string_as_ascii_hex(ptr, arg, arg + arglen);
+      ptr = pack_string_as_ascii_hex(ptr, arg, (arg + arglen));
       if (ptr >= exe_and_args_buffer_end)
         {
           ptr = oldptr;
@@ -6661,9 +6681,9 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
 
   getpkt(buf, buf_size, 0);
   if (buf[0] == 'E')
-    error("Got an error \"%s\" sending arguments to remote.", buf);
+    error(_("Got an error \"%s\" sending arguments to remote."), buf);
   else if ((buf[0] != 'O') && (buf[1] != 'K'))
-    error("Unknown packet reply: \"%s\" to remote arguments packet.", buf);
+    error(_("Unknown packet reply: \"%s\" to remote arguments packet."), buf);
 
   /* debugserver actually replies to the A packet before starting up the app,
      so then if it fails to start up, we do NOT get a useful error code.
@@ -6681,12 +6701,12 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
   if (timed_out)
     {
       pop_target();
-      error("Error launching timed out.");
+      error(_("Error launching timed out."));
     }
   else if (buf[0] == 'E')
     {
       pop_target();
-      error("Error launching remote program: %s.", buf+1);
+      error(_("Error launching remote program: %s."), (buf + 1));
     }
 
   remote_macosx_complete_create_or_attach(from_tty);

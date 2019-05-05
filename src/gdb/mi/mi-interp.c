@@ -40,6 +40,7 @@
 #include "inlining.h"
 /* APPLE LOCAL end subroutine inlining  */
 #include "gdbthread.h"
+#include "mi-interp.h"
 
 struct mi_interp
 {

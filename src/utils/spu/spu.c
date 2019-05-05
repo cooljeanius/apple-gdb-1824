@@ -80,6 +80,16 @@ const char *version_string = "0.5";
 
 #define DEFAULT_LIB_PERCENT 10
 
+#ifndef PTR
+# if defined(__STDC__) || defined(_AIX) || \
+     (defined(__mips) && defined(_SYSTYPE_SVR4)) || defined(_WIN32) || \
+     (defined(__alpha) && defined(__cplusplus))
+#  define PTR void *
+# else
+#  define PTR char *
+# endif /* STDC-ish */
+#endif /* !PTR */
+
 /* Generic hash table.  */
 
 struct hash_entry
@@ -241,7 +251,7 @@ int probability(int prob);
 
 char *copy_string(const char *str);
 
-char *xmalloc(size_t n);
+PTR xmalloc(size_t n);
 
 const char *gen_unique_global_name(const char *root, int upcase);
 
@@ -2153,10 +2163,10 @@ probability(int prob)
   return (xrandom(100) < prob);
 }
 
-char *
+PTR
 xmalloc(size_t amt)
 {
-  char *value = (char *)malloc(amt);
+  PTR value = (PTR)malloc(amt);
 
   if (value == NULL)
     {
@@ -2175,7 +2185,7 @@ char *
 copy_string(const char *str)
 {
   size_t len = strlen(str);
-  char *rslt;
+  PTR rslt;
 
   rslt = xmalloc(len + 1UL);
   strcpy(rslt, str);

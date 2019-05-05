@@ -133,6 +133,8 @@ void x86_frame_prev_register(struct frame_info *next_frame,
 
 CORE_ADDR x86_cxx_virtual_override_thunk_trampline(CORE_ADDR pc);
 
+extern int debug_x86bt;
+
 #endif /* X86_SHARED_TDEP_H */
 
 /* EOF */

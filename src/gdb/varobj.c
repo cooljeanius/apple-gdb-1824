@@ -884,7 +884,7 @@ varobj_create(char *objname, const char *expression, CORE_ADDR frame,
 {
   struct varobj *var;
   struct frame_info *fi;
-  struct frame_id var_frame_id;
+  struct frame_id var_frame_id = null_frame_id;
   struct frame_id old_frame_id = null_frame_id;
   struct cleanup *old_chain, *schedlock_chain;
   size_t expr_len;
@@ -897,11 +897,10 @@ varobj_create(char *objname, const char *expression, CORE_ADDR frame,
 
   make_cleanup_objfile_init_clear_hitlist();
 
-  /* We are also going to fix the scheduler-locking here so we
-     don't end up running other threads.  Note that not only can
-     getting the value cause a function call, even parsing the
-     expression for dynamic languages might trigger a lookup
-     call. */
+  /* We are also going to fix the scheduler-locking here so we do NOT end up
+   * running other threads.  Note that not only can getting the value cause a
+   * function call, even parsing the expression for dynamic languages might
+   * trigger a lookup call. */
 
   if (!varobj_runs_all_threads)
     schedlock_chain = make_cleanup_set_restore_scheduler_locking_mode(scheduler_locking_on);
@@ -936,7 +935,7 @@ varobj_create(char *objname, const char *expression, CORE_ADDR frame,
 	var_frame_id = get_frame_id(fi);
 
       /* APPLE LOCAL begin radar 6529939  */
-      /* If we're trying to create a variable using a block for a
+      /* If we are/were trying to create a variable using a block for a
 	 particular frame, verify that the frame and block being used
 	 actually correspond!  */
 
@@ -955,7 +954,7 @@ varobj_create(char *objname, const char *expression, CORE_ADDR frame,
 	  && ((get_frame_pc(fi) <  superblock->startaddr)
 	      || (get_frame_pc(fi) > superblock->endaddr)))
 	{
-	  warning("Attempting to create USE_BLOCK_IN_FRAME variable with block that isn't in the frame.");
+	  warning(_("Attempting to create USE_BLOCK_IN_FRAME variable with block that is NOT in the frame."));
 	  goto error_cleanup;
 	}
       /* APPLE LOCAL end radar 6529939  */
@@ -968,12 +967,12 @@ varobj_create(char *objname, const char *expression, CORE_ADDR frame,
 	{
 	  if (type == USE_BLOCK_IN_FRAME)
 	    {
-	      warning("Attempting to create USE_BLOCK_IN_FRAME variable with NULL block.");
+	      warning(_("Attempting to create USE_BLOCK_IN_FRAME variable with NULL block."));
 	      goto error_cleanup;
 	    }
 	  else if (type == NO_FRAME_NEEDED)
 	    {
-	      warning("Attempting to create NO_FRAME_NEEDED variable with NULL block.");
+	      warning(_("Attempting to create NO_FRAME_NEEDED variable with NULL block."));
 	      goto error_cleanup;
 	    }
 	  else if (fi != NULL)
@@ -1005,7 +1004,7 @@ varobj_create(char *objname, const char *expression, CORE_ADDR frame,
 	      /* APPLE LOCAL: suppress this warning, since Xcode does this
 		 when raising tooltips over the cast part of an expression: */
 #if !(defined(__APPLE__) || defined(__XCODE__))
-	      warning("Attempt to use a type name as an expression.");
+	      warning(_("Attempt to use a type name as an expression."));
 #endif /* !(__APPLE__ || __XCODE__) */
 	      goto error_cleanup;
 	    }

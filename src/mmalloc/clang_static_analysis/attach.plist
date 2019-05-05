@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
  <key>clang_version</key>
-<string>clang version 5.0.1 (tags/RELEASE_501/final)</string>
- <key>files</key>
+<string>clang version 8.0.0 (tags/RELEASE_800/final)</string>
+ <key>diagnostics</key>
  <array>
  </array>
- <key>diagnostics</key>
+ <key>files</key>
  <array>
  </array>
 </dict>

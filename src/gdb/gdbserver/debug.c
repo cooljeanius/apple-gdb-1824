@@ -1,4 +1,4 @@
-/* Debugging routines for the remote server for GDB.
+/* gdbserver/debug.c: Debugging routines for the remote server for GDB.
    Copyright (C) 2014 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -18,6 +18,14 @@
 
 #include "server.h"
 #include <sys/time.h>
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "debug.c expects <string.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRING_H */
 
 /* Enable miscellaneous debugging output.  The name is historical - it
    was originally used to debug LinuxThreads support.  */

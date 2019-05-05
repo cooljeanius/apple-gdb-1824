@@ -23,7 +23,7 @@
 #include "libiberty.h"
 
 /* */
-static void
+static void ATTRIBUTE_NORETURN
 die(const char *s)
 {
   fprintf(stderr, "oops: %s\n", s);

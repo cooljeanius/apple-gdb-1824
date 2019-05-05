@@ -232,6 +232,11 @@ fill_ent(ENT *ent, char *path)
 
   cp = (last_slash + 1);
   dp = ent->dos_name;
+  if (dp == NULL)
+    {
+      printf("%s - unexpected NULL pointer encountered\n", path);
+      return;
+    }
   dots_seen = 0;
   chars_seen = 0;
   while (1)

@@ -113,6 +113,20 @@ struct remote_stats {
 extern uint64_t total_packets_sent;
 extern uint64_t total_packets_received;
 
+extern char *remote_debugflags;
+
+extern int no_ack_mode;
+extern enum auto_boolean user_requested_no_ack_mode;
+
+extern int remote_hw_watchpoint_limit;
+extern int remote_hw_breakpoint_limit;
+
+/* APPLE LOCAL: classic-inferior-support */
+extern struct target_ops remote_ops;
+
+/* If nonzero, ignore the next kill: */
+extern int kill_kludge;
+
 #endif /* !REMOTE_H */
 
 /* EOF */

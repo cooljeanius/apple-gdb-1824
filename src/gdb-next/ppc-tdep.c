@@ -974,7 +974,7 @@ ppc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 
   set_gdbarch_num_regs (gdbarch, NUM_REGS);
   set_gdbarch_sp_regnum (gdbarch, SP_REGNUM);
-#if defined(FP_REGNUM) && (FP_REGNUM != SP_REGNUM)
+#if defined(FP_REGNUM) && defined(SP_REGNUM) && (FP_REGNUM != SP_REGNUM)
   set_gdbarch_fp_regnum (gdbarch, FP_REGNUM);
 #endif /* FP_REGNUM != SP_REGNUM */
   set_gdbarch_pc_regnum (gdbarch, PC_REGNUM);

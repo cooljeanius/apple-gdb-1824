@@ -27,6 +27,11 @@
    catchpoint.  */
 struct cleanup *setup_breakpoint_reporting(void);
 
+extern struct gdb_events breakpoint_hooks;
+extern char **mi_command_line_array;
+extern int mi_command_line_array_cnt;
+extern int mi_command_line_array_ptr;
+
 #endif /* !MI_CMD_BREAK_H */
 
 /* EOF */

@@ -24,6 +24,14 @@
 
 #include "server.h"
 
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "target.c expects <string.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRING_H */
+
 struct target_ops *the_target;
 
 void

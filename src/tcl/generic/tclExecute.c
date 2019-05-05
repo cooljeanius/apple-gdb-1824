@@ -3797,7 +3797,7 @@ TclExecuteByteCode(interp, codePtr)
 		    goto checkForCatch;
 		}
 	    }
-	    converted = converted;  /* lint, converted not used. */
+	    (void)converted;  /* lint, converted not used. */
 	    TRACE(("\"%.20s\" => numeric, %s, %s\n", O2S(valuePtr),
 	            (converted? "converted" : "not converted"),
 		    (needNew? "new Tcl_Obj" : "same Tcl_Obj")));
@@ -5430,7 +5430,7 @@ ExprSrandFunc(interp, eePtr, clientData)
     Interp *iPtr = (Interp *) interp;
     Tcl_Obj *valuePtr;
     long i = 0;			/* Initialized to avoid compiler warning. */
-    int result;
+    int result = 0;
 
     /*
      * Set stackPtr and stackTop from eePtr.

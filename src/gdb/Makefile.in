@@ -1193,6 +1193,7 @@ cli_srcdir = $(srcdir)/cli
 cli_cmds_h = $(cli_srcdir)/cli-cmds.h
 cli_decode_h = $(cli_srcdir)/cli-decode.h $(command_h)
 cli_dump_h = $(cli_srcdir)/cli-dump.h
+cli_interp_h = $(cli_srcdir)/cli-interp.h $(ui_out_h)
 cli_logging_h = $(cli_srcdir)/cli-logging.h
 cli_script_h = $(cli_srcdir)/cli-script.h
 cli_setshow_h = $(cli_srcdir)/cli-setshow.h
@@ -1225,6 +1226,7 @@ arm_macosx_regnums_h = $(macosxsrcdir)/arm-macosx-regnums.h
 arm_macosx_tdep_h = $(macosxsrcdir)/arm-macosx-tdep.h $(defs_h) \
   $(arm_macosx_thread_status_h) $(arm_macosx_regnums_h) $(macosx_tdep_h)
 cached_symfile_h = $(macosxsrcdir)/cached-symfile.h $(defs_h)
+core_macho_h = $(macosxsrcdir)/core-macho.h $(target_h) 
 i386_macosx_nat_exec_h = $(macosxsrcdir)/i386-macosx-nat-exec.h \
   $(defs_h) $(target_h)
 i386_macosx_tdep_h = $(macosxsrcdir)/i386-macosx-tdep.h \
@@ -1307,10 +1309,12 @@ xm_ppc_macosx_h = $(macosxsrcdir)/xm-ppc-macosx.h $(xm_macosx_h)
 
 mi_srcdir = $(srcdir)/mi
 mi_cmd_break_h = $(mi_srcdir)/mi-cmd-break.h $(defs_h)
+mi_cmd_stack_h = $(mi_srcdir)/mi-cmd-stack.h $(gdb_regex_h)
 mi_cmds_h = $(mi_srcdir)/mi-cmds.h
 mi_common_h = $(mi_srcdir)/mi-common.h
 mi_console_h = $(mi_srcdir)/mi-console.h
 mi_getopt_h = $(mi_srcdir)/mi-getopt.h
+mi_interp_h = $(mi_srcdir)/mi-interp.h
 mi_main_h = $(mi_srcdir)/mi-main.h
 mi_out_h = $(mi_srcdir)/mi-out.h
 mi_parse_h = $(mi_srcdir)/mi-parse.h $(remote_h)
@@ -1913,9 +1917,25 @@ distclean: clean clean-tui clean-gdbtk @MAINT@ clean-po
 	  subdir_do
 	-for dir in $(UNUSED_SUBDIRS); do \
 	  if test -d $${dir} && test -e $${dir}/Makefile; then \
-	    cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) distclean; \
+	    if test "x$${dir}" = "xgnulib"; then \
+	      if test -e $${dir}/import/Makefile; then \
+	        echo "$${dir} exists and it and its subdir both have Makefiles; attempting to make it be distclean..."; \
+	        cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) distclean; \
+	      else \
+	        echo "skipping making $${dir} be distclean; no Makefile in its import subdir"; \
+	      fi; \
+	    else \
+	      echo "$${dir} exists and has a Makefile; attempting to make it be distclean..."; \
+	      cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) distclean; \
+	    fi; \
 	  else \
-	    echo "Skipping making $${dir} be distclean"; \
+	    if test ! -d $${dir}; then \
+	      echo "Skipping making nonexistent $${dir} be distclean"; \
+	    elif test ! -e $${dir}/Makefile; then \
+	      echo "Skipping making $${dir} be distclean (missing Makefile)"; \
+	    else \
+	      echo "Skipping making $${dir} be distclean for unknown reason"; \
+	    fi; \
 	  fi; \
 	done
 	rm -f gdbserver/config.status gdbserver/config.log
@@ -3707,7 +3727,7 @@ cli-dump.o: $(cli_srcdir)/cli-dump.c $(defs_h) $(gdb_string_h) \
 cli-interp.o: $(cli_srcdir)/cli-interp.c $(defs_h) $(interps_h) \
   $(wrapper_h) $(event_top_h) $(ui_out_h) $(cli_out_h) $(top_h) \
   $(inferior_h) $(mi_console_h) $(gdb_string_h) $(cli_cmds_h) \
-  $(exceptions_h)
+  $(exceptions_h) $(cli_interp_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(cli_srcdir)/cli-interp.c
 	$(POSTCOMPILE)
@@ -3923,7 +3943,7 @@ core-macho.o: $(macosxsrcdir)/core-macho.c $(defs_h) $(gdb_string_h) \
   $(frame_h) $(inferior_h) $(symtab_h) $(command_h) $(bfd_h) $(target_h) \
   $(gdbcore_h) $(gdbthread_h) $(regcache_h) $(exec_h) $(readline_h) \
   $(mach_o_h) $(inlining_h) $(gdb_assert_h) $(osabi_h) $(gdbarch_h) \
-  $(objfiles_h) $(ui_out_h)
+  $(objfiles_h) $(ui_out_h) $(core_macho_h)
 darwin-kernel.o: $(macosxsrcdir)/darwin-kernel.c $(defs_h) $(inferior_h) \
   $(gdbcmd_h) $(event_loop_h) $(event_top_h) $(inf_loop_h) $(regcache_h) \
   $(infcall_h)
@@ -4179,7 +4199,7 @@ mi-cmd-stack.o: $(mi_srcdir)/mi-cmd-stack.c $(defs_h) $(target_h) \
   $(frame_h) $(value_h) $(mi_cmds_h) $(mi_main_h) $(ui_out_h) $(varobj_h) \
   $(wrapper_h) $(interps_h) $(symtab_h) $(block_h) $(stack_h) \
   $(dictionary_h) $(gdb_string_h) $(objfiles_h) $(gdb_regex_h) \
-  $(inlining_h) $(tm_i386_macosx_h)
+  $(inlining_h) $(tm_i386_macosx_h) $(mi_cmd_stack_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-cmd-stack.c
 	$(POSTCOMPILE)
@@ -4213,7 +4233,7 @@ mi-getopt.o: $(mi_srcdir)/mi-getopt.c $(defs_h) $(mi_getopt_h) \
 mi-interp.o: $(mi_srcdir)/mi-interp.c $(defs_h) $(gdb_string_h) \
   $(interps_h) $(event_top_h) $(event_loop_h) $(inferior_h) $(ui_out_h) \
   $(top_h) $(exceptions_h) $(mi_main_h) $(mi_cmds_h) $(mi_out_h) \
-  $(mi_console_h) $(mi_common_h) $(inlining_h) $(gdbthread_h)
+  $(mi_console_h) $(mi_common_h) $(inlining_h) $(gdbthread_h) $(mi_interp_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(mi_srcdir)/mi-interp.c
 	$(POSTCOMPILE)

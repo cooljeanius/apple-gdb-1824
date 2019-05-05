@@ -1,3 +1,7 @@
+dnl# dejagnu/acinclude.m4                                -*- Autoconf -*-
+
+sinclude(../config/warnings.m4)
+
 #  AC_PROG_CXX_OLD
 
 # FIXME: We temporarily define our own version of AC_PROG_CXX.

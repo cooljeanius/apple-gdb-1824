@@ -30,12 +30,14 @@ extern int gdb_prompt_is_optimized;
 /* APPLE LOCAL end Inform users about debugging optimized code  */
 
 /* From top.c.  */
+extern int caution;
 extern char *line;
 extern size_t linesize;
 extern FILE *instream;
 extern char gdb_dirbuf[1024];
 extern int inhibit_gdbinit;
 extern int epoch_interface;
+extern int xgdb_verbose;
 extern char gdbinit[];
 /* APPLE LOCAL global gdbinit */
 extern char gdbinit_global[];

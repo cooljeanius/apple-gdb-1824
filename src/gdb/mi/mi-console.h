@@ -1,4 +1,4 @@
-/* MI Command Set - MI Console.
+/* mi/mi-console.h: MI Command Set - MI Console.
    Copyright 2000 Free Software Foundation, Inc.
    Contributed by Cygnus Solutions (a Red Hat company).
 
@@ -22,8 +22,12 @@
 #ifndef MI_CONSOLE_H
 #define MI_CONSOLE_H
 
-extern struct ui_file *mi_console_file_new (struct ui_file *raw,
-					    const char *prefix,
-					    char quote);
+extern struct ui_file *mi_console_file_new(struct ui_file *raw,
+					   const char *prefix,
+					   char quote);
 
-#endif
+extern int mi_console_file_magic;
+
+#endif /* !MI_CONSOLE_H */
+
+/* EOF */

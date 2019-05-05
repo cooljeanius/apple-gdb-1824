@@ -23,7 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include "defs.h"
 #include "target.h"
-#include "am29k-opcode.h"
+#include "am29k-opcode_old.h"
 
 /* Print a symbolic representation of a general-purpose
    register number NUM on STREAM.
@@ -51,20 +51,20 @@ print_special (num, stream)
      FILE *stream;
 {
   /* Register names of registers 0-SPEC0_NUM-1.  */
-  static char *spec0_names[] = {
+  static const char *spec0_names[] = {
     "vab", "ops", "cps", "cfg", "cha", "chd", "chc", "rbp", "tmc", "tmr",
     "pc0", "pc1", "pc2", "mmu", "lru"
     };
 #define SPEC0_NUM ((sizeof spec0_names) / (sizeof spec0_names[0]))
 
   /* Register names of registers 128-128+SPEC128_NUM-1.  */
-  static char *spec128_names[] = {
+  static const char *spec128_names[] = {
     "ipc", "ipa", "ipb", "q", "alu", "bp", "fc", "cr"
     };
 #define SPEC128_NUM ((sizeof spec128_names) / (sizeof spec128_names[0]))
 
   /* Register names of registers 160-160+SPEC160_NUM-1.  */
-  static char *spec160_names[] = {
+  static const char *spec160_names[] = {
     "fpe", "inte", "fps", "sr163", "exop"
     };
 #define SPEC160_NUM ((sizeof spec160_names) / (sizeof spec160_names[0]))

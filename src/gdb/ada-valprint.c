@@ -631,12 +631,12 @@ ada_val_print_1(struct type *type, const gdb_byte *valaddr0,
   switch (TYPE_CODE(type))
     {
     default:
-      return c_val_print(type, valaddr0, embedded_offset, address, stream,
+      return c_val_print(type, valaddr0, (int)embedded_offset, address, stream,
 			 format, deref_ref, recurse, pretty);
 
     case TYPE_CODE_PTR:
       {
-	int ret = c_val_print(type, valaddr0, embedded_offset, address,
+	int ret = c_val_print(type, valaddr0, (int)embedded_offset, address,
 			      stream, format, deref_ref, recurse, pretty);
 	if (ada_is_tag_type(type))
 	  {
@@ -773,7 +773,7 @@ ada_val_print_1(struct type *type, const gdb_byte *valaddr0,
 
     case TYPE_CODE_FLT:
       if (format)
-	return c_val_print(type, valaddr0, embedded_offset, address,
+	return c_val_print(type, valaddr0, (int)embedded_offset, address,
                            stream, format, deref_ref, recurse, pretty);
       else
 	ada_print_floating(valaddr0 + embedded_offset, type, stream);

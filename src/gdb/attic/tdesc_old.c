@@ -274,15 +274,23 @@ typedef handle_info_t *dc_handle_t;
    the parameters on to the user error handler.
 */
 
-#include <varargs.h>
+#ifdef HAVE_VARARGS_H
+# include <varargs.h>
+#else
+# if defined(HAVE_STDARG_H) || defined(__STDC__)
+#  include <stdarg.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "tdesc_old.c needs a header for variadic arguments"
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_STDARG_H || __STDC__ */
+#endif /* HAVE_VARARGS_H */
 extern int vsprintf();
 
 /* Exit status for exception-processing machinery failure */
 #define DC_EXCEPTION_FAILURE    250
 
-void dc_exception(continuable, args)
-   dc_boolean_t continuable;
-   va_list args;
+void dc_exception(dc_boolean_t continuable, va_list args)
 {
    dc_handle_t handle;
    char *format;
@@ -1510,9 +1518,9 @@ dc_word_t instr;
 	   pc= map_info_out.entry_point;
 	} else if (map_info_in.flags & DC_MII_PRECEDING_TDESC_END) {
 		/**/
-		/* tdesc_lookup gets the tep for the preceeding tdesc information
-		/* so we call it with one less than the preceding tdesc end since
-		/* tdesc information is exclusive of the ending address
+		/* tdesc_lookup gets the tep for the preceeding tdesc information */
+		/* so we call it with one less than the preceding tdesc end since */
+		/* tdesc information is exclusive of the ending address */
 		/**/
 	   dc_init_cr_data(cdp,
 					   dc_tdesc_lookup(map_info_in.preceding_tdesc_end-1,

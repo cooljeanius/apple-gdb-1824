@@ -4531,7 +4531,6 @@ fi
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $USE_NLS" >&5
 $as_echo "$USE_NLS" >&6; }
 
-
     USE_INCLUDED_LIBINTL=no
 
         if test "$USE_NLS" = "yes"; then
@@ -4548,9 +4547,8 @@ else
   nls_cv_force_use_gnu_gettext=no
 fi
 
-      { $as_echo "$as_me:${as_lineno-$LINENO}: result: $nls_cv_force_use_gnu_gettext" >&5
-$as_echo "$nls_cv_force_use_gnu_gettext" >&6; }
-
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${nls_cv_force_use_gnu_gettext}" >&5
+$as_echo "${nls_cv_force_use_gnu_gettext}" >&6; }
       nls_cv_use_gnu_gettext="$nls_cv_force_use_gnu_gettext"
       if test "$nls_cv_force_use_gnu_gettext" != "yes"; then
                                 	nls_cv_header_intl=
@@ -4584,7 +4582,6 @@ rm -f core conftest.err conftest.$ac_objext \
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gt_cv_func_gettext_libc" >&5
 $as_echo "$gt_cv_func_gettext_libc" >&6; }
-
 	   if test "$gt_cv_func_gettext_libc" != "yes"; then
 	     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for bindtextdomain in -lintl" >&5
 $as_echo_n "checking for bindtextdomain in -lintl... " >&6; }
@@ -4797,7 +4794,6 @@ fi
 done
 
 
-
         if test "$CATOBJEXT" = "NONE"; then
 	  	  	  nls_cv_use_gnu_gettext=yes
         fi
@@ -4959,17 +4955,6 @@ $as_echo "found xgettext programs is not GNU xgettext; ignore it" >&6; }
     done
 
 
-
-
-
-
-
-
-
-
-
-
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
 $as_echo_n "checking for a sed that does not truncate output... " >&6; }
 if ${ac_cv_path_SED+:} false; then :
@@ -5125,7 +5110,6 @@ _ACEOF
 fi
 done
 
-
    if test "${ac_cv_func_stpcpy+set}" != "set"; then
      for ac_func in stpcpy
 do :
@@ -5146,15 +5130,13 @@ $as_echo "#define HAVE_STPCPY 1" >>confdefs.h
    fi
 
 
-
-
    if test "x$CATOBJEXT" != "x"; then
      if test "x$ALL_LINGUAS" = "x"; then
-       LINGUAS=
+       LINGUAS=""
      else
        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for catalogs to be installed" >&5
 $as_echo_n "checking for catalogs to be installed... " >&6; }
-       NEW_LINGUAS=
+       NEW_LINGUAS=""
        for lang in ${LINGUAS=$ALL_LINGUAS}; do
          case "$ALL_LINGUAS" in
           *$lang*) NEW_LINGUAS="$NEW_LINGUAS $lang" ;;
@@ -5177,7 +5159,6 @@ $as_echo "$LINGUAS" >&6; }
 /* The system does not provide the header <locale.h>. Take care yourself.  */"
    fi
 
-
             if test -f $srcdir/po2tbl.sed.in; then
       if test "$CATOBJEXT" = ".cat"; then
 	 for ac_header in linux/version.h
@@ -5195,7 +5176,6 @@ fi
 done
 
 
-
 	 sed -e '/^#/d' $srcdir/$msgformat-msg.sed > po2msg.sed
       fi
             sed -e '/^#.*[^\\]$/d' -e '/^#$/d' \
@@ -5204,19 +5184,15 @@ done
 
             if test "$PACKAGE" = "gettext"; then
      GT_NO="#NO#"
-     GT_YES=
+     GT_YES=""
    else
-     GT_NO=
+     GT_NO=""
      GT_YES="#YES#"
    fi
 
-
-
    MKINSTALLDIRS="\$(srcdir)/../../mkinstalldirs"
 
-
-      l=
-
+      l=""
 
             if test -d $srcdir/po; then
       test -d po || mkdir po
@@ -5470,35 +5446,15 @@ _ACEOF
 $as_echo "$as_me: Running checks common to all simulators" >&6;}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if test "x${cross_compiling}" = "xno"; then
   CC_FOR_BUILD='$(CC)'
 else
   CC_FOR_BUILD=gcc
 fi
 
-
-
-
 AR=${AR-ar}
 
-
-
 ALL_LINGUAS=""
-
 
 
 
@@ -5603,8 +5559,6 @@ fi
 done
 
 
-
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for bind in -lsocket" >&5
 $as_echo_n "checking for bind in -lsocket... " >&6; }
 if ${ac_cv_lib_socket_bind+:} false; then :
@@ -5695,7 +5649,6 @@ _ACEOF
 
 fi
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ${srcdir}/../../bfd/configure.host" >&5
 $as_echo "$as_me: sourcing ${srcdir}/../../bfd/configure.host" >&6;}
 . ${srcdir}/../../bfd/configure.host
@@ -5717,7 +5670,6 @@ fi
 
 
 
-
 USE_MAINTAINER_MODE=no
 # Check whether --enable-maintainer-mode was given.
 if test "${enable_maintainer_mode+set}" = set; then :
@@ -5734,7 +5686,6 @@ else
 fi
 
 
-
 # Check whether --enable-sim-bswap was given.
 if test "${enable_sim_bswap+set}" = set; then :
   enableval=$enable_sim_bswap; case "${enableval}" in
@@ -5748,7 +5699,6 @@ fi
 else
   sim_bswap=""
 fi
-
 
 
 # Check whether --enable-sim-cflags was given.
@@ -5767,7 +5717,6 @@ else
 fi
 
 
-
 # Check whether --enable-sim-debug was given.
 if test "${enable_sim_debug+set}" = set; then :
   enableval=$enable_sim_debug; case "${enableval}" in
@@ -5783,7 +5732,6 @@ else
 fi
 
 
-
 # Check whether --enable-sim-stdio was given.
 if test "${enable_sim_stdio+set}" = set; then :
   enableval=$enable_sim_stdio; case "${enableval}" in
@@ -5797,7 +5745,6 @@ fi
 else
   sim_stdio=""
 fi
-
 
 
 # Check whether --enable-sim-trace was given.
@@ -5826,7 +5773,6 @@ else
 fi
 
 
-
 # Check whether --enable-sim-profile was given.
 if test "${enable_sim_profile+set}" = set; then :
   enableval=$enable_sim_profile; case "${enableval}" in
@@ -5851,9 +5797,6 @@ fi
 else
   sim_profile="-DPROFILE=1 -DWITH_PROFILE=-1"
 fi
-
-
-
 
 
 

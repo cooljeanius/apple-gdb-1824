@@ -110,6 +110,14 @@ extern int cli_interpreter_complete(void *data, const char *word,
 
 extern NORETURN void error_no_arg(const char *) ATTR_NORETURN;
 
+/* Limit the call depth of user-defined commands */
+extern int max_user_call_depth;
+
+/* APPLE LOCAL begin hack hack */
+extern char **argv;
+extern struct cleanup *old_cleanups;
+/* APPLE LOCAL end hack hack */
+
 #endif /* !defined(CLI_CMDS_H) */
 
 /* EOF */

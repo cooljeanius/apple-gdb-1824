@@ -460,7 +460,7 @@ Tk_CanvasTagsPrintProc(clientData, tkwin, widgRec, offset, freeProcPtr)
 
 static int	DashConvert _ANSI_ARGS_((char *l, CONST char *p,
 			int n, double width));
-#define ABS(a) ((a>=0)?(a):(-(a)))
+#define ABS(a) ((a >= 0) ? (a) : (-(a)))
 
 /*
  *--------------------------------------------------------------
@@ -819,13 +819,13 @@ Tk_GetDash(interp, value, dash)
 	if (argv != NULL) {
 	    ckfree((char *)argv);
 	}
-	if (ABS(dash->number) > sizeof(char *))
+	if ((size_t)ABS(dash->number) > sizeof(char *))
 	    ckfree((char *)dash->pattern.pt);
 	dash->number = 0;
 	return TCL_ERROR;
     }
 
-    if (ABS(dash->number) > sizeof(char *)) {
+    if ((size_t)ABS(dash->number) > sizeof(char *)) {
 	ckfree((char *)dash->pattern.pt);
     }
     if (argc > (int)sizeof(char *)) {
@@ -919,13 +919,13 @@ void Tk_DeleteOutline(display, outline)
     if (outline->gc != None) {
 	Tk_FreeGC(display, outline->gc);
     }
-    if (ABS(outline->dash.number) > sizeof(char *)) {
+    if ((size_t)ABS(outline->dash.number) > sizeof(char *)) {
 	ckfree((char *) outline->dash.pattern.pt);
     }
-    if (ABS(outline->activeDash.number) > sizeof(char *)) {
+    if ((size_t)ABS(outline->activeDash.number) > sizeof(char *)) {
 	ckfree((char *) outline->activeDash.pattern.pt);
     }
-    if (ABS(outline->disabledDash.number) > sizeof(char *)) {
+    if ((size_t)ABS(outline->disabledDash.number) > sizeof(char *)) {
 	ckfree((char *) outline->disabledDash.pattern.pt);
     }
     if (outline->color != NULL) {
@@ -1349,16 +1349,16 @@ Tk_CanvasPsOutline(canvas, item, outline)
 	}
     }
     sprintf(string, "%.15g setlinewidth\n", width);
-    Tcl_AppendResult(interp, string, (char *) NULL);
+    Tcl_AppendResult(interp, string, (char *)NULL);
 
     if (dash->number > 10) {
-	str = (char *)ckalloc((unsigned int) (1 + 4*dash->number));
+	str = (char *)ckalloc((unsigned int)(1 + (4 * dash->number)));
     } else if (dash->number < -5) {
-	str = (char *)ckalloc((unsigned int) (1 - 8*dash->number));
-	lptr = (char *)ckalloc((unsigned int) (1 - 2*dash->number));
+	str = (char *)ckalloc((unsigned int)(1 - (8 * dash->number)));
+	lptr = (char *)ckalloc((unsigned int)(1 - (2 * dash->number)));
     }
-    ptr = (char *) ((ABS(dash->number) > sizeof(char *)) ) ?
-	dash->pattern.pt : dash->pattern.array;
+    ptr = (char *)((((size_t)ABS(dash->number) > sizeof(char *)))
+		   ? dash->pattern.pt : dash->pattern.array);
     if (dash->number > 0) {
 	char *ptr0 = ptr;
 	sprintf(str, "[%d", *ptr++ & 0xff);

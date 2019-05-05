@@ -22,25 +22,25 @@ dnl#
 
 AC_DEFUN([SIM_AC_COMMON],
 [AC_PREREQ([2.5])
-AC_MSG_NOTICE([Running checks common to all simulators])
+AC_MSG_NOTICE([Running checks common to all simulators])dnl
 
 dnl# This macro used to provide a call to AC_CONFIG_HEADERS, but that
 dnl# messed stuff up for me, so I removed it. Use AC_CONFIG_HEADERS in your
 dnl# own configure.ac file now. Same with AC_CONFIG_AUX_DIR.
 
-AC_REQUIRE([AS_PREPARE])
-AC_REQUIRE([AS_TEST_X])
-AC_REQUIRE([AS_EXECUTABLE_P])
-AC_REQUIRE([AS_INIT])
-AC_REQUIRE([AC_CONFIG_AUX_DIR_DEFAULT])
-AC_REQUIRE_AUX_FILE([config.guess])
-AC_REQUIRE_AUX_FILE([config.sub])
-AC_REQUIRE([AC_CANONICAL_TARGET])
-AC_REQUIRE([AC_PROG_GREP])
-AC_REQUIRE([AC_PROG_MKDIR_P])
-AC_REQUIRE([AC_ARG_PROGRAM])
-AC_REQUIRE([AC_PROG_CC])
-AC_REQUIRE([AC_PROG_INSTALL])
+AC_REQUIRE([AS_PREPARE])dnl
+AC_REQUIRE([AS_TEST_X])dnl
+AC_REQUIRE([AS_EXECUTABLE_P])dnl
+AC_REQUIRE([AS_INIT])dnl
+AC_REQUIRE([AC_CONFIG_AUX_DIR_DEFAULT])dnl
+AC_REQUIRE_AUX_FILE([config.guess])dnl
+AC_REQUIRE_AUX_FILE([config.sub])dnl
+AC_REQUIRE([AC_CANONICAL_TARGET])dnl
+AC_REQUIRE([AC_PROG_GREP])dnl
+AC_REQUIRE([AC_PROG_MKDIR_P])dnl
+AC_REQUIRE([AC_ARG_PROGRAM])dnl
+AC_REQUIRE([AC_PROG_CC])dnl
+AC_REQUIRE([AC_PROG_INSTALL])dnl
 
 dnl# Put a plausible default for CC_FOR_BUILD in Makefile.
 if test "x${cross_compiling}" = "xno"; then
@@ -48,18 +48,18 @@ if test "x${cross_compiling}" = "xno"; then
 else
   CC_FOR_BUILD=gcc
 fi
-AC_SUBST([CC_FOR_BUILD])
+AC_SUBST([CC_FOR_BUILD])dnl
 
-AC_SUBST([CFLAGS])
-AC_SUBST([HDEFINES])
+AC_SUBST([CFLAGS])dnl
+AC_SUBST([HDEFINES])dnl
 AR=${AR-ar}
-AC_SUBST([AR])
-AC_REQUIRE([AC_PROG_RANLIB])
+AC_SUBST([AR])dnl
+AC_REQUIRE([AC_PROG_RANLIB])dnl
 
 dnl# We do NOT use gettext, but bfd does. So we do the appropriate checks
 dnl# to see if there are intl libraries we should link against.
 ALL_LINGUAS=""
-AC_REQUIRE([CY_GNU_GETTEXT])
+AC_REQUIRE([CY_GNU_GETTEXT])dnl
 
 dnl# Check for common headers.
 dnl# FIXME: Seems to me this can cause problems for i386-windows hosts.
@@ -75,12 +75,12 @@ AC_CHECK_HEADERS([arpa/inet.h netdb.h netinet/in.h sys/socket.h])
 AC_CHECK_FUNCS([gethostbyname memset select socket strdup strerror])
 AC_CHECK_FUNCS([strrchr strtol strtoul])
 AC_CHECK_FUNCS([getrusage time sigaction __setfpucw])
-AC_REQUIRE([AC_FUNC_ERROR_AT_LINE])
-AC_REQUIRE([AC_FUNC_MALLOC])
+AC_REQUIRE([AC_FUNC_ERROR_AT_LINE])dnl
+AC_REQUIRE([AC_FUNC_MALLOC])dnl
 
 dnl# Check for socket libraries
 AC_CHECK_LIB([socket],[bind])
-AC_CHECK_LIB([nsl],[gethostbyname])
+AC_CHECK_LIB([nsl],[gethostbyname])dnl
 
 AC_MSG_NOTICE([sourcing ${srcdir}/../../bfd/configure.host])
 . ${srcdir}/../../bfd/configure.host
@@ -88,7 +88,7 @@ AC_MSG_NOTICE([sourcing ${srcdir}/../../bfd/configure.host])
 dnl# check some members
 AC_CHECK_MEMBER([host_callback.fdbuddy])
 AC_CHECK_MEMBER([host_callback.fdopen])
-AC_CHECK_MEMBER([host_callback.alwaysopen])
+AC_CHECK_MEMBER([host_callback.alwaysopen])dnl
 
 dnl# Standard (and optional) simulator options.
 dnl# Eventually all simulators will support these.
@@ -110,7 +110,7 @@ esac
 if test x"$silent" != x"yes" && test x"$MAINT" = x""; then
   echo "Setting maintainer mode" 6>&1
 fi],[MAINT="#"])dnl
-AC_SUBST([MAINT])
+AC_SUBST([MAINT])dnl
 
 
 dnl# This is a generic option to enable special byte swapping
@@ -125,7 +125,7 @@ esac
 if test x"$silent" != x"yes" && test x"$sim_bswap" != x""; then
   echo "Setting bswap flags = $sim_bswap" 6>&1
 fi],[sim_bswap=""])dnl
-AC_SUBST([sim_bswap])
+AC_SUBST([sim_bswap])dnl
 
 
 AC_ARG_ENABLE([sim-cflags],
@@ -139,7 +139,7 @@ esac
 if test x"$silent" != x"yes" && test x"$sim_cflags" != x""; then
   echo "Setting sim cflags = $sim_cflags" 6>&1
 fi],[sim_cflags=""])dnl
-AC_SUBST([sim_cflags])
+AC_SUBST([sim_cflags])dnl
 
 
 dnl# --enable-sim-debug is for developers of the simulator
@@ -154,7 +154,7 @@ esac
 if test x"$silent" != x"yes" && test x"$sim_debug" != x""; then
   echo "Setting sim debug = $sim_debug" 6>&1
 fi],[sim_debug=""])dnl
-AC_SUBST([sim_debug])
+AC_SUBST([sim_debug])dnl
 
 
 dnl# --enable-sim-stdio is for users of the simulator
@@ -169,7 +169,7 @@ esac
 if test x"$silent" != x"yes" && test x"$sim_stdio" != x""; then
   echo "Setting stdio flags = $sim_stdio" 6>&1
 fi],[sim_stdio=""])dnl
-AC_SUBST([sim_stdio])
+AC_SUBST([sim_stdio])dnl
 
 
 dnl# --enable-sim-trace is for users of the simulator
@@ -198,7 +198,7 @@ esac
 if test x"$silent" != x"yes" && test x"$sim_trace" != x""; then
   echo "Setting sim trace = $sim_trace" 6>&1
 fi],[sim_trace=""])dnl
-AC_SUBST([sim_trace])
+AC_SUBST([sim_trace])dnl
 
 
 dnl# --enable-sim-profile
@@ -227,13 +227,13 @@ esac
 if test x"$silent" != x"yes" && test x"$sim_profile" != x""; then
   echo "Setting sim profile = $sim_profile" 6>&1
 fi],[sim_profile="-DPROFILE=1 -DWITH_PROFILE=-1"])dnl
-AC_SUBST([sim_profile])
+AC_SUBST([sim_profile])dnl
 
 dnl# Types used by common code
-AC_REQUIRE([AC_TYPE_SIGNAL])
+AC_REQUIRE([AC_TYPE_SIGNAL])dnl
 
 dnl# Detect exe extension
-AC_REQUIRE([AC_EXEEXT])
+AC_REQUIRE([AC_EXEEXT])dnl
 
 dnl# These are available to append to as desired.
 sim_link_files=""
@@ -291,7 +291,7 @@ if test x"$silent" != x"yes" && test x"$sim_environment" != x""; then
 fi],
 [sim_environment="-DWITH_ENVIRONMENT=ALL_ENVIRONMENT"])dnl
 ])
-AC_SUBST([sim_environment])
+AC_SUBST([sim_environment])dnl
 
 
 dnl# Specify the alignment restrictions of the target architecture.
@@ -343,7 +343,7 @@ else
   fi
 fi])dnl
 ])dnl
-AC_SUBST([sim_alignment])
+AC_SUBST([sim_alignment])dnl
 
 
 dnl# Conditionally compile in assertion statements.
@@ -360,7 +360,7 @@ if test x"$silent" != x"yes" && test x"$sim_assert" != x""; then
   echo "Setting assert flags = $sim_assert" 6>&1
 fi],[sim_assert=""])dnl
 ])
-AC_SUBST([sim_assert])
+AC_SUBST([sim_assert])dnl
 
 
 
@@ -429,7 +429,7 @@ if test x"$wire_cell_bitsize" != x; then
   sim_bitsize="$sim_bitsize -DWITH_TARGET_CELL_BITSIZE=$wire_cell_bitsize"
 fi])dnl
 ])
-AC_SUBST([sim_bitsize])
+AC_SUBST([sim_bitsize])dnl
 
 
 
@@ -477,11 +477,11 @@ else
   if test x"$wire_endian" != x; then
     sim_endian="-DWITH_TARGET_BYTE_ORDER=${wire_endian}"
   else
-    sim_endian=
+    sim_endian=""
   fi
 fi])dnl
 ])
-AC_SUBST([sim_endian])
+AC_SUBST([sim_endian])dnl
 
 
 dnl# --enable-sim-hostendian is for users of the simulator when
@@ -511,7 +511,7 @@ else
   sim_hostendian="-DWITH_HOST_BYTE_ORDER=0"
 fi])dnl
 ])
-AC_SUBST([sim_hostendian])
+AC_SUBST([sim_hostendian])dnl
 
 
 dnl# --enable-sim-float is for developers of the simulator
@@ -544,7 +544,7 @@ if test x"${default_sim_float_bitsize}" != x""; then
 fi
 ])dnl
 ])
-AC_SUBST([sim_float])
+AC_SUBST([sim_float])dnl
 
 
 dnl# The argument is the default cache size if none is specified.
@@ -564,7 +564,7 @@ if test x"$silent" != x"yes" && test x"$sim_scache" != x""; then
   echo "Setting scache size = $sim_scache" 6>&1
 fi],[sim_scache="-DWITH_SCACHE=${default_sim_scache}"])
 ])
-AC_SUBST([sim_scache])
+AC_SUBST([sim_scache])dnl
 
 
 dnl# The argument is the default model if none is specified.
@@ -581,7 +581,7 @@ if test x"$silent" != x"yes" && test x"$sim_default_model" != x""; then
   echo "Setting default model = $sim_default_model" 6>&1
 fi],[sim_default_model="-DWITH_DEFAULT_MODEL='\"${default_sim_default_model}\"'"])
 ])
-AC_SUBST([sim_default_model])
+AC_SUBST([sim_default_model])dnl
 
 
 dnl# --enable-sim-hardware is for users of the simulator
@@ -642,9 +642,9 @@ if test x"$silent" != x"yes"; then
   echo "Setting hardware to $sim_hw_cflags, $sim_hw, $sim_hw_objs"
 fi])dnl
 ])
-AC_SUBST([sim_hw_cflags])
-AC_SUBST([sim_hw_objs])
-AC_SUBST([sim_hw])
+AC_SUBST([sim_hw_cflags])dnl
+AC_SUBST([sim_hw_objs])dnl
+AC_SUBST([sim_hw])dnl
 
 
 dnl# --enable-sim-inline is for users that wish to ramp up the simulator's
@@ -693,7 +693,7 @@ else
   sim_inline="-DDEFAULT_INLINE=0"
 fi])dnl
 ])
-AC_SUBST([sim_inline])
+AC_SUBST([sim_inline])dnl
 
 
 AC_DEFUN([SIM_AC_OPTION_PACKAGES],
@@ -719,7 +719,7 @@ if test x"$silent" != x"yes"; then
   echo "Setting packages to $sim_pk_src, $sim_pk_obj"
 fi])dnl
 ])
-AC_SUBST([sim_packages])
+AC_SUBST([sim_packages])dnl
 
 
 AC_DEFUN([SIM_AC_OPTION_REGPARM],
@@ -736,7 +736,7 @@ if test x"$silent" != x"yes" && test x"$sim_regparm" != x""; then
   echo "Setting regparm flags = $sim_regparm" 6>&1
 fi],[sim_regparm=""])dnl
 ])
-AC_SUBST([sim_regparm])
+AC_SUBST([sim_regparm])dnl
 
 
 AC_DEFUN([SIM_AC_OPTION_RESERVED_BITS],
@@ -753,7 +753,7 @@ if test x"$silent" != x"yes" && test x"$sim_reserved_bits" != x""; then
   echo "Setting reserved flags = $sim_reserved_bits" 6>&1
 fi],[sim_reserved_bits="-DWITH_RESERVED_BITS=${default_sim_reserved_bits}"])dnl
 ])
-AC_SUBST([sim_reserved_bits])
+AC_SUBST([sim_reserved_bits])dnl
 
 
 AC_DEFUN([SIM_AC_OPTION_SMP],
@@ -773,7 +773,7 @@ if test x"$silent" != x"yes"; then
   echo "Setting smp flags = $sim_smp" 6>&1
 fi])dnl
 ])
-AC_SUBST([sim_smp])
+AC_SUBST([sim_smp])dnl
 
 
 AC_DEFUN([SIM_AC_OPTION_STDCALL],
@@ -790,7 +790,7 @@ if test x"$silent" != x"yes" && test x"$sim_stdcall" != x""; then
   echo "Setting function call flags = $sim_stdcall" 6>&1
 fi],[sim_stdcall=""])dnl
 ])
-AC_SUBST([sim_stdcall])
+AC_SUBST([sim_stdcall])dnl
 
 
 AC_DEFUN([SIM_AC_OPTION_XOR_ENDIAN],
@@ -807,13 +807,67 @@ if test x"$silent" != x"yes" && test x"$sim_xor_endian" != x""; then
   echo "Setting xor-endian flag = $sim_xor_endian" 6>&1
 fi],[sim_xor_endian="-DWITH_XOR_ENDIAN=${default_sim_xor_endian}"])dnl
 ])
-AC_SUBST([sim_xor_endian])
+AC_SUBST([sim_xor_endian])dnl
 
+dnl# copied from the gnulib warnings.m4:
+
+dnl# gl_AS_VAR_APPEND(VAR, VALUE)
+dnl# ----------------------------
+dnl# Provide the functionality of AS_VAR_APPEND if Autoconf does not have it.
+m4_ifdef([AS_VAR_APPEND],
+[m4_copy([AS_VAR_APPEND], [gl_AS_VAR_APPEND])],
+[m4_define([gl_AS_VAR_APPEND],
+[AS_VAR_SET([$1], [AS_VAR_GET([$1])$2])])])
+
+
+dnl# gl_COMPILER_OPTION_IF(OPTION, [IF-SUPPORTED], [IF-NOT-SUPPORTED],
+dnl#                       [PROGRAM = AC_LANG_PROGRAM()])
+dnl# -----------------------------------------------------------------
+dnl# Check if the compiler supports OPTION when compiling PROGRAM.
+dnl#
+dnl# FIXME: gl_Warn must be used unquoted until we can assume Autoconf
+dnl# 2.64 or newer.
+AC_DEFUN([gl_COMPILER_OPTION_IF],
+[AS_VAR_PUSHDEF([gl_Warn], [gl_cv_warn_[]_AC_LANG_ABBREV[]_$1])dnl
+AS_VAR_PUSHDEF([gl_Flags], [_AC_LANG_PREFIX[]FLAGS])dnl
+AS_LITERAL_IF([$1],
+  [m4_pushdef([gl_Positive], m4_bpatsubst([$1], [^-Wno-], [-W]))],
+  [gl_positive="$1"
+case $gl_positive in
+  -Wno-*) gl_positive=-W`expr "X$gl_positive" : 'X-Wno-\(.*\)'` ;;
+esac
+m4_pushdef([gl_Positive], [$gl_positive])])dnl
+AC_CACHE_CHECK([whether _AC_LANG compiler handles $1], m4_defn([gl_Warn]), [
+  gl_save_compiler_FLAGS="$gl_Flags"
+  gl_AS_VAR_APPEND(m4_defn([gl_Flags]),
+    [" $gl_unknown_warnings_are_errors ]m4_defn([gl_Positive])["])
+  AC_LINK_IFELSE([m4_default([$4], [AC_LANG_PROGRAM([])])],
+                 [AS_VAR_SET(gl_Warn, [yes])],
+                 [AS_VAR_SET(gl_Warn, [no])])
+  gl_Flags="$gl_save_compiler_FLAGS"
+])
+AS_VAR_IF(gl_Warn, [yes], [$2], [$3])
+m4_popdef([gl_Positive])dnl
+AS_VAR_POPDEF([gl_Flags])dnl
+AS_VAR_POPDEF([gl_Warn])dnl
+])dnl
+
+dnl# gl_UNKNOWN_WARNINGS_ARE_ERRORS
+dnl# ------------------------------
+dnl# Clang does NOT complain about unknown warning options unless one also
+dnl# specifies -Wunknown-warning-option -Werror.  Detect this.
+AC_DEFUN([gl_UNKNOWN_WARNINGS_ARE_ERRORS],
+[gl_COMPILER_OPTION_IF([-Werror -Wunknown-warning-option],
+   [gl_unknown_warnings_are_errors='-Wunknown-warning-option -Werror'],
+   [gl_unknown_warnings_are_errors=])])dnl
+
+dnl# end portion copied from gnulib warnings.m4
 
 dnl# --enable-build-warnings is for developers of the simulator.
 dnl# it enables extra GCC specific warnings.
 AC_DEFUN([SIM_AC_OPTION_WARNINGS],
 [
+AC_REQUIRE([gl_UNKNOWN_WARNINGS_ARE_ERRORS])
 AC_REQUIRE([AC_PROG_SED])
 # NOTE: Do NOT add -Wall or -Wunused, they both include
 # -Wunused-parameter which reports bogus warnings.
@@ -892,7 +946,7 @@ then
             ;;
 	*) # Check that GCC accepts it
 	    saved_CFLAGS="${CFLAGS}"
-	    CFLAGS="${CFLAGS} ${w}"
+	    CFLAGS="${CFLAGS} ${w} ${gl_unknown_warnings_are_errors}"
 	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[WARN_CFLAGS="${WARN_CFLAGS} ${w}"],[])
 	    CFLAGS="${saved_CFLAGS}"
             ;;
@@ -933,7 +987,7 @@ fi
 export CONFIG_FILES="Makefile.sim:Makefile.in Make-common.sim:../common/Make-common.in .gdbinit:../common/gdbinit.in"
 
 AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate'
-cleanly from AC_LINK_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
+cleanly from AC\_LINK\_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
 functional but inelegant update, you should probably tune the result
 yourself.])dnl
 ac_sources="$sim_link_files"
@@ -1000,7 +1054,7 @@ else
   echo "targ-vals.def present"
 fi
 
-])
+])dnl
 
 # This file is derived from `gettext.m4'. The difference is that the
 # included macros assume Cygnus-style source and build trees.
@@ -1022,7 +1076,7 @@ AC_DEFUN([CY_WITH_NLS],
       [AS_HELP_STRING([--disable-nls],[do not use Native Language Support])],
       [USE_NLS=$enableval],[USE_NLS=yes])
     AC_MSG_RESULT([$USE_NLS])
-    AC_SUBST([USE_NLS])
+    AC_SUBST([USE_NLS])dnl
 
     USE_INCLUDED_LIBINTL=no
 
@@ -1034,7 +1088,7 @@ AC_DEFUN([CY_WITH_NLS],
         [AS_HELP_STRING([--with-included-gettext],[use the GNU gettext library included here])],
         [nls_cv_force_use_gnu_gettext=$withval],
         [nls_cv_force_use_gnu_gettext=no])
-      AC_MSG_RESULT([$nls_cv_force_use_gnu_gettext])
+      AC_MSG_RESULT([${nls_cv_force_use_gnu_gettext}])dnl
 
       nls_cv_use_gnu_gettext="$nls_cv_force_use_gnu_gettext"
       if test "$nls_cv_force_use_gnu_gettext" != "yes"; then
@@ -1051,7 +1105,7 @@ AC_DEFUN([CY_WITH_NLS],
 	    [AC_LINK_IFELSE([AC_LANG_SOURCE([[#include <libintl.h>]],[[return (int) gettext ("")]])],
 	       [gt_cv_func_gettext_libc=yes],
 	       [gt_cv_func_gettext_libc=no])
-	  ])
+	  ])dnl
 
 	   if test "$gt_cv_func_gettext_libc" != "yes"; then
 	     AC_CHECK_LIB([intl],[bindtextdomain],
@@ -1083,7 +1137,7 @@ AC_DEFUN([CY_WITH_NLS],
 		INSTOBJEXT=.mo
 	      fi
 	    fi
-	])
+	])dnl
 
 	dnl# In the standard gettext, we would now check for catgets.
 	dnl# However, we never want to use catgets for our releases.
@@ -1152,18 +1206,18 @@ AC_DEFUN([CY_WITH_NLS],
     done
 
     dnl# Make all variables we use known to autoconf.
-    AC_SUBST([USE_INCLUDED_LIBINTL])
-    AC_SUBST([CATALOGS])
-    AC_SUBST([CATOBJEXT])
-    AC_SUBST([DATADIRNAME])
-    AC_SUBST([GMOFILES])
-    AC_SUBST([INSTOBJEXT])
-    AC_SUBST([INTLDEPS])
-    AC_SUBST([INTLLIBS])
-    AC_SUBST([INTLOBJS])
-    AC_SUBST([POFILES])
-    AC_SUBST([POSUB])
-  ])
+    AC_SUBST([USE_INCLUDED_LIBINTL])dnl
+    AC_SUBST([CATALOGS])dnl
+    AC_SUBST([CATOBJEXT])dnl
+    AC_SUBST([DATADIRNAME])dnl
+    AC_SUBST([GMOFILES])dnl
+    AC_SUBST([INSTOBJEXT])dnl
+    AC_SUBST([INTLDEPS])dnl
+    AC_SUBST([INTLLIBS])dnl
+    AC_SUBST([INTLOBJS])dnl
+    AC_SUBST([POFILES])dnl
+    AC_SUBST([POSUB])dnl
+  ])dnl
 
 AC_DEFUN([CY_GNU_GETTEXT],
   [AC_MSG_NOTICE([Doing Cygnus gettext checks])
@@ -1182,7 +1236,7 @@ AC_DEFUN([CY_GNU_GETTEXT],
    AC_CHECK_HEADERS([argz.h limits.h locale.h nl_types.h malloc.h \
                      malloc/malloc.h values.h])
    AC_CHECK_FUNCS([getcwd munmap putenv setenv setlocale strchr \
-                   strcasecmp __argz_count __argz_stringify __argz_next])
+                   strcasecmp __argz_count __argz_stringify __argz_next])dnl
 
    if test "${ac_cv_func_stpcpy+set}" != "set"; then
      AC_CHECK_FUNCS([stpcpy])
@@ -1191,15 +1245,15 @@ AC_DEFUN([CY_GNU_GETTEXT],
      AC_DEFINE([HAVE_STPCPY],[1],[Define to 1 if we have the stpcpy function])
    fi
 
-   AC_REQUIRE([AM_LC_MESSAGES])
-   AC_REQUIRE([CY_WITH_NLS])
+   AC_REQUIRE([AM_LC_MESSAGES])dnl
+   AC_REQUIRE([CY_WITH_NLS])dnl
 
    if test "x$CATOBJEXT" != "x"; then
      if test "x$ALL_LINGUAS" = "x"; then
-       LINGUAS=
+       LINGUAS=""
      else
        AC_MSG_CHECKING([for catalogs to be installed])
-       NEW_LINGUAS=
+       NEW_LINGUAS=""
        for lang in ${LINGUAS=$ALL_LINGUAS}; do
          case "$ALL_LINGUAS" in
           *$lang*) NEW_LINGUAS="$NEW_LINGUAS $lang" ;;
@@ -1224,14 +1278,14 @@ AC_DEFUN([CY_GNU_GETTEXT],
      INCLUDE_LOCALE_H="\
 /* The system does not provide the header <locale.h>. Take care yourself.  */"
    fi
-   AC_SUBST([INCLUDE_LOCALE_H])
+   AC_SUBST([INCLUDE_LOCALE_H])dnl
 
    dnl# Determine which catalog format we have (if any is needed)
    dnl# For now we know about two different formats:
    dnl#   Linux libc-5 and the normal X/Open format
    if test -f $srcdir/po2tbl.sed.in; then
       if test "$CATOBJEXT" = ".cat"; then
-	 AC_CHECK_HEADERS([linux/version.h],[msgformat=linux],[msgformat=xopen])
+	 AC_CHECK_HEADERS([linux/version.h],[msgformat=linux],[msgformat=xopen])dnl
 
 	 dnl# Transform the SED scripts while copying because some dumb SEDs
 	 dnl# cannot handle comments.
@@ -1248,20 +1302,20 @@ AC_DEFUN([CY_GNU_GETTEXT],
    dnl# packages.
    if test "$PACKAGE" = "gettext"; then
      GT_NO="#NO#"
-     GT_YES=
+     GT_YES=""
    else
-     GT_NO=
+     GT_NO=""
      GT_YES="#YES#"
    fi
-   AC_SUBST([GT_NO])
-   AC_SUBST([GT_YES])
+   AC_SUBST([GT_NO])dnl
+   AC_SUBST([GT_YES])dnl
 
    MKINSTALLDIRS="\$(srcdir)/../../mkinstalldirs"
-   AC_SUBST([MKINSTALLDIRS])
+   AC_SUBST([MKINSTALLDIRS])dnl
 
    dnl# *** For now the libtool support in intl/Makefile is not for real.
-   l=
-   AC_SUBST([l])
+   l=""
+   AC_SUBST([l])dnl
 
    dnl# Generate list of files to be processed by xgettext which will
    dnl# be included in po/Makefile. But only do this if the po directory
@@ -1282,7 +1336,7 @@ AC_DEFUN([CY_GNU_GETTEXT],
 	 < $srcdir/po/POTFILES.in > po/POTFILES
    fi
    AC_MSG_NOTICE([Done with Cygnus gettext checks])
-  ])
+  ])dnl
 
 # Search path for a program which passes the given test.
 # Ulrich Drepper <drepper@cygnus.com>, 1996.
@@ -1329,7 +1383,7 @@ else
   AC_MSG_RESULT([no])
 fi
 AC_SUBST([$1])dnl
-])
+])dnl
 
 # Check whether LC_MESSAGES is available in <locale.h>.
 # Ulrich Drepper <drepper@cygnus.com>, 1995.
@@ -1351,7 +1405,7 @@ AC_DEFUN([AM_LC_MESSAGES],
       AC_DEFINE([HAVE_LC_MESSAGES],[1],[Define to 1 if we have LC_MESSAGES])
     fi
   fi
-])
+])dnl
 
 
 dnl# --enable-cgen-maint support

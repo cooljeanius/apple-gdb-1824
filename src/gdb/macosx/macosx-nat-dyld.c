@@ -1996,7 +1996,7 @@ macosx_get_osabi_from_dyld_entry(bfd *abfd)
   const char *bfd_name;
   struct macosx_dyld_thread_status *status;
   const struct dyld_path_info *d;
-  struct dyld_objfile_entry *e;
+  struct dyld_objfile_entry *e = NULL;
   int i;
   enum gdb_osabi bfd_osabi;
   const char *entry_name;

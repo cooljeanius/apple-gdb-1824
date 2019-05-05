@@ -21,7 +21,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 struct am29k_opcode {
   /* Name of the instruction.  */
-  char *name;
+  const char *name;
 
   /* Opcode (i.e. most significant byte of the word).  */
   unsigned char opcode;
@@ -53,7 +53,7 @@ struct am29k_opcode {
      r        RND--bits 4-6 of the instruction.
      d        FD--bits 2-3 of the instruction.
      f        FS--bits 0-1 of the instruction.  */
-  char *args;
+  const char *args;
 };
 
 static struct am29k_opcode am29k_opcodes[] =
@@ -268,6 +268,6 @@ static struct am29k_opcode am29k_opcodes[] =
 
 };
 
-#define NUM_OPCODES ((sizeof am29k_opcodes) / (sizeof am29k_opcodes[0]))
+#define NUM_OPCODES ((sizeof(am29k_opcodes)) / (sizeof(am29k_opcodes[0])))
 
 /* EOF */

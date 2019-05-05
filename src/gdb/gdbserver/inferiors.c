@@ -31,6 +31,14 @@
 # include "inferiors.h"
 #endif /* !INFERIORS_H */
 
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "inferiors.c expects <string.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRING_H */
+
 /* my "gdbthread.h" is currently broken, so copy some parts of it here: */
 #ifndef GDB_THREAD_H
 # define GDB_THREAD_H 1

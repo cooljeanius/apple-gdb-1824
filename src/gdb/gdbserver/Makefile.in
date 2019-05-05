@@ -97,7 +97,7 @@ abs_top_srcdir=@abs_top_srcdir@
 abs_srcdir=@abs_srcdir@
 VPATH = @srcdir@
 
-# It is also possible that you will need to add -I/usr/include/sys to the
+# It is also possible that you will need to add -Wp,-I/usr/include/sys to the
 # CFLAGS section if your system does NOT have fcntl.h in /usr/include
 # (which is where it should be according to Posix).
 
@@ -115,10 +115,10 @@ INCLUDE_DEP = $$(INCLUDE_DIR)
 # gnulib
 GNULIB_BUILDDIR = ../gnulib
 LIBGNU = $(GNULIB_BUILDDIR)/import/libgnu.a
-INCGNU = -I$(srcdir)/../gnulib -I$(srcdir)/../gnulib/import \
-  -I$(GNULIB_BUILDDIR)/import
-GNULIB_CFLAGS = -I$(srcdir)/../gnulib -I$(GNULIB_BUILDDIR)/gnulib \
-  -I$(GNULIB_BUILDDIR)/import
+INCGNU = -Wp,-I$(srcdir)/../gnulib -Wp,-I$(srcdir)/../gnulib/import \
+  -Wp,-I$(GNULIB_BUILDDIR)/import
+GNULIB_CFLAGS = -Wp,-I$(srcdir)/../gnulib -Wp,-I$(GNULIB_BUILDDIR)/gnulib \
+  -Wp,-I$(GNULIB_BUILDDIR)/import
 GNULIB_LIB = $(GNULIB_BUILDDIR)/import/libgnu.a
 
 # Generated headers in the gnulib directory. These must be listed
@@ -129,13 +129,13 @@ GNULIB_H = $(GNULIB_BUILDDIR)/import/string.h @GNULIB_STDINT_H@
 BFD_DIR = ../../bfd
 BFD = $(BFD_DIR)/libbfd.a
 BFD_SRC = $(srcdir)/$(BFD_DIR)
-BFD_CFLAGS = -I$(BFD_DIR) -I$(BFD_SRC)
+BFD_CFLAGS = -Wp,-I$(BFD_DIR) -Wp,-I$(BFD_SRC)
 
 # Where is the "-liberty" library?  Typically in ../libiberty.
 LIBIBERTY_DIR = $(srcdir)/../../libiberty
 LIBIBERTY_DEP = $(LIBIBERTY_DIR)/libiberty.a
 LIBIBERTY = -L$(LIBIBERTY_DIR) -liberty
-LIBIBERTY_CFLAGS = -I$(LIBIBERTY_DIR)
+LIBIBERTY_CFLAGS = -Wp,-I$(LIBIBERTY_DIR)
 
 # Where is the srcdir for the READLINE library? Traditionally in .. or .
 # (For the binary library built from it, we use ${READLINE_DIR}${subdir}.)
@@ -183,9 +183,9 @@ am__v_CXXLD_0 = @echo "  CXXLD    " $@;
 am__v_CXXLD_1 = 
 
 # All the includes used for CFLAGS and for lint.
-# -I. for config files.
-# -I${srcdir} for our headers.
-# -I$(regformat_dir) for regdef.h.
+# -Wp,-I. for config files.
+# -Wp,-I${srcdir} for our headers.
+# -Wp,-I$(regformat_dir) for regdef.h.
 #
 # We do not include ../target or ../nat in here because headers
 # in those directories should be included with the subdirectory.
@@ -195,9 +195,9 @@ am__v_CXXLD_1 =
 # and mach stuff with regular gdb. So I am adding another
 # platform include directory to get this stuff.
 PLATFORM_INCLUDE = @GDBSERVER_PLATFORM_INCLUDE@
-INCLUDE_CFLAGS = -I. -I.. -I../common -I${srcdir} -I$(srcdir)/../common \
-	 -I$(regformat_dir) -I$(srcdir)/.. \
-	 $(PLATFORM_INCLUDE) -I$(INCLUDE_DIR) $(INCGNU) $(GNULIB_CFLAGS)
+INCLUDE_CFLAGS = -Wp,-I. -Wp,-I.. -Wp,-I../common -Wp,-I${srcdir} \
+	 -Wp,-I$(srcdir)/../common -Wp,-I$(regformat_dir) -Wp,-I$(srcdir)/.. \
+	 $(PLATFORM_INCLUDE) -Wp,-I$(INCLUDE_DIR) $(INCGNU) $(GNULIB_CFLAGS)
 
 # M{H,T}_CFLAGS, if defined, has host- and target-dependent CFLAGS
 # from the config/ directory.
@@ -222,7 +222,7 @@ CFLAGS = @CFLAGS@
 # (configure script should have already put archflags into CFLAGS itself)
 
 # CPPFLAGS is specifically reserved for setting from the command line
-# when running make.  E.G.  "make CPPFLAGS=-I.".
+# when running make.  E.G.  "make CPPFLAGS=-Wp,-I.".
 CPPFLAGS = @CPPFLAGS@ -DHAVE_CONFIG_H
 DEFS = -DGDBSERVER
 CONFIGURED_DEFS = @DEFS@

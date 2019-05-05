@@ -33,6 +33,7 @@
 /* APPLE LOCAL cli-cmds.h */
 #include "cli-cmds.h"
 #include "exceptions.h"
+#include "cli-interp.h"
 
 /* These are the ui_out and the interpreter for the console interpreter: */
 struct ui_out *cli_uiout;

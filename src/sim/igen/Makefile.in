@@ -79,15 +79,17 @@ MAKEINFO = makeinfo
 .NOEXPORT:
 MAKEOVERRIDES=
 
-LIB_INCLUDES	= -I$(srcdir)/../../include
-INCLUDES	= -I. -I$(srcdir) $(LIB_INCLUDES)
+LIB_INCLUDES	= -Wp,-I$(srcdir)/../../include
+INCLUDES	= -Wp,-I. -Wp,-I$(srcdir) $(LIB_INCLUDES)
 
 LIBIBERTY_LIB	= @LIBIBERTY_LIB@
 
-BUILD_CFLAGS = \
+BUILD_COMPILERFLAGS = \
 	$(CFLAGS_FOR_BUILD) \
 	$(IGEN_WARN_CFLAGS) \
-	$(IGEN_WERROR_CFLAGS) \
+	$(IGEN_WERROR_CFLAGS)
+BUILD_CFLAGS = \
+	$(BUILD_COMPILERFLAGS) \
 	$(INCLUDES)
 BUILD_LDFLAGS = 
 
@@ -119,7 +121,7 @@ IGEN_OBJS=\
 	gen.o
 
 igen: igen.o $(IGEN_OBJS)
-	$(CC_FOR_BUILD) $(BUILD_CFLAGS) $(BUILD_LDFLAGS) -o igen igen.o $(IGEN_OBJS) $(LIBIBERTY_LIB)
+	$(CC_FOR_BUILD) $(BUILD_COMPILERFLAGS) $(BUILD_LDFLAGS) -o igen igen.o $(IGEN_OBJS) $(LIBIBERTY_LIB)
 
 igen.o: igen.c misc.h filter_host.h lf.h table.h ld-decode.h ld-cache.h ld-insn.h filter.h gen-model.h gen-itable.h gen-icache.h gen-idecode.h gen-engine.h gen-semantics.h gen-support.h gen.h igen.h 
 	$(CC_FOR_BUILD) $(BUILD_CFLAGS) -c $(srcdir)/igen.c

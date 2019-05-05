@@ -5,7 +5,7 @@
    Written by Thomas Tanner, 1998
 
    NOTE: The canonical source of this file is maintained with the
-   GNU Libtool package.  Report bugs to bug-libtool@gnu.org.
+   GNU Libtool package.  Report bugs to <bug-libtool@gnu.org>.
 
 GNU Libltdl is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -79,15 +79,15 @@ static  const char	libext[]		= LT_LIBEXT;
 static  const char	libprefix[]		= LT_LIBPREFIX;
 #if defined(LT_MODULE_EXT)
 static	const char	shlib_ext[]		= LT_MODULE_EXT;
-#endif
+#endif /* LT_MODULE_EXT */
 /* If the loadable module suffix is not the same as the linkable
  * shared library suffix, this will be defined. */
 #if defined(LT_SHARED_EXT)
 static	const char	shared_ext[]		= LT_SHARED_EXT;
-#endif
+#endif /* LT_SHARED_EXT */
 #if defined(LT_DLSEARCH_PATH)
 static	const char	sys_dlsearch_path[]	= LT_DLSEARCH_PATH;
-#endif
+#endif /* LT_DLSEARCH_PATH */
 
 
 
@@ -1363,13 +1363,17 @@ try_dlopen (lt_dlhandle *phandle, const char *filename, const char *ext,
 	      if (search_path)
 		file = find_file (search_path, base_name, &dir);
 	    }
-#endif
+#endif /* LT_MODULE_PATH_VAR */
 #if defined(LT_DLSEARCH_PATH)
+	  /* should be ok to ignore -Wconstant-logical-operand for
+	   * *sys_dlsearch_path here and throughout the file; it is only
+	   * constant depending on the value of a preprocessor conditional,
+	   * which could change depending on configuration: */
 	  if (!file && *sys_dlsearch_path)
 	    {
 	      file = find_file (sys_dlsearch_path, base_name, &dir);
 	    }
-#endif
+#endif /* LT_DLSEARCH_PATH */
 	}
       else
 	{
@@ -1925,14 +1929,14 @@ lt_dlforeachfile (const char *search_path,
 	  is_done = foreach_dirinpath (getenv(LT_MODULE_PATH_VAR), 0,
 				       foreachfile_callback, fpptr, data);
 	}
-#endif
+#endif /* LT_MODULE_PATH_VAR */
 #if defined(LT_DLSEARCH_PATH)
       if (!is_done && *sys_dlsearch_path)
 	{
 	  is_done = foreach_dirinpath (sys_dlsearch_path, 0,
 				       foreachfile_callback, fpptr, data);
 	}
-#endif
+#endif /* LT_DLSEARCH_PATH */
     }
 
   return is_done;

@@ -84,7 +84,7 @@ CFLAGS =	-ggdb $(C_ALLWFLAGS) $(C_ARCHFLAGS)
 CXX_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 CXX_SWFLAGS =   -Wsign-compare -Wsign-promo @MAINT@ -Wconversion
 CXX_WARNFLAGS = $(SHRD_WFLAGS) -Wabi -Weffc++ $(CXX_SWFLAGS) -Wformat=2
-CXX_XFLAGS =    -fno-exceptions -fno-use-cxa-atexit -fconserve-space
+CXX_XFLAGS =    -fno-exceptions -fno-use-cxa-atexit # -fconserve-space
 CXX_SFLAGS =    -fcheck-new -fno-rtti @MAINT@ $(CXX_XFLAGS)
 CXXFLAGS =      -ggdb $(CXX_SFLAGS) $(CXX_WARNFLAGS) $(CXX_ARCHFLAGS)
 FGREP = 	@FGREP@

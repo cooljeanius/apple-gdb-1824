@@ -29,6 +29,15 @@ Boston, MA 02111-1307, USA.  */
 
 #include "mmprivate.h"
 
+#if !defined(__cplusplus) || \
+    ((__cplusplus < 201703L) && \
+     (!defined(__clang__) || \
+      (defined(__clang_major__) && (__clang_major__ < 8))))
+# define REGISTER_KW register
+#else
+# define REGISTER_KW /* (nothing) */
+#endif /* C++ pre-c++17 */
+
 /* Prototypes for local functions: */
 static int initialize PARAMS((struct mdesc *));
 static PTR morecore PARAMS((struct mdesc *, size_t));
@@ -123,9 +132,9 @@ mmalloc(PTR md, size_t size)
   struct mdesc *mdp;
   PTR result;
   size_t block, blocks, lastblocks, start;
-  register size_t i;
+  REGISTER_KW size_t i;
   struct list *next;
-  register size_t log;
+  REGISTER_KW size_t log;
 
   if (size == 0)
     {

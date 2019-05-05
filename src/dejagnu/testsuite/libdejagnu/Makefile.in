@@ -94,7 +94,7 @@ subdir = testsuite/libdejagnu
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/extern-inline.m4 \
 	$(top_srcdir)/m4/xorg-macros.m4 $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/../config/warnings.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -103,9 +103,11 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am_unit_OBJECTS = unit.$(OBJEXT)
+am_unit_OBJECTS = unit-unit.$(OBJEXT)
 unit_OBJECTS = $(am_unit_OBJECTS)
 unit_LDADD = $(LDADD)
+unit_LINK = $(CXXLD) $(unit_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -121,8 +123,12 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/unit.Po
+am__depfiles_remade = ./$(DEPDIR)/unit-unit.Po
 am__mv = mv -f
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 AM_V_CXX = $(am__v_CXX_@AM_V@)
@@ -192,6 +198,7 @@ CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
+CXXSTDLIBFLAGS = @CXXSTDLIBFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -303,6 +310,7 @@ AM_CXXFLAGS = -I$(top_srcdir) -ggdb -Wall -Wextra -Wabi -Wsign-promo \
   -Wuninitialized -Wshadow -Wconversion -pedantic
 
 unit_SOURCES = unit.cc
+unit_CXXFLAGS = $(CXXSTDLIBFLAGS)
 all: all-am
 
 .SUFFIXES:
@@ -342,7 +350,7 @@ clean-noinstPROGRAMS:
 
 unit$(EXEEXT): $(unit_OBJECTS) $(unit_DEPENDENCIES) $(EXTRA_unit_DEPENDENCIES) 
 	@rm -f unit$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(unit_OBJECTS) $(unit_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(unit_LINK) $(unit_OBJECTS) $(unit_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -350,7 +358,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unit.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unit-unit.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -373,6 +381,20 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+unit-unit.o: unit.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unit_CXXFLAGS) $(CXXFLAGS) -MT unit-unit.o -MD -MP -MF $(DEPDIR)/unit-unit.Tpo -c -o unit-unit.o `test -f 'unit.cc' || echo '$(srcdir)/'`unit.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unit-unit.Tpo $(DEPDIR)/unit-unit.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='unit.cc' object='unit-unit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unit_CXXFLAGS) $(CXXFLAGS) -c -o unit-unit.o `test -f 'unit.cc' || echo '$(srcdir)/'`unit.cc
+
+unit-unit.obj: unit.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unit_CXXFLAGS) $(CXXFLAGS) -MT unit-unit.obj -MD -MP -MF $(DEPDIR)/unit-unit.Tpo -c -o unit-unit.obj `if test -f 'unit.cc'; then $(CYGPATH_W) 'unit.cc'; else $(CYGPATH_W) '$(srcdir)/unit.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unit-unit.Tpo $(DEPDIR)/unit-unit.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='unit.cc' object='unit-unit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unit_CXXFLAGS) $(CXXFLAGS) -c -o unit-unit.obj `if test -f 'unit.cc'; then $(CYGPATH_W) 'unit.cc'; else $(CYGPATH_W) '$(srcdir)/unit.cc'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -544,7 +566,7 @@ clean-am: clean-generic clean-local clean-noinstPROGRAMS \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/unit.Po
+		-rm -f ./$(DEPDIR)/unit-unit.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-DEJAGNU distclean-compile \
 	distclean-generic distclean-local distclean-tags
@@ -590,7 +612,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/unit.Po
+		-rm -f ./$(DEPDIR)/unit-unit.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

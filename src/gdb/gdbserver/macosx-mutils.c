@@ -246,10 +246,9 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, char *myaddr,
       if (kret != KERN_SUCCESS)
 	{
 #ifdef DEBUG_MACOSX_MUTILS
-	  mutils_debug
-	    ("Unable to read page for region at 0x%8.8llx with length %lu from inferior: %s (0x%lx)\n",
-	     (uint64_t) pageaddr, (unsigned long) len,
-	     MACH_ERROR_STRING (kret), kret);
+	  mutils_debug("Unable to read page for region at 0x%8.8llx with length %lu from inferior: %s (0x%lx)\n",
+		       (uint64_t)pageaddr, (unsigned long)len,
+		       MACH_ERROR_STRING(kret), kret);
 #endif /* DEBUG_MACOSX_MUTILS */
 	  return 0;
 	}
@@ -258,28 +257,26 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, char *myaddr,
 	  kret = vm_deallocate (mach_task_self (), mempointer, memcopied);
 	  if (kret != KERN_SUCCESS)
 	    {
-	      warning
-		("Unable to deallocate memory used by failed read from inferior: %s (0x%lx)",
-		 MACH_ERROR_STRING (kret), (unsigned long) kret);
+	      warning("Unable to deallocate memory used by failed read from inferior: %s (0x%lx)",
+		      MACH_ERROR_STRING(kret), (unsigned long)kret);
 	    }
 #ifdef DEBUG_MACOSX_MUTILS
-	  mutils_debug
-	    ("Unable to read region at 0x%8.8llx with length %lu from inferior: "
-	     "vm_read returned %lu bytes instead of %lu\n",
-	     (uint64_t) pageaddr, (unsigned long) pagesize,
-	     (unsigned long) memcopied, (unsigned long) pagesize);
+	  mutils_debug("Unable to read region at 0x%8.8llx with length %lu from inferior: "
+		       "vm_read returned %lu bytes instead of %lu\n",
+		       (uint64_t)pageaddr, (unsigned long)pagesize,
+		       (unsigned long)memcopied, (unsigned long)pagesize);
 #endif /* DEBUG_MACOSX_MUTILS */
 	  return 0;
 	}
 
-      memcpy (myaddr, ((unsigned char *) 0) + mempointer
-              + (memaddr - pageaddr), len);
+      /* FIXME: -Wnull-pointer-arithmetic: */
+      memcpy(myaddr, (((unsigned char *)0) + mempointer
+		      + (memaddr - pageaddr)), len);
       kret = vm_deallocate(mach_task_self(), mempointer, memcopied);
       if (kret != KERN_SUCCESS)
 	{
-	  warning
-	    ("Unable to deallocate memory used to read from inferior: %s (0x%ulx)",
-	     MACH_ERROR_STRING(kret), kret);
+	  warning("Unable to deallocate memory used to read from inferior: %s (0x%ulx)",
+		  MACH_ERROR_STRING(kret), kret);
 	  return 0;
 	}
     }
@@ -308,9 +305,8 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, char *myaddr,
 # ifdef DEBUG_MACOSX_MUTILS
       if (kret != KERN_SUCCESS)
         {
-          mutils_debug
-            ("Unable to flush GDB's address space after memcpy prior to vm_write: %s (0x%lx)\n",
-             MACH_ERROR_STRING(kret), kret);
+          mutils_debug("Unable to flush GDB's address space after memcpy prior to vm_write: %s (0x%lx)\n",
+		       MACH_ERROR_STRING(kret), kret);
         }
 # endif /* DEBUG_MACOSX_MUTILS */
 #endif /* TARGET_POWERPC */
@@ -319,10 +315,9 @@ mach_xfer_memory_remainder(CORE_ADDR memaddr, char *myaddr,
       if (kret != KERN_SUCCESS)
         {
 #ifdef DEBUG_MACOSX_MUTILS
-          mutils_debug
-            ("Unable to write region at 0x%8.8llx with length %lu to inferior: %s (0x%lx)\n",
-             (uint64_t)memaddr, (unsigned long)len,
-             MACH_ERROR_STRING(kret), kret);
+          mutils_debug("Unable to write region at 0x%8.8llx with length %lu to inferior: %s (0x%lx)\n",
+		       (uint64_t)memaddr, (unsigned long)len,
+		       MACH_ERROR_STRING(kret), kret);
 #endif /* DEBUG_MACOSX_MUTILS */
           return 0;
         }
@@ -353,10 +348,9 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
       if (kret != KERN_SUCCESS)
         {
 #ifdef DEBUG_MACOSX_MUTILS
-          mutils_debug
-            ("Unable to read region at 0x%8.8llx with length %lu from inferior: %s (0x%lx)\n",
-             (uint64_t) memaddr, (unsigned long) len,
-             MACH_ERROR_STRING (kret), kret);
+          mutils_debug("Unable to read region at 0x%8.8llx with length %lu from inferior: %s (0x%lx)\n",
+		       (uint64_t)memaddr, (unsigned long)len,
+		       MACH_ERROR_STRING(kret), kret);
 #endif /* DEBUG_MACOSX_MUTILS */
           return 0;
         }
@@ -365,26 +359,24 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
           kret = vm_deallocate(mach_task_self(), mempointer, memcopied);
           if (kret != KERN_SUCCESS)
             {
-              warning
-                ("Unable to deallocate memory used by failed read from inferior: %s (0x%ux)",
-                 MACH_ERROR_STRING (kret), kret);
+              warning("Unable to deallocate memory used by failed read from inferior: %s (0x%ux)",
+		      MACH_ERROR_STRING(kret), kret);
             }
 #ifdef DEBUG_MACOSX_MUTILS
-          mutils_debug
-            ("Unable to read region at 0x%8.8llx with length %lu from inferior: "
-             "vm_read returned %lu bytes instead of %lu\n",
-             (uint64_t) memaddr, (unsigned long) len,
-             (unsigned long) memcopied, (unsigned long) len);
+          mutils_debug("Unable to read region at 0x%8.8llx with length %lu from inferior: "
+		       "vm_read returned %lu bytes instead of %lu\n",
+		       (uint64_t)memaddr, (unsigned long)len,
+		       (unsigned long)memcopied, (unsigned long)len);
 #endif /* DEBUG_MACOSX_MUTILS */
           return 0;
         }
-      memcpy (myaddr, ((unsigned char *) 0) + mempointer, len);
-      kret = vm_deallocate (mach_task_self (), mempointer, memcopied);
+      /* FIXME: -Wnull-pointer-arithmetic: */
+      memcpy(myaddr, ((unsigned char *)0) + mempointer, len);
+      kret = vm_deallocate(mach_task_self(), mempointer, memcopied);
       if (kret != KERN_SUCCESS)
         {
-          warning
-            ("Unable to deallocate memory used by read from inferior: %s (0x%ulx)",
-             MACH_ERROR_STRING (kret), kret);
+          warning("Unable to deallocate memory used by read from inferior: %s (0x%ulx)",
+		  MACH_ERROR_STRING(kret), kret);
           return 0;
         }
     }
@@ -395,10 +387,9 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
       if (kret != KERN_SUCCESS)
         {
 #ifdef DEBUG_MACOSX_MUTILS
-          mutils_debug
-            ("Unable to write region at 0x%8.8llx with length %lu from inferior: %s (0x%lx)\n",
-             (uint64_t) memaddr, (unsigned long) len,
-             MACH_ERROR_STRING (kret), kret);
+          mutils_debug("Unable to write region at 0x%8.8llx with length %lu from inferior: %s (0x%lx)\n",
+		       (uint64_t)memaddr, (unsigned long)len,
+		       MACH_ERROR_STRING(kret), kret);
 #endif /* DEBUG_MACOSX_MUTILS */
           return 0;
         }
@@ -757,9 +748,8 @@ mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
       if (r_start > (mach_vm_address_t)cur_memaddr)
         {
 #ifdef DEBUG_MACOSX_MUTILS
-          mutils_debug
-            ("Next available region for address at 0x%8.8llx is 0x%8.8llx\n",
-             (uint64_t)cur_memaddr, (uint64_t)r_start);
+          mutils_debug("Next available region for address at 0x%8.8llx is 0x%8.8llx\n",
+		       (uint64_t)cur_memaddr, (uint64_t)r_start);
 #endif /* DEBUG_MACOSX_MUTILS */
           break;
         }
@@ -807,9 +797,8 @@ mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
 	      if (kret != KERN_SUCCESS)
 		{
 #ifdef DEBUG_MACOSX_MUTILS
-		  mutils_debug
-		    ("Unable to add write access to region at 0x8.8llx: %s (0x%lx)\n",
-		     (uint64_t)r_start, MACH_ERROR_STRING(kret), kret);
+		  mutils_debug("Unable to add write access to region at 0x8.8llx: %s (0x%lx)\n",
+			       (uint64_t)r_start, MACH_ERROR_STRING(kret), kret);
 #endif /* DEBUG_MACOSX_MUTILS */
 		  break;
 		}
@@ -867,16 +856,14 @@ mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
               nwarn++;
               if (nwarn <= MAX_INSTRUCTION_CACHE_WARNINGS)
                 {
-                  warning
-                    ("Unable to flush data/instruction cache for region at 0x%8.8llx: %s",
-                     (uint64_t) r_start, MACH_ERROR_STRING (ret));
+                  warning("Unable to flush data/instruction cache for region at 0x%8.8llx: %s",
+			  (uint64_t)r_start, MACH_ERROR_STRING(ret));
                 }
               if (nwarn == MAX_INSTRUCTION_CACHE_WARNINGS)
                 {
-                  warning
-                    ("Support for flushing the data/instruction cache on this "
-		     "machine appears broken");
-                  warning ("No further warning messages will be given.");
+                  warning("Support for flushing the data/instruction cache on this "
+			  "machine appears broken");
+                  warning("No further warning messages will be given.");
                 }
             }
 #endif /* TARGET_POWERPC */
@@ -894,9 +881,8 @@ mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
                                        orig_protection, 0);
 	      if (kret != KERN_SUCCESS)
 		{
-		  warning
-		    ("Unable to restore original permissions for region at 0x%8.8llx",
-		     (uint64_t)r_start);
+		  warning("Unable to restore original permissions for region at 0x%8.8llx",
+			  (uint64_t)r_start);
 		}
 	    }
         }
@@ -929,7 +915,8 @@ int macosx_thread_valid(task_t task, thread_t thread)
 
   kret = task_threads (task, &thread_list, &thread_count);
 #ifdef DEBUG_MACOSX_MUTILS
-  mutils_debug("macosx_thread_valid - task_threads (%d, %p, %d) returned 0x%lx\n", task, &thread_list, thread_count, kret);
+  mutils_debug("macosx_thread_valid - task_threads (%d, %p, %d) returned 0x%lx\n",
+	       task, &thread_list, thread_count, kret);
 #endif /* DEBUG_MACOSX_MUTILS */
   if ((kret == KERN_INVALID_ARGUMENT)
       || (kret == MACH_SEND_INVALID_RIGHT) || (kret == MACH_RCV_INVALID_NAME)) {
@@ -944,7 +931,8 @@ int macosx_thread_valid(task_t task, thread_t thread)
   }
 
   kret = vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
-					   (vm_size_t)(thread_count * sizeof(thread_t)));
+					   (vm_size_t)(thread_count
+						       * sizeof(thread_t)));
   MACH_CHECK_ERROR(kret);
 
 #ifdef DEBUG_MACOSX_MUTILS

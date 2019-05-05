@@ -396,7 +396,7 @@ history_do_write(const char *filename, size_t nelements, int overwrite)
     }
 
 #ifdef HAVE_MMAP
-  cursize = (overwrite ? 0 : lseek(file, (off_t)0L, SEEK_END));
+  cursize = (overwrite ? 0UL : (size_t)lseek(file, (off_t)0L, SEEK_END));
 #endif /* HAVE_MMAP */
 
   if (nelements > history_length)

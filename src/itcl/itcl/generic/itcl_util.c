@@ -1232,8 +1232,8 @@ Itcl_DecodeScopedCommand(interp, name, rNsPtr, rCmdPtr)
     const char **listv;
 
     if ((*name == 'n') && (len > 17) && (strncmp(name, "namespace", 9) == 0)) {
-	for (pos = (name + 9);  (*pos == ' ');  pos++) {
-	    /* empty body: skip over spaces */
+	for (pos = (name + 9); (pos != NULL) && (*pos == ' ');  pos++) {
+	  ; /* empty body: skip over spaces */
 	}
 	if ((*pos == 'i') && ((pos + 7) <= (name + len))
 	        && (strncmp(pos, "inscope", 7) == 0)) {

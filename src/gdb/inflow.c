@@ -103,6 +103,7 @@ static const char *inferior_thisrun_terminal;
 
 int terminal_is_ours;
 
+/* TODO: move to header: */
 enum terminal_flag_possibilities {
     yes, no, have_not_checked
 } gdb_has_a_terminal_flag = have_not_checked;

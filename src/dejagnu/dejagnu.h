@@ -36,6 +36,7 @@
 # include <unistd.h>
 #endif /* _DEJAGNU_WAIT_ */
 
+/* FIXME: -Wstatic-in-inline for all of these: */
 static int passed;
 static int failed;
 static int untest;

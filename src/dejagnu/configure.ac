@@ -99,6 +99,11 @@ AC_C_CONST
 AC_C_INLINE
 AC_C_PROTOTYPES
 gl_EXTERN_INLINE
+case "${CXX}" in
+  *clang*)
+    ACX_PROG_CXX_WARNING_OPTS([-stdlib=macports-libstdc++],[CXXSTDLIBFLAGS])
+    ;;
+esac
 
 # Checks for library functions.
 AC_FUNC_SELECT_ARGTYPES
@@ -116,13 +121,13 @@ dnl# we need the path to the tcl shell to build a release
 DJ_AC_PATH_TCLSH
 
 dnl# Search for expect.
-AC_PATH_PROG([EXPECT_LOCAL],[expect])
+AC_PATH_PROG([EXPECT_LOCAL],[expect],[],[${PATH}:../expect])
 if test -z "${ac_cv_path_EXPECT_LOCAL}"; then
    AC_MSG_WARN([unable to locate expect])
 else
    dnl# Check the Tcl version is >= 8.3.
    AC_MSG_CHECKING([Tcl version 8.3 or greater])
-   AC_MSG_RESULT([ ])
+   AC_MSG_RESULT([(TODO)])
    dnl# TODO: actually check
 fi
 

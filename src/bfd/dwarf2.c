@@ -1630,9 +1630,9 @@ read_rangelist(struct comp_unit *unit, struct arange *arange, bfd_uint64_t offse
 	  high_pc = (bfd_vma)read_8_bytes(unit->abfd, ranges_ptr);
 	  ranges_ptr += 8;
 	}
-      if (low_pc == 0 && high_pc == 0)
+      if ((low_pc == 0UL) && (high_pc == 0UL))
 	break;
-      if ((low_pc == -1UL) && (high_pc != -1UL))
+      if ((low_pc == (bfd_vma)(-1UL)) && (high_pc != (bfd_vma)(-1UL)))
 	base_address = high_pc;
       else
         arange_add(unit->abfd, arange, (base_address + low_pc),
@@ -1688,7 +1688,7 @@ scan_unit_for_symbols(struct comp_unit *unit)
 	{
 	  bfd_size_type amt = sizeof(struct funcinfo);
 	  func = (struct funcinfo *)bfd_zalloc(abfd, amt);
-	  func->tag = abbrev->tag;
+	  func->tag = (int)abbrev->tag;
 	  func->nesting_level = nesting_level;
 	  func->prev_func = unit->function_table;
 	  unit->function_table = func;
@@ -1700,7 +1700,7 @@ scan_unit_for_symbols(struct comp_unit *unit)
 	    {
 	      bfd_size_type amt = sizeof(struct varinfo);
 	      var = (struct varinfo *)bfd_zalloc(abfd, amt);
-	      var->tag = abbrev->tag;
+	      var->tag = (int)abbrev->tag;
 	      var->stack = 1;
 	      var->prev_var = unit->variable_table;
 	      unit->variable_table = var;

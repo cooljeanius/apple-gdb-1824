@@ -74,6 +74,8 @@
 
 #include "ui-out.h"
 
+#include "core-macho.h"
+
 struct target_ops macho_core_ops;
 
 extern void _initialize_core_macho(void);

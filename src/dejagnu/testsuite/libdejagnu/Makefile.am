@@ -11,6 +11,9 @@ AM_CXXFLAGS = -I$(top_srcdir) -ggdb -Wall -Wextra -Wabi -Wsign-promo \
 noinst_PROGRAMS = unit
 
 unit_SOURCES = unit.cc
+unit_CXXFLAGS = $(CXXSTDLIBFLAGS)
+## unit_CXXFLAGS are also used when linking, so no need for a separate
+## unit_LDFLAGS
 
 clean-local: Makefile
 	-rm -rf *.dSYM || rmdir *.dSYM

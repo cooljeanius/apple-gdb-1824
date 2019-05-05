@@ -39,6 +39,7 @@
 #include "gdb_regex.h"
 /* APPLE LOCAL - subroutine inlining  */
 #include "inlining.h"
+#include "mi-cmd-stack.h"
 
 #if (defined(__i386__) && !defined(THROW_CATCH_FIND_TYPEINFO) && \
      defined(MACOSX_DYLD)) || defined(TARGET_I386)
@@ -1164,20 +1165,16 @@ mi_cmd_file_list_globals (char *command, char **argv, int argc)
    that compiled regexp.  */
 
 static void
-print_syms_for_block (struct block *block,
-		      struct frame_info *fi,
-		      struct ui_stream *stb,
-		      int locals,
-		      int consts,
-		      enum print_values values,
-		      regex_t *filter)
+print_syms_for_block(struct block *block, struct frame_info *fi,
+		     struct ui_stream *stb, int locals, int consts,
+		     enum print_values values, regex_t *filter)
 {
   int print_me;
   struct symbol *sym;
   struct dict_iterator iter;
   struct ui_stream *error_stb;
   struct cleanup *old_chain;
-  struct frame_id stack_frame_id;
+  struct frame_id stack_frame_id = null_frame_id;
   int s_f_id_inited = 0;
   if (fi) {
     stack_frame_id = get_frame_id(fi);

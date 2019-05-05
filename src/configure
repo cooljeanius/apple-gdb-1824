@@ -15695,6 +15695,7 @@ extrasub_build=""
 for module in ${build_configdirs}; do
   if test -z "${no_recursion}" \
      && test -f ${build_subdir}/${module}/Makefile; then
+    ##FIXME: might want to do more than this:
     echo 1>&2 "*** removing ${build_subdir}/${module}/Makefile to force reconfigure"
     rm -f ${build_subdir}/${module}/Makefile
   fi
@@ -15707,6 +15708,7 @@ done
 for module in ${configdirs} ; do
   if test -z "${no_recursion}" \
      && test -f ${module}/Makefile; then
+    ##FIXME: might want to do more than this:
     echo 1>&2 "*** removing ${module}/Makefile to force reconfigure"
     rm -f ${module}/Makefile
   fi
@@ -15719,6 +15721,7 @@ done
 for module in ${target_configdirs} ; do
   if test -z "${no_recursion}" \
      && test -f ${target_subdir}/${module}/Makefile; then
+    ##FIXME: might want to do more than this:
     echo 1>&2 "*** removing ${target_subdir}/${module}/Makefile to force reconfigure"
     rm -f ${target_subdir}/${module}/Makefile
   fi

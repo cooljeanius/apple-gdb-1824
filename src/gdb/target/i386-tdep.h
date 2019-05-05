@@ -212,4 +212,7 @@ extern int i386nbsd_sc_reg_offset[];
 extern int i386obsd_sc_reg_offset[];
 extern int i386bsd_sc_reg_offset[];
 
+/* Variables exported from i386-tdep.c: */
+extern struct type *builtin_type_vec128i_big;
+
 #endif /* i386-tdep.h */

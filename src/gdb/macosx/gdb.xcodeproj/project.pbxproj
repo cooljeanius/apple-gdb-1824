@@ -623,7 +623,6 @@
 		A53F05201B45F8A7005B5360 /* xvasprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC1801A3F4517002F20B2 /* xvasprintf.c */; };
 		A53F07981B4636C9005B5360 /* libiberty.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A53F04941B45F52C005B5360 /* libiberty.a */; };
 		A53F07991B4636E1005B5360 /* test-expandargv.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC3431A410A84002F20B2 /* test-expandargv.c */; };
-		A57C98182043C97400D09754 /* nextstep-nat-watchpoint.h in Headers */ = {isa = PBXBuildFile; fileRef = A57C98172043C97400D09754 /* nextstep-nat-watchpoint.h */; };
 		A589CB5B1A30F16700E717B9 /* cpcg.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB4F1A30EF6400E717B9 /* cpcg.c */; };
 		A589CB5C1A30F16700E717B9 /* cpfork.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB501A30EF6400E717B9 /* cpfork.c */; };
 		A589CB681A30F23F00E717B9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A589CB671A30F23F00E717B9 /* ApplicationServices.framework */; };
@@ -5779,6 +5778,10 @@
 		A5965C7D198897D700404B03 /* xm-vaxult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-vaxult.h"; sourceTree = "<group>"; };
 		A5965C7E198897D700404B03 /* xm-vaxult2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "xm-vaxult2.h"; sourceTree = "<group>"; };
 		A5992E5F22719892009498A3 /* symfile-mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "symfile-mem.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/symfile-mem.h"; sourceTree = "<absolute>"; };
+		A59B5609227F3D30009420B2 /* mi-interp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "mi-interp.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mi/mi-interp.h"; sourceTree = "<absolute>"; };
+		A59B560D227F3DD4009420B2 /* mi-cmd-stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "mi-cmd-stack.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mi/mi-cmd-stack.h"; sourceTree = "<absolute>"; };
+		A59B5610227F6D1F009420B2 /* cli-interp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "cli-interp.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/cli/cli-interp.h"; sourceTree = "<absolute>"; };
+		A59B5613227F7202009420B2 /* core-macho.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "core-macho.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/core-macho.h"; sourceTree = "<absolute>"; };
 		A5A66DD31A54CA6000EDD221 /* trad-user.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "trad-user.h"; sourceTree = "<group>"; };
 		A5A673AE1A589D7700EDD221 /* aarch64-linux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "aarch64-linux-nat.c"; sourceTree = "<group>"; };
 		A5A673AF1A589D7700EDD221 /* aarch64-linux-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "aarch64-linux-tdep.c"; sourceTree = "<group>"; };
@@ -7494,6 +7497,7 @@
 				2609D3120E82C40A008125DE /* cli-dump.c */,
 				2609D3130E82C40A008125DE /* cli-dump.h */,
 				2609D3140E82C40A008125DE /* cli-interp.c */,
+				A59B5610227F6D1F009420B2 /* cli-interp.h */,
 				2609D3150E82C40A008125DE /* cli-logging.c */,
 				A5C4A6571A7A950900DBC833 /* cli-logging.h */,
 				2609D3160E82C40A008125DE /* cli-script.c */,
@@ -8457,6 +8461,7 @@
 				A5558E721992727D00A45587 /* cached-symfile.c */,
 				A5558E731992727D00A45587 /* cached-symfile.h */,
 				2609D69C0E82C40C008125DE /* core-macho.c */,
+				A59B5613227F7202009420B2 /* core-macho.h */,
 				2609D69D0E82C40C008125DE /* darwin-kernel.c */,
 				2609D6A10E82C40C008125DE /* i386-macosx-nat-exec.c */,
 				A5CA6C681AC39A0E00716574 /* i386-macosx-nat-exec.h */,
@@ -8573,6 +8578,7 @@
 				2609D7030E82C40C008125DE /* mi-cmd-file.c */,
 				A5159B581987160E0079DD4F /* mi-cmd-info.c */,
 				2609D7040E82C40C008125DE /* mi-cmd-stack.c */,
+				A59B560D227F3DD4009420B2 /* mi-cmd-stack.h */,
 				A5159B59198716150079DD4F /* mi-cmd-target.c */,
 				2609D7050E82C40C008125DE /* mi-cmd-var.c */,
 				2609D7060E82C40C008125DE /* mi-cmds.c */,
@@ -8584,6 +8590,7 @@
 				2609D70C0E82C40C008125DE /* mi-getopt.c */,
 				2609D70D0E82C40C008125DE /* mi-getopt.h */,
 				2609D70E0E82C40C008125DE /* mi-interp.c */,
+				A59B5609227F3D30009420B2 /* mi-interp.h */,
 				2609D70F0E82C40C008125DE /* mi-main.c */,
 				2609D7100E82C40C008125DE /* mi-main.h */,
 				2609D7110E82C40C008125DE /* mi-out.c */,
@@ -13858,7 +13865,6 @@
 				A53B87821AE585E10067328B /* tcap.h in Headers */,
 				A53B87831AE585E10067328B /* tilde.h in Headers */,
 				A53B87841AE585E10067328B /* xmalloc.h in Headers */,
-				A57C98182043C97400D09754 /* nextstep-nat-watchpoint.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

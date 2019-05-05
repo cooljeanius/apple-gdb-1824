@@ -1371,7 +1371,7 @@ do_over_unique_frames(stack_logging_record_t record, void *data)
   for (i = 0U; i < num_frames; i++)
     {
       struct cleanup *frame_cleanup;
-      const char *name;
+      const char *name = NULL;
       volatile int err = 0;
       struct gdb_exception e;
       frame_cleanup = make_cleanup_ui_out_tuple_begin_end(uiout, "frame");
@@ -1400,7 +1400,7 @@ do_over_unique_frames(stack_logging_record_t record, void *data)
       if (e.reason != (enum return_reason)NO_ERROR)
 	{
 	  ui_out_text(uiout, "\n");
-	  warning("Could not raise load level for objfile at pc: 0x%s.",
+	  warning(_("Could not raise load level for objfile at pc: 0x%s."),
                   paddr_nz((CORE_ADDR)frames[i]));
 	  continue;
 	}

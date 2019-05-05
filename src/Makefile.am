@@ -1944,6 +1944,8 @@ local-distclean:
 	    echo "Skipping making nonexistent $${dir} be distclean"; \
 	  elif test ! -e $${dir}/Makefile; then \
 	    echo "Skipping making $${dir} be distclean (missing Makefile)"; \
+	  else \
+	    echo "Skipping making $${dir} be distclean for unknown reason"; \
 	  fi; \
 	done
 

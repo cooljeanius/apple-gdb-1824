@@ -54,7 +54,7 @@ extern void mi_execute_command(char *cmd, int from_tty);
 extern void mi_output_async_notification(const char *notification);
 
 /* These are hooks that we put in place while doing interpreter_exec
-   so we can report interesting things that happened "behind the mi's 
+   so we can report interesting things that happened "behind the mi's
    back" in this command */
 
 extern void mi_interp_create_breakpoint_hook(struct breakpoint *bpt);
@@ -74,6 +74,24 @@ extern void mi_interp_sync_continue_command_hook(void);
 
 void mi_insert_notify_hooks(void);
 void mi_remove_notify_hooks(void);
+
+/* These are the various output channels that are used by the mi. */
+
+extern struct ui_file *raw_stdout;
+extern struct ui_file *mi_stdout;
+extern struct ui_file *mi_stderr;
+extern struct ui_file *mi_stdlog;
+extern struct ui_file *mi_stdtarg;
+
+/* This is used to pass the current command timestamp
+ * down to continuation routines. */
+extern struct mi_timestamp *current_command_ts;
+
+/* The actual interpreters: */
+extern struct interp *miunspec_interp;
+extern struct interp *mi0_interp;
+extern struct interp *mi1_interp;
+extern struct interp *mi2_interp;
 
 #endif /* !MI_MAIN_H */
 

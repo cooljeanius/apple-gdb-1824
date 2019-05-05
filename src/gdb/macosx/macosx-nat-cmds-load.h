@@ -7,6 +7,8 @@ extern void load_plugin(const char *arg, int from_tty);
 
 extern void info_plugins_command(const char *arg, int from_tty);
 
+extern void *_plugin_global_data;
+
 #endif /* !__GDB_MACOSX_NAT_CMDS_LOAD_H__ */
 
 /* EOF */

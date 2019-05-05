@@ -27,6 +27,14 @@
 # include "ptid.h" /* from ../common */
 #endif /* !minus_one_ptid */
 
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "dll.c expects <string.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRING_H */
+
 #define get_dll(inf) ((struct dll_info *)(inf))
 
 struct inferior_list all_dlls;

@@ -24,7 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <stdio.h>
 #include "frame.h"
 #include "value.h"
-#include "param.h"
+#include "param_old.h"
 #include "symtab.h"
 #include "inferior.h"
 

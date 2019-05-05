@@ -29,7 +29,7 @@
 enum mi_cmd_result
   {
     /* Report the command as ``done''.  Display both the ``NNN^done''
-       message and the completion prompt.  Start this at 1 so that 
+       message and the completion prompt.  Start this at 1 so that
        you can distinguish ALL these returns from the 0 of an error
        in catch_errors. */
     MI_CMD_DONE = 1,
@@ -181,6 +181,8 @@ extern struct ui_file *raw_stdout;
 
 extern char *mi_error_message;
 extern void mi_execute_command(char *cmd, int from_tty);
+
+extern struct mi_cmd mi_cmds[];
 
 #endif
 
