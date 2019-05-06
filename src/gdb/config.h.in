@@ -301,6 +301,12 @@
 /* Define to 1 if you have the <crt_externs.h> header file. */
 #undef HAVE_CRT_EXTERNS_H
 
+/* Define to 1 if you have the <cthreads.h> header file. */
+#undef HAVE_CTHREADS_H
+
+/* Define to 1 if the system has the type `cthread_t'. */
+#undef HAVE_CTHREAD_T
+
 /* Define to 1 if you have the <ctype.h> header file. */
 #undef HAVE_CTYPE_H
 
@@ -854,6 +860,9 @@
 /* Define to 1 if you have the <mach-o/nlist.h> header file. */
 #undef HAVE_MACH_O_NLIST_H
 
+/* Define to 1 if you have the <mach/policy.h> header file. */
+#undef HAVE_MACH_POLICY_H
+
 /* Define to 1 if you have the `mach_port_get_receive_status' function. */
 #undef HAVE_MACH_PORT_GET_RECEIVE_STATUS
 
@@ -868,6 +877,12 @@
 
 /* Define to 1 if you have the <mach/task.h> header file. */
 #undef HAVE_MACH_TASK_H
+
+/* Define to 1 if you have the <mach/task_info.h> header file. */
+#undef HAVE_MACH_TASK_INFO_H
+
+/* Define to 1 if you have the <mach/thread_act.h> header file. */
+#undef HAVE_MACH_THREAD_ACT_H
 
 /* Define to 1 if you have the <mach/thread_info.h> header file. */
 #undef HAVE_MACH_THREAD_INFO_H
@@ -1219,6 +1234,9 @@
 /* Define to 1 if you have the `send' function. */
 #undef HAVE_SEND
 
+/* Define to 1 if you have the <servers/machid.h> header file. */
+#undef HAVE_SERVERS_MACHID_H
+
 /* Define to 1 if you have the <servers/netname_defs.h> header file. */
 #undef HAVE_SERVERS_NETNAME_DEFS_H
 
@@ -1287,6 +1305,9 @@
 
 /* Define to 1 if you have the <spawn.h> header file. */
 #undef HAVE_SPAWN_H
+
+/* Define to 1 if the system has the type `spin_lock_t'. */
+#undef HAVE_SPIN_LOCK_T
 
 /* Define to 1 if you have the `stack_logging_enumerate_records' function. */
 #undef HAVE_STACK_LOGGING_ENUMERATE_RECORDS
@@ -1436,6 +1457,9 @@
 /* Define to 1 if `st_rdev' is a member of `struct stat'. */
 #undef HAVE_STRUCT_STAT_ST_RDEV
 
+/* Define to 1 if `base_priority' is a member of `struct task_basic_info'. */
+#undef HAVE_STRUCT_TASK_BASIC_INFO_BASE_PRIORITY
+
 /* Define to 1 if `td_pcb' is a member of `struct thread'. */
 #undef HAVE_STRUCT_THREAD_TD_PCB
 
@@ -1457,6 +1481,9 @@
 
 /* Define to 1 if you have the <sys/bitypes.h> header file. */
 #undef HAVE_SYS_BITYPES_H
+
+/* Define to 1 if you have the <sys/core.h> header file. */
+#undef HAVE_SYS_CORE_H
 
 /* Define to 1 if you have the <sys/debugreg.h> header file. */
 #undef HAVE_SYS_DEBUGREG_H
@@ -1482,6 +1509,9 @@
 
 /* Define to 1 if you have the <sys/ioctl.h> header file. */
 #undef HAVE_SYS_IOCTL_H
+
+/* Define to 1 if you have the <sys/ldr.h> header file. */
+#undef HAVE_SYS_LDR_H
 
 /* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
    */
@@ -1523,6 +1553,9 @@
 /* Define to 1 if you have the <sys/sysctl.h> header file. */
 #undef HAVE_SYS_SYSCTL_H
 
+/* Define to 1 if you have the <sys/systemcfg.h> header file. */
+#undef HAVE_SYS_SYSTEMCFG_H
+
 /* Define to 1 if you have the <sys/termios.h> header file. */
 #undef HAVE_SYS_TERMIOS_H
 
@@ -1544,6 +1577,9 @@
 /* Define to 1 if you have the <sys/wait.h> header file. */
 #undef HAVE_SYS_WAIT_H
 
+/* Define to 1 if the system has the type `task_basic_info_data_t'. */
+#undef HAVE_TASK_BASIC_INFO_DATA_T
+
 /* Define to 1 if you have the `task_set_exception_port' function. */
 #undef HAVE_TASK_SET_EXCEPTION_PORT
 
@@ -1561,6 +1597,9 @@
 
 /* Define to 1 if you have the <term.h> header file. */
 #undef HAVE_TERM_H
+
+/* Define to 1 if you have the <thread_act.h> header file. */
+#undef HAVE_THREAD_ACT_H
 
 /* Define to 1 if you have the <thread_db.h> header file. */
 #undef HAVE_THREAD_DB_H

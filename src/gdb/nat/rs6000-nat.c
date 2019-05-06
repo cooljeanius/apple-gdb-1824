@@ -38,7 +38,13 @@
 #include "exec.h"
 
 #include <sys/ptrace.h>
-#include <sys/reg.h>
+#ifdef HAVE_SYS_REG_H
+# include <sys/reg.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rs6000-nat.c expects <sys/reg.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_REG_H */
 
 #include <sys/param.h>
 #include <sys/dir.h>
@@ -51,11 +57,29 @@
 #include <a.out.h>
 #include <sys/file.h>
 #include "gdb_stat.h"
-#include <sys/core.h>
+#ifdef HAVE_SYS_CORE_H
+# include <sys/core.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rs6000-nat.c expects <sys/core.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __GNUC__ && !__STRICT_ANSI__ */
 #define __LDINFO_PTRACE32__	/* for __ld_info32 */
 #define __LDINFO_PTRACE64__	/* for __ld_info64 */
-#include <sys/ldr.h>
-#include <sys/systemcfg.h>
+#ifdef HAVE_SYS_LDR_H
+# include <sys/ldr.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rs6000-nat.c expects <sys/ldr.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_LDR_H */
+#ifdef HAVE_SYS_SYSTEMCFG_H
+# include <sys/systemcfg.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "rs6000-nat.c expects <sys/systemcfg.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_SYSTEMCFG_H */
 
 /* On AIX4.3+, sys/ldr.h provides different versions of struct ld_info for
    debugging 32-bit and 64-bit processes.  Define a typedef and macros for
@@ -73,7 +97,7 @@
 #ifndef ARCH3264
 # define ARCH64() 0
 #else
-# define ARCH64() (register_size (current_gdbarch, 0) == 8)
+# define ARCH64() (register_size(current_gdbarch, 0) == 8)
 #endif
 
 /* Union of 32-bit and 64-bit ".reg" core file sections. */
@@ -127,23 +151,23 @@ typedef union {
 #define LDI_FD(ldi, arch64)		LDI_FIELD(ldi, arch64, fd)
 #define LDI_FILENAME(ldi, arch64)	LDI_FIELD(ldi, arch64, filename)
 
-extern struct vmap *map_vmap (bfd * bf, bfd * arch);
+extern struct vmap *map_vmap(bfd *bf, bfd *arch);
 
-static void vmap_exec (void);
+static void vmap_exec(void);
 
-static void vmap_ldinfo (LdInfo *);
+static void vmap_ldinfo(LdInfo *);
 
-static struct vmap *add_vmap (LdInfo *);
+static struct vmap *add_vmap(LdInfo *);
 
-static int objfile_symbol_add (void *);
+static int objfile_symbol_add(void *);
 
-static void vmap_symtab (struct vmap *);
+static void vmap_symtab(struct vmap *);
 
-static void fetch_core_registers (char *, unsigned int, int, CORE_ADDR);
+static void fetch_core_registers(char *, unsigned int, int, CORE_ADDR);
 
-static void exec_one_dummy_insn (void);
+static void exec_one_dummy_insn(void);
 
-extern void fixup_breakpoints (CORE_ADDR low, CORE_ADDR high, CORE_ADDR delta);
+extern void fixup_breakpoints(CORE_ADDR low, CORE_ADDR high, CORE_ADDR delta);
 
 /* Given REGNO, a gdb register number, return the corresponding
    number suitable for use as a ptrace() parameter.  Return -1 if
@@ -151,20 +175,20 @@ extern void fixup_breakpoints (CORE_ADDR low, CORE_ADDR high, CORE_ADDR delta);
    ISFLOAT to indicate whether REGNO is a floating point register.  */
 
 static int
-regmap (int regno, int *isfloat)
+regmap(int regno, int *isfloat)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep(current_gdbarch);
 
   *isfloat = 0;
-  if (tdep->ppc_gp0_regnum <= regno
-      && regno < tdep->ppc_gp0_regnum + ppc_num_gprs)
+  if ((tdep->ppc_gp0_regnum <= regno)
+      && (regno < (tdep->ppc_gp0_regnum + ppc_num_gprs)))
     return regno;
-  else if (tdep->ppc_fp0_regnum >= 0
-           && tdep->ppc_fp0_regnum <= regno
-           && regno < tdep->ppc_fp0_regnum + ppc_num_fprs)
+  else if ((tdep->ppc_fp0_regnum >= 0)
+           && (tdep->ppc_fp0_regnum <= regno)
+           && (regno < (tdep->ppc_fp0_regnum + ppc_num_fprs)))
     {
       *isfloat = 1;
-      return regno - tdep->ppc_fp0_regnum + FPR0;
+      return (regno - tdep->ppc_fp0_regnum + FPR0);
     }
   else if (regno == PC_REGNUM)
     return IAR;
@@ -190,13 +214,13 @@ regmap (int regno, int *isfloat)
 /* Call ptrace(REQ, ID, ADDR, DATA, BUF). */
 
 static int
-rs6000_ptrace32 (int req, int id, int *addr, int data, int *buf)
+rs6000_ptrace32(int req, int id, int *addr, int data, int *buf)
 {
-  int ret = ptrace (req, id, (int *)addr, data, buf);
+  int ret = ptrace(req, id, (int *)addr, data, buf);
 #if 0
-  printf ("rs6000_ptrace32 (%d, %d, 0x%x, %08x, 0x%x) = 0x%x\n",
-	  req, id, (unsigned int)addr, data, (unsigned int)buf, ret);
-#endif
+  printf("rs6000_ptrace32 (%d, %d, 0x%x, %08x, 0x%x) = 0x%x\n",
+	 req, id, (unsigned int)addr, data, (unsigned int)buf, ret);
+#endif /* 0 */
   return ret;
 }
 
@@ -220,7 +244,7 @@ rs6000_ptrace64 (int req, int id, long long addr, int data, int *buf)
 /* Fetch register REGNO from the inferior. */
 
 static void
-fetch_register (int regno)
+fetch_register(int regno)
 {
   int addr[MAX_REGISTER_SIZE];
   int nr, isfloat;
@@ -232,8 +256,9 @@ fetch_register (int regno)
 
   /* Floating-point registers. */
   if (isfloat)
-    rs6000_ptrace32 (PT_READ_FPR, PIDGET (inferior_ptid), addr, nr, 0);
-
+    {
+      rs6000_ptrace32(PT_READ_FPR, PIDGET(inferior_ptid), addr, nr, 0);
+    }
   /* Bogus register number. */
   else if (nr < 0)
     {
@@ -243,22 +268,23 @@ fetch_register (int regno)
 			    regno);
       return;
     }
-
   /* Fixed-point registers. */
   else
     {
-      if (!ARCH64 ())
-	*addr = rs6000_ptrace32 (PT_READ_GPR, PIDGET (inferior_ptid), (int *)nr, 0, 0);
+      if (!ARCH64())
+	*addr = rs6000_ptrace32(PT_READ_GPR, PIDGET(inferior_ptid), (int *)nr,
+				0, 0);
       else
 	{
 	  /* PT_READ_GPR requires the buffer parameter to point to long long,
 	     even if the register is really only 32 bits. */
 	  long long buf;
-	  rs6000_ptrace64 (PT_READ_GPR, PIDGET (inferior_ptid), nr, 0, (int *)&buf);
-	  if (register_size (current_gdbarch, regno) == 8)
-	    memcpy (addr, &buf, 8);
+	  rs6000_ptrace64(PT_READ_GPR, PIDGET(inferior_ptid), nr, 0,
+			  (int *)&buf);
+	  if (register_size(current_gdbarch, regno) == 8)
+	    memcpy(addr, &buf, 8);
 	  else
-	    *addr = buf;
+	    *addr = (int)buf;
 	}
     }
 
@@ -292,8 +318,9 @@ store_register (int regno)
 
   /* Floating-point registers. */
   if (isfloat)
-    rs6000_ptrace32 (PT_WRITE_FPR, PIDGET (inferior_ptid), addr, nr, 0);
-
+    {
+      rs6000_ptrace32(PT_WRITE_FPR, PIDGET(inferior_ptid), addr, nr, 0);
+    }
   /* Bogus register number. */
   else if (nr < 0)
     {
@@ -302,7 +329,6 @@ store_register (int regno)
 			    "gdb error: register no %d not implemented.\n",
 			    regno);
     }
-
   /* Fixed-point registers. */
   else
     {
@@ -317,8 +343,9 @@ store_register (int regno)
       /* The PT_WRITE_GPR operation is rather odd.  For 32-bit inferiors,
          the register's value is passed by value, but for 64-bit inferiors,
 	 the address of a buffer containing the value is passed.  */
-      if (!ARCH64 ())
-	rs6000_ptrace32 (PT_WRITE_GPR, PIDGET (inferior_ptid), (int *)nr, *addr, 0);
+      if (!ARCH64())
+	rs6000_ptrace32(PT_WRITE_GPR, PIDGET(inferior_ptid), (int *)nr, *addr,
+			0);
       else
 	{
 	  /* PT_WRITE_GPR requires the buffer parameter to point to an 8-byte
@@ -387,8 +414,9 @@ void
 store_inferior_registers (int regno)
 {
   if (regno != -1)
-    store_register (regno);
-
+    {
+      store_register(regno);
+    }
   else
     {
       struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
@@ -458,8 +486,8 @@ child_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len,
   CORE_ADDR addr = memaddr & ~(CORE_ADDR)mask;
 
   /* Round ending address up to 32-bit word boundary. */
-  int count = ((memaddr + len - addr + mask) & ~(CORE_ADDR)mask)
-    / sizeof (int);
+  int count = (((memaddr + len - addr + mask) & ~(CORE_ADDR)mask)
+	       / sizeof(int));
 
   /* Allocate word transfer buffer. */
   /* FIXME (alloca): This code, cloned from infptrace.c, is unsafe
@@ -570,7 +598,7 @@ fetch_core_registers (char *core_reg_sect, unsigned core_reg_size,
 {
   CoreRegs *regs;
   int regi;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch); 
+  struct gdbarch_tdep *tdep = gdbarch_tdep (current_gdbarch);
 
   if (which != 0)
     {
@@ -757,8 +785,8 @@ add_vmap (LdInfo *ldi)
   int fd;
   ARCH64_DECL (arch64);
 
-  /* This ldi structure was allocated using alloca() in 
-     xcoff_relocate_symtab(). Now we need to have persistent object 
+  /* This ldi structure was allocated using alloca() in
+     xcoff_relocate_symtab(). Now we need to have persistent object
      and member names, so we should save them. */
 
   filename = LDI_FILENAME (ldi, arch64);

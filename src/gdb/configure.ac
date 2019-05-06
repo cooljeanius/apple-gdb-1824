@@ -1627,18 +1627,20 @@ AC_CHECK_HEADERS([Availability.h AvailabilityMacros.h \
                   CoreFoundation/CFPropertyList.h \
                   CoreFoundation/CFURLAccess.h Security/Security.h \
                   alloca.h assert.h architecture/byte_order.h \
-                  bits/endian.h crt_externs.h dl.h libgen.h libgettext.h \
-                  linux/byteorder/big_endian.h \
+                  bits/endian.h crt_externs.h cthreads.h dl.h libgen.h \
+                  libgettext.h linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach.h mach_error.h \
                   mach/cthreads.h mach/kern_return.h mach/mach_error.h \
                   mach/mach_init.h mach/mach_port.h mach/message.h \
-                  mach/port.h mach/ppc/thread_status.h mach/thread_info.h \
+                  mach/policy.h mach/port.h mach/ppc/thread_status.h \
+                  mach/task_info.h mach/thread_act.h mach/thread_info.h \
                   mach/thread_status.h mach/vm_types.h mach-o/dyld.h \
                   mach-o/dyld_debug.h mach-o/dyld_images.h mach-o/loader.h \
                   mach-o/nlist.h machine/save_state.h math.h memory.h pc.h \
-                  pthread.h rpc/rpc.h sched.h servers/netname.h \
-                  servers/netname_defs.h setjmp.h sys/uio.h sys/utsname.h \
-                  uuid/uuid.h])dnl
+                  pthread.h rpc/rpc.h sched.h servers/machid.h \
+                  servers/netname.h servers/netname_defs.h setjmp.h \
+                  sys/core.h sys/ldr.h sys/systemcfg.h sys/uio.h \
+                  sys/utsname.h thread_act.h uuid/uuid.h])dnl
   ## needs other headers first on some systems:
 AC_CHECK_HEADERS([mach/kmod.h],[],[],[[
 #ifdef HAVE_MACH_VM_TYPES_H
@@ -1864,6 +1866,15 @@ AC_CHECK_MEMBERS([struct stat.st_blksize])dnl
 AC_CHECK_MEMBERS([struct stat.st_rdev])dnl
 dnl# checks for struct reg members are done later in a separate macro
 AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
+AC_CHECK_MEMBERS([struct task_basic_info.base_priority],[],[],[
+#ifdef HAVE_MACH_TASK_INFO_H
+# include <mach/task_info.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "test for task_basic_info.base_priority wants <mach/task_info.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_MACH_TASK_INFO_H */
+])dnl
 
 # ------------------ #
 # Checks for types.  #
@@ -1996,6 +2007,19 @@ AC_CHECK_TYPES([unw_accessors_t],[],[],[
 #endif /* HAVE_LIBUNWIND_H */
 ])dnl
 dnl# some mach-specific ones:
+AC_CHECK_TYPES([cthread_t],[],[],[
+#ifdef HAVE_CTHREADS_H
+# include <cthreads.h>
+#else
+# ifdef HAVE_MACH_CTHREADS_H
+#  include <mach/cthreads.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "conftest for cthread_t expects <cthreads.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_MACH_CTHREADS_H */
+#endif /* HAVE_CTHREADS_H */
+])dnl
 AC_CHECK_TYPES([kern_return_t],[],[],[
 #ifdef HAVE_MACH_KERN_RETURN_H
 # include <mach/kern_return.h>
@@ -2070,6 +2094,18 @@ AC_CHECK_TYPES([save_state_t],[],[],[
 #  warning "This conftest for save_state_t wants <machine/save_state.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACHINE_SAVE_STATE_H */
+])dnl
+AC_CHECK_TYPES([spin_lock_t],[],[],[
+/* FIXME: which header to include? */
+])dnl
+AC_CHECK_TYPES([task_basic_info_data_t],[],[],[
+#ifdef HAVE_MACH_TASK_INFO_H
+# include <mach/task_info.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "conftest for task_basic_info_data_t wants <mach/task_info.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_MACH_TASK_INFO_H */
 ])dnl
 dnl# The "x86_debug_state32_t" type is checked for in an APPLE_LOCAL
 dnl# section below.

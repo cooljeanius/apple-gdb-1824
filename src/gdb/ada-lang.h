@@ -27,6 +27,7 @@ struct frame_info;
 #include "value.h"
 #include "gdbtypes.h"
 #include "breakpoint.h"
+#include "expression.h"
 
 /* Names of specific files known to be part of the runtime
    system and that might consider (confusing) debugging information.
@@ -454,6 +455,8 @@ extern struct value *ada_to_static_fixed_value(struct value *val);
 extern struct value *ada_evaluate_subexp(struct type *,
                                          struct expression *, int *,
                                          enum noside);
+
+extern const struct language_defn ada_language_defn;
 
 #endif /* !ADA_LANG_H */
 

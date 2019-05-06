@@ -989,7 +989,8 @@ nm_h =		@nm_h@
 # gdb/ headers
 #
 
-ada_lang_h = ada-lang.h $(value_h) $(gdbtypes_h) $(breakpoint_h)
+ada_lang_h = ada-lang.h $(value_h) $(gdbtypes_h) $(breakpoint_h) \
+  $(expression_h)
 ada_lex_c = ada-lex.c $(gdb_string_h)
 alphabsd_tdep_h = alphabsd-tdep.h
 alpha_tdep_h = alpha-tdep.h

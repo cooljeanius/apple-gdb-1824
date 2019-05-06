@@ -1,4 +1,4 @@
-/* Interface GDB to Mach 3.0 operating systems.
+/* m3-nat.c: Interface GDB to Mach 3.0 operating systems.
    (Most) Mach 3.0 related routines live in this file.
 
    Copyright 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001
@@ -51,10 +51,26 @@
 # endif /* HAVE_MACH_MACH_H || (__APPLE__ && __MACH__) */
 #endif /* HAVE_MACH_H */
 #include <servers/netname.h>
-#include <servers/machid.h>
+#ifdef HAVE_SERVERS_MACHID_H
+# include <servers/machid.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "m3-nat.c expects <servers/machid.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SERVERS_MACHID_H */
 #include <mach/message.h>
 #include <mach/notify.h>
-#include <mach_error.h>
+#ifdef HAVE_MACH_ERROR_H
+# include <mach_error.h>
+#else
+# if defined(HAVE_MACH_MACH_ERROR_H) || (defined(__APPLE__) && defined(__MACH__))
+#  include <mach/mach_error.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "m3-nat.c expects a <mach_error.h>-like header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_MACH_MACH_ERROR_H || (__APPLE__ && __MACH__) */
+#endif /* HAVE_MACH_ERROR_H */
 #include <mach/exception.h>
 #include <mach/vm_attributes.h>
 
@@ -68,11 +84,13 @@
 #include "gdbcmd.h"
 #include "gdbcore.h"
 #include "regcache.h"
+#include "gdb_obstack.h"
+#include "exceptions.h"
 
 #if 0
 # include <servers/machid_lib.h>
 #else
-# define	MACH_TYPE_TASK			1
+# define MACH_TYPE_TASK			1
 # define MACH_TYPE_THREAD		2
 #endif /* 0 */
 
@@ -84,7 +102,33 @@
 #include <signal.h>
 #define SIG_UNKNOWN 0		/* Exception that has no matching unix signal */
 
-#include <cthreads.h>
+#ifdef HAVE_CTHREADS_H
+# include <cthreads.h>
+#else
+# ifdef HAVE_MACH_CTHREADS_H
+#  include <mach/cthreads.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "m3-nat.c expects a <cthreads.h>-like header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+struct cthread
+{
+  const char *name;
+};
+typedef struct cthread *cthread_t;
+# endif /* HAVE_MACH_CTHREADS_H */
+#endif /* HAVE_CTHREADS_H */
+#ifdef HAVE_THREAD_ACT_H
+# include <thread_act.h>
+#else
+# if defined HAVE_MACH_THREAD_ACT_H
+#  include <mach/thread_act.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "m3-nat.c expects a <thread_act.h>-like header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_MACH_THREAD_ACT_H */
+#endif /* HAVE_THREAD_ACT_H */
 
 /* This is what a cproc looks like.  This is here partly because
    cthread_internals.h is not a header we can just #include, partly with
@@ -104,7 +148,12 @@
 #define CPROC_CONTEXT_OFFSET (CPROC_REPLY_OFFSET + CPROC_REPLY_SIZE)
 #define CPROC_CONTEXT_SIZE (TARGET_INT_BIT / HOST_CHAR_BIT)
 #define CPROC_LOCK_OFFSET (CPROC_CONTEXT_OFFSET + CPROC_CONTEXT_SIZE)
-#define CPROC_LOCK_SIZE (sizeof (spin_lock_t))
+#ifdef HAVE_SPIN_LOCK_T
+# define CPROC_LOCK_SIZE (sizeof(spin_lock_t))
+#else
+/* arbitrary guess: */
+# define CPROC_LOCK_SIZE 1
+#endif /* HAVE_SPIN_LOCK_T */
 #define CPROC_STATE_OFFSET (CPROC_LOCK_OFFSET + CPROC_LOCK_SIZE)
 #define CPROC_STATE_SIZE (TARGET_INT_BIT / HOST_CHAR_BIT)
 #define CPROC_WIRED_OFFSET (CPROC_STATE_OFFSET + CPROC_STATE_SIZE)
@@ -124,6 +173,13 @@
 #define CPROC_SWITCHING 1
 #define CPROC_BLOCKED	2
 #define CPROC_CONDWAIT	4
+
+/* from "config/nm-m3.h": */
+#ifndef GDB_MESSAGE_ID_STOP
+/* If our_message_port gets a msg with this ID, GDB suspends its inferior,
+ * and then enters command level. (Useful at least if ^C does not work) */
+# define GDB_MESSAGE_ID_STOP 0x41151
+#endif /* !GDB_MESSAGE_ID_STOP */
 
 /* For cproc and kernel thread mapping */
 typedef struct gdb_thread
@@ -163,7 +219,7 @@ typedef struct gdb_thread
 
 struct exception_list
   {
-    char *name;
+    const char *name;
     boolean_t forward;
     boolean_t print;
     int sigmap;
@@ -200,7 +256,7 @@ exception_map[] =
 };
 
 /* Mach exception table size */
-int max_exception = sizeof (exception_map) / sizeof (struct exception_list) - 1;
+int max_exception = (sizeof(exception_map) / sizeof(struct exception_list) - 1);
 
 #define MAX_EXCEPTION max_exception
 
@@ -210,19 +266,38 @@ WAITTYPE wait_status;
  * dumped while waiting the inferior to EXEC the correct
  * program
  */
-/* #define DUMP_SYSCALL         /* debugging interceptor */
+#if 0
+# define DUMP_SYSCALL         /* debugging interceptor */
+#endif /* 0 */
 
 /* xx_debug() outputs messages if this is nonzero.
  * If > 1, DUMP_SYSCALL will dump message contents.
  */
 int debug_level = 0;
 
+/* prototypes */
+extern int setup_single_step(thread_t, boolean_t);
+extern void thread_trace(mach_port_t, boolean_t);
+extern int mid_attach(int);
+extern int ptrace(int, int, int, int);
+extern int add_mach_specific_commands(void);
+extern int setup_notify_port(int);
+extern int mach3_exception_actions(WAITTYPE *, boolean_t, const char *);
+extern int resume_all_threads(int);
+static int suspend_all_threads(int);
+extern int reverse_msg_bits(mach_msg_header_t *, int);
+extern int setup_thread(mach_port_t, int);
+extern CORE_ADDR lookup_address_of_variable(const char *);
+extern int setup_exception_port(void);
+extern int mach3_prepare_to_proceed(int);
+
 /* "Temporary" debug stuff */
 void
-xx_debug (char *fmt, int a, int b, int c)
+xx_debug(const char *fmt, int a, int b, int c)
 {
+  /* FIXME: move to variadic arguments */
   if (debug_level)
-    warning (fmt, a, b, c);
+    warning(fmt, a, b, c);
 }
 
 /* This is in libmach.a */
@@ -235,7 +310,7 @@ int stopped_in_exception;
 /* Thread that was the active thread when we stopped */
 thread_t stop_thread = MACH_PORT_NULL;
 
-char *hostname = "";
+const char *hostname = "";
 
 /* Set when task is attached or created */
 boolean_t emulator_present = FALSE;
@@ -298,7 +373,7 @@ struct cleanup *cleanup_step = NULL_CLEANUP;
 
 static struct target_ops m3_ops;
 
-static void m3_kill_inferior ();
+static void m3_kill_inferior();
 
 #if 0
 # define MACH_TYPE_EXCEPTION_PORT	-1
@@ -373,24 +448,35 @@ port_chain_t
 port_chain_delete (port_chain_t list, mach_port_t elem)
 {
   if (list)
+  {
     if (list->port == elem)
+    {
       list = list->next;
+    }
     else
+    {
       while (list->next)
 	{
 	  if (list->next->port == elem)
+	  {
 	    list->next = list->next->next;	/* GCd with obstack_free() */
+	  }
 	  else
+	  {
 	    list = list->next;
+	  }
 	}
+    }
+  }
   return list;
 }
 
+/* */
 void
-port_chain_destroy (struct obstack *ostack)
+port_chain_destroy(struct obstack *ostack)
 {
-  obstack_free (ostack, 0);
-  obstack_init (ostack);
+  obstack_free(ostack, 0);
+  obstack_init(ostack);
 }
 
 port_chain_t
@@ -454,7 +540,9 @@ discard_single_step (thread_t thread)
     setup_single_step (thread, FALSE);
 }
 
-setup_single_step (thread_t thread, boolean_t start_step)
+/* */
+int
+setup_single_step(thread_t thread, boolean_t start_step)
 {
   kern_return_t ret;
 
@@ -478,22 +566,22 @@ setup_single_step (thread_t thread, boolean_t start_step)
 	    }
 
 	  /* If we are already stepping this thread */
-	  if (MACH_PORT_VALID (teport) && teport == thread_exception_port)
+	  if (MACH_PORT_VALID(teport) && (teport == thread_exception_port))
 	    {
-	      ret = mach_port_deallocate (mach_task_self (), teport);
-	      CHK ("Could not deallocate thread exception port", ret);
+	      ret = mach_port_deallocate(mach_task_self(), teport);
+	      CHK("Could not deallocate thread exception port", ret);
 	    }
 	  else
 	    {
-	      ret = thread_set_exception_port (thread, thread_exception_port);
-	      CHK ("Setting exception port for thread", ret);
+	      ret = thread_set_exception_port(thread, thread_exception_port);
+	      CHK("Setting exception port for thread", ret);
 #if 0
 	      /* Insert thread exception port to wait port set */
-	      ret = mach_port_move_member (mach_task_self (),
-					   thread_exception_port,
-					   inferior_wait_port_set);
-	      CHK ("Moving thread exception port to inferior_wait_port_set",
-		   ret);
+	      ret = mach_port_move_member(mach_task_self(),
+					  thread_exception_port,
+					  inferior_wait_port_set);
+	      CHK("Moving thread exception port to inferior_wait_port_set",
+		  ret);
 #endif /* 0 */
 	      thread_saved_exception_port = teport;
 	    }
@@ -502,7 +590,8 @@ setup_single_step (thread_t thread, boolean_t start_step)
 
 	  singlestepped_thread_port = thread_exception_port;
 	  currently_waiting_for = singlestepped_thread_port;
-	  cleanup_step = make_cleanup (discard_single_step, thread);
+	  cleanup_step = make_cleanup((make_cleanup_ftype *)discard_single_step,
+				      (void *)thread);
 	}
       else
 	{
@@ -523,15 +612,15 @@ setup_single_step (thread_t thread, boolean_t start_step)
 	       ret);
 #endif /* 0 */
 	  /* Restore thread's old exception port */
-	  ret = thread_set_exception_port (thread,
-					   thread_saved_exception_port);
+	  ret = thread_set_exception_port(thread,
+					  thread_saved_exception_port);
 	  CHK ("Restoring stepped thread's exception port", ret);
 
-	  if (MACH_PORT_VALID (thread_saved_exception_port))
-	    (void) mach_port_deallocate (mach_task_self (),
-					 thread_saved_exception_port);
+	  if (MACH_PORT_VALID(thread_saved_exception_port))
+	    (void)mach_port_deallocate(mach_task_self(),
+				       thread_saved_exception_port);
 
-	  thread_trace (thread, FALSE);
+	  thread_trace(thread, FALSE);
 
 	  singlestepped_thread_port = MACH_PORT_NULL;
 	  currently_waiting_for = inferior_wait_port_set;
@@ -541,8 +630,9 @@ setup_single_step (thread_t thread, boolean_t start_step)
     }
 }
 
-static
-request_notify (mach_port_t name, mach_msg_id_t variant, int type)
+/* */
+static void
+request_notify(mach_port_t name, mach_msg_id_t variant, int type)
 {
   kern_return_t ret;
   mach_port_t previous_port_dummy = MACH_PORT_NULL;
@@ -568,7 +658,8 @@ request_notify (mach_port_t name, mach_msg_id_t variant, int type)
   notify_chain = port_chain_insert (notify_chain, name, type);
 }
 
-reverse_msg_bits (mach_msg_header_t *msgp, int type)
+int
+reverse_msg_bits(mach_msg_header_t *msgp, int type)
 {
   int rbits, lbits;
   rbits = MACH_MSGH_BITS_REMOTE (msgp->msgh_bits);
@@ -661,7 +752,7 @@ intercept_exec_calls (int exec_counter)
   kern_return_t ret;
 
   if (exec_counter <= 0)
-    return;			/* We are already set up in the correct program */
+    return;		/* We are already set up in the correct program */
 
   ret = mach_port_allocate (mach_task_self (),
 			    MACH_PORT_RIGHT_RECEIVE,
@@ -733,15 +824,14 @@ intercept_exec_calls (int exec_counter)
   if (acquired != MACH_MSG_TYPE_PORT_SEND_ONCE)
     error ("Incorrect right extracted, send once expected for exec reply");
 
-  ret = mach_port_move_member (mach_task_self (),
-			       fake_server,
-			       inferior_wait_port_set);
-  CHK ("Moving fake syscall port to inferior_wait_port_set", ret);
+  ret = mach_port_move_member(mach_task_self(), fake_server,
+			      inferior_wait_port_set);
+  CHK("Moving fake syscall port to inferior_wait_port_set", ret);
 
-  xx_debug ("syscall fake server set up, resuming inferior\n");
+  xx_debug("syscall fake server set up, resuming inferior\n");
 
-  ret = task_resume (inferior_task);
-  CHK ("task_resume (startup)", ret);
+  ret = task_resume(inferior_task);
+  CHK("task_resume (startup)", ret);
 
   /* Read requests from the inferior.
      Pass directly through everything else except exec() calls.
@@ -885,7 +975,8 @@ consume_send_rights (thread_array_t thread_list, int thread_count)
 }
 
 /* suspend/abort/resume a thread. */
-setup_thread (mach_port_t thread, int what)
+int
+setup_thread(mach_port_t thread, int what)
 {
   kern_return_t ret;
 
@@ -915,7 +1006,8 @@ map_slot_to_mid (int slot, thread_array_t threads, int thread_count)
   if (!threads)
     {
       deallocate++;
-      ret = task_threads (inferior_task, &threads, &thread_count);
+      ret = task_threads(inferior_task, &threads,
+			 (mach_msg_type_number_t *)&thread_count);
       CHK ("Can not select a thread from a dead task", ret);
     }
 
@@ -989,7 +1081,7 @@ parse_thread_id (char *arg, int thread_count, int slots)
   if (thread_count && slot >= thread_count)
     return -(slot + 1);
 
-  mid = map_slot_to_mid (slot);
+  mid = map_slot_to_mid(slot);
 
   return mid;
 }
@@ -1017,7 +1109,8 @@ select_thread (mach_port_t task, int thread_id, int flag)
   if (thread_id < 0)
     error ("Cannot select cprocs without kernel thread");
 
-  ret = task_threads (task, &thread_list, &thread_count);
+  ret = task_threads(task, &thread_list,
+		     (mach_msg_type_number_t *)&thread_count);
   if (ret != KERN_SUCCESS)
     {
       warning ("Can not select a thread from a dead task");
@@ -1182,7 +1275,9 @@ m3_trace_him (int pid)
   return pid;
 }
 
-setup_exception_port (void)
+/* */
+int
+setup_exception_port(void)
 {
   kern_return_t ret;
 
@@ -1432,7 +1527,6 @@ gdb_message_server (mach_msg_header_t *InP)
       /* A message coming to our_message_port. Check validity */
       switch (InP->msgh_id)
 	{
-
 	case GDB_MESSAGE_ID_STOP:
 	  ret = task_suspend (inferior_task);
 	  if (ret != KERN_SUCCESS)
@@ -1566,11 +1660,11 @@ mach_thread_output_id (int mid)
   static char foobar[20];
 
   if (mid > 0)
-    sprintf (foobar, "mid %d", mid);
+    snprintf(foobar, sizeof(foobar), "mid %d", mid);
   else if (mid < 0)
-    sprintf (foobar, "@%d", -(mid + 1));
+    snprintf(foobar, sizeof(foobar), "@%d", -(mid + 1));
   else
-    sprintf (foobar, "*any thread*");
+    snprintf(foobar, sizeof(foobar), "*any thread*");
 
   return foobar;
 }
@@ -1586,11 +1680,11 @@ mach_thread_output_id (int mid)
  * Note that this implementation is potentially redundant now that
  * default_prepare_to_proceed() has been added.
  *
- * FIXME This may not support switching threads after Ctrl-C
+ * FIXME: This may not support switching threads after Ctrl-C
  * correctly. The default implementation does support this.
  */
-
-mach3_prepare_to_proceed (int select_it)
+int
+mach3_prepare_to_proceed(int select_it)
 {
   if (stop_thread &&
       stop_thread != current_thread &&
@@ -1792,21 +1886,18 @@ boolean_t vm_read_cache_valid = FALSE;
  * Return 0 on failure; number of bytes read otherwise.
  */
 int
-mach3_read_inferior (CORE_ADDR addr, char *myaddr, int length)
+mach3_read_inferior(CORE_ADDR addr, char *myaddr, int length)
 {
   kern_return_t ret;
-  vm_address_t low_address = (vm_address_t) trunc_page (addr);
+  vm_address_t low_address = (vm_address_t)trunc_page(addr);
   vm_size_t aligned_length =
-  (vm_size_t) round_page (addr + length) - low_address;
+    (vm_size_t)round_page(addr + length) - low_address;
   pointer_t copied_memory;
   int copy_count;
 
   /* Get memory from inferior with page aligned addresses */
-  ret = vm_read (inferior_task,
-		 low_address,
-		 aligned_length,
-		 &copied_memory,
-		 &copy_count);
+  ret = vm_read(inferior_task, low_address, aligned_length, &copied_memory,
+		(mach_msg_type_number_t *)&copy_count);
   if (ret != KERN_SUCCESS)
     {
       /* the problem is that the inferior might be killed for whatever reason
@@ -1875,24 +1966,21 @@ mach3_write_inferior (CORE_ADDR addr, char *myaddr, int length)
   int copy_count;
   int deallocate = 0;
 
-  char *errstr = "Bug in mach3_write_inferior";
+  const char *errstr = "Bug in mach3_write_inferior";
 
   struct vm_region_list *region_element;
-  struct vm_region_list *region_head = (struct vm_region_list *) NULL;
+  struct vm_region_list *region_head = (struct vm_region_list *)NULL;
 
   /* Get memory from inferior with page aligned addresses */
-  ret = vm_read (inferior_task,
-		 low_address,
-		 aligned_length,
-		 &copied_memory,
-		 &copy_count);
-  CHK_GOTO_OUT ("mach3_write_inferior vm_read failed", ret);
+  ret = vm_read(inferior_task, low_address, aligned_length, &copied_memory,
+		(mach_msg_type_number_t *)&copy_count);
+  CHK_GOTO_OUT("mach3_write_inferior vm_read failed", ret);
 
   deallocate++;
 
-  memcpy ((char *) addr - low_address + copied_memory, myaddr, length);
+  memcpy((char *)addr - low_address + copied_memory, myaddr, length);
 
-  obstack_init (&region_obstack);
+  obstack_init(&region_obstack);
 
   /* Do writes atomically.
    * First check for holes and unwritable memory.
@@ -1999,7 +2087,7 @@ mach3_write_inferior (CORE_ADDR addr, char *myaddr, int length)
 			      scan->length,
 			      FALSE,
 			      scan->protection);
-	    CHK_GOTO_OUT ("vm_protect: enable write failed", ret);
+	    CHK_GOTO_OUT("vm_protect: enable write failed", ret);
 	  }
       }
   }
@@ -2039,9 +2127,9 @@ m3_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
   return result;
 }
 
-
-static char *
-translate_state (int state)
+/* */
+static const char *
+translate_state(int state)
 {
   switch (state)
     {
@@ -2060,8 +2148,9 @@ translate_state (int state)
     }
 }
 
-static char *
-translate_cstate (int state)
+/* */
+static const char *
+translate_cstate(int state)
 {
   switch (state)
     {
@@ -2121,32 +2210,36 @@ map_inferior_port_name (mach_port_t inferior_name, mach_msg_type_name_t type)
 static char buf[7];
 
 static char *
-get_thread_name (gdb_thread_t one_cproc, int id)
+get_thread_name(gdb_thread_t one_cproc, int id)
 {
   if (one_cproc)
     if (one_cproc->cthread == NULL)
       {
 	/* cproc not mapped to any cthread */
-	sprintf (buf, "_C%d", id);
+	snprintf(buf, sizeof(buf), "_C%d", id);
       }
     else if (!one_cproc->cthread->name)
       {
 	/* cproc and cthread, but no name */
-	sprintf (buf, "_t%d", id);
+	snprintf(buf, sizeof(buf), "_t%d", id);
       }
     else
-      return (char *) (one_cproc->cthread->name);
+      return (char *)(one_cproc->cthread->name);
   else
     {
       if (id < 0)
-	warning ("Inconsistency in thread name id %d", id);
+	warning("Inconsistency in thread name id %d", id);
 
       /* Kernel thread without cproc */
-      sprintf (buf, "_K%d", id);
+      snprintf(buf, sizeof(buf), "_K%d", id);
     }
 
   return buf;
 }
+
+#ifndef FP_REGNUM
+# define FP_REGNUM 1
+#endif /* !FP_REGNUM */
 
 int
 fetch_thread_info (mach_port_t task, gdb_thread_t *mthreads_out)
@@ -2157,7 +2250,7 @@ fetch_thread_info (mach_port_t task, gdb_thread_t *mthreads_out)
   gdb_thread_t mthreads = NULL;
   int index;
 
-  ret = task_threads (task, &th_table, &th_count);
+  ret = task_threads(task, &th_table, (mach_msg_type_number_t *)&th_count);
   if (ret != KERN_SUCCESS)
     {
       warning ("Error getting inferior's thread list:%s",
@@ -2191,9 +2284,9 @@ fetch_thread_info (mach_port_t task, gdb_thread_t *mthreads_out)
       mthreads[index].in_emulator = FALSE;
       mthreads[index].slotid = index;
 
-      mthreads[index].sp = read_register (SP_REGNUM);
-      mthreads[index].fp = read_register (FP_REGNUM);
-      mthreads[index].pc = read_pc ();
+      mthreads[index].sp = read_register(SP_REGNUM);
+      mthreads[index].fp = read_register(FP_REGNUM);
+      mthreads[index].pc = read_pc();
 
       if (MACH_PORT_VALID (saved_thread))
 	mid = switch_to_thread (saved_thread);
@@ -2263,14 +2356,13 @@ have_emulator_p (task_t task)
   int i;
   int vector_start;
 
-  ret = task_get_emulation_vector (task,
-				   &vector_start,
+  ret = task_get_emulation_vector(task, &vector_start,
 #ifndef EMUL_VECTOR_COUNT
-				   &emulation_vector,
+				  &emulation_vector,
 #else
-				   emulation_vector,
+				  emulation_vector,
 #endif /* !EMUL_VECTOR_COUNT */
-				   &n);
+				  (mach_msg_type_number_t *)&n);
   CHK ("task_get_emulation_vector", ret);
   xx_debug ("%d vectors from %d at 0x%08x\n",
 	    n, vector_start, emulation_vector);
@@ -2414,16 +2506,16 @@ map_cprocs_to_kernel_threads (gdb_thread_t cprocs, gdb_thread_t mthreads,
 
 #define TL_HEADER "\n@    MID  Name        KState CState   Where\n"
 
+extern int addressprint;
+extern int asm_demangle;
+
 void
-print_tl_address (struct ui_file *stream, CORE_ADDR pc)
+print_tl_address(struct ui_file *stream, CORE_ADDR pc)
 {
-  if (!lookup_minimal_symbol_by_pc (pc))
-    fprintf_filtered (stream, local_hex_format (), pc);
+  if (!lookup_minimal_symbol_by_pc(pc))
+    fprintf_filtered(stream, local_hex_format(), pc);
   else
     {
-      extern int addressprint;
-      extern int asm_demangle;
-
       int store = addressprint;
       addressprint = 0;
       print_address_symbolic (pc, stream, asm_demangle, "");
@@ -2436,7 +2528,7 @@ print_tl_address (struct ui_file *stream, CORE_ADDR pc)
 
 /* Returns the address of variable NAME or 0 if not found */
 CORE_ADDR
-lookup_address_of_variable (char *name)
+lookup_address_of_variable(const char *name)
 {
   struct symbol *sym;
   CORE_ADDR symaddr = 0;
@@ -2474,14 +2566,14 @@ get_cprocs (void)
   CORE_ADDR symaddr;
 
   buf = alloca (TARGET_PTR_BIT / HOST_CHAR_BIT);
-  symaddr = lookup_address_of_variable ("cproc_list");
+  symaddr = lookup_address_of_variable("cproc_list");
 
   if (!symaddr)
     {
       /* cproc_list is not in a file compiled with debugging
          symbols, but do NOT give up yet */
 
-      symaddr = lookup_address_of_variable ("cprocs");
+      symaddr = lookup_address_of_variable("cprocs");
 
       if (symaddr)
 	{
@@ -2549,10 +2641,11 @@ get_cprocs (void)
 
 	  if (cthread->name)
 	    {
-	      name = (char *) obstack_alloc (cproc_obstack, MAX_NAME_LEN);
+	      name = (char *)obstack_alloc(cproc_obstack, MAX_NAME_LEN);
 
-	      if (!mach3_read_inferior (cthread->name, name, MAX_NAME_LEN))
-		error ("Cannot read next thread's name at 0x%x.", cthread->name);
+	      if (!mach3_read_inferior((CORE_ADDR)cthread->name, name,
+				       MAX_NAME_LEN))
+		error("Cannot read next thread's name at 0x%x.", cthread->name);
 
 	      cthread->name = name;
 	    }
@@ -2633,11 +2726,13 @@ thread_list_command (void)
 
   int neworder = 1;
 
-  char *fmt = "There are %d kernel threads in task %d.\n";
+  const char *fmt = "There are %d kernel threads in task %d.\n";
 
   int tmid = map_port_name_to_mid (inferior_task, MACH_TYPE_TASK);
 
+#ifdef MACH_ERROR_NO_INFERIOR
   MACH_ERROR_NO_INFERIOR;
+#endif /* MACH_ERROR_NO_INFERIOR */
 
   thread_count = fetch_thread_info (inferior_task,
 				    &their_threads);
@@ -2661,14 +2756,14 @@ thread_list_command (void)
       char buf[10];
       char slot[3];
       int cproc_state =
-      extract_signed_integer
-      (scan->raw_cproc + CPROC_STATE_OFFSET, CPROC_STATE_SIZE);
+      extract_signed_integer((scan->raw_cproc + CPROC_STATE_OFFSET),
+			     CPROC_STATE_SIZE);
 
       selected = ' ';
 
       /* a wired cproc? */
-      wired = (extract_address (scan->raw_cproc + CPROC_WIRED_OFFSET,
-				CPROC_WIRED_SIZE)
+      wired = (extract_address((scan->raw_cproc + CPROC_WIRED_OFFSET),
+			       CPROC_WIRED_SIZE)
 	       ? "wired" : "");
 
       if (scan->reverse_map != -1)
@@ -2684,10 +2779,9 @@ thread_list_command (void)
 
 	  infoCnt = THREAD_BASIC_INFO_COUNT;
 
-	  ret = thread_info (kthread->name,
-			     THREAD_BASIC_INFO,
-			     (thread_info_t) & ths,
-			     &infoCnt);
+	  ret = thread_info(kthread->name, THREAD_BASIC_INFO,
+			    (thread_info_t)&ths,
+			    (mach_msg_type_number_t *)&infoCnt);
 
 	  if (ret != KERN_SUCCESS)
 	    {
@@ -2698,13 +2792,13 @@ thread_list_command (void)
 	    }
 
 	  /* Who is the first to have more than 100 threads */
-	  sprintf (slot, "%d", kthread->slotid % 100);
+	  snprintf(slot, sizeof(slot), "%d", (kthread->slotid % 100));
 
 	  if (kthread->name == current_thread)
 	    selected = '*';
 
 	  if (ths.suspend_count)
-	    sprintf (buf, "%d", ths.suspend_count);
+	    snprintf(buf, sizeof(buf), "%d", ths.suspend_count);
 	  else
 	    buf[0] = '\000';
 
@@ -2781,10 +2875,8 @@ thread_list_command (void)
 
 	  infoCnt = THREAD_BASIC_INFO_COUNT;
 
-	  ret = thread_info (name,
-			     THREAD_BASIC_INFO,
-			     (thread_info_t) & ths,
-			     &infoCnt);
+	  ret = thread_info(name, THREAD_BASIC_INFO, (thread_info_t)&ths,
+			    (mach_msg_type_number_t *)&infoCnt);
 
 	  if (ret != KERN_SUCCESS)
 	    {
@@ -2794,7 +2886,7 @@ thread_list_command (void)
 	      continue;
 	    }
 
-	  sprintf (slot, "%d", index % 100);
+	  snprintf(slot, sizeof(slot), "%d", (index % 100));
 
 	  if (name == current_thread)
 	    selected = '*';
@@ -2802,7 +2894,7 @@ thread_list_command (void)
 	    selected = ' ';
 
 	  if (ths.suspend_count)
-	    sprintf (buf, "%d", ths.suspend_count);
+	    snprintf(buf, sizeof(buf), "%d", ths.suspend_count);
 	  else
 	    buf[0] = '\000';
 
@@ -2842,7 +2934,9 @@ thread_select_command(char *args, int from_tty)
   kern_return_t ret;
   int is_slot = 0;
 
+#ifdef MACH_ERROR_NO_INFERIOR
   MACH_ERROR_NO_INFERIOR;
+#endif /* MACH_ERROR_NO_INFERIOR */
 
   if (!args)
     error_no_arg(_("MID or @SLOTNUMBER to specify a thread to select"));
@@ -2871,7 +2965,9 @@ thread_select_command(char *args, int from_tty)
 						   MACH_TYPE_THREAD) : mid);
 }
 
-thread_trace (mach_port_t thread, boolean_t set)
+/* */
+void
+thread_trace(mach_port_t thread, boolean_t set)
 {
   int flavor = TRACE_FLAVOR;
   unsigned int stateCnt = TRACE_FLAVOR_SIZE;
@@ -2934,8 +3030,8 @@ flush_inferior_icache (CORE_ADDR pc, int amount)
 #endif /* FLUSH_INFERIOR_CACHE */
 
 
-static
-suspend_all_threads (int from_tty)
+static int
+suspend_all_threads(int from_tty)
 {
   kern_return_t ret;
   thread_array_t thread_list;
@@ -2943,13 +3039,13 @@ suspend_all_threads (int from_tty)
   int infoCnt;
   thread_basic_info_data_t th_info;
 
-
-  ret = task_threads (inferior_task, &thread_list, &thread_count);
+  ret = task_threads(inferior_task, &thread_list,
+		     (mach_msg_type_number_t *)&thread_count);
   if (ret != KERN_SUCCESS)
     {
-      warning ("Could not suspend inferior threads.");
-      m3_kill_inferior ();
-      return_to_top_level (RETURN_ERROR);
+      warning(_("Could not suspend inferior threads."));
+      m3_kill_inferior();
+      return_to_top_level(RETURN_ERROR);
     }
 
   for (index = 0; index < thread_count; index++)
@@ -2968,10 +3064,9 @@ suspend_all_threads (int from_tty)
       if (from_tty)
 	{
 	  infoCnt = THREAD_BASIC_INFO_COUNT;
-	  ret = thread_info (thread_list[index],
-			     THREAD_BASIC_INFO,
-			     (thread_info_t) & th_info,
-			     &infoCnt);
+	  ret = thread_info(thread_list[index], THREAD_BASIC_INFO,
+			    (thread_info_t)&th_info,
+			    (mach_msg_type_number_t *)&infoCnt);
 	  CHK ("suspend cannot get thread info", ret);
 
 	  warning ("Thread %d suspend count is %d",
@@ -2995,7 +3090,9 @@ thread_suspend_command (char *args, int from_tty)
   int infoCnt;
   thread_basic_info_data_t th_info;
 
+#ifdef MACH_ERROR_NO_INFERIOR
   MACH_ERROR_NO_INFERIOR;
+#endif /* MACH_ERROR_NO_INFERIOR */
 
   if (!strcasecmp (args, "all"))
     {
@@ -3025,10 +3122,8 @@ thread_suspend_command (char *args, int from_tty)
 	     mach_error_string (ret));
 
   infoCnt = THREAD_BASIC_INFO_COUNT;
-  ret = thread_info (current_thread,
-		     THREAD_BASIC_INFO,
-		     (thread_info_t) & th_info,
-		     &infoCnt);
+  ret = thread_info(current_thread, THREAD_BASIC_INFO, (thread_info_t)&th_info,
+		    (mach_msg_type_number_t *)&infoCnt);
   CHK ("suspend cannot get thread info", ret);
 
   warning ("Thread %d suspend count is %d", mid, th_info.suspend_count);
@@ -3036,7 +3131,9 @@ thread_suspend_command (char *args, int from_tty)
   current_thread = saved_thread;
 }
 
-resume_all_threads (int from_tty)
+/* */
+int
+resume_all_threads(int from_tty)
 {
   kern_return_t ret;
   thread_array_t thread_list;
@@ -3045,7 +3142,8 @@ resume_all_threads (int from_tty)
   int infoCnt;
   thread_basic_info_data_t th_info;
 
-  ret = task_threads (inferior_task, &thread_list, &thread_count);
+  ret = task_threads(inferior_task, &thread_list,
+		     (mach_msg_type_number_t *)&thread_count);
   if (ret != KERN_SUCCESS)
     {
       m3_kill_inferior ();
@@ -3055,10 +3153,9 @@ resume_all_threads (int from_tty)
   for (index = 0; index < thread_count; index++)
     {
       infoCnt = THREAD_BASIC_INFO_COUNT;
-      ret = thread_info (thread_list[index],
-			 THREAD_BASIC_INFO,
-			 (thread_info_t) & th_info,
-			 &infoCnt);
+      ret = thread_info(thread_list[index], THREAD_BASIC_INFO,
+			(thread_info_t)&th_info,
+			(mach_msg_type_number_t *)&infoCnt);
       CHK ("resume_all cannot get thread info", ret);
 
       mid = map_port_name_to_mid (thread_list[index],
@@ -3097,7 +3194,9 @@ thread_resume_command (char *args, int from_tty)
   thread_basic_info_data_t th_info;
   int infoCnt = THREAD_BASIC_INFO_COUNT;
 
+#ifdef MACH_ERROR_NO_INFERIOR
   MACH_ERROR_NO_INFERIOR;
+#endif /* MACH_ERROR_NO_INFERIOR */
 
   if (!strcasecmp (args, "all"))
     {
@@ -3121,10 +3220,8 @@ thread_resume_command (char *args, int from_tty)
       return_to_top_level (RETURN_ERROR);
     }
 
-  ret = thread_info (current_thread,
-		     THREAD_BASIC_INFO,
-		     (thread_info_t) & th_info,
-		     &infoCnt);
+  ret = thread_info(current_thread, THREAD_BASIC_INFO, (thread_info_t)&th_info,
+		    (mach_msg_type_number_t *)&infoCnt);
   CHK ("resume cannot get thread info", ret);
 
   if (!th_info.suspend_count)
@@ -3157,8 +3254,9 @@ thread_kill_command (char *args, int from_tty)
   int index;
   mach_port_t thread_to_kill = MACH_PORT_NULL;
 
-
+#ifdef MACH_ERROR_NO_INFERIOR
   MACH_ERROR_NO_INFERIOR;
+#endif /* MACH_ERROR_NO_INFERIOR */
 
   if (!args)
     error_no_arg(_("thread mid to kill from the inferior task"));
@@ -3177,7 +3275,8 @@ thread_kill_command (char *args, int from_tty)
     mid = map_port_name_to_mid (current_thread, MACH_TYPE_THREAD);
 
   /* Do NOT allow gdb to kill *any* thread in the system. Use mkill program for that */
-  ret = task_threads (inferior_task, &thread_table, &thread_count);
+  ret = task_threads(inferior_task, &thread_table,
+		     (mach_msg_type_number_t *)&thread_count);
   CHK ("Error getting inferior's thread list", ret);
 
   if (thread_to_kill == current_thread)
@@ -3217,16 +3316,16 @@ task_resume_command (char *args, int from_tty)
   int infoCnt = TASK_BASIC_INFO_COUNT;
   int mid = map_port_name_to_mid (inferior_task, MACH_TYPE_TASK);
 
+#ifdef MACH_ERROR_NO_INFERIOR
   MACH_ERROR_NO_INFERIOR;
+#endif /* MACH_ERROR_NO_INFERIOR */
 
   /* Would be trivial to change, but is it desirable? */
   if (args)
     error ("Currently gdb can resume only its inferior task");
 
-  ret = task_info (inferior_task,
-		   TASK_BASIC_INFO,
-		   (task_info_t) & ta_info,
-		   &infoCnt);
+  ret = task_info(inferior_task, TASK_BASIC_INFO, (task_info_t)&ta_info,
+		  (mach_msg_type_number_t *)&infoCnt);
   CHK ("task_resume_command: task_info failed", ret);
 
   if (ta_info.suspend_count == 0)
@@ -3261,7 +3360,9 @@ task_suspend_command (char *args, int from_tty)
   int infoCnt = TASK_BASIC_INFO_COUNT;
   int mid = map_port_name_to_mid (inferior_task, MACH_TYPE_TASK);
 
+#ifdef MACH_ERROR_NO_INFERIOR
   MACH_ERROR_NO_INFERIOR;
+#endif /* MACH_ERROR_NO_INFERIOR */
 
   /* Would be trivial to change, but is it desirable? */
   if (args)
@@ -3272,10 +3373,8 @@ task_suspend_command (char *args, int from_tty)
 
   must_suspend_thread = 0;
 
-  ret = task_info (inferior_task,
-		   TASK_BASIC_INFO,
-		   (task_info_t) & ta_info,
-		   &infoCnt);
+  ret = task_info(inferior_task, TASK_BASIC_INFO, (task_info_t)&ta_info,
+		  (mach_msg_type_number_t *)&infoCnt);
   CHK ("task_suspend_command: task_info failed", ret);
 
   warning ("Inferior task %d suspend count is now %d",
@@ -3286,12 +3385,13 @@ static char *
 get_size (int bytes)
 {
   static char size[30];
-  int zz = bytes / 1024;
+  int zz = (bytes / 1024);
 
   if (zz / 1024)
-    sprintf (size, "%-2.1f M", ((float) bytes) / (1024.0 * 1024.0));
+    snprintf(size, sizeof(size), "%-2.1f M",
+	     (((float)bytes) / (1024.0 * 1024.0)));
   else
-    sprintf (size, "%d K", zz);
+    snprintf(size, sizeof(size), "%d K", zz);
 
   return size;
 }
@@ -3332,22 +3432,23 @@ task_info_command (char *args, int from_tty)
   if (mid < 0)
     error ("You have to give the task MID as an argument");
 
-  ret = task_info (task,
-		   TASK_BASIC_INFO,
-		   (task_info_t) & ta_info,
-		   &infoCnt);
+  ret = task_info(task, TASK_BASIC_INFO, (task_info_t)&ta_info,
+		  (mach_msg_type_number_t *)&infoCnt);
   CHK ("task_info_command: task_info failed", ret);
 
-  printf_filtered ("\nTask info for task %d:\n\n", mid);
-  printf_filtered (" Suspend count : %d\n", ta_info.suspend_count);
-  printf_filtered (" Base priority : %d\n", ta_info.base_priority);
-  printf_filtered (" Virtual size  : %s\n", get_size (ta_info.virtual_size));
-  printf_filtered (" Resident size : %s\n", get_size (ta_info.resident_size));
+  printf_filtered("\nTask info for task %d:\n\n", mid);
+  printf_filtered(" Suspend count : %d\n", ta_info.suspend_count);
+#ifdef HAVE_STRUCT_TASK_BASIC_INFO_BASE_PRIORITY
+  printf_filtered(" Base priority : %d\n", ta_info.base_priority);
+#endif /* HAVE_STRUCT_TASK_BASIC_INFO_BASE_PRIORITY */
+  printf_filtered(" Virtual size  : %s\n", get_size(ta_info.virtual_size));
+  printf_filtered(" Resident size : %s\n", get_size(ta_info.resident_size));
 
   {
     thread_array_t thread_list;
 
-    ret = task_threads (task, &thread_list, &thread_count);
+    ret = task_threads(task, &thread_list,
+		       (mach_msg_type_number_t *)&thread_count);
     CHK ("task_info_command: task_threads", ret);
 
     printf_filtered (" Thread count  : %d\n", thread_count);
@@ -3462,10 +3563,11 @@ exception_info (char *args, int from_tty)
 
 /* Check for actions for mach exceptions.
  */
-mach3_exception_actions (WAITTYPE *w, boolean_t force_print_only, char *who)
+int
+mach3_exception_actions(WAITTYPE *w, boolean_t force_print_only,
+			const char *who)
 {
   boolean_t force_print = FALSE;
-
 
   if (force_print_only ||
       exception_map[stop_exception].sigmap == SIG_UNKNOWN)
@@ -3517,7 +3619,8 @@ mach3_exception_actions (WAITTYPE *w, boolean_t force_print_only, char *who)
     }
 }
 
-setup_notify_port (int create_new)
+int
+setup_notify_port(int create_new)
 {
   kern_return_t ret;
 
@@ -3640,7 +3743,8 @@ task_command (char *arg, int from_tty)
   help_list (cmd_task_list, "task ", -1, gdb_stdout);
 }
 
-add_mach_specific_commands (void)
+int
+add_mach_specific_commands(void)
 {
   /* Thread handling commands */
 
@@ -3887,9 +3991,10 @@ m3_can_run (void)
 /* Mach 3.0 does not need ptrace for anything
  * Make sure nobody uses it on mach.
  */
-ptrace (int a, int b, int c, int d)
+int
+ptrace(int a, int b, int c, int d)
 {
-  error ("Lose, Lose! Somebody called ptrace\n");
+  error(_("Lose, Lose! Somebody called ptrace\n"));
 }
 
 /* Resume execution of the inferior process.
@@ -3985,20 +4090,21 @@ task_attach (task_t tid)
  * (Someone must have killed it))
  */
 void
-attach_to_thread (void)
+attach_to_thread(void)
 {
-  if (select_thread (inferior_task, 0, 1) != KERN_SUCCESS)
-    error ("Could not select any threads to attach to");
+  if (select_thread(inferior_task, 0, 1) != KERN_SUCCESS)
+    error("Could not select any threads to attach to");
 }
 
-mid_attach (int mid)
+int
+mid_attach(int mid)
 {
   kern_return_t ret;
 
-  ret = machid_mach_port (mid_server, mid_auth, mid, &inferior_task);
-  CHK ("mid_attach: machid_mach_port", ret);
+  ret = machid_mach_port(mid_server, mid_auth, mid, &inferior_task);
+  CHK("mid_attach: machid_mach_port", ret);
 
-  task_attach (inferior_task);
+  task_attach(inferior_task);
 
   return mid;
 }
@@ -4075,9 +4181,9 @@ m3_attach(char *args, int from_tty)
       gdb_flush (gdb_stdout);
     }
 
-  m3_do_attach (pid_to_ptid (pid));
-  inferior_ptid = pid_to_ptid (pid);
-  push_target (&m3_ops);
+  m3_do_attach(pid);
+  inferior_ptid = pid_to_ptid(pid);
+  push_target(&m3_ops);
 }
 
 void
@@ -4090,7 +4196,8 @@ deallocate_inferior_ports (void)
   if (!MACH_PORT_VALID (inferior_task))
     return;
 
-  ret = task_threads (inferior_task, &thread_list, &thread_count);
+  ret = task_threads(inferior_task, &thread_list,
+		     (mach_msg_type_number_t *)&thread_count);
   if (ret != KERN_SUCCESS)
     {
       warning ("deallocate_inferior_ports: task_threads",
@@ -4102,10 +4209,9 @@ deallocate_inferior_ports (void)
   for (index = 0; index < thread_count; index++)
     {
       int rights;
-      ret = mach_port_get_refs (mach_task_self (),
-				thread_list[index],
-				MACH_PORT_RIGHT_SEND,
-				&rights);
+      ret = mach_port_get_refs(mach_task_self(), thread_list[index],
+			       MACH_PORT_RIGHT_SEND,
+			       (mach_port_urefs_t *)&rights);
       CHK ("deallocate_inferior_ports: get refs", ret);
 
       if (rights > 0)
@@ -4141,7 +4247,9 @@ m3_do_detach (int signal)
 {
   kern_return_t ret;
 
+#ifdef MACH_ERROR_NO_INFERIOR
   MACH_ERROR_NO_INFERIOR;
+#endif /* MACH_ERROR_NO_INFERIOR */
 
   if (current_thread != MACH_PORT_NULL)
     {
@@ -4190,7 +4298,7 @@ m3_detach (char *args, int from_tty)
 
   if (from_tty)
     {
-      char *exec_file = get_exec_file (0);
+      const char *exec_file = get_exec_file(0);
       if (exec_file == 0)
 	exec_file = "";
       printf_unfiltered ("Detaching from program: %s %s\n",
@@ -4308,10 +4416,10 @@ char *bsd1_names[] =
   "pid_by_task",
 };
 
-int bsd1_nnames = sizeof (bsd1_names) / sizeof (bsd1_names[0]);
+int bsd1_nnames = (sizeof(bsd1_names) / sizeof(bsd1_names[0]));
 
 char *
-name_str (int name, char *buf)
+name_str(int name, char *buf)
 {
   switch (name)
     {
@@ -4330,13 +4438,14 @@ name_str (int name, char *buf)
     case MACH_MSG_TYPE_STRING:
       return "string";
     default:
-      sprintf (buf, "%d", name);
+      snprintf(buf, BUF_LEN_MAX_FOR_SNPRINTF, "%d", name);
       return buf;
     }
 }
 
+/* */
 char *
-id_str (int id, char *buf)
+id_str(int id, char *buf)
 {
   char *p;
   if (id >= 101000 && id < 101000 + bsd1_nnames)
@@ -4348,7 +4457,7 @@ id_str (int id, char *buf)
     return "psignal_retry";
   if (id == 100000)
     return "syscall";
-  sprintf (buf, "%d", id);
+  snprintf(buf, BUF_LEN_MAX_FOR_SNPRINTF, "%d", id);
   return buf;
 }
 
@@ -4477,7 +4586,7 @@ init_m3_ops (void)
   m3_ops.to_fetch_registers = fetch_inferior_registers;
   m3_ops.to_store_registers = store_inferior_registers;
   m3_ops.to_prepare_to_store = m3_prepare_to_store;
-  m3_ops.to_xfer_memory = m3_xfer_memory;
+  m3_ops.deprecated_xfer_memory = m3_xfer_memory;
   m3_ops.to_files_info = m3_files_info;
   m3_ops.to_insert_breakpoint = memory_insert_breakpoint;
   m3_ops.to_remove_breakpoint = memory_remove_breakpoint;
@@ -4501,8 +4610,9 @@ init_m3_ops (void)
   m3_ops.to_magic = OPS_MAGIC;
 }
 
+extern void _initialize_m3_nat(void); /* -Wmissing-prototypes */
 void
-_initialize_m3_nat (void)
+_initialize_m3_nat(void)
 {
   kern_return_t ret;
 
@@ -4519,7 +4629,8 @@ _initialize_m3_nat (void)
   /* mach_really_wait now waits for this */
   currently_waiting_for = inferior_wait_port_set;
 
-  ret = netname_look_up (name_server_port, hostname, "MachID", &mid_server);
+  ret = netname_look_up(name_server_port, (char *)hostname, (char *)"MachID",
+			&mid_server);
   if (ret != KERN_SUCCESS)
     {
       mid_server = MACH_PORT_NULL;
@@ -4564,7 +4675,7 @@ _initialize_m3_nat (void)
 
       /* @@@@ No way to change message port name currently */
       /* Foo. This assumes gdb has a unix pid */
-      sprintf (buf, "gdb-%d", getpid ());
+      snprintf(buf, sizeof(buf), "gdb-%d", getpid());
       gdb_register_port (buf, our_message_port);
     }
 
