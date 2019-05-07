@@ -276,6 +276,7 @@ WAITTYPE wait_status;
 int debug_level = 0;
 
 /* prototypes */
+extern void xx_debug(const char *fmt, ...);
 extern int setup_single_step(thread_t, boolean_t);
 extern void thread_trace(mach_port_t, boolean_t);
 extern int mid_attach(int);
@@ -290,14 +291,20 @@ extern int setup_thread(mach_port_t, int);
 extern CORE_ADDR lookup_address_of_variable(const char *);
 extern int setup_exception_port(void);
 extern int mach3_prepare_to_proceed(int);
+extern int map_slot_to_mid(int, thread_array_t, int);
 
 /* "Temporary" debug stuff */
 void
-xx_debug(const char *fmt, int a, int b, int c)
+xx_debug(const char *fmt, ...)
 {
-  /* FIXME: move to variadic arguments */
+  va_list ap;
   if (debug_level)
-    warning(fmt, a, b, c);
+  {
+    va_start(ap, fmt);
+    vwarning(fmt, ap);
+    va_end(ap);
+    fflush(stderr);
+  }
 }
 
 /* This is in libmach.a */
@@ -373,7 +380,7 @@ struct cleanup *cleanup_step = NULL_CLEANUP;
 
 static struct target_ops m3_ops;
 
-static void m3_kill_inferior();
+static void m3_kill_inferior(void);
 
 #if 0
 # define MACH_TYPE_EXCEPTION_PORT	-1
@@ -995,8 +1002,9 @@ setup_thread(mach_port_t thread, int what)
     }
 }
 
+/* */
 int
-map_slot_to_mid (int slot, thread_array_t threads, int thread_count)
+map_slot_to_mid(int slot, thread_array_t threads, int thread_count)
 {
   kern_return_t ret;
   int deallocate = 0;
@@ -1037,8 +1045,9 @@ map_slot_to_mid (int slot, thread_array_t threads, int thread_count)
   return mid;
 }
 
+/* */
 static int
-parse_thread_id (char *arg, int thread_count, int slots)
+parse_thread_id(const char *arg, int thread_count, int slots)
 {
   kern_return_t ret;
   int mid;
@@ -1081,7 +1090,7 @@ parse_thread_id (char *arg, int thread_count, int slots)
   if (thread_count && slot >= thread_count)
     return -(slot + 1);
 
-  mid = map_slot_to_mid(slot);
+  mid = map_slot_to_mid(slot, 0, 0);
 
   return mid;
 }
@@ -1179,32 +1188,32 @@ select_thread (mach_port_t task, int thread_id, int flag)
   else
     {
 #if 0
-      if (MACH_PORT_VALID (current_thread))
+      if (MACH_PORT_VALID(current_thread))
 	{
 	  /* Store the gdb's view of the thread we are deselecting
 
 	   * @@ I think gdb updates registers immediately when they are
 	   * changed, so do NOT do this.
 	   */
-	  ret = thread_abort (current_thread);
-	  CHK ("Could not abort system calls when saving state of old thread",
-	       ret);
-	  target_prepare_to_store ();
-	  target_store_registers (-1);
+	  ret = thread_abort(current_thread);
+	  CHK("Could not abort system calls when saving state of old thread",
+	      ret);
+	  target_prepare_to_store();
+	  target_store_registers(-1);
 	}
 #endif /* 0 */
 
-      registers_changed ();
+      registers_changed();
 
       current_thread = new_thread;
 
-      ret = thread_abort (current_thread);
-      CHK ("Could not abort system calls when selecting a thread", ret);
+      ret = thread_abort(current_thread);
+      CHK("Could not abort system calls when selecting a thread", ret);
 
-      stop_pc = read_pc ();
-      flush_cached_frames ();
+      stop_pc = read_pc();
+      flush_cached_frames();
 
-      select_frame (get_current_frame (), 0);
+      select_frame(get_current_frame());
     }
 
   return KERN_SUCCESS;
@@ -1237,42 +1246,42 @@ switch_to_thread (thread_t new_thread)
 /* Do this in gdb after doing FORK but before STARTUP_INFERIOR.
  * Note that the registers are not yet valid in the inferior task.
  */
-static int
-m3_trace_him (int pid)
+static void
+m3_trace_him(int pid)
 {
   kern_return_t ret;
 
-  push_target (&m3_ops);
+  push_target(&m3_ops);
 
-  inferior_task = task_by_pid (pid);
+  inferior_task = task_by_pid(pid);
 
-  if (!MACH_PORT_VALID (inferior_task))
-    error ("Can not map Unix pid %d to Mach task", pid);
+  if (!MACH_PORT_VALID(inferior_task))
+    error("Can not map Unix pid %d to Mach task", pid);
 
   /* Clean up previous notifications and create new ones */
-  setup_notify_port (1);
+  setup_notify_port(1);
 
   /* When notification appears, the inferior task has died */
-  request_notify (inferior_task, MACH_NOTIFY_DEAD_NAME, MACH_TYPE_TASK);
+  request_notify(inferior_task, MACH_NOTIFY_DEAD_NAME, MACH_TYPE_TASK);
 
-  emulator_present = have_emulator_p (inferior_task);
+  emulator_present = have_emulator_p(inferior_task);
 
   /* By default, select the first thread,
    * If task has no threads, gives a warning
    * Does not fetch registers, since they are not yet valid.
    */
-  select_thread (inferior_task, 0, 0);
+  select_thread(inferior_task, 0, 0);
 
   inferior_exception_port = MACH_PORT_NULL;
 
-  setup_exception_port ();
+  setup_exception_port();
 
-  xx_debug ("Now the debugged task is created\n");
+  xx_debug("Now the debugged task is created\n");
 
   /* One trap to exec the shell, one to exec the program being debugged.  */
-  intercept_exec_calls (2);
+  intercept_exec_calls(2);
 
-  return pid;
+  (void)pid;
 }
 
 /* */
@@ -1340,7 +1349,8 @@ int mach_really_waiting;
    Returns the inferior_ptid for rest of gdb.
    Side effects: Set *OURSTATUS.  */
 ptid_t
-mach_really_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
+mach_really_wait(ptid_t ptid, struct target_waitstatus *ourstatus,
+		 gdb_client_data unused)
 {
   kern_return_t ret;
   int w;
@@ -1608,13 +1618,13 @@ stop_inferior_gdb (void)
  * it is selected and the last exception was a breakpoint.
  */
 int
-mach_thread_for_breakpoint (int mid)
+mach_thread_for_breakpoint(int mid)
 {
-  int cmid = map_port_name_to_mid (current_thread, MACH_TYPE_THREAD);
+  int cmid = map_port_name_to_mid(current_thread, MACH_TYPE_THREAD);
 
   if (mid < 0)
     {
-      mid = map_slot_to_mid (-(mid + 1), 0, 0);
+      mid = map_slot_to_mid(-(mid + 1), 0, 0);
       if (mid < 0)
 	return 0;		/* Do NOT stop, no such slot */
     }
@@ -2002,22 +2012,16 @@ mach3_write_inferior (CORE_ADDR addr, char *myaddr, int length)
 	vm_size_t region_length = remaining_length;
 	vm_address_t old_address = region_address;
 
-	ret = vm_region (inferior_task,
-			 &region_address,
-			 &region_length,
-			 &protection,
-			 &max_protection,
-			 &inheritance,
-			 &shared,
-			 &object_name,
-			 &offset);
-	CHK_GOTO_OUT ("vm_region failed", ret);
+	ret = vm_region(inferior_task, &region_address, &region_length,
+			&protection, &max_protection, &inheritance, &shared,
+			&object_name, &offset);
+	CHK_GOTO_OUT("vm_region failed", ret);
 
 	/* Check for holes in memory */
 	if (old_address != region_address)
 	  {
-	    warning ("No memory at 0x%x. Nothing written",
-		     old_address);
+	    warning("No memory at 0x%x. Nothing written",
+		    old_address);
 	    ret = KERN_SUCCESS;
 	    length = 0;
 	    goto out;
@@ -2114,15 +2118,15 @@ out:
 /* Return 0 on failure, number of bytes handled otherwise.  TARGET is
    ignored. */
 static int
-m3_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
-		struct target_ops *target)
+m3_xfer_memory(CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
+	       struct mem_attrib *unused, struct target_ops *target)
 {
   int result;
 
   if (write)
-    result = mach3_write_inferior (memaddr, myaddr, len);
+    result = mach3_write_inferior(memaddr, (char *)myaddr, len);
   else
-    result = mach3_read_inferior (memaddr, myaddr, len);
+    result = mach3_read_inferior(memaddr, (char *)myaddr, len);
 
   return result;
 }
@@ -2315,18 +2319,17 @@ fetch_thread_info (mach_port_t task, gdb_thread_t *mthreads_out)
  * emulator stack below struct emul_stack_top stuff.
  */
 CORE_ADDR
-fetch_usp_from_emulator_stack (CORE_ADDR sp)
+fetch_usp_from_emulator_stack(CORE_ADDR sp)
 {
   CORE_ADDR stack_pointer;
 
-  sp = (sp & ~(EMULATOR_STACK_SIZE - 1)) +
-    EMULATOR_STACK_SIZE - sizeof (struct emul_stack_top);
+  sp = ((sp & ~(EMULATOR_STACK_SIZE - 1))
+	+ EMULATOR_STACK_SIZE - sizeof(struct emul_stack_top));
 
-  if (mach3_read_inferior (sp,
-			   &stack_pointer,
-			   sizeof (CORE_ADDR)) != sizeof (CORE_ADDR))
+  if (mach3_read_inferior(sp, (char *)&stack_pointer, sizeof(CORE_ADDR))
+      != sizeof(CORE_ADDR))
     {
-      warning ("Cannot read user sp from emulator stack address 0x%x", sp);
+      warning(_("Cannot read user sp from emulator stack address 0x%x"), sp);
       return 0;
     }
 
@@ -2358,7 +2361,7 @@ have_emulator_p (task_t task)
 
   ret = task_get_emulation_vector(task, &vector_start,
 #ifndef EMUL_VECTOR_COUNT
-				  &emulation_vector,
+				  (emulation_vector_t *)&emulation_vector,
 #else
 				  emulation_vector,
 #endif /* !EMUL_VECTOR_COUNT */
@@ -2509,6 +2512,9 @@ map_cprocs_to_kernel_threads (gdb_thread_t cprocs, gdb_thread_t mthreads,
 extern int addressprint;
 extern int asm_demangle;
 
+/* FIXME: where is this actually supposed to be declared? */
+extern const char *local_hex_format(void);
+
 void
 print_tl_address(struct ui_file *stream, CORE_ADDR pc)
 {
@@ -2628,14 +2634,14 @@ get_cprocs (void)
       else
 	{
 	  /* This CPROC has an attached CTHREAD. Get its name */
-	  cthread = (cthread_t) obstack_alloc (cproc_obstack,
-					       sizeof (struct cthread));
+	  cthread = (cthread_t)obstack_alloc(cproc_obstack,
+					     sizeof(struct cthread));
 
-	  if (!mach3_read_inferior (cproc_copy_incarnation,
-				    cthread,
-				    sizeof (struct cthread)))
-	      error ("Cannot read next thread at 0x%x.",
-		     cproc_copy_incarnation);
+	  if (!mach3_read_inferior(cproc_copy_incarnation,
+				   (char *)cthread->name,
+				   sizeof(struct cthread)))
+	      error("Cannot read next thread at 0x%x.",
+		    cproc_copy_incarnation);
 
 	  cproc_copy->cthread = cthread;
 
@@ -2706,9 +2712,9 @@ mach3_cproc_state (gdb_thread_t mthread)
 }
 #endif /* FETCH_CPROC_STATE */
 
-
+/*ARGSUSED*/
 void
-thread_list_command (void)
+thread_list_command(const char *args, int from_tty)
 {
   thread_basic_info_data_t ths;
   int thread_count;
@@ -2925,8 +2931,9 @@ thread_list_command (void)
   obstack_init (cproc_obstack);
 }
 
+/* */
 void
-thread_select_command(char *args, int from_tty)
+thread_select_command(const char *args, int from_tty)
 {
   int mid;
   thread_array_t thread_list;
@@ -3081,8 +3088,9 @@ suspend_all_threads(int from_tty)
   CHK ("Error trying to deallocate thread list", ret);
 }
 
+/* */
 void
-thread_suspend_command (char *args, int from_tty)
+thread_suspend_command(const char *args, int from_tty)
 {
   kern_return_t ret;
   int mid;
@@ -3146,8 +3154,8 @@ resume_all_threads(int from_tty)
 		     (mach_msg_type_number_t *)&thread_count);
   if (ret != KERN_SUCCESS)
     {
-      m3_kill_inferior ();
-      error ("task_threads", mach_error_string (ret));
+      m3_kill_inferior();
+      error("task_threads: %s", mach_error_string(ret));
     }
 
   for (index = 0; index < thread_count; index++)
@@ -3185,8 +3193,9 @@ resume_all_threads(int from_tty)
   CHK ("Error trying to deallocate thread list", ret);
 }
 
+/* */
 void
-thread_resume_command (char *args, int from_tty)
+thread_resume_command(const char *args, int from_tty)
 {
   int mid;
   mach_port_t saved_thread;
@@ -3244,8 +3253,9 @@ out:
   current_thread = saved_thread;
 }
 
+/* */
 void
-thread_kill_command (char *args, int from_tty)
+thread_kill_command(const char *args, int from_tty)
 {
   int mid;
   kern_return_t ret;
@@ -3309,7 +3319,7 @@ thread_kill_command (char *args, int from_tty)
 /* Task specific commands; add more if you like */
 
 void
-task_resume_command (char *args, int from_tty)
+task_resume_command(const char *args, int from_tty)
 {
   kern_return_t ret;
   task_basic_info_data_t ta_info;
@@ -3351,14 +3361,14 @@ task_resume_command (char *args, int from_tty)
 	     mid, ta_info.suspend_count - 1);
 }
 
-
+/* */
 void
-task_suspend_command (char *args, int from_tty)
+task_suspend_command(const char *args, int from_tty)
 {
   kern_return_t ret;
   task_basic_info_data_t ta_info;
   int infoCnt = TASK_BASIC_INFO_COUNT;
-  int mid = map_port_name_to_mid (inferior_task, MACH_TYPE_TASK);
+  int mid = map_port_name_to_mid(inferior_task, MACH_TYPE_TASK);
 
 #ifdef MACH_ERROR_NO_INFERIOR
   MACH_ERROR_NO_INFERIOR;
@@ -3398,7 +3408,7 @@ get_size (int bytes)
 
 /* Does this require the target task to be suspended?? I do NOT think so. */
 void
-task_info_command (char *args, int from_tty)
+task_info_command(const char *args, int from_tty)
 {
   int mid = -5;
   mach_port_t task;
@@ -3476,9 +3486,9 @@ task_info_command (char *args, int from_tty)
  */
 
 static void
-exception_command (char *args, int from_tty)
+exception_command(const char *args, int from_tty)
 {
-  char *scan = args;
+  const char *scan = args;
   int exception;
   int len;
 
@@ -3524,8 +3534,9 @@ exception_command (char *args, int from_tty)
     error ("exception action is either \"keep\" or \"forward\"");
 }
 
+/* */
 static void
-print_exception_info (int exception)
+print_exception_info(int exception)
 {
   boolean_t forward = exception_map[exception].forward;
 
@@ -3542,8 +3553,9 @@ print_exception_info (int exception)
     printf_filtered ("forward exception to inferior\n");
 }
 
+/* */
 void
-exception_info (char *args, int from_tty)
+exception_info(const char *args, int from_tty)
 {
   int exception;
 
@@ -3667,17 +3679,18 @@ setup_notify_port(int create_new)
 char registered_name[MAX_NAME_LEN];
 
 void
-message_port_info (char *args, int from_tty)
+message_port_info(const char *args, int from_tty)
 {
   if (registered_name[0])
-    printf_filtered ("gdb's message port name: '%s'\n",
-		     registered_name);
+    printf_filtered("gdb's message port name: '%s'\n",
+		    registered_name);
   else
-    printf_filtered ("gdb's message port is not currently registered\n");
+    printf_filtered("gdb's message port is not currently registered\n");
 }
 
+/* */
 void
-gdb_register_port (char *name, mach_port_t port)
+gdb_register_port(char *name, mach_port_t port)
 {
   kern_return_t ret;
   static int already_signed = 0;
@@ -3729,20 +3742,21 @@ struct cmd_list_element *cmd_task_list;
 
 /*ARGSUSED */
 static void
-thread_command (char *arg, int from_tty)
+thread_command(const char *arg, int from_tty)
 {
-  printf_unfiltered ("\"thread\" must be followed by the name of a thread command.\n");
-  help_list (cmd_thread_list, "thread ", -1, gdb_stdout);
+  printf_unfiltered("\"thread\" must be followed by the name of a thread command.\n");
+  help_list(cmd_thread_list, "thread ", -1, gdb_stdout);
 }
 
 /*ARGSUSED */
 static void
-task_command (char *arg, int from_tty)
+task_command(const char *arg, int from_tty)
 {
-  printf_unfiltered ("\"task\" must be followed by the name of a task command.\n");
-  help_list (cmd_task_list, "task ", -1, gdb_stdout);
+  printf_unfiltered("\"task\" must be followed by the name of a task command.\n");
+  help_list(cmd_task_list, "task ", -1, gdb_stdout);
 }
 
+/* */
 int
 add_mach_specific_commands(void)
 {
@@ -3972,12 +3986,13 @@ m3_mourn_inferior (void)
 /* Fork an inferior process, and start debugging it.  */
 
 static void
-m3_create_inferior (char *exec_file, char *allargs, char **env)
+m3_create_inferior(char *exec_file, char *allargs, char **env, int unused)
 {
-  fork_inferior (exec_file, allargs, env, m3_trace_me, m3_trace_him, NULL, NULL);
+  fork_inferior(exec_file, allargs, env, m3_trace_me, m3_trace_him, NULL, NULL);
   /* We are at the first instruction we care about.  */
   /* Pedal to the metal... */
-  proceed ((CORE_ADDR) -1, 0, 0);
+  proceed(INVALID_ADDRESS, 0, 0);
+  (void)unused;
 }
 
 /* Mark our target-struct as eligible for stray "run" and "attach"
@@ -4154,7 +4169,7 @@ m3_do_attach (int pid)
    and wait for the trace-trap that results from attaching.  */
 
 static void
-m3_attach(char *args, int from_tty)
+m3_attach(const char *args, int from_tty)
 {
   char *exec_file;
   int pid;
@@ -4200,8 +4215,8 @@ deallocate_inferior_ports (void)
 		     (mach_msg_type_number_t *)&thread_count);
   if (ret != KERN_SUCCESS)
     {
-      warning ("deallocate_inferior_ports: task_threads",
-	       mach_error_string (ret));
+      warning("deallocate_inferior_ports: task_threads: %s",
+	      mach_error_string(ret));
       return;
     }
 
@@ -4257,28 +4272,27 @@ m3_do_detach (int signal)
        * before we detach.
        * @@ I am really not sure if this is ever needeed.
        */
-      target_prepare_to_store ();
-      target_store_registers (-1);
+      target_prepare_to_store();
+      target_store_registers(-1);
     }
 
-  ret = task_set_special_port (inferior_task,
-			       TASK_EXCEPTION_PORT,
-			       inferior_old_exception_port);
-  CHK ("task_set_special_port", ret);
+  ret = task_set_special_port(inferior_task, TASK_EXCEPTION_PORT,
+			      inferior_old_exception_port);
+  CHK("task_set_special_port", ret);
 
   /* Discard all requested notifications */
-  setup_notify_port (0);
+  setup_notify_port(0);
 
-  if (remove_breakpoints ())
-    warning ("Could not remove breakpoints when detaching");
+  if (remove_breakpoints())
+    warning(_("Could not remove breakpoints when detaching"));
 
-  if (signal && PIDGET (inferior_ptid) > 0)
-    kill (PIDGET (inferior_ptid), signal);
+  if (signal && PIDGET(inferior_ptid) > 0)
+    kill(PIDGET(inferior_ptid), signal);
 
   /* the task might be dead by now */
-  (void) task_resume (inferior_task);
+  (void)task_resume(inferior_task);
 
-  deallocate_inferior_ports ();
+  deallocate_inferior_ports();
 
   attach_flag = 0;
 }
@@ -4292,7 +4306,7 @@ m3_do_detach (int signal)
    started via fork.  */
 
 static void
-m3_detach (char *args, int from_tty)
+m3_detach(const char *args, int from_tty)
 {
   int siggnal = 0;
 
@@ -4331,23 +4345,25 @@ m3_prepare_to_store (void)
 /* Print status information about what we are/were accessing.  */
 
 static void
-m3_files_info (struct target_ops *ignore)
+m3_files_info(struct target_ops *ignore)
 {
   /* FIXME: should print MID and all that crap.  */
-  printf_unfiltered ("\tUsing the running image of %s %s.\n",
-      attach_flag ? "attached" : "child", target_pid_to_str (inferior_ptid));
+  printf_unfiltered("\tUsing the running image of %s %s.\n",
+		    (attach_flag ? "attached" : "child"),
+		    target_pid_to_str(inferior_ptid));
 }
 
+/* */
 static void
-m3_open (char *arg, int from_tty)
+m3_open(const char *arg, int from_tty)
 {
-  error ("Use the \"run\" command to start a Unix child process.");
+  error(_("Use the \"run\" command to start a Unix child process."));
 }
 
 #ifdef DUMP_SYSCALL
 #define STR(x) #x
 
-char *bsd1_names[] =
+const char *bsd1_names[] =
 {
   "execve",
   "fork",

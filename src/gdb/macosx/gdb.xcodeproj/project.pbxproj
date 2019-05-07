@@ -1782,7 +1782,7 @@
 		2609D6810E82C40B008125DE /* m2-lang.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "m2-lang.h"; sourceTree = "<group>"; };
 		2609D6820E82C40B008125DE /* m2-typeprint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "m2-typeprint.c"; sourceTree = "<group>"; };
 		2609D6830E82C40B008125DE /* m2-valprint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "m2-valprint.c"; sourceTree = "<group>"; };
-		2609D6840E82C40B008125DE /* m32r-linux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "m32r-linux-nat.c"; path = "../m32r-linux-nat.c"; sourceTree = "<group>"; };
+		2609D6840E82C40B008125DE /* m32r-linux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "m32r-linux-nat.c"; sourceTree = "<group>"; };
 		2609D6850E82C40B008125DE /* m32r-linux-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "m32r-linux-tdep.c"; sourceTree = "<group>"; };
 		2609D6860E82C40B008125DE /* m32r-rom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "m32r-rom.c"; sourceTree = "<group>"; };
 		2609D6870E82C40B008125DE /* m32r-stub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "m32r-stub.c"; sourceTree = "<group>"; };
