@@ -1918,19 +1918,19 @@
 		2609D7150E82C40C008125DE /* mi-symbol-cmds.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mi-symbol-cmds.c"; sourceTree = "<group>"; };
 		2609D7160E82C40C008125DE /* minsyms.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = minsyms.c; sourceTree = "<group>"; };
 		2609D7170E82C40C008125DE /* mips-irix-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mips-irix-tdep.c"; sourceTree = "<group>"; };
-		2609D7180E82C40C008125DE /* mips-linux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mips-linux-nat.c"; path = "../mips-linux-nat.c"; sourceTree = "<group>"; };
+		2609D7180E82C40C008125DE /* mips-linux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mips-linux-nat.c"; sourceTree = "<group>"; };
 		2609D7190E82C40C008125DE /* mips-linux-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mips-linux-tdep.c"; sourceTree = "<group>"; };
 		2609D71A0E82C40C008125DE /* mips-mdebug-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mips-mdebug-tdep.c"; sourceTree = "<group>"; };
 		2609D71B0E82C40C008125DE /* mips-mdebug-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "mips-mdebug-tdep.h"; sourceTree = "<group>"; };
 		2609D71C0E82C40C008125DE /* mips-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mips-tdep.c"; sourceTree = "<group>"; };
 		2609D71D0E82C40C008125DE /* mips-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "mips-tdep.h"; sourceTree = "<group>"; };
-		2609D71E0E82C40C008125DE /* mips64obsd-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mips64obsd-nat.c"; path = "../mips64obsd-nat.c"; sourceTree = "<group>"; };
+		2609D71E0E82C40C008125DE /* mips64obsd-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mips64obsd-nat.c"; sourceTree = "<group>"; };
 		2609D71F0E82C40C008125DE /* mips64obsd-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mips64obsd-tdep.c"; sourceTree = "<group>"; };
-		2609D7200E82C40C008125DE /* mipsnbsd-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mipsnbsd-nat.c"; path = "../mipsnbsd-nat.c"; sourceTree = "<group>"; };
+		2609D7200E82C40C008125DE /* mipsnbsd-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mipsnbsd-nat.c"; sourceTree = "<group>"; };
 		2609D7210E82C40C008125DE /* mipsnbsd-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mipsnbsd-tdep.c"; sourceTree = "<group>"; };
 		2609D7220E82C40C008125DE /* mipsnbsd-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "mipsnbsd-tdep.h"; sourceTree = "<group>"; };
 		2609D7230E82C40C008125DE /* mipsread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mipsread.c; sourceTree = "<group>"; };
-		2609D7240E82C40C008125DE /* mipsv4-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mipsv4-nat.c"; path = "../mipsv4-nat.c"; sourceTree = "<group>"; };
+		2609D7240E82C40C008125DE /* mipsv4-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mipsv4-nat.c"; sourceTree = "<group>"; };
 		2609D7250E82C40C008125DE /* mn10300-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mn10300-tdep.c"; sourceTree = "<group>"; };
 		2609D7260E82C40C008125DE /* mn10300-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "mn10300-tdep.h"; sourceTree = "<group>"; };
 		2609D7270E82C40C008125DE /* monitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = monitor.c; sourceTree = "<group>"; };
@@ -2189,10 +2189,10 @@
 		2609DCD00E82C410008125DE /* value.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = value.h; sourceTree = "<group>"; };
 		2609DCD10E82C410008125DE /* varobj.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = varobj.c; sourceTree = "<group>"; };
 		2609DCD20E82C410008125DE /* varobj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = varobj.h; sourceTree = "<group>"; };
-		2609DCD30E82C410008125DE /* vax-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "vax-nat.c"; path = "../vax-nat.c"; sourceTree = "<group>"; };
+		2609DCD30E82C410008125DE /* vax-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "vax-nat.c"; sourceTree = "<group>"; };
 		2609DCD40E82C410008125DE /* vax-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "vax-tdep.c"; sourceTree = "<group>"; };
 		2609DCD50E82C410008125DE /* vax-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "vax-tdep.h"; sourceTree = "<group>"; };
-		2609DCD60E82C410008125DE /* vaxbsd-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "vaxbsd-nat.c"; path = "../vaxbsd-nat.c"; sourceTree = "<group>"; };
+		2609DCD60E82C410008125DE /* vaxbsd-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "vaxbsd-nat.c"; sourceTree = "<group>"; };
 		2609DCD70E82C410008125DE /* vaxnbsd-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "vaxnbsd-tdep.c"; sourceTree = "<group>"; };
 		2609DCD80E82C410008125DE /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
 		2609DCDC0E82C410008125DE /* win32-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "win32-nat.c"; sourceTree = "<group>"; };
@@ -5851,7 +5851,7 @@
 		A5A673F51A589F7800EDD221 /* tic6x-linux-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "tic6x-linux-tdep.c"; sourceTree = "<group>"; };
 		A5A673F61A589F7800EDD221 /* tic6x-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "tic6x-tdep.c"; sourceTree = "<group>"; };
 		A5A673F71A589F7800EDD221 /* tic6x-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tic6x-tdep.h"; sourceTree = "<group>"; };
-		A5A673F81A589F7800EDD221 /* tilegx-linux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "tilegx-linux-nat.c"; path = "../tilegx-linux-nat.c"; sourceTree = "<group>"; };
+		A5A673F81A589F7800EDD221 /* tilegx-linux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "tilegx-linux-nat.c"; sourceTree = "<group>"; };
 		A5A673F91A589F7800EDD221 /* tilegx-linux-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "tilegx-linux-tdep.c"; sourceTree = "<group>"; };
 		A5A673FA1A589F7800EDD221 /* tilegx-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "tilegx-tdep.c"; sourceTree = "<group>"; };
 		A5A673FB1A589F7800EDD221 /* tilegx-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tilegx-tdep.h"; sourceTree = "<group>"; };
@@ -6213,6 +6213,10 @@
 		A5CA73F51ACC384300716574 /* watch.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = watch.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/watch.gif"; sourceTree = "<absolute>"; };
 		A5CA73F61ACC384300716574 /* watch_movie.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = watch_movie.gif; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbtk/library/images2/watch_movie.gif"; sourceTree = "<absolute>"; };
 		A5CA74481ACC384400716574 /* rhabout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rhabout.c; sourceTree = "<group>"; };
+		A5D1CD122284BE730068D405 /* mcore-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mcore-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/target/mcore-tdep.c"; sourceTree = "<absolute>"; };
+		A5D1CD132284BF010068D405 /* mipsm3-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mipsm3-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/nat/mipsm3-nat.c"; sourceTree = "<absolute>"; };
+		A5D1CD142284BF9D0068D405 /* symm-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "symm-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/nat/symm-nat.c"; sourceTree = "<absolute>"; };
+		A5D1CD1C2284C1860068D405 /* symm-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "symm-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/target/symm-tdep.c"; sourceTree = "<absolute>"; };
 		A5D6C3361AD460A500E04E36 /* gomp-constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gomp-constants.h"; sourceTree = "<group>"; };
 		A5D6C3D51AD59D2A00E04E36 /* rlcompat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rlcompat.h; sourceTree = "<group>"; };
 		A5D6C4BA1ADB410200E04E36 /* libefence.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libefence.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -10928,6 +10932,7 @@
 				2609D6940E82C40B008125DE /* m88kbsd-nat.c */,
 				2609D7180E82C40C008125DE /* mips-linux-nat.c */,
 				2609D71E0E82C40C008125DE /* mips64obsd-nat.c */,
+				A5D1CD132284BF010068D405 /* mipsm3-nat.c */,
 				2609D7200E82C40C008125DE /* mipsnbsd-nat.c */,
 				2609D7240E82C40C008125DE /* mipsv4-nat.c */,
 				A5AFD1BD1A58B17A006C21FE /* nbsd-nat.c */,
@@ -10955,6 +10960,7 @@
 				A5AFD1551A58AE31006C21FE /* sparc64obsd-nat.c */,
 				2609D8290E82C40D008125DE /* sparcnbsd-nat.c */,
 				A5AFD14D1A58AE10006C21FE /* spu-linux-nat.c */,
+				A5D1CD142284BF9D0068D405 /* symm-nat.c */,
 				A5A673F81A589F7800EDD221 /* tilegx-linux-nat.c */,
 				2609DCD30E82C410008125DE /* vax-nat.c */,
 				2609DCD60E82C410008125DE /* vaxbsd-nat.c */,
@@ -11308,6 +11314,7 @@
 				A50DDC7F1B332F6200F50318 /* m68knbsd-tdep.c */,
 				2609D6920E82C40B008125DE /* m88k-tdep.c */,
 				2609D6930E82C40B008125DE /* m88k-tdep.h */,
+				A5D1CD122284BE730068D405 /* mcore-tdep.c */,
 				A5AFD1D31A58B256006C21FE /* mep-tdep.c */,
 				A5AFD1C81A58B241006C21FE /* microblaze-linux-tdep.c */,
 				A5AFD1CA1A58B241006C21FE /* microblaze-tdep.c */,
@@ -11389,6 +11396,7 @@
 				2609D82B0E82C40D008125DE /* sparcobsd-tdep.c */,
 				A5AFD14F1A58AE10006C21FE /* spu-tdep.c */,
 				A5AFD1501A58AE10006C21FE /* spu-tdep.h */,
+				A5D1CD1C2284C1860068D405 /* symm-tdep.c */,
 				A5A673FC1A589F9E00EDD221 /* target-dcache.c */,
 				A5A673FD1A589F9E00EDD221 /* target-dcache.h */,
 				A5A673FE1A589F9E00EDD221 /* target-delegates.c */,

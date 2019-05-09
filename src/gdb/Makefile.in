@@ -1847,13 +1847,6 @@ TAGS: $(TAGFILES_NO_SRCDIR) $(TAGFILES_WITH_SRCDIR)
 	done)` \
 	`find $(srcdir)/config -name '*.h' -print`
 
-# FIXME: still missing:
-# - amdfbsd-nat.c
-# - mcore-tdep.c
-# - mipsm3-nat.c
-# - symm-tdep.c
-# - symm-nat.c
-
 tags: TAGS
 
 # Give the `clean' target an extra `:' so people can add additional
@@ -1883,7 +1876,13 @@ clean mostlyclean:: $(CONFIG_CLEAN)
 	        cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) clean; \
 	      fi; \
 	    else \
-	      echo "skipping cleaning $${dir}"; \
+	      if test ! -d $${dir}; then \
+	        echo "Skipping cleaning nonexistent $${dir}"; \
+	      elif test ! -e $${dir}/Makefile; then \
+	        echo "Skipping cleaning $${dir} (missing Makefile)"; \
+	      else \
+	        echo "Skipping cleaning $${dir} for unknown reason"; \
+	      fi; \
 	    fi; \
 	  done; \
 	else \
@@ -2216,7 +2215,7 @@ ALLDEPFILES = \
   alpha-tdep.c alpha-linux-tdep.c alphabsd-tdep.c alphanbsd-tdep.c \
   alpha-osf1-tdep.c alphafbsd-tdep.c alpha-mdebug-tdep.c \
   amd64-nat.c amd64-tdep.c \
-  amd64bsd-nat.c amdfbsd-nat.c amd64fbsd-tdep.c \
+  amd64bsd-nat.c amd64fbsd-nat.c amd64fbsd-tdep.c \
   amd64nbsd-nat.c amd64nbsd-tdep.c \
   amd64obsd-nat.c amd64obsd-tdep.c \
   amd64-linux-nat.c amd64-linux-tdep.c \
