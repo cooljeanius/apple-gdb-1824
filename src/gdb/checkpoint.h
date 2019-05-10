@@ -104,6 +104,21 @@ extern void checkpoint_clear_inferior(void);
 
 extern int auto_checkpointing;
 
+extern int max_checkpoints;
+extern int subsystem_checkpointing;
+extern int forking_checkpoints;
+extern int checkpoint_count;
+extern int collecting_checkpoint;
+extern int rolling_back;
+extern int rolled_back;
+extern int inferior_call_checkpoints;
+extern int warned_cpfork;
+extern int warned_cg;
+extern struct checkpoint *checkpoint_list;
+extern struct checkpoint *last_checkpoint;
+extern struct checkpoint *current_checkpoint;
+extern struct checkpoint *original_latest_checkpoint;
+
 #endif /* !__GDB_CHECKPOINT_H__ */
 
 /* EOF */

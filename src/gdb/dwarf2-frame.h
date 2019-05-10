@@ -1,4 +1,4 @@
-/* Frame unwinder for frames with DWARF Call Frame Information.
+/* dwarf2-frame.h: Frame unwinder for frames with DWARF Call Frame Information.
 
    Copyright (C) 2003, 2004, 2005, 2007 Free Software Foundation, Inc.
 
@@ -26,10 +26,10 @@
 
 struct gdbarch;
 struct objfile;
+struct objfile_data;
 struct frame_info;
 
-/* Register rule.  */
-
+/* Register rule: */
 enum dwarf2_frame_reg_rule
 {
   /* Make certain that 0 maps onto the correct enum value; the
@@ -55,7 +55,7 @@ enum dwarf2_frame_reg_rule
   DWARF2_FRAME_REG_SAVED_VAL_OFFSET,
   DWARF2_FRAME_REG_SAVED_VAL_EXP,
 
-  /* These aren't defined by the DWARF2 CFI specification, but are
+  /* These are NOT defined by the DWARF2 CFI specification, but are
      used internally by GDB.  */
   DWARF2_FRAME_REG_RA,		/* Return Address.  */
   DWARF2_FRAME_REG_RA_OFFSET,	/* Return Address with offset.  */
@@ -63,8 +63,7 @@ enum dwarf2_frame_reg_rule
   DWARF2_FRAME_REG_CFA_OFFSET	/* Call Frame Address with offset.  */
 };
 
-/* Register state.  */
-
+/* Register state: */
 struct dwarf2_frame_state_reg
 {
   /* Each register save state can be described in terms of a CFA slot,
@@ -79,38 +78,37 @@ struct dwarf2_frame_state_reg
 };
 
 int
-dwarf2_frame_adjust_regnum (struct gdbarch *gdbarch, int regnum, int eh_frame_p);
+dwarf2_frame_adjust_regnum(struct gdbarch *gdbarch, int regnum, int eh_frame_p);
 
 /* Set the architecture-specific register state initialization
    function for GDBARCH to INIT_REG.  */
-
-extern void dwarf2_frame_set_init_reg (struct gdbarch *gdbarch,
-				       void (*init_reg) (struct gdbarch *, int,
+extern void dwarf2_frame_set_init_reg(struct gdbarch *gdbarch,
+				      void (*init_reg)(struct gdbarch *, int,
 					     struct dwarf2_frame_state_reg *,
 					     struct frame_info *));
 
 /* Set the architecture-specific signal trampoline recognition
    function for GDBARCH to SIGNAL_FRAME_P.  */
-
 extern void
-  dwarf2_frame_set_signal_frame_p (struct gdbarch *gdbarch,
-				   int (*signal_frame_p) (struct gdbarch *,
-							  struct frame_info *));
+  dwarf2_frame_set_signal_frame_p(struct gdbarch *gdbarch,
+				  int (*signal_frame_p)(struct gdbarch *,
+							struct frame_info *));
 
 /* Return the frame unwind methods for the function that contains PC,
-   or NULL if it can't be handled by DWARF CFI frame unwinder.  */
-
+   or NULL if it cannot be handled by DWARF CFI frame unwinder.  */
 extern const struct frame_unwind *
-  dwarf2_frame_sniffer (struct frame_info *next_frame);
+  dwarf2_frame_sniffer(struct frame_info *next_frame);
 
 /* Return the frame base methods for the function that contains PC, or
-   NULL if it can't be handled by the DWARF CFI frame unwinder.  */
-
+   NULL if it cannot be handled by the DWARF CFI frame unwinder.  */
 extern const struct frame_base *
-  dwarf2_frame_base_sniffer (struct frame_info *next_frame);
+  dwarf2_frame_base_sniffer(struct frame_info *next_frame);
 
 /* Register the DWARF CFI for OBJFILE.  */
+void dwarf2_frame_build_info(struct objfile *objfile);
 
-void dwarf2_frame_build_info (struct objfile *objfile);
+extern const struct objfile_data *dwarf2_frame_objfile_data;
 
 #endif /* dwarf2-frame.h */
+
+/* EOF */

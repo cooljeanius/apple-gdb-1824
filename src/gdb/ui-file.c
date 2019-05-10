@@ -51,6 +51,7 @@ struct ui_file
   };
 int ui_file_magic;
 
+/* */
 struct ui_file *
 ui_file_new(void)
 {
@@ -67,6 +68,7 @@ ui_file_new(void)
   return file;
 }
 
+/* */
 void
 ui_file_delete(struct ui_file *file)
 {
@@ -74,18 +76,21 @@ ui_file_delete(struct ui_file *file)
   xfree(file);
 }
 
+/* */
 static int
 null_file_isatty(struct ui_file *file)
 {
   return 0;
 }
 
+/* */
 static void
 null_file_rewind(struct ui_file *file)
 {
   return;
 }
 
+/* */
 static void
 null_file_put(struct ui_file *file, ui_file_put_method_ftype *write,
 	      void *dest)
@@ -93,12 +98,14 @@ null_file_put(struct ui_file *file, ui_file_put_method_ftype *write,
   return;
 }
 
+/* */
 static void
 null_file_flush(struct ui_file *file)
 {
   return;
 }
 
+/* */
 static void
 null_file_write(struct ui_file *file, const char *buf, long sizeof_buf)
 {
@@ -124,6 +131,7 @@ null_file_write(struct ui_file *file, const char *buf, long sizeof_buf)
     }
 }
 
+/* */
 static long
 null_file_read(struct ui_file *file, char *buf, long sizeof_buf)
 {
@@ -131,6 +139,7 @@ null_file_read(struct ui_file *file, char *buf, long sizeof_buf)
   return 0;
 }
 
+/* */
 static void
 null_file_fputs(const char *buf, struct ui_file *file)
 {
@@ -144,12 +153,14 @@ null_file_fputs(const char *buf, struct ui_file *file)
     }
 }
 
+/* */
 static void
 null_file_delete(struct ui_file *file)
 {
   return;
 }
 
+/* */
 void *
 ui_file_data(struct ui_file *file)
 {
@@ -159,24 +170,28 @@ ui_file_data(struct ui_file *file)
   return file->to_data;
 }
 
+/* */
 void
 gdb_flush(struct ui_file *file)
 {
   file->to_flush(file);
 }
 
+/* */
 int
 ui_file_isatty(struct ui_file *file)
 {
   return file->to_isatty(file);
 }
 
+/* */
 void
 ui_file_rewind(struct ui_file *file)
 {
   file->to_rewind(file);
 }
 
+/* */
 void
 ui_file_put(struct ui_file *file, ui_file_put_method_ftype *write,
             void *dest)
@@ -184,6 +199,7 @@ ui_file_put(struct ui_file *file, ui_file_put_method_ftype *write,
   file->to_put(file, write, dest);
 }
 
+/* */
 void
 ui_file_write(struct ui_file *file, const char *buf, long length_buf)
 {
@@ -191,12 +207,14 @@ ui_file_write(struct ui_file *file, const char *buf, long length_buf)
     file->to_write(file, buf, length_buf);
 }
 
+/* */
 long
 ui_file_read(struct ui_file *file, char *buf, long length_buf)
 {
   return file->to_read(file, buf, length_buf);
 }
 
+/* */
 void
 fputs_unfiltered(const char *buf, struct ui_file *file)
 {
@@ -208,49 +226,55 @@ fputs_unfiltered(const char *buf, struct ui_file *file)
     file->to_fputs(buf, file);
 }
 
+/* */
 void
-set_ui_file_flush (struct ui_file *file, ui_file_flush_ftype *flush)
+set_ui_file_flush(struct ui_file *file, ui_file_flush_ftype *flush)
 {
   file->to_flush = flush;
 }
 
+/* */
 void
-set_ui_file_isatty (struct ui_file *file, ui_file_isatty_ftype *isatty)
+set_ui_file_isatty(struct ui_file *file, ui_file_isatty_ftype *isatty)
 {
   file->to_isatty = isatty;
 }
 
+/* */
 void
-set_ui_file_rewind (struct ui_file *file, ui_file_rewind_ftype *rewind)
+set_ui_file_rewind(struct ui_file *file, ui_file_rewind_ftype *rewind)
 {
   file->to_rewind = rewind;
 }
 
+/* */
 void
-set_ui_file_put (struct ui_file *file, ui_file_put_ftype *put)
+set_ui_file_put(struct ui_file *file, ui_file_put_ftype *put)
 {
   file->to_put = put;
 }
 
+/* */
 void
-set_ui_file_write (struct ui_file *file,
-		    ui_file_write_ftype *write)
+set_ui_file_write(struct ui_file *file, ui_file_write_ftype *write)
 {
   file->to_write = write;
 }
 
 void
-set_ui_file_read (struct ui_file *file, ui_file_read_ftype *read)
+set_ui_file_read(struct ui_file *file, ui_file_read_ftype *read)
 {
   file->to_read = read;
 }
 
+/* */
 void
-set_ui_file_fputs (struct ui_file *file, ui_file_fputs_ftype *fputs)
+set_ui_file_fputs(struct ui_file *file, ui_file_fputs_ftype *fputs)
 {
   file->to_fputs = fputs;
 }
 
+/* */
 void
 set_ui_file_data(struct ui_file *file, void *data,
 		 ui_file_delete_ftype *deletef)
@@ -268,6 +292,7 @@ struct accumulated_ui_file
   long length;
 };
 
+/* */
 static void
 do_ui_file_xstrdup(void *context, const char *buffer, long length)
 {
@@ -281,6 +306,7 @@ do_ui_file_xstrdup(void *context, const char *buffer, long length)
   acc->buffer[acc->length] = '\0';
 }
 
+/* */
 char *
 ui_file_xstrdup(struct ui_file *file, long *length)
 {
@@ -313,6 +339,7 @@ static ui_file_delete_ftype mem_file_delete;
 static struct ui_file *mem_file_new(void);
 static int mem_file_magic;
 
+/* */
 static struct ui_file *
 mem_file_new(void)
 {
@@ -329,6 +356,7 @@ mem_file_new(void)
   return file;
 }
 
+/* */
 static void
 mem_file_delete(struct ui_file *file)
 {
@@ -341,12 +369,14 @@ mem_file_delete(struct ui_file *file)
   xfree(stream);
 }
 
+/* */
 struct ui_file *
 mem_fileopen(void)
 {
   return mem_file_new();
 }
 
+/* */
 static void
 mem_file_rewind(struct ui_file *file)
 {
@@ -357,6 +387,7 @@ mem_file_rewind(struct ui_file *file)
   stream->length_buffer = 0;
 }
 
+/* */
 static void
 mem_file_put(struct ui_file *file, ui_file_put_method_ftype *write,
 	     void *dest)
@@ -369,6 +400,7 @@ mem_file_put(struct ui_file *file, ui_file_put_method_ftype *write,
     write(dest, stream->buffer, stream->length_buffer);
 }
 
+/* */
 void
 mem_file_write(struct ui_file *file, const char *buffer,
                long length_buffer)
@@ -419,6 +451,7 @@ struct stdio_file
     int close_p;
   };
 
+/* */
 static struct ui_file *
 stdio_file_new(FILE *file, int close_p)
 {
@@ -437,6 +470,7 @@ stdio_file_new(FILE *file, int close_p)
   return ui_file;
 }
 
+/* */
 static void
 stdio_file_delete(struct ui_file *file)
 {
@@ -451,6 +485,7 @@ stdio_file_delete(struct ui_file *file)
   xfree(stdio);
 }
 
+/* */
 static void
 stdio_file_flush(struct ui_file *file)
 {
@@ -461,6 +496,7 @@ stdio_file_flush(struct ui_file *file)
   fflush(stdio->file);
 }
 
+/* */
 static long
 stdio_file_read(struct ui_file *file, char *buf, long length_buf)
 {
@@ -471,6 +507,7 @@ stdio_file_read(struct ui_file *file, char *buf, long length_buf)
   return read(fileno(stdio->file), buf, length_buf);
 }
 
+/* */
 static void
 stdio_file_write(struct ui_file *file, const char *buf, long length_buf)
 {
@@ -481,6 +518,7 @@ stdio_file_write(struct ui_file *file, const char *buf, long length_buf)
   fwrite(buf, length_buf, 1, stdio->file);
 }
 
+/* */
 static void
 stdio_file_fputs(const char *linebuffer, struct ui_file *file)
 {
@@ -491,6 +529,7 @@ stdio_file_fputs(const char *linebuffer, struct ui_file *file)
   fputs(linebuffer, stdio->file);
 }
 
+/* */
 static int
 stdio_file_isatty(struct ui_file *file)
 {
@@ -501,14 +540,14 @@ stdio_file_isatty(struct ui_file *file)
   return (isatty(fileno(stdio->file)));
 }
 
-/* Like fdopen().  Create a ui_file from a previously opened FILE. */
-
+/* Like fdopen().  Create a ui_file from a previously opened FILE: */
 struct ui_file *
 stdio_fileopen(FILE *file)
 {
   return stdio_file_new(file, 0);
 }
 
+/* */
 struct ui_file *
 gdb_fopen(const char *name, const char *mode)
 {
@@ -535,6 +574,7 @@ struct tee_file
     int close_one, close_two;
   };
 
+/* */
 struct ui_file *
 tee_file_new(struct ui_file *one, int close_one,
 	     struct ui_file *two, int close_two)
@@ -555,6 +595,7 @@ tee_file_new(struct ui_file *one, int close_one,
   return ui_file;
 }
 
+/* */
 static void
 tee_file_delete(struct ui_file *file)
 {
@@ -570,6 +611,7 @@ tee_file_delete(struct ui_file *file)
   xfree(tee);
 }
 
+/* */
 static void
 tee_file_flush(struct ui_file *file)
 {
@@ -581,6 +623,7 @@ tee_file_flush(struct ui_file *file)
   tee->two->to_flush(tee->two);
 }
 
+/* */
 static void
 tee_file_write(struct ui_file *file, const char *buf, long length_buf)
 {
@@ -592,6 +635,7 @@ tee_file_write(struct ui_file *file, const char *buf, long length_buf)
   ui_file_write(tee->two, buf, length_buf);
 }
 
+/* */
 static void
 tee_file_fputs(const char *linebuffer, struct ui_file *file)
 {
@@ -603,6 +647,7 @@ tee_file_fputs(const char *linebuffer, struct ui_file *file)
   tee->two->to_fputs(linebuffer, tee->two);
 }
 
+/* */
 static int
 tee_file_isatty(struct ui_file *file)
 {

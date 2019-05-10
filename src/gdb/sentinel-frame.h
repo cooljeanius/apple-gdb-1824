@@ -19,7 +19,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (SENTINEL_FRAME_H)
+#if !defined(SENTINEL_FRAME_H)
 #define SENTINEL_FRAME_H 1
 
 struct frame_unwind;
@@ -32,10 +32,13 @@ struct regcache;
 /* Pump prime the sentinel frame's cache.  Since this needs the
    REGCACHE provide that here.  */
 
-extern void *sentinel_frame_cache (struct regcache *regcache);
+extern void *sentinel_frame_cache(struct regcache *regcache);
 
-/* At present there is only one type of sentinel frame.  */
-
+/* At present there is only one type of sentinel frame: */
 extern const struct frame_unwind *const sentinel_frame_unwind;
 
-#endif /* !defined (SENTINEL_FRAME_H)  */
+extern const struct frame_unwind sentinel_frame_unwinder;
+
+#endif /* !defined(SENTINEL_FRAME_H)  */
+
+/* EOF */

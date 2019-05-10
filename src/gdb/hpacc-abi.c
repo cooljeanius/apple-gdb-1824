@@ -33,6 +33,7 @@
 #include "gdbcore.h"
 #include "cp-abi.h"
 #include "gnu-v2-abi.h"
+#include "hpacc-abi.h"
 
 struct cp_abi_ops hpacc_abi_ops;
 

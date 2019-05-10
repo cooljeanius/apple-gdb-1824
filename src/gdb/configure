@@ -41655,6 +41655,25 @@ _ACEOF
 
 fi
 
+ac_fn_c_check_member "$LINENO" "struct user" "u_sa" "ac_cv_member_struct_user_u_sa" "
+#if defined(__USLC__) || defined(HAVE_SYS_USER_H)
+# include <sys/user.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest for a member of 'struct user' wants <sys/user.h>\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __USLC__ || HAVE_SYS_USER_H */
+
+"
+if test "x$ac_cv_member_struct_user_u_sa" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STRUCT_USER_U_SA 1
+_ACEOF
+
+
+fi
+
 # ------------------ #
 # Checks for types.  #
 # ------------------ #
@@ -56018,15 +56037,17 @@ echo "SHELL: '${SHELL}'"
 echo "subdirs: '${subdirs}'"
 echo "unused_subdirs: '${unused_subdirs}'"
 echo ""
-echo "CONFIG_OBS: '${CONFIG_OBS}'"
-echo "CONFIG_DEPS: '${CONFIG_DEPS}'"
-echo "CONFIG_SRCS: '${CONFIG_SRCS}'"
-echo "ENABLE_CFLAGS: '${ENABLE_CFLAGS}'"
-echo "ENABLE_LDFLAGS: '${ENABLE_LDFLAGS}'"
-echo "CONFIG_ALL: '${CONFIG_ALL}'"
-echo "CONFIG_CLEAN: '${CONFIG_CLEAN}'"
-echo "CONFIG_INSTALL: '${CONFIG_INSTALL}'"
-echo "CONFIG_UNINSTALL: '${CONFIG_UNINSTALL}'"
-echo ""
+if test "x${DISPLAY_CONFIG_MAKEFILE_TARGS}" = "xyes"; then
+  echo "CONFIG_OBS: '${CONFIG_OBS}'"
+  echo "CONFIG_DEPS: '${CONFIG_DEPS}'"
+  echo "CONFIG_SRCS: '${CONFIG_SRCS}'"
+  echo "ENABLE_CFLAGS: '${ENABLE_CFLAGS}'"
+  echo "ENABLE_LDFLAGS: '${ENABLE_LDFLAGS}'"
+  echo "CONFIG_ALL: '${CONFIG_ALL}'"
+  echo "CONFIG_CLEAN: '${CONFIG_CLEAN}'"
+  echo "CONFIG_INSTALL: '${CONFIG_INSTALL}'"
+  echo "CONFIG_UNINSTALL: '${CONFIG_UNINSTALL}'"
+  echo ""
+fi
 
 exit 0

@@ -1472,6 +1472,9 @@
 /* Define to 1 if `gs_base' is a member of `struct user_regs_struct'. */
 #undef HAVE_STRUCT_USER_REGS_STRUCT_GS_BASE
 
+/* Define to 1 if `u_sa' is a member of `struct user'. */
+#undef HAVE_STRUCT_USER_U_SA
+
 /* Define to 1 if your `struct stat' has `st_blocks'. Deprecated, use
    `HAVE_STRUCT_STAT_ST_BLOCKS' instead. */
 #undef HAVE_ST_BLOCKS

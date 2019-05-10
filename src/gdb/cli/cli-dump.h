@@ -39,6 +39,14 @@ extern const char *skip_spaces(const char *inp);
 extern struct value *parse_and_eval_with_error(char *exp, const char *fmt, ...)
   ATTR_FORMAT(printf, 2, 3);
 
+extern struct cmd_list_element *dump_cmdlist;
+extern struct cmd_list_element *append_cmdlist;
+extern struct cmd_list_element *srec_cmdlist;
+extern struct cmd_list_element *ihex_cmdlist;
+extern struct cmd_list_element *tekhex_cmdlist;
+extern struct cmd_list_element *binary_dump_cmdlist;
+extern struct cmd_list_element *binary_append_cmdlist;
+
 #endif /* !CLI_DUMP_H */
 
 /* EOF */

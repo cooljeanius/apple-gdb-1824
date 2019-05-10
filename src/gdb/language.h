@@ -26,6 +26,8 @@
 #if !defined(LANGUAGE_H)
 #define LANGUAGE_H 1
 
+#include "expression.h"
+
 /* Forward decls for prototypes */
 struct value;
 struct objfile;

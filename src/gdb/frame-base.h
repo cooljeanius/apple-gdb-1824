@@ -1,4 +1,4 @@
-/* Definitions for a frame base, for GDB, the GNU debugger.
+/* frame-base.h: Definitions for a frame base, for GDB, the GNU debugger.
 
    Copyright 2003 Free Software Foundation, Inc.
 
@@ -19,7 +19,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (FRAME_BASE_H)
+#if !defined(FRAME_BASE_H)
 #define FRAME_BASE_H 1
 
 struct frame_info;
@@ -44,18 +44,18 @@ struct regcache;
 
 /* A generic base address.  */
 
-typedef CORE_ADDR (frame_this_base_ftype) (struct frame_info *next_frame,
-					   void **this_base_cache);
+typedef CORE_ADDR (frame_this_base_ftype)(struct frame_info *next_frame,
+					  void **this_base_cache);
 
 /* The base address of the frame's local variables.  */
 
-typedef CORE_ADDR (frame_this_locals_ftype) (struct frame_info *next_frame,
-					     void **this_base_cache);
+typedef CORE_ADDR (frame_this_locals_ftype)(struct frame_info *next_frame,
+					    void **this_base_cache);
 
 /* The base address of the frame's arguments / parameters.  */
 
-typedef CORE_ADDR (frame_this_args_ftype) (struct frame_info *next_frame,
-					   void **this_base_cache);
+typedef CORE_ADDR (frame_this_args_ftype)(struct frame_info *next_frame,
+					  void **this_base_cache);
 
 struct frame_base
 {
@@ -70,24 +70,28 @@ struct frame_base
 /* Given the NEXT frame, return the frame base methods for THIS frame,
    or NULL if it can't handle THIS frame.  */
 
-typedef const struct frame_base *(frame_base_sniffer_ftype) (struct frame_info *next_frame);
+typedef const struct frame_base *(frame_base_sniffer_ftype)(struct frame_info *nf);
 
 /* Append a frame base sniffer to the list.  The sniffers are polled
    in the order that they are appended.  */
 
-extern void frame_base_append_sniffer (struct gdbarch *gdbarch,
-				       frame_base_sniffer_ftype *sniffer);
+extern void frame_base_append_sniffer(struct gdbarch *gdbarch,
+				      frame_base_sniffer_ftype *sniffer);
 
 /* Set the default frame base.  If all else fails, this one is
    returned.  If this isn't set, the default is to use legacy code
    that uses things like the frame ID's base (ulgh!).  */
 
-extern void frame_base_set_default (struct gdbarch *gdbarch,
-				    const struct frame_base *def);
+extern void frame_base_set_default(struct gdbarch *gdbarch,
+				   const struct frame_base *def);
 
 /* Iterate through the list of frame base handlers until one returns
    an implementation.  */
 
-extern const struct frame_base *frame_base_find_by_frame (struct frame_info *next_frame);
+extern const struct frame_base *frame_base_find_by_frame(struct frame_info *nf);
 
-#endif
+extern const struct frame_base default_frame_base;
+
+#endif /* 1FRAME_BASE_H */
+
+/* EOF */

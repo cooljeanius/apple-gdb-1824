@@ -81,6 +81,7 @@
 # include "macosx-nat-dyld-process.h"
 #endif /* MACOSX_DYLD */
 
+#include "fix-and-continue.h"
 
 /* A list of all active threads, and the functions those threads have
  * currently executing which are in the fixed object file.

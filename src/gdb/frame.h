@@ -698,6 +698,9 @@ extern void *frame_cache_hack (struct frame_info *frame);
 /* APPLE LOCAL: Need this for the fast_show_stack routines.  */
 extern int backtrace_past_main;
 
+extern int backtrace_sanity_checks;
+extern int frame_debug;
+
 #endif /* !defined(FRAME_H)  */
 
 /* EOF */

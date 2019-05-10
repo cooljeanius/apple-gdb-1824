@@ -89,7 +89,7 @@
 extern int dyld_preload_libraries_flag;
 extern int dyld_filter_events_flag;
 extern int dyld_always_read_from_memory_flag;
-extern char *dyld_symbols_prefix;
+/* declaration for dyld_symbols_prefix is now in macosx-nat-dyld.h */
 extern int dyld_load_dyld_symbols_flag;
 extern int dyld_load_dyld_shlib_symbols_flag;
 extern int dyld_load_cfm_shlib_symbols_flag;

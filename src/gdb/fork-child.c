@@ -41,6 +41,8 @@
 # include <spawn.h>
 #endif /* USE_POSIX_SPAWN */
 
+#include "fork-child.h"
+
 char *exec_argv0 = NULL;
 char *exec_pathname = NULL;
 

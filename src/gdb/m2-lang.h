@@ -22,9 +22,15 @@
 #ifndef M2_LANG_H
 #define M2_LANG_H 1
 
+#include "language.h"
+
 extern int m2_parse(void);	/* Defined in m2-exp.y */
 
 extern void m2_error(const char *);	/* Defined in m2-exp.y */
+
+extern int m2_char; /* Defined in m2-exp.y */
+
+extern int m2_nerrs; /* Defined in m2-exp.y */
 
 /* Defined in m2-typeprint.c */
 extern void m2_print_type(struct type *, const char *, struct ui_file *, int,
@@ -33,6 +39,9 @@ extern void m2_print_type(struct type *, const char *, struct ui_file *, int,
 extern int m2_val_print(struct type *, const gdb_byte *, int, CORE_ADDR,
 			struct ui_file *, int, int, int,
 			enum val_prettyprint);
+
+/* Defined in m2-lang.c */
+extern const struct language_defn m2_language_defn;
 
 #endif /* !M2_LANG_H */
 

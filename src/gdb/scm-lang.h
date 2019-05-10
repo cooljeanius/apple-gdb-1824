@@ -20,6 +20,12 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef SCM_LANG_H
+#define SCM_LANG_H 1
+
+#include "parser-defs.h"
+#include "language.h"
+
 #define SICP
 #include "scm-tags.h"
 #undef SCM_NCELLP
@@ -47,26 +53,33 @@
 /* Forward decls for prototypes */
 struct value;
 
-extern int scm_value_print (struct value *, struct ui_file *,
-			    int, enum val_prettyprint);
+extern int scm_value_print(struct value *, struct ui_file *,
+			   int, enum val_prettyprint);
 
-extern int scm_val_print (struct type *, const gdb_byte *, int, CORE_ADDR,
-			  struct ui_file *, int, int, int,
-			  enum val_prettyprint);
+extern int scm_val_print(struct type *, const gdb_byte *, int, CORE_ADDR,
+			 struct ui_file *, int, int, int,
+			 enum val_prettyprint);
 
-extern LONGEST scm_get_field (LONGEST, int);
+extern LONGEST scm_get_field(LONGEST, int);
 
-extern void scm_scmval_print (LONGEST, struct ui_file *, int, int, int,
-			      enum val_prettyprint);
+extern void scm_scmval_print(LONGEST, struct ui_file *, int, int, int,
+			     enum val_prettyprint);
 
-extern int is_scmvalue_type (struct type *);
+extern int is_scmvalue_type(struct type *);
 
-extern void scm_printchar (int, struct ui_file *);
+extern void scm_printchar(int, struct ui_file *);
 
-extern struct value *scm_evaluate_string (char *, int);
+extern struct value *scm_evaluate_string(char *, int);
 
 extern struct type *builtin_type_scm;
 
-extern int scm_parse (void);
+extern int scm_parse(void);
 
-extern LONGEST scm_unpack (struct type *, const gdb_byte *, enum type_code);
+extern LONGEST scm_unpack(struct type *, const gdb_byte *, enum type_code);
+
+extern const struct exp_descriptor exp_descriptor_scm;
+extern const struct language_defn scm_language_defn;
+
+#endif /* !SCM_LANG_H */
+
+/* EOF */

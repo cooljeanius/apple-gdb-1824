@@ -52,7 +52,7 @@
 #include "gdb_assert.h"
 #include <sys/types.h>
 /* APPLE LOCAL - dwarf repository  */
-#include "db-access-functions.h"
+#include "db-access-functions.h" /* gets <sqlite3.h> for us */
 /* APPLE LOCAL - debug map */
 #include "symfile.h"
 /* APPLE LOCAL - subroutine inlining  */
@@ -2113,6 +2113,7 @@ struct objfile_list_node {
   struct objfile_list_node *next;
 };
 
+/* FIXME: move to header: */
 struct database_info {
   char *fullname;
   struct abbrev_info *abbrev_table;
@@ -12928,7 +12929,6 @@ get_die_type(struct die_info *die, htab_t type_hash)
 
 /* Restore the types of the DIE tree starting at START_DIE from the hash
    table saved in CU.  */
-
 static void
 reset_die_and_siblings_types (struct die_info *start_die, struct dwarf2_cu *cu)
 {
@@ -12969,7 +12969,6 @@ dwarf2_add_dependence(struct dwarf2_cu *cu,
 
 /* Set the mark field in CU and in every other compilation unit in the
    cache that we must keep because we are keeping CU.  */
-
 static int
 dwarf2_mark_helper (void **slot, void *data)
 {
@@ -13008,7 +13007,6 @@ dwarf2_clear_marks (struct dwarf2_per_cu_data *per_cu)
 
 /* Allocation function for the libiberty hash table which uses an
    obstack.  */
-
 static void *
 hashtab_obstack_allocate (void *data, size_t size, size_t count)
 {
@@ -13131,7 +13129,7 @@ caching, which can slow down startup."),
 /* APPLE LOCAL begin dwarf repository  */
 /* NOTE:  Everything from here to the end of the file is APPLE LOCAL  */
 /* ********************** REPOSITORY STUFF STARTS HERE ********************** */
-/*
+/* TODO: move to separate file
   This "section" contains several sub-sections:
 
   1. Red Black Trees.  This sub-section contains code for defining, creating
@@ -13184,7 +13182,6 @@ caching, which can slow down startup."),
 /* This function searches the tree ROOT recursively until it
    finds a node with the key KEY, which it returns.  If there
    is no such node in the tree it returns NULL.  */
-
 struct rb_tree_node *
 rb_tree_find_node(struct rb_tree_node *root, long long key, int secondary_key)
 {
@@ -13211,7 +13208,6 @@ rb_tree_find_node(struct rb_tree_node *root, long long key, int secondary_key)
    finds a node with the key KEY, secondary key SECONDARY_KEY and third key
    THIRD_KEY, which it returns.  If there is no such node in the tree it
    returns NULL.  */
-
 struct rb_tree_node *
 rb_tree_find_node_all_keys(struct rb_tree_node *root, long long key,
 			   int secondary_key, long long third_key)
@@ -13252,7 +13248,6 @@ rb_tree_find_node_all_keys(struct rb_tree_node *root, long long key,
    tree (CUR_NODE), a primary key (KEY), and a SECONDARY_KEY,  searches for
    a node in the tree that matches the keys given, removes the node from
    the tree, and returns a copy of the node.  */
-
 static struct rb_tree_node *
 rb_tree_find_and_remove_node(struct rb_tree_node **root,
 			     struct rb_tree_node *cur_node, long long key,
@@ -13283,7 +13278,6 @@ rb_tree_find_and_remove_node(struct rb_tree_node **root,
 
 /* Given a red-black tree NODE, return the node in the tree that has the
    smallest "value".  */
-
 static struct rb_tree_node *
 rb_tree_minimum(struct rb_tree_node *node)
 {
@@ -13295,7 +13289,6 @@ rb_tree_minimum(struct rb_tree_node *node)
 /* Given a NODE in a red-black tree, this function returns the
    descendant of that node in the tree that has the smallest "value"
    that is greater than the "value" of NODE.  */
-
 static struct rb_tree_node *
 rb_tree_successor (struct rb_tree_node *node)
 {
@@ -13317,7 +13310,6 @@ rb_tree_successor (struct rb_tree_node *node)
 /* This function takes a red-black tree (ROOT) that has had a node
    removed at X, and restores the red-black properties to the tree.
    It uses the algorithm from pate 274 of the Corman et. al. textbook.  */
-
 static void
 rb_delete_fixup (struct rb_tree_node **root, struct rb_tree_node *x)
 {
@@ -13663,9 +13655,7 @@ rb_tree_remove_node (struct rb_tree_node **root, struct rb_tree_node *node)
      a    y                            x   c
          / \                          / \
         b   c                        a   b
-
 */
-
 static void
 left_rotate (struct rb_tree_node **root, struct rb_tree_node *x)
 {
@@ -13705,9 +13695,7 @@ left_rotate (struct rb_tree_node **root, struct rb_tree_node *x)
      y    c                            a   x
     / \                                   / \
    a   b                                 b   c
-
 */
-
 static void
 right_rotate (struct rb_tree_node **root, struct rb_tree_node *x)
 {
@@ -13737,7 +13725,6 @@ right_rotate (struct rb_tree_node **root, struct rb_tree_node *x)
 
 /* Basic binary tree insertion, with parent node, and assuming we know the
    NEW_NODE is not already in the tree.  */
-
 static void
 plain_tree_insert (struct rb_tree_node **root, struct rb_tree_node *new_node)
 {
@@ -13925,7 +13912,6 @@ int num_open_dbs = 0;
 
 /* Given an open sqlite3 db (probably obtained from an objfile struct), find and
    return the global repository record for that db.  */
-
 static struct database_info *
 find_open_repository (sqlite3 *db)
 {
@@ -13943,7 +13929,6 @@ find_open_repository (sqlite3 *db)
 /* Given a repository TYPE_ID number and the DB repository in which
    it's supposed to be defined, return a struct type containing the
    type definition.  */
-
 static void *
 lookup_repository_type (int type_id, sqlite3 *db, struct dwarf2_cu *cu,
 			int return_die)
@@ -14031,7 +14016,6 @@ initialize_repositories (void)
    the repository (if not already open), initialize the appropriate objfile
    fields, and update the corresponding global repository record
    appropriately (including incrementing the use-count).  */
-
 static int
 open_dwarf_repository(char *dirname, char *filename, struct objfile *objfile,
 		      struct dwarf2_cu *cu)
@@ -14121,7 +14105,6 @@ open_dwarf_repository(char *dirname, char *filename, struct objfile *objfile,
 /* Given an open sqlite3 DB (repository), find the appropriate
    global repository record, decrement the use-count, and close
    the database if the use-count hits zero.  */
-
 int
 close_dwarf_repositories (struct objfile *objfile)
 {
@@ -14153,7 +14136,6 @@ close_dwarf_repositories (struct objfile *objfile)
 /* Given a compilation unit, find the corresponding db and global
    repository record, check to see if dwarf abbreviations table has
    been read in or not, and read it in if it hasn't.  */
-
 static void
 dwarf2_read_repository_abbrevs (struct dwarf2_cu *cu)
 {
@@ -14242,7 +14224,7 @@ struct attr_pair {
   struct attr_pair *next;
 };
 
-
+/* */
 static void
 read_in_db_abbrev_table(struct abbrev_info **abbrev_table, sqlite3 *db)
 {
@@ -14356,7 +14338,7 @@ read_in_db_abbrev_table(struct abbrev_info **abbrev_table, sqlite3 *db)
     db_error("read_in_abbrev_table", "sqlite3_finalize failed", db);
 }
 
-
+/* */
 static void
 fill_in_die_info(struct die_info *new_die, int die_len, uint8_t *die_bytes,
 		 uint8_t *d_ptr, struct abbrev_info *abbrev_table,
@@ -14846,7 +14828,7 @@ finalize_stmts(sqlite3 *db)
   return db_status;
 }
 
-
+/* */
 static void
 increment_use_count(struct database_info *repository, struct objfile *ofile)
 {
@@ -14907,7 +14889,7 @@ num_nodes_in_tree(struct rb_tree_node *tree)
   return total;
 }
 
-
+/* */
 static int
 tree_height(struct rb_tree_node *tree)
 {

@@ -1035,7 +1035,7 @@ dummy_frame_h = dummy-frame.h
 dwarf2expr_h = dwarf2expr.h $(dwarf2loc_h)
 dwarf2_frame_h = dwarf2-frame.h
 dwarf2loc_h = dwarf2loc.h $(dwarf2read_h)
-dwarf2read_h = dwarf2read.h $(bfd_h)
+dwarf2read_h = dwarf2read.h $(bfd_h) $(buildsym_h) $(db_access_functions_h)
 environ_h = environ.h
 event_loop_h = event-loop.h
 event_top_h = event-top.h
@@ -1044,6 +1044,8 @@ exec_h = exec.h $(target_h)
 expression_h = expression.h $(symtab_h) $(doublest_h)
 fbsd_nat_h = fbsd-nat.h
 f_lang_h = f-lang.h
+fix_and_continue_h = fix-and-continue.h
+fork_child_h = fork-child.h
 frame_base_h = frame-base.h
 frame_h = frame.h
 frame_unwind_h = frame-unwind.h $(frame_h) $(value_h)
@@ -1071,8 +1073,9 @@ gdb_vfork_h = gdb_vfork.h
 gdb_wait_h = gdb_wait.h
 glibc_tdep_h = glibc-tdep.h
 gnu_nat_h = gnu-nat.h
-gnu_v2_abi_h = gnu-v2-abi.h
+gnu_v2_abi_h = gnu-v2-abi.h $(gdbtypes_h) $(cp_abi_h)
 gregset_h = gregset.h
+hpacc_abi_h = hpacc-abi.h $(cp_abi_h)
 hppa_tdep_h = hppa-tdep.h
 i386bsd_nat_h = i386bsd-nat.h
 i386_linux_tdep_h = i386-linux-tdep.h
@@ -1085,6 +1088,7 @@ infcmd_h = infcmd.h
 inferior_h = inferior.h $(breakpoint_h) $(target_h) $(frame_h)
 inf_loop_h = inf-loop.h
 inflow_h = inflow.h $(terminal_h)
+inftarg_h = inftarg.h
 inf_ptrace_h = inf-ptrace.h
 inf_ttrace_h = inf-ttrace.h
 # APPLE LOCAL begin subroutine inlining:
@@ -1093,12 +1097,12 @@ inlining_h = inlining.h $(frame_h) $(bfd_h)
 interps_h = interps.h $(exceptions_h)
 jv_lang_h = jv-lang.h
 kod_h = kod.h
-language_h = language.h
+language_h = language.h $(expression_h)
 libunwind_h = ## FIXME: where is this?
 libunwind_frame_h = libunwind-frame.h $(libunwind_h)
 linespec_h = linespec.h
 linux_nat_h = linux-nat.h $(target_h)
-m2_lang_h = m2-lang.h
+m2_lang_h = m2-lang.h $(language_h)
 m32r_tdep_h = m32r-tdep.h
 m68k_tdep_h = m68k-tdep.h
 m88k_tdep_h = m88k-tdep.h
@@ -1124,7 +1128,7 @@ ocd_h = ocd.h
 osabi_h = osabi.h
 osdata_h = osdata.h $(vec_h)
 parser_defs_h = parser-defs.h $(doublest_h)
-p_lang_h = p-lang.h
+p_lang_h = p-lang.h $(parser_defs_h) $(language_h)
 ppcnbsd_tdep_h = ppcnbsd-tdep.h
 ppcobsd_tdep_h = ppcobsd-tdep.h
 ppc_tdep_h = ppc-tdep.h
@@ -1137,7 +1141,7 @@ remote_h = remote.h $(ansidecl_h)
 remote_utils_h = remote-utils.h $(target_h)
 rs6000_tdep_h = rs6000-tdep.h
 s390_tdep_h = s390-tdep.h
-scm_lang_h = scm-lang.h $(scm_tags_h)
+scm_lang_h = scm-lang.h $(parser_defs_h) $(language_h) $(scm_tags_h)
 scm_tags_h = scm-tags.h
 sentinel_frame_h = sentinel-frame.h
 serial_h = serial.h $(ansidecl_h)
@@ -1228,6 +1232,7 @@ arm_macosx_tdep_h = $(macosxsrcdir)/arm-macosx-tdep.h $(defs_h) \
   $(arm_macosx_thread_status_h) $(arm_macosx_regnums_h) $(macosx_tdep_h)
 cached_symfile_h = $(macosxsrcdir)/cached-symfile.h $(defs_h)
 core_macho_h = $(macosxsrcdir)/core-macho.h $(target_h) 
+darwin_kernel_h = $(macosxsrcdir)/darwin-kernel.h $(target_h)
 i386_macosx_nat_exec_h = $(macosxsrcdir)/i386-macosx-nat-exec.h \
   $(defs_h) $(target_h)
 i386_macosx_tdep_h = $(macosxsrcdir)/i386-macosx-tdep.h \
@@ -1292,7 +1297,7 @@ ppc_macosx_tdep_h = $(macosxsrcdir)/ppc-macosx-tdep.h $(defs_h) \
   $(reggroups_h)
 ppc_macosx_thread_status_h = $(macosxsrcdir)/ppc-macosx-thread-status.h
 remote_kdp_h = $(macosxsrcdir)/remote-kdp.h $(defs_h) $(target_h)
-symread_h = $(macosxsrcdir)/symread.h $(objfiles_h)
+symread_h = $(macosxsrcdir)/symread.h $(objfiles_h) $(gdbtypes_h)
 tm_arm_macosx_h = $(macosxsrcdir)/tm-arm-macosx.h $(tm_macosx_h)
 tm_arm_h = $(macosxsrcdir)/tm-arm.h
 tm_i386_macosx_h = $(macosxsrcdir)/tm-i386-macosx.h
@@ -2832,11 +2837,11 @@ fix-and-continue.o: fix-and-continue.c $(defs_h) $(value_h) \
   $(frame_h) $(target_h) $(gdbcore_h) $(inferior_h) $(symfile_h) $(gdb_h) \
   $(ui_out_h) $(cli_out_h) $(symtab_h) $(readline_h) $(regcache_h) \
   $(gdbcmd_h) $(language_h) macosx/ppc-macosx-frameinfo.h \
-  macosx/ppc-macosx-tdep.h $(macosx_nat_dyld_process_h)
+  macosx/ppc-macosx-tdep.h $(macosx_nat_dyld_process_h) $(fix_and_continue_h)
 fork-child.o: fork-child.c $(defs_h) $(gdb_string_h) $(frame_h) \
   $(inferior_h) $(target_h) $(gdb_wait_h) $(gdb_vfork_h) $(gdbcore_h) \
   $(terminal_h) $(gdbthread_h) $(gdbcmd_h) $(command_h) $(solib_h) \
-  $(osabi_h)
+  $(osabi_h) $(fork_child_h)
 frame-base.o: frame-base.c $(defs_h) $(frame_base_h) $(frame_h) \
   $(gdb_obstack_h)
 # APPLE LOCAL begin subroutine inlining:
@@ -2893,7 +2898,8 @@ h8300-tdep.o: h8300-tdep.c $(defs_h) $(value_h) $(arch_utils_h) \
   $(regcache_h) $(gdbcore_h) $(objfiles_h) $(gdb_assert_h) $(dis_asm_h) \
   $(dwarf2_frame_h) $(frame_base_h) $(frame_unwind_h)
 hpacc-abi.o: hpacc-abi.c $(defs_h) $(value_h) $(gdb_regex_h) \
-  $(gdb_string_h) $(gdbtypes_h) $(gdbcore_h) $(cp_abi_h) $(gnu_v2_abi_h)
+  $(gdb_string_h) $(gdbtypes_h) $(gdbcore_h) $(cp_abi_h) $(gnu_v2_abi_h) \
+  $(hpacc_abi_h)
 hppabsd-nat.o: hppabsd-nat.c $(defs_h) $(inferior_h) $(regcache_h) \
   $(target_h) $(hppa_tdep_h) $(inf_ptrace_h)
 hppabsd-tdep.o: hppabsd-tdep.c $(defs_h) $(arch_utils_h) $(symtab_h) \
@@ -3033,7 +3039,7 @@ infrun.o: infrun.c $(defs_h) $(gdb_string_h) $(symtab_h) $(frame_h) \
 # APPLE LOCAL end subroutine inlining
 inftarg.o: inftarg.c $(defs_h) $(frame_h) $(inferior_h) $(target_h) \
   $(gdbcore_h) $(command_h) $(gdb_stat_h) $(event_loop_h) $(observer_h) \
-  $(gdb_wait_h) $(inflow_h)
+  $(gdb_wait_h) $(inflow_h) $(inftarg_h)
 inf-ttrace.o: inf-ttrace.c $(defs_h) $(command_h) $(gdbcore_h) \
   $(gdbthread_h) $(inferior_h) $(observer_h) $(target_h) $(gdb_assert_h) \
   $(gdb_string_h) $(inf_child_h) $(inf_ttrace_h)
@@ -3946,7 +3952,7 @@ core-macho.o: $(macosxsrcdir)/core-macho.c $(defs_h) $(gdb_string_h) \
   $(objfiles_h) $(ui_out_h) $(core_macho_h)
 darwin-kernel.o: $(macosxsrcdir)/darwin-kernel.c $(defs_h) $(inferior_h) \
   $(gdbcmd_h) $(event_loop_h) $(event_top_h) $(inf_loop_h) $(regcache_h) \
-  $(infcall_h)
+  $(infcall_h) $(darwin_kernel_h)
 i386-macosx-nat-exec.o: $(macosxsrcdir)/i386-macosx-nat-exec.c $(defs_h) \
   $(frame_h) $(inferior_h) $(target_h) $(symfile_h) $(symtab_h) \
   $(objfiles_h) $(gdbcmd_h) $(regcache_h) $(gdb_assert_h) $(i386_tdep_h) \

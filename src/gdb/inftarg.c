@@ -40,6 +40,7 @@
 #include "observer.h"
 #include "gdb_wait.h"
 #include "inflow.h"
+#include "inftarg.h"
 
 extern int child_enable_exception_callback(enum exception_event_kind, int);
 /* APPLE LOCAL begin exception catchpoints */

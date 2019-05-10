@@ -1876,6 +1876,16 @@ AC_CHECK_MEMBERS([struct task_basic_info.base_priority],[],[],[
 #endif /* HAVE_MACH_TASK_INFO_H */
 ])dnl
 
+AC_CHECK_MEMBERS([struct user.u_sa],[],[],[
+#if defined(__USLC__) || defined(HAVE_SYS_USER_H)
+# include <sys/user.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for a member of 'struct user' wants <sys/user.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __USLC__ || HAVE_SYS_USER_H */
+])dnl
+
 # ------------------ #
 # Checks for types.  #
 # ------------------ #
@@ -4450,15 +4460,17 @@ echo "SHELL: '${SHELL}'"
 echo "subdirs: '${subdirs}'"
 echo "unused_subdirs: '${unused_subdirs}'"
 echo ""
-echo "CONFIG_OBS: '${CONFIG_OBS}'"
-echo "CONFIG_DEPS: '${CONFIG_DEPS}'"
-echo "CONFIG_SRCS: '${CONFIG_SRCS}'"
-echo "ENABLE_CFLAGS: '${ENABLE_CFLAGS}'"
-echo "ENABLE_LDFLAGS: '${ENABLE_LDFLAGS}'"
-echo "CONFIG_ALL: '${CONFIG_ALL}'"
-echo "CONFIG_CLEAN: '${CONFIG_CLEAN}'"
-echo "CONFIG_INSTALL: '${CONFIG_INSTALL}'"
-echo "CONFIG_UNINSTALL: '${CONFIG_UNINSTALL}'"
-echo ""
+if test "x${DISPLAY_CONFIG_MAKEFILE_TARGS}" = "xyes"; then
+  echo "CONFIG_OBS: '${CONFIG_OBS}'"
+  echo "CONFIG_DEPS: '${CONFIG_DEPS}'"
+  echo "CONFIG_SRCS: '${CONFIG_SRCS}'"
+  echo "ENABLE_CFLAGS: '${ENABLE_CFLAGS}'"
+  echo "ENABLE_LDFLAGS: '${ENABLE_LDFLAGS}'"
+  echo "CONFIG_ALL: '${CONFIG_ALL}'"
+  echo "CONFIG_CLEAN: '${CONFIG_CLEAN}'"
+  echo "CONFIG_INSTALL: '${CONFIG_INSTALL}'"
+  echo "CONFIG_UNINSTALL: '${CONFIG_UNINSTALL}'"
+  echo ""
+fi
 
 exit 0

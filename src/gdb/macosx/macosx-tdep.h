@@ -234,6 +234,8 @@ struct gdb_copy_dyld_cache_local_symbols_entry *get_dyld_shared_cache_entry(CORE
 extern const CFStringRef kSymbolRichExecutable;
 #endif /* __COREFOUNDATION__ || __COREFOUNDATION_COREFOUNDATION__ */
 extern uint8_t *dyld_shared_cache_raw;
+extern unsigned char macosx_symbol_types[256]
+  ATTRIBUTE_ALIGNED_ALIGNOF(void *);
 
 #endif /* __GDB_MACOSX_TDEP_H__ */
 

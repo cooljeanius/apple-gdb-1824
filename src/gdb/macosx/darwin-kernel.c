@@ -74,6 +74,8 @@
 #include <ctype.h>
 #include <libintl.h>
 
+#include "darwin-kernel.h"
+
 extern int standard_is_async_p(void);
 extern int standard_can_async_p(void);
 

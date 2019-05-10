@@ -1440,7 +1440,7 @@ struct solib_token_elem
   char *token;
   struct value *val;
   struct solib_token_elem *next;
-} *solib_token_list;
+} *solib_token_list; /* TODO: move to header */
 
 enum mi_cmd_result
 mi_cmd_target_load_solib(char *command, char **argv, int argc)

@@ -119,6 +119,16 @@ char **macosx_process_completer_quoted(const char *text, char *word, int quote,
                                        struct pid_list *ignorepids);
 void direct_memcache_get(struct checkpoint *cp);
 void fork_memcache_put(struct checkpoint *cp);
+
+extern macosx_inferior_status *macosx_status;
+
+extern int inferior_ptrace_flag;
+extern int inferior_ptrace_on_attach_flag;
+extern int inferior_bind_exception_port_flag;
+
+extern int macosx_fake_resume;
+struct macosx_pending_event;
+extern struct macosx_pending_event *pending_event_chain, *pending_event_tail;
 #endif /* __GDB_MACOSX_NAT_INFERIOR_H__ */
 
 /* EOF */

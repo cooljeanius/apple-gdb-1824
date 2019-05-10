@@ -19,4 +19,6 @@
 #if !defined (CLI_UTILS_H)
 # define CLI_UTILS_H 1
 
+extern int cli_utils_c_dummy_symbol;
+
 #endif /* !defined (CLI_UTILS_H) */

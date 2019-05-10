@@ -13,6 +13,18 @@
 #include <mach/thread_status.h>
 #include <sys/wait.h>
 
+#ifdef HAVE_PTHREAD_H
+# include <pthread.h>
+#else
+# ifdef HAVE_PTHREAD_PTHREAD_H
+#  include <pthread/pthread.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "macosx-nat-excthread.h needs a header for pthreads"
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_PTHREAD_PTHREAD_H */
+#endif /* HAVE_PTHREAD_H */
+
 #ifndef HAVE_64_BIT_MACH_EXCEPTIONS
 # define mach_exception_data_t exception_data_t
 # define mach_exception_data_type_t exception_data_type_t
@@ -44,9 +56,9 @@ struct macosx_exception_thread_status
    */
   mach_port_t inferior_exception_port; /* receive-right mach port */
 
-  /* The Mach port returned by task_for_pid() 
+  /* The Mach port returned by task_for_pid()
    * aka the inferior's self port aka the inferior's kernel port
-   * the kernel has the receive right of this port; 
+   * the kernel has the receive right of this port;
    * gdb has the send right
    */
   task_t task;
@@ -80,6 +92,9 @@ void macosx_exception_thread_destroy(macosx_exception_thread_status *s);
 
 void macosx_exception_get_write_lock(macosx_exception_thread_status *s);
 void macosx_exception_release_write_lock(macosx_exception_thread_status *s);
+
+extern pthread_mutex_t excthread_mutex;
+extern pthread_cond_t excthread_cond;
 
 #endif /* __GDB_MACOSX_NAT_EXCTHREAD_H__ */
 

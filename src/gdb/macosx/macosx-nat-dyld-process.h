@@ -154,6 +154,11 @@ struct pre_run_memory_map *create_pre_run_memory_map(struct bfd *abfd)
 
 void free_pre_run_memory_map(struct pre_run_memory_map *map);
 
+#ifndef DYLD_TRACE_NUM_EXTERNALLY_DECLARED
+# define DYLD_TRACE_NUM_EXTERNALLY_DECLARED 1
+extern int dyld_trace_num;
+#endif /* !DYLD_TRACE_NUM_EXTERNALLY_DECLARED */
+
 #endif /* __GDB_MACOSX_NAT_DYLD_PROCESS_H__ */
 
 /* EOF */

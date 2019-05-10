@@ -236,7 +236,7 @@ struct mi_cmd_stats
   int miss;
   int rehash;
 };
-struct mi_cmd_stats stats;
+struct mi_cmd_stats stats; /* TODO: move to header */
 
 /* our lookup function: */
 static struct mi_cmd **

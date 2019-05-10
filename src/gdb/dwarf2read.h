@@ -4,6 +4,9 @@
 #define DWARF2READ_H 1
 
 #include "bfd.h"
+#include "buildsym.h"
+/* APPLE LOCAL - dwarf repository  */
+#include "db-access-functions.h" /* gets <sqlite3.h> for us */
 
 extern asection *dwarf_frame_section;
 extern asection *dwarf_eh_frame_section;
@@ -87,6 +90,17 @@ struct oso_to_final_addr_map {
 
 int translate_debug_map_address(struct oso_to_final_addr_map *,
                                 CORE_ADDR, CORE_ADDR *, int);
+
+extern int dwarf2_inform_debugging_optimized_code;
+extern struct pending *inlined_subroutine_symbols;
+
+struct database_info; /* forward decl */
+
+extern struct database_info *repositories;
+extern int num_open_dbs;
+
+extern sqlite3_stmt *db_stmt1;
+extern sqlite3_stmt *db_stmt2;
 
 #endif /* DWARF2READ_H */
 

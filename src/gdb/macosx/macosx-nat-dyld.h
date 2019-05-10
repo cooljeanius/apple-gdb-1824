@@ -169,6 +169,36 @@ extern int macosx_cfm_init(macosx_cfm_thread_status *s);
 extern struct cmd_list_element *setshliblist;
 extern struct cmd_list_element *showshliblist;
 
+extern int dyld_preload_libraries_flag;
+extern int dyld_filter_events_flag;
+extern int dyld_always_read_from_memory_flag;
+extern const char *dyld_symbols_prefix;
+extern int dyld_load_dyld_symbols_flag;
+extern int dyld_load_dyld_shlib_symbols_flag;
+extern int dyld_load_cfm_shlib_symbols_flag;
+extern int dyld_print_basenames_flag;
+extern int dyld_reload_on_downgrade_flag;
+extern char *dyld_load_rules;
+extern char *dyld_minimal_load_rules;
+extern FILE *dyld_stderr;
+extern int dyld_debug_flag;
+extern int inferior_auto_start_cfm_flag;
+extern int inferior_auto_start_dyld_flag;
+extern int dyld_stop_on_shlibs_added;
+extern int dyld_stop_on_shlibs_updated;
+extern int dyld_combine_shlibs_added;
+extern const char *malloc_inited_callback;
+extern const char *malloc_inited_callback_alt;
+
+extern macosx_dyld_thread_status macosx_dyld_status;
+
+extern struct cmd_list_element *dyldlist;
+extern struct cmd_list_element *setshliblist;
+extern struct cmd_list_element *showshliblist;
+extern struct cmd_list_element *infoshliblist;
+extern struct cmd_list_element *shliblist;
+extern struct cmd_list_element *maintenanceshliblist;
+
 #endif /* __GDB_MACOSX_NAT_DYLD_H__ */
 
 /* EOF */

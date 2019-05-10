@@ -1839,8 +1839,7 @@ macosx_lookup_task(const char *args, task_t *ptask, int *ppid)
 }
 
 
-/* Used in the following function; moved up here for '-Wnested-externs': */
-extern char *dyld_symbols_prefix;
+/* declaration for dyld_symbols_prefix is now in macosx-nat-dyld.h */
 
 static void
 macosx_child_attach(const char *args, int from_tty ATTRIBUTE_UNUSED)

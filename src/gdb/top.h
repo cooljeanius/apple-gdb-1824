@@ -95,6 +95,9 @@ extern void do_restore_instream_cleanup(void *stream);
 
 extern void dummy_func_to_use_unused_top_c_funcs(void) ATTR_NORETURN;
 
+extern void (*window_hook)(FILE *, char *);
+extern void (*pre_init_ui_hook)(void);
+
 #endif /* !TOP_H */
 
 /* EOF */

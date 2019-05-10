@@ -1,4 +1,4 @@
-/* UI_FILE - a generic STDIO like output stream.
+/* ui-file.h: UI_FILE - a generic STDIO like output stream.
    Copyright 1999, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -27,69 +27,79 @@
 
 struct ui_file;
 
-/* Create a generic ui_file object with null methods. */
-
-extern struct ui_file *ui_file_new (void);
+/* Create a generic ui_file object with null methods: */
+extern struct ui_file *ui_file_new(void);
 
 /* Override methods used by specific implementations of a UI_FILE
    object. */
-
-typedef void (ui_file_flush_ftype) (struct ui_file * stream);
-extern void set_ui_file_flush (struct ui_file *stream, ui_file_flush_ftype * flush);
+typedef void (ui_file_flush_ftype)(struct ui_file *stream);
+extern void set_ui_file_flush(struct ui_file *stream,
+			      ui_file_flush_ftype *flush);
 
 /* NOTE: Both fputs and write methods are available. Default
    implementations that mapping one onto the other are included. */
-typedef void (ui_file_write_ftype) (struct ui_file * stream, const char *buf, long length_buf);
-extern void set_ui_file_write (struct ui_file *stream, ui_file_write_ftype *fputs);
+typedef void (ui_file_write_ftype)(struct ui_file *stream, const char *buf,
+				   long length_buf);
+extern void set_ui_file_write(struct ui_file *stream,
+			      ui_file_write_ftype *fputs);
 
-typedef void (ui_file_fputs_ftype) (const char *, struct ui_file * stream);
-extern void set_ui_file_fputs (struct ui_file *stream, ui_file_fputs_ftype * fputs);
+typedef void (ui_file_fputs_ftype)(const char *, struct ui_file *stream);
+extern void set_ui_file_fputs(struct ui_file *stream,
+			      ui_file_fputs_ftype *fputs);
 
-typedef long (ui_file_read_ftype) (struct ui_file * stream, char *buf, long length_buf);
-extern void set_ui_file_read (struct ui_file *stream, ui_file_read_ftype *fread);
+typedef long (ui_file_read_ftype)(struct ui_file *stream, char *buf,
+				  long length_buf);
+extern void set_ui_file_read(struct ui_file *stream, ui_file_read_ftype *fread);
 
-typedef int (ui_file_isatty_ftype) (struct ui_file * stream);
-extern void set_ui_file_isatty (struct ui_file *stream, ui_file_isatty_ftype * isatty);
+typedef int (ui_file_isatty_ftype)(struct ui_file * stream);
+extern void set_ui_file_isatty(struct ui_file *stream,
+			       ui_file_isatty_ftype *isatty);
 
-typedef void (ui_file_rewind_ftype) (struct ui_file * stream);
-extern void set_ui_file_rewind (struct ui_file *stream, ui_file_rewind_ftype * rewind);
+typedef void (ui_file_rewind_ftype)(struct ui_file *stream);
+extern void set_ui_file_rewind(struct ui_file *stream,
+			       ui_file_rewind_ftype *rewind);
 
-typedef void (ui_file_put_method_ftype) (void *object, const char *buffer, long length_buffer);
-typedef void (ui_file_put_ftype) (struct ui_file *stream, ui_file_put_method_ftype * method, void *context);
-extern void set_ui_file_put (struct ui_file *stream, ui_file_put_ftype * put);
+typedef void (ui_file_put_method_ftype)(void *object, const char *buffer,
+					long length_buffer);
+typedef void (ui_file_put_ftype)(struct ui_file *stream,
+				 ui_file_put_method_ftype *method,
+				 void *context);
+extern void set_ui_file_put(struct ui_file *stream, ui_file_put_ftype *put);
 
-typedef void (ui_file_delete_ftype) (struct ui_file * stream);
-extern void set_ui_file_data (struct ui_file *stream, void *data, ui_file_delete_ftype *);
+typedef void (ui_file_delete_ftype)(struct ui_file * stream);
+extern void set_ui_file_data(struct ui_file *stream, void *data,
+			     ui_file_delete_ftype *);
 
-extern void *ui_file_data (struct ui_file *file);
+extern void *ui_file_data(struct ui_file *file);
 
 
-extern void gdb_flush (struct ui_file *);
+extern void gdb_flush(struct ui_file *);
 
-extern void ui_file_delete (struct ui_file *stream);
+extern void ui_file_delete(struct ui_file *stream);
 
-extern void ui_file_rewind (struct ui_file *stream);
+extern void ui_file_rewind(struct ui_file *stream);
 
-extern int ui_file_isatty (struct ui_file *);
+extern int ui_file_isatty(struct ui_file *);
 
-extern void ui_file_write (struct ui_file *file, const char *buf, long length_buf);
+extern void ui_file_write(struct ui_file *file, const char *buf, long length_buf);
 
 /* NOTE: copies left to right */
-extern void ui_file_put (struct ui_file *src, ui_file_put_method_ftype *write, void *dest);
+extern void ui_file_put(struct ui_file *src, ui_file_put_method_ftype *write,
+			void *dest);
 
 /* Returns a freshly allocated buffer containing the entire contents
    of FILE (as determined by ui_file_put()) with a NUL character
    appended.  LENGTH is set to the size of the buffer minus that
    appended NUL. */
-extern char *ui_file_xstrdup (struct ui_file *file, long *length);
+extern char *ui_file_xstrdup(struct ui_file *file, long *length);
 
 
 
-extern long ui_file_read (struct ui_file *file, char *buf, long length_buf);
+extern long ui_file_read(struct ui_file *file, char *buf, long length_buf);
 
 /* Create/open a memory based file. Can be used as a scratch buffer
    for collecting output. */
-extern struct ui_file *mem_fileopen (void);
+extern struct ui_file *mem_fileopen(void);
 
 
 
@@ -102,8 +112,11 @@ extern struct ui_file *gdb_fopen(const char *name, const char *mode);
 /* Create a file which writes to both ONE and TWO.  CLOSE_ONE
    and CLOSE_TWO indicate whether the original files should be
    closed when the new file is closed.  */
-struct ui_file *tee_file_new (struct ui_file *one,
-			      int close_one,
-			      struct ui_file *two,
-			      int close_two);
-#endif
+struct ui_file *tee_file_new(struct ui_file *one, int close_one,
+			     struct ui_file *two, int close_two);
+
+extern int ui_file_magic;
+
+#endif /* !UI_FILE_H */
+
+/* EOF */

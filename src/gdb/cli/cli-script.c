@@ -81,7 +81,7 @@ struct user_args
     a[MAXUSERARGS];
     int count;
   }
- *user_args;
+ *user_args; /* TODO: move to header */
 
 
 /* Allocate, initialize a new command line structure for one of the

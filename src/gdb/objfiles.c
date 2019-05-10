@@ -829,7 +829,7 @@ init_entry_point_info (struct objfile *objfile)
 /* Get current entry point address.  */
 
 CORE_ADDR
-entry_point_address (void)
+entry_point_address(void)
 {
   return symfile_objfile ? symfile_objfile->ei.entry_point : 0;
 }

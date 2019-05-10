@@ -30,6 +30,9 @@ const char *unparse_exception_type(unsigned int i);
 const char *unparse_protection(vm_prot_t p);
 const char *unparse_inheritance(vm_inherit_t i);
 
+extern int timestamps_debug_flag;
+extern char unknown_exception_buf[32];
+
 #endif /* __GDB_MACOSX_NAT_INFERIOR_DEBUG_H__ */
 
 /* EOF */

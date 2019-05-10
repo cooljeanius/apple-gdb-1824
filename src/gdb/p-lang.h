@@ -23,11 +23,18 @@
 #ifndef P_LANG_H
 #define P_LANG_H 1
 
+#include "parser-defs.h"
+#include "language.h"
+
 struct value;
 
 extern int pascal_parse(void);	/* Defined in p-exp.y */
 
 extern void pascal_error(const char *);	/* Defined in p-exp.y */
+
+extern int pascal_char; /* Defined in p-exp.y */
+
+extern int pascal_nerrs; /* Defined in p-exp.y */
 
 /* Defined in p-typeprint.c */
 extern void pascal_print_type(struct type *, const char *, struct ui_file *,
@@ -57,6 +64,9 @@ extern struct type *pascal_create_fundamental_type(struct objfile *, int);
 
 extern struct type **const pascal_builtin_types[];
 
+extern const struct op_print pascal_op_print_tab[];
+extern const struct language_defn pascal_language_defn;
+
 /* These are in p-typeprint.c: */
 
 extern void
@@ -65,7 +75,7 @@ extern void
 extern void
   pascal_type_print_varspec_prefix(struct type *, struct ui_file *, int, int);
 
-/* These are in cp-valprint.c */
+/* These are in p-valprint.c */
 
 extern int vtblprint;		/* Controls printing of vtbl's */
 
@@ -85,6 +95,8 @@ extern void pascal_object_print_value_fields(struct type *, const gdb_byte *,
 extern int pascal_object_is_vtbl_ptr_type(struct type *);
 
 extern int pascal_object_is_vtbl_member(struct type *);
+
+extern const char pascal_vtbl_ptr_name[];
 
 #endif /* !P_LANG_H */
 

@@ -1107,7 +1107,7 @@ struct collection_list
     long next_aexpr_elt;
     struct agent_expr **aexpr_list;
   }
-tracepoint_list, stepping_list;
+tracepoint_list, stepping_list; /* TODO: move to header */
 
 /* MEMRANGE functions: */
 static int memrange_cmp(const void *, const void *);

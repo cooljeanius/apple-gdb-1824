@@ -1,4 +1,4 @@
-/* Abstraction of GNU v2 abi.
+/* gnu-v2-abi.h: Abstraction of GNU v2 abi.
 
    Copyright 2005 Free Software Foundation, Inc.
 
@@ -24,8 +24,15 @@
 #ifndef GNU_V2_ABI_H
 #define GNU_V2_ABI_H
 
-extern int gnuv2_baseclass_offset (struct type *type, int index,
-				   const bfd_byte *valaddr,
-				   CORE_ADDR address);
+#include "gdbtypes.h"
+#include "cp-abi.h"
 
-#endif
+extern int gnuv2_baseclass_offset(struct type *type, int index,
+				  const bfd_byte *valaddr,
+				  CORE_ADDR address);
+
+extern struct cp_abi_ops gnu_v2_abi_ops;
+
+#endif /* !GNU_V2_ABI_H */
+
+/* EOF */

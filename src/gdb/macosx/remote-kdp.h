@@ -20,6 +20,8 @@ extern int kdp_insert_hw_breakpoint(CORE_ADDR, gdb_byte *);
 
 extern int kdp_remove_hw_breakpoint(CORE_ADDR, gdb_byte *);
 
+extern struct target_ops kdp_ops;
+
 #endif /* !__GDB_REMOTE_KDP_H__ */
 
 /* EOF */
