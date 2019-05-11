@@ -6222,6 +6222,7 @@
 		A5D1CD942285DD510068D405 /* inftarg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = inftarg.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/inftarg.h"; sourceTree = "<absolute>"; };
 		A5D1CD972286030F0068D405 /* fork-child.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "fork-child.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/fork-child.h"; sourceTree = "<absolute>"; };
 		A5D1CD9A228609680068D405 /* hpacc-abi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "hpacc-abi.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hpacc-abi.h"; sourceTree = "<absolute>"; };
+		A5D1CD9D228635950068D405 /* dwarf2read-repository.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "dwarf2read-repository.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/dwarf2read-repository.c"; sourceTree = "<absolute>"; };
 		A5D6C3361AD460A500E04E36 /* gomp-constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gomp-constants.h"; sourceTree = "<group>"; };
 		A5D6C3D51AD59D2A00E04E36 /* rlcompat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rlcompat.h; sourceTree = "<group>"; };
 		A5D6C4BA1ADB410200E04E36 /* libefence.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libefence.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7046,6 +7047,7 @@
 				2609D4840E82C40A008125DE /* dwarf2loc.h */,
 				2609D4850E82C40A008125DE /* dwarf2read.c */,
 				2609D4860E82C40A008125DE /* dwarf2read.h */,
+				A5D1CD9D228635950068D405 /* dwarf2read-repository.c */,
 				2609D4870E82C40A008125DE /* dwarfread.c */,
 				2609D4880E82C40A008125DE /* elfread.c */,
 				2609D4890E82C40A008125DE /* environ.c */,

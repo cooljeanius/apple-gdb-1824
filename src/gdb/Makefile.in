@@ -854,7 +854,8 @@ SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c  \
   cp-abi.c cp-support.c cp-namespace.c cp-valprint.c \
   cp-name-parser.y \
   dbxread.c demangle.c dictionary.c disasm.c doublest.c dummy-frame.c \
-  dwarfread.c dwarf2expr.c dwarf2loc.c dwarf2read.c dwarf2-frame.c \
+  dwarfread.c dwarf2expr.c dwarf2loc.c dwarf2read.c dwarf2read-repository.c \
+  dwarf2-frame.c \
   elfread.c environ.c eval.c event-loop.c event-top.c expprint.c \
   f-exp.y f-lang.c f-typeprint.c f-valprint.c findvar.c frame.c \
   frame-base.c \
@@ -918,7 +919,8 @@ elf_sh_h =	$(INCLUDE_DIR)/elf/sh.h $(elf_reloc_macros_h)
 elf_arm_h =	$(INCLUDE_DIR)/elf/arm.h $(elf_reloc_macros_h)
 elf_bfd_h = $(BFD_SRC)/elf-bfd.h $(bfd_h) $(elf_common_h) \
   $(elf_internal_h) $(elf_external_h) $(bfdlink_h)
-elf_common_h =  $(INCLUDE_DIR)/elf/common.h
+elf_common_h = $(INCLUDE_DIR)/elf/common.h
+elf_dwarf2_h = $(INCLUDE_DIR)/elf/dwarf2.h
 elf_external_h = $(INCLUDE_DIR)/elf/external.h
 elf_frv_h =	$(INCLUDE_DIR)/elf/frv.h $(elf_reloc_macros_h)
 elf_internal_h = $(INCLUDE_DIR)/elf/internal.h
@@ -1035,7 +1037,8 @@ dummy_frame_h = dummy-frame.h
 dwarf2expr_h = dwarf2expr.h $(dwarf2loc_h)
 dwarf2_frame_h = dwarf2-frame.h
 dwarf2loc_h = dwarf2loc.h $(dwarf2read_h)
-dwarf2read_h = dwarf2read.h $(bfd_h) $(buildsym_h) $(db_access_functions_h)
+dwarf2read_h = dwarf2read.h $(bfd_h) $(buildsym_h) $(elf_dwarf2_h) \
+  $(hashtab_h) $(db_access_functions_h)
 environ_h = environ.h
 event_loop_h = event-loop.h
 event_top_h = event-top.h
@@ -1424,7 +1427,8 @@ BASE_OBS = \
   gdb-events.o \
   exec.o bcache.o objfiles.o observer.o minsyms.o maint.o demangle.o \
   dbxread.o coffread.o coff-pe-read.o elfread.o \
-  dwarfread.o dwarf2read.o mipsread.o stabsread.o corefile.o \
+  dwarfread.o dwarf2read.o dwarf2read-repository.o mipsread.o stabsread.o \
+  corefile.o \
   dwarf2expr.o dwarf2loc.o dwarf2-frame.o \
   ada-lang.o c-lang.o f-lang.o objc-lang.o \
   ui-out.o cli-out.o \
@@ -2792,6 +2796,8 @@ dwarf2read.o: dwarf2read.c $(defs_h) $(bfd_h) $(symtab_h) $(gdbtypes_h) \
   $(cp_support_h) $(hashtab_h) $(command_h) $(gdbcmd_h) $(gdb_string_h) \
   $(gdb_assert_h) $(db_access_functions_h) $(symfile_h) $(inlining_h) \
   $(block_h) $(gdbcore_h) $(dwarf2read_h) $(objc_lang_h)
+dwarf2read-repository.o: dwarf2read-repository.c $(defs_h) $(dwarf2read_h) \
+  $(gdb_assert_h) $(elf_dwarf2_h)
 # APPLE LOCAL end subroutine inlining
 dwarfread.o: dwarfread.c $(defs_h) $(symtab_h) $(gdbtypes_h) \
   $(objfiles_h) $(elf_dwarf_h) $(buildsym_h) $(demangle_h) \
