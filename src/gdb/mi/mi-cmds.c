@@ -230,13 +230,7 @@ mi_lookup(const char *command)
 }
 
 /* stat collecting */
-struct mi_cmd_stats
-{
-  int hit;
-  int miss;
-  int rehash;
-};
-struct mi_cmd_stats stats; /* TODO: move to header */
+struct mi_cmd_stats stats;
 
 /* our lookup function: */
 static struct mi_cmd **

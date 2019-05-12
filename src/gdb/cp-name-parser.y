@@ -50,6 +50,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #endif /* !HAVE_DECL_BASENAME */
 #include "libiberty.h"
 #include "demangle.h"
+#if 0 /* FIXME */
+# include "cp-support.h"
+#else
+extern int cpname_char;
+extern int cpname_nerrs;
+#endif /* 0 */
 
 /* Bison does not make it easy to create a parser without global
    state, unfortunately.  Here are all the global variables used

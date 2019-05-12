@@ -16,7 +16,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (CLI_SCRIPT_H)
+#if !defined(CLI_SCRIPT_H)
 #define CLI_SCRIPT_H 1
 
 struct ui_file;
@@ -52,6 +52,22 @@ struct cleanup *make_cleanup_free_command_lines(struct command_line **arg);
 /* Exported to gdb/infrun.c */
 
 extern void execute_user_command(struct cmd_list_element *c, const char *args);
+
+/* Structure for arguments to user defined functions: */
+#define MAXUSERARGS 10
+struct user_args
+{
+  struct user_args *next;
+  struct
+  {
+    const char *arg;
+    ptrdiff_t len;
+  }
+  a[MAXUSERARGS];
+  int count;
+};
+
+extern struct user_args *user_args;
 
 #endif /* !defined(CLI_SCRIPT_H) */
 

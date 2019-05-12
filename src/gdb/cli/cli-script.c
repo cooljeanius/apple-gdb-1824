@@ -68,21 +68,9 @@ static char *read_next_line(void);
 /* Level of control structure: */
 static int control_level;
 
-/* Structure for arguments to user defined functions: */
-#define MAXUSERARGS 10
-struct user_args
-  {
-    struct user_args *next;
-    struct
-      {
-	const char *arg;
-	ptrdiff_t len;
-      }
-    a[MAXUSERARGS];
-    int count;
-  }
- *user_args; /* TODO: move to header */
-
+/* struct user_args has been moved to "cli-script.h" */
+/* the variable of it is still here though: */
+struct user_args *user_args;
 
 /* Allocate, initialize a new command line structure for one of the
    control commands (if/while).  */

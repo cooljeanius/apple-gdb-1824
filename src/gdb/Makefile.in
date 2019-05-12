@@ -1014,7 +1014,7 @@ bsd_uthread_h = bsd-uthread.h
 buildsym_h = buildsym.h
 call_cmds_h = call-cmds.h $(ansidecl_h)
 charset_h = charset.h
-c_lang_h = c-lang.h $(value_h) $(macroexp_h)
+c_lang_h = c-lang.h $(value_h) $(macroexp_h) $(language_h) $(parser_defs_h)
 checkpoint_h = checkpoint.h
 cleanups_h = cleanups.h
 cli_out_h = cli-out.h
@@ -1040,13 +1040,14 @@ dwarf2loc_h = dwarf2loc.h $(dwarf2read_h)
 dwarf2read_h = dwarf2read.h $(bfd_h) $(buildsym_h) $(elf_dwarf2_h) \
   $(hashtab_h) $(db_access_functions_h)
 environ_h = environ.h
+eval_h = eval.h
 event_loop_h = event-loop.h
 event_top_h = event-top.h
 exceptions_h = exceptions.h $(ansidecl_h) $(ui_out_h)
 exec_h = exec.h $(target_h)
 expression_h = expression.h $(symtab_h) $(doublest_h)
 fbsd_nat_h = fbsd-nat.h
-f_lang_h = f-lang.h
+f_lang_h = f-lang.h $(language_h)
 fix_and_continue_h = fix-and-continue.h
 fork_child_h = fork-child.h
 frame_base_h = frame-base.h
@@ -1087,7 +1088,7 @@ i387_tdep_h = i387-tdep.h
 ia64_tdep_h = ia64-tdep.h
 infcall_h = infcall.h
 inf_child_h = inf-child.h $(symtab_h) $(target_h)
-infcmd_h = infcmd.h
+infcmd_h = infcmd.h $(checkpoint_h)
 inferior_h = inferior.h $(breakpoint_h) $(target_h) $(frame_h)
 inf_loop_h = inf-loop.h
 inflow_h = inflow.h $(terminal_h)
@@ -1098,7 +1099,7 @@ inf_ttrace_h = inf-ttrace.h
 inlining_h = inlining.h $(frame_h) $(bfd_h)
 # APPLE LOCAL end subroutine inlining
 interps_h = interps.h $(exceptions_h)
-jv_lang_h = jv-lang.h
+jv_lang_h = jv-lang.h $(parser_defs_h) $(language_h)
 kod_h = kod.h
 language_h = language.h $(expression_h)
 libunwind_h = ## FIXME: where is this?
@@ -1124,7 +1125,7 @@ mn10300_tdep_h = mn10300-tdep.h
 monitor_h = monitor.h $(ansidecl_h)
 nbsd_tdep_h = nbsd-tdep.h
 nto_tdep_h = nto-tdep.h $(defs_h) $(solist_h) $(osabi_h) $(regset_h)
-objc_lang_h = objc-lang.h
+objc_lang_h = objc-lang.h $(language_h)
 objfiles_h = objfiles.h $(ansidecl_h) $(gdb_obstack_h) $(symfile_h) \
   $(inlining_h)
 ocd_h = ocd.h
@@ -1135,6 +1136,7 @@ p_lang_h = p-lang.h $(parser_defs_h) $(language_h)
 ppcnbsd_tdep_h = ppcnbsd-tdep.h
 ppcobsd_tdep_h = ppcobsd-tdep.h
 ppc_tdep_h = ppc-tdep.h
+printcmd_h = printcmd.h
 proc_utils_h = proc-utils.h
 regcache_h = regcache.h $(ansidecl_h)
 reggroups_h = reggroups.h
@@ -1166,6 +1168,7 @@ srec_h = srec.h
 stabsread_h = stabsread.h
 stack_h = stack.h
 symfile_h = symfile.h $(ansidecl_h) $(symtab_h)
+symmisc_h = symmisc.h
 symtab_h = symtab.h $(defs_h) $(ansidecl_h)
 target_h = target.h $(bfd_h) $(symtab_h) $(dcache_h) $(memattr_h)
 terminal_h = terminal.h
@@ -1325,7 +1328,7 @@ mi_console_h = $(mi_srcdir)/mi-console.h
 mi_getopt_h = $(mi_srcdir)/mi-getopt.h
 mi_interp_h = $(mi_srcdir)/mi-interp.h
 mi_main_h = $(mi_srcdir)/mi-main.h
-mi_out_h = $(mi_srcdir)/mi-out.h
+mi_out_h = $(mi_srcdir)/mi-out.h $(ui_out_h)
 mi_parse_h = $(mi_srcdir)/mi-parse.h $(remote_h)
 
 #
@@ -1631,7 +1634,7 @@ uninstall-tui:
 
 # The C++ name parser can be built standalone for testing.
 test-cp-name-parser.o: cp-name-parser.c $(safe_ctype_h) $(libiberty_h) \
-  $(demangle_h)
+  $(demangle_h) $(cp_support_h)
 	$(AM_V_CC)$(COMPILER) -c $(INTERNAL_CFLAGS) -DTEST_CPNAMES \
 	  -o test-cp-name-parser.o cp-name-parser.c
 
@@ -2345,7 +2348,7 @@ monitor.o: $(srcdir)/monitor.c @MAINT@ $(defs_h)
 # -Wformat-nonliteral. It needs to be overhauled so that it does NOT
 # pass user input strings as the format parameter to host printf
 # function calls.
-printcmd.o: $(srcdir)/printcmd.c @MAINT@ $(defs_h)
+printcmd.o: $(srcdir)/printcmd.c $(printcmd_h) @MAINT@ $(defs_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_WARN_CFLAGS) \
 	  $(NO_WERROR_CFLAGS) $(srcdir)/printcmd.c
 	$(POSTCOMPILE)
@@ -2716,7 +2719,7 @@ core-regset.o: core-regset.c $(defs_h) $(command_h) $(gdbcore_h) \
 cp-abi.o: cp-abi.c $(defs_h) $(value_h) $(cp_abi_h) $(command_h) \
   $(gdbcmd_h) $(ui_out_h) $(gdb_string_h)
 cp-name-parser.o: cp-name-parser.c $(safe_ctype_h) $(libiberty_h) \
-  $(demangle_h)
+  $(demangle_h) $(cp_support_h)
 cp-namespace.o: cp-namespace.c $(defs_h) $(cp_support_h) $(gdb_obstack_h) \
   $(symtab_h) $(symfile_h) $(gdb_assert_h) $(block_h) $(objfiles_h) \
   $(gdbtypes_h) $(dictionary_h) $(command_h) $(frame_h)
@@ -2809,7 +2812,7 @@ environ.o: environ.c $(defs_h) $(environ_h) $(gdb_string_h)
 eval.o: eval.c $(defs_h) $(gdb_string_h) $(symtab_h) $(gdbtypes_h) \
   $(value_h) $(expression_h) $(target_h) $(frame_h) $(language_h) \
   $(f_lang_h) $(cp_abi_h) $(infcall_h) $(objc_lang_h) $(block_h) \
-  $(parser_defs_h) $(cp_support_h)
+  $(parser_defs_h) $(cp_support_h) $(eval_h)
 event-loop.o: event-loop.c $(defs_h) $(event_loop_h) $(event_top_h) \
   $(interps_h) $(ui_out_h) $(gdb_string_h) $(exceptions_h) $(gdb_assert_h)
 event-top.o: event-top.c $(defs_h) $(top_h) $(inferior_h) $(target_h) \
@@ -3312,7 +3315,7 @@ printcmd.o: printcmd.c $(defs_h) $(gdb_string_h) $(frame_h) $(symtab_h) \
   $(gdbtypes_h) $(value_h) $(language_h) $(expression_h) $(gdbcore_h) \
   $(gdbcmd_h) $(target_h) $(breakpoint_h) $(demangle_h) $(valprint_h) \
   $(annotate_h) $(symfile_h) $(objfiles_h) $(completer_h) $(ui_out_h) \
-  $(gdb_assert_h) $(block_h) $(disasm_h) $(objc_lang_h) $(tui_h)
+  $(gdb_assert_h) $(block_h) $(disasm_h) $(objc_lang_h) $(printcmd_h) $(tui_h)
 proc-api.o: proc-api.c $(defs_h) $(gdbcmd_h) $(completer_h) $(gdb_wait_h) \
   $(proc_utils_h)
 proc-events.o: proc-events.c $(defs_h)
@@ -3589,7 +3592,7 @@ symmisc.o: symmisc.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(bfd_h) \
   $(symfile_h) $(objfiles_h) $(breakpoint_h) $(command_h) \
   $(gdb_obstack_h) $(exceptions_h) $(language_h) $(bcache_h) \
   $(demangle_h) $(block_h) $(gdb_regex_h) $(gdb_stat_h) $(dictionary_h) \
-  $(gdb_assert_h) $(gdb_string_h) $(readline_h)
+  $(gdb_assert_h) $(gdb_string_h) $(readline_h) $(symmisc_h)
 symtab.o: symtab.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(gdbcore_h) \
   $(frame_h) $(target_h) $(value_h) $(symfile_h) $(objfiles_h) \
   $(gdbcmd_h) $(call_cmds_h) $(gdb_regex_h) $(expression_h) $(language_h) \

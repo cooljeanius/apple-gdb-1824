@@ -143,7 +143,7 @@ extern struct type *msym_text_symbol_type;
 extern struct type *msym_data_symbol_type;
 extern struct type *msym_unknown_symbol_type;
 
-extern unsigned int symbol_generation;
+/* no need to declare symbol_generation in this file; it is not used here */
 
 static void
 show_overload_resolution (struct ui_file *file, int from_tty,

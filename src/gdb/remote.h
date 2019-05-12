@@ -127,6 +127,14 @@ extern struct target_ops remote_ops;
 /* If nonzero, ignore the next kill: */
 extern int kill_kludge;
 
+/* */
+struct protocol_log {
+  int head;
+  int max_ent;
+  struct protocol_log_entry *ents;
+};
+extern struct protocol_log protocol_log;
+
 #endif /* !REMOTE_H */
 
 /* EOF */

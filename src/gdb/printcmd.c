@@ -44,6 +44,7 @@
 #include "block.h"
 #include "disasm.h"
 #include "objc-lang.h"
+#include "printcmd.h"
 
 #ifdef TUI
 # include "tui/tui.h"		/* For tui_active et.al.   */

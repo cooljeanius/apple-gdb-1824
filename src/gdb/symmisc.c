@@ -43,6 +43,8 @@
 #include "gdb_string.h"
 #include "readline/readline.h"
 
+#include "symmisc.h"
+
 #ifndef DEV_TTY
 # define DEV_TTY "/dev/tty"
 #endif /* !DEV_TTY */

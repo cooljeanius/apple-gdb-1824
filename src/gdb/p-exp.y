@@ -652,7 +652,7 @@ variable:	name_not_typename
 				  if ((innermost_block == 0) ||
 				      contained_in(block_found,
                                                    innermost_block))
-				    innermost_block = block_found;
+				    innermost_block = (struct block *)block_found;
 				}
 
 			      write_exp_elt_opcode(OP_VAR_VALUE);
@@ -672,7 +672,7 @@ variable:	name_not_typename
 				 to data ref.  */
 			      if ((innermost_block == 0) ||
 				  contained_in(block_found, innermost_block))
-				innermost_block = block_found;
+				innermost_block = (struct block *)block_found;
 			      write_exp_elt_opcode(OP_THIS);
 			      write_exp_elt_opcode(OP_THIS);
 			      write_exp_elt_opcode(STRUCTOP_PTR);

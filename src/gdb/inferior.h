@@ -265,6 +265,8 @@ extern void get_last_target_status(ptid_t *ptid,
 extern void step_once(int, int, int);
 extern void follow_inferior_reset_breakpoints(void);
 
+extern int stop_after_trap;
+
 /* From infcmd.c */
 extern void tty_command(const char *, int);
 extern void attach_command(const char *, int);

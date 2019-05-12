@@ -41,6 +41,7 @@ extern int m2_val_print(struct type *, const gdb_byte *, int, CORE_ADDR,
 			enum val_prettyprint);
 
 /* Defined in m2-lang.c */
+extern struct type **const (m2_builtin_types[]);
 extern const struct language_defn m2_language_defn;
 
 #endif /* !M2_LANG_H */

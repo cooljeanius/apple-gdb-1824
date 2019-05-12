@@ -685,14 +685,14 @@ string_to_operator(struct stoken string)
 /* Emit expression to access an instance of SYM, in block BLOCK (if
  * non-NULL), and with :: qualification ORIG_LEFT_CONTEXT.  */
 static void
-write_var_from_sym(struct block *orig_left_context, struct block *block,
+write_var_from_sym(struct block *orig_left_context, const struct block *block,
 		   struct symbol *sym)
 {
   if ((orig_left_context == NULL) && symbol_read_needs_frame(sym))
     {
       if ((innermost_block == 0)
 	  || contained_in(block, innermost_block))
-	innermost_block = block;
+	innermost_block = (struct block *)block;
     }
 
   write_exp_elt_opcode(OP_VAR_VALUE);
@@ -794,14 +794,14 @@ write_object_renaming (struct block *orig_left_context,
 
   name = (char *)obstack_alloc(&temp_parse_space, (int)(suffix - expr + 1));
   strncpy(name, expr, (size_t)(suffix - expr));
-  name[suffix-expr] = '\000';
-  sym = lookup_symbol (name, orig_left_context, VAR_DOMAIN, 0, NULL);
+  name[suffix - expr] = '\000';
+  sym = lookup_symbol(name, orig_left_context, VAR_DOMAIN, 0, NULL);
   if (sym == NULL)
-    error ("Could not find renamed variable: %s", ada_decode (name));
-  if (ada_is_object_renaming (sym))
-    write_object_renaming (orig_left_context, sym, max_depth-1);
+    error(_("Could not find renamed variable: %s"), ada_decode(name));
+  if (ada_is_object_renaming(sym))
+    write_object_renaming(orig_left_context, sym, max_depth-1);
   else
-    write_var_from_sym (orig_left_context, block_found, sym);
+    write_var_from_sym(orig_left_context, block_found, sym);
 
   suffix += 5;
   slice_state = SIMPLE_INDEX;
@@ -812,7 +812,7 @@ write_object_renaming (struct block *orig_left_context,
       switch (*suffix) {
       case 'A':
         suffix += 1;
-        write_exp_elt_opcode (UNOP_IND);
+        write_exp_elt_opcode(UNOP_IND);
         break;
       case 'L':
 	slice_state = LOWER_BOUND;
@@ -854,22 +854,22 @@ write_object_renaming (struct block *orig_left_context,
 	    suffix = end;
 
 	    index_sym =
-	      lookup_symbol (index_name, NULL, VAR_DOMAIN, 0, NULL);
+	      lookup_symbol(index_name, NULL, VAR_DOMAIN, 0, NULL);
 	    if (index_sym == NULL)
-	      error ("Could not find %s", index_name);
-	    write_var_from_sym (NULL, block_found, sym);
+	      error(_("Failed to find %s"), index_name);
+	    write_var_from_sym(NULL, block_found, sym);
 	  }
 	if (slice_state == SIMPLE_INDEX)
 	  {
-	    write_exp_elt_opcode (OP_FUNCALL);
-	    write_exp_elt_longcst ((LONGEST) 1);
-	    write_exp_elt_opcode (OP_FUNCALL);
+	    write_exp_elt_opcode(OP_FUNCALL);
+	    write_exp_elt_longcst((LONGEST)1L);
+	    write_exp_elt_opcode(OP_FUNCALL);
 	  }
 	else if (slice_state == LOWER_BOUND)
 	  slice_state = UPPER_BOUND;
 	else if (slice_state == UPPER_BOUND)
 	  {
-	    write_exp_elt_opcode (TERNOP_SLICE);
+	    write_exp_elt_opcode(TERNOP_SLICE);
 	    slice_state = SIMPLE_INDEX;
 	  }
 	break;

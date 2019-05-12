@@ -1435,12 +1435,7 @@ mi_cmd_target_select (char *args, int from_tty)
    be retrieved.
 */
 
-struct solib_token_elem
-{
-  char *token;
-  struct value *val;
-  struct solib_token_elem *next;
-} *solib_token_list; /* TODO: move to header */
+struct solib_token_elem *solib_token_list;
 
 enum mi_cmd_result
 mi_cmd_target_load_solib(char *command, char **argv, int argc)

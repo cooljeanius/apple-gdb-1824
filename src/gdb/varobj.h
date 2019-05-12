@@ -46,7 +46,7 @@ enum varobj_type
     NO_FRAME_NEEDED             /* No frame is needed, this is a file static
 				   or a global variable.  */
   };
-    
+
 /* String representations of gdb's format codes (defined in varobj.c) */
 extern const char *varobj_format_string[];
 
@@ -132,16 +132,20 @@ extern int varobj_in_scope_p(struct varobj *var);
 
 extern int varobj_pc_in_valid_block_p(struct varobj *var);
 
-extern int varobj_update(struct varobj **varp, 
+extern int varobj_update(struct varobj **varp,
 			 struct varobj_changelist **changelist);
 
-extern struct varobj *varobj_changelist_pop(struct varobj_changelist *chglst, 
+extern struct varobj *varobj_changelist_pop(struct varobj_changelist *chglst,
 					    enum varobj_type_change *typchgd);
 
 extern void varobj_get_valid_block(struct varobj *var, CORE_ADDR *start,
 				   CORE_ADDR *end);
 
 extern void varobj_delete_objfiles_vars(struct objfile *ofile);
+
+/* */
+extern int varobjdebug;
+extern int varobj_runs_all_threads;
 #endif /* VAROBJ_H */
 
 /* EOF */

@@ -42,14 +42,20 @@
 # endif /* !__IPHONE_NA */
 #endif /* HAVE_AVAILABILITY_H || (__APPLE__ && NM_NEXTSTEP) */
 
+#include "language.h"
+
 struct stoken;
 
 struct value;
 struct block;
 
-extern int objc_parse(void);	/* Defined in c-exp.y */
+extern int objc_parse(void);	/* Defined in objc-exp.y */
 
-extern void objc_error(const char *);	/* Defined in c-exp.y */
+extern void objc_error(const char *);	/* Defined in objc-exp.y */
+
+extern int objc_char; /* Defined in objc-exp.y */
+
+extern int objc_nerrs; /* Defined in objc-exp.y */
 
 extern CORE_ADDR lookup_objc_class(const char *);
 extern CORE_ADDR lookup_child_selector(const char *);
@@ -144,6 +150,13 @@ int objc_check_safe_to_run_all_threads(void);
 
 /* This it the ObjC "make printing safe for ObjC" method: */
 int objc_setup_safe_print(struct cleanup **);
+
+/* */
+extern int po_and_print_run_all_threads;
+extern int let_po_run_all_threads;
+extern struct type **const objc_builtin_types[];
+extern const struct language_defn objc_language_defn;
+extern const struct language_defn objcplus_language_defn;
 #endif /* !OBJC_LANG_H */
 
 /* EOF */

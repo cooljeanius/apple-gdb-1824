@@ -1254,7 +1254,7 @@ static const struct op_print objc_op_print_tab[] =
     { NULL, OP_NULL, PREC_NULL, 0 }
 };
 
-struct type ** const objc_builtin_types[] =
+struct type **const objc_builtin_types[] =
 {
   &builtin_type_int,
   &builtin_type_long,

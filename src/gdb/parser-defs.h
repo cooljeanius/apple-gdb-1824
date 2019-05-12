@@ -49,10 +49,7 @@ extern CORE_ADDR expression_context_pc;
    we've encountered so far. */
 extern struct block *innermost_block;
 
-/* The block in which the most recently discovered symbol was found.
-   FIXME: Should be declared along with lookup_symbol in symtab.h; is not
-   related specifically to parsing.  */
-extern struct block *block_found;
+/* declaration of block_found has been moved to "symtab.h" */
 
 /* Number of arguments seen so far in innermost function call.  */
 extern int arglist_len;
@@ -130,7 +127,7 @@ extern void write_exp_string(struct stoken);
 
 extern void write_exp_bitstring(struct stoken);
 
-extern void write_exp_elt_block(struct block *);
+extern void write_exp_elt_block(const struct block *);
 
 extern void write_exp_msymbol(struct minimal_symbol *,
                               struct type *, struct type *);

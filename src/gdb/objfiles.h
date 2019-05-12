@@ -898,6 +898,9 @@ extern void objfile_add_special_psym(struct objfile *objfile,
 void slide_objfile(struct objfile *objfile, CORE_ADDR dyld_slide,
                    struct section_offsets *new_offsets);
 
+/* */
+extern int mapped_symbol_files;
+extern int use_mapped_symbol_files;
 
 #endif /* !defined(OBJFILES_H) */
 

@@ -1420,6 +1420,12 @@ void do_restore_target_async_mask(int mask);
 int debug_to_enable_exception_callback(enum exception_event_kind kind,
                                        int enable);
 
+/* */
+extern struct target_ops **target_structs;
+extern unsigned int target_struct_size;
+extern unsigned int target_struct_index;
+extern unsigned int target_struct_allocsize;
+
 #endif /* !defined(TARGET_H) */
 
 /* EOF */

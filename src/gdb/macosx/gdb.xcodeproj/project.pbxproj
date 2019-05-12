@@ -6223,6 +6223,9 @@
 		A5D1CD972286030F0068D405 /* fork-child.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "fork-child.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/fork-child.h"; sourceTree = "<absolute>"; };
 		A5D1CD9A228609680068D405 /* hpacc-abi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "hpacc-abi.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/hpacc-abi.h"; sourceTree = "<absolute>"; };
 		A5D1CD9D228635950068D405 /* dwarf2read-repository.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "dwarf2read-repository.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/dwarf2read-repository.c"; sourceTree = "<absolute>"; };
+		A5D1CE3E228680900068D405 /* eval.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = eval.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/eval.h"; sourceTree = "<absolute>"; };
+		A5D1CE762287B18D0068D405 /* printcmd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = printcmd.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/printcmd.h"; sourceTree = "<absolute>"; };
+		A5D1CE7F2287B3290068D405 /* symmisc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = symmisc.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/symmisc.h"; sourceTree = "<absolute>"; };
 		A5D6C3361AD460A500E04E36 /* gomp-constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "gomp-constants.h"; sourceTree = "<group>"; };
 		A5D6C3D51AD59D2A00E04E36 /* rlcompat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rlcompat.h; sourceTree = "<group>"; };
 		A5D6C4BA1ADB410200E04E36 /* libefence.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libefence.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7053,6 +7056,7 @@
 				2609D4890E82C40A008125DE /* environ.c */,
 				2609D48A0E82C40A008125DE /* environ.h */,
 				2609D48B0E82C40A008125DE /* eval.c */,
+				A5D1CE3E228680900068D405 /* eval.h */,
 				2609D48C0E82C40A008125DE /* event-loop.c */,
 				2609D48D0E82C40A008125DE /* event-loop.h */,
 				2609D48E0E82C40A008125DE /* event-top.c */,
@@ -7287,6 +7291,7 @@
 				A5AFD1A51A58B093006C21FE /* ppc-ravenscar-thread.h */,
 				2609D76E0E82C40C008125DE /* ppcbug-rom.c */,
 				2609D7750E82C40C008125DE /* printcmd.c */,
+				A5D1CE762287B18D0068D405 /* printcmd.h */,
 				A5AFD19C1A58B062006C21FE /* probe.c */,
 				A5AFD19D1A58B062006C21FE /* probe.h */,
 				2609D7770E82C40C008125DE /* proc-api.c */,
@@ -7435,6 +7440,7 @@
 				2609D8340E82C40D008125DE /* symfile.c */,
 				2609D8350E82C40D008125DE /* symfile.h */,
 				2609D8360E82C40D008125DE /* symmisc.c */,
+				A5D1CE7F2287B3290068D405 /* symmisc.h */,
 				2609D8370E82C40D008125DE /* symtab.c */,
 				2609D8380E82C40D008125DE /* symtab.h */,
 				A5AFD1491A58ADD2006C21FE /* SysTypes.r */,

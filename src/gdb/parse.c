@@ -232,11 +232,11 @@ write_exp_elt_sym (struct symbol *expelt)
 }
 
 void
-write_exp_elt_block (struct block *b)
+write_exp_elt_block(const struct block *b)
 {
   union exp_element tmp;
   tmp.block = b;
-  write_exp_elt (tmp);
+  write_exp_elt(tmp);
 }
 
 void

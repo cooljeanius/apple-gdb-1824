@@ -458,6 +458,11 @@ extern char *language_class_name_from_physname(const struct language_defn *,
 /* Splitting strings into words: */
 extern const char *default_word_break_characters(void);
 
+/* */
+extern char lang_frame_mismatch_warn[];
+extern const struct language_defn auto_language_defn;
+extern const struct language_defn local_language_defn;
+
 #endif /* defined(LANGUAGE_H) */
 
 /* EOF */

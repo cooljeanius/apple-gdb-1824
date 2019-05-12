@@ -22,6 +22,8 @@
 #ifndef MI_OUT_H
 #define MI_OUT_H 1
 
+#include "ui-out.h"
+
 struct ui_out;
 struct ui_file;
 
@@ -34,6 +36,9 @@ extern void mi_out_buffered(struct ui_out *uiout, char *string);
 
 /* Return the version number of the current MI: */
 extern int mi_version(struct ui_out *uiout);
+
+/* */
+extern struct ui_out_impl mi_ui_out_impl;
 
 #endif /* !MI_OUT_H */
 

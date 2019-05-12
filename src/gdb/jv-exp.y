@@ -1252,37 +1252,37 @@ push_variable(struct stoken name)
   char *tmp = copy_name(name);
   int is_a_field_of_this = 0;
   struct symbol *sym;
-  sym = lookup_symbol (tmp, expression_context_block, VAR_DOMAIN,
-		       &is_a_field_of_this, (struct symtab **) NULL);
-  if (sym && SYMBOL_CLASS (sym) != LOC_TYPEDEF)
+  sym = lookup_symbol(tmp, expression_context_block, VAR_DOMAIN,
+		      &is_a_field_of_this, (struct symtab **)NULL);
+  if (sym && (SYMBOL_CLASS(sym) != LOC_TYPEDEF))
     {
-      if (symbol_read_needs_frame (sym))
+      if (symbol_read_needs_frame(sym))
 	{
-	  if (innermost_block == 0 ||
-	      contained_in (block_found, innermost_block))
-	    innermost_block = block_found;
+	  if ((innermost_block == 0)
+	      || contained_in(block_found, innermost_block))
+	    innermost_block = (struct block *)block_found;
 	}
 
-      write_exp_elt_opcode (OP_VAR_VALUE);
+      write_exp_elt_opcode(OP_VAR_VALUE);
       /* We want to use the selected frame, not another more inner frame
 	 which happens to be in the same block.  */
-      write_exp_elt_block (NULL);
-      write_exp_elt_sym (sym);
-      write_exp_elt_opcode (OP_VAR_VALUE);
+      write_exp_elt_block(NULL);
+      write_exp_elt_sym(sym);
+      write_exp_elt_opcode(OP_VAR_VALUE);
       return 1;
     }
   if (is_a_field_of_this)
     {
       /* it hangs off of `this'.  Must not inadvertently convert from a
 	 method call to data ref.  */
-      if (innermost_block == 0 ||
-	  contained_in (block_found, innermost_block))
-	innermost_block = block_found;
-      write_exp_elt_opcode (OP_THIS);
-      write_exp_elt_opcode (OP_THIS);
-      write_exp_elt_opcode (STRUCTOP_PTR);
-      write_exp_string (name);
-      write_exp_elt_opcode (STRUCTOP_PTR);
+      if ((innermost_block == 0)
+	  || contained_in(block_found, innermost_block))
+	innermost_block = (struct block *)block_found;
+      write_exp_elt_opcode(OP_THIS);
+      write_exp_elt_opcode(OP_THIS);
+      write_exp_elt_opcode(STRUCTOP_PTR);
+      write_exp_string(name);
+      write_exp_elt_opcode(STRUCTOP_PTR);
       return 1;
     }
   return 0;

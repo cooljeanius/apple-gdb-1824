@@ -1696,6 +1696,8 @@ void symtab_clear_cached_lookup_values(void);
 
 /* APPLE LOCAL end cache lookup values for improved performance  */
 
+extern const struct block *block_found;
+
 #endif /* !defined(SYMTAB_H) */
 
 /* EOF */

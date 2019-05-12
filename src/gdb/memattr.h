@@ -40,7 +40,7 @@ enum mem_access_width
 };
 
 /* The set of all attributes that can be set for a memory region.
-  
+
    This structure was created so that memory attributes can be passed
    to target_ functions without exposing the details of memory region
    list, which would be necessary if these fields were simply added to
@@ -48,8 +48,8 @@ enum mem_access_width
 
    FIXME: It would be useful if there was a mechanism for targets to
    add their own attributes.  For example, the number of wait states. */
- 
-struct mem_attrib 
+
+struct mem_attrib
 {
   /* read/write, read-only, or write-only */
   enum mem_access_mode mode;
@@ -58,26 +58,26 @@ struct mem_attrib
 
   /* enables hardware breakpoints */
   int hwbreak;
-  
+
   /* enables host-side caching of memory region data */
   /* APPLE LOCAL: +1 means the cache is on.  0 means it is off,
      -1 means it is temporarily suspended (using mem_disable_caching)
      and mem_enable_caching will turn it back on.  */
   int cache;
-  
+
   /* enables memory verification.  after a write, memory is re-read
      to verify that the write was successful. */
-  int verify; 
+  int verify;
 };
 
-struct mem_region 
+struct mem_region
 {
   /* FIXME: memory regions are stored in an unsorted singly-linked
      list.  This probably won't scale to handle hundreds of memory
      regions --- that many could be needed to describe the allowed
      access modes for memory mapped i/o device registers. */
   struct mem_region *next;
-  
+
   CORE_ADDR lo;
   CORE_ADDR hi;
 
@@ -94,7 +94,12 @@ struct mem_region
 extern struct mem_region *lookup_mem_region(CORE_ADDR);
 
 /* APPLE LOCAL: Temporarily suspend caching. */
-void mem_disable_caching (void);
-void mem_enable_caching (void *);
+void mem_disable_caching(void);
+void mem_enable_caching(void *);
 /* END APPLE LOCAL */
+
+extern const struct mem_attrib default_mem_attrib;
+
 #endif	/* MEMATTR_H */
+
+/* EOF */

@@ -603,7 +603,7 @@ variable:	NAME
 				  if ((innermost_block == 0) ||
 				      contained_in(block_found,
                                                    innermost_block))
-				    innermost_block = block_found;
+				    innermost_block = (struct block *)block_found;
 				}
 
 			      write_exp_elt_opcode(OP_VAR_VALUE);

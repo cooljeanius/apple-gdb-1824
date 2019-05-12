@@ -29,46 +29,58 @@ struct language_arch_info;
 
 #include "value.h"
 #include "macroexp.h"
-
+#include "language.h"
+#include "parser-defs.h"
 
 extern int c_parse(void);	/* Defined in c-exp.y */
 
 extern void c_error(const char *);	/* Defined in c-exp.y */
 
+extern int c_char; /* Defined in c-exp.y */
+
+extern int c_nerrs; /* Defined in c-exp.y */
+
 /* Defined in c-typeprint.c */
 extern void c_print_type(struct type *, const char *, struct ui_file *, int,
 			 int);
 
-extern int c_val_print (struct type *, const gdb_byte *, int, CORE_ADDR,
-			struct ui_file *, int, int, int,
-			enum val_prettyprint);
+extern int c_val_print(struct type *, const gdb_byte *, int, CORE_ADDR,
+		       struct ui_file *, int, int, int,
+		       enum val_prettyprint);
 
-extern int c_value_print (struct value *, struct ui_file *, int,
-			  enum val_prettyprint);
+extern int c_value_print(struct value *, struct ui_file *, int,
+			 enum val_prettyprint);
 
 /* These are in c-lang.c: */
 
-extern void c_printchar (int, struct ui_file *);
+extern void c_printchar(int, struct ui_file *);
 
-extern void c_printstr (struct ui_file * stream, const gdb_byte *string,
-			unsigned int length, int width,
-			int force_ellipses);
+extern void c_printstr(struct ui_file * stream, const gdb_byte *string,
+		       unsigned int length, int width,
+		       int force_ellipses);
 
-extern void scan_macro_expansion (char *expansion);
-extern int scanning_macro_expansion (void);
-extern void finished_macro_expansion (void);
+extern void scan_macro_expansion(char *expansion);
+extern int scanning_macro_expansion(void);
+extern void finished_macro_expansion(void);
 
 extern macro_lookup_ftype *expression_macro_lookup_func;
 extern void *expression_macro_lookup_baton;
 
-extern struct type *c_create_fundamental_type (struct objfile *, int);
+extern struct type *c_create_fundamental_type(struct objfile *, int);
 
-extern void c_language_arch_info (struct gdbarch *gdbarch,
-				  struct language_arch_info *lai);
+extern void c_language_arch_info(struct gdbarch *gdbarch,
+				 struct language_arch_info *lai);
+
+extern const struct op_print c_op_print_tab[];
+extern const struct language_defn c_language_defn;
+extern struct type **const cplus_builtin_types[];
+extern const struct language_defn cplus_language_defn;
+extern const struct language_defn asm_language_defn;
+extern const struct language_defn minimal_language_defn;
 
 /* These are in c-typeprint.c: */
 
-extern void c_type_print_base (struct type *, struct ui_file *, int, int);
+extern void c_type_print_base(struct type *, struct ui_file *, int, int);
 
 /* These are in cp-valprint.c */
 

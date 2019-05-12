@@ -308,6 +308,10 @@ extern int ui_out_redirect(struct ui_out *uiout, struct ui_file *outstream);
 
 void ui_out_delete(struct ui_out *uiout);
 
+/* */
+extern struct ui_out_impl default_ui_out_impl;
+extern struct ui_out def_uiout;
+
 #endif /* UI_OUT_H */
 
 /* EOF */

@@ -38,6 +38,7 @@
 #include "block.h"
 #include "parser-defs.h"
 #include "cp-support.h"
+#include "eval.h"
 
 #ifndef INFINITY
 # ifdef HAVE_MATH_H

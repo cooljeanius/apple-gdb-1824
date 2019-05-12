@@ -578,54 +578,55 @@ extern void clear_internalvars (void);
 
 /* From values.c */
 
-extern struct value *value_copy (struct value *);
+extern struct value *value_copy(struct value *);
 
 /* From valops.c */
 
-extern struct value *varying_to_slice (struct value *);
+extern int overload_resolution;
 
-extern struct value *value_slice (struct value *, int, int);
+extern struct value *varying_to_slice(struct value *);
 
-extern struct value *call_function_by_hand (struct value *, int,
-					    struct value **);
+extern struct value *value_slice(struct value *, int, int);
+
+extern struct value *call_function_by_hand(struct value *, int,
+					   struct value **);
 
 extern struct value *
-call_function_by_hand_expecting_type (struct value *,
-				      struct type *, int,
-				      struct value **, int);
+call_function_by_hand_expecting_type(struct value *, struct type *, int,
+				     struct value **, int);
 
-extern struct value *value_literal_complex (struct value *, struct value *,
-					    struct type *);
+extern struct value *value_literal_complex(struct value *, struct value *,
+					   struct type *);
 
-extern void find_rt_vbase_offset (struct type *, struct type *,
-				  const gdb_byte *, int, int *, int *);
+extern void find_rt_vbase_offset(struct type *, struct type *,
+				 const gdb_byte *, int, int *, int *);
 
-extern CORE_ADDR find_function_addr (struct value *, struct type **);
+extern CORE_ADDR find_function_addr(struct value *, struct type **);
 
-extern struct value *find_function_in_inferior (const char *, struct type *);
+extern struct value *find_function_in_inferior(const char *, struct type *);
 
-extern struct value *value_allocate_space_in_inferior (int);
+extern struct value *value_allocate_space_in_inferior(int);
 
-extern CORE_ADDR allocate_space_in_inferior_malloc (int);
+extern CORE_ADDR allocate_space_in_inferior_malloc(int);
 
-extern CORE_ADDR default_push_arguments (int nargs, struct value ** args,
-					 CORE_ADDR sp, int struct_return,
-					 CORE_ADDR struct_addr);
-
-extern CORE_ADDR legacy_push_arguments (int nargs, struct value ** args,
+extern CORE_ADDR default_push_arguments(int nargs, struct value ** args,
 					CORE_ADDR sp, int struct_return,
 					CORE_ADDR struct_addr);
 
-struct cached_value * create_cached_function (const char *, struct type *);
+extern CORE_ADDR legacy_push_arguments(int nargs, struct value ** args,
+				       CORE_ADDR sp, int struct_return,
+				       CORE_ADDR struct_addr);
 
-extern struct value *lookup_cached_function (struct cached_value *cval);
+struct cached_value *create_cached_function(const char *, struct type *);
 
-extern struct value *value_of_local (const char *name, int complain);
+extern struct value *lookup_cached_function(struct cached_value *cval);
+
+extern struct value *value_of_local(const char *name, int complain);
 
 /* APPLE LOCAL begin variable initialized status  */
-extern void set_var_status (struct value *, int);
+extern void set_var_status(struct value *, int);
 
-extern int value_var_status (struct value *);
+extern int value_var_status(struct value *);
 /* APPLE LOCAL end variable initialized status  */
 
 /* APPLE LOCAL begin check safe call  */

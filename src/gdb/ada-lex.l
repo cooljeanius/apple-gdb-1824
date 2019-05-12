@@ -985,6 +985,7 @@ ada_yy_fatal_error(const char *errormsg)
 
 /* Dummy definition to suppress warnings about unused static definitions: */
 typedef void (*dummy_function)(void);
+extern dummy_function ada_flex_use[];
 dummy_function ada_flex_use[] =
 {
   (dummy_function)yyunput,

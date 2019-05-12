@@ -942,6 +942,18 @@ extern struct cleanup *make_cleanup_enable_disable_bpts_during_operation(void);
 /* Helper function for the previous: */
 extern void enable_user_breakpoints_after_operation(void *);
 
+/* */
+extern int symbol_generation;
+extern int breakpoint_generation;
+extern int show_breakpoint_hit_counts;
+extern struct breakpoint *breakpoint_chain;
+extern struct bp_location *bp_location_chain;
+extern int breakpoint_count;
+extern int default_breakpoint_valid;
+extern CORE_ADDR default_breakpoint_address;
+extern struct symtab *default_breakpoint_symtab;
+extern int default_breakpoint_line;
+
 #endif /* !defined(BREAKPOINT_H) */
 
 /* EOF */

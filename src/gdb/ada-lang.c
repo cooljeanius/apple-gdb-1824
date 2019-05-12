@@ -3815,7 +3815,7 @@ static void
 cache_symbol(const char *name ATTRIBUTE_UNUSED,
              domain_enum anamespace ATTRIBUTE_UNUSED,
              struct symbol *sym ATTRIBUTE_UNUSED,
-             struct block *block ATTRIBUTE_UNUSED,
+             const struct block *block ATTRIBUTE_UNUSED,
              struct symtab *symtab ATTRIBUTE_UNUSED)
 {
   return;
@@ -4664,20 +4664,20 @@ ada_lookup_symbol_list(const char *name0, const struct block *block0,
     }
 
 done:
-  ndefns = num_defns_collected (&symbol_list_obstack);
-  *results = defns_collected (&symbol_list_obstack, 1);
+  ndefns = num_defns_collected(&symbol_list_obstack);
+  *results = defns_collected(&symbol_list_obstack, 1);
 
-  ndefns = remove_extra_symbols (*results, ndefns);
+  ndefns = remove_extra_symbols(*results, ndefns);
 
   if (ndefns == 0)
-    cache_symbol (name0, anamespace, NULL, NULL, NULL);
+    cache_symbol(name0, anamespace, NULL, NULL, NULL);
 
-  if (ndefns == 1 && cacheIfUnique)
-    cache_symbol (name0, anamespace, (*results)[0].sym, (*results)[0].block,
-                  (*results)[0].symtab);
+  if ((ndefns == 1) && cacheIfUnique)
+    cache_symbol(name0, anamespace, (*results)[0].sym, (*results)[0].block,
+                 (*results)[0].symtab);
 
-  ndefns = remove_out_of_scope_renamings (*results, ndefns,
-                                          (struct block *) block0);
+  ndefns = remove_out_of_scope_renamings(*results, ndefns,
+                                         (struct block *)block0);
 
   return ndefns;
 }

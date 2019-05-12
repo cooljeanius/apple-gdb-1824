@@ -217,6 +217,8 @@ extern int regcache_compare(struct regcache *rc1, struct regcache *rc2);
 
 extern void regcache_observer_target_changed(struct target_ops *target);
 
+extern struct gdbarch_data *regcache_descr_handle;
+
 #endif /* REGCACHE_H */
 
 /* EOF */

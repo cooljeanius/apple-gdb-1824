@@ -27,8 +27,8 @@ struct type;
 
 extern ptid_t get_hand_call_ptid(void);
 
-extern CORE_ADDR find_function_addr (struct value *function,
-				     struct type **retval_type);
+extern CORE_ADDR find_function_addr(struct value *function,
+				    struct type **retval_type);
 
 extern struct value *
 /* APPLE LOCAL hand function call */
@@ -44,13 +44,18 @@ hand_function_call(struct value *function, struct type *expect_type,
 
    ARGS is modified to contain coerced values. */
 
-extern struct value *call_function_by_hand (struct value *function, int nargs,
-					    struct value **args);
+extern struct value *call_function_by_hand(struct value *function, int nargs,
+					   struct value **args);
 
 /* APPLE LOCAL */
 extern int inferior_function_calls_disabled_p;
-int set_hand_function_call_timeout (int newval);
-int hand_function_call_timeout_p (void);
+int set_hand_function_call_timeout(int newval);
+int hand_function_call_timeout_p(void);
+
+/* */
+extern int objc_exceptions_interrupt_hand_call;
+extern ptid_t hand_call_ptid;
+extern int unwind_on_signal_p;
 
 #endif /* !INFCALL_H */
 

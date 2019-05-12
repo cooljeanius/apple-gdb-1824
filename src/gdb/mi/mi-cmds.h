@@ -1,4 +1,4 @@
-/* mi-cmds.h: MI Command Set for GDB, the GNU debugger.
+/* mi/mi-cmds.h: MI Command Set for GDB, the GNU debugger.
 
    Copyright 2000, 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -184,6 +184,15 @@ extern void mi_execute_command(char *cmd, int from_tty);
 
 extern struct mi_cmd mi_cmds[];
 
-#endif
+/* stat collecting */
+struct mi_cmd_stats
+{
+  int hit;
+  int miss;
+  int rehash;
+};
+extern struct mi_cmd_stats stats;
+
+#endif /* !MI_CMDS_H */
 
 /* EOF */

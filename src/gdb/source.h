@@ -78,6 +78,10 @@ extern int open_source_file_fullpath(const char *, const char *, char **);
 
 extern int find_and_open_source(struct objfile *, const char *,
                                 const char *, char **);
+
+/* */
+extern int lines_to_list;
+
 #endif /* !SOURCE_H */
 
 /* EOF */

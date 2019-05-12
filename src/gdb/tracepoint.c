@@ -1097,17 +1097,7 @@ struct memrange
   bfd_signed_vma end;
 };
 
-struct collection_list
-  {
-    unsigned char regs_mask[32];	/* room for up to 256 regs */
-    long listsize;
-    long next_memrange;
-    struct memrange *list;
-    long aexpr_listsize;	/* size of array pointed to by expr_list elt */
-    long next_aexpr_elt;
-    struct agent_expr **aexpr_list;
-  }
-tracepoint_list, stepping_list; /* TODO: move to header */
+struct collection_list tracepoint_list, stepping_list;
 
 /* MEMRANGE functions: */
 static int memrange_cmp(const void *, const void *);

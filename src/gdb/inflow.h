@@ -40,4 +40,10 @@ extern PROCESS_GROUP_TYPE inferior_process_group;
 /* see inflow.c: */
 extern int terminal_is_ours;
 
+enum terminal_flag_possibilities {
+  yes, no, have_not_checked
+};
+
+extern enum terminal_flag_possibilities gdb_has_a_terminal_flag;
+
 #endif /* inflow.h */

@@ -23,11 +23,18 @@
 #ifndef JV_LANG_H
 #define JV_LANG_H
 
+#include "language.h"
+#include "parser-defs.h"
+
 struct value;
 
 extern int java_parse(void);	/* Defined in jv-exp.y */
 
 extern void java_error(const char *);	/* Defined in jv-exp.y */
+
+extern int java_char; /* Defined in jv-exp.y */
+
+extern int java_nerrs; /* Defined in jv-exp.y */
 
 /* sizeof(struct Object) */
 #define JAVA_OBJECT_SIZE (get_java_object_header_size())
@@ -65,6 +72,10 @@ extern int get_java_object_header_size(void);
 extern struct type *java_lookup_class(char *);
 
 extern int is_object_type(struct type *);
+
+extern const struct op_print java_op_print_tab[];
+extern const struct exp_descriptor exp_descriptor_java;
+extern const struct language_defn java_language_defn;
 
 /* Defined in jv-typeprint.c */
 extern void java_print_type(struct type *, const char *, struct ui_file *, int,

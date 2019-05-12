@@ -4864,8 +4864,8 @@ enum overlay_debugging_state overlay_debugging = ovly_off;
 int overlay_cache_invalid = 0;	/* True if need to refresh mapped state */
 
 /* Target vector for refreshing overlay mapped state */
-static void simple_overlay_update (struct obj_section *);
-void (*target_overlay_update) (struct obj_section *) = simple_overlay_update;
+static void simple_overlay_update(struct obj_section *);
+void (*target_overlay_update)(struct obj_section *) = simple_overlay_update;
 
 /* Function: section_is_overlay (SECTION)
    Returns true if SECTION has VMA not equal to LMA, ie.

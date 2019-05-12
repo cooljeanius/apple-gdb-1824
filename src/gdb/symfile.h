@@ -201,9 +201,10 @@ extern struct objfile *symbol_file_add (const char *, int,
 					struct section_addr_info *, int, int);
 
 /* APPLE LOCAL: Use this one for editing in place...  */
-extern struct objfile *symbol_file_add_using_objfile (struct objfile *,
-						      const char *, int,
-						      struct section_addr_info *, int, int);
+extern struct objfile *symbol_file_add_using_objfile(struct objfile *,
+						     const char *, int,
+						     struct section_addr_info *,
+						     int, int);
 /* END APPLE LOCAL */
 
 extern struct objfile *symbol_file_add_from_bfd (bfd *, int,
@@ -368,14 +369,14 @@ struct nlist_rec
   CORE_ADDR addr;
 };
 
-extern void read_oso_nlists (bfd *oso_bfd, struct partial_symtab *pst,
-                             struct nlist_rec **nlists, int *nlists_count,
-                             char ***common_symnames,
-                             int *common_symnames_count);
+extern void read_oso_nlists(bfd *oso_bfd, struct partial_symtab *pst,
+                            struct nlist_rec **nlists, int *nlists_count,
+                            char ***common_symnames,
+                            int *common_symnames_count);
 
-void add_dyld_shared_cache_local_symbols (struct objfile *objfile, uint8_t *nlist_records_start,
-                                     int nlist_records_count, int nlist_record_size,
-                                     char *strings_base, CORE_ADDR slide, int mainline);
+void add_dyld_shared_cache_local_symbols(struct objfile *o, uint8_t *n_r_start,
+					 int n_r_count, int n_r_size,
+					 char *s_b, CORE_ADDR slide, int ml);
 
 /* From mdebugread.c */
 
@@ -386,28 +387,26 @@ struct ecoff_debug_hack
   struct ecoff_debug_info *b;
 };
 
-extern void mdebug_build_psymtabs (struct objfile *,
-				   const struct ecoff_debug_swap *,
-				   struct ecoff_debug_info *);
+extern void mdebug_build_psymtabs(struct objfile *,
+				  const struct ecoff_debug_swap *,
+				  struct ecoff_debug_info *);
 
-extern void elfmdebug_build_psymtabs (struct objfile *,
-				      const struct ecoff_debug_swap *,
-				      asection *);
+extern void elfmdebug_build_psymtabs(struct objfile *,
+				     const struct ecoff_debug_swap *,
+				     asection *);
 
 extern int symfile_bfd_open_helper(void *v);
 
-extern bfd *symfile_bfd_open_safe (const char *filename, int mainline,
-				   enum gdb_osabi osabi);
+extern bfd *symfile_bfd_open_safe(const char *filename, int mainline,
+				  enum gdb_osabi osabi);
 
-int reread_symbols_for_objfile (struct objfile *objfile,
-				long new_modtime,
-				enum gdb_osabi osabi,
-                                struct objfile **next);
+int reread_symbols_for_objfile(struct objfile *objfile, long new_modtime,
+			       enum gdb_osabi osabi, struct objfile **next);
 
-extern struct objfile *symbol_file_add_bfd_safe
-(bfd *abfd, int from_tty, struct section_addr_info *addrs, struct section_offsets *offsets,
- int mainline, int flags, int symflags, CORE_ADDR mapaddr, const char *prefix,
- char *kext_bundle) ATTRIBUTE_W_U_R;
+extern struct objfile *
+symbol_file_add_bfd_safe(bfd *, int, struct section_addr_info *,
+			 struct section_offsets *, int, int, int, CORE_ADDR,
+			 const char *, char *) ATTRIBUTE_W_U_R;
 
 extern int symbol_file_add_bfd_helper(void *v) ATTRIBUTE_W_U_R;
 
@@ -417,24 +416,46 @@ extern struct objfile *symbol_file_add_bfd_using_objfile
  int mainline, int flags, int symflags, CORE_ADDR mapaddr, const char *prefix);
 
 /* APPLE LOCAL: pick the slice of a fat file matching the current arch: */
-bfd *open_bfd_matching_arch (bfd *archive_bfd, bfd_format expected_format,
-			     enum gdb_osabi osabi);
+bfd *open_bfd_matching_arch(bfd *archive_bfd, bfd_format expected_format,
+			    enum gdb_osabi osabi);
 
 extern void append_psymbols_as_msymbols(struct objfile *objfile);
 
 void replace_psymbols_with_correct_psymbols(struct objfile *exe_obj);
 
-struct objfile *symbol_file_add_with_addrs_or_offsets_using_objfile(struct objfile *, bfd *, int, struct section_addr_info *, struct section_offsets *, int, int, int, int, CORE_ADDR, const char *, char *) ATTRIBUTE_W_U_R;
+struct objfile *
+symbol_file_add_with_addrs_or_offsets_using_objfile(struct objfile *, bfd *,
+						    int from_tty,
+						    struct section_addr_info *,
+						    struct section_offsets *,
+						    int, int, int, int,
+						    CORE_ADDR, const char *,
+						    char *) ATTRIBUTE_W_U_R;
 
-struct objfile *symbol_file_add_name_with_addrs_or_offsets(const char *name, int from_tty, struct section_addr_info *addrs, struct section_offsets *offsets, int num_offsets, int mainline, int flags, int symflags, CORE_ADDR mapaddr, const char *prefix, char *kext_bundle)
-  ATTRIBUTE_W_U_R;
+struct objfile *
+symbol_file_add_name_with_addrs_or_offsets(const char *name, int from_tty,
+					   struct section_addr_info *addrs,
+					   struct section_offsets *offsets,
+					   int num_offsets, int mainline,
+					   int flags, int symflags,
+					   CORE_ADDR mapaddr,
+					   const char *prefix,
+					   char *kext_bundle) ATTRIBUTE_W_U_R;
 
-struct section_offsets *convert_sect_addrs_to_offsets_via_on_disk_file(struct section_addr_info *sect_addrs, const char *file, int *num_offsets)
+struct section_offsets *
+convert_sect_addrs_to_offsets_via_on_disk_file(struct section_addr_info *,
+					       const char *file, int *n_o)
   ATTRIBUTE_W_U_R;
 
 /* APPLE LOCAL begin remove symbol file */
 struct objfile *find_objfile(const char *name) ATTRIBUTE_W_U_R;
 /* APPLE LOCAL end remove symbol file */
+
+/* */
+extern int symbol_reloading;
+extern void (*target_overlay_update)(struct obj_section *);
+extern int readnow_symbol_files;
+extern struct cmd_list_element *overlaylist;
 
 #endif /* !defined(SYMFILE_H) */
 

@@ -183,6 +183,13 @@ extern int ada_parse(void);    /* Defined in ada-exp.y */
 
 extern void ada_error(const char *); /* Defined in ada-exp.y */
 
+extern int ada_char;  /* Defined in ada-exp.y */
+
+extern int ada_nerrs;  /* Defined in ada-exp.y */
+
+/* Defined in ada-exp.y: */
+extern struct stoken(*dummy_string_to_ada_operator)(struct stoken);
+
                         /* Defined in ada-typeprint.c */
 extern void ada_print_type(struct type *, const char *, struct ui_file *, int,
                            int);
@@ -191,8 +198,8 @@ extern int ada_val_print(struct type *, const gdb_byte *, int, CORE_ADDR,
                          struct ui_file *, int, int, int,
                          enum val_prettyprint);
 
-extern int ada_value_print (struct value *, struct ui_file *, int,
-                            enum val_prettyprint);
+extern int ada_value_print(struct value *, struct ui_file *, int,
+                           enum val_prettyprint);
 
                                 /* Defined in ada-lang.c */
 

@@ -93,6 +93,16 @@ extern struct interp *mi0_interp;
 extern struct interp *mi1_interp;
 extern struct interp *mi2_interp;
 
+/* */
+struct solib_token_elem
+{
+  char *token;
+  struct value *val;
+  struct solib_token_elem *next;
+};
+
+extern struct solib_token_elem *solib_token_list;
+
 #endif /* !MI_MAIN_H */
 
 /* EOF */

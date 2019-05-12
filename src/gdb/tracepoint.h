@@ -142,6 +142,20 @@ enum actionline_type validate_actionline(char **, struct tracepoint *);
 	for (t = tracepoint_chain;	\
 	     t ? (tmp = t->next, 1) : 0;\
 	     t = tmp)
+
+/* */
+struct collection_list
+{
+  unsigned char regs_mask[32];	/* room for up to 256 regs */
+  long listsize;
+  long next_memrange;
+  struct memrange *list;
+  long aexpr_listsize;	/* size of array pointed to by expr_list elt */
+  long next_aexpr_elt;
+  struct agent_expr **aexpr_list;
+};
+extern struct collection_list tracepoint_list, stepping_list;
+
 #endif	/* TRACEPOINT_H */
 
 /* EOF */

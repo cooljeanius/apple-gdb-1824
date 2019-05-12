@@ -275,12 +275,8 @@ struct protocol_log_entry {
   char packet[PROTOCOL_LOG_BUFSIZE];
 };
 
-/* TODO: move to header: */
-struct protocol_log {
-  int head;
-  int max_ent;
-  struct protocol_log_entry *ents;
-} protocol_log;
+/* struct is moved to header; variable is still here: */
+struct protocol_log protocol_log;
 
 /* APPLE LOCAL: Make the gdb remote protocol ack packets optional.
    It would be straightforward to only have the NO_ACK_MODE boolean

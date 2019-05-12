@@ -1,10 +1,10 @@
-/* Fortran language support definitions for GDB, the GNU debugger.
+/* f-lang.h: Fortran language support definitions for GDB, the GNU debugger.
 
    Copyright 1992, 1993, 1994, 1995, 1998, 2000, 2005 Free Software
    Foundation, Inc.
 
    Contributed by Motorola.  Adapted from the C definitions by Farooq Butt
-   (fmbutt@engage.sps.mot.com).
+   <fmbutt@engage.sps.mot.com>.
 
    This file is part of GDB.
 
@@ -23,9 +23,18 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef GDB_F_LANG_H
+#define GDB_F_LANG_H 1
+
+#include "language.h"
+
 extern int f_parse(void);
 
 extern void f_error(const char *);	/* Defined in f-exp.y */
+
+extern int f_char; /* Defined in f-exp.y */
+
+extern int f_nerrs; /* Defined in f-exp.y */
 
 extern void f_print_type(struct type *, const char *, struct ui_file *, int,
 			 int);
@@ -48,7 +57,7 @@ struct saved_f77_common
     char *name;			/* Name of COMMON */
     char *owning_function;	/* Name of parent function */
     int secnum;			/* Section # of .bss */
-    CORE_ADDR offset;		/* Offset from .bss for 
+    CORE_ADDR offset;		/* Offset from .bss for
 				   this block */
     struct common_entry *entries;	/* List of block's components */
     struct common_entry *end_of_entries;	/* ptr. to end of components */
@@ -76,9 +85,9 @@ extern SAVED_F77_COMMON_PTR find_common_for_function(const char *,
 #define BOUND_FETCH_OK 1
 #define BOUND_FETCH_ERROR -999
 
-/* When reasonable array bounds cannot be fetched, such as when 
-   you ask to 'mt print symbols' and there is no stack frame and 
-   therefore no way of knowing the bounds of stack-based arrays, 
+/* When reasonable array bounds cannot be fetched, such as when
+   you ask to 'mt print symbols' and there is no stack frame and
+   therefore no way of knowing the bounds of stack-based arrays,
    we have to assign default bounds, these are as good as any... */
 
 #define DEFAULT_UPPER_BOUND 999999
@@ -99,3 +108,15 @@ extern int calc_f77_array_dims (struct type *);
 #define DEFAULT_MAIN_NAME_IN_MF77               "MAIN_"
 #define DEFAULT_DOTMAIN_NAME_IN_XLF_BUGGY       ".main "
 #define DEFAULT_DOTMAIN_NAME_IN_XLF             ".main"
+
+/* in f-lang.c: */
+extern struct type **const (f_builtin_types[]);
+extern const struct language_defn f_language_defn;
+extern int global_remote_debug;
+
+/* in f-valprint.c: */
+extern int f77_array_offset_tbl[MAX_FORTRAN_DIMS + 1][2];
+
+#endif /* !GDB_F_LANG_H */
+
+/* EOF */
