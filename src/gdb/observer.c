@@ -56,11 +56,15 @@
 #include "command.h"
 #include "gdbcmd.h"
 
-/* "observer.h" is a generated file, so put any extra prototypes here in
- * the meantime: */
+/* "observer.h" is a generated file, so put any extra prototypes and
+ * declarations here in the meantime: */
 extern void observer_test_first_notification_function(struct bpstats *bs);
 extern void observer_test_second_notification_function(struct bpstats *bs);
 extern void observer_test_third_notification_function(struct bpstats *bs);
+
+extern int observer_test_first_observer;
+extern int observer_test_second_observer;
+extern int observer_test_third_observer;
 
 /* now we can do actual functions and stuff: */
 static int observer_debug;

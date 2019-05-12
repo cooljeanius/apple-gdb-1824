@@ -235,7 +235,7 @@ void
 write_exp_elt_block(const struct block *b)
 {
   union exp_element tmp;
-  tmp.block = b;
+  tmp.block = (struct block *)b;
   write_exp_elt(tmp);
 }
 

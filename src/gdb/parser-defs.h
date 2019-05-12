@@ -279,6 +279,12 @@ extern void start_msglist(void);
 extern void add_msglist(struct stoken *str, int addcolon);
 extern int end_msglist(void);
 
+/* from parse.c: */
+extern size_t namecopy_size;
+extern struct type *msym_text_symbol_type;
+extern struct type *msym_data_symbol_type;
+extern struct type *msym_unknown_symbol_type;
+
 #endif /* PARSER_DEFS_H */
 
 /* EOF */

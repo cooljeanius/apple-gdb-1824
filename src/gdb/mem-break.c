@@ -32,14 +32,15 @@
 #include "inferior.h"
 #include "target.h"
 
+#include "mem-break.h"
+
 /* APPLE LOCAL - Keep a circular array of recently removed
    breakpoints, so that when debugging multi-threaded programs and one
    thread hits a temporary breakpoint whose trap was just removed by
    another thread, we can tell whether or not to back up the PC
    (sometimes the kernel will hand us the same exception twice in a
    row).  */
-
-#define BKPT_ARRAY_SIZE 100
+/* define for BKPT_ARRAY_SIZE moved to header */
 CORE_ADDR recent_breakpoints[BKPT_ARRAY_SIZE];
 int last_bkpt_index = -1;
 
@@ -50,7 +51,6 @@ int last_bkpt_index = -1;
    memory allocated for saving the target contents.  It is guaranteed
    by the caller to be long enough to save BREAKPOINT_LEN bytes (this
    is accomplished via BREAKPOINT_MAX).  */
-
 int
 default_memory_insert_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
 {
@@ -83,7 +83,7 @@ default_memory_insert_breakpoint (CORE_ADDR addr, bfd_byte *contents_cache)
   return val;
 }
 
-
+/* */
 int
 default_memory_remove_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
 {
@@ -148,9 +148,8 @@ default_memory_remove_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
    of recently removed breakpoint addresses for a match.  It returns
    an integer indicating whether or not it found the address in the
    array of recent breakpoints or not.  */
-
 int
-address_contained_breakpoint_trap (CORE_ADDR addr)
+address_contained_breakpoint_trap(CORE_ADDR addr)
 {
   int i;
 
@@ -161,14 +160,18 @@ address_contained_breakpoint_trap (CORE_ADDR addr)
   return 0;
 }
 
+/* */
 int
 memory_insert_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
 {
   return MEMORY_INSERT_BREAKPOINT(addr, contents_cache);
 }
 
+/* */
 int
 memory_remove_breakpoint(CORE_ADDR addr, bfd_byte *contents_cache)
 {
   return MEMORY_REMOVE_BREAKPOINT(addr, contents_cache);
 }
+
+/* EOF */

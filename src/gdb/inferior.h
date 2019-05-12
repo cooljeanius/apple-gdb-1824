@@ -267,6 +267,50 @@ extern void follow_inferior_reset_breakpoints(void);
 
 extern int stop_after_trap;
 
+/* This enum encodes possible reasons for doing a target_wait, so that wfi can
+ * call target_wait in one place.  (Ultimately the call will be moved out of
+ * the infinite loop entirely.) */
+enum infwait_states
+{
+  infwait_normal_state,
+  infwait_thread_hop_state,
+  infwait_nonstep_watch_state
+};
+
+/* This structure contains what used to be local variables in
+ * wait_for_inferior.  Probably many of them can return to being locals in
+ * handle_inferior_event.  */
+struct execution_control_state
+{
+  struct target_waitstatus ws;
+  struct target_waitstatus *wp;
+  int another_trap;
+  int random_signal;
+  CORE_ADDR stop_func_start;
+  CORE_ADDR stop_func_end;
+  const char *stop_func_name;
+  struct symtab_and_line sal;
+  int current_line;
+  struct symtab *current_symtab;
+  int handling_longjmp;		/* FIXME */
+  ptid_t ptid;
+  ptid_t saved_inferior_ptid;
+  int step_after_step_resume_breakpoint;
+  int stepping_through_solib_after_catch;
+  bpstat stepping_through_solib_catchpoints;
+  /* APPLE LOCAL old watchpoint hackery */
+  int enable_hw_watchpoints_after_wait;
+  int new_thread_event;
+  struct target_waitstatus tmpstatus;
+  enum infwait_states infwait_state;
+  ptid_t waiton_ptid;
+  int wait_some_more;
+};
+
+extern struct execution_control_state async_ecss;
+extern struct execution_control_state *async_ecs;
+extern int stepped_after_stopped_by_watchpoint;
+
 /* From infcmd.c */
 extern void tty_command(const char *, int);
 extern void attach_command(const char *, int);

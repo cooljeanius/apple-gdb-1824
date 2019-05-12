@@ -105,6 +105,18 @@ extern void gdb_queue_event(event_handler_func proc, void *data, queue_position 
 
 extern void print_event_queue(void);
 
+/* Structure associated with a timer. PROC will be executed at the first
+ * occasion after WHEN. */
+struct gdb_timer
+{
+  struct timeval when;
+  int timer_id;
+  struct gdb_timer *next;
+  timer_handler_func *proc;	/* Function to call to do the work */
+  gdb_client_data client_data;	/* Argument to async_handler_func */
+};
+extern struct gdb_timer gdb_timer;
+
 #endif /* !__GDB_EVENT_LOOP_H__ */
 
 /* EOF */

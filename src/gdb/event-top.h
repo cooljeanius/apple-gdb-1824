@@ -1,4 +1,4 @@
-/* Definitions used by event-top.c, for GDB, the GNU debugger.
+/* event-top.h: Definitions used by event-top.c, for GDB, the GNU debugger.
 
    Copyright 1999, 2001, 2003 Free Software Foundation, Inc.
 
@@ -74,7 +74,7 @@ struct prompts
 #define PREFIX(X) the_prompts.prompt_stack[the_prompts.top + X].prefix
 #define SUFFIX(X) the_prompts.prompt_stack[the_prompts.top + X].suffix
 
-/* Exported functions from event-top.c. 
+/* Exported functions from event-top.c.
    FIXME: these should really go into top.h.  */
 
 extern void display_gdb_prompt(char *new_prompt);
@@ -115,14 +115,40 @@ extern int exec_done_display_p;
 extern const char *async_annotation_suffix;
 extern char *new_async_prompt;
 extern struct prompts the_prompts;
-extern void (*call_readline) (void *);
-extern void (*input_handler) (char *);
+extern void (*call_readline)(void *);
+extern void (*input_handler)(char *);
 extern int input_fd;
-extern void (*after_char_processing_hook) (void);
+extern void (*after_char_processing_hook)(void);
 
-extern void cli_command_loop (void *data);
+extern void cli_command_loop(void *data);
 
 /* APPLE LOCAL - Inform users about debugging optimized code  */
-extern void adjust_prompts_for_optimized_code (void);
+extern void adjust_prompts_for_optimized_code(void);
 
-#endif
+/* keep these ifdefs the same as in the source file: */
+extern void *sigint_token;
+#ifdef SIGHUP
+extern void *sighup_token;
+#endif /* SIGHUP */
+#ifdef SIGQUIT
+extern void *sigquit_token;
+#endif /* SIGQUIT */
+extern void *sigfpe_token;
+#if defined(SIGWINCH) && defined(SIGWINCH_HANDLER)
+extern void *sigwinch_token;
+#endif /* SIGWINCH && SIGWINCH_HANDLER */
+#ifdef STOP_SIGNAL
+extern void *sigtstp_token;
+#endif /* STOP_SIGNAL */
+extern int more_to_come;
+struct readline_input_state
+{
+  char *linebuffer;
+  char *linebuffer_ptr;
+};
+extern struct readline_input_state readline_input_state;
+extern int stdin_enabled;
+
+#endif /* !EVENT_TOP_H */
+
+/* EOF */

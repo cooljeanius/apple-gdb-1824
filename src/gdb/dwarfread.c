@@ -122,6 +122,7 @@
 #include <fcntl.h>
 #include "gdb_assert.h"
 #include "gdb_string.h"
+#include "dwarfread.h"
 
 /* Some macros to provide DIE info for complaints. */
 

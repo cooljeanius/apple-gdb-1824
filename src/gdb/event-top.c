@@ -160,12 +160,7 @@ int gdb_prompt_is_optimized = 0;
    between different calls. */
 int more_to_come = 0;
 
-struct readline_input_state
-  {
-    char *linebuffer;
-    char *linebuffer_ptr;
-  }
-readline_input_state;
+struct readline_input_state readline_input_state;
 
 /* This hook is called by rl_callback_read_char_wrapper after each
    character is processed.  */

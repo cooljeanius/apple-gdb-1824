@@ -1039,6 +1039,7 @@ dwarf2_frame_h = dwarf2-frame.h
 dwarf2loc_h = dwarf2loc.h $(dwarf2read_h)
 dwarf2read_h = dwarf2read.h $(bfd_h) $(buildsym_h) $(elf_dwarf2_h) \
   $(hashtab_h) $(db_access_functions_h)
+dwarfread_h = dwarfread.h $(buildsym_h)
 environ_h = environ.h
 eval_h = eval.h
 event_loop_h = event-loop.h
@@ -1116,6 +1117,7 @@ macrotab_h = macrotab.h
 main_h = main.h $(ansidecl_h)
 maint_h = maint.h
 mdebugread_h = mdebugread.h $(coff_sym_h) $(coff_symconst_h)
+mem_break_h = mem-break.h
 memattr_h = memattr.h
 minsyms_h = minsyms.h $(ansidecl_h)
 mips_mdebug_tdep_h = mips-mdebug-tdep.h
@@ -2802,9 +2804,9 @@ dwarf2read.o: dwarf2read.c $(defs_h) $(bfd_h) $(symtab_h) $(gdbtypes_h) \
 dwarf2read-repository.o: dwarf2read-repository.c $(defs_h) $(dwarf2read_h) \
   $(gdb_assert_h) $(elf_dwarf2_h)
 # APPLE LOCAL end subroutine inlining
-dwarfread.o: dwarfread.c $(defs_h) $(symtab_h) $(gdbtypes_h) \
-  $(objfiles_h) $(elf_dwarf_h) $(buildsym_h) $(demangle_h) \
-  $(expression_h) $(language_h) $(complaints_h) $(gdb_string_h)
+dwarfread.o: dwarfread.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(objfiles_h) \
+  $(elf_dwarf_h) $(buildsym_h) $(demangle_h) $(expression_h) $(language_h) \
+  $(complaints_h) $(gdb_string_h) $(dwarfread_h)
 elfread.o: elfread.c $(defs_h) $(bfd_h) $(gdb_string_h) $(elf_bfd_h) \
   $(elf_mips_h) $(symtab_h) $(symfile_h) $(objfiles_h) $(buildsym_h) \
   $(stabsread_h) $(gdb_stabs_h) $(complaints_h) $(demangle_h)
@@ -3189,7 +3191,7 @@ mdebugread.o: mdebugread.c $(defs_h) $(symtab_h) $(gdbtypes_h) \
 memattr.o: memattr.c $(defs_h) $(command_h) $(gdbcmd_h) $(memattr_h) \
   $(target_h) $(value_h) $(language_h) $(gdb_string_h)
 mem-break.o: mem-break.c $(defs_h) $(symtab_h) $(breakpoint_h) \
-  $(inferior_h) $(target_h)
+  $(inferior_h) $(target_h) $(mem_break_h)
 minsyms.o: minsyms.c $(defs_h) $(gdb_string_h) $(symtab_h) $(bfd_h) \
   $(symfile_h) $(objfiles_h) $(demangle_h) $(value_h) $(cp_abi_h) \
   $(minsyms_h)

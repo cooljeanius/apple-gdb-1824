@@ -36,6 +36,10 @@ extern int gdb_main(struct captured_main_args *) ATTRIBUTE_W_U_R;
 
 extern int can_use_malloc_now;
 
+/* */
+extern int display_time;
+extern int display_space;
+
 #endif /* !MAIN_H */
 
 /* EOF */

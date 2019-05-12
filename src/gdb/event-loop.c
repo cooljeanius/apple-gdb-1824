@@ -203,15 +203,7 @@ gdb_notifier;
 
 /* Structure associated with a timer. PROC will be executed at the
    first occasion after WHEN. */
-struct gdb_timer
-  {
-    struct timeval when;
-    int timer_id;
-    struct gdb_timer *next;
-    timer_handler_func *proc;	/* Function to call to do the work */
-    gdb_client_data client_data;	/* Argument to async_handler_func */
-  }
-gdb_timer;
+struct gdb_timer gdb_timer;
 
 /* List of currently active timers. It is sorted in order of
    increasing timers. */

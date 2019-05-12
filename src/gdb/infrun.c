@@ -1147,16 +1147,7 @@ init_wait_for_inferior (void)
   stepping_past_singlestep_breakpoint = 0;
 }
 
-/* This enum encodes possible reasons for doing a target_wait, so that
-   wfi can call target_wait in one place.  (Ultimately the call will be
-   moved out of the infinite loop entirely.) */
-
-enum infwait_states
-{
-  infwait_normal_state,
-  infwait_thread_hop_state,
-  infwait_nonstep_watch_state
-};
+/* enum infwait_states moved to "inferior.h" */
 
 /* Why did the inferior stop? Used to print the appropriate messages
    to the interface from within handle_inferior_event(). */
@@ -1176,48 +1167,19 @@ enum inferior_stop_reason
   SIGNAL_RECEIVED
 };
 
-/* This structure contains what used to be local variables in
-   wait_for_inferior.  Probably many of them can return to being
-   locals in handle_inferior_event.  */
+/* struct execution_control_state moved to "inferior.h" */
 
-struct execution_control_state
-{
-  struct target_waitstatus ws;
-  struct target_waitstatus *wp;
-  int another_trap;
-  int random_signal;
-  CORE_ADDR stop_func_start;
-  CORE_ADDR stop_func_end;
-  const char *stop_func_name;
-  struct symtab_and_line sal;
-  int current_line;
-  struct symtab *current_symtab;
-  int handling_longjmp;		/* FIXME */
-  ptid_t ptid;
-  ptid_t saved_inferior_ptid;
-  int step_after_step_resume_breakpoint;
-  int stepping_through_solib_after_catch;
-  bpstat stepping_through_solib_catchpoints;
-  /* APPLE LOCAL old watchpoint hackery */
-  int enable_hw_watchpoints_after_wait;
-  int new_thread_event;
-  struct target_waitstatus tmpstatus;
-  enum infwait_states infwait_state;
-  ptid_t waiton_ptid;
-  int wait_some_more;
-};
+extern void init_execution_control_state(struct execution_control_state *ecs);
 
-void init_execution_control_state (struct execution_control_state *ecs);
+extern void handle_inferior_event(struct execution_control_state *ecs);
 
-void handle_inferior_event (struct execution_control_state *ecs);
-
-static void step_into_function (struct execution_control_state *ecs);
-static void insert_step_resume_breakpoint_at_frame (struct frame_info *step_frame);
-static void stop_stepping (struct execution_control_state *ecs);
-static void prepare_to_wait (struct execution_control_state *ecs);
-static void keep_going (struct execution_control_state *ecs);
-static void print_stop_reason (enum inferior_stop_reason stop_reason,
-			       int stop_info);
+static void step_into_function(struct execution_control_state *ecs);
+static void insert_step_resume_breakpoint_at_frame(struct frame_info *s_f);
+static void stop_stepping(struct execution_control_state *ecs);
+static void prepare_to_wait(struct execution_control_state *ecs);
+static void keep_going(struct execution_control_state *ecs);
+static void print_stop_reason(enum inferior_stop_reason stop_reason,
+			      int stop_info);
 
 /* Wait for control to return from inferior to debugger.
    If inferior gets a signal, we may decide to start it up again

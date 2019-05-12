@@ -1,6 +1,6 @@
 /* kod.h: Kernel Object Display facility for Cisco
    Copyright 1999 Free Software Foundation, Inc.
-   
+
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -57,6 +57,8 @@ extern char *cisco_kod_open(kod_display_callback_ftype *display_func,
 extern void cisco_kod_request(const char *arg, int from_tty);
 
 extern void cisco_kod_close(void);
+
+extern char *operating_system;
 
 #endif /* !KOD_H */
 
