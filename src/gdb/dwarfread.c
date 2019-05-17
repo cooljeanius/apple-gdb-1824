@@ -1069,17 +1069,17 @@ struct_type(struct dieinfo *dip, char *thisdie, char *enddie,
      for the full structure definition. */
   if (nfields == 0)
     {
-      TYPE_FLAGS (type) |= TYPE_FLAG_STUB;
+      TYPE_FLAGS(type) |= TYPE_FLAG_STUB;
     }
   else
     {
-      TYPE_NFIELDS (type) = nfields;
-      TYPE_FIELDS (type) = (struct field *)
-	TYPE_ALLOC (type, sizeof (struct field) * nfields);
-      /* Copy the saved-up fields into the field vector.  */
+      TYPE_NFIELDS(type) = (short)nfields;
+      TYPE_FIELDS(type) = ((struct field *)
+			   TYPE_ALLOC(type, (sizeof(struct field) * nfields)));
+      /* Copy the saved-up fields into the field vector: */
       for (n = nfields; list; list = list->next)
 	{
-	  TYPE_FIELD (type, --n) = list->field;
+	  TYPE_FIELD(type, --n) = list->field;
 	}
     }
   xfree(mbr);
@@ -1158,9 +1158,8 @@ read_structure_scope (struct dieinfo *dip, char *thisdie, char *enddie,
    must return the appropriate type.  If the type attribute is not
    recognized, just warn about the problem and return type int.
  */
-
 static struct type *
-decode_array_element_type (char *scan)
+decode_array_element_type(char *scan)
 {
   struct type *typep;
   DIE_REF die_ref;
@@ -1168,22 +1167,22 @@ decode_array_element_type (char *scan)
   unsigned short fundtype;
   int nbytes;
 
-  attribute = target_to_host (scan, SIZEOF_ATTRIBUTE, GET_UNSIGNED,
-			      current_objfile);
+  attribute = (unsigned short)target_to_host(scan, SIZEOF_ATTRIBUTE,
+					     GET_UNSIGNED, current_objfile);
   scan += SIZEOF_ATTRIBUTE;
-  nbytes = attribute_size (attribute);
+  nbytes = attribute_size(attribute);
   if (nbytes == -1)
     {
-      bad_array_element_type_complaint (DIE_ID, DIE_NAME, attribute);
-      typep = dwarf_fundamental_type (current_objfile, FT_INTEGER);
+      bad_array_element_type_complaint(DIE_ID, DIE_NAME, attribute);
+      typep = dwarf_fundamental_type(current_objfile, FT_INTEGER);
     }
   else
     {
       switch (attribute)
 	{
 	case AT_fund_type:
-	  fundtype = target_to_host(scan, nbytes, GET_UNSIGNED,
-				    current_objfile);
+	  fundtype = (unsigned short)target_to_host(scan, nbytes, GET_UNSIGNED,
+						    current_objfile);
 	  typep = decode_fund_type(fundtype);
 	  break;
 	case AT_mod_fund_type:
@@ -1276,8 +1275,8 @@ decode_subscript_data_item (char *scan, char *end)
       typep = decode_array_element_type(scan);
       break;
     case FMT_FT_C_C:
-      fundtype = target_to_host(scan, SIZEOF_FMT_FT, GET_UNSIGNED,
-				current_objfile);
+      fundtype = (unsigned short)target_to_host(scan, SIZEOF_FMT_FT,
+						GET_UNSIGNED, current_objfile);
       indextype = decode_fund_type(fundtype);
       scan += SIZEOF_FMT_FT;
       nbytes = TARGET_FT_LONG_SIZE(current_objfile);
@@ -1354,25 +1353,26 @@ dwarf_read_array_type (struct dieinfo *dip)
   if (dip->at_ordering != ORD_row_major)
     {
       /* FIXME:  Can gdb even handle column major arrays? */
-      complaint (&symfile_complaints,
-		 _("DIE @ 0x%x \"%s\", array not row major; not handled correctly"),
-		 DIE_ID, DIE_NAME);
+      complaint(&symfile_complaints,
+		_("DIE @ 0x%x \"%s\", array not row major; not handled correctly"),
+		DIE_ID, DIE_NAME);
     }
   sub = dip->at_subscr_data;
   if (sub != NULL)
     {
-      nbytes = attribute_size (AT_subscr_data);
-      blocksz = target_to_host (sub, nbytes, GET_UNSIGNED, current_objfile);
-      subend = sub + nbytes + blocksz;
+      nbytes = attribute_size(AT_subscr_data);
+      blocksz = (unsigned short)target_to_host(sub, nbytes, GET_UNSIGNED,
+					       current_objfile);
+      subend = (sub + nbytes + blocksz);
       sub += nbytes;
-      type = decode_subscript_data_item (sub, subend);
-      utype = lookup_utype (dip->die_ref);
+      type = decode_subscript_data_item(sub, subend);
+      utype = lookup_utype(dip->die_ref);
       if (utype == NULL)
 	{
 	  /* Install user defined type that has not been referenced yet. */
-	  alloc_utype (dip->die_ref, type);
+	  alloc_utype(dip->die_ref, type);
 	}
-      else if (TYPE_CODE (utype) == TYPE_CODE_UNDEF)
+      else if (TYPE_CODE(utype) == TYPE_CODE_UNDEF)
 	{
 	  /* Ick!  A forward ref has already generated a blank type in our
 	     slot, and this type probably already has things pointing to it
@@ -1677,7 +1677,8 @@ enum_type(struct dieinfo *dip, struct objfile *objfile)
 	{
 	  nbytes = attribute_size(AT_element_list);
 	}
-      blocksz = target_to_host(scan, nbytes, GET_UNSIGNED, objfile);
+      blocksz = (unsigned short)target_to_host(scan, nbytes, GET_UNSIGNED,
+					       objfile);
       listend = (scan + nbytes + blocksz);
       scan += nbytes;
       while (scan < listend)
@@ -1720,7 +1721,7 @@ enum_type(struct dieinfo *dip, struct objfile *objfile)
 	{
 	  if (unsigned_enum)
 	    TYPE_FLAGS(type) |= TYPE_FLAG_UNSIGNED;
-	  TYPE_NFIELDS(type) = nfields;
+	  TYPE_NFIELDS(type) = (short)nfields;
 	  TYPE_FIELDS(type) = ((struct field *)
                                obstack_alloc(&objfile->objfile_obstack,
                                              (sizeof(struct field)
@@ -2477,22 +2478,23 @@ add_enum_psymbol (struct dieinfo *dip, struct objfile *objfile)
     {
       if (dip->short_element_list)
 	{
-	  nbytes = attribute_size (AT_short_element_list);
+	  nbytes = attribute_size(AT_short_element_list);
 	}
       else
 	{
-	  nbytes = attribute_size (AT_element_list);
+	  nbytes = attribute_size(AT_element_list);
 	}
-      blocksz = target_to_host (scan, nbytes, GET_UNSIGNED, objfile);
+      blocksz = (unsigned short)target_to_host(scan, nbytes, GET_UNSIGNED,
+					       objfile);
       scan += nbytes;
-      listend = scan + blocksz;
+      listend = (scan + blocksz);
       while (scan < listend)
 	{
-	  scan += TARGET_FT_LONG_SIZE (objfile);
-	  add_psymbol_to_list (scan, strlen (scan), VAR_DOMAIN, LOC_CONST,
-			       &objfile->static_psymbols, 0, 0, cu_language,
-			       objfile);
-	  scan += strlen (scan) + 1;
+	  scan += TARGET_FT_LONG_SIZE(objfile);
+	  add_psymbol_to_list(scan, strlen(scan), VAR_DOMAIN, LOC_CONST,
+			      &objfile->static_psymbols, 0, 0, cu_language,
+			      objfile);
+	  scan += strlen(scan) + 1;
 	}
     }
 }
@@ -2899,65 +2901,65 @@ new_symbol (struct dieinfo *dip, struct objfile *objfile)
 	case TAG_global_variable:
 	  if (dip->at_location != NULL)
 	    {
-	      SYMBOL_VALUE_ADDRESS (sym) = locval (dip);
-	      add_symbol_to_list (sym, &global_symbols);
-	      SYMBOL_CLASS (sym) = LOC_STATIC;
-	      SYMBOL_VALUE (sym) += baseaddr;
+	      SYMBOL_VALUE_ADDRESS(sym) = locval(dip);
+	      add_symbol_to_list(sym, &global_symbols);
+	      SYMBOL_CLASS(sym) = LOC_STATIC;
+	      SYMBOL_VALUE(sym) += baseaddr;
 	    }
 	  break;
 	case TAG_local_variable:
 	  if (dip->at_location != NULL)
 	    {
-	      int loc = locval (dip);
+	      int loc = locval(dip);
 	      if (dip->optimized_out)
 		{
-		  SYMBOL_CLASS (sym) = LOC_OPTIMIZED_OUT;
+		  SYMBOL_CLASS(sym) = LOC_OPTIMIZED_OUT;
 		}
 	      else if (dip->isreg)
 		{
-		  SYMBOL_CLASS (sym) = LOC_REGISTER;
+		  SYMBOL_CLASS(sym) = LOC_REGISTER;
 		}
 	      else if (dip->offreg)
 		{
-		  SYMBOL_CLASS (sym) = LOC_BASEREG;
-		  SYMBOL_BASEREG (sym) = dip->basereg;
+		  SYMBOL_CLASS(sym) = LOC_BASEREG;
+		  SYMBOL_BASEREG(sym) = (short)dip->basereg;
 		}
 	      else
 		{
-		  SYMBOL_CLASS (sym) = LOC_STATIC;
-		  SYMBOL_VALUE (sym) += baseaddr;
+		  SYMBOL_CLASS(sym) = LOC_STATIC;
+		  SYMBOL_VALUE(sym) += baseaddr;
 		}
-	      if (SYMBOL_CLASS (sym) == LOC_STATIC)
+	      if (SYMBOL_CLASS(sym) == LOC_STATIC)
 		{
 		  /* LOC_STATIC address class MUST use SYMBOL_VALUE_ADDRESS,
 		     which may store to a bigger location than SYMBOL_VALUE. */
-		  SYMBOL_VALUE_ADDRESS (sym) = loc;
+		  SYMBOL_VALUE_ADDRESS(sym) = loc;
 		}
 	      else
 		{
-		  SYMBOL_VALUE (sym) = loc;
+		  SYMBOL_VALUE(sym) = loc;
 		}
-	      add_symbol_to_list (sym, list_in_scope);
+	      add_symbol_to_list(sym, list_in_scope);
 	    }
 	  break;
 	case TAG_formal_parameter:
 	  if (dip->at_location != NULL)
 	    {
-	      SYMBOL_VALUE (sym) = locval (dip);
+	      SYMBOL_VALUE(sym) = locval(dip);
 	    }
-	  add_symbol_to_list (sym, list_in_scope);
+	  add_symbol_to_list(sym, list_in_scope);
 	  if (dip->isreg)
 	    {
-	      SYMBOL_CLASS (sym) = LOC_REGPARM;
+	      SYMBOL_CLASS(sym) = LOC_REGPARM;
 	    }
 	  else if (dip->offreg)
 	    {
-	      SYMBOL_CLASS (sym) = LOC_BASEREG_ARG;
-	      SYMBOL_BASEREG (sym) = dip->basereg;
+	      SYMBOL_CLASS(sym) = LOC_BASEREG_ARG;
+	      SYMBOL_BASEREG(sym) = (short)dip->basereg;
 	    }
 	  else
 	    {
-	      SYMBOL_CLASS (sym) = LOC_ARG;
+	      SYMBOL_CLASS(sym) = LOC_ARG;
 	    }
 	  break;
 	case TAG_unspecified_parameters:
@@ -3050,9 +3052,8 @@ synthesize_typedef (struct dieinfo *dip, struct objfile *objfile,
    We simply compute the number of modifiers and call the general
    function decode_modified_type to do the actual work.
  */
-
 static struct type *
-decode_mod_fund_type (char *typedata)
+decode_mod_fund_type(char *typedata)
 {
   struct type *typep = NULL;
   unsigned short modcount;
@@ -3060,17 +3061,18 @@ decode_mod_fund_type (char *typedata)
 
   /* Get the total size of the block, exclusive of the size itself */
 
-  nbytes = attribute_size (AT_mod_fund_type);
-  modcount = target_to_host (typedata, nbytes, GET_UNSIGNED, current_objfile);
+  nbytes = attribute_size(AT_mod_fund_type);
+  modcount = (unsigned short)target_to_host(typedata, nbytes, GET_UNSIGNED,
+					    current_objfile);
   typedata += nbytes;
 
   /* Deduct the size of the fundamental type bytes at the end of the block. */
 
-  modcount -= attribute_size (AT_fund_type);
+  modcount -= attribute_size(AT_fund_type);
 
   /* Now do the actual decoding */
 
-  typep = decode_modified_type (typedata, modcount, AT_mod_fund_type);
+  typep = decode_modified_type(typedata, modcount, AT_mod_fund_type);
   return (typep);
 }
 
@@ -3095,9 +3097,8 @@ decode_mod_fund_type (char *typedata)
    We simply compute the number of modifiers and call the general
    function decode_modified_type to do the actual work.
  */
-
 static struct type *
-decode_mod_u_d_type (char *typedata)
+decode_mod_u_d_type(char *typedata)
 {
   struct type *typep = NULL;
   unsigned short modcount;
@@ -3105,17 +3106,18 @@ decode_mod_u_d_type (char *typedata)
 
   /* Get the total size of the block, exclusive of the size itself */
 
-  nbytes = attribute_size (AT_mod_u_d_type);
-  modcount = target_to_host (typedata, nbytes, GET_UNSIGNED, current_objfile);
+  nbytes = attribute_size(AT_mod_u_d_type);
+  modcount = (unsigned short)target_to_host(typedata, nbytes, GET_UNSIGNED,
+					    current_objfile);
   typedata += nbytes;
 
   /* Deduct the size of the reference type bytes at the end of the block. */
 
-  modcount -= attribute_size (AT_user_def_type);
+  modcount -= attribute_size(AT_user_def_type);
 
   /* Now do the actual decoding */
 
-  typep = decode_modified_type (typedata, modcount, AT_mod_u_d_type);
+  typep = decode_modified_type(typedata, modcount, AT_mod_u_d_type);
   return (typep);
 }
 
@@ -3156,7 +3158,6 @@ decode_mod_u_d_type (char *typedata)
 
    We currently ignore MOD_const and MOD_volatile.  (FIXME)
  */
-
 static struct type *
 decode_modified_type (char *modifiers, unsigned int modcount, int mtype)
 {
@@ -3172,8 +3173,9 @@ decode_modified_type (char *modifiers, unsigned int modcount, int mtype)
 	{
 	case AT_mod_fund_type:
 	  nbytes = attribute_size(AT_fund_type);
-	  fundtype = target_to_host(modifiers, nbytes, GET_UNSIGNED,
-				    current_objfile);
+	  fundtype = (unsigned short)target_to_host(modifiers, nbytes,
+						    GET_UNSIGNED,
+						    current_objfile);
 	  typep = decode_fund_type(fundtype);
 	  break;
 	case AT_mod_u_d_type:
@@ -3472,8 +3474,8 @@ basicdieinfo(struct dieinfo *dip, char *diep, struct objfile *objfile)
   else
     {
       diep += SIZEOF_DIE_LENGTH;
-      dip->die_tag = target_to_host(diep, SIZEOF_DIE_TAG, GET_UNSIGNED,
-				    objfile);
+      dip->die_tag = (unsigned short)target_to_host(diep, SIZEOF_DIE_TAG,
+						    GET_UNSIGNED, objfile);
     }
 }
 
@@ -3521,7 +3523,8 @@ completedieinfo(struct dieinfo *dip, struct objfile *objfile)
   diep += (SIZEOF_DIE_LENGTH + SIZEOF_DIE_TAG);
   while (diep < end)
     {
-      attr = target_to_host(diep, SIZEOF_ATTRIBUTE, GET_UNSIGNED, objfile);
+      attr = (unsigned short)target_to_host(diep, SIZEOF_ATTRIBUTE,
+					    GET_UNSIGNED, objfile);
       diep += SIZEOF_ATTRIBUTE;
       nbytes = attribute_size(attr);
       if (nbytes == -1)
@@ -3535,16 +3538,19 @@ completedieinfo(struct dieinfo *dip, struct objfile *objfile)
       switch (attr)
 	{
 	case AT_fund_type:
-	  dip->at_fund_type = target_to_host(diep, nbytes, GET_UNSIGNED,
-					     objfile);
+	  dip->at_fund_type = (unsigned short)target_to_host(diep, nbytes,
+							     GET_UNSIGNED,
+							     objfile);
 	  break;
 	case AT_ordering:
-	  dip->at_ordering = target_to_host(diep, nbytes, GET_UNSIGNED,
-					    objfile);
+	  dip->at_ordering = (unsigned short)target_to_host(diep, nbytes,
+							    GET_UNSIGNED,
+							    objfile);
 	  break;
 	case AT_bit_offset:
-	  dip->at_bit_offset = target_to_host(diep, nbytes, GET_UNSIGNED,
-					      objfile);
+	  dip->at_bit_offset = (unsigned short)target_to_host(diep, nbytes,
+							      GET_UNSIGNED,
+							      objfile);
 	  break;
 	case AT_sibling:
 	  dip->at_sibling = (unsigned long)target_to_host(diep, nbytes,

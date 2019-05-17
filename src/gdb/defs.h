@@ -869,7 +869,7 @@ extern const char *paddress_with_arch(struct gdbarch *gdbarch, CORE_ADDR addr);
 
 extern char *phex(ULONGEST l, int sizeof_l);
 extern char *phex_nz(ULONGEST l, int sizeof_l);
-extern char *int_string(LONGEST, int, int, int, int);
+extern char *int_string(LONGEST, int, int, int8_t, int);
 
 /* Like paddr() only print/scan raw CORE_ADDR.  The output from
    core_addr_to_string() can be passed direct to

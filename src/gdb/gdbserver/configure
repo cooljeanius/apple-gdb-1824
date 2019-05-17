@@ -7524,6 +7524,42 @@ _ACEOF
 fi
 
 
+
+  ac_fn_c_check_type "$LINENO" "intptr_t" "ac_cv_type_intptr_t" "$ac_includes_default"
+if test "x$ac_cv_type_intptr_t" = xyes; then :
+
+$as_echo "#define HAVE_INTPTR_T 1" >>confdefs.h
+
+else
+  for ac_type in 'int' 'long int' 'long long int'; do
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+static int test_array [1 - 2 * !(sizeof (void *) <= sizeof ($ac_type))];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+
+cat >>confdefs.h <<_ACEOF
+#define intptr_t $ac_type
+_ACEOF
+
+	  ac_type=
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+       test -z "$ac_type" && break
+     done
+fi
+
+
 ac_fn_c_check_type "$LINENO" "off_t" "ac_cv_type_off_t" "$ac_includes_default"
 if test "x$ac_cv_type_off_t" = xyes; then :
 
@@ -10349,12 +10385,12 @@ build_warnings="-Wmain -Wpointer-arith -Wformat-security \
 -Woverlength-strings -Wreturn-local-addr -Wsequence-point \
 -Wsizeof-pointer-memaccess -Wstrict-overflow -Wtrampolines \
 -Wcoverage-mismatch -Wmisleading-indentation -Wno-strict-aliasing \
--Wno-unused-function"
+-Wno-unused-function -Wno-null-pointer-arithmetic"
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
   cxx_warnings="-Wabi -Wabi-tag -Woverloaded-virtual -Wsign-promo -Wodr \
 -Winvalid-offsetof -Wstrict-null-sentinel -Wlto-type-mismatch \
--Wc++11-compat -Wmultiple-inheritance -Wvirtual-inheritance"
+-Wc++11-compat -Wmultiple-inheritance -Wvirtual-inheritance -Wno-deprecated"
   build_warnings="${build_warnings} ${cxx_warnings} -std=gnu++03 \
 -fpermissive"
   WARN_COMPILER_FLAGS='$(WARN_CXXFLAGS)'
@@ -10380,7 +10416,7 @@ case "${host}" in
     # -Wmost is APPLE_LOCAL, as are -Wextra-tokens and -Wnewline-eof
     # (-Wmost might have to be removed for the same reason as -Wall)
     build_warnings="${build_warnings} -Wmost -Wextra-tokens -Wnewline-eof \
--Wendif-labels -Wno-unused -Wformat"
+-Wendif-labels -Wno-unused -Wformat -Wfour-char-constants"
     case "${host}" in
       *64*-apple-darwin9* | *64*-apple-darwin1[0123456789].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"

@@ -193,6 +193,9 @@
 /* Define to 1 if the system has the type `intmax_t'. */
 #undef HAVE_INTMAX_T
 
+/* Define to 1 if the system has the type `intptr_t'. */
+#undef HAVE_INTPTR_T
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -815,6 +818,10 @@
 /* Define to the widest signed integer type if <stdint.h> and <inttypes.h> do
    not define. */
 #undef intmax_t
+
+/* Define to the type of a signed integer type wide enough to hold a pointer,
+   if such a type exists, and if the system does not define it. */
+#undef intptr_t
 
 /* Define to rpl_malloc if the replacement function should be used. */
 #undef malloc

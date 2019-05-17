@@ -332,6 +332,7 @@ AC_TYPE_INT16_T
 AC_TYPE_INT32_T
 AC_TYPE_INT64_T
 AC_TYPE_INTMAX_T
+AC_TYPE_INTPTR_T
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
@@ -856,12 +857,12 @@ build_warnings="-Wmain -Wpointer-arith -Wformat-security \
 -Woverlength-strings -Wreturn-local-addr -Wsequence-point \
 -Wsizeof-pointer-memaccess -Wstrict-overflow -Wtrampolines \
 -Wcoverage-mismatch -Wmisleading-indentation -Wno-strict-aliasing \
--Wno-unused-function"
+-Wno-unused-function -Wno-null-pointer-arithmetic"
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
   cxx_warnings="-Wabi -Wabi-tag -Woverloaded-virtual -Wsign-promo -Wodr \
 -Winvalid-offsetof -Wstrict-null-sentinel -Wlto-type-mismatch \
--Wc++11-compat -Wmultiple-inheritance -Wvirtual-inheritance"
+-Wc++11-compat -Wmultiple-inheritance -Wvirtual-inheritance -Wno-deprecated"
   build_warnings="${build_warnings} ${cxx_warnings} -std=gnu++03 \
 -fpermissive"
   WARN_COMPILER_FLAGS='$(WARN_CXXFLAGS)'
@@ -888,7 +889,7 @@ case "${host}" in
     # -Wmost is APPLE_LOCAL, as are -Wextra-tokens and -Wnewline-eof
     # (-Wmost might have to be removed for the same reason as -Wall)
     build_warnings="${build_warnings} -Wmost -Wextra-tokens -Wnewline-eof \
--Wendif-labels -Wno-unused -Wformat"
+-Wendif-labels -Wno-unused -Wformat -Wfour-char-constants"
     case "${host}" in
       *64*-apple-darwin9* | *64*-apple-darwin1[[0123456789]].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"

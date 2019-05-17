@@ -322,9 +322,7 @@ asection *dwarf_eh_frame_section;
 
 /* local data types */
 
-/* struct comp_unit_head moved to "dwarf2read.h" */
-
-/* struct dwarf2_cu moved to "dwarf2read.h" */
+/* structs comp_unit_head and dwarf2_cu moved to "dwarf2read.h" */
 
 /* Persistent data held for a compilation unit, even when not
    processing it.  We put a pointer to this structure in the
@@ -1372,7 +1370,7 @@ dwarf2_scan_inlined_section_for_psymbols(struct partial_symtab *pst,
       inlined_ptr += bytes_read;
       total_bytes_read += bytes_read;
 
-      version = read_2_bytes(abfd, inlined_ptr);
+      version = (unsigned char)read_2_bytes(abfd, inlined_ptr);
       if (version == 0U) {
         ; /* ??? */
       }
@@ -1383,7 +1381,7 @@ dwarf2_scan_inlined_section_for_psymbols(struct partial_symtab *pst,
       inlined_ptr += 1;
       total_bytes_read += 1;
 
-      fake_cu.header.addr_size = addr_size;
+      fake_cu.header.addr_size = (unsigned char)addr_size;
 
       /* Keep reading entries until we have read the length of
 	 the debug_inlined section.  */
@@ -1515,7 +1513,6 @@ find_pubtypes(bfd *ignore_abfd, asection *sectp, void *ignore)
    for OBJFILE for this PST.  If we had to open an archive to
    fetch out the symbols for PST, we return the BFD for that
    archive.  */
-
 void
 dwarf2_scan_pubtype_for_psymbols(struct partial_symtab *pst,
                                  struct objfile *objfile,
@@ -1618,7 +1615,7 @@ dwarf2_scan_pubtype_for_psymbols(struct partial_symtab *pst,
         ; /* ??? */
       }
       pubtypes_ptr += bytes_read;
-      version = read_2_bytes(abfd, pubtypes_ptr);
+      version = (unsigned char)read_2_bytes(abfd, pubtypes_ptr);
       if (version == 0U) {
         ; /* ??? */
       }
@@ -1706,12 +1703,12 @@ read_comp_unit_head(struct comp_unit_head *cu_header,
   cu_header->length =
     (unsigned long)read_initial_length(abfd, info_ptr, cu_header, &bytes_read);
   info_ptr += bytes_read;
-  cu_header->version = read_2_bytes(abfd, info_ptr);
+  cu_header->version = (short)read_2_bytes(abfd, info_ptr);
   info_ptr += 2;
   cu_header->abbrev_offset =
     (unsigned int)read_offset(abfd, info_ptr, cu_header, &bytes_read);
   info_ptr += bytes_read;
-  cu_header->addr_size = read_1_byte(abfd, info_ptr);
+  cu_header->addr_size = (unsigned char)read_1_byte(abfd, info_ptr);
   info_ptr += 1;
   /* APPLE LOCAL dwarf2 (using a non-elf file, duh) */
   cu_header->signed_addr_p = 0;
@@ -1810,9 +1807,7 @@ dwarf2_build_include_psymtabs(struct dwarf2_cu *cu,
   free_line_header(lh);
 }
 
-/* enum db_status has been moved to "dwarf2read.h" */
-
-/* struct database_info has been moved to "dwarf2read.h" */
+/* enum db_status and struct database_info have been moved to "dwarf2read.h" */
 
 /* APPLE LOCAL begin debug inlined section */
 static void
@@ -2811,7 +2806,6 @@ add_partial_enumeration(struct partial_die_info *enum_pdi,
    Return the corresponding abbrev, or NULL if the number is zero (indicating
    an empty DIE).  In either case *BYTES_READ will be set to the length of
    the initial number.  */
-
 static struct abbrev_info *
 peek_die_abbrev(char *info_ptr, int *bytes_read, struct dwarf2_cu *cu)
 {
@@ -2849,9 +2843,8 @@ peek_die_abbrev(char *info_ptr, int *bytes_read, struct dwarf2_cu *cu)
 /* Scan the debug information for CU starting at INFO_PTR.  Returns a
    pointer to the end of a series of DIEs, terminated by an empty
    DIE.  Any children of the skipped DIEs will also be skipped.  */
-
 static char *
-skip_children (char *info_ptr, struct dwarf2_cu *cu)
+skip_children(char *info_ptr, struct dwarf2_cu *cu)
 {
   struct abbrev_info *abbrev;
   unsigned int bytes_read;
@@ -3358,7 +3351,6 @@ convert_oso_map_to_final_map(struct nlist_rec *nlists,
 
    This function frees NLISTS by the time it is done; it malloc's the
    space for the oso-to-final-address table.  */
-
 static struct oso_to_final_addr_map *
 create_kext_addr_map(struct nlist_rec *nlists, int oso_nlists_count,
                      char **oso_common_symnames,
@@ -3638,8 +3630,7 @@ compare_translation_tuples_nothighpc (const void *key, const void *arrmem)
 /* This function compares if an address *KEY is contained in a tuple including
    if the address is equal to the high or low oso address:
    oso_low_addr <= address <= oso_high_addr. This is used when parsing line
-   tables.
- */
+   tables.  */
 static int
 compare_translation_tuples_inclusive (const void *key, const void *arrmem)
 {
@@ -3720,7 +3711,6 @@ compare_translation_final_addr(const void *key, const void *arrmem)
    *ADDR is not set to anything.  This will happen when the address
    is in a function that was coalesced or dead code stripped during
    the final link edit stage.  */
-
 int
 translate_debug_map_address(struct oso_to_final_addr_map *map,
                             CORE_ADDR oso_addr, CORE_ADDR *addr,
@@ -3796,7 +3786,6 @@ translate_debug_map_address(struct oso_to_final_addr_map *map,
    So instead we do the search by symbol name.
 
    This function returns 1 if a matching symbol name was found, else 0.  */
-
 static int
 translate_common_symbol_debug_map_address (struct oso_to_final_addr_map *map,
                                            const char *name, CORE_ADDR *addr)
@@ -3976,7 +3965,6 @@ dwarf2_kext_psymtab_to_symtab(struct partial_symtab *pst)
 
    The address translation map is not freed at the end -- there may be pointers
    to it in location list expressions so we'll need to keep it around.  */
-
 void
 dwarf2_debug_map_psymtab_to_symtab(struct partial_symtab *pst)
 {
@@ -4086,7 +4074,6 @@ dwarf2_debug_map_psymtab_to_symtab(struct partial_symtab *pst)
    dwarf2_kext_psymtab_to_symtab().  If MATCH_AMOUNT is -1, we require
    a full source pathname match.  If it's 0, only the base names are
    matched.  If 1, it's the base names plus the parent directory.  */
-
 char *
 find_debug_info_for_pst(struct partial_symtab *pst, int match_amount)
 {
@@ -4252,7 +4239,6 @@ process_queue (struct objfile *objfile)
 /* Free all allocated queue entries.  This function only releases anything if
    an error was thrown; if the queue was processed then it would have been
    freed as we went along.  */
-
 static void
 dwarf2_release_queue (void *dummy)
 {
@@ -4416,7 +4402,6 @@ fix_inlined_subroutine_symbols (void)
 
 /* Generate full symbol information for PST and CU, whose DIEs have
    already been loaded into memory.  */
-
 static void
 process_full_comp_unit(struct dwarf2_per_cu_data *per_cu)
 {
@@ -5150,7 +5135,6 @@ read_func_scope(struct die_info *die, struct dwarf2_cu *cu)
 
 /* Process all the DIES contained within a lexical block scope.  Start
    a new scope, process the dies, and then close the scope.  */
-
 static void
 read_lexical_block_scope(struct die_info *die, struct dwarf2_cu *cu)
 {
@@ -5656,47 +5640,47 @@ dwarf2_add_field(struct field_info *fip, struct die_info *die,
 
 /* Create the vector of fields, and attach it to the type: */
 static void
-dwarf2_attach_fields_to_type (struct field_info *fip, struct type *type,
-			      struct dwarf2_cu *cu)
+dwarf2_attach_fields_to_type(struct field_info *fip, struct type *type,
+			     struct dwarf2_cu *cu)
 {
   int nfields = fip->nfields;
 
   /* Record the field count, allocate space for the array of fields,
      and create blank accessibility bitfields if necessary.  */
-  TYPE_NFIELDS (type) = nfields;
-  TYPE_FIELDS (type) = (struct field *)
-    TYPE_ALLOC (type, sizeof (struct field) * nfields);
-  memset (TYPE_FIELDS (type), 0, sizeof (struct field) * nfields);
+  TYPE_NFIELDS(type) = (short)nfields;
+  TYPE_FIELDS(type) = ((struct field *)
+		       TYPE_ALLOC(type, (sizeof(struct field) * nfields)));
+  memset(TYPE_FIELDS(type), 0, (sizeof(struct field) * nfields));
 
   if (fip->non_public_fields)
     {
-      ALLOCATE_CPLUS_STRUCT_TYPE (type);
+      ALLOCATE_CPLUS_STRUCT_TYPE(type);
 
-      TYPE_FIELD_PRIVATE_BITS (type) =
-	(B_TYPE *) TYPE_ALLOC (type, B_BYTES (nfields));
-      B_CLRALL (TYPE_FIELD_PRIVATE_BITS (type), nfields);
+      TYPE_FIELD_PRIVATE_BITS(type) =
+	(B_TYPE *)TYPE_ALLOC(type, B_BYTES(nfields));
+      B_CLRALL(TYPE_FIELD_PRIVATE_BITS(type), nfields);
 
-      TYPE_FIELD_PROTECTED_BITS (type) =
-	(B_TYPE *) TYPE_ALLOC (type, B_BYTES (nfields));
-      B_CLRALL (TYPE_FIELD_PROTECTED_BITS (type), nfields);
+      TYPE_FIELD_PROTECTED_BITS(type) =
+	(B_TYPE *)TYPE_ALLOC(type, B_BYTES(nfields));
+      B_CLRALL(TYPE_FIELD_PROTECTED_BITS(type), nfields);
 
-      TYPE_FIELD_IGNORE_BITS (type) =
-	(B_TYPE *) TYPE_ALLOC (type, B_BYTES (nfields));
-      B_CLRALL (TYPE_FIELD_IGNORE_BITS (type), nfields);
+      TYPE_FIELD_IGNORE_BITS(type) =
+	(B_TYPE *)TYPE_ALLOC(type, B_BYTES(nfields));
+      B_CLRALL(TYPE_FIELD_IGNORE_BITS(type), nfields);
     }
 
   /* If the type has baseclasses, allocate and clear a bit vector for
      TYPE_FIELD_VIRTUAL_BITS.  */
   if (fip->nbaseclasses)
     {
-      int num_bytes = B_BYTES (fip->nbaseclasses);
+      int num_bytes = B_BYTES(fip->nbaseclasses);
       char *pointer;
 
-      ALLOCATE_CPLUS_STRUCT_TYPE (type);
-      pointer = (char *) TYPE_ALLOC (type, num_bytes);
-      TYPE_FIELD_VIRTUAL_BITS (type) = (B_TYPE *) pointer;
-      B_CLRALL (TYPE_FIELD_VIRTUAL_BITS (type), fip->nbaseclasses);
-      TYPE_N_BASECLASSES (type) = fip->nbaseclasses;
+      ALLOCATE_CPLUS_STRUCT_TYPE(type);
+      pointer = (char *)TYPE_ALLOC(type, num_bytes);
+      TYPE_FIELD_VIRTUAL_BITS(type) = (B_TYPE *)pointer;
+      B_CLRALL(TYPE_FIELD_VIRTUAL_BITS(type), fip->nbaseclasses);
+      TYPE_N_BASECLASSES(type) = (short)fip->nbaseclasses;
     }
 
   /* Copy the saved-up fields into the field vector.  Start from the head
@@ -5704,7 +5688,7 @@ dwarf2_attach_fields_to_type (struct field_info *fip, struct type *type,
      up in the same order in the array in which they were added to the list.  */
   while (nfields-- > 0)
     {
-      TYPE_FIELD (type, nfields) = fip->fields->field;
+      TYPE_FIELD(type, nfields) = fip->fields->field;
       switch (fip->fields->accessibility)
 	{
 	case DW_ACCESS_private:
@@ -5916,15 +5900,15 @@ dwarf2_attach_fn_fields_to_type(struct field_info *fip, struct type *type,
       total_length += flp->length;
     }
 
-  TYPE_NFN_FIELDS(type) = fip->nfnfields;
-  TYPE_NFN_FIELDS_TOTAL(type) = total_length;
+  TYPE_NFN_FIELDS(type) = (short)fip->nfnfields;
+  TYPE_NFN_FIELDS_TOTAL(type) = (short)total_length;
 }
 
 
 /* Returns non-zero if NAME is the name of a vtable member in CU's
    language, zero otherwise.  */
 static int
-is_vtable_name (const char *name, struct dwarf2_cu *cu)
+is_vtable_name(const char *name, struct dwarf2_cu *cu)
 {
   static const char vptr[] = "_vptr";
   static const char vtable[] = "vtable";
@@ -6091,21 +6075,20 @@ read_structure_type (struct die_info *die, struct dwarf2_cu *cu)
 
                       if (is_vtable_name(fieldname, cu))
 			{
-			  TYPE_VPTR_FIELDNO(type) = i;
+			  TYPE_VPTR_FIELDNO(type) = (short)i;
 			  break;
 			}
 		    }
 
-		  /* Complain if virtual function table field not found.  */
-		  if (i < TYPE_N_BASECLASSES (t))
-		    complaint (&symfile_complaints,
-			       _("virtual function table pointer not found when defining class '%s'"),
-			       TYPE_TAG_NAME (type) ? TYPE_TAG_NAME (type) :
-			       "");
+		  /* Complain if virtual function table field not found: */
+		  if (i < TYPE_N_BASECLASSES(t))
+		    complaint(&symfile_complaints,
+			      _("virtual function table pointer not found when defining class '%s'"),
+			      TYPE_TAG_NAME(type) ? TYPE_TAG_NAME(type) : "");
 		}
 	      else
 		{
-		  TYPE_VPTR_FIELDNO (type) = TYPE_VPTR_FIELDNO (t);
+		  TYPE_VPTR_FIELDNO(type) = TYPE_VPTR_FIELDNO(t);
 		}
 	    }
 	}
@@ -6382,49 +6365,51 @@ process_enumeration_scope(struct die_info *die, struct dwarf2_cu *cu)
 	{
 	  if (child_die->tag != DW_TAG_enumerator)
 	    {
-	      process_die (child_die, cu);
+	      process_die(child_die, cu);
 	    }
 	  else
 	    {
-	      attr = dwarf2_attr (child_die, DW_AT_name, cu);
+	      attr = dwarf2_attr(child_die, DW_AT_name, cu);
 	      if (attr)
 		{
-		  sym = new_symbol (child_die, die->type, cu);
-		  if (SYMBOL_VALUE (sym) < 0)
+		  sym = new_symbol(child_die, die->type, cu);
+		  if (SYMBOL_VALUE(sym) < 0)
 		    unsigned_enum = 0;
 
 		  if ((num_fields % DW_FIELD_ALLOC_CHUNK) == 0)
 		    {
-		      fields = (struct field *)
-			xrealloc (fields,
-				  (num_fields + DW_FIELD_ALLOC_CHUNK)
-				  * sizeof (struct field));
+		      fields = ((struct field *)
+				xrealloc(fields,
+					 ((num_fields + DW_FIELD_ALLOC_CHUNK)
+					  * sizeof(struct field))));
 		    }
 
-		  FIELD_NAME (fields[num_fields]) = DEPRECATED_SYMBOL_NAME (sym);
-		  FIELD_TYPE (fields[num_fields]) = NULL;
-		  FIELD_BITPOS (fields[num_fields]) = SYMBOL_VALUE (sym);
-		  FIELD_BITSIZE (fields[num_fields]) = 0;
-		  FIELD_STATIC_KIND (fields[num_fields]) = 0;
+		  FIELD_NAME(fields[num_fields]) = DEPRECATED_SYMBOL_NAME(sym);
+		  FIELD_TYPE(fields[num_fields]) = NULL;
+		  FIELD_BITPOS(fields[num_fields]) = SYMBOL_VALUE(sym);
+		  FIELD_BITSIZE(fields[num_fields]) = 0;
+		  FIELD_STATIC_KIND(fields[num_fields]) = 0;
 
 		  num_fields++;
 		}
 	    }
 
-	  child_die = sibling_die (child_die);
+	  child_die = sibling_die(child_die);
 	}
 
       if (num_fields)
 	{
-	  TYPE_NFIELDS (die->type) = num_fields;
-	  TYPE_FIELDS (die->type) = (struct field *)
-	    TYPE_ALLOC (die->type, sizeof (struct field) * num_fields);
-	  memcpy (TYPE_FIELDS (die->type), fields,
-		  sizeof (struct field) * num_fields);
-	  xfree (fields);
+	  TYPE_NFIELDS(die->type) = (short)num_fields;
+	  TYPE_FIELDS(die->type) = ((struct field *)
+				    TYPE_ALLOC(die->type,
+					       (sizeof(struct field)
+						* num_fields)));
+	  memcpy(TYPE_FIELDS (die->type), fields,
+		 (sizeof(struct field) * num_fields));
+	  xfree(fields);
 	}
       if (unsigned_enum)
-	TYPE_FLAGS (die->type) |= TYPE_FLAG_UNSIGNED;
+	TYPE_FLAGS(die->type) |= TYPE_FLAG_UNSIGNED;
     }
 
   new_symbol (die, die->type, cu);
@@ -7047,14 +7032,15 @@ read_subroutine_type (struct die_info *die, struct dwarf2_cu *cu)
 	  if (child_die->tag == DW_TAG_formal_parameter)
 	    nparams++;
 	  else if (child_die->tag == DW_TAG_unspecified_parameters)
-	    TYPE_FLAGS (ftype) |= TYPE_FLAG_VARARGS;
-	  child_die = sibling_die (child_die);
+	    TYPE_FLAGS(ftype) |= TYPE_FLAG_VARARGS;
+	  child_die = sibling_die(child_die);
 	}
 
-      /* Allocate storage for parameters and fill them in.  */
-      TYPE_NFIELDS (ftype) = nparams;
-      TYPE_FIELDS (ftype) = (struct field *)
-	TYPE_ALLOC (ftype, nparams * sizeof (struct field));
+      /* Allocate storage for parameters and fill them in: */
+      TYPE_NFIELDS(ftype) = (short)nparams;
+      TYPE_FIELDS(ftype) = ((struct field *)
+			    TYPE_ALLOC(ftype,
+				       (nparams * sizeof (struct field))));
 
       child_die = die->child;
       while (child_die && child_die->tag)
@@ -7422,7 +7408,7 @@ dwarf2_read_abbrevs(bfd *abfd, struct dwarf2_cu *cu)
                          read_unsigned_leb128(abfd, abbrev_ptr,
                                               &bytes_read));
       abbrev_ptr += bytes_read;
-      cur_abbrev->has_children = read_1_byte(abfd, abbrev_ptr);
+      cur_abbrev->has_children = (unsigned short)read_1_byte(abfd, abbrev_ptr);
       abbrev_ptr += 1;
 
       if (cur_abbrev->tag == DW_TAG_namespace)
@@ -7526,7 +7512,6 @@ dwarf2_lookup_abbrev(unsigned int number, struct dwarf2_cu *cu)
 
 /* Returns nonzero if TAG represents a type that we might generate a partial
    symbol for.  */
-
 static int
 is_type_tag_for_partial(int tag)
 {
@@ -7953,18 +7938,19 @@ read_partial_die(struct partial_die_info *part_die,
 	  /* Ignore absolute siblings, they might point outside of
 	     the current compile unit.  */
 	  if (attr.form == DW_FORM_ref_addr)
-	    complaint (&symfile_complaints, _("ignoring absolute DW_AT_sibling"));
+	    complaint(&symfile_complaints,
+		      _("ignoring absolute DW_AT_sibling"));
 	  else
-	    part_die->sibling = dwarf2_per_objfile->info_buffer
-	      + dwarf2_get_ref_die_offset (&attr, cu);
+	    part_die->sibling = (dwarf2_per_objfile->info_buffer
+				 + dwarf2_get_ref_die_offset(&attr, cu));
 	  break;
         case DW_AT_stmt_list:
           part_die->has_stmt_list = 1;
-          part_die->line_offset = DW_UNSND (&attr);
+          part_die->line_offset = DW_UNSND(&attr);
           break;
         /* APPLE LOCAL begin differentiate between Arm & Thumb */
         case DW_AT_APPLE_isa:
-          part_die->isa_value = DW_SND (&attr);
+          part_die->isa_value = (short)DW_SND(&attr);
           break;
         /* APPLE LOCAL end differentiate between Arm & Thumb */
 	default:
@@ -8919,44 +8905,45 @@ dwarf_decode_line_header(unsigned int offset, bfd *abfd,
     (unsigned int)read_initial_length(abfd, line_ptr, &cu->header,
 				      (int *)&bytes_read);
   line_ptr += bytes_read;
-  if (line_ptr + lh->total_length > (dwarf2_per_objfile->line_buffer
-				     + dwarf2_per_objfile->line_size))
+  if ((line_ptr + lh->total_length) > (dwarf2_per_objfile->line_buffer
+				       + dwarf2_per_objfile->line_size))
     {
-      dwarf2_statement_list_fits_in_line_number_section_complaint ();
+      dwarf2_statement_list_fits_in_line_number_section_complaint();
       return 0;
     }
-  lh->statement_program_end = line_ptr + lh->total_length;
-  lh->version = read_2_bytes (abfd, line_ptr);
+  lh->statement_program_end = (line_ptr + lh->total_length);
+  lh->version = (unsigned short)read_2_bytes(abfd, line_ptr);
   line_ptr += 2;
   /* APPLE LOCAL Add cast to avoid type mismatch in arg4 warning.  */
   lh->header_length = (unsigned int)read_offset(abfd, line_ptr, &cu->header,
 						(int *)&bytes_read);
   line_ptr += bytes_read;
-  lh->minimum_instruction_length = read_1_byte (abfd, line_ptr);
+  lh->minimum_instruction_length = (unsigned char)read_1_byte(abfd, line_ptr);
   line_ptr += 1;
-  lh->default_is_stmt = read_1_byte (abfd, line_ptr);
+  lh->default_is_stmt = (unsigned char)read_1_byte(abfd, line_ptr);
   line_ptr += 1;
-  lh->line_base = read_1_signed_byte (abfd, line_ptr);
+  lh->line_base = read_1_signed_byte(abfd, line_ptr);
   line_ptr += 1;
-  lh->line_range = read_1_byte (abfd, line_ptr);
+  lh->line_range = (unsigned char)read_1_byte(abfd, line_ptr);
   line_ptr += 1;
-  lh->opcode_base = read_1_byte (abfd, line_ptr);
+  lh->opcode_base = (unsigned char)read_1_byte(abfd, line_ptr);
   line_ptr += 1;
-  lh->standard_opcode_lengths
-    = (unsigned char *) xmalloc (lh->opcode_base * sizeof (unsigned char));
+  lh->standard_opcode_lengths =
+    (unsigned char *)xmalloc(lh->opcode_base * sizeof(unsigned char));
 
   lh->standard_opcode_lengths[0] = 1;  /* This should never be used anyway.  */
   for (i = 1; i < lh->opcode_base; ++i)
     {
-      lh->standard_opcode_lengths[i] = read_1_byte (abfd, line_ptr);
+      lh->standard_opcode_lengths[i] = (unsigned char)read_1_byte(abfd,
+								  line_ptr);
       line_ptr += 1;
     }
 
-  /* Read directory table.  */
-  while ((cur_dir = read_string (abfd, line_ptr, &bytes_read)) != NULL)
+  /* Read directory table: */
+  while ((cur_dir = read_string(abfd, line_ptr, &bytes_read)) != NULL)
     {
       line_ptr += bytes_read;
-      add_include_dir (lh, cur_dir);
+      add_include_dir(lh, cur_dir);
     }
   line_ptr += bytes_read;
 
@@ -9311,7 +9298,6 @@ lowpc        highpc	function
   (LNE_end_sequence)), we need to check each address to see if it is in mapped
   in the output both as a low and high pc address.
  */
-
 static CORE_ADDR
 translate_debug_map_address_with_tuple(struct oso_to_final_addr_map *map,
                                        struct oso_final_addr_tuple *match,
@@ -9419,13 +9405,12 @@ translate_debug_map_address_with_tuple(struct oso_to_final_addr_map *map,
   are translating ADDRESS that the same as OSO_HIGH_ADDR member of a
   tuple and take extra care when translating these entries.
  */
-
 static int
-dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu,
-		    CORE_ADDR address, CORE_ADDR baseaddr, int file, int line,
-		    int end_sequence)
+dwarf2_record_line(struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu,
+		   CORE_ADDR address, CORE_ADDR baseaddr, int file, int line,
+		   int end_sequence)
 {
-  CORE_ADDR final_addr = (CORE_ADDR) -1;
+  CORE_ADDR final_addr = INVALID_ADDRESS;
   int record_final_addr = 0;
   int num_lines_recorded = 0;
   struct oso_to_final_addr_map *map = cu->addr_map;
@@ -9485,10 +9470,10 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 		 anything special.  */
 	      if (match->present_in_final)
 		{
-		  final_addr = translate_debug_map_address_with_tuple (map,
-							     	       match,
-							     	       address,
-    							           end_sequence);
+		  final_addr = translate_debug_map_address_with_tuple(map,
+								      match,
+								      address,
+								  end_sequence);
 		  record_final_addr = 1;
 		}
 	    }
@@ -9507,18 +9492,18 @@ dwarf2_record_line (struct line_header *lh, char *comp_dir, struct dwarf2_cu *cu
 		{
 		  /* Set NEXT correctly if it already isn't is there is a next
 		     tuple.  */
-		  if (match + 1 < last_tuple)
-		    next = match + 1;
+		  if ((match + 1) < last_tuple)
+		    next = (match + 1);
 		}
 
 	      if (match->present_in_final)
 		{
 		  /* Translate ADDRESS as a highpc address for the function
 		     described by MATCH (func_a).  */
-		  final_addr = translate_debug_map_address_with_tuple (map,
-								       match,
-								       address,
-								       1);
+		  final_addr = translate_debug_map_address_with_tuple(map,
+								      match,
+								      address,
+								      1);
 		  record_final_addr = 1;
 		}
 
@@ -9706,23 +9691,23 @@ dwarf_decode_lines (struct line_header *lh, char *comp_dir, bfd *abfd,
 	     at the end of the line table. */
 	  if (line_ptr >= line_end)
 	    {
-	      complaint (&symfile_complaints,
-			 _("Missing end sequence in DWARF2 line table."));
+	      complaint(&symfile_complaints,
+			_("Missing end sequence in DWARF2 line table."));
 	      op_code = DW_LNS_extended_op;
 	    }
 	  else
 	    {
-	      op_code = read_1_byte (abfd, line_ptr);
+	      op_code = (unsigned char)read_1_byte(abfd, line_ptr);
 	      line_ptr += 1;
 	    }
 
 	  if (op_code >= lh->opcode_base)
 	    {
-	      /* Special operand.  */
-	      adj_opcode = op_code - lh->opcode_base;
-	      address += (adj_opcode / lh->line_range)
-		* lh->minimum_instruction_length;
-	      line += lh->line_base + (adj_opcode % lh->line_range);
+	      /* Special operand: */
+	      adj_opcode = (op_code - lh->opcode_base);
+	      address += ((adj_opcode / lh->line_range)
+			  * lh->minimum_instruction_length);
+	      line += (lh->line_base + (adj_opcode % lh->line_range));
               lh->file_names[file - 1].included_p = 1;
               if (!decode_for_pst_p)
 		dwarf2_record_line (lh, comp_dir, cu, address, baseaddr, file,
@@ -9740,9 +9725,9 @@ dwarf_decode_lines (struct line_header *lh, char *comp_dir, bfd *abfd,
 		}
 	      else
 		{
-		  read_unsigned_leb128 (abfd, line_ptr, &bytes_read);
+		  read_unsigned_leb128(abfd, line_ptr, &bytes_read);
 		  line_ptr += bytes_read;
-		  extended_op = read_1_byte (abfd, line_ptr);
+		  extended_op = (unsigned char)read_1_byte(abfd, line_ptr);
 		  line_ptr += 1;
 		}
 
@@ -10098,7 +10083,7 @@ new_symbol(struct die_info *die, struct type *type, struct dwarf2_cu *cu)
       attr = dwarf2_attr(die, DW_AT_decl_line, cu);
       if (attr)
 	{
-	  SYMBOL_LINE(sym) = DW_UNSND(attr);
+	  SYMBOL_LINE(sym) = (unsigned short)DW_UNSND(attr);
 	}
       gdb_assert(die != NULL);
       switch (die->tag)

@@ -1658,17 +1658,17 @@ varobj_update (struct varobj **varp, struct varobj_changelist **changelist)
       if (newval != NULL)
         fprintf_unfiltered(gdb_stdlog,
                            "Updating variable: %s (%s) got new value %p.\n",
-                           (*varp)->name, (*varp)->obj_name, newval);
+                           (*varp)->name, (*varp)->obj_name, (void *)newval);
       else
         fprintf_unfiltered(gdb_stdlog,
                            "Updating variable: %s (%s) got new value.\n",
                            (*varp)->name, (*varp)->obj_name);
     }
 
-  if (newval != NULL && value_lazy(newval))
+  if ((newval != NULL) && value_lazy(newval))
     {
       if (!gdb_value_fetch_lazy(newval))
-      newval = NULL;
+	newval = NULL;
     }
 
   if (newval == NULL)

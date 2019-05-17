@@ -3346,7 +3346,7 @@ hex_string_custom(LONGEST num, int width)
  * and 'o' formats do not include a prefix (0x or leading 0). */
 
 char *
-int_string(LONGEST val, int radix, int is_signed, int width,
+int_string(LONGEST val, int radix, int is_signed, int8_t width,
 	   int use_c_format)
 {
   switch (radix)

@@ -816,20 +816,21 @@ define_symbol(CORE_ADDR valu, const char *string, const char *prefix,
      e.g. ":t10=*2" or a nameless enum like " :T16=ered:0,green:1,blue:2,;" */
   nameless = (p == string || ((string[0] == ' ') && (string[1] == ':')));
 
-  current_symbol = sym = (struct symbol *)
-    obstack_alloc(&objfile->objfile_obstack, sizeof(struct symbol));
+  current_symbol = sym = ((struct symbol *)
+			  obstack_alloc(&objfile->objfile_obstack,
+					sizeof(struct symbol)));
   memset(sym, 0, sizeof(struct symbol));
 
   switch (type & N_TYPE)
     {
     case N_TEXT:
-      SYMBOL_SECTION(sym) = SECT_OFF_TEXT(objfile);
+      SYMBOL_SECTION(sym) = (short)SECT_OFF_TEXT(objfile);
       break;
     case N_DATA:
-      SYMBOL_SECTION(sym) = SECT_OFF_DATA(objfile);
+      SYMBOL_SECTION(sym) = (short)SECT_OFF_DATA(objfile);
       break;
     case N_BSS:
-      SYMBOL_SECTION(sym) = SECT_OFF_BSS(objfile);
+      SYMBOL_SECTION(sym) = (short)SECT_OFF_BSS(objfile);
       break;
     default:
       break;
@@ -839,7 +840,7 @@ define_symbol(CORE_ADDR valu, const char *string, const char *prefix,
     {
       /* GCC 2.x puts the line number in desc.  SunOS apparently puts in the
          number of bytes occupied by a type or object, which we ignore.  */
-      SYMBOL_LINE(sym) = desc;
+      SYMBOL_LINE(sym) = (short)desc;
     }
   else
     {
@@ -1110,22 +1111,22 @@ define_symbol(CORE_ADDR valu, const char *string, const char *prefix,
 	         a TYPE_CODE_VOID type by read_type, and we have to turn
 	         it back into builtin_type_int here.
 	         FIXME: Do we need a new builtin_type_promoted_int_arg ?  */
-	      if (TYPE_CODE (ptype) == TYPE_CODE_VOID)
+	      if (TYPE_CODE(ptype) == TYPE_CODE_VOID)
 		ptype = builtin_type_int;
-	      TYPE_FIELD_TYPE (ftype, nparams) = ptype;
-	      TYPE_FIELD_ARTIFICIAL (ftype, nparams++) = 0;
+	      TYPE_FIELD_TYPE(ftype, nparams) = ptype;
+	      TYPE_FIELD_ARTIFICIAL(ftype, nparams++) = 0;
 	    }
-	  TYPE_NFIELDS (ftype) = nparams;
-	  TYPE_FLAGS (ftype) |= TYPE_FLAG_PROTOTYPED;
+	  TYPE_NFIELDS(ftype) = (short)nparams;
+	  TYPE_FLAGS(ftype) |= TYPE_FLAG_PROTOTYPED;
 	}
       break;
 
     case 'F':
-      /* A global function definition.  */
-      SYMBOL_TYPE (sym) = read_type (&p, objfile);
-      SYMBOL_CLASS (sym) = LOC_BLOCK;
-      SYMBOL_DOMAIN (sym) = VAR_DOMAIN;
-      add_symbol_to_list (sym, &global_symbols);
+      /* A global function definition: */
+      SYMBOL_TYPE(sym) = read_type(&p, objfile);
+      SYMBOL_CLASS(sym) = LOC_BLOCK;
+      SYMBOL_DOMAIN(sym) = VAR_DOMAIN;
+      add_symbol_to_list(sym, &global_symbols);
       goto process_function_types;
 
     case 'G':
@@ -2002,28 +2003,28 @@ again:
           /* We stuck each argument type onto the front of the list
              when we read it, so the list is reversed.  Build the
              fields array right-to-left.  */
-          for (t = arg_types, i = num_args - 1; t; t = t->next, i--)
-            TYPE_FIELD_TYPE (func_type, i) = t->type;
+          for (t = arg_types, i = (num_args - 1); t; t = t->next, i--)
+            TYPE_FIELD_TYPE(func_type, i) = t->type;
         }
-        TYPE_NFIELDS (func_type) = num_args;
-        TYPE_FLAGS (func_type) |= TYPE_FLAG_PROTOTYPED;
+        TYPE_NFIELDS(func_type) = (short)num_args;
+        TYPE_FLAGS(func_type) |= TYPE_FLAG_PROTOTYPED;
 
         type = func_type;
         break;
       }
 
     case 'k':			/* Const qualifier on some type (Sun) */
-      type = read_type (pp, objfile);
-      type = make_cvr_type (1, TYPE_VOLATILE (type), TYPE_RESTRICT (type), type,
+      type = read_type(pp, objfile);
+      type = make_cvr_type(1, TYPE_VOLATILE(type), TYPE_RESTRICT(type), type,
 			   /* APPLE LOCAL objfile for types */
-			   dbx_lookup_type (typenums, objfile));
+			   dbx_lookup_type(typenums, objfile));
       break;
 
     case 'B':			/* Volatile qual on some type (Sun) */
-      type = read_type (pp, objfile);
-      type = make_cvr_type (TYPE_CONST (type), 1, TYPE_RESTRICT (type), type,
+      type = read_type(pp, objfile);
+      type = make_cvr_type(TYPE_CONST(type), 1, TYPE_RESTRICT(type), type,
 			   /* APPLE LOCAL objfile for types */
-			   dbx_lookup_type (typenums, objfile));
+			   dbx_lookup_type(typenums, objfile));
       break;
 
     case '@':
@@ -2972,13 +2973,15 @@ read_member_functions(struct field_info *fip, const char **pp,
     }
   if (nfn_fields)
     {
-      ALLOCATE_CPLUS_STRUCT_TYPE (type);
-      TYPE_FN_FIELDLISTS (type) = (struct fn_fieldlist *)
-	TYPE_ALLOC (type, sizeof (struct fn_fieldlist) * nfn_fields);
-      memset (TYPE_FN_FIELDLISTS (type), 0,
-	      sizeof (struct fn_fieldlist) * nfn_fields);
-      TYPE_NFN_FIELDS (type) = nfn_fields;
-      TYPE_NFN_FIELDS_TOTAL (type) = total_length;
+      ALLOCATE_CPLUS_STRUCT_TYPE(type);
+      TYPE_FN_FIELDLISTS(type) = ((struct fn_fieldlist *)
+				  TYPE_ALLOC(type,
+					     (sizeof(struct fn_fieldlist)
+					      * nfn_fields)));
+      memset(TYPE_FN_FIELDLISTS(type), 0,
+	     (sizeof(struct fn_fieldlist) * nfn_fields));
+      TYPE_NFN_FIELDS(type) = (short)nfn_fields;
+      TYPE_NFN_FIELDS_TOTAL(type) = (short)total_length;
     }
 
   return 1;
@@ -3360,7 +3363,7 @@ read_baseclasses(struct field_info *fip, const char **pp, struct type *type,
   ALLOCATE_CPLUS_STRUCT_TYPE(type);
   {
     int nbits;
-    TYPE_N_BASECLASSES(type) = read_huge_number(pp, ',', &nbits, 0);
+    TYPE_N_BASECLASSES(type) = (short)read_huge_number(pp, ',', &nbits, 0);
     if (nbits != 0)
       return 0;
   }
@@ -3526,19 +3529,19 @@ read_tilde_fields(struct field_info *fip, const char **pp, struct type *type,
 		  if (!strncmp(name, vptr_name, (sizeof(vptr_name) - 2UL))
 		      && is_cplus_marker(name[sizeof(vptr_name) - 2]))
 		    {
-		      TYPE_VPTR_FIELDNO(type) = i;
+		      TYPE_VPTR_FIELDNO(type) = (short)i;
 		      goto gotit;
 		    }
 		}
-	      /* Virtual function table field not found.  */
-	      complaint (&symfile_complaints,
-			 _("virtual function table pointer not found when defining class `%s'"),
-			 TYPE_NAME (type));
+	      /* Virtual function table field not found: */
+	      complaint(&symfile_complaints,
+			_("virtual function table pointer not found when defining class `%s'"),
+			TYPE_NAME(type));
 	      return 0;
 	    }
 	  else
 	    {
-	      TYPE_VPTR_FIELDNO (type) = TYPE_VPTR_FIELDNO (t);
+	      TYPE_VPTR_FIELDNO(type) = TYPE_VPTR_FIELDNO(t);
 	    }
 
 	gotit:
@@ -3593,18 +3596,18 @@ attach_fields_to_type (struct field_info *fip, struct type *type,
      non-public fields.  Record the field count, allocate space for the
      array of fields, and create blank visibility bitfields if necessary. */
 
-  TYPE_NFIELDS (type) = nfields;
-  TYPE_FIELDS (type) = (struct field *)
-    TYPE_ALLOC (type, sizeof (struct field) * nfields);
-  memset (TYPE_FIELDS (type), 0, sizeof (struct field) * nfields);
+  TYPE_NFIELDS(type) = (short)nfields;
+  TYPE_FIELDS(type) = ((struct field *)
+		       TYPE_ALLOC(type, (sizeof(struct field) * nfields)));
+  memset(TYPE_FIELDS(type), 0, (sizeof(struct field) * nfields));
 
   if (non_public_fields)
     {
-      ALLOCATE_CPLUS_STRUCT_TYPE (type);
+      ALLOCATE_CPLUS_STRUCT_TYPE(type);
 
-      TYPE_FIELD_PRIVATE_BITS (type) =
-	(B_TYPE *) TYPE_ALLOC (type, B_BYTES (nfields));
-      B_CLRALL (TYPE_FIELD_PRIVATE_BITS (type), nfields);
+      TYPE_FIELD_PRIVATE_BITS(type) =
+	(B_TYPE *)TYPE_ALLOC(type, B_BYTES(nfields));
+      B_CLRALL(TYPE_FIELD_PRIVATE_BITS(type), nfields);
 
       TYPE_FIELD_PROTECTED_BITS (type) =
 	(B_TYPE *) TYPE_ALLOC (type, B_BYTES (nfields));
@@ -3920,15 +3923,15 @@ read_enum_type(const char **pp, struct type *type,
 
   /* Now fill in the fields of the type-structure.  */
 
-  TYPE_LENGTH_ASSIGN (type) = TARGET_INT_BIT / HOST_CHAR_BIT;
-  TYPE_CODE (type) = TYPE_CODE_ENUM;
-  TYPE_FLAGS (type) &= ~TYPE_FLAG_STUB;
+  TYPE_LENGTH_ASSIGN(type) = (TARGET_INT_BIT / HOST_CHAR_BIT);
+  TYPE_CODE(type) = TYPE_CODE_ENUM;
+  TYPE_FLAGS(type) &= ~TYPE_FLAG_STUB;
   if (unsigned_enum)
-    TYPE_FLAGS (type) |= TYPE_FLAG_UNSIGNED;
-  TYPE_NFIELDS (type) = nsyms;
-  TYPE_FIELDS (type) = (struct field *)
-    TYPE_ALLOC (type, sizeof (struct field) * nsyms);
-  memset (TYPE_FIELDS (type), 0, sizeof (struct field) * nsyms);
+    TYPE_FLAGS(type) |= TYPE_FLAG_UNSIGNED;
+  TYPE_NFIELDS(type) = (short)nsyms;
+  TYPE_FIELDS(type) = ((struct field *)
+		       TYPE_ALLOC(type, (sizeof(struct field) * nsyms)));
+  memset(TYPE_FIELDS(type), 0, (sizeof(struct field) * nsyms));
 
   /* Find the symbols for the values and put them into the type.
      The symbols can be found in the symlist that we put them on

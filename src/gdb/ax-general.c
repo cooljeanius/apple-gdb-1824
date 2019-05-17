@@ -132,10 +132,10 @@ read_const(struct agent_expr *x, int o, int n)
 
 /* Append a simple operator OP to EXPR.  */
 void
-ax_simple (struct agent_expr *x, enum agent_op op)
+ax_simple(struct agent_expr *x, enum agent_op op)
 {
-  grow_expr (x, 1);
-  x->buf[x->len++] = op;
+  grow_expr(x, 1);
+  x->buf[x->len++] = (unsigned char)op;
 }
 
 
@@ -152,7 +152,7 @@ generic_ext(struct agent_expr *x, enum agent_op op, int n)
     error(_("GDB bug: ax-general.c (generic_ext): opcode has inadequate range"));
 
   grow_expr(x, 2);
-  x->buf[x->len++] = op;
+  x->buf[x->len++] = (unsigned char)op;
   x->buf[x->len++] = (char)n;
 }
 
@@ -197,7 +197,7 @@ int
 ax_goto(struct agent_expr *x, enum agent_op op)
 {
   grow_expr(x, 3);
-  x->buf[x->len + 0] = op;
+  x->buf[x->len + 0] = (unsigned char)op;
   x->buf[x->len + 1] = 0xff;
   x->buf[x->len + 2] = 0xff;
   x->len += 3;

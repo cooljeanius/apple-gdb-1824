@@ -47796,7 +47796,7 @@ build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wunused-value -Wunused-label -Wunused-result \
 -Wunused-variable -Wunused-but-set-variable -Wunused-but-set-parameter \
 -Wunused-function -Wempty-body -Wmissing-declarations \
--Wignored-qualifiers -Wmissing-format-attribute -Waddress -Wattributes \
+-Wignored-qualifiers -Wmissing-format-attribute -Wattributes \
 -Wignored-attributes -Wswitch -Wswitch-default -Wclobbered \
 -Wcoverage-mismatch -Wdiv-by-zero -Wdouble-promotion \
 -Wfree-nonheap-object -Wrestrict -Wsign-compare -Wpointer-compare \
@@ -47890,7 +47890,8 @@ case "${host}" in
     # FSF gcc, but it only makes sense on Apple platforms.
     build_warnings="${build_warnings} -Wmost -Wextra-tokens -Wnewline-eof \
 -Wendif-labels -Wformat -Wformat-y2k -Wformat-security -Wnonnull \
--Wnonportable-cfstrings -Wno-unused-const-variable ${stdflag}"
+-Wnonportable-cfstrings -Wfour-char-constants \
+-Wno-unused-const-variable ${stdflag}"
     case "${host}" in
       *64*-apple-darwin9* | *64*-apple-darwin1[0123456789].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"
@@ -47929,22 +47930,61 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
 -Wbool-conversion -Wconstant-logical-operand -Wunused-comparison \
 -Wtautological-constant-out-of-range-compare -Wunevaluated-expression \
 -Wextra-semi -Wunsequenced -Wself-assign -Wshift-sign-overflow \
--Wstatic-in-inline -Wparentheses-equality -Winvalid-noreturn \
--Wincompatible-pointer-types-discards-qualifiers -Wasm \
+-Wstatic-in-inline -Wparentheses-equality -Winvalid-noreturn -Wc11-extensions \
+-Wincompatible-pointer-types-discards-qualifiers -Wasm -Wassign-enum \
 -Wfor-loop-analysis -Wloop-analysis -Wconditional-uninitialized \
--Wunreachable-code-loop-increment -Wtautological-pointer-compare \
--Wmissing-variable-declarations -Wdocumentation"
+-Wunreachable-code-loop-increment -Wvisibility -Wgnu-anonymous-struct \
+-Watomic-properties -Wauto-import -Wbinary-literal -Wbitfield-enum-conversion \
+-Wcomplex-component-init -Wconsumed -Wcstring-format-directive -Wdate-time \
+-Wdirect-ivar-access -Wdisabled-macro-expansion -Wdocumentation-html \
+-Wdollar-in-identifier-extension -Wduplicate-enum -Wgnu-folding-constant \
+-Wembedded-directive -Wempty-init-stmt -Wempty-translation-unit \
+-Wfixed-enum-extension -Wflexible-array-extensions -Wmicrosoft \
+-Wfloat-overflow-conversion -Wfloat-zero-conversion -Wformat-non-iso \
+-Wformat-pedantic -Widiomatic-parentheses -Wimplicit-float-conversion \
+-Wimplicit-int-conversion -Winfinite-recursion -Wkeyword-macro \
+-Wlanguage-extension-token -Wmissing-method-return-type -Wnested-anon-types \
+-Wnonportable-system-include-path -Wnullability-extension -Wgnu-case-range \
+-Wnullable-to-nonnull-conversion -Wover-aligned -Wreserved-id-macro \
+-Wpragma-pack-suspicious-include -Wprofile-instr-missing -Wgnu-binary-literal \
+-Wquoted-include-in-framework-header -Wredundant-parens -Wgnu-auto-type \
+-Wself-assign-overloaded -Wsigned-enum-bitfield -Wsometimes-uninitialized \
+-Wtautological-overlap-compare -Wtautological-type-limit-compare \
+-Wtautological-unsigned-enum-zero-compare -Wzero-length-array \
+-Wtautological-unsigned-zero-compare -Wthread-safety -Wvector-conversion \
+-Wgnu-complex-integer -Wgnu-compound-literal-initializer \
+-Wgnu-conditional-omitted-operand -Wgnu-empty-initializer -Wgnu-empty-struct \
+-Wgnu-flexible-array-initializer -Wgnu-flexible-array-union-member \
+-Wgnu-imaginary-constant -Wgnu-include-next -Wgnu-label-as-value \
+-Wgnu-statement-expression -Wgnu-union-cast -Wgnu-zero-line-directive \
+-Wgnu-zero-variadic-macro-arguments"
   # Up for debate (i.e. for debating adding to existing flags here):
   # * -Wunreachable-code and its suboptions for returns and breaks
   # * -Wgnu-redeclared-enum
   # * -Wextended-offsetof
   # * -Wcomma (false positives)
+  # * -Wmissing-variable-declarations (triggers in generated code)
+  # * -Wdocumentation-deprecated-sync (triggers in headers out of our control)
+  # * -Wdocumentation-pedantic (enables -Wdocumentation-unknown-command, which
+  #   triggers in headers out of our control)
+  # * -Wtautological-pointer-compare (not sure how to fix)
+  # * -Wnull-pointer-arithmetic (triggers in obstack headers)
   if test "x${enable_build_with_cxx}" = "xyes"; then
     build_warnings="${build_warnings} -Wmismatched-tags \
--Wmissing-exception-spec -Wnon-literal-null-conversion \
+-Wmissing-exception-spec -Wnon-literal-null-conversion -Wshadow-field \
 -Wpredefined-identifier-outside-function -Wvexing-parse \
 -Wreturn-stack-address -Wshadow-field-in-constructor -Wunused-private-field \
--Wvla-extension -Wno-deprecated"
+-Wvla-extension -Wabstract-vbase-init -Wbind-to-temporary-copy \
+-Wctad-maybe-unsupported -Wdelete-non-abstract-non-virtual-dtor \
+-Wduplicate-method-arg -Wduplicate-method-match -Wexit-time-destructors \
+-Wexplicit-ownership-type -Wheader-hygiene -Wmethod-signatures \
+-Winconsistent-missing-destructor-override -Wnon-modular-include-in-module \
+-Wretained-language-linkage -Wreturn-std-move -Wreturn-std-move-in-c++11 \
+-Wself-move -Wsemicolon-before-method-body -Wshadow-uncaptured-local \
+-Wsuper-class-method-mismatch -Wundefined-func-template \
+-Wundefined-internal-type -Wundefined-reinterpret-cast -Wweak-vtables \
+-Wunneeded-member-function -Wunsupported-dll-base-class-template \
+-Wweak-template-vtables -Wno-deprecated"
   fi
   ## mig typechecks cause parameters that would otherwise be unused to be
   ## used, triggering this:
@@ -47955,8 +47995,9 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
   ## the clang version of this warning is un-pluralized, unlike in GCC:
   build_warnings="${build_warnings} -Wno-unused-local-typedef"
 else
-  ## really only noisy with clang:
-  build_warnings="${build_warnings} -Wcast-align"
+  ## -Waddress turns on -Wtautological-pointer-compare with clang, and
+  ## -Wcast-align is really only noisy with clang:
+  build_warnings="${build_warnings} -Waddress -Wcast-align"
 fi
 
 if test "x${acl_cv_wa}" = "x"; then

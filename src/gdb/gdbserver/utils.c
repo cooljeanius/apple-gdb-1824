@@ -62,11 +62,12 @@ void
 error(const char *string,...)
 {
   va_list args;
-  va_start (args, string);
-  fflush (stdout);
-  vfprintf (stderr, string, args);
-  fprintf (stderr, "\n");
-  longjmp (toplevel, 1);
+  va_start(args, string);
+  fflush(stdout);
+  vfprintf(stderr, string, args);
+  fprintf(stderr, "\n");
+  longjmp(toplevel, 1);
+  /* FIXME: -Winvalid-noreturn */
 }
 
 /* Print an error message and exit reporting failure.
@@ -75,27 +76,27 @@ error(const char *string,...)
 
 /* VARARGS */
 void
-fatal (const char *string,...)
+fatal(const char *string,...)
 {
   va_list args;
-  va_start (args, string);
-  fprintf (stderr, "gdb: ");
-  vfprintf (stderr, string, args);
-  fprintf (stderr, "\n");
-  va_end (args);
-  exit (1);
+  va_start(args, string);
+  fprintf(stderr, "gdb: ");
+  vfprintf(stderr, string, args);
+  fprintf(stderr, "\n");
+  va_end(args);
+  exit(1);
 }
 
 /* VARARGS */
 void
-warning (const char *string,...)
+warning(const char *string,...)
 {
   va_list args;
-  va_start (args, string);
-  fprintf (stderr, "gdb: ");
-  vfprintf (stderr, string, args);
-  fprintf (stderr, "\n");
-  va_end (args);
+  va_start(args, string);
+  fprintf(stderr, "gdb: ");
+  vfprintf(stderr, string, args);
+  fprintf(stderr, "\n");
+  va_end(args);
 }
 
 /* EOF */

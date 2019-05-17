@@ -1197,7 +1197,7 @@ read_in_db_abbrev_table(struct abbrev_info **abbrev_table, sqlite3 *db)
       a_ptr = attributes;
       (*abbrev_table)[abbrev_id].number = abbrev_id;
       (*abbrev_table)[abbrev_id].tag = (enum dwarf_tag)get_uleb128(&a_ptr);
-      (*abbrev_table)[abbrev_id].has_children = (int)(*a_ptr);
+      (*abbrev_table)[abbrev_id].has_children = (unsigned short)(*a_ptr);
       (*abbrev_table)[abbrev_id].next = NULL;
       a_ptr++;
       num_attribs = 0;
@@ -1220,7 +1220,7 @@ read_in_db_abbrev_table(struct abbrev_info **abbrev_table, sqlite3 *db)
 	  tail = attr_node;
 	}
       } while ((attrib != 0) || (form != 0));
-      (*abbrev_table)[abbrev_id].num_attrs = num_attribs;
+      (*abbrev_table)[abbrev_id].num_attrs = (unsigned short)num_attribs;
       (*abbrev_table)[abbrev_id].attrs =
 	((struct attr_abbrev *)
 	 xmalloc(num_attribs * sizeof(struct attr_abbrev)));
@@ -1445,7 +1445,7 @@ db_read_2_bytes(uint8_t *info_ptr)
 {
   uint16_t src = *((uint16_t *)info_ptr);
   if (byte_swap_p)
-    return (uint16_t)(src & 0x00ff) << 8 | (src & 0xff00) >> 8;
+    return (uint16_t)(((src & 0x00ff) << 8) | ((src & 0xff00) >> 8));
   else
     return src;
 }
