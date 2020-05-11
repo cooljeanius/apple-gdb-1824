@@ -325,11 +325,9 @@ FORMAT_FILE=""
 backtrace_supports_data=yes
 case "${libbacktrace_cv_sys_filetype}" in
 elf*) FORMAT_FILE="elf.lo" ;;
-mach-o*) AC_MSG_WARN([mach-o support is incomplete; treating as unknown])
-         FORMAT_FILE="unknown.lo"
-         backtrace_supports_data=no
-         backtrace_supported=no
-         ;;
+macho*) AC_MSG_WARN([mach-o support is a WIP])
+        FORMAT_FILE="macho.lo"
+        ;;
 *) AC_MSG_WARN([could not determine output file type])
    FORMAT_FILE="unknown.lo"
    backtrace_supported=no
@@ -462,6 +460,9 @@ if test "x${have_dl_iterate_phdr}" = "xyes"; then
             [Define to 1 if dl_iterate_phdr is available.])
 fi
 
+# Check for header file for Mach-O image functions.
+AC_CHECK_HEADERS([mach-o/dyld.h])dnl
+
 # Check for the fcntl function.
 if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
    case "${host}" in
@@ -497,6 +498,11 @@ fi
 if test "x${have_getexecname}" = "xyes"; then
   AC_DEFINE([HAVE_GETEXECNAME],[1],[Define if getexecname is available.])
 fi
+
+AC_ARG_VAR([DSYMUTIL],[location of dsymutil])
+AC_CHECK_PROG([DSYMUTIL],[dsymutil],[dsymutil])
+AM_CONDITIONAL([HAVE_DSYMUTIL],
+               [test -n "${DSYMUTIL}" && test -x "${DSYMUTIL}"])dnl
 
 AC_CACHE_CHECK([whether tests can run],
   [libbacktrace_cv_sys_native],

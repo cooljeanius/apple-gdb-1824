@@ -1,3 +1,19 @@
+2020-05-09  Ian Lance Taylor  <iant@golang.org>
+
+       PR libbacktrace/88745
+       * macho.c: New file.
+       * filetype.awk: Recognize Mach-O files.
+       * Makefile.am (FORMAT_FILES): Add macho.c.
+       (check_DATA): New variable.  Set to .dSYM if HAVE_DSYMUTIL.
+       (%.dSYM): New pattern target.
+       (macho.lo): Add dependencies.
+       * configure.ac: Recognize macho file type.  Check for
+       mach-o/dyld.h.  Look for dsymutil and define a HAVE_DSYMUTIL
+       conditional.
+       * Makefile.in: Regenerate.
+       * configure: Regenerate.
+       * config.h.in: Regenerate.
+
 2014-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
 	PR bootstrap/63784

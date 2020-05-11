@@ -122,6 +122,7 @@ host_triplet = @host@
 target_triplet = @target@
 check_PROGRAMS = $(am__EXEEXT_1)
 @NATIVE_TRUE@am__append_1 = btest stest
+@HAVE_DSYMUTIL_TRUE@@NATIVE_TRUE@am__append_2 = btest.dSYM stest.dSYM
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/../config/lead-dot.m4 \
@@ -591,6 +592,7 @@ BACKTRACE_FILES = \
 
 FORMAT_FILES = \
 	elf.c \
+	macho.c \
 	unknown.c
 
 VIEW_FILES = \
@@ -641,7 +643,18 @@ MULTIDIRS =
 MULTISUBDIR = 
 MULTIDO = true
 MULTICLEAN = true
+
+# Add a test to this variable if you want it to be run.
 TESTS = $(check_PROGRAMS)
+
+# Add a test to this variable if you want it to be built and run.
+BUILDTESTS = 
+
+# Add a file to this variable if you want it to be built for testing.
+check_DATA = $(am__append_2)
+
+# Flags to use when compiling test programs.
+libbacktrace_TEST_CFLAGS = $(EXTRA_FLAGS) $(WARN_FLAGS) -g
 @NATIVE_TRUE@btest_SOURCES = btest.c
 @NATIVE_TRUE@btest_CFLAGS = $(AM_CFLAGS) -ggdb -O1 -Wno-unused-function
 @NATIVE_TRUE@btest_DEPENDENCIES = backtrace.h backtrace-supported.h
@@ -965,7 +978,7 @@ $(TEST_SUITE_LOG): $(TEST_LOGS)
 	fi;								\
 	$$success || exit 1
 
-check-TESTS: $(check_PROGRAMS)
+check-TESTS: $(check_PROGRAMS) $(check_DATA)
 	@list='$(RECHECK_LOGS)';           test -z "$$list" || rm -f $$list
 	@list='$(RECHECK_LOGS:.log=.trs)'; test -z "$$list" || rm -f $$list
 	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
@@ -975,7 +988,7 @@ check-TESTS: $(check_PROGRAMS)
 	log_list=`echo $$log_list`; trs_list=`echo $$trs_list`; \
 	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) TEST_LOGS="$$log_list"; \
 	exit $$?;
-recheck: all $(check_PROGRAMS)
+recheck: all $(check_PROGRAMS) $(check_DATA)
 	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 	@set +e; $(am__set_TESTS_bases); \
 	bases=`for i in $$bases; do echo $$i; done \
@@ -1015,7 +1028,7 @@ stest.log: stest$(EXEEXT)
 @am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
 @am__EXEEXT_TRUE@	"$$tst" $(AM_TESTS_FD_REDIRECT)
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS) $(check_DATA)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
@@ -1162,6 +1175,9 @@ all-am: default all-multi @MAINT@ Makefile.am
 	$(MAKE) $(libbacktrace_la_DEPENDENCIES) $(EXTRA_builddir_LTOBJECTS)
 install-exec-local: install-multi
 
+@HAVE_DSYMUTIL_TRUE@%.dSYM: %
+@HAVE_DSYMUTIL_TRUE@	$(DSYMUTIL) $<
+
 mostlyclean-local: mostlyclean-multi
 clean-local: clean-multi
 distclean-local: distclean-multi
@@ -1180,6 +1196,7 @@ dwarf.lo: config.h $(INCDIR)/dwarf2.h $(INCDIR)/dwarf2.def \
 	$(INCDIR)/filenames.h backtrace.h internal.h
 elf.lo: config.h backtrace.h internal.h
 fileline.lo: config.h backtrace.h internal.h
+macho.lo: config.h backtrace.h internal.h
 mmap.lo: config.h backtrace.h internal.h
 mmapio.lo: config.h backtrace.h internal.h
 nounwind.lo: config.h internal.h

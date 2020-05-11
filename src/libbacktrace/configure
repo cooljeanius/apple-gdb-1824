@@ -635,6 +635,8 @@ am__EXEEXT_TRUE
 LTLIBOBJS
 NATIVE_FALSE
 NATIVE_TRUE
+HAVE_DSYMUTIL_FALSE
+HAVE_DSYMUTIL_TRUE
 BACKTRACE_USES_MALLOC
 LIBOBJS
 ALLOC_FILE
@@ -796,7 +798,8 @@ CXX
 CXXFLAGS
 CCC
 LT_SYS_LIBRARY_PATH
-CXXCPP'
+CXXCPP
+DSYMUTIL'
 
 
 # Initialize some variables set by options.
@@ -1458,6 +1461,7 @@ Some influential environment variables:
   LT_SYS_LIBRARY_PATH
               User-defined run-time library search path.
   CXXCPP      C++ preprocessor
+  DSYMUTIL    location of dsymutil
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -17975,12 +17979,10 @@ FORMAT_FILE=""
 backtrace_supports_data=yes
 case "${libbacktrace_cv_sys_filetype}" in
 elf*) FORMAT_FILE="elf.lo" ;;
-mach-o*) { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: mach-o support is incomplete; treating as unknown" >&5
-$as_echo "$as_me: WARNING: mach-o support is incomplete; treating as unknown" >&2;}
-         FORMAT_FILE="unknown.lo"
-         backtrace_supports_data=no
-         backtrace_supported=no
-         ;;
+macho*) { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: mach-o support is a WIP" >&5
+$as_echo "$as_me: WARNING: mach-o support is a WIP" >&2;}
+        FORMAT_FILE="macho.lo"
+        ;;
 *) { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: could not determine output file type" >&5
 $as_echo "$as_me: WARNING: could not determine output file type" >&2;}
    FORMAT_FILE="unknown.lo"
@@ -19331,6 +19333,19 @@ $as_echo "#define HAVE_DL_ITERATE_PHDR 1" >>confdefs.h
 
 fi
 
+# Check for header file for Mach-O image functions.
+for ac_header in mach-o/dyld.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "mach-o/dyld.h" "ac_cv_header_mach_o_dyld_h" "$ac_includes_default"
+if test "x$ac_cv_header_mach_o_dyld_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_MACH_O_DYLD_H 1
+_ACEOF
+
+fi
+
+done
+
 # Check for the fcntl function.
 if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
    case "${host}" in
@@ -19465,6 +19480,52 @@ if test "x${have_getexecname}" = "xyes"; then
 
 $as_echo "#define HAVE_GETEXECNAME 1" >>confdefs.h
 
+fi
+
+
+# Extract the first word of "dsymutil", so it can be a program name with args.
+set dummy dsymutil; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_DSYMUTIL+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$DSYMUTIL"; then
+  ac_cv_prog_DSYMUTIL="$DSYMUTIL" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_DSYMUTIL="dsymutil"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+DSYMUTIL=$ac_cv_prog_DSYMUTIL
+if test -n "$DSYMUTIL"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $DSYMUTIL" >&5
+$as_echo "$DSYMUTIL" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+ if test -n "${DSYMUTIL}" && test -x "${DSYMUTIL}"; then
+  HAVE_DSYMUTIL_TRUE=
+  HAVE_DSYMUTIL_FALSE='#'
+else
+  HAVE_DSYMUTIL_TRUE='#'
+  HAVE_DSYMUTIL_FALSE=
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether tests can run" >&5
@@ -19648,6 +19709,10 @@ fi
 
 if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then
   as_fn_error $? "conditional \"MAINTAINER_MODE\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_DSYMUTIL_TRUE}" && test -z "${HAVE_DSYMUTIL_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_DSYMUTIL\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${NATIVE_TRUE}" && test -z "${NATIVE_FALSE}"; then

@@ -6047,6 +6047,7 @@
 		A5AFD2051A58B6DD006C21FE /* CodeFragmentTypes.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; path = CodeFragmentTypes.r; sourceTree = "<group>"; };
 		A5AFD2061A58B6F1006C21FE /* c-exp.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = "c-exp.y"; sourceTree = "<group>"; };
 		A5C4A6571A7A950900DBC833 /* cli-logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cli-logging.h"; sourceTree = "<group>"; };
+		A5C8EE972468FA1D0008BD0C /* macho.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = macho.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/macho.c"; sourceTree = "<absolute>"; };
 		A5CA6A8D1AC081B100716574 /* libiberty_deprecated.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libiberty_deprecated.h; sourceTree = "<group>"; };
 		A5CA6A8E1AC088E100716574 /* memmem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memmem.c; sourceTree = "<group>"; };
 		A5CA6B5F1AC10E3700716574 /* macosx-nat-cmds-load.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "macosx-nat-cmds-load.h"; sourceTree = "<group>"; };
@@ -11609,6 +11610,7 @@
 				A53AC5D11A4724BC002F20B2 /* fileline.c */,
 				A53AC5D31A4724BC002F20B2 /* gstdint.h */,
 				A53AC5D41A4724BC002F20B2 /* internal.h */,
+				A5C8EE972468FA1D0008BD0C /* macho.c */,
 				A53AC5D71A4724BC002F20B2 /* mmap.c */,
 				A53AC5D81A4724BC002F20B2 /* mmapio.c */,
 				A53AC5D91A4724BC002F20B2 /* nounwind.c */,

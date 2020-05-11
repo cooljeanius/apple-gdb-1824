@@ -61,6 +61,7 @@ BACKTRACE_FILES = \
 
 FORMAT_FILES = \
 	elf.c \
+	macho.c \
 	unknown.c
 
 VIEW_FILES = \
@@ -125,9 +126,27 @@ install-exec-local: install-multi
 
 # Testsuite.
 
+# Add a test to this variable if you want it to be built.
 check_PROGRAMS =
 
+# Add a test to this variable if you want it to be run.
 TESTS = $(check_PROGRAMS)
+
+# Add a test to this variable if you want it to be built and run.
+BUILDTESTS =
+
+# Add a file to this variable if you want it to be built for testing.
+check_DATA =
+
+# Flags to use when compiling test programs.
+libbacktrace_TEST_CFLAGS = $(EXTRA_FLAGS) $(WARN_FLAGS) -g
+
+if HAVE_DSYMUTIL
+
+%.dSYM: %
+	$(DSYMUTIL) $<
+
+endif HAVE_DSYMUTIL
 
 if NATIVE
 
@@ -139,10 +158,18 @@ btest_LDFLAGS = $(AM_LDFLAGS) $(CFLAGS)
 
 check_PROGRAMS += btest
 
+if HAVE_DSYMUTIL
+check_DATA += btest.dSYM
+endif HAVE_DSYMUTIL
+
 stest_SOURCES = stest.c
 stest_LDADD = libbacktrace.la
 
 check_PROGRAMS += stest
+
+if HAVE_DSYMUTIL
+check_DATA += stest.dSYM
+endif HAVE_DSYMUTIL
 
 endif NATIVE
 
@@ -182,6 +209,7 @@ dwarf.lo: config.h $(INCDIR)/dwarf2.h $(INCDIR)/dwarf2.def \
 	$(INCDIR)/filenames.h backtrace.h internal.h
 elf.lo: config.h backtrace.h internal.h
 fileline.lo: config.h backtrace.h internal.h
+macho.lo: config.h backtrace.h internal.h
 mmap.lo: config.h backtrace.h internal.h
 mmapio.lo: config.h backtrace.h internal.h
 nounwind.lo: config.h internal.h
