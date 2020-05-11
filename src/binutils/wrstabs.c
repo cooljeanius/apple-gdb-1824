@@ -1456,7 +1456,9 @@ stab_end_struct_type (void *p)
 /* Start outputting a class.  */
 
 static bfd_boolean
-stab_start_class_type (void *p, const char *tag, unsigned int id, bfd_boolean structp, unsigned int size, bfd_boolean vptr, bfd_boolean ownvptr)
+stab_start_class_type(void *p, const char *tag, unsigned int id,
+		      bfd_boolean structp, unsigned int size, bfd_boolean vptr,
+		      bfd_boolean ownvptr)
 {
   struct stab_write_handle *info = (struct stab_write_handle *) p;
   bfd_boolean definition;
@@ -1488,12 +1490,18 @@ stab_start_class_type (void *p, const char *tag, unsigned int id, bfd_boolean st
 	  vtable = (char *)xmalloc(vtable_len);
 	  snprintf(vtable, vtable_len, "~%%%ld", info->type_stack->index);
 	}
-      else
+      else if (vstring != NULL)
 	{
 	  vtable_len = (strlen(vstring) + 4UL);
 	  vtable = (char *)xmalloc(vtable_len);
 	  snprintf(vtable, vtable_len, "~%%%s", vstring);
 	  free(vstring);
+	}
+      else
+	{
+	  vtable_len = 4UL;
+	  vtable = (char *)xmalloc(vtable_len);
+	  snprintf(vtable, vtable_len, "~%%%c", '\0');
 	}
 
       info->type_stack->vtable = vtable;

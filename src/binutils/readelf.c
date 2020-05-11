@@ -10266,7 +10266,7 @@ typedef struct Frame_Chunk
   int cfa_reg;
   int cfa_offset;
   int ra;
-  unsigned char fde_encoding;
+  unsigned char fde_encoding; /* FIXME: embiggen? */
   unsigned char cfa_exp;
 }
 Frame_Chunk;
@@ -10555,7 +10555,7 @@ display_debug_frames(Elf_Internal_Shdr *section, unsigned char *start,
 		  else if (*p == 'P')
 		    q += 1 + size_of_encoded_value (*q);
 		  else if (*p == 'R')
-		    fc->fde_encoding = *q++;
+		    fc->fde_encoding = *q++; /* FIXME: -Wstringop-overflow */
 		  else
 		    break;
 		  p++;

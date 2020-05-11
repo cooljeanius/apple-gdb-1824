@@ -3431,7 +3431,7 @@ add_implementation_to_cache(CORE_ADDR objc_class, CORE_ADDR sel,
 }
 
 static CORE_ADDR
-find_implementation_from_class(CORE_ADDR objc_class, CORE_ADDR sel)
+find_implementation_from_class(volatile CORE_ADDR objc_class, CORE_ADDR sel)
 {
   volatile CORE_ADDR subclass = objc_class;
   char sel_str[2048];

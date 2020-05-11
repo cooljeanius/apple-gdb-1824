@@ -366,22 +366,29 @@ define_resource (struct res_directory **resources, int cids,
 	{
 	  if (! re->subdir)
 	    {
-	      fprintf (stderr, "%s: ", program_name);
-	      res_ids_print (stderr, i, ids);
-	      fprintf (stderr, _(": expected to be a directory\n"));
-	      xexit (1);
+	      fprintf(stderr, "%s: ", program_name);
+	      res_ids_print(stderr, i, ids);
+	      fprintf(stderr, _(": expected to be a directory\n"));
+	      xexit(1);
 	    }
 
 	  resources = &re->u.dir;
 	}
     }
 
+  if (re == NULL)
+    {
+      fprintf(stderr, "%s: ", program_name);
+      res_ids_print(stderr, cids, ids);
+      fprintf(stderr, _(": unexpectedly NULL\n"));
+      xexit(1);
+    }
   if (re->subdir)
     {
-      fprintf (stderr, "%s: ", program_name);
-      res_ids_print (stderr, cids, ids);
-      fprintf (stderr, _(": expected to be a leaf\n"));
-      xexit (1);
+      fprintf(stderr, "%s: ", program_name);
+      res_ids_print(stderr, cids, ids);
+      fprintf(stderr, _(": expected to be a leaf\n"));
+      xexit(1);
     }
 
   if (re->u.res != NULL)

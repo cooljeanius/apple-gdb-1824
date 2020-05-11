@@ -1136,7 +1136,7 @@ slide_bfd_in_pre_run_memory_map(struct bfd *abfd,
   int j, k;
   int intended_loadaddr_bucket;
   struct bfd_memory_footprint *fp;
-  CORE_ADDR intended_loadaddr;
+  volatile CORE_ADDR intended_loadaddr;
   int can_load_at_preferred_addr;
 
   NSTRACE(slide_bfd_in_pre_run_memory_map);
@@ -1512,7 +1512,7 @@ dyld_load_library(const struct dyld_path_info *d,
 	      if (!matches)
 		{
 		  struct mach_header header;
-		  bfd_vma curpos;
+		  volatile bfd_vma curpos;
 		  struct load_command cmd;
 		  target_read_mach_header(e->dyld_addr, &header);
 		  curpos = (e->dyld_addr

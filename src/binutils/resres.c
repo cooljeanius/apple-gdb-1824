@@ -610,6 +610,13 @@ res_append_resource(struct res_directory **resource_directories,
 	}
     }
 
+  if (re == NULL)
+    {
+      fprintf(stderr, "%s: ", program_name);
+      res_ids_print(stderr, cids, ids);
+      fprintf(stderr, ": unexpectedly NULL\n");
+      xexit(1);
+    }
   if (re->subdir)
     {
       fprintf(stderr, "%s: ", program_name);

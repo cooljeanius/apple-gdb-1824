@@ -1781,7 +1781,7 @@ get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level)
 			   && (stack_address < (val_address
                                                 + TYPE_LENGTH(val_type))))
 		    {
-		      CORE_ADDR offset = (stack_address - val_address);
+		      volatile CORE_ADDR offset = (stack_address - val_address);
 		      this_symbol = sym;
                       CHECK_FATAL(this_symbol != NULL);
 		      symbol_name = xstrdup(SYMBOL_PRINT_NAME(sym));
@@ -1899,7 +1899,7 @@ gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
 
       if (kind == AUTO_BLOCK_STACK)
 	{
-	  CORE_ADDR stack_address;
+	  volatile CORE_ADDR stack_address;
 	  int frame_level;
 	  char *symbol_name;
 
