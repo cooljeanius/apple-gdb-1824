@@ -756,18 +756,19 @@ macho_add_fat (struct backtrace_state *state, const char *filename,
 
   arch_view_valid = 0;
 
-#if defined (__x86_64__)
+#if defined(__x86_64__)
   cputype = MACH_O_CPU_TYPE_X86_64;
-#elif defined (__i386__)
+#elif defined(__i386__)
   cputype = MACH_O_CPU_TYPE_X86;
-#elif defined (__aarch64__)
+#elif defined(__aarch64__)
   cputype = MACH_O_CPU_TYPE_ARM64;
-#elif defined (__arm__)
+#elif defined(__arm__)
   cputype = MACH_O_CPU_TYPE_ARM;
 #else
+  /* TODO: maybe try to add back ppc support later */
   error_callback (data, "unknown Mach-O architecture", 0);
   goto fail;
-#endif
+#endif /* cpu type */
 
   if (!backtrace_get_view (state, descriptor, offset,
 			   nfat_arch * sizeof (struct macho_fat_arch),
@@ -858,7 +859,8 @@ macho_add_dsym (struct backtrace_state *state, const char *filename,
   else
     {
       dirnamelen = p - filename;
-      diralc = backtrace_alloc (state, dirnamelen + 1, error_callback, data);
+      diralc = (char *)backtrace_alloc(state, (dirnamelen + 1), error_callback,
+				       data);
       if (diralc == NULL)
 	goto fail;
       memcpy (diralc, filename, dirnamelen);
@@ -876,7 +878,7 @@ macho_add_dsym (struct backtrace_state *state, const char *filename,
 	     + dsymsuffixdirlen
 	     + basenamelen
 	     + 1);
-  dsym = backtrace_alloc (state, dsymlen, error_callback, data);
+  dsym = (char *)backtrace_alloc(state, dsymlen, error_callback, data);
   if (dsym == NULL)
     goto fail;
 
@@ -1146,14 +1148,14 @@ macho_add (struct backtrace_state *state, const char *filename, int descriptor,
 
       is_big_endian = 0;
 #if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__)
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+# if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
       is_big_endian = 1;
-#endif
-#endif
+# endif /* __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__ */
+#endif /* __BYTE_ORDER__ && __ORDER_BIG_ENDIAN__ */
 
-      if (!backtrace_dwarf_add (state, base_address, &dwarf_sections,
-				is_big_endian, NULL, error_callback, data,
-				fileline_fn, NULL))
+      if (!backtrace_dwarf_add_new(state, base_address, &dwarf_sections,
+				   is_big_endian, NULL, error_callback, data,
+				   fileline_fn, NULL))
 	goto fail;
     }
 
@@ -1180,15 +1182,16 @@ macho_add (struct backtrace_state *state, const char *filename, int descriptor,
    using the dyld support functions.  This closes descriptor.  */
 
 int
-backtrace_initialize (struct backtrace_state *state, const char *filename,
-		      int descriptor, backtrace_error_callback error_callback,
-		      void *data, fileline *fileline_fn)
+backtrace_initialize(struct backtrace_state *state, int descriptor,
+		     backtrace_error_callback error_callback, void *data,
+		     fileline *fileline_fn)
 {
   uint32_t c;
   uint32_t i;
   int closed_descriptor;
   int found_sym;
   fileline macho_fileline_fn;
+  const char *filename = "FIXMEFIXMEFIXME";
 
   closed_descriptor = 0;
   found_sym = 0;
@@ -1271,12 +1274,13 @@ backtrace_initialize (struct backtrace_state *state, const char *filename,
    descriptor.  */
 
 int
-backtrace_initialize (struct backtrace_state *state, const char *filename,
-		      int descriptor, backtrace_error_callback error_callback,
-		      void *data, fileline *fileline_fn)
+backtrace_initialize(struct backtrace_state *state, int descriptor,
+		     backtrace_error_callback error_callback, void *data,
+		     fileline *fileline_fn)
 {
   fileline macho_fileline_fn;
   int found_sym;
+  const char *filename = "FIXMEFIXMEFIXME";
 
   macho_fileline_fn = macho_nodebug;
   if (!macho_add (state, filename, descriptor, 0, NULL, 0, 0,

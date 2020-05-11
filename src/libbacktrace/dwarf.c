@@ -1040,14 +1040,14 @@ read_abbrevs (struct backtrace_state *state, uint64_t abbrev_offset,
       if (count_buf.reported_underflow)
 	return 0;
       ++num_abbrevs;
-      // Skip tag.
+      /* Skip tag: */
       read_uleb128 (&count_buf);
-      // Skip has_children.
+      /* Skip has_children: */
       read_byte (&count_buf);
-      // Skip attributes.
+      /* Skip attributes: */
       while (read_uleb128 (&count_buf) != 0)
 	read_uleb128 (&count_buf);
-      // Skip form of last attribute.
+      /* Skip form of last attribute: */
       read_uleb128 (&count_buf);
     }
 
@@ -3022,3 +3022,22 @@ backtrace_dwarf_add (struct backtrace_state *state,
 
   return 1;
 }
+
+/* Compatibility function: */
+int
+backtrace_dwarf_add_new(struct backtrace_state *state, uintptr_t base_address,
+			const struct dwarf_sections *dwsects ATTRIBUTE_UNUSED,
+			int is_bigendian,
+			struct dwarf_data *fileline_altlink ATTRIBUTE_UNUSED,
+			backtrace_error_callback error_callback,
+			void *data, fileline *fileline_fn,
+			struct dwarf_data **fileline_entry ATTRIBUTE_UNUSED)
+{
+  /* FIXME: just maintaining compatibility for now; should update to actual
+   * newer code some time later, which will use unused parameters... */
+  return backtrace_dwarf_add(state, base_address, NULL, 0UL, NULL, 0UL, NULL,
+			     0UL, NULL, 0UL, NULL, 0UL, is_bigendian,
+			     error_callback, data, fileline_fn);
+}
+
+/* EOF */
