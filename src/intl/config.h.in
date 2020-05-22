@@ -155,6 +155,9 @@
    declares uintmax_t. */
 #undef HAVE_INTTYPES_H_WITH_UINTMAX
 
+/* Define to 1 if you have the <io.h> header file. */
+#undef HAVE_IO_H
+
 /* Define to 1 if you have the `langinfo' function. */
 #undef HAVE_LANGINFO
 

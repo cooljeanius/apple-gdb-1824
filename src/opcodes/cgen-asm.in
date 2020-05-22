@@ -1,4 +1,4 @@
-/* Assembler interface for targets using CGEN. -*- C -*-
+/* @prefix@-asm.c: Assembler interface for targets using CGEN. -*- C -*-
    CGEN: Cpu tools GENerator
 
    THIS FILE IS MACHINE GENERATED WITH CGEN.
@@ -34,7 +34,13 @@
 #include "@prefix@-desc.h"
 #include "@prefix@-opc.h"
 #include "opintl.h"
-#include <regex.h>
+#ifdef HAVE_REGEX_H
+# include <regex.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "@prefix@-asm.c wants to include <regex.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_REGEX_H */
 #include "libiberty.h"
 #include "safe-ctype.h"
 

@@ -3,6 +3,7 @@ CMakeFiles/*
 CTestTestfile.cmake
 cmake_install.cmake
 zlib.pc
+*.exe
 *.o
 *.lo
 *~

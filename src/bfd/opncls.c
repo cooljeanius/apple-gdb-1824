@@ -234,6 +234,9 @@ bfd_fopen(const char *filename, const char *target, const char *mode, int fd)
     }
 
   /* APPLE LOCAL: Do NOT let this fd be inherited on exec of child proc: */
+#ifndef F_SETFD
+# define F_SETFD 2
+#endif /* !F_SETFD */
   fcntl(fileno((FILE *)nbfd->iostream), F_SETFD, 1);
 
   /* OK, put everything where it belongs: */

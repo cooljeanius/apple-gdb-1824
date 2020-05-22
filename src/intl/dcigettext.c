@@ -163,7 +163,11 @@ extern int errno;
 char *getwd PARAMS((char *buffer));
 #  define getcwd(buf, max) getwd(buf)
 # else
+#  ifdef HAVE_IO_H
+#   include <io.h>
+#  else
 char *getcwd PARAMS((char *buffer, size_t buflen));
+#  endif /* HAVE_IO_H */
 # endif /* !HAVE_GETCWD */
 # if !defined(HAVE_STPCPY) || !HAVE_STPCPY || !defined(HAVE_DECL_STPCPY) || !HAVE_DECL_STPCPY
 static char *stpcpy PARAMS((char *dest, const char *src));

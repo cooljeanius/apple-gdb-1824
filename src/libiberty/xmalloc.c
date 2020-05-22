@@ -14,7 +14,7 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with libiberty; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+not, write to the Free Software Foundation, Inc., 51 Franklin St., 5th Floor,
 Boston, MA 02110-1301, USA.  */
 
 /*
@@ -96,6 +96,7 @@ void *malloc(size_t);
 void *realloc(void *, size_t);
 void *calloc(size_t, size_t);
 void *sbrk(ptrdiff_t);
+void free(void *);
 #  ifdef __cplusplus
 }
 #  endif /* __cplusplus */

@@ -135,7 +135,11 @@ void free PARAMS((void *buffer));
 char *getwd PARAMS((char *b));
 #  define getcwd(buf, max) getwd(buf)
 # else
+#  ifdef HAVE_IO_H
+#   include <io.h>
+#  else
 char *getcwd PARAMS((char *buf, size_t len));
+#  endif /* HAVE_IO_H */
 # endif /* !HAVE_GETCWD */
 # ifndef HAVE_STPCPY
 static char *stpcpy PARAMS((char *dest, const char *src));

@@ -180,6 +180,14 @@ typedef struct env387
 # else
 #  if defined(HAVE_SIGNAL_H)
 #   include <signal.h>
+#  else
+#   ifndef NSIG
+#    ifdef __DARWIN_NSIG
+#     define NSIG __DARWIN_NSIG
+#    else
+#     define NSIG 32
+#    endif /* __DARWIN_NSIG */
+#   endif /* !NSIG */
 #  endif /* HAVE_SIGNAL_H */
 # endif /* HAVE_SYS_SIGNAL_H */
 

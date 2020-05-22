@@ -360,7 +360,7 @@ unset ac_cv_header_malloc_h
 unset ac_cv_header_stdlib_h
 AC_CHECK_HEADERS([err.h errno.h gettext.h libgen.h libintl.h \
                   mach/mach_types.h machine/types.h \
-                  malloc.h malloc/malloc.h setjmp.h stddef.h \
+                  malloc.h malloc/malloc.h regex.h setjmp.h stddef.h \
                   stdio.h stdio_ext.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.

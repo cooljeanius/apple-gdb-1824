@@ -136,7 +136,7 @@ AC_REQUIRE_HEADER_STDC
 AC_HEADER_STAT
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_CHECK_HEADERS([argz.h bits/libc-lock.h byteswap.h ctype.h errno.h \
-                  fcntl.h iconv.h langinfo.h libintl.h limits.h locale.h \
+                  fcntl.h iconv.h io.h langinfo.h libintl.h limits.h locale.h \
                   malloc.h malloc/malloc.h nl_types.h \
                   stddef.h stdio.h sys/mman.h sys/param.h wchar.h])dnl
 AC_CHECK_HEADERS_ONCE([sys/types.h])dnl

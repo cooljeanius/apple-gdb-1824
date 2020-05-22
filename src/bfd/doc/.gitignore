@@ -21,6 +21,7 @@ chew
 chew_am
 .dirstamp
 *.dSYM
+*.exe
 *.o
 *.lo
 bfd.info
