@@ -21093,6 +21093,24 @@ _ACEOF
 ;;
   esac
 
+ac_fn_c_check_type "$LINENO" "regex_t" "ac_cv_type_regex_t" "
+#ifdef HAVE_REGEX_H
+# include <regex.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest for regex_t expects <regex.h> to be included.\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_REGEX_H */
+
+"
+if test "x$ac_cv_type_regex_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_REGEX_T 1
+_ACEOF
+
+
+fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether struct tm is in sys/time.h or time.h" >&5
 $as_echo_n "checking whether struct tm is in sys/time.h or time.h... " >&6; }
 if ${ac_cv_struct_tm+:} false; then :
@@ -21639,8 +21657,9 @@ fi
 done
 
 
-for ac_func in abs chdir err labs memmove memset regcomp strdup strerror \
-                strncasecmp strstr strtol strtoul strtoull
+for ac_func in abs chdir err labs memmove memset regcomp regerror regexec \
+                regfree strdup strerror strncasecmp strstr \
+                strtol strtoul strtoull
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -22732,6 +22751,7 @@ if test "x$gl_cv_warn_c__fno_strict_aliasing" = xyes; then :
 fi
 
 
+    if test "x${cgen_maint}" != "xyes"; then
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-unused-but-set-variable" >&5
 $as_echo_n "checking whether C compiler handles -Wno-unused-but-set-variable... " >&6; }
@@ -22806,6 +22826,7 @@ if test "x$gl_cv_warn_c__Wno_enum_compare" = xyes; then :
 fi
 
 
+    fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wextra" >&5
 $as_echo_n "checking whether C compiler handles -Wextra... " >&6; }
@@ -22843,6 +22864,7 @@ if test "x$gl_cv_warn_c__Wextra" = xyes; then :
 fi
 
 
+    if test "x${cgen_maint}" != "xyes"; then
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-missing-field-initializers" >&5
 $as_echo_n "checking whether C compiler handles -Wno-missing-field-initializers... " >&6; }
@@ -23028,6 +23050,7 @@ if test "x$gl_cv_warn_c__Wno_format_truncation" = xyes; then :
 fi
 
 
+    fi
 
 fi
 

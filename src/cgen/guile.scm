@@ -6,10 +6,11 @@
 (define *guile-major-version* (string->number (major-version)))
 (define *guile-minor-version* (string->number (minor-version)))
 
-; eval takes a module argument in 1.6 and later
+; eval takes a module argument in 1.6 and later, but not 2.2.4
 
-(if (or (> *guile-major-version* 1)
-	(>= *guile-minor-version* 6))
+(if (or 
+    (and (= *guile-major-version* 2) (< *guile-minor-version* 2))
+	(and (= *guile-major-version* 1) (>= *guile-minor-version* 6)))
     (define (eval1 expr)
       (eval expr (current-module)))
     (define (eval1 expr)

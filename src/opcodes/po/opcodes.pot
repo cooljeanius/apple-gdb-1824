@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-25 22:47-0500\n"
+"POT-Creation-Date: 2020-05-23 01:58-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -178,37 +178,37 @@ msgstr ""
 msgid "Address 0x%s is out of bounds.\n"
 msgstr ""
 
-#: fr30-asm.c:92 m32c-asm.c:782 m32c-asm.c:789
+#: fr30-asm.c:102 m32c-asm.c:782 m32c-asm.c:789
 msgid "Register number is not valid"
 msgstr ""
 
-#: fr30-asm.c:94
+#: fr30-asm.c:104
 msgid "Register must be between r0 and r7"
 msgstr ""
 
-#: fr30-asm.c:96
+#: fr30-asm.c:106
 msgid "Register must be between r8 and r15"
 msgstr ""
 
-#: fr30-asm.c:115 m32c-asm.c:820
+#: fr30-asm.c:125 m32c-asm.c:820
 msgid "Register list is not valid"
 msgstr ""
 
-#: fr30-asm.c:309 frv-asm.c:1262 ip2k-asm.c:510 iq2000-asm.c:456
+#: fr30-asm.c:319 frv-asm.c:1262 ip2k-asm.c:510 iq2000-asm.c:456
 #: m32c-asm.c:1476 m32r-asm.c:327 ms1-asm.c:546 openrisc-asm.c:240
 #: xstormy16-asm.c:275
 #, c-format
 msgid "Unrecognized field %d while parsing.\n"
 msgstr ""
 
-#: fr30-asm.c:357 frv-asm.c:1310 ip2k-asm.c:558 iq2000-asm.c:504
+#: fr30-asm.c:370 frv-asm.c:1310 ip2k-asm.c:558 iq2000-asm.c:504
 #: m32c-asm.c:1524 m32r-asm.c:375 ms1-asm.c:594 openrisc-asm.c:288
 #: xstormy16-asm.c:323
 msgid "missing mnemonic in syntax string"
 msgstr ""
 
 #. We couldn't parse it.
-#: fr30-asm.c:492 fr30-asm.c:496 fr30-asm.c:583 fr30-asm.c:684 frv-asm.c:1445
+#: fr30-asm.c:509 fr30-asm.c:513 fr30-asm.c:600 fr30-asm.c:706 frv-asm.c:1445
 #: frv-asm.c:1449 frv-asm.c:1536 frv-asm.c:1637 ip2k-asm.c:693 ip2k-asm.c:697
 #: ip2k-asm.c:784 ip2k-asm.c:885 iq2000-asm.c:639 iq2000-asm.c:643
 #: iq2000-asm.c:730 iq2000-asm.c:831 m32c-asm.c:1659 m32c-asm.c:1663
@@ -220,40 +220,40 @@ msgstr ""
 msgid "unrecognized instruction"
 msgstr ""
 
-#: fr30-asm.c:539 frv-asm.c:1492 ip2k-asm.c:740 iq2000-asm.c:686
+#: fr30-asm.c:556 frv-asm.c:1492 ip2k-asm.c:740 iq2000-asm.c:686
 #: m32c-asm.c:1706 m32r-asm.c:557 ms1-asm.c:776 openrisc-asm.c:470
 #: xstormy16-asm.c:505
 #, c-format
 msgid "syntax error (expected char `%c', found `%c')"
 msgstr ""
 
-#: fr30-asm.c:549 frv-asm.c:1502 ip2k-asm.c:750 iq2000-asm.c:696
+#: fr30-asm.c:566 frv-asm.c:1502 ip2k-asm.c:750 iq2000-asm.c:696
 #: m32c-asm.c:1716 m32r-asm.c:567 ms1-asm.c:786 openrisc-asm.c:480
 #: xstormy16-asm.c:515
 #, c-format
 msgid "syntax error (expected char `%c', found end of instruction)"
 msgstr ""
 
-#: fr30-asm.c:577 frv-asm.c:1530 ip2k-asm.c:778 iq2000-asm.c:724
+#: fr30-asm.c:594 frv-asm.c:1530 ip2k-asm.c:778 iq2000-asm.c:724
 #: m32c-asm.c:1744 m32r-asm.c:595 ms1-asm.c:814 openrisc-asm.c:508
 #: xstormy16-asm.c:543
 msgid "junk at end of line"
 msgstr ""
 
-#: fr30-asm.c:683 frv-asm.c:1636 ip2k-asm.c:884 iq2000-asm.c:830
+#: fr30-asm.c:705 frv-asm.c:1636 ip2k-asm.c:884 iq2000-asm.c:830
 #: m32c-asm.c:1850 m32r-asm.c:701 ms1-asm.c:920 openrisc-asm.c:614
 #: xstormy16-asm.c:649
 msgid "unrecognized form of instruction"
 msgstr ""
 
-#: fr30-asm.c:695 frv-asm.c:1648 ip2k-asm.c:896 iq2000-asm.c:842
+#: fr30-asm.c:717 frv-asm.c:1648 ip2k-asm.c:896 iq2000-asm.c:842
 #: m32c-asm.c:1862 m32r-asm.c:713 ms1-asm.c:932 openrisc-asm.c:626
 #: xstormy16-asm.c:661
 #, c-format
 msgid "bad instruction `%.50s...'"
 msgstr ""
 
-#: fr30-asm.c:698 frv-asm.c:1651 ip2k-asm.c:899 iq2000-asm.c:845
+#: fr30-asm.c:720 frv-asm.c:1651 ip2k-asm.c:899 iq2000-asm.c:845
 #: m32c-asm.c:1865 m32r-asm.c:716 ms1-asm.c:935 openrisc-asm.c:629
 #: xstormy16-asm.c:664
 #, c-format
@@ -261,13 +261,13 @@ msgid "bad instruction `%.50s'"
 msgstr ""
 
 #. Default text to print if an instruction isn't recognized.
-#: fr30-dis.c:42 frv-dis.c:42 ip2k-dis.c:42 iq2000-dis.c:42 m32c-dis.c:42
+#: fr30-dis.c:41 frv-dis.c:42 ip2k-dis.c:42 iq2000-dis.c:42 m32c-dis.c:42
 #: m32r-dis.c:42 mmix-dis.c:282 ms1-dis.c:42 openrisc-dis.c:42
 #: xstormy16-dis.c:42
 msgid "*unknown*"
 msgstr ""
 
-#: fr30-dis.c:300 frv-dis.c:397 ip2k-dis.c:289 iq2000-dis.c:190 m32c-dis.c:861
+#: fr30-dis.c:299 frv-dis.c:397 ip2k-dis.c:289 iq2000-dis.c:190 m32c-dis.c:861
 #: m32r-dis.c:257 ms1-dis.c:259 openrisc-dis.c:136 xstormy16-dis.c:169
 #, c-format
 msgid "Unrecognized field %d while printing insn.\n"

@@ -384,6 +384,15 @@ AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
+AC_CHECK_TYPES([regex_t],[],[],[
+#ifdef HAVE_REGEX_H
+# include <regex.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for regex_t expects <regex.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_REGEX_H */
+])dnl
 AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 
 # Checks for library functions.
@@ -394,8 +403,9 @@ AC_FUNC_MALLOC
 AC_FUNC_MEMCMP
 AC_FUNC_REALLOC
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([abs chdir err labs memmove memset regcomp strdup strerror \
-                strncasecmp strstr strtol strtoul strtoull])dnl
+AC_CHECK_FUNCS([abs chdir err labs memmove memset regcomp regerror regexec \
+                regfree strdup strerror strncasecmp strstr \
+                strtol strtoul strtoull])dnl
 
 # Checks for declarations.
 AC_MSG_CHECKING([declarations])
@@ -705,14 +715,18 @@ else
     ])
     gl_WARN_ADD([-Wall])
     gl_WARN_ADD([-fno-strict-aliasing])
-    gl_WARN_ADD([-Wno-unused-but-set-variable])
-    gl_WARN_ADD([-Wno-enum-compare])
+    if test "x${cgen_maint}" != "xyes"; then
+      gl_WARN_ADD([-Wno-unused-but-set-variable])
+      gl_WARN_ADD([-Wno-enum-compare])
+    fi
     gl_WARN_ADD([-Wextra])
-    gl_WARN_ADD([-Wno-missing-field-initializers])
-    gl_WARN_ADD([-Wno-shift-negative-value])
-    gl_WARN_ADD([-Wno-shift-count-overflow])
-    gl_WARN_ADD([-Wno-format-overflow])
-    gl_WARN_ADD([-Wno-format-truncation])
+    if test "x${cgen_maint}" != "xyes"; then
+      gl_WARN_ADD([-Wno-missing-field-initializers])
+      gl_WARN_ADD([-Wno-shift-negative-value])
+      gl_WARN_ADD([-Wno-shift-count-overflow])
+      gl_WARN_ADD([-Wno-format-overflow])
+      gl_WARN_ADD([-Wno-format-truncation])
+    fi
   ])
 fi
 dnl# (I uncommented it to add it back in anyways, but conditionally)

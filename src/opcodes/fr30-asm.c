@@ -1,4 +1,4 @@
-/* Assembler interface for targets using CGEN. -*- C -*-
+/* fr30-asm.c: Assembler interface for targets using CGEN. -*- C -*-
    CGEN: Cpu tools GENerator
 
    THIS FILE IS MACHINE GENERATED WITH CGEN.
@@ -20,7 +20,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation, Inc.,
+   along w/this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 /* ??? Eventually more and more of this stuff can go to cpu-independent files.
@@ -34,7 +34,17 @@
 #include "fr30-desc.h"
 #include "fr30-opc.h"
 #include "opintl.h"
-#include <regex.h>
+#ifdef HAVE_REGEX_H
+# include <regex.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fr30-asm.c wants to include <regex.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+/* inline parts we need: */
+# ifndef REG_NOSUB
+#  define REG_NOSUB 0004
+# endif /* !REG_NOSUB */
+#endif /* HAVE_REGEX_H */
 #include "libiberty.h"
 #include "safe-ctype.h"
 
@@ -325,6 +335,9 @@ fr30_cgen_init_asm (CGEN_CPU_DESC cd)
   fr30_cgen_init_ibld_table (cd);
   cd->parse_handlers = & fr30_cgen_parse_handlers[0];
   cd->parse_operand = fr30_cgen_parse_operand;
+#ifdef CGEN_ASM_INIT_HOOK
+CGEN_ASM_INIT_HOOK
+#endif
 }
 
 
@@ -432,6 +445,7 @@ fr30_cgen_build_insn_regex (CGEN_INSN *insn)
   * rx++ = '$'; 
   * rx = '\0';
 
+#ifdef HAVE_REGEX_H
   CGEN_INSN_RX (insn) = xmalloc (sizeof (regex_t));
   reg_err = regcomp ((regex_t *) CGEN_INSN_RX (insn), rxbuf, REG_NOSUB);
 
@@ -447,6 +461,9 @@ fr30_cgen_build_insn_regex (CGEN_INSN *insn)
       (CGEN_INSN_RX (insn)) = NULL;
       return msg;
     }
+#else
+  return (char *)"Error: regex routines missing";
+#endif /* HAVE_REGEX_H */
 }
 
 
@@ -648,8 +665,13 @@ fr30_cgen_assemble_insn (CGEN_CPU_DESC cd,
       str = start;
 
       /* Skip this insn if str doesn't look right lexically.  */
-      if (CGEN_INSN_RX (insn) != NULL &&
-	  regexec ((regex_t *) CGEN_INSN_RX (insn), str, 0, NULL, 0) == REG_NOMATCH)
+      if ((CGEN_INSN_RX(insn) != NULL) &&
+#ifdef HAVE_REGEXEC
+	  (regexec((regex_t *)CGEN_INSN_RX(insn), str, 0, NULL, 0) == REG_NOMATCH)
+#else
+	  0
+#endif /* HAVE_REGEXEC */
+	  && 1)
 	continue;
 
       /* Allow parse/insert handlers to obtain length of insn.  */
