@@ -3,6 +3,8 @@
 
    THIS FILE IS MACHINE GENERATED WITH CGEN.
    - the resultant file is machine generated, cgen-asm.in isn't
+   FIXME: cgen hangs when trying to regenerate this file; edit manually until
+   I figure out how to fix that
 
    Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2005
    Free Software Foundation, Inc.
@@ -34,7 +36,7 @@
 #include "m32c-desc.h"
 #include "m32c-opc.h"
 #include "opintl.h"
-#include <regex.h>
+#include "xregex.h"
 #include "libiberty.h"
 #include "safe-ctype.h"
 

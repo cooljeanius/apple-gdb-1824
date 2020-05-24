@@ -405,6 +405,24 @@ Define an instruction opcode enum, all arguments specified.
   *UNSPECIFIED*
 )
 
+(define (enum-builtin!)
+  ;; Provide FPCONV-DEFAULT == 0 as an enum constant to use as the `how'
+  ;; parameter to the floating point conversion functions.
+  ;; ??? Add standard IEEE rounding modes?
+  (define-enum '(name fpconv-kind)
+     '(comment "builtin floating point conversion kinds")
+     '(attrs VIRTUAL) ;; let app provide def'n instead of each cpu's desc.h
+     '(prefix FPCONV-)
+     '(values ((DEFAULT 0)
+               (TIES-TO-EVEN 1)
+               (TIES-TO-AWAY 2)
+               (TOWARD-ZERO 3)
+               (TOWARD-POSITIVE 4)
+               (TOWARD-NEGATIVE 5))))
+ 
+  *UNSPECIFIED*
+)
+
 (define (enum-finish!)
   *UNSPECIFIED*
 )

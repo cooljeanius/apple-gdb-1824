@@ -1,6 +1,9 @@
 /* CPU data for frv.
 
 THIS FILE IS MACHINE GENERATED WITH CGEN.
+FIXME: regenerating frv files with cgen fails, though, with the following:
+ERROR: unknown operand:  FPCONV-DEFAULT
+Editing manually until I figure out how to fix that.
 
 Copyright 1996-2005 Free Software Foundation, Inc.
 
@@ -32,7 +35,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "frv-opc.h"
 #include "opintl.h"
 #include "libiberty.h"
-#include <regex.h>
+#ifdef HAVE_REGEX_H
+# include <regex.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "frv-desc.c wants to include <regex.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+# include "xregex.h"
+/* inline parts we need: */
+# ifndef REG_NOSUB
+#  define REG_NOSUB 0004
+# endif /* !REG_NOSUB */
+#endif /* HAVE_REGEX_H */
 
 /* Attributes.  */
 

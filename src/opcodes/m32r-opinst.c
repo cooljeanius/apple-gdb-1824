@@ -2,23 +2,23 @@
 
 THIS FILE IS MACHINE GENERATED WITH CGEN.
 
-Copyright 1996-2005 Free Software Foundation, Inc.
+Copyright 1996-2009 Free Software Foundation, Inc.
 
 This file is part of the GNU Binutils and/or GDB, the GNU debugger.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
-any later version.
+   This file is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   It is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, write to the Free Software Foundation, Inc.,
+   51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
 */
 
@@ -565,7 +565,7 @@ static const CGEN_OPINST sfmt_sc_ops[] ATTRIBUTE_UNUSED = {
 
 static const CGEN_OPINST sfmt_clrpsw_ops[] ATTRIBUTE_UNUSED = {
   { INPUT, "h_cr_USI_0", HW_H_CR, CGEN_MODE_USI, 0, 0, 0 },
-  { INPUT, "uimm8", HW_H_UINT, CGEN_MODE_BI, OP_ENT (UIMM8), 0, 0 },
+  { INPUT, "uimm8", HW_H_UINT, CGEN_MODE_QI, OP_ENT (UIMM8), 0, 0 },
   { OUTPUT, "h_cr_USI_0", HW_H_CR, CGEN_MODE_USI, 0, 0, 0 },
   { END, (const char *)0, (enum cgen_hw_type)0, (enum cgen_mode)0, (enum cgen_operand_type)0, 0, 0 }
 };
@@ -586,7 +586,7 @@ static const CGEN_OPINST sfmt_bset_ops[] ATTRIBUTE_UNUSED = {
 };
 
 static const CGEN_OPINST sfmt_btst_ops[] ATTRIBUTE_UNUSED = {
-  { INPUT, "sr", HW_H_GR, CGEN_MODE_USI, OP_ENT (SR), 0, 0 },
+  { INPUT, "sr", HW_H_GR, CGEN_MODE_QI, OP_ENT (SR), 0, 0 },
   { INPUT, "uimm3", HW_H_UINT, CGEN_MODE_UINT, OP_ENT (UIMM3), 0, 0 },
   { OUTPUT, "condbit", HW_H_COND, CGEN_MODE_BI, 0, 0, 0 },
   { END, (const char *)0, (enum cgen_hw_type)0, (enum cgen_mode)0, (enum cgen_operand_type)0, 0, 0 }

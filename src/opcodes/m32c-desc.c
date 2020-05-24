@@ -1,6 +1,8 @@
 /* CPU data for m32c.
 
 THIS FILE IS MACHINE GENERATED WITH CGEN.
+FIXME: cgen hangs when trying to regenerate this file; edit manually until I
+figure out how to fix that
 
 Copyright 1996-2005 Free Software Foundation, Inc.
 
@@ -32,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "m32c-opc.h"
 #include "opintl.h"
 #include "libiberty.h"
-#include <regex.h>
+#include "xregex.h"
 
 /* Attributes.  */
 

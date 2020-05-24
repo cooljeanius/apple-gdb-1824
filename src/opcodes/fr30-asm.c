@@ -2,7 +2,7 @@
    CGEN: Cpu tools GENerator
 
    THIS FILE IS MACHINE GENERATED WITH CGEN.
-   - the resultant file is machine generated, cgen-asm.in isn't
+   - the resultant file is machine generated, cgen-asm.in is NOT
 
    Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2005
    Free Software Foundation, Inc.
@@ -40,6 +40,7 @@
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #  warning "fr30-asm.c wants to include <regex.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
+# include "xregex.h"
 /* inline parts we need: */
 # ifndef REG_NOSUB
 #  define REG_NOSUB 0004
@@ -408,7 +409,7 @@ fr30_cgen_build_insn_regex (CGEN_INSN *insn)
 	    case '?': case '{': case '}': 
 	    case '(': case ')': case '*':
 	    case '|': case '+': case ']':
-#endif
+#endif /* CGEN_ESCAPE_EXTENDED_REGEX */
 	      *rx++ = '\\';
 	      *rx++ = c;
 	      break;
@@ -495,7 +496,7 @@ parse_insn_normal (CGEN_CPU_DESC cd,
 #ifdef CGEN_MNEMONIC_OPERANDS
   /* FIXME: wip */
   int past_opcode_p;
-#endif
+#endif /* CGEN_MNEMONIC_OPERANDS */
 
   /* For now we assume the mnemonic is first (there are no leading operands).
      We can parse it without needing to set up operand parsing.
@@ -511,15 +512,15 @@ parse_insn_normal (CGEN_CPU_DESC cd,
 #ifndef CGEN_MNEMONIC_OPERANDS
   if (* str && ! ISSPACE (* str))
     return _("unrecognized instruction");
-#endif
+#endif /* CGEN_MNEMONIC_OPERANDS */
 
   CGEN_INIT_PARSE (cd);
   cgen_init_parse_operand (cd);
 #ifdef CGEN_MNEMONIC_OPERANDS
   past_opcode_p = 0;
-#endif
+#endif /* CGEN_MNEMONIC_OPERANDS */
 
-  /* We don't check for (*str != '\0') here because we want to parse
+  /* We do NOT check for (*str != '\0') here because we want to parse
      any trailing fake arguments in the syntax string.  */
   syn = CGEN_SYNTAX_STRING (syntax);
 
@@ -543,13 +544,13 @@ parse_insn_normal (CGEN_CPU_DESC cd,
 #ifdef CGEN_MNEMONIC_OPERANDS
 	      if (CGEN_SYNTAX_CHAR(* syn) == ' ')
 		past_opcode_p = 1;
-#endif
+#endif /* CGEN_MNEMONIC_OPERANDS */
 	      ++ syn;
 	      ++ str;
 	    }
 	  else if (*str)
 	    {
-	      /* Syntax char didn't match.  Can't be this insn.  */
+	      /* Syntax char failed to match.  Cannot be this insn.  */
 	      static char msg [80];
 
 	      /* xgettext:c-format */
@@ -580,7 +581,7 @@ parse_insn_normal (CGEN_CPU_DESC cd,
       ++ syn;
     }
 
-  /* If we're at the end of the syntax string, we're done.  */
+  /* If we are at the end of the syntax string, we are done.  */
   if (* syn == 0)
     {
       /* FIXME: For the moment we assume a valid `str' can only contain
@@ -596,7 +597,7 @@ parse_insn_normal (CGEN_CPU_DESC cd,
       return NULL;
     }
 
-  /* We couldn't parse it.  */
+  /* We failed to parse it.  */
   return _("unrecognized instruction");
 }
 
@@ -615,7 +616,7 @@ parse_insn_normal (CGEN_CPU_DESC cd,
    Note that when processing (non-alias) macro-insns,
    this function recurses.
 
-   ??? It's possible to make this cpu-independent.
+   ??? It might be possible to make this cpu-independent.
    One would have to deal with a few minor things.
    At this point in time doing so would be more of a curiosity than useful
    [for example this file isn't _that_ big], but keeping the possibility in
@@ -651,12 +652,12 @@ fr30_cgen_assemble_insn (CGEN_CPU_DESC cd,
 
 #ifdef CGEN_VALIDATE_INSN_SUPPORTED 
       /* Not usually needed as unsupported opcodes
-	 shouldn't be in the hash lists.  */
+	 should NOT be in the hash lists.  */
       /* Is this insn supported by the selected cpu?  */
       if (! fr30_cgen_insn_supported (cd, insn))
 	continue;
-#endif
-      /* If the RELAXED attribute is set, this is an insn that shouldn't be
+#endif /* CGEN_VALIDATE_INSN_SUPPORTED */
+      /* If the RELAXED attribute is set, this is an insn that should NOT be
 	 chosen immediately.  Instead, it is used during assembler/linker
 	 relaxation if possible.  */
       if (CGEN_INSN_ATTR_VALUE (insn, CGEN_INSN_RELAXED) != 0)
@@ -664,7 +665,7 @@ fr30_cgen_assemble_insn (CGEN_CPU_DESC cd,
 
       str = start;
 
-      /* Skip this insn if str doesn't look right lexically.  */
+      /* Skip this insn if str does NOT look right lexically.  */
       if ((CGEN_INSN_RX(insn) != NULL) &&
 #ifdef HAVE_REGEXEC
 	  (regexec((regex_t *)CGEN_INSN_RX(insn), str, 0, NULL, 0) == REG_NOMATCH)
@@ -718,7 +719,7 @@ fr30_cgen_assemble_insn (CGEN_CPU_DESC cd,
     else 
       /* xgettext:c-format */
       sprintf (errbuf, _("bad instruction `%.50s'"), start);
-#endif
+#endif /* CGEN_VERBOSE_ASSEMBLER_ERRORS */
       
     *errmsg = errbuf;
     return NULL;

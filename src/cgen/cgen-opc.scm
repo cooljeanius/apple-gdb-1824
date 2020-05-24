@@ -13,6 +13,7 @@
   (load (string-append srcdir "/read.scm"))
   (load (string-append srcdir "/desc.scm"))
   (load (string-append srcdir "/desc-cpu.scm"))
+  (load (string-append srcdir "/enum.scm"))
   (load (string-append srcdir "/opcodes.scm"))
   (load (string-append srcdir "/opc-asmdis.scm"))
   (load (string-append srcdir "/opc-ibld.scm"))

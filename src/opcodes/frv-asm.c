@@ -3,6 +3,9 @@
 
    THIS FILE IS MACHINE GENERATED WITH CGEN.
    - the resultant file is machine generated, cgen-asm.in isn't
+   FIXME: cgen fails to regenerate this file with the following error:
+   ERROR: unknown operand:  FPCONV-DEFAULT
+   Until I figure out how to fix that I am editing this file manually.
 
    Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2005
    Free Software Foundation, Inc.
@@ -34,7 +37,18 @@
 #include "frv-desc.h"
 #include "frv-opc.h"
 #include "opintl.h"
-#include <regex.h>
+#ifdef HAVE_REGEX_H
+# include <regex.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "frv-asm.c wants to include <regex.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+# include "xregex.h"
+/* inline parts we need: */
+# ifndef REG_NOSUB
+#  define REG_NOSUB 0004
+# endif /* !REG_NOSUB */
+#endif /* HAVE_REGEX_H */
 #include "libiberty.h"
 #include "safe-ctype.h"
 
