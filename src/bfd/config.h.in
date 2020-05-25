@@ -198,6 +198,9 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
+/* Define to 1 if you have the `fctrl' function. */
+#undef HAVE_FCTRL
+
 /* Define to 1 if you have the `fdopen' function. */
 #undef HAVE_FDOPEN
 
@@ -272,6 +275,9 @@
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `ioctlsocket' function. */
+#undef HAVE_IOCTLSOCKET
 
 /* Define to 1 if you have the `islower' function. */
 #undef HAVE_ISLOWER
@@ -373,6 +379,12 @@
 /* Define to 1 if you have the `memchr' function. */
 #undef HAVE_MEMCHR
 
+/* Define to 1 if you have the `memcpy_chk' function. */
+#undef HAVE_MEMCPY_CHK
+
+/* Define to 1 if you have the `memcpy_s' function. */
+#undef HAVE_MEMCPY_S
+
 /* Define to 1 if you have the `memmove' function. */
 #undef HAVE_MEMMOVE
 
@@ -384,6 +396,15 @@
 
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
+
+/* Define to 1 if you have the <mingw/fcntl.h> header file. */
+#undef HAVE_MINGW_FCNTL_H
+
+/* Define to 1 if you have the <mingw/malloc.h> header file. */
+#undef HAVE_MINGW_MALLOC_H
+
+/* Define to 1 if you have the <mingw/sys/types.h> header file. */
+#undef HAVE_MINGW_SYS_TYPES_H
 
 /* Define to 1 if you have a working `mmap' system call. */
 #undef HAVE_MMAP

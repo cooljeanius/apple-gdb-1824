@@ -91,7 +91,7 @@
    the CoreFoundation framework. */
 #undef HAVE_CFPREFERENCESCOPYAPPVALUE
 
-/* Define to 1 if your system has a working `chown' function. */
+/* Define to 1 if you have the `chown' function. */
 #undef HAVE_CHOWN
 
 /* Define to 1 if you have the `ctime' function. */
@@ -183,8 +183,14 @@
 /* Define to 1 if you have the `fclose' function. */
 #undef HAVE_FCLOSE
 
+/* Define to 1 if you have the `fcntl' function. */
+#undef HAVE_FCNTL
+
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
+
+/* Define to 1 if you have the `fctrl' function. */
+#undef HAVE_FCTRL
 
 /* Define to 1 if the system has the type `FILE'. */
 #undef HAVE_FILE
@@ -234,6 +240,9 @@
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
+/* Define to 1 if the system has the type `gid_t'. */
+#undef HAVE_GID_T
+
 /* Does <utime.h> define struct utimbuf? */
 #undef HAVE_GOOD_UTIME_H
 
@@ -248,6 +257,9 @@
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `ioctlsocket' function. */
+#undef HAVE_IOCTLSOCKET
 
 /* Define to 1 if you have the `isascii' function. */
 #undef HAVE_ISASCII
@@ -296,6 +308,9 @@
 
 /* Define to 1 if you have the `readline' library (-lreadline). */
 #undef HAVE_LIBREADLINE
+
+/* Define to 1 if you have the `ssp' library (-lssp). */
+#undef HAVE_LIBSSP
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
@@ -364,6 +379,12 @@
 
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
+
+/* Define to 1 if you have the <mingw/fcntl.h> header file. */
+#undef HAVE_MINGW_FCNTL_H
+
+/* Define to 1 if you have the <mingw/sys/types.h> header file. */
+#undef HAVE_MINGW_SYS_TYPES_H
 
 /* Define to 1 if you have the `mkdtemp' function. */
 #undef HAVE_MKDTEMP
@@ -582,6 +603,9 @@
 /* Define to 1 if you don't have `tm_zone' but do have the external array
    `tzname'. */
 #undef HAVE_TZNAME
+
+/* Define to 1 if the system has the type `uid_t'. */
+#undef HAVE_UID_T
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H

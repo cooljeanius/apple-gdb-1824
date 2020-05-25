@@ -1,4 +1,4 @@
-This is binutils.info, produced by makeinfo version 6.6 from
+This is binutils.info, produced by makeinfo version 6.7 from
 binutils.texi.
 
 START-INFO-DIR-ENTRY
@@ -3680,3 +3680,8 @@ Node: GNU Free Documentation License118768
 Node: Index138405
 
 End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:

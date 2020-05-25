@@ -3196,7 +3196,7 @@ main(int argc, char *argv[])
       if ((i > 4U) && (FILENAME_CMP((program_name + i - 4U), ".exe") == 0))
 	{
 	  i -= 4UL;
-	  program_name[i] = '\0';
+	  *(char *)program_name[i] = '\0';
 	}
 #endif /* HAVE_DOS_BASED_FILE_SYSTEM || HAVE_EXEEXT */
       is_strip = ((i >= 5UL) && FILENAME_CMP((program_name + i - 5UL), "strip") == 0);

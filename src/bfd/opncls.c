@@ -233,11 +233,17 @@ bfd_fopen(const char *filename, const char *target, const char *mode, int fd)
       return NULL;
     }
 
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || (defined(HAVE_FCNTL) && defined(HAVE_FILENO))
   /* APPLE LOCAL: Do NOT let this fd be inherited on exec of child proc: */
-#ifndef F_SETFD
-# define F_SETFD 2
-#endif /* !F_SETFD */
+# ifndef F_SETFD
+#  define F_SETFD 2
+# endif /* !F_SETFD */
   fcntl(fileno((FILE *)nbfd->iostream), F_SETFD, 1);
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "please implement support for fcntl() in libiberty; try stealing from gnulib"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* (__APPLE__ && __APPLE_CC__) || (HAVE_FCNTL && HAVE_FILENO) */
 
   /* OK, put everything where it belongs: */
   nbfd->filename = filename;

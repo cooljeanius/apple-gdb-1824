@@ -16,6 +16,8 @@ AC_REQUIRE_AUX_FILE([depcomp])dnl
 AC_REQUIRE_AUX_FILE([mkinstalldirs])dnl
 
 # target stuff:
+AC_MSG_CHECKING([system])
+AC_MSG_RESULT([ ])
 AC_CANONICAL_TARGET
 if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
   export BUILD_ARCHITECTURE="${build_cpu}"
@@ -51,9 +53,11 @@ AC_SUBST([CXXFLAGS_FOR_BUILD])dnl
 AC_SUBST([LDFLAGS_FOR_BUILD])dnl
 
 # Automake:
+AC_MSG_CHECKING([automake stuff])
+AC_MSG_RESULT([ ])
 if test -f ${srcdir}/config.status; then
-  AC_MSG_NOTICE([config.status is already present, removing it.])
-  rm -f ${srcdir}/config.status
+  AC_MSG_NOTICE([config.status is already present, moving it aside])
+  mv -vf ${srcdir}/config.status ${srcdir}/config.status~
 fi
 AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu no-dist info-in-builddir])dnl
 AM_SANITY_CHECK
@@ -72,6 +76,8 @@ if test -e ./config.cache; then
 fi
 
 # Libtool checks:
+AC_MSG_CHECKING([libtool stuff])
+AC_MSG_RESULT([ ])
 AC_PROG_CXX
 LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
 LT_LANG([C])dnl
@@ -154,9 +160,15 @@ AH_TOP([
 # Checks for systems.
 if test -z "${target}"; then
   AC_MSG_ERROR([Unrecognized target system type; please check config.sub.])
+else
+  test -n "${target}"
+  AC_SUBST([target])
 fi
 if test -z "${host}"; then
   AC_MSG_ERROR([Unrecognized host system type; please check config.sub.])
+else
+  test -n "${host}"
+  AC_SUBST([host])
 fi
 AC_SYS_INTERPRETER
 m4_ifdef([ACX_LARGEFILE],[
@@ -166,6 +178,8 @@ m4_ifdef([ACX_LARGEFILE],[
 ])dnl
 
 # Checks for programs.
+AC_MSG_CHECKING([programs])
+AC_MSG_RESULT([ ])
 AM_PROG_AS
 if test "x${CC}" = "x"; then
   test -z "${CC}"
@@ -297,6 +311,8 @@ esac
 AC_SUBST([DEMANGLER_NAME])dnl
 
 # Checks for libraries.
+AC_MSG_CHECKING([libraries])
+AC_MSG_RESULT([ ])
 AC_MSG_CHECKING([for linker flag to verify linked libraries have the correct architecture])
 # this is also done in warning.m4, but make sure it is done up here first:
 if test "x${acl_cv_wl}" = "x"; then
@@ -366,6 +382,11 @@ AC_GETTEXT_SUBCHECKS
 dnl# I forget, why am I not just using AM\_GNU\_GETTEXT?
 dnl# Anyways... continuing with library checks:
 AC_CHECK_LIB([c],[printf])
+AC_CHECK_LIB([ssp],[__chk_fail],[],[
+  AC_CHECK_LIB([ssp],[__memcpy_chk],[],[
+    AC_CHECK_LIB([ssp],[__strcpy_chk],[],[])
+  ])
+])
 # check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
@@ -411,6 +432,8 @@ AC_CHECK_LIB([gnu],[gl_dummy_symbol],[],[
 ])dnl
 
 # Checks for header files.
+AC_MSG_CHECKING([headers])
+AC_MSG_RESULT([ ])
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
@@ -452,9 +475,9 @@ AC_CHECK_HEADERS([AvailabilityMacros.h assert.h binary-io.h errno.h \
                   fcntl.h gettext.h iconv.h langinfo.h libgen.h libgettext.h \
                   libintl.h limits.h locale.h mach/i386/thread_status.h \
                   mach/mach.h mach-o/loader.h malloc.h malloc/malloc.h \
-                  math.h stdarg.h stddef.h stdio.h sys/file.h sys/ioctl.h \
-                  sys/param.h sys/time.h utime.h varargs.h \
-                  wchar.h wctype.h])dnl
+                  math.h mingw/fcntl.h mingw/sys/types.h stdarg.h stddef.h \
+                  stdio.h sys/file.h sys/ioctl.h sys/param.h sys/time.h \
+                  utime.h varargs.h wchar.h wctype.h])dnl
 AC_CHECK_HEADERS_ONCE([time.h])dnl
 AC_HEADER_SYS_WAIT
 AC_HEADER_STAT
@@ -476,6 +499,8 @@ AC_CHECK_HEADERS([mach-o/codesign.h],[],[
 ])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_MSG_CHECKING([compiler characteristics])
+AC_MSG_RESULT([ ])
 AC_DEFUN([AC_REQUIRE_C_CONST],[
   AC_REQUIRE([AC_C_CONST])dnl
 ])dnl
@@ -483,6 +508,8 @@ AC_REQUIRE_C_CONST
 AC_C_BIGENDIAN
 AC_C_PROTOTYPES
 AC_C_RESTRICT
+AC_MSG_CHECKING([types])
+AC_MSG_RESULT([ ])
 AC_CHECK_TYPES([FILE])dnl
 AC_TYPE_INT8_T
 AC_TYPE_INT16_T
@@ -585,22 +612,62 @@ AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_CHECK_TYPES([iconv_t])dnl
 dnl# one hand-rolled one:
-AC_MSG_CHECKING([for mbstate_t])
+AC_CACHE_CHECK([if mbstate_t compiles],[ac_cv_have_mbstate_t],[
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <wchar.h>
-]],[[mbstate_t teststate;]])],[have_mbstate_t=yes],[have_mbstate_t=no])
-AC_MSG_RESULT([${have_mbstate_t}])
-if test x"${have_mbstate_t}" = x"yes"; then
+]],[[mbstate_t teststate;]])],
+[ac_cv_have_mbstate_t=yes],[ac_cv_have_mbstate_t=no])
+])dnl
+  ## dunno if this should go inside or outside the cache check...
+if test x"${ac_cv_have_mbstate_t}" = x"yes"; then
   AC_DEFINE([HAVE_MBSTATE_T],[1],[Define if mbstate_t exists in wchar.h.])
 fi
 
 # Checks for library functions.
+AC_MSG_CHECKING([functions])
+AC_MSG_RESULT([ ])
 AM_WITH_DMALLOC
 AC_DEFUN([AC_REQUIRE_ALLOCA],[
   AC_REQUIRE([AC_FUNC_ALLOCA])dnl
 ])dnl
 AC_REQUIRE_ALLOCA
-AC_FUNC_CHOWN
+AS_IF([test "x${host_os}" = "xmingw32" || test "x${target_os}" = "xmingw32"],[
+  AS_IF([false && test -z "`grep \"define uid_t int\" config.h`"],[
+    AC_CHECK_TYPE([uid_t],[int])
+    AC_CHECK_TYPE([gid_t],[int])
+  ],[
+    AC_CHECK_TYPES([uid_t])
+    AC_CHECK_TYPES([gid_t])
+  ])dnl
+  ## if that failed, try looking in other headers:
+  AS_IF([test "x${ac_cv_type_uid_t}" != "xyes"],[
+    unset ac_cv_type_uid_t
+    AC_CACHE_CHECK([for uid_t in unistd.h],[ac_cv_type_uid_t],[
+      AC_EGREP_HEADER([uid_t],[unistd.h],[ac_cv_type_uid_t=yes],
+                      [ac_cv_type_uid_t=maybe])dnl
+    ])dnl
+  ])dnl
+  ## one more try:
+  AS_IF([test "x${ac_cv_type_uid_t}" != "xyes" \
+         && test "x${ac_cv_header_mingw_sys_types_h}" = "xyes"],[
+    unset ac_cv_type_uid_t
+    AC_CACHE_CHECK([for uid_t in mingw/sys/types.h],[ac_cv_type_uid_t],[
+      AC_EGREP_HEADER([uid_t],[mingw/sys/types.h],[ac_cv_type_uid_t=yes],
+                      [ac_cv_type_uid_t=maybe])dnl
+    ])dnl
+  ])dnl
+  ## if none of that works then I have no clue where else to look...
+],[
+  echo "assuming default test for uid_t will work with host ${host_os} and target ${target_os}..."
+])dnl
+  ## AC\_FUNC\_CHOWN calls checks for uid_t/gid_t, which can mess up config.h:
+AS_IF([test "x${host_os}" != "xmingw32" \
+       && test "x${target_os}" != "xmingw32"],[
+  AC_FUNC_CHOWN
+],[
+  AC_CHECK_FUNCS([chown])dnl
+])dnl
+  ## (FIXME: might need to do the above differently...)
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FNMATCH dnl# avoid the "REPLACE" version of it though
@@ -629,14 +696,18 @@ AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 unset ac_cv_func_setlocale
 AC_CHECK_FUNCS([atexit bindtextdomain ctime dcgettext dirname dup2 expandargv \
-                fclose floor fopen fprintf fputs fread free getc_unlocked \
-                gettimeofday isascii localeconv mblen memchr memcmp \
-                memcpy memmove memset modf pow re_comp regcomp rint rmdir \
-                sbrk setlocale setmode sqrt strcspn strdup strerror \
-                strncasecmp strpbrk strrchr strspn strstr strtol strtoul \
-                strverscmp textdomain utime utimes])dnl
-AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])dnl
-AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])dnl
+                fclose fcntl fctrl floor fopen fprintf fputs fread free \
+                getc_unlocked gettimeofday isascii ioctlsocket localeconv \
+                mblen memchr memcmp memcpy memmove memset modf pow re_comp \
+                regcomp rint rmdir sbrk setlocale setmode sqrt strcspn \
+                strdup strerror strncasecmp strpbrk strrchr strspn strstr \
+                strtol strtoul strverscmp textdomain utime utimes])dnl
+AC_SEARCH_LIBS([fcntl],[fcntl posix unix compat gcc gcc_s crt iberty c gnu])dnl
+AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu mingwex msvcrt ucrt ucrtbase])dnl
+AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu mingwex msvcrt ucrt ucrtbase])dnl
+AC_SEARCH_LIBS([__chk_fail],[ssp gcc iberty c gnu])dnl
+AC_SEARCH_LIBS([__memcpy_chk],[ssp gcc iberty c gnu])dnl
+AC_SEARCH_LIBS([__strcpy_chk],[ssp gcc iberty c gnu])dnl
 
 AC_CHECK_FUNC([mkstemp],
 	      [AC_DEFINE([HAVE_MKSTEMP],[1],
@@ -790,6 +861,8 @@ if test "x${bu_cv_header_utime_h}" = "xyes"; then
 fi
 
 # checks for declarations (keep alphabetized please):
+AC_MSG_CHECKING([declarations])
+AC_MSG_RESULT([ ])
 unset ac_cv_have_decl_getenv
 AC_CHECK_DECLS([basename, dirname, environ, fprintf, getc_unlocked, getenv,
 		sbrk, snprintf, stpcpy, strnlen, strstr, vsnprintf])dnl

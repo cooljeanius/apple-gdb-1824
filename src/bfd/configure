@@ -21894,6 +21894,7 @@ unset ac_cv_header_sys_param_h
 for ac_header in ctype.h errno.h fcntl.h gettext.h iconv.h libgen.h \
                   libgettext.h libintl.h limits.h mach/mach.h \
                   mach-o/loader.h malloca.h malloc/malloc.h math.h \
+                  mingw/fcntl.h mingw/malloc.h mingw/sys/types.h \
                   realloc.h stdarg.h stddef.h stdio.h sys/acl.h \
                   sys/core.h sys/errno.h sys/file.h sys/paccess.h \
                   sys/param.h sys/region.h sys/resource.h sys/socket.h \
@@ -23303,12 +23304,13 @@ $as_echo "no" >&6; }
 fi
 
 
-for ac_func in btowc calloc close exit fabs fabsf fabsl fcntl fdopen \
+for ac_func in btowc calloc close exit fabs fabsf fabsl fcntl fctrl fdopen \
                 feof ferror fileno fopen fprintf fread getgid getrlimit \
-                getuid islower isspace isupper mbsrtowcs memchr memmove \
-                mempcpy memset open pread qsort rpl_malloc rpl_realloc \
-                setitimer strcmp strdup strncasecmp strrchr strspn strstr \
-                strtol strtoul strtoull sysconf system uname wmempcpy
+                getuid ioctlsocket islower isspace isupper mbsrtowcs memchr \
+                memcpy_chk memcpy_s memmove mempcpy memset open pread qsort \
+                rpl_malloc rpl_realloc setitimer strcmp strdup strncasecmp \
+                strrchr strspn strstr strtol strtoul strtoull sysconf system \
+                uname wmempcpy
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -24091,6 +24093,61 @@ fi
 done
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing fcntl" >&5
+$as_echo_n "checking for library containing fcntl... " >&6; }
+if ${ac_cv_search_fcntl+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char fcntl ();
+int
+main ()
+{
+return fcntl ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' fcntl posix unix compat gcc gcc_s crt iberty c gnu; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_fcntl=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_fcntl+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_fcntl+:} false; then :
+
+else
+  ac_cv_search_fcntl=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_fcntl" >&5
+$as_echo "$ac_cv_search_fcntl" >&6; }
+ac_res=$ac_cv_search_fcntl
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing rpl_realloc" >&5
 $as_echo_n "checking for library containing rpl_realloc... " >&6; }
 if ${ac_cv_search_rpl_realloc+:} false; then :
@@ -24115,7 +24172,7 @@ return rpl_realloc ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' iberty c gnu; do
+for ac_lib in '' iberty c gnu mingwex msvcrt ucrt ucrtbase; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else
@@ -24170,7 +24227,7 @@ return rpl_malloc ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' iberty c gnu; do
+for ac_lib in '' iberty c gnu mingwex msvcrt ucrt ucrtbase; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else

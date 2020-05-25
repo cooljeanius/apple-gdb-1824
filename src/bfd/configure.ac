@@ -613,6 +613,7 @@ unset ac_cv_header_sys_param_h
 AC_CHECK_HEADERS([ctype.h errno.h fcntl.h gettext.h iconv.h libgen.h \
                   libgettext.h libintl.h limits.h mach/mach.h \
                   mach-o/loader.h malloca.h malloc/malloc.h math.h \
+                  mingw/fcntl.h mingw/malloc.h mingw/sys/types.h \
                   realloc.h stdarg.h stddef.h stdio.h sys/acl.h \
                   sys/core.h sys/errno.h sys/file.h sys/paccess.h \
                   sys/param.h sys/region.h sys/resource.h sys/socket.h \
@@ -676,12 +677,13 @@ AC_CHECK_MEMBERS([struct user.u_comm],[],[
 AC_MSG_CHECKING([functions])
 AC_MSG_RESULT([ ])
 AM_WITH_DMALLOC
-AC_CHECK_FUNCS([btowc calloc close exit fabs fabsf fabsl fcntl fdopen \
+AC_CHECK_FUNCS([btowc calloc close exit fabs fabsf fabsl fcntl fctrl fdopen \
                 feof ferror fileno fopen fprintf fread getgid getrlimit \
-                getuid islower isspace isupper mbsrtowcs memchr memmove \
-                mempcpy memset open pread qsort rpl_malloc rpl_realloc \
-                setitimer strcmp strdup strncasecmp strrchr strspn strstr \
-                strtol strtoul strtoull sysconf system uname wmempcpy])dnl
+                getuid ioctlsocket islower isspace isupper mbsrtowcs memchr \
+                memcpy_chk memcpy_s memmove mempcpy memset open pread qsort \
+                rpl_malloc rpl_realloc setitimer strcmp strdup strncasecmp \
+                strrchr strspn strstr strtol strtoul strtoull sysconf system \
+                uname wmempcpy])dnl
 AC_CHECK_FUNCS_ONCE([lt_dlinit])dnl
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_FNMATCH
@@ -693,8 +695,9 @@ AC_FUNC_REALLOC
 AC_FUNC_STAT
 AC_FUNC_STRNLEN
 AC_FUNC_VPRINTF
-AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])dnl
-AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])dnl
+AC_SEARCH_LIBS([fcntl],[fcntl posix unix compat gcc gcc_s crt iberty c gnu])dnl
+AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu mingwex msvcrt ucrt ucrtbase])dnl
+AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu mingwex msvcrt ucrt ucrtbase])dnl
 
 # other misc. stuff:
 AC_MSG_CHECKING([stuff that we might have already checked])

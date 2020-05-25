@@ -164,7 +164,7 @@ smart_rename(const char *from, const char *to, int preserve_dates)
   if (ret != 0)
     {
       /* We have to clean up here: */
-      non_fatal(_("unable to rename '%s' reason: %s"), to, strerror(errno));
+      non_fatal(_("unable to rename '%s' reason: %s"), to, xstrerror(errno));
       unlink(from);
     }
 
