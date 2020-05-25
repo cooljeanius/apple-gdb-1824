@@ -2241,6 +2241,9 @@ Morpho MS1 - Used to tell the linker which vtable entries are used.
 @deffn {} BFD_RELOC_MS1_GNU_VTENTRY
 Morpho MS1 - Used to tell the linker which vtable entries are used.
 @end deffn
+@deffn {} BFD_RELOC_MS1_PCINSN8
+Morpho MS1 - 8 bit immediate relocation.
+@end deffn
 @deffn {} BFD_RELOC_MSP430_10_PCREL
 @deffnx {} BFD_RELOC_MSP430_16_PCREL
 @deffnx {} BFD_RELOC_MSP430_16

@@ -361,6 +361,8 @@ CGEN_ASM_INIT_HOOK
 
 
 
+/* -- end assembler routines. */
+
 /* Regex construction routine.
 
    This translates an opcode syntax string into a regex string,

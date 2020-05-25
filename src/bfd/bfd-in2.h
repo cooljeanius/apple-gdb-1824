@@ -4215,6 +4215,9 @@ This is the 5 bits of a value.  */
 /* Morpho MS1 - Used to tell the linker which vtable entries are used.  */
   BFD_RELOC_MS1_GNU_VTENTRY,
 
+/* Morpho MS1 - 8 bit immediate relocation.  */
+  BFD_RELOC_MS1_PCINSN8,
+
 /* msp430 specific relocation codes  */
   BFD_RELOC_MSP430_10_PCREL,
   BFD_RELOC_MSP430_16_PCREL,

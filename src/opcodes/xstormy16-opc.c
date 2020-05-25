@@ -1,24 +1,24 @@
-/* xstormy16-opc.c: Instruction opcode table for xstormy16.
+/* Instruction opcode table for xstormy16.
 
-THIS FILE WAS ORIGINALLY MACHINE GENERATED WITH CGEN.
+THIS FILE IS MACHINE GENERATED WITH CGEN.
 
-Copyright 1996-2005 Free Software Foundation, Inc.
+Copyright 1996-2009 Free Software Foundation, Inc.
 
 This file is part of the GNU Binutils and/or GDB, the GNU debugger.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
-any later version.
+   This file is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   It is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, write to the Free Software Foundation, Inc.,
+   51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
 */
 
@@ -38,12 +38,13 @@ static unsigned int asm_hash_insn (const char *);
 static int dis_hash_insn_p        (const CGEN_INSN *);
 static unsigned int dis_hash_insn (const char *, CGEN_INSN_INT);
 
-/* Instruction formats: */
-#if defined(__STDC__) || defined(ALMOST_STDC) || defined(HAVE_STRINGIZE)
-# define F(f) & xstormy16_cgen_ifld_table[XSTORMY16_##f]
+/* Instruction formats.  */
+
+#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
+#define F(f) & xstormy16_cgen_ifld_table[XSTORMY16_##f]
 #else
-# define F(f) & xstormy16_cgen_ifld_table[XSTORMY16_/**/f]
-#endif /* __STDC__ || ALMOST_STDC || HAVE_STRINGIZE */
+#define F(f) & xstormy16_cgen_ifld_table[XSTORMY16_/**/f]
+#endif
 static const CGEN_IFMT ifmt_empty ATTRIBUTE_UNUSED = {
   0, 0, 0x0, { { 0 } }
 };
@@ -1009,27 +1010,27 @@ static const CGEN_IBASE xstormy16_cgen_macro_insn_table[] =
 /* mov Rx,#$imm8 */
   {
     -1, "movimm8", "mov", 16,
-    { 0|A(ALIAS), { (1<<MACH_BASE) } }
+    { 0|A(ALIAS), { { { (1<<MACH_BASE), 0 } } } }
   },
 /* mov $Rm,#$imm8small */
   {
     -1, "movgrimm8", "mov", 16,
-    { 0|A(ALIAS), { (1<<MACH_BASE) } }
+    { 0|A(ALIAS), { { { (1<<MACH_BASE), 0 } } } }
   },
 /* mov $Rd,#$imm16 */
   {
     -1, "movgrimm16", "mov", 32,
-    { 0|A(ALIAS), { (1<<MACH_BASE) } }
+    { 0|A(ALIAS), { { { (1<<MACH_BASE), 0 } } } }
   },
 /* inc $Rd */
   {
     -1, "incgr", "inc", 16,
-    { 0|A(ALIAS), { (1<<MACH_BASE) } }
+    { 0|A(ALIAS), { { { (1<<MACH_BASE), 0 } } } }
   },
 /* dec $Rd */
   {
     -1, "decgr", "dec", 16,
-    { 0|A(ALIAS), { (1<<MACH_BASE) } }
+    { 0|A(ALIAS), { { { (1<<MACH_BASE), 0 } } } }
   },
 };
 
@@ -1075,40 +1076,42 @@ static const CGEN_OPCODE xstormy16_cgen_macro_insn_opcode_table[] =
 #undef OP
 
 #ifndef CGEN_ASM_HASH_P
-# define CGEN_ASM_HASH_P(insn) 1
-#endif /* !CGEN_ASM_HASH_P */
+#define CGEN_ASM_HASH_P(insn) 1
+#endif
 
 #ifndef CGEN_DIS_HASH_P
-# define CGEN_DIS_HASH_P(insn) 1
-#endif /* CGEN_DIS_HASH_P */
+#define CGEN_DIS_HASH_P(insn) 1
+#endif
 
 /* Return non-zero if INSN is to be added to the hash table.
    Targets are free to override CGEN_{ASM,DIS}_HASH_P in the .opc file.  */
 
 static int
-asm_hash_insn_p(const CGEN_INSN *insn ATTRIBUTE_UNUSED)
+asm_hash_insn_p (insn)
+     const CGEN_INSN *insn ATTRIBUTE_UNUSED;
 {
-  return CGEN_ASM_HASH_P(insn);
+  return CGEN_ASM_HASH_P (insn);
 }
 
 static int
-dis_hash_insn_p(const CGEN_INSN *insn)
+dis_hash_insn_p (insn)
+     const CGEN_INSN *insn;
 {
   /* If building the hash table and the NO-DIS attribute is present,
      ignore.  */
-  if (CGEN_INSN_ATTR_VALUE(insn, CGEN_INSN_NO_DIS))
+  if (CGEN_INSN_ATTR_VALUE (insn, CGEN_INSN_NO_DIS))
     return 0;
-  return CGEN_DIS_HASH_P(insn);
+  return CGEN_DIS_HASH_P (insn);
 }
 
 #ifndef CGEN_ASM_HASH
-# define CGEN_ASM_HASH_SIZE 127
-# ifdef CGEN_MNEMONIC_OPERANDS
-#  define CGEN_ASM_HASH(mnem) (*(unsigned char *)(mnem) % CGEN_ASM_HASH_SIZE)
-# else
-#  define CGEN_ASM_HASH(mnem) (*(unsigned char *)(mnem) % CGEN_ASM_HASH_SIZE) /*FIXME*/
-# endif /* CGEN_MNEMONIC_OPERANDS */
-#endif /* CGEN_ASM_HASH */
+#define CGEN_ASM_HASH_SIZE 127
+#ifdef CGEN_MNEMONIC_OPERANDS
+#define CGEN_ASM_HASH(mnem) (*(unsigned char *) (mnem) % CGEN_ASM_HASH_SIZE)
+#else
+#define CGEN_ASM_HASH(mnem) (*(unsigned char *) (mnem) % CGEN_ASM_HASH_SIZE) /*FIXME*/
+#endif
+#endif
 
 /* It doesn't make much sense to provide a default here,
    but while this is under development we do.
@@ -1116,32 +1119,37 @@ dis_hash_insn_p(const CGEN_INSN *insn)
    VALUE is the first base_insn_bitsize bits as an int in host order.  */
 
 #ifndef CGEN_DIS_HASH
-# define CGEN_DIS_HASH_SIZE 256
-# define CGEN_DIS_HASH(buf, value) (*(unsigned char *)(buf))
-#endif /* !CGEN_DIS_HASH */
+#define CGEN_DIS_HASH_SIZE 256
+#define CGEN_DIS_HASH(buf, value) (*(unsigned char *) (buf))
+#endif
 
 /* The result is the hash value of the insn.
    Targets are free to override CGEN_{ASM,DIS}_HASH in the .opc file.  */
+
 static unsigned int
-asm_hash_insn(const char *mnem)
+asm_hash_insn (mnem)
+     const char * mnem;
 {
-  return CGEN_ASM_HASH(mnem);
+  return CGEN_ASM_HASH (mnem);
 }
 
 /* BUF is a pointer to the bytes of the insn, target order.
    VALUE is the first base_insn_bitsize bits as an int in host order.  */
+
 static unsigned int
-dis_hash_insn(const char *buf ATTRIBUTE_UNUSED,
-              CGEN_INSN_INT value ATTRIBUTE_UNUSED)
+dis_hash_insn (buf, value)
+     const char * buf ATTRIBUTE_UNUSED;
+     CGEN_INSN_INT value ATTRIBUTE_UNUSED;
 {
-  return CGEN_DIS_HASH(buf, value);
+  return CGEN_DIS_HASH (buf, value);
 }
 
-/* Set the recorded length of the insn in the CGEN_FIELDS struct: */
+/* Set the recorded length of the insn in the CGEN_FIELDS struct.  */
+
 static void
-set_fields_bitsize(CGEN_FIELDS *fields, int size)
+set_fields_bitsize (CGEN_FIELDS *fields, int size)
 {
-  CGEN_FIELDS_BITSIZE(fields) = size;
+  CGEN_FIELDS_BITSIZE (fields) = size;
 }
 
 /* Function to call before using the operand instance table.
@@ -1151,32 +1159,35 @@ void
 xstormy16_cgen_init_opcode_table (CGEN_CPU_DESC cd)
 {
   int i;
-  int num_macros = (sizeof(xstormy16_cgen_macro_insn_table) /
-		    sizeof(xstormy16_cgen_macro_insn_table[0]));
+  int num_macros = (sizeof (xstormy16_cgen_macro_insn_table) /
+		    sizeof (xstormy16_cgen_macro_insn_table[0]));
   const CGEN_IBASE *ib = & xstormy16_cgen_macro_insn_table[0];
   const CGEN_OPCODE *oc = & xstormy16_cgen_macro_insn_opcode_table[0];
-  CGEN_INSN *insns = (CGEN_INSN *)xmalloc(num_macros * sizeof(CGEN_INSN));
+  CGEN_INSN *insns = xmalloc (num_macros * sizeof (CGEN_INSN));
 
-  memset(insns, 0, num_macros * sizeof(CGEN_INSN));
+  /* This test has been added to avoid a warning generated
+     if memset is called with a third argument of value zero.  */
+  if (num_macros >= 1)
+    memset (insns, 0, num_macros * sizeof (CGEN_INSN));
   for (i = 0; i < num_macros; ++i)
     {
       insns[i].base = &ib[i];
       insns[i].opcode = &oc[i];
-      xstormy16_cgen_build_insn_regex(&insns[i]);
+      xstormy16_cgen_build_insn_regex (& insns[i]);
     }
   cd->macro_insn_table.init_entries = insns;
-  cd->macro_insn_table.entry_size = sizeof(CGEN_IBASE);
+  cd->macro_insn_table.entry_size = sizeof (CGEN_IBASE);
   cd->macro_insn_table.num_init_entries = num_macros;
 
-  oc = &xstormy16_cgen_insn_opcode_table[0];
-  insns = (CGEN_INSN *)cd->insn_table.init_entries;
+  oc = & xstormy16_cgen_insn_opcode_table[0];
+  insns = (CGEN_INSN *) cd->insn_table.init_entries;
   for (i = 0; i < MAX_INSNS; ++i)
     {
       insns[i].opcode = &oc[i];
-      xstormy16_cgen_build_insn_regex(&insns[i]);
+      xstormy16_cgen_build_insn_regex (& insns[i]);
     }
 
-  cd->sizeof_fields = sizeof(CGEN_FIELDS);
+  cd->sizeof_fields = sizeof (CGEN_FIELDS);
   cd->set_fields_bitsize = set_fields_bitsize;
 
   cd->asm_hash_p = asm_hash_insn_p;
@@ -1187,5 +1198,3 @@ xstormy16_cgen_init_opcode_table (CGEN_CPU_DESC cd)
   cd->dis_hash = dis_hash_insn;
   cd->dis_hash_size = CGEN_DIS_HASH_SIZE;
 }
-
-/* EOF */

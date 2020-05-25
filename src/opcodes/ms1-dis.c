@@ -1,9 +1,8 @@
-/* ms1-dis.c: Disassembler interface for targets using CGEN. -*- C -*-
+/* Disassembler interface for targets using CGEN. -*- C -*-
    CGEN: Cpu tools GENerator
 
-   THIS FILE WAS ORIGINALLY MACHINE GENERATED WITH CGEN.
-   - the resultant file was machine generated, cgen-dis.in is NOT.
-     (but re-cgen-erating these files is broken, so just edit manually for now...)
+   THIS FILE IS MACHINE GENERATED WITH CGEN.
+   - the resultant file is machine generated, cgen-dis.in isn't
 
    Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2005
    Free Software Foundation, Inc.
@@ -61,6 +60,7 @@ static int read_insn
 
 /* -- dis.c */
 static void print_dollarhex (CGEN_CPU_DESC, PTR, long, unsigned, bfd_vma, int);
+static void print_pcrel (CGEN_CPU_DESC, PTR, long, unsigned, bfd_vma, int);
 
 static void
 print_dollarhex (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
@@ -78,6 +78,16 @@ print_dollarhex (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
     print_normal (cd, dis_info, value, attrs, pc, length);
 }
 
+static void
+print_pcrel (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
+	     void * dis_info,
+	     long value,
+	     unsigned int attrs ATTRIBUTE_UNUSED,
+	     bfd_vma pc ATTRIBUTE_UNUSED,
+	     int length ATTRIBUTE_UNUSED)
+{
+  print_address (cd, dis_info, value + pc, attrs, pc, length);
+}
 
 /* -- */
 
@@ -129,6 +139,18 @@ ms1_cgen_print_operand (CGEN_CPU_DESC cd,
       break;
     case MS1_OPERAND_BRC2 :
       print_dollarhex (cd, info, fields->f_brc2, 0, pc, length);
+      break;
+    case MS1_OPERAND_CB1INCR :
+      print_dollarhex (cd, info, fields->f_cb1incr, 0|(1<<CGEN_OPERAND_SIGNED), pc, length);
+      break;
+    case MS1_OPERAND_CB1SEL :
+      print_dollarhex (cd, info, fields->f_cb1sel, 0, pc, length);
+      break;
+    case MS1_OPERAND_CB2INCR :
+      print_dollarhex (cd, info, fields->f_cb2incr, 0|(1<<CGEN_OPERAND_SIGNED), pc, length);
+      break;
+    case MS1_OPERAND_CB2SEL :
+      print_dollarhex (cd, info, fields->f_cb2sel, 0, pc, length);
       break;
     case MS1_OPERAND_CBRB :
       print_dollarhex (cd, info, fields->f_cbrb, 0, pc, length);
@@ -187,8 +209,11 @@ ms1_cgen_print_operand (CGEN_CPU_DESC cd,
     case MS1_OPERAND_IMM16 :
       print_dollarhex (cd, info, fields->f_imm16s, 0|(1<<CGEN_OPERAND_SIGNED), pc, length);
       break;
+    case MS1_OPERAND_IMM16L :
+      print_dollarhex (cd, info, fields->f_imm16l, 0, pc, length);
+      break;
     case MS1_OPERAND_IMM16O :
-      print_dollarhex (cd, info, fields->f_imm16s, 0, pc, length);
+      print_pcrel (cd, info, fields->f_imm16s, 0|(1<<CGEN_OPERAND_PCREL_ADDR), pc, length);
       break;
     case MS1_OPERAND_IMM16Z :
       print_dollarhex (cd, info, fields->f_imm16u, 0, pc, length);
@@ -201,6 +226,9 @@ ms1_cgen_print_operand (CGEN_CPU_DESC cd,
       break;
     case MS1_OPERAND_LENGTH :
       print_dollarhex (cd, info, fields->f_length, 0, pc, length);
+      break;
+    case MS1_OPERAND_LOOPSIZE :
+      print_pcrel (cd, info, fields->f_loopo, 0|(1<<CGEN_OPERAND_PCREL_ADDR), pc, length);
       break;
     case MS1_OPERAND_MASK :
       print_dollarhex (cd, info, fields->f_mask, 0, pc, length);
@@ -225,6 +253,9 @@ ms1_cgen_print_operand (CGEN_CPU_DESC cd,
       break;
     case MS1_OPERAND_RC2 :
       print_dollarhex (cd, info, fields->f_rc2, 0, pc, length);
+      break;
+    case MS1_OPERAND_RC3 :
+      print_dollarhex (cd, info, fields->f_rc3, 0, pc, length);
       break;
     case MS1_OPERAND_RCNUM :
       print_dollarhex (cd, info, fields->f_rcnum, 0, pc, length);
@@ -262,7 +293,7 @@ ms1_cgen_print_operand (CGEN_CPU_DESC cd,
   }
 }
 
-cgen_print_fn * const ms1_cgen_print_handlers[] =
+cgen_print_fn * const ms1_cgen_print_handlers[] = 
 {
   print_insn_normal,
 };
@@ -460,7 +491,7 @@ print_insn (CGEN_CPU_DESC cd,
       int length;
       unsigned long insn_value_cropped;
 
-#ifdef CGEN_VALIDATE_INSN_SUPPORTED
+#ifdef CGEN_VALIDATE_INSN_SUPPORTED 
       /* Not needed as insn shouldn't be in hash lists if not supported.  */
       /* Supported by this cpu?  */
       if (! ms1_cgen_insn_supported (cd, insn))
@@ -478,7 +509,7 @@ print_insn (CGEN_CPU_DESC cd,
          relevant part from the buffer. */
       if ((unsigned) (CGEN_INSN_BITSIZE (insn) / 8) < buflen &&
 	  (unsigned) (CGEN_INSN_BITSIZE (insn) / 8) <= sizeof (unsigned long))
-	insn_value_cropped = bfd_get_bits (buf, CGEN_INSN_BITSIZE (insn),
+	insn_value_cropped = bfd_get_bits (buf, CGEN_INSN_BITSIZE (insn), 
 					   info->endian == BFD_ENDIAN_BIG);
       else
 	insn_value_cropped = insn_value;
@@ -596,17 +627,17 @@ print_insn_ms1 (bfd_vma pc, disassemble_info *info)
   arch = info->arch;
   if (arch == bfd_arch_unknown)
     arch = CGEN_BFD_ARCH;
-
+   
   /* There's no standard way to compute the machine or isa number
      so we leave it to the target.  */
 #ifdef CGEN_COMPUTE_MACH
-  mach = CGEN_COMPUTE_MACH(info);
+  mach = CGEN_COMPUTE_MACH (info);
 #else
   mach = info->mach;
-#endif /* CGEN_COMPUTE_MACH */
+#endif
 
 #ifdef CGEN_COMPUTE_ISA
-  isa = CGEN_COMPUTE_ISA(info);
+  isa = CGEN_COMPUTE_ISA (info);
 #else
   isa = (int)(intptr_t)info->insn_sets;
 #endif
@@ -628,7 +659,7 @@ print_insn_ms1 (bfd_vma pc, disassemble_info *info)
 	      break;
 	    }
 	}
-    }
+    } 
 
   /* If we haven't initialized yet, initialize the opcode table.  */
   if (! cd)

@@ -1,24 +1,24 @@
-/* ms1-opc.c: Instruction opcode table for ms1.
+/* Instruction opcode table for ms1.
 
-THIS FILE WAS ORIGINALLY MACHINE GENERATED WITH CGEN.
+THIS FILE IS MACHINE GENERATED WITH CGEN.
 
-Copyright 1996-2005 Free Software Foundation, Inc.
+Copyright 1996-2009 Free Software Foundation, Inc.
 
 This file is part of the GNU Binutils and/or GDB, the GNU debugger.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
-any later version.
+   This file is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   It is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, write to the Free Software Foundation, Inc.,
+   51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
 */
 
@@ -44,7 +44,7 @@ ms1_cgen_insn_supported (CGEN_CPU_DESC cd,
   /* No mach attribute?  Assume it's supported for all machs.  */
   if (machs == 0)
     return 1;
-
+  
   return ((machs & cd->machs) != 0);
 }
 
@@ -235,6 +235,26 @@ static const CGEN_IFMT ifmt_fbcbincrs ATTRIBUTE_UNUSED = {
 
 static const CGEN_IFMT ifmt_mfbcbincrs ATTRIBUTE_UNUSED = {
   32, 32, 0xfc008000, { { F (F_MSYS) }, { F (F_MSOPC) }, { F (F_PERM) }, { F (F_SR1) }, { F (F_SR2) }, { F (F_UU_1_15) }, { F (F_CBX) }, { F (F_CCB) }, { F (F_CDB) }, { F (F_ROWNUM2) }, { F (F_DUP) }, { F (F_CTXDISP) }, { 0 } }
+};
+
+static const CGEN_IFMT ifmt_loop ATTRIBUTE_UNUSED = {
+  32, 32, 0xff0fff00, { { F (F_MSYS) }, { F (F_OPC) }, { F (F_IMM) }, { F (F_SR1) }, { F (F_UU4A) }, { F (F_UU8) }, { F (F_LOOPO) }, { 0 } }
+};
+
+static const CGEN_IFMT ifmt_loopi ATTRIBUTE_UNUSED = {
+  32, 32, 0xff000000, { { F (F_MSYS) }, { F (F_OPC) }, { F (F_IMM) }, { F (F_IMM16L) }, { F (F_LOOPO) }, { 0 } }
+};
+
+static const CGEN_IFMT ifmt_dfbc ATTRIBUTE_UNUSED = {
+  32, 32, 0xfc000000, { { F (F_MSYS) }, { F (F_MSOPC) }, { F (F_CB1SEL) }, { F (F_CB2SEL) }, { F (F_CB1INCR) }, { F (F_CB2INCR) }, { F (F_RC3) }, { F (F_RC2) }, { F (F_CTXDISP) }, { 0 } }
+};
+
+static const CGEN_IFMT ifmt_dwfb ATTRIBUTE_UNUSED = {
+  32, 32, 0xfc000080, { { F (F_MSYS) }, { F (F_MSOPC) }, { F (F_CB1SEL) }, { F (F_CB2SEL) }, { F (F_CB1INCR) }, { F (F_CB2INCR) }, { F (F_UU1) }, { F (F_RC2) }, { F (F_CTXDISP) }, { 0 } }
+};
+
+static const CGEN_IFMT ifmt_dfbr ATTRIBUTE_UNUSED = {
+  32, 32, 0xfc000000, { { F (F_MSYS) }, { F (F_MSOPC) }, { F (F_CB1SEL) }, { F (F_CB2SEL) }, { F (F_SR2) }, { F (F_LENGTH) }, { F (F_ROWNUM1) }, { F (F_ROWNUM2) }, { F (F_RC2) }, { F (F_CTXDISP) }, { 0 } }
 };
 
 #undef F
@@ -722,6 +742,42 @@ static const CGEN_OPCODE ms1_cgen_insn_opcode_table[MAX_INSNS] =
     { { MNEM, ' ', OP (FRSR1), ',', OP (FRSR2), ',', '#', OP (PERM), ',', '#', OP (CBX), ',', '#', OP (CCB), ',', '#', OP (CDB), ',', '#', OP (ROWNUM2), ',', '#', OP (DUP), ',', '#', OP (CTXDISP), 0 } },
     & ifmt_mfbcbincrs, { 0xfc000000 }
   },
+/* loop $frsr1,$loopsize */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, ' ', OP (FRSR1), ',', OP (LOOPSIZE), 0 } },
+    & ifmt_loop, { 0x3e000000 }
+  },
+/* loopi #$imm16l,$loopsize */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, ' ', '#', OP (IMM16L), ',', OP (LOOPSIZE), 0 } },
+    & ifmt_loopi, { 0x3f000000 }
+  },
+/* dfbc #$cb1sel,#$cb2sel,#$cb1incr,#$cb2incr,#$rc3,#$rc2,#$ctxdisp */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, ' ', '#', OP (CB1SEL), ',', '#', OP (CB2SEL), ',', '#', OP (CB1INCR), ',', '#', OP (CB2INCR), ',', '#', OP (RC3), ',', '#', OP (RC2), ',', '#', OP (CTXDISP), 0 } },
+    & ifmt_dfbc, { 0x80000000 }
+  },
+/* dwfb #$cb1sel,#$cb2sel,#$cb1incr,#$cb2incr,#$rc2,#$ctxdisp */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, ' ', '#', OP (CB1SEL), ',', '#', OP (CB2SEL), ',', '#', OP (CB1INCR), ',', '#', OP (CB2INCR), ',', '#', OP (RC2), ',', '#', OP (CTXDISP), 0 } },
+    & ifmt_dwfb, { 0x84000000 }
+  },
+/* fbwfb #$cb1sel,#$cb2sel,#$cb1incr,#$cb2incr,#$rc3,#$rc2,#$ctxdisp */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, ' ', '#', OP (CB1SEL), ',', '#', OP (CB2SEL), ',', '#', OP (CB1INCR), ',', '#', OP (CB2INCR), ',', '#', OP (RC3), ',', '#', OP (RC2), ',', '#', OP (CTXDISP), 0 } },
+    & ifmt_dfbc, { 0x88000000 }
+  },
+/* dfbr #$cb1sel,#$cb2sel,$frsr2,#$length,#$rownum1,#$rownum2,#$rc2,#$ctxdisp */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, ' ', '#', OP (CB1SEL), ',', '#', OP (CB2SEL), ',', OP (FRSR2), ',', '#', OP (LENGTH), ',', '#', OP (ROWNUM1), ',', '#', OP (ROWNUM2), ',', '#', OP (RC2), ',', '#', OP (CTXDISP), 0 } },
+    & ifmt_dfbr, { 0x8c000000 }
+  },
 };
 
 #undef A
@@ -753,16 +809,16 @@ static const CGEN_OPCODE ms1_cgen_insn_opcode_table[MAX_INSNS] =
 #define MNEM CGEN_SYNTAX_MNEMONIC /* syntax value for mnemonic */
 #define OP(field) CGEN_SYNTAX_MAKE_FIELD (OPERAND (field))
 
-/* The macro instruction table: */
+/* The macro instruction table.  */
+
 static const CGEN_IBASE ms1_cgen_macro_insn_table[] =
 {
-  { 0 }
 };
 
-/* The macro instruction opcode table: */
+/* The macro instruction opcode table.  */
+
 static const CGEN_OPCODE ms1_cgen_macro_insn_opcode_table[] =
 {
-  { { 0 } }
 };
 
 #undef A
@@ -860,7 +916,10 @@ ms1_cgen_init_opcode_table (CGEN_CPU_DESC cd)
   const CGEN_OPCODE *oc = & ms1_cgen_macro_insn_opcode_table[0];
   CGEN_INSN *insns = xmalloc (num_macros * sizeof (CGEN_INSN));
 
-  memset (insns, 0, num_macros * sizeof (CGEN_INSN));
+  /* This test has been added to avoid a warning generated
+     if memset is called with a third argument of value zero.  */
+  if (num_macros >= 1)
+    memset (insns, 0, num_macros * sizeof (CGEN_INSN));
   for (i = 0; i < num_macros; ++i)
     {
       insns[i].base = &ib[i];

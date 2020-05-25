@@ -2,23 +2,23 @@
 
 THIS FILE IS MACHINE GENERATED WITH CGEN.
 
-Copyright 1996-2005 Free Software Foundation, Inc.
+Copyright 1996-2009 Free Software Foundation, Inc.
 
 This file is part of the GNU Binutils and/or GDB, the GNU debugger.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
-any later version.
+   This file is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   It is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, write to the Free Software Foundation, Inc.,
+   51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
 */
 
@@ -68,14 +68,15 @@ typedef enum cgen_insn_type {
  , MS1_INSN_WFBI, MS1_INSN_WFB, MS1_INSN_RCRISC, MS1_INSN_FBCBINC
  , MS1_INSN_RCXMODE, MS1_INSN_INTERLEAVER, MS1_INSN_WFBINC, MS1_INSN_MWFBINC
  , MS1_INSN_WFBINCR, MS1_INSN_MWFBINCR, MS1_INSN_FBCBINCS, MS1_INSN_MFBCBINCS
- , MS1_INSN_FBCBINCRS, MS1_INSN_MFBCBINCRS
+ , MS1_INSN_FBCBINCRS, MS1_INSN_MFBCBINCRS, MS1_INSN_LOOP, MS1_INSN_LOOPI
+ , MS1_INSN_DFBC, MS1_INSN_DWFB, MS1_INSN_FBWFB, MS1_INSN_DFBR
 } CGEN_INSN_TYPE;
 
 /* Index of `invalid' insn place holder.  */
 #define CGEN_INSN_INVALID MS1_INSN_INVALID
 
 /* Total number of insns in table.  */
-#define MAX_INSNS ((int) MS1_INSN_MFBCBINCRS + 1)
+#define MAX_INSNS ((int) MS1_INSN_DFBR + 1)
 
 /* This struct records data prior to insertion or after extraction.  */
 struct cgen_fields
@@ -97,7 +98,9 @@ struct cgen_fields
   long f_uu4a;
   long f_uu4b;
   long f_uu12;
+  long f_uu8;
   long f_uu16;
+  long f_uu1;
   long f_msopc;
   long f_uu_26_25;
   long f_mask;
@@ -147,6 +150,13 @@ struct cgen_fields
   long f_dup;
   long f_rc2;
   long f_ctxdisp;
+  long f_imm16l;
+  long f_loopo;
+  long f_cb1sel;
+  long f_cb2sel;
+  long f_cb1incr;
+  long f_cb2incr;
+  long f_rc3;
   long f_msysfrsr2;
   long f_brc2;
   long f_ball2;

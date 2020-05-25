@@ -60,6 +60,8 @@ static const char * parse_insn_normal
 /* -- assembler routines inserted here.  */
 
 
+/* -- end assembler routines. */
+
 /* Regex construction routine.
 
    This translates an opcode syntax string into a regex string,
