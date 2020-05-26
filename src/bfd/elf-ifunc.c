@@ -1,4 +1,4 @@
-/* ELF STT_GNU_IFUNC support.
+/* elf-ifunc.c: ELF STT_GNU_IFUNC support.
    Copyright 2009-2013
    Free Software Foundation, Inc.
 
@@ -19,6 +19,7 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
 #include "sysdep.h"
 #include "bfd.h"
 #include "bfdlink.h"

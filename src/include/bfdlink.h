@@ -368,6 +368,11 @@ struct bfd_link_info
   /* Criteria for skipping symbols when detemining
      whether to include an object from an archive. */
   enum bfd_link_common_skip_ar_aymbols common_skip_ar_aymbols;
+  
+#ifdef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+  /* TRUE if the linker script contained an explicit PHDRS command.  */
+  unsigned int user_phdrs: 1;
+#endif /* USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 
   /* Char that may appear as the first char of a symbol, but should be
      skipped (like symbol_leading_char) when looking up symbols in

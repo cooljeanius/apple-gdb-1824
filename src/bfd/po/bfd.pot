@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-25 15:46-0400\n"
+"POT-Creation-Date: 2020-05-26 15:58-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -660,7 +660,7 @@ msgstr ""
 msgid "%B(%A): warning: unresolvable relocation against symbol `%s'"
 msgstr ""
 
-#: elf-ifunc.c:135
+#: elf-ifunc.c:136
 msgid ""
 "%F%P: dynamic STT_GNU_IFUNC symbol `%s' with pointer equality in `%B' can "
 "not be used when making an executable; recompile with -fPIE and relink with -"

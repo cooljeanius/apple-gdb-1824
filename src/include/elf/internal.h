@@ -241,6 +241,11 @@ struct elf_segment_map
   /* Whether the p_paddr field is valid; if not, the physical address
      is based on the section lma values.  */
   unsigned int p_paddr_valid : 1;
+#ifdef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+  /* Whether the p_size field is valid; if not, the size are based
+   * on the section sizes.  */
+  unsigned int p_size_valid : 1;
+#endif /* USE_NEW_ELF_BFD_STRUCT_MEMBERS */
   /* Whether this segment includes the file header.  */
   unsigned int includes_filehdr : 1;
   /* Whether this segment includes the program headers.  */

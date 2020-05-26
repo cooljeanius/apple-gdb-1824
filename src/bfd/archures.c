@@ -490,6 +490,13 @@ DESCRIPTION
 .
 .  bfd_boolean (*scan) (const struct bfd_arch_info *, const char *);
 .
+.#ifdef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+.  {* Allocate via bfd_malloc and return a fill buffer of size COUNT.  If
+.     IS_BIGENDIAN is TRUE, the order of bytes is big endian.  If CODE is
+.     TRUE, the buffer contains code.  *}
+.  void *(*fill) (bfd_size_type count, bfd_boolean is_bigendian,
+.                 bfd_boolean code);
+.#endif {* USE_NEW_ELF_BFD_STRUCT_MEMBERS *}
 .  const struct bfd_arch_info *next;
 .}
 .bfd_arch_info_type;

@@ -1,4 +1,4 @@
-/* Native Client support for ELF
+/* elf-nacl.c: Native Client support for ELF
    Copyright 2012, 2013 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -18,6 +18,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330, Boston,
    MA 02111-1307, USA.  */
 
+#define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"

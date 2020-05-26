@@ -628,6 +628,10 @@
 		A589CB681A30F23F00E717B9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A589CB671A30F23F00E717B9 /* ApplicationServices.framework */; };
 		A589D5C81A311DF100E717B9 /* cptest.c in Sources */ = {isa = PBXBuildFile; fileRef = A589D5C01A311DA800E717B9 /* cptest.c */; };
 		A589D5C91A311DF700E717B9 /* libcheckpoint.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A589CB581A30F15100E717B9 /* libcheckpoint.dylib */; };
+		A5A18602247CC0DD00B30E00 /* pei-x86_64.c in Sources */ = {isa = PBXBuildFile; fileRef = A5A18601247CC0DD00B30E00 /* pei-x86_64.c */; };
+		A5A18642247DA5DD00B30E00 /* elf-ifunc.c in Sources */ = {isa = PBXBuildFile; fileRef = A5A18641247DA5DD00B30E00 /* elf-ifunc.c */; };
+		A5A18647247DA6F800B30E00 /* elf-nacl.c in Sources */ = {isa = PBXBuildFile; fileRef = A5A18645247DA6F800B30E00 /* elf-nacl.c */; };
+		A5A18648247DA6F800B30E00 /* elf-nacl.h in Headers */ = {isa = PBXBuildFile; fileRef = A5A18646247DA6F800B30E00 /* elf-nacl.h */; };
 		A5A66DD41A54CA6000EDD221 /* trad-user.h in Headers */ = {isa = PBXBuildFile; fileRef = A5A66DD31A54CA6000EDD221 /* trad-user.h */; };
 		A5D6C4BD1ADB411B00E04E36 /* efence.h in Headers */ = {isa = PBXBuildFile; fileRef = A53AC1A21A3F7EFE002F20B2 /* efence.h */; };
 		A5D6C4C31ADB412A00E04E36 /* efence.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC1A11A3F7EFE002F20B2 /* efence.c */; };
@@ -2786,7 +2790,7 @@
 		61089A321F6DCD6F0032B3F1 /* xmethod.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = xmethod.py; sourceTree = "<group>"; };
 		61089A351F6DCDC20032B3F1 /* xmethods.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = xmethods.py; sourceTree = "<group>"; };
 		6108ED351BB0866700696685 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
-		611906D01CA5D4B900AD73D8 /* x86_64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x86_64.h; path = "/var/root/apple-gdb-1824/src/include/coff/x86_64.h"; sourceTree = "<absolute>"; };
+		611906D01CA5D4B900AD73D8 /* x86_64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x86_64.h; sourceTree = "<group>"; };
 		6119070A1CA5E5E400AD73D8 /* elfnn-aarch64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elfnn-aarch64.c"; sourceTree = "<group>"; };
 		611907221CA6311F00AD73D8 /* elf-attrs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf-attrs.c"; sourceTree = "<group>"; };
 		611909B61CAB06A200AD73D8 /* cpu-aarch64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cpu-aarch64.c"; sourceTree = "<group>"; };
@@ -5782,6 +5786,10 @@
 		A59B560D227F3DD4009420B2 /* mi-cmd-stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "mi-cmd-stack.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mi/mi-cmd-stack.h"; sourceTree = "<absolute>"; };
 		A59B5610227F6D1F009420B2 /* cli-interp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "cli-interp.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/cli/cli-interp.h"; sourceTree = "<absolute>"; };
 		A59B5613227F7202009420B2 /* core-macho.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "core-macho.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/core-macho.h"; sourceTree = "<absolute>"; };
+		A5A18601247CC0DD00B30E00 /* pei-x86_64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "pei-x86_64.c"; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/pei-x86_64.c"; sourceTree = "<absolute>"; };
+		A5A18641247DA5DD00B30E00 /* elf-ifunc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "elf-ifunc.c"; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/elf-ifunc.c"; sourceTree = "<absolute>"; };
+		A5A18645247DA6F800B30E00 /* elf-nacl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "elf-nacl.c"; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/elf-nacl.c"; sourceTree = "<absolute>"; };
+		A5A18646247DA6F800B30E00 /* elf-nacl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "elf-nacl.h"; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/elf-nacl.h"; sourceTree = "<absolute>"; };
 		A5A66DD31A54CA6000EDD221 /* trad-user.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "trad-user.h"; sourceTree = "<group>"; };
 		A5A673AE1A589D7700EDD221 /* aarch64-linux-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "aarch64-linux-nat.c"; sourceTree = "<group>"; };
 		A5A673AF1A589D7700EDD221 /* aarch64-linux-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "aarch64-linux-tdep.c"; sourceTree = "<group>"; };
@@ -6504,8 +6512,11 @@
 				2609CEFE0E82C407008125DE /* elf-bfd.h */,
 				2609CEFF0E82C407008125DE /* elf-eh-frame.c */,
 				2609CF000E82C407008125DE /* elf-hppa.h */,
+				A5A18641247DA5DD00B30E00 /* elf-ifunc.c */,
 				2609CF010E82C407008125DE /* elf-m10200.c */,
 				2609CF020E82C407008125DE /* elf-m10300.c */,
+				A5A18645247DA6F800B30E00 /* elf-nacl.c */,
+				A5A18646247DA6F800B30E00 /* elf-nacl.h */,
 				2609CF030E82C407008125DE /* elf-strtab.c */,
 				2609CF040E82C407008125DE /* elf-vxworks.c */,
 				2609CF050E82C407008125DE /* elf-vxworks.h */,
@@ -6683,6 +6694,7 @@
 				2609CFC90E82C408008125DE /* pei-mips.c */,
 				2609CFCA0E82C408008125DE /* pei-ppc.c */,
 				2609CFCB0E82C408008125DE /* pei-sh.c */,
+				A5A18601247CC0DD00B30E00 /* pei-x86_64.c */,
 				2609CFCC0E82C408008125DE /* peicode.h */,
 				2609CFCD0E82C408008125DE /* peXXigen.c */,
 				A51B3F171A493694002170CE /* plugin.c */,
@@ -13849,6 +13861,7 @@
 				A5A66DD41A54CA6000EDD221 /* trad-user.h in Headers */,
 				A5FE69901A9E935D005583F9 /* macosx-nat-info.h in Headers */,
 				611906D11CA5D4B900AD73D8 /* x86_64.h in Headers */,
+				A5A18648247DA6F800B30E00 /* elf-nacl.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -14682,6 +14695,9 @@
 				61D221BC192D61C300FA979E /* xsym.c in Sources */,
 				61D221BE192D61C300FA979E /* xtensa-isa.c in Sources */,
 				61D221BF192D61C300FA979E /* xtensa-modules.c in Sources */,
+				A5A18602247CC0DD00B30E00 /* pei-x86_64.c in Sources */,
+				A5A18642247DA5DD00B30E00 /* elf-ifunc.c in Sources */,
+				A5A18647247DA6F800B30E00 /* elf-nacl.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -316,4 +316,93 @@ typedef struct
 #define IMAGE_WEAK_EXTERN_SEARCH_LIBRARY	2
 #define IMAGE_WEAK_EXTERN_SEARCH_ALIAS		3
 
+/* .pdata/.xdata defines and structures for x64 PE+ for exception handling.  */
+
+/* .pdata in exception directory.  */
+
+struct pex64_runtime_function
+{
+  bfd_vma rva_BeginAddress;
+  bfd_vma rva_EndAddress;
+  bfd_vma rva_UnwindData;
+  unsigned int isChained : 1;
+};
+
+struct external_pex64_runtime_function
+{
+  bfd_byte rva_BeginAddress[4];
+  bfd_byte rva_EndAddress[4];
+  bfd_byte rva_UnwindData[4];
+};
+
+/* If the lowest significant bit is set for rva_UnwindData RVA, it
+   means that the unified RVA points to another pex64_runtime_function
+   that this entry shares the unwind_info block with.  */
+#define PEX64_IS_RUNTIME_FUNCTION_CHAINED(PTR_RTF) \
+  (((PTR_RTF)->rva_UnwindData & 1) != 0)
+#define PEX64_GET_UNWINDDATA_UNIFIED_RVA(PTR_RTF) \
+  ((PTR_RTF)->rva_UnwindData & ~1)
+
+/* The unwind codes.  */
+#define UWOP_PUSH_NONVOL      0
+#define UWOP_ALLOC_LARGE      1
+#define UWOP_ALLOC_SMALL      2
+#define UWOP_SET_FPREG        3
+#define UWOP_SAVE_NONVOL      4
+#define UWOP_SAVE_NONVOL_FAR  5
+#define UWOP_SAVE_XMM         6
+#define UWOP_SAVE_XMM_FAR     7
+#define UWOP_SAVE_XMM128      8
+#define UWOP_SAVE_XMM128_FAR  9
+#define UWOP_PUSH_MACHFRAME   10
+
+/* The unwind info.  */
+#define UNW_FLAG_NHANDLER     0
+#define UNW_FLAG_EHANDLER     1
+#define UNW_FLAG_UHANDLER     2
+#define UNW_FLAG_FHANDLER     3
+#define UNW_FLAG_CHAININFO    4
+
+#define UNW_FLAG_MASK         0x1f
+
+struct pex64_unwind_info
+{
+  bfd_vma SizeOfBlock;
+  bfd_byte Version; /* Values from 0 up to 7 are possible.  */
+  bfd_byte Flags; /* Values from 0 up to 31 are possible.  */
+  bfd_vma SizeOfPrologue;
+  bfd_vma CountOfCodes; /* Amount of pex64_unwind_code elements.  */
+  /* 0 = CFA, 1..15 are index of integer registers.  */
+  unsigned int FrameRegister : 4;
+  bfd_vma FrameOffset;
+  bfd_vma sizeofUnwindCodes;
+  bfd_byte *rawUnwindCodes;
+  /* Valid for UNW_FLAG_EHANDLER and UNW_FLAG_UHANDLER.  */
+  bfd_vma CountOfScopes;
+  bfd_byte *rawScopeEntries;
+  bfd_vma rva_ExceptionHandler; /* UNW_EHANDLER.  */
+  bfd_vma rva_TerminationHandler; /* UNW_FLAG_UHANDLER.  */
+  bfd_vma rva_FrameHandler; /* UNW_FLAG_FHANDLER.  */
+  bfd_vma FrameHandlerArgument; /* UNW_FLAG_FHANDLER.  */
+  bfd_vma rva_FunctionEntry; /* UNW_FLAG_CHAININFO.  */
+};
+
+struct external_pex64_unwind_info
+{
+  bfd_byte Version_Flags;
+  bfd_byte SizeOfPrologue;
+  bfd_byte CountOfCodes;
+  bfd_byte FrameRegisterOffset;
+  /* external_pex64_unwind_code array.  */
+  /* bfd_byte handler[4];  */
+  /* Optional language specific data.  */
+};
+
+#define PEX64_UWI_VERSION(VAL)  ((VAL) & 7)
+#define PEX64_UWI_FLAGS(VAL)    (((VAL) >> 3) & 0x1f)
+#define PEX64_UWI_FRAMEREG(VAL) ((VAL) & 0xf)
+#define PEX64_UWI_FRAMEOFF(VAL) (((VAL) >> 4) & 0xf)
+#define PEX64_UWI_SIZEOF_UWCODE_ARRAY(VAL) \
+  ((((VAL) + 1) & ~1) * 2)
+
 #endif /* _PE_H */

@@ -1,4 +1,4 @@
-/* BFD back-end for Intel 386 PE IMAGE COFF files.
+/* pei-x86_64.c: BFD back-end for Intel 386 PE IMAGE COFF files.
    Copyright 2006, 2007, 2009 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
