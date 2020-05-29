@@ -9605,7 +9605,8 @@ for real_option in -Wall -Wextra -Wno-unused-parameter -Wshadow \
   -Wfloat-conversion -Wdouble-promotion -Wenum-conversion -Wenum-compare \
   -Wbool-conversion -Wbool-operation -Wnested-externs -Wabi \
   -Wint-in-bool-context -Wnull-dereference -Wmisleading-indentation \
-  -Wc99-c11-compat -Wswitch-unreachable -Wswitch-bool; do
+  -Wc99-c11-compat -Wswitch-unreachable -Wswitch-bool -Wstring-compare \
+  -Wzero-length-bounds -fanalyzer; do
   # Do the check with the no- prefix removed since gcc silently accepts
   # any -Wno-* option on purpose:
   case ${real_option} in
@@ -24549,7 +24550,9 @@ $as_echo X/"$am_mf" |
     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "Something went wrong bootstrapping makefile fragments
-    for automatic dependency tracking.  Try re-running configure with the
+    for automatic dependency tracking.  If GNU make was not used, consider
+    re-running the configure script with MAKE=\"gmake\" (or whatever is
+    necessary).  You can also try re-running configure with the
     '--disable-dependency-tracking' option to at least be able to build
     the package (albeit without support for automatic dependency tracking).
 See \`config.log' for more details" "$LINENO" 5; }

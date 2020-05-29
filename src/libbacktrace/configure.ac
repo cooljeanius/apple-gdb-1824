@@ -143,6 +143,9 @@ unset ac_cv_prog_AWK
 AC_PROG_AWK
 case "${AWK}" in
 "") AC_MSG_ERROR([cannot build without awk]) ;;
+"gawk") ;;
+"mawk") AC_MSG_WARN([prefer gawk to mawk]) ;;
+"nawk") AC_MSG_WARN([prefer gawk to nawk]) ;;
 esac
 
 AC_PROG_CXX
@@ -212,7 +215,7 @@ ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wnested-externs \
 -Wmissing-format-attribute -Wcast-qual -Wmisleading-indentation -Wabi \
 -Wnull-dereference -Wdangling-else -Wduplicate-decl-specifier \
 -Wmemset-elt-size -Wswitch-unreachable -Wexpansion-to-defined \
--Wshadow-local -Wc99-c11-compat],[WARN_FLAGS])dnl
+-Wshadow-local -Wc99-c11-compat -Wzero-length-bounds],[WARN_FLAGS])dnl
 
 # deal with potential name mismatch:
 if test "x${WARN_FLAGS}" = "x" && test "x${WARN_CFLAGS}" != "x"; then

@@ -314,7 +314,8 @@ AC_SUBST([PICFLAG])dnl
 
 ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wpointer-arith \
 -Wfloat-conversion -Wstrict-prototypes -Wmissing-prototypes -Wimplicit \
--Wnested-externs -Wmissing-parameter-type -Wabi -Wswitch -Wparentheses])
+-Wnested-externs -Wmissing-parameter-type -Wabi -Wswitch -Wparentheses \
+-Wzero-length-bounds])
 ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])dnl
 
 # Only enable with --enable-werror-always until existing warnings are

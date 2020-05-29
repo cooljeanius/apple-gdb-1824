@@ -3263,7 +3263,8 @@ build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wenum-conversion -Wbuiltin-declaration-mismatch \
 -Walloc-zero -Walloc-size-larger-than=2147483647 \
 -Wmultistatement-macros -Wif-not-aligned -Wpacked-not-aligned \
--Wattribute-alias -Wmissing-attributes -Wundef -Wunused-macros"
+-Wattribute-alias -Wmissing-attributes -Wundef -Wunused-macros \
+-Wstring-compare -Wzero-length-bounds"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then

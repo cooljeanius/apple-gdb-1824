@@ -2191,12 +2191,15 @@ stamp-splint: $(LINTFILES)
 	  -o $(analysisdir)/$@ $<
 
 # To actually run clang:
-lint-local: stamp-clang
+lint-local: stamp-clang stamp-gcc-analysis
 stamp-clang: $(LINTFILES) $(DEPFILES)
 	$(MAKE) `echo "$(LINTFILES) init.c" | uniq | $(SED) 's/\.c /\.plist /g' | $(SED) 's/\.y /\.plist /g'`
 	$(MAKE) `echo "$(DEPFILES) init.o" | uniq | $(SED) 's/\.o /\.plist /g'`
 	touch $@
 .PHONY: lint-local
+stamp-gcc-analysis: $(LINTFILES) $(DEPFILES)
+	echo "TODO: set up static analysis with gcc"
+	touch $@
 
 # cxref has many of the same limitations as splint, so reuse the same
 # preprocessor define that splint uses:

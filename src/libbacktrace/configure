@@ -6000,6 +6000,11 @@ done
 
 case "${AWK}" in
 "") as_fn_error $? "cannot build without awk" "$LINENO" 5 ;;
+"gawk") ;;
+"mawk") { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: prefer gawk to mawk" >&5
+$as_echo "$as_me: WARNING: prefer gawk to mawk" >&2;} ;;
+"nawk") { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: prefer gawk to nawk" >&5
+$as_echo "$as_me: WARNING: prefer gawk to nawk" >&2;} ;;
 esac
 
 ac_ext=cpp
@@ -17691,7 +17696,7 @@ for real_option in -Wall -Wextra -Wwrite-strings -Wnested-externs \
 -Wmissing-format-attribute -Wcast-qual -Wmisleading-indentation -Wabi \
 -Wnull-dereference -Wdangling-else -Wduplicate-decl-specifier \
 -Wmemset-elt-size -Wswitch-unreachable -Wexpansion-to-defined \
--Wshadow-local -Wc99-c11-compat; do
+-Wshadow-local -Wc99-c11-compat -Wzero-length-bounds; do
   # Do the check with the no- prefix removed since gcc silently accepts
   # any -Wno-* option on purpose:
   case ${real_option} in

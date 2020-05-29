@@ -31,16 +31,20 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmisleading-indentation -Wformat=2 -Wmissing-format-attribute \
 -Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
--Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough \
+-Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough -Wstring-compare \
 -Walloca-larger-than=4032 -Wvla-larger-than=4032 -Wformat-overflow=2 \
--Wformat-truncation=2 -Wstringop-overflow=2 -Wno-cast-function-type \
--Qunused-arguments"
+-Wformat-truncation=2 -Wstringop-overflow=2 -Wzero-length-bounds \
+-Wno-cast-function-type -Qunused-arguments"
 # (4032 is MAX_ALLOCA_SIZE in "libiberty.h")
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
   # "-Wconversion" and friends are because of a comment in libbfd.c
   WARN_CFLAGS="${WARN_CFLAGS} -Wnon-gcc -Wconversion -Wfloat-conversion \
   -Wsign-conversion -Wsign-compare -Wshorten-64-to-32 -Wdouble-promotion"
+elif test "x${WANT_CONVERSION_WARNS}" = "xmaybe"; then
+  test -n "${WANT_CONVERSION_WARNS}"
+  gl_COMPILER_OPTION_IF([-Warith-conversion],
+                        [gl_WARN_ADD([-Wconversion])],[:])
 fi
 WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint -DDEBUG_GEN_RELOC -DDEBUG_HASH \
 -DDEBUG_PIC -DDEBUG_RELAX -DDEBUG_RELOC -DDJDEBUG -DFATAL_DEBUG \
