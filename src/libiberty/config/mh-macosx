@@ -1,4 +1,6 @@
 # APPLE LOCAL - The following macro needs to be defined to allow more
 # than 256 streams to be open at a time.
+# Newer versions of <stdio.h> error out if it is defined with a minimum macOS
+# version that is too low, though, so bump it up:
 
-HDEFINES = -D_DARWIN_UNLIMITED_STREAMS -mmacosx-version-min=10.5
+HDEFINES = -D_DARWIN_UNLIMITED_STREAMS -mmacosx-version-min=10.6

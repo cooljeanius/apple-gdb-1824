@@ -4324,6 +4324,26 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
        ;;
+      *-arch*)
+                            cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  eval "$as_acx_Woption=yes"
+else
+  eval "$as_acx_Woption=no"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+       ;;
       *)
        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -22320,16 +22340,91 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmisleading-indentation -Wformat=2 -Wmissing-format-attribute \
 -Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
--Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough \
+-Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough -Wstring-compare \
 -Walloca-larger-than=4032 -Wvla-larger-than=4032 -Wformat-overflow=2 \
--Wformat-truncation=2 -Wstringop-overflow=2 -Wno-cast-function-type \
--Qunused-arguments"
+-Wformat-truncation=2 -Wstringop-overflow=2 -Wzero-length-bounds \
+-Wno-cast-function-type -Qunused-arguments"
 # (4032 is MAX_ALLOCA_SIZE in "libiberty.h")
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}"
   # "-Wconversion" and friends are because of a comment in libbfd.c
   WARN_CFLAGS="${WARN_CFLAGS} -Wnon-gcc -Wconversion -Wfloat-conversion \
   -Wsign-conversion -Wsign-compare -Wshorten-64-to-32 -Wdouble-promotion"
+elif test "x${WANT_CONVERSION_WARNS}" = "xmaybe"; then
+  test -n "${WANT_CONVERSION_WARNS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Warith-conversion" >&5
+$as_echo_n "checking whether C compiler handles -Warith-conversion... " >&6; }
+if ${gl_cv_warn_c__Warith_conversion+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Warith-conversion"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Warith_conversion=yes
+else
+  gl_cv_warn_c__Warith_conversion=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Warith_conversion" >&5
+$as_echo "$gl_cv_warn_c__Warith_conversion" >&6; }
+if test "x$gl_cv_warn_c__Warith_conversion" = xyes; then :
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wconversion" >&5
+$as_echo_n "checking whether C compiler handles -Wconversion... " >&6; }
+if ${gl_cv_warn_c__Wconversion+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wconversion"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  gl_cv_warn_c__Wconversion=yes
+else
+  gl_cv_warn_c__Wconversion=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wconversion" >&5
+$as_echo "$gl_cv_warn_c__Wconversion" >&6; }
+if test "x$gl_cv_warn_c__Wconversion" = xyes; then :
+  as_fn_append WARN_CFLAGS " -Wconversion"
+fi
+
+
+else
+  :
+fi
+
 fi
 WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint -DDEBUG_GEN_RELOC -DDEBUG_HASH \
 -DDEBUG_PIC -DDEBUG_RELAX -DDEBUG_RELOC -DDJDEBUG -DFATAL_DEBUG \

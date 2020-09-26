@@ -54,6 +54,14 @@ for real_option in $1; do
         [AS_VAR_SET(acx_Woption, yes)],
         [AS_VAR_SET(acx_Woption, no)])
        ;;
+      *-arch*)
+       dnl# use a link test for archflags because sometimes archflags that succeed for compiling
+       dnl# can then go and fail at the linking step, and we want to catch that here in this
+       dnl# conftest rather than having it go and make the build fail later:
+       AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+        [AS_VAR_SET(acx_Woption, yes)],
+        [AS_VAR_SET(acx_Woption, no)])
+       ;;
       *)
        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
         [AS_VAR_SET(acx_Woption, yes)],

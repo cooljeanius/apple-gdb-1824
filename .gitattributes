@@ -20,3 +20,6 @@
 # Tell GitHub to ignore when calculating language stats:
 aclocal.m4 linguist-vendored
 libcheckpoint/Makefile.in linguist-vendored
+
+# Gnulib's git-merge-changelog driver:
+ChangeLog    merge=cl-merge

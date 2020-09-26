@@ -1,2 +1,5 @@
 *.m diff=objc
 nextstep-core.c diff=objc
+
+# Gnulib's git-merge-changelog driver:
+ChangeLog    merge=cl-merge

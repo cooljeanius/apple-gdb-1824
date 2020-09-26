@@ -17,8 +17,9 @@ Feel free to fork and submit pull requests.
 (Just beware that I will probably never respond to any of them...)
 
 Tested on:
+* 10.15.5 (currently)
 * 10.6.8 (previously)
-* 10.5.8 (more recently... I have gone backwards)
+* 10.5.8 (for a while when my Snow Leopard machine was dead)
 
 Building
 --------

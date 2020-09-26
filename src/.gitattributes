@@ -11,3 +11,6 @@ missing linguist-vendored
 test-driver linguist-vendored
 texinfo.tex linguist-vendored
 ylwrap linguist-vendored
+
+# Gnulib's git-merge-changelog driver:
+ChangeLog    merge=cl-merge
