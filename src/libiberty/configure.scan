@@ -1,9 +1,9 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.70])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
-AC_CONFIG_SRCDIR([_doprnt.c])
+AC_CONFIG_SRCDIR([malloca.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
@@ -21,7 +21,7 @@ AC_PROG_MKDIR_P
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h malloc.h stddef.h stdint.h stdio_ext.h stdlib.h string.h strings.h sys/file.h sys/param.h sys/time.h unistd.h wchar.h wctype.h])
+AC_CHECK_HEADERS([fcntl.h inttypes.h langinfo.h libintl.h malloc.h stdint.h stdio_ext.h strings.h sys/file.h sys/param.h sys/time.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -50,5 +50,6 @@ AC_FUNC_STRTOD
 AC_CHECK_FUNCS([atexit btowc bzero dup2 getcwd getpagesize gettimeofday memchr memmove mempcpy memset mkdir munmap pathconf pstat_getdynamic putenv re_comp realpath regcomp rmdir setenv stpcpy strcasecmp strchr strcspn strdup strerror strncasecmp strndup strpbrk strrchr strspn strstr strtol strtoul strtoull strverscmp utime])
 
 AC_CONFIG_FILES([Makefile
+                 config/Makefile
                  testsuite/Makefile])
 AC_OUTPUT

@@ -1,6 +1,7 @@
 dnl# libiberty/acinclude.m4                                -*- Autoconf -*-
 
 sinclude(../config/acx.m4)
+sinclude(../config/multi.m4)
 sinclude(../config/no-executables.m4)
 sinclude(../config/picflag.m4)
 sinclude(../config/warnings.m4)

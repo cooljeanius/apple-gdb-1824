@@ -47,26 +47,30 @@ AC_CONFIG_AUX_DIR([config])dnl
 AC_CONFIG_MACRO_DIR([m4])dnl
 AC_CONFIG_LIBOBJ_DIR([.])dnl
 
-dnl# Very limited version of automake's enable-maintainer-mode:
-AC_MSG_CHECKING([whether to enable maintainer-specific portions of Makefiles])
-  dnl# maintainer-mode is disabled by default
-  AC_ARG_ENABLE([maintainer-mode],
-[AS_HELP_STRING([--enable-maintainer-mode],
-                [enable make rules and dependencies not useful (and sometimes confusing) to the casual installer])],
-      [maintainer_mode=${enableval}],
-      [maintainer_mode=no])dnl
+m4_ifdef([AM_MAINTAINER_MODE],[
+  AM_MAINTAINER_MODE
+],[
+  dnl# Very limited version of automake's enable-maintainer-mode:
+  AC_MSG_CHECKING([whether to enable maintainer-specific portions of Makefiles])
+    dnl# maintainer-mode is disabled by default
+    AC_ARG_ENABLE([maintainer-mode],
+  [AS_HELP_STRING([--enable-maintainer-mode],
+                  [enable make rules and dependencies not useful (and sometimes confusing) to the casual installer])],
+        [maintainer_mode=${enableval}],
+        [maintainer_mode=no])dnl
 
-AC_MSG_RESULT([${maintainer_mode}])dnl
+  AC_MSG_RESULT([${maintainer_mode}])dnl
 
-if test "x${maintainer_mode}" = "xyes"; then
-  MAINT=''
-  NOTMAINT='#'
-else
-  MAINT='#'
-  NOTMAINT=''
-fi
-AC_SUBST([MAINT])dnl
-AC_SUBST([NOTMAINT])dnl
+  if test "x${maintainer_mode}" = "xyes"; then
+    MAINT=''
+    NOTMAINT='#'
+  else
+    MAINT='#'
+    NOTMAINT=''
+  fi
+  AC_SUBST([MAINT])dnl
+  AC_SUBST([NOTMAINT])dnl
+])dnl
 
 # Do we have a single-tree copy of texinfo? Even if we do, we cannot
 # rely on it - libiberty is built before texinfo.
@@ -122,7 +126,7 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   AC_SUBST([TARGET_ARCHITECTURE])
 fi
 
-# libtoolize will delete this, because we do not actually use automake:
+# libtoolize will delete these, because we do not really use automake fully yet:
 if test "x${ac_aux_dir}" != "x"; then
   test -n "${ac_aux_dir}" && test -d "${ac_aux_dir}"
   if test ! -e ${ac_aux_dir}/missing && test -w "${ac_aux_dir}"; then
@@ -134,13 +138,21 @@ if test "x${ac_aux_dir}" != "x"; then
       cp ../config/missing ${ac_aux_dir}
     fi
   fi
+  if test ! -e ${ac_aux_dir}/compile && test -w "${ac_aux_dir}"; then
+    if test -e ./compile && test "x${ac_aux_dir}" != "x."; then
+      cp ./compile ${ac_aux_dir}
+    elif test -e ../compile && test "x${ac_aux_dir}" != "x.."; then
+      cp ../compile ${ac_aux_dir}
+    elif test -e ../config/compile && test "x${ac_aux_dir}" != "x../config"; then
+      cp ../config/compile ${ac_aux_dir}
+    fi
+  fi
 else
   test -z "${ac_aux_dir}"
 fi
 
-dnl# When we start using automake with a legit Makefile.am; un-comment and
-dnl# un-escape this:
-dnl#AM\_INIT\_AUTOMAKE\(\[gnu\ dejagnu\ \-Wno\-obsolete\]\)
+dnl# We are starting to use automake with a legit Makefile.am, albeit in a subdir:
+AM_INIT_AUTOMAKE([gnu dejagnu -Wno-obsolete])
 AM_MISSING_PROG([AUTOCONF],[autoconf])dnl
 
 dnl# until then, though, use this as a substitute:
@@ -257,19 +269,42 @@ if test "x${ac_cv_prog_ac_ct_RANLIB}" = "x"; then
 fi
 ])dnl
 
-dnl# When switching to automake, replace the following block with
-dnl# the AM_ENABLE_MULTILIB macro:
-# Add --enable-multilib to configure.
-# Default to --enable-multilib
-AC_ARG_ENABLE([multilib],
-[AS_HELP_STRING([--enable-multilib],
-                [try to build many library versions (default off)])],
-[case "${enableval}" in
-  yes) multilib=yes ;;
-  no)  multilib=no ;;
-  *)   AC_MSG_ERROR([bad value ${enableval} for multilib option]) ;;
- esac],
-	      [multilib=no])dnl
+dnl# Since I am partially switching to automake, I am using the AM_ENABLE_MULTILIB
+dnl# macro here when available:
+m4_ifdef([AM_ENABLE_MULTILIB],[
+  if test "x${with_multisrctop}" = "x"; then
+    test -z "${with_multisrctop}"
+    if test -d .. && test -e ../config-ml.in; then
+      export with_multisrctop="../"
+    else
+      AC_MSG_WARN([we need config-ml.in])
+    fi
+  fi
+  AM_ENABLE_MULTILIB
+  if test "x${multi_basedir}" = "x"; then
+    test -z "${multi_basedir}"
+    if test -n "${with_multisubdir}" && test -d "${with_multisubdir}"; then
+      export multi_basedir="${with_multisubdir}"
+    elif test -n "${libiberty_topdir}" && test -d "${libiberty_topdir}"; then
+      export multi_basedir="${libiberty_topdir}"
+    elif test -d ..; then
+      export multi_basedir=..
+    fi
+  fi
+  AC_SUBST([multi_basedir])dnl
+],[
+  # Add --enable-multilib to configure.
+  # Default to --enable-multilib
+  AC_ARG_ENABLE([multilib],
+  [AS_HELP_STRING([--enable-multilib],
+                  [try to build many library versions (default off)])],
+  [case "${enableval}" in
+    yes) multilib=yes ;;
+    no)  multilib=no ;;
+    *)   AC_MSG_ERROR([bad value ${enableval} for multilib option]) ;;
+   esac],
+  	        [multilib=no])dnl
+])dnl
 
 # Even if the default multilib is not a cross compilation,
 # it may be that some of the other multilibs are.
@@ -510,6 +545,23 @@ AC_CHECK_HEADERS([alloca.h assert.h ctype.h fcntl.h float.h getopt.h \
   time.h wchar.h wctype.h])dnl
 AC_HEADER_SYS_WAIT
 AC_HEADER_TIME
+
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z "${ac_cv_header_inttypes_h}"
+  AC_CHECK_HEADERS([inttypes.h])
+fi
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}"
+  AC_CHECK_HEADERS([stdint.h])
+fi
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}"
+  AC_CHECK_HEADERS([strings.h])
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  AC_CHECK_HEADERS([unistd.h])
+fi
 
 libiberty_AC_DECLARE_ERRNO
 
@@ -1164,7 +1216,7 @@ AC_SUBST([MMALLOC_OK])dnl
 
 # Output.
 # We need multilib support, but only if configuring for the target.
-AC_CONFIG_FILES([Makefile testsuite/Makefile])
+AC_CONFIG_FILES([Makefile config/Makefile testsuite/Makefile])
 AC_CONFIG_COMMANDS([default],
   [[test -z "${CONFIG_HEADERS}" || echo "timestamp: `date`" > stamp-h
 if test -n "${CONFIG_FILES}"; then

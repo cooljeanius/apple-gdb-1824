@@ -660,7 +660,9 @@ ac_includes_default="\
 
 ac_header_c_list=
 ac_func_c_list=
-ac_subst_vars='LTLIBOBJS
+ac_subst_vars='am__EXEEXT_FALSE
+am__EXEEXT_TRUE
+LTLIBOBJS
 MMALLOC_OK
 MMALLOC
 MMALLOC_CFLAGS
@@ -677,12 +679,6 @@ ALLOCA
 NOASANFLAG
 NOPICFLAG
 PICFLAG
-INSTALL_DATA
-INSTALL_SCRIPT
-INSTALL_PROGRAM
-INSTALL_STRIP_PROGRAM
-MAINTAINER_MODE_FALSE
-MAINTAINER_MODE_TRUE
 CXXCPP
 LT_SYS_LIBRARY_PATH
 OTOOL64
@@ -691,7 +687,6 @@ LIPO
 NMEDIT
 DSYMUTIL
 MANIFEST_TOOL
-STRIP
 DLLTOOL
 OBJDUMP
 LN_S
@@ -701,26 +696,30 @@ DUMPBIN
 LD
 FGREP
 LIBTOOL
-SET_MAKE
+am__fastdepCXX_FALSE
+am__fastdepCXX_TRUE
+CXXDEPMODE
 ac_ct_CXX
 CXXFLAGS
 CXX
-AWK
 OUTPUT_OPTION
 NO_MINUS_C_MINUS_O
 ac_libiberty_warn_cflags
 WARN_CFLAGS
-MKDIR_P
 am__fastdepCCAS_FALSE
 am__fastdepCCAS_TRUE
 CCASDEPMODE
 CCASFLAGS
 CCAS
+multi_basedir
 RANLIB
 ac_ct_AR
 AR
 EGREP
 CPP
+am__fastdepCC_FALSE
+am__fastdepCC_TRUE
+CCDEPMODE
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -736,19 +735,33 @@ AMDEP_FALSE
 AMDEP_TRUE
 am__include
 DEPDIR
+SED
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
 AM_V
+am__untar
+am__tar
+AMTAR
 am__leading_dot
+SET_MAKE
+AWK
 mkdir_p
+MKDIR_P
+INSTALL_STRIP_PROGRAM
+STRIP
 install_sh
-AUTOMAKE
 AUTOHEADER
-ACLOCAL
-CYGPATH_W
-SED
+AUTOMAKE
 AUTOCONF
+ACLOCAL
+VERSION
+PACKAGE
+CYGPATH_W
+am__isrc
+INSTALL_DATA
+INSTALL_SCRIPT
+INSTALL_PROGRAM
 TARGET_ARCHITECTURE
 HOST_ARCHITECTURE
 BUILD_ARCHITECTURE
@@ -769,8 +782,9 @@ PERL
 BUILD_INFO
 GREP
 MAKEINFO
-NOTMAINT
 MAINT
+MAINTAINER_MODE_FALSE
+MAINTAINER_MODE_TRUE
 libiberty_topdir
 target_alias
 host_alias
@@ -1489,16 +1503,13 @@ Optional Features:
                           do not reject slow dependency extractors
   --disable-dependency-tracking
                           speeds up one-time build
-  --enable-multilib       try to build many library versions (default off)
+  --enable-multilib       build many library versions (default off)
   --disable-largefile     omit support for large files
   --enable-shared[=PKGS]  build shared libraries [default=no]
   --enable-static[=PKGS]  build static libraries [default=yes]
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --enable-maintainer-mode
-                          enable make rules and dependencies not useful (and
-                          sometimes confusing) to the casual installer
   --enable-install-libiberty
                           Install headers for end users
 
@@ -3388,7 +3399,7 @@ as_fn_append ac_func_c_list " fork HAVE_FORK"
 as_fn_append ac_func_c_list " vfork HAVE_VFORK"
 
 # Auxiliary files required by this configure script.
-ac_aux_files="ltmain.sh install-sh ar-lib compile missing config.guess config.sub"
+ac_aux_files="ltmain.sh ar-lib compile missing install-sh config.guess config.sub"
 
 # Locations in which to look for auxiliary files.
 ac_aux_dir_candidates="${srcdir}/config"
@@ -3605,25 +3616,31 @@ else
   libiberty_topdir="${srcdir}/.."
 fi
 
+
+
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
 printf %s "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
     # Check whether --enable-maintainer-mode was given.
 if test ${enable_maintainer_mode+y}
 then :
-  enableval=$enable_maintainer_mode; maintainer_mode=${enableval}
+  enableval=$enable_maintainer_mode; USE_MAINTAINER_MODE=$enableval
 else $as_nop
-  maintainer_mode=no
+  USE_MAINTAINER_MODE=no
 fi
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${maintainer_mode}" >&5
-printf "%s\n" "${maintainer_mode}" >&6; }
-if test "x${maintainer_mode}" = "xyes"; then
-  MAINT=''
-  NOTMAINT='#'
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $USE_MAINTAINER_MODE" >&5
+printf "%s\n" "$USE_MAINTAINER_MODE" >&6; }
+   if test $USE_MAINTAINER_MODE = yes; then
+  MAINTAINER_MODE_TRUE=
+  MAINTAINER_MODE_FALSE='#'
 else
-  MAINT='#'
-  NOTMAINT=''
+  MAINTAINER_MODE_TRUE='#'
+  MAINTAINER_MODE_FALSE=
 fi
+
+  MAINT=$MAINTAINER_MODE_TRUE
+
+
 
 # Do we have a single-tree copy of texinfo? Even if we do, we cannot
 # rely on it - libiberty is built before texinfo.
@@ -3944,7 +3961,7 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
 
 fi
 
-# libtoolize will delete this, because we do not actually use automake:
+# libtoolize will delete these, because we do not really use automake fully yet:
 if test "x${ac_aux_dir}" != "x"; then
   test -n "${ac_aux_dir}" && test -d "${ac_aux_dir}"
   if test ! -e ${ac_aux_dir}/missing && test -w "${ac_aux_dir}"; then
@@ -3956,47 +3973,43 @@ if test "x${ac_aux_dir}" != "x"; then
       cp ../config/missing ${ac_aux_dir}
     fi
   fi
+  if test ! -e ${ac_aux_dir}/compile && test -w "${ac_aux_dir}"; then
+    if test -e ./compile && test "x${ac_aux_dir}" != "x."; then
+      cp ./compile ${ac_aux_dir}
+    elif test -e ../compile && test "x${ac_aux_dir}" != "x.."; then
+      cp ../compile ${ac_aux_dir}
+    elif test -e ../config/compile && test "x${ac_aux_dir}" != "x../config"; then
+      cp ../config/compile ${ac_aux_dir}
+    fi
+  fi
 else
   test -z "${ac_aux_dir}"
 fi
 
-
-# Expand $ac_aux_dir to an absolute path.
-am_aux_dir=`cd "$ac_aux_dir" && pwd`
-
-
-  if test x"${MISSING+set}" != xset; then
-  MISSING="\${SHELL} '$am_aux_dir/missing'"
-fi
-# Use eval to expand $SHELL
-if eval "$MISSING --is-lightweight"; then
-  am_missing_run="$MISSING "
-else
-  am_missing_run=
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: 'missing' script is too old or missing" >&5
-printf "%s\n" "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
-fi
-
-
-AUTOCONF=${AUTOCONF-"${am_missing_run}autoconf"}
-
 am__api_version='1.16'
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
-printf %s "checking for a sed that does not truncate output... " >&6; }
-if test ${ac_cv_path_SED+y}
+
+  # Find a good install program.  We prefer a C program (faster),
+# so one script is as good as another.  But avoid the broken or
+# incompatible versions:
+# SysV /etc/install, /usr/sbin/install
+# SunOS /usr/etc/install
+# IRIX /sbin/install
+# AIX /bin/install
+# AmigaOS /C/install, which installs bootblocks on floppy discs
+# AIX 4 /usr/bin/installbsd, which doesn't work without a -g flag
+# AFS /usr/afsws/bin/install, which mishandles nonexistent args
+# SVR4 /usr/ucb/install, which tries to use the nonexistent group "staff"
+# OS/2's system install, which has a completely different semantic
+# ./install, which can be erroneously created by make from ./install.sh.
+# Reject install programs that cannot install multiple files.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a BSD-compatible install" >&5
+printf %s "checking for a BSD-compatible install... " >&6; }
+if test -z "$INSTALL"; then
+if test ${ac_cv_path_install+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-            ac_script=s/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/
-     for ac_i in 1 2 3 4 5 6 7; do
-       ac_script="$ac_script$as_nl$ac_script"
-     done
-     echo "$ac_script" 2>/dev/null | sed 99q >conftest.sed
-     { ac_script=; unset ac_script;}
-     if test -z "$SED"; then
-  ac_path_SED_found=false
-  # Loop through the user's path and test for each of PROGNAME-LIST
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
 do
@@ -4006,56 +4019,73 @@ do
     */) ;;
     *) as_dir=$as_dir/ ;;
   esac
-    for ac_prog in sed gsed
-   do
-    for ac_exec_ext in '' $ac_executable_extensions; do
-      ac_path_SED="$as_dir$ac_prog$ac_exec_ext"
-      as_fn_executable_p "$ac_path_SED" || continue
-# Check for GNU ac_path_SED and select it if it is found.
-  # Check for GNU $ac_path_SED
-case `"$ac_path_SED" --version 2>&1` in
-*GNU*)
-  ac_cv_path_SED="$ac_path_SED" ac_path_SED_found=:;;
-*)
-  ac_count=0
-  printf %s 0123456789 >"conftest.in"
-  while :
-  do
-    cat "conftest.in" "conftest.in" >"conftest.tmp"
-    mv "conftest.tmp" "conftest.in"
-    cp "conftest.in" "conftest.nl"
-    printf "%s\n" '' >> "conftest.nl"
-    "$ac_path_SED" -f conftest.sed < "conftest.nl" >"conftest.out" 2>/dev/null || break
-    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
-    as_fn_arith $ac_count + 1 && ac_count=$as_val
-    if test $ac_count -gt ${ac_path_SED_max-0}; then
-      # Best one so far, save it but keep looking for a better one
-      ac_cv_path_SED="$ac_path_SED"
-      ac_path_SED_max=$ac_count
-    fi
-    # 10*(2^10) chars as input seems more than enough
-    test $ac_count -gt 10 && break
-  done
-  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
+    # Account for fact that we put trailing slashes in our PATH walk.
+case $as_dir in #((
+  ./ | /[cC]/* | \
+  /etc/* | /usr/sbin/* | /usr/etc/* | /sbin/* | /usr/afsws/bin/* | \
+  ?:[\\/]os2[\\/]install[\\/]* | ?:[\\/]OS2[\\/]INSTALL[\\/]* | \
+  /usr/ucb/* ) ;;
+  *)
+    # OSF1 and SCO ODT 3.0 have their own names for install.
+    # Don't use installbsd from OSF since it installs stuff as root
+    # by default.
+    for ac_prog in ginstall scoinst install; do
+      for ac_exec_ext in '' $ac_executable_extensions; do
+	if as_fn_executable_p "$as_dir$ac_prog$ac_exec_ext"; then
+	  if test $ac_prog = install &&
+	    grep dspmsg "$as_dir$ac_prog$ac_exec_ext" >/dev/null 2>&1; then
+	    # AIX install.  It has an incompatible calling convention.
+	    :
+	  elif test $ac_prog = install &&
+	    grep pwplus "$as_dir$ac_prog$ac_exec_ext" >/dev/null 2>&1; then
+	    # program-specific install script used by HP pwplus--don't use.
+	    :
+	  else
+	    rm -rf conftest.one conftest.two conftest.dir
+	    echo one > conftest.one
+	    echo two > conftest.two
+	    mkdir conftest.dir
+	    if "$as_dir$ac_prog$ac_exec_ext" -c conftest.one conftest.two "`pwd`/conftest.dir/" &&
+	      test -s conftest.one && test -s conftest.two &&
+	      test -s conftest.dir/conftest.one &&
+	      test -s conftest.dir/conftest.two
+	    then
+	      ac_cv_path_install="$as_dir$ac_prog$ac_exec_ext -c"
+	      break 3
+	    fi
+	  fi
+	fi
+      done
+    done
+    ;;
 esac
 
-      $ac_path_SED_found && break 3
-    done
-  done
   done
 IFS=$as_save_IFS
-  if test -z "$ac_cv_path_SED"; then
-    as_fn_error $? "no acceptable sed could be found in \$PATH" "$LINENO" 5
-  fi
-else
-  ac_cv_path_SED=$SED
-fi
+
+rm -rf conftest.one conftest.two conftest.dir
 
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_SED" >&5
-printf "%s\n" "$ac_cv_path_SED" >&6; }
- SED="$ac_cv_path_SED"
-  rm -f conftest.sed
+  if test ${ac_cv_path_install+y}; then
+    INSTALL=$ac_cv_path_install
+  else
+    # As a last resort, use the slow shell script.  Don't cache a
+    # value for INSTALL within a source directory, because that will
+    # break other packages using the cache if that directory is
+    # removed, or if the value is a relative name.
+    INSTALL=$ac_install_sh
+  fi
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $INSTALL" >&5
+printf "%s\n" "$INSTALL" >&6; }
+
+# Use test -z because SunOS4 sh mishandles braces in ${var-val}.
+# It thinks the first close brace ends the variable substitution.
+test -z "$INSTALL_PROGRAM" && INSTALL_PROGRAM='${INSTALL}'
+
+test -z "$INSTALL_SCRIPT" && INSTALL_SCRIPT='${INSTALL}'
+
+test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether build environment is sane" >&5
 printf %s "checking whether build environment is sane... " >&6; }
@@ -4134,6 +4164,23 @@ test "$program_suffix" != NONE &&
 ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
 program_transform_name=`printf "%s\n" "$program_transform_name" | sed "$ac_script"`
 
+
+# Expand $ac_aux_dir to an absolute path.
+am_aux_dir=`cd "$ac_aux_dir" && pwd`
+
+
+  if test x"${MISSING+set}" != xset; then
+  MISSING="\${SHELL} '$am_aux_dir/missing'"
+fi
+# Use eval to expand $SHELL
+if eval "$MISSING --is-lightweight"; then
+  am_missing_run="$MISSING "
+else
+  am_missing_run=
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: 'missing' script is too old or missing" >&5
+printf "%s\n" "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
+fi
+
 if test x"${install_sh+set}" != xset; then
   case $am_aux_dir in
   *\ * | *\	*)
@@ -4141,6 +4188,243 @@ if test x"${install_sh+set}" != xset; then
   *)
     install_sh="\${SHELL} $am_aux_dir/install-sh"
   esac
+fi
+
+# Installed binaries are usually stripped using 'strip' when the user
+# run "make install-strip".  However 'strip' might not be the right
+# tool to use in cross-compilation environments, therefore Automake
+# will honor the 'STRIP' environment variable to overrule this program.
+if test "$cross_compiling" != no; then
+  if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}strip", so it can be a program name with args.
+set dummy ${ac_tool_prefix}strip; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_STRIP+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if test -n "$STRIP"; then
+  ac_cv_prog_STRIP="$STRIP" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_STRIP="${ac_tool_prefix}strip"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+STRIP=$ac_cv_prog_STRIP
+if test -n "$STRIP"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $STRIP" >&5
+printf "%s\n" "$STRIP" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_prog_STRIP"; then
+  ac_ct_STRIP=$STRIP
+  # Extract the first word of "strip", so it can be a program name with args.
+set dummy strip; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_ac_ct_STRIP+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if test -n "$ac_ct_STRIP"; then
+  ac_cv_prog_ac_ct_STRIP="$ac_ct_STRIP" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_STRIP="strip"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_STRIP=$ac_cv_prog_ac_ct_STRIP
+if test -n "$ac_ct_STRIP"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_ct_STRIP" >&5
+printf "%s\n" "$ac_ct_STRIP" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+  if test "x$ac_ct_STRIP" = x; then
+    STRIP=":"
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+printf "%s\n" "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    STRIP=$ac_ct_STRIP
+  fi
+else
+  STRIP="$ac_cv_prog_STRIP"
+fi
+
+fi
+INSTALL_STRIP_PROGRAM="\$(install_sh) -c -s"
+
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a race-free mkdir -p" >&5
+printf %s "checking for a race-free mkdir -p... " >&6; }
+if test -z "$MKDIR_P"; then
+  if test ${ac_cv_path_mkdir+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH$PATH_SEPARATOR/opt/sfw/bin
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_prog in mkdir gmkdir; do
+	 for ac_exec_ext in '' $ac_executable_extensions; do
+	   as_fn_executable_p "$as_dir$ac_prog$ac_exec_ext" || continue
+	   case `"$as_dir$ac_prog$ac_exec_ext" --version 2>&1` in #(
+	     'mkdir ('*'coreutils) '* | \
+	     'BusyBox '* | \
+	     'mkdir (fileutils) '4.1*)
+	       ac_cv_path_mkdir=$as_dir$ac_prog$ac_exec_ext
+	       break 3;;
+	   esac
+	 done
+       done
+  done
+IFS=$as_save_IFS
+
+fi
+
+  test -d ./--version && rmdir ./--version
+  if test ${ac_cv_path_mkdir+y}; then
+    MKDIR_P="$ac_cv_path_mkdir -p"
+  else
+    # As a last resort, use the slow shell script.  Don't cache a
+    # value for MKDIR_P within a source directory, because that will
+    # break other packages using the cache if that directory is
+    # removed, or if the value is a relative name.
+    MKDIR_P="$ac_install_sh -d"
+  fi
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $MKDIR_P" >&5
+printf "%s\n" "$MKDIR_P" >&6; }
+
+for ac_prog in gawk mawk nawk awk
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_AWK+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if test -n "$AWK"; then
+  ac_cv_prog_AWK="$AWK" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_AWK="$ac_prog"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+AWK=$ac_cv_prog_AWK
+if test -n "$AWK"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $AWK" >&5
+printf "%s\n" "$AWK" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+  test -n "$AWK" && break
+done
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${MAKE-make} sets \$(MAKE)" >&5
+printf %s "checking whether ${MAKE-make} sets \$(MAKE)... " >&6; }
+set x ${MAKE-make}
+ac_make=`printf "%s\n" "$2" | sed 's/+/p/g; s/[^a-zA-Z0-9_]/_/g'`
+if eval test \${ac_cv_prog_make_${ac_make}_set+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  cat >conftest.make <<\_ACEOF
+SHELL = /bin/sh
+all:
+	@echo '@@@%%%=$(MAKE)=@@@%%%'
+_ACEOF
+# GNU make sometimes prints "make[1]: Entering ...", which would confuse us.
+case `${MAKE-make} -f conftest.make 2>/dev/null` in
+  *@@@%%%=?*=@@@%%%*)
+    eval ac_cv_prog_make_${ac_make}_set=yes;;
+  *)
+    eval ac_cv_prog_make_${ac_make}_set=no;;
+esac
+rm -f conftest.make
+fi
+if eval test \$ac_cv_prog_make_${ac_make}_set = yes; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+  SET_MAKE=
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+  SET_MAKE="MAKE=${MAKE-make}"
 fi
 
 rm -rf .tst 2>/dev/null
@@ -4192,6 +4476,195 @@ else
   AM_DEFAULT_V=$AM_DEFAULT_VERBOSITY
 fi
 AM_BACKSLASH='\'
+
+if test "`cd $srcdir && pwd`" != "`pwd`"; then
+  # Use -I$(srcdir) only when $(srcdir) != ., so that make's output
+  # is not polluted with repeated "-I."
+  am__isrc=' -I$(srcdir)'
+  # test to see if srcdir already configured
+  if test -f $srcdir/config.status; then
+    as_fn_error $? "source directory already configured; run \"make distclean\" there first" "$LINENO" 5
+  fi
+fi
+
+# test whether we have cygpath
+if test -z "$CYGPATH_W"; then
+  if (cygpath --version) >/dev/null 2>/dev/null; then
+    CYGPATH_W='cygpath -w'
+  else
+    CYGPATH_W=echo
+  fi
+fi
+
+
+# Define the identity of the package.
+ PACKAGE='libiberty'
+ VERSION='1.0'
+
+
+printf "%s\n" "#define PACKAGE \"$PACKAGE\"" >>confdefs.h
+
+
+printf "%s\n" "#define VERSION \"$VERSION\"" >>confdefs.h
+
+# Some tools Automake needs.
+
+ACLOCAL=${ACLOCAL-"${am_missing_run}aclocal-${am__api_version}"}
+
+
+AUTOCONF=${AUTOCONF-"${am_missing_run}autoconf"}
+
+
+AUTOMAKE=${AUTOMAKE-"${am_missing_run}automake-${am__api_version}"}
+
+
+AUTOHEADER=${AUTOHEADER-"${am_missing_run}autoheader"}
+
+
+MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
+
+# For better backward compatibility.  To be removed once Automake 1.9.x
+# dies out for good.  For more background, see:
+# <https://lists.gnu.org/archive/html/automake/2012-07/msg00001.html>
+# <https://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
+mkdir_p='$(MKDIR_P)'
+
+# We need awk for the "check" target (and possibly the TAP driver).  The
+# system "awk" is bad on some platforms.
+# Always define AMTAR for backward compatibility.  Yes, it's still used
+# in the wild :-(  We should find a proper way to deprecate it ...
+AMTAR='$${TAR-tar}'
+
+
+# We'll loop over all known methods to create a tar archive until one works.
+_am_tools='gnutar  pax cpio none'
+
+am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
+
+
+
+
+
+
+# POSIX will say in a future version that running "rm -f" with no argument
+# is OK; and we want to be able to make that assumption in our Makefile
+# recipes.  So use an aggressive probe to check that the usage we want is
+# actually supported "in the wild" to an acceptable degree.
+# See automake bug#10828.
+# To make any issue more visible, cause the running configure to be aborted
+# by default if the 'rm' program in use doesn't match our expectations; the
+# user can still override this though.
+if rm -f && rm -fr && rm -rf; then : OK; else
+  cat >&2 <<'END'
+Oops!
+
+Your 'rm' program seems unable to run without file operands specified
+on the command line, even when the '-f' option is present.  This is contrary
+to the behaviour of most rm programs out there, and not conforming with
+the upcoming POSIX standard: <http://austingroupbugs.net/view.php?id=542>
+
+Please tell bug-automake@gnu.org about your system, including the value
+of your $PATH and any error possibly output before this message.  This
+can help us improve future automake versions.
+
+END
+  if test x"$ACCEPT_INFERIOR_RM_PROGRAM" = x"yes"; then
+    echo 'Configuration will proceed anyway, since you have set the' >&2
+    echo 'ACCEPT_INFERIOR_RM_PROGRAM variable to "yes"' >&2
+    echo >&2
+  else
+    cat >&2 <<'END'
+Aborting the configuration process, to ensure you take notice of the issue.
+
+You can download and install GNU coreutils to get an 'rm' implementation
+that behaves properly: <https://www.gnu.org/software/coreutils/>.
+
+If you want to complete the configuration process using your problematic
+'rm' anyway, export the environment variable ACCEPT_INFERIOR_RM_PROGRAM
+to "yes", and re-run configure.
+
+END
+    as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
+  fi
+fi
+
+
+AUTOCONF=${AUTOCONF-"${am_missing_run}autoconf"}
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
+printf %s "checking for a sed that does not truncate output... " >&6; }
+if test ${ac_cv_path_SED+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+            ac_script=s/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/
+     for ac_i in 1 2 3 4 5 6 7; do
+       ac_script="$ac_script$as_nl$ac_script"
+     done
+     echo "$ac_script" 2>/dev/null | sed 99q >conftest.sed
+     { ac_script=; unset ac_script;}
+     if test -z "$SED"; then
+  ac_path_SED_found=false
+  # Loop through the user's path and test for each of PROGNAME-LIST
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_prog in sed gsed
+   do
+    for ac_exec_ext in '' $ac_executable_extensions; do
+      ac_path_SED="$as_dir$ac_prog$ac_exec_ext"
+      as_fn_executable_p "$ac_path_SED" || continue
+# Check for GNU ac_path_SED and select it if it is found.
+  # Check for GNU $ac_path_SED
+case `"$ac_path_SED" --version 2>&1` in
+*GNU*)
+  ac_cv_path_SED="$ac_path_SED" ac_path_SED_found=:;;
+*)
+  ac_count=0
+  printf %s 0123456789 >"conftest.in"
+  while :
+  do
+    cat "conftest.in" "conftest.in" >"conftest.tmp"
+    mv "conftest.tmp" "conftest.in"
+    cp "conftest.in" "conftest.nl"
+    printf "%s\n" '' >> "conftest.nl"
+    "$ac_path_SED" -f conftest.sed < "conftest.nl" >"conftest.out" 2>/dev/null || break
+    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
+    as_fn_arith $ac_count + 1 && ac_count=$as_val
+    if test $ac_count -gt ${ac_path_SED_max-0}; then
+      # Best one so far, save it but keep looking for a better one
+      ac_cv_path_SED="$ac_path_SED"
+      ac_path_SED_max=$ac_count
+    fi
+    # 10*(2^10) chars as input seems more than enough
+    test $ac_count -gt 10 && break
+  done
+  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
+esac
+
+      $ac_path_SED_found && break 3
+    done
+  done
+  done
+IFS=$as_save_IFS
+  if test -z "$ac_cv_path_SED"; then
+    as_fn_error $? "no acceptable sed could be found in \$PATH" "$LINENO" 5
+  fi
+else
+  ac_cv_path_SED=$SED
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_SED" >&5
+printf "%s\n" "$ac_cv_path_SED" >&6; }
+ SED="$ac_cv_path_SED"
+  rm -f conftest.sed
 
 DEPDIR="${am__leading_dot}deps"
 
@@ -5401,6 +5874,135 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+depcc="$CC"   am_compiler_list=
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking dependency style of $depcc" >&5
+printf %s "checking dependency style of $depcc... " >&6; }
+if test ${am_cv_CC_dependencies_compiler_type+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if test -z "$AMDEP_TRUE" && test -f "$am_depcomp"; then
+  # We make a subdir and do the tests there.  Otherwise we can end up
+  # making bogus files that we don't know about and never remove.  For
+  # instance it was reported that on HP-UX the gcc test will end up
+  # making a dummy file named 'D' -- because '-MD' means "put the output
+  # in D".
+  rm -rf conftest.dir
+  mkdir conftest.dir
+  # Copy depcomp to subdir because otherwise we won't find it if we're
+  # using a relative directory.
+  cp "$am_depcomp" conftest.dir
+  cd conftest.dir
+  # We will build objects and dependencies in a subdirectory because
+  # it helps to detect inapplicable dependency modes.  For instance
+  # both Tru64's cc and ICC support -MD to output dependencies as a
+  # side effect of compilation, but ICC will put the dependencies in
+  # the current directory while Tru64 will put them in the object
+  # directory.
+  mkdir sub
+
+  am_cv_CC_dependencies_compiler_type=none
+  if test "$am_compiler_list" = ""; then
+     am_compiler_list=`sed -n 's/^#*\([a-zA-Z0-9]*\))$/\1/p' < ./depcomp`
+  fi
+  am__universal=false
+  case " $depcc " in #(
+     *\ -arch\ *\ -arch\ *) am__universal=true ;;
+     esac
+
+  for depmode in $am_compiler_list; do
+    # Setup a source with many dependencies, because some compilers
+    # like to wrap large dependency lists on column 80 (with \), and
+    # we should not choose a depcomp mode which is confused by this.
+    #
+    # We need to recreate these files for each test, as the compiler may
+    # overwrite some of them when testing with obscure command lines.
+    # This happens at least with the AIX C compiler.
+    : > sub/conftest.c
+    for i in 1 2 3 4 5 6; do
+      echo '#include "conftst'$i'.h"' >> sub/conftest.c
+      # Using ": > sub/conftst$i.h" creates only sub/conftst1.h with
+      # Solaris 10 /bin/sh.
+      echo '/* dummy */' > sub/conftst$i.h
+    done
+    echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
+
+    # We check with '-c' and '-o' for the sake of the "dashmstdout"
+    # mode.  It turns out that the SunPro C++ compiler does not properly
+    # handle '-M -o', and we need to detect this.  Also, some Intel
+    # versions had trouble with output in subdirs.
+    am__obj=sub/conftest.${OBJEXT-o}
+    am__minus_obj="-o $am__obj"
+    case $depmode in
+    gcc)
+      # This depmode causes a compiler race in universal mode.
+      test "$am__universal" = false || continue
+      ;;
+    nosideeffect)
+      # After this tag, mechanisms are not by side-effect, so they'll
+      # only be used when explicitly requested.
+      if test "x$enable_dependency_tracking" = xyes; then
+	continue
+      else
+	break
+      fi
+      ;;
+    msvc7 | msvc7msys | msvisualcpp | msvcmsys)
+      # This compiler won't grok '-c -o', but also, the minuso test has
+      # not run yet.  These depmodes are late enough in the game, and
+      # so weak that their functioning should not be impacted.
+      am__obj=conftest.${OBJEXT-o}
+      am__minus_obj=
+      ;;
+    none) break ;;
+    esac
+    if depmode=$depmode \
+       source=sub/conftest.c object=$am__obj \
+       depfile=sub/conftest.Po tmpdepfile=sub/conftest.TPo \
+       $SHELL ./depcomp $depcc -c $am__minus_obj sub/conftest.c \
+         >/dev/null 2>conftest.err &&
+       grep sub/conftst1.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep sub/conftst6.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep $am__obj sub/conftest.Po > /dev/null 2>&1 &&
+       ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
+      # icc doesn't choke on unknown options, it will just issue warnings
+      # or remarks (even with -Werror).  So we grep stderr for any message
+      # that says an option was ignored or not supported.
+      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      #   icc: Command line warning: ignoring option '-M'; no argument required
+      # The diagnosis changed in icc 8.0:
+      #   icc: Command line remark: option '-MP' not supported
+      if (grep 'ignoring option' conftest.err ||
+          grep 'not supported' conftest.err) >/dev/null 2>&1; then :; else
+        am_cv_CC_dependencies_compiler_type=$depmode
+        break
+      fi
+    fi
+  done
+
+  cd ..
+  rm -rf conftest.dir
+else
+  am_cv_CC_dependencies_compiler_type=none
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_CC_dependencies_compiler_type" >&5
+printf "%s\n" "$am_cv_CC_dependencies_compiler_type" >&6; }
+CCDEPMODE=depmode=$am_cv_CC_dependencies_compiler_type
+
+ if
+  test "x$enable_dependency_tracking" != xno \
+  && test "$am_cv_CC_dependencies_compiler_type" = gcc3; then
+  am__fastdepCC_TRUE=
+  am__fastdepCC_FALSE='#'
+else
+  am__fastdepCC_TRUE='#'
+  am__fastdepCC_FALSE=
+fi
+
+
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -6228,8 +6830,19 @@ fi
 
 fi
 
-# Add --enable-multilib to configure.
-# Default to --enable-multilib
+
+  if test "x${with_multisrctop}" = "x"; then
+    test -z "${with_multisrctop}"
+    if test -d .. && test -e ../config-ml.in; then
+      export with_multisrctop="../"
+    else
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: we need config-ml.in" >&5
+printf "%s\n" "$as_me: WARNING: we need config-ml.in" >&2;}
+    fi
+  fi
+
+
+# Default to --enable-multilib usually:
 # Check whether --enable-multilib was given.
 if test ${enable_multilib+y}
 then :
@@ -6241,6 +6854,40 @@ then :
 else $as_nop
   multilib=no
 fi
+
+# We may get other options which we leave undocumented:
+# --with-target-subdir, --with-multisrctop, --with-multisubdir
+# See config-ml.in if you want the gory details.
+
+if test "${srcdir}" = "."; then
+  if test -n "${with_target_subdir}" && test "${with_target_subdir}" != "."; then
+    multi_basedir="${srcdir}/${with_multisrctop}../"
+  else
+    multi_basedir="${srcdir}/${with_multisrctop}"
+  fi
+else
+  multi_basedir="${srcdir}/"
+fi
+
+# Even if the default multilib is not a cross compilation,
+# it may be that some of the other multilibs are.
+if test "x${cross_compiling}" = "xno" && test "x${multilib}" = "xyes" \
+   && test "x${with_multisubdir}" != "x"; then
+   cross_compiling=maybe
+fi
+
+ac_config_commands="$ac_config_commands multilib-default-1"
+
+  if test "x${multi_basedir}" = "x"; then
+    test -z "${multi_basedir}"
+    if test -n "${with_multisubdir}" && test -d "${with_multisubdir}"; then
+      export multi_basedir="${with_multisubdir}"
+    elif test -n "${libiberty_topdir}" && test -d "${libiberty_topdir}"; then
+      export multi_basedir="${libiberty_topdir}"
+    elif test -d ..; then
+      export multi_basedir=..
+    fi
+  fi
 
 # Even if the default multilib is not a cross compilation,
 # it may be that some of the other multilibs are.
@@ -6593,53 +7240,6 @@ fi
 
 
 ac_c_preproc_warn_flag=yes
-
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a race-free mkdir -p" >&5
-printf %s "checking for a race-free mkdir -p... " >&6; }
-if test -z "$MKDIR_P"; then
-  if test ${ac_cv_path_mkdir+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH$PATH_SEPARATOR/opt/sfw/bin
-do
-  IFS=$as_save_IFS
-  case $as_dir in #(((
-    '') as_dir=./ ;;
-    */) ;;
-    *) as_dir=$as_dir/ ;;
-  esac
-    for ac_prog in mkdir gmkdir; do
-	 for ac_exec_ext in '' $ac_executable_extensions; do
-	   as_fn_executable_p "$as_dir$ac_prog$ac_exec_ext" || continue
-	   case `"$as_dir$ac_prog$ac_exec_ext" --version 2>&1` in #(
-	     'mkdir ('*'coreutils) '* | \
-	     'BusyBox '* | \
-	     'mkdir (fileutils) '4.1*)
-	       ac_cv_path_mkdir=$as_dir$ac_prog$ac_exec_ext
-	       break 3;;
-	   esac
-	 done
-       done
-  done
-IFS=$as_save_IFS
-
-fi
-
-  test -d ./--version && rmdir ./--version
-  if test ${ac_cv_path_mkdir+y}; then
-    MKDIR_P="$ac_cv_path_mkdir -p"
-  else
-    # As a last resort, use the slow shell script.  Don't cache a
-    # value for MKDIR_P within a source directory, because that will
-    # break other packages using the cache if that directory is
-    # removed, or if the value is a relative name.
-    MKDIR_P="$ac_install_sh -d"
-  fi
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $MKDIR_P" >&5
-printf "%s\n" "$MKDIR_P" >&6; }
 
 
 
@@ -7373,53 +7973,6 @@ fi
 
 
 
-for ac_prog in gawk mawk nawk awk
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-printf %s "checking for $ac_word... " >&6; }
-if test ${ac_cv_prog_AWK+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  if test -n "$AWK"; then
-  ac_cv_prog_AWK="$AWK" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  case $as_dir in #(((
-    '') as_dir=./ ;;
-    */) ;;
-    *) as_dir=$as_dir/ ;;
-  esac
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
-    ac_cv_prog_AWK="$ac_prog"
-    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-AWK=$ac_cv_prog_AWK
-if test -n "$AWK"; then
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $AWK" >&5
-printf "%s\n" "$AWK" >&6; }
-else
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }
-fi
-
-
-  test -n "$AWK" && break
-done
-
 
 
 
@@ -7800,37 +8353,134 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${MAKE-make} sets \$(MAKE)" >&5
-printf %s "checking whether ${MAKE-make} sets \$(MAKE)... " >&6; }
-set x ${MAKE-make}
-ac_make=`printf "%s\n" "$2" | sed 's/+/p/g; s/[^a-zA-Z0-9_]/_/g'`
-if eval test \${ac_cv_prog_make_${ac_make}_set+y}
+depcc="$CXX"  am_compiler_list=
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking dependency style of $depcc" >&5
+printf %s "checking dependency style of $depcc... " >&6; }
+if test ${am_cv_CXX_dependencies_compiler_type+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  cat >conftest.make <<\_ACEOF
-SHELL = /bin/sh
-all:
-	@echo '@@@%%%=$(MAKE)=@@@%%%'
-_ACEOF
-# GNU make sometimes prints "make[1]: Entering ...", which would confuse us.
-case `${MAKE-make} -f conftest.make 2>/dev/null` in
-  *@@@%%%=?*=@@@%%%*)
-    eval ac_cv_prog_make_${ac_make}_set=yes;;
-  *)
-    eval ac_cv_prog_make_${ac_make}_set=no;;
-esac
-rm -f conftest.make
-fi
-if eval test \$ac_cv_prog_make_${ac_make}_set = yes; then
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }
-  SET_MAKE=
+  if test -z "$AMDEP_TRUE" && test -f "$am_depcomp"; then
+  # We make a subdir and do the tests there.  Otherwise we can end up
+  # making bogus files that we don't know about and never remove.  For
+  # instance it was reported that on HP-UX the gcc test will end up
+  # making a dummy file named 'D' -- because '-MD' means "put the output
+  # in D".
+  rm -rf conftest.dir
+  mkdir conftest.dir
+  # Copy depcomp to subdir because otherwise we won't find it if we're
+  # using a relative directory.
+  cp "$am_depcomp" conftest.dir
+  cd conftest.dir
+  # We will build objects and dependencies in a subdirectory because
+  # it helps to detect inapplicable dependency modes.  For instance
+  # both Tru64's cc and ICC support -MD to output dependencies as a
+  # side effect of compilation, but ICC will put the dependencies in
+  # the current directory while Tru64 will put them in the object
+  # directory.
+  mkdir sub
+
+  am_cv_CXX_dependencies_compiler_type=none
+  if test "$am_compiler_list" = ""; then
+     am_compiler_list=`sed -n 's/^#*\([a-zA-Z0-9]*\))$/\1/p' < ./depcomp`
+  fi
+  am__universal=false
+  case " $depcc " in #(
+     *\ -arch\ *\ -arch\ *) am__universal=true ;;
+     esac
+
+  for depmode in $am_compiler_list; do
+    # Setup a source with many dependencies, because some compilers
+    # like to wrap large dependency lists on column 80 (with \), and
+    # we should not choose a depcomp mode which is confused by this.
+    #
+    # We need to recreate these files for each test, as the compiler may
+    # overwrite some of them when testing with obscure command lines.
+    # This happens at least with the AIX C compiler.
+    : > sub/conftest.c
+    for i in 1 2 3 4 5 6; do
+      echo '#include "conftst'$i'.h"' >> sub/conftest.c
+      # Using ": > sub/conftst$i.h" creates only sub/conftst1.h with
+      # Solaris 10 /bin/sh.
+      echo '/* dummy */' > sub/conftst$i.h
+    done
+    echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
+
+    # We check with '-c' and '-o' for the sake of the "dashmstdout"
+    # mode.  It turns out that the SunPro C++ compiler does not properly
+    # handle '-M -o', and we need to detect this.  Also, some Intel
+    # versions had trouble with output in subdirs.
+    am__obj=sub/conftest.${OBJEXT-o}
+    am__minus_obj="-o $am__obj"
+    case $depmode in
+    gcc)
+      # This depmode causes a compiler race in universal mode.
+      test "$am__universal" = false || continue
+      ;;
+    nosideeffect)
+      # After this tag, mechanisms are not by side-effect, so they'll
+      # only be used when explicitly requested.
+      if test "x$enable_dependency_tracking" = xyes; then
+	continue
+      else
+	break
+      fi
+      ;;
+    msvc7 | msvc7msys | msvisualcpp | msvcmsys)
+      # This compiler won't grok '-c -o', but also, the minuso test has
+      # not run yet.  These depmodes are late enough in the game, and
+      # so weak that their functioning should not be impacted.
+      am__obj=conftest.${OBJEXT-o}
+      am__minus_obj=
+      ;;
+    none) break ;;
+    esac
+    if depmode=$depmode \
+       source=sub/conftest.c object=$am__obj \
+       depfile=sub/conftest.Po tmpdepfile=sub/conftest.TPo \
+       $SHELL ./depcomp $depcc -c $am__minus_obj sub/conftest.c \
+         >/dev/null 2>conftest.err &&
+       grep sub/conftst1.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep sub/conftst6.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep $am__obj sub/conftest.Po > /dev/null 2>&1 &&
+       ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
+      # icc doesn't choke on unknown options, it will just issue warnings
+      # or remarks (even with -Werror).  So we grep stderr for any message
+      # that says an option was ignored or not supported.
+      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      #   icc: Command line warning: ignoring option '-M'; no argument required
+      # The diagnosis changed in icc 8.0:
+      #   icc: Command line remark: option '-MP' not supported
+      if (grep 'ignoring option' conftest.err ||
+          grep 'not supported' conftest.err) >/dev/null 2>&1; then :; else
+        am_cv_CXX_dependencies_compiler_type=$depmode
+        break
+      fi
+    fi
+  done
+
+  cd ..
+  rm -rf conftest.dir
 else
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }
-  SET_MAKE="MAKE=${MAKE-make}"
+  am_cv_CXX_dependencies_compiler_type=none
 fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_CXX_dependencies_compiler_type" >&5
+printf "%s\n" "$am_cv_CXX_dependencies_compiler_type" >&6; }
+CXXDEPMODE=depmode=$am_cv_CXX_dependencies_compiler_type
+
+ if
+  test "x$enable_dependency_tracking" != xno \
+  && test "$am_cv_CXX_dependencies_compiler_type" = gcc3; then
+  am__fastdepCXX_TRUE=
+  am__fastdepCXX_FALSE='#'
+else
+  am__fastdepCXX_TRUE='#'
+  am__fastdepCXX_FALSE=
+fi
+
 
 
 
@@ -8438,7 +9088,7 @@ else $as_nop
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
   fi
-  rm -f conftest*
+  rm -rf conftest*
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_nm_interface" >&5
 printf "%s\n" "$lt_cv_nm_interface" >&6; }
@@ -9871,7 +10521,7 @@ for ac_symprfx in "" "_"; do
   # Check to see that the pipe works correctly.
   pipe_works=no
 
-  rm -f conftest*
+  rm -rf conftest*
   cat > conftest.$ac_ext <<_LT_EOF
 #ifdef __cplusplus
 extern "C" {
@@ -10559,7 +11209,7 @@ else $as_nop
   if $GREP 'Manifest Tool' conftest.out > /dev/null; then
     lt_cv_path_mainfest_tool=yes
   fi
-  rm -f conftest*
+  rm -rf conftest*
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_path_mainfest_tool" >&5
 printf "%s\n" "$lt_cv_path_mainfest_tool" >&6; }
@@ -11809,7 +12459,7 @@ ac_outfile=conftest.$ac_objext
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM conftest*
+$RM -r conftest*
 
 ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -11867,7 +12517,7 @@ else $as_nop
        lt_cv_prog_compiler_rtti_exceptions=yes
      fi
    fi
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_rtti_exceptions" >&5
@@ -12277,7 +12927,7 @@ else $as_nop
        lt_cv_prog_compiler_pic_works=yes
      fi
    fi
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_pic_works" >&5
@@ -12391,14 +13041,14 @@ else $as_nop
      fi
    fi
    chmod u+w . 2>&5
-   $RM conftest*
+   $RM -r conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o" >&5
@@ -12447,14 +13097,14 @@ else $as_nop
      fi
    fi
    chmod u+w . 2>&5
-   $RM conftest*
+   $RM -r conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o" >&5
@@ -12469,7 +13119,7 @@ if test no = "$lt_cv_prog_compiler_c_o" && test no != "$need_locks"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 printf %s "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM conftest*
+  $RM -r conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -13808,7 +14458,7 @@ if test ${lt_cv_archive_cmds_need_lc+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  $RM conftest*
+  $RM -r conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -13843,7 +14493,7 @@ else $as_nop
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM conftest*
+	$RM -r conftest*
 
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_archive_cmds_need_lc" >&5
@@ -15841,7 +16491,7 @@ compiler=$CC
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM conftest*
+$RM -r conftest*
 
   ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -17700,7 +18350,7 @@ else $as_nop
        lt_cv_prog_compiler_pic_works_CXX=yes
      fi
    fi
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_pic_works_CXX" >&5
@@ -17805,14 +18455,14 @@ else $as_nop
      fi
    fi
    chmod u+w . 2>&5
-   $RM conftest*
+   $RM -r conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o_CXX" >&5
@@ -17858,14 +18508,14 @@ else $as_nop
      fi
    fi
    chmod u+w . 2>&5
-   $RM conftest*
+   $RM -r conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o_CXX" >&5
@@ -17880,7 +18530,7 @@ if test no = "$lt_cv_prog_compiler_c_o_CXX" && test no != "$need_locks"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 printf %s "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM conftest*
+  $RM -r conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -17972,7 +18622,7 @@ if test ${lt_cv_archive_cmds_need_lc_CXX+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  $RM conftest*
+  $RM -r conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -18007,7 +18657,7 @@ else $as_nop
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM conftest*
+	$RM -r conftest*
 
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_archive_cmds_need_lc_CXX" >&5
@@ -19124,104 +19774,6 @@ INSTALL_STRIP_PROGRAM="\$(install_sh) -c -s"
 
 
 
-  # Find a good install program.  We prefer a C program (faster),
-# so one script is as good as another.  But avoid the broken or
-# incompatible versions:
-# SysV /etc/install, /usr/sbin/install
-# SunOS /usr/etc/install
-# IRIX /sbin/install
-# AIX /bin/install
-# AmigaOS /C/install, which installs bootblocks on floppy discs
-# AIX 4 /usr/bin/installbsd, which doesn't work without a -g flag
-# AFS /usr/afsws/bin/install, which mishandles nonexistent args
-# SVR4 /usr/ucb/install, which tries to use the nonexistent group "staff"
-# OS/2's system install, which has a completely different semantic
-# ./install, which can be erroneously created by make from ./install.sh.
-# Reject install programs that cannot install multiple files.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a BSD-compatible install" >&5
-printf %s "checking for a BSD-compatible install... " >&6; }
-if test -z "$INSTALL"; then
-if test ${ac_cv_path_install+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  case $as_dir in #(((
-    '') as_dir=./ ;;
-    */) ;;
-    *) as_dir=$as_dir/ ;;
-  esac
-    # Account for fact that we put trailing slashes in our PATH walk.
-case $as_dir in #((
-  ./ | /[cC]/* | \
-  /etc/* | /usr/sbin/* | /usr/etc/* | /sbin/* | /usr/afsws/bin/* | \
-  ?:[\\/]os2[\\/]install[\\/]* | ?:[\\/]OS2[\\/]INSTALL[\\/]* | \
-  /usr/ucb/* ) ;;
-  *)
-    # OSF1 and SCO ODT 3.0 have their own names for install.
-    # Don't use installbsd from OSF since it installs stuff as root
-    # by default.
-    for ac_prog in ginstall scoinst install; do
-      for ac_exec_ext in '' $ac_executable_extensions; do
-	if as_fn_executable_p "$as_dir$ac_prog$ac_exec_ext"; then
-	  if test $ac_prog = install &&
-	    grep dspmsg "$as_dir$ac_prog$ac_exec_ext" >/dev/null 2>&1; then
-	    # AIX install.  It has an incompatible calling convention.
-	    :
-	  elif test $ac_prog = install &&
-	    grep pwplus "$as_dir$ac_prog$ac_exec_ext" >/dev/null 2>&1; then
-	    # program-specific install script used by HP pwplus--don't use.
-	    :
-	  else
-	    rm -rf conftest.one conftest.two conftest.dir
-	    echo one > conftest.one
-	    echo two > conftest.two
-	    mkdir conftest.dir
-	    if "$as_dir$ac_prog$ac_exec_ext" -c conftest.one conftest.two "`pwd`/conftest.dir/" &&
-	      test -s conftest.one && test -s conftest.two &&
-	      test -s conftest.dir/conftest.one &&
-	      test -s conftest.dir/conftest.two
-	    then
-	      ac_cv_path_install="$as_dir$ac_prog$ac_exec_ext -c"
-	      break 3
-	    fi
-	  fi
-	fi
-      done
-    done
-    ;;
-esac
-
-  done
-IFS=$as_save_IFS
-
-rm -rf conftest.one conftest.two conftest.dir
-
-fi
-  if test ${ac_cv_path_install+y}; then
-    INSTALL=$ac_cv_path_install
-  else
-    # As a last resort, use the slow shell script.  Don't cache a
-    # value for INSTALL within a source directory, because that will
-    # break other packages using the cache if that directory is
-    # removed, or if the value is a relative name.
-    INSTALL=$ac_install_sh
-  fi
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $INSTALL" >&5
-printf "%s\n" "$INSTALL" >&6; }
-
-# Use test -z because SunOS4 sh mishandles braces in ${var-val}.
-# It thinks the first close brace ends the variable substitution.
-test -z "$INSTALL_PROGRAM" && INSTALL_PROGRAM='${INSTALL}'
-
-test -z "$INSTALL_SCRIPT" && INSTALL_SCRIPT='${INSTALL}'
-
-test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
-
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ln -s works" >&5
 printf %s "checking whether ln -s works... " >&6; }
 LN_S=$as_ln_s
@@ -19993,6 +20545,47 @@ printf "%s\n" "#define TIME_WITH_SYS_TIME 1" >>confdefs.h
 fi
 # End of obsolete code.
 
+
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z "${ac_cv_header_inttypes_h}"
+  ac_fn_c_check_header_preproc "$LINENO" "inttypes.h" "ac_cv_header_inttypes_h"
+if test "x$ac_cv_header_inttypes_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_INTTYPES_H 1" >>confdefs.h
+
+fi
+
+fi
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}"
+  ac_fn_c_check_header_preproc "$LINENO" "stdint.h" "ac_cv_header_stdint_h"
+if test "x$ac_cv_header_stdint_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_STDINT_H 1" >>confdefs.h
+
+fi
+
+fi
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}"
+  ac_fn_c_check_header_preproc "$LINENO" "strings.h" "ac_cv_header_strings_h"
+if test "x$ac_cv_header_strings_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_STRINGS_H 1" >>confdefs.h
+
+fi
+
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  ac_fn_c_check_header_preproc "$LINENO" "unistd.h" "ac_cv_header_unistd_h"
+if test "x$ac_cv_header_unistd_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_UNISTD_H 1" >>confdefs.h
+
+fi
+
+fi
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether errno must be declared" >&5
 printf %s "checking whether errno must be declared... " >&6; }
@@ -24144,7 +24737,7 @@ fi
 
 # Output.
 # We need multilib support, but only if configuring for the target.
-ac_config_files="$ac_config_files Makefile testsuite/Makefile"
+ac_config_files="$ac_config_files Makefile config/Makefile testsuite/Makefile"
 
 ac_config_commands="$ac_config_commands default"
 cat >confcache <<\_ACEOF
@@ -24256,6 +24849,10 @@ LIBOBJS=$ac_libobjs
 LTLIBOBJS=$ac_ltlibobjs
 
 
+if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then
+  as_fn_error $? "conditional \"MAINTAINER_MODE\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking that generated files are newer than configure" >&5
 printf %s "checking that generated files are newer than configure... " >&6; }
    if test -n "$am_sleep_pid"; then
@@ -24264,8 +24861,20 @@ printf %s "checking that generated files are newer than configure... " >&6; }
    fi
    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: done" >&5
 printf "%s\n" "done" >&6; }
+ if test -n "$EXEEXT"; then
+  am__EXEEXT_TRUE=
+  am__EXEEXT_FALSE='#'
+else
+  am__EXEEXT_TRUE='#'
+  am__EXEEXT_FALSE=
+fi
+
 if test -z "${AMDEP_TRUE}" && test -z "${AMDEP_FALSE}"; then
   as_fn_error $? "conditional \"AMDEP\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
+  as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCCAS_TRUE}" && test -z "${am__fastdepCCAS_FALSE}"; then
@@ -24273,6 +24882,10 @@ if test -z "${am__fastdepCCAS_TRUE}" && test -z "${am__fastdepCCAS_FALSE}"; then
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
+if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
+  as_fn_error $? "conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then
   as_fn_error $? "conditional \"MAINTAINER_MODE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
@@ -24860,6 +25473,20 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 #
 AMDEP_TRUE="$AMDEP_TRUE" MAKE="${MAKE-make}"
 
+srcdir="${srcdir}"
+host="${host}"
+target="${target}"
+with_multisubdir="${with_multisubdir}"
+with_multisrctop="${with_multisrctop}"
+with_target_subdir="${with_target_subdir}"
+ac_configure_args="${multilib_arg} ${ac_configure_args}"
+multi_basedir="${multi_basedir}"
+CONFIG_SHELL=${CONFIG_SHELL-/bin/sh}
+CC="${CC}"
+CXX="${CXX}"
+GFORTRAN="${GFORTRAN}"
+GCJ="${GCJ}"
+
 
 # The HP-UX ksh and POSIX shell print the target directory to stdout
 # if CDPATH is set.
@@ -25261,10 +25888,12 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
+    "multilib-default-1") CONFIG_COMMANDS="$CONFIG_COMMANDS multilib-default-1" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "$ac_config_libobj_dir/fnmatch.h") CONFIG_LINKS="$CONFIG_LINKS $ac_config_libobj_dir/fnmatch.h:$ac_config_libobj_dir/fnmatch_.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "config/Makefile") CONFIG_FILES="$CONFIG_FILES config/Makefile" ;;
     "testsuite/Makefile") CONFIG_FILES="$CONFIG_FILES testsuite/Makefile" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
 
@@ -26029,6 +26658,15 @@ See \`config.log' for more details" "$LINENO" 5; }
   rm -f conftest-deps.mk
 }
  ;;
+    "multilib-default-1":C)
+# Only add multilib support code if we just rebuilt the top-level
+# Makefile.
+case " ${CONFIG_FILES} " in
+ *" Makefile "*)
+   echo "Sourcing ${multi_basedir}/config-ml.in"
+   ac_file=Makefile . ${multi_basedir}/config-ml.in
+   ;;
+esac ;;
     "libtool":C)
 
     # See if we are running on zsh, and set the options that allow our

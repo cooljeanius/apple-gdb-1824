@@ -131,7 +131,7 @@ SUFFIXES = .c .y .o .lo
 @BISON3_YES@	sed 's/\.c\.y"/.y"/' $@.c > $@
 @BISON3_YES@	rm -f $@.c $@.y $@.h
 @ifGNUmake@@BISON3_NO@	echo '/* #define USE_BISON3 */' > $(patsubst %.c,%-config.h,$@)
-@BISON3_NO@	$(YACC) $(YFLAGS) $(AM_YFLAGS) --output $@ $<
+@BISON3_NO@	$(YACC) $(YFLAGS) --output $@ $<
 	rm -f $*.h
 
 EXTRA_DIST += plural.c
