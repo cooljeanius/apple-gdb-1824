@@ -197,6 +197,11 @@ if test "x${ac_cv_header_sys_param_h}" = "x"; then
   AC_CHECK_HEADERS([sys/param.h])dnl
   ## should have been checked anyways, but whatever...
 fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  AC_CHECK_HEADERS([unistd.h])dnl
+  ## should have been checked anyways, but whatever...
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_MSG_CHECKING([C compiler charactersistics])

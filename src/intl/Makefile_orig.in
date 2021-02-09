@@ -51,11 +51,12 @@ RANLIB = @RANLIB@
 
 DEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\" \
 -DLOCALE_ALIAS_PATH=\"$(aliaspath)\" -DLIBDIR="\"$(libdir)\"" -DINSTALLDIR="\"$(libdir)\"" @DEFS@
+PICFLAG = @PICFLAG@
 CPPFLAGS = @CPPFLAGS@
 CFLAGS = @CFLAGS@
 LDFLAGS = @LDFLAGS@
 
-COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
+COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(PICFLAG) $(XCFLAGS)
 
 HEADERS = $(COMHDRS) libgettext.h loadinfo.h
 COMHDRS = gettext.h gettextP.h hash-string.h
@@ -79,6 +80,17 @@ DISTFILES.gettext = libintl.glibc intlh.inst.in
 	$(COMPILE) $<
 .c.lo:
 	$(LIBTOOL) --tag=CC --mode=compile $(COMPILE) $<
+
+## Unlike the automake-generated Makefile, we can assume GNU make here:
+.y.c:
+@BISON3_YES@	echo '#define USE_BISON3' > $(patsubst %.c,%-config.h,$@)
+@BISON3_YES@	sed 's,%pure_parser,,;s,^/\* BISON3 \(.*\) \*/$$,\1,' $< > $@.y
+@BISON3_YES@	$(YACC) $(YFLAGS) --output $@.c $@.y
+@BISON3_YES@	sed 's/\.c\.y"/.y"/' $@.c > $@
+@BISON3_YES@	rm -f $@.c $@.y $@.h
+@BISON3_NO@	echo '/* #define USE_BISON3 */' > $(patsubst %.c,%-config.h,$@)
+@BISON3_NO@	$(YACC) $(YFLAGS) --output $@ $<
+	rm -f $*.h
 
 INCLUDES = -I. -I$(srcdir)
 

@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.70])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
@@ -21,16 +21,16 @@ AC_PROG_OBJCXX
 AC_PROG_RANLIB
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lgmp':
-AC_CHECK_LIB([gmp], [main])
-# FIXME: Replace `main' with a function in `-lmpfr':
-AC_CHECK_LIB([mpfr], [main])
+# FIXME: Replace 'main' with a function in '-lintl':
+AC_CHECK_LIB([intl], [main])
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h mach/mach.h stddef.h stdlib.h string.h sys/file.h sys/ioctl.h sys/param.h termios.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h mach/mach.h sys/file.h sys/ioctl.h sys/param.h termios.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_INT32_T
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_FUNC_FORK

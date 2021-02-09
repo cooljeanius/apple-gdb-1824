@@ -38,7 +38,7 @@ dnl# This is a hack because autoconf finds the AC\_INIT from
 dnl# config/override.m4 first if it is present.
 dnl# Feel free to re-define to whichever version of autoconf
 dnl# that you are using:
-m4_define([_GCC_AUTOCONF_VERSION],[2.69])
+m4_define([_GCC_AUTOCONF_VERSION],[2.70])
 dnl# OK, now that we have that out of the way, we can actually get started:
 AC_INIT([apple-gdb-src],[1824],[gclayton@apple.com])
 dnl# bug report address is email address of last person to touch this
@@ -2037,9 +2037,21 @@ AC_CHECK_HEADERS([fcntl.h langinfo.h libintl.h limits.h locale.h \
                   netinet/in.h signal.h stddef.h stdio.h \
                   sys/file.h sys/ioctl.h sys/param.h sys/time.h])dnl
 
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z "${ac_cv_header_inttypes_h}"
+  AC_CHECK_HEADERS([inttypes.h])
+fi
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}"
+  AC_CHECK_HEADERS([stdint.h])
+fi
 if test "x${ac_cv_header_sys_socket_h}" = "x"; then
   test -z "${ac_cv_header_sys_socket_h}"
   AC_CHECK_HEADERS([sys/socket.h])
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  AC_CHECK_HEADERS([unistd.h])
 fi
 if test "x${ac_cv_header_wchar_h}" = "x"; then
   test -z "${ac_cv_header_wchar_h}"

@@ -56,6 +56,17 @@ m4_ifdef([AM_MAINTAINER_MODE],[
     AC_MSG_NOTICE([No Makefile present...])
   fi
   AM_MAINTAINER_MODE
+],[
+  AC_ARG_ENABLE([maintainer-mode],
+                [AS_HELP_STRING([--enable-maintainer-mode],
+                                [enable rules only needed by maintainers])],
+                [],[enable_maintainer_mode=no])
+  if test "x$enable_maintainer_mode" = xno; then
+    MAINT='#'
+  else
+    MAINT=''
+  fi
+  AC_SUBST([MAINT])dnl
 ])dnl
 m4_ifdef([AM_SANITY_CHECK],[
   test -e "."
@@ -67,6 +78,8 @@ m4_ifdef([AM_SANITY_CHECK],[
   fi
   AM_SANITY_CHECK
 ])dnl
+
+AX_CHECK_GNU_MAKE
 
 AC_SYS_LARGEFILE
 AC_SYS_LONG_FILE_NAMES
@@ -262,6 +275,22 @@ AC_DEFINE([set_relocation_prefix],[libintl_set_relocation_prefix],
 AC_DEFINE([relocate],[libintl_relocate],
           [Define this entry point correctly.])dnl
 
+MISSING=missing
+if test -d ${ac_aux_dir} && test -e ${ac_aux_dir}/missing; then
+  MISSING=`cd ${ac_aux_dir} && ${PWDCMD-pwd}`/missing
+elif test -d ${srcdir} -a -e ${srcdir}/missing; then
+  MISSING=`cd ${srcdir} && ${PWDCMD-pwd}`/missing
+elif test -d . -a -e ./missing; then
+  MISSING=`cd . && ${PWDCMD-pwd}`/missing
+elif test -d .. -a -e ../missing; then
+  MISSING=`cd .. && ${PWDCMD-pwd}`/missing
+elif test -d ../config -a -e ../config/missing; then
+  MISSING=`cd ../config && ${PWDCMD-pwd}`/missing
+fi
+AC_CHECK_PROGS([ACLOCAL],[aclocal],[${MISSING} aclocal])
+AC_CHECK_PROGS([AUTOCONF],[autoconf],[${MISSING} autoconf])
+AC_CHECK_PROGS([AUTOHEADER],[autoheader],[${MISSING} autoheader])dnl
+
 # Additional info for config.intl.
 AC_SUBST([LIBINTL_DEP])dnl
 AC_SUBST([INCINTL])dnl
@@ -272,13 +301,41 @@ if test "x${USE_INCLUDED_LIBINTL}" != "x"; then
   test -n "${USE_INCLUDED_LIBINTL}" || test ! -z "${USE_INCLUDED_LIBINTL}"
   case ${USE_INCLUDED_LIBINTL} in
     yes)
-      LIBINTL=`echo ${LIBINTL} | sed 's,${top_builddir},&/..,' `
+      LIBINTL=`echo ${LIBINTL} | sed 's,${top_builddir},-L&/..,; s,\.\./intl/libintl\.a,../intl -lintl,' `
+      ## might be ok to remove LTLIBINTL here, but I dunno:
       LTLIBINTL=`echo ${LTLIBINTL} | sed 's,${top_builddir},&/..,' `
       LIBINTL_DEP='${top_builddir}/../intl/libintl.a'
       INCINTL='-Wp,-I${top_builddir}/../intl'
       ;;
   esac
 fi
+
+# intl is sometimes linked into shared libraries even without --enable-shared
+# (e.g. gdbsupport's inprocess agent): so always PICify, just in case.
+GCC_PICFLAG
+AC_SUBST([PICFLAG])dnl
+
+BISON3_YES='#'
+BISON3_NO=''
+if test -n "${INTLBISON}" && test "${INTLBISON}" != :; then
+  ac_bison3=no
+  AC_MSG_CHECKING([bison 3 or later])
+changequote(<<,>>)dnl
+  ac_prog_version=`${INTLBISON} --version 2>&1 | sed -n 's/^.*GNU Bison.* \([0-9]*\.[0-9.]*\).*$/\1/p'`
+  case ${ac_prog_version} in
+    [3-9].*)
+changequote([,])dnl
+      ac_prog_version="${ac_prog_version}, bison3"; ac_bison3=yes;;
+    *) ac_prog_version="${ac_prog_version}, old";;
+  esac
+  AC_MSG_RESULT([${ac_prog_version}])
+  if test "x${ac_bison3}" = "xyes"; then
+    BISON3_YES=''
+    BISON3_NO='#'
+  fi
+fi
+AC_SUBST([BISON3_YES])dnl
+AC_SUBST([BISON3_NO])dnl
 
 AC_CONFIG_COMMANDS([libintl_h_compat],[
 if test -e libgettext.h -a ! -e libintl.h; then

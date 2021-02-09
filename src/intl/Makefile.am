@@ -68,6 +68,7 @@ XC_ARCHFLAGS = @XC_ARCHFLAGS@
 
 DEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\" \
 -DLOCALE_ALIAS_PATH=\"$(aliaspath)\" -DLIBDIR="\"$(libdir)\"" -DINSTALLDIR="\"$(libdir)\"" @DEFS@
+PICFLAG = @PICFLAG@
 CPPFLAGS = @CPPFLAGS@
 CFLAGS = @CFLAGS@ 
 LIBCFLAGS = $(CFLAGS) $(C_ARCHFLAGS)
@@ -83,7 +84,7 @@ AM_DEBUG_CFLAGS = $(AM_WARNFLAGS) @MAINT@ $(AM_COMPILE_DEBUGFLAGS)
 AM_LDFLAGS = -framework CoreFoundation
 AM_YFLAGS = -d -t $(AM_V_v) @MAINT@@EXTRA_YFLAGS_SEP@ -k -Wall -Wyacc
 
-COMPILE = $(CC) -c $(DEFS) $(AM_CPPFLAGS) $(AM_DEBUG_CFLAGS) $(CPPFLAGS) $(CFLAGS) $(C_ARCHFLAGS) $(XCFLAGS) @MAINT@ $(INCLUDES)
+COMPILE = $(CC) -c $(DEFS) $(AM_CPPFLAGS) $(AM_DEBUG_CFLAGS) $(CPPFLAGS) $(CFLAGS) $(PICFLAG) $(C_ARCHFLAGS) $(XCFLAGS) @MAINT@ $(INCLUDES)
 .PHONY: -c -m 644 
 ## The above `.PHONY:` is a hack; `-c` and `-m` and `644` should not even
 ## have been treated as targets in the first place...
@@ -124,7 +125,13 @@ SUFFIXES = .c .y .o .lo
 	$(LIBTOOL) --tag=CC --mode=compile $(COMPILE) $<
 
 .y.c:
-	$(YACC) $(YFLAGS) $(AM_YFLAGS) --output $@ $<
+@ifGNUmake@@BISON3_YES@	echo '#define USE_BISON3' > $(patsubst %.c,%-config.h,$@)
+@BISON3_YES@	sed 's,%pure_parser,,;s,^/\* BISON3 \(.*\) \*/$$,\1,' $< > $@.y
+@BISON3_YES@	$(YACC) $(YFLAGS) $(AM_YFLAGS) --output $@.c $@.y
+@BISON3_YES@	sed 's/\.c\.y"/.y"/' $@.c > $@
+@BISON3_YES@	rm -f $@.c $@.y $@.h
+@ifGNUmake@@BISON3_NO@	echo '/* #define USE_BISON3 */' > $(patsubst %.c,%-config.h,$@)
+@BISON3_NO@	$(YACC) $(YFLAGS) $(AM_YFLAGS) --output $@ $<
 	rm -f $*.h
 
 EXTRA_DIST += plural.c
