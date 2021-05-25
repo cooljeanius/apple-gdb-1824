@@ -1,1 +1,1 @@
-## (nothing needed here; just a dummy Makefile so we can use automake)
+ACLOCAL_AMFLAGS = -I../../config -I../..

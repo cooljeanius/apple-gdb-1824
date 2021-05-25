@@ -731,7 +731,7 @@ $(srcdir)/configure: @MAINT@ $(srcdir)/configure.ac $(configure_deps)
 ACLOCAL = aclocal
 CONFIGURED_ACLOCAL = @ACLOCAL@
 $(srcdir)/aclocal.m4: @MAINT@ $(aclocal_deps)
-	cd $(srcdir) && $(ACLOCAL) @MAINT@ --force
+	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS) @MAINT@ --force
 
 automake_vendored_files = $(srcdir)/config/ar-lib \
 	$(srcdir)/config/compile \
