@@ -1528,6 +1528,7 @@ if test "x${ac_cv_header_sys_wait_h}" = "x"; then
 fi
 AC_CHECK_HEADERS([wait.h])dnl
 AC_CHECK_HEADERS([termios.h termio.h sgtty.h sys/termios.h])dnl
+AC_CHECK_HEADERS([execinfo.h libproc.h sys/proc_info.h])dnl
 AC_HEADER_TIOCGWINSZ
 AC_SYS_POSIX_TERMIOS
 
@@ -1636,8 +1637,8 @@ AC_CHECK_HEADERS([Availability.h AvailabilityMacros.h \
                   mach/task_info.h mach/thread_act.h mach/thread_info.h \
                   mach/thread_status.h mach/vm_types.h mach-o/dyld.h \
                   mach-o/dyld_debug.h mach-o/dyld_images.h mach-o/loader.h \
-                  mach-o/nlist.h machine/save_state.h math.h memory.h pc.h \
-                  pthread.h rpc/rpc.h sched.h servers/machid.h \
+                  mach-o/nlist.h machine/save_state.h machine/setjmp.h math.h \
+                  memory.h pc.h pthread.h rpc/rpc.h sched.h servers/machid.h \
                   servers/netname.h servers/netname_defs.h setjmp.h \
                   sys/core.h sys/ldr.h sys/systemcfg.h sys/uio.h \
                   sys/utsname.h thread_act.h uuid/uuid.h])dnl
@@ -2604,7 +2605,7 @@ AC_CHECK_TYPES([thread_identifier_info_data_t],[],[],
 
 AC_MSG_NOTICE([done with second batch of APPLE_LOCAL checks])dnl
 
-AC_CHECK_FUNCS([pthread_setname_np])dnl
+AC_CHECK_FUNCS([pthread_detach pthread_join pthread_setname_np])dnl
 
 if test "x${ac_cv_header_sys_procfs_h}" = "xyes"; then
   BFD_HAVE_SYS_PROCFS_TYPE([pstatus_t])dnl

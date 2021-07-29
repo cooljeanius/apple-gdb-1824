@@ -1719,6 +1719,9 @@ macosx_locate_executable_by_dbg_shell_command(CFStringRef uuid)
   plist = CFPropertyListCreateWithData(kCFAllocatorDefault, plist_data,
                                        kCFPropertyListImmutable,
                                        NULL, NULL);
+#elif (MAC_OS_X_VERSION_MIN_REQUIRED < 1060)
+  plist = CFPropertyListCreateFromXMLData(kCFAllocatorDefault, plist_data,
+                                          kCFPropertyListImmutable, NULL);
 #else
   plist = NULL;
 #endif /* 10.6+ || HAVE_CFPROPERTYLISTCREATEWITHDATA */

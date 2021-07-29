@@ -1,4 +1,4 @@
-# generated automatically by aclocal 1.16.2 -*- Autoconf -*-
+# generated automatically by aclocal 1.16.3 -*- Autoconf -*-
 
 # Copyright (C) 1996-2020 Free Software Foundation, Inc.
 
@@ -14,15 +14,15 @@
 m4_ifndef([AC_CONFIG_MACRO_DIRS], [m4_defun([_AM_CONFIG_MACRO_DIRS], [])m4_defun([AC_CONFIG_MACRO_DIRS], [_AM_CONFIG_MACRO_DIRS($@)])])
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
-m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.69],,
-[m4_warning([this file was generated for autoconf 2.69.
+m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.70],,
+[m4_warning([this file was generated for autoconf 2.70.
 You have another version of autoconf.  It may work, but is not guaranteed to.
 If you have problems, you may need to regenerate the build system entirely.
 To do so, use the procedure documented by the package, typically 'autoreconf'.])])
 
 # bison-i18n.m4 serial 2
 
-dnl Copyright (C) 2005-2006, 2009-2015, 2018-2020 Free Software
+dnl Copyright (C) 2005-2006, 2009-2015, 2018-2021 Free Software
 dnl Foundation, Inc.
 
 dnl This file is free software; the Free Software Foundation
@@ -1210,7 +1210,7 @@ AC_DEFUN([AM_AUTOMAKE_VERSION],
 [am__api_version='1.16'
 dnl Some users find AM_AUTOMAKE_VERSION and mistake it for a way to
 dnl require some minimum version.  Point them to the right macro.
-m4_if([$1], [1.16.2], [],
+m4_if([$1], [1.16.3], [],
       [AC_FATAL([Do not call $0, use AM_INIT_AUTOMAKE([$1]).])])dnl
 ])
 
@@ -1226,7 +1226,7 @@ m4_define([_AM_AUTOCONF_VERSION], [])
 # Call AM_AUTOMAKE_VERSION and AM_AUTOMAKE_VERSION so they can be traced.
 # This function is AC_REQUIREd by AM_INIT_AUTOMAKE.
 AC_DEFUN([AM_SET_CURRENT_AUTOMAKE_VERSION],
-[AM_AUTOMAKE_VERSION([1.16.2])dnl
+[AM_AUTOMAKE_VERSION([1.16.3])dnl
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
 _AM_AUTOCONF_VERSION(m4_defn([AC_AUTOCONF_VERSION]))])
@@ -2082,12 +2082,7 @@ AC_DEFUN([AM_MISSING_HAS_RUN],
 [AC_REQUIRE([AM_AUX_DIR_EXPAND])dnl
 AC_REQUIRE_AUX_FILE([missing])dnl
 if test x"${MISSING+set}" != xset; then
-  case $am_aux_dir in
-  *\ * | *\	*)
-    MISSING="\${SHELL} \"$am_aux_dir/missing\"" ;;
-  *)
-    MISSING="\${SHELL} $am_aux_dir/missing" ;;
-  esac
+  MISSING="\${SHELL} '$am_aux_dir/missing'"
 fi
 # Use eval to expand $SHELL
 if eval "$MISSING --is-lightweight"; then
@@ -2259,12 +2254,14 @@ AC_DEFUN([AM_PATH_PYTHON],
     m4_default([$3], [AC_MSG_ERROR([no suitable Python interpreter found])])
   else
 
-  dnl Query Python for its version number.  Getting [:3] seems to be
-  dnl the best way to do this; it's what "site.py" does in the standard
-  dnl library.
+  dnl Query Python for its version number.  Although site.py simply uses
+  dnl sys.version[:3], printing that failed with Python 3.10, since the
+  dnl trailing zero was eliminated. So now we output just the major
+  dnl and minor version numbers, as numbers. Apparently the tertiary
+  dnl version is not of interest.
 
   AC_CACHE_CHECK([for $am_display_PYTHON version], [am_cv_python_version],
-    [am_cv_python_version=`$PYTHON -c "import sys; sys.stdout.write(sys.version[[:3]])"`])
+    [am_cv_python_version=`$PYTHON -c "import sys; print('%u.%u' % sys.version_info[[:2]])"`])
   AC_SUBST([PYTHON_VERSION], [$am_cv_python_version])
 
   dnl Use the values of $prefix and $exec_prefix for the corresponding
@@ -2760,23 +2757,25 @@ AC_SUBST([am__untar])
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
 
-# Check whether the Vala compiler exists in $PATH.  If it is found, the
-# variable VALAC is set pointing to its absolute path.  Otherwise, it is
-# simply set to 'valac'.
-# Optionally a minimum release number of the compiler can be requested.
-# If the ACTION-IF-FOUND parameter is given, it will be run if a proper
-# Vala compiler is found.
-# Similarly, if the ACTION-IF-FOUND is given, it will be run if no proper
-# Vala compiler is found.  It defaults to simply print a warning about the
-# situation, but otherwise proceeding with the configuration.
+# Search for a Vala compiler in PATH.  If it is found, the variable VALAC is
+# set to point to it.  Otherwise, it is simply set to 'valac'.  This macro
+# takes three optional arguments.  The first argument, if present, is the
+# minimum version of the Vala API required to compile this package.  For Vala
+# releases, this is the same as the major and minor release number; e.g., when
+# `valac --version' reports 0.48.7, `valac --api-version' reports 0.48.  If a
+# compiler is found and satisfies MINIMUM-VERSION, then ACTION-IF-FOUND is run
+# (this defaults to do nothing).  Otherwise, ACTION-IF-NOT-FOUND is run.  If
+# ACTION-IF-NOT-FOUND is not specified, the default value is to print a
+# warning in case no compiler is found, or if a too-old version of the
+# compiler is found.
 #
 # AM_PROG_VALAC([MINIMUM-VERSION], [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
 # --------------------------------------------------------------------------
 AC_DEFUN([AM_PROG_VALAC],
   [AC_PATH_PROG([VALAC], [valac], [valac])
    AS_IF([test "$VALAC" != valac && test -n "$1"],
-      [AC_MSG_CHECKING([whether $VALAC is at least version $1])
-       am__vala_version=`$VALAC --version | sed 's/Vala  *//'`
+      [AC_MSG_CHECKING([whether $VALAC supports at least API version $1])
+       am__vala_version=`$VALAC --api-version`
        AS_VERSION_COMPARE([$1], ["$am__vala_version"],
          [AC_MSG_RESULT([yes])],
          [AC_MSG_RESULT([yes])],
@@ -2784,8 +2783,8 @@ AC_DEFUN([AM_PROG_VALAC],
           VALAC=valac])])
     if test "$VALAC" = valac; then
       m4_default([$3],
-        [AC_MSG_WARN([no proper vala compiler found])
-         AC_MSG_WARN([you will not be able to compile vala source files])])
+        [AC_MSG_WARN([Vala compiler not found or too old])
+         AC_MSG_WARN([you will not be able to compile Vala source files])])
     else
       m4_default([$2], [:])
     fi])

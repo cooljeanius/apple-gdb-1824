@@ -66,7 +66,20 @@
 # include "macosx-nat-dyld.h"
 # include "macosx-nat-dyld-process.h"
 #endif /* MACOSX_DYLD */
-#include <execinfo.h>
+#ifdef HAVE_EXECINFO_H
+# include <execinfo.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "remote.c expects <execinfo.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_EXECINFO_H */
+#ifdef HAVE_AVAILABILITYMACROS_H
+# include <AvailabilityMacros.h>
+#else
+# ifndef MAC_OS_X_VERSION_MIN_REQUIRED
+#  define MAC_OS_X_VERSION_MIN_REQUIRED 1050
+# endif /* !MAC_OS_X_VERSION_MIN_REQUIRED */
+#endif /* HAVE_AVAILABILITYMACROS_H */
 
 #ifdef HAVE_LIBGEN_H
 # include <libgen.h> /* for basename() on some systems */
@@ -490,11 +503,15 @@ struct memory_packet_config
 static void
 remote_backtrace_self(const char *message)
 {
+#if (MAC_OS_X_VERSION_MIN_REQUIRED >= 1050)
   void *bt_buffer[100];
   int count = backtrace(bt_buffer, 100);
   if (message && message[0])
     fprintf_filtered(gdb_stderr, "%s", message);
   backtrace_symbols_fd(bt_buffer, count, STDERR_FILENO);
+#else
+  (void)message;
+#endif /* Leopard and newer */
 }
 
 static void

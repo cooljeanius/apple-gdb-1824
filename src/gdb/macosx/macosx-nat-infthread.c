@@ -52,8 +52,27 @@
 #include <inttypes.h>
 #include <sys/types.h>
 
-#include <libproc.h>
-#include <sys/proc_info.h>
+#ifdef HAVE_LIBPROC_H
+# include <libproc.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx-nat-inferior.c expects <libproc.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_LIBPROC_H */
+#ifdef HAVE_SYS_PROC_INFO_H
+# include <sys/proc_info.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx-nat-inferior.c expects <sys/proc_info.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_PROC_INFO_H */
+#ifdef HAVE_AVAILABILITYMACROS_H
+# include <AvailabilityMacros.h>
+#else
+# ifndef MAC_OS_X_VERSION_MIN_REQUIRED
+#  define MAC_OS_X_VERSION_MIN_REQUIRED 1050
+# endif /* !MAC_OS_X_VERSION_MIN_REQUIRED */
+#endif /* HAVE_AVAILABILITYMACROS_H */
 
 #include "macosx-nat-inferior.h"
 #include "macosx-nat-inferior-util.h"

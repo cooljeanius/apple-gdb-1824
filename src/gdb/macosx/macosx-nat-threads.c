@@ -52,7 +52,7 @@ gdb_pthread_kill(pthread_t pthread)
 	      safe_strerror(errno), errno);
     }
 
-  ret = pthread_join(pthread, NULL);
+  ret = pthread_join(pthread, NULL); /* replace with pthread_detach? */
   if (ret != 0)
     {
       warning(_("Unable to join to canceled thread: %s (%d)"),

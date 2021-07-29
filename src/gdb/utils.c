@@ -35,7 +35,20 @@
 #include "event-top.h"
 #include "exceptions.h"
 #include "bfd.h"
-#include <execinfo.h>
+#ifdef HAVE_EXECINFO_H
+# include <execinfo.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "remote.c expects <execinfo.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_EXECINFO_H */
+#ifdef HAVE_AVAILABILITYMACROS_H
+# include <AvailabilityMacros.h>
+#else
+# ifndef MAC_OS_X_VERSION_MIN_REQUIRED
+#  define MAC_OS_X_VERSION_MIN_REQUIRED 1050
+# endif /* !MAC_OS_X_VERSION_MIN_REQUIRED */
+#endif /* HAVE_AVAILABILITYMACROS_H */
 #include <sys/resource.h>
 #include <uuid/uuid.h>
 #include <regex.h>
@@ -914,12 +927,14 @@ internal_vproblem(struct internal_problem *problem,
 
   /* APPLE LOCAL: Do a stack crawl of how we got here so we are more likely
      to get useful bug reports.  */
+#if (MAC_OS_X_VERSION_MIN_REQUIRED >= 1050)
   {
     void *bt_buffer[15];
     int count = backtrace(bt_buffer, 15);
     fprintf(stderr, "gdb stack crawl at point of internal error:\n");
     backtrace_symbols_fd(bt_buffer, count, STDERR_FILENO);
   }
+#endif /* Leopard and newer */
 
   /* Create a string containing the full error/warning message.  Need
      to call query with this full string, as otherwize the reason

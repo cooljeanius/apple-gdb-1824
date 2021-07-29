@@ -298,6 +298,8 @@ AC_ARG_WITH([separate-debug-dir],
 [DEBUGDIR="${withval}"])
 AC_SUBST([DEBUGDIR])dnl
 
+ACX_PROG_CC_WARNING_OPTS([-gtoggle],[GTOGGLE])dnl
+
 # Check to see if we should allow the generation of
 # symbols with the ELF standard's STT_COMMON type.
 AC_ARG_ENABLE([elf-stt-common],

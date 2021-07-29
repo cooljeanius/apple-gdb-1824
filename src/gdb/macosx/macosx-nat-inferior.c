@@ -54,7 +54,20 @@
 
 #include <sys/ptrace.h>
 #include <sys/signal.h>
-#include <machine/setjmp.h>
+#ifndef __has_include
+# define __has_include(x) 0
+#endif /* !__has_include */
+#if defined(HAVE_MACHINE_SETJMP_H) || __has_include(<machine/setjmp.h>)
+# include <machine/setjmp.h>
+#else
+# if defined(HAVE_SETJMP_H) || __has_include(<setjmp.h>)
+#  include <setjmp.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "macosx-nat-inferior.c wants to include a header for setjmp."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_SETJMP_H */
+#endif /* HAVE_MACHINE_SETJMP_H */
 #include <sys/types.h>
 #include <unistd.h>
 #include <signal.h>
@@ -64,7 +77,13 @@
 #include <sys/sysctl.h>
 #include <sys/proc.h>
 #include <mach/mach_error.h>
-#include <spawn.h>
+#ifdef HAVE_SPAWN_H
+# include <spawn.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx-nat-inferior.c expects <spawn.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SPAWN_H */
 
 #include <semaphore.h>
 

@@ -11,6 +11,10 @@
 *.out
 *.pbxuser
 *.perspectivev3
+*.xcworkspacedata
+*/xcuserdata/*
+*.xcuserdatad
+*.xcuserstate
 *.status
 *.tmp
 confdefs.h
