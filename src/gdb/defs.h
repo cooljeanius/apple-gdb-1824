@@ -1897,6 +1897,9 @@ extern struct cleanup *start_timer(int *timer_var, const char *timer_name,
 # ifdef free
 #  undef free
 # endif /* free */
+# ifdef bzero
+#  undef bzero
+# endif /* bzero */
 /* gdbint.texinfo says to avoid these ones: */
 # pragma GCC poison malloc realloc calloc free strdup sprintf
 /* for similar reasons, such as libiberty also providing replacements: */
@@ -1918,7 +1921,12 @@ extern struct cleanup *start_timer(int *timer_var, const char *timer_name,
 #  pragma GCC poison strtok
 # endif /* HAVE_STRTOK_R && _REENTRANT */
 /* gdb_ari.sh says to avoid these: */
-# pragma GCC poison setlinebuf bcmp bzero strnicmp
+# pragma GCC poison setlinebuf bzero strnicmp
+/* Newer macOS SDKs use bcmp in <netinet/in.h>; need to refine this condition
+ * once I've found out which specifically: */
+# ifndef HAVE_NETINET_IN_H
+#  pragma GCC poison bcmp
+# endif /* !HAVE_NETINET_IN_H */
 /* also consider poisoning: assert abort basename bcopy strsave */
 #endif /* gcc3+ && !NO_POISON && !FLEX_SCANNER */
 

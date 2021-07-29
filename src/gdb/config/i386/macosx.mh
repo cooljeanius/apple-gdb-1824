@@ -53,8 +53,9 @@ CFM_CFLAGS = -DWITH_CFM=0
 CFM_LIBS = 
 
 # APPLE LOCAL - Allow more than 256 streams to be open at a time.
-
-MH_CFLAGS += -DUSE_PTHREADS=1 -D_DARWIN_UNLIMITED_STREAMS -mmacosx-version-min=10.5
+# be careful, though; if there is a mismatch, you can run into errors like this:
+# error: "_DARWIN_UNLIMITED_STREAMS specified, but -mmacosx-version-min version does not support it."
+MH_CFLAGS += -DUSE_PTHREADS=1 -D_DARWIN_UNLIMITED_STREAMS -mmacosx-version-min=10.6
 
 ## FIXME: MH_CFLAGS is NOT the place to put warning flags; so put the ones
 ## that used to be in there in this unused variable temporarily instead:
