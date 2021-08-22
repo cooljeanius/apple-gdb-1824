@@ -36,3 +36,5 @@ Roots/*
 # no longer keeping these as submodules:
 binutils-gdb/*
 macgdb/*
+
+# (the GitHub Desktop GUI may insert things below this line)
