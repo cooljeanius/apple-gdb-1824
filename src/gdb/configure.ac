@@ -3431,7 +3431,7 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
 -Wshadow-uncaptured-local -Wsuper-class-method-mismatch -Wundefined-func-template \
 -Wundefined-internal-type -Wundefined-reinterpret-cast -Wweak-vtables \
 -Wunneeded-member-function -Wunsupported-dll-base-class-template \
--Wweak-template-vtables -Wno-deprecated"
+-Wweak-template-vtables -Wno-deprecated -Wno-stdlibcxx-not-found"
   fi
   ## mig typechecks cause parameters that would otherwise be unused to be
   ## used, triggering this:

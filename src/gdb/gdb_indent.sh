@@ -35,7 +35,7 @@ fi
 
 # Check that the indent found is both GNU and a reasonable version.
 # Different indent versions give different indentation.
-
+# TODO: consider updating?
 m1=2
 m2=2
 m3=9
@@ -57,7 +57,7 @@ fi
 
 if test $m3 -ne $v3
 then
-    echo "warning: GNU indent version $m1.$m2.$m3 recommended" 1>&2
+    echo "warning: GNU indent version $m1.$m2.$m3 recommended; you have $v1.$v2.$v3" 1>&2
 fi
 
 # Check that we're in the GDB source directory
@@ -85,6 +85,6 @@ types="\
     | sort -u`"
 
 additional_args="-as -cdw -ss -npcs -ncs -nbc -sar -nut -sob -gts -lps -i2 \
--di1 -l254 -nbad -nbap -nbbb -npsl"
+-di1 -l79 -bad -bap -nbbb -bls -blf -ppi1 -dj -cd0 -c1 -cp1 -ntac"
 
 ${indent} ${types} ${additional_args} "$@"
