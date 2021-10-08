@@ -216,7 +216,7 @@ bcache_data(const void *addr, int length, struct bcache *bcache)
   bcache->total_size += length;
 
   full_hash = hash(addr, length);
-  half_hash = (full_hash >> 16);
+  half_hash = (unsigned short)(full_hash >> 16U);
   hash_index = (int)(full_hash % bcache->num_buckets);
 
   /* Search the hash bucket for a string identical to the caller's.

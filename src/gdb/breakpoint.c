@@ -10816,7 +10816,7 @@ restore_saved_pending_break_support(void *val)
   pending_break_support = ((val != NULL)
 			   ? AUTO_BOOLEAN_TRUE : AUTO_BOOLEAN_FALSE);
 #else
-  pending_break_support = (enum auto_boolean)val;
+  pending_break_support = (enum auto_boolean)(intptr_t)val;
 #endif /* __cplusplus */
 }
 

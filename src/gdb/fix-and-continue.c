@@ -2414,7 +2414,7 @@ restore_language(void *arg)
 #ifdef __cplusplus
   enum language l = ((arg != NULL) ? language_auto : language_unknown);
 #else
-  enum language l = (enum language)arg;
+  enum language l = (enum language)(intptr_t)arg;
 #endif /* __cplusplus */
   set_language(l);
 }
@@ -2426,14 +2426,14 @@ set_current_language(const char *filename)
   enum language new_language;
 
   save_language = current_language->la_language;
-  new_language = deduce_language_from_filename (filename);
+  new_language = deduce_language_from_filename(filename);
 
   if (new_language == save_language)
-    return (make_cleanup (null_cleanup, 0));
+    return (make_cleanup(null_cleanup, 0));
 
-  set_language (new_language);
+  set_language(new_language);
 
-  return (make_cleanup (restore_language, (void *) save_language));
+  return (make_cleanup(restore_language, (void *)save_language));
 }
 
 /* Given the SRC_FILENAME and SRC_BASENAME fields of the CUR structure
@@ -2446,7 +2446,7 @@ set_current_language(const char *filename)
    just a pointer to one of the other filenames so it should not be freed.  */
 
 static void
-find_original_object_file_name (struct fixinfo *cur)
+find_original_object_file_name(struct fixinfo *cur)
 {
   struct objfile *obj;
   struct partial_symtab *ps;

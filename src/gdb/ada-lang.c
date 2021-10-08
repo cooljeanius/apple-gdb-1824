@@ -4233,7 +4233,7 @@ restore_language(void *lang)
 #ifdef __cplusplus
   set_language((lang != NULL) ? language_auto : language_unknown);
 #else
-  set_language((enum language)lang);
+  set_language((enum language)(intptr_t)lang);
 #endif /* __cplusplus */
 }
 

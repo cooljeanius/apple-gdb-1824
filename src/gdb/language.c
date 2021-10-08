@@ -409,7 +409,7 @@ do_set_language(void *in_language)
   enum language lang = ((in_language != NULL)
 			? language_auto : language_unknown);
 #else
-  enum language lang = (enum language)in_language;
+  enum language lang = (enum language)(intptr_t)in_language;
 #endif /* __cplusplus */
   set_language(lang);
 }

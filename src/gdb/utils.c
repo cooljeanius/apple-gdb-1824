@@ -432,7 +432,8 @@ do_set_schedlock_mode(void *in_mode)
   enum scheduler_locking_mode mode = scheduler_locking_off;
   (void)in_mode;
 #else
-  enum scheduler_locking_mode mode = (enum scheduler_locking_mode)in_mode;
+  enum scheduler_locking_mode mode =
+    (enum scheduler_locking_mode)(intptr_t)in_mode;
 #endif /* __cplusplus */
   set_scheduler_locking_mode(mode);
 }

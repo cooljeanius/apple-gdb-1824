@@ -84,4 +84,7 @@ types="\
     -e 's/^typedef.*[^a-zA-Z0-9_]\([a-zA-Z0-9_]*[a-zA-Z0-9_]\);$/-T \1/p' \
     | sort -u`"
 
-${indent} ${types} "$@"
+additional_args="-as -cdw -ss -npcs -ncs -nbc -sar -nut -sob -gts -lps -i2 \
+-di1 -l254 -nbad -nbap -nbbb -npsl"
+
+${indent} ${types} ${additional_args} "$@"

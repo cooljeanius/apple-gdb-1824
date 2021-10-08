@@ -3248,7 +3248,7 @@ build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Winvalid-memory-model -Winvalid-pch -Wmissing-braces \
 -Wmissing-include-dirs -Woverflow -Woverlength-strings -Wpragmas \
 -Wreturn-local-addr -Wsequence-point \
--Wsizeof-pointer-div -Wsizeof-pointer-memaccess \
+-Wsizeof-array-div -Wsizeof-pointer-div -Wsizeof-pointer-memaccess \
 -Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc -Wlogical-op \
 -Wfloat-conversion -Wmissing-field-initializers \
 -Wno-deprecated-declarations -Wbool-compare -Wlogical-not-parentheses \
@@ -3261,7 +3261,7 @@ build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wformat-overflow=2 -Wformat-truncation=2 \
 -Wexpansion-to-defined -Wint-in-bool-context -Wbool-operation \
 -Wduplicated-branches -Wstringop-overflow=2 -Wstringop-truncation=2 \
--Wenum-conversion -Wbuiltin-declaration-mismatch \
+-Wstringop-overread -Wenum-conversion -Wbuiltin-declaration-mismatch \
 -Walloc-zero -Walloc-size-larger-than=2147483647 \
 -Wmultistatement-macros -Wif-not-aligned -Wpacked-not-aligned \
 -Wattribute-alias -Wmissing-attributes -Wundef -Wunused-macros \
@@ -3280,7 +3280,9 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wsized-deallocation -Wplacement-new=2 -Wshadow-compatible-local \
 -Wbuiltin-function-redefined -Waligned-new=all -Wsynth -Wcatch-value \
 -Wclass-memaccess -Wnon-pod-varargs -Wdeprecated-copy -Wdeprecated-copy-dtor \
--Wpessimizing-move -Wredundant-move -Wclass-conversion"
+-Wpessimizing-move -Wredundant-move -Wclass-conversion -Wctad-maybe-unsupported \
+-Wrange-loop-construct -Wdeprecated-enum-enum-conversion \
+-Wdeprecated-enum-float-conversion -Wmismatched-new-delete -Wvexing-parse"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -3288,7 +3290,7 @@ else
 -Woverride-init -Woverride-init-side-effects -Wduplicate-decl-specifier \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
 -Wstrict-prototypes -Wnested-externs -Wabsolute-value -Wc99-c11-compat \
--fno-common"
+-Warray-parameter -fno-common"
   if test -f /usr/X11/include/X11/Xlib.h && test "x${enable_gdbtk}" = "xyes"; then
     AC_MSG_WARN([Disabling C++ compatibility warnings for gdbtk])
   else
@@ -3306,7 +3308,7 @@ fi
 if test "x${ac_cv_c_vararrays}" != "xyes" || test "x${enable_build_with_cxx}" = "xyes"; then
   build_warnings="${build_warnings} -Wvla"
 elif test "x${ac_cv_c_vararrays}" = "xyes"; then
-  build_warnings="${build_warnings} -Wvla-larger-than=9999"
+  build_warnings="${build_warnings} -Wvla-larger-than=9999 -Wvla-parameter"
 fi
 # ...and alloca:
 if test "x${ac_cv_func_alloca_works}" = "xno"; then
@@ -3418,16 +3420,15 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
   if test "x${enable_build_with_cxx}" = "xyes"; then
     build_warnings="${build_warnings} -Wmismatched-tags \
 -Wmissing-exception-spec -Wnon-literal-null-conversion -Wshadow-field \
--Wpredefined-identifier-outside-function -Wvexing-parse \
--Wreturn-stack-address -Wshadow-field-in-constructor -Wunused-private-field \
--Wvla-extension -Wabstract-vbase-init -Wbind-to-temporary-copy \
--Wctad-maybe-unsupported -Wdelete-non-abstract-non-virtual-dtor \
--Wduplicate-method-arg -Wduplicate-method-match -Wexit-time-destructors \
--Wexplicit-ownership-type -Wheader-hygiene -Wmethod-signatures \
--Winconsistent-missing-destructor-override -Wnon-modular-include-in-module \
--Wretained-language-linkage -Wreturn-std-move -Wreturn-std-move-in-c++11 \
--Wself-move -Wsemicolon-before-method-body -Wshadow-uncaptured-local \
--Wsuper-class-method-mismatch -Wundefined-func-template \
+-Wpredefined-identifier-outside-function -Wreturn-stack-address \
+-Wshadow-field-in-constructor -Wunused-private-field -Wvla-extension \
+-Wabstract-vbase-init -Wbind-to-temporary-copy \
+-Wdelete-non-abstract-non-virtual-dtor -Wduplicate-method-arg \
+-Wduplicate-method-match -Wexit-time-destructors -Wexplicit-ownership-type \
+-Wheader-hygiene -Wmethod-signatures -Winconsistent-missing-destructor-override \
+-Wnon-modular-include-in-module -Wretained-language-linkage -Wreturn-std-move \
+-Wreturn-std-move-in-c++11 -Wself-move -Wsemicolon-before-method-body \
+-Wshadow-uncaptured-local -Wsuper-class-method-mismatch -Wundefined-func-template \
 -Wundefined-internal-type -Wundefined-reinterpret-cast -Wweak-vtables \
 -Wunneeded-member-function -Wunsupported-dll-base-class-template \
 -Wweak-template-vtables -Wno-deprecated"

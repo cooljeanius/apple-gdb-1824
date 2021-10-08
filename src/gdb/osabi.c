@@ -705,6 +705,7 @@ _initialize_gdb_osabi(void)
 #if defined(DEBUG) || defined(GDB_DEBUG)
   printf("Hello from _initialize_gdb_osabi.\n");
 #endif /* DEBUG || GDB_DEBUG */
+  /* FIXME: -Wtautological-pointer-compare: */
   if (gdb_osabi_names != NULL)
     {
 #if defined(DEBUG) || defined(GDB_DEBUG)
