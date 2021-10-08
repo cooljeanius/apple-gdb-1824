@@ -84,6 +84,10 @@ types="\
     -e 's/^typedef.*[^a-zA-Z0-9_]\([a-zA-Z0-9_]*[a-zA-Z0-9_]\);$/-T \1/p' \
     | sort -u`"
 
+# TODO: maybe set these in a Makefile target instead, so we can have different
+# args depending on whether the file is a header or not?
+# See the GNU indent documentation for more info on options:
+# https://www.gnu.org/software/indent/manual/indent.html
 additional_args="-as -cdw -ss -npcs -ncs -nbc -sar -nut -sob -gts -lps -i2 \
 -di1 -l79 -bad -bap -nbbb -bls -blf -ppi1 -dj -cd0 -c1 -cp1 -ntac"
 
