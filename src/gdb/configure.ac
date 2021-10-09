@@ -3259,13 +3259,12 @@ build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wdangling-else -Wmemset-elt-size -Wswitch-unreachable -Whsa \
 -Wscalar-storage-order -Wimplicit-fallthrough=3 \
 -Wformat-overflow=2 -Wformat-truncation=2 \
--Wexpansion-to-defined -Wint-in-bool-context -Wbool-operation \
--Wduplicated-branches -Wstringop-overflow=2 -Wstringop-truncation=2 \
--Wstringop-overread -Wenum-conversion -Wbuiltin-declaration-mismatch \
+-Wint-in-bool-context -Wbool-operation -Wduplicated-branches \
+-Wstringop-overflow=2 -Wstringop-truncation=2 -Wstringop-overread \
+-Wenum-conversion -Wbuiltin-declaration-mismatch \
 -Walloc-zero -Walloc-size-larger-than=2147483647 \
--Wmultistatement-macros -Wif-not-aligned -Wpacked-not-aligned \
--Wattribute-alias -Wmissing-attributes -Wundef -Wunused-macros \
--Wstring-compare -Wzero-length-bounds"
+-Wmultistatement-macros -Wif-not-aligned -Wattribute-alias \
+-Wmissing-attributes -Wstring-compare -Wzero-length-bounds"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -3289,8 +3288,8 @@ else
 -Wpointer-sign -Wmissing-prototypes -Wdeclaration-after-statement -Wmain \
 -Woverride-init -Woverride-init-side-effects -Wduplicate-decl-specifier \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
--Wstrict-prototypes -Wnested-externs -Wabsolute-value -Wc99-c11-compat \
--Warray-parameter -fno-common"
+-Wstrict-prototypes -Wnested-externs -Wabsolute-value -Warray-parameter \
+-fno-common"
   if test -f /usr/X11/include/X11/Xlib.h && test "x${enable_gdbtk}" = "xyes"; then
     AC_MSG_WARN([Disabling C++ compatibility warnings for gdbtk])
   else
@@ -3550,6 +3549,11 @@ fi
 #  * -Wsuggest-attribute=malloc (triggers on generated code; unsure how to
 #    silence false positives)
 #  * -Wcast-function-type (I dislike it)
+#  * -Wundef (triggers in headers outside of our control)
+#  * -Wunused-macros (since I had to re-remove -Wundef again)
+#  * -Wc99-c11-compat (triggers in headers outside of our control)
+#  * -Wpacked-not-aligned (triggers in headers outside of our control)
+#  * -Wexpansion-to-defined (triggers in headers outside of our control)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)
@@ -3569,8 +3573,6 @@ fi
 #    others such as -Wformat-nonliteral, so I added it back)
 #  * -Wnested-externs (if it gets redundant with -Wimplicit again)
 #  * -Wwrite-strings (in case all the const-ifying gets to be too much)
-#  * -Wundef (if issues like the one with caddr_t crop up again)
-#  * -Wunused-macros (if we have to re-remove -Wundef again)
 # Up for debate in some other way:
 #  * -Wstrict-overflow (i.e., could change the value assigned to it. We use
 #    "1" now because that is the default for "-Wall", but "2" is the
