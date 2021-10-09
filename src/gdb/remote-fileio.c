@@ -452,46 +452,46 @@ remote_fileio_to_fio_stat (struct stat *st, struct fio_stat *fst)
 }
 
 static void
-remote_fileio_to_fio_timeval (struct timeval *tv, struct fio_timeval *ftv)
+remote_fileio_to_fio_timeval(struct timeval *tv, struct fio_timeval *ftv)
 {
-  remote_fileio_to_fio_time (tv->tv_sec, ftv->ftv_sec);
-  remote_fileio_to_fio_long (tv->tv_usec, ftv->ftv_usec);
+  remote_fileio_to_fio_time(tv->tv_sec, ftv->ftv_sec);
+  remote_fileio_to_fio_long(tv->tv_usec, ftv->ftv_usec);
 }
 
 static int remote_fio_ctrl_c_flag = 0;
 static int remote_fio_no_longjmp = 0;
 
-#if defined (HAVE_SIGACTION) && defined (SA_RESTART)
+#if defined(HAVE_SIGACTION) && defined(SA_RESTART)
 static struct sigaction remote_fio_sa;
 static struct sigaction remote_fio_osa;
 #else
 static void (*remote_fio_ofunc)(int);
-#endif
+#endif /* HAVE_SIGACTION && SA_RESTART */
 
 static void
 remote_fileio_sig_init (void)
 {
-#if defined (HAVE_SIGACTION) && defined (SA_RESTART)
+#if defined(HAVE_SIGACTION) && defined(SA_RESTART)
   remote_fio_sa.sa_handler = SIG_IGN;
-  sigemptyset (&remote_fio_sa.sa_mask);
+  (void)sigemptyset(&remote_fio_sa.sa_mask);
   remote_fio_sa.sa_flags = 0;
-  sigaction (SIGINT, &remote_fio_sa, &remote_fio_osa);
+  sigaction(SIGINT, &remote_fio_sa, &remote_fio_osa);
 #else
-  remote_fio_ofunc = signal (SIGINT, SIG_IGN);
-#endif
+  remote_fio_ofunc = signal(SIGINT, SIG_IGN);
+#endif /* HAVE_SIGACTION && SA_RESTART */
 }
 
 static void
-remote_fileio_sig_set (void (*sigint_func)(int))
+remote_fileio_sig_set(void (*sigint_func)(int))
 {
-#if defined (HAVE_SIGACTION) && defined (SA_RESTART)
+#if defined(HAVE_SIGACTION) && defined(SA_RESTART)
   remote_fio_sa.sa_handler = sigint_func;
-  sigemptyset (&remote_fio_sa.sa_mask);
+  (void)sigemptyset(&remote_fio_sa.sa_mask);
   remote_fio_sa.sa_flags = 0;
-  sigaction (SIGINT, &remote_fio_sa, NULL);
+  sigaction(SIGINT, &remote_fio_sa, NULL);
 #else
-  signal (SIGINT, sigint_func);
-#endif
+  signal(SIGINT, sigint_func);
+#endif /* HAVE_SIGACTION && SA_RESTART */
 }
 
 static void

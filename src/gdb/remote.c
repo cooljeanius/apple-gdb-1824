@@ -6673,6 +6673,7 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env,
           ptr = oldptr;
           break;
         }
+      /* FIXME: -Wformat-truncation: */
       print_len = snprintf(ptr, (exe_and_args_buffer_end - ptr), "%d,%d,",
                            (2 * (int)arglen), (argnum + 1));
       ptr += print_len;

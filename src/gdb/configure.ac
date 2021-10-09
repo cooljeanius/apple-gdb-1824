@@ -47,6 +47,7 @@ AH_TOP([
 #endif /* !HAVE_CONFIG_H */
 ])dnl
 AH_VERBATIM([00_CONFIG_H_CHECK],[
+/* 00_CONFIG_H_CHECK */
 /* Check that config.h is #included before system headers
  * (this works only for glibc, but that should be enough). */
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
@@ -58,7 +59,9 @@ AH_VERBATIM([00_CONFIG_H_CHECK],[
 # define __CONFIG_H__ 1
 # ifndef __GDB_CONFIG_H__
 #  define __GDB_CONFIG_H__ 1
-# endif /* __GDB_CONFIG_H__ */])dnl
+# endif /* __GDB_CONFIG_H__ */
+/* (the next part after this should be from m4/ptrace.m4) */
+])dnl
 AH_BOTTOM([
 #endif /* __CONFIG_H__ */
 ])dnl
@@ -3243,20 +3246,18 @@ build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wunused-function -Wempty-body -Wmissing-declarations \
 -Wignored-qualifiers -Wmissing-format-attribute -Wattributes \
 -Wignored-attributes -Wswitch -Wswitch-default -Wclobbered \
--Wcoverage-mismatch -Wdiv-by-zero -Wdouble-promotion \
--Wfree-nonheap-object -Wrestrict -Wsign-compare -Wpointer-compare \
--Winvalid-memory-model -Winvalid-pch -Wmissing-braces \
--Wmissing-include-dirs -Woverflow -Woverlength-strings -Wpragmas \
--Wreturn-local-addr -Wsequence-point \
+-Wcoverage-mismatch -Wdiv-by-zero -Wfree-nonheap-object -Wrestrict \
+-Wsign-compare -Wpointer-compare -Winvalid-memory-model -Winvalid-pch \
+-Wmissing-braces -Wmissing-include-dirs -Woverflow -Woverlength-strings \
+-Wpragmas -Wreturn-local-addr -Wsequence-point \
 -Wsizeof-array-div -Wsizeof-pointer-div -Wsizeof-pointer-memaccess \
 -Wtrampolines -Wunknown-pragmas -Wnormalized=nfkc -Wlogical-op \
--Wfloat-conversion -Wmissing-field-initializers \
--Wno-deprecated-declarations -Wbool-compare -Wlogical-not-parentheses \
--Wsizeof-array-argument -Wswitch-bool -Wshift-count-negative \
--Wshift-count-overflow -Wshift-negative-value -Wshift-overflow=2 \
--Wmisleading-indentation -Wlto-type-mismatch -Wtautological-compare \
--Wduplicated-cond -Wwrite-strings -Wenum-compare -Wnonnull-compare \
--Wdangling-else -Wmemset-elt-size -Wswitch-unreachable -Whsa \
+-Wmissing-field-initializers -Wno-deprecated-declarations -Wbool-compare \
+-Wlogical-not-parentheses -Wsizeof-array-argument -Wswitch-bool \
+-Wshift-count-negative -Wshift-count-overflow -Wshift-negative-value \
+-Wshift-overflow=2 -Wmisleading-indentation -Wlto-type-mismatch \
+-Wtautological-compare -Wduplicated-cond -Wwrite-strings -Wenum-compare \
+-Wnonnull-compare -Wdangling-else -Wmemset-elt-size -Wswitch-unreachable -Whsa \
 -Wscalar-storage-order -Wimplicit-fallthrough=3 \
 -Wformat-overflow=2 -Wformat-truncation=2 \
 -Wint-in-bool-context -Wbool-operation -Wduplicated-branches \
@@ -3301,7 +3302,7 @@ fi
 # If compiler does NOT support the long long data type, see if it can
 # at least warn about it:
 if test "x${gdb_cv_c_long_long}" != "xyes"; then
-  build_warnings="${build_warnings} -Wlong-long"
+  build_warnings="${build_warnings} -Wlong-long -Wdouble-promotion"
 fi
 # similarly with VLAs:
 if test "x${ac_cv_c_vararrays}" != "xyes" || test "x${enable_build_with_cxx}" = "xyes"; then
@@ -3554,6 +3555,7 @@ fi
 #  * -Wc99-c11-compat (triggers in headers outside of our control)
 #  * -Wpacked-not-aligned (triggers in headers outside of our control)
 #  * -Wexpansion-to-defined (triggers in headers outside of our control)
+#  * -Wfloat-conversion (triggers in headers outside of our control)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)
@@ -3578,8 +3580,8 @@ fi
 #    "1" now because that is the default for "-Wall", but "2" is the
 #    default when no value is used with it with an "=", and the max is "5")
 #  * -Wabi (currently only used for C++, but sometimes accepted for just C)
-#  * -Wdouble-promotion (could be moved to the same place as -Wlong-long if
-#    we get rid of -Wunsuffixed-float-constants some time...)
+#  * -Wdouble-promotion (could be moved out of the same place as -Wlong-long if
+#    it stops firing in headers out of our control)
 #  * -Wformat-nonliteral (as to the conditions in which we enable it)
 #  * -Wcast-align (as to whether to un-disable for clang as well)
 #  * -Wtype-limits (as to whether to also use it for 32-bit BFD)

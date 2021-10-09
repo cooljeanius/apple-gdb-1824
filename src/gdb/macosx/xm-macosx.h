@@ -23,7 +23,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef _XM_MACOSX_H_
 #define _XM_MACOSX_H_
 
+/* TODO: refine this condition: */
+#if defined(__GNUC__) && (__GNUC__ > 5)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wfloat-conversion"
+# pragma GCC diagnostic ignored "-Wtraditional-conversion"
+# pragma GCC diagnostic ignored "-Wdouble-promotion"
+#endif /* GCC6+ */
 #include <mach/mach.h>
+#if defined(__GNUC__) && (__GNUC__ > 5)
+# pragma GCC diagnostic pop
+#endif /* GCC6+ */
 
 /* Need this for NSIG: */
 #include <signal.h>

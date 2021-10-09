@@ -77,9 +77,20 @@ if test "x$[3]" = "xcaddr_t"; then
             [Use this define in preprocessor conditionals instead of trying
              to do strcmp() at preproccessing time.])
   AH_VERBATIM([01_HEADER_FOR_CADDR_T],[
+/* 01_HEADER_FOR_CADDR_T (from m4/ptrace.m4) */
 /* make sure that caddr_t is defined for us: */
 #if defined(HAVE_SYS_TYPES_H) && HAVE_SYS_TYPES_H
+/* TODO: refine this condition: */
+# if defined(__GNUC__) && (__GNUC__ > 5)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wfloat-conversion"
+#  pragma GCC diagnostic ignored "-Wtraditional-conversion"
+#  pragma GCC diagnostic ignored "-Wdouble-promotion"
+# endif /* GCC6+ */
 # include <sys/types.h>
+# if defined(__GNUC__) && (__GNUC__ > 5)
+#  pragma GCC diagnostic pop
+# endif /* GCC6+ */
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(lint)
  #  warning "config.h expects <sys/types.h> to be included for caddr_t."
