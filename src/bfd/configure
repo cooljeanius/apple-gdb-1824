@@ -811,6 +811,9 @@ AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
 AM_V
+CSCOPE
+ETAGS
+CTAGS
 am__fastdepCC_FALSE
 am__fastdepCC_TRUE
 CCDEPMODE
@@ -3480,7 +3483,7 @@ as_fn_append ac_header_c_list " sys/mman.h sys_mman_h HAVE_SYS_MMAN_H"
 ac_aux_files="ltmain.sh ar-lib missing install-sh compile config.guess config.sub"
 
 # Locations in which to look for auxiliary files.
-ac_aux_dir_candidates="${srcdir}${PATH_SEPARATOR}${srcdir}/..${PATH_SEPARATOR}${srcdir}/../.."
+ac_aux_dir_candidates="${srcdir}/.."
 
 # Search for a directory containing all of the required auxiliary files,
 # $ac_aux_files, from the $PATH-style list $ac_aux_dir_candidates.
@@ -3644,7 +3647,10 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+
 ac_config_headers="$ac_config_headers config.h"
+
+echo "hello from bfd's configure script"
 
 # target stuff:
 
@@ -7053,6 +7059,20 @@ CCDEPMODE=depmode=$am_cv_CC_dependencies_compiler_type
 else
   am__fastdepCC_TRUE='#'
   am__fastdepCC_FALSE=
+fi
+
+
+# Variables for tags utilities; see am/tags.am
+if test -z "$CTAGS"; then
+  CTAGS=ctags
+fi
+
+if test -z "$ETAGS"; then
+  ETAGS=etags
+fi
+
+if test -z "$CSCOPE"; then
+  CSCOPE=cscope
 fi
 
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-29 05:27-0400\n"
+"POT-Creation-Date: 2021-11-12 08:24-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -146,22 +146,22 @@ msgstr ""
 msgid "#<Invalid error code>"
 msgstr ""
 
-#: bfd.c:794
+#: bfd.c:813
 #, c-format
 msgid "BFD %s assertion fail %s:%d"
 msgstr ""
 
-#: bfd.c:806
+#: bfd.c:825
 #, c-format
 msgid "BFD %s internal error, aborting at %s line %d in %s\n"
 msgstr ""
 
-#: bfd.c:810
+#: bfd.c:829
 #, c-format
 msgid "BFD %s internal error, aborting at %s line %d\n"
 msgstr ""
 
-#: bfd.c:812
+#: bfd.c:831
 msgid "Please report this bug.\n"
 msgstr ""
 

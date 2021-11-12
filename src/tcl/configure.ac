@@ -14,6 +14,8 @@ AC_CONFIG_SRCDIR([generic/tcl.h])
 AC_CONFIG_MACRO_DIR([m4])dnl
 AC_CONFIG_HEADERS([config.h])dnl
 
+echo "hello from Tcl's configure script"
+
 # and some automake bits:
 m4_ifdef([AM_SANITY_CHECK],[
 AM_SANITY_CHECK

@@ -12,7 +12,10 @@ AC_INIT([Tcl-unix],[8.4.1],[tromey@cygnus.com])
 AC_CONFIG_SRCDIR([../generic/tcl.h])
 AC_PREREQ([2.59])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADERS([config.h:../unix/config.h.in])
+AC_CONFIG_HEADERS([config.h:../unix/config.h.in])dnl
+
+echo "hello from the configure script for Tcl's unix subdirectory"
+
 AC_CANONICAL_TARGET
 if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
   export BUILD_ARCHITECTURE="${build_cpu}"
@@ -182,6 +185,7 @@ AC_C_BIGENDIAN
 AC_CHECK_FUNCS([getcwd],[],
                [AC_DEFINE([USEGETWD],[1],
                           [Define to 1 if getcwd is missing and we have to use getwd as a fallback])])dnl
+
 # Nb: if getcwd uses popen and pwd(1) (like SunOS 4) we should really
 # define USEGETWD even if the posix getcwd exists. Add a test?
 

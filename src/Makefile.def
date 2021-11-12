@@ -510,6 +510,7 @@ dependencies = { module=install-binutils; on=install-opcodes; };
 dependencies = { module=install-strip-binutils; on=install-strip-opcodes; };
 
 // libopcodes depends on libbfd
+dependencies = { module=configure-opcodes; on=configure-bfd; hard=true; };
 dependencies = { module=install-opcodes; on=install-bfd; };
 dependencies = { module=install-strip-opcodes; on=install-strip-bfd; };
 

@@ -440,8 +440,9 @@ _bfd_default_error_handler(const char *fmt, ...)
   new_fmt = fmt;
   bufp = buf;
 
-  /* Reserve enough space for the existing format string: */
-  avail -= (strlen(fmt) + 1UL);
+  /* Reserve enough space for the existing format string, plus potentially
+   * two brackets (or parentheses): */
+  avail -= (strlen(fmt) + 1UL + 2UL);
   if (avail > 1000UL)
     abort();
 
@@ -473,7 +474,7 @@ _bfd_default_error_handler(const char *fmt, ...)
 	  /* If we run out of space, tough, you lose your ridiculously
 	   * long file or section name.  It is not safe to try to alloc
 	   * memory here; we might be printing an out of memory message: */
-	  if (avail == 0)
+	  if (avail <= 1UL)
 	    {
 	      *bufp++ = '*';
 	      *bufp++ = '*';
@@ -485,8 +486,17 @@ _bfd_default_error_handler(const char *fmt, ...)
 		{
 		  bfd *abfd = va_arg(ap, bfd *);
 		  if (abfd->my_archive)
-		    snprintf(bufp, avail, "%s(%s)",
-                             abfd->my_archive->filename, abfd->filename);
+                    {
+                      if (avail <= 5UL)
+                        {
+                          *bufp++ = '*';
+                          *bufp++ = '*';
+                          *bufp = '\0';
+                        }
+                      else
+                        snprintf(bufp, avail, "%s(%s)",
+                                 abfd->my_archive->filename, abfd->filename);
+                    }
 		  else
 		    snprintf(bufp, avail, "%s", abfd->filename);
 		}
@@ -508,7 +518,16 @@ _bfd_default_error_handler(const char *fmt, ...)
                                                                 sec)) != NULL)
 		    group = ci->name;
 		  if (group != NULL)
-		    snprintf(bufp, avail, "%s[%s]", sec->name, group);
+                    {
+                      if (avail <= 5UL)
+                        {
+                          *bufp++ = '*';
+                          *bufp++ = '*';
+                          *bufp = '\0';
+                        }
+                      else
+                        snprintf(bufp, avail, "%s[%s]", sec->name, group);
+                    }
 		  else
 		    snprintf(bufp, avail, "%s", sec->name);
 		}

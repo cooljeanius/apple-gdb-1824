@@ -13,6 +13,9 @@ AC_INIT([dltest],[1.4],[tromey@cygnus.com])
 AC_CONFIG_SRCDIR([pkga.c])
 AC_CONFIG_MACRO_DIR([../m4])
 AC_CONFIG_AUX_DIR([..])
+
+echo "hello from the configure script for the tcl/unix/dltest subdirectory"
+
 AC_CANONICAL_TARGET
 if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
   export BUILD_ARCHITECTURE="${build_cpu}"

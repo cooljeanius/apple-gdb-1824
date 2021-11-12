@@ -749,6 +749,9 @@ AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
 AM_V
+CSCOPE
+ETAGS
+CTAGS
 am__fastdepCC_FALSE
 am__fastdepCC_TRUE
 CCDEPMODE
@@ -3346,6 +3349,8 @@ ac_config_headers="$ac_config_headers config.h"
 
 
 
+echo "hello from the intl subdirectory's configure script"
+
 # architectures:
 
 
@@ -5670,6 +5675,20 @@ else
 fi
 
 
+# Variables for tags utilities; see am/tags.am
+if test -z "$CTAGS"; then
+  CTAGS=ctags
+fi
+
+if test -z "$ETAGS"; then
+  ETAGS=etags
+fi
+
+if test -z "$CSCOPE"; then
+  CSCOPE=cscope
+fi
+
+
 
 # POSIX will say in a future version that running "rm -f" with no argument
 # is OK; and we want to be able to make that assumption in our Makefile
@@ -5901,7 +5920,7 @@ fi
 then :
   ifnGNUmake=""
 else $as_nop
-  ifGNUmake="#"
+  ifnGNUmake="#"
 fi
   if test "x$_cv_gnu_make_command" = x""
 then :
@@ -6165,6 +6184,7 @@ fi
 
 if test -e ./config.cache; then
   echo "hacking ./config.cache"
+  ## FIXME: filename gets interpreted as a sed command:
   sed -i "s|ac_cv_env_CPP_set|bad_CPP_status|g" ./config.cache
   sed -i "s|ac_cv_env_CPP_value|bad_CPP|g" ./config.cache
 fi

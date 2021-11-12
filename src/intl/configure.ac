@@ -14,6 +14,8 @@ m4_ifdef([AC_REQUIRE_AUX_FILE],[
   AC_REQUIRE_AUX_FILE([ylwrap])dnl
 ])dnl
 
+echo "hello from the intl subdirectory's configure script"
+
 # architectures:
 AC_CANONICAL_TARGET
 if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
@@ -86,6 +88,7 @@ AC_SYS_LONG_FILE_NAMES
 
 if test -e ./config.cache; then
   echo "hacking ./config.cache"
+  ## FIXME: filename gets interpreted as a sed command:
   sed -i "s|ac_cv_env_CPP_set|bad_CPP_status|g" ./config.cache
   sed -i "s|ac_cv_env_CPP_value|bad_CPP|g" ./config.cache
 fi

@@ -161,6 +161,10 @@ if test -n "${PWD}"; then PWD=`${PWDCMD-pwd}`; fi
 
 # Test for sed:
 AC_PROG_SED
+if test "x${SED}" = "x"; then
+  test -z "${SED}" && echo "SED environment variable is empty" >&2
+  AC_MSG_ERROR([no usable sed found])
+fi
 # ...and for grep:
 if test "x${GREP}" = "x"; then
   test -z "${GREP}"
@@ -172,7 +176,7 @@ fi
 # Export original configure arguments for use by sub-configures. These
 # will be expanded by make, so quote '$'.
 tmp="${progname} $@"
-sed -e 's,\$,$$,g' <<EOF_SED > conftestsed.out
+${SED} -e 's,\$,$$,g' <<EOF_SED > conftestsed.out
 ${tmp}
 EOF_SED
 TOPLEVEL_CONFIGURE_ARGUMENTS=`cat conftestsed.out`
@@ -3409,7 +3413,7 @@ s/ -arch_([^ ]*)/-arch \1/g
 s/^ *//;s/ *$//
 s,\$,$$,g
 EOF_SED
-sed -f conftestsed <<EOF_SED > conftestsed.out
+${SED} -f conftestsed <<EOF_SED > conftestsed.out
  ${ac_configure_args}
 EOF_SED
 baseargs=`cat conftestsed.out`
@@ -3422,7 +3426,7 @@ rm -rf conftestsed conftestsed.out
 # quotes, because this will be expanded first by make and then by the
 # shell. Also, because we want to override the logic in subdir configure
 # scripts to choose program_transform_name, replace any s,x,x, with s,y,y,.
-sed -e "s,\\\\\\\\,\\\\,g; s,','\\\\'',g; s/s,x,x,/s,y,y,/" <<EOF_SED > conftestsed.out
+${SED} -e "s,\\\\\\\\,\\\\,g; s,','\\\\'',g; s/s,x,x,/s,y,y,/" <<EOF_SED > conftestsed.out
 ${program_transform_name}
 EOF_SED
 gcc_transform_name=`cat conftestsed.out`

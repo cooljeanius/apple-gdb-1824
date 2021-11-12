@@ -740,6 +740,9 @@ AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
 AM_V
+CSCOPE
+ETAGS
+CTAGS
 am__untar
 am__tar
 AMTAR
@@ -3565,6 +3568,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+echo "hello from libiberty's configure script"
+
 # This works around the fact that libtool configuration may change LD
 # for this particular configuration, but some shells, instead of
 # keeping the changes in LD private, export them just because LD is
@@ -4545,6 +4550,20 @@ am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
 
 
 
+# Variables for tags utilities; see am/tags.am
+if test -z "$CTAGS"; then
+  CTAGS=ctags
+fi
+
+if test -z "$ETAGS"; then
+  ETAGS=etags
+fi
+
+if test -z "$CSCOPE"; then
+  CSCOPE=cscope
+fi
+
+
 
 # POSIX will say in a future version that running "rm -f" with no argument
 # is OK; and we want to be able to make that assumption in our Makefile
@@ -4773,6 +4792,8 @@ AUTOMAKE=${AUTOMAKE-"${am_missing_run}automake"}
 
 
 if test -e ./config.cache; then
+  echo "hacking ./config.cache"
+  ## FIXME: filename gets interpreted as a sed command:
   sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
 fi
 

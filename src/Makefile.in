@@ -61629,6 +61629,14 @@ all-stageprofile-binutils: maybe-all-stageprofile-gas
 all-stagefeedback-binutils: maybe-all-stagefeedback-gas
 install-binutils: maybe-install-opcodes
 install-strip-binutils: maybe-install-strip-opcodes
+configure-opcodes: configure-bfd
+
+configure-stage1-opcodes: configure-stage1-bfd
+configure-stage2-opcodes: configure-stage2-bfd
+configure-stage3-opcodes: configure-stage3-bfd
+configure-stage4-opcodes: configure-stage4-bfd
+configure-stageprofile-opcodes: configure-stageprofile-bfd
+configure-stagefeedback-opcodes: configure-stagefeedback-bfd
 install-opcodes: maybe-install-bfd
 install-strip-opcodes: maybe-install-strip-bfd
 configure-gas: maybe-configure-intl

@@ -256,6 +256,7 @@ WRITE_DEBUG_SRC_OFILES = $(DEBUG_SRC_OFILES) wrstabs.o
 OBJDUMP_PRIVATE_OFILES = @OBJDUMP_PRIVATE_OFILES@
 
 # Code shared by all the binutils.
+## FIXME: this variable name is kind of a misnomer? It's sources, not libs...
 BULIBS = bucomm.c version.c filemode.c
 BULIB_OFILES = bucomm.o version.o filemode.o
 
@@ -393,12 +394,12 @@ ar_SOURCES = $(ar_and_ranlib_SHARED_SRC_CFILES) not-ranlib.c
 ar_OFILES = not-ranlib.o
 EXTRA_ar_SOURCES = $(CFILES)
 ar_LDADD = $(BFD) $(LIBIBERTY) @LEXLIB@ $(INTLLIBS)
-ar_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) @LEXLIB@ $(INTLLIBS_DEP) \
+ar_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) $(INTLLIBS_DEP) \
   not-ranlib.o
 
 ranlib_SOURCES = $(ar_and_ranlib_SHARED_SRC_CFILES) is-ranlib.c
 ranlib_LDADD = $(BFD) $(LIBIBERTY) @LEXLIB@ $(INTLLIBS)
-ranlib_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) @LEXLIB@ $(INTLDEP)
+ranlib_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) $(INTLDEP)
 
 addr2line_SOURCES = addr2line.c budemang.c $(BULIBS)
 addr2line_LDADD = $(BFD) $(LIBIBERTY) $(INTLLIBS)

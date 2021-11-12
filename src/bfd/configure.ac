@@ -10,7 +10,10 @@ dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory.
 AC_CONFIG_SRCDIR([libbfd.c])
 AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_AUX_DIR([..])
 AC_CONFIG_HEADERS([config.h])dnl
+
+echo "hello from bfd's configure script"
 
 # target stuff:
 AC_CANONICAL_TARGET

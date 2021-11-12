@@ -7,6 +7,8 @@ dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
 AC_CONFIG_SRCDIR([xmalloc.c])dnl
 
+echo "hello from libiberty's configure script"
+
 # This works around the fact that libtool configuration may change LD
 # for this particular configuration, but some shells, instead of
 # keeping the changes in LD private, export them just because LD is
@@ -233,6 +235,8 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
 AM_INIT_MY_AUTOMAKE_LITE
 
 if test -e ./config.cache; then
+  echo "hacking ./config.cache"
+  ## FIXME: filename gets interpreted as a sed command:
   sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
 fi
 
