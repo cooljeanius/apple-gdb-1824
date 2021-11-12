@@ -22,9 +22,16 @@ CFLAGS = @CFLAGS@ $(C_ARCHFLAGS)
 
 @SET_MAKE@
 
-all:
+all: $(CONFIGDIR)/Makefile
 	@cd $(CONFIGDIR) && $(MAKE) $@ CFLAGS="@CFLAGS@ $(C_ARCHFLAGS)"
 	@test x"$(CONFIGDIR2)" = x"" || (cd "$(CONFIGDIR2)" && $(MAKE) $@)
+
+$(CONFIGDIR)/Makefile: $(CONFIGDIR)/config.status
+	@cd $(CONFIGDIR) && ./config.status
+
+# TODO: pass along configure flags:
+$(CONFIGDIR)/config.status: $(CONFIGDIR)/configure
+	@cd $(CONFIGDIR) && ./configure
 
 # FIXME: install-binaries
 install test install-binaries install-libraries install-minimal:

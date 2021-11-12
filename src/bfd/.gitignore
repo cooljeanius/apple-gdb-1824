@@ -65,3 +65,4 @@ elf32-target.h
 elf64-target.h
 # tempfiles that are normally deleted anyways:
 *.new
+*.h-new

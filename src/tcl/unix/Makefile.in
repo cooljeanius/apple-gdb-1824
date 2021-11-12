@@ -717,7 +717,8 @@ install-doc: doc
 	@echo "Cross-linking command (.n) docs";
 	@$(UNIX_DIR)/mkLinks $(MKLINKS_FLAGS) $(MANN_INSTALL_DIR)
 
-Makefile: $(UNIX_DIR)/Makefile.in $(DLTEST_DIR)/Makefile.in
+Makefile: $(UNIX_DIR)/Makefile.in $(DLTEST_DIR)/Makefile.in config.status
+	@echo "rebuilding the Makefile for Tcl's unix subdirectory"
 	$(SHELL) config.status
 
 am--refresh:

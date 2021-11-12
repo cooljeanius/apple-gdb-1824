@@ -12140,7 +12140,8 @@ fi
 done
 fi
 
-done{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gettimeofday declaration" >&5
+done  ## grep the header:
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gettimeofday declaration" >&5
 printf %s "checking for gettimeofday declaration... " >&6; }
 if test ${tcl_cv_grep_gettimeofday+y}
 then :
@@ -12164,7 +12165,7 @@ fi
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${tcl_cv_grep_gettimeofday}" >&5
 printf "%s\n" "${tcl_cv_grep_gettimeofday}" >&6; }
-if test ${tcl_cv_grep_gettimeofday} = missing ; then
+if test "x${tcl_cv_grep_gettimeofday}" = "xmissing"; then
 
 printf "%s\n" "#define GETTOD_NOT_DECLARED 1" >>confdefs.h
 

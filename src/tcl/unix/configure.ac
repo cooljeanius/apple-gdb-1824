@@ -517,12 +517,13 @@ AC_CHECK_FUNCS([BSDgettimeofday],
                     [Define to 1 if there is no gettimeofday function])dnl
     ])dnl
 ])dnl
+  ## grep the header:
 AC_MSG_CHECKING([for gettimeofday declaration])
 AC_CACHE_VAL([tcl_cv_grep_gettimeofday],
     [AC_EGREP_HEADER([gettimeofday],[sys/time.h],
-	[tcl_cv_grep_gettimeofday=present], [tcl_cv_grep_gettimeofday=missing])])
+	[tcl_cv_grep_gettimeofday=present],[tcl_cv_grep_gettimeofday=missing])])
 AC_MSG_RESULT([${tcl_cv_grep_gettimeofday}])
-if test ${tcl_cv_grep_gettimeofday} = missing ; then
+if test "x${tcl_cv_grep_gettimeofday}" = "xmissing"; then
     AC_DEFINE([GETTOD_NOT_DECLARED],[1],
               [Define to 1 if gettimeofday is not declared])
 fi
