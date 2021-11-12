@@ -20,11 +20,13 @@ dnl# Process this file with autoconf264 to generate a configuration script.
 # <http://www.gnu.org/licenses/>.
 
 AC_PREREQ([2.64])
-dnl# override.m4 is annoying
-m4_define([_GCC_AUTOCONF_VERSION],[2.69])
+dnl# override.m4 is annoying; feel free to adjust this number as necessary:
+m4_define([_GCC_AUTOCONF_VERSION],[2.70])
 AC_INIT([libdecnumber],[0.0.1],[gcc-bugs@gcc.gnu.org],[libdecnumber])
 AC_CONFIG_SRCDIR([decNumber.h])dnl
 AC_CONFIG_MACRO_DIR([../config])dnl
+
+echo "hello from the configure script for the libdecnumber subdirectory"
 
 # Checks for programs.
 AC_PROG_MAKE_SET

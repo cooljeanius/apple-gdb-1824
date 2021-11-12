@@ -35,12 +35,14 @@ dnl# This is a hack because autoconf finds the AC\_INIT from
 dnl# ../config/override.m4 first if it is present, which is annoying.
 dnl# Feel free to re-define to whichever version of autoconf
 dnl# that you are using:
-m4_define([_GCC_AUTOCONF_VERSION],[2.69])
+m4_define([_GCC_AUTOCONF_VERSION],[2.70])
 AC_INIT([libbacktrace],[version-unused],[],[libbacktrace])
 AC_CONFIG_SRCDIR([backtrace.h])dnl
 AC_CONFIG_AUX_DIR([..])dnl
 AC_CONFIG_MACRO_DIR([..])dnl
 AC_CONFIG_HEADER([config.h])dnl
+
+echo "hello from the configure script for the libbacktrace subdirectory"
 
 if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   AM_ENABLE_MULTILIB([],[..])

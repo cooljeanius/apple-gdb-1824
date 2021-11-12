@@ -8,7 +8,7 @@ dnl#
 dnl# The override bits of this file should be a no-op for the newest
 dnl# Autoconf version, which means they can be removed once the complete
 dnl# tree has moved to a new enough Autoconf version.
-dn#l
+dnl#
 dnl# The _GCC_AUTOCONF_VERSION_TEST ensures that exactly the desired
 dnl# Autoconf version is used. It should be kept for consistency.
 
