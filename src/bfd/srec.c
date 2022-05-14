@@ -18,7 +18,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* SUBSECTION
 	S-Record handling
@@ -804,8 +804,9 @@ srec_get_section_contents(bfd *abfd, asection *section, void *location,
 
   if ((bfd_byte *)section->used_by_bfd == NULL)
     BFD_ASSERT(offset > 0L);
-  memcpy(location, ((bfd_byte *)section->used_by_bfd + offset),
-         (size_t)count);
+  if (section->used_by_bfd != NULL)
+    memcpy(location, ((bfd_byte *)section->used_by_bfd + offset),
+           (size_t)count);
 
   return TRUE;
 }

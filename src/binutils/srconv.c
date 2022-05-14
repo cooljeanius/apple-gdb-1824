@@ -318,6 +318,7 @@ static void
 wr_un(struct coff_ofile *ptr, struct coff_sfile *sfile, int first,
       int nsecs ATTRIBUTE_UNUSED)
 {
+  /* FIXME: where is this from? */
   struct IT_un un;
   struct coff_symbol *s;
 
@@ -1225,6 +1226,7 @@ wr_program_structure (struct coff_ofile *p, struct coff_sfile *sfile)
 static void
 wr_du (struct coff_ofile *p, struct coff_sfile *sfile, int n)
 {
+  /* FIXME: where is this from? */
   struct IT_du du;
   int lim;
   int i;

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-25 15:05-0400\n"
+"POT-Creation-Date: 2022-05-14 17:40-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,7 +50,7 @@ msgid ""
 msgstr ""
 
 #: addr2line.c:93 ar.c:371 coffdump.c:530 elfedit.c:644 nlmconv.c:1116
-#: objcopy.c:489 objcopy.c:525 readelf.c:2730 size.c:107 srconv.c:1757
+#: objcopy.c:489 objcopy.c:525 readelf.c:2730 size.c:107 srconv.c:1759
 #: strings.c:777 sysdump.c:656 windmc.c:234 windres.c:680
 #, c-format
 msgid "Report bugs to %s\n"
@@ -488,7 +488,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: coffdump.c:591 srconv.c:1846 sysdump.c:710
+#: coffdump.c:591 srconv.c:1848 sysdump.c:710
 msgid "no input file specified"
 msgstr ""
 
@@ -3054,7 +3054,7 @@ msgstr ""
 msgid "Duplicate symbol entered into keyword list."
 msgstr ""
 
-#: nlmconv.c:274 srconv.c:1837
+#: nlmconv.c:274 srconv.c:1839
 msgid "input and output files must be different"
 msgstr ""
 
@@ -3400,7 +3400,7 @@ msgstr ""
 msgid "data size %ld"
 msgstr ""
 
-#: objcopy.c:403 srconv.c:1746
+#: objcopy.c:403 srconv.c:1748
 #, c-format
 msgid "Usage: %s [option(s)] in-file [out-file]\n"
 msgstr ""
@@ -6837,12 +6837,12 @@ msgstr ""
 msgid "Invalid radix: %s\n"
 msgstr ""
 
-#: srconv.c:1748
+#: srconv.c:1750
 #, c-format
 msgid "Convert a COFF object file into a SYSROFF object file\n"
 msgstr ""
 
-#: srconv.c:1749
+#: srconv.c:1751
 #, c-format
 msgid ""
 " The options are:\n"
@@ -6853,7 +6853,7 @@ msgid ""
 "  -v --version     Print the version number of the program\n"
 msgstr ""
 
-#: srconv.c:1892
+#: srconv.c:1894
 #, c-format
 msgid "unable to open output file %s"
 msgstr ""

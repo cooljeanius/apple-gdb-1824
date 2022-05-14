@@ -36,3 +36,6 @@ conf*/*.awk
 # For some reason gdb's testsuite likes to copy stuff here:
 gdb.ada/*
 gdb.apple/*
+
+# Uh... dunno where this came from:
+dejagnu-/*

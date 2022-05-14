@@ -85,7 +85,7 @@ RM =		rm
 NSLIBTOOL =	cc -dynamiclib
 CC =		@CC@
 CPP =           @CPP@
-CPPFLAGS =      @CPPFLAGS@
+CPPFLAGS =      @CPPFLAGS@ -I../include
 NROFF_PROG =	@NROFF_PROG@
 SHAR_PROG =	@SHAR_PROG@
 
@@ -174,9 +174,9 @@ check: eftest.c tstheap.c
 	@echo "this is so failing efence tests will not ruin everything."
 
 check-local: eftest.c tstheap.c $(TARGETLIB)
-	$(CC) $(CFLAGS) -o eftest.o -c $(srcdir)/eftest.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o eftest.o -c $(srcdir)/eftest.c
 	$(CC) $(CFLAGS) eftest.o libefence.a -o eftest$(EXEEXT) -lpthread
-	$(CC) $(CFLAGS) -o tstheap.o -c $(srcdir)/tstheap.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o tstheap.o -c $(srcdir)/tstheap.c
 	$(CC) $(CFLAGS) tstheap.o libefence.a -o tstheap$(EXEEXT) -lpthread
 # This loses for Canadian cross (building efence with a cross-compiler).
 # There is probably some dejagnu-ish solution (such as what we are doing
