@@ -7,6 +7,7 @@ config.rpath linguist-vendored
 config.sub linguist-vendored
 depcomp linguist-vendored
 install-sh linguist-vendored
+mdate-sh linguist-vendored
 missing linguist-vendored
 test-driver linguist-vendored
 texinfo.tex linguist-vendored

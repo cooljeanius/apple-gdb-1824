@@ -255,10 +255,10 @@ am__DIST_COMMON = $(dist_man_MANS) $(srcdir)/Makefile.in \
 	../ar-lib ../compile ../config.guess ../config.rpath \
 	../config.sub ../depcomp ../install-sh ../ltcf-c.sh \
 	../ltcf-cxx.sh ../ltcf-gcj.sh ../ltconfig ../ltmain.sh \
-	../missing ../mkinstalldirs ../texinfo.tex ../ylwrap AUTHORS \
-	COPYING ChangeLog INSTALL NEWS README THANKS TODO compile \
-	config.guess config.sub depcomp install-sh missing \
-	mkinstalldirs texinfo.tex
+	../mdate-sh ../missing ../mkinstalldirs ../texinfo.tex \
+	../ylwrap AUTHORS COPYING ChangeLog INSTALL NEWS README THANKS \
+	TODO compile config.guess config.sub depcomp install-sh \
+	missing mkinstalldirs texinfo.tex
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)

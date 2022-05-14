@@ -9,6 +9,7 @@ AC_INIT([opcodes],[2.16.91],[jmolenda@apple.com])
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
 AC_CONFIG_SRCDIR([z8k-dis.c])
+AC_CONFIG_AUX_DIR([..])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])dnl
 
@@ -488,6 +489,7 @@ AC_SUBST([WIN32LIBADD])dnl
 if test -n "${enable_targets}"; then
     for targ in `echo ${enable_targets} | sed 's/,/ /g'`
     do
+	# FIXME: "warning: $ac_config_sub is obsolete and unsafe."
 	result=`${ac_config_sub} ${targ} 2>/dev/null`
 	if test -n "${result}" ; then
 	    canon_targets="${canon_targets} ${result}"

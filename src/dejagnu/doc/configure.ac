@@ -5,6 +5,7 @@ sinclude(../acinclude.m4)
 
 AC_PREREQ([2.5])
 AC_INIT([dejagnu-doc],[1.4.2],[rob@welcomehome.org])
+AC_CONFIG_AUX_DIR([..])
 AC_CONFIG_SRCDIR([dejagnu.texi])
 AM_INIT_AUTOMAKE([1.11.6 dejagnu foreign])
 AM_MAINTAINER_MODE

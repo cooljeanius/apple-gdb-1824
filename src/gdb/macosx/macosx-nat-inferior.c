@@ -2646,6 +2646,15 @@ macosx_child_create_inferior(char *exec_file, char *allargs, char **env,
 #else /* #if defined(TARGET_ARM)  */
 
 # ifndef S_SPLINT_S
+/* FIXME: <Security/Authorization.h> should be updated to say:
+enum { kAuthorizationExternalFormLength = 32 };
+ ...instead of the current:
+static const size_t kAuthorizationExternalFormLength = 32;
+See:
+ - https://github.com/cooljeanius/apple-gdb-1824/issues/8
+ - https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93082
+ - rdar://FB8919799
+ */
 #  include <Security/Security.h>
 # else
 #  if !defined(__MACTYPES__) && !defined(__TYPES__)

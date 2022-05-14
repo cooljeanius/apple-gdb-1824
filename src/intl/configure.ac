@@ -134,6 +134,7 @@ AX_PROG_BISON([
 ])dnl##end bison conditional
 AC_SUBST([EXTRA_YFLAGS_SEP])dnl
 AM_PROG_LEX
+AC_PATH_PROG([GIT_BIN],[git])dnl
 
 # Checks for libraries.
 AC_CHECK_LIB([c],[printf])dnl

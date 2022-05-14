@@ -3,6 +3,7 @@ dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.59])
 AC_INIT([cgen],[1.1],[dje@sebabeach.org])
+AC_CONFIG_AUX_DIR([..])
 AC_CONFIG_SRCDIR([read.scm])
 AC_CANONICAL_TARGET
 if test -f ${srcdir}/config.status; then

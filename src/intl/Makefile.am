@@ -169,6 +169,7 @@ libintl.la: $(LTOBJECTS) $(OBJECTS)
 EXTRA_DIST += po/Makevars.in
 
 check: all @MAINT@ config.status
+	ls *.i || ls *.s || ls *.bc
 .PHONY: check
 
 # This installation goal is only used in GNU gettext. Packages which
@@ -263,7 +264,26 @@ localealias.lo relocatable.lo: relocatable.h
 plural-exp.o: plural-exp.h
 plural-exp.lo: plural-exp.h
 
-plural.c: plural.y @MAINT@ Makefile
+plural.c: plural.y @MAINT@@BISON3_NO@ Makefile
+plural.lo: plural.c
+	$(LIBTOOL) --tag=CC --mode=compile $(COMPILE) $<; \
+	if [[ $$? -eq 1 ]]; then \
+	  if test -d ../../.git && test -n "${GIT_BIN}" && test -x "${GIT_BIN}"; then \
+	    if test -n "`${GIT_BIN} status -s plural.c | grep M`"; then \
+	      echo "plural.c appears to have been changed; attempting to restore it..."; \
+	      ${GIT_BIN} restore $<; \
+	      $(LIBTOOL) --tag=CC --mode=compile $(COMPILE) $<; \
+            else \
+              echo "error: plural.c does NOT seem to have been changed, so therefore building it ought to succeed; dunno what happened here..." >&2; \
+	      exit 1; \
+	    fi; \
+	  else \
+	    echo "error: bison 3 may have been used to re-yacc plural.c; you may need to either restore the previous version, or try re-yaccing with bison 2 instead." >&2; \
+	    exit 1; \
+	  fi; \
+	else \
+	  echo "compilation returned code $$?"; \
+	fi
 
 tags-lowercase: TAGS-uppercase
 .PHONY: tags-lowercase
@@ -286,7 +306,7 @@ mostlyclean-local: @MAINT@ config.status
 .PHONY: mostlyclean-local
 
 clean-local: mostlyclean-local @MAINT@ config.status
-	rm -f $(AM_V_v) *.s *.i
+	rm -f $(AM_V_v) *.s *.i *.bc
 .PHONY: clean-local
 
 distclean-local: clean-local @MAINT@ config.status

@@ -3,6 +3,7 @@ dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])dnl
 AC_INIT([electric-fence],[2.0.5],[Bruce@Pixar.com])
+AC_CONFIG_AUX_DIR([..])
 AC_CONFIG_SRCDIR([efence.c])dnl
 AC_CONFIG_HEADERS([config.h])dnl
 

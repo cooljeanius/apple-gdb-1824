@@ -3,6 +3,7 @@ dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.5])
 AC_INIT([gdb-etc],[???],[/dev/null])
+AC_CONFIG_AUX_DIR([..])
 AC_CONFIG_SRCDIR([Makefile.in])
 
 AM_SANITY_CHECK
