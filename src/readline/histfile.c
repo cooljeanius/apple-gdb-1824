@@ -165,8 +165,8 @@ read_history_range(const char *filename, int from, int to)
 
   file_size = (size_t)finfo.st_size;
 
-  /* check for overflow on very large files */
-  if ((file_size != finfo.st_size) || ((file_size + 1UL) < file_size))
+  /* do cast other way around to check for overflow on very large files: */
+  if (((off_t)file_size != finfo.st_size) || ((file_size + 1UL) < file_size))
     {
 #if defined (EFBIG)
       errno = EFBIG;
@@ -296,8 +296,8 @@ history_truncate_file(const char *fname, int lines)
 
   file_size = (size_t)finfo.st_size;
 
-  /* check for overflow on very large files */
-  if (file_size != finfo.st_size || file_size + 1 < file_size)
+  /* do cast other way around to check for overflow on very large files: */
+  if (((off_t)file_size != finfo.st_size) || ((file_size + 1) < file_size))
     {
       close (file);
 #if defined (EFBIG)

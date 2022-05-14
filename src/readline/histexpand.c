@@ -1316,7 +1316,12 @@ history_arg_extract(int first, int last, const char *string)
   else
     {
       for (size = 0, i = first; i < last; i++)
-	size += (strlen(list[i]) + 1UL);
+        {
+          if ((list != NULL) && (list[i] != NULL))
+            size += (strlen(list[i]) + 1UL);
+          else
+            size += 1UL;
+        }
       result = (char *)xmalloc(size + 1UL);
       result[0] = '\0';
 

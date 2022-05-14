@@ -341,7 +341,7 @@ rl_translate_keyseq(const char *seq, char *array, int *len)
 	  if ((c == 'C' || c == 'M') && seq[i + 1] == '-')
 	    {
 	      /* Handle special case of backwards define. */
-	      if (strncmp (&seq[i], "C-\\M-", 5) == 0)
+	      if (strncmp(&seq[i], "C-\\M-", 5UL) == 0)
 		{
 		  array[l++] = ESC;	/* ESC is meta-prefix */
 		  i += 5;

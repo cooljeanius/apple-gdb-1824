@@ -105,7 +105,7 @@ int
 rl_tty_status(int count, int key)
 {
 #if defined(TIOCSTAT)
-  ioctl(1, TIOCSTAT, (char *)0);
+  ioctl(1, (unsigned long)TIOCSTAT, (char *)0);
   rl_refresh_line(count, key);
 #else
   rl_ding();

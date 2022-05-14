@@ -389,7 +389,7 @@ rl_redisplay(void)
   size_t temp;
   const char *prompt_this_line;
 #if defined(HANDLE_MULTIBYTE)
-  wchar_t wc;
+  wchar_t wc = 0;
   size_t wc_bytes;
   int wc_width = 0;
   mbstate_t ps;

@@ -123,13 +123,17 @@ rl_do_undo(void)
         end = TRANS(rl_undo_list->end);
       }
 
+    if (rl_undo_list == NULL)
+      return (0);
+
     switch (rl_undo_list->what)
       {
 	/* Undoing deletes means inserting some text. */
 	case UNDO_DELETE:
 	  rl_point = start;
 	  rl_insert_text(rl_undo_list->text);
-	  free(rl_undo_list->text);
+	  if (rl_undo_list != NULL)
+	    free(rl_undo_list->text);
 	  break;
 
 	/* Undoing inserts means deleting some text. */
@@ -145,10 +149,11 @@ rl_do_undo(void)
 
 	/* Undoing a BEGIN means that we are done with this group. */
 	case UNDO_BEGIN:
-	  if (waiting_for_begin)
+	  if (waiting_for_begin) {
 	    waiting_for_begin--;
-	  else
+	  } else {
 	    rl_ding();
+	  }
 	  break;
 
         default:

@@ -685,7 +685,8 @@ _rl_find_completion_word(int *fp, int *dp)
 	     to quote anything in single quotes, especially not the closing
 	     quote.  If you don't like this, take out the check on the value
 	     of quote_char. */
-	  if (quote_char != '\'' && rl_line_buffer[scan] == '\\')
+	  if ((quote_char != '\'') && (rl_line_buffer != NULL)
+	      && (rl_line_buffer[scan] == '\\'))
 	    {
 	      pass_next = 1;
 	      found_quote |= RL_QF_BACKSLASH;
@@ -702,7 +703,9 @@ _rl_find_completion_word(int *fp, int *dp)
 		  rl_point = end;
 		}
 	    }
-	  else if (strchr (rl_completer_quote_characters, rl_line_buffer[scan]))
+	  else if ((rl_line_buffer != NULL)
+	           && strchr(rl_completer_quote_characters,
+	                     rl_line_buffer[scan]))
 	    {
 	      /* Found start of a quoted substring. */
 	      quote_char = rl_line_buffer[scan];

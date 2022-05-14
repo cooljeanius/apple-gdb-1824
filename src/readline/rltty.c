@@ -731,7 +731,7 @@ rl_restart_output(int count, int key)
 #  if defined(apollo)
   ioctl(&fildes, TIOCSTART, 0);
 #  else
-  ioctl(fildes, TIOCSTART, 0);
+  ioctl(fildes, (unsigned long)TIOCSTART, 0);
 #  endif /* apollo */
 
 # else /* !TIOCSTART: */
@@ -769,7 +769,7 @@ rl_stop_output(int count, int key)
 #  if defined(apollo)
   ioctl(&fildes, TIOCSTOP, 0);
 #  else
-  ioctl(fildes, TIOCSTOP, 0);
+  ioctl(fildes, (unsigned long)TIOCSTOP, 0);
 #  endif /* apollo */
 # else /* !TIOCSTOP: */
 #  if defined(TERMIOS_TTY_DRIVER)
