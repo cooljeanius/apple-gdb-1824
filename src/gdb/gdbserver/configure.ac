@@ -470,11 +470,13 @@ AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_SETPGRP
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([atexit basename child_get_pagesize gettimeofday gmtime \
-                inet_ntoa localtime localtime_r memset minus_one_ptid \
-                pread pread64 pwrite readlink select setenv socket strchr \
-                strdup strerror strlen strncmp strrchr strstr strtol \
-                strtoul strtoull xfree xmalloc xsnprintf xstrdup])dnl
+AC_CHECK_FUNCS([atexit basename bzero child_get_pagesize explicit_bzero \
+                gettimeofday gmtime inet_ntoa localtime localtime_r memcpy \
+                memset memset_explicit memset_pattern memset_s minus_one_ptid \
+                pread pread64 pwrite pwrite64 readlink select setenv socket \
+                strchr strcmp strdup strerror strlen strncmp strrchr strstr \
+                strtol strtoul strtoull swab wmemset xfree xmalloc xsnprintf \
+                xstrdup])dnl
 dnl# the makefile gets the sources for these libobjs from libiberty:
 AC_REPLACE_FUNCS([vasprintf vsnprintf])
 dnl# dladdr is glibc-specific. It is used by thread-db.c but only for

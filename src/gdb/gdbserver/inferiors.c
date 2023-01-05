@@ -22,8 +22,12 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef __STDC_WANT_LIB_EXT1__
+# define __STDC_WANT_LIB_EXT1__ 1
+#endif
 #include <stdlib.h>
 
+#include "config.h"
 #include "server.h"
 #include "dll.h"
 
@@ -31,13 +35,21 @@
 # include "inferiors.h"
 #endif /* !INFERIORS_H */
 
-#ifdef HAVE_STRING_H
+#ifndef __has_include
+# define __has_include(x) 0
+#endif /* !__has_include */
+
+#if defined(HAVE_STRING_H) || __has_include(<string.h>)
 # include <string.h>
 #else
-# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# if (defined(__GNUC__) && !defined(__STRICT_ANSI__)) || defined(__clang__)
  #  warning "inferiors.c expects <string.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STRING_H */
+
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif /* HAVE_STRINGS_H */
 
 /* my "gdbthread.h" is currently broken, so copy some parts of it here: */
 #ifndef GDB_THREAD_H
@@ -148,7 +160,11 @@ add_thread(unsigned long thread_id, void *target_data, unsigned int gdb_id)
   struct thread_info *new_thread
     = (struct thread_info *)malloc(sizeof(*new_thread));
 
+#ifdef HAVE_BZERO
+  bzero(new_thread, sizeof(*new_thread));
+#else
   memset(new_thread, 0, sizeof(*new_thread));
+#endif
 
   new_thread->entry.id = thread_id;
 

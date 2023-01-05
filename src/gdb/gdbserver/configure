@@ -10499,10 +10499,22 @@ then :
   printf "%s\n" "#define HAVE_BASENAME 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "bzero" "ac_cv_func_bzero"
+if test "x$ac_cv_func_bzero" = xyes
+then :
+  printf "%s\n" "#define HAVE_BZERO 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "child_get_pagesize" "ac_cv_func_child_get_pagesize"
 if test "x$ac_cv_func_child_get_pagesize" = xyes
 then :
   printf "%s\n" "#define HAVE_CHILD_GET_PAGESIZE 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "explicit_bzero" "ac_cv_func_explicit_bzero"
+if test "x$ac_cv_func_explicit_bzero" = xyes
+then :
+  printf "%s\n" "#define HAVE_EXPLICIT_BZERO 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "gettimeofday" "ac_cv_func_gettimeofday"
@@ -10535,10 +10547,34 @@ then :
   printf "%s\n" "#define HAVE_LOCALTIME_R 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "memcpy" "ac_cv_func_memcpy"
+if test "x$ac_cv_func_memcpy" = xyes
+then :
+  printf "%s\n" "#define HAVE_MEMCPY 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "memset" "ac_cv_func_memset"
 if test "x$ac_cv_func_memset" = xyes
 then :
   printf "%s\n" "#define HAVE_MEMSET 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "memset_explicit" "ac_cv_func_memset_explicit"
+if test "x$ac_cv_func_memset_explicit" = xyes
+then :
+  printf "%s\n" "#define HAVE_MEMSET_EXPLICIT 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "memset_pattern" "ac_cv_func_memset_pattern"
+if test "x$ac_cv_func_memset_pattern" = xyes
+then :
+  printf "%s\n" "#define HAVE_MEMSET_PATTERN 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "memset_s" "ac_cv_func_memset_s"
+if test "x$ac_cv_func_memset_s" = xyes
+then :
+  printf "%s\n" "#define HAVE_MEMSET_S 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "minus_one_ptid" "ac_cv_func_minus_one_ptid"
@@ -10563,6 +10599,12 @@ ac_fn_c_check_func "$LINENO" "pwrite" "ac_cv_func_pwrite"
 if test "x$ac_cv_func_pwrite" = xyes
 then :
   printf "%s\n" "#define HAVE_PWRITE 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "pwrite64" "ac_cv_func_pwrite64"
+if test "x$ac_cv_func_pwrite64" = xyes
+then :
+  printf "%s\n" "#define HAVE_PWRITE64 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "readlink" "ac_cv_func_readlink"
@@ -10593,6 +10635,12 @@ ac_fn_c_check_func "$LINENO" "strchr" "ac_cv_func_strchr"
 if test "x$ac_cv_func_strchr" = xyes
 then :
   printf "%s\n" "#define HAVE_STRCHR 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "strcmp" "ac_cv_func_strcmp"
+if test "x$ac_cv_func_strcmp" = xyes
+then :
+  printf "%s\n" "#define HAVE_STRCMP 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "strdup" "ac_cv_func_strdup"
@@ -10647,6 +10695,18 @@ ac_fn_c_check_func "$LINENO" "strtoull" "ac_cv_func_strtoull"
 if test "x$ac_cv_func_strtoull" = xyes
 then :
   printf "%s\n" "#define HAVE_STRTOULL 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "swab" "ac_cv_func_swab"
+if test "x$ac_cv_func_swab" = xyes
+then :
+  printf "%s\n" "#define HAVE_SWAB 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "wmemset" "ac_cv_func_wmemset"
+if test "x$ac_cv_func_wmemset" = xyes
+then :
+  printf "%s\n" "#define HAVE_WMEMSET 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "xfree" "ac_cv_func_xfree"

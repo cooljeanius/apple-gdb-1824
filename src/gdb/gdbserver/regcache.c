@@ -25,6 +25,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 /* The private data for the register cache.  Note that we have one
    per inferior; this is primarily for simplicity, as the performance

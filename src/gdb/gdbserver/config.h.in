@@ -36,6 +36,9 @@
 /* Define to 1 if you have the `basename' function. */
 #undef HAVE_BASENAME
 
+/* Define to 1 if you have the `bzero' function. */
+#undef HAVE_BZERO
+
 /* Define to 1 if you have the `child_get_pagesize' function. */
 #undef HAVE_CHILD_GET_PAGESIZE
 
@@ -159,6 +162,9 @@
 
 /* Define to 1 if the system has the type `exception_mask_t'. */
 #undef HAVE_EXCEPTION_MASK_T
+
+/* Define to 1 if you have the `explicit_bzero' function. */
+#undef HAVE_EXPLICIT_BZERO
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
@@ -290,8 +296,20 @@
 /* Define to 1 if you have the <malloc/malloc.h> header file. */
 #undef HAVE_MALLOC_MALLOC_H
 
+/* Define to 1 if you have the `memcpy' function. */
+#undef HAVE_MEMCPY
+
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
+
+/* Define to 1 if you have the `memset_explicit' function. */
+#undef HAVE_MEMSET_EXPLICIT
+
+/* Define to 1 if you have the `memset_pattern' function. */
+#undef HAVE_MEMSET_PATTERN
+
+/* Define to 1 if you have the `memset_s' function. */
+#undef HAVE_MEMSET_S
 
 /* Define to 1 if you have the `minus_one_ptid' function. */
 #undef HAVE_MINUS_ONE_PTID
@@ -354,6 +372,9 @@
 /* Define to 1 if you have the `pwrite' function. */
 #undef HAVE_PWRITE
 
+/* Define to 1 if you have the `pwrite64' function. */
+#undef HAVE_PWRITE64
+
 /* Define to 1 if you have the `readlink' function. */
 #undef HAVE_READLINK
 
@@ -394,6 +415,9 @@
 /* Define to 1 if you have the `strchr' function. */
 #undef HAVE_STRCHR
 
+/* Define to 1 if you have the `strcmp' function. */
+#undef HAVE_STRCMP
+
 /* Define to 1 if you have the `strdup' function. */
 #undef HAVE_STRDUP
 
@@ -429,6 +453,9 @@
 
 /* Define to 1 if `tm_zone' is a member of `struct tm'. */
 #undef HAVE_STRUCT_TM_TM_ZONE
+
+/* Define to 1 if you have the `swab' function. */
+#undef HAVE_SWAB
 
 /* Define to 1 if the target supports __sync_*_compare_and_swap */
 #undef HAVE_SYNC_BUILTINS
@@ -544,6 +571,9 @@
 
 /* Define to 1 if you have the `vsnprintf' function. */
 #undef HAVE_VSNPRINTF
+
+/* Define to 1 if you have the `wmemset' function. */
+#undef HAVE_WMEMSET
 
 /* Define to 1 if `fork' works. */
 #undef HAVE_WORKING_FORK
