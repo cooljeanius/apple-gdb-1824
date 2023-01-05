@@ -4302,7 +4302,10 @@ echo "- cross-compiling, not checking" 1>&6
 else $as_nop
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-main(){exit(0);}
+
+#include <stdlib.h>
+int main(){exit(0);}
+
 _ACEOF
 if ac_fn_c_try_run "$LINENO"
 then :
@@ -4338,7 +4341,10 @@ echo "- cross-compiling, not checking" 1>&6
 else $as_nop
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-main(){exit(0);}
+
+#include <stdlib.h>
+int main(){exit(0);}
+
 _ACEOF
 if ac_fn_c_try_run "$LINENO"
 then :
@@ -4711,6 +4717,12 @@ then :
   printf "%s\n" "#define HAVE_ARPA_INET_H 1" >>confdefs.h
 
 fi
+ac_fn_c_check_header_compile "$LINENO" "curses.h" "ac_cv_header_curses_h" "$ac_includes_default"
+if test "x$ac_cv_header_curses_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_CURSES_H 1" >>confdefs.h
+
+fi
 ac_fn_c_check_header_compile "$LINENO" "errno.h" "ac_cv_header_errno_h" "$ac_includes_default"
 if test "x$ac_cv_header_errno_h" = xyes
 then :
@@ -4783,6 +4795,12 @@ then :
   printf "%s\n" "#define HAVE_SYS_PTY_H 1" >>confdefs.h
 
 fi
+ac_fn_c_check_header_compile "$LINENO" "sys/select.h" "ac_cv_header_sys_select_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_select_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_SYS_SELECT_H 1" >>confdefs.h
+
+fi
 ac_fn_c_check_header_compile "$LINENO" "sys/sioctl.h" "ac_cv_header_sys_sioctl_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_sioctl_h" = xyes
 then :
@@ -4829,6 +4847,12 @@ ac_fn_c_check_header_compile "$LINENO" "sys/un.h" "ac_cv_header_sys_un_h" "$ac_i
 if test "x$ac_cv_header_sys_un_h" = xyes
 then :
   printf "%s\n" "#define HAVE_SYS_UN_H 1" >>confdefs.h
+
+fi
+ac_fn_c_check_header_compile "$LINENO" "term.h" "ac_cv_header_term_h" "$ac_includes_default"
+if test "x$ac_cv_header_term_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_TERM_H 1" >>confdefs.h
 
 fi
 ac_fn_c_check_header_compile "$LINENO" "termio.h" "ac_cv_header_termio_h" "$ac_includes_default"
@@ -5793,6 +5817,8 @@ printf "%s\n" "$as_me: checking select..." >&6;}
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
+#include <sys/select.h>
+
 int
 main (void)
 {
@@ -5814,6 +5840,8 @@ LIBS="${LIBS} -lnet -lnsl"
 printf "%s\n" "$as_me: checking select with ${LIBS}" >&6;}
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
+#include <sys/select.h>
 
 int
 main (void)
@@ -5853,9 +5881,12 @@ else $as_nop
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
 
 char *nam = "/tmp/conftest$$";
 
@@ -5901,6 +5932,7 @@ int main(void)
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <signal.h>
 
 int main(void)
 {
@@ -5977,6 +6009,13 @@ printf "%s\n" "$as_me: checking for tgetent..." >&6;}
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
+#ifdef HAVE_CURSES_H
+# include <curses.h>
+#endif /* HAVE_CURSES_H */
+#ifdef HAVE_TERM_H
+# include <term.h>
+#endif /* HAVE_TERM_H */
+
 int
 main (void)
 {
@@ -5999,6 +6038,13 @@ else $as_nop
 printf "%s\n" "$as_me: checking libcurses" >&6;}
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
+#ifdef HAVE_CURSES_H
+# include <curses.h>
+#endif /* HAVE_CURSES_H */
+#ifdef HAVE_TERM_H
+# include <term.h>
+#endif /* HAVE_TERM_H */
 
 int
 main (void)
@@ -6028,6 +6074,13 @@ printf "%s\n" "$as_me: checking libtermcap" >&6;}
     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
+#ifdef HAVE_CURSES_H
+# include <curses.h>
+#endif /* HAVE_CURSES_H */
+#ifdef HAVE_TERM_H
+# include <term.h>
+#endif /* HAVE_TERM_H */
+
 int
 main (void)
 {
@@ -6050,6 +6103,13 @@ printf "%s\n" "$as_me: checking libtermlib" >&6;}
       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
+#ifdef HAVE_CURSES_H
+# include <curses.h>
+#endif /* HAVE_CURSES_H */
+#ifdef HAVE_TERM_H
+# include <term.h>
+#endif /* HAVE_TERM_H */
+
 int
 main (void)
 {
@@ -6071,6 +6131,13 @@ else $as_nop
 printf "%s\n" "$as_me: checking libncurses" >&6;}
         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
+#ifdef HAVE_CURSES_H
+# include <curses.h>
+#endif /* HAVE_CURSES_H */
+#ifdef HAVE_TERM_H
+# include <term.h>
+#endif /* HAVE_TERM_H */
 
 int
 main (void)
@@ -6121,6 +6188,14 @@ else $as_nop
 #ifdef __APPLE__
 # error "Erroring out early (while compiling) to prevent runtime errors"
 #endif /* __APPLE__ */
+#include <stdlib.h>
+#include <string.h>
+#ifdef HAVE_CURSES_H
+# include <curses.h>
+#endif /* HAVE_CURSES_H */
+#ifdef HAVE_TERM_H
+# include <term.h>
+#endif /* HAVE_TERM_H */
 int main(void)
 {
  exit(strcmp(tgoto("%p1%d", 0, 1), "1") ? 0 : 1);
@@ -6196,6 +6271,8 @@ sysvr4ptys=""
 if test -c /dev/ptmx ; then
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
+#include <stdlib.h>
 
 int
 main (void)
@@ -6373,6 +6450,8 @@ else $as_nop
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 int main(void)
 {
   struct stat sb;
@@ -6655,6 +6734,7 @@ else $as_nop
 
 #include <sys/types.h>
 #include <signal.h>
+#include <stdlib.h>
 
 #ifndef SIGCLD
 # define SIGCLD SIGCHLD

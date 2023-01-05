@@ -193,3 +193,6 @@ depend.in: $(CFILES) term.h
 
 ### Dependencies:
 pty.o: pty.c config.h
+
+config.log: configure
+	./configure || sh ./configure

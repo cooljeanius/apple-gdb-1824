@@ -19,7 +19,7 @@ ACLOCAL_AMFLAGS = -I m4 --install
 
 AUTOMAKE_OPTIONS = 1.11.6 dejagnu foreign std-options no-dist
 
-SUBDIRS = . doc shlib examples
+SUBDIRS = . doc shlib examples @MAINT@ examples/rlfe.dir
 
 RL_LIBRARY_VERSION = @LIBVERSION@
 RL_LIBRARY_NAME = readline

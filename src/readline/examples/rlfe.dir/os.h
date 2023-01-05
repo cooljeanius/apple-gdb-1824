@@ -143,7 +143,7 @@ extern int errno;
 # define getcwd(b,l) getwd(b)
 #endif
 
-#ifndef USEBCOPY
+#if !defined(USEBCOPY) && !defined(bcopy)
 # ifdef USEMEMMOVE
 #  define bcopy(s,d,len) memmove(d,s,len)
 # else

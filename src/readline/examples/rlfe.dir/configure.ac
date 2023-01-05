@@ -41,7 +41,10 @@ AC_PROG_INSTALL
 AC_SEARCH_LIBS([strerror],[cposix])dnl
 
 AS_MESSAGE([checking if your ${CC} actually works])
-AC_RUN_IFELSE([AC_LANG_SOURCE([[main(){exit(0);}]])],[
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <stdlib.h>
+int main(){exit(0);}
+]])],[
 AC_NOTE([- Your ${CC} works])
 ],[
 if test "x${CC}" != "xcc"; then
@@ -56,7 +59,10 @@ AC_NOTE([- cross-compiling, not checking])
 ])dnl
 
 AS_MESSAGE([checking if the compiler actually works (i.e. runs)])
-AC_RUN_IFELSE([AC_LANG_SOURCE([[main(){exit(0);}]])],[
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <stdlib.h>
+int main(){exit(0);}
+]])],[
 AC_NOTE([- Your compiler works])
 ],[
 exec 5>&2
@@ -124,12 +130,12 @@ LDFLAGS="${ARCHLESS_LDFLAGS}"
 # Checks for header files.
 AC_HEADER_MAJOR
 AC_HEADER_STAT
-AC_CHECK_HEADERS([arpa/inet.h errno.h fcntl.h grp.h netdb.h \
+AC_CHECK_HEADERS([arpa/inet.h curses.h errno.h fcntl.h grp.h netdb.h \
                   netinet/in.h secure/_string.h sgtty.h signal.h \
                   stdio.h sys/ioctl.h sys/param.h sys/pty.h \
-                  sys/sioctl.h sys/socket.h sys/stropts.h \
+                  sys/select.h sys/sioctl.h sys/socket.h sys/stropts.h \
                   sys/sysmacros.h sys/time.h sys/ttold.h sys/tty.h \
-                  sys/un.h termio.h termios.h utmp.h utmpx.h])dnl
+                  sys/un.h term.h termio.h termios.h utmp.h utmpx.h])dnl
 # Force use of our own headers:
 AH_BOTTOM([
 #define READLINE_LIBRARY
@@ -181,12 +187,16 @@ dnl#    ****  select()  ****
 dnl#
 
 AS_MESSAGE([checking select...])
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[select(0, 0, 0, 0, 0);]])],[
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/select.h>
+]],[[select(0, 0, 0, 0, 0);]])],[
 AC_NOTE([- found select by itself])
 ],[ 
 LIBS="${LIBS} -lnet -lnsl"
 AS_MESSAGE([checking select with ${LIBS}])
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[select(0, 0, 0, 0, 0);]])],[
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/select.h>
+]],[[select(0, 0, 0, 0, 0);]])],[
 AC_NOTE([- found select with ${LIBS}])
 ],[ 
 AC_MSG_ERROR([!!! no select - no screen])])
@@ -198,9 +208,12 @@ dnl#
 AS_MESSAGE([checking select return value...])
 sleep 1
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
 
 char *nam = "/tmp/conftest$$";
 
@@ -246,6 +259,7 @@ int main(void)
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <signal.h>
 
 int main(void)
 {
@@ -308,13 +322,27 @@ dnl#
 dnl#   ****  termcap or terminfo  ****
 dnl#
 AS_MESSAGE([checking for tgetent...])
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[tgetent((char *)0, (char *)0);]])],[
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#ifdef HAVE_CURSES_H
+# include <curses.h>
+#endif /* HAVE_CURSES_H */
+#ifdef HAVE_TERM_H
+# include <term.h>
+#endif /* HAVE_TERM_H */
+]],[[tgetent((char *)0, (char *)0);]])],[
   AC_NOTE([- found tgetent by itself])
   ],[
   olibs="${LIBS}"
   LIBS="-lcurses ${olibs}"
   AS_MESSAGE([checking libcurses])
-  AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#ifdef HAVE_CURSES_H
+# include <curses.h>
+#endif /* HAVE_CURSES_H */
+#ifdef HAVE_TERM_H
+# include <term.h>
+#endif /* HAVE_TERM_H */
+  ]],[[
 #ifdef __hpux
 __sorry_hpux_libcurses_is_totally_broken_in_10_10();
 #else
@@ -325,17 +353,38 @@ tgetent((char *)0, (char *)0);
     ],[
     LIBS="-ltermcap ${olibs}"
     AS_MESSAGE([checking libtermcap])
-    AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[tgetent((char *)0, (char *)0);]])],[
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#ifdef HAVE_CURSES_H
+# include <curses.h>
+#endif /* HAVE_CURSES_H */
+#ifdef HAVE_TERM_H
+# include <term.h>
+#endif /* HAVE_TERM_H */
+]],[[tgetent((char *)0, (char *)0);]])],[
       AC_NOTE([- found tgetent with libtermcap])
       ],[
       LIBS="-ltermlib ${olibs}"
       AS_MESSAGE([checking libtermlib])
-      AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[tgetent((char *)0, (char *)0);]])],[
+      AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#ifdef HAVE_CURSES_H
+# include <curses.h>
+#endif /* HAVE_CURSES_H */
+#ifdef HAVE_TERM_H
+# include <term.h>
+#endif /* HAVE_TERM_H */
+]],[[tgetent((char *)0, (char *)0);]])],[
         AC_NOTE([- found tgetent with libtermlib])
         ],[
         LIBS="-lncurses ${olibs}"
         AS_MESSAGE([checking libncurses])
-        AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[tgetent((char *)0, (char *)0);]])],[
+        AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#ifdef HAVE_CURSES_H
+# include <curses.h>
+#endif /* HAVE_CURSES_H */
+#ifdef HAVE_TERM_H
+# include <term.h>
+#endif /* HAVE_TERM_H */
+]],[[tgetent((char *)0, (char *)0);]])],[
           AC_NOTE([- found tgetent with libncurses])
           ],[
           AC_MSG_ERROR([!!! no tgetent - no screen])
@@ -351,6 +400,14 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #ifdef __APPLE__
 # error "Erroring out early (while compiling) to prevent runtime errors"
 #endif /* __APPLE__ */
+#include <stdlib.h>
+#include <string.h>
+#ifdef HAVE_CURSES_H
+# include <curses.h>
+#endif /* HAVE_CURSES_H */
+#ifdef HAVE_TERM_H
+# include <term.h>
+#endif /* HAVE_TERM_H */
 int main(void)
 {
  exit(strcmp(tgoto("%p1%d", 0, 1), "1") ? 0 : 1);
@@ -387,7 +444,9 @@ fi
 AS_MESSAGE([checking for SVR4 ptys...])
 sysvr4ptys=""
 if test -c /dev/ptmx ; then
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[ptsname(0);grantpt(0);unlockpt(0);]])],[
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <stdlib.h>
+]],[[ptsname(0);grantpt(0);unlockpt(0);]])],[
 AC_NOTE([- you have SVR4 ptys])
 AC_DEFINE([HAVE_SVR4_PTYS],[1],[Define to 1 if you have SVR4 ptys])
 sysvr4ptys=1
@@ -459,6 +518,8 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 int main(void)
 {
   struct stat sb;
@@ -578,6 +639,7 @@ AS_MESSAGE([checking signal implementation...])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <sys/types.h>
 #include <signal.h>
+#include <stdlib.h>
 
 #ifndef SIGCLD
 # define SIGCLD SIGCHLD

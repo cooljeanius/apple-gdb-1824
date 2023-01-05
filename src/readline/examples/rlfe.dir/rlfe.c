@@ -78,6 +78,7 @@
 # include "readline.h"
 # include "rltypedefs.h"
 # include "history.h"
+# include "extern.h"
 #else
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -97,15 +98,17 @@
 # define ALT_COMMAND_ARGS ALT_COMMAND
 #endif /* !ALT_COMMAND_ARGS */
 
-#ifndef HAVE_MEMMOVE
+#ifndef memmove
+# ifndef HAVE_MEMMOVE
 #  if __GNUC__ > 1
 #    define memmove(d, s, n)	__builtin_memcpy(d, s, n)
 #  else
 #    define memmove(d, s, n)	memcpy(d, s, n)
 #  endif /* __GNUC__ > 1 */
-#else
+# else
 #  define memmove(d, s, n)	memcpy(d, s, n)
-#endif /* !HAVE_MEMMOVE */
+# endif /* !HAVE_MEMMOVE */
+#endif /* !memmove */
 
 #ifndef rl_getc
 extern int rl_getc PARAMS((FILE *));

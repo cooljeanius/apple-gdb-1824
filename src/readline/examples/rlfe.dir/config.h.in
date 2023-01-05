@@ -12,6 +12,9 @@
 /* Define to 1 if your system has a working `chown' function. */
 #undef HAVE_CHOWN
 
+/* Define to 1 if you have the <curses.h> header file. */
+#undef HAVE_CURSES_H
+
 /* Define to 1 if you have /dev/ptc */
 #undef HAVE_DEV_PTC
 
@@ -131,6 +134,9 @@
 /* Define to 1 if you have the <sys/pty.h> header file. */
 #undef HAVE_SYS_PTY_H
 
+/* Define to 1 if you have the <sys/select.h> header file. */
+#undef HAVE_SYS_SELECT_H
+
 /* Define to 1 if you have the <sys/sioctl.h> header file. */
 #undef HAVE_SYS_SIOCTL_H
 
@@ -166,6 +172,9 @@
 
 /* Define to 1 if you have the <termio.h> header file. */
 #undef HAVE_TERMIO_H
+
+/* Define to 1 if you have the <term.h> header file. */
+#undef HAVE_TERM_H
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H

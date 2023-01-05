@@ -464,7 +464,7 @@ AC_MSG_RESULT([ ])
 LT_INIT([static disable-shared])dnl
 LT_LANG([C])dnl
 dnl# temporarily set this while I update everything libtool-related:
-LT_PREREQ([2.4.6])dnl
+LT_PREREQ([2.4.7])dnl
 
 # Some final things:
 AC_MSG_NOTICE([finishing up...])

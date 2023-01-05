@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <unistd.h>
 
 #include "config.h"
 #include "screen.h"
@@ -33,7 +34,9 @@
 # ifdef HAVE_SYS_IOCTL_H
 #  include <sys/ioctl.h>
 # else
-#  warning pty.c expects <sys/ioctl.h> to be included.
+#  if defined(__GNU__) && !defined(__STRICT_ANSI__)
+#   warning "pty.c expects <sys/ioctl.h> to be included."
+#  endif /* __GNU__ && !__STRICT_ANSI__ */
 # endif /* HAVE_SYS_IOCTL_H */
 #endif /* !sun */
 
@@ -42,7 +45,9 @@
 # ifdef HAVE_SYS_STROPTS_H
 #  include <sys/stropts.h>
 # else
-#  warning pty.c expects <sys/stropts.h> to be included for SVR4 ptys.
+#  if defined(__GNU__) && !defined(__STRICT_ANSI__)
+#   warning "pty.c expects <sys/stropts.h> to be included for SVR4 ptys."
+#  endif /* __GNU__ && !__STRICT_ANSI__ */
 # endif /* HAVE_SYS_STROPTS_H */
 #endif /* HAVE_SVR4_PTYS */
 

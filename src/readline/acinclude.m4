@@ -1733,9 +1733,10 @@ LDFLAGS="${LDFLAGS} -L${ac_cv_rl_libdir}"
 
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
+#include <stdlib.h>
 #include <readline/readline.h>
 
-main()
+int main()
 {
 	FILE *fp;
 	fp = fopen("conftest.rlv", "w");
