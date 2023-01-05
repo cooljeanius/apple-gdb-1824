@@ -2011,14 +2011,17 @@ subdir_do: force
 	     if (cd ./$${i}; \
 	       $(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
 	       echo "'$@' succeeded for '$${i}'"; \
-	     else exit 1; fi; \
+	     else echo "gdb/Makefile: '$@' failed for '$${i}'" >&2; exit 1; fi; \
 	   else echo "at least one Makefile missing for '$${i}'"; fi; \
 	  else \
 	    if [ -f ./$${i}/Makefile ]; then \
 	      if (cd ./$${i}; \
 	        $(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
 	        echo "'$@' succeeded for '$${i}'"; \
-	      else exit 1; fi; \
+	      else \
+	        echo "gdb/Makefile: '$@' failed for '$${i}'" >&2; \
+	        exit 1; \
+	      fi; \
 	    else echo "no Makefile for '$${i}'"; fi; \
 	  fi; \
 	done

@@ -164,19 +164,22 @@ do-maintainer-clean:
 
 subdir_do: force
 	@for i in $(DODIRS); do \
-		case $${i} in \
-		$(REQUIRED_SUBDIRS)) \
-			if [ ! -f ./$${i}/Makefile ]; then \
-				echo "Missing $${i}/Makefile" >&2; \
-				exit 1; \
-			fi ;; \
-		esac; \
-		if [ -f ./$${i}/Makefile ]; then \
-			if (cd ./$${i}; \
-				$(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
-				echo "'$@' succeeded for '$${i}'"; \
-			else exit 1; fi; \
-		else echo "no Makefile for '$${i}'"; fi; \
+	    case $${i} in \
+	    $(REQUIRED_SUBDIRS)) \
+	        if [ ! -f ./$${i}/Makefile ]; then \
+	            echo "Missing $${i}/Makefile" >&2; \
+	            exit 1; \
+	        fi ;; \
+	    esac; \
+	    if [ -f ./$${i}/Makefile ]; then \
+	        if (cd ./$${i}; \
+	            $(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
+	            echo "'$@' succeeded for '$${i}'"; \
+	        else \
+	            echo "gnulib/Makefile_orig: '$@' failed for '$${i}'" >&2; \
+	            exit 1; \
+	        fi; \
+	    else echo "no Makefile for '$${i}'"; fi; \
 	done
 
 Makefile: Makefile.in config.status

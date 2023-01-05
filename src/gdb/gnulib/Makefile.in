@@ -1684,15 +1684,18 @@ subdir_do: force
 		case $${i} in \
 		$(REQUIRED_SUBDIRS)) \
 			if [ ! -f ./$${i}/Makefile ]; then \
-				echo "Missing $${i}/Makefile" >&2; \
-				exit 1; \
+			    echo "Missing $${i}/Makefile" >&2; \
+			    exit 1; \
 			fi ;; \
 		esac; \
 		if [ -f ./$${i}/Makefile ]; then \
 			if (cd ./$${i}; \
-				$(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
-				echo "'$@' succeeded for '$${i}'"; \
-			else exit 1; fi; \
+			    $(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
+			    echo "'$@' succeeded for '$${i}'"; \
+			else \
+			    echo "gnulib/Makefile: '$@' failed for '$${i}'" >&2; \
+			    exit 1; \
+			fi; \
 		else echo "no Makefile for '$${i}'"; fi; \
 	done
 
