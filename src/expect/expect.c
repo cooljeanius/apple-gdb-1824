@@ -18,7 +18,9 @@ would appreciate credit if this program or parts of it are used.
 # ifdef HAVE_SETJMP_H
 #  include <setjmp.h>
 # else
-#  warning expect.c expects <setjmp.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "expect.c expects <setjmp.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_SETJMP_H */
 #endif /* 0 */
 
@@ -27,13 +29,17 @@ would appreciate credit if this program or parts of it are used.
 #ifdef HAVE_SYS_WAIT_H
 # include <sys/wait.h>
 #else
-# warning expect.c expects <sys/wait.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "expect.c expects <sys/wait.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_WAIT_H */
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning expect.c expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "expect.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #include "tcl.h"
@@ -52,6 +58,17 @@ would appreciate credit if this program or parts of it are used.
 #ifdef TCL_DEBUGGER
 # include "Dbg.h"
 #endif /* TCL_DEBUGGER */
+
+/*
+   The following function is linked from the Tcl library.  It
+   doesn't cause anything else in the library to be dragged in, so it
+   shouldn't cause any problems (e.g., bloat).
+
+   The function is relatively small but painful enough that I don't care
+   to recode it.  You may, if you absolutely want to get rid of any
+   vestiges of Tcl.
+*/
+extern char *TclGetRegError();
 
 /* initial length of strings that we can guarantee patterns can match */
 int exp_default_match_max =	2000;

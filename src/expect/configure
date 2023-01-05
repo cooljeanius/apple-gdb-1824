@@ -9734,6 +9734,12 @@ then :
   printf "%s\n" "#define HAVE_FCNTL_H 1" >>confdefs.h
 
 fi
+ac_fn_c_check_header_compile "$LINENO" "ioctl.h" "ac_cv_header_ioctl_h" "$ac_includes_default"
+if test "x$ac_cv_header_ioctl_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_IOCTL_H 1" >>confdefs.h
+
+fi
 ac_fn_c_check_header_compile "$LINENO" "malloc.h" "ac_cv_header_malloc_h" "$ac_includes_default"
 if test "x$ac_cv_header_malloc_h" = xyes
 then :
@@ -10917,6 +10923,12 @@ then :
   printf "%s\n" "#define HAVE_SYSTEM 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "TclGetRegError" "ac_cv_func_TclGetRegError"
+if test "x$ac_cv_func_TclGetRegError" = xyes
+then :
+  printf "%s\n" "#define HAVE_TCLGETREGERROR 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "time" "ac_cv_func_time"
 if test "x$ac_cv_func_time" = xyes
 then :
@@ -10936,6 +10948,8 @@ fi
 printf %s "checking for memcpy... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
+#include <string.h>
 
 int
 main (void)
@@ -11107,6 +11121,11 @@ else $as_nop
 /* end confdefs.h.  */
 
 #include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+#ifdef RETSIGTYPE
+# undef RETSIGTYPE
+#endif
 #define RETSIGTYPE $retsigtype
 
 int signal_rearms = 0;
@@ -11478,6 +11497,7 @@ else $as_nop
 /* end confdefs.h.  */
 
 #include <sgtty.h>
+#include <stdlib.h>
 int main(void)
 {
   struct sgttyb tmp;
@@ -11557,7 +11577,8 @@ printf "%s\n" "no" >&6; } ;;
 else $as_nop
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <termio.h>
+#include <stdlib.h>
+  #include <termio.h>
   int main(void)
   {
     struct termio tmp;
@@ -11608,6 +11629,7 @@ else $as_nop
 #   warning "this conftest expects <inttypes.h> to be included."
 #  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_INTTYPES_H */
+#  include <stdlib.h>
 #  include <termios.h>
   int main(void)
   {
@@ -11843,6 +11865,11 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
+if test "x${PTY_TYPE}" = "x"; then
+  test -z "${PTY_TYPE}" && echo "PTY_TYPE is empty!" >&2
+  as_fn_error $? "no working PTY_TYPE found" "$LINENO" 5
+fi
+
 #
 # Check for select and/or poll. If both exist, we prefer select.
 # if neither exists, define SIMPLE_EVENT.
@@ -11914,6 +11941,7 @@ else $as_nop
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
+#include <stdlib.h>
 extern char *tzname[2];
 extern int daylight;
 int main(void)
@@ -12150,6 +12178,8 @@ fi
 if test "x${with_x}" = "xno"; then
    no_tk=true
 else
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Doing X-related checks for Tk" >&5
+printf "%s\n" "$as_me: Doing X-related checks for Tk" >&6;}
 
 #
 # Ok, let us find the tk source trees so we can use the headers

@@ -26,6 +26,8 @@ void exp_tty_set();
 int exp_tty_set_simple();
 int exp_tty_get_simple();
 
+extern int exp_tty_cooked_echo();
+
 #endif	/* __EXP_TTY_H__ */
 
 /* EOF */

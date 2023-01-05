@@ -71,6 +71,19 @@ conflicts with sys/ioctl.h
 # include <sys/ioctl.h>
 #endif /* HAVE_TERMIOS && !HAVE_TIOCGWINSZ_IN_TERMIOS_H */
 
+/* Who cares about AIX 2.3 anymore? I think we can be cavalier now: */
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>
+#else
+# ifdef HAVE_IOCTL_H
+#  include <ioctl.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "exp_win.c wants to include either <sys/ioctl.h> or <ioctl.h>."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_IOCTL_H */
+#endif /* HAVE_SYS_IOCTL_H */
+
 /* SCO defines window size structure in PTEM and TIOCGWINSZ in termio.h */
 /* Sigh... */
 #if defined(HAVE_SYS_PTEM_H)

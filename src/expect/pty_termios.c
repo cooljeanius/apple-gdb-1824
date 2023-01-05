@@ -104,6 +104,18 @@ extern char *TclGetRegError();
 # endif /* HAVE_FCNTL_H */
 #endif /* HAVE_SYS_FCNTL_H */
 
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>
+#else
+# ifdef HAVE_IOCTL_H
+#  include <ioctl.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "pty_termios.c expects either <sys/ioctl.h> or <ioctl.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_IOCTL_H */
+#endif /* HAVE_SYS_IOCTL_H */
+
 #if defined(_SEQUENT_) && defined(HAVE_SYS_STRPTY_H)
 # include <sys/strpty.h>
 #else

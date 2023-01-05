@@ -13,7 +13,9 @@ would appreciate credit if this program or parts of it are used.
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #else
-# warning exp_inter.c expects <inttypes.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "exp_inter.c expects <inttypes.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_INTTYPES_H */
 #include <sys/types.h>
 #ifdef HAVE_UNISTD_H
@@ -57,6 +59,8 @@ would appreciate credit if this program or parts of it are used.
 
 #include "tcl_regexp.h"
 #include "exp_regexp.h"
+
+#include "exp_event.h"
 
 extern char *TclGetRegError();
 extern void Expect_TclRegError();

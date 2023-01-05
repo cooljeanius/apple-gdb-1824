@@ -48,6 +48,9 @@
 #include "exp_tty_in.h"
 #include "exp_log.h"
 #include "exp_command.h"
+#include "exp_win.h"
+
+extern int Tcl_ExecObjCmd(ClientData, Tcl_Interp *, int, Tcl_Obj *);
 
 static int is_raw = FALSE;
 static int is_noecho = FALSE;

@@ -39,6 +39,8 @@
 #include "exp_regexp.h"
 #include "string.h"
 
+extern void TclRegError(char *);
+
 #define NOTSTATIC	/* was at one time, but Expect needs access */
 
 /*

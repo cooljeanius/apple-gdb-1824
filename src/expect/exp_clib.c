@@ -100,6 +100,10 @@ would appreciate credit if this program or parts of it are used.
 
 #include "exp_printify.h"
 
+#include "exp_log.h"
+
+extern void exp_init_tty();
+
 #ifdef NO_STDLIB_H
 # include "../compat/stdlib.h"
 #else
@@ -129,7 +133,6 @@ void (*exp_child_exec_prelude)() = 0;
 jmp_buf exp_readenv;		/* for interruptable read() */
 int exp_reading = FALSE;	/* whether we can longjmp or not */
 
-void debuglog();
 int getptymaster();
 int getptyslave();
 int Exp_StringMatch();

@@ -16,6 +16,18 @@
 # include <sys/wait.h>
 #endif /* HAVE_SYS_WAIT_H */
 
+#ifdef HAVE_SYS_FCNTL_H
+# include <sys/fcntl.h>
+#else
+# ifdef HAVE_FCNTL_H
+#  include <fcntl.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "exp_main_sub.c wants to include either <sys/fcntl.h> or <fcntl.h>."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_FCNTL_H */
+#endif /* HAVE_SYS_FCNTL_H */
+
 #include "tcl.h"
 #include "tclInt.h"
 #include "exp_rename.h"

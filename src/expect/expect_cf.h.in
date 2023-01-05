@@ -65,6 +65,9 @@
 /* Define to 1 if you have the `ioctl' function. */
 #undef HAVE_IOCTL
 
+/* Define to 1 if you have the <ioctl.h> header file. */
+#undef HAVE_IOCTL_H
+
 /* Define to 1 if you have the `isascii' function. */
 #undef HAVE_ISASCII
 
@@ -301,6 +304,9 @@
 
 /* Define to 1 if TCGETS or TCGETA is in termios.h */
 #undef HAVE_TCGETS_OR_TCGETA_IN_TERMIOS_H
+
+/* Define to 1 if you have the `TclGetRegError' function. */
+#undef HAVE_TCLGETREGERROR
 
 /* Define to 1 if you have the <tclInt.h> header file. */
 #undef HAVE_TCLINT_H

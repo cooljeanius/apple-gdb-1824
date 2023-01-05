@@ -9,6 +9,7 @@ would appreciate credit if this program or parts of it are used.
 */
 
 #include <stdio.h>
+#include <unistd.h>
 
 #include "Dbg_cf.h"
 #if 0

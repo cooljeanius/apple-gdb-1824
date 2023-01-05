@@ -15,9 +15,9 @@ would appreciate credit if this program or parts of it are used.
 # define TRUE 1
 #endif /* !TRUE */
 
-#ifndef HAVE_MEMCPY
+#if !defined(HAVE_MEMCPY) && !defined(memcpy)
 # define memcpy(x,y,len) bcopy(y,x,len)
-#endif /* !HAVE_MEMCPY */
+#endif /* !HAVE_MEMCPY && !memcpy */
 
 #include <errno.h>
 

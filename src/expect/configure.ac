@@ -679,7 +679,7 @@ AC_CHECK_HEADERS([stdlib.h],[],[
             [Define to 1 if there is no stdlib.h header file.])dnl
 ])dnl
 
-AC_CHECK_HEADERS([ctype.h errno.h fcntl.h malloc.h malloc/malloc.h math.h \
+AC_CHECK_HEADERS([ctype.h errno.h fcntl.h ioctl.h malloc.h malloc/malloc.h math.h \
                   mem/memory.h poll.h setjmp.h sgtty.h signal.h stdarg.h \
                   stdio.h sys/file.h sys/ioctl.h sys/poll.h sys/time.h \
                   termio.h termios.h time.h utmp.h varargs/varargs.h])dnl
@@ -731,13 +731,15 @@ unset ac_cv_func_select
 AC_CHECK_FUNCS([dup2 exit gethostname gettimeofday ioctl isascii isspace \
                 log memmove memset pow re_comp regcomp regexec select \
                 strchr strcpy strcspn strlen strrchr strstr \
-                sysconf system time timezone])dnl
+                sysconf system TclGetRegError time timezone])dnl
 
 dnl# check for memcpy by hand
 # because Unixware 2.0 handles it specially and refuses to compile
 # autoconf's automatic test that is a call with no arguments
 AC_MSG_CHECKING([for memcpy])
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <string.h>
+]],[[
 char *s1, *s2;
 memcpy(s1,s2,0);
 ]])],[AC_MSG_RESULT([yes])
@@ -817,6 +819,11 @@ AC_CHECK_FUNCS([alarm])
 AC_MSG_CHECKING([if signals need to be re-armed])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+#ifdef RETSIGTYPE
+# undef RETSIGTYPE
+#endif
 #define RETSIGTYPE $retsigtype
 
 int signal_rearms = 0;
@@ -1047,6 +1054,7 @@ fi
 AC_MSG_CHECKING([for struct sgttyb])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <sgtty.h>
+#include <stdlib.h>
 int main(void)
 {
   struct sgttyb tmp;
@@ -1073,7 +1081,8 @@ if test ${mach} -eq 0 ; then
   # since that just controls which of pty_XXXX.c file is use and
   # pty_termios.c is set up to handle pty_termio.
   AC_MSG_CHECKING([for struct termio])
-  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <termio.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdlib.h>
+  #include <termio.h>
   int main(void)
   {
     struct termio tmp;
@@ -1099,6 +1108,7 @@ if test ${mach} -eq 0 ; then
 #   warning "this conftest expects <inttypes.h> to be included."
 #  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_INTTYPES_H */
+#  include <stdlib.h>
 #  include <termios.h>
   int main(void)
   {
@@ -1194,6 +1204,11 @@ int main(void) {
 	 esac
 ])dnl
 
+if test "x${PTY_TYPE}" = "x"; then
+  test -z "${PTY_TYPE}" && echo "PTY_TYPE is empty!" >&2
+  AC_MSG_ERROR([no working PTY_TYPE found])
+fi
+
 #
 # Check for select and/or poll. If both exist, we prefer select.
 # if neither exists, define SIMPLE_EVENT.
@@ -1227,6 +1242,7 @@ AC_CHECK_FUNCS([getpty])dnl
 #
 AC_MSG_CHECKING([for SV-style timezone])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <stdlib.h>
 extern char *tzname[2];
 extern int daylight;
 int main(void)
@@ -1252,6 +1268,7 @@ AC_ARG_WITH([x],[AS_HELP_STRING([--with-x],[whether or not to use X (default yes
 if test "x${with_x}" = "xno"; then
    no_tk=true
 else
+   AC_MSG_NOTICE([Doing X-related checks for Tk])
    CY_AC_PATH_TKH
    _AC_PATH_X_XMKMF
 fi
