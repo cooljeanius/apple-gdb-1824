@@ -91,16 +91,19 @@ AC_OBJEXT
 AC_EXEEXT
 AC_USE_SYSTEM_EXTENSIONS
 if test -n "${BUILD_ARCHITECTURE}"; then
+  AC_MSG_NOTICE([BUILD_ARCHITECTURE is "${BUILD_ARCHITECTURE}"; seeing if we can use it as an archflag])
   ACX_PROG_CC_WARNING_OPTS(["-arch ${BUILD_ARCHITECTURE}"],
                            [C_BUILD_ARCHFLAGS])dnl
   AC_SUBST([C_BUILD_ARCHFLAGS])
 fi
 if test -n "${HOST_ARCHITECTURE}"; then
+  AC_MSG_NOTICE([HOST_ARCHITECTURE is "${HOST_ARCHITECTURE}"; seeing if we can use it as an archflag])
   ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],
                            [C_HOST_ARCHFLAGS])dnl
   AC_SUBST([C_HOST_ARCHFLAGS])
 fi
 if test -n "${TARGET_ARCHITECTURE}"; then
+  AC_MSG_NOTICE([TARGET_ARCHITECTURE is "${TARGET_ARCHITECTURE}"; seeing if we can use it as an archflag])
   ACX_PROG_CC_WARNING_OPTS(["-arch ${TARGET_ARCHITECTURE}"],
                            [C_TARG_ARCHFLAGS])dnl
   AC_SUBST([C_TARG_ARCHFLAGS])

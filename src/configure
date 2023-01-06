@@ -5083,6 +5083,8 @@ then :
 fi
 
 if test -n "${BUILD_ARCHITECTURE}"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: BUILD_ARCHITECTURE is \"${BUILD_ARCHITECTURE}\"; seeing if we can use it as an archflag" >&5
+printf "%s\n" "$as_me: BUILD_ARCHITECTURE is \"${BUILD_ARCHITECTURE}\"; seeing if we can use it as an archflag" >&6;}
   ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -5184,6 +5186,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 fi
 if test -n "${HOST_ARCHITECTURE}"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: HOST_ARCHITECTURE is \"${HOST_ARCHITECTURE}\"; seeing if we can use it as an archflag" >&5
+printf "%s\n" "$as_me: HOST_ARCHITECTURE is \"${HOST_ARCHITECTURE}\"; seeing if we can use it as an archflag" >&6;}
   ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -5285,6 +5289,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 fi
 if test -n "${TARGET_ARCHITECTURE}"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TARGET_ARCHITECTURE is \"${TARGET_ARCHITECTURE}\"; seeing if we can use it as an archflag" >&5
+printf "%s\n" "$as_me: TARGET_ARCHITECTURE is \"${TARGET_ARCHITECTURE}\"; seeing if we can use it as an archflag" >&6;}
   ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'

@@ -172,11 +172,17 @@ lint:	force
 	$(MAKE) $(MFLAGS) CCFLAGS='$(GCC_LINT_CFLAGS)' static
 
 Makefile makefile: config.status $(srcdir)/Makefile.in
-	CONFIG_FILES=Makefile CONFIG_HEADERS= $(SHELL) ./config.status
+	CONFIG_FILES=Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
+
+doc/Makefile: config.status $(srcdir)/Makefile.in
+	CONFIG_FILES=doc/Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
+
+examples/Makefile: config.status $(srcdir)/Makefile.in
+	CONFIG_FILES=examples/Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
 
 Makefiles makefiles: config.status $(srcdir)/Makefile.in
 	@for mf in $(CREATED_MAKEFILES); do \
-		CONFIG_FILES=$$mf CONFIG_HEADERS= $(SHELL) ./config.status ; \
+		CONFIG_FILES=$$mf CONFIG_HEADERS="" $(SHELL) ./config.status; \
 	done
 
 config.status: configure
@@ -185,21 +191,21 @@ config.status: configure
 config.h:	stamp-h
 
 stamp-h: config.status $(srcdir)/config.h.in
-	CONFIG_FILES= CONFIG_HEADERS=config.h ./config.status
-	echo > $@
+	CONFIG_FILES="" CONFIG_HEADERS=config.h ./config.status
+	echo "stamp-h" > $@
 
 #$(srcdir)/configure: $(srcdir)/configure.in	## Comment-me-out in distribution
 #	cd $(srcdir) && autoconf	## Comment-me-out in distribution
 
-shared:	force
+shared: force shlib/Makefile
 	-test -d shlib || mkdir shlib
-	-( cd shlib ; ${MAKE} ${MFLAGS} all )
+	-( cd shlib; ${MAKE} ${MFLAGS} all )
 
-documentation: force
+documentation: force doc/Makefile
 	-test -d doc || mkdir doc
 	-( cd doc && $(MAKE) $(MFLAGS) )
 
-examples: force
+examples: force examples/Makefile
 	-test -d examples || mkdir examples
 	-(cd examples && ${MAKE} ${MFLAGS} all )
 
@@ -285,7 +291,7 @@ distclean maintainer-clean: clean
 	$(RM) $(CREATED_CONFIGURE)
 	$(RM) $(CREATED_TAGS)
 
-info dvi:
+info dvi: doc/Makefile
 	-( cd doc && $(MAKE) $(MFLAGS) $@ )
 
 install-info:

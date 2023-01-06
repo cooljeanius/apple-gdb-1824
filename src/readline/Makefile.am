@@ -198,22 +198,28 @@ tilde.o: tilde.c
 	rm -rf $@
 	$(CC) $(CCFLAGS) -DREADLINE_LIBRARY -c $(srcdir)/tilde.c
 
-readline: $(OBJECTS) readline.h rldefs.h chardefs.h ./libreadline.a
+readline: $(OBJECTS) readline.h rldefs.h chardefs.h examples/rl.c ./libreadline.a
 	$(CC) $(CCFLAGS) -o $@ ./examples/rl.c ./libreadline.a ${TERMCAP_LIB}
 
 lint: force
 	$(MAKE) $(MFLAGS) CCFLAGS='$(GCC_LINT_CFLAGS)' static
 
 am_Makefile am_makefile: config.status $(srcdir)/Makefile.in
-	CONFIG_FILES=Makefile CONFIG_HEADERS= $(SHELL) ./config.status
+	CONFIG_FILES=Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
 .PHONY: am_Makefile am_makefile
+
+doc/Makefile: config.status $(srcdir)/Makefile.in
+	CONFIG_FILES=doc/Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
+
+examples/Makefile: config.status $(srcdir)/Makefile.in
+	CONFIG_FILES=examples/Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
 
 Makefiles makefiles: config.status $(srcdir)/Makefile.in
 	@for mf in $(CREATED_MAKEFILES); do \
 	  CONFIG_FILES=$${mf} CONFIG_HEADERS="" $(SHELL) ./config.status; \
 	done
 
-am_config.status: configure
+am_config.status: configure config.status
 	$(SHELL) ./config.status --recheck
 .PHONY: am_config.status
 
@@ -224,15 +230,15 @@ stamp-h: config.status $(srcdir)/config.h.in
 	CONFIG_FILES="" CONFIG_HEADERS=config.h ./config.status
 	echo "" > $@
 
-shared:	force
+shared: force shlib/Makefile
 	-test -d shlib || mkdir shlib
 	-( cd shlib; ${MAKE} ${MFLAGS} all )
 
-documentation: force
+documentation: force doc/Makefile
 	-test -d doc || mkdir doc
 	-( cd doc && $(MAKE) $(MFLAGS) )
 
-examples: force
+examples: force examples/Makefile
 	-test -d examples || mkdir examples
 	-(cd examples && ${MAKE} ${MFLAGS} all )
 
@@ -319,7 +325,7 @@ distclean-local: clean-local config.status
 	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && cp -v Makefile Makefile.bak && $(MAKE) $(MFLAGS) $@ && mv -v Makefile.bak Makefile; fi )
 	$(RM) $(CREATED_TAGS)
 	$(RM) -r autom4te.cache || rmdir autom4te.cache
 
@@ -336,7 +342,7 @@ maintainer-clean-local: distclean-local
 CLEANFILES = *~
 DISTCLEANFILES = .DS_Store stamp-h
 
-info dvi:
+info dvi: doc/Makefile
 	-( cd doc && $(MAKE) $(MFLAGS) $@ )
 
 install-info-local:
