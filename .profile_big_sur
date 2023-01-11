@@ -22,6 +22,10 @@ export UNAME_RELEASE=20.3.0
 export UNAME_SYSNAME=Darwin
 if test -x /usr/bin/arch; then
   export HOST_ARCHITECTURE=`/usr/bin/arch`
+  if test "x${HOST_ARCHITECTURE}" = "xi386"; then
+    # it shouldn't actually be i386; that's deprecated:
+    export HOST_ARCHITECTURE=x86_64
+  fi
 else
   # /usr/bin/arch still says i386, but I distrust it:
   export HOST_ARCHITECTURE=x86_64

@@ -1,9 +1,10 @@
-*-all
+# src/.gitignore
+# what was "*-all" in here for?
 *-co
 *-dirs
 *-done
 *-install-info
-*-src
+# what was "*-src" in here for?
 *-stamp-*
 *-tagged
 *.E

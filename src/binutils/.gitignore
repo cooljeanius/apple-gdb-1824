@@ -21,7 +21,7 @@ ar
 arlex.c
 arparse.c
 arparse.h
-binutils-*/*
+binutils-*.*.*/*
 arparse.output
 bfdtest1
 bfdtest2
