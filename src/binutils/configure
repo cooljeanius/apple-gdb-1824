@@ -1750,6 +1750,39 @@ fi
 
 } # ac_fn_c_try_compile
 
+# ac_fn_c_check_header_compile LINENO HEADER VAR INCLUDES
+# -------------------------------------------------------
+# Tests whether HEADER exists and can be compiled using the include files in
+# INCLUDES, setting the cache variable VAR accordingly.
+ac_fn_c_check_header_compile ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $2" >&5
+printf %s "checking for $2... " >&6; }
+if eval test \${$3+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+#include <$2>
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  eval "$3=yes"
+else $as_nop
+  eval "$3=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+eval ac_res=\$$3
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_check_header_compile
+
 # ac_fn_c_try_link LINENO
 # -----------------------
 # Try to link conftest.$ac_ext, and return whether this succeeded.
@@ -1796,39 +1829,6 @@ fi
   as_fn_set_status $ac_retval
 
 } # ac_fn_c_try_link
-
-# ac_fn_c_check_header_compile LINENO HEADER VAR INCLUDES
-# -------------------------------------------------------
-# Tests whether HEADER exists and can be compiled using the include files in
-# INCLUDES, setting the cache variable VAR accordingly.
-ac_fn_c_check_header_compile ()
-{
-  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $2" >&5
-printf %s "checking for $2... " >&6; }
-if eval test \${$3+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-$4
-#include <$2>
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"
-then :
-  eval "$3=yes"
-else $as_nop
-  eval "$3=no"
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-eval ac_res=\$$3
-	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-printf "%s\n" "$ac_res" >&6; }
-  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
-
-} # ac_fn_c_check_header_compile
 
 # ac_fn_cxx_try_compile LINENO
 # ----------------------------
@@ -2886,6 +2886,7 @@ printf "%s\n" "$as_me: creating cache $cache_file" >&6;}
   >$cache_file
 fi
 
+as_fn_append ac_header_c_list " stdio.h stdio_h HAVE_STDIO_H"
 # Test code for whether the C compiler supports C89 (global declarations)
 ac_c_conftest_c89_globals='
 /* Does the compiler advertise C89 conformance?
@@ -3194,7 +3195,6 @@ main (int argc, char **argv)
 }
 "
 
-as_fn_append ac_header_c_list " stdio.h stdio_h HAVE_STDIO_H"
 as_fn_append ac_header_c_list " stdlib.h stdlib_h HAVE_STDLIB_H"
 as_fn_append ac_header_c_list " string.h string_h HAVE_STRING_H"
 as_fn_append ac_header_c_list " inttypes.h inttypes_h HAVE_INTTYPES_H"
@@ -4811,65 +4811,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing strerror" >&5
-printf %s "checking for library containing strerror... " >&6; }
-if test ${ac_cv_search_strerror+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-char strerror ();
-int
-main (void)
-{
-return strerror ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' cposix
-do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_search_strerror=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext
-  if test ${ac_cv_search_strerror+y}
-then :
-  break
-fi
-done
-if test ${ac_cv_search_strerror+y}
-then :
-
-else $as_nop
-  ac_cv_search_strerror=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_strerror" >&5
-printf "%s\n" "$ac_cv_search_strerror" >&6; }
-ac_res=$ac_cv_search_strerror
-if test "$ac_res" != no
-then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-
-fi
- ac_header= ac_cache=
+ac_header= ac_cache=
 for ac_item in $ac_header_c_list
 do
   if test $ac_cache; then
@@ -5037,7 +4979,65 @@ then :
 
 fi
 
-if test -n "${HOST_ARCHITECTURE}"; then
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing strerror" >&5
+printf %s "checking for library containing strerror... " >&6; }
+if test ${ac_cv_search_strerror+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+char strerror ();
+int
+main (void)
+{
+return strerror ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' cposix
+do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_search_strerror=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext
+  if test ${ac_cv_search_strerror+y}
+then :
+  break
+fi
+done
+if test ${ac_cv_search_strerror+y}
+then :
+
+else $as_nop
+  ac_cv_search_strerror=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_strerror" >&5
+printf "%s\n" "$ac_cv_search_strerror" >&6; }
+ac_res=$ac_cv_search_strerror
+if test "$ac_res" != no
+then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+fi
+ if test -n "${HOST_ARCHITECTURE}"; then
   ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -30507,6 +30507,8 @@ ac_config_files="$ac_config_files Makefile doc/Makefile po/Makefile.in:po/Make-i
 
 ac_config_commands="$ac_config_commands default"
 
+ac_config_commands="$ac_config_commands subdirs"
+
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -31730,6 +31732,7 @@ do
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
     "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in:po/Make-in" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
+    "subdirs") CONFIG_COMMANDS="$CONFIG_COMMANDS subdirs" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -33295,9 +33298,15 @@ _LT_EOF
 
  ;;
     "default":C)
+if test "x${SED}" = "x"; then
+  test -z "${SED}" && export SED=sed
+fi
 case "x${CONFIG_FILES}" in
-*) sed -e '/POTFILES =/r po/POTFILES' po/Makefile.in > po/Makefile ;;
+*) ${SED} -e '/POTFILES =/r po/POTFILES' po/Makefile.in > po/Makefile ;;
 esac
+ ;;
+    "subdirs":C)
+ls bfd binutils etc gas gprof ld opcodes || echo "never mind about subdirs"
  ;;
 
   esac
@@ -33340,9 +33349,9 @@ fi
 
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo "1: pwd = `pwd`"
   elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo "2: pwd = `pwd`"
   fi
 fi
 

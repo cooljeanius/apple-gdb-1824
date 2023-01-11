@@ -1,9 +1,9 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.70])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
-AC_CONFIG_SRCDIR([addr2line.c])
+AC_CONFIG_SRCDIR([unwind-ia64.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
@@ -18,14 +18,14 @@ AC_PROG_LEX
 AC_PROG_YACC
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lintl':
+# FIXME: Replace 'main' with a function in '-lintl':
 AC_CHECK_LIB([intl], [main])
-# FIXME: Replace `main' with a function in `-ln':
+# FIXME: Replace 'main' with a function in '-ln':
 AC_CHECK_LIB([n], [main])
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([fcntl.h inttypes.h libintl.h limits.h locale.h malloc.h memory.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/param.h sys/time.h unistd.h utime.h])
+AC_CHECK_HEADERS([fcntl.h inttypes.h libintl.h malloc.h stdint.h strings.h sys/file.h sys/param.h sys/time.h unistd.h utime.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_INLINE
@@ -49,9 +49,16 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRCOLL
 AC_FUNC_STRNLEN
-AC_CHECK_FUNCS([dup2 memchr memmove memset rmdir setlocale stpcpy strcasecmp strchr strerror strncasecmp strrchr strspn strstr strtol strtoul utime])
+AC_CHECK_FUNCS([dup2 memchr memmove memset rmdir setlocale stpcpy strcasecmp strchr strncasecmp strrchr strspn strstr strtol strtoul utime])
 
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
                  po/Makefile])
+AC_CONFIG_SUBDIRS([bfd
+                   binutils
+                   etc
+                   gas
+                   gprof
+                   ld
+                   opcodes])
 AC_OUTPUT

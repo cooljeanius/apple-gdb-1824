@@ -913,9 +913,9 @@ adjust_o_magic(bfd *abfd, struct internal_exec *execp)
   /* Data.  */
   if (!obj_datasec(abfd)->user_set_vma)
     {
-      obj_textsec(abfd)->size += pad;
+      obj_textsec(abfd)->size += (bfd_size_type)pad;
       pos += pad;
-      vma += pad;
+      vma += (bfd_vma)pad;
       obj_datasec(abfd)->vma = vma;
     }
   else
@@ -927,9 +927,9 @@ adjust_o_magic(bfd *abfd, struct internal_exec *execp)
   /* BSS.  */
   if (!obj_bsssec(abfd)->user_set_vma)
     {
-      obj_datasec(abfd)->size += pad;
+      obj_datasec(abfd)->size += (bfd_size_type)pad;
       pos += pad;
-      vma += pad;
+      vma += (bfd_vma)pad;
       obj_bsssec(abfd)->vma = vma;
     }
   else
@@ -940,21 +940,22 @@ adjust_o_magic(bfd *abfd, struct internal_exec *execp)
       pad = (int)(obj_bsssec(abfd)->vma - vma);
       if (pad > 0)
 	{
-	  obj_datasec (abfd)->size += pad;
+	  obj_datasec(abfd)->size += (bfd_size_type)pad;
 	  pos += pad;
 	}
     }
-  obj_bsssec (abfd)->filepos = pos;
+  obj_bsssec(abfd)->filepos = pos;
 
-  /* Fix up the exec header.  */
-  execp->a_text = obj_textsec (abfd)->size;
-  execp->a_data = obj_datasec (abfd)->size;
-  execp->a_bss = obj_bsssec (abfd)->size;
-  N_SET_MAGIC (*execp, OMAGIC);
+  /* Fix up the exec header: */
+  execp->a_text = obj_textsec(abfd)->size;
+  execp->a_data = obj_datasec(abfd)->size;
+  execp->a_bss = obj_bsssec(abfd)->size;
+  N_SET_MAGIC(*execp, OMAGIC);
 }
 
+/* */
 static void
-adjust_z_magic (bfd *abfd, struct internal_exec *execp)
+adjust_z_magic(bfd *abfd, struct internal_exec *execp)
 {
   bfd_size_type data_pad, text_pad;
   file_ptr text_end;
@@ -962,24 +963,24 @@ adjust_z_magic (bfd *abfd, struct internal_exec *execp)
   /* TRUE if text includes exec header.  */
   bfd_boolean ztih;
 
-  abdp = aout_backend_info (abfd);
+  abdp = aout_backend_info(abfd);
 
   /* Text.  */
   ztih = (abdp != NULL
 	  && (abdp->text_includes_header
 	      || obj_aout_subformat (abfd) == q_magic_format));
-  obj_textsec (abfd)->filepos = (ztih
-				 ? adata (abfd).exec_bytes_size
-				 : adata (abfd).zmagic_disk_block_size);
-  if (! obj_textsec (abfd)->user_set_vma)
+  obj_textsec(abfd)->filepos = (ztih
+                                ? adata(abfd).exec_bytes_size
+                                : (file_ptr)adata(abfd).zmagic_disk_block_size);
+  if (! obj_textsec(abfd)->user_set_vma)
     {
       /* ?? Do we really need to check for relocs here?  */
-      obj_textsec (abfd)->vma = ((abfd->flags & HAS_RELOC)
-				 ? 0
-				 : (ztih
-				    ? (abdp->default_text_vma
-				       + adata (abfd).exec_bytes_size)
-				    : abdp->default_text_vma));
+      obj_textsec(abfd)->vma = ((abfd->flags & HAS_RELOC)
+                                ? 0
+                                : (ztih
+                                   ? (abdp->default_text_vma
+                                      + adata(abfd).exec_bytes_size)
+                                   : abdp->default_text_vma));
       text_pad = 0;
     }
   else
@@ -988,9 +989,9 @@ adjust_z_magic (bfd *abfd, struct internal_exec *execp)
          may need to pad it such that the .data section starts at a page
          boundary.  */
       if (ztih)
-	text_pad = (bfd_size_type)((obj_textsec(abfd)->filepos
-				    - obj_textsec(abfd)->vma)
-				   & (adata(abfd).page_size - 1UL));
+	text_pad = (((bfd_size_type)obj_textsec(abfd)->filepos
+                     - obj_textsec(abfd)->vma)
+                    & (adata(abfd).page_size - 1UL));
       else
 	text_pad = ((0UL - obj_textsec(abfd)->vma)
 		    & (adata(abfd).page_size - 1UL));
@@ -999,19 +1000,20 @@ adjust_z_magic (bfd *abfd, struct internal_exec *execp)
   /* Find start of data.  */
   if (ztih)
     {
-      text_end = (obj_textsec(abfd)->filepos + obj_textsec(abfd)->size);
-      text_pad += (bfd_size_type)(BFD_ALIGN(text_end, adata(abfd).page_size)
-				  - text_end);
+      text_end = (obj_textsec(abfd)->filepos
+                  + (file_ptr)obj_textsec(abfd)->size);
+      text_pad += (BFD_ALIGN(text_end, adata(abfd).page_size)
+                   - (bfd_size_type)text_end);
     }
   else
     {
       /* Note that if page_size == zmagic_disk_block_size, then
 	 filepos == page_size, and this case is the same as the ztih
 	 case.  */
-      text_end = obj_textsec(abfd)->size;
-      text_pad += (bfd_size_type)(BFD_ALIGN(text_end, adata(abfd).page_size)
-				  - text_end);
-      text_end += obj_textsec(abfd)->filepos;
+      text_end = (file_ptr)obj_textsec(abfd)->size;
+      text_pad += (BFD_ALIGN(text_end, adata(abfd).page_size)
+                   - (bfd_size_type)text_end);
+      text_end += (file_ptr)obj_textsec(abfd)->filepos;
     }
   obj_textsec (abfd)->size += text_pad;
   text_end += text_pad;
@@ -1034,10 +1036,10 @@ adjust_z_magic (bfd *abfd, struct internal_exec *execp)
       if (text_pad > 0)
 	text->size += text_pad;
     }
-  obj_datasec (abfd)->filepos = (obj_textsec (abfd)->filepos
-				 + obj_textsec (abfd)->size);
+  obj_datasec(abfd)->filepos = (obj_textsec(abfd)->filepos
+                                + (file_ptr)obj_textsec(abfd)->size);
 
-  /* Fix up exec header while we're at it.  */
+  /* Fix up exec header while we are at it: */
   execp->a_text = obj_textsec (abfd)->size;
   if (ztih && (!abdp || (abdp && !abdp->exec_header_not_counted)))
     execp->a_text += adata (abfd).exec_bytes_size;
@@ -1098,8 +1100,8 @@ adjust_n_magic(bfd *abfd, struct internal_exec *execp)
   /* Since BSS follows data immediately, see if it needs alignment: */
   vma += obj_datasec(abfd)->size;
   pad = (int)(align_power(vma, obj_bsssec(abfd)->alignment_power) - vma);
-  obj_datasec (abfd)->size += pad;
-  pos += obj_datasec (abfd)->size;
+  obj_datasec(abfd)->size += (bfd_size_type)pad;
+  pos += obj_datasec(abfd)->size;
 
   /* BSS.  */
   if (!obj_bsssec(abfd)->user_set_vma)
@@ -1266,36 +1268,37 @@ NAME (aout, set_section_contents) (bfd *abfd,
 
   if (! abfd->output_has_begun)
     {
-      if (! NAME (aout, adjust_sizes_and_vmas) (abfd, &text_size, &text_end))
+      if (! NAME(aout, adjust_sizes_and_vmas)(abfd, &text_size, &text_end))
 	return FALSE;
     }
 
-  if (section == obj_bsssec (abfd))
+  if (section == obj_bsssec(abfd))
     {
-      bfd_set_error (bfd_error_no_contents);
+      bfd_set_error(bfd_error_no_contents);
       return FALSE;
     }
 
-  if (section != obj_textsec (abfd)
-      && section != obj_datasec (abfd))
+  if ((section != obj_textsec(abfd))
+      && (section != obj_datasec(abfd)))
     {
-      if (aout_section_merge_with_text_p (abfd, section))
-	section->filepos = obj_textsec (abfd)->filepos +
-			   (section->vma - obj_textsec (abfd)->vma);
+      if (aout_section_merge_with_text_p(abfd, section))
+	section->filepos = (obj_textsec(abfd)->filepos
+			    + (file_ptr)(section->vma
+			                 - obj_textsec(abfd)->vma));
       else
 	{
           (*_bfd_error_handler)
 	   (_("%s: can not represent section `%s' in a.out object file format"),
-	     bfd_get_filename (abfd), bfd_get_section_name (abfd, section));
-          bfd_set_error (bfd_error_nonrepresentable_section);
+	     bfd_get_filename(abfd), bfd_get_section_name(abfd, section));
+          bfd_set_error(bfd_error_nonrepresentable_section);
           return FALSE;
 	}
     }
 
   if (count != 0)
     {
-      if (bfd_seek (abfd, section->filepos + offset, SEEK_SET) != 0
-	  || bfd_bwrite (location, count, abfd) != count)
+      if ((bfd_seek(abfd, (section->filepos + offset), SEEK_SET) != 0)
+	  || (bfd_bwrite(location, count, abfd) != count))
 	return FALSE;
     }
 
@@ -1639,7 +1642,7 @@ translate_to_native_sym_flags (bfd *abfd,
     sym_pointer->e_type[0] &= ~N_EXT;
 
   if ((cache_ptr->flags & BSF_CONSTRUCTOR) != 0) {
-      int type = ((aout_symbol_type *)cache_ptr)->type;
+      bfd_byte type = ((aout_symbol_type *)cache_ptr)->type;
 
       switch (type) {
 	case N_ABS:	type = N_SETA; break;
@@ -1653,7 +1656,7 @@ translate_to_native_sym_flags (bfd *abfd,
 
   if ((cache_ptr->flags & BSF_WEAK) != 0)
     {
-      int type;
+      bfd_byte type;
 
       switch (sym_pointer->e_type[0] & N_TYPE)
 	{
@@ -1718,8 +1721,8 @@ NAME(aout, translate_symbol_table)(bfd *abfd, aout_symbol_type *in,
 	return FALSE;
 
       in->symbol.value = (symvalue)GET_SWORD(abfd,  ext->e_value);
-      in->desc = H_GET_16(abfd, ext->e_desc);
-      in->other = H_GET_8(abfd, ext->e_other);
+      in->desc = (short)H_GET_16(abfd, ext->e_desc);
+      in->other = (char)H_GET_8(abfd, ext->e_other);
       in->type = H_GET_8(abfd,  ext->e_type);
       in->symbol.udata.p = NULL;
 
@@ -1935,16 +1938,16 @@ NAME(aout, swap_std_reloc_out)(bfd *abfd, arelent *g,
   int r_index;
   asymbol *sym = *(g->sym_ptr_ptr);
   int r_extern;
-  unsigned int r_length;
+  bfd_byte r_length;
   int r_pcrel;
   int r_baserel, r_jmptable, r_relative;
   asection *output_section = sym->section->output_section;
 
   PUT_WORD(abfd, g->address, natptr->r_address);
 
-  r_length = g->howto->size;	/* Size as a power of two.  */
+  r_length = (bfd_byte)g->howto->size; /* Size as a power of two.  */
   r_pcrel = (int)g->howto->pc_relative; /* Relative to PC?  */
-  /* XXX This relies on relocs coming from a.out files.  */
+  /* XXX: This relies on relocs coming from a.out files: */
   r_baserel = ((g->howto->type & 8) != 0);
   r_jmptable = ((g->howto->type & 16) != 0);
   r_relative = ((g->howto->type & 32) != 0);
@@ -1978,35 +1981,35 @@ NAME(aout, swap_std_reloc_out)(bfd *abfd, arelent *g,
     }
   else
     {
-      /* Just an ordinary section.  */
+      /* Just an ordinary section: */
       r_extern = 0;
-      r_index  = output_section->target_index;
+      r_index = output_section->target_index;
     }
 
-  /* Now the fun stuff.  */
-  if (bfd_header_big_endian (abfd))
+  /* Now the "fun" stuff: */
+  if (bfd_header_big_endian(abfd))
     {
-      natptr->r_index[0] = r_index >> 16;
-      natptr->r_index[1] = r_index >> 8;
-      natptr->r_index[2] = r_index;
-      natptr->r_type[0] = ((r_extern ? RELOC_STD_BITS_EXTERN_BIG : 0)
-			   | (r_pcrel ? RELOC_STD_BITS_PCREL_BIG : 0)
-			   | (r_baserel ? RELOC_STD_BITS_BASEREL_BIG : 0)
-			   | (r_jmptable ? RELOC_STD_BITS_JMPTABLE_BIG : 0)
-			   | (r_relative ? RELOC_STD_BITS_RELATIVE_BIG : 0)
-			   | (r_length << RELOC_STD_BITS_LENGTH_SH_BIG));
+      natptr->r_index[0] = (bfd_byte)(r_index >> 16);
+      natptr->r_index[1] = (bfd_byte)(r_index >> 8);
+      natptr->r_index[2] = (bfd_byte)r_index;
+      natptr->r_type[0] = ((r_extern ? RELOC_STD_BITS_EXTERN_BIG : 0U)
+			   | (r_pcrel ? RELOC_STD_BITS_PCREL_BIG : 0U)
+			   | (r_baserel ? RELOC_STD_BITS_BASEREL_BIG : 0U)
+			   | (r_jmptable ? RELOC_STD_BITS_JMPTABLE_BIG : 0U)
+			   | (r_relative ? RELOC_STD_BITS_RELATIVE_BIG : 0U)
+			   | (bfd_byte)(r_length << RELOC_STD_BITS_LENGTH_SH_BIG));
     }
   else
     {
-      natptr->r_index[2] = r_index >> 16;
-      natptr->r_index[1] = r_index >> 8;
-      natptr->r_index[0] = r_index;
-      natptr->r_type[0] = ((r_extern ? RELOC_STD_BITS_EXTERN_LITTLE : 0)
-			   | (r_pcrel ? RELOC_STD_BITS_PCREL_LITTLE : 0)
-			   | (r_baserel ? RELOC_STD_BITS_BASEREL_LITTLE : 0)
-			   | (r_jmptable ? RELOC_STD_BITS_JMPTABLE_LITTLE : 0)
-			   | (r_relative ? RELOC_STD_BITS_RELATIVE_LITTLE : 0)
-			   | (r_length << RELOC_STD_BITS_LENGTH_SH_LITTLE));
+      natptr->r_index[2] = (bfd_byte)(r_index >> 16);
+      natptr->r_index[1] = (bfd_byte)(r_index >> 8);
+      natptr->r_index[0] = (bfd_byte)r_index;
+      natptr->r_type[0] = ((r_extern ? RELOC_STD_BITS_EXTERN_LITTLE : 0U)
+			   | (r_pcrel ? RELOC_STD_BITS_PCREL_LITTLE : 0U)
+			   | (r_baserel ? RELOC_STD_BITS_BASEREL_LITTLE : 0U)
+			   | (r_jmptable ? RELOC_STD_BITS_JMPTABLE_LITTLE : 0U)
+			   | (r_relative ? RELOC_STD_BITS_RELATIVE_LITTLE : 0U)
+			   | (bfd_byte)(r_length << RELOC_STD_BITS_LENGTH_SH_LITTLE));
     }
 }
 
@@ -2023,14 +2026,14 @@ NAME (aout, swap_ext_reloc_out) (bfd *abfd,
 {
   int r_index;
   int r_extern;
-  unsigned int r_type;
+  bfd_byte r_type;
   bfd_vma r_addend;
   asymbol *sym = *(g->sym_ptr_ptr);
   asection *output_section = sym->section->output_section;
 
   PUT_WORD (abfd, g->address, natptr->r_address);
 
-  r_type = (unsigned int) g->howto->type;
+  r_type = (bfd_byte)g->howto->type;
 
   r_addend = g->addend;
   if ((sym->flags & BSF_SECTION_SYM) != 0)
@@ -2058,27 +2061,27 @@ NAME (aout, swap_ext_reloc_out) (bfd *abfd,
     }
   else
     {
-      /* Just an ordinary section.  */
+      /* Just an ordinary section: */
       r_extern = 0;
       r_index = output_section->target_index;
     }
 
-  /* Now the fun stuff.  */
-  if (bfd_header_big_endian (abfd))
+  /* Now the "fun" stuff: */
+  if (bfd_header_big_endian(abfd))
     {
-      natptr->r_index[0] = r_index >> 16;
-      natptr->r_index[1] = r_index >> 8;
-      natptr->r_index[2] = r_index;
-      natptr->r_type[0] = ((r_extern ? RELOC_EXT_BITS_EXTERN_BIG : 0)
-			   | (r_type << RELOC_EXT_BITS_TYPE_SH_BIG));
+      natptr->r_index[0] = (bfd_byte)(r_index >> 16);
+      natptr->r_index[1] = (bfd_byte)(r_index >> 8);
+      natptr->r_index[2] = (bfd_byte)r_index;
+      natptr->r_type[0] = ((r_extern ? RELOC_EXT_BITS_EXTERN_BIG : 0U)
+			   | (bfd_byte)(r_type << RELOC_EXT_BITS_TYPE_SH_BIG));
     }
   else
     {
-      natptr->r_index[2] = r_index >> 16;
-      natptr->r_index[1] = r_index >> 8;
-      natptr->r_index[0] = r_index;
-      natptr->r_type[0] = ((r_extern ? RELOC_EXT_BITS_EXTERN_LITTLE : 0)
-			   | (r_type << RELOC_EXT_BITS_TYPE_SH_LITTLE));
+      natptr->r_index[2] = (bfd_byte)(r_index >> 16);
+      natptr->r_index[1] = (bfd_byte)(r_index >> 8);
+      natptr->r_index[0] = (bfd_byte)r_index;
+      natptr->r_type[0] = ((r_extern ? RELOC_EXT_BITS_EXTERN_LITTLE : 0U)
+			   | (bfd_byte)(r_type << RELOC_EXT_BITS_TYPE_SH_LITTLE));
     }
 
   PUT_WORD (abfd, r_addend, natptr->r_addend);
@@ -2229,8 +2232,9 @@ NAME (aout, swap_std_reloc_in) (bfd *abfd,
 		   >> RELOC_STD_BITS_LENGTH_SH_LITTLE);
     }
 
-  howto_idx = (r_length + 4 * r_pcrel + 8 * r_baserel
-	       + 16 * r_jmptable + 32 * r_relative);
+  howto_idx = (r_length
+               + (unsigned int)((4 * r_pcrel) + (8 * r_baserel)
+                                + (16 * r_jmptable) + (32 * r_relative)));
   BFD_ASSERT (howto_idx < TABLE_SIZE (howto_table_std));
   cache_ptr->howto =  howto_table_std + howto_idx;
   BFD_ASSERT (cache_ptr->howto->type != (unsigned int) -1);
@@ -2481,12 +2485,12 @@ NAME (aout, get_symbol_info) (bfd *ignore_abfd ATTRIBUTE_UNUSED,
 			      asymbol *symbol,
 			      symbol_info *ret)
 {
-  bfd_symbol_info (symbol, ret);
+  bfd_symbol_info(symbol, ret);
 
   if (ret->type == '?')
     {
-      int type_code = aout_symbol (symbol)->type & 0xff;
-      const char *stab_name = bfd_get_stab_name (type_code);
+      unsigned char type_code = (aout_symbol(symbol)->type & 0xff);
+      const char *stab_name = bfd_get_stab_name(type_code);
       static char buf[10];
 
       if (stab_name == NULL)
@@ -2496,8 +2500,8 @@ NAME (aout, get_symbol_info) (bfd *ignore_abfd ATTRIBUTE_UNUSED,
 	}
       ret->type = '-';
       ret->stab_type = type_code;
-      ret->stab_other = (unsigned) (aout_symbol (symbol)->other & 0xff);
-      ret->stab_desc = (unsigned) (aout_symbol (symbol)->desc & 0xffff);
+      ret->stab_other = (char)((unsigned int)aout_symbol(symbol)->other & 0xff);
+      ret->stab_desc = (short)((unsigned int)aout_symbol(symbol)->desc & 0xffff);
       ret->stab_name = stab_name;
     }
 }
@@ -2515,9 +2519,9 @@ void NAME(aout, print_symbol)(bfd *abfd, void *afile, asymbol *symbol,
       break;
     case bfd_print_symbol_more:
       fprintf(file, "%4x %2x %2x",
-	      (unsigned)(aout_symbol(symbol)->desc & 0xffff),
-	      (unsigned)(aout_symbol(symbol)->other & 0xff),
-	      (unsigned)(aout_symbol(symbol)->type));
+	      (unsigned int)(aout_symbol(symbol)->desc & 0xffff),
+	      (unsigned int)(aout_symbol(symbol)->other & 0xff),
+	      (unsigned int)(aout_symbol(symbol)->type));
       break;
     case bfd_print_symbol_all:
       {
@@ -2526,9 +2530,9 @@ void NAME(aout, print_symbol)(bfd *abfd, void *afile, asymbol *symbol,
 	bfd_print_symbol_vandf(abfd, (void *)file, symbol);
 
 	fprintf(file, " %-5s %04x %02x %02x", section_name,
-		(unsigned)(aout_symbol(symbol)->desc & 0xffff),
-		(unsigned)(aout_symbol(symbol)->other & 0xff),
-		(unsigned)(aout_symbol(symbol)->type & 0xff));
+		(unsigned int)(aout_symbol(symbol)->desc & 0xffff),
+		(unsigned int)(aout_symbol(symbol)->other & 0xff),
+		(unsigned int)(aout_symbol(symbol)->type & 0xff));
 	if (symbol->name) {
 	    fprintf(file, " %s", symbol->name);
 	}
@@ -2622,7 +2626,7 @@ NAME (aout, find_nearest_line) (bfd *abfd,
   const char *directory_name = NULL;
   const char *main_file_name = NULL;
   const char *current_file_name = NULL;
-  const char *line_file_name = NULL;      /* Value of current_file_name at line number.  */
+  const char *line_file_name = NULL; /* Value of current_file_name at line number.  */
   const char *line_directory_name = NULL; /* Value of directory_name at line number.  */
   bfd_vma low_line_vma = 0;
   bfd_vma low_func_vma = 0;
@@ -2709,7 +2713,7 @@ NAME (aout, find_nearest_line) (bfd *abfd,
 	       * already: */
 	      if ((q->symbol.value >= low_line_vma)
 		  && (q->symbol.value <= offset)) {
-		  *line_ptr = q->desc;
+		  *line_ptr = (unsigned int)q->desc;
 		  low_line_vma = q->symbol.value;
 		  line_file_name = current_file_name;
 		  line_directory_name = directory_name;
@@ -2718,8 +2722,8 @@ NAME (aout, find_nearest_line) (bfd *abfd,
 	    case N_FUN:
 	      {
 		/* We shall keep this if nearer than what we have already: */
-		if ((q->symbol.value >= low_func_vma) &&
-		    (q->symbol.value <= offset)) {
+		if ((q->symbol.value >= low_func_vma)
+		    && (q->symbol.value <= offset)) {
 		    low_func_vma = q->symbol.value;
 		    func = (asymbol *)q;
 		} else if (q->symbol.value > offset) {
@@ -2804,9 +2808,9 @@ NAME (aout, find_nearest_line) (bfd *abfd,
 }
 
 int
-NAME (aout, sizeof_headers) (bfd *abfd, bfd_boolean execable ATTRIBUTE_UNUSED)
+NAME(aout, sizeof_headers)(bfd *abfd, bfd_boolean execable ATTRIBUTE_UNUSED)
 {
-  return adata (abfd).exec_bytes_size;
+  return (int)adata(abfd).exec_bytes_size;
 }
 
 /* Free all information we have cached for this BFD.  We can always
@@ -3713,38 +3717,38 @@ aout_link_reloc_link_order (struct aout_final_link_info *finfo,
 	int r_relative;
 	int r_length;
 
-	r_pcrel = (int) howto->pc_relative;
-	r_baserel = (howto->type & 8) != 0;
-	r_jmptable = (howto->type & 16) != 0;
-	r_relative = (howto->type & 32) != 0;
+	r_pcrel = (int)howto->pc_relative;
+	r_baserel = ((howto->type & 8) != 0);
+	r_jmptable = ((howto->type & 16) != 0);
+	r_relative = ((howto->type & 32) != 0);
 	r_length = howto->size;
 
-	PUT_WORD (finfo->output_bfd, p->offset, srel.r_address);
-	if (bfd_header_big_endian (finfo->output_bfd))
+	PUT_WORD(finfo->output_bfd, p->offset, srel.r_address);
+	if (bfd_header_big_endian(finfo->output_bfd))
 	  {
-	    srel.r_index[0] = r_index >> 16;
-	    srel.r_index[1] = r_index >> 8;
-	    srel.r_index[2] = r_index;
+	    srel.r_index[0] = (bfd_byte)(r_index >> 16);
+	    srel.r_index[1] = (bfd_byte)(r_index >> 8);
+	    srel.r_index[2] = (bfd_byte)r_index;
 	    srel.r_type[0] =
-	      ((r_extern ?     RELOC_STD_BITS_EXTERN_BIG : 0)
-	       | (r_pcrel ?    RELOC_STD_BITS_PCREL_BIG : 0)
-	       | (r_baserel ?  RELOC_STD_BITS_BASEREL_BIG : 0)
-	       | (r_jmptable ? RELOC_STD_BITS_JMPTABLE_BIG : 0)
-	       | (r_relative ? RELOC_STD_BITS_RELATIVE_BIG : 0)
-	       | (r_length <<  RELOC_STD_BITS_LENGTH_SH_BIG));
+	      ((r_extern ? RELOC_STD_BITS_EXTERN_BIG : 0U)
+	       | (r_pcrel ? RELOC_STD_BITS_PCREL_BIG : 0U)
+	       | (r_baserel ? RELOC_STD_BITS_BASEREL_BIG : 0U)
+	       | (r_jmptable ? RELOC_STD_BITS_JMPTABLE_BIG : 0U)
+	       | (r_relative ? RELOC_STD_BITS_RELATIVE_BIG : 0U)
+	       | (bfd_byte)(r_length << RELOC_STD_BITS_LENGTH_SH_BIG));
 	  }
 	else
 	  {
-	    srel.r_index[2] = r_index >> 16;
-	    srel.r_index[1] = r_index >> 8;
-	    srel.r_index[0] = r_index;
+	    srel.r_index[2] = (bfd_byte)(r_index >> 16);
+	    srel.r_index[1] = (bfd_byte)(r_index >> 8);
+	    srel.r_index[0] = (bfd_byte)r_index;
 	    srel.r_type[0] =
-	      ((r_extern ?     RELOC_STD_BITS_EXTERN_LITTLE : 0)
-	       | (r_pcrel ?    RELOC_STD_BITS_PCREL_LITTLE : 0)
-	       | (r_baserel ?  RELOC_STD_BITS_BASEREL_LITTLE : 0)
-	       | (r_jmptable ? RELOC_STD_BITS_JMPTABLE_LITTLE : 0)
-	       | (r_relative ? RELOC_STD_BITS_RELATIVE_LITTLE : 0)
-	       | (r_length <<  RELOC_STD_BITS_LENGTH_SH_LITTLE));
+	      ((r_extern ? RELOC_STD_BITS_EXTERN_LITTLE : 0U)
+	       | (r_pcrel ? RELOC_STD_BITS_PCREL_LITTLE : 0U)
+	       | (r_baserel ? RELOC_STD_BITS_BASEREL_LITTLE : 0U)
+	       | (r_jmptable ? RELOC_STD_BITS_JMPTABLE_LITTLE : 0U)
+	       | (r_relative ? RELOC_STD_BITS_RELATIVE_LITTLE : 0U)
+	       | (bfd_byte)(r_length << RELOC_STD_BITS_LENGTH_SH_LITTLE));
 	  }
       }
 #endif
@@ -3802,25 +3806,25 @@ aout_link_reloc_link_order (struct aout_final_link_info *finfo,
       MY_put_ext_reloc (finfo->output_bfd, r_extern, r_index, p->offset,
 			howto, &erel, pr->addend);
 #else
-      PUT_WORD (finfo->output_bfd, p->offset, erel.r_address);
+      PUT_WORD(finfo->output_bfd, p->offset, erel.r_address);
 
-      if (bfd_header_big_endian (finfo->output_bfd))
+      if (bfd_header_big_endian(finfo->output_bfd))
 	{
-	  erel.r_index[0] = r_index >> 16;
-	  erel.r_index[1] = r_index >> 8;
-	  erel.r_index[2] = r_index;
+	  erel.r_index[0] = (bfd_byte)(r_index >> 16);
+	  erel.r_index[1] = (bfd_byte)(r_index >> 8);
+	  erel.r_index[2] = (bfd_byte)r_index;
 	  erel.r_type[0] =
-	    ((r_extern ? RELOC_EXT_BITS_EXTERN_BIG : 0)
-	     | (howto->type << RELOC_EXT_BITS_TYPE_SH_BIG));
+	    ((r_extern ? RELOC_EXT_BITS_EXTERN_BIG : 0U)
+	     | (bfd_byte)(howto->type << RELOC_EXT_BITS_TYPE_SH_BIG));
 	}
       else
 	{
-	  erel.r_index[2] = r_index >> 16;
-	  erel.r_index[1] = r_index >> 8;
-	  erel.r_index[0] = r_index;
+	  erel.r_index[2] = (bfd_byte)(r_index >> 16);
+	  erel.r_index[1] = (bfd_byte)(r_index >> 8);
+	  erel.r_index[0] = (bfd_byte)r_index;
 	  erel.r_type[0] =
-	    (r_extern ? RELOC_EXT_BITS_EXTERN_LITTLE : 0)
-	      | (howto->type << RELOC_EXT_BITS_TYPE_SH_LITTLE);
+	    (r_extern ? RELOC_EXT_BITS_EXTERN_LITTLE : 0U)
+	      | (bfd_byte)(howto->type << RELOC_EXT_BITS_TYPE_SH_LITTLE);
 	}
 
       PUT_WORD (finfo->output_bfd, (bfd_vma) pr->addend, erel.r_addend);
@@ -3925,38 +3929,38 @@ aout_link_input_section_std (struct aout_final_link_info *finfo,
 	int r_length;
 	unsigned int howto_idx;
 
-	if (bfd_header_big_endian (input_bfd))
+	if (bfd_header_big_endian(input_bfd))
 	  {
-	    r_index   =  (((unsigned int) rel->r_index[0] << 16)
-			  | ((unsigned int) rel->r_index[1] << 8)
-			  | rel->r_index[2]);
-	    r_extern  = (0 != (rel->r_type[0] & RELOC_STD_BITS_EXTERN_BIG));
-	    r_pcrel   = (0 != (rel->r_type[0] & RELOC_STD_BITS_PCREL_BIG));
+	    r_index = (int)(((unsigned int)rel->r_index[0] << 16U)
+			    | ((unsigned int)rel->r_index[1] << 8U)
+			    | rel->r_index[2]);
+	    r_extern = (0 != (rel->r_type[0] & RELOC_STD_BITS_EXTERN_BIG));
+	    r_pcrel = (0 != (rel->r_type[0] & RELOC_STD_BITS_PCREL_BIG));
 	    r_baserel = (0 != (rel->r_type[0] & RELOC_STD_BITS_BASEREL_BIG));
-	    r_jmptable= (0 != (rel->r_type[0] & RELOC_STD_BITS_JMPTABLE_BIG));
-	    r_relative= (0 != (rel->r_type[0] & RELOC_STD_BITS_RELATIVE_BIG));
-	    r_length  = ((rel->r_type[0] & RELOC_STD_BITS_LENGTH_BIG)
-			 >> RELOC_STD_BITS_LENGTH_SH_BIG);
+	    r_jmptable = (0 != (rel->r_type[0] & RELOC_STD_BITS_JMPTABLE_BIG));
+	    r_relative = (0 != (rel->r_type[0] & RELOC_STD_BITS_RELATIVE_BIG));
+	    r_length = ((rel->r_type[0] & RELOC_STD_BITS_LENGTH_BIG)
+                        >> RELOC_STD_BITS_LENGTH_SH_BIG);
 	  }
 	else
 	  {
-	    r_index   = (((unsigned int) rel->r_index[2] << 16)
-			 | ((unsigned int) rel->r_index[1] << 8)
-			 | rel->r_index[0]);
-	    r_extern  = (0 != (rel->r_type[0] & RELOC_STD_BITS_EXTERN_LITTLE));
-	    r_pcrel   = (0 != (rel->r_type[0] & RELOC_STD_BITS_PCREL_LITTLE));
+	    r_index = (int)(((unsigned int)rel->r_index[2] << 16U)
+			    | ((unsigned int)rel->r_index[1] << 8U)
+			    | rel->r_index[0]);
+	    r_extern = (0 != (rel->r_type[0] & RELOC_STD_BITS_EXTERN_LITTLE));
+	    r_pcrel = (0 != (rel->r_type[0] & RELOC_STD_BITS_PCREL_LITTLE));
 	    r_baserel = (0 != (rel->r_type[0]
 			       & RELOC_STD_BITS_BASEREL_LITTLE));
-	    r_jmptable= (0 != (rel->r_type[0]
-			       & RELOC_STD_BITS_JMPTABLE_LITTLE));
-	    r_relative= (0 != (rel->r_type[0]
-			       & RELOC_STD_BITS_RELATIVE_LITTLE));
-	    r_length  = ((rel->r_type[0] & RELOC_STD_BITS_LENGTH_LITTLE)
-			 >> RELOC_STD_BITS_LENGTH_SH_LITTLE);
+	    r_jmptable = (0 != (rel->r_type[0]
+			        & RELOC_STD_BITS_JMPTABLE_LITTLE));
+	    r_relative = (0 != (rel->r_type[0]
+			        & RELOC_STD_BITS_RELATIVE_LITTLE));
+	    r_length = ((rel->r_type[0] & RELOC_STD_BITS_LENGTH_LITTLE)
+                        >> RELOC_STD_BITS_LENGTH_SH_LITTLE);
 	  }
 
-	howto_idx = (r_length + 4 * r_pcrel + 8 * r_baserel
-		     + 16 * r_jmptable + 32 * r_relative);
+	howto_idx = (unsigned int)(r_length + (4 * r_pcrel) + (8 * r_baserel)
+		                   + (16 * r_jmptable) + (32 * r_relative));
 	BFD_ASSERT (howto_idx < TABLE_SIZE (howto_table_std));
 	howto = howto_table_std + howto_idx;
       }
@@ -4260,18 +4264,18 @@ aout_link_input_section_ext (struct aout_final_link_info *finfo,
 
       if (bfd_header_big_endian (input_bfd))
 	{
-	  r_index  = (((unsigned int) rel->r_index[0] << 16)
-		      | ((unsigned int) rel->r_index[1] << 8)
-		      | rel->r_index[2]);
+	  r_index  = (int)(((unsigned int)rel->r_index[0] << 16U)
+		           | ((unsigned int)rel->r_index[1] << 8U)
+		           | rel->r_index[2]);
 	  r_extern = (0 != (rel->r_type[0] & RELOC_EXT_BITS_EXTERN_BIG));
 	  r_type   = ((rel->r_type[0] & RELOC_EXT_BITS_TYPE_BIG)
 		      >> RELOC_EXT_BITS_TYPE_SH_BIG);
 	}
       else
 	{
-	  r_index  = (((unsigned int) rel->r_index[2] << 16)
-		      | ((unsigned int) rel->r_index[1] << 8)
-		      | rel->r_index[0]);
+	  r_index  = (int)(((unsigned int)rel->r_index[2] << 16U)
+                           | ((unsigned int)rel->r_index[1] << 8U)
+		           | rel->r_index[0]);
 	  r_extern = (0 != (rel->r_type[0] & RELOC_EXT_BITS_EXTERN_LITTLE));
 	  r_type   = ((rel->r_type[0] & RELOC_EXT_BITS_TYPE_LITTLE)
 		      >> RELOC_EXT_BITS_TYPE_SH_LITTLE);
@@ -4383,18 +4387,18 @@ aout_link_input_section_ext (struct aout_final_link_info *finfo,
 		     is done below.  */
 		}
 
-	      /* Write out the new r_index value.  */
-	      if (bfd_header_big_endian (output_bfd))
+	      /* Write out the new r_index value: */
+	      if (bfd_header_big_endian(output_bfd))
 		{
-		  rel->r_index[0] = r_index >> 16;
-		  rel->r_index[1] = r_index >> 8;
-		  rel->r_index[2] = r_index;
+		  rel->r_index[0] = (bfd_byte)(r_index >> 16);
+		  rel->r_index[1] = (bfd_byte)(r_index >> 8);
+		  rel->r_index[2] = (bfd_byte)r_index;
 		}
 	      else
 		{
-		  rel->r_index[2] = r_index >> 16;
-		  rel->r_index[1] = r_index >> 8;
-		  rel->r_index[0] = r_index;
+		  rel->r_index[2] = (bfd_byte)(r_index >> 16);
+		  rel->r_index[1] = (bfd_byte)(r_index >> 8);
+		  rel->r_index[0] = (bfd_byte)r_index;
 		}
 	    }
 	  else
@@ -5060,7 +5064,7 @@ aout_link_write_symbols(struct aout_final_link_info *finfo, bfd *input_bfd)
 
 		      s = (strings + GET_WORD(input_bfd, incl_sym->e_strx));
 		      for (; (*s != '\0'); s++) {
-			  val += *s;
+			  val += (bfd_vma)*s;
 			  if (*s == '(') {
 			      /* Skip the file number: */
 			      ++s;
@@ -5164,11 +5168,11 @@ aout_link_write_symbols(struct aout_final_link_info *finfo, bfd *input_bfd)
     {
       bfd_size_type outsym_size;
 
-      if (bfd_seek (output_bfd, finfo->symoff, SEEK_SET) != 0)
+      if (bfd_seek(output_bfd, finfo->symoff, SEEK_SET) != 0)
 	return FALSE;
-      outsym_size = outsym - finfo->output_syms;
+      outsym_size = (bfd_size_type)(outsym - finfo->output_syms);
       outsym_size *= EXTERNAL_NLIST_SIZE;
-      if (bfd_bwrite ((void *) finfo->output_syms, outsym_size, output_bfd)
+      if (bfd_bwrite((void *)finfo->output_syms, outsym_size, output_bfd)
 	  != outsym_size)
 	return FALSE;
       finfo->symoff += outsym_size;
@@ -5538,11 +5542,12 @@ NAME(aout, final_link)(bfd *abfd, struct bfd_link_info *info,
   /* Update the header information: */
   abfd->symcount = (unsigned int)obj_aout_external_sym_count(abfd);
   exec_hdr(abfd)->a_syms = (abfd->symcount * EXTERNAL_NLIST_SIZE);
-  obj_str_filepos(abfd) = (obj_sym_filepos(abfd) + exec_hdr(abfd)->a_syms);
+  obj_str_filepos(abfd) = (obj_sym_filepos(abfd)
+                           + (file_ptr)exec_hdr(abfd)->a_syms);
   obj_textsec(abfd)->reloc_count =
-    (unsigned)(exec_hdr(abfd)->a_trsize / obj_reloc_entry_size(abfd));
+    (unsigned int)(exec_hdr(abfd)->a_trsize / obj_reloc_entry_size(abfd));
   obj_datasec(abfd)->reloc_count =
-    (unsigned)(exec_hdr(abfd)->a_drsize / obj_reloc_entry_size(abfd));
+    (unsigned int)(exec_hdr(abfd)->a_drsize / obj_reloc_entry_size(abfd));
 
   /* Write out the string table, unless there are no symbols: */
   if (abfd->symcount > 0)
@@ -5558,7 +5563,8 @@ NAME(aout, final_link)(bfd *abfd, struct bfd_link_info *info,
       file_ptr pos;
 
       b = 0;
-      pos = (obj_datasec(abfd)->filepos + exec_hdr(abfd)->a_data - 1);
+      pos = (obj_datasec(abfd)->filepos
+             + (file_ptr)(exec_hdr(abfd)->a_data - 1L));
       if ((bfd_seek(abfd, pos, SEEK_SET) != 0)
 	  || (bfd_bwrite(&b, (bfd_size_type)1L, abfd) != 1))
 	goto error_return;

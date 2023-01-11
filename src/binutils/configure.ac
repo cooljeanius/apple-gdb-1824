@@ -31,8 +31,8 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   export TARGET_ARCHITECTURE="${target_cpu}"
   AC_SUBST([TARGET_ARCHITECTURE])
 fi
-AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 AC_USE_SYSTEM_EXTENSIONS
+AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 if test -n "${HOST_ARCHITECTURE}"; then
   ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
   AC_SUBST([C_ARCHFLAGS])
@@ -84,7 +84,7 @@ LT_LANG([C])dnl
 LT_LANG([C++])dnl
 LT_LANG([Windows Resource])dnl
 dnl# temporarily set this while I update everything libtool-related:
-LT_PREREQ([2.4.6])dnl
+LT_PREREQ([2.4.7])dnl
 dnl# (largefile check is done farther below)
 
 # flags:
@@ -1231,17 +1231,28 @@ AC_CONFIG_FILES([Makefile \
                  po/Makefile.in:po/Make-in])dnl
 
 AC_CONFIG_COMMANDS([default],[
+if test "x${SED}" = "x"; then
+  test -z "${SED}" && export SED=sed
+fi
 case "x${CONFIG_FILES}" in
-*) sed -e '/POTFILES =/r po/POTFILES' po/Makefile.in > po/Makefile ;;
+*) ${SED} -e '/POTFILES =/r po/POTFILES' po/Makefile.in > po/Makefile ;;
 esac
+],[])dnl
+
+dnl# While there may be subdirs with configure scripts present, they don't actually
+dnl# contain the sources necessary to run, so don't listen to autoscan's requests
+dnl# to put them in AC\_CONFIG\_SUBDIRS. (I'm thinking the scripts may have only
+dnl# gotten there by mistake in the first place)
+AC_CONFIG_COMMANDS([subdirs],[
+ls bfd binutils etc gas gprof ld opcodes || echo "never mind about subdirs"
 ],[])dnl
 
 AC_OUTPUT
 
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo "1: pwd = `pwd`"
   elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo "2: pwd = `pwd`"
   fi
 fi

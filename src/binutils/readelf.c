@@ -524,13 +524,16 @@ byte_put_little_endian(unsigned char *field, bfd_vma value, int size)
       field[5] = (((value >> 24) >> 16) & 0xff);
       field[4] = (((value >> 24) >> 8) & 0xff);
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case 4:
       field[3] = ((value >> 24) & 0xff);
       field[2] = ((value >> 16) & 0xff);
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case 2:
       field[1] = ((value >> 8) & 0xff);
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case 1:
       field[0] = (value & 0xff);
       break;
@@ -746,15 +749,18 @@ byte_put_big_endian (unsigned char *field, bfd_vma value, int size)
       value >>= 16;
       value >>= 16;
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case 4:
       field[3] = value & 0xff;
       field[2] = (value >> 8) & 0xff;
       value >>= 16;
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case 2:
       field[1] = value & 0xff;
       value >>= 8;
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case 1:
       field[0] = value & 0xff;
       break;
@@ -6873,7 +6879,7 @@ process_symbol_table(FILE *file)
 
 	      n = print_vma (si, DEC_5);
 	      if (n < 5)
-		fputs ("     " + n, stdout);
+		fputs ("     " + n, stdout); /* FIXME: -Wstring-plus-int */
 	      printf (" %3lu: ", hn);
 	      print_vma (psym->st_value, LONG_HEX);
 	      putchar (' ');

@@ -129,7 +129,7 @@ AC_MSG_RESULT([ ])
 LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
 LT_LANG([C])dnl
 dnl# (temporarily) set this while I update everything libtool-related:
-LT_PREREQ([2.4.6])dnl
+LT_PREREQ([2.4.7])dnl
 
 if test -z "${lt_cv_objdir}"; then
   AC_MSG_WARN([lt_cv_objdir somehow was left unset, setting to default])
@@ -713,6 +713,7 @@ AC_DEFUN([AC_POSSIBLE_DUPLICATE_CHECKS],
  AC_REQUIRE([AC_FUNC_MMAP])dnl
  AC_REQUIRE([AC_TYPE_OFF_T])dnl
  AC_REQUIRE([AC_TYPE_SIZE_T])dnl
+ AC_REQUIRE([AC_TYPE_SSIZE_T])dnl
  AC_REQUIRE([AC_C_CONST])dnl
  AC_REQUIRE([AC_C_INLINE])dnl
  AC_REQUIRE([AM_PROG_CC_C_O])dnl

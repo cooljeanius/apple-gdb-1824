@@ -813,7 +813,7 @@ main(int argc, char **argv)
 	      optarg = argv[optind++];
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case 'o':
 	  output_filename = optarg;
 	  break;

@@ -247,6 +247,7 @@ dump_coff_type(struct coff_type *p)
           printf("UNKNOWN");
 	  abort();
 	}
+      ATTRIBUTE_FALLTHROUGH; /* fall through, I guess? */
     default:
       break;
     }

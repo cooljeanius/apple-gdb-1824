@@ -697,6 +697,7 @@ main(int argc, char **argv)
                   break;
 		}
             }
+            ATTRIBUTE_FALLTHROUGH; /* fall through, I guess? */
 	    case 'l':
 	      break;
 	    case 'c':

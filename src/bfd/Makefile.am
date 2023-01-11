@@ -947,12 +947,12 @@ all: info @MAINT@ config.status
 diststuff: info @MAINT@ config.status
 .PHONY: diststuff
 
-## currently succeeds:
+## currently succeeds (as long as you don't use -Werror):
 all_machines: $(ALL_MACHINES)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: all_machines
 
-## currently breaks on elf32-bfin.c:
+## currently breaks on aout-adobe.c with clang, elf32-bfin.c in some other context:
 bfd32_backends: $(BFD32_BACKENDS)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: bfd32_backends

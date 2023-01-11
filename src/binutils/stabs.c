@@ -626,6 +626,7 @@ parse_stab (void *dhandle, void *handle, int type, int desc, bfd_vma value,
          value to the start of the section.  gcc always seems to use
          :S, so we don't worry about this.  */
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     default:
       {
 	const char *colon;
@@ -947,6 +948,7 @@ parse_stab_string (void *dhandle, struct stab_handle *info, int stabtype,
 	  break;
 	}
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case 'R':
       /* Parameter which is in a register.  */
       dtype = parse_stab_type (dhandle, info, (const char *) NULL, &p,
@@ -4991,6 +4993,7 @@ stab_demangle_fund_type (struct stab_demangle_info *minfo, const char **pp,
 	  return FALSE;
 	}
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case '0': case '1': case '2': case '3': case '4':
     case '5': case '6': case '7': case '8': case '9':
       {

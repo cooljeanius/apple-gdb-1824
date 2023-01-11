@@ -761,6 +761,7 @@ parse_coff (bfd *abfd, asymbol **syms, long symcount, void *dhandle)
 	  if (syment.n_type == T_NULL)
 	    break;
 	  /* Fall through.  */
+	  ATTRIBUTE_FALLTHROUGH;
 	case C_WEAKEXT:
 	case C_EXT:
 	  if (ISFCN (syment.n_type))

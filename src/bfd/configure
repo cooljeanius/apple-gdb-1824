@@ -26832,6 +26832,16 @@ printf %s "checking stuff that we might have already checked... " >&6; }
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result:  " >&5
 printf "%s\n" " " >&6; }
 # Hack because AC_REQUIRE cannot be used outside of macro definitions:
+ac_fn_c_check_type "$LINENO" "ssize_t" "ac_cv_type_ssize_t" "$ac_includes_default"
+if test "x$ac_cv_type_ssize_t" = xyes
+then :
+
+else $as_nop
+
+printf "%s\n" "#define ssize_t int" >>confdefs.h
+
+fi
+
 
 # Check whether --enable-largefile was given.
 if test ${enable_largefile+y}

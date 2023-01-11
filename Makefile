@@ -57,6 +57,9 @@ INSTALL=$(SRCROOT)/src/install-sh
 
 CANONICAL_ARCHS := $(foreach arch,$(RC_ARCHS),$(foreach os,$(RC_OS),$(foreach release,$(RC_RELEASE),$(os):$(arch):$(release))))
 
+CANONICAL_ARCHS := $(subst teflon:ppc:Rhapsody,powerpc-apple-rhapsody,$(CANONICAL_ARCHS))
+CANONICAL_ARCHS := $(subst teflon:i386:Rhapsody,i386-apple-rhapsody,$(CANONICAL_ARCHS))
+
 CANONICAL_ARCHS := $(subst macos:i386:$(RC_RELEASE),i386-apple-darwin,$(CANONICAL_ARCHS))
 CANONICAL_ARCHS := $(subst macos:x86_64:$(RC_RELEASE),x86_64-apple-darwin,$(CANONICAL_ARCHS))
 CANONICAL_ARCHS := $(subst macos:ppc:$(RC_RELEASE),powerpc-apple-darwin,$(CANONICAL_ARCHS))

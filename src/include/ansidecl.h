@@ -258,9 +258,13 @@ So instead we use the macro below and test it against specific values.  */
 # define __attribute__(x)
 #endif /* gcc pre-2.7 */
 
+#if !defined __has_attribute
+# define __has_attribute(x) 0
+#endif
+
 /* Attribute __malloc__ on functions was valid as of gcc 2.96. */
 #ifndef ATTRIBUTE_MALLOC
-# if (GCC_VERSION >= 2096)
+# if (GCC_VERSION >= 2096) || __has_attribute(__malloc__)
 #  define ATTRIBUTE_MALLOC __attribute__((__malloc__))
 # else
 #  define ATTRIBUTE_MALLOC
@@ -345,7 +349,7 @@ So instead we use the macro below and test it against specific values.  */
 #endif /* !__cplusplus || GNUC >= 3.4 */
 
 #ifndef ATTRIBUTE_NOCLONE
-# if (GCC_VERSION >= 4005)
+# if (GCC_VERSION >= 4005) || __has_attribute(__noclone__)
 #  define ATTRIBUTE_NOCLONE __attribute__((__noclone__))
 # else
 #  define ATTRIBUTE_NOCLONE /* (nothing) */
@@ -371,7 +375,7 @@ So instead we use the macro below and test it against specific values.  */
 
 /* Attribute `returns_nonnull' was valid as of gcc 4.9 */
 #ifndef ATTRIBUTE_RETURNS_NONNULL
-# if (GCC_VERSION >= 4009)
+# if (GCC_VERSION >= 4009) || __has_attribute(returns_nonnull)
 #  define ATTRIBUTE_RETURNS_NONNULL __attribute__((returns_nonnull))
 # else
 #  define ATTRIBUTE_RETURNS_NONNULL
@@ -380,7 +384,7 @@ So instead we use the macro below and test it against specific values.  */
 
 /* Attribute `pure' was valid as of gcc 3.0.  */
 #ifndef ATTRIBUTE_PURE
-# if (GCC_VERSION >= 3000)
+# if (GCC_VERSION >= 3000) || __has_attribute(__pure__)
 #  define ATTRIBUTE_PURE __attribute__((__pure__))
 # else
 #  define ATTRIBUTE_PURE
@@ -389,7 +393,7 @@ So instead we use the macro below and test it against specific values.  */
 
 /* Assume likewise about attribute `const': */
 #ifndef ATTRIBUTE_CONST
-# if (GCC_VERSION >= 3000)
+# if (GCC_VERSION >= 3000) || __has_attribute(__const__)
 #  define ATTRIBUTE_CONST __attribute__((__const__))
 # else
 #  define ATTRIBUTE_CONST
@@ -447,7 +451,7 @@ So instead we use the macro below and test it against specific values.  */
 
 /* Attribute `sentinel' was valid as of gcc 3.5.  */
 #ifndef ATTRIBUTE_SENTINEL
-# if (GCC_VERSION >= 3005)
+# if (GCC_VERSION >= 3005) || __has_attribute(__sentinel__)
 #  define ATTRIBUTE_SENTINEL __attribute__((__sentinel__))
 # else
 #  define ATTRIBUTE_SENTINEL
@@ -471,14 +475,14 @@ So instead we use the macro below and test it against specific values.  */
 
 /* Attribute `hot' and `cold' was valid as of gcc 4.3.  */
 #ifndef ATTRIBUTE_COLD
-# if (GCC_VERSION >= 4003)
+# if (GCC_VERSION >= 4003) || __has_attribute(__cold__)
 #  define ATTRIBUTE_COLD __attribute__((__cold__))
 # else
 #  define ATTRIBUTE_COLD
 # endif /* GNUC >= 4.3 */
 #endif /* ATTRIBUTE_COLD */
 #ifndef ATTRIBUTE_HOT
-# if (GCC_VERSION >= 4003)
+# if (GCC_VERSION >= 4003) || __has_attribute(__hot__)
 #  define ATTRIBUTE_HOT __attribute__((__hot__))
 # else
 #  define ATTRIBUTE_HOT
@@ -487,7 +491,7 @@ So instead we use the macro below and test it against specific values.  */
 
 /* Attribute 'no_sanitize_undefined' was valid as of gcc 4.9.  */
 #ifndef ATTRIBUTE_NO_SANITIZE_UNDEFINED
-# if (GCC_VERSION >= 4009)
+# if (GCC_VERSION >= 4009) || __has_attribute(no_sanitize_undefined)
 #  define ATTRIBUTE_NO_SANITIZE_UNDEFINED __attribute__((no_sanitize_undefined))
 # else
 #  define ATTRIBUTE_NO_SANITIZE_UNDEFINED
@@ -501,7 +505,7 @@ So instead we use the macro below and test it against specific values.  */
 
 /* Added in gcc 7: */
 #ifndef ATTRIBUTE_FALLTHROUGH
-# if (GCC_VERSION >= 7000)
+# if (GCC_VERSION >= 7000) || __has_attribute(fallthrough)
 #  define ATTRIBUTE_FALLTHROUGH __attribute__((fallthrough))
 # else
 #  define ATTRIBUTE_FALLTHROUGH /* FALLTHRU */

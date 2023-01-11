@@ -17,6 +17,14 @@ XDEPFILES = \
 	GdbManager.o \
 	ViewGdbManager.o
 
+ifneq ("$(WITH_FOUNDATION)", "")
+XDEPFILES = $(PBFILES)
+FOUNDATION_LIBS = -framework Foundation
+else
+XDEPFILES =
+FOUNDATION_LIBS =
+endif
+
 NEXT_FILES = \
         nextstep-nat-watchpoint.o \
         nextstep-nat-dyld.o \
@@ -32,8 +40,11 @@ NEXT_FILES = \
         nextstep-nat-sigthread.o \
         nextstep-nat-mutils.o \
         nextstep-nat-threads.o \
-	nextstep-nat-infthread.o \
-	nextstep-nat-info.o
+        nextstep-nat-infthread.o \
+        nextstep-nat-info.o \
+        nextstep-xdep.o \
+        rhapsody-nat.o \
+        embedded-symbol.o
 
 I386_FILES = i386-next-nat-exec.o
 
@@ -46,9 +57,10 @@ NATDEPFILES = \
 	inftarg.o \
 	$(I386_FILES) \
 	$(NEXT_FILES) \
-	$(RHAPSODY_FILES)
+	$(RHAPSODY_FILES) \
+	$(CFM_FILES)
 
-XM_CLIBS = -framework Foundation $(CFM_CLIBS)
+XM_CLIBS = $(FOUNDATION_LIBS) $(CFM_CLIBS)
 
 VPATH += $(srcdir)/../gdb-next
 VPATH += $(srcdir)/../gdb-next/display-support
@@ -57,7 +69,30 @@ MH_CFLAGS = \
 	-DUSE_PTHREADS \
 	-DNS_TARGET_MAJOR=5 \
 	-I$(srcdir)/../gdb-next \
-	-I$(srcdir)/../gdb-next/display-support
+	-I$(srcdir)/../gdb-next/display-support \
+	$(CFM_CFLAGS)
+
+ifneq ("$(WITH_CFM)", "")
+
+CFM_FILES = \
+	nextstep-nat-cfm.o \
+	macosx-metrowerks.o
+
+CFM_CFLAGS = \
+	-DWITH_CFM=1 \
+	-I$(NEXT_ROOT)/System/Library/Frameworks/CarbonCore.framework/Headers \
+	-I$(NEXT_ROOT)/System/Library/Frameworks/CarbonCore.framework/PrivateHeaders \
+	-Wno-four-char-constants \
+	-traditional-cpp
+
+CFM_LIBS = \
+	-L$(NEXT_ROOT)/System/Library/Frameworks/CarbonCore.framework/Support -lGDBCFMHelper
+
+else
+CFM_FILES =
+CFM_CFLAGS =
+CFM_LIBS =
+endif
 
 ifneq ("$(USE_PTHREADS)", "")
 MH_CFLAGS += -DUSE_PTHREADS=1

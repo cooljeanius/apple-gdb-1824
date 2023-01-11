@@ -372,9 +372,9 @@ struct reloc_std_external
 #define	RELOC_STD_BITS_PCREL_LITTLE	((unsigned int) 0x01)
 
 #define	RELOC_STD_BITS_LENGTH_BIG	((unsigned int) 0x60)
-#define	RELOC_STD_BITS_LENGTH_SH_BIG	5
+#define	RELOC_STD_BITS_LENGTH_SH_BIG	5U
 #define	RELOC_STD_BITS_LENGTH_LITTLE	((unsigned int) 0x06)
-#define	RELOC_STD_BITS_LENGTH_SH_LITTLE	1
+#define	RELOC_STD_BITS_LENGTH_SH_LITTLE	1U
 
 #define	RELOC_STD_BITS_EXTERN_BIG	((unsigned int) 0x10)
 #define	RELOC_STD_BITS_EXTERN_LITTLE	((unsigned int) 0x08)
