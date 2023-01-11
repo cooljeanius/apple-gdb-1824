@@ -275,13 +275,13 @@ So instead we use the macro below and test it against specific values.  */
  * g++ an attribute on a label must be followed by a semicolon: */
 #ifndef ATTRIBUTE_UNUSED_LABEL
 # ifndef __cplusplus
-#  if GCC_VERSION >= 2093
+#  if (GCC_VERSION >= 2093) || __has_attribute(__unused__)
 #   define ATTRIBUTE_UNUSED_LABEL ATTRIBUTE_UNUSED
 #  else
 #   define ATTRIBUTE_UNUSED_LABEL
 #  endif /* gcc 2.93+ */
 # else /* __cplusplus: */
-#  if GCC_VERSION >= 4005
+#  if (GCC_VERSION >= 4005) || __has_attribute(__unused__)
 #   define ATTRIBUTE_UNUSED_LABEL ATTRIBUTE_UNUSED ;
 #  else
 #   define ATTRIBUTE_UNUSED_LABEL
@@ -291,7 +291,7 @@ So instead we use the macro below and test it against specific values.  */
 
 /* FIXME: verify the gcc versions in which this is available: */
 #ifndef ATTRIBUTE_DEPRECATED
-# if GCC_VERSION >= 3002
+# if (GCC_VERSION >= 3002) || __has_attribute(__deprecated__)
 #  define ATTRIBUTE_DEPRECATED __attribute__((__deprecated__))
 # else
 #  define ATTRIBUTE_DEPRECATED
@@ -300,7 +300,7 @@ So instead we use the macro below and test it against specific values.  */
 
 /* This part is based on <glib-2.0/glib/gmacros.h>: */
 #ifndef ATTRIBUTE_DEPRECATED_FOR
-# if GCC_VERSION >= 4005
+# if (GCC_VERSION >= 4005) || __has_attribute(__deprecated__)
 #  define ATTRIBUTE_DEPRECATED_FOR(f) __attribute__((__deprecated__("Use '" #f "' instead")))
 # else
 #  if defined(_MSC_FULL_VER) && (_MSC_FULL_VER > 140050320)
@@ -313,7 +313,8 @@ So instead we use the macro below and test it against specific values.  */
 
 
 #ifndef ATTRIBUTE_GNU_INLINE
-# if defined(__GNUC__) && defined(__GNUC_VERSION__)
+# if (defined(__GNUC__) && defined(__GNUC_VERSION__)) || \
+     __has_attribute(__gnu_inline__)
 #  define ATTRIBUTE_GNU_INLINE __attribute__((__gnu_inline__))
 # else
 #  define ATTRIBUTE_GNU_INLINE /* (nothing) */
@@ -324,7 +325,7 @@ So instead we use the macro below and test it against specific values.  */
    could NOT parse attributes placed after the identifier name, and now
    the entire compiler is built with C++.  */
 #ifndef ATTRIBUTE_UNUSED
-# if GCC_VERSION >= 3004
+# if (GCC_VERSION >= 3004) || __has_attribute(__unused__)
 #  define ATTRIBUTE_UNUSED __attribute__((__unused__))
 # else
 #  define ATTRIBUTE_UNUSED
@@ -333,7 +334,7 @@ So instead we use the macro below and test it against specific values.  */
 
 /* Similar to the previous: */
 #ifndef ATTRIBUTE_USED
-# if GCC_VERSION >= 3004
+# if (GCC_VERSION >= 3004) || __has_attribute(__used__)
 #  define ATTRIBUTE_USED __attribute__((__used__))
 # else
 #  define ATTRIBUTE_USED
@@ -366,7 +367,7 @@ So instead we use the macro below and test it against specific values.  */
 
 /* Attribute `nonnull' was valid as of gcc 3.3.  */
 #ifndef ATTRIBUTE_NONNULL
-# if (GCC_VERSION >= 3003)
+# if (GCC_VERSION >= 3003) || __has_attribute(__nonnull__)
 #  define ATTRIBUTE_NONNULL(m) __attribute__((__nonnull__(m)))
 # else
 #  define ATTRIBUTE_NONNULL(m)
@@ -422,7 +423,7 @@ So instead we use the macro below and test it against specific values.  */
    a function pointer.  Format attributes were allowed on function
    pointers as of gcc 3.1.  */
 #ifndef ATTRIBUTE_FPTR_PRINTF
-# if (GCC_VERSION >= 3001)
+# if (GCC_VERSION >= 3001) || __has_attribute(__format__)
 #  define ATTRIBUTE_FPTR_PRINTF(m, n) ATTRIBUTE_PRINTF(m, n)
 # else
 #  define ATTRIBUTE_FPTR_PRINTF(m, n)
@@ -437,7 +438,7 @@ So instead we use the macro below and test it against specific values.  */
 /* Use ATTRIBUTE_NULL_PRINTF when the format specifier may be NULL.  A
    NULL format specifier was allowed as of gcc 3.3.  */
 #ifndef ATTRIBUTE_NULL_PRINTF
-# if (GCC_VERSION >= 3003)
+# if (GCC_VERSION >= 3003) || __has_attribute(__format__)
 #  define ATTRIBUTE_NULL_PRINTF(m, n) __attribute__((__format__(__printf__, m, n)))
 # else
 #  define ATTRIBUTE_NULL_PRINTF(m, n)
@@ -460,7 +461,7 @@ So instead we use the macro below and test it against specific values.  */
 
 
 #ifndef ATTRIBUTE_ALIGNED_ALIGNOF
-# if (GCC_VERSION >= 3000)
+# if (GCC_VERSION >= 3000) || __has_attribute(__aligned__)
 #  define ATTRIBUTE_ALIGNED_ALIGNOF(m) __attribute__((__aligned__(__alignof__(m))))
 # else
 #  define ATTRIBUTE_ALIGNED_ALIGNOF(m)
