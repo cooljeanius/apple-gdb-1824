@@ -25,12 +25,13 @@ sinclude(../../config/acx.m4)
 
 echo "CPPFLAGS are '${CPPFLAGS}'"
 
-AC_PREREQ([2.61])dnl
+AC_PREREQ([2.70])dnl
 
 echo "initializing autoconf stuff for the testsuite..."
 
 AC_INIT([gdb-testsuite],[1824],[bug-gdb@gnu.org])dnl
 AC_CONFIG_SRCDIR([gdb.base])dnl
+AC_CONFIG_HEADERS([config.h])dnl
 
 # Architecture stuff:
 AC_MSG_CHECKING([architecture stuff])
@@ -269,7 +270,7 @@ case "${target}" in
     *-*-darwin*) AC_CONFIG_FILES([gdb.apple/Makefile])
                  AC_CONFIG_FILES([gdb.apple/gused/Makefile])
                  AC_CONFIG_FILES([gdb.apple/ld-r/Makefile])
-		 AC_CONFIG_FILES([gdb.apple/debug-in-ofile/Makefile])
+                 AC_CONFIG_FILES([gdb.apple/debug-in-ofile/Makefile])
                  AC_CONFIG_FILES([gdb.apple/xcode/Makefile])
                  AC_CONFIG_SUBDIRS([gdb.apple])
                  AC_CONFIG_SUBDIRS([gdb.objc])
@@ -302,16 +303,18 @@ fi
 AC_SUBST([gdb_target_cpu])dnl
 
 # The rest of the output:
+AC_CONFIG_SUBDIRS([gdb.asm])dnl
+AC_CONFIG_SUBDIRS([gdb.base])dnl
+AC_CONFIG_SUBDIRS([gdb.c++])dnl
 AC_CONFIG_SUBDIRS([gdb.cell])dnl
 AC_CONFIG_SUBDIRS([gdb.chill])dnl
+AC_CONFIG_SUBDIRS([gdb.disasm])dnl
+AC_CONFIG_SUBDIRS([gdb.threads])dnl
 AC_CONFIG_FILES([Makefile \
   gdb.ada/Makefile \
   gdb.arch/Makefile \
-  gdb.asm/Makefile \
-  gdb.base/Makefile \
   gdb.btrace/Makefile \
   gdb.cp/Makefile \
-  gdb.disasm/Makefile \
   gdb.dlang/Makefile \
   gdb.dwarf2/Makefile \
   gdb.fortran/Makefile \
@@ -329,7 +332,6 @@ AC_CONFIG_FILES([Makefile \
   gdb.perf/Makefile \
   gdb.reverse/Makefile \
   gdb.server/Makefile \
-  gdb.threads/Makefile \
   gdb.trace/Makefile \
   gdb.xml/Makefile])dnl
 AC_OUTPUT

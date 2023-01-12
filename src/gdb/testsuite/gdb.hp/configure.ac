@@ -49,9 +49,23 @@ AS_IF([test "x${CC}" = "x"],[
   AC_PROG_GCC_TRADITIONAL
 ])
 AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_MAKE_SET
 
 # Header(s).
 AC_CHECK_HEADERS([stdio.h])dnl
+
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  AC_CHECK_HEADERS([unistd.h])
+fi
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_TYPE_SIZE_T
+
+# Checks for library functions.
+AC_FUNC_FORK
+AC_FUNC_MALLOC
 
 # Output:
 AC_CONFIG_SUBDIRS([gdb.aCC gdb.base-hp gdb.compat gdb.defects gdb.objdbg])

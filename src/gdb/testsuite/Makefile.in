@@ -43,11 +43,14 @@ SED = @SED@
 EXEEXT = @EXEEXT@
 SUBDIRS = @subdirs@
 RPATH_ENVVAR = @RPATH_ENVVAR@
-ALL_SUBDIRS = gdb.ada gdb.arch gdb.asm gdb.base gdb.cp gdb.disasm \
-	gdb.dwarf2 \
-	gdb.fortran gdb.server gdb.java gdb.mi \
-	gdb.threads gdb.trace \
+ALL_SUBDIRS = gdb.ada gdb.apple gdb.arch gdb.asm gdb.base gdb.btrace gdb.c++ \
+	gdb.cell gdb.chill gdb.cp gdb.disasm gdb.dlang gdb.dwarf2 gdb.fortran \
+	gdb.gdb gdb.gdbtk gdb.go gdb.guile gdb.java gdb.linespec gdb.mi \
+	gdb.modula2 gdb.multi gdb.objc gdb.opencl gdb.opt gdb.pascal gdb.perf \
+	gdb.reverse gdb.server gdb.stabs gdb.threads gdb.trace gdb.xml \
 	$(SUBDIRS)
+
+SUBDIRS_WITHOUT_MAKEFILES = gdb.hp gdb.python
 
 EXPECT = `if test -f $${rootme}/../../expect/expect; then \
           echo $${rootme}/../../expect/expect ; \
@@ -94,7 +97,7 @@ TARGET_FLAGS_TO_PASS = \
         "RUNTEST=$(RUNTEST)" \
         "RUNTESTFLAGS=$(RUNTESTFLAGS)"
 
-all: read1 @MAINT@ $(EXTRA_RULES)
+all: read1 @MAINT@ $(EXTRA_RULES) subdirs
 	@echo "Nothing to be done for all..."
 
 .NOEXPORT:

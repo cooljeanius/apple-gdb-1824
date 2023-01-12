@@ -6,7 +6,7 @@ dnl any existing configure script.
 
 AC_PREREQ(2.5)
 AC_INIT(pthreads.exp)
-AC_CONFIG_HEADER(config.h:config.in)
+AC_CONFIG_HEADER(config.h:config_h.in)
 
 CC=${CC-cc}
 AC_SUBST(CC)
