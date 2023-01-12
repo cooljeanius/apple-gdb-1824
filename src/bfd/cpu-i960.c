@@ -37,24 +37,24 @@ scan_960_mach(const bfd_arch_info_type *ap, const char *string)
   unsigned long machine;
   int fail_because_not_80960 = FALSE;
 
-  /* Look for the string i960 at the front of the string.  */
-  if (strncasecmp ("i960", string, 4) == 0)
+  /* Look for the string i960 at the front of the string: */
+  if (strncasecmp("i960", string, 4UL) == 0)
     {
       string += 4;
 
-      /* i960 on it's own means core to us.  */
-      if (* string == 0)
+      /* i960 on its own means "core" to us: */
+      if (*string == 0)
 	return ap->mach == bfd_mach_i960_core;
 
-      /* "i960:*" is valid, anything else is not.  */
-      if (* string != ':')
+      /* "i960:*" is valid, anything else is not: */
+      if (*string != ':')
 	return FALSE;
 
       string ++;
     }
   /* In some bfds the cpu-id is written as "80960KA", "80960KB",
      "80960CA" or "80960MC".  */
-  else if (strncmp ("80960", string, 5) == 0)
+  else if (strncmp("80960", string, 5UL) == 0)
     {
       string += 5;
 

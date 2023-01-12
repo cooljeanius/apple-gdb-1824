@@ -688,9 +688,9 @@ AC_CHECK_FUNCS([btowc calloc close exit fabs fabsf fabsl fcntl fctrl fdopen \
                 feof ferror fileno fopen fprintf fread getgid getrlimit \
                 getuid ioctlsocket islower isspace isupper mbsrtowcs memchr \
                 memcpy_chk memcpy_s memmove mempcpy memset open pread qsort \
-                rpl_malloc rpl_realloc setitimer strcmp strdup strncasecmp \
-                strrchr strspn strstr strtol strtoul strtoull sysconf system \
-                uname wmempcpy])dnl
+                rpl_malloc rpl_realloc setitimer snprintf strcmp strdup \
+                strncasecmp strrchr strspn strstr strtol strtoul strtoull \
+                sysconf system uname wmempcpy])dnl
 AC_CHECK_FUNCS_ONCE([lt_dlinit])dnl
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_FNMATCH

@@ -211,7 +211,7 @@ aix386_core_file_p(bfd *abfd)
       return 0;
   }
 
-  if (strncmp((const char *)longbuf, COR_MAGIC, 4)) {
+  if (strncmp((const char *)longbuf, COR_MAGIC, 4UL)) {
       return 0;
   }
 
@@ -389,7 +389,7 @@ static int
 aix386_core_file_failing_signal(bfd *abfd)
 {
 #if defined(core_hdr) && defined(ACTUALLY_CAN_USE_AIX_I386_STUFF)
-  return core_hdr(abfd)->cd_cursig;
+  return (int)core_hdr(abfd)->cd_cursig;
 #else
 # if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
 #  pragma unused (abfd)

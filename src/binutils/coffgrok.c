@@ -206,7 +206,7 @@ do_sections_p2(struct coff_ofile *head)
           r->offset = sr->address;
 #endif /* HAVE_OFF_T || off_t || __STDC__ */
 	  r->addend = sr->addend;
-	  idx = (((coff_symbol_type *)(sr->sym_ptr_ptr[0]))->native - rawsyms);
+	  idx = (int)(((coff_symbol_type *)(sr->sym_ptr_ptr[0]))->native - rawsyms);
 	  r->symbol = tindex[idx];
 	}
     }
@@ -357,7 +357,7 @@ do_type(size_t i)
 	{
 	  /* This is probably a section definition: */
 	  res->type = coff_secdef_type;
-	  res->size = aux->x_scn.x_scnlen;
+	  res->size = (int)aux->x_scn.x_scnlen;
 	}
       else
 	{

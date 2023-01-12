@@ -907,7 +907,7 @@ adjust_o_magic(bfd *abfd, struct internal_exec *execp)
   else
     vma = obj_textsec(abfd)->vma;
 
-  pos += obj_textsec(abfd)->size;
+  pos += (file_ptr)obj_textsec(abfd)->size;
   vma += obj_textsec(abfd)->size;
 
   /* Data.  */
@@ -921,7 +921,7 @@ adjust_o_magic(bfd *abfd, struct internal_exec *execp)
   else
     vma = obj_datasec(abfd)->vma;
   obj_datasec(abfd)->filepos = pos;
-  pos += obj_datasec(abfd)->size;
+  pos += (file_ptr)obj_datasec(abfd)->size;
   vma += obj_datasec(abfd)->size;
 
   /* BSS.  */
@@ -968,7 +968,7 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
   /* Text.  */
   ztih = (abdp != NULL
 	  && (abdp->text_includes_header
-	      || obj_aout_subformat (abfd) == q_magic_format));
+	      || (obj_aout_subformat(abfd) == q_magic_format)));
   obj_textsec(abfd)->filepos = (ztih
                                 ? adata(abfd).exec_bytes_size
                                 : (file_ptr)adata(abfd).zmagic_disk_block_size);
@@ -1015,22 +1015,22 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
                    - (bfd_size_type)text_end);
       text_end += (file_ptr)obj_textsec(abfd)->filepos;
     }
-  obj_textsec (abfd)->size += text_pad;
-  text_end += text_pad;
+  obj_textsec(abfd)->size += text_pad;
+  text_end += (file_ptr)text_pad;
 
-  /* Data.  */
-  if (!obj_datasec (abfd)->user_set_vma)
+  /* Data: */
+  if (!obj_datasec(abfd)->user_set_vma)
     {
       bfd_vma vma;
-      vma = obj_textsec (abfd)->vma + obj_textsec (abfd)->size;
-      obj_datasec (abfd)->vma = BFD_ALIGN (vma, adata (abfd).segment_size);
+      vma = (obj_textsec(abfd)->vma + obj_textsec(abfd)->size);
+      obj_datasec(abfd)->vma = BFD_ALIGN(vma, adata(abfd).segment_size);
     }
   if (abdp && abdp->zmagic_mapped_contiguous)
     {
-      asection * text = obj_textsec (abfd);
-      asection * data = obj_datasec (abfd);
+      asection *text = obj_textsec(abfd);
+      asection *data = obj_datasec(abfd);
 
-      text_pad = data->vma - (text->vma + text->size);
+      text_pad = (data->vma - (text->vma + text->size));
       /* Only pad the text section if the data
 	 section is going to be placed after it.  */
       if (text_pad > 0)
@@ -1040,26 +1040,26 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
                                 + (file_ptr)obj_textsec(abfd)->size);
 
   /* Fix up exec header while we are at it: */
-  execp->a_text = obj_textsec (abfd)->size;
+  execp->a_text = obj_textsec(abfd)->size;
   if (ztih && (!abdp || (abdp && !abdp->exec_header_not_counted)))
-    execp->a_text += adata (abfd).exec_bytes_size;
-  if (obj_aout_subformat (abfd) == q_magic_format)
-    N_SET_MAGIC (*execp, QMAGIC);
+    execp->a_text += adata(abfd).exec_bytes_size;
+  if (obj_aout_subformat(abfd) == q_magic_format)
+    N_SET_MAGIC(*execp, QMAGIC);
   else
-    N_SET_MAGIC (*execp, ZMAGIC);
+    N_SET_MAGIC(*execp, ZMAGIC);
 
   /* Spec says data section should be rounded up to page boundary.  */
-  obj_datasec (abfd)->size
-    = align_power (obj_datasec (abfd)->size,
-		   obj_bsssec (abfd)->alignment_power);
-  execp->a_data = BFD_ALIGN (obj_datasec (abfd)->size,
-			     adata (abfd).page_size);
-  data_pad = execp->a_data - obj_datasec (abfd)->size;
+  obj_datasec(abfd)->size
+    = align_power(obj_datasec(abfd)->size,
+                  obj_bsssec(abfd)->alignment_power);
+  execp->a_data = BFD_ALIGN(obj_datasec(abfd)->size,
+                            adata(abfd).page_size);
+  data_pad = (execp->a_data - obj_datasec(abfd)->size);
 
   /* BSS.  */
-  if (!obj_bsssec (abfd)->user_set_vma)
-    obj_bsssec (abfd)->vma = (obj_datasec (abfd)->vma
-			      + obj_datasec (abfd)->size);
+  if (!obj_bsssec(abfd)->user_set_vma)
+    obj_bsssec(abfd)->vma = (obj_datasec(abfd)->vma
+                             + obj_datasec(abfd)->size);
   /* If the BSS immediately follows the data section and extra space
      in the page is left after the data section, fudge data
      in the header so that the bss section looks smaller by that
@@ -1067,12 +1067,12 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
      (Note that a linker script, as well as the above assignment,
      could have explicitly set the BSS vma to immediately follow
      the data section.)  */
-  if (align_power (obj_bsssec (abfd)->vma, obj_bsssec (abfd)->alignment_power)
-      == obj_datasec (abfd)->vma + obj_datasec (abfd)->size)
-    execp->a_bss = (data_pad > obj_bsssec (abfd)->size
-		    ? 0 : obj_bsssec (abfd)->size - data_pad);
+  if (align_power(obj_bsssec(abfd)->vma, obj_bsssec(abfd)->alignment_power)
+      == (obj_datasec(abfd)->vma + obj_datasec(abfd)->size))
+    execp->a_bss = ((data_pad > obj_bsssec(abfd)->size)
+		    ? 0 : (obj_bsssec(abfd)->size - data_pad));
   else
-    execp->a_bss = obj_bsssec (abfd)->size;
+    execp->a_bss = obj_bsssec(abfd)->size;
 }
 
 static void
@@ -1088,7 +1088,7 @@ adjust_n_magic(bfd *abfd, struct internal_exec *execp)
     obj_textsec(abfd)->vma = vma;
   else
     vma = obj_textsec(abfd)->vma;
-  pos += obj_textsec(abfd)->size;
+  pos += (file_ptr)obj_textsec(abfd)->size;
   vma += obj_textsec(abfd)->size;
 
   /* Data: */
@@ -1101,7 +1101,7 @@ adjust_n_magic(bfd *abfd, struct internal_exec *execp)
   vma += obj_datasec(abfd)->size;
   pad = (int)(align_power(vma, obj_bsssec(abfd)->alignment_power) - vma);
   obj_datasec(abfd)->size += (bfd_size_type)pad;
-  pos += obj_datasec(abfd)->size;
+  pos += (file_ptr)obj_datasec(abfd)->size;
 
   /* BSS.  */
   if (!obj_bsssec(abfd)->user_set_vma)
@@ -1577,9 +1577,9 @@ translate_to_native_sym_flags (bfd *abfd,
 
   /* Mask out any existing type bits in case copying from one section
      to another.  */
-  sym_pointer->e_type[0] &= ~N_TYPE;
+  sym_pointer->e_type[0] &= (bfd_byte)(~N_TYPE);
 
-  sec = bfd_get_section (cache_ptr);
+  sec = bfd_get_section(cache_ptr);
   off = 0;
 
   if (sec == NULL)
@@ -1628,8 +1628,8 @@ translate_to_native_sym_flags (bfd *abfd,
 	}
     }
 
-  /* Turn the symbol from section relative to absolute again.  */
-  value += sec->vma + off;
+  /* Turn the symbol from section relative to absolute again: */
+  value += (sec->vma + off);
 
   if ((cache_ptr->flags & BSF_WARNING) != 0)
     sym_pointer->e_type[0] = N_WARNING;
@@ -1639,7 +1639,7 @@ translate_to_native_sym_flags (bfd *abfd,
   else if ((cache_ptr->flags & BSF_GLOBAL) != 0)
     sym_pointer->e_type[0] |= N_EXT;
   else if ((cache_ptr->flags & BSF_LOCAL) != 0)
-    sym_pointer->e_type[0] &= ~N_EXT;
+    sym_pointer->e_type[0] &= (unsigned char)(~N_EXT);
 
   if ((cache_ptr->flags & BSF_CONSTRUCTOR) != 0) {
       bfd_byte type = ((aout_symbol_type *)cache_ptr)->type;
@@ -1874,8 +1874,8 @@ NAME(aout, write_syms)(bfd *abfd)
       if (bfd_asymbol_flavour(g) == abfd->xvec->flavour)
 	{
 	  H_PUT_16(abfd, (bfd_vma)aout_symbol(g)->desc,  nsp.e_desc);
-	  H_PUT_8(abfd, aout_symbol(g)->other, nsp.e_other);
-	  H_PUT_8(abfd, aout_symbol(g)->type,  nsp.e_type);
+	  H_PUT_8(abfd, (unsigned char)aout_symbol(g)->other, nsp.e_other);
+	  H_PUT_8(abfd, (unsigned char)aout_symbol(g)->type,  nsp.e_type);
 	}
       else
 	{
@@ -3603,7 +3603,7 @@ aout_link_write_other_symbol(struct aout_link_hash_entry *h, void * data)
       return TRUE;
     }
 
-  H_PUT_8(output_bfd, type, outsym.e_type);
+  H_PUT_8(output_bfd, (unsigned char)type, outsym.e_type);
   H_PUT_8(output_bfd, 0, outsym.e_other);
   H_PUT_16(output_bfd, (bfd_vma)0UL, outsym.e_desc);
   indx = add_to_stringtab(output_bfd, finfo->strtab, h->root.root.string,
@@ -3984,9 +3984,9 @@ aout_link_input_section_std (struct aout_final_link_info *finfo,
 
 		  /* Change the r_extern value.  */
 		  if (bfd_header_big_endian (output_bfd))
-		    rel->r_type[0] &=~ RELOC_STD_BITS_EXTERN_BIG;
+		    rel->r_type[0] &= (bfd_byte)(~RELOC_STD_BITS_EXTERN_BIG);
 		  else
-		    rel->r_type[0] &=~ RELOC_STD_BITS_EXTERN_LITTLE;
+		    rel->r_type[0] &= (bfd_byte)(~RELOC_STD_BITS_EXTERN_LITTLE);
 
 		  /* Compute a new r_index.  */
 		  output_section = h->root.u.def.section->output_section;
@@ -4311,9 +4311,9 @@ aout_link_input_section_ext (struct aout_final_link_info *finfo,
 
 		  /* Change the r_extern value.  */
 		  if (bfd_header_big_endian (output_bfd))
-		    rel->r_type[0] &=~ RELOC_EXT_BITS_EXTERN_BIG;
+		    rel->r_type[0] &= (bfd_byte)(~RELOC_EXT_BITS_EXTERN_BIG);
 		  else
-		    rel->r_type[0] &=~ RELOC_EXT_BITS_EXTERN_LITTLE;
+		    rel->r_type[0] &= (bfd_byte)(~RELOC_EXT_BITS_EXTERN_LITTLE);
 
 		  /* Compute a new r_index.  */
 		  output_section = h->root.u.def.section->output_section;
@@ -4689,7 +4689,7 @@ aout_link_input_section (struct aout_final_link_info *finfo,
 	return FALSE;
       if (bfd_bwrite (relocs, rel_size, finfo->output_bfd) != rel_size)
 	return FALSE;
-      *reloff_ptr += rel_size;
+      *reloff_ptr += (file_ptr)rel_size;
 
       /* Assert that the relocs have not run into the symbols, and
 	 that if these are the text relocs they have not run into the
@@ -5138,9 +5138,9 @@ aout_link_write_symbols(struct aout_final_link_info *finfo, bfd *input_bfd)
 
       /* Copy this symbol into the list of symbols we are going to
 	 write out.  */
-      H_PUT_8 (output_bfd, type, outsym->e_type);
-      H_PUT_8 (output_bfd, H_GET_8 (input_bfd, sym->e_other), outsym->e_other);
-      H_PUT_16 (output_bfd, H_GET_16 (input_bfd, sym->e_desc), outsym->e_desc);
+      H_PUT_8(output_bfd, (unsigned char)type, outsym->e_type);
+      H_PUT_8(output_bfd, H_GET_8(input_bfd, sym->e_other), outsym->e_other);
+      H_PUT_16(output_bfd, H_GET_16(input_bfd, sym->e_desc), outsym->e_desc);
       copy = FALSE;
       if (! finfo->info->keep_memory)
 	{
@@ -5175,7 +5175,7 @@ aout_link_write_symbols(struct aout_final_link_info *finfo, bfd *input_bfd)
       if (bfd_bwrite((void *)finfo->output_syms, outsym_size, output_bfd)
 	  != outsym_size)
 	return FALSE;
-      finfo->symoff += outsym_size;
+      finfo->symoff += (file_ptr)outsym_size;
     }
 
   return TRUE;

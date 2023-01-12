@@ -1038,10 +1038,10 @@ alpha_ecoff_get_relocated_section_contents(bfd *abfd,
 	    offset = ((rel->addend >> 8) & 0xff);
 	    size = (size_t)(rel->addend & 0xff);
 
-	    val = bfd_get_64 (abfd, data + rel->address);
-	    val &=~ (((1UL << size) - 1UL) << offset);
-	    val |= (stack[--tos] & ((1 << size) - 1)) << offset;
-	    bfd_put_64 (abfd, val, data + rel->address);
+	    val = bfd_get_64(abfd, (data + rel->address));
+	    val &= ~(((1UL << size) - 1UL) << offset);
+	    val |= ((stack[--tos] & ((1UL << size) - 1UL)) << offset);
+	    bfd_put_64(abfd, val, (data + rel->address));
 	  }
 	  break;
 
@@ -1223,7 +1223,7 @@ alpha_bfd_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
       alpha_type = ALPHA_R_SREL64;
       break;
     default:
-      return (reloc_howto_type *) NULL;
+      return (reloc_howto_type *)NULL;
     }
 
   return &alpha_howto_table[alpha_type];
@@ -1254,7 +1254,7 @@ alpha_convert_external_reloc(bfd *output_bfd ATTRIBUTE_UNUSED,
 	 being against the symbol to being against the section.  */
 
       /* Clear the r_extern bit: */
-      ext_rel->r_bits[1] &=~ RELOC_BITS1_EXTERN_LITTLE;
+      ext_rel->r_bits[1] &= (unsigned char)(~RELOC_BITS1_EXTERN_LITTLE);
 
       /* Compute a new r_symndx value: */
       hsec = h->root.u.def.section;
@@ -2053,21 +2053,21 @@ alpha_ecoff_read_ar_hdr(bfd *abfd)
     return NULL;
 
   h = (struct ar_hdr *)ret->arch_header;
-  if (strncmp(h->ar_fmag, ARFZMAG, 2) == 0)
+  if (strncmp(h->ar_fmag, ARFZMAG, 2UL) == 0)
     {
       bfd_byte ab[8];
 
       /* This is a compressed file.  We must set the size correctly.
          The size is the eight bytes after the dummy file header.  */
-      if (bfd_seek (abfd, (file_ptr) FILHSZ, SEEK_CUR) != 0
-	  || bfd_bread (ab, (bfd_size_type) 8, abfd) != 8
-	  || bfd_seek (abfd, (file_ptr) (- (FILHSZ + 8)), SEEK_CUR) != 0)
+      if ((bfd_seek(abfd, (file_ptr)FILHSZ, SEEK_CUR) != 0)
+	  || (bfd_bread(ab, (bfd_size_type)8UL, abfd) != 8)
+	  || (bfd_seek(abfd, (file_ptr)(-(FILHSZ + 8)), SEEK_CUR) != 0))
 	return NULL;
 
       ret->parsed_size = (unsigned int)H_GET_64(abfd, ab);
     }
 
-  return (PTR) ret;
+  return (PTR)ret;
 }
 
 /* Get an archive element at a specified file position.  This is where
@@ -2096,7 +2096,7 @@ alpha_ecoff_get_elt_at_filepos(bfd *archive, file_ptr filepos)
 
   tdata = (struct areltdata *)nbfd->arelt_data;
   hdr = (struct ar_hdr *)tdata->arch_header;
-  if (strncmp(hdr->ar_fmag, ARFZMAG, 2) != 0)
+  if (strncmp(hdr->ar_fmag, ARFZMAG, 2UL) != 0)
     return nbfd;
 
   /* We must uncompress this element.  We do this by copying it into a

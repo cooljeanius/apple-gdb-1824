@@ -348,6 +348,12 @@ size_t strnlen(const char *, size_t);
 # ifndef bzero
 #  pragma GCC poison bzero
 # endif /* !bzero */
+# if defined(HAVE_SNPRINTF) && defined(__APPLE__) && !defined(__BFD_H_SEEN__) && \
+     (defined(HAVE_DECL_SNPRINTF) && HAVE_DECL_SNPRINTF)
+#  ifndef sprintf
+#   pragma GCC poison sprintf
+#  endif /* !sprintf */
+# endif /* HAVE_SNPRITNF && __APPLE__ && !__BFD_H_SEEN__ && HAVE_DECL_SNPRINTF */
 # pragma GCC poison setlinebuf bcmp strsave strnicmp extra_func_to_poison
 #endif /* gcc3+ && !NO_POISON && !FLEX_SCANNER */
 

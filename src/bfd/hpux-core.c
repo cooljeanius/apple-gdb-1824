@@ -155,7 +155,7 @@ thread_section_p(bfd *abfd ATTRIBUTE_UNUSED,
                  asection *sect,
                  void *obj ATTRIBUTE_UNUSED)
 {
-  return (strncmp(bfd_section_name(abfd, sect), ".reg/", 5) == 0);
+  return (strncmp(bfd_section_name(abfd, sect), ".reg/", 5UL) == 0);
 }
 
 /* see comment below this: */

@@ -236,7 +236,7 @@ bfd_pef_parse_traceback_table(bfd *abfd, asection *section,
   }
 
   if (file != NULL) {
-    fprintf(file, " [length = 0x%lx]", (long) offset);
+    fprintf(file, " [length = 0x%lx]", (unsigned long)offset);
   }
 
   return (int)offset;

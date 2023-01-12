@@ -530,7 +530,8 @@ srec_scan (bfd *abfd)
 		    char *secname;
 		    bfd_size_type amt;
 
-		    sprintf(secbuf, ".sec%d", bfd_count_sections(abfd) + 1);
+		    snprintf(secbuf, sizeof(secbuf), ".sec%d",
+		             (int)(bfd_count_sections(abfd) + 1));
 		    amt = (strlen(secbuf) + 1);
 		    secname = (char *)bfd_alloc(abfd, amt);
 		    strcpy(secname, secbuf);

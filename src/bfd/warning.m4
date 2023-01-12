@@ -47,6 +47,11 @@ elif test "x${WANT_CONVERSION_WARNS}" = "xmaybe"; then
   test -n "${WANT_CONVERSION_WARNS}"
   gl_COMPILER_OPTION_IF([-Warith-conversion],
                         [gl_WARN_ADD([-Wconversion])],[:])
+elif test "x${WANT_CONVERSION_WARNS}" = "xweird"; then
+  WARN_CFLAGS="${WARN_CFLAGS} -Warith-conversion -Wtraditional-conversion \
+  -Wenum-conversion -Wanon-enum-enum-conversion -Wbitfield-enum-conversion \
+  -Wimplicit-int-conversion -Wnullable-to-nonnull-conversion \
+  -Wstring-conversion -Wvector-conversion"
 fi
 WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint -DDEBUG_GEN_RELOC -DDEBUG_HASH \
 -DDEBUG_PIC -DDEBUG_RELAX -DDEBUG_RELOC -DDJDEBUG -DFATAL_DEBUG \

@@ -479,17 +479,16 @@ ecoff_swap_sym_in(bfd *abfd, void *ext_copy, SYMR *intern)
     }
 
 #ifdef TEST
-  if (memcmp ((char *) ext, (char *) intern, sizeof (*intern)) != 0)
-    abort ();
+  if (memcmp((char *)ext, (char *)intern, sizeof(*intern)) != 0)
+    abort();
 #endif
 }
 
-/* Swap out a symbol record.  */
-
+/* Swap out a symbol record: */
 static void
-ecoff_swap_sym_out (bfd *abfd, const SYMR *intern_copy, void * ext_ptr)
+ecoff_swap_sym_out(bfd *abfd, const SYMR *intern_copy, void *ext_ptr)
 {
-  struct sym_ext *ext = (struct sym_ext *) ext_ptr;
+  struct sym_ext *ext = (struct sym_ext *)ext_ptr;
   SYMR intern[1];
 
   /* Make it reasonable to do in-place: */
@@ -510,8 +509,8 @@ ecoff_swap_sym_out (bfd *abfd, const SYMR *intern_copy, void * ext_ptr)
 			 | (intern->reserved ? SYM_BITS2_RESERVED_BIG : 0)
 			 | ((intern->index >> SYM_BITS2_INDEX_SH_LEFT_BIG)
 			    & SYM_BITS2_INDEX_BIG));
-      ext->s_bits3[0] = (intern->index >> SYM_BITS3_INDEX_SH_LEFT_BIG) & 0xff;
-      ext->s_bits4[0] = (intern->index >> SYM_BITS4_INDEX_SH_LEFT_BIG) & 0xff;
+      ext->s_bits3[0] = (unsigned char)((intern->index >> SYM_BITS3_INDEX_SH_LEFT_BIG) & 0xff);
+      ext->s_bits4[0] = (unsigned char)((intern->index >> SYM_BITS4_INDEX_SH_LEFT_BIG) & 0xff);
     }
   else
     {
@@ -524,13 +523,13 @@ ecoff_swap_sym_out (bfd *abfd, const SYMR *intern_copy, void * ext_ptr)
 			 | (intern->reserved ? SYM_BITS2_RESERVED_LITTLE : 0)
 			 | ((intern->index << SYM_BITS2_INDEX_SH_LITTLE)
 			    & SYM_BITS2_INDEX_LITTLE));
-      ext->s_bits3[0] = (intern->index >> SYM_BITS3_INDEX_SH_LEFT_LITTLE) & 0xff;
-      ext->s_bits4[0] = (intern->index >> SYM_BITS4_INDEX_SH_LEFT_LITTLE) & 0xff;
+      ext->s_bits3[0] = (unsigned char)((intern->index >> SYM_BITS3_INDEX_SH_LEFT_LITTLE) & 0xff);
+      ext->s_bits4[0] = (unsigned char)((intern->index >> SYM_BITS4_INDEX_SH_LEFT_LITTLE) & 0xff);
     }
 
 #ifdef TEST
-  if (memcmp ((char *) ext, (char *) intern, sizeof (*intern)) != 0)
-    abort ();
+  if (memcmp((char *)ext, (char *)intern, sizeof(*intern)) != 0)
+    abort();
 #endif
 }
 

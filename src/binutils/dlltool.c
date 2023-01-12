@@ -2450,9 +2450,9 @@ make_one_lib_file (export_type *exp, int i)
 
 	  if (exp->noname)
 	    {
-	      si->data[0] = exp->ordinal ;
-	      si->data[1] = exp->ordinal >> 8;
-	      si->data[2] = exp->ordinal >> 16;
+	      si->data[0] = (unsigned char)exp->ordinal;
+	      si->data[1] = (unsigned char)(exp->ordinal >> 8U);
+	      si->data[2] = (unsigned char)(exp->ordinal >> 16U);
 	      si->data[3] = 0x80;
 	    }
 	  else
@@ -2465,7 +2465,7 @@ make_one_lib_file (export_type *exp, int i)
 	      rpp[1] = 0;
 	      rel->address = 0;
 	      rel->addend = 0;
-	      rel->howto = bfd_reloc_type_lookup (abfd, BFD_RELOC_RVA);
+	      rel->howto = bfd_reloc_type_lookup(abfd, BFD_RELOC_RVA);
 	      rel->sym_ptr_ptr = secdata[IDATA6].sympp;
 	      sec->orelocation = rpp;
 	    }
@@ -2475,14 +2475,14 @@ make_one_lib_file (export_type *exp, int i)
 	case IDATA6:
 	  if (!exp->noname)
 	    {
-	      /* This used to add 1 to exp->hint.  I don't know
+	      /* This used to add 1 to exp->hint.  I do NOT know
 		 why it did that, and it does not match what I see
-		 in programs compiled with the MS tools.  */
+		 in programs compiled with the MS tools, but whatever... */
 	      int idx = exp->hint;
 	      si->size = (strlen(xlate(exp->import_name)) + 3UL);
 	      si->data = (unsigned char *)xmalloc(si->size);
-	      si->data[0] = idx & 0xff;
-	      si->data[1] = idx >> 8;
+	      si->data[0] = (idx & 0xff);
+	      si->data[1] = (unsigned char)(idx >> 8U);
 	      strcpy((char *)si->data + 2, xlate(exp->import_name));
 	    }
 	  break;

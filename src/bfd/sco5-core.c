@@ -129,15 +129,13 @@ const bfd_target *
 sco5_core_file_p(bfd *abfd)
 {
   size_t coffset_siz;
-  int val, nsecs, cheadoffs;
+  int nsecs, cheadoffs;
   size_t coresize;
   user_struct_t *u;
   struct coreoffsets coffsets;
   struct coresecthead chead;
   char *secname;
   flagword flags;
-
-  val = 0;
 
   /* Read coreoffsets region at end of core (see core(FP)): */
   {
@@ -185,6 +183,7 @@ sco5_core_file_p(bfd *abfd)
                              (file_ptr)coffsets.u_user))
 	goto fail;
 
+#ifdef _SCO_DS
       if (!make_bfd_asection(abfd, ".data",
                              (SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS),
                              ((bfd_size_type)u->u_exdata.ux_dsize
@@ -192,6 +191,13 @@ sco5_core_file_p(bfd *abfd)
                              (bfd_vma)u->u_exdata.ux_datorg,
                              (file_ptr)coffsets.u_data))
 	goto fail;
+#else
+      if (!make_bfd_asection(abfd, ".data",
+                             (SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS),
+                             (bfd_size_type)0UL, (bfd_vma)0UL,
+                             (file_ptr)coffsets.u_data))
+	goto fail;
+#endif /* _SCO_DS*/
 
 /* in case this is undefined: */
 #ifndef NBPC
@@ -199,12 +205,21 @@ sco5_core_file_p(bfd *abfd)
 # define NBPC 1
 #endif /* !NBPC */
 
+#ifdef _SCO_DS
       if (!make_bfd_asection(abfd, ".stack",
                              (SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS),
                              ((bfd_size_type)u->u_ssize * NBPC),
                              (bfd_vma)u->u_sub,
                              (file_ptr)coffsets.u_stack))
 	goto fail;
+#else
+      if (!make_bfd_asection(abfd, ".stack",
+                             (SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS),
+                             ((bfd_size_type)u->u_ssize * NBPC),
+                             (bfd_vma)0UL,
+                             (file_ptr)coffsets.u_stack))
+	goto fail;
+#endif /* _SCO_DS */
 
       return abfd->xvec;		/* Done for version 1 */
     }
@@ -373,6 +388,8 @@ sco5_core_file_p(bfd *abfd)
       abfd->tdata.any = NULL;
     }
   bfd_section_list_clear(abfd);
+  (void)chead;
+  (void)coffsets;
   return NULL;
 }
 
@@ -389,9 +406,15 @@ sco5_core_file_failing_command(bfd *abfd)
 int
 sco5_core_file_failing_signal(bfd *ignore_abfd)
 {
+#ifdef _SCO_DS
   return ((ignore_abfd->tdata.sco5_core_data->u.u_sysabort != 0)
 	  ? ignore_abfd->tdata.sco5_core_data->u.u_sysabort
 	  : -1);
+#else
+  (void)ignore_abfd;
+  return -1;
+#endif /* _SCO_DS */
+  /*NOTREACHED*/
 }
 
 bfd_boolean

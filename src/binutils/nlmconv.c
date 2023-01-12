@@ -977,22 +977,22 @@ main(int argc, char **argv)
       struct string_list *l;
       bfd_size_type c;
 
-      data = xmalloc (module_size);
+      data = xmalloc(module_size);
       c = 0;
-      set = (unsigned char *) data;
+      set = (unsigned char *)data;
       for (l = modules; l != NULL; l = l->next)
 	{
-	  *set = strlen (l->string);
-	  strncpy ((char *) set + 1, l->string, *set);
-	  set += *set + 1;
+	  *set = (unsigned char)strlen(l->string);
+	  strncpy((char *)set + 1, l->string, *set);
+	  set += (*set + 1);
 	  ++c;
 	}
-      if (! bfd_set_section_contents (outbfd, module_section, data,
-				      (file_ptr) 0, module_size))
-	bfd_fatal (_("module section"));
-      nlm_fixed_header (outbfd)->moduleDependencyOffset =
+      if (! bfd_set_section_contents(outbfd, module_section, data,
+                                     (file_ptr)0L, module_size))
+	bfd_fatal(_("module section"));
+      nlm_fixed_header(outbfd)->moduleDependencyOffset =
 	module_section->filepos;
-      nlm_fixed_header (outbfd)->numberOfModuleDependencies = c;
+      nlm_fixed_header(outbfd)->numberOfModuleDependencies = c;
     }
   if (rpc_file != NULL)
     {
@@ -1062,36 +1062,36 @@ main(int argc, char **argv)
     }
 
   {
-    const int    max_len  = NLM_MODULE_NAME_SIZE - 2;
-    const char * filename = lbasename (output_file);
+    const int max_len = (NLM_MODULE_NAME_SIZE - 2);
+    const char *filename = lbasename(output_file);
 
-    len = strlen (filename);
+    len = strlen(filename);
     if (len > max_len)
       len = max_len;
-    nlm_fixed_header (outbfd)->moduleName[0] = len;
+    nlm_fixed_header(outbfd)->moduleName[0] = (char)len;
 
-    strncpy (nlm_fixed_header (outbfd)->moduleName + 1, filename, max_len);
-    nlm_fixed_header (outbfd)->moduleName[max_len + 1] = '\0';
+    strncpy((nlm_fixed_header(outbfd)->moduleName + 1), filename, max_len);
+    nlm_fixed_header(outbfd)->moduleName[max_len + 1] = '\0';
 
-    for (modname = nlm_fixed_header (outbfd)->moduleName;
+    for (modname = nlm_fixed_header(outbfd)->moduleName;
 	 *modname != '\0';
 	 modname++)
       *modname = TOUPPER (*modname);
   }
 
-  strncpy (nlm_variable_header (outbfd)->oldThreadName, " LONG",
+  strncpy (nlm_variable_header(outbfd)->oldThreadName, " LONG",
 	   NLM_OLD_THREAD_NAME_LENGTH);
 
-  nlm_cygnus_ext_header (outbfd)->offset = secsec->filepos;
-  nlm_cygnus_ext_header (outbfd)->length = bfd_section_size (outbfd, secsec);
+  nlm_cygnus_ext_header(outbfd)->offset = secsec->filepos;
+  nlm_cygnus_ext_header(outbfd)->length = bfd_section_size(outbfd, secsec);
 
-  if (! bfd_close (outbfd))
-    bfd_fatal (output_file);
-  if (! bfd_close (inbfd))
-    bfd_fatal (input_file);
+  if (! bfd_close(outbfd))
+    bfd_fatal(output_file);
+  if (! bfd_close(inbfd))
+    bfd_fatal(input_file);
 
   if (unlink_on_exit != NULL)
-    unlink (unlink_on_exit);
+    unlink(unlink_on_exit);
 
   return 0;
 }

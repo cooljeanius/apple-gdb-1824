@@ -767,8 +767,9 @@ bfd_section_hash_newfunc(struct bfd_hash_entry *entry,
      subclass.  */
   if (entry == NULL)
     {
-      entry = (struct bfd_hash_entry *)
-	bfd_hash_allocate(table, sizeof(struct section_hash_entry));
+      entry = ((struct bfd_hash_entry *)
+               bfd_hash_allocate(table,
+                                 (unsigned int)sizeof(struct section_hash_entry)));
       if (entry == NULL)
 	return entry;
     }

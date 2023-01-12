@@ -126,49 +126,42 @@ static const char * quot (const char *);
 #define obstack_chunk_alloc xmalloc
 #define obstack_chunk_free free
 
-/* The resource building obstack.  */
-
+/* The resource building obstack: */
 static struct obstack res_obstack;
 
-/* Initialize the resource building obstack.  */
-
+/* Initialize the resource building obstack: */
 static void
-res_init (void)
+res_init(void)
 {
-  obstack_init (&res_obstack);
+  obstack_init(&res_obstack);
 }
 
-/* Allocate space on the resource building obstack.  */
-
+/* Allocate space on the resource building obstack: */
 void *
-res_alloc (size_t bytes)
+res_alloc(size_t bytes)
 {
-  return (void *) obstack_alloc (&res_obstack, bytes);
+  return (void *)obstack_alloc(&res_obstack, bytes);
 }
 
 /* We also use an obstack to save memory used while writing out a set
    of resources.  */
-
 static struct obstack reswr_obstack;
 
-/* Initialize the resource writing obstack.  */
-
+/* Initialize the resource writing obstack: */
 static void
-reswr_init (void)
+reswr_init(void)
 {
-  obstack_init (&reswr_obstack);
+  obstack_init(&reswr_obstack);
 }
 
-/* Allocate space on the resource writing obstack.  */
-
+/* Allocate space on the resource writing obstack: */
 void *
-reswr_alloc (size_t bytes)
+reswr_alloc(size_t bytes)
 {
-  return (void *) obstack_alloc (&reswr_obstack, bytes);
+  return (void *)obstack_alloc(&reswr_obstack, bytes);
 }
 
-/* Open a file using the include directory search list.  */
-
+/* Open a file using the include directory search list: */
 FILE *
 open_file_search (const char *filename, const char *mode, const char *errmsg,
 		  char **real_filename)
@@ -594,13 +587,13 @@ format_from_filename (const char *filename, int input)
   if (e == NULL)
     fatal("%s: %s", filename, xstrerror(errno));
 
-  b1 = getc (e);
-  b2 = getc (e);
-  b3 = getc (e);
-  b4 = getc (e);
-  b5 = getc (e);
+  b1 = (unsigned char)getc(e);
+  b2 = (unsigned char)getc(e);
+  b3 = (unsigned char)getc(e);
+  b4 = (unsigned char)getc(e);
+  b5 = (unsigned char)getc(e);
 
-  fclose (e);
+  fclose(e);
 
   /* A PE executable starts with 0x4d 0x5a.  */
   if (b1 == 0x4d && b2 == 0x5a)

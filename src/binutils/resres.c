@@ -421,7 +421,7 @@ write_res_id(const struct res_id *id)
     {
       unsigned short i = 0xFFFF;
       write_res_data(&i, sizeof(i), 1);
-      i = id->u.id;
+      i = (unsigned short)id->u.id;
       write_res_data(&i, sizeof(i), 1);
     }
 }

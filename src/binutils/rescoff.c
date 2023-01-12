@@ -175,11 +175,10 @@ overrun(const struct coff_file_info *finfo, const char *msg)
   fatal(_("%s: %s: address out of bounds"), finfo->filename, msg);
 }
 
-/* Read a resource directory.  */
-
+/* Read a resource directory: */
 static struct res_directory *
-read_coff_res_dir (const bfd_byte *data, const struct coff_file_info *finfo,
-		   const struct res_id *type, int level)
+read_coff_res_dir(const bfd_byte *data, const struct coff_file_info *finfo,
+                  const struct res_id *type, int level)
 {
   const struct extern_res_directory *erd;
   struct res_directory *rd;
@@ -187,26 +186,26 @@ read_coff_res_dir (const bfd_byte *data, const struct coff_file_info *finfo,
   struct res_entry **pp;
   const struct extern_res_entry *ere;
 
-  if ((size_t) (finfo->data_end - data) < sizeof (struct extern_res_directory))
-    overrun (finfo, _("directory"));
+  if ((size_t)(finfo->data_end - data) < sizeof(struct extern_res_directory))
+    overrun(finfo, _("directory"));
 
-  erd = (const struct extern_res_directory *) data;
+  erd = (const struct extern_res_directory *)data;
 
-  rd = (struct res_directory *) res_alloc (sizeof *rd);
-  rd->characteristics = getfi_32 (finfo, erd->characteristics);
-  rd->time = getfi_32 (finfo, erd->time);
-  rd->major = getfi_16 (finfo, erd->major);
-  rd->minor = getfi_16 (finfo, erd->minor);
+  rd = (struct res_directory *)res_alloc(sizeof *rd);
+  rd->characteristics = getfi_32(finfo, erd->characteristics);
+  rd->time = getfi_32(finfo, erd->time);
+  rd->major = (unsigned short)getfi_16(finfo, erd->major);
+  rd->minor = (unsigned short)getfi_16(finfo, erd->minor);
   rd->entries = NULL;
 
-  name_count = getfi_16 (finfo, erd->name_count);
-  id_count = getfi_16 (finfo, erd->id_count);
+  name_count = getfi_16(finfo, erd->name_count);
+  id_count = getfi_16(finfo, erd->id_count);
 
   pp = &rd->entries;
 
   /* The resource directory entries immediately follow the directory
      table.  */
-  ere = (const struct extern_res_entry *) (erd + 1);
+  ere = (const struct extern_res_entry *)(erd + 1);
 
   for (i = 0; i < name_count; i++, ere++)
     {
@@ -215,28 +214,28 @@ read_coff_res_dir (const bfd_byte *data, const struct coff_file_info *finfo,
       const bfd_byte *ers;
       int length, j;
 
-      if ((const bfd_byte *) ere >= finfo->data_end)
-	overrun (finfo, _("named directory entry"));
+      if ((const bfd_byte *)ere >= finfo->data_end)
+	overrun(finfo, _("named directory entry"));
 
-      name = getfi_32 (finfo, ere->name);
-      rva = getfi_32 (finfo, ere->rva);
+      name = getfi_32(finfo, ere->name);
+      rva = getfi_32(finfo, ere->rva);
 
-      /* For some reason the high bit in NAME is set.  */
-      name &=~ 0x80000000;
+      /* For some reason the high bit in NAME is set: */
+      name &= ~0x80000000;
 
-      if (name > (size_t) (finfo->data_end - finfo->data))
-	overrun (finfo, _("directory entry name"));
+      if (name > (size_t)(finfo->data_end - finfo->data))
+	overrun(finfo, _("directory entry name"));
 
-      ers = finfo->data + name;
+      ers = (finfo->data + name);
 
-      re = (struct res_entry *) res_alloc (sizeof *re);
+      re = (struct res_entry *)res_alloc(sizeof *re);
       re->next = NULL;
       re->id.named = 1;
-      length = getfi_16 (finfo, ers);
+      length = getfi_16(finfo, ers);
       re->id.u.n.length = length;
-      re->id.u.n.name = (unichar *) res_alloc (length * sizeof (unichar));
+      re->id.u.n.name = (unichar *)res_alloc(length * sizeof(unichar));
       for (j = 0; j < length; j++)
-	re->id.u.n.name[j] = getfi_16 (finfo, ers + j * 2 + 2);
+	re->id.u.n.name[j] = (unichar)getfi_16(finfo, (ers + (j * 2) + 2));
 
       if (level == 0)
 	type = &re->id;

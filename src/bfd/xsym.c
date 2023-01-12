@@ -305,8 +305,8 @@ bfd_sym_display_table_summary(FILE *f, bfd_sym_table_info *dti,
                               const char *name)
 {
   fprintf(f, "%-6s %13ld %13ld %13ld\n",
-          name, dti->dti_first_page, dti->dti_page_count,
-          dti->dti_object_count);
+          name, (long)dti->dti_first_page, (long)dti->dti_page_count,
+          (long)dti->dti_object_count);
 }
 
 void
@@ -1957,7 +1957,7 @@ bfd_sym_print_type_information(bfd *abfd, FILE *f, unsigned char *buf,
 		      bfd_sym_symbol_name(abfd, tinfo.nte_index)[0],
 		      &bfd_sym_symbol_name(abfd, tinfo.nte_index)[1]);
 	  }
-	fprintf(f, " (TTE %lu)", value);
+	fprintf(f, " (TTE %lu)", (unsigned long)value);
 	break;
       }
 
@@ -2019,13 +2019,13 @@ bfd_sym_print_type_information(bfd *abfd, FILE *f, unsigned char *buf,
 	  fprintf(f, "union (0x%x) of ", type);
 
 	bfd_sym_fetch_long(buf, len, offset, &offset, &nrec);
-	fprintf(f, "%lu elements: ", nrec);
+	fprintf(f, "%lu elements: ", (unsigned long)nrec);
 
 	for (i = 0; i < nrec; i++)
 	  {
 	    bfd_sym_fetch_long(buf, len, offset, &offset, &eloff);
 	    fprintf(f, "\n                ");
-	    fprintf(f, "offset %lu: ", eloff);
+	    fprintf(f, "offset %lu: ", (unsigned long)eloff);
 	    bfd_sym_print_type_information(abfd, f, buf, len, offset,
                                            &offset);
 	  }
@@ -2054,7 +2054,7 @@ bfd_sym_print_type_information(bfd *abfd, FILE *f, unsigned char *buf,
                 bfd_sym_symbol_name(abfd, (unsigned long)value)[0],
                 &bfd_sym_symbol_name(abfd, (unsigned long)value)[1]);
 
-      fprintf(f, " (NTE %lu) with type ", value);
+      fprintf(f, " (NTE %lu) with type ", (unsigned long)value);
       bfd_sym_print_type_information(abfd, f, buf, len, offset, &offset);
       break;
     }
@@ -2075,7 +2075,9 @@ bfd_sym_print_type_information(bfd *abfd, FILE *f, unsigned char *buf,
       bfd_sym_fetch_long (buf, len, offset, &offset, &n);
       bfd_sym_fetch_long (buf, len, offset, &offset, &width);
       bfd_sym_fetch_long (buf, len, offset, &offset, &m);
-      /* fprintf (f, "\n                "); */
+#if 0
+      fprintf (f, "\n                ");
+#endif /* 0 */
       fprintf (f, " N %ld, width %ld, M %ld, ", n, width, m);
       for (i = 0; i < m; i++)
 	{
@@ -2643,6 +2645,7 @@ int bfd_sym_sizeof_headers(bfd *abfd ATTRIBUTE_UNUSED,
   return 0;
 }
 
+/* */
 const bfd_target sym_vec =
 {
   "sym",			/* Name.  */

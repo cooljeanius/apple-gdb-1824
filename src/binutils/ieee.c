@@ -4186,7 +4186,7 @@ ieee_write_id(struct ieee_handle *info, const char *s)
 {
   unsigned int len;
 
-  len = strlen(s);
+  len = (unsigned int)strlen(s);
   if (len <= 0x7f)
     {
       if (! ieee_write_byte(info, (bfd_byte)len))
@@ -5615,7 +5615,7 @@ ieee_array_type(void *p, bfd_signed_vma low, bfd_signed_vma high,
   /* If we don't know the range, treat the size as exactly one
      element.  */
   if (low < high)
-    size *= (unsigned int)((high - low) + 1UL);
+    size *= (unsigned int)((high - low) + 1L);
 
   if (! localp)
     {

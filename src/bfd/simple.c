@@ -170,7 +170,7 @@ bfd_simple_get_relocated_section_contents(bfd *abfd, asection *sec,
 	contents = outbuf;
 
       if (contents)
-	bfd_get_section_contents(abfd, sec, contents, 0, size);
+	bfd_get_section_contents(abfd, sec, contents, 0L, size);
 
       return contents;
     }

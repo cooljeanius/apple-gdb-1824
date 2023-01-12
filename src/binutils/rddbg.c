@@ -163,11 +163,11 @@ read_section_stabs_debugging_info (bfd *abfd, asymbol **syms, long symcount,
 	      bfd_vma value;
 
 	      /* This code presumes 32 bit values: */
-	      strx = bfd_get_32(abfd, stab);
-	      type = bfd_get_8(abfd, stab + 4);
-	      other = bfd_get_8(abfd, stab + 5);
-	      desc = bfd_get_16(abfd, stab + 6);
-	      value = bfd_get_32(abfd, stab + 8);
+	      strx = (unsigned int)bfd_get_32(abfd, stab);
+	      type = bfd_get_8(abfd, (stab + 4));
+	      other = bfd_get_8(abfd, (stab + 5));
+	      desc = (int)bfd_get_16(abfd, (stab + 6));
+	      value = bfd_get_32(abfd, (stab + 8));
 
 	      if (type == 0)
 		{

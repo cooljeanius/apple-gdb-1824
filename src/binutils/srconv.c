@@ -145,14 +145,13 @@ section_translate(char *n)
 
 #define DATE "940201073000";	/* Just a time on my birthday */
 
-static
-char *
+static char *
 strip_suffix(char *name)
 {
   int i;
   char *res;
 
-  for (i = 0; name[i] != 0 && name[i] != '.'; i++)
+  for (i = 0; (name[i] != 0) && (name[i] != '.'); i++)
     ;
   res = (char *) xmalloc (i + 1);
   memcpy (res, name, i);
@@ -172,14 +171,14 @@ checksum(FILE *file, unsigned char *ptr, int size, int code)
   last = !(code & 0xff00);
   if (size & 0x7)
     abort();
-  ptr[0] = (code | (last ? 0x80 : 0));
-  ptr[1] = (bytes + 1);
+  ptr[0] = (unsigned char)(code | (last ? 0x80 : 0U));
+  ptr[1] = (unsigned char)(bytes + 1U);
 
   for (j = 0; j < bytes; j++)
     sum += ptr[j];
 
   /* Glue on a checksum too: */
-  ptr[bytes] = ~sum;
+  ptr[bytes] = (unsigned char)~sum;
   fwrite(ptr, (bytes + 1), 1, file);
 }
 
@@ -187,10 +186,11 @@ checksum(FILE *file, unsigned char *ptr, int size, int code)
 static int code;
 #endif /* !code */
 
+/* */
 static void
-writeINT (int n, unsigned char *ptr, int *idx, int size, FILE *file)
+writeINT(int n, unsigned char *ptr, int *idx, int size, FILE *file)
 {
-  int byte = *idx / 8;
+  int byte = (*idx / 8);
 
   if (size == -2)
     size = addrsize;
@@ -200,9 +200,9 @@ writeINT (int n, unsigned char *ptr, int *idx, int size, FILE *file)
   if (byte > 240)
     {
       /* Let us write out that record and do another one: */
-      checksum (file, ptr, *idx, (code | 0x1000));
+      checksum(file, ptr, *idx, (code | 0x1000));
       *idx = 16;
-      byte = *idx / 8;
+      byte = (*idx / 8);
     }
 
   switch (size)
@@ -210,29 +210,30 @@ writeINT (int n, unsigned char *ptr, int *idx, int size, FILE *file)
     case 0:
       break;
     case 1:
-      ptr[byte] = n;
+      ptr[byte] = (unsigned char)n;
       break;
     case 2:
-      ptr[byte + 0] = n >> 8;
-      ptr[byte + 1] = n;
+      ptr[byte + 0] = (unsigned char)(n >> 8U);
+      ptr[byte + 1] = (unsigned char)n;
       break;
     case 4:
-      ptr[byte + 0] = n >> 24;
-      ptr[byte + 1] = n >> 16;
-      ptr[byte + 2] = n >> 8;
-      ptr[byte + 3] = n >> 0;
+      ptr[byte + 0] = (unsigned char)(n >> 24U);
+      ptr[byte + 1] = (unsigned char)(n >> 16U);
+      ptr[byte + 2] = (unsigned char)(n >> 8U);
+      ptr[byte + 3] = (unsigned char)(n >> 0U);
       break;
     default:
-      abort ();
+      abort();
     }
-  *idx += size * 8;
+  *idx += (size * 8);
 }
 
+/* */
 static void
-writeBITS (int val, unsigned char *ptr, int *idx, int size)
+writeBITS(int val, unsigned char *ptr, int *idx, int size)
 {
-  int byte = *idx / 8;
-  int bit = *idx % 8;
+  int byte = (*idx / 8);
+  int bit = (*idx % 8);
   int old;
 
   *idx += size;
@@ -242,44 +243,46 @@ writeBITS (int val, unsigned char *ptr, int *idx, int size)
   old &= ~((~0 >> (8 - bit - size)) & ((1 << size) - 1));
   /* Turn on the bits we want.  */
   old |= (val & ((1 << size) - 1)) << (8 - bit - size);
-  ptr[byte] = old;
+  ptr[byte] = (unsigned char)old;
 }
 
+/* */
 static void
-writeBARRAY (barray data, unsigned char *ptr, int *idx,
-	     int size ATTRIBUTE_UNUSED, FILE *file)
+writeBARRAY(barray data, unsigned char *ptr, int *idx,
+            int size ATTRIBUTE_UNUSED, FILE *file)
 {
   int i;
 
-  writeINT (data.len, ptr, idx, 1, file);
+  writeINT(data.len, ptr, idx, 1, file);
   for (i = 0; i < data.len; i++)
-    writeINT (data.data[i], ptr, idx, 1, file);
+    writeINT(data.data[i], ptr, idx, 1, file);
 }
 
+/* */
 static void
-writeCHARS (char *string, unsigned char *ptr, int *idx, int size, FILE *file)
+writeCHARS(char *string, unsigned char *ptr, int *idx, int size, FILE *file)
 {
-  int i = *idx / 8;
+  int i = (*idx / 8);
 
   if (i > 240)
     {
-      /* Lets write out that record and do another one.  */
-      checksum (file, ptr, *idx, code | 0x1000);
+      /* Let's write out that record and do another one: */
+      checksum(file, ptr, *idx, (code | 0x1000));
       *idx = 16;
-      i = *idx / 8;
+      i = (*idx / 8);
     }
 
   if (size == 0)
     {
-      /* Variable length string.  */
-      size = strlen (string);
-      ptr[i++] = size;
+      /* Variable length string: */
+      size = strlen(string);
+      ptr[i++] = (unsigned char)size;
     }
 
-  /* BUG WAITING TO HAPPEN.  */
-  memcpy (ptr + i, string, size);
+  /* BUG WAITING TO HAPPEN: */
+  memcpy((ptr + i), string, size);
   i += size;
-  *idx = i * 8;
+  *idx = (i * 8);
 }
 
 #define SYSROFF_SWAP_OUT

@@ -134,6 +134,7 @@ struct trad_user
   char u_comm[32];
   int u_debugreg[8];
   /* FIXME: hppabsd-core.c needs members 'u_pcb' and 'u_code'; research */
+  /* also, sco5-core.c needs members 'u_exdata', 'u_sub', and 'u_sysabort' */
 };
 
 /* these defines should be in "config.h": */

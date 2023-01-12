@@ -2060,11 +2060,11 @@ print_section_stabs (bfd *abfd,
       unsigned short desc;
       bfd_vma value;
 
-      strx = bfd_h_get_32 (abfd, stabp + STRDXOFF);
-      type = bfd_h_get_8 (abfd, stabp + TYPEOFF);
-      other = bfd_h_get_8 (abfd, stabp + OTHEROFF);
-      desc = bfd_h_get_16 (abfd, stabp + DESCOFF);
-      value = bfd_h_get_32 (abfd, stabp + VALOFF);
+      strx = bfd_h_get_32(abfd, (stabp + STRDXOFF));
+      type = bfd_h_get_8(abfd, (stabp + TYPEOFF));
+      other = bfd_h_get_8(abfd, (stabp + OTHEROFF));
+      desc = (unsigned short)bfd_h_get_16(abfd, (stabp + DESCOFF));
+      value = bfd_h_get_32(abfd, (stabp + VALOFF));
 
       printf ("\n%-6d ", i);
       /* Either print the stab name, or, if unnamed, print its number

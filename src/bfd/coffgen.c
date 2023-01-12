@@ -1912,27 +1912,27 @@ coff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
 	      switch (combined->u.syment.n_sclass)
 		{
 		case C_FILE:
-		  fprintf (file, "File ");
+		  fprintf(file, "File ");
 		  break;
 
 		case C_STAT:
 		  if (combined->u.syment.n_type == T_NULL)
-		    /* Probably a section symbol ?  */
 		    {
-		      fprintf (file, "AUX scnlen 0x%lx nreloc %d nlnno %d",
-			       (long) auxp->u.auxent.x_scn.x_scnlen,
-			       auxp->u.auxent.x_scn.x_nreloc,
-			       auxp->u.auxent.x_scn.x_nlinno);
-		      if (auxp->u.auxent.x_scn.x_checksum != 0
-			  || auxp->u.auxent.x_scn.x_associated != 0
-			  || auxp->u.auxent.x_scn.x_comdat != 0)
-			fprintf (file, " checksum 0x%lx assoc %d comdat %d",
-				 auxp->u.auxent.x_scn.x_checksum,
-				 auxp->u.auxent.x_scn.x_associated,
-				 auxp->u.auxent.x_scn.x_comdat);
+      		      /* Probably a section symbol?  */
+		      fprintf(file, "AUX scnlen 0x%lx nreloc %d nlnno %d",
+		              (unsigned long)auxp->u.auxent.x_scn.x_scnlen,
+		              auxp->u.auxent.x_scn.x_nreloc,
+		              auxp->u.auxent.x_scn.x_nlinno);
+		      if ((auxp->u.auxent.x_scn.x_checksum != 0)
+			  || (auxp->u.auxent.x_scn.x_associated != 0)
+			  || (auxp->u.auxent.x_scn.x_comdat != 0))
+			fprintf(file, " checksum 0x%lx assoc %d comdat %d",
+			        auxp->u.auxent.x_scn.x_checksum,
+			        auxp->u.auxent.x_scn.x_associated,
+			        auxp->u.auxent.x_scn.x_comdat);
 		      break;
 		    }
-		    /* Otherwise fall through.  */
+		    /* Otherwise fall through: */
 		    ATTRIBUTE_FALLTHROUGH;
 		case C_EXT:
 		  if (ISFCN(combined->u.syment.n_type))
@@ -1941,40 +1941,40 @@ coff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
 
 		      if (auxp->fix_end)
 			next = (auxp->u.auxent.x_sym.x_fcnary.x_fcn.x_endndx.p
-			       - root);
+			        - root);
 		      else
 			next = auxp->u.auxent.x_sym.x_fcnary.x_fcn.x_endndx.l;
 		      llnos = (long)auxp->u.auxent.x_sym.x_fcnary.x_fcn.x_lnnoptr;
 		      fprintf(file,
 			      "AUX tagndx %ld ttlsiz 0x%lx lnnos %ld next %ld",
-			      tagndx, auxp->u.auxent.x_sym.x_misc.x_fsize,
+			      tagndx, (unsigned long)auxp->u.auxent.x_sym.x_misc.x_fsize,
 			      llnos, next);
 		      break;
 		    }
-		  /* Otherwise fall through.  */
+		  /* Otherwise fall through: */
 		  ATTRIBUTE_FALLTHROUGH;
 		default:
-		  fprintf (file, "AUX lnno %d size 0x%x tagndx %ld",
-			   auxp->u.auxent.x_sym.x_misc.x_lnsz.x_lnno,
-			   auxp->u.auxent.x_sym.x_misc.x_lnsz.x_size,
-			   tagndx);
+		  fprintf(file, "AUX lnno %d size 0x%x tagndx %ld",
+		          auxp->u.auxent.x_sym.x_misc.x_lnsz.x_lnno,
+		          auxp->u.auxent.x_sym.x_misc.x_lnsz.x_size,
+		          tagndx);
 		  if (auxp->fix_end)
-		    fprintf (file, " endndx %ld",
-			     ((long)
-			      (auxp->u.auxent.x_sym.x_fcnary.x_fcn.x_endndx.p
-			       - root)));
+		    fprintf(file, " endndx %ld",
+		            ((long)
+		             (auxp->u.auxent.x_sym.x_fcnary.x_fcn.x_endndx.p
+		              - root)));
 		  break;
 		}
 	    }
 
 	  if (l)
 	    {
-	      fprintf (file, "\n%s :", l->u.sym->name);
+	      fprintf(file, "\n%s :", l->u.sym->name);
 	      l++;
 	      while (l->line_number)
 		{
-		  fprintf (file, "\n%4d : ", l->line_number);
-		  fprintf_vma (file, l->u.offset + symbol->section->vma);
+		  fprintf(file, "\n%4d : ", (int)l->line_number);
+		  fprintf_vma(file, (l->u.offset + symbol->section->vma));
 		  l++;
 		}
 	    }

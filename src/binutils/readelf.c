@@ -10590,7 +10590,7 @@ display_debug_frames(Elf_Internal_Shdr *section, unsigned char *start,
 	  if (!cie)
 	    {
 	      warn("Invalid CIE pointer %08lx in FDE at %p\n",
-                   cie_id, saved_start);
+                   cie_id, (void *)saved_start);
 	      start = block_end;
 	      fc->ncols = 0;
 	      fc->col_type = (short int *)xmalloc(sizeof(short int));
@@ -10773,7 +10773,7 @@ display_debug_frames(Elf_Internal_Shdr *section, unsigned char *start,
 		  reg = LEB(); LEB();
 		  frame_need_space(fc, reg);
 		  fc->col_type[reg] = DW_CFA_undefined;
-
+		  ATTRIBUTE_FALLTHROUGH; /* ...I guess? */
 		default:
 		  break;
 		}
@@ -11703,6 +11703,7 @@ process_gnu_liblist(FILE *file)
 	    }
 
 	  free(elib);
+	  ATTRIBUTE_FALLTHROUGH; /* ...I guess? */
         default:;
 	}
     }

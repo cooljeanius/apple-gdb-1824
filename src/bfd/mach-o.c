@@ -681,7 +681,7 @@ bfd_mach_o_get_symbol_info(bfd *abfd, asymbol *symbol, symbol_info *ret)
   if (type & BFD_MACH_O_N_STAB)
     {
       int type_code;
-      static char buf[10];
+      static char buf[11];
       const char *stab_name;
 
       type_code = bfd_mach_o_symbol_type(abfd, (unsigned char)type,
@@ -690,7 +690,7 @@ bfd_mach_o_get_symbol_info(bfd *abfd, asymbol *symbol, symbol_info *ret)
       stab_name = bfd_get_stab_name(type_code);
       if (stab_name == NULL)
 	{
-	  sprintf(buf, "(%d)", type_code);
+	  snprintf(buf, sizeof(buf), "(%d)", type_code);
 	  stab_name = buf;
 	}
 
@@ -1232,7 +1232,7 @@ bfd_mach_o_write_contents(bfd *abfd)
 	default:
 	  fprintf(stderr,
                   "unable to write unknown load command 0x%lx\n",
-                  (long)cur->type);
+                  (unsigned long)cur->type);
 	  return FALSE;
 	}
     }
@@ -1340,7 +1340,8 @@ bfd_mach_o_make_bfd_section(bfd *abfd, bfd_mach_o_section *section)
   sname = (char *)bfd_alloc(abfd, snamelen);
   if (sname == NULL)
     return NULL;
-  sprintf(sname, "%s.%s.%s", prefix, section->segname, section->sectname);
+  snprintf(sname, snamelen, "%s.%s.%s", prefix, section->segname,
+           section->sectname);
 
   bfdsec = bfd_make_section_anyway(abfd, sname);
   if (bfdsec == NULL)
@@ -1502,7 +1503,7 @@ bfd_mach_o_scan_read_symtab_symbol(bfd *abfd,
   if (bfd_bread((PTR)buf, (bfd_size_type)symwidth, abfd) != symwidth)
     {
       fprintf(stderr, "bfd_mach_o_scan_read_symtab_symbol: unable to read %d bytes at %lu\n",
-	      symwidth, (unsigned long)symoff);
+	      (int)symwidth, (unsigned long)symoff);
       return -1;
     }
 
@@ -2057,14 +2058,14 @@ bfd_mach_o_scan_read_thread(bfd *abfd, bfd_mach_o_load_command *command)
 	}
 
       snamelen = (strlen(prefix) + 1UL + 20UL + 1UL +
-                  strlen(flavourstr) + 1UL);
+                  strlen(flavourstr) + 1UL + 4UL);
       sname = (char *)bfd_alloc(abfd, snamelen);
       if (sname == NULL)
 	return -1;
 
       for (;;)
 	{
-	  sprintf(sname, "%s.%s.%u", prefix, flavourstr, j);
+	  snprintf(sname, snamelen, "%s.%s.%u", prefix, flavourstr, j);
 	  if (bfd_get_section_by_name(abfd, sname) == NULL)
 	    break;
 	  j++;
@@ -2368,11 +2369,11 @@ bfd_mach_o_scan_read_segment(bfd *abfd, bfd_mach_o_load_command *command,
       seg->flags = (unsigned long)bfd_h_get_32(abfd, (buf + 44));
     }
 
-  snamelen = (strlen(prefix) + 1UL + strlen(seg->segname) + 1UL);
+  snamelen = (strlen(prefix) + 1UL + strlen(seg->segname) + 2UL);
   sname = (char *)bfd_alloc(abfd, snamelen);
   if (sname == NULL)
     return -1;
-  sprintf(sname, "%s.%s", prefix, seg->segname);
+  snprintf(sname, snamelen, "%s.%s", prefix, seg->segname);
 
   bfdsec = bfd_make_section_anyway(abfd, sname);
   if (bfdsec == NULL)
@@ -2807,7 +2808,7 @@ bfd_mach_o_scan (bfd *abfd,
               bfd_errmsg(bfd_get_error()));
       abfd->tdata.mach_o_data = NULL;
       return -1;
-#endif /* EOF */
+#endif /* 0 */
     }
 
   mdata->scanning_load_cmds = 0;
@@ -2859,7 +2860,7 @@ bfd_mach_o_object_p(bfd *abfd)
         || (header.byteorder == BFD_ENDIAN_LITTLE)))
     {
       fprintf(stderr, "unknown header byte-order value 0x%lx\n",
-	      (long)header.byteorder);
+	      (unsigned long)header.byteorder);
       goto wrong;
     }
 
@@ -2906,7 +2907,7 @@ bfd_mach_o_core_p(bfd *abfd)
         || (header.byteorder == BFD_ENDIAN_LITTLE)))
     {
       fprintf(stderr, "unknown header byte-order value 0x%lx\n",
-              (long)header.byteorder);
+              (unsigned long)header.byteorder);
       abort();
     }
 

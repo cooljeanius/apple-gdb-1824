@@ -413,7 +413,7 @@ dump_coff_scope(struct coff_scope *p)
         /* this ifdef should be similar to the one in "coffgrok.h": */
 #if (defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)) && \
     defined(__STDC_VERSION__) && !defined(__STRICT_ANSI__)
-	printf("  %s %llx..%llx", p->sec->name, p->offset, (p->offset + p->size - 1));
+	printf("  %s %llx..%llx", p->sec->name, p->offset, ((size_t)p->offset + p->size - 1ULL));
 #else
         printf("  %s %x..%x", p->sec->name, p->offset, (p->offset + p->size - 1));
 #endif /* (HAVE_OFF_T || off_t || __STDC__) && __STDC_VERSION__ && !__STRICT_ANSI__ */
@@ -471,8 +471,8 @@ dump_coff_section(struct coff_section *ptr)
   /* FIXME: need an equivalent of BFD_VMA_FMT for bfd_size_type */
 #if defined(__BFD_H_SEEN__) && defined(__STDC_VERSION__) && !defined(__STRICT_ANSI__)
   printf("section %s %d %d address %x size %llx number %d nrelocs %d",
-         ptr->name, ptr->code, ptr->data, ptr->address, ptr->size,
-         ptr->number, ptr->nrelocs);
+         ptr->name, ptr->code, ptr->data, ptr->address,
+         (unsigned long long)ptr->size, ptr->number, ptr->nrelocs);
 #else
   printf("section %s %d %d address %x size %x number %d nrelocs %d",
          ptr->name, ptr->code, ptr->data, ptr->address, ptr->size,

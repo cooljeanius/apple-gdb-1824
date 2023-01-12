@@ -1257,21 +1257,21 @@ debug_make_complex_type (void *handle, unsigned int size)
    The fourth argument is a NULL terminated array of fields.  */
 
 debug_type
-debug_make_struct_type (void *handle, bfd_boolean structp, bfd_vma size,
-			debug_field *fields)
+debug_make_struct_type(void *handle, bfd_boolean structp, bfd_vma size,
+                       debug_field *fields)
 {
-  struct debug_handle *info = (struct debug_handle *) handle;
+  struct debug_handle *info = (struct debug_handle *)handle;
   struct debug_type *t;
   struct debug_class_type *c;
 
-  t = debug_make_type (info,
-		       structp ? DEBUG_KIND_STRUCT : DEBUG_KIND_UNION,
-		       size);
+  t = debug_make_type(info,
+                      structp ? DEBUG_KIND_STRUCT : DEBUG_KIND_UNION,
+                      (unsigned int)size);
   if (t == NULL)
     return DEBUG_TYPE_NULL;
 
-  c = (struct debug_class_type *) xmalloc (sizeof *c);
-  memset (c, 0, sizeof *c);
+  c = (struct debug_class_type *)xmalloc(sizeof(*c));
+  memset(c, 0, sizeof(*c));
 
   c->fields = fields;
 
@@ -1288,23 +1288,23 @@ debug_make_struct_type (void *handle, bfd_boolean structp, bfd_vma size,
    object has its own virtual function table.  */
 
 debug_type
-debug_make_object_type (void *handle, bfd_boolean structp, bfd_vma size,
-			debug_field *fields, debug_baseclass *baseclasses,
-			debug_method *methods, debug_type vptrbase,
-			bfd_boolean ownvptr)
+debug_make_object_type(void *handle, bfd_boolean structp, bfd_vma size,
+                       debug_field *fields, debug_baseclass *baseclasses,
+                       debug_method *methods, debug_type vptrbase,
+                       bfd_boolean ownvptr)
 {
-  struct debug_handle *info = (struct debug_handle *) handle;
+  struct debug_handle *info = (struct debug_handle *)handle;
   struct debug_type *t;
   struct debug_class_type *c;
 
-  t = debug_make_type (info,
-		       structp ? DEBUG_KIND_CLASS : DEBUG_KIND_UNION_CLASS,
-		       size);
+  t = debug_make_type(info,
+                      structp ? DEBUG_KIND_CLASS : DEBUG_KIND_UNION_CLASS,
+                      (unsigned int)size);
   if (t == NULL)
     return DEBUG_TYPE_NULL;
 
-  c = (struct debug_class_type *) xmalloc (sizeof *c);
-  memset (c, 0, sizeof *c);
+  c = (struct debug_class_type *)xmalloc(sizeof(*c));
+  memset(c, 0, sizeof(*c));
 
   c->fields = fields;
   c->baseclasses = baseclasses;
@@ -1659,17 +1659,17 @@ debug_make_undefined_tagged_type (void *handle, const char *name,
    argument is the visibility of the base class.  */
 
 debug_baseclass
-debug_make_baseclass (void *handle ATTRIBUTE_UNUSED, debug_type type,
-		      bfd_vma bitpos, bfd_boolean is_virtual,
-		      enum debug_visibility visibility)
+debug_make_baseclass(void *handle ATTRIBUTE_UNUSED, debug_type type,
+                     bfd_vma bitpos, bfd_boolean is_virtual,
+                     enum debug_visibility visibility)
 {
   struct debug_baseclass *b;
 
-  b = (struct debug_baseclass *)xmalloc(sizeof *b);
+  b = (struct debug_baseclass *)xmalloc(sizeof(*b));
   memset(b, 0, sizeof(*b));
 
   b->type = type;
-  b->bitpos = bitpos;
+  b->bitpos = (unsigned int)bitpos;
   b->virtuality = is_virtual;
   b->visibility = visibility;
 
@@ -1683,20 +1683,20 @@ debug_make_baseclass (void *handle ATTRIBUTE_UNUSED, debug_type type,
    of the field.  */
 
 debug_field
-debug_make_field (void *handle ATTRIBUTE_UNUSED, const char *name,
-		  debug_type type, bfd_vma bitpos, bfd_vma bitsize,
-		  enum debug_visibility visibility)
+debug_make_field(void *handle ATTRIBUTE_UNUSED, const char *name,
+                 debug_type type, bfd_vma bitpos, bfd_vma bitsize,
+                 enum debug_visibility visibility)
 {
   struct debug_field *f;
 
-  f = (struct debug_field *) xmalloc (sizeof *f);
-  memset (f, 0, sizeof *f);
+  f = (struct debug_field *)xmalloc(sizeof(*f));
+  memset(f, 0, sizeof(*f));
 
   f->name = name;
   f->type = type;
   f->static_member = FALSE;
-  f->u.f.bitpos = bitpos;
-  f->u.f.bitsize = bitsize;
+  f->u.f.bitpos = (unsigned int)bitpos;
+  f->u.f.bitsize = (unsigned int)bitsize;
   f->visibility = visibility;
 
   return f;

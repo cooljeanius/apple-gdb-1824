@@ -17,6 +17,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic push
+ #  pragma GCC diagnostic warning "-Wtraditional"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 #define BYTES_IN_WORD 4
 #define N_SHARED_LIB(x) 0
 
@@ -25,8 +32,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #define SEGMENT_SIZE TARGET_PAGE_SIZE
 #define DEFAULT_ARCH bfd_arch_m68k
 
-#define MY(OP) CAT(m68klynx_aout_,OP)
+/* Do not "beautify" the CONCAT* macro args.  Traditional C will not
+ * remove whitespace added here, and thus will fail to concatenate
+ * the tokens: */
+#define MY(OP) CONCAT2(m68klynx_aout_,OP)
 #define TARGETNAME "a.out-m68k-lynx"
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+ #  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 #include "bfd.h"
 #include "sysdep.h"

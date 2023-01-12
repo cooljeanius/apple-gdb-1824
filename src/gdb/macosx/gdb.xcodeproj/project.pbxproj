@@ -392,6 +392,7 @@
 		61D221BF192D61C300FA979E /* xtensa-modules.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D00C0E82C408008125DE /* xtensa-modules.c */; settings = {COMPILER_FLAGS = "-Wcast-qual"; }; };
 		61D81872192FE3BF00E440C0 /* chew.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEEF0E82C407008125DE /* chew.c */; };
 		61D81AE7193186DC00E440C0 /* aout-encap.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE5B0E82C407008125DE /* aout-encap.c */; };
+		A50C0F8E29701B0600E82F7F /* m68klynx.c in Sources */ = {isa = PBXBuildFile; fileRef = A50C0F7D29701B0600E82F7F /* m68klynx.c */; };
 		A51B3F191A493694002170CE /* plugin.c in Sources */ = {isa = PBXBuildFile; fileRef = A51B3F171A493694002170CE /* plugin.c */; };
 		A51B3F1A1A493694002170CE /* plugin.h in Headers */ = {isa = PBXBuildFile; fileRef = A51B3F181A493694002170CE /* plugin.h */; };
 		A51DEE731AA273B300DA3F76 /* cf-m68klynx.c in Sources */ = {isa = PBXBuildFile; fileRef = A51DEE721AA273B300DA3F76 /* cf-m68klynx.c */; };
@@ -3323,6 +3324,7 @@
 		61F331671CCDDE9D00C05007 /* cris-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cris-tdep.h"; sourceTree = "<group>"; };
 		61F331CB1CCF226400C05007 /* fr30-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "fr30-tdep.h"; sourceTree = "<group>"; };
 		61F333921CD3B44100C05007 /* remote-m32r-sdi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "remote-m32r-sdi.h"; sourceTree = "<group>"; };
+		A50C0F7D29701B0600E82F7F /* m68klynx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m68klynx.c; sourceTree = "<group>"; };
 		A50DD7D41B30D2AC00F50318 /* AppleMakefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = AppleMakefile; sourceTree = "<group>"; };
 		A50DD7DF1B30D2AC00F50318 /* Dbg.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; path = Dbg.c; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; };
 		A50DD7E01B30D2AC00F50318 /* Dbg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dbg.h; sourceTree = "<group>"; };
@@ -6649,6 +6651,7 @@
 				2609CF990E82C408008125DE /* lynx-core.c */,
 				2609CF9A0E82C408008125DE /* m68k4knetbsd.c */,
 				2609CF9B0E82C408008125DE /* m68klinux.c */,
+				A50C0F7D29701B0600E82F7F /* m68klynx.c */,
 				2609CF9C0E82C408008125DE /* m68knetbsd.c */,
 				2609CF9D0E82C408008125DE /* m88kmach3.c */,
 				2609CF9E0E82C408008125DE /* m88kopenbsd.c */,
@@ -14200,6 +14203,8 @@
 /* Begin PBXProject section */
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "gdb" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
@@ -14645,6 +14650,7 @@
 				61D22181192D61C300FA979E /* oasys.c in Sources */,
 				61D22182192D61C300FA979E /* opncls.c in Sources */,
 				61D22184192D61C300FA979E /* pc532-mach.c in Sources */,
+				A50C0F8E29701B0600E82F7F /* m68klynx.c in Sources */,
 				61D22185192D61C300FA979E /* pdp11.c in Sources */,
 				61D22186192D61C300FA979E /* pe-arm.c in Sources */,
 				61D22187192D61C300FA979E /* pe-i386.c in Sources */,
