@@ -5588,7 +5588,11 @@ no enclosing block"));
     case N_NBLCS:
       unknown_symtype_complaint(hex_string(type));
       /* FALLTHROUGH */
+#ifdef __clang__
+      goto define_a_symbol;
+#else
       ATTRIBUTE_FALLTHROUGH;
+#endif /* __clang__ */
       /* The following symbol types don't need the address field
          relocated, since it is either unused, or is absolute.  */
     define_a_symbol:

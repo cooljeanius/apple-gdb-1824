@@ -2109,9 +2109,9 @@ fi]],[[]])dnl
 AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo "1: pwd = `pwd`"
   elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo "2: pwd = `pwd`"
   fi
 fi
 ],[])dnl

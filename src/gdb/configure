@@ -759,6 +759,7 @@ DEFAULT_SIM_OB
 X_EXTRA_LIBS
 X_PRE_LIBS
 XMKMF
+ENABLE_IDE
 GDBTK_SRC_DIR
 GDBTK_CFLAGS
 GDBTKLIBS
@@ -771,6 +772,8 @@ TCL_DEPS
 X_LIBS
 X_LDFLAGS
 X_CFLAGS
+TIX_BUILD_LIB_SPEC
+TIX_VERSION
 ITK_LIB_SPEC
 ITK_BUILD_LIB_SPEC
 ITK_BUILD_INCLUDES
@@ -781,6 +784,7 @@ ITCL_BUILD_LIB_SPEC
 ITCL_BUILD_INCLUDES
 ITCL_DEFS
 ITCL_VERSION
+TIXHDIR
 ITKHDIR
 ITCLHDIR
 TKHDIR
@@ -1276,6 +1280,7 @@ with_tclinclude
 with_tkinclude
 with_itclconfig
 with_itkconfig
+with_tixconfig
 with_x
 enable_sim
 enable_multi_ice
@@ -2046,6 +2051,8 @@ Optional Packages:
                           (itclConfig.sh)
   --with-itkconfig        Directory containing itk configuration
                           (itkConfig.sh)
+  --with-tixconfig        Directory containing tix configuration
+                          (tixConfig.sh)
   --with-x                use the X Window System
   --with-babeltrace       include babeltrace support (auto/yes/no)
   --with-libbabeltrace-prefix[=DIR]  search for libbabeltrace in DIR/include and DIR/lib
@@ -53564,6 +53571,25 @@ printf "%s\n" "found in ${ac_cv_c_itkh}" >&6; }
 fi
 
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for Tix private headers. srcdir=${srcdir}" >&5
+printf %s "checking for Tix private headers. srcdir=${srcdir}... " >&6; }
+if test x"${ac_cv_c_tixh}" = x""; then
+  for i in ${srcdir}/../tix ${srcdir}/../../tix ${srcdir}/../../../tix; do
+    if test -f ${i}/generic/tix.h ; then
+      ac_cv_c_tixh=`(cd ${i}/generic; pwd)`
+      break
+    fi
+  done
+fi
+if test x"${ac_cv_c_tixh}" = x""; then
+  TIXHDIR="# no Tix private headers found"
+  as_fn_error $? "Cannot find Tix private headers" "$LINENO" 5
+fi
+if test x"${ac_cv_c_tixh}" != x""; then
+     TIXHDIR="-I${ac_cv_c_tixh}"
+fi
+
+
 	   # now look for Tk library stuff:
 	   tkdir="../tk/${configdir}/"
 
@@ -53773,6 +53799,110 @@ printf "%s\n" "$as_me: sourcing ${ITKCONFIG}" >&6;}
            else
              { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: cannot load itkConfig.sh; it is missing" >&5
 printf "%s\n" "$as_me: WARNING: cannot load itkConfig.sh; it is missing" >&2;}
+           fi
+
+           # now look for Tix stuff:
+
+#
+# Ok, let us find the tix configuration
+# First, look for one uninstalled.
+# the alternative search directory is invoked by --with-itkconfig
+#
+
+if test x"${no_tix}" = x""; then
+  # we reset no_tix in case something fails here
+  no_tix=true
+
+# Check whether --with-tixconfig was given.
+if test ${with_tixconfig+y}
+then :
+  withval=$with_tixconfig; with_tixconfig=${withval}
+fi
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for Tix configuration" >&5
+printf %s "checking for Tix configuration... " >&6; }
+  if test ${ac_cv_c_tixconfig+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+
+
+  # First check to see if --with-tixconfig was specified.
+  if test x"${with_tixconfig}" != x""; then
+    if test -f "${with_tixconfig}/tixConfig.sh"; then
+      ac_cv_c_tixconfig=`(cd ${with_tixconfig}; pwd)`
+    else
+      as_fn_error $? "${with_tixconfig} directory does NOT contain tixConfig.sh" "$LINENO" 5
+    fi
+  fi
+
+  # then check for a private Tix library
+  if test x"${ac_cv_c_tixconfig}" = x""; then
+    for i in \
+		../tix \
+		`ls -dr ../tix 2>/dev/null` \
+		../../tix \
+		`ls -dr ../../tix 2>/dev/null` \
+		../../../tix \
+		`ls -dr ../../../tix 2>/dev/null`; do
+      echo "**** Looking at ${i} - with ${configdir}"
+      if test -f "${i}/tixConfig.sh" ; then
+        ac_cv_c_tixconfig=`(cd ${i}; pwd)`
+	break
+      fi
+    done
+  fi
+  # check in a few common install locations
+  if test x"${ac_cv_c_tixconfig}" = x""; then
+    for i in `ls -d ${prefix}/lib /usr/local/lib 2>/dev/null`; do
+      echo "**** Looking at $i"
+      if test -f "${i}/tixConfig.sh" ; then
+        ac_cv_c_tixconfig=`(cd ${i}; pwd)`
+	break
+      fi
+    done
+  fi
+  # check in a few other private locations
+  echo "**** Other private locations"
+  if test x"${ac_cv_c_tixconfig}" = x""; then
+    for i in \
+		${srcdir}/../tix \
+		`ls -dr ${srcdir}/../tix 2>/dev/null`; do
+      echo "**** Looking at ${i} - with ${configdir}"
+      if test -f "${i}/${configdir}/tixConfig.sh"; then
+        ac_cv_c_tixconfig=`(cd ${i}/${configdir}; pwd)`
+	break
+      fi
+    done
+  fi
+
+fi
+
+  if test x"${ac_cv_c_tixconfig}" = x""; then
+    TIXCONFIG="# no Tix configs found"
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Cannot find Tix configuration definitions" >&5
+printf "%s\n" "$as_me: WARNING: Cannot find Tix configuration definitions" >&2;}
+  else
+    no_tix=""
+    TIXCONFIG=${ac_cv_c_tixconfig}/tixConfig.sh
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: found ${TIXCONFIG}" >&5
+printf "%s\n" "found ${TIXCONFIG}" >&6; }
+  fi
+fi
+
+           if test -z "${no_tix}"; then
+
+    if test -f "${TIXCONFIG}"; then
+      . ${TIXCONFIG}
+    fi
+
+
+
+             TIXLIB="${TIX_BUILD_LIB_SPEC}"
+             TIX_DEPS="${TIX_LIB_FULL_PATH}"
+           else
+             { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: cannot load tixConfig.sh; it is missing" >&5
+printf "%s\n" "$as_me: WARNING: cannot load tixConfig.sh; it is missing" >&2;}
            fi
 
            ENABLE_CFLAGS="${ENABLE_CFLAGS} \$(SUBDIR_GDBTK_CFLAGS)"
@@ -55664,7 +55794,7 @@ if test "x${gl_LIBOBJS}" = "x"; then
   fi
 fi
 
-ac_config_files="$ac_config_files Makefile data-directory/Makefile .gdbinit:gdbinit.in gnulib/Makefile gdb-gdb.gdb"
+ac_config_files="$ac_config_files Makefile data-directory/Makefile .gdbinit:gdbinit.in gnulib/Makefile gdb-gdb.gdb tui/Makefile"
   ##FIXME: add build-gnulib/Makefile:gnulib/Makefile.in once it works
 ac_config_files="$ac_config_files gcore"
 ac_config_commands="$ac_config_commands default"
@@ -57266,6 +57396,7 @@ do
     ".gdbinit") CONFIG_FILES="$CONFIG_FILES .gdbinit:gdbinit.in" ;;
     "gnulib/Makefile") CONFIG_FILES="$CONFIG_FILES gnulib/Makefile" ;;
     "gdb-gdb.gdb") CONFIG_FILES="$CONFIG_FILES gdb-gdb.gdb" ;;
+    "tui/Makefile") CONFIG_FILES="$CONFIG_FILES tui/Makefile" ;;
     "gcore") CONFIG_FILES="$CONFIG_FILES gcore" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
     "config_status_vpath_build_fix") CONFIG_COMMANDS="$CONFIG_COMMANDS config_status_vpath_build_fix" ;;
@@ -59533,9 +59664,9 @@ esac
     "config_status_vpath_build_fix":C)
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo "1: pwd = `pwd`"
   elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo "2: pwd = `pwd`"
   fi
 fi
  ;;

@@ -62,7 +62,7 @@ static int dont_handle_bad_access = 0;
 
 #ifndef HAVE_64_BIT_MACH_EXCEPTIONS
 # define mach_exc_server exc_server
-# define MACH_EXCEPTION_CODES 0
+# define MACH_EXCEPTION_CODES 0 /* FIXME: might already be defined? */
 #endif /* !HAVE_64_BIT_MACH_EXCEPTIONS */
 
 static void excthread_debug_re(int level, const char *fmt, ...)

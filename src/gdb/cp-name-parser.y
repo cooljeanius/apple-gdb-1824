@@ -1653,8 +1653,12 @@ yylex (void)
 	  lexptr++;
 	  return '-';
 	}
+#ifdef __clang__
+      goto try_number;
+#else
       /* FALL THRU into number case.  */
       ATTRIBUTE_FALLTHROUGH;
+#endif /* __clang__ */
     try_number:
     case '0':
     case '1':

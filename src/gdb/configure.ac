@@ -3924,6 +3924,7 @@ if test "x${enable_gdbtk}" = "xyes"; then
 	   CY_AC_PATH_TKH
 	   CY_AC_PATH_ITCLH
 	   CY_AC_PATH_ITKH
+	   CY_AC_PATH_TIXH
 
 	   # now look for Tk library stuff:
 	   tkdir="../tk/${configdir}/"
@@ -3950,6 +3951,17 @@ if test "x${enable_gdbtk}" = "xyes"; then
 	     ITK_DEPS="${ITK_LIB_FULL_PATH}"
            else
              AC_MSG_WARN([cannot load itkConfig.sh; it is missing])
+           fi
+
+           # now look for Tix stuff:
+           CY_AC_PATH_TIXCONFIG
+           if test -z "${no_tix}"; then
+             CY_AC_LOAD_TIXCONFIG
+
+             TIXLIB="${TIX_BUILD_LIB_SPEC}"
+             TIX_DEPS="${TIX_LIB_FULL_PATH}"
+           else
+             AC_MSG_WARN([cannot load tixConfig.sh; it is missing])
            fi
 
            ENABLE_CFLAGS="${ENABLE_CFLAGS} \$(SUBDIR_GDBTK_CFLAGS)"
@@ -4003,6 +4015,7 @@ AC_SUBST([ITK_DEPS])dnl
 AC_SUBST([GDBTKLIBS])dnl
 AC_SUBST([GDBTK_CFLAGS])dnl
 AC_SUBST([GDBTK_SRC_DIR])dnl
+AC_SUBST([ENABLE_IDE])dnl
 
 unset ac_cv_func_gethostbyname
 AC_PATH_XTRA dnl# calls AC_PATH_X as well
@@ -4450,7 +4463,8 @@ AC_CONFIG_FILES([Makefile \
                  data-directory/Makefile \
                  .gdbinit:gdbinit.in \
                  gnulib/Makefile \
-                 gdb-gdb.gdb])dnl
+                 gdb-gdb.gdb \
+                 tui/Makefile])dnl
   ##FIXME: add build-gnulib/Makefile:gnulib/Makefile.in once it works
 AC_CONFIG_FILES([gcore],[chmod +x gcore])dnl
 AC_CONFIG_COMMANDS([default],[
@@ -4482,9 +4496,9 @@ nativefile=${nativefile}
 AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo "1: pwd = `pwd`"
   elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo "2: pwd = `pwd`"
   fi
 fi
 ],[])dnl

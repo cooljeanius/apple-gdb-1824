@@ -1,9 +1,9 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.70])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
-AC_CONFIG_SRCDIR([abug-rom.c])
+AC_CONFIG_SRCDIR([ultra3-xdep.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
@@ -20,24 +20,26 @@ AC_PROG_RANLIB
 AC_PROG_MKDIR_P
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lbfd':
+# FIXME: Replace 'main' with a function in '-latex':
+AC_CHECK_LIB([atex], [main])
+# FIXME: Replace 'main' with a function in '-lbfd':
 AC_CHECK_LIB([bfd], [main])
-# FIXME: Replace `main' with a function in `-liberty':
+# FIXME: Replace 'main' with a function in '-liberty':
 AC_CHECK_LIB([iberty], [main])
-# FIXME: Replace `main' with a function in `-lintl':
+# FIXME: Replace 'main' with a function in '-lintl':
 AC_CHECK_LIB([intl], [main])
-# FIXME: Replace `main' with a function in `-lopcodes':
+# FIXME: Replace 'main' with a function in '-lopcodes':
 AC_CHECK_LIB([opcodes], [main])
-# FIXME: Replace `main' with a function in `-lreadline':
+# FIXME: Replace 'main' with a function in '-lreadline':
 AC_CHECK_LIB([readline], [main])
-# FIXME: Replace `main' with a function in `-lsqlite3':
+# FIXME: Replace 'main' with a function in '-lsqlite3':
 AC_CHECK_LIB([sqlite3], [main])
-# FIXME: Replace `main' with a function in `-lz':
+# FIXME: Replace 'main' with a function in '-lz':
 AC_CHECK_LIB([z], [main])
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h langinfo.h libintl.h limits.h locale.h mach/mach.h malloc.h memory.h netdb.h netinet/in.h nl_types.h nlist.h paths.h sgtty.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termio.h termios.h unistd.h utmp.h wchar.h wctype.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h langinfo.h libintl.h mach/mach.h malloc.h netdb.h netinet/in.h nl_types.h nlist.h paths.h sgtty.h stdint.h strings.h sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termio.h termios.h unistd.h utmp.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -73,11 +75,13 @@ AC_FUNC_REALLOC
 AC_FUNC_STRNLEN
 AC_FUNC_STRTOD
 AC_FUNC_WAIT3
-AC_CHECK_FUNCS([alarm atexit bzero dup2 getcwd gethostbyaddr gethostbyname gethostname getpagesize getpass gettimeofday inet_ntoa isascii localtime_r memchr memmove memset mkdir munmap nl_langinfo pathconf pow putenv re_comp realpath regcomp select setlocale socket strcasecmp strchr strcspn strerror strncasecmp strpbrk strrchr strspn strstr strtol strtoul uname])
+AC_CHECK_FUNCS([alarm atexit btowc bzero dup2 getcwd gethostbyaddr gethostbyname gethostname getpagesize getpass gettimeofday inet_ntoa isascii localtime_r memchr memmove memset mkdir munmap nl_langinfo pathconf pow putenv re_comp realpath regcomp select setlocale socket strcasecmp strchr strcspn strerror strncasecmp strpbrk strrchr strspn strstr strtol strtoul uname])
 
 AC_CONFIG_FILES([Makefile
                  data-directory/Makefile
-                 features/Makefile])
+                 features/Makefile
+                 nindy-share/Makefile
+                 tui/Makefile])
 AC_CONFIG_SUBDIRS([doc
                    gdbserver
                    gdbtk
