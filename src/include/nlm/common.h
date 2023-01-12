@@ -72,16 +72,16 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
 /* Give names to things that should not change. */
 
-#define NLM_MAX_DESCRIPTION_LENGTH		127
-#define NLM_MAX_SCREEN_NAME_LENGTH		71
-#define NLM_MAX_THREAD_NAME_LENGTH		71
-#define NLM_MAX_COPYRIGHT_MESSAGE_LENGTH	255
-#define NLM_OTHER_DATA_LENGTH 			400		/* FIXME */
-#define NLM_OLD_THREAD_NAME_LENGTH		5
-#define NLM_SIGNATURE_SIZE			24
-#define NLM_HEADER_VERSION			4
-#define NLM_MODULE_NAME_SIZE			14
-#define NLM_DEFAULT_STACKSIZE			(8 * 1024)
+#define NLM_MAX_DESCRIPTION_LENGTH	 127
+#define NLM_MAX_SCREEN_NAME_LENGTH	 71
+#define NLM_MAX_THREAD_NAME_LENGTH	 71
+#define NLM_MAX_COPYRIGHT_MESSAGE_LENGTH 255
+#define NLM_OTHER_DATA_LENGTH 		 400		/* FIXME */
+#define NLM_OLD_THREAD_NAME_LENGTH	 6UL /* 5, plus 1 for trailing nul */
+#define NLM_SIGNATURE_SIZE		 24
+#define NLM_HEADER_VERSION		 4
+#define NLM_MODULE_NAME_SIZE		 14
+#define NLM_DEFAULT_STACKSIZE		 (8 * 1024)
 
 /* Alpha information.  This should probably be in a separate Alpha
    header file, but it can't go in alpha-ext.h because some of it is

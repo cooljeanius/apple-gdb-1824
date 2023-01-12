@@ -232,7 +232,11 @@ do_where(size_t i)
     {
     case C_FIELD:
       where->where = coff_where_member_of_struct;
+#if defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)
+      where->offset = (off_t)(sym->n_value / 8L);
+#else
       where->offset = (sym->n_value / 8);
+#endif /* HAVE_OFF_T || off_t || __STDC__ */
       where->bitoffset = (sym->n_value % 8);
       where->bitsize = rawsyms[i + 1].u.auxent.x_sym.x_misc.x_lnsz.x_size;
       break;

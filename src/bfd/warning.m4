@@ -29,7 +29,7 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
 -Wmissing-parameter-type -Wabi=11 -Wmissing-include-dirs \
 -Wmisleading-indentation -Wformat -Wformat-security -Wformat-y2k \
--Wformat-signedness -Wformat-non-iso -Wformat-pedantic -Wformat-type-confusion \
+-Wformat-non-iso -Wformat-pedantic -Wformat-type-confusion \
 -Wcstring-format-directive -Wmissing-format-attribute \
 -Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
@@ -48,10 +48,11 @@ elif test "x${WANT_CONVERSION_WARNS}" = "xmaybe"; then
   gl_COMPILER_OPTION_IF([-Warith-conversion],
                         [gl_WARN_ADD([-Wconversion])],[:])
 elif test "x${WANT_CONVERSION_WARNS}" = "xweird"; then
+  test -n "${WANT_CONVERSION_WARNS}"
   WARN_CFLAGS="${WARN_CFLAGS} -Warith-conversion -Wtraditional-conversion \
   -Wenum-conversion -Wanon-enum-enum-conversion -Wbitfield-enum-conversion \
   -Wimplicit-int-conversion -Wnullable-to-nonnull-conversion \
-  -Wstring-conversion -Wvector-conversion"
+  -Wstring-conversion -Wvector-conversion -Wformat-signedness"
 fi
 WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint -DDEBUG_GEN_RELOC -DDEBUG_HASH \
 -DDEBUG_PIC -DDEBUG_RELAX -DDEBUG_RELOC -DDJDEBUG -DFATAL_DEBUG \

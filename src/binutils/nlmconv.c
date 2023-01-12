@@ -736,20 +736,20 @@ main(int argc, char **argv)
       else
 	{
 	  help_size = st.st_size;
-	  help_section = bfd_make_section (outbfd, ".nlmhelp");
-	  if (help_section == NULL
-	      || ! bfd_set_section_size (outbfd, help_section, help_size)
-	      || ! bfd_set_section_flags (outbfd, help_section,
-					  SEC_HAS_CONTENTS))
-	    bfd_fatal (_("help section"));
-	  strncpy (nlm_extended_header (outbfd)->stamp, "MeSsAgEs", 8);
+	  help_section = bfd_make_section(outbfd, ".nlmhelp");
+	  if ((help_section == NULL)
+	      || ! bfd_set_section_size(outbfd, help_section, help_size)
+	      || ! bfd_set_section_flags(outbfd, help_section,
+                                         SEC_HAS_CONTENTS))
+	    bfd_fatal(_("help section"));
+	  strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 9UL);
 	}
     }
   if (message_file != NULL)
     {
-      message_data = fopen (message_file, "r");
-      if (message_data == NULL
-	  || fstat (fileno (message_data), &st) < 0)
+      message_data = fopen(message_file, "r");
+      if ((message_data == NULL)
+	  || (fstat(fileno(message_data), &st) < 0))
 	{
 	  fprintf(stderr, "%s:%s: %s\n", program_name, message_file,
 		  xstrerror(errno));
@@ -758,13 +758,13 @@ main(int argc, char **argv)
       else
 	{
 	  message_size = st.st_size;
-	  message_section = bfd_make_section (outbfd, ".nlmmessages");
-	  if (message_section == NULL
-	      || ! bfd_set_section_size (outbfd, message_section, message_size)
-	      || ! bfd_set_section_flags (outbfd, message_section,
-					  SEC_HAS_CONTENTS))
-	    bfd_fatal (_("message section"));
-	  strncpy (nlm_extended_header (outbfd)->stamp, "MeSsAgEs", 8);
+	  message_section = bfd_make_section(outbfd, ".nlmmessages");
+	  if ((message_section == NULL)
+	      || ! bfd_set_section_size(outbfd, message_section, message_size)
+	      || ! bfd_set_section_flags(outbfd, message_section,
+                                         SEC_HAS_CONTENTS))
+	    bfd_fatal(_("message section"));
+	  strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 9UL);
 	}
     }
   if (modules != NULL)
@@ -773,19 +773,19 @@ main(int argc, char **argv)
 
       module_size = 0;
       for (l = modules; l != NULL; l = l->next)
-	module_size += strlen (l->string) + 1;
-      module_section = bfd_make_section (outbfd, ".nlmmodules");
-      if (module_section == NULL
-	  || ! bfd_set_section_size (outbfd, module_section, module_size)
-	  || ! bfd_set_section_flags (outbfd, module_section,
-				      SEC_HAS_CONTENTS))
+	module_size += (strlen(l->string) + 1);
+      module_section = bfd_make_section(outbfd, ".nlmmodules");
+      if ((module_section == NULL)
+	  || ! bfd_set_section_size(outbfd, module_section, module_size)
+	  || ! bfd_set_section_flags(outbfd, module_section,
+                                     SEC_HAS_CONTENTS))
 	bfd_fatal (_("module section"));
     }
   if (rpc_file != NULL)
     {
-      rpc_data = fopen (rpc_file, "r");
-      if (rpc_data == NULL
-	  || fstat (fileno (rpc_data), &st) < 0)
+      rpc_data = fopen(rpc_file, "r");
+      if ((rpc_data == NULL)
+	  || (fstat(fileno(rpc_data), &st) < 0))
 	{
 	  fprintf(stderr, "%s:%s: %s\n", program_name, rpc_file,
 		  xstrerror(errno));
@@ -794,13 +794,13 @@ main(int argc, char **argv)
       else
 	{
 	  rpc_size = st.st_size;
-	  rpc_section = bfd_make_section (outbfd, ".nlmrpc");
-	  if (rpc_section == NULL
-	      || ! bfd_set_section_size (outbfd, rpc_section, rpc_size)
-	      || ! bfd_set_section_flags (outbfd, rpc_section,
-					  SEC_HAS_CONTENTS))
-	    bfd_fatal (_("rpc section"));
-	  strncpy (nlm_extended_header (outbfd)->stamp, "MeSsAgEs", 8);
+	  rpc_section = bfd_make_section(outbfd, ".nlmrpc");
+	  if ((rpc_section == NULL)
+	      || ! bfd_set_section_size(outbfd, rpc_section, rpc_size)
+	      || ! bfd_set_section_flags(outbfd, rpc_section,
+                                         SEC_HAS_CONTENTS))
+	    bfd_fatal(_("rpc section"));
+	  strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 9UL);
 	}
     }
   if (sharelib_file != NULL)
@@ -834,58 +834,58 @@ main(int argc, char **argv)
 		 not be done without reading through them.  */
 	      if (sharedhdr.uninitializedDataSize > 0)
 		{
-		  /* There is no place to record this information.  */
-		  non_fatal (_("%s: warning: shared libraries can not have uninitialized data"),
-			     sharelib_file);
+		  /* There is no place to record this information: */
+		  non_fatal(_("%s: warning: shared libraries cannot have uninitialized data"),
+                            sharelib_file);
 		}
 	      shared_offset = st.st_size;
-	      if (shared_offset > (size_t) sharedhdr.codeImageOffset)
+	      if (shared_offset > (size_t)sharedhdr.codeImageOffset)
 		shared_offset = sharedhdr.codeImageOffset;
-	      if (shared_offset > (size_t) sharedhdr.dataImageOffset)
+	      if (shared_offset > (size_t)sharedhdr.dataImageOffset)
 		shared_offset = sharedhdr.dataImageOffset;
-	      if (shared_offset > (size_t) sharedhdr.relocationFixupOffset)
+	      if (shared_offset > (size_t)sharedhdr.relocationFixupOffset)
 		shared_offset = sharedhdr.relocationFixupOffset;
-	      if (shared_offset > (size_t) sharedhdr.externalReferencesOffset)
+	      if (shared_offset > (size_t)sharedhdr.externalReferencesOffset)
 		shared_offset = sharedhdr.externalReferencesOffset;
-	      if (shared_offset > (size_t) sharedhdr.publicsOffset)
+	      if (shared_offset > (size_t)sharedhdr.publicsOffset)
 		shared_offset = sharedhdr.publicsOffset;
-	      shared_size = st.st_size - shared_offset;
-	      shared_section = bfd_make_section (outbfd, ".nlmshared");
-	      if (shared_section == NULL
-		  || ! bfd_set_section_size (outbfd, shared_section,
-					     shared_size)
-		  || ! bfd_set_section_flags (outbfd, shared_section,
-					      SEC_HAS_CONTENTS))
-		bfd_fatal (_("shared section"));
-	      strncpy (nlm_extended_header (outbfd)->stamp, "MeSsAgEs", 8);
+	      shared_size = (st.st_size - shared_offset);
+	      shared_section = bfd_make_section(outbfd, ".nlmshared");
+	      if ((shared_section == NULL)
+		  || ! bfd_set_section_size(outbfd, shared_section,
+                                            shared_size)
+		  || ! bfd_set_section_flags(outbfd, shared_section,
+                                             SEC_HAS_CONTENTS))
+		bfd_fatal(_("shared section"));
+	      strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 9UL);
 	    }
 	}
     }
 
-  /* Check whether a version was given.  */
-  if (strncmp (version_hdr->stamp, "VeRsIoN#", 8) != 0)
-    non_fatal (_("warning: No version number given"));
+  /* Check whether a version was given: */
+  if (strncmp(version_hdr->stamp, "VeRsIoN#", 8UL) != 0)
+    non_fatal(_("warning: No version number given"));
 
   /* At least for now, always create an extended header, because that
      is what NLMLINK does.  */
-  strncpy (nlm_extended_header (outbfd)->stamp, "MeSsAgEs", 8);
+  strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 9UL);
 
-  strncpy (nlm_cygnus_ext_header (outbfd)->stamp, "CyGnUsEx", 8);
+  strncpy(nlm_cygnus_ext_header(outbfd)->stamp, "CyGnUsEx", 9UL);
 
-  /* If the date was not given, force it in.  */
-  if (nlm_version_header (outbfd)->month == 0
-      && nlm_version_header (outbfd)->day == 0
-      && nlm_version_header (outbfd)->year == 0)
+  /* If the date was not given, then force it in: */
+  if ((nlm_version_header(outbfd)->month == 0)
+      && (nlm_version_header(outbfd)->day == 0)
+      && (nlm_version_header(outbfd)->year == 0))
     {
       time_t now;
       struct tm *ptm;
 
-      time (&now);
-      ptm = localtime (&now);
-      nlm_version_header (outbfd)->month = ptm->tm_mon + 1;
-      nlm_version_header (outbfd)->day = ptm->tm_mday;
-      nlm_version_header (outbfd)->year = ptm->tm_year + 1900;
-      strncpy (version_hdr->stamp, "VeRsIoN#", 8);
+      time(&now);
+      ptm = localtime(&now);
+      nlm_version_header(outbfd)->month = (ptm->tm_mon + 1);
+      nlm_version_header(outbfd)->day = ptm->tm_mday;
+      nlm_version_header(outbfd)->year = (ptm->tm_year + 1900);
+      strncpy(version_hdr->stamp, "VeRsIoN#", 9UL);
     }
 
 #ifdef NLMCONV_POWERPC
@@ -1076,11 +1076,11 @@ main(int argc, char **argv)
     for (modname = nlm_fixed_header(outbfd)->moduleName;
 	 *modname != '\0';
 	 modname++)
-      *modname = TOUPPER (*modname);
+      *modname = TOUPPER(*modname);
   }
 
-  strncpy (nlm_variable_header(outbfd)->oldThreadName, " LONG",
-	   NLM_OLD_THREAD_NAME_LENGTH);
+  strncpy(nlm_variable_header(outbfd)->oldThreadName, " LONG",
+          NLM_OLD_THREAD_NAME_LENGTH);
 
   nlm_cygnus_ext_header(outbfd)->offset = secsec->filepos;
   nlm_cygnus_ext_header(outbfd)->length = bfd_section_size(outbfd, secsec);
