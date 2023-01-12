@@ -10893,6 +10893,12 @@ then :
   printf "%s\n" "#define HAVE_STRCSPN 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "strerror" "ac_cv_func_strerror"
+if test "x$ac_cv_func_strerror" = xyes
+then :
+  printf "%s\n" "#define HAVE_STRERROR 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "strlen" "ac_cv_func_strlen"
 if test "x$ac_cv_func_strlen" = xyes
 then :
