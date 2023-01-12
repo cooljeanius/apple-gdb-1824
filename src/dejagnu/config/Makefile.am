@@ -1,6 +1,6 @@
 ## Process this file with automake to generate Makefile.in
 
-# AUTOMAKE_OPTIONS = 
+AUTOMAKE_OPTIONS = foreign no-dist 1.4 dejagnu
 
 configdir = $(pkgdatadir)/config
 

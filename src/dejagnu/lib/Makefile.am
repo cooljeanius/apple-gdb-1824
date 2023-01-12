@@ -1,6 +1,6 @@
 ## Process this file with automake to generate Makefile.in
 
-# AUTOMAKE_OPTIONS =
+AUTOMAKE_OPTIONS = foreign no-dist 1.4 dejagnu
 
 pkgdata_DATA = debugger.exp dg.exp framework.exp ftp.exp kermit.exp \
 	     libgloss.exp mondfe.exp remote.exp rlogin.exp rsh.exp \
