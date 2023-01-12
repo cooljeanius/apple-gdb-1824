@@ -16,6 +16,7 @@ AC_DEFUN([AC_PROG_CXX_OLD],
 AC_CHECK_PROGS([CXX],[${CCC} c++ g++ gcc CC cxx cc++ cl],[gcc])dnl
 
 AC_REQUIRE([AC_PROG_CXX_GNU])dnl
+AC_REQUIRE([AC_PROG_RANLIB])dnl
 
 if test "x${ac_cv_prog_gxx_variable}" = "xyes"; then
   GXX=yes

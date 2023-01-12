@@ -37,7 +37,6 @@ AC_CONFIG_FILES([Makefile
                  testsuite/Makefile
                  testsuite/libdejagnu/Makefile])
 AC_CONFIG_SUBDIRS([contrib/bluegnu2.0.3
-                   dejagnu-1.4.2
                    doc
                    example/calc])
 AC_OUTPUT

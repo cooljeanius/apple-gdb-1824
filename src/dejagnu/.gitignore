@@ -39,3 +39,6 @@ gdb.apple/*
 
 # Uh... dunno where this came from:
 dejagnu-/*
+
+# In case user tries to make a distdir:
+dejagnu-*.*.*/*
