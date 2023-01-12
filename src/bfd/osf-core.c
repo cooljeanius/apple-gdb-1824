@@ -26,13 +26,13 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 #include "libbfd.h"
 
 #include <sys/user.h>
-#if defined(__OSF__) || defined(HAVE_SYS_CORE_H)
+#if defined(__OSF__) || defined(HAVE_SYS_CORE_H) || __has_include(<sys/core.h>)
 # include <sys/core.h>
 #else
-# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__clang__)
  #  warning "osf-core.c expects <sys/core.h> to be included."
-# endif /* __GNUC__ && !__STRICT_ANSI__ */
-#endif /* __OSF__ || HAVE_SYS_CORE_H */
+# endif /* __GNUC__ && !__STRICT_ANSI__ && !__clang__ */
+#endif /* __OSF__ || HAVE_SYS_CORE_H || __has_include(<sys/core.h>) */
 
 /* forward declarations: */
 static asection *make_bfd_asection
@@ -190,7 +190,7 @@ osf_core_core_file_matches_executable_p(bfd *core_bfd ATTRIBUTE_UNUSED,
 }
 
 /* If somebody calls any byte-swapping routines, then shoot them: */
-static void
+static void ATTRIBUTE_NORETURN
 swap_abort(void)
 {
   /* This way does NOT require any declaration for ANSI to mess up (?): */

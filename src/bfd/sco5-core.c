@@ -33,10 +33,12 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 #include <signal.h>
 
 #include <sys/user.h> /* After a.out.h  */
-#if defined(__USLC__) || defined(HAVE_SYS_PACCESS_H)
+#if defined(__USLC__) || defined(HAVE_SYS_PACCESS_H) || \
+    __has_include(<sys/paccess.h>)
 # include <sys/paccess.h>
 #endif /* __USLC__ || HAVE_SYS_PACCESS_H */
-#if defined(__USLC__) || defined(HAVE_SYS_REGION_H)
+#if defined(__USLC__) || defined(HAVE_SYS_REGION_H) || \
+    __has_include(<sys/region.h>)
 # include <sys/region.h>
 #endif /* __USLC__ || HAVE_SYS_REGION_H */
 

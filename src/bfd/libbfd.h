@@ -648,9 +648,10 @@ extern bfd_boolean _bfd_generic_verify_endian_match
   (((abfd)->direction == write_direction) || ((abfd)->direction == both_direction))
 
 void
-#if defined(__clang_analyzer__) || (defined(__GNUC__) && (__GNUC__ >= 7))
+#if defined(__clang_analyzer__) || (defined(__GNUC__) && (__GNUC__ >= 7)) || \
+    __has_attribute(noreturn)
 ATTRIBUTE_NORETURN
-#endif /* __clang_analyzer__ || gcc 7+ */
+#endif /* __clang_analyzer__ || gcc 7+ || __has_attribute(noreturn) */
 bfd_assert(const char *, int);
 
 #define BFD_ASSERT(x) \

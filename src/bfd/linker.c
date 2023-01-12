@@ -1616,6 +1616,7 @@ _bfd_generic_link_add_one_symbol(struct bfd_link_info *info, bfd *abfd,
                  abfd, bfd_link_hash_defined, (bfd_vma)0UL)))
 	    return FALSE;
 	  /* Fall through.  */
+	  ATTRIBUTE_FALLTHROUGH;
 	case DEF:
 	case DEFW:
 	  {
@@ -1809,6 +1810,7 @@ _bfd_generic_link_add_one_symbol(struct bfd_link_info *info, bfd *abfd,
 	      && (strcmp(h->u.i.link->root.string, string) == 0))
 	    break;
 	  /* Fall through.  */
+	  ATTRIBUTE_FALLTHROUGH;
 	case MDEF:
 	  /* Handle a multiple definition: */
 	  if (!info->allow_multiple_definition)
@@ -1860,6 +1862,7 @@ _bfd_generic_link_add_one_symbol(struct bfd_link_info *info, bfd *abfd,
                  abfd, bfd_link_hash_indirect, (bfd_vma)0UL)))
 	    return FALSE;
 	  /* Fall through.  */
+	  ATTRIBUTE_FALLTHROUGH;
 	case IND:
 	  /* Create an indirect symbol: */
 	  {
@@ -1920,6 +1923,7 @@ _bfd_generic_link_add_one_symbol(struct bfd_link_info *info, bfd *abfd,
 	      h->u.i.warning = NULL;
 	    }
 	  /* Fall through.  */
+	  ATTRIBUTE_FALLTHROUGH;
 	case CYCLE:
 	  /* Try again with the referenced symbol: */
 	  h = h->u.i.link;
@@ -1957,6 +1961,7 @@ _bfd_generic_link_add_one_symbol(struct bfd_link_info *info, bfd *abfd,
 	      break;
 	    }
 	  /* Fall through.  */
+	  ATTRIBUTE_FALLTHROUGH;
 	case MWARN:
 	  /* Make a warning symbol.  */
 	  {
@@ -2349,6 +2354,7 @@ _bfd_generic_link_output_symbols(bfd *output_bfd, bfd *input_bfd,
 		      || ! (sym->section->flags & SEC_MERGE))
 		    break;
 		  /* FALLTHROUGH */
+		  ATTRIBUTE_FALLTHROUGH;
 		case discard_l:
 		  if (bfd_is_local_label (input_bfd, sym))
 		    output = FALSE;

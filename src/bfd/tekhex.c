@@ -455,7 +455,7 @@ first_phase (bfd *abfd, int type, char *src)
 	      return FALSE;
 	    }
 	}
-
+      ATTRIBUTE_FALLTHROUGH;
     default:
       break;
     }
@@ -947,6 +947,7 @@ tekhex_print_symbol(bfd *abfd, void * filep, asymbol *symbol,
 
 	fprintf(file, " %-5s %s", section_name, symbol->name);
       }
+      ATTRIBUTE_FALLTHROUGH;
     default:
       break;
     }

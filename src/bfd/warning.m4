@@ -28,7 +28,9 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wgcc-compat -Wasm -Wdangling-else -Wused-but-marked-unused \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
 -Wmissing-parameter-type -Wabi=11 -Wmissing-include-dirs \
--Wmisleading-indentation -Wformat=2 -Wmissing-format-attribute \
+-Wmisleading-indentation -Wformat -Wformat-security -Wformat-y2k \
+-Wformat-signedness -Wformat-non-iso -Wformat-pedantic -Wformat-type-confusion \
+-Wcstring-format-directive -Wmissing-format-attribute \
 -Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
 -Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough -Wstring-compare \

@@ -337,7 +337,9 @@ m4_ifdef([ACX_BUGURL],[
 ])dnl
 
 if test "x${WANT_CONVERSION_WARNS}" = "x"; then
-  test -z "${WANT_CONVERSION_WARNS}" && export WANT_CONVERSION_WARNS=1
+  if test -n "${GCC}" && test "x${bad_64bit_gcc}" != "xyes"; then
+    test -z "${WANT_CONVERSION_WARNS}" && export WANT_CONVERSION_WARNS=1
+  fi
 fi
 AM_BINUTILS_WARNINGS
 AM_BINUTILS_CLANG_STATIC_ANALYSIS

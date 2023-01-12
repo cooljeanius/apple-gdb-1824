@@ -20706,7 +20706,9 @@ fi
   esac;
 
 if test "x${WANT_CONVERSION_WARNS}" = "x"; then
-  test -z "${WANT_CONVERSION_WARNS}" && export WANT_CONVERSION_WARNS=1
+  if test -n "${GCC}" && test "x${bad_64bit_gcc}" != "xyes"; then
+    test -z "${WANT_CONVERSION_WARNS}" && export WANT_CONVERSION_WARNS=1
+  fi
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Werror -Wunknown-warning-option" >&5
 printf %s "checking whether C compiler handles -Werror -Wunknown-warning-option... " >&6; }
@@ -20758,7 +20760,9 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wgcc-compat -Wasm -Wdangling-else -Wused-but-marked-unused \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
 -Wmissing-parameter-type -Wabi=11 -Wmissing-include-dirs \
--Wmisleading-indentation -Wformat=2 -Wmissing-format-attribute \
+-Wmisleading-indentation -Wformat -Wformat-security -Wformat-y2k \
+-Wformat-signedness -Wformat-non-iso -Wformat-pedantic -Wformat-type-confusion \
+-Wcstring-format-directive -Wmissing-format-attribute \
 -Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
 -Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough -Wstring-compare \

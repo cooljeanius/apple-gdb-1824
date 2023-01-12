@@ -1438,6 +1438,7 @@ BFD32_BACKENDS = \
 	ieee.lo \
 	m68k4knetbsd.lo \
 	m68klinux.lo \
+	m68klynx.lo \
 	m68knetbsd.lo \
 	m88kmach3.lo \
 	m88kopenbsd.lo \

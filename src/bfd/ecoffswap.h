@@ -100,8 +100,8 @@ ecoff_swap_hdr_in(bfd *abfd, void *ext_copy, HDRR *intern)
 
   *ext = *(struct hdr_ext *)ext_copy;
 
-  intern->magic         = H_GET_S16(abfd, ext->h_magic);
-  intern->vstamp        = H_GET_S16(abfd, ext->h_vstamp);
+  intern->magic         = (short)H_GET_S16(abfd, ext->h_magic);
+  intern->vstamp        = (short)H_GET_S16(abfd, ext->h_vstamp);
   intern->ilineMax      = (long)H_GET_32(abfd, ext->h_ilineMax);
   intern->cbLine        = ECOFF_GET_OFF(abfd, ext->h_cbLine);
   intern->cbLineOffset  = ECOFF_GET_OFF(abfd, ext->h_cbLineOffset);
@@ -201,8 +201,8 @@ ecoff_swap_fdr_in(bfd *abfd, void *ext_copy, FDR *intern)
   intern->cpd           = H_GET_16(abfd, ext->f_cpd);
 #endif /* ECOFF_32 || ECOFF_SIGNED_32 */
 #if defined(ECOFF_64) || defined(ECOFF_SIGNED_64)
-  intern->ipdFirst      = H_GET_32(abfd, ext->f_ipdFirst);
-  intern->cpd           = H_GET_32(abfd, ext->f_cpd);
+  intern->ipdFirst      = (unsigned short)H_GET_32(abfd, ext->f_ipdFirst);
+  intern->cpd           = (short)H_GET_32(abfd, ext->f_cpd);
 #endif /* ECOFF_64 || ECOFF_SIGNED_64 */
   intern->iauxBase      = (long)H_GET_32(abfd, ext->f_iauxBase);
   intern->caux          = (long)H_GET_32(abfd, ext->f_caux);
@@ -329,8 +329,8 @@ ecoff_swap_pdr_in(bfd *abfd, void *ext_copy, PDR *intern)
   intern->fregmask      = (long)H_GET_32(abfd, ext->p_fregmask);
   intern->fregoffset    = (long)H_GET_S32 (abfd, ext->p_fregoffset);
   intern->frameoffset   = (long)H_GET_S32(abfd, ext->p_frameoffset);
-  intern->framereg      = H_GET_16(abfd, ext->p_framereg);
-  intern->pcreg         = H_GET_16(abfd, ext->p_pcreg);
+  intern->framereg      = (short)H_GET_16(abfd, ext->p_framereg);
+  intern->pcreg         = (short)H_GET_16(abfd, ext->p_pcreg);
   intern->lnLow         = (long)H_GET_32(abfd, ext->p_lnLow);
   intern->lnHigh        = (long)H_GET_32(abfd, ext->p_lnHigh);
   intern->cbLineOffset  = ECOFF_GET_OFF(abfd, ext->p_cbLineOffset);
@@ -700,16 +700,16 @@ ecoff_swap_opt_out(bfd *abfd, const OPTR *intern_copy, void *ext_ptr)
   if (bfd_header_big_endian(abfd))
     {
       ext->o_bits1[0] = intern->ot;
-      ext->o_bits2[0] = intern->value >> OPT_BITS2_VALUE_SH_LEFT_BIG;
-      ext->o_bits3[0] = intern->value >> OPT_BITS3_VALUE_SH_LEFT_BIG;
-      ext->o_bits4[0] = intern->value >> OPT_BITS4_VALUE_SH_LEFT_BIG;
+      ext->o_bits2[0] = (unsigned char)(intern->value >> OPT_BITS2_VALUE_SH_LEFT_BIG);
+      ext->o_bits3[0] = (unsigned char)(intern->value >> OPT_BITS3_VALUE_SH_LEFT_BIG);
+      ext->o_bits4[0] = (unsigned char)(intern->value >> OPT_BITS4_VALUE_SH_LEFT_BIG);
     }
   else
     {
       ext->o_bits1[0] = intern->ot;
-      ext->o_bits2[0] = intern->value >> OPT_BITS2_VALUE_SH_LEFT_LITTLE;
-      ext->o_bits3[0] = intern->value >> OPT_BITS3_VALUE_SH_LEFT_LITTLE;
-      ext->o_bits4[0] = intern->value >> OPT_BITS4_VALUE_SH_LEFT_LITTLE;
+      ext->o_bits2[0] = (unsigned char)(intern->value >> OPT_BITS2_VALUE_SH_LEFT_LITTLE);
+      ext->o_bits3[0] = (unsigned char)(intern->value >> OPT_BITS3_VALUE_SH_LEFT_LITTLE);
+      ext->o_bits4[0] = (unsigned char)(intern->value >> OPT_BITS4_VALUE_SH_LEFT_LITTLE);
     }
 
   _bfd_ecoff_swap_rndx_out(bfd_header_big_endian(abfd),

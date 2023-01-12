@@ -1988,7 +1988,7 @@ coff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
 		   coffsymbol (symbol)->lineno ? "l" : " ",
 		   symbol->name);
 	}
-
+      ATTRIBUTE_FALLTHROUGH; /* ...I guess? */
     default:
       break;
     }

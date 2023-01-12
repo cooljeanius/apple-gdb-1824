@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-10 21:42-0500\n"
+"POT-Creation-Date: 2023-01-11 20:17-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,22 +34,22 @@ msgstr ""
 msgid "%B: Bad relocation record imported: %d"
 msgstr ""
 
-#: aoutx.h:1288 aoutx.h:1621
+#: aoutx.h:1291 aoutx.h:1624
 #, c-format
 msgid "%s: can not represent section `%s' in a.out object file format"
 msgstr ""
 
-#: aoutx.h:1587
+#: aoutx.h:1590
 #, c-format
 msgid ""
 "%s: can not represent section for symbol `%s' in a.out object file format"
 msgstr ""
 
-#: aoutx.h:1589 vms-alpha.c:7564
+#: aoutx.h:1592 vms-alpha.c:7564
 msgid "*unknown*"
 msgstr ""
 
-#: aoutx.h:5309
+#: aoutx.h:5313
 #, c-format
 msgid "%s: relocatable link from %s to %s not supported"
 msgstr ""
@@ -3126,20 +3126,20 @@ msgstr ""
 msgid "Deprecated %s called\n"
 msgstr ""
 
-#: linker.c:1878
+#: linker.c:1881
 msgid "%B: indirect symbol `%s' to `%s' is a loop"
 msgstr ""
 
-#: linker.c:2751
+#: linker.c:2757
 #, c-format
 msgid "Attempt to do relocatable link with %s input and %s output"
 msgstr ""
 
-#: linker.c:3048
+#: linker.c:3054
 msgid "%B: warning: ignoring duplicate section `%A'\n"
 msgstr ""
 
-#: linker.c:3062
+#: linker.c:3068
 msgid "%B: warning: duplicate section `%A' has different size\n"
 msgstr ""
 

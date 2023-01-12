@@ -457,7 +457,7 @@ alpha_ecoff_object_p(bfd *abfd)
 	{
 	  bfd_size_type size;
 
-	  size = (sec->line_filepos * 8);
+	  size = ((bfd_size_type)sec->line_filepos * 8UL);
 	  BFD_ASSERT((size == sec->size)
                      || ((size + 8) == sec->size));
 	  if (! bfd_set_section_size(abfd, sec, size))
@@ -470,7 +470,7 @@ alpha_ecoff_object_p(bfd *abfd)
 
 /* See whether the magic number matches: */
 static bfd_boolean
-alpha_ecoff_bad_format_hook(bfd *abfd ATTRIBUTE_UNUSED, PTR filehdr)
+alpha_ecoff_bad_format_hook(bfd *abfd, PTR filehdr)
 {
   struct internal_filehdr *internal_f = (struct internal_filehdr *)filehdr;
 
@@ -550,7 +550,7 @@ alpha_ecoff_swap_reloc_in(bfd *abfd, PTR ext_ptr,
 	 clobber the symndx.  */
       if (intern->r_size != 0)
 	abort ();
-      intern->r_size = intern->r_symndx;
+      intern->r_size = (unsigned char)intern->r_symndx;
       intern->r_symndx = RELOC_SECTION_NONE;
     }
   else if (intern->r_type == ALPHA_R_IGNORE)
@@ -654,7 +654,7 @@ alpha_adjust_reloc_in(bfd *abfd, const struct internal_reloc *intern,
       /* Copy the gp value for this object file into the addend, to
 	 ensure that we are not confused by the linker.  */
       if (! intern->r_extern)
-	rptr->addend += ecoff_data (abfd)->gp;
+	rptr->addend += ecoff_data(abfd)->gp;
       break;
 
     case ALPHA_R_LITUSE:
@@ -668,8 +668,8 @@ alpha_adjust_reloc_in(bfd *abfd, const struct internal_reloc *intern,
     case ALPHA_R_OP_STORE:
       /* The STORE reloc needs the size and offset fields.  We store
 	 them in the addend.  */
-      BFD_ASSERT (intern->r_offset <= 256);
-      rptr->addend = (intern->r_offset << 8) + intern->r_size;
+      BFD_ASSERT(intern->r_offset <= 256);
+      rptr->addend = ((intern->r_offset << 8) + intern->r_size);
       break;
 
     case ALPHA_R_OP_PUSH:
@@ -683,7 +683,7 @@ alpha_adjust_reloc_in(bfd *abfd, const struct internal_reloc *intern,
 
     case ALPHA_R_GPVALUE:
       /* Set the addend field to the new GP value.  */
-      rptr->addend = intern->r_symndx + ecoff_data (abfd)->gp;
+      rptr->addend = ((bfd_vma)intern->r_symndx + ecoff_data(abfd)->gp);
       break;
 
     case ALPHA_R_IGNORE:
@@ -694,7 +694,7 @@ alpha_adjust_reloc_in(bfd *abfd, const struct internal_reloc *intern,
 	 here, for convenience when doing the GPDISP relocation.  */
       rptr->sym_ptr_ptr = bfd_abs_section_ptr->symbol_ptr_ptr;
       rptr->address = intern->r_vaddr;
-      rptr->addend = ecoff_data (abfd)->gp;
+      rptr->addend = ecoff_data(abfd)->gp;
       break;
 
     default:
@@ -717,7 +717,7 @@ alpha_adjust_reloc_out(bfd *abfd ATTRIBUTE_UNUSED, const arelent *rel,
     {
     case ALPHA_R_LITUSE:
     case ALPHA_R_GPDISP:
-      intern->r_size = rel->addend;
+      intern->r_size = (unsigned char)rel->addend;
       break;
 
     case ALPHA_R_OP_STORE:
@@ -1039,7 +1039,7 @@ alpha_ecoff_get_relocated_section_contents(bfd *abfd,
 	    size = (size_t)(rel->addend & 0xff);
 
 	    val = bfd_get_64 (abfd, data + rel->address);
-	    val &=~ (((1 << size) - 1) << offset);
+	    val &=~ (((1UL << size) - 1UL) << offset);
 	    val |= (stack[--tos] & ((1 << size) - 1)) << offset;
 	    bfd_put_64 (abfd, val, data + rel->address);
 	  }
@@ -1331,7 +1331,7 @@ alpha_convert_external_reloc(bfd *output_bfd ATTRIBUTE_UNUSED,
     {
       /* Change the symndx value to the right one for
 	 the output BFD.  */
-      r_symndx = h->indx;
+      r_symndx = (unsigned long)h->indx;
       if (r_symndx == (unsigned long)(-1L))
 	{
 	  /* Caller must give an error.  */
@@ -2217,13 +2217,13 @@ alpha_ecoff_openr_next_archived_file(bfd *archive, bfd *last_file)
          which is the uncompressed size.  We need the compressed size.  */
       t = (struct areltdata *)last_file->arelt_data;
       h = (struct ar_hdr *)t->arch_header;
-      size = strtol(h->ar_size, (char **)NULL, 10);
+      size = (bfd_size_type)strtol(h->ar_size, (char **)NULL, 10);
 
       /* Pad to an even boundary...
 	 Note that last_file->origin can be odd in the case of
 	 BSD-4.4-style element with a long odd size.  */
-      filestart = last_file->origin + size;
-      filestart += filestart % 2;
+      filestart = (file_ptr)(last_file->origin + size);
+      filestart += (filestart % 2);
     }
 
   return alpha_ecoff_get_elt_at_filepos (archive, filestart);
