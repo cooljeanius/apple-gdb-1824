@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-14 19:39-0400\n"
+"POT-Creation-Date: 2023-01-12 19:05-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5437,50 +5437,50 @@ msgstr ""
 msgid "block start larger than block end"
 msgstr ""
 
-#: dbxread.c:5655 hpread.c:121
+#: dbxread.c:5659 hpread.c:121
 #, possible-c-format
 msgid "unmatched N_LBRAC before symtab pos %d"
 msgstr ""
 
-#: dbxread.c:5810 dbxread.c:5908
+#: dbxread.c:5814 dbxread.c:5912
 msgid "Possible issue with dbx_symfile_info here"
 msgstr ""
 
 #. APPLE LOCAL better error message
-#: dbxread.c:5823 dbxread.c:5925
+#: dbxread.c:5827 dbxread.c:5929
 #, possible-c-format
 msgid "error parsing symfile: invalid string table size (%d bytes)."
 msgstr ""
 
-#: dbxread.c:6000
+#: dbxread.c:6004
 #, possible-c-format
 msgid "stabsect_build_psymtabs:  Found stabs (%s), but not string section (%s)"
 msgstr ""
 
-#: dbxread.c:6009
+#: dbxread.c:6013
 #, possible-c-format
 msgid "Cannot find %s section in symbol file"
 msgstr ""
 
-#: dbxread.c:6020
+#: dbxread.c:6024
 #, possible-c-format
 msgid "ridiculous string table size: %d bytes"
 msgstr ""
 
-#: dbxread.c:6170
+#: dbxread.c:6174
 msgid "Set if we should create partial symbols for types."
 msgstr ""
 
-#: dbxread.c:6171
+#: dbxread.c:6175
 msgid "Show if we should create partial symbols for types."
 msgstr ""
 
-#: dbxread.c:6175
+#: dbxread.c:6179
 msgid ""
 "Set if N_FUN end-of-function symbols use absolute addresses on non-GCC files."
 msgstr ""
 
-#: dbxread.c:6176
+#: dbxread.c:6180
 msgid ""
 "Show if N_FUN end-of-function symbols use absolute addresses on non-GCC "
 "files."
@@ -7510,6 +7510,94 @@ msgstr ""
 msgid "Show if GDB should honor the 'stride' parameter of array types."
 msgstr ""
 
+#: gnu-regex.c:995 gnulib/import/regcomp.c:135
+msgid "Success"
+msgstr ""
+
+#. REG_NOERROR
+#: gnu-regex.c:996 gnulib/import/regcomp.c:138
+msgid "No match"
+msgstr ""
+
+#. REG_NOMATCH
+#: gnu-regex.c:997 gnulib/import/regcomp.c:141
+msgid "Invalid regular expression"
+msgstr ""
+
+#. REG_BADPAT
+#: gnu-regex.c:998 gnulib/import/regcomp.c:144
+msgid "Invalid collation character"
+msgstr ""
+
+#. REG_ECOLLATE
+#: gnu-regex.c:999 gnulib/import/regcomp.c:147
+msgid "Invalid character class name"
+msgstr ""
+
+#. REG_ECTYPE
+#: gnu-regex.c:1000 gnulib/import/regcomp.c:150
+msgid "Trailing backslash"
+msgstr ""
+
+#. REG_EESCAPE
+#: gnu-regex.c:1001 gnulib/import/regcomp.c:153
+msgid "Invalid back reference"
+msgstr ""
+
+#. REG_ESUBREG
+#: gnu-regex.c:1002
+msgid "Unmatched [ or [^"
+msgstr ""
+
+#. REG_EBRACK
+#: gnu-regex.c:1003 gnulib/import/regcomp.c:159
+msgid "Unmatched ( or \\("
+msgstr ""
+
+#. REG_EPAREN
+#: gnu-regex.c:1004 gnulib/import/regcomp.c:162
+msgid "Unmatched \\{"
+msgstr ""
+
+#. REG_EBRACE
+#: gnu-regex.c:1005 gnulib/import/regcomp.c:165
+msgid "Invalid content of \\{\\}"
+msgstr ""
+
+#. REG_BADBR
+#: gnu-regex.c:1006 gnulib/import/regcomp.c:168
+msgid "Invalid range end"
+msgstr ""
+
+#. REG_ERANGE
+#: gnu-regex.c:1007 gnulib/import/regcomp.c:171
+msgid "Memory exhausted"
+msgstr ""
+
+#. REG_ESPACE
+#: gnu-regex.c:1008 gnulib/import/regcomp.c:174
+msgid "Invalid preceding regular expression"
+msgstr ""
+
+#. REG_BADRPT
+#: gnu-regex.c:1009 gnulib/import/regcomp.c:177
+msgid "Premature end of regular expression"
+msgstr ""
+
+#. REG_EEND
+#: gnu-regex.c:1010 gnulib/import/regcomp.c:180
+msgid "Regular expression too big"
+msgstr ""
+
+#. REG_ESIZE
+#: gnu-regex.c:1011 gnulib/import/regcomp.c:183
+msgid "Unmatched ) or \\)"
+msgstr ""
+
+#: gnu-regex.c:5494 gnulib/import/regcomp.c:676
+msgid "No previous regular expression"
+msgstr ""
+
 #: gnu-v2-abi.c:178
 msgid "I am confused:  virtual function table has bad type"
 msgstr ""
@@ -7621,76 +7709,8 @@ msgstr ""
 msgid "cannot open stats file for writing"
 msgstr ""
 
-#: gnulib/import/regcomp.c:135
-msgid "Success"
-msgstr ""
-
-#: gnulib/import/regcomp.c:138
-msgid "No match"
-msgstr ""
-
-#: gnulib/import/regcomp.c:141
-msgid "Invalid regular expression"
-msgstr ""
-
-#: gnulib/import/regcomp.c:144
-msgid "Invalid collation character"
-msgstr ""
-
-#: gnulib/import/regcomp.c:147
-msgid "Invalid character class name"
-msgstr ""
-
-#: gnulib/import/regcomp.c:150
-msgid "Trailing backslash"
-msgstr ""
-
-#: gnulib/import/regcomp.c:153
-msgid "Invalid back reference"
-msgstr ""
-
 #: gnulib/import/regcomp.c:156
 msgid "Unmatched [, [^, [:, [., or [="
-msgstr ""
-
-#: gnulib/import/regcomp.c:159
-msgid "Unmatched ( or \\("
-msgstr ""
-
-#: gnulib/import/regcomp.c:162
-msgid "Unmatched \\{"
-msgstr ""
-
-#: gnulib/import/regcomp.c:165
-msgid "Invalid content of \\{\\}"
-msgstr ""
-
-#: gnulib/import/regcomp.c:168
-msgid "Invalid range end"
-msgstr ""
-
-#: gnulib/import/regcomp.c:171
-msgid "Memory exhausted"
-msgstr ""
-
-#: gnulib/import/regcomp.c:174
-msgid "Invalid preceding regular expression"
-msgstr ""
-
-#: gnulib/import/regcomp.c:177
-msgid "Premature end of regular expression"
-msgstr ""
-
-#: gnulib/import/regcomp.c:180
-msgid "Regular expression too big"
-msgstr ""
-
-#: gnulib/import/regcomp.c:183
-msgid "Unmatched ) or \\)"
-msgstr ""
-
-#: gnulib/import/regcomp.c:676
-msgid "No previous regular expression"
 msgstr ""
 
 #: gnulib/import/openat-die.c:38
@@ -11233,56 +11253,56 @@ msgstr ""
 msgid "No additional help."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4177
+#: macosx/macosx-tdep.c:4178
 msgid "Can only get dyld_shared_cache local symbols on ARM"
 msgstr ""
 
-#: macosx/macosx-tdep.c:4207
+#: macosx/macosx-tdep.c:4208
 msgid ""
 "Open the named source file in an application determined by LaunchServices.\n"
 "With no arguments, open the currently selected source file.\n"
 "Also takes file:line to hilight the file at the given line."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4224
+#: macosx/macosx-tdep.c:4225
 msgid "Set locate dSYM files using the DebugSymbols framework."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4225
+#: macosx/macosx-tdep.c:4226
 msgid "Show locate dSYM files using the DebugSymbols framework."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4226
+#: macosx/macosx-tdep.c:4227
 msgid ""
 "If set, gdb will try and locate dSYM files using the DebugSymbols framework."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4232
+#: macosx/macosx-tdep.c:4233
 msgid ""
 "Set whether gdb should do a search through memory for the kernel on 'target "
 "remote'."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4233
+#: macosx/macosx-tdep.c:4234
 msgid ""
 "Show whether gdb should do a search through memory for the kernel on 'target "
 "remote'."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4234
+#: macosx/macosx-tdep.c:4235
 msgid ""
 "If set, gdb may look through memory for a kernel when doing 'target remote'"
 msgstr ""
 
-#: macosx/macosx-tdep.c:4245
+#: macosx/macosx-tdep.c:4246
 msgid "Set if GDB should disable shared library address randomization."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4246
+#: macosx/macosx-tdep.c:4247
 msgid "Show if GDB should disable shared library address randomization."
 msgstr ""
 
-#: macosx/macosx-tdep.c:4251
+#: macosx/macosx-tdep.c:4252
 msgid ""
 "Usage: add-all-kexts\n"
 "Load the dSYMs for all of the kexts loaded in a live kernel/kernel "

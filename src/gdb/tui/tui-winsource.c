@@ -561,14 +561,14 @@ tui_update_exec_info (struct tui_win_info * win_info)
 }
 
 enum tui_status
-tui_alloc_source_buffer (struct tui_win_info *win_info)
+tui_alloc_source_buffer(struct tui_win_info *win_info)
 {
   char *src_line_buf;
   int i, line_width, max_lines;
   enum tui_status ret = TUI_FAILURE;
 
   max_lines = win_info->generic.height;	/* less the highlight box */
-  line_width = win_info->generic.width - 1;
+  line_width = (win_info->generic.width - 1);
   /*
      ** Allocate the buffer for the source lines.  Do this only once since they
      ** will be re-used for all source displays.  The only other time this will
@@ -576,8 +576,8 @@ tui_alloc_source_buffer (struct tui_win_info *win_info)
    */
   if (win_info->generic.content == NULL)
     {
-      src_line_buf = (char *) xmalloc ((max_lines * line_width) * sizeof (char));
-      if (src_line_buf == (char *) NULL)
+      src_line_buf = (char *)xmalloc((max_lines * line_width) * sizeof(char));
+      if (src_line_buf == (char *)NULL)
 	fputs_unfiltered (
 	   "Unable to Allocate Memory for Source or Disassembly Display.\n",
 			   gdb_stderr);
@@ -587,11 +587,10 @@ tui_alloc_source_buffer (struct tui_win_info *win_info)
 	  if ((win_info->generic.content =
 	  (void **) tui_alloc_content (max_lines, SRC_WIN)) == NULL)
 	    {
-	      xfree (src_line_buf);
-	      src_line_buf = (char *) NULL;
-	      fputs_unfiltered (
-				 "Unable to Allocate Memory for Source or Disassembly Display.\n",
-				 gdb_stderr);
+	      xfree(src_line_buf);
+	      src_line_buf = (char *)NULL;
+	      fputs_unfiltered("Unable to Allocate Memory for Source or Disassembly Display.\n",
+                               gdb_stderr);
 	    }
 	}
       for (i = 0; i < max_lines; i++)

@@ -57,6 +57,9 @@ dist-hook:
 	false
 .PHONY: dist-hook
 
+pdf-local:
+.PHONY: pdf-local
+
 MAINTAINERCLEANFILES = configure.scan missing_symbols.txt
 
 configure.scan:

@@ -1734,6 +1734,9 @@ decode_frame_entry_1(struct comp_unit *unit, gdb_byte *start, int eh_frame_p)
       cie = ((struct dwarf2_cie *)
              obstack_alloc(&unit->objfile->objfile_obstack,
                            sizeof(struct dwarf2_cie)));
+      if (cie == NULL) {
+        return NULL;
+      }
       cie->initial_instructions = NULL;
       cie->cie_pointer = cie_pointer;
 

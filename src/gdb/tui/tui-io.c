@@ -202,7 +202,7 @@ tui_redisplay_readline(void)
 {
   int prev_col;
   int height;
-  int col, line;
+  int col, line = 0;
   int c_pos;
   int c_line;
   int in;
@@ -347,20 +347,20 @@ printable_part (char *pathname)
 
 #define PUTX(c) \
     do { \
-      if (CTRL_CHAR (c)) \
+      if (CTRL_CHAR(c)) \
         { \
-          tui_puts ("^"); \
-          tui_putc (UNCTRL (c)); \
+          tui_puts("^"); \
+          tui_putc((char)UNCTRL(c)); \
           printed_len += 2; \
         } \
       else if (c == RUBOUT) \
 	{ \
-	  tui_puts ("^?"); \
+	  tui_puts("^?"); \
 	  printed_len += 2; \
 	} \
       else \
 	{ \
-	  tui_putc (c); \
+	  tui_putc((char)c); \
 	  printed_len++; \
 	} \
     } while (0)

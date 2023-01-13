@@ -217,7 +217,9 @@ get_java_utf8_name(struct obstack *obstack, struct value *name)
   data_addr = (VALUE_ADDRESS(temp) + value_offset(temp)
                + TYPE_LENGTH(value_type(temp)));
   chrs = (char *)obstack_alloc(obstack, name_length + 1);
-  chrs[name_length] = '\0';
+  if (chrs != NULL) {
+    chrs[name_length] = '\0';
+  }
   read_memory(data_addr, (gdb_byte *)chrs, name_length);
   return chrs;
 }
@@ -518,6 +520,7 @@ java_link_class_type(struct type *type, struct value *clas)
   memset(fn_fields, 0, j);
   fn_fieldlists = ((struct fn_fieldlist *)
                    alloca(nmethods * sizeof(struct fn_fieldlist)));
+  memset(fn_fieldlists, 0, (nmethods * sizeof(struct fn_fieldlist)));
 
   methods = NULL;
   for (i = 0; i < nmethods; i++)
@@ -532,15 +535,15 @@ java_link_class_type(struct type *type, struct value *clas)
 	}
       else
 	{			/* Re-use method value for next method. */
-	  VALUE_ADDRESS (method) += TYPE_LENGTH (value_type (method));
-	  set_value_lazy (method, 1);
+	  VALUE_ADDRESS(method) += TYPE_LENGTH(value_type(method));
+	  set_value_lazy(method, 1);
 	}
 
       /* Get method name. */
       temp = method;
-      temp = value_struct_elt (&temp, NULL, "name", NULL, "structure");
-      mname = get_java_utf8_name (&objfile->objfile_obstack, temp);
-      if (strcmp (mname, "<init>") == 0)
+      temp = value_struct_elt(&temp, NULL, "name", NULL, "structure");
+      mname = get_java_utf8_name(&objfile->objfile_obstack, temp);
+      if (strcmp(mname, "<init>") == 0)
 	mname = unqualified_name;
 
       /* Check for an existing method with the same name.
@@ -553,15 +556,15 @@ java_link_class_type(struct type *type, struct value *clas)
 	{
 	  if (--j < 0)
 	    {			/* No match - new method name. */
-	      j = TYPE_NFN_FIELDS (type)++;
+	      j = TYPE_NFN_FIELDS(type)++;
 	      fn_fieldlists[j].name = mname;
 	      fn_fieldlists[j].length = 1;
 	      fn_fieldlists[j].fn_fields = &fn_fields[i];
 	      k = i;
 	      break;
 	    }
-	  if (strcmp (mname, fn_fieldlists[j].name) == 0)
-	    {			/* Found an existing method with the same name. */
+	  if (strcmp(mname, fn_fieldlists[j].name) == 0)
+	    {		/* Found an existing method with the same name. */
 	      int l;
 	      if (mname != unqualified_name)
 		obstack_free (&objfile->objfile_obstack, mname);

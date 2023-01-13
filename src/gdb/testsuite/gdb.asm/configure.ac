@@ -21,12 +21,14 @@ archinc=common.inc
 case ${target} in
 d10v-*-*) archinc=d10v.inc ;;
 esac
+
 m4_warn([obsolete],
 [It is technically impossible to `autoupdate' cleanly from AC\_LINK\_FILES
 to AC\_CONFIG\_LINKS.  `autoupdate' provides a functional but inelegant
 update, you should probably tune the result yourself.])dnl
 ac_sources="${archinc}"
 ac_dests="arch.inc"
+unset ac_config_links_1
 while test -n "${ac_sources}"; do
   set ${ac_dests}; ac_dest=${1}; shift; ac_dests=$*
   set ${ac_sources}; ac_source=${1}; shift; ac_sources=$*

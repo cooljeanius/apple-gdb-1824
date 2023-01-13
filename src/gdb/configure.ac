@@ -1682,6 +1682,22 @@ if test "x${enable_gdbtk}" = "xyes"; then
     test -n "${ac_cv_header_X11_Xlib_h}" && test -f /usr/X11/include/X11/Xlib.h && test -r /usr/X11/include/X11/Xlib.h && stat /usr/X11/include/X11/Xlib.h
   fi
 fi
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z "${ac_cv_header_inttypes_h}"
+  AC_CHECK_HEADERS([inttypes.h])
+fi
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}"
+  AC_CHECK_HEADERS([stdint.h])
+fi
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}"
+  AC_CHECK_HEADERS([strings.h])
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  AC_CHECK_HEADERS([unistd.h])
+fi
 
 # ------------------------- #
 # Checks for declarations.  #
@@ -2300,6 +2316,11 @@ dnl# might be checked elsewhere?
 if test "x${ac_cv_func_connect}" = "x"; then
   test -z "${ac_cv_func_connect}"
   AC_CHECK_FUNCS([connect])
+fi
+dnl# checked by the check for mmap:
+if test "x${ac_cv_func_getpagesize}" = "x"; then
+  test -z "${ac_cv_func_getpagesize}"
+  AC_CHECK_FUNCS([getpagesize])
 fi
 
 dnl# CoreFoundation:

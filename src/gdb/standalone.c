@@ -23,9 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include <sys/types.h>
 #include "gdb_stat.h"
 
-#if defined (SIGTSTP) && defined (SIGIO)
-#include <sys/time.h>
-#include <sys/resource.h>
+#if defined(SIGTSTP) && defined(SIGIO)
+# include <sys/time.h>
+# include <sys/resource.h>
 #endif /* SIGTSTP and SIGIO defined (must be 4.2) */
 
 #include "defs.h"
@@ -35,49 +35,59 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include "inferior.h"
 #include "wait.h"
 
+#ifndef REGISTER_TYPE
+# ifdef DEPRECATED_REGISTER_VIRTUAL_TYPE
+#  define REGISTER_TYPE DEPRECATED_REGISTER_VIRTUAL_TYPE
+# else
+#  define REGISTER_TYPE unsigned int
+# endif /* DEPRECATED_REGISTER_VIRTUAL_TYPE */
+#endif /* !REGISTER_TYPE */
+
+extern void fault(void);
+extern void save_registers(int);
+extern void restore_gdb(void);
+
+extern void _initialize_standalone(void);
 
 /* Random system calls, mostly no-ops to prevent link problems  */
-
-ioctl (desc, code, arg)
+int
+ioctl(int desc, unsigned long code, ...)
 {}
 
 int (* signal ()) ()
 {}
 
-kill ()
+kill()
 {}
 
-getpid ()
+int getpid()
 {
   return 0;
 }
 
-sigsetmask ()
+sigsetmask()
 {}
 
-chdir ()
+chdir()
 {}
 
 char *
-getcwd (buf, len)
-     char *buf;
-     unsigned int len;
+getcwd(char *buf, size_t len)
 {
   buf[0] = '/';
   buf[1] = 0;
   return buf;
 }
 
-/* Used to check for existence of .gdbinit.  Say no.  */
-
-access ()
+/* Used to check for existence of .gdbinit.  Say no: */
+int access()
 {
   return -1;
 }
 
-exit ()
+void exit(int ignored)
 {
-  error ("Fatal error; restarting.");
+  error("Fatal error; restarting.");
 }
 
 /* Reading "files".  The contents of some files are written into kdb's
@@ -123,9 +133,8 @@ int sourceleft;			/* number of bytes to eof */
 
 int sourcedesc;
 
-open (filename, modes)
-     char *filename;
-     int modes;
+int
+open(const char *filename, int modes)
 {
   register char *next;
 
@@ -141,14 +150,14 @@ open (filename, modes)
       return -1;
     }
 
-  for (next = files_start; * (int *) next; next += * (int *) next)
+  for (next = files_start; *(int *)next; next += *(int *)next)
     {
-      if (!STRCMP (next + 4, filename))
+      if (!STRCMP((next + 4), filename))
 	{
-	  sourcebeg = next + 4 + strlen (next + 4) + 1;
-	  sourcebeg = (char *) (((int) sourcebeg + 3) & (-4));
+	  sourcebeg = (next + 4 + strlen(next + 4) + 1);
+	  sourcebeg = (char *)(((int)sourcebeg + 3) & (-4));
 	  sourceptr = sourcebeg;
-	  sourcesize = next + * (int *) next - sourceptr;
+	  sourcesize = (next + *(int *)next - sourceptr);
 	  sourceleft = sourcesize;
 	  return sourcedesc;
 	}
@@ -156,38 +165,35 @@ open (filename, modes)
   return 0;
 }
 
-close (desc)
-     int desc;
+close(int desc)
 {
   sourceptr = 0;
   sourcedesc++;
-  /* Don't let sourcedesc get big enough to be confused with stdin.  */
+  /* Do NOT let sourcedesc get big enough to be confused with stdin: */
   if (sourcedesc == 100)
     sourcedesc = 5;
 }
 
 FILE *
-fopen (filename, modes)
-     char *filename;
-     char *modes;
+fopen(const char *filename, const char *modes)
 {
-  return (FILE *) open (filename, *modes == 'w');
+  return (FILE *)open(filename, (*modes == 'w'));
 }
 
 FILE *
-fdopen (desc)
-     int desc;
+fdopen(int desc)
 {
-  return (FILE *) desc;
+  return (FILE *)desc;
 }
 
-fclose (desc)
-     int desc;
+int
+fclose(int desc)
 {
-  close (desc);
+  close(desc);
 }
 
-fstat (desc, statbuf)
+int
+fstat(desc, statbuf)
      struct stat *statbuf;
 {
   if (desc != sourcedesc)
@@ -198,13 +204,10 @@ fstat (desc, statbuf)
   statbuf->st_size = sourcesize;
 }
 
-myread (desc, destptr, size, filename)
-     int desc;
-     char *destptr;
-     int size;
-     char *filename;
+int
+myread(int desc, char *destptr, int size, char *filename)
 {
-  int len = min (sourceleft, size);
+  int len = min(sourceleft, size);
 
   if (desc != sourcedesc)
     {
@@ -212,16 +215,16 @@ myread (desc, destptr, size, filename)
       return -1;
     }
 
-  memcpy (destptr, sourceptr, len);
+  memcpy(destptr, sourceptr, len);
   sourceleft -= len;
   return len;
 }
 
 int
-fread (bufp, numelts, eltsize, stream)
+fread(bufp, numelts, eltsize, stream)
 {
-  register int elts = min (numelts, sourceleft / eltsize);
-  register int len = elts * eltsize;
+  register int elts = min(numelts, (sourceleft / eltsize));
+  register int len = (elts * eltsize);
 
   if (stream != sourcedesc)
     {
@@ -229,18 +232,16 @@ fread (bufp, numelts, eltsize, stream)
       return -1;
     }
 
-  memcpy (bufp, sourceptr, len);
+  memcpy(bufp, sourceptr, len);
   sourceleft -= len;
   return elts;
 }
 
 int
-fgetc (desc)
-     int desc;
+fgetc(int desc)
 {
-
-  if (desc == (int) stdin)
-    return tty_input ();
+  if (desc == (int)(intptr_t)stdin)
+    return tty_input();
 
   if (desc != sourcedesc)
     {
@@ -253,9 +254,8 @@ fgetc (desc)
   return *sourceptr++;
 }
 
-lseek (desc, pos)
-     int desc;
-     int pos;
+off_t
+lseek(int desc, int pos)
 {
 
   if (desc != sourcedesc)
@@ -264,149 +264,139 @@ lseek (desc, pos)
       return -1;
     }
 
-  if (pos < 0 || pos > sourcesize)
+  if ((pos < 0) || (pos > sourcesize))
     {
       errno = EINVAL;
       return -1;
     }
 
-  sourceptr = sourcebeg + pos;
-  sourceleft = sourcesize - pos;
+  sourceptr = (sourcebeg + pos);
+  sourceleft = (sourcesize - pos);
 }
 
 /* Output in kdb can go only to the terminal, so the stream
    specified may be ignored.  */
 
-printf (a1, a2, a3, a4, a5, a6, a7, a8, a9)
+printf(a1, a2, a3, a4, a5, a6, a7, a8, a9)
 {
   char buffer[1024];
-  sprintf (buffer, a1, a2, a3, a4, a5, a6, a7, a8, a9);
-  display_string (buffer);
+  snprintf(buffer, sizeof(buffer), a1, a2, a3, a4, a5, a6, a7, a8, a9);
+  display_string(buffer);
 }
 
-fprintf (ign, a1, a2, a3, a4, a5, a6, a7, a8, a9)
+fprintf(ign, a1, a2, a3, a4, a5, a6, a7, a8, a9)
 {
   char buffer[1024];
-  sprintf (buffer, a1, a2, a3, a4, a5, a6, a7, a8, a9);
-  display_string (buffer);
+  snprintf(buffer, sizeof(buffer), a1, a2, a3, a4, a5, a6, a7, a8, a9);
+  display_string(buffer);
 }
 
-fwrite (buf, numelts, size, stream)
-     register char *buf;
-     int numelts, size;
+size_t
+fwrite(const void *restrict buf, size_t numelts, size_t size, FILE *stream)
 {
-  register int i = numelts * size;
+  register int i = (numelts * size);
   while (i-- > 0)
-    fputc (*buf++, stream);
+    fputc(*buf++, stream);
 }
 
-fputc (c, ign)
+int
+fputc(int c, FILE *ign)
 {
   char buf[2];
-  buf[0] = c;
+  buf[0] = (char)c;
   buf[1] = 0;
-  display_string (buf);
+  display_string(buf);
 }
 
 /* sprintf refers to this, but loading this from the
    library would cause fflush to be loaded from it too.
    In fact there should be no need to call this (I hope).  */
 
-_flsbuf ()
+_flsbuf()
 {
-  error ("_flsbuf was actually called.");
+  error("_flsbuf was actually called.");
 }
 
-fflush (ign)
+int
+fflush(FILE *ign)
 {
 }
 
 /* Entries into core and inflow, needed only to make things link ok.  */
 
-exec_file_command ()
+exec_file_command()
 {}
 
-core_file_command ()
+core_file_command()
 {}
 
-char *
-get_exec_file (err)
-     int err;
+const char *
+get_exec_file(int err)
 {
-  /* Makes one printout look reasonable; value does not matter otherwise.  */
+  /* Makes one printout look reasonable; value does not matter otherwise: */
   return "run";
 }
 
-/* Nonzero if there is a core file.  */
-
-have_core_file_p ()
+/* Nonzero if there is a core file: */
+int have_core_file_p()
 {
   return 0;
 }
 
-kill_command ()
+kill_command()
 {
   inferior_pid = 0;
 }
 
-terminal_inferior ()
+terminal_inferior()
 {}
 
-terminal_ours ()
+terminal_ours()
 {}
 
-terminal_init_inferior ()
+terminal_init_inferior()
 {}
 
-write_inferior_register ()
+write_inferior_register()
 {}
 
-read_inferior_register ()
+read_inferior_register()
 {}
 
-read_memory (memaddr, myaddr, len)
-     CORE_ADDR memaddr;
-     char *myaddr;
-     int len;
+read_memory(CORE_ADDR memaddr, char *myaddr, int len)
 {
-  memcpy (myaddr, memaddr, len);
+  memcpy(myaddr, memaddr, len);
 }
 
 /* Always return 0 indicating success.  */
-
-write_memory (memaddr, myaddr, len)
-     CORE_ADDR memaddr;
-     char *myaddr;
-     int len;
+int
+write_memory(CORE_ADDR memaddr, char *myaddr, int len)
 {
-  memcpy (memaddr, myaddr, len);
+  memcpy(memaddr, myaddr, len);
   return 0;
 }
 
 static REGISTER_TYPE saved_regs[NUM_REGS];
 
 REGISTER_TYPE
-read_register (regno)
-     int regno;
+read_register(int regno)
 {
-  if (regno < 0 || regno >= NUM_REGS)
-    error ("Register number %d out of range.", regno);
+  if ((regno < 0) || (regno >= NUM_REGS))
+    error("Register number %d out of range.", regno);
   return saved_regs[regno];
 }
 
 void
-write_register (regno, value)
-     int regno;
-     REGISTER_TYPE value;
+write_register(int regno, REGISTER_TYPE value)
 {
-  if (regno < 0 || regno >= NUM_REGS)
-    error ("Register number %d out of range.", regno);
+  if ((regno < 0) || (regno >= NUM_REGS))
+    error("Register number %d out of range.", regno);
   saved_regs[regno] = value;
 }
 
 /* System calls needed in relation to running the "inferior".  */
 
-vfork ()
+int vfork()
 {
   /* Just appear to "succeed".  Say the inferior's pid is 1.  */
   return 1;
@@ -416,57 +406,57 @@ vfork ()
    that has just been forked.  That code never runs, when standalone,
    and these definitions are so it will link without errors.  */
 
-ptrace ()
+ptrace()
 {}
 
-setpgrp ()
+setpgrp()
 {}
 
-execle ()
+int
+execle(const char *path, const char *arg0, ...)
 {}
 
-_exit ()
+void
+_exit(int unused)
 {}
 
 /* Malloc calls these.  */
 
-malloc_warning (str)
-     char *str;
+malloc_warning(char *str)
 {
-  printf ("\n%s.\n\n", str);
+  printf("\n%s.\n\n", str);
 }
 
 char *next_free;
 char *memory_limit;
 
-char *
-sbrk (amount)
-     int amount;
+void *
+sbrk(int amount)
 {
-  if (next_free + amount > memory_limit)
-    return (char *) -1;
+  if ((next_free + amount) > memory_limit)
+    return (void *)-1;
   next_free += amount;
-  return next_free - amount;
+  return (next_free - amount);
 }
 
 /* Various ways malloc might ask where end of memory is.  */
 
 char *
-ulimit ()
+ulimit(void)
 {
   return memory_limit;
 }
 
 int
-vlimit ()
+vlimit(void)
 {
-  return memory_limit - next_free;
+  return (memory_limit - next_free);
 }
 
-getrlimit (addr)
-     struct rlimit *addr;
+int
+getrlimit(int unused, struct rlimit *addr)
 {
-  addr->rlim_cur = memory_limit - next_free;
+  addr->rlim_cur = (memory_limit - next_free);
 }
 
 /* Context switching to and from program being debugged.  */
@@ -479,20 +469,27 @@ getrlimit (addr)
 static int fault_code;
 static REGISTER_TYPE gdb_stack;
 
-resume ()
+void
+resume(int unused1, enum target_signal unused2)
 {
   REGISTER_TYPE restore[NUM_REGS];
 
+#ifdef PUSH_FRAME_PTR
   PUSH_FRAME_PTR;
-  save_frame_pointer ();
+#endif /* PUSH_FRAME_PTR */
+  save_frame_pointer();
 
-  memcpy (restore, saved_regs, sizeof restore);
+  memcpy(restore, saved_regs, sizeof(restore));
+#ifdef POP_REGISTERS
   POP_REGISTERS;
+#else
+  return;
+#endif /* POP_REGISTERS */
   /* Control does not drop through here!  */
 }
 
-save_frame_pointer (val)
-     CORE_ADDR val;
+void
+save_frame_pointer(CORE_ADDR val)
 {
   gdb_stack = val;
 }
@@ -502,22 +499,25 @@ save_frame_pointer (val)
    old PC, old PS, and any other info about the fault.
    The exact format is machine-dependent and is known only
    in the definition of PUSH_REGISTERS.  */
-
-fault ()
+void
+fault(void)
 {
   /* Transfer all registers and fault code to the stack
      in canonical order: registers in order of GDB register number,
      followed by fault code.  */
+#ifdef PUSH_REGISTERS
   PUSH_REGISTERS;
+#endif /* PUSH_REGISTERS */
 
-  /* Transfer them to saved_regs and fault_code.  */
-  save_registers ();
+  /* Transfer them to saved_regs and fault_code: */
+  save_registers(0);
 
-  restore_gdb ();
+  restore_gdb();
   /* Control does not reach here */
 }
 
-restore_gdb ()
+void
+restore_gdb(void)
 {
   CORE_ADDR new_fp = gdb_stack;
   /* Switch to GDB's stack  */
@@ -528,25 +528,26 @@ restore_gdb ()
 /* Assuming register contents and fault code have been pushed on the stack as
    arguments to this function, copy them into the standard place
    for the program's registers while GDB is running.  */
-
-save_registers (firstreg)
-     int firstreg;
+void
+save_registers(int firstreg)
 {
-  memcpy (saved_regs, &firstreg, sizeof saved_regs);
+  memcpy(saved_regs, &firstreg, sizeof(saved_regs));
   fault_code = (&firstreg)[NUM_REGS];
 }
 
 /* Store into the structure such as `wait' would return
    the information on why the program faulted,
    converted into a machine-independent signal number.  */
-
+#ifdef FAULT_TABLE
 static int fault_table[] = FAULT_TABLE;
+#else
+static int fault_table[] = {0};
+#endif /* FAULT_TABLE */
 
 int
-wait (w)
-     WAITTYPE *w;
+wait(WAITTYPE *w)
 {
-  WSETSTOP (*w, fault_table[fault_code / FAULT_CODE_UNITS]);
+  WSETSTOP(*w, fault_table[fault_code / FAULT_CODE_UNITS]);
   return inferior_pid;
 }
 
@@ -561,19 +562,20 @@ wait (w)
    for kdb to use!  */
 
 #ifndef HEAP_SIZE
-#define HEAP_SIZE 400000
-#endif
+# define HEAP_SIZE 400000
+#endif /* !HEAP_SIZE */
 
 char heap[HEAP_SIZE] = {0};
 
 #ifndef STACK_SIZE
-#define STACK_SIZE 100000
-#endif
+# define STACK_SIZE 100000
+#endif /* !STACK_SIZE */
 
-int kdb_stack_beg[STACK_SIZE / sizeof (int)];
+int kdb_stack_beg[STACK_SIZE / sizeof(int)];
 int kdb_stack_end;
 
-_initialize_standalone ()
+void
+_initialize_standalone(void)
 {
   register char *next;
 
@@ -581,13 +583,12 @@ _initialize_standalone ()
 
   files_start = heap;
 
-  /* Find the end of the data on files.  */
-
-  for (next = files_start; * (int *) next; next += * (int *) next) {}
+  /* Find the end of the data on files: */
+  for (next = files_start; *(int *)next; next += *(int *)next) {}
 
   /* That is where free storage starts for sbrk to give out.  */
   next_free = next;
 
-  memory_limit = heap + sizeof heap;
+  memory_limit = (heap + sizeof(heap));
 }
 

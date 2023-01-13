@@ -510,14 +510,7 @@ bfd_mach_o_canonicalize_symtab(bfd *abfd, asymbol **alocation)
 #define BFD_GETL32(addr) ((((((unsigned long)addr[3] << 8) | addr[2]) << 8) | addr[1]) << 8 | addr[0])
 #define BFD_GETL64(addr) ((((((((((unsigned long long)addr[7] << 8) | addr[6]) << 8) | addr[5]) << 8 | addr[4]) << 8 | addr[3]) << 8 | addr[2]) << 8 | addr[1]) << 8 | addr[0])
 
-/* This was originally for clang's -Wmissing-variable-declarations, but now it
- * is breaking gdb, since a symbol with the same name also exists in
- * gdb/macosx/macosx-tdep.c... unsure if I can just make one of them static
- * or not... */
-#ifdef __clang__
-extern unsigned char macosx_symbol_types[256];
-#endif /* __clang__ */
-unsigned char macosx_symbol_types[256];
+static unsigned char macosx_symbol_types[256];
 
 static unsigned char
 bfd_mach_o_symbol_type_base(unsigned char macho_type)

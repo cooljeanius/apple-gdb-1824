@@ -171,7 +171,7 @@ AC_CHECK_HEADERS([arpa/inet.h basetsd.h errno.h fcntl.h getopt.h \
                   intsafe.h limits.h locale.h mach/mach_vm.h \
                   mach/vm_types.h netdb.h netinet/in.h netinet/tcp.h \
                   signal.h stdarg.h stddef.h stdio.h \
-                  sys/file.h sys/ioctl.h sys/signal.h sys/time.h \
+                  sys/file.h sys/ioctl.h sys/signal.h sys/socket.h sys/time.h \
                   sys/types.h termios.h termio.h unix.h \
                   wincon.h windef.h windows.h winnt.h])dnl
   ## needs other headers first on some systems:
@@ -189,6 +189,11 @@ if test "x${ac_cv_header_sys_types_h}" = "xyes"; then
   export EXTRA_DEFS="-DHAVE_SYS_TYPES_H"
 fi
 AC_SUBST([EXTRA_DEFS])dnl
+
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  AC_CHECK_HEADERS([unistd.h])
+fi
 
 dnl# Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
@@ -293,7 +298,7 @@ then
 	case ${w} in
 	*) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
-	    CFLAGS="${CFLAGS} ${w}"
+	    CFLAGS="${CFLAGS} ${w} -Werror"
 	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
                               [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
                               [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])

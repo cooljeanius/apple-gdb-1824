@@ -1668,9 +1668,13 @@ char *rdi_error_message(int err)
 # endif /* DEPRECATED_REGISTER_BYTE */
 #endif /* !REGISTER_BYTE */
 
+#include "regcache.h"
+
 #if !defined(REGISTER_RAW_SIZE)
 # if defined(DEPRECATED_REGISTER_RAW_SIZE)
 #  define REGISTER_RAW_SIZE(reg_nr) DEPRECATED_REGISTER_RAW_SIZE(reg_nr)
+# else
+#  define REGISTER_RAW_SIZE(foo) register_size(NULL, foo)
 # endif /* DEPRECATED_REGISTER_RAW_SIZE */
 #endif /* !REGISTER_RAW_SIZE */
 

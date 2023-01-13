@@ -43128,6 +43128,46 @@ fi
     test -n "${ac_cv_header_X11_Xlib_h}" && test -f /usr/X11/include/X11/Xlib.h && test -r /usr/X11/include/X11/Xlib.h && stat /usr/X11/include/X11/Xlib.h
   fi
 fi
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z "${ac_cv_header_inttypes_h}"
+  ac_fn_c_check_header_compile "$LINENO" "inttypes.h" "ac_cv_header_inttypes_h" "$ac_includes_default"
+if test "x$ac_cv_header_inttypes_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_INTTYPES_H 1" >>confdefs.h
+
+fi
+
+fi
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}"
+  ac_fn_c_check_header_compile "$LINENO" "stdint.h" "ac_cv_header_stdint_h" "$ac_includes_default"
+if test "x$ac_cv_header_stdint_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_STDINT_H 1" >>confdefs.h
+
+fi
+
+fi
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}"
+  ac_fn_c_check_header_compile "$LINENO" "strings.h" "ac_cv_header_strings_h" "$ac_includes_default"
+if test "x$ac_cv_header_strings_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_STRINGS_H 1" >>confdefs.h
+
+fi
+
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  ac_fn_c_check_header_compile "$LINENO" "unistd.h" "ac_cv_header_unistd_h" "$ac_includes_default"
+if test "x$ac_cv_header_unistd_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_UNISTD_H 1" >>confdefs.h
+
+fi
+
+fi
 
 # ------------------------- #
 # Checks for declarations.  #
@@ -48271,6 +48311,16 @@ if test "x${ac_cv_func_connect}" = "x"; then
 if test "x$ac_cv_func_connect" = xyes
 then :
   printf "%s\n" "#define HAVE_CONNECT 1" >>confdefs.h
+
+fi
+
+fi
+if test "x${ac_cv_func_getpagesize}" = "x"; then
+  test -z "${ac_cv_func_getpagesize}"
+  ac_fn_c_check_func "$LINENO" "getpagesize" "ac_cv_func_getpagesize"
+if test "x$ac_cv_func_getpagesize" = xyes
+then :
+  printf "%s\n" "#define HAVE_GETPAGESIZE 1" >>confdefs.h
 
 fi
 

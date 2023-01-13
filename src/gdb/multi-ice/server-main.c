@@ -32,15 +32,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string.h>
 #include <stdlib.h>
 
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
 #include "defs.h"
 #include "tm.h"
 #include "server.h"
 #include "low.h"
+#include "regcache.h"
 #include "remote-utils.h"
 
 #ifndef REGISTER_RAW_SIZE
 # ifdef DEPRECATED_REGISTER_RAW_SIZE
 #  define REGISTER_RAW_SIZE(foo) DEPRECATED_REGISTER_RAW_SIZE(foo)
+# else
+#  define REGISTER_RAW_SIZE(foo) register_size(NULL, foo)
 # endif /* DEPRECATED_REGISTER_RAW_SIZE */
 #endif /* !REGISTER_RAW_SIZE */
 
@@ -181,8 +187,8 @@ int main(int argc, char *argv[])
 	    if ((*byte_sex != 'b') && (*byte_sex != 'l')
 		&& (*byte_sex != 'B') && (*byte_sex != 'L'))
 	      {
-		output_error ("Bad value for --byte-sex: \"%s\", ", byte_sex);
-		output_error ("should be \"b\" or \"l\"\n");
+		output_error("Bad value for --byte-sex: \"%s\", ", byte_sex);
+		output_error("should be \"b\" or \"l\"\n");
 		exit(1);
 	      }
 	    break;
@@ -201,14 +207,14 @@ int main(int argc, char *argv[])
   	  case '?':
 	    output("Available options are:\n");
 	    print_help();
-	    exit (1);
+	    exit(1);
 	  }
       }
 
   if (show_version)
     {
       print_version(0);
-      exit (0);
+      exit(0);
     }
 
   print_version(1);
@@ -216,7 +222,7 @@ int main(int argc, char *argv[])
   if (show_help)
     {
       print_help();
-      exit (0);
+      exit(0);
     }
 
 
@@ -230,7 +236,7 @@ int main(int argc, char *argv[])
    * First establish a connection to the target.
    */
 
-  if (!low_open_target (target_port, byte_sex, show_config_dialog))
+  if (!low_open_target(target_port, byte_sex, show_config_dialog))
     {
       if (target_port == NULL)
 	output("Error opening target.\nExiting...\n");
@@ -244,14 +250,14 @@ int main(int argc, char *argv[])
    * Now open the listening port.  Bag out if we can't open it.
    */
 
-  if (!open_listener (remote_port))
+  if (!open_listener(remote_port))
     {
-      output ("Error opening listener port %s\nExiting...\n", remote_port);
-      low_close_target ();
-      exit (1);
+      output("Error opening listener port %s\nExiting...\n", remote_port);
+      low_close_target();
+      exit(1);
     }
 
-  output ("GDB Server starting on port %s\n", remote_port);
+  output("GDB Server starting on port %s\n", remote_port);
 
   signal(SIGINT, exit_handler);
   signal(SIGTERM, exit_handler);
@@ -261,7 +267,6 @@ int main(int argc, char *argv[])
     {
       if (wait_for_connection())
 	{
-
             /*
              * Reset environment
              */
@@ -272,10 +277,9 @@ int main(int argc, char *argv[])
             low_reset_thread_op();
 #endif /* 0 */
 
-
 	  while (!exit_now && !close_connection_now)
 	    {
-	      if (!handle_system_events ())
+	      if (!handle_system_events())
 		{
 		  exit_now = 1;
 		  break;
@@ -287,12 +291,12 @@ int main(int argc, char *argv[])
 		  break;
 		}
 
-	      message_len = getpkt (input_buffer, &input_buffer_len);
+	      message_len = getpkt(input_buffer, &input_buffer_len);
 	      if (message_len >= 0)
 		{
-		  if (!dispatch (input_buffer, message_len))
+		  if (!dispatch(input_buffer, message_len))
 		    {
-		      /* Handle errors here */
+		      ; /* TODO: Handle errors here */
 		    }
 		}
 	      else
@@ -310,14 +314,14 @@ int main(int argc, char *argv[])
 	}
       else
 	{
-	  output_error ("Attempt to connect failed\n");
+	  output_error("Attempt to connect failed\n");
 	}
     }
 
-  close_listener ();
-  low_close_target ();
+  close_listener();
+  low_close_target();
 
-  output ("Exiting...\n");
+  output("Exiting...\n");
   return exit_status;
 }
 
@@ -340,9 +344,9 @@ update_current_thread(void)
     // Using thread operations
     res = low_thread_op("qC#", &result);
     if (res) {
-        current_thread = strtol(result+2, &ptr, 0x10);
+        current_thread = (int)strtol((result + 2), &ptr, 0x10);
     } else {
-        output("Can't deduce current thread\n");
+        output("Cannot deduce current thread\n");
     }
 }
 
@@ -552,15 +556,15 @@ handle_thread (char *input_buffer, enum thread_mode mode)
       thread_id = strtol (input_buffer, &ptr, 0x10);  // Protocol uses hex values
       if (ptr == input_buffer)
 	{
-	  putpkt ("ENN");
-	  output_error ("Got invalid thread id: %s\n", input_buffer);
+	  putpkt("ENN");
+	  output_error("Got invalid thread id: %s\n", input_buffer);
 	  return 0;
 	}
 
       switch (key)
 	{
 	case 'c':
-	  if (low_set_thread_for_resume (thread_id))
+	  if (low_set_thread_for_resume(thread_id))
 	    {
 	      putpkt("OK");
 	      return 1;
@@ -571,9 +575,9 @@ handle_thread (char *input_buffer, enum thread_mode mode)
 	      return 0;
 	    }
 	case 'g':
-          selected_thread = thread_id;
+          selected_thread = (int)thread_id;
           if (selected_thread) {
-              return low_set_thread_for_query (input_buffer-2);
+              return low_set_thread_for_query(input_buffer - 2);
           } else {
 	      putpkt("OK");
 	      return 1;
@@ -584,15 +588,15 @@ handle_thread (char *input_buffer, enum thread_mode mode)
       break;
     case THREAD_ALIVE:
 
-      thread_id = strtol (input_buffer, &ptr, 0x10);
+      thread_id = strtol(input_buffer, &ptr, 0x10);
       if (ptr == input_buffer)
 	{
-	  putpkt ("ENN");
-	  output_error ("Got invalid thread id: %s\n", input_buffer);
+	  putpkt("ENN");
+	  output_error("Got invalid thread id: %s\n", input_buffer);
 	  return 0;
 	}
       if (thread_id) {
-          return low_is_thread_alive (input_buffer-1);
+          return low_is_thread_alive(input_buffer - 1);
       } else {
 	  putpkt("OK");
       }
@@ -1001,9 +1005,8 @@ handle_search_memory (char *input_buffer)
  * thread query (though this returns nothing useful since you can't
  * query threads through the RDI.
  */
-
 int
-handle_general_query (char *input_buffer)
+handle_general_query(char *input_buffer)
 {
   char key;
   long thread_id;
@@ -1023,7 +1026,7 @@ handle_general_query (char *input_buffer)
           // Look at result to decode answer
           if (strncmp(result, "QC", 2) == 0) {
               using_threads = 1;
-              current_thread = strtol (result+2, &ptr, 0x10);  // Protocol uses hex values
+              current_thread = (int)strtol((result + 2), &ptr, 0x10); // Protocol uses hex values
           } else {
               current_thread = 0;  // Unknown
           }

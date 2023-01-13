@@ -4408,6 +4408,12 @@ fi
 
 
 
+# Compiler:
+if test "x${ac_cv_prog_cc_c89}" != "x"; then
+  test -n "${ac_cv_prog_cc_c89}" && echo "c89 compiler: ${ac_cv_prog_cc_c89}"
+else
+  test -z "${ac_cv_prog_cc_c89}" && echo "we will need to find a c89 compiler"
+fi
 
 
 
@@ -5735,6 +5741,7 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+##############################################################################
 if test "x${COMPILER}" = "x"; then
   test -z "${COMPILER}" && export COMPILER='$(CC)'
 fi
@@ -7621,7 +7628,7 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-am_cv_prog_cc_stdc="${ac_cv_prog_cc_stdc}"
+test -z "${am_cv_prog_cc_stdc}" && am_cv_prog_cc_stdc="${ac_cv_prog_cc_stdc}"
 
 
 
@@ -57464,9 +57471,9 @@ esac
     "config_status_vpath_build_fix":C)
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo "1: pwd = `pwd`"
   elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo "2: pwd = `pwd`"
   fi
 fi
  ;;

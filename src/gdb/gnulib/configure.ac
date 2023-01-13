@@ -19,17 +19,27 @@ dnl# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 dnl# Process this file with autoconf to produce a configure script.
 
+echo "hello from the gnulib subdirectory of the gdb directory"
+
 # Setup:
 AC_PREREQ([2.64])dnl
 AC_INIT([libgnu],[2013.11.14],[bug-gnulib@gnu.org])
 AC_CONFIG_SRCDIR([import/memmem.c])
 AC_CONFIG_LIBOBJ_DIR([import])
-AC_CONFIG_HEADER([config.h])dnl
+AC_CONFIG_HEADERS([config.h])dnl
 
 # Some initial checks:
 AM_MAINTAINER_MODE
 
+# Compiler:
+if test "x${ac_cv_prog_cc_c89}" != "x"; then
+  test -n "${ac_cv_prog_cc_c89}" && echo "c89 compiler: ${ac_cv_prog_cc_c89}"
+else
+  test -z "${ac_cv_prog_cc_c89}" && echo "we will need to find a c89 compiler"
+fi
+dnl# FIXME: something broke in here:
 AC_PROG_CC
+##############################################################################
 if test "x${COMPILER}" = "x"; then
   test -z "${COMPILER}" && export COMPILER='$(CC)'
 fi
@@ -48,7 +58,7 @@ AC_MSG_RESULT([ ])
 gl_EARLY
 AC_MSG_NOTICE([done with early gnulib pre-initialization checks])
 AC_PROG_CPP
-am_cv_prog_cc_stdc="${ac_cv_prog_cc_stdc}"
+test -z "${am_cv_prog_cc_stdc}" && am_cv_prog_cc_stdc="${ac_cv_prog_cc_stdc}"
 
 AC_CONFIG_AUX_DIR([../..])
 AC_CONFIG_MACRO_DIR([m4])
@@ -550,9 +560,9 @@ esac
 AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo "1: pwd = `pwd`"
   elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo "2: pwd = `pwd`"
   fi
 fi
 ],[])dnl

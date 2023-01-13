@@ -70,8 +70,9 @@ tui_dispatch_ctrl_char(unsigned int ch)
        */
       term = (char *)getenv("TERM");
       for (i = 0; (term && term[i]); i++)
-	term[i] = toupper(term[i]);
-      if ((strcmp(term, "XTERM") == 0) && key_is_start_sequence(ch))
+	term[i] = (char)toupper(term[i]);
+      if ((term != NULL) && (strcmp(term, "XTERM") == 0)
+          && key_is_start_sequence(ch))
 	{
 	  unsigned int page_ch = 0U;
 	  unsigned int tmp_char;

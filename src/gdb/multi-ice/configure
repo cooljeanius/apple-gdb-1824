@@ -6747,6 +6747,12 @@ then :
   printf "%s\n" "#define HAVE_SYS_SIGNAL_H 1" >>confdefs.h
 
 fi
+ac_fn_c_check_header_compile "$LINENO" "sys/socket.h" "ac_cv_header_sys_socket_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_socket_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_SYS_SOCKET_H 1" >>confdefs.h
+
+fi
 ac_fn_c_check_header_compile "$LINENO" "sys/time.h" "ac_cv_header_sys_time_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_time_h" = xyes
 then :
@@ -6820,6 +6826,17 @@ if test "x${ac_cv_header_sys_types_h}" = "xyes"; then
   # for it to be defined at the top of it (for caddr_t for ptrace):
   export DEFS="${DEFS} -DHAVE_SYS_TYPES_H"
   export EXTRA_DEFS="-DHAVE_SYS_TYPES_H"
+fi
+
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  ac_fn_c_check_header_compile "$LINENO" "unistd.h" "ac_cv_header_unistd_h" "$ac_includes_default"
+if test "x$ac_cv_header_unistd_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_UNISTD_H 1" >>confdefs.h
+
+fi
+
 fi
 
  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
@@ -8294,7 +8311,7 @@ printf %s "checking compiler warning flags... " >&6; }
 	case ${w} in
 	*) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
-	    CFLAGS="${CFLAGS} ${w}"
+	    CFLAGS="${CFLAGS} ${w} -Werror"
 	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 

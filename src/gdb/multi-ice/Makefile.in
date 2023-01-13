@@ -684,7 +684,7 @@ mostlyclean-am: mostlyclean-compile mostlyclean-generic
 
 pdf: pdf-am
 
-pdf-am:
+pdf-am: pdf-local
 
 ps: ps-am
 
@@ -706,8 +706,9 @@ uninstall-am: uninstall-binPROGRAMS
 	install-pdf-am install-ps install-ps-am install-strip \
 	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic maintainer-clean-local mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS
+	mostlyclean-compile mostlyclean-generic pdf pdf-am pdf-local \
+	ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 
@@ -723,6 +724,9 @@ dist-hook:
 	@test -d .. && echo "avoid making distributions in subdirs" >&2
 	false
 .PHONY: dist-hook
+
+pdf-local:
+.PHONY: pdf-local
 
 configure.scan:
 	autoscan || touch configure.scan

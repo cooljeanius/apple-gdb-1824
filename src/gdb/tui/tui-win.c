@@ -893,7 +893,7 @@ tui_set_focus(const char *arg, int from_tty)
       struct tui_win_info *win_info = (struct tui_win_info *)NULL;
 
       for (i = 0UL; (i < strlen(buf_ptr)); i++)
-	buf_ptr[i] = toupper(arg[i]);
+	buf_ptr[i] = (char)toupper(arg[i]);
 
       if (subset_compare(buf_ptr, "NEXT"))
 	win_info = tui_next_win(tui_win_with_focus());
@@ -1006,7 +1006,7 @@ tui_set_win_height(const char *arg, int from_tty)
 	  ** Validate the window name
 	   */
 	  for (i = 0UL; i < strlen(wname); i++)
-	    wname[i] = toupper(wname[i]);
+	    wname[i] = (char)toupper(wname[i]);
 	  win_info = tui_partial_win_by_name(wname);
 
 	  if ((win_info == (struct tui_win_info *)NULL) || !win_info->generic.is_visible)
@@ -1557,7 +1557,7 @@ parse_scrolling_args(const char *arg, struct tui_win_info **win_to_scroll,
 
 	  /* Validate the window name: */
 	  for (i = 0UL; i < strlen(wname); i++)
-	    wname[i] = toupper(wname[i]);
+	    wname[i] = (char)toupper(wname[i]);
 	  *win_to_scroll = tui_partial_win_by_name(wname);
 
 	  if ((*win_to_scroll == (struct tui_win_info *)NULL)

@@ -336,12 +336,12 @@ tui_show_frame_info (struct frame_info *fi)
   if (fi)
     {
       int start_line, i;
-      CORE_ADDR low;
-      struct tui_gen_win_info * locator = tui_locator_win_info_ptr ();
+      CORE_ADDR low = 0UL;
+      struct tui_gen_win_info *locator = tui_locator_win_info_ptr();
       int source_already_displayed;
       struct symtab_and_line sal;
 
-      find_frame_sal (fi, &sal);
+      find_frame_sal(fi, &sal);
 
       source_already_displayed = sal.symtab != 0
         && tui_source_is_displayed (sal.symtab->filename);

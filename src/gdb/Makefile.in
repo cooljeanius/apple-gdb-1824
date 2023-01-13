@@ -1645,6 +1645,9 @@ test-cp-name-parser$(EXEEXT): test-cp-name-parser.o $(LIBIBERTY_DEP)
 	  -o test-cp-name-parser$(EXEEXT) test-cp-name-parser.o \
 	  $(LIBIBERTY)
 
+local_cxxfilt: test-cp-name-parser$(EXEEXT)
+.PHONY: local_cxxfilt
+
 # We do this by grepping through sources. If that turns out to be too slow,
 # we could just require every .o file to have an initialization routine
 # of a given name (top.o -> _initialize_top, etc.).
@@ -1815,10 +1818,17 @@ libgdb.a: $(LIBGDB_OBS)
 	$(AM_V_AR)$(AR) $(AR_FLAGS) libgdb.a $(LIBGDB_OBS)
 	$(RANLIB) $(RANLIB_FLAGS) libgdb.a
 
+libgdb_a: libgdb.a
+	stat libgdb.a
+.PHONY: libgdb_a
+
 # A Mach 3.0 program to force gdb back to command level:
 stop-gdb$(EXEEXT): stop-gdb.o
 	$(AM_V_CCLD)${CC_LD} $(GLOBAL_CFLAGS) $(LDFLAGS) \
 	  -o stop-gdb$(EXEEXT) stop-gdb.o $(CLIBS) $(LOADLIBES)
+
+stopgdb: stop-gdb$(EXEEXT)
+.PHONY: stopgdb
 
 # This is useful when debugging GDB, because some Unices do NOT let you
 # run GDB on itself without copying the executable. So "make gdb1" will
@@ -1855,6 +1865,8 @@ TAGS: $(TAGFILES_NO_SRCDIR) $(TAGFILES_WITH_SRCDIR)
 	      echo $(srcdir)/mi/$${j}; \
 	    elif [ -f $(srcdir)/attic/$${j} ]; then \
 	      echo $(srcdir)/attic/$${j}; \
+	    elif [ -f $(srcdir)/tui/$${j} ]; then \
+	      echo $(srcdir)/tui/$${j}; \
 	    else echo $(macosxsrcdir)/$${j}; fi; \
 	done; for i in $(TAGFILES_WITH_SRCDIR); do \
 		echo $${i}; \
@@ -2330,6 +2342,14 @@ main.o: main.c @MAINT@ $(defs_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
 	  $(TARGET_SYSTEM_ROOT_DEFINE) -DBINDIR=\"$(bindir)\" \
 	  $(srcdir)/main.c
+	$(POSTCOMPILE)
+
+# maybe some special flags will help this one along:
+standalone.o: standalone.c $(gdb_stat_h) $(defs_h) $(signals_h) $(symtab_h) \
+  $(frame_h) $(inferior_h) $(wait_h)
+	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
+	  -ffreestanding -std=gnu89 -fms-extensions -ferror-limit=-1 \
+	  $(srcdir)/standalone.c
 	$(POSTCOMPILE)
 
 # FIXME: cagney/2004-09-16: "gnu-v3-abi.c", with a GCC 3.4 compiler,

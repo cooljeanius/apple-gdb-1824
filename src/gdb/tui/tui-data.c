@@ -324,10 +324,10 @@ set_gen_win_origin(struct tui_gen_win_info * win_info, int x, int y)
 /* Answer the next window in the list, cycling back to the top if
    necessary.  */
 struct tui_win_info *
-tui_next_win(struct tui_win_info * cur_win)
+tui_next_win(struct tui_win_info *cur_win)
 {
   enum tui_win_type type = cur_win->generic.type;
-  struct tui_win_info * next_win = (struct tui_win_info *)NULL;
+  struct tui_win_info *next_win = (struct tui_win_info *)NULL;
 
   if (cur_win->generic.type == CMD_WIN)
     type = SRC_WIN;
@@ -346,6 +346,7 @@ tui_next_win(struct tui_win_info * cur_win)
 	}
     }
 
+  (void)type;
   return next_win;
 }
 
@@ -353,7 +354,7 @@ tui_next_win(struct tui_win_info * cur_win)
 /* Answer the prev window in the list, cycling back to the bottom if
    necessary.  */
 struct tui_win_info *
-tui_prev_win(struct tui_win_info * cur_win)
+tui_prev_win(struct tui_win_info *cur_win)
 {
   enum tui_win_type type = cur_win->generic.type;
   struct tui_win_info *prev = (struct tui_win_info *)NULL;
@@ -375,6 +376,7 @@ tui_prev_win(struct tui_win_info * cur_win)
 	}
     }
 
+  (void)type;
   return prev;
 }
 

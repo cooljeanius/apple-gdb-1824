@@ -2058,8 +2058,10 @@ archinc=common.inc
 case ${target} in
 d10v-*-*) archinc=d10v.inc ;;
 esac
+
 ac_sources="${archinc}"
 ac_dests="arch.inc"
+unset ac_config_links_1
 while test -n "${ac_sources}"; do
   set ${ac_dests}; ac_dest=${1}; shift; ac_dests=$*
   set ${ac_sources}; ac_source=${1}; shift; ac_sources=$*

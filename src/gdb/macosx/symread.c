@@ -528,7 +528,9 @@ sym_read_type(struct objfile *objfile, struct type **typevec,
 #if 0
   *ptype = NULL;
 #endif /* 0 */
-  *psymbol = NULL;
+  if (psymbol != NULL) {
+    *psymbol = NULL;
+  }
 
   if (i <= 99)
     {
@@ -540,7 +542,7 @@ sym_read_type(struct objfile *objfile, struct type **typevec,
       return;
     }
 
-  if (bfd_sym_fetch_type_table_entry(abfd, &index, i - 100) < 0)
+  if (bfd_sym_fetch_type_table_entry(abfd, &index, (i - 100)) < 0)
     {
       return;
     }
@@ -655,7 +657,9 @@ sym_read_types(struct objfile *objfile, unsigned long *pmaxtypes,
   for (i = 0; i < maxtypes; i++)
     {
       typevec[i] = alloc_type(objfile);
-      typedefvec[i] = 0;
+      if (typedefvec != NULL) {
+        typedefvec[i] = 0;
+      }
     }
 
   for (i = 0; i < maxtypes; i++)
@@ -663,7 +667,7 @@ sym_read_types(struct objfile *objfile, unsigned long *pmaxtypes,
       sym_read_type(objfile, typevec, maxtypes, typevec[i], &typedefvec[i],
                     i);
       ntypes++;
-      if (typedefvec[i] != NULL)
+      if ((typedefvec != NULL) && (typedefvec[i] != NULL))
         {
           ntypedefs++;
         }
@@ -1060,7 +1064,9 @@ sym_read_functions(struct objfile *objfile, struct type **typevec,
       SYMBOL_LINE(fsymbol) = 0;
       SYMBOL_BASEREG(fsymbol) = 0;
 
-      funcvec[nfuncs] = fsymbol;
+      if (funcvec != NULL) {
+        funcvec[nfuncs] = fsymbol;
+      }
       nfuncs++;
     }
 
@@ -1068,6 +1074,7 @@ sym_read_functions(struct objfile *objfile, struct type **typevec,
   *pfuncvec = funcvec;
 }
 
+/* */
 static void
 sym_symfile_init(struct objfile *objfile)
 {
@@ -1081,7 +1088,7 @@ sym_symfile_init(struct objfile *objfile)
   objfile->deprecated_sym_private =
     xmmalloc(objfile->md, sizeof(struct sym_symfile_info));
 
-  memset (objfile->deprecated_sym_private, 0, sizeof (struct sym_symfile_info));
+  memset(objfile->deprecated_sym_private, 0, sizeof(struct sym_symfile_info));
 
   objfile->flags |= OBJF_REORDERED;
 }
@@ -1181,7 +1188,7 @@ sym_symfile_read(struct objfile *objfile, int mainline)
 
   for (uli0 = 0UL; uli0 < maxtypes; uli0++)
     {
-      if (typedefvec[uli0] != NULL)
+      if ((typedefvec != NULL) && (typedefvec[uli0] != NULL))
         {
           dict_add_symbol(BLOCK_DICT(gblock), typedefvec[uli0]);
         }
@@ -1189,6 +1196,7 @@ sym_symfile_read(struct objfile *objfile, int mainline)
 
   for (uli0 = 0UL; uli0 < nfuncs; uli0++)
     {
+      CHECK_FATAL(funcvec != NULL);
       CHECK_FATAL(funcvec[uli0] != NULL);
       dict_add_symbol(BLOCK_DICT(gblock), funcvec[uli0]);
     }

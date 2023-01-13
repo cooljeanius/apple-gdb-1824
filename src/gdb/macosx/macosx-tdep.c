@@ -246,7 +246,7 @@ struct deprecated_complaint unsupported_indirect_symtype_complaint =
 # define BFD_GETL64(addr) BFD_GETL32(addr)
 #endif /* (BYTES_IN_WORD == 8) */
 
-/* FIXME: this also exists in bfd/mach-o.c: */
+/* Conflict resolved with bfd by making the bfd version of this static: */
 unsigned char macosx_symbol_types[256] ATTRIBUTE_ALIGNED_ALIGNOF(void *);
 
 /* */
