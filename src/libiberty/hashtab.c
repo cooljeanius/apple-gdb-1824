@@ -974,7 +974,7 @@ iterative_hash(const PTR k_in /* the key */,
     case 2: a += ((hashval_t)k[1] << 8); ATTRIBUTE_FALLTHROUGH;
     case 1: a += k[0]; ATTRIBUTE_FALLTHROUGH;
     case 0: a += 0; ATTRIBUTE_FALLTHROUGH; /* nothing left to add */
-    default:; ATTRIBUTE_FALLTHROUGH;
+    default:; /*FALLTHROUGH*/
     }
   mix(a,b,c);
   /*-------------------------------------------- report the result */

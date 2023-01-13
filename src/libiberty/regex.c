@@ -2573,7 +2573,11 @@ PREFIX(regex_compile) (const char *ARG_PREFIX(pattern),
 	    {
 	      goto normal_char;
 	    }
+#ifdef __clang__
+	  goto handle_plus;
+#else
 	  ATTRIBUTE_FALLTHROUGH;
+#endif /* __clang__ */
         handle_plus:
         case '*':
           /* If there is no previous pattern... */
