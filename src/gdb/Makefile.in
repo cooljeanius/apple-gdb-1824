@@ -2348,7 +2348,7 @@ main.o: main.c @MAINT@ $(defs_h)
 standalone.o: standalone.c $(gdb_stat_h) $(defs_h) $(signals_h) $(symtab_h) \
   $(frame_h) $(inferior_h) $(wait_h)
 	$(AM_V_COMPILER)$(COMPILER) -c $(INTERNAL_CFLAGS) \
-	  -ffreestanding -std=gnu89 -fms-extensions -ferror-limit=-1 \
+	  -ffreestanding -std=gnu89 -fms-extensions -flax-vector-conversions \
 	  $(srcdir)/standalone.c
 	$(POSTCOMPILE)
 

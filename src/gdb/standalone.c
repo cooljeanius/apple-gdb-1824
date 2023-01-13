@@ -34,6 +34,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include "frame.h"
 #include "inferior.h"
 #include "wait.h"
+#include "gdb_wait.h"
+#include "tm.h"
+#include "xm.h"
+#include "gdbarch.h"
 
 #ifndef REGISTER_TYPE
 # ifdef DEPRECATED_REGISTER_VIRTUAL_TYPE
@@ -43,33 +47,52 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 # endif /* DEPRECATED_REGISTER_VIRTUAL_TYPE */
 #endif /* !REGISTER_TYPE */
 
+#ifndef FAULT_CODE_UNITS
+# define FAULT_CODE_UNITS 4 /* value used by all xm-*.h currently present */
+#endif /* !FAULT_CODE_UNITS */
+
 extern void fault(void);
+extern void save_frame_pointer(CORE_ADDR);
 extern void save_registers(int);
 extern void restore_gdb(void);
+extern void display_string(char *);
+extern int tty_input(void);
 
 extern void _initialize_standalone(void);
 
 /* Random system calls, mostly no-ops to prevent link problems  */
 int
 ioctl(int desc, unsigned long code, ...)
+{
+  return desc;
+}
+
+RETSIGTYPE (* signal ()) ()
 {}
 
-int (* signal ()) ()
-{}
-
-kill()
-{}
-
-int getpid()
+int
+kill(pid_t unused1, int unused2)
 {
   return 0;
 }
 
-sigsetmask()
-{}
+int
+getpid(void)
+{
+  return 0;
+}
 
-chdir()
-{}
+int
+sigsetmask(int mask)
+{
+  return mask;
+}
+
+int
+chdir(const char *path)
+{
+  return 0;
+}
 
 char *
 getcwd(char *buf, size_t len)
@@ -133,8 +156,12 @@ int sourceleft;			/* number of bytes to eof */
 
 int sourcedesc;
 
+#ifndef STRCMP
+# define STRCMP(foo, bar) strcmp(foo, bar)
+#endif /* !STRCMP */
+
 int
-open(const char *filename, int modes)
+open(const char *filename, int modes, ...)
 {
   register char *next;
 
@@ -165,13 +192,16 @@ open(const char *filename, int modes)
   return 0;
 }
 
+int
 close(int desc)
 {
   sourceptr = 0;
   sourcedesc++;
   /* Do NOT let sourcedesc get big enough to be confused with stdin: */
-  if (sourcedesc == 100)
+  if (sourcedesc == 100) {
     sourcedesc = 5;
+  }
+  return 0;
 }
 
 FILE *
@@ -181,15 +211,15 @@ fopen(const char *filename, const char *modes)
 }
 
 FILE *
-fdopen(int desc)
+fdopen(int desc, const char *unused)
 {
   return (FILE *)desc;
 }
 
 int
-fclose(int desc)
+fclose(FILE *desc)
 {
-  close(desc);
+  return close(fileno(desc));
 }
 
 int
@@ -202,10 +232,11 @@ fstat(desc, statbuf)
       return -1;
     }
   statbuf->st_size = sourcesize;
+  return 0;
 }
 
 int
-myread(int desc, char *destptr, int size, char *filename)
+myread(int desc, char *destptr, int size)
 {
   int len = min(sourceleft, size);
 
@@ -220,13 +251,14 @@ myread(int desc, char *destptr, int size, char *filename)
   return len;
 }
 
-int
-fread(bufp, numelts, eltsize, stream)
+size_t
+fread(void *restrict bufp, size_t numelts, size_t eltsize,
+      FILE *restrict stream)
 {
   register int elts = min(numelts, (sourceleft / eltsize));
   register int len = (elts * eltsize);
 
-  if (stream != sourcedesc)
+  if (fileno(stream) != sourcedesc)
     {
       errno = EBADF;
       return -1;
@@ -238,12 +270,12 @@ fread(bufp, numelts, eltsize, stream)
 }
 
 int
-fgetc(int desc)
+fgetc(FILE *desc)
 {
-  if (desc == (int)(intptr_t)stdin)
+  if (desc == stdin)
     return tty_input();
 
-  if (desc != sourcedesc)
+  if (fileno(desc) != sourcedesc)
     {
       errno = EBADF;
       return -1;
@@ -255,7 +287,7 @@ fgetc(int desc)
 }
 
 off_t
-lseek(int desc, int pos)
+lseek(int desc, off_t pos, int whence)
 {
 
   if (desc != sourcedesc)
@@ -272,11 +304,12 @@ lseek(int desc, int pos)
 
   sourceptr = (sourcebeg + pos);
   sourceleft = (sourcesize - pos);
+  return sourceleft;
 }
 
 /* Output in kdb can go only to the terminal, so the stream
    specified may be ignored.  */
-
+int
 printf(a1, a2, a3, a4, a5, a6, a7, a8, a9)
 {
   char buffer[1024];
@@ -284,6 +317,7 @@ printf(a1, a2, a3, a4, a5, a6, a7, a8, a9)
   display_string(buffer);
 }
 
+int
 fprintf(ign, a1, a2, a3, a4, a5, a6, a7, a8, a9)
 {
   char buffer[1024];
@@ -311,7 +345,7 @@ fputc(int c, FILE *ign)
 /* sprintf refers to this, but loading this from the
    library would cause fflush to be loaded from it too.
    In fact there should be no need to call this (I hope).  */
-
+static void
 _flsbuf()
 {
   error("_flsbuf was actually called.");
@@ -323,14 +357,15 @@ fflush(FILE *ign)
 }
 
 /* Entries into core and inflow, needed only to make things link ok.  */
-
-exec_file_command()
+static void
+exec_file_command(void)
 {}
 
-core_file_command()
+static void
+core_file_command(void)
 {}
 
-const char *
+static const char *
 get_exec_file(int err)
 {
   /* Makes one printout look reasonable; value does not matter otherwise: */
@@ -338,47 +373,58 @@ get_exec_file(int err)
 }
 
 /* Nonzero if there is a core file: */
-int have_core_file_p()
+static int
+have_core_file_p(void)
 {
   return 0;
 }
 
-kill_command()
+static void
+kill_command(void)
 {
   inferior_pid = 0;
 }
 
-terminal_inferior()
+void
+terminal_inferior(void)
 {}
 
-terminal_ours()
+void
+terminal_ours(void)
 {}
 
-terminal_init_inferior()
+void
+terminal_init_inferior(void)
 {}
 
-write_inferior_register()
+static void
+write_inferior_register(void)
 {}
 
-read_inferior_register()
+static void
+read_inferior_register(void)
 {}
 
+static void
 read_memory(CORE_ADDR memaddr, char *myaddr, int len)
 {
-  memcpy(myaddr, memaddr, len);
+  memcpy(myaddr, (void *)(uintptr_t)memaddr, len);
 }
 
 /* Always return 0 indicating success.  */
-int
+static int
 write_memory(CORE_ADDR memaddr, char *myaddr, int len)
 {
-  memcpy(memaddr, myaddr, len);
+  memcpy((void *)(uintptr_t)memaddr, myaddr, len);
   return 0;
 }
 
+#ifndef NUM_REGS
+# define NUM_REGS 10 /* smallest of any defs currently in tm-*.h files */
+#endif /* !NUM_REGS */
 static REGISTER_TYPE saved_regs[NUM_REGS];
 
-REGISTER_TYPE
+static REGISTER_TYPE
 read_register(int regno)
 {
   if ((regno < 0) || (regno >= NUM_REGS))
@@ -386,7 +432,7 @@ read_register(int regno)
   return saved_regs[regno];
 }
 
-void
+static void
 write_register(int regno, REGISTER_TYPE value)
 {
   if ((regno < 0) || (regno >= NUM_REGS))
@@ -405,11 +451,12 @@ int vfork()
 /* These are called by code that normally runs in the inferior
    that has just been forked.  That code never runs, when standalone,
    and these definitions are so it will link without errors.  */
-
-ptrace()
+static void
+ptrace(void)
 {}
 
-setpgrp()
+pid_t
+setpgrp(void)
 {}
 
 int
@@ -421,7 +468,7 @@ _exit(int unused)
 {}
 
 /* Malloc calls these.  */
-
+static void
 malloc_warning(char *str)
 {
   printf("\n%s.\n\n", str);
@@ -441,13 +488,13 @@ sbrk(int amount)
 
 /* Various ways malloc might ask where end of memory is.  */
 
-char *
+static char *
 ulimit(void)
 {
   return memory_limit;
 }
 
-int
+static int
 vlimit(void)
 {
   return (memory_limit - next_free);
@@ -477,7 +524,7 @@ resume(int unused1, enum target_signal unused2)
 #ifdef PUSH_FRAME_PTR
   PUSH_FRAME_PTR;
 #endif /* PUSH_FRAME_PTR */
-  save_frame_pointer();
+  save_frame_pointer(INVALID_ADDRESS);
 
   memcpy(restore, saved_regs, sizeof(restore));
 #ifdef POP_REGISTERS
@@ -521,7 +568,12 @@ restore_gdb(void)
 {
   CORE_ADDR new_fp = gdb_stack;
   /* Switch to GDB's stack  */
+#ifdef POP_FRAME_PTR
   POP_FRAME_PTR;
+#else
+  (void)new_fp;
+  return;
+#endif /* POP_FRAME_PTR */
   /* Return from the function `resume'.  */
 }
 
