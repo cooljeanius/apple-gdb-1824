@@ -160,7 +160,7 @@ read_history_range(const char *filename, int from, int to)
   input = history_filename(filename);
   file = open(input, (O_RDONLY | O_BINARY), 0666);
 
-  if ((file < 0) || (fstat (file, &finfo) == -1))
+  if ((file < 0) || (fstat(file, &finfo) == -1))
     goto error_and_exit;
 
   file_size = (size_t)finfo.st_size;
@@ -185,13 +185,13 @@ read_history_range(const char *filename, int from, int to)
 			file, (off_t)0L);
   if ((void *)buffer == MAP_FAILED)
     goto error_and_exit;
-  chars_read = file_size;
+  chars_read = (int)file_size;
 #else
-  buffer = (char *)malloc (file_size + 1);
+  buffer = (char *)malloc(file_size + 1UL);
   if (buffer == 0)
     goto error_and_exit;
 
-  chars_read = read (file, buffer, file_size);
+  chars_read = read(file, buffer, file_size);
 #endif
   if (chars_read < 0)
 
@@ -310,19 +310,19 @@ history_truncate_file(const char *fname, int lines)
       goto truncate_exit;
     }
 
-  buffer = (char *)malloc (file_size + 1);
+  buffer = (char *)malloc(file_size + 1UL);
   if (buffer == 0)
     {
-      close (file);
+      close(file);
       goto truncate_exit;
     }
 
-  chars_read = read (file, buffer, file_size);
-  close (file);
+  chars_read = (int)read(file, buffer, file_size);
+  close(file);
 
   if (chars_read <= 0)
     {
-      rv = (chars_read < 0) ? errno : 0;
+      rv = ((chars_read < 0) ? errno : 0);
       goto truncate_exit;
     }
 

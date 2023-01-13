@@ -7869,7 +7869,8 @@ printf "%s\n" "#define size_t unsigned int" >>confdefs.h
 
 fi
 
-ac_fn_c_check_type "$LINENO" "ssize_t" "ac_cv_type_ssize_t" "$ac_includes_default"
+
+  ac_fn_c_check_type "$LINENO" "ssize_t" "ac_cv_type_ssize_t" "$ac_includes_default"
 if test "x$ac_cv_type_ssize_t" = xyes
 then :
 
@@ -7878,6 +7879,7 @@ else $as_nop
 printf "%s\n" "#define ssize_t int" >>confdefs.h
 
 fi
+
 
 # Checks for library functions.
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking functions" >&5
@@ -11184,6 +11186,37 @@ ac_fn_c_check_header_compile "$LINENO" "wctype.h" "ac_cv_header_wctype_h" "$ac_i
 if test "x$ac_cv_header_wctype_h" = xyes
 then :
   printf "%s\n" "#define HAVE_WCTYPE_H 1" >>confdefs.h
+
+fi
+
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}"
+  ac_fn_c_check_header_compile "$LINENO" "stdint.h" "ac_cv_header_stdint_h" "$ac_includes_default"
+if test "x$ac_cv_header_stdint_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_STDINT_H 1" >>confdefs.h
+
+fi
+
+fi
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}"
+  ac_fn_c_check_header_compile "$LINENO" "strings.h" "ac_cv_header_strings_h" "$ac_includes_default"
+if test "x$ac_cv_header_strings_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_STRINGS_H 1" >>confdefs.h
+
+fi
+
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  ac_fn_c_check_header_compile "$LINENO" "unistd.h" "ac_cv_header_unistd_h" "$ac_includes_default"
+if test "x$ac_cv_header_unistd_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_UNISTD_H 1" >>confdefs.h
+
+fi
 
 fi
 

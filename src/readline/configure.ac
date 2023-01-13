@@ -248,7 +248,11 @@ AC_TYPE_UID_T
 AC_TYPE_PID_T
 AC_CHECK_TYPES([ptrdiff_t])dnl
 AC_TYPE_SIZE_T
-AC_CHECK_TYPE([ssize_t],[int])dnl
+m4_ifdef([AC_TYPE_SSIZE_T],[
+  AC_TYPE_SSIZE_T
+],[
+  AC_CHECK_TYPE([ssize_t],[int])dnl
+])dnl
 
 # Checks for library functions.
 AC_MSG_CHECKING([functions])
@@ -312,6 +316,19 @@ AC_CHECK_HEADERS([arpa/inet.h errno.h fcntl.h features.h limits.h \
                   sys/ioctl.h sys/pte.h sys/ptem.h sys/select.h \
                   sys/socket.h sys/stream.h sys/time.h termcap.h \
                   termio.h termios.h time.h varargs.h wchar.h wctype.h])dnl
+
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}"
+  AC_CHECK_HEADERS([stdint.h])
+fi
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}"
+  AC_CHECK_HEADERS([strings.h])
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  AC_CHECK_HEADERS([unistd.h])
+fi
 
 # Checks for compiler flags.
 AC_MSG_CHECKING([compiler flags, for use by the lint target])

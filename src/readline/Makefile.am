@@ -201,8 +201,9 @@ tilde.o: tilde.c
 readline: $(OBJECTS) readline.h rldefs.h chardefs.h examples/rl.c ./libreadline.a
 	$(CC) $(CCFLAGS) -o $@ ./examples/rl.c ./libreadline.a ${TERMCAP_LIB}
 
-lint: force
+lint lint-local: force
 	$(MAKE) $(MFLAGS) CCFLAGS='$(GCC_LINT_CFLAGS)' static
+.PHONY: lint lint-local
 
 am_Makefile am_makefile: config.status $(srcdir)/Makefile.in
 	CONFIG_FILES=Makefile CONFIG_HEADERS="" $(SHELL) ./config.status

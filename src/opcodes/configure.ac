@@ -364,6 +364,23 @@ AC_CHECK_HEADERS([err.h errno.h gettext.h libgen.h libintl.h \
                   malloc.h malloc/malloc.h regex.h setjmp.h stddef.h \
                   stdio.h stdio_ext.h])dnl
 
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z "${ac_cv_header_inttypes_h}"
+  AC_CHECK_HEADERS([inttypes.h])
+fi
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}"
+  AC_CHECK_HEADERS([stdint.h])
+fi
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}"
+  AC_CHECK_HEADERS([strings.h])
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  AC_CHECK_HEADERS([unistd.h])
+fi
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_MSG_CHECKING([C language characteristics that your C compiler supports])
 AC_MSG_RESULT([ ])
@@ -728,6 +745,7 @@ else
       gl_WARN_ADD([-Wno-shift-count-overflow])
       gl_WARN_ADD([-Wno-format-overflow])
       gl_WARN_ADD([-Wno-format-truncation])
+      gl_WARN_ADD([-Wno-many-braces-around-scalar-init])
     fi
   ])
 fi

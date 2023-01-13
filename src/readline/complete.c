@@ -1192,17 +1192,17 @@ display_matches(char **matches)
   char *temp;
 
   /* Move to the last visible line of a possibly-multiple-line command. */
-  _rl_move_vert (_rl_vis_botlin);
+  _rl_move_vert(_rl_vis_botlin);
 
   /* Handle simple case first.  What if there is only one answer? */
   if (matches[1] == 0)
     {
-      temp = printable_part (matches[0]);
-      rl_crlf ();
-      print_filename (temp, matches[0]);
-      rl_crlf ();
+      temp = printable_part(matches[0]);
+      rl_crlf();
+      print_filename(temp, matches[0]);
+      rl_crlf();
 
-      rl_forced_update_display ();
+      rl_forced_update_display();
       rl_display_fixed = 1;
 
       return;
@@ -1212,19 +1212,19 @@ display_matches(char **matches)
      and find the maximum printed length of a single entry. */
   for (max = 0, i = 1; matches[i]; i++)
     {
-      temp = printable_part (matches[i]);
-      len = strlen (temp);
+      temp = printable_part(matches[i]);
+      len = (int)strlen(temp);
 
       if (len > max)
 	max = len;
     }
 
-  len = i - 1;
+  len = (i - 1);
 
   /* If the caller has defined a display hook, then call that now. */
   if (rl_completion_display_matches_hook)
     {
-      (*rl_completion_display_matches_hook) (matches, len, max);
+      (*rl_completion_display_matches_hook)(matches, len, max);
       return;
     }
 
@@ -1232,14 +1232,14 @@ display_matches(char **matches)
      see them all. */
   if (len >= rl_completion_query_items)
     {
-      rl_crlf ();
-      fprintf (rl_outstream, "Display all %d possibilities? (y or n)", len);
-      fflush (rl_outstream);
-      if (get_y_or_n (0) == 0)
+      rl_crlf();
+      fprintf(rl_outstream, "Display all %d possibilities? (y or n)", len);
+      fflush(rl_outstream);
+      if (get_y_or_n(0) == 0)
 	{
-	  rl_crlf ();
+	  rl_crlf();
 
-	  rl_forced_update_display ();
+	  rl_forced_update_display();
 	  rl_display_fixed = 1;
 
 	  return;

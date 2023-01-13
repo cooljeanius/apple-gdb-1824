@@ -22437,6 +22437,47 @@ then :
 
 fi
 
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z "${ac_cv_header_inttypes_h}"
+  ac_fn_c_check_header_compile "$LINENO" "inttypes.h" "ac_cv_header_inttypes_h" "$ac_includes_default"
+if test "x$ac_cv_header_inttypes_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_INTTYPES_H 1" >>confdefs.h
+
+fi
+
+fi
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}"
+  ac_fn_c_check_header_compile "$LINENO" "stdint.h" "ac_cv_header_stdint_h" "$ac_includes_default"
+if test "x$ac_cv_header_stdint_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_STDINT_H 1" >>confdefs.h
+
+fi
+
+fi
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}"
+  ac_fn_c_check_header_compile "$LINENO" "strings.h" "ac_cv_header_strings_h" "$ac_includes_default"
+if test "x$ac_cv_header_strings_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_STRINGS_H 1" >>confdefs.h
+
+fi
+
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  ac_fn_c_check_header_compile "$LINENO" "unistd.h" "ac_cv_header_unistd_h" "$ac_includes_default"
+if test "x$ac_cv_header_unistd_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_UNISTD_H 1" >>confdefs.h
+
+fi
+
+fi
+
 # Checks for typedefs, structures, and compiler characteristics.
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking C language characteristics that your C compiler supports" >&5
 printf %s "checking C language characteristics that your C compiler supports... " >&6; }
@@ -24362,7 +24403,9 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wgcc-compat -Wasm -Wdangling-else -Wused-but-marked-unused \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
 -Wmissing-parameter-type -Wabi=11 -Wmissing-include-dirs \
--Wmisleading-indentation -Wformat=2 -Wmissing-format-attribute \
+-Wmisleading-indentation -Wformat -Wformat-security -Wformat-y2k \
+-Wformat-non-iso -Wformat-pedantic -Wformat-type-confusion \
+-Wcstring-format-directive -Wmissing-format-attribute \
 -Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa \
 -Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
 -Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough -Wstring-compare \
@@ -24456,6 +24499,12 @@ else $as_nop
   :
 fi
 
+elif test "x${WANT_CONVERSION_WARNS}" = "xweird"; then
+  test -n "${WANT_CONVERSION_WARNS}"
+  WARN_CFLAGS="${WARN_CFLAGS} -Warith-conversion -Wtraditional-conversion \
+  -Wenum-conversion -Wanon-enum-enum-conversion -Wbitfield-enum-conversion \
+  -Wimplicit-int-conversion -Wnullable-to-nonnull-conversion \
+  -Wstring-conversion -Wvector-conversion -Wformat-signedness"
 fi
 WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint -DDEBUG_GEN_RELOC -DDEBUG_HASH \
 -DDEBUG_PIC -DDEBUG_RELAX -DDEBUG_RELOC -DDJDEBUG -DFATAL_DEBUG \
@@ -25216,6 +25265,46 @@ printf "%s\n" "$gl_cv_warn_c__Wno_format_truncation" >&6; }
 if test "x$gl_cv_warn_c__Wno_format_truncation" = xyes
 then :
   as_fn_append WARN_CFLAGS " -Wno-format-truncation"
+fi
+
+
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-many-braces-around-scalar-init" >&5
+printf %s "checking whether C compiler handles -Wno-many-braces-around-scalar-init... " >&6; }
+if test ${gl_cv_warn_c__Wno_many_braces_around_scalar_init+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wmany-braces-around-scalar-init"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  gl_cv_warn_c__Wno_many_braces_around_scalar_init=yes
+else $as_nop
+  gl_cv_warn_c__Wno_many_braces_around_scalar_init=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_many_braces_around_scalar_init" >&5
+printf "%s\n" "$gl_cv_warn_c__Wno_many_braces_around_scalar_init" >&6; }
+if test "x$gl_cv_warn_c__Wno_many_braces_around_scalar_init" = xyes
+then :
+  as_fn_append WARN_CFLAGS " -Wno-many-braces-around-scalar-init"
 fi
 
 
