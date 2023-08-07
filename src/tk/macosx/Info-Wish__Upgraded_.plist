@@ -29,7 +29,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 	<key>CFBundleIconFile</key>
 	<string>Wish.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.tcltk.wish</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
