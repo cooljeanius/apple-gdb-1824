@@ -24808,6 +24808,12 @@ then :
   printf "%s\n" "#define HAVE_PUTENV 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "raise" "ac_cv_func_raise"
+if test "x$ac_cv_func_raise" = xyes
+then :
+  printf "%s\n" "#define HAVE_RAISE 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "setenv" "ac_cv_func_setenv"
 if test "x$ac_cv_func_setenv" = xyes
 then :

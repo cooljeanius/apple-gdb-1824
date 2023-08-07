@@ -29,6 +29,26 @@
 # endif /* __STDC__ */
 #endif /* !PARAMS */
 
+#ifndef GCC_VERSION
+# if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#  define GCC_VERSION (__GNUC__ * 1000 + __GNUC_MINOR__)
+# else
+#  define GCC_VERSION 0
+# endif /* __GNUC__ && __GNUC_MINOR__ */
+#endif /* GCC_VERSION */
+
+#if !defined __has_builtin
+# define __has_builtin(x) 0
+#endif
+
+/* Use intl_unreachable() to mark unreachable locations, like an
+ * unreachable default case of a switch. */
+#if (GCC_VERSION >= 4005) || __has_builtin(__builtin_unreachable)
+# define intl_unreachable() __builtin_unreachable()
+#else
+# define intl_unreachable()
+#endif
+
 /* Evaluate the plural expression and return an index value.  */
 STATIC unsigned long int plural_eval PARAMS((struct expression *pexp,
                                              unsigned long int n))
@@ -50,6 +70,7 @@ plural_eval(struct expression *pexp, unsigned long int n)
 	default:
 	  break;
       }
+      intl_unreachable();
       /* NOTREACHED */
       break;
     case 1:
@@ -70,7 +91,7 @@ plural_eval(struct expression *pexp, unsigned long int n)
 
 	    switch (pexp->operation) {
 	      case mult:
-		return leftarg * rightarg;
+		return (leftarg * rightarg);
 	      case divide:
 #if (!defined(INTDIV0_RAISES_SIGFPE) || !INTDIV0_RAISES_SIGFPE)
                 if (rightarg == 0) {
@@ -84,27 +105,28 @@ plural_eval(struct expression *pexp, unsigned long int n)
 		  raise(SIGFPE);
                 }
 #endif /* !INTDIV0_RAISES_SIGFPE */
-		return leftarg % rightarg;
+		return (leftarg % rightarg);
 	      case plus:
-		return leftarg + rightarg;
+		return (leftarg + rightarg);
 	      case minus:
-		return leftarg - rightarg;
+		return (leftarg - rightarg);
 	      case less_than:
-		return leftarg < rightarg;
+		return (leftarg < rightarg);
 	      case greater_than:
-		return leftarg > rightarg;
+		return (leftarg > rightarg);
 	      case less_or_equal:
-		return leftarg <= rightarg;
+		return (leftarg <= rightarg);
 	      case greater_or_equal:
-		return leftarg >= rightarg;
+		return (leftarg >= rightarg);
 	      case equal:
-		return leftarg == rightarg;
+		return (leftarg == rightarg);
 	      case not_equal:
-		return leftarg != rightarg;
+		return (leftarg != rightarg);
 	      default:
 		break;
             }
         }
+        intl_unreachable();
 	/* NOTREACHED */
 	break;
       }
@@ -115,9 +137,11 @@ plural_eval(struct expression *pexp, unsigned long int n)
 	return plural_eval(pexp->val.args[boolarg ? 1 : 2], n);
       }
     default:
+      intl_unreachable();
       /* NOTREACHED */
       break;
     }
+  intl_unreachable();
   /* NOTREACHED */
   return 0;
 }

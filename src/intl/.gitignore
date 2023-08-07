@@ -2,6 +2,7 @@
 *.bc
 *.i
 *.lo
+*.loT
 *.o
 *.s
 *.status

@@ -233,10 +233,10 @@ AC_FUNC_STRNLEN
 AC_CHECK_FUNCS_ONCE([gettext _gettext])dnl
 AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify \
                 dcgettext__ dgettext__ errno free fgets getcwd \
-                getenv getwd memcpy mempcpy munmap \
-                nl_langinfo putenv setenv setlocale stpcpy \
-                strcasecmp strchr strdup strlen strstr strtoul \
-                system tolower])dnl
+                getenv getwd memcpy mempcpy munmap nl_langinfo \
+                putenv raise setenv setlocale stpcpy strcasecmp \
+                strchr strdup strlen strstr strtoul system \
+                tolower])dnl
 AC_CHECK_DECLS([dcgettext__])dnl
 AC_CHECK_DECLS([dgettext__])dnl
 AC_CHECK_DECLS([free])dnl

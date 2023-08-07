@@ -169,8 +169,10 @@ char *BINDTEXTDOMAIN(const char *domainname, const char *dirname)
 
 #if defined _LIBC || defined HAVE_STRDUP
       new_binding->domainname = strdup(domainname);
-      if (new_binding->domainname == NULL)
+      if (new_binding->domainname == NULL) {
+	free(new_binding);
 	return NULL;
+      }
 #else
       len = (strlen(domainname) + 1UL);
       new_binding->domainname = (char *)malloc(len);
@@ -185,8 +187,10 @@ char *BINDTEXTDOMAIN(const char *domainname, const char *dirname)
 	{
 #if defined _LIBC || defined HAVE_STRDUP
 	  new_binding->dirname = strdup(dirname);
-	  if (new_binding->dirname == NULL)
+	  if (new_binding->dirname == NULL) {
+	    free(new_binding);
 	    return NULL;
+	  }
 #else
 	  len = (strlen(dirname) + 1UL);
 	  new_binding->dirname = (char *)malloc(len);

@@ -148,7 +148,7 @@ static const char *get_charset_aliases(void)
 	  char buf1[(50 + 1)]; /* why not just "51"? */
 	  char buf2[(50 + 1)]; /* likewise, why not just "51"? */
 	  char *res_ptr = NULL;
-	  size_t res_size = 0;
+	  size_t res_size = 0UL;
 	  size_t l1, l2;
 
 	  for (;;)
@@ -156,14 +156,14 @@ static const char *get_charset_aliases(void)
 	      c = getc(fp);
 	      if (c == EOF)
 		break;
-	      if (c == '\n' || c == ' ' || c == '\t')
+	      if ((c == '\n') || (c == ' ') || (c == '\t'))
 		continue;
 	      if (c == '#')
 		{
-		  /* Skip comment, to end of line.  */
-		  do
+		  /* Skip comment, to end of line: */
+		  do {
 		    c = getc(fp);
-		  while (!(c == EOF || c == '\n'));
+		  } while (!((c == EOF) || (c == '\n')));
 		  if (c == EOF)
 		    break;
 		  continue;
@@ -175,26 +175,29 @@ static const char *get_charset_aliases(void)
 	      l2 = strlen(buf2);
 	      if (res_size == 0)
 		{
-		  res_size = (l1 + 1 + l2 + 1);
-		  res_ptr = (char *)malloc(res_size + 1);
+		  res_size = (l1 + 1UL + l2 + 1UL);
+		  res_ptr = (char *)malloc(res_size + 1UL);
 		}
 	      else
 		{
-		  res_size += l1 + 1 + l2 + 1;
-		  res_ptr = (char *)realloc(res_ptr, res_size + 1);
+		  res_size += (l1 + 1UL + l2 + 1UL);
+		  res_ptr = (char *)realloc(res_ptr, (res_size + 1UL));
 		}
 	      if (res_ptr == NULL)
 		{
 		  /* Out of memory: */
-		  res_size = 0;
+		  res_size = 0UL;
 		  break;
 		}
 	      strcpy(res_ptr + res_size - (l2 + 1) - (l1 + 1), buf1);
 	      strcpy(res_ptr + res_size - (l2 + 1), buf2);
 	    }
-	  fclose (fp);
-	  if (res_size == 0)
-	    cp = "";
+	  fclose(fp);
+	  if (res_size == 0UL)
+	    {
+	      cp = "";
+	      free(res_ptr);
+	    }
 	  else
 	    {
 	      *(res_ptr + res_size) = '\0';

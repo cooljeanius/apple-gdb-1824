@@ -328,6 +328,7 @@ _nl_make_l10nflist(struct loaded_l10nfile **l10nfile_list,
                               * (1UL << (size_t)pop(mask))
                               * sizeof(struct loaded_l10nfile *)));
   if (retval == NULL) {
+    free(abs_filename);
     return NULL;
   }
 
