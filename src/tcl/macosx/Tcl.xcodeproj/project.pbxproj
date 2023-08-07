@@ -25,9 +25,6 @@
 		618C8A331CEE881F004BBE5E /* tclPort.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24FD2016ECB1E01DC9062 /* tclPort.h */; };
 		618C8A341CEE882E004BBE5E /* tclUnixPort.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24FD6016ECC0F01DC9062 /* tclUnixPort.h */; };
 		618C8A351CEE882E004BBE5E /* tclUnixThrd.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F24FD7016ECC0F01DC9062 /* tclUnixThrd.h */; };
-		7BC331AE1881E6E300EF9359 /* Tcl-Common.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AD1881E6E300EF9359 /* Tcl-Common.xcconfig */; };
-		7BC331B01881E6E900EF9359 /* Tcl-Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AF1881E6E900EF9359 /* Tcl-Debug.xcconfig */; };
-		7BC331B21881E6EF00EF9359 /* Tcl-Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331B11881E6EF00EF9359 /* Tcl-Release.xcconfig */; };
 		7BC331B41881E7CA00EF9359 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AC1881E6B300EF9359 /* README */; };
 		7BC331B51881E7CE00EF9359 /* license.terms in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AB1881E6AE00EF9359 /* license.terms */; };
 /* End PBXBuildFile section */
@@ -660,15 +657,19 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 /* Begin PBXProject section */
 		00E2F845016E82EB0ACA28DC /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1320;
+			};
 			buildConfigurationList = A50F55481808CA12008BA312 /* Build configuration list for PBXProject "Tcl" */;
 			compatibilityVersion = "Xcode 2.4";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
-				Japanese,
-				French,
-				German,
+				de,
+				en,
+				ja,
+				Base,
+				fr,
 			);
 			mainGroup = 00E2F846016E82EB0ACA28DC;
 			productRefGroup = 00E2F84A016E8A830ACA28DC /* Products */;
@@ -692,9 +693,6 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			files = (
 				7BC331B51881E7CE00EF9359 /* license.terms in Resources */,
 				7BC331B41881E7CA00EF9359 /* README in Resources */,
-				7BC331AE1881E6E300EF9359 /* Tcl-Common.xcconfig in Resources */,
-				7BC331B01881E6E900EF9359 /* Tcl-Debug.xcconfig in Resources */,
-				7BC331B21881E6EF00EF9359 /* Tcl-Release.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -868,19 +866,18 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F553C1808CA11008BA312 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				BINDIR = "$(PREFIX)/bin";
 				CC = "$(GCC)-$(GCC_VERSION)";
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CONFIGURE_ARGS = "--enable-symbols --enable-dtrace $(TCL_CONFIGURE_ARGS) $(CONFIGURE_ARGS)";
 				CPPFLAGS = "-mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET) $(CPPFLAGS)";
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = NO;
+				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_INSTALL_PATH = /Library/Frameworks;
 				GCC = "$(DEVELOPER_DIR)/usr/bin/gcc";
 				GCC_DYNAMIC_NO_PIC = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREFIX_HEADER = "$(DERIVED_FILE_DIR)/tcl/tclConfig.h";
@@ -907,6 +904,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				MAKE_TARGET = develop;
 				MANDIR = "$(PREFIX)/man";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-headerpad_max_install_names";
 				PER_ARCH_CFLAGS_ppc = "-mcpu=G3 -mtune=G4 $(PER_ARCH_CFLAGS_ppc)";
 				PER_ARCH_CFLAGS_ppc64 = "-mcpu=G5 -mpowerpc64 $(PER_ARCH_CFLAGS_ppc64)";
@@ -938,6 +936,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F553D1808CA11008BA312 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CONFIGURE_ARGS = "--disable-symbols $(TCL_CONFIGURE_ARGS) $(CONFIGURE_ARGS)";
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -955,20 +954,22 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F553E1808CA11008BA312 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 			};
 			name = Default;
 		};
 		A50F553F1808CA11008BA312 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DSTROOT = "${TEMP_DIR}";
 				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
 				EXTRA_MAKE_INSTALL_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				INSTALL_STRIP = NO;
 				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}/Versions/${FRAMEWORK_VERSION}";
@@ -982,10 +983,11 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55401808CA11008BA312 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DSTROOT = "${TEMP_DIR}";
 				EXTRA_MAKE_INSTALL_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				INSTALL_STRIP = YES;
 				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}/Versions/${FRAMEWORK_VERSION}";
@@ -999,9 +1001,11 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55411808CA11008BA312 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DSTROOT = "${TEMP_DIR}";
 				EXTRA_MAKE_INSTALL_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}/Versions/${FRAMEWORK_VERSION}";
 				PRODUCT_NAME = Tcl;
@@ -1012,12 +1016,13 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55421808CA11008BA312 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
 				FRAMEWORK_VERSION = 8.4;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				INSTALL_STRIP = NO;
 				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
@@ -1030,9 +1035,10 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55431808CA11008BA312 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				EXTRA_CONFIGURE_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				INSTALL_STRIP = YES;
 				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
@@ -1045,8 +1051,10 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55441808CA11008BA312 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				EXTRA_CONFIGURE_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
 				PRODUCT_NAME = Tcl;
@@ -1056,15 +1064,16 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55451808CA11008BA312 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_INSTALL_DIR = "${DYLIB_INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
 				DYLIB_INSTALL_PATH = "${INSTALL_PATH}";
 				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
 				EXTRA_MAKE_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				INSTALL_STRIP = NO;
 				PRODUCT_NAME = Tcl;
@@ -1076,11 +1085,12 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55461808CA11008BA312 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_INSTALL_DIR = "${DYLIB_INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
 				DYLIB_INSTALL_PATH = "${INSTALL_PATH}";
 				EXTRA_MAKE_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				INSTALL_STRIP = YES;
 				PRODUCT_NAME = Tcl;
@@ -1092,10 +1102,12 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55471808CA11008BA312 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_INSTALL_DIR = "${DYLIB_INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
 				DYLIB_INSTALL_PATH = "${INSTALL_PATH}";
 				EXTRA_MAKE_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				PRODUCT_NAME = Tcl;
 			};
@@ -1104,19 +1116,21 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F555E1808CA1C008BA312 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DSTROOT = "${TEMP_DIR}";
 				EXTRA_CONFIGURE_FLAGS = "--enable-symbols --enable-dtrace";
 				EXTRA_MAKE_INSTALL_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "Info-Tcl__Upgraded_.plist";
 				INSTALL_PATH = /Library/Frameworks;
 				INSTALL_STRIP = NO;
 				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tcltk.tcllibrary;
 				PRODUCT_NAME = Tcl;
 				TEMP_DIR = "${OBJROOT}/Development.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
 				WRAPPER_EXTENSION = framework;
@@ -1127,15 +1141,17 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F555F1808CA1C008BA312 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DSTROOT = "${TEMP_DIR}";
 				EXTRA_MAKE_INSTALL_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "Info-Tcl__Upgraded_.plist";
 				INSTALL_PATH = /Library/Frameworks;
 				INSTALL_STRIP = YES;
 				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tcltk.tcllibrary;
 				PRODUCT_NAME = Tcl;
 				TEMP_DIR = "${OBJROOT}/Deployment.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
 				WRAPPER_EXTENSION = framework;
@@ -1146,13 +1162,16 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55601808CA1C008BA312 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DSTROOT = "${TEMP_DIR}";
 				EXTRA_MAKE_INSTALL_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "Info-Tcl__Upgraded_.plist";
 				INSTALL_PATH = /Library/Frameworks;
 				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tcltk.tcllibrary;
 				PRODUCT_NAME = Tcl;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -1161,12 +1180,13 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55651808CA1C008BA312 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				EXTRA_CONFIGURE_FLAGS = "--enable-symbols --enable-dtrace";
 				FRAMEWORK_VERSION = 8.4;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				INSTALL_STRIP = NO;
 				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
@@ -1179,9 +1199,10 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55661808CA1C008BA312 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				EXTRA_CONFIGURE_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				INSTALL_STRIP = YES;
 				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
@@ -1194,8 +1215,10 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55671808CA1C008BA312 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				EXTRA_CONFIGURE_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
 				PRODUCT_NAME = Tcl;
@@ -1205,15 +1228,16 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F556C1808CA1C008BA312 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_INSTALL_DIR = "${DYLIB_INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
 				DYLIB_INSTALL_PATH = "${INSTALL_PATH}";
 				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
 				EXTRA_MAKE_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				INSTALL_STRIP = NO;
 				PRODUCT_NAME = Tcl;
@@ -1225,11 +1249,12 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F556D1808CA1C008BA312 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_INSTALL_DIR = "${DYLIB_INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
 				DYLIB_INSTALL_PATH = "${INSTALL_PATH}";
 				EXTRA_MAKE_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				INSTALL_STRIP = YES;
 				PRODUCT_NAME = Tcl;
@@ -1241,10 +1266,12 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F556E1808CA1C008BA312 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_INSTALL_DIR = "${DYLIB_INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
 				DYLIB_INSTALL_PATH = "${INSTALL_PATH}";
 				EXTRA_MAKE_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /Library/Frameworks;
 				PRODUCT_NAME = Tcl;
 			};
