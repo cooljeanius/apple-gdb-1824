@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-11 20:17-0500\n"
+"POT-Creation-Date: 2023-08-07 16:11-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3083,35 +3083,35 @@ msgstr ""
 msgid "%B:%u: bad checksum in Intel Hex file (expected %u, found %u)"
 msgstr ""
 
-#: ihex.c:386
+#: ihex.c:387
 msgid "%B:%u: bad extended address record length in Intel Hex file"
 msgstr ""
 
-#: ihex.c:403
+#: ihex.c:404
 msgid "%B:%u: bad extended start address length in Intel Hex file"
 msgstr ""
 
-#: ihex.c:420
+#: ihex.c:421
 msgid "%B:%u: bad extended linear address record length in Intel Hex file"
 msgstr ""
 
-#: ihex.c:437
+#: ihex.c:438
 msgid "%B:%u: bad extended linear start address length in Intel Hex file"
 msgstr ""
 
-#: ihex.c:454
+#: ihex.c:455
 msgid "%B:%u: unrecognized ihex type %u in Intel Hex file"
 msgstr ""
 
-#: ihex.c:580
+#: ihex.c:581
 msgid "%B: internal error in ihex_read_section"
 msgstr ""
 
-#: ihex.c:622
+#: ihex.c:623
 msgid "%B: bad section length in ihex_read_section"
 msgstr ""
 
-#: ihex.c:828
+#: ihex.c:829
 #, c-format
 msgid "%s: address 0x%s out of range for Intel Hex file"
 msgstr ""
