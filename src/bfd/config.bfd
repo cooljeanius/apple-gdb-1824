@@ -953,7 +953,7 @@ case "${targ}" in
     targ_defvec=m68kcoff_vec
     targ_selvecs="m68kcoff_vec versados_vec ieee_vec aout0_big_vec"
     ;;
-  m68*-*-elf* | m68*-*-sysv4* | m68*-*-uclinux*)
+  m68*-*-elf* | m68*-*-sysv4* | m68*-*-uclinux* | m68*-*-macos*)
     targ_defvec=bfd_elf32_m68k_vec
     targ_selvecs="m68kcoff_vec ieee_vec"
     ;;
@@ -1442,6 +1442,8 @@ case "${targ}" in
     ;;
 #endif /* BFD64 */
   powerpc-*-macos* | powerpc-*-mpw*)
+    targ_cflags=-DAIX_WEAK_SUPPORT
+    targ_selvecs=powerpc_xcoff_vec
     targ_defvec=pmac_xcoff_vec
     ;;
 #ifdef BFD64

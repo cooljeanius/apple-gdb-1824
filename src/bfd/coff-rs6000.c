@@ -292,8 +292,8 @@ _bfd_xcoff_copy_private_bfd_data(bfd *ibfd, bfd *obfd)
     ox->sntoc = 0;
   else
     {
-      sec = coff_section_from_bfd_index (ibfd, ix->sntoc);
-      if (sec == NULL)
+      sec = coff_section_from_bfd_index(ibfd, ix->sntoc);
+      if ((sec == NULL) || (sec->output_section == NULL))
 	ox->sntoc = 0;
       else
 	ox->sntoc = sec->output_section->target_index;
@@ -302,14 +302,14 @@ _bfd_xcoff_copy_private_bfd_data(bfd *ibfd, bfd *obfd)
     ox->snentry = 0;
   else
     {
-      sec = coff_section_from_bfd_index (ibfd, ix->snentry);
-      if (sec == NULL)
+      sec = coff_section_from_bfd_index(ibfd, ix->snentry);
+      if ((sec == NULL) || (sec->output_section == NULL))
 	ox->snentry = 0;
       else
 	ox->snentry = sec->output_section->target_index;
     }
-  bfd_xcoff_text_align_power (obfd) = bfd_xcoff_text_align_power (ibfd);
-  bfd_xcoff_data_align_power (obfd) = bfd_xcoff_data_align_power (ibfd);
+  bfd_xcoff_text_align_power(obfd) = bfd_xcoff_text_align_power(ibfd);
+  bfd_xcoff_data_align_power(obfd) = bfd_xcoff_data_align_power(ibfd);
   ox->modtype = ix->modtype;
   ox->cputype = ix->cputype;
   ox->maxdata = ix->maxdata;
@@ -4334,5 +4334,83 @@ const bfd_target pmac_xcoff_vec =
 
     (const struct bfd_target *)(void *)&bfd_pmac_xcoff_backend_data,
   };
+
+#ifdef HAVE_powerpc_xcoff_vec
+/* The transfer vector that leads the outside world to all of the above: */
+const bfd_target powerpc_xcoff_vec =
+  {
+    "xcoff-powermac",
+    bfd_target_xcoff_flavour,
+    BFD_ENDIAN_BIG,		/* data byte order is big */
+    BFD_ENDIAN_BIG,		/* header byte order is big */
+
+    (HAS_RELOC | EXEC_P | HAS_LINENO | HAS_DEBUG | DYNAMIC
+     | HAS_SYMS | HAS_LOCALS | WP_TEXT),
+
+    SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_RELOC | SEC_CODE | SEC_DATA,
+    0,				/* leading char */
+    '/',			/* ar_pad_char */
+    15,				/* ar_max_namelen */
+    0,				/* match priority.  */
+
+    /* data */
+    bfd_getb64,
+    bfd_getb_signed_64,
+    bfd_putb64,
+    bfd_getb32,
+    bfd_getb_signed_32,
+    bfd_putb32,
+    bfd_getb16,
+    bfd_getb_signed_16,
+    bfd_putb16,
+
+    /* hdrs */
+    bfd_getb64,
+    bfd_getb_signed_64,
+    bfd_putb64,
+    bfd_getb32,
+    bfd_getb_signed_32,
+    bfd_putb32,
+    bfd_getb16,
+    bfd_getb_signed_16,
+    bfd_putb16,
+
+    { /* bfd_check_format */
+      _bfd_dummy_target,
+      coff_object_p,
+      _bfd_xcoff_archive_p,
+      CORE_FILE_P
+    },
+
+    { /* bfd_set_format */
+      bfd_false,
+      coff_mkobject,
+      _bfd_generic_mkarchive,
+      bfd_false
+    },
+
+    {/* bfd_write_contents */
+      bfd_false,
+      coff_write_object_contents,
+      _bfd_xcoff_write_archive_contents,
+      bfd_false
+    },
+
+    BFD_JUMP_TABLE_GENERIC(coff),
+    BFD_JUMP_TABLE_COPY(coff),
+    BFD_JUMP_TABLE_CORE(coff),
+    BFD_JUMP_TABLE_ARCHIVE(_bfd_archive_coff),
+    BFD_JUMP_TABLE_SYMBOLS(coff),
+    BFD_JUMP_TABLE_RELOCS(coff),
+    BFD_JUMP_TABLE_WRITE(coff),
+    BFD_JUMP_TABLE_LINK(coff),
+    BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
+
+    /* Opposite endian version, none exists */
+    NULL,
+
+    &bfd_pmac_xcoff_backend_data,
+  };
+#endif /* HAVE_powerpc_xcoff_vec */
 
 /* EOF */

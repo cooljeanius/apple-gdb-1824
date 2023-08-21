@@ -1314,6 +1314,10 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&bfd_powerpc_pei_vec,
 	&bfd_powerpcle_pe_vec,
 	&bfd_powerpcle_pei_vec,
+# ifdef HAVE_powerpc_xcoff_vec
+	/* This has (or at least should have) the same magic number as RS/6000: */
+	&powerpc_xcoff_vec;
+# endif /* HAVE_powerpc_xcoff_vec */
 	&cris_aout_vec,
 # ifdef BFD64
 	&demo_64_vec,	/* Only compiled if host has long-long support.  */

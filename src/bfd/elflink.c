@@ -8751,6 +8751,23 @@ _bfd_elf_gc_mark (struct bfd_link_info *info,
     if (!_bfd_elf_gc_mark (info, group_sec, gc_mark_hook))
       return FALSE;
 
+  { /* keep macsbug sections */
+    asection *next_sec = sec->next;
+    if (next_sec)
+      {
+        const char *p = sec->name, *q = next_sec->name;
+
+        while (*p && *q && *p == *q)
+          p++, q++;
+
+        if (*p == 0 && strcmp(q, ".macsbug") == 0)
+          if (!next_sec->gc_mark)
+            if (!_bfd_elf_gc_mark(info, next_sec, gc_mark_hook))
+              return FALSE;
+
+      }
+  }
+
   /* Look through the section relocs.  */
   ret = TRUE;
   is_eh = strcmp (sec->name, ".eh_frame") == 0;
