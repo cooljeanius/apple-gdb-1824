@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-21 01:10-0400\n"
+"POT-Creation-Date: 2023-08-21 06:18-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -406,17 +406,17 @@ msgstr ""
 msgid "GP relative relocation when _gp not defined"
 msgstr ""
 
-#: coff-rs6000.c:2706
+#: coff-rs6000.c:2707
 #, c-format
 msgid "%s: unsupported relocation type 0x%02x"
 msgstr ""
 
-#: coff-rs6000.c:2783
+#: coff-rs6000.c:2784
 #, c-format
 msgid "%s: TOC reloc at 0x%x to symbol `%s' with no TOC entry"
 msgstr ""
 
-#: coff-rs6000.c:3492 coff64-rs6000.c:2058
+#: coff-rs6000.c:3493 coff64-rs6000.c:2058
 msgid "%B: symbol `%s' has unrecognized smclas %d"
 msgstr ""
 

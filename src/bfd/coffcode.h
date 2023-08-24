@@ -3435,8 +3435,8 @@ coff_write_object_contents(bfd *abfd)
 
   reloc_size = (reloc_count * bfd_coff_relsz(abfd));
 
-  lineno_base = (reloc_base + reloc_size);
-  sym_base = (lineno_base + lnno_size);
+  lineno_base = (reloc_base + (file_ptr)reloc_size);
+  sym_base = (lineno_base + (file_ptr)lnno_size);
 
   /* Indicate in each section->line_filepos its actual file address: */
   for (current = abfd->sections; current != NULL; current =
@@ -3508,7 +3508,7 @@ coff_write_object_contents(bfd *abfd)
 
       internal_f.f_nscns++;
 
-      strncpy(section.s_name, current->name, (size_t)SCNNMLEN);
+      strncpy(section.s_name, current->name, ((size_t)SCNNMLEN - 1UL));
 
 #ifdef COFF_LONG_SECTION_NAMES
       /* Handle long section names as in PE. This must be compatible
@@ -3750,7 +3750,7 @@ coff_write_object_contents(bfd *abfd)
 	  bfd_size_type amt;
 
 	  internal_f.f_nscns++;
-	  strncpy(&(scnhdr.s_name[0]), current->name, 8UL);
+	  strncpy(&(scnhdr.s_name[0]), current->name, (8UL - 1UL));
 	  scnhdr.s_paddr = current->reloc_count;
 	  scnhdr.s_vaddr = current->lineno_count;
 	  scnhdr.s_size = 0;

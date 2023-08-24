@@ -38,3 +38,4 @@ binutils-gdb/*
 macgdb/*
 
 # (the GitHub Desktop GUI may insert things below this line)
+.env.local

@@ -2161,22 +2161,23 @@ xcoff_write_archive_contents_old(bfd *abfd)
 	return FALSE;
     }
 
-  sprintf(fhdr.lastmemoff, "%ld", (long)prevoff);
+  snprintf(fhdr.lastmemoff, sizeof(fhdr.lastmemoff), "%ld", (long)prevoff);
 
   /* Write out the member table: */
   BFD_ASSERT(nextoff == bfd_tell(abfd));
   sprintf(fhdr.memoff, "%ld", (long)nextoff);
 
   memset(&ahdr, 0, sizeof(ahdr));
-  sprintf(ahdr.size, "%ld", (long)(XCOFFARMAG_ELEMENT_SIZE
-                                   + (count * XCOFFARMAG_ELEMENT_SIZE)
-                                   + total_namlen));
-  sprintf(ahdr.prevoff, "%ld", (long)prevoff);
-  sprintf(ahdr.date, "%d", 0);
-  sprintf(ahdr.uid, "%d", 0);
-  sprintf(ahdr.gid, "%d", 0);
-  sprintf(ahdr.mode, "%d", 0);
-  sprintf(ahdr.namlen, "%d", 0);
+  snprintf(ahdr.size, sizeof(ahdr.size), "%ld",
+           (long)(XCOFFARMAG_ELEMENT_SIZE
+                  + (count * XCOFFARMAG_ELEMENT_SIZE)
+                  + total_namlen));
+  snprintf(ahdr.prevoff, sizeof(ahdr.prevoff), "%ld", (long)prevoff);
+  snprintf(ahdr.date, sizeof(ahdr.date), "%d", 0);
+  snprintf(ahdr.uid, sizeof(ahdr.uid), "%d", 0);
+  snprintf(ahdr.gid, sizeof(ahdr.gid), "%d", 0);
+  snprintf(ahdr.mode, sizeof(ahdr.mode), "%d", 0);
+  snprintf(ahdr.namlen, sizeof(ahdr.namlen), "%d", 0);
 
   size = (SIZEOF_AR_HDR + XCOFFARMAG_ELEMENT_SIZE
           + (count * XCOFFARMAG_ELEMENT_SIZE)
@@ -2186,30 +2187,30 @@ xcoff_write_archive_contents_old(bfd *abfd)
   nextoff += (file_ptr)(size + (size & 1));
 
   if (makemap && hasobjects)
-    sprintf(ahdr.nextoff, "%ld", (long)nextoff);
+    snprintf(ahdr.nextoff, sizeof(ahdr.nextoff), "%ld", (long)nextoff);
   else
-    sprintf(ahdr.nextoff, "%d", 0);
+    snprintf(ahdr.nextoff, sizeof(ahdr.nextoff), "%d", 0);
 
   /* We need spaces, not null bytes, in the header.  */
   for (p = (char *)&ahdr; p < ((char *)&ahdr + SIZEOF_AR_HDR); p++)
     if (*p == '\0')
       *p = ' ';
 
-  if ((bfd_bwrite ((PTR) &ahdr, (bfd_size_type) SIZEOF_AR_HDR, abfd)
+  if ((bfd_bwrite((PTR)&ahdr, (bfd_size_type)SIZEOF_AR_HDR, abfd)
        != SIZEOF_AR_HDR)
-      || (bfd_bwrite ((PTR) XCOFFARFMAG, (bfd_size_type) SXCOFFARFMAG, abfd)
+      || (bfd_bwrite((PTR)XCOFFARFMAG, (bfd_size_type)SXCOFFARFMAG, abfd)
 	  != SXCOFFARFMAG))
     return FALSE;
 
-  sprintf (decbuf, "%-12ld", (long) count);
-  if (bfd_bwrite ((PTR) decbuf, (bfd_size_type) XCOFFARMAG_ELEMENT_SIZE, abfd)
+  snprintf(decbuf, sizeof(decbuf), "%-12ld", (long)count);
+  if (bfd_bwrite((PTR)decbuf, (bfd_size_type)XCOFFARMAG_ELEMENT_SIZE, abfd)
       != XCOFFARMAG_ELEMENT_SIZE)
     return FALSE;
-  for (i = 0; i < (size_t) count; i++)
+  for (i = 0; i < (size_t)count; i++)
     {
-      sprintf (decbuf, "%-12ld", (long) offsets[i]);
-      if (bfd_bwrite ((PTR) decbuf, (bfd_size_type) XCOFFARMAG_ELEMENT_SIZE,
-		      abfd) != XCOFFARMAG_ELEMENT_SIZE)
+      snprintf(decbuf, sizeof(decbuf), "%-12ld", (long)offsets[i]);
+      if (bfd_bwrite((PTR)decbuf, (bfd_size_type)XCOFFARMAG_ELEMENT_SIZE,
+                     abfd) != XCOFFARMAG_ELEMENT_SIZE)
 	return FALSE;
     }
   for (sub = abfd->archive_head; sub != NULL; sub = sub->next)
@@ -2219,22 +2220,22 @@ xcoff_write_archive_contents_old(bfd *abfd)
 
       name = normalize_filename(sub);
       namlen = strlen(name);
-      if (bfd_bwrite((PTR)name, namlen + 1, abfd) != namlen + 1)
+      if (bfd_bwrite((PTR)name, (namlen + 1), abfd) != (namlen + 1))
 	return FALSE;
     }
 
   if (! do_pad(abfd, (unsigned int)(size & 1)))
     return FALSE;
 
-  /* Write out the armap, if appropriate.  */
+  /* Write out the armap, if appropriate: */
   if (! makemap || ! hasobjects)
-    sprintf(fhdr.symoff, "%d", 0);
+    snprintf(fhdr.symoff, sizeof(fhdr.symoff), "%d", 0);
   else
     {
-      BFD_ASSERT (nextoff == bfd_tell (abfd));
-      sprintf (fhdr.symoff, "%ld", (long) nextoff);
-      bfd_ardata (abfd)->tdata = (PTR) &fhdr;
-      if (! _bfd_compute_and_write_armap (abfd, 0))
+      BFD_ASSERT(nextoff == bfd_tell(abfd));
+      snprintf(fhdr.symoff, sizeof(fhdr.symoff), "%.12ld", (long)nextoff);
+      bfd_ardata(abfd)->tdata = (PTR)&fhdr;
+      if (! _bfd_compute_and_write_armap(abfd, 0))
 	return FALSE;
     }
 
