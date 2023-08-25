@@ -176,6 +176,7 @@ AC_DEFUN([AC_REQUIRE_PROG_SED],[
 ])dnl
 AC_REQUIRE_PROG_SED
 AC_PATH_PROG([TEX_BINARY],[tex])dnl
+AC_PATH_PROG([DVIPS],[dvips])dnl
 
 # Checks for libraries.
 AC_MSG_CHECKING([libraries])
@@ -390,7 +391,7 @@ esac
 
 case "${host_os}" in
 isc*)	 LOCAL_CFLAGS=-Disc386 ;;
-darwin*) echo "FIXME: add some LOCAL_CFLAGS" ;;
+darwin*) echo "FIXME: add some LOCAL_CFLAGS for darwin" ;;
 esac
 
 # Automake:

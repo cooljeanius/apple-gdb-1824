@@ -56,7 +56,8 @@ TEXI2HTML   = $(srcdir)/texi2html
 QUIETPS     = # set this to -q to shut up dvips
 PAPERSIZE   = letter
 PSDPI       = 300	# I do not have any 600-dpi printers
-DVIPS       = dvips -D ${PSDPI} $(QUIETPS) -t ${PAPERSIZE} -o $@     # tricky
+DVIPS_FLAGS = -D ${PSDPI} $(QUIETPS) -t ${PAPERSIZE} -o $@     # tricky
+DVIPS_WITH_FLAGS = $(DVIPS) $(DVIPS_FLAGS)
 
 RLSRC = $(srcdir)/rlman.texinfo $(srcdir)/rluser.texinfo \
 	$(srcdir)/rltech.texinfo $(srcdir)/manvers.texinfo \
@@ -114,15 +115,15 @@ history.info: ${HISTSRC}
 
 readline.ps:	readline.dvi
 	$(RM) $@
-	$(DVIPS) readline.dvi
+	$(DVIPS_WITH_FLAGS) readline.dvi
 
 rluserman.ps:	rluserman.dvi
 	$(RM) $@
-	$(DVIPS) rluserman.dvi
+	$(DVIPS_WITH_FLAGS) rluserman.dvi
 
 history.ps:	history.dvi
 	$(RM) $@
-	$(DVIPS) history.dvi
+	$(DVIPS_WITH_FLAGS) history.dvi
 
 #
 # This leaves readline.html and rlman.html -- rlman.html is for www.gnu.org
