@@ -8,6 +8,8 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])dnl
 
+# FIXME: this code needs updating, what with the change in versioning in Big Sur
+# Specifically, the field representing the major and minor versions have changed
 if test -x "`which sw_vers 2>/dev/null`"; then
   if test ! -z "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)"; then
     if test "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)" = "6"; then
