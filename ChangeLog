@@ -1,3 +1,29 @@
+2023-09-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' of github.com:cooljeanius/apple-gdb-1824
+
+	Change-Id: Id02887efdf09eebcddd5ffbbf8b4c28e81b7038d
+
+2023-09-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update top-level configury
+
+	(like, the *real* top-level, the one above the usual top-level)
+
+	Change-Id: Ia255b492bc87892890597029a7766a99329d324c
+
+2023-09-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #12 from cooljeanius/main
+
+	regenerate top-level ChangeLog
+
+2023-09-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	regenerate top-level ChangeLog
+
+	Change-Id: I3f46207708ac7abc41b6cbe90480cca8074be664
+
 2023-09-08  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	Update configure.ac
