@@ -1,3 +1,869 @@
+2023-09-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update configure.ac
+
+	note for later
+
+	Change-Id: I34bf37ebd204801e1258ca2db5f8ce20496b5936
+
+2023-09-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #11 from cooljeanius/imgbot
+
+	[ImgBot] Optimize images
+
+2023-09-04  ImgBotApp  <ImgBotHelp@gmail.com>
+
+	[ImgBot] Optimize images
+
+	*Total -- 1,294.45kb -> 1,059.61kb (18.14%)
+
+	/src/gdb/gdbtk/library/help/images/frame_info.gif -- 1.17kb -> 0.36kb (69.06%)
+	/src/gdb/gdbtk/library/images2/watch_movie.gif -- 1.08kb -> 0.49kb (55.06%)
+	/src/gdb/gdbtk/library/images/watch_movie.gif -- 1.08kb -> 0.49kb (55.06%)
+	/htdocs/talks/esc-west-1999/slides/img022.png -- 6.75kb -> 3.54kb (47.58%)
+	/htdocs/talks/esc-west-1999/slides/img026.png -- 27.21kb -> 15.32kb (43.71%)
+	/htdocs/talks/esc-west-1999/slides/img002.png -- 13.40kb -> 7.72kb (42.39%)
+	/htdocs/talks/esc-west-1999/slides/img011.png -- 3.26kb -> 1.88kb (42.3%)
+	/htdocs/talks/esc-west-1999/slides/img015.png -- 6.06kb -> 3.50kb (42.25%)
+	/htdocs/talks/esc-west-1999/slides/img020.png -- 15.15kb -> 8.75kb (42.21%)
+	/htdocs/talks/esc-west-1999/slides/img004.png -- 13.15kb -> 7.61kb (42.13%)
+	/htdocs/talks/esc-west-1999/slides/img021.png -- 8.99kb -> 5.22kb (41.95%)
+	/htdocs/talks/esc-west-1999/slides/img016.png -- 5.71kb -> 3.33kb (41.74%)
+	/htdocs/talks/esc-west-1999/slides/img018.png -- 7.79kb -> 4.57kb (41.34%)
+	/htdocs/talks/esc-west-1999/slides/img003.png -- 12.41kb -> 7.31kb (41.1%)
+	/htdocs/talks/esc-west-1999/slides/img006.png -- 9.39kb -> 5.55kb (40.87%)
+	/htdocs/talks/esc-west-1999/slides/img019.png -- 4.20kb -> 2.51kb (40.11%)
+	/htdocs/talks/esc-west-1999/slides/img001.png -- 6.40kb -> 3.85kb (39.77%)
+	/htdocs/talks/esc-west-1999/slides/img014.png -- 5.12kb -> 3.10kb (39.49%)
+	/htdocs/talks/esc-west-1999/slides/img017.png -- 7.06kb -> 4.29kb (39.23%)
+	/htdocs/talks/esc-west-1999/slides/img027.png -- 30.93kb -> 18.97kb (38.68%)
+	/htdocs/talks/esc-west-1999/slides/img010.png -- 5.21kb -> 3.21kb (38.43%)
+	/htdocs/talks/esc-west-1999/slides/img013.png -- 8.27kb -> 5.10kb (38.32%)
+	/htdocs/talks/esc-west-1999/slides/img008.png -- 5.08kb -> 3.15kb (38.08%)
+	/src/tk/library/images/logo64.gif -- 1.63kb -> 1.01kb (37.84%)
+	/htdocs/talks/esc-west-1999/slides/img009.png -- 5.74kb -> 3.59kb (37.46%)
+	/htdocs/talks/esc-west-1999/slides/img012.png -- 4.69kb -> 2.95kb (37.18%)
+	/htdocs/talks/esc-west-1999/slides/img005.png -- 14.43kb -> 9.42kb (34.7%)
+	/htdocs/talks/esc-west-1999/slides/img007.png -- 13.38kb -> 8.98kb (32.85%)
+	/src/gdb/doc/stack_frame.svg -- 46.76kb -> 32.88kb (29.67%)
+	/src/gdb/gdbtk/library/images2/home.gif -- 0.38kb -> 0.27kb (29.64%)
+	/src/tk/library/demos/images/tcllogo.gif -- 2.29kb -> 1.64kb (28.06%)
+	/src/tk/library/images/logo100.gif -- 2.29kb -> 1.64kb (28.06%)
+	/src/gdb/gdbtk/library/images/edit.gif -- 0.37kb -> 0.27kb (27.44%)
+	/htdocs/talks/esc-west-1999/slides/img028.png -- 28.94kb -> 21.05kb (27.28%)
+	/htdocs/talks/esc-west-1999/slides/img024.png -- 33.25kb -> 24.71kb (25.7%)
+	/htdocs/papers/multi-arch/real-multi-arch/xform-frame.jpg -- 6.73kb -> 5.03kb (25.31%)
+	/htdocs/papers/multi-arch/real-multi-arch/xform-thread.jpg -- 6.86kb -> 5.15kb (24.99%)
+	/src/gdb/gdbtk/library/images2/run_expt.gif -- 0.42kb -> 0.32kb (24.83%)
+	/src/gdb/gdbtk/library/images/run_expt.gif -- 0.42kb -> 0.32kb (24.83%)
+	/htdocs/papers/multi-arch/real-multi-arch/stack-for-thread-3.jpg -- 1.12kb -> 0.85kb (24.41%)
+	/htdocs/papers/multi-arch/real-multi-arch/multi.jpg -- 3.13kb -> 2.39kb (23.61%)
+	/src/itcl/iwidgets/demos/images/cut.gif -- 0.17kb -> 0.13kb (23.46%)
+	/src/gdb/XcodePlugins/Images/DBGFrameDatabase.png -- 1.40kb -> 1.07kb (23.44%)
+	/src/gdb/XcodePlugins/Images/DBGFrameSecurity.png -- 1.35kb -> 1.05kb (22.54%)
+	/src/gdb/XcodePlugins/Images/DBGFrameWeb.png -- 1.48kb -> 1.15kb (22.51%)
+	/htdocs/talks/esc-west-1999/slides/img023.png -- 28.30kb -> 22.24kb (21.41%)
+	/htdocs/papers/multi-arch/real-multi-arch/stack-buttons-3.jpg -- 0.85kb -> 0.67kb (21.14%)
+	/htdocs/papers/multi-arch/real-multi-arch/foo.jpg -- 0.85kb -> 0.67kb (21.14%)
+	/htdocs/talks/esc-west-1999/slides/img025.png -- 27.83kb -> 22.00kb (20.95%)
+	/src/gdb/XcodePlugins/Images/DBGFrameSystem.png -- 1.38kb -> 1.10kb (20.82%)
+	/htdocs/papers/multi-arch/real-multi-arch/thread-x-frame.jpg -- 3.55kb -> 2.83kb (20.27%)
+	/htdocs/papers/multi-arch/real-multi-arch/xform.jpg -- 8.75kb -> 6.99kb (20.04%)
+	/src/gdb/gdbtk/library/help/images/watch.png -- 14.35kb -> 11.59kb (19.2%)
+	/src/gdb/doc/stack_frame.png -- 65.70kb -> 53.55kb (18.49%)
+	/htdocs/papers/multi-arch/real-multi-arch/away.jpg -- 5.85kb -> 4.77kb (18.44%)
+	/src/gdb/gdbtk/library/help/images/browser2.png -- 13.44kb -> 10.97kb (18.42%)
+	/src/gdb/gdbtk/library/help/images/reg_menu.png -- 14.04kb -> 11.55kb (17.74%)
+	/src/gdb/gdbtk/library/help/images/reg.png -- 12.25kb -> 10.13kb (17.27%)
+	/src/gdb/XcodePlugins/Images/DBGFrameGraphics.png -- 1.18kb -> 0.98kb (16.72%)
+	/htdocs/papers/multi-arch/real-multi-arch/arch.jpg -- 4.08kb -> 3.41kb (16.48%)
+	/src/gdb/gdbtk/library/images/less.gif -- 0.11kb -> 0.09kb (15.65%)
+	/src/gdb/gdbtk/library/images2/less.gif -- 0.11kb -> 0.09kb (15.65%)
+	/src/gdb/gdbtk/library/images2/more.gif -- 0.11kb -> 0.10kb (15.52%)
+	/src/gdb/gdbtk/library/images/more.gif -- 0.11kb -> 0.10kb (15.52%)
+	/src/contrib/doc/Apple/TN2124_MacOSX_Debugging_Magic_via_Chrome.webarchive/Technical Note TN2124  Mac OS X Debugging Magic_files/tn2124_XcodeDebugLib32.png -- 74.52kb -> 63.28kb (15.09%)
+	/src/gdb/XcodePlugins/Images/DBGFrameAudioSpeech.png -- 1.26kb -> 1.07kb (15.05%)
+	/src/gdb/gdbtk/library/images2/Movie_off.gif -- 0.32kb -> 0.27kb (14.72%)
+	/src/gdb/gdbtk/library/images/Movie_off.gif -- 0.32kb -> 0.27kb (14.72%)
+	/src/gdb/XcodePlugins/Images/DBGFrameAppKit.png -- 1.24kb -> 1.06kb (14.41%)
+	/src/gdb/XcodePlugins/Images/DBGFrameLanguages.png -- 1.15kb -> 0.98kb (14.4%)
+	/htdocs/papers/multi-arch/real-multi-arch/path.jpg -- 4.38kb -> 3.77kb (13.77%)
+	/src/itcl/iwidgets/demos/images/new.gif -- 0.21kb -> 0.18kb (13.68%)
+	/src/contrib/doc/Apple/TN2124_MacOSX_Debugging_Magic_via_Chrome.webarchive/Technical Note TN2124  Mac OS X Debugging Magic_files/tn2124_XCodeEnv.png -- 69.73kb -> 60.59kb (13.1%)
+	/src/itcl/iwidgets/demos/images/copy.gif -- 0.26kb -> 0.23kb (13.01%)
+	/src/gdb/gdbtk/library/help/images/browser1.png -- 10.99kb -> 9.64kb (12.31%)
+	/src/contrib/doc/Apple/TN2124_MacOSX_Debugging_Magic_via_Chrome.webarchive/Technical Note TN2124  Mac OS X Debugging Magic_files/tn2124_XcodeArgs.png -- 96.31kb -> 84.65kb (12.1%)
+	/src/itcl/iwidgets/demos/images/close.gif -- 0.24kb -> 0.21kb (12.05%)
+	/src/gdb/gdbtk/library/help/images/src_toolbar.gif -- 3.21kb -> 2.83kb (11.92%)
+	/src/itcl/iwidgets/demos/images/open.gif -- 0.25kb -> 0.22kb (11.24%)
+	/htdocs/papers/multi-arch/real-multi-arch/registers-for-thread-3.jpg -- 15.00kb -> 13.33kb (11.12%)
+	/htdocs/papers/multi-arch/real-multi-arch/functions-for-thread-3.jpg -- 6.12kb -> 5.44kb (11.08%)
+	/htdocs/papers/multi-arch/real-multi-arch/insight-frame.jpg -- 16.43kb -> 14.67kb (10.71%)
+	/src/itcl/iwidgets/demos/images/clear.gif -- 0.27kb -> 0.24kb (10.39%)
+	/htdocs/papers/multi-arch/real-multi-arch/insight-thread.jpg -- 16.14kb -> 14.48kb (10.3%)
+	/htdocs/papers/multi-arch/real-multi-arch/threads-for-thread-3.jpg -- 5.54kb -> 5.00kb (9.71%)
+	/src/gdb/gdbtk/library/images2/next_frame.gif -- 0.21kb -> 0.19kb (8.29%)
+	/src/gdb/gdbtk/library/images/next_frame.gif -- 0.21kb -> 0.19kb (8.29%)
+	/htdocs/papers/multi-arch/real-multi-arch/var-with-struct-open.jpg -- 10.85kb -> 9.99kb (7.86%)
+	/src/gdb/XcodePlugins/Images/DBGFrameUser.png -- 1.06kb -> 0.98kb (7.57%)
+	/htdocs/papers/multi-arch/real-multi-arch/memory-for-thread-3.jpg -- 8.45kb -> 7.82kb (7.45%)
+	/htdocs/papers/libgdb2/wp/gdbtk2.jpg -- 33.45kb -> 30.98kb (7.38%)
+	/htdocs/papers/multi-arch/real-multi-arch/source-for-thread-3.jpg -- 20.73kb -> 19.20kb (7.35%)
+	/htdocs/papers/libgdb2/wp/stream2.jpg -- 13.30kb -> 12.33kb (7.27%)
+	/htdocs/papers/libgdb2/wp/server2.jpg -- 34.62kb -> 32.17kb (7.05%)
+	/src/tk/library/images/logoLarge.gif -- 10.74kb -> 9.99kb (6.99%)
+	/htdocs/papers/libgdb2/wp/stream.jpg -- 13.38kb -> 12.50kb (6.61%)
+	/htdocs/papers/libgdb2/wp/adapter.jpg -- 4.85kb -> 4.54kb (6.54%)
+	/htdocs/papers/libgdb2/wp/gdbtk.jpg -- 14.59kb -> 13.67kb (6.32%)
+	/src/gdb/gdbtk/library/images2/tdump.gif -- 0.30kb -> 0.29kb (5.79%)
+	/src/gdb/gdbtk/library/images/tdump.gif -- 0.30kb -> 0.29kb (5.79%)
+	/htdocs/images/icon.png -- 8.15kb -> 7.69kb (5.68%)
+	/src/contrib/doc/Apple/TN2124_MacOSX_Debugging_Magic_via_Chrome.webarchive/Technical Note TN2124  Mac OS X Debugging Magic_files/tn2124_XcodeDebugStr3.png -- 56.85kb -> 53.76kb (5.44%)
+	/src/gdb/gdbtk/library/images/tp.gif -- 0.22kb -> 0.21kb (5.26%)
+	/src/gdb/gdbtk/library/images2/tp.gif -- 0.22kb -> 0.21kb (5.26%)
+	/src/contrib/doc/Apple/TN2124_MacOSX_Debugging_Magic_via_Chrome.webarchive/Technical Note TN2124  Mac OS X Debugging Magic_files/tn2124_NSShowAllViews106.png -- 32.07kb -> 30.44kb (5.08%)
+	/src/gdb/gdbtk/library/help/images/insightbwr.png -- 1.52kb -> 1.45kb (4.76%)
+	/src/gdb/gdbtk/library/help/images/mem_menu.gif -- 0.83kb -> 0.80kb (3.75%)
+	/src/gdb/gdbtk/library/help/images/src_menu.gif -- 0.38kb -> 0.37kb (3.57%)
+	/src/itcl/iwidgets/demos/images/paste.gif -- 0.37kb -> 0.35kb (3.46%)
+	/src/gdb/gdbtk/library/help/images/src_pop.gif -- 1.04kb -> 1.00kb (3.02%)
+	/src/gdb/gdbtk/library/help/images/src_bpop.gif -- 1.07kb -> 1.04kb (2.91%)
+	/src/gdb/gdbtk/library/help/images/src_stat.gif -- 1.13kb -> 1.10kb (2.77%)
+	/src/gdb/gdbtk/library/help/images/mem_popup.gif -- 1.23kb -> 1.20kb (2.53%)
+	/src/gdb/gdbtk/library/images2/next_line.gif -- 0.24kb -> 0.23kb (2.46%)
+	/src/gdb/gdbtk/library/images/next_line.gif -- 0.24kb -> 0.23kb (2.46%)
+	/src/gdb/gdbtk/library/images/rewind.gif -- 0.21kb -> 0.21kb (1.84%)
+	/src/gdb/gdbtk/library/images2/rewind.gif -- 0.21kb -> 0.21kb (1.84%)
+	/htdocs/images/archer.jpg -- 5.07kb -> 4.97kb (1.81%)
+	/src/gdb/gdbtk/library/help/images/src_bal.gif -- 1.24kb -> 1.22kb (1.58%)
+	/src/gdb/gdbtk/library/help/images/src_thread.gif -- 3.50kb -> 3.45kb (1.56%)
+	/src/gdb/gdbtk/library/images/next_check.gif -- 0.24kb -> 0.23kb (1.24%)
+	/src/gdb/gdbtk/library/images2/next_check.gif -- 0.24kb -> 0.23kb (1.24%)
+	/src/gdb/gdbtk/library/images/Movie_on.gif -- 0.35kb -> 0.35kb (1.11%)
+	/src/gdb/gdbtk/library/images2/Movie_on.gif -- 0.35kb -> 0.35kb (1.11%)
+	/src/gdb/gdbtk/library/help/images/src_bp_bal.gif -- 2.86kb -> 2.83kb (1.09%)
+	/src/gdb/gdbtk/library/help/images/mem_pref.gif -- 5.25kb -> 5.20kb (1.04%)
+	/src/gdb/gdbtk/library/images2/next_hit.gif -- 0.22kb -> 0.22kb (0.9%)
+	/src/gdb/gdbtk/library/images/next_hit.gif -- 0.22kb -> 0.22kb (0.9%)
+	/src/tk/library/images/pwrdLogo75.gif -- 1.14kb -> 1.13kb (0.77%)
+	/src/tk/library/images/pwrdLogo100.gif -- 1.58kb -> 1.57kb (0.56%)
+	/src/tk/library/images/pwrdLogo150.gif -- 2.43kb -> 2.42kb (0.36%)
+	/htdocs/papers/libgdb2/wp/server.jpg -- 23.48kb -> 23.41kb (0.32%)
+	/src/tk/library/images/pwrdLogo175.gif -- 2.91kb -> 2.90kb (0.3%)
+	/src/tk/library/demos/images/earth.gif -- 50.50kb -> 50.35kb (0.3%)
+	/src/tk/library/images/pwrdLogo200.gif -- 3.41kb -> 3.40kb (0.26%)
+	/src/itcl/iwidgets/demos/iwidgets.gif -- 7.55kb -> 7.54kb (0.01%)
+
+2023-08-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update some readline docs stuff
+
+	Change-Id: I10c4de1137e3fed694b4c362411aba56479d98f0
+
+2023-08-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	I forget what I was doing
+
+	Change-Id: I1b559bc605916a001e81bb207d82410caaa07e10
+
+2023-08-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update FUNDING.yml
+
+	add Patreon
+
+2023-08-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	copy over some changes from @autc04's Retro68
+
+	see autc04/Retro68/binutils
+
+	Change-Id: I4d099cf758871f221cb1e6cafe32019ae0ec8809
+
+2023-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	messing around in intl subdir
+
+	Change-Id: I44316f8e491da7daf9cf8b1fe0f54591e7c88047
+
+2023-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	let Xcode 13 make changes it wants to make, cntd
+
+	for unicode_formatter
+
+	Change-Id: I8d6d96c756cffef0998ecd30c1b1143bb728d05c
+
+2023-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update project.pbxproj
+
+	let Xcode 13 make the changes it wants to make for zlib
+
+	Change-Id: If8222e0bfd459497265aae22e113035a4d1bd31d
+
+2023-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	same as prev., but for Tcl
+
+	Change-Id: Ieb1e06cd3b7ec43495eb68682d4d224601cdc83b
+
+2023-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	same as prev., but for Wish
+
+	Change-Id: Idc8df011bfcceef8c1e2e2b149cf6164b0dd7416
+
+2023-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	let Xcode 13 make the changes it wants to make
+
+	Change-Id: I1b509e27be70f99ffaf97463cfdf6b337e2d8628
+
+2023-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a few things from upstream
+
+	Change-Id: I35f6186f0f4debc645049d2a4c237c013de6dee7
+
+2023-07-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update FUNDING.yml
+
+	add open_collective
+
+2023-01-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	opcodes and readline configury tweaks
+
+	Change-Id: I505a3c6a91552667927ffad82c5858e73ea3c0dc
+
+2023-01-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor libiberty tweaks
+
+	Change-Id: I32ad8ebcd36fc645078ce41a2a1bbcf1007a30e9
+
+2023-01-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more messing with standalone.c
+
+	Change-Id: I8f9e9dd7a61207b766be9541f2dcd3df6c1174da
+
+2023-01-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	continue with gdb subdir
+
+	Change-Id: I5733e768970872b6b13492c82698951903606ceb
+
+2023-01-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	tweaks to configury in gdb/testsuite
+
+	Change-Id: If12d3fff1e67e6c7466e807ce59218be41107db8
+
+2023-01-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	stuff in gdb
+
+	misc. tweaks to account for b98e0a1, such as ensuring the tui Makefile has everything subst-ed
+
+	Change-Id: I72205b67f502dd451ecaac0a48924f7fb1bab01e
+
+2023-01-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor update for expect
+
+	Change-Id: I2624b3f4f81f53dce3c317e5930796cf42302e28
+
+2023-01-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	oops I accidentally made a distdir; delete it
+
+	Change-Id: I8b66ad3e1a0e6e4296dfb9c90754470963358794
+
+2023-01-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	updates for dejagnu
+
+	account for b98e0a1, and copy over some files from mainline dejagnu
+
+	Change-Id: Ib2428f5f7ed606ce21fb9059e5f8f71cdef54fbb
+
+2023-01-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	1 more for the morning
+
+	I really need to get going...
+
+	Change-Id: Ie3cc26549f24206eafeee876568bacc023574e12
+
+2023-01-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more bfd/binutils warnings
+
+	Change-Id: Ib931c05fc2ccbfdd0a33429b7e6edb4e74789f31
+
+2023-01-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more stuff for warnings in bfd
+
+	Change-Id: I010eaaa38bc21ce3e36e0c4ac5f343959f599f43
+
+2023-01-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update ansidecl.h
+
+	more __has_attribute() usage
+
+	Change-Id: Ia924c6190d6394bb52eacd975556228eefd6091b
+
+2023-01-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	making sure I haven't broken anything w/new files
+
+	nothing that wasn't already broken, that is
+	(incomplete; only up through bfd and binutils, and now I'm back to bfd again)
+
+	Change-Id: I2a96732a30e16b1528737dbaec5253604e785db4
+
+2023-01-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	copy over a bunch of files
+
+	from https://github.com/evolver56k/Darwin-0.3/tree/master/gdb-1
+
+	Change-Id: I652646bbab9538c51db7cf2e510f054c525f0124
+
+2023-01-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	configury changes for readline
+
+	think I might have broken something in some of my previous commits; this is me attempting to fix that
+
+	Change-Id: I44b657e0763ee706077806a520cc9f760255ceb5
+
+2023-01-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	something is messed up with gdbserver
+
+	Change-Id: I6bd79c2339a98bd49bf5063b2a6f9068d728c3e4
+
+2023-01-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update readline configury
+
+	to account for pickier clang
+
+	Change-Id: I64f4649f60fb69e622bb34b779b540eed2009e77
+
+2023-01-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok I got expect compiling again
+
+	Change-Id: I0aa6d20b58842eef4edc27f0ac1dae0bbe319133
+
+2023-01-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	improve cleaning error handling
+
+	Change-Id: Ic98b5f520417ad3d0e9f1d77efa4f3ddfcdaa1eb
+
+2022-08-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Create FUNDING.yml
+
+	Change-Id: I31099e9e121c2e34eeb0b9d879b6b956509ce990
+
+2022-05-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	halb halb halb
+
+	Change-Id: Ie3fb1c3b766e4abad98e349a28df02b72e6243d4
+
+2022-05-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	blah blah blah
+
+	Change-Id: If8e089c6b71e9fe9cf846fa0665d77512cec6521
+
+2022-05-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	fix some analyzer warnings for readline
+
+	Change-Id: Iea155a9c782b145ecbc2a7f17ff9228a91ab23d1
+
+2022-05-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update texi2html
+
+	remove `defined()`; appears to fix #10
+
+	Change-Id: I1900ae53fb78c5259c90116ed586bb867ad818d9
+
+2022-05-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update autotools stuff again
+
+	includes (what I hope is) a fix for #4
+
+	Change-Id: Ieae442566ccfdcbd5c19f711b72dad4d95c4e567
+
+2021-11-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	maintainer mode regenerated some stuff
+
+	Change-Id: Iebc946982a2bfa31bfc97bf3f1627332a5064ea0
+
+2021-11-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Tcl build process tweaks
+
+	Change-Id: Id5e5faab8f63b48eade792b60f8cec712f469d81
+
+2021-11-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	configury edits
+
+	fixes #3 (I had been putting @LEXLIB@ in the wrong spot)
+
+	Change-Id: I8691399e6b3d22606dc041ee662db16e8fb4904d
+
+2021-10-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	there's a warning I can't seem to silence...
+
+	Change-Id: If7838803f11b667255be59534a447f9c8f446e15
+
+2021-10-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	GCC 12 warnings don't play nice with macOS headers
+
+	Change-Id: Ia73db0a588fc7e9f967c721e835214a1bb79d707
+
+2021-10-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update gdb_indent.sh
+
+	added comment
+
+	Change-Id: I57f44caad41de3320d19ff35d2bbe54b317a891c
+
+2021-10-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	updating indent script
+
+	Change-Id: I45c1db20bfc296f7a722afc70f4c371be21a8d33
+
+2021-10-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update warning flags
+
+	Change-Id: I6d3d8a99e89f193307a91ad53932d38d7e9b4177
+
+2021-08-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor gitignore update
+
+	Change-Id: Ia12e5db2dcaed148b1d7aa0ce473768aeefdfbb6
+
+2021-07-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more trying to build on Big Sur
+
+	Change-Id: Ib8d4e051eca7345f99349694e4b530f8bf3f9124
+
+2021-07-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update autotools stuff for now
+
+	also try applying patch based on: https://github.com/macports/macports-ports/pull/11690/commits/c2d5c0eb4ff3ae0d7408e1d7cf35d595453f98d2
+	via @evanmiller
+
+	Change-Id: Icabd8f10c642e2b07e60d3a9a9146097f80b144b
+
+2021-05-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ACLOCAL_AMFLAGS for libiberty
+
+	Change-Id: Ia5d84388696cb4a169a9d2d2b32e82c7cd0349df
+
+2021-02-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Use automake (kinda) for libiberty
+
+	Change-Id: I52e1147c695e1265afd1d31c88b2ab5718347d9c
+
+2021-02-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Big Sur updates
+
+	and autotools updates
+
+	Change-Id: I11f8706a1443ea9b57c31ec6d1f13a0984f745d9
+
+2020-09-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try bringing to Catalina
+
+	Change-Id: I4f1fa9e1feaf42ea691f5f7674b9d770f132194e
+
+2020-05-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	GCC 10 stuff
+
+	Change-Id: I06dc0a09dc64f763dd4ec868af4ecbf7e6b7e5cf
+
+2020-05-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	compiling for 64-bit mingw now gets as far as it does for 32-bit mingw
+
+	Change-Id: Ic8c725e6bb08358d5aaeb316c5974ca6b633658d
+
+2020-05-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	cross-compiling for mingw gets a bit farther now; it now fails at the linking step for binutils
+
+	Change-Id: Ie40079b4c21b7094d69869a0873011f11636ea4e
+
+2020-05-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok opcodes can now be cross-compiled for mingw; on to binutils...
+
+	Change-Id: Ica02a40a56031fc150c6b96e8e8f7ad8b2d17453
+
+2020-05-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ugh cgen is such a pain
+
+	Change-Id: I04b0bc4d266356f8ad0d2ee77b9419683b89a31a
+
+2020-05-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	cgen now kinda works to generate opcodes if I force GUILE=guile18
+
+	Change-Id: I6cd8842bc5d21a795972bbe5d255eea8a027a9b9
+
+2020-05-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try compiling with a cross-compiler for mingw
+
+	Change-Id: I15f4832821d13cb58a47bb7d1ae561027a0b527a
+
+2020-05-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	libbacktrace now compiles with the new macho support
+
+	Change-Id: I935be84e6e3b82847fbe63497a6db44385948183
+
+2020-05-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try backporting macho support from gcc's copy of libbacktrace to this one
+
+	Change-Id: If13a6c04b8803911035cc6ef69818d01cf11cf84
+
+2020-05-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	oops, I had this one sitting around for a while
+
+	Change-Id: Iaa67491216c8d55cadfb41a5c9b36c4ae55bceb8
+
+2019-05-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	I forget
+
+	Change-Id: I1550e14775c58f8d82f7b119a437d9fbedf07d66
+
+2019-05-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok that should be enough -Wmissing-variable-declarations for now
+
+	Change-Id: I6825afe3aeea74fae45c1747f54442e12e6867ab
+
+2019-05-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more -Wmissing-variable-declarations
+
+	Change-Id: Ib4ff12f4ce57bb35f1ab7f3dc3ef466774a222ed
+
+2019-05-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	split part of dwarf2read.c off into a separate file
+
+	Change-Id: Ib49a40f72456e6269cf300daa44549c2c85b80a2
+
+2019-05-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	actually add files missed by prev. commit; deal with -Wmissing-variable-declarations
+
+	Change-Id: Ic126f11393e729b70e757c65261cbdad36c86f94
+
+2019-05-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	add missing files wanted by TAGS target
+
+	Change-Id: I87d4a4d406b369faeac1726ee0a668ab43f61dc1
+
+2019-05-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	bit more mach3 tweaking
+
+	Change-Id: I89bc51ba681affa43b78d789958ca3e64c6d7ac5
+
+2019-05-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try messing with files for other hosts in the nat folder
+
+	Change-Id: Id8adad799416695b137786c8c42dfba769dd5c3c
+
+2019-05-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try turning on -Wmissing-variable-declarations with clang, for the sake of doxygen
+
+	Change-Id: I8383453f76f7eb986bcdf24b812f0fa2bfe370bf
+
+2019-05-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	compile with gcc 4.7
+
+	Change-Id: I3a08e5e31179cb0e8e25ed0204ce30b3f52ec818
+
+2019-04-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	compile with Apple G++ 4.0
+
+	Change-Id: Icb366dbcf3c7f49a536cb09ad37718aaecca2613
+
+2019-04-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	compile with Apple GCC 4.0
+
+	Change-Id: I26d1352f48bf00da07c467c81364084fc20ccb23
+
+2019-04-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	C++ with Apple g++ 4.2
+
+	Change-Id: I93a50c2ab2e08a3a66017655b39bc5ec964163cd
+
+2019-04-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	remember the old Apple gcc 4.2 compiler
+
+	Change-Id: I53697a0e1320e5862cdcca65e741f0ed7094a10b
+
+2019-04-28  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more 64-bitness warnings, part 2
+
+	Change-Id: I45b36d928c11b0753ec7ef1f5be13e6c4c312ffe
+
+2019-04-28  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more 64-bitness warnings
+
+	Change-Id: Ic42dd21ea7f40b65a3ea0a8e3834eb731fd9bc40
+
+2019-04-28  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	silencing of 64-bitness warnings
+
+	Change-Id: I8f30c800f715236941b7243d09b94541396fceca
+
+2019-04-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	splinting now finishes with newer rules
+
+	Change-Id: I8b718ddea970f37182bb4c550dfa1e1b62bd3ef7
+
+2019-04-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	add cxref html; splint w/new rules gets to main.c
+
+	Change-Id: I5c7ab1f01f2420d607171c9a8b00437496144837
+
+2019-04-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	add cxref output
+
+	Change-Id: I1bce674b8311216b454d2c79243f81b3c9a610cc
+
+2019-04-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	splinting now gets up to macosx-tdep.c
+
+	Change-Id: Ie30281120b1c07caad23495375e4480bbf8c02c0
+
+2019-04-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	argle bargle bargle
+
+	Change-Id: I7055827f8986aad58ab776e0933b17d80859bf79
+
+2019-04-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	A few things:
+
+	- Try to deal with compilers that use versions of the clang assembler
+	  that complain about unused '-I' arguments
+	- update splinting
+	- do static analysis with new version of clang
+
+	Change-Id: Ia9dd166dea28cae38a368d1144f2dafefec6dcf5
+
+2019-02-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update gnulib for 2019
+
+	Change-Id: I0d6d2e37c8f297214996ea26e81b39bedae6078c
+
+2019-02-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	some updates for 2019 and gcc 9
+
+	Change-Id: Id6e403c6dad00e8479bbc823e8342318ee97bbe4
+
+2018-10-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Add ldexpl gnulib module
+
+	Change-Id: Ifd8ece594f4a1665056d638211f9459d42560830
+
+2018-10-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	avoid setlocale module
+
+	Change-Id: Iace190ebfaa48aef16bb9572650e26af03241fbb
+
+2018-10-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	really add the gnulib modules this time
+
+	Change-Id: I89cf5aedd7afd8fdfbf729b2caf05577a9d62e59
+
+2018-10-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	add gnulib modules recommended by posixcheck
+
+	Change-Id: I3dbde76a874efd143c800142ce080335411f3272
+
+2018-10-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	autoreconf after new gnulib import
+
+	Change-Id: Ib4bddcee282e71121ce4b8816dbe1c0c75d4de25
+
+2018-10-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	new gnulib import for October 2018
+
+	Change-Id: I0a03d477034d9c029e73c59ba2ff604c2ea5ff03
+
+2018-09-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	More static analysis with clang-6.0
+
+	Change-Id: Ib7223b7b0aa707acefe37702d8ae94aaefbeb498
+
+2018-09-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	clang-6.0 produces new static analysis results
+
+	Change-Id: Iba28c144758848cd14b286d7562fe6de5e1ce692
+
+2018-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Compiling with GCC 9 points out different things
+
+	Change-Id: I2a013003b76dc7a710ea0a6be5cdd0d959a519f4
+
+2018-03-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	autoreconf using new automake and libtool
+
+	Change-Id: I7264ed7be79f23f41ead369ef374c1e8fa11ab87
+
+2018-02-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	go back to previous hosts/targets
+
+	Change-Id: I67e878e02dfe91ea872d4c6f1949ac599975deb2
+
+2018-02-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try configuring with --host=powerpc-apple-rhapsody
+
+	Change-Id: I09af7c9775c03234fbecd11e53eebc2b52dbb2fe
+
+2018-02-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more tweaking the objc sources in gdb-next
+
+	Change-Id: Iad002fe49ee0fb66d23bb659bdea88ba0a720468
+
+2018-02-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try compiling sources in gdb-next subdir
+
+	Change-Id: I96860e065213ac437a14747753ef07c1a4bb5338
+
+2018-02-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	make sure `make install` works
+
+	Change-Id: I68ed00237d4cbf4bf77ba6f8d0b4bd5f5432ce75
+
+2018-02-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	tinker tinker tinker
+
+	Change-Id: If9e740d2212fb8692f53622c59bc73e3bccee54a
+
+2018-02-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	haven't configured with --enable-maintainer-mode in a while
+
+	Change-Id: Idd40e8a8ea71ec064eedeccb5be765fd05f0baa5
+
+2018-02-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update #gnulib for 2018
+
+	Change-Id: Id81d8aa1fed4f6ad04dc1765bd59bddf99b53c7a
+
+2018-02-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	fix regenerating some more texinfos #chew
+
+	Change-Id: If66c08a6dd31d5f3a43297e853ace486ac373ad2
+
+2018-02-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok NOW bfd texinfos should be fixed for makeinfo 5
+
+	even when regenerated with chew, that is
+
+	Change-Id: I6ff4043cbb50e0c106ca18de65b0076a48608094
+
+2018-02-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Some people sleepwalk or sleeptalk; I sleepcode
+
+	Change-Id: If6d264d964a3e5c161665a9e2330a7ac8f589873
+
+2018-02-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	mark some files as Objective-C
+
+	Change-Id: I43f26c4a47dc582a38ac5056cd41981925a2e237
+
+2018-02-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Ran my unempty.sh script again
+
+	Change-Id: I29f687d0a6bc59fcc15ee52419eb64ce2eebe904
+
 2018-01-26  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	Warning silencing for Jan 2018
