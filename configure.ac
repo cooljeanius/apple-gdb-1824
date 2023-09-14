@@ -8,26 +8,49 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])dnl
 
-# FIXME: this code needs updating, what with the change in versioning in Big Sur
-# Specifically, the field representing the major and minor versions have changed
-if test -x "`which sw_vers 2>/dev/null`"; then
-  if test ! -z "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)"; then
-    if test "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)" = "6"; then
-      if test -e ./.profile_snowleopard; then
-        AC_MSG_NOTICE([sourcing ./.profile_snowleopard])
-        . ./.profile_snowleopard
+# The change in versioning in Big Sur has required some updating here:
+if test -x "`which sw_vers 2>&AS_MESSAGE_LOG_FD`"; then
+  mac_vers_major="$(sw_vers -productVersion | cut -d\. -f1 2>&AS_MESSAGE_LOG_FD)"
+  mac_vers_minor="$(sw_vers -productVersion | cut -d\. -f2 2>&AS_MESSAGE_LOG_FD)"
+  if test -n "${mac_vers_major}"; then
+    if test ${mac_vers_major} -eq 11; then
+      if test -e ./.profile_big_sur; then
+        AC_MSG_NOTICE([sourcing ./.profile_big_sur])
+        . ./.profile_big_sur
       else
-        AC_MSG_WARN([there are some environment variables that you will have to set manually for this to work properly.])
+        AC_MSG_WARN([there are some environment variables that you will have to set manually for this to work properly (on Big Sur but missing file for Big Sur).])
       fi
-    elif test "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)" = "5"; then
-      if test -e ./.profile_leopard; then
-        AC_MSG_NOTICE([sourcing ./.profile_leopard])
-        . ./.profile_leopard
+    elif test ${mac_vers_major} -eq 10; then
+      if test -n "${mac_vers_minor}"; then
+        if test ${mac_vers_minor} -eq 15; then
+          if test -e ./.profile_catalina; then
+            AC_MSG_NOTICE([sourcing ./.profile_catalina])
+            . ./.profile_catalina
+          else
+            AC_MSG_WARN([there are some environment variables that you will have to set manually for this to work properly (on Catalina but missing file for Catalina).])
+          fi
+        elif test ${mac_vers_minor} -eq 6; then
+          if test -e ./.profile_snowleopard; then
+            AC_MSG_NOTICE([sourcing ./.profile_snowleopard])
+            . ./.profile_snowleopard
+          else
+            AC_MSG_WARN([there are some environment variables that you will have to set manually for this to work properly (on Snow Leopard but missing file for Snow Leopard).])
+          fi
+        elif test ${mac_vers_minor} -eq 5; then
+          if test -e ./.profile_leopard; then
+            AC_MSG_NOTICE([sourcing ./.profile_leopard])
+            . ./.profile_leopard
+          else
+            AC_MSG_WARN([there are some environment variables that you will have to set manually for this to work properly (on Leopard but missing file for Leopard).])
+          fi
+        else
+          AC_MSG_WARN([you will have to find out what to do for this platform yourself (version info: ${mac_vers_major}.${mac_vers_minor}).])
+        fi
       else
-        AC_MSG_WARN([there are some environment variables that you will have to set manually for this to work properly.])
+        AC_MSG_WARN([you will have to find out what to do for this platform yourself (major vers is 10).])
       fi
     else
-      AC_MSG_WARN([you will have to find out what to do for this platform yourself.])
+      AC_MSG_WARN([you will have to find out what to do for this platform yourself (version info: ${mac_vers_major}).])
     fi
   else
     AC_MSG_WARN([you will have to find out what to do for this platform yourself.])
@@ -40,6 +63,8 @@ else
     AC_MSG_WARN([you will have to find out what to do for this platform yourself.])
   fi
 fi
+AC_SUBST([mac_vers_major])dnl
+AC_SUBST([mac_vers_minor])dnl
 
 AC_CANONICAL_TARGET
 AC_SYS_INTERPRETER
