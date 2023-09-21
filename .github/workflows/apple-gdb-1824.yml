@@ -1,0 +1,30 @@
+name: cooljeanius/apple-gdb-1824
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.0.0
+#     # 'Transformers::TravisCI::Scripts::Dependencies' dependencies are currently unsupported
+#     # 'compiler' was not transformed because there is no suitable equivalent in GitHub Actions
+    - run: sudo apt-get update
+    - run: sudo apt-get install autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libopts25 libopts25-dev texinfo flex flex-doc binutils binutils-dev binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl guile-1.8 guile-1.8-dev guile-1.8-libs tclreadline m4 xutils-dev libgcj-common ecj-gcj gfortran gfortran-multilib gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar java-gcj-compat gcj-jdk gdb gdbserver autopoint gperf help2man libextutils-f77-perl
+    - run: test -e ./.profile_generic && source ./.profile_generic
+    - run: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules && make V=0
+    - run: pwd
+      if: "${{ success() }}"
+    - run: find . -name config.log | xargs cat | grep -i error | sort | uniq
+      if: "${{ failure() }}"
+    strategy:
+      matrix:
+        compiler:
+        - clang
+        - gcc
