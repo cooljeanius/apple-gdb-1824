@@ -10,13 +10,13 @@ before_install:
 
 install:
   # Prerequisites
-  - "sudo apt-get install autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libopts25 libopts25-dev texinfo flex flex-doc binutils binutils-dev binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl guile-1.8 guile-1.8-dev guile-1.8-libs tclreadline m4 xutils-dev libgcj-common ecj-gcj gfortran gfortran-multilib gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar java-gcj-compat gcj-jdk gdb gdbserver autopoint gperf help2man libextutils-f77-perl"
+  - "sudo apt-get install autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libopts25 libopts25-dev texinfo flex flex-doc binutils binutils-dev binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl guile-1.8 guile-1.8-dev guile-1.8-libs tclreadline m4 xutils-dev libgcj-common ecj-gcj gfortran gfortran-multilib gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar java-gcj-compat gcj-jdk gdb gdbserver autopoint gperf help2man libextutils-f77-perl zlib"
 
 # set up env
 before_script: test -e ./.profile_generic && source ./.profile_generic
 
 # try to build
-script: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules && make V=0
+script: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib && make V=0
 
 compiler:
   - clang
