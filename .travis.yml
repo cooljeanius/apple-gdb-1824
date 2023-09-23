@@ -1,5 +1,5 @@
 language: c
-dist: trusty
+dist: precise
 
 os:
   - linux
