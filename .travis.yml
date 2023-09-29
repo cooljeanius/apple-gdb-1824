@@ -16,7 +16,9 @@ install:
 before_script: test -e ./.profile_generic && source ./.profile_generic
 
 # try to build
-script: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib && make V=0
+script:
+  - cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib
+  - pwd
 
 compiler:
   - clang
