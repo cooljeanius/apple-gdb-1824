@@ -615,7 +615,8 @@ extern int pexecute(const char *, char * const *, const char *,
 /* Wait for pexecute to finish: */
 extern int pwait(int, int *, int) ATTRIBUTE_W_U_R;
 
-#if !defined(HAVE_DECL_ASPRINTF) || (defined(HAVE_DECL_ASPRINTF) && !HAVE_DECL_ASPRINTF)
+#if (!defined(HAVE_DECL_ASPRINTF) || \
+     (defined(HAVE_DECL_ASPRINTF) && !HAVE_DECL_ASPRINTF)) && !defined(asprintf)
 /* Like sprintf but provides a pointer to malloc'd storage, which must be freed
  * by the caller: */
 extern int asprintf(char **, const char *, ...) ATTRIBUTE_PRINTF_2;
