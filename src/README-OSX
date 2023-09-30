@@ -14,10 +14,11 @@ Attempted to merge into Apple's gdb fork by cooljeanius:
 https://github.com/cooljeanius/apple-gdb-1824
 
 Feel free to fork and submit pull requests.
-(Just beware that I will probably never respond to any of them...)
+(Just beware that distractions may prevent me from responding to any of them...)
 
 Tested on:
-* 10.15.5 (currently)
+* 11.x (currently)
+* 10.15.5 (previously)
 * 10.6.8 (previously)
 * 10.5.8 (for a while when my Snow Leopard machine was dead)
 

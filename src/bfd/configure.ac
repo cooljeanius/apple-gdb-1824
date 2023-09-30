@@ -621,10 +621,10 @@ AC_CHECK_HEADERS([ctype.h errno.h fcntl.h gettext.h iconv.h libgen.h \
                   libgettext.h libintl.h limits.h mach/mach.h \
                   mach-o/loader.h malloca.h malloc/malloc.h math.h \
                   mingw/fcntl.h mingw/malloc.h mingw/sys/types.h \
-                  realloc.h stdarg.h stddef.h stdio.h sys/acl.h \
+                  realloc.h signal.h stdarg.h stddef.h stdio.h sys/acl.h \
                   sys/core.h sys/errno.h sys/file.h sys/paccess.h \
-                  sys/param.h sys/region.h sys/resource.h sys/socket.h \
-                  sys/time.h sys/user.h sys/utsname.h time.h \
+                  sys/param.h sys/region.h sys/resource.h sys/signal.h \
+                  sys/socket.h sys/time.h sys/user.h sys/utsname.h time.h \
                   wchar.h wctype.h windef.h windows.h])dnl
 GCC_HEADER_STDINT([bfd_stdint.h],[stdint.h])dnl
 AC_HEADER_TIME
@@ -634,6 +634,19 @@ ACX_HEADER_STRING
 # This should have already been checked:
 unset ac_cv_header_malloc_h
 AC_CHECK_HEADERS([malloc.h])dnl
+
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}"
+  AC_CHECK_HEADERS([stdint.h]) # (keep autoscan happy)
+fi
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}"
+  AC_CHECK_HEADERS([strings.h]) # (keep autoscan happy)
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  AC_CHECK_HEADERS([unistd.h]) # (keep autoscan happy)
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_MSG_CHECKING([C language characteristics that your C compiler supports])
@@ -649,6 +662,8 @@ AC_MSG_RESULT([ ])
 AC_TYPE_MODE_T
 AC_TYPE_PID_T
 AC_TYPE_UID_T
+  ## TODO: also check what effect defining _POSIX_SOURCE has on this type:
+AC_CHECK_TYPES([ksigmask_t])dnl
 AC_CHECK_TYPES([ptrdiff_t])dnl
 AC_DEFUN([AC_TYPE_VARIOUS_INT_TYPES],[
   AC_REQUIRE([AC_TYPE_INT32_T])dnl
@@ -705,6 +720,11 @@ AC_FUNC_VPRINTF
 AC_SEARCH_LIBS([fcntl],[fcntl posix unix compat gcc gcc_s crt iberty c gnu])dnl
 AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu mingwex msvcrt ucrt ucrtbase])dnl
 AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu mingwex msvcrt ucrt ucrtbase])dnl
+
+if test "x${ac_cv_func_getpagesize}" = "x"; then
+  test -z "${ac_cv_func_getpagesize}"
+  AC_CHECK_FUNCS([getpagesize]) # (keep autoscan happy)
+fi
 
 # other misc. stuff:
 AC_MSG_CHECKING([stuff that we might have already checked])

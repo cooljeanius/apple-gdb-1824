@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-25 11:08-0400\n"
+"POT-Creation-Date: 2023-09-30 14:39-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1276,8 +1276,8 @@ msgstr ""
 #: elf32-frv.c:6696
 #, c-format
 msgid ""
-"%s: uses different unknown e_flags (0x%lx) fields than previous modules (0x"
-"%lx)"
+"%s: uses different unknown e_flags (0x%lx) fields than previous modules "
+"(0x%lx)"
 msgstr ""
 
 #: elf32-frv.c:6744 elf32-iq2000.c:842 elf32-m32c.c:829 elf32-ms1.c:596
@@ -1685,8 +1685,8 @@ msgstr ""
 #: elf32-nds32.c:14015
 #, c-format
 msgid ""
-"%s: warning: unaligned small data access. For entry: {%d, %d, %d}, addr = 0x"
-"%x, align = 0x%x."
+"%s: warning: unaligned small data access. For entry: {%d, %d, %d}, addr = "
+"0x%x, align = 0x%x."
 msgstr ""
 
 #: elf32-nds32.c:14047
@@ -2504,8 +2504,8 @@ msgstr ""
 
 #: elf64-ia64-vms.c:3942
 msgid ""
-"%B: missing TLS section for relocation %s against `%s' at 0x%lx in section `"
-"%A'."
+"%B: missing TLS section for relocation %s against `%s' at 0x%lx in section "
+"`%A'."
 msgstr ""
 
 #: elf64-ia64-vms.c:3957 elf32-ia64.c:4719 elf64-ia64.c:4719
@@ -2552,8 +2552,8 @@ msgstr ""
 #, c-format
 msgid ""
 "%s: Internal inconsistency error for value for\n"
-" linker-allocated global register: linked: 0x%lx%08lx != relaxed: 0x%lx"
-"%08lx\n"
+" linker-allocated global register: linked: 0x%lx%08lx != relaxed: "
+"0x%lx%08lx\n"
 msgstr ""
 
 #: elf64-mmix.c:1576
@@ -3286,8 +3286,8 @@ msgstr ""
 #: mmo.c:3153
 #, c-format
 msgid ""
-"%s: invalid start address for initialized registers of length %ld: 0x%lx"
-"%08lx\n"
+"%s: invalid start address for initialized registers of length %ld: "
+"0x%lx%08lx\n"
 msgstr ""
 
 #: oasys.c:879
