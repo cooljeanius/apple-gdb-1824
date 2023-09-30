@@ -19,7 +19,9 @@ before_script: test -e ./.profile_generic && source ./.profile_generic
 script:
   - cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib
   - make configure-bfd
+  # FIXME: these next steps are hacks. The dependency handling in the Makefiles should be fixed to do this properly instead. 
   - make -C bfd headers
+  - if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi
   - make V=0
 
 compiler:
