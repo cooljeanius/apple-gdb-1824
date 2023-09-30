@@ -18,7 +18,9 @@ before_script: test -e ./.profile_generic && source ./.profile_generic
 # try to build
 script:
   - cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib
-  - pwd
+  - make configure-bfd
+  - make -C bfd headers
+  - make V=0
 
 compiler:
   - clang
