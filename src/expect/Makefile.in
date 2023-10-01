@@ -547,7 +547,7 @@ config.status: $(srcdir)/configure
 check: expect
 	@if [ -f testsuite/Makefile ]; then \
 	   cd testsuite && $(MAKE) $(FLAGS_TO_PASS) check; \
-	else echo "skipping testsuite"; fi
+	else echo "skipping testsuite due to missing Makefile for it"; fi
 
 # Original Dbgconfig.in comes from the NIST Tcl debugger distribution.
 # CYGNUS LOCAL: Do NOT have dependancies, because people get upset
