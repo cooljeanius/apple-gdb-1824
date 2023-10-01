@@ -737,6 +737,7 @@ ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 ac_ct_F77 = @ac_ct_F77@
 ac_ct_FC = @ac_ct_FC@
+ac_cv_help2man_supports_no_discard_stderr = @ac_cv_help2man_supports_no_discard_stderr@
 aclocaldir = @aclocaldir@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@

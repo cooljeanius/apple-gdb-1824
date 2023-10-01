@@ -284,6 +284,40 @@ AC_SUBST([ORDER])dnl
 ## ------------- ##
 AM_MISSING_PROG([HELP2MAN],[help2man])dnl
 
+if test "x${HELP2MAN}" = "x"; then
+  test -z "${HELP2MAN}" && echo "error: help2man is required for documentation!" >&2
+  exit 1
+fi
+AC_CACHE_CHECK([if ${HELP2MAN} supports --no-discard-stderr],
+               [ac_cv_help2man_supports_no_discard_stderr],
+  [AC_PATH_PROGS_FEATURE_CHECK([HELP2MAN],[${HELP2MAN} help2man `which help2man`],
+    [[${ac_path_HELP2MAN} --no-discard-stderr ${ac_path_HELP2MAN} >/dev/null 2>&1 \
+      ac_cv_path_HELP2MAN=${ac_path_HELP2MAN}
+      ac_path_HELP2MAN_found=:]],
+    [AC_MSG_WARN([help2man should support the --no-discard-stderr flag])],
+    [${PATH}])dnl# end program check
+  ])dnl# end cache check
+  ## (need this extra line here)
+if test "x${ac_path_HELP2MAN_found}" = "x:" && test "x${ac_cv_help2man_supports_no_discard_stderr}" != "x"; then
+  test -n "${ac_cv_help2man_supports_no_discard_stderr}" && echo "ok, good: ${ac_cv_help2man_supports_no_discard_stderr}"
+elif test "x${ac_path_HELP2MAN_found}" != "x"; then
+  test -n "${ac_path_HELP2MAN_found}" && echo "ac_path_HELP2MAN_found is ${ac_path_HELP2MAN_found}"
+elif test "x${ac_cv_path_HELP2MAN}" != "x"; then
+  if test "x${ac_cv_help2man_supports_no_discard_stderr}" != "x"; then
+    test -n "${ac_cv_path_HELP2MAN}" && test -n "${ac_cv_help2man_supports_no_discard_stderr}" && echo "ac_cv_path_HELP2MAN is ${ac_cv_path_HELP2MAN} (${ac_cv_help2man_supports_no_discard_stderr})"
+  else
+    test -n "${ac_cv_path_HELP2MAN}" && test -z "${ac_cv_help2man_supports_no_discard_stderr}" && echo "ac_cv_path_HELP2MAN is ${ac_cv_path_HELP2MAN}"
+  fi
+elif test "x${ac_path_HELP2MAN}" != "x"; then
+  test -n "${ac_path_HELP2MAN}" && echo "ac_path_HELP2MAN is ${ac_path_HELP2MAN}"
+elif test "x${HELP2MAN}" != "x"; then
+  test -n "${HELP2MAN}" && echo "HELP2MAN is ${HELP2MAN}"
+else
+  AC_MSG_WARN([something weird happened here?])
+fi
+AC_SUBST([ac_cv_help2man_supports_no_discard_stderr])dnl
+AC_SUBST([HELP2MAN],[${ac_cv_path_HELP2MAN-${HELP2MAN-help2man}}])dnl
+
 ## -------- ##
 ## Outputs. ##
 ## -------- ##
