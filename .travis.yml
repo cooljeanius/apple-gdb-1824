@@ -10,7 +10,7 @@ before_install:
 
 install:
   # Prerequisites
-  - "sudo apt-get install autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libopts25 libopts25-dev texinfo flex flex-doc pax libcurses-perl dejagnu expect libexpect-perl guile-1.8 guile-1.8-dev guile-1.8-libs tcl-tclreadline m4 xutils-dev libgcj-common ecj-gcj gfortran gfortran-multilib gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar gcj-jre gcj-jdk autopoint gperf help2man libextutils-f77-perl"
+  - "sudo apt-get install autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libopts25 libopts25-dev texinfo flex flex-doc pax libcurses-perl dejagnu expect libexpect-perl guile-1.8 guile-1.8-dev guile-1.8-libs tcl-tclreadline m4 xutils-dev libgcj-common ecj-gcj gfortran gfortran-multilib gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar gcj-jre gcj-jdk autopoint gperf help2man libextutils-f77-perl texlive-base texlive-latex-base texlive-generic-recommended"
 
 # set up env
 before_script: test -e ./.profile_generic && source ./.profile_generic
@@ -32,9 +32,11 @@ script:
   - make all-etc
   - make all-libdecnumber
   - make all-mmalloc
+  - make all-readline
   - for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/configure; then make configure-${dir}; elif test -d ${dir}; then ls ${dir}/configure*; else echo "skipping configuring in ${dir}"; fi; done
-  - for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then make -C ${dir}; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
+  - for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then make -C ${dir}; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
   - make check-libiberty
+  - make check-readline
   - for dir in sim itcl; do if test -e ${dir}/Makefile; then make check-${dir} V=0 RUNTESTFLAGS="-v"; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
 
 compiler:
