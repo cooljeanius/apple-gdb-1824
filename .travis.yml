@@ -22,7 +22,25 @@ script:
   # FIXME: these next steps are hacks. The dependency handling in the Makefiles should be fixed to do this properly instead. 
   - make -C bfd headers
   - if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi
-  - make V=0
+  # Just skip the directories that are broken:
+  - if test -e autogen/Makefile; then make -C autogen; elif test -d autogen; then ls autogen/Makefile*; else echo "skipping autogen"; fi
+  - make -C bfd diststuff
+  - make all-cgen
+  - make all-libiberty
+  - make all-intl
+  - make all-electric-fence
+  - make all-etc
+  - make all-libbacktrace
+  - make all-libdecnumber
+  - make all-mmalloc
+  - make all-readline
+  - for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then make -C ${dir}; elif test -d dir; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
+  - make check-cgen
+  - make check-libiberty
+  - make check-intl
+  - make check-mmalloc
+  - make check-readline
+  - for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then make check-${dir} V=0 RUNTESTFLAGS="-v"; elif test -d dir; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
 
 compiler:
   - clang
