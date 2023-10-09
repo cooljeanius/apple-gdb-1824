@@ -16,6 +16,7 @@ jobs:
     - run: sudo apt-get install autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libopts25 libopts25-dev texinfo flex flex-doc binutils binutils-dev binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl guile-2.2 guile-2.2-dev guile-2.2-libs tclreadline m4 xutils-dev gfortran gfortran-multilib gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar gdb gdbserver autopoint gperf help2man libextutils-f77-perl
     - run: test -e ./.profile_generic && source ./.profile_generic
     - run: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib
+    - run: cd src && make configure-bfd
     - run: cd src && make -C bfd headers
     - run: cd src && if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi
     - run: cd src && if test -e autogen/Makefile; then make -C autogen; elif test -d autogen; then ls autogen/Makefile*; else echo "skipping autogen"; fi
