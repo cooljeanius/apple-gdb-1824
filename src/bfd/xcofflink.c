@@ -5107,26 +5107,26 @@ xcoff_write_global_symbol(struct xcoff_link_hash_entry *h, void *inf)
   outsym += bfd_coff_symesz(output_bfd);
 
   aux.x_csect.x_smclas = h->smclas;
-  bfd_coff_swap_aux_out (output_bfd, (void *) &aux, T_NULL, isym.n_sclass, 0, 1,
-			 (void *) outsym);
-  outsym += bfd_coff_auxesz (output_bfd);
+  bfd_coff_swap_aux_out(output_bfd, (void *)&aux, T_NULL, isym.n_sclass, 0, 1,
+                        (void *)outsym);
+  outsym += bfd_coff_auxesz(output_bfd);
 
   if ((h->root.type == bfd_link_hash_defined
        || h->root.type == bfd_link_hash_defweak)
       && h->smclas != XMC_XO)
     {
-      /* We just output an SD symbol.  Now output an LD symbol.  */
+      /* We just output an SD symbol.  Now output an LD symbol: */
       h->indx += 2;
 
       isym.n_sclass = C_EXT;
-      bfd_coff_swap_sym_out (output_bfd, (void *) &isym, (void *) outsym);
-      outsym += bfd_coff_symesz (output_bfd);
+      bfd_coff_swap_sym_out(output_bfd, (void *)&isym, (void *)outsym);
+      outsym += bfd_coff_symesz(output_bfd);
 
       aux.x_csect.x_smtyp = XTY_LD;
-      aux.x_csect.x_scnlen.l = obj_raw_syment_count (output_bfd);
-      bfd_coff_swap_aux_out (output_bfd, (void *) &aux, T_NULL, C_EXT, 0, 1,
-			     (void *) outsym);
-      outsym += bfd_coff_auxesz (output_bfd);
+      aux.x_csect.x_scnlen.l = (bfd_signed_vma)obj_raw_syment_count(output_bfd);
+      bfd_coff_swap_aux_out(output_bfd, (void *)&aux, T_NULL, C_EXT, 0, 1,
+                            (void *)outsym);
+      outsym += bfd_coff_auxesz(output_bfd);
     }
 
   pos = obj_sym_filepos(output_bfd);
@@ -5778,7 +5778,7 @@ _bfd_xcoff_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
       struct internal_reloc *irelend;
       struct xcoff_link_hash_entry **rel_hash;
       struct xcoff_toc_rel_hash *toc_rel_hash;
-      bfd_byte *erel;
+      bfd_byte *erel = NULL;
       bfd_size_type rel_size;
 
       /* A stripped file has no relocs.  */
@@ -5792,7 +5792,7 @@ _bfd_xcoff_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
 	continue;
 
       irel = finfo.section_info[o->target_index].relocs;
-      irelend = irel + o->reloc_count;
+      irelend = (irel + o->reloc_count);
       rel_hash = finfo.section_info[o->target_index].rel_hashes;
       for (; irel < irelend; irel++, rel_hash++, erel += relsz)
 	{

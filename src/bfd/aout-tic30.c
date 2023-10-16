@@ -1069,4 +1069,21 @@ const bfd_target tic30_aout_vec =
 # include "aout-target.h"
 #endif /* !__BFD_AOUT_TARGET_H__ && !tic30_aout_callback && !MY_final_link_callback && !MY_bfd_final_link and so on */
 
+/* for -Wunused-macros: */
+#ifdef MY_bfd_debug_info_start
+# undef MY_bfd_debug_info_start
+#endif /* MY_bfd_debug_info_start */
+#ifdef MY_bfd_debug_info_end
+# undef MY_bfd_debug_info_end
+#endif /* MY_bfd_debug_info_end */
+#ifdef MY_bfd_debug_info_accumulate
+# undef MY_bfd_debug_info_accumulate
+#endif /* MY_bfd_debug_info_accumulate */
+#ifdef TARGET_IS_BIG_ENDIAN_P
+# undef TARGET_IS_BIG_ENDIAN_P
+#endif /* TARGET_IS_BIG_ENDIAN_P */
+#ifdef MY
+# undef MY
+#endif /* MY */
+
 /* EOF */

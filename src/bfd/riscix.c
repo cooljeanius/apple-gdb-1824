@@ -243,7 +243,7 @@ riscix_fix_pcrel_26(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
       && (output_bfd != NULL))
     return bfd_reloc_continue;
 
-  relocation = ((target & 0x00ffffff) << 2);
+  relocation = ((target & 0x00ffffff) << 2UL);
   relocation = ((relocation ^ 0x02000000) - 0x02000000); /* Sign extend */
   relocation += symbol->value;
   relocation += symbol->section->output_section->vma;
@@ -377,25 +377,25 @@ riscix_swap_std_reloc_out(bfd *abfd, arelent *g,
   /* Now the fun stuff: */
   if (bfd_header_big_endian (abfd))
     {
-      natptr->r_index[0] = (r_index >> 16);
-      natptr->r_index[1] = (r_index >> 8);
+      natptr->r_index[0] = (r_index >> 16U);
+      natptr->r_index[1] = (r_index >> 8U);
       natptr->r_index[2] = r_index;
       natptr->r_type[0] =
 	((r_extern ? RELOC_STD_BITS_EXTERN_BIG : 0)
 	 | (r_pcrel ? RELOC_STD_BITS_PCREL_BIG : 0)
 	 | (r_neg ? RELOC_STD_BITS_BASEREL_BIG : 0)
-	 | (r_length <<  RELOC_STD_BITS_LENGTH_SH_BIG));
+	 | (r_length << RELOC_STD_BITS_LENGTH_SH_BIG));
     }
   else
     {
-      natptr->r_index[2] = (r_index >> 16);
-      natptr->r_index[1] = (r_index >> 8);
+      natptr->r_index[2] = (r_index >> 16U);
+      natptr->r_index[1] = (r_index >> 8U);
       natptr->r_index[0] = r_index;
       natptr->r_type[0] =
 	((r_extern ? RELOC_STD_BITS_EXTERN_LITTLE : 0)
 	 | (r_pcrel ? RELOC_STD_BITS_PCREL_LITTLE : 0)
 	 | (r_neg ? RELOC_STD_BITS_BASEREL_LITTLE : 0)
-	 | (r_length <<  RELOC_STD_BITS_LENGTH_SH_LITTLE));
+	 | (r_length << RELOC_STD_BITS_LENGTH_SH_LITTLE));
     }
 }
 

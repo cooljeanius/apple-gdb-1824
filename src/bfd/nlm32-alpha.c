@@ -39,31 +39,30 @@
    the location before the regular NLM header.  */
 
 static bfd_boolean
-nlm_alpha_backend_object_p (bfd *abfd)
+nlm_alpha_backend_object_p(bfd *abfd)
 {
   struct nlm32_alpha_external_prefix_header s;
   file_ptr size;
 
-  if (bfd_bread (&s, (bfd_size_type) sizeof s, abfd) != sizeof s)
+  if (bfd_bread(&s, (bfd_size_type)sizeof(s), abfd) != sizeof(s))
     return FALSE;
 
-  if (H_GET_32 (abfd, s.magic) != NLM32_ALPHA_MAGIC)
+  if (H_GET_32(abfd, s.magic) != NLM32_ALPHA_MAGIC)
     return FALSE;
 
   /* FIXME: Should we check the format number?  */
 
-  /* Skip to the end of the header.  */
-  size = H_GET_32 (abfd, s.size);
-  if (bfd_seek (abfd, size, SEEK_SET) != 0)
+  /* Skip to the end of the header: */
+  size = (file_ptr)H_GET_32(abfd, s.size);
+  if (bfd_seek(abfd, size, SEEK_SET) != 0)
     return FALSE;
 
   return TRUE;
 }
 
-/* Write out the prefix.  */
-
+/* Write out the prefix: */
 static bfd_boolean
-nlm_alpha_write_prefix (bfd *abfd)
+nlm_alpha_write_prefix(bfd *abfd)
 {
   struct nlm32_alpha_external_prefix_header s;
 
@@ -71,7 +70,7 @@ nlm_alpha_write_prefix (bfd *abfd)
   H_PUT_32(abfd, (bfd_vma)NLM32_ALPHA_MAGIC, s.magic);
   H_PUT_32(abfd, (bfd_vma)2UL, s.format);
   H_PUT_32(abfd, (bfd_vma)sizeof(s), s.size);
-  if (bfd_bwrite (&s, (bfd_size_type) sizeof s, abfd) != sizeof s)
+  if (bfd_bwrite(&s, (bfd_size_type) sizeof(s), abfd) != sizeof(s))
     return FALSE;
   return TRUE;
 }

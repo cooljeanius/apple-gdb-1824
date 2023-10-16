@@ -176,12 +176,12 @@ MY(put_reloc)(bfd *abfd, int r_extern, int r_index, bfd_vma value,
   int r_ns32k_type;
 
   PUT_WORD(abfd, value, reloc->r_address);
-  r_length = howto->size;	/* Size as a power of two.  */
+  r_length = (unsigned int)howto->size;	/* Size as a power of two.  */
   r_pcrel = (int)howto->pc_relative; /* Relative to PC?  */
-  r_ns32k_type = ((howto - MY(howto_table)) / 6);
+  r_ns32k_type = ((howto - MY(howto_table)) / 6U);
 
-  reloc->r_index[2] = (r_index >> 16);
-  reloc->r_index[1] = (r_index >> 8);
+  reloc->r_index[2] = (r_index >> 16U);
+  reloc->r_index[1] = (r_index >> 8U);
   reloc->r_index[0] = r_index;
   reloc->r_type[0] =
     ((r_extern ? RELOC_STD_BITS_EXTERN_LITTLE : 0)

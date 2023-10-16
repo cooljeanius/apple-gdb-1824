@@ -475,12 +475,11 @@ mmo_make_section (bfd *abfd, const char *secname)
 /* Nothing to do, but keep as a placeholder if we need it.
    Note that state that might differ between bfd:s must not be initialized
    here, nor must it be static.  Add it to tdata information instead.  */
-
 static void
-mmo_init (void)
+mmo_init(void)
 {
   static bfd_boolean inited = FALSE;
-  int i = 0;
+  size_t i = 0UL;
   int j = 0;
   static const char letters[]
     = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:_";
@@ -489,18 +488,17 @@ mmo_init (void)
     return;
   inited = TRUE;
 
-  /* Fill in the set of valid symbol characters.  */
-  strcpy (valid_mmo_symbol_character_set, letters);
-  i = strlen (letters);
+  /* Fill in the set of valid symbol characters: */
+  strcpy(valid_mmo_symbol_character_set, letters);
+  i = strlen(letters);
 
   for (j = 126; j < 256; j++)
     valid_mmo_symbol_character_set[i++] = j;
 }
 
-/* Check whether an existing file is an mmo file.  */
-
+/* Check whether an existing file is an mmo file: */
 static const bfd_target *
-mmo_object_p (bfd *abfd)
+mmo_object_p(bfd *abfd)
 {
   struct stat statbuf;
   bfd_byte b[4];
@@ -710,44 +708,40 @@ mmo_decide_section (bfd *abfd, bfd_vma vma)
   return sec;
 }
 
-/* Xor in a 64-bit value VALUE at VMA.  */
-
+/* Xor in a 64-bit value VALUE at VMA: */
 static INLINE void
-mmo_xore_64 (asection *sec, bfd_vma vma, bfd_vma value)
+mmo_xore_64(asection *sec, bfd_vma vma, bfd_vma value)
 {
-  bfd_byte *loc = mmo_get_loc (sec, vma, 8);
-  bfd_vma prev = bfd_get_64 (sec->owner, loc);
+  bfd_byte *loc = mmo_get_loc(sec, vma, 8);
+  bfd_vma prev = bfd_get_64(sec->owner, loc);
 
   value ^= prev;
-  bfd_put_64 (sec->owner, value, loc);
+  bfd_put_64(sec->owner, value, loc);
 }
 
-/* Xor in a 32-bit value VALUE at VMA.  */
-
+/* Xor in a 32-bit value VALUE at VMA: */
 static INLINE void
-mmo_xore_32 (asection *sec, bfd_vma vma, unsigned int value)
+mmo_xore_32(asection *sec, bfd_vma vma, unsigned int value)
 {
-  bfd_byte *loc = mmo_get_loc (sec, vma, 4);
-  unsigned int prev = bfd_get_32 (sec->owner, loc);
+  bfd_byte *loc = mmo_get_loc(sec, vma, 4);
+  unsigned int prev = (unsigned int)bfd_get_32(sec->owner, loc);
 
   value ^= prev;
   bfd_put_32 (sec->owner, value, loc);
 }
 
-/* Xor in a 16-bit value VALUE at VMA.  */
-
+/* Xor in a 16-bit value VALUE at VMA: */
 static INLINE void
-mmo_xore_16 (asection *sec, bfd_vma vma, unsigned int value)
+mmo_xore_16(asection *sec, bfd_vma vma, unsigned int value)
 {
-  bfd_byte *loc = mmo_get_loc (sec, vma, 2);
-  unsigned int prev = bfd_get_16 (sec->owner, loc);
+  bfd_byte *loc = mmo_get_loc(sec, vma, 2);
+  unsigned int prev = (unsigned int)bfd_get_16(sec->owner, loc);
 
   value ^= prev;
-  bfd_put_16 (sec->owner, value, loc);
+  bfd_put_16(sec->owner, value, loc);
 }
 
-/* Write a 32-bit word to output file, no lop_quote generated.  */
-
+/* Write a 32-bit word to output file, no lop_quote generated: */
 static INLINE void
 mmo_write_tetra_raw (bfd *abfd, unsigned int value)
 {

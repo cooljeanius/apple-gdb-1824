@@ -364,7 +364,7 @@ MY(canonicalize_reloc)(bfd *abfd, sec_ptr section, arelent **relptr,
   /* fix up howto entries.  */
   for (count = 0; count++ < section->reloc_count;)
     {
-      c = tblptr->howto - NAME(aout,ext_howto_table);
+      c = (unsigned int)(tblptr->howto - NAME(aout,ext_howto_table));
       tblptr->howto = &mips_howto_table_ext[c];
 
       *relptr++ = tblptr++;

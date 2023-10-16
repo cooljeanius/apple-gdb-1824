@@ -346,7 +346,9 @@ _gdbcp_cg_rollback(pid_t cpid)
 int
 _gdbcp_cg_delete(pid_t cpid)
 {
-#pragma unused (cpid)
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (cpid)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
   return 0;
 }
 

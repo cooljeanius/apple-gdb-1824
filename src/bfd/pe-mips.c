@@ -493,19 +493,20 @@ coff_mips_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
       return NULL;
     }
 
-  return & howto_table [mips_type];
+  return &howto_table[mips_type];
 }
 
+/* */
 static void
-mips_swap_reloc_in (bfd * abfd, void * src, void * dst)
+mips_swap_reloc_in(bfd *abfd, void *src, void *dst)
 {
   static struct internal_reloc pair_prev;
-  RELOC *reloc_src = (RELOC *) src;
-  struct internal_reloc *reloc_dst = (struct internal_reloc *) dst;
+  RELOC *reloc_src = (RELOC *)src;
+  struct internal_reloc *reloc_dst = (struct internal_reloc *)dst;
 
-  reloc_dst->r_vaddr = H_GET_32 (abfd, reloc_src->r_vaddr);
-  reloc_dst->r_symndx = H_GET_S32 (abfd, reloc_src->r_symndx);
-  reloc_dst->r_type = H_GET_16 (abfd, reloc_src->r_type);
+  reloc_dst->r_vaddr = H_GET_32(abfd, reloc_src->r_vaddr);
+  reloc_dst->r_symndx = H_GET_S32(abfd, reloc_src->r_symndx);
+  reloc_dst->r_type = (unsigned short)H_GET_16(abfd, reloc_src->r_type);
   reloc_dst->r_size = 0;
   reloc_dst->r_extern = 0;
   reloc_dst->r_offset = 0;
@@ -516,7 +517,7 @@ mips_swap_reloc_in (bfd * abfd, void * src, void * dst)
     pair_prev = *reloc_dst;
     break;
   case MIPS_R_PAIR:
-    reloc_dst->r_offset = reloc_dst->r_symndx;
+    reloc_dst->r_offset = (unsigned long)reloc_dst->r_symndx;
     if (reloc_dst->r_offset & 0x8000) {
       reloc_dst->r_offset -= 0x10000;
     }
@@ -527,8 +528,9 @@ mips_swap_reloc_in (bfd * abfd, void * src, void * dst)
   }
 }
 
+/* */
 static unsigned int
-mips_swap_reloc_out(bfd * abfd, void * src, void * dst)
+mips_swap_reloc_out(bfd *abfd, void *src, void *dst)
 {
   static int prev_offset = 1;
   static bfd_vma prev_addr = 0;

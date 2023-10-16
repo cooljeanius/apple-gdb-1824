@@ -200,7 +200,7 @@ oasys_canonicalize_symtab (bfd *abfd, asymbol **location)
   if (! oasys_slurp_symbol_table (abfd))
     return -1;
 
-  symbase = OASYS_DATA (abfd)->symbols;
+  symbase = OASYS_DATA(abfd)->symbols;
   for (counter = 0; counter < abfd->symcount; counter++)
     *(location++) = symbase++;
 
@@ -219,7 +219,7 @@ oasys_archive_p(bfd *abfd)
   bfd_size_type amt;
 
   amt = sizeof(header_ext);
-  if (bfd_seek(abfd, (file_ptr)0, 0) != 0
+  if (bfd_seek(abfd, (file_ptr)0L, 0) != 0
       || bfd_bread((void *)&header_ext, amt, abfd) != amt)
     {
       if (bfd_get_error() != bfd_error_system_call)
@@ -227,13 +227,13 @@ oasys_archive_p(bfd *abfd)
       return NULL;
     }
 
-  header.version = H_GET_32(abfd, header_ext.version);
-  header.mod_count = H_GET_32(abfd, header_ext.mod_count);
+  header.version = (unsigned int)H_GET_32(abfd, header_ext.version);
+  header.mod_count = (unsigned int)H_GET_32(abfd, header_ext.mod_count);
   header.mod_tbl_offset = H_GET_32(abfd, header_ext.mod_tbl_offset);
-  header.sym_tbl_size = H_GET_32(abfd, header_ext.sym_tbl_size);
-  header.sym_count = H_GET_32(abfd, header_ext.sym_count);
+  header.sym_tbl_size = (unsigned int)H_GET_32(abfd, header_ext.sym_tbl_size);
+  header.sym_count = (unsigned int)H_GET_32(abfd, header_ext.sym_count);
   header.sym_tbl_offset = H_GET_32(abfd, header_ext.sym_tbl_offset);
-  header.xref_count = H_GET_32(abfd, header_ext.xref_count);
+  header.xref_count = (unsigned int)H_GET_32(abfd, header_ext.xref_count);
   header.xref_lst_offset = H_GET_32(abfd, header_ext.xref_lst_offset);
 
   /* There is NOT a magic number in an Oasys archive, so the best we

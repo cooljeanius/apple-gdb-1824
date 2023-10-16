@@ -605,8 +605,8 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
   bfd_byte *fixup_table;
   struct linux_link_hash_entry *h;
   struct fixup *f;
-  unsigned int new_addr;
-  int section_offset;
+  bfd_vma new_addr;
+  off_t section_offset;
   unsigned int fixups_written;
 
   if (linux_hash_table(info)->dynobj == NULL)
@@ -650,21 +650,21 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
 
 #if defined(LINUX_LINK_DEBUG) && 0
       printf("Fixup(%d) %s: %x %lx\n", f->jump, f->h->root.root.string,
-	     new_addr, f->value);
+	     (unsigned int)new_addr, f->value);
 #endif /* LINUX_LINK_DEBUG && 0 */
 
       if (f->jump)
 	{
 	  /* Relative address */
-	  new_addr = (new_addr - (f->value + 5));
-	  bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
+	  new_addr = (new_addr - (f->value + 5UL));
+	  bfd_put_32(output_bfd, new_addr, fixup_table);
 	  fixup_table += 4;
 	  bfd_put_32(output_bfd, (f->value + 1), fixup_table);
 	  fixup_table += 4;
 	}
       else
 	{
-	  bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
+	  bfd_put_32(output_bfd, new_addr, fixup_table);
 	  fixup_table += 4;
 	  bfd_put_32(output_bfd, f->value, fixup_table);
 	  fixup_table += 4;
@@ -703,7 +703,7 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
 		 new_addr, f->value);
 #endif /* LINUX_LINK_DEBUG && 0 */
 
-	  bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
+	  bfd_put_32(output_bfd, new_addr, fixup_table);
 	  fixup_table += 4;
 	  bfd_put_32(output_bfd, f->value, fixup_table);
 	  fixup_table += 4;
@@ -737,10 +737,10 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
       new_addr = (h->root.root.u.def.value + section_offset);
 
 #ifdef LINUX_LINK_DEBUG
-      printf("Builtin fixup table at %x\n", new_addr);
+      printf("Builtin fixup table at %x\n", (unsigned int)new_addr);
 #endif /* LINUX_LINK_DEBUG */
 
-      bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
+      bfd_put_32(output_bfd, new_addr, fixup_table);
     }
   else
     bfd_put_32(output_bfd, (bfd_vma)0UL, fixup_table);

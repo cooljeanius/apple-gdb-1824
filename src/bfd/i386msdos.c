@@ -132,10 +132,16 @@ msdos_set_section_contents(bfd *abfd, sec_ptr section, const PTR location,
 }
 
 
-
-#define msdos_mkobject aout_32_mkobject
-#define msdos_make_empty_symbol aout_32_make_empty_symbol
-#define msdos_bfd_reloc_type_lookup aout_32_reloc_type_lookup
+/* FIXME: test proper macro here: */
+#ifdef __LP64__
+# define msdos_mkobject aout_64_mkobject
+# define msdos_make_empty_symbol aout_64_make_empty_symbol
+# define msdos_bfd_reloc_type_lookup aout_64_reloc_type_lookup
+#else
+# define msdos_mkobject aout_32_mkobject
+# define msdos_make_empty_symbol aout_32_make_empty_symbol
+# define msdos_bfd_reloc_type_lookup aout_32_reloc_type_lookup
+#endif /* __LP64__ */
 
 #define	msdos_close_and_cleanup _bfd_generic_close_and_cleanup
 #define msdos_bfd_free_cached_info _bfd_generic_bfd_free_cached_info

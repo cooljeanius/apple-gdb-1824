@@ -68,9 +68,9 @@ xtensa_isa_error_msg (xtensa_isa isa __attribute__ ((unused)))
 /* Instruction buffers.  */
 
 int
-xtensa_insnbuf_size (xtensa_isa isa)
+xtensa_insnbuf_size(xtensa_isa isa)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
   return intisa->insnbuf_size;
 }
 

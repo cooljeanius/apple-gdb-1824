@@ -843,7 +843,7 @@ record_toc(asection *toc_section, bfd_signed_vma our_toc_offset,
     abort();
   }
   t->next = 0;
-  t->offset = our_toc_offset;
+  t->offset = (int)our_toc_offset;
   t->name = name;
   t->cat = cat;
   t->addr = (toc_section->output_offset + our_toc_offset);

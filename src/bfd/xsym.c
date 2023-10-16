@@ -262,7 +262,11 @@ bfd_sym_read_header(bfd *abfd, bfd_sym_header_block *header,
     case BFD_SYM_VERSION_3_1: /* Fall through to: */
     default:
       if ((version == BFD_SYM_VERSION_3_4)
-          || (version == BFD_SYM_VERSION_3_5))
+          || (version == BFD_SYM_VERSION_3_5)
+#if defined(__clang__) && !defined(__clang_analyzer__)
+          || ((__clang__ > 1) || rand())
+#endif /* __clang__ && !__clang_analyzer__ */
+          || (version == (bfd_sym_version)6))
         {
           /* try to make '-Wunreachable-code' shut up: */
           goto hack;

@@ -38,4 +38,8 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
 #include "coff-arm.c"
 
+#ifdef PEI_ARM_C
+# undef PEI_ARM_C
+#endif /* PEI_ARM_C */
+
 /* EOF */

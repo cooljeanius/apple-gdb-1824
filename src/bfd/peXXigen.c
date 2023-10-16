@@ -88,7 +88,7 @@
 # undef AOUTSZ
 # define AOUTSZ		PEPAOUTSZ
 # define PEAOUTHDR	PEPAOUTHDR
-#endif
+#endif /* COFF_WITH_pep */
 
 /* FIXME: This file has various tests of POWERPC_LE_PE.  Those tests
    worked when the code was in peicode.h, but no longer work now that

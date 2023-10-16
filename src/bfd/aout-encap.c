@@ -658,15 +658,15 @@ const bfd_target *encap_real_callback(bfd *abfd)
   if (N_FLAGS(exec_aouthdr) & N_FLAGS_COFF_ENCAPSULATE)
     {
       struct coffheader ch;
-      int val;
+      off_t val;
       int execchan = 0;
       char *filename = NULL;
       val = lseek(execchan, -(sizeof(AOUTHDR) + sizeof(ch)), 1);
-      if (val == -1) {
+      if (val == -1L) {
 	perror_with_name(filename);
       }
       val = myread(execchan, (char *)&ch, sizeof(ch));
-      if (val < 0) {
+      if (val < 0L) {
 	  perror_with_name(filename);
       }
       text_start = ch.text_start;

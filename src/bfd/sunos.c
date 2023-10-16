@@ -241,24 +241,23 @@ sunos_read_dynamic_info(bfd *abfd)
   return TRUE;
 }
 
-/* Return the amount of memory required for the dynamic symbols.  */
-
+/* Return the amount of memory required for the dynamic symbols: */
 static long
-sunos_get_dynamic_symtab_upper_bound (bfd *abfd)
+sunos_get_dynamic_symtab_upper_bound(bfd *abfd)
 {
   struct sunos_dynamic_info *info;
 
-  if (! sunos_read_dynamic_info (abfd))
+  if (! sunos_read_dynamic_info(abfd))
     return -1;
 
-  info = (struct sunos_dynamic_info *) obj_aout_dynamic_info (abfd);
+  info = (struct sunos_dynamic_info *)obj_aout_dynamic_info(abfd);
   if (! info->valid)
     {
-      bfd_set_error (bfd_error_no_symbols);
+      bfd_set_error(bfd_error_no_symbols);
       return -1;
     }
 
-  return (info->dynsym_count + 1) * sizeof (asymbol *);
+  return ((info->dynsym_count + 1UL) * sizeof(asymbol *));
 }
 
 /* Read the external dynamic symbols: */

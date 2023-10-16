@@ -215,13 +215,40 @@ const bfd_target i386os9k_vec =
     {bfd_false, bfd_false,	/* bfd_write_contents */
      _bfd_write_archive_contents, bfd_false},
 
+    /* FIXME: test proper macro here: */
+#if defined(__LP64__)
+# if defined(BFD_JUMP_TABLE_GENERIC) && 0
+    BFD_JUMP_TABLE_GENERIC(aout_64),
+# else
+    aout_64_bfd_free_cached_info,
+# endif /* BFD_JUMP_TABLE_GENERIC */
+#else
     BFD_JUMP_TABLE_GENERIC(aout_32),
+#endif /* __LP64__ */
     BFD_JUMP_TABLE_COPY(_bfd_generic),
     BFD_JUMP_TABLE_CORE(_bfd_nocore),
     BFD_JUMP_TABLE_ARCHIVE(_bfd_archive_bsd),
+#if defined(__LP64__)
+# if defined(BFD_JUMP_TABLE_SYMBOLS) && 0
+    BFD_JUMP_TABLE_SYMBOLS(aout_64),
+# else
+    aout_64_get_symtab_upper_bound,
+# endif /* BFD_JUMP_TABLE_SYMBOLS */
+# if defined(BFD_JUMP_TABLE_RELOCS) && 0
+    BFD_JUMP_TABLE_RELOCS(aout_64),
+# else
+    aout_64_get_reloc_upper_bound,
+# endif /* BFD_JUMP_TABLE_RELOCS */
+# if defined(BFD_JUMP_TABLE_WRITE) && 0
+    BFD_JUMP_TABLE_WRITE(aout_64),
+# else
+    aout_64_set_arch_mach,
+# endif /* BFD_JUMP_TABLE_WRITE*/
+#else
     BFD_JUMP_TABLE_SYMBOLS(aout_32),
     BFD_JUMP_TABLE_RELOCS(aout_32),
     BFD_JUMP_TABLE_WRITE(aout_32),
+#endif /* __LP64__ */
     BFD_JUMP_TABLE_LINK(os9k),
     BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
 
@@ -229,5 +256,10 @@ const bfd_target i386os9k_vec =
 
     (PTR)0,
   };
+
+/* for -Wunused-macros: */
+#ifdef aout_32_close_and_cleanup
+# undef aout_32_close_and_cleanup
+#endif /* aout_32_close_and_cleanupaout_32_close_and_cleanup */
 
 /* EOF */

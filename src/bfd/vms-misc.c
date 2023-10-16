@@ -409,9 +409,9 @@ _bfd_vms_next_record (bfd * abfd)
   PRIV (rec_length) -= PRIV (rec_size);
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  vms_debug (8, "_bfd_vms_next_record: rec %p, size %d, length %d, type %d\n",
-	      PRIV (vms_rec), PRIV (rec_size), PRIV (rec_length),
-	      PRIV (rec_type));
+  vms_debug(8, "_bfd_vms_next_record: rec %p, size %d, length %d, type %d\n",
+            (void *)PRIV(vms_rec), PRIV(rec_size), PRIV(rec_length),
+            PRIV(rec_type));
 #endif
 
   return PRIV (rec_type);

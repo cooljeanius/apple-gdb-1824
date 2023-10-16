@@ -608,19 +608,19 @@ pe_ILF_make_a_section(pe_ILF_vars *vars, const char *name,
      then the entire string length, including the null byte,
      is even and so the extra, padding byte, is not needed.  */
   if (size & 1)
-    vars->data --;
+    vars->data--;
 
-  /* Create a coff_section_tdata structure for our use.  */
-  sec->used_by_bfd = (struct coff_section_tdata *) vars->data;
-  vars->data += sizeof (struct coff_section_tdata);
+  /* Create a coff_section_tdata structure for our use: */
+  sec->used_by_bfd = (struct coff_section_tdata *)vars->data;
+  vars->data += sizeof(struct coff_section_tdata);
 
-  BFD_ASSERT (vars->data <= vars->bim->buffer + vars->bim->size);
+  BFD_ASSERT(vars->data <= (vars->bim->buffer + vars->bim->size));
 
-  /* Create a symbol to refer to this section.  */
-  pe_ILF_make_a_symbol (vars, "", name, sec, BSF_LOCAL);
+  /* Create a symbol to refer to this section: */
+  pe_ILF_make_a_symbol(vars, "", name, sec, BSF_LOCAL);
 
-  /* Cache the index to the symbol in the coff_section_data structure.  */
-  coff_section_data (vars->abfd, sec)->i = vars->sym_index - 1;
+  /* Cache the index to the symbol in the coff_section_data structure: */
+  coff_section_data(vars->abfd, sec)->i = (vars->sym_index - 1);
 
   return sec;
 }
@@ -1203,6 +1203,7 @@ pe_ILF_object_p(bfd * abfd)
   return abfd->xvec;
 }
 
+/* */
 static const bfd_target *
 pe_bfd_object_p(bfd *abfd)
 {
@@ -1267,7 +1268,7 @@ pe_bfd_object_p(bfd *abfd)
   /* Here is the hack.  coff_object_p wants to read filhsz bytes to
      pick up the COFF header for PE, see "struct external_PEI_filehdr"
      in include/coff/pe.h.  We adjust so that that will work. */
-  if (bfd_seek(abfd, (file_ptr)(offset - sizeof(dos_hdr)), SEEK_SET) != 0)
+  if (bfd_seek(abfd, (offset - (file_ptr)sizeof(dos_hdr)), SEEK_SET) != 0)
     {
       if (bfd_get_error() != bfd_error_system_call)
 	bfd_set_error(bfd_error_wrong_format);

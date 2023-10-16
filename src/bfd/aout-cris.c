@@ -187,7 +187,7 @@ MY (swap_ext_reloc_out) (bfd *abfd,
   else if ((sym->flags & BSF_SECTION_SYM) == 0)
     {
       if (bfd_is_und_section (bfd_get_section (sym))
-	  /* Remember to check for weak symbols; they count as global.  */
+	  /* Remember to check for weak symbols; they count as global: */
 	  || (sym->flags & (BSF_GLOBAL | BSF_WEAK)) != 0)
 	r_extern = 1;
       else
@@ -196,7 +196,7 @@ MY (swap_ext_reloc_out) (bfd *abfd,
     }
   else
     {
-      /* Just an ordinary section.  */
+      /* Just an ordinary section: */
       r_extern = 0;
       r_index = output_section->target_index;
     }
@@ -212,66 +212,65 @@ MY (swap_ext_reloc_out) (bfd *abfd,
       bfd_set_error (bfd_error_wrong_format);
     }
 
-  /* Now the fun stuff.  */
-  natptr->r_index[2] = r_index >> 16;
-  natptr->r_index[1] = r_index >> 8;
+  /* Now the fun stuff: */
+  natptr->r_index[2] = (r_index >> 16U);
+  natptr->r_index[1] = (r_index >> 8U);
   natptr->r_index[0] = r_index;
   natptr->r_type[0] =
      (r_extern ? RELOC_EXT_BITS_EXTERN_LITTLE : 0)
       | (r_type << RELOC_EXT_BITS_TYPE_SH_LITTLE);
 
-  PUT_WORD (abfd, r_addend, natptr->r_addend);
+  PUT_WORD(abfd, r_addend, natptr->r_addend);
 }
 
-/* We need our own to assert that a normal 8, 16 or 32 reloc is input.  */
-
+/* We need our own to assert that a normal 8, 16 or 32 reloc is input: */
 static void
-MY (swap_ext_reloc_in) (bfd *abfd,
-			struct reloc_ext_external *bytes,
-			arelent *cache_ptr,
-			asymbol **symbols,
-			bfd_size_type symcount)
+MY(swap_ext_reloc_in)(bfd *abfd,
+                      struct reloc_ext_external *bytes,
+                      arelent *cache_ptr,
+                      asymbol **symbols,
+                      bfd_size_type symcount)
 {
   unsigned int r_index;
   int r_extern;
   unsigned int r_type;
   struct aoutdata *su = &(abfd->tdata.aout_data->a);
 
-  cache_ptr->address = (GET_SWORD (abfd, bytes->r_address));
+  cache_ptr->address = (GET_SWORD(abfd, bytes->r_address));
 
-  /* Now the fun stuff.  */
-  r_index =  (bytes->r_index[2] << 16)
-    | (bytes->r_index[1] << 8)
-    |  bytes->r_index[0];
+  /* Now the fun stuff: */
+  r_index = ((bytes->r_index[2] << 16U)
+             | (bytes->r_index[1] << 8U)
+             | bytes->r_index[0]);
   r_extern = (0 != (bytes->r_type[0] & RELOC_EXT_BITS_EXTERN_LITTLE));
-  r_type = ((bytes->r_type[0]) >> RELOC_EXT_BITS_TYPE_SH_LITTLE)
-    & RELOC_EXT_BITS_TYPE_LITTLE;
+  r_type = (((bytes->r_type[0]) >> RELOC_EXT_BITS_TYPE_SH_LITTLE)
+            & RELOC_EXT_BITS_TYPE_LITTLE);
 
   if (r_type > 2)
     {
-      (*_bfd_error_handler) (_("%B: Invalid relocation type imported: %d"),
-			     abfd, r_type);
+      (*_bfd_error_handler)(_("%B: Invalid relocation type imported: %d"),
+                            abfd, r_type);
 
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
     }
 
-  cache_ptr->howto =  howto_table_ext + r_type;
+  cache_ptr->howto = (howto_table_ext + r_type);
 
-  if (r_extern && r_index > symcount)
+  if (r_extern && (r_index > symcount))
     {
       (*_bfd_error_handler)
         (_("%B: Bad relocation record imported: %d"), abfd, r_index);
 
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
 
-      /* We continue, so we can catch further errors.  */
+      /* We continue, so we can catch further errors: */
       r_extern = 0;
       r_index = N_ABS;
     }
 
-  /* Magically uses r_extern, symbols etc.  Ugly, but it's what's in the
+  /* Magically uses r_extern, symbols etc.  Ugly, but it is what is in the
      default.  */
-  MOVE_ADDRESS (GET_SWORD (abfd, bytes->r_addend));
+  MOVE_ADDRESS(GET_SWORD(abfd, bytes->r_addend));
 }
 
 /* We use the same as the default, except that we also set

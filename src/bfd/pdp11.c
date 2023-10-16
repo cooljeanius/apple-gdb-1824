@@ -825,49 +825,50 @@ NAME (aout, set_arch_mach) (bfd *abfd,
 	return FALSE;
     }
 
-  obj_reloc_entry_size (abfd) = RELOC_SIZE;
+  obj_reloc_entry_size(abfd) = RELOC_SIZE;
 
-  return (*aout_backend_info(abfd)->set_sizes) (abfd);
+  return (*aout_backend_info(abfd)->set_sizes)(abfd);
 }
 
+/* */
 static void
-adjust_o_magic (bfd *abfd, struct internal_exec *execp)
+adjust_o_magic(bfd *abfd, struct internal_exec *execp)
 {
-  file_ptr pos = adata (abfd).exec_bytes_size;
+  file_ptr pos = adata(abfd).exec_bytes_size;
   bfd_vma vma = 0;
   int pad = 0;
 
-  /* Text.  */
-  obj_textsec (abfd)->filepos = pos;
-  if (! obj_textsec (abfd)->user_set_vma)
-    obj_textsec (abfd)->vma = vma;
+  /* Text: */
+  obj_textsec(abfd)->filepos = pos;
+  if (! obj_textsec(abfd)->user_set_vma)
+    obj_textsec(abfd)->vma = vma;
   else
-    vma = obj_textsec (abfd)->vma;
+    vma = obj_textsec(abfd)->vma;
 
-  pos += obj_textsec (abfd)->size;
-  vma += obj_textsec (abfd)->size;
+  pos += obj_textsec(abfd)->size;
+  vma += obj_textsec(abfd)->size;
 
-  /* Data.  */
-  if (!obj_datasec (abfd)->user_set_vma)
+  /* Data: */
+  if (!obj_datasec(abfd)->user_set_vma)
     {
-      obj_textsec (abfd)->size += pad;
+      obj_textsec(abfd)->size += pad;
       pos += pad;
       vma += pad;
-      obj_datasec (abfd)->vma = vma;
+      obj_datasec(abfd)->vma = vma;
     }
   else
-    vma = obj_datasec (abfd)->vma;
-  obj_datasec (abfd)->filepos = pos;
-  pos += obj_datasec (abfd)->size;
-  vma += obj_datasec (abfd)->size;
+    vma = obj_datasec(abfd)->vma;
+  obj_datasec(abfd)->filepos = pos;
+  pos += obj_datasec(abfd)->size;
+  vma += obj_datasec(abfd)->size;
 
-  /* BSS.  */
-  if (! obj_bsssec (abfd)->user_set_vma)
+  /* BSS: */
+  if (! obj_bsssec(abfd)->user_set_vma)
     {
-      obj_datasec (abfd)->size += pad;
+      obj_datasec(abfd)->size += pad;
       pos += pad;
       vma += pad;
-      obj_bsssec (abfd)->vma = vma;
+      obj_bsssec(abfd)->vma = vma;
     }
   else
     {
@@ -877,30 +878,31 @@ adjust_o_magic (bfd *abfd, struct internal_exec *execp)
       pad = (int)(obj_bsssec(abfd)->vma - vma);
       if (pad > 0)
 	{
-	  obj_datasec (abfd)->size += pad;
+	  obj_datasec(abfd)->size += pad;
 	  pos += pad;
 	}
     }
-  obj_bsssec (abfd)->filepos = pos;
+  obj_bsssec(abfd)->filepos = pos;
 
-  /* Fix up the exec header.  */
-  execp->a_text = obj_textsec (abfd)->size;
-  execp->a_data = obj_datasec (abfd)->size;
-  execp->a_bss  = obj_bsssec (abfd)->size;
-  N_SET_MAGIC (*execp, OMAGIC);
+  /* Fix up the exec header: */
+  execp->a_text = obj_textsec(abfd)->size;
+  execp->a_data = obj_datasec(abfd)->size;
+  execp->a_bss = obj_bsssec(abfd)->size;
+  N_SET_MAGIC(*execp, OMAGIC);
 }
 
+/* */
 static void
-adjust_z_magic (bfd *abfd, struct internal_exec *execp)
+adjust_z_magic(bfd *abfd, struct internal_exec *execp)
 {
   bfd_size_type data_pad, text_pad;
   file_ptr text_end;
   const struct aout_backend_data *abdp;
   int ztih;			/* Nonzero if text includes exec header.  */
 
-  abdp = aout_backend_info (abfd);
+  abdp = aout_backend_info(abfd);
 
-  /* Text.  */
+  /* Text: */
   ztih = (abdp != NULL
 	  && (abdp->text_includes_header
 	      || obj_aout_subformat (abfd) == q_magic_format));
@@ -910,7 +912,7 @@ adjust_z_magic (bfd *abfd, struct internal_exec *execp)
   if (! obj_textsec(abfd)->user_set_vma)
     {
       if (abdp != NULL) {
-	/* ?? Do we really need to check for relocs here?  */
+	/* ???: Do we really need to check for relocs here?  */
 	obj_textsec(abfd)->vma = ((abfd->flags & HAS_RELOC)
 				  ? 0
 				  : (ztih
@@ -918,7 +920,7 @@ adjust_z_magic (bfd *abfd, struct internal_exec *execp)
 					+ adata(abfd).exec_bytes_size)
 				     : abdp->default_text_vma));
       } else {
-	/* ?? Do we really need to check for relocs here?  */
+	/* ???: Do we really need to check for relocs here?  */
 	obj_textsec(abfd)->vma = ((abfd->flags & HAS_RELOC)
 				  ? 0 : (ztih ? adata(abfd).exec_bytes_size
 					 : 0));
@@ -938,7 +940,7 @@ adjust_z_magic (bfd *abfd, struct internal_exec *execp)
 		    & (adata (abfd).page_size - 1));
     }
 
-  /* Find start of data.  */
+  /* Find start of data: */
   if (ztih)
     {
       text_end = obj_textsec (abfd)->filepos + obj_textsec (abfd)->size;
@@ -1135,7 +1137,7 @@ NAME (aout, adjust_sizes_and_vmas) (bfd *abfd,
 	  obj_datasec(abfd)->vma, (unsigned long)obj_datasec(abfd)->size,
 	  (unsigned long)obj_datasec(abfd)->filepos,
 	  obj_bsssec(abfd)->vma, (unsigned long)obj_bsssec(abfd)->size);
-#endif
+#endif /* BFD_AOUT_DEBUG */
 
   return TRUE;
 }
@@ -1993,13 +1995,12 @@ NAME(aout, squirt_out_relocs)(bfd *abfd, asection *section)
   return TRUE;
 }
 
-/* This is stupid.  This function should be a boolean predicate.  */
-
+/* This is stupid.  This function should be a boolean predicate: */
 long
-NAME (aout, canonicalize_reloc) (bfd *abfd,
-				 sec_ptr section,
-				 arelent **relptr,
-				 asymbol **symbols)
+NAME(aout, canonicalize_reloc)(bfd *abfd,
+                               sec_ptr section,
+                               arelent **relptr,
+                               asymbol **symbols)
 {
   arelent *tblptr = section->relocation;
   unsigned int count;

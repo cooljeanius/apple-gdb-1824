@@ -98,7 +98,7 @@ bout_swap_exec_header_in (bfd *abfd,
   execp->a_talign    = bytes->e_talign[0];
   execp->a_dalign    = bytes->e_dalign[0];
   execp->a_balign    = bytes->e_balign[0];
-  execp->a_relaxable = bytes->e_relaxable[0];
+  execp->a_relaxable = (char)bytes->e_relaxable[0];
 }
 
 /* Swaps the information in an internal exec header structure into the
@@ -123,7 +123,7 @@ bout_swap_exec_header_out (bfd *abfd,
   bytes->e_talign[0] = execp->a_talign;
   bytes->e_dalign[0] = execp->a_dalign;
   bytes->e_balign[0] = execp->a_balign;
-  bytes->e_relaxable[0] = execp->a_relaxable;
+  bytes->e_relaxable[0] = (unsigned char)execp->a_relaxable;
 }
 
 /* Finish up the opening of a b.out file for reading.  Fill in all the
@@ -141,50 +141,51 @@ b_out_callback (bfd *abfd)
 		     bfd_mach_i960_core /* Default.  */
 		     );
 
-  /* The positions of the string table and symbol table.  */
-  obj_str_filepos (abfd) = N_STROFF (*execp);
-  obj_sym_filepos (abfd) = N_SYMOFF (*execp);
+  /* The positions of the string table and symbol table: */
+  obj_str_filepos(abfd) = (file_ptr)N_STROFF(*execp);
+  obj_sym_filepos(abfd) = (file_ptr)N_SYMOFF(*execp);
 
-  /* The alignments of the sections.  */
-  obj_textsec (abfd)->alignment_power = execp->a_talign;
-  obj_datasec (abfd)->alignment_power = execp->a_dalign;
-  obj_bsssec  (abfd)->alignment_power = execp->a_balign;
+  /* The alignments of the sections: */
+  obj_textsec(abfd)->alignment_power = execp->a_talign;
+  obj_datasec(abfd)->alignment_power = execp->a_dalign;
+  obj_bsssec(abfd)->alignment_power = execp->a_balign;
 
-  /* The starting addresses of the sections.  */
-  obj_textsec (abfd)->vma = execp->a_tload;
-  obj_datasec (abfd)->vma = execp->a_dload;
+  /* The starting addresses of the sections: */
+  obj_textsec(abfd)->vma = execp->a_tload;
+  obj_datasec(abfd)->vma = execp->a_dload;
 
-  obj_textsec (abfd)->lma = obj_textsec (abfd)->vma;
-  obj_datasec (abfd)->lma = obj_datasec (abfd)->vma;
+  obj_textsec(abfd)->lma = obj_textsec(abfd)->vma;
+  obj_datasec(abfd)->lma = obj_datasec(abfd)->vma;
 
-  /* And reload the sizes, since the aout module zaps them.  */
-  obj_textsec (abfd)->size = execp->a_text;
+  /* And reload the sizes, since the aout module zaps them: */
+  obj_textsec(abfd)->size = execp->a_text;
 
   /* BSS = end of data section: */
   bss_start = (unsigned long)(execp->a_dload + execp->a_data);
-  obj_bsssec (abfd)->vma = align_power (bss_start, execp->a_balign);
+  obj_bsssec(abfd)->vma = align_power(bss_start, execp->a_balign);
 
-  obj_bsssec (abfd)->lma = obj_bsssec (abfd)->vma;
+  obj_bsssec(abfd)->lma = obj_bsssec(abfd)->vma;
 
-  /* The file positions of the sections.  */
-  obj_textsec (abfd)->filepos = N_TXTOFF (*execp);
-  obj_datasec (abfd)->filepos = N_DATOFF (*execp);
+  /* The file positions of the sections: */
+  obj_textsec(abfd)->filepos = N_TXTOFF(*execp);
+  obj_datasec(abfd)->filepos = (file_ptr)N_DATOFF(*execp);
 
-  /* The file positions of the relocation info.  */
-  obj_textsec (abfd)->rel_filepos = N_TROFF (*execp);
-  obj_datasec (abfd)->rel_filepos =  N_DROFF (*execp);
+  /* The file positions of the relocation info: */
+  obj_textsec(abfd)->rel_filepos = (file_ptr)N_TROFF(*execp);
+  obj_datasec(abfd)->rel_filepos = (file_ptr)N_DROFF(*execp);
 
-  adata (abfd).page_size = 1;	/* Not applicable.  */
-  adata (abfd).segment_size = 1; /* Not applicable.  */
-  adata (abfd).exec_bytes_size = EXEC_BYTES_SIZE;
+  adata(abfd).page_size = 1;	/* Not applicable.  */
+  adata(abfd).segment_size = 1; /* Not applicable.  */
+  adata(abfd).exec_bytes_size = EXEC_BYTES_SIZE;
 
   if (execp->a_relaxable)
    abfd->flags |= BFD_IS_RELAXABLE;
   return abfd->xvec;
 }
 
+/* */
 static const bfd_target *
-b_out_object_p (bfd *abfd)
+b_out_object_p(bfd *abfd)
 {
   struct internal_exec anexec;
   struct external_exec exec_bytes;

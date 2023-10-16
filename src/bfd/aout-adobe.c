@@ -202,7 +202,7 @@ aout_adobe_object_p(bfd *abfd)
       return NULL;
   }
 
-  anexec.a_info = H_GET_32(abfd, exec_bytes.e_info);
+  anexec.a_info = (long)H_GET_32(abfd, exec_bytes.e_info);
 
   /* Normally we just compare for the magic number.
    * However, a bunch of Adobe tools are NOT fixed up yet; they generate
@@ -497,12 +497,34 @@ const bfd_target a_out_adobe_vec =
   {bfd_false, aout_adobe_write_object_contents,/* bfd_write_contents.  */
    _bfd_write_archive_contents, bfd_false},
 
+  /* FIXME: test proper macro here: */
+#if defined(__LP64__)
+# if defined(BFD_JUMP_TABLE_GENERIC) && 0
+  BFD_JUMP_TABLE_GENERIC(aout_64),
+# else
+  aout_64_bfd_free_cached_info,
+# endif /* BFD_JUMP_TABLE_GENERIC && 0 */
+#else
   BFD_JUMP_TABLE_GENERIC(aout_32),
+#endif /* __LP64__ */
   BFD_JUMP_TABLE_COPY(_bfd_generic),
   BFD_JUMP_TABLE_CORE(_bfd_nocore),
   BFD_JUMP_TABLE_ARCHIVE(_bfd_archive_bsd),
+#if defined(__LP64__)
+# if defined(BFD_JUMP_TABLE_SYMBOLS) && 0
+  BFD_JUMP_TABLE_SYMBOLS(aout_64),
+# else
+  aout_64_get_symtab_upper_bound,
+# endif /* BFD_JUMP_TABLE_SYMBOLS && 0 */
+# if defined(BFD_JUMP_TABLE_RELOCS) && 0
+  BFD_JUMP_TABLE_RELOCS(aout_64),
+# else
+  aout_64_get_reloc_upper_bound,
+# endif /* BFD_JUMP_TABLE_RELOCS && 0 */
+#else
   BFD_JUMP_TABLE_SYMBOLS(aout_32),
   BFD_JUMP_TABLE_RELOCS(aout_32),
+#endif /* __LP64__ */
   BFD_JUMP_TABLE_WRITE(aout_32),
   BFD_JUMP_TABLE_LINK(aout_32),
   BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
@@ -511,5 +533,22 @@ const bfd_target a_out_adobe_vec =
 
   NULL
 };
+
+/* silence -Wunused-macros: */
+#ifdef aout_32_bfd_make_debug_symbol
+# undef aout_32_bfd_make_debug_symbol
+#endif /* aout_32_bfd_make_debug_symbol */
+#ifdef aout_32_bfd_reloc_type_lookup
+# undef aout_32_bfd_reloc_type_lookup
+#endif /* aout_32_bfd_reloc_type_lookup */
+#ifdef aout_32_close_and_cleanup
+# undef aout_32_close_and_cleanup
+#endif /* aout_32_close_and_cleanup */
+#ifdef aout_32_get_section_contents_in_window
+# undef aout_32_get_section_contents_in_window
+#endif /* aout_32_get_section_contents_in_window */
+#ifdef aout_32_get_section_contents_in_window_with_mode
+# undef aout_32_get_section_contents_in_window_with_mode
+#endif /* aout_32_get_section_contents_in_window_with_mode */
 
 /* EOF */

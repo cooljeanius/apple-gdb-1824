@@ -215,6 +215,7 @@ typedef	struct ksigmask {	/* used in u struct */
 #   endif /* !HAVE_KSIGMASK_T */
 #  else
 #   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+/* FIXME: why exactly is this the case? */
 #    warning "ksigmask_t cannot be used if _POSIX_SOURCE is defined."
 #   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* !_POSIX_SOURCE */

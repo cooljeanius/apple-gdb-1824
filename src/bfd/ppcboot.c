@@ -205,7 +205,7 @@ ppcboot_object_p(bfd *abfd)
     return NULL;
   sec->flags = (SEC_ALLOC | SEC_LOAD | SEC_DATA | SEC_CODE | SEC_HAS_CONTENTS);
   sec->vma = 0;
-  sec->size = (bfd_size_type)(statbuf.st_size - sizeof(ppcboot_hdr_t));
+  sec->size = (bfd_size_type)((size_t)statbuf.st_size - sizeof(ppcboot_hdr_t));
   sec->filepos = sizeof(ppcboot_hdr_t);
 
   ppcboot_mkobject(abfd);

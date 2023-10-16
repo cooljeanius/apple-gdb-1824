@@ -142,7 +142,7 @@ pex64_xdata_print_uwd_codes (FILE *file, struct pex64_unwind_info *ui,
       const bfd_byte *t;
 
       t = insns[insns_count++] = &dta[i * 2];
-      switch (PEX64_UNWCODE_CODE (t[1]))
+      switch (PEX64_UNWCODE_CODE(t[1]))
 	{
 	case UWOP_PUSH_NONVOL:
 	case UWOP_ALLOC_SMALL:

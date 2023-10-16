@@ -100,9 +100,9 @@ image_dump (bfd * abfd,
 	    int offset ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (8, "image_dump from (%p, %d) to (%p)\n", ptr, size,
-		  PRIV (image_ptr));
-  _bfd_hexdump (9, ptr, size, offset);
+  _bfd_vms_debug(8, "image_dump from (%p, %d) to (%p)\n", (void *)ptr, size,
+                 (void *)PRIV(image_ptr));
+  _bfd_hexdump(9, ptr, size, offset);
 #endif
 
   if (PRIV (is_vax) && check_section (abfd, size))
@@ -235,8 +235,8 @@ static bfd_boolean
 etir_sta (bfd * abfd, int cmd, unsigned char *ptr)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (5, "etir_sta %d/%x\n", cmd, cmd);
-  _bfd_hexdump (8, ptr, 16, (int) ptr);
+  _bfd_vms_debug(5, "etir_sta %d/%x\n", cmd, cmd);
+  _bfd_hexdump(8, ptr, 16, (int)(intptr_t)ptr);
 #endif
 
   switch (cmd)
@@ -340,8 +340,8 @@ etir_sto (bfd * abfd, int cmd, unsigned char *ptr)
   int psect;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (5, "etir_sto %d/%x\n", cmd, cmd);
-  _bfd_hexdump (8, ptr, 16, (int) ptr);
+  _bfd_vms_debug(5, "etir_sto %d/%x\n", cmd, cmd);
+  _bfd_hexdump(8, ptr, 16, (int)(intptr_t)ptr);
 #endif
 
   switch (cmd)
@@ -522,8 +522,8 @@ etir_opr (bfd * abfd, int cmd, unsigned char *ptr ATTRIBUTE_UNUSED)
   long op1, op2;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (5, "etir_opr %d/%x\n", cmd, cmd);
-  _bfd_hexdump (8, ptr, 16, (int) ptr);
+  _bfd_vms_debug(5, "etir_opr %d/%x\n", cmd, cmd);
+  _bfd_hexdump(8, ptr, 16, (int)(intptr_t)ptr);
 #endif
 
   switch (cmd)
@@ -636,7 +636,7 @@ etir_ctl(bfd *abfd, int cmd, unsigned char *ptr)
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug(5, "etir_ctl %d/%x\n", cmd, cmd);
-  _bfd_hexdump(8, ptr, 16, (int)ptr);
+  _bfd_hexdump(8, ptr, 16, (int)(intptr_t)ptr);
 #endif /* VMS_DEBUG */
 
   switch (cmd)
@@ -691,8 +691,8 @@ static bfd_boolean
 etir_stc (bfd * abfd, int cmd, unsigned char *ptr ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (5, "etir_stc %d/%x\n", cmd, cmd);
-  _bfd_hexdump (8, ptr, 16, (int) ptr);
+  _bfd_vms_debug(5, "etir_stc %d/%x\n", cmd, cmd);
+  _bfd_hexdump(8, ptr, 16, (int)(intptr_t)ptr);
 #endif
 
   switch (cmd)
@@ -1539,8 +1539,8 @@ tir_cmd (bfd * abfd, unsigned char *ptr)
   int i = 0;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (4, "tir_cmd %d/%x\n", *ptr, *ptr);
-  _bfd_hexdump (8, ptr, 16, (int) ptr);
+  _bfd_vms_debug(4, "tir_cmd %d/%x\n", *ptr, *ptr);
+  _bfd_hexdump(8, ptr, 16, (int)(intptr_t)ptr);
 #endif
 
   if (*ptr & 0x80)
@@ -1596,8 +1596,8 @@ etir_cmd (bfd * abfd, int cmd, unsigned char *ptr)
   int i = 0;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (4, "etir_cmd %d/%x\n", cmd, cmd);
-  _bfd_hexdump (8, ptr, 16, (int) ptr);
+  _bfd_vms_debug(4, "etir_cmd %d/%x\n", cmd, cmd);
+  _bfd_hexdump(8, ptr, 16, (int)(intptr_t)ptr);
 #endif
 
   while (etir_table[i].mincod >= 0)
@@ -1803,8 +1803,8 @@ static void sto_imm(bfd *abfd, vms_section *sptr, bfd_vma vaddr, int my_index)
   cptr = sptr->contents;
 
   while (ssize > 0) {
-      /* Try all the rest.  */
-      size = ssize;
+      /* Try all the rest: */
+      size = (int)ssize;
 
       if (_bfd_vms_output_check(abfd, size) < 0) {
 	  /* Does NOT fit, split! */
@@ -1814,7 +1814,7 @@ static void sto_imm(bfd *abfd, vms_section *sptr, bfd_vma vaddr, int my_index)
 	  size = _bfd_vms_output_check(abfd, 0);
 	  /* More than what is left? */
 	  if (size > ssize) {
-	      size = ssize;
+	      size = (int)ssize;
 	  }
       }
 

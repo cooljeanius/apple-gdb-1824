@@ -207,43 +207,43 @@ nlm_swap_auxiliary_headers_in (bfd *abfd)
 	  nlm_extended_header(abfd)->languageID =
 	    (long)get_word(abfd, (bfd_byte *)thdr.languageID);
 	  nlm_extended_header(abfd)->messageFileOffset =
-	    get_word(abfd, (bfd_byte *)thdr.messageFileOffset);
+	    (file_ptr)get_word(abfd, (bfd_byte *)thdr.messageFileOffset);
 	  nlm_extended_header(abfd)->messageFileLength =
 	    get_word(abfd, (bfd_byte *)thdr.messageFileLength);
 	  nlm_extended_header(abfd)->messageCount =
 	    (long)get_word(abfd, (bfd_byte *)thdr.messageCount);
 	  nlm_extended_header(abfd)->helpFileOffset =
-	    get_word(abfd, (bfd_byte *)thdr.helpFileOffset);
+	    (file_ptr)get_word(abfd, (bfd_byte *)thdr.helpFileOffset);
 	  nlm_extended_header(abfd)->helpFileLength =
 	    get_word(abfd, (bfd_byte *)thdr.helpFileLength);
 	  nlm_extended_header(abfd)->RPCDataOffset =
-	    get_word(abfd, (bfd_byte *)thdr.RPCDataOffset);
+	    (file_ptr)get_word(abfd, (bfd_byte *)thdr.RPCDataOffset);
 	  nlm_extended_header(abfd)->RPCDataLength =
 	    get_word(abfd, (bfd_byte *)thdr.RPCDataLength);
 	  nlm_extended_header(abfd)->sharedCodeOffset =
-	    get_word(abfd, (bfd_byte *)thdr.sharedCodeOffset);
+	    (file_ptr)get_word(abfd, (bfd_byte *)thdr.sharedCodeOffset);
 	  nlm_extended_header(abfd)->sharedCodeLength =
 	    get_word(abfd, (bfd_byte *)thdr.sharedCodeLength);
 	  nlm_extended_header(abfd)->sharedDataOffset =
-	    get_word(abfd, (bfd_byte *)thdr.sharedDataOffset);
+	    (file_ptr)get_word(abfd, (bfd_byte *)thdr.sharedDataOffset);
 	  nlm_extended_header(abfd)->sharedDataLength =
 	    get_word(abfd, (bfd_byte *)thdr.sharedDataLength);
 	  nlm_extended_header(abfd)->sharedRelocationFixupOffset =
-	    get_word(abfd, (bfd_byte *)thdr.sharedRelocationFixupOffset);
+	    (file_ptr)get_word(abfd, (bfd_byte *)thdr.sharedRelocationFixupOffset);
 	  nlm_extended_header(abfd)->sharedRelocationFixupCount =
 	    (long)get_word(abfd,
                            (bfd_byte *)thdr.sharedRelocationFixupCount);
 	  nlm_extended_header(abfd)->sharedExternalReferenceOffset =
-	    get_word(abfd, (bfd_byte *)thdr.sharedExternalReferenceOffset);
+	    (file_ptr)get_word(abfd, (bfd_byte *)thdr.sharedExternalReferenceOffset);
 	  nlm_extended_header(abfd)->sharedExternalReferenceCount =
 	    (long)get_word(abfd,
                            (bfd_byte *)thdr.sharedExternalReferenceCount);
 	  nlm_extended_header(abfd)->sharedPublicsOffset =
-	    get_word(abfd, (bfd_byte *)thdr.sharedPublicsOffset);
+	    (file_ptr)get_word(abfd, (bfd_byte *)thdr.sharedPublicsOffset);
 	  nlm_extended_header(abfd)->sharedPublicsCount =
 	    (long)get_word(abfd, (bfd_byte *)thdr.sharedPublicsCount);
 	  nlm_extended_header(abfd)->sharedDebugRecordOffset =
-	    get_word(abfd, (bfd_byte *)thdr.sharedDebugRecordOffset);
+	    (file_ptr)get_word(abfd, (bfd_byte *)thdr.sharedDebugRecordOffset);
 	  nlm_extended_header(abfd)->sharedDebugRecordCount =
 	    (long)get_word(abfd, (bfd_byte *)thdr.sharedDebugRecordCount);
 	  nlm_extended_header(abfd)->SharedInitializationOffset =
@@ -281,53 +281,53 @@ nlm_swap_auxiliary_headers_in (bfd *abfd)
 			amt, abfd) != amt)
 	    return FALSE;
 	}
-      else if (strncmp (tempstr, "CuStHeAd", 8) == 0)
+      else if (strncmp(tempstr, "CuStHeAd", 8UL) == 0)
 	{
 	  Nlm_External_Custom_Header thdr;
 	  bfd_size_type hdrLength;
 	  file_ptr dataOffset;
 	  bfd_size_type dataLength;
 	  char dataStamp[8];
-	  void * hdr;
+	  void *hdr;
 
-	  /* Read the stamp ("CuStHeAd").  */
-	  amt = sizeof (thdr.stamp);
-	  if (bfd_bread ((void *) thdr.stamp, amt, abfd) != amt)
+	  /* Read the stamp ("CuStHeAd"): */
+	  amt = sizeof(thdr.stamp);
+	  if (bfd_bread((void *)thdr.stamp, amt, abfd) != amt)
 	    return FALSE;
-	  /* Read the length of this custom header.  */
-	  amt = sizeof (thdr.length);
-	  if (bfd_bread ((void *) thdr.length, amt, abfd) != amt)
+	  /* Read the length of this custom header: */
+	  amt = sizeof(thdr.length);
+	  if (bfd_bread((void *)thdr.length, amt, abfd) != amt)
 	    return FALSE;
-	  hdrLength = get_word (abfd, (bfd_byte *) thdr.length);
-	  /* Read further fields if we have them.  */
+	  hdrLength = get_word(abfd, (bfd_byte *)thdr.length);
+	  /* Read further fields if we have them: */
 	  if (hdrLength < NLM_TARGET_LONG_SIZE)
 	    dataOffset = 0;
 	  else
 	    {
-	      amt = sizeof (thdr.dataOffset);
-	      if (bfd_bread ((void *) thdr.dataOffset, amt, abfd) != amt)
+	      amt = sizeof(thdr.dataOffset);
+	      if (bfd_bread((void *)thdr.dataOffset, amt, abfd) != amt)
 		return FALSE;
-	      dataOffset = get_word (abfd, (bfd_byte *) thdr.dataOffset);
+	      dataOffset = (file_ptr)get_word(abfd, (bfd_byte *)thdr.dataOffset);
 	    }
-	  if (hdrLength < 2 * NLM_TARGET_LONG_SIZE)
+	  if (hdrLength < (2 * NLM_TARGET_LONG_SIZE))
 	    dataLength = 0;
 	  else
 	    {
-	      amt = sizeof (thdr.dataLength);
-	      if (bfd_bread ((void *) thdr.dataLength, amt, abfd) != amt)
+	      amt = sizeof(thdr.dataLength);
+	      if (bfd_bread((void *)thdr.dataLength, amt, abfd) != amt)
 		return FALSE;
-	      dataLength = get_word (abfd, (bfd_byte *) thdr.dataLength);
+	      dataLength = get_word(abfd, (bfd_byte *)thdr.dataLength);
 	    }
 	  if (hdrLength < 2 * NLM_TARGET_LONG_SIZE + 8)
-	    memset (dataStamp, 0, sizeof (dataStamp));
+	    memset(dataStamp, 0, sizeof(dataStamp));
 	  else
 	    {
-	      amt = sizeof (dataStamp);
-	      if (bfd_bread ((void *) dataStamp, amt, abfd) != amt)
+	      amt = sizeof(dataStamp);
+	      if (bfd_bread((void *)dataStamp, amt, abfd) != amt)
 		return FALSE;
 	    }
 
-	  /* Read the rest of the header, if any.  */
+	  /* Read the rest of the header, if any: */
 	  if (hdrLength <= 2 * NLM_TARGET_LONG_SIZE + 8)
 	    {
 	      hdr = NULL;
@@ -380,7 +380,7 @@ nlm_swap_auxiliary_headers_in (bfd *abfd)
 		 may be subsets of the NLM section, can only be found
 		 using bfd_map_over_sections.  */
 	      p = contents;
-	      pend = p + dataLength;
+	      pend = (p + dataLength);
 	      while (p < pend)
 		{
 		  char *name;
@@ -395,16 +395,16 @@ nlm_swap_auxiliary_headers_in (bfd *abfd)
 		     4 byte section data file pointer
 		     4 byte section size.  */
 
-		  name = (char *) p;
-		  l = strlen (name) + 1;
-		  l = (l + 3) &~ (size_t) 3;
+		  name = (char *)p;
+		  l = (strlen(name) + 1UL);
+		  l = ((l + 3UL) &~ (size_t)3UL);
 		  p += l;
-		  filepos = H_GET_32 (abfd, p);
+		  filepos = (file_ptr)H_GET_32(abfd, p);
 		  p += 4;
-		  size = H_GET_32 (abfd, p);
+		  size = H_GET_32(abfd, p);
 		  p += 4;
 
-		  newsec = bfd_make_section_anyway (abfd, name);
+		  newsec = bfd_make_section_anyway(abfd, name);
 		  if (newsec == NULL)
 		    return FALSE;
 		  newsec->size = size;
@@ -417,14 +417,14 @@ nlm_swap_auxiliary_headers_in (bfd *abfd)
 	    }
 	  else
 	    {
-	      memcpy (nlm_custom_header (abfd)->stamp, thdr.stamp,
-		      sizeof (thdr.stamp));
-	      nlm_custom_header (abfd)->hdrLength = hdrLength;
-	      nlm_custom_header (abfd)->dataOffset = dataOffset;
-	      nlm_custom_header (abfd)->dataLength = dataLength;
-	      memcpy (nlm_custom_header (abfd)->dataStamp, dataStamp,
-		      sizeof (dataStamp));
-	      nlm_custom_header (abfd)->hdr = hdr;
+	      memcpy(nlm_custom_header(abfd)->stamp, thdr.stamp,
+                     sizeof(thdr.stamp));
+	      nlm_custom_header(abfd)->hdrLength = hdrLength;
+	      nlm_custom_header(abfd)->dataOffset = dataOffset;
+	      nlm_custom_header(abfd)->dataLength = dataLength;
+	      memcpy(nlm_custom_header(abfd)->dataStamp, dataStamp,
+                     sizeof(dataStamp));
+	      nlm_custom_header(abfd)->hdr = hdr;
 	    }
 	}
       else
@@ -529,7 +529,7 @@ nlm_object_p (bfd *abfd)
 			   SEC_ALLOC))
     goto got_no_match;
 
-  if (!nlm_swap_auxiliary_headers_in (abfd))
+  if (!nlm_swap_auxiliary_headers_in(abfd))
     goto got_no_match;
 
   if (nlm_fixed_header (abfd)->numberOfRelocationFixups != 0
@@ -540,40 +540,39 @@ nlm_object_p (bfd *abfd)
       || nlm_fixed_header (abfd)->numberOfExternalReferences != 0)
     abfd->flags |= HAS_SYMS;
 
-  arch = nlm_architecture (abfd);
+  arch = nlm_architecture(abfd);
   if (arch != bfd_arch_unknown)
-    bfd_default_set_arch_mach (abfd, arch, (unsigned long) 0);
+    bfd_default_set_arch_mach(abfd, arch, 0UL);
 
   abfd->flags |= EXEC_P;
-  bfd_get_start_address (abfd) = nlm_fixed_header (abfd)->codeStartOffset;
+  bfd_get_start_address(abfd) = (bfd_vma)nlm_fixed_header(abfd)->codeStartOffset;
 
   return abfd->xvec;
 
 got_wrong_format_error:
-  bfd_set_error (bfd_error_wrong_format);
+  bfd_set_error(bfd_error_wrong_format);
 got_no_match:
-  nlm_tdata (abfd) = preserved_tdata;
+  nlm_tdata(abfd) = preserved_tdata;
   if (new_tdata != NULL)
-    bfd_release (abfd, new_tdata);
+    bfd_release(abfd, new_tdata);
   if (x_fxdhdr != NULL)
-    free (x_fxdhdr);
+    free(x_fxdhdr);
 
   return NULL;
 }
 
 /* Swap and write out the variable length header.  All the fields must
    exist in the NLM, and must exist in this order.  */
-
 static bfd_boolean
-nlm_swap_variable_header_out (bfd *abfd)
+nlm_swap_variable_header_out(bfd *abfd)
 {
   bfd_byte temp[NLM_TARGET_LONG_SIZE];
   bfd_size_type amt;
 
-  /* Write the description length and text members.  */
-  amt = sizeof (nlm_variable_header (abfd)->descriptionLength);
-  if (bfd_bwrite (& nlm_variable_header (abfd)->descriptionLength, amt,
-		  abfd) != amt)
+  /* Write the description length and text members: */
+  amt = sizeof(nlm_variable_header(abfd)->descriptionLength);
+  if (bfd_bwrite(&nlm_variable_header(abfd)->descriptionLength, amt,
+                 abfd) != amt)
     return FALSE;
   amt = nlm_variable_header (abfd)->descriptionLength + 1;
   if (bfd_bwrite ((void *) nlm_variable_header (abfd)->descriptionText, amt,
@@ -1365,10 +1364,10 @@ nlm_compute_section_file_positions (bfd *abfd)
      same alignment restrictions that apply to the sections in memory;
      this may not be necessary.  */
   text = 0;
-  text_low = (bfd_vma) - 1;
+  text_low = (bfd_vma)-1L;
   text_align = 0;
   data = 0;
-  data_low = (bfd_vma) - 1;
+  data_low = (bfd_vma)-1L;
   data_align = 0;
   bss = 0;
   other_align = 0;
@@ -1376,22 +1375,22 @@ nlm_compute_section_file_positions (bfd *abfd)
     {
       flagword f;
 
-      sec->size = BFD_ALIGN (sec->size, 1 << sec->alignment_power);
+      sec->size = BFD_ALIGN(sec->size, (1 << sec->alignment_power));
 
-      f = bfd_get_section_flags (abfd, sec);
+      f = bfd_get_section_flags(abfd, sec);
       if (f & SEC_CODE)
 	{
 	  text += sec->size;
-	  if (bfd_get_section_vma (abfd, sec) < text_low)
-	    text_low = bfd_get_section_vma (abfd, sec);
+	  if (bfd_get_section_vma(abfd, sec) < text_low)
+	    text_low = bfd_get_section_vma(abfd, sec);
 	  if (sec->alignment_power > text_align)
 	    text_align = sec->alignment_power;
 	}
       else if (f & SEC_DATA)
 	{
 	  data += sec->size;
-	  if (bfd_get_section_vma (abfd, sec) < data_low)
-	    data_low = bfd_get_section_vma (abfd, sec);
+	  if (bfd_get_section_vma(abfd, sec) < data_low)
+	    data_low = bfd_get_section_vma(abfd, sec);
 	  if (sec->alignment_power > data_align)
 	    data_align = sec->alignment_power;
 	}
@@ -1404,10 +1403,10 @@ nlm_compute_section_file_positions (bfd *abfd)
 	bss += sec->size;
     }
 
-  nlm_set_text_low (abfd, text_low);
-  nlm_set_data_low (abfd, data_low);
+  nlm_set_text_low(abfd, text_low);
+  nlm_set_data_low(abfd, data_low);
 
-  if (nlm_no_uninitialized_data (abfd))
+  if (nlm_no_uninitialized_data(abfd))
     {
       /* This NetWare format does not use uninitialized data.  We must
 	 increase the size of the data section.  We will never wind up
@@ -1416,23 +1415,23 @@ nlm_compute_section_file_positions (bfd *abfd)
       bss = 0;
     }
 
-  text_ptr = BFD_ALIGN (sofar, 1 << text_align);
-  data_ptr = BFD_ALIGN (text_ptr + text, 1 << data_align);
-  other_ptr = BFD_ALIGN (data_ptr + data, 1 << other_align);
+  text_ptr = BFD_ALIGN(sofar, (1 << text_align));
+  data_ptr = BFD_ALIGN((text_ptr + text), (1 << data_align));
+  other_ptr = BFD_ALIGN((data_ptr + data), (1 << other_align));
 
   /* Fill in some fields in the header for which we now have the
      information.  */
-  nlm_fixed_header (abfd)->codeImageOffset = text_ptr;
-  nlm_fixed_header (abfd)->codeImageSize = text;
-  nlm_fixed_header (abfd)->dataImageOffset = data_ptr;
-  nlm_fixed_header (abfd)->dataImageSize = data;
-  nlm_fixed_header (abfd)->uninitializedDataSize = bss;
+  nlm_fixed_header(abfd)->codeImageOffset = text_ptr;
+  nlm_fixed_header(abfd)->codeImageSize = text;
+  nlm_fixed_header(abfd)->dataImageOffset = data_ptr;
+  nlm_fixed_header(abfd)->dataImageSize = data;
+  nlm_fixed_header(abfd)->uninitializedDataSize = bss;
 
   for (sec = abfd->sections; sec != NULL; sec = sec->next)
     {
       flagword f;
 
-      f = bfd_get_section_flags (abfd, sec);
+      f = bfd_get_section_flags(abfd, sec);
 
       if (f & SEC_CODE)
 	{

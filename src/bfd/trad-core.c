@@ -99,7 +99,7 @@ trad_unix_core_file_p(bfd *abfd)
     return 0;
 #endif /* TRAD_CORE_USER_OFFSET */
 
-  val = bfd_bread((void *) &u, (bfd_size_type)sizeof(u), abfd);
+  val = (int)bfd_bread((void *)&u, (bfd_size_type)sizeof(u), abfd);
   if (val != sizeof(u))
     {
       /* Too small to be a core file: */
@@ -261,8 +261,13 @@ trad_unix_core_file_failing_command(bfd *abfd)
   if (*com)
     return com;
   else
+    (void)com;
+#else
+# if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+#  pragma unused (abfd)
+# endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
 #endif /* !NO_CORE_COMMAND */
-    return 0;
+  return 0;
 }
 
 int
@@ -271,7 +276,7 @@ trad_unix_core_file_failing_signal(bfd *ignore_abfd ATTRIBUTE_UNUSED)
 #ifdef TRAD_UNIX_CORE_FILE_FAILING_SIGNAL
   return TRAD_UNIX_CORE_FILE_FAILING_SIGNAL(ignore_abfd);
 #else
-  return -1;		/* FIXME, where is it? */
+  return -1;		/* FIXME: where is it? */
 #endif /* TRAD_UNIX_CORE_FILE_FAILING_SIGNAL */
 }
 

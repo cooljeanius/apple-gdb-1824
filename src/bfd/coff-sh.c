@@ -613,7 +613,7 @@ sh_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
 	sym_value -= 0x1000;
       insn = (unsigned long)((insn & 0xf000) | (sym_value & 0xfff));
       bfd_put_16 (abfd, (bfd_vma) insn, hit_data);
-      if (sym_value < (bfd_vma) -0x1000 || sym_value >= 0x1000)
+      if ((sym_value < (bfd_vma)-0x1000) || (sym_value >= 0x1000))
 	return bfd_reloc_overflow;
       break;
     default:
@@ -1100,23 +1100,23 @@ sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
       bfd_signed_vma voff = 0;
       bfd_boolean overflow;
 
-      /* Get the new reloc address.  */
-      nraddr = irel->r_vaddr - sec->vma;
+      /* Get the new reloc address: */
+      nraddr = (irel->r_vaddr - sec->vma);
       if ((irel->r_vaddr - sec->vma > addr
 	   && irel->r_vaddr - sec->vma < toaddr)
 	  || (irel->r_type == R_SH_ALIGN
 	      && irel->r_vaddr - sec->vma == toaddr))
-	nraddr -= count;
+	nraddr -= (bfd_vma)count;
 
       /* See if this reloc was for the bytes we have deleted, in which
 	 case we no longer care about it.  Don't delete relocs which
 	 represent addresses, though.  */
-      if (irel->r_vaddr - sec->vma >= addr
-	  && irel->r_vaddr - sec->vma < addr + count
-	  && irel->r_type != R_SH_ALIGN
-	  && irel->r_type != R_SH_CODE
-	  && irel->r_type != R_SH_DATA
-	  && irel->r_type != R_SH_LABEL)
+      if (((irel->r_vaddr - sec->vma) >= addr)
+	  && ((irel->r_vaddr - sec->vma) < (addr + count))
+	  && (irel->r_type != R_SH_ALIGN)
+	  && (irel->r_type != R_SH_CODE)
+	  && (irel->r_type != R_SH_DATA)
+	  && (irel->r_type != R_SH_LABEL))
 	irel->r_type = R_SH_UNUSED;
 
       /* If this is a PC relative reloc, see if the range it covers
@@ -1130,8 +1130,8 @@ sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
 	case R_SH_PCDISP:
 	case R_SH_PCRELIMM8BY2:
 	case R_SH_PCRELIMM8BY4:
-	  start = irel->r_vaddr - sec->vma;
-	  insn = (unsigned long)bfd_get_16(abfd, (contents + nraddr));
+	  start = (irel->r_vaddr - sec->vma);
+	  insn = (int)bfd_get_16(abfd, (contents + nraddr));
 	  break;
 	}
 
@@ -1145,7 +1145,7 @@ sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
 #ifdef COFF_WITH_PE
 	case R_SH_IMM32CE:
 	case R_SH_IMAGEBASE:
-#endif
+#endif /* COFF_WITH_PE */
 	  /* If this reloc is against a symbol defined in this
              section, and the symbol will not be adjusted below, we
              must check the addend to see it will put the value in
