@@ -43215,6 +43215,60 @@ else $as_nop
 fi
 
 printf "%s\n" "#define HAVE_DECL_STRCHR $ac_have_decl" >>confdefs.h
+ac_fn_c_check_decl "$LINENO" "strcmp" "ac_cv_have_decl_strcmp" "
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest expects <string.h> to be included.\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRING_H */
+
+"
+if test "x$ac_cv_have_decl_strcmp" = xyes
+then :
+  ac_have_decl=1
+else $as_nop
+  ac_have_decl=0
+fi
+
+printf "%s\n" "#define HAVE_DECL_STRCMP $ac_have_decl" >>confdefs.h
+ac_fn_c_check_decl "$LINENO" "strcpy" "ac_cv_have_decl_strcpy" "
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest expects <string.h> to be included.\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRING_H */
+
+"
+if test "x$ac_cv_have_decl_strcpy" = xyes
+then :
+  ac_have_decl=1
+else $as_nop
+  ac_have_decl=0
+fi
+
+printf "%s\n" "#define HAVE_DECL_STRCPY $ac_have_decl" >>confdefs.h
+ac_fn_c_check_decl "$LINENO" "strdup" "ac_cv_have_decl_strdup" "
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest expects <string.h> to be included.\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRING_H */
+
+"
+if test "x$ac_cv_have_decl_strdup" = xyes
+then :
+  ac_have_decl=1
+else $as_nop
+  ac_have_decl=0
+fi
+
+printf "%s\n" "#define HAVE_DECL_STRDUP $ac_have_decl" >>confdefs.h
 ac_fn_c_check_decl "$LINENO" "strpbrk" "ac_cv_have_decl_strpbrk" "
 #ifdef HAVE_STRING_H
 # include <string.h>
@@ -43269,6 +43323,24 @@ else $as_nop
 fi
 
 printf "%s\n" "#define HAVE_DECL_STRLCAT $ac_have_decl" >>confdefs.h
+ac_fn_c_check_decl "$LINENO" "strlen" "ac_cv_have_decl_strlen" "
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"This conftest expects <string.h> to be included.\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STRING_H */
+
+"
+if test "x$ac_cv_have_decl_strlen" = xyes
+then :
+  ac_have_decl=1
+else $as_nop
+  ac_have_decl=0
+fi
+
+printf "%s\n" "#define HAVE_DECL_STRLEN $ac_have_decl" >>confdefs.h
 
 ac_fn_c_check_decl "$LINENO" "strcasecmp" "ac_cv_have_decl_strcasecmp" "
 #ifdef HAVE_STRINGS_H

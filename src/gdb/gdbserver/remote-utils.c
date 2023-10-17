@@ -29,7 +29,9 @@
 #include "terminal.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <sys/ioctl.h>
 #include <sys/file.h>
 #include <netinet/in.h>
@@ -46,6 +48,34 @@
 #if defined(HAVE_ERRNO_H) && HAVE_ERRNO_H
 # include <errno.h>
 #endif /* HAVE_ERRNO_H */
+
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(_STRING_H_)
+# if !defined(__clang__)
+#  include_next <string.h>
+# else
+#  if !defined(HAVE_DECL_STRLEN) || !HAVE_DECL_STRLEN
+size_t strlen(const char *);
+#  endif /* !HAVE_DECL_STRLEN */
+#  if !defined(HAVE_DECL_STRCMP) || !HAVE_DECL_STRCMP
+int strcmp(const char *, const char *);
+#  endif /* !HAVE_DECL_STRCMP */
+#  if !defined(HAVE_DECL_STRCHR) || !HAVE_DECL_STRCHR
+char *strchr(const char *, int);
+#  endif /* !HAVE_DECL_STRCHR */
+#  if !defined(HAVE_DECL_STRNCPY) || !HAVE_DECL_STRNCPY
+char *strncpy(char *, const char *, size_t);
+#  endif /* !HAVE_DECL_STRNCPY */
+#  if !defined(HAVE_DECL_STRCPY) || !HAVE_DECL_STRCPY
+char *strcpy(char *, const char *);
+#  endif /* !HAVE_DECL_STRCPY */
+#  if !defined(HAVE_DECL_STRNCMP) || !HAVE_DECL_STRNCMP
+int strncmp(const char *, const char *, size_t);
+#  endif /* !HAVE_DECL_STRNCMP */
+#  if !defined(HAVE_DECL_STRDUP) || !HAVE_DECL_STRDUP
+char *strdup(const char *);
+#  endif /* !HAVE_DECL_STRDUP */
+# endif /* !__clang__ */
+#endif /* __GNUC__ && !__STRICT_ANSI__ && !_STRING_H_ */
 
 #ifndef HAVE_SOCKLEN_T
 typedef int socklen_t;

@@ -8144,6 +8144,24 @@ else $as_nop
 fi
 
 printf "%s\n" "#define HAVE_DECL_LOCALTIME_R $ac_have_decl" >>confdefs.h
+ac_fn_c_check_decl "$LINENO" "memcpy" "ac_cv_have_decl_memcpy" "$ac_includes_default"
+if test "x$ac_cv_have_decl_memcpy" = xyes
+then :
+  ac_have_decl=1
+else $as_nop
+  ac_have_decl=0
+fi
+
+printf "%s\n" "#define HAVE_DECL_MEMCPY $ac_have_decl" >>confdefs.h
+ac_fn_c_check_decl "$LINENO" "strcmp" "ac_cv_have_decl_strcmp" "$ac_includes_default"
+if test "x$ac_cv_have_decl_strcmp" = xyes
+then :
+  ac_have_decl=1
+else $as_nop
+  ac_have_decl=0
+fi
+
+printf "%s\n" "#define HAVE_DECL_STRCMP $ac_have_decl" >>confdefs.h
 ac_fn_c_check_decl "$LINENO" "strerror" "ac_cv_have_decl_strerror" "$ac_includes_default"
 if test "x$ac_cv_have_decl_strerror" = xyes
 then :
@@ -8153,6 +8171,15 @@ else $as_nop
 fi
 
 printf "%s\n" "#define HAVE_DECL_STRERROR $ac_have_decl" >>confdefs.h
+ac_fn_c_check_decl "$LINENO" "strlen" "ac_cv_have_decl_strlen" "$ac_includes_default"
+if test "x$ac_cv_have_decl_strlen" = xyes
+then :
+  ac_have_decl=1
+else $as_nop
+  ac_have_decl=0
+fi
+
+printf "%s\n" "#define HAVE_DECL_STRLEN $ac_have_decl" >>confdefs.h
 ac_fn_c_check_decl "$LINENO" "strstr" "ac_cv_have_decl_strstr" "$ac_includes_default"
 if test "x$ac_cv_have_decl_strstr" = xyes
 then :

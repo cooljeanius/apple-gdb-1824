@@ -291,8 +291,8 @@ esac
 AC_MSG_CHECKING([declarations])
 AC_MSG_RESULT([ ])
 AC_CHECK_DECLS([child_get_pagesize])dnl
-AC_CHECK_DECLS([gmtime, localtime, localtime_r])dnl
-AC_CHECK_DECLS([strerror, strstr, perror, vasprintf, vsnprintf])dnl
+AC_CHECK_DECLS([gmtime, localtime, localtime_r, memcpy])dnl
+AC_CHECK_DECLS([strcmp, strerror, strlen, strstr, perror, vasprintf, vsnprintf])dnl
 AC_CHECK_DECLS([NULL])dnl
   ## try to avoid redefinition warnings:
 if test "x${ac_cv_have_decl_basename}" = "x"; then

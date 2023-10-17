@@ -1717,7 +1717,8 @@ AC_CHECK_DECLS([atof],[],[],[
 ])dnl
 
 unset ac_cv_have_decl_strpbrk
-AC_CHECK_DECLS([strchr, strpbrk, strlcpy, strlcat],[],[],[
+AC_CHECK_DECLS([strchr, strcmp, strcpy, strdup, strpbrk, strlcpy, strlcat, strlen],
+               [],[],[
 #ifdef HAVE_STRING_H
 # include <string.h>
 #else

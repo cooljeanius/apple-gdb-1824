@@ -20,12 +20,33 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "server.h"
 #include "regdef.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(_STRING_H_)
+# if !defined(__clang__)
+#  include_next <string.h>
+# else
+#  if !defined(HAVE_DECL_STRLEN) || !HAVE_DECL_STRLEN
+size_t strlen(const char *);
+#  endif /* !HAVE_DECL_STRLEN */
+#  if !defined(HAVE_DECL_STRCMP) || !HAVE_DECL_STRCMP
+int strcmp(const char *, const char *);
+#  endif /* !HAVE_DECL_STRCMP */
+#  if !defined(HAVE_DECL_MEMCPY) || !HAVE_DECL_MEMCPY
+void *memcpy(void *, const void *, size_t);
+#  endif /* !HAVE_DECL_MEMCPY */
+# endif /* !__clang__ */
+#endif /* __GNUC__ && !__STRICT_ANSI__ && !_STRING_H_ */
 
 /* The private data for the register cache.  Note that we have one
    per inferior; this is primarily for simplicity, as the performance
