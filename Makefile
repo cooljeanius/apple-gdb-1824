@@ -884,6 +884,8 @@ build-core: configure
 	  test -n "$(MAKE)" && $(MAKE) configure; \
 	elif test -x "`which make`"; then \
 	  make configure; \
+	else \
+	  echo "unsure how to ensure that we have configure present..."; \
 	fi
 ifneq ($(NATIVE_TARGETS),)
 	$(SUBMAKE) $(patsubst %,$(OBJROOT)/%/stamp-build-core, $(NATIVE_TARGETS)) 
