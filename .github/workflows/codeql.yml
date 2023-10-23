@@ -111,7 +111,6 @@ jobs:
         make all-cgen
         make all-libiberty
         make all-intl
-        make all-electric-fence
         make all-etc
         make all-libdecnumber
         make all-mmalloc
