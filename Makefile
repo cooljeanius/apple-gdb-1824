@@ -878,7 +878,13 @@ ifneq ($(CROSS_TARGETS),)
 endif
 
 build-core: configure
-	$(SUBMAKE) configure
+	if test "x$(SUBMAKE)" != "x"; then \
+	  test -n "$(SUBMAKE)" && $(SUBMAKE) configure; \
+	elif test "x$(MAKE)" != "x"; then \
+	  test -n "$(MAKE)" && $(MAKE) configure; \
+	elif test -x "`which make`"; then \
+	  make configure; \
+	fi
 ifneq ($(NATIVE_TARGETS),)
 	$(SUBMAKE) $(patsubst %,$(OBJROOT)/%/stamp-build-core, $(NATIVE_TARGETS)) 
 endif

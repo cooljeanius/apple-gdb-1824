@@ -68,7 +68,18 @@ jobs:
         # https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
         # queries: security-extended,security-and-quality
 
-    - run: if test ! -d build; then mkdir build; else stat build; fi
+    - name: Create builddirs
+      run: |
+        if test ! -d build; then mkdir build; else stat build; fi
+        if test ! -d /home/runner/work/apple-gdb-1824/build; then \
+          if test -w /home/runner/work/apple-gdb-1824; then \
+            mkdir /home/runner/work/apple-gdb-1824/build; \
+          elif test -w /home/runner/work -o -w /home/runner -o -w /home; then \
+            mkdir -p /home/runner/work/apple-gdb-1824/build; \
+          fi; \
+        else \
+          stat /home/runner/work/apple-gdb-1824/build; \
+        fi
 
     - name: Dependencies
       if: matrix.language == 'c-cpp'
