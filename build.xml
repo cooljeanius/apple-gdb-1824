@@ -11,6 +11,7 @@
     
 <!-- configures and builds GDB -->         
     <target name="build-everything" depends="clean-gdb,configure,make-gdb">
+    	<mkdir dir="${gdb.build.dir}"/>
     </target>
     <target name="build-everything-dwarf" depends="clean-gdb-dwarf,configure-dwarf,make-gdb-dwarf">
     </target>
