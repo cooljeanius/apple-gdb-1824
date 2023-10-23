@@ -844,6 +844,28 @@ endif
 ifneq ($(CROSS_TARGETS),)
 	$(SUBMAKE) $(patsubst %,$(OBJROOT)/%/stamp-rc-configure-cross, $(CROSS_TARGETS))
 endif
+	if test ! -e configure; then \
+	  if test -e configure.sh; then \
+	    cp -v configure.sh configure; \
+	  elif test -d .git && test -x "`which git`"; then \
+	    if test -n "`git status -s configure | grep D`"; then \
+	      echo "configure appears to have been deleted; attempting to restore it..."; \
+	      git restore configure; \
+	    fi; \
+	  elif test -e $(SRCROOT)/configure; then \
+	    cp -v $(SRCROOT)/configure configure; \
+	  elif test -e $(OBJROOT)/configure; then \
+	    cp -v $(OBJROOT)/configure configure; \
+	  elif test -e $(SYMROOT)/configure; then \
+	    cp -v $(SYMROOT)/configure configure; \
+	  elif test -e $(DSTROOT)/configure; then \
+	    cp -v $(DSTROOT)/configure configure; \
+	  else \
+	    touch configure; \
+	  fi; \
+	else \
+	  stat configure; \
+	fi
 
 build-headers: configure
 	$(SUBMAKE) configure-headers
