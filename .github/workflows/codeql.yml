@@ -96,7 +96,7 @@ jobs:
       run: |
         test -e ./.profile_generic && source ./.profile_generic
         ./configure --enable-silent-rules
-        make -C libcheckpoint || make -C libcheckpoint -f Makefile_orig || make -C macsbug || make -C macsbug/gdb_plugin_support
+        make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi)
         cd src
         ./configure --disable-werror --enable-silent-rules
         make configure-bfd
