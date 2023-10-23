@@ -86,21 +86,64 @@ jobs:
       if: matrix.language == 'c-cpp'
       run: sudo apt-get -y install autopoint gobjc clang
 
-    # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
-    # If this step fails, then you should remove it and run the build manually (see below)
+    # Can try bringing back autobuild for 'c-cpp' once darling has xcrun:
     - name: Autobuild
+      if: matrix.language != 'c-cpp'
       uses: github/codeql-action/autobuild@v2
 
-    # Command-line programs to run using the OS shell.
-    # See:
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-
-    #   If the Autobuild fails above, remove it and uncomment the following three lines.
-    #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
-
-    # - run: |
-    #     echo "Run, Build Application using script"
-    #     ./location_of_script_within_repo/buildscript.sh
+    - name: Manual build
+      if: matrix.language == 'c-cpp'
+      run: |
+        test -e ./.profile_generic && source ./.profile_generic
+        cd src
+        ./configure --disable-werror --enable-silent-rules
+        make configure-bfd
+        make -C bfd headers
+        if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi
+        if test -e autogen/Makefile; then \
+          make -C autogen; \
+        elif test -d autogen; then \
+          ls autogen/Makefile*; \
+        else \
+          echo "skipping autogen"; \
+        fi
+        make -C bfd diststuff
+        make all-cgen
+        make all-libiberty
+        make all-intl
+        make all-electric-fence
+        make all-etc
+        make all-libdecnumber
+        make all-mmalloc
+        make configure-readline
+        for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do \
+          if test -e ${dir}/configure; then \
+            make configure-${dir}; \
+          elif test -d ${dir}; then \
+            ls ${dir}/configure*; \
+          else \
+            echo "skipping configuring in ${dir}"; \
+          fi; \
+        done
+        for dir in sim utils tcl expect dejagnu itcl tk libgui; do \
+          if test -e ${dir}/Makefile; then \
+            make -C ${dir}; \
+          elif test -d ${dir}; then \
+            ls ${dir}/Makefile*; \
+          else \
+            echo "skipping ${dir}"; \
+          fi; \
+        done
+        make check-libiberty
+        for dir in sim itcl; do \
+          if test -e ${dir}/Makefile; then \
+            make check-${dir} V=0 RUNTESTFLAGS="-v"; \
+          elif test -d ${dir}; \
+            then ls ${dir}/Makefile*; \
+          else \
+            echo "skipping testing ${dir}"; \
+          fi; \
+        done
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
