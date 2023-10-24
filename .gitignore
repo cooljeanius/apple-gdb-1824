@@ -3,6 +3,7 @@
 *.build
 *.cache
 *.dSYM
+*.jar
 *.la
 *.lai
 *.lo
@@ -39,3 +40,9 @@ macgdb/*
 
 # (the GitHub Desktop GUI may insert things below this line)
 .env.local
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build

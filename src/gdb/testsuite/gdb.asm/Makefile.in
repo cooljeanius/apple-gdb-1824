@@ -20,3 +20,4 @@ distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log
 	-rm -fv *-init.exp
 	-rm -frv *.log summary detail *.plog *.sum *.psum site.*
+	-rm -frv autom4te.cache || rmdir autom4te.cache

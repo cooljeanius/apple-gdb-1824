@@ -301,6 +301,9 @@ Makefile: Make-in ../config.status SRC-POTFILES BLD-POTFILES
 	  && CONFIG_FILES=$(subdir)/Makefile.in:$(subdir)/Make-in \
 	     CONFIG_HEADERS="" $(SHELL) ./config.status
 
+../config.status: ../configure
+	if test ! -e $@; then cd .. && ./configure; fi
+
 # Tell versions [3.59,3.63) of GNU make not to export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

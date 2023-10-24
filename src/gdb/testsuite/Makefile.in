@@ -194,6 +194,7 @@ clean mostlyclean:
 	-rm -fv *.dwo *.dwp
 	-rm -rfv outputs temp cache
 	-rm -f read1.so expect-read1
+	-rm -rfv *.dSYM || rmdir *.dSYM
 	if [ x"${ALL_SUBDIRS}" != x"" ]; then \
 	    for dir in ${ALL_SUBDIRS}; \
 	    do \
