@@ -17,3 +17,11 @@ updates:
     directory: "/src/zlib/contrib/dotzlib/DotZLib"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "gomod"
+    directory: "/src/gdb/testsuite/gdb.go"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/src/gdb"
+    schedule:
+      interval: "weekly"

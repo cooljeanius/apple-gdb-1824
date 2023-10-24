@@ -163,7 +163,7 @@ jobs:
         for subdir in dejagnu/testsuite/libdejagnu gdb/testsuite/gdb.apple gdb/testsuite/gdb.apple/gused gdb/testsuite/gdb.apple/ld-r gdb/testsuite/gdb.btrace gdb/testsuite/gdb.c++ gdb/testsuite/gdb.cp gdb/testsuite/gdb.gdbtk gdb/testsuite/gdb.hp  gdb/testsuite/gdb.linespec gdb/testsuite/gdb.mi gdb/testsuite/gdb.python gdb/testsuite/gdb.trace; do \
           if test -e ${subdir}/Makefile; then \
             pushd "${subdir}"; \
-            for srcfile in *.c; do \
+            for srcfile in *.cc; do \
               make "$(echo "${srcfile}" | sed "s/\.cc/.o/g")" || stat "${srcfile}"; \
             done; \
             popd; \
