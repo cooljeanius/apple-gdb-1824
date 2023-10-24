@@ -44,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby' ]
+        language: [ 'c-cpp', 'csharp', 'go', 'javascript-typescript', 'python', 'ruby' ]
         # CodeQL supports [ 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift' ]
         # Use only 'java-kotlin' to analyze code written in Java, Kotlin or both
         # Use only 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
@@ -110,12 +110,12 @@ jobs:
           echo "skipping autogen"; \
         fi
         make -C bfd diststuff
-        make all-cgen
-        make all-libiberty
-        make all-intl
-        make all-etc
-        make all-libdecnumber
-        make all-mmalloc
+        echo "make all-cgen" && time make all-cgen
+        echo "make all-libiberty" && time make all-libiberty
+        echo "make all-intl" && time make all-intl
+        echo "make all-etc" && time make all-etc
+        echo "make all-libdecnumber" && time make all-libdecnumber
+        echo "make all-mmalloc" && time make all-mmalloc
         make configure-electric-fence
         make configure-readline
         for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do \
@@ -129,7 +129,7 @@ jobs:
         done
         for dir in sim utils tcl expect dejagnu itcl tk libgui; do \
           if test -e ${dir}/Makefile; then \
-            make -C ${dir}; \
+            echo "doing make in ${dir}" && time make -C ${dir}; \
           elif test -d ${dir}; then \
             ls ${dir}/Makefile*; \
           else \
@@ -147,31 +147,36 @@ jobs:
           fi; \
         done
 
-    - name: Extra coverage build
+    - name: Extra coverage build (C)
       if: matrix.language == 'c-cpp' && success()
       run: |
         cd src
         for subdir in autogen/agen5 autogen/autoopts autogen/columns autogen/compat autogen/getdefs autogen/snprintfv autogen/xml2ag bfd bfd/doc binutils dejagnu dejagnu/contrib/bluegnu2.0.3/example/calc dejagnu/example/calc electric-fence expect expect/example expect/testsuite gdb gdb/gdbserver gdb/gnulib gdb/gnulib/import gdb/multi-ice gdb/nlm gdb/rdi-share gdb/rem-multi_old gdb/testsuite gdb/testsuite/gdb.apple gdb/testsuite/gdb.apple/debug-in-ofile gdb/testsuite/gdb.apple/gused gdb/testsuite/gdb.apple/xcode gdb/testsuite/gdb.arch gdb/testsuite/gdb.base gdb/testsuite/gdb.btrace gdb/testsuite/gdb.cell gdb/testsuite/gdb.dwarf2 gdb/testsuite/gdb.gdbtk gdb/testsuite/gdb.guile gdb/testsuite/gdb.hp gdb/testsuite/gdb.hp/gdb.aCC gdb/testsuite/gdb.hp/gdb.base-hp gdb/testsuite/gdb.hp/gdb.compat gdb/testsuite/gdb.hp/gdb.defects gdb/testsuite/gdb.linespec gdb/testsuite/gdb.mi gdb/testsuite/gdb.modula2 gdb/testsuite/gdb.multi gdb/testsuite/gdb.opt gdb/testsuite/gdb.perf gdb/testsuite/gdb.python gdb/testsuite/gdb.reverse gdb/testsuite/gdb.server gdb/testsuite/gdb.stabs gdb/testsuite/gdb.threads gdb/testsuite/gdb.trace gdb/tui intl itcl/itcl/win itcl/itk/win libbacktrace libdecnumber libgui/src libiberty libiberty/testsuite libtool_gnu/libltdl libtool_gnu/tests/cdemo libtool_gnu/tests/demo libtool_gnu/tests/depdemo libtool_gnu/tests/depdemo/l1 libtool_gnu/tests/depdemo/l2 libtool_gnu/tests/depdemo/l3 libtool_gnu/tests/depdemo/l4 libtool_gnu/tests/f77demo libtool_gnu/tests/fcdemo libtool_gnu/tests/mdemo libtool_gnu/tests/mdemo2 libtool_gnu/tests/pdemo mmalloc opcodes readline readline/examples readline/examples/rlfe.dir sim/common sim/igen sim/testsuite/common tcl/unix tcl/unix/dltest tcl/win tk/unix tk/win utils/amd-udi/mondfe utils/amd-udi/montip utils/amd-udi/udi utils/decomment.tproj utils/misc/doschk utils/relpath.tproj utils/sparclite utils/spu utils/wince zlib zlib/contrib/minizip; do \
-          if test -e ${subdir}/Makefile; then \
+          if test -e "${subdir}/Makefile"; then \
             pushd "${subdir}"; \
             for srcfile in *.c; do \
               make "$(echo "${srcfile}" | sed "s/\.c/.o/g")" || stat "${srcfile}"; \
             done; \
             popd; \
-          elif test -d ${subdir} -a -r ${subdir}/Makefile*; \
+          elif test -d "${subdir}" && test -r ${subdir}/Makefile*; \
             then ls ${subdir}/Makefile*; \
           else \
             echo "skipping attempting to build additional objfiles in ${subdir}"; \
           fi; \
         done
+
+    - name: Extra coverage build (C++)
+      if: matrix.language == 'c-cpp' && success()
+      run: |
+        cd src
         for subdir in dejagnu/testsuite/libdejagnu gdb/testsuite/gdb.apple gdb/testsuite/gdb.apple/gused gdb/testsuite/gdb.apple/ld-r gdb/testsuite/gdb.btrace gdb/testsuite/gdb.c++ gdb/testsuite/gdb.cp gdb/testsuite/gdb.gdbtk gdb/testsuite/gdb.hp  gdb/testsuite/gdb.linespec gdb/testsuite/gdb.mi gdb/testsuite/gdb.python gdb/testsuite/gdb.trace; do \
-          if test -e ${subdir}/Makefile; then \
+          if test -e "${subdir}/Makefile"; then \
             pushd "${subdir}"; \
             for srcfile in *.cc; do \
               make "$(echo "${srcfile}" | sed "s/\.cc/.o/g")" || stat "${srcfile}"; \
             done; \
             popd; \
-          elif test -d ${subdir}; \
+          elif test -d "${subdir}"; \
             then ls ${subdir}/Makefile*; \
           else \
             echo "skipping attempting to build additional objfiles in ${subdir}"; \
@@ -193,6 +198,11 @@ jobs:
           make mmallocplusplus.o || stat mmallocplusplus.cp; \
           popd; \
         fi
+
+    - name: Clang static analysis
+      if: matrix.language == 'c-cpp' && success()
+      run: |
+        cd src
         if test -x "$(which clang)"; then
           for subdir in bfd electric-fence gdb utils/misc/doschk utils/spu; do \
             if test -e ${subdir}/Makefile; then \
@@ -201,7 +211,7 @@ jobs:
                 make "$(echo "${srcfile}" | sed "s/\.c/.plist/g")" || stat "${srcfile}"; \
               done; \
               popd; \
-            elif test -d ${subdir}; \
+            elif test -d "${subdir}"; \
               then ls ${subdir}/Makefile*; \
             else \
               echo "skipping attempting to do static analysis with clang in ${subdir}"; \
