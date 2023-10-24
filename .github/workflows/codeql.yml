@@ -44,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'c-cpp', 'go', 'javascript-typescript', 'python', 'ruby' ]
+        language: [ 'c-cpp', 'csharp', 'go', 'javascript-typescript', 'python', 'ruby' ]
         # CodeQL supports [ 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift' ]
         # Use only 'java-kotlin' to analyze code written in Java, Kotlin or both
         # Use only 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
@@ -154,7 +154,7 @@ jobs:
               make "$(echo "${srcfile}" | sed "s/\.c/.o/g")" || stat "${srcfile}"; \
             done; \
             popd; \
-          elif test -d ${subdir}; \
+          elif test -d ${subdir} -a -r ${subdir}/Makefile*; \
             then ls ${subdir}/Makefile*; \
           else \
             echo "skipping attempting to build additional objfiles in ${subdir}"; \

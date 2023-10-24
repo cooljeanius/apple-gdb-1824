@@ -1,15 +1,15 @@
 #!/bin/sh
 
-if [ -x "`dirname $0`/../../../usr/local/bin/bdgdb" ]
+if [ -x "$(dirname "$0")/../../../usr/local/bin/bdgdb" ]
 then
   echo "Running bdgdb."
-  exec "`dirname $0`/../../../usr/local/bin/bdgdb" "$@"
+  exec "$(dirname "$0")/../../../usr/local/bin/bdgdb" "$@"
 fi
 
-if [ -x "`dirname $0`/../local/bin/bdgdb" ]
+if [ -x "$(dirname "$0")/../local/bin/bdgdb" ]
 then
   echo "Running bdgdb."
-  exec "`dirname $0`/../local/bin/bdgdb" "$@"
+  exec "$(dirname "$0")/../local/bin/bdgdb" "$@"
 fi
 
 host_arch=""
@@ -59,12 +59,12 @@ unset DYLD_PATHS_ROOT
 unset DYLD_IMAGE_SUFFIX
 unset DYLD_INSERT_LIBRARIES
 
-host_arch=`/usr/bin/arch 2>/dev/null` || host_arch=""
+host_arch=$(/usr/bin/arch 2>/dev/null) || host_arch=""
 
-if [ "$host_arch" == "arm" ]
+if [ "${host_arch}" = "arm" ]
 then
   host_arch=armv7            # default to armv7
-  host_cpusubtype=`sysctl hw.cpusubtype | awk '{ print $NF }'` || host_cputype=""
+  host_cpusubtype=$(sysctl hw.cpusubtype | awk '{ print $NF }') || host_cputype=""
   case "$host_cpusubtype" in
     6) host_arch="armv6" ;;
     7) host_arch="armv5" ;;
@@ -72,7 +72,7 @@ then
     10) host_arch="armv7f" ;;
     11) host_arch="armv7s" ;;
     12) host_arch="armv7k" ;;
-    *) echo warning: unrecognized host cpusubtype ${host_cpusubtype}, defaulting to host==armv7. >&2 ;;
+    *) echo "warning: unrecognized host cpusubtype ${host_cpusubtype}, defaulting to host==armv7." >&2 ;;
   esac
 elif [ -z "$host_arch" ]
 then
@@ -82,24 +82,23 @@ fi
 
 # Not sure if this helps anything in particular - gdb should pick the
 # x86_64 arch by default when available and the hardware supports it.
-# And it might cause issues with some of our older branches so I'll
-# leave it commented out for the moment.
-#
-#if [ $host_arch = i386 ]
-#then
-#  x86_64_p=`sysctl -n hw.optional.x86_64 2>/dev/null`
-#  if [ -n "$x86_64_p" -a "$x86_64_p" = "1" ]
-#  then
-#    host_arch=x86_64
-#  fi
-#fi
+# And it might cause issues with some of our older branches, so I shall
+# leave it stuck in an unreachable condition for the moment.
+if false; then
+  if [ "${host_arch}" = "i386" ]; then
+    x86_64_p=$(sysctl -n hw.optional.x86_64 2>/dev/null)
+    if [ -n "$x86_64_p" -a "$x86_64_p" = "1" ]; then
+      host_arch=x86_64
+    fi
+  fi
+fi
 
 case "$1" in
  --help)
     echo "  -arch x86_64|arm|armv6|armv7||armv7f|armv7s|i386         Specify a gdb targetting a specific architecture" >&2
     ;;
   -arch=* | -a=* | --arch=*)
-    requested_arch=`echo "$1" | sed 's,^[^=]*=,,'`
+    requested_arch=$(echo "$1" | sed 's,^[^=]*=,,')
     shift;;
   -arch | -a | --arch)
     shift
@@ -120,7 +119,7 @@ then
     i386 | x86_64 | arm*)
      ;;
     *)
-      echo "Unrecognized architecture \'$requested_arch\', using host arch." >&2
+      printf "Unrecognized architecture \'%s\', using host arch.\n" "${requested_arch}" >&2
       requested_arch=""
       ;;
   esac
@@ -145,7 +144,7 @@ do
     *)
       # Call file to determine the file type of the argument
       [ ! -f "$arg" ] && continue
-      file_result=`file "$arg"`
+      file_result=$(file "$arg")
       case "$file_result" in
         *\ Mach-O\ core\ *|*\ Mach-O\ 64-bit\ core\ *)
           core_file=$arg
@@ -165,7 +164,7 @@ do
 done
 if [ -n "$core_file" ]
 then
-  core_file_tmp=`file "$core_file" 2>/dev/null | tail -1`
+  core_file_tmp=$(file "$core_file" 2>/dev/null | tail -1)
 fi
 if [ -n "$core_file" -a -n "$core_file_tmp" ]
 then
@@ -175,25 +174,25 @@ then
   then
     file_archs=x86_64
   else
-    file_archs=`echo "$core_file_tmp" | awk '{print $NF}'`
+    file_archs=$(echo "$core_file_tmp" | awk '{print $NF}')
   fi
 else
   if [ -n "$exec_file" ]
   then
-    file_archs=`file "$exec_file" | grep -v universal | awk '{ print $NF }'`
+    file_archs=$(file "$exec_file" | grep -v universal | awk '{ print $NF }')
     # file(1) says "arm" instead of specifying WHICH arm architecture -
     # lipo -info can provide specifics.
     if echo "$file_archs" | grep 'arm' >/dev/null
     then
-      if lipo -info "$exec_file" | egrep "^Architectures in the fat file|^Non-fat file" >/dev/null
+      if lipo -info "$exec_file" | grep -E "^Architectures in the fat file|^Non-fat file" >/dev/null
       then
-        lipo_archs=`lipo -info "$exec_file" |
-                    sed -e 's,^Archi.* are: ,,' -e 's,^Non-fat.*ture: ,,' |
-                    sed 's,(cputype (12) cpusubtype (11)),armv7s,' |
-                    sed 's,cputype 12 cpusubtype 11,armv7s,' |
-                    tr  ' ' '\n' | grep arm`
+        lipo_archs=$(lipo -info "$exec_file" |
+                     sed -e 's,^Archi.* are: ,,' -e 's,^Non-fat.*ture: ,,' |
+                     sed 's,(cputype (12) cpusubtype (11)),armv7s,' |
+                     sed 's,cputype 12 cpusubtype 11,armv7s,' |
+                     tr  ' ' '\n' | grep arm)
         file_archs="$file_archs $lipo_archs"
-        file_archs=`echo $file_archs | tr ' ' '\n' | sort | uniq | grep -v '^arm$'`
+        file_archs=$(echo "${file_archs}" | tr ' ' '\n' | sort | uniq | grep -v '^arm$')
       fi
     fi
   fi
@@ -208,12 +207,12 @@ then
 # invoked us with '-arch arm' and there is only one arm fork present in
 # the file, replace the user's arch spec with the correct one.
 
-  if [ $requested_arch = arm ]
+  if [ "${requested_arch}" = "arm" ]
   then
-    file_arm_archs=`echo $file_archs | tr ' ' '\n' |grep arm`
+    file_arm_archs=$(echo "${file_archs}" | tr ' ' '\n' |grep arm)
     if [ -n "$file_arm_archs" ]
     then
-      arm_arch_count=`echo "$file_arm_archs" | wc -w`
+      arm_arch_count=$(echo "$file_arm_archs" | wc -w)
       if [ "$arm_arch_count" -eq 1 ]
       then
         architecture_to_use=$file_arm_archs
@@ -303,10 +302,10 @@ then
   gdb_bin="$0"
   if [ -L "$gdb_bin" ]
   then
-    gdb_bin=`readlink "$gdb_bin"`
+    gdb_bin=$(readlink "$gdb_bin")
   fi
-  gdb_bin_dirname=`dirname "$gdb_bin"`
-  GDB_ROOT=`cd "$gdb_bin_dirname"/../.. ; pwd`
+  gdb_bin_dirname=$(dirname "$gdb_bin")
+  GDB_ROOT=$(cd "$gdb_bin_dirname"/../.. && pwd)
   if [ "$GDB_ROOT" = "/" ]
       then
         GDB_ROOT=
@@ -369,7 +368,7 @@ fi
 
 if [ -n "$osabiopts" ]
 then
-  exec $translate_binary "$gdb" $osabiopts "$@"
+  exec $translate_binary "$gdb" "$osabiopts" "$@"
 fi
 
 if [ -n "$requested_arch" ]

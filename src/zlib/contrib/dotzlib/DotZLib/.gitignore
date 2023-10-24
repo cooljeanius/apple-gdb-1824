@@ -4,3 +4,4 @@ test-results/*
 *.dll
 *.mdb
 *.test-cache
+obj/*

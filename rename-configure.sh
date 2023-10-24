@@ -5,7 +5,7 @@
 # (or if that is even possible)
 set -e
 
-echo "=== entering $(basename `pwd`) (`pwd`)"
+echo "=== entering $(basename "$(pwd)") ($(pwd))"
 
 if [ -e ./configure ]; then
 	echo "Actually renaming the configure script now..."
