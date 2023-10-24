@@ -3,3 +3,4 @@
 */tktest
 Icon?
 Icon\r
+unix/conf*/*.awk

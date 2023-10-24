@@ -63,13 +63,17 @@ m4_ifdef([AM_MAINTAINER_MODE],[
                 [AS_HELP_STRING([--enable-maintainer-mode],
                                 [enable rules only needed by maintainers])],
                 [],[enable_maintainer_mode=no])
-  if test "x$enable_maintainer_mode" = xno; then
+  if test "x${enable_maintainer_mode}" = "xno"; then
     MAINT='#'
   else
     MAINT=''
   fi
   AC_SUBST([MAINT])dnl
 ])dnl
+
+export IN_MAINT_MODE="${enable_maintainer_mode}"
+AC_SUBST([IN_MAINT_MODE])dnl
+
 m4_ifdef([AM_SANITY_CHECK],[
   test -e "."
   if test -e "Makefile"; then
@@ -178,7 +182,7 @@ ACX_PROG_CC_WARNING_OPTS([-Wtraditional-conversion -Wnested-externs \
 
 # Checks for library functions.
 AM_GNU_GETTEXT([external],[need-ngettext])dnl
-AM_GNU_GETTEXT_VERSION([0.19.4])dnl
+AM_GNU_GETTEXT_VERSION([0.21.1])dnl
 AC_SUBST([GT_YES],['#'])dnl
 AC_SUBST([GT_NO])dnl
 AC_DEFUN([AC_GETTEXT_SUBCHECKS],[

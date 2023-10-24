@@ -41,7 +41,7 @@ MKDEP = gcc -MM
 PATH_TO_MOVEIFCHANGE = $(srcdir)/../move-if-change
 RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
 
-SUBDIRS = doc po
+SUBDIRS = doc @MAINT@ po
 
 bfddocdir = doc
 

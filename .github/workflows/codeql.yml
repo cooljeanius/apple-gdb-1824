@@ -115,7 +115,7 @@ jobs:
         echo "make all-intl" && (time make all-intl) && echo "done making all-intl"
         echo "make all-etc" && (time make all-etc) && echo "done making all-etc"
         echo "make all-libdecnumber" && (time make all-libdecnumber) && echo "done making all-libdecnumber"
-        echo "make all-mmalloc" && (time make all-mmalloc) && "echo done making all-mmalloc"
+        echo "make all-mmalloc" && (time make all-mmalloc) && echo "done making all-mmalloc"
         make configure-electric-fence
         make configure-readline
         for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do \

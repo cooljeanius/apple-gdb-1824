@@ -14,8 +14,8 @@
 m4_ifndef([AC_CONFIG_MACRO_DIRS], [m4_defun([_AM_CONFIG_MACRO_DIRS], [])m4_defun([AC_CONFIG_MACRO_DIRS], [_AM_CONFIG_MACRO_DIRS($@)])])
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
-m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.70],,
-[m4_warning([this file was generated for autoconf 2.70.
+m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.71],,
+[m4_warning([this file was generated for autoconf 2.71.
 You have another version of autoconf.  It may work, but is not guaranteed to.
 If you have problems, you may need to regenerate the build system entirely.
 To do so, use the procedure documented by the package, typically 'autoreconf'.])])
@@ -1293,6 +1293,7 @@ m4_include([m4/fcntl-o.m4])
 m4_include([m4/gettext.m4])
 m4_include([m4/glibc2.m4])
 m4_include([m4/glibc21.m4])
+m4_include([m4/host-cpu-c-abi.m4])
 m4_include([m4/iconv.m4])
 m4_include([m4/intdiv0.m4])
 m4_include([m4/intlmacosx.m4])

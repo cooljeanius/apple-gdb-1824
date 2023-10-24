@@ -1,3 +1,12 @@
+2023-10-24  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.21.1.
+	* Rules-quot: Upgrade to gettext-0.21.1.
+	* en@boldquot.header: Upgrade to gettext-0.21.1.
+	* en@quot.header: Upgrade to gettext-0.21.1.
+	* insert-header.sin: Upgrade to gettext-0.21.1.
+	* remove-potcdate.sin: Upgrade to gettext-0.21.1.
+
 2013-09-24  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* Makefile.in.in: New file, from gettext-0.18.3.

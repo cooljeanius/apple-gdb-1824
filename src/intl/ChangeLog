@@ -1,3 +1,17 @@
+2023-10-24  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* m4/gettext.m4: Upgrade to gettext-0.21.1.
+	* m4/host-cpu-c-abi.m4: New file, from gettext-0.21.1.
+	* m4/iconv.m4: Upgrade to gettext-0.21.1.
+	* m4/intlmacosx.m4: Upgrade to gettext-0.21.1.
+	* m4/lib-ld.m4: Upgrade to gettext-0.21.1.
+	* m4/lib-link.m4: Upgrade to gettext-0.21.1.
+	* m4/lib-prefix.m4: Upgrade to gettext-0.21.1.
+	* m4/nls.m4: Upgrade to gettext-0.21.1.
+	* m4/po.m4: Upgrade to gettext-0.21.1.
+	* m4/progtest.m4: Upgrade to gettext-0.21.1.
+	* configure.ac (AM_GNU_GETTEXT_VERSION): Bump to 0.21.1.
+
 2014-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
 	* Try to choose whether this is 0.12.1 or 0.19.2 or something else.
 

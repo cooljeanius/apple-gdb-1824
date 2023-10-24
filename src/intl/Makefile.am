@@ -19,7 +19,7 @@ ACLOCAL_AMFLAGS = -I m4 --install
 
 AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu
 
-SUBDIRS = . po
+SUBDIRS = . @MAINT@ po
 
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
@@ -307,6 +307,7 @@ mostlyclean-local: @MAINT@ config.status
 
 clean-local: mostlyclean-local @MAINT@ config.status
 	rm -f $(AM_V_v) *.s *.i *.bc
+	-if test ! -e po/Makefile; then $(MAKE) po/Makefile; fi
 .PHONY: clean-local
 
 distclean-local: clean-local @MAINT@ config.status
@@ -315,10 +316,14 @@ distclean-local: clean-local @MAINT@ config.status
 	  if test -e po; then ./config.status po/Makevars; fi \
 	fi
 	rm -f config.log config.intl config.h @MAINT@ libintl.h
-	rm -f $(AM_V_v) Makefile ID TAGS @MAINT@ *.status
+	rm -f Makefile ID TAGS @MAINT@ stamp-h1
+	if test ! -d po && (test -z $(SUBDIRS) || (test "x$(SUBDIRS)" != "xpo" && test "x$(SUBDIRS)" != "x. po")); then \
+	  test "x${IN_MAINT_MODE}" != "xyes" && rm -f $(AM_V_v) *.status; \
+	fi
 	rm -f $(AM_V_v) *.output Makefile*orig *~ m4/*~ po/*~
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 	-rm -f .DS_Store
+	-if test ! -e po/Makefile; then $(MAKE) po/Makefile; fi
 .PHONY: distclean-local
 
 maintainer-clean-local: distclean-local @MAINT@ config.status
