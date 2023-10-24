@@ -12,13 +12,13 @@
 /* The normal alignment of `void *', in bytes. */
 #undef ALIGNOF_VOID_P
 
-/* Define to 1 if using `alloca.c'. */
+/* Define to 1 if using 'alloca.c'. */
 #undef C_ALLOCA
 
 /* Define to 1 if `TIOCGWINSZ' requires <sys/ioctl.h>. */
 #undef GWINSZ_IN_SYS_IOCTL
 
-/* Define to 1 if you have `alloca', as a function or macro. */
+/* Define to 1 if you have 'alloca', as a function or macro. */
 #undef HAVE_ALLOCA
 
 /* Define to 1 if <alloca.h> works. */
@@ -77,6 +77,10 @@
    don't. */
 #undef HAVE_DECL_LOCALTIME_R
 
+/* Define to 1 if you have the declaration of `memcpy', and to 0 if you don't.
+   */
+#undef HAVE_DECL_MEMCPY
+
 /* Define to 1 if you have the declaration of `NULL', and to 0 if you don't.
    */
 #undef HAVE_DECL_NULL
@@ -89,9 +93,17 @@
    don't. */
 #undef HAVE_DECL_SNPRINTF
 
+/* Define to 1 if you have the declaration of `strcmp', and to 0 if you don't.
+   */
+#undef HAVE_DECL_STRCMP
+
 /* Define to 1 if you have the declaration of `strerror', and to 0 if you
    don't. */
 #undef HAVE_DECL_STRERROR
+
+/* Define to 1 if you have the declaration of `strlen', and to 0 if you don't.
+   */
+#undef HAVE_DECL_STRLEN
 
 /* Define to 1 if you have the declaration of `strstr', and to 0 if you don't.
    */

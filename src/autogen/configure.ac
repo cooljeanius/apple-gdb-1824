@@ -92,6 +92,8 @@ AM_WITH_DMALLOC
 # ----------------------------------------------------------------------
 # check for various programs used during the build.
 # ----------------------------------------------------------------------
+AC_MSG_CHECKING([programs])
+AC_MSG_RESULT([ ])
 AM_PROG_CC_C_O
 AC_PROG_CC_STDC
 AC_PROG_CXX
@@ -106,6 +108,8 @@ AC_C_INLINE
 # ----------------------------------------------------------------------
 # check for various libraries
 # ----------------------------------------------------------------------
+AC_MSG_CHECKING([libraries])
+AC_MSG_RESULT([ ])
 dnl# libtool already checks dlopen, so use a different symbol here:
 AC_CHECK_LIB([dl],[dlsym])dnl
 dnl# libiconv symbol prefixing can vary:
@@ -123,6 +127,8 @@ dnl# gmp, guile, ltdl, pthread
 # ----------------------------------------------------------------------
 # Checks for header files.
 # ----------------------------------------------------------------------
+AC_MSG_CHECKING([headers])
+AC_MSG_RESULT([ ])
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
   AC_REQUIRE([AC_HEADER_STDC])dnl
 ])dnl
@@ -137,6 +143,8 @@ dnl# (might need an extra section for keeping autoscan happy)
 # ----------------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.
 # ----------------------------------------------------------------------
+AC_MSG_CHECKING([typedefs, structures, and compiler characteristics])
+AC_MSG_RESULT([ ])
 AC_C_BIGENDIAN
 AC_C_PROTOTYPES
 AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
@@ -208,6 +216,8 @@ AC_CHECK_ALIGNOF([short])dnl
 # ----------------------------------------------------------------------
 # Checks for library functions.
 # ----------------------------------------------------------------------
+AC_MSG_CHECKING([functions])
+AC_MSG_RESULT([ ])
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_MALLOC
 AC_FUNC_MEMCMP
@@ -249,6 +259,8 @@ AC_SEARCH_LIBS([modfl],[m],
 # ----------------------------------------------------------------------
 # Gettext
 # ----------------------------------------------------------------------
+AC_MSG_CHECKING([gettext])
+AC_MSG_RESULT([ ])
 AM_GNU_GETTEXT([external])dnl
 AM_GNU_GETTEXT_VERSION([0.19.2])dnl
 
@@ -266,6 +278,8 @@ AC_SUBST([DYNAMIC_AG])dnl
 # ----------------------------------------------------------------------
 # Do all our own macros
 # ----------------------------------------------------------------------
+AC_MSG_CHECKING([some autogen-specific things])
+AC_MSG_RESULT([ ])
 # might need to unset some variables out here instead of in the macro
 # itself because of how "AC_REQUIRE" works:
 unset ac_cv_prog_ranlib

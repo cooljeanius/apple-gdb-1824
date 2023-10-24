@@ -86,6 +86,7 @@ distclean-local: clean-local
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 	-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
 	-rm -f config.h.in~
+	-if test -d .deps; then (rm -rf $(AM_V_v) .deps || rmdir .deps); fi
 .PHONY: distclean-local
 
 EXTRA_DIST = Remote_Makefile

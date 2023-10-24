@@ -649,6 +649,7 @@ mostlyclean-local: mostlyclean-generic
 distclean-local:
 	rm -rf autom4te.cache || rmdir autom4te.cache
 	if test -e config.h.in~; then rm -f config.h.in~; fi
+	-if test -d .deps; then (rm -rf .deps || rmdir .deps); fi
 	-rm -rf import/.deps || rmdir import/.deps
 	-rm -rf import/uniwidth/.deps || rmdir import/uniwidth/.deps
 	-if test -L fnmatch.h; then unlink fnmatch.h; fi

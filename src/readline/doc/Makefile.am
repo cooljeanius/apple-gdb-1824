@@ -94,7 +94,7 @@ all: info dvi html ps text
 nodvi: info html text
 
 readline.dvi: $(RLSRC)
-	TEXINPUTS=.:$(TEXINPUTDIR):$$TEXINPUTS $(TEXI2DVI) $(srcdir)/rlman.texinfo
+	(TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rlman.texinfo )|| (TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/old/readline.texinfo)
 	mv rlman.dvi readline.dvi
 
 readline.info: $(RLSRC)
@@ -107,7 +107,7 @@ rluserman.info: $(RLSRC)
 	$(MAKEINFO) --no-split -I $(TEXINPUTDIR) -o $@ $(srcdir)/rluserman.texinfo
 
 history.dvi: ${HISTSRC}
-	TEXINPUTS=.:$(TEXINPUTDIR):$$TEXINPUTS $(TEXI2DVI) $(srcdir)/hist.texinfo
+	(TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/hist.texinfo) || (TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/old/history.texinfo)
 	mv hist.dvi history.dvi
 
 history.info: ${HISTSRC}
@@ -165,7 +165,7 @@ clean-local:
 mostlyclean-local: clean-local
 
 distclean-local: clean-local maybe-clean
-	$(RM) $(INTERMEDIATE_OBJ)
+	@MAINT@$(RM) $(INTERMEDIATE_OBJ)
 
 maybe-clean:
 	-if test "X$(topdir)" != "X$(BUILD_DIR)"; then \

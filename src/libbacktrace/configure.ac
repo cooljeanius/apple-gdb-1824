@@ -35,7 +35,7 @@ dnl# This is a hack because autoconf finds the AC\_INIT from
 dnl# ../config/override.m4 first if it is present, which is annoying.
 dnl# Feel free to re-define to whichever version of autoconf
 dnl# that you are using:
-m4_define([_GCC_AUTOCONF_VERSION],[2.70])
+m4_define([_GCC_AUTOCONF_VERSION],[2.71])
 AC_INIT([libbacktrace],[version-unused],[],[libbacktrace])
 AC_CONFIG_SRCDIR([backtrace.h])dnl
 AC_CONFIG_AUX_DIR([..])dnl

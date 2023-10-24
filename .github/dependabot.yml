@@ -9,3 +9,11 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+  - package-ecosystem: "maven"
+    directory: "/src/zlib/contrib/java/jzlib-1.1.2"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "nuget"
+    directory: "/src/zlib/contrib/dotzlib/DotZLib"
+    schedule:
+      interval: "weekly"

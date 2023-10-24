@@ -154,6 +154,7 @@ distclean maintainer-clean realclean:
 		else "nothing to be done for $@"; fi; \
 	done
 	rm -f Makefile config.cache config.log config.status
+	-rm -rf autom4te.cache || rmdir autom4te.cache
 
 install:
 	@rootme=`pwd` ; export rootme ; \

@@ -21,7 +21,7 @@ dnl# Process this file with autoconf264 to generate a configuration script.
 
 AC_PREREQ([2.64])
 dnl# override.m4 is annoying; feel free to adjust this number as necessary:
-m4_define([_GCC_AUTOCONF_VERSION],[2.70])
+m4_define([_GCC_AUTOCONF_VERSION],[2.71])
 AC_INIT([libdecnumber],[0.0.1],[gcc-bugs@gcc.gnu.org],[libdecnumber])
 AC_CONFIG_AUX_DIR([..])dnl
 AC_CONFIG_SRCDIR([decNumber.h])dnl

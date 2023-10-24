@@ -339,6 +339,7 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = 1.11.6 no-dependencies foreign
 ACLOCAL_AMFLAGS = -I ../../libltdl/m4
 AM_CPPFLAGS = -I$(top_srcdir)/../.. -I$(top_srcdir)/../../libltdl
+DISTCLEANFILES = *~
 
 # Create a version of mdemo2 that links a library that does dlopen.
 mdemo2_SOURCES = main.c
@@ -732,6 +733,7 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"

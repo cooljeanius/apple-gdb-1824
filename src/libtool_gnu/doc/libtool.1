@@ -320,7 +320,7 @@ When reporting a bug, please describe a test case to reproduce it and
 include the following information:
 .TP
 host\-triplet:
-x86_64\-apple\-darwin20.3.0
+x86_64\-apple\-darwin20.6.0
 .TP
 shell:
 \fI\,/bin/sh\/\fP
@@ -329,10 +329,10 @@ compiler:
 gcc
 .TP
 compiler flags:
-\fB\-g\fR \fB\-O2\fR \fB\-arch\fR x86_64
+\fB\-g\fR \fB\-O2\fR  \fB\-arch\fR x86_64 \fB\-arch\fR x86_64
 .TP
 linker:
-\fI\,/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld\/\fP (gnu? no)
+\fI\,/opt/local/bin/ld\/\fP (gnu? no)
 .TP
 libtool:
 (GNU libtool) 2.4.2

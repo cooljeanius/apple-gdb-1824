@@ -570,7 +570,7 @@ INSTALLED_HEADERS = readline.h chardefs.h keymaps.h history.h tilde.h \
 ##########################################################################
 TARGETS = @STATIC_TARGET@ @SHARED_TARGET@
 INSTALL_TARGETS = @STATIC_INSTALL_TARGET@ @SHARED_INSTALL_TARGET@
-CLEANFILES = *~
+CLEANFILES = *~ m4/*~
 DISTCLEANFILES = .DS_Store stamp-h
 NSLIBTOOL = cc -dynamiclib
 SYSTEM_FRAMEWORK = -framework System -lcurses

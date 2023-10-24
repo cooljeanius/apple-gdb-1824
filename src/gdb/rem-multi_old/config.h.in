@@ -47,14 +47,14 @@
 /* Define to 0 on a little endian system */
 #undef BITS_BIG_ENDIAN
 
-/* Define to 1 if using `alloca.c'. */
+/* Define to 1 if using 'alloca.c'. */
 #undef C_ALLOCA
 
 /* Define to the type of elements in the array set by `getgroups'. Usually
    this is either `int' or `gid_t'. */
 #undef GETGROUPS_T
 
-/* Define to 1 if you have `alloca', as a function or macro. */
+/* Define to 1 if you have 'alloca', as a function or macro. */
 #undef HAVE_ALLOCA
 
 /* Define to 1 if <alloca.h> works. */

@@ -25,8 +25,9 @@
 AUTOMAKE_OPTIONS = 1.11.6 no-dependencies foreign
 ## cannot use '--install'; that will trash our local (newer) copies of
 ## libtool.m4 and friends:
-ACLOCAL_AMFLAGS  = -I ../../libltdl/m4
-AM_CPPFLAGS	 = -I$(top_srcdir)/../..
+ACLOCAL_AMFLAGS = -I ../../libltdl/m4
+AM_CPPFLAGS = -I$(top_srcdir)/../..
+DISTCLEANFILES = *~
 
 noinst_LTLIBRARIES = libfoo.la
 

@@ -84,6 +84,7 @@ gcc/libgcc
 gcc/stmp-dirs
 gdb-fake-dist-root/*
 intl/po2tbl.sed
+lex.yy.c
 libiberty/*-list
 libiberty/lib*.a
 libiberty/stamp*

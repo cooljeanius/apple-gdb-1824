@@ -585,6 +585,8 @@ clean: cleanhelp
 distclean: clean
 	$(RM) Makefile config.status config.cache config.log tclConfig.sh \
 		tcl.hpj
+	-$(RM) -rf autom4te.cache || rmdir autom4te.cache
+	-$(RM) -fv *~
 
 #
 # Regenerate the stubs files.

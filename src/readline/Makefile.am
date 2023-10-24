@@ -340,7 +340,7 @@ maintainer-clean-local: distclean-local
 	if test -e Makefile_orig; then $(RM) Makefile_orig; \
 	elif test -e Makefile.in; then $(RM) Makefile.in; fi
 
-CLEANFILES = *~
+CLEANFILES = *~ m4/*~
 DISTCLEANFILES = .DS_Store stamp-h
 
 info dvi: doc/Makefile

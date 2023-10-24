@@ -4,6 +4,7 @@
 AUTOMAKE_OPTIONS = 1.4 foreign no-dist
 ## "cygnus" == "foreign no-dist"
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
+DISTCLEANFILES = *~
 
 updir=$(srcdir)/..
 vpath % $(updir)/generic:$(updir)/unix
@@ -93,4 +94,7 @@ TCL_PACKAGE_PATH = @TCL_PACKAGE_PATH@
 
 AM_CPPFLAGS = -I$(updir)/generic
 AM_CFLAGS = -DTCL_LIBRARY='"$(TCL_LIBRARY)"' -DTCL_PACKAGE_PATH='"$(TCL_PACKAGE_PATH)"'
+
+distclean-local:
+	-rm -rf autom4te.cache || rmdir autom4te.cache
 

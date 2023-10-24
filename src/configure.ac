@@ -38,7 +38,7 @@ dnl# This is a hack because autoconf finds the AC\_INIT from
 dnl# config/override.m4 first if it is present.
 dnl# Feel free to re-define to whichever version of autoconf
 dnl# that you are using:
-m4_define([_GCC_AUTOCONF_VERSION],[2.70])
+m4_define([_GCC_AUTOCONF_VERSION],[2.71])
 dnl# OK, now that we have that out of the way, we can actually get started:
 AC_INIT([apple-gdb-src],[1824],[gclayton@apple.com])
 dnl# bug report address is email address of last person to touch this
@@ -918,6 +918,8 @@ if test "x${want64}" = "xtrue"; then
   enable_64_bit_bfd=yes
 fi
 
+AC_CHECK_LIB([guile],[scm_display])dnl
+
 case "${target}" in
   *-*-chorusos)
     noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
@@ -955,11 +957,12 @@ case "${target}" in
     fi
 # building zlib from this level can mess it up; build it manually instead:
     if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o"; then
+      ## FIXME: come up with a proper fix instead?
       noconfigdirs="${noconfigdirs} zlib"
     fi
 # autogen support in this tree is still tentative, so disable if guile is
-# not also present in this tree:
-    if test ! -d guile; then
+# not also present:
+    if test ! -d guile && (test -z "$(which guile)" || test "x${ac_cv_lib_guile_scm_display}" != "xyes"); then
       noconfigdirs="${noconfigdirs} build-autogen autogen"
     fi
 # I also do not know about a lot of the rest of these:
@@ -1019,8 +1022,8 @@ case "${target}" in
       noconfigdirs="${noconfigdirs} zlib"
     fi
 # autogen support in this tree is still tentative, so disable if guile is
-# not also present in this tree:
-    if test ! -d guile; then
+# not also present:
+    if test ! -d guile && (test -z "$(which guile)" || test "x${ac_cv_lib_guile_scm_display}" != "xyes"); then
       noconfigdirs="${noconfigdirs} build-autogen autogen"
     fi
 # also steal some stuff from the Intel Linux section below:

@@ -602,6 +602,7 @@ clean: cleanhelp
 
 distclean: clean
 	$(RM) Makefile config.status config.cache config.log tkConfig.sh
+	-$(RM) -rf autom4te.cache || rmdir autom4te.cache
 
 Makefile: $(SRC_DIR)/Makefile.in
 	./config.status

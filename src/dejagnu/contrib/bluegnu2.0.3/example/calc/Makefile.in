@@ -101,6 +101,7 @@ distclean maintainer-clean realclean: clean
 	-rm -f calc.h calc.h.in~ calc.log calc.plog calc.psum
 	-rm -f calc.sum site.exp .DS_Store testsuite/.DS_Store
 	-rm -fr autom4te.cache || rmdir autom4te.cache
+	-rm -fr *.dSYM || rmdir *.dSYM
 .PHONY: distclean maintainer-clean realclean
 
 Makefile: $(srcdir)/Makefile.in $(host_makefile_frag) config.status

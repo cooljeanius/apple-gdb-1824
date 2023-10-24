@@ -30,3 +30,6 @@ CLEANFILES = *~ *.o .DS_Store testsuite/.DS_Store
 
 clean-local:
 	-rm -rf *.dSYM || rmdir *.dSYM
+
+distclean-local:
+	-rm -rf autom4te.cache || rmdir autom4te.cache

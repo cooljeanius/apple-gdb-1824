@@ -175,4 +175,7 @@ sim-test: sim-test.scm cgen-stest.scm @MAINT@ $(ARCHFILE)
 CLEANFILES = tmp-*
 DISTCLEANFILES = stamp-cgen
 
+distclean-local:
+	-rm -rf autom4te.cache || rmdir autom4te.cache
+
 ## is that all?

@@ -45,6 +45,7 @@ pdf-local:
 ## introduced:
 distclean-local:
 	rm -rfv autom4te.cache || rmdir autom4te.cache
+	-if test -d .deps; then (rm -rf .deps || rmdir .deps); fi
 	$(am__post_remove_distdir)
 
 dist-hook:

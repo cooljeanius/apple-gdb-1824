@@ -57,3 +57,4 @@ CLEANFILES = *~ autoscan.log .DS_Store
 
 distclean-local:
 	rm -rf autom4te.cache || rmdir autom4te.cache
+	-if test -d .deps; then (rm -rf .deps || rmdir .deps); fi

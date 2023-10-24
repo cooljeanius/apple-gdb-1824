@@ -6,7 +6,7 @@ dnl# This is a hack because autoconf finds the AC\_INIT from
 dnl# ../config/override.m4 first if it is present, which is annoying.
 dnl# Feel free to re-define to whichever version of autoconf
 dnl# that you are using:
-m4_define([_GCC_AUTOCONF_VERSION],[2.69])
+m4_define([_GCC_AUTOCONF_VERSION],[2.71])
 AC_INIT([zlib],[1.2.8],[jloup@gzip.org])
 AC_CONFIG_SRCDIR([adler32.c])
 AC_CONFIG_HEADERS([config.h])

@@ -20,4 +20,5 @@ clean-local: Makefile
 .PHONY: clean-local
 
 distclean-local: $(top_srcdir)/config.status clean-local
+	-if test -d .deps; then (rm -rf .deps || rmdir .deps); fi
 .PHONY: distclean-local

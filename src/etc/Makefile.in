@@ -145,7 +145,8 @@ clean:
 mostlyclean: clean
 
 distclean:   clean
-	rm -f Makefile config.status config.cache
+	rm -f Makefile config.status config.cache *~
+	-rm -rf autom4te.cache || rmdir autom4te.cache
 
 maintainer-clean realclean:   distclean
 	rm -f *.info*
