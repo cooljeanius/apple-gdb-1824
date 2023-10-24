@@ -301,8 +301,24 @@ Makefile: Make-in ../config.status SRC-POTFILES BLD-POTFILES
 	  && CONFIG_FILES=$(subdir)/Makefile.in:$(subdir)/Make-in \
 	     CONFIG_HEADERS="" $(SHELL) ./config.status
 
-../config.status: ../configure
-	if test ! -e $@; then cd .. && ./configure; fi
+../config.status: @MAINT@ ../configure
+	if test ! -e $@; then \
+	  if test -e $(top_srcdir)/config.status; then \
+	    cp -v $(top_srcdir)/config.status $@; \
+	  elif test -e $(top_builddir)/config.status; then \
+	    cp -v $(top_builddir)/config.status $@; \
+	  elif test -d ../../../.git && test -x "`which git`"; then \
+	    if test -n "`git status -s $@ | grep D`"; then \
+	      git restore $@; \
+	    else \
+	      git status $@ || stat $@; \
+	    fi; \
+	  elif test -x ../configure; then \
+	    cd .. && ./configure; \
+	  fi; \
+	else \
+	  touch $@; \
+	fi
 
 # Tell versions [3.59,3.63) of GNU make not to export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -14,3 +14,5 @@ clean mostlyclean:
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log config.h
+	-rm -fv *~
+	-rm -rfv autom4te.cache || rmdir autom4te.cache

@@ -110,12 +110,12 @@ jobs:
           echo "skipping autogen"; \
         fi
         make -C bfd diststuff
-        echo "make all-cgen" && time make all-cgen
-        echo "make all-libiberty" && time make all-libiberty
-        echo "make all-intl" && time make all-intl
-        echo "make all-etc" && time make all-etc
-        echo "make all-libdecnumber" && time make all-libdecnumber
-        echo "make all-mmalloc" && time make all-mmalloc
+        echo "make all-cgen" && (time make all-cgen) && echo "done making all-cgen"
+        echo "make all-libiberty" && (time make -j"$(nproc)" all-libiberty) && echo "done making all-libiberty"
+        echo "make all-intl" && (time make all-intl) && echo "done making all-intl"
+        echo "make all-etc" && (time make all-etc) && echo "done making all-etc"
+        echo "make all-libdecnumber" && (time make all-libdecnumber) && echo "done making all-libdecnumber"
+        echo "make all-mmalloc" && (time make all-mmalloc) && "echo done making all-mmalloc"
         make configure-electric-fence
         make configure-readline
         for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do \
@@ -129,7 +129,7 @@ jobs:
         done
         for dir in sim utils tcl expect dejagnu itcl tk libgui; do \
           if test -e ${dir}/Makefile; then \
-            echo "doing make in ${dir}" && time make -C ${dir}; \
+            echo "doing make in ${dir}" && (time make -j"$(nproc)" -C ${dir}) && echo "done running make in ${dir}"; \
           elif test -d ${dir}; then \
             ls ${dir}/Makefile*; \
           else \
@@ -158,7 +158,7 @@ jobs:
               make "$(echo "${srcfile}" | sed "s/\.c/.o/g")" || stat "${srcfile}"; \
             done; \
             popd; \
-          elif test -d "${subdir}" && test -r ${subdir}/Makefile*; \
+          elif test -d "${subdir}" && (test -r "${subdir}/Makefile.in" || test -r "${subdir}/Makefile.am" || test -r "${subdir}/Makefile.def" || test -r "${subdir}/Makefile.tpl"); \
             then ls ${subdir}/Makefile*; \
           else \
             echo "skipping attempting to build additional objfiles in ${subdir}"; \
