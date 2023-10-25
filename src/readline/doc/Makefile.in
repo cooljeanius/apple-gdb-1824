@@ -762,7 +762,24 @@ readline.info: $(RLSRC)
 	$(MAKEINFO) --no-split -I $(TEXINPUTDIR) -o $@ $(srcdir)/rlman.texinfo
 
 rluserman.dvi: $(RLSRC)
-	(TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rluserman.texinfo) || (TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rluser.texinfo)
+	(TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rluserman.texinfo) || (TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rluser.texinfo); \
+	if [ $? -ge 1 ]; then \
+	  if test ! -e rluserman.dvi; then \
+	    if test -e rluser.dvi; then \
+	      mv rluser.dvi rluserman.dvi; \
+	    elif test -e $(srcdir)/rluserman.dvi; then \
+	      cp $(srcdir)/rluserman.dvi rluserman.dvi; \
+	    elif test -e $(builddir)/rluserman.dvi; then \
+	      cp $(builddir)/rluserman.dvi rluserman.dvi \
+	    else \
+	      echo "unsure how to get rluserman.dvi to be present!"; \
+	    fi; \
+	  else \
+	    touch rluserman.dvi; \
+	  fi; \
+	else \
+	  ls *.dvi; \
+	fi
 	if test ! -e $@ && test -e rluser.dvi; then \
 	  mv rluser.dvi $@; \
 	fi

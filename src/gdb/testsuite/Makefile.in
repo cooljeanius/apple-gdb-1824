@@ -190,7 +190,14 @@ subdirs:
 clean mostlyclean:
 	-rm -fv *~ core *.o a.out xgdb *.x *.grt
 	-rm -f bigcore.corefile .gdb_history zzz-gdbscript
-	-rm -fv core.* *.tf *.cl *.py tracecommandsscript copy1.txt
+	-rm -fv core.* *.tf *.cl tracecommandsscript copy1.txt
+	-for pyscript in *.py; do \
+	  if test "x$${pyscript}" != "xanalyze-racy-logs.py" && test "x$${pyscript}" != "xprint-ts.py"; then \
+	    rm -fv "$${pyscript}"; \
+	  else \
+	    echo "$${pyscript} is protected; keeping..." && stat "$${pyscript}"; \
+	  fi; \
+	fi 
 	-rm -fv *.dwo *.dwp
 	-rm -rfv outputs temp cache
 	-rm -f read1.so expect-read1
@@ -216,7 +223,7 @@ distclean maintainer-clean realclean: clean
 	    for dir in ${ALL_SUBDIRS}; \
 	    do \
 		    echo "$${dir}:"; \
-		    if [ -d $${dir} ]; then \
+		    if [ -d $${dir} -a -r $${dir}/Makefile ]; then \
 			    (cd $${dir}; $(MAKE) distclean); \
 		    fi; \
 	    done; \

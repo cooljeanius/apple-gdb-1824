@@ -1,3 +1,495 @@
+2023-10-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	doing stuff
+
+	Change-Id: Ib70779eaeeb8db346fe1032dbf94cfb16e3b62fc
+
+2023-10-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try turning java codeql back on... again.
+
+	Change-Id: I46170c386733c58e3ac077f271bbd622cb30a35f
+
+2023-10-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #17 from cooljeanius/dependabot/github_actions/actions/checkout-4
+
+	Bump actions/checkout from 3 to 4
+
+2023-10-25  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump actions/checkout from 3 to 4
+
+	Bumps [actions/checkout](https://github.com/actions/checkout) from 3 to 4.
+	- [Release notes](https://github.com/actions/checkout/releases)
+	- [Changelog](https://github.com/actions/checkout/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/actions/checkout/compare/v3...v4)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/checkout
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	...
+
+2023-10-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	(emoji with spiral eyes)
+
+	Change-Id: Id9069f2ab11eda28a561bdc3b18b2dc99928d08e
+
+2023-10-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	please don't assume anything about my availability
+
+	...from this commit
+
+	Change-Id: Ide821ce06f72d9e70b54c8d4b7dbaff38d12cc6b
+
+2023-10-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #19 from cooljeanius/imgbot
+
+	[ImgBot] Optimize images
+
+2023-10-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #18 from cooljeanius/dependabot/maven/src/zlib/contrib/java/jzlib-1.1.2/org.apache.maven.plugins-maven-compiler-plugin-3.11.0
+
+	Bump org.apache.maven.plugins:maven-compiler-plugin from 2.0 to 3.11.0 in /src/zlib/contrib/java/jzlib-1.1.2
+
+2023-10-24  ImgBotApp  <ImgBotHelp@gmail.com>
+
+	[ImgBot] Optimize images
+
+	*Total -- 110.16kb -> 59.48kb (46.01%)
+
+	/htdocs/images/archer-inkscape.png -- 52.46kb -> 24.26kb (53.76%)
+	/htdocs/talks/esc-west-1999/slides/img029.png -- 20.35kb -> 9.65kb (52.57%)
+	/htdocs/images/archer-inkscape.svg -- 36.71kb -> 25.07kb (31.7%)
+	/src/gdb/gdbtk/library/images/home.gif -- 0.38kb -> 0.27kb (29.64%)
+	/src/gdb/gdbtk/library/images2/home.gif -- 0.27kb -> 0.23kb (13.55%)
+
+2023-10-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok fine, disable java again
+
+	also try profiling the codeql build
+	and add some vector archers
+
+	Change-Id: Idd5f0d51ba96abc1aa99a3ae7f8c25eefabfa1b4
+
+2023-10-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try turning java codeql back on
+
+	Change-Id: I83df462d8326b9eb2b2532141fa93b613e4be07f
+
+2023-10-24  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump org.apache.maven.plugins:maven-compiler-plugin
+
+	Bumps [org.apache.maven.plugins:maven-compiler-plugin](https://github.com/apache/maven-compiler-plugin) from 2.0 to 3.11.0.
+	- [Release notes](https://github.com/apache/maven-compiler-plugin/releases)
+	- [Commits](https://github.com/apache/maven-compiler-plugin/compare/maven-compiler-plugin-2.0...maven-compiler-plugin-3.11.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.apache.maven.plugins:maven-compiler-plugin
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	...
+
+2023-10-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	adding over some stuff from upstream
+
+	Change-Id: I3c06f3b142ba897f12bc03ee078773d6c4031dba
+
+2023-10-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try turning csharp back on in codeql
+
+	also shellcheck some top-level scripts
+
+	Change-Id: I1c0e2ba1e83764db79a3923f39686bc0f0c4e8f6
+
+2023-10-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more cleaning & maintainer-mode-ing
+
+	also try increasing codeql coverage
+
+	Change-Id: Id8e8f61d65f50793f51f5421cf5bd88e0eebb452
+
+2023-10-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	be a bit looser
+
+	Change-Id: I0f6bac756d2413d21c762d57b17325822ac2eca5
+
+2023-10-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	most toplevel dirs probably won't work on CI, but maybe at least one will?
+
+	Change-Id: Ia37c4c5a07ed0d45bae413823c7a855e8c0b94ac
+
+2023-10-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	try adding some top-level subdirectories
+
+	Change-Id: I53e165d111c508f0759fa38810807dca6d93c3bf
+
+2023-10-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	remove electric-fence
+
+	Change-Id: Ie299f38f2a17ef1f799963672de39df0052b4c48
+
+2023-10-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	switch to manual build for 'c-cpp'
+
+	Change-Id: I9845cd3e61b22ba8f8cc523d45407ce91da08d23
+
+2023-10-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	remove 'java-kotlin' from codeql language matrix
+
+	Change-Id: I3a5824922ca3d792f1be3055abc99f538c88d207
+
+2023-10-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	codeql still doesn't work
+
+	Change-Id: I284fe100cc9fcd50164ad413e4bdbbaef88bb2d3
+
+2023-10-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	still trying to get codeql to autobuild
+
+	Change-Id: I8cb865a6ec6ed95828fe75f000f7416aee2b06fb
+
+2023-10-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	will probably still fail, but whatever
+
+	Change-Id: I4506e460ac9bdccb812d0d20905d83ba65a0ee1a
+
+2023-10-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	fiddling with some stuff
+
+	Change-Id: If193697713cedb68f1643bad448008f3db865f5e
+
+2023-10-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Create codeql.yml
+
+	Switch to advanced configuration
+
+2023-10-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #16 from cooljeanius/dependabot/github_actions/actions/checkout-4.1.1
+
+	Bump actions/checkout from 4.1.0 to 4.1.1
+
+2023-10-23  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump actions/checkout from 4.1.0 to 4.1.1
+
+	Bumps [actions/checkout](https://github.com/actions/checkout) from 4.1.0 to 4.1.1.
+	- [Release notes](https://github.com/actions/checkout/releases)
+	- [Changelog](https://github.com/actions/checkout/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/actions/checkout/compare/v4.1.0...v4.1.1)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/checkout
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	...
+
+2023-10-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	sth seems to be wrong w/the gdbserver headers
+
+	Change-Id: If2cb606ccd65ec67308163a754a7df4147b5a26d
+
+2023-10-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	messing around in Xcode
+
+	Change-Id: Iee764d3469c618444ff9ac5569336cad2f26d564
+
+2023-10-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	oops, I forgot a step
+
+	Change-Id: I0228d19e18010371db228bbf16edbf23b008ec62
+
+2023-10-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' of github.com:cooljeanius/apple-gdb-1824
+
+	Change-Id: Ie7d24d35b3b497a5c4a4b1bcb2ffac62f7aececc
+
+2023-10-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	copy over some additional steps from Travis
+	[travis skip]
+
+	Change-Id: I632ed19c5684cf04286fcfe6ca168451f775055f
+
+2023-10-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	bump ubuntu version further
+	see https://github.blog/changelog/2022-08-09-github-actions-the-ubuntu-18-04-actions-runner-image-is-being-deprecated-and-will-be-removed-by-12-1-22/
+
+2023-10-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	actionlint
+
+	Change-Id: I59a300992a399fe53fe3c453a0fffb130e0aee91
+
+2023-10-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	looks like readline still won't work
+
+	so let's try updating stuff in libtool_gnu instead
+
+	Change-Id: I083ce577cf6519938bea9bddfbc77e641b986cf3
+
+2023-10-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update .travis.yml
+
+	readline was just failing due to documentation, so see if installing texlive-related packages let us turn it back on
+
+	Change-Id: I47a1366f0f189bc45e5478908c556ad7221922da
+
+2023-10-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	updates for bad/missing testsuites
+
+	Change-Id: I30311d457c645a3e7a1519bc050d955cbeba2021
+
+2023-10-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update .travis.yml
+
+	skip broken directories
+
+	Change-Id: I1a1e7b5c6e56475a7831e5b27fa2ee9247e6c928
+
+2023-10-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' of github.com:cooljeanius/apple-gdb-1824
+
+	Change-Id: Ied60adf115d104984e024ca364b013e6cbaa66a0
+
+2023-10-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try "fixing" CI (by skipping steps that fail)
+
+	see issue #14
+
+	Change-Id: I5a4239747ccea577258c33a1174bbf6b81794e6f
+
+2023-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #15 from cooljeanius/dependabot/github_actions/actions/checkout-4.1.0
+
+	Bump actions/checkout from 4.0.0 to 4.1.0
+
+2023-09-30  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump actions/checkout from 4.0.0 to 4.1.0
+
+	Bumps [actions/checkout](https://github.com/actions/checkout) from 4.0.0 to 4.1.0.
+	- [Release notes](https://github.com/actions/checkout/releases)
+	- [Changelog](https://github.com/actions/checkout/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/actions/checkout/compare/v4.0.0...v4.1.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/checkout
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	...
+
+2023-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Create dependabot.yml
+
+	use github-actions
+
+2023-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	autotools updates in bfd
+
+	Change-Id: Ia1f52eae4bd673b62fb9d97c86bc369870070e31
+
+2023-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update libiberty.h
+
+	asprintf may be defined as a macro
+
+	Change-Id: I2652502b2e29c2b1ac0b44d00542d6d84c689795
+
+2023-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update .travis.yml
+
+	I hate Makefile dependency handling, especially in the bfd subdirectory
+	(see issue #6 for example, although that's in the opposite direction)
+
+2023-09-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update .travis.yml
+
+	update build script
+
+2023-09-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update .travis.yml
+
+	let's try doing this script differently...
+
+	Change-Id: I2f8a46184cc1277d2c791c33b30e97718b3034cb
+
+2023-09-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update .travis.yml
+
+	actually maybe let's remove some of these dependencies
+
+2023-09-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update .travis.yml
+
+	all right, back to xenial then, I guess...
+
+2023-09-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update .travis.yml
+
+	try changing version again
+
+2023-09-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	[travis skip]
+
+2023-09-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update .travis.yml
+
+	try changing runner dist version
+
+2023-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #13 from cooljeanius/convert-cooljeanius-apple-gdb-1824-to-actions-20230921-054748
+
+	Convert cooljeanius/apple-gdb-1824 to GitHub Actions
+	(broken; will need to find a way to ignore system bfd headers...)
+
+2023-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update .travis.yml
+
+	update dependencies
+
+	Change-Id: I0f82be5986b11615554e04af82ea82d23a9a21b9
+
+2023-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' of github.com:cooljeanius/apple-gdb-1824
+
+	Change-Id: Ia21a0365f65375c96f8fd77ef41492d147a89f90
+
+2023-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update .travis.yml
+
+	address infos
+
+	Change-Id: I8d3b97e009c71eb9cff470bfe9be534f8a953a75
+
+2023-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	ok so I guess that isn't actually a package
+
+2023-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update .travis.yml
+
+	use system zlib
+
+2023-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	use system zlib
+
+2023-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	remove last trace of gcj
+
+2023-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	bump guile version again
+
+2023-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	bump guile version
+
+2023-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	remove concurrency
+
+2023-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Add workflow cooljeanius/apple-gdb-1824
+
+2023-09-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	regenerate top-level ChangeLog again
+
+	hopefully I'm on the right branch this time!
+
+	Change-Id: I666a821b2160db8f2fbf2e293fb4f9c81a357cd7
+
 2023-09-14  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	Merge branch 'master' of github.com:cooljeanius/apple-gdb-1824
