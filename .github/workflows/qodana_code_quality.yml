@@ -10,10 +10,15 @@ on:
 jobs:
   qodana:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
+          fetch-depth: 0  # a full history is required for pull request analysis
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2023.2
         env:
@@ -21,6 +26,6 @@ jobs:
       - name: 'Debug failures'
         if: failure()
         run: |
-          if test -d ./log/; then ls ./log/; fi
-          if test -d ./logs/; then ls ./logs/; fi
+          if test -d ./log/; then echo "looking in ./log/" && ls ./log/; fi
+          if test -d ./logs/; then echo "looking in ./logs/" && ls ./logs/; fi
           pwd && ls
