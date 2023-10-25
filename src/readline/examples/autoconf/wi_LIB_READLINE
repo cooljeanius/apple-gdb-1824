@@ -1,3 +1,4 @@
+dnl# wi_LIB_READLINE                               -*- Autoconf -*-
 dnl# Borut Razem
 dnl#
 dnl# This macro checks for the presence of the readline library.

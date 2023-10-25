@@ -18,6 +18,9 @@ repositories {
             includeGroup("com.jcraft")
         }
     }
+    maven {
+        url = uri("https://github.com/cooljeanius/apple-gdb-1824/tree/master/src/zlib/contrib/java/jzlib-1.1.2")
+    }
 }
 
 dependencies {

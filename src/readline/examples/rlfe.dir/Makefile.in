@@ -108,12 +108,13 @@ clean clean-local: mostlyclean
 # ETCSCREENRC.
 distclean-local: mostlyclean
 	rm -f $(SCREEN).tar $(SCREEN).tar.gz
-	rm -f config.status Makefile
+	rm -f Makefile
 	rm -f osdef.h doc/Makefile
 	rm -rf autom4te.cache || rmdir autom4te.cache
 .PHONY: distclean-local
 
 distclean: clean distclean-local
+	-if test -e config.status; then rm -f config.status; fi
 .PHONY: distclean
 
 maintainer-clean:

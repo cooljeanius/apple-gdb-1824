@@ -94,14 +94,36 @@ all: info dvi html ps text
 nodvi: info html text
 
 readline.dvi: $(RLSRC)
-	(TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rlman.texinfo )|| (TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/old/readline.texinfo)
-	mv rlman.dvi readline.dvi
+	(TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rlman.texinfo )|| (TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/old/readline.texinfo); \
+	if [ $? -ge 1 ]; then \
+	  if test ! -e readline.dvi; then \
+	    if test -e rlman.dvi; then \
+	      mv rlman.dvi readline.dvi; \
+	    elif test -e $(srcdir)/readline.dvi; then \
+	      cp $(srcdir)/readline.dvi readline.dvi; \
+	    elif test -e $(builddir)/readline.dvi; then \
+	      cp $(builddir)/readline.dvi readline.dvi \
+	    else \
+	      echo "unsure how to get readline.dvi to be present!"; \
+	    fi; \
+	  else \
+	    touch readline.dvi; \
+	  fi; \
+	else \
+	  ls *.dvi; \
+	fi
+	if test -e rlman.dvi && test ! -e readline.dvi; then \
+	  mv rlman.dvi readline.dvi; \
+	fi
 
 readline.info: $(RLSRC)
 	$(MAKEINFO) --no-split -I $(TEXINPUTDIR) -o $@ $(srcdir)/rlman.texinfo
 
 rluserman.dvi: $(RLSRC)
-	TEXINPUTS=.:$(TEXINPUTDIR):$$TEXINPUTS $(TEXI2DVI) $(srcdir)/rluserman.texinfo
+	(TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rluserman.texinfo) || (TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rluser.texinfo)
+	if test ! -e $@ && test -e rluser.dvi; then \
+	  mv rluser.dvi $@; \
+	fi
 
 rluserman.info: $(RLSRC)
 	$(MAKEINFO) --no-split -I $(TEXINPUTDIR) -o $@ $(srcdir)/rluserman.texinfo

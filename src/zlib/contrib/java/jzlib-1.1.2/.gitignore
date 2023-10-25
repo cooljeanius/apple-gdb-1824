@@ -33,6 +33,7 @@ lib_managed/*
 nbproject/private
 project/boot/*
 project/build/target/*
+project/target/*
 share
 shared.iml
 spaces test

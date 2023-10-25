@@ -1,3 +1,5 @@
+dnl# BASH_CHECK_LIB_TERMCAP                         -*- Autoconf -*-
+
 AC_DEFUN([BASH_CHECK_LIB_TERMCAP],
 [
 if test "X${bash_cv_termcap_lib}" = "X"; then

@@ -326,7 +326,7 @@ distclean-local: clean-local config.status
 	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
 	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && cp -v Makefile Makefile.bak && $(MAKE) $(MFLAGS) $@ && mv -v Makefile.bak Makefile; fi )
+	-( if test -e examples/rlfe.dir/Makefile && test -x examples/rlfe.dir/config.status; then cd examples/rlfe.dir && cp -v Makefile Makefile.bak && $(MAKE) $(MFLAGS) $@ && mv -v Makefile.bak Makefile; fi )
 	$(RM) $(CREATED_TAGS)
 	$(RM) -r autom4te.cache || rmdir autom4te.cache
 

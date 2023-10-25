@@ -4,7 +4,7 @@
 #include <pthread.h>
 
 int 
-main ()
+main(void)
 {
   __block hicount = 1;
   dispatch_queue_t queue1, queue2, queue3;
@@ -20,9 +20,9 @@ main ()
   dispatch_group_async (group, queue2, ^{sleep (20); puts("queue2 sleep done");});
   dispatch_group_async (group, queue2, ^{sleep (20); puts("queue2 sleep done");});
 
-#if 0
-  /* This is pretty cool but the extra output makes writing a testsuite
-     case more difficult so I'm commenting it out.  */
+#ifdef DISPLAY_EXTRA_OUTPUT
+  /* This is pretty cool, but the extra output makes writing a testsuite
+   * case more difficult, so just leave it ifdef-ed out for now.  */
   dispatch_source_timer_create (DISPATCH_TIMER_INTERVAL, 1 * NSEC_PER_SEC, 0,
                                 NULL, queue3, 
                                 ^(dispatch_event_t event) { 
@@ -33,11 +33,12 @@ main ()
                               puts ("done saying hello");
                             }
                          });
-#endif
+#endif /* DISPLAY_EXTRA_OUTPUT */
 
   sleep (1);
   puts ("waiting for work group's queues to complete."); // breakpoint here
   dispatch_group_wait (group, UINT64_MAX);
+  /* (currently takes about 40 seconds to complete on my current machine) */
 
   puts ("all queues completed");
 

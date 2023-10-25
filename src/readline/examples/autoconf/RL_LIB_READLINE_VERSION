@@ -1,3 +1,4 @@
+dnl# RL_LIB_READLINE_VERSION                       -*- Autoconf -*-
 dnl# need: prefix exec_prefix libdir includedir CC TERMCAP_LIB
 dnl# require:
 dnl#	AC_PROG_CC

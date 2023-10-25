@@ -24,6 +24,12 @@ EXECUTABLES = bigenum blocks blocks-linetables blocks-linetables2 blocks-queues 
 
 MISSING_EXECUTABLES = r3376907
 
+# There is a ruby script in here:
+RUBY = @RUBY@
+
+# Tool to keep programs from looping forever:
+TIMEOUT = @TIMEOUT@
+
 all:
 	@echo "Nothing to be done for all..."
 
@@ -35,6 +41,36 @@ uninstall: force
 installcheck:
 check:
 check-local: $(EXECUTABLES)
+	if test -e gen-x86-prologues.rb; then $(RUBY) -c gen-x86-prologues.rb; fi
+	for myexe in $(EXECUTABLES); do \
+	  if test -x ./"$${myexe}"; then \
+	    if test -x "$(TIMEOUT)"; then \
+	      echo "giving $${myexe} up to 1m to run"; \
+	      $(TIMEOUT) 1m ./$${myexe}; \
+	      echo "done with $${myexe}"; \
+	    elif test -x "`which timeout`"; then \
+	      echo "giving $${myexe} up to 1m to run"; \
+	      timeout 1m ./$${myexe}; \
+	      echo "done with $${myexe}"; \
+	    elif test -x "`which gtimeout`"; then \
+	      echo "giving $${myexe} up to 1m to run"; \
+	      gtimeout 1m ./$${myexe}; \
+	      echo "done with $${myexe}"; \
+	    elif test -x "`which time`" || test -x "`which gtime`"; then \
+	      echo "timing run of $${myexe}"; \
+	      (time ./$${myexe}) || (gtime ./$${myexe}); \
+	      echo "done with $${myexe}"; \
+	    else \
+	      echo "running $${myexe}"; \
+	      ./$${myexe}; \
+	      echo "done with $${myexe}"; \
+	    fi; \
+	  elif test -e "$${myexe}"; then \
+	    stat "$${myexe}"; \
+	  else \
+	    echo "$${myexe} appears to be missing"; \
+	  fi; \
+	done
 .PHONY: check-local
 
 .PHONY: file\ (my\ name).c

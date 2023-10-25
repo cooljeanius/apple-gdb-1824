@@ -58,6 +58,8 @@ else
   AC_SUBST([OBJCPP])dnl
   ## just in case... I do something further here? idk...
 fi
+AC_PATH_PROG([RUBY],[ruby],[ruby])
+AC_PATH_PROGS([TIMEOUT],[timeout gtimeout],[timeout])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
