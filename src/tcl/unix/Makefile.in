@@ -733,11 +733,14 @@ clean:
 	fi
 
 distclean: clean
-	rm -rf config.status config.cache config.log tclConfig.sh \
+	rm -rf config.cache config.log tclConfig.sh \
 		$(PACKAGE).* prototype .DS_Store *.dSYM
-	if test -f dltest/Makefile; then \
+	if test -f dltest/Makefile && test -f config.status; then \
 	  cd dltest && $(MAKE) distclean; \
+	else \
+	  rm -fv *.status; \
 	fi
+	if test -e config.status; then rm -f config.status; fi
 	-rm -f Makefile
 	-rm -rf autom4te.cache || rmdir autom4te.cache
 

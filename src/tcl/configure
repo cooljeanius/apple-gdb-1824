@@ -658,6 +658,7 @@ LIBOBJS
 EGREP
 GREP
 CPP
+AUTOCONF
 YFLAGS
 YACC
 SED
@@ -5707,6 +5708,8 @@ fi
 done
 test -n "$YACC" || YACC="yacc"
 
+
+AUTOCONF=${AUTOCONF-"${am_missing_run}autoconf"}
 
 # Checks for header files.
 ac_ext=c

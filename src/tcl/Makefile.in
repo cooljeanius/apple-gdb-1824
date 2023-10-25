@@ -4,6 +4,8 @@
 
 ACLOCAL_AMFLAGS = -I m4 --install
 
+AUTOCONF = @AUTOCONF@
+
 CONFIGDIR=@CONFIGDIR@
 CONFIGDIR2=@CONFIGDIR2@
 
@@ -43,18 +45,19 @@ maintainer-clean-recursive:
 	@test x"$(CONFIGDIR2)" = x"" || (cd "$(CONFIGDIR2)" && $(MAKE) `echo $@ | $(SED) 's/-recursive'`)
 
 configure:
-	cd $(SRC_DIR) && autoconf
+	cd $(SRC_DIR) && $(AUTOCONF)
 
 mostlyclean: mostlyclean-recursive
 
 clean: clean-recursive
 
 distclean-local:
-	rm -f Makefile config.status config.cache config.log
+	rm -f Makefile config.cache config.log
 	rm -f autoscan.log *~
 	rm -rf autom4te.cache || rmdir autom4te.cache
 
 distclean: distclean-recursive distclean-local
+	if test -e config.status; then rm -f config.status; fi
 
 maintainer-clean: distclean-local maintainer-clean-recursive
 
