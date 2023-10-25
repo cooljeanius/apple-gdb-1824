@@ -21,5 +21,6 @@ jobs:
       - name: 'Debug failures'
         if: failure()
         run: |
-          ls ./log/
-          ls ./logs/
+          if test -d ./log/; then ls ./log/; fi
+          if test -d ./logs/; then ls ./logs/; fi
+          pwd && ls
