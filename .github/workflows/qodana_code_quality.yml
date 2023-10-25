@@ -18,3 +18,8 @@ jobs:
         uses: JetBrains/qodana-action@v2023.2
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+      - name: 'Debug failures'
+        if: failure()
+        run: |
+          ls ./log/
+          ls ./logs/
