@@ -161,8 +161,8 @@ jobs:
     - name: Extra coverage build (C)
       if: matrix.language == 'c-cpp' && success()
       run: |
-        # shellcheck disable=SC2001,SC2235,SC2044
         cd src
+        # shellcheck disable=SC2001,SC2235
         for subdir in autogen/agen5 autogen/autoopts autogen/columns autogen/compat autogen/getdefs autogen/snprintfv autogen/xml2ag bfd bfd/doc binutils dejagnu dejagnu/contrib/bluegnu2.0.3/example/calc dejagnu/example/calc electric-fence expect expect/example expect/testsuite gdb gdb/gdbserver gdb/gnulib gdb/gnulib/import gdb/multi-ice gdb/nlm gdb/rdi-share gdb/rem-multi_old gdb/testsuite gdb/testsuite/gdb.apple gdb/testsuite/gdb.apple/debug-in-ofile gdb/testsuite/gdb.apple/gused gdb/testsuite/gdb.apple/xcode gdb/testsuite/gdb.arch gdb/testsuite/gdb.base gdb/testsuite/gdb.btrace gdb/testsuite/gdb.cell gdb/testsuite/gdb.dwarf2 gdb/testsuite/gdb.gdbtk gdb/testsuite/gdb.guile gdb/testsuite/gdb.hp gdb/testsuite/gdb.hp/gdb.aCC gdb/testsuite/gdb.hp/gdb.base-hp gdb/testsuite/gdb.hp/gdb.compat gdb/testsuite/gdb.hp/gdb.defects gdb/testsuite/gdb.linespec gdb/testsuite/gdb.mi gdb/testsuite/gdb.modula2 gdb/testsuite/gdb.multi gdb/testsuite/gdb.opt gdb/testsuite/gdb.perf gdb/testsuite/gdb.python gdb/testsuite/gdb.reverse gdb/testsuite/gdb.server gdb/testsuite/gdb.stabs gdb/testsuite/gdb.threads gdb/testsuite/gdb.trace gdb/tui intl itcl/itcl/win itcl/itk/win libbacktrace libdecnumber libgui/src libiberty libiberty/testsuite libtool_gnu/libltdl libtool_gnu/tests/cdemo libtool_gnu/tests/demo libtool_gnu/tests/depdemo libtool_gnu/tests/depdemo/l1 libtool_gnu/tests/depdemo/l2 libtool_gnu/tests/depdemo/l3 libtool_gnu/tests/depdemo/l4 libtool_gnu/tests/f77demo libtool_gnu/tests/fcdemo libtool_gnu/tests/mdemo libtool_gnu/tests/mdemo2 libtool_gnu/tests/pdemo mmalloc opcodes readline readline/examples readline/examples/rlfe.dir sim/common sim/igen sim/testsuite/common tcl/unix tcl/unix/dltest tcl/win tk/unix tk/win utils/amd-udi/mondfe utils/amd-udi/montip utils/amd-udi/udi utils/decomment.tproj utils/misc/doschk utils/relpath.tproj utils/sparclite utils/spu utils/wince zlib zlib/contrib/minizip; do \
           if test -e "${subdir}/Makefile" || test -x "${subdir}/configure"; then \
             pushd "${subdir}"; \
@@ -180,13 +180,14 @@ jobs:
               make "$(echo "${srcfile}" | sed "s/\.c/.o/g")" || stat "${srcfile}"; \
             done; \
             popd; \
-          elif test -d "${subdir}" && (test -r "${subdir}/Makefile.in" || test -r "${subdir}/Makefile.am" || test -r "${subdir}/Makefile.def" || test -r "${subdir}/Makefile.tpl"); \
+          elif test -d "${subdir}" && (test -r "${subdir}/Makefile.in" || test -r "${subdir}/Makefile.am" || test -r "${subdir}/Makefile.def" || test -r "${subdir}/Makefile.tpl"); then \
             echo "no unsuffixed Makefile in ${subdir}, but there are these ones with suffixes:"; \
-            then ls ${subdir}/Makefile*; \
+            ls ${subdir}/Makefile* || echo "... $(ls ${subdir}/Makefile*)"; \
           else \
             echo "skipping attempting to build additional objfiles in ${subdir}"; \
           fi; \
         done
+        # shellcheck disable=SC2044
         for cfile in $(find . -name '*.c' -type f); do \
           gcc -c "${cfile}" || stat "${cfile}"; \
         done
@@ -194,7 +195,6 @@ jobs:
     - name: Extra coverage build (C++)
       if: matrix.language == 'c-cpp' && success()
       run: |
-        # shellcheck disable=SC2001,SC2044
         cd src
         if test -d gdb/testsuite; then \
           pushd gdb/testsuite; \
@@ -211,6 +211,7 @@ jobs:
         else \
           echo "warning: gdb testsuite appears to be missing?"; \
         fi
+        # shellcheck disable=SC2001
         for subdir in dejagnu/testsuite/libdejagnu gdb/testsuite/gdb.apple gdb/testsuite/gdb.apple/gused gdb/testsuite/gdb.apple/ld-r gdb/testsuite/gdb.btrace gdb/testsuite/gdb.c++ gdb/testsuite/gdb.cp gdb/testsuite/gdb.gdbtk gdb/testsuite/gdb.hp  gdb/testsuite/gdb.linespec gdb/testsuite/gdb.mi gdb/testsuite/gdb.python gdb/testsuite/gdb.trace; do \
           if test -e "${subdir}/Makefile"; then \
             pushd "${subdir}"; \
@@ -224,6 +225,7 @@ jobs:
             echo "skipping attempting to build additional objfiles in ${subdir}"; \
           fi; \
         done
+        # shellcheck disable=SC2044
         for ccfile in $(find . -name '*.cc' -type f); do \
           g++ -c "${ccfile}" || stat "${ccfile}"; \
         done
@@ -233,6 +235,7 @@ jobs:
           make var-path-expr.o || stat var-path-expr.cpp; \
           popd; \
         fi
+        # shellcheck disable=SC2044
         for cppfile in $(find . -name '*.cpp' -type f); do \
           g++ -c "${cppfile}" || stat "${cppfile}"; \
         done
@@ -241,6 +244,7 @@ jobs:
           make langs2.o || stat langs2.cxx; \
           popd; \
         fi
+        # shellcheck disable=SC2044
         for cxxfile in $(find . -name '*.cxx' -type f); do \
           g++ -c "${cxxfile}" || stat "${cxxfile}"; \
         done
@@ -253,6 +257,7 @@ jobs:
     - name: Extra coverage build (Java)
       if: matrix.language == 'java-kotlin' && success()
       run: |
+        # shellcheck disable=SC2044
         for javafile in $(find . -name '*.java' -type f); do \
           javac "${javafile}" || stat "${javafile}"; \
         done
@@ -260,8 +265,8 @@ jobs:
     - name: Clang static analysis
       if: matrix.language == 'c-cpp' && success()
       run: |
-        # shellcheck disable=SC2001
         cd src
+        # shellcheck disable=SC2001
         if test -x "$(which clang)"; then
           for subdir in bfd electric-fence gdb utils/misc/doschk utils/spu; do \
             if test -e ${subdir}/Makefile; then \
