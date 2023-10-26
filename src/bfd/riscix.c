@@ -243,7 +243,7 @@ riscix_fix_pcrel_26(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
       && (output_bfd != NULL))
     return bfd_reloc_continue;
 
-  relocation = ((target & 0x00ffffff) << 2UL);
+  relocation = (bfd_vma)((target & 0x00ffffff) << 2UL);
   relocation = ((relocation ^ 0x02000000) - 0x02000000); /* Sign extend */
   relocation += symbol->value;
   relocation += symbol->section->output_section->vma;
@@ -475,7 +475,7 @@ MY(canonicalize_reloc)(bfd *abfd, sec_ptr section, arelent **relptr,
   /* Fix up howto entries: */
   for (count = 0; count++ < section->reloc_count;)
     {
-      c = (tblptr->howto - NAME(aout,std_howto_table));
+      c = (unsigned int)(tblptr->howto - NAME(aout,std_howto_table));
       BFD_ASSERT(c < RISCIX_TABLE_SIZE);
       tblptr->howto = &riscix_std_reloc_howto[c];
 

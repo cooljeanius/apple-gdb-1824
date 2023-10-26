@@ -257,7 +257,7 @@ sunos_get_dynamic_symtab_upper_bound(bfd *abfd)
       return -1;
     }
 
-  return ((info->dynsym_count + 1UL) * sizeof(asymbol *));
+  return (long)((info->dynsym_count + 1UL) * sizeof(asymbol *));
 }
 
 /* Read the external dynamic symbols: */

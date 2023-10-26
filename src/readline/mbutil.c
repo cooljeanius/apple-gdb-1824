@@ -183,6 +183,7 @@ _rl_find_prev_mbchar_internal(char *string, int seed, int find_non_zero)
       point += (int)tmp;
     }
 
+  (void)non_zero_prev;
   return prev;
 }
 

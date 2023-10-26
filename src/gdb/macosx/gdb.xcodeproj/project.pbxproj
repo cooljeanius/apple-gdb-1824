@@ -3322,6 +3322,9 @@
 		61F331671CCDDE9D00C05007 /* cris-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cris-tdep.h"; sourceTree = "<group>"; };
 		61F331CB1CCF226400C05007 /* fr30-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "fr30-tdep.h"; sourceTree = "<group>"; };
 		61F333921CD3B44100C05007 /* remote-m32r-sdi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "remote-m32r-sdi.h"; sourceTree = "<group>"; };
+		A50558E62AEB129E00DFAB6C /* .profile_big_sur */ = {isa = PBXFileReference; lastKnownFileType = text; name = .profile_big_sur; path = ../../../.profile_big_sur; sourceTree = "<group>"; };
+		A50558F72AEB12A800DFAB6C /* .profile_catalina */ = {isa = PBXFileReference; lastKnownFileType = text; name = .profile_catalina; path = ../../../.profile_catalina; sourceTree = "<group>"; };
+		A50558F82AEB12BD00DFAB6C /* .github */ = {isa = PBXFileReference; lastKnownFileType = folder; name = .github; path = ../../../.github; sourceTree = "<group>"; };
 		A50C0F7D29701B0600E82F7F /* m68klynx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m68klynx.c; sourceTree = "<group>"; };
 		A50DD7D41B30D2AC00F50318 /* AppleMakefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = AppleMakefile; sourceTree = "<group>"; };
 		A50DD7DF1B30D2AC00F50318 /* Dbg.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; path = Dbg.c; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; };
@@ -12403,6 +12406,9 @@
 		A589C8CF1A30EBDC00E717B9 /* top_level */ = {
 			isa = PBXGroup;
 			children = (
+				A50558F82AEB12BD00DFAB6C /* .github */,
+				A50558F72AEB12A800DFAB6C /* .profile_catalina */,
+				A50558E62AEB129E00DFAB6C /* .profile_big_sur */,
 				A589C8DC1A30EC3100E717B9 /* .profile_generic */,
 				A589C8DD1A30EC3100E717B9 /* .profile_leopard */,
 				A589C8DE1A30EC3100E717B9 /* .profile_leopard_universal */,

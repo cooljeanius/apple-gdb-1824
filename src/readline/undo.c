@@ -164,7 +164,10 @@ rl_do_undo(void)
     RL_UNSETSTATE(RL_STATE_UNDOING);
 
     release = rl_undo_list;
-    rl_undo_list = rl_undo_list->next;
+    if (rl_undo_list)
+      rl_undo_list = rl_undo_list->next;
+    else
+      rl_undo_list = NULL;
     free(release);
   } while (waiting_for_begin);
 

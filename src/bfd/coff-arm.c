@@ -1560,7 +1560,7 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      /* If this is a signed value, the rightshift just dropped
 		 leading 1 bits (assuming twos complement).  */
 	      if ((bfd_signed_vma)relocation >= 0)
-		signed_check = check;
+		signed_check = (bfd_signed_vma)check;
 	      else
 		signed_check = (check
 				| ((bfd_vma)-1

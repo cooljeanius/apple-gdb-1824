@@ -258,6 +258,18 @@ const bfd_target i386os9k_vec =
   };
 
 /* for -Wunused-macros: */
+#ifdef aout_32_bfd_make_debug_symbol
+# undef aout_32_bfd_make_debug_symbol
+#endif /* aout_32_bfd_make_debug_symbol */
+#ifdef aout_32_bfd_reloc_type_lookup
+# undef aout_32_bfd_reloc_type_lookup
+#endif /* aout_32_bfd_reloc_type_lookup */
+#ifdef aout_32_get_section_contents_in_window
+# undef aout_32_get_section_contents_in_window
+#endif /* aout_32_get_section_contents_in_window */
+#ifdef aout_32_get_section_contents_in_window_with_mode
+# undef aout_32_get_section_contents_in_window_with_mode
+#endif /* aout_32_get_section_contents_in_window_with_mode */
 #ifdef aout_32_close_and_cleanup
 # undef aout_32_close_and_cleanup
 #endif /* aout_32_close_and_cleanupaout_32_close_and_cleanup */

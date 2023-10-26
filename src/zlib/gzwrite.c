@@ -85,7 +85,7 @@ local int gz_comp(state, flush)
 
     /* write directly if requested */
     if (state->direct) {
-        got = write(state->fd, strm->next_in, strm->avail_in);
+        got = (int)write(state->fd, strm->next_in, strm->avail_in);
         if (got < 0 || (unsigned)got != strm->avail_in) {
             gz_error(state, Z_ERRNO, zstrerror());
             return -1;

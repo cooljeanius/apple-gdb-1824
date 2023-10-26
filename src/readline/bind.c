@@ -571,7 +571,7 @@ rl_function_of_keyseq(const char *keyseq, Keymap map, int *type)
 	    }
 	}
 
-      if (map[ic].type == ISKMAP)
+      if (map && (map[ic].type == ISKMAP))
 	{
 	  /* If this is the last key in the key sequence, return the
 	     map. */
@@ -585,7 +585,7 @@ rl_function_of_keyseq(const char *keyseq, Keymap map, int *type)
 	  else
 	    map = FUNCTION_TO_KEYMAP(map, ic);
 	}
-      else
+      else if (map)
 	{
 	  if (type)
 	    *type = map[ic].type;

@@ -231,6 +231,7 @@ rl_gather_tyi(void)
 	rl_stuff_char(input);
     }
 
+  (void)result;
   return 1;
 }
 

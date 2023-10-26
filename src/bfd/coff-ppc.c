@@ -911,14 +911,14 @@ ppc_record_toc_entry(bfd *abfd,
 
       if (IS_UNALLOCATED(local_syms[sym]))
 	{
-	  local_syms[sym] = global_toc_size;
+	  local_syms[sym] = (int)global_toc_size;
 	  global_toc_size += 4;
 
-	  /* The size must fit in a 16-bit displacement.  */
+	  /* The size must fit in a 16-bit displacement: */
 	  if (global_toc_size > 65535)
 	    {
-	      (*_bfd_error_handler) (_("TOC overflow"));
-	      bfd_set_error (bfd_error_file_too_big);
+	      (*_bfd_error_handler)(_("TOC overflow"));
+	      bfd_set_error(bfd_error_file_too_big);
 	      return FALSE;
 	    }
 	}

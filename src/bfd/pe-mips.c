@@ -541,7 +541,7 @@ mips_swap_reloc_out(bfd *abfd, void *src, void *dst)
     {
     case MIPS_R_REFHI:
       prev_addr = reloc_src->r_vaddr;
-      prev_offset = reloc_src->r_offset;
+      prev_offset = (int)reloc_src->r_offset;
       break;
     case MIPS_R_REFLO:
       if (reloc_src->r_vaddr == prev_addr)

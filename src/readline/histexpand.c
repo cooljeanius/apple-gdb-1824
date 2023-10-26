@@ -1271,6 +1271,8 @@ get_history_word_specifier(char *spec, char *from, int *caller_index)
   if (last >= first || last == '$' || last < 0)
     result = history_arg_extract (first, last, from);
 
+  (void)first;
+  (void)last;
   return (result ? result : (char *)&error_pointer);
 }
 

@@ -553,6 +553,8 @@ rl_search_history(int direction, int invoking_key)
 
   RL_UNSETSTATE(RL_STATE_ISEARCH);
 
+  (void)found;
+  (void)failed;
   return 0;
 }
 

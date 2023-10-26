@@ -850,12 +850,15 @@ remove_duplicate_matches(char **matches)
     qsort((matches + 1), ((size_t)i - 1UL), sizeof(char *),
           (QSFUNC *)_rl_qsort_string_compare);
 
-  /* Remember the lowest common denominator for it may be unique. */
-  lowest_common = savestring (matches[0]);
+  /* Remember the lowest common denominator for it may be unique: */
+  if (matches && matches[0])
+    lowest_common = savestring(matches[0]);
+  else
+    lowest_common = NULL;
 
   for (i = newlen = 0; matches[i + 1]; i++)
     {
-      if (strcmp(matches[i], matches[i + 1]) == 0)
+      if (matches[i] && (strcmp(matches[i], matches[i + 1]) == 0))
 	{
 	  free(matches[i]);
 	  matches[i] = (char *)&dead_slot;
@@ -883,7 +886,8 @@ remove_duplicate_matches(char **matches)
   /* If there is one string left, and it is identical to the
      lowest common denominator, then the LCD is the string to
      insert. */
-  if (j == 2 && strcmp (temp_array[0], temp_array[1]) == 0)
+  if ((j == 2) && (temp_array[0] != NULL)
+      && (strcmp(temp_array[0], temp_array[1]) == 0))
     {
       free (temp_array[1]);
       temp_array[1] = (char *)NULL;

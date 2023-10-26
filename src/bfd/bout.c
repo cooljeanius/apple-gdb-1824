@@ -1118,7 +1118,7 @@ aligncode(bfd *abfd, asection *input_section, arelent *r,
     ; /* (do nothing, just silences '-Wunused-but-set-variable') */
   }
 
-  return shrink;
+  return (int)shrink;
 }
 
 static bfd_boolean

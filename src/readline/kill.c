@@ -139,19 +139,25 @@ _rl_copy_to_kill_ring(char *text, int append)
 
       if (append)
 	{
-	  strcpy(newstr, oldstr);
+	  if (oldstr)
+	    strcpy(newstr, oldstr);
+	  else
+	    strcpy(newstr, "");
 	  strcat(newstr, text);
 	}
       else
 	{
 	  strcpy(newstr, text);
-	  strcat(newstr, oldstr);
+	  if (oldstr)
+	    strcat(newstr, oldstr);
+	  else
+	    strcat(newstr, "");
 	}
       free(oldstr);
       free(text);
       rl_kill_ring[slot] = newstr;
     }
-  else
+  else if (rl_kill_ring != NULL)
     rl_kill_ring[slot] = text;
 
   rl_kill_index = (int)slot;
@@ -509,44 +515,45 @@ rl_yank_nth_arg_internal(int count, int ignore, int history_skip)
   if (history_skip)
     {
       for (i = 0; i < history_skip; i++)
-	entry = previous_history ();
+	entry = previous_history();
     }
 
-  entry = previous_history ();
+  entry = previous_history();
 
-  history_set_pos (pos);
+  history_set_pos(pos);
 
   if (entry == 0)
     {
-      rl_ding ();
+      rl_ding();
       return -1;
     }
 
-  arg = history_arg_extract (count, count, entry->line);
+  arg = history_arg_extract(count, count, entry->line);
   if (!arg || !*arg)
     {
-      rl_ding ();
+      rl_ding();
       return -1;
     }
 
-  rl_begin_undo_group ();
+  rl_begin_undo_group();
 
-  _rl_set_mark_at_pos (rl_point);
+  _rl_set_mark_at_pos(rl_point);
 
-#if defined (VI_MODE)
+#if defined(VI_MODE)
   /* Vi mode always inserts a space before yanking the argument, and it
      inserts it right *after* rl_point. */
   if (rl_editing_mode == vi_mode)
     {
-      rl_vi_append_mode (1, ignore);
-      rl_insert_text (" ");
+      rl_vi_append_mode(1, ignore);
+      rl_insert_text(" ");
     }
 #endif /* VI_MODE */
 
-  rl_insert_text (arg);
-  free (arg);
+  rl_insert_text(arg);
+  free(arg);
 
-  rl_end_undo_group ();
+  rl_end_undo_group();
+  (void)entry;
   return 0;
 }
 

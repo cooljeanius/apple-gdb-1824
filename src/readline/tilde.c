@@ -267,6 +267,7 @@ tilde_expand(const char *string)
 
   result[result_index] = '\0';
 
+  (void)result_size;
   return (result);
 }
 

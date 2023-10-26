@@ -688,6 +688,7 @@ _rl_insert_char(int count, int c)
       rl_insert_text(string);
       free(string);
 
+      (void)incoming_length;
       return 0;
     }
 
@@ -731,6 +732,7 @@ _rl_insert_char(int count, int c)
 	}
 #endif /* !HANDLE_MULTIBYTE */
 
+      (void)incoming_length;
       return 0;
     }
 
@@ -1066,17 +1068,18 @@ rl_delete_horizontal_space(int count, int ignore)
 {
   int start = rl_point;
 
-  while (rl_point && whitespace (rl_line_buffer[rl_point - 1]))
+  while (rl_point && whitespace(rl_line_buffer[rl_point - 1]))
     rl_point--;
 
-  start = rl_point;
+  if (start != rl_point)
+    start = rl_point;
 
-  while (rl_point < rl_end && whitespace (rl_line_buffer[rl_point]))
+  while ((rl_point < rl_end) && whitespace(rl_line_buffer[rl_point]))
     rl_point++;
 
   if (start != rl_point)
     {
-      rl_delete_text (start, rl_point);
+      rl_delete_text(start, rl_point);
       rl_point = start;
     }
   return 0;

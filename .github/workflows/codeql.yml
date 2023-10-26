@@ -169,15 +169,15 @@ jobs:
             pushd "${subdir}"; \
             if test ! -r Makefile && test -x ./configure; then \
               echo "configuring in ${subdir}"; \
-              ./configure --disable-werror --enable-silent-rules --disable-option-checking || stat ./configure; \
+              ./configure --disable-werror --enable-silent-rules --disable-option-checking || stat -t ./configure; \
             elif test ! -e Makefile && test -x ./config.status; then \
               echo "checking with ./config.status in ${subdir}"; \
-              ./config.status || stat ./config.status; \
+              ./config.status || stat -t ./config.status; \
             else \
               echo "assuming we are fully configured in ${subdir}"; \
             fi
             for srcfile in *.c; do \
-              echo "attempting to compile ${srcfile} in ${subdir}"; \
+              echo "attempting to use $(which make) to compile ${srcfile} in ${subdir}"; \
               make "$(echo "${srcfile}" | sed "s/\.c/.o/g")" V=0 || stat -t "${srcfile}"; \
             done; \
             popd; \
@@ -222,12 +222,12 @@ jobs:
         fi
         # shellcheck disable=SC2001
         for subdir in dejagnu/testsuite/libdejagnu gdb/testsuite/gdb.apple gdb/testsuite/gdb.apple/gused gdb/testsuite/gdb.apple/ld-r gdb/testsuite/gdb.btrace gdb/testsuite/gdb.c++ gdb/testsuite/gdb.cp gdb/testsuite/gdb.gdbtk gdb/testsuite/gdb.hp  gdb/testsuite/gdb.linespec gdb/testsuite/gdb.mi gdb/testsuite/gdb.python gdb/testsuite/gdb.trace; do \
-          if test -e "${subdir}/Makefile"; then \
+          if test -e "${subdir}/Makefile" && test -r "${subdir}/Makefile"; then \
             pushd "${subdir}"; \
             for srcfile in *.cc; do \
               make "$(echo "${srcfile}" | sed "s/\.cc/.o/g")" || stat "${srcfile}"; \
-              cp -v ./*.o .. || ls ./*.o; \
             done; \
+            cp -v ./*.o .. || ls ./*.o || pwd; \
             popd; \
           elif test -d "${subdir}"; \
             then ls ${subdir}/Makefile*; \

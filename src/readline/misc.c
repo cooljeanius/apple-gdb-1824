@@ -89,10 +89,11 @@ rl_digit_loop(void)
       if (rl_numeric_arg > 1000000)
 	{
 	  sawdigits = rl_explicit_arg = rl_numeric_arg = 0;
-	  rl_ding ();
-	  rl_restore_prompt ();
-	  rl_clear_message ();
+	  rl_ding();
+	  rl_restore_prompt();
+	  rl_clear_message();
 	  RL_UNSETSTATE(RL_STATE_NUMERICARG);
+	  (void)sawdigits;
 	  return 1;
 	}
       rl_message ("(arg: %d) ", rl_arg_sign * rl_numeric_arg);
