@@ -7278,7 +7278,7 @@ for real_option in -Wall -Wextra -Wwrite-strings -Wc++-compat \
 -Walloc-zero -Wrestrict -Wold-style-definition -Wold-style-declaration \
 -Wfloat-conversion -Wabi -Wc99-c11-compat -Wout-of-line-declaration \
 -Wno-extended-offsetof -Wmisleading-indentation -Wnull-dereference \
--Wpointer-compare -Wbool-operation; do
+-Wpointer-compare -Wbool-operation -Wfatal-errors; do
   # Do the check with the no- prefix removed since gcc silently accepts
   # any -Wno-* option on purpose:
   case ${real_option} in

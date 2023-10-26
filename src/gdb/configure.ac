@@ -3259,8 +3259,8 @@ AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
 diag_formatting_opts="-fdiagnostics-show-option -fdiagnostics-color=auto \
--fdiagnostics-show-caret -fdiagnostics-show-labels -fshow-column \
--fdiagnostics-show-line-numbers -fcolor-diagnostics"
+-fdiagnostics-show-caret -fdiagnostics-show-labels -fshow-column -ferror-limit=1 \
+-fdiagnostics-show-line-numbers -fcolor-diagnostics -Wfatal-errors"
 build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wpointer-arith -Wchar-subscripts \
 -Wunused-value -Wunused-label -Wunused-result \

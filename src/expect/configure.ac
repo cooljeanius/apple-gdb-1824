@@ -57,7 +57,7 @@ if test -n "${HOST_ARCHITECTURE}"; then
   AC_SUBST([C_ARCHFLAGS])
 fi
 
-ACX_PROG_CC_WARNING_OPTS([-Wreturn-type])
+ACX_PROG_CC_WARNING_OPTS([-Wreturn-type -Wfatal-errors])
 
 AC_CONFIG_HEADERS([expect_cf.h])dnl
 

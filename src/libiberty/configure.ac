@@ -336,7 +336,7 @@ m4_ifdef([ACX_PROG_CC_WARNING_OPTS],[
 -Walloc-zero -Wrestrict -Wold-style-definition -Wold-style-declaration \
 -Wfloat-conversion -Wabi -Wc99-c11-compat -Wout-of-line-declaration \
 -Wno-extended-offsetof -Wmisleading-indentation -Wnull-dereference \
--Wpointer-compare -Wbool-operation],[ac_libiberty_warn_cflags])dnl
+-Wpointer-compare -Wbool-operation -Wfatal-errors],[ac_libiberty_warn_cflags])dnl
   m4_ifdef([ACX_PROG_CC_WARNING_ALMOST_PEDANTIC],[
     ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([],[ac_libiberty_warn_cflags])dnl
   ])dnl

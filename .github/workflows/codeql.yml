@@ -1,3 +1,4 @@
+# .github/workflows/codeql.yml: codeql workflow for apple-gdb-1824
 # For most projects, this workflow file will not need changing; you simply need
 # to commit it to your repository.
 #
@@ -187,9 +188,13 @@ jobs:
             echo "skipping attempting to build additional objfiles in ${subdir}"; \
           fi; \
         done
-        # shellcheck disable=SC2044
+        # shellcheck disable=SC2001,SC2044
         for cfile in $(find . -name '*.c' -type f); do \
-          gcc -c "${cfile}" || stat "${cfile}"; \
+          if test ! -e "$(echo "${cfile}" | sed "s/\.c/.o/g")"; then
+            gcc -c -I. "${cfile}" || stat "${cfile}" || echo "cfile is ${cfile}"; \
+          else \
+            echo "object file for ${cfile} already exists."
+          fi; \
         done
 
     - name: Extra coverage build (C++)
