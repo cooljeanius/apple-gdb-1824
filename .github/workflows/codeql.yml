@@ -178,7 +178,7 @@ jobs:
             fi
             for srcfile in *.c; do \
               echo "attempting to compile ${srcfile} in ${subdir}"; \
-              make "$(echo "${srcfile}" | sed "s/\.c/.o/g")" || stat "${srcfile}"; \
+              make "$(echo "${srcfile}" | sed "s/\.c/.o/g")" V=0 || stat -t "${srcfile}"; \
             done; \
             popd; \
           elif test -d "${subdir}" && (test -r "${subdir}/Makefile.in" || test -r "${subdir}/Makefile.am" || test -r "${subdir}/Makefile.def" || test -r "${subdir}/Makefile.tpl"); then \
@@ -188,12 +188,16 @@ jobs:
             echo "skipping attempting to build additional objfiles in ${subdir}"; \
           fi; \
         done
+        find . -name '*.o' -exec cp -v {} . ";" || echo "failed copying an object file"
         # shellcheck disable=SC2001,SC2044
         for cfile in $(find . -name '*.c' -type f); do \
-          if test ! -e "$(echo "${cfile}" | sed "s/\.c/.o/g")"; then
-            gcc -c -I. "${cfile}" || stat "${cfile}" || echo "cfile is ${cfile}"; \
+          cobjfile="$(echo "${cfile}" | sed "s/\.c/.o/g")"; \
+          if test ! -e "${cobjfile}"; then \
+            echo "One last attempt at compiling ${cfile}..."; \
+            gcc -c "${cfile}" || gcc -c -I. "${cfile}" || gcc -c -I. -I.. "${cfile}" || stat -t "${cfile}" || echo "cfile is ${cfile}"; \
           else \
-            echo "object file for ${cfile} already exists."
+            echo "object file ${cobjfile} already exists for ${cfile}."; \
+            cp -v "${cobjfile}" "$(dirname "${cfile}")" || cp -v "${cobjfile}" . || cp -v "${cobjfile}" ..; \
           fi; \
         done
 
@@ -222,6 +226,7 @@ jobs:
             pushd "${subdir}"; \
             for srcfile in *.cc; do \
               make "$(echo "${srcfile}" | sed "s/\.cc/.o/g")" || stat "${srcfile}"; \
+              cp -v ./*.o .. || ls ./*.o; \
             done; \
             popd; \
           elif test -d "${subdir}"; \
@@ -232,30 +237,33 @@ jobs:
         done
         # shellcheck disable=SC2044
         for ccfile in $(find . -name '*.cc' -type f); do \
-          g++ -c "${ccfile}" || stat "${ccfile}"; \
+          g++ -c "${ccfile}" || g++ -c -I. "${ccfile}" || g++ -c -I. -I.. "${ccfile}" || stat "${ccfile}"; \
         done
         if test -e gdb/testsuite/gdb.apple/Makefile; then \
           pushd gdb/testsuite/gdb.apple; \
           make file-statics-cpp.o || stat file-statics-cpp.cpp; \
           make var-path-expr.o || stat var-path-expr.cpp; \
+          cp -v ./*.o .. || ls ./*.o; \
           popd; \
         fi
         # shellcheck disable=SC2044
         for cppfile in $(find . -name '*.cpp' -type f); do \
-          g++ -c "${cppfile}" || stat "${cppfile}"; \
+          g++ -c "${cppfile}" || g++ -c -I. "${cppfile}" || g++ -c -I. -I.. "${cppfile}" || stat "${cppfile}"; \
         done
         if test -e gdb/testsuite/gdb.base/Makefile && test -e gdb/testsuite/gdb.base/langs2.cxx; then \
           pushd gdb/testsuite/gdb.base; \
           make langs2.o || stat langs2.cxx; \
+          cp -v ./*.o .. || ls ./*.o;
           popd; \
         fi
         # shellcheck disable=SC2044
         for cxxfile in $(find . -name '*.cxx' -type f); do \
-          g++ -c "${cxxfile}" || stat "${cxxfile}"; \
+          g++ -c "${cxxfile}" || g++ -c -I. "${cxxfile}" || g++ -c -I. -I.. "${cxxfile}" || stat "${cxxfile}"; \
         done
         if test -e mmalloc/Makefile; then \
           pushd mmalloc; \
           make mmallocplusplus.o || stat mmallocplusplus.cp; \
+          cp -v ./*.o .. || ls ./*.o; \
           popd; \
         fi
 
