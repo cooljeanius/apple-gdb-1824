@@ -3298,13 +3298,13 @@ fork_memcache_put(struct checkpoint *cp)
 	  vm_offset_t mempointer;     /* local copy of inferior's memory */
 	  mach_msg_type_number_t memcopied;     /* for vm_read to use */
 
-	  if (0)
+	  if ((0))
 	    printf("count now %u addr 0x%s size 0x%s\n", count,
                    paddr_nz(address), paddr_nz(size));
 
 	  rslt = mach_vm_read(itask, address, size, &mempointer, &memcopied);
 
-	  if (0)
+	  if ((0))
 	    printf("rslt is %d, copied %u\n", rslt, memcopied);
 
 	  if (rslt == KERN_SUCCESS)
@@ -3542,6 +3542,26 @@ Show if GDB should attach to the subprocess using ptrace()."), NULL,
 
   add_info("fork", cpfork_info, "help");
 }
+
+#ifdef U_HAVE_STD_STRING
+# undef U_HAVE_STD_STRING
+#endif /* U_HAVE_STD_STRING */
+
+#ifdef _dyld_debug_make_runnable
+# undef _dyld_debug_make_runnable
+#endif /* _dyld_debug_make_runnable */
+#ifdef _dyld_debug_restore_runnable
+# undef _dyld_debug_restore_runnable
+#endif /* _dyld_debug_restore_runnable */
+#ifdef _dyld_debug_module_name
+# undef _dyld_debug_module_name
+#endif /* _dyld_debug_module_name */
+#ifdef _dyld_debug_set_error_func
+# undef _dyld_debug_set_error_func
+#endif /* _dyld_debug_set_error_func */
+#ifdef _dyld_debug_add_event_subscriber
+# undef _dyld_debug_add_event_subscriber
+#endif /* _dyld_debug_add_event_subscriber */
 
 #ifdef macosx_ptrace_her
 # undef macosx_ptrace_her
