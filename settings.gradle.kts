@@ -12,3 +12,4 @@ plugins {
 
 rootProject.name = "apple-gdb-1824"
 include("lib")
+includeBuild("src/zlib/contrib/java/jzlib-1.1.2")

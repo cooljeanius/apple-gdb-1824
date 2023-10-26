@@ -4,11 +4,23 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/src/zlib/contrib/java/jzlib-1.1.2" name="jzlib">
+                <projects>
+                  <project path="$PROJECT_DIR$/src/zlib/contrib/java/jzlib-1.1.2" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/lib" />
+            <option value="$PROJECT_DIR$/src/zlib/contrib/java/jzlib-1.1.2" />
           </set>
         </option>
       </GradleProjectSettings>
