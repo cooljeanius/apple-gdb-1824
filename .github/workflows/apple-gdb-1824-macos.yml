@@ -13,8 +13,10 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - run: brew update
-    - run: brew install autogen objc-codegenutils objc-run objconv texi2html texinfo flex aarch64-elf-binutils arm-linux-gnueabihf-binutils arm-none-eabi-binutils binutils i686-elf-binutils riscv64-elf-binutils x86_64-elf-binutils x86_64-linux-gnu-binutils pax deja-gnu expect guile jimtcl osxutils dmalloc fastjar gdb gettext gperf help2man ant-contrib findutils grep coreutils remake bison byacc texlive
-    - run: test -e ./.profile_generic && source ./.profile_generic
+    - run: brew install autogen objc-codegenutils objc-run objconv texi2html texinfo flex aarch64-elf-binutils arm-linux-gnueabihf-binutils arm-none-eabi-binutils binutils i686-elf-binutils riscv64-elf-binutils x86_64-elf-binutils x86_64-linux-gnu-binutils pax deja-gnu expect guile jimtcl osxutils dmalloc fastjar gdb gettext gperf help2man ant-contrib findutils grep coreutils remake bison byacc texlive gawk
+      env:
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+    - run: test -e ./.profile_generic && test -r ./.profile_generic && source ./.profile_generic
     - run: ./configure --enable-silent-rules
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi)
     - run: cd src && ./configure --disable-werror --disable-opts-test --enable-carbon-framework --enable-debug-symbols-framework --enable-64-bit-bfd --enable-silent-rules
@@ -62,7 +64,11 @@ jobs:
     - run: cd src && make all-gdb
     - run: cd src && make check-libiberty
     - run: cd src && for dir in sim itcl; do if test -e ${dir}/Makefile; then make check-${dir} V=0 RUNTESTFLAGS="-v"; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
-    - run: cd src && make check
+    - run: cd src && make check-bfd
+    - run: cd src && make check-opcodes
+    - run: cd src && make check-dejagnu
+    - run: cd src && make check-intl
+    - run: cd src && make check-utils
     - run: pwd
       if: "${{ success() }}"
     - run: find . -name config.log -print0 | xargs cat | grep -i error | sort | uniq
