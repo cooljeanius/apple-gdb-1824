@@ -187,13 +187,13 @@ jobs:
               ./configure --disable-werror --enable-silent-rules --disable-option-checking CFLAGS="-w" || stat -t ./configure; \
             elif test ! -e Makefile && test -x ./config.status; then \
               echo "checking with ./config.status in ${subdir}"; \
-              ./config.status || stat -t ./config.status; \
+              ./config.status CFLAGS="-w" || stat -t ./config.status; \
             else \
               echo "assuming we are fully configured in ${subdir}"; \
             fi
             for srcfile in *.c; do \
               echo "attempting to use $(which make) to compile ${srcfile} in ${subdir}"; \
-              make "$(echo "${srcfile}" | sed "s/\.c/.o/g")" V=0 || stat -t "${srcfile}"; \
+              make "$(echo "${srcfile}" | sed "s/\.c/.o/g")" V=0 CFLAGS="-w" || stat -t "${srcfile}"; \
             done; \
             popd; \
           elif test -d "${subdir}" && (test -r "${subdir}/Makefile.in" || test -r "${subdir}/Makefile.am" || test -r "${subdir}/Makefile.def" || test -r "${subdir}/Makefile.tpl"); then \
@@ -256,6 +256,7 @@ jobs:
         done
         # shellcheck disable=SC2044
         for ccfile in $(find . -name '*.cc' -type f); do \
+          echo "One last attempt at compiling ${ccfile}..."; \
           g++ -c "${ccfile}" || g++ -c -I. "${ccfile}" || g++ -c -I. -I.. "${ccfile}" || stat "${ccfile}"; \
         done
         if test -e gdb/testsuite/gdb.apple/Makefile; then \
@@ -267,6 +268,7 @@ jobs:
         fi
         # shellcheck disable=SC2044
         for cppfile in $(find . -name '*.cpp' -type f); do \
+          echo "One last attempt at compiling ${cppfile}..."; \
           g++ -c "${cppfile}" || g++ -c -I. "${cppfile}" || g++ -c -I. -I.. "${cppfile}" || stat "${cppfile}"; \
         done
         if test -e gdb/testsuite/gdb.base/Makefile && test -e gdb/testsuite/gdb.base/langs2.cxx; then \
@@ -277,6 +279,7 @@ jobs:
         fi
         # shellcheck disable=SC2044
         for cxxfile in $(find . -name '*.cxx' -type f); do \
+          echo "One last attempt at compiling ${cxxfile}..."; \
           g++ -c "${cxxfile}" || g++ -c -I. "${cxxfile}" || g++ -c -I. -I.. "${cxxfile}" || stat "${cxxfile}"; \
         done
         if test -e mmalloc/Makefile; then \

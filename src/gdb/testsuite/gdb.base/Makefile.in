@@ -3,6 +3,10 @@
 VPATH = @srcdir@
 srcdir = @srcdir@
 
+CFLAGS = @CFLAGS@
+CXXFLAGS = @CXXFLAGS@
+DEFS = @DEFS@
+
 EXECUTABLES = all-types annota1 bitfields break \
 	call-ar-st call-rt-st call-strs callfuncs callfwmall \
 	chng-syms commands compiler condbreak constvars coremaker \
