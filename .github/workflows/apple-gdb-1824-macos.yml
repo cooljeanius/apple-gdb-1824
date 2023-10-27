@@ -56,6 +56,7 @@ jobs:
     - run: cd src && make all-libdecnumber
     - run: cd src && make all-mmalloc
     - run: cd src && make configure-readline
+    - run: cd src && make configure-gdb
     - run: cd src && for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/configure; then make configure-${dir}; elif test -d ${dir}; then ls ${dir}/configure*; else echo "skipping configuring in ${dir}"; fi; done
     - run: cd src && for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then make -C ${dir}; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
     - run: cd src && make all-gdb

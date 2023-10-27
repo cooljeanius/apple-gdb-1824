@@ -1201,23 +1201,23 @@ get_history_word_specifier(char *spec, char *from, int *caller_index)
   /* `%' is the word last searched for. */
   if (spec[i] == '%')
     {
-      *caller_index = i + 1;
-      return (search_match ? savestring (search_match) : savestring (""));
+      *caller_index = (i + 1);
+      return (search_match ? savestring(search_match) : savestring(""));
     }
 
   /* `*' matches all of the arguments, but not the command. */
   if (spec[i] == '*')
     {
-      *caller_index = i + 1;
-      result = history_arg_extract (1, '$', from);
-      return (result ? result : savestring (""));
+      *caller_index = (i + 1);
+      result = history_arg_extract(1, '$', from);
+      return (result ? result : savestring(""));
     }
 
   /* `$' is last arg. */
   if (spec[i] == '$')
     {
-      *caller_index = i + 1;
-      return (history_arg_extract ('$', '$', from));
+      *caller_index = (i + 1);
+      return (history_arg_extract('$', '$', from));
     }
 
   /* Try to get FIRST and LAST figured out. */

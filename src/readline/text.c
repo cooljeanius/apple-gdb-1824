@@ -688,7 +688,9 @@ _rl_insert_char(int count, int c)
       rl_insert_text(string);
       free(string);
 
+#ifdef HANDLE_MULTIBYTE
       (void)incoming_length;
+#endif /* HANDLE_MULTIBYTE */
       return 0;
     }
 
@@ -717,7 +719,7 @@ _rl_insert_char(int count, int c)
       free(string);
       incoming_length = 0;
       stored_count = 0;
-#else /* !HANDLE_MULTIBYTE */
+#else /* !HANDLE_MULTIBYTE: */
       char str[1024 + 1];
 
       for (i = 0; i < 1024; i++)
@@ -732,7 +734,9 @@ _rl_insert_char(int count, int c)
 	}
 #endif /* !HANDLE_MULTIBYTE */
 
+#ifdef HANDLE_MULTIBYTE
       (void)incoming_length;
+#endif /* HANDLE_MULTIBYTE */
       return 0;
     }
 

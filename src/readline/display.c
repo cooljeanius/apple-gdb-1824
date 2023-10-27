@@ -754,7 +754,8 @@ rl_redisplay(void)
     }
 
   lb_botlin = (int)newlines;
-  inv_botlin = lb_botlin;
+  if (inv_botlin != lb_botlin)
+    inv_botlin = lb_botlin;
   CHECK_INV_LBREAKS();
   inv_lbreaks[newlines + 1] = out;
   cursor_linenum = lb_linenum;

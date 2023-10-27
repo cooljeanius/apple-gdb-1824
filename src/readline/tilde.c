@@ -206,10 +206,10 @@ tilde_expand(const char *string)
   result_index = result_size = 0UL;
   /* looks like this was supposed to be an assignment after all; doing it
    * as an equality comparison causes result to be used uninitialized: */
-  if ((result = strchr(string, '~')))
-    result = (char *)xmalloc(result_size = (strlen(string) + 16UL));
+  if ((result = strchr(string, '~')) && result)
+    result = (char *)xmalloc(result_size = (strlen(string) + 16UL + result_size));
   else
-    result = (char *)xmalloc(result_size = (strlen(string) + 1UL));
+    result = (char *)xmalloc(result_size = (strlen(string) + 1UL + result_size));
 
   /* Scan through STRING expanding tildes as we come to them. */
   while (1)
