@@ -752,7 +752,7 @@ readline.dvi: $(RLSRC)
 	    touch readline.dvi; \
 	  fi; \
 	else \
-	  ls *.dvi; \
+	  ls ./*.dvi || stat ./*.dvi || ls; \
 	fi
 	if test -e rlman.dvi && test ! -e readline.dvi; then \
 	  mv rlman.dvi readline.dvi; \
