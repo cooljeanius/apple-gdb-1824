@@ -1,3 +1,5 @@
+# -*- coding: utf-8; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- vim:fenc=utf-8:et:sw=2:ts=2:sts=2
+
 name: cooljeanius/apple-gdb-1824-macos
 on:
   push:
@@ -23,7 +25,14 @@ jobs:
     - run: cd src && make all-bfd
     - run: cd src && make all-opcodes
     - run: cd src && make configure-binutils
-    - run: cd src/binutils && make arparse.h
+    - name: Backup that annoying arparse.h header
+      run: |
+        cd src/binutils && make arparse.h
+        if test ! -e ../bfd/arparse.h; then \
+          cp -v arparse.h ../bfd; \
+        elif test ! -e ../include/arparse.h; then \
+          cp -v arparse.h ../include; \
+        fi
     - run: cd src && make
     - run: cd src && make check
     - run: pwd
