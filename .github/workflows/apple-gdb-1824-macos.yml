@@ -20,6 +20,10 @@ jobs:
     - run: cd src && make -C bfd headers
     - run: cd src && if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi
     - run: cd src && make -C bfd diststuff
+    - run: cd src && make all-bfd
+    - run: cd src && make all-opcodes
+    - run: cd src && make configure-binutils
+    - run: cd src/binutils && make arparse.h
     - run: cd src && make
     - run: cd src && make check
     - run: pwd
