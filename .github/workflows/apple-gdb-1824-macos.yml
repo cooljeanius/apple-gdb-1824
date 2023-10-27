@@ -35,8 +35,9 @@ jobs:
         if test ! -f arparse.h; then \
           remake arparse.c; \
         fi
+        # shellcheck disable=SC2046
         if test ! -e arparse.h; then \
-          /bin/sh ./../ylwrap arparse.y y.tab.c arparse.c y.tab.h "$(echo arparse.c | sed -e s/cc$/hh/ -e s/cpp$/hpp/ -e s/cxx$/hxx/ -e s/c++$/h++/ -e s/c$/h/)" y.output arparse.output -- "$(if [ -f ../bison/bison ]; then echo ../bison/bison -y -L./../bison/; else echo bison -o y.tab.c; fi)" -d -t -v -k -Wall -Wyacc; \
+          /bin/sh ./../ylwrap arparse.y y.tab.c arparse.c y.tab.h "$(echo arparse.c | sed -e s/cc$/hh/ -e s/cpp$/hpp/ -e s/cxx$/hxx/ -e s/c++$/h++/ -e s/c$/h/)" y.output arparse.output -- $(if [ -f ../bison/bison ]; then echo ../bison/bison -y -L./../bison/; else echo bison -o y.tab.c; fi) -d -t -v -k -Wall -Wyacc; \
         fi
         if test -e arparse.h; then \
           if test ! -e ../bfd/arparse.h; then \
