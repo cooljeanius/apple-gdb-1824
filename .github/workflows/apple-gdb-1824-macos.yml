@@ -16,6 +16,10 @@ jobs:
     - run: ./configure --enable-silent-rules
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi)
     - run: cd src && ./configure --disable-werror --disable-opts-test --enable-carbon-framework --enable-debug-symbols-framework --enable-64-bit-bfd --enable-silent-rules
+    - run: cd src && make configure-bfd
+    - run: cd src && make -C bfd headers
+    - run: cd src && if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi
+    - run: cd src && make -C bfd diststuff
     - run: cd src && make
     - run: cd src && make check
     - run: pwd
