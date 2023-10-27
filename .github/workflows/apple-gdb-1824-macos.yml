@@ -13,7 +13,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - run: brew update
-    - run: brew install autogen objc-codegenutils objc-run objconv texi2html texinfo flex aarch64-elf-binutils arm-linux-gnueabihf-binutils arm-none-eabi-binutils binutils i686-elf-binutils riscv64-elf-binutils x86_64-elf-binutils x86_64-linux-gnu-binutils pax deja-gnu expect guile jimtcl osxutils dmalloc fastjar gdb gettext gperf help2man ant-contrib findutils grep coreutils
+    - run: brew install autogen objc-codegenutils objc-run objconv texi2html texinfo flex aarch64-elf-binutils arm-linux-gnueabihf-binutils arm-none-eabi-binutils binutils i686-elf-binutils riscv64-elf-binutils x86_64-elf-binutils x86_64-linux-gnu-binutils pax deja-gnu expect guile jimtcl osxutils dmalloc fastjar gdb gettext gperf help2man ant-contrib findutils grep coreutils remake bison byacc
     - run: test -e ./.profile_generic && source ./.profile_generic
     - run: ./configure --enable-silent-rules
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi)
@@ -31,6 +31,12 @@ jobs:
         make arparse.h
         if test ! -e arparse.h; then \
           make my_arparse.h; \
+        fi
+        if test ! -f arparse.h; then \
+          remake arparse.c; \
+        fi
+        if test ! -e arparse.h; then \
+          /bin/sh ./../ylwrap arparse.y y.tab.c arparse.c y.tab.h "$(echo arparse.c | sed -e s/cc$/hh/ -e s/cpp$/hpp/ -e s/cxx$/hxx/ -e s/c++$/h++/ -e s/c$/h/)" y.output arparse.output -- "$(if [ -f ../bison/bison ]; then echo ../bison/bison -y -L./../bison/; else echo bison -o y.tab.c; fi)" -d -t -v -k -Wall -Wyacc; \
         fi
         if test -e arparse.h; then \
           if test ! -e ../bfd/arparse.h; then \
