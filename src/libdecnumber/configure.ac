@@ -49,7 +49,7 @@ ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wno-unused-value -Wwrite-strings \
 -Wmissing-declarations -Wnested-externs -Wundef -Wshadow -Wformat=2 \
 -Wold-style-definition -Wold-style-declaration -Wc++-compat -Wodr -Wabi \
 -Wmissing-format-attribute -Wcast-qual -Wout-of-line-declaration \
--Wmisleading-indentation -Wnull-dereference -Wzero-length-bounds])
+-Wmisleading-indentation -Wnull-dereference -Wzero-length-bounds -Wfatal-errors])
 ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])dnl
 
 # Only enable with --enable-werror-always until existing warnings are

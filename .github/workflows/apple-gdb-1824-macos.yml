@@ -11,7 +11,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - run: brew update
-    - run: sudo apt-get install autogen libobjc2 objc-codegenutils objc-run objconv texi2html texinfo flex aarch64-elf-binutils arm-linux-gnueabihf-binutils arm-none-eabi-binutils binutils i686-elf-binutils riscv64-elf-binutils x86_64-elf-binutils x86_64-linux-gnu-binutils pax ncurses deja-gnu expect guile tcl-tk m4 osxutils dmalloc fastjar gdb gettext gperf help2man ant ant-contrib findutils grep coreutils
+    - run: brew install autogen libobjc2 objc-codegenutils objc-run objconv texi2html texinfo flex aarch64-elf-binutils arm-linux-gnueabihf-binutils arm-none-eabi-binutils binutils i686-elf-binutils riscv64-elf-binutils x86_64-elf-binutils x86_64-linux-gnu-binutils pax ncurses deja-gnu expect guile tcl-tk m4 osxutils dmalloc fastjar gdb gettext gperf help2man ant ant-contrib findutils grep coreutils
     - run: test -e ./.profile_generic && source ./.profile_generic
     - run: ./configure --enable-silent-rules
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi)
@@ -23,6 +23,7 @@ jobs:
     - run: find . -name config.log -print0 | xargs cat | grep -i error | sort | uniq
       if: "${{ failure() }}"
     strategy:
+      fail-fast: false
       matrix:
         compiler:
         - clang

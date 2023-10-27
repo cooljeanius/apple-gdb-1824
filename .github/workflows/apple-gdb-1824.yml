@@ -38,6 +38,7 @@ jobs:
     - run: find . -name config.log -print0 | xargs cat | grep -i error | sort | uniq
       if: "${{ failure() }}"
     strategy:
+      fail-fast: false
       matrix:
         compiler:
         - clang

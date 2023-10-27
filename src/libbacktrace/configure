@@ -19114,7 +19114,7 @@ for real_option in -Wall -Wextra -Wwrite-strings -Wnested-externs \
 -Wmissing-format-attribute -Wcast-qual -Wmisleading-indentation -Wabi \
 -Wnull-dereference -Wdangling-else -Wduplicate-decl-specifier \
 -Wmemset-elt-size -Wswitch-unreachable -Wexpansion-to-defined \
--Wshadow-local -Wc99-c11-compat -Wzero-length-bounds; do
+-Wshadow-local -Wc99-c11-compat -Wzero-length-bounds -Wfatal-errors; do
   # Do the check with the no- prefix removed since gcc silently accepts
   # any -Wno-* option on purpose:
   case ${real_option} in

@@ -177,7 +177,7 @@ AC_CHECK_TYPES([iconv_t])dnl
 AC_MSG_CHECKING([compiler flags])
 AC_MSG_RESULT([ ])
 ACX_PROG_CC_WARNING_OPTS([-Wtraditional-conversion -Wnested-externs \
-  -Wmissing-parameter-type -Wold-style-declaration],
+  -Wmissing-parameter-type -Wold-style-declaration -Wfatal-errors],
                          [EXTRA_ANSIFICATION_FLAGS])dnl
 
 # Checks for library functions.
