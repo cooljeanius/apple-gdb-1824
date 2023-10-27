@@ -16,6 +16,8 @@ jobs:
     - run: brew install autogen objc-codegenutils objc-run objconv texi2html texinfo flex aarch64-elf-binutils arm-linux-gnueabihf-binutils arm-none-eabi-binutils binutils i686-elf-binutils riscv64-elf-binutils x86_64-elf-binutils x86_64-linux-gnu-binutils pax deja-gnu expect guile jimtcl osxutils dmalloc fastjar gdb gettext gperf help2man ant-contrib findutils grep coreutils remake bison byacc texlive gawk
       env:
         HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+        HOMEBREW_VERBOSE: 1
+        HOMEBREW_VERBOSE_USING_DOTS: 1
     - run: test -e ./.profile_generic && test -r ./.profile_generic && source ./.profile_generic
     - run: ./configure --enable-silent-rules
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi)

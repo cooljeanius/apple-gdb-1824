@@ -169,7 +169,7 @@ libintl.la: $(LTOBJECTS) $(OBJECTS)
 EXTRA_DIST += po/Makevars.in
 
 check: all @MAINT@ config.status
-	ls *.i || ls *.s || ls *.bc
+	ls ./*.i || ls ./*.s || ls ./*.bc || ls
 .PHONY: check
 
 # This installation goal is only used in GNU gettext. Packages which
