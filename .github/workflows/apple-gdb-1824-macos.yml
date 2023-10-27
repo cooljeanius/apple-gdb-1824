@@ -27,11 +27,19 @@ jobs:
     - run: cd src && make configure-binutils
     - name: Backup that annoying arparse.h header
       run: |
-        cd src/binutils && make arparse.h
-        if test ! -e ../bfd/arparse.h; then \
-          cp -v arparse.h ../bfd; \
-        elif test ! -e ../include/arparse.h; then \
-          cp -v arparse.h ../include; \
+        cd src/binutils
+        make arparse.h
+        if test ! -e arparse.h; then \
+          make my_arparse.h; \
+        fi
+        if test -e arparse.h; then \
+          if test ! -e ../bfd/arparse.h; then \
+            cp -v arparse.h ../bfd; \
+          elif test ! -e ../include/arparse.h; then \
+            cp -v arparse.h ../include; \
+          fi; \
+        else \
+          ls ./*.h || ls || pwd; \
         fi
     - run: cd src && make
     - run: cd src && make check
