@@ -664,20 +664,23 @@ static int string_for_ptr(GDB_ADDRESS addr, char *theString, int maxLen,
     /* If we got a string then copy it to the returned string quoting and truncating as	*/
     /* as necessary...									*/
     
-    if (stringLen == 0)
+    if (stringLen == 0) {
     	return (0);
+    }
     	
     s = result_string;
     
-    if (!override_quoting)
+    if (!override_quoting) {
 	if (str_obj || env_MACSBUG_COMMENT_INSNS != SECRET_CODE) {
 	    *theString++ = '"';
 	    totalLen     = needQuote = 1;
 	} else {
 	    totalLen = needQuote = (strType == IS_PSTRING || *s == ' ' || *(s + stringLen - 1) == ' ');
-	    if (needQuote)
+	    if (needQuote) {
 		*theString++ = '\'';
+            }
 	}
+    }
     
     maxLen -= needQuote;
     if (str_obj && env_MACSBUG_COMMENT_INSNS != SECRET_CODE)
@@ -1240,7 +1243,7 @@ static int try_to_comment_insn(GDB_ADDRESS pc, unsigned long instruction,
 		    return (sprintf(comment, "%.9g", fltval));
 		
 		case 599:					     /* lfdx   frt,ra,rb*/
-		case 631:					     /* lfdux  frt,ra,rb /
+		case 631:					     /* lfdux  frt,ra,rb*/
 	    	    ra = BITS(instruction, 11, 15);
 		    rb = BITS(instruction, 16, 20);
 		    if (!gdb_read_memory_from_addr(&dblval, Ra + Rb, sizeof(double), 0))
@@ -1426,7 +1429,7 @@ char *format_disasm_line(FILE *f, char *src, void *data)
     /* Extract function name and offset from "<function[+dddd][ in|at file:line]>: "...	*/
         
     /* The function name could be a Objective C message and thus enclosed in brackets 	*/
-    /* which may contain embedded spaces (e.g., "[msg p1]").  The function may also be	*
+    /* which may contain embedded spaces (e.g., "[msg p1]").  The function may also be	*/
     /* an unmangled C++ name, possibly a template instance, which means there are	*/
     /* possibly nested angle brackets or even unpaired angle brackes for operator> and	*/
     /* operator<.  RealBasic names too can have angle brackets. Hopefully none of these	*/

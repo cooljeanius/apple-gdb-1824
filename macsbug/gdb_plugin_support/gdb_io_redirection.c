@@ -16,9 +16,27 @@
  the displays through user specified routines.
 */
 
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include <stdio.h>
 #include <stddef.h>
 #include <stdarg.h>
+
+#if !defined(__has_include)
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
+#if defined(HAVE_INTTYPES_H) || __has_include(<inttypes.h>)
+# include <inttypes.h>
+#endif /* HAVE_INTTYPES_H */
+#if defined(HAVE_STDINT_H) || __has_include(<stdint.h>)
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+#if defined(HAVE_SYS_TYPES_H) || __has_include(<sys/types.h>)
+# include <sys/types.h>
+#endif /* HAVE_SYS_TYPES_H */
 
 #include "gdb_private_interfaces.h"
 

@@ -781,7 +781,7 @@ GDB_ADDRESS gdb_read_memory_from_addr(void *dst, GDB_ADDRESS src, int n, int rep
 
 void gdb_write_memory(char *dst, void *src, int n);
     /* The n bytes from the (plugin) src are written to the target memory address 
-       represented by the dst expression *string*. *.
+       represented by the dst expression *string*. */
 
 void gdb_write_memory_to_addr(GDB_ADDRESS dst, void *src, int n);
     /*  The n bytes from the (plugin) src are written to the target memory address 

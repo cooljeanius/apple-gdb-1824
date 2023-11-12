@@ -15,6 +15,10 @@
  capture the output.  Gdb's internal way is just to write to stdout.
 */
 
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include <stdio.h>
 #include <stddef.h>
 #include <stdarg.h>

@@ -22,6 +22,22 @@
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #  warning "nspage.c expects <mach/mach.h> to be included."
 # endif /* __GNUC__ && !defined(__STRICT_ANSI__) */
+# ifndef KERN_SUCCESS
+#  define KERN_SUCCESS 0
+# endif /* !KERN_SUCCESS */
+# ifndef _MACH_VM_PROT_H_
+#  define _MACH_VM_PROT_H_ 1
+typedef int vm_prot_t;
+#  ifndef VM_PROT_NONE
+#   define VM_PROT_NONE ((vm_prot_t)0x00)
+#  endif /* !VM_PROT_NONE */
+#  ifndef VM_PROT_READ
+#   define VM_PROT_READ ((vm_prot_t)0x01)
+#  endif /* !VM_PROT_READ */
+#  ifndef VM_PROT_WRITE
+#   define VM_PROT_WRITE ((vm_prot_t)0x02)
+#  endif /* !VM_PROT_WRITE */
+# endif /* !_MACH_VM_PROT_H_ */
 #endif /* HAVE_MACH_MACH_H || __MACH__ || __APPLE__ */
 
 #if (!defined(__GNUC__) || (__GNUC__ < 2) || __GNUC_MINOR__ < (defined __cplusplus ? 6 : 4))

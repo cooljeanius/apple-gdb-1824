@@ -1647,7 +1647,7 @@ void __display_side_bar(char *arg, int from_tty)
 	    	if (!*bar_right)
 	    	    screen_fprintf(stdout, SIDE_BAR, CLEAR_LINE);
 	    }
-    	} else {				/* no curApName, blank title and name	*/
+    	} else {		/* no curApName, blank title and name	*/
     	    screen_fprintf(stdout, SIDE_BAR, GOTO "%s" "%s" "%s", row++, left_col,
     	    				bar_left, blanks, bar_right);
     	    screen_fprintf(stdout, SIDE_BAR, GOTO "%s" "%s" "%s", row++, left_col,
@@ -1658,16 +1658,18 @@ void __display_side_bar(char *arg, int from_tty)
     } else
     	row += 3;
 
-    /* Print the special registers, in red if they different from previous...		*/
+    /* Print the special registers, in red if they different from previous... */
 
     changed = (prev_lr != lr);
-    if (first_sidebar || changed || changed != prev_lr_color)
-    	if (target_arch == 4)
+    if (first_sidebar || changed || changed != prev_lr_color) {
+    	if (target_arch == 4) {
 	  screen_fprintf(stdout, SIDE_BAR, GOTO "%s" "LR  " "%s" "%.8lX" "%s", row, left_col,
 			   bar_left, COLOR_CHANGE(prev_lr_color = changed), (unsigned long)lr, bar_right);
-	else
+	} else {
 	  screen_fprintf(stdout, SIDE_BAR, GOTO "%s" "LR  " "%s" "%.16llX" "%s", row, left_col,
 			   bar_left, COLOR_CHANGE(prev_lr_color = changed), (unsigned long long)lr, bar_right);
+      	}
+    }
     ++row;
 
     changed = (prev_cr.cr != cr.cr);
@@ -2344,7 +2346,7 @@ void my_prompt_position_function(int continued)
     static int used_cmd_lines = 0;
     static int starts_top     = 0;
 
-    if (gdb_interactive() && macsbug_screen)
+    if (gdb_interactive() && macsbug_screen) {
     	if (continued == 0) {
 	    immediate_flush = NORMAL_REFRESH;
 	    gdb_fflush(gdb_current_stdout);
@@ -2368,6 +2370,7 @@ void my_prompt_position_function(int continued)
 	    }
 	    screen_fprintf(stderr, CMD_AREA, GOTO CLEAR_LINE, cmd_top + cmd_lines - 1, cmd_left);
 	}
+    }
 
     gdb_define_raw_input_handler(my_raw_input_handler);
 }

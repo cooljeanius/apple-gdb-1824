@@ -14,6 +14,10 @@
  like it does its own.  User handlers can be specified to filter the operations as well.
 */
 
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>

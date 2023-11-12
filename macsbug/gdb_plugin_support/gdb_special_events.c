@@ -15,10 +15,28 @@
  routines which are independent of gdb's data definitions.
 */
 
+#ifndef NO_POISON
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "gdb_private_interfaces.h"
 
 #include <stdio.h>
 #include <stdarg.h>
+
+#if !defined(__has_include)
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
+#if defined(HAVE_INTTYPES_H) || __has_include(<inttypes.h>)
+# include <inttypes.h>
+#endif /* HAVE_INTTYPES_H */
+#if defined(HAVE_STDINT_H) || __has_include(<stdint.h>)
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
+#if defined(HAVE_SYS_TYPES_H) || __has_include(<sys/types.h>)
+# include <sys/types.h>
+#endif /* HAVE_SYS_TYPES_H */
 
 #include "command.h"
 /* FIXME: we don't have interfaces to the parts of cmd_list_element
@@ -27,7 +45,9 @@
 #include "breakpoint.h"
 #include "gdbcore.h" // file_changed_hook
 #include "inferior.h"
-//#include "target.h"
+#if 0
+# include "target.h"
+#endif /* 0 */
 
 /*--------------------------------------------------------------------------------------*/
 
