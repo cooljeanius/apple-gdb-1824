@@ -11,12 +11,31 @@
 #include <errno.h>
 #include <string.h>
 
-#include <mach/mach.h>
+#if !defined(__has_include)
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
+#if defined(HAVE_MACH_MACH_H) || __has_include(<mach/mach.h>) || \
+    defined(__MACH__) || defined(__APPLE__)
+# include <mach/mach.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "nspage.c expects <mach/mach.h> to be included."
+# endif /* __GNUC__ && !defined(__STRICT_ANSI__) */
+#endif /* HAVE_MACH_MACH_H || __MACH__ || __APPLE__ */
 
 #if (!defined(__GNUC__) || (__GNUC__ < 2) || __GNUC_MINOR__ < (defined __cplusplus ? 6 : 4))
 # define __MACH_CHECK_FUNCTION ((__const char *)0)
 #else
-# define __MACH_CHECK_FUNCTION __PRETTY_FUNCTION__
+# if defined(__PRETTY_FUNCTION__) && !defined(__STRICT_ANSI__)
+#  define __MACH_CHECK_FUNCTION __PRETTY_FUNCTION__
+# else
+#  if defined(NULL) || defined(__STDC__)
+#   define __MACH_CHECK_FUNCTION NULL
+#  else
+#   define __MACH_CHECK_FUNCTION ((void *)0)
+#  endif /* NULL || __STDC__ */
+# endif /* __PRETTY_FUNCTION__ && !__STRICT_ANSI__ */
 #endif /* ? */
 
 #define MACH_CHECK_ERROR(ret) \

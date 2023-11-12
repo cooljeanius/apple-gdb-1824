@@ -128,7 +128,7 @@ HFILES				= 	MacsBug.h
 HEADERS				=	$(HFILES:%=$(SRCROOT)/%) 	\
 					$(PLUGIN_SUPPORT)/gdb.h
 
-INCLUDES 			= 	-I$(PLUGIN_SUPPORT) -I.
+INCLUDES 			= 	-I$(PLUGIN_SUPPORT) -I. -I../src/include
 
 OPT				=	-Os
 

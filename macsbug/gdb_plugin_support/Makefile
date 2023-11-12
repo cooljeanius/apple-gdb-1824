@@ -107,7 +107,11 @@ INCLUDES 			= 	\
 					-I$(GDB_FRAMEWORKS)/gdb.framework/Headers 	 \
 					-I$(GDB_FRAMEWORKS)/gdb.framework/Headers/config \
 					-I$(GDB_FRAMEWORKS)/gdb.framework/Headers/machine \
-					-I.
+					-I. -I.. -I../../src/include \
+					-I$(IDIR_H) -I$(DSTDIR_H) \
+					-I../../src/gdb -I../../src/bfd \
+					-I../../src/gdb/target \
+					-I$(SRCROOT)/include
 
 OPT				=	-Os
 

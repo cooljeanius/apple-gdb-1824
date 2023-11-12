@@ -40,7 +40,8 @@
 static caddr_t	startAddr = (caddr_t) 0;
 
 #if (!defined(sgi) && !defined(_AIX) && (!defined(linux) || !defined(_BSD_SOURCE)) \
-     && !defined(FIXINC_WRAP_STDIO_H_STDIO_STDARG_H) && !defined(_STDIO_H_))
+     && !defined(FIXINC_WRAP_STDIO_H_STDIO_STDARG_H) && !defined(_STDIO_H) \
+     && !defined(_STDIO_H_))
 extern int	sys_nerr;
 extern char *	sys_errlist[];
 #endif /* !sgi && !_AIX && (!linux || !_BSD_SOURCE) && !_STDIO_H_ */
