@@ -1308,9 +1308,9 @@ write_struct(FILE *fp, struct struct_desc *structdesc)
   fprintf(fp, "\nstruct %s {\n", structdesc->name);
   for (j = 0; j < structdesc->numfields; ++j)
     {
-      fprintf(fp, "  %s %s;\n",
-	      name_from_type(structdesc->fields[j].type),
-	      structdesc->fields[j].name);
+      const char *w_s_tmpstr = name_from_type(structdesc->fields[j].type);
+      fprintf(fp, "  %s %s;\n", w_s_tmpstr, structdesc->fields[j].name);
+      free((void *)w_s_tmpstr);
     }
   fprintf(fp, "};\n\n");
 }
@@ -1325,9 +1325,9 @@ write_class(FILE *fp, struct class_desc *classdesc)
   fprintf(fp, "public:\n");
   for (j = 0; j < classdesc->numfields; ++j)
     {
-      fprintf(fp, "  %s %s;\n",
-	      name_from_type(classdesc->fields[j].type),
-	      classdesc->fields[j].name);
+      const char *w_c_tmpstr = name_from_type(classdesc->fields[j].type);
+      fprintf(fp, "  %s %s;\n", w_c_tmpstr, classdesc->fields[j].name);
+      free((void *)w_c_tmpstr);
     }
   for (j = 0; j < classdesc->nummethods; ++j)
     {
@@ -1341,15 +1341,16 @@ write_function_decl(FILE *fp, struct function_desc *fndesc)
 {
   int i;
 
-  fprintf(fp, "extern %s %s (",
-	  name_from_type(fndesc->return_type), fndesc->name);
+  const char *w_f_d_tmpstr0 = name_from_type(fndesc->return_type);
+  fprintf(fp, "extern %s %s (", w_f_d_tmpstr0, fndesc->name);
+  free((void *)w_f_d_tmpstr0);
   if (language != knr)
     {
       for (i = 0; i < fndesc->numargs; ++i)
 	{
-	  fprintf(fp, "%s %s",
-		  name_from_type(fndesc->args[i].type),
-		  fndesc->args[i].name);
+	  const char *w_f_d_tmpstr1 = name_from_type(fndesc->args[i].type);
+	  fprintf(fp, "%s %s", w_f_d_tmpstr1, fndesc->args[i].name);
+   	  free((void *)w_f_d_tmpstr1);
 	  if ((i + 1) < fndesc->numargs)
 	    fprintf(fp, ", ");
 	}
@@ -2185,9 +2186,9 @@ char *
 copy_string(const char *str)
 {
   size_t len = strlen(str);
-  PTR rslt;
+  char *rslt;
 
-  rslt = xmalloc(len + 1UL);
+  rslt = (char *)xmalloc(len + 1UL);
   strcpy(rslt, str);
   return rslt;
 }

@@ -48,6 +48,10 @@ static bfd_boolean osf_core_core_file_matches_executable_p
 static void swap_abort
  PARAMS((void));
 
+#if !defined(MAXCOMLEN) && !defined(__SYS_CORE_H__)
+# define MAXCOMLEN 1
+#endif /* !MAXCOMLEN && !__SYS_CORE_H__ */
+
 /* These are stored in the bfd's tdata: */
 struct osf_core_struct
 {

@@ -20,7 +20,12 @@ jobs:
         HOMEBREW_VERBOSE_USING_DOTS: 1
     - run: test -e ./.profile_generic && test -r ./.profile_generic && source ./.profile_generic
     - run: ./configure --enable-silent-rules
-    - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi)
+    - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
+    - run: if test ! -e libcheckpoint/libcheckpoint.dylib; then make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else stat libcheckpoint/libcheckpoint.dylib; fi
+    - run: if test ! -e macsbug/MacsBug_plugin; then make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else stat macsbug/MacsBug_plugin; fi
+    - run: if test ! -e macsbug/MacsBug_plugin; then make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else stat macsbug/MacsBug_plugin; fi
+    - run: if test ! -e macsbug/gdb_plugin_support/gdb_plugin_support.o; then make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi) || (for cfile in macsbug/gdb_plugin_support/*.c; do ${{ matrix.compiler }} -c "${cfile}"; done); else stat macsbug/gdb_plugin_support/gdb_plugin_support.o; fi
+    - run: (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi) || (if test -x ./gradlew; then ./gradlew; elif test -r ./gradlew; then sh ./gradlew; elif test -e ./gradlew; then stat ./gradlew; else echo "gradlewrapper missing"; fi) || (if test -x "$(which gradle)"; then gradle; else echo "gradle missing"; fi) || (if test -x ~rc/bin/buildit; then sudo ~rc/bin/buildit "$(pwd)" -arch ppc -arch i386 -arch armv5 -target cross -project gdb -release RELEASENAME RC_CROSS_ARCHS=armv6; else echo "buildit missing"; fi) || ls
     - run: cd src && ./configure --disable-werror --disable-opts-test --enable-carbon-framework --enable-debug-symbols-framework --enable-64-bit-bfd --enable-silent-rules
     - run: cd src && make configure-bfd
     - run: cd src && make -C bfd headers

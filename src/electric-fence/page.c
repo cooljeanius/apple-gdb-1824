@@ -3,6 +3,12 @@
  */
 
 #include "efence.h"
+#if !defined(__has_include)
+# define __has_include(foo) 0
+#endif /* !__has_include */
+#if defined(HAVE_FEATURES_H) || __has_include(<features.h>)
+# include <features.h>
+#endif /* HAVE_FEATURES_H */
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -33,10 +39,11 @@
 
 static caddr_t	startAddr = (caddr_t) 0;
 
-#if (!defined(sgi) && !defined(_AIX) && !defined(linux))
+#if (!defined(sgi) && !defined(_AIX) && (!defined(linux) || !defined(_BSD_SOURCE)) \
+     && !defined(FIXINC_WRAP_STDIO_H_STDIO_STDARG_H) && !defined(_STDIO_H_))
 extern int	sys_nerr;
 extern char *	sys_errlist[];
-#endif /* !sgi && !_AIX && !linux */
+#endif /* !sgi && !_AIX && (!linux || !_BSD_SOURCE) && !_STDIO_H_ */
 
 static const char *
 stringErrorReport(void)
