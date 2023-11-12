@@ -1,4 +1,4 @@
-/*
+/* -*- Rez -*-
  * tkMacMDEF.r --
  *
  *	This file contains the actual MDEF. Since this is not likely to 

@@ -1,4 +1,4 @@
-/*
+/* -*- Rez -*-
  * tkMacOSA.r --
  *
  *	This file creates resources used by the AppleScript package.

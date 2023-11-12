@@ -1,4 +1,4 @@
-/* 
+/* -*- Rez -*-
  * tkMacApplication.r --
  *
  *	This file creates resources for use in the Wish application.

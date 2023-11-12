@@ -1,4 +1,4 @@
-/* 
+/* -*- Rez -*-
  * tkMacOSXApplication.r --
  *
  *	This file creates resources for use in the Wish application.
@@ -41,14 +41,14 @@ resource 'vers' (1) {
 	TK_MAJOR_VERSION, MINOR_VERSION,
 	RELEASE_LEVEL, 0x00, verUS,
 	TK_PATCH_LEVEL,
-	TK_PATCH_LEVEL ", by Jim Ingham & Ian Reid" "\n" "© 2001 Apple Computer, Inc" "\n" "1998-2000 Scriptics Inc." "\n" "1996-1997 Sun Microsystems Inc."
+	TK_PATCH_LEVEL ", by Jim Ingham & Ian Reid" "\n" "ï¿½ 2001 Apple Computer, Inc" "\n" "1998-2000 Scriptics Inc." "\n" "1996-1997 Sun Microsystems Inc."
 };
 
 resource 'vers' (2) {
 	TK_MAJOR_VERSION, MINOR_VERSION,
 	RELEASE_LEVEL, 0x00, verUS,
 	TK_PATCH_LEVEL,
-	"Wish " TK_PATCH_LEVEL " © 1993-1999"
+	"Wish " TK_PATCH_LEVEL " ï¿½ 1993-1999"
 };
 
 #define TK_APP_RESOURCES 128
@@ -90,7 +90,7 @@ resource 'FREF' (TK_APP_RESOURCES+1, purgeable)
 
 type TK_APP_CREATOR as 'STR ';
 resource TK_APP_CREATOR (0, purgeable) {
-	"Wish " TK_PATCH_LEVEL " © 1996"
+	"Wish " TK_PATCH_LEVEL " ï¿½ 1996"
 };
 
 /*

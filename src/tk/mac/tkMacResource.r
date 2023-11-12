@@ -1,4 +1,4 @@
-/*
+/* -*- Rez -*-
  * tkMacResources.r --
  *
  *	This file creates resources for use in a simple shell.
@@ -69,7 +69,7 @@ resource 'DITL' (128, "About Box", purgeable) {
 	    "Wish - Windowing Shell" "\n" "based on Tcl " 
 	    TCL_PATCH_LEVEL " & Tk " TK_PATCH_LEVEL "\n\n" 
             "Jim Ingham & Ray Johnson" "\n"
-	    "© 2001 Tcl Core Team" "\n"
+	    "ï¿½ 2001 Tcl Core Team" "\n"
             "jingham@apple.com"},	    
         { 19,  24, 119,  92}, Picture  {enabled, 128}
     }

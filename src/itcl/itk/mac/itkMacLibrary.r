@@ -1,4 +1,4 @@
-/*
+/* -*- Rez -*-
  * tkMacLibrary.r --
  *
  *	This file creates resources for use in most Tk applications.

@@ -1,4 +1,4 @@
-/* mac-gdb.r: Resource (Rez) file for MacGDB. */
+/* mac-gdb.r: -*- Rez -*- Resource file for MacGDB. */
 
 /* These first two can be found in /Developer/Headers/FlatCarbon with
  * Xcode 3, but I have vendored in local copies just in case: */

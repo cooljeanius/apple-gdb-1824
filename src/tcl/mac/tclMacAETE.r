@@ -1,4 +1,4 @@
-/*
+/* -*- Rez -*-
  * tclMacAETE.r --
  *
  *	This file creates the Apple Event Terminology resources 

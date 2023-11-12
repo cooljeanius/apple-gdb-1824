@@ -1,4 +1,4 @@
-/*
+/* -*- Rez -*-
  * tkAboutDlg.r --
  *
  *	This file creates resources for use in most Tk applications.

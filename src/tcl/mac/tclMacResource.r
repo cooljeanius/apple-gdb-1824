@@ -1,4 +1,4 @@
-/* 
+/* -*- Rez -*-
  * tclMacResource.r --
  *
  *	This file creates resources for use in a simple shell.

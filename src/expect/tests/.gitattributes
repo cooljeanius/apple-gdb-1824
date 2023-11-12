@@ -1,0 +1,4 @@
+all linguist-language=tcl
+defs linguist-language=tcl
+*.test linguist-language=tcl
+README linguist-language=text

@@ -1,4 +1,4 @@
-/* 
+/* -*- Rez -*-
  * tclMacApplication.r --
  *
  *	This file creates resources for use Tcl Shell application.

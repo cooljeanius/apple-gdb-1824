@@ -1,4 +1,4 @@
-/*
+/* -*- Rez -*-
  * Types.r
  *
  * A Rez resource file

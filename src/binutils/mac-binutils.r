@@ -1,4 +1,4 @@
-/* mac-binutils.r: Rez resources for GNU binutils. */
+/* mac-binutils.r: -*- Rez -*- resources for GNU binutils. */
 
 #include "SysTypes.r"
 

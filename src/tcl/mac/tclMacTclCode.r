@@ -1,4 +1,4 @@
-/* 
+/* -*- Rez -*-
  * tclMacTclCode.r --
  *
  *	This file creates resources from the Tcl code that is

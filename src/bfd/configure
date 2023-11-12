@@ -7634,7 +7634,7 @@ unknown)
 esac
 
 if test "x${AR}" = "x"; then
-  test -z "${AR}"
+  test -z "${AR}" || unset AR
   if test -n "$ac_tool_prefix"; then
   for ac_prog in ar gar
   do
@@ -7746,7 +7746,7 @@ esac
 fi
   ## might want to switch around these checks...
 else
-  test ! -z "${AR}"
+  test -n "${AR}" && export AR
 fi
 if test -n "$ac_tool_prefix"; then
   for ac_prog in ranlib granlib
@@ -7859,7 +7859,7 @@ esac
 fi
   ## keep autoscan happy:
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -7963,7 +7963,7 @@ else
 fi
 
 else
-  test ! -z "${RANLIB}"
+  test -n "${RANLIB}" && export RANLIB
 fi
 # Extract the first word of "sandbox-exec", so it can be a program name with args.
 set dummy sandbox-exec; ac_word=$2

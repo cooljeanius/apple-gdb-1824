@@ -1,4 +1,4 @@
-/*
+/* -*- Rez -*-
  *  itclMacTclCode.r
  *
  *  This file includes the Itcl code that is needed to startup Tcl.

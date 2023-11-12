@@ -1,4 +1,4 @@
-/*
+/* -*- Rez -*-
  * tkMacOSXResources.r --
  *
  *	This file creates resources for use in a simple shell.
@@ -50,14 +50,14 @@ resource 'vers' (1) {
 	TK_MAJOR_VERSION, MINOR_VERSION,
 	RELEASE_LEVEL, 0x00, verUS,
 	TK_PATCH_LEVEL,
-	TK_PATCH_LEVEL ", by Ray Johnson & Jim Ingham " "\n" "© 1993-1997 Sun Microsystems" "\n" "© 1998-1999 Scriptics Inc."
+	TK_PATCH_LEVEL ", by Ray Johnson & Jim Ingham " "\n" "ï¿½ 1993-1997 Sun Microsystems" "\n" "ï¿½ 1998-1999 Scriptics Inc."
 };
 
 resource 'vers' (2) {
 	TK_MAJOR_VERSION, MINOR_VERSION,
 	RELEASE_LEVEL, 0x00, verUS,
 	TK_PATCH_LEVEL,
-	"Wish " TK_PATCH_LEVEL " © 1993-1999"
+	"Wish " TK_PATCH_LEVEL " ï¿½ 1993-1999"
 };
 
 

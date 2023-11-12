@@ -1,4 +1,4 @@
-/*
+/* -*- Rez -*-
  *  itkMacTclCode.r
  *
  *  This file includes the Itk code that is needed to startup Itk.

@@ -68,19 +68,19 @@ AC_MSG_RESULT([ ])
 AM_PROG_AS
 AM_PROG_AR
 if test "x${AR}" = "x"; then
-  test -z "${AR}"
+  test -z "${AR}" || unset AR
   AC_CHECK_TOOLS([AR],[ar gar])dnl
   ## might want to switch around these checks...
 else
-  test ! -z "${AR}"
+  test -n "${AR}" && export AR
 fi
 AC_CHECK_TOOLS([RANLIB],[ranlib granlib],[:])dnl
   ## keep autoscan happy:
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   AC_PROG_RANLIB
 else
-  test ! -z "${RANLIB}"
+  test -n "${RANLIB}" && export RANLIB
 fi
 AC_PATH_PROG([SANDBOX_EXEC],[sandbox-exec],[],[/usr/bin])dnl
 AC_PATH_PROGS([MAKE_BIN],[make gmake gnumake remake "xcrun make"])

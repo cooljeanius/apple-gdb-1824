@@ -1,4 +1,4 @@
-/*
+/* -*- Rez -*-
  * itkStaticPkgIndex.r --
  *
  *	This file creates resources which bind in the static version of the

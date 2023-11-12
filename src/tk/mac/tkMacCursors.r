@@ -1,4 +1,4 @@
-/* 
+/* -*- Rez -*-
  * tkMacCursors.r --
  *
  *	This file defines a set of Macintosh cursor resources that

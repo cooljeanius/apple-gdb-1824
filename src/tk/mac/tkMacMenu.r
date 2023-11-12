@@ -1,4 +1,4 @@
-/*
+/* -*- Rez -*-
  * tkMacMenu.r --
  *
  *	Resources needed by menus.

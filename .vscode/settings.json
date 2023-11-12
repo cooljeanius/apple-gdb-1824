@@ -1,3 +1,5 @@
 {
-    "dotnet.preferCSharpExtension": true
+    "dotnet.preferCSharpExtension": true,
+    "dotnet.defaultSolution": "disable",
+    "java.compile.nullAnalysis.mode": "automatic"
 }

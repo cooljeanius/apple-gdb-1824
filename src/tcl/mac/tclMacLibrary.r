@@ -1,4 +1,4 @@
-/* 
+/* -*- Rez -*-
  * tclMacLibrary.r --
  *
  *	This file creates resources used by the Tcl shared library.
