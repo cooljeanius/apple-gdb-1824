@@ -505,7 +505,7 @@ parse_expression (ieee_data_type *ieee,
   bfd_boolean loop = TRUE;
   ieee_value_type stack[10];
   ieee_value_type *sp = stack;
-  asection *dummy;
+  asection *dummy = NULL;
 
 #ifndef POS
 # define POS sp[1]
@@ -530,26 +530,26 @@ parse_expression (ieee_data_type *ieee,
 	  {
 	    int section_n;
 
-	    next_byte (&(ieee->h));
+	    next_byte(&(ieee->h));
 	    *pcrel = TRUE;
 	    section_n = (int)must_parse_int(&(ieee->h));
-	    PUSH (NOSYMBOL, bfd_abs_section_ptr, 0);
+	    PUSH(NOSYMBOL, bfd_abs_section_ptr, 0);
 	    break;
 	  }
 	case ieee_variable_L_enum:
 	  /* L variable  address of section N.  */
-	  next_byte (&(ieee->h));
-	  PUSH (NOSYMBOL, ieee->section_table[must_parse_int (&(ieee->h))], 0);
+	  next_byte(&(ieee->h));
+	  PUSH(NOSYMBOL, ieee->section_table[must_parse_int (&(ieee->h))], 0);
 	  break;
 	case ieee_variable_R_enum:
 	  /* R variable, logical address of section module.  */
-	  /* FIXME, this should be different to L.  */
-	  next_byte (&(ieee->h));
-	  PUSH (NOSYMBOL, ieee->section_table[must_parse_int (&(ieee->h))], 0);
+	  /* FIXME: this should be different to L.  */
+	  next_byte(&(ieee->h));
+	  PUSH(NOSYMBOL, ieee->section_table[must_parse_int (&(ieee->h))], 0);
 	  break;
 	case ieee_variable_S_enum:
 	  /* S variable, size in MAUS of section module.  */
-	  next_byte (&(ieee->h));
+	  next_byte(&(ieee->h));
 	  PUSH (NOSYMBOL,
 		0,
 		ieee->section_table[must_parse_int (&(ieee->h))]->size);
@@ -559,8 +559,8 @@ parse_expression (ieee_data_type *ieee,
 	  {
 	    ieee_symbol_index_type sy;
 
-	    next_byte (&(ieee->h));
-	    sy.index = (int) must_parse_int (&(ieee->h));
+	    next_byte(&(ieee->h));
+	    sy.index = (int)must_parse_int(&(ieee->h));
 	    sy.letter = 'I';
 
 	    PUSH (sy, bfd_abs_section_ptr, 0);
@@ -571,8 +571,8 @@ parse_expression (ieee_data_type *ieee,
 	  {
 	    ieee_symbol_index_type sy;
 
-	    next_byte (&(ieee->h));
-	    sy.index = (int) (must_parse_int (&(ieee->h)));
+	    next_byte(&(ieee->h));
+	    sy.index = (int)(must_parse_int(&(ieee->h)));
 	    sy.letter = 'X';
 
 	    PUSH (sy, bfd_und_section_ptr, 0);
@@ -586,9 +586,9 @@ parse_expression (ieee_data_type *ieee,
 
 	    next_byte (&(ieee->h));
 
-	    POP (sy, section1, value1);
-	    POP (sy, section_dummy, value2);
-	    PUSH (sy, section1 ? section1 : section_dummy, value2 - value1);
+	    POP(sy, section1, value1);
+	    POP(sy, section_dummy, value2);
+	    PUSH(sy, section1 ? section1 : section_dummy, value2 - value1);
 	  }
 	  break;
 	case ieee_function_plus_enum:
@@ -599,13 +599,13 @@ parse_expression (ieee_data_type *ieee,
 	    ieee_symbol_index_type sy1;
 	    ieee_symbol_index_type sy2;
 
-	    next_byte (&(ieee->h));
+	    next_byte(&(ieee->h));
 
-	    POP (sy1, section1, value1);
-	    POP (sy2, section2, value2);
-	    PUSH (sy1.letter ? sy1 : sy2,
-		  bfd_is_abs_section (section1) ? section2 : section1,
-		  value1 + value2);
+	    POP(sy1, section1, value1);
+	    POP(sy2, section2, value2);
+	    PUSH((sy1.letter ? sy1 : sy2),
+		 bfd_is_abs_section(section1) ? section2 : section1,
+		 (value1 + value2));
 	  }
 	  break;
 	default:
@@ -1824,6 +1824,8 @@ ieee_object_p (bfd *abfd)
   ieee->section_table_size = 0;
 
   processor = ieee->mb.processor = read_id (&(ieee->h));
+  if (processor == NULL)
+    goto fail;
   if (strcmp (processor, "LIBRARY") == 0)
     goto got_wrong_format;
   ieee->mb.module_name = read_id (&(ieee->h));
@@ -2574,31 +2576,31 @@ copy_expression(void)
 	  *tos++ = value;
 	  break;
 	case 0x81:
-	  NEXT ();
-	  value = THIS ();
-	  NEXT ();
+	  NEXT();
+	  value = THIS();
+	  NEXT();
 	  *tos++ = value;
 	  break;
 	case 0x80:
-	  NEXT ();
+	  NEXT();
 	  *tos++ = 0;
 	  break;
 	default:
-	  if (THIS () > 0x84)
+	  if (THIS() > 0x84)
 	    {
-	      /* Not a number, just bug out with the answer.  */
-	      write_int (*(--tos));
+	      /* Not a number, just bug out with the answer: */
+	      write_int(*(--tos));
 	      return;
 	    }
-	  *tos++ = THIS ();
-	  NEXT ();
+	  *tos++ = THIS();
+	  NEXT();
 	  break;
 	case 0xa5:
-	  /* PLUS anything.  */
+	  /* PLUS anything: */
 	  value = *(--tos);
 	  value += *(--tos);
 	  *tos++ = value;
-	  NEXT ();
+	  NEXT();
 	  break;
 	case VAR ('R'):
 	  {
@@ -2606,11 +2608,11 @@ copy_expression(void)
 	    ieee_data_type *ieee;
 	    asection *s;
 
-	    NEXT ();
-	    section_number = THIS ();
+	    NEXT();
+	    section_number = THIS();
 
-	    NEXT ();
-	    ieee = IEEE_DATA (input_bfd);
+	    NEXT();
+	    ieee = IEEE_DATA(input_bfd);
 	    s = ieee->section_table[section_number];
 	    value = 0;
 	    if (s->output_section)
@@ -2621,9 +2623,9 @@ copy_expression(void)
 	  break;
 	case 0x90:
 	  {
-	    NEXT ();
-	    write_int (*(--tos));
-	    OUT (0x90);
+	    NEXT();
+	    write_int(*(--tos));
+	    OUT(0x90);
 	    return;
 	  }
 	}
@@ -2639,11 +2641,11 @@ fill_int (struct output_buffer_struct *buf)
   if (buf->buffer == output_buffer)
     {
       /* Still a chance to output the size.  */
-      int value = output_ptr - buf->ptrp + 3;
-      buf->ptrp[0] = value >> 24;
-      buf->ptrp[1] = value >> 16;
-      buf->ptrp[2] = value >> 8;
-      buf->ptrp[3] = value >> 0;
+      int value = (output_ptr - buf->ptrp + 3);
+      buf->ptrp[0] = (value >> 24);
+      buf->ptrp[1] = (value >> 16);
+      buf->ptrp[2] = (value >> 8);
+      buf->ptrp[3] = (value >> 0);
     }
 }
 
@@ -3258,9 +3260,9 @@ ieee_set_section_contents(bfd *abfd, sec_ptr section, const void *location,
       if (!init_for_output (abfd))
 	return FALSE;
     }
-  memcpy ((void *) (ieee_per_section (section)->data + offset),
-	  (void *) location,
-	  (unsigned int) count);
+  memcpy((void *)(ieee_per_section(section)->data + offset),
+         (void *)location,
+         (unsigned int)count);
   return TRUE;
 }
 

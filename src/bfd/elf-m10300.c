@@ -1415,7 +1415,8 @@ mn10300_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
       if (r_symndx < symtab_hdr->sh_info)
 	{
 	  sym = local_syms + r_symndx;
-	  sec = local_sections[r_symndx];
+   	  if (local_sections != NULL)
+	    sec = local_sections[r_symndx];
 	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
 	}
       else
@@ -1484,7 +1485,8 @@ mn10300_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  else
 	    {
 	      name = (bfd_elf_string_from_elf_section
-		      (input_bfd, symtab_hdr->sh_link, sym->st_name));
+		      (input_bfd, symtab_hdr->sh_link,
+                       ((sym != NULL) ? sym->st_name : 0U)));
 	      if (name == NULL || *name == '\0')
 		name = bfd_section_name (input_bfd, sec);
 	    }
@@ -3316,7 +3318,7 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 /* Compute the stack size and movm arguments for the function
    referred to by HASH at address ADDR in section with
    contents CONTENTS, store the information in the hash table.  */
-static void
+static void ATTRIBUTE_NONNULL(1)
 compute_function_info(bfd *abfd,
                       struct elf32_mn10300_link_hash_entry *hash,
                       bfd_vma addr, unsigned char *contents)

@@ -1803,6 +1803,8 @@ xcoff_write_armap_big(bfd *abfd, unsigned int elength ATTRIBUTE_UNUSED,
 
   fhdr = xcoff_ardata_big(abfd);
 
+  BFD_ASSERT(fhdr != NULL);
+
   /* xcoff_write_archive_contents_big passes nextoff in symoff: */
   READ20(fhdr->memoff, prevoff, file_ptr);
   READ20(fhdr->symoff, nextoff, file_ptr);
@@ -3604,33 +3606,33 @@ xcoff_generate_rtinit(bfd *abfd, const char *init, const char *fini,
      0x0040	      init name
      0x0040 + initsz  fini name */
 
-  data_buffer_size = 0x0040 + initsz + finisz;
+  data_buffer_size = (0x0040 + initsz + finisz);
   data_buffer_size = (data_buffer_size + 7) &~ (bfd_size_type) 7;
   data_buffer = NULL;
-  data_buffer = (bfd_byte *) bfd_zmalloc (data_buffer_size);
+  data_buffer = (bfd_byte *)bfd_zmalloc(data_buffer_size);
   if (data_buffer == NULL)
     return FALSE;
 
   if (initsz)
     {
       val = 0x10;
-      bfd_h_put_32 (abfd, val, &data_buffer[0x04]);
+      bfd_h_put_32(abfd, val, &data_buffer[0x04]);
       val = 0x40;
-      bfd_h_put_32 (abfd, val, &data_buffer[0x14]);
-      memcpy (&data_buffer[val], init, initsz);
+      bfd_h_put_32(abfd, val, &data_buffer[0x14]);
+      memcpy(&data_buffer[val], init, initsz);
     }
 
   if (finisz)
     {
       val = 0x28;
-      bfd_h_put_32 (abfd, val, &data_buffer[0x08]);
-      val = 0x40 + initsz;
-      bfd_h_put_32 (abfd, val, &data_buffer[0x2C]);
-      memcpy (&data_buffer[val], fini, finisz);
+      bfd_h_put_32(abfd, val, &data_buffer[0x08]);
+      val = (0x40 + initsz);
+      bfd_h_put_32(abfd, val, &data_buffer[0x2C]);
+      memcpy(&data_buffer[val], fini, finisz);
     }
 
   val = 0x0C;
-  bfd_h_put_32 (abfd, val, &data_buffer[0x0C]);
+  bfd_h_put_32(abfd, val, &data_buffer[0x0C]);
 
   scnhdr.s_size = data_buffer_size;
 
@@ -3651,6 +3653,8 @@ xcoff_generate_rtinit(bfd *abfd, const char *init, const char *fini,
       bfd_h_put_32(abfd, val, &string_table[0]);
       st_tmp = string_table + 4;
     }
+  else if (string_table != NULL)
+    st_tmp = string_table + 4;
 
   /* symbols
      0. .data csect
@@ -3679,51 +3683,51 @@ xcoff_generate_rtinit(bfd *abfd, const char *init, const char *fini,
   filehdr.f_nsyms += 2;
 
   /* __rtinit */
-  memset (&syment, 0, sizeof (struct internal_syment));
-  memset (&auxent, 0, sizeof (union internal_auxent));
-  memcpy (syment._n._n_name, rtinit_name, strlen (rtinit_name));
+  memset(&syment, 0, sizeof(struct internal_syment));
+  memset(&auxent, 0, sizeof(union internal_auxent));
+  memcpy(syment._n._n_name, rtinit_name, strlen(rtinit_name));
   syment.n_scnum = 1;
   syment.n_sclass = C_EXT;
   syment.n_numaux = 1;
   auxent.x_csect.x_smtyp = XTY_LD;
   auxent.x_csect.x_smclas = XMC_RW;
-  bfd_coff_swap_sym_out (abfd, &syment,
-			 &syment_ext[filehdr.f_nsyms * SYMESZ]);
-  bfd_coff_swap_aux_out (abfd, &auxent, syment.n_type, syment.n_sclass, 0,
-			 syment.n_numaux,
-			 &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
+  bfd_coff_swap_sym_out(abfd, &syment,
+                        &syment_ext[filehdr.f_nsyms * SYMESZ]);
+  bfd_coff_swap_aux_out(abfd, &auxent, syment.n_type, syment.n_sclass, 0,
+                        syment.n_numaux,
+                        &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
   filehdr.f_nsyms += 2;
 
   /* init */
   if (initsz)
     {
-      memset (&syment, 0, sizeof (struct internal_syment));
-      memset (&auxent, 0, sizeof (union internal_auxent));
+      memset(&syment, 0, sizeof(struct internal_syment));
+      memset(&auxent, 0, sizeof(union internal_auxent));
 
-      if (initsz > 9)
+      if ((initsz > 9) && (st_tmp != NULL))
 	{
-	  syment._n._n_n._n_offset = st_tmp - string_table;
-	  memcpy (st_tmp, init, initsz);
+	  syment._n._n_n._n_offset = (st_tmp - string_table);
+	  memcpy(st_tmp, init, initsz);
 	  st_tmp += initsz;
 	}
       else
-	memcpy (syment._n._n_name, init, initsz - 1);
+	memcpy(syment._n._n_name, init, (initsz - 1));
 
       syment.n_sclass = C_EXT;
       syment.n_numaux = 1;
-      bfd_coff_swap_sym_out (abfd, &syment,
-			     &syment_ext[filehdr.f_nsyms * SYMESZ]);
-      bfd_coff_swap_aux_out (abfd, &auxent, syment.n_type, syment.n_sclass, 0,
-			     syment.n_numaux,
-			     &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
+      bfd_coff_swap_sym_out(abfd, &syment,
+                            &syment_ext[filehdr.f_nsyms * SYMESZ]);
+      bfd_coff_swap_aux_out(abfd, &auxent, syment.n_type, syment.n_sclass, 0,
+                            syment.n_numaux,
+                            &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
 
       /* reloc */
-      memset (&reloc, 0, sizeof (struct internal_reloc));
+      memset(&reloc, 0, sizeof(struct internal_reloc));
       reloc.r_vaddr = 0x0010;
       reloc.r_symndx = filehdr.f_nsyms;
       reloc.r_type = R_POS;
       reloc.r_size = 31;
-      bfd_coff_swap_reloc_out (abfd, &reloc, &reloc_ext[0]);
+      bfd_coff_swap_reloc_out(abfd, &reloc, &reloc_ext[0]);
 
       filehdr.f_nsyms += 2;
       scnhdr.s_nreloc += 1;
@@ -3732,34 +3736,34 @@ xcoff_generate_rtinit(bfd *abfd, const char *init, const char *fini,
   /* fini */
   if (finisz)
     {
-      memset (&syment, 0, sizeof (struct internal_syment));
-      memset (&auxent, 0, sizeof (union internal_auxent));
+      memset(&syment, 0, sizeof(struct internal_syment));
+      memset(&auxent, 0, sizeof(union internal_auxent));
 
-      if (finisz > 9)
+      if ((finisz > 9) && (st_tmp != NULL))
 	{
-	  syment._n._n_n._n_offset = st_tmp - string_table;
-	  memcpy (st_tmp, fini, finisz);
+	  syment._n._n_n._n_offset = (st_tmp - string_table);
+	  memcpy(st_tmp, fini, finisz);
 	  st_tmp += finisz;
 	}
       else
-	memcpy (syment._n._n_name, fini, finisz - 1);
+	memcpy(syment._n._n_name, fini, (finisz - 1));
 
       syment.n_sclass = C_EXT;
       syment.n_numaux = 1;
-      bfd_coff_swap_sym_out (abfd, &syment,
-			     &syment_ext[filehdr.f_nsyms * SYMESZ]);
-      bfd_coff_swap_aux_out (abfd, &auxent, syment.n_type, syment.n_sclass, 0,
-			     syment.n_numaux,
-			     &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
+      bfd_coff_swap_sym_out(abfd, &syment,
+                            &syment_ext[filehdr.f_nsyms * SYMESZ]);
+      bfd_coff_swap_aux_out(abfd, &auxent, syment.n_type, syment.n_sclass, 0,
+                            syment.n_numaux,
+                            &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
 
       /* reloc */
-      memset (&reloc, 0, sizeof (struct internal_reloc));
+      memset(&reloc, 0, sizeof(struct internal_reloc));
       reloc.r_vaddr = 0x0028;
       reloc.r_symndx = filehdr.f_nsyms;
       reloc.r_type = R_POS;
       reloc.r_size = 31;
-      bfd_coff_swap_reloc_out (abfd, &reloc,
-			       &reloc_ext[scnhdr.s_nreloc * RELSZ]);
+      bfd_coff_swap_reloc_out(abfd, &reloc,
+                              &reloc_ext[scnhdr.s_nreloc * RELSZ]);
 
       filehdr.f_nsyms += 2;
       scnhdr.s_nreloc += 1;
@@ -3767,19 +3771,19 @@ xcoff_generate_rtinit(bfd *abfd, const char *init, const char *fini,
 
   if (rtld)
     {
-      memset (&syment, 0, sizeof (struct internal_syment));
-      memset (&auxent, 0, sizeof (union internal_auxent));
-      memcpy (syment._n._n_name, rtld_name, strlen (rtld_name));
+      memset(&syment, 0, sizeof(struct internal_syment));
+      memset(&auxent, 0, sizeof(union internal_auxent));
+      memcpy(syment._n._n_name, rtld_name, strlen(rtld_name));
       syment.n_sclass = C_EXT;
       syment.n_numaux = 1;
-      bfd_coff_swap_sym_out (abfd, &syment,
-			     &syment_ext[filehdr.f_nsyms * SYMESZ]);
-      bfd_coff_swap_aux_out (abfd, &auxent, syment.n_type, syment.n_sclass, 0,
-			     syment.n_numaux,
-			     &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
+      bfd_coff_swap_sym_out(abfd, &syment,
+                            &syment_ext[filehdr.f_nsyms * SYMESZ]);
+      bfd_coff_swap_aux_out(abfd, &auxent, syment.n_type, syment.n_sclass, 0,
+                            syment.n_numaux,
+                            &syment_ext[(filehdr.f_nsyms + 1) * SYMESZ]);
 
       /* reloc */
-      memset (&reloc, 0, sizeof (struct internal_reloc));
+      memset(&reloc, 0, sizeof(struct internal_reloc));
       reloc.r_vaddr = 0x0000;
       reloc.r_symndx = filehdr.f_nsyms;
       reloc.r_type = R_POS;
@@ -3806,6 +3810,7 @@ xcoff_generate_rtinit(bfd *abfd, const char *init, const char *fini,
   free(data_buffer);
   data_buffer = NULL;
 
+  (void)st_tmp;
   return TRUE;
 }
 

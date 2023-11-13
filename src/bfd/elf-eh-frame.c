@@ -1398,10 +1398,11 @@ _bfd_elf_write_section_eh_frame_hdr (bfd *abfd, struct bfd_link_info *info)
       bfd_put_32 (abfd, hdr_info->fde_count, contents + EH_FRAME_HDR_SIZE);
       qsort (hdr_info->array, hdr_info->fde_count, sizeof (*hdr_info->array),
 	     vma_compare);
-      for (i = 0; i < hdr_info->fde_count; i++)
+      for (i = 0; (hdr_info != NULL) && (i < hdr_info->fde_count); i++)
 	{
 	  BFD_ASSERT(hdr_info != NULL);
-	  BFD_ASSERT(sec != NULL);
+	  BFD_ASSERT(hdr_info->array != NULL);
+    	  BFD_ASSERT(sec != NULL);
 	  BFD_ASSERT(sec->output_section != NULL);
 	  bfd_put_32(abfd,
 		     (hdr_info->array[i].initial_loc

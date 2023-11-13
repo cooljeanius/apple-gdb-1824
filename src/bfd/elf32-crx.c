@@ -857,7 +857,8 @@ elf32_crx_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
       if (r_symndx < symtab_hdr->sh_info)
 	{
 	  sym = local_syms + r_symndx;
-	  sec = local_sections[r_symndx];
+          if (local_sections != NULL)
+	    sec = local_sections[r_symndx];
 	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
 	}
       else
@@ -886,7 +887,8 @@ elf32_crx_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	  else
 	    {
 	      name = (bfd_elf_string_from_elf_section
-		      (input_bfd, symtab_hdr->sh_link, sym->st_name));
+		      (input_bfd, symtab_hdr->sh_link,
+                       ((sym != NULL) ? sym->st_name : 0U)));
 	      if (name == NULL || *name == '\0')
 		name = bfd_section_name (input_bfd, sec);
 	    }

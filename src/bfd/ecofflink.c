@@ -2328,8 +2328,9 @@ lookup_line(bfd *abfd, struct ecoff_debug_info * const debug_info,
 	{
 	  char *colon;
 
-	  strcpy (buffer, function_name);
-	  colon = strchr (buffer, ':');
+	  if (buffer != NULL)
+	    strncpy(buffer, function_name, len);
+	  colon = strchr(buffer, ':');
 	  if (colon != NULL)
 	    *colon = '\0';
 	  line_info->cache.functionname = buffer;

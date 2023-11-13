@@ -2854,7 +2854,11 @@ elf32_arm_final_link_relocate (reloc_howto_type *           howto,
   if (symtab_hdr == NULL) {
     ; /* ??? */
   }
-  sym_hashes = elf_sym_hashes(input_bfd);
+  if (elf_tdata(input_bfd) != NULL)
+    sym_hashes = elf_sym_hashes(input_bfd);
+  else
+    sym_hashes = NULL;
+
   if (sym_hashes == NULL) {
     ; /* ??? */
   }

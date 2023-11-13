@@ -548,12 +548,15 @@ oasys_object_p(bfd *abfd)
   bfd_boolean had_usefull = FALSE;
 
   abfd->tdata.oasys_obj_data = 0;
-  oasys_mkobject (abfd);
-  oasys = OASYS_DATA (abfd);
-  memset ((void *) oasys->sections, 0xff, sizeof (oasys->sections));
+  oasys_mkobject(abfd);
+  oasys = OASYS_DATA(abfd);
+  if (oasys == NULL)
+    goto fail;
 
-  /* Point to the start of the file.  */
-  if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0)
+  memset((void *)oasys->sections, 0xff, sizeof(oasys->sections));
+
+  /* Point to the start of the file: */
+  if (bfd_seek(abfd, (file_ptr)0L, SEEK_SET) != 0)
     goto fail;
   oasys->symbol_string_length = 0;
 

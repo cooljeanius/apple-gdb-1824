@@ -2404,16 +2404,16 @@ NAME (aout, find_nearest_line) (bfd *abfd,
       /* The caller expects a symbol name.  We actually have a
 	 function name, without the leading underscore.  Put the
 	 underscore back in, so that the caller gets a symbol name.  */
-      if (bfd_get_symbol_leading_char (abfd) == '\0')
+      if (bfd_get_symbol_leading_char(abfd) == '\0')
 	strncpy(buf, function, buf_len);
       else if (buf != NULL)
 	{
-	  buf[0] = bfd_get_symbol_leading_char (abfd);
+	  buf[0] = bfd_get_symbol_leading_char(abfd);
 	  strncpy(buf + 1, function, buf_len + 1);
 	}
 
       /* Have to remove : stuff.  */
-      colon = strchr (buf, ':');
+      colon = strchr(buf, ':');
       if (colon != NULL)
 	*colon = '\0';
       *functionname_ptr = buf;
@@ -2423,9 +2423,9 @@ NAME (aout, find_nearest_line) (bfd *abfd,
 }
 
 int
-NAME (aout, sizeof_headers) (bfd *abfd, bfd_boolean execable ATTRIBUTE_UNUSED)
+NAME(aout, sizeof_headers)(bfd *abfd, bfd_boolean execable ATTRIBUTE_UNUSED)
 {
-  return adata (abfd).exec_bytes_size;
+  return (int)adata(abfd).exec_bytes_size;
 }
 
 /* Free all information we have cached for this BFD.  We can always

@@ -3264,13 +3264,13 @@ ecoff_link_hash_newfunc (struct bfd_hash_entry *entry,
 
   if (ret)
     {
-      /* Set local fields.  */
+      /* Set local fields: */
       ret->indx = -1;
       ret->abfd = NULL;
       ret->written = 0;
       ret->small = 0;
+      memset((void *)&ret->esym, 0, sizeof(ret->esym));
     }
-  memset((void *)&ret->esym, 0, sizeof(ret->esym));
 
   return (struct bfd_hash_entry *)ret;
 }

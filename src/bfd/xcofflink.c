@@ -701,15 +701,16 @@ xcoff_link_add_dynamic_symbols (bfd *abfd, struct bfd_link_info *info)
 	  if (hds == NULL)
 	    {
 	      char *dsnm;
+              bfd_size_type dsnmlen = (bfd_size_type)strlen(name) + 2UL;
 
-	      dsnm = (char *)bfd_malloc((bfd_size_type)strlen(name) + 2);
+	      dsnm = (char *)bfd_malloc(dsnmlen);
 	      if (dsnm == NULL)
 		return FALSE;
 	      dsnm[0] = '.';
-	      strcpy (dsnm + 1, name);
-	      hds = xcoff_link_hash_lookup (xcoff_hash_table (info), dsnm,
-					    TRUE, TRUE, TRUE);
-	      free (dsnm);
+	      strncpy(dsnm + 1, name, dsnmlen);
+	      hds = xcoff_link_hash_lookup(xcoff_hash_table(info), dsnm,
+                                           TRUE, TRUE, TRUE);
+	      free(dsnm);
 	      if (hds == NULL)
 		return FALSE;
 
@@ -1787,6 +1788,7 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 		}
 	    }
 
+	  BFD_ASSERT(last_real != NULL);
 	  /* _bfd_generic_link_add_one_symbol may call the linker to
 	     generate an error message, and the linker may try to read
 	     the symbol table to give a good error.  Right now, the
@@ -1797,7 +1799,7 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	     correctly, so temporarily clobber the link to the csects
 	     so that the linker will not try to read the line numbers
 	     a second time from the csects.  */
-	  BFD_ASSERT (last_real->next == first_csect);
+	  BFD_ASSERT(last_real->next == first_csect);
 	  last_real->next = NULL;
 	  if (! (_bfd_generic_link_add_one_symbol
 		 (info, abfd, name, flags, section, value,
@@ -3692,7 +3694,8 @@ xcoff_link_input_bfd(struct xcoff_final_link_info *finfo, bfd *input_bfd)
 
       /* We can skip resolved external references: */
       if (! skip && (isym.n_sclass == C_EXT) && (smtyp == XTY_ER)
-	  && ((*sym_hash)->root.type != bfd_link_hash_undefined))
+	  && (sym_hash != NULL) && ((*sym_hash) != NULL)
+          && ((*sym_hash)->root.type != bfd_link_hash_undefined))
 	skip = TRUE;
 
       /* We can skip common symbols if they got defined somewhere
