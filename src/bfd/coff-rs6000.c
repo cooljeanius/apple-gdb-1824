@@ -3635,7 +3635,7 @@ xcoff_generate_rtinit(bfd *abfd, const char *init, const char *fini,
   scnhdr.s_size = data_buffer_size;
 
   /* string table */
-  string_table_size = 0;
+  string_table_size = 1UL;
   if (initsz > 9)
     string_table_size += initsz;
   if (finisz > 9)
@@ -3643,7 +3643,7 @@ xcoff_generate_rtinit(bfd *abfd, const char *init, const char *fini,
   if (string_table_size)
     {
       string_table_size += 4;
-      string_table = (bfd_byte *) bfd_zmalloc (string_table_size);
+      string_table = (bfd_byte *)bfd_zmalloc(string_table_size);
       if (string_table == NULL)
 	return FALSE;
 

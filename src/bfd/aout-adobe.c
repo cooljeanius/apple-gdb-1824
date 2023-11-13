@@ -144,7 +144,7 @@ aout_adobe_callback(bfd *abfd)
 	  if (newname == NULL) {
 	      return NULL;
 	  }
-	  strcpy (newname, sect->name);
+	  strncpy(newname, sect->name, amt);
 	  sect->name = newname;
       }
 
@@ -156,7 +156,7 @@ aout_adobe_callback(bfd *abfd)
 		    | ext->e_size[2]);
       sect->vma = H_GET_32(abfd, ext->e_virtbase);
       sect->filepos = H_GET_32(abfd, ext->e_filebase);
-      /* FIXME XXX alignment?  */
+      /* FIXME: XXX: alignment?  */
 
       /* Set relocation information for first section of each type: */
       if (trynum == 0)

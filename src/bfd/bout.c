@@ -1413,11 +1413,28 @@ const bfd_target b_out_vec_big_host =
  {bfd_false, b_out_write_object_contents, /* bfd_write_contents.  */
    _bfd_write_archive_contents, bfd_false},
 
+  /* FIXME: test proper macro here: */
+#if defined(__LP64__)
+# if defined(BFD_JUMP_TABLE_GENERIC) && 0
+     BFD_JUMP_TABLE_GENERIC(aout_64),
+# else
+     aout_64_bfd_free_cached_info,
+# endif /* BFD_JUMP_TABLE_GENERIC && 0 */
+#else
      BFD_JUMP_TABLE_GENERIC(aout_32),
+#endif /* __LP64__ */
      BFD_JUMP_TABLE_COPY(_bfd_generic),
      BFD_JUMP_TABLE_CORE(_bfd_nocore),
      BFD_JUMP_TABLE_ARCHIVE(_bfd_archive_bsd),
+#if defined(__LP64__)
+# if defined(BFD_JUMP_TABLE_SYMBOLS) && 0
+     BFD_JUMP_TABLE_SYMBOLS(aout_64),
+# else
+     aout_64_get_symtab_upper_bound,
+# endif /* BFD_JUMP_TABLE_SYMBOLS && 0 */
+#else
      BFD_JUMP_TABLE_SYMBOLS(aout_32),
+#endif /* __LP64__ */
      BFD_JUMP_TABLE_RELOCS(b_out),
      BFD_JUMP_TABLE_WRITE(b_out),
      BFD_JUMP_TABLE_LINK(b_out),
@@ -1455,11 +1472,28 @@ const bfd_target b_out_vec_little_host =
   {bfd_false, b_out_write_object_contents, /* bfd_write_contents.  */
      _bfd_write_archive_contents, bfd_false},
 
+  /* FIXME: test proper macro here: */
+#if defined(__LP64__)
+# if defined(BFD_JUMP_TABLE_GENERIC) && 0
+     BFD_JUMP_TABLE_GENERIC(aout_64),
+# else
+     aout_64_bfd_free_cached_info,
+# endif /* BFD_JUMP_TABLE_GENERIC && 0 */
+#else
      BFD_JUMP_TABLE_GENERIC(aout_32),
+#endif /* __LP64__ */
      BFD_JUMP_TABLE_COPY(_bfd_generic),
      BFD_JUMP_TABLE_CORE(_bfd_nocore),
      BFD_JUMP_TABLE_ARCHIVE(_bfd_archive_bsd),
+#if defined(__LP64__)
+# if defined(BFD_JUMP_TABLE_SYMBOLS) && 0
+     BFD_JUMP_TABLE_SYMBOLS(aout_64),
+# else
+     aout_64_get_symtab_upper_bound,
+# endif /* BFD_JUMP_TABLE_SYMBOLS && 0 */
+#else
      BFD_JUMP_TABLE_SYMBOLS(aout_32),
+#endif /* __LP64__ */
      BFD_JUMP_TABLE_RELOCS(b_out),
      BFD_JUMP_TABLE_WRITE(b_out),
      BFD_JUMP_TABLE_LINK(b_out),
@@ -1476,5 +1510,19 @@ const bfd_target b_out_vec_little_host =
 #ifdef ABS32_WAS_RELAXABLE
 # undef ABS32_WAS_RELAXABLE
 #endif /* ABS32_WAS_RELAXABLE */
+
+/* for -Wunused-macros: */
+#ifdef aout_32_bfd_make_debug_symbol
+# undef aout_32_bfd_make_debug_symbol
+#endif /* aout_32_bfd_make_debug_symbol */
+#ifdef aout_32_close_and_cleanup
+# undef aout_32_close_and_cleanup
+#endif /* aout_32_close_and_cleanup */
+#ifdef aout_32_get_section_contents_in_window
+# undef aout_32_get_section_contents_in_window
+#endif /* aout_32_get_section_contents_in_window */
+#ifdef aout_32_get_section_contents_in_window_with_mode
+# undef aout_32_get_section_contents_in_window_with_mode
+#endif /* aout_32_get_section_contents_in_window_with_mode */
 
 /* EOF */

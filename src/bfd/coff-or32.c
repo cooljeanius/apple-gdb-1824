@@ -57,12 +57,12 @@ static void reloc_processing
     ((JT) & 0x04000000 ? (JT)|(~0x03ffffffL) : (JT))
 
 /* Provided the symbol, returns the value reffed: */
-static long
+static long ATTRIBUTE_NONNULL(1)
 get_symbol_value(asymbol *symbol)
 {
   long relocation = 0L;
 
-  if (bfd_is_com_section (symbol->section))
+  if (bfd_is_com_section(symbol->section))
     relocation = 0L;
   else
     relocation = (long)(symbol->value
@@ -126,7 +126,10 @@ or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
       return bfd_reloc_dangerous;
     }
 
-  sym_value = (unsigned long)get_symbol_value(symbol_in);
+  if (symbol_in != NULL)
+    sym_value = (unsigned long)get_symbol_value(symbol_in);
+  else
+    sym_value = 0UL;
 
   switch (r_type)
     {

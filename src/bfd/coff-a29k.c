@@ -51,7 +51,7 @@ static void reloc_processing
     (((HWORD) ^ 0x8000) - 0x8000)
 
 /* Provided the symbol, returns the value reffed: */
-static long
+static long ATTRIBUTE_NONNULL(1)
 get_symbol_value(asymbol *symbol)
 {
   long relocation = 0L;
@@ -87,7 +87,7 @@ a29k_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
   addr = (addr + input_section->vma);
 #endif /* 0 */
 
-  r_type = reloc_entry->howto->type;
+  r_type = (unsigned short)reloc_entry->howto->type;
 
   if (output_bfd)
     {
@@ -116,7 +116,10 @@ a29k_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
       return bfd_reloc_dangerous;
     }
 
-  sym_value = get_symbol_value(symbol_in);
+  if (symbol_in != NULL)
+    sym_value = get_symbol_value(symbol_in);
+  else
+    sym_value = 0UL;
 
   switch (r_type)
     {

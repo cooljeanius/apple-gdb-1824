@@ -409,7 +409,8 @@ coff_mcore_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	    {
 	      asection *sec = sections[symndx];
 
-	      val = (sym->n_value + sec->output_section->vma
+	      val = (((sym != NULL) ? sym->n_value : 0)
+        	     + sec->output_section->vma
 		     + sec->output_offset);
 
 	      if (sym == NULL)

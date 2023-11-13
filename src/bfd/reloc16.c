@@ -136,8 +136,8 @@ bfd_coff_reloc16_relax_section(bfd *abfd, asection *input_section,
 {
   /* Get enough memory to hold the stuff: */
   bfd *input_bfd = input_section->owner;
-  unsigned *shrinks;
-  unsigned shrink = 0;
+  unsigned int *shrinks;
+  unsigned int shrink = 0U;
   long reloc_size = bfd_get_reloc_upper_bound(input_bfd, input_section);
   arelent **reloc_vector = NULL;
   long reloc_count;

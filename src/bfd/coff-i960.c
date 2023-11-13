@@ -419,7 +419,7 @@ coff_i960_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	      sec = sections[symndx];
               val = (sec->output_section->vma
 		     + sec->output_offset
-		     + sym->n_value
+		     + ((sym != NULL) ? sym->n_value : 0)
 		     - sec->vma);
 	    }
 	}
@@ -453,7 +453,7 @@ coff_i960_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	  if (h != NULL)
 	    theclass = h->class;
 	  else
-	    theclass = sym->n_sclass;
+	    theclass = ((sym != NULL) ? sym->n_sclass : 0);
 
 	  switch (theclass)
 	    {

@@ -394,6 +394,7 @@ static const reloc_map maxq_reloc_map[] =
 {
   {BFD_RELOC_16_PCREL_S2, SHORT_JUMP, howto_table},
   {BFD_RELOC_16,          LONG_JUMP,  howto_table},
+  {BFD_RELOC_UNUSED, ABSOLUTE_ADDR_FOR_DATA, NULL}
 };
 
 static reloc_howto_type *

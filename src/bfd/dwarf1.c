@@ -410,10 +410,11 @@ dwarf1_unit_find_nearest_line (struct dwarf1_debug* stash,
 		return FALSE;
 	    }
 
-	  for (i = 0; i < aUnit->line_count; i++)
+	  for (i = 0; (aUnit != NULL) && (i < aUnit->line_count); i++)
 	    {
-	      if (aUnit->linenumber_table[i].addr <= addr
-		  && addr < aUnit->linenumber_table[i+1].addr)
+	      if ((aUnit->linenumber_table != NULL)
+        	  && (aUnit->linenumber_table[i].addr <= addr)
+		  && (addr < aUnit->linenumber_table[i + 1].addr))
 		{
 		  *filename_ptr = aUnit->name;
 		  *linenumber_ptr = aUnit->linenumber_table[i].linenumber;

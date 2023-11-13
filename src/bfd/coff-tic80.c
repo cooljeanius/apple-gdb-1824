@@ -550,7 +550,7 @@ coff_tic80_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      sec = sections[symndx];
               val = (sec->output_section->vma
 		     + sec->output_offset
-		     + sym->n_value);
+		     + ((sym != NULL) ? sym->n_value : 0));
 	      if (! obj_pe (output_bfd))
 		val -= sec->vma;
 	    }

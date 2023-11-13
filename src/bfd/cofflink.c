@@ -2931,7 +2931,7 @@ _bfd_coff_generic_relocate_section (bfd *output_bfd,
 	      sec = sections[symndx];
               val = (sec->output_section->vma
 		     + sec->output_offset
-		     + sym->n_value);
+		     + ((sym != NULL) ? sym->n_value : 0));
 	      if (! obj_pe (input_bfd))
 		val -= sec->vma;
 	    }

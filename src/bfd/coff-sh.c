@@ -396,7 +396,7 @@ static reloc_howto_type sh_coff_howtos[] =
 #endif /* !COFF_WITH_PE */
 
 /* Get the value of a symbol, when performing a relocation: */
-static long
+static long ATTRIBUTE_NONNULL(1)
 get_symbol_value(asymbol *symbol)
 {
   bfd_vma relocation;
@@ -581,7 +581,10 @@ sh_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
       && bfd_is_und_section (symbol_in->section))
     return bfd_reloc_undefined;
 
-  sym_value = get_symbol_value (symbol_in);
+  if (symbol_in != NULL)
+    sym_value = get_symbol_value(symbol_in);
+  else
+    sym_value = 0UL;
 
   switch (r_type)
     {

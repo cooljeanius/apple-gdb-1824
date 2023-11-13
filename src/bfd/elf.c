@@ -99,26 +99,24 @@ _bfd_elf_swap_verdef_out (bfd *abfd,
   H_PUT_32 (abfd, src->vd_next, dst->vd_next);
 }
 
-/* Swap in a Verdaux structure.  */
-
-void
-_bfd_elf_swap_verdaux_in (bfd *abfd,
-			  const Elf_External_Verdaux *src,
-			  Elf_Internal_Verdaux *dst)
+/* Swap in a Verdaux structure: */
+void ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+_bfd_elf_swap_verdaux_in(bfd *abfd,
+			 const Elf_External_Verdaux *src,
+			 Elf_Internal_Verdaux *dst)
 {
-  dst->vda_name = H_GET_32 (abfd, src->vda_name);
-  dst->vda_next = H_GET_32 (abfd, src->vda_next);
+  dst->vda_name = H_GET_32(abfd, src->vda_name);
+  dst->vda_next = H_GET_32(abfd, src->vda_next);
 }
 
-/* Swap out a Verdaux structure.  */
-
+/* Swap out a Verdaux structure: */
 void
-_bfd_elf_swap_verdaux_out (bfd *abfd,
-			   const Elf_Internal_Verdaux *src,
-			   Elf_External_Verdaux *dst)
+_bfd_elf_swap_verdaux_out(bfd *abfd,
+			  const Elf_Internal_Verdaux *src,
+			  Elf_External_Verdaux *dst)
 {
-  H_PUT_32 (abfd, src->vda_name, dst->vda_name);
-  H_PUT_32 (abfd, src->vda_next, dst->vda_next);
+  H_PUT_32(abfd, src->vda_name, dst->vda_name);
+  H_PUT_32(abfd, src->vda_next, dst->vda_next);
 }
 
 /* Swap in a Verneed structure.  */
@@ -6499,15 +6497,15 @@ error_return_verdef:
 	    goto error_return_verdef;
 
 	  everdaux = ((Elf_External_Verdaux *)
-		      ((bfd_byte *) everdef + iverdef->vd_aux));
+		      ((bfd_byte *)everdef + iverdef->vd_aux));
 	  iverdaux = iverdef->vd_auxptr;
-	  for (j = 0; j < iverdef->vd_cnt; j++, iverdaux++)
+	  for (j = 0; (j < iverdef->vd_cnt) && (iverdaux != NULL); j++, iverdaux++)
 	    {
-	      _bfd_elf_swap_verdaux_in (abfd, everdaux, iverdaux);
+	      _bfd_elf_swap_verdaux_in(abfd, everdaux, iverdaux);
 
 	      iverdaux->vda_nodename =
-		bfd_elf_string_from_elf_section (abfd, hdr->sh_link,
-						 iverdaux->vda_name);
+		bfd_elf_string_from_elf_section(abfd, hdr->sh_link,
+                                                iverdaux->vda_name);
 	      if (iverdaux->vda_nodename == NULL)
 		goto error_return_verdef;
 
@@ -6524,7 +6522,7 @@ error_return_verdef:
 			  ((bfd_byte *) everdaux + iverdaux->vda_next));
 	    }
 
-	  if (iverdef->vd_cnt)
+	  if (iverdef->vd_cnt && iverdef->vd_auxptr)
 	    iverdef->vd_nodename = iverdef->vd_auxptr->vda_nodename;
 
 	  if ((size_t) (iverdef - iverdefarr) + 1 < maxidx)
@@ -8239,7 +8237,7 @@ _bfd_elf_get_synthetic_symtab(bfd *abfd, long symcount ATTRIBUTE_UNUSED,
 {
   const struct elf_backend_data *bed = get_elf_backend_data(abfd);
   asection *relplt;
-  asymbol *s;
+  asymbol *s = NULL;
   const char *relplt_name;
   bfd_boolean (*slurp_relocs)(bfd *, asection *, asymbol **, bfd_boolean);
   arelent *p;
@@ -8271,7 +8269,7 @@ _bfd_elf_get_synthetic_symtab(bfd *abfd, long symcount ATTRIBUTE_UNUSED,
     return 0;
   }
 
-  hdr = &elf_section_data (relplt)->this_hdr;
+  hdr = &elf_section_data(relplt)->this_hdr;
   if ((hdr->sh_link != elf_dynsymtab(abfd))
       || ((hdr->sh_type != SHT_REL) && (hdr->sh_type != SHT_RELA)))
     return 0;

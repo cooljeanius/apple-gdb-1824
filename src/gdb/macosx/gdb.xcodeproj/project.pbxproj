@@ -15373,7 +15373,8 @@
 					"-undefined",
 					dynamic_lookup,
 				);
-				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = NO;
+				"PRESERVE_DEAD_CODE_INITS_AND_TERMS[sdk=macosx*][arch=i386]" = YES;
 				PRODUCT_NAME = "bfd-shared";
 				RUN_CLANG_STATIC_ANALYZER = NO;
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;

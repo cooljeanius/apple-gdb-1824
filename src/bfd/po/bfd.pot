@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-12 13:45-0500\n"
+"POT-Creation-Date: 2023-11-12 22:00-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -184,19 +184,19 @@ msgstr ""
 msgid "Missing IHCONST"
 msgstr ""
 
-#: coff-a29k.c:175
+#: coff-a29k.c:178
 msgid "Missing IHIHALF"
 msgstr ""
 
-#: coff-a29k.c:207 coff-or32.c:222
+#: coff-a29k.c:210 coff-or32.c:225
 msgid "Unrecognized reloc"
 msgstr ""
 
-#: coff-a29k.c:396
+#: coff-a29k.c:399
 msgid "missing IHCONST reloc"
 msgstr ""
 
-#: coff-a29k.c:486
+#: coff-a29k.c:489
 msgid "missing IHIHALF reloc"
 msgstr ""
 
@@ -719,103 +719,103 @@ msgid ""
 "%s: warning: unresolvable relocation against symbol `%s' from %s section"
 msgstr ""
 
-#: elf.c:304
+#: elf.c:302
 msgid "%B: invalid string offset %u >= %lu for section `%s'"
 msgstr ""
 
-#: elf.c:570
+#: elf.c:568
 msgid "%B: invalid SHT_GROUP entry"
 msgstr ""
 
-#: elf.c:640
+#: elf.c:638
 msgid "%B: no group info for section %A"
 msgstr ""
 
-#: elf.c:677
+#: elf.c:675
 msgid "%B: unknown [%d] section `%s' in group [%s]"
 msgstr ""
 
-#: elf.c:1062
+#: elf.c:1060
 #, c-format
 msgid ""
 "\n"
 "Program Header:\n"
 msgstr ""
 
-#: elf.c:1114
+#: elf.c:1112
 #, c-format
 msgid ""
 "\n"
 "Dynamic Section:\n"
 msgstr ""
 
-#: elf.c:1239
+#: elf.c:1237
 #, c-format
 msgid ""
 "\n"
 "Version definitions:\n"
 msgstr ""
 
-#: elf.c:1264
+#: elf.c:1262
 #, c-format
 msgid ""
 "\n"
 "Version References:\n"
 msgstr ""
 
-#: elf.c:1269
+#: elf.c:1267
 #, c-format
 msgid "  required from %s:\n"
 msgstr ""
 
-#: elf.c:1982
+#: elf.c:1980
 msgid "%B: invalid link %lu for reloc section %s (index %u)"
 msgstr ""
 
-#: elf.c:3119 elflink.c:7628
+#: elf.c:3117 elflink.c:7628
 msgid "%B: warning: sh_link not set for section `%A'"
 msgstr ""
 
-#: elf.c:3129
+#: elf.c:3127
 msgid "%B: sh_link of section `%A' points to discarded section `%A' of `%B'"
 msgstr ""
 
-#: elf.c:4137
+#: elf.c:4135
 msgid "%B: Not enough room for program headers (allocated %u, need %u)"
 msgstr ""
 
-#: elf.c:4241
+#: elf.c:4239
 msgid ""
 "%B: The first section in the PT_DYNAMIC segment is not the .dynamic section"
 msgstr ""
 
-#: elf.c:4289
+#: elf.c:4287
 msgid "%B: Not enough room for program headers, try linking with -N"
 msgstr ""
 
-#: elf.c:4380
+#: elf.c:4378
 msgid "%B: section %A lma 0x%lx overlaps previous sections"
 msgstr ""
 
-#: elf.c:4783
+#: elf.c:4781
 msgid "%B: warning: allocated section `%s' not in segment"
 msgstr ""
 
-#: elf.c:5083
+#: elf.c:5081
 msgid "%B: symbol `%s' required but not present"
 msgstr ""
 
-#: elf.c:5385
+#: elf.c:5383
 msgid "%B: warning: Empty loadable segment detected, is this intentional ?\n"
 msgstr ""
 
-#: elf.c:6009
+#: elf.c:6007
 #, c-format
 msgid ""
 "Unable to find equivalent output section for symbol '%s' from section '%s'"
 msgstr ""
 
-#: elf.c:6977
+#: elf.c:6975
 msgid "%B: unsupported relocation type %s"
 msgstr ""
 
@@ -3295,7 +3295,7 @@ msgstr ""
 msgid "%s: can not represent section `%s' in oasys"
 msgstr ""
 
-#: osf-core.c:142
+#: osf-core.c:146
 #, c-format
 msgid "Unhandled OSF/1 core file section type %d\n"
 msgstr ""

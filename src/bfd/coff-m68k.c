@@ -225,7 +225,7 @@ m68kcoff_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
 
   howto = relent.howto;
 
-  if (howto->pc_relative)
+  if (howto && howto->pc_relative)
     *addendp += sec->vma;
 
   return howto;

@@ -25,6 +25,14 @@
 # ifndef KERN_SUCCESS
 #  define KERN_SUCCESS 0
 # endif /* !KERN_SUCCESS */
+# ifndef _MACH_I386_KERN_RETURN_H_
+#  define _MACH_I386_KERN_RETURN_H_ 1
+#  if defined(__i386__) || defined(__x86_64__)
+#   ifndef ASSEMBLER
+typedef int kern_return_t;
+#   endif /* !ASSEMBLER */
+#  endif /* __i386__ || __x86_64__ */
+# endif /* !_MACH_I386_KERN_RETURN_H_ */
 # ifndef _MACH_VM_PROT_H_
 #  define _MACH_VM_PROT_H_ 1
 typedef int vm_prot_t;

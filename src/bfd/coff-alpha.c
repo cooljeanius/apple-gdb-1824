@@ -831,7 +831,7 @@ alpha_ecoff_get_relocated_section_contents(bfd *abfd,
 	}
     }
 
-  for (; *reloc_vector != (arelent *)NULL; reloc_vector++)
+  for (; reloc_vector && (*reloc_vector != (arelent *)NULL); reloc_vector++)
     {
       arelent *rel;
       bfd_reloc_status_type r;

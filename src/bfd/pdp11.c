@@ -1498,7 +1498,7 @@ NAME (aout, translate_symbol_table) (bfd *abfd,
   struct external_nlist *ext_end;
 
   ext_end = ext + count;
-  for (; ext < ext_end; ext++, in++)
+  for (; (ext < ext_end) && (in != NULL); ext++, in++)
     {
       bfd_vma x;
 
@@ -2405,11 +2405,11 @@ NAME (aout, find_nearest_line) (bfd *abfd,
 	 function name, without the leading underscore.  Put the
 	 underscore back in, so that the caller gets a symbol name.  */
       if (bfd_get_symbol_leading_char (abfd) == '\0')
-	strcpy (buf, function);
+	strncpy(buf, function, buf_len);
       else if (buf != NULL)
 	{
 	  buf[0] = bfd_get_symbol_leading_char (abfd);
-	  strcpy (buf + 1, function);
+	  strncpy(buf + 1, function, buf_len + 1);
 	}
 
       /* Have to remove : stuff.  */
@@ -3391,7 +3391,7 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
 	      /* Write out the new r_index value.  */
 	      reloc_entry = (int)GET_WORD(input_bfd, rel);
 	      reloc_entry &= RIDXMASK;
-	      reloc_entry |= r_index << 4;
+	      reloc_entry |= (r_index << 4);
 	      PUT_WORD(input_bfd, (bfd_vma)reloc_entry, rel);
 	    }
 	  else

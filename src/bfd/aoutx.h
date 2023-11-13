@@ -2791,11 +2791,11 @@ NAME (aout, find_nearest_line) (bfd *abfd,
 	 function name, without the leading underscore.  Put the
 	 underscore back in, so that the caller gets a symbol name.  */
       if (bfd_get_symbol_leading_char (abfd) == '\0')
-	strcpy (buf, function);
+	strncpy(buf, function, buf_len);
       else
 	{
 	  buf[0] = bfd_get_symbol_leading_char (abfd);
-	  strcpy (buf + 1, function);
+	  strncpy(buf + 1, function, buf_len + 1);
 	}
       /* Have to remove : stuff.  */
       colon = strchr (buf, ':');

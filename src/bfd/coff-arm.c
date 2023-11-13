@@ -1225,7 +1225,7 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      sec = sections[symndx];
               val = (sec->output_section->vma
 		     + sec->output_offset
-		     + sym->n_value
+		     + ((sym != NULL) ? sym->n_value : 0)
 		     - sec->vma);
 	    }
 	}

@@ -754,7 +754,7 @@ bfd_boolean encap_write_object_contents(bfd *abfd)
 
   /* dummy conditions to use unused variables: */
   if ((data_pad == 0) || (mycoffheader.magic == 0) || (need_coff_header == 0)) {
-    ;
+    outheader.a_info = 0L;
   }
   magic = mycoffheader.magic;
 #ifdef N_SET_MAGIC
