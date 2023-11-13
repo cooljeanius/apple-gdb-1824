@@ -412,6 +412,13 @@
 				"INSTALL_PATH[sdk=macosx*]" = /usr/lib;
 				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/libz.1.dylib";
 				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "-headerpad_max_install_names";
+				"OTHER_LDFLAGS[sdk=macosx*][arch=i386]" = (
+					"-headerpad_max_install_names",
+					"-keep_relocs",
+					"-read_only_relocs",
+					suppress,
+				);
 				PRODUCT_NAME = "z.$(DYLIB_CURRENT_VERSION)";
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/include;
 				"PUBLIC_HEADERS_FOLDER_PATH[sdk=iphoneos*]" = /usr/include;

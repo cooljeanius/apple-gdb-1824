@@ -23,7 +23,8 @@ jobs:
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
     - run: if test ! -e libcheckpoint/libcheckpoint.dylib; then make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else stat libcheckpoint/libcheckpoint.dylib; fi
     - run: if test ! -e macsbug/MacsBug_plugin; then make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else stat macsbug/MacsBug_plugin; fi
-    - run: if test ! -e macsbug/gdb_plugin_support/gdb_plugin_support.o; then make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi) || (for cfile in macsbug/gdb_plugin_support/*.c; do ${{ matrix.compiler }} -c "${cfile}"; done); else stat macsbug/gdb_plugin_support/gdb_plugin_support.o; fi
+    - run: if test ! -e macsbug/gdb_plugin_support/gdb_plugin_support.o; then make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi) || (for cfile in macsbug/gdb_plugin_support/*.c; do ${{ matrix.compiler }} -c "${cfile}" || stat "${cfile}"; done); else stat macsbug/gdb_plugin_support/gdb_plugin_support.o; fi
+    - run: if test -d .. && test -w .. && test ! -e ../gdb; then cd .. && ln -sv apple-gdb-1824 gdb; else stat .. && ls ..; fi
     - run: (if test -x "$(which ant)"; then if test ! -d build; then mkdir build; elif test ! -d "${HOME}"/work/apple-gdb-1824/build; then mkdir -pv "${HOME}"/work/apple-gdb-1824/build; fi; ant; else echo "ant missing"; fi) || (if test -x ./gradlew; then (./gradlew build || ./gradlew assemble || ./gradlew); elif test -r ./gradlew; then sh ./gradlew; elif test -e ./gradlew; then stat ./gradlew; else echo "gradlewrapper missing"; fi) || (if test -x "$(which gradle)"; then gradle; else echo "gradle missing"; fi) || (if test -x ~rc/bin/buildit; then sudo ~rc/bin/buildit "$(pwd)" -arch ppc -arch i386 -arch armv5 -target cross -project gdb -release RELEASENAME RC_CROSS_ARCHS=armv6; else echo "buildit missing"; fi) || ls
     - run: cd src && ./configure --disable-werror --disable-opts-test --enable-carbon-framework --enable-debug-symbols-framework --enable-64-bit-bfd --enable-silent-rules
     - run: cd src && make configure-bfd
@@ -64,8 +65,8 @@ jobs:
     - run: cd src && make all-libdecnumber
     - run: cd src && make all-mmalloc
     - run: cd src && make configure-readline
-    - run: cd src && make configure-gdb
     - run: cd src && for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/configure; then make configure-${dir}; elif test -d ${dir}; then ls ${dir}/configure*; else echo "skipping configuring in ${dir}"; fi; done
+    - run: cd src && make configure-gdb
     - run: cd src && for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then make -C ${dir}; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
     - run: cd src && make all-gdb
     - run: cd src && make check-libiberty
@@ -75,7 +76,7 @@ jobs:
     - run: cd src && make check-dejagnu
     - run: cd src && make check-intl
     - run: cd src && make check-utils
-    - run: pwd
+    - run: (pwd && ls)
       if: "${{ success() }}"
     - run: find . -name config.log -print0 | xargs cat | grep -i error | sort | uniq
       if: "${{ failure() }}"

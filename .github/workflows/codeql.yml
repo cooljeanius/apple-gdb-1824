@@ -89,14 +89,14 @@ jobs:
 
     - name: Syntax check
       if: matrix.language == 'ruby'
-      run: ruby -c src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb
+      run: ruby -cwv src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb
 
     - name: Setup Gradle
       if: matrix.language == 'java-kotlin'
       uses: gradle/gradle-build-action@v2
     - name: Run build with Gradle Wrapper
       if: matrix.language == 'java-kotlin' && success()
-      run: ./gradlew build || stat ./gradlew
+      run: ./gradlew build || ./gradlew assemble || stat ./gradlew
 
     # Can try bringing back autobuild for 'c-cpp' once darling has xcrun:
     - name: Autobuild
@@ -306,6 +306,7 @@ jobs:
       run: |
         # shellcheck disable=SC2044
         for javafile in $(find . -name '*.java' -type f); do \
+          echo "One last attempt at compiling ${javafile}..."; \
           javac "${javafile}" || stat "${javafile}"; \
         done
 

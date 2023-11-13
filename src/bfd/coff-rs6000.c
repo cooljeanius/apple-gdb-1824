@@ -1155,7 +1155,7 @@ _bfd_xcoff_slurp_armap(bfd *abfd)
 
       /* Skip the name (normally empty): */
       namlen = (size_t)strtol(hdr.namlen, (char **)NULL, 10);
-      off = (((namlen + 1UL) & ~(size_t)1UL) + SXCOFFARFMAG);
+      off = (file_ptr)(((namlen + 1UL) & ~(size_t)1UL) + SXCOFFARFMAG);
       if (bfd_seek(abfd, off, SEEK_CUR) != 0)
 	return FALSE;
 
@@ -1210,11 +1210,11 @@ _bfd_xcoff_slurp_armap(bfd *abfd)
 
       /* Skip the name (normally empty): */
       namlen = (size_t)strtol(hdr.namlen, (char **)NULL, 10);
-      off = (((namlen + 1) & ~(size_t)1UL) + SXCOFFARFMAG);
+      off = (file_ptr)(((namlen + 1) & ~(size_t)1UL) + SXCOFFARFMAG);
       if (bfd_seek(abfd, off, SEEK_CUR) != 0)
 	return FALSE;
 
-      /* XXX This actually has to be a call to strtoll (at least on 32-bit
+      /* XXX: This actually has to be a call to strtoll (at least on 32-bit
 	 machines) since the field width is 20 and there numbers with more
 	 than 32 bits can be represented.  */
       sz = (size_t)strtol(hdr.size, (char **)NULL, 10);
