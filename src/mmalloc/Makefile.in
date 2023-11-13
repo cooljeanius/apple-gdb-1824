@@ -178,7 +178,8 @@ mmallocplusplus.o: mmallocplusplus.cp
 
 STAGESTUFF =	$(TARGETLIB) *.o
 
-all:		$(TARGETLIB)
+all: $(TARGETLIB)
+	if test -n "$(TARGETLIB)"; then stat $(TARGETLIB); fi
 
 info: $(INFO_DEPS)
 dvi: mmalloc.dvi

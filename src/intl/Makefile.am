@@ -139,6 +139,7 @@ EXTRA_DIST += plural.c
 AM_INCLUDES = -Wp,-I. -Wp,-I$(srcdir)
 
 all: all-@USE_INCLUDED_LIBINTL@ @MAINT@ config.status po/Makefile
+	@echo "Use included libintl? @USE_INCLUDED_LIBINTL@"
 .PHONY: all all-@USE_INCLUDED_LIBINTL@
 
 all-yes: libintl.la intlh.inst libintl.a libintl.h config.intl @MAINT@ config.status

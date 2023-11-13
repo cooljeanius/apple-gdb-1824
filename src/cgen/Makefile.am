@@ -33,12 +33,14 @@ RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
 # app-independent files.
 
 all-local: stamp-cgen
+	stat stamp-cgen
 
 stamp-cgen: $(CGENFILES)
 	rm -f stamp-cgen
 	echo "timestamp" > stamp-cgen
 
 all: @MAINT@ all-local
+	ls
 
 # Phony targets to run each of the applications,
 # though most of these are for development purposes only.

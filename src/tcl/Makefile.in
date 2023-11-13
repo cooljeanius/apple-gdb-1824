@@ -96,7 +96,7 @@ RUNTEST = ` \
   else echo runtest ;  fi`
 
 check: $(CONFIGDIR)/Makefile
-	echo "CONFIGDIR is $(CONFIGDIR); making tcltest in it..."
+	@echo "CONFIGDIR is $(CONFIGDIR); making tcltest in it..."
 	cd $(CONFIGDIR) && $(MAKE) tcltest
 	if test "x$(CONFIGDIR)" != "x$(DEJAGNUDIR)"; then \
 	  if test -e $(CONFIGDIR)/tcltest && test ! -e $(DEJAGNUDIR)/$(CONFIGDIR)/tcltest; then \

@@ -134,6 +134,7 @@ all: stamp-picdir stamp-noasandir $(TARGETLIB) needed-list required-list all-sub
 
 .PHONY: check installcheck
 check: check-subdir @MAINT@ all @MAINT@ $(TEST_PROGRAMS)
+	if test -n "$(TARGETLIB)"; then stat $(TARGETLIB); fi
 installcheck: installcheck-subdir
 
 ###########################################################################

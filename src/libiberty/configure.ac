@@ -1226,14 +1226,18 @@ AC_SUBST([MMALLOC_OK])dnl
 if test "x${multi_basedir}" = "x"; then
   test -z "${multi_basedir}" || echo "inconsistent test for multi_basedir"
   if test -n "${with_multisubdir}" && test -d "${with_multisubdir}"; then
+    AC_MSG_NOTICE([setting multi_basedir to with_multisubdir: ${with_multisubdir}])
     export multi_basedir="${with_multisubdir}"
   elif test -n "${libiberty_topdir}" && test -d "${libiberty_topdir}"; then
+    AC_MSG_NOTICE([setting multi_basedir to libiberty_topdir: ${libiberty_topdir}])
     export multi_basedir="${libiberty_topdir}"
   elif test -d ..; then
-    export multi_basedir=..
+    echo "setting multi_basedir to .." && export multi_basedir=..
   else
     AC_MSG_WARN([multi_basedir is STILL unset! Watch out!])
   fi
+else
+  test -n "${multi_basedir}" && echo "multi_basedir is ${multi_basedir}"
 fi
 
 # Output.

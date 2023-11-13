@@ -146,7 +146,8 @@ SUFFIXES = .c .o .plist
 
 STAGESTUFF =	$(TARGETLIB) $(TARGETOBJ)
 
-all:		$(TARGETLIB)
+all: $(TARGETLIB)
+	if test -n "$(TARGETLIB)"; then stat $(TARGETLIB); fi
 
 info: electric-fence.info
 dvi: electric-fence.dvi

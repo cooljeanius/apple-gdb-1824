@@ -74,6 +74,7 @@ libdecnumber_a_SOURCES = decContext.c decContext.h decDPD.h \
 	bid/decimal64.c bid/decimal64.h
 
 all: libdecnumber.a
+	stat libdecnumber.a
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj

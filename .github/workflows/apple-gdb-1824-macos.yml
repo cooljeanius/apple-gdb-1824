@@ -71,13 +71,13 @@ jobs:
     - run: cd src && make configure-gdb
     - run: cd src && make all-gdb
     - run: cd src && make check-libiberty
-    - run: cd src && for dir in sim tcl expect dejagnu itcl; do if test -e ${dir}/Makefile; then make check-${dir} V=0 RUNTESTFLAGS="-v"; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
+    - run: cd src && for dir in sim tcl expect dejagnu itcl libgui; do if test -e ${dir}/Makefile; then make check-${dir} V=0 RUNTESTFLAGS="-v"; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
     - run: cd src && make check-bfd
     - run: cd src && make check-opcodes
     - run: cd src && make check-dejagnu
     - run: cd src && make check-intl
     - run: cd src && make check-utils
-    - run: (pwd && ls)
+    - run: time (pwd && ls)
       if: "${{ success() }}"
     - run: find . -name config.log -print0 | xargs cat | grep -i error | sort | uniq
       if: "${{ failure() }}"

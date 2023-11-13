@@ -24854,15 +24854,21 @@ fi
 if test "x${multi_basedir}" = "x"; then
   test -z "${multi_basedir}" || echo "inconsistent test for multi_basedir"
   if test -n "${with_multisubdir}" && test -d "${with_multisubdir}"; then
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: setting multi_basedir to with_multisubdir: ${with_multisubdir}" >&5
+printf "%s\n" "$as_me: setting multi_basedir to with_multisubdir: ${with_multisubdir}" >&6;}
     export multi_basedir="${with_multisubdir}"
   elif test -n "${libiberty_topdir}" && test -d "${libiberty_topdir}"; then
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: setting multi_basedir to libiberty_topdir: ${libiberty_topdir}" >&5
+printf "%s\n" "$as_me: setting multi_basedir to libiberty_topdir: ${libiberty_topdir}" >&6;}
     export multi_basedir="${libiberty_topdir}"
   elif test -d ..; then
-    export multi_basedir=..
+    echo "setting multi_basedir to .." && export multi_basedir=..
   else
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: multi_basedir is STILL unset! Watch out!" >&5
 printf "%s\n" "$as_me: WARNING: multi_basedir is STILL unset! Watch out!" >&2;}
   fi
+else
+  test -n "${multi_basedir}" && echo "multi_basedir is ${multi_basedir}"
 fi
 
 # Output.
