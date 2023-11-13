@@ -6743,7 +6743,7 @@ fi
   fi
 
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -6850,12 +6850,12 @@ fi
 
 
   if test "x${with_multisrctop}" = "x"; then
-    test -z "${with_multisrctop}"
+    test -z "${with_multisrctop}" || echo "inconsistent test for with_multisrctop"
     if test -d .. && test -e ../config-ml.in; then
       export with_multisrctop="../"
     else
-      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: we need config-ml.in" >&5
-printf "%s\n" "$as_me: WARNING: we need config-ml.in" >&2;}
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: we need config-ml.in, but it seems to be missing from ../" >&5
+printf "%s\n" "$as_me: WARNING: we need config-ml.in, but it seems to be missing from ../" >&2;}
     fi
   fi
 
@@ -6897,13 +6897,16 @@ fi
 ac_config_commands="$ac_config_commands multilib-default-1"
 
   if test "x${multi_basedir}" = "x"; then
-    test -z "${multi_basedir}"
+    test -z "${multi_basedir}" || echo "inconsistent test for multi_basedir"
     if test -n "${with_multisubdir}" && test -d "${with_multisubdir}"; then
       export multi_basedir="${with_multisubdir}"
     elif test -n "${libiberty_topdir}" && test -d "${libiberty_topdir}"; then
       export multi_basedir="${libiberty_topdir}"
     elif test -d ..; then
       export multi_basedir=..
+    else
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: unsure what to set multi_basedir to" >&5
+printf "%s\n" "$as_me: WARNING: unsure what to set multi_basedir to" >&2;}
     fi
   fi
 
@@ -6915,7 +6918,7 @@ if test "x${cross_compiling}" = "xno" && test "x${multilib}" = "xyes" \
 fi
 
 # The flag for installing the target headers is further below.
-test -d .
+test -d . || echo "uh oh, your shell is screwing up basic tests, watch out..."
 
 # More checks for programs:
 # By default we simply use the C compiler to build assembly code.
@@ -24845,6 +24848,21 @@ printf "%s\n" "#define USE_MMALLOC 1" >>confdefs.h
    MMALLOC_OK=''
 else
    MMALLOC_OK='#'
+fi
+
+# Check these one more time.
+if test "x${multi_basedir}" = "x"; then
+  test -z "${multi_basedir}" || echo "inconsistent test for multi_basedir"
+  if test -n "${with_multisubdir}" && test -d "${with_multisubdir}"; then
+    export multi_basedir="${with_multisubdir}"
+  elif test -n "${libiberty_topdir}" && test -d "${libiberty_topdir}"; then
+    export multi_basedir="${libiberty_topdir}"
+  elif test -d ..; then
+    export multi_basedir=..
+  else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: multi_basedir is STILL unset! Watch out!" >&5
+printf "%s\n" "$as_me: WARNING: multi_basedir is STILL unset! Watch out!" >&2;}
+  fi
 fi
 
 # Output.

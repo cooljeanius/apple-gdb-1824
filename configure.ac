@@ -13,7 +13,15 @@ if test -x "`which sw_vers 2>&AS_MESSAGE_LOG_FD`"; then
   mac_vers_major="$(sw_vers -productVersion | cut -d\. -f1 2>&AS_MESSAGE_LOG_FD)"
   mac_vers_minor="$(sw_vers -productVersion | cut -d\. -f2 2>&AS_MESSAGE_LOG_FD)"
   if test -n "${mac_vers_major}"; then
-    if test ${mac_vers_major} -eq 11; then
+    if test ${mac_vers_major} -ge 12; then
+      AC_MSG_WARN([support for Monterey and later still needs to be written])
+      if test -e ./.profile_generic; then
+        AC_MSG_NOTICE([falling back to ./.profile_generic])
+        . ./.profile_generic
+      else
+        AC_MSG_WARN([you will have to find out what to do here yourself.])
+      fi
+    elif test ${mac_vers_major} -eq 11; then
       if test -e ./.profile_big_sur; then
         AC_MSG_NOTICE([sourcing ./.profile_big_sur])
         . ./.profile_big_sur

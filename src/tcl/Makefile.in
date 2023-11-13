@@ -9,6 +9,8 @@ AUTOCONF = @AUTOCONF@
 CONFIGDIR=@CONFIGDIR@
 CONFIGDIR2=@CONFIGDIR2@
 
+MKDIR_P = @MKDIR_P@
+
 SUBDIRS = $(CONFIGDIR) $(CONFIGDIR2)
 
 VPATH = @srcdir@
@@ -41,8 +43,18 @@ install test install-binaries install-libraries install-minimal:
 
 mostlyclean-recursive clean-recursive distclean-recursive \
 maintainer-clean-recursive:
-	@cd $(CONFIGDIR) && $(MAKE) `echo $@ | $(SED) 's/-recursive//'`
-	@test x"$(CONFIGDIR2)" = x"" || (cd "$(CONFIGDIR2)" && $(MAKE) `echo $@ | $(SED) 's/-recursive'`)
+	@if test x"$(CONFIGDIR)" != x"" && test -r $(CONFIGDIR)/Makefile; then \
+	  echo "$@: entering CONFIGDIR $(CONFIGDIR)"; \
+	  cd $(CONFIGDIR) && $(MAKE) `echo $@ | $(SED) 's/-recursive//'`; \
+	else \
+	  echo "Makefile missing for $(CONFIGDIR); skipping $@ target for it"; \
+	fi
+	@if test x"$(CONFIGDIR2)" != x"" && test -r $(CONFIGDIR2)/Makefile; then \
+	  echo "$@: entering CONFIGDIR2 $(CONFIGDIR2)"; \
+	  cd "$(CONFIGDIR2)" && $(MAKE) `echo $@ | $(SED) 's/-recursive'`; \
+	else \
+	  echo "Makefile missing for $(CONFIGDIR2); skipping $@ target for it"; \
+	fi
 
 configure:
 	cd $(SRC_DIR) && $(AUTOCONF)
@@ -52,15 +64,20 @@ mostlyclean: mostlyclean-recursive
 clean: clean-recursive
 
 distclean-local:
-	rm -f Makefile config.cache config.log
+	rm -f config.cache config.log
 	rm -f autoscan.log *~
 	rm -rf autom4te.cache || rmdir autom4te.cache
 
 distclean: distclean-recursive distclean-local
+	if test -e Makefile; then rm -f Makefile; fi
 	if test -e config.status; then rm -f config.status; fi
 
 maintainer-clean: distclean-local maintainer-clean-recursive
-
+	@echo "This command is intended for maintainers to use"
+	@echo "it deletes files that may require special tools to rebuild."
+	-if test -d $(DEJAGNUDIR)/$(CONFIGDIR) && test -w $(DEJAGNUDIR)/$(CONFIGDIR) && test -e $(DEJAGNUDIR)/$(CONFIGDIR)/tcltest; then \
+	  rm -fv $(DEJAGNUDIR)/$(CONFIGDIR)/tcltest; \
+	fi
 
 #----------------------------------------------------------------
 # These let the DejaGnu test suite run when DejaGnu is NOT
@@ -72,19 +89,32 @@ EXPECT = ` \
   else echo expect ; fi`
 
 RUNTESTFLAGS =
+DEJAGNUDIR = $(SRC_DIR)/../dejagnu
 RUNTEST = ` \
-  if [ -f $(SRC_DIR)/../dejagnu/runtest ] ; then \
-    echo $(SRC_DIR)/../dejagnu/runtest ; \
+  if [ -f $(DEJAGNUDIR)/runtest ] ; then \
+    echo $(DEJAGNUDIR)/runtest ; \
   else echo runtest ;  fi`
 
-check:
+check: $(CONFIGDIR)/Makefile
+	echo "CONFIGDIR is $(CONFIGDIR); making tcltest in it..."
 	cd $(CONFIGDIR) && $(MAKE) tcltest
-	rootme=`pwd`; export rootme; \
-	srcdir=${SRC_DIR}; export srcdir ; \
-	EXPECT=${EXPECT} ; export EXPECT ; \
+	if test "x$(CONFIGDIR)" != "x$(DEJAGNUDIR)"; then \
+	  if test -e $(CONFIGDIR)/tcltest && test ! -e $(DEJAGNUDIR)/$(CONFIGDIR)/tcltest; then \
+	    if test ! -d $(DEJAGNUDIR)/$(CONFIGDIR); then \
+	      $(MKDIR_P) -v $(DEJAGNUDIR)/$(CONFIGDIR); \
+	    fi; \
+	    cp -v $(CONFIGDIR)/tcltest $(DEJAGNUDIR)/$(CONFIGDIR)/tcltest; \
+	  fi; \
+	fi
+	rootme="`pwd`"; echo "rootme is $${rootme}" && export rootme; \
+	srcdir="${SRC_DIR}"; echo "srcdir is $${srcdir}" && export srcdir ; \
+	EXPECT=${EXPECT}; echo "EXPECT is $${EXPECT}" && export EXPECT ; \
 	if [ -f $${rootme}/../expect/expect ] ; then  \
-	   TCL_LIBRARY=`cd $${srcdir}/library && pwd` ; \
-	   export TCL_LIBRARY ; fi ; \
+	   TCL_LIBRARY=`cd $${srcdir}/library && pwd`; \
+	   echo "TCL_LIBRARY is $${TCL_LIBRARY}" && export TCL_LIBRARY; \
+	else \
+	   echo "$${rootme}/../expect/expect is missing; skipping setting TCL_LIBRARY here..."; \
+	fi; \
 	$(RUNTEST) $(RUNTESTFLAGS) --tool tcl --srcdir $(SRC_DIR)/testsuite
 
 install-info info installcheck:

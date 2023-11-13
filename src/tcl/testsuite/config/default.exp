@@ -73,11 +73,17 @@ proc tcl_start { } {
     global verbose
     global spawn_id
     global tprompt
-    
+
+    verbose "Looking for testdrv $testdrv in objdir $objdir..."
     set testdrv "$objdir/$testdrv"
     set defs	"$srcdir/../tests/defs"
     set timeout 100
     set timetol 0
+
+    if ![file exists $testdrv] {
+	perror "testdrv (i.e. $testdrv) is missing." 0
+	return -1
+    }
 
     spawn $testdrv
 

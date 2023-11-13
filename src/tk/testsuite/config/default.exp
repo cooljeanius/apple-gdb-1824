@@ -86,6 +86,7 @@ proc tk_start {} {
   set timetol 0
 
   if {! [find_x_display]} then {
+      perror "Failed to find X display." 0
       return -1
   }
 

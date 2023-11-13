@@ -263,12 +263,12 @@ m4_ifdef([AM_PROG_AR],[
 ])dnl
 m4_ifdef([AC_PROG_RANLIB],[
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   AC_PROG_RANLIB
 fi
 ],[
 if test "x${ac_cv_prog_ac_ct_RANLIB}" = "x"; then
-  test -z "${ac_cv_prog_ac_ct_RANLIB}"
+  test -z "${ac_cv_prog_ac_ct_RANLIB}" || unset ac_cv_prog_ac_ct_RANLIB
   AC_CHECK_TOOLS([RANLIB],[ranlib granlib],[:])
 fi
 ])dnl
@@ -277,22 +277,26 @@ dnl# Since I am partially switching to automake, I am using the AM_ENABLE_MULTIL
 dnl# macro here when available:
 m4_ifdef([AM_ENABLE_MULTILIB],[
   if test "x${with_multisrctop}" = "x"; then
-    test -z "${with_multisrctop}"
+    test -z "${with_multisrctop}" || echo "inconsistent test for with_multisrctop"
     if test -d .. && test -e ../config-ml.in; then
       export with_multisrctop="../"
     else
-      AC_MSG_WARN([we need config-ml.in])
+      AC_MSG_WARN([we need config-ml.in, but it seems to be missing from ../])
     fi
   fi
+  dnl# So, apparently we cannot use the usual "([],[..])" argument here that other
+  dnl# subdirectories use, because, well, this whole mess is annoying...
   AM_ENABLE_MULTILIB
   if test "x${multi_basedir}" = "x"; then
-    test -z "${multi_basedir}"
+    test -z "${multi_basedir}" || echo "inconsistent test for multi_basedir"
     if test -n "${with_multisubdir}" && test -d "${with_multisubdir}"; then
       export multi_basedir="${with_multisubdir}"
     elif test -n "${libiberty_topdir}" && test -d "${libiberty_topdir}"; then
       export multi_basedir="${libiberty_topdir}"
     elif test -d ..; then
       export multi_basedir=..
+    else
+      AC_MSG_WARN([unsure what to set multi_basedir to])
     fi
   fi
   AC_SUBST([multi_basedir])dnl
@@ -318,7 +322,7 @@ if test "x${cross_compiling}" = "xno" && test "x${multilib}" = "xyes" \
 fi
 
 # The flag for installing the target headers is further below.
-test -d .
+test -d . || echo "uh oh, your shell is screwing up basic tests, watch out..."
 
 # More checks for programs:
 AM_PROG_AS
@@ -1217,6 +1221,20 @@ else
    MMALLOC_OK='#'
 fi
 AC_SUBST([MMALLOC_OK])dnl
+
+# Check these one more time.
+if test "x${multi_basedir}" = "x"; then
+  test -z "${multi_basedir}" || echo "inconsistent test for multi_basedir"
+  if test -n "${with_multisubdir}" && test -d "${with_multisubdir}"; then
+    export multi_basedir="${with_multisubdir}"
+  elif test -n "${libiberty_topdir}" && test -d "${libiberty_topdir}"; then
+    export multi_basedir="${libiberty_topdir}"
+  elif test -d ..; then
+    export multi_basedir=..
+  else
+    AC_MSG_WARN([multi_basedir is STILL unset! Watch out!])
+  fi
+fi
 
 # Output.
 # We need multilib support, but only if configuring for the target.
