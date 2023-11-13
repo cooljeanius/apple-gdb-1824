@@ -123,6 +123,7 @@ CFLAGS 				= 	-gdwarf-2		\
 					-Wall			\
 					-Wimplicit		\
 					-Wformat		\
+					-Wno-error		\
 					$(INCLUDES)
 
 OBJS				=	$(CFILES:%.c=$(OFILE_DIR)/%.o)

@@ -203,14 +203,14 @@ jobs:
             echo "skipping attempting to build additional objfiles in ${subdir}"; \
           fi; \
         done
-        find . -name '*.o' -exec cp -v {} . ";" || echo "failed copying an object file"
+        (time (find . -name '*.o' -exec cp -v {} . ";")) || echo "failed copying an object file"
 
     - name: Extra coverage build (C), part 2
       if: matrix.language == 'c-cpp' && success()
       run: |
         cd src
         FINAL_CPPFLAGS="-I."
-        for myincdir in .. include ../include bfd ../bfd gdb ../gdb; do \
+        for myincdir in .. include ../include bfd ../bfd gdb ../gdb libiberty ../libiberty; do \
           if test -d "${myincdir}" && test -r "${myincdir}" && test -n "$(ls "${myincdir}"/*.h)"; then \
             FINAL_CPPFLAGS="${FINAL_CPPFLAGS} -I${myincdir} -iquote ${myincdir}"; \
           fi; \
@@ -220,7 +220,6 @@ jobs:
         for cfile in $(find . -name '*.c' -type f); do \
           cobjfile="$(echo "${cfile}" | sed "s/\.c/.o/g")"; \
           if test ! -e "${cobjfile}"; then \
-            echo "One last attempt at compiling ${cfile}..."; \
             echo "gcc -c -w \"${FINAL_CPPFLAGS}\" \"${cfile}\""; \
             gcc -c -w "${FINAL_CPPFLAGS}" "${cfile}" || stat -t "${cfile}" || echo "cfile is ${cfile}"; \
           else \
