@@ -204,11 +204,15 @@ jobs:
           fi; \
         done
         find . -name '*.o' -exec cp -v {} . ";" || echo "failed copying an object file"
-        pwd
+
+    - name: Extra coverage build (C), part 2
+      if: matrix.language == 'c-cpp' && success()
+      run: |
+        cd src
         FINAL_CPPFLAGS="-I."
         for myincdir in .. include ../include bfd ../bfd gdb ../gdb; do \
           if test -d "${myincdir}" && test -r "${myincdir}" && test -n "$(ls "${myincdir}"/*.h)"; then \
-            FINAL_CPPFLAGS="${FINAL_CPPFLAGS} -I${myincdir}"; \
+            FINAL_CPPFLAGS="${FINAL_CPPFLAGS} -I${myincdir} -iquote ${myincdir}"; \
           fi; \
         done
         echo "FINAL_CPPFLAGS are ${FINAL_CPPFLAGS}"
@@ -217,10 +221,11 @@ jobs:
           cobjfile="$(echo "${cfile}" | sed "s/\.c/.o/g")"; \
           if test ! -e "${cobjfile}"; then \
             echo "One last attempt at compiling ${cfile}..."; \
+            echo "gcc -c -w \"${FINAL_CPPFLAGS}\" \"${cfile}\""; \
             gcc -c -w "${FINAL_CPPFLAGS}" "${cfile}" || stat -t "${cfile}" || echo "cfile is ${cfile}"; \
           else \
             echo "object file ${cobjfile} already exists for ${cfile}."; \
-            cp -v "${cobjfile}" "$(dirname "${cfile}")" || cp -v "${cobjfile}" . || cp -v "${cobjfile}" ..; \
+            cp -v "${cobjfile}" "$(dirname "${cfile}")" || cp -v "${cobjfile}" . || cp -v "${cobjfile}" .. || (if test -d /tmp && test -w /tmp; then cp -v "${cobjfile}" /tmp; fi) || stat -t "${cobjfile}"; \
           fi; \
         done
 
