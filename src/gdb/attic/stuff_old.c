@@ -73,8 +73,9 @@ extern char *sys_errlist[];
 extern int get_offset(char *, const char *);
 extern int find_symbol(const char *, struct nlist *, int, char *);
 # if !defined(_VARARGS_H) && (defined(_STDARG_H) || defined(_ANSI_STDARG_H_))
-#  if defined(__GNUC__) && (__GNUC__ >= 3) && 0
-extern void err(const char *str, ...) __attribute__((__format__(__printf__, 1, 2)));
+#  if defined(__GNUC__) && (__GNUC__ >= 3)
+extern void err(const char *str, ...) __attribute__((__format__(__printf__, 1, 2)))
+  __attribute__((__noreturn__));
 #  else
 extern void err(const char *str, ...);
 #  endif /* __GNUC__ >= 3 && 0 */
@@ -256,6 +257,19 @@ find_symbol (sym_name, symbol_table, length, strings)
     return -1;
 }
 
+#if defined(__STDC__) || defined(PROTOTYPES) || defined(__PROTOTYPES)
+void err(const char *format, ...)
+{
+  va_list args;
+  char *string;
+
+  va_start(args, format);
+  string = va_arg(args, char *);
+  vfprintf(stderr, string, args);
+  va_end(args);
+  exit(-1);
+}
+#else
 /* VARARGS */
 void
 err (va_alist)
@@ -270,5 +284,6 @@ err (va_alist)
   va_end(args);
   exit(-1);
 }
+#endif /* __STDC__ || PROTOTYPES || __PROTOTYPES */
 
 /* EOF */

@@ -293,6 +293,10 @@ m4_ifdef([AM_ENABLE_MULTILIB],[
       export with_multisrctop="../src/"
     elif test -d ../../src && test -r ../../src/config-ml.in; then
       export with_multisrctop="../../src/"
+    elif test -n "${libiberty_topdir}" && test -d "${libiberty_topdir}" && test -r ${libiberty_topdir}/config-ml.in; then
+      export with_multisrctop="${libiberty_topdir}/"
+    elif test -n "${srcdir}" && test -d "${srcdir}" && test -r ${srcdir}/../config-ml.in; then
+      export with_multisrctop="${srcdir}/../"
     else
       AC_MSG_WARN([we need config-ml.in, but it seems to be missing in all the directories we checked])
     fi

@@ -6864,6 +6864,10 @@ fi
       export with_multisrctop="../src/"
     elif test -d ../../src && test -r ../../src/config-ml.in; then
       export with_multisrctop="../../src/"
+    elif test -n "${libiberty_topdir}" && test -d "${libiberty_topdir}" && test -r ${libiberty_topdir}/config-ml.in; then
+      export with_multisrctop="${libiberty_topdir}/"
+    elif test -n "${srcdir}" && test -d "${srcdir}" && test -r ${srcdir}/../config-ml.in; then
+      export with_multisrctop="${srcdir}/../"
     else
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: we need config-ml.in, but it seems to be missing in all the directories we checked" >&5
 printf "%s\n" "$as_me: WARNING: we need config-ml.in, but it seems to be missing in all the directories we checked" >&2;}

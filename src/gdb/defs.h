@@ -1900,6 +1900,9 @@ extern struct cleanup *start_timer(int *timer_var, const char *timer_name,
 # ifdef bzero
 #  undef bzero
 # endif /* bzero */
+# ifdef realloc
+#  undef realloc
+# endif /* realloc */
 /* gdbint.texinfo says to avoid these ones: */
 # pragma GCC poison malloc realloc calloc free strdup sprintf
 /* for similar reasons, such as libiberty also providing replacements: */
