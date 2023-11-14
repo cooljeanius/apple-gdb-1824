@@ -33,6 +33,8 @@
  *	  relocation info are never sent to the target.
  */
 
+#ifndef NINDY_SHARE_B_OUT_H
+#define NINDY_SHARE_B_OUT_H 1
 
 #define BMAGIC	0415
 /* We don't accept the following (see N_BADMAG macro).
@@ -156,3 +158,5 @@ struct relocation_info {
 		r_callj:1,	/* 1 if relocation target is an i960 'callj' */
 		nuthin:1;	/* Unused				*/
 };
+
+#endif /* NINDY_SHARE_B_OUT_H */

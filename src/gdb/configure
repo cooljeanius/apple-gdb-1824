@@ -44071,6 +44071,31 @@ else $as_nop
 fi
 printf "%s\n" "#define HAVE_DECL_TIMERSUB $ac_have_decl" >>confdefs.h
 
+ac_fn_check_decl "$LINENO" "coreaddr" "ac_cv_have_decl_coreaddr" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_coreaddr" = xyes
+then :
+  ac_have_decl=1
+else $as_nop
+  ac_have_decl=0
+fi
+printf "%s\n" "#define HAVE_DECL_COREADDR $ac_have_decl" >>confdefs.h
+ac_fn_check_decl "$LINENO" "file" "ac_cv_have_decl_file" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_file" = xyes
+then :
+  ac_have_decl=1
+else $as_nop
+  ac_have_decl=0
+fi
+printf "%s\n" "#define HAVE_DECL_FILE $ac_have_decl" >>confdefs.h
+ac_fn_check_decl "$LINENO" "origin" "ac_cv_have_decl_origin" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_origin" = xyes
+then :
+  ac_have_decl=1
+else $as_nop
+  ac_have_decl=0
+fi
+printf "%s\n" "#define HAVE_DECL_ORIGIN $ac_have_decl" >>confdefs.h
+
 # ----------------------- #
 # Checks for structures.  #
 # ----------------------- #

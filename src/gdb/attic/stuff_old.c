@@ -24,8 +24,22 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #if defined(__unix__) || defined(__linux__) || defined(HAVE_A_OUT_H)
 # include <a.out.h>
 #else
+# if !defined(__A_OUT_GNU_H__) && !defined(NINDY_SHARE_B_OUT_H) && \
+     !defined(__GNU_EXEC_MACROS__) && !defined(__STRUCT_EXEC_OVERRIDE__)
+struct exec {
+  int a_syms;
+  int a_text;
+};
+struct nlist {
+  struct {
+    int n_strx;
+  } n_un;
+  int n_value;
+};
+# else
 struct exec;
 struct nlist;
+# endif /* !__A_OUT_GNU_H__ && !NINDY_SHARE_B_OUT_H && !__GNU_EXEC_MACROS__ && !__STRUCT_EXEC_OVERRIDE__ */
 #endif /* __unix__ || __linux__ || HAVE_A_OUT_H */
 #if defined(__STDC__) || defined(STDC_HEADERS) || defined(HAVE_STDLIB_H)
 # include <stdlib.h>
@@ -58,6 +72,17 @@ extern char *sys_errlist[];
 #if defined(__STDC__) || defined(PROTOTYPES) || defined(__PROTOTYPES)
 extern int get_offset(char *, const char *);
 extern int find_symbol(const char *, struct nlist *, int, char *);
+# if !defined(_VARARGS_H) && (defined(_STDARG_H) || defined(_ANSI_STDARG_H_))
+#  if defined(__GNUC__) && (__GNUC__ >= 3) && 0
+extern void err(const char *str, ...) __attribute__((__format__(__printf__, 1, 2)));
+#  else
+extern void err(const char *str, ...);
+#  endif /* __GNUC__ >= 3 && 0 */
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "Cannot declare prototype here for err() with your current ifdefs."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* !_VARARGS_H && (_STDARG_H || _ANSI_STDARG_H_) */
 #endif /* __STDC__ || PROTOTYPES || __PROTOTYPES */
 
 #if defined(__STDC__) || defined(PROTOTYPES) || defined(__PROTOTYPES)
@@ -144,6 +169,12 @@ get_offset (file, sym_name)
   struct nlist *symbol_table;
   int size;
   char *strings;
+#if defined(__APPLE__) && (!defined(HAVE_DECL_ORIGIN) || !HAVE_DECL_ORIGIN)
+  int origin;
+#endif /* __APPLE__ && !HAVE_DECL_ORIGIN */
+#if defined(__APPLE__) && (!defined(HAVE_DECL_COREADDR) || !HAVE_DECL_COREADDR)
+  int coreaddr;
+#endif /* __APPLE__ && !HAVE_DECL_COREADDR */
 
   f = open(file, O_RDONLY);
   if (f < 0)
@@ -184,9 +215,11 @@ get_offset (file, sym_name)
   coreaddr = find_symbol(sym_name, symbol_table, file_hdr.a_syms, strings);
 #ifdef N_TXTOFF
   /* Return address in file of the heap data space: */
-  return (N_TXTOFF(file_hdr) + core_addr - origin);
+  return (N_TXTOFF(file_hdr) + coreaddr - origin);
 #else
   (void)file_hdr;
+  (void)coreaddr;
+  (void)origin;
   return -1;
 #endif /* N_TXTOFF */
 }
@@ -203,6 +236,9 @@ find_symbol (sym_name, symbol_table, length, strings)
 #endif /* __STDC__ || PROTOTYPES || __PROTOTYPES */
 {
   register struct nlist *sym;
+#if defined(__APPLE__) && (!defined(HAVE_DECL_FILE) || !HAVE_DECL_FILE)
+  const char *file = ".";
+#endif /* __APPLE__ && !HAVE_DECL_FILE */
 
   /* Find symbol in question */
   for (sym = symbol_table;

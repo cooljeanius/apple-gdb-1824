@@ -1875,6 +1875,8 @@ AC_CHECK_DECLS([timeradd, timerclear, timersub],[],[],[
 #endif /* HAVE_SYS_TIME_H */
 ])dnl
 
+AC_CHECK_DECLS([coreaddr, file, origin])dnl
+
 # ----------------------- #
 # Checks for structures.  #
 # ----------------------- #

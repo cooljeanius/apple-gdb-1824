@@ -368,8 +368,16 @@
    */
 #undef HAVE_DECL_CLOSE
 
+/* Define to 1 if you have the declaration of `coreaddr', and to 0 if you
+   don't. */
+#undef HAVE_DECL_COREADDR
+
 /* Define to 1 if you have the declaration of `ffs', and to 0 if you don't. */
 #undef HAVE_DECL_FFS
+
+/* Define to 1 if you have the declaration of `file', and to 0 if you don't.
+   */
+#undef HAVE_DECL_FILE
 
 /* Define to 1 if you have the declaration of `free', and to 0 if you don't.
    */
@@ -402,6 +410,10 @@
 /* Define to 1 if you have the declaration of `name_server_port', and to 0 if
    you don't. */
 #undef HAVE_DECL_NAME_SERVER_PORT
+
+/* Define to 1 if you have the declaration of `origin', and to 0 if you don't.
+   */
+#undef HAVE_DECL_ORIGIN
 
 /* Define to 1 if you have the declaration of `POSIX_SPAWN_SETEXEC', and to 0
    if you don't. */

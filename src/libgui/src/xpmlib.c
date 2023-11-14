@@ -84,7 +84,7 @@ typedef struct PixmapMaster {
     int size[2];		/* width and height */
     int ncolors;		/* number of colors */
     int cpp;			/* characters per pixel */
-    char ** data;		/* The data that defines this pixmap 
+    CONST84 char ** data;	/* The data that defines this pixmap
 				 * image (array of strings). It is
 				 * converted into an X Pixmap when this
 				 * image is instanciated
@@ -181,21 +181,21 @@ static Tk_ConfigSpec configSpecs[] = {
  * Prototypes for procedures used only locally in this file:
  */
 static int		ImgXpmCmd _ANSI_ARGS_((ClientData clientData,
-			    Tcl_Interp *interp, int argc, char **argv));
+			    Tcl_Interp *interp, int argc, const char **argv));
 static void		ImgXpmCmdDeletedProc _ANSI_ARGS_((
 			    ClientData clientData));
 static void		ImgXpmConfigureInstance _ANSI_ARGS_((
 			    PixmapInstance *instancePtr));
 static int		ImgXpmConfigureMaster _ANSI_ARGS_((
-			    PixmapMaster *masterPtr, int argc, char **argv,
+			    PixmapMaster *masterPtr, int argc, const char **argv,
 			    int flags));
 static int		ImgXpmGetData _ANSI_ARGS_((Tcl_Interp *interp,
 			    PixmapMaster *masterPtr));
-static char ** 		ImgXpmGetDataFromFile _ANSI_ARGS_((Tcl_Interp * interp,
+static CONST84 char ** 	ImgXpmGetDataFromFile _ANSI_ARGS_((Tcl_Interp * interp,
 			    char * string, int * numLines_return));
-static char ** 		ImgXpmGetDataFromId _ANSI_ARGS_((Tcl_Interp * interp,
-			    char * id));
-static char ** 		ImgXpmGetDataFromString _ANSI_ARGS_((Tcl_Interp*interp,
+static CONST84 char ** 	ImgXpmGetDataFromId _ANSI_ARGS_((Tcl_Interp * interp,
+			    Tk_Uid id));
+static CONST84 char ** 	ImgXpmGetDataFromString _ANSI_ARGS_((Tcl_Interp*interp,
 			    char * string, int * numLines_return));
 static void 		ImgXpmGetPixmapFromData _ANSI_ARGS_((
 			    Tcl_Interp * interp,
@@ -238,7 +238,7 @@ ImgXpmCreate(interp, name, argc, objv, typePtr, master, clientDataPtr)
 				 * it will be returned in later callbacks. */
 {
     PixmapMaster *masterPtr;
-    char **argv;
+    const char **argv;
     int i;
 
     masterPtr = (PixmapMaster *) ckalloc(sizeof(PixmapMaster));
@@ -254,7 +254,7 @@ ImgXpmCreate(interp, name, argc, objv, typePtr, master, clientDataPtr)
     masterPtr->isDataAlloced = 0;
     masterPtr->instancePtr = NULL;
 
-    argv = (char **) ckalloc (argc * sizeof (char *));
+    argv = (const char **)ckalloc(argc * sizeof(const char *));
     for (i = 0; i < argc; i++) {
 	argv[i] = Tcl_GetStringFromObj(objv[i], (int *) NULL);
     }
@@ -296,7 +296,7 @@ ImgXpmConfigureMaster(masterPtr, argc, argv, flags)
     PixmapMaster *masterPtr;	/* Pointer to data structure describing
 				 * overall pixmap image to (reconfigure). */
     int argc;			/* Number of entries in argv. */
-    char **argv;		/* Pairs of configuration options for image. */
+    const char **argv;		/* Pairs of configuration options for image. */
     int flags;			/* Flags to pass to Tk_ConfigureWidget,
 				 * such as TK_CONFIG_ARGV_ONLY. */
 {
@@ -378,10 +378,10 @@ ImgXpmGetData(interp, masterPtr)
     Tcl_Interp *interp;			/* For reporting errors. */
     PixmapMaster *masterPtr;
 {
-    char ** data = NULL;
+    CONST84 char ** data = NULL;
     int  isAllocated = 0;		/* do we need to free "data"? */
     int listArgc;
-    char ** listArgv = NULL;
+    CONST84 char ** listArgv = NULL;
     int numLines;
     int size[2];
     int cpp;
@@ -472,9 +472,9 @@ ImgXpmGetData(interp, masterPtr)
     return TCL_ERROR;
 }
 
-static char ** ImgXpmGetDataFromId(interp, id)
+static CONST84 char ** ImgXpmGetDataFromId(interp, id)
     Tcl_Interp * interp;
-    char * id;
+    Tk_Uid id;
 {
     Tcl_HashEntry * hashPtr;
 
@@ -487,13 +487,13 @@ static char ** ImgXpmGetDataFromId(interp, id)
     if (hashPtr == NULL) {
 	Tcl_AppendResult(interp, "unknown pixmap ID \"", id,
 	    "\"", NULL);
-	return (char**)NULL;
+	return (CONST84 char **)NULL;
     } else {
-	return (char**)Tcl_GetHashValue(hashPtr);
+	return (CONST84 char **)Tcl_GetHashValue(hashPtr);
     }
 }
 
-static char ** ImgXpmGetDataFromString(interp, string, numLines_return)
+static CONST84 char ** ImgXpmGetDataFromString(interp, string, numLines_return)
     Tcl_Interp * interp;
     char * string;
     int * numLines_return;
@@ -501,7 +501,7 @@ static char ** ImgXpmGetDataFromString(interp, string, numLines_return)
     int quoted;
     char * p, * list;
     int numLines;
-    char ** data = NULL;
+    CONST84 char ** data = NULL;
 
     /* skip the leading blanks (leading blanks are not defined in the
      * the XPM definition, but skipping them shouldn't hurt. Also, the ability
@@ -509,7 +509,7 @@ static char ** ImgXpmGetDataFromString(interp, string, numLines_return)
      * scripts
      */
     while (isspace(*string)) {
-	++ string;
+	++string;
     }
 
     /* parse the header */
@@ -619,16 +619,16 @@ static char ** ImgXpmGetDataFromString(interp, string, numLines_return)
 
   error:
     Tcl_AppendResult(interp, "File format error", NULL);
-    return (char**) NULL;
+    return (CONST84 char **)NULL;
 }
 
-static char ** ImgXpmGetDataFromFile(interp, fileName, numLines_return)
+static CONST84 char ** ImgXpmGetDataFromFile(interp, fileName, numLines_return)
     Tcl_Interp * interp;
     char * fileName;
     int * numLines_return;
 {
     int fileId, size;
-    char ** data;
+    CONST84 char ** data;
     struct stat statBuf;
     char *cmdBuffer = NULL;
     Tcl_DString buffer;			/* initialized by Tcl_TildeSubst */
@@ -689,7 +689,7 @@ static char ** ImgXpmGetDataFromFile(interp, fileName, numLines_return)
 	ckfree(cmdBuffer);
     }
     Tcl_DStringFree(&buffer);
-    return (char**)NULL;
+    return (CONST84 char **)NULL;
 }
 
 
@@ -906,7 +906,7 @@ static void ImgXpmGetPixmapFromData(interp, masterPtr, instancePtr)
     }
 
     for (i=0; i<masterPtr->ncolors; i++) {
-	char * colorDefn;		/* the color definition line */
+	CONST84 char *colorDefn;	/* the color definition line */
 	char * colorName;		/* temp place to hold the color name
 					 * defined for one type of visual */
 	char * useName;			/* the color name used for this
@@ -916,9 +916,9 @@ static void ImgXpmGetPixmapFromData(interp, masterPtr, instancePtr)
 					 */
 	int found;
 
-	colorDefn = masterPtr->data[i+lOffset]+masterPtr->cpp;
-	colorName = (char*)ckalloc(strlen(colorDefn));
-	useName   = (char*)ckalloc(strlen(colorDefn));
+	colorDefn = masterPtr->data[i + lOffset]+masterPtr->cpp;
+	colorName = (char *)ckalloc(strlen(colorDefn) + 1);
+	useName   = (char *)ckalloc(strlen(colorDefn) + 1);
 	found     = 0;
 
 	while (colorDefn && *colorDefn) {
@@ -997,7 +997,7 @@ static void ImgXpmGetPixmapFromData(interp, masterPtr, instancePtr)
      * Parse the main body of the image
      */
     for (i=0; i<masterPtr->size[1]; i++) {
-	char * p = masterPtr->data[i+lOffset];
+	CONST84 char *p = masterPtr->data[i + lOffset];
 
 	for (j=0; j<masterPtr->size[0]; j++) {
 	    if (masterPtr->cpp == 1) {
@@ -1203,7 +1203,7 @@ ImgXpmCmd(clientData, interp, argc, argv)
     ClientData clientData;	/* Information about button widget. */
     Tcl_Interp *interp;		/* Current interpreter. */
     int argc;			/* Number of arguments. */
-    char **argv;		/* Argument strings. */
+    const char **argv;		/* Argument strings. */
 {
     PixmapMaster *masterPtr = (PixmapMaster *) clientData;
     int c, code;
