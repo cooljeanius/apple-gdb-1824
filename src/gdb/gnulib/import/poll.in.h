@@ -1,22 +1,22 @@
 /* Header for poll(2) emulation
    Contributed by Paolo Bonzini.
 
-   Copyright 2001-2003, 2007, 2009-2019 Free Software Foundation, Inc.
+   Copyright 2001-2003, 2007, 2009-2023 Free Software Foundation, Inc.
 
    This file is part of gnulib.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3, or (at your option)
-   any later version.
+   This file is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as
+   published by the Free Software Foundation; either version 2.1 of the
+   License, or (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
+   This file is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+   GNU Lesser General Public License for more details.
 
-   You should have received a copy of the GNU General Public License along
-   with this program; if not, see <https://www.gnu.org/licenses/>.  */
+   You should have received a copy of the GNU Lesser General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #ifndef _@GUARD_PREFIX@_POLL_H
 
@@ -33,6 +33,18 @@
 #ifndef _@GUARD_PREFIX@_POLL_H
 #define _@GUARD_PREFIX@_POLL_H
 
+/* This file uses GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+#if !_GL_CONFIG_H_INCLUDED
+ #error "Please include config.h first."
+#endif
+
+/* On native Windows, get the 'struct pollfd' type and the POLL* macro
+   definitions before we override them.  mingw defines them in <winsock2.h>
+   if _WIN32_WINNT >= 0x0600.  */
+#if @HAVE_WINSOCK2_H@
+# include <winsock2.h>
+#endif
+
 
 /* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
 
@@ -40,6 +52,21 @@
 
 
 #if !@HAVE_POLL_H@
+
+# if @HAVE_WINSOCK2_H@
+/* Override the definitions from <winsock2.h>.  */
+#  undef POLLIN
+#  undef POLLPRI
+#  undef POLLOUT
+#  undef POLLERR
+#  undef POLLHUP
+#  undef POLLNVAL
+#  undef POLLRDNORM
+#  undef POLLRDBAND
+#  undef POLLWRNORM
+#  undef POLLWRBAND
+#  define pollfd rpl_pollfd
+# endif
 
 /* fake a poll(2) environment */
 # define POLLIN      0x0001      /* any readable data available   */

@@ -1,6 +1,6 @@
 /* Generic bitsets.
 
-   Copyright (C) 2002-2004, 2009-2015, 2018-2019 Free Software Foundation, Inc.
+   Copyright (C) 2002-2004, 2009-2015, 2018-2023 Free Software Foundation, Inc.
 
    Contributed by Michael Hayes (m.hayes@elec.canterbury.ac.nz).
 
@@ -15,13 +15,18 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #ifndef _GL_BITSET_H
 #define _GL_BITSET_H
 
 /* This file is the public interface to the bitset abstract data type.
    Only use the functions and macros defined in this file.  */
+
+/* This file uses _GL_ATTRIBUTE_DEALLOC.  */
+#if !_GL_CONFIG_H_INCLUDED
+ #error "Please include config.h first."
+#endif
 
 #include <stdio.h>
 #if USE_UNLOCKED_IO
@@ -96,6 +101,9 @@ typedef struct
 } bitset_iterator;
 
 
+/* Free bitset.  Do nothing if NULL.  */
+void bitset_free (bitset);
+
 /* Return bytes required for bitset of desired type and size.  */
 size_t bitset_bytes (enum bitset_type, bitset_bindex);
 
@@ -107,21 +115,21 @@ bitset bitset_init (bitset, bitset_bindex, enum bitset_type);
 enum bitset_type bitset_type_choose (bitset_bindex, bitset_attrs);
 
 /* Create a bitset of desired type and size.  The bitset is zeroed.  */
-bitset bitset_alloc (bitset_bindex, enum bitset_type);
+bitset bitset_alloc (bitset_bindex, enum bitset_type)
+  _GL_ATTRIBUTE_DEALLOC (bitset_free, 1);
 
-/* Free bitset.  */
-void bitset_free (bitset);
+/* Free bitset allocated on obstack.  Do nothing if NULL.  */
+void bitset_obstack_free (bitset);
 
 /* Create a bitset of desired type and size using an obstack.  The
    bitset is zeroed.  */
 bitset bitset_obstack_alloc (struct obstack *bobstack,
-                             bitset_bindex, enum bitset_type);
-
-/* Free bitset allocated on obstack.  */
-void bitset_obstack_free (bitset);
+                             bitset_bindex, enum bitset_type)
+  _GL_ATTRIBUTE_DEALLOC (bitset_obstack_free, 1);
 
 /* Create a bitset of desired size and attributes.  The bitset is zeroed.  */
-bitset bitset_create (bitset_bindex, bitset_attrs);
+bitset bitset_create (bitset_bindex, bitset_attrs)
+  _GL_ATTRIBUTE_DEALLOC (bitset_free, 1);
 
 /* Return bitset type.  */
 enum bitset_type bitset_type_get (bitset);
@@ -178,8 +186,9 @@ bitset_test (bitset bset, bitset_bindex bitno)
 /* Return size in bits of bitset SRC.  */
 #define bitset_size(SRC) BITSET_SIZE_ (SRC)
 
-/* Change size of bitset.  */
-void bitset_resize (bitset, bitset_bindex);
+/* Change size in bits of bitset.  New bits are zeroed.  Return
+   SIZE.  */
+#define bitset_resize(DST, SIZE) BITSET_RESIZE_ (DST, SIZE)
 
 /* Return number of bits set in bitset SRC.  */
 #define bitset_count(SRC) BITSET_COUNT_ (SRC)
@@ -281,17 +290,21 @@ void bitset_resize (bitset, bitset_bindex);
 /* Return true if both bitsets are of the same type and size.  */
 bool bitset_compatible_p (bitset bset1, bitset bset2);
 
-/* Find next set bit from the given bit index.  */
-bitset_bindex bitset_next (bitset, bitset_bindex);
+/* Find next bit set in SRC starting from and including BITNO.
+   Return BITSET_BINDEX_MAX if SRC empty.  */
+bitset_bindex bitset_next (bitset src, bitset_bindex bitno);
 
-/* Find previous set bit from the given bit index.  */
-bitset_bindex bitset_prev (bitset, bitset_bindex);
+/* Find previous bit set in SRC starting from and including BITNO.
+   Return BITSET_BINDEX_MAX if SRC empty.  */
+bitset_bindex bitset_prev (bitset src, bitset_bindex bitno);
 
-/* Find first set bit.  */
-bitset_bindex bitset_first (bitset);
+/* Find first set bit.
+   Return BITSET_BINDEX_MAX if SRC empty.  */
+bitset_bindex bitset_first (bitset src);
 
-/* Find last set bit.  */
-bitset_bindex bitset_last (bitset);
+/* Find last set bit.
+   Return BITSET_BINDEX_MAX if SRC empty.  */
+bitset_bindex bitset_last (bitset src);
 
 /* Return nonzero if this is the only set bit.  */
 bool bitset_only_set_p (bitset, bitset_bindex);
@@ -370,10 +383,10 @@ void bitset_stats_enable (void);
 /* Disable bitset stats gathering.  */
 void bitset_stats_disable (void);
 
-/* Read bitset stats file of accummulated stats.  */
+/* Read bitset stats file of accumulated stats.  */
 void bitset_stats_read (const char *file_name);
 
-/* Write bitset stats file of accummulated stats.  */
+/* Write bitset stats file of accumulated stats.  */
 void bitset_stats_write (const char *file_name);
 
 /* Dump bitset stats.  */

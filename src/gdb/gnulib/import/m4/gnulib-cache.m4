@@ -1,8 +1,8 @@
-# Copyright (C) 2002-2019 Free Software Foundation, Inc.
+# Copyright (C) 2002-2023 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
 # This file is distributed in the hope that it will be useful,
@@ -72,7 +72,6 @@
 #  dirent \
 #  dirent-safer \
 #  dirfd \
-#  dosname \
 #  double-slash-root \
 #  dup2 \
 #  environ \
@@ -89,6 +88,7 @@
 #  fcntl-safer \
 #  fflush \
 #  fileblocks \
+#  filename \
 #  flexmember \
 #  float \
 #  fnmatch \
@@ -130,7 +130,6 @@
 #  localcharset \
 #  locale \
 #  localtime \
-#  localtime-buffer \
 #  longlong \
 #  lstat \
 #  malloc-gnu \
@@ -285,7 +284,6 @@ gl_MODULES([
   dirent
   dirent-safer
   dirfd
-  dosname
   double-slash-root
   dup2
   environ
@@ -302,6 +300,7 @@ gl_MODULES([
   fcntl-safer
   fflush
   fileblocks
+  filename
   flexmember
   float
   fnmatch
@@ -343,7 +342,6 @@ gl_MODULES([
   localcharset
   locale
   localtime
-  localtime-buffer
   longlong
   lstat
   malloc-gnu

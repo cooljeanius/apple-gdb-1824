@@ -61,6 +61,15 @@
 #include "rlprivate.h"
 #include "xmalloc.h"
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic error "-Wformat-security"
+#  pragma GCC diagnostic warning "-Wformat=2"
+#  pragma GCC diagnostic warning "-Wsuggest-attribute=format"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 #if !defined(strchr) && !defined(__STDC__)
 extern char *strchr(), *strrchr();
 #endif /* !strchr && !__STDC__ */
@@ -1768,7 +1777,7 @@ rl_message (va_alist)
   (*rl_redisplay_function) ();
   return 0;
 }
-#else /* !USE_VARARGS */
+#else /* !USE_VARARGS: */
 int
 rl_message (format, arg1, arg2)
      char *format;
@@ -1830,6 +1839,7 @@ rl_restore_prompt(void)
   prompt_visible_length = saved_visible_length;
 }
 
+/* */
 char *
 _rl_make_prompt_for_search(int pchar)
 {
@@ -2236,5 +2246,12 @@ _rl_col_width(const char *str, int start, int end)
   return width;
 }
 #endif /* HANDLE_MULTIBYTE */
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
 /* EOF */

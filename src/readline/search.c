@@ -53,6 +53,15 @@
 #endif
 #define abs(x)		(((x) >= 0) ? (x) : -(x))
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic error "-Wformat-security"
+#  pragma GCC diagnostic warning "-Wformat=2"
+#  pragma GCC diagnostic warning "-Wsuggest-attribute=format"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 extern HIST_ENTRY *_rl_saved_line_for_history;
 
 /* Functions imported from the rest of the library. */
@@ -187,7 +196,11 @@ noninc_search(int dir, int pchar)
   rl_end = rl_point = 0;
 
   p = _rl_make_prompt_for_search(pchar ? pchar : ':');
+#if defined(USE_VARARGS) && defined(PREFER_STDARG)
+  rl_message("%s", p);
+#else
   rl_message(p, 0, 0);
+#endif /* USE_VARARGS && PREFER_STDARG */
   free(p);
 
 #define SEARCH_RETURN rl_restore_prompt(); RL_UNSETSTATE(RL_STATE_NSEARCH); return
@@ -452,3 +465,10 @@ rl_history_search_backward(int count, int ignore)
     return (rl_get_previous_history (count, ignore));
   return (rl_history_search_internal (abs (count), (count > 0) ? -1 : 1));
 }
+
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */

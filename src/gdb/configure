@@ -42796,7 +42796,8 @@ else
   GL_GENERATE_STDINT_H_FALSE=
 fi
 
- { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for C/C++ restrict keyword" >&5
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for C/C++ restrict keyword" >&5
 printf %s "checking for C/C++ restrict keyword... " >&6; }
 if test ${ac_cv_c_restrict+y}
 then :
@@ -46919,7 +46920,8 @@ test $ac_cv_func_memcmp_working = no && case " $LIBOBJS " in
 esac
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if malloc debugging is wanted" >&5
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if malloc debugging is wanted" >&5
 printf %s "checking if malloc debugging is wanted... " >&6; }
 
 # Check whether --with-dmalloc was given.
@@ -46943,7 +46945,7 @@ printf "%s\n" "no" >&6; }
 fi
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for obstacks" >&5
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for obstacks" >&5
 printf %s "checking for obstacks... " >&6; }
 if test ${ac_cv_func_obstack+y}
 then :

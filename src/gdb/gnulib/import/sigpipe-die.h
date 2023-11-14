@@ -1,9 +1,9 @@
 /* Report a SIGPIPE signal and exit.
-   Copyright (C) 2008-2019 Free Software Foundation, Inc.
+   Copyright (C) 2008-2023 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
+   the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -41,6 +41,11 @@
 #ifndef _SIGPIPE_DIE_H
 #define _SIGPIPE_DIE_H
 
+/* This file uses _Noreturn.  */
+#if !_GL_CONFIG_H_INCLUDED
+ #error "Please include config.h first."
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -48,7 +53,7 @@ extern "C" {
 
 /* Emit an error message indicating a SIGPIPE signal, and terminate the
    process with an error code.  */
-extern _Noreturn void sigpipe_die (void);
+/*extern*/ _Noreturn void sigpipe_die (void);
 
 /* Install a SIGPIPE handler that invokes PREPARE_DIE and then emits an
    error message and exits.  PREPARE_DIE may be NULL, meaning a no-op.  */

@@ -35,18 +35,18 @@ IMPORTED_GNULIB_MODULES="\
     bcopy bison-i18n bitset btowc builtin-expect \
     c-ctype c-strcase c-strcasestr c99 calloc-posix chdir-long configmake \
     connect closedir crc ctime \
-    dirent dirent-safer dirfd dosname double-slash-root dup2 \
+    dirent dirent-safer dirfd double-slash-root dup2 \
     environ errno error euidaccess exitfail extensions extern-inline \
-    faccessat fclose fcntl fcntl-h fcntl-safer fflush fileblocks flexmember \
-    float fnmatch fnmatch-gnu fnmatch-h fopen fpieee fprintf-posix fpucw \
-    frexp frexpl fstatat fts \
+    faccessat fclose fcntl fcntl-h fcntl-safer fflush fileblocks filename \
+    flexmember float fnmatch fnmatch-gnu fnmatch-h fopen fpieee fprintf-posix \
+    fpucw frexp frexpl fstatat fts \
     getcwd getcwd-lgpl getpagesize gettext-h gettimeofday git-version-gen \
     gitlog-to-changelog gnu-make gpl-2.0 \
     havelib host-cpu-c-abi host-os \
     ignore-value include_next inline intprops inttypes inttypes-incomplete \
     isnand-nolibm isnanl-nolibm iswctype \
     largefile ldd ldexpl limits-h localcharset locale localtime \
-    localtime-buffer longlong lstat \
+    localtime longlong lstat \
     malloc-gnu malloc-posix manywarnings math mbrtowc mbschr mbsinit mbsrchr \
     mbsrtowcs mbsspn memchr memcmp memmem memmem-simple \
     mempcpy memrchr mkdir mkdtemp multiarch \
@@ -84,9 +84,9 @@ IMPORTED_GNULIB_MODULES="\
 #   explicitly ignored.
 
 # The gnulib commit ID to use for the update.
-GNULIB_COMMIT_SHA1="1e5153d4ecc50f9258b384b7c616831bbaa6af33"
+GNULIB_COMMIT_SHA1="4ec032e7c67deccd194f0a230cfaffd25c706b08"
 # (feel free to update if you know that your version works and is newer)
-# (last updated February 26, 2019)
+# (last updated November 14, 2023)
 
 # The expected version number for the various auto tools we will
 # use after the import.
@@ -114,7 +114,7 @@ else
 fi
 
 # Verify that we have the right version of gnulib...
-gnulib_head_sha1=`cd ${gnulib_prefix} && git rev-parse HEAD`
+gnulib_head_sha1=$(cd "${gnulib_prefix}" && git rev-parse HEAD)
 if [ "${gnulib_head_sha1}" != "${GNULIB_COMMIT_SHA1}" ]; then
    echo "Error: Wrong version of gnulib: ${gnulib_head_sha1}"
    echo "       (we expected it to be ${GNULIB_COMMIT_SHA1})"
@@ -136,27 +136,27 @@ fi
 
 echo "actually importing now; this may take a while..."
 # Update our gnulib import.
-${gnulib_prefix}/gnulib-tool --import --dir=. --lib=libgnu \
+"${gnulib_prefix}"/gnulib-tool --import --dir=. --lib=libgnu \
   --source-base=import --m4-base=import/m4 --doc-base=doc \
   --tests-base=tests --aux-dir=import/extra \
   --avoid=localename --avoid=lock --avoid=msvc-nothrow --avoid=setlocale \
   --avoid=threadlib --no-conditional-dependencies --no-libtool \
   --macro-prefix=gl --no-vc-files --with-obsolete \
-  ${IMPORTED_GNULIB_MODULES}
+  "${IMPORTED_GNULIB_MODULES}"
 if [ $? -ne 0 ]; then
    echo "Error: gnulib import failed.  Aborting."
    exit 1
 fi
 
 # Verify that we have the correct version of autoconf.
-ver=`autoconf --version 2>&1 | head -1 | sed 's/.*) //'`
+ver=$(autoconf --version 2>&1 | head -1 | sed 's/.*) //')
 if [ "${ver}" != "${AUTOCONF_VERSION}" ]; then
    echo "Error: Wrong autoconf version: ${ver}. Aborting."
    exit 1
 fi
 
 # Verify that we have the correct version of automake.
-ver=`automake --version 2>&1 | head -1 | sed 's/.*) //'`
+ver=$(automake --version 2>&1 | head -1 | sed 's/.*) //')
 if [ "${ver}" != "${AUTOMAKE_VERSION}" ]; then
    echo "Error: Wrong automake version (${ver}), we need ${AUTOMAKE_VERSION}."
    echo "Aborting."
@@ -164,7 +164,7 @@ if [ "${ver}" != "${AUTOMAKE_VERSION}" ]; then
 fi
 
 # Verify that we have the correct version of aclocal.
-ver=`aclocal --version 2>&1 | head -1 | sed 's/.*) //'`
+ver=$(aclocal --version 2>&1 | head -1 | sed 's/.*) //')
 if [ "${ver}" != "${ACLOCAL_VERSION}" ]; then
    echo "Error: Wrong aclocal version: ${ver}. Aborting."
    exit 1

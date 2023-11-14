@@ -1,4 +1,4 @@
-# serial 22
+# serial 25
 # Check for several getcwd bugs with long file names.
 # If so, arrange to compile the wrapper function.
 
@@ -6,7 +6,7 @@
 # I've heard that this is due to a Linux kernel bug, and that it has
 # been fixed between 2.4.21-pre3 and 2.4.21-pre4.
 
-# Copyright (C) 2003-2007, 2009-2019 Free Software Foundation, Inc.
+# Copyright (C) 2003-2007, 2009-2023 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -55,8 +55,7 @@ AC_DEFUN([gl_FUNC_GETCWD_PATH_MAX],
 /* Use the getcwd function, not any macro.  */
 #undef getcwd
 
-/* Don't get link errors because mkdir is redefined to rpl_mkdir.  */
-#undef mkdir
+]GL_MDA_DEFINES[
 
 #ifndef S_IRWXU
 # define S_IRWXU 0700
@@ -220,17 +219,17 @@ main ()
        [# Cross-compilation guesses:
         case "$host_os" in
           aix*) # On AIX, it has the AIX bug.
-            gl_cv_func_getcwd_path_max='no, it has the AIX bug' ;;
+            gl_cv_func_getcwd_path_max='guessing no, it has the AIX bug' ;;
           gnu*) # On Hurd, it is 'yes'.
-            gl_cv_func_getcwd_path_max=yes ;;
+            gl_cv_func_getcwd_path_max='guessing yes' ;;
           linux* | kfreebsd*)
             # On older Linux+glibc it's 'no, but it is partly working',
             # on newer Linux+glibc it's 'yes'.
             # On Linux+musl libc, it's 'no, but it is partly working'.
             # On kFreeBSD+glibc, it's 'no, but it is partly working'.
-            gl_cv_func_getcwd_path_max='no, but it is partly working' ;;
-          *) # If we don't know, assume the worst.
-            gl_cv_func_getcwd_path_max=no ;;
+            gl_cv_func_getcwd_path_max='guessing no, but it is partly working' ;;
+          *) # If we don't know, obey --enable-cross-guesses.
+            gl_cv_func_getcwd_path_max="$gl_cross_guess_normal" ;;
         esac
        ])
     ])

@@ -1,19 +1,19 @@
 /* Convert a 'struct tm' to a time_t value.
-   Copyright (C) 1993-2019 Free Software Foundation, Inc.
+   Copyright (C) 1993-2023 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Paul Eggert <eggert@twinsun.com>.
 
    The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
+   version 2.1 of the License, or (at your option) any later version.
 
    The GNU C Library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
@@ -46,6 +46,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <stdbool.h>
+#include <stdckdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -72,13 +73,13 @@ my_tzset (void)
   /* Rectify the value of the environment variable TZ.
      There are four possible kinds of such values:
        - Traditional US time zone names, e.g. "PST8PDT".  Syntax: see
-         <https://msdn.microsoft.com/en-us/library/90s5c885.aspx>
+         <https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/tzset>
        - Time zone names based on geography, that contain one or more
          slashes, e.g. "Europe/Moscow".
        - Time zone names based on geography, without slashes, e.g.
          "Singapore".
        - Time zone names that contain explicit DST rules.  Syntax: see
-         <http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap08.html#tag_08_03>
+         <https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap08.html#tag_08_03>
      The Microsoft CRT understands only the first kind.  It produces incorrect
      results if the value of TZ is of the other kinds.
      But in a Cygwin environment, /etc/profile.d/tzset.sh sets TZ to a value
@@ -94,7 +95,7 @@ my_tzset (void)
   const char *tz = getenv ("TZ");
   if (tz != NULL && strchr (tz, '/') != NULL)
     _putenv ("TZ=");
-# elif HAVE_TZSET
+# else
   tzset ();
 # endif
 }
@@ -112,11 +113,11 @@ my_tzset (void)
    added to them, and then with another timestamp added, without
    worrying about overflow.
 
-   Much of the code uses long_int to represent time_t values, to
-   lessen the hassle of dealing with platforms where time_t is
+   Much of the code uses long_int to represent __time64_t values, to
+   lessen the hassle of dealing with platforms where __time64_t is
    unsigned, and because long_int should suffice to represent all
-   time_t values that mktime can generate even on platforms where
-   time_t is excessively wide.  */
+   __time64_t values that mktime can generate even on platforms where
+   __time64_t is wider than the int components of struct tm.  */
 
 #if INT_MAX <= LONG_MAX / 4 / 366 / 24 / 60 / 60
 typedef long int long_int;
@@ -141,19 +142,18 @@ shr (long_int a, int b)
   long_int one = 1;
   return (-one >> 1 == -1
 	  ? a >> b
-	  : a / (one << b) - (a % (one << b) < 0));
+	  : (a + (a < 0)) / (one << b) - (a < 0));
 }
 
-/* Bounds for the intersection of time_t and long_int.  */
+/* Bounds for the intersection of __time64_t and long_int.  */
 
 static long_int const mktime_min
-  = ((TYPE_SIGNED (time_t) && TYPE_MINIMUM (time_t) < TYPE_MINIMUM (long_int))
-     ? TYPE_MINIMUM (long_int) : TYPE_MINIMUM (time_t));
+  = ((TYPE_SIGNED (__time64_t)
+      && TYPE_MINIMUM (__time64_t) < TYPE_MINIMUM (long_int))
+     ? TYPE_MINIMUM (long_int) : TYPE_MINIMUM (__time64_t));
 static long_int const mktime_max
-  = (TYPE_MAXIMUM (long_int) < TYPE_MAXIMUM (time_t)
-     ? TYPE_MAXIMUM (long_int) : TYPE_MAXIMUM (time_t));
-
-verify (TYPE_IS_INTEGER (time_t));
+  = (TYPE_MAXIMUM (long_int) < TYPE_MAXIMUM (__time64_t)
+     ? TYPE_MAXIMUM (long_int) : TYPE_MAXIMUM (__time64_t));
 
 #define EPOCH_YEAR 1970
 #define TM_YEAR_BASE 1900
@@ -212,8 +212,8 @@ ydhms_diff (long_int year1, long_int yday1, int hour1, int min1, int sec1,
      Take care to avoid integer overflow here.  */
   int a4 = shr (year1, 2) + shr (TM_YEAR_BASE, 2) - ! (year1 & 3);
   int b4 = shr (year0, 2) + shr (TM_YEAR_BASE, 2) - ! (year0 & 3);
-  int a100 = a4 / 25 - (a4 % 25 < 0);
-  int b100 = b4 / 25 - (b4 % 25 < 0);
+  int a100 = (a4 + (a4 < 0)) / 25 - (a4 < 0);
+  int b100 = (b4 + (b4 < 0)) / 25 - (b4 < 0);
   int a400 = shr (a100, 2);
   int b400 = shr (b100, 2);
   int intervening_leap_days = (a4 - b4) - (a100 - b100) + (a400 - b400);
@@ -252,23 +252,23 @@ tm_diff (long_int year, long_int yday, int hour, int min, int sec,
 }
 
 /* Use CONVERT to convert T to a struct tm value in *TM.  T must be in
-   range for time_t.  Return TM if successful, NULL (setting errno) on
+   range for __time64_t.  Return TM if successful, NULL (setting errno) on
    failure.  */
 static struct tm *
-convert_time (struct tm *(*convert) (const time_t *, struct tm *),
+convert_time (struct tm *(*convert) (const __time64_t *, struct tm *),
 	      long_int t, struct tm *tm)
 {
-  time_t x = t;
+  __time64_t x = t;
   return convert (&x, tm);
 }
 
 /* Use CONVERT to convert *T to a broken down time in *TP.
    If *T is out of range for conversion, adjust it so that
    it is the nearest in-range value and then convert that.
-   A value is in range if it fits in both time_t and long_int.
+   A value is in range if it fits in both __time64_t and long_int.
    Return TP on success, NULL (setting errno) on failure.  */
 static struct tm *
-ranged_convert (struct tm *(*convert) (const time_t *, struct tm *),
+ranged_convert (struct tm *(*convert) (const __time64_t *, struct tm *),
 		long_int *t, struct tm *tp)
 {
   long_int t1 = (*t < mktime_min ? mktime_min
@@ -310,7 +310,7 @@ ranged_convert (struct tm *(*convert) (const time_t *, struct tm *),
 }
 
 
-/* Convert *TP to a time_t value, inverting
+/* Convert *TP to a __time64_t value, inverting
    the monotonic and mostly-unit-linear conversion function CONVERT.
    Use *OFFSET to keep track of a guess at the offset of the result,
    compared to what the result would be for UTC without leap seconds.
@@ -318,9 +318,9 @@ ranged_convert (struct tm *(*convert) (const time_t *, struct tm *),
    If successful, set *TP to the canonicalized struct tm;
    otherwise leave *TP alone, return ((time_t) -1) and set errno.
    This function is external because it is used also by timegm.c.  */
-time_t
+__time64_t
 __mktime_internal (struct tm *tp,
-		   struct tm *(*convert) (const time_t *, struct tm *),
+		   struct tm *(*convert) (const __time64_t *, struct tm *),
 		   mktime_offset_t *offset)
 {
   struct tm tm;
@@ -380,7 +380,7 @@ __mktime_internal (struct tm *tp,
   /* Invert CONVERT by probing.  First assume the same offset as last
      time.  */
 
-  INT_SUBTRACT_WRAPV (0, off, &negative_offset_guess);
+  ckd_sub (&negative_offset_guess, 0, off);
   long_int t0 = ydhms_diff (year, yday, hour, min, sec,
 			    EPOCH_YEAR - TM_YEAR_BASE, 0, 0, 0,
 			    negative_offset_guess);
@@ -430,8 +430,13 @@ __mktime_internal (struct tm *tp,
 	 time with the right value, and use its UTC offset.
 
 	 Heuristic: probe the adjacent timestamps in both directions,
-	 looking for the desired isdst.  This should work for all real
-	 time zone histories in the tz database.  */
+	 looking for the desired isdst.  If none is found within a
+	 reasonable duration bound, assume a one-hour DST difference.
+	 This should work for all real time zone histories in the tz
+	 database.  */
+
+      /* +1 if we wanted standard time but got DST, -1 if the reverse.  */
+      int dst_difference = (isdst == 0) - (tm.tm_isdst == 0);
 
       /* Distance between probes when looking for a DST boundary.  In
 	 tzdata2003a, the shortest period of DST is 601200 seconds
@@ -442,12 +447,14 @@ __mktime_internal (struct tm *tp,
 	 periods when probing.  */
       int stride = 601200;
 
-      /* The longest period of DST in tzdata2003a is 536454000 seconds
-	 (e.g., America/Jujuy starting 1946-10-01 01:00).  The longest
-	 period of non-DST is much longer, but it makes no real sense
-	 to search for more than a year of non-DST, so use the DST
-	 max.  */
-      int duration_max = 536454000;
+      /* In TZDB 2021e, the longest period of DST (or of non-DST), in
+	 which the DST (or adjacent DST) difference is not one hour,
+	 is 457243209 seconds: e.g., America/Cambridge_Bay with leap
+	 seconds, starting 1965-10-31 00:00 in a switch from
+	 double-daylight time (-05) to standard time (-07), and
+	 continuing to 1980-04-27 02:00 in a switch from standard time
+	 (-07) to daylight time (-06).  */
+      int duration_max = 457243209;
 
       /* Search in both directions, so the maximum distance is half
 	 the duration; add the stride to avoid off-by-1 problems.  */
@@ -459,7 +466,7 @@ __mktime_internal (struct tm *tp,
 	for (direction = -1; direction <= 1; direction += 2)
 	  {
 	    long_int ot;
-	    if (! INT_ADD_WRAPV (t, delta * direction, &ot))
+	    if (! ckd_add (&ot, t, delta * direction))
 	      {
 		struct tm otm;
 		if (! ranged_convert (convert, &ot, &otm))
@@ -484,6 +491,11 @@ __mktime_internal (struct tm *tp,
 	      }
 	  }
 
+      /* No unusual DST offset was found nearby.  Assume one-hour DST.  */
+      t += 60 * 60 * dst_difference;
+      if (mktime_min <= t && t <= mktime_max && convert_time (convert, t, &tm))
+	goto offset_found;
+
       __set_errno (EOVERFLOW);
       return -1;
     }
@@ -492,8 +504,8 @@ __mktime_internal (struct tm *tp,
   /* Set *OFFSET to the low-order bits of T - T0 - NEGATIVE_OFFSET_GUESS.
      This is just a heuristic to speed up the next mktime call, and
      correctness is unaffected if integer overflow occurs here.  */
-  INT_SUBTRACT_WRAPV (t, t0, offset);
-  INT_SUBTRACT_WRAPV (*offset, negative_offset_guess, offset);
+  ckd_sub (offset, t, t0);
+  ckd_sub (offset, *offset, negative_offset_guess);
 
   if (LEAP_SECONDS_POSSIBLE && sec_requested != tm.tm_sec)
     {
@@ -502,7 +514,7 @@ __mktime_internal (struct tm *tp,
       long_int sec_adjustment = sec == 0 && tm.tm_sec == 60;
       sec_adjustment -= sec;
       sec_adjustment += sec_requested;
-      if (INT_ADD_WRAPV (t, sec_adjustment, &t)
+      if (ckd_add (&t, t, sec_adjustment)
 	  || ! (mktime_min <= t && t <= mktime_max))
 	{
 	  __set_errno (EOVERFLOW);
@@ -520,9 +532,9 @@ __mktime_internal (struct tm *tp,
 
 #if defined _LIBC || NEED_MKTIME_WORKING || NEED_MKTIME_WINDOWS
 
-/* Convert *TP to a time_t value.  */
-time_t
-mktime (struct tm *tp)
+/* Convert *TP to a __time64_t value.  */
+__time64_t
+__mktime64 (struct tm *tp)
 {
   /* POSIX.1 8.1.1 requires that whenever mktime() is called, the
      time zone names contained in the external variable 'tzname' shall
@@ -531,7 +543,7 @@ mktime (struct tm *tp)
 
 # if defined _LIBC || NEED_MKTIME_WORKING
   static mktime_offset_t localtime_offset;
-  return __mktime_internal (tp, __localtime_r, &localtime_offset);
+  return __mktime_internal (tp, __localtime64_r, &localtime_offset);
 # else
 #  undef mktime
   return mktime (tp);
@@ -539,11 +551,29 @@ mktime (struct tm *tp)
 }
 #endif /* _LIBC || NEED_MKTIME_WORKING || NEED_MKTIME_WINDOWS */
 
-#ifdef weak_alias
-weak_alias (mktime, timelocal)
+#if defined _LIBC && __TIMESIZE != 64
+
+libc_hidden_def (__mktime64)
+
+time_t
+mktime (struct tm *tp)
+{
+  struct tm tm = *tp;
+  __time64_t t = __mktime64 (&tm);
+  if (in_time_t_range (t))
+    {
+      *tp = tm;
+      return t;
+    }
+  else
+    {
+      __set_errno (EOVERFLOW);
+      return -1;
+    }
+}
+
 #endif
 
-#ifdef _LIBC
+weak_alias (mktime, timelocal)
 libc_hidden_def (mktime)
 libc_hidden_weak (timelocal)
-#endif

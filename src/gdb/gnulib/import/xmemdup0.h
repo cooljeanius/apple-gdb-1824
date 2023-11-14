@@ -1,10 +1,10 @@
 /* xmemdup0.h -- copy a block of arbitrary bytes, plus a trailing NUL
 
-   Copyright (C) 2008-2019 Free Software Foundation, Inc.
+   Copyright (C) 2008-2023 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
+   the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -18,14 +18,21 @@
 #ifndef XMEMDUP_H_
 # define XMEMDUP_H_
 
-# include <stddef.h>
+/* This file uses _GL_ATTRIBUTE_MALLOC, _GL_ATTRIBUTE_RETURNS_NONNULL.  */
+#if !_GL_CONFIG_H_INCLUDED
+ #error "Please include config.h first."
+#endif
+
+# include <stdlib.h>
 
 
 # ifdef __cplusplus
 extern "C" {
 # endif
 
-char *xmemdup0 (void const *p, size_t s);
+char *xmemdup0 (void const *p, size_t s)
+  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE
+  _GL_ATTRIBUTE_RETURNS_NONNULL;
 
 # ifdef __cplusplus
 }

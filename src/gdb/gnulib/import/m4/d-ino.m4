@@ -1,11 +1,11 @@
-# serial 18
+# serial 21
 
 dnl From Jim Meyering.
 dnl
 dnl Check whether struct dirent has a member named d_ino.
 dnl
 
-# Copyright (C) 1997, 1999-2001, 2003-2004, 2006-2007, 2009-2019 Free Software
+# Copyright (C) 1997, 1999-2001, 2003-2004, 2006-2007, 2009-2023 Free Software
 # Foundation, Inc.
 
 # This file is free software; the Free Software Foundation
@@ -40,12 +40,16 @@ AC_DEFUN([gl_CHECK_TYPE_STRUCT_DIRENT_D_INO],
            [gl_cv_struct_dirent_d_ino=yes],
            [gl_cv_struct_dirent_d_ino=no],
            [case "$host_os" in
-                           # Guess yes on glibc systems with Linux kernel.
-              linux*-gnu*) gl_cv_struct_dirent_d_ino="guessing yes" ;;
-                           # Guess no on native Windows.
-              mingw*)      gl_cv_struct_dirent_d_ino="guessing no" ;;
-                           # If we don't know, assume the worst.
-              *)           gl_cv_struct_dirent_d_ino="guessing no" ;;
+                            # Guess yes on glibc systems with Linux kernel.
+              linux*-gnu*)  gl_cv_struct_dirent_d_ino="guessing yes" ;;
+                            # Guess yes on musl systems with Linux kernel.
+              linux*-musl*) gl_cv_struct_dirent_d_ino="guessing yes" ;;
+                            # Guess yes on systems that emulate the Linux system calls.
+              midipix*)     gl_cv_struct_dirent_d_ino="guessing yes" ;;
+                            # Guess no on native Windows.
+              mingw*)       gl_cv_struct_dirent_d_ino="guessing no" ;;
+                            # If we don't know, obey --enable-cross-guesses.
+              *)            gl_cv_struct_dirent_d_ino="$gl_cross_guess_normal" ;;
             esac
            ])])
    case "$gl_cv_struct_dirent_d_ino" in

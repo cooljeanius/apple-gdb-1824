@@ -1,18 +1,18 @@
 /* Searching a string for the last occurrence of a character.
-   Copyright (C) 2007-2019 Free Software Foundation, Inc.
+   Copyright (C) 2007-2023 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2007.
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
-   (at your option) any later version.
+   This file is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as
+   published by the Free Software Foundation, either version 3 of the
+   License, or (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
+   This file is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+   GNU Lesser General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
+   You should have received a copy of the GNU Lesser General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include <config.h>
@@ -20,7 +20,7 @@
 /* Specification.  */
 #include <string.h>
 
-#include "mbuiter.h"
+#include "mbuiterf.h"
 
 /* Locate the last single-byte character C in the character string STRING,
    and return a pointer to it.  Return NULL if C is not found in STRING.  */
@@ -34,14 +34,17 @@ mbsrchr (const char *string, int c)
       && (unsigned char) c >= 0x30)
     {
       const char *result = NULL;
-      mbui_iterator_t iter;
 
-      for (mbui_init (iter, string); mbui_avail (iter); mbui_advance (iter))
+      mbuif_state_t state;
+      const char *iter;
+      for (mbuif_init (state), iter = string; mbuif_avail (state, iter); )
         {
-          if (mb_len (mbui_cur (iter)) == 1
-              && (unsigned char) * mbui_cur_ptr (iter) == (unsigned char) c)
-            result = mbui_cur_ptr (iter);
+          mbchar_t cur = mbuif_next (state, iter);
+          if (mb_len (cur) == 1 && (unsigned char) *iter == (unsigned char) c)
+            result = iter;
+          iter += mb_len (cur);
         }
+
       return (char *) result;
     }
   else

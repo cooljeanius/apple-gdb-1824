@@ -1,18 +1,18 @@
 /* Wrapper around <monetary.h>.
-   Copyright (C) 2017-2019 Free Software Foundation, Inc.
+   Copyright (C) 2017-2023 Free Software Foundation, Inc.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3, or (at your option)
-   any later version.
+   This file is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as
+   published by the Free Software Foundation; either version 2.1 of the
+   License, or (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
+   This file is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+   GNU Lesser General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <https://www.gnu.org/licenses/>.  */
+   You should have received a copy of the GNU Lesser General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #ifndef _@GUARD_PREFIX@_MONETARY_H
 
@@ -29,6 +29,11 @@
 #ifndef _@GUARD_PREFIX@_MONETARY_H
 #define _@GUARD_PREFIX@_MONETARY_H
 
+/* This file uses _GL_ATTRIBUTE_FORMAT, GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+#if !_GL_CONFIG_H_INCLUDED
+ #error "Please include config.h first."
+#endif
+
 #if @GNULIB_STRFMON_L@
 # if @HAVE_XLOCALE_H@
 /* Get locale_t on Mac OS X 10.12.  */
@@ -39,10 +44,12 @@
 #endif
 
 /* Like in <stdio.h>.  */
-#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 7)
-# define _GL_ATTRIBUTE_FORMAT(spec) __attribute__ ((__format__ spec))
-#else
-# define _GL_ATTRIBUTE_FORMAT(spec) /* empty */
+#ifndef _GL_ATTRIBUTE_FORMAT
+# if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 7) || defined __clang__
+#  define _GL_ATTRIBUTE_FORMAT(spec) __attribute__ ((__format__ spec))
+# else
+#  define _GL_ATTRIBUTE_FORMAT(spec) /* empty */
+# endif
 #endif
 
 /* _GL_ATTRIBUTE_FORMAT_STRFMON
@@ -74,24 +81,29 @@ extern "C" {
 #if @GNULIB_STRFMON_L@
 /* Converts a monetary value to a string.
    See the POSIX:2008 specification
-   <http://pubs.opengroup.org/onlinepubs/9699919799/functions/strfmon_l.html.  */
+   <https://pubs.opengroup.org/onlinepubs/9699919799/functions/strfmon_l.html.  */
 # if @REPLACE_STRFMON_L@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define strfmon_l rpl_strfmon_l
 #  endif
-_GL_FUNCDECL_RPL (strfmon_l, ssize_t, (char *s, size_t maxsize, locale_t locale,
-                                       const char *format, ...)
-                                      _GL_ATTRIBUTE_FORMAT_STRFMON (4, 5)
-                                      _GL_ARG_NONNULL ((4)));
-_GL_CXXALIAS_RPL (strfmon_l, ssize_t, (char *s, size_t maxsize, locale_t locale,
-                                       const char *format, ...));
+_GL_FUNCDECL_RPL (strfmon_l, ssize_t,
+                  (char *restrict s, size_t maxsize, locale_t locale,
+                   const char *restrict format, ...)
+                  _GL_ATTRIBUTE_FORMAT_STRFMON (4, 5)
+                  _GL_ARG_NONNULL ((4)));
+_GL_CXXALIAS_RPL (strfmon_l, ssize_t,
+                  (char *restrict s, size_t maxsize, locale_t locale,
+                   const char *restrict format, ...));
 # else
 #  if @HAVE_STRFMON_L@
-_GL_CXXALIAS_SYS (strfmon_l, ssize_t, (char *s, size_t maxsize, locale_t locale,
-                                       const char *format, ...));
+_GL_CXXALIAS_SYS (strfmon_l, ssize_t,
+                  (char *restrict s, size_t maxsize, locale_t locale,
+                   const char *restrict format, ...));
 #  endif
 # endif
+# if __GLIBC__ >= 2
 _GL_CXXALIASWARN (strfmon_l);
+# endif
 #elif defined GNULIB_POSIXCHECK
 # undef strfmon_l
 # if HAVE_RAW_DECL_STRFMON_L

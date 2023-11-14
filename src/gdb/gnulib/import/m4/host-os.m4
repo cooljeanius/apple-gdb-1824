@@ -1,6 +1,6 @@
-# serial 10
+# serial 12
 
-# Copyright (C) 2001, 2003-2004, 2006, 2009-2019 Free Software Foundation, Inc.
+# Copyright (C) 2001, 2003-2004, 2006, 2009-2023 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -41,6 +41,7 @@ AC_DEFUN([gl_HOST_OS],
        netbsd*-gnu*)    os='GNU/NetBSD';; # NetBSD kernel+libc, GNU userland
        netbsd*)         os='NetBSD';;
        mirbsd*)         os='MirBSD';;
+       midnightbsd*)    os='MidnightBSD';;
        knetbsd*-gnu)    os='GNU/kNetBSD';; # NetBSD kernel, GNU libc+userland
        kfreebsd*-gnu)   os='GNU/kFreeBSD';; # FreeBSD kernel, GNU libc+userland
        msdosdjgpp*)     os='DJGPP';;
@@ -54,6 +55,7 @@ AC_DEFUN([gl_HOST_OS],
        gnu*)            os='GNU';;
        freebsd*)        os='FreeBSD';;
        dgux*)           os='DG/UX';;
+       dragonfly*)      os='DragonFly BSD';;
        bsdi*)           os='BSD/OS';;
        bsd*)            os='BSD';;
        beos*)           os='BeOS';;

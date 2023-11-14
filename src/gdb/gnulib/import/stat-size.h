@@ -1,5 +1,5 @@
 /* macros useful in interpreting size-related values in struct stat.
-   Copyright (C) 1989, 1991-2019 Free Software Foundation, Inc.
+   Copyright (C) 1989, 1991-2023 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,6 +24,11 @@
  */
 #ifndef STAT_SIZE_H
 #define STAT_SIZE_H
+
+/* This file uses HAVE_SYS_PARAM_H, HAVE_STRUCT_STAT_ST_BLOCKS.  */
+#if !_GL_CONFIG_H_INCLUDED
+ #error "Please include config.h first."
+#endif
 
 /* sys/param.h may define DEV_BSIZE */
 #if HAVE_SYS_PARAM_H
@@ -77,12 +82,6 @@
   /* HP-UX counts st_blocks in 1024-byte units.
      This loses when mixing HP-UX and BSD file systems with NFS.  */
 #  define ST_NBLOCKSIZE 1024
-# else /* !hpux */
-#  if defined _CRAY
-#   define ST_NBLOCKS(statbuf) \
-  (S_ISREG ((statbuf).st_mode) || S_ISDIR ((statbuf).st_mode) \
-   ? (statbuf).st_blocks * ST_BLKSIZE (statbuf) / ST_NBLOCKSIZE : 0)
-#  endif
 # endif
 #endif
 

@@ -181,12 +181,13 @@ rl_gather_tyi(void)
     return 0;	/* Nothing to read. */
 #endif /* HAVE_SELECT */
 
-  result = -1;
 #if defined(FIONREAD)
   errno = 0;
   result = ioctl(tty, FIONREAD, &chars_avail);
   if ((result == -1) && (errno == EIO))
     return -1;
+#else
+  result = -1;
 #endif /* FIONREAD */
 
 #if defined(O_NDELAY)

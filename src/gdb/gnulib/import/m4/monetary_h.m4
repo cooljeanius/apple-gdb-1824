@@ -1,5 +1,5 @@
-# monetary_h.m4 serial 4
-dnl Copyright (C) 2017-2019 Free Software Foundation, Inc.
+# monetary_h.m4 serial 9
+dnl Copyright (C) 2017-2023 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -15,7 +15,7 @@ AC_DEFUN_ONCE([gl_MONETARY_H],
   dnl - C++ GNULIB_NAMESPACE support may be requested, or
   dnl - the system already has a <monetary.h>.
   if m4_ifdef([gl_POSIXCHECK], [true], [m4_ifdef([gl_ANSI_CXX], [test "$CXX" != no], [false]) || test $ac_cv_header_monetary_h = yes]); then
-    MONETARY_H='monetary.h'
+    GL_GENERATE_MONETARY_H=true
 
     gl_CHECK_NEXT_HEADERS([monetary.h])
     if test $ac_cv_header_monetary_h = yes; then
@@ -38,23 +38,38 @@ AC_DEFUN_ONCE([gl_MONETARY_H],
     gl_WARN_ON_USE_PREPARE([[
       #include <monetary.h>
       ]], [strfmon_l])
+
+    AC_REQUIRE([AC_C_RESTRICT])
   else
-    MONETARY_H=''
+    GL_GENERATE_MONETARY_H=false
   fi
-  AC_SUBST([MONETARY_H])
-  AM_CONDITIONAL([GL_GENERATE_MONETARY_H], [test -n "$MONETARY_H"])
 ])
 
+# gl_MONETARY_MODULE_INDICATOR([modulename])
+# sets the shell variable that indicates the presence of the given module
+# to a C preprocessor expression that will evaluate to 1.
+# This macro invocation must not occur in macros that are AC_REQUIREd.
 AC_DEFUN([gl_MONETARY_MODULE_INDICATOR],
 [
-  dnl Use AC_REQUIRE here, so that the default settings are expanded once only.
-  AC_REQUIRE([gl_MONETARY_H_DEFAULTS])
+  dnl Ensure to expand the default settings once only.
+  gl_MONETARY_H_REQUIRE_DEFAULTS
   gl_MODULE_INDICATOR_SET_VARIABLE([$1])
+])
+
+# Initializes the default values for AC_SUBSTed shell variables.
+# This macro must not be AC_REQUIREd.  It must only be invoked, and only
+# outside of macros or in macros that are not AC_REQUIREd.
+AC_DEFUN([gl_MONETARY_H_REQUIRE_DEFAULTS],
+[
+  m4_defun(GL_MODULE_INDICATOR_PREFIX[_MONETARY_H_MODULE_INDICATOR_DEFAULTS], [
+    gl_MODULE_INDICATOR_INIT_VARIABLE([GNULIB_STRFMON_L])
+  ])
+  m4_require(GL_MODULE_INDICATOR_PREFIX[_MONETARY_H_MODULE_INDICATOR_DEFAULTS])
+  AC_REQUIRE([gl_MONETARY_H_DEFAULTS])
 ])
 
 AC_DEFUN([gl_MONETARY_H_DEFAULTS],
 [
-  GNULIB_STRFMON_L=0;      AC_SUBST([GNULIB_STRFMON_L])
   dnl Assume proper GNU behavior unless another module says otherwise.
   HAVE_STRFMON_L=1;        AC_SUBST([HAVE_STRFMON_L])
   REPLACE_STRFMON_L=0;     AC_SUBST([REPLACE_STRFMON_L])

@@ -1,18 +1,18 @@
 /* A GNU-like <search.h>.
 
-   Copyright (C) 2007-2019 Free Software Foundation, Inc.
+   Copyright (C) 2007-2023 Free Software Foundation, Inc.
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
-   (at your option) any later version.
+   This file is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as
+   published by the Free Software Foundation; either version 2.1 of the
+   License, or (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
+   This file is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+   GNU Lesser General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
+   You should have received a copy of the GNU Lesser General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #ifndef _@GUARD_PREFIX@_SEARCH_H
@@ -30,6 +30,11 @@
 #ifndef _@GUARD_PREFIX@_SEARCH_H
 #define _@GUARD_PREFIX@_SEARCH_H
 
+/* This file uses GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+#if !_GL_CONFIG_H_INCLUDED
+ #error "Please include config.h first."
+#endif
+
 
 /* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
 
@@ -38,18 +43,78 @@
 /* The definition of _GL_WARN_ON_USE is copied here.  */
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+#if !GNULIB_defined_lsearch_fn_types
+typedef int (*_gl_lsearch_compar_fn) (const void *, const void *);
+# define GNULIB_defined_lsearch_fn_types 1
+#endif
+#ifdef __cplusplus
+}
+#endif
+
+#if @GNULIB_MDA_LFIND@
+/* On native Windows, map 'lfind' to '_lfind', so that -loldnames is not
+   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
+   platforms by defining GNULIB_NAMESPACE::lfind always.  */
+# if defined _WIN32 && !defined __CYGWIN__
+#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
+#   undef lfind
+#   define lfind _lfind
+#  endif
+_GL_CXXALIAS_MDA (lfind, void *,
+                  (const void *key, const void *base, unsigned int *nmemb,
+                   unsigned int size,
+                   _gl_lsearch_compar_fn compar));
+# else
+_GL_CXXALIAS_SYS (lfind, void *,
+                  (const void *key, const void *base, size_t *nmemb,
+                   size_t size,
+                   _gl_lsearch_compar_fn compar));
+# endif
+_GL_CXXALIASWARN (lfind);
+#endif
+
+#if @GNULIB_MDA_LSEARCH@
+/* On native Windows, map 'lsearch' to '_lsearch', so that -loldnames is not
+   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
+   platforms by defining GNULIB_NAMESPACE::lsearch always.  */
+# if defined _WIN32 && !defined __CYGWIN__
+#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
+#   undef lsearch
+#   define lsearch _lsearch
+#  endif
+_GL_CXXALIAS_MDA (lsearch, void *,
+                  (const void *key, void *base, unsigned int *nmemb,
+                   unsigned int size,
+                   _gl_lsearch_compar_fn compar));
+# else
+_GL_CXXALIAS_SYS (lsearch, void *,
+                  (const void *key, void *base, size_t *nmemb,
+                   size_t size,
+                   _gl_lsearch_compar_fn compar));
+# endif
+_GL_CXXALIASWARN (lsearch);
+#endif
+
+
 #if @GNULIB_TSEARCH@
 # if @REPLACE_TSEARCH@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define tsearch rpl_tsearch
 #   define tfind rpl_tfind
 #   define tdelete rpl_tdelete
+#  endif
+# endif
+# if @REPLACE_TWALK@
+#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define twalk rpl_twalk
 #  endif
 # endif
 
-/* See <http://www.opengroup.org/susv3xbd/search.h.html>,
-       <http://www.opengroup.org/susv3xsh/tsearch.html>
+/* See <https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/search.h.html>
+       <https://pubs.opengroup.org/onlinepubs/9699919799/functions/tsearch.html>
    for details.  */
 
 # if !@HAVE_TYPE_VISIT@
@@ -100,7 +165,9 @@ _GL_CXXALIAS_SYS (tsearch, void *,
                   (const void *key, void **vrootp,
                    _gl_search_compar_fn compar));
 # endif
+# if __GLIBC__ >= 2
 _GL_CXXALIASWARN (tsearch);
+# endif
 
 /* Searches an element in the tree *VROOTP that compares equal to KEY.
    If one is found, it is returned.  Otherwise, NULL is returned.  */
@@ -125,31 +192,35 @@ _GL_CXXALIAS_SYS_CAST (tfind, void *,
                        (const void *key, void *const *vrootp,
                         _gl_search_compar_fn compar));
 # endif
+# if __GLIBC__ >= 2
 _GL_CXXALIASWARN (tfind);
+# endif
 
 /* Searches an element in the tree *VROOTP that compares equal to KEY.
    If one is found, it is removed from the tree, and its parent node is
    returned.  Otherwise, NULL is returned.  */
 # if @REPLACE_TSEARCH@
 _GL_FUNCDECL_RPL (tdelete, void *,
-                  (const void *key, void **vrootp,
+                  (const void *restrict key, void **restrict vrootp,
                    _gl_search_compar_fn compar)
                   _GL_ARG_NONNULL ((1, 2, 3)));
 _GL_CXXALIAS_RPL (tdelete, void *,
-                  (const void *key, void **vrootp,
+                  (const void *restrict key, void **restrict vrootp,
                    _gl_search_compar_fn compar));
 # else
 #  if !@HAVE_TSEARCH@
 _GL_FUNCDECL_SYS (tdelete, void *,
-                  (const void *key, void **vrootp,
+                  (const void *restrict key, void **restrict vrootp,
                    _gl_search_compar_fn compar)
                   _GL_ARG_NONNULL ((1, 2, 3)));
 #  endif
 _GL_CXXALIAS_SYS (tdelete, void *,
-                  (const void *key, void **vrootp,
+                  (const void *restrict key, void **restrict vrootp,
                    _gl_search_compar_fn compar));
 # endif
+# if __GLIBC__ >= 2
 _GL_CXXALIASWARN (tdelete);
+# endif
 
 /* Perform a depth-first, left-to-right traversal of the tree VROOT.
    The ACTION function is called:
@@ -162,7 +233,7 @@ _GL_CXXALIASWARN (tdelete);
         pointer to the key,
      2. an indicator which visit of the node this is,
      3. the level of the node in the tree (0 for the root).  */
-# if @REPLACE_TSEARCH@
+# if @REPLACE_TWALK@
 _GL_FUNCDECL_RPL (twalk, void,
                   (const void *vroot, _gl_search_action_fn action)
                   _GL_ARG_NONNULL ((2)));
@@ -177,11 +248,13 @@ _GL_FUNCDECL_SYS (twalk, void,
 _GL_CXXALIAS_SYS (twalk, void,
                   (const void *vroot, _gl_search_action_fn action));
 # endif
+# if __GLIBC__ >= 2
 _GL_CXXALIASWARN (twalk);
+# endif
 
 /* Flags used by tsearch.c.  */
 # define GNULIB_defined_tsearch  (@REPLACE_TSEARCH@ || !@HAVE_TSEARCH@)
-# define GNULIB_defined_twalk    (@REPLACE_TSEARCH@ || !@HAVE_TWALK@)
+# define GNULIB_defined_twalk    (@REPLACE_TWALK@ || !@HAVE_TWALK@)
 
 #elif defined GNULIB_POSIXCHECK
 # undef tsearch

@@ -1,6 +1,6 @@
 /* General bitsets.
 
-   Copyright (C) 2002-2006, 2009-2015, 2018-2019 Free Software Foundation, Inc.
+   Copyright (C) 2002-2006, 2009-2015, 2018-2023 Free Software Foundation, Inc.
 
    Contributed by Michael Hayes (m.hayes@elec.canterbury.ac.nz).
 
@@ -15,7 +15,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include <config.h>
 
@@ -94,7 +94,7 @@ bitset_init (bitset bset, bitset_bindex n_bits, enum bitset_type type)
    specified by ATTR.  For variable size bitsets, N_BITS is only a
    hint and may be zero.  */
 enum bitset_type
-bitset_type_choose (bitset_bindex n_bits ATTRIBUTE_UNUSED, unsigned attr)
+bitset_type_choose (MAYBE_UNUSED bitset_bindex n_bits, unsigned attr)
 {
   /* Check attributes.  */
   if (attr & BITSET_FIXED && attr & BITSET_VARIABLE)
@@ -129,7 +129,7 @@ bitset_alloc (bitset_bindex n_bits, enum bitset_type type)
 {
   size_t bytes = bitset_bytes (type, n_bits);
 
-  bitset bset = xcalloc (1, bytes);
+  bitset bset = xzalloc (bytes);
 
   /* The cache is disabled until some elements are allocated.  If we
      have variable length arrays, then we may need to allocate a dummy
@@ -168,8 +168,11 @@ bitset_create (bitset_bindex n_bits, unsigned attr)
 void
 bitset_free (bitset bset)
 {
-  BITSET_FREE_ (bset);
-  free (bset);
+  if (bset)
+    {
+      BITSET_FREE_ (bset);
+      free (bset);
+    }
 }
 
 
@@ -177,7 +180,8 @@ bitset_free (bitset bset)
 void
 bitset_obstack_free (bitset bset)
 {
-  BITSET_FREE_ (bset);
+  if (bset)
+    BITSET_FREE_ (bset);
 }
 
 
@@ -203,8 +207,6 @@ bitset_type_name_get (bitset bset)
 }
 
 
-/* Find next bit set in SRC starting from and including BITNO.
-   Return BITSET_BINDEX_MAX if SRC empty.  */
 bitset_bindex
 bitset_next (bitset src, bitset_bindex bitno)
 {
@@ -224,8 +226,6 @@ bitset_compatible_p (bitset bset1, bitset bset2)
 }
 
 
-/* Find previous bit set in SRC starting from and including BITNO.
-   Return BITSET_BINDEX_MAX if SRC empty.  */
 bitset_bindex
 bitset_prev (bitset src, bitset_bindex bitno)
 {
@@ -271,7 +271,8 @@ static void
 bitset_print (FILE *file, bitset bset, bool verbose)
 {
   if (verbose)
-    fprintf (file, "n_bits = %lu, set = {",
+    fprintf (file, "%s{n_bits = %lu, set = {",
+             bitset_type_name_get (bset),
              (unsigned long) bitset_size (bset));
 
   unsigned pos = 30;
@@ -290,7 +291,7 @@ bitset_print (FILE *file, bitset bset, bool verbose)
   }
 
   if (verbose)
-    fprintf (file, "}\n");
+    fprintf (file, "}}\n");
 }
 
 

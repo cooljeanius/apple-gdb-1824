@@ -1,10 +1,10 @@
 /* Traverse a file hierarchy.
 
-   Copyright (C) 2004-2019 Free Software Foundation, Inc.
+   Copyright (C) 2004-2023 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
+   the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -48,6 +48,11 @@
 
 #ifndef _FTS_H
 # define _FTS_H 1
+
+/* This file uses _GL_ATTRIBUTE_DEALLOC, _GL_ATTRIBUTE_NODISCARD.  */
+# if !_LIBC && !_GL_CONFIG_H_INCLUDED
+#  error "Please include config.h first."
+# endif
 
 # ifdef _LIBC
 #  include <features.h>
@@ -219,11 +224,6 @@ typedef struct _ftsent {
 
         size_t fts_namelen;             /* strlen(fts_name) */
 
-        /* If not (nlink_t) -1, an upper bound on the number of
-           remaining subdirectories of interest.  If this becomes
-           zero, some work can be avoided.  */
-        nlink_t fts_n_dirs_remaining;
-
 # define FTS_D           1              /* preorder directory */
 # define FTS_DC          2              /* directory that causes cycles */
 # define FTS_DEFAULT     3              /* none of the above */
@@ -254,31 +254,27 @@ typedef struct _ftsent {
         char fts_name[__FLEXIBLE_ARRAY_MEMBER]; /* file name */
 } FTSENT;
 
-#ifndef __GNUC_PREREQ
-# if defined __GNUC__ && defined __GNUC_MINOR__
-#  define __GNUC_PREREQ(maj, min) \
-         ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
-# else
-#  define __GNUC_PREREQ(maj, min) 0
-# endif
-#endif
-
-#if __GNUC_PREREQ (3,4)
-# undef __attribute_warn_unused_result__
-# define __attribute_warn_unused_result__ \
-   __attribute__ ((__warn_unused_result__))
-#else
-# define __attribute_warn_unused_result__ /* empty */
-#endif
-
 __BEGIN_DECLS
-FTSENT  *fts_children (FTS *, int) __THROW __attribute_warn_unused_result__;
-int      fts_close (FTS *) __THROW __attribute_warn_unused_result__;
+
+ _GL_ATTRIBUTE_NODISCARD
+FTSENT  *fts_children (FTS *, int) __THROW;
+
+_GL_ATTRIBUTE_NODISCARD
+int      fts_close (FTS *) __THROW;
+
+_GL_ATTRIBUTE_NODISCARD
 FTS     *fts_open (char * const *, int,
                    int (*)(const FTSENT **, const FTSENT **))
-  __THROW __attribute_warn_unused_result__;
-FTSENT  *fts_read (FTS *) __THROW __attribute_warn_unused_result__;
+  _GL_ATTRIBUTE_DEALLOC (fts_close, 1) __THROW;
+
+_GL_ATTRIBUTE_NODISCARD
+FTSENT  *fts_read (FTS *) __THROW;
+
 int      fts_set (FTS *, FTSENT *, int) __THROW;
+
+#if GNULIB_FTS_DEBUG
+void     fts_cross_check (FTS const *);
+#endif
 __END_DECLS
 
 #endif /* fts.h */

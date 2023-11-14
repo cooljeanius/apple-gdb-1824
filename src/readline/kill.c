@@ -517,6 +517,12 @@ rl_yank_nth_arg_internal(int count, int ignore, int history_skip)
       for (i = 0; i < history_skip; i++)
 	entry = previous_history();
     }
+  else
+    entry = NULL;
+
+  if (entry == NULL) {
+    ; /* TODO: ??? */
+  }
 
   entry = previous_history();
 

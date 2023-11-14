@@ -178,7 +178,13 @@ AC_MSG_CHECKING([headers for gnulib])
 AC_MSG_RESULT([ ])
 gl_STDINT_H
 AC_SUBST([STDINT_H])dnl
-gl_HEADER_STRING_H
+m4_ifdef([gl_HEADER_STRING_H],[
+  gl_HEADER_STRING_H dnl# yeah
+],[
+  m4_ifdef([gl_STRING_H],[
+    gl_STRING_H dnl# ...or maybe it got renamed to this.
+  ])dnl
+])dnl
 AC_HEADER_ASSERT
 AC_HEADER_DIRENT
 if test "x${ac_cv_header_stat_broken}" = "x"; then

@@ -1667,7 +1667,13 @@ AC_CHECK_HEADERS([gettext.h],[],[],[
 gl_LIMITS_H dnl# and this:
 gl_STDINT_H dnl# in case failed to subst:
 AC_SUBST([STDINT_H])dnl
-gl_HEADER_STRING_H dnl# yeah
+m4_ifdef([gl_HEADER_STRING_H],[
+  gl_HEADER_STRING_H dnl# yeah
+],[
+  m4_ifdef([gl_STRING_H],[
+    gl_STRING_H dnl# ...or maybe it got renamed to this.
+  ])dnl
+])dnl
 # Just in case:
 if test "x${NEXT_STRING_H}" = "x"; then
   test -z "${NEXT_STRING_H}" && export NEXT_STRING_H="<string.h>"
@@ -2239,7 +2245,11 @@ if test "x${ac_cv_func_mbrtowc}" = "x"; then
   AC_FUNC_MBRTOWC
 fi
 AC_FUNC_MEMCMP
-AM_WITH_DMALLOC
+m4_ifdef([AM_WITH_DMALLOC],[
+  AM_WITH_DMALLOC
+  dnl# FIXME: do something about how it can put -ldmalloc into LIBS even when the
+  dnl# library is unavailable or unlinkable
+])dnl
 AC_FUNC_OBSTACK
 AC_CHECK_FUNCS([obstack_xfree])dnl
 AC_FUNC_REALLOC

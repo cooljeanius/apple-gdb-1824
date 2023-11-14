@@ -1,14 +1,14 @@
 # Configure a replacement for <sys/times.h>.
-# serial 8
+# serial 11
 
-# Copyright (C) 2008-2019 Free Software Foundation, Inc.
+# Copyright (C) 2008-2023 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
 
 # Written by Simon Josefsson.
 
-AC_DEFUN([gl_SYS_TIMES_H],
+AC_DEFUN_ONCE([gl_SYS_TIMES_H],
 [
   AC_REQUIRE([gl_SYS_TIMES_H_DEFAULTS])
 
@@ -36,16 +36,31 @@ AC_DEFUN([gl_SYS_TIMES_H],
     ]], [times])
 ])
 
+# gl_SYS_TIMES_MODULE_INDICATOR([modulename])
+# sets the shell variable that indicates the presence of the given module
+# to a C preprocessor expression that will evaluate to 1.
+# This macro invocation must not occur in macros that are AC_REQUIREd.
 AC_DEFUN([gl_SYS_TIMES_MODULE_INDICATOR],
 [
-  dnl Use AC_REQUIRE here, so that the default settings are expanded once only.
-  AC_REQUIRE([gl_SYS_TIMES_H_DEFAULTS])
+  dnl Ensure to expand the default settings once only.
+  gl_SYS_TIMES_H_REQUIRE_DEFAULTS
   gl_MODULE_INDICATOR_SET_VARIABLE([$1])
+])
+
+# Initializes the default values for AC_SUBSTed shell variables.
+# This macro must not be AC_REQUIREd.  It must only be invoked, and only
+# outside of macros or in macros that are not AC_REQUIREd.
+AC_DEFUN([gl_SYS_TIMES_H_REQUIRE_DEFAULTS],
+[
+  m4_defun(GL_MODULE_INDICATOR_PREFIX[_SYS_TIMES_H_MODULE_INDICATOR_DEFAULTS], [
+    gl_MODULE_INDICATOR_INIT_VARIABLE([GNULIB_TIMES])
+  ])
+  m4_require(GL_MODULE_INDICATOR_PREFIX[_SYS_TIMES_H_MODULE_INDICATOR_DEFAULTS])
+  AC_REQUIRE([gl_SYS_TIMES_H_DEFAULTS])
 ])
 
 AC_DEFUN([gl_SYS_TIMES_H_DEFAULTS],
 [
-  GNULIB_TIMES=0;     AC_SUBST([GNULIB_TIMES])
   HAVE_STRUCT_TMS=1;  AC_SUBST([HAVE_STRUCT_TMS])
   HAVE_TIMES=1;       AC_SUBST([HAVE_TIMES])
 ])

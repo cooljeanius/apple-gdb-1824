@@ -1,12 +1,12 @@
-# strncat.m4 serial 4
-dnl Copyright (C) 2002-2004, 2009-2019 Free Software Foundation, Inc.
+# strncat.m4 serial 7
+dnl Copyright (C) 2002-2004, 2009-2023 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 AC_DEFUN_ONCE([gl_FUNC_STRNCAT],
 [
-  AC_REQUIRE([gl_HEADER_STRING_H_DEFAULTS])
+  AC_REQUIRE([gl_STRING_H_DEFAULTS])
   AC_REQUIRE([AC_PROG_CC])
   AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
 
@@ -15,7 +15,7 @@ AC_DEFUN_ONCE([gl_FUNC_STRNCAT],
   AC_CHECK_HEADERS_ONCE([sys/mman.h])
   AC_CHECK_FUNCS_ONCE([mprotect])
 
-  dnl Detect bug in Solaris 8..10 on SPARC and Solaris 11.0 on x86:
+  dnl Detect bug in Solaris 8..11.4 on SPARC and Solaris 11.0 on x86:
   dnl strncat should not dereference more than n bytes, but always dereferences
   dnl n+1 bytes if the first n bytes don't contain a NUL byte.
   dnl Assume that strncat works on platforms that lack mprotect.
@@ -31,7 +31,8 @@ AC_DEFUN_ONCE([gl_FUNC_STRNCAT],
 #  define MAP_FILE 0
 # endif
 #endif
-]], [[
+]GL_MDA_DEFINES],
+[[
   char *fence = NULL;
 #if HAVE_SYS_MMAN_H && HAVE_MPROTECT
 # if HAVE_MAP_ANONYMOUS

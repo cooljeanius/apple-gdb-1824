@@ -1,9 +1,9 @@
 /* provide a replacement openat function
-   Copyright (C) 2004-2006, 2008-2019 Free Software Foundation, Inc.
+   Copyright (C) 2004-2006, 2008-2023 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
+   the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -19,16 +19,18 @@
 #ifndef _GL_HEADER_OPENAT
 #define _GL_HEADER_OPENAT
 
+/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE, _Noreturn,
+   _GL_ATTRIBUTE_DEPRECATED, HAVE_OPENAT.  */
+#if !_GL_CONFIG_H_INCLUDED
+ #error "Please include config.h first."
+#endif
+
 #include <fcntl.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <stdbool.h>
 
-#ifndef _GL_INLINE_HEADER_BEGIN
- #error "Please include config.h first."
-#endif
 _GL_INLINE_HEADER_BEGIN
 
 #if !HAVE_OPENAT
@@ -52,19 +54,19 @@ _Noreturn void openat_save_fail (int);
    slightly more readable than it would be with
    fchownat (..., 0) or fchownat (..., AT_SYMLINK_NOFOLLOW).  */
 
-#if GNULIB_FCHOWNAT
+#if GNULIB_CHOWNAT
 
-# ifndef FCHOWNAT_INLINE
-#  define FCHOWNAT_INLINE _GL_INLINE
+# ifndef CHOWNAT_INLINE
+#  define CHOWNAT_INLINE _GL_INLINE
 # endif
 
-FCHOWNAT_INLINE int
+CHOWNAT_INLINE int
 chownat (int fd, char const *file, uid_t owner, gid_t group)
 {
   return fchownat (fd, file, owner, group, 0);
 }
 
-FCHOWNAT_INLINE int
+CHOWNAT_INLINE int
 lchownat (int fd, char const *file, uid_t owner, gid_t group)
 {
   return fchownat (fd, file, owner, group, AT_SYMLINK_NOFOLLOW);
@@ -72,19 +74,19 @@ lchownat (int fd, char const *file, uid_t owner, gid_t group)
 
 #endif
 
-#if GNULIB_FCHMODAT
+#if GNULIB_CHMODAT
 
-# ifndef FCHMODAT_INLINE
-#  define FCHMODAT_INLINE _GL_INLINE
+# ifndef CHMODAT_INLINE
+#  define CHMODAT_INLINE _GL_INLINE
 # endif
 
-FCHMODAT_INLINE int
+CHMODAT_INLINE int
 chmodat (int fd, char const *file, mode_t mode)
 {
   return fchmodat (fd, file, mode, 0);
 }
 
-FCHMODAT_INLINE int
+CHMODAT_INLINE int
 lchmodat (int fd, char const *file, mode_t mode)
 {
   return fchmodat (fd, file, mode, AT_SYMLINK_NOFOLLOW);
@@ -98,12 +100,14 @@ lchmodat (int fd, char const *file, mode_t mode)
 #  define STATAT_INLINE _GL_INLINE
 # endif
 
+_GL_ATTRIBUTE_DEPRECATED
 STATAT_INLINE int
 statat (int fd, char const *name, struct stat *st)
 {
   return fstatat (fd, name, st, 0);
 }
 
+_GL_ATTRIBUTE_DEPRECATED
 STATAT_INLINE int
 lstatat (int fd, char const *name, struct stat *st)
 {

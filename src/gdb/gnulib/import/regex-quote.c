@@ -1,10 +1,10 @@
 /* Construct a regular expression from a literal string.
-   Copyright (C) 1995, 2010-2019 Free Software Foundation, Inc.
+   Copyright (C) 1995, 2010-2023 Free Software Foundation, Inc.
    Written by Bruno Haible <haible@clisp.cons.org>, 2010.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
+   the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -26,10 +26,10 @@
 #include "xalloc.h"
 
 /* Characters that are special in a BRE.  */
-static const char bre_special[] = "$^.*[]\\";
+static const char bre_special[] = "$^.*[\\";
 
 /* Characters that are special in an ERE.  */
-static const char ere_special[] = "$^.*[]\\+?{}()|";
+static const char ere_special[] = "$^.*[\\+?{()|";
 
 struct regex_quote_spec
 regex_quote_spec_posix (int cflags, bool anchored)

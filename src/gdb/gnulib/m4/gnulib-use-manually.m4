@@ -51,7 +51,15 @@ fi
 dnl# from gnulib module configmake:
 AC_REQUIRE([gl_CONFIGMAKE_PREP])dnl
 dnl# from gnulib module connect:
-AC_REQUIRE([gl_HEADER_SYS_SOCKET])dnl
+m4_ifdef([gl_HEADER_SYS_SOCKET],[
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])dnl
+],[
+  m4_ifdef([gl_SYS_SOCKET_H],[
+    AC_REQUIRE([gl_SYS_SOCKET_H])dnl
+  ],[
+    AC_CHECK_HEADERS_ONCE([sys/socket.h winsock2.h])dnl
+  ])dnl
+])dnl
   ## set up libobj if needed:
 if test "x${ac_cv_header_winsock2_h}" = "xyes"; then
   AC_LIBOBJ([connect])dnl
@@ -587,7 +595,19 @@ dnl# from gnulib module stat-time:
 AC_REQUIRE([gl_STAT_TIME])dnl
 AC_REQUIRE([gl_STAT_BIRTHTIME])dnl
 dnl# from gnulib module stdbool:
-AC_REQUIRE([AM_STDBOOL_H])dnl
+m4_ifdef([AM_STDBOOL_H],[
+  AC_REQUIRE([AM_STDBOOL_H])dnl
+],[
+  m4_ifdef([gl_C_BOOL],[
+    AC_REQUIRE([gl_C_BOOL])dnl
+  ],[
+    m4_ifdef([gl_STDBOOL_H],[
+      AC_REQUIRE([gl_STDBOOL_H])dnl
+    ],[
+      : dnl# (regular stdbool check should have already been done)
+    ])dnl
+  ])dnl
+])dnl
 dnl# from gnulib module stddef:
 AC_REQUIRE([gl_STDDEF_H])dnl
 dnl# from gnulib module stdint:
@@ -635,7 +655,15 @@ if test ${REPLACE_STRFTIME} = 1; then
 fi
 gl_TIME_MODULE_INDICATOR([strftime])dnl
 dnl# from gnulib module string:
-AC_REQUIRE([gl_HEADER_STRING_H])dnl
+m4_ifdef([gl_HEADER_STRING_H],[
+  AC_REQUIRE([gl_HEADER_STRING_H])dnl
+],[
+  m4_ifdef([gl_STRING_H],[
+    AC_REQUIRE([gl_STRING_H])dnl
+  ],[
+    AC_CHECK_HEADERS_ONCE([string.h])dnl
+  ])dnl
+])dnl
 dnl# from gnulib module strncat:
 AC_REQUIRE([gl_FUNC_STRNCAT])dnl
   ## set up libobj if needed:
@@ -690,18 +718,51 @@ if test ${HAVE_STRTOK_R} = 0 || test ${REPLACE_STRTOK_R} = 1; then
 fi
 gl_STRING_MODULE_INDICATOR([strtok_r])dnl
 dnl# from gnulib module sys_select:
-AC_REQUIRE([gl_HEADER_SYS_SELECT])dnl
+m4_ifdef([gl_HEADER_SYS_SELECT],[
+  AC_REQUIRE([gl_HEADER_SYS_SELECT])dnl
+],[
+  m4_ifdef([gl_SYS_SELECT_H],[
+    AC_REQUIRE([gl_SYS_SELECT_H])dnl
+  ],[
+    AC_CHECK_HEADERS_ONCE([sys/select.h])dnl
+  ])dnl
+])dnl
 AC_REQUIRE([AC_PROG_MKDIR_P])dnl
 dnl# from gnulib module sys_stat:
-AC_REQUIRE([gl_HEADER_SYS_STAT_H])dnl
+m4_ifdef([gl_HEADER_SYS_STAT_H],[
+  AC_REQUIRE([gl_HEADER_SYS_STAT_H])dnl
+],[
+  m4_ifdef([gl_SYS_STAT_H],[
+    AC_REQUIRE([gl_SYS_STAT_H])dnl
+  ],[
+    AC_CHECK_HEADERS_ONCE([sys/stat.h])dnl
+  ])dnl
+])dnl
 dnl# from gnulib module sys_time:
-AC_REQUIRE([gl_HEADER_SYS_TIME_H])dnl
+m4_ifdef([gl_HEADER_SYS_TIME_H],[
+  AC_REQUIRE([gl_HEADER_SYS_TIME_H])dnl
+],[
+  m4_ifdef([gl_SYS_TIME_H],[
+    AC_REQUIRE([gl_SYS_TIME_H])dnl
+  ],[
+    AC_CHECK_HEADERS_ONCE([sys/time.h])dnl
+  ])dnl
+])dnl
 dnl# from gnulib module sys_types:
 AC_REQUIRE([gl_SYS_TYPES_H])dnl
 dnl# from gnulib module sys_wait:
 AC_REQUIRE([gl_SYS_WAIT_H])dnl
 dnl# from gnulib module time:
-AC_REQUIRE([gl_HEADER_TIME_H])dnl
+m4_ifdef([gl_HEADER_TIME_H],[
+  AC_REQUIRE([gl_HEADER_TIME_H])dnl
+],[
+  m4_ifdef([gl_FUNC_TIME],[
+    AC_REQUIRE([gl_FUNC_TIME])dnl
+  ],[
+    AC_CHECK_HEADERS_ONCE([time.h])dnl
+    AC_CHECK_FUNCS_ONCE([time])dnl
+  ])dnl
+])dnl
 dnl# from gnulib module time_r:
 AC_REQUIRE([gl_TIME_R])dnl
   ## set up libobj if needed:

@@ -1,5 +1,5 @@
-# locale-ja.m4 serial 14
-dnl Copyright (C) 2003, 2005-2019 Free Software Foundation, Inc.
+# locale-ja.m4 serial 17
+dnl Copyright (C) 2003, 2005-2023 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -7,13 +7,12 @@ dnl with or without modifications, as long as this notice is preserved.
 dnl From Bruno Haible.
 
 dnl Determine the name of a japanese locale with EUC-JP encoding.
-AC_DEFUN([gt_LOCALE_JA],
+AC_DEFUN_ONCE([gt_LOCALE_JA],
 [
   AC_REQUIRE([AC_CANONICAL_HOST])
   AC_REQUIRE([AM_LANGINFO_CODESET])
   AC_CACHE_CHECK([for a traditional japanese locale], [gt_cv_locale_ja], [
-    AC_LANG_CONFTEST([AC_LANG_SOURCE([
-changequote(,)dnl
+    AC_LANG_CONFTEST([AC_LANG_SOURCE([[
 #include <locale.h>
 #include <time.h>
 #if HAVE_LANGINFO_CODESET
@@ -82,8 +81,7 @@ int main ()
   return 0;
 #endif
 }
-changequote([,])dnl
-      ])])
+      ]])])
     if AC_TRY_EVAL([ac_link]) && test -s conftest$ac_exeext; then
       case "$host_os" in
         # Handle native Windows specially, because there setlocale() interprets
@@ -141,5 +139,11 @@ changequote([,])dnl
     rm -fr conftest*
   ])
   LOCALE_JA=$gt_cv_locale_ja
+  case $LOCALE_JA in #(
+    '' | *[[[:space:]\"\$\'*@<:@]]*)
+      dnl This locale name might cause trouble with sh or make.
+      AC_MSG_WARN([invalid locale "$LOCALE_JA"; assuming "none"])
+      LOCALE_JA=none;;
+  esac
   AC_SUBST([LOCALE_JA])
 ])

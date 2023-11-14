@@ -1,21 +1,21 @@
 /* glob.h -- Find a path matching a pattern.
 
-   Copyright (C) 2005-2007, 2009-2019 Free Software Foundation, Inc.
+   Copyright (C) 2005-2007, 2009-2023 Free Software Foundation, Inc.
 
    Written by Derek Price <derek@ximbiot.com> & Paul Eggert <eggert@CS.UCLA.EDU>
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3, or (at your option)
-   any later version.
+   This file is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as
+   published by the Free Software Foundation; either version 2.1 of the
+   License, or (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
+   This file is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+   GNU Lesser General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <https://www.gnu.org/licenses/>.  */
+   You should have received a copy of the GNU Lesser General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #ifndef _@GUARD_PREFIX@_GLOB_H
 
@@ -32,22 +32,30 @@
 #ifndef _@GUARD_PREFIX@_GLOB_H
 #define _@GUARD_PREFIX@_GLOB_H
 
+/* This file uses GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+#if !_GL_CONFIG_H_INCLUDED
+ #error "Please include config.h first."
+#endif
+
 /* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
 
 /* The definition of _GL_ARG_NONNULL is copied here.  */
 
 /* The definition of _GL_WARN_ON_USE is copied here.  */
 
-/* GCC 2.95 and later have "__restrict"; C99 compilers have
+/* For plain 'restrict', use glibc's __restrict if defined.
+   Otherwise, GCC 2.95 and later have "__restrict"; C99 compilers have
    "restrict", and "configure" may have defined "restrict".
    Other compilers use __restrict, __restrict__, and _Restrict, and
    'configure' might #define 'restrict' to those words, so pick a
    different name.  */
 #ifndef _Restrict_
-# if 199901L <= __STDC_VERSION__
-#  define _Restrict_ restrict
-# elif 2 < __GNUC__ || (2 == __GNUC__ && 95 <= __GNUC_MINOR__)
+# if defined __restrict \
+     || 2 < __GNUC__ + (95 <= __GNUC_MINOR__) \
+     || __clang_major__ >= 3
 #  define _Restrict_ __restrict
+# elif 199901L <= __STDC_VERSION__ || defined restrict
+#  define _Restrict_ restrict
 # else
 #  define _Restrict_
 # endif
@@ -67,18 +75,12 @@ typedef int (*_gl_glob_errfunc_fn) (const char *, int);
 
 /* Preparations for including the standard GNU C Library header.  */
 
-# include <libc-config.h>
-
 # include <stddef.h>
 
 /* On some systems, such as AIX 5.1, <sys/stat.h> does a "#define stat stat64".
    Make sure this definition is seen before glob-libc.h defines types that
    rely on 'struct stat'.  */
 # include <sys/stat.h>
-
-# ifndef __USE_GNU
-#  define __USE_GNU    1
-# endif
 
 # if @REPLACE_GLOB@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -97,7 +99,7 @@ typedef int (*_gl_glob_errfunc_fn) (const char *, int);
 
 
 /* Now the standard GNU C Library header should work.  */
-# include "glob-libc.h"
+# include "glob-libc.gl.h"
 
 
 #endif
@@ -123,7 +125,9 @@ _GL_CXXALIAS_SYS (glob, int, (const char *_Restrict_ __pattern, int __flags,
                               _gl_glob_errfunc_fn __errfunc,
                               glob_t *_Restrict_ __pglob));
 # endif
+# if __GLIBC__ >= 2
 _GL_CXXALIASWARN (glob);
+# endif
 #elif defined GNULIB_POSIXCHECK
 # undef glob
 # if HAVE_RAW_DECL_GLOB
