@@ -3990,7 +3990,7 @@ if test "x${ac_aux_dir}" != "x"; then
     fi
   fi
 else
-  test -z "${ac_aux_dir}"
+  test -z "${ac_aux_dir}" && echo "warning: ac_aux_dir is unset"
 fi
 
 am__api_version='1.16'
@@ -6740,6 +6740,9 @@ esac
   fi
 fi
 
+  else
+    test -n "${AR}" && test -n "${am_cv_ar_interface}" && test -n "${ac_ct_AR}" \
+      && test -n "${ac_cv_prog_AR}" && echo "skipping check for ar"
   fi
 
 if test "x${RANLIB}" = "x"; then
@@ -6846,6 +6849,8 @@ else
   RANLIB="$ac_cv_prog_RANLIB"
 fi
 
+else
+  test -n "${RANLIB}" && test -x "`which ranlib`" && echo "RANLIB is ${RANLIB}"
 fi
 
 
@@ -6853,10 +6858,14 @@ fi
     test -z "${with_multisrctop}" || echo "inconsistent test for with_multisrctop"
     if test -d .. && test -e ../config-ml.in; then
       export with_multisrctop="../"
+    elif test -d ../../src && test -r ../../src/config-ml.in; then
+      export with_multisrctop="../../src/"
     else
-      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: we need config-ml.in, but it seems to be missing from ../" >&5
-printf "%s\n" "$as_me: WARNING: we need config-ml.in, but it seems to be missing from ../" >&2;}
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: we need config-ml.in, but it seems to be missing all the directories we checked" >&5
+printf "%s\n" "$as_me: WARNING: we need config-ml.in, but it seems to be missing all the directories we checked" >&2;}
     fi
+  else
+    test -n "${with_multisrctop}" && echo "with_multisrctop is ${with_multisrctop}"
   fi
 
 
@@ -20098,7 +20107,7 @@ if [ "x${shared}" = "xyes" ]; then
   fi
 elif [ "x${shared}" != "xyes" ]; then
   if test "x${PICFLAG}" != "x"; then
-    test -n "${PICFLAG}"
+    test -n "${PICFLAG}" && echo "PICFLAG that will now be cleared is: ${PICFLAG}"
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: libraries are unshared; overriding user-supplied PICFLAG" >&5
 printf "%s\n" "$as_me: WARNING: libraries are unshared; overriding user-supplied PICFLAG" >&2;}
   fi

@@ -150,7 +150,7 @@ if test "x${ac_aux_dir}" != "x"; then
     fi
   fi
 else
-  test -z "${ac_aux_dir}"
+  test -z "${ac_aux_dir}" && echo "warning: ac_aux_dir is unset"
 fi
 
 dnl# We are starting to use automake with a legit Makefile.am, albeit in a subdir:
@@ -257,6 +257,9 @@ m4_ifdef([AM_PROG_AR],[
   elif test "x${ac_ct_AR}" = "x" && test "x${ac_cv_prog_AR}" = "x"; then
     test -z "${ac_ct_AR}" && test -z "${ac_cv_prog_AR}"
     AC_CHECK_TOOLS([AR],[ar gar])
+  else
+    test -n "${AR}" && test -n "${am_cv_ar_interface}" && test -n "${ac_ct_AR}" \
+      && test -n "${ac_cv_prog_AR}" && echo "skipping check for ar"
   fi
 ],[
   AC_CHECK_TOOLS([AR],[ar gar])dnl
@@ -265,11 +268,15 @@ m4_ifdef([AC_PROG_RANLIB],[
 if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}" || unset RANLIB
   AC_PROG_RANLIB
+else
+  test -n "${RANLIB}" && test -x "`which ranlib`" && echo "RANLIB is ${RANLIB}"
 fi
 ],[
 if test "x${ac_cv_prog_ac_ct_RANLIB}" = "x"; then
   test -z "${ac_cv_prog_ac_ct_RANLIB}" || unset ac_cv_prog_ac_ct_RANLIB
   AC_CHECK_TOOLS([RANLIB],[ranlib granlib],[:])
+else
+  test -n "${ac_cv_prog_ac_ct_RANLIB}" && echo "skipping check for ranlib"
 fi
 ])dnl
 
@@ -280,9 +287,13 @@ m4_ifdef([AM_ENABLE_MULTILIB],[
     test -z "${with_multisrctop}" || echo "inconsistent test for with_multisrctop"
     if test -d .. && test -e ../config-ml.in; then
       export with_multisrctop="../"
+    elif test -d ../../src && test -r ../../src/config-ml.in; then
+      export with_multisrctop="../../src/"
     else
-      AC_MSG_WARN([we need config-ml.in, but it seems to be missing from ../])
+      AC_MSG_WARN([we need config-ml.in, but it seems to be missing all the directories we checked])
     fi
+  else
+    test -n "${with_multisrctop}" && echo "with_multisrctop is ${with_multisrctop}"
   fi
   dnl# So, apparently we cannot use the usual "([],[..])" argument here that other
   dnl# subdirectories use, because, well, this whole mess is annoying...
@@ -493,7 +504,7 @@ if [[ "x${shared}" = "xyes" ]]; then
   fi
 elif [[ "x${shared}" != "xyes" ]]; then
   if test "x${PICFLAG}" != "x"; then
-    test -n "${PICFLAG}"
+    test -n "${PICFLAG}" && echo "PICFLAG that will now be cleared is: ${PICFLAG}"
     AC_MSG_WARN([libraries are unshared; overriding user-supplied PICFLAG])
   fi
   PICFLAG=""
