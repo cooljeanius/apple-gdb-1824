@@ -286,16 +286,18 @@ m4_ifdef([AM_ENABLE_MULTILIB],[
   if test "x${with_multisrctop}" = "x"; then
     test -z "${with_multisrctop}" || echo "inconsistent test for with_multisrctop"
     if test -d .. && test -e ../config-ml.in; then
-      export with_multisrctop="../"
+      echo "setting with_multisrctop to ../" && export with_multisrctop="../"
     elif test -d ../.. && test -r ../../config-ml.in; then
-      export with_multisrctop="../../"
+      echo "setting with_multisrctop to ../../" && export with_multisrctop="../../"
     elif test -d ../src && test -r ../src/config-ml.in; then
-      export with_multisrctop="../src/"
+      echo "with_multisrctop is now ../src/" && export with_multisrctop="../src/"
     elif test -d ../../src && test -r ../../src/config-ml.in; then
-      export with_multisrctop="../../src/"
+      echo "with_multisrctop is ../../src/" && export with_multisrctop="../../src/"
     elif test -n "${libiberty_topdir}" && test -d "${libiberty_topdir}" && test -r ${libiberty_topdir}/config-ml.in; then
+      AC_MSG_NOTICE([setting with_multisrctop to ${libiberty_topdir}/ here])
       export with_multisrctop="${libiberty_topdir}/"
     elif test -n "${srcdir}" && test -d "${srcdir}" && test -r ${srcdir}/../config-ml.in; then
+      AC_MSG_NOTICE([setting with_multisrctop to ${srcdir}/../ (i.e. srcdir/../)])
       export with_multisrctop="${srcdir}/../"
     else
       AC_MSG_WARN([we need config-ml.in, but it seems to be missing in all the directories we checked])
@@ -320,7 +322,7 @@ m4_ifdef([AM_ENABLE_MULTILIB],[
       AC_MSG_WARN([unsure what to set multi_basedir to])
     fi
   else
-    test -n "${multi_basedir}" && echo "multi_basedir is ${multi_basedir} here"
+    test -n "${multi_basedir}" && echo "multi_basedir was set to ${multi_basedir}"
   fi
   AC_SUBST([multi_basedir])dnl
 ],[
@@ -1260,7 +1262,7 @@ if test "x${multi_basedir}" = "x"; then
     AC_MSG_WARN([multi_basedir is STILL unset! Watch out!])
   fi
 else
-  test -n "${multi_basedir}" && echo "multi_basedir is ${multi_basedir}"
+  test -n "${multi_basedir}" && echo "multi_basedir was set to ${multi_basedir}"
 fi
 
 # Output.

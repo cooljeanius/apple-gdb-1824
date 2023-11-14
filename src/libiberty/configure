@@ -6857,16 +6857,20 @@ fi
   if test "x${with_multisrctop}" = "x"; then
     test -z "${with_multisrctop}" || echo "inconsistent test for with_multisrctop"
     if test -d .. && test -e ../config-ml.in; then
-      export with_multisrctop="../"
+      echo "setting with_multisrctop to ../" && export with_multisrctop="../"
     elif test -d ../.. && test -r ../../config-ml.in; then
-      export with_multisrctop="../../"
+      echo "setting with_multisrctop to ../../" && export with_multisrctop="../../"
     elif test -d ../src && test -r ../src/config-ml.in; then
-      export with_multisrctop="../src/"
+      echo "with_multisrctop is now ../src/" && export with_multisrctop="../src/"
     elif test -d ../../src && test -r ../../src/config-ml.in; then
-      export with_multisrctop="../../src/"
+      echo "with_multisrctop is ../../src/" && export with_multisrctop="../../src/"
     elif test -n "${libiberty_topdir}" && test -d "${libiberty_topdir}" && test -r ${libiberty_topdir}/config-ml.in; then
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: setting with_multisrctop to ${libiberty_topdir}/ here" >&5
+printf "%s\n" "$as_me: setting with_multisrctop to ${libiberty_topdir}/ here" >&6;}
       export with_multisrctop="${libiberty_topdir}/"
     elif test -n "${srcdir}" && test -d "${srcdir}" && test -r ${srcdir}/../config-ml.in; then
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: setting with_multisrctop to ${srcdir}/../ (i.e. srcdir/../)" >&5
+printf "%s\n" "$as_me: setting with_multisrctop to ${srcdir}/../ (i.e. srcdir/../)" >&6;}
       export with_multisrctop="${srcdir}/../"
     else
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: we need config-ml.in, but it seems to be missing in all the directories we checked" >&5
@@ -6928,7 +6932,7 @@ ac_config_commands="$ac_config_commands multilib-default-1"
 printf "%s\n" "$as_me: WARNING: unsure what to set multi_basedir to" >&2;}
     fi
   else
-    test -n "${multi_basedir}" && echo "multi_basedir is ${multi_basedir} here"
+    test -n "${multi_basedir}" && echo "multi_basedir was set to ${multi_basedir}"
   fi
 
 # Even if the default multilib is not a cross compilation,
@@ -24889,7 +24893,7 @@ printf "%s\n" "$as_me: setting multi_basedir to libiberty_topdir: ${libiberty_to
 printf "%s\n" "$as_me: WARNING: multi_basedir is STILL unset! Watch out!" >&2;}
   fi
 else
-  test -n "${multi_basedir}" && echo "multi_basedir is ${multi_basedir}"
+  test -n "${multi_basedir}" && echo "multi_basedir was set to ${multi_basedir}"
 fi
 
 # Output.

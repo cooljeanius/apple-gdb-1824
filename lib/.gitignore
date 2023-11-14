@@ -1,1 +1,4 @@
 *.class
+!build
+*.bin
+*.bin.idx
