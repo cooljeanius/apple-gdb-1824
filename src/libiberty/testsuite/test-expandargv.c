@@ -165,7 +165,7 @@ writeout_test(int test, const char *test_data_buf)
   char * parse;
 
   /* Unique filename per test */
-  sprintf(filename, FILENAME_PATTERN, test);
+  snprintf(filename, sizeof(filename), FILENAME_PATTERN, test);
   fd = fopen(filename, "w");
   if (fd == NULL)
     fatal_error(__LINE__, "Failed to create test file.", errno);
@@ -192,7 +192,7 @@ void
 erase_test(int test)
 {
   char filename[256];
-  sprintf(filename, FILENAME_PATTERN, test);
+  snprintf(filename, sizeof(filename), FILENAME_PATTERN, test);
   if (unlink(filename) != 0)
     fatal_error(__LINE__, "Failed to erase test file.", errno);
 }
@@ -224,6 +224,8 @@ run_tests(const char **test_data_buf)
       argc_after = 0;
       while (test_data_buf[j + argc_before])
         argc_before++;
+      /* FIXME: we cannot take the advice of -Wpointer-compare here, because
+       * then we would be dereferencing a null pointer: */
       if (test_data_buf[j + argc_before] == '\0')
         j += (argc_before + 1); /* Skip null terminator */
       else

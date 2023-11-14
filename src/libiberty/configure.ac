@@ -290,14 +290,18 @@ m4_ifdef([AM_ENABLE_MULTILIB],[
   if test "x${multi_basedir}" = "x"; then
     test -z "${multi_basedir}" || echo "inconsistent test for multi_basedir"
     if test -n "${with_multisubdir}" && test -d "${with_multisubdir}"; then
+      echo "setting multi_basedir to with_multisubdir: ${with_multisubdir}"
       export multi_basedir="${with_multisubdir}"
     elif test -n "${libiberty_topdir}" && test -d "${libiberty_topdir}"; then
+      echo "setting multi_basedir to libiberty_topdir: ${libiberty_topdir}"
       export multi_basedir="${libiberty_topdir}"
     elif test -d ..; then
-      export multi_basedir=..
+      echo "setting multi_basedir to .." && export multi_basedir=..
     else
       AC_MSG_WARN([unsure what to set multi_basedir to])
     fi
+  else
+    test -n "${multi_basedir}" && echo "multi_basedir is ${multi_basedir} here"
   fi
   AC_SUBST([multi_basedir])dnl
 ],[

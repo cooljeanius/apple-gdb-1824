@@ -992,7 +992,7 @@ distcleancheck: distclean
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU
 check: check-recursive
-all-am: Makefile $(DATA) $(HEADERS) config.h
+all-am: Makefile $(DATA) $(HEADERS) config.h all-local
 installdirs: installdirs-recursive
 installdirs-am:
 	for dir in "$(DESTDIR)$(INSTALLdir)" "$(DESTDIR)$(includedir)"; do \
@@ -1104,7 +1104,7 @@ uninstall-am: uninstall-INSTALLDATA uninstall-includeHEADERS \
 
 .MAKE: $(am__recursive_targets) all check-am install-am install-strip
 
-.PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
+.PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am all-local \
 	am--refresh check check-DEJAGNU check-am clean clean-cscope \
 	clean-generic clean-libtool clean-local cscope cscopelist-am \
 	ctags ctags-am dist dist-all dist-bzip2 dist-gzip dist-lzip \
@@ -1144,8 +1144,11 @@ uninstall-am: uninstall-INSTALLDATA uninstall-includeHEADERS \
 	rm -f $*.h
 
 all: all-@USE_INCLUDED_LIBINTL@ @MAINT@ config.status po/Makefile
-	@echo "Use included libintl? @USE_INCLUDED_LIBINTL@"
 .PHONY: all all-@USE_INCLUDED_LIBINTL@
+
+all-local:
+	@echo "Use included libintl? @USE_INCLUDED_LIBINTL@"
+.PHONY: all-local
 
 all-yes: libintl.la intlh.inst libintl.a libintl.h config.intl @MAINT@ config.status
 	@test -e Makefile_orig && make -f Makefile_orig

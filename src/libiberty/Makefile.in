@@ -130,6 +130,7 @@ SUBDIRS = testsuite
 
 # FIXME: add @BUILD_INFO@ once we are sure it works for everyone.
 all: stamp-picdir stamp-noasandir $(TARGETLIB) needed-list required-list all-subdir
+	@echo "libiberty: BUILD_INFO is @BUILD_INFO@ here (all)."
 	@: $(MAKE) ; exec $(MULTIDO) $(FLAGS_TO_PASS) multi-do DO=all
 
 .PHONY: check installcheck

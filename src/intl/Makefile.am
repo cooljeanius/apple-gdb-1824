@@ -138,9 +138,14 @@ EXTRA_DIST += plural.c
 
 AM_INCLUDES = -Wp,-I. -Wp,-I$(srcdir)
 
+## Leave the actual rules for this target empty, because if we put any here, that
+## would be overriding the default:
 all: all-@USE_INCLUDED_LIBINTL@ @MAINT@ config.status po/Makefile
-	@echo "Use included libintl? @USE_INCLUDED_LIBINTL@"
 .PHONY: all all-@USE_INCLUDED_LIBINTL@
+
+all-local:
+	@echo "Use included libintl? @USE_INCLUDED_LIBINTL@"
+.PHONY: all-local
 
 all-yes: libintl.la intlh.inst libintl.a libintl.h config.intl @MAINT@ config.status
 	@test -e Makefile_orig && make -f Makefile_orig
