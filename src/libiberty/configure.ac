@@ -7,7 +7,7 @@ dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
 AC_CONFIG_SRCDIR([xmalloc.c])dnl
 
-echo "hello from libiberty's configure script"
+echo "hello from libiberty's configure script (in `pwd`)"
 
 # This works around the fact that libtool configuration may change LD
 # for this particular configuration, but some shells, instead of
@@ -287,10 +287,14 @@ m4_ifdef([AM_ENABLE_MULTILIB],[
     test -z "${with_multisrctop}" || echo "inconsistent test for with_multisrctop"
     if test -d .. && test -e ../config-ml.in; then
       export with_multisrctop="../"
+    elif test -d ../.. && test -r ../../config-ml.in; then
+      export with_multisrctop="../../"
+    elif test -d ../src && test -r ../src/config-ml.in; then
+      export with_multisrctop="../src/"
     elif test -d ../../src && test -r ../../src/config-ml.in; then
       export with_multisrctop="../../src/"
     else
-      AC_MSG_WARN([we need config-ml.in, but it seems to be missing all the directories we checked])
+      AC_MSG_WARN([we need config-ml.in, but it seems to be missing in all the directories we checked])
     fi
   else
     test -n "${with_multisrctop}" && echo "with_multisrctop is ${with_multisrctop}"

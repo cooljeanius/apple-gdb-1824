@@ -3353,7 +3353,7 @@ ac_config_headers="$ac_config_headers config.h"
 
 
 
-echo "hello from the intl subdirectory's configure script"
+echo "hello from the intl subdirectory's configure script (in `pwd`)"
 
 # architectures:
 

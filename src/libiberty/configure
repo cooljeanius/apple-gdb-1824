@@ -3570,7 +3570,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-echo "hello from libiberty's configure script"
+echo "hello from libiberty's configure script (in `pwd`)"
 
 # This works around the fact that libtool configuration may change LD
 # for this particular configuration, but some shells, instead of
@@ -6858,11 +6858,15 @@ fi
     test -z "${with_multisrctop}" || echo "inconsistent test for with_multisrctop"
     if test -d .. && test -e ../config-ml.in; then
       export with_multisrctop="../"
+    elif test -d ../.. && test -r ../../config-ml.in; then
+      export with_multisrctop="../../"
+    elif test -d ../src && test -r ../src/config-ml.in; then
+      export with_multisrctop="../src/"
     elif test -d ../../src && test -r ../../src/config-ml.in; then
       export with_multisrctop="../../src/"
     else
-      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: we need config-ml.in, but it seems to be missing all the directories we checked" >&5
-printf "%s\n" "$as_me: WARNING: we need config-ml.in, but it seems to be missing all the directories we checked" >&2;}
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: we need config-ml.in, but it seems to be missing in all the directories we checked" >&5
+printf "%s\n" "$as_me: WARNING: we need config-ml.in, but it seems to be missing in all the directories we checked" >&2;}
     fi
   else
     test -n "${with_multisrctop}" && echo "with_multisrctop is ${with_multisrctop}"

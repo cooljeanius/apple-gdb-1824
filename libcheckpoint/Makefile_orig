@@ -47,3 +47,4 @@ $(SYMROOT)/$(LIB) : $(OBJS)
 		-install_name $(GDBDIR)/$(LIB) \
 		-single_module -compatibility_version 1 \
 		-current_version 1 $(OBJS) -framework ApplicationServices
+	stat $(SYMROOT)/$(LIB) || stat $(GDBDIR)/$(LIB) || stat $(OBJS)

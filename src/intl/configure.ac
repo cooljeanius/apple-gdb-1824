@@ -14,7 +14,7 @@ m4_ifdef([AC_REQUIRE_AUX_FILE],[
   AC_REQUIRE_AUX_FILE([ylwrap])dnl
 ])dnl
 
-echo "hello from the intl subdirectory's configure script"
+echo "hello from the intl subdirectory's configure script (in `pwd`)"
 
 # architectures:
 AC_CANONICAL_TARGET
