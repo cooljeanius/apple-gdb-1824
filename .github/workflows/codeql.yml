@@ -300,6 +300,7 @@ jobs:
           cp -v ./*.o .. || ls ./*.o || pwd; \
           popd; \
         fi
+        find . -name conftest.o -exec rm -fv {} ';'
 
     - name: Extra coverage build (Java)
       if: matrix.language == 'java-kotlin' && success()

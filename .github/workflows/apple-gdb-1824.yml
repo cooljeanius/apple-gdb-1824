@@ -34,7 +34,7 @@ jobs:
     - run: cd src && make check-libiberty
     - run: cd src && make -C tcl/unix tcltest
     - run: cd src && for dir in sim itcl; do if test -e ${dir}/Makefile; then make check-${dir} V=0 RUNTESTFLAGS="-v"; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
-    - run: pwd
+    - run: time (pwd && ls)
       if: "${{ success() }}"
     - run: find . -name config.log -print0 | xargs cat | grep -i error | sort | uniq
       if: "${{ failure() }}"

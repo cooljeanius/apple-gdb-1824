@@ -18,11 +18,31 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
+#if !defined(__has_include)
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
+#if defined(HAVE_STDIO_H) || defined(__APPLE__) || __has_include(<stdio.h>)
+# include <stdio.h>
+#endif /* HAVE_STDIO_H || __APPLE__ */
+
+#if defined(HAVE_STRING_H) || defined(__APPLE__) || __has_include(<string.h>)
+# include <string.h>
+#endif /* HAVE_STRING_H || __APPLE__ */
+
+#if defined(HAVE_SYS_TYPES_H) || defined(__APPLE__) || __has_include(<sys/types.h>)
+# include <sys/types.h>
+#endif /* HAVE_SYS_TYPES_H || __APPLE__ */
+
+#if defined(HAVE_SYS_PTRACE_H) || defined(__APPLE__) || __has_include(<sys/ptrace.h>)
+# include <sys/ptrace.h>
+#endif /* HAVE_SYS_PTRACE_H || __APPLE__ */
+
 /*** Prettier register printing. ***/
 
 /* Print registers in the same format as pyramid's dbx, adb, sdb.  */
-pyr_print_registers(reg_buf, regnum)
-    long *reg_buf[];
+int
+pyr_print_registers(long *reg_buf[], int regnum)
 {
   register int regno;
   int usp, ksp;
@@ -49,10 +69,8 @@ pyr_print_registers(reg_buf, regnum)
 
 /* Print the register regnum, or all registers if regnum is -1.
    fpregs is currently ignored.  */
-
-pyr_do_registers_info (regnum, fpregs)
-    int regnum;
-    int fpregs;
+int
+pyr_do_registers_info(int regnum, int fpregs)
 {
   /* On a pyr, we know a virtual register can always fit in an long.
      Here (and elsewhere) we take advantage of that.  Yuk.  */
@@ -82,8 +100,7 @@ pyr_do_registers_info (regnum, fpregs)
 
 /*** Debugging editions of various macros from m-pyr.h ****/
 
-CORE_ADDR frame_locals_address (frame)
-    FRAME frame;
+CORE_ADDR frame_locals_address(FRAME frame)
 {
   register int addr = find_saved_register (frame,CFP_REGNUM);
   register int result = read_memory_integer (addr, 4);
@@ -107,8 +124,7 @@ CORE_ADDR frame_locals_address (frame)
     return ((frame->next) ? result: frame->frame_cfp);
 }
 
-CORE_ADDR frame_args_addr (frame)
-    FRAME frame;
+CORE_ADDR frame_args_addr(FRAME frame)
 {
   register int addr = find_saved_register (frame,CFP_REGNUM);
   register int result = read_memory_integer (addr, 4);

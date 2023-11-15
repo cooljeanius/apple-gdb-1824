@@ -74,7 +74,7 @@ jobs:
     - run: cd src && for dir in sim tcl expect dejagnu itcl libgui; do if test -e ${dir}/Makefile; then make check-${dir} V=0 RUNTESTFLAGS="-v"; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
     - run: cd src && make check-bfd
     - run: cd src && make check-opcodes
-    - run: cd src && make check-dejagnu
+    # (dejagnu is now moved into the loop above)
     - run: cd src && make check-intl
     - run: cd src && make check-utils
     - run: time (pwd && ls)

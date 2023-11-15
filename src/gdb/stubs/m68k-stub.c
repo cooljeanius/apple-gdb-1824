@@ -119,7 +119,7 @@ typedef void (*ExceptionHook)(int);   /* pointer to function with int parm */
 typedef void (*Function)();           /* pointer to a function */
 
 extern void putDebugChar();	/* write a single character      */
-extern int getDebugChar();	/* read and return a single char */
+extern int getDebugChar(void);	/* read and return a single char */
 
 extern Function exceptionHandler();  /* assign an exception handler */
 extern ExceptionHook exceptionHook;  /* hook variable for errors/exceptions */
@@ -128,7 +128,7 @@ extern ExceptionHook exceptionHook;  /* hook variable for errors/exceptions */
 /* FORWARD DECLARATIONS */
 /************************/
 static void
-initializeRemcomErrorFrame ();
+initializeRemcomErrorFrame(void);
 
 /************************************************************************/
 /* BUFMAX defines the maximum number of characters in inbound/outbound buffers*/
