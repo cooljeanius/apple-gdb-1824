@@ -1,7 +1,7 @@
-/* regex.h
-   Definitions for data structures callers pass the regex library.
-   Copyright (C) 1985, 1989 Free Software Foundation, Inc.
-
+/* regex_old.h
+ * Definitions for data structures callers pass the regex library.
+ * Copyright (C) 1985, 1989 Free Software Foundation, Inc. */
+/*
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -15,6 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+
+#ifndef REGEX_OLD_H
+#define REGEX_OLD_H 1
 
 /* Define number of parens for which we record the beginnings and ends.
    This affects how much space the `struct re_registers' type takes up.  */
@@ -62,6 +65,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define RE_SYNTAX_GREP (RE_BK_PLUS_QM | RE_NEWLINE_OR)
 #define RE_SYNTAX_EMACS 0
 
+#if !defined(_REGEX_H) || defined(__APPLE__)
 /* This data structure is used to represent a compiled pattern. */
 
 struct re_pattern_buffer
@@ -87,6 +91,7 @@ struct re_pattern_buffer
 			           * but at end of range or before a character
 			           * listed in the fastmap.  */
   };
+#endif /* !defined(_REGEX_H) || __APPLE__ */
 
 /* Structure to store "register" contents data in.
 
@@ -166,19 +171,28 @@ enum regexpcode
 				  * Sword or such like */
     notsyntaxspec /* Matches any character whose syntax differs from the specified. */
   };
-
-extern char *re_compile_pattern ();
+
+extern int re_set_syntax(int);
+extern const char *re_compile_pattern(char *, int, struct re_pattern_buffer *);
 /* Is this really advertised? */
-extern void re_compile_fastmap ();
-extern int re_search (), re_search_2 ();
-extern int re_match (), re_match_2 ();
+extern void re_compile_fastmap(struct re_pattern_buffer *);
+extern int re_search(struct re_pattern_buffer *, char *, int, int, int,
+                     struct re_registers *);
+extern int re_search_2(struct re_pattern_buffer *, char *, int, char *, int,
+		       int, register int, struct re_registers *, int);
+extern int re_match(struct re_pattern_buffer *, char *, int, int,
+                    struct re_registers *);
+extern int re_match_2(struct re_pattern_buffer *, unsigned char *, int,
+                      unsigned char *, int, int, struct re_registers *, int);
 
 /* 4.2 bsd compatibility (yuck) */
-extern char *re_comp ();
-extern int re_exec ();
+extern const char *re_comp(char *);
+extern int re_exec(char *);
 
 #ifdef SYNTAX_TABLE
 extern char *re_syntax_table;
 #endif /* SYNTAX_TABLE */
+
+#endif /* !REGEX_OLD_H */
 
 /* EOF */

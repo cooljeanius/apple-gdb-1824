@@ -1,7 +1,7 @@
-/* regex.c
-   Extended regular expression matching and search library.
-   Copyright (C) 1985, 1989 Free Software Foundation, Inc.
-
+/* regex_old.c
+ * Extended regular expression matching and search library.
+ * Copyright (C) 1985, 1989 Free Software Foundation, Inc. */
+/*
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -17,9 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 /* To test, compile with -Dtest.
- This Dtestable feature turns this into a self-contained program
- which reads a pattern, describes how it compiles,
- then reads a string and searches for it.  */
+ * This Dtestable feature turns this into a self-contained program
+ * which reads a pattern, describes how it compiles,
+ * then reads a string and searches for it.  */
 
 #ifdef emacs
 
@@ -31,7 +31,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "buffer.h"
 #include "syntax.h"
 
-#else  /* not emacs */
+#else  /* not emacs: */
 
 #ifdef USG
 # ifndef BSTRING
@@ -49,6 +49,18 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #  include <alloca.h>
 # endif /* sparc */
 #endif /* __GNUC__ */
+
+#if !defined(__has_include)
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
+#if defined(HAVE_STDLIB_H) || defined(__APPLE__) || __has_include(<stdlib.h>)
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H || __APPLE__ */
+
+#if defined(HAVE_STRINGS_H) || defined(__APPLE__) || __has_include(<strings.h>)
+# include <strings.h>
+#endif /* HAVE_STRINGS_H || __APPLE__ */
 
 /*
  * Define the syntax stuff, so we can do the \<...\> things.
@@ -69,7 +81,7 @@ char *re_syntax_table;
 static char re_syntax_table[256];
 
 static void
-init_syntax_once ()
+init_syntax_once(void)
 {
    register int c;
    static int done = 0;
@@ -77,7 +89,7 @@ init_syntax_once ()
    if (done)
      return;
 
-   bzero (re_syntax_table, sizeof re_syntax_table);
+   bzero(re_syntax_table, sizeof(re_syntax_table));
 
    for (c = 'a'; c <= 'z'; c++)
      re_syntax_table[c] = Sword;
@@ -94,7 +106,13 @@ init_syntax_once ()
 #endif /* SYNTAX_TABLE */
 #endif /* not emacs */
 
-#include "regex.h"
+#if !defined(__APPLE__)
+# include "regex.h"
+#endif /* !__APPLE__ */
+#if !defined(RE_NREGS) && !defined(REGEX_OLD_H) && \
+    (!defined(RE_SYNTAX_EMACS) || !defined(_REGEX_H))
+# include "regex_old.h"
+#endif /* !RE_NREGS && !REGEX_OLD_H && (!RE_SYNTAX_EMACS || !_REGEX_H) */
 
 /* Number of failure points to allocate space for initially,
  * when matching. If this number is exceeded, more space is allocated,
@@ -120,9 +138,8 @@ static int obscure_syntax = 0;
 
    The argument SYNTAX is a bit-mask containing the two bits
    RE_NO_BK_PARENS and RE_NO_BK_VBAR.  */
-
 int
-re_set_syntax (syntax)
+re_set_syntax(int syntax)
 {
   int ret;
 
@@ -178,18 +195,16 @@ re_set_syntax (syntax)
       pending_exact += c; \
   }
 
-static int store_jump (), insert_jump ();
+static int store_jump(char *from, char opcode, char *to);
+static int insert_jump(char op, char *from, char *to, char *current_end);
 
-char *
-re_compile_pattern (pattern, size, bufp)
-     char *pattern;
-     int size;
-     struct re_pattern_buffer *bufp;
+const char *
+re_compile_pattern(char *pattern, int size, struct re_pattern_buffer *bufp)
 {
   register char *b = bufp->buffer;
   register char *p = pattern;
   char *pend = pattern + size;
-  register unsigned c, c1;
+  register unsigned int c, c1;
   char *p1;
   unsigned char *translate = (unsigned char *) bufp->translate;
 
@@ -661,13 +676,12 @@ re_compile_pattern (pattern, size, bufp)
   `opcode' is the opcode to store. */
 
 static int
-store_jump (from, opcode, to)
-     char *from, *to;
-     char opcode;
+store_jump(char *from, char opcode, char *to)
 {
   from[0] = opcode;
   from[1] = (to - (from + 3)) & 0377;
   from[2] = (to - (from + 3)) >> 8;
+  return 0;
 }
 
 /* Open up space at char FROM, and insert there a jump to TO.
@@ -678,15 +692,13 @@ store_jump (from, opcode, to)
    If you call this function, you must zero out pending_exact.  */
 
 static int
-insert_jump (op, from, to, current_end)
-     char op;
-     char *from, *to, *current_end;
+insert_jump(char op, char *from, char *to, char *current_end)
 {
   register char *pto = current_end + 3;
   register char *pfrom = current_end;
   while (pfrom != from)
     *--pto = *--pfrom;
-  store_jump (from, op, to);
+  return store_jump(from, op, to);
 }
 
 /* Given a pattern, compute a fastmap from it.
@@ -699,15 +711,17 @@ insert_jump (op, from, to, current_end)
  The other components of bufp describe the pattern to be used.  */
 
 void
-re_compile_fastmap (bufp)
-     struct re_pattern_buffer *bufp;
+re_compile_fastmap(struct re_pattern_buffer *bufp)
 {
   unsigned char *pattern = (unsigned char *) bufp->buffer;
   int size = bufp->used;
   register char *fastmap = bufp->fastmap;
   register unsigned char *p = pattern;
   register unsigned char *pend = pattern + size;
-  register int j, k;
+  register int j;
+#ifdef emacs
+  register int k;
+#endif /* emacs */
   unsigned char *translate = (unsigned char *) bufp->translate;
 
   unsigned char *stackb[NFAILURES];
@@ -865,6 +879,7 @@ re_compile_fastmap (bufp)
 		  fastmap[j] = 1;
 	      }
 	  break;
+	default:; /* TODO: put something here? */
 	}
 
       /* Get here means we have successfully found the possible starting characters
@@ -880,13 +895,10 @@ re_compile_fastmap (bufp)
 /* Like re_search_2, below, but only one string is specified. */
 
 int
-re_search (pbufp, string, size, startpos, range, regs)
-     struct re_pattern_buffer *pbufp;
-     char *string;
-     int size, startpos, range;
-     struct re_registers *regs;
+re_search(struct re_pattern_buffer *pbufp, char *string, int size, int startpos,
+	  int range, struct re_registers *regs)
 {
-  return re_search_2 (pbufp, 0, 0, string, size, startpos, range, regs, size);
+  return re_search_2(pbufp, 0, 0, string, size, startpos, range, regs, size);
 }
 
 /* Like re_match_2 but tries first a match starting at index STARTPOS,
@@ -902,14 +914,9 @@ The value returned is the position at which the match was found,
  or -2 if error (such as failure stack overflow).  */
 
 int
-re_search_2 (pbufp, string1, size1, string2, size2, startpos, range, regs, mstop)
-     struct re_pattern_buffer *pbufp;
-     char *string1, *string2;
-     int size1, size2;
-     int startpos;
-     register int range;
-     struct re_registers *regs;
-     int mstop;
+re_search_2(struct re_pattern_buffer *pbufp, char *string1, int size1,
+	    char *string2, int size2, int startpos, register int range,
+            struct re_registers *regs, int mstop)
 {
   register char *fastmap = pbufp->fastmap;
   register unsigned char *translate = (unsigned char *) pbufp->translate;
@@ -981,7 +988,8 @@ re_search_2 (pbufp, string1, size1, string2, size2, startpos, range, regs, mstop
 	  && fastmap && pbufp->can_be_null == 0)
 	return -1;
 
-      val = re_match_2 (pbufp, string1, size1, string2, size2, startpos, regs, mstop);
+      val = re_match_2(pbufp, (unsigned char *)string1, size1,
+                       (unsigned char *)string2, size2, startpos, regs, mstop);
       if (0 <= val)
 	{
 	  if (val == -2)
@@ -1002,13 +1010,10 @@ re_search_2 (pbufp, string1, size1, string2, size2, startpos, range, regs, mstop
 
 #ifndef emacs   /* emacs never uses this */
 int
-re_match (pbufp, string, size, pos, regs)
-     struct re_pattern_buffer *pbufp;
-     char *string;
-     int size, pos;
-     struct re_registers *regs;
+re_match(struct re_pattern_buffer *pbufp, char *string, int size, int pos,
+	 struct re_registers *regs)
 {
-  return re_match_2 (pbufp, 0, 0, string, size, pos, regs, size);
+  return re_match_2(pbufp, 0, 0, (unsigned char *)string, size, pos, regs, size);
 }
 #endif /* emacs */
 
@@ -1016,7 +1021,8 @@ re_match (pbufp, string, size, pos, regs)
 
 int re_max_failures = 2000;
 
-static int bcmp_translate();
+static int bcmp_translate(unsigned char *, unsigned char *, register int,
+	       		  unsigned char *);
 /* Match the pattern described by PBUFP
    against data which is the virtual concatenation of STRING1 and STRING2.
    SIZE1 and SIZE2 are the sizes of the two data strings.
@@ -1034,13 +1040,9 @@ static int bcmp_translate();
    of the substring which was matched.  */
 
 int
-re_match_2 (pbufp, string1, size1, string2, size2, pos, regs, mstop)
-     struct re_pattern_buffer *pbufp;
-     unsigned char *string1, *string2;
-     int size1, size2;
-     int pos;
-     struct re_registers *regs;
-     int mstop;
+re_match_2(struct re_pattern_buffer *pbufp, unsigned char *string1, int size1,
+	   unsigned char *string2, int size2, int pos,
+           struct re_registers *regs, int mstop)
 {
   register unsigned char *p = (unsigned char *) pbufp->buffer;
   register unsigned char *pend = p + pbufp->used;
@@ -1051,7 +1053,7 @@ re_match_2 (pbufp, string1, size1, string2, size2, pos, regs, mstop)
   /* Pointer just past last char to consider matching */
   unsigned char *end_match_1, *end_match_2;
   register unsigned char *d, *dend;
-  register int mcnt;
+  register unsigned int mcnt;
   unsigned char *translate = (unsigned char *) pbufp->translate;
 
  /* Failure point stack.  Each place that can handle a failure further down the line
@@ -1243,10 +1245,10 @@ re_match_2 (pbufp, string1, size1, string2, size2, pos, regs, mstop)
 	case charset_not:
 	  {
 	    /* Nonzero for charset_not */
-	    int not = 0;
+	    int cnot = 0;
 	    register int c;
 	    if (*(p - 1) == (unsigned char) charset_not)
-	      not = 1;
+	      cnot = 1;
 
 	    /* fetch a data character */
 	    PREFETCH;
@@ -1258,11 +1260,11 @@ re_match_2 (pbufp, string1, size1, string2, size2, pos, regs, mstop)
 
 	    if (c < *p * BYTEWIDTH
 		&& p[1 + c / BYTEWIDTH] & (1 << (c % BYTEWIDTH)))
-	      not = !not;
+	      cnot = !cnot;
 
 	    p += 1 + *p;
 
-	    if (!not) goto fail;
+	    if (!cnot) goto fail;
 	    d++;
 	    break;
 	  }
@@ -1297,10 +1299,10 @@ re_match_2 (pbufp, string1, size1, string2, size2, pos, regs, mstop)
 	  if (stackp == stacke)
 	    {
 	      unsigned char **stackx;
-	      if (stacke - stackb > re_max_failures * 2)
+	      if ((stacke - stackb) > (re_max_failures * 2))
 		return -2;
-	      stackx = (unsigned char **) alloca (2 * (stacke - stackb)
-					 * sizeof (char *));
+	      stackx =
+        	(unsigned char **)alloca(2 * (stacke - stackb) * sizeof(char *));
 	      bcopy (stackb, stackx, (stacke - stackb) * sizeof (char *));
 	      stackp = stackx + (stackp - stackb);
 	      stacke = stackx + 2 * (stacke - stackb);
@@ -1343,13 +1345,13 @@ re_match_2 (pbufp, string1, size1, string2, size2, pos, regs, mstop)
 		else if (p1[3] == (unsigned char) charset
 			 || p1[3] == (unsigned char) charset_not)
 		  {
-		    int not = p1[3] == (unsigned char) charset_not;
+		    int cnot = p1[3] == (unsigned char)charset_not;
 		    if (c < p1[4] * BYTEWIDTH
 			&& p1[5 + c / BYTEWIDTH] & (1 << (c % BYTEWIDTH)))
-		      not = !not;
-		    /* not is 1 if c would match */
+		      cnot = !cnot;
+		    /* cnot is 1 if c would match */
 		    /* That means it is not safe to finalize */
-		    if (!not)
+		    if (!cnot)
 		      p[-3] = (unsigned char) finalize_jump;
 		  }
 	      }
@@ -1367,21 +1369,21 @@ re_match_2 (pbufp, string1, size1, string2, size2, pos, regs, mstop)
 
 	case finalize_jump:
 	  stackp -= 2;
+          /* FALLTHROUGH */
 
 	case jump:
 	nofinalize:
 	  mcnt = *p++ & 0377;
-	  mcnt += SIGN_EXTEND_CHAR (*(char *)p) << 8;
+	  mcnt += SIGN_EXTEND_CHAR(*(char *)p) << 8;
 	  p += mcnt + 1;	/* The 1 compensates for missing ++ above */
 	  break;
 
 	case dummy_failure_jump:
 	  if (stackp == stacke)
 	    {
-	      unsigned char **stackx
-		= (unsigned char **) alloca (2 * (stacke - stackb)
-					     * sizeof (char *));
-	      bcopy (stackb, stackx, (stacke - stackb) * sizeof (char *));
+	      unsigned char **stackx =
+		(unsigned char **)alloca(2 * (stacke - stackb) * sizeof (char *));
+	      bcopy(stackb, stackx, (stacke - stackb) * sizeof(char *));
 	      stackp = stackx + (stackp - stackb);
 	      stacke = stackx + 2 * (stacke - stackb);
 	      stackb = stackx;
@@ -1518,6 +1520,7 @@ re_match_2 (pbufp, string1, size1, string2, size2, pos, regs, mstop)
 	      while (--mcnt);
 	    }
 	  break;
+	default:; /* TODO: put something here? */
 	}
       continue;    /* Successfully matched one pattern command; keep matching */
 
@@ -1542,10 +1545,8 @@ re_match_2 (pbufp, string1, size1, string2, size2, pos, regs, mstop)
 }
 
 static int
-bcmp_translate (s1, s2, len, translate)
-     unsigned char *s1, *s2;
-     register int len;
-     unsigned char *translate;
+bcmp_translate(unsigned char *s1, unsigned char *s2, register int len,
+	       unsigned char *translate)
 {
   register unsigned char *p1 = s1, *p2 = s2;
   while (len)
@@ -1562,9 +1563,8 @@ bcmp_translate (s1, s2, len, translate)
 
 static struct re_pattern_buffer re_comp_buf;
 
-char *
-re_comp (s)
-     char *s;
+const char *
+re_comp(char *s)
 {
   if (!s)
     {
@@ -1585,10 +1585,9 @@ re_comp (s)
 }
 
 int
-re_exec (s)
-     char *s;
+re_exec(char *s)
 {
-  int len = strlen (s);
+  int len = strlen(s);
   return 0 <= re_search (&re_comp_buf, s, len, 0, len, 0);
 }
 
@@ -1635,6 +1634,7 @@ static char upcase[0400] =
     0370, 0371, 0372, 0373, 0374, 0375, 0376, 0377
   };
 
+int
 main (argc, argv)
      int argc;
      char **argv;

@@ -2246,9 +2246,14 @@ if test "x${ac_cv_func_mbrtowc}" = "x"; then
 fi
 AC_FUNC_MEMCMP
 m4_ifdef([AM_WITH_DMALLOC],[
+  PRE_DMALLOC_LIBS="${LIBS}"
   AM_WITH_DMALLOC
-  dnl# FIXME: do something about how it can put -ldmalloc into LIBS even when the
-  dnl# library is unavailable or unlinkable
+  AC_CHECK_LIB([dmalloc],[dmalloc_shutdown],[
+    : # (ok)
+  ],[
+    LIBS="${PRE_DMALLOC_LIBS}"
+  ])dnl
+  AC_SUBST([PRE_DMALLOC_LIBS])dnl
 ])dnl
 AC_FUNC_OBSTACK
 AC_CHECK_FUNCS([obstack_xfree])dnl

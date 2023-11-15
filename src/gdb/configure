@@ -837,6 +837,7 @@ MIG_CHECKING
 DEBUG_SYMBOLS_LIBS
 CARBON_LIBS
 POW_LIB
+PRE_DMALLOC_LIBS
 APPLE_UNIVERSAL_BUILD
 LIBOBJS
 NEXT_AS_FIRST_DIRECTIVE_STRING_H
@@ -46921,6 +46922,7 @@ esac
 
 
 
+  PRE_DMALLOC_LIBS="${LIBS}"
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if malloc debugging is wanted" >&5
 printf %s "checking if malloc debugging is wanted... " >&6; }
 
@@ -46945,7 +46947,52 @@ printf "%s\n" "no" >&6; }
 fi
 
 
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for obstacks" >&5
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for dmalloc_shutdown in -ldmalloc" >&5
+printf %s "checking for dmalloc_shutdown in -ldmalloc... " >&6; }
+if test ${ac_cv_lib_dmalloc_dmalloc_shutdown+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ldmalloc  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+char dmalloc_shutdown ();
+int
+main (void)
+{
+return dmalloc_shutdown ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_dmalloc_dmalloc_shutdown=yes
+else $as_nop
+  ac_cv_lib_dmalloc_dmalloc_shutdown=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_dmalloc_dmalloc_shutdown" >&5
+printf "%s\n" "$ac_cv_lib_dmalloc_dmalloc_shutdown" >&6; }
+if test "x$ac_cv_lib_dmalloc_dmalloc_shutdown" = xyes
+then :
+
+    : # (ok)
+
+else $as_nop
+
+    LIBS="${PRE_DMALLOC_LIBS}"
+
+fi
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for obstacks" >&5
 printf %s "checking for obstacks... " >&6; }
 if test ${ac_cv_func_obstack+y}
 then :
