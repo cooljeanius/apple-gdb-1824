@@ -317,7 +317,7 @@ crossarm: CDEBUGFLAGS ?= -gdwarf-2 -D__DARWIN_UNIX03=0
 crossarm:;
         
 	echo BUILDING CROSSARM; \
-	$(RM)  $(SYMROOT)/$(LIBEXEC_GDB_DIR)/gdb-arm-apple-darwin
+	$(RM) -v $(SYMROOT)/$(LIBEXEC_GDB_DIR)/gdb-arm-apple-darwin
 	for i in $(RC_ARCHS); do \
 		$(RM) -r $(OBJROOT)/$${i}-apple-darwin--arm-apple-darwin; \
 		$(INSTALL) -c -d $(OBJROOT)/$${i}-apple-darwin--arm-apple-darwin; \
@@ -350,6 +350,7 @@ crossarm:;
 	sed -e 's/version=.*/version=$(GDB_VERSION)-$(GDB_RC_VERSION)/' \
                 < $(SRCROOT)/gdb.sh > ${DSTROOT}/usr/bin/gdb
 	chmod 755 ${DSTROOT}/usr/bin/gdb
+.PHONY: crossarm
 
 #
 # cross
@@ -433,7 +434,7 @@ cross:;
 	sed -e 's/version=.*/version=$(GDB_VERSION)-$(GDB_RC_VERSION)/' \
                 < $(SRCROOT)/gdb.sh > ${DSTROOT}/usr/bin/gdb; \
 	chmod 755 ${DSTROOT}/usr/bin/gdb; \
-
+.PHONY: cross
 
 cross-installhdrs:
 	$(SUBMAKE) $(MACOSX_FLAGS) install-clean ; \
@@ -814,10 +815,9 @@ clean: mostlyclean
 	if test -e src/Makefile; then \
 	  unset CPP && $(MAKE) -i -C src clean; fi
 	$(RM) -r $(OBJROOT)
-	$(RM) *~ stamp-*
-	$(RM) .DS_Store
+	$(RM) -v *~ stamp-*
+	$(RM) .DS_Store autoscan.log
 	$(RM) -r autom4te.cache || rmdir autom4te.cache
-	$(RM) autoscan.log
 
 distclean: clean
 	if test -e src/Makefile; then \
@@ -984,11 +984,14 @@ check:
            exit 1)
 	$(MAKE) -C src check
 
+test: # (unsure if it is okay to make this equivalent to check?)
+.PHONY: test
+
 ifndef srcdir
 srcdir = .
 endif
 
-PHONY: update-ChangeLog
+.PHONY: update-ChangeLog
 update-ChangeLog:
 	    if test -d $(srcdir)/.git; then                         \
 	       $(srcdir)/build-aux/gitlog-to-changelog              \

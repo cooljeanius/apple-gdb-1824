@@ -1163,6 +1163,7 @@ etags tags: TAGS
 # the user could load to tell emacs19 where all the TAGS files we just
 # built are.
 TAGS: do-TAGS
+.PHONY: TAGS
 
 # ------------------------------------
 # Macros for configure and all targets
