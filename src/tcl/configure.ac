@@ -103,6 +103,7 @@ AC_PROG_RANLIB
 AC_PROG_SED
 AC_PROG_YACC
 AM_MISSING_PROG([AUTOCONF],[autoconf])dnl
+AC_PATH_PROGS([TIMEOUT],[timeout gtimeout uu-timeout],[timeout])dnl
 
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[

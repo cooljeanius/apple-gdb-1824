@@ -24,6 +24,8 @@ TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 C_ARCHFLAGS = @C_ARCHFLAGS@
 CFLAGS = @CFLAGS@ $(C_ARCHFLAGS)
 
+TIMEOUT = @TIMEOUT@
+
 @SET_MAKE@
 
 all: $(CONFIGDIR)/Makefile
@@ -115,7 +117,11 @@ check: $(CONFIGDIR)/Makefile
 	else \
 	   echo "$${rootme}/../expect/expect is missing; skipping setting TCL_LIBRARY here..."; \
 	fi; \
-	$(RUNTEST) $(RUNTESTFLAGS) --tool tcl --srcdir $(SRC_DIR)/testsuite
+	if test "x$(TIMEOUT)" != "x"; then \
+	  $(TIMEOUT) --preserve-status --kill-after=5m -v 3m $(RUNTEST) $(RUNTESTFLAGS) --tool tcl --srcdir $(SRC_DIR)/testsuite; \
+	else \
+	  $(RUNTEST) $(RUNTESTFLAGS) --tool tcl --srcdir $(SRC_DIR)/testsuite; \
+	fi
 
 install-info info installcheck:
 

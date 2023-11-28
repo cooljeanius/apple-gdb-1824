@@ -1,5 +1,5 @@
 /*!
- * modernizr v3.5.0
+ * modernizr v3.13.0
  * Build https://modernizr.com/download?-classlist-datalistelem-es5-eventlistener-framed-hidden-history-postmessage-queryselector-dontmin
  *
  * Copyright (c)
@@ -10,6 +10,7 @@
  *  Patrick Kettner
  *  Stu Cox
  *  Richard Herrera
+ *  Veeck
 
  * MIT License
  */
@@ -22,21 +23,19 @@
  * of control over the experience.
 */
 
-;(function(window, document, undefined){
+;(function(scriptGlobalObject, window, document, undefined){
+
   var tests = [];
   
 
   /**
-   *
    * ModernizrProto is the constructor for Modernizr
    *
    * @class
    * @access public
    */
-
   var ModernizrProto = {
-    // The current version, dummy
-    _version: '3.5.0',
+    _version: '3.13.0',
 
     // Any settings that don't work as separate modules
     // can go in here as configuration.
@@ -95,20 +94,20 @@
    * @function is
    * @param {*} obj - A thing we want to check the type of
    * @param {string} type - A string to compare the typeof against
-   * @returns {boolean}
+   * @returns {boolean} true if the typeof the first parameter is exactly the specified type, false otherwise
    */
-
   function is(obj, type) {
     return typeof obj === type;
   }
+
   ;
 
   /**
    * Run through all tests and detect their support in the current UA.
    *
    * @access private
+   * @returns {void}
    */
-
   function testRunner() {
     var featureNames;
     var feature;
@@ -143,7 +142,6 @@
         // Run the test, or use the raw value if it's not a function
         result = is(feature.fn, 'function') ? feature.fn() : feature.fn;
 
-
         // Set each of the names on the Modernizr object
         for (nameIdx = 0; nameIdx < featureNames.length; nameIdx++) {
           featureName = featureNames[nameIdx];
@@ -158,8 +156,8 @@
           if (featureNameSplit.length === 1) {
             Modernizr[featureNameSplit[0]] = result;
           } else {
-            // cast to a Boolean, if not one already
-            if (Modernizr[featureNameSplit[0]] && !(Modernizr[featureNameSplit[0]] instanceof Boolean)) {
+            // cast to a Boolean, if not one already or if it doesnt exist yet (like inputtypes)
+            if (!Modernizr[featureNameSplit[0]] || Modernizr[featureNameSplit[0]] && !(Modernizr[featureNameSplit[0]] instanceof Boolean)) {
               Modernizr[featureNameSplit[0]] = new Boolean(Modernizr[featureNameSplit[0]]);
             }
 
@@ -179,7 +177,6 @@
    * @access private
    * @returns {HTMLElement|SVGElement} The root element of the document
    */
-
   var docElement = document.documentElement;
   
 /*!
@@ -205,8 +202,8 @@
    * @access private
    * @returns {boolean}
    */
-
   var isSVG = docElement.nodeName.toLowerCase() === 'svg';
+
   
 
   /**
@@ -219,7 +216,6 @@
    * @function createElement
    * @returns {HTMLElement|SVGElement} An HTML or SVG element
    */
-
   function createElement() {
     if (typeof document.createElement !== 'function') {
       // This is the case in IE7, where the type of createElement is "object".
@@ -239,8 +235,8 @@
   "property": "hidden",
   "tags": ["dom"],
   "notes": [{
-    "name": "WHATWG: The hidden attribute",
-    "href": "https://developers.whatwg.org/editing.html#the-hidden-attribute"
+    "name": "WHATWG Spec",
+    "href": "https://html.spec.whatwg.org/dev/interaction.html#the-hidden-attribute"
   }, {
     "name": "original implementation of detect code",
     "href": "https://github.com/aFarkas/html5shiv/blob/bf4fcc4/src/html5shiv.js#L38"
@@ -273,8 +269,8 @@ Does the browser support the HTML5 [hidden] attribute?
   "tags": ["forms"],
   "authors": ["Mike Taylor"],
   "notes": [{
-    "name": "WHATWG spec",
-    "href": "https://html.spec.whatwg.org/multipage/forms.html#input-type-attr-summary"
+    "name": "WHATWG Spec",
+    "href": "https://html.spec.whatwg.org/multipage/input.html#input-type-attr-summary"
   }],
   "knownBugs": ["Some blackberry devices report false positive for input.multiple"]
 }
@@ -330,8 +326,8 @@ Modernizr.input.step
   "warnings": ["This test is a dupe of Modernizr.input.list. Only around for legacy reasons."],
   "notes": [{
     "name": "CSS Tricks Article",
-    "href": "https://css-tricks.com/15346-relevant-dropdowns-polyfill-for-datalist/"
-  },{
+    "href": "https://css-tricks.com/relevant-dropdowns-polyfill-for-datalist/"
+  }, {
     "name": "Mike Taylor Code",
     "href": "https://miketaylr.com/code/datalist.html"
   }]
@@ -349,7 +345,7 @@ Modernizr.input.step
   "property": "es5array",
   "notes": [{
     "name": "ECMAScript 5.1 Language Specification",
-    "href": "http://www.ecma-international.org/ecma-262/5.1/"
+    "href": "https://www.ecma-international.org/ecma-262/5.1/"
   }],
   "polyfills": ["es5shim"],
   "authors": ["Ron Waldon (@jokeyrhyme)"],
@@ -380,7 +376,7 @@ Check if browser implements ECMAScript 5 Array per specification.
   "property": "es5date",
   "notes": [{
     "name": "ECMAScript 5.1 Language Specification",
-    "href": "http://www.ecma-international.org/ecma-262/5.1/"
+    "href": "https://www.ecma-international.org/ecma-262/5.1/"
   }],
   "polyfills": ["es5shim"],
   "authors": ["Ron Waldon (@jokeyrhyme)"],
@@ -412,7 +408,7 @@ Check if browser implements ECMAScript 5 Date per specification.
   "property": "es5function",
   "notes": [{
     "name": "ECMAScript 5.1 Language Specification",
-    "href": "http://www.ecma-international.org/ecma-262/5.1/"
+    "href": "https://www.ecma-international.org/ecma-262/5.1/"
   }],
   "polyfills": ["es5shim"],
   "authors": ["Ron Waldon (@jokeyrhyme)"],
@@ -433,7 +429,7 @@ Check if browser implements ECMAScript 5 Function per specification.
   "property": "es5object",
   "notes": [{
     "name": "ECMAScript 5.1 Language Specification",
-    "href": "http://www.ecma-international.org/ecma-262/5.1/"
+    "href": "https://www.ecma-international.org/ecma-262/5.1/"
   }],
   "polyfills": ["es5shim", "es5sham"],
   "authors": ["Ron Waldon (@jokeyrhyme)"],
@@ -464,10 +460,10 @@ Check if browser implements ECMAScript 5 Object per specification.
 {
   "name": "ES5 Strict Mode",
   "property": "strictmode",
-  "caniuse": "sctrict-mode",
+  "caniuse": "use-strict",
   "notes": [{
     "name": "ECMAScript 5.1 Language Specification",
-    "href": "http://www.ecma-international.org/ecma-262/5.1/"
+    "href": "https://www.ecma-international.org/ecma-262/5.1/"
   }],
   "authors": ["@kangax"],
   "tags": ["es5"],
@@ -486,7 +482,7 @@ Check if browser implements ECMAScript 5 Object strict mode.
   "property": "es5string",
   "notes": [{
     "name": "ECMAScript 5.1 Language Specification",
-    "href": "http://www.ecma-international.org/ecma-262/5.1/"
+    "href": "https://www.ecma-international.org/ecma-262/5.1/"
   }],
   "polyfills": ["es5shim"],
   "authors": ["Ron Waldon (@jokeyrhyme)"],
@@ -507,7 +503,7 @@ Check if browser implements ECMAScript 5 String per specification.
   "property": "json",
   "caniuse": "json",
   "notes": [{
-    "name": "MDN documentation",
+    "name": "MDN Docs",
     "href": "https://developer.mozilla.org/en-US/docs/Glossary/JSON"
   }],
   "polyfills": ["json2"]
@@ -528,10 +524,10 @@ Detects native support for JSON handling functions.
   "property": "es5syntax",
   "notes": [{
     "name": "ECMAScript 5.1 Language Specification",
-    "href": "http://www.ecma-international.org/ecma-262/5.1/"
+    "href": "https://www.ecma-international.org/ecma-262/5.1/"
   }, {
     "name": "original implementation of detect code",
-    "href": "http://kangax.github.io/es5-compat-table/"
+    "href": "https://kangax.github.io/compat-table/es5/"
   }],
   "authors": ["Ron Waldon (@jokeyrhyme)"],
   "warnings": ["This detect uses `eval()`, so CSP may be a problem."],
@@ -571,10 +567,10 @@ Check if browser accepts ECMAScript 5 syntax.
   "property": "es5undefined",
   "notes": [{
     "name": "ECMAScript 5.1 Language Specification",
-    "href": "http://www.ecma-international.org/ecma-262/5.1/"
+    "href": "https://www.ecma-international.org/ecma-262/5.1/"
   }, {
     "name": "original implementation of detect code",
-    "href": "http://kangax.github.io/es5-compat-table/"
+    "href": "https://kangax.github.io/compat-table/es5/"
   }],
   "authors": ["Ron Waldon (@jokeyrhyme)"],
   "tags": ["es5"]
@@ -601,9 +597,10 @@ Check if browser prevents assignment to global `undefined` per ECMAScript 5.
 {
   "name": "ES5",
   "property": "es5",
+  "caniuse": "es5",
   "notes": [{
     "name": "ECMAScript 5.1 Language Specification",
-    "href": "http://www.ecma-international.org/ecma-262/5.1/"
+    "href": "https://www.ecma-international.org/ecma-262/5.1/"
   }],
   "polyfills": ["es5shim", "es5sham"],
   "authors": ["Ron Waldon (@jokeyrhyme)"],
@@ -632,6 +629,7 @@ Check if browser implements everything as specified in ECMAScript 5.
 {
   "name": "Event Listener",
   "property": "eventlistener",
+  "caniuse": "addeventlistener",
   "authors": ["Andrew Betts (@triblondon)"],
   "notes": [{
     "name": "W3C Spec",
@@ -657,7 +655,7 @@ Detects native support for addEventListener
     "name": "W3C Spec",
     "href": "https://www.w3.org/TR/html51/browsers.html#the-history-interface"
   }, {
-    "name": "MDN documentation",
+    "name": "MDN Docs",
     "href": "https://developer.mozilla.org/en-US/docs/Web/API/window.history"
   }],
   "polyfills": ["historyjs", "html5historyapi"]
@@ -673,6 +671,12 @@ Detects support for the History API for manipulating the browser session history
     // Unfortunately support is really buggy and there is no clean way to detect
     // these bugs, so we fall back to a user agent sniff :(
     var ua = navigator.userAgent;
+    
+    // Some browsers allow to have empty userAgent.
+    // Therefore, we need to check ua before using "indexOf" on it.
+    if(!ua) {
+      return false;
+    }
 
     // We only want Android 2 and 4.0, stock browser, and not Chrome which identifies
     // itself as 'Mobile Safari' as well, nor Windows Phone (issue #1471).
@@ -699,16 +703,25 @@ Detects support for the History API for manipulating the browser session history
   "caniuse": "x-doc-messaging",
   "notes": [{
     "name": "W3C Spec",
-    "href": "http://www.w3.org/TR/html5/comms.html#posting-messages"
+    "href": "https://www.w3.org/TR/webmessaging/#crossDocumentMessages"
   }],
-  "polyfills": ["easyxdm", "postmessage-jquery"]
+  "polyfills": ["easyxdm", "postmessage-jquery"],
+  "knownBugs": ["structuredclones - Android 2&3 can not send a structured clone of dates, filelists or regexps"],
+  "warnings": ["Some old WebKit versions have bugs. Stick with object, array, number and pixeldata to be safe."]
 }
 !*/
 /* DOC
 Detects support for the `window.postMessage` protocol for cross-document messaging.
+`Modernizr.postmessage.structuredclones` reports if `postMessage` can send objects.
 */
 
-  Modernizr.addTest('postmessage', 'postMessage' in window);
+  var bool = true;
+  try {
+    window.postMessage({ toString: function () { bool = false; } }, '*');
+  } catch (e) {}
+
+  Modernizr.addTest('postmessage', new Boolean('postMessage' in window));
+  Modernizr.addTest('postmessage.structuredclones', bool);
 
 /*!
 {
@@ -718,7 +731,7 @@ Detects support for the `window.postMessage` protocol for cross-document messagi
   "tags": ["queryselector"],
   "authors": ["Andrew Betts (@triblondon)"],
   "notes": [{
-    "name" : "W3C Selectors reference",
+    "name": "W3C Spec",
     "href": "https://www.w3.org/TR/selectors-api/#queryselectorall"
   }],
   "polyfills": ["css-selector-engine"]
@@ -744,7 +757,7 @@ Tests if page is iframed.
 
   // github.com/Modernizr/Modernizr/issues/242
 
-  Modernizr.addTest('framed', window.location != top.location);
+  Modernizr.addTest('framed', window.location !== top.location);
 
 
   // Run each test
@@ -759,9 +772,9 @@ Tests if page is iframed.
   }
 
   // Leak Modernizr namespace
-  window.Modernizr = Modernizr;
+  scriptGlobalObject.Modernizr = Modernizr;
 
 
 ;
 
-})(window, document);
+})(window, window, document);
