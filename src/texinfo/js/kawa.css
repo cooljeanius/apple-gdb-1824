@@ -1,0 +1,39 @@
+body.mainbar {
+    background: #fffff5;
+}
+
+pre.example kbd {
+    background-color: #FFFFD0;
+    font-style: normal;
+    font-weight: bold;
+}
+
+#slider {
+    background-color: #F4FCFF;
+}
+
+div.toc-sidebar a {
+    text-decoration: none;
+}
+
+div.toc-sidebar a:hover, div.toc-sidebar a:hover div {
+    color: #fff;
+    background-color: #69C;
+}
+
+div.display {
+  white-space: pre-wrap;
+  font-family: monospace;
+}
+
+div.toc li {
+    display: block;
+    text-indent: 0;
+    text-align: left;
+    border: solid;
+    border-width: 1px 0px 0px 1px;
+    border-color: #AAA #666 #666 #AAA;
+    list-style: none;              /* Remove triangle from H2 */
+    padding: 0px 4px;
+    margin: 0;
+}

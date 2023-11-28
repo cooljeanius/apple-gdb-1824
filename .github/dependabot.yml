@@ -29,3 +29,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/src/texinfo/js"
+    schedule:
+      interval: "weekly"

@@ -1,0 +1,25 @@
+{
+  "name": "texinfo",
+  "version": "0.1.0",
+  "main": "info.js",
+  "repository": {
+    "type": "git",
+    "url": "https://notabug.org/mthl/texinfo.git"
+  },
+  "email": "bug-texinfo@gnu.org",
+  "homepage": "https://www.gnu.org/texinfo",
+  "contributors": [
+    "Per Bothner <per@gnu.org>",
+    "Mathieu Lirzin <mthl@gnu.org>"
+  ],
+  "license": "GPL-3.0",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^4.4.1",
+    "finalhandler": "^1.0.4",
+    "modernizr": "^3.5.0",
+    "serve-static": "^1.12.4",
+    "typescript": "^2.4.2",
+    "uglify-js": "^3.0.27"
+  }
+}

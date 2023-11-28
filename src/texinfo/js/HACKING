@@ -1,0 +1,32 @@
+While the build process doesn't require any tool since the program is
+written as single script directly loadable in browsers, it is
+convenient for the developpers to have some of them to improve its
+coding experience and avoid them some headaches.
+
+Those tools consists of a linter (ESLint) and a type checker
+(TypeScript).  They can be fetched with 'NPM' by running the 'npm
+install' command from the the source directory.
+
+To run the linter you can execute:
+
+   $ make lint
+
+To run the type check you can execute:
+
+   $ make check-types
+
+When modifying the 'info.js' source we recommend that you often run
+those commands.
+
+Additionaly the NPM install process provides 'modernizr' which can
+update the "modernizr.js" script which is used for ensuring the
+portability of "info.js" across browsers by doing features tests.  The
+update can be done by executing:
+
+   $ make modernizr
+
+Finally 'Uglify-js' (which is provided by NPM too) is used to check
+the size of a minified version of the script.  To do that you can
+execute:
+
+   $ make minify

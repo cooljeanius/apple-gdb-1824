@@ -1,0 +1,27 @@
+This subdirectory contains a JavaScript system used to browse the HTML 
+output of texi2any.  This work was done by Matthieu Lirzin in 2017.
+
+See https://www.gnu.org/software/soc-projects/ideas-2017.html#texinfo
+and http://mathieu.lirzin.emi.u-bordeaux.fr/categories/gsoc/ for some
+background information.
+
+The example manuals are in the git repository.
+
+Running "make examples" used to build the provided examples, but
+now you can use INFO_JS_DIR instead - see the Texinfo manual.
+
+To check the result of EXAMPLE:
+
+  firefox examples/EXAMPLE-html/index.html
+
+See the "HACKING" file for information about the development of this
+program.
+
+The full git history of this project is available at
+https://ftp.gnu.org/gnu/texinfo/texinfo-gsoc_2017.git-bundle
+
+Once downloaded, you can open a git repository with its contents with 
+the following commands:
+
+git clone texinfo-gsoc_2017.git-bundle texinfo-gsoc_2017
+git checkout gsoc_2017
