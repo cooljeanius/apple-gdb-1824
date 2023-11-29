@@ -3,10 +3,19 @@
 VPATH = @srcdir@
 srcdir = @srcdir@
 
+CFLAGS = @CFLAGS@
+
 EXECUTABLES = pthreads
 
 all info install-info dvi install uninstall installcheck check:
 	@echo "Nothing to be done for $@..."
+
+executables: $(EXECUTABLES)
+	if test -n "$(EXECUTABLES)"; then stat "$(EXECUTABLES)"; fi
+.PHONY: executables
+
+Makefile: config.status $(srcdir)/Makefile.in
+	CONFIG_FILES=Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
 
 # 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:

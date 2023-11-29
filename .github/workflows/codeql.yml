@@ -96,6 +96,8 @@ jobs:
             pushd src/gdb/ruby || exit; \
             (bundle install && bundle check) || ruby -cwv Gemfile || ruby -c Gemfile; \
             popd || exit; \
+          else \
+            echo "bundler missing; skipping checking Gemfile in src/gdb/ruby"; \
           fi; \
         elif test ${{ matrix.language }} = 'javascript-typescript' && test -x "$(which node)"; then \
           (find . -name '*.js' -print0 | xargs -0 node -c) || find . -name '*.js' -print -exec node -c '{}' ';'; \

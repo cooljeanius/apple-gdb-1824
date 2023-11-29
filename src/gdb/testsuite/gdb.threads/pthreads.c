@@ -1,4 +1,4 @@
-/* Pthreads test program.
+/* pthreads.c: Pthreads test program.
    Copyright 1996, 2002, 2003, 2004
    Free Software Foundation, Inc.
 
@@ -25,25 +25,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <unistd.h>
 
 /* Under OSF 2.0 & 3.0 and HPUX 10, the second arg of pthread_create
    is prototyped to be just a "pthread_attr_t", while under Solaris it
    is a "pthread_attr_t *".  Arg! */
 
-#if defined (__osf__) || defined (__hpux__)
-#define PTHREAD_CREATE_ARG2(arg) arg
-#define PTHREAD_CREATE_NULL_ARG2 null_attr
+#if defined(__osf__) || defined(__hpux__)
+# define PTHREAD_CREATE_ARG2(arg) arg
+# define PTHREAD_CREATE_NULL_ARG2 null_attr
 static pthread_attr_t null_attr;
 #else
-#define PTHREAD_CREATE_ARG2(arg) &arg
-#define PTHREAD_CREATE_NULL_ARG2 NULL
-#endif
+# define PTHREAD_CREATE_ARG2(arg) &arg
+# define PTHREAD_CREATE_NULL_ARG2 NULL
+#endif /* __osf__ || __hpux__ */
 
 static int verbose = 0;
 
+/* */
 static void
-common_routine (arg)
-     int arg;
+common_routine(int arg)
 {
   static int from_thread1;
   static int from_thread2;
@@ -69,92 +70,94 @@ common_routine (arg)
     full_coverage = 1;
 }
 
+/* */
 static void *
-thread1 (void *arg)
+thread1(void *arg)
 {
   int i;
   int z = 0;
 
-  if (verbose) printf ("thread1 (%0x) ; pid = %d\n", arg, getpid ());
-  for (i=1; i <= 10000000; i++)
+  if (verbose) printf("thread1 (%0x) ; pid = %d\n", arg, getpid());
+  for (i = 1; i <= 10000000; i++)
     {
-      if (verbose) printf("thread1 %d\n", pthread_self ());
+      if (verbose) printf("thread1 %d\n", pthread_self());
       z += i;
-      common_routine (1);
+      common_routine(1);
       sleep(1);
     }
-  return (void *) 0;
+  return (void *)0;
 }
 
+/* */
 static void *
-thread2 (void * arg)
+thread2(void *arg)
 {
   int i;
   int k = 0;
 
-  if (verbose) printf ("thread2 (%0x) ; pid = %d\n", arg, getpid ());
-  for (i=1; i <= 10000000; i++)
+  if (verbose) printf("thread2 (%0x) ; pid = %d\n", arg, getpid());
+  for (i = 1; i <= 10000000; i++)
     {
-      if (verbose) printf("thread2 %d\n", pthread_self ());
+      if (verbose) printf("thread2 %d\n", pthread_self());
       k += i;
-      common_routine (2);
+      common_routine(2);
       sleep(1);
     }
   sleep(100);
-  return (void *) 0;
+  return (void *)0;
 }
 
+/* */
 void
-foo (a, b, c)
-     int a, b, c;
+foo(int a, int b, int c)
 {
   int d, e, f;
 
   if (verbose) printf("a=%d\n", a);
 }
 
-main(argc, argv)
-     int argc;
-     char **argv;
+/* */
+int
+main(int argc, char **argv)
 {
   pthread_t tid1, tid2;
   int j;
   int t = 0;
-  void (*xxx) ();
+  void (*xxx)();
   pthread_attr_t attr;
 
-  if (verbose) printf ("pid = %d\n", getpid());
+  if (verbose) printf("pid = %d\n", getpid());
 
-  foo (1, 2, 3);
+  foo(1, 2, 3);
 
 #ifndef __osf__
-  if (pthread_attr_init (&attr))
+  if (pthread_attr_init(&attr))
     {
-      perror ("pthread_attr_init 1");
-      exit (1);
+      perror("pthread_attr_init 1");
+      exit(1);
     }
-#endif
+#endif /* !__osf__ */
 
 #ifdef PTHREAD_SCOPE_SYSTEM
-  if (pthread_attr_setscope (&attr, PTHREAD_SCOPE_SYSTEM))
+  if (pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM))
     {
-      perror ("pthread_attr_setscope 1");
-      exit (1);
+      perror("pthread_attr_setscope 1");
+      exit(1);
     }
-#endif
+#endif /* PTHREAD_SCOPE_SYSTEM */
 
-  if (pthread_create (&tid1, PTHREAD_CREATE_ARG2(attr), thread1, (void *) 0xfeedface))
+  if (pthread_create(&tid1, PTHREAD_CREATE_ARG2(attr), thread1, (void *) 0xfeedface))
     {
-      perror ("pthread_create 1");
-      exit (1);
+      perror("pthread_create 1");
+      exit(1);
     }
-  if (verbose) printf ("Made thread %d\n", tid1);
-  sleep (1);
+  if (verbose) printf("Made thread %d\n", tid1);
+  sleep(1);
 
-  if (pthread_create (&tid2, PTHREAD_CREATE_NULL_ARG2, thread2, (void *) 0xdeadbeef))
+  if (pthread_create(&tid2, PTHREAD_CREATE_NULL_ARG2, thread2, (void *) 0xdeadbeef))
     {
-      perror ("pthread_create 2");
-      exit (1);
+      perror("pthread_create 2");
+      exit(1);
     }
   if (verbose) printf("Made thread %d\n", tid2);
 
@@ -162,8 +165,8 @@ main(argc, argv)
 
   for (j = 1; j <= 10000000; j++)
     {
-      if (verbose) printf("top %d\n", pthread_self ());
-      common_routine (0);
+      if (verbose) printf("top %d\n", pthread_self());
+      common_routine(0);
       sleep(1);
       t += j;
     }
@@ -171,3 +174,4 @@ main(argc, argv)
   exit(0);
 }
 
+/* EOF */
