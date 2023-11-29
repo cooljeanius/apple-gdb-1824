@@ -745,13 +745,13 @@ coff_swap_aouthdr_out(bfd *abfd, void *input_data, void *output_data)
 }
 
 static void
-coff_swap_scnhdr_in(bfd *abfd, void *ext, void *in)
+coff_swap_scnhdr_in(bfd *abfd, void *ext, void *in_ptr)
 {
   SCNHDR *scnhdr_ext = (SCNHDR *)ext;
-  struct internal_scnhdr *scnhdr_int = (struct internal_scnhdr *)in;
+  struct internal_scnhdr *scnhdr_int = (struct internal_scnhdr *)in_ptr;
 
 #ifdef COFF_ADJUST_SCNHDR_IN_PRE
-  COFF_ADJUST_SCNHDR_IN_PRE(abfd, ext, in);
+  COFF_ADJUST_SCNHDR_IN_PRE(abfd, ext, in_ptr);
 #endif /* COFF_ADJUST_SCNHDR_IN_PRE */
   memcpy(scnhdr_int->s_name, scnhdr_ext->s_name,
          sizeof(scnhdr_int->s_name));
@@ -772,7 +772,7 @@ coff_swap_scnhdr_in(bfd *abfd, void *ext, void *in)
   scnhdr_int->s_align = (long)GET_SCNHDR_ALIGN(abfd, scnhdr_ext->s_align);
 #endif /* I960 */
 #ifdef COFF_ADJUST_SCNHDR_IN_POST
-  COFF_ADJUST_SCNHDR_IN_POST(abfd, ext, in);
+  COFF_ADJUST_SCNHDR_IN_POST(abfd, ext, in_ptr);
 #endif /* COFF_ADJUST_SCNHDR_IN_POST */
 }
 

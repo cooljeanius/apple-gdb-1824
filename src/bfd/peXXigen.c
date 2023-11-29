@@ -71,9 +71,9 @@
 /* NOTE: it is strange to be including an architecture specific header
  * in what is supposed to be general (to PE/PEI) code. However, that is
  * where the definitions are, and they do NOT vary per architecture
- * within PE/PEI, so we get them from there. FIXME: The lack of
- * variance is an assumption which may prove to be incorrect if new
- * PE/PEI targets are created.  */
+ * within PE/PEI, so it is okay for us to get them from there.
+ * FIXME: The lack of variance is an assumption which may prove to be
+ * incorrect if new PE/PEI targets are created.  */
 #ifdef COFF_WITH_pep
 # include "coff/ia64.h"
 #else
@@ -154,16 +154,17 @@ _bfd_XXi_swap_sym_in(bfd *abfd, void *ext1, void *in1)
 	  int unused_section_number = 0;
 	  asection *sec;
 	  char *name;
+          bfd_size_type namelen;
 
 	  for (sec = abfd->sections; sec; sec = sec->next)
 	    if (unused_section_number <= sec->target_index)
 	      unused_section_number = (sec->target_index + 1);
 
-	  name = (char *)bfd_alloc(abfd,
-                                   (bfd_size_type)strlen(in->n_name) + 10);
+	  namelen = ((bfd_size_type)strlen(in->n_name) + 10UL);
+	  name = (char *)bfd_alloc(abfd, namelen);
 	  if (name == NULL)
 	    return;
-	  strcpy(name, in->n_name);
+	  strncpy(name, in->n_name, namelen);
 	  sec = bfd_make_section_anyway(abfd, name);
 
 	  sec->vma = 0;
@@ -1691,7 +1692,7 @@ static const char * const tbl[] =
   "RESERVED1",
   "MIPS_JMPADDR16",
   "DIR64",
-  "HIGH3ADJ"
+  "HIGH3ADJ",
   "UNKNOWN",   /* MUST be last.  */
 };
 
