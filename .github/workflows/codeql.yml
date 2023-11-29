@@ -92,6 +92,11 @@ jobs:
       run: |
         if test ${{ matrix.language }} == 'ruby' && test -x "$(which ruby)"; then \
           ruby -cwv src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb || ruby -c src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb; \
+          if test -x "$(which bundle)"; then \
+            pushd src/gdb/ruby || exit; \
+            (bundle install && bundle check) || ruby -cwv Gemfile || ruby -c Gemfile; \
+            popd || exit; \
+          fi; \
         elif test ${{ matrix.language }} = 'javascript-typescript' && test -x "$(which node)"; then \
           (find . -name '*.js' -print0 | xargs -0 node -c) || find . -name '*.js' -print -exec node -c '{}' ';'; \
           if test -x "$(which npx)"; then \
@@ -178,6 +183,7 @@ jobs:
             echo "skipping testing ${dir}"; \
           fi; \
         done
+        find . -name conftest.c -exec rm -fv {} ';' || echo "no conftests left to remove"
 
     - name: Extra coverage build (C)
       if: matrix.language == 'c-cpp' && success()
@@ -187,6 +193,7 @@ jobs:
           pushd autogen; \
           if test -x ./configure; then \
             ./configure --disable-werror --enable-silent-rules --disable-option-checking CFLAGS="-w" || stat -t ./configure; \
+            find . -name conftest.c -exec rm -fv {} ';' || echo "no conftests left to remove"; \
           elif test -x ./config.status; then \
             ./config.status || stat -t ./config.status; \
           elif test -f Makefile; then \
@@ -205,6 +212,7 @@ jobs:
             if test ! -r Makefile && test -x ./configure; then \
               echo "configuring in ${subdir}"; \
               ./configure --disable-werror --enable-silent-rules --disable-option-checking CFLAGS="-w" || stat -t ./configure; \
+              find . -name conftest.c -exec rm -fv {} ';' || echo "no conftests left to remove"; \
             elif test ! -e Makefile && test -x ./config.status; then \
               echo "checking with ./config.status in ${subdir}"; \
               ./config.status CFLAGS="-w" || stat -t ./config.status; \
@@ -333,6 +341,16 @@ jobs:
           echo "One last attempt at compiling ${javafile}..."; \
           javac "${javafile}" || stat "${javafile}"; \
         done
+        if test -n "${javafile}"; then unset javafile; fi
+        # shellcheck disable=SC2044
+        if test -x "$(which kotlin)"; then \
+          for kotlinfile in $(find . -name '*.kts' -type f); do \
+            echo "One last attempt at compiling ${kotlinfile}..."; \
+            kotlin "${kotlinfile}" || stat "${kotlinfile}"; \
+          done; \
+        else \
+          echo "kotlin missing; skipping extra kotlin compilation attempts"; \
+        fi
 
     - name: Clang static analysis
       if: matrix.language == 'c-cpp' && success()
