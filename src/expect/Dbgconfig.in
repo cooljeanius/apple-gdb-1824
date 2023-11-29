@@ -95,6 +95,8 @@ AH_TOP([
 /* This file is only to be included by the Debugger itself. */
 /* Applications should only include Dbg.h. */
 
+#line 98 "Dbgconfig.in"
+
 /*
  * Check for headers
  */
@@ -109,6 +111,8 @@ AH_TOP([
 #undef HAVE_STRCHR
 ])
 AH_BOTTOM([
+#line 114 "Dbgconfig.in"
+
 #ifndef HAVE_STRCHR
 # define strchr(s,c) index(s,c)
 #endif /* !HAVE_STRCHR */

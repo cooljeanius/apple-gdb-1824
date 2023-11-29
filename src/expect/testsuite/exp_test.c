@@ -7,9 +7,8 @@
 
 #define ARRAYSIZE 128
 
-main (argc, argv)
-int argc;
-char *argv[];
+int
+main(int argc, char *argv[])
 {
   char line[ARRAYSIZE];
 
@@ -30,4 +29,5 @@ char *argv[];
       puts (line + 6);
     }
   } while (strncmp (line, "quit", 4));
+  return 0;
 }

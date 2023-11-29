@@ -23,7 +23,7 @@ jobs:
         if test ${{ matrix.compiler }} == clang; then \
           COMPILER_FORMULA="clang-build-analyzer"; \
         elif test ${{ matrix.compiler }} == gcc; then \
-          COMPILER_FORMULA="gcc@11"; \
+          COMPILER_FORMULA="gcc@10"; \
         else \
           COMPILER_FORMULA=""; \
         fi
