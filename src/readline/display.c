@@ -66,7 +66,6 @@
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic error "-Wformat-security"
 #  pragma GCC diagnostic warning "-Wformat=2"
-#  pragma GCC diagnostic warning "-Wsuggest-attribute=format"
 # endif /* gcc 4.6+ */
 #endif /* GCC */
 
@@ -1744,9 +1743,14 @@ rl_character_len(register int c, register int pos)
 /* How to print things in the "echo-area".  The prompt is treated as a
    mini-modeline. */
 
-#if defined (USE_VARARGS)
+#if defined(USE_VARARGS)
 int
-#if defined (PREFER_STDARG)
+#if defined(PREFER_STDARG)
+#if defined(ATTRIBUTE_PRINTF_1)
+ATTRIBUTE_PRINTF_1
+#elif defined(__GNUC__) && (__GNUC__ > 3)
+__attribute__((__format__(__printf__, 1, 2)))
+#endif
 rl_message (const char *format, ...)
 #else
 rl_message (va_alist)

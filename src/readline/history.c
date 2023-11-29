@@ -321,14 +321,18 @@ stifle_history(int max)
       /* This loses because we cannot free the data. */
       for (i = 0, j = ((int)history_length - max); i < j; i++)
 	{
-	  free (the_history[i]->line);
-	  free (the_history[i]);
+	  if (the_history == NULL)
+	    break;
+          if (the_history[i] != NULL)
+	    free(the_history[i]->line);
+	  free(the_history[i]);
 	}
 
       history_base = i;
-      for (j = 0, i = ((int)history_length - max); j < max; i++, j++)
+      for (j = 0, i = ((int)history_length - max); (j < max) && (the_history != NULL); i++, j++)
 	the_history[j] = the_history[i];
-      the_history[j] = (HIST_ENTRY *)NULL;
+      if (the_history != NULL)
+        the_history[j] = (HIST_ENTRY *)NULL;
       history_length = j;
     }
 
@@ -365,7 +369,10 @@ clear_history(void)
   /* This loses because we cannot free the data. */
   for (i = 0UL; i < history_length; i++)
     {
-      free(the_history[i]->line);
+      if (the_history == NULL)
+        break;
+      if (the_history[i] != NULL)
+        free(the_history[i]->line);
       free(the_history[i]);
       the_history[i] = (HIST_ENTRY *)NULL;
     }

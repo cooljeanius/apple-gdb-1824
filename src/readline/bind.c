@@ -825,7 +825,7 @@ parser_if(char *args)
   /* Handle "$if term=foo" and "$if mode=emacs" constructs.  If this
      isn't term=foo, or mode=emacs, then check to see if the first
      word in ARGS is the same as the value stored in rl_readline_name. */
-  if (rl_terminal_name && _rl_strnicmp(args, "term=", 5) == 0)
+  if (rl_terminal_name && _rl_strnicmp(args, "term=", 5UL) == 0)
     {
       char *tem, *tname;
 
@@ -844,7 +844,7 @@ parser_if(char *args)
       free(tname);
     }
 #if defined(VI_MODE)
-  else if (_rl_strnicmp(args, "mode=", 5) == 0)
+  else if (_rl_strnicmp(args, "mode=", 5UL) == 0)
     {
       int mode;
 
@@ -1369,7 +1369,7 @@ rl_variable_bind(const char *name, const char *value)
 static int
 sv_editmode(const char *value)
 {
-  if (_rl_strnicmp(value, "vi", 2) == 0)
+  if (_rl_strnicmp(value, "vi", 2UL) == 0)
     {
 #if defined(VI_MODE)
       _rl_keymap = vi_insertion_keymap;
@@ -1377,7 +1377,7 @@ sv_editmode(const char *value)
 #endif /* VI_MODE */
       return 0;
     }
-  else if (_rl_strnicmp(value, "emacs", 5) == 0)
+  else if (_rl_strnicmp(value, "emacs", 5UL) == 0)
     {
       _rl_keymap = emacs_standard_keymap;
       rl_editing_mode = emacs_mode;

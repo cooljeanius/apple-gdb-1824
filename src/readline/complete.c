@@ -1442,7 +1442,7 @@ _rl_free_match_list(char **matches)
   if (matches == 0)
     return;
 
-  for (i = 0; matches[i]; i++)
+  for (i = 0; (matches != NULL) && matches[i] && (i < INT_MAX); i++)
     free(matches[i]);
   free(matches);
 }

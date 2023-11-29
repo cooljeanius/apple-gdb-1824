@@ -344,7 +344,7 @@ ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wno-unused-parameter -Wshadow \
   -Wbool-conversion -Wbool-operation -Wnested-externs -Wabi \
   -Wint-in-bool-context -Wnull-dereference -Wmisleading-indentation \
   -Wc99-c11-compat -Wswitch-unreachable -Wswitch-bool -Wstring-compare \
-  -Wzero-length-bounds -fanalyzer],[GCC_LINT_FLAGS])dnl
+  -Wzero-length-bounds -Wformat=2 -fanalyzer],[GCC_LINT_FLAGS])dnl
 ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-ansi -Wno-long-long],
                                     [GCC_LINT_FLAGS])dnl
 

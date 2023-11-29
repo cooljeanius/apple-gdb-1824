@@ -11257,7 +11257,7 @@ for real_option in -Wall -Wextra -Wno-unused-parameter -Wshadow \
   -Wbool-conversion -Wbool-operation -Wnested-externs -Wabi \
   -Wint-in-bool-context -Wnull-dereference -Wmisleading-indentation \
   -Wc99-c11-compat -Wswitch-unreachable -Wswitch-bool -Wstring-compare \
-  -Wzero-length-bounds -fanalyzer; do
+  -Wzero-length-bounds -Wformat=2 -fanalyzer; do
   # Do the check with the no- prefix removed since gcc silently accepts
   # any -Wno-* option on purpose:
   case ${real_option} in

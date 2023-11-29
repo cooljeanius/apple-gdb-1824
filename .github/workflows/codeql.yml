@@ -96,7 +96,8 @@ jobs:
           (find . -name '*.js' -print0 | xargs -0 node -c) || find . -name '*.js' -print -exec node -c '{}' ';'; \
           if test -x "$(which npx)"; then \
             pushd src/texinfo/js || exit; \
-            npx eslint -c build-aux/eslint.json info.js -f unix || npx tsc --allowJs --checkJS --noEmit --lib dom,es2017 info.js || npx uglifyjs info.js -o info.min.js --mangle --compress || npx modernizr -c build-aux/modernizr.json; \
+            (npx eslint -c build-aux/eslint.json info.js -f unix) || (npx tsc --allowJs --checkJS --noEmit --lib dom,es2017 info.js) || (npx uglifyjs info.js -o info.min.js --mangle --compress) || (npx modernizr -c build-aux/modernizr.json) || (npx esparse info.js info.js.json) || (npx esvalidate info.js); \
+            echo "Done with texinfo javascript."; \
             popd || exit; \
           fi; \
         else \
@@ -108,7 +109,14 @@ jobs:
       uses: gradle/gradle-build-action@v2
     - name: Run build with Gradle Wrapper
       if: matrix.language == 'java-kotlin' && success()
-      run: ./gradlew build || ./gradlew assemble || stat ./gradlew
+      run: |
+        ./gradlew build || ./gradlew assemble || stat ./gradlew
+        pushd src/zlib/contrib/java/jzlib-1.1.2 || exit
+        ./gradlew build || ./gradlew assemble || stat ./gradlew
+        popd || exit
+        pushd src/gdb/testsuite/gdb.java || exit
+        ./gradlew build || ./gradlew assemble || stat ./gradlew
+        popd || exit
 
     # Can try bringing back autobuild for 'c-cpp' once darling has xcrun:
     - name: Autobuild
@@ -317,6 +325,9 @@ jobs:
     - name: Extra coverage build (Java)
       if: matrix.language == 'java-kotlin' && success()
       run: |
+        pushd src/zlib/contrib/java/jzlib-1.1.2 || exit
+        mvn test || mvn test-compile || mvn generate-test-sources || mvn process-test-sources || mvn generate-test-resources || mvn process-test-resources || mvn process-test-classes || mvn pre-integration-test || mvn integration-test || mvn post-integration-test || mvn verify || stat pom.xml
+        popd
         # shellcheck disable=SC2044
         for javafile in $(find . -name '*.java' -type f); do \
           echo "One last attempt at compiling ${javafile}..."; \
