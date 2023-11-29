@@ -15,12 +15,23 @@ jobs:
     - run: brew update
     - name: Install dependencies with Homebrew
       env:
+        HOMEBREW_NO_EMOJI: 1
         HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
         HOMEBREW_VERBOSE: 1
         HOMEBREW_VERBOSE_USING_DOTS: 1
       run: |
-        for brewformula in autogen objc-codegenutils objc-run objconv texi2html texinfo flex binutils pax deja-gnu expect guile jimtcl osxutils dmalloc fastjar gdb gettext gperf help2man ant-contrib findutils grep coreutils remake bison byacc texlive gawk ${{ matrix.compiler }}; do \
-          echo "formula to install: ${brewformula}"; \
+        if test ${{ matrix.compiler }} == clang; then \
+          COMPILER_FORMULA="clang-build-analyzer"; \
+        elif test ${{ matrix.compiler }} == gcc; then \
+          COMPILER_FORMULA="gcc@12"; \
+        else \
+          COMPILER_FORMULA=""; \
+        fi
+        for brewformula in autogen texi2html texinfo deja-gnu expect jimtcl osxutils dmalloc fastjar openssl@3 gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk "${COMPILER_FORMULA}"; do \
+          echo "formula to install next: ${brewformula}"; \
+          if test "${brewformula}" = "texlive"; then \
+            echo "(warning: this next one (texlive) might take awhile, but it is actually necessary, for documentation...)"; \
+          fi; \
           time brew install "${brewformula}"; \
         done
     - run: test -e ./.profile_generic && test -r ./.profile_generic && source ./.profile_generic && (env | uniq | sort | uniq)
