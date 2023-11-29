@@ -16,7 +16,8 @@ AC_REQUIRE([AC_PROG_EGREP])dnl
 AC_MSG_CHECKING([if running LynxOS])
 AC_CACHE_VAL([ac_cv_os_lynx],
 [AC_EGREP_CPP([LynxOSthing],
-[/*
+[#line 19 "acinclude.m4"
+/*
  * The old Lynx "cc" only defines "Lynx", but the newer one uses "__Lynx__"
  */
 #if defined(__Lynx__) || defined(Lynx)
@@ -29,7 +30,7 @@ if test "x${ac_cv_os_lynx}" = "xyes" ; then
   AC_DEFINE([LYNX],[1],[Define to 1 for LynxOS])
   AC_MSG_CHECKING([whether -mposix or -X is available])
   AC_CACHE_VAL([ac_cv_c_posix_flag],
-  [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]],[[
+  [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]],[[#line 33 "acinclude.m4"
   /*
    * This flag varies depending on how old the compiler is.
    * -X is for the old "cc" and "gcc" (based on 1.42).
@@ -59,9 +60,9 @@ AC_MSG_CHECKING([whether the compiler (${CC}) actually works])
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]],[[/* do NOT need anything here */]])],
         [c_compiles=yes],[c_compiles=no])
 # Now do the linking test:
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#line 63 "acinclude.m4"
 #include <stdio.h>
-]],[[
+]],[[#line 65 "acinclude.m4"
 int main(void) {
     return 0;
 }
@@ -576,6 +577,7 @@ if test "x${CYGWIN}" = "xyes"; then
 ac_cv_exeext=.exe
 else
 cat > ac_c_test.c << 'EOF'
+#line 580 "acinclude.m4"
 int main() {
 /* Nothing needed here */
 }
@@ -605,7 +607,7 @@ AC_SUBST([EXEEXT])dnl
 AC_DEFUN([CY_AC_INTTYPES_H],
 [AC_MSG_CHECKING([for inttypes.h])
 AC_CACHE_VAL([ac_cv_inttypes_h],
-  [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+  [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#line 610 "acinclude.m4"
   #include <sys/types.h>
   #include <inttypes.h>]],
   [[

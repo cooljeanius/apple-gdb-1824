@@ -87,7 +87,7 @@ jobs:
       if: matrix.language == 'c-cpp'
       run: sudo apt-get -y install autopoint gobjc clang
 
-    - name: Syntax check
+    - name: Syntax check (and similar stuff)
       if: matrix.language == 'ruby' || matrix.language == 'javascript-typescript'
       run: |
         if test ${{ matrix.language }} == 'ruby' && test -x "$(which ruby)"; then \
@@ -120,6 +120,7 @@ jobs:
             echo "found $(which bundle)..."; \
           fi; \
           (bundle install && bundle check) || ruby -cwv Gemfile || ruby -c Gemfile; \
+          (bundle clean && ls) || stat Gemfile || wc -l Gemfile || du Gemfile; \
           popd || exit; \
         elif test ${{ matrix.language }} = 'javascript-typescript' && test -x "$(which node)"; then \
           (find . -name '*.js' -print0 | xargs -0 node -c) || find . -name '*.js' -print -exec node -c '{}' ';'; \
@@ -207,7 +208,6 @@ jobs:
             echo "skipping testing ${dir}"; \
           fi; \
         done
-        find . -name conftest.c -exec rm -fv {} ';' || echo "no conftests left to remove"
 
     - name: Extra coverage build (C)
       if: matrix.language == 'c-cpp' && success()
@@ -217,7 +217,6 @@ jobs:
           pushd autogen; \
           if test -x ./configure && test -r ./configure && test -w .; then \
             ./configure --disable-werror --enable-silent-rules --disable-option-checking CFLAGS="-w" || stat -t ./configure; \
-            find . -name conftest.c -exec rm -fv {} ';' || echo "no conftests left to remove"; \
           elif test -x ./config.status && test -r ./config.status && test -w .; then \
             ./config.status || stat -t ./config.status; \
           elif test -f Makefile && test -r Makefile && test -w .; then \
@@ -236,7 +235,6 @@ jobs:
             if test ! -r Makefile && test -x ./configure; then \
               echo "configuring in ${subdir}"; \
               ./configure --disable-werror --enable-silent-rules --disable-option-checking CFLAGS="-w" || stat -t ./configure; \
-              find . -name conftest.c -exec rm -fv {} ';' || echo "no conftests left to remove"; \
             elif test ! -e Makefile && test -x ./config.status; then \
               echo "checking with ./config.status in ${subdir}"; \
               ./config.status CFLAGS="-w" || stat -t ./config.status; \
@@ -352,7 +350,6 @@ jobs:
           cp -v ./*.o .. || ls ./*.o || pwd; \
           popd; \
         fi
-        find . -name conftest.o -exec rm -fv {} ';' || echo "no conftests left to remove"
 
     - name: Extra coverage build (Java)
       if: matrix.language == 'java-kotlin' && success()

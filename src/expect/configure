@@ -6298,13 +6298,13 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 # Now do the linking test:
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-
+#line 63 "acinclude.m4"
 #include <stdio.h>
 
 int
 main (void)
 {
-
+#line 65 "acinclude.m4"
 int main(void) {
     return 0;
 }
@@ -7102,6 +7102,7 @@ then :
 else $as_nop
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+#line 19 "acinclude.m4"
 /*
  * The old Lynx "cc" only defines "Lynx", but the newer one uses "__Lynx__"
  */
@@ -9851,7 +9852,7 @@ then :
 else $as_nop
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-
+#line 610 "acinclude.m4"
   #include <sys/types.h>
   #include <inttypes.h>
 _ACEOF
@@ -12504,6 +12505,7 @@ if test "x${CYGWIN}" = "xyes"; then
 ac_cv_exeext=.exe
 else
 cat > ac_c_test.c << 'EOF'
+#line 580 "acinclude.m4"
 int main() {
 /* Nothing needed here */
 }
