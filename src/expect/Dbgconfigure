@@ -5249,7 +5249,7 @@ printf "%s\n" "#define HAVE_STRCHR 1" >>confdefs.h
 fi
 
 done
-if test "x${GITHUB_ACTIONS}" = "xtrue"; then
+if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
   export ac_cv_func_chown_works=yes
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for uid_t in sys/types.h" >&5
@@ -5420,7 +5420,7 @@ printf "%s\n" "#define HAVE_CHOWN 1" >>confdefs.h
 
 fi
 
-if test "x${GITHUB_ACTIONS}" = "xtrue"; then
+if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
   export ac_cv_func_fork_works=yes
   export ac_cv_func_vfork_works=yes
 fi

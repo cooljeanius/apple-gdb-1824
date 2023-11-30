@@ -71,11 +71,11 @@ AC_CHECK_LIB([m],[sqrt])dnl
 AC_CHECK_FUNCS([strchr],
                [AC_DEFINE([HAVE_STRCHR],[1],
                           [Define to 1 if you have the strchr function.])])
-if test "x${GITHUB_ACTIONS}" = "xtrue"; then
+if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
   export ac_cv_func_chown_works=yes
 fi
 AC_FUNC_CHOWN
-if test "x${GITHUB_ACTIONS}" = "xtrue"; then
+if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
   export ac_cv_func_fork_works=yes
   export ac_cv_func_vfork_works=yes
 fi
