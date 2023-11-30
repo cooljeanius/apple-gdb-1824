@@ -18,9 +18,6 @@ Makefile
 abcdefgh*
 addr2line
 ar
-arlex.c
-arparse.c
-arparse.h
 binutils-*.*.*/*
 arparse.output
 bfdtest1

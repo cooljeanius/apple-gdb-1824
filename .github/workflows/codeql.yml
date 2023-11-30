@@ -212,6 +212,8 @@ jobs:
     - name: Extra coverage build (C)
       if: matrix.language == 'c-cpp' && success()
       run: |
+        make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" || stat libcheckpoint
+        make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || stat macsbug
         cd src
         if test -d autogen && test -r autogen && test -w autogen; then \
           pushd autogen; \

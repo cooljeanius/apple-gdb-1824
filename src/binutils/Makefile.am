@@ -172,6 +172,7 @@ HFILES = \
 GENERATED_HFILES = arparse.h sysroff.h sysinfo.h defparse.h rcparse.h \
 	mcparse.h nlmheader.h
 BUILT_SOURCES = $(GENERATED_HFILES)
+noinst_HEADERS = $(HFILES) $(GENERATED_HFILES)
 
 CFILES = \
 	addr2line.c ar.c arsup.c bin2c.c binemul.c bucomm.c budemang.c \
@@ -705,7 +706,7 @@ dllwrap_DEPENDENCIES = $(LIBIBERTY_DEP) $(INTLDEP)
 
 EXTRA_DIST = arparse.c arparse.h arlex.c nlmheader.c sysinfo.c sysinfo.h \
 	syslex.c deflex.c defparse.h defparse.c rclex.c \
-	rcparse.h rcparse.c mcparse.h mcparse.c embedspu.sh
+	rcparse.h rcparse.c mcparse.h mcparse.c embedspu.sh $(BUILT_SOURCES)
 
 diststuff: $(EXTRA_DIST) info
 all: $(OFILES) info

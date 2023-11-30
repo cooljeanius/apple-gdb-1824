@@ -13,8 +13,8 @@ jobs:
 #     # 'Transformers::TravisCI::Scripts::Dependencies' dependencies are currently unsupported
 #     # 'compiler' was not transformed because there is no suitable equivalent in GitHub Actions
     - run: sudo apt-get update
-    - run: sudo apt-get install autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libopts25 libopts25-dev texinfo flex flex-doc binutils binutils-dev binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl guile-2.2 guile-2.2-dev guile-2.2-libs tclreadline m4 xutils-dev gfortran gfortran-multilib gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar gdb gdbserver autopoint gperf help2man libextutils-f77-perl emacs sharutils texlive latex2html ddd ${{ matrix.compiler }}
-    # stuff I still need to find the packages for: gnatbind gnatmake libguile dvips gfortran
+    - run: sudo apt-get install autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libopts25 libopts25-dev texinfo flex flex-doc binutils binutils-dev binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl guile-2.2 guile-2.2-dev guile-2.2-libs tclreadline m4 xutils-dev gfortran gfortran-multilib gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar gdb gdbserver autopoint gperf help2man libextutils-f77-perl emacs sharutils texlive latex2html ddd pydb xterm x11-utils ${{ matrix.compiler }}
+    # stuff I still need to find the packages for: gnatbind gnatmake libguile gfortran
     - run: test -e ./.profile_generic && source ./.profile_generic && (env | uniq | sort | uniq)
     - run: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: cd src && make configure-bfd

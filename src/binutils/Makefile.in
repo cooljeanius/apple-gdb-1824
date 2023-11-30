@@ -15,6 +15,7 @@
 @SET_MAKE@
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -121,7 +122,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_bison.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
-	$(am__configure_deps)
+	$(am__configure_deps) $(noinst_HEADERS)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/../mkinstalldirs
@@ -358,6 +359,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+HEADERS = $(noinst_HEADERS)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 am__recursive_targets = \
@@ -883,6 +885,7 @@ GENERATED_HFILES = arparse.h sysroff.h sysinfo.h defparse.h rcparse.h \
 	mcparse.h nlmheader.h
 
 BUILT_SOURCES = $(GENERATED_HFILES) $(GENERATED_CFILES)
+noinst_HEADERS = $(HFILES) $(GENERATED_HFILES)
 CFILES = \
 	addr2line.c ar.c arsup.c bin2c.c binemul.c bucomm.c budemang.c \
 	coffdump.c coffgrok.c cxxfilt.c \
@@ -1097,7 +1100,7 @@ dllwrap_LDADD = $(LIBIBERTY) $(INTLLIBS)
 dllwrap_DEPENDENCIES = $(LIBIBERTY_DEP) $(INTLDEP)
 EXTRA_DIST = arparse.c arparse.h arlex.c nlmheader.c sysinfo.c sysinfo.h \
 	syslex.c deflex.c defparse.h defparse.c rclex.c \
-	rcparse.h rcparse.c mcparse.h mcparse.c embedspu.sh
+	rcparse.h rcparse.c mcparse.h mcparse.c embedspu.sh $(BUILT_SOURCES)
 
 
 # We extract version from bfd/configure.ac, make sure to rerun configure
@@ -1859,7 +1862,7 @@ check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU check-TESTS
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-recursive
-all-am: Makefile $(PROGRAMS) $(SCRIPTS) config.h
+all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(HEADERS) config.h
 installdirs: installdirs-recursive
 installdirs-am:
 	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)"; do \
