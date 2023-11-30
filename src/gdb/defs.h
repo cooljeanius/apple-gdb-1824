@@ -56,14 +56,18 @@
 # endif /* !_SECURE__STDIO_H_ */
 #endif /* __NeXT__ */
 
+#ifndef __has_include
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
 #else
-# ifdef HAVE_SYS_TIME_H
+# if defined(HAVE_SYS_TIME_H) || __has_include(<sys/time.h>)
 #  include <sys/time.h>
 # else
-#  ifdef HAVE_TIME_H
+#  if defined(HAVE_TIME_H) || __has_include(<time.h>)
 #   include <time.h>
 #  else
 #   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -73,7 +77,8 @@
 # endif /* HAVE_SYS_TIME_H */
 #endif /* TIME_WITH_SYS_TIME */
 
-#if defined(HAVE_SYS_TYPES_H) || defined(STDC_HEADERS) || defined(__STDC__) || defined(__GNUC__) || defined(__APPLE__)
+#if defined(HAVE_SYS_TYPES_H) || defined(STDC_HEADERS) || defined(__STDC__) || \
+    defined(__GNUC__) || defined(__APPLE__) || __has_include(<sys/types.h>)
 # include <sys/types.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -81,14 +86,16 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H || STDC_HEADERS || __STDC__ || __GNUC__ || __APPLE__ */
 
-#if defined(HAVE_STDIO_H) || defined(STDC_HEADERS) || defined(__STDC__) || defined(__GNUC__) || defined(__APPLE__)
+#if defined(HAVE_STDIO_H) || defined(STDC_HEADERS) || defined(__STDC__) || \
+    defined(__GNUC__) || defined(__APPLE__) || __has_include(<stdio.h>)
 # include <stdio.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
  #  warning "defs.h expects <stdio.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
-#if defined(HAVE_ERRNO_H) || defined(STDC_HEADERS) || defined(__STDC__) || defined(__GNUC__) || defined(__APPLE__)
+#if defined(HAVE_ERRNO_H) || defined(STDC_HEADERS) || defined(__STDC__) || \
+    defined(__GNUC__) || defined(__APPLE__) || __has_include(<errno.h>)
 # include <errno.h> /* System call error return status.  */
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -102,10 +109,10 @@
  #  warning "defs.h expects <limits.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIMITS_H */
-#ifdef HAVE_STRING_H
+#if defined(HAVE_STRING_H) || __has_include(<string.h>)
 # include <string.h>
 #else
-# ifdef HAVE_STRINGS_H
+# if defined(HAVE_STRINGS_H) || __has_include(<strings.h>)
 #  include <strings.h>
 # else
 #  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -113,7 +120,7 @@
 #  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STRINGS_H */
 #endif /* HAVE_STRING_H */
-#if defined(HAVE_REGEX_H) || defined(__GNUC__)
+#if defined(HAVE_REGEX_H) || defined(__GNUC__) || __has_include(<regex.h>)
 # include <regex.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -121,7 +128,7 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_REGEX_H */
 
-#ifdef HAVE_STDDEF_H
+#if defined(HAVE_STDDEF_H) || __has_include(<stddef.h>)
 # include <stddef.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -129,7 +136,7 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDDEF_H */
 
-#ifdef HAVE_UNISTD_H
+#if defined(HAVE_UNISTD_H) || __has_include(<unistd.h>)
 # include <unistd.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -143,7 +150,7 @@
  * #endif
  * (Note: The above is NOT actually a preprocessor macro that can actually
  * be uncommented; rather, it is a weak attempt at humor) */
-#ifdef HAVE_STDINT_H
+#if defined(HAVE_STDINT_H) || __has_include(<stdint.h>)
 # include <stdint.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -168,10 +175,11 @@
 # define SEEK_CUR 1
 #endif /* !SEEK_CUR */
 
-#if defined(HAVE_STDARG_H) || defined(STDC_HEADERS) || defined(__STDC__) || defined(__GNUC__) || defined(__APPLE__)
+#if defined(HAVE_STDARG_H) || defined(STDC_HEADERS) || defined(__STDC__) || \
+    defined(__GNUC__) || defined(__APPLE__) || __has_include(<stdarg.h>)
 # include <stdarg.h> /* For va_list.  */
 #else
-# ifdef HAVE_VARARGS_H
+# if defined(HAVE_VARARGS_H) || __has_include(<varargs.h>)
 #  include <varargs.h>
 # else
 #  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -194,7 +202,7 @@
 
 /* NLS (from gettext/libintl) might be needed: */
 #ifdef ENABLE_NLS
-# ifdef HAVE_LIBINTL_H
+# if defined(HAVE_LIBINTL_H) || __has_include(<libintl.h>)
 #  include <libintl.h>
 #  define _(String) gettext (String)
 #  ifdef gettext_noop
@@ -218,10 +226,10 @@
 #   define bindtextdomain(Domainname, Dirname) while (0) /* nothing */
 #  endif /* !bindtextdomain */
 # else
-#  ifdef HAVE_LIBGETTEXT_H
+#  if defined(HAVE_LIBGETTEXT_H) || __has_include(<libgettext.h>)
 #   include <libgettext.h>
 #  else
-#   ifdef HAVE_GETTEXT_H
+#   if defined(HAVE_GETTEXT_H) || __has_include(<gettext.h>)
 #    include <gettext.h>
 #   else
 #    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -300,7 +308,7 @@ typedef bfd_vma CORE_ADDR;
 
 #ifndef PATH_MAX
 /* For MAXPATHLEN: */
-# ifdef HAVE_SYS_PARAM_H
+# if defined(HAVE_SYS_PARAM_H) || __has_include(<sys/param.h>)
 #  include <sys/param.h>
 # else
 #  ifndef MAXPATHLEN
@@ -1426,7 +1434,7 @@ extern void vwarning(const char *, va_list args) ATTR_FORMAT(printf, 1, 0);
 /* From other system libraries: */
 
 /* should have already been included above... can probably remove this: */
-#ifdef HAVE_STDDEF_H
+#if defined(HAVE_STDDEF_H) || __has_include(<stddef.h>)
 # include <stddef.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__STDDEF_H__)
@@ -1434,7 +1442,8 @@ extern void vwarning(const char *, va_list args) ATTR_FORMAT(printf, 1, 0);
 # endif /* __GNUC__ && !__STRICT_ANSI__ && !__STDDEF_H__ */
 #endif /* HAVE_STDDEF_H */
 
-#if defined(HAVE_STDLIB_H)  || defined(STDC_HEADERS) || defined(__STDC__)
+#if defined(HAVE_STDLIB_H)  || defined(STDC_HEADERS) || defined(__STDC__) || \
+    __has_include(<stdlib.h>)
 # include <stdlib.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -1517,7 +1526,7 @@ extern struct tm *localtime_r(const time_t *restrict, struct tm *restrict);
 # ifdef __GNUC__
 #  define alloca __builtin_alloca
 # else /* Not GNU C */
-#  ifdef HAVE_ALLOCA_H
+#  if defined(HAVE_ALLOCA_H) || __has_include(<alloca.h>)
 #   include <alloca.h>
 #  else
 #   ifdef _AIX

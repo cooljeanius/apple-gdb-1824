@@ -68,7 +68,7 @@ jobs:
         else \
           ls ./*.h || ls || pwd; \
         fi
-    - run: cd src && make all-binutils
+    - run: cd src && make -C binutils diststuff
     - run: cd src && make all-cgen
     - run: cd src && make all-libiberty
     - run: cd src && make all-intl
