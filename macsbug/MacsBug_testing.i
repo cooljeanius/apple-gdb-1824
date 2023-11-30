@@ -14,6 +14,12 @@
  file.
 */
 
+#if defined(__GNUC__) && (__GNUC__ >= 5)
+# pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
+#elif defined(__clang__)
+# pragma clang diagnostic ignored "-Wimplicit-function-declaration"
+#endif /* GCC 5+ || __clang__ */
+
 /*--------------------------------------------------------------------------------------*/
 
 static void prehook(char *arg, int from_tty)
@@ -142,6 +148,8 @@ static void testd(char *arg, int from_tty)
 
 extern int string_for_ptr(GDB_ADDRESS addr, char *theString, int maxLen,
 			  int not_guessable_obj);
+
+extern void *gdb_teste(GDB_ADDRESS addr); /* idk */
 
 static void teste(char *arg, int from_tty)
 {

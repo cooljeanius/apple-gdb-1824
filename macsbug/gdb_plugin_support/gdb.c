@@ -145,7 +145,7 @@ static void restore_user_classes(void *unused)
     Class_user *p;
 
     for (p = class_user_classes; p; p = p->next)  /* ...restore the original class	*/
-	p->c->class = class_user;
+	p->c->cmdclass = class_user;
 }
 
 
@@ -170,7 +170,7 @@ static void intercept_help_commands(char *arg, int from_tty)
     struct cleanup *old_chain = make_cleanup(restore_user_classes, NULL);
 
     for (p = class_user_classes; p; p = p->next)/* ...change the recorded cmds		*/
-	p->c->class = map_class_to_gdb(p->class);
+	p->c->cmdclass = map_class_to_gdb(p->class);
 
     gdb_help_command(arg, from_tty);		/* ...HELP is none the wiser!		*/
     do_cleanups(old_chain);
@@ -194,7 +194,7 @@ static void intercept_help_commands(char *arg, int from_tty)
 
 int gdb_initialize(void)
 {
-    static initialized = 0;
+    static int initialized = 0;
 
     if (!initialized) {
 	if (gdbarch_bfd_arch_info(current_gdbarch)->arch != bfd_arch_powerpc) {
@@ -210,6 +210,7 @@ int gdb_initialize(void)
 	/* gdb_private_interfaces.h.							*/
 
 	if (gdb_global_data_p == NULL) {
+            /* FIXME: lvalue casts are illegal: */
 	    gdb_global_data_p = (Gdb_Global_Data *)gdb_malloc(sizeof(Gdb_Global_Data));
 	    memset(gdb_global_data_p, 0, sizeof(Gdb_Global_Data));
 	}
@@ -333,8 +334,8 @@ void gdb_change_class(char *theCommand, Gdb_Cmd_Class newClass)
     /* (intercept_help_commands()) where we do the replacement before calling the real	*/
     /* gdb help.									*/
 
-    if (c->class != class_user)	{		/* if not class_user...			*/
-	c->class = map_class_to_gdb(newClass);	/* ...simply set the new class		*/
+    if (c->cmdclass != class_user)	{	/* if not class_user...			*/
+	c->cmdclass = map_class_to_gdb(newClass); /* ...simply set the new class	*/
 	return;
     }
 
@@ -1496,7 +1497,7 @@ char *gdb_address_symbol(GDB_ADDRESS addr, int onlyAddr, char *symbol, int maxLe
 
 int gdb_target_arch(void)
 {
-    return (gdbarch_tdep(current_gdbarch)->wordsize);
+    return (new_gdbarch_tdep(current_gdbarch)->wordsize);
 }
 
 /*--------------------------------------------------------------------------------------*/

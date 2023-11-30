@@ -40,7 +40,8 @@ char *default_help = "For internal use only -- do not use.";
  
 void __asciidump(char *arg, int from_tty)
 {
-    int  	  argc, i, k, n, offset, repeated, repcnt;
+    int  	  argc, i, k, n, repeated, repcnt;
+    long	  offset;
     GDB_ADDRESS   addr;
     char 	  *argv[5], tmpCmdLine[1024], addrexp[1024];
     unsigned char *c, x, data[65], prev[64];
@@ -333,7 +334,7 @@ static int is_printable_string(GDB_ADDRESS addr, String_Type *strType, char *the
     	(p_stringLen == '\n' || p_stringLen == '\t' || p_stringLen == '\r')) {
 	if (in_cstring_section)
 	    return (c_stringLen);
-	*strType != UNKNOWN_STRING_TYPE;
+	*strType != UNKNOWN_STRING_TYPE; /* FIXME: -Wunused-comparison */
 	if ((i = is_printable_string(addr, strType, tmpString, 1023)) &&
 	    *strType == IS_CSTRING && (p_stringLen + i + 1) == c_stringLen)
 	    return (c_stringLen);
@@ -1981,7 +1982,8 @@ static void __getenv(char *arg, int from_tty)
  
 void __hexdump(char *arg, int from_tty)
 {
-    int  	  argc, i, j, k, n, offset, repeated, repcnt, extra_space_ok, show_line, width;
+    int  	  argc, i, j, k, n, repeated, repcnt, extra_space_ok, show_line, width;
+    long	  offset;
     GDB_ADDRESS   addr;
     char 	  *start, *argv[5], tmpCmdLine[1024], addrexp[1024];
     unsigned char *c, x, data[1024], prev[1024], charline[1024];

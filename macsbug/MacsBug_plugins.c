@@ -501,28 +501,28 @@ static void dm(char *arg, int from_tty)
 	    gdb_printf("Displaying Binary32\n"
 	               " %.8llX: %.8lX = ", (long long)addr, (unsigned long)l);
 	Binary32:
-	    sprintf(line, "0x%X 4", (l >> 28) & 0x0F);
+	    sprintf(line, "0x%lX 4", (l >> 28) & 0x0F);
 	    __binary(line, from_tty);
 	    gdb_puts(" ");
-	    sprintf(line, "0x%X 4", (l >> 24) & 0x0F);
+	    sprintf(line, "0x%lX 4", (l >> 24) & 0x0F);
 	    __binary(line, from_tty);
 	    gdb_puts(" ");
-	    sprintf(line, "0x%X 4", (l >> 20) & 0x0F);
+	    sprintf(line, "0x%lX 4", (l >> 20) & 0x0F);
 	    __binary(line, from_tty);
 	    gdb_puts(" ");
-	    sprintf(line, "0x%X 4", (l >> 16) & 0x0F);
+	    sprintf(line, "0x%lX 4", (l >> 16) & 0x0F);
 	    __binary(line, from_tty);
 	    gdb_puts(" ");
-	    sprintf(line, "0x%X 4", (l >> 12) & 0x0F);
+	    sprintf(line, "0x%lX 4", (l >> 12) & 0x0F);
 	    __binary(line, from_tty);
 	    gdb_puts(" ");
-	    sprintf(line, "0x%X 4", (l >> 8) & 0x0F);
+	    sprintf(line, "0x%lX 4", (l >> 8) & 0x0F);
 	    __binary(line, from_tty);
 	    gdb_puts(" ");
-	    sprintf(line, "0x%X 4", (l >> 4) & 0x0F);
+	    sprintf(line, "0x%lX 4", (l >> 4) & 0x0F);
 	    __binary(line, from_tty);
 	    gdb_puts(" ");
-	    sprintf(line, "0x%X 4", l & 0x0F);
+	    sprintf(line, "0x%lX 4", l & 0x0F);
 	    __binary(line, from_tty);
 	    gdb_puts("\n");
     	    break;
@@ -1258,7 +1258,7 @@ static void il(char *arg, int from_tty)
     
     gdb_set_address("$dot", addr);
     
-    sprintf(tmpCmdLine, "0x%llx %ld", (long long)addr, n);
+    sprintf(tmpCmdLine, "0x%llx %d", (long long)addr, n);
     __disasm(tmpCmdLine, from_tty);
     
     gdb_set_int("$__lastcmd__", 11);
@@ -1704,14 +1704,14 @@ static void so_and_si(char *arg, int from_tty, int cmdNbr, char *cmdName, char *
     	__reset_current_function(NULL, 0);
 	
     if (macsbug_screen) {
-    	sprintf(line, "$pc %ld 1", n);
+    	sprintf(line, "$pc %d 1", n);
     	__disasm(line, from_tty);
     }
     
     redirect_stdout = gdb_open_output(stdout, so_si_filter, &prev_stdout);
     prev_stdout = gdb_redirect_output(redirect_stdout);
     
-    sprintf(line, "%s %ld\n", gdbCmd, step);
+    sprintf(line, "%s %d\n", gdbCmd, step);
     gdb_execute_command(line);
     
     gdb_close_output(redirect_stdout);
@@ -1720,7 +1720,7 @@ static void so_and_si(char *arg, int from_tty, int cmdNbr, char *cmdName, char *
     gdb_set_address("$dot", pc);
     
     if (!macsbug_screen) {
-    	sprintf(line, "$pc %ld", n);
+    	sprintf(line, "$pc %d", n);
     	__disasm(line, from_tty);
     }
     
@@ -1937,7 +1937,7 @@ static void td(char *arg, int from_tty)
     
     gdb_get_register("$cr", &cr);	/* cr is always 4 bytes				*/
     for (i = 28; i >= 0; i -= 4) {
-    	sprintf(tmpCmdLine, "0x%X 4", (cr >> i) & 0x0F);
+    	sprintf(tmpCmdLine, "0x%lX 4", (cr >> i) & 0x0F);
 	gdb_printf(" ");
 	__binary(tmpCmdLine, from_tty);
     }

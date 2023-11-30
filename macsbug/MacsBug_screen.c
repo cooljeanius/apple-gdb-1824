@@ -171,7 +171,7 @@ void screen_init(int top, int left, int bottom, int right)
     /* a 3-digit number.  That's 10 bytes per column.					*/
 
     max_y = max_rows;				/* this many rows			*/
-    max_x = max_cols + 10*max_cols;		/* worse possible case for width	*/
+    max_x = max_cols + (10 * max_cols);		/* worse possible case for width	*/
 
     screen       = gdb_malloc(max_y * max_x);	/* allocate the screen buffers...	*/
     prev_screen  = gdb_malloc(max_y * max_x);

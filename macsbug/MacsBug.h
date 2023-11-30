@@ -70,6 +70,7 @@ extern void __is_running(char *arg, int from_tty);
 extern void __print_1(char *arg, int from_tty);
 extern void __print_2(char *arg, int from_tty);
 extern void __print_4(char *arg, int from_tty);
+extern void __print_8(char *arg, int from_tty);
 extern void __reset_current_function(char *arg, int from_tty);
 extern void __window_size(char *arg, int from_tty);
 
