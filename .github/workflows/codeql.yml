@@ -156,7 +156,7 @@ jobs:
     - name: Manual build
       if: matrix.language == 'c-cpp'
       run: |
-        test -e ./.profile_generic && source ./.profile_generic
+        test -e ./.profile_generic && source ./.profile_generic && (env | uniq | sort | uniq)
         ./configure --enable-silent-rules
         make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi)
         cd src
