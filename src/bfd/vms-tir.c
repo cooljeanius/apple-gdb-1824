@@ -658,28 +658,29 @@ etir_ctl(bfd *abfd, int cmd, unsigned char *ptr)
       /* Define location: pop index, save location counter under index
 	 arg: none.  */
     case ETIR_S_C_CTL_DFLOC:
-      dummy = _bfd_vms_pop (abfd, NULL);
-      /* FIXME */
+      dummy = _bfd_vms_pop(abfd, NULL);
+      /* FIXME: ??? */
       break;
 
       /* Set location: pop index, restore location counter from index
 	 arg: none.  */
     case ETIR_S_C_CTL_STLOC:
-      dummy = _bfd_vms_pop (abfd, &psect);
-      /* FIXME */
+      dummy = _bfd_vms_pop(abfd, &psect);
+      /* FIXME: ??? */
       break;
 
       /* Stack defined location: pop index, push location counter from index
 	 arg: none.  */
     case ETIR_S_C_CTL_STKDL:
-      dummy = _bfd_vms_pop (abfd, &psect);
-      /* FIXME.  */
+      dummy = _bfd_vms_pop(abfd, &psect);
+      /* FIXME: ??? */
       break;
 
     default:
-      (*_bfd_error_handler) (_("reserved CTL cmd %d"), cmd);
+      (*_bfd_error_handler)(_("reserved CTL cmd %d"), cmd);
       break;
     }
+  (void)dummy;
   return TRUE;
 }
 

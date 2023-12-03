@@ -64,8 +64,10 @@
 /* the following three candidates were found:						*/
 
 extern int ui_file_magic;
-//extern int epoch_interface; /* in top.h */
-//extern char *rl_library_version;
+#if 0
+extern int epoch_interface; /* in top.h */
+extern char *rl_library_version;
+#endif /* 0 */
 
 /* Only the address if ui_file_magic is used by gdb, not what's in it.  It's not static	*/
 /* so we can get at it.  But there's no reason it shouldn't be static.  If someone ever */
@@ -124,7 +126,7 @@ typedef struct {				/* initialized by or initial value...	*/
 /* it as a pointer to the above struct.  In our code we use a more appropriate name for	*/
 /* the pointer:										*/
 
-#define gdb_global_data_p ((Gdb_Global_Data *)ui_file_magic)
+#define gdb_global_data_p (*(Gdb_Global_Data **)ui_file_magic)
 
 /* We still allow setting local statics from the gdb values, but we do it with the 	*/
 /* following macro.  It guarantees that we set the value on the first instance and then	*/

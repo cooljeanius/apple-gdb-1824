@@ -2862,8 +2862,8 @@ elf32_arm_final_link_relocate (reloc_howto_type *           howto,
   if (sym_hashes == NULL) {
     ; /* ??? */
   }
-  local_got_offsets = elf_local_got_offsets (input_bfd);
-  r_symndx = ELF32_R_SYM (rel->r_info);
+  local_got_offsets = elf_local_got_offsets(input_bfd);
+  r_symndx = ELF32_R_SYM(rel->r_info);
 
   if (globals->use_rel)
     {
@@ -5990,24 +5990,24 @@ elf32_arm_size_dynamic_sections (bfd * output_bfd ATTRIBUTE_UNUSED,
 }
 
 /* Finish up dynamic symbol handling.  We set the contents of various
-   dynamic sections here.  */
-
+ * dynamic sections here: */
 static bfd_boolean
-elf32_arm_finish_dynamic_symbol (bfd * output_bfd, struct bfd_link_info * info,
-				 struct elf_link_hash_entry * h, Elf_Internal_Sym * sym)
+elf32_arm_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
+                                struct elf_link_hash_entry *h,
+                                Elf_Internal_Sym *sym)
 {
-  bfd * dynobj;
+  bfd *dynobj;
   struct elf32_arm_link_hash_table *htab;
   struct elf32_arm_link_hash_entry *eh;
 
-  dynobj = elf_hash_table (info)->dynobj;
-  htab = elf32_arm_hash_table (info);
-  eh = (struct elf32_arm_link_hash_entry *) h;
+  dynobj = elf_hash_table(info)->dynobj;
+  htab = elf32_arm_hash_table(info);
+  eh = (struct elf32_arm_link_hash_entry *)h;
 
-  if (h->plt.offset != (bfd_vma) -1)
+  if (h->plt.offset != (bfd_vma)-1)
     {
-      asection * splt;
-      asection * srel;
+      asection *splt;
+      asection *srel;
       bfd_byte *loc;
       bfd_vma plt_index;
       Elf_Internal_Rela rel;
@@ -6015,26 +6015,25 @@ elf32_arm_finish_dynamic_symbol (bfd * output_bfd, struct bfd_link_info * info,
       /* This symbol has an entry in the procedure linkage table.  Set
 	 it up.  */
 
-      BFD_ASSERT (h->dynindx != -1);
+      BFD_ASSERT(h->dynindx != -1);
 
-      splt = bfd_get_section_by_name (dynobj, ".plt");
-      srel = bfd_get_section_by_name (dynobj, ".rel.plt");
-      BFD_ASSERT (splt != NULL && srel != NULL);
+      splt = bfd_get_section_by_name(dynobj, ".plt");
+      srel = bfd_get_section_by_name(dynobj, ".rel.plt");
+      BFD_ASSERT((splt != NULL) && (srel != NULL));
 
       /* Fill in the entry in the procedure linkage table.  */
       if (htab->symbian_p)
 	{
-	  unsigned i;
-	  for (i = 0; i < htab->plt_entry_size / 4; ++i)
-	    bfd_put_32 (output_bfd,
-			elf32_arm_symbian_plt_entry[i],
-			splt->contents + h->plt.offset + 4 * i);
+	  unsigned int i;
+	  for (i = 0; i < (htab->plt_entry_size / 4); ++i)
+	    bfd_put_32(output_bfd, elf32_arm_symbian_plt_entry[i],
+                       (splt->contents + h->plt.offset + (4 * i)));
 
-	  /* Fill in the entry in the .rel.plt section.  */
+	  /* Fill in the entry in the .rel.plt section: */
 	  rel.r_offset = (splt->output_section->vma
 			  + splt->output_offset
-			  + h->plt.offset + 4 * (i - 1));
-	  rel.r_info = ELF32_R_INFO (h->dynindx, R_ARM_GLOB_DAT);
+			  + h->plt.offset + (4 * (i - 1)));
+	  rel.r_info = ELF32_R_INFO(h->dynindx, R_ARM_GLOB_DAT);
 
 	  /* Get the index in the procedure linkage table which
 	     corresponds to this symbol.  This is the index of this symbol

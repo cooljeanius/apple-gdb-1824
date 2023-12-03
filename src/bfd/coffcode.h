@@ -5089,12 +5089,15 @@ coff_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
 
 /* This is stupid. This function should be a boolean predicate: */
 static long
-coff_canonicalize_reloc(bfd * abfd, sec_ptr section, arelent **relptr,
+coff_canonicalize_reloc(bfd *abfd, sec_ptr section, arelent **relptr,
 			asymbol **symbols)
 {
   arelent *tblptr = section->relocation;
   unsigned int count = 0U;
 
+  if (tblptr == NULL) {
+      (void)tblptr;
+  }
   if (section->flags & SEC_CONSTRUCTOR) {
       /* This section has relocs made up by us, they are not in the file,
        * so take them out of their chain and place them

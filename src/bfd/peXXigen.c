@@ -143,7 +143,7 @@ _bfd_XXi_swap_sym_in(bfd *abfd, void *ext1, void *in1)
 	    {
 	      if (strcmp(sec->name, in->n_name) == 0)
 		{
-		  in->n_scnum = sec->target_index;
+		  in->n_scnum = (short)sec->target_index;
 		  break;
 		}
 	    }
@@ -182,7 +182,7 @@ _bfd_XXi_swap_sym_in(bfd *abfd, void *ext1, void *in1)
 
 	  sec->target_index = unused_section_number;
 
-	  in->n_scnum = unused_section_number;
+	  in->n_scnum = (short)unused_section_number;
 	}
       in->n_sclass = C_STAT;
     }
@@ -1325,10 +1325,11 @@ pe_print_idata (bfd * abfd, void * vfile)
   return TRUE;
 }
 
+/* */
 static bfd_boolean
-pe_print_edata (bfd * abfd, void * vfile)
+pe_print_edata(bfd *abfd, void *vfile)
 {
-  FILE *file = (FILE *) vfile;
+  FILE *file = (FILE *)vfile;
   bfd_byte *data;
   asection *section;
   bfd_size_type datasize = 0;
@@ -1386,7 +1387,7 @@ pe_print_edata (bfd * abfd, void * vfile)
 	}
 
       dataoff = (addr - section->vma);
-      datasize = extra->DataDirectory[0].Size;
+      datasize = (bfd_size_type)extra->DataDirectory[0].Size;
       if (datasize > (section->size - dataoff))
 	{
 	  fprintf(file,
@@ -1407,20 +1408,20 @@ pe_print_edata (bfd * abfd, void * vfile)
                                  (file_ptr)dataoff, datasize))
     return FALSE;
 
-  /* Go get Export Directory Table.  */
-  edt.export_flags   = bfd_get_32 (abfd, data +  0);
-  edt.time_stamp     = bfd_get_32 (abfd, data +  4);
-  edt.major_ver      = bfd_get_16 (abfd, data +  8);
-  edt.minor_ver      = bfd_get_16 (abfd, data + 10);
-  edt.name           = bfd_get_32 (abfd, data + 12);
-  edt.base           = bfd_get_32 (abfd, data + 16);
-  edt.num_functions  = bfd_get_32 (abfd, data + 20);
-  edt.num_names      = bfd_get_32 (abfd, data + 24);
-  edt.eat_addr       = bfd_get_32 (abfd, data + 28);
-  edt.npt_addr       = bfd_get_32 (abfd, data + 32);
-  edt.ot_addr        = bfd_get_32 (abfd, data + 36);
+  /* Go get Export Directory Table: */
+  edt.export_flags  = bfd_get_32(abfd, data +  0);
+  edt.time_stamp    = bfd_get_32(abfd, data +  4);
+  edt.major_ver     = bfd_get_16(abfd, data +  8);
+  edt.minor_ver     = bfd_get_16(abfd, data + 10);
+  edt.name          = bfd_get_32(abfd, data + 12);
+  edt.base          = bfd_get_32(abfd, data + 16);
+  edt.num_functions = bfd_get_32(abfd, data + 20);
+  edt.num_names     = bfd_get_32(abfd, data + 24);
+  edt.eat_addr      = bfd_get_32(abfd, data + 28);
+  edt.npt_addr      = bfd_get_32(abfd, data + 32);
+  edt.ot_addr       = bfd_get_32(abfd, data + 36);
 
-  adj = section->vma - extra->ImageBase + dataoff;
+  adj = (bfd_signed_vma)(section->vma - extra->ImageBase + dataoff);
 
   /* Dump the EDT first.  */
   fprintf (file,
@@ -1493,7 +1494,7 @@ pe_print_edata (bfd * abfd, void * vfile)
       if (eat_member == 0)
 	continue;
 
-      if (eat_member - adj <= datasize)
+      if ((eat_member - adj) <= datasize)
 	{
 	  /* This rva is to a name (forwarding function) in our section.  */
 	  /* Should locate a function descriptor.  */
@@ -1571,7 +1572,7 @@ pe_print_pdata (bfd * abfd, void * vfile)
     return TRUE;
 
   stop = pei_section_data (abfd, section)->virt_size;
-  if ((stop % onaline) != 0)
+  if ((stop % (bfd_size_type)onaline) != 0)
     fprintf (file,
 	     _("Warning, .pdata section size (%ld) is not a multiple of %d\n"),
 	     (long) stop, onaline);
@@ -1600,7 +1601,7 @@ pe_print_pdata (bfd * abfd, void * vfile)
 
   start = 0;
 
-  for (i = start; i < stop; i += onaline)
+  for (i = start; i < stop; i += (bfd_size_type)onaline)
     {
       bfd_vma begin_addr;
       bfd_vma end_addr;
@@ -1772,7 +1773,7 @@ pe_print_reloc(bfd *abfd, void *vfile)
 	  fprintf (file, "\n");
 	}
 
-      i += size;
+      i += (bfd_size_type)size;
     }
   
   if (i > datasize) {

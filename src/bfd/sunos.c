@@ -405,58 +405,56 @@ sunos_canonicalize_dynamic_symtab(bfd *abfd, asymbol **storage)
 	}
     }
 
-  /* Return pointers to the dynamic asymbol structures.  */
+  /* Return pointers to the dynamic asymbol structures: */
   for (i = 0; i < info->dynsym_count; i++)
     *storage++ = (asymbol *)(info->canonical_dynsym + i);
   *storage = NULL;
 
-  return info->dynsym_count;
+  return (long)info->dynsym_count;
 }
 
-/* Return the amount of memory required for the dynamic relocs.  */
-
+/* Return the amount of memory required for the dynamic relocs: */
 static long
-sunos_get_dynamic_reloc_upper_bound (bfd *abfd)
+sunos_get_dynamic_reloc_upper_bound(bfd *abfd)
 {
   struct sunos_dynamic_info *info;
 
-  if (! sunos_read_dynamic_info (abfd))
+  if (!sunos_read_dynamic_info(abfd))
     return -1;
 
-  info = (struct sunos_dynamic_info *) obj_aout_dynamic_info (abfd);
-  if (! info->valid)
+  info = (struct sunos_dynamic_info *)obj_aout_dynamic_info(abfd);
+  if (!info->valid)
     {
       bfd_set_error (bfd_error_no_symbols);
       return -1;
     }
 
-  return (info->dynrel_count + 1) * sizeof (arelent *);
+  return (long)((info->dynrel_count + 1) * sizeof(arelent *));
 }
 
-/* Read in the dynamic relocs.  */
-
+/* Read in the dynamic relocs: */
 static long
-sunos_canonicalize_dynamic_reloc (bfd *abfd, arelent **storage, asymbol **syms)
+sunos_canonicalize_dynamic_reloc(bfd *abfd, arelent **storage, asymbol **syms)
 {
   struct sunos_dynamic_info *info;
   unsigned long i;
   bfd_size_type size;
 
-  /* Get the general dynamic information.  */
-  if (obj_aout_dynamic_info (abfd) == NULL)
+  /* Get the general dynamic information: */
+  if (obj_aout_dynamic_info(abfd) == NULL)
     {
-      if (! sunos_read_dynamic_info (abfd))
+      if (!sunos_read_dynamic_info(abfd))
 	return -1;
     }
 
-  info = (struct sunos_dynamic_info *) obj_aout_dynamic_info (abfd);
+  info = (struct sunos_dynamic_info *) obj_aout_dynamic_info(abfd);
   if (! info->valid)
     {
-      bfd_set_error (bfd_error_no_symbols);
+      bfd_set_error(bfd_error_no_symbols);
       return -1;
     }
 
-  /* Get the dynamic reloc information.  */
+  /* Get the dynamic reloc information: */
   if (info->dynrel == NULL)
     {
       size = (bfd_size_type) info->dynrel_count * obj_reloc_entry_size (abfd);

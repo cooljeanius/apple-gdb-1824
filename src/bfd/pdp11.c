@@ -1517,7 +1517,7 @@ NAME (aout, translate_symbol_table) (bfd *abfd,
       else
 	return FALSE;
 
-      in->symbol.value = GET_SWORD (abfd,  ext->e_value);
+      in->symbol.value = GET_SWORD(abfd, ext->e_value);
       /* TODO: is 0 a safe value here?  */
       in->desc = 0;
       in->other = 0;

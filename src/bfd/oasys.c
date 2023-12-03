@@ -392,30 +392,29 @@ oasys_slurp_section_data (bfd *const abfd)
 		section->flags = SEC_ALLOC;
 	      }
 
-	    dst_offset = H_GET_32 (abfd, record.data.addr);
+	    dst_offset = H_GET_32(abfd, record.data.addr);
 	    if (! per->had_vma)
 	      {
-		/* Take the first vma we see as the base.  */
+		/* Take the first vma we see as the base: */
 		section->vma = dst_offset;
 		per->had_vma = TRUE;
 	      }
 
 	    dst_offset -= section->vma;
 
-	    dst_base_ptr = oasys_per_section (section)->data;
-	    dst_ptr = oasys_per_section (section)->data +
-	      dst_offset;
+	    dst_base_ptr = oasys_per_section(section)->data;
+	    dst_ptr = (oasys_per_section(section)->data + dst_offset);
 
 	    if (src < end_src)
-	      section->flags |= SEC_LOAD | SEC_HAS_CONTENTS;
+	      section->flags |= (SEC_LOAD | SEC_HAS_CONTENTS);
 
 	    while (src < end_src)
 	      {
 		unsigned char mod_byte = *src++;
-		size_t gap = end_src - src;
+		ptrdiff_t gap = (end_src - src);
 
 		count = 8;
-		if (mod_byte == 0 && gap >= 8)
+		if ((mod_byte == 0) && (gap >= 8))
 		  {
 		    dst_ptr[0] = src[0];
 		    dst_ptr[1] = src[1];
@@ -459,7 +458,8 @@ oasys_slurp_section_data (bfd *const abfd)
 				  /* There is no symbol: */
 				  r->symbol = 0;
 				  /* Work out the howto: */
-				  abort();
+				  if (dst_base_ptr == NULL)
+				    abort();
 				  r->relent.address = (dst_ptr - dst_base_ptr);
 				  r->relent.howto = &howto_table[reloc >> 6];
 				  r->relent.sym_ptr_ptr = NULL;
@@ -492,7 +492,8 @@ oasys_slurp_section_data (bfd *const abfd)
 				  /* Get symbol number: */
 				  r->symbol = ((src[0] << 8) | src[1]);
 				  /* Work out the howto: */
-				  abort();
+				  if (dst_base_ptr == NULL)
+				    abort();
 
 				  r->relent.addend = 0;
 				  r->relent.address = (dst_ptr - dst_base_ptr);
@@ -919,34 +920,36 @@ oasys_write_header (bfd *abfd)
 				       description[0]));
 }
 
+/* */
 static bfd_boolean
-oasys_write_end (bfd *abfd)
+oasys_write_end(bfd *abfd)
 {
   oasys_end_record_type end;
   unsigned char null = 0;
 
   end.relb = RELOCATION_TYPE_ABS;
-  H_PUT_32 (abfd, abfd->start_address, end.entry);
-  H_PUT_16 (abfd, 0, end.fill);
+  H_PUT_32(abfd, abfd->start_address, end.entry);
+  H_PUT_16(abfd, 0, end.fill);
   end.zero = 0;
-  if (! oasys_write_record (abfd,
-			    oasys_record_is_end_enum,
-			    (oasys_record_union_type *) & end,
-			    sizeof (end)))
+  if (! oasys_write_record(abfd, oasys_record_is_end_enum,
+			   (oasys_record_union_type *)&end,
+			   sizeof(end)))
     return FALSE;
 
-  return bfd_bwrite ((void *) &null, (bfd_size_type) 1, abfd) == 1;
+  return (bfd_bwrite((void *)&null, (bfd_size_type)1UL, abfd) == 1);
 }
 
+/* */
 static int
-comp (const void * ap, const void * bp)
+comp(const void *ap, const void *bp)
 {
-  arelent *a = *((arelent **) ap);
-  arelent *b = *((arelent **) bp);
+  arelent *a = *((arelent **)ap);
+  arelent *b = *((arelent **)bp);
 
-  return a->address - b->address;
+  return (int)(a->address - b->address);
 }
 
+/* */
 static bfd_boolean
 oasys_write_data (bfd *abfd)
 {
@@ -963,9 +966,9 @@ oasys_write_data (bfd *abfd)
 	  arelent **p = s->orelocation;
 
 	  if (s->reloc_count != 0)
-	    /* Sort the reloc records so it's easy to insert the relocs into the
-	       data.  */
-	    qsort (s->orelocation, s->reloc_count, sizeof (arelent **), comp);
+	    /* Sort the reloc records so that it is easy to insert the relocs
+	     * into the data: */
+	    qsort(s->orelocation, s->reloc_count, sizeof(arelent **), comp);
 
 	  current_byte_index = 0;
 	  processed_data.relb = s->target_index | RELOCATION_TYPE_REL;

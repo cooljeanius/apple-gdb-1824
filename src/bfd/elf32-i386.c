@@ -2494,7 +2494,7 @@ elf_i386_relocate_section (bfd *output_bfd,
 	      if (outrel.r_offset == (bfd_vma) -1)
 		skip = TRUE;
 	      else if (outrel.r_offset == (bfd_vma) -2)
-		skip = TRUE, relocate = TRUE;
+		skip = relocate = TRUE;
 	      outrel.r_offset += (input_section->output_section->vma
 				  + input_section->output_offset);
 
@@ -3163,7 +3163,7 @@ elf_i386_finish_dynamic_symbol (bfd *output_bfd,
 
 	      rel.r_offset = (htab->splt->output_section->vma
 			      + htab->splt->output_offset
-			      + h->plt.offset + 2),
+			      + h->plt.offset + 2);
 	      rel.r_info = ELF32_R_INFO (htab->hgot->indx, R_386_32);
 	      bfd_elf32_swap_reloc_out (output_bfd, &rel, loc);
 

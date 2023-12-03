@@ -2375,35 +2375,34 @@ elf64_alpha_calc_got_offsets(struct bfd_link_info *info)
     }
 }
 
-/* Constructs the gots.  */
-
+/* Constructs the gots: */
 static bfd_boolean
-elf64_alpha_size_got_sections (struct bfd_link_info *info)
+elf64_alpha_size_got_sections(struct bfd_link_info *info)
 {
   bfd *i, *got_list, *cur_got_obj = NULL;
   int something_changed = 0;
 
-  got_list = alpha_elf_hash_table (info)->got_list;
+  got_list = alpha_elf_hash_table(info)->got_list;
 
   /* On the first time through, pretend we have an existing got list
      consisting of all of the input files.  */
   if (got_list == NULL)
     {
-      for (i = info->input_bfds; i ; i = i->link_next)
+      for (i = info->input_bfds; i; i = i->link_next)
 	{
-	  bfd *this_got = alpha_elf_tdata (i)->gotobj;
+	  bfd *this_got = alpha_elf_tdata(i)->gotobj;
 	  if (this_got == NULL)
 	    continue;
 
-	  /* We are assuming no merging has yet occurred.  */
-	  BFD_ASSERT (this_got == i);
+	  /* We are assuming no merging has yet occurred: */
+	  BFD_ASSERT(this_got == i);
 
-          if (alpha_elf_tdata (this_got)->total_got_size > MAX_GOT_SIZE)
+          if (alpha_elf_tdata(this_got)->total_got_size > MAX_GOT_SIZE)
 	    {
 	      /* Yikes! A single object file has too many entries.  */
 	      (*_bfd_error_handler)
 	        (_("%B: .got subsegment exceeds 64K (size %d)"),
-	         i, alpha_elf_tdata (this_got)->total_got_size);
+	         i, alpha_elf_tdata(this_got)->total_got_size);
 	      return FALSE;
 	    }
 
@@ -2414,13 +2413,13 @@ elf64_alpha_size_got_sections (struct bfd_link_info *info)
 	  cur_got_obj = this_got;
 	}
 
-      /* Strange degenerate case of no got references.  */
+      /* Strange degenerate case of no got references: */
       if (got_list == NULL)
 	return TRUE;
 
-      alpha_elf_hash_table (info)->got_list = got_list;
+      alpha_elf_hash_table(info)->got_list = got_list;
 
-      /* Force got offsets to be recalculated.  */
+      /* Force got offsets to be recalculated: */
       something_changed = 1;
     }
 
@@ -2428,9 +2427,9 @@ elf64_alpha_size_got_sections (struct bfd_link_info *info)
   i = alpha_elf_tdata(cur_got_obj)->got_link_next;
   while (i != NULL)
     {
-      if (elf64_alpha_can_merge_gots (cur_got_obj, i))
+      if (elf64_alpha_can_merge_gots(cur_got_obj, i))
 	{
-	  elf64_alpha_merge_gots (cur_got_obj, i);
+	  elf64_alpha_merge_gots(cur_got_obj, i);
 
 	  alpha_elf_tdata(i)->got->size = 0;
 	  i = alpha_elf_tdata(i)->got_link_next;
@@ -2447,8 +2446,8 @@ elf64_alpha_size_got_sections (struct bfd_link_info *info)
 
   /* Once the gots have been merged, fill in the got offsets for
      everything therein.  */
-  if (1 || something_changed)
-    elf64_alpha_calc_got_offsets (info);
+  if ((info != NULL) || something_changed)
+    elf64_alpha_calc_got_offsets(info);
 
   return TRUE;
 }
@@ -3705,16 +3704,16 @@ elf64_alpha_relax_section (bfd *abfd, asection *sec,
 	  continue;
 	}
 
-      /* Get the value of the symbol referred to by the reloc.  */
+      /* Get the value of the symbol referred to by the reloc: */
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  /* A local symbol.  */
+	  /* A local symbol: */
 	  Elf_Internal_Sym *isym;
 
-	  /* Read this BFD's local symbols.  */
+	  /* Read this BFD's local symbols: */
 	  if (isymbuf == NULL)
 	    {
-	      isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
+	      isymbuf = (Elf_Internal_Sym *)symtab_hdr->contents;
 	      if (isymbuf == NULL)
 		isymbuf = bfd_elf_get_elf_syms (abfd, symtab_hdr,
 						symtab_hdr->sh_info, 0,
@@ -4391,7 +4390,7 @@ elf64_alpha_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 		BFD_ASSERT(h->root.dynindx != -1);
 		dynindx = h->root.dynindx;
 		dynaddend = addend;
-		addend = 0, value = 0;
+		addend = value = 0;
 	      }
 	    else if (r_type == R_ALPHA_DTPREL64)
 	      {

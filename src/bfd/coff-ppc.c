@@ -1362,8 +1362,8 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 	    if (h == 0)
 	      {
-		/* It is a file local symbol.  */
-		sym = syms + symndx;
+		/* It is a file local symbol: */
+		sym = (syms + symndx);
 		name = sym->_n._n_name;
 	      }
 	    else
@@ -1383,8 +1383,7 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		    struct coff_link_hash_entry *myh;
 
 		    myh = coff_link_hash_lookup(coff_hash_table(info),
-                                                target,
-                                                FALSE, FALSE, TRUE);
+                                                target, FALSE, FALSE, TRUE);
 		    if (myh == 0)
 		      {
 			/* Missing magic cookies.  Something is very

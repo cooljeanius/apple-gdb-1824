@@ -150,7 +150,7 @@ bfd_coff_reloc16_relax_section(bfd *abfd, asection *input_section,
     return FALSE;
 
   reloc_vector = (arelent **)bfd_malloc((bfd_size_type)reloc_size);
-  if (!reloc_vector && reloc_size > 0)
+  if (!reloc_vector && (reloc_size > 0))
     return FALSE;
 
   /* Get the relocs and think about them: */
@@ -186,8 +186,8 @@ bfd_coff_reloc16_relax_section(bfd *abfd, asection *input_section,
       /* Allocate and initialize the shrinks array for this section.
        * The last element is used as an accumulator of shrinks.  */
       amt = (bfd_size_type)(reloc_count + 1L);
-      amt *= sizeof(unsigned);
-      shrinks = (unsigned *)bfd_zmalloc(amt);
+      amt *= sizeof(unsigned int);
+      shrinks = (unsigned int *)bfd_zmalloc(amt);
 
       /* Loop until nothing changes in this section: */
       do {

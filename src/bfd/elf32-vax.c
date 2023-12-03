@@ -1651,7 +1651,7 @@ elf_vax_relocate_section (bfd *output_bfd,
 	      if (outrel.r_offset == (bfd_vma) -1)
 		skip = TRUE;
 	      if (outrel.r_offset == (bfd_vma) -2)
-		skip = TRUE, relocate = TRUE;
+		skip = relocate = TRUE;
 	      outrel.r_offset += (input_section->output_section->vma
 				  + input_section->output_offset);
 

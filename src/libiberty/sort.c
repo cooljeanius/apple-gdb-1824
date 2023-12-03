@@ -71,7 +71,7 @@ void sort_pointers(size_t n, void **pointers, void **work)
     abort();
 
   /* Figure out the endianness of the machine.  */
-  for (i = 0, j = 0; i < sizeof(size_t); ++i)
+  for (i = j = 0; i < sizeof(size_t); ++i)
     {
       j *= (UCHAR_MAX + 1);
       j += i;

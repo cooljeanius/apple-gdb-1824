@@ -547,7 +547,7 @@ versados_scan(bfd *abfd)
 	}
     }
 
-  abfd->symcount += nsecs;
+  abfd->symcount += (unsigned int)nsecs;
 
   amt = abfd->symcount;
   amt *= sizeof(asymbol);

@@ -726,73 +726,73 @@ hppa_build_one_stub (struct bfd_hash_entry *bh, void *in_arg)
 		   + hsh->target_section->output_offset
 		   + hsh->target_section->output_section->vma);
 
-      val = hppa_field_adjust (sym_value, 0, e_lrsel);
-      insn = hppa_rebuild_insn ((int) LDIL_R1, val, 21);
-      bfd_put_32 (stub_bfd, insn, loc);
+      val = hppa_field_adjust(sym_value, 0, e_lrsel);
+      insn = hppa_rebuild_insn((int)LDIL_R1, val, 21);
+      bfd_put_32(stub_bfd, insn, loc);
 
-      val = hppa_field_adjust (sym_value, 0, e_rrsel) >> 2;
-      insn = hppa_rebuild_insn ((int) BE_SR4_R1, val, 17);
-      bfd_put_32 (stub_bfd, insn, loc + 4);
+      val = (hppa_field_adjust(sym_value, 0, e_rrsel) >> 2);
+      insn = hppa_rebuild_insn((int)BE_SR4_R1, val, 17);
+      bfd_put_32(stub_bfd, insn, (loc + 4));
 
       size = 8;
       break;
 
     case hppa_stub_long_branch_shared:
-      /* Branches are relative.  This is where we are going to.  */
+      /* Branches are relative.  This is where we are going to: */
       sym_value = (hsh->target_value
 		   + hsh->target_section->output_offset
 		   + hsh->target_section->output_section->vma);
 
-      /* And this is where we are coming from, more or less.  */
+      /* ...and this is where we are coming from, more or less: */
       sym_value -= (hsh->stub_offset
 		    + stub_sec->output_offset
 		    + stub_sec->output_section->vma);
 
-      bfd_put_32 (stub_bfd, (bfd_vma) BL_R1, loc);
-      val = hppa_field_adjust (sym_value, (bfd_signed_vma) -8, e_lrsel);
-      insn = hppa_rebuild_insn ((int) ADDIL_R1, val, 21);
-      bfd_put_32 (stub_bfd, insn, loc + 4);
+      bfd_put_32(stub_bfd, (bfd_vma)BL_R1, loc);
+      val = hppa_field_adjust(sym_value, (bfd_signed_vma)-8, e_lrsel);
+      insn = hppa_rebuild_insn((int)ADDIL_R1, val, 21);
+      bfd_put_32(stub_bfd, insn, (loc + 4));
 
-      val = hppa_field_adjust (sym_value, (bfd_signed_vma) -8, e_rrsel) >> 2;
-      insn = hppa_rebuild_insn ((int) BE_SR4_R1, val, 17);
-      bfd_put_32 (stub_bfd, insn, loc + 8);
+      val = (hppa_field_adjust(sym_value, (bfd_signed_vma)-8, e_rrsel) >> 2);
+      insn = hppa_rebuild_insn((int)BE_SR4_R1, val, 17);
+      bfd_put_32(stub_bfd, insn, (loc + 8));
       size = 12;
       break;
 
     case hppa_stub_import:
     case hppa_stub_import_shared:
       off = hsh->hh->eh.plt.offset;
-      if (off >= (bfd_vma) -2)
-	abort ();
+      if (off >= (bfd_vma)-2)
+	abort();
 
-      off &= ~ (bfd_vma) 1;
+      off &= ~(bfd_vma)1;
       sym_value = (off
 		   + htab->splt->output_offset
 		   + htab->splt->output_section->vma
-		   - elf_gp (htab->splt->output_section->owner));
+		   - elf_gp(htab->splt->output_section->owner));
 
       insn = ADDIL_DP;
 #if R19_STUBS
       if (hsh->stub_type == hppa_stub_import_shared)
 	insn = ADDIL_R19;
-#endif
-      val = hppa_field_adjust (sym_value, 0, e_lrsel),
-      insn = hppa_rebuild_insn ((int) insn, val, 21);
-      bfd_put_32 (stub_bfd, insn, loc);
+#endif /* R19_STUBS */
+      val = hppa_field_adjust(sym_value, 0, e_lrsel);
+      insn = hppa_rebuild_insn((int)insn, val, 21);
+      bfd_put_32(stub_bfd, insn, loc);
 
       /* It is critical to use lrsel/rrsel here because we are using
 	 two different offsets (+0 and +4) from sym_value.  If we use
 	 lsel/rsel then with unfortunate sym_values we will round
 	 sym_value+4 up to the next 2k block leading to a mis-match
 	 between the lsel and rsel value.  */
-      val = hppa_field_adjust (sym_value, 0, e_rrsel);
-      insn = hppa_rebuild_insn ((int) LDW_R1_R21, val, 14);
-      bfd_put_32 (stub_bfd, insn, loc + 4);
+      val = hppa_field_adjust(sym_value, 0, e_rrsel);
+      insn = hppa_rebuild_insn((int)LDW_R1_R21, val, 14);
+      bfd_put_32(stub_bfd, insn, (loc + 4));
 
       if (htab->multi_subspace)
 	{
-	  val = hppa_field_adjust (sym_value, (bfd_signed_vma) 4, e_rrsel);
-	  insn = hppa_rebuild_insn ((int) LDW_R1_DLT, val, 14);
+	  val = hppa_field_adjust(sym_value, (bfd_signed_vma)4L, e_rrsel);
+	  insn = hppa_rebuild_insn((int)LDW_R1_DLT, val, 14);
 	  bfd_put_32 (stub_bfd, insn, loc + 8);
 
 	  bfd_put_32 (stub_bfd, (bfd_vma) LDSID_R21_R1, loc + 12);
@@ -1661,10 +1661,10 @@ elf32_hppa_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 
       case 396:		/* Linux/hppa */
 	/* pr_cursig */
-	elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
+	elf_tdata(abfd)->core_signal = bfd_get_16(abfd, note->descdata + 12);
 
 	/* pr_pid */
-	elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 24);
+	elf_tdata(abfd)->core_pid = bfd_get_32(abfd, note->descdata + 24);
 
 	/* pr_reg */
 	offset = 72;
@@ -1697,10 +1697,10 @@ elf32_hppa_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
      onto the end of the args in some (at least one anyway)
      implementations, so strip it off if it exists.  */
   {
-    char *command = elf_tdata (abfd)->core_command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    size_t n = strlen(command);
 
-    if (0 < n && command[n - 1] == ' ')
+    if ((n > 0UL) && (command[n - 1] == ' '))
       command[n - 1] = '\0';
   }
 

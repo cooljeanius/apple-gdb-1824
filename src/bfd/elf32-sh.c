@@ -2229,7 +2229,7 @@ sh_elf_relax_section (bfd *abfd, asection *sec,
       /* Read this BFD's symbols if we haven't done so already.  */
       if (isymbuf == NULL && symtab_hdr->sh_info != 0)
 	{
-	  isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
+	  isymbuf = (Elf_Internal_Sym *)symtab_hdr->contents;
 	  if (isymbuf == NULL)
 	    isymbuf = bfd_elf_get_elf_syms (abfd, symtab_hdr,
 					    symtab_hdr->sh_info, 0,
@@ -4923,7 +4923,7 @@ sh_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      if (outrel.r_offset == (bfd_vma) -1)
 		skip = TRUE;
 	      else if (outrel.r_offset == (bfd_vma) -2)
-		skip = TRUE, relocate = TRUE;
+		skip = relocate = TRUE;
 	      outrel.r_offset += (input_section->output_section->vma
 				  + input_section->output_offset);
 
@@ -5754,7 +5754,7 @@ sh_elf_get_relocated_section_contents (bfd *output_bfd,
 
       if (symtab_hdr->sh_info != 0)
 	{
-	  isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
+	  isymbuf = (Elf_Internal_Sym *)symtab_hdr->contents;
 	  if (isymbuf == NULL)
 	    isymbuf = bfd_elf_get_elf_syms (input_bfd, symtab_hdr,
 					    symtab_hdr->sh_info, 0,

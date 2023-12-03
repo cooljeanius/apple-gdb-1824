@@ -23,7 +23,11 @@ length, the function returns @var{string}.
 #include <stddef.h>
 
 extern char *strchr(const char *, int);
+#ifdef __STDC__
+extern int strncmp(const char *, const char *, size_t);
+#else
 extern int strncmp(const void *, const void *, size_t);
+#endif /* __STDC__ */
 extern size_t strlen(const char *);
 
 char *

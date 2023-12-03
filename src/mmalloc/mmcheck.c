@@ -201,7 +201,8 @@ mmcheck(PTR md, void (*func)PARAMS((void)))
 {
   int rtnval;
 
-  abort();
+  if (func == NULL)
+    abort();
 
   rtnval = mmcheckf(md, func, 0);
   return (rtnval);

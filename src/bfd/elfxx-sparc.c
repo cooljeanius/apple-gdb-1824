@@ -2688,7 +2688,7 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      if (outrel.r_offset == (bfd_vma) -1)
 		skip = TRUE;
 	      else if (outrel.r_offset == (bfd_vma) -2)
-		skip = TRUE, relocate = TRUE;
+		skip = relocate = TRUE;
 	      outrel.r_offset += (input_section->output_section->vma
 				  + input_section->output_offset);
 
@@ -2730,7 +2730,7 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 		     FIXME: Add code tracking needed dynamic relocs as
 		     e.g. i386 has.  */
 		  if (h->dynindx == -1)
-		    skip = TRUE, relocate = TRUE;
+		    skip = relocate = TRUE;
 		  break;
                 default:
                   break;
@@ -2983,7 +2983,7 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      if (outrel.r_offset == (bfd_vma) -1)
 		skip = TRUE;
 	      else if (outrel.r_offset == (bfd_vma) -2)
-		skip = TRUE, relocate = TRUE;
+		skip = relocate = TRUE;
 	      outrel.r_offset += (input_section->output_section->vma
 				  + input_section->output_offset);
 	      if (skip)

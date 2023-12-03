@@ -1589,9 +1589,8 @@ nlm_external_reloc_compare (const void *p1, const void *p2)
    imports are both obtained from the list of relocs attached to each
    section.  The exports and debugging records are obtained from the
    list of outsymbols.  */
-
 bfd_boolean
-nlm_write_object_contents (bfd *abfd)
+nlm_write_object_contents(bfd *abfd)
 {
   asection *sec;
   bfd_boolean(*write_import_func)(bfd *, asection *, arelent *);
@@ -1760,8 +1759,8 @@ nlm_write_object_contents (bfd *abfd)
   sym_ptr_ptr = bfd_get_outsymbols(abfd);
   if (sym_ptr_ptr != NULL)
     {
-      bfd_vma (*get_public_offset_func) (bfd *, asymbol *);
-      bfd_boolean (*write_export_func) (bfd *, asymbol *, bfd_vma);
+      bfd_vma (*get_public_offset_func)(bfd *, asymbol *);
+      bfd_boolean (*write_export_func)(bfd *, asymbol *, bfd_vma);
 
       asymbol **sym_end;
 
@@ -1802,12 +1801,12 @@ nlm_write_object_contents (bfd *abfd)
 		}
 	      else if (sec->flags & (SEC_DATA | SEC_ALLOC))
 		{
-		  /* SEC_ALLOC is for the .bss section.  */
+		  /* SEC_ALLOC is for the .bss section: */
 		  offset -= nlm_get_data_low (abfd);
 		}
 	      else
 		{
-		  /* We can't handle an exported symbol that is not in
+		  /* We cannot handle an exported symbol that is not in
 		     the code or data segment.  */
 		  bfd_set_error (bfd_error_invalid_operation);
 		  goto error_return;
@@ -1821,7 +1820,7 @@ nlm_write_object_contents (bfd *abfd)
 	    }
 	  else
 	    {
-	      len = strlen (sym->name);
+	      len = (bfd_byte)strlen(sym->name);
 	      if ((bfd_bwrite(&len, (bfd_size_type)sizeof(bfd_byte), abfd)
 		   != sizeof(bfd_byte))
 		  || bfd_bwrite(sym->name, (bfd_size_type)len, abfd) != len)

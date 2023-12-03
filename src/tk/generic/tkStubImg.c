@@ -41,10 +41,7 @@
 #endif
 
 void
-Tk_InitImageArgs(interp, argc, argvPtr)
-    Tcl_Interp *interp;
-    int argc;
-    char ***argvPtr;
+Tk_InitImageArgs(Tcl_Interp *interp, int argc, char ***argvPtr)
 {
     static int useNewImage = -1;
     static char **argv = NULL;

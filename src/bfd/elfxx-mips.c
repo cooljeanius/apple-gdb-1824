@@ -1589,7 +1589,7 @@ sort_dynamic_relocs(const void *arg1, const void *arg2)
   bfd_elf32_swap_reloc_in(reldyn_sorting_bfd, (const bfd_byte *)arg2,
                           &int_reloc2);
 
-  return (ELF32_R_SYM(int_reloc1.r_info) - ELF32_R_SYM(int_reloc2.r_info));
+  return (int)(ELF32_R_SYM(int_reloc1.r_info) - ELF32_R_SYM(int_reloc2.r_info));
 }
 
 /* Like sort_dynamic_relocs, but used for elf64 relocations: */
@@ -3297,7 +3297,7 @@ mips_elf_multi_got (bfd *abfd, struct bfd_link_info *info,
      an initial dynamic index computed from gg->assigned_gotno, where
      the number of unreferenced global entries in the primary GOT is
      preserved.  */
-  if (1)
+  if (g != NULL)
     {
       gg->assigned_gotno = gg->global_gotno - g->global_gotno;
       g->global_gotno = gg->global_gotno;
@@ -3346,8 +3346,7 @@ mips_elf_multi_got (bfd *abfd, struct bfd_link_info *info,
   assign = 0;
   gg->next = gg;
 
-  do
-    {
+  do {
       struct mips_got_info *gn;
 
       assign += MIPS_RESERVED_GOTNO;
@@ -3371,8 +3370,7 @@ mips_elf_multi_got (bfd *abfd, struct bfd_link_info *info,
 	 stubs.  */
       if (g)
 	htab_traverse (g->got_entries, mips_elf_set_no_stub, NULL);
-    }
-  while (g);
+  } while (g);
 
   got->size = (gg->next->local_gotno
 		    + gg->next->global_gotno
@@ -6342,10 +6340,10 @@ _bfd_mips_relax_section(bfd *abfd, asection *sec,
 	{
 	  Elf_Internal_Sym *isym;
 
-	  /* Read this BFD's symbols if we haven't done so already.  */
+	  /* Read this BFD's symbols if we still need to do so: */
 	  if (isymbuf == NULL && symtab_hdr->sh_info != 0)
 	    {
-	      isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
+	      isymbuf = (Elf_Internal_Sym *)symtab_hdr->contents;
 	      if (isymbuf == NULL)
 		isymbuf = bfd_elf_get_elf_syms (abfd, symtab_hdr,
 						symtab_hdr->sh_info, 0,
@@ -6354,7 +6352,8 @@ _bfd_mips_relax_section(bfd *abfd, asection *sec,
 		goto relax_return;
 	    }
 
-	  isym = isymbuf + r_symndx;
+	  isym = (isymbuf + r_symndx);
+	  BFD_ASSERT(isym != NULL);
 	  if (isym->st_shndx == SHN_UNDEF)
 	    continue;
 	  else if (isym->st_shndx == SHN_ABS)

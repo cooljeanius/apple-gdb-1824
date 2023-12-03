@@ -757,11 +757,11 @@ pe_ILF_build_a_bfd(bfd *abfd, unsigned int magic, char *symbol_name,
     return FALSE;
   }
 
-  /* Create a bfd_in_memory structure.  */
+  /* Create a bfd_in_memory structure: */
   vars.bim = (struct bfd_in_memory *)ptr;
   vars.bim->buffer = ptr;
   vars.bim->size = ILF_DATA_SIZE;
-  ptr += sizeof(* vars.bim);
+  ptr += sizeof(*vars.bim);
 
   /* Initialise the pointers to regions of the memory and the
    * other contents of the pe_ILF_vars structure as well: */
@@ -821,7 +821,7 @@ pe_ILF_build_a_bfd(bfd *abfd, unsigned int magic, char *symbol_name,
   if (import_name_type == IMPORT_ORDINAL)
     {
       if (ordinal == 0)
-	/* XXX - treat as IMPORT_NAME ??? */
+	/* XXX: treat as IMPORT_NAME perhaps??? */
 	abort();
 
       *(unsigned int *)id4->contents = (ordinal | 0x80000000);

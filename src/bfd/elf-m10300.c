@@ -1801,8 +1801,8 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 		      /* If this is not a "call" instruction, then we
 			 should convert "call" instructions to "calls"
 			 instructions.  */
-		      code = bfd_get_8 (input_bfd,
-					contents + irel->r_offset - 1);
+		      code = bfd_get_8(input_bfd,
+                                       contents + irel->r_offset - 1);
 		      if (code != 0xdd && code != 0xcd)
 			hash->flags |= MN10300_CONVERT_CALL_TO_CALLS;
 
@@ -3334,15 +3334,15 @@ compute_function_info(bfd *abfd,
      If we find anything else, we quit.  */
 
   /* Look for movm [regs],sp */
-  byte1 = bfd_get_8 (abfd, contents + addr);
-  byte2 = bfd_get_8 (abfd, contents + addr + 1);
+  byte1 = bfd_get_8(abfd, contents + addr);
+  byte2 = bfd_get_8(abfd, contents + addr + 1);
 
   if (byte1 == 0xcf)
     {
       hash->movm_args = byte2;
       addr += 2;
-      byte1 = bfd_get_8 (abfd, contents + addr);
-      byte2 = bfd_get_8 (abfd, contents + addr + 1);
+      byte1 = bfd_get_8(abfd, contents + addr);
+      byte2 = bfd_get_8(abfd, contents + addr + 1);
     }
 
   /* Now figure out how much stack space will be allocated by the movm

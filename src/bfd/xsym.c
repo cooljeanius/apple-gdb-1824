@@ -234,6 +234,7 @@ bfd_sym_read_header_v32(bfd *abfd, bfd_sym_header_block *header)
   return 0;
 }
 
+/* */
 int ATTRIBUTE_NORETURN
 bfd_sym_read_header_v34(bfd *abfd ATTRIBUTE_UNUSED,
                         bfd_sym_header_block *header ATTRIBUTE_UNUSED)
@@ -241,6 +242,7 @@ bfd_sym_read_header_v34(bfd *abfd ATTRIBUTE_UNUSED,
   abort();
 }
 
+/* */
 int
 bfd_sym_read_header(bfd *abfd, bfd_sym_header_block *header,
                     bfd_sym_version version)

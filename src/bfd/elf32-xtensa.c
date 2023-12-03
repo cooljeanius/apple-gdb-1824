@@ -5189,32 +5189,31 @@ struct section_cache_struct
   unsigned reloc_count;
 };
 
-
+/* */
 static void
-init_section_cache (section_cache_t *sec_cache)
+init_section_cache(section_cache_t *sec_cache)
 {
-  memset (sec_cache, 0, sizeof (*sec_cache));
+  memset(sec_cache, 0, sizeof(*sec_cache));
 }
 
-
+/* */
 static void
-clear_section_cache (section_cache_t *sec_cache)
+clear_section_cache(section_cache_t *sec_cache)
 {
   if (sec_cache->sec)
     {
-      release_contents (sec_cache->sec, sec_cache->contents);
-      release_internal_relocs (sec_cache->sec, sec_cache->relocs);
+      release_contents(sec_cache->sec, sec_cache->contents);
+      release_internal_relocs(sec_cache->sec, sec_cache->relocs);
       if (sec_cache->ptbl)
-	free (sec_cache->ptbl);
-      memset (sec_cache, 0, sizeof (sec_cache));
+	free(sec_cache->ptbl);
+      memset(sec_cache, 0, sizeof(*sec_cache));
     }
 }
 
-
+/* */
 static bfd_boolean
-section_cache_section (section_cache_t *sec_cache,
-		       asection *sec,
-		       struct bfd_link_info *link_info)
+section_cache_section(section_cache_t *sec_cache, asection *sec,
+		      struct bfd_link_info *link_info)
 {
   bfd *abfd;
   property_table_entry *prop_table = NULL;
@@ -5229,26 +5228,26 @@ section_cache_section (section_cache_t *sec_cache,
     return TRUE;
 
   abfd = sec->owner;
-  sec_size = bfd_get_section_limit (abfd, sec);
+  sec_size = bfd_get_section_limit(abfd, sec);
 
-  /* Get the contents.  */
-  contents = retrieve_contents (abfd, sec, link_info->keep_memory);
+  /* Get the contents: */
+  contents = retrieve_contents(abfd, sec, link_info->keep_memory);
   if (contents == NULL && sec_size != 0)
     goto err;
 
-  /* Get the relocations.  */
-  internal_relocs = retrieve_internal_relocs (abfd, sec,
-					      link_info->keep_memory);
+  /* Get the relocations: */
+  internal_relocs = retrieve_internal_relocs(abfd, sec,
+					     link_info->keep_memory);
 
-  /* Get the entry table.  */
-  ptblsize = xtensa_read_table_entries (abfd, sec, &prop_table,
-					XTENSA_PROP_SEC_NAME, FALSE);
+  /* Get the entry table: */
+  ptblsize = xtensa_read_table_entries(abfd, sec, &prop_table,
+                                       XTENSA_PROP_SEC_NAME, FALSE);
   if (ptblsize < 0)
     goto err;
 
-  /* Fill in the new section cache.  */
-  clear_section_cache (sec_cache);
-  memset (sec_cache, 0, sizeof (sec_cache));
+  /* Fill in the new section cache: */
+  clear_section_cache(sec_cache);
+  memset(sec_cache, 0, (sizeof(*sec_cache) * sizeof(sec_cache)));
 
   sec_cache->sec = sec;
   sec_cache->contents = contents;
