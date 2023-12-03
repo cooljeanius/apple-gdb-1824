@@ -1086,15 +1086,15 @@ int xtensa_operand_encode(xtensa_isa isa, xtensa_opcode opc, int opnd,
   return 0;
 }
 
-
+/* */
 int
-xtensa_operand_decode (xtensa_isa isa, xtensa_opcode opc, int opnd,
-		       uint32 *valp)
+xtensa_operand_decode(xtensa_isa isa, xtensa_opcode opc, int opnd,
+		      uint32 *valp)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
   xtensa_operand_internal *intop;
 
-  intop = get_operand (intisa, opc, opnd);
+  intop = get_operand(intisa, opc, opnd);
   if (!intop) return -1;
 
   /* Use identity function for "default" operands.  */

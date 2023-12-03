@@ -4671,27 +4671,26 @@ elf64_alpha_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
       srel = bfd_get_section_by_name (dynobj, ".rela.plt");
       BFD_ASSERT (srel != NULL);
 
-      for (gotent = ah->got_entries; gotent ; gotent = gotent->next)
-	if (gotent->reloc_type == R_ALPHA_LITERAL
-	    && gotent->use_count > 0)
+      for (gotent = ah->got_entries; gotent; gotent = gotent->next)
+	if ((gotent->reloc_type == R_ALPHA_LITERAL)
+	    && (gotent->use_count > 0))
 	  {
 	    unsigned int insn;
 	    int disp;
 
-	    sgot = alpha_elf_tdata (gotent->gotobj)->got;
-	    BFD_ASSERT (sgot != NULL);
+	    sgot = alpha_elf_tdata(gotent->gotobj)->got;
+	    BFD_ASSERT(sgot != NULL);
 
-	    BFD_ASSERT (gotent->got_offset != -1);
-	    BFD_ASSERT (gotent->plt_offset != -1);
+	    BFD_ASSERT(gotent->got_offset != -1);
+	    BFD_ASSERT(gotent->plt_offset != -1);
 
-	    got_addr = (sgot->output_section->vma
-			+ sgot->output_offset
+	    got_addr = (sgot->output_section->vma + sgot->output_offset
 			+ gotent->got_offset);
-	    plt_addr = (splt->output_section->vma
-			+ splt->output_offset
+	    plt_addr = (splt->output_section->vma + splt->output_offset
 			+ gotent->plt_offset);
 
-	    plt_index = (gotent->plt_offset-PLT_HEADER_SIZE) / PLT_ENTRY_SIZE;
+	    plt_index = ((gotent->plt_offset - PLT_HEADER_SIZE)
+                         / PLT_ENTRY_SIZE);
 
 	    /* Fill in the entry in the procedure linkage table.  */
 	    if (elf64_alpha_use_secureplt)

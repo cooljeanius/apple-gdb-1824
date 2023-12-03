@@ -1282,7 +1282,8 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	    }
 
 	  csect = NULL;
-	  csect_index = -(unsigned int)1U;
+          if (csect_index != -(unsigned int)1U)
+	    csect_index = -(unsigned int)1U;
 
 	  /* When we see a TOC anchor, we record the TOC value: */
 	  if (aux.x_csect.x_smclas == XMC_TC0)
@@ -2609,16 +2610,16 @@ bfd_xcoff_export_symbol (bfd *output_bfd,
     {
       char *fnname;
       struct xcoff_link_hash_entry *hfn;
-      bfd_size_type amt = (strlen(h->root.root.string) + 2);
+      bfd_size_type amt = (strlen(h->root.root.string) + 2UL);
 
       fnname = (char *)bfd_malloc(amt);
       if (fnname == NULL)
 	return FALSE;
       fnname[0] = '.';
-      strcpy (fnname + 1, h->root.root.string);
-      hfn = xcoff_link_hash_lookup (xcoff_hash_table (info),
-				    fnname, FALSE, FALSE, TRUE);
-      free (fnname);
+      strncpy((fnname + 1), h->root.root.string, (amt + 1UL));
+      hfn = xcoff_link_hash_lookup(xcoff_hash_table(info),
+				   fnname, FALSE, FALSE, TRUE);
+      free(fnname);
       if (hfn != NULL
 	  && hfn->smclas == XMC_PR
 	  && (hfn->root.type == bfd_link_hash_defined

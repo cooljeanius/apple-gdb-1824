@@ -5044,11 +5044,11 @@ ppc64_elf_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info,
   if ((sec->flags & SEC_ALLOC) == 0)
     return TRUE;
 
-  elf_section_data (sec)->local_dynrel = NULL;
+  elf_section_data(sec)->local_dynrel = NULL;
 
-  htab = ppc_hash_table (info);
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
+  htab = ppc_hash_table(info);
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
   local_got_ents = elf_local_got_ents (abfd);
 
   relend = (relocs + sec->reloc_count);
@@ -6154,8 +6154,8 @@ ppc64_elf_edit_opd(bfd *obfd, struct bfd_link_info *info,
 	continue;
 
       local_syms = NULL;
-      symtab_hdr = &elf_tdata (ibfd)->symtab_hdr;
-      sym_hashes = elf_sym_hashes (ibfd);
+      symtab_hdr = &elf_tdata(ibfd)->symtab_hdr;
+      sym_hashes = elf_sym_hashes(ibfd);
 
       /* Read the relocations.  */
       relstart = _bfd_elf_link_read_relocs (ibfd, sec, NULL, NULL,
@@ -10962,14 +10962,14 @@ ppc64_elf_finish_dynamic_sections(bfd *output_bfd,
 	      break;
 
 	    case DT_PPC64_OPD:
-	      s = bfd_get_section_by_name (output_bfd, ".opd");
+	      s = bfd_get_section_by_name(output_bfd, ".opd");
 	      if (s == NULL)
 		continue;
 	      dyn.d_un.d_ptr = s->vma;
 	      break;
 
 	    case DT_PPC64_OPDSZ:
-	      s = bfd_get_section_by_name (output_bfd, ".opd");
+	      s = bfd_get_section_by_name(output_bfd, ".opd");
 	      if (s == NULL)
 		continue;
 	      dyn.d_un.d_val = s->size;
@@ -10977,12 +10977,12 @@ ppc64_elf_finish_dynamic_sections(bfd *output_bfd,
 
 	    case DT_PLTGOT:
 	      s = htab->plt;
-	      dyn.d_un.d_ptr = s->output_section->vma + s->output_offset;
+	      dyn.d_un.d_ptr = (s->output_section->vma + s->output_offset);
 	      break;
 
 	    case DT_JMPREL:
 	      s = htab->relplt;
-	      dyn.d_un.d_ptr = s->output_section->vma + s->output_offset;
+	      dyn.d_un.d_ptr = (s->output_section->vma + s->output_offset);
 	      break;
 
 	    case DT_PLTRELSZ:

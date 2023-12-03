@@ -1050,17 +1050,17 @@ adjust_n_magic (bfd *abfd, struct internal_exec *execp)
   execp->a_text = obj_textsec(abfd)->size;
   execp->a_data = obj_datasec(abfd)->size;
   execp->a_bss = obj_bsssec(abfd)->size;
-  N_SET_MAGIC (*execp, NMAGIC);
+  N_SET_MAGIC(*execp, NMAGIC);
 }
 
+/* */
 bfd_boolean
-NAME (aout, adjust_sizes_and_vmas) (bfd *abfd,
-				    bfd_size_type *text_size,
-				    file_ptr * text_end ATTRIBUTE_UNUSED)
+NAME(aout, adjust_sizes_and_vmas)(bfd *abfd, bfd_size_type *text_size,
+                                  file_ptr *text_end ATTRIBUTE_UNUSED)
 {
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
 
-  if (! NAME (aout, make_sections) (abfd))
+  if (! NAME(aout, make_sections)(abfd))
     return FALSE;
 
   if (adata(abfd).magic != undecided_magic)
@@ -3000,7 +3000,7 @@ aout_link_write_other_symbol (struct aout_link_hash_entry *h, void * data)
       }
       break;
     case bfd_link_hash_common:
-      type = N_UNDF | N_EXT;
+      type = (N_UNDF | N_EXT);
       val = h->root.u.c.size;
       break;
     case bfd_link_hash_undefweak:
@@ -3266,21 +3266,21 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
   bfd_byte *rel_end;
 
   output_bfd = finfo->output_bfd;
-  check_dynamic_reloc = aout_backend_info (output_bfd)->check_dynamic_reloc;
+  check_dynamic_reloc = aout_backend_info(output_bfd)->check_dynamic_reloc;
 
-  BFD_ASSERT (obj_reloc_entry_size (input_bfd) == RELOC_SIZE);
-  BFD_ASSERT (input_bfd->xvec->header_byteorder
-	      == output_bfd->xvec->header_byteorder);
+  BFD_ASSERT(obj_reloc_entry_size(input_bfd) == RELOC_SIZE);
+  BFD_ASSERT(input_bfd->xvec->header_byteorder
+	     == output_bfd->xvec->header_byteorder);
 
   relocatable = finfo->info->relocatable;
-  syms = obj_aout_external_syms (input_bfd);
-  strings = obj_aout_external_strings (input_bfd);
-  sym_hashes = obj_aout_sym_hashes (input_bfd);
+  syms = obj_aout_external_syms(input_bfd);
+  strings = obj_aout_external_strings(input_bfd);
+  sym_hashes = obj_aout_sym_hashes(input_bfd);
   symbol_map = finfo->symbol_map;
 
-  reloc_count = rel_size / RELOC_SIZE;
+  reloc_count = (rel_size / RELOC_SIZE);
   rel = relocs;
-  rel_end = rel + rel_size;
+  rel_end = (rel + rel_size);
   for (; rel < rel_end; rel += RELOC_SIZE)
     {
       bfd_vma r_addr;
@@ -3610,51 +3610,48 @@ aout_link_input_section (struct aout_final_link_info *finfo,
   return TRUE;
 }
 
-/* Link an a.out input BFD into the output file.  */
-
+/* Link an a.out input BFD into the output file: */
 static bfd_boolean
-aout_link_input_bfd (struct aout_final_link_info *finfo, bfd *input_bfd)
+aout_link_input_bfd(struct aout_final_link_info *finfo, bfd *input_bfd)
 {
   bfd_size_type sym_count;
 
-  BFD_ASSERT (bfd_get_format (input_bfd) == bfd_object);
+  BFD_ASSERT(bfd_get_format(input_bfd) == bfd_object);
 
-  /* If this is a dynamic object, it may need special handling.  */
-  if ((input_bfd->flags & DYNAMIC) != 0
-      && aout_backend_info (input_bfd)->link_dynamic_object != NULL)
-    return ((*aout_backend_info (input_bfd)->link_dynamic_object)
+  /* If this is a dynamic object, it may need special handling: */
+  if (((input_bfd->flags & DYNAMIC) != 0)
+      && (aout_backend_info(input_bfd)->link_dynamic_object != NULL))
+    return ((*aout_backend_info(input_bfd)->link_dynamic_object)
 	    (finfo->info, input_bfd));
 
   /* Get the symbols.  We probably have them already, unless
      finfo->info->keep_memory is FALSE.  */
-  if (! aout_get_external_symbols (input_bfd))
+  if (! aout_get_external_symbols(input_bfd))
     return FALSE;
 
-  sym_count = obj_aout_external_sym_count (input_bfd);
+  sym_count = obj_aout_external_sym_count(input_bfd);
 
   /* Write out the symbols and get a map of the new indices.  The map
      is placed into finfo->symbol_map.  */
-  if (! aout_link_write_symbols (finfo, input_bfd))
+  if (! aout_link_write_symbols(finfo, input_bfd))
     return FALSE;
 
   /* Relocate and write out the sections.  These functions use the
      symbol map created by aout_link_write_symbols.  The linker_mark
      field will be set if these sections are to be included in the
      link, which will normally be the case.  */
-  if (obj_textsec (input_bfd)->linker_mark)
+  if (obj_textsec(input_bfd)->linker_mark)
     {
-      if (! aout_link_input_section (finfo, input_bfd,
-				     obj_textsec (input_bfd),
-				     &finfo->treloff,
-				     exec_hdr (input_bfd)->a_trsize))
+      if (! aout_link_input_section(finfo, input_bfd, obj_textsec(input_bfd),
+				    &finfo->treloff,
+				    exec_hdr(input_bfd)->a_trsize))
 	return FALSE;
     }
-  if (obj_datasec (input_bfd)->linker_mark)
+  if (obj_datasec(input_bfd)->linker_mark)
     {
-      if (! aout_link_input_section (finfo, input_bfd,
-				     obj_datasec (input_bfd),
-				     &finfo->dreloff,
-				     exec_hdr (input_bfd)->a_drsize))
+      if (! aout_link_input_section(finfo, input_bfd, obj_datasec(input_bfd),
+				    &finfo->dreloff,
+				    exec_hdr(input_bfd)->a_drsize))
 	return FALSE;
     }
 
@@ -3663,7 +3660,7 @@ aout_link_input_bfd (struct aout_final_link_info *finfo, bfd *input_bfd)
      strings in the hash table point into them.  */
   if (! finfo->info->keep_memory)
     {
-      if (! aout_link_free_symbols (input_bfd))
+      if (! aout_link_free_symbols(input_bfd))
 	return FALSE;
     }
 

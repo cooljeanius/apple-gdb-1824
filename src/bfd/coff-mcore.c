@@ -354,7 +354,7 @@ coff_mcore_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
          bfd_big_endian(input_bfd) ? _("big endian") : _("little endian"),
          bfd_big_endian(output_bfd) ? _("big endian") : _("little endian"));
 
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return FALSE;
     }
 

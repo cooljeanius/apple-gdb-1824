@@ -1794,8 +1794,8 @@ elf_xtensa_do_reloc(reloc_howto_type *howto, bfd *abfd,
   return bfd_reloc_ok;
 }
 
-
-static char *
+/* */
+static char * ATTRIBUTE_NONNULL(1)
 vsprint_msg(const char *origmsg, const char *fmt, int arglen, ...)
 {
   /* To reduce the size of the memory leak,
@@ -2821,15 +2821,14 @@ elf_xtensa_object_p (bfd *abfd)
 /* The final processing done just before writing out an Xtensa ELF object
    file.  This gets the Xtensa architecture right based on the machine
    number.  */
-
 static void
-elf_xtensa_final_write_processing (bfd *abfd,
-				   bfd_boolean linker ATTRIBUTE_UNUSED)
+elf_xtensa_final_write_processing(bfd *abfd,
+				  bfd_boolean linker ATTRIBUTE_UNUSED)
 {
   int mach;
   unsigned long val;
 
-  switch (mach = bfd_get_mach (abfd))
+  switch (mach = bfd_get_mach(abfd))
     {
     case bfd_mach_xtensa:
       val = E_XTENSA_MACH;
@@ -2838,8 +2837,8 @@ elf_xtensa_final_write_processing (bfd *abfd,
       return;
     }
 
-  elf_elfheader (abfd)->e_flags &=  (~ EF_XTENSA_MACH);
-  elf_elfheader (abfd)->e_flags |= val;
+  elf_elfheader(abfd)->e_flags &= (~ EF_XTENSA_MACH);
+  elf_elfheader(abfd)->e_flags |= val;
 }
 
 
@@ -5704,7 +5703,8 @@ pin_contents(asection *sec, bfd_byte *contents)
 static void
 release_contents(asection *sec, bfd_byte *contents)
 {
-  if (contents && elf_section_data(sec)->this_hdr.contents != contents)
+  if (contents && (elf_section_data(sec) != NULL)
+      && (elf_section_data(sec)->this_hdr.contents != contents))
     free(contents);
 }
 

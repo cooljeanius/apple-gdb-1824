@@ -1657,12 +1657,12 @@ bfd_fill_in_gnu_debuglink_section(bfd *abfd, struct bfd_section *sect,
   contents = (char *)malloc((size_t)debuglink_size);
   if (contents == NULL)
     {
-      /* XXX Should we delete the section from the bfd?  */
+      /* XXX: Should we delete the section from the bfd?  */
       bfd_set_error(bfd_error_no_memory);
       return FALSE;
     }
 
-  strcpy(contents, filename);
+  strncpy(contents, filename, (size_t)debuglink_size);
   crc_offset = (debuglink_size - 4);
 
   bfd_put_32(abfd, (bfd_vma)crc32, (contents + crc_offset));
@@ -1670,7 +1670,7 @@ bfd_fill_in_gnu_debuglink_section(bfd *abfd, struct bfd_section *sect,
   if (!bfd_set_section_contents(abfd, sect, contents, (file_ptr)0L,
                                 debuglink_size))
     {
-      /* XXX Should we delete the section from the bfd? */
+      /* XXX: Should we delete the section from the bfd? */
       free(contents);
       return FALSE;
     }

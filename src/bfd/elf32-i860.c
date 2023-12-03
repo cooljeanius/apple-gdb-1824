@@ -49,12 +49,12 @@ i860_howto_pc26_reloc (bfd *abfd ATTRIBUTE_UNUSED,
       return bfd_reloc_ok;
     }
 
-  /* Used elf32-mips.c as an example.  */
-  if (bfd_is_und_section (symbol->section)
-      && output_bfd == (bfd *) NULL)
+  /* Used elf32-mips.c as an example: */
+  if (bfd_is_und_section(symbol->section)
+      && output_bfd == (bfd *)NULL)
     return bfd_reloc_undefined;
 
-  if (bfd_is_com_section (symbol->section))
+  if (bfd_is_com_section(symbol->section))
     relocation = 0;
   else
     relocation = symbol->value;
@@ -63,28 +63,26 @@ i860_howto_pc26_reloc (bfd *abfd ATTRIBUTE_UNUSED,
   relocation += symbol->section->output_offset;
   relocation += reloc_entry->addend;
 
-  if (reloc_entry->address > bfd_get_section_limit (abfd, input_section))
+  if (reloc_entry->address > bfd_get_section_limit(abfd, input_section))
     return bfd_reloc_outofrange;
 
-  /* Adjust for PC-relative relocation.  */
+  /* Adjust for PC-relative relocation: */
   relocation -= (input_section->output_section->vma
-                 + input_section->output_offset
-                 + reloc_entry->address
-                 + 4);
+                 + input_section->output_offset + reloc_entry->address + 4);
 
   /* Check for target out of range.  */
   if ((bfd_signed_vma)relocation > (0x3ffffff << 2)
       || (bfd_signed_vma)relocation < (-0x4000000 << 2))
     return bfd_reloc_outofrange;
 
-  addr = (bfd_byte *) data + reloc_entry->address;
-  insn = bfd_get_32 (abfd, addr);
+  addr = (bfd_byte *)data + reloc_entry->address;
+  insn = bfd_get_32(abfd, addr);
 
   relocation >>= reloc_entry->howto->rightshift;
-  insn = (insn & ~reloc_entry->howto->dst_mask)
-         | (relocation & reloc_entry->howto->dst_mask);
+  insn = ((insn & ~reloc_entry->howto->dst_mask)
+          | (relocation & reloc_entry->howto->dst_mask));
 
-  bfd_put_32 (abfd, (bfd_vma) insn, addr);
+  bfd_put_32(abfd, (bfd_vma)insn, addr);
 
   return bfd_reloc_ok;
 }

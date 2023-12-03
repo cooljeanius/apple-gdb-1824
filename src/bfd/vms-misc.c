@@ -924,6 +924,7 @@ _bfd_vms_length_hash_symbol (bfd * abfd, const char *in, int maxlen)
       printf(_("Symbol %s replaced by %s\n"), old_name, new_name);
   }
 
+  (void)in;
   return outbuf;
 }
 

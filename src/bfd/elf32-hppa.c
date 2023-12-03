@@ -4013,7 +4013,7 @@ elf32_hppa_finish_dynamic_symbol (bfd *output_bfd,
 	  && (info->symbolic || eh->dynindx == -1)
 	  && eh->def_regular)
 	{
-	  rela.r_info = ELF32_R_INFO (0, R_PARISC_DIR32);
+	  rela.r_info = ELF32_R_INFO(0, R_PARISC_DIR32);
 	  rela.r_addend = (eh->root.u.def.value
 			  + eh->root.u.def.section->output_offset
 			  + eh->root.u.def.section->output_section->vma);
@@ -4021,16 +4021,16 @@ elf32_hppa_finish_dynamic_symbol (bfd *output_bfd,
       else
 	{
 	  if ((eh->got.offset & 1) != 0)
-	    abort ();
+	    abort();
 
-	  bfd_put_32 (output_bfd, 0, htab->sgot->contents + (eh->got.offset & ~1));
-	  rela.r_info = ELF32_R_INFO (eh->dynindx, R_PARISC_DIR32);
+	  bfd_put_32(output_bfd, 0, htab->sgot->contents + (eh->got.offset & ~1));
+	  rela.r_info = ELF32_R_INFO(eh->dynindx, R_PARISC_DIR32);
 	  rela.r_addend = 0;
 	}
 
       loc = htab->srelgot->contents;
-      loc += htab->srelgot->reloc_count++ * sizeof (Elf32_External_Rela);
-      bfd_elf32_swap_reloca_out (output_bfd, &rela, loc);
+      loc += htab->srelgot->reloc_count++ * sizeof(Elf32_External_Rela);
+      bfd_elf32_swap_reloca_out(output_bfd, &rela, loc);
     }
 
   if (eh->needs_copy)
@@ -4042,13 +4042,15 @@ elf32_hppa_finish_dynamic_symbol (bfd *output_bfd,
       if (! (eh->dynindx != -1
 	     && (eh->root.type == bfd_link_hash_defined
 		 || eh->root.type == bfd_link_hash_defweak)))
-	abort ();
+	abort();
 
       sec = htab->srelbss;
 
       rela.r_offset = (eh->root.u.def.value
-		      + eh->root.u.def.section->output_offset
-		      + eh->root.u.def.section->output_section->vma);
+                       + eh->root.u.def.section->output_offset);
+
+      if (eh->root.u.def.section->output_section)
+        rela.r_offset += eh->root.u.def.section->output_section->vma;
       rela.r_addend = 0;
       rela.r_info = ELF32_R_INFO (eh->dynindx, R_PARISC_COPY);
       loc = sec->contents + sec->reloc_count++ * sizeof (Elf32_External_Rela);

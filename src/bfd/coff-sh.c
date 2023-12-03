@@ -2773,7 +2773,7 @@ sh_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	{
 	  asection *sec;
 
-	  /* There is nothing to do for an internal PCDISP reloc.  */
+	  /* There is nothing to do for an internal PCDISP reloc: */
 	  if (rel->r_type == R_SH_PCDISP)
 	    continue;
 
@@ -2781,41 +2781,39 @@ sh_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	    {
 	      sec = bfd_abs_section_ptr;
 	      val = 0;
+              (void)sec;
 	    }
 	  else
 	    {
 	      sec = sections[symndx];
-              val = (sec->output_section->vma
-		     + sec->output_offset
-		     + sym->n_value
-		     - sec->vma);
+              val = (sec->output_section->vma + sec->output_offset
+		     + sym->n_value - sec->vma);
 	    }
 	}
       else
 	{
-	  if (h->root.type == bfd_link_hash_defined
-	      || h->root.type == bfd_link_hash_defweak)
+	  if ((h->root.type == bfd_link_hash_defined)
+	      || (h->root.type == bfd_link_hash_defweak))
 	    {
 	      asection *sec;
 
 	      sec = h->root.u.def.section;
-	      val = (h->root.u.def.value
-		     + sec->output_section->vma
+	      val = (h->root.u.def.value + sec->output_section->vma
 		     + sec->output_offset);
 	    }
-	  else if (! info->relocatable)
+	  else if (!info->relocatable)
 	    {
-	      if (! ((*info->callbacks->undefined_symbol)
-		     (info, h->root.root.string, input_bfd, input_section,
-		      rel->r_vaddr - input_section->vma, TRUE)))
+	      if (!((*info->callbacks->undefined_symbol)
+		    (info, h->root.root.string, input_bfd, input_section,
+		     (rel->r_vaddr - input_section->vma), TRUE)))
 		return FALSE;
 	    }
 	}
 
-      rstat = _bfd_final_link_relocate (howto, input_bfd, input_section,
-					contents,
-					rel->r_vaddr - input_section->vma,
-					val, addend);
+      rstat = _bfd_final_link_relocate(howto, input_bfd, input_section,
+                                       contents,
+                                       (rel->r_vaddr - input_section->vma),
+                                       val, addend);
 
       switch (rstat)
 	{

@@ -2527,7 +2527,7 @@ mmix_elf_relax_section(bfd *abfd, asection *sec,
   Elf_Internal_Sym *isymbuf = NULL;
   bfd_size_type size = sec->rawsize ? sec->rawsize : sec->size;
 
-  mmix_elf_section_data (sec)->pjs.stubs_size_sum = 0;
+  mmix_elf_section_data(sec)->pjs.stubs_size_sum = 0;
 
   /* Assume nothing changes.  */
   *again = FALSE;
@@ -2544,14 +2544,14 @@ mmix_elf_relax_section(bfd *abfd, asection *sec,
 	  && mmix_elf_section_data (sec)->pjs.n_pushj_relocs == 0))
     return TRUE;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
 
-  bpo_greg_owner = (bfd *) link_info->base_file;
+  bpo_greg_owner = (bfd *)link_info->base_file;
 
   if (bpodata != NULL)
     {
       bpo_gregs_section = bpodata->bpo_greg_section;
-      gregdata = mmix_elf_section_data (bpo_gregs_section)->bpo.greg;
+      gregdata = mmix_elf_section_data(bpo_gregs_section)->bpo.greg;
       bpono = bpodata->first_base_plus_offset_reloc;
     }
   else
@@ -2559,9 +2559,9 @@ mmix_elf_relax_section(bfd *abfd, asection *sec,
 
   /* Get a copy of the native relocations.  */
   internal_relocs
-    = _bfd_elf_link_read_relocs (abfd, sec, (PTR) NULL,
-				 (Elf_Internal_Rela *) NULL,
-				 link_info->keep_memory);
+    = _bfd_elf_link_read_relocs(abfd, sec, (PTR)NULL,
+                                (Elf_Internal_Rela *)NULL,
+                                link_info->keep_memory);
   if (internal_relocs == NULL)
     goto error_return;
 

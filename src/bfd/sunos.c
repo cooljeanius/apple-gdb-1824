@@ -1022,24 +1022,24 @@ sunos_add_dynamic_symbols (bfd *abfd,
 	  char majbuf[30];
 	  char minbuf[30];
 
-	  sprintf (majbuf, ".%d", major_vno);
+	  snprintf(majbuf, sizeof(majbuf), ".%d", major_vno);
 	  if (minor_vno == 0)
 	    minbuf[0] = '\0';
 	  else
-	    sprintf (minbuf, ".%d", minor_vno);
+	    snprintf(minbuf, sizeof(minbuf), ".%d", minor_vno);
 
-	  if ((p - namebuf) + strlen (majbuf) + strlen (minbuf) >= alc)
+	  if (((p - namebuf) + strlen(majbuf) + strlen(minbuf)) >= alc)
 	    {
 	      char *n;
 
-	      alc = (p - namebuf) + strlen (majbuf) + strlen (minbuf);
-	      n = (char *)bfd_realloc(namebuf, alc + 1);
+	      alc = ((p - namebuf) + strlen(majbuf) + strlen(minbuf));
+	      n = (char *)bfd_realloc(namebuf, (alc + 1));
 	      if (n == NULL)
 		{
 		  free(namebuf);
 		  return FALSE;
 		}
-	      p = n + (p - namebuf);
+	      p = (n + (p - namebuf));
 	      namebuf = n;
 	    }
 
@@ -1050,16 +1050,16 @@ sunos_add_dynamic_symbols (bfd *abfd,
       namecopy = (char *)bfd_alloc(abfd, (bfd_size_type)strlen(namebuf) + 1);
       if (namecopy == NULL)
 	{
-	  free (namebuf);
+	  free(namebuf);
 	  return FALSE;
 	}
-      strcpy (namecopy, namebuf);
-      free (namebuf);
+      strcpy(namecopy, namebuf);
+      free(namebuf);
       needed->name = namecopy;
 
       needed->next = NULL;
 
-      for (pp = &sunos_hash_table (info)->needed;
+      for (pp = &sunos_hash_table(info)->needed;
 	   *pp != NULL;
 	   pp = &(*pp)->next)
 	;
@@ -1828,12 +1828,12 @@ sunos_scan_dynamic_symbol (struct sunos_link_hash_entry *h, void * data)
 
       BFD_ASSERT (h->dynindx == -2);
 
-      dynobj = sunos_hash_table (info)->dynobj;
+      dynobj = sunos_hash_table(info)->dynobj;
 
-      h->dynindx = sunos_hash_table (info)->dynsymcount;
-      ++sunos_hash_table (info)->dynsymcount;
+      h->dynindx = sunos_hash_table(info)->dynsymcount;
+      ++sunos_hash_table(info)->dynsymcount;
 
-      len = strlen (h->root.root.root.string);
+      len = strlen(h->root.root.root.string);
 
       /* We don't bother to construct a BFD hash table for the strings
 	 which are the names of the dynamic symbols.  Using a hash
@@ -1856,27 +1856,26 @@ sunos_scan_dynamic_symbol (struct sunos_link_hash_entry *h, void * data)
       name = (const unsigned char *)h->root.root.root.string;
       hash = 0;
       while (*name != '\0')
-	hash = (hash << 1) + *name++;
+	hash = ((hash << 1) + *name++);
       hash &= 0x7fffffff;
       hash %= sunos_hash_table(info)->bucketcount;
 
-      s = bfd_get_section_by_name (dynobj, ".hash");
-      BFD_ASSERT (s != NULL);
+      s = bfd_get_section_by_name(dynobj, ".hash");
+      BFD_ASSERT(s != NULL);
 
-      if (GET_SWORD (dynobj, s->contents + hash * HASH_ENTRY_SIZE) == -1)
+      if (GET_SWORD(dynobj, (s->contents + (hash * HASH_ENTRY_SIZE))) == -1)
 	PUT_WORD(dynobj, (bfd_vma)h->dynindx,
-		 (s->contents + hash * HASH_ENTRY_SIZE));
+		 (s->contents + (hash * HASH_ENTRY_SIZE)));
       else
 	{
 	  bfd_vma next;
 
-	  next = GET_WORD (dynobj,
-			   (s->contents
-			    + hash * HASH_ENTRY_SIZE
-			    + BYTES_IN_WORD));
+	  next = GET_WORD(dynobj,
+			  (s->contents + (hash * HASH_ENTRY_SIZE)
+			   + BYTES_IN_WORD));
 	  PUT_WORD(dynobj, (s->size / HASH_ENTRY_SIZE),
-		   (s->contents + hash * HASH_ENTRY_SIZE + BYTES_IN_WORD));
-	  PUT_WORD(dynobj, (bfd_vma)h->dynindx, s->contents + s->size);
+		   (s->contents + (hash * HASH_ENTRY_SIZE) + BYTES_IN_WORD));
+	  PUT_WORD(dynobj, (bfd_vma)h->dynindx, (s->contents + s->size));
 	  PUT_WORD(dynobj, next, (s->contents + s->size + BYTES_IN_WORD));
 	  s->size += HASH_ENTRY_SIZE;
 	}

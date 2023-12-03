@@ -949,12 +949,12 @@ static bfd_boolean
 elf64_hppa_dynamic_symbol_p(struct elf_link_hash_entry *h,
 			    struct bfd_link_info *info)
 {
-  /* ??? What, if anything, needs to happen wrt STV_PROTECTED symbols
+  /* ???: What, if anything, needs to happen wrt STV_PROTECTED symbols
      and relocations that retrieve a function descriptor?  Assume the
      worst for now.  */
   if (_bfd_elf_dynamic_symbol_p (h, info, 1))
     {
-      /* ??? Why is this here and not elsewhere is_local_label_name.  */
+      /* ???: Why is this here and not elsewhere is_local_label_name? */
       if (h->root.root.string[0] == '$' && h->root.root.string[1] == '$')
 	return FALSE;
 
@@ -1486,9 +1486,9 @@ allocate_dynrel_entries(struct elf64_hppa_dyn_hash_entry *dyn_h, PTR data)
 	 shared libraries get two REL relocations.  Local symbols in
 	 main applications get nothing.  */
       if (dynamic_symbol)
-	t = sizeof (Elf64_External_Rela);
+	t = sizeof(Elf64_External_Rela);
       else if (shared)
-	t = 2 * sizeof (Elf64_External_Rela);
+	t = (2 * sizeof(Elf64_External_Rela));
 
       hppa_info->plt_rel_sec->size += t;
     }

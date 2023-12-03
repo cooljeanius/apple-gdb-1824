@@ -3333,16 +3333,26 @@ compute_function_info(bfd *abfd,
 
      If we find anything else, we quit.  */
 
-  /* Look for movm [regs],sp */
-  byte1 = bfd_get_8(abfd, (contents + addr));
-  byte2 = bfd_get_8(abfd, (contents + addr + 1));
+  if (contents) {
+    /* Look for movm [regs],sp */
+    byte1 = bfd_get_8(abfd, (contents + addr));
+    byte2 = bfd_get_8(abfd, (contents + addr + 1));
+  } else {
+    byte1 = bfd_get_8(abfd, addr);
+    byte2 = bfd_get_8(abfd, (addr + 1));
+  }
 
   if (byte1 == 0xcf)
     {
       hash->movm_args = byte2;
       addr += 2;
-      byte1 = bfd_get_8(abfd, (contents + addr));
-      byte2 = bfd_get_8(abfd, (contents + addr + 1));
+      if (contents) {
+        byte1 = bfd_get_8(abfd, (contents + addr));
+        byte2 = bfd_get_8(abfd, (contents + addr + 1));
+      } else {
+        byte1 = bfd_get_8(abfd, addr);
+        byte2 = bfd_get_8(abfd, (addr + 1));
+      }
     }
 
   /* Now figure out how much stack space will be allocated by the movm
@@ -3368,37 +3378,41 @@ compute_function_info(bfd *abfd,
 
       /* "other" space.  d0, d1, a0, a1, mdr, lir, lar, 4 byte pad.  */
       if (hash->movm_args & 0x08)
-	hash->movm_stack_size += 8 * 4;
+	hash->movm_stack_size += (8 * 4);
 
       if (bfd_get_mach (abfd) == bfd_mach_am33
 	  || bfd_get_mach (abfd) == bfd_mach_am33_2)
 	{
 	  /* "exother" space.  e0, e1, mdrq, mcrh, mcrl, mcvf */
 	  if (hash->movm_args & 0x1)
-	    hash->movm_stack_size += 6 * 4;
+	    hash->movm_stack_size += (6 * 4);
 
 	  /* exreg1 space.  e4, e5, e6, e7 */
 	  if (hash->movm_args & 0x2)
-	    hash->movm_stack_size += 4 * 4;
+	    hash->movm_stack_size += (4 * 4);
 
 	  /* exreg0 space.  e2, e3  */
 	  if (hash->movm_args & 0x4)
-	    hash->movm_stack_size += 2 * 4;
+	    hash->movm_stack_size += (2 * 4);
 	}
     }
 
-  /* Now look for the two stack adjustment variants.  */
-  if (byte1 == 0xf8 && byte2 == 0xfe)
+  /* Now look for the two stack adjustment variants: */
+  if ((byte1 == 0xf8) && (byte2 == 0xfe))
     {
-      int temp = bfd_get_8 (abfd, contents + addr + 2);
-      temp = ((temp & 0xff) ^ (~0x7f)) + 0x80;
+      int temp;
+      if (contents)
+        temp = bfd_get_8(abfd, (contents + addr + 2));
+      else
+	temp = bfd_get_8(abfd, (addr + 2));
+      temp = (((temp & 0xff) ^ (~0x7f)) + 0x80);
 
       hash->stack_size = -temp;
     }
-  else if (byte1 == 0xfa && byte2 == 0xfe)
+  else if ((byte1 == 0xfa) && (byte2 == 0xfe))
     {
-      int temp = bfd_get_16 (abfd, contents + addr + 2);
-      temp = ((temp & 0xffff) ^ (~0x7fff)) + 0x8000;
+      int temp = bfd_get_16(abfd, (contents + addr + 2));
+      temp = (((temp & 0xffff) ^ (~0x7fff)) + 0x8000);
       temp = -temp;
 
       if (temp < 255)
@@ -3408,7 +3422,7 @@ compute_function_info(bfd *abfd,
   /* If the total stack to be allocated by the call instruction is more
      than 255 bytes, then we can't remove the stack adjustment by using
      "call" (we might still be able to remove the "movm" instruction.  */
-  if (hash->stack_size + hash->movm_stack_size > 255)
+  if ((hash->stack_size + hash->movm_stack_size) > 255)
     hash->stack_size = 0;
 
   return;
@@ -4414,8 +4428,7 @@ _bfd_mn10300_elf_finish_dynamic_symbol(bfd *output_bfd,
       srel = bfd_get_section_by_name (dynobj, ".rela.got");
       BFD_ASSERT (sgot != NULL && srel != NULL);
 
-      rel.r_offset = (sgot->output_section->vma
-		      + sgot->output_offset
+      rel.r_offset = (sgot->output_section->vma + sgot->output_offset
 		      + (h->got.offset &~ 1));
 
       /* If this is a -Bsymbolic link, and the symbol is defined
@@ -4434,7 +4447,7 @@ _bfd_mn10300_elf_finish_dynamic_symbol(bfd *output_bfd,
 	}
       else
 	{
-	  bfd_put_32(output_bfd, (bfd_vma)0, sgot->contents + h->got.offset);
+	  bfd_put_32(output_bfd, (bfd_vma)0L, sgot->contents + h->got.offset);
 	  rel.r_info = ELF32_R_INFO(h->dynindx, R_MN10300_GLOB_DAT);
 	  rel.r_addend = 0;
 	}

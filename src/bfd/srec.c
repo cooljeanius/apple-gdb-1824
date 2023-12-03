@@ -397,26 +397,26 @@ srec_scan (bfd *abfd)
 	      symname = (char *)bfd_alloc(abfd, (bfd_size_type)(p - symbuf));
 	      if (symname == NULL)
 		goto error_return;
-	      strcpy (symname, symbuf);
-	      free (symbuf);
+	      strcpy(symname, symbuf);
+	      free(symbuf);
 	      symbuf = NULL;
 
-	      while ((c = srec_get_byte (abfd, &error)) != EOF
-		     && (c == ' ' || c == '\t'))
+	      while (((c = srec_get_byte(abfd, &error)) != EOF)
+		     && ((c == ' ') || (c == '\t')))
 		;
 	      if (c == EOF)
 		{
-		  srec_bad_byte (abfd, lineno, c, error);
+		  srec_bad_byte(abfd, lineno, c, error);
 		  goto error_return;
 		}
 
-	      /* Skip a dollar sign before the hex value.  */
+	      /* Skip a dollar sign before the hex value: */
 	      if (c == '$')
 		{
-		  c = srec_get_byte (abfd, &error);
+		  c = srec_get_byte(abfd, &error);
 		  if (c == EOF)
 		    {
-		      srec_bad_byte (abfd, lineno, c, error);
+		      srec_bad_byte(abfd, lineno, c, error);
 		      goto error_return;
 		    }
 		}

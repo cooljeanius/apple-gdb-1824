@@ -863,9 +863,9 @@ record_toc(asection *toc_section, bfd_signed_vma our_toc_offset,
 #ifdef COFF_IMAGE_WITH_PE
 
 static bfd_boolean ppc_record_toc_entry
-  PARAMS ((bfd *, struct bfd_link_info *, asection *, int, enum toc_type));
+  PARAMS((bfd *, struct bfd_link_info *, asection *, int, enum toc_type));
 static void ppc_mark_symbol_as_glue
-  PARAMS ((bfd *, int, struct internal_reloc *));
+  PARAMS((bfd *, int, struct internal_reloc *));
 
 /* Record a toc offset against a symbol: */
 static bfd_boolean
@@ -881,7 +881,7 @@ ppc_record_toc_entry(bfd *abfd,
 
   h = 0;
 
-  h = (struct ppc_coff_link_hash_entry *) (obj_coff_sym_hashes (abfd)[sym]);
+  h = (struct ppc_coff_link_hash_entry *)(obj_coff_sym_hashes(abfd)[sym]);
   if (h != 0)
     {
       HASH_CHECK(h);
@@ -897,15 +897,15 @@ ppc_record_toc_entry(bfd *abfd,
 	  bfd_size_type amt;
 
 	  /* allocate a table */
-	  amt = (bfd_size_type) obj_raw_syment_count (abfd) * sizeof (int);
-	  local_syms = (int *) bfd_zalloc (abfd, amt);
+	  amt = (bfd_size_type)(obj_raw_syment_count(abfd) * sizeof(int));
+	  local_syms = (int *)bfd_zalloc(abfd, amt);
 	  if (local_syms == 0)
 	    return FALSE;
-	  obj_coff_local_toc_table (abfd) = local_syms;
+	  obj_coff_local_toc_table(abfd) = local_syms;
 
-	  for (i = 0; i < obj_raw_syment_count (abfd); ++i)
+	  for (i = 0; i < obj_raw_syment_count(abfd); ++i)
 	    {
-	      SET_UNALLOCATED (local_syms[i]);
+	      SET_UNALLOCATED(local_syms[i]);
 	    }
 	}
 
@@ -934,7 +934,7 @@ ppc_record_toc_entry(bfd *abfd,
 	  h->toc_offset = global_toc_size;
 	  global_toc_size += 4;
 
-	  /* The size must fit in a 16-bit displacement.  */
+	  /* The size must fit in a 16-bit displacement: */
 	  if (global_toc_size >= 65535)
 	    {
 	      (*_bfd_error_handler)(_("TOC overflow"));
@@ -944,6 +944,9 @@ ppc_record_toc_entry(bfd *abfd,
 	}
     }
 
+#ifdef __clang_analyzer__
+  (void)name;
+#endif /* __clang_analyzer__ */
   return TRUE;
 }
 
@@ -1349,14 +1352,14 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		   - pe_data(output_bfd)->pe_opthdr.ImageBase);
 
 		idata5offset = myh->root.u.def.value;
-		myh = coff_link_hash_lookup (coff_hash_table (info),
-					     "__idata6_magic__",
-					     FALSE, FALSE, TRUE);
+		myh = coff_link_hash_lookup(coff_hash_table(info),
+                                            "__idata6_magic__",
+                                            FALSE, FALSE, TRUE);
 
-		thunk_size = myh->root.u.def.value - idata5offset;
-		myh = coff_link_hash_lookup (coff_hash_table (info),
-					     "__idata4_magic__",
-					     FALSE, FALSE, TRUE);
+		thunk_size = (myh->root.u.def.value - idata5offset);
+		myh = coff_link_hash_lookup(coff_hash_table (info),
+                                            "__idata4_magic__",
+                                            FALSE, FALSE, TRUE);
 		import_table_size = myh->root.u.def.value;
 	      }
 

@@ -504,7 +504,7 @@ NAME (aout, some_aout_object_p) (bfd *abfd,
 
   if (N_MAGIC(*execp) == ZMAGIC) {
       abfd->flags |= (D_PAGED | WP_TEXT);
-      adata (abfd).magic = z_magic;
+      adata(abfd).magic = z_magic;
   } else if (N_MAGIC(*execp) == QMAGIC) {
       /*NOTREACHED*/
       abfd->flags |= (D_PAGED | WP_TEXT);
@@ -512,9 +512,9 @@ NAME (aout, some_aout_object_p) (bfd *abfd,
       adata(abfd).subformat = q_magic_format;
   } else if (N_MAGIC(*execp) == NMAGIC) {
       abfd->flags |= WP_TEXT;
-      adata (abfd).magic = n_magic;
+      adata(abfd).magic = n_magic;
   } else if ((N_MAGIC(*execp) == OMAGIC) || (N_MAGIC(*execp) == BMAGIC)) {
-      adata (abfd).magic = o_magic;
+      adata(abfd).magic = o_magic;
   } else {
       /* Should have been checked with N_BADMAG before this routine
        * was called. */

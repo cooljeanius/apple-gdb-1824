@@ -1400,7 +1400,7 @@ _bfd_construct_extended_name_table (bfd *abfd,
 	     encounter an oddball archive format and want to
 	     generalise this hack.  */
 	  struct ar_hdr *hdr = arch_hdr(current);
-	  strcpy(strptr, normal);
+	  strncpy(strptr, normal, (thislen - 1UL));
 	  if (! trailing_slash)
 	    strptr[thislen] = '\012';
 	  else
@@ -1844,14 +1844,12 @@ _bfd_write_archive_contents(bfd *arch)
 	 table-of-contents if it is >60 seconds less than the file's
 	 modified-time.  That painful hack requires this painful hack.  */
       tries = 1;
-      do
-	{
-	  if (bfd_update_armap_timestamp (arch))
+      do {
+	  if (bfd_update_armap_timestamp(arch))
 	    break;
 	  (*_bfd_error_handler)
 	    (_("Warning: writing archive was slow: rewriting timestamp\n"));
-	}
-      while (++tries < 6);
+      } while (++tries < 6);
     }
 
   return TRUE;

@@ -208,14 +208,15 @@ get_4 (unsigned char **pp)
   return (p[0] << 24) | (p[1] << 16) | (p[2] << 8) | (p[3] << 0);
 }
 
+/* */
 static void
-get_10 (unsigned char **pp, char *name)
+get_10(unsigned char **pp, char *name)
 {
-  char *p = (char *) *pp;
+  char *p = (char *)*pp;
   int len = 10;
 
   *pp += len;
-  while (*p != ' ' && len)
+  while ((*p != ' ') && len)
     {
       *name++ = *p++;
       len--;
@@ -223,27 +224,29 @@ get_10 (unsigned char **pp, char *name)
   *name = 0;
 }
 
+/* */
 static char *
-new_symbol_string (bfd *abfd, const char *name)
+new_symbol_string(bfd *abfd, const char *name)
 {
-  char *n = VDATA (abfd)->strings;
+  char *n = VDATA(abfd)->strings;
 
-  strcpy (VDATA (abfd)->strings, name);
-  VDATA (abfd)->strings += strlen (VDATA (abfd)->strings) + 1;
+  strcpy(VDATA(abfd)->strings, name);
+  VDATA(abfd)->strings += (strlen(VDATA(abfd)->strings) + 1);
   return n;
 }
 
+/* */
 static void
-process_esd (bfd *abfd, struct ext_esd *esd, int pass)
+process_esd(bfd *abfd, struct ext_esd *esd, int pass)
 {
-  /* Read through the ext def for the est entries.  */
-  int togo = esd->size - 2;
+  /* Read through the ext def for the est entries: */
+  int togo = (esd->size - 2);
   bfd_vma size;
   bfd_vma start;
   asection *sec;
   char name[11];
   unsigned char *ptr = esd->esd_entries;
-  unsigned char *end = ptr + togo;
+  unsigned char *end = (ptr + togo);
 
   while (ptr < end)
     {

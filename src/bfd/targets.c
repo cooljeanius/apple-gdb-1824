@@ -1777,7 +1777,7 @@ bfd_get_target_info(const char *target_name, bfd *abfd,
                 {
                   char new_tname[50];
 
-                  strcpy(new_tname, hyp);
+                  strncpy(new_tname, hyp, (sizeof(new_tname) - 1UL));
                   while ((hyp = strrchr(new_tname, '-')) != NULL)
                     {
                       *hyp = 0;

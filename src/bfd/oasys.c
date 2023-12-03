@@ -152,7 +152,7 @@ oasys_slurp_symbol_table (bfd *const abfd)
 		break;
 	      default:
 		dest = dest_defined--;
-		BFD_ASSERT(FALSE);
+		BFD_ASSERT(dest);
 		break;
 	      }
 	    dest->name = string_ptr;

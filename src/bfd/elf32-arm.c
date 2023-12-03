@@ -2855,7 +2855,8 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
   if (sym_hashes == NULL) {
     ; /* ??? */
   }
-  local_got_offsets = ((input_bfd) ? elf_local_got_offsets(input_bfd) : NULL);
+  local_got_offsets = ((elf_tdata(input_bfd))
+                       ? elf_local_got_offsets(input_bfd) : NULL);
   r_symndx = ELF32_R_SYM(rel->r_info);
 
   if (globals->use_rel)

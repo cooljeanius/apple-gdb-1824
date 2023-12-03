@@ -4228,34 +4228,34 @@ mips_elf_calculate_relocation(bfd *abfd, bfd *input_bfd,
 	 0.  */
       if (! local_p)
 	goto got_disp;
-      value = mips_elf_got_page (abfd, input_bfd, info, symbol + addend, NULL);
+      value = mips_elf_got_page(abfd, input_bfd, info, (symbol + addend), NULL);
       if (value == MINUS_ONE)
 	return bfd_reloc_outofrange;
-      value = mips_elf_got_offset_from_index (elf_hash_table (info)->dynobj,
-					      abfd, input_bfd, value);
-      overflowed_p = mips_elf_overflow_p (value, 16);
+      value = mips_elf_got_offset_from_index(elf_hash_table(info)->dynobj,
+                                             abfd, input_bfd, value);
+      overflowed_p = mips_elf_overflow_p(value, 16);
       break;
 
     case R_MIPS_GOT_OFST:
       if (local_p)
-	mips_elf_got_page (abfd, input_bfd, info, symbol + addend, &value);
+	mips_elf_got_page(abfd, input_bfd, info, (symbol + addend), &value);
       else
 	value = addend;
-      overflowed_p = mips_elf_overflow_p (value, 16);
+      overflowed_p = mips_elf_overflow_p(value, 16);
       break;
 
     case R_MIPS_SUB:
-      value = symbol - addend;
+      value = (symbol - addend);
       value &= howto->dst_mask;
       break;
 
     case R_MIPS_HIGHER:
-      value = mips_elf_higher (addend + symbol);
+      value = mips_elf_higher(addend + symbol);
       value &= howto->dst_mask;
       break;
 
     case R_MIPS_HIGHEST:
-      value = mips_elf_highest (addend + symbol);
+      value = mips_elf_highest(addend + symbol);
       value &= howto->dst_mask;
       break;
 

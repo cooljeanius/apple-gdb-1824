@@ -193,10 +193,9 @@ vms_esecflag_by_name(struct sec_flags_struct *section_flags,
 
 struct flagdescstruct { const char *name; flagword value; };
 
-/* Convert flag to printable string.  */
-
+/* Convert flag to printable string: */
 static char *
-flag2str (struct flagdescstruct * flagdesc, flagword flags)
+flag2str(struct flagdescstruct *flagdesc, flagword flags)
 {
   static char res[64];
   int next = 0;
@@ -207,10 +206,10 @@ flag2str (struct flagdescstruct * flagdesc, flagword flags)
       if ((flags & flagdesc->value) != 0)
 	{
 	  if (next)
-	    strcat (res, ",");
+	    strncat(res, ",", (sizeof(res) - 1UL));
 	  else
 	    next = 1;
-	  strcat (res, flagdesc->name);
+	  strncat(res, flagdesc->name, (sizeof(res) - 1UL));
 	}
       flagdesc++;
     }

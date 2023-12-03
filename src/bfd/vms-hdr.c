@@ -177,10 +177,9 @@ get_vms_time_string (void)
   return tbuf;
 }
 
-/* Write object header for bfd abfd.  */
-
+/* Write object header for bfd abfd: */
 int
-_bfd_vms_write_hdr (bfd *abfd, int objtype)
+_bfd_vms_write_hdr(bfd *abfd, int objtype)
 {
   asymbol *symbol;
   unsigned int symnum;
@@ -189,40 +188,40 @@ _bfd_vms_write_hdr (bfd *abfd, int objtype)
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(2, "vms_write_hdr (%p)\n", (void *)abfd);
-#endif
+#endif /* VMS_DEBUG */
 
-  _bfd_vms_output_alignment (abfd, 2);
+  _bfd_vms_output_alignment(abfd, 2);
 
-  /* MHD.  */
+  /* MHD: */
   if (objtype != OBJ_S_C_HDR)
     {
-      _bfd_vms_output_begin (abfd, EOBJ_S_C_EMH, EMH_S_C_MHD);
-      _bfd_vms_output_short (abfd, EOBJ_S_C_STRLVL);
-      _bfd_vms_output_long (abfd, 0);
-      _bfd_vms_output_long (abfd, 0);
-      _bfd_vms_output_long (abfd, MAX_OUTREC_SIZE);
+      _bfd_vms_output_begin(abfd, EOBJ_S_C_EMH, EMH_S_C_MHD);
+      _bfd_vms_output_short(abfd, EOBJ_S_C_STRLVL);
+      _bfd_vms_output_long(abfd, 0);
+      _bfd_vms_output_long(abfd, 0);
+      _bfd_vms_output_long(abfd, MAX_OUTREC_SIZE);
     }
 
-  if (bfd_get_filename (abfd) != 0)
+  if (bfd_get_filename(abfd) != 0)
     {
-      /* Strip path and suffix information.  */
+      /* Strip path and suffix information: */
       char *fname, *fout, *fptr;
 
       fptr = bfd_get_filename (abfd);
       fname = (char *)alloca(strnlen(fptr, (MAX_ALLOCA_SIZE - 1UL)) + 1UL);
-      strcpy (fname, fptr);
-      fout = strrchr (fname, ']');
+      strcpy(fname, fptr);
+      fout = strrchr(fname, ']');
       if (fout == 0)
-	fout = strchr (fname, ':');
+	fout = strchr(fname, ':');
       if (fout != 0)
 	fout++;
       else
 	fout = fname;
 
-      /* Strip .obj suffix.  */
-      fptr = strrchr (fname, '.');
+      /* Strip .obj suffix: */
+      fptr = strrchr(fname, '.');
       if ((fptr != 0)
-	  && (strcasecmp (fptr, ".OBJ") == 0))
+	  && (strcasecmp(fptr, ".OBJ") == 0))
 	*fptr = 0;
 
       fptr = fout;

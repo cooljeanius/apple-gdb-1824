@@ -1219,6 +1219,7 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	    {
 	      sec = bfd_abs_section_ptr;
 	      val = 0;
+              (void)sec;
 	    }
 	  else
 	    {

@@ -1718,7 +1718,7 @@ elf_cris_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
 	}
       else
 	{
-	  bfd_put_32(output_bfd, (bfd_vma)0, where);
+	  bfd_put_32(output_bfd, (bfd_vma)0L, where);
 	  rela.r_info = ELF32_R_INFO(h->dynindx, R_CRIS_GLOB_DAT);
 	  rela.r_addend = 0;
 	}

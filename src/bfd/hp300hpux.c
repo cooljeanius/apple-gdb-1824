@@ -574,17 +574,17 @@ MY(slurp_symbol_table)(bfd *abfd)
   for (sym_pointer = syms; sym_pointer < sym_end; sym_pointer++, num_syms++)
     {
       /* skip over the embedded symbol. */
-      sym_pointer = (struct external_nlist *) (((char *) sym_pointer) +
-					       sym_pointer->e_length[0]);
+      sym_pointer = (struct external_nlist *)(((char *)sym_pointer) +
+					      sym_pointer->e_length[0]);
     }
 
   /* now that we know the symbol count, update the bfd header */
-  bfd_get_symcount (abfd) = num_syms;
+  bfd_get_symcount(abfd) = num_syms;
 
   amt = num_syms;
-  amt *= sizeof (aout_symbol_type);
-  cached = (aout_symbol_type *) bfd_zalloc (abfd, amt);
-  if (cached == NULL && num_syms != 0)
+  amt *= sizeof(aout_symbol_type);
+  cached = (aout_symbol_type *)bfd_zalloc(abfd, amt);
+  if ((cached == NULL) && (num_syms != 0))
     return FALSE;
 
   /* as we march thru the hp symbol table, convert it into a list of
@@ -603,16 +603,16 @@ MY(slurp_symbol_table)(bfd *abfd)
 	unsigned int length;
 	BFD_ASSERT(cache_ptr != NULL);
 	cache_ptr->symbol.the_bfd = abfd;
-	cache_ptr->symbol.value = GET_SWORD (abfd, sym_pointer->e_value);
-	cache_ptr->desc = bfd_get_16 (abfd, sym_pointer->e_almod);
-	cache_ptr->type = bfd_get_8 (abfd, sym_pointer->e_type);
+	cache_ptr->symbol.value = GET_SWORD(abfd, sym_pointer->e_value);
+	cache_ptr->desc = bfd_get_16(abfd, sym_pointer->e_almod);
+	cache_ptr->type = bfd_get_8(abfd, sym_pointer->e_type);
 	cache_ptr->symbol.udata.p = NULL;
-	length = bfd_get_8 (abfd, sym_pointer->e_length);
+	length = bfd_get_8(abfd, sym_pointer->e_length);
 	cache_ptr->other = length;	/* other not used, save length here */
 
 	cache_save = *cache_ptr;
 	convert_sym_type (sym_pointer, cache_ptr, abfd);
-	if (!translate_from_native_sym_flags (abfd, cache_ptr))
+	if (!translate_from_native_sym_flags(abfd, cache_ptr))
 	  return FALSE;
 
 	/********************************************************/

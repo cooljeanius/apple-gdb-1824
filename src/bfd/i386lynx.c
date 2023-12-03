@@ -154,7 +154,7 @@ NAME(lynx,swap_std_reloc_out)(bfd *abfd, arelent *g,
   r_jmptable = 0;
   r_relative = 0;
 
-  r_addend = g->addend + (*(g->sym_ptr_ptr))->section->output_section->vma;
+  r_addend = (g->addend + (*(g->sym_ptr_ptr))->section->output_section->vma);
 
   /* name was clobbered by aout_write_syms to be symbol index */
 

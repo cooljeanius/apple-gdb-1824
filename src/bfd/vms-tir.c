@@ -787,30 +787,33 @@ etir_stc (bfd * abfd, int cmd, unsigned char *ptr ATTRIBUTE_UNUSED)
   return TRUE;
 }
 
+/* */
 static asection *
-new_section (bfd * abfd ATTRIBUTE_UNUSED, int idx)
+new_section(bfd *abfd ATTRIBUTE_UNUSED, int idx)
 {
   asection *section;
   char sname[20];
   char *name;
+  bfd_size_type namelen;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug(5, "new_section %d\n", idx);
 #endif /* VMS_DEBUG */
   snprintf(sname, sizeof(sname), SECTION_NAME_TEMPLATE, idx);
 
-  name = (char *)bfd_malloc((bfd_size_type)strlen(sname) + 1);
+  namelen = ((bfd_size_type)strlen(sname) + 1UL);
+  name = (char *)bfd_malloc(namelen);
   if (name == 0) {
     return NULL;
   }
-  strcpy(name, sname);
+  strncpy(name, sname, namelen);
 
   section = (asection *)bfd_malloc((bfd_size_type)sizeof(asection));
   if (section == 0)
     {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-      _bfd_vms_debug (6,  "bfd_make_section (%s) failed", name);
-#endif
+      _bfd_vms_debug(6,  "bfd_make_section (%s) failed", name);
+#endif /* VMS_DEBUG */
       return NULL;
     }
 
@@ -1119,6 +1122,7 @@ tir_sta (bfd * abfd, unsigned char *ptr)
 	(*_bfd_error_handler)(_("stack-local-symbol-entry-point-mask not fully implemented"));
 	_bfd_vms_push(abfd, (uquad)0, -1);
 	ptr += (*ptr + 1);
+	(void)envidx;
       }
       break;
 
@@ -1515,6 +1519,7 @@ tir_ctl(bfd *abfd, unsigned char *ptr)
       (*_bfd_error_handler)(_("reserved CTL cmd %d"), ptr[-1]);
       break;
     }
+  (void)dummy;
   return ptr;
 }
 
@@ -1841,7 +1846,6 @@ _bfd_vms_write_tir(bfd *abfd, int objtype ATTRIBUTE_UNUSED)
 {
   asection *section;
   vms_section *sptr;
-  int nextoffset;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug(2, "vms_write_tir (%p, %d)\n", (void *)abfd, objtype);
@@ -1849,7 +1853,6 @@ _bfd_vms_write_tir(bfd *abfd, int objtype ATTRIBUTE_UNUSED)
 
   _bfd_vms_output_alignment(abfd, 4);
 
-  nextoffset = 0;
   PRIV(vms_linkage_index) = 1;
 
   /* Dump all other sections: */
@@ -1874,7 +1877,7 @@ _bfd_vms_write_tir(bfd *abfd, int objtype ATTRIBUTE_UNUSED)
 	  else
 	    {
 	      arelent **rptr;
-	      _bfd_vms_debug (4, "%d relocations:\n", i);
+	      _bfd_vms_debug(4, "%d relocations:\n", i);
 	      rptr = section->orelocation;
 	      while (i-- > 0)
 		{
@@ -1889,25 +1892,25 @@ _bfd_vms_write_tir(bfd *abfd, int objtype ATTRIBUTE_UNUSED)
 		  rptr++;
 		}
 	    }
-#endif
+#endif /* VMS_DEBUG */
 	}
 
       if ((section->flags & SEC_HAS_CONTENTS)
-	  && (! bfd_is_com_section (section)))
+	  && (! bfd_is_com_section(section)))
 	{
-	  /* Virtual addr in section.  */
+	  /* Virtual addr in section: */
 	  bfd_vma vaddr;
 
-	  sptr = _bfd_get_vms_section (abfd, section->index);
+	  sptr = _bfd_get_vms_section(abfd, section->index);
 	  if (sptr == NULL)
 	    {
-	      bfd_set_error (bfd_error_no_contents);
+	      bfd_set_error(bfd_error_no_contents);
 	      return -1;
 	    }
 
-	  vaddr = (bfd_vma) (sptr->offset);
+	  vaddr = (bfd_vma)(sptr->offset);
 
-	  start_etir_record (abfd, section->index, (uquad) sptr->offset,
+	  start_etir_record (abfd, section->index, (uquad)sptr->offset,
 			     FALSE);
 
 	  while (sptr != NULL)

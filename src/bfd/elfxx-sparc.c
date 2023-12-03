@@ -977,10 +977,9 @@ sparc_elf_tls_transition (struct bfd_link_info *info, bfd *abfd,
 /* Look through the relocs for a section during the first phase, and
    allocate space in the global offset table or procedure linkage
    table.  */
-
 bfd_boolean
-_bfd_sparc_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
-			     asection *sec, const Elf_Internal_Rela *relocs)
+_bfd_sparc_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
+			    asection *sec, const Elf_Internal_Rela *relocs)
 {
   struct _bfd_sparc_elf_link_hash_table *htab;
   Elf_Internal_Shdr *symtab_hdr;
@@ -995,31 +994,31 @@ _bfd_sparc_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
   if (info->relocatable)
     return TRUE;
 
-  htab = _bfd_sparc_elf_hash_table (info);
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
-  local_got_offsets = elf_local_got_offsets (abfd);
+  htab = _bfd_sparc_elf_hash_table(info);
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
+  local_got_offsets = elf_local_got_offsets(abfd);
 
   sreloc = NULL;
 
-  if (ABI_64_P (abfd))
-    num_relocs = NUM_SHDR_ENTRIES (& elf_section_data (sec)->rel_hdr);
+  if (ABI_64_P(abfd))
+    num_relocs = NUM_SHDR_ENTRIES(&elf_section_data(sec)->rel_hdr);
   else
     num_relocs = sec->reloc_count;
-  rel_end = relocs + num_relocs;
+  rel_end = (relocs + num_relocs);
   for (rel = relocs; rel < rel_end; rel++)
     {
       unsigned int r_type;
       unsigned long r_symndx;
       struct elf_link_hash_entry *h;
 
-      r_symndx = SPARC_ELF_R_SYMNDX (htab, rel->r_info);
-      r_type = SPARC_ELF_R_TYPE (rel->r_info);
+      r_symndx = SPARC_ELF_R_SYMNDX(htab, rel->r_info);
+      r_type = SPARC_ELF_R_TYPE(rel->r_info);
 
-      if (r_symndx >= NUM_SHDR_ENTRIES (symtab_hdr))
+      if (r_symndx >= NUM_SHDR_ENTRIES(symtab_hdr))
 	{
-	  (*_bfd_error_handler) (_("%B: bad symbol index: %d"),
-				 abfd, r_symndx);
+	  (*_bfd_error_handler)(_("%B: bad symbol index: %d"),
+                                abfd, r_symndx);
 	  return FALSE;
 	}
 
@@ -1030,7 +1029,7 @@ _bfd_sparc_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
 	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
 	  while (h->root.type == bfd_link_hash_indirect
 		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	}
 
       /* Compatibility with old R_SPARC_REV32 reloc conflicting
@@ -1438,19 +1437,19 @@ _bfd_sparc_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
   return TRUE;
 }
 
+/* */
 asection *
-_bfd_sparc_elf_gc_mark_hook (asection *sec,
-			     struct bfd_link_info *info,
-			     Elf_Internal_Rela *rel,
-			     struct elf_link_hash_entry *h,
-			     Elf_Internal_Sym *sym)
+_bfd_sparc_elf_gc_mark_hook(asection *sec, struct bfd_link_info *info,
+			    Elf_Internal_Rela *rel,
+			    struct elf_link_hash_entry *h,
+			    Elf_Internal_Sym *sym)
 {
   if (h != NULL)
     {
       struct _bfd_sparc_elf_link_hash_table *htab;
 
-      htab = _bfd_sparc_elf_hash_table (info);
-      switch (SPARC_ELF_R_TYPE (rel->r_info))
+      htab = _bfd_sparc_elf_hash_table(info);
+      switch (SPARC_ELF_R_TYPE(rel->r_info))
       {
       case R_SPARC_GNU_VTINHERIT:
       case R_SPARC_GNU_VTENTRY:
@@ -2975,30 +2974,30 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      Elf_Internal_Rela outrel;
 	      bfd_boolean skip, relocate = FALSE;
 
-	      BFD_ASSERT (sreloc != NULL);
+	      BFD_ASSERT(sreloc != NULL);
 	      skip = FALSE;
 	      outrel.r_offset =
-		_bfd_elf_section_offset (output_bfd, info, input_section,
-					 rel->r_offset);
-	      if (outrel.r_offset == (bfd_vma) -1)
+		_bfd_elf_section_offset(output_bfd, info, input_section,
+                                        rel->r_offset);
+	      if (outrel.r_offset == (bfd_vma)-1)
 		skip = TRUE;
-	      else if (outrel.r_offset == (bfd_vma) -2)
+	      else if (outrel.r_offset == (bfd_vma)-2)
 		skip = relocate = TRUE;
 	      outrel.r_offset += (input_section->output_section->vma
 				  + input_section->output_offset);
 	      if (skip)
-		memset (&outrel, 0, sizeof outrel);
+		memset(&outrel, 0, sizeof(outrel));
 	      else
 		{
-		  outrel.r_info = SPARC_ELF_R_INFO (htab, NULL, 0, r_type);
-		  outrel.r_addend = relocation - dtpoff_base (info)
+		  outrel.r_info = SPARC_ELF_R_INFO(htab, NULL, 0, r_type);
+		  outrel.r_addend = relocation - dtpoff_base(info)
 				    + rel->r_addend;
 		}
 
-	      SPARC_ELF_APPEND_RELA (htab, output_bfd, sreloc, &outrel);
+	      SPARC_ELF_APPEND_RELA(htab, output_bfd, sreloc, &outrel);
 	      continue;
 	    }
-	  relocation = tpoff (info, relocation);
+	  relocation = tpoff(info, relocation);
 	  break;
 
 	case R_SPARC_TLS_LDM_CALL:
@@ -3395,20 +3394,19 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 
 /* Finish up dynamic symbol handling.  We set the contents of various
    dynamic sections here.  */
-
 bfd_boolean
-_bfd_sparc_elf_finish_dynamic_symbol (bfd *output_bfd,
-				      struct bfd_link_info *info,
-				      struct elf_link_hash_entry *h,
-				      Elf_Internal_Sym *sym)
+_bfd_sparc_elf_finish_dynamic_symbol(bfd *output_bfd,
+				     struct bfd_link_info *info,
+				     struct elf_link_hash_entry *h,
+				     Elf_Internal_Sym *sym)
 {
   bfd *dynobj;
   struct _bfd_sparc_elf_link_hash_table *htab;
 
-  htab = _bfd_sparc_elf_hash_table (info);
+  htab = _bfd_sparc_elf_hash_table(info);
   dynobj = htab->elf.dynobj;
 
-  if (h->plt.offset != (bfd_vma) -1)
+  if (h->plt.offset != (bfd_vma)-1)
     {
       asection *splt;
       asection *srela;
@@ -3419,16 +3417,16 @@ _bfd_sparc_elf_finish_dynamic_symbol (bfd *output_bfd,
 
       /* This symbol has an entry in the PLT.  Set it up.  */
 
-      BFD_ASSERT (h->dynindx != -1);
+      BFD_ASSERT(h->dynindx != -1);
 
       splt = htab->splt;
       srela = htab->srelplt;
-      BFD_ASSERT (splt != NULL && srela != NULL);
+      BFD_ASSERT((splt != NULL) && (srela != NULL));
 
-      /* Fill in the entry in the procedure linkage table.  */
-      rela_index = SPARC_ELF_BUILD_PLT_ENTRY (htab, output_bfd, splt,
-					      h->plt.offset, splt->size,
-					      &r_offset);
+      /* Fill in the entry in the procedure linkage table: */
+      rela_index = SPARC_ELF_BUILD_PLT_ENTRY(htab, output_bfd, splt,
+					     h->plt.offset, splt->size,
+					     &r_offset);
 
       /* Fill in the entry in the .rela.plt section.  */
       rela.r_offset = r_offset

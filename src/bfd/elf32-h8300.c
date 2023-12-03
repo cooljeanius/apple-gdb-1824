@@ -455,7 +455,7 @@ elf32_h8_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 
       if (r != bfd_reloc_ok)
 	{
-	  const char *name;
+	  const char *name = NULL;
 	  const char *msg = (const char *)0;
 	  arelent bfd_reloc;
 	  reloc_howto_type *howto;
@@ -467,8 +467,11 @@ elf32_h8_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	    name = h->root.root.string;
 	  else
 	    {
-	      name = (bfd_elf_string_from_elf_section
-		      (input_bfd, symtab_hdr->sh_link, sym->st_name));
+              if (sym)
+	        name =
+          	  (bfd_elf_string_from_elf_section(input_bfd,
+                                                   symtab_hdr->sh_link,
+                                                   sym->st_name));
 	      if ((name == NULL) || (*name == '\0'))
 		name = bfd_section_name(input_bfd, sec);
 	    }
