@@ -1071,7 +1071,7 @@ abs32code (bfd *abfd,
       perform_slip (abfd, 4, input_section, r->address-shrink + 4);
     }
 
-  return shrink;
+  return (int)shrink;
 }
 
 static int

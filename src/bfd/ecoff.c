@@ -1041,10 +1041,9 @@ ecoff_emit_aggregate (bfd *abfd,
 	    + debug_info->symbolic_header.iextMax));
 }
 
-/* Convert the type information to string format.  */
-
+/* Convert the type information to string format: */
 static const char *
-ecoff_type_to_string (bfd *abfd, FDR *fdr, unsigned int indx)
+ecoff_type_to_string(bfd *abfd, FDR *fdr, unsigned int indx)
 {
   union aux_ext *aux_ptr;
   int bigendian;

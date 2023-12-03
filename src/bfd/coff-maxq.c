@@ -95,8 +95,8 @@ coff_maxq20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
   if (data && reloc_entry)
     {
       howto = reloc_entry->howto;
-      addr = (unsigned char *) data + reloc_entry->address;
-      call_addr = get_symbol_value (symbol_in);
+      addr = ((unsigned char *)data + reloc_entry->address);
+      call_addr = get_symbol_value(symbol_in);
 
       /* Over here the value val stores the 8 bit/16 bit value. We will put a
          check if we are moving a 16 bit immediate value into an 8 bit
@@ -129,9 +129,9 @@ coff_maxq20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
 
 	  x = (unsigned long)bfd_get_16(abfd, addr);
 
-	  x = x & LOW_WORD_MASK;
-	  x = x | (diff << 8);
-	  bfd_put_16 (abfd, (bfd_vma) x, addr);
+	  x = (x & LOW_WORD_MASK);
+	  x = (x | (diff << 8));
+	  bfd_put_16(abfd, (bfd_vma)x, addr);
 
 	  return bfd_reloc_ok;
 
@@ -233,33 +233,33 @@ coff_maxq20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
 	      ((symbol_in->flags & BSF_OLD_COMMON) != 0))
 	    addend = reloc_entry->addend;
 
-	  if (addend < 0
-	      && (call_addr < (long) (addend * (-1))))
+	  if ((addend < 0)
+	      && (call_addr < (long)(addend * (-1))))
 	    addend = 0;
 
-	  if (call_addr + addend > 0xFF)
+	  if ((call_addr + addend) > 0xFF)
 	    {
-	      bfd_perror (_("Absolute address Exceeds 8 bit Range"));
+	      bfd_perror(_("Absolute address Exceeds 8 bit Range"));
 	      return bfd_reloc_outofrange;
 	    }
 
-	  x = bfd_get_8 (abfd, addr);
-	  x = x & 0x00;
-	  x = x | (call_addr + addend);
+	  x = bfd_get_8(abfd, addr);
+	  x = (x & 0x00);
+	  x = (x | (call_addr + addend));
 
 	  bfd_put_8(abfd, (bfd_vma)x, addr);
 	  return bfd_reloc_ok;
 
 	case BFD_RELOC_16:
 	  addend = (reloc_entry->addend - reloc_entry->addend);
-	  if (!bfd_is_com_section (symbol_in->section) &&
+	  if (!bfd_is_com_section(symbol_in->section) &&
 	      ((symbol_in->flags & BSF_OLD_COMMON) == 0))
 	    {
 	      if (reloc_entry->addend > symbol_in->value)
-		addend = reloc_entry->addend - symbol_in->value;
+		addend = (reloc_entry->addend - symbol_in->value);
 
 	      if (reloc_entry->addend < symbol_in->value)
-		addend = reloc_entry->addend - symbol_in->value;
+		addend = (reloc_entry->addend - symbol_in->value);
 
 	      if (reloc_entry->addend == symbol_in->value)
 		addend = 0;
@@ -269,8 +269,8 @@ coff_maxq20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
 	      ((symbol_in->flags & BSF_OLD_COMMON) != 0))
 	    addend = reloc_entry->addend;
 
-	  if (addend < 0
-	      && (call_addr < (long) (addend * (-1))))
+	  if ((addend < 0)
+	      && (call_addr < (long)(addend * (-1))))
 	    addend = 0;
 
 	  if ((call_addr + addend) > 0xFFFF)
@@ -288,22 +288,22 @@ coff_maxq20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
 	      x = (x & 0x0000);	/* Flush garbage value.  */
 	      x = val;
 	      if ((symbol_in->section->flags & SEC_CODE) == SEC_CODE)
-		x = x >> 1;	/* Convert it into words.  */
+		x = (x >> 1);	/* Convert it into words.  */
 	    }
 
-	  bfd_put_16 (abfd, (bfd_vma) x, addr);
+	  bfd_put_16(abfd, (bfd_vma)x, addr);
 	  return bfd_reloc_ok;
 
 	case BFD_RELOC_32:
 	  addend = (reloc_entry->addend - reloc_entry->addend);
 
-	  if (!bfd_is_com_section (symbol_in->section) &&
+	  if (!bfd_is_com_section(symbol_in->section) &&
 	      ((symbol_in->flags & BSF_OLD_COMMON) == 0))
 	    {
 	      if (reloc_entry->addend > symbol_in->value)
-		addend = reloc_entry->addend - symbol_in->value;
+		addend = (reloc_entry->addend - symbol_in->value);
 	      if (reloc_entry->addend < symbol_in->value)
-		addend = reloc_entry->addend - symbol_in->value;
+		addend = (reloc_entry->addend - symbol_in->value);
 	      if (reloc_entry->addend == symbol_in->value)
 		addend = 0;
 	    }

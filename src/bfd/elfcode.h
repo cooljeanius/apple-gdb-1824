@@ -648,25 +648,25 @@ elf_object_p(bfd *abfd)
 	 It ought to be good enough to just read the last one.  */
       if (i_ehdrp->e_shnum != 1)
 	{
-	  /* Check that we don't have a totally silly number of sections.  */
-	  if (i_ehdrp->e_shnum > (unsigned int) -1 / sizeof (x_shdr)
-	      || i_ehdrp->e_shnum > (unsigned int) -1 / sizeof (i_shdr))
+	  /* Check that we don't have a totally silly number of sections: */
+	  if ((i_ehdrp->e_shnum > (unsigned int)-1 / sizeof(x_shdr))
+	      || (i_ehdrp->e_shnum > (unsigned int)-1 / sizeof(i_shdr)))
 	    goto got_wrong_format_error;
 
-	  where += (i_ehdrp->e_shnum - 1) * sizeof (x_shdr);
-	  if (where != (file_ptr) where)
+	  where += ((i_ehdrp->e_shnum - 1) * sizeof(x_shdr));
+	  if (where != (file_ptr)where)
 	    goto got_wrong_format_error;
-	  if ((bfd_size_type) where <= i_ehdrp->e_shoff)
+	  if ((bfd_size_type)where <= i_ehdrp->e_shoff)
 	    goto got_wrong_format_error;
 
-	  if (bfd_seek (abfd, (file_ptr) where, SEEK_SET) != 0)
+	  if (bfd_seek(abfd, (file_ptr)where, SEEK_SET) != 0)
 	    goto got_no_match;
-	  if (bfd_bread (&x_shdr, sizeof x_shdr, abfd) != sizeof (x_shdr))
+	  if (bfd_bread(&x_shdr, sizeof(x_shdr), abfd) != sizeof(x_shdr))
 	    goto got_no_match;
 
-	  /* Back to where we were.  */
-	  where = i_ehdrp->e_shoff + sizeof (x_shdr);
-	  if (bfd_seek (abfd, (file_ptr) where, SEEK_SET) != 0)
+	  /* Back to where we were: */
+	  where = (i_ehdrp->e_shoff + sizeof(x_shdr));
+	  if (bfd_seek(abfd, (file_ptr)where, SEEK_SET) != 0)
 	    goto got_no_match;
 	}
     }

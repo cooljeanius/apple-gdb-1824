@@ -147,12 +147,12 @@ a29k_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
 	  signed_value -= (long)(reloc_entry->address
 				 + input_section->output_section->vma
 				 + input_section->output_offset);
-	  if (signed_value > 0x1ffff || signed_value < -0x20000)
+	  if ((signed_value > 0x1ffff) || (signed_value < -0x20000))
 	    return bfd_reloc_overflow;
 	}
       signed_value >>= 2;
-      insn = INSERT_HWORD (insn, signed_value);
-      bfd_put_32 (abfd, (bfd_vma) insn ,hit_data);
+      insn = INSERT_HWORD(insn, signed_value);
+      bfd_put_32(abfd, (bfd_vma)insn ,hit_data);
       break;
     case R_ILOHALF:
       insn = (unsigned long)bfd_get_32(abfd, hit_data);

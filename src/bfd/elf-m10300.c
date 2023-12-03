@@ -1802,7 +1802,7 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 			 should convert "call" instructions to "calls"
 			 instructions.  */
 		      code = bfd_get_8(input_bfd,
-                                       contents + irel->r_offset - 1);
+                                       (contents + irel->r_offset - 1));
 		      if (code != 0xdd && code != 0xcd)
 			hash->flags |= MN10300_CONVERT_CALL_TO_CALLS;
 
@@ -3334,15 +3334,15 @@ compute_function_info(bfd *abfd,
      If we find anything else, we quit.  */
 
   /* Look for movm [regs],sp */
-  byte1 = bfd_get_8(abfd, contents + addr);
-  byte2 = bfd_get_8(abfd, contents + addr + 1);
+  byte1 = bfd_get_8(abfd, (contents + addr));
+  byte2 = bfd_get_8(abfd, (contents + addr + 1));
 
   if (byte1 == 0xcf)
     {
       hash->movm_args = byte2;
       addr += 2;
-      byte1 = bfd_get_8(abfd, contents + addr);
-      byte2 = bfd_get_8(abfd, contents + addr + 1);
+      byte1 = bfd_get_8(abfd, (contents + addr));
+      byte2 = bfd_get_8(abfd, (contents + addr + 1));
     }
 
   /* Now figure out how much stack space will be allocated by the movm
@@ -4427,27 +4427,27 @@ _bfd_mn10300_elf_finish_dynamic_symbol(bfd *output_bfd,
 	  && (info->symbolic || h->dynindx == -1)
 	  && h->def_regular)
 	{
-	  rel.r_info = ELF32_R_INFO (0, R_MN10300_RELATIVE);
+	  rel.r_info = ELF32_R_INFO(0, R_MN10300_RELATIVE);
 	  rel.r_addend = (h->root.u.def.value
 			  + h->root.u.def.section->output_section->vma
 			  + h->root.u.def.section->output_offset);
 	}
       else
 	{
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h->got.offset);
-	  rel.r_info = ELF32_R_INFO (h->dynindx, R_MN10300_GLOB_DAT);
+	  bfd_put_32(output_bfd, (bfd_vma)0, sgot->contents + h->got.offset);
+	  rel.r_info = ELF32_R_INFO(h->dynindx, R_MN10300_GLOB_DAT);
 	  rel.r_addend = 0;
 	}
 
-      bfd_elf32_swap_reloca_out (output_bfd, &rel,
-				 (bfd_byte *) ((Elf32_External_Rela *) srel->contents
-					       + srel->reloc_count));
-      ++ srel->reloc_count;
+      bfd_elf32_swap_reloca_out(output_bfd, &rel,
+                                (bfd_byte *)((Elf32_External_Rela *)srel->contents
+                                             + srel->reloc_count));
+      ++srel->reloc_count;
     }
 
   if (h->needs_copy)
     {
-      asection *        s;
+      asection *s;
       Elf_Internal_Rela rel;
 
       /* This symbol needs a copy reloc.  Set it up.  */

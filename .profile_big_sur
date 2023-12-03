@@ -3,7 +3,7 @@
 echo "Hello from .profile_big_sur"
 
 export INSTALLED_PRODUCT_ASIDES=YES
-export MACOSX_DEPLOYMENT_TARGET=11.2
+export MACOSX_DEPLOYMENT_TARGET=11.5
 export NEXT_ROOT=""
 export RC_ARCHS="x86_64"
 export RC_JASPER=YES
@@ -18,7 +18,7 @@ export RC_TARGET_CONFIG=macOS
 export RC_XBS=YES
 # FIXME: find good values for SDKROOT, SDKROOT_FOR_BUILD, and MAKEFILEPATH
 export SEPARATE_STRIP=YES
-export UNAME_RELEASE=20.3.0
+export UNAME_RELEASE=20.6.0
 export UNAME_SYSNAME=Darwin
 if test -x /usr/bin/arch; then
   export HOST_ARCHITECTURE=`/usr/bin/arch`

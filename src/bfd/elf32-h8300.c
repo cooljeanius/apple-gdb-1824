@@ -433,34 +433,34 @@ elf32_h8_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
       sec = NULL;
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
-	  sec = local_sections[r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  sym = (local_syms + r_symndx);
+   	  if (local_sections)
+	    sec = local_sections[r_symndx];
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 	}
       else
 	{
 	  bfd_boolean unresolved_reloc, warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 	}
 
-      r = elf32_h8_final_link_relocate (r_type, input_bfd, output_bfd,
-					input_section,
-					contents, rel->r_offset,
-					relocation, rel->r_addend,
-					info, sec, h == NULL);
+      r = elf32_h8_final_link_relocate(r_type, input_bfd, output_bfd,
+                                       input_section, contents, rel->r_offset,
+                                       relocation, rel->r_addend, info, sec,
+                                       (h == NULL));
 
       if (r != bfd_reloc_ok)
 	{
 	  const char *name;
-	  const char *msg = (const char *) 0;
+	  const char *msg = (const char *)0;
 	  arelent bfd_reloc;
 	  reloc_howto_type *howto;
 
-	  elf32_h8_info_to_howto (input_bfd, &bfd_reloc, rel);
+	  elf32_h8_info_to_howto(input_bfd, &bfd_reloc, rel);
 	  howto = bfd_reloc.howto;
 
 	  if (h != NULL)
@@ -469,8 +469,8 @@ elf32_h8_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	    {
 	      name = (bfd_elf_string_from_elf_section
 		      (input_bfd, symtab_hdr->sh_link, sym->st_name));
-	      if (name == NULL || *name == '\0')
-		name = bfd_section_name (input_bfd, sec);
+	      if ((name == NULL) || (*name == '\0'))
+		name = bfd_section_name(input_bfd, sec);
 	    }
 
 	  switch (r)

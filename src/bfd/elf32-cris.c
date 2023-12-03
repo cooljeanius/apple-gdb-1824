@@ -1173,7 +1173,8 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 		  off &= ~1;
 		else
 		  {
-		    bfd_put_32 (output_bfd, relocation, sgot->contents + off);
+                    bfd_put_32(output_bfd, relocation,
+                               (((sgot) ? sgot->contents : 0) + off));
 
 		    if (info->shared)
 		      {
@@ -1181,17 +1182,19 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 			Elf_Internal_Rela outrel;
 			bfd_byte *loc;
 
-			s = bfd_get_section_by_name (dynobj, ".rela.got");
-			BFD_ASSERT (s != NULL);
+			s = bfd_get_section_by_name(dynobj, ".rela.got");
+			BFD_ASSERT(s != NULL);
 
-			outrel.r_offset = (sgot->output_section->vma
-					   + sgot->output_offset
-					   + off);
-			outrel.r_info = ELF32_R_INFO (0, R_CRIS_RELATIVE);
+			if (sgot)
+			  outrel.r_offset = (sgot->output_section->vma
+					     + sgot->output_offset + off);
+          		else
+                          outrel.r_offset = off;
+			outrel.r_info = ELF32_R_INFO(0, R_CRIS_RELATIVE);
 			outrel.r_addend = relocation;
 			loc = s->contents;
-			loc += s->reloc_count++ * sizeof (Elf32_External_Rela);
-			bfd_elf32_swap_reloca_out (output_bfd, &outrel, loc);
+			loc += (s->reloc_count++ * sizeof(Elf32_External_Rela));
+			bfd_elf32_swap_reloca_out(output_bfd, &outrel, loc);
 		      }
 
 		    local_got_offsets[r_symndx] |= 1;
@@ -1399,7 +1402,7 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	      if (outrel.r_offset == (bfd_vma) -1)
 		skip = TRUE;
 	      else if (outrel.r_offset == (bfd_vma) -2)
-		skip = TRUE, relocate = TRUE;
+		skip = relocate = TRUE;
 	      outrel.r_offset += (input_section->output_section->vma
 				  + input_section->output_offset);
 
@@ -1697,32 +1700,32 @@ elf_cris_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
 
       rela.r_offset = (sgot->output_section->vma
 		       + sgot->output_offset
-		       + (h->got.offset &~ (bfd_vma) 1));
+		       + (h->got.offset &~ (bfd_vma)1));
 
       /* If this is a static link, or it is a -Bsymbolic link and the
 	 symbol is defined locally or was forced to be local because
 	 of a version file, we just want to emit a RELATIVE reloc.
 	 The entry in the global offset table will already have been
 	 initialized in the relocate_section function.  */
-      where = sgot->contents + (h->got.offset &~ (bfd_vma) 1);
+      where = sgot->contents + (h->got.offset &~ (bfd_vma)1);
       if (! elf_hash_table (info)->dynamic_sections_created
 	  || (info->shared
 	      && (info->symbolic || h->dynindx == -1)
 	      && h->def_regular))
 	{
-	  rela.r_info = ELF32_R_INFO (0, R_CRIS_RELATIVE);
-	  rela.r_addend = bfd_get_signed_32 (output_bfd, where);
+	  rela.r_info = ELF32_R_INFO(0, R_CRIS_RELATIVE);
+	  rela.r_addend = bfd_get_signed_32(output_bfd, where);
 	}
       else
 	{
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, where);
-	  rela.r_info = ELF32_R_INFO (h->dynindx, R_CRIS_GLOB_DAT);
+	  bfd_put_32(output_bfd, (bfd_vma)0, where);
+	  rela.r_info = ELF32_R_INFO(h->dynindx, R_CRIS_GLOB_DAT);
 	  rela.r_addend = 0;
 	}
 
       loc = srela->contents;
-      loc += srela->reloc_count++ * sizeof (Elf32_External_Rela);
-      bfd_elf32_swap_reloca_out (output_bfd, &rela, loc);
+      loc += (srela->reloc_count++ * sizeof(Elf32_External_Rela));
+      bfd_elf32_swap_reloca_out(output_bfd, &rela, loc);
     }
 
   if (h->needs_copy)

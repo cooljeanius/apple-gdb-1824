@@ -1775,8 +1775,8 @@ mmo_scan (bfd *abfd)
 		      (*_bfd_error_handler)
 			(_("%s: invalid mmo file: file number %d `%s',"
 			   " was already entered as `%s'\n"),
-			 bfd_get_filename (abfd), y, fname, file_names[y]);
-		      bfd_set_error (bfd_error_bad_value);
+			 bfd_get_filename(abfd), y, fname, file_names[y]);
+		      bfd_set_error(bfd_error_bad_value);
 		      goto error_return;
 		    }
 
@@ -1788,8 +1788,8 @@ mmo_scan (bfd *abfd)
 		  (*_bfd_error_handler)
 		    (_("%s: invalid mmo file: file name for number %d"
 		       " was not specified before use\n"),
-		     bfd_get_filename (abfd), y);
-		  bfd_set_error (bfd_error_bad_value);
+		     bfd_get_filename(abfd), y);
+		  bfd_set_error(bfd_error_bad_value);
 		  goto error_return;
 		}
 
@@ -1798,11 +1798,10 @@ mmo_scan (bfd *abfd)
 	      break;
 
 	    case LOP_LINE:
-	      /* Set line number.  */
-	      lineno = y * 256 + z;
-	      /* FIXME: Create a sequence of mmo-specific line number
-		 entries for each section, then translate into canonical
-		 format.  */
+	      /* Set line number: */
+	      lineno = ((y * 256) + z);
+	      /* TODO: Create a sequence of mmo-specific line number entries
+               * for each section, then translate into canonical format.  */
 	      break;
 
 	    case LOP_SPEC:
@@ -1810,7 +1809,7 @@ mmo_scan (bfd *abfd)
 		 lopcode.  */
 	      non_spec_sec = sec;
 	      non_spec_vma = vma;
-	      sec = mmo_get_spec_section (abfd, y * 256 + z);
+	      sec = mmo_get_spec_section(abfd, ((y * 256) + z));
 	      if (sec == NULL)
 		goto error_return;
 

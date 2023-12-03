@@ -1274,8 +1274,8 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		my_name = h->root.root.root.string;
 		if (h->symbol_is_glue == 1)
 		  {
-		    x = bfd_get_32 (input_bfd, loc);
-		    bfd_put_32 (input_bfd, (bfd_vma) h->glue_insn, loc);
+		    x = bfd_get_32(input_bfd, loc);
+		    bfd_put_32(input_bfd, (bfd_vma)h->glue_insn, loc);
 		  }
 	      }
 	  }

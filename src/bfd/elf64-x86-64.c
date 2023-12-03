@@ -2118,13 +2118,13 @@ elf64_x86_64_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      if (outrel.r_offset == (bfd_vma) -1)
 		skip = TRUE;
 	      else if (outrel.r_offset == (bfd_vma) -2)
-		skip = TRUE, relocate = TRUE;
+		skip = relocate = TRUE;
 
 	      outrel.r_offset += (input_section->output_section->vma
 				  + input_section->output_offset);
 
 	      if (skip)
-		memset (&outrel, 0, sizeof outrel);
+		memset(&outrel, 0, sizeof(outrel));
 
 	      /* h->dynindx may be -1 if this symbol was marked to
 		 become local.  */
@@ -2138,27 +2138,27 @@ elf64_x86_64_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 			   || !info->symbolic
 			   || !h->def_regular))
 		{
-		  outrel.r_info = ELF64_R_INFO (h->dynindx, r_type);
+		  outrel.r_info = ELF64_R_INFO(h->dynindx, r_type);
 		  outrel.r_addend = rel->r_addend;
 		}
 	      else
 		{
-		  /* This symbol is local, or marked to become local.  */
+		  /* This symbol is local, or marked to become local: */
 		  if (r_type == R_X86_64_64)
 		    {
 		      relocate = TRUE;
-		      outrel.r_info = ELF64_R_INFO (0, R_X86_64_RELATIVE);
-		      outrel.r_addend = relocation + rel->r_addend;
+		      outrel.r_info = ELF64_R_INFO(0, R_X86_64_RELATIVE);
+		      outrel.r_addend = (relocation + rel->r_addend);
 		    }
 		  else
 		    {
 		      long sindx;
 
-		      if (bfd_is_abs_section (sec))
+		      if (bfd_is_abs_section(sec))
 			sindx = 0;
 		      else if (sec == NULL || sec->owner == NULL)
 			{
-			  bfd_set_error (bfd_error_bad_value);
+			  bfd_set_error(bfd_error_bad_value);
 			  return FALSE;
 			}
 		      else

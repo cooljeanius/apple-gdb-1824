@@ -713,9 +713,9 @@ _bfd_elf_link_renumber_dynsyms (bfd *output_bfd,
 				struct bfd_link_info *info,
 				unsigned long *section_sym_count)
 {
-  unsigned long dynsymcount = 0;
+  unsigned long dynsymcount = 0UL;
 
-  if (info->shared || elf_hash_table (info)->is_relocatable_executable)
+  if (info->shared || elf_hash_table(info)->is_relocatable_executable)
     {
       const struct elf_backend_data *bed = get_elf_backend_data (output_bfd);
       asection *p;
@@ -723,7 +723,7 @@ _bfd_elf_link_renumber_dynsyms (bfd *output_bfd,
 	if ((p->flags & SEC_EXCLUDE) == 0
 	    && (p->flags & SEC_ALLOC) != 0
 	    && !(*bed->elf_backend_omit_section_dynsym) (output_bfd, info, p))
-	  elf_section_data (p)->dynindx = ++dynsymcount;
+	  elf_section_data(p)->dynindx = ++dynsymcount;
     }
   *section_sym_count = dynsymcount;
 
@@ -5300,27 +5300,27 @@ bfd_elf_size_dynamic_sections (bfd *output_bfd,
   /* The backend must work out the sizes of all the other dynamic
      sections.  */
   if (bed->elf_backend_size_dynamic_sections
-      && ! (*bed->elf_backend_size_dynamic_sections) (output_bfd, info))
+      && !(*bed->elf_backend_size_dynamic_sections)(output_bfd, info))
     return FALSE;
 
-  if (elf_hash_table (info)->dynamic_sections_created)
+  if (elf_hash_table(info)->dynamic_sections_created)
     {
       unsigned long section_sym_count;
       asection *s;
 
-      /* Set up the version definition section.  */
-      s = bfd_get_section_by_name (dynobj, ".gnu.version_d");
-      BFD_ASSERT (s != NULL);
+      /* Set up the version definition section: */
+      s = bfd_get_section_by_name(dynobj, ".gnu.version_d");
+      BFD_ASSERT(s != NULL);
 
       /* We may have created additional version definitions if we are
 	 just linking a regular application.  */
       verdefs = asvinfo.verdefs;
 
-      /* Skip anonymous version tag.  */
-      if (verdefs != NULL && verdefs->vernum == 0)
+      /* Skip anonymous version tag: */
+      if ((verdefs != NULL) && (verdefs->vernum == 0))
 	verdefs = verdefs->next;
 
-      if (verdefs == NULL && !info->create_default_symver)
+      if ((verdefs == NULL) && !info->create_default_symver)
 	s->flags |= SEC_EXCLUDE;
       else
 	{
@@ -6906,12 +6906,12 @@ elf_link_input_bfd (struct elf_final_link_info *finfo, bfd *input_bfd)
 
       /* If the section is not in the output BFD's section list, it is not
 	 being output.  */
-      if (bfd_section_removed_from_list (output_bfd, isec->output_section))
+      if (bfd_section_removed_from_list(output_bfd, isec->output_section))
 	continue;
 
-      /* Get the name of the symbol.  */
-      name = bfd_elf_string_from_elf_section (input_bfd, symtab_hdr->sh_link,
-					      isym->st_name);
+      /* Get the name of the symbol: */
+      name = bfd_elf_string_from_elf_section(input_bfd, symtab_hdr->sh_link,
+					     isym->st_name);
       if (name == NULL)
 	return FALSE;
 
@@ -8745,10 +8745,10 @@ _bfd_elf_gc_mark (struct bfd_link_info *info,
 
   sec->gc_mark = 1;
 
-  /* Mark all the sections in the group.  */
-  group_sec = elf_section_data (sec)->next_in_group;
+  /* Mark all the sections in the group: */
+  group_sec = elf_section_data(sec)->next_in_group;
   if (group_sec && !group_sec->gc_mark)
-    if (!_bfd_elf_gc_mark (info, group_sec, gc_mark_hook))
+    if (!_bfd_elf_gc_mark(info, group_sec, gc_mark_hook))
       return FALSE;
 
   { /* keep macsbug sections */
@@ -8795,11 +8795,11 @@ _bfd_elf_gc_mark (struct bfd_link_info *info,
       else
 	extsymoff = nlocsyms = symtab_hdr->sh_info;
 
-      isym = (Elf_Internal_Sym *) symtab_hdr->contents;
+      isym = (Elf_Internal_Sym *)symtab_hdr->contents;
       if (isym == NULL && nlocsyms != 0)
 	{
-	  isym = bfd_elf_get_elf_syms (input_bfd, symtab_hdr, nlocsyms, 0,
-				       NULL, NULL, NULL);
+	  isym = bfd_elf_get_elf_syms(input_bfd, symtab_hdr, nlocsyms, 0,
+				      NULL, NULL, NULL);
 	  if (isym == NULL)
 	    return FALSE;
 	}
@@ -9585,12 +9585,12 @@ bfd_elf_discard_info (bfd *output_bfd, struct bfd_link_info *info)
       else
 	cookie.r_sym_shift = 32;
 
-      cookie.locsyms = (Elf_Internal_Sym *) symtab_hdr->contents;
+      cookie.locsyms = (Elf_Internal_Sym *)symtab_hdr->contents;
       if (cookie.locsyms == NULL && cookie.locsymcount != 0)
 	{
-	  cookie.locsyms = bfd_elf_get_elf_syms (abfd, symtab_hdr,
-						 cookie.locsymcount, 0,
-						 NULL, NULL, NULL);
+	  cookie.locsyms = bfd_elf_get_elf_syms(abfd, symtab_hdr,
+                                                cookie.locsymcount, 0,
+                                                NULL, NULL, NULL);
 	  if (cookie.locsyms == NULL)
 	    return FALSE;
 	}
@@ -9764,26 +9764,27 @@ _bfd_elf_section_already_linked (bfd *abfd, struct bfd_section * sec)
 		   abfd, sec);
 	      else if (sec->size != 0)
 		{
-		  bfd_byte *sec_contents, *l_sec_contents;
+		  bfd_byte *sec_contents;
+                  bfd_byte *l_sec_contents = NULL;
 
-		  if (!bfd_malloc_and_get_section (abfd, sec, &sec_contents))
+		  if (!bfd_malloc_and_get_section(abfd, sec, &sec_contents))
 		    (*_bfd_error_handler)
 		      (_("%B: warning: could not read contents of section `%A'"),
 		       abfd, sec);
-		  else if (!bfd_malloc_and_get_section (l->sec->owner, l->sec,
-							&l_sec_contents))
+		  else if (!bfd_malloc_and_get_section(l->sec->owner, l->sec,
+                                                       &l_sec_contents))
 		    (*_bfd_error_handler)
 		      (_("%B: warning: could not read contents of section `%A'"),
 		       l->sec->owner, l->sec);
-		  else if (memcmp (sec_contents, l_sec_contents, sec->size) != 0)
+		  else if (memcmp(sec_contents, l_sec_contents, sec->size) != 0)
 		    (*_bfd_error_handler)
 		      (_("%B: warning: duplicate section `%A' has different contents"),
 		       abfd, sec);
 
 		  if (sec_contents)
-		    free (sec_contents);
+		    free(sec_contents);
 		  if (l_sec_contents)
-		    free (l_sec_contents);
+		    free(l_sec_contents);
 		}
 	      break;
 	    }

@@ -3038,11 +3038,11 @@ xcoff_complain_overflow_signed_func(bfd *input_bfd, bfd_vma val,
   signmask = ((~ howto->src_mask) >> 1) & howto->src_mask;
   if ((b & signmask) != 0)
     {
-      /* Set all the bits above the sign bit.  */
+      /* Set all the bits above the sign bit: */
       b -= signmask <<= 1;
     }
 
-  b = (b & addrmask) >> howto->bitpos;
+  b = ((b & addrmask) >> howto->bitpos);
 
   /* Now we can do the addition.  */
   sum = a + b;

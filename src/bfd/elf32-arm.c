@@ -2183,7 +2183,7 @@ record_thumb_to_arm_glue (struct bfd_link_info *link_info,
   sprintf(tmp_name, CHANGE_TO_ARM, name);
 
   bh = NULL;
-  val = (hash_table->thumb_glue_size + 4),
+  val = (hash_table->thumb_glue_size + 4);
   _bfd_generic_link_add_one_symbol(link_info, hash_table->bfd_of_glue_owner,
 				   tmp_name, BSF_LOCAL, s, val,
 				   NULL, TRUE, FALSE, &bh);
@@ -2793,44 +2793,37 @@ tpoff (struct bfd_link_info *info, bfd_vma address)
   return address - htab->tls_sec->vma + base;
 }
 
-/* Perform a relocation as part of a final link.  */
-
+/* Perform a relocation as part of a final link: */
 static bfd_reloc_status_type
-elf32_arm_final_link_relocate (reloc_howto_type *           howto,
-			       bfd *                        input_bfd,
-			       bfd *                        output_bfd,
-			       asection *                   input_section,
-			       bfd_byte *                   contents,
-			       Elf_Internal_Rela *          rel,
-			       bfd_vma                      value,
-			       struct bfd_link_info *       info,
-			       asection *                   sym_sec,
-			       const char *                 sym_name,
-			       int		            sym_flags,
-			       struct elf_link_hash_entry * h,
-			       bfd_boolean *                unresolved_reloc_p)
+elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
+			      bfd *output_bfd, asection *input_section,
+			      bfd_byte *contents, Elf_Internal_Rela *rel,
+			      bfd_vma value, struct bfd_link_info *info,
+			      asection *sym_sec, const char *sym_name,
+			      int sym_flags, struct elf_link_hash_entry *h,
+			      bfd_boolean *unresolved_reloc_p)
 {
-  unsigned long                 r_type = howto->type;
-  unsigned long                 r_symndx;
-  bfd_byte *                    hit_data = contents + rel->r_offset;
-  bfd *                         dynobj = NULL;
-  Elf_Internal_Shdr *           symtab_hdr;
-  struct elf_link_hash_entry ** sym_hashes;
-  bfd_vma *                     local_got_offsets;
-  asection *                    sgot = NULL;
-  asection *                    splt = NULL;
-  asection *                    sreloc = NULL;
-  bfd_vma                       addend;
-  bfd_signed_vma                signed_addend;
-  struct elf32_arm_link_hash_table * globals;
+  unsigned long r_type = howto->type;
+  unsigned long r_symndx;
+  bfd_byte *hit_data = (contents + rel->r_offset);
+  bfd *dynobj = NULL;
+  Elf_Internal_Shdr *symtab_hdr;
+  struct elf_link_hash_entry **sym_hashes;
+  bfd_vma *local_got_offsets;
+  asection *sgot = NULL;
+  asection *splt = NULL;
+  asection *sreloc = NULL;
+  bfd_vma addend;
+  bfd_signed_vma signed_addend;
+  struct elf32_arm_link_hash_table *globals;
 
-  globals = elf32_arm_hash_table (info);
+  globals = elf32_arm_hash_table(info);
 
   /* Some relocation type map to different relocations depending on the
      target.  We pick the right one here.  */
-  r_type = arm_real_reloc_type (globals, r_type);
+  r_type = arm_real_reloc_type(globals, r_type);
   if (r_type != howto->type)
-    howto = elf32_arm_howto_from_type (r_type);
+    howto = elf32_arm_howto_from_type(r_type);
 
   /* If the start address has been set, then set the EF_ARM_HASENTRY
      flag.  Setting this more than once is redundant, but the cost is
@@ -2862,7 +2855,7 @@ elf32_arm_final_link_relocate (reloc_howto_type *           howto,
   if (sym_hashes == NULL) {
     ; /* ??? */
   }
-  local_got_offsets = elf_local_got_offsets(input_bfd);
+  local_got_offsets = ((input_bfd) ? elf_local_got_offsets(input_bfd) : NULL);
   r_symndx = ELF32_R_SYM(rel->r_info);
 
   if (globals->use_rel)
@@ -2977,7 +2970,7 @@ elf32_arm_final_link_relocate (reloc_howto_type *           howto,
 	  if (outrel.r_offset == (bfd_vma) -1)
 	    skip = TRUE;
 	  else if (outrel.r_offset == (bfd_vma) -2)
-	    skip = TRUE, relocate = TRUE;
+	    skip = relocate = TRUE;
 	  outrel.r_offset += (input_section->output_section->vma
 			      + input_section->output_offset);
 
@@ -3931,12 +3924,10 @@ elf32_arm_final_link_relocate (reloc_howto_type *           howto,
     }
 }
 
-/* Add INCREMENT to the reloc (of type HOWTO) at ADDRESS.  */
+/* Add INCREMENT to the reloc (of type HOWTO) at ADDRESS: */
 static void
-arm_add_to_rel (bfd *              abfd,
-		bfd_byte *         address,
-		reloc_howto_type * howto,
-		bfd_signed_vma     increment)
+arm_add_to_rel(bfd *abfd, bfd_byte *address, reloc_howto_type *howto,
+               bfd_signed_vma increment)
 {
   bfd_signed_vma addend;
 
@@ -3945,26 +3936,26 @@ arm_add_to_rel (bfd *              abfd,
       int upper_insn, lower_insn;
       int upper, lower;
 
-      upper_insn = bfd_get_16 (abfd, address);
-      lower_insn = bfd_get_16 (abfd, address + 2);
-      upper = upper_insn & 0x7ff;
-      lower = lower_insn & 0x7ff;
+      upper_insn = (int)bfd_get_16(abfd, address);
+      lower_insn = (int)bfd_get_16(abfd, (address + 2));
+      upper = (upper_insn & 0x7ff);
+      lower = (lower_insn & 0x7ff);
 
-      addend = (upper << 12) | (lower << 1);
+      addend = ((upper << 12) | (lower << 1));
       addend += increment;
       addend >>= 1;
 
-      upper_insn = (upper_insn & 0xf800) | ((addend >> 11) & 0x7ff);
-      lower_insn = (lower_insn & 0xf800) | (addend & 0x7ff);
+      upper_insn = ((upper_insn & 0xf800) | ((addend >> 11) & 0x7ff));
+      lower_insn = ((lower_insn & 0xf800) | (addend & 0x7ff));
 
-      bfd_put_16 (abfd, (bfd_vma) upper_insn, address);
-      bfd_put_16 (abfd, (bfd_vma) lower_insn, address + 2);
+      bfd_put_16(abfd, (bfd_vma)upper_insn, address);
+      bfd_put_16(abfd, (bfd_vma)lower_insn, (address + 2));
     }
   else
     {
-      bfd_vma        contents;
+      bfd_vma contents;
 
-      contents = bfd_get_32 (abfd, address);
+      contents = bfd_get_32(abfd, address);
 
       /* Get the (signed) value from the instruction.  */
       addend = contents & howto->src_mask;
@@ -6228,10 +6219,10 @@ elf32_arm_finish_dynamic_sections (bfd * output_bfd, struct bfd_link_info * info
       for (; dyncon < dynconend; dyncon++)
 	{
 	  Elf_Internal_Dyn dyn;
-	  const char * name;
-	  asection * s;
+	  const char *name;
+	  asection *s;
 
-	  bfd_elf32_swap_dyn_in (dynobj, dyncon, &dyn);
+	  bfd_elf32_swap_dyn_in(dynobj, dyncon, &dyn);
 
 	  switch (dyn.d_tag)
 	    {
@@ -6393,7 +6384,7 @@ elf32_arm_finish_dynamic_sections (bfd * output_bfd, struct bfd_link_info * info
 	  bfd_put_32 (output_bfd, got_displacement,        splt->contents + 28);
 #else
 	  bfd_put_32 (output_bfd, got_displacement,        splt->contents + 16);
-#endif
+#endif /* FOUR_WORD_PLT */
 	}
 
       /* UnixWare sets the entsize of .plt to 4, although that doesn't
@@ -6422,8 +6413,9 @@ elf32_arm_finish_dynamic_sections (bfd * output_bfd, struct bfd_link_info * info
   return TRUE;
 }
 
+/* */
 static void
-elf32_arm_post_process_headers (bfd * abfd, struct bfd_link_info * link_info ATTRIBUTE_UNUSED)
+elf32_arm_post_process_headers(bfd *abfd, struct bfd_link_info *link_info ATTRIBUTE_UNUSED)
 {
   Elf_Internal_Ehdr * i_ehdrp;	/* ELF file header, internal form.  */
   struct elf32_arm_link_hash_table *globals;

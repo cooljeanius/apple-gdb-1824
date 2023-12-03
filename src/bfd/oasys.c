@@ -124,16 +124,16 @@ oasys_slurp_symbol_table (bfd *const abfd)
 	      case RELOCATION_TYPE_REL:
 		dest = dest_defined--;
 		dest->section =
-		  OASYS_DATA (abfd)->sections[record.symbol.relb &
-					      RELOCATION_SECT_BITS];
+		  OASYS_DATA(abfd)->sections[record.symbol.relb &
+                                             RELOCATION_SECT_BITS];
 		if (record.header.type == (int) oasys_record_is_local_enum)
 		  {
 		    dest->flags = BSF_LOCAL;
-		    if (dest->section == (asection *) (~0))
+		    if (dest->section == (asection *)(~0))
 		      {
-			/* It seems that sometimes internal symbols are tied up, but
-		       still get output, even though there is no
-		       section */
+			/* It seems that sometimes internal symbols are tied up,
+		         * but still get output, even though there is no
+		         * section: */
 			dest->section = 0;
 		      }
 		  }
@@ -141,7 +141,7 @@ oasys_slurp_symbol_table (bfd *const abfd)
 		  dest->flags = flag;
 		break;
 	      case RELOCATION_TYPE_UND:
-		dest = data->symbols + H_GET_16 (abfd, record.symbol.refno);
+		dest = (data->symbols + H_GET_16(abfd, record.symbol.refno));
 		dest->section = bfd_und_section_ptr;
 		break;
 	      case RELOCATION_TYPE_COM:
@@ -152,13 +152,13 @@ oasys_slurp_symbol_table (bfd *const abfd)
 		break;
 	      default:
 		dest = dest_defined--;
-		BFD_ASSERT (FALSE);
+		BFD_ASSERT(FALSE);
 		break;
 	      }
 	    dest->name = string_ptr;
 	    dest->the_bfd = abfd;
 	    dest->udata.p = NULL;
-	    dest->value = H_GET_32 (abfd, record.symbol.value);
+	    dest->value = H_GET_32(abfd, record.symbol.value);
 
 #ifdef UNDERSCORE_HACK
 	    if (record.symbol.name[0] != '_')
@@ -166,11 +166,11 @@ oasys_slurp_symbol_table (bfd *const abfd)
 		string_ptr[0] = '_';
 		string_ptr++;
 	      }
-#endif
-	    memcpy (string_ptr, record.symbol.name, length);
+#endif /* UNDERSCORE_HACK */
+	    memcpy(string_ptr, record.symbol.name, length);
 
 	    string_ptr[length] = 0;
-	    string_ptr += length + 1;
+	    string_ptr += (length + 1);
 	  }
 	  break;
 	default:

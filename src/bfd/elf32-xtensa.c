@@ -1805,22 +1805,22 @@ vsprint_msg(const char *origmsg, const char *fmt, int arglen, ...)
   bfd_size_type orig_len, len = 0;
   bfd_boolean is_append;
 
-  VA_OPEN (ap, arglen);
-  VA_FIXEDARG (ap, const char *, origmsg);
+  VA_OPEN(ap, arglen);
+  VA_FIXEDARG(ap, const char *, origmsg);
 
   is_append = (origmsg == message);
 
-  orig_len = strlen (origmsg);
-  len = orig_len + strlen (fmt) + arglen + 20;
+  orig_len = strlen(origmsg);
+  len = (orig_len + strlen(fmt) + arglen + 20);
   if (len > alloc_size)
     {
-      message = (char *) bfd_realloc (message, len);
+      message = (char *)bfd_realloc(message, len);
       alloc_size = len;
     }
   if (!is_append)
-    memcpy (message, origmsg, orig_len);
-  vsprintf (message + orig_len, fmt, ap);
-  VA_CLOSE (ap);
+    memcpy(message, origmsg, orig_len);
+  vsprintf((message + orig_len), fmt, ap);
+  VA_CLOSE(ap);
   return message;
 }
 
@@ -5684,49 +5684,49 @@ retrieve_contents (bfd *abfd, asection *sec, bfd_boolean keep_memory)
       if (!bfd_malloc_and_get_section (abfd, sec, &contents))
 	{
 	  if (contents)
-	    free (contents);
+	    free(contents);
 	  return NULL;
 	}
       if (keep_memory)
-	elf_section_data (sec)->this_hdr.contents = contents;
+	elf_section_data(sec)->this_hdr.contents = contents;
     }
   return contents;
 }
 
-
+/* */
 static void
-pin_contents (asection *sec, bfd_byte *contents)
+pin_contents(asection *sec, bfd_byte *contents)
 {
-  elf_section_data (sec)->this_hdr.contents = contents;
+  elf_section_data(sec)->this_hdr.contents = contents;
 }
 
-
+/* */
 static void
-release_contents (asection *sec, bfd_byte *contents)
+release_contents(asection *sec, bfd_byte *contents)
 {
-  if (contents && elf_section_data (sec)->this_hdr.contents != contents)
-    free (contents);
+  if (contents && elf_section_data(sec)->this_hdr.contents != contents)
+    free(contents);
 }
 
-
+/* */
 static Elf_Internal_Sym *
-retrieve_local_syms (bfd *input_bfd)
+retrieve_local_syms(bfd *input_bfd)
 {
   Elf_Internal_Shdr *symtab_hdr;
   Elf_Internal_Sym *isymbuf;
   size_t locsymcount;
 
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
   locsymcount = symtab_hdr->sh_info;
 
-  isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
-  if (isymbuf == NULL && locsymcount != 0)
-    isymbuf = bfd_elf_get_elf_syms (input_bfd, symtab_hdr, locsymcount, 0,
-				    NULL, NULL, NULL);
+  isymbuf = (Elf_Internal_Sym *)symtab_hdr->contents;
+  if ((isymbuf == NULL) && (locsymcount != 0))
+    isymbuf = bfd_elf_get_elf_syms(input_bfd, symtab_hdr, locsymcount, 0,
+				   NULL, NULL, NULL);
 
-  /* Save the symbols for this input file so they won't be read again.  */
-  if (isymbuf && isymbuf != (Elf_Internal_Sym *) symtab_hdr->contents)
-    symtab_hdr->contents = (unsigned char *) isymbuf;
+  /* Save the symbols for this input file to prevent them from be read again: */
+  if (isymbuf && isymbuf != (Elf_Internal_Sym *)symtab_hdr->contents)
+    symtab_hdr->contents = (unsigned char *)isymbuf;
 
   return isymbuf;
 }
@@ -6214,23 +6214,23 @@ is_resolvable_asm_expansion (bfd *abfd,
   if (ELF32_R_TYPE (irel->r_info) != R_XTENSA_ASM_EXPAND)
     return FALSE;
 
-  sec_size = bfd_get_section_limit (abfd, sec);
-  opcode = get_expanded_call_opcode (contents + irel->r_offset,
-				     sec_size - irel->r_offset, &uses_l32r);
+  sec_size = bfd_get_section_limit(abfd, sec);
+  opcode = get_expanded_call_opcode((contents + irel->r_offset),
+				    (sec_size - irel->r_offset), &uses_l32r);
   /* Optimization of longcalls that use CONST16 is not yet implemented.  */
   if (!uses_l32r)
     return FALSE;
 
-  direct_call_opcode = swap_callx_for_call_opcode (opcode);
+  direct_call_opcode = swap_callx_for_call_opcode(opcode);
   if (direct_call_opcode == XTENSA_UNDEFINED)
     return FALSE;
 
-  /* Check and see that the target resolves.  */
-  r_reloc_init (&r_rel, abfd, irel, contents, sec_size);
-  if (!r_reloc_is_defined (&r_rel))
+  /* Check and see that the target resolves: */
+  r_reloc_init(&r_rel, abfd, irel, contents, sec_size);
+  if (!r_reloc_is_defined(&r_rel))
     return FALSE;
 
-  target_sec = r_reloc_get_section (&r_rel);
+  target_sec = r_reloc_get_section(&r_rel);
   target_offset = r_rel.target_offset;
 
   /* If the target is in a shared library, then it doesn't reach.  This
@@ -7981,22 +7981,22 @@ relax_section (bfd *abfd, asection *sec, struct bfd_link_info *link_info)
 
 	  if (action->offset > orig_dot)
 	    {
-	      copy_size = action->offset - orig_dot;
-	      memmove (&dup_contents[dup_dot], &contents[orig_dot], copy_size);
+	      copy_size = (action->offset - orig_dot);
+	      memmove(&dup_contents[dup_dot], &contents[orig_dot], copy_size);
 	      orig_dot += copy_size;
 	      dup_dot += copy_size;
-	      BFD_ASSERT (action->offset == orig_dot);
+	      BFD_ASSERT(action->offset == orig_dot);
 	    }
 	  else if (action->offset < orig_dot)
 	    {
-	      if (action->action == ta_fill
-		  && action->offset - action->removed_bytes == orig_dot)
+	      if ((action->action == ta_fill)
+		  && ((action->offset - action->removed_bytes) == orig_dot))
 		{
-		  /* This is OK because the fill only effects the dup_dot.  */
+		  ; /* (This is OK because the fill only effects the dup_dot) */
 		}
 	      else if (action->action == ta_add_literal)
 		{
-		  /* TBD.  Might need to handle this.  */
+		  ; /* TBD.  Might need to handle this.  */
 		}
 	    }
 	  if (action->offset == orig_dot)
@@ -8006,33 +8006,33 @@ relax_section (bfd *abfd, asection *sec, struct bfd_link_info *link_info)
 		  if (orig_dot_vo == 0)
 		    {
 		      /* Need to copy virtual_offset bytes.  Probably four.  */
-		      copy_size = action->virtual_offset - orig_dot_vo;
-		      memmove (&dup_contents[dup_dot],
-			       &contents[orig_dot], copy_size);
+		      copy_size = (action->virtual_offset - orig_dot_vo);
+		      memmove(&dup_contents[dup_dot],
+			      &contents[orig_dot], copy_size);
 		      orig_dot_copied = copy_size;
 		      dup_dot += copy_size;
 		    }
 		  virtual_action = TRUE;
 		}
 	      else
-		BFD_ASSERT (action->virtual_offset <= orig_dot_vo);
+		BFD_ASSERT(action->virtual_offset <= orig_dot_vo);
 	    }
 	  switch (action->action)
 	    {
 	    case ta_remove_literal:
 	    case ta_remove_insn:
-	      BFD_ASSERT (action->removed_bytes >= 0);
+	      BFD_ASSERT(action->removed_bytes >= 0);
 	      orig_dot += action->removed_bytes;
 	      break;
 
 	    case ta_narrow_insn:
 	      orig_insn_size = 3;
 	      copy_size = 2;
-	      memmove (scratch, &contents[orig_dot], orig_insn_size);
-	      BFD_ASSERT (action->removed_bytes == 1);
-	      rv = narrow_instruction (scratch, final_size, 0, TRUE);
-	      BFD_ASSERT (rv);
-	      memmove (&dup_contents[dup_dot], scratch, copy_size);
+	      memmove(scratch, &contents[orig_dot], orig_insn_size);
+	      BFD_ASSERT(action->removed_bytes == 1);
+	      rv = narrow_instruction(scratch, final_size, 0, TRUE);
+	      BFD_ASSERT(rv);
+	      memmove(&dup_contents[dup_dot], scratch, copy_size);
 	      orig_dot += orig_insn_size;
 	      dup_dot += copy_size;
 	      break;
@@ -8049,23 +8049,23 @@ relax_section (bfd *abfd, asection *sec, struct bfd_link_info *link_info)
 	      break;
 
 	    case ta_none:
-	      BFD_ASSERT (action->removed_bytes == 0);
+	      BFD_ASSERT(action->removed_bytes == 0);
 	      break;
 
 	    case ta_convert_longcall:
 	    case ta_remove_longcall:
-	      /* These will be removed or converted before we get here.  */
-	      BFD_ASSERT (0);
+	      /* These will be removed or converted before we get here: */
+	      BFD_ASSERT(0);
 	      break;
 
 	    case ta_widen_insn:
 	      orig_insn_size = 2;
 	      copy_size = 3;
-	      memmove (scratch, &contents[orig_dot], orig_insn_size);
-	      BFD_ASSERT (action->removed_bytes == -1);
-	      rv = widen_instruction (scratch, final_size, 0, TRUE);
-	      BFD_ASSERT (rv);
-	      memmove (&dup_contents[dup_dot], scratch, copy_size);
+	      memmove(scratch, &contents[orig_dot], orig_insn_size);
+	      BFD_ASSERT(action->removed_bytes == -1);
+	      rv = widen_instruction(scratch, final_size, 0, TRUE);
+	      BFD_ASSERT(rv);
+	      memmove(&dup_contents[dup_dot], scratch, copy_size);
 	      orig_dot += orig_insn_size;
 	      dup_dot += copy_size;
 	      break;
@@ -8073,15 +8073,15 @@ relax_section (bfd *abfd, asection *sec, struct bfd_link_info *link_info)
 	    case ta_add_literal:
 	      orig_insn_size = 0;
 	      copy_size = 4;
-	      BFD_ASSERT (action->removed_bytes == -4);
+	      BFD_ASSERT(action->removed_bytes == -4);
 	      /* TBD -- place the literal value here and insert
 		 into the table.  */
-	      memset (&dup_contents[dup_dot], 0, 4);
-	      pin_internal_relocs (sec, internal_relocs);
-	      pin_contents (sec, contents);
+	      memset(&dup_contents[dup_dot], 0, 4);
+	      pin_internal_relocs(sec, internal_relocs);
+	      pin_contents(sec, contents);
 
-	      if (!move_literal (abfd, link_info, sec, dup_dot, dup_contents,
-				 relax_info, &internal_relocs, &action->value))
+	      if (!move_literal(abfd, link_info, sec, dup_dot, dup_contents,
+                                relax_info, &internal_relocs, &action->value))
 		goto error_return;
 
 	      if (virtual_action)
@@ -8874,17 +8874,17 @@ relax_property_section (bfd *abfd,
 
 	  if (remove_this_irel)
 	    {
-	      irel->r_info = ELF32_R_INFO (0, R_XTENSA_NONE);
+	      irel->r_info = ELF32_R_INFO(0, R_XTENSA_NONE);
 	      irel->r_offset -= bytes_to_remove;
 	    }
 
 	  if (bytes_to_remove != 0)
 	    {
 	      removed_bytes += bytes_to_remove;
-	      if (offset + bytes_to_remove < section_size)
-		memmove (&contents[actual_offset],
-			 &contents[actual_offset + bytes_to_remove],
-			 section_size - offset - bytes_to_remove);
+	      if ((offset + bytes_to_remove) < section_size)
+		memmove(&contents[actual_offset],
+                        (&contents[actual_offset + bytes_to_remove]),
+                        (section_size - offset - bytes_to_remove));
 	    }
 	}
 

@@ -1478,8 +1478,8 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  if (done)
 	    rstat = bfd_reloc_ok;
 	  else
-	    if (   h->root.type == bfd_link_hash_defined
-		|| h->root.type == bfd_link_hash_defweak)
+	    if ((h->root.type == bfd_link_hash_defined)
+		|| (h->root.type == bfd_link_hash_defweak))
 	    {
 	      asection *sec;
 

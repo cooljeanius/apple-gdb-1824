@@ -1863,7 +1863,7 @@ nlm_write_object_contents(bfd *abfd)
 	      /* The NLM notion of a debugging symbol is actually what
 		 BFD calls a local or global symbol.  What BFD calls a
 		 debugging symbol NLM does not understand at all.  */
-	      if ((sym->flags & (BSF_LOCAL | BSF_GLOBAL | BSF_EXPORT)) == 0
+	      if (((sym->flags & (BSF_LOCAL | BSF_GLOBAL | BSF_EXPORT)) == 0)
 		  || ((sym->flags & BSF_DEBUGGING) != 0)
 		  || bfd_is_und_section(bfd_get_section(sym)))
 		continue;

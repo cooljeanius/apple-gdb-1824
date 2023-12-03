@@ -936,35 +936,35 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
 	text_pad = ((obj_textsec (abfd)->filepos - obj_textsec (abfd)->vma)
 		    & (adata (abfd).page_size - 1));
       else
-	text_pad = ((- obj_textsec (abfd)->vma)
-		    & (adata (abfd).page_size - 1));
+	text_pad = ((0 - obj_textsec(abfd)->vma)
+		    & (adata(abfd).page_size - 1));
     }
 
   /* Find start of data: */
   if (ztih)
     {
-      text_end = obj_textsec (abfd)->filepos + obj_textsec (abfd)->size;
-      text_pad += BFD_ALIGN (text_end, adata (abfd).page_size) - text_end;
+      text_end = (obj_textsec(abfd)->filepos + obj_textsec(abfd)->size);
+      text_pad += (BFD_ALIGN(text_end, adata(abfd).page_size) - text_end);
     }
   else
     {
       /* Note that if page_size == zmagic_disk_block_size, then
 	 filepos == page_size, and this case is the same as the ztih
 	 case.  */
-      text_end = obj_textsec (abfd)->size;
-      text_pad += BFD_ALIGN (text_end, adata (abfd).page_size) - text_end;
-      text_end += obj_textsec (abfd)->filepos;
+      text_end = obj_textsec(abfd)->size;
+      text_pad += (BFD_ALIGN(text_end, adata(abfd).page_size) - text_end);
+      text_end += obj_textsec(abfd)->filepos;
     }
 
-  obj_textsec (abfd)->size += text_pad;
+  obj_textsec(abfd)->size += text_pad;
   text_end += text_pad;
 
-  /* Data.  */
+  /* Data: */
   if (!obj_datasec(abfd)->user_set_vma)
     {
       bfd_vma vma;
-      vma = obj_textsec(abfd)->vma + obj_textsec(abfd)->size;
-      obj_datasec(abfd)->vma = BFD_ALIGN (vma, adata(abfd).segment_size);
+      vma = (obj_textsec(abfd)->vma + obj_textsec(abfd)->size);
+      obj_datasec(abfd)->vma = BFD_ALIGN(vma, adata(abfd).segment_size);
     }
   if (abdp && abdp->zmagic_mapped_contiguous)
     {
@@ -973,10 +973,10 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
 		  - obj_textsec(abfd)->size);
       obj_textsec(abfd)->size += text_pad;
     }
-  obj_datasec (abfd)->filepos = (obj_textsec (abfd)->filepos
-				+ obj_textsec (abfd)->size);
+  obj_datasec(abfd)->filepos = (obj_textsec(abfd)->filepos
+				+ obj_textsec(abfd)->size);
 
-  /* Fix up exec header while we're at it.  */
+  /* Fix up exec header while we are at it: */
   execp->a_text = obj_textsec(abfd)->size;
   if (ztih && (!abdp || (abdp && !abdp->exec_header_not_counted)))
     execp->a_text += adata(abfd).exec_bytes_size;

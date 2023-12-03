@@ -1073,17 +1073,17 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	}
     }
 
-  /* Don't let the linker relocation routines discard the symbols.  */
-  obj_coff_keep_syms (abfd) = TRUE;
+  /* Don't let the linker relocation routines discard the symbols: */
+  obj_coff_keep_syms(abfd) = TRUE;
 
   csect = NULL;
   csect_index = 0;
   first_csect = NULL;
 
-  symesz = bfd_coff_symesz (abfd);
-  BFD_ASSERT (symesz == bfd_coff_auxesz (abfd));
-  esym = (bfd_byte *) obj_coff_external_syms (abfd);
-  esym_end = esym + symcount * symesz;
+  symesz = bfd_coff_symesz(abfd);
+  BFD_ASSERT(symesz == bfd_coff_auxesz(abfd));
+  esym = (bfd_byte *)obj_coff_external_syms(abfd);
+  esym_end = (esym + (symcount * symesz));
 
   while (esym < esym_end)
     {

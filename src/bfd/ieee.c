@@ -1450,6 +1450,7 @@ ieee_mkobject(bfd *abfd)
   return abfd->tdata.ieee_data != NULL;
 }
 
+/* */
 static bfd_boolean
 do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
        unsigned char *location_ptr, asection *s, int iterations)
@@ -1464,7 +1465,7 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 	next_byte(&(ieee->h));
 	number_of_maus = (unsigned int)must_parse_int(&(ieee->h));
 
-	for (i = 0; i < number_of_maus; i++)
+	for (i = 0U; (i < number_of_maus) && (current_map != NULL); i++)
 	  {
 	    location_ptr[current_map->pc++] = this_byte(&(ieee->h));
 	    next_byte(&(ieee->h));
@@ -1630,7 +1631,7 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 		    {
 		      unsigned int i;
 
-		      for (i = 0; i < this_size; i++)
+		      for (i = 0U; (i < this_size) && (current_map != NULL); i++)
 			{
 			  location_ptr[current_map->pc++] = this_byte(&(ieee->h));
 			  next_byte(&(ieee->h));
@@ -2312,23 +2313,23 @@ do_with_relocs(bfd *abfd, asection *s)
 		  switch (r->howto->size)
 		    {
 		    case 2:
-		      ov = bfd_get_signed_32 (abfd,
-					      stream + current_byte_index);
+		      ov = bfd_get_signed_32(abfd,
+					     stream + current_byte_index);
 		      current_byte_index += 4;
 		      break;
 		    case 1:
-		      ov = bfd_get_signed_16 (abfd,
-					      stream + current_byte_index);
+		      ov = bfd_get_signed_16(abfd,
+					     stream + current_byte_index);
 		      current_byte_index += 2;
 		      break;
 		    case 0:
-		      ov = bfd_get_signed_8 (abfd,
-					     stream + current_byte_index);
+		      ov = bfd_get_signed_8(abfd,
+					    stream + current_byte_index);
 		      current_byte_index++;
 		      break;
 		    default:
 		      ov = 0;
-		      BFD_FAIL ();
+		      BFD_FAIL();
 		      return FALSE;
 		    }
 
@@ -2338,16 +2339,16 @@ do_with_relocs(bfd *abfd, asection *s)
 		      && ! r->howto->pcrel_offset)
 		    ov += r->address;
 
-		  if (! ieee_write_byte (abfd,
-					 ieee_function_either_open_b_enum))
+		  if (! ieee_write_byte(abfd,
+                                        ieee_function_either_open_b_enum))
 		    return FALSE;
 
-		  if (r->sym_ptr_ptr != (asymbol **) NULL)
+		  if (r->sym_ptr_ptr != (asymbol **)NULL)
 		    {
-		      if (! ieee_write_expression (abfd, r->addend + ov,
-						   *(r->sym_ptr_ptr),
-						   r->howto->pc_relative,
-						   (unsigned) s->index))
+		      if (! ieee_write_expression(abfd, (r->addend + ov),
+						  *(r->sym_ptr_ptr),
+						  r->howto->pc_relative,
+						  (unsigned int)s->index))
 			return FALSE;
 		    }
 		  else
@@ -2634,21 +2635,21 @@ copy_expression(void)
 
 /* Drop the int in the buffer, and copy a null into the gap, which we
    will overwrite later.  */
-
 static void
-fill_int (struct output_buffer_struct *buf)
+fill_int(struct output_buffer_struct *buf)
 {
   if (buf->buffer == output_buffer)
     {
       /* Still a chance to output the size.  */
       int value = (output_ptr - buf->ptrp + 3);
-      buf->ptrp[0] = (value >> 24);
-      buf->ptrp[1] = (value >> 16);
-      buf->ptrp[2] = (value >> 8);
-      buf->ptrp[3] = (value >> 0);
+      buf->ptrp[0] = (value >> 24U);
+      buf->ptrp[1] = (value >> 16U);
+      buf->ptrp[2] = (value >> 8U);
+      buf->ptrp[3] = (value >> 0U);
     }
 }
 
+/* The actual dropping part: */
 static void
 drop_int(struct output_buffer_struct *buf)
 {
@@ -2687,6 +2688,7 @@ drop_int(struct output_buffer_struct *buf)
   OUT(0);
 }
 
+/* */
 static void
 copy_int(void)
 {

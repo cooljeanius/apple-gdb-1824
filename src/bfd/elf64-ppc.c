@@ -7894,19 +7894,19 @@ build_plt_stub (bfd *obfd, bfd_byte *p, int offset)
 #define PPC_HI(v) (((v) >> 16) & 0xffff)
 #define PPC_HA(v) PPC_HI ((v) + 0x8000)
 
-  bfd_put_32 (obfd, ADDIS_R12_R2 | PPC_HA (offset), p),	p += 4;
-  bfd_put_32 (obfd, STD_R2_40R1, p),			p += 4;
-  bfd_put_32 (obfd, LD_R11_0R12 | PPC_LO (offset), p),	p += 4;
-  if (PPC_HA (offset + 8) != PPC_HA (offset))
-    bfd_put_32 (obfd, ADDIS_R12_R12 | 1, p),		p += 4;
+  bfd_put_32(obfd, (ADDIS_R12_R2 | PPC_HA(offset)), p),	p += 4;
+  bfd_put_32(obfd, STD_R2_40R1, p),			p += 4;
+  bfd_put_32(obfd, (LD_R11_0R12 | PPC_LO(offset)), p),	p += 4;
+  if (PPC_HA(offset + 8) != PPC_HA(offset))
+    bfd_put_32(obfd, (ADDIS_R12_R12 | 1), p),		p += 4;
   offset += 8;
-  bfd_put_32 (obfd, LD_R2_0R12 | PPC_LO (offset), p),	p += 4;
-  if (PPC_HA (offset + 8) != PPC_HA (offset))
-    bfd_put_32 (obfd, ADDIS_R12_R12 | 1, p),		p += 4;
+  bfd_put_32(obfd, (LD_R2_0R12 | PPC_LO(offset)), p),	p += 4;
+  if (PPC_HA(offset + 8) != PPC_HA(offset))
+    bfd_put_32(obfd, (ADDIS_R12_R12 | 1), p),		p += 4;
   offset += 8;
-  bfd_put_32 (obfd, MTCTR_R11, p),			p += 4;
-  bfd_put_32 (obfd, LD_R11_0R12 | PPC_LO (offset), p),	p += 4;
-  bfd_put_32 (obfd, BCTR, p),				p += 4;
+  bfd_put_32(obfd, MTCTR_R11, p),			p += 4;
+  bfd_put_32(obfd, (LD_R11_0R12 | PPC_LO (offset)), p),	p += 4;
+  bfd_put_32(obfd, BCTR, p),				p += 4;
   return p;
 }
 
@@ -10490,7 +10490,7 @@ ppc64_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      if (out_off == (bfd_vma)(-1L))
 		skip = TRUE;
 	      else if (out_off == (bfd_vma)(-2L))
-		skip = TRUE, relocate = TRUE;
+		skip = relocate = TRUE;
 	      out_off += (input_section->output_section->vma
 			  + input_section->output_offset);
 	      outrel1.r_offset = out_off;

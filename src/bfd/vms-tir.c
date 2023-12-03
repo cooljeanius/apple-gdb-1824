@@ -1094,8 +1094,8 @@ tir_sta (bfd * abfd, unsigned char *ptr)
 
 	 stack literal.  */
       ptr++;
-      _bfd_vms_push (abfd, (uquad) 0, -1);
-      (*_bfd_error_handler) (_("stack-literal not fully implemented"));
+      _bfd_vms_push(abfd, (uquad)0, -1);
+      (*_bfd_error_handler)(_("stack-literal not fully implemented"));
       break;
 
     case TIR_S_C_STA_LEPM:
@@ -1112,18 +1112,18 @@ tir_sta (bfd * abfd, unsigned char *ptr)
 
 	envidx = (int)bfd_getl16(ptr);
 	ptr += 2;
-	name = _bfd_vms_save_counted_string (ptr);
-	entry = _bfd_vms_enter_symbol (abfd, name);
+	name = _bfd_vms_save_counted_string(ptr);
+	entry = _bfd_vms_enter_symbol(abfd, name);
 	if (entry == NULL)
 	  return NULL;
-	(*_bfd_error_handler) (_("stack-local-symbol-entry-point-mask not fully implemented"));
-	_bfd_vms_push (abfd, (uquad) 0, -1);
-	ptr += *ptr + 1;
+	(*_bfd_error_handler)(_("stack-local-symbol-entry-point-mask not fully implemented"));
+	_bfd_vms_push(abfd, (uquad)0, -1);
+	ptr += (*ptr + 1);
       }
       break;
 
     default:
-      (*_bfd_error_handler) (_("reserved STA cmd %d"), ptr[-1]);
+      (*_bfd_error_handler)(_("reserved STA cmd %d"), ptr[-1]);
       return NULL;
       break;
     }
@@ -1835,10 +1835,9 @@ static void sto_imm(bfd *abfd, vms_section *sptr, bfd_vma vaddr, int my_index)
     }
 }
 
-/* Write section contents for bfd abfd.  */
-
+/* Write section contents for bfd abfd: */
 int
-_bfd_vms_write_tir (bfd * abfd, int objtype ATTRIBUTE_UNUSED)
+_bfd_vms_write_tir(bfd *abfd, int objtype ATTRIBUTE_UNUSED)
 {
   asection *section;
   vms_section *sptr;
@@ -1848,22 +1847,21 @@ _bfd_vms_write_tir (bfd * abfd, int objtype ATTRIBUTE_UNUSED)
   _bfd_vms_debug(2, "vms_write_tir (%p, %d)\n", (void *)abfd, objtype);
 #endif /* VMS_DEBUG */
 
-  _bfd_vms_output_alignment (abfd, 4);
+  _bfd_vms_output_alignment(abfd, 4);
 
   nextoffset = 0;
-  PRIV (vms_linkage_index) = 1;
+  PRIV(vms_linkage_index) = 1;
 
-  /* Dump all other sections.  */
+  /* Dump all other sections: */
   section = abfd->sections;
 
   while (section != NULL)
     {
-
 #if defined(VMS_DEBUG) && VMS_DEBUG
-      _bfd_vms_debug (4, "writing %d. section '%s' (%d bytes)\n",
-		      section->index, section->name,
-		      (int) (section->size));
-#endif
+      _bfd_vms_debug(4, "writing %d. section '%s' (%d bytes)\n",
+		     section->index, section->name,
+		     (int)(section->size));
+#endif /* VMS_DEBUG */
 
       if (section->flags & SEC_RELOC)
 	{

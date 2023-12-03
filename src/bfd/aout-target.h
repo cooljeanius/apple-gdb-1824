@@ -56,10 +56,10 @@ static const bfd_target *MY(callback)(bfd *abfd)
   unsigned int arch_align_power;
   unsigned long arch_align;
 
-  /* Calculate the file positions of the parts of a newly read aout header.  */
+  /* Calculate the file positions of the parts of a newly read aout header: */
   obj_textsec(abfd)->size = N_TXTSIZE(*execp);
 
-  /* The virtual memory addresses of the sections.  */
+  /* The virtual memory addresses of the sections: */
   obj_textsec(abfd)->vma = N_TXTADDR(*execp);
   obj_datasec(abfd)->vma = N_DATADDR(*execp);
   obj_bsssec(abfd)->vma = N_BSSADDR(*execp);

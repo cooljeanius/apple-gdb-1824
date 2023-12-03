@@ -1282,13 +1282,13 @@ _frvfdpic_add_dyn_reloc (bfd *output_bfd, asection *sreloc, bfd_vma offset,
   bfd_vma reloc_offset;
 
   outrel.r_offset = offset;
-  outrel.r_info = ELF32_R_INFO (dynindx, reloc_type);
+  outrel.r_info = ELF32_R_INFO(dynindx, reloc_type);
   outrel.r_addend = addend;
 
-  reloc_offset = sreloc->reloc_count * sizeof (Elf32_External_Rel);
-  BFD_ASSERT (reloc_offset < sreloc->size);
-  bfd_elf32_swap_reloc_out (output_bfd, &outrel,
-			    sreloc->contents + reloc_offset);
+  reloc_offset = (sreloc->reloc_count * sizeof(Elf32_External_Rel));
+  BFD_ASSERT(reloc_offset < sreloc->size);
+  bfd_elf32_swap_reloc_out(output_bfd, &outrel,
+			   (sreloc->contents + reloc_offset));
   sreloc->reloc_count++;
 
   /* If the entry's index is zero, this relocation was probably to a
@@ -1298,27 +1298,26 @@ _frvfdpic_add_dyn_reloc (bfd *output_bfd, asection *sreloc, bfd_vma offset,
      simple way for us to catch this situation, since the relocation
      is cleared right before calling relocate_section, at which point
      we no longer know what the relocation used to point to.  */
-  if (entry->symndx)
+  if (entry && entry->symndx)
     {
-      BFD_ASSERT (entry->dynrelocs > 0);
+      BFD_ASSERT(entry->dynrelocs > 0);
       entry->dynrelocs--;
     }
 
   return reloc_offset;
 }
 
-/* Add a fixup to the ROFIXUP section.  */
-
+/* Add a fixup to the ROFIXUP section: */
 static bfd_vma
-_frvfdpic_add_rofixup (bfd *output_bfd, asection *rofixup, bfd_vma offset,
-		       struct frvfdpic_relocs_info *entry)
+_frvfdpic_add_rofixup(bfd *output_bfd, asection *rofixup, bfd_vma offset,
+		      struct frvfdpic_relocs_info *entry)
 {
   bfd_vma fixup_offset;
 
   if (rofixup->flags & SEC_EXCLUDE)
     return -1;
 
-  fixup_offset = rofixup->reloc_count * 4;
+  fixup_offset = (rofixup->reloc_count * 4);
   if (rofixup->contents)
     {
       BFD_ASSERT (fixup_offset < rofixup->size);
@@ -1454,7 +1453,7 @@ _frvfdpic_emit_got_relocs_plt_entries (struct frvfdpic_relocs_info *entry,
 	  && (entry->symndx != -1
 	      || FRVFDPIC_SYM_LOCAL (info, entry->d.h)))
 	{
-	  if (sec)
+	  if (sec && sec->output_section)
 	    ad += sec->output_section->vma;
 	  if (entry->symndx != -1
 	      || entry->d.h->root.type != bfd_link_hash_undefweak)
@@ -1614,7 +1613,7 @@ _frvfdpic_emit_got_relocs_plt_entries (struct frvfdpic_relocs_info *entry,
       if (info->executable && !info->pie
 	  && (entry->symndx != -1 || FRVFDPIC_SYM_LOCAL (info, entry->d.h)))
 	{
-	  if (sec)
+	  if (sec && sec->output_section)
 	    ad += sec->output_section->vma;
 	  ofst = 0;
 	  if (entry->symndx != -1
@@ -1686,11 +1685,12 @@ _frvfdpic_emit_got_relocs_plt_entries (struct frvfdpic_relocs_info *entry,
 	     the low word contains the address of the lazy PLT entry
 	     entry point, that must be within the memory region
 	     assigned to that section.  */
-	  lowword = entry->lzplt_entry + 4
-	    + frvfdpic_plt_section (info)->output_offset
-	    + frvfdpic_plt_section (info)->output_section->vma;
-	  highword = _frvfdpic_osec_to_segment
-	    (output_bfd, frvfdpic_plt_section (info)->output_section);
+	  lowword = (entry->lzplt_entry + 4
+                     + frvfdpic_plt_section(info)->output_offset
+                     + frvfdpic_plt_section(info)->output_section->vma);
+	  highword =
+            _frvfdpic_osec_to_segment(output_bfd,
+                                      frvfdpic_plt_section(info)->output_section);
 	}
       else
 	{
@@ -1698,22 +1698,24 @@ _frvfdpic_emit_got_relocs_plt_entries (struct frvfdpic_relocs_info *entry,
 	     of the section.  For a non-local function, it's
 	     disregarded.  */
 	  lowword = ad;
-	  if (entry->symndx == -1 && entry->d.h->dynindx != -1
-	      && entry->d.h->dynindx == idx)
+	  if ((entry->symndx == -1) && (entry->d.h->dynindx != -1)
+	      && (entry->d.h->dynindx == idx))
 	    highword = 0;
-	  else
-	    highword = _frvfdpic_osec_to_segment
-	      (output_bfd, sec->output_section);
+	  else if (sec)
+	    highword = _frvfdpic_osec_to_segment(output_bfd,
+     						 sec->output_section);
+          else
+            highword = 0;
 	}
 
-      bfd_put_32 (output_bfd, lowword,
-		  frvfdpic_got_section (info)->contents
-		  + frvfdpic_got_initial_offset (info)
-		  + entry->fd_entry);
-      bfd_put_32 (output_bfd, highword,
-		  frvfdpic_got_section (info)->contents
-		  + frvfdpic_got_initial_offset (info)
-		  + entry->fd_entry + 4);
+      bfd_put_32(output_bfd, lowword,
+		 (frvfdpic_got_section(info)->contents
+		  + frvfdpic_got_initial_offset(info)
+		  + entry->fd_entry));
+      bfd_put_32(output_bfd, highword,
+		 (frvfdpic_got_section(info)->contents
+		  + frvfdpic_got_initial_offset(info)
+		  + entry->fd_entry + 4));
     }
 
   /* Generate code for the PLT entry.  */
@@ -1824,8 +1826,8 @@ _frvfdpic_emit_got_relocs_plt_entries (struct frvfdpic_relocs_info *entry,
 		ad += sym->st_value;
 	      ad += sec->output_offset;
 	      if (sec->output_section
-		  && elf_section_data (sec->output_section))
-		idx = elf_section_data (sec->output_section)->dynindx;
+		  && elf_section_data(sec->output_section))
+		idx = elf_section_data(sec->output_section)->dynindx;
 	      else
 		idx = 0;
 	    }
@@ -1834,33 +1836,33 @@ _frvfdpic_emit_got_relocs_plt_entries (struct frvfdpic_relocs_info *entry,
       /* *ABS*+addend is special for TLS relocations, use only the
 	 addend.  */
       if (info->executable
-	  && idx == 0
-	  && (bfd_is_abs_section (sec)
-	      || bfd_is_und_section (sec)))
+	  && (idx == 0)
+	  && (bfd_is_abs_section(sec)
+	      || bfd_is_und_section(sec)))
 	;
       /* If we're linking an executable, we can entirely omit the
 	 dynamic relocation if the symbol is local to this module.  */
       else if (info->executable
-	       && (entry->symndx != -1
-		   || FRVFDPIC_SYM_LOCAL (info, entry->d.h)))
+	       && ((entry->symndx != -1)
+		   || FRVFDPIC_SYM_LOCAL(info, entry->d.h)))
 	{
-	  if (sec)
-	    ad += sec->output_section->vma - tls_biased_base (info);
+	  if (sec && sec->output_section)
+	    ad += (sec->output_section->vma - tls_biased_base(info));
 	}
       else
 	{
-	  if (idx == 0
-	      && (bfd_is_abs_section (sec)
-		  || bfd_is_und_section (sec)))
+	  if ((idx == 0)
+	      && (bfd_is_abs_section(sec)
+		  || bfd_is_und_section(sec)))
 	    {
-	      if (! elf_hash_table (info)->tls_sec)
+	      if (! elf_hash_table(info)->tls_sec)
 		{
 		  (*info->callbacks->undefined_symbol)
-		    (info, "TLS section", elf_hash_table (info)->dynobj,
-		     frvfdpic_got_section (info), entry->tlsoff_entry, TRUE);
+		    (info, "TLS section", elf_hash_table(info)->dynobj,
+		     frvfdpic_got_section(info), entry->tlsoff_entry, TRUE);
 		  return FALSE;
 		}
-	      idx = elf_section_data (elf_hash_table (info)->tls_sec)->dynindx;
+	      idx = elf_section_data(elf_hash_table(info)->tls_sec)->dynindx;
 	      ad += FRVFDPIC_TLS_BIAS;
 	    }
 	  _frvfdpic_add_dyn_reloc (output_bfd, frvfdpic_gotrel_section (info),
@@ -3710,7 +3712,7 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	    if (info->executable && !info->pie
 		&& (!h || FRVFDPIC_SYM_LOCAL (info, h)))
 	      {
-		if (osec)
+		if (osec && osec->output_section)
 		  addend += osec->output_section->vma;
 		if (IS_FDPIC (input_bfd)
 		    && (bfd_get_section_flags (output_bfd,
@@ -3777,7 +3779,7 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 					     + input_section->output_offset,
 					     r_type, dynindx, addend, picrel);
 		  }
-		else if (osec)
+		else if (osec && osec->output_section)
 		  addend += osec->output_section->vma;
 		/* We want the addend in-place because dynamic
 		   relocations are REL.  Setting relocation to it
