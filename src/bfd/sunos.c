@@ -515,7 +515,7 @@ sunos_canonicalize_dynamic_reloc(bfd *abfd, arelent **storage, asymbol **syms)
     *storage++ = info->canonical_dynrel + i;
   *storage = NULL;
 
-  return info->dynrel_count;
+  return (long)info->dynrel_count;
 }
 
 /* Code to handle linking of SunOS shared libraries.  */
@@ -1011,7 +1011,7 @@ sunos_add_dynamic_symbols (bfd *abfd,
 	      namebuf = n;
 	    }
 
-	  *p++ = b;
+	  *p++ = (char)b;
 	}
       while (b != '\0');
 
@@ -2723,14 +2723,14 @@ sunos_finish_dynamic_link (bfd *abfd, struct bfd_link_info *info)
   asection *s;
   asection *sdyn;
 
-  if (! sunos_hash_table (info)->dynamic_sections_needed
-      && ! sunos_hash_table (info)->got_needed)
+  if (! sunos_hash_table(info)->dynamic_sections_needed
+      && ! sunos_hash_table(info)->got_needed)
     return TRUE;
 
-  dynobj = sunos_hash_table (info)->dynobj;
+  dynobj = sunos_hash_table(info)->dynobj;
 
-  sdyn = bfd_get_section_by_name (dynobj, ".dynamic");
-  BFD_ASSERT (sdyn != NULL);
+  sdyn = bfd_get_section_by_name(dynobj, ".dynamic");
+  BFD_ASSERT(sdyn != NULL);
 
   /* Finish up the .need section.  The linker emulation code filled it
      in, but with offsets from the start of the section instead of
@@ -2742,25 +2742,25 @@ sunos_finish_dynamic_link (bfd *abfd, struct bfd_link_info *info)
       file_ptr filepos;
       bfd_byte *p;
 
-      filepos = s->output_section->filepos + s->output_offset;
+      filepos = (s->output_section->filepos + s->output_offset);
       p = s->contents;
       while (1)
 	{
 	  bfd_vma val;
 
-	  PUT_WORD (dynobj, GET_WORD (dynobj, p) + filepos, p);
-	  val = GET_WORD (dynobj, p + 12);
+	  PUT_WORD(dynobj, (GET_WORD(dynobj, p) + filepos), p);
+	  val = GET_WORD(dynobj, (p + 12));
 	  if (val == 0)
 	    break;
-	  PUT_WORD (dynobj, val + filepos, p + 12);
+	  PUT_WORD(dynobj, (val + filepos), (p + 12));
 	  p += 16;
 	}
     }
 
   /* The first entry in the .got section is the address of the
      dynamic information, unless this is a shared library.  */
-  s = bfd_get_section_by_name (dynobj, ".got");
-  BFD_ASSERT (s != NULL);
+  s = bfd_get_section_by_name(dynobj, ".got");
+  BFD_ASSERT(s != NULL);
   if (info->shared || sdyn->size == 0)
     PUT_WORD(dynobj, (bfd_vma)0UL, s->contents);
   else
@@ -2772,12 +2772,12 @@ sunos_finish_dynamic_link (bfd *abfd, struct bfd_link_info *info)
       if ((o->flags & SEC_HAS_CONTENTS) != 0
 	  && o->contents != NULL)
 	{
-	  BFD_ASSERT (o->output_section != NULL
-		      && o->output_section->owner == abfd);
-	  if (! bfd_set_section_contents (abfd, o->output_section,
-					  o->contents,
-					  (file_ptr) o->output_offset,
-					  o->size))
+	  BFD_ASSERT(o->output_section != NULL
+		     && o->output_section->owner == abfd);
+	  if (! bfd_set_section_contents(abfd, o->output_section,
+					 o->contents,
+					 (file_ptr)o->output_offset,
+					 o->size))
 	    return FALSE;
 	}
     }

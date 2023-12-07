@@ -3265,22 +3265,22 @@ m32r_elf_finish_dynamic_symbol (bfd *output_bfd,
 	      || h->forced_local)
           && h->def_regular)
         {
-          rela.r_info = ELF32_R_INFO (0, R_M32R_RELATIVE);
+          rela.r_info = ELF32_R_INFO(0, R_M32R_RELATIVE);
           rela.r_addend = (h->root.u.def.value
                            + h->root.u.def.section->output_section->vma
                            + h->root.u.def.section->output_offset);
         }
       else
         {
-	  BFD_ASSERT ((h->got.offset & 1) == 0);
-          bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h->got.offset);
-          rela.r_info = ELF32_R_INFO (h->dynindx, R_M32R_GLOB_DAT);
+	  BFD_ASSERT((h->got.offset & 1) == 0);
+          bfd_put_32(output_bfd, (bfd_vma)0L, sgot->contents + h->got.offset);
+          rela.r_info = ELF32_R_INFO(h->dynindx, R_M32R_GLOB_DAT);
           rela.r_addend = 0;
         }
 
       loc = srela->contents;
-      loc += srela->reloc_count * sizeof (Elf32_External_Rela);
-      bfd_elf32_swap_reloca_out (output_bfd, &rela, loc);
+      loc += (srela->reloc_count * sizeof(Elf32_External_Rela));
+      bfd_elf32_swap_reloca_out(output_bfd, &rela, loc);
       ++srela->reloc_count;
     }
 

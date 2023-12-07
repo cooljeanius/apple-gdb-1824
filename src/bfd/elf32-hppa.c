@@ -4015,8 +4015,8 @@ elf32_hppa_finish_dynamic_symbol (bfd *output_bfd,
 	{
 	  rela.r_info = ELF32_R_INFO(0, R_PARISC_DIR32);
 	  rela.r_addend = (eh->root.u.def.value
-			  + eh->root.u.def.section->output_offset
-			  + eh->root.u.def.section->output_section->vma);
+			   + eh->root.u.def.section->output_offset
+			   + eh->root.u.def.section->output_section->vma);
 	}
       else
 	{

@@ -7416,7 +7416,7 @@ identify_literal_placement (bfd *abfd,
       values->has_last_loc = TRUE;
       values->last_loc = rel->r_rel;
       if (!val_map)
-	val_map = add_value_map (values, &val, &rel->r_rel, final_static_link);
+	val_map = add_value_map(values, &val, &rel->r_rel, final_static_link);
       else
 	val_map->loc = rel->r_rel;
       *last_loc_is_prev_p = TRUE;
@@ -8465,28 +8465,28 @@ move_literal (bfd *abfd,
       reloc_bfd_fix *fix;
       unsigned insert_at;
 
-      r_type = ELF32_R_TYPE (r_rel->rela.r_info);
-      target_sec = r_reloc_get_section (r_rel);
+      r_type = ELF32_R_TYPE(r_rel->rela.r_info);
+      target_sec = r_reloc_get_section(r_rel);
 
       /* This is the difficult case.  We have to create a fix up.  */
       this_rela.r_offset = offset;
-      this_rela.r_info = ELF32_R_INFO (0, r_type);
+      this_rela.r_info = ELF32_R_INFO(0, r_type);
       this_rela.r_addend =
-	r_rel->target_offset - r_reloc_get_target_offset (r_rel);
+	(r_rel->target_offset - r_reloc_get_target_offset(r_rel));
       bfd_put_32 (abfd, lit->value, contents + offset);
 
       /* Currently, we cannot move relocations during a relocatable link.  */
-      BFD_ASSERT (!link_info->relocatable);
-      fix = reloc_bfd_fix_init (sec, offset, r_type, r_rel->abfd,
-				r_reloc_get_section (r_rel),
-				r_rel->target_offset + r_rel->virtual_offset,
-				FALSE);
+      BFD_ASSERT(!link_info->relocatable);
+      fix = reloc_bfd_fix_init(sec, offset, r_type, r_rel->abfd,
+                               r_reloc_get_section(r_rel),
+                               (r_rel->target_offset + r_rel->virtual_offset),
+                               FALSE);
       /* We also need to mark that relocations are needed here.  */
       sec->flags |= SEC_RELOC;
 
-      translate_reloc_bfd_fix (fix);
+      translate_reloc_bfd_fix(fix);
       /* This fix has not yet been translated.  */
-      add_fix (sec, fix);
+      add_fix(sec, fix);
 
       /* Add the relocation.  If we have already allocated our own
 	 space for the relocations and we have room for more, then use

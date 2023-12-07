@@ -319,6 +319,8 @@ process_esd(bfd *abfd, struct ext_esd *esd, int pass)
 	  break;
 	}
     }
+  (void)size;
+  (void)start;
 }
 
 #define R_RELWORD     1

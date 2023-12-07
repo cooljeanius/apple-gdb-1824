@@ -1809,7 +1809,7 @@ gptab_compare(const void *p1, const void *p2)
   const Elf32_gptab *a1 = (const Elf32_gptab *)p1;
   const Elf32_gptab *a2 = (const Elf32_gptab *)p2;
 
-  return (a1->gt_entry.gt_g_value - a2->gt_entry.gt_g_value);
+  return (int)(a1->gt_entry.gt_g_value - a2->gt_entry.gt_g_value);
 }
 
 /* Functions to manage the got entry hash table.  */
@@ -1818,13 +1818,13 @@ gptab_compare(const void *p1, const void *p2)
    hash number.  */
 
 static INLINE hashval_t
-mips_elf_hash_bfd_vma (bfd_vma addr)
+mips_elf_hash_bfd_vma(bfd_vma addr)
 {
 #ifdef BFD64
-  return addr + (addr >> 32);
+  return (hashval_t)(addr + (addr >> 32));
 #else
   return addr;
-#endif
+#endif /* BFD64 */
 }
 
 /* got_entries only match if they're identical, except for gotidx, so
@@ -1977,7 +1977,7 @@ mips_tls_got_relocs (struct bfd_link_info *info, unsigned char tls_type,
 
   if (h && WILL_CALL_FINISH_DYNAMIC_SYMBOL (dyn, info->shared, h)
       && (!info->shared || !SYMBOL_REFERENCES_LOCAL (info, h)))
-    indx = h->dynindx;
+    indx = (int)h->dynindx;
 
   if ((info->shared || indx != 0)
       && (h == NULL
@@ -2111,7 +2111,7 @@ mips_elf_initialize_tls_slots (bfd *abfd, bfd_vma got_offset,
 
       if (WILL_CALL_FINISH_DYNAMIC_SYMBOL (dyn, info->shared, &h->root)
 	  && (!info->shared || !SYMBOL_REFERENCES_LOCAL (info, &h->root)))
-	indx = h->root.dynindx;
+	indx = (int)h->root.dynindx;
     }
 
   if (*tls_type_p & GOT_TLS_DONE)
@@ -3722,11 +3722,12 @@ mips_elf_calculate_relocation(bfd *abfd, bfd *input_bfd,
 	++symbol;
 
       /* Record the name of this symbol, for our caller.  */
-      *namep = bfd_elf_string_from_elf_section (input_bfd,
-						symtab_hdr->sh_link,
-						sym->st_name);
+      *namep =
+        bfd_elf_string_from_elf_section(input_bfd,
+                                        (unsigned int)symtab_hdr->sh_link,
+                                        (unsigned int)sym->st_name);
       if (*namep == '\0')
-	*namep = bfd_section_name (input_bfd, sec);
+	*namep = bfd_section_name(input_bfd, sec);
 
       target_is_16_bit_code_p = (sym->st_other == STO_MIPS16);
     }
@@ -4711,7 +4712,7 @@ elf_mips_abi_name(bfd *abfd)
 {
   flagword flags;
 
-  flags = elf_elfheader(abfd)->e_flags;
+  flags = (flagword)elf_elfheader(abfd)->e_flags;
   switch (flags & EF_MIPS_ABI)
     {
     case 0:
@@ -6597,7 +6598,7 @@ _bfd_mips_elf_always_size_sections (bfd *output_bfd,
     return FALSE;
 
   if (g->global_gotsym != NULL)
-    i = elf_hash_table (info)->dynsymcount - g->global_gotsym->dynindx;
+    i = (int)(elf_hash_table(info)->dynsymcount - g->global_gotsym->dynindx);
   else
     /* If there are no global symbols, or none requiring
        relocations, then GLOBAL_GOTSYM will be NULL.  */
@@ -8814,7 +8815,7 @@ _bfd_elf_mips_get_relocated_section_contents
 	  gp_found = 0;
       }
       /* end mips */
-      for (parent = reloc_vector; *parent != NULL; parent++)
+      for (parent = reloc_vector; (parent != NULL) && (*parent != NULL); parent++)
 	{
 	  const char *error_message = NULL;
 	  bfd_reloc_status_type r;
@@ -9719,9 +9720,9 @@ _bfd_mips_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
       return FALSE;
     }
 
-  new_flags = elf_elfheader(ibfd)->e_flags;
+  new_flags = (flagword)elf_elfheader(ibfd)->e_flags;
   elf_elfheader(obfd)->e_flags |= (new_flags & EF_MIPS_NOREORDER);
-  old_flags = elf_elfheader(obfd)->e_flags;
+  old_flags = (flagword)elf_elfheader(obfd)->e_flags;
 
   if (! elf_flags_init(obfd))
     {

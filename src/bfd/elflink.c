@@ -6035,27 +6035,27 @@ elf_link_sort_relocs (bfd *abfd, struct bfd_link_info *info, asection **psec)
 	p = sort + o->output_offset / ext_size * sort_elt;
 	while (erel < erelend)
 	  {
-	    struct elf_link_sort_rela *s = (struct elf_link_sort_rela *) p;
-	    (*swap_in) (abfd, erel, s->rela);
-	    s->type = (*bed->elf_backend_reloc_type_class) (s->rela);
+	    struct elf_link_sort_rela *s = (struct elf_link_sort_rela *)p;
+	    (*swap_in)(abfd, erel, s->rela);
+	    s->type = (*bed->elf_backend_reloc_type_class)(s->rela);
 	    s->u.sym_mask = r_sym_mask;
 	    p += sort_elt;
 	    erel += ext_size;
 	  }
       }
 
-  qsort (sort, count, sort_elt, elf_link_sort_cmp1);
+  qsort(sort, count, sort_elt, elf_link_sort_cmp1);
 
   for (i = 0, p = sort; i < count; i++, p += sort_elt)
     {
-      struct elf_link_sort_rela *s = (struct elf_link_sort_rela *) p;
+      struct elf_link_sort_rela *s = (struct elf_link_sort_rela *)p;
       if (s->type != reloc_class_relative)
 	break;
     }
   ret = i;
   s_non_relative = p;
 
-  sq = (struct elf_link_sort_rela *) s_non_relative;
+  sq = (struct elf_link_sort_rela *)s_non_relative;
   for (; i < count; i++, p += sort_elt)
     {
       struct elf_link_sort_rela *sp = (struct elf_link_sort_rela *) p;
@@ -8757,8 +8757,10 @@ _bfd_elf_gc_mark (struct bfd_link_info *info,
       {
         const char *p = sec->name, *q = next_sec->name;
 
-        while (*p && *q && *p == *q)
-          p++, q++;
+        while (*p && *q && (*p == *q)) {
+          p++;
+          q++;
+        }
 
         if (*p == 0 && strcmp(q, ".macsbug") == 0)
           if (!next_sec->gc_mark)

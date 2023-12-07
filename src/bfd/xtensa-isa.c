@@ -1074,7 +1074,7 @@ int xtensa_operand_encode(xtensa_isa isa, xtensa_opcode opc, int opnd,
    * the original value: */
   orig_val = *valp;
   if ((*intop->encode)(valp) ||
-      (test_val = *valp, (*intop->decode)(&test_val)) ||
+      ((test_val = *valp) && (*intop->decode)(&test_val)) ||
       test_val != orig_val)
     {
       xtisa_errno = xtensa_isa_bad_value;

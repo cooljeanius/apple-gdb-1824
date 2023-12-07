@@ -1652,12 +1652,12 @@ ppc_process_before_allocation(bfd *abfd, struct bfd_link_info *info)
 		 toc entry.  */
 	      if ((r_flags & IMAGE_REL_PPC_TOCDEFN) != IMAGE_REL_PPC_TOCDEFN)
 		ok = ppc_record_toc_entry(abfd, info, sec,
-					  rel->r_symndx, default_toc);
+					  (int)rel->r_symndx, default_toc);
 	      if (!ok)
 		return FALSE;
 	      break;
 	    case IMAGE_REL_PPC_IMGLUE:
-	      ppc_mark_symbol_as_glue (abfd, rel->r_symndx, rel);
+	      ppc_mark_symbol_as_glue(abfd, (int)rel->r_symndx, rel);
 	      break;
 	    default:
 	      break;

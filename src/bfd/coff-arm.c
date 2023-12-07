@@ -1581,7 +1581,7 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		 can not get the upper bit, but that does not matter since
 		 signed_add needs no adjustment to become negative in that
 		 case.  */
-	      signed_add = add;
+	      signed_add = (bfd_signed_vma)add;
 
 	      if ((add & (((~src_mask) >> 1) & src_mask)) != 0)
 		signed_add -= ((((~src_mask) >> 1) & src_mask) << 1);
@@ -1592,7 +1592,7 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      /* Add the value from the object file, shifted so that it is a
 		 straight number.  */
 	      signed_check += signed_add;
-	      relocation   += signed_add;
+	      relocation += (bfd_vma)signed_add;
 
 	      BFD_ASSERT(howto->complain_on_overflow == complain_overflow_signed);
 

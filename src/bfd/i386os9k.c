@@ -220,7 +220,12 @@ const bfd_target i386os9k_vec =
 # if defined(BFD_JUMP_TABLE_GENERIC) && 0
     BFD_JUMP_TABLE_GENERIC(aout_64),
 # else
+    _bfd_generic_close_and_cleanup,
     aout_64_bfd_free_cached_info,
+    aout_64_new_section_hook,
+    aout_64_get_section_contents,
+    _bfd_generic_get_section_contents_in_window,
+    _bfd_generic_get_section_contents_in_window_with_mode,
 # endif /* BFD_JUMP_TABLE_GENERIC */
 #else
     BFD_JUMP_TABLE_GENERIC(aout_32),
@@ -233,16 +238,32 @@ const bfd_target i386os9k_vec =
     BFD_JUMP_TABLE_SYMBOLS(aout_64),
 # else
     aout_64_get_symtab_upper_bound,
+    aout_64_canonicalize_symtab,
+    aout_64_make_empty_symbol,
+    aout_64_print_symbol,
+    aout_64_get_symbol_info,
+    bfd_is_local_label_name,
+    bfd_is_target_special_symbol,
+    aout_64_get_lineno,
+    aout_64_find_nearest_line,
+    _bfd_generic_find_line,
+    _bfd_dwarf2_find_inliner_info,
+    _bfd_generic_make_empty_symbol,
+    aout_64_read_minisymbols,
+    aout_64_minisymbol_to_symbol,
 # endif /* BFD_JUMP_TABLE_SYMBOLS */
 # if defined(BFD_JUMP_TABLE_RELOCS) && 0
     BFD_JUMP_TABLE_RELOCS(aout_64),
 # else
     aout_64_get_reloc_upper_bound,
+    aout_64_canonicalize_reloc,
+    bfd_reloc_type_lookup,
 # endif /* BFD_JUMP_TABLE_RELOCS */
 # if defined(BFD_JUMP_TABLE_WRITE) && 0
     BFD_JUMP_TABLE_WRITE(aout_64),
 # else
     aout_64_set_arch_mach,
+    aout_64_set_section_contents,
 # endif /* BFD_JUMP_TABLE_WRITE*/
 #else
     BFD_JUMP_TABLE_SYMBOLS(aout_32),
