@@ -339,9 +339,9 @@ ihex_scan (bfd *abfd)
 	  switch (type)
 	    {
 	    case 0:
-	      /* This is a data record.  */
-	      if (sec != NULL
-		  && sec->vma + sec->size == extbase + segbase + addr)
+	      /* This is a data record: */
+	      if ((sec != NULL)
+		  && ((sec->vma + sec->size) == (extbase + segbase + addr)))
 		{
 		  /* This data goes at the end of the section we are
                      currently building.  */
@@ -359,8 +359,8 @@ ihex_scan (bfd *abfd)
 		  secname = (char *)bfd_alloc(abfd, amt);
 		  if (secname == NULL)
 		    goto error_return;
-		  strcpy (secname, secbuf);
-		  sec = bfd_make_section (abfd, secname);
+		  strcpy(secname, secbuf);
+		  sec = bfd_make_section(abfd, secname);
 		  if (sec == NULL)
 		    goto error_return;
 		  sec->flags = (SEC_HAS_CONTENTS | SEC_LOAD | SEC_ALLOC);

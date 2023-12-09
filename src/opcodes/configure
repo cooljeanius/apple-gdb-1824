@@ -25271,6 +25271,46 @@ then :
 fi
 
 
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -fpermissive" >&5
+printf %s "checking whether C compiler handles -fpermissive... " >&6; }
+if test ${gl_cv_warn_c__fpermissive+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -fpermissive"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  gl_cv_warn_c__fpermissive=yes
+else $as_nop
+  gl_cv_warn_c__fpermissive=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__fpermissive" >&5
+printf "%s\n" "$gl_cv_warn_c__fpermissive" >&6; }
+if test "x$gl_cv_warn_c__fpermissive" = xyes
+then :
+  as_fn_append WARN_CFLAGS " -fpermissive"
+fi
+
+
     fi
 
 fi

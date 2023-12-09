@@ -534,7 +534,7 @@ srec_scan (bfd *abfd)
 		             (int)(bfd_count_sections(abfd) + 1));
 		    amt = (strlen(secbuf) + 1);
 		    secname = (char *)bfd_alloc(abfd, amt);
-		    strcpy(secname, secbuf);
+		    strncpy(secname, secbuf, amt);
 		    sec = bfd_make_section(abfd, secname);
 		    if (sec == NULL)
 		      goto error_return;

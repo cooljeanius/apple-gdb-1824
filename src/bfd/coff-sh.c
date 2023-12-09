@@ -598,24 +598,22 @@ sh_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
       break;
 #ifdef COFF_WITH_PE
     case R_SH_IMAGEBASE:
-      insn = bfd_get_32 (abfd, hit_data);
-      insn += sym_value + reloc_entry->addend;
-      insn -= pe_data (input_section->output_section->owner)->pe_opthdr.ImageBase;
-      bfd_put_32 (abfd, (bfd_vma) insn, hit_data);
+      insn = bfd_get_32(abfd, hit_data);
+      insn += (sym_value + reloc_entry->addend);
+      insn -= pe_data(input_section->output_section->owner)->pe_opthdr.ImageBase;
+      bfd_put_32(abfd, (bfd_vma)insn, hit_data);
       break;
-#endif
+#endif /* COFF_WITH_PE */
     case R_SH_PCDISP:
       insn = (unsigned long)bfd_get_16(abfd, hit_data);
       sym_value += reloc_entry->addend;
       sym_value -= (input_section->output_section->vma
-		    + input_section->output_offset
-		    + addr
-		    + 4);
-      sym_value += (insn & 0xfff) << 1;
+		    + input_section->output_offset + addr + 4);
+      sym_value += ((insn & 0xfff) << 1);
       if (insn & 0x800)
 	sym_value -= 0x1000;
       insn = (unsigned long)((insn & 0xf000) | (sym_value & 0xfff));
-      bfd_put_16 (abfd, (bfd_vma) insn, hit_data);
+      bfd_put_16(abfd, (bfd_vma)insn, hit_data);
       if ((sym_value < (bfd_vma)-0x1000) || (sym_value >= 0x1000))
 	return bfd_reloc_overflow;
       break;
@@ -2063,20 +2061,20 @@ sh_insn_uses_reg(unsigned int insn, const struct sh_opcode *op,
 {
   unsigned int f;
 
-  f = op->flags;
+  f = (unsigned int)op->flags;
 
-  if ((f & USES1) != 0
-      && USES1_REG (insn) == reg)
+  if (((f & USES1) != 0)
+      && (USES1_REG(insn) == reg))
     return TRUE;
-  if ((f & USES2) != 0
-      && USES2_REG (insn) == reg)
+  if (((f & USES2) != 0)
+      && (USES2_REG(insn) == reg))
     return TRUE;
-  if ((f & USESR0) != 0
-      && reg == 0)
+  if (((f & USESR0) != 0)
+      && (reg == 0))
     return TRUE;
-  if ((f & USESAS) && reg == USESAS_REG (insn))
+  if ((f & USESAS) && (reg == USESAS_REG(insn)))
     return TRUE;
-  if ((f & USESR8) && reg == 8)
+  if ((f & USESR8) && (reg == 8))
     return TRUE;
 
   return FALSE;
@@ -2089,18 +2087,18 @@ sh_insn_sets_reg(unsigned int insn, const struct sh_opcode *op,
 {
   unsigned int f;
 
-  f = op->flags;
+  f = (unsigned int)op->flags;
 
   if (((f & SETS1) != 0)
       && (SETS1_REG(insn) == reg))
     return TRUE;
-  if ((f & SETS2) != 0
-      && SETS2_REG (insn) == reg)
+  if (((f & SETS2) != 0)
+      && (SETS2_REG(insn) == reg))
     return TRUE;
-  if ((f & SETSR0) != 0
-      && reg == 0)
+  if (((f & SETSR0) != 0)
+      && (reg == 0))
     return TRUE;
-  if ((f & SETSAS) && reg == SETSAS_REG (insn))
+  if ((f & SETSAS) && (reg == SETSAS_REG(insn)))
     return TRUE;
 
   return FALSE;
@@ -2124,7 +2122,7 @@ sh_insn_uses_freg(unsigned int insn, const struct sh_opcode *op,
 {
   unsigned int f;
 
-  f = op->flags;
+  f = (unsigned int)op->flags;
 
   /* We cannot tell if this is a double-precision insn, so just play safe
      and assume that it might be.  So not only have we test FREG against
@@ -2135,14 +2133,14 @@ sh_insn_uses_freg(unsigned int insn, const struct sh_opcode *op,
      So what this all boils down to is that we have to ignore the lowest
      bit of the register number.  */
 
-  if ((f & USESF1) != 0
-      && (USESF1_REG (insn) & 0xe) == (freg & 0xe))
+  if (((f & USESF1) != 0)
+      && ((USESF1_REG(insn) & 0xe) == (freg & 0xe)))
     return TRUE;
-  if ((f & USESF2) != 0
-      && (USESF2_REG (insn) & 0xe) == (freg & 0xe))
+  if (((f & USESF2) != 0)
+      && ((USESF2_REG(insn) & 0xe) == (freg & 0xe)))
     return TRUE;
-  if ((f & USESF0) != 0
-      && freg == 0)
+  if (((f & USESF0) != 0)
+      && (freg == 0))
     return TRUE;
 
   return FALSE;
@@ -2155,7 +2153,7 @@ sh_insn_sets_freg(unsigned int insn, const struct sh_opcode *op,
 {
   unsigned int f;
 
-  f = op->flags;
+  f = (unsigned int)op->flags;
 
   /* We can't tell if this is a double-precision insn, so just play safe
      and assume that it might be.  So not only have we test FREG against
@@ -2166,8 +2164,8 @@ sh_insn_sets_freg(unsigned int insn, const struct sh_opcode *op,
      So what this all boils down to is that we have to ignore the lowest
      bit of the register number.  */
 
-  if ((f & SETSF1) != 0
-      && (SETSF1_REG (insn) & 0xe) == (freg & 0xe))
+  if (((f & SETSF1) != 0)
+      && ((SETSF1_REG(insn) & 0xe) == (freg & 0xe)))
     return TRUE;
 
   return FALSE;
@@ -2184,8 +2182,8 @@ sh_insns_conflict(unsigned int i1, const struct sh_opcode *op1,
 {
   unsigned int f1, f2;
 
-  f1 = op1->flags;
-  f2 = op2->flags;
+  f1 = (unsigned int)op1->flags;
+  f2 = (unsigned int)op2->flags;
 
   /* Load of fpscr conflicts with floating point operations.
      FIXME: should NOT test raw opcodes here: */
@@ -2246,7 +2244,7 @@ sh_load_use(unsigned int i1, const struct sh_opcode *op1,
 {
   unsigned int f1;
 
-  f1 = op1->flags;
+  f1 = (unsigned int)op1->flags;
 
   if ((f1 & LOAD) == 0U)
     return FALSE;
@@ -2254,17 +2252,17 @@ sh_load_use(unsigned int i1, const struct sh_opcode *op1,
   /* If both SETS1 and SETSSP are set, that means a load to a special
      register using postincrement addressing mode, which we do NOT care
      about here.  */
-  if ((f1 & SETS1) != 0
-      && (f1 & SETSSP) == 0
-      && sh_insn_uses_reg (i2, op2, (i1 & 0x0f00) >> 8))
+  if (((f1 & SETS1) != 0)
+      && ((f1 & SETSSP) == 0)
+      && sh_insn_uses_reg(i2, op2, (i1 & 0x0f00) >> 8))
     return TRUE;
 
-  if ((f1 & SETSR0) != 0
-      && sh_insn_uses_reg (i2, op2, 0))
+  if (((f1 & SETSR0) != 0)
+      && sh_insn_uses_reg(i2, op2, 0))
     return TRUE;
 
-  if ((f1 & SETSF1) != 0
-      && sh_insn_uses_freg (i2, op2, (i1 & 0x0f00) >> 8))
+  if (((f1 & SETSF1) != 0)
+      && sh_insn_uses_freg(i2, op2, (i1 & 0x0f00) >> 8))
     return TRUE;
 
   return FALSE;

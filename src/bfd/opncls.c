@@ -1400,6 +1400,7 @@ find_separate_debug_file(bfd *abfd, const char *debug_file_directory)
   char *debugfile;
   unsigned long crc32;
   int i;
+  size_t debugfilelen;
 
   BFD_ASSERT(abfd);
   if (debug_file_directory == NULL)
@@ -1435,9 +1436,10 @@ find_separate_debug_file(bfd *abfd, const char *debug_file_directory)
   dir[i + 1] = '\0';
   BFD_ASSERT((dir[i] == '/') || (dir[0] == '\0'));
 
-  debugfile = (char *)malloc((strlen(debug_file_directory) + 1)
-                             + strlen(dir) + strlen(".debug/")
-                             + strlen(basename_str) + 1);
+  debugfilelen = ((strlen(debug_file_directory) + 1UL)
+                  + strlen(dir) + strlen(".debug/")
+                  + strlen(basename_str) + 1UL);
+  debugfile = (char *)malloc(debugfilelen);
   if (debugfile == NULL)
     {
       free(basename_str);
@@ -1446,8 +1448,8 @@ find_separate_debug_file(bfd *abfd, const char *debug_file_directory)
     }
 
   /* First try in the same directory as the original file:  */
-  strcpy(debugfile, dir);
-  strcat(debugfile, basename_str);
+  strncpy(debugfile, dir, debugfilelen);
+  strncat(debugfile, basename_str, debugfilelen);
 
   if (separate_debug_file_exists(debugfile, crc32))
     {
@@ -1457,9 +1459,9 @@ find_separate_debug_file(bfd *abfd, const char *debug_file_directory)
     }
 
   /* Then try in a subdirectory called .debug.  */
-  strcpy(debugfile, dir);
-  strcat(debugfile, ".debug/");
-  strcat(debugfile, basename_str);
+  strncpy(debugfile, dir, debugfilelen);
+  strncat(debugfile, ".debug/", debugfilelen);
+  strncat(debugfile, basename_str, debugfilelen);
 
   if (separate_debug_file_exists(debugfile, crc32))
     {
@@ -1469,14 +1471,14 @@ find_separate_debug_file(bfd *abfd, const char *debug_file_directory)
     }
 
   /* Then try in the global debugfile directory: */
-  strcpy(debugfile, debug_file_directory);
+  strncpy(debugfile, debug_file_directory, debugfilelen);
   i = (int)(strlen(debug_file_directory) - 1UL);
   if ((i > 0)
       && (debug_file_directory[i] != '/')
       && (dir[0] != '/'))
-    strcat(debugfile, "/");
-  strcat(debugfile, dir);
-  strcat(debugfile, basename_str);
+    strncat(debugfile, "/", debugfilelen);
+  strncat(debugfile, dir, debugfilelen);
+  strncat(debugfile, basename_str, debugfilelen);
 
   if (separate_debug_file_exists(debugfile, crc32))
     {

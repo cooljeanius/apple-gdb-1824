@@ -951,6 +951,7 @@ sunos_add_dynamic_symbols (bfd *abfd,
       bfd_size_type alc;
       bfd_byte b;
       char *namecopy;
+      size_t namecopylen;
 
       if ((bfd_seek(abfd, (file_ptr)need, SEEK_SET) != 0)
 	  || (bfd_bread(buf, (bfd_size_type)16, abfd) != 16))
@@ -971,8 +972,8 @@ sunos_add_dynamic_symbols (bfd *abfd,
       needed->by = abfd;
 
       /* We return the name as [-l]name[.maj][.min].  */
-      alc = 30;
-      namebuf = (char *)bfd_malloc(alc + 1);
+      alc = 30UL;
+      namebuf = (char *)bfd_malloc(alc + 1UL);
       if (namebuf == NULL)
 	return FALSE;
       p = namebuf;
@@ -982,15 +983,14 @@ sunos_add_dynamic_symbols (bfd *abfd,
 	  *p++ = '-';
 	  *p++ = 'l';
 	}
-      if (bfd_seek (abfd, (file_ptr) name, SEEK_SET) != 0)
+      if (bfd_seek(abfd, (file_ptr)name, SEEK_SET) != 0)
 	{
-	  free (namebuf);
+	  free(namebuf);
 	  return FALSE;
 	}
 
-      do
-	{
-	  if (bfd_bread (&b, (bfd_size_type) 1, abfd) != 1)
+      do {
+	  if (bfd_bread(&b, (bfd_size_type)1UL, abfd) != 1)
 	    {
 	      free(namebuf);
 	      return FALSE;
@@ -1000,20 +1000,19 @@ sunos_add_dynamic_symbols (bfd *abfd,
 	    {
 	      char *n;
 
-	      alc *= 2;
-	      n = (char *)bfd_realloc(namebuf, alc + 1);
+	      alc *= 2UL;
+	      n = (char *)bfd_realloc(namebuf, (alc + 1UL));
 	      if (n == NULL)
 		{
 		  free(namebuf);
 		  return FALSE;
 		}
-	      p = n + (p - namebuf);
+	      p = (n + (p - namebuf));
 	      namebuf = n;
 	    }
 
 	  *p++ = (char)b;
-	}
-      while (b != '\0');
+      } while (b != '\0');
 
       if (major_vno == 0)
 	*p = '\0';
@@ -1028,12 +1027,12 @@ sunos_add_dynamic_symbols (bfd *abfd,
 	  else
 	    snprintf(minbuf, sizeof(minbuf), ".%d", minor_vno);
 
-	  if (((p - namebuf) + strlen(majbuf) + strlen(minbuf)) >= alc)
+	  if (((size_t)(p - namebuf) + strlen(majbuf) + strlen(minbuf)) >= alc)
 	    {
 	      char *n;
 
-	      alc = ((p - namebuf) + strlen(majbuf) + strlen(minbuf));
-	      n = (char *)bfd_realloc(namebuf, (alc + 1));
+	      alc = ((size_t)(p - namebuf) + strlen(majbuf) + strlen(minbuf));
+	      n = (char *)bfd_realloc(namebuf, (alc + 1UL));
 	      if (n == NULL)
 		{
 		  free(namebuf);
@@ -1043,17 +1042,18 @@ sunos_add_dynamic_symbols (bfd *abfd,
 	      namebuf = n;
 	    }
 
-	  strcpy(p, majbuf);
-	  strcat(p, minbuf);
+	  strncpy(p, majbuf, alc);
+	  strncat(p, minbuf, alc);
 	}
 
-      namecopy = (char *)bfd_alloc(abfd, (bfd_size_type)strlen(namebuf) + 1);
+      namecopylen = (strlen(namebuf) + 1UL);
+      namecopy = (char *)bfd_alloc(abfd, (bfd_size_type)namecopylen);
       if (namecopy == NULL)
 	{
 	  free(namebuf);
 	  return FALSE;
 	}
-      strcpy(namecopy, namebuf);
+      strncpy(namecopy, namebuf, namecopylen);
       free(namebuf);
       needed->name = namecopy;
 
@@ -1437,18 +1437,18 @@ sunos_scan_ext_relocs (struct bfd_link_info *info,
   asection *srel = NULL;
   bfd_size_type amt;
 
-  /* We only know how to handle SPARC plt entries.  */
-  if (bfd_get_arch (abfd) != bfd_arch_sparc)
+  /* We only know how to handle SPARC plt entries: */
+  if (bfd_get_arch(abfd) != bfd_arch_sparc)
     {
-      bfd_set_error (bfd_error_invalid_target);
+      bfd_set_error(bfd_error_invalid_target);
       return FALSE;
     }
 
   dynobj = NULL;
 
-  sym_hashes = (struct sunos_link_hash_entry **) obj_aout_sym_hashes (abfd);
+  sym_hashes = (struct sunos_link_hash_entry **)obj_aout_sym_hashes(abfd);
 
-  relend = relocs + rel_size / RELOC_EXT_SIZE;
+  relend = (relocs + (rel_size / RELOC_EXT_SIZE));
   for (rel = relocs; rel < relend; rel++)
     {
       unsigned int r_index;
@@ -1456,8 +1456,8 @@ sunos_scan_ext_relocs (struct bfd_link_info *info,
       int r_type;
       struct sunos_link_hash_entry *h = NULL;
 
-      /* Swap in the reloc information.  */
-      if (bfd_header_big_endian (abfd))
+      /* Swap in the reloc information: */
+      if (bfd_header_big_endian(abfd))
 	{
 	  r_index = ((rel->r_index[0] << 16)
 		     | (rel->r_index[1] << 8)
@@ -1826,7 +1826,7 @@ sunos_scan_dynamic_symbol (struct sunos_link_hash_entry *h, void * data)
       unsigned long hash;
       bfd *dynobj;
 
-      BFD_ASSERT (h->dynindx == -2);
+      BFD_ASSERT(h->dynindx == -2);
 
       dynobj = sunos_hash_table(info)->dynobj;
 
@@ -1843,7 +1843,7 @@ sunos_scan_dynamic_symbol (struct sunos_link_hash_entry *h, void * data)
 	 There are no debugging symbols in the dynamic symbols.  */
       s = bfd_get_section_by_name(dynobj, ".dynstr");
       BFD_ASSERT(s != NULL);
-      contents = (bfd_byte *)bfd_realloc(s->contents, s->size + len + 1);
+      contents = (bfd_byte *)bfd_realloc(s->contents, (s->size + len + 1));
       if (contents == NULL)
 	return FALSE;
       s->contents = contents;
@@ -2736,13 +2736,13 @@ sunos_finish_dynamic_link (bfd *abfd, struct bfd_link_info *info)
      in, but with offsets from the start of the section instead of
      real addresses.  Now that we know the section location, we can
      fill in the final values.  */
-  s = bfd_get_section_by_name (dynobj, ".need");
-  if (s != NULL && s->size != 0)
+  s = bfd_get_section_by_name(dynobj, ".need");
+  if ((s != NULL) && (s->size != 0))
     {
       file_ptr filepos;
       bfd_byte *p;
 
-      filepos = (s->output_section->filepos + s->output_offset);
+      filepos = (file_ptr)(s->output_section->filepos + s->output_offset);
       p = s->contents;
       while (1)
 	{

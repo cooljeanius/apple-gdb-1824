@@ -235,12 +235,25 @@ bfd_sym_read_header_v32(bfd *abfd, bfd_sym_header_block *header)
 }
 
 /* */
-int ATTRIBUTE_NORETURN
+int
 bfd_sym_read_header_v34(bfd *abfd ATTRIBUTE_UNUSED,
                         bfd_sym_header_block *header ATTRIBUTE_UNUSED)
 {
-  abort();
+  /* FIXME: TODO: fix */
+  return -1;
 }
+
+static bfd_sym_version ATTRIBUTE_NOIPA
+bfd_sym_version_barrier(bfd_sym_version version)
+{
+#if (defined(__GNUC__) && (__GNUC__ > 1)) || defined(__clang__)
+  __asm__ volatile("");
+#endif /* (__GNUC__ > 1) || __clang__ */
+  if (version)
+    return *(volatile bfd_sym_version *volatile)version;
+  else
+    return version;
+} /* */
 
 /* */
 int
@@ -248,6 +261,8 @@ bfd_sym_read_header(bfd *abfd, bfd_sym_header_block *header,
                     bfd_sym_version version)
 {
   volatile int retval = 0;
+
+  version = bfd_sym_version_barrier(version);
 
   switch (version)
     {

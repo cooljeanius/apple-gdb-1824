@@ -5750,13 +5750,13 @@ ppc64_elf_hide_symbol (struct bfd_link_info *info,
 	     accessed;  It's either a string in an ELF string table,
 	     or allocated in an objalloc structure.  */
 
-	  p = eh->elf.root.root.string - 1;
+	  p = (eh->elf.root.root.string - 1);
 	  save = *p;
-	  *(char *) p = '.';
-	  htab = ppc_hash_table (info);
-	  fh = (struct ppc_link_hash_entry *)
-	    elf_link_hash_lookup (&htab->elf, p, FALSE, FALSE, FALSE);
-	  *(char *) p = save;
+	  *(char *)p = '.';
+	  htab = ppc_hash_table(info);
+	  fh = ((struct ppc_link_hash_entry *)
+	        elf_link_hash_lookup(&htab->elf, p, FALSE, FALSE, FALSE));
+	  *(char *)p = save;
 
 	  /* Unfortunately, if it so happens that the string we were
 	     looking for was allocated immediately before this string,
@@ -5764,12 +5764,14 @@ ppc64_elf_hide_symbol (struct bfd_link_info *info,
 	     reason the lookup should fail.  */
 	  if (fh == NULL)
 	    {
-	      q = eh->elf.root.root.string + strlen (eh->elf.root.root.string);
-	      while (q >= eh->elf.root.root.string && *q == *p)
-		--q, --p;
-	      if (q < eh->elf.root.root.string && *p == '.')
+	      q = (eh->elf.root.root.string + strlen(eh->elf.root.root.string));
+	      while ((q >= eh->elf.root.root.string) && (*q == *p)) {
+		--q;
+	        --p;
+	      }
+	      if ((q < eh->elf.root.root.string) && (*p == '.'))
 		fh = (struct ppc_link_hash_entry *)
-		  elf_link_hash_lookup (&htab->elf, p, FALSE, FALSE, FALSE);
+		  elf_link_hash_lookup(&htab->elf, p, FALSE, FALSE, FALSE);
 	    }
 	  if (fh != NULL)
 	    {
@@ -5778,10 +5780,11 @@ ppc64_elf_hide_symbol (struct bfd_link_info *info,
 	    }
 	}
       if (fh != NULL)
-	_bfd_elf_link_hash_hide_symbol (info, &fh->elf, force_local);
+	_bfd_elf_link_hash_hide_symbol(info, &fh->elf, force_local);
     }
 }
 
+/* */
 static bfd_boolean
 get_sym_h (struct elf_link_hash_entry **hp,
 	   Elf_Internal_Sym **symp,
@@ -5822,7 +5825,7 @@ get_sym_h (struct elf_link_hash_entry **hp,
 	{
 	  struct ppc_link_hash_entry *eh;
 
-	  eh = (struct ppc_link_hash_entry *) h;
+	  eh = (struct ppc_link_hash_entry *)h;
 	  *tls_maskp = &eh->tls_mask;
 	}
     }
@@ -5833,16 +5836,16 @@ get_sym_h (struct elf_link_hash_entry **hp,
 
       if (locsyms == NULL)
 	{
-	  locsyms = (Elf_Internal_Sym *) symtab_hdr->contents;
+	  locsyms = (Elf_Internal_Sym *)symtab_hdr->contents;
 	  if (locsyms == NULL)
-	    locsyms = bfd_elf_get_elf_syms (ibfd, symtab_hdr,
-					    symtab_hdr->sh_info,
-					    0, NULL, NULL, NULL);
+	    locsyms = bfd_elf_get_elf_syms(ibfd, symtab_hdr,
+                                           symtab_hdr->sh_info, 0,
+                                           NULL, NULL, NULL);
 	  if (locsyms == NULL)
 	    return FALSE;
 	  *locsymsp = locsyms;
 	}
-      sym = locsyms + r_symndx;
+      sym = (locsyms + r_symndx);
 
       if (hp != NULL)
 	*hp = NULL;
@@ -7873,11 +7876,11 @@ ppc_type_of_stub(asection *input_sec, const Elf_Internal_Rela *rel,
   r_type = (enum elf_ppc64_reloc_type)ELF64_R_TYPE(rel->r_info);
 
   /* Determine if a long branch stub is needed: */
-  max_branch_offset = 1 << 25;
+  max_branch_offset = (1 << 25);
   if (r_type != R_PPC64_REL24)
-    max_branch_offset = 1 << 15;
+    max_branch_offset = (1 << 15);
 
-  if (branch_offset + max_branch_offset >= 2 * max_branch_offset)
+  if ((branch_offset + max_branch_offset) >= (2 * max_branch_offset))
     /* We need a stub.  Figure out whether a long_branch or plt_branch
        is needed later.  */
     return ppc_stub_long_branch;
@@ -7885,28 +7888,38 @@ ppc_type_of_stub(asection *input_sec, const Elf_Internal_Rela *rel,
   return ppc_stub_none;
 }
 
-/* Build a .plt call stub.  */
-
+/* Build a .plt call stub: */
 static inline bfd_byte *
-build_plt_stub (bfd *obfd, bfd_byte *p, int offset)
+build_plt_stub(bfd *obfd, bfd_byte *p, int offset)
 {
 #define PPC_LO(v) ((v) & 0xffff)
 #define PPC_HI(v) (((v) >> 16) & 0xffff)
 #define PPC_HA(v) PPC_HI ((v) + 0x8000)
 
-  bfd_put_32(obfd, (ADDIS_R12_R2 | PPC_HA(offset)), p),	p += 4;
-  bfd_put_32(obfd, STD_R2_40R1, p),			p += 4;
-  bfd_put_32(obfd, (LD_R11_0R12 | PPC_LO(offset)), p),	p += 4;
-  if (PPC_HA(offset + 8) != PPC_HA(offset))
-    bfd_put_32(obfd, (ADDIS_R12_R12 | 1), p),		p += 4;
+  bfd_put_32(obfd, (ADDIS_R12_R2 | PPC_HA(offset)), p);
+  p += 4;
+  bfd_put_32(obfd, STD_R2_40R1, p);
+  p += 4;
+  bfd_put_32(obfd, (LD_R11_0R12 | PPC_LO(offset)), p);
+  p += 4;
+  if (PPC_HA(offset + 8) != PPC_HA(offset)) {
+    bfd_put_32(obfd, (ADDIS_R12_R12 | 1), p);
+    p += 4;
+  }
   offset += 8;
-  bfd_put_32(obfd, (LD_R2_0R12 | PPC_LO(offset)), p),	p += 4;
-  if (PPC_HA(offset + 8) != PPC_HA(offset))
-    bfd_put_32(obfd, (ADDIS_R12_R12 | 1), p),		p += 4;
+  bfd_put_32(obfd, (LD_R2_0R12 | PPC_LO(offset)), p);
+  p += 4;
+  if (PPC_HA(offset + 8) != PPC_HA(offset)) {
+    bfd_put_32(obfd, (ADDIS_R12_R12 | 1), p);
+    p += 4;
+  }
   offset += 8;
-  bfd_put_32(obfd, MTCTR_R11, p),			p += 4;
-  bfd_put_32(obfd, (LD_R11_0R12 | PPC_LO (offset)), p),	p += 4;
-  bfd_put_32(obfd, BCTR, p),				p += 4;
+  bfd_put_32(obfd, MTCTR_R11, p);
+  p += 4;
+  bfd_put_32(obfd, (LD_R11_0R12 | PPC_LO (offset)), p);
+  p += 4;
+  bfd_put_32(obfd, BCTR, p);
+  p += 4;
   return p;
 }
 

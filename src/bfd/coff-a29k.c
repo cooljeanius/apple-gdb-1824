@@ -344,12 +344,12 @@ coff_a29k_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
       bfd_reloc_status_type rstat;
 
       symndx = rel->r_symndx;
-      loc = contents + rel->r_vaddr - input_section->vma;
+      loc = (contents + rel->r_vaddr - input_section->vma);
 
-      if (symndx == -1 || rel->r_type == R_IHCONST)
+      if ((symndx == -1) || (rel->r_type == R_IHCONST))
 	h = NULL;
       else
-	h = obj_coff_sym_hashes (input_bfd)[symndx];
+	h = obj_coff_sym_hashes(input_bfd)[symndx];
 
       sym = NULL;
       sec = NULL;
@@ -368,20 +368,17 @@ coff_a29k_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 		{
 		  sym = syms + symndx;
 		  sec = sections[symndx];
-		  val = (sec->output_section->vma
-			 + sec->output_offset
-			 + sym->n_value
-			 - sec->vma);
+		  val = (sec->output_section->vma + sec->output_offset
+			 + sym->n_value - sec->vma);
 		}
 	    }
 	  else
 	    {
-	      if (   h->root.type == bfd_link_hash_defined
-		  || h->root.type == bfd_link_hash_defweak)
+	      if ((h->root.type == bfd_link_hash_defined)
+		  || (h->root.type == bfd_link_hash_defweak))
 		{
 		  sec = h->root.u.def.section;
-		  val = (h->root.u.def.value
-			 + sec->output_section->vma
+		  val = (h->root.u.def.value + sec->output_section->vma
 			 + sec->output_offset);
 		}
 	      else

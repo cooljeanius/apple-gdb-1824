@@ -7749,15 +7749,17 @@ elfcore_grok_nto_regs(bfd *abfd, Elf_Internal_Note *note, pid_t tid,
   char buf[100];
   char *name;
   asection *sect;
+  size_t namelen;
 
   /* Make a "(base)/%d" section: */
-  sprintf(buf, "%s/%ld", base, (long) tid);
+  snprintf(buf, sizeof(buf), "%s/%ld", base, (long)tid);
 
-  name = (char *)bfd_alloc(abfd, strlen(buf) + 1UL);
+  namelen = (strlen(buf) + 1UL);
+  name = (char *)bfd_alloc(abfd, namelen);
   if (name == NULL) {
     return FALSE;
   }
-  strcpy(name, buf);
+  strncpy(name, buf, namelen);
 
   sect = bfd_make_section_anyway(abfd, name);
   if (sect == NULL) {
@@ -7770,7 +7772,7 @@ elfcore_grok_nto_regs(bfd *abfd, Elf_Internal_Note *note, pid_t tid,
   sect->alignment_power = 2;
 
   /* This is the current thread: */
-  if (elf_tdata (abfd)->core_lwpid == tid) {
+  if (elf_tdata(abfd)->core_lwpid == tid) {
     return elfcore_maybe_make_sect(abfd, base, sect);
   }
 

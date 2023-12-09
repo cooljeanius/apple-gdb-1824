@@ -3702,69 +3702,69 @@ mips_elf_calculate_relocation(bfd *abfd, bfd *input_bfd,
     {
       Elf_Internal_Sym *sym;
 
-      sym = local_syms + r_symndx;
+      sym = (local_syms + r_symndx);
       sec = local_sections[r_symndx];
 
-      symbol = sec->output_section->vma + sec->output_offset;
-      if (ELF_ST_TYPE (sym->st_info) != STT_SECTION
+      symbol = (sec->output_section->vma + sec->output_offset);
+      if ((ELF_ST_TYPE(sym->st_info) != STT_SECTION)
 	  || (sec->flags & SEC_MERGE))
 	symbol += sym->st_value;
       if ((sec->flags & SEC_MERGE)
-	  && ELF_ST_TYPE (sym->st_info) == STT_SECTION)
+	  && (ELF_ST_TYPE(sym->st_info) == STT_SECTION))
 	{
-	  addend = _bfd_elf_rel_local_sym (abfd, sym, &sec, addend);
+	  addend = _bfd_elf_rel_local_sym(abfd, sym, &sec, addend);
 	  addend -= symbol;
-	  addend += sec->output_section->vma + sec->output_offset;
+	  addend += (sec->output_section->vma + sec->output_offset);
 	}
 
-      /* MIPS16 text labels should be treated as odd.  */
+      /* MIPS16 text labels should be treated as odd: */
       if (sym->st_other == STO_MIPS16)
 	++symbol;
 
-      /* Record the name of this symbol, for our caller.  */
+      /* Record the name of this symbol, for our caller: */
       *namep =
         bfd_elf_string_from_elf_section(input_bfd,
                                         (unsigned int)symtab_hdr->sh_link,
                                         (unsigned int)sym->st_name);
-      if (*namep == '\0')
+      if (namep && ((*namep == NULL) || (**namep == '\0')))
 	*namep = bfd_section_name(input_bfd, sec);
 
       target_is_16_bit_code_p = (sym->st_other == STO_MIPS16);
     }
   else
     {
-      /* ??? Could we use RELOC_FOR_GLOBAL_SYMBOL here ?  */
+      /* ???: Could we use RELOC_FOR_GLOBAL_SYMBOL here, perhaps?  */
 
-      /* For global symbols we look up the symbol in the hash-table.  */
+      /* For global symbols we look up the symbol in the hash-table: */
       h = ((struct mips_elf_link_hash_entry *)
-	   elf_sym_hashes (input_bfd) [r_symndx - extsymoff]);
-      /* Find the real hash-table entry for this symbol.  */
-      while (h->root.root.type == bfd_link_hash_indirect
-	     || h->root.root.type == bfd_link_hash_warning)
-	h = (struct mips_elf_link_hash_entry *) h->root.root.u.i.link;
+	   elf_sym_hashes(input_bfd)[r_symndx - extsymoff]);
+      /* Find the real hash-table entry for this symbol: */
+      while ((h->root.root.type == bfd_link_hash_indirect)
+	     || (h->root.root.type == bfd_link_hash_warning))
+	h = (struct mips_elf_link_hash_entry *)h->root.root.u.i.link;
 
-      /* Record the name of this symbol, for our caller.  */
+      /* Record the name of this symbol, for our caller: */
       *namep = h->root.root.root.string;
 
       /* See if this is the special _gp_disp symbol.  Note that such a
 	 symbol must always be a global symbol.  */
-      if (strcmp (*namep, "_gp_disp") == 0
-	  && ! NEWABI_P (input_bfd))
+      if ((strcmp(*namep, "_gp_disp") == 0)
+	  && ! NEWABI_P(input_bfd))
 	{
 	  /* Relocations against _gp_disp are permitted only with
 	     R_MIPS_HI16 and R_MIPS_LO16 relocations.  */
-	  if (r_type != R_MIPS_HI16 && r_type != R_MIPS_LO16
-	      && r_type != R_MIPS16_HI16 && r_type != R_MIPS16_LO16)
+	  if ((r_type != R_MIPS_HI16) && (r_type != R_MIPS_LO16)
+	      && (r_type != R_MIPS16_HI16) && (r_type != R_MIPS16_LO16))
 	    return bfd_reloc_notsupported;
 
 	  gp_disp_p = TRUE;
 	}
       /* See if this is the special _gp symbol.  Note that such a
 	 symbol must always be a global symbol.  */
-      else if (strcmp (*namep, "__gnu_local_gp") == 0)
-	gnu_local_gp_p = TRUE;
-
-
+      else if (strcmp(*namep, "__gnu_local_gp") == 0)
+        {
+	  gnu_local_gp_p = TRUE;
+        }
       /* If this symbol is defined, calculate its address.  Note that
 	 _gp_disp is a magic symbol, always implicitly defined by the
 	 linker, so it's inappropriate to check to see whether or not

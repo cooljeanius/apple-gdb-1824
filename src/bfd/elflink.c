@@ -6058,13 +6058,13 @@ elf_link_sort_relocs (bfd *abfd, struct bfd_link_info *info, asection **psec)
   sq = (struct elf_link_sort_rela *)s_non_relative;
   for (; i < count; i++, p += sort_elt)
     {
-      struct elf_link_sort_rela *sp = (struct elf_link_sort_rela *) p;
+      struct elf_link_sort_rela *sp = (struct elf_link_sort_rela *)p;
       if (((sp->rela->r_info ^ sq->rela->r_info) & r_sym_mask) != 0)
 	sq = sp;
       sp->u.offset = sq->rela->r_offset;
     }
 
-  qsort (s_non_relative, count - ret, sort_elt, elf_link_sort_cmp2);
+  qsort(s_non_relative, (count - ret), sort_elt, elf_link_sort_cmp2);
 
   for (lo = reldyn->map_head.link_order; lo != NULL; lo = lo->next)
     if (lo->type == bfd_indirect_link_order)
@@ -6073,12 +6073,12 @@ elf_link_sort_relocs (bfd *abfd, struct bfd_link_info *info, asection **psec)
 	asection *o = lo->u.indirect.section;
 
 	erel = o->contents;
-	erelend = o->contents + o->size;
+	erelend = (o->contents + o->size);
 	p = sort + o->output_offset / ext_size * sort_elt;
 	while (erel < erelend)
 	  {
-	    struct elf_link_sort_rela *s = (struct elf_link_sort_rela *) p;
-	    (*swap_out) (abfd, s->rela, erel);
+	    struct elf_link_sort_rela *s = (struct elf_link_sort_rela *)p;
+	    (*swap_out)(abfd, s->rela, erel);
 	    p += sort_elt;
 	    erel += ext_size;
 	  }
@@ -6794,10 +6794,10 @@ elf_link_input_bfd (struct elf_final_link_info *finfo, bfd *input_bfd)
   emit_relocs = (finfo->info->relocatable
 		 || finfo->info->emitrelocations);
 
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
-  if (elf_bad_symtab (input_bfd))
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  if (elf_bad_symtab(input_bfd))
     {
-      locsymcount = symtab_hdr->sh_size / bed->s->sizeof_sym;
+      locsymcount = (symtab_hdr->sh_size / bed->s->sizeof_sym);
       extsymoff = 0;
     }
   else
@@ -6807,13 +6807,13 @@ elf_link_input_bfd (struct elf_final_link_info *finfo, bfd *input_bfd)
     }
 
   /* Read the local symbols.  */
-  isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
+  isymbuf = (Elf_Internal_Sym *)symtab_hdr->contents;
   if (isymbuf == NULL && locsymcount != 0)
     {
-      isymbuf = bfd_elf_get_elf_syms (input_bfd, symtab_hdr, locsymcount, 0,
-				      finfo->internal_syms,
-				      finfo->external_syms,
-				      finfo->locsym_shndx);
+      isymbuf = bfd_elf_get_elf_syms(input_bfd, symtab_hdr, locsymcount, 0,
+				     finfo->internal_syms,
+				     finfo->external_syms,
+				     finfo->locsym_shndx);
       if (isymbuf == NULL)
 	return FALSE;
     }
@@ -6821,7 +6821,7 @@ elf_link_input_bfd (struct elf_final_link_info *finfo, bfd *input_bfd)
   /* Find local symbol sections and adjust values of symbols in
      SEC_MERGE sections.  Write out those local symbols we know are
      going into the output file.  */
-  isymend = isymbuf + locsymcount;
+  isymend = (isymbuf + locsymcount);
   for (isym = isymbuf, pindex = finfo->indices, ppsection = finfo->sections;
        isym < isymend;
        isym++, pindex++, ppsection++)
@@ -8807,14 +8807,14 @@ _bfd_elf_gc_mark (struct bfd_link_info *info,
 	}
 
       /* Read the relocations.  */
-      relstart = _bfd_elf_link_read_relocs (input_bfd, sec, NULL, NULL,
-					    info->keep_memory);
+      relstart = _bfd_elf_link_read_relocs(input_bfd, sec, NULL, NULL,
+					   info->keep_memory);
       if (relstart == NULL)
 	{
 	  ret = FALSE;
 	  goto out1;
 	}
-      relend = relstart + sec->reloc_count * bed->s->int_rels_per_ext_rel;
+      relend = (relstart + (sec->reloc_count * bed->s->int_rels_per_ext_rel));
 
       if (bed->s->arch_size == 32)
 	r_sym_shift = 8;

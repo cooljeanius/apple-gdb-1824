@@ -2253,35 +2253,35 @@ mips_elf64_rtype_to_howto (unsigned int r_type, bfd_boolean rela_p)
 
 /* Prevent relocation handling by bfd for MIPS ELF64.  */
 
-static void
-mips_elf64_info_to_howto_rel (bfd *abfd ATTRIBUTE_UNUSED,
+static void ATTRIBUTE_NORETURN
+mips_elf64_info_to_howto_rel(bfd *abfd ATTRIBUTE_UNUSED,
+			     arelent *cache_ptr ATTRIBUTE_UNUSED,
+			     Elf_Internal_Rela *dst ATTRIBUTE_UNUSED)
+{
+  BFD_ASSERT(0);
+}
+
+static void ATTRIBUTE_NORETURN
+mips_elf64_info_to_howto_rela(bfd *abfd ATTRIBUTE_UNUSED,
 			      arelent *cache_ptr ATTRIBUTE_UNUSED,
 			      Elf_Internal_Rela *dst ATTRIBUTE_UNUSED)
 {
-  BFD_ASSERT (0);
-}
-
-static void
-mips_elf64_info_to_howto_rela (bfd *abfd ATTRIBUTE_UNUSED,
-			       arelent *cache_ptr ATTRIBUTE_UNUSED,
-			       Elf_Internal_Rela *dst ATTRIBUTE_UNUSED)
-{
-  BFD_ASSERT (0);
+  BFD_ASSERT(0);
 }
 
 /* Since each entry in an SHT_REL or SHT_RELA section can represent up
    to three relocs, we must tell the user to allocate more space.  */
 
 static long
-mips_elf64_get_reloc_upper_bound (bfd *abfd ATTRIBUTE_UNUSED, asection *sec)
+mips_elf64_get_reloc_upper_bound(bfd *abfd ATTRIBUTE_UNUSED, asection *sec)
 {
-  return (sec->reloc_count * 3 + 1) * sizeof (arelent *);
+  return (((sec->reloc_count * 3) + 1) * sizeof(arelent *));
 }
 
 static long
-mips_elf64_get_dynamic_reloc_upper_bound (bfd *abfd)
+mips_elf64_get_dynamic_reloc_upper_bound(bfd *abfd)
 {
-  return _bfd_elf_get_dynamic_reloc_upper_bound (abfd) * 3;
+  return (_bfd_elf_get_dynamic_reloc_upper_bound(abfd) * 3);
 }
 
 /* We must also copy more relocations than the corresponding functions

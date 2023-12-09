@@ -361,6 +361,14 @@ So instead we use the macro below and test it against specific values.  */
 # define ATTRIBUTE_NOINLINE __attribute__((__noinline__))
 #endif /* !ATTRIBUTE_NOINLINE */
 
+#ifndef ATTRIBUTE_NOIPA
+# if (GCC_VERSION >= 8000) || __has_attribute(__noipa__)
+#  define ATTRIBUTE_NOIPA __attribute__((__noipa__))
+# else
+#  define ATTRIBUTE_NOIPA ATTRIBUTE_NOINLINE ATTRIBUTE_NOCLONE
+# endif /* gcc 8+ */
+#endif /* !ATTRIBUTE_NOIPA */
+
 #ifndef ATTRIBUTE_NORETURN
 # define ATTRIBUTE_NORETURN __attribute__((__noreturn__))
 #endif /* ATTRIBUTE_NORETURN */

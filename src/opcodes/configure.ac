@@ -746,6 +746,7 @@ else
       gl_WARN_ADD([-Wno-format-overflow])
       gl_WARN_ADD([-Wno-format-truncation])
       gl_WARN_ADD([-Wno-many-braces-around-scalar-init])
+      gl_WARN_ADD([-fpermissive])
     fi
   ])
 fi

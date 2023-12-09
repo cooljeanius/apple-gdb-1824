@@ -271,13 +271,13 @@ _bfd_XXi_swap_aux_in(bfd *abfd, void *ext1, int type, int theclass,
       in->x_sym.x_fcnary.x_fcn.x_endndx.l = GET_FCN_ENDNDX(abfd, ext);
   } else {
       in->x_sym.x_fcnary.x_ary.x_dimen[0] =
-	H_GET_16 (abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[0]);
+	H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[0]);
       in->x_sym.x_fcnary.x_ary.x_dimen[1] =
-	H_GET_16 (abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[1]);
+	H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[1]);
       in->x_sym.x_fcnary.x_ary.x_dimen[2] =
-	H_GET_16 (abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[2]);
+	H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[2]);
       in->x_sym.x_fcnary.x_ary.x_dimen[3] =
-	H_GET_16 (abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[3]);
+	H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[3]);
   }
 
   if (ISFCN (type))

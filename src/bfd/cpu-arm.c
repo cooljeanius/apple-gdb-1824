@@ -314,7 +314,7 @@ bfd_arm_update_notes(bfd *abfd, const char *note_section)
     goto FAIL;
 
   /* Check the architecture in the note against the architecture of the bfd.  */
-  switch (bfd_get_mach (abfd))
+  switch (bfd_get_mach(abfd))
     {
     default:
     case bfd_mach_arm_unknown: expected = "unknown"; break;

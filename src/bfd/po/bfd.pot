@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-06 22:20-0500\n"
+"POT-Creation-Date: 2023-12-09 17:33-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,15 +54,15 @@ msgstr ""
 msgid "%s: relocatable link from %s to %s not supported"
 msgstr ""
 
-#: archive.c:1851
+#: archive.c:1852
 msgid "Warning: writing archive was slow: rewriting timestamp\n"
 msgstr ""
 
-#: archive.c:2105
+#: archive.c:2106
 msgid "Reading archive file mod timestamp"
 msgstr ""
 
-#: archive.c:2130
+#: archive.c:2131
 msgid "Writing updated armap timestamp"
 msgstr ""
 
@@ -192,11 +192,11 @@ msgstr ""
 msgid "Unrecognized reloc"
 msgstr ""
 
-#: coff-a29k.c:399
+#: coff-a29k.c:396
 msgid "missing IHCONST reloc"
 msgstr ""
 
-#: coff-a29k.c:489
+#: coff-a29k.c:486
 msgid "missing IHIHALF reloc"
 msgstr ""
 
@@ -850,11 +850,11 @@ msgstr ""
 msgid "%B(%A+0x%lx): %s relocation against SEC_MERGE section"
 msgstr ""
 
-#: elf32-arm.c:4168 elf64-ppc.c:9570 elfnn-aarch64.c:4211
+#: elf32-arm.c:4168 elf64-ppc.c:9583 elfnn-aarch64.c:4211
 msgid "%B(%A+0x%lx): %s used with TLS symbol %s"
 msgstr ""
 
-#: elf32-arm.c:4169 elf64-ppc.c:9571 elfnn-aarch64.c:4212
+#: elf32-arm.c:4169 elf64-ppc.c:9584 elfnn-aarch64.c:4212
 msgid "%B(%A+0x%lx): %s used with non-TLS symbol %s"
 msgstr ""
 
@@ -1276,8 +1276,8 @@ msgstr ""
 #: elf32-frv.c:6698
 #, c-format
 msgid ""
-"%s: uses different unknown e_flags (0x%lx) fields than previous modules (0x"
-"%lx)"
+"%s: uses different unknown e_flags (0x%lx) fields than previous modules "
+"(0x%lx)"
 msgstr ""
 
 #: elf32-frv.c:6746 elf32-iq2000.c:842 elf32-m32c.c:829 elf32-ms1.c:597
@@ -1685,8 +1685,8 @@ msgstr ""
 #: elf32-nds32.c:14015
 #, c-format
 msgid ""
-"%s: warning: unaligned small data access. For entry: {%d, %d, %d}, addr = 0x"
-"%x, align = 0x%x."
+"%s: warning: unaligned small data access. For entry: {%d, %d, %d}, addr = "
+"0x%x, align = 0x%x."
 msgstr ""
 
 #: elf32-nds32.c:14047
@@ -1801,7 +1801,7 @@ msgid ""
 "%B: compiled normally and linked with modules compiled with -mrelocatable"
 msgstr ""
 
-#: elf32-ppc.c:5761 elf64-ppc.c:10089
+#: elf32-ppc.c:5761 elf64-ppc.c:10102
 msgid "%B: unknown relocation type %d for symbol %s"
 msgstr ""
 
@@ -1818,11 +1818,11 @@ msgstr ""
 msgid "%B: relocation %s is not yet supported for symbol %s."
 msgstr ""
 
-#: elf32-ppc.c:6552 elf32-tilepro.c:3569 elf64-ppc.c:10728 elfnn-aarch64.c:4468
+#: elf32-ppc.c:6552 elf32-tilepro.c:3569 elf64-ppc.c:10741 elfnn-aarch64.c:4468
 msgid "%B(%A+0x%lx): unresolvable %s relocation against symbol `%s'"
 msgstr ""
 
-#: elf32-ppc.c:6601 elf64-ppc.c:10769
+#: elf32-ppc.c:6601 elf64-ppc.c:10782
 msgid "%B(%A+0x%lx): %s reloc against `%s': error %d"
 msgstr ""
 
@@ -2088,7 +2088,7 @@ msgstr ""
 msgid "overlay stub relocation overflow"
 msgstr ""
 
-#: elf32-spu.c:1957 elf64-ppc.c:9327
+#: elf32-spu.c:1957 elf64-ppc.c:9340
 msgid "stubs don't match calculated size"
 msgstr ""
 
@@ -2504,8 +2504,8 @@ msgstr ""
 
 #: elf64-ia64-vms.c:3942
 msgid ""
-"%B: missing TLS section for relocation %s against `%s' at 0x%lx in section `"
-"%A'."
+"%B: missing TLS section for relocation %s against `%s' at 0x%lx in section "
+"`%A'."
 msgstr ""
 
 #: elf64-ia64-vms.c:3957 elf32-ia64.c:4719 elf64-ia64.c:4719
@@ -2552,8 +2552,8 @@ msgstr ""
 #, c-format
 msgid ""
 "%s: Internal inconsistency error for value for\n"
-" linker-allocated global register: linked: 0x%lx%08lx != relaxed: 0x%lx"
-"%08lx\n"
+" linker-allocated global register: linked: 0x%lx%08lx != relaxed: "
+"0x%lx%08lx\n"
 msgstr ""
 
 #: elf64-mmix.c:1576
@@ -2622,47 +2622,47 @@ msgid ""
 "LD_BIND_NOW=1 or upgrade gcc"
 msgstr ""
 
-#: elf64-ppc.c:6092
+#: elf64-ppc.c:6095
 msgid "dynreloc miscount for %B, section %A"
 msgstr ""
 
-#: elf64-ppc.c:6193
+#: elf64-ppc.c:6196
 msgid "%B: .opd is not a regular array of opd entries"
 msgstr ""
 
-#: elf64-ppc.c:6206
+#: elf64-ppc.c:6209
 msgid "%B: unexpected reloc type %u in .opd section"
 msgstr ""
 
-#: elf64-ppc.c:6227
+#: elf64-ppc.c:6230
 msgid "%B: undefined sym `%s' in .opd section"
 msgstr ""
 
-#: elf64-ppc.c:6879 elf64-ppc.c:7259
+#: elf64-ppc.c:6882 elf64-ppc.c:7262
 #, c-format
 msgid "%s defined in removed toc entry"
 msgstr ""
 
-#: elf64-ppc.c:8044
+#: elf64-ppc.c:8057
 #, c-format
 msgid "cannot find branch stub `%s'"
 msgstr ""
 
-#: elf64-ppc.c:8083 elf64-ppc.c:8158
+#: elf64-ppc.c:8096 elf64-ppc.c:8171
 #, c-format
 msgid "linkage table error against `%s'"
 msgstr ""
 
-#: elf64-ppc.c:8287
+#: elf64-ppc.c:8300
 #, c-format
 msgid "cannot build branch stub `%s'"
 msgstr ""
 
-#: elf64-ppc.c:9214
+#: elf64-ppc.c:9227
 msgid ".glink and .plt too far apart"
 msgstr ""
 
-#: elf64-ppc.c:9339
+#: elf64-ppc.c:9352
 #, c-format
 msgid ""
 "linker stubs in %u group%s\n"
@@ -2673,24 +2673,24 @@ msgid ""
 "  plt call     %lu"
 msgstr ""
 
-#: elf64-ppc.c:9983
+#: elf64-ppc.c:9996
 msgid ""
 "%B(%A+0x%lx): automatic multiple TOCs not supported using your crt files; "
 "recompile with -mminimal-toc or upgrade gcc"
 msgstr ""
 
-#: elf64-ppc.c:9989
+#: elf64-ppc.c:10002
 msgid ""
 "%B(%A+0x%lx): sibling call optimization to `%s' does not allow automatic "
 "multiple TOCs; recompile with -mminimal-toc or -fno-optimize-sibling-calls, "
 "or make `%s' extern"
 msgstr ""
 
-#: elf64-ppc.c:10630
+#: elf64-ppc.c:10643
 msgid "%B: relocation %s is not supported for symbol %s."
 msgstr ""
 
-#: elf64-ppc.c:10710
+#: elf64-ppc.c:10723
 msgid "%B: error: relocation %s not a multiple of %d"
 msgstr ""
 
@@ -3286,8 +3286,8 @@ msgstr ""
 #: mmo.c:3146
 #, c-format
 msgid ""
-"%s: invalid start address for initialized registers of length %ld: 0x%lx"
-"%08lx\n"
+"%s: invalid start address for initialized registers of length %ld: "
+"0x%lx%08lx\n"
 msgstr ""
 
 #: oasys.c:883
@@ -3502,7 +3502,7 @@ msgstr ""
 msgid "reserved cmd %d"
 msgstr ""
 
-#: vms-alpha.c:2332 vms-hdr.c:325
+#: vms-alpha.c:2332 vms-hdr.c:327
 msgid "Object module NOT error-free !\n"
 msgstr ""
 

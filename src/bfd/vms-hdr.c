@@ -206,10 +206,12 @@ _bfd_vms_write_hdr(bfd *abfd, int objtype)
     {
       /* Strip path and suffix information: */
       char *fname, *fout, *fptr;
+      size_t fnamelen;
 
-      fptr = bfd_get_filename (abfd);
-      fname = (char *)alloca(strnlen(fptr, (MAX_ALLOCA_SIZE - 1UL)) + 1UL);
-      strcpy(fname, fptr);
+      fptr = bfd_get_filename(abfd);
+      fnamelen = (strnlen(fptr, (MAX_ALLOCA_SIZE - 1UL)) + 1UL);
+      fname = (char *)alloca(fnamelen);
+      strncpy(fname, fptr, fnamelen);
       fout = strrchr(fname, ']');
       if (fout == 0)
 	fout = strchr(fname, ':');

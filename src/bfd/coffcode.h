@@ -980,7 +980,7 @@ handle_COMDAT(bfd *abfd, flagword sec_flags, void *hdr, const char *name,
 		  abort();
 		}
 
-		strcpy(newname, symname);
+		strncpy(newname, symname, amt);
 		coff_section_data(abfd, section)->comdat->name
 		  = newname;
 	      }

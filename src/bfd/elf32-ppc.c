@@ -2107,47 +2107,47 @@ ppc_elf_begin_write_processing(bfd *abfd, struct bfd_link_info *link_info)
       if (datum + 20 != length)
 	goto fail;
 
-      /* Make sure that we do not run off the end of the section.  */
-      if (offset + length > output_section_size)
+      /* Make sure that we do not run off the end of the section: */
+      if ((offset + length) > output_section_size)
 	goto fail;
 
-      /* Scan the apuinfo section, building a list of apuinfo numbers.  */
+      /* Scan the apuinfo section, building a list of apuinfo numbers: */
       for (i = 0; i < datum; i += 4)
-	apuinfo_list_add (bfd_get_32 (ibfd, ptr + 20 + i));
+	apuinfo_list_add(bfd_get_32(ibfd, (ptr + 20 + i)));
 
-      /* Update the offset.  */
+      /* Update the offset: */
       offset += length;
     }
 
   error_message = NULL;
 
-  /* Compute the size of the output section.  */
-  num_entries = apuinfo_list_length ();
-  output_section_size = 20 + num_entries * 4;
+  /* Compute the size of the output section: */
+  num_entries = apuinfo_list_length();
+  output_section_size = (20 + (num_entries * 4));
 
-  asec = bfd_get_section_by_name (abfd, APUINFO_SECTION_NAME);
+  asec = bfd_get_section_by_name(abfd, APUINFO_SECTION_NAME);
 
-  if (! bfd_set_section_size (abfd, asec, output_section_size))
-    ibfd = abfd,
-      error_message = _("warning: unable to set size of %s section in %B");
+  if (! bfd_set_section_size(abfd, asec, output_section_size)) {
+    ibfd = abfd;
+    error_message = _("warning: unable to set size of %s section in %B");
+  }
 
  fail:
-  free (buffer);
+  free(buffer);
 
   if (error_message)
-    (*_bfd_error_handler) (error_message, ibfd, APUINFO_SECTION_NAME);
+    (*_bfd_error_handler)(error_message, ibfd, APUINFO_SECTION_NAME);
 }
 
 /* Prevent the output section from accumulating the input sections'
    contents.  We have already stored this in our linked list structure.  */
 
 static bfd_boolean
-ppc_elf_write_section (bfd *abfd ATTRIBUTE_UNUSED,
-		       asection *asec,
-		       bfd_byte *contents ATTRIBUTE_UNUSED)
+ppc_elf_write_section(bfd *abfd ATTRIBUTE_UNUSED, asection *asec,
+		      bfd_byte *contents ATTRIBUTE_UNUSED)
 {
-  return (apuinfo_list_length ()
-	  && strcmp (asec->name, APUINFO_SECTION_NAME) == 0);
+  return (apuinfo_list_length()
+	  && (strcmp(asec->name, APUINFO_SECTION_NAME) == 0));
 }
 
 /* Finally we can generate the output section: */

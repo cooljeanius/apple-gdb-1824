@@ -621,23 +621,23 @@ elf64_hppa_check_relocs(bfd *abfd, struct bfd_link_info *info,
 	 ?!? Note we leak the last section_syms array.  Presumably we
 	 could free it in one of the later routines in this file.  */
       if (hppa_info->section_syms)
-	free (hppa_info->section_syms);
+	free(hppa_info->section_syms);
 
       /* Read this BFD's local symbols.  */
       if (symtab_hdr->sh_info != 0)
 	{
-	  local_syms = (Elf_Internal_Sym *) symtab_hdr->contents;
+	  local_syms = (Elf_Internal_Sym *)symtab_hdr->contents;
 	  if (local_syms == NULL)
-	    local_syms = bfd_elf_get_elf_syms (abfd, symtab_hdr,
-					       symtab_hdr->sh_info, 0,
-					       NULL, NULL, NULL);
+	    local_syms = bfd_elf_get_elf_syms(abfd, symtab_hdr,
+					      symtab_hdr->sh_info, 0,
+					      NULL, NULL, NULL);
 	  if (local_syms == NULL)
 	    return FALSE;
 	}
 
-      /* Record the highest section index referenced by the local symbols.  */
+      /* Record the highest section index referenced by the local symbols: */
       highest_shndx = 0;
-      isymend = local_syms + symtab_hdr->sh_info;
+      isymend = (local_syms + symtab_hdr->sh_info);
       for (isym = local_syms; isym < isymend; isym++)
 	{
 	  if (isym->st_shndx > highest_shndx)

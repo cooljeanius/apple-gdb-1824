@@ -586,14 +586,14 @@ xstormy16_elf_relax_section (bfd *dynobj,
      fall in the low 64k.  */
   relax_plt_data.splt = splt;
   relax_plt_data.again = again;
-  elf_link_hash_traverse (elf_hash_table (info), xstormy16_relax_plt_check,
-			  &relax_plt_data);
+  elf_link_hash_traverse(elf_hash_table(info), xstormy16_relax_plt_check,
+			 &relax_plt_data);
 
   /* Likewise for local symbols, though that's somewhat less convenient
      as we have to walk the list of input bfds and swap in symbol data.  */
-  for (ibfd = info->input_bfds; ibfd ; ibfd = ibfd->link_next)
+  for (ibfd = info->input_bfds; ibfd; ibfd = ibfd->link_next)
     {
-      bfd_vma *local_plt_offsets = elf_local_got_offsets (ibfd);
+      bfd_vma *local_plt_offsets = elf_local_got_offsets(ibfd);
       Elf_Internal_Shdr *symtab_hdr;
       Elf_Internal_Sym *isymbuf = NULL;
       unsigned int idx;
@@ -601,14 +601,14 @@ xstormy16_elf_relax_section (bfd *dynobj,
       if (! local_plt_offsets)
 	continue;
 
-      symtab_hdr = &elf_tdata (ibfd)->symtab_hdr;
+      symtab_hdr = &elf_tdata(ibfd)->symtab_hdr;
       if (symtab_hdr->sh_info != 0)
 	{
-	  isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
+	  isymbuf = (Elf_Internal_Sym *)symtab_hdr->contents;
 	  if (isymbuf == NULL)
-	    isymbuf = bfd_elf_get_elf_syms (ibfd, symtab_hdr,
-					    symtab_hdr->sh_info, 0,
-					    NULL, NULL, NULL);
+	    isymbuf = bfd_elf_get_elf_syms(ibfd, symtab_hdr,
+					   symtab_hdr->sh_info, 0,
+					   NULL, NULL, NULL);
 	  if (isymbuf == NULL)
 	    return FALSE;
 	}

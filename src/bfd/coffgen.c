@@ -71,7 +71,7 @@ make_a_section_from_file(bfd *abfd, struct internal_scnhdr *hdr,
       strindex = strtol(buf, &p, 10);
       if ((*p == '\0') && (strindex >= 0))
 	{
-	  strings = _bfd_coff_read_string_table (abfd);
+	  strings = _bfd_coff_read_string_table(abfd);
 	  if (strings == NULL)
 	    return FALSE;
 	  /* FIXME: For extra safety, we should make sure that

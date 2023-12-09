@@ -1218,7 +1218,7 @@ _bfd_slurp_extended_name_table(bfd *abfd)
       bfd_ardata (abfd)->first_file_filepos +=
 	(bfd_ardata (abfd)->first_file_filepos) % 2;
 
-      /* FIXME, we can't release namedata here because it was allocated
+      /* FIXME: we cannot release namedata here because it was allocated
 	 below extended_names on the objalloc...  */
     }
   return TRUE;
@@ -1393,7 +1393,8 @@ _bfd_construct_extended_name_table (bfd *abfd,
       if (normal == NULL)
 	return FALSE;
 
-      thislen = (unsigned int)strlen(normal);
+      /* FIXME: not sure if this calculation is correct: */
+      thislen = (unsigned int)strnlen(normal, total_namelen);
       if (thislen > maxname)
 	{
 	  /* Works for now; may need to be re-engineered if we

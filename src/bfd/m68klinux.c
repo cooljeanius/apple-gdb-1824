@@ -432,28 +432,28 @@ linux_tally_symbols(struct linux_link_hash_entry *h, PTR data)
   bfd_boolean exists;
 
   if (h->root.root.type == bfd_link_hash_warning)
-    h = (struct linux_link_hash_entry *) h->root.root.u.i.link;
+    h = (struct linux_link_hash_entry *)h->root.root.u.i.link;
 
-  if (h->root.root.type == bfd_link_hash_undefined
-      && strncmp (h->root.root.root.string, NEEDS_SHRLIB,
-		  sizeof NEEDS_SHRLIB - 1) == 0)
+  if ((h->root.root.type == bfd_link_hash_undefined)
+      && strncmp(h->root.root.root.string, NEEDS_SHRLIB,
+		 (sizeof(NEEDS_SHRLIB) - 1UL)) == 0)
     {
       const char *name;
       char *p;
       char *alloc = NULL;
 
-      name = h->root.root.root.string + sizeof NEEDS_SHRLIB - 1;
-      p = strrchr (name, '_');
+      name = (h->root.root.root.string + sizeof(NEEDS_SHRLIB) - 1UL);
+      p = strrchr(name, '_');
       if (p != NULL)
-	alloc = (char *) bfd_malloc ((bfd_size_type) strlen (name) + 1);
+	alloc = (char *)bfd_malloc((bfd_size_type)strlen(name) + 1UL);
 
-      if (p == NULL || alloc == NULL)
-	(*_bfd_error_handler) (_("Output file requires shared library `%s'\n"),
-			       name);
+      if ((p == NULL) || (alloc == NULL))
+	(*_bfd_error_handler)(_("Output file requires shared library `%s'\n"),
+			      name);
       else
 	{
-	  strcpy (alloc, name);
-	  p = strrchr (alloc, '_');
+	  strcpy(alloc, name);
+	  p = strrchr(alloc, '_');
 	  *p++ = '\0';
 	  (*_bfd_error_handler)
 	    (_("Output file requires shared library `%s.so.%s'\n"),
@@ -461,26 +461,26 @@ linux_tally_symbols(struct linux_link_hash_entry *h, PTR data)
 	  free (alloc);
 	}
 
-      abort ();
+      abort();
     }
 
   /* If this symbol is not a PLT/GOT, we do not even need to look at it */
-  is_plt = IS_PLT_SYM (h->root.root.root.string);
+  is_plt = IS_PLT_SYM(h->root.root.root.string);
 
-  if (is_plt || IS_GOT_SYM (h->root.root.root.string))
+  if (is_plt || IS_GOT_SYM(h->root.root.root.string))
     {
       /* Look up this symbol twice.  Once just as a regular lookup,
 	 and then again following all of the indirect links until we
 	 reach a real symbol.  */
-      h1 = linux_link_hash_lookup (linux_hash_table (info),
-				   (h->root.root.root.string
-				    + sizeof PLT_REF_PREFIX - 1),
-				   FALSE, FALSE, TRUE);
+      h1 = linux_link_hash_lookup(linux_hash_table(info),
+				  (h->root.root.root.string
+				   + sizeof(PLT_REF_PREFIX) - 1),
+				  FALSE, FALSE, TRUE);
       /* h2 does not follow indirect symbols.  */
-      h2 = linux_link_hash_lookup (linux_hash_table (info),
-				   (h->root.root.root.string
-				    + sizeof PLT_REF_PREFIX - 1),
-				   FALSE, FALSE, FALSE);
+      h2 = linux_link_hash_lookup(linux_hash_table(info),
+				  (h->root.root.root.string
+				   + sizeof(PLT_REF_PREFIX) - 1),
+				  FALSE, FALSE, FALSE);
 
       /* The real symbol must exist but if it is also an ABS symbol,
 	 there is no need to have a fixup.  This is because they both
@@ -499,7 +499,7 @@ linux_tally_symbols(struct linux_link_hash_entry *h, PTR data)
 	     fixup.  In the end, this relaxes some of the requirements
 	     about the order of performing fixups.  */
 	  exists = FALSE;
-	  for (f1 = linux_hash_table (info)->fixup_list;
+	  for (f1 = linux_hash_table(info)->fixup_list;
 	       f1 != NULL;
 	       f1 = f1->next)
 	    {
@@ -509,9 +509,9 @@ linux_tally_symbols(struct linux_link_hash_entry *h, PTR data)
 	      if (f1->h == h1)
 		exists = TRUE;
 	      if (! exists
-		  && bfd_is_abs_section (h->root.root.u.def.section))
+		  && bfd_is_abs_section(h->root.root.u.def.section))
 		{
-		  f = new_fixup (info, h1, f1->h->root.root.u.def.value, 0);
+		  f = new_fixup(info, h1, f1->h->root.root.u.def.value, 0);
 		  f->jump = is_plt;
 		}
 	      f1->h = h1;
@@ -520,13 +520,13 @@ linux_tally_symbols(struct linux_link_hash_entry *h, PTR data)
 	      exists = TRUE;
 	    }
 	  if (! exists
-	      && bfd_is_abs_section (h->root.root.u.def.section))
+	      && bfd_is_abs_section(h->root.root.u.def.section))
 	    {
-	      f = new_fixup (info, h1, h->root.root.u.def.value, 0);
+	      f = new_fixup(info, h1, h->root.root.u.def.value, 0);
 	      if (f == NULL)
 		{
 		  /* FIXME: No way to return error.  */
-		  abort ();
+		  abort();
 		}
 	      f->jump = is_plt;
 	    }
@@ -534,7 +534,7 @@ linux_tally_symbols(struct linux_link_hash_entry *h, PTR data)
 
       /* Quick and dirty way of stripping these symbols from the
 	 symtab.  */
-      if (bfd_is_abs_section (h->root.root.u.def.section))
+      if (bfd_is_abs_section(h->root.root.u.def.section))
 	h->root.written = TRUE;
     }
 

@@ -1612,7 +1612,7 @@ nlm_write_object_contents(bfd *abfd)
     goto error_return;
 
   /* Write out the variable length headers: */
-  pos = nlm_optional_prefix_size(abfd) + nlm_fixed_header_size(abfd);
+  pos = (nlm_optional_prefix_size(abfd) + nlm_fixed_header_size(abfd));
   if (bfd_seek(abfd, pos, SEEK_SET) != 0)
     goto error_return;
   if (! nlm_swap_variable_header_out (abfd)
@@ -1928,12 +1928,11 @@ nlm_write_object_contents(bfd *abfd)
 
   /* At this point everything has been written out except the fixed
      header.  */
-  memcpy (nlm_fixed_header (abfd)->signature, nlm_signature (abfd),
-	  NLM_SIGNATURE_SIZE);
-  nlm_fixed_header (abfd)->version = NLM_HEADER_VERSION;
-  nlm_fixed_header (abfd)->codeStartOffset =
-    (bfd_get_start_address (abfd)
-     - nlm_get_text_low (abfd));
+  memcpy(nlm_fixed_header(abfd)->signature, nlm_signature(abfd),
+         NLM_SIGNATURE_SIZE);
+  nlm_fixed_header(abfd)->version = NLM_HEADER_VERSION;
+  nlm_fixed_header(abfd)->codeStartOffset =
+    (bfd_get_start_address(abfd) - nlm_get_text_low(abfd));
 
   /* We have no convenient way for the caller to pass in the exit
      procedure or the check unload procedure, so the caller must set
