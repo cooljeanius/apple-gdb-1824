@@ -462,10 +462,10 @@ hppa_stub_name(const asection *input_section,
       stub_name = (char *)bfd_malloc(len);
       if (stub_name != NULL)
 	{
-	  sprintf(stub_name, "%08x_%s+%x",
-		  (input_section->id & 0xffffffff),
-		  hh->eh.root.root.string,
-		  ((int)rela->r_addend & 0xffffffff));
+	  snprintf(stub_name, len, "%08x_%s+%x",
+		   (input_section->id & 0xffffffff),
+		   hh->eh.root.root.string,
+		   ((int)rela->r_addend & 0xffffffff));
 	}
     }
   else
@@ -474,11 +474,11 @@ hppa_stub_name(const asection *input_section,
       stub_name = (char *)bfd_malloc(len);
       if (stub_name != NULL)
 	{
-	  sprintf(stub_name, "%08x_%x:%x+%x",
-		  (input_section->id & 0xffffffff),
-		  (sym_sec->id & 0xffffffff),
-		  ((int)ELF32_R_SYM(rela->r_info) & 0xffffffff),
-		  ((int)rela->r_addend & 0xffffffff));
+	  snprintf(stub_name, len, "%08x_%x:%x+%x",
+		   (input_section->id & 0xffffffff),
+		   ((sym_sec) ? (sym_sec->id & 0xffffffff) : 0xffffffff),
+		   ((int)ELF32_R_SYM(rela->r_info) & 0xffffffff),
+		   ((int)rela->r_addend & 0xffffffff));
 	}
     }
   return stub_name;
@@ -4029,7 +4029,7 @@ elf32_hppa_finish_dynamic_symbol (bfd *output_bfd,
 	}
 
       loc = htab->srelgot->contents;
-      loc += htab->srelgot->reloc_count++ * sizeof(Elf32_External_Rela);
+      loc += (htab->srelgot->reloc_count++ * sizeof(Elf32_External_Rela));
       bfd_elf32_swap_reloca_out(output_bfd, &rela, loc);
     }
 

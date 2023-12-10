@@ -1136,26 +1136,25 @@ allocate_global_data_opd(struct elf64_hppa_dyn_hash_entry *dyn_h, PTR data)
 	      char *new_name;
 	      struct elf_link_hash_entry *nh;
 
-	      new_name = (char *)alloca(strlen(h->root.root.string) + 2);
+	      new_name = (char *)alloca(strlen(h->root.root.string) + 2UL);
 	      new_name[0] = '.';
-	      strcpy (new_name + 1, h->root.root.string);
+	      strcpy((new_name + 1), h->root.root.string);
 
-	      nh = elf_link_hash_lookup (elf_hash_table (x->info),
-					 new_name, TRUE, TRUE, TRUE);
+	      nh = elf_link_hash_lookup(elf_hash_table(x->info),
+                                        new_name, TRUE, TRUE, TRUE);
 
 	      nh->root.type = h->root.type;
 	      nh->root.u.def.value = h->root.u.def.value;
 	      nh->root.u.def.section = h->root.u.def.section;
 
-	      if (! bfd_elf_link_record_dynamic_symbol (x->info, nh))
+	      if (! bfd_elf_link_record_dynamic_symbol(x->info, nh))
 		return FALSE;
 
 	     }
 	  dyn_h->opd_offset = x->ofs;
 	  x->ofs += OPD_ENTRY_SIZE;
 	}
-
-      /* Otherwise we do not need an opd entry.  */
+      /* Otherwise we do not need an opd entry: */
       else
 	dyn_h->want_opd = 0;
     }

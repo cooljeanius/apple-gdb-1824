@@ -489,7 +489,8 @@ mmo_init(void)
   inited = TRUE;
 
   /* Fill in the set of valid symbol characters: */
-  strcpy(valid_mmo_symbol_character_set, letters);
+  strncpy(valid_mmo_symbol_character_set, letters,
+          sizeof(valid_mmo_symbol_character_set));
   i = strlen(letters);
 
   for (j = 126; j < 256; j++)

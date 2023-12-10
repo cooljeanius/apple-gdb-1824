@@ -175,10 +175,14 @@ typedef struct env387
 #  define SPATHLEN 16 /* sys/param.h */
 # endif /* !SPATHLEN */
 
-# if defined(HAVE_SYS_SIGNAL_H)
+# ifndef __has_include
+#  define __has_include(foo) 0
+# endif /* !__has_include */
+
+# if defined(HAVE_SYS_SIGNAL_H) || __has_include(<sys/signal.h>)
 #  include <sys/signal.h>
 # else
-#  if defined(HAVE_SIGNAL_H)
+#  if defined(HAVE_SIGNAL_H) || __has_include(<signal.h>)
 #   include <signal.h>
 #  else
 #   ifndef NSIG

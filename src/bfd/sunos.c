@@ -1849,7 +1849,7 @@ sunos_scan_dynamic_symbol(struct sunos_link_hash_entry *h, void * data)
       s->contents = contents;
 
       h->dynstr_index = (long)s->size;
-      strcpy((char *)contents + s->size, h->root.root.root.string);
+      strcpy(((char *)contents + s->size), h->root.root.root.string);
       s->size += len + 1;
 
       /* Add it to the dynamic hash table: */

@@ -2856,38 +2856,38 @@ sh64_elf64_add_symbol_hook (bfd *abfd, struct bfd_link_info *info,
 	= ((info->relocatable || info->emitrelocations)
            ? BSF_GLOBAL : (BSF_GLOBAL | BSF_INDIRECT));
 
-      char *dl_name
-	= (char *)bfd_malloc(strlen(*namep) + sizeof(DATALABEL_SUFFIX));
-      struct elf_link_hash_entry ** sym_hash = elf_sym_hashes (abfd);
+      size_t dl_namelen = (strlen(*namep) + sizeof(DATALABEL_SUFFIX));
+      char *dl_name = (char *)bfd_malloc(dl_namelen);
+      struct elf_link_hash_entry **sym_hash = elf_sym_hashes(abfd);
 
-      BFD_ASSERT (sym_hash != NULL);
+      BFD_ASSERT(sym_hash != NULL);
 
-      /* Allocation may fail.  */
+      /* Allocation may fail: */
       if (dl_name == NULL)
 	return FALSE;
 
-      strcpy (dl_name, *namep);
-      strcat (dl_name, DATALABEL_SUFFIX);
+      strncpy(dl_name, *namep, dl_namelen);
+      strncat(dl_name, DATALABEL_SUFFIX, dl_namelen);
 
-      h = (struct elf_link_hash_entry *)
-	bfd_link_hash_lookup (info->hash, dl_name, FALSE, FALSE, FALSE);
+      h = ((struct elf_link_hash_entry *)
+           bfd_link_hash_lookup(info->hash, dl_name, FALSE, FALSE, FALSE));
 
       if (h == NULL)
 	{
 	  /* No previous datalabel symbol.  Make one.  */
 	  struct bfd_link_hash_entry *bh = NULL;
-	  const struct elf_backend_data *bed = get_elf_backend_data (abfd);
+	  const struct elf_backend_data *bed = get_elf_backend_data(abfd);
 
-	  if (! _bfd_generic_link_add_one_symbol (info, abfd, dl_name,
-						  flags, *secp, *valp,
-						  *namep, FALSE,
-						  bed->collect, &bh))
+	  if (! _bfd_generic_link_add_one_symbol(info, abfd, dl_name,
+						 flags, *secp, *valp,
+						 *namep, FALSE,
+						 bed->collect, &bh))
 	    {
-	      free (dl_name);
+	      free(dl_name);
 	      return FALSE;
 	    }
 
-	  h = (struct elf_link_hash_entry *) bh;
+	  h = (struct elf_link_hash_entry *)bh;
 	  h->non_elf = 0;
 	  h->type = STT_DATALABEL;
 	}
@@ -3240,26 +3240,27 @@ sh64_elf64_create_dynamic_sections(bfd *abfd, struct bfd_link_info *info)
 
       if (! (_bfd_generic_link_add_one_symbol
 	     (info, abfd, "_PROCEDURE_LINKAGE_TABLE_", BSF_GLOBAL, s,
-	      (bfd_vma) 0, (const char *) NULL, FALSE, bed->collect, &bh)))
+	      (bfd_vma)0UL, (const char *)NULL, FALSE, bed->collect, &bh)))
 	return FALSE;
 
-      h = (struct elf_link_hash_entry *) bh;
+      h = (struct elf_link_hash_entry *)bh;
       h->def_regular = 1;
       h->type = STT_OBJECT;
 
       if (info->shared
-	  && ! bfd_elf_link_record_dynamic_symbol (info, h))
+	  && ! bfd_elf_link_record_dynamic_symbol(info, h))
 	return FALSE;
     }
 
-  s = bfd_make_section_with_flags (abfd,
-				   bed->default_use_rela_p ? ".rela.plt" : ".rel.plt",
-				   flags | SEC_READONLY);
+  s = bfd_make_section_with_flags(abfd,
+				  (bed->default_use_rela_p
+                                   ? ".rela.plt" : ".rel.plt"),
+				  (flags | SEC_READONLY));
   if (s == NULL
-      || ! bfd_set_section_alignment (abfd, s, ptralign))
+      || ! bfd_set_section_alignment(abfd, s, ptralign))
     return FALSE;
 
-  if (! _bfd_elf_create_got_section (abfd, info))
+  if (! _bfd_elf_create_got_section(abfd, info))
     return FALSE;
 
   {
@@ -3270,18 +3271,20 @@ sh64_elf64_create_dynamic_sections(bfd *abfd, struct bfd_link_info *info)
 
     for (sec = abfd->sections; sec; sec = sec->next)
       {
-	secflags = bfd_get_section_flags (abfd, sec);
+        size_t relnamelen;
+	secflags = bfd_get_section_flags(abfd, sec);
 	if ((secflags & (SEC_DATA | SEC_LINKER_CREATED))
 	    || ((secflags & SEC_HAS_CONTENTS) != SEC_HAS_CONTENTS))
 	  continue;
-	secname = bfd_get_section_name (abfd, sec);
-	relname = (char *) bfd_malloc (strlen (secname) + 6);
-	strcpy (relname, ".rela");
-	strcat (relname, secname);
-	s = bfd_make_section_with_flags (abfd, relname,
-					 flags | SEC_READONLY);
-	if (s == NULL
-	    || ! bfd_set_section_alignment (abfd, s, ptralign))
+	secname = bfd_get_section_name(abfd, sec);
+	relnamelen = (strlen(secname) + 6UL);
+	relname = (char *)bfd_malloc(relnamelen);
+	strncpy(relname, ".rela", relnamelen);
+	strncat(relname, secname, relnamelen);
+	s = bfd_make_section_with_flags(abfd, relname,
+                                        (flags | SEC_READONLY));
+	if ((s == NULL)
+	    || ! bfd_set_section_alignment(abfd, s, ptralign))
 	  return FALSE;
       }
   }

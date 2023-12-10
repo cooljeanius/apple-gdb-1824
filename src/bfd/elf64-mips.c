@@ -2356,7 +2356,7 @@ mips_elf64_canonicalize_dynamic_reloc(bfd *abfd, arelent **storage,
    reloc_count to the number of external relocations, because a lot of
    generic code seems to depend on this.  */
 
-static bfd_boolean
+static bfd_boolean ATTRIBUTE_NONNULL(3)
 mips_elf64_slurp_one_reloc_table(bfd *abfd, asection *asect,
 				 Elf_Internal_Shdr *rel_hdr,
 				 bfd_size_type reloc_count,
@@ -2527,10 +2527,10 @@ mips_elf64_slurp_one_reloc_table(bfd *abfd, asection *asect,
    zero before processing the relocs of a section.  */
 
 static bfd_boolean
-mips_elf64_slurp_reloc_table (bfd *abfd, asection *asect,
-			      asymbol **symbols, bfd_boolean dynamic)
+mips_elf64_slurp_reloc_table(bfd *abfd, asection *asect,
+			     asymbol **symbols, bfd_boolean dynamic)
 {
-  struct bfd_elf_section_data * const d = elf_section_data (asect);
+  struct bfd_elf_section_data *const d = elf_section_data(asect);
   Elf_Internal_Shdr *rel_hdr;
   Elf_Internal_Shdr *rel_hdr2;
   bfd_size_type reloc_count;
@@ -2543,18 +2543,18 @@ mips_elf64_slurp_reloc_table (bfd *abfd, asection *asect,
 
   if (! dynamic)
     {
-      if ((asect->flags & SEC_RELOC) == 0
-	  || asect->reloc_count == 0)
+      if (((asect->flags & SEC_RELOC) == 0)
+	  || (asect->reloc_count == 0))
 	return TRUE;
 
       rel_hdr = &d->rel_hdr;
-      reloc_count = NUM_SHDR_ENTRIES (rel_hdr);
+      reloc_count = NUM_SHDR_ENTRIES(rel_hdr);
       rel_hdr2 = d->rel_hdr2;
-      reloc_count2 = (rel_hdr2 ? NUM_SHDR_ENTRIES (rel_hdr2) : 0);
+      reloc_count2 = (rel_hdr2 ? NUM_SHDR_ENTRIES(rel_hdr2) : 0);
 
-      BFD_ASSERT (asect->reloc_count == reloc_count + reloc_count2);
-      BFD_ASSERT (asect->rel_filepos == rel_hdr->sh_offset
-		  || (rel_hdr2 && asect->rel_filepos == rel_hdr2->sh_offset));
+      BFD_ASSERT(asect->reloc_count == (reloc_count + reloc_count2));
+      BFD_ASSERT((asect->rel_filepos == rel_hdr->sh_offset)
+		 || (rel_hdr2 && (asect->rel_filepos == rel_hdr2->sh_offset)));
 
     }
   else
@@ -2573,7 +2573,7 @@ mips_elf64_slurp_reloc_table (bfd *abfd, asection *asect,
     }
 
   /* Allocate space for 3 arelent structures for each Rel structure: */
-  amt = (reloc_count + reloc_count2) * 3 * sizeof(arelent);
+  amt = ((reloc_count + reloc_count2) * 3 * sizeof(arelent));
   relents = (arelent *)bfd_alloc(abfd, amt);
   if (relents == NULL)
     return FALSE;
@@ -2586,9 +2586,10 @@ mips_elf64_slurp_reloc_table (bfd *abfd, asection *asect,
     return FALSE;
   if (d->rel_hdr2 != NULL)
     {
+      BFD_ASSERT(rel_hdr2 != NULL);
       if (! mips_elf64_slurp_one_reloc_table(abfd, asect,
 					     rel_hdr2, reloc_count2,
-					     (relents + reloc_count * 3),
+					     (relents + (reloc_count * 3)),
 					     symbols, dynamic))
 	return FALSE;
     }

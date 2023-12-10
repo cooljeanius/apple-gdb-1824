@@ -538,7 +538,7 @@ bfd_wrapped_link_hash_lookup (bfd *abfd,
 #undef WRAP
 #define WRAP "__wrap_"
 
-      if (bfd_hash_lookup (info->wrap_hash, l, FALSE, FALSE) != NULL)
+      if (bfd_hash_lookup(info->wrap_hash, l, FALSE, FALSE) != NULL)
 	{
 	  char *n;
 	  struct bfd_link_hash_entry *h;
@@ -546,17 +546,17 @@ bfd_wrapped_link_hash_lookup (bfd *abfd,
 	  /* This symbol is being wrapped.  We want to replace all
              references to SYM with references to __wrap_SYM.  */
 
-	  amt = strlen(l) + sizeof WRAP + 1;
+	  amt = (strlen(l) + sizeof(WRAP) + 1UL);
 	  n = (char *)bfd_malloc(amt);
 	  if (n == NULL)
 	    return NULL;
 
 	  n[0] = prefix;
 	  n[1] = '\0';
-	  strcat (n, WRAP);
-	  strcat (n, l);
-	  h = bfd_link_hash_lookup (info->hash, n, create, TRUE, follow);
-	  free (n);
+	  strncat(n, WRAP, amt);
+	  strncat(n, l, amt);
+	  h = bfd_link_hash_lookup(info->hash, n, create, TRUE, follow);
+	  free(n);
 	  return h;
 	}
 
@@ -565,10 +565,10 @@ bfd_wrapped_link_hash_lookup (bfd *abfd,
 #undef REAL
 #define REAL "__real_"
 
-      if (*l == '_'
-	  && strncmp (l, REAL, sizeof REAL - 1) == 0
-	  && bfd_hash_lookup (info->wrap_hash, l + sizeof REAL - 1,
-			      FALSE, FALSE) != NULL)
+      if ((*l == '_')
+	  && (strncmp(l, REAL, (sizeof(REAL) - 1)) == 0)
+	  && bfd_hash_lookup(info->wrap_hash, (l + sizeof(REAL) - 1),
+                             FALSE, FALSE) != NULL)
 	{
 	  char *n;
 	  struct bfd_link_hash_entry *h;
@@ -577,23 +577,23 @@ bfd_wrapped_link_hash_lookup (bfd *abfd,
              wrapped.  We want to replace all references to __real_SYM
              with references to SYM.  */
 
-	  amt = strlen(l + sizeof REAL - 1) + 2;
+	  amt = (strlen(l + sizeof(REAL) - 1) + 2UL);
 	  n = (char *)bfd_malloc(amt);
 	  if (n == NULL)
 	    return NULL;
 
 	  n[0] = prefix;
 	  n[1] = '\0';
-	  strcat (n, l + sizeof REAL - 1);
-	  h = bfd_link_hash_lookup (info->hash, n, create, TRUE, follow);
-	  free (n);
+	  strncat(n, (l + sizeof(REAL) - 1), amt);
+	  h = bfd_link_hash_lookup(info->hash, n, create, TRUE, follow);
+	  free(n);
 	  return h;
 	}
 
 #undef REAL
     }
 
-  return bfd_link_hash_lookup (info->hash, string, create, copy, follow);
+  return bfd_link_hash_lookup(info->hash, string, create, copy, follow);
 }
 
 /* Traverse a generic link hash table.  The only reason this is not a

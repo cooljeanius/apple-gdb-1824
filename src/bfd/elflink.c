@@ -2286,11 +2286,12 @@ _bfd_elf_fix_symbol_flags (struct elf_link_hash_entry *h,
      any dynamic object, then the linker will have allocated space for
      the symbol in a common section but the DEF_REGULAR
      flag will not have been set.  */
-  if (h->root.type == bfd_link_hash_defined
+  if ((h->root.type == bfd_link_hash_defined)
       && !h->def_regular
       && h->ref_regular
       && !h->def_dynamic
-      && (h->root.u.def.section->owner->flags & DYNAMIC) == 0)
+      && (h->root.u.def.section->owner != NULL)
+      && ((h->root.u.def.section->owner->flags & DYNAMIC) == 0))
     h->def_regular = 1;
 
   /* If -Bsymbolic was used (which means to bind references to global
@@ -6910,7 +6911,8 @@ elf_link_input_bfd (struct elf_final_link_info *finfo, bfd *input_bfd)
 	continue;
 
       /* Get the name of the symbol: */
-      name = bfd_elf_string_from_elf_section(input_bfd, symtab_hdr->sh_link,
+      name = bfd_elf_string_from_elf_section(input_bfd,
+                                             symtab_hdr->sh_link,
 					     isym->st_name);
       if (name == NULL)
 	return FALSE;

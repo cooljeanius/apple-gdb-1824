@@ -1827,6 +1827,7 @@ bfd_mach_o_scan_read_dylinker(bfd *abfd, bfd_mach_o_load_command *command)
   asection *bfdsec;
   char *sname;
   const char *prefix;
+  size_t snamelen;
 
   BFD_ASSERT((command->type == BFD_MACH_O_LC_ID_DYLINKER)
              || (command->type == BFD_MACH_O_LC_LOAD_DYLINKER));
@@ -1847,10 +1848,11 @@ bfd_mach_o_scan_read_dylinker(bfd *abfd, bfd_mach_o_load_command *command)
   else
     abort();
 
-  sname = (char *)bfd_alloc(abfd, (bfd_size_type)(strlen(prefix) + 1UL));
+  snamelen = (strlen(prefix) + 1UL);
+  sname = (char *)bfd_alloc(abfd, (bfd_size_type)snamelen);
   if (sname == NULL)
     return -1;
-  strcpy(sname, prefix);
+  strncpy(sname, prefix, snamelen);
 
   bfdsec = bfd_make_section_anyway(abfd, sname);
   if (bfdsec == NULL)
@@ -1896,6 +1898,7 @@ bfd_mach_o_scan_read_dylib(bfd *abfd, bfd_mach_o_load_command *command)
   asection *bfdsec;
   char *sname;
   const char *prefix;
+  size_t snamelen;
 
   BFD_ASSERT((command->type == BFD_MACH_O_LC_ID_DYLIB)
 	     || (command->type == BFD_MACH_O_LC_LOAD_DYLIB)
@@ -1929,10 +1932,11 @@ bfd_mach_o_scan_read_dylib(bfd *abfd, bfd_mach_o_load_command *command)
   else
     abort();
 
-  sname = (char *)bfd_alloc(abfd, (bfd_size_type)(strlen(prefix) + 1UL));
+  snamelen = (strlen(prefix) + 1UL);
+  sname = (char *)bfd_alloc(abfd, (bfd_size_type)snamelen);
   if (sname == NULL)
     return -1;
-  strcpy(sname, prefix);
+  strncpy(sname, prefix, snamelen);
 
   bfdsec = bfd_make_section_anyway(abfd, sname);
   if (bfdsec == NULL)
@@ -2179,13 +2183,14 @@ bfd_mach_o_scan_read_dysymtab(bfd *abfd, bfd_mach_o_load_command *command)
    * we have some local symbols: */
   if (seg->nlocalsym > 0)
     {
+      size_t snamelen;
       prefix = "LC_DYSYMTAB.localstabs";
 
-      sname = (char *)bfd_alloc(abfd,
-                                (bfd_size_type)(strlen(prefix) + 1UL));
+      snamelen = (strlen(prefix) + 1UL);
+      sname = (char *)bfd_alloc(abfd, (bfd_size_type)snamelen);
       if (sname == NULL)
 	return -1;
-      strcpy(sname, prefix);
+      strncpy(sname, prefix, snamelen);
 
       bfdsec = bfd_make_section_anyway(abfd, sname);
       if (bfdsec == NULL)
@@ -2220,13 +2225,14 @@ bfd_mach_o_scan_read_dysymtab(bfd *abfd, bfd_mach_o_load_command *command)
 
       if (num_nonlocalstabs > 0)
 	{
+	  size_t snamelen;
 	  prefix = "LC_DYSYMTAB.nonlocalstabs";
 
-	  sname = (char *)bfd_alloc(abfd,
-                                    (bfd_size_type)(strlen(prefix) + 1UL));
+	  snamelen = (strlen(prefix) + 1UL);
+	  sname = (char *)bfd_alloc(abfd, (bfd_size_type)snamelen);
 	  if (sname == NULL)
 	    return -1;
-	  strcpy(sname, prefix);
+	  strncpy(sname, prefix, snamelen);
 
 	  bfdsec = bfd_make_section_anyway(abfd, sname);
 	  if (bfdsec == NULL)
@@ -2251,6 +2257,7 @@ bfd_mach_o_scan_read_symtab(bfd *abfd, bfd_mach_o_load_command *command)
   unsigned char buf[16];
   asection *bfdsec;
   char *sname;
+  size_t snamelen;
   const char *prefix = "LC_SYMTAB.stabs";
   int nlist_size = ((bfd_mach_o_version(abfd) > 1) ? 16 : 12);
 
@@ -2267,10 +2274,11 @@ bfd_mach_o_scan_read_symtab(bfd *abfd, bfd_mach_o_load_command *command)
   seg->symbols = NULL;
   seg->strtab = NULL;
 
-  sname = (char *)bfd_alloc(abfd, (bfd_size_type)(strlen(prefix) + 1UL));
+  snamelen = (strlen(prefix) + 1UL);
+  sname = (char *)bfd_alloc(abfd, (bfd_size_type)snamelen);
   if (sname == NULL)
     return -1;
-  strcpy(sname, prefix);
+  strncpy(sname, prefix, snamelen);
 
   bfdsec = bfd_make_section_anyway(abfd, sname);
   if (bfdsec == NULL)
@@ -2286,10 +2294,11 @@ bfd_mach_o_scan_read_symtab(bfd *abfd, bfd_mach_o_load_command *command)
   seg->stabs_segment = bfdsec;
 
   prefix = "LC_SYMTAB.stabstr";
-  sname = (char *)bfd_alloc(abfd, (bfd_size_type)(strlen(prefix) + 1UL));
+  snamelen = (strlen(prefix) + 1UL);
+  sname = (char *)bfd_alloc(abfd, (bfd_size_type)snamelen);
   if (sname == NULL)
     return -1;
-  strcpy(sname, prefix);
+  strncpy(sname, prefix, snamelen);
 
   bfdsec = bfd_make_section_anyway(abfd, sname);
   if (bfdsec == NULL)
@@ -2307,6 +2316,7 @@ bfd_mach_o_scan_read_symtab(bfd *abfd, bfd_mach_o_load_command *command)
   return 0;
 }
 
+/* */
 static int
 bfd_mach_o_scan_read_segment(bfd *abfd, bfd_mach_o_load_command *command,
                              unsigned int wide)
@@ -3082,16 +3092,17 @@ bfd_mach_o_openr_next_archived_file(bfd *archive, bfd *prev)
     {
       bfd *nbfd = _bfd_new_bfd_contained_in(archive);
       char *s = NULL;
+      size_t slen;
 
       if (nbfd == NULL)
 	return NULL;
 
       nbfd->origin = entry->offset;
-      s = ((char *)
-           bfd_malloc((bfd_size_type)(strlen(archive->filename) + 1UL)));
+      slen = (strlen(archive->filename) + 1UL);
+      s = (char *)bfd_malloc((bfd_size_type)slen);
       if (s == NULL)
 	return NULL;
-      strcpy(s, archive->filename);
+      strncpy(s, archive->filename, slen);
       nbfd->filename = s;
       nbfd->iostream = NULL;
       entry->abfd = nbfd;

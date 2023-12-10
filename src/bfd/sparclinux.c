@@ -439,18 +439,20 @@ linux_tally_symbols(struct linux_link_hash_entry *h, PTR data)
       const char *name;
       char *p;
       char *alloc = NULL;
+      size_t alloclen;
 
       name = (h->root.root.root.string + sizeof(NEEDS_SHRLIB) - 1);
       p = strrchr(name, '_');
+      alloclen = (strlen(name) + 1UL);
       if (p != NULL)
-	alloc = (char *)bfd_malloc((bfd_size_type)strlen(name) + 1);
+	alloc = (char *)bfd_malloc((bfd_size_type)alloclen);
 
       if ((p == NULL) || (alloc == NULL))
 	(*_bfd_error_handler)(_("Output file requires shared library `%s'\n"),
                               name);
       else
 	{
-	  strcpy(alloc, name);
+	  strncpy(alloc, name, alloclen);
 	  p = strrchr(alloc, '_');
 	  *p++ = '\0';
 	  (*_bfd_error_handler)

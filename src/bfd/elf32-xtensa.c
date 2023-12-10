@@ -6211,13 +6211,14 @@ is_resolvable_asm_expansion (bfd *abfd,
   if (contents == NULL)
     return FALSE;
 
-  if (ELF32_R_TYPE (irel->r_info) != R_XTENSA_ASM_EXPAND)
+  if (ELF32_R_TYPE(irel->r_info) != R_XTENSA_ASM_EXPAND)
     return FALSE;
 
   sec_size = bfd_get_section_limit(abfd, sec);
   opcode = get_expanded_call_opcode((contents + irel->r_offset),
-				    (sec_size - irel->r_offset), &uses_l32r);
-  /* Optimization of longcalls that use CONST16 is not yet implemented.  */
+				    (sec_size - irel->r_offset),
+                                    &uses_l32r);
+  /* Optimization of longcalls that use CONST16 is not yet implemented: */
   if (!uses_l32r)
     return FALSE;
 

@@ -2039,8 +2039,9 @@ elf64_x86_64_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	case R_X86_64_PC8:
 	case R_X86_64_PC16:
 	case R_X86_64_PC32:
+	  BFD_ASSERT(h != NULL);
 	  if (info->shared
-	      && !SYMBOL_REFERENCES_LOCAL (info, h)
+	      && !SYMBOL_REFERENCES_LOCAL(info, h)
 	      && (input_section->flags & SEC_ALLOC) != 0
 	      && (input_section->flags & SEC_READONLY) != 0
 	      && (!h->def_regular
@@ -2166,8 +2167,8 @@ elf64_x86_64_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 			  asection *osec;
 
 			  osec = sec->output_section;
-			  sindx = elf_section_data (osec)->dynindx;
-			  BFD_ASSERT (sindx > 0);
+			  sindx = elf_section_data(osec)->dynindx;
+			  BFD_ASSERT(sindx > 0);
 			}
 
 		      outrel.r_info = ELF64_R_INFO (sindx, r_type);

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-09 19:20-0500\n"
+"POT-Creation-Date: 2023-12-09 23:24-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -484,7 +484,7 @@ msgstr ""
 msgid "%B: bad string table size %lu"
 msgstr ""
 
-#: cofflink.c:519 elf64-ia64-vms.c:5173 elflink.c:3987
+#: cofflink.c:519 elf64-ia64-vms.c:5173 elflink.c:3988
 msgid "Warning: type of symbol `%s' changed from %d to %d in %B"
 msgstr ""
 
@@ -772,7 +772,7 @@ msgstr ""
 msgid "%B: invalid link %lu for reloc section %s (index %u)"
 msgstr ""
 
-#: elf.c:3117 elflink.c:7628
+#: elf.c:3117 elflink.c:7630
 msgid "%B: warning: sh_link not set for section `%A'"
 msgstr ""
 
@@ -1039,12 +1039,12 @@ msgid "relocation should be even number"
 msgstr ""
 
 #: elf32-bfin.c:1601 elf32-i386.c:3042 elf32-m68k.c:1697 elf32-s390.c:2957
-#: elf32-xtensa.c:2309 elf64-s390.c:2965 elf64-x86-64.c:2515 elfxx-sparc.c:3141
+#: elf32-xtensa.c:2309 elf64-s390.c:2965 elf64-x86-64.c:2516 elfxx-sparc.c:3141
 msgid "%B(%A+0x%lx): unresolvable relocation against symbol `%s'"
 msgstr ""
 
 #: elf32-bfin.c:1634 elf32-i386.c:3082 elf32-m68k.c:1737 elf32-s390.c:3008
-#: elf64-s390.c:3016 elf64-x86-64.c:2559
+#: elf64-s390.c:3016 elf64-x86-64.c:2560
 msgid "%B(%A+0x%lx): reloc against `%s': error %d"
 msgstr ""
 
@@ -1554,7 +1554,7 @@ msgid ""
 "object"
 msgstr ""
 
-#: elf32-metag.c:2283 elf64-x86-64.c:696 elf64-x86-64.c:822 elf64-x86-64.c:2062
+#: elf32-metag.c:2283 elf64-x86-64.c:696 elf64-x86-64.c:822 elf64-x86-64.c:2063
 msgid ""
 "%B: relocation %s against `%s' can not be used when making a shared object; "
 "recompile with -fPIC"
@@ -2377,27 +2377,27 @@ msgstr ""
 msgid "Attempt to convert L32R/CALLX to CALL failed"
 msgstr ""
 
-#: elf32-xtensa.c:5462 elf32-xtensa.c:5538 elf32-xtensa.c:6500
-#: elf32-xtensa.c:6554
+#: elf32-xtensa.c:5462 elf32-xtensa.c:5538 elf32-xtensa.c:6501
+#: elf32-xtensa.c:6555
 msgid ""
 "%B(%A+0x%lx): could not decode instruction; possible configuration mismatch"
 msgstr ""
 
-#: elf32-xtensa.c:6371 elf32-xtensa.c:6536
+#: elf32-xtensa.c:6372 elf32-xtensa.c:6537
 msgid ""
 "%B(%A+0x%lx): could not decode instruction for XTENSA_ASM_SIMPLIFY "
 "relocation; possible configuration mismatch"
 msgstr ""
 
-#: elf32-xtensa.c:7855
+#: elf32-xtensa.c:7856
 msgid "invalid relocation address"
 msgstr ""
 
-#: elf32-xtensa.c:7908
+#: elf32-xtensa.c:7909
 msgid "overflow after relaxation"
 msgstr ""
 
-#: elf32-xtensa.c:9036
+#: elf32-xtensa.c:9037
 msgid "%B(%A+0x%lx): unexpected fix for %s relocation"
 msgstr ""
 
@@ -2445,7 +2445,7 @@ msgstr ""
 msgid "%B: tp-relative relocation against dynamic symbol %s"
 msgstr ""
 
-#: elf64-hppa.c:1999
+#: elf64-hppa.c:1998
 #, c-format
 msgid "stub entry for %s cannot load .plt, dp offset = %ld"
 msgstr ""
@@ -2540,11 +2540,11 @@ msgid ""
 "alignment (%u) of its section %A"
 msgstr ""
 
-#: elf64-ia64-vms.c:5131 elflink.c:3951
+#: elf64-ia64-vms.c:5131 elflink.c:3952
 msgid "Warning: alignment %u of symbol `%s' in %B is smaller than %u in %B"
 msgstr ""
 
-#: elf64-ia64-vms.c:5146 elflink.c:3963
+#: elf64-ia64-vms.c:5146 elflink.c:3964
 msgid "Warning: size of symbol `%s' changed from %lu in %B to %lu in %B"
 msgstr ""
 
@@ -2729,7 +2729,7 @@ msgid ""
 "used when making a shared object"
 msgstr ""
 
-#: elf64-x86-64.c:2058
+#: elf64-x86-64.c:2059
 msgid ""
 "%B: relocation R_X86_64_PC32 against protected function `%s' can not be used "
 "when making a shared object"
@@ -2780,96 +2780,96 @@ msgstr ""
 msgid "%B: relocation size mismatch in %B section %A"
 msgstr ""
 
-#: elflink.c:2473
+#: elflink.c:2474
 #, c-format
 msgid "warning: type and size of dynamic symbol `%s' are not defined"
 msgstr ""
 
-#: elflink.c:2796
+#: elflink.c:2797
 msgid "warning: creating a DT_TEXTREL in a shared object."
 msgstr ""
 
-#: elflink.c:3735
+#: elflink.c:3736
 msgid "%B: %s: invalid version %u (max %d)"
 msgstr ""
 
-#: elflink.c:3771
+#: elflink.c:3772
 msgid "%B: %s: invalid needed version %d"
 msgstr ""
 
-#: elflink.c:4132
+#: elflink.c:4133
 #, c-format
 msgid "%s: invalid DSO for symbol `%s' definition"
 msgstr ""
 
-#: elflink.c:5185
+#: elflink.c:5186
 #, c-format
 msgid "%s: undefined version: %s"
 msgstr ""
 
-#: elflink.c:5252
+#: elflink.c:5253
 msgid "%B: .preinit_array section is not allowed in DSO"
 msgstr ""
 
-#: elflink.c:6010
+#: elflink.c:6011
 msgid "Not enough memory to sort relocations"
 msgstr ""
 
-#: elflink.c:6403
+#: elflink.c:6404
 msgid "%B: %s symbol `%s' in %B is referenced by DSO"
 msgstr ""
 
-#: elflink.c:6486
+#: elflink.c:6487
 msgid "%B: could not find output section %A for input section %A"
 msgstr ""
 
-#: elflink.c:6583
+#: elflink.c:6584
 msgid "%B: %s symbol `%s' isn't defined"
 msgstr ""
 
-#: elflink.c:7064
+#: elflink.c:7066
 msgid ""
 "error: %B contains a reloc (0x%s) for section %A that references a non-"
 "existent global symbol"
 msgstr ""
 
-#: elflink.c:7098
+#: elflink.c:7100
 msgid ""
 "%X`%s' referenced in section `%A' of %B: defined in discarded section `%A' "
 "of %B\n"
 msgstr ""
 
-#: elflink.c:7701
+#: elflink.c:7703
 #, c-format
 msgid "%A has both ordered and unordered sections"
 msgstr ""
 
-#: elflink.c:8514 elflink.c:8555
+#: elflink.c:8516 elflink.c:8557
 msgid "%B: could not find output section %s"
 msgstr ""
 
-#: elflink.c:8519
+#: elflink.c:8521
 #, c-format
 msgid "warning: %s section has zero size"
 msgstr ""
 
-#: elflink.c:9129
+#: elflink.c:9131
 msgid "Warning: gc-sections option ignored"
 msgstr ""
 
-#: elflink.c:9751
+#: elflink.c:9753
 msgid "%B: ignoring duplicate section `%A'"
 msgstr ""
 
-#: elflink.c:9758 elflink.c:9765
+#: elflink.c:9760 elflink.c:9767
 msgid "%B: duplicate section `%A' has different size"
 msgstr ""
 
-#: elflink.c:9774 elflink.c:9779
+#: elflink.c:9776 elflink.c:9781
 msgid "%B: warning: could not read contents of section `%A'"
 msgstr ""
 
-#: elflink.c:9783
+#: elflink.c:9785
 msgid "%B: warning: duplicate section `%A' has different contents"
 msgstr ""
 
@@ -3033,23 +3033,23 @@ msgstr ""
 msgid "invalid relocation type %d"
 msgstr ""
 
-#: i386linux.c:439 m68klinux.c:451 sparclinux.c:449
+#: i386linux.c:441 m68klinux.c:453 sparclinux.c:451
 #, c-format
 msgid "Output file requires shared library `%s'\n"
 msgstr ""
 
-#: i386linux.c:447 m68klinux.c:459 sparclinux.c:457
+#: i386linux.c:449 m68klinux.c:461 sparclinux.c:459
 #, c-format
 msgid "Output file requires shared library `%s.so.%s'\n"
 msgstr ""
 
-#: i386linux.c:632 i386linux.c:682 m68klinux.c:648 m68klinux.c:696
-#: sparclinux.c:642 sparclinux.c:692
+#: i386linux.c:634 i386linux.c:684 m68klinux.c:650 m68klinux.c:698
+#: sparclinux.c:644 sparclinux.c:694
 #, c-format
 msgid "Symbol %s not defined for fixups\n"
 msgstr ""
 
-#: i386linux.c:706 m68klinux.c:720 sparclinux.c:716
+#: i386linux.c:708 m68klinux.c:722 sparclinux.c:718
 msgid "Warning: fixup count mismatch\n"
 msgstr ""
 
@@ -3153,137 +3153,137 @@ msgstr ""
 msgid "%s: No core to allocate section name %s\n"
 msgstr ""
 
-#: mmo.c:537
+#: mmo.c:538
 #, c-format
 msgid "%s: No core to allocate a symbol %d bytes long\n"
 msgstr ""
 
-#: mmo.c:1191
+#: mmo.c:1192
 #, c-format
 msgid "%s: invalid mmo file: initialization value for $255 is not `Main'\n"
 msgstr ""
 
-#: mmo.c:1336
+#: mmo.c:1337
 #, c-format
 msgid ""
 "%s: unsupported wide character sequence 0x%02X 0x%02X after symbol name "
 "starting with `%s'\n"
 msgstr ""
 
-#: mmo.c:1570
+#: mmo.c:1571
 #, c-format
 msgid "%s: invalid mmo file: unsupported lopcode `%d'\n"
 msgstr ""
 
-#: mmo.c:1580
+#: mmo.c:1581
 #, c-format
 msgid "%s: invalid mmo file: expected YZ = 1 got YZ = %d for lop_quote\n"
 msgstr ""
 
-#: mmo.c:1616
+#: mmo.c:1617
 #, c-format
 msgid "%s: invalid mmo file: expected z = 1 or z = 2, got z = %d for lop_loc\n"
 msgstr ""
 
-#: mmo.c:1662
+#: mmo.c:1663
 #, c-format
 msgid ""
 "%s: invalid mmo file: expected z = 1 or z = 2, got z = %d for lop_fixo\n"
 msgstr ""
 
-#: mmo.c:1701
+#: mmo.c:1702
 #, c-format
 msgid "%s: invalid mmo file: expected y = 0, got y = %d for lop_fixrx\n"
 msgstr ""
 
-#: mmo.c:1710
+#: mmo.c:1711
 #, c-format
 msgid ""
 "%s: invalid mmo file: expected z = 16 or z = 24, got z = %d for lop_fixrx\n"
 msgstr ""
 
-#: mmo.c:1733
+#: mmo.c:1734
 #, c-format
 msgid ""
 "%s: invalid mmo file: leading byte of operand word must be 0 or 1, got %d "
 "for lop_fixrx\n"
 msgstr ""
 
-#: mmo.c:1756
+#: mmo.c:1757
 #, c-format
 msgid "%s: cannot allocate file name for file number %d, %d bytes\n"
 msgstr ""
 
-#: mmo.c:1776
+#: mmo.c:1777
 #, c-format
 msgid ""
 "%s: invalid mmo file: file number %d `%s', was already entered as `%s'\n"
 msgstr ""
 
-#: mmo.c:1789
+#: mmo.c:1790
 #, c-format
 msgid ""
 "%s: invalid mmo file: file name for number %d was not specified before use\n"
 msgstr ""
 
-#: mmo.c:1894
+#: mmo.c:1895
 #, c-format
 msgid ""
 "%s: invalid mmo file: fields y and z of lop_stab non-zero, y: %d, z: %d\n"
 msgstr ""
 
-#: mmo.c:1930
+#: mmo.c:1931
 #, c-format
 msgid "%s: invalid mmo file: lop_end not last item in file\n"
 msgstr ""
 
-#: mmo.c:1943
+#: mmo.c:1944
 #, c-format
 msgid ""
 "%s: invalid mmo file: YZ of lop_end (%ld) not equal to the number of tetras "
 "to the preceding lop_stab (%ld)\n"
 msgstr ""
 
-#: mmo.c:2652
+#: mmo.c:2653
 #, c-format
 msgid "%s: invalid symbol table: duplicate symbol `%s'\n"
 msgstr ""
 
-#: mmo.c:2895
+#: mmo.c:2896
 #, c-format
 msgid ""
 "%s: Bad symbol definition: `Main' set to %s rather than the start address "
 "%s\n"
 msgstr ""
 
-#: mmo.c:2987
+#: mmo.c:2988
 #, c-format
 msgid ""
 "%s: warning: symbol table too large for mmo, larger than 65535 32-bit words: "
 "%d.  Only `Main' will be emitted.\n"
 msgstr ""
 
-#: mmo.c:3032
+#: mmo.c:3033
 #, c-format
 msgid "%s: internal error, symbol table changed size from %d to %d words\n"
 msgstr ""
 
-#: mmo.c:3084
+#: mmo.c:3085
 #, c-format
 msgid "%s: internal error, internal register section %s had contents\n"
 msgstr ""
 
-#: mmo.c:3135
+#: mmo.c:3136
 #, c-format
 msgid "%s: no initialized registers; section length 0\n"
 msgstr ""
 
-#: mmo.c:3141
+#: mmo.c:3142
 #, c-format
 msgid "%s: too many initialized registers; section length %ld\n"
 msgstr ""
 
-#: mmo.c:3146
+#: mmo.c:3147
 #, c-format
 msgid ""
 "%s: invalid start address for initialized registers of length %ld: "

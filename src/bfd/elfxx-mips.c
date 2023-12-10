@@ -967,7 +967,7 @@ mips_elf_create_procedure_table(void *handle, bfd *abfd,
   str += (strlen(no_name_func) + 1UL);
   for (i = 0; i < count; i++)
     {
-      ecoff_swap_rpdr_out(abfd, rpdr + i, erp + i);
+      ecoff_swap_rpdr_out(abfd, (rpdr + i), (erp + i));
       strcpy(str, sv[i]);
       str += (strlen(sv[i]) + 1UL);
     }
@@ -3633,8 +3633,8 @@ mips_elf_calculate_relocation(bfd *abfd, bfd *input_bfd,
 			      const char **namep, bfd_boolean *require_jalxp,
 			      bfd_boolean save_addend)
 {
-  /* The eventual value we will return.  */
-  bfd_vma value;
+  /* The eventual value we will return: */
+  bfd_vma value = 0UL;
   /* The address of the symbol against which the relocation is
      occurring.  */
   bfd_vma symbol = 0;

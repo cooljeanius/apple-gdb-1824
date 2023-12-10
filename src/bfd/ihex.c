@@ -359,7 +359,7 @@ ihex_scan (bfd *abfd)
 		  secname = (char *)bfd_alloc(abfd, amt);
 		  if (secname == NULL)
 		    goto error_return;
-		  strcpy(secname, secbuf);
+		  strncpy(secname, secbuf, amt);
 		  sec = bfd_make_section(abfd, secname);
 		  if (sec == NULL)
 		    goto error_return;
