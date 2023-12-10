@@ -4,6 +4,7 @@ dnl# Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.61])
 AC_INIT([libgui],[0.0],[/dev/null])
 AC_CONFIG_SRCDIR([src/subcommand.h])
+AC_CONFIG_AUX_DIR([..])
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([1.11.6 gnits no-dependencies no-dist dejagnu])
 AC_CONFIG_HEADERS([config.h])

@@ -15,6 +15,10 @@
 /* Define to 1 if you have the <curses.h> header file. */
 #undef HAVE_CURSES_H
 
+/* Define to 1 if you have the declaration of `ptsname', and to 0 if you
+   don't. */
+#undef HAVE_DECL_PTSNAME
+
 /* Define to 1 if you have /dev/ptc */
 #undef HAVE_DEV_PTC
 
@@ -78,6 +82,9 @@
 
 /* Define to 1 if you have the `printf' function. */
 #undef HAVE_PRINTF
+
+/* Define to 1 if you have the `ptsname' function. */
+#undef HAVE_PTSNAME
 
 /* Define to 1 if you have the `rl_getc' function. */
 #undef HAVE_RL_GETC

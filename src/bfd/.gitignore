@@ -8,6 +8,7 @@ po/Makefile.in
 *.dSYM
 *.o
 *.lo
+*.loT
 doc/*.p
 doc/*.ip
 doc/*libs/*

@@ -455,7 +455,11 @@ AC_NOTE([- you are missing SVR4 ptys])
 ])
 fi
 
-AC_CHECK_FUNCS([getpt])
+AC_CHECK_FUNCS([getpt ptsname])dnl
+
+AC_CHECK_DECLS([ptsname],[],[],[
+#include <stdlib.h>
+])dnl
 
 dnl# check for openpty()
 if test -z "${sysvr4ptys}"; then

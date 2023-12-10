@@ -62,9 +62,9 @@
 # undef exit
 #endif /* sun */
 
-#ifndef linux /* all done in <errno.h> */
+#if !defined(linux) && !defined(errno) /* all done in <errno.h> */
 extern int errno;
-#endif /* linux */
+#endif /* !linux && !errno */
 #ifndef HAVE_STRERROR
 /* No macros, please */
 #undef strerror
@@ -408,7 +408,7 @@ extern int errno;
 #endif
 
 /* Geeeee, reverse it? */
-#if defined(SVR4) || (defined(SYSV) && defined(ISC)) || defined(_AIX) || defined(linux) || defined(ultrix) || defined(__386BSD__) || defined(__bsdi__) || defined(POSIX) || defined(NeXT)
+#if defined(SVR4) || (defined(SYSV) && defined(ISC)) || defined(_AIX) || defined(linux) || defined(ultrix) || defined(__386BSD__) || defined(__bsdi__) || defined(POSIX) || defined(NeXT) || (defined(__APPLE__) && defined(__MACH__))
 # define SIGHASARG
 #endif
 

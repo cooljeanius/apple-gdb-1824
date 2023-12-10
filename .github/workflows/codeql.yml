@@ -85,7 +85,7 @@ jobs:
 
     - name: Dependencies
       if: matrix.language == 'c-cpp'
-      run: sudo apt-get -y install autopoint gobjc clang
+      run: sudo apt-get -y install autopoint gobjc clang autogen
 
     - name: Syntax check (and similar stuff)
       if: matrix.language == 'ruby' || matrix.language == 'javascript-typescript'

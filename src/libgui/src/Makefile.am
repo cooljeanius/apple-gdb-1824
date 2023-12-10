@@ -51,6 +51,7 @@ $(TKHDIR)/../unix $(TKHDIR)/../win \
 -DTBL_COMMAND=\"$(TBL_COMMAND)\"\
 -DTBL_RUNTIME=\"tkTable.tcl\" -DTBL_RUNTIME_DIR=\"$(guidir)\"\
 -DSTATIC_BUILD
+AM_CFLAGS = -std=gnu89
 
 TKTABLE_SOURCES = tkTable.c tkTableCell.c tkTableCellSort.c \
 tkTableCmds.c tkTableEdit.c tkTableTag.c tkTableWin.c tkTableUtil.c
