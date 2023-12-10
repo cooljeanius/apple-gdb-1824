@@ -9296,15 +9296,15 @@ xtensa_is_littable_section (asection *sec)
   return FALSE;
 }
 
-
+/* Passed to qsort(): */
 static int
-internal_reloc_compare (const void *ap, const void *bp)
+internal_reloc_compare(const void *ap, const void *bp)
 {
-  const Elf_Internal_Rela *a = (const Elf_Internal_Rela *) ap;
-  const Elf_Internal_Rela *b = (const Elf_Internal_Rela *) bp;
+  const Elf_Internal_Rela *a = (const Elf_Internal_Rela *)ap;
+  const Elf_Internal_Rela *b = (const Elf_Internal_Rela *)bp;
 
   if (a->r_offset != b->r_offset)
-    return (a->r_offset - b->r_offset);
+    return (int)(a->r_offset - b->r_offset);
 
   /* We don't need to sort on these criteria for correctness,
      but enforcing a more strict ordering prevents unstable qsort
@@ -9314,53 +9314,54 @@ internal_reloc_compare (const void *ap, const void *bp)
      same results no matter the host.  */
 
   if (a->r_info != b->r_info)
-    return (a->r_info - b->r_info);
+    return (int)(a->r_info - b->r_info);
 
-  return (a->r_addend - b->r_addend);
+  return (int)(a->r_addend - b->r_addend);
 }
 
-
+/* Passed to bsearch(): */
 static int
-internal_reloc_matches (const void *ap, const void *bp)
+internal_reloc_matches(const void *ap, const void *bp)
 {
-  const Elf_Internal_Rela *a = (const Elf_Internal_Rela *) ap;
-  const Elf_Internal_Rela *b = (const Elf_Internal_Rela *) bp;
+  const Elf_Internal_Rela *a = (const Elf_Internal_Rela *)ap;
+  const Elf_Internal_Rela *b = (const Elf_Internal_Rela *)bp;
 
   /* Check if one entry overlaps with the other; this shouldn't happen
      except when searching for a match.  */
-  return (a->r_offset - b->r_offset);
+  return (int)(a->r_offset - b->r_offset);
 }
 
-
+/* */
 char *
-xtensa_get_property_section_name (asection *sec, const char *base_name)
+xtensa_get_property_section_name(asection *sec, const char *base_name)
 {
-  if (strncmp (sec->name, ".gnu.linkonce.", linkonce_len) == 0)
+  if (strncmp(sec->name, ".gnu.linkonce.", linkonce_len) == 0)
     {
       char *prop_sec_name;
+      size_t prop_sec_namelen;
       const char *suffix;
       const char *linkonce_kind = (const char *)0;
 
-      if (strcmp (base_name, XTENSA_INSN_SEC_NAME) == 0)
+      if (strcmp(base_name, XTENSA_INSN_SEC_NAME) == 0)
 	linkonce_kind = "x.";
-      else if (strcmp (base_name, XTENSA_LIT_SEC_NAME) == 0)
+      else if (strcmp(base_name, XTENSA_LIT_SEC_NAME) == 0)
 	linkonce_kind = "p.";
-      else if (strcmp (base_name, XTENSA_PROP_SEC_NAME) == 0)
+      else if (strcmp(base_name, XTENSA_PROP_SEC_NAME) == 0)
 	linkonce_kind = "prop.";
       else
-	abort ();
+	abort();
 
-      prop_sec_name = (char *) bfd_malloc (strlen (sec->name)
-					   + strlen (linkonce_kind) + 1);
-      memcpy (prop_sec_name, ".gnu.linkonce.", linkonce_len);
-      strcpy (prop_sec_name + linkonce_len, linkonce_kind);
+      prop_sec_namelen = (strlen(sec->name) + strlen(linkonce_kind) + 1UL);
+      prop_sec_name = (char *)bfd_malloc(prop_sec_namelen);
+      memcpy(prop_sec_name, ".gnu.linkonce.", linkonce_len);
+      strcpy((prop_sec_name + linkonce_len), linkonce_kind);
 
-      suffix = sec->name + linkonce_len;
+      suffix = (sec->name + linkonce_len);
       /* For backward compatibility, replace "t." instead of inserting
          the new linkonce_kind (but not for "prop" sections).  */
-      if (strncmp (suffix, "t.", 2) == 0 && linkonce_kind[1] == '.')
+      if ((strncmp(suffix, "t.", 2) == 0) && (linkonce_kind[1] == '.'))
         suffix += 2;
-      strcat (prop_sec_name + linkonce_len, suffix);
+      strcat((prop_sec_name + linkonce_len), suffix);
 
       return prop_sec_name;
     }
@@ -9368,9 +9369,9 @@ xtensa_get_property_section_name (asection *sec, const char *base_name)
   return xstrdup(base_name);
 }
 
-
+/* */
 flagword
-xtensa_get_property_predef_flags (asection *sec)
+xtensa_get_property_predef_flags(asection *sec)
 {
   if (strcmp (sec->name, XTENSA_INSN_SEC_NAME) == 0
       || strncmp (sec->name, ".gnu.linkonce.x.",

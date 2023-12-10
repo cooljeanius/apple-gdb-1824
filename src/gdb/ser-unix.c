@@ -811,6 +811,7 @@ hardwire_setbaudrate(struct serial *scb, int rate)
   return set_tty_state(scb, &state);
 }
 
+/* */
 static int
 hardwire_setstopbits(struct serial *scb, int num)
 {
@@ -848,15 +849,17 @@ hardwire_setstopbits(struct serial *scb, int num)
 #endif /* HAVE_TERMIO */
 
 #ifdef HAVE_SGTTY
-  if (!newbit)
-    return 0;			/* sgtty does NOT support this */
+  /* FIXME: kind of a hack to avoid -Wduplicated-branches: */
+  if (newbit == 0)
+    return newbit;		/* sgtty does NOT support this */
   else
-    return 0;			/* FIXME: -Wduplicated-branches */
+    return 0;
 #endif /* HAVE_SGTTY */
 
   return set_tty_state(scb, &state);
 }
 
+/* */
 static void
 hardwire_close(struct serial *scb)
 {

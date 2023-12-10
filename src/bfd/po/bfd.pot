@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-10 13:45-0500\n"
+"POT-Creation-Date: 2023-12-10 18:24-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -846,7 +846,7 @@ msgstr ""
 msgid "%B(%A+0x%lx): R_ARM_TLS_LE32 relocation not permitted in shared object"
 msgstr ""
 
-#: elf32-arm.c:4107 elf32-sh.c:4618 elf64-sh64.c:1541
+#: elf32-arm.c:4107 elf32-sh.c:4620 elf64-sh64.c:1541
 msgid "%B(%A+0x%lx): %s relocation against SEC_MERGE section"
 msgstr ""
 
@@ -1332,7 +1332,7 @@ msgstr ""
 msgid "%B: invalid relocation type %d"
 msgstr ""
 
-#: elf32-i386.c:1022 elf32-s390.c:1147 elf32-sh.c:6408 elf32-tilepro.c:1627
+#: elf32-i386.c:1022 elf32-s390.c:1147 elf32-sh.c:6410 elf32-tilepro.c:1627
 #: elf64-s390.c:1109 elfxx-sparc.c:1150
 msgid "%B: `%s' accessed both as normal and thread local symbol"
 msgstr ""
@@ -1963,31 +1963,31 @@ msgstr ""
 msgid "%B: 0x%lx: fatal: reloc overflow while relaxing"
 msgstr ""
 
-#: elf32-sh.c:4566 elf64-sh64.c:1513
+#: elf32-sh.c:4568 elf64-sh64.c:1513
 msgid "Unexpected STO_SH5_ISA32 on local symbol is not handled"
 msgstr ""
 
-#: elf32-sh.c:4717
+#: elf32-sh.c:4719
 msgid "%B(%A): unresolvable relocation against symbol `%s'"
 msgstr ""
 
-#: elf32-sh.c:4787
+#: elf32-sh.c:4789
 msgid "%B: 0x%lx: fatal: unaligned branch target for relax-support relocation"
 msgstr ""
 
-#: elf32-sh.c:4820 elf32-sh.c:4835
+#: elf32-sh.c:4822 elf32-sh.c:4837
 msgid "%B: 0x%lx: fatal: unaligned %s relocation 0x%lx"
 msgstr ""
 
-#: elf32-sh.c:4849
+#: elf32-sh.c:4851
 msgid "%B: 0x%lx: fatal: R_SH_PSHA relocation %d not in range -32..32"
 msgstr ""
 
-#: elf32-sh.c:4863
+#: elf32-sh.c:4865
 msgid "%B: 0x%lx: fatal: R_SH_PSHL relocation %d not in range -32..32"
 msgstr ""
 
-#: elf32-sh.c:6620 elf64-alpha.c:4535
+#: elf32-sh.c:6622 elf64-alpha.c:4535
 msgid "%B: TLS local exec code cannot be linked into shared objects"
 msgstr ""
 

@@ -492,14 +492,14 @@ elf64_sparc_add_symbol_hook (bfd *abfd, struct bfd_link_info *info,
 	    }
 	  else
 	    p->name = "";
-	  p->bind = ELF_ST_BIND (sym->st_info);
+	  p->bind = ELF_ST_BIND(sym->st_info);
 	  p->abfd = abfd;
 	  p->shndx = sym->st_shndx;
 	}
       else
 	{
-	  if (p->bind == STB_WEAK
-	      && ELF_ST_BIND (sym->st_info) == STB_GLOBAL)
+	  if ((p->bind == STB_WEAK)
+	      && (ELF_ST_BIND(sym->st_info) == STB_GLOBAL))
 	    {
 	      p->bind = STB_GLOBAL;
 	      p->abfd = abfd;

@@ -5941,6 +5941,8 @@ else $as_nop
 #include <unistd.h>
 #include <string.h>
 
+#line 225 "configure.ac"
+
 char *nam = "/tmp/conftest$$";
 
 #ifdef NAMEDPIPE
@@ -6249,6 +6251,7 @@ else $as_nop
 #ifdef HAVE_TERM_H
 # include <term.h>
 #endif /* HAVE_TERM_H */
+#line 420 "configure.ac"
 int main(void)
 {
  exit(strcmp(tgoto("%p1%d", 0, 1), "1") ? 0 : 1);
@@ -6602,6 +6605,7 @@ else $as_nop
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#line 537 "configure.ac"
 int main(void)
 {
   struct stat sb;

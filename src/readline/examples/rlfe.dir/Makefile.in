@@ -149,13 +149,14 @@ check:
 	@true
 .PHONY: check
 
-config:
+config: configure
 	rm -f config.cache
 	sh ./configure
 .PHONY: config
 
 Makefile: Makefile.in config.status
-
+	./config.status || $(SHELL) config.status
+	touch Makefile
 
 ###########################################################################
 
@@ -181,7 +182,7 @@ mdepend: $(CFILES) term.h
           ` >> DEPEND ; \
 	done
 
-depend: depend.in
+depend: depend.in config.status configure
 	./config.status || ./configure
 
 depend.in: $(CFILES) term.h
@@ -197,3 +198,14 @@ pty.o: pty.c config.h
 
 config.log: configure
 	./configure || sh ./configure
+
+configure: configure.ac
+	if test -x "`which autoconf`"; then \
+	  echo "running autoconf" && autoconf; \
+	elif test -e configure~; then \
+	  echo "using backup $@ script"; \
+	  cat configure~ >$@; \
+	  chmod a+x $@; \
+	else \
+	  echo "unsure what to do, so just touching $@" && touch $@; \
+	fi

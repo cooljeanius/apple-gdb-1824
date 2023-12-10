@@ -621,6 +621,7 @@ sym_read_type(struct objfile *objfile, struct type **typevec,
   *psymbol = symbol;
 }
 
+/* */
 static void
 sym_read_types(struct objfile *objfile, unsigned long *pmaxtypes,
                struct type ***ptypevec, unsigned long *pntypes,
@@ -681,6 +682,7 @@ sym_read_types(struct objfile *objfile, unsigned long *pmaxtypes,
   *pntypedefs = ntypedefs;
 }
 
+/* */
 static void
 sym_read_contained_variables(struct objfile *objfile,
                              struct bfd_sym_modules_table_entry *entry,
@@ -909,7 +911,7 @@ sym_read_contained_variables(struct objfile *objfile,
           BFD_SYM_STORAGE_CLASS_GLOBAL)
         {
 	  /* FIXME: find better way to avoid -Wduplicated-branches: */
-          nlocals = nlocals + 1;
+          nlocals = (nlocals + 1);
         }
       else
         {
@@ -923,6 +925,7 @@ end:
   *pnglobals = nglobals;
 }
 
+/* */
 static void
 sym_read_functions(struct objfile *objfile, struct type **typevec,
                    unsigned long ntypes, struct symbol ***pfuncvec,

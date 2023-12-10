@@ -3727,53 +3727,55 @@ sh_elf_create_dynamic_sections (bfd *abfd, struct bfd_link_info *info)
 
       if (! (_bfd_generic_link_add_one_symbol
 	     (info, abfd, "_PROCEDURE_LINKAGE_TABLE_", BSF_GLOBAL, s,
-	      (bfd_vma) 0, (const char *) NULL, FALSE,
-	      get_elf_backend_data (abfd)->collect, &bh)))
+	      (bfd_vma)0UL, (const char *)NULL, FALSE,
+	      get_elf_backend_data(abfd)->collect, &bh)))
 	return FALSE;
 
-      h = (struct elf_link_hash_entry *) bh;
+      h = (struct elf_link_hash_entry *)bh;
       h->def_regular = 1;
       h->type = STT_OBJECT;
 
       if (info->shared
-	  && ! bfd_elf_link_record_dynamic_symbol (info, h))
+	  && ! bfd_elf_link_record_dynamic_symbol(info, h))
 	return FALSE;
     }
 
-  s = bfd_make_section_with_flags (abfd,
-				   bed->default_use_rela_p ? ".rela.plt" : ".rel.plt",
-				   flags | SEC_READONLY);
+  s = bfd_make_section_with_flags(abfd,
+				  bed->default_use_rela_p ? ".rela.plt" : ".rel.plt",
+				  (flags | SEC_READONLY));
   htab->srelplt = s;
-  if (s == NULL
-      || ! bfd_set_section_alignment (abfd, s, ptralign))
+  if ((s == NULL)
+      || ! bfd_set_section_alignment(abfd, s, ptralign))
     return FALSE;
 
-  if (htab->sgot == NULL
-      && !create_got_section (abfd, info))
+  if ((htab->sgot == NULL)
+      && !create_got_section(abfd, info))
     return FALSE;
 
   {
     const char *secname;
     char *relname;
+    size_t relnamelen;
     flagword secflags;
     asection *sec;
 
     for (sec = abfd->sections; sec; sec = sec->next)
       {
-	secflags = bfd_get_section_flags (abfd, sec);
+	secflags = bfd_get_section_flags(abfd, sec);
 	if ((secflags & (SEC_DATA | SEC_LINKER_CREATED))
 	    || ((secflags & SEC_HAS_CONTENTS) != SEC_HAS_CONTENTS))
 	  continue;
-	secname = bfd_get_section_name (abfd, sec);
-	relname = (char *) bfd_malloc ((bfd_size_type) strlen (secname) + 6);
-	strcpy (relname, ".rela");
-	strcat (relname, secname);
-	if (bfd_get_section_by_name (abfd, secname))
+	secname = bfd_get_section_name(abfd, sec);
+	relnamelen = (strlen(secname) + 6UL);
+	relname = (char *)bfd_malloc((bfd_size_type)relnamelen);
+	strncpy(relname, ".rela", relnamelen);
+	strncat(relname, secname, relnamelen);
+	if (bfd_get_section_by_name(abfd, secname))
 	  continue;
-	s = bfd_make_section_with_flags (abfd, relname,
-					 flags | SEC_READONLY);
-	if (s == NULL
-	    || ! bfd_set_section_alignment (abfd, s, ptralign))
+	s = bfd_make_section_with_flags(abfd, relname,
+                                        (flags | SEC_READONLY));
+	if ((s == NULL)
+	    || ! bfd_set_section_alignment(abfd, s, ptralign))
 	  return FALSE;
       }
   }
@@ -3786,8 +3788,8 @@ sh_elf_create_dynamic_sections (bfd *abfd, struct bfd_link_info *info)
 	 image and use a R_*_COPY reloc to tell the dynamic linker to
 	 initialize them at run time.  The linker script puts the .dynbss
 	 section into the .bss section of the final image.  */
-      s = bfd_make_section_with_flags (abfd, ".dynbss",
-				       SEC_ALLOC | SEC_LINKER_CREATED);
+      s = bfd_make_section_with_flags(abfd, ".dynbss",
+				      (SEC_ALLOC | SEC_LINKER_CREATED));
       htab->sdynbss = s;
       if (s == NULL)
 	return FALSE;

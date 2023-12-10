@@ -222,6 +222,8 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <unistd.h>
 #include <string.h>
 
+#line 225 "configure.ac"
+
 char *nam = "/tmp/conftest$$";
 
 #ifdef NAMEDPIPE
@@ -415,6 +417,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #ifdef HAVE_TERM_H
 # include <term.h>
 #endif /* HAVE_TERM_H */
+#line 420 "configure.ac"
 int main(void)
 {
  exit(strcmp(tgoto("%p1%d", 0, 1), "1") ? 0 : 1);
@@ -531,6 +534,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#line 537 "configure.ac"
 int main(void)
 {
   struct stat sb;

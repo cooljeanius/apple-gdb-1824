@@ -1275,9 +1275,13 @@ if test -n "${CONFIG_FILES}"; then
     # FIXME: We should NOT need to set ac_file here:
     ac_file=Makefile
     LD="${ORIGINAL_LD_FOR_MULTILIBS}"
-    echo "sourcing '${libiberty_topdir}/config-ml.in'..."
-    . ${libiberty_topdir}/config-ml.in
+    echo "sourcing '${libiberty_topdir}/config-ml.in' (or '${multi_basedir}/config-ml.in')..."
+    . ${libiberty_topdir}/config-ml.in || . ${multi_basedir}/config-ml.in
+  else
+    echo "with_target_subdir unset; skipping any attempts to do anything with config-ml.in..."
   fi
+else
+  echo "CONFIG_FILES unset; skipping any attempts to do anything with config-ml.in..."
 fi]],
 [[srcdir=${srcdir}
 host=${host}
