@@ -397,7 +397,7 @@ ppcboot_bfd_print_private_bfd_data(bfd *abfd, PTR farg)
   if (tdata->header.os_id)
     fprintf(f, "OS_ID               = 0x%.2x\n", tdata->header.os_id);
 
-  if (tdata->header.partition_name)
+  if (strncmp(tdata->header.partition_name, "", 32UL) >= 0)
     fprintf(f, _("Partition name      = \"%s\"\n"), tdata->header.partition_name);
 
   for (i = 0; i < 4; i++)
@@ -417,23 +417,23 @@ ppcboot_bfd_print_private_bfd_data(bfd *abfd, PTR farg)
 	  && !sector_begin && !sector_length)
 	continue;
 
-      fprintf (f, _("\nPartition[%d] start  = { 0x%.2x, 0x%.2x, 0x%.2x, 0x%.2x }\n"), i,
-	       tdata->header.partition[i].partition_begin.ind,
-	       tdata->header.partition[i].partition_begin.head,
-	       tdata->header.partition[i].partition_begin.sector,
-	       tdata->header.partition[i].partition_begin.cylinder);
+      fprintf(f, _("\nPartition[%d] start  = { 0x%.2x, 0x%.2x, 0x%.2x, 0x%.2x }\n"), i,
+	      tdata->header.partition[i].partition_begin.ind,
+	      tdata->header.partition[i].partition_begin.head,
+	      tdata->header.partition[i].partition_begin.sector,
+	      tdata->header.partition[i].partition_begin.cylinder);
 
-      fprintf (f, _("Partition[%d] end    = { 0x%.2x, 0x%.2x, 0x%.2x, 0x%.2x }\n"), i,
-	       tdata->header.partition[i].partition_end.ind,
-	       tdata->header.partition[i].partition_end.head,
-	       tdata->header.partition[i].partition_end.sector,
-	       tdata->header.partition[i].partition_end.cylinder);
+      fprintf(f, _("Partition[%d] end    = { 0x%.2x, 0x%.2x, 0x%.2x, 0x%.2x }\n"), i,
+	      tdata->header.partition[i].partition_end.ind,
+	      tdata->header.partition[i].partition_end.head,
+	      tdata->header.partition[i].partition_end.sector,
+	      tdata->header.partition[i].partition_end.cylinder);
 
-      fprintf (f, _("Partition[%d] sector = 0x%.8lx (%ld)\n"), i, sector_begin, sector_begin);
-      fprintf (f, _("Partition[%d] length = 0x%.8lx (%ld)\n"), i, sector_length, sector_length);
+      fprintf(f, _("Partition[%d] sector = 0x%.8lx (%ld)\n"), i, sector_begin, sector_begin);
+      fprintf(f, _("Partition[%d] length = 0x%.8lx (%ld)\n"), i, sector_length, sector_length);
     }
 
-  fprintf (f, "\n");
+  fprintf(f, "\n");
   return TRUE;
 }
 

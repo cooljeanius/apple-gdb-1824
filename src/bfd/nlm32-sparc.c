@@ -102,6 +102,10 @@ nlm_sparc_read_reloc(bfd *abfd,
   code_sec = bfd_get_section_by_name(abfd, NLM_CODE_NAME);
   data_sec = bfd_get_section_by_name(abfd, NLM_INITIALIZED_DATA_NAME);
 
+  if (data_sec == NULL) {
+    ; /* ??? */
+  }
+
   *secp = code_sec;
 
   val = bfd_get_32(abfd, tmp_reloc.offset);

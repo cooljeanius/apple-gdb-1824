@@ -154,7 +154,7 @@ static void cashier_psymtab(struct partial_symtab *);
 static int compare_psymbols(const void *, const void *);
 
 /* APPLE LOCAL symfile bfd open */
-bfd *symfile_bfd_open(const char *, int mainline, int osabi);
+bfd *symfile_bfd_open(const char *, int mainline, enum gdb_osabi osabi);
 
 int get_section_index(struct objfile *, const char *);
 

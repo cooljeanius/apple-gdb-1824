@@ -517,8 +517,8 @@ nlm_alpha_read_reloc (bfd *abfd,
     case ALPHA_R_OP_STORE:
       /* The STORE reloc needs the size and offset fields.  We store
 	 them in the addend.  */
-      BFD_ASSERT (r_offset < 256 && r_size < 256);
-      rel->addend = (r_offset << 8) + r_size;
+      BFD_ASSERT((r_offset < 256) && (r_size < 256));
+      rel->addend = ((r_offset << 8) + r_size);
       break;
 
     case ALPHA_R_OP_PUSH:
@@ -531,7 +531,7 @@ nlm_alpha_read_reloc (bfd *abfd,
       break;
 
     case ALPHA_R_GPVALUE:
-      /* Record the new gp value.  */
+      /* Record the new gp value: */
       gp_value += r_symndx;
       rel->addend = gp_value;
       break;

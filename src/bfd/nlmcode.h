@@ -1612,7 +1612,7 @@ nlm_write_object_contents(bfd *abfd)
     goto error_return;
 
   /* Write out the variable length headers: */
-  pos = (nlm_optional_prefix_size(abfd) + nlm_fixed_header_size(abfd));
+  pos = (file_ptr)(nlm_optional_prefix_size(abfd) + nlm_fixed_header_size(abfd));
   if (bfd_seek(abfd, pos, SEEK_SET) != 0)
     goto error_return;
   if (! nlm_swap_variable_header_out (abfd)
@@ -1908,23 +1908,23 @@ nlm_write_object_contents(bfd *abfd)
 
   /* NLMLINK fills in offset values even if there is no data, so we do
      the same.  */
-  last = bfd_tell (abfd);
-  if (nlm_fixed_header (abfd)->codeImageOffset == 0)
-    nlm_fixed_header (abfd)->codeImageOffset = last;
-  if (nlm_fixed_header (abfd)->dataImageOffset == 0)
-    nlm_fixed_header (abfd)->dataImageOffset = last;
-  if (nlm_fixed_header (abfd)->customDataOffset == 0)
-    nlm_fixed_header (abfd)->customDataOffset = last;
-  if (nlm_fixed_header (abfd)->moduleDependencyOffset == 0)
-    nlm_fixed_header (abfd)->moduleDependencyOffset = last;
-  if (nlm_fixed_header (abfd)->relocationFixupOffset == 0)
-    nlm_fixed_header (abfd)->relocationFixupOffset = last;
-  if (nlm_fixed_header (abfd)->externalReferencesOffset == 0)
-    nlm_fixed_header (abfd)->externalReferencesOffset = last;
-  if (nlm_fixed_header (abfd)->publicsOffset == 0)
-    nlm_fixed_header (abfd)->publicsOffset = last;
-  if (nlm_fixed_header (abfd)->debugInfoOffset == 0)
-    nlm_fixed_header (abfd)->debugInfoOffset = last;
+  last = bfd_tell(abfd);
+  if (nlm_fixed_header(abfd)->codeImageOffset == 0)
+    nlm_fixed_header(abfd)->codeImageOffset = last;
+  if (nlm_fixed_header(abfd)->dataImageOffset == 0)
+    nlm_fixed_header(abfd)->dataImageOffset = last;
+  if (nlm_fixed_header(abfd)->customDataOffset == 0)
+    nlm_fixed_header(abfd)->customDataOffset = last;
+  if (nlm_fixed_header(abfd)->moduleDependencyOffset == 0)
+    nlm_fixed_header(abfd)->moduleDependencyOffset = last;
+  if (nlm_fixed_header(abfd)->relocationFixupOffset == 0)
+    nlm_fixed_header(abfd)->relocationFixupOffset = last;
+  if (nlm_fixed_header(abfd)->externalReferencesOffset == 0)
+    nlm_fixed_header(abfd)->externalReferencesOffset = last;
+  if (nlm_fixed_header(abfd)->publicsOffset == 0)
+    nlm_fixed_header(abfd)->publicsOffset = last;
+  if (nlm_fixed_header(abfd)->debugInfoOffset == 0)
+    nlm_fixed_header(abfd)->debugInfoOffset = last;
 
   /* At this point everything has been written out except the fixed
      header.  */
@@ -1937,36 +1937,36 @@ nlm_write_object_contents(bfd *abfd)
   /* We have no convenient way for the caller to pass in the exit
      procedure or the check unload procedure, so the caller must set
      the values in the header to the values of the symbols.  */
-  nlm_fixed_header (abfd)->exitProcedureOffset -= nlm_get_text_low (abfd);
-  if (nlm_fixed_header (abfd)->checkUnloadProcedureOffset != 0)
-    nlm_fixed_header (abfd)->checkUnloadProcedureOffset -=
-      nlm_get_text_low (abfd);
+  nlm_fixed_header(abfd)->exitProcedureOffset -= nlm_get_text_low(abfd);
+  if (nlm_fixed_header(abfd)->checkUnloadProcedureOffset != 0)
+    nlm_fixed_header(abfd)->checkUnloadProcedureOffset -=
+      nlm_get_text_low(abfd);
 
-  if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0)
+  if (bfd_seek(abfd, (file_ptr)0L, SEEK_SET) != 0)
     goto error_return;
 
-  write_prefix_func = nlm_write_prefix_func (abfd);
+  write_prefix_func = nlm_write_prefix_func(abfd);
   if (write_prefix_func)
     {
-      if (! (*write_prefix_func) (abfd))
+      if (! (*write_prefix_func)(abfd))
 	goto error_return;
     }
 
-  BFD_ASSERT ((bfd_size_type) bfd_tell (abfd)
-	      == nlm_optional_prefix_size (abfd));
+  BFD_ASSERT((bfd_size_type)bfd_tell(abfd)
+	     == nlm_optional_prefix_size(abfd));
 
-  nlm_swap_fixed_header_out (abfd, nlm_fixed_header (abfd), fixed_header);
-  if (bfd_bwrite (fixed_header, nlm_fixed_header_size (abfd), abfd)
-      != nlm_fixed_header_size (abfd))
+  nlm_swap_fixed_header_out(abfd, nlm_fixed_header(abfd), fixed_header);
+  if (bfd_bwrite(fixed_header, nlm_fixed_header_size(abfd), abfd)
+      != nlm_fixed_header_size(abfd))
     goto error_return;
 
   if (fixed_header != NULL)
-    free (fixed_header);
+    free(fixed_header);
   return TRUE;
 
 error_return:
   if (fixed_header != NULL)
-    free (fixed_header);
+    free(fixed_header);
   return FALSE;
 }
 

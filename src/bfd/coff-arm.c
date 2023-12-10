@@ -1102,15 +1102,15 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
   for (; rel < relend; rel++)
     {
-      int                            done = 0;
-      long                           symndx;
-      struct coff_link_hash_entry *  h;
-      struct internal_syment *       sym;
-      bfd_vma                        addend;
-      bfd_vma                        val;
-      reloc_howto_type *             howto;
-      bfd_reloc_status_type          rstat;
-      bfd_vma                        h_val;
+      int done = 0;
+      long symndx;
+      struct coff_link_hash_entry *h;
+      struct internal_syment *sym;
+      bfd_vma addend;
+      bfd_vma val;
+      reloc_howto_type *howto;
+      bfd_reloc_status_type rstat;
+      bfd_vma h_val;
 
       symndx = rel->r_symndx;
 
@@ -1121,8 +1121,8 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	}
       else
 	{
-	  h = obj_coff_sym_hashes (input_bfd)[symndx];
-	  sym = syms + symndx;
+	  h = obj_coff_sym_hashes(input_bfd)[symndx];
+	  sym = (syms + symndx);
 	}
 
       /* COFF treats common symbols in one of two ways.  Either the
@@ -1130,13 +1130,13 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
          is not.  We assume that the size is not included, and force
          the rtype_to_howto function to adjust the addend as needed.  */
 
-      if (sym != NULL && sym->n_scnum != 0)
-	addend = - sym->n_value;
+      if ((sym != NULL) && (sym->n_scnum != 0))
+	addend = -sym->n_value;
       else
 	addend = 0;
 
-      howto = coff_rtype_to_howto (input_bfd, input_section, rel, h,
-				       sym, &addend);
+      howto = coff_rtype_to_howto(input_bfd, input_section, rel, h,
+                                  sym, &addend);
       if (howto == NULL)
 	return FALSE;
 
@@ -1171,7 +1171,7 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
           addend -= (rel->r_vaddr - input_section->vma);
 #ifdef ARM_WINCE
-          /* FIXME: I don't know why, but the hack is necessary for correct
+          /* FIXME: I dunno why, but the hack is necessary for correct
            *        generation of bl's instruction offset.  */
           addend -= 8;
 #endif /* ARM_WINCE */
@@ -1477,7 +1477,10 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
              perform a direct link.  */
 
 	  if (done)
-	    rstat = bfd_reloc_ok;
+            {
+	      rstat = bfd_reloc_ok;
+              (void)rstat;
+            }
 	  else
 	    if ((h->root.type == bfd_link_hash_defined)
 		|| (h->root.type == bfd_link_hash_defweak))
@@ -1488,7 +1491,7 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      val = (h->root.u.def.value
 		     + sec->output_section->vma
 		     + sec->output_offset);
-	      }
+            }
 
 	  else if (! info->relocatable)
 	    {
@@ -1631,7 +1634,7 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 #endif /* !ARM_WINCE */
       else
         if (info->relocatable && ! howto->partial_inplace)
-            rstat = bfd_reloc_ok;
+          rstat = bfd_reloc_ok;
         else
 	  rstat = _bfd_final_link_relocate(howto, input_bfd, input_section,
 					   contents,
@@ -1704,7 +1707,8 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      return FALSE;
 	  }
 	}
-    }
+      (void)rstat;
+    } /* end for-loop */
 
   return TRUE;
 }

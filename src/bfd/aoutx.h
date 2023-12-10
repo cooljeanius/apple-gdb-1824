@@ -1073,6 +1073,7 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
 		    ? 0 : (obj_bsssec(abfd)->size - data_pad));
   else
     execp->a_bss = obj_bsssec(abfd)->size;
+  (void)text_end;
 }
 
 static void

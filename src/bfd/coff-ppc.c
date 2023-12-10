@@ -1270,17 +1270,21 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	    bfd_vma x;
 	    const char *my_name;
 
-	    DUMP_RELOC2 (howto->name, rel);
+	    DUMP_RELOC2(howto->name, rel);
 
 	    if (h != 0)
 	      {
 		my_name = h->root.root.root.string;
+  		if (my_name == NULL) {
+                  ; /* ??? */
+                }
 		if (h->symbol_is_glue == 1)
 		  {
 		    x = bfd_get_32(input_bfd, loc);
 		    bfd_put_32(input_bfd, (bfd_vma)h->glue_insn, loc);
 		  }
 	      }
+            (void)x;
 	  }
 	  break;
 	case IMAGE_REL_PPC_SECREL:
@@ -1368,6 +1372,7 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		/* It is a file local symbol: */
 		sym = (syms + symndx);
 		name = sym->_n._n_name;
+  		(void)name;
 	      }
 	    else
 	      {
@@ -1401,33 +1406,32 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		    if (first_thunk_address == 0)
 		      {
 			int idata5offset;
-			myh = coff_link_hash_lookup (coff_hash_table (info),
-						     "__idata5_magic__",
-						     FALSE, FALSE, TRUE);
+			myh = coff_link_hash_lookup(coff_hash_table(info),
+						    "__idata5_magic__",
+						    FALSE, FALSE, TRUE);
 			first_thunk_address = myh->root.u.def.value +
 			  sec->output_section->vma +
 			    sec->output_offset -
 			      pe_data(output_bfd)->pe_opthdr.ImageBase;
 
 			idata5offset = myh->root.u.def.value;
-			myh = coff_link_hash_lookup (coff_hash_table (info),
-						     "__idata6_magic__",
-						     FALSE, FALSE, TRUE);
+			myh = coff_link_hash_lookup(coff_hash_table(info),
+						    "__idata6_magic__",
+						    FALSE, FALSE, TRUE);
 
-			thunk_size = myh->root.u.def.value - idata5offset;
-			myh = coff_link_hash_lookup (coff_hash_table (info),
-						     "__idata4_magic__",
-						     FALSE, FALSE, TRUE);
+			thunk_size = (myh->root.u.def.value - idata5offset);
+			myh = coff_link_hash_lookup(coff_hash_table(info),
+						    "__idata4_magic__",
+						    FALSE, FALSE, TRUE);
 			import_table_size = myh->root.u.def.value;
 		      }
 		  }
 	      }
 
-	    rstat = _bfd_relocate_contents (howto,
-					    input_bfd,
-					    val -
-					    pe_data (output_bfd)->pe_opthdr.ImageBase,
-					    loc);
+	    rstat = _bfd_relocate_contents(howto, input_bfd,
+					   val -
+					   pe_data(output_bfd)->pe_opthdr.ImageBase,
+					   loc);
 	  }
 	  break;
 

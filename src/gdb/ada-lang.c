@@ -2332,22 +2332,22 @@ ada_array_element_type(struct type *type, int nindices)
    Does not examine memory.  */
 
 struct type *
-ada_index_type (struct type *type, int n)
+ada_index_type(struct type *type, int n)
 {
   struct type *result_type;
 
-  type = desc_base_type (type);
+  type = desc_base_type(type);
 
-  if (n > ada_array_arity (type))
+  if (n > ada_array_arity(type))
     return NULL;
 
-  if (ada_is_simple_array_type (type))
+  if (ada_is_simple_array_type(type))
     {
       int i;
 
       for (i = 1; i < n; i += 1)
-        type = TYPE_TARGET_TYPE (type);
-      result_type = TYPE_TARGET_TYPE (TYPE_FIELD_TYPE (type, 0));
+        type = TYPE_TARGET_TYPE(type);
+      result_type = TYPE_TARGET_TYPE(TYPE_FIELD_TYPE(type, 0));
       /* FIXME: The stabs type r(0,0);bound;bound in an array type
          has a target type of TYPE_CODE_UNDEF.  We compensate here, but
          perhaps stabsread.c would make more sense.  */

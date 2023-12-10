@@ -341,13 +341,13 @@ srec_scan (bfd *abfd)
 	  break;
 
 	case ' ':
-	  do
-	    {
+	  do {
 	      bfd_size_type alc;
 	      char *p, *symname;
 	      bfd_vma symval;
+              ptrdiff_t symnamelen;
 
-	      /* Starting a symbol definition.  */
+	      /* Starting a symbol definition: */
 	      while (((c = srec_get_byte(abfd, &error)) != EOF)
 		     && ((c == ' ') || (c == '\t')))
 		;
@@ -361,8 +361,8 @@ srec_scan (bfd *abfd)
 		  goto error_return;
 		}
 
-	      alc = 10;
-	      symbuf = (char *)bfd_malloc(alc + 1);
+	      alc = 10UL;
+	      symbuf = (char *)bfd_malloc(alc + 1UL);
 	      if (symbuf == NULL)
 		goto error_return;
 
@@ -376,8 +376,8 @@ srec_scan (bfd *abfd)
 		    {
 		      char *n;
 
-		      alc *= 2;
-		      n = (char *)bfd_realloc(symbuf, (alc + 1));
+		      alc *= 2UL;
+		      n = (char *)bfd_realloc(symbuf, (alc + 1UL));
 		      if (n == NULL)
 			goto error_return;
 		      p = (n + (p - symbuf));
@@ -394,10 +394,11 @@ srec_scan (bfd *abfd)
 		}
 
 	      *p++ = '\0';
-	      symname = (char *)bfd_alloc(abfd, (bfd_size_type)(p - symbuf));
+              symnamelen = (p - symbuf);
+	      symname = (char *)bfd_alloc(abfd, (bfd_size_type)symnamelen);
 	      if (symname == NULL)
 		goto error_return;
-	      strcpy(symname, symbuf);
+	      strncpy(symname, symbuf, (size_t)symnamelen);
 	      free(symbuf);
 	      symbuf = NULL;
 
@@ -422,24 +423,22 @@ srec_scan (bfd *abfd)
 		}
 
 	      symval = 0;
-	      while (ISHEX (c))
+	      while (ISHEX(c))
 		{
 		  symval <<= 4;
-		  symval += NIBBLE (c);
-		  c = srec_get_byte (abfd, &error);
+		  symval += NIBBLE(c);
+		  c = srec_get_byte(abfd, &error);
 		}
 
-	      if (! srec_new_symbol (abfd, symname, symval))
+	      if (! srec_new_symbol(abfd, symname, symval))
 		goto error_return;
-	    }
-	  while (c == ' ' || c == '\t')
-	    ;
+          } while ((c == ' ') || (c == '\t'));
 
 	  if (c == '\n')
 	    ++lineno;
 	  else if (c != '\r')
 	    {
-	      srec_bad_byte (abfd, lineno, c, error);
+	      srec_bad_byte(abfd, lineno, c, error);
 	      goto error_return;
 	    }
 
@@ -456,7 +455,7 @@ srec_scan (bfd *abfd)
 	    /* Starting an S-record: */
 	    pos = (bfd_tell(abfd) - 1);
 
-	    if (bfd_bread(hdr, (bfd_size_type)3, abfd) != 3)
+	    if (bfd_bread(hdr, (bfd_size_type)3UL, abfd) != 3)
 	      goto error_return;
 
 	    if (! ISHEX(hdr[1]) || ! ISHEX(hdr[2]))

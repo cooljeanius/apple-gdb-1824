@@ -1395,7 +1395,7 @@ parser_fprintf (FILE *x, const char *y, ...)
    properly handled in value_check_printable.  */
 
 static void
-fix_references_to_optimized_out_variables (void)
+fix_references_to_optimized_out_variables(void)
 {
   int i;
 
@@ -1411,15 +1411,15 @@ fix_references_to_optimized_out_variables (void)
 
   if ((expout->elts[0].opcode == OP_VAR_VALUE)
       && expout->elts[2].symbol
-      && (SYMBOL_CLASS (expout->elts[2].symbol) == LOC_OPTIMIZED_OUT))
+      && (SYMBOL_CLASS(expout->elts[2].symbol) == LOC_OPTIMIZED_OUT))
     {
-      /* We found one.  Blank out the rest of the vector.  */
+      /* We found one.  Blank out the rest of the vector: */
       for (i = 4; i <= expout_ptr; i++)
-	memset (&(expout->elts[i]), 0, sizeof (union exp_element));
+	memset(&(expout->elts[i]), 0, sizeof(union exp_element));
       expout->nelts = 4;
       expout_ptr = 4;
-      parser_fprintf (stderr, "Unable to access variable \"%s\"\n",
-		      SYMBOL_LINKAGE_NAME (expout->elts[2].symbol));
+      parser_fprintf(stderr, "Unable to access variable \"%s\"\n",
+		     SYMBOL_LINKAGE_NAME(expout->elts[2].symbol));
     }
 }
 /* APPLE LOCAL end - Fix references to variables the compiler
@@ -1435,7 +1435,7 @@ _initialize_parse (void)
 
   build_parse ();
 
-  /* FIXME - For the moment, handle types by swapping them in and out.
+  /* FIXME: For the moment, handle types by swapping them in and out.
      Should be using the per-architecture data-pointer and a large
      struct. */
   DEPRECATED_REGISTER_GDBARCH_SWAP (msym_text_symbol_type);

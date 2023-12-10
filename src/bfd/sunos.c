@@ -1459,18 +1459,18 @@ sunos_scan_ext_relocs (struct bfd_link_info *info,
       /* Swap in the reloc information: */
       if (bfd_header_big_endian(abfd))
 	{
-	  r_index = ((rel->r_index[0] << 16)
-		     | (rel->r_index[1] << 8)
-		     | rel->r_index[2]);
+	  r_index = (unsigned int)((rel->r_index[0] << 16U)
+                                   | (rel->r_index[1] << 8U)
+                                   | rel->r_index[2]);
 	  r_extern = (0 != (rel->r_type[0] & RELOC_EXT_BITS_EXTERN_BIG));
 	  r_type = ((rel->r_type[0] & RELOC_EXT_BITS_TYPE_BIG)
 		    >> RELOC_EXT_BITS_TYPE_SH_BIG);
 	}
       else
 	{
-	  r_index = ((rel->r_index[2] << 16)
-		     | (rel->r_index[1] << 8)
-		     | rel->r_index[0]);
+	  r_index = (unsigned int)((rel->r_index[2] << 16U)
+                                   | (rel->r_index[1] << 8U)
+                                   | rel->r_index[0]);
 	  r_extern = (0 != (rel->r_type[0] & RELOC_EXT_BITS_EXTERN_LITTLE));
 	  r_type = ((rel->r_type[0] & RELOC_EXT_BITS_TYPE_LITTLE)
 		    >> RELOC_EXT_BITS_TYPE_SH_LITTLE);
@@ -1755,13 +1755,13 @@ sunos_scan_relocs (struct bfd_link_info *info,
     }
 
   if (free_relocs != NULL)
-    free (free_relocs);
+    free(free_relocs);
 
   return TRUE;
 
  error_return:
   if (free_relocs != NULL)
-    free (free_relocs);
+    free(free_relocs);
   return FALSE;
 }
 
@@ -1769,12 +1769,12 @@ sunos_scan_relocs (struct bfd_link_info *info,
    symbols from dynamic objects which we do not plan to write out.  */
 
 static bfd_boolean
-sunos_scan_dynamic_symbol (struct sunos_link_hash_entry *h, void * data)
+sunos_scan_dynamic_symbol(struct sunos_link_hash_entry *h, void * data)
 {
-  struct bfd_link_info *info = (struct bfd_link_info *) data;
+  struct bfd_link_info *info = (struct bfd_link_info *)data;
 
   if (h->root.root.type == bfd_link_hash_warning)
-    h = (struct sunos_link_hash_entry *) h->root.root.u.i.link;
+    h = (struct sunos_link_hash_entry *)h->root.root.u.i.link;
 
   /* Set the written flag for symbols we do not want to write out as
      part of the regular symbol table.  This is all symbols which are
@@ -1785,9 +1785,9 @@ sunos_scan_dynamic_symbol (struct sunos_link_hash_entry *h, void * data)
      is an undefined symbol which was turned into a common symbol
      because it was found in an archive object which was not included
      in the link.  */
-  if ((h->flags & SUNOS_DEF_REGULAR) == 0
-      && (h->flags & SUNOS_DEF_DYNAMIC) != 0
-      && strcmp (h->root.root.root.string, "__DYNAMIC") != 0)
+  if (((h->flags & SUNOS_DEF_REGULAR) == 0)
+      && ((h->flags & SUNOS_DEF_DYNAMIC) != 0)
+      && (strcmp(h->root.root.root.string, "__DYNAMIC") != 0))
     h->root.written = TRUE;
 
   /* If this symbol is defined by a dynamic object and referenced by a
@@ -1830,7 +1830,7 @@ sunos_scan_dynamic_symbol (struct sunos_link_hash_entry *h, void * data)
 
       dynobj = sunos_hash_table(info)->dynobj;
 
-      h->dynindx = sunos_hash_table(info)->dynsymcount;
+      h->dynindx = (long)sunos_hash_table(info)->dynsymcount;
       ++sunos_hash_table(info)->dynsymcount;
 
       len = strlen(h->root.root.root.string);
@@ -1848,7 +1848,7 @@ sunos_scan_dynamic_symbol (struct sunos_link_hash_entry *h, void * data)
 	return FALSE;
       s->contents = contents;
 
-      h->dynstr_index = s->size;
+      h->dynstr_index = (long)s->size;
       strcpy((char *)contents + s->size, h->root.root.root.string);
       s->size += len + 1;
 
@@ -1894,11 +1894,11 @@ sunos_scan_dynamic_symbol (struct sunos_link_hash_entry *h, void * data)
    we discard them, and will read them again later.  */
 
 bfd_boolean
-bfd_sunos_size_dynamic_sections (bfd *output_bfd,
-				 struct bfd_link_info *info,
-				 asection **sdynptr,
-				 asection **sneedptr,
-				 asection **srulesptr)
+bfd_sunos_size_dynamic_sections(bfd *output_bfd,
+                                struct bfd_link_info *info,
+                                asection **sdynptr,
+                                asection **sneedptr,
+                                asection **srulesptr)
 {
   bfd *dynobj;
   bfd_size_type dynsymcount;
@@ -2713,10 +2713,9 @@ sunos_check_dynamic_reloc (struct bfd_link_info *info,
   return TRUE;
 }
 
-/* Finish up the dynamic linking information.  */
-
+/* Finish up the dynamic linking information: */
 static bfd_boolean
-sunos_finish_dynamic_link (bfd *abfd, struct bfd_link_info *info)
+sunos_finish_dynamic_link(bfd *abfd, struct bfd_link_info *info)
 {
   bfd *dynobj;
   asection *o;
@@ -2742,7 +2741,7 @@ sunos_finish_dynamic_link (bfd *abfd, struct bfd_link_info *info)
       file_ptr filepos;
       bfd_byte *p;
 
-      filepos = (file_ptr)(s->output_section->filepos + s->output_offset);
+      filepos = (s->output_section->filepos + (file_ptr)s->output_offset);
       p = s->contents;
       while (1)
 	{
@@ -2789,88 +2788,86 @@ sunos_finish_dynamic_link (bfd *abfd, struct bfd_link_info *info)
       file_ptr pos;
 
       /* Finish up the dynamic link information.  */
-      PUT_WORD (dynobj, (bfd_vma) 3, esd.ld_version);
-      PUT_WORD (dynobj,
-		sdyn->output_section->vma + sdyn->output_offset + sizeof esd,
-		esd.ldd);
-      PUT_WORD (dynobj,
-		(sdyn->output_section->vma
-		 + sdyn->output_offset
-		 + sizeof esd
-		 + EXTERNAL_SUN4_DYNAMIC_DEBUGGER_SIZE),
-		esd.ld);
+      PUT_WORD(dynobj, (bfd_vma)3UL, esd.ld_version);
+      PUT_WORD(dynobj,
+               sdyn->output_section->vma + sdyn->output_offset + sizeof(esd),
+               esd.ldd);
+      PUT_WORD(dynobj,
+               (sdyn->output_section->vma + sdyn->output_offset
+                + sizeof(esd) + EXTERNAL_SUN4_DYNAMIC_DEBUGGER_SIZE),
+               esd.ld);
 
-      if (! bfd_set_section_contents (abfd, sdyn->output_section, &esd,
-				      (file_ptr) sdyn->output_offset,
-				      (bfd_size_type) sizeof esd))
+      if (! bfd_set_section_contents(abfd, sdyn->output_section, &esd,
+				     (file_ptr)sdyn->output_offset,
+				     (bfd_size_type)sizeof(esd)))
 	return FALSE;
 
-      PUT_WORD (dynobj, (bfd_vma) 0, esdl.ld_loaded);
+      PUT_WORD(dynobj, (bfd_vma)0UL, esdl.ld_loaded);
 
-      s = bfd_get_section_by_name (dynobj, ".need");
-      if (s == NULL || s->size == 0)
-	PUT_WORD (dynobj, (bfd_vma) 0, esdl.ld_need);
+      s = bfd_get_section_by_name(dynobj, ".need");
+      if ((s == NULL) || (s->size == 0))
+	PUT_WORD(dynobj, (bfd_vma)0UL, esdl.ld_need);
       else
-	PUT_WORD (dynobj, s->output_section->filepos + s->output_offset,
-		  esdl.ld_need);
+	PUT_WORD(dynobj, (s->output_section->filepos + s->output_offset),
+		 esdl.ld_need);
 
-      s = bfd_get_section_by_name (dynobj, ".rules");
-      if (s == NULL || s->size == 0)
-	PUT_WORD (dynobj, (bfd_vma) 0, esdl.ld_rules);
+      s = bfd_get_section_by_name(dynobj, ".rules");
+      if ((s == NULL) || (s->size == 0))
+	PUT_WORD(dynobj, (bfd_vma)0UL, esdl.ld_rules);
       else
-	PUT_WORD (dynobj, s->output_section->filepos + s->output_offset,
-		  esdl.ld_rules);
+	PUT_WORD(dynobj, (s->output_section->filepos + s->output_offset),
+		 esdl.ld_rules);
 
-      s = bfd_get_section_by_name (dynobj, ".got");
-      BFD_ASSERT (s != NULL);
-      PUT_WORD (dynobj, s->output_section->vma + s->output_offset,
-		esdl.ld_got);
+      s = bfd_get_section_by_name(dynobj, ".got");
+      BFD_ASSERT(s != NULL);
+      PUT_WORD(dynobj, (s->output_section->vma + s->output_offset),
+               esdl.ld_got);
 
-      s = bfd_get_section_by_name (dynobj, ".plt");
-      BFD_ASSERT (s != NULL);
-      PUT_WORD (dynobj, s->output_section->vma + s->output_offset,
-		esdl.ld_plt);
-      PUT_WORD (dynobj, s->size, esdl.ld_plt_sz);
+      s = bfd_get_section_by_name(dynobj, ".plt");
+      BFD_ASSERT(s != NULL);
+      PUT_WORD(dynobj, (s->output_section->vma + s->output_offset),
+               esdl.ld_plt);
+      PUT_WORD(dynobj, s->size, esdl.ld_plt_sz);
 
-      s = bfd_get_section_by_name (dynobj, ".dynrel");
-      BFD_ASSERT (s != NULL);
-      BFD_ASSERT (s->reloc_count * obj_reloc_entry_size (dynobj)
-		  == s->size);
-      PUT_WORD (dynobj, s->output_section->filepos + s->output_offset,
-		esdl.ld_rel);
+      s = bfd_get_section_by_name(dynobj, ".dynrel");
+      BFD_ASSERT(s != NULL);
+      BFD_ASSERT((s->reloc_count * obj_reloc_entry_size(dynobj))
+                 == s->size);
+      PUT_WORD(dynobj, (s->output_section->filepos + s->output_offset),
+               esdl.ld_rel);
 
-      s = bfd_get_section_by_name (dynobj, ".hash");
-      BFD_ASSERT (s != NULL);
-      PUT_WORD (dynobj, s->output_section->filepos + s->output_offset,
-		esdl.ld_hash);
+      s = bfd_get_section_by_name(dynobj, ".hash");
+      BFD_ASSERT(s != NULL);
+      PUT_WORD(dynobj, (s->output_section->filepos + s->output_offset),
+               esdl.ld_hash);
 
-      s = bfd_get_section_by_name (dynobj, ".dynsym");
-      BFD_ASSERT (s != NULL);
-      PUT_WORD (dynobj, s->output_section->filepos + s->output_offset,
-		esdl.ld_stab);
+      s = bfd_get_section_by_name(dynobj, ".dynsym");
+      BFD_ASSERT(s != NULL);
+      PUT_WORD(dynobj, (s->output_section->filepos + s->output_offset),
+               esdl.ld_stab);
 
-      PUT_WORD (dynobj, (bfd_vma) 0, esdl.ld_stab_hash);
+      PUT_WORD(dynobj, (bfd_vma)0UL, esdl.ld_stab_hash);
 
-      PUT_WORD (dynobj, (bfd_vma) sunos_hash_table (info)->bucketcount,
-		esdl.ld_buckets);
+      PUT_WORD(dynobj, (bfd_vma)sunos_hash_table(info)->bucketcount,
+               esdl.ld_buckets);
 
-      s = bfd_get_section_by_name (dynobj, ".dynstr");
-      BFD_ASSERT (s != NULL);
-      PUT_WORD (dynobj, s->output_section->filepos + s->output_offset,
-		esdl.ld_symbols);
-      PUT_WORD (dynobj, s->size, esdl.ld_symb_size);
+      s = bfd_get_section_by_name(dynobj, ".dynstr");
+      BFD_ASSERT(s != NULL);
+      PUT_WORD(dynobj, (s->output_section->filepos + s->output_offset),
+               esdl.ld_symbols);
+      PUT_WORD(dynobj, s->size, esdl.ld_symb_size);
 
       /* The size of the text area is the size of the .text section
 	 rounded up to a page boundary.  FIXME: Should the page size be
 	 conditional on something?  */
-      PUT_WORD (dynobj,
-		BFD_ALIGN (obj_textsec (abfd)->size, 0x2000),
-		esdl.ld_text);
+      PUT_WORD(dynobj,
+               BFD_ALIGN(obj_textsec(abfd)->size, 0x2000),
+               esdl.ld_text);
 
-      pos = sdyn->output_offset;
-      pos += sizeof esd + EXTERNAL_SUN4_DYNAMIC_DEBUGGER_SIZE;
-      if (! bfd_set_section_contents (abfd, sdyn->output_section, &esdl,
-				      pos, (bfd_size_type) sizeof esdl))
+      pos = (file_ptr)sdyn->output_offset;
+      pos += (sizeof(esd) + EXTERNAL_SUN4_DYNAMIC_DEBUGGER_SIZE);
+      if (! bfd_set_section_contents(abfd, sdyn->output_section, &esdl,
+                                     pos, (bfd_size_type)sizeof(esdl)))
 	return FALSE;
 
       abfd->flags |= DYNAMIC;
@@ -2878,3 +2875,5 @@ sunos_finish_dynamic_link (bfd *abfd, struct bfd_link_info *info)
 
   return TRUE;
 }
+
+/* EOF */

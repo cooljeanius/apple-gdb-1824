@@ -2447,7 +2447,7 @@ do_without_relocs (bfd *abfd, asection *s)
 	      return TRUE;
 	    }
 	}
-      if (! do_as_repeat (abfd, s))
+      if (! do_as_repeat(abfd, s))
 	return FALSE;
     }
 
@@ -2455,19 +2455,19 @@ do_without_relocs (bfd *abfd, asection *s)
 }
 
 static void
-fill (void)
+fill(void)
 {
-  bfd_size_type amt = input_ptr_end - input_ptr_start;
-  /* FIXME: Check return value.  I'm not sure whether it needs to read
+  bfd_size_type amt = (bfd_size_type)(input_ptr_end - input_ptr_start);
+  /* FIXME: Check return value.  I am not sure whether it needs to read
      the entire buffer or not.  */
-  bfd_bread ((void *) input_ptr_start, amt, input_bfd);
+  bfd_bread((void *)input_ptr_start, amt, input_bfd);
   input_ptr = input_ptr_start;
 }
 
 static void
 flush(void)
 {
-  bfd_size_type amt = output_ptr - output_ptr_start;
+  bfd_size_type amt = (bfd_size_type)(output_ptr - output_ptr_start);
 
   if (bfd_bwrite((void *)(output_ptr_start), amt, output_bfd) != amt)
     abort();
@@ -2477,7 +2477,7 @@ flush(void)
 
 #define THIS() (*input_ptr)
 #define NEXT() { input_ptr++; if (input_ptr == input_ptr_end) fill(); }
-#define OUT(x) { *output_ptr++ = (x); if (output_ptr == output_ptr_end)  flush(); }
+#define OUT(x) { *output_ptr++ = (__typeof__(*output_ptr))(x); if (output_ptr == output_ptr_end) flush(); }
 
 static void
 write_int(int value)
@@ -2490,9 +2490,9 @@ write_int(int value)
     {
       unsigned int length;
 
-      /* How many significant bytes ?  */
+      /* How many significant bytes?  */
       /* FIXME FOR LONGER INTS.  */
-      if (value & 0xff000000)
+      if ((unsigned int)value & 0xff000000)
 	length = 4;
       else if (value & 0x00ff0000)
 	length = 3;
@@ -2528,7 +2528,7 @@ copy_id(void)
   NEXT();
   while (length--)
     {
-      ch = THIS();
+      ch = (char)THIS();
       OUT(ch);
       NEXT();
     }
@@ -2544,36 +2544,36 @@ copy_expression(void)
 
   while (1)
     {
-      switch (THIS ())
+      switch (THIS())
 	{
 	case 0x84:
-	  NEXT ();
-	  value = THIS ();
-	  NEXT ();
-	  value = (value << 8) | THIS ();
-	  NEXT ();
-	  value = (value << 8) | THIS ();
-	  NEXT ();
-	  value = (value << 8) | THIS ();
-	  NEXT ();
+	  NEXT();
+	  value = THIS();
+	  NEXT();
+	  value = ((value << 8) | THIS());
+	  NEXT();
+	  value = ((value << 8) | THIS());
+	  NEXT();
+	  value = ((value << 8) | THIS());
+	  NEXT();
 	  *tos++ = value;
 	  break;
 	case 0x83:
-	  NEXT ();
-	  value = THIS ();
-	  NEXT ();
-	  value = (value << 8) | THIS ();
-	  NEXT ();
-	  value = (value << 8) | THIS ();
-	  NEXT ();
+	  NEXT();
+	  value = THIS();
+	  NEXT();
+	  value = ((value << 8) | THIS());
+	  NEXT();
+	  value = ((value << 8) | THIS());
+	  NEXT();
 	  *tos++ = value;
 	  break;
 	case 0x82:
-	  NEXT ();
-	  value = THIS ();
-	  NEXT ();
-	  value = (value << 8) | THIS ();
-	  NEXT ();
+	  NEXT();
+	  value = THIS();
+	  NEXT();
+	  value = ((value << 8) | THIS());
+	  NEXT();
 	  *tos++ = value;
 	  break;
 	case 0x81:
@@ -2640,8 +2640,8 @@ fill_int(struct output_buffer_struct *buf)
 {
   if (buf->buffer == output_buffer)
     {
-      /* Still a chance to output the size.  */
-      int value = (output_ptr - buf->ptrp + 3);
+      /* Still a chance to output the size: */
+      ptrdiff_t value = (output_ptr - buf->ptrp + 3);
       buf->ptrp[0] = (value >> 24U);
       buf->ptrp[1] = (value >> 16U);
       buf->ptrp[2] = (value >> 8U);

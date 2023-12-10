@@ -92,39 +92,39 @@ coff_mips_reloc (bfd *abfd,
     if (diff != 0)
       {
 	reloc_howto_type *howto = reloc_entry->howto;
-	unsigned char *addr = (unsigned char *) data + reloc_entry->address;
+	unsigned char *addr = (unsigned char *)data + reloc_entry->address;
 
 	switch (howto->size)
 	  {
 	  case 0:
 	    {
-	      char x = bfd_get_8 (abfd, addr);
+	      char x = bfd_get_8(abfd, addr);
 
-	      DOIT (x);
-	      bfd_put_8 (abfd, x, addr);
+	      DOIT(x);
+	      bfd_put_8(abfd, x, addr);
 	    }
 	    break;
 
 	  case 1:
 	    {
-	      short x = bfd_get_16 (abfd, addr);
+	      short x = bfd_get_16(abfd, addr);
 
-	      DOIT (x);
-	      bfd_put_16 (abfd, (bfd_vma) x, addr);
+	      DOIT(x);
+	      bfd_put_16(abfd, (bfd_vma)x, addr);
 	    }
 	    break;
 
 	  case 2:
 	    {
-	      long x = bfd_get_32 (abfd, addr);
+	      long x = bfd_get_32(abfd, addr);
 
-	      DOIT (x);
-	      bfd_put_32 (abfd, (bfd_vma) x, addr);
+	      DOIT(x);
+	      bfd_put_32(abfd, (bfd_vma)x, addr);
 	    }
 	    break;
 
 	  default:
-	    abort ();
+	    abort();
 	  }
       }
 

@@ -853,7 +853,7 @@ adjust_o_magic(bfd *abfd, struct internal_exec *execp)
     {
       obj_textsec(abfd)->size += pad;
       pos += pad;
-      vma += pad;
+      vma += (bfd_vma)pad;
       obj_datasec(abfd)->vma = vma;
     }
   else
@@ -867,7 +867,7 @@ adjust_o_magic(bfd *abfd, struct internal_exec *execp)
     {
       obj_datasec(abfd)->size += pad;
       pos += pad;
-      vma += pad;
+      vma += (bfd_vma)pad;
       obj_bsssec(abfd)->vma = vma;
     }
   else
@@ -905,7 +905,7 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
   /* Text: */
   ztih = (abdp != NULL
 	  && (abdp->text_includes_header
-	      || obj_aout_subformat (abfd) == q_magic_format));
+	      || obj_aout_subformat(abfd) == q_magic_format));
   obj_textsec(abfd)->filepos = (ztih
 				? adata(abfd).exec_bytes_size
 				: adata(abfd).zmagic_disk_block_size);
@@ -933,8 +933,8 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
          may need to pad it such that the .data section starts at a page
          boundary.  */
       if (ztih)
-	text_pad = ((obj_textsec (abfd)->filepos - obj_textsec (abfd)->vma)
-		    & (adata (abfd).page_size - 1));
+	text_pad = ((obj_textsec(abfd)->filepos - obj_textsec(abfd)->vma)
+		    & (adata(abfd).page_size - 1));
       else
 	text_pad = ((0 - obj_textsec(abfd)->vma)
 		    & (adata(abfd).page_size - 1));
@@ -957,7 +957,7 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
     }
 
   obj_textsec(abfd)->size += text_pad;
-  text_end += text_pad;
+  text_end += (file_ptr)text_pad;
 
   /* Data: */
   if (!obj_datasec(abfd)->user_set_vma)
@@ -980,18 +980,18 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
   execp->a_text = obj_textsec(abfd)->size;
   if (ztih && (!abdp || (abdp && !abdp->exec_header_not_counted)))
     execp->a_text += adata(abfd).exec_bytes_size;
-  if (obj_aout_subformat (abfd) == q_magic_format)
-    N_SET_MAGIC (*execp, QMAGIC);
+  if (obj_aout_subformat(abfd) == q_magic_format)
+    N_SET_MAGIC(*execp, QMAGIC);
   else
-    N_SET_MAGIC (*execp, ZMAGIC);
+    N_SET_MAGIC(*execp, ZMAGIC);
 
   /* Spec says data section should be rounded up to page boundary.  */
   obj_datasec(abfd)->size
     = align_power (obj_datasec(abfd)->size,
 		   obj_bsssec(abfd)->alignment_power);
-  execp->a_data = BFD_ALIGN (obj_datasec(abfd)->size,
-			     adata(abfd).page_size);
-  data_pad = execp->a_data - obj_datasec(abfd)->size;
+  execp->a_data = BFD_ALIGN(obj_datasec(abfd)->size,
+			    adata(abfd).page_size);
+  data_pad = (execp->a_data - obj_datasec(abfd)->size);
 
   /* BSS.  */
   if (!obj_bsssec(abfd)->user_set_vma)
@@ -1004,12 +1004,14 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
      (Note that a linker script, as well as the above assignment,
      could have explicitly set the BSS vma to immediately follow
      the data section.)  */
-  if (align_power (obj_bsssec(abfd)->vma, obj_bsssec(abfd)->alignment_power)
-      == obj_datasec(abfd)->vma + obj_datasec(abfd)->size)
-    execp->a_bss = (data_pad > obj_bsssec(abfd)->size) ? 0 :
-      obj_bsssec(abfd)->size - data_pad;
+  if (align_power(obj_bsssec(abfd)->vma, obj_bsssec(abfd)->alignment_power)
+      == (obj_datasec(abfd)->vma + obj_datasec(abfd)->size))
+    execp->a_bss =
+      ((data_pad > obj_bsssec(abfd)->size)
+       ? 0 : (obj_bsssec(abfd)->size - data_pad));
   else
     execp->a_bss = obj_bsssec(abfd)->size;
+  (void)text_end;
 }
 
 static void

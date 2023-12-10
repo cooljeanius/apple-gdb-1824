@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-09 17:33-0500\n"
+"POT-Creation-Date: 2023-12-09 19:20-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,22 +34,22 @@ msgstr ""
 msgid "%B: Bad relocation record imported: %d"
 msgstr ""
 
-#: aoutx.h:1291 aoutx.h:1624
+#: aoutx.h:1292 aoutx.h:1625
 #, c-format
 msgid "%s: can not represent section `%s' in a.out object file format"
 msgstr ""
 
-#: aoutx.h:1590
+#: aoutx.h:1591
 #, c-format
 msgid ""
 "%s: can not represent section for symbol `%s' in a.out object file format"
 msgstr ""
 
-#: aoutx.h:1592 vms-alpha.c:7564
+#: aoutx.h:1593 vms-alpha.c:7564
 msgid "*unknown*"
 msgstr ""
 
-#: aoutx.h:5313
+#: aoutx.h:5314
 #, c-format
 msgid "%s: relocatable link from %s to %s not supported"
 msgstr ""
@@ -256,105 +256,105 @@ msgid ""
 "  consider relinking with --support-old-code enabled"
 msgstr ""
 
-#: coff-arm.c:1681 coff-tic80.c:678 cofflink.c:3035
+#: coff-arm.c:1684 coff-tic80.c:678 cofflink.c:3035
 msgid "%B: bad reloc address 0x%lx in section `%A'"
 msgstr ""
 
-#: coff-arm.c:2007
+#: coff-arm.c:2011
 msgid "%B: illegal symbol index in reloc: %d"
 msgstr ""
 
-#: coff-arm.c:2144
+#: coff-arm.c:2148
 #, c-format
 msgid "ERROR: %B is compiled for APCS-%d, whereas %B is compiled for APCS-%d"
 msgstr ""
 
-#: coff-arm.c:2160 elf32-arm.c:4479
+#: coff-arm.c:2164 elf32-arm.c:4479
 #, c-format
 msgid ""
 "ERROR: %B passes floats in float registers, whereas %B passes them in "
 "integer registers"
 msgstr ""
 
-#: coff-arm.c:2163 elf32-arm.c:4483
+#: coff-arm.c:2167 elf32-arm.c:4483
 #, c-format
 msgid ""
 "ERROR: %B passes floats in integer registers, whereas %B passes them in "
 "float registers"
 msgstr ""
 
-#: coff-arm.c:2177
+#: coff-arm.c:2181
 #, c-format
 msgid ""
 "ERROR: %B is compiled as position independent code, whereas target %B is "
 "absolute position"
 msgstr ""
 
-#: coff-arm.c:2180
+#: coff-arm.c:2184
 #, c-format
 msgid ""
 "ERROR: %B is compiled as absolute position code, whereas target %B is "
 "position independent"
 msgstr ""
 
-#: coff-arm.c:2208 elf32-arm.c:4548
+#: coff-arm.c:2212 elf32-arm.c:4548
 #, c-format
 msgid "Warning: %B supports interworking, whereas %B does not"
 msgstr ""
 
-#: coff-arm.c:2211 elf32-arm.c:4554
+#: coff-arm.c:2215 elf32-arm.c:4554
 #, c-format
 msgid "Warning: %B does not support interworking, whereas %B does"
 msgstr ""
 
-#: coff-arm.c:2234
+#: coff-arm.c:2238
 #, c-format
 msgid "private flags = %x:"
 msgstr ""
 
-#: coff-arm.c:2242 elf32-arm.c:4605
+#: coff-arm.c:2246 elf32-arm.c:4605
 #, c-format
 msgid " [floats passed in float registers]"
 msgstr ""
 
-#: coff-arm.c:2244
+#: coff-arm.c:2248
 #, c-format
 msgid " [floats passed in integer registers]"
 msgstr ""
 
-#: coff-arm.c:2247 elf32-arm.c:4608
+#: coff-arm.c:2251 elf32-arm.c:4608
 #, c-format
 msgid " [position independent]"
 msgstr ""
 
-#: coff-arm.c:2249
+#: coff-arm.c:2253
 #, c-format
 msgid " [absolute position]"
 msgstr ""
 
-#: coff-arm.c:2253
+#: coff-arm.c:2257
 #, c-format
 msgid " [interworking flag not initialised]"
 msgstr ""
 
-#: coff-arm.c:2255
+#: coff-arm.c:2259
 #, c-format
 msgid " [interworking supported]"
 msgstr ""
 
-#: coff-arm.c:2257
+#: coff-arm.c:2261
 #, c-format
 msgid " [interworking not supported]"
 msgstr ""
 
-#: coff-arm.c:2302 elf32-arm.c:4286
+#: coff-arm.c:2306 elf32-arm.c:4286
 #, c-format
 msgid ""
 "Warning: Not setting interworking flag of %B since it has already been "
 "specified as non-interworking"
 msgstr ""
 
-#: coff-arm.c:2306 elf32-arm.c:4290
+#: coff-arm.c:2310 elf32-arm.c:4290
 #, c-format
 msgid "Warning: Clearing the interworking flag of %B due to outside request"
 msgstr ""

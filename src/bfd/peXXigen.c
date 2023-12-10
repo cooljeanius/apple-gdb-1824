@@ -372,7 +372,7 @@ _bfd_XXi_swap_aux_out(bfd *abfd, void *inp, int type, int theclass,
 void
 _bfd_XXi_swap_lineno_in(bfd *abfd, void *ext1, void *in1)
 {
-  LINENO *ext = (LINENO *) ext1;
+  LINENO *ext = (LINENO *)ext1;
   struct internal_lineno *in = (struct internal_lineno *)in1;
 
   in->l_addr.l_symndx = H_GET_32(abfd, ext->l_addr.l_symndx);
@@ -413,33 +413,33 @@ _bfd_XXi_swap_aouthdr_in(bfd *abfd, void *aouthdr_ext1, void *aouthdr_int1)
 #endif /* !COFF_WITH_pep */
 
   a = &aouthdr_int->pe;
-  a->ImageBase = GET_OPTHDR_IMAGE_BASE (abfd, src->ImageBase);
-  a->SectionAlignment = H_GET_32 (abfd, src->SectionAlignment);
-  a->FileAlignment = H_GET_32 (abfd, src->FileAlignment);
+  a->ImageBase = GET_OPTHDR_IMAGE_BASE(abfd, src->ImageBase);
+  a->SectionAlignment = H_GET_32(abfd, src->SectionAlignment);
+  a->FileAlignment = H_GET_32(abfd, src->FileAlignment);
   a->MajorOperatingSystemVersion =
-    H_GET_16 (abfd, src->MajorOperatingSystemVersion);
+    H_GET_16(abfd, src->MajorOperatingSystemVersion);
   a->MinorOperatingSystemVersion =
-    H_GET_16 (abfd, src->MinorOperatingSystemVersion);
-  a->MajorImageVersion = H_GET_16 (abfd, src->MajorImageVersion);
-  a->MinorImageVersion = H_GET_16 (abfd, src->MinorImageVersion);
-  a->MajorSubsystemVersion = H_GET_16 (abfd, src->MajorSubsystemVersion);
-  a->MinorSubsystemVersion = H_GET_16 (abfd, src->MinorSubsystemVersion);
-  a->Reserved1 = H_GET_32 (abfd, src->Reserved1);
-  a->SizeOfImage = H_GET_32 (abfd, src->SizeOfImage);
-  a->SizeOfHeaders = H_GET_32 (abfd, src->SizeOfHeaders);
-  a->CheckSum = H_GET_32 (abfd, src->CheckSum);
-  a->Subsystem = H_GET_16 (abfd, src->Subsystem);
-  a->DllCharacteristics = H_GET_16 (abfd, src->DllCharacteristics);
+    H_GET_16(abfd, src->MinorOperatingSystemVersion);
+  a->MajorImageVersion = H_GET_16(abfd, src->MajorImageVersion);
+  a->MinorImageVersion = H_GET_16(abfd, src->MinorImageVersion);
+  a->MajorSubsystemVersion = H_GET_16(abfd, src->MajorSubsystemVersion);
+  a->MinorSubsystemVersion = H_GET_16(abfd, src->MinorSubsystemVersion);
+  a->Reserved1 = H_GET_32(abfd, src->Reserved1);
+  a->SizeOfImage = H_GET_32(abfd, src->SizeOfImage);
+  a->SizeOfHeaders = H_GET_32(abfd, src->SizeOfHeaders);
+  a->CheckSum = H_GET_32(abfd, src->CheckSum);
+  a->Subsystem = H_GET_16(abfd, src->Subsystem);
+  a->DllCharacteristics = H_GET_16(abfd, src->DllCharacteristics);
   a->SizeOfStackReserve =
-    GET_OPTHDR_SIZE_OF_STACK_RESERVE (abfd, src->SizeOfStackReserve);
+    GET_OPTHDR_SIZE_OF_STACK_RESERVE(abfd, src->SizeOfStackReserve);
   a->SizeOfStackCommit =
-    GET_OPTHDR_SIZE_OF_STACK_COMMIT (abfd, src->SizeOfStackCommit);
+    GET_OPTHDR_SIZE_OF_STACK_COMMIT(abfd, src->SizeOfStackCommit);
   a->SizeOfHeapReserve =
-    GET_OPTHDR_SIZE_OF_HEAP_RESERVE (abfd, src->SizeOfHeapReserve);
+    GET_OPTHDR_SIZE_OF_HEAP_RESERVE(abfd, src->SizeOfHeapReserve);
   a->SizeOfHeapCommit =
-    GET_OPTHDR_SIZE_OF_HEAP_COMMIT (abfd, src->SizeOfHeapCommit);
-  a->LoaderFlags = H_GET_32 (abfd, src->LoaderFlags);
-  a->NumberOfRvaAndSizes = H_GET_32 (abfd, src->NumberOfRvaAndSizes);
+    GET_OPTHDR_SIZE_OF_HEAP_COMMIT(abfd, src->SizeOfHeapCommit);
+  a->LoaderFlags = H_GET_32(abfd, src->LoaderFlags);
+  a->NumberOfRvaAndSizes = H_GET_32(abfd, src->NumberOfRvaAndSizes);
 
   {
     int idx;

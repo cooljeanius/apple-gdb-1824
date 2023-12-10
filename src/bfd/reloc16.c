@@ -191,30 +191,32 @@ bfd_coff_reloc16_relax_section(bfd *abfd, asection *input_section,
 
       /* Loop until nothing changes in this section: */
       do {
-	  arelent **parent;
-	  unsigned int i;
-	  long j;
+        arelent **parent;
+        unsigned int i;
+        long j;
 
-	  another_pass = 0;
+        another_pass = 0;
 
-	  for (i = 0, parent = reloc_vector; (parent != NULL) && *parent;
-	       parent++, i++)
-	    {
-              /* Let the target/machine dependent code examine each reloc
-               * in this section and attempt to shrink it: */
-	      shrink = bfd_coff_reloc16_estimate(abfd, input_section, *parent,
-                                                 shrinks[i], link_info);
+        for (i = 0, parent = reloc_vector; (parent != NULL) && *parent;
+             parent++, i++)
+          {
+            /* Let the target/machine dependent code examine each reloc
+             * in this section and attempt to shrink it: */
+            shrink =
+              ((unsigned int)
+               bfd_coff_reloc16_estimate(abfd, input_section, *parent,
+                                         shrinks[i], link_info));
 
-	      /* If it shrunk, then note it in the shrinks array, and set
-               * up for another pass: */
-	      if (shrink != shrinks[i])
-		{
-		  another_pass = 1;
-		  for (j = (i + 1); j <= reloc_count; j++) {
-		    shrinks[j] += (shrink - shrinks[i]);
-                  }
-		}
-	    }
+            /* If it shrunk, then note it in the shrinks array, and set
+             * up for another pass: */
+            if (shrink != shrinks[i])
+              {
+                another_pass = 1;
+                for (j = (i + 1); j <= reloc_count; j++) {
+                  shrinks[j] += (shrink - shrinks[i]);
+                }
+              }
+          }
       } while (another_pass);
 
       shrink = shrinks[reloc_count];
