@@ -2174,8 +2174,11 @@ void update_macsbug_prompt(void)
     char *p, set_prompt_cmd[1024], prompt[1024];
 
     if (!doing_set_prompt && macsbug_screen) {
-	//prompt_start = sprintf(prompt, GOTO CLEAR_LINE, cmd_top, cmd_left);
-	prompt_start = sprintf(prompt, GOTO, cmd_top, cmd_left);
+#if 0
+	prompt_start = sprintf(prompt, GOTO CLEAR_LINE, cmd_top, cmd_left);
+#endif /* 0 */
+	prompt_start = snprintf(prompt, sizeof(set_prompt_cmd), GOTO, cmd_top,
+				cmd_left);
 	gdb_get_prompt(prompt + prompt_start);
 	sprintf(set_prompt_cmd, "set prompt %s", prompt);
 	doing_set_prompt = 1;

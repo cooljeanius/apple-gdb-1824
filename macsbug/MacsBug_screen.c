@@ -91,7 +91,7 @@ static FILE *screen_stdout = NULL;		/* private stdout with a large buffer	*/
  xterm control sequences thrown at it.
 */
 
-static void write_char(c)
+static void write_char(int c)
 {
     if (cursor_x > row_len[cursor_y-1])
 	row_len[cursor_y-1] = cursor_x;

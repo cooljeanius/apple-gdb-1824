@@ -147,7 +147,7 @@ mi_cmd_var_create(char *command, char **argv, int argc)
 
 	  if (colon)
 	    {
-	      struct symtabs_and_lines sals = { NULL, 0, 0 };
+	      volatile struct symtabs_and_lines sals = { NULL, 0, 0 };
 	      struct cleanup *old_chain = NULL;
 
 	      TRY_CATCH(except, RETURN_MASK_ALL)

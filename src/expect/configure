@@ -10004,6 +10004,9 @@ fi
 #
 # Look for functions that may be missing
 #
+if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
+  export ac_cv_func_chown_works=yes
+fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for uid_t in sys/types.h" >&5
 printf %s "checking for uid_t in sys/types.h... " >&6; }
 if test ${ac_cv_type_uid_t+y}
@@ -10097,6 +10100,10 @@ printf "%s\n" "#define HAVE_CHOWN 1" >>confdefs.h
 
 fi
 
+if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
+  export ac_cv_func_fork_works=yes
+  export ac_cv_func_vfork_works=yes
+fi
 
 ac_func=
 for ac_item in $ac_func_c_list

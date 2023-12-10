@@ -2066,7 +2066,7 @@ static void tf(char *arg, int from_tty)
     gdb_printf("%d%d\n\n", (fpscr.fpscr >> 1) & 1, fpscr.fpscr & 1);
     
     for (i = 0; i < 32; ++i) {
-    	sprintf(f, "$f%d", i);
+    	snprintf(f, sizeof(f), "$f%d", i);
 	gdb_printf(" FPR%-2d = ", i);
 	
 	v = gdb_get_register(f, &value);
@@ -2138,7 +2138,7 @@ static void tv(char *arg, int from_tty)
     gdb_printf("\n\n");
     
     for (i = 0; i < 32; ++i) {
-    	sprintf(vn, "$v%d", i);
+    	snprintf(vn, sizeof(vn), "$v%d", i);
 	gdb_printf(" V%-2d = ", i);
 	
 	v = gdb_get_register(vn, &value);

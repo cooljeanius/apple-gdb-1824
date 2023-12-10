@@ -260,8 +260,15 @@ AC_MSG_CHECKING([functions])
 AC_MSG_RESULT([ ])
 AM_WITH_DMALLOC
 AC_FUNC_ALLOCA
+if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
+  export ac_cv_func_chown_works=yes
+fi
 AC_FUNC_CHOWN
 AC_FUNC_ERROR_AT_LINE
+if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
+  export ac_cv_func_fork_works=yes
+  export ac_cv_func_vfork_works=yes
+fi
 AC_FUNC_FORK
 AC_FUNC_LSTAT dnl# also checks whether it "_FOLLOWS_SLASHED_SYMLINK"
 AC_FUNC_MALLOC

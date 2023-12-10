@@ -1376,6 +1376,8 @@ lookup_cmd_composition(const char *text, struct cmd_list_element **alias,
 	return 0;
 
       len = (p - text);
+      if (len < 0)
+        len = labs(len);
 
       /* text and p now bracket the first command word to lookup (and its
        * length is len).  We copy this into a local temporary */

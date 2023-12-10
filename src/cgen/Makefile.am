@@ -40,7 +40,7 @@ stamp-cgen: $(CGENFILES)
 	echo "timestamp" > stamp-cgen
 
 all: @MAINT@ all-local
-	ls
+	(pwd && ls)
 
 # Phony targets to run each of the applications,
 # though most of these are for development purposes only.

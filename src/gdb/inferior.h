@@ -219,6 +219,16 @@ int ptrace_wait(ptid_t, int *);
 
 extern void child_resume(ptid_t, int, enum target_signal);
 
+#ifndef PTRACE_TYPE_ARG3
+# if defined(PTRACE_ARG3_IS_CADDR_T) && (defined(HAVE_CADDR_T) || defined(caddr_t))
+#  define PTRACE_TYPE_ARG3 caddr_t
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "unsure what to define PTRACE_TYPE_ARG3 to"
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* PTRACE_ARG3_IS_CADDR_T && (HAVE_CADDR_T || caddr_t) */
+#endif /* !PTRACE_TYPE_ARG3 */
+
 #ifndef PTRACE_ARG3_TYPE
 # define PTRACE_ARG3_TYPE PTRACE_TYPE_ARG3
 #endif /* !PTRACE_ARG3_TYPE */

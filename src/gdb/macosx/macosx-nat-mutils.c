@@ -1844,7 +1844,7 @@ gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
 
   for (ref_index = 0; ref_index < num_refs; ref_index++)
     {
-      struct cleanup *ref_cleanup;
+      struct cleanup *volatile ref_cleanup;
       LONGEST offset;
       ULONGEST address;
       ULONGEST kind;

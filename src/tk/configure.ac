@@ -79,7 +79,14 @@ AC_TYPE_SIZE_T
 AC_STRUCT_ST_BLOCKS
 
 # Checks for library functions.
+if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
+  export ac_cv_func_chown_works=yes
+fi
 AC_FUNC_CHOWN
+if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
+  export ac_cv_func_fork_works=yes
+  export ac_cv_func_vfork_works=yes
+fi
 AC_FUNC_FORK
 AC_FUNC_GETGROUPS
 AC_FUNC_MALLOC
