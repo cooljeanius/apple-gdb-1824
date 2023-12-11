@@ -450,7 +450,7 @@ parse_insn_words (insn_entry * insn, char *formats)
 				   the same size */
 				if (f->width != refered_field->width)
 				  error (insn->line,
-					 "Conditional `%s' of field `%s' should be of size %s\n",
+					 "Conditional `%s' of field `%s' should be of size %d\n",
 					 cond->string, f->val_string,
 					 refered_field->width);
 			      }
@@ -785,7 +785,7 @@ parse_function_record (table *file,
       record = table_read (file);
     }
   /* parse the function body */
-  if (record->type == table_code_entry)
+  if ((record != NULL) && (record->type == table_code_entry))
     {
       new_function->code = record;
       record = table_read (file);

@@ -99,6 +99,10 @@
 # else
 #  ifdef HAVE_SYS_TIME_H
 #   include <sys/time.h>
+#  else
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "fileman.c expects a time-related header to be included"
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_SYS_TIME_H */
 # endif /* HAVE_TIME_H */
 #endif /* TIME_WITH_SYS_TIME */
@@ -129,9 +133,9 @@ int com_quit PARAMS((char *));
    can understand. */
 
 typedef struct {
-  char *name;			/* User printable name of the function. */
+  const char *name;		/* User printable name of the function. */
   rl_icpfunc_t *func;		/* Function to call to do the job. */
-  char *doc;			/* Documentation for this function.  */
+  const char *doc;		/* Documentation for this function.  */
 } COMMAND;
 
 COMMAND commands[] = {
@@ -146,7 +150,7 @@ COMMAND commands[] = {
   { "rename", com_rename, "Rename FILE to NEWNAME" },
   { "stat", com_stat, "Print out statistics on FILE" },
   { "view", com_view, "View the contents of FILE" },
-  { (char *)NULL, (rl_icpfunc_t *)NULL, (char *)NULL }
+  { (const char *)NULL, (rl_icpfunc_t *)NULL, (const char *)NULL }
 };
 
 /* Forward declarations. */
@@ -154,8 +158,8 @@ char *stripwhite();
 COMMAND *find_command();
 int initialize_readline();
 int execute_line PARAMS((char *));
-int valid_argument PARAMS((char *, char *));
-int too_dangerous PARAMS((char *));
+int valid_argument PARAMS((const char *, char *));
+int too_dangerous PARAMS((const char *));
 
 /* The name of this program, as taken from argv[0]. */
 char *progname;
@@ -207,8 +211,7 @@ int main(int argc, char **argv)
 
 /* Execute a command line: */
 int
-execute_line(line)
-     char *line;
+execute_line(char *line)
 {
   register int i;
   COMMAND *command;
@@ -247,8 +250,7 @@ execute_line(line)
 /* Look up NAME as the name of a command, and return a pointer to that
    command.  Return a NULL pointer if NAME is _not_ a command name. */
 COMMAND *
-find_command (name)
-     char *name;
+find_command(char *name)
 {
   register int i;
 
@@ -262,8 +264,7 @@ find_command (name)
 /* Strip whitespace from the start and end of STRING. Return a pointer
    into STRING. */
 char *
-stripwhite (string)
-     char *string;
+stripwhite(char *string)
 {
   register char *s, *t;
 
@@ -293,7 +294,7 @@ char **fileman_completion PARAMS((const char *, int, int));
 /* Tell the GNU Readline library how to complete. We want to try to complete
    on command names if this is the first word in the line, or on filenames
    if not. */
-int initialize_readline()
+int initialize_readline(void)
 {
   /* Allow conditional parsing of the ~/.inputrc file. */
   rl_readline_name = "FileMan";
@@ -310,9 +311,7 @@ int initialize_readline()
    in case we want to do some simple parsing.  Return the array of matches,
    or NULL if there are not any. */
 char **
-fileman_completion (text, start, end)
-     const char *text;
-     int start, end;
+fileman_completion(const char *text, int start, int end)
 {
   char **matches;
 
@@ -335,7 +334,7 @@ command_generator(const char *text, int state)
 {
   static int list_index;
   static size_t len;
-  char *name = (char *)NULL;
+  const char *name = (const char *)NULL;
 
   /* If this is a new word to complete, initialize now. This includes
      saving the length of TEXT for efficiency, and initializing the index
@@ -347,12 +346,12 @@ command_generator(const char *text, int state)
     }
 
   /* Return the next name which partially matches from the command list. */
-  while ((name = commands[list_index].name))
+  while ((name = commands[list_index].name) != NULL)
     {
       list_index++;
 
       if (strncmp(name, text, len) == 0)
-        return (dupstr(name));
+        return (dupstr((char *)name));
     }
 
   /* If no names matched, then return NULL. */
@@ -370,8 +369,7 @@ command_generator(const char *text, int state)
 static char syscom[1024];
 
 /* List the file(s) named in arg. */
-int com_list(arg)
-     char *arg;
+int com_list(char *arg)
 {
   if (!arg)
     arg = "";
@@ -380,8 +378,7 @@ int com_list(arg)
   return (system(syscom));
 }
 
-int com_view(arg)
-     char *arg;
+int com_view(char *arg)
 {
   if (!valid_argument("view", arg))
     return 1;
@@ -395,15 +392,13 @@ int com_view(arg)
   return (system(syscom));
 }
 
-int com_rename(arg)
-     char *arg;
+int com_rename(char *arg)
 {
   too_dangerous("rename");
   return (1);
 }
 
-int com_stat(arg)
-     char *arg;
+int com_stat(char *arg)
 {
   struct stat finfo;
 
@@ -429,17 +424,15 @@ int com_stat(arg)
   return (0);
 }
 
-int com_delete (arg)
-     char *arg;
+int com_delete(char *arg)
 {
-  too_dangerous ("delete");
+  too_dangerous("delete");
   return (1);
 }
 
 /* Print out help for ARG, or for all of the commands if ARG is
    not present. */
-int com_help (arg)
-     char *arg;
+int com_help(char *arg)
 {
   register int i;
   int printed = 0;
@@ -477,8 +470,7 @@ int com_help (arg)
 }
 
 /* Change to the directory ARG. */
-int com_cd(arg)
-     char *arg;
+int com_cd(char *arg)
 {
   if (chdir(arg) == -1)
     {
@@ -491,8 +483,7 @@ int com_cd(arg)
 }
 
 /* Print out the current working directory. */
-int com_pwd(ignore)
-     char *ignore;
+int com_pwd(char *ignore)
 {
   char dir[1024], *s;
 
@@ -508,28 +499,25 @@ int com_pwd(ignore)
 }
 
 /* The user wishes to quit using this program.  Just set DONE non-zero. */
-int com_quit(arg)
-     char *arg;
+int com_quit(char *arg)
 {
   done = 1;
   return (0);
 }
 
 /* Function which tells you that you cannot do this. */
-int too_dangerous(caller)
-     char *caller;
+int too_dangerous(const char *caller)
 {
-  fprintf (stderr,
-           "%s: Too dangerous for me to distribute.  Write it yourself.\n",
-           caller);
-	return (0);
+  fprintf(stderr,
+          "%s: Too dangerous for me to distribute.  Write it yourself.\n",
+          caller);
+  return (0);
 }
 
 /* Return non-zero if ARG is a valid argument for CALLER, else print
    an error message and return zero. */
 int
-valid_argument(caller, arg)
-     char *caller, *arg;
+valid_argument(const char *caller, char *arg)
 {
   if (!arg || !*arg)
     {
