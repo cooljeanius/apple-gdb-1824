@@ -85,6 +85,7 @@ jobs:
     - run: cd src && make -C tcl/unix tcltest
     - run: cd src && for dir in sim expect dejagnu itcl libgui; do if test -r ${dir}/Makefile; then make check-${dir} V=0 RUNTESTFLAGS="-v"; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
     - run: cd src && make check-bfd
+      if: matrix.compiler == 'clang'
     - run: cd src && make check-opcodes
     # (dejagnu is now moved into the loop above)
     - run: cd src && make check-intl
