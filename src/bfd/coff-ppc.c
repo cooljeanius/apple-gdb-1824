@@ -1014,7 +1014,7 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
   hihalf_val = 0;
 
   rel = relocs;
-  relend = rel + input_section->reloc_count;
+  relend = (rel + input_section->reloc_count);
   for (; rel < relend; rel++)
     {
       long symndx;
@@ -1026,7 +1026,7 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
       bfd_reloc_status_type rstat;
       bfd_byte *loc;
 
-      unsigned short r_type  = EXTRACT_TYPE (rel->r_type);
+      unsigned short r_type = EXTRACT_TYPE(rel->r_type);
       unsigned short r_flags = EXTRACT_FLAGS(rel->r_type);
 
       symndx = rel->r_symndx;

@@ -270,88 +270,88 @@ create_go32_stub(bfd *abfd)
       unsigned long coff_start;
       long exe_start;
 
-      /* Check at first the environment variable $(GO32STUB).  */
-      stub = getenv ("GO32STUB");
-      /* Now check the environment variable $(STUB).  */
+      /* Check at first the environment variable $(GO32STUB): */
+      stub = getenv("GO32STUB");
+      /* Now check the environment variable $(STUB): */
       if (stub == NULL)
-	stub = getenv ("STUB");
+	stub = getenv("STUB");
       if (stub == NULL)
 	goto stub_end;
-      if (stat (stub, &st) != 0)
+      if (stat(stub, &st) != 0)
 	goto stub_end;
 #ifdef O_BINARY
-      f = open (stub, O_RDONLY | O_BINARY);
+      f = open(stub, (O_RDONLY | O_BINARY));
 #else
-      f = open (stub, O_RDONLY);
-#endif
+      f = open(stub, O_RDONLY);
+#endif /* O_BINARY */
       if (f < 0)
 	goto stub_end;
-      if (read (f, &header, sizeof (header)) < 0)
+      if (read(f, &header, sizeof(header)) < 0)
 	{
-	  close (f);
+	  close(f);
 	  goto stub_end;
 	}
-      if (_H (0) != 0x5a4d)	/* It is not an exe file.  */
+      if (_H(0) != 0x5a4d)	/* It is not an exe file.  */
 	{
-	  close (f);
+	  close(f);
 	  goto stub_end;
 	}
       /* Compute the size of the stub (it is every thing up
          to the beginning of the coff image).  */
-      coff_start = (long) _H (2) * 512L;
-      if (_H (1))
-	coff_start += (long) _H (1) - 512L;
+      coff_start = (long)_H(2) * 512L;
+      if (_H(1))
+	coff_start += (long)_H(1) - 512L;
 
       /* Currently there is only a fixed stub size of 2048 bytes
          supported.  */
       if (coff_start != 2048)
 	{
-	  close (f);
+	  close(f);
 	  goto stub_end;
 	}
       exe_start = (long)(_H(4) * 16L);
       if ((long)lseek(f, (off_t)exe_start, SEEK_SET) != exe_start)
 	{
-	  close (f);
+	  close(f);
 	  goto stub_end;
 	}
-      if (read (f, &magic, 8) != 8)
+      if (read(f, &magic, 8) != 8)
 	{
-	  close (f);
+	  close(f);
 	  goto stub_end;
 	}
-      if (memcmp (magic, "go32stub", 8) != 0)
+      if (memcmp(magic, "go32stub", 8) != 0)
 	{
-	  close (f);
+	  close(f);
 	  goto stub_end;
 	}
-      /* Now we found a correct stub (hopefully).  */
-      bfd_coff_go32stub (abfd)
-	= (PTR) bfd_alloc (abfd, (bfd_size_type) coff_start);
-      if (bfd_coff_go32stub (abfd) == NULL)
+      /* Now we found a correct stub (hopefully): */
+      bfd_coff_go32stub(abfd) =
+      	(PTR)bfd_alloc(abfd, (bfd_size_type)coff_start);
+      if (bfd_coff_go32stub(abfd) == NULL)
 	{
-	  close (f);
+	  close(f);
 	  return;
 	}
       lseek(f, (off_t)0L, SEEK_SET);
-      if ((unsigned long) read (f, bfd_coff_go32stub (abfd), coff_start)
+      if ((unsigned long)read(f, bfd_coff_go32stub(abfd), coff_start)
 	  != coff_start)
 	{
-	  bfd_release (abfd, bfd_coff_go32stub (abfd));
-	  bfd_coff_go32stub (abfd) = NULL;
+	  bfd_release(abfd, bfd_coff_go32stub(abfd));
+	  bfd_coff_go32stub(abfd) = NULL;
 	}
-      close (f);
+      close(f);
     }
 stub_end:
   /* There was something wrong above, so use now the standard builtin
      stub.  */
-  if (bfd_coff_go32stub (abfd) == NULL)
+  if (bfd_coff_go32stub(abfd) == NULL)
     {
-      bfd_coff_go32stub (abfd)
-	= (PTR) bfd_alloc (abfd, (bfd_size_type) STUBSIZE);
-      if (bfd_coff_go32stub (abfd) == NULL)
+      bfd_coff_go32stub(abfd) =
+      	(PTR)bfd_alloc(abfd, (bfd_size_type)STUBSIZE);
+      if (bfd_coff_go32stub(abfd) == NULL)
 	return;
-      memcpy (bfd_coff_go32stub (abfd), stub_bytes, STUBSIZE);
+      memcpy(bfd_coff_go32stub(abfd), stub_bytes, STUBSIZE);
     }
 }
 

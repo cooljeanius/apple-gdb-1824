@@ -154,7 +154,9 @@ NAME(lynx,swap_std_reloc_out)(bfd *abfd, arelent *g,
   r_jmptable = 0;
   r_relative = 0;
 
-  r_addend = (g->addend + (*(g->sym_ptr_ptr))->section->output_section->vma);
+  r_addend =
+    (unsigned int)(g->addend
+                   + (*(g->sym_ptr_ptr))->section->output_section->vma);
 
   /* name was clobbered by aout_write_syms to be symbol index */
 
@@ -182,7 +184,7 @@ NAME(lynx,swap_std_reloc_out)(bfd *abfd, arelent *g,
 	{
 	  /* Fill in symbol */
 	  r_extern = 1;
-	  r_index = (*g->sym_ptr_ptr)->KEEPIT;
+	  r_index = (int)(*g->sym_ptr_ptr)->KEEPIT;
 	}
     }
   else
@@ -219,6 +221,7 @@ NAME(lynx,swap_std_reloc_out)(bfd *abfd, arelent *g,
 	| (r_relative ? RELOC_STD_BITS_RELATIVE_LITTLE : 0)
 	| (r_length << RELOC_STD_BITS_LENGTH_SH_LITTLE);
     }
+  (void)r_addend;
 }
 
 
@@ -236,11 +239,13 @@ NAME(lynx,swap_ext_reloc_out)(bfd *abfd, arelent *g,
   asymbol *sym = *(g->sym_ptr_ptr);
   asection *output_section = sym->section->output_section;
 
-  PUT_WORD (abfd, g->address, natptr->r_address);
+  PUT_WORD(abfd, g->address, natptr->r_address);
 
-  r_type = (unsigned int) g->howto->type;
+  r_type = (unsigned int)g->howto->type;
 
-  r_addend = g->addend + (*(g->sym_ptr_ptr))->section->output_section->vma;
+  r_addend =
+    (unsigned int)(g->addend
+                   + (*(g->sym_ptr_ptr))->section->output_section->vma);
 
 
   /* If this relocation is relative to a symbol then set the
@@ -251,21 +256,21 @@ NAME(lynx,swap_ext_reloc_out)(bfd *abfd, arelent *g,
      check for that here
      */
 
-  if (bfd_is_com_section (output_section)
-      || bfd_is_abs_section (output_section)
-      || bfd_is_und_section (output_section))
+  if (bfd_is_com_section(output_section)
+      || bfd_is_abs_section(output_section)
+      || bfd_is_und_section(output_section))
     {
       if (bfd_abs_section_ptr->symbol == sym)
 	{
 	  /* Whoops, looked like an abs symbol, but is really an offset
-	 from the abs section */
+	   * from the abs section */
 	  r_index = 0;
 	  r_extern = 0;
 	}
       else
 	{
 	  r_extern = 1;
-	  r_index = (*g->sym_ptr_ptr)->KEEPIT;
+	  r_index = (int)(*g->sym_ptr_ptr)->KEEPIT;
 	}
     }
   else

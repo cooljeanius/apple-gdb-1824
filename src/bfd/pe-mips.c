@@ -98,7 +98,7 @@ coff_mips_reloc (bfd *abfd,
 	  {
 	  case 0:
 	    {
-	      char x = bfd_get_8(abfd, addr);
+	      char x = (char)bfd_get_8(abfd, addr);
 
 	      DOIT(x);
 	      bfd_put_8(abfd, x, addr);
@@ -107,7 +107,7 @@ coff_mips_reloc (bfd *abfd,
 
 	  case 1:
 	    {
-	      short x = bfd_get_16(abfd, addr);
+	      short x = (short)bfd_get_16(abfd, addr);
 
 	      DOIT(x);
 	      bfd_put_16(abfd, (bfd_vma)x, addr);
@@ -116,7 +116,7 @@ coff_mips_reloc (bfd *abfd,
 
 	  case 2:
 	    {
-	      long x = bfd_get_32(abfd, addr);
+	      long x = (long)bfd_get_32(abfd, addr);
 
 	      DOIT(x);
 	      bfd_put_32(abfd, (bfd_vma)x, addr);

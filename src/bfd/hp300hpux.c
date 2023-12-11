@@ -411,7 +411,8 @@ convert_sym_type(struct external_nlist *sym_pointer ATTRIBUTE_UNUSED,
 	  break;
 
 	default:
-	  abort ();
+	  (void)new_type;
+	  abort();
 	  break;
 	}
       if (name_type & HP_SYMTYPE_EXTERNAL)
@@ -422,7 +423,7 @@ convert_sym_type(struct external_nlist *sym_pointer ATTRIBUTE_UNUSED,
 	  switch (new_type)
 	    {
 	    default:
-	      abort ();
+	      abort();
 	    case N_UNDF | N_EXT:
 	      /* If the value is nonzero, then just treat this as a
                  common symbol.  I don't know if this is correct in
@@ -447,7 +448,6 @@ convert_sym_type(struct external_nlist *sym_pointer ATTRIBUTE_UNUSED,
 	}
     }
   cache_ptr->type = new_type;
-
 }
 
 /*
@@ -596,6 +596,7 @@ MY(slurp_symbol_table)(bfd *abfd)
   {
     aout_symbol_type *cache_ptr = cached;
     aout_symbol_type cache_save;
+    BFD_ASSERT(cache_ptr != NULL);
     /* Run through table and copy values */
     for (sym_pointer = syms, cache_ptr = cached;
 	 sym_pointer < sym_end; sym_pointer++, cache_ptr++)
@@ -611,7 +612,7 @@ MY(slurp_symbol_table)(bfd *abfd)
 	cache_ptr->other = length;	/* other not used, save length here */
 
 	cache_save = *cache_ptr;
-	convert_sym_type (sym_pointer, cache_ptr, abfd);
+	convert_sym_type(sym_pointer, cache_ptr, abfd);
 	if (!translate_from_native_sym_flags(abfd, cache_ptr))
 	  return FALSE;
 

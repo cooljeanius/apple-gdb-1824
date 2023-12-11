@@ -2450,6 +2450,10 @@ sh_elf64_check_relocs(bfd *abfd, struct bfd_link_info *info,
   if (!elf_bad_symtab(abfd))
     sym_hashes_end -= symtab_hdr->sh_info;
 
+  if (sym_hashes_end == NULL) {
+    ; /* ??? */
+  }
+
   dynobj = elf_hash_table(info)->dynobj;
   local_got_offsets = elf_local_got_offsets(abfd);
 

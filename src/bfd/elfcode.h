@@ -1346,6 +1346,7 @@ elf_slurp_reloc_table_from_section(bfd *abfd, asection *asect,
 	  s = *ps;
 
 	  relent->sym_ptr_ptr = ps;
+          (void)s;
 	}
 
       relent->addend = rela.r_addend;

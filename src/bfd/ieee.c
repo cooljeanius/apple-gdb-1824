@@ -534,6 +534,7 @@ parse_expression (ieee_data_type *ieee,
 	    *pcrel = TRUE;
 	    section_n = (int)must_parse_int(&(ieee->h));
 	    PUSH(NOSYMBOL, bfd_abs_section_ptr, 0);
+            (void)section_n;
 	    break;
 	  }
 	case ieee_variable_L_enum:
@@ -2328,7 +2329,6 @@ do_with_relocs(bfd *abfd, asection *s)
 		      current_byte_index++;
 		      break;
 		    default:
-		      ov = 0;
 		      BFD_FAIL();
 		      return FALSE;
 		    }
@@ -2686,6 +2686,7 @@ drop_int(struct output_buffer_struct *buf)
   OUT(0);
   OUT(0);
   OUT(0);
+  (void)ch;
 }
 
 /* */

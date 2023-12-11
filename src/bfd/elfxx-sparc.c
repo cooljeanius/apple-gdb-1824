@@ -1449,6 +1449,9 @@ _bfd_sparc_elf_gc_mark_hook(asection *sec, struct bfd_link_info *info,
       struct _bfd_sparc_elf_link_hash_table *htab;
 
       htab = _bfd_sparc_elf_hash_table(info);
+      if (htab == NULL) {
+        ; /* ??? */
+      }
       switch (SPARC_ELF_R_TYPE(rel->r_info))
       {
       case R_SPARC_GNU_VTINHERIT:
@@ -2382,24 +2385,24 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
   if (info->relocatable)
     return TRUE;
 
-  htab = _bfd_sparc_elf_hash_table (info);
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
-  local_got_offsets = elf_local_got_offsets (input_bfd);
+  htab = _bfd_sparc_elf_hash_table(info);
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
+  local_got_offsets = elf_local_got_offsets(input_bfd);
 
-  if (elf_hash_table (info)->hgot == NULL)
+  if (elf_hash_table(info)->hgot == NULL)
     got_base = 0;
   else
-    got_base = elf_hash_table (info)->hgot->root.u.def.value;
+    got_base = elf_hash_table(info)->hgot->root.u.def.value;
 
-  sreloc = elf_section_data (input_section)->sreloc;
+  sreloc = elf_section_data(input_section)->sreloc;
 
   rel = relocs;
-  if (ABI_64_P (output_bfd))
-    num_relocs = NUM_SHDR_ENTRIES (& elf_section_data (input_section)->rel_hdr);
+  if (ABI_64_P(output_bfd))
+    num_relocs = NUM_SHDR_ENTRIES(&elf_section_data(input_section)->rel_hdr);
   else
     num_relocs = input_section->reloc_count;
-  relend = relocs + num_relocs;
+  relend = (relocs + num_relocs);
   for (; rel < relend; rel++)
     {
       int r_type, tls_type;
@@ -2413,7 +2416,7 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
       bfd_boolean is_plt = FALSE;
       bfd_boolean unresolved_reloc;
 
-      r_type = SPARC_ELF_R_TYPE (rel->r_info);
+      r_type = SPARC_ELF_R_TYPE(rel->r_info);
       if (r_type == R_SPARC_GNU_VTINHERIT
 	  || r_type == R_SPARC_GNU_VTENTRY)
 	continue;
@@ -3405,6 +3408,10 @@ _bfd_sparc_elf_finish_dynamic_symbol(bfd *output_bfd,
 
   htab = _bfd_sparc_elf_hash_table(info);
   dynobj = htab->elf.dynobj;
+
+  if (dynobj == NULL) {
+    ;
+  }
 
   if (h->plt.offset != (bfd_vma)-1)
     {

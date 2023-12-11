@@ -2991,32 +2991,32 @@ sh_elf_align_loads (bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
     {
       bfd_vma start, stop;
 
-      if (ELF32_R_TYPE (irel->r_info) != (int) R_SH_CODE)
+      if (ELF32_R_TYPE(irel->r_info) != (int)R_SH_CODE)
 	continue;
 
       start = irel->r_offset;
 
       for (irel++; irel < irelend; irel++)
-	if (ELF32_R_TYPE (irel->r_info) == (int) R_SH_DATA)
+	if (ELF32_R_TYPE(irel->r_info) == (int)R_SH_DATA)
 	  break;
       if (irel < irelend)
 	stop = irel->r_offset;
       else
 	stop = sec->size;
 
-      if (! _bfd_sh_align_load_span (abfd, sec, contents, sh_elf_swap_insns,
-				     internal_relocs, &label,
-				     label_end, start, stop, pswapped))
+      if (! _bfd_sh_align_load_span(abfd, sec, contents, sh_elf_swap_insns,
+				    internal_relocs, &label,
+				    label_end, start, stop, pswapped))
 	goto error_return;
     }
 
-  free (labels);
+  free(labels);
 
   return TRUE;
 
  error_return:
   if (labels != NULL)
-    free (labels);
+    free(labels);
   return FALSE;
 }
 

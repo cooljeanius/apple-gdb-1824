@@ -1477,6 +1477,10 @@ mmo_get_loc (asection *sec, bfd_vma vma, int size)
 
   datap = sdatap->head;
 
+  if (datap == NULL) {
+    ; /* ??? */
+  }
+
   /* Sort the records by address.  Optimize for the common case of adding
      a record to the end of the list.  */
   if (sdatap->tail != NULL && entry->where >= sdatap->tail->where)

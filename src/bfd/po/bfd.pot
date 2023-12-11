@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-10 18:24-0500\n"
+"POT-Creation-Date: 2023-12-11 00:02-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,22 +34,22 @@ msgstr ""
 msgid "%B: Bad relocation record imported: %d"
 msgstr ""
 
-#: aoutx.h:1292 aoutx.h:1625
+#: aoutx.h:1294 aoutx.h:1627
 #, c-format
 msgid "%s: can not represent section `%s' in a.out object file format"
 msgstr ""
 
-#: aoutx.h:1591
+#: aoutx.h:1593
 #, c-format
 msgid ""
 "%s: can not represent section for symbol `%s' in a.out object file format"
 msgstr ""
 
-#: aoutx.h:1593 vms-alpha.c:7564
+#: aoutx.h:1595 vms-alpha.c:7564
 msgid "*unknown*"
 msgstr ""
 
-#: aoutx.h:5314
+#: aoutx.h:5316
 #, c-format
 msgid "%s: relocatable link from %s to %s not supported"
 msgstr ""
@@ -1039,7 +1039,7 @@ msgid "relocation should be even number"
 msgstr ""
 
 #: elf32-bfin.c:1601 elf32-i386.c:3042 elf32-m68k.c:1697 elf32-s390.c:2957
-#: elf32-xtensa.c:2309 elf64-s390.c:2965 elf64-x86-64.c:2516 elfxx-sparc.c:3141
+#: elf32-xtensa.c:2309 elf64-s390.c:2965 elf64-x86-64.c:2516 elfxx-sparc.c:3144
 msgid "%B(%A+0x%lx): unresolvable relocation against symbol `%s'"
 msgstr ""
 
@@ -1571,7 +1571,7 @@ msgid "%s: The target (%s) of an %s relocation is in the wrong section (%s)"
 msgstr ""
 
 #: elf32-microblaze.c:1484 elf32-or1k.c:1077 elf32-tilepro.c:3320
-#: elfxx-sparc.c:2785
+#: elfxx-sparc.c:2788
 msgid "%B: probably compiled without -fPIC?"
 msgstr ""
 
@@ -2006,7 +2006,7 @@ msgstr ""
 msgid "%s: object size does not match that of target %s"
 msgstr ""
 
-#: elf32-sh64.c:447 elf64-sh64.c:2907
+#: elf32-sh64.c:447 elf64-sh64.c:2911
 #, c-format
 msgid "%s: encountered datalabel symbol in input"
 msgstr ""
@@ -3063,15 +3063,15 @@ msgstr ""
 msgid "%s: unrecognized symbol `%s' flags 0x%x"
 msgstr ""
 
-#: ieee.c:786
+#: ieee.c:787
 msgid "%B: unimplemented ATI record %u for symbol %u"
 msgstr ""
 
-#: ieee.c:810
+#: ieee.c:811
 msgid "%B: unexpected ATN type %d in external part"
 msgstr ""
 
-#: ieee.c:832
+#: ieee.c:833
 msgid "%B: unexpected type after ATN"
 msgstr ""
 
@@ -3170,120 +3170,120 @@ msgid ""
 "starting with `%s'\n"
 msgstr ""
 
-#: mmo.c:1571
+#: mmo.c:1575
 #, c-format
 msgid "%s: invalid mmo file: unsupported lopcode `%d'\n"
 msgstr ""
 
-#: mmo.c:1581
+#: mmo.c:1585
 #, c-format
 msgid "%s: invalid mmo file: expected YZ = 1 got YZ = %d for lop_quote\n"
 msgstr ""
 
-#: mmo.c:1617
+#: mmo.c:1621
 #, c-format
 msgid "%s: invalid mmo file: expected z = 1 or z = 2, got z = %d for lop_loc\n"
 msgstr ""
 
-#: mmo.c:1663
+#: mmo.c:1667
 #, c-format
 msgid ""
 "%s: invalid mmo file: expected z = 1 or z = 2, got z = %d for lop_fixo\n"
 msgstr ""
 
-#: mmo.c:1702
+#: mmo.c:1706
 #, c-format
 msgid "%s: invalid mmo file: expected y = 0, got y = %d for lop_fixrx\n"
 msgstr ""
 
-#: mmo.c:1711
+#: mmo.c:1715
 #, c-format
 msgid ""
 "%s: invalid mmo file: expected z = 16 or z = 24, got z = %d for lop_fixrx\n"
 msgstr ""
 
-#: mmo.c:1734
+#: mmo.c:1738
 #, c-format
 msgid ""
 "%s: invalid mmo file: leading byte of operand word must be 0 or 1, got %d "
 "for lop_fixrx\n"
 msgstr ""
 
-#: mmo.c:1757
+#: mmo.c:1761
 #, c-format
 msgid "%s: cannot allocate file name for file number %d, %d bytes\n"
 msgstr ""
 
-#: mmo.c:1777
+#: mmo.c:1781
 #, c-format
 msgid ""
 "%s: invalid mmo file: file number %d `%s', was already entered as `%s'\n"
 msgstr ""
 
-#: mmo.c:1790
+#: mmo.c:1794
 #, c-format
 msgid ""
 "%s: invalid mmo file: file name for number %d was not specified before use\n"
 msgstr ""
 
-#: mmo.c:1895
+#: mmo.c:1899
 #, c-format
 msgid ""
 "%s: invalid mmo file: fields y and z of lop_stab non-zero, y: %d, z: %d\n"
 msgstr ""
 
-#: mmo.c:1931
+#: mmo.c:1935
 #, c-format
 msgid "%s: invalid mmo file: lop_end not last item in file\n"
 msgstr ""
 
-#: mmo.c:1944
+#: mmo.c:1948
 #, c-format
 msgid ""
 "%s: invalid mmo file: YZ of lop_end (%ld) not equal to the number of tetras "
 "to the preceding lop_stab (%ld)\n"
 msgstr ""
 
-#: mmo.c:2653
+#: mmo.c:2657
 #, c-format
 msgid "%s: invalid symbol table: duplicate symbol `%s'\n"
 msgstr ""
 
-#: mmo.c:2896
+#: mmo.c:2900
 #, c-format
 msgid ""
 "%s: Bad symbol definition: `Main' set to %s rather than the start address "
 "%s\n"
 msgstr ""
 
-#: mmo.c:2988
+#: mmo.c:2992
 #, c-format
 msgid ""
 "%s: warning: symbol table too large for mmo, larger than 65535 32-bit words: "
 "%d.  Only `Main' will be emitted.\n"
 msgstr ""
 
-#: mmo.c:3033
+#: mmo.c:3037
 #, c-format
 msgid "%s: internal error, symbol table changed size from %d to %d words\n"
 msgstr ""
 
-#: mmo.c:3085
+#: mmo.c:3089
 #, c-format
 msgid "%s: internal error, internal register section %s had contents\n"
 msgstr ""
 
-#: mmo.c:3136
+#: mmo.c:3140
 #, c-format
 msgid "%s: no initialized registers; section length 0\n"
 msgstr ""
 
-#: mmo.c:3142
+#: mmo.c:3146
 #, c-format
 msgid "%s: too many initialized registers; section length %ld\n"
 msgstr ""
 
-#: mmo.c:3147
+#: mmo.c:3151
 #, c-format
 msgid ""
 "%s: invalid start address for initialized registers of length %ld: "

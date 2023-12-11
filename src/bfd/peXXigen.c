@@ -628,11 +628,11 @@ _bfd_XXi_swap_aouthdr_out (bfd * abfd, void * in, void * out)
 	/* The first non-zero section filepos is the header size.
 	   Sections without contents will have a filepos of 0.  */
 	if (hsize == 0)
-	  hsize = sec->filepos;
+	  hsize = (bfd_vma)sec->filepos;
 	if (sec->flags & SEC_DATA)
-	  dsize += rounded;
+	  dsize += (bfd_vma)rounded;
 	if (sec->flags & SEC_CODE)
-	  tsize += rounded;
+	  tsize += (bfd_vma)rounded;
 	/* The image size is the total VIRTUAL size (which is what is
 	   in the virt_size field).  Files have been seen (from MSVC
 	   5.0 link.exe) where the file size of the .data segment is

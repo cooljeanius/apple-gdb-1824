@@ -6724,31 +6724,31 @@ _bfd_mips_elf_size_dynamic_sections(bfd *output_bfd,
 	      info->combreloc = 0;
 	    }
 	}
-      else if (strncmp (name, ".got", 4) == 0)
+      else if (strncmp(name, ".got", 4UL) == 0)
 	{
 	  /* _bfd_mips_elf_always_size_sections() has already done
 	     most of the work, but some symbols may have been mapped
 	     to versions that we must now resolve in the got_entries
 	     hash tables.  */
-	  struct mips_got_info *gg = mips_elf_got_info (dynobj, NULL);
+	  struct mips_got_info *gg = mips_elf_got_info(dynobj, NULL);
 	  struct mips_got_info *g = gg;
 	  struct mips_elf_set_global_got_offset_arg set_got_offset_arg;
 	  unsigned int needed_relocs = 0;
 
-	  if (gg->next)
+	  if ((g != NULL) && gg->next)
 	    {
-	      set_got_offset_arg.value = MIPS_ELF_GOT_SIZE (output_bfd);
+	      set_got_offset_arg.value = MIPS_ELF_GOT_SIZE(output_bfd);
 	      set_got_offset_arg.info = info;
 
 	      /* NOTE 2005-02-03: How can this call, or the next, ever
 		 find any indirect entries to resolve?  They were all
 		 resolved in mips_elf_multi_got.  */
-	      mips_elf_resolve_final_got_entries (gg);
+	      mips_elf_resolve_final_got_entries(gg);
 	      for (g = gg->next; g && g->next != gg; g = g->next)
 		{
 		  unsigned int save_assign;
 
-		  mips_elf_resolve_final_got_entries (g);
+		  mips_elf_resolve_final_got_entries(g);
 
 		  /* Assign offsets to global GOT entries.  */
 		  save_assign = g->assigned_gotno;

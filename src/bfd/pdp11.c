@@ -1053,6 +1053,8 @@ adjust_n_magic (bfd *abfd, struct internal_exec *execp)
   execp->a_data = obj_datasec(abfd)->size;
   execp->a_bss = obj_bsssec(abfd)->size;
   N_SET_MAGIC(*execp, NMAGIC);
+  (void)pos;
+  (void)vma;
 }
 
 /* */
@@ -3008,6 +3010,7 @@ aout_link_write_other_symbol (struct aout_link_hash_entry *h, void * data)
     case bfd_link_hash_undefweak:
       type = N_WEAKU;
       val = 0;
+      break;
     case bfd_link_hash_indirect:
     case bfd_link_hash_warning:
       /* FIXME: Ignore these for now.  The circumstances under which
@@ -3666,6 +3669,7 @@ aout_link_input_bfd(struct aout_final_link_info *finfo, bfd *input_bfd)
 	return FALSE;
     }
 
+  (void)sym_count;
   return TRUE;
 }
 
