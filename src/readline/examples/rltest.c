@@ -62,9 +62,9 @@
 # include <readline/history.h>
 #endif /* READLINE_LIBRARY */
 
-extern HIST_ENTRY **history_list();
+extern HIST_ENTRY **history_list(void);
 
-int main()
+int main(void)
 {
   char *temp, *prompt;
   int done;

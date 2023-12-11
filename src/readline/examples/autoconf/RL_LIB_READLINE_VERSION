@@ -38,9 +38,12 @@ AC_CACHE_VAL([ac_cv_rl_version],
 #include <stdio.h>
 #include <readline/readline.h>
 
+#line 41 "RL_LIB_READLINE_VERSION"
+
 extern int rl_gnu_readline_p;
 
-main()
+int
+main(void)
 {
 	FILE *fp;
 	fp = fopen("conftest.rlv", "w");

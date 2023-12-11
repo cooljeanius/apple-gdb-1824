@@ -60,9 +60,7 @@
 # include <readline/history.h>
 #endif /* READLINE_LIBRARY */
 
-int main(argc, argv)
-     int argc;
-     char **argv;
+int main(int argc, char **argv)
 {
   char line[1024], *t;
   int len, done = 0;

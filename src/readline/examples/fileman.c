@@ -116,7 +116,7 @@
 #endif /* READLINE_LIBRARY */
 
 /* Why is there a prototype for this here? */
-extern char *xmalloc();
+extern char *xmalloc(size_t);
 
 /* The names of functions that actually do the manipulation. */
 int com_list PARAMS((char *));
@@ -154,9 +154,9 @@ COMMAND commands[] = {
 };
 
 /* Forward declarations. */
-char *stripwhite();
-COMMAND *find_command();
-int initialize_readline();
+char *stripwhite(char *);
+COMMAND *find_command(char *);
+int initialize_readline(void);
 int execute_line PARAMS((char *));
 int valid_argument PARAMS((const char *, char *));
 int too_dangerous PARAMS((const char *));

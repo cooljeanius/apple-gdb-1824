@@ -628,6 +628,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
 #ifdef signal
 # undef signal
 #endif /* signal */
+#line 631 "configure.ac"
 extern void (*signal ()) ();]],[[int i;]])],[
 AC_NOTE([- signals return void])
 AC_DEFINE([SIGVOID],[1],[Define to 1 if signals have a void return type])
@@ -639,6 +640,7 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
 #include <signal.h>
 ]],[[
+#line 643 "configure.ac"
 #ifdef SIGVOID
 sigset(0, (void (*)())0);
 #else
@@ -655,6 +657,8 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <sys/types.h>
 #include <signal.h>
 #include <stdlib.h>
+
+#line 661 "configure.ac"
 
 #ifndef SIGCLD
 # define SIGCLD SIGCHLD

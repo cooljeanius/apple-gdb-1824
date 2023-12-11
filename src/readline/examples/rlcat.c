@@ -92,22 +92,20 @@ extern int errno;
 extern int optind;
 extern char *optarg;
 
-static int stdcat();
+static int stdcat(int, char **);
 
 static char *progname;
 static int vflag;
 
 static void
-usage()
+usage(void)
 {
   fprintf(stderr, "%s: usage: %s [-vEVN] [filename]\n",
           progname, progname);
 }
 
 int
-main(argc, argv)
-     int argc;
-     char **argv;
+main(int argc, char **argv)
 {
   char *temp;
   int opt, Vflag, Nflag;
@@ -159,8 +157,7 @@ main(argc, argv)
 }
 
 static int
-fcopy(fp)
-     FILE *fp;
+fcopy(FILE *fp)
 {
   int c;
   char *x;
@@ -180,12 +177,9 @@ fcopy(fp)
 }
 
 int
-stdcat(argc, argv)
-     int argc;
-     char **argv;
+stdcat(int argc, char **argv)
 {
-  int  i, fd = 0, r;
-  char *s = (char *)NULL;
+  int  i, r;
   FILE *fp;
 
   if (argc == 0)
