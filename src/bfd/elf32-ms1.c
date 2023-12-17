@@ -450,17 +450,14 @@ ms1_elf_gc_sweep_hook
    virtual table relocs for gc.  */
 
 static bfd_boolean
-ms1_elf_check_relocs
-    (bfd *                     abfd,
-     struct bfd_link_info *    info,
-     asection *                sec,
-     const Elf_Internal_Rela * relocs)
+ms1_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
+                     asection *sec, const Elf_Internal_Rela *relocs)
 {
-  Elf_Internal_Shdr *           symtab_hdr;
-  struct elf_link_hash_entry ** sym_hashes;
-  struct elf_link_hash_entry ** sym_hashes_end;
-  const Elf_Internal_Rela *     rel;
-  const Elf_Internal_Rela *     rel_end;
+  Elf_Internal_Shdr *symtab_hdr;
+  struct elf_link_hash_entry **sym_hashes;
+  struct elf_link_hash_entry **sym_hashes_end;
+  const Elf_Internal_Rela *rel;
+  const Elf_Internal_Rela *rel_end;
 
   if (info->relocatable)
     return TRUE;
@@ -543,38 +540,38 @@ ms1_elf_copy_private_bfd_data (bfd * ibfd, bfd * obfd)
 
 /* Merge backend specific data from an object file to the output
    object file when linking.  */
-
 static bfd_boolean
-ms1_elf_merge_private_bfd_data (bfd * ibfd, bfd * obfd)
+ms1_elf_merge_private_bfd_data(bfd * ibfd, bfd * obfd)
 {
-  flagword     old_flags, new_flags;
-  bfd_boolean  error = FALSE;
-  static bfd * last_ibfd = 0;
+  flagword old_flags, new_flags;
+  bfd_boolean error = FALSE;
+  static bfd *last_ibfd = 0;
 
-  /* Check if we have the same endianess.  */
-  if (_bfd_generic_verify_endian_match (ibfd, obfd) == FALSE)
+  /* Check if we have the same endianess: */
+  if (_bfd_generic_verify_endian_match(ibfd, obfd) == FALSE)
     return FALSE;
 
   /* If they're not both ms1, then merging is meaningless, so just
      don't do it.  */
-  if (strcmp (ibfd->arch_info->arch_name, "ms1") != 0)
+  if (strcmp(ibfd->arch_info->arch_name, "ms1") != 0)
     return TRUE;
-  if (strcmp (obfd->arch_info->arch_name, "ms1") != 0)
+  if (strcmp(obfd->arch_info->arch_name, "ms1") != 0)
     return TRUE;
 
-  new_flags = elf_elfheader (ibfd)->e_flags;
-  old_flags = elf_elfheader (obfd)->e_flags;
+  new_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  old_flags = (flagword)elf_elfheader(obfd)->e_flags;
 
-#ifdef DEBUG
-  _bfd_error_handler ("%B: old_flags = 0x%.8lx, new_flags = 0x%.8lx, init = %s",
-		      ibfd, old_flags, new_flags, elf_flags_init (obfd) ? "yes" : "no");
-#endif
+#if defined(DEBUG) || defined(__clang_analyzer__)
+  _bfd_error_handler("%B: old_flags = 0x%.8lx, new_flags = 0x%.8lx, init = %s",
+		     ibfd, old_flags, new_flags,
+                     (elf_flags_init(obfd) ? "yes" : "no"));
+#endif /* DEBUG || __clang_analyzer__ */
 
-  elf_flags_init (obfd) = TRUE;
+  elf_flags_init(obfd) = TRUE;
 
   if ((new_flags & EF_MS1_CPU_MASK) == EF_MS1_CPU_MRISC2)
     {
-      elf_elfheader (obfd)->e_flags = new_flags;
+      elf_elfheader(obfd)->e_flags = new_flags;
       last_ibfd = ibfd;
       obfd->arch_info = ibfd->arch_info;
     }
@@ -582,13 +579,14 @@ ms1_elf_merge_private_bfd_data (bfd * ibfd, bfd * obfd)
   return !error;
 }
 
+/* */
 static bfd_boolean
-ms1_elf_print_private_bfd_data (bfd * abfd, void * ptr)
+ms1_elf_print_private_bfd_data(bfd *abfd, void *ptr)
 {
-  FILE *   file = (FILE *) ptr;
+  FILE *file = (FILE *)ptr;
   flagword flags;
 
-  BFD_ASSERT (abfd != NULL && ptr != NULL);
+  BFD_ASSERT((abfd != NULL) && (ptr != NULL));
 
   /* Print normal ELF private data.  */
   _bfd_elf_print_private_bfd_data (abfd, ptr);

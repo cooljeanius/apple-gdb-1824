@@ -260,8 +260,8 @@ elf32_msp430_gc_sweep_hook (bfd * abfd ATTRIBUTE_UNUSED,
    virtual table relocs for gc.  */
 
 static bfd_boolean
-elf32_msp430_check_relocs (bfd * abfd, struct bfd_link_info * info,
-			   asection * sec, const Elf_Internal_Rela * relocs)
+elf32_msp430_check_relocs(bfd *abfd, struct bfd_link_info *info,
+			  asection *sec, const Elf_Internal_Rela *relocs)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes, **sym_hashes_end;
@@ -271,20 +271,20 @@ elf32_msp430_check_relocs (bfd * abfd, struct bfd_link_info * info,
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
   sym_hashes_end =
-      sym_hashes + symtab_hdr->sh_size / sizeof (Elf32_External_Sym);
-  if (!elf_bad_symtab (abfd))
+    (sym_hashes + (symtab_hdr->sh_size / sizeof(Elf32_External_Sym)));
+  if (!elf_bad_symtab(abfd))
     sym_hashes_end -= symtab_hdr->sh_info;
 
-  rel_end = relocs + sec->reloc_count;
+  rel_end = (relocs + sec->reloc_count);
   for (rel = relocs; rel < rel_end; rel++)
     {
       struct elf_link_hash_entry *h;
       unsigned long r_symndx;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
       if (r_symndx < symtab_hdr->sh_info)
 	h = NULL;
       else
@@ -292,7 +292,7 @@ elf32_msp430_check_relocs (bfd * abfd, struct bfd_link_info * info,
 	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
 	  while (h->root.type == bfd_link_hash_indirect
 		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	}
     }
 
@@ -438,8 +438,8 @@ elf32_msp430_relocate_section (bfd * output_bfd ATTRIBUTE_UNUSED,
   Elf_Internal_Rela *rel;
   Elf_Internal_Rela *relend;
 
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
   relend = relocs + input_section->reloc_count;
 
   for (rel = relocs; rel < relend; rel++)
@@ -456,22 +456,23 @@ elf32_msp430_relocate_section (bfd * output_bfd ATTRIBUTE_UNUSED,
 
       /* This is a final link.  */
 
-      r_type = ELF32_R_TYPE (rel->r_info);
-      r_symndx = ELF32_R_SYM (rel->r_info);
-      howto = elf_msp430_howto_table + ELF32_R_TYPE (rel->r_info);
+      r_type = ELF32_R_TYPE(rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
+      howto = (elf_msp430_howto_table + ELF32_R_TYPE(rel->r_info));
       h = NULL;
       sym = NULL;
       sec = NULL;
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
+	  sym = (local_syms + r_symndx);
 	  sec = local_sections[r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 
-	  name = bfd_elf_string_from_elf_section
-	      (input_bfd, symtab_hdr->sh_link, sym->st_name);
-	  name = (name == NULL) ? bfd_section_name (input_bfd, sec) : name;
+	  name =
+            bfd_elf_string_from_elf_section(input_bfd, symtab_hdr->sh_link,
+                                            sym->st_name);
+	  name = ((name == NULL) ? bfd_section_name(input_bfd, sec) : name);
 	}
       else
 	{

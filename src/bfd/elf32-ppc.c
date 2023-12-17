@@ -4977,38 +4977,38 @@ ppc_elf_relax_section(bfd *abfd, asection *isec,
 	  /* A local symbol.  */
 	  Elf_Internal_Sym *isym;
 
-	  /* Read this BFD's local symbols.  */
+	  /* Read this BFD's local symbols: */
 	  if (isymbuf == NULL)
 	    {
-	      isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
+	      isymbuf = (Elf_Internal_Sym *)symtab_hdr->contents;
 	      if (isymbuf == NULL)
-		isymbuf = bfd_elf_get_elf_syms (abfd, symtab_hdr,
-						symtab_hdr->sh_info, 0,
-						NULL, NULL, NULL);
+		isymbuf = bfd_elf_get_elf_syms(abfd, symtab_hdr,
+                                               symtab_hdr->sh_info, 0,
+                                               NULL, NULL, NULL);
 	      if (isymbuf == 0)
 		goto error_return;
 	    }
-	  isym = isymbuf + ELF32_R_SYM (irel->r_info);
+	  isym = (isymbuf + ELF32_R_SYM(irel->r_info));
 	  if (isym->st_shndx == SHN_UNDEF)
-	    continue;	/* We can't do anything with undefined symbols.  */
+	    continue;	/* We cannot do anything with undefined symbols.  */
 	  else if (isym->st_shndx == SHN_ABS)
 	    tsec = bfd_abs_section_ptr;
 	  else if (isym->st_shndx == SHN_COMMON)
 	    tsec = bfd_com_section_ptr;
 	  else
-	    tsec = bfd_section_from_elf_index (abfd, isym->st_shndx);
+	    tsec = bfd_section_from_elf_index(abfd, isym->st_shndx);
 
 	  toff = isym->st_value;
-	  sym_type = ELF_ST_TYPE (isym->st_info);
+	  sym_type = ELF_ST_TYPE(isym->st_info);
 	}
       else
 	{
-	  /* Global symbol handling.  */
+	  /* Global symbol handling: */
 	  unsigned long indx;
 	  struct elf_link_hash_entry *h;
 
-	  indx = ELF32_R_SYM (irel->r_info) - symtab_hdr->sh_info;
-	  h = elf_sym_hashes (abfd)[indx];
+	  indx = (ELF32_R_SYM(irel->r_info) - symtab_hdr->sh_info);
+	  h = elf_sym_hashes(abfd)[indx];
 
 	  while (h->root.type == bfd_link_hash_indirect
 		 || h->root.type == bfd_link_hash_warning)
@@ -5016,10 +5016,10 @@ ppc_elf_relax_section(bfd *abfd, asection *isec,
 
 	  tsec = NULL;
 	  toff = 0;
-	  if (r_type == R_PPC_PLTREL24
-	      && htab->plt != NULL)
+	  if ((r_type == R_PPC_PLTREL24)
+	      && (htab->plt != NULL))
 	    {
-	      struct plt_entry *ent = find_plt_ent (h, got2, irel->r_addend);
+	      struct plt_entry *ent = find_plt_ent(h, got2, irel->r_addend);
 
 	      if (ent != NULL)
 		{
@@ -6858,38 +6858,38 @@ ppc_elf_finish_dynamic_symbol (bfd *output_bfd,
 
 		plt -= got;
 
-		if (plt + 0x8000 < 0x10000)
+		if ((plt + 0x8000) < 0x10000)
 		  {
-		    bfd_put_32 (output_bfd, LWZ_11_30 + PPC_LO (plt), p);
+		    bfd_put_32(output_bfd, (LWZ_11_30 + PPC_LO(plt)), p);
 		    p += 4;
-		    bfd_put_32 (output_bfd, MTCTR_11, p);
+		    bfd_put_32(output_bfd, MTCTR_11, p);
 		    p += 4;
-		    bfd_put_32 (output_bfd, BCTR, p);
+		    bfd_put_32(output_bfd, BCTR, p);
 		    p += 4;
-		    bfd_put_32 (output_bfd, NOP, p);
+		    bfd_put_32(output_bfd, NOP, p);
 		    p += 4;
 		  }
 		else
 		  {
-		    bfd_put_32 (output_bfd, ADDIS_11_30 + PPC_HA (plt), p);
+		    bfd_put_32(output_bfd, (ADDIS_11_30 + PPC_HA(plt)), p);
 		    p += 4;
-		    bfd_put_32 (output_bfd, LWZ_11_11 + PPC_LO (plt), p);
+		    bfd_put_32(output_bfd, (LWZ_11_11 + PPC_LO(plt)), p);
 		    p += 4;
-		    bfd_put_32 (output_bfd, MTCTR_11, p);
+		    bfd_put_32(output_bfd, MTCTR_11, p);
 		    p += 4;
-		    bfd_put_32 (output_bfd, BCTR, p);
+		    bfd_put_32(output_bfd, BCTR, p);
 		    p += 4;
 		  }
 	      }
 	    else
 	      {
-		bfd_put_32 (output_bfd, LIS_11 + PPC_HA (plt), p);
+		bfd_put_32(output_bfd, (LIS_11 + PPC_HA(plt)), p);
 		p += 4;
-		bfd_put_32 (output_bfd, LWZ_11_11 + PPC_LO (plt), p);
+		bfd_put_32(output_bfd, (LWZ_11_11 + PPC_LO(plt)), p);
 		p += 4;
-		bfd_put_32 (output_bfd, MTCTR_11, p);
+		bfd_put_32(output_bfd, MTCTR_11, p);
 		p += 4;
-		bfd_put_32 (output_bfd, BCTR, p);
+		bfd_put_32(output_bfd, BCTR, p);
 		p += 4;
 
 		/* We only need one non-PIC glink stub.  */

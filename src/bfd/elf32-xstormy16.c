@@ -650,32 +650,32 @@ xstormy16_elf_relax_section (bfd *dynobj,
 	    free (isymbuf);
 	  else
 	    {
-	      /* Cache the symbols for elf_link_input_bfd.  */
-	      symtab_hdr->contents = (unsigned char *) isymbuf;
+	      /* Cache the symbols for elf_link_input_bfd: */
+	      symtab_hdr->contents = (unsigned char *)isymbuf;
 	    }
 	}
     }
 
   /* If we changed anything, walk the symbols again to reallocate
      .plt entry addresses.  */
-  if (*again && splt->size > 0)
+  if (*again && (splt->size > 0))
     {
       bfd_vma entry = 0;
 
-      elf_link_hash_traverse (elf_hash_table (info),
-			      xstormy16_relax_plt_realloc, &entry);
+      elf_link_hash_traverse(elf_hash_table(info),
+			     xstormy16_relax_plt_realloc, &entry);
 
-      for (ibfd = info->input_bfds; ibfd ; ibfd = ibfd->link_next)
+      for (ibfd = info->input_bfds; ibfd; ibfd = ibfd->link_next)
 	{
-	  bfd_vma *local_plt_offsets = elf_local_got_offsets (ibfd);
-	  unsigned int nlocals = elf_tdata (ibfd)->symtab_hdr.sh_info;
+	  bfd_vma *local_plt_offsets = elf_local_got_offsets(ibfd);
+	  unsigned long nlocals = elf_tdata(ibfd)->symtab_hdr.sh_info;
 	  unsigned int idx;
 
 	  if (! local_plt_offsets)
 	    continue;
 
 	  for (idx = 0; idx < nlocals; ++idx)
-	    if (local_plt_offsets[idx] != (bfd_vma) -1)
+	    if (local_plt_offsets[idx] != (bfd_vma)-1L)
 	      {
 	        local_plt_offsets[idx] = entry;
 		entry += 4;
@@ -686,9 +686,10 @@ xstormy16_elf_relax_section (bfd *dynobj,
   return TRUE;
 }
 
+/* */
 static bfd_boolean
-xstormy16_elf_always_size_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
-				    struct bfd_link_info *info)
+xstormy16_elf_always_size_sections(bfd *output_bfd ATTRIBUTE_UNUSED,
+				   struct bfd_link_info *info)
 {
   bfd *dynobj;
   asection *splt;

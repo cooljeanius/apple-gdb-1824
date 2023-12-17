@@ -58,22 +58,22 @@ v850_elf_check_relocs (bfd *abfd,
     return TRUE;
 
 #ifdef DEBUG
-  _bfd_error_handler ("v850_elf_check_relocs called for section %A in %B",
-		      sec, abfd);
-#endif
+  _bfd_error_handler("v850_elf_check_relocs called for section %A in %B",
+		     sec, abfd);
+#endif /* DEBUG */
 
-  dynobj = elf_hash_table (info)->dynobj;
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
+  dynobj = elf_hash_table(info)->dynobj;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
   sreloc = NULL;
 
-  rel_end = relocs + sec->reloc_count;
+  rel_end = (relocs + sec->reloc_count);
   for (rel = relocs; rel < rel_end; rel++)
     {
       unsigned long r_symndx;
       struct elf_link_hash_entry *h;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
       if (r_symndx < symtab_hdr->sh_info)
 	h = NULL;
       else
@@ -81,10 +81,10 @@ v850_elf_check_relocs (bfd *abfd,
 	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
 	  while (h->root.type == bfd_link_hash_indirect
 		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	}
 
-      r_type = (enum v850_reloc_type) ELF32_R_TYPE (rel->r_info);
+      r_type = (enum v850_reloc_type)ELF32_R_TYPE(rel->r_info);
       switch (r_type)
 	{
 	default:
@@ -106,14 +106,14 @@ v850_elf_check_relocs (bfd *abfd,
         /* This relocation describes the C++ object vtable hierarchy.
            Reconstruct it for later use during GC.  */
         case R_V850_GNU_VTINHERIT:
-          if (!bfd_elf_gc_record_vtinherit (abfd, sec, h, rel->r_offset))
+          if (!bfd_elf_gc_record_vtinherit(abfd, sec, h, rel->r_offset))
             return FALSE;
           break;
 
         /* This relocation describes which C++ vtable entries
 	   are actually used.  Record for later use during GC.  */
         case R_V850_GNU_VTENTRY:
-          if (!bfd_elf_gc_record_vtentry (abfd, sec, h, rel->r_addend))
+          if (!bfd_elf_gc_record_vtentry(abfd, sec, h, rel->r_addend))
             return FALSE;
           break;
 
@@ -173,12 +173,12 @@ v850_elf_check_relocs (bfd *abfd,
 		      break;
 		    }
 
-		  sprintf(buff, msg, h->root.root.string);
+		  snprintf(buff, sizeof(buff), msg, h->root.root.string);
 		  info->callbacks->warning(info, buff, h->root.root.string,
 					   abfd, h->root.u.def.section,
 					   (bfd_vma)0UL);
 
-		  bfd_set_error (bfd_error_bad_value);
+		  bfd_set_error(bfd_error_bad_value);
 		  h->other |= V850_OTHER_ERROR;
 		  ret = FALSE;
 		}
@@ -186,20 +186,26 @@ v850_elf_check_relocs (bfd *abfd,
 
 	  if (h && h->root.type == bfd_link_hash_common
 	      && h->root.u.c.p
-	      && !strcmp (bfd_get_section_name (abfd, h->root.u.c.p->section), "COMMON"))
+	      && !strcmp(bfd_get_section_name(abfd, h->root.u.c.p->section), "COMMON"))
 	    {
 	      asection * section;
 
-	      section = h->root.u.c.p->section = bfd_make_section_old_way (abfd, common);
+	      section = h->root.u.c.p->section = bfd_make_section_old_way(abfd, common);
 	      section->flags |= SEC_IS_COMMON;
 	    }
 
-#ifdef DEBUG
-	  fprintf (stderr, "v850_elf_check_relocs, found %s relocation for %s%s\n",
-		   v850_elf_howto_table[ (int)r_type ].name,
-		   (h && h->root.root.string) ? h->root.root.string : "<unknown>",
-		   (h->root.type == bfd_link_hash_common) ? ", symbol is common" : "");
-#endif
+#if (defined(DEBUG) && DEBUG) || defined(__clang_analyzer__)
+	  fprintf(stderr, "v850_elf_check_relocs, found %s relocation for %s%s\n",
+# if defined(__clang_analyzer__)
+                  "<unknown",
+# else
+		  v850_elf_howto_table[(int)r_type].name,
+# endif /* __clang_analyzer__ */
+		  ((h && h->root.root.string)
+                   ? h->root.root.string : "<unknown>"),
+		  ((h && (h->root.type == bfd_link_hash_common))
+                   ? ", symbol is common" : ""));
+#endif /* DEBUG || __clang_analyzer__ */
 	  break;
 	}
     }
@@ -281,7 +287,7 @@ find_remembered_hi16s_reloc (bfd_vma addend, bfd_boolean *already_found)
 	  && (match == NULL || match->counter < entry->counter))
 	{
 	  previous = prev;
-	  match    = entry;
+	  match = entry;
 	}
 
       prev = entry;
@@ -2733,15 +2739,15 @@ v850_elf_relax_section (bfd *abfd,
 		/* If this needs to be changed because of future relaxing,
 		   it will be handled here like other internal IND12W
 		   relocs.  */
-		bfd_put_32 (abfd,
-			    0x00000780 | (JARL_R2 (insn[2])<<11) | ((addend << 16) & 0xffff) | ((addend >> 16) & 0xf),
-			    contents + irel->r_offset);
+		bfd_put_32(abfd,
+			   0x00000780 | (JARL_R2(insn[2])<<11) | ((addend << 16) & 0xffff) | ((addend >> 16) & 0xf),
+			   contents + irel->r_offset);
 	      else
-		/* We can't fully resolve this yet, because the external
+		/* We cannot fully resolve this yet, because the external
 		   symbol value may be changed by future relaxing.
 		   We let the final link phase handle it.  */
-		bfd_put_32 (abfd, 0x00000780 | (JARL_R2 (insn[2])<<11),
-			    contents + irel->r_offset);
+		bfd_put_32(abfd, 0x00000780 | (JARL_R2(insn[2])<<11),
+			   contents + irel->r_offset);
 
 	      hi_irelfn->r_info =
 		ELF32_R_INFO (ELF32_R_SYM (hi_irelfn->r_info), R_V850_NONE);

@@ -4410,7 +4410,7 @@ elf64_alpha_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 		dynaddend = (value - dtp_base);
 	      }
 	    else if (info->shared
-		     && r_symndx != 0
+		     && (r_symndx != 0)
 		     && (input_section->flags & SEC_ALLOC)
 		     && !undef_weak_ref)
 	      {

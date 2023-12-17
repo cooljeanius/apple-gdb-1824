@@ -1861,9 +1861,9 @@ elf64_hppa_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
   struct elf64_hppa_link_hash_table *hppa_info;
   struct elf64_hppa_dyn_hash_entry *dyn_h;
 
-  hppa_info = elf64_hppa_hash_table (info);
-  dyn_h = elf64_hppa_dyn_hash_lookup (&hppa_info->dyn_hash_table,
-				      h->root.root.string, FALSE, FALSE);
+  hppa_info = elf64_hppa_hash_table(info);
+  dyn_h = elf64_hppa_dyn_hash_lookup(&hppa_info->dyn_hash_table,
+				     h->root.root.string, FALSE, FALSE);
 
   stub = hppa_info->stub_sec;
   splt = hppa_info->plt_sec;
@@ -1881,7 +1881,7 @@ elf64_hppa_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
      the original values (in elf64_hppa_link_output_symbol_hook).  */
   if (dyn_h && dyn_h->want_opd)
     {
-      BFD_ASSERT (sopd != NULL);
+      BFD_ASSERT(sopd != NULL);
 
       /* Save away the original value and section index so that we
 	 can restore them later.  */

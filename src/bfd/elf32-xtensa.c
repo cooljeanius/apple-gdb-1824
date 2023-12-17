@@ -7583,27 +7583,30 @@ move_shared_literal (asection *sec,
   if (elf32xtensa_no_literal_movement)
     return FALSE;
 
-  relax_info = get_xtensa_relax_info (sec);
+  relax_info = get_xtensa_relax_info(sec);
   if (!relax_info)
     return FALSE;
 
-  target_sec = r_reloc_get_section (target_loc);
-  target_relax_info = get_xtensa_relax_info (target_sec);
+  target_sec = r_reloc_get_section(target_loc);
+  target_relax_info = get_xtensa_relax_info(target_sec);
 
   /* Literals to undefined sections may not be moved because they
      must report an error.  */
-  if (bfd_is_und_section (target_sec))
+  if (bfd_is_und_section(target_sec))
     return FALSE;
 
-  src_entry = elf_xtensa_find_property_entry
-    (prop_table, ptblsize, sec->vma + rel->r_rel.target_offset);
+  src_entry =
+    elf_xtensa_find_property_entry(prop_table, ptblsize,
+                                   (sec->vma + rel->r_rel.target_offset));
 
-  if (!section_cache_section (target_sec_cache, target_sec, link_info))
+  if (!section_cache_section(target_sec_cache, target_sec, link_info))
     return FALSE;
 
-  target_entry = elf_xtensa_find_property_entry
-    (target_sec_cache->ptbl, target_sec_cache->pte_count,
-     target_sec->vma + target_loc->target_offset);
+  target_entry =
+    elf_xtensa_find_property_entry(target_sec_cache->ptbl,
+                                   target_sec_cache->pte_count,
+                                   (target_sec->vma
+                                    + target_loc->target_offset));
 
   if (!target_entry)
     return FALSE;
@@ -7611,96 +7614,96 @@ move_shared_literal (asection *sec,
   /* Make sure that we have not broken any branches.  */
   relocs_fit = FALSE;
 
-  init_ebb_constraint (&ebb_table);
+  init_ebb_constraint(&ebb_table);
   ebb = &ebb_table.ebb;
-  init_ebb (ebb, target_sec_cache->sec, target_sec_cache->contents,
-	    target_sec_cache->content_length,
-	    target_sec_cache->ptbl, target_sec_cache->pte_count,
-	    target_sec_cache->relocs, target_sec_cache->reloc_count);
+  init_ebb(ebb, target_sec_cache->sec, target_sec_cache->contents,
+	   target_sec_cache->content_length,
+	   target_sec_cache->ptbl, target_sec_cache->pte_count,
+	   target_sec_cache->relocs, target_sec_cache->reloc_count);
 
   /* Propose to add 4 bytes + worst-case alignment size increase to
      destination.  */
-  ebb_propose_action (&ebb_table, EBB_NO_ALIGN, 0,
-		      ta_fill, target_loc->target_offset,
-		      -4 - (1 << target_sec->alignment_power), TRUE);
+  ebb_propose_action(&ebb_table, EBB_NO_ALIGN, 0,
+		     ta_fill, target_loc->target_offset,
+		     (-4 - (1 << target_sec->alignment_power)), TRUE);
 
-  /* Check all of the PC-relative relocations to make sure they still fit.  */
-  relocs_fit = check_section_ebb_pcrels_fit (target_sec->owner, target_sec,
-					     target_sec_cache->contents,
-					     target_sec_cache->relocs,
-					     &ebb_table);
+  /* Check all of the PC-relative relocations to make sure they still fit: */
+  relocs_fit = check_section_ebb_pcrels_fit(target_sec->owner, target_sec,
+					    target_sec_cache->contents,
+					    target_sec_cache->relocs,
+					    &ebb_table);
 
   if (!relocs_fit)
     return FALSE;
 
-  text_action_add_literal (&target_relax_info->action_list,
-			   ta_add_literal, target_loc, lit_value, -4);
+  text_action_add_literal(&target_relax_info->action_list,
+			  ta_add_literal, target_loc, lit_value, -4);
 
-  if (target_sec->alignment_power > 2 && target_entry != src_entry)
+  if ((target_sec->alignment_power > 2) && (target_entry != src_entry))
     {
       /* May need to add or remove some fill to maintain alignment.  */
       int fill_extra_space;
       bfd_vma entry_sec_offset;
 
       entry_sec_offset =
-	target_entry->address - target_sec->vma + target_entry->size;
+	(target_entry->address - target_sec->vma + target_entry->size);
 
       /* If the literal range is at the end of the section,
 	 do not add fill.  */
       fill_extra_space = 0;
       the_add_entry =
-	elf_xtensa_find_property_entry (target_sec_cache->ptbl,
-					target_sec_cache->pte_count,
-					entry_sec_offset);
+	elf_xtensa_find_property_entry(target_sec_cache->ptbl,
+                                       target_sec_cache->pte_count,
+                                       entry_sec_offset);
       if (the_add_entry && (the_add_entry->flags & XTENSA_PROP_UNREACHABLE))
-	fill_extra_space = the_add_entry->size;
+	fill_extra_space = (int)the_add_entry->size;
 
-      target_fa = find_fill_action (&target_relax_info->action_list,
-				    target_sec, entry_sec_offset);
-      removed_diff = compute_removed_action_diff (target_fa, target_sec,
-						  entry_sec_offset, 4,
-						  fill_extra_space);
+      target_fa = find_fill_action(&target_relax_info->action_list,
+                                  target_sec, entry_sec_offset);
+      removed_diff = compute_removed_action_diff(target_fa, target_sec,
+						 entry_sec_offset, 4,
+						 fill_extra_space);
       if (target_fa)
-	adjust_fill_action (target_fa, removed_diff);
+	adjust_fill_action(target_fa, removed_diff);
       else
-	text_action_add (&target_relax_info->action_list,
-			 ta_fill, target_sec, entry_sec_offset, removed_diff);
+	text_action_add(&target_relax_info->action_list, ta_fill, target_sec,
+	 		entry_sec_offset, removed_diff);
     }
 
-  /* Mark that the literal will be moved to the new location.  */
-  add_removed_literal (&relax_info->removed_list, &rel->r_rel, target_loc);
+  /* Mark that the literal will be moved to the new location: */
+  add_removed_literal(&relax_info->removed_list, &rel->r_rel, target_loc);
 
-  /* Remove the literal.  */
-  text_action_add (&relax_info->action_list,
-		   ta_remove_literal, sec, rel->r_rel.target_offset, 4);
+  /* Remove the literal: */
+  text_action_add(&relax_info->action_list,
+		  ta_remove_literal, sec, rel->r_rel.target_offset, 4);
 
-  /* If the section is 4-byte aligned, do not add fill.  */
-  if (sec->alignment_power > 2 && target_entry != src_entry)
+  /* If the section is 4-byte aligned, do not add fill: */
+  if ((sec->alignment_power > 2) && (target_entry != src_entry))
     {
       int fill_extra_space;
       bfd_vma entry_sec_offset;
 
       if (src_entry)
-	entry_sec_offset = src_entry->address - sec->vma + src_entry->size;
+	entry_sec_offset = (src_entry->address - sec->vma + src_entry->size);
       else
-	entry_sec_offset = rel->r_rel.target_offset+4;
+	entry_sec_offset = (rel->r_rel.target_offset + 4);
 
       /* If the literal range is at the end of the section,
 	 do not add fill.  */
       fill_extra_space = 0;
-      the_add_entry = elf_xtensa_find_property_entry (prop_table, ptblsize,
-						      entry_sec_offset);
+      the_add_entry = elf_xtensa_find_property_entry(prop_table, ptblsize,
+						     entry_sec_offset);
       if (the_add_entry && (the_add_entry->flags & XTENSA_PROP_UNREACHABLE))
-	fill_extra_space = the_add_entry->size;
+	fill_extra_space = (int)the_add_entry->size;
 
-      fa = find_fill_action (&relax_info->action_list, sec, entry_sec_offset);
-      removed_diff = compute_removed_action_diff (fa, sec, entry_sec_offset,
-						  -4, fill_extra_space);
+      fa = find_fill_action(&relax_info->action_list, sec, entry_sec_offset);
+      removed_diff = compute_removed_action_diff(fa, sec, entry_sec_offset,
+						 -4, fill_extra_space);
       if (fa)
-	adjust_fill_action (fa, removed_diff);
+	adjust_fill_action(fa, removed_diff);
       else
-	text_action_add (&relax_info->action_list,
-			 ta_fill, sec, entry_sec_offset, removed_diff);
+	text_action_add(&relax_info->action_list, ta_fill, sec,
+			entry_sec_offset, removed_diff);
     }
 
   return TRUE;
@@ -7720,7 +7723,7 @@ relax_section (bfd *abfd, asection *sec, struct bfd_link_info *link_info)
   xtensa_relax_info *relax_info;
   bfd_byte *contents;
   bfd_boolean ok = TRUE;
-  unsigned i;
+  unsigned int i;
   bfd_boolean rv = FALSE;
   bfd_boolean virtual_action;
   bfd_size_type sec_size;
@@ -7756,7 +7759,7 @@ relax_section (bfd *abfd, asection *sec, struct bfd_link_info *link_info)
 	  xtensa_relax_info *target_relax_info;
 	  bfd_vma source_offset, old_source_offset;
 	  r_reloc r_rel;
-	  unsigned r_type;
+	  unsigned int r_type;
 	  asection *target_sec;
 
 	  /* Locally change the source address.
@@ -7955,6 +7958,10 @@ relax_section (bfd *abfd, asection *sec, struct bfd_link_info *link_info)
 
       text_action *action = relax_info->action_list.head;
 
+      if (action == NULL) {
+        ; /* ??? */
+      }
+
       final_size = sec->size;
       for (action = relax_info->action_list.head; action;
 	   action = action->next)
@@ -8095,15 +8102,15 @@ relax_section (bfd *abfd, asection *sec, struct bfd_link_info *link_info)
 	      break;
 
 	    default:
-	      /* Not implemented yet.  */
-	      BFD_ASSERT (0);
+	      /* Not implemented yet: */
+	      BFD_ASSERT(0);
 	      break;
 	    }
 
 	  size -= action->removed_bytes;
 	  removed += action->removed_bytes;
-	  BFD_ASSERT (dup_dot <= final_size);
-	  BFD_ASSERT (orig_dot <= orig_size);
+	  BFD_ASSERT(dup_dot <= final_size);
+	  BFD_ASSERT(orig_dot <= orig_size);
 	}
 
       orig_dot += orig_dot_copied;
@@ -8111,58 +8118,59 @@ relax_section (bfd *abfd, asection *sec, struct bfd_link_info *link_info)
 
       if (orig_dot != orig_size)
 	{
-	  copy_size = orig_size - orig_dot;
-	  BFD_ASSERT (orig_size > orig_dot);
-	  BFD_ASSERT (dup_dot + copy_size == final_size);
-	  memmove (&dup_contents[dup_dot], &contents[orig_dot], copy_size);
+	  copy_size = (orig_size - orig_dot);
+	  BFD_ASSERT(orig_size > orig_dot);
+	  BFD_ASSERT((dup_dot + copy_size) == final_size);
+	  memmove(&dup_contents[dup_dot], &contents[orig_dot], copy_size);
 	  orig_dot += copy_size;
 	  dup_dot += copy_size;
 	}
-      BFD_ASSERT (orig_size == orig_dot);
-      BFD_ASSERT (final_size == dup_dot);
+      BFD_ASSERT(orig_size == orig_dot);
+      BFD_ASSERT(final_size == dup_dot);
 
-      /* Move the dup_contents back.  */
+      /* Move the dup_contents back: */
       if (final_size > orig_size)
 	{
 	  /* Contents need to be reallocated.  Swap the dup_contents into
 	     contents.  */
 	  sec->contents = dup_contents;
-	  free (contents);
+	  free(contents);
 	  contents = dup_contents;
-	  pin_contents (sec, contents);
+	  pin_contents(sec, contents);
 	}
       else
 	{
-	  BFD_ASSERT (final_size <= orig_size);
-	  memset (contents, 0, orig_size);
-	  memcpy (contents, dup_contents, final_size);
-	  free (dup_contents);
+	  BFD_ASSERT(final_size <= orig_size);
+	  memset(contents, 0, orig_size);
+	  memcpy(contents, dup_contents, final_size);
+	  free(dup_contents);
 	}
-      free (scratch);
-      pin_contents (sec, contents);
+      free(scratch);
+      pin_contents(sec, contents);
 
       sec->size = final_size;
+      (void)orig_dot_copied;
     }
 
  error_return:
-  release_internal_relocs (sec, internal_relocs);
-  release_contents (sec, contents);
+  release_internal_relocs(sec, internal_relocs);
+  release_contents(sec, contents);
   return ok;
 }
 
-
+/* */
 static bfd_boolean
-translate_section_fixes (asection *sec)
+translate_section_fixes(asection *sec)
 {
   xtensa_relax_info *relax_info;
   reloc_bfd_fix *r;
 
-  relax_info = get_xtensa_relax_info (sec);
+  relax_info = get_xtensa_relax_info(sec);
   if (!relax_info)
     return TRUE;
 
   for (r = relax_info->fix_list; r != NULL; r = r->next)
-    if (!translate_reloc_bfd_fix (r))
+    if (!translate_reloc_bfd_fix(r))
       return FALSE;
 
   return TRUE;
@@ -8456,27 +8464,31 @@ move_literal (bfd *abfd,
   const r_reloc *r_rel;
 
   r_rel = &lit->r_rel;
-  BFD_ASSERT (elf_section_data (sec)->relocs == *internal_relocs_p);
+  BFD_ASSERT(elf_section_data(sec)->relocs == *internal_relocs_p);
 
-  if (r_reloc_is_const (r_rel))
-    bfd_put_32 (abfd, lit->value, contents + offset);
+  if (r_reloc_is_const(r_rel))
+    bfd_put_32(abfd, lit->value, (contents + offset));
   else
     {
       int r_type;
-      unsigned i;
+      unsigned int i;
       asection *target_sec;
       reloc_bfd_fix *fix;
-      unsigned insert_at;
+      unsigned int insert_at;
 
       r_type = ELF32_R_TYPE(r_rel->rela.r_info);
       target_sec = r_reloc_get_section(r_rel);
+
+      if (target_sec == NULL) {
+        ; /* ??? */
+      }
 
       /* This is the difficult case.  We have to create a fix up.  */
       this_rela.r_offset = offset;
       this_rela.r_info = ELF32_R_INFO(0, r_type);
       this_rela.r_addend =
 	(r_rel->target_offset - r_reloc_get_target_offset(r_rel));
-      bfd_put_32 (abfd, lit->value, contents + offset);
+      bfd_put_32(abfd, lit->value, (contents + offset));
 
       /* Currently, we cannot move relocations during a relocatable link.  */
       BFD_ASSERT(!link_info->relocatable);

@@ -1392,10 +1392,10 @@ elf_vax_relocate_section (bfd *output_bfd,
   if (info->relocatable)
     return TRUE;
 
-  dynobj = elf_hash_table (info)->dynobj;
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
-  local_got_offsets = elf_local_got_offsets (input_bfd);
+  dynobj = elf_hash_table(info)->dynobj;
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
+  local_got_offsets = elf_local_got_offsets(input_bfd);
 
   sgot = NULL;
   splt = NULL;
@@ -1403,7 +1403,7 @@ elf_vax_relocate_section (bfd *output_bfd,
   sreloc = NULL;
 
   rel = relocs;
-  relend = relocs + input_section->reloc_count;
+  relend = (relocs + input_section->reloc_count);
   for (; rel < relend; rel++)
     {
       int r_type;
@@ -1415,34 +1415,34 @@ elf_vax_relocate_section (bfd *output_bfd,
       bfd_vma relocation;
       bfd_reloc_status_type r;
 
-      r_type = ELF32_R_TYPE (rel->r_info);
-      if (r_type < 0 || r_type >= (int) R_VAX_max)
+      r_type = ELF32_R_TYPE(rel->r_info);
+      if ((r_type < 0) || (r_type >= (int)R_VAX_max))
 	{
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  return FALSE;
 	}
-      howto = howto_table + r_type;
+      howto = (howto_table + r_type);
 
-      /* This is a final link.  */
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      /* This is a final link: */
+      r_symndx = ELF32_R_SYM(rel->r_info);
       h = NULL;
       sym = NULL;
       sec = NULL;
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
+	  sym = (local_syms + r_symndx);
 	  sec = local_sections[r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 	}
       else
 	{
 	  bfd_boolean unresolved_reloc;
 	  bfd_boolean warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 
 	  if ((h->root.type == bfd_link_hash_defined
 	      || h->root.type == bfd_link_hash_defweak)

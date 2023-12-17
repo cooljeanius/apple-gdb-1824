@@ -1460,42 +1460,48 @@ Operand_lsi4x4_decode (uint32 *valp)
   return 0;
 }
 
+/* */
 static int
-Operand_lsi4x4_encode (uint32 *valp)
+Operand_lsi4x4_encode(uint32 *valp)
 {
-  unsigned r_0, lsi4x4_0;
+  unsigned int r_0, lsi4x4_0;
   lsi4x4_0 = *valp;
   r_0 = ((lsi4x4_0 >> 2) & 0xf);
   *valp = r_0;
   return 0;
 }
 
+/* */
 static int
-Operand_simm7_decode (uint32 *valp)
+Operand_simm7_decode(uint32 *valp)
 {
-  unsigned simm7_0, imm7_0;
-  imm7_0 = *valp & 0x7f;
-  simm7_0 = ((((-((((imm7_0 >> 6) & 1)) & (((imm7_0 >> 5) & 1)))) & 0x1ffffff)) << 7) | imm7_0;
+  unsigned int simm7_0, imm7_0;
+  imm7_0 = (*valp & 0x7f);
+  simm7_0 =
+    (((((-((((imm7_0 >> 6) & 1)) & (((imm7_0 >> 5) & 1)))) & 0x1ffffff)) << 7)
+     | imm7_0);
   *valp = simm7_0;
   return 0;
 }
 
+/* */
 static int
-Operand_simm7_encode (uint32 *valp)
+Operand_simm7_encode(uint32 *valp)
 {
-  unsigned imm7_0, simm7_0;
+  unsigned int imm7_0, simm7_0;
   simm7_0 = *valp;
   imm7_0 = (simm7_0 & 0x7f);
   *valp = imm7_0;
   return 0;
 }
 
+/* */
 static int
-Operand_uimm6_decode (uint32 *valp)
+Operand_uimm6_decode(uint32 *valp)
 {
-  unsigned uimm6_0, imm6_0;
-  imm6_0 = *valp & 0x3f;
-  uimm6_0 = 0x4 + ((((0)) << 6) | imm6_0);
+  unsigned int uimm6_0, imm6_0;
+  imm6_0 = (*valp & 0x3f);
+  uimm6_0 = (0x4 + ((((0)) << 6) | imm6_0));
   *valp = uimm6_0;
   return 0;
 }

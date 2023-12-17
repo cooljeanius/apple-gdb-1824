@@ -2924,8 +2924,8 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  insn0 = 0xe322c000;
 		  insn1 = 0x0004;
 		}
-	      bfd_put_32 (output_bfd, insn0, contents + rel->r_offset);
-	      bfd_put_16 (output_bfd, insn1, contents + rel->r_offset + 4);
+	      bfd_put_32(output_bfd, insn0, (contents + rel->r_offset));
+	      bfd_put_16(output_bfd, insn1, (contents + rel->r_offset + 4));
 	    }
 	  else if (r_type == R_390_TLS_LDCALL)
 	    {
@@ -2945,8 +2945,8 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		     brasl %r14,__tls_get_addr@plt -> brcl 0,. */
 		  insn0 = 0xc0040000;
 		  insn1 = 0x0000;
-		  bfd_put_32 (output_bfd, insn0, contents + rel->r_offset);
-		  bfd_put_16 (output_bfd, insn1, contents + rel->r_offset + 4);
+		  bfd_put_32(output_bfd, insn0, (contents + rel->r_offset));
+		  bfd_put_16(output_bfd, insn1, (contents + rel->r_offset + 4));
 		}
 	    }
 	  continue;
@@ -3104,10 +3104,10 @@ elf_s390_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
       rela.r_offset = (htab->sgotplt->output_section->vma
 		       + htab->sgotplt->output_offset
 		       + got_offset);
-      rela.r_info = ELF64_R_INFO (h->dynindx, R_390_JMP_SLOT);
+      rela.r_info = ELF64_R_INFO(h->dynindx, R_390_JMP_SLOT);
       rela.r_addend = 0;
-      loc = htab->srelplt->contents + plt_index * sizeof (Elf64_External_Rela);
-      bfd_elf64_swap_reloca_out (output_bfd, &rela, loc);
+      loc = (htab->srelplt->contents + plt_index * sizeof(Elf64_External_Rela));
+      bfd_elf64_swap_reloca_out(output_bfd, &rela, loc);
 
       if (!h->def_regular)
 	{
