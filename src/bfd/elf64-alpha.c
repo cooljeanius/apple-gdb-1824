@@ -3715,9 +3715,9 @@ elf64_alpha_relax_section (bfd *abfd, asection *sec,
 	    {
 	      isymbuf = (Elf_Internal_Sym *)symtab_hdr->contents;
 	      if (isymbuf == NULL)
-		isymbuf = bfd_elf_get_elf_syms (abfd, symtab_hdr,
-						symtab_hdr->sh_info, 0,
-						NULL, NULL, NULL);
+		isymbuf = bfd_elf_get_elf_syms(abfd, symtab_hdr,
+                                               symtab_hdr->sh_info, 0,
+                                               NULL, NULL, NULL);
 	      if (isymbuf == NULL)
 		goto error_return;
 	    }
@@ -3729,7 +3729,7 @@ elf64_alpha_relax_section (bfd *abfd, asection *sec,
 	  if (r_type == R_ALPHA_TLSLDM)
 	    {
 	      info.tsec = bfd_abs_section_ptr;
-	      symval = alpha_get_tprel_base (info.link_info);
+	      symval = alpha_get_tprel_base(info.link_info);
 	    }
 	  else
 	    {

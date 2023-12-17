@@ -999,6 +999,10 @@ _bfd_sparc_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
   sym_hashes = elf_sym_hashes(abfd);
   local_got_offsets = elf_local_got_offsets(abfd);
 
+  if (local_got_offsets == NULL) {
+    ; /* ??? */
+  }
+
   sreloc = NULL;
 
   if (ABI_64_P(abfd))
@@ -2993,11 +2997,12 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      else
 		{
 		  outrel.r_info = SPARC_ELF_R_INFO(htab, NULL, 0, r_type);
-		  outrel.r_addend = relocation - dtpoff_base(info)
-				    + rel->r_addend;
+		  outrel.r_addend = (relocation - dtpoff_base(info)
+				     + rel->r_addend);
 		}
 
 	      SPARC_ELF_APPEND_RELA(htab, output_bfd, sreloc, &outrel);
+              (void)relocate;
 	      continue;
 	    }
 	  relocation = tpoff(info, relocation);

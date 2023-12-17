@@ -1872,6 +1872,10 @@ elf64_hppa_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
   spltrel = hppa_info->plt_rel_sec;
   sdltrel = hppa_info->dlt_rel_sec;
 
+  if (sdlt == sdltrel) {
+    ; /* ??? */
+  }
+
   /* Incredible.  It is actually necessary to NOT use the symbol's real
      value when building the dynamic symbol table for a shared library.
      At least for symbols that refer to functions.

@@ -124,59 +124,55 @@ i860_howto_pc16_reloc (bfd *abfd,
   relocation += symbol->section->output_offset;
   relocation += reloc_entry->addend;
 
-  if (reloc_entry->address > bfd_get_section_limit (abfd, input_section))
+  if (reloc_entry->address > bfd_get_section_limit(abfd, input_section))
     return bfd_reloc_outofrange;
 
-  /* Adjust for PC-relative relocation.  */
+  /* Adjust for PC-relative relocation: */
   relocation -= (input_section->output_section->vma
                  + input_section->output_offset
                  + reloc_entry->address
                  + 4);
 
-  /* Check for target out of range.  */
+  /* Check for target out of range: */
   if ((bfd_signed_vma)relocation > (0x7fff << 2)
       || (bfd_signed_vma)relocation < (-0x8000 << 2))
     return bfd_reloc_outofrange;
 
-  addr = (bfd_byte *) data + reloc_entry->address;
-  insn = bfd_get_32 (abfd, addr);
+  addr = (bfd_byte *)data + reloc_entry->address;
+  insn = bfd_get_32(abfd, addr);
 
   relocation >>= reloc_entry->howto->rightshift;
-  relocation = (((relocation & 0xf800) << 5) | (relocation & 0x7ff))
-               & reloc_entry->howto->dst_mask;
-  insn = (insn & ~reloc_entry->howto->dst_mask) | relocation;
+  relocation = ((((relocation & 0xf800) << 5) | (relocation & 0x7ff))
+                & reloc_entry->howto->dst_mask);
+  insn = ((insn & ~reloc_entry->howto->dst_mask) | relocation);
 
-  bfd_put_32 (abfd, (bfd_vma) insn, addr);
+  bfd_put_32(abfd, (bfd_vma)insn, addr);
 
   return bfd_reloc_ok;
 }
 
-/* special_function for R_860_HIGHADJ relocation.  */
+/* special_function for R_860_HIGHADJ relocation: */
 static bfd_reloc_status_type
-i860_howto_highadj_reloc (bfd *abfd,
-                          arelent *reloc_entry,
-                          asymbol *symbol,
-                          void *data,
-                          asection *input_section,
-                          bfd *output_bfd,
-                          const char **error_message ATTRIBUTE_UNUSED)
+i860_howto_highadj_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                         void *data, asection *input_section, bfd *output_bfd,
+                         const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma insn;
   bfd_vma relocation;
   bfd_byte *addr;
 
-  if (output_bfd != NULL
-      && (symbol->flags & BSF_SECTION_SYM) == 0
+  if ((output_bfd != NULL)
+      && ((symbol->flags & BSF_SECTION_SYM) == 0)
       && (! reloc_entry->howto->partial_inplace
-	  || reloc_entry->addend == 0))
+	  || (reloc_entry->addend == 0)))
     {
       reloc_entry->address += input_section->output_offset;
       return bfd_reloc_ok;
     }
 
-  /* Used elf32-mips.c as an example.  */
-  if (bfd_is_und_section (symbol->section)
-      && output_bfd == (bfd *) NULL)
+  /* Used elf32-mips.c as an example: */
+  if (bfd_is_und_section(symbol->section)
+      && output_bfd == (bfd *)NULL)
     return bfd_reloc_undefined;
 
   if (bfd_is_com_section (symbol->section))

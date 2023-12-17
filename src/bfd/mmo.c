@@ -1527,41 +1527,40 @@ mmo_map_set_sizes (bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
   sec->lma = sec->vma;
 }
 
-/* Read the mmo file and turn it into sections.  */
-
+/* Read the mmo file and turn it into sections: */
 static bfd_boolean
-mmo_scan (bfd *abfd)
+mmo_scan(bfd *abfd)
 {
   unsigned int i;
   unsigned int lineno = 1;
   bfd_boolean error = FALSE;
   bfd_vma vma = 0;
-  asection *sec = bfd_make_section_old_way (abfd, MMO_TEXT_SECTION_NAME);
+  asection *sec = bfd_make_section_old_way(abfd, MMO_TEXT_SECTION_NAME);
   asection *non_spec_sec = NULL;
   bfd_vma non_spec_vma = 0;
   char *current_filename = NULL;
   bfd_size_type nbytes_read = 0;
-  /* Buffer with room to read a 64-bit value.  */
+  /* Buffer with room to read a 64-bit value: */
   bfd_byte buf[8];
   long stab_loc = -1;
   char *file_names[256];
 
-  memset (file_names, 0, sizeof (file_names));
+  memset(file_names, 0, sizeof(file_names));
 
-  if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0)
+  if (bfd_seek(abfd, (file_ptr)0L, SEEK_SET) != 0)
     goto error_return;
 
-  while ((nbytes_read = bfd_bread (buf, 4, abfd)) == 4)
+  while ((nbytes_read = bfd_bread(buf, 4, abfd)) == 4)
     {
       if (buf[0] == LOP)
 	{
-	  unsigned int y = bfd_get_8 (abfd, buf + 2);
-	  unsigned int z = bfd_get_8 (abfd, buf + 3);
+	  unsigned int y = bfd_get_8(abfd, (buf + 2));
+	  unsigned int z = bfd_get_8(abfd, (buf + 3));
 
 	  /* Change back to the original section for lopcodes other
 	     than LOP_QUOTE that comes after a LOP_SPEC.  */
-	  if ((buf[1] != LOP_QUOTE || y != 0 || z != 1)
-	      && non_spec_sec != NULL)
+	  if (((buf[1] != LOP_QUOTE) || (y != 0) || (z != 1))
+	      && (non_spec_sec != NULL))
 	    {
 	      sec = non_spec_sec;
 	      vma = non_spec_vma;
@@ -1573,67 +1572,67 @@ mmo_scan (bfd *abfd)
 	    default:
 	      (*_bfd_error_handler)
 		(_("%s: invalid mmo file: unsupported lopcode `%d'\n"),
-		 bfd_get_filename (abfd), buf[1]);
-	      bfd_set_error (bfd_error_bad_value);
+		 bfd_get_filename(abfd), buf[1]);
+	      bfd_set_error(bfd_error_bad_value);
 	      goto error_return;
 
 	    case LOP_QUOTE:
-	      /* Quote the next 32-bit word.  */
-	      if (y != 0 || z != 1)
+	      /* Quote the next 32-bit word: */
+	      if ((y != 0) || (z != 1))
 		{
 		  (*_bfd_error_handler)
 		    (_("%s: invalid mmo file: expected YZ = 1 got YZ = %d for lop_quote\n"),
-		     bfd_get_filename (abfd), y*256+z);
-		  bfd_set_error (bfd_error_bad_value);
+		     bfd_get_filename(abfd), ((y * 256) + z));
+		  bfd_set_error(bfd_error_bad_value);
 		  goto error_return;
 		}
-	      if (bfd_bread (buf, 4, abfd) != 4)
+	      if (bfd_bread(buf, 4, abfd) != 4)
 		goto error_return;
 
-	      mmo_xore_32 (sec, vma, bfd_get_32 (abfd, buf));
+	      mmo_xore_32(sec, vma, bfd_get_32(abfd, buf));
 	      vma += 4;
 	      vma &= ~3;
 	      lineno++;
 	      break;
 
 	    case LOP_LOC:
-	      /* Set vma (and section).  */
-	      vma = (bfd_vma) y << 56;
+	      /* Set vma (and section): */
+	      vma = (bfd_vma)y << 56;
 	      if (z == 1)
 		{
-		  /* Get a 32-bit value.  */
-		  if (bfd_bread (buf, 4, abfd) != 4)
+		  /* Get a 32-bit value: */
+		  if (bfd_bread(buf, 4, abfd) != 4)
 		    goto error_return;
 
-		  vma += bfd_get_32 (abfd, buf);
+		  vma += bfd_get_32(abfd, buf);
 		}
 	      else if (z == 2)
 		{
-		  /* Get a 64-bit value.  */
-		  if (bfd_bread (buf, 8, abfd) != 8)
+		  /* Get a 64-bit value: */
+		  if (bfd_bread(buf, 8, abfd) != 8)
 		    goto error_return;
 
-		  vma += bfd_get_64 (abfd, buf);
+		  vma += bfd_get_64(abfd, buf);
 		}
 	      else
 		{
 		  (*_bfd_error_handler)
 		    (_("%s: invalid mmo file: expected z = 1 or z = 2, got z = %d for lop_loc\n"),
-		     bfd_get_filename (abfd), z);
-		  bfd_set_error (bfd_error_bad_value);
+		     bfd_get_filename(abfd), z);
+		  bfd_set_error(bfd_error_bad_value);
 		  goto error_return;
 		}
 
-	      sec = mmo_decide_section (abfd, vma);
+	      sec = mmo_decide_section(abfd, vma);
 	      if (sec == NULL)
 		goto error_return;
 	      break;
 
 	    case LOP_SKIP:
-	      /* Move forward within the same section.  */
-	      vma += y * 256 + z;
+	      /* Move forward within the same section: */
+	      vma += ((y * 256) + z);
 
-	      sec = mmo_decide_section (abfd, vma);
+	      sec = mmo_decide_section(abfd, vma);
 	      if (sec == NULL)
 		goto error_return;
 	      break;
@@ -1642,52 +1641,52 @@ mmo_scan (bfd *abfd)
 	      /* A fixup: Store the current vma somewhere.  Position using
 		 same format as LOP_LOC.  */
 	      {
-		bfd_vma p = (bfd_vma) y << 56;
+		bfd_vma p = (bfd_vma)y << 56;
 		asection *fixosec;
 
 		if (z == 1)
 		  {
-		    /* Get a 32-bit value.  */
-		    if (bfd_bread (buf, 4, abfd) != 4)
+		    /* Get a 32-bit value: */
+		    if (bfd_bread(buf, 4, abfd) != 4)
 		      goto error_return;
 
-		    p += bfd_get_32 (abfd, buf);
+		    p += bfd_get_32(abfd, buf);
 		  }
 		else if (z == 2)
 		  {
-		    /* Get a 64-bit value.  */
-		    if (bfd_bread (buf, 8, abfd) != 8)
+		    /* Get a 64-bit value: */
+		    if (bfd_bread(buf, 8, abfd) != 8)
 		      goto error_return;
 
-		    p += bfd_get_64 (abfd, buf);
+		    p += bfd_get_64(abfd, buf);
 		  }
 		else
 		  {
 		    (*_bfd_error_handler)
 		      (_("%s: invalid mmo file: expected z = 1 or z = 2, got z = %d for lop_fixo\n"),
-		       bfd_get_filename (abfd), z);
-		    bfd_set_error (bfd_error_bad_value);
+		       bfd_get_filename(abfd), z);
+		    bfd_set_error(bfd_error_bad_value);
 		    goto error_return;
 		  }
 
 		/* The section where we store this address might be a
 		   different one than the current section.  */
-		fixosec = mmo_decide_section (abfd, p);
+		fixosec = mmo_decide_section(abfd, p);
 		if (fixosec == NULL)
 		  goto error_return;
-		mmo_xore_64 (fixosec, p, vma);
+		mmo_xore_64(fixosec, p, vma);
 	      }
 	    break;
 
 	    case LOP_FIXR:
-	      /* A fixup: Store YZ of this lopcode into YZ at vma - 4 * yz.  */
+	      /* A fixup: Store YZ of this lopcode into YZ at vma - 4 * yz: */
 	      {
-		unsigned int yz = (y * 256 + z);
-		bfd_vma p = vma + 2 - 4 * yz;
-		asection *fixrsec = mmo_decide_section (abfd, p);
+		unsigned int yz = ((y * 256) + z);
+		bfd_vma p = (vma + 2 - (4 * yz));
+		asection *fixrsec = mmo_decide_section(abfd, p);
 		if (fixrsec == NULL)
 		  goto error_return;
-		mmo_xore_16 (fixrsec, p, yz);
+		mmo_xore_16(fixrsec, p, yz);
 	      }
 	    break;
 
@@ -1704,47 +1703,47 @@ mmo_scan (bfd *abfd)
 		  {
 		    (*_bfd_error_handler)
 		      (_("%s: invalid mmo file: expected y = 0, got y = %d for lop_fixrx\n"),
-		       bfd_get_filename (abfd), y);
-		    bfd_set_error (bfd_error_bad_value);
+		       bfd_get_filename(abfd), y);
+		    bfd_set_error(bfd_error_bad_value);
 		    goto error_return;
 		  }
 
-		if (z != 16 && z != 24)
+		if ((z != 16) && (z != 24))
 		  {
 		    (*_bfd_error_handler)
 		      (_("%s: invalid mmo file: expected z = 16 or z = 24, got z = %d for lop_fixrx\n"),
-		       bfd_get_filename (abfd), z);
-		    bfd_set_error (bfd_error_bad_value);
+		       bfd_get_filename(abfd), z);
+		    bfd_set_error(bfd_error_bad_value);
 		    goto error_return;
 		  }
 
-		/* Get the next 32-bit value.  */
-		if (bfd_bread (buf, 4, abfd) != 4)
+		/* Get the next 32-bit value: */
+		if (bfd_bread(buf, 4, abfd) != 4)
 		  goto error_return;
 
-		delta = bfd_get_32 (abfd, buf);
+		delta = bfd_get_32(abfd, buf);
 
 		/* Do an, ehm, involved calculation for the location of
 		   the fixup.  See mmixal documentation for a verbose
 		   explanation.  We follow it verbosely here for the
 		   readers delight.  */
 		if (buf[0] == 0)
-		  p = vma - 4 * delta;
+		  p = (vma - (4 * delta));
 		else if (buf[0] == 1)
-		  p = vma - 4 * ((delta & 0xffffff) - (1 << z));
+		  p = (vma - (4 * ((delta & 0xffffff) - (1 << z))));
 		else
 		  {
 		    (*_bfd_error_handler)
 		      (_("%s: invalid mmo file: leading byte of operand word must be 0 or 1, got %d for lop_fixrx\n"),
-		       bfd_get_filename (abfd), buf[0]);
-		    bfd_set_error (bfd_error_bad_value);
+		       bfd_get_filename(abfd), buf[0]);
+		    bfd_set_error(bfd_error_bad_value);
 		    goto error_return;
 		  }
 
-		fixrsec = mmo_decide_section (abfd, vma);
+		fixrsec = mmo_decide_section(abfd, vma);
 		if (fixrsec == NULL)
 		  goto error_return;
-		mmo_xore_32 (fixrsec, p, delta);
+		mmo_xore_32(fixrsec, p, delta);
 	      }
 	    break;
 
@@ -1753,14 +1752,14 @@ mmo_scan (bfd *abfd)
 		 number.  */
 	      if (z != 0)
 		{
-		  char *fname = (char *)bfd_malloc(z * 4 + 1);
+		  char *fname = (char *)bfd_malloc((z * 4) + 1);
 
 		  if (fname == NULL)
 		    {
 		      (*_bfd_error_handler)
 			(_("%s: cannot allocate file name for file number %d, %d bytes\n"),
-			 bfd_get_filename (abfd), y, z * 4 + 1);
-		      bfd_set_error (bfd_error_system_call);
+			 bfd_get_filename(abfd), y, ((z * 4) + 1));
+		      bfd_set_error(bfd_error_system_call);
 		      goto error_return;
 		    }
 
@@ -1768,7 +1767,7 @@ mmo_scan (bfd *abfd)
 
 		  for (i = 0; i < z; i++)
 		    {
-		      if (bfd_bread (fname + i * 4, 4, abfd) != 4)
+		      if (bfd_bread((fname + (i * 4)), 4, abfd) != 4)
 			{
 			  free (fname);
 			  goto error_return;
@@ -1799,6 +1798,9 @@ mmo_scan (bfd *abfd)
 		}
 
 	      current_filename = file_names[y];
+              if (current_filename == NULL) {
+              	; /* ??? */
+              }
 	      lineno = 0;
 	      break;
 

@@ -1063,17 +1063,18 @@ abs32code (bfd *abfd,
       /* Change the reloc type from 32bitcode possible 24, to 24bit
 	 possible 32.  */
       r->howto = &howto_reloc_abs32codeshrunk;
-      /* The place to relc moves back by four bytes.  */
+      /* The place to relc moves back by four bytes: */
       r->address -=4;
 
-      /* This will be four bytes smaller in the long run.  */
+      /* This will be four bytes smaller in the long run: */
       shrink += 4 ;
-      perform_slip (abfd, 4, input_section, r->address-shrink + 4);
+      perform_slip(abfd, 4, input_section, (r->address-shrink + 4));
     }
 
   return (int)shrink;
 }
 
+/* */
 static int
 aligncode(bfd *abfd, asection *input_section, arelent *r,
 	  unsigned int shrink)

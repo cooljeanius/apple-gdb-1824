@@ -588,20 +588,20 @@ ms1_elf_print_private_bfd_data(bfd *abfd, void *ptr)
 
   BFD_ASSERT((abfd != NULL) && (ptr != NULL));
 
-  /* Print normal ELF private data.  */
-  _bfd_elf_print_private_bfd_data (abfd, ptr);
+  /* Print normal ELF private data: */
+  _bfd_elf_print_private_bfd_data(abfd, ptr);
 
-  flags = elf_elfheader (abfd)->e_flags;
-  fprintf (file, _("private flags = 0x%lx:"), (long)flags);
+  flags = (flagword)elf_elfheader(abfd)->e_flags;
+  fprintf(file, _("private flags = 0x%lx:"), (long)flags);
 
   switch (flags & EF_MS1_CPU_MASK)
     {
     default:
-    case EF_MS1_CPU_MRISC:	fprintf (file, " ms1-16-002");	break;
-    case EF_MS1_CPU_MRISC2:  fprintf (file, " ms1-16-003");	break;
+    case EF_MS1_CPU_MRISC: fprintf(file, " ms1-16-002"); break;
+    case EF_MS1_CPU_MRISC2: fprintf(file, " ms1-16-003"); break;
     }
 
-  fputc ('\n', file);
+  fputc('\n', file);
 
   return TRUE;
 }

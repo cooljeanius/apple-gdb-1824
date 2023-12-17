@@ -117,7 +117,7 @@ a29k_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
     }
 
   if (symbol_in != NULL)
-    sym_value = get_symbol_value(symbol_in);
+    sym_value = (unsigned long)get_symbol_value(symbol_in);
   else
     sym_value = 0UL;
 
@@ -151,7 +151,7 @@ a29k_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
 	    return bfd_reloc_overflow;
 	}
       signed_value >>= 2;
-      insn = INSERT_HWORD(insn, signed_value);
+      insn = (unsigned long)INSERT_HWORD(insn, (unsigned long)signed_value);
       bfd_put_32(abfd, (bfd_vma)insn ,hit_data);
       break;
     case R_ILOHALF:
@@ -278,7 +278,7 @@ reloc_processing(arelent *relent, struct internal_reloc *reloc,
       }
       relent->address = ihihalf_vaddr;
       ihihalf_vaddr = (bfd_vma)-1;
-      relent->addend = reloc->r_symndx;
+      relent->addend = (bfd_vma)reloc->r_symndx;
       relent->sym_ptr_ptr= bfd_abs_section_ptr->symbol_ptr_ptr;
     }
   else
@@ -458,19 +458,19 @@ coff_a29k_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 		}
 	    }
 
-	  /* Put the adjusted value back into the instruction.  */
+	  /* Put the adjusted value back into the instruction: */
 	  signed_value >>= 2;
-	  insn = INSERT_HWORD (insn, signed_value);
+	  insn = (unsigned long)INSERT_HWORD(insn, (unsigned long)signed_value);
 
-	  bfd_put_32 (input_bfd, (bfd_vma) insn, loc);
+	  bfd_put_32(input_bfd, (bfd_vma)insn, loc);
 	  break;
 
 	case R_ILOHALF:
 	  insn = (unsigned long)bfd_get_32(input_bfd, loc);
 	  unsigned_value = EXTRACT_HWORD(insn);
 	  unsigned_value += (unsigned long)val;
-	  insn = INSERT_HWORD (insn, unsigned_value);
-	  bfd_put_32 (input_bfd, (bfd_vma) insn, loc);
+	  insn = INSERT_HWORD(insn, unsigned_value);
+	  bfd_put_32(input_bfd, (bfd_vma)insn, loc);
 	  break;
 
 	case R_IHIHALF:
@@ -482,18 +482,18 @@ coff_a29k_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	case R_IHCONST:
 	  if (! hihalf)
 	    {
-	      if (! ((*info->callbacks->reloc_dangerous)
-		     (info, _("missing IHIHALF reloc"), input_bfd,
-		      input_section, rel->r_vaddr - input_section->vma)))
+	      if (!((*info->callbacks->reloc_dangerous)
+		    (info, _("missing IHIHALF reloc"), input_bfd,
+		     input_section, (rel->r_vaddr - input_section->vma))))
 		return FALSE;
 	      hihalf_val = 0;
 	    }
 
 	  insn = (unsigned long)bfd_get_32(input_bfd, loc);
-	  unsigned_value = (unsigned long)(rel->r_symndx + hihalf_val);
+	  unsigned_value = (unsigned long)((bfd_vma)rel->r_symndx + hihalf_val);
 	  unsigned_value >>= 16;
-	  insn = INSERT_HWORD (insn, unsigned_value);
-	  bfd_put_32 (input_bfd, (bfd_vma) insn, loc);
+	  insn = INSERT_HWORD(insn, unsigned_value);
+	  bfd_put_32(input_bfd, (bfd_vma)insn, loc);
 
 	  hihalf = FALSE;
 
@@ -502,12 +502,12 @@ coff_a29k_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	case R_BYTE:
 	case R_HWORD:
 	case R_WORD:
-	  rstat = _bfd_relocate_contents (howto_table + rel->r_type,
-					  input_bfd, val, loc);
+	  rstat = _bfd_relocate_contents((howto_table + rel->r_type),
+					 input_bfd, val, loc);
 	  if (rstat == bfd_reloc_overflow)
 	    overflow = TRUE;
 	  else if (rstat != bfd_reloc_ok)
-	    abort ();
+	    abort();
 	  break;
 	}
 

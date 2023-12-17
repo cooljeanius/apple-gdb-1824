@@ -5047,6 +5047,9 @@ ppc64_elf_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info,
   elf_section_data(sec)->local_dynrel = NULL;
 
   htab = ppc_hash_table(info);
+  if (htab == NULL) {
+    ; /* ??? */
+  }
   symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
   sym_hashes = elf_sym_hashes(abfd);
   local_got_ents = elf_local_got_ents (abfd);
@@ -6912,11 +6915,11 @@ ppc64_elf_edit_toc (bfd *obfd ATTRIBUTE_UNUSED, struct bfd_link_info *info)
       unsigned char *used;
       unsigned char *keep, last, some_unused;
 
-      toc = bfd_get_section_by_name (ibfd, ".toc");
-      if (toc == NULL
-	  || toc->size == 0
-	  || toc->sec_info_type == ELF_INFO_TYPE_JUST_SYMS
-	  || elf_discarded_section (toc))
+      toc = bfd_get_section_by_name(ibfd, ".toc");
+      if ((toc == NULL)
+	  || (toc->size == 0)
+	  || (toc->sec_info_type == ELF_INFO_TYPE_JUST_SYMS)
+	  || elf_discarded_section(toc))
 	continue;
 
       local_syms = NULL;

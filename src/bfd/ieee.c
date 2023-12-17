@@ -337,29 +337,29 @@ ieee_write_int5_out (bfd *abfd, bfd_vma value)
 }
 
 static bfd_boolean
-parse_int (common_header_type *ieee, bfd_vma *value_ptr)
+parse_int(common_header_type *ieee, bfd_vma *value_ptr)
 {
-  int value = this_byte (ieee);
+  int value = this_byte(ieee);
   int result;
 
-  if (value >= 0 && value <= 127)
+  if ((value >= 0) && (value <= 127))
     {
-      *value_ptr = value;
-      next_byte (ieee);
+      *value_ptr = (bfd_vma)value;
+      next_byte(ieee);
       return TRUE;
     }
-  else if (value >= 0x80 && value <= 0x88)
+  else if ((value >= 0x80) && (value <= 0x88))
     {
-      unsigned int count = value & 0xf;
+      unsigned int count = (value & 0xf);
 
       result = 0;
-      next_byte (ieee);
+      next_byte(ieee);
       while (count)
 	{
-	  result = (result << 8) | this_byte_and_next (ieee);
+	  result = ((result << 8) | this_byte_and_next(ieee));
 	  count--;
 	}
-      *value_ptr = result;
+      *value_ptr = (bfd_vma)result;
       return TRUE;
     }
   return FALSE;
@@ -775,6 +775,9 @@ ieee_slurp_external_symbols (bfd *abfd)
 	      case ieee_attribute_record_enum:
 		symbol_name_index = (unsigned int)must_parse_int(&(ieee->h));
 		symbol_type_index = (unsigned int)must_parse_int(&(ieee->h));
+  		if (symbol_name_index == symbol_type_index) {
+                  ; /* ??? */
+                }
 		symbol_attribute_def = (unsigned int)must_parse_int(&(ieee->h));
 		switch (symbol_attribute_def)
 		  {
@@ -847,10 +850,11 @@ ieee_slurp_external_symbols (bfd *abfd)
 	    bfd_boolean pcrel_ignore;
 	    unsigned int extra;
 
-	    next_byte (&(ieee->h));
-	    next_byte (&(ieee->h));
+	    next_byte(&(ieee->h));
+	    next_byte(&(ieee->h));
 
 	    symbol_name_index = (unsigned int)must_parse_int(&(ieee->h));
+            (void)symbol_name_index;
 	    parse_expression(ieee, &symbol->symbol.value, &symbol_ignore,
 			     &pcrel_ignore, &extra, &symbol->symbol.section);
 

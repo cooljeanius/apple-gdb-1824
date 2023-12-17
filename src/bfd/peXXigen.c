@@ -520,13 +520,14 @@ add_data_entry(bfd *abfd, struct internal_extra_pe_aouthdr *aout,
     }
 }
 
+/* */
 unsigned int
-_bfd_XXi_swap_aouthdr_out (bfd * abfd, void * in, void * out)
+_bfd_XXi_swap_aouthdr_out(bfd *abfd, void *in, void *out)
 {
-  struct internal_aouthdr *aouthdr_in = (struct internal_aouthdr *) in;
+  struct internal_aouthdr *aouthdr_in = (struct internal_aouthdr *)in;
   pe_data_type *pe = pe_data (abfd);
   struct internal_extra_pe_aouthdr *extra = &pe->pe_opthdr;
-  PEAOUTHDR *aouthdr_out = (PEAOUTHDR *) out;
+  PEAOUTHDR *aouthdr_out = (PEAOUTHDR *)out;
   bfd_vma sa, fa, ib;
   IMAGE_DATA_DIRECTORY idata2, idata5, tls;
 
@@ -1165,15 +1166,15 @@ pe_print_idata (bfd * abfd, void * vfile)
  vma:            Hint    Time      Forward  DLL       First\n\
                  Table   Stamp     Chain    Name      Thunk\n"));
 
-  /* Read the whole section.  Some of the fields might be before dataoff.  */
-  if (!bfd_malloc_and_get_section (abfd, section, &data))
+  /* Read the whole section.  Some of the fields might be before dataoff: */
+  if (!bfd_malloc_and_get_section(abfd, section, &data))
     {
       if (data != NULL)
-	free (data);
+	free(data);
       return FALSE;
     }
 
-  adj = section->vma - extra->ImageBase;
+  adj = (section->vma - extra->ImageBase);
 
   /* Print all image import descriptors.  */
   for (i = 0; i < datasize; i += onaline)
@@ -1188,7 +1189,7 @@ pe_print_idata (bfd * abfd, void * vfile)
       char *dll;
 
       /* Print (i + extra->DataDirectory[1].VirtualAddress).  */
-      fprintf (file, " %08lx\t", (unsigned long) (i + adj + dataoff));
+      fprintf(file, " %08lx\t", (unsigned long)(i + adj + dataoff));
       hint_addr = bfd_get_32 (abfd, data + i + dataoff);
       time_stamp = bfd_get_32 (abfd, data + i + 4 + dataoff);
       forward_chain = bfd_get_32 (abfd, data + i + 8 + dataoff);

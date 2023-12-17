@@ -628,17 +628,18 @@ MY(slurp_symbol_table)(bfd *abfd)
 	    /* structure before it in memory.                             */
 	    /**************************************************************/
 	    cache_ptr->symbol.name = strings;
-	    memcpy (strings, sym_pointer + 1, length);
+	    memcpy(strings, (sym_pointer + 1), length);
 	    strings[length] = '\0';
-	    strings += length + 1;
+	    strings += (length + 1);
 	  }
 	else
-	  cache_ptr->symbol.name = (char *) NULL;
+	  cache_ptr->symbol.name = (char *)NULL;
 
-	/* skip over the embedded symbol. */
-	sym_pointer = (struct external_nlist *) (((char *) sym_pointer) +
-						 length);
+	/* skip over the embedded symbol: */
+	sym_pointer = (struct external_nlist *)(((char *)sym_pointer) +
+                                                length);
       }
+    (void)cache_save;
   }
 
   obj_aout_symbols(abfd) = cached;

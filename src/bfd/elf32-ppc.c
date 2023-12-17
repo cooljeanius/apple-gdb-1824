@@ -3951,11 +3951,11 @@ ppc_elf_tls_optimize (bfd *obfd ATTRIBUTE_UNUSED,
 		  case R_PPC_REL14_BRNTAKEN:
 		  case R_PPC_REL24:
 		    if (expecting_tls_get_addr
-			&& h != NULL
-			&& h == htab->tls_get_addr)
+			&& (h != NULL)
+			&& (h == htab->tls_get_addr))
 		      {
-			struct plt_entry *ent = find_plt_ent (h, NULL, 0);
-			if (ent != NULL && ent->plt.refcount > 0)
+			struct plt_entry *ent = find_plt_ent(h, NULL, 0);
+			if ((ent != NULL) && (ent->plt.refcount > 0))
 			  ent->plt.refcount -= 1;
 		      }
 		    expecting_tls_get_addr = 0;
@@ -3970,11 +3970,11 @@ ppc_elf_tls_optimize (bfd *obfd ATTRIBUTE_UNUSED,
 		  {
 		    if (tls_set == 0)
 		      {
-			/* We managed to get rid of a got entry.  */
+			/* We managed to get rid of a got entry: */
 			if (h->got.refcount > 0)
 			  h->got.refcount -= 1;
 		      }
-		    tls_mask = &ppc_elf_hash_entry (h)->tls_mask;
+		    tls_mask = &ppc_elf_hash_entry(h)->tls_mask;
 		  }
 		else
 		  {
@@ -3984,29 +3984,29 @@ ppc_elf_tls_optimize (bfd *obfd ATTRIBUTE_UNUSED,
 
 		    if (locsyms == NULL)
 		      {
-			locsyms = (Elf_Internal_Sym *) symtab_hdr->contents;
+			locsyms = (Elf_Internal_Sym *)symtab_hdr->contents;
 			if (locsyms == NULL)
-			  locsyms = bfd_elf_get_elf_syms (ibfd, symtab_hdr,
-							  symtab_hdr->sh_info,
-							  0, NULL, NULL, NULL);
+			  locsyms = bfd_elf_get_elf_syms(ibfd, symtab_hdr,
+							 symtab_hdr->sh_info,
+							 0, NULL, NULL, NULL);
 			if (locsyms == NULL)
 			  {
-			    if (elf_section_data (sec)->relocs != relstart)
-			      free (relstart);
+			    if (elf_section_data(sec)->relocs != relstart)
+			      free(relstart);
 			    return FALSE;
 			  }
 		      }
-		    sym = locsyms + r_symndx;
-		    lgot_refs = elf_local_got_refcounts (ibfd);
+		    sym = (locsyms + r_symndx);
+		    lgot_refs = elf_local_got_refcounts(ibfd);
 		    if (lgot_refs == NULL)
-		      abort ();
+		      abort();
 		    if (tls_set == 0)
 		      {
-			/* We managed to get rid of a got entry.  */
+			/* We managed to get rid of a got entry: */
 			if (lgot_refs[r_symndx] > 0)
 			  lgot_refs[r_symndx] -= 1;
 		      }
-		    lgot_masks = (char *) (lgot_refs + symtab_hdr->sh_info);
+		    lgot_masks = (char *)(lgot_refs + symtab_hdr->sh_info);
 		    tls_mask = &lgot_masks[r_symndx];
 		  }
 
@@ -4014,17 +4014,17 @@ ppc_elf_tls_optimize (bfd *obfd ATTRIBUTE_UNUSED,
 		*tls_mask &= ~tls_clear;
 	      }
 
-	    if (elf_section_data (sec)->relocs != relstart)
-	      free (relstart);
+	    if (elf_section_data(sec)->relocs != relstart)
+	      free(relstart);
 	  }
 
-      if (locsyms != NULL
-	  && (symtab_hdr->contents != (unsigned char *) locsyms))
+      if ((locsyms != NULL)
+	  && (symtab_hdr->contents != (unsigned char *)locsyms))
 	{
 	  if (!info->keep_memory)
-	    free (locsyms);
+	    free(locsyms);
 	  else
-	    symtab_hdr->contents = (unsigned char *) locsyms;
+	    symtab_hdr->contents = (unsigned char *)locsyms;
 	}
     }
   return TRUE;
@@ -6225,10 +6225,10 @@ ppc_elf_relocate_section (bfd *output_bfd,
 	      /* This reloc will be computed at runtime.  We clear the memory
 		 so that it contains predictable value.  */
 	      if (! skip
-		  && ((input_section->flags & SEC_ALLOC) != 0
-		      || ELF32_R_TYPE (outrel.r_info) != R_PPC_RELATIVE))
+		  && (((input_section->flags & SEC_ALLOC) != 0)
+		      || (ELF32_R_TYPE(outrel.r_info) != R_PPC_RELATIVE)))
 		{
-		  relocation = howto->pc_relative ? outrel.r_offset : 0;
+		  relocation = (howto->pc_relative ? outrel.r_offset : 0);
 		  addend = 0;
 		  break;
 		}
@@ -6238,7 +6238,7 @@ ppc_elf_relocate_section (bfd *output_bfd,
 	case R_PPC_RELAX32PC_PLT:
 	case R_PPC_RELAX32_PLT:
 	  {
-	    struct plt_entry *ent = find_plt_ent (h, got2, addend);
+	    struct plt_entry *ent = find_plt_ent(h, got2, addend);
 
 	    if (!htab->old_plt)
 	      relocation = (htab->glink->output_section->vma
@@ -6266,8 +6266,8 @@ ppc_elf_relocate_section (bfd *output_bfd,
 	    unsigned long t0;
 	    unsigned long t1;
 
-	    t0 = bfd_get_32 (output_bfd, contents + rel->r_offset);
-	    t1 = bfd_get_32 (output_bfd, contents + rel->r_offset + 4);
+	    t0 = bfd_get_32(output_bfd, (contents + rel->r_offset));
+	    t1 = bfd_get_32(output_bfd, (contents + rel->r_offset + 4));
 
 	    /* We're clearing the bits for R_PPC_ADDR16_HA
 	       and R_PPC_ADDR16_LO here.  */
@@ -6276,11 +6276,11 @@ ppc_elf_relocate_section (bfd *output_bfd,
 
 	    /* t0 is HA, t1 is LO */
 	    relocation += addend;
-	    t0 |= ((relocation + 0x8000) >> 16) & 0xffff;
-	    t1 |= relocation & 0xffff;
+	    t0 |= (((relocation + 0x8000) >> 16) & 0xffff);
+	    t1 |= (relocation & 0xffff);
 
-	    bfd_put_32 (output_bfd, t0, contents + rel->r_offset);
-	    bfd_put_32 (output_bfd, t1, contents + rel->r_offset + 4);
+	    bfd_put_32(output_bfd, t0, (contents + rel->r_offset));
+	    bfd_put_32(output_bfd, t1, (contents + rel->r_offset + 4));
 	  }
 	  continue;
 
@@ -6895,6 +6895,7 @@ ppc_elf_finish_dynamic_symbol (bfd *output_bfd,
 		/* We only need one non-PIC glink stub.  */
 		break;
 	      }
+            (void)p;
 	  }
 	else
 	  break;
@@ -6909,29 +6910,29 @@ ppc_elf_finish_dynamic_symbol (bfd *output_bfd,
       /* This symbols needs a copy reloc.  Set it up.  */
 
 #ifdef DEBUG
-      fprintf (stderr, ", copy");
-#endif
+      fprintf(stderr, ", copy");
+#endif /* DEBUG */
 
-      BFD_ASSERT (h->dynindx != -1);
+      BFD_ASSERT(h->dynindx != -1);
 
-      if (ppc_elf_hash_entry (h)->has_sda_refs)
+      if (ppc_elf_hash_entry(h)->has_sda_refs)
 	s = htab->relsbss;
       else
 	s = htab->relbss;
-      BFD_ASSERT (s != NULL);
+      BFD_ASSERT(s != NULL);
 
       rela.r_offset = (h->root.u.def.value
 		       + h->root.u.def.section->output_section->vma
 		       + h->root.u.def.section->output_offset);
-      rela.r_info = ELF32_R_INFO (h->dynindx, R_PPC_COPY);
+      rela.r_info = ELF32_R_INFO(h->dynindx, R_PPC_COPY);
       rela.r_addend = 0;
-      loc = s->contents + s->reloc_count++ * sizeof (Elf32_External_Rela);
-      bfd_elf32_swap_reloca_out (output_bfd, &rela, loc);
+      loc = s->contents + s->reloc_count++ * sizeof(Elf32_External_Rela);
+      bfd_elf32_swap_reloca_out(output_bfd, &rela, loc);
     }
 
 #ifdef DEBUG
-  fprintf (stderr, "\n");
-#endif
+  fprintf(stderr, "\n");
+#endif /* DEBUG */
 
   /* Mark some specially defined symbols as absolute.  */
   if (strcmp (h->root.root.string, "_DYNAMIC") == 0

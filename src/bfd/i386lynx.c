@@ -387,13 +387,20 @@ NAME(lynx,swap_std_reloc_in)(bfd *abfd, struct reloc_std_external *bytes,
   r_baserel = (0 != (bytes->r_index[0] & RELOC_STD_BITS_BASEREL_BIG));
   r_jmptable = (0 != (bytes->r_index[0] & RELOC_STD_BITS_JMPTABLE_BIG));
   r_relative = (0 != (bytes->r_index[0] & RELOC_STD_BITS_RELATIVE_BIG));
-  r_length = (bytes->r_index[0] & RELOC_STD_BITS_LENGTH_BIG)
-    >> RELOC_STD_BITS_LENGTH_SH_BIG;
+  r_length =
+    ((bytes->r_index[0] & RELOC_STD_BITS_LENGTH_BIG)
+     >> RELOC_STD_BITS_LENGTH_SH_BIG);
 
-  cache_ptr->howto = aout_32_std_howto_table + r_length + 4 * r_pcrel;
+  if ((r_baserel == r_jmptable) || (r_jmptable == r_relative)
+      || (r_baserel == r_relative))
+    {
+      ; /* ??? */
+    }
+
+  cache_ptr->howto = (aout_32_std_howto_table + r_length + (4 * r_pcrel));
   /* FIXME-soon:  Roll baserel, jmptable, relative bits into howto setting */
 
-  MOVE_ADDRESS (0);
+  MOVE_ADDRESS(0);
 }
 
 /* Reloc hackery: */

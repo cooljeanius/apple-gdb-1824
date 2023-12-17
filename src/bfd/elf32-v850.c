@@ -271,8 +271,9 @@ remember_hi16s_reloc(bfd *abfd, bfd_vma addend, bfd_byte *address)
     }
 }
 
+/* */
 static bfd_byte *
-find_remembered_hi16s_reloc (bfd_vma addend, bfd_boolean *already_found)
+find_remembered_hi16s_reloc(bfd_vma addend, bfd_boolean *already_found)
 {
   hi16s_location *match = NULL;
   hi16s_location *entry;
@@ -280,11 +281,11 @@ find_remembered_hi16s_reloc (bfd_vma addend, bfd_boolean *already_found)
   hi16s_location *prev;
   bfd_byte *addr;
 
-  /* Search the table.  Record the most recent entry that matches.  */
+  /* Search the table.  Record the most recent entry that matches: */
   for (entry = previous_hi16s; entry; entry = entry->next)
     {
-      if (entry->addend == addend
-	  && (match == NULL || match->counter < entry->counter))
+      if ((entry->addend == addend)
+	  && ((match == NULL) || (match->counter < entry->counter)))
 	{
 	  previous = prev;
 	  match = entry;
@@ -296,14 +297,14 @@ find_remembered_hi16s_reloc (bfd_vma addend, bfd_boolean *already_found)
   if (match == NULL)
     return NULL;
 
-  /* Extract the address.  */
+  /* Extract the address: */
   addr = match->address;
 
-  /* Remember if this entry has already been used before.  */
+  /* Remember if this entry has already been used before: */
   if (already_found)
-    * already_found = match->found;
+    *already_found = match->found;
 
-  /* Note that this entry has now been used.  */
+  /* Note that this entry has now been used: */
   match->found = TRUE;
 
   return addr;
@@ -2501,44 +2502,44 @@ v850_elf_relax_section (bfd *abfd,
 	  fprintf(stderr,
 		  "relax check r_info 0x%"BFD_VMA_FMT"x r_offset 0x%"BFD_VMA_FMT"x r_addend 0x%"BFD_VMA_FMT"x\n",
 		  irel->r_info, irel->r_offset, irel->r_addend);
-#endif
+#endif /* DEBUG_RELAX */
 
-	  /* Get the section contents.  */
+	  /* Get the section contents: */
 	  if (contents == NULL)
 	    {
-	      if (elf_section_data (sec)->this_hdr.contents != NULL)
-		contents = elf_section_data (sec)->this_hdr.contents;
+	      if (elf_section_data(sec)->this_hdr.contents != NULL)
+		contents = elf_section_data(sec)->this_hdr.contents;
 	      else
 		{
-		  if (! bfd_malloc_and_get_section (abfd, sec, &contents))
+		  if (! bfd_malloc_and_get_section(abfd, sec, &contents))
 		    goto error_return;
 		}
 	    }
 
-	  /* Read this BFD's local symbols if we haven't done so already.  */
-	  if (isymbuf == NULL && symtab_hdr->sh_info != 0)
+	  /* Read this BFD's local symbols if we still need to do so: */
+	  if ((isymbuf == NULL) && (symtab_hdr->sh_info != 0))
 	    {
-	      isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
+	      isymbuf = (Elf_Internal_Sym *)symtab_hdr->contents;
 	      if (isymbuf == NULL)
-		isymbuf = bfd_elf_get_elf_syms (abfd, symtab_hdr,
-						symtab_hdr->sh_info, 0,
-						NULL, NULL, NULL);
+		isymbuf = bfd_elf_get_elf_syms(abfd, symtab_hdr,
+                                               symtab_hdr->sh_info, 0,
+                                               NULL, NULL, NULL);
 	      if (isymbuf == NULL)
 		goto error_return;
 	    }
 
 	  laddr = irel->r_offset;
 
-	  if (ELF32_R_TYPE (irel->r_info) == (int) R_V850_LONGCALL)
+	  if (ELF32_R_TYPE(irel->r_info) == (int)R_V850_LONGCALL)
 	    {
-	      /* Check code for -mlong-calls output. */
-	      if (laddr + 16 <= (bfd_vma) sec->size)
+	      /* Check code for -mlong-calls output: */
+	      if ((laddr + 16) <= (bfd_vma)sec->size)
 		{
-		  insn[0] = bfd_get_16 (abfd, contents + laddr);
-		  insn[1] = bfd_get_16 (abfd, contents + laddr + 4);
-		  insn[2] = bfd_get_32 (abfd, contents + laddr + 8);
-		  insn[3] = bfd_get_16 (abfd, contents + laddr + 12);
-		  insn[4] = bfd_get_16 (abfd, contents + laddr + 14);
+		  insn[0] = bfd_get_16(abfd, (contents + laddr));
+		  insn[1] = bfd_get_16(abfd, (contents + laddr + 4));
+		  insn[2] = bfd_get_32(abfd, (contents + laddr + 8));
+		  insn[3] = bfd_get_16(abfd, (contents + laddr + 12));
+		  insn[4] = bfd_get_16(abfd, (contents + laddr + 14));
 
 		  if ((insn[0] & MOVHI_MASK) != MOVHI
 		       || MOVHI_R1 (insn[0]) != 0)

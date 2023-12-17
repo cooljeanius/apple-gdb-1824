@@ -15408,7 +15408,6 @@
 					"-Woverlength-strings",
 					"-Wswitch-default",
 					"-Wwrite-strings",
-					"-Wcast-align",
 				);
 			};
 			name = Debug;

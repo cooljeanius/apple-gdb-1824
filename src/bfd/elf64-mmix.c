@@ -1956,6 +1956,10 @@ mmix_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
   if (!elf_bad_symtab(abfd))
     sym_hashes_end -= symtab_hdr->sh_info;
 
+  if (sym_hashes_end == NULL) {
+    ; /* ??? */
+  }
+
   /* First we sort the relocs so that any register relocs come before
      expansion-relocs to the same insn.  FIXME: Not done for mmo.  */
   qsort((PTR)relocs, sec->reloc_count, sizeof(Elf_Internal_Rela),
@@ -2541,7 +2545,7 @@ mmix_elf_relax_section(bfd *abfd, asection *sec,
       /* If no R_MMIX_BASE_PLUS_OFFSET relocs and no PUSHJ-stub relocs,
          then nothing to do.  */
       || (bpodata == NULL
-	  && mmix_elf_section_data (sec)->pjs.n_pushj_relocs == 0))
+	  && mmix_elf_section_data(sec)->pjs.n_pushj_relocs == 0))
     return TRUE;
 
   symtab_hdr = &elf_tdata(abfd)->symtab_hdr;

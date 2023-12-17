@@ -1331,7 +1331,7 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  {
 	    const char *name = 0;
 
-	    DUMP_RELOC2 (howto->name, rel);
+	    DUMP_RELOC2(howto->name, rel);
 
 	    if ((strncmp(".idata$2", input_section->name, (size_t)8L) == 0)
                 && (first_thunk_address == 0))
@@ -1340,9 +1340,9 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		int idata5offset;
 		struct coff_link_hash_entry *myh;
 
-		myh = coff_link_hash_lookup (coff_hash_table (info),
-					     "__idata5_magic__",
-					     FALSE, FALSE, TRUE);
+		myh = coff_link_hash_lookup(coff_hash_table(info),
+					    "__idata5_magic__",
+					    FALSE, FALSE, TRUE);
 		BFD_ASSERT(sec != NULL);
 		first_thunk_address =
 		  (myh->root.u.def.value
@@ -1350,7 +1350,7 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		   + sec->output_offset
 		   - pe_data(output_bfd)->pe_opthdr.ImageBase);
 
-		idata5offset = myh->root.u.def.value;
+		idata5offset = (int)myh->root.u.def.value;
 		myh = coff_link_hash_lookup(coff_hash_table(info),
                                             "__idata6_magic__",
                                             FALSE, FALSE, TRUE);
