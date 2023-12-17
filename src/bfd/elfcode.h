@@ -649,8 +649,8 @@ elf_object_p(bfd *abfd)
       if (i_ehdrp->e_shnum != 1)
 	{
 	  /* Check that we don't have a totally silly number of sections: */
-	  if ((i_ehdrp->e_shnum > (unsigned int)-1 / sizeof(x_shdr))
-	      || (i_ehdrp->e_shnum > (unsigned int)-1 / sizeof(i_shdr)))
+	  if ((i_ehdrp->e_shnum > ((unsigned int)-1U / sizeof(x_shdr)))
+	      || (i_ehdrp->e_shnum > (unsigned int)((size_t)-1L / sizeof(i_shdr))))
 	    goto got_wrong_format_error;
 
 	  where += ((i_ehdrp->e_shnum - 1) * sizeof(x_shdr));

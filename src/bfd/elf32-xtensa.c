@@ -1264,17 +1264,16 @@ elf_xtensa_allocate_local_got_size (struct bfd_link_info *info,
 	{
 	  if (local_got_refcounts[j] > 0)
 	    srelgot->size += (local_got_refcounts[j]
-			      * sizeof (Elf32_External_Rela));
+			      * sizeof(Elf32_External_Rela));
 	}
     }
 }
 
 
-/* Set the sizes of the dynamic sections.  */
-
+/* Set the sizes of the dynamic sections: */
 static bfd_boolean
-elf_xtensa_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
-				  struct bfd_link_info *info)
+elf_xtensa_size_dynamic_sections(bfd *output_bfd ATTRIBUTE_UNUSED,
+				 struct bfd_link_info *info)
 {
   bfd *dynobj, *abfd;
   asection *s, *srelplt, *splt, *sgotplt, *srelgot, *spltlittbl, *sgotloc;
@@ -1285,94 +1284,94 @@ elf_xtensa_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
   plt_chunks = 0;
   srelgot = 0;
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
   if (dynobj == NULL)
-    abort ();
+    abort();
 
-  if (elf_hash_table (info)->dynamic_sections_created)
+  if (elf_hash_table(info)->dynamic_sections_created)
     {
-      /* Set the contents of the .interp section to the interpreter.  */
+      /* Set the contents of the .interp section to the interpreter: */
       if (info->executable)
 	{
-	  s = bfd_get_section_by_name (dynobj, ".interp");
+	  s = bfd_get_section_by_name(dynobj, ".interp");
 	  if (s == NULL)
-	    abort ();
-	  s->size = sizeof ELF_DYNAMIC_INTERPRETER;
-	  s->contents = (unsigned char *) ELF_DYNAMIC_INTERPRETER;
+	    abort();
+	  s->size = sizeof(ELF_DYNAMIC_INTERPRETER);
+	  s->contents = (unsigned char *)ELF_DYNAMIC_INTERPRETER;
 	}
 
-      /* Allocate room for one word in ".got".  */
-      s = bfd_get_section_by_name (dynobj, ".got");
+      /* Allocate room for one word in ".got": */
+      s = bfd_get_section_by_name(dynobj, ".got");
       if (s == NULL)
-	abort ();
+	abort();
       s->size = 4;
 
-      /* Adjust refcounts for symbols that we now know are not "dynamic".  */
-      elf_link_hash_traverse (elf_hash_table (info),
-			      elf_xtensa_fix_refcounts,
-			      (void *) info);
+      /* Adjust refcounts for symbols that we now know are not "dynamic": */
+      elf_link_hash_traverse(elf_hash_table(info),
+			     elf_xtensa_fix_refcounts,
+			     (void *)info);
 
       /* Allocate space in ".rela.got" for literals that reference
 	 global symbols.  */
-      srelgot = bfd_get_section_by_name (dynobj, ".rela.got");
+      srelgot = bfd_get_section_by_name(dynobj, ".rela.got");
       if (srelgot == NULL)
-	abort ();
-      elf_link_hash_traverse (elf_hash_table (info),
-			      elf_xtensa_allocate_got_size,
-			      (void *) srelgot);
+	abort();
+      elf_link_hash_traverse(elf_hash_table(info),
+			     elf_xtensa_allocate_got_size,
+			     (void *)srelgot);
 
       /* If we are generating a shared object, we also need space in
 	 ".rela.got" for R_XTENSA_RELATIVE relocs for literals that
 	 reference local symbols.  */
       if (info->shared)
-	elf_xtensa_allocate_local_got_size (info, srelgot);
+	elf_xtensa_allocate_local_got_size(info, srelgot);
 
-      /* Allocate space in ".rela.plt" for literals that have PLT entries.  */
-      srelplt = bfd_get_section_by_name (dynobj, ".rela.plt");
+      /* Allocate space in ".rela.plt" for literals that have PLT entries: */
+      srelplt = bfd_get_section_by_name(dynobj, ".rela.plt");
       if (srelplt == NULL)
-	abort ();
-      elf_link_hash_traverse (elf_hash_table (info),
-			      elf_xtensa_allocate_plt_size,
-			      (void *) srelplt);
+	abort();
+      elf_link_hash_traverse(elf_hash_table(info),
+			     elf_xtensa_allocate_plt_size,
+			     (void *)srelplt);
 
       /* Allocate space in ".plt" to match the size of ".rela.plt".  For
 	 each PLT entry, we need the PLT code plus a 4-byte literal.
 	 For each chunk of ".plt", we also need two more 4-byte
 	 literals, two corresponding entries in ".rela.got", and an
 	 8-byte entry in ".xt.lit.plt".  */
-      spltlittbl = bfd_get_section_by_name (dynobj, ".xt.lit.plt");
+      spltlittbl = bfd_get_section_by_name(dynobj, ".xt.lit.plt");
       if (spltlittbl == NULL)
-	abort ();
+	abort();
 
-      plt_entries = srelplt->size / sizeof (Elf32_External_Rela);
+      plt_entries = (int)(srelplt->size / sizeof(Elf32_External_Rela));
       plt_chunks =
-	(plt_entries + PLT_ENTRIES_PER_CHUNK - 1) / PLT_ENTRIES_PER_CHUNK;
+	((plt_entries + PLT_ENTRIES_PER_CHUNK - 1) / PLT_ENTRIES_PER_CHUNK);
 
       /* Iterate over all the PLT chunks, including any extra sections
 	 created earlier because the initial count of PLT relocations
 	 was an overestimate.  */
       for (chunk = 0;
-	   (splt = elf_xtensa_get_plt_section (dynobj, chunk)) != NULL;
+	   (splt = elf_xtensa_get_plt_section(dynobj, chunk)) != NULL;
 	   chunk++)
 	{
 	  int chunk_entries;
 
-	  sgotplt = elf_xtensa_get_gotplt_section (dynobj, chunk);
+	  sgotplt = elf_xtensa_get_gotplt_section(dynobj, chunk);
 	  if (sgotplt == NULL)
-	    abort ();
+	    abort();
 
-	  if (chunk < plt_chunks - 1)
+	  if (chunk < (plt_chunks - 1))
 	    chunk_entries = PLT_ENTRIES_PER_CHUNK;
-	  else if (chunk == plt_chunks - 1)
-	    chunk_entries = plt_entries - (chunk * PLT_ENTRIES_PER_CHUNK);
+	  else if (chunk == (plt_chunks - 1))
+	    chunk_entries = (plt_entries - (chunk * PLT_ENTRIES_PER_CHUNK));
 	  else
 	    chunk_entries = 0;
 
 	  if (chunk_entries != 0)
 	    {
-	      sgotplt->size = 4 * (chunk_entries + 2);
-	      splt->size = PLT_ENTRY_SIZE * chunk_entries;
-	      srelgot->size += 2 * sizeof (Elf32_External_Rela);
+	      sgotplt->size = (4 * (chunk_entries + 2));
+	      splt->size = (PLT_ENTRY_SIZE * chunk_entries);
+	      srelgot->size += (2 * sizeof(Elf32_External_Rela));
 	      spltlittbl->size += 8;
 	    }
 	  else
@@ -1384,9 +1383,9 @@ elf_xtensa_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 
       /* Allocate space in ".got.loc" to match the total size of all the
 	 literal tables.  */
-      sgotloc = bfd_get_section_by_name (dynobj, ".got.loc");
+      sgotloc = bfd_get_section_by_name(dynobj, ".got.loc");
       if (sgotloc == NULL)
-	abort ();
+	abort();
       sgotloc->size = spltlittbl->size;
       for (abfd = info->input_bfds; abfd != NULL; abfd = abfd->link_next)
 	{
@@ -1394,15 +1393,17 @@ elf_xtensa_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	    continue;
 	  for (s = abfd->sections; s != NULL; s = s->next)
 	    {
-	      if (! elf_discarded_section (s)
-		  && xtensa_is_littable_section (s)
-		  && s != spltlittbl)
+	      if (! elf_discarded_section(s)
+		  && xtensa_is_littable_section(s)
+		  && (s != spltlittbl))
 		sgotloc->size += s->size;
 	    }
 	}
     }
+  else
+    (void)plt_entries;
 
-  /* Allocate memory for dynamic sections.  */
+  /* Allocate memory for dynamic sections: */
   relplt = FALSE;
   relgot = FALSE;
   for (s = dynobj->sections; s != NULL; s = s->next)
@@ -1414,15 +1415,15 @@ elf_xtensa_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 
       /* It's OK to base decisions on the section name, because none
 	 of the dynobj section names depend upon the input files.  */
-      name = bfd_get_section_name (dynobj, s);
+      name = bfd_get_section_name(dynobj, s);
 
-      if (strncmp (name, ".rela", 5) == 0)
+      if (strncmp(name, ".rela", 5UL) == 0)
 	{
 	  if (s->size != 0)
 	    {
-	      if (strcmp (name, ".rela.plt") == 0)
+	      if (strcmp(name, ".rela.plt") == 0)
 		relplt = TRUE;
-	      else if (strcmp (name, ".rela.got") == 0)
+	      else if (strcmp(name, ".rela.got") == 0)
 		relgot = TRUE;
 
 	      /* We use the reloc_count field as a counter if we need
@@ -1430,13 +1431,13 @@ elf_xtensa_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	      s->reloc_count = 0;
 	    }
 	}
-      else if (strncmp (name, ".plt.", 5) != 0
-	       && strncmp (name, ".got.plt.", 9) != 0
-	       && strcmp (name, ".got") != 0
-	       && strcmp (name, ".plt") != 0
-	       && strcmp (name, ".got.plt") != 0
-	       && strcmp (name, ".xt.lit.plt") != 0
-	       && strcmp (name, ".got.loc") != 0)
+      else if ((strncmp(name, ".plt.", 5UL) != 0)
+	       && (strncmp(name, ".got.plt.", 9UL) != 0)
+	       && (strcmp(name, ".got") != 0)
+	       && (strcmp(name, ".plt") != 0)
+	       && (strcmp(name, ".got.plt") != 0)
+	       && (strcmp(name, ".xt.lit.plt") != 0)
+	       && (strcmp(name, ".got.loc") != 0))
 	{
 	  /* It's not one of our sections, so don't allocate space.  */
 	  continue;
@@ -1457,34 +1458,34 @@ elf_xtensa_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	}
       else if ((s->flags & SEC_HAS_CONTENTS) != 0)
 	{
-	  /* Allocate memory for the section contents.  */
-	  s->contents = (bfd_byte *) bfd_zalloc (dynobj, s->size);
+	  /* Allocate memory for the section contents: */
+	  s->contents = (bfd_byte *)bfd_zalloc(dynobj, s->size);
 	  if (s->contents == NULL)
 	    return FALSE;
 	}
     }
 
-  if (elf_hash_table (info)->dynamic_sections_created)
+  if (elf_hash_table(info)->dynamic_sections_created)
     {
       /* Add the special XTENSA_RTLD relocations now.  The offsets won't be
 	 known until finish_dynamic_sections, but we need to get the relocs
 	 in place before they are sorted.  */
       if (srelgot == NULL)
-	abort ();
+	abort();
       for (chunk = 0; chunk < plt_chunks; chunk++)
 	{
 	  Elf_Internal_Rela irela;
 	  bfd_byte *loc;
 
 	  irela.r_offset = 0;
-	  irela.r_info = ELF32_R_INFO (0, R_XTENSA_RTLD);
+	  irela.r_info = ELF32_R_INFO(0, R_XTENSA_RTLD);
 	  irela.r_addend = 0;
 
 	  loc = (srelgot->contents
-		 + srelgot->reloc_count * sizeof (Elf32_External_Rela));
-	  bfd_elf32_swap_reloca_out (output_bfd, &irela, loc);
-	  bfd_elf32_swap_reloca_out (output_bfd, &irela,
-				     loc + sizeof (Elf32_External_Rela));
+		 + (srelgot->reloc_count * sizeof(Elf32_External_Rela)));
+	  bfd_elf32_swap_reloca_out(output_bfd, &irela, loc);
+	  bfd_elf32_swap_reloca_out(output_bfd, &irela,
+				    (loc + sizeof(Elf32_External_Rela)));
 	  srelgot->reloc_count += 2;
 	}
 
@@ -1494,33 +1495,33 @@ elf_xtensa_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	 the .dynamic section.  The DT_DEBUG entry is filled in by the
 	 dynamic linker and used by the debugger.  */
 #define add_dynamic_entry(TAG, VAL) \
-  _bfd_elf_add_dynamic_entry (info, TAG, VAL)
+  _bfd_elf_add_dynamic_entry(info, TAG, VAL)
 
       if (! info->shared)
 	{
-	  if (!add_dynamic_entry (DT_DEBUG, 0))
+	  if (!add_dynamic_entry(DT_DEBUG, 0))
 	    return FALSE;
 	}
 
       if (relplt)
 	{
-	  if (!add_dynamic_entry (DT_PLTGOT, 0)
-	      || !add_dynamic_entry (DT_PLTRELSZ, 0)
-	      || !add_dynamic_entry (DT_PLTREL, DT_RELA)
-	      || !add_dynamic_entry (DT_JMPREL, 0))
+	  if (!add_dynamic_entry(DT_PLTGOT, 0)
+	      || !add_dynamic_entry(DT_PLTRELSZ, 0)
+	      || !add_dynamic_entry(DT_PLTREL, DT_RELA)
+	      || !add_dynamic_entry(DT_JMPREL, 0))
 	    return FALSE;
 	}
 
       if (relgot)
 	{
-	  if (!add_dynamic_entry (DT_RELA, 0)
-	      || !add_dynamic_entry (DT_RELASZ, 0)
-	      || !add_dynamic_entry (DT_RELAENT, sizeof (Elf32_External_Rela)))
+	  if (!add_dynamic_entry(DT_RELA, 0)
+	      || !add_dynamic_entry(DT_RELASZ, 0)
+	      || !add_dynamic_entry(DT_RELAENT, sizeof(Elf32_External_Rela)))
 	    return FALSE;
 	}
 
-      if (!add_dynamic_entry (DT_XTENSA_GOT_LOC_OFF, 0)
-	  || !add_dynamic_entry (DT_XTENSA_GOT_LOC_SZ, 0))
+      if (!add_dynamic_entry(DT_XTENSA_GOT_LOC_OFF, 0)
+	  || !add_dynamic_entry(DT_XTENSA_GOT_LOC_SZ, 0))
 	return FALSE;
     }
 #undef add_dynamic_entry
@@ -2825,7 +2826,7 @@ static void
 elf_xtensa_final_write_processing(bfd *abfd,
 				  bfd_boolean linker ATTRIBUTE_UNUSED)
 {
-  int mach;
+  unsigned long mach;
   unsigned long val;
 
   switch (mach = bfd_get_mach(abfd))
@@ -2834,6 +2835,7 @@ elf_xtensa_final_write_processing(bfd *abfd,
       val = E_XTENSA_MACH;
       break;
     default:
+      (void)mach;
       return;
     }
 

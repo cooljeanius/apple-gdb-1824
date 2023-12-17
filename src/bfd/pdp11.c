@@ -3284,6 +3284,9 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
   symbol_map = finfo->symbol_map;
 
   reloc_count = (rel_size / RELOC_SIZE);
+  if (reloc_count) {
+    ; /* ??? */
+  }
   rel = relocs;
   rel_end = (rel + rel_size);
   for (; rel < rel_end; rel += RELOC_SIZE)

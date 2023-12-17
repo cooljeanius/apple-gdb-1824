@@ -3120,10 +3120,10 @@ elf_s390_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
 	}
     }
 
-  if (h->got.offset != (bfd_vma) -1
-      && elf_s390_hash_entry(h)->tls_type != GOT_TLS_GD
-      && elf_s390_hash_entry(h)->tls_type != GOT_TLS_IE
-      && elf_s390_hash_entry(h)->tls_type != GOT_TLS_IE_NLT)
+  if ((h->got.offset != (bfd_vma)-1L)
+      && (elf_s390_hash_entry(h)->tls_type != GOT_TLS_GD)
+      && (elf_s390_hash_entry(h)->tls_type != GOT_TLS_IE)
+      && (elf_s390_hash_entry(h)->tls_type != GOT_TLS_IE_NLT))
     {
       Elf_Internal_Rela rela;
       bfd_byte *loc;
@@ -3131,7 +3131,7 @@ elf_s390_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
       /* This symbol has an entry in the global offset table.  Set it
 	 up.  */
       if (htab->sgot == NULL || htab->srelgot == NULL)
-	abort ();
+	abort();
 
       rela.r_offset = (htab->sgot->output_section->vma
 		       + htab->sgot->output_offset

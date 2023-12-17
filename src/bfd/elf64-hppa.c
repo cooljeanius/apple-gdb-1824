@@ -414,21 +414,19 @@ elf64_hppa_object_p(bfd *abfd)
 /* Given section type (hdr->sh_type), return a boolean indicating
    whether or not the section is an elf64-hppa specific section.  */
 static bfd_boolean
-elf64_hppa_section_from_shdr (bfd *abfd,
-			      Elf_Internal_Shdr *hdr,
-			      const char *name,
-			      int shindex)
+elf64_hppa_section_from_shdr(bfd *abfd, Elf_Internal_Shdr *hdr,
+			     const char *name, int shindex)
 {
   asection *newsect;
 
   switch (hdr->sh_type)
     {
     case SHT_PARISC_EXT:
-      if (strcmp (name, ".PARISC.archext") != 0)
+      if (strcmp(name, ".PARISC.archext") != 0)
 	return FALSE;
       break;
     case SHT_PARISC_UNWIND:
-      if (strcmp (name, ".PARISC.unwind") != 0)
+      if (strcmp(name, ".PARISC.unwind") != 0)
 	return FALSE;
       break;
     case SHT_PARISC_DOC:
@@ -437,9 +435,11 @@ elf64_hppa_section_from_shdr (bfd *abfd,
       return FALSE;
     }
 
-  if (! _bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex))
+  if (! _bfd_elf_make_section_from_shdr(abfd, hdr, name, shindex))
     return FALSE;
   newsect = hdr->bfd_section;
+  if (newsect == NULL)
+    return FALSE;
 
   return TRUE;
 }
@@ -463,8 +463,8 @@ get_dyn_name(bfd *abfd, struct elf_link_hash_entry *h,
   if (h)
     nlen = strlen(h->root.root.string);
   else
-    nlen = 8 + 1 + sizeof(rel->r_info) * 2 - 8;
-  tlen = nlen + 1 + sizeof(rel->r_addend) * 2 + 1;
+    nlen = (8UL + 1UL + (sizeof(rel->r_info) * 2UL) - 8UL);
+  tlen = (nlen + 1UL + (sizeof(rel->r_addend) * 2UL) + 1UL);
 
   len = *plen;
   buf = *pbuf;
@@ -480,19 +480,19 @@ get_dyn_name(bfd *abfd, struct elf_link_hash_entry *h,
 
   if (h)
     {
-      memcpy (buf, h->root.root.string, nlen);
+      memcpy(buf, h->root.root.string, nlen);
       buf[nlen++] = '+';
-      sprintf_vma (buf + nlen, rel->r_addend);
+      sprintf_vma((buf + nlen), rel->r_addend);
     }
   else
     {
-      nlen = sprintf (buf, "%x:%lx",
-		      sec->id & 0xffffffff,
-		      (long) ELF64_R_SYM (rel->r_info));
+      nlen = snprintf(buf, ((len > tlen) ? len : tlen), "%x:%lx",
+		      (sec->id & 0xffffffff),
+		      (long)ELF64_R_SYM(rel->r_info));
       if (rel->r_addend)
 	{
 	  buf[nlen++] = '+';
-	  sprintf_vma (buf + nlen, rel->r_addend);
+	  sprintf_vma((buf + nlen), rel->r_addend);
 	}
     }
 
@@ -1469,13 +1469,13 @@ allocate_dynrel_entries(struct elf64_hppa_dyn_hash_entry *dyn_h, PTR data)
   /* Take care of the GOT and PLT relocations.  */
 
   if ((dynamic_symbol || shared) && dyn_h->want_dlt)
-    hppa_info->dlt_rel_sec->size += sizeof (Elf64_External_Rela);
+    hppa_info->dlt_rel_sec->size += sizeof(Elf64_External_Rela);
 
   /* If we are building a shared library, then every symbol that has an
      opd entry will need an EPLT relocation to relocate the symbol's address
      and __gp value based on the runtime load address.  */
   if (shared && dyn_h->want_opd)
-    hppa_info->opd_rel_sec->size += sizeof (Elf64_External_Rela);
+    hppa_info->opd_rel_sec->size += sizeof(Elf64_External_Rela);
 
   if (dyn_h->want_plt && dynamic_symbol)
     {

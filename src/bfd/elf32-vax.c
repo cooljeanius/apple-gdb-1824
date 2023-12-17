@@ -477,34 +477,34 @@ elf_vax_link_hash_table_create(bfd *abfd)
   return &ret->root.root;
 }
 
-/* Keep vax-specific flags in the ELF header */
+/* Keep vax-specific flags in the ELF header: */
 static bfd_boolean
-elf32_vax_set_private_flags (bfd *abfd, flagword flags)
+elf32_vax_set_private_flags(bfd *abfd, flagword flags)
 {
-  elf_elfheader (abfd)->e_flags = flags;
-  elf_flags_init (abfd) = TRUE;
+  elf_elfheader(abfd)->e_flags = flags;
+  elf_flags_init(abfd) = TRUE;
   return TRUE;
 }
 
 /* Merge backend specific data from an object file to the output
    object file when linking.  */
 static bfd_boolean
-elf32_vax_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
+elf32_vax_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   flagword out_flags;
   flagword in_flags;
 
-  if (   bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
-  in_flags  = elf_elfheader (ibfd)->e_flags;
-  out_flags = elf_elfheader (obfd)->e_flags;
+  in_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  out_flags = (flagword)elf_elfheader(obfd)->e_flags;
 
-  if (!elf_flags_init (obfd))
+  if (!elf_flags_init(obfd))
     {
-      elf_flags_init (obfd) = TRUE;
-      elf_elfheader (obfd)->e_flags = in_flags;
+      elf_flags_init(obfd) = TRUE;
+      elf_elfheader(obfd)->e_flags = in_flags;
     }
 
   return TRUE;
@@ -512,14 +512,14 @@ elf32_vax_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
 
 /* Display the flags field */
 static bfd_boolean
-elf32_vax_print_private_bfd_data (bfd *abfd, PTR ptr)
+elf32_vax_print_private_bfd_data(bfd *abfd, PTR ptr)
 {
-  FILE *file = (FILE *) ptr;
+  FILE *file = (FILE *)ptr;
 
-  BFD_ASSERT (abfd != NULL && ptr != NULL);
+  BFD_ASSERT((abfd != NULL) && (ptr != NULL));
 
-  /* Print normal ELF private data.  */
-  _bfd_elf_print_private_bfd_data (abfd, ptr);
+  /* Print normal ELF private data: */
+  _bfd_elf_print_private_bfd_data(abfd, ptr);
 
   /* Ignore init flag - it may not be set, despite the flags field containing valid data.  */
 

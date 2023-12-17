@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-11 00:02-0500\n"
+"POT-Creation-Date: 2023-12-17 03:51-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -676,7 +676,7 @@ msgstr ""
 #: elf32-microblaze.c:1560 elf32-moxie.c:282 elf32-ms1.c:373 elf32-msp430.c:508
 #: elf32-mt.c:395 elf32-nds32.c:4910 elf32-openrisc.c:383 elf32-or1k.c:1263
 #: elf32-score.c:2729 elf32-score7.c:2537 elf32-spu.c:5041 elf32-tilepro.c:3666
-#: elf32-v850.c:1668 elf32-xstormy16.c:914 elf64-mmix.c:1500
+#: elf32-v850.c:1668 elf32-xstormy16.c:914 elf64-mmix.c:1499
 msgid "internal error: out of range error"
 msgstr ""
 
@@ -688,7 +688,7 @@ msgstr ""
 #: elf32-metag.c:1996 elf32-microblaze.c:1564 elf32-moxie.c:286
 #: elf32-msp430.c:512 elf32-nds32.c:4914 elf32-openrisc.c:387 elf32-or1k.c:1267
 #: elf32-score.c:2733 elf32-score7.c:2541 elf32-spu.c:5045 elf32-tilepro.c:3670
-#: elf32-v850.c:1672 elf32-xstormy16.c:918 elf64-mmix.c:1504 elfxx-mips.c:7210
+#: elf32-v850.c:1672 elf32-xstormy16.c:918 elf64-mmix.c:1503 elfxx-mips.c:7210
 msgid "internal error: unsupported relocation error"
 msgstr ""
 
@@ -709,7 +709,7 @@ msgstr ""
 #: elf32-microblaze.c:1572 elf32-moxie.c:294 elf32-ms1.c:381 elf32-msp430.c:520
 #: elf32-mt.c:403 elf32-nds32.c:4922 elf32-openrisc.c:395 elf32-or1k.c:1275
 #: elf32-score.c:2746 elf32-score7.c:2549 elf32-spu.c:5053 elf32-tilepro.c:3678
-#: elf32-v850.c:1692 elf32-xstormy16.c:926 elf64-mmix.c:1512
+#: elf32-v850.c:1692 elf32-xstormy16.c:926 elf64-mmix.c:1511
 msgid "internal error: unknown error"
 msgstr ""
 
@@ -1030,7 +1030,7 @@ msgstr ""
 #: elf32-iq2000.c:628 elf32-m32c.c:480 elf32-mep.c:543 elf32-metag.c:2000
 #: elf32-moxie.c:290 elf32-ms1.c:377 elf32-msp430.c:516 elf32-mt.c:399
 #: elf32-openrisc.c:391 elf32-or1k.c:1271 elf32-tilepro.c:3674
-#: elf32-v850.c:1676 elf32-xstormy16.c:922 elf64-mmix.c:1508
+#: elf32-v850.c:1676 elf32-xstormy16.c:922 elf64-mmix.c:1507
 msgid "internal error: dangerous relocation"
 msgstr ""
 
@@ -2548,7 +2548,7 @@ msgstr ""
 msgid "Warning: size of symbol `%s' changed from %lu in %B to %lu in %B"
 msgstr ""
 
-#: elf64-mmix.c:1158
+#: elf64-mmix.c:1154
 #, c-format
 msgid ""
 "%s: Internal inconsistency error for value for\n"
@@ -3300,7 +3300,7 @@ msgstr ""
 msgid "Unhandled OSF/1 core file section type %d\n"
 msgstr ""
 
-#: pe-mips.c:593
+#: pe-mips.c:591
 msgid "%B: `ld -r' not supported with PE MIPS objects\n"
 msgstr ""
 
@@ -3312,11 +3312,11 @@ msgstr ""
 msgid "%B: unimplemented %s\n"
 msgstr ""
 
-#: pe-mips.c:731
+#: pe-mips.c:733
 msgid "%B: jump too far away\n"
 msgstr ""
 
-#: pe-mips.c:757
+#: pe-mips.c:759
 msgid "%B: bad pair/reflo after refhi\n"
 msgstr ""
 

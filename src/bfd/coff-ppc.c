@@ -998,8 +998,6 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 {
   struct internal_reloc *rel;
   struct internal_reloc *relend;
-  bfd_boolean hihalf;
-  bfd_vma hihalf_val;
   asection *toc_section = 0;
   bfd_vma relocation;
   reloc_howto_type *howto = 0;
@@ -1009,9 +1007,6 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
      addresses and symbol indices.  */
   if (info->relocatable)
     return TRUE;
-
-  hihalf = FALSE;
-  hihalf_val = 0;
 
   rel = relocs;
   relend = (rel + input_section->reloc_count);

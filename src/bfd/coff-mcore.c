@@ -335,8 +335,6 @@ coff_mcore_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 {
   struct internal_reloc *rel;
   struct internal_reloc *relend;
-  bfd_boolean hihalf;
-  bfd_vma hihalf_val;
 
   /* If we are performing a relocatable link, we don't need to do a
      thing.  The caller will take care of adjusting the reloc
@@ -357,9 +355,6 @@ coff_mcore_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
       bfd_set_error(bfd_error_wrong_format);
       return FALSE;
     }
-
-  hihalf = FALSE;
-  hihalf_val = 0;
 
   rel = relocs;
   relend = (rel + input_section->reloc_count);

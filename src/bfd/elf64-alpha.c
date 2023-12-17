@@ -4394,20 +4394,20 @@ elf64_alpha_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      }
 	    else if (r_type == R_ALPHA_DTPREL64)
 	      {
-		BFD_ASSERT (elf_hash_table (info)->tls_sec != NULL);
+		BFD_ASSERT(elf_hash_table(info)->tls_sec != NULL);
 		value -= dtp_base;
 		goto default_reloc;
 	      }
 	    else if (r_type == R_ALPHA_TPREL64)
 	      {
-		BFD_ASSERT (elf_hash_table (info)->tls_sec != NULL);
+		BFD_ASSERT(elf_hash_table(info)->tls_sec != NULL);
 		if (!info->shared)
 		  {
 		    value -= tp_base;
 		    goto default_reloc;
 		  }
 		dynindx = 0;
-		dynaddend = value - dtp_base;
+		dynaddend = (value - dtp_base);
 	      }
 	    else if (info->shared
 		     && r_symndx != 0

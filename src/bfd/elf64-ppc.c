@@ -10853,6 +10853,10 @@ ppc64_elf_finish_dynamic_symbol(bfd *output_bfd,
   htab = ppc_hash_table(info);
   dynobj = htab->elf.dynobj;
 
+  if (dynobj == NULL) {
+    ; /* ??? */
+  }
+
   for (ent = h->plt.plist; ent != NULL; ent = ent->next)
     if (ent->plt.offset != (bfd_vma)-1L)
       {

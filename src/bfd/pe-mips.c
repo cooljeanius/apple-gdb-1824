@@ -581,11 +581,9 @@ coff_pe_mips_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 {
   bfd_vma gp;
   bfd_boolean gp_undefined;
-  size_t adjust;
   struct internal_reloc *rel;
   struct internal_reloc *rel_end;
   unsigned int i;
-  bfd_boolean got_lo;
 
   if (info->relocatable)
     {
@@ -599,10 +597,12 @@ coff_pe_mips_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
   gp = _bfd_get_gp_value(output_bfd);
   gp_undefined = ((gp == 0) ? TRUE : FALSE);
-  got_lo = FALSE;
-  adjust = 0;
   rel = relocs;
   rel_end = (rel + input_section->reloc_count);
+
+  if (gp_undefined) {
+    ; /* ??? */
+  }
 
   for (i = 0; rel < rel_end; rel++, i++)
     {
@@ -624,7 +624,7 @@ coff_pe_mips_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
       else
 	{
 	  h = obj_coff_sym_hashes(input_bfd)[symndx];
-	  sym = syms + symndx;
+	  sym = (syms + symndx);
 	}
 
       /* COFF treats common symbols in one of two ways.  Either the
@@ -633,7 +633,7 @@ coff_pe_mips_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
          the rtype_to_howto function to adjust the addend as needed.  */
 
       if ((sym != NULL) && (sym->n_scnum != 0))
-	addend = - sym->n_value;
+	addend = (0 - sym->n_value);
       else
 	addend = 0;
 
@@ -704,9 +704,9 @@ coff_pe_mips_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	   mem = pointer to memory we are fixing up
 	   val = VMA of what we need to refer to.  */
 
-#define UI(x) (*_bfd_error_handler) (_("%B: unimplemented %s\n"), \
-				     input_bfd, x); \
-	      bfd_set_error (bfd_error_bad_value);
+#define UI(x) (*_bfd_error_handler)(_("%B: unimplemented %s\n"), \
+				    input_bfd, x); \
+	      bfd_set_error(bfd_error_bad_value);
 
       switch (rel->r_type)
 	{
@@ -718,88 +718,95 @@ coff_pe_mips_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  break;
 	case MIPS_R_REFWORD:
 	  tmp = bfd_get_32(input_bfd, mem);
-	  /* printf ("refword: src=%08x targ=%08x+%08x\n", src, tmp, val); */
+#if defined(DEBUG) && defined(MIPSDEBUG) && DEBUG && MIPSDEBUG
+	  printf("refword: src=%08x targ=%08x+%08x\n", src, tmp, val);
+#endif /* DEBUG && MIPSDEBUG */
 	  tmp += val;
-	  bfd_put_32 (input_bfd, tmp, mem);
+	  bfd_put_32(input_bfd, tmp, mem);
 	  break;
 
 	case MIPS_R_JMPADDR:
-	  tmp = bfd_get_32 (input_bfd, mem);
-	  targ = val + (tmp & 0x03ffffff) * 4;
+	  tmp = bfd_get_32(input_bfd, mem);
+	  targ = (val + ((tmp & 0x03ffffff) * 4));
 	  if ((src & 0xf0000000) != (targ & 0xf0000000))
 	    {
-	      (*_bfd_error_handler) (_("%B: jump too far away\n"), input_bfd);
-	      bfd_set_error (bfd_error_bad_value);
+	      (*_bfd_error_handler)(_("%B: jump too far away\n"), input_bfd);
+	      bfd_set_error(bfd_error_bad_value);
 	      return FALSE;
 	    }
 	  tmp &= 0xfc000000;
-	  tmp |= (targ / 4) & 0x3ffffff;
-	  bfd_put_32 (input_bfd, tmp, mem);
+	  tmp |= ((targ / 4) & 0x3ffffff);
+	  bfd_put_32(input_bfd, tmp, mem);
 	  break;
 
 	case MIPS_R_REFHI:
-	  tmp = bfd_get_32 (input_bfd, mem);
+	  tmp = bfd_get_32(input_bfd, mem);
 	  switch (rel[1].r_type)
 	    {
 	    case MIPS_R_PAIR:
 	      /* MS PE object */
-	      targ = val + rel[1].r_offset + ((tmp & 0xffff) << 16);
+	      targ = (val + rel[1].r_offset + ((tmp & 0xffff) << 16));
 	      break;
 	    case MIPS_R_REFLO:
 	      /* GNU COFF object */
-	      low = bfd_get_32 (input_bfd, contents + rel[1].r_vaddr);
+	      low = bfd_get_32(input_bfd, contents + rel[1].r_vaddr);
 	      low &= 0xffff;
 	      if (low & 0x8000)
 		low -= 0x10000;
-	      targ = val + low + ((tmp & 0xffff) << 16);
+	      targ = (val + low + ((tmp & 0xffff) << 16));
 	      break;
 	    default:
-	      (*_bfd_error_handler) (_("%B: bad pair/reflo after refhi\n"),
-				     input_bfd);
-	      bfd_set_error (bfd_error_bad_value);
+	      (*_bfd_error_handler)(_("%B: bad pair/reflo after refhi\n"),
+				    input_bfd);
+	      bfd_set_error(bfd_error_bad_value);
 	      return FALSE;
 	    }
 	  tmp &= 0xffff0000;
-	  tmp |= (targ >> 16) & 0xffff;
-	  bfd_put_32 (input_bfd, tmp, mem);
+	  tmp |= ((targ >> 16) & 0xffff);
+	  bfd_put_32(input_bfd, tmp, mem);
 	  break;
 
 	case MIPS_R_REFLO:
-	  tmp = bfd_get_32 (input_bfd, mem);
-	  targ = val + (tmp & 0xffff);
-	  /* printf ("refword: src=%08x targ=%08x\n", src, targ); */
+	  tmp = bfd_get_32(input_bfd, mem);
+	  targ = (val + (tmp & 0xffff));
+#if defined(DEBUG) && defined(MIPSDEBUG) && DEBUG && MIPSDEBUG
+	  printf("refword: src=%08x targ=%08x\n", src, targ);
+#endif /* DEBUG && MIPSDEBUG */
 	  tmp &= 0xffff0000;
-	  tmp |= targ & 0xffff;
-	  bfd_put_32 (input_bfd, tmp, mem);
+	  tmp |= (targ & 0xffff);
+	  bfd_put_32(input_bfd, tmp, mem);
 	  break;
 
 	case MIPS_R_GPREL:
 	case MIPS_R_LITERAL:
-	  UI ("gprel");
+	  UI("gprel");
 	  break;
 
 	case MIPS_R_SECTION:
-	  UI ("section");
+	  UI("section");
 	  break;
 
 	case MIPS_R_SECREL:
-	  UI ("secrel");
+	  UI("secrel");
 	  break;
 
 	case MIPS_R_SECRELLO:
-	  UI ("secrello");
+	  UI("secrello");
 	  break;
 
 	case MIPS_R_SECRELHI:
-	  UI ("secrelhi");
+	  UI("secrelhi");
 	  break;
 
 	case MIPS_R_RVA:
-	  tmp = bfd_get_32 (input_bfd, mem);
-	  /* printf ("rva: src=%08x targ=%08x+%08x\n", src, tmp, val); */
-	  tmp += val
-	    - pe_data (input_section->output_section->owner)->pe_opthdr.ImageBase;
-	  bfd_put_32 (input_bfd, tmp, mem);
+	  tmp = bfd_get_32(input_bfd, mem);
+#if defined(DEBUG) && defined(MIPSDEBUG) && DEBUG && MIPSDEBUG
+	  printf("rva: src=%08x targ=%08x+%08x\n", src, tmp, val);
+#endif /* DEBUG && MIPSDEBUG */
+	  tmp +=
+            (val
+	     - pe_data(input_section->output_section->owner)->pe_opthdr.ImageBase);
+	  bfd_put_32(input_bfd, tmp, mem);
 	  break;
 
 	case MIPS_R_PAIR:

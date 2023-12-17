@@ -971,18 +971,17 @@ mmix_elf_perform_relocation(asection *isec, reloc_howto_type *howto,
       break;
 
     case R_MMIX_PUSHJ_STUBBABLE:
-      /* If the address fits, we're fine.  */
-      if ((value & 3) == 0
+      /* If the address fits, we are fine: */
+      if (((value & 3) == 0)
 	  /* Note rightshift 0; see R_MMIX_JMP case below.  */
-	  && (r = bfd_check_overflow (complain_overflow_signed,
-				      howto->bitsize,
-				      0,
-				      bfd_arch_bits_per_address (abfd),
-				      value)) == bfd_reloc_ok)
+	  && (r = bfd_check_overflow(complain_overflow_signed,
+				     howto->bitsize, 0,
+				     bfd_arch_bits_per_address(abfd),
+				     value)) == bfd_reloc_ok)
 	goto pcrel_mmix_reloc_fits;
       else
 	{
-	  bfd_size_type size = isec->rawsize ? isec->rawsize : isec->size;
+	  bfd_size_type size = (isec->rawsize ? isec->rawsize : isec->size);
 
 	  /* We have the bytes at the PUSHJ insn and need to get the
 	     position for the stub.  There's supposed to be room allocated
@@ -1081,22 +1080,21 @@ mmix_elf_perform_relocation(asection *isec, reloc_howto_type *howto,
 	 FIXME: bfd_check_overflow seems broken; the relocation is
 	 rightshifted before testing, so supply a zero rightshift.  */
 
-      if (! ((value & 3) == 0
-	     && (r = bfd_check_overflow (complain_overflow_signed,
-					 howto->bitsize,
-					 0,
-					 bfd_arch_bits_per_address (abfd),
-					 value)) == bfd_reloc_ok))
+      if (! (((value & 3) == 0)
+	     && (r = bfd_check_overflow(complain_overflow_signed,
+                                        howto->bitsize, 0,
+                                        bfd_arch_bits_per_address(abfd),
+                                        value)) == bfd_reloc_ok))
 	{
 	  /* If the relocation doesn't fit in a JMP, we let the NOP:s be
 	     modified below, and put a "GO $255,$255,0" after the
 	     address-loading sequence.  */
-	  bfd_put_32 (abfd,
-		      ((GO_INSN_BYTE | IMM_OFFSET_BIT) << 24)
-		      | 0xffff00,
-		      (bfd_byte *) datap + 16);
+	  bfd_put_32(abfd,
+		     (((GO_INSN_BYTE | IMM_OFFSET_BIT) << 24)
+		      | 0xffff00),
+		     (bfd_byte *)datap + 16);
 
-	  /* We change to an absolute value.  */
+	  /* We change to an absolute value: */
 	  value += addr;
 	  break;
 	}
@@ -1104,22 +1102,20 @@ mmix_elf_perform_relocation(asection *isec, reloc_howto_type *howto,
     case R_MMIX_ADDR19:
     case R_MMIX_ADDR27:
     pcrel_mmix_reloc_fits:
-      /* These must be in range, or else we emit an error.  */
-      if ((value & 3) == 0
+      /* These must be in range, or else we emit an error: */
+      if (((value & 3) == 0)
 	  /* Note rightshift 0; see above.  */
-	  && (r = bfd_check_overflow (complain_overflow_signed,
-				      howto->bitsize,
-				      0,
-				      bfd_arch_bits_per_address (abfd),
-				      value)) == bfd_reloc_ok)
+	  && (r = bfd_check_overflow(complain_overflow_signed,
+				     howto->bitsize, 0,
+				     bfd_arch_bits_per_address(abfd),
+				     value)) == bfd_reloc_ok)
 	{
-	  bfd_vma in1
-	    = bfd_get_32 (abfd, (bfd_byte *) datap);
+	  bfd_vma in1 = bfd_get_32(abfd, (bfd_byte *)datap);
 	  bfd_vma highbit;
 
-	  if ((bfd_signed_vma) value < 0)
+	  if ((bfd_signed_vma)value < 0)
 	    {
-	      highbit = 1 << 24;
+	      highbit = (1 << 24);
 	      value += (1 << (howto->bitsize - 1));
 	    }
 	  else
@@ -1127,11 +1123,11 @@ mmix_elf_perform_relocation(asection *isec, reloc_howto_type *howto,
 
 	  value >>= 2;
 
-	  bfd_put_32 (abfd,
-		      (in1 & howto->src_mask)
+	  bfd_put_32(abfd,
+		     ((in1 & howto->src_mask)
 		      | highbit
-		      | (value & howto->dst_mask),
-		      (bfd_byte *) datap);
+		      | (value & howto->dst_mask)),
+		     (bfd_byte *)datap);
 
 	  return bfd_reloc_ok;
 	}
@@ -1262,12 +1258,12 @@ mmix_elf_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, PTR data,
      initial relocation command value.  */
 
   /* Get symbol value.  (Common symbols are special.)  */
-  if (bfd_is_com_section (symbol->section))
+  if (bfd_is_com_section(symbol->section))
     relocation = 0;
   else
     relocation = symbol->value;
 
-  reloc_target_output_section = bfd_get_output_section (symbol);
+  reloc_target_output_section = bfd_get_output_section(symbol);
 
   /* Here the variable relocation holds the final address of the symbol we
      are relocating against, plus any addend.  */
@@ -1276,12 +1272,12 @@ mmix_elf_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, PTR data,
   else
     output_base = reloc_target_output_section->vma;
 
-  relocation += output_base + symbol->section->output_offset;
+  relocation += (output_base + symbol->section->output_offset);
 
-  /* Get position of relocation.  */
+  /* Get position of relocation: */
   addr = (reloc_entry->address + input_section->output_section->vma
 	  + input_section->output_offset);
-  if (output_bfd != (bfd *) NULL)
+  if (output_bfd != (bfd *)NULL)
     {
       /* Add in supplied addend.  */
       relocation += reloc_entry->addend;
@@ -1477,22 +1473,25 @@ mmix_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
       if (r != bfd_reloc_ok)
 	{
 	  bfd_boolean check_ok = TRUE;
-	  const char * msg = (const char *) NULL;
+	  const char *msg = (const char *)NULL;
 
 	  switch (r)
 	    {
 	    case bfd_reloc_overflow:
-	      check_ok = info->callbacks->reloc_overflow
-		(info, (h ? &h->root : NULL), name, howto->name,
-		 (bfd_vma) 0, input_bfd, input_section, rel->r_offset);
+	      check_ok =
+        	info->callbacks->reloc_overflow(info, (h ? &h->root : NULL),
+                                                name, howto->name, (bfd_vma)0,
+                                                input_bfd, input_section,
+                                                rel->r_offset);
 	      break;
 
 	    case bfd_reloc_undefined:
-	      /* We may have sent this message above.  */
+	      /* We may have sent this message above: */
 	      if (! undefined_signalled)
-		check_ok = info->callbacks->undefined_symbol
-		  (info, name, input_bfd, input_section, rel->r_offset,
-		   TRUE);
+		check_ok =
+    		  info->callbacks->undefined_symbol(info, name, input_bfd,
+                                                    input_section,
+                                                    rel->r_offset, TRUE);
 	      undefined_signalled = TRUE;
 	      break;
 
@@ -1514,8 +1513,9 @@ mmix_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	    }
 
 	  if (msg)
-	    check_ok = info->callbacks->warning
-	      (info, msg, name, input_bfd, input_section, rel->r_offset);
+	    check_ok =
+              info->callbacks->warning(info, msg, name, input_bfd,
+                                       input_section, rel->r_offset);
 
 	  if (! check_ok)
 	    return FALSE;
@@ -1958,11 +1958,11 @@ mmix_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 
   /* First we sort the relocs so that any register relocs come before
      expansion-relocs to the same insn.  FIXME: Not done for mmo.  */
-  qsort ((PTR) relocs, sec->reloc_count, sizeof (Elf_Internal_Rela),
-	 mmix_elf_sort_relocs);
+  qsort((PTR)relocs, sec->reloc_count, sizeof(Elf_Internal_Rela),
+        mmix_elf_sort_relocs);
 
-  /* Do the common part.  */
-  if (!mmix_elf_check_common_relocs (abfd, info, sec, relocs))
+  /* Do the common part: */
+  if (!mmix_elf_check_common_relocs(abfd, info, sec, relocs))
     return FALSE;
 
   if (info->relocatable)
