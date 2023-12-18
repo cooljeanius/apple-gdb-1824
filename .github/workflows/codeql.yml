@@ -121,6 +121,7 @@ jobs:
           fi; \
           (bundle install && bundle check) || ruby -cwv Gemfile || ruby -c Gemfile; \
           (bundle clean && ls) || stat Gemfile || wc -l Gemfile || du Gemfile; \
+          echo "leaving $(pwd)..."; \
           popd || exit; \
         elif test ${{ matrix.language }} = 'javascript-typescript' && test -x "$(which node)"; then \
           (find . -name '*.js' -print0 | xargs -0 node -c) || find . -name '*.js' -print -exec node -c '{}' ';'; \
@@ -212,8 +213,8 @@ jobs:
     - name: Extra coverage build (C)
       if: matrix.language == 'c-cpp' && success()
       run: |
-        make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" || stat libcheckpoint
-        make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || stat macsbug
+        make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" || stat -t libcheckpoint
+        make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || stat -t macsbug
         cd src
         if test -d autogen && test -r autogen && test -w autogen; then \
           pushd autogen; \
@@ -287,11 +288,11 @@ jobs:
         if test -d gdb/testsuite; then \
           pushd gdb/testsuite; \
           if test -x ./configure; then \
-            ./configure || stat ./configure; \
+            ./configure || stat -t ./configure; \
           elif test -x ./config.status; then \
-            ./config.status || stat ./config.status; \
+            ./config.status || stat -t ./config.status; \
           elif test -f Makefile; then \
-            make || stat Makefile; \
+            make || stat -t Makefile; \
           else \
             pwd && ls; \
           fi; \
@@ -308,7 +309,7 @@ jobs:
             fi; \
             for srcfile in *.cc; do \
               echo "attempting to use $(which make) to compile ${srcfile} in ${subdir}"; \
-              make "$(echo "${srcfile}" | sed "s/\.cc/.o/g")" || stat "${srcfile}"; \
+              make "$(echo "${srcfile}" | sed "s/\.cc/.o/g")" || stat -t "${srcfile}"; \
             done; \
             cp -v ./*.o .. || ls ./*.o || pwd; \
             popd; \
@@ -321,34 +322,34 @@ jobs:
         # shellcheck disable=SC2044
         for ccfile in $(find . -name '*.cc' -type f); do \
           echo "One last attempt at compiling ${ccfile}..."; \
-          g++ -c "${ccfile}" || g++ -c -w -I. "${ccfile}" || g++ -c -w -Wno-error -fpermissive -I. -I.. "${ccfile}" || stat -t "${ccfile}"; \
+          g++ -c -Wfatal-errors "${ccfile}" || g++ -c -w -Wfatal-errors -I. "${ccfile}" || g++ -c -w -Wno-error -Wfatal-errors -fpermissive -I. -I.. "${ccfile}" || stat -t "${ccfile}"; \
         done
         if test -e gdb/testsuite/gdb.apple/Makefile; then \
           pushd gdb/testsuite/gdb.apple; \
-          make file-statics-cpp.o || stat file-statics-cpp.cpp; \
-          make var-path-expr.o || stat var-path-expr.cpp; \
+          make file-statics-cpp.o || stat -t file-statics-cpp.cpp; \
+          make var-path-expr.o || stat -t var-path-expr.cpp; \
           cp -v ./*.o .. || ls ./*.o || pwd; \
           popd; \
         fi
         # shellcheck disable=SC2044
         for cppfile in $(find . -name '*.cpp' -type f); do \
           echo "One last attempt at compiling ${cppfile}..."; \
-          g++ -c "${cppfile}" || g++ -c -w -I. "${cppfile}" || g++ -c -w -Wno-error -fpermissive -I. -I.. "${cppfile}" || stat -t "${cppfile}"; \
+          g++ -c -Wfatal-errors "${cppfile}" || g++ -c -w -Wfatal-errors -I. "${cppfile}" || g++ -c -w -Wno-error -Wfatal-errors -fpermissive -I. -I.. "${cppfile}" || stat -t "${cppfile}"; \
         done
         if test -e gdb/testsuite/gdb.base/Makefile && test -e gdb/testsuite/gdb.base/langs2.cxx; then \
           pushd gdb/testsuite/gdb.base; \
-          make langs2.o || stat langs2.cxx; \
+          make langs2.o || stat -t langs2.cxx; \
           cp -v ./*.o .. || ls ./*.o || pwd; \
           popd; \
         fi
         # shellcheck disable=SC2044
         for cxxfile in $(find . -name '*.cxx' -type f); do \
           echo "One last attempt at compiling ${cxxfile}..."; \
-          g++ -c "${cxxfile}" || g++ -c -w -I. "${cxxfile}" || g++ -c -w -Wno-error -fpermissive -I. -I.. "${cxxfile}" || stat -t "${cxxfile}"; \
+          g++ -c -Wfatal-errors "${cxxfile}" || g++ -c -w -Wfatal-errors -I. "${cxxfile}" || g++ -c -w -Wno-error -Wfatal-errors -fpermissive -I. -I.. "${cxxfile}" || stat -t "${cxxfile}"; \
         done
         if test -e mmalloc/Makefile; then \
           pushd mmalloc; \
-          make mmallocplusplus.o || stat mmallocplusplus.cp; \
+          make mmallocplusplus.o || stat -t mmallocplusplus.cp; \
           cp -v ./*.o .. || ls ./*.o || pwd; \
           popd; \
         fi
