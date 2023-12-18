@@ -6744,32 +6744,31 @@ _bfd_mips_elf_size_dynamic_sections(bfd *output_bfd,
 		 find any indirect entries to resolve?  They were all
 		 resolved in mips_elf_multi_got.  */
 	      mips_elf_resolve_final_got_entries(gg);
-	      for (g = gg->next; g && g->next != gg; g = g->next)
+	      for (g = gg->next; g && (g->next != gg); g = g->next)
 		{
 		  unsigned int save_assign;
 
 		  mips_elf_resolve_final_got_entries(g);
 
-		  /* Assign offsets to global GOT entries.  */
+		  /* Assign offsets to global GOT entries: */
 		  save_assign = g->assigned_gotno;
 		  g->assigned_gotno = g->local_gotno;
 		  set_got_offset_arg.g = g;
 		  set_got_offset_arg.needed_relocs = 0;
-		  htab_traverse (g->got_entries,
-				 mips_elf_set_global_got_offset,
-				 &set_got_offset_arg);
+		  htab_traverse(g->got_entries, mips_elf_set_global_got_offset,
+                                &set_got_offset_arg);
 		  needed_relocs += set_got_offset_arg.needed_relocs;
-		  BFD_ASSERT (g->assigned_gotno - g->local_gotno
-			      <= g->global_gotno);
+		  BFD_ASSERT((g->assigned_gotno - g->local_gotno)
+			     <= g->global_gotno);
 
 		  g->assigned_gotno = save_assign;
 		  if (info->shared)
 		    {
-		      needed_relocs += g->local_gotno - g->assigned_gotno;
-		      BFD_ASSERT (g->assigned_gotno == g->next->local_gotno
-				  + g->next->global_gotno
-				  + g->next->tls_gotno
-				  + MIPS_RESERVED_GOTNO);
+		      needed_relocs += (g->local_gotno - g->assigned_gotno);
+		      BFD_ASSERT(g->assigned_gotno == g->next->local_gotno
+				 + g->next->global_gotno
+				 + g->next->tls_gotno
+				 + MIPS_RESERVED_GOTNO);
 		    }
 		}
 	    }
@@ -6779,36 +6778,37 @@ _bfd_mips_elf_size_dynamic_sections(bfd *output_bfd,
 	      arg.info = info;
 	      arg.needed = 0;
 
-	      htab_traverse (gg->got_entries, mips_elf_count_local_tls_relocs,
-			     &arg);
-	      elf_link_hash_traverse (elf_hash_table (info),
-				      mips_elf_count_global_tls_relocs,
-				      &arg);
+              if (gg != NULL)
+	        htab_traverse(gg->got_entries, mips_elf_count_local_tls_relocs,
+			      &arg);
+	      elf_link_hash_traverse(elf_hash_table(info),
+				     mips_elf_count_global_tls_relocs,
+				     &arg);
 
 	      needed_relocs += arg.needed;
 	    }
 
 	  if (needed_relocs)
-	    mips_elf_allocate_dynamic_relocations (dynobj, needed_relocs);
+	    mips_elf_allocate_dynamic_relocations(dynobj, needed_relocs);
 	}
-      else if (strcmp (name, MIPS_ELF_STUB_SECTION_NAME (output_bfd)) == 0)
+      else if (strcmp(name, MIPS_ELF_STUB_SECTION_NAME(output_bfd)) == 0)
 	{
 	  /* IRIX rld assumes that the function stub isn't at the end
 	     of .text section. So put a dummy. XXX  */
 	  s->size += MIPS_FUNCTION_STUB_SIZE;
 	}
       else if (! info->shared
-	       && ! mips_elf_hash_table (info)->use_rld_obj_head
-	       && strncmp (name, ".rld_map", 8) == 0)
+	       && ! mips_elf_hash_table(info)->use_rld_obj_head
+	       && (strncmp(name, ".rld_map", 8UL) == 0))
 	{
 	  /* We add a room for __rld_map. It will be filled in by the
 	     rtld to contain a pointer to the _r_debug structure.  */
 	  s->size += 4;
 	}
       else if (SGI_COMPAT(output_bfd)
-	       && (strncmp(name, ".compact_rel", 12) == 0))
+	       && (strncmp(name, ".compact_rel", 12UL) == 0))
 	s->size += mips_elf_hash_table(info)->compact_rel_size;
-      else if (strncmp(name, ".init", 5) != 0)
+      else if (strncmp(name, ".init", 5UL) != 0)
 	{
 	  /* It is not one of our sections, so do NOT allocate space: */
 	  continue;
@@ -6827,12 +6827,12 @@ _bfd_mips_elf_size_dynamic_sections(bfd *output_bfd,
       s->contents = (unsigned char *)bfd_zalloc(dynobj, s->size);
       if (s->contents == NULL)
 	{
-	  bfd_set_error (bfd_error_no_memory);
+	  bfd_set_error(bfd_error_no_memory);
 	  return FALSE;
 	}
     }
 
-  if (elf_hash_table (info)->dynamic_sections_created)
+  if (elf_hash_table(info)->dynamic_sections_created)
     {
       /* Add some entries to the .dynamic section.  We fill in the
 	 values later, in _bfd_mips_elf_finish_dynamic_sections, but we
@@ -6843,77 +6843,77 @@ _bfd_mips_elf_size_dynamic_sections(bfd *output_bfd,
 	{
 	  /* SGI object has the equivalence of DT_DEBUG in the
 	     DT_MIPS_RLD_MAP entry.  */
-	  if (!MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_MIPS_RLD_MAP, 0))
+	  if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_MIPS_RLD_MAP, 0))
 	    return FALSE;
-	  if (!SGI_COMPAT (output_bfd))
+	  if (!SGI_COMPAT(output_bfd))
 	    {
-	      if (!MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_DEBUG, 0))
+	      if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_DEBUG, 0))
 		return FALSE;
 	    }
 	}
       else
 	{
-	  /* Shared libraries on traditional mips have DT_DEBUG.  */
-	  if (!SGI_COMPAT (output_bfd))
+	  /* Shared libraries on traditional mips have DT_DEBUG: */
+	  if (!SGI_COMPAT(output_bfd))
 	    {
-	      if (!MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_DEBUG, 0))
+	      if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_DEBUG, 0))
 		return FALSE;
 	    }
 	}
 
-      if (reltext && SGI_COMPAT (output_bfd))
+      if (reltext && SGI_COMPAT(output_bfd))
 	info->flags |= DF_TEXTREL;
 
       if ((info->flags & DF_TEXTREL) != 0)
 	{
-	  if (! MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_TEXTREL, 0))
+	  if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_TEXTREL, 0))
 	    return FALSE;
 	}
 
-      if (! MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_PLTGOT, 0))
+      if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_PLTGOT, 0))
 	return FALSE;
 
-      if (mips_elf_rel_dyn_section (dynobj, FALSE))
+      if (mips_elf_rel_dyn_section(dynobj, FALSE))
 	{
-	  if (! MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_REL, 0))
+	  if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_REL, 0))
 	    return FALSE;
 
-	  if (! MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_RELSZ, 0))
+	  if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_RELSZ, 0))
 	    return FALSE;
 
-	  if (! MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_RELENT, 0))
+	  if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_RELENT, 0))
 	    return FALSE;
 	}
 
-      if (! MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_MIPS_RLD_VERSION, 0))
+      if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_MIPS_RLD_VERSION, 0))
 	return FALSE;
 
-      if (! MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_MIPS_FLAGS, 0))
+      if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_MIPS_FLAGS, 0))
 	return FALSE;
 
-      if (! MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_MIPS_BASE_ADDRESS, 0))
+      if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_MIPS_BASE_ADDRESS, 0))
 	return FALSE;
 
-      if (! MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_MIPS_LOCAL_GOTNO, 0))
+      if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_MIPS_LOCAL_GOTNO, 0))
 	return FALSE;
 
-      if (! MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_MIPS_SYMTABNO, 0))
+      if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_MIPS_SYMTABNO, 0))
 	return FALSE;
 
-      if (! MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_MIPS_UNREFEXTNO, 0))
+      if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_MIPS_UNREFEXTNO, 0))
 	return FALSE;
 
-      if (! MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_MIPS_GOTSYM, 0))
+      if (!MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_MIPS_GOTSYM, 0))
 	return FALSE;
 
-      if (IRIX_COMPAT (dynobj) == ict_irix5
-	  && ! MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_MIPS_HIPAGENO, 0))
+      if ((IRIX_COMPAT(dynobj) == ict_irix5)
+	  && !MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_MIPS_HIPAGENO, 0))
 	return FALSE;
 
-      if (IRIX_COMPAT (dynobj) == ict_irix6
-	  && (bfd_get_section_by_name
-	      (dynobj, MIPS_ELF_OPTIONS_SECTION_NAME (dynobj)))
-	  && !MIPS_ELF_ADD_DYNAMIC_ENTRY (info, DT_MIPS_OPTIONS, 0))
+      if ((IRIX_COMPAT(dynobj) == ict_irix6)
+	  && (bfd_get_section_by_name(dynobj,
+                                      MIPS_ELF_OPTIONS_SECTION_NAME(dynobj)))
+	  && !MIPS_ELF_ADD_DYNAMIC_ENTRY(info, DT_MIPS_OPTIONS, 0))
 	return FALSE;
     }
 

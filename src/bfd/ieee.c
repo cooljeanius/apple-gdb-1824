@@ -613,14 +613,14 @@ parse_expression (ieee_data_type *ieee,
 	  {
 	    bfd_vma va;
 
-	    BFD_ASSERT (this_byte (&(ieee->h)) < (int) ieee_variable_A_enum
-		    || this_byte (&(ieee->h)) > (int) ieee_variable_Z_enum);
-	    if (parse_int (&(ieee->h), &va))
+	    BFD_ASSERT((this_byte(&(ieee->h)) < (int)ieee_variable_A_enum)
+		       || (this_byte(&(ieee->h)) > (int)ieee_variable_Z_enum));
+	    if (parse_int(&(ieee->h), &va))
 	      {
-		PUSH (NOSYMBOL, bfd_abs_section_ptr, va);
+		PUSH(NOSYMBOL, bfd_abs_section_ptr, va);
 	      }
 	    else
-	      /* Thats all that we can understand.  */
+	      /* That is/was all that we can understand.  */
 	      loop = FALSE;
 	  }
 	}
@@ -1503,8 +1503,10 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 		  if (!r)
 		    return FALSE;
 
-		  *(current_map->reloc_tail_ptr) = r;
-		  current_map->reloc_tail_ptr = &r->next;
+                  if (current_map != NULL) {
+		    *(current_map->reloc_tail_ptr) = r;
+		    current_map->reloc_tail_ptr = &r->next;
+                  }
 		  r->next = (ieee_reloc_type *)NULL;
 		  next_byte(&(ieee->h));
 #if 0
@@ -1515,11 +1517,13 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 				   &r->relent.addend,
 				   &r->symbol,
 				   &pcrel, &extra, &section);
-		  r->relent.address = current_map->pc;
-		  s->flags |= SEC_RELOC;
-		  s->owner->flags |= HAS_RELOC;
-		  s->reloc_count++;
-		  if (r->relent.sym_ptr_ptr == NULL && section != NULL)
+		  r->relent.address = ((current_map) ? current_map->pc : 0UL);
+                  if (s != NULL) {
+		    s->flags |= SEC_RELOC;
+		    s->owner->flags |= HAS_RELOC;
+		    s->reloc_count++;
+                  }
+		  if ((r->relent.sym_ptr_ptr == NULL) && (section != NULL))
 		    r->relent.sym_ptr_ptr = section->symbol_ptr_ptr;
 
 		  if (this_byte(&(ieee->h)) == (int)ieee_comma)
@@ -1559,22 +1563,25 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 			{
 #if KEEPMINUSPCININST
 			  bfd_put_32(ieee->h.abfd, -current_map->pc,
-				     location_ptr + current_map->pc);
+				     (location_ptr + current_map->pc));
 			  r->relent.howto = &rel32_howto;
 			  r->relent.addend -= current_map->pc;
 #else
 			  bfd_put_32(ieee->h.abfd, (bfd_vma)0UL,
-                                     (location_ptr + current_map->pc));
+                                     (location_ptr
+                                      + ((current_map) ? current_map->pc : 0)));
 			  r->relent.howto = &rel32_howto;
 #endif /* KEEPMINUSPCININST */
 			}
 		      else
 			{
 			  bfd_put_32(ieee->h.abfd, (bfd_vma)0UL,
-				     (location_ptr + current_map->pc));
+				     (location_ptr
+                                      + ((current_map) ? current_map->pc : 0)));
 			  r->relent.howto = &abs32_howto;
 			}
-		      current_map->pc += 4;
+                      if (current_map != NULL)
+		        current_map->pc += 4;
 		      break;
 		    case 2:
 		      if (pcrel)
@@ -1587,17 +1594,20 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 #else
 
 			  bfd_put_16(ieee->h.abfd, (bfd_vma)0UL,
-				     (location_ptr + current_map->pc));
+				     (location_ptr
+                                      + ((current_map) ? current_map->pc : 0)));
 			  r->relent.howto = &rel16_howto;
 #endif /* KEEPMINUSPCININST */
 			}
 		      else
 			{
 			  bfd_put_16(ieee->h.abfd, (bfd_vma)0UL,
-				     (location_ptr + current_map->pc));
+				     (location_ptr
+                                      + ((current_map) ? current_map->pc : 0)));
 			  r->relent.howto = &abs16_howto;
 			}
-		      current_map->pc += 2;
+                      if (current_map != NULL)
+		        current_map->pc += 2;
 		      break;
 		    case 1:
 		      if (pcrel)
@@ -1609,17 +1619,20 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 			  r->relent.howto = &rel8_howto;
 #else
 			  bfd_put_8(ieee->h.abfd, 0,
-                                    (location_ptr + current_map->pc));
+                                    (location_ptr
+                                     + ((current_map) ? current_map->pc : 0)));
 			  r->relent.howto = &rel8_howto;
 #endif /* KEEPMINUSPCININST */
 			}
 		      else
 			{
 			  bfd_put_8(ieee->h.abfd, 0,
-                                    (location_ptr + current_map->pc));
+                                    (location_ptr
+                                     + ((current_map) ? current_map->pc : 0)));
 			  r->relent.howto = &abs8_howto;
 			}
-		      current_map->pc += 1;
+                      if (current_map != NULL)
+		        current_map->pc += 1;
 		      break;
 
 		    default:

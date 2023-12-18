@@ -2396,7 +2396,7 @@ NAME (aout, find_nearest_line) (bfd *abfd,
 	  snprintf(buf, (size_t)buf_len, "%s%s", directory_name,
 		   main_file_name);
 	  *filename_ptr = buf;
-	  buf += filelen + 1;
+	  buf += (filelen + 1);
 	}
     }
 
@@ -2408,12 +2408,12 @@ NAME (aout, find_nearest_line) (bfd *abfd,
       /* The caller expects a symbol name.  We actually have a
 	 function name, without the leading underscore.  Put the
 	 underscore back in, so that the caller gets a symbol name.  */
-      if (bfd_get_symbol_leading_char(abfd) == '\0')
+      if ((bfd_get_symbol_leading_char(abfd) == '\0') && (buf != NULL))
 	strncpy(buf, function, buf_len);
       else if (buf != NULL)
 	{
 	  buf[0] = bfd_get_symbol_leading_char(abfd);
-	  strncpy(buf + 1, function, buf_len + 1);
+	  strncpy((buf + 1), function, (buf_len + 1));
 	}
 
       /* Have to remove : stuff.  */

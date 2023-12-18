@@ -272,8 +272,8 @@ jobs:
         for cfile in $(find . -name '*.c' -type f); do \
           cobjfile="$(echo "${cfile}" | sed "s/\.c/.o/g")"; \
           if test ! -e "${cobjfile}"; then \
-            echo "gcc -c -w \"${FINAL_CPPFLAGS}\" \"${cfile}\""; \
-            gcc -c -w "${FINAL_CPPFLAGS}" "${cfile}" || stat -t "${cfile}" || echo "cfile is ${cfile}"; \
+            echo "gcc -c -w -Wno-error -Wfatal-errors \"${FINAL_CPPFLAGS}\" \"${cfile}\""; \
+            gcc -c -w -Wno-error -Wfatal-errors "${FINAL_CPPFLAGS}" -I"$(dirname "${cfile}")" -iquote "$(dirname "${cfile}")" "${cfile}" || stat -t "${cfile}" || echo "cfile is ${cfile}"; \
           else \
             echo "object file ${cobjfile} already exists for ${cfile}."; \
             cp -v "${cobjfile}" "$(dirname "${cfile}")" || cp -v "${cobjfile}" . || cp -v "${cobjfile}" .. || (if test -d /tmp && test -w /tmp; then cp -v "${cobjfile}" /tmp; fi) || stat -t "${cobjfile}"; \
@@ -321,7 +321,7 @@ jobs:
         # shellcheck disable=SC2044
         for ccfile in $(find . -name '*.cc' -type f); do \
           echo "One last attempt at compiling ${ccfile}..."; \
-          g++ -c "${ccfile}" || g++ -c -I. "${ccfile}" || g++ -c -I. -I.. "${ccfile}" || stat "${ccfile}"; \
+          g++ -c "${ccfile}" || g++ -c -w -I. "${ccfile}" || g++ -c -w -Wno-error -fpermissive -I. -I.. "${ccfile}" || stat -t "${ccfile}"; \
         done
         if test -e gdb/testsuite/gdb.apple/Makefile; then \
           pushd gdb/testsuite/gdb.apple; \
@@ -333,7 +333,7 @@ jobs:
         # shellcheck disable=SC2044
         for cppfile in $(find . -name '*.cpp' -type f); do \
           echo "One last attempt at compiling ${cppfile}..."; \
-          g++ -c "${cppfile}" || g++ -c -I. "${cppfile}" || g++ -c -I. -I.. "${cppfile}" || stat "${cppfile}"; \
+          g++ -c "${cppfile}" || g++ -c -w -I. "${cppfile}" || g++ -c -w -Wno-error -fpermissive -I. -I.. "${cppfile}" || stat -t "${cppfile}"; \
         done
         if test -e gdb/testsuite/gdb.base/Makefile && test -e gdb/testsuite/gdb.base/langs2.cxx; then \
           pushd gdb/testsuite/gdb.base; \
@@ -344,7 +344,7 @@ jobs:
         # shellcheck disable=SC2044
         for cxxfile in $(find . -name '*.cxx' -type f); do \
           echo "One last attempt at compiling ${cxxfile}..."; \
-          g++ -c "${cxxfile}" || g++ -c -I. "${cxxfile}" || g++ -c -I. -I.. "${cxxfile}" || stat "${cxxfile}"; \
+          g++ -c "${cxxfile}" || g++ -c -w -I. "${cxxfile}" || g++ -c -w -Wno-error -fpermissive -I. -I.. "${cxxfile}" || stat -t "${cxxfile}"; \
         done
         if test -e mmalloc/Makefile; then \
           pushd mmalloc; \
