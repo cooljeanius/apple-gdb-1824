@@ -3490,6 +3490,8 @@ xcoff_link_input_bfd(struct xcoff_final_link_info *finfo, bfd *input_bfd)
       bfd_boolean require;
       int add;
 
+      memset(&aux, 0, sizeof(union internal_auxent));
+
       bfd_coff_swap_sym_in(input_bfd, (void *)esym, (void *)isymp);
 
       /* If this is a C_EXT or C_HIDEXT symbol, we need the csect

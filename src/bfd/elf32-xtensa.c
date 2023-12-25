@@ -4000,49 +4000,54 @@ get_expanded_call_opcode(bfd_byte *buf, int bufsize, bfd_boolean *p_uses_l32r)
     {
       if (p_uses_l32r)
 	*p_uses_l32r = FALSE;
-      if (xtensa_operand_get_field (isa, opcode, CONST16_TARGET_REG_OPERAND,
-				    fmt, 0, slotbuf, &regno)
-	  || xtensa_operand_decode (isa, opcode, CONST16_TARGET_REG_OPERAND,
-				    &regno))
+      if (xtensa_operand_get_field(isa, opcode, CONST16_TARGET_REG_OPERAND,
+				   fmt, 0, slotbuf, &regno)
+	  || xtensa_operand_decode(isa, opcode, CONST16_TARGET_REG_OPERAND,
+				   &regno))
 	return XTENSA_UNDEFINED;
 
-      /* Check that the next instruction is also CONST16.  */
-      offset += xtensa_format_length (isa, fmt);
-      xtensa_insnbuf_from_chars (isa, insnbuf, buf + offset, bufsize - offset);
-      fmt = xtensa_format_decode (isa, insnbuf);
-      if (fmt == XTENSA_UNDEFINED
-	  || xtensa_format_get_slot (isa, fmt, 0, insnbuf, slotbuf))
+      /* Check that the next instruction is also CONST16: */
+      offset += xtensa_format_length(isa, fmt);
+      xtensa_insnbuf_from_chars(isa, insnbuf, (buf + offset),
+      				(bufsize - offset));
+      fmt = xtensa_format_decode(isa, insnbuf);
+      if ((fmt == XTENSA_UNDEFINED)
+	  || xtensa_format_get_slot(isa, fmt, 0, insnbuf, slotbuf))
 	return XTENSA_UNDEFINED;
-      opcode = xtensa_opcode_decode (isa, fmt, 0, slotbuf);
-      if (opcode != get_const16_opcode ())
+      opcode = xtensa_opcode_decode(isa, fmt, 0, slotbuf);
+      if (opcode != get_const16_opcode())
 	return XTENSA_UNDEFINED;
 
-      if (xtensa_operand_get_field (isa, opcode, CONST16_TARGET_REG_OPERAND,
-				    fmt, 0, slotbuf, &const16_regno)
-	  || xtensa_operand_decode (isa, opcode, CONST16_TARGET_REG_OPERAND,
-				    &const16_regno)
-	  || const16_regno != regno)
+      if (xtensa_operand_get_field(isa, opcode, CONST16_TARGET_REG_OPERAND,
+				   fmt, 0, slotbuf, &const16_regno)
+	  || xtensa_operand_decode(isa, opcode, CONST16_TARGET_REG_OPERAND,
+				   &const16_regno)
+	  || (const16_regno != regno))
 	return XTENSA_UNDEFINED;
     }
   else
-    return XTENSA_UNDEFINED;
+    {
+      if (p_uses_l32r)
+	*p_uses_l32r = FALSE;
+      return XTENSA_UNDEFINED;
+    }
 
   /* Next instruction should be an CALLXn with operand 0 == regno.  */
-  offset += xtensa_format_length (isa, fmt);
-  xtensa_insnbuf_from_chars (isa, insnbuf, buf + offset, bufsize - offset);
-  fmt = xtensa_format_decode (isa, insnbuf);
-  if (fmt == XTENSA_UNDEFINED
-      || xtensa_format_get_slot (isa, fmt, 0, insnbuf, slotbuf))
+  offset += xtensa_format_length(isa, fmt);
+  xtensa_insnbuf_from_chars(isa, insnbuf, (buf + offset), (bufsize - offset));
+  fmt = xtensa_format_decode(isa, insnbuf);
+  if ((fmt == XTENSA_UNDEFINED)
+      || xtensa_format_get_slot(isa, fmt, 0, insnbuf, slotbuf))
     return XTENSA_UNDEFINED;
-  opcode = xtensa_opcode_decode (isa, fmt, 0, slotbuf);
-  if (opcode == XTENSA_UNDEFINED
-      || !is_indirect_call_opcode (opcode))
+  opcode = xtensa_opcode_decode(isa, fmt, 0, slotbuf);
+  if ((opcode == XTENSA_UNDEFINED)
+      || !is_indirect_call_opcode(opcode))
     return XTENSA_UNDEFINED;
 
-  if (xtensa_operand_get_field (isa, opcode, CALLN_SOURCE_OPERAND,
-				fmt, 0, slotbuf, &call_regno)
-      || xtensa_operand_decode (isa, opcode, CALLN_SOURCE_OPERAND,
-				&call_regno))
+  if (xtensa_operand_get_field(isa, opcode, CALLN_SOURCE_OPERAND,
+                               fmt, 0, slotbuf, &call_regno)
+      || xtensa_operand_decode(isa, opcode, CALLN_SOURCE_OPERAND,
+                               &call_regno))
     return XTENSA_UNDEFINED;
 
   if (call_regno != regno)
@@ -8033,6 +8038,7 @@ relax_section(bfd *abfd, asection *sec, struct bfd_link_info *link_info)
 	    case ta_narrow_insn:
 	      orig_insn_size = 3;
 	      copy_size = 2;
+              BFD_ASSERT(contents != NULL);
 	      memmove(scratch, &contents[orig_dot], orig_insn_size);
 	      BFD_ASSERT(action->removed_bytes == 1);
 	      rv = narrow_instruction(scratch, final_size, 0, TRUE);
@@ -8066,6 +8072,7 @@ relax_section(bfd *abfd, asection *sec, struct bfd_link_info *link_info)
 	    case ta_widen_insn:
 	      orig_insn_size = 2;
 	      copy_size = 3;
+              BFD_ASSERT(contents != NULL);
 	      memmove(scratch, &contents[orig_dot], orig_insn_size);
 	      BFD_ASSERT(action->removed_bytes == -1);
 	      rv = widen_instruction(scratch, final_size, 0, TRUE);
@@ -8891,7 +8898,8 @@ relax_property_section (bfd *abfd,
 	  if (bytes_to_remove != 0)
 	    {
 	      removed_bytes += bytes_to_remove;
-	      if ((offset + bytes_to_remove) < section_size)
+	      if (((offset + bytes_to_remove) < section_size)
+                  && (contents != NULL))
 		memmove(&contents[actual_offset],
                         (&contents[actual_offset + bytes_to_remove]),
                         (section_size - offset - bytes_to_remove));
@@ -8900,18 +8908,18 @@ relax_property_section (bfd *abfd,
 
       if (removed_bytes)
 	{
-	  /* Clear the removed bytes.  */
-	  memset (&contents[section_size - removed_bytes], 0, removed_bytes);
+	  /* Clear the removed bytes: */
+	  memset(&contents[section_size - removed_bytes], 0, removed_bytes);
 
-	  sec->size = section_size - removed_bytes;
+	  sec->size = (section_size - removed_bytes);
 
-	  if (xtensa_is_littable_section (sec))
+	  if (xtensa_is_littable_section(sec))
 	    {
-	      bfd *dynobj = elf_hash_table (link_info)->dynobj;
+	      bfd *dynobj = elf_hash_table(link_info)->dynobj;
 	      if (dynobj)
 		{
 		  asection *sgotloc =
-		    bfd_get_section_by_name (dynobj, ".got.loc");
+		    bfd_get_section_by_name(dynobj, ".got.loc");
 		  if (sgotloc)
 		    sgotloc->size -= removed_bytes;
 		}
@@ -8920,8 +8928,8 @@ relax_property_section (bfd *abfd,
     }
 
  error_return:
-  release_internal_relocs (sec, internal_relocs);
-  release_contents (sec, contents);
+  release_internal_relocs(sec, internal_relocs);
+  release_contents(sec, contents);
   return ok;
 }
 

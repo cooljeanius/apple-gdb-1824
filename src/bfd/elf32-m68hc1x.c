@@ -667,7 +667,7 @@ elf32_m68hc11_build_stubs (bfd *abfd, struct bfd_link_info *info)
 void
 m68hc11_elf_get_bank_parameters (struct bfd_link_info *info)
 {
-  unsigned i;
+  unsigned int i;
   struct m68hc11_page_info *pinfo;
   struct bfd_link_hash_entry *h;
 
@@ -699,23 +699,23 @@ m68hc11_elf_get_bank_parameters (struct bfd_link_info *info)
 
   h = bfd_link_hash_lookup (info->hash, BFD_M68HC11_BANK_SIZE_NAME,
                             FALSE, FALSE, TRUE);
-  if (h != (struct bfd_link_hash_entry*) NULL
+  if ((h != (struct bfd_link_hash_entry *)NULL)
       && h->type == bfd_link_hash_defined)
     pinfo->bank_size = (h->u.def.value
                         + h->u.def.section->output_section->vma
                         + h->u.def.section->output_offset);
 
   pinfo->bank_shift = 0;
-  for (i = pinfo->bank_size; i != 0; i >>= 1)
+  for (i = (unsigned int)pinfo->bank_size; i != 0; i >>= 1)
     pinfo->bank_shift++;
   pinfo->bank_shift--;
-  pinfo->bank_mask = (1 << pinfo->bank_shift) - 1;
-  pinfo->bank_physical_end = pinfo->bank_physical + pinfo->bank_size;
+  pinfo->bank_mask = ((1 << pinfo->bank_shift) - 1);
+  pinfo->bank_physical_end = (pinfo->bank_physical + pinfo->bank_size);
   pinfo->bank_param_initialized = 1;
 
-  h = bfd_link_hash_lookup (info->hash, "__far_trampoline", FALSE,
-                            FALSE, TRUE);
-  if (h != (struct bfd_link_hash_entry*) NULL
+  h = bfd_link_hash_lookup(info->hash, "__far_trampoline", FALSE,
+                           FALSE, TRUE);
+  if ((h != (struct bfd_link_hash_entry *)NULL)
       && h->type == bfd_link_hash_defined)
     pinfo->trampoline_addr = (h->u.def.value
                               + h->u.def.section->output_section->vma

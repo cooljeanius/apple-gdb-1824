@@ -2403,10 +2403,8 @@ v850_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
 #define JMP_R1(insn)	((insn) & 0x1f)
 
 static bfd_boolean
-v850_elf_relax_section (bfd *abfd,
-			asection *sec,
-			struct bfd_link_info *link_info,
-			bfd_boolean *again)
+v850_elf_relax_section(bfd *abfd, asection *sec,
+                       struct bfd_link_info *link_info, bfd_boolean *again)
 {
   Elf_Internal_Shdr *symtab_hdr;
   Elf_Internal_Rela *internal_relocs;
@@ -2423,57 +2421,58 @@ v850_elf_relax_section (bfd *abfd,
   *again = FALSE;
 
   if (link_info->relocatable
-      || (sec->flags & SEC_RELOC) == 0
-      || sec->reloc_count == 0)
+      || ((sec->flags & SEC_RELOC) == 0)
+      || (sec->reloc_count == 0))
     return TRUE;
 
-  symtab_hdr = & elf_tdata (abfd)->symtab_hdr;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
 
-  internal_relocs = (_bfd_elf_link_read_relocs
-		     (abfd, sec, NULL, NULL, link_info->keep_memory));
+  internal_relocs =
+    _bfd_elf_link_read_relocs(abfd, sec, NULL, NULL, link_info->keep_memory);
   if (internal_relocs == NULL)
     goto error_return;
 
-  irelend = internal_relocs + sec->reloc_count;
+  irelend = (internal_relocs + sec->reloc_count);
 
   while (addr < sec->size)
     {
       toaddr = sec->size;
 
       for (irel = internal_relocs; irel < irelend; irel ++)
-	if (ELF32_R_TYPE (irel->r_info) == (int) R_V850_ALIGN
-	    && irel->r_offset > addr
-	    && irel->r_offset < toaddr)
+	if ((ELF32_R_TYPE(irel->r_info) == (int)R_V850_ALIGN)
+	    && (irel->r_offset > addr)
+	    && (irel->r_offset < toaddr))
 	  toaddr = irel->r_offset;
 
 #ifdef DEBUG_RELAX
       fprintf(stderr, "relax region 0x%"BFD_VMA_FMT"x to 0x%"BFD_VMA_FMT"x align pad %d\n",
 	      addr, toaddr, align_pad_size);
-#endif
+#endif /* DEBUG_RELAX */
       if (irelalign)
 	{
 	  bfd_vma alignto;
 	  bfd_vma alignmoveto;
 
-	  alignmoveto = BFD_ALIGN (addr - align_pad_size, 1 << irelalign->r_addend);
-	  alignto = BFD_ALIGN (addr, 1 << irelalign->r_addend);
+	  alignmoveto = BFD_ALIGN((addr - align_pad_size),
+   				  (1 << irelalign->r_addend));
+	  alignto = BFD_ALIGN(addr, (1 << irelalign->r_addend));
 
 	  if (alignmoveto < alignto)
 	    {
 	      unsigned int i;
 
-	      align_pad_size = alignto - alignmoveto;
+	      align_pad_size = (int)(alignto - alignmoveto);
 #ifdef DEBUG_RELAX
 	      fprintf(stderr, "relax move region 0x%"BFD_VMA_FMT"x to 0x%"BFD_VMA_FMT"x delete size 0x%x\n",
 		      alignmoveto, toaddr, align_pad_size);
-#endif
-	      if (!v850_elf_relax_delete_bytes (abfd, sec, alignmoveto,
-						toaddr, align_pad_size))
+#endif /* DEBUG_RELAX */
+	      if (!v850_elf_relax_delete_bytes(abfd, sec, alignmoveto,
+                                               toaddr, align_pad_size))
 		goto error_return;
 
-	      for (i  = BFD_ALIGN (toaddr - align_pad_size, 1);
+	      for (i = (unsigned int)BFD_ALIGN(toaddr - align_pad_size, 1);
 		   (i + 1) < toaddr; i += 2)
-		bfd_put_16 (abfd, NOP_OPCODE, contents + i);
+		bfd_put_16(abfd, NOP_OPCODE, (contents + i));
 
 	      addr = alignmoveto;
 	    }
@@ -2486,7 +2485,7 @@ v850_elf_relax_section (bfd *abfd,
 	  bfd_vma laddr;
 	  bfd_vma addend;
 	  bfd_vma symval;
-	  int insn[5];
+	  int insn[5] = { 0, 0, 0, 0, 0 };
 	  int no_match = -1;
 	  Elf_Internal_Rela *hi_irelfn;
 	  Elf_Internal_Rela *lo_irelfn;
@@ -2494,8 +2493,8 @@ v850_elf_relax_section (bfd *abfd,
 	  bfd_signed_vma foff;
 
 	  if (! (irel->r_offset >= addr && irel->r_offset < toaddr
-		 && (ELF32_R_TYPE (irel->r_info) == (int) R_V850_LONGCALL
-		     || ELF32_R_TYPE (irel->r_info) == (int) R_V850_LONGJUMP)))
+		 && (ELF32_R_TYPE(irel->r_info) == (int)R_V850_LONGCALL
+		     || ELF32_R_TYPE(irel->r_info) == (int)R_V850_LONGJUMP)))
 	    continue;
 
 #ifdef DEBUG_RELAX
@@ -2536,10 +2535,10 @@ v850_elf_relax_section (bfd *abfd,
 	      if ((laddr + 16) <= (bfd_vma)sec->size)
 		{
 		  insn[0] = bfd_get_16(abfd, (contents + laddr));
-		  insn[1] = bfd_get_16(abfd, (contents + laddr + 4));
-		  insn[2] = bfd_get_32(abfd, (contents + laddr + 8));
-		  insn[3] = bfd_get_16(abfd, (contents + laddr + 12));
-		  insn[4] = bfd_get_16(abfd, (contents + laddr + 14));
+		  insn[1] = (int)bfd_get_16(abfd, (contents + laddr + 4));
+		  insn[2] = (int)bfd_get_32(abfd, (contents + laddr + 8));
+		  insn[3] = (int)bfd_get_16(abfd, (contents + laddr + 12));
+		  insn[4] = (int)bfd_get_16(abfd, (contents + laddr + 14));
 
 		  if ((insn[0] & MOVHI_MASK) != MOVHI
 		       || MOVHI_R1 (insn[0]) != 0)
@@ -2768,9 +2767,9 @@ v850_elf_relax_section (bfd *abfd,
 	      /* Check code for -mlong-jumps output.  */
 	      if (laddr + 10 <= (bfd_vma) sec->size)
 		{
-		  insn[0] = bfd_get_16 (abfd, contents + laddr);
-		  insn[1] = bfd_get_16 (abfd, contents + laddr + 4);
-		  insn[2] = bfd_get_16 (abfd, contents + laddr + 8);
+		  insn[0] = (int)bfd_get_16(abfd, (contents + laddr));
+		  insn[1] = (int)bfd_get_16(abfd, (contents + laddr + 4));
+		  insn[2] = (int)bfd_get_16(abfd, (contents + laddr + 8));
 
 		  if ((insn[0] & MOVHI_MASK) != MOVHI
 		       || MOVHI_R1 (insn[0]) != 0)
@@ -2790,7 +2789,7 @@ v850_elf_relax_section (bfd *abfd,
 		{
 		  ((*_bfd_error_handler)
 		   ("%s: 0x%lx: warning: R_V850_LONGJUMP points to unrecognized insns",
-		    bfd_get_filename (abfd), (unsigned long) irel->r_offset));
+		    bfd_get_filename(abfd), (unsigned long)irel->r_offset));
 
 		  continue;
 		}
@@ -2863,7 +2862,7 @@ v850_elf_relax_section (bfd *abfd,
 			    sym_sec->output_offset,
 			    isym->st_value, irel->r_addend);
 		  }
-#endif
+#endif /* DEBUG_RELAX */
 		}
 	      else
 		{
@@ -2892,7 +2891,7 @@ v850_elf_relax_section (bfd *abfd,
 			  "addend %"BFD_VMA_FMT"x\n",
 			  sec->name, h->root.root.string, h->root.u.def.value,
 			  sec->output_section->vma, sec->output_offset, irel->r_addend);
-#endif
+#endif /* DEBUG_RELAX */
 		}
 
 	      addend = irel->r_addend;
@@ -2911,7 +2910,7 @@ v850_elf_relax_section (bfd *abfd,
 		      (irel->r_offset + sec->output_section->vma
 		       + sec->output_offset),
 		      symval, addend, foff);
-#endif
+#endif /* DEBUG_RELAX */
 	      if (foff < -0x100000 || foff >= 0x100000)
 		/* After all that work, we can't shorten this function call.  */
 		continue;

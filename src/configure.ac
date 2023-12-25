@@ -38,7 +38,7 @@ dnl# This is a hack because autoconf finds the AC\_INIT from
 dnl# config/override.m4 first if it is present.
 dnl# Feel free to re-define to whichever version of autoconf
 dnl# that you are using:
-m4_define([_GCC_AUTOCONF_VERSION],[2.71])
+m4_define([_GCC_AUTOCONF_VERSION],[2.72])
 dnl# OK, now that we have that out of the way, we can actually get started:
 AC_INIT([apple-gdb-src],[1824],[gclayton@apple.com])
 dnl# bug report address is email address of last person to touch this
@@ -1798,8 +1798,7 @@ else
     test -z "${CC}"
     AC_PROG_CC
   else
-    test ! -z "${CC}"
-    AC_PROG_GCC_TRADITIONAL
+    test -n "${CC}" && export CC
   fi
   AC_PROG_CPP
   AC_PROG_CXX
@@ -3066,6 +3065,7 @@ AC_CHECK_PROGS([CONFIGURED_FLEX],[flex],[${MISSING} flex])
 AC_CHECK_PROGS([CONFIGURED_LEX],[flex lex],[${MISSING} flex])
 AC_CHECK_PROGS([CONFIGURED_MAKEINFO],[makeinfo],[${MISSING} makeinfo])dnl
 
+AC_PROG_LEX([yywrap])
 AM_PROG_LEX
 AC_PROG_YACC
 

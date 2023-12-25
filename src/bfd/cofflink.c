@@ -1652,7 +1652,7 @@ _bfd_coff_link_input_bfd(struct coff_final_link_info *finfo, bfd *input_bfd)
 	      name_copy = (char *)bfd_alloc(input_bfd, amt);
 	      if (name_copy == NULL)
 		return FALSE;
-	      strcpy(name_copy, elename);
+	      strncpy(name_copy, elename, amt);
 
 	      (*epp)->name = name_copy;
 	      (*epp)->type = islp->n_type;

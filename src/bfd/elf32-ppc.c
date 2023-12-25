@@ -7080,13 +7080,19 @@ ppc_elf_finish_dynamic_sections (bfd *output_bfd,
 
       if (!info->shared)
 	{
-	  bfd_vma got_value =
-	    ((((htab->elf.hgot != NULL)
-               && (htab->elf.hgot->root.u.def.section != NULL))
-              ? htab->elf.hgot->root.u.def.section->output_section->vma
-              : 0UL)
-	     + htab->elf.hgot->root.u.def.section->output_offset
-	     + htab->elf.hgot->root.u.def.value);
+	  bfd_vma got_value = 0UL;
+          if ((htab->elf.hgot != NULL)
+              && (htab->elf.hgot->root.u.def.section != NULL))
+            {
+              got_value =
+                (htab->elf.hgot->root.u.def.section->output_section->vma
+	         + htab->elf.hgot->root.u.def.section->output_offset
+	         + htab->elf.hgot->root.u.def.value);
+            }
+          else if (htab->elf.hgot != NULL)
+            {
+              got_value = htab->elf.hgot->root.u.def.value;
+            }
 	  bfd_vma got_hi = ((got_value >> 16) + ((got_value & 0x8000) >> 15));
 
 	  bfd_put_32(output_bfd, (plt_entry[0] | (got_hi & 0xffff)),
@@ -7117,41 +7123,51 @@ ppc_elf_finish_dynamic_sections (bfd *output_bfd,
 	  rela.r_offset = (htab->plt->output_section->vma
 			   + htab->plt->output_offset
 			   + 2);
-	  rela.r_info = ELF32_R_INFO (htab->elf.hgot->indx, R_PPC_ADDR16_HA);
+	  rela.r_info = ((htab->elf.hgot != NULL)
+    			 ? ELF32_R_INFO(htab->elf.hgot->indx, R_PPC_ADDR16_HA)
+           		 : 0UL);
 	  rela.r_addend = 0;
-	  bfd_elf32_swap_reloca_out (output_bfd, &rela, loc);
-	  loc += sizeof (Elf32_External_Rela);
+	  bfd_elf32_swap_reloca_out(output_bfd, &rela, loc);
+	  loc += sizeof(Elf32_External_Rela);
 
 	  /* Output the @l relocation for the second instruction.  */
 	  rela.r_offset = (htab->plt->output_section->vma
 			   + htab->plt->output_offset
 			   + 6);
-	  rela.r_info = ELF32_R_INFO (htab->elf.hgot->indx, R_PPC_ADDR16_LO);
+	  rela.r_info = ((htab->elf.hgot != NULL)
+    			 ? ELF32_R_INFO(htab->elf.hgot->indx, R_PPC_ADDR16_LO)
+                         : 0UL);
 	  rela.r_addend = 0;
-	  bfd_elf32_swap_reloca_out (output_bfd, &rela, loc);
-	  loc += sizeof (Elf32_External_Rela);
+	  bfd_elf32_swap_reloca_out(output_bfd, &rela, loc);
+	  loc += sizeof(Elf32_External_Rela);
 
 	  /* Fix up the remaining relocations.  They may have the wrong
 	     symbol index for _G_O_T_ or _P_L_T_ depending on the order
 	     in which symbols were output.  */
-	  while (loc < htab->srelplt2->contents + htab->srelplt2->size)
+	  while (loc < (htab->srelplt2->contents + htab->srelplt2->size))
 	    {
 	      Elf_Internal_Rela rel;
 
-	      bfd_elf32_swap_reloc_in (output_bfd, loc, &rel);
-	      rel.r_info = ELF32_R_INFO (htab->elf.hgot->indx, R_PPC_ADDR16_HA);
-	      bfd_elf32_swap_reloc_out (output_bfd, &rel, loc);
-	      loc += sizeof (Elf32_External_Rela);
+	      bfd_elf32_swap_reloc_in(output_bfd, loc, &rel);
+	      rel.r_info = ((htab->elf.hgot != NULL)
+                            ? ELF32_R_INFO(htab->elf.hgot->indx,
+                                           R_PPC_ADDR16_HA)
+                            : 0UL);
+	      bfd_elf32_swap_reloc_out(output_bfd, &rel, loc);
+	      loc += sizeof(Elf32_External_Rela);
 
-	      bfd_elf32_swap_reloc_in (output_bfd, loc, &rel);
-	      rel.r_info = ELF32_R_INFO (htab->elf.hgot->indx, R_PPC_ADDR16_LO);
-	      bfd_elf32_swap_reloc_out (output_bfd, &rel, loc);
-	      loc += sizeof (Elf32_External_Rela);
+	      bfd_elf32_swap_reloc_in(output_bfd, loc, &rel);
+	      rel.r_info = ((htab->elf.hgot != NULL)
+                            ? ELF32_R_INFO(htab->elf.hgot->indx,
+                                           R_PPC_ADDR16_LO)
+                            : 0UL);
+	      bfd_elf32_swap_reloc_out(output_bfd, &rel, loc);
+	      loc += sizeof(Elf32_External_Rela);
 
-	      bfd_elf32_swap_reloc_in (output_bfd, loc, &rel);
-	      rel.r_info = ELF32_R_INFO (htab->hplt->indx, R_PPC_ADDR32);
-	      bfd_elf32_swap_reloc_out (output_bfd, &rel, loc);
-	      loc += sizeof (Elf32_External_Rela);
+	      bfd_elf32_swap_reloc_in(output_bfd, loc, &rel);
+	      rel.r_info = ELF32_R_INFO(htab->hplt->indx, R_PPC_ADDR32);
+	      bfd_elf32_swap_reloc_out(output_bfd, &rel, loc);
+	      loc += sizeof(Elf32_External_Rela);
 	    }
 	}
     }

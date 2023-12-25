@@ -1890,22 +1890,22 @@ elf_m68k_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
 	      || h->forced_local)
 	  && h->def_regular)
 	{
-	  rela.r_info = ELF32_R_INFO (0, R_68K_RELATIVE);
-	  rela.r_addend = bfd_get_signed_32 (output_bfd,
-					     (sgot->contents
-					      + (h->got.offset &~ (bfd_vma) 1)));
+	  rela.r_info = ELF32_R_INFO(0, R_68K_RELATIVE);
+	  rela.r_addend = bfd_get_signed_32(output_bfd,
+					    (sgot->contents
+					     + (h->got.offset &~ (bfd_vma) 1)));
 	}
       else
 	{
-	  bfd_put_32 (output_bfd, (bfd_vma) 0,
-		      sgot->contents + (h->got.offset &~ (bfd_vma) 1));
-	  rela.r_info = ELF32_R_INFO (h->dynindx, R_68K_GLOB_DAT);
+	  bfd_put_32(output_bfd, (bfd_vma)0UL,
+		     sgot->contents + (h->got.offset &~ (bfd_vma) 1));
+	  rela.r_info = ELF32_R_INFO(h->dynindx, R_68K_GLOB_DAT);
 	  rela.r_addend = 0;
 	}
 
       loc = srela->contents;
-      loc += srela->reloc_count++ * sizeof (Elf32_External_Rela);
-      bfd_elf32_swap_reloca_out (output_bfd, &rela, loc);
+      loc += (srela->reloc_count++ * sizeof(Elf32_External_Rela));
+      bfd_elf32_swap_reloca_out(output_bfd, &rela, loc);
     }
 
   if (h->needs_copy)

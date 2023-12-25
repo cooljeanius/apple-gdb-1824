@@ -108,13 +108,15 @@ AS_IF([test "x${CC}" = "x"],[
   test -z "${CC}"
   AC_PROG_CC
 ],[
-  test ! -z "${CC}"
-  AC_PROG_GCC_TRADITIONAL
+  test -n "${CC}" && export CC
 ])dnl
   ## ...uh... this comment is apparently necessary.
 AC_PROG_CPP
 AC_PROG_CXX
+AC_PROG_GREP
+AC_PROG_EGREP
 AC_PROG_INSTALL
+AC_PROG_LEX([yywrap])
 AM_PROG_LEX
 AC_PROG_LN_S
 AS_IF([test "x${ac_cv_prog_make_make_set}" = "x"],[

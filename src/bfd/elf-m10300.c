@@ -4466,22 +4466,22 @@ _bfd_mn10300_elf_finish_dynamic_symbol(bfd *output_bfd,
       Elf_Internal_Rela rel;
 
       /* This symbol needs a copy reloc.  Set it up.  */
-      BFD_ASSERT (h->dynindx != -1
-		  && (h->root.type == bfd_link_hash_defined
-		      || h->root.type == bfd_link_hash_defweak));
+      BFD_ASSERT((h->dynindx != -1)
+		 && (h->root.type == bfd_link_hash_defined
+		     || h->root.type == bfd_link_hash_defweak));
 
-      s = bfd_get_section_by_name (h->root.u.def.section->owner,
-				   ".rela.bss");
-      BFD_ASSERT (s != NULL);
+      s = bfd_get_section_by_name(h->root.u.def.section->owner,
+				  ".rela.bss");
+      BFD_ASSERT(s != NULL);
 
       rel.r_offset = (h->root.u.def.value
 		      + h->root.u.def.section->output_section->vma
 		      + h->root.u.def.section->output_offset);
-      rel.r_info = ELF32_R_INFO (h->dynindx, R_MN10300_COPY);
+      rel.r_info = ELF32_R_INFO(h->dynindx, R_MN10300_COPY);
       rel.r_addend = 0;
-      bfd_elf32_swap_reloca_out (output_bfd, &rel,
-				 (bfd_byte *) ((Elf32_External_Rela *) s->contents
-					       + s->reloc_count));
+      bfd_elf32_swap_reloca_out(output_bfd, &rel,
+                                (bfd_byte *)((Elf32_External_Rela *)s->contents
+                                             + s->reloc_count));
       ++ s->reloc_count;
     }
 

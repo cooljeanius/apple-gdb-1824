@@ -505,6 +505,8 @@ parse_expression(ieee_data_type *ieee, bfd_vma *value,
   ieee_value_type *sp = stack;
   asection *dummy = NULL;
 
+  memset(&stack, 0, sizeof(ieee_value_type));
+
 #ifndef POS
 # define POS sp[1]
 #endif /* !POS */
@@ -2621,7 +2623,7 @@ copy_expression(void)
 	  *tos++ = value;
 	  NEXT();
 	  break;
-	case VAR ('R'):
+	case VAR('R'):
 	  {
 	    int section_number;
 	    ieee_data_type *ieee;
@@ -3272,13 +3274,13 @@ ieee_set_section_contents(bfd *abfd, sec_ptr section, const void *location,
 	}
       /* bfd_set_section_contents has already checked that everything
          is within range.  */
-      memcpy(section->contents + offset, location, (size_t)count);
+      memcpy((section->contents + offset), location, (size_t)count);
       return TRUE;
     }
 
-  if (ieee_per_section (section)->data == (bfd_byte *) NULL)
+  if (ieee_per_section(section)->data == (bfd_byte *)NULL)
     {
-      if (!init_for_output (abfd))
+      if (!init_for_output(abfd))
 	return FALSE;
     }
   memcpy((void *)(ieee_per_section(section)->data + offset),
@@ -3293,34 +3295,34 @@ ieee_set_section_contents(bfd *abfd, sec_ptr section, const void *location,
    symbol values into indexes from the right base.  */
 
 static bfd_boolean
-ieee_write_external_part (bfd *abfd)
+ieee_write_external_part(bfd *abfd)
 {
   asymbol **q;
-  ieee_data_type *ieee = IEEE_DATA (abfd);
+  ieee_data_type *ieee = IEEE_DATA(abfd);
   unsigned int reference_index = IEEE_REFERENCE_BASE;
   unsigned int public_index = IEEE_PUBLIC_BASE + 2;
-  file_ptr here = bfd_tell (abfd);
+  file_ptr here = bfd_tell(abfd);
   bfd_boolean hadone = FALSE;
 
-  if (abfd->outsymbols != (asymbol **) NULL)
+  if (abfd->outsymbols != (asymbol **)NULL)
     {
 
-      for (q = abfd->outsymbols; *q != (asymbol *) NULL; q++)
+      for (q = abfd->outsymbols; *q != (asymbol *)NULL; q++)
 	{
 	  asymbol *p = *q;
 
-	  if (bfd_is_und_section (p->section))
+	  if (bfd_is_und_section(p->section))
 	    {
 	      /* This must be a symbol reference.  */
-	      if (! ieee_write_byte (abfd, ieee_external_reference_enum)
-		  || ! ieee_write_int (abfd, (bfd_vma) reference_index)
-		  || ! ieee_write_id (abfd, p->name))
+	      if (! ieee_write_byte(abfd, ieee_external_reference_enum)
+		  || ! ieee_write_int(abfd, (bfd_vma)reference_index)
+		  || ! ieee_write_id(abfd, p->name))
 		return FALSE;
 	      p->value = reference_index;
 	      reference_index++;
 	      hadone = TRUE;
 	    }
-	  else if (bfd_is_com_section (p->section))
+	  else if (bfd_is_com_section(p->section))
 	    {
 	      /* This is a weak reference.  */
 	      if (! ieee_write_byte (abfd, ieee_external_reference_enum)
