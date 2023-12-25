@@ -493,13 +493,11 @@ static reloc_howto_type rel8_howto =
 
 static ieee_symbol_index_type NOSYMBOL = {0, 0};
 
+/* */
 static void
-parse_expression (ieee_data_type *ieee,
-		  bfd_vma *value,
-		  ieee_symbol_index_type *symbol,
-		  bfd_boolean *pcrel,
-		  unsigned int *extra,
-		  asection **section)
+parse_expression(ieee_data_type *ieee, bfd_vma *value,
+		 ieee_symbol_index_type *symbol, bfd_boolean *pcrel,
+		 unsigned int *extra, asection **section)
 
 {
   bfd_boolean loop = TRUE;
@@ -540,20 +538,19 @@ parse_expression (ieee_data_type *ieee,
 	case ieee_variable_L_enum:
 	  /* L variable  address of section N.  */
 	  next_byte(&(ieee->h));
-	  PUSH(NOSYMBOL, ieee->section_table[must_parse_int (&(ieee->h))], 0);
+	  PUSH(NOSYMBOL, ieee->section_table[must_parse_int(&(ieee->h))], 0);
 	  break;
 	case ieee_variable_R_enum:
 	  /* R variable, logical address of section module.  */
 	  /* FIXME: this should be different to L.  */
 	  next_byte(&(ieee->h));
-	  PUSH(NOSYMBOL, ieee->section_table[must_parse_int (&(ieee->h))], 0);
+	  PUSH(NOSYMBOL, ieee->section_table[must_parse_int(&(ieee->h))], 0);
 	  break;
 	case ieee_variable_S_enum:
 	  /* S variable, size in MAUS of section module.  */
 	  next_byte(&(ieee->h));
-	  PUSH (NOSYMBOL,
-		0,
-		ieee->section_table[must_parse_int (&(ieee->h))]->size);
+	  PUSH(NOSYMBOL, 0,
+               ieee->section_table[must_parse_int(&(ieee->h))]->size);
 	  break;
 	case ieee_variable_I_enum:
 	  /* Push the address of variable n.  */
@@ -564,7 +561,7 @@ parse_expression (ieee_data_type *ieee,
 	    sy.index = (int)must_parse_int(&(ieee->h));
 	    sy.letter = 'I';
 
-	    PUSH (sy, bfd_abs_section_ptr, 0);
+	    PUSH(sy, bfd_abs_section_ptr, 0);
 	  }
 	  break;
 	case ieee_variable_X_enum:
@@ -581,31 +578,34 @@ parse_expression (ieee_data_type *ieee,
 	  break;
 	case ieee_function_minus_enum:
 	  {
-	    bfd_vma value1, value2;
-	    asection *section1, *section_dummy;
-	    ieee_symbol_index_type sy;
+	    bfd_vma value1 = 0UL;
+            bfd_vma value2 = 0UL;
+	    asection *section1 = NULL;
+            asection *section_dummy = NULL;
+	    ieee_symbol_index_type sy = { 0, 0 };
 
-	    next_byte (&(ieee->h));
+	    next_byte(&(ieee->h));
 
 	    POP(sy, section1, value1);
 	    POP(sy, section_dummy, value2);
-	    PUSH(sy, section1 ? section1 : section_dummy, value2 - value1);
+	    PUSH(sy, (section1 ? section1 : section_dummy), (value2 - value1));
 	  }
 	  break;
 	case ieee_function_plus_enum:
 	  {
-	    bfd_vma value1, value2;
-	    asection *section1;
-	    asection *section2;
-	    ieee_symbol_index_type sy1;
-	    ieee_symbol_index_type sy2;
+	    bfd_vma value1 = 0UL;
+            bfd_vma value2 = 0UL;
+	    asection *section1 = NULL;
+	    asection *section2 = NULL;
+	    ieee_symbol_index_type sy1 = { 0, 0 };
+	    ieee_symbol_index_type sy2 = { 0, 0 };
 
 	    next_byte(&(ieee->h));
 
 	    POP(sy1, section1, value1);
 	    POP(sy2, section2, value2);
 	    PUSH((sy1.letter ? sy1 : sy2),
-		 bfd_is_abs_section(section1) ? section2 : section1,
+		 (bfd_is_abs_section(section1) ? section2 : section1),
 		 (value1 + value2));
 	  }
 	  break;
@@ -634,8 +634,8 @@ parse_expression (ieee_data_type *ieee,
      so we keep adding.  */
   while (sp != (stack + 1))
     {
-      asection *section1;
-      ieee_symbol_index_type sy1;
+      asection *section1 = NULL;
+      ieee_symbol_index_type sy1 = { 0, 0 };
 
       POP(sy1, section1, *extra);
     }
@@ -1618,7 +1618,7 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 			  r->relent.addend -= current_map->pc;
 			  r->relent.howto = &rel8_howto;
 #else
-			  bfd_put_8(ieee->h.abfd, 0,
+			  bfd_put_8(((ieee) ? ieee->h.abfd : NULL), 0,
                                     (location_ptr
                                      + ((current_map) ? current_map->pc : 0)));
 			  r->relent.howto = &rel8_howto;
@@ -1626,7 +1626,7 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 			}
 		      else
 			{
-			  bfd_put_8(ieee->h.abfd, 0,
+			  bfd_put_8(((ieee) ? ieee->h.abfd : NULL), 0,
                                     (location_ptr
                                      + ((current_map) ? current_map->pc : 0)));
 			  r->relent.howto = &abs8_howto;
@@ -2551,13 +2551,14 @@ copy_id(void)
     }
 }
 
+/* */
 #define VAR(x) ((x | 0x80))
 static void
 copy_expression(void)
 {
-  int stack[10];
+  int stack[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   int *tos = stack;
-  int value;
+  int value = 0;
 
   while (1)
     {
@@ -2659,10 +2660,10 @@ fill_int(struct output_buffer_struct *buf)
     {
       /* Still a chance to output the size: */
       ptrdiff_t value = (output_ptr - buf->ptrp + 3);
-      buf->ptrp[0] = (value >> 24U);
-      buf->ptrp[1] = (value >> 16U);
-      buf->ptrp[2] = (value >> 8U);
-      buf->ptrp[3] = (value >> 0U);
+      buf->ptrp[0] = (unsigned char)(value >> 24U);
+      buf->ptrp[1] = (unsigned char)(value >> 16U);
+      buf->ptrp[2] = (unsigned char)(value >> 8U);
+      buf->ptrp[3] = (unsigned char)(value >> 0U);
     }
 }
 

@@ -1637,8 +1637,8 @@ mmix_final_link_relocate(reloc_howto_type *howto, asection *input_section,
 	}
     do_mmix_reloc:
       contents += r_offset;
-      r = mmix_elf_perform_relocation (input_section, howto, contents,
-				       addr, srel);
+      r = mmix_elf_perform_relocation(input_section, howto, contents,
+				      addr, srel);
       break;
 
     case R_MMIX_LOCAL:
@@ -1646,9 +1646,9 @@ mmix_final_link_relocate(reloc_howto_type *howto, asection *input_section,
 	 final relocation value corresponds to a local register.  We
 	 ignore the actual relocation; nothing is changed.  */
       {
-	asection *regsec
-	  = bfd_get_section_by_name (input_section->output_section->owner,
-				     MMIX_REG_CONTENTS_SECTION_NAME);
+	asection *regsec =
+	  bfd_get_section_by_name(input_section->output_section->owner,
+                                  MMIX_REG_CONTENTS_SECTION_NAME);
 	bfd_vma first_global;
 
 	/* Check that this is an absolute value, or a reference to the
@@ -1656,16 +1656,17 @@ mmix_final_link_relocate(reloc_howto_type *howto, asection *input_section,
 	   Absolute numbers can get here as undefined section.  Undefined
 	   symbols are signalled elsewhere, so there's no conflict in us
 	   accidentally handling it.  */
-	if (!bfd_is_abs_section (symsec)
-	    && !bfd_is_und_section (symsec)
-	    && strcmp (bfd_get_section_name (symsec->owner, symsec),
-		       MMIX_REG_CONTENTS_SECTION_NAME) != 0
-	    && strcmp (bfd_get_section_name (symsec->owner, symsec),
-		       MMIX_REG_SECTION_NAME) != 0)
+	if ((symsec != NULL)
+	    && !bfd_is_abs_section(symsec)
+	    && !bfd_is_und_section(symsec)
+	    && (strcmp(bfd_get_section_name(symsec->owner, symsec),
+		       MMIX_REG_CONTENTS_SECTION_NAME) != 0)
+	    && (strcmp(bfd_get_section_name(symsec->owner, symsec),
+		       MMIX_REG_SECTION_NAME) != 0))
 	{
 	  (*_bfd_error_handler)
 	    (_("%s: directive LOCAL valid only with a register or absolute value"),
-	     bfd_get_filename (input_section->owner));
+	     bfd_get_filename(input_section->owner));
 
 	  return bfd_reloc_overflow;
 	}
@@ -1676,11 +1677,12 @@ mmix_final_link_relocate(reloc_howto_type *howto, asection *input_section,
 	first_global = 255;
       else
 	{
-	  first_global = bfd_get_section_vma (abfd, regsec) / 8;
-	  if (strcmp (bfd_get_section_name (symsec->owner, symsec),
-		      MMIX_REG_CONTENTS_SECTION_NAME) == 0)
+	  first_global = (bfd_get_section_vma(abfd, regsec) / 8);
+	  if ((symsec != NULL)
+              && (strcmp(bfd_get_section_name(symsec->owner, symsec),
+		         MMIX_REG_CONTENTS_SECTION_NAME) == 0))
 	    {
-	      if ((srel & 7) != 0 || srel < 32*8 || srel > 255*8)
+	      if (((srel & 7) != 0) || (srel < (32 * 8)) || (srel > (255 * 8)))
 		/* The bfd_reloc_outofrange return value, though
 		   intuitively a better value, will not get us an error.  */
 		return bfd_reloc_overflow;
@@ -1688,12 +1690,13 @@ mmix_final_link_relocate(reloc_howto_type *howto, asection *input_section,
 	    }
 	}
 
-	if ((bfd_vma) srel >= first_global)
+	if ((bfd_vma)srel >= first_global)
 	  {
-	    /* FIXME: Better error message.  */
+	    /* FIXME: Better error message: */
 	    (*_bfd_error_handler)
 	      (_("%s: LOCAL directive: Register $%ld is not a local register.  First global register is $%ld."),
-	       bfd_get_filename (input_section->owner), (long) srel, (long) first_global);
+	       bfd_get_filename(input_section->owner), (long)srel,
+         			(long)first_global);
 
 	    return bfd_reloc_overflow;
 	  }
@@ -1702,9 +1705,8 @@ mmix_final_link_relocate(reloc_howto_type *howto, asection *input_section,
       break;
 
     default:
-      r = _bfd_final_link_relocate (howto, input_section->owner, input_section,
-				    contents, r_offset,
-				    relocation, r_addend);
+      r = _bfd_final_link_relocate(howto, input_section->owner, input_section,
+				   contents, r_offset, relocation, r_addend);
     }
 
   return r;
@@ -2737,11 +2739,13 @@ mmix_elf_relax_section(bfd *abfd, asection *sec,
 	  continue;
 	}
 
-      /* We are looking at a R_MMIX_BASE_PLUS_OFFSET reloc: */
-      gregdata->reloc_request[gregdata->bpo_reloc_indexes[bpono]].value =
-        (symval + irel->r_addend);
-      gregdata->reloc_request[gregdata->bpo_reloc_indexes[bpono++]].valid = TRUE;
-      gregdata->n_remaining_bpo_relocs_this_relaxation_round--;
+      if (gregdata != NULL) {
+      	/* We are looking at a R_MMIX_BASE_PLUS_OFFSET reloc: */
+      	gregdata->reloc_request[gregdata->bpo_reloc_indexes[bpono]].value =
+          (symval + irel->r_addend);
+      	gregdata->reloc_request[gregdata->bpo_reloc_indexes[bpono++]].valid = TRUE;
+      	gregdata->n_remaining_bpo_relocs_this_relaxation_round--;
+      }
     }
 
   /* Check if that was the last BPO-reloc.  If so, sort the values and

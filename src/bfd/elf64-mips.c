@@ -2697,17 +2697,17 @@ mips_elf64_write_rel(bfd *abfd, asection *sec, Elf_Internal_Shdr *rel_hdr,
       if ((abfd->flags & (EXEC_P | DYNAMIC)) == 0)
 	int_rel.r_offset = ptr->address;
       else
-	int_rel.r_offset = ptr->address + sec->vma;
+	int_rel.r_offset = (ptr->address + sec->vma);
 
       sym = *ptr->sym_ptr_ptr;
       if (sym == last_sym)
 	n = last_sym_idx;
-      else if (bfd_is_abs_section (sym->section) && sym->value == 0)
+      else if (bfd_is_abs_section(sym->section) && (sym->value == 0))
 	n = STN_UNDEF;
       else
 	{
 	  last_sym = sym;
-	  n = _bfd_elf_symbol_from_bfd_symbol (abfd, &sym);
+	  n = _bfd_elf_symbol_from_bfd_symbol(abfd, &sym);
 	  if (n < 0)
 	    {
 	      *failedp = TRUE;
@@ -2719,27 +2719,28 @@ mips_elf64_write_rel(bfd *abfd, asection *sec, Elf_Internal_Shdr *rel_hdr,
       int_rel.r_sym = n;
       int_rel.r_ssym = RSS_UNDEF;
 
-      if ((*ptr->sym_ptr_ptr)->the_bfd->xvec != abfd->xvec
-	  && ! _bfd_elf_validate_reloc (abfd, ptr))
+      if (((*ptr->sym_ptr_ptr) == NULL)
+          || (((*ptr->sym_ptr_ptr)->the_bfd->xvec != abfd->xvec)
+              && ! _bfd_elf_validate_reloc(abfd, ptr)))
 	{
 	  *failedp = TRUE;
 	  return;
 	}
 
       int_rel.r_type = ptr->howto->type;
-      int_rel.r_type2 = (int) R_MIPS_NONE;
-      int_rel.r_type3 = (int) R_MIPS_NONE;
+      int_rel.r_type2 = (int)R_MIPS_NONE;
+      int_rel.r_type3 = (int)R_MIPS_NONE;
 
       for (i = 0; i < 2; i++)
 	{
 	  arelent *r;
 
-	  if (idx + 1 >= sec->reloc_count)
+	  if ((idx + 1) >= sec->reloc_count)
 	    break;
 	  r = sec->orelocation[idx + 1];
-	  if (r->address != ptr->address
-	      || ! bfd_is_abs_section ((*r->sym_ptr_ptr)->section)
-	      || (*r->sym_ptr_ptr)->value != 0)
+	  if ((r->address != ptr->address)
+	      || ! bfd_is_abs_section((*r->sym_ptr_ptr)->section)
+	      || ((*r->sym_ptr_ptr)->value != 0))
 	    break;
 
 	  /* We can merge the reloc at IDX + 1 with the reloc at IDX.  */
@@ -2752,13 +2753,14 @@ mips_elf64_write_rel(bfd *abfd, asection *sec, Elf_Internal_Shdr *rel_hdr,
 	  ++idx;
 	}
 
-      mips_elf64_swap_reloc_out (abfd, &int_rel, ext_rel);
+      mips_elf64_swap_reloc_out(abfd, &int_rel, ext_rel);
     }
 
   BFD_ASSERT((ext_rel - (Elf64_Mips_External_Rel *)rel_hdr->contents)
              == *count);
 }
 
+/* */
 static void
 mips_elf64_write_rela(bfd *abfd, asection *sec,
                       Elf_Internal_Shdr *rela_hdr, int *count, void *data)
@@ -2799,12 +2801,12 @@ mips_elf64_write_rela(bfd *abfd, asection *sec,
       sym = *ptr->sym_ptr_ptr;
       if (sym == last_sym)
 	n = last_sym_idx;
-      else if (bfd_is_abs_section (sym->section) && sym->value == 0)
+      else if (bfd_is_abs_section(sym->section) && (sym->value == 0))
 	n = STN_UNDEF;
       else
 	{
 	  last_sym = sym;
-	  n = _bfd_elf_symbol_from_bfd_symbol (abfd, &sym);
+	  n = _bfd_elf_symbol_from_bfd_symbol(abfd, &sym);
 	  if (n < 0)
 	    {
 	      *failedp = TRUE;
@@ -2817,26 +2819,27 @@ mips_elf64_write_rela(bfd *abfd, asection *sec,
       int_rela.r_addend = ptr->addend;
       int_rela.r_ssym = RSS_UNDEF;
 
-      if ((*ptr->sym_ptr_ptr)->the_bfd->xvec != abfd->xvec
-	  && ! _bfd_elf_validate_reloc (abfd, ptr))
+      if (((*ptr->sym_ptr_ptr) == NULL)
+          || ((*ptr->sym_ptr_ptr)->the_bfd->xvec != abfd->xvec
+	      && ! _bfd_elf_validate_reloc(abfd, ptr)))
 	{
 	  *failedp = TRUE;
 	  return;
 	}
 
       int_rela.r_type = ptr->howto->type;
-      int_rela.r_type2 = (int) R_MIPS_NONE;
-      int_rela.r_type3 = (int) R_MIPS_NONE;
+      int_rela.r_type2 = (int)R_MIPS_NONE;
+      int_rela.r_type3 = (int)R_MIPS_NONE;
 
       for (i = 0; i < 2; i++)
 	{
 	  arelent *r;
 
-	  if (idx + 1 >= sec->reloc_count)
+	  if ((idx + 1) >= sec->reloc_count)
 	    break;
 	  r = sec->orelocation[idx + 1];
 	  if (r->address != ptr->address
-	      || ! bfd_is_abs_section ((*r->sym_ptr_ptr)->section)
+	      || ! bfd_is_abs_section((*r->sym_ptr_ptr)->section)
 	      || (*r->sym_ptr_ptr)->value != 0)
 	    break;
 

@@ -4953,7 +4953,7 @@ bfd_elf_size_dynamic_sections (bfd *output_bfd,
   bfd_size_type soname_indx;
   bfd *dynobj;
   const struct elf_backend_data *bed;
-  struct elf_assign_sym_version_info asvinfo;
+  struct elf_assign_sym_version_info asvinfo = { NULL, NULL, NULL, FALSE };
 
   *sinterpptr = NULL;
 
@@ -6907,13 +6907,14 @@ elf_link_input_bfd (struct elf_final_link_info *finfo, bfd *input_bfd)
 
       /* If the section is not in the output BFD's section list, it is not
 	 being output.  */
-      if (bfd_section_removed_from_list(output_bfd, isec->output_section))
+      if ((isec == NULL)
+          || bfd_section_removed_from_list(output_bfd, isec->output_section))
 	continue;
 
       /* Get the name of the symbol: */
       name = bfd_elf_string_from_elf_section(input_bfd,
-                                             symtab_hdr->sh_link,
-					     isym->st_name);
+                                             (unsigned int)symtab_hdr->sh_link,
+					     (unsigned int)isym->st_name);
       if (name == NULL)
 	return FALSE;
 

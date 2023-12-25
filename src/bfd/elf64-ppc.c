@@ -10946,19 +10946,19 @@ ppc64_elf_finish_dynamic_sections(bfd *output_bfd,
   bfd *dynobj;
   asection *sdyn;
 
-  htab = ppc_hash_table (info);
+  htab = ppc_hash_table(info);
   dynobj = htab->elf.dynobj;
-  sdyn = bfd_get_section_by_name (dynobj, ".dynamic");
+  sdyn = bfd_get_section_by_name(dynobj, ".dynamic");
 
   if (htab->elf.dynamic_sections_created)
     {
       Elf64_External_Dyn *dyncon, *dynconend;
 
       if (sdyn == NULL || htab->got == NULL)
-	abort ();
+	abort();
 
-      dyncon = (Elf64_External_Dyn *) sdyn->contents;
-      dynconend = (Elf64_External_Dyn *) (sdyn->contents + sdyn->size);
+      dyncon = (Elf64_External_Dyn *)sdyn->contents;
+      dynconend = (Elf64_External_Dyn *)(sdyn->contents + sdyn->size);
       for (; dyncon < dynconend; dyncon++)
 	{
 	  Elf_Internal_Dyn dyn;
@@ -11002,11 +11002,13 @@ ppc64_elf_finish_dynamic_sections(bfd *output_bfd,
 
 	    case DT_JMPREL:
 	      s = htab->relplt;
+              if (s == NULL)
+                continue;
 	      dyn.d_un.d_ptr = (s->output_section->vma + s->output_offset);
 	      break;
 
 	    case DT_PLTRELSZ:
-	      dyn.d_un.d_val = htab->relplt->size;
+	      dyn.d_un.d_val = ((htab->relplt) ? htab->relplt->size : 0UL);
 	      break;
 
 	    case DT_RELASZ:

@@ -1885,8 +1885,8 @@ elf_vax_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
 
       /* This symbol has an entry in the global offset table.  Set it
 	 up.  */
-      sgot = bfd_get_section_by_name (dynobj, ".got");
-      srela = bfd_get_section_by_name (dynobj, ".rela.got");
+      sgot = bfd_get_section_by_name(dynobj, ".got");
+      srela = bfd_get_section_by_name(dynobj, ".rela.got");
       BFD_ASSERT (sgot != NULL && srela != NULL);
 
       rela.r_offset = (sgot->output_section->vma
@@ -1897,23 +1897,21 @@ elf_vax_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
 	 locally we just want to emit a RELATIVE reloc.  The entry in
 	 the global offset table will already have been initialized in
 	 the relocate_section function.  */
-      if (info->shared
-	  && h->dynindx == -1
-	  && h->def_regular)
+      if (info->shared && (h->dynindx == -1) && h->def_regular)
 	{
-	  rela.r_info = ELF32_R_INFO (0, R_VAX_RELATIVE);
+	  rela.r_info = ELF32_R_INFO(0, R_VAX_RELATIVE);
 	}
       else
 	{
-	  rela.r_info = ELF32_R_INFO (h->dynindx, R_VAX_GLOB_DAT);
+	  rela.r_info = ELF32_R_INFO(h->dynindx, R_VAX_GLOB_DAT);
 	}
-      rela.r_addend = bfd_get_signed_32 (output_bfd,
-					 (sgot->contents
-					  + (h->got.offset & ~1)));
+      rela.r_addend = bfd_get_signed_32(output_bfd,
+                                        (sgot->contents
+                                         + (h->got.offset & ~1)));
 
       loc = srela->contents;
-      loc += srela->reloc_count++ * sizeof (Elf32_External_Rela);
-      bfd_elf32_swap_reloca_out (output_bfd, &rela, loc);
+      loc += (srela->reloc_count++ * sizeof(Elf32_External_Rela));
+      bfd_elf32_swap_reloca_out(output_bfd, &rela, loc);
     }
 
   if (h->needs_copy)
@@ -1923,35 +1921,34 @@ elf_vax_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
       bfd_byte *loc;
 
       /* This symbol needs a copy reloc.  Set it up.  */
-      BFD_ASSERT (h->dynindx != -1
-		  && (h->root.type == bfd_link_hash_defined
-		      || h->root.type == bfd_link_hash_defweak));
+      BFD_ASSERT((h->dynindx != -1)
+		 && (h->root.type == bfd_link_hash_defined
+		     || h->root.type == bfd_link_hash_defweak));
 
-      s = bfd_get_section_by_name (h->root.u.def.section->owner,
-				   ".rela.bss");
-      BFD_ASSERT (s != NULL);
+      s = bfd_get_section_by_name(h->root.u.def.section->owner,
+				  ".rela.bss");
+      BFD_ASSERT(s != NULL);
 
       rela.r_offset = (h->root.u.def.value
 		       + h->root.u.def.section->output_section->vma
 		       + h->root.u.def.section->output_offset);
-      rela.r_info = ELF32_R_INFO (h->dynindx, R_VAX_COPY);
+      rela.r_info = ELF32_R_INFO(h->dynindx, R_VAX_COPY);
       rela.r_addend = 0;
-      loc = s->contents + s->reloc_count++ * sizeof (Elf32_External_Rela);
-      bfd_elf32_swap_reloca_out (output_bfd, &rela, loc);
+      loc = (s->contents + (s->reloc_count++ * sizeof(Elf32_External_Rela)));
+      bfd_elf32_swap_reloca_out(output_bfd, &rela, loc);
     }
 
-  /* Mark _DYNAMIC and _GLOBAL_OFFSET_TABLE_ as absolute.  */
-  if (strcmp (h->root.root.string, "_DYNAMIC") == 0
-      || strcmp (h->root.root.string, "_GLOBAL_OFFSET_TABLE_") == 0)
+  /* Mark _DYNAMIC and _GLOBAL_OFFSET_TABLE_ as absolute: */
+  if ((strcmp(h->root.root.string, "_DYNAMIC") == 0)
+      || (strcmp(h->root.root.string, "_GLOBAL_OFFSET_TABLE_") == 0))
     sym->st_shndx = SHN_ABS;
 
   return TRUE;
 }
 
 /* Finish up the dynamic sections.  */
-
 static bfd_boolean
-elf_vax_finish_dynamic_sections (bfd *output_bfd, struct bfd_link_info *info)
+elf_vax_finish_dynamic_sections(bfd *output_bfd, struct bfd_link_info *info)
 {
   bfd *dynobj;
   asection *sgot;

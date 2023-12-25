@@ -4016,14 +4016,17 @@ elf32_hppa_finish_dynamic_symbol (bfd *output_bfd,
 	  rela.r_info = ELF32_R_INFO(0, R_PARISC_DIR32);
 	  rela.r_addend = (eh->root.u.def.value
 			   + eh->root.u.def.section->output_offset
-			   + eh->root.u.def.section->output_section->vma);
+			   + ((eh->root.u.def.section->output_section)
+                              ? eh->root.u.def.section->output_section->vma
+                              : 0UL));
 	}
       else
 	{
 	  if ((eh->got.offset & 1) != 0)
 	    abort();
 
-	  bfd_put_32(output_bfd, 0, htab->sgot->contents + (eh->got.offset & ~1));
+	  bfd_put_32(output_bfd, 0, (htab->sgot->contents
+                                     + (eh->got.offset & ~1)));
 	  rela.r_info = ELF32_R_INFO(eh->dynindx, R_PARISC_DIR32);
 	  rela.r_addend = 0;
 	}

@@ -1752,7 +1752,7 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 			  struct elf_link_hash_table *elftab;
 			  bfd_size_type amt;
 
-			  isym = isymbuf + r_index;
+			  isym = (isymbuf + r_index);
 			  if (isym->st_shndx == SHN_UNDEF)
 			    sym_sec = bfd_und_section_ptr;
 			  else if (isym->st_shndx == SHN_ABS)
@@ -1760,49 +1760,50 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 			  else if (isym->st_shndx == SHN_COMMON)
 			    sym_sec = bfd_com_section_ptr;
 			  else
-			    sym_sec
-			      = bfd_section_from_elf_index (input_bfd,
-							    isym->st_shndx);
+			    sym_sec =
+                              bfd_section_from_elf_index(input_bfd,
+                                                         isym->st_shndx);
 
-			  sym_name
-			    = bfd_elf_string_from_elf_section (input_bfd,
-							       (symtab_hdr
-								->sh_link),
-							       isym->st_name);
+			  sym_name =
+                            bfd_elf_string_from_elf_section(input_bfd,
+                                                            (symtab_hdr->sh_link),
+                                                            isym->st_name);
 
 			  /* If it isn't a function, then we don't care
 			     about it.  */
-			  if (ELF_ST_TYPE (isym->st_info) != STT_FUNC)
+			  if (ELF_ST_TYPE(isym->st_info) != STT_FUNC)
 			    continue;
 
 			  /* Tack on an ID so we can uniquely identify this
 			     local symbol in the global hash table.  */
-			  amt = strlen(sym_name) + 10;
+			  amt = (strlen(sym_name) + 10UL);
 			  new_name = (char *)bfd_malloc(amt);
 			  if (new_name == 0)
 			    goto error_return;
 
-			  sprintf (new_name, "%s_%08x", sym_name, sym_sec->id);
+			  snprintf(new_name, amt, "%s_%08x", sym_name,
+        			   sym_sec->id);
 			  sym_name = new_name;
 
 			  elftab = &hash_table->static_hash_table->root;
 			  hash = ((struct elf32_mn10300_link_hash_entry *)
-				  elf_link_hash_lookup (elftab, sym_name,
-							TRUE, TRUE, FALSE));
-			  free (new_name);
+				  elf_link_hash_lookup(elftab, sym_name,
+                                                       TRUE, TRUE, FALSE));
+			  free(new_name);
 			}
 		      else
 			{
 			  r_index -= symtab_hdr->sh_info;
-			  hash = (struct elf32_mn10300_link_hash_entry *)
-				   elf_sym_hashes (input_bfd)[r_index];
+			  hash = ((struct elf32_mn10300_link_hash_entry *)
+                                  elf_sym_hashes(input_bfd)[r_index]);
 			}
 
 		      /* If this is not a "call" instruction, then we
 			 should convert "call" instructions to "calls"
 			 instructions.  */
 		      code = bfd_get_8(input_bfd,
-                                       (contents + irel->r_offset - 1));
+                                       (contents
+                                        + ((irel) ? irel->r_offset : 1) - 1));
 		      if (code != 0xdd && code != 0xcd)
 			hash->flags |= MN10300_CONVERT_CALL_TO_CALLS;
 
@@ -4447,7 +4448,8 @@ _bfd_mn10300_elf_finish_dynamic_symbol(bfd *output_bfd,
 	}
       else
 	{
-	  bfd_put_32(output_bfd, (bfd_vma)0L, sgot->contents + h->got.offset);
+	  bfd_put_32(output_bfd, (bfd_vma)0L,
+                     (sgot->contents + h->got.offset));
 	  rel.r_info = ELF32_R_INFO(h->dynindx, R_MN10300_GLOB_DAT);
 	  rel.r_addend = 0;
 	}

@@ -278,7 +278,7 @@ find_remembered_hi16s_reloc(bfd_vma addend, bfd_boolean *already_found)
   hi16s_location *match = NULL;
   hi16s_location *entry;
   hi16s_location *previous = NULL;
-  hi16s_location *prev;
+  hi16s_location *prev = NULL;
   bfd_byte *addr;
 
   /* Search the table.  Record the most recent entry that matches: */
@@ -2714,7 +2714,7 @@ v850_elf_relax_section (bfd *abfd,
 		       + sec->output_section->vma
 		       + sec->output_offset),
 		      symval, addend, foff);
-#endif
+#endif /* DEBUG_RELAX */
 
 	      if (foff < -0x100000 || foff >= 0x100000)
 		/* After all that work, we can't shorten this function call.  */
@@ -2799,7 +2799,8 @@ v850_elf_relax_section (bfd *abfd,
 		{
 		  ((*_bfd_error_handler)
 		   ("%s: 0x%lx: warning: R_V850_LONGJUMP points to unrecognized insn 0x%x",
-		    bfd_get_filename (abfd), (unsigned long) irel->r_offset+no_match, insn[no_match]));
+		    bfd_get_filename(abfd), (unsigned long)(irel->r_offset + no_match),
+                    insn[no_match]));
 
 		  continue;
 		}
@@ -2807,12 +2808,12 @@ v850_elf_relax_section (bfd *abfd,
 	      /* Get the reloc for the address from which the register is
 	         being loaded.  This reloc will tell us which function is
 	         actually being called.  */
-	      for (hi_irelfn = internal_relocs; hi_irelfn < irelend; hi_irelfn ++)
+	      for (hi_irelfn = internal_relocs; hi_irelfn < irelend; hi_irelfn++)
 		if (hi_irelfn->r_offset == laddr + 2
 		    && ELF32_R_TYPE (hi_irelfn->r_info) == (int) R_V850_HI16_S)
 		  break;
 
-	      for (lo_irelfn = internal_relocs; lo_irelfn < irelend; lo_irelfn ++)
+	      for (lo_irelfn = internal_relocs; lo_irelfn < irelend; lo_irelfn++)
 		if (lo_irelfn->r_offset == laddr + 6
 		    && ELF32_R_TYPE (lo_irelfn->r_info) == (int) R_V850_LO16)
 		  break;

@@ -7006,7 +7006,7 @@ ppc_elf_finish_dynamic_sections (bfd *output_bfd,
 	  Elf_Internal_Dyn dyn;
 	  asection *s;
 
-	  bfd_elf32_swap_dyn_in (dynobj, dyncon, &dyn);
+	  bfd_elf32_swap_dyn_in(dynobj, dyncon, &dyn);
 
 	  switch (dyn.d_tag)
 	    {
@@ -7019,12 +7019,14 @@ ppc_elf_finish_dynamic_sections (bfd *output_bfd,
 	      break;
 
 	    case DT_PLTRELSZ:
-	      dyn.d_un.d_val = htab->relplt->size;
+	      dyn.d_un.d_val = ((htab->relplt) ? htab->relplt->size : 0UL);
 	      break;
 
 	    case DT_JMPREL:
 	      s = htab->relplt;
-	      dyn.d_un.d_ptr = s->output_section->vma + s->output_offset;
+              if (s == NULL)
+                continue;
+	      dyn.d_un.d_ptr = (s->output_section->vma + s->output_offset);
 	      break;
 
 	    case DT_PPC_GOT:
@@ -7044,7 +7046,7 @@ ppc_elf_finish_dynamic_sections (bfd *output_bfd,
 	      continue;
 	    }
 
-	  bfd_elf32_swap_dyn_out (output_bfd, &dyn, dyncon);
+	  bfd_elf32_swap_dyn_out(output_bfd, &dyn, dyncon);
 	}
     }
 
@@ -7058,18 +7060,18 @@ ppc_elf_finish_dynamic_sections (bfd *output_bfd,
       BFD_ASSERT(htab->elf.hgot != NULL);
       p += htab->elf.hgot->root.u.def.value;
       if (htab->old_plt && !htab->is_vxworks)
-	bfd_put_32 (output_bfd, 0x4e800021 /* blrl */, p - 4);
+	bfd_put_32(output_bfd, 0x4e800021 /* blrl */, (p - 4));
 
       val = 0;
       if (sdyn != NULL)
-	val = sdyn->output_section->vma + sdyn->output_offset;
-      bfd_put_32 (output_bfd, val, p);
+	val = (sdyn->output_section->vma + sdyn->output_offset);
+      bfd_put_32(output_bfd, val, p);
 
-      elf_section_data (htab->got->output_section)->this_hdr.sh_entsize = 4;
+      elf_section_data(htab->got->output_section)->this_hdr.sh_entsize = 4;
     }
 
   /* Fill in the first entry in the VxWorks procedure linkage table.  */
-  if (splt && splt->size > 0)
+  if (splt && (splt->size > 0))
     {
       /* Use the right PLT. */
       static const bfd_vma *plt_entry = NULL;
@@ -7079,27 +7081,30 @@ ppc_elf_finish_dynamic_sections (bfd *output_bfd,
       if (!info->shared)
 	{
 	  bfd_vma got_value =
-	    (htab->elf.hgot->root.u.def.section->output_section->vma
+	    ((((htab->elf.hgot != NULL)
+               && (htab->elf.hgot->root.u.def.section != NULL))
+              ? htab->elf.hgot->root.u.def.section->output_section->vma
+              : 0UL)
 	     + htab->elf.hgot->root.u.def.section->output_offset
 	     + htab->elf.hgot->root.u.def.value);
-	  bfd_vma got_hi = (got_value >> 16) + ((got_value & 0x8000) >> 15);
+	  bfd_vma got_hi = ((got_value >> 16) + ((got_value & 0x8000) >> 15));
 
-	  bfd_put_32 (output_bfd, plt_entry[0] | (got_hi & 0xffff),
-		      splt->contents +  0);
-	  bfd_put_32 (output_bfd, plt_entry[1] | (got_value & 0xffff),
-		      splt->contents +  4);
+	  bfd_put_32(output_bfd, (plt_entry[0] | (got_hi & 0xffff)),
+		     (splt->contents + 0));
+	  bfd_put_32(output_bfd, (plt_entry[1] | (got_value & 0xffff)),
+		     (splt->contents + 4));
 	}
       else
 	{
-	  bfd_put_32 (output_bfd, plt_entry[0], splt->contents +  0);
-	  bfd_put_32 (output_bfd, plt_entry[1], splt->contents +  4);
+	  bfd_put_32(output_bfd, plt_entry[0], (splt->contents + 0));
+	  bfd_put_32(output_bfd, plt_entry[1], (splt->contents + 4));
 	}
-      bfd_put_32 (output_bfd, plt_entry[2], splt->contents +  8);
-      bfd_put_32 (output_bfd, plt_entry[3], splt->contents + 12);
-      bfd_put_32 (output_bfd, plt_entry[4], splt->contents + 16);
-      bfd_put_32 (output_bfd, plt_entry[5], splt->contents + 20);
-      bfd_put_32 (output_bfd, plt_entry[6], splt->contents + 24);
-      bfd_put_32 (output_bfd, plt_entry[7], splt->contents + 28);
+      bfd_put_32(output_bfd, plt_entry[2], (splt->contents + 8));
+      bfd_put_32(output_bfd, plt_entry[3], (splt->contents + 12));
+      bfd_put_32(output_bfd, plt_entry[4], (splt->contents + 16));
+      bfd_put_32(output_bfd, plt_entry[5], (splt->contents + 20));
+      bfd_put_32(output_bfd, plt_entry[6], (splt->contents + 24));
+      bfd_put_32(output_bfd, plt_entry[7], (splt->contents + 28));
 
       if (! info->shared)
 	{

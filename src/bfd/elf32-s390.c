@@ -1135,7 +1135,7 @@ elf_s390_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	  else
 	    {
 	      local_got_refcounts[r_symndx] += 1;
-	      old_tls_type = elf_s390_local_got_tls_type (abfd) [r_symndx];
+	      old_tls_type = elf_s390_local_got_tls_type(abfd)[r_symndx];
 	    }
 	  /* If a TLS symbol is accessed using IE at least once,
 	     there is no point to use dynamic model for it.  */
@@ -1145,7 +1145,7 @@ elf_s390_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 		{
 		  (*_bfd_error_handler)
 		    (_("%B: `%s' accessed both as normal and thread local symbol"),
-		     abfd, h->root.root.string);
+		     abfd, ((h != NULL) ? h->root.root.string : "<unknown>"));
 		  return FALSE;
 		}
 	      if (old_tls_type > tls_type)
@@ -1155,9 +1155,9 @@ elf_s390_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	  if (old_tls_type != tls_type)
 	    {
 	      if (h != NULL)
-		elf_s390_hash_entry (h)->tls_type = tls_type;
+		elf_s390_hash_entry(h)->tls_type = tls_type;
 	      else
-		elf_s390_local_got_tls_type (abfd) [r_symndx] = tls_type;
+		elf_s390_local_got_tls_type(abfd)[r_symndx] = tls_type;
 	    }
 
 	  if (r_type != R_390_TLS_IE32)
@@ -3196,7 +3196,7 @@ elf_s390_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
 	  && h->def_regular)
 	{
 	  BFD_ASSERT((h->got.offset & 1) != 0);
-	  rela.r_info = ELF32_R_INFO (0, R_390_RELATIVE);
+	  rela.r_info = ELF32_R_INFO(0, R_390_RELATIVE);
 	  rela.r_addend = (h->root.u.def.value
 			   + h->root.u.def.section->output_section->vma
 			   + h->root.u.def.section->output_offset);
@@ -3204,14 +3204,15 @@ elf_s390_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
       else
 	{
 	  BFD_ASSERT((h->got.offset & 1) == 0);
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, htab->sgot->contents + h->got.offset);
-	  rela.r_info = ELF32_R_INFO (h->dynindx, R_390_GLOB_DAT);
+	  bfd_put_32(output_bfd, (bfd_vma)0, (htab->sgot->contents
+                                              + h->got.offset));
+	  rela.r_info = ELF32_R_INFO(h->dynindx, R_390_GLOB_DAT);
 	  rela.r_addend = 0;
 	}
 
       loc = htab->srelgot->contents;
-      loc += htab->srelgot->reloc_count++ * sizeof (Elf32_External_Rela);
-      bfd_elf32_swap_reloca_out (output_bfd, &rela, loc);
+      loc += (htab->srelgot->reloc_count++ * sizeof(Elf32_External_Rela));
+      bfd_elf32_swap_reloca_out(output_bfd, &rela, loc);
     }
 
   if (h->needs_copy)
@@ -3225,7 +3226,7 @@ elf_s390_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
 	  || (h->root.type != bfd_link_hash_defined
 	      && h->root.type != bfd_link_hash_defweak)
 	  || htab->srelbss == NULL)
-	abort ();
+	abort();
 
       rela.r_offset = (h->root.u.def.value
 		       + h->root.u.def.section->output_section->vma

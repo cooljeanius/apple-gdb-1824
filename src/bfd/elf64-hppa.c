@@ -952,7 +952,7 @@ elf64_hppa_dynamic_symbol_p(struct elf_link_hash_entry *h,
   /* ???: What, if anything, needs to happen wrt STV_PROTECTED symbols
      and relocations that retrieve a function descriptor?  Assume the
      worst for now.  */
-  if (_bfd_elf_dynamic_symbol_p (h, info, 1))
+  if ((h != NULL) && _bfd_elf_dynamic_symbol_p(h, info, 1))
     {
       /* ???: Why is this here and not elsewhere is_local_label_name? */
       if (h->root.root.string[0] == '$' && h->root.root.string[1] == '$')
