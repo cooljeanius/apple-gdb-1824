@@ -726,6 +726,7 @@ LEX_OUTPUT_ROOT
 LEX
 YFLAGS_SEP1
 EXTRA_YFLAGS_SEP
+BISON_VERSION
 YFLAGS
 YACC
 am__fastdepCCAS_FALSE
@@ -21189,6 +21190,11 @@ else case e in #(
    ;;
 esac
 fi  ## (hopefully this will be enough)
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking full bison version info" >&5
+printf %s "checking full bison version info... " >&6; }
+  BISON_VERSION="`${YACC} --version | head -n 1`"
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${BISON_VERSION}" >&5
+printf "%s\n" "${BISON_VERSION}" >&6; }
 
 else case e in #(
   e)

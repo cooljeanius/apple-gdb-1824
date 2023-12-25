@@ -207,6 +207,10 @@ AX_PROG_BISON([
     YFLAGS_SEP1='#'
   ])dnl
   ## (hopefully this will be enough)
+  AC_MSG_CHECKING([full bison version info])
+  BISON_VERSION="`${YACC} --version | head -n 1`"
+  AC_MSG_RESULT([${BISON_VERSION}])
+  AC_SUBST([BISON_VERSION])dnl
 ],[
   EXTRA_YFLAGS_SEP='#'
   YFLAGS_SEP1='#'

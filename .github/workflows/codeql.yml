@@ -382,7 +382,7 @@ jobs:
         cd src
         # shellcheck disable=SC2001
         if test -x "$(which clang)"; then
-          for subdir in bfd electric-fence gdb utils/misc/doschk utils/spu; do \
+          for subdir in bfd electric-fence gdb mmalloc utils/misc/doschk utils/spu; do \
             if test -e ${subdir}/Makefile; then \
               pushd "${subdir}"; \
               for srcfile in *.c; do \

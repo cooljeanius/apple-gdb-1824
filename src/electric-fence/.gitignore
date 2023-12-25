@@ -6,6 +6,7 @@ errs
 \#*
 TAGS
 *.E
+*.framework
 a.out
 errors
 tstheap

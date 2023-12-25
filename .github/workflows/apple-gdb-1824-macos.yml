@@ -77,23 +77,44 @@ jobs:
     - run: cd src && make all-libdecnumber
     - run: cd src && make all-mmalloc
     - run: cd src && make configure-readline
-    - run: cd src && for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/configure; then make configure-${dir}; elif test -d ${dir}; then ls ${dir}/configure*; else echo "skipping configuring in ${dir}"; fi; done
-    - run: cd src && for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then make -C ${dir}; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
+    - run: cd src && for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/configure; then (echo "configuring in ${dir}" && make configure-${dir}); elif test -d ${dir}; then ls ${dir}/configure*; else echo "skipping configuring in ${dir}"; fi; done
+    - run: cd src && for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then (echo "building in ${dir}" && make -C ${dir}); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
     - run: cd src && make configure-gdb
     - run: cd src && make all-gdb
-    - run: cd src && (make || remake)
+    - name: Full build to get anything that might have been missed
+      run: |
+        cd src
+        if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
+          echo "nproc says we can use $(nproc) build jobs"; \
+          (make -j"$(nproc)" || remake); \
+        elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
+          echo "gnproc says we can use $(gnproc) build jobs"; \
+          (make -j"$(gnproc)" || remake); \
+        else \
+          echo "on the slow path..."; \
+          (make || remake); \
+        fi
     - run: cd src && make check-libiberty
     - run: cd src && make -C tcl/unix tcltest
-    - run: cd src && for dir in cgen sim expect dejagnu itcl libgui; do if test -r ${dir}/Makefile; then make check-${dir} V=0 RUNTESTFLAGS="-v"; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
+    - run: cd src && for dir in cgen sim expect dejagnu itcl libgui; do if test -r ${dir}/Makefile; then (echo "running testsuite for ${dir}" && make check-${dir} V=0 RUNTESTFLAGS="-v"); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
     - name: Possibly do static analysis
       run: |
         cd src
         if test ${{ matrix.compiler }} == clang; then \
           make check-bfd; \
           make check-mmalloc; \
+          cd electric-fence; \
+          make check-local || make check info dvi stamp-framework ls; \
         elif test ${{ matrix.compiler }} == gcc; then \
-          cd bfd; \
+          pushd bfd; \
           make check-DEJAGNU; \
+          popd; \
+          pushd mmalloc; \
+          make info dvi stamp-framework-headers ls; \
+          popd; \
+          pushd electric-fence; \
+          make check info dvi stamp-framework ls; \
+          popd; \
         else \
           echo "error, unhandled compiler!" >&2 && exit 1; \
         fi

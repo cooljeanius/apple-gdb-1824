@@ -231,6 +231,7 @@ uninstall-info:
 	  (cd $(DESTDIR)$(infodir) && rm -fv $${file} $$file-[0-9] $$file-[0-9][0-9]); \
 	done
 
+# FIXME: where did the source file test1.c go?
 check: check-local @MAINT@# $(srcdir)/test1.c libmmalloc.a
 #	$(CC) -g $(srcdir)/test1.c libmmalloc.a
 # This loses for Canadian cross (building mmalloc with a cross-compiler).

@@ -27,6 +27,7 @@ binutils.log
 binutils.sum
 coffdump
 config.h
+conf*/*.awk
 cxxfilt
 defparse.output
 dep.sed
