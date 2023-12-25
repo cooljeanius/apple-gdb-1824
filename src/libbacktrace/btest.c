@@ -54,14 +54,18 @@ POSSIBILITY OF SUCH DAMAGE.  */
 #endif
 
 #ifndef ATTRIBUTE_UNUSED
-# define ATTRIBUTE_UNUSED __attribute__ ((__unused__))
+# define ATTRIBUTE_UNUSED __attribute__((__unused__))
 #endif /* !ATTRIBUTE_UNUSED */
+
+#ifndef ATTRIBUTE_NORETURN
+# define ATTRIBUTE_NORETURN __attribute__((__noreturn__))
+#endif /* ATTRIBUTE_NORETURN */
 
 /* Used to collect backtrace info: */
 struct info
 {
   char *filename;
-  int lineno;
+  long lineno;
   char *function;
 };
 
@@ -72,6 +76,7 @@ struct bdata
   size_t index;
   size_t max;
   int failed;
+  int padding;
 };
 
 /* Passed to backtrace_simple callback function: */
@@ -81,6 +86,7 @@ struct sdata
   size_t index;
   size_t max;
   int failed;
+  int padding;
 };
 
 /* Passed to backtrace_syminfo callback function: */
@@ -89,6 +95,7 @@ struct symdata
   const char *name;
   uintptr_t val, size;
   int failed;
+  int padding;
 };
 
 /* The backtrace state: */
@@ -135,8 +142,8 @@ check (const char *name, int index, const struct info *all, int want_lineno,
     }
   if (all[index].lineno != want_lineno)
     {
-      fprintf (stderr, "%s: [%d]: got %d expected %d\n", name, index,
-	       all[index].lineno, want_lineno);
+      fprintf(stderr, "%s: [%d]: got %d expected %d\n", name, index,
+	      (int)all[index].lineno, want_lineno);
       *failed = 1;
     }
   if (strcmp (all[index].function, want_function) != 0)
@@ -266,8 +273,11 @@ error_callback_three (void *vdata, const char *msg, int errnum)
 }
 
 /* Test the backtrace function with non-inlined functions.  */
-
+#if BACKTRACE_SUPPORTED
+static int test1 (void) __attribute__ ((noinline));
+#else
 static int test1 (void) __attribute__ ((noinline, unused));
+#endif
 static int f2 (int) __attribute__ ((noinline));
 static int f3 (int, int) __attribute__ ((noinline));
 
@@ -329,8 +339,11 @@ f3 (int f1line, int f2line)
 }
 
 /* Test the backtrace function with inlined functions.  */
-
+#if BACKTRACE_SUPPORTED
+static inline int test2 (void) __attribute__ ((always_inline));
+#else
 static inline int test2 (void) __attribute__ ((always_inline, unused));
+#endif
 static inline int f12 (int) __attribute__ ((always_inline));
 static inline int f13 (int, int) __attribute__ ((always_inline));
 
@@ -382,8 +395,11 @@ f13 (int f1line, int f2line)
 }
 
 /* Test the backtrace_simple function with non-inlined functions.  */
-
+#if BACKTRACE_SUPPORTED
+static int test3 (void) __attribute__ ((noinline));
+#else
 static int test3 (void) __attribute__ ((noinline, unused));
+#endif
 static int f22 (int) __attribute__ ((noinline));
 static int f23 (int, int) __attribute__ ((noinline));
 
@@ -534,8 +550,11 @@ f23 (int f1line, int f2line)
 }
 
 /* Test the backtrace_simple function with inlined functions.  */
-
+#if BACKTRACE_SUPPORTED
+static inline int test4 (void) __attribute__ ((always_inline));
+#else
 static inline int test4 (void) __attribute__ ((always_inline, unused));
+#endif
 static inline int f32 (int) __attribute__ ((always_inline));
 static inline int f33 (int, int) __attribute__ ((always_inline));
 
@@ -611,7 +630,7 @@ f33 (int f1line, int f2line)
   return failures;
 }
 
-int global = 1;
+static int global = 1;
 
 static int
 test5 (void)
@@ -679,7 +698,7 @@ test5 (void)
   return failures;
 }
 
-static void
+static void ATTRIBUTE_NORETURN
 error_callback_create (void *data ATTRIBUTE_UNUSED, const char *msg,
 		       int errnum)
 {

@@ -81,14 +81,16 @@ jobs:
     - run: cd src && for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then make -C ${dir}; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
     - run: cd src && make configure-gdb
     - run: cd src && make all-gdb
+    - run: cd src && (make || remake)
     - run: cd src && make check-libiberty
     - run: cd src && make -C tcl/unix tcltest
-    - run: cd src && for dir in sim expect dejagnu itcl libgui; do if test -r ${dir}/Makefile; then make check-${dir} V=0 RUNTESTFLAGS="-v"; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
-    - name: Possibly check bfd
+    - run: cd src && for dir in cgen sim expect dejagnu itcl libgui; do if test -r ${dir}/Makefile; then make check-${dir} V=0 RUNTESTFLAGS="-v"; elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
+    - name: Possibly do static analysis
       run: |
         cd src
         if test ${{ matrix.compiler }} == clang; then \
           make check-bfd; \
+          make check-mmalloc; \
         elif test ${{ matrix.compiler }} == gcc; then \
           cd bfd; \
           make check-DEJAGNU; \
@@ -98,6 +100,7 @@ jobs:
     - run: cd src && make check-opcodes
     # (dejagnu is now moved into the loop above)
     - run: cd src && make check-intl
+    - run: cd src && make check-binutils
     - run: cd src && make check-utils
     - run: time (pwd && ls)
       if: "${{ success() }}"

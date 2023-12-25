@@ -710,6 +710,14 @@ EXTRA_DIST = arparse.c arparse.h arlex.c nlmheader.c sysinfo.c sysinfo.h \
 
 diststuff: $(EXTRA_DIST) info
 all: $(OFILES) info
+all-local: $(PROGS)
+	for myprog in $(PROGS); do \
+	  if test -r "$${myprog}" && test -x "$${myprog}"; then \
+	    echo "ok: $${myprog}"; \
+	  else \
+	    echo "warning: missing/unusable $${myprog}" >&2; \
+	  fi; \
+	done
 
 # We extract version from bfd/configure.ac, make sure to rerun configure
 # when BFD's version changes.

@@ -1863,7 +1863,7 @@ check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU check-TESTS
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-recursive
-all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(HEADERS) config.h
+all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(HEADERS) config.h all-local
 installdirs: installdirs-recursive
 installdirs-am:
 	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)"; do \
@@ -2130,7 +2130,7 @@ uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS
 .MAKE: $(am__recursive_targets) all check check-am install install-am \
 	install-exec install-strip
 
-.PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
+.PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am all-local \
 	am--depfiles am--refresh check check-DEJAGNU check-TESTS \
 	check-am clean clean-binPROGRAMS clean-checkPROGRAMS \
 	clean-cscope clean-generic clean-libtool clean-local \
@@ -2369,6 +2369,14 @@ nlmconv.@OBJEXT@: nlmconv.c $(INCDIR)/coff/sym.h $(INCDIR)/coff/ecoff.h
 
 diststuff: $(EXTRA_DIST) info
 all: $(OFILES) info
+all-local: $(PROGS)
+	for myprog in $(PROGS); do \
+	  if test -r "$${myprog}" && test -x "$${myprog}"; then \
+	    echo "ok: $${myprog}"; \
+	  else \
+	    echo "warning: missing/unusable $${myprog}" >&2; \
+	  fi; \
+	done
 
 distclean-local:
 	rm -rf autom4te.cache || rmdir autom4te.cache
