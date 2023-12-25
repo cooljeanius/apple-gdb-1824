@@ -3797,6 +3797,7 @@ NCN_STRICT_CHECK_TOOLS([OBJCOPY],[objcopy gobjcopy])dnl
 NCN_STRICT_CHECK_TOOLS([OBJDUMP],[objdump gobjdump])dnl
 NCN_STRICT_CHECK_TOOLS([READELF],[readelf greadelf])dnl
 
+AC_PROG_AR
 AM_PROG_AR
 AM_PROG_AS
 if test "x${RANLIB}" = "x"; then

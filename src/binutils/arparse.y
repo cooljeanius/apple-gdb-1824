@@ -42,6 +42,9 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 extern int verbose;
 extern int yylex(void);
 static int yyerror(const char *);
+#ifndef yyparse
+# define yyparse yy_arparse
+#endif /* !yyparse */
 %}
 
 %union {

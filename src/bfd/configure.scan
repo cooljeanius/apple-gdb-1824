@@ -1,13 +1,14 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.71])
+AC_PREREQ([2.72])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
 AC_CONFIG_SRCDIR([reloc.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CXX
+AC_PROG_AR
 AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
@@ -48,6 +49,5 @@ AC_FUNC_STRNLEN
 AC_CHECK_FUNCS([getpagesize memchr memmove memset munmap stpcpy strcasecmp strchr strncasecmp strrchr strspn strstr strtol strtoul strtoull])
 
 AC_CONFIG_FILES([Makefile
-                 doc/Makefile
-                 po/Makefile])
+                 doc/Makefile])
 AC_OUTPUT

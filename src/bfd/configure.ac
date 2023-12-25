@@ -17,6 +17,7 @@ echo "hello from bfd's configure script"
 
 # target stuff:
 AC_CANONICAL_TARGET
+AC_USE_SYSTEM_EXTENSIONS
 AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   export TARGET_ARCHITECTURE="${target_cpu}"
@@ -26,13 +27,11 @@ fi
 
 # host stuff:
 if test "x${CC}" = "x"; then
-  test -z "${CC}"
+  test -z "${CC}" || unset CC
    AC_PROG_CC
 else
-  test ! -z "${CC}"
-  AC_PROG_GCC_TRADITIONAL
+  test -n "${CC}" && export CC
 fi
-AC_USE_SYSTEM_EXTENSIONS
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
   AC_SUBST([HOST_ARCHITECTURE])dnl
@@ -71,6 +70,10 @@ if test "x${AR}" = "x"; then
   test -z "${AR}" || unset AR
   AC_CHECK_TOOLS([AR],[ar gar])dnl
   ## might want to switch around these checks...
+  if test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    AC_PROG_AR
+  fi
 else
   test -n "${AR}" && export AR
 fi

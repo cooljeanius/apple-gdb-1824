@@ -716,6 +716,7 @@ WARN_WRITE_STRINGS = @WARN_WRITE_STRINGS@
 XGETTEXT = @XGETTEXT@
 YACC = `if [ -f ../bison/bison ]; then echo ../bison/bison -y -L$(srcdir)/../bison/; else echo @YACC@; fi`
 YFLAGS = @YFLAGS@
+YFLAGS_SEP1 = @YFLAGS_SEP1@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -806,7 +807,7 @@ AM_V_redir_a = $(am__v_redir_a_@AM_V@)
 am__v_redir_a_ = $(am__v_redir_a_@AM_DEFAULT_V@)
 am__v_redir_a_0 = >>
 am__v_redir_a_1 = | tee -a
-AM_YFLAGS = @MAINT@@EXTRA_YFLAGS_SEP@ -d -t $(AM_V_v) -k -Wall -Wyacc
+AM_YFLAGS = @MAINT@@EXTRA_YFLAGS_SEP@ -d -t $(AM_V_v) -k @YFLAGS_SEP1@ -Wall -Wyacc
 AM_LFLAGS = @MAINT@ -d
 
 # Automake 1.10+ disables lex and yacc output file regeneration if

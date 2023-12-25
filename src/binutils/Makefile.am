@@ -48,7 +48,7 @@ am__v_redir_a_0 = >>
 am__v_redir_a_1 = | tee -a
 
 YACC = `if [ -f ../bison/bison ]; then echo ../bison/bison -y -L$(srcdir)/../bison/; else echo @YACC@; fi`
-AM_YFLAGS = @MAINT@@EXTRA_YFLAGS_SEP@ -d -t $(AM_V_v) -k -Wall -Wyacc
+AM_YFLAGS = @MAINT@@EXTRA_YFLAGS_SEP@ -d -t $(AM_V_v) -k @YFLAGS_SEP1@ -Wall -Wyacc
 LEX = `if [ -f ../flex/flex ]; then echo ../flex/flex; else echo @LEX@; fi`
 AM_LFLAGS = @MAINT@ -d
 

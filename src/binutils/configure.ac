@@ -181,22 +181,39 @@ m4_ifdef([ACX_LARGEFILE],[
 AC_MSG_CHECKING([programs])
 AC_MSG_RESULT([ ])
 AM_PROG_AS
+if test "x${ac_cv_prog_AR}" = "x"; then
+  test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+  AC_PROG_AR
+fi
 if test "x${CC}" = "x"; then
   test -z "${CC}"
   AC_PROG_CC
 else
-  test ! -z "${CC}"
-  AC_PROG_GCC_TRADITIONAL
+  test -n "${CC}" && export CC
 fi
 
 AC_PROG_YACC
 AX_PROG_BISON([
-  # (might want to check the bison version first)
   EXTRA_YFLAGS_SEP=''
+  AC_CACHE_CHECK([if your bison is a new enough version of GNU bison],
+                 [ax_cv_prog_gnu_bison],[
+    AS_IF([test -n "`${YACC} --version 2>/dev/null | grep 'GNU' | grep ' 3.'`"],
+      [ax_cv_prog_gnu_bison=yes],[ax_cv_prog_gnu_bison=no])dnl
+  ])dnl
+  ## one more separator:
+  AS_IF([test "x${ax_cv_prog_gnu_bison}" = "xyes"],[
+    YFLAGS_SEP1=''
+  ],[
+    YFLAGS_SEP1='#'
+  ])dnl
+  ## (hopefully this will be enough)
 ],[
   EXTRA_YFLAGS_SEP='#'
+  YFLAGS_SEP1='#'
 ])dnl##end bison conditional
 AC_SUBST([EXTRA_YFLAGS_SEP])dnl
+AC_SUBST([YFLAGS_SEP1])dnl
+AC_PROG_LEX([yywrap])
 AM_PROG_LEX dnl# is required by the next 1, but call it explicitly anyways
 AX_PROG_FLEX([
   # (this is not currently used, but it could be)

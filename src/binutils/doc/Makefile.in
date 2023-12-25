@@ -355,6 +355,7 @@ WARN_WRITE_STRINGS = @WARN_WRITE_STRINGS@
 XGETTEXT = @XGETTEXT@
 YACC = @YACC@
 YFLAGS = @YFLAGS@
+YFLAGS_SEP1 = @YFLAGS_SEP1@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
