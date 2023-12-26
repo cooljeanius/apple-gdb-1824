@@ -1567,7 +1567,7 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		signed_check = (bfd_signed_vma)check;
 	      else
 		signed_check = (check
-				| ((bfd_vma)-1
+				| ((bfd_vma)-1L
 				   & ~((bfd_vma)-1 >> howto->rightshift)));
 
 	      /* Get the value from the object file: */

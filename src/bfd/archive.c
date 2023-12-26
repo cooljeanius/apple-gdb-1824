@@ -1939,6 +1939,7 @@ _bfd_compute_and_write_armap(bfd *arch, unsigned int elength)
 		    {
 		      bfd_size_type namelen;
 		      struct orl *new_map;
+                      size_t another_len;
 
 		      /* This symbol will go into the archive header: */
 		      if (orl_count == orl_max)
@@ -1957,10 +1958,13 @@ _bfd_compute_and_write_armap(bfd *arch, unsigned int elength)
 		      map[orl_count].name = (char **)bfd_alloc(arch, amt);
 		      if (map[orl_count].name == NULL)
 			goto error_return;
-		      *(map[orl_count].name) = (char *)bfd_alloc(arch, (namelen + 1));
+                      another_len = (namelen + 1UL);
+		      *(map[orl_count].name) = (char *)bfd_alloc(arch,
+        	 						 another_len);
 		      if (*(map[orl_count].name) == NULL)
 			goto error_return;
-		      strcpy(*(map[orl_count].name), syms[src_count]->name);
+		      strncpy(*(map[orl_count].name), syms[src_count]->name,
+                              another_len);
 		      map[orl_count].u.abfd = current;
 		      map[orl_count].namidx = stridx;
 

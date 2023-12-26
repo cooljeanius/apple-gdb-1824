@@ -1400,14 +1400,15 @@ coff_ppc_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
                            + sec->output_offset);
 		    if (first_thunk_address == 0)
 		      {
-			int idata5offset;
+			off_t idata5offset;
 			myh = coff_link_hash_lookup(coff_hash_table(info),
 						    "__idata5_magic__",
 						    FALSE, FALSE, TRUE);
-			first_thunk_address = myh->root.u.def.value +
-			  sec->output_section->vma +
-			    sec->output_offset -
-			      pe_data(output_bfd)->pe_opthdr.ImageBase;
+			first_thunk_address =
+                          (myh->root.u.def.value
+                           + sec->output_section->vma
+                           + sec->output_offset
+                           - pe_data(output_bfd)->pe_opthdr.ImageBase);
 
 			idata5offset = myh->root.u.def.value;
 			myh = coff_link_hash_lookup(coff_hash_table(info),

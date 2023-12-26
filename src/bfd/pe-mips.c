@@ -59,7 +59,7 @@ coff_mips_reloc (bfd *abfd,
   if (output_bfd == NULL)
     return bfd_reloc_continue;
 
-  if (bfd_is_com_section (symbol->section))
+  if (bfd_is_com_section(symbol->section))
     {
 #ifndef COFF_WITH_PE
       /* We are relocating a common symbol.  The current value in the
@@ -87,9 +87,12 @@ coff_mips_reloc (bfd *abfd,
     diff = reloc_entry->addend;
 
 #define DOIT(x) \
-  x = ((x & ~howto->dst_mask) | (((x & howto->src_mask) + (diff >> howto->rightshift)) & howto->dst_mask))
+  x = (__typeof__(x))(((bfd_vma)x & ~howto->dst_mask) \
+                      | ((((bfd_vma)x & howto->src_mask) \
+                          + (diff >> howto->rightshift)) \
+          		 & howto->dst_mask))
 
-    if (diff != 0)
+    if (diff != 0UL)
       {
 	reloc_howto_type *howto = reloc_entry->howto;
 	unsigned char *addr = (unsigned char *)data + reloc_entry->address;
@@ -335,7 +338,7 @@ static reloc_howto_type howto_table[] =
 
 /* Turn a howto into a reloc nunmber.  */
 
-#define SELECT_RELOC(x, howto) { x.r_type = howto->type; }
+#define SELECT_RELOC(x, howto) { x.r_type = (unsigned short)howto->type; }
 #define BADMAG(x)              MIPSBADMAG (x)
 
 /* Customize coffcode.h.  */

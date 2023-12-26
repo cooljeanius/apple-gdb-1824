@@ -35,12 +35,12 @@ dnl# This is a hack because autoconf finds the AC\_INIT from
 dnl# ../config/override.m4 first if it is present, which is annoying.
 dnl# Feel free to re-define to whichever version of autoconf
 dnl# that you are using:
-m4_define([_GCC_AUTOCONF_VERSION],[2.71])
+m4_define([_GCC_AUTOCONF_VERSION],[2.72])
 AC_INIT([libbacktrace],[version-unused],[],[libbacktrace])
 AC_CONFIG_SRCDIR([backtrace.h])dnl
 AC_CONFIG_AUX_DIR([..])dnl
 AC_CONFIG_MACRO_DIR([..])dnl
-AC_CONFIG_HEADER([config.h])dnl
+AC_CONFIG_HEADERS([config.h])dnl
 
 echo "hello from the configure script for the libbacktrace subdirectory"
 
@@ -132,8 +132,12 @@ m4_ifdef([AC_REQUIRE_AUX_FILE],[
 
 AC_PROG_CPP
 
+if test "x${ac_cv_prog_AR}" = "x"; then
+  test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+  AC_PROG_AR
+fi
 if test "x${AR}" = "x" && test "x${am_cv_ar_interface}" = "x"; then
-  test -z "${AR}" && test -z "${am_cv_ar_interface}"
+  test -z "${AR}" && test -z "${am_cv_ar_interface}" && echo "doing automake-style check for AR"
   AM_PROG_AR
 fi
 AC_PROG_INSTALL
@@ -217,7 +221,8 @@ ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wnested-externs \
 -Wmissing-format-attribute -Wcast-qual -Wmisleading-indentation -Wabi \
 -Wnull-dereference -Wdangling-else -Wduplicate-decl-specifier \
 -Wmemset-elt-size -Wswitch-unreachable -Wexpansion-to-defined \
--Wshadow-local -Wc99-c11-compat -Wzero-length-bounds -Wfatal-errors],[WARN_FLAGS])dnl
+-Wshadow-local -Wc99-c11-compat -Wzero-length-bounds -Wfatal-errors \
+-Walloc-size -Wcalloc-transposed-args -fanalyzer],[WARN_FLAGS])dnl
 
 # deal with potential name mismatch:
 if test "x${WARN_FLAGS}" = "x" && test "x${WARN_CFLAGS}" != "x"; then
@@ -330,7 +335,7 @@ FORMAT_FILE=""
 backtrace_supports_data=yes
 case "${libbacktrace_cv_sys_filetype}" in
 elf*) FORMAT_FILE="elf.lo" ;;
-macho*) AC_MSG_WARN([mach-o support is a WIP])
+macho*) AC_MSG_WARN([mach-o support in libbacktrace is a WIP])
         FORMAT_FILE="macho.lo"
         ;;
 *) AC_MSG_WARN([could not determine output file type])
@@ -360,6 +365,9 @@ if test "x${backtrace_supports_data}" = "xyes"; then
 fi
 AC_SUBST([BACKTRACE_SUPPORTS_DATA])dnl
 
+AC_DEFINE_UNQUOTED([BACKTRACE_SUPPORTS_DATA],[${BACKTRACE_SUPPORTS_DATA}],
+                   [Define to 1 if libbacktrace supports data, 0 otherwise.])dnl
+
 AC_CHECK_HEADERS([stddef.h])dnl
 
 # check integer types before doing stdint header check:
@@ -377,10 +385,20 @@ AC_TYPE_UINTMAX_T
 AC_TYPE_UINTPTR_T
 GCC_HEADER_STDINT([gstdint.h])dnl
 
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
+  AC_CHECK_HEADERS([stdint.h])
+fi
+
 # Other types:
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
+
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
+  AC_CHECK_HEADERS([unistd.h])
+fi
 
 AC_CHECK_HEADERS([sys/mman.h])
 if test "x${ac_cv_header_sys_mman_h}" = "xno"; then
@@ -395,6 +413,10 @@ else
     AC_CHECK_FUNC([mmap],[have_mmap=yes],[have_mmap=no])dnl
     ## also related:
     AC_CHECK_FUNCS([munmap])
+    if test "x${ac_cv_header_getpagesize}" = "x"; then
+      test -z "${ac_cv_header_getpagesize}" || unset ac_cv_header_getpagesize
+      AC_CHECK_FUNCS([getpagesize])
+    fi
   fi
 fi
 if test "x${have_mmap}" = "xno"; then
@@ -491,6 +513,11 @@ AC_CHECK_DECLS([strnlen])dnl
 # Other string functions:
 AC_CHECK_FUNCS([strdup strerror])dnl
 
+if test "x${ac_cv_func_strrchr}" = "x"; then
+  test -z "${ac_cv_func_strrchr}" || unset ac_cv_func_strrchr
+  AC_CHECK_FUNCS([strrchr])
+fi
+
 # Check for getexecname function.
 if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
    case "${host}" in
@@ -504,8 +531,18 @@ if test "x${have_getexecname}" = "xyes"; then
   AC_DEFINE([HAVE_GETEXECNAME],[1],[Define if getexecname is available.])
 fi
 
+EXTRA_DIRS_TO_CHECK_FOR_DSYMUTIL="."
+for mydir in /Developer/usr/bin /Library/Developer/CommandLineTools/usr/bin \
+  /Users/Shared/Previously\ Relocated\ Items/Security/Developer/usr/bin \
+  /opt/iains/x86_64-apple-darwin19/gcc-7-5-toolchain/bin; do
+  if test -d "${mydir}" && test -r "${mydir}" && test -x "${mydir}"; then
+    AC_MSG_NOTICE([${mydir} exists; will look in it for dsymutil...])
+    EXTRA_DIRS_TO_CHECK_FOR_DSYMUTIL="${EXTRA_DIRS_TO_CHECK_FOR_DSYMUTIL}:${mydir}"
+  fi
+done
 AC_ARG_VAR([DSYMUTIL],[location of dsymutil])
-AC_CHECK_PROG([DSYMUTIL],[dsymutil],[dsymutil])
+AC_PATH_PROGS([DSYMUTIL],[dsymutil llvm-dsymutil],[dsymutil],
+             [${PATH}:${EXTRA_DIRS_TO_CHECK_FOR_DSYMUTIL}])
 AM_CONDITIONAL([HAVE_DSYMUTIL],
                [test -n "${DSYMUTIL}" && test -x "${DSYMUTIL}"])dnl
 

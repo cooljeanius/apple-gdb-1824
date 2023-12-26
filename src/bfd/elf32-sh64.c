@@ -396,9 +396,9 @@ sh64_elf_add_symbol_hook (bfd *abfd, struct bfd_link_info *info,
 	= ((info->relocatable || info->emitrelocations)
            ? BSF_GLOBAL : (BSF_GLOBAL | BSF_INDIRECT));
 
-      char *dl_name
-	= (char *)bfd_malloc(strlen(*namep) + sizeof(DATALABEL_SUFFIX));
-      struct elf_link_hash_entry ** sym_hash = elf_sym_hashes(abfd);
+      size_t dl_namelen = (strlen(*namep) + sizeof(DATALABEL_SUFFIX));
+      char *dl_name = (char *)bfd_malloc(dl_namelen);
+      struct elf_link_hash_entry **sym_hash = elf_sym_hashes(abfd);
 
       BFD_ASSERT(sym_hash != NULL);
 
@@ -406,28 +406,27 @@ sh64_elf_add_symbol_hook (bfd *abfd, struct bfd_link_info *info,
       if (dl_name == NULL)
 	return FALSE;
 
-      strcpy(dl_name, *namep);
-      strcat(dl_name, DATALABEL_SUFFIX);
+      strncpy(dl_name, *namep, dl_namelen);
+      strncat(dl_name, DATALABEL_SUFFIX, dl_namelen);
 
-      h = (struct elf_link_hash_entry *)
-	bfd_link_hash_lookup (info->hash, dl_name, FALSE, FALSE, FALSE);
+      h = ((struct elf_link_hash_entry *)
+           bfd_link_hash_lookup(info->hash, dl_name, FALSE, FALSE, FALSE));
 
       if (h == NULL)
 	{
 	  /* No previous datalabel symbol.  Make one.  */
 	  struct bfd_link_hash_entry *bh = NULL;
-	  const struct elf_backend_data *bed = get_elf_backend_data (abfd);
+	  const struct elf_backend_data *bed = get_elf_backend_data(abfd);
 
-	  if (! _bfd_generic_link_add_one_symbol (info, abfd, dl_name,
-						  flags, *secp, *valp,
-						  *namep, FALSE,
-						  bed->collect, &bh))
+	  if (! _bfd_generic_link_add_one_symbol(info, abfd, dl_name, flags,
+   						 *secp, *valp, *namep, FALSE,
+						 bed->collect, &bh))
 	    {
-	      free (dl_name);
+	      free(dl_name);
 	      return FALSE;
 	    }
 
-	  h = (struct elf_link_hash_entry *) bh;
+	  h = (struct elf_link_hash_entry *)bh;
 	  h->non_elf = 0;
 	  h->type = STT_DATALABEL;
 	}

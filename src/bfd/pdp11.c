@@ -851,7 +851,7 @@ adjust_o_magic(bfd *abfd, struct internal_exec *execp)
   /* Data: */
   if (!obj_datasec(abfd)->user_set_vma)
     {
-      obj_textsec(abfd)->size += pad;
+      obj_textsec(abfd)->size += (bfd_size_type)pad;
       pos += pad;
       vma += (bfd_vma)pad;
       obj_datasec(abfd)->vma = vma;
@@ -865,7 +865,7 @@ adjust_o_magic(bfd *abfd, struct internal_exec *execp)
   /* BSS: */
   if (! obj_bsssec(abfd)->user_set_vma)
     {
-      obj_datasec(abfd)->size += pad;
+      obj_datasec(abfd)->size += (bfd_size_type)pad;
       pos += pad;
       vma += (bfd_vma)pad;
       obj_bsssec(abfd)->vma = vma;
@@ -878,7 +878,7 @@ adjust_o_magic(bfd *abfd, struct internal_exec *execp)
       pad = (int)(obj_bsssec(abfd)->vma - vma);
       if (pad > 0)
 	{
-	  obj_datasec(abfd)->size += pad;
+	  obj_datasec(abfd)->size += (bfd_size_type)pad;
 	  pos += pad;
 	}
     }
@@ -908,7 +908,7 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
 	      || obj_aout_subformat(abfd) == q_magic_format));
   obj_textsec(abfd)->filepos = (ztih
 				? adata(abfd).exec_bytes_size
-				: adata(abfd).zmagic_disk_block_size);
+				: (file_ptr)adata(abfd).zmagic_disk_block_size);
   if (! obj_textsec(abfd)->user_set_vma)
     {
       if (abdp != NULL) {
@@ -933,7 +933,8 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
          may need to pad it such that the .data section starts at a page
          boundary.  */
       if (ztih)
-	text_pad = ((obj_textsec(abfd)->filepos - obj_textsec(abfd)->vma)
+	text_pad = (((bfd_vma)obj_textsec(abfd)->filepos
+                     - obj_textsec(abfd)->vma)
 		    & (adata(abfd).page_size - 1));
       else
 	text_pad = ((0 - obj_textsec(abfd)->vma)
@@ -943,16 +944,19 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
   /* Find start of data: */
   if (ztih)
     {
-      text_end = (obj_textsec(abfd)->filepos + obj_textsec(abfd)->size);
-      text_pad += (BFD_ALIGN(text_end, adata(abfd).page_size) - text_end);
+      text_end = (obj_textsec(abfd)->filepos
+                  + (file_ptr)obj_textsec(abfd)->size);
+      text_pad += (BFD_ALIGN(text_end, adata(abfd).page_size)
+                   - (bfd_size_type)text_end);
     }
   else
     {
       /* Note that if page_size == zmagic_disk_block_size, then
 	 filepos == page_size, and this case is the same as the ztih
 	 case.  */
-      text_end = obj_textsec(abfd)->size;
-      text_pad += (BFD_ALIGN(text_end, adata(abfd).page_size) - text_end);
+      text_end = (file_ptr)obj_textsec(abfd)->size;
+      text_pad += (BFD_ALIGN(text_end, adata(abfd).page_size)
+                   - (bfd_size_type)text_end);
       text_end += obj_textsec(abfd)->filepos;
     }
 
@@ -974,7 +978,7 @@ adjust_z_magic(bfd *abfd, struct internal_exec *execp)
       obj_textsec(abfd)->size += text_pad;
     }
   obj_datasec(abfd)->filepos = (obj_textsec(abfd)->filepos
-				+ obj_textsec(abfd)->size);
+				+ (file_ptr)obj_textsec(abfd)->size);
 
   /* Fix up exec header while we are at it: */
   execp->a_text = obj_textsec(abfd)->size;
@@ -1033,13 +1037,13 @@ adjust_n_magic (bfd *abfd, struct internal_exec *execp)
   /* Data.  */
   obj_datasec(abfd)->filepos = pos;
   if (!obj_datasec(abfd)->user_set_vma)
-    obj_datasec(abfd)->vma = BFD_ALIGN (vma, adata(abfd).segment_size);
+    obj_datasec(abfd)->vma = BFD_ALIGN(vma, adata(abfd).segment_size);
   vma = obj_datasec(abfd)->vma;
 
   /* Since BSS follows data immediately, see if it needs alignment.  */
   vma += obj_datasec(abfd)->size;
   pad = (int)(align_power(vma, obj_bsssec(abfd)->alignment_power) - vma);
-  obj_datasec(abfd)->size += pad;
+  obj_datasec(abfd)->size += (bfd_size_type)pad;
   pos += obj_datasec(abfd)->size;
 
   /* BSS.  */
@@ -1501,12 +1505,12 @@ NAME (aout, translate_symbol_table) (bfd *abfd,
 {
   struct external_nlist *ext_end;
 
-  ext_end = ext + count;
+  ext_end = (ext + count);
   for (; (ext < ext_end) && (in != NULL); ext++, in++)
     {
       bfd_vma x;
 
-      x = GET_WORD (abfd, ext->e_strx);
+      x = GET_WORD(abfd, ext->e_strx);
       in->symbol.the_bfd = abfd;
 
       /* For the normal symbols, the zero index points at the number
@@ -1517,18 +1521,18 @@ NAME (aout, translate_symbol_table) (bfd *abfd,
       if (x == 0 && ! dynamic)
 	in->symbol.name = "";
       else if (x < strsize)
-	in->symbol.name = str + x;
+	in->symbol.name = (str + x);
       else
 	return FALSE;
 
-      in->symbol.value = GET_SWORD(abfd, ext->e_value);
+      in->symbol.value = (symvalue)GET_SWORD(abfd, ext->e_value);
       /* TODO: is 0 a safe value here?  */
       in->desc = 0;
       in->other = 0;
-      in->type = H_GET_8 (abfd,  ext->e_type);
+      in->type = H_GET_8(abfd,  ext->e_type);
       in->symbol.udata.p = NULL;
 
-      if (! translate_from_native_sym_flags (abfd, in))
+      if (! translate_from_native_sym_flags(abfd, in))
 	return FALSE;
 
       if (dynamic)
@@ -1956,7 +1960,7 @@ NAME (aout, slurp_reloc_table) (bfd *abfd, sec_ptr asect, asymbol **symbols)
   free(relocs);
 
   asect->relocation = reloc_cache;
-  asect->reloc_count = cache_ptr - reloc_cache;
+  asect->reloc_count = (unsigned int)(cache_ptr - reloc_cache);
 
   return TRUE;
 }
@@ -2041,12 +2045,13 @@ NAME(aout, canonicalize_reloc)(bfd *abfd,
   return section->reloc_count;
 }
 
+/* */
 long
-NAME (aout, get_reloc_upper_bound) (bfd *abfd, sec_ptr asect)
+NAME(aout, get_reloc_upper_bound)(bfd *abfd, sec_ptr asect)
 {
-  if (bfd_get_format (abfd) != bfd_object)
+  if (bfd_get_format(abfd) != bfd_object)
     {
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return -1;
     }
 
@@ -2054,24 +2059,26 @@ NAME (aout, get_reloc_upper_bound) (bfd *abfd, sec_ptr asect)
     return (sizeof(arelent *) * (asect->reloc_count + 1));
 
   if (asect == obj_datasec(abfd))
-    return (sizeof(arelent *)
-	    * ((size_t)(exec_hdr(abfd)->a_drsize / obj_reloc_entry_size(abfd))
-	       + 1UL));
+    return (long)(sizeof(arelent *)
+                  * ((size_t)(exec_hdr(abfd)->a_drsize
+                              / obj_reloc_entry_size(abfd))
+                     + 1UL));
 
   if (asect == obj_textsec(abfd))
-    return (sizeof(arelent *)
-	    * ((size_t)(exec_hdr(abfd)->a_trsize / obj_reloc_entry_size(abfd))
-	       + 1UL));
+    return (long)(sizeof(arelent *)
+                  * ((size_t)(exec_hdr(abfd)->a_trsize
+                              / obj_reloc_entry_size(abfd))
+                     + 1UL));
 
   /* TODO: why are there two if statements for obj_bsssec()? */
 
-  if (asect == obj_bsssec (abfd))
-    return sizeof (arelent *);
+  if (asect == obj_bsssec(abfd))
+    return sizeof(arelent *);
 
-  if (asect == obj_bsssec (abfd))
+  if (asect == obj_bsssec(abfd))
     return 0;
 
-  bfd_set_error (bfd_error_invalid_operation);
+  bfd_set_error(bfd_error_invalid_operation);
   return -1;
 }
 
@@ -2092,32 +2099,34 @@ NAME (aout, get_lineno) (bfd * abfd ATTRIBUTE_UNUSED,
   return NULL;
 }
 
+/* */
 void
-NAME (aout, get_symbol_info) (bfd * abfd ATTRIBUTE_UNUSED,
-			      asymbol *symbol,
-			      symbol_info *ret)
+NAME(aout, get_symbol_info)(bfd *abfd ATTRIBUTE_UNUSED,
+                            asymbol *symbol,
+                            symbol_info *ret)
 {
-  bfd_symbol_info (symbol, ret);
+  bfd_symbol_info(symbol, ret);
 
   if (ret->type == '?')
     {
-      int type_code = aout_symbol(symbol)->type & 0xff;
-      const char *stab_name = bfd_get_stab_name (type_code);
+      int type_code = (aout_symbol(symbol)->type & 0xff);
+      const char *stab_name = bfd_get_stab_name(type_code);
       static char buf[10];
 
       if (stab_name == NULL)
 	{
-	  sprintf(buf, "(%d)", type_code);
+	  snprintf(buf, sizeof(buf), "(%d)", type_code);
 	  stab_name = buf;
 	}
       ret->type = '-';
-      ret->stab_type  = type_code;
-      ret->stab_other = (unsigned) (aout_symbol(symbol)->other & 0xff);
-      ret->stab_desc  = (unsigned) (aout_symbol(symbol)->desc & 0xffff);
-      ret->stab_name  = stab_name;
+      ret->stab_type = (unsigned char)type_code;
+      ret->stab_other = (char)(aout_symbol(symbol)->other & 0xff);
+      ret->stab_desc = (short)(aout_symbol(symbol)->desc & 0xffff);
+      ret->stab_name = stab_name;
     }
 }
 
+/* */
 void
 NAME(aout, print_symbol)(bfd *abfd, void *afile, asymbol *symbol,
                          bfd_print_symbol_type how)
@@ -2281,7 +2290,7 @@ NAME (aout, find_nearest_line) (bfd *abfd,
 		    {
 		      if (q->symbol.value > low_line_vma)
 			{
-			  *line_ptr = 0;
+			  *line_ptr = 0U;
 			  line_file_name = NULL;
 			}
 		      if (q->symbol.value > low_func_vma)
@@ -2298,7 +2307,7 @@ NAME (aout, find_nearest_line) (bfd *abfd,
 		{
 		  if (q->symbol.value > low_line_vma)
 		    {
-		      *line_ptr = 0;
+		      *line_ptr = 0U;
 		      line_file_name = NULL;
 		    }
 		  if (q->symbol.value > low_func_vma)
@@ -2332,7 +2341,7 @@ NAME (aout, find_nearest_line) (bfd *abfd,
 	      if ((q->symbol.value >= low_line_vma)
 		  && (q->symbol.value <= offset))
 		{
-		  *line_ptr = q->desc;
+		  *line_ptr = (unsigned int)q->desc;
 		  low_line_vma = q->symbol.value;
 		  line_file_name = current_file_name;
 		}

@@ -659,7 +659,8 @@ check_DATA = $(am__append_2)
 # Flags to use when compiling test programs.
 libbacktrace_TEST_CFLAGS = $(EXTRA_FLAGS) $(WARN_FLAGS) -g
 @NATIVE_TRUE@btest_SOURCES = btest.c
-@NATIVE_TRUE@btest_CFLAGS = $(AM_CFLAGS) -ggdb -O1 -Wno-unused-function
+@NATIVE_TRUE@btest_OPTFLAG = -O1
+@NATIVE_TRUE@btest_CFLAGS = $(AM_CFLAGS) -ggdb $(btest_OPTFLAG) -Wno-unused-function
 @NATIVE_TRUE@btest_DEPENDENCIES = backtrace.h backtrace-supported.h
 @NATIVE_TRUE@btest_LDADD = libbacktrace.la
 @NATIVE_TRUE@btest_LDFLAGS = $(AM_LDFLAGS) $(CFLAGS)
@@ -1032,7 +1033,7 @@ stest.log: stest$(EXEEXT)
 @am__EXEEXT_TRUE@	"$$tst" $(AM_TESTS_FD_REDIRECT)
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS) $(check_DATA)
-	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS check-local
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(LTLIBRARIES) config.h all-local
@@ -1152,8 +1153,8 @@ uninstall-am:
 	install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am all-local am--refresh check \
-	check-TESTS check-am clean clean-checkPROGRAMS clean-cscope \
-	clean-generic clean-libtool clean-local \
+	check-TESTS check-am check-local clean clean-checkPROGRAMS \
+	clean-cscope clean-generic clean-libtool clean-local \
 	clean-noinstLTLIBRARIES cscope cscopelist-am ctags ctags-am \
 	distclean distclean-compile distclean-generic distclean-hdr \
 	distclean-libtool distclean-local distclean-tags dvi dvi-am \
@@ -1182,6 +1183,21 @@ install-exec-local: install-multi
 
 @HAVE_DSYMUTIL_TRUE@%.dSYM: %
 @HAVE_DSYMUTIL_TRUE@	$(DSYMUTIL) $<
+
+@HAVE_DSYMUTIL_FALSE@%.dSYM: %
+@HAVE_DSYMUTIL_FALSE@	@echo "dsymutil is missing"
+
+@NATIVE_TRUE@check-local: $(check_DATA)
+@NATIVE_TRUE@	for thingy in $(check_DATA) libbacktrace.la; do \
+@NATIVE_TRUE@	  if test -e $${thingy} && test -r $${thingy}; then \
+@NATIVE_TRUE@	    echo "ok: $${thingy}"; \
+@NATIVE_TRUE@	  else \
+@NATIVE_TRUE@	    echo "missing: $${thingy}"; \
+@NATIVE_TRUE@	  fi; \
+@NATIVE_TRUE@	done
+
+@NATIVE_FALSE@check-local:
+@NATIVE_FALSE@	@echo "check-local target requires a native build"
 
 mostlyclean-local: mostlyclean-multi
 clean-local: clean-multi

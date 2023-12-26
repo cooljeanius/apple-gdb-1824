@@ -89,6 +89,8 @@ struct macho_header_fat
 #define MACH_O_MH_MAGIC_64	0xfeedfacf
 #define MACH_O_MH_MAGIC_FAT	0xcafebabe
 #define MACH_O_MH_CIGAM_FAT	0xbebafeca
+#define MACH_O_MH_MAGIC_FAT_64	0xcafebabf
+#define MACH_O_MH_CIGAM_FAT_64	0xbfbafeca
 
 /* Value for the header filetype field.  */
 
@@ -109,6 +111,20 @@ struct macho_fat_arch
   uint32_t align;	/* Alignment of this entry */
 };
 
+/* A component of a 64-bit fat file.  This is used if the magic field
+   is MAGIC_FAT_64.  This is only used when some file size or file
+   offset is too large to represent in the 32-bit format.  */
+
+struct macho_fat_arch_64
+{
+  uint32_t cputype;	/* CPU type */
+  uint32_t cpusubtype;	/* CPU subtype */
+  uint64_t offset;	/* File offset of this entry */
+  uint64_t size;	/* Size of this entry */
+  uint32_t align;	/* Alignment of this entry */
+  uint32_t reserved;	/* Reserved */
+};
+
 /* Values for the fat_arch cputype field (and the header cputype
    field).  */
 
@@ -116,9 +132,11 @@ struct macho_fat_arch
 
 #define MACH_O_CPU_TYPE_X86 7
 #define MACH_O_CPU_TYPE_ARM 12
+#define MACH_O_CPU_TYPE_PPC 18
 
 #define MACH_O_CPU_TYPE_X86_64 (MACH_O_CPU_TYPE_X86 | MACH_O_CPU_ARCH_ABI64)
 #define MACH_O_CPU_TYPE_ARM64  (MACH_O_CPU_TYPE_ARM | MACH_O_CPU_ARCH_ABI64)
+#define MACH_O_CPU_TYPE_PPC64  (MACH_O_CPU_TYPE_PPC | MACH_O_CPU_ARCH_ABI64)
 
 /* The header of a load command.  */
 
@@ -764,8 +782,11 @@ macho_add_fat (struct backtrace_state *state, const char *filename,
   cputype = MACH_O_CPU_TYPE_ARM64;
 #elif defined(__arm__)
   cputype = MACH_O_CPU_TYPE_ARM;
+#elif defined (__ppc__)
+  cputype = MACH_O_CPU_TYPE_PPC;
+#elif defined (__ppc64__)
+  cputype = MACH_O_CPU_TYPE_PPC64;
 #else
-  /* TODO: maybe try to add back ppc support later */
   error_callback (data, "unknown Mach-O architecture", 0);
   goto fail;
 #endif /* cpu type */

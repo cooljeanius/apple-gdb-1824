@@ -151,11 +151,11 @@ aout_adobe_callback(bfd *abfd)
       /* Now set the section's attributes: */
       bfd_set_section_flags(abfd, sect, flags);
       /* Assumed big-endian: */
-      sect->size = ((ext->e_size[0] << 8UL)
-		    | (ext->e_size[1] << 8UL)
-		    | (bfd_size_type)ext->e_size[2]);
+      sect->size = (bfd_size_type)((ext->e_size[0] << 8UL)
+                                   | (ext->e_size[1] << 8UL)
+                                   | ext->e_size[2]);
       sect->vma = H_GET_32(abfd, ext->e_virtbase);
-      sect->filepos = H_GET_32(abfd, ext->e_filebase);
+      sect->filepos = (file_ptr)H_GET_32(abfd, ext->e_filebase);
       /* FIXME: XXX: alignment?  */
 
       /* Set relocation information for first section of each type: */
@@ -163,13 +163,13 @@ aout_adobe_callback(bfd *abfd)
 	switch (ext->e_type[0])
 	  {
 	  case N_TEXT:
-	    sect->rel_filepos = N_TRELOFF(*execp);
-	    sect->reloc_count = execp->a_trsize;
+	    sect->rel_filepos = (file_ptr)N_TRELOFF(*execp);
+	    sect->reloc_count = (unsigned int)execp->a_trsize;
 	    break;
 
 	  case N_DATA:
-	    sect->rel_filepos = N_DRELOFF(*execp);
-	    sect->reloc_count = execp->a_drsize;
+	    sect->rel_filepos = (file_ptr)N_DRELOFF(*execp);
+	    sect->reloc_count = (unsigned int)execp->a_drsize;
 	    break;
 
 	  default:

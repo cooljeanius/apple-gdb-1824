@@ -71,6 +71,7 @@ make_a_section_from_file(bfd *abfd, struct internal_scnhdr *hdr,
       strindex = strtol(buf, &p, 10);
       if ((*p == '\0') && (strindex >= 0))
 	{
+	  size_t namelen;
 	  strings = _bfd_coff_read_string_table(abfd);
 	  if (strings == NULL)
 	    return FALSE;
@@ -78,11 +79,11 @@ make_a_section_from_file(bfd *abfd, struct internal_scnhdr *hdr,
              strindex does not run us past the end, but right now we
              do NOT know the length of the string table.  */
 	  strings += strindex;
-	  name = (char *)bfd_alloc(abfd,
-                                   (bfd_size_type)strlen(strings) + 1);
+   	  namelen = (strlen(strings) + 1UL);
+	  name = (char *)bfd_alloc(abfd, (bfd_size_type)namelen);
 	  if (name == NULL)
 	    return FALSE;
-	  strcpy(name, strings);
+	  strncpy(name, strings, namelen);
 	}
     }
 

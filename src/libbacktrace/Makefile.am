@@ -146,12 +146,18 @@ if HAVE_DSYMUTIL
 %.dSYM: %
 	$(DSYMUTIL) $<
 
-endif HAVE_DSYMUTIL
+else HAVE_DSYMUTIL_FALSE
+
+%.dSYM: %
+	@echo "dsymutil is missing"
+
+endif HAVE_DSYMUTIL_FALSE
 
 if NATIVE
 
 btest_SOURCES = btest.c
-btest_CFLAGS = $(AM_CFLAGS) -ggdb -O1 -Wno-unused-function
+btest_OPTFLAG = -O1
+btest_CFLAGS = $(AM_CFLAGS) -ggdb $(btest_OPTFLAG) -Wno-unused-function
 btest_DEPENDENCIES = backtrace.h backtrace-supported.h
 btest_LDADD = libbacktrace.la
 btest_LDFLAGS = $(AM_LDFLAGS) $(CFLAGS)
@@ -162,6 +168,15 @@ if HAVE_DSYMUTIL
 check_DATA += btest.dSYM
 endif HAVE_DSYMUTIL
 
+check-local: $(check_DATA)
+	for thingy in $(check_DATA) libbacktrace.la; do \
+	  if test -e $${thingy} && test -r $${thingy}; then \
+	    echo "ok: $${thingy}"; \
+	  else \
+	    echo "missing: $${thingy}"; \
+	  fi; \
+	done
+
 stest_SOURCES = stest.c
 stest_LDADD = libbacktrace.la
 
@@ -171,7 +186,12 @@ if HAVE_DSYMUTIL
 check_DATA += stest.dSYM
 endif HAVE_DSYMUTIL
 
-endif NATIVE
+else NATIVE_FALSE
+
+check-local:
+	@echo "check-local target requires a native build"
+
+endif NATIVE_FALSE
 
 # Cleaning.
 DISTCLEANFILES = *~ autoscan*.log .DS_Store config_status_backup.sh

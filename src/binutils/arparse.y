@@ -45,6 +45,9 @@ static int yyerror(const char *);
 #ifndef yyparse
 # define yyparse yy_arparse
 #endif /* !yyparse */
+#ifndef yydebug
+# define yydebug yy_ardebug
+#endif /* !yydebug */
 %}
 
 %union {

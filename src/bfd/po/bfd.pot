@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-25 01:41-0500\n"
+"POT-Creation-Date: 2023-12-26 02:32-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,11 +58,11 @@ msgstr ""
 msgid "Warning: writing archive was slow: rewriting timestamp\n"
 msgstr ""
 
-#: archive.c:2106
+#: archive.c:2110
 msgid "Reading archive file mod timestamp"
 msgstr ""
 
-#: archive.c:2131
+#: archive.c:2135
 msgid "Writing updated armap timestamp"
 msgstr ""
 
@@ -480,7 +480,7 @@ msgstr ""
 msgid "%B: illegal relocation type %d at address 0x%lx"
 msgstr ""
 
-#: coffgen.c:1510
+#: coffgen.c:1511
 msgid "%B: bad string table size %lu"
 msgstr ""
 
@@ -1457,7 +1457,7 @@ msgstr ""
 msgid "%B: linking files compiled for HCS12 with others compiled for HC12"
 msgstr ""
 
-#: elf32-m68hc1x.c:1320 elf32-ppc.c:3577 elf64-sparc.c:696 elfxx-mips.c:9874
+#: elf32-m68hc1x.c:1320 elf32-ppc.c:3577 elf64-sparc.c:698 elfxx-mips.c:9874
 msgid "%B: uses different e_flags (0x%lx) fields than previous modules (0x%lx)"
 msgstr ""
 
@@ -2006,34 +2006,34 @@ msgstr ""
 msgid "%s: object size does not match that of target %s"
 msgstr ""
 
-#: elf32-sh64.c:447 elf64-sh64.c:2911
+#: elf32-sh64.c:446 elf64-sh64.c:2911
 #, c-format
 msgid "%s: encountered datalabel symbol in input"
 msgstr ""
 
-#: elf32-sh64.c:524
+#: elf32-sh64.c:523
 msgid "PTB mismatch: a SHmedia address (bit 0 == 1)"
 msgstr ""
 
-#: elf32-sh64.c:527
+#: elf32-sh64.c:526
 msgid "PTA mismatch: a SHcompact address (bit 0 == 0)"
 msgstr ""
 
-#: elf32-sh64.c:545
+#: elf32-sh64.c:544
 #, c-format
 msgid "%s: GAS error: unexpected PTB insn with R_SH_PT_16"
 msgstr ""
 
-#: elf32-sh64.c:595
+#: elf32-sh64.c:594
 msgid "%B: error: unaligned relocation type %d at %08x reloc %p\n"
 msgstr ""
 
-#: elf32-sh64.c:670
+#: elf32-sh64.c:669
 #, c-format
 msgid "%s: could not write out added .cranges entries"
 msgstr ""
 
-#: elf32-sh64.c:730
+#: elf32-sh64.c:729
 #, c-format
 msgid "%s: could not write out sorted .cranges entries"
 msgstr ""
@@ -2707,15 +2707,15 @@ msgstr ""
 msgid "Register %%g%d used incompatibly: %s in %B, previously %s in %B"
 msgstr ""
 
-#: elf64-sparc.c:481
+#: elf64-sparc.c:482
 msgid "Symbol `%s' has differing types: REGISTER in %B, previously %s in %B"
 msgstr ""
 
-#: elf64-sparc.c:526
+#: elf64-sparc.c:528
 msgid "Symbol `%s' has differing types: %s in %B, previously REGISTER in %B"
 msgstr ""
 
-#: elf64-sparc.c:677
+#: elf64-sparc.c:679
 msgid "%B: linking UltraSPARC specific with HAL specific code"
 msgstr ""
 
@@ -3158,132 +3158,132 @@ msgstr ""
 msgid "%s: No core to allocate a symbol %d bytes long\n"
 msgstr ""
 
-#: mmo.c:1192
+#: mmo.c:1194
 #, c-format
 msgid "%s: invalid mmo file: initialization value for $255 is not `Main'\n"
 msgstr ""
 
-#: mmo.c:1337
+#: mmo.c:1339
 #, c-format
 msgid ""
 "%s: unsupported wide character sequence 0x%02X 0x%02X after symbol name "
 "starting with `%s'\n"
 msgstr ""
 
-#: mmo.c:1574
+#: mmo.c:1576
 #, c-format
 msgid "%s: invalid mmo file: unsupported lopcode `%d'\n"
 msgstr ""
 
-#: mmo.c:1584
+#: mmo.c:1586
 #, c-format
 msgid "%s: invalid mmo file: expected YZ = 1 got YZ = %d for lop_quote\n"
 msgstr ""
 
-#: mmo.c:1620
+#: mmo.c:1622
 #, c-format
 msgid "%s: invalid mmo file: expected z = 1 or z = 2, got z = %d for lop_loc\n"
 msgstr ""
 
-#: mmo.c:1666
+#: mmo.c:1668
 #, c-format
 msgid ""
 "%s: invalid mmo file: expected z = 1 or z = 2, got z = %d for lop_fixo\n"
 msgstr ""
 
-#: mmo.c:1705
+#: mmo.c:1707
 #, c-format
 msgid "%s: invalid mmo file: expected y = 0, got y = %d for lop_fixrx\n"
 msgstr ""
 
-#: mmo.c:1714
+#: mmo.c:1716
 #, c-format
 msgid ""
 "%s: invalid mmo file: expected z = 16 or z = 24, got z = %d for lop_fixrx\n"
 msgstr ""
 
-#: mmo.c:1737
+#: mmo.c:1739
 #, c-format
 msgid ""
 "%s: invalid mmo file: leading byte of operand word must be 0 or 1, got %d "
 "for lop_fixrx\n"
 msgstr ""
 
-#: mmo.c:1760
+#: mmo.c:1762
 #, c-format
 msgid "%s: cannot allocate file name for file number %d, %d bytes\n"
 msgstr ""
 
-#: mmo.c:1780
+#: mmo.c:1782
 #, c-format
 msgid ""
 "%s: invalid mmo file: file number %d `%s', was already entered as `%s'\n"
 msgstr ""
 
-#: mmo.c:1793
+#: mmo.c:1795
 #, c-format
 msgid ""
 "%s: invalid mmo file: file name for number %d was not specified before use\n"
 msgstr ""
 
-#: mmo.c:1901
+#: mmo.c:1903
 #, c-format
 msgid ""
 "%s: invalid mmo file: fields y and z of lop_stab non-zero, y: %d, z: %d\n"
 msgstr ""
 
-#: mmo.c:1937
+#: mmo.c:1939
 #, c-format
 msgid "%s: invalid mmo file: lop_end not last item in file\n"
 msgstr ""
 
-#: mmo.c:1950
+#: mmo.c:1952
 #, c-format
 msgid ""
 "%s: invalid mmo file: YZ of lop_end (%ld) not equal to the number of tetras "
 "to the preceding lop_stab (%ld)\n"
 msgstr ""
 
-#: mmo.c:2659
+#: mmo.c:2661
 #, c-format
 msgid "%s: invalid symbol table: duplicate symbol `%s'\n"
 msgstr ""
 
-#: mmo.c:2902
+#: mmo.c:2904
 #, c-format
 msgid ""
 "%s: Bad symbol definition: `Main' set to %s rather than the start address "
 "%s\n"
 msgstr ""
 
-#: mmo.c:2994
+#: mmo.c:2996
 #, c-format
 msgid ""
 "%s: warning: symbol table too large for mmo, larger than 65535 32-bit words: "
 "%d.  Only `Main' will be emitted.\n"
 msgstr ""
 
-#: mmo.c:3039
+#: mmo.c:3041
 #, c-format
 msgid "%s: internal error, symbol table changed size from %d to %d words\n"
 msgstr ""
 
-#: mmo.c:3091
+#: mmo.c:3093
 #, c-format
 msgid "%s: internal error, internal register section %s had contents\n"
 msgstr ""
 
-#: mmo.c:3142
+#: mmo.c:3144
 #, c-format
 msgid "%s: no initialized registers; section length 0\n"
 msgstr ""
 
-#: mmo.c:3148
+#: mmo.c:3150
 #, c-format
 msgid "%s: too many initialized registers; section length %ld\n"
 msgstr ""
 
-#: mmo.c:3153
+#: mmo.c:3155
 #, c-format
 msgid ""
 "%s: invalid start address for initialized registers of length %ld: 0x%lx"
@@ -3300,7 +3300,7 @@ msgstr ""
 msgid "Unhandled OSF/1 core file section type %d\n"
 msgstr ""
 
-#: pe-mips.c:591
+#: pe-mips.c:594
 msgid "%B: `ld -r' not supported with PE MIPS objects\n"
 msgstr ""
 
@@ -3308,15 +3308,15 @@ msgstr ""
 #. src = VMA of the memory we are fixing up
 #. mem = pointer to memory we are fixing up
 #. val = VMA of what we need to refer to.
-#: pe-mips.c:707
+#: pe-mips.c:710
 msgid "%B: unimplemented %s\n"
 msgstr ""
 
-#: pe-mips.c:733
+#: pe-mips.c:736
 msgid "%B: jump too far away\n"
 msgstr ""
 
-#: pe-mips.c:759
+#: pe-mips.c:762
 msgid "%B: bad pair/reflo after refhi\n"
 msgstr ""
 
@@ -3325,7 +3325,7 @@ msgstr ""
 msgid "warning: .pdata section size (%ld) is not a multiple of %d\n"
 msgstr ""
 
-#: pei-x86_64.c:448 peigen.c:1583 pepigen.c:1583 pex64igen.c:1583
+#: pei-x86_64.c:448 peigen.c:1576 pepigen.c:1576 pex64igen.c:1576
 #, c-format
 msgid ""
 "\n"
@@ -5778,54 +5778,54 @@ msgid ""
 "Export Address Table -- Ordinal Base %ld\n"
 msgstr ""
 
-#: peigen.c:1508 pepigen.c:1508 pex64igen.c:1508
+#: peigen.c:1505 pepigen.c:1505 pex64igen.c:1505
 msgid "Forwarder RVA"
 msgstr ""
 
-#: peigen.c:1519 pepigen.c:1519 pex64igen.c:1519
+#: peigen.c:1512 pepigen.c:1512 pex64igen.c:1512
 msgid "Export RVA"
 msgstr ""
 
-#: peigen.c:1526 pepigen.c:1526 pex64igen.c:1526
+#: peigen.c:1519 pepigen.c:1519 pex64igen.c:1519
 #, c-format
 msgid ""
 "\n"
 "[Ordinal/Name Pointer] Table\n"
 msgstr ""
 
-#: peigen.c:1579 pepigen.c:1579 pex64igen.c:1579
+#: peigen.c:1572 pepigen.c:1572 pex64igen.c:1572
 #, c-format
 msgid "Warning, .pdata section size (%ld) is not a multiple of %d\n"
 msgstr ""
 
-#: peigen.c:1586 pepigen.c:1586 pex64igen.c:1586
+#: peigen.c:1579 pepigen.c:1579 pex64igen.c:1579
 #, c-format
 msgid " vma:\t\t\tBegin Address    End Address      Unwind Info\n"
 msgstr ""
 
-#: peigen.c:1588 pepigen.c:1588 pex64igen.c:1588
+#: peigen.c:1581 pepigen.c:1581 pex64igen.c:1581
 #, c-format
 msgid ""
 " vma:\t\tBegin    End      EH       EH       PrologEnd  Exception\n"
 "     \t\tAddress  Address  Handler  Data     Address    Mask\n"
 msgstr ""
 
-#: peigen.c:1663 pepigen.c:1663 pex64igen.c:1663
+#: peigen.c:1656 pepigen.c:1656 pex64igen.c:1656
 #, c-format
 msgid " Register save millicode"
 msgstr ""
 
-#: peigen.c:1666 pepigen.c:1666 pex64igen.c:1666
+#: peigen.c:1659 pepigen.c:1659 pex64igen.c:1659
 #, c-format
 msgid " Register restore millicode"
 msgstr ""
 
-#: peigen.c:1669 pepigen.c:1669 pex64igen.c:1669
+#: peigen.c:1662 pepigen.c:1662 pex64igen.c:1662
 #, c-format
 msgid " Glue code sequence"
 msgstr ""
 
-#: peigen.c:1719 pepigen.c:1719 pex64igen.c:1719
+#: peigen.c:1712 pepigen.c:1712 pex64igen.c:1712
 #, c-format
 msgid ""
 "\n"
@@ -5833,14 +5833,14 @@ msgid ""
 "PE File Base Relocations (interpreted .reloc section contents)\n"
 msgstr ""
 
-#: peigen.c:1749 pepigen.c:1749 pex64igen.c:1749
+#: peigen.c:1742 pepigen.c:1742 pex64igen.c:1742
 #, c-format
 msgid ""
 "\n"
 "Virtual Address: %08lx Chunk size %ld (0x%lx) Number of fixups %ld\n"
 msgstr ""
 
-#: peigen.c:1762 pepigen.c:1762 pex64igen.c:1762
+#: peigen.c:1755 pepigen.c:1755 pex64igen.c:1755
 #, c-format
 msgid "\treloc %4d offset %4x [%4lx] %s"
 msgstr ""
@@ -5848,7 +5848,7 @@ msgstr ""
 #. The MS dumpbin program reportedly ands with 0xff0f before
 #. printing the characteristics field.  Not sure why.  No reason to
 #. emulate it here.
-#: peigen.c:1804 pepigen.c:1804 pex64igen.c:1804
+#: peigen.c:1797 pepigen.c:1797 pex64igen.c:1797
 #, c-format
 msgid ""
 "\n"

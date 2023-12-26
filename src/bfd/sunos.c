@@ -2747,11 +2747,11 @@ sunos_finish_dynamic_link(bfd *abfd, struct bfd_link_info *info)
 	{
 	  bfd_vma val;
 
-	  PUT_WORD(dynobj, (GET_WORD(dynobj, p) + filepos), p);
+	  PUT_WORD(dynobj, (GET_WORD(dynobj, p) + (unsigned long)filepos), p);
 	  val = GET_WORD(dynobj, (p + 12));
 	  if (val == 0)
 	    break;
-	  PUT_WORD(dynobj, (val + filepos), (p + 12));
+	  PUT_WORD(dynobj, (val + (unsigned long)filepos), (p + 12));
 	  p += 16;
 	}
     }
@@ -2808,14 +2808,14 @@ sunos_finish_dynamic_link(bfd *abfd, struct bfd_link_info *info)
       if ((s == NULL) || (s->size == 0))
 	PUT_WORD(dynobj, (bfd_vma)0UL, esdl.ld_need);
       else
-	PUT_WORD(dynobj, (s->output_section->filepos + s->output_offset),
+	PUT_WORD(dynobj, ((bfd_vma)s->output_section->filepos + s->output_offset),
 		 esdl.ld_need);
 
       s = bfd_get_section_by_name(dynobj, ".rules");
       if ((s == NULL) || (s->size == 0))
 	PUT_WORD(dynobj, (bfd_vma)0UL, esdl.ld_rules);
       else
-	PUT_WORD(dynobj, (s->output_section->filepos + s->output_offset),
+	PUT_WORD(dynobj, ((bfd_vma)s->output_section->filepos + s->output_offset),
 		 esdl.ld_rules);
 
       s = bfd_get_section_by_name(dynobj, ".got");
@@ -2833,17 +2833,17 @@ sunos_finish_dynamic_link(bfd *abfd, struct bfd_link_info *info)
       BFD_ASSERT(s != NULL);
       BFD_ASSERT((s->reloc_count * obj_reloc_entry_size(dynobj))
                  == s->size);
-      PUT_WORD(dynobj, (s->output_section->filepos + s->output_offset),
+      PUT_WORD(dynobj, ((bfd_vma)s->output_section->filepos + s->output_offset),
                esdl.ld_rel);
 
       s = bfd_get_section_by_name(dynobj, ".hash");
       BFD_ASSERT(s != NULL);
-      PUT_WORD(dynobj, (s->output_section->filepos + s->output_offset),
+      PUT_WORD(dynobj, ((bfd_vma)s->output_section->filepos + s->output_offset),
                esdl.ld_hash);
 
       s = bfd_get_section_by_name(dynobj, ".dynsym");
       BFD_ASSERT(s != NULL);
-      PUT_WORD(dynobj, (s->output_section->filepos + s->output_offset),
+      PUT_WORD(dynobj, ((bfd_vma)s->output_section->filepos + s->output_offset),
                esdl.ld_stab);
 
       PUT_WORD(dynobj, (bfd_vma)0UL, esdl.ld_stab_hash);
@@ -2853,7 +2853,7 @@ sunos_finish_dynamic_link(bfd *abfd, struct bfd_link_info *info)
 
       s = bfd_get_section_by_name(dynobj, ".dynstr");
       BFD_ASSERT(s != NULL);
-      PUT_WORD(dynobj, (s->output_section->filepos + s->output_offset),
+      PUT_WORD(dynobj, ((bfd_vma)s->output_section->filepos + s->output_offset),
                esdl.ld_symbols);
       PUT_WORD(dynobj, s->size, esdl.ld_symb_size);
 

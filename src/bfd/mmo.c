@@ -1157,16 +1157,18 @@ mmo_create_symbol(bfd *abfd, const char *symname, bfd_vma addr,
                   enum mmo_sym_type sym_type, unsigned int serno)
 {
   struct mmo_symbol *n;
+  size_t n_namelen;
 
   n = (struct mmo_symbol *)bfd_alloc(abfd, sizeof(struct mmo_symbol));
   if (n == NULL)
     return FALSE;
 
-  n->name = (const char *)bfd_alloc(abfd, (strlen(symname) + 1UL));
+  n_namelen = (strlen(symname) + 1UL);
+  n->name = (const char *)bfd_alloc(abfd, (bfd_size_type)n_namelen);
   if (n->name == NULL)
     return FALSE;
 
-  strcpy((char *)n->name, symname);
+  strncpy((char *)n->name, symname, n_namelen);
 
   n->value = addr;
   n->sym_type = sym_type;
@@ -1185,13 +1187,13 @@ mmo_create_symbol(bfd *abfd, const char *symname, bfd_vma addr,
      section, as it's the one place we're sure to pass when reading a mmo
      object.  For written objects, we do it while setting the symbol
      table.  */
-  if (strcmp (symname, MMIX_START_SYMBOL_NAME) == 0
-      && bfd_get_start_address (abfd) != addr)
+  if ((strcmp(symname, MMIX_START_SYMBOL_NAME) == 0)
+      && (bfd_get_start_address(abfd) != addr))
     {
       (*_bfd_error_handler)
 	(_("%s: invalid mmo file: initialization value for $255 is not `Main'\n"),
-	 bfd_get_filename (abfd));
-      bfd_set_error (bfd_error_bad_value);
+	 bfd_get_filename(abfd));
+      bfd_set_error(bfd_error_bad_value);
       return FALSE;
     }
 
