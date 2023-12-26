@@ -37,7 +37,7 @@ aout_adobe_swap_exec_header_in(bfd *abfd, struct external_exec *bytes,
                                struct internal_exec *execp)
 {
   /* Now fill in fields in the execp, from the bytes in the raw data: */
-  execp->a_info = H_GET_32(abfd, bytes->e_info);
+  execp->a_info = (long)H_GET_32(abfd, bytes->e_info);
   execp->a_text = GET_WORD(abfd, bytes->e_text);
   execp->a_data = GET_WORD(abfd, bytes->e_data);
   execp->a_bss = GET_WORD(abfd, bytes->e_bss);
@@ -83,8 +83,8 @@ aout_adobe_callback(bfd *abfd)
   bfd_set_arch_mach(abfd, bfd_arch_unknown, 0L);
 
   /* The positions of the string table and symbol table: */
-  obj_str_filepos(abfd) = N_STROFF(*execp);
-  obj_sym_filepos(abfd) = N_SYMOFF(*execp);
+  obj_str_filepos(abfd) = (file_ptr)N_STROFF(*execp);
+  obj_sym_filepos(abfd) = (file_ptr)N_SYMOFF(*execp);
 
   /* Suck up the section information from the file, one section at a time: */
   for (;;) {
@@ -151,9 +151,9 @@ aout_adobe_callback(bfd *abfd)
       /* Now set the section's attributes: */
       bfd_set_section_flags(abfd, sect, flags);
       /* Assumed big-endian: */
-      sect->size = ((ext->e_size[0] << 8)
-		    | (ext->e_size[1] << 8)
-		    | ext->e_size[2]);
+      sect->size = ((ext->e_size[0] << 8UL)
+		    | (ext->e_size[1] << 8UL)
+		    | (bfd_size_type)ext->e_size[2]);
       sect->vma = H_GET_32(abfd, ext->e_virtbase);
       sect->filepos = H_GET_32(abfd, ext->e_filebase);
       /* FIXME: XXX: alignment?  */

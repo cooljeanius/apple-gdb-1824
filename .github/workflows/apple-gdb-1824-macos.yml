@@ -69,10 +69,9 @@ jobs:
         else \
           ls ./*.h || ls || pwd; \
         fi
-        find . -name arparse.h -print
+        find . -name arparse.h -type f -print
     - run: cd src && make all-binutils
-    - run: cd src && make all-cgen
-    - run: cd src && make all-libiberty && make all-intl
+    - run: cd src && make all-cgen && make all-libiberty && make all-intl
     - run: cd src && make all-electric-fence
     - run: cd src && make all-etc
     - run: cd src && make all-libdecnumber

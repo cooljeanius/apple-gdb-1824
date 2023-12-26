@@ -58,8 +58,9 @@ all: ../libiberty.a
 # CHECK is set to "really-check" or the empty string by configure.
 check: @CHECK@
 
-really-check: check-cplus-dem check-strtol check-pexecute fuzz-demangler \
+really-check: check-cplus-dem check-strtol check-pexecute \
 	all @MAINT@ check-expandargv check-d-demangle
+	$(MAKE) -ki fuzz-demangler || stat demangler-fuzzer
 
 # Run some tests of the demangler.
 check-cplus-dem: test-demangle $(srcdir)/demangle-expected

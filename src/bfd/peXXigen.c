@@ -105,18 +105,18 @@ _bfd_XXi_swap_sym_in(bfd *abfd, void *ext1, void *in1)
   if (ext->e.e_name[0] == 0)
     {
       in->_n._n_n._n_zeroes = 0;
-      in->_n._n_n._n_offset = H_GET_32(abfd, ext->e.e.e_offset);
+      in->_n._n_n._n_offset = (long)H_GET_32(abfd, ext->e.e.e_offset);
     }
   else
     memcpy(in->_n._n_name, ext->e.e_name, (size_t)SYMNMLEN);
 
   in->n_value = H_GET_32(abfd, ext->e_value);
-  in->n_scnum = H_GET_16(abfd, ext->e_scnum);
+  in->n_scnum = (short)H_GET_16(abfd, ext->e_scnum);
 
   if (sizeof(ext->e_type) == 2UL)
-    in->n_type = H_GET_16(abfd, ext->e_type);
+    in->n_type = (unsigned short)H_GET_16(abfd, ext->e_type);
   else
-    in->n_type = H_GET_32(abfd, ext->e_type);
+    in->n_type = (unsigned short)H_GET_32(abfd, ext->e_type);
 
   in->n_sclass = H_GET_8(abfd, ext->e_sclass);
   in->n_numaux = H_GET_8(abfd, ext->e_numaux);
@@ -238,7 +238,7 @@ _bfd_XXi_swap_aux_in(bfd *abfd, void *ext1, int type, int theclass,
     case C_FILE:
       if (ext->x_file.x_fname[0] == 0) {
 	  in->x_file.x_n.x_zeroes = 0;
-	  in->x_file.x_n.x_offset = H_GET_32(abfd, ext->x_file.x_n.x_offset);
+	  in->x_file.x_n.x_offset = (long)H_GET_32(abfd, ext->x_file.x_n.x_offset);
       } else {
 	  memcpy(in->x_file.x_fname, ext->x_file.x_fname,
                  (size_t)FILNMLEN);
@@ -249,11 +249,11 @@ _bfd_XXi_swap_aux_in(bfd *abfd, void *ext1, int type, int theclass,
     case C_LEAFSTAT:
     case C_HIDDEN:
       if (type == T_NULL) {
-	  in->x_scn.x_scnlen = GET_SCN_SCNLEN(abfd, ext);
-	  in->x_scn.x_nreloc = GET_SCN_NRELOC(abfd, ext);
-	  in->x_scn.x_nlinno = GET_SCN_NLINNO(abfd, ext);
+	  in->x_scn.x_scnlen = (long)GET_SCN_SCNLEN(abfd, ext);
+	  in->x_scn.x_nreloc = (unsigned short)GET_SCN_NRELOC(abfd, ext);
+	  in->x_scn.x_nlinno = (unsigned short)GET_SCN_NLINNO(abfd, ext);
 	  in->x_scn.x_checksum = H_GET_32(abfd, ext->x_scn.x_checksum);
-	  in->x_scn.x_associated = H_GET_16(abfd, ext->x_scn.x_associated);
+	  in->x_scn.x_associated = (unsigned short)H_GET_16(abfd, ext->x_scn.x_associated);
 	  in->x_scn.x_comdat = H_GET_8(abfd, ext->x_scn.x_comdat);
 	  return;
       }
@@ -262,32 +262,32 @@ _bfd_XXi_swap_aux_in(bfd *abfd, void *ext1, int type, int theclass,
       break; /* not sure if correct... */
   }
 
-  in->x_sym.x_tagndx.l = H_GET_32(abfd, ext->x_sym.x_tagndx);
-  in->x_sym.x_tvndx = H_GET_16(abfd, ext->x_sym.x_tvndx);
+  in->x_sym.x_tagndx.l = (long)H_GET_32(abfd, ext->x_sym.x_tagndx);
+  in->x_sym.x_tvndx = (unsigned short)H_GET_16(abfd, ext->x_sym.x_tvndx);
 
   if ((theclass == C_BLOCK) || (theclass == C_FCN) || ISFCN(type)
       || ISTAG(theclass)) {
-      in->x_sym.x_fcnary.x_fcn.x_lnnoptr = GET_FCN_LNNOPTR(abfd, ext);
-      in->x_sym.x_fcnary.x_fcn.x_endndx.l = GET_FCN_ENDNDX(abfd, ext);
+      in->x_sym.x_fcnary.x_fcn.x_lnnoptr = (bfd_signed_vma)GET_FCN_LNNOPTR(abfd, ext);
+      in->x_sym.x_fcnary.x_fcn.x_endndx.l = (long)GET_FCN_ENDNDX(abfd, ext);
   } else {
       in->x_sym.x_fcnary.x_ary.x_dimen[0] =
-	H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[0]);
+	(unsigned short)H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[0]);
       in->x_sym.x_fcnary.x_ary.x_dimen[1] =
-	H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[1]);
+	(unsigned short)H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[1]);
       in->x_sym.x_fcnary.x_ary.x_dimen[2] =
-	H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[2]);
+	(unsigned short)H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[2]);
       in->x_sym.x_fcnary.x_ary.x_dimen[3] =
-	H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[3]);
+	(unsigned short)H_GET_16(abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[3]);
   }
 
   if (ISFCN (type))
     {
-      in->x_sym.x_misc.x_fsize = H_GET_32(abfd, ext->x_sym.x_misc.x_fsize);
+      in->x_sym.x_misc.x_fsize = (long)H_GET_32(abfd, ext->x_sym.x_misc.x_fsize);
     }
   else
     {
-      in->x_sym.x_misc.x_lnsz.x_lnno = GET_LNSZ_LNNO(abfd, ext);
-      in->x_sym.x_misc.x_lnsz.x_size = GET_LNSZ_SIZE(abfd, ext);
+      in->x_sym.x_misc.x_lnsz.x_lnno = (unsigned short)GET_LNSZ_LNNO(abfd, ext);
+      in->x_sym.x_misc.x_lnsz.x_size = (unsigned short)GET_LNSZ_SIZE(abfd, ext);
     }
 }
 
@@ -375,7 +375,7 @@ _bfd_XXi_swap_lineno_in(bfd *abfd, void *ext1, void *in1)
   LINENO *ext = (LINENO *)ext1;
   struct internal_lineno *in = (struct internal_lineno *)in1;
 
-  in->l_addr.l_symndx = H_GET_32(abfd, ext->l_addr.l_symndx);
+  in->l_addr.l_symndx = (bfd_signed_vma)H_GET_32(abfd, ext->l_addr.l_symndx);
   in->l_lnno = GET_LINENO_LNNO(abfd, ext);
 }
 
@@ -398,8 +398,8 @@ _bfd_XXi_swap_aouthdr_in(bfd *abfd, void *aouthdr_ext1, void *aouthdr_int1)
   AOUTHDR *aouthdr_ext = (AOUTHDR *)aouthdr_ext1;
   struct internal_aouthdr *aouthdr_int = (struct internal_aouthdr *)aouthdr_int1;
 
-  aouthdr_int->magic = H_GET_16(abfd, aouthdr_ext->magic);
-  aouthdr_int->vstamp = H_GET_16(abfd, aouthdr_ext->vstamp);
+  aouthdr_int->magic = (short)H_GET_16(abfd, aouthdr_ext->magic);
+  aouthdr_int->vstamp = (short)H_GET_16(abfd, aouthdr_ext->vstamp);
   aouthdr_int->tsize = GET_AOUTHDR_TSIZE(abfd, aouthdr_ext->tsize);
   aouthdr_int->dsize = GET_AOUTHDR_DSIZE(abfd, aouthdr_ext->dsize);
   aouthdr_int->bsize = GET_AOUTHDR_BSIZE(abfd, aouthdr_ext->bsize);
@@ -417,19 +417,19 @@ _bfd_XXi_swap_aouthdr_in(bfd *abfd, void *aouthdr_ext1, void *aouthdr_int1)
   a->SectionAlignment = H_GET_32(abfd, src->SectionAlignment);
   a->FileAlignment = H_GET_32(abfd, src->FileAlignment);
   a->MajorOperatingSystemVersion =
-    H_GET_16(abfd, src->MajorOperatingSystemVersion);
+    (short)H_GET_16(abfd, src->MajorOperatingSystemVersion);
   a->MinorOperatingSystemVersion =
-    H_GET_16(abfd, src->MinorOperatingSystemVersion);
-  a->MajorImageVersion = H_GET_16(abfd, src->MajorImageVersion);
-  a->MinorImageVersion = H_GET_16(abfd, src->MinorImageVersion);
-  a->MajorSubsystemVersion = H_GET_16(abfd, src->MajorSubsystemVersion);
-  a->MinorSubsystemVersion = H_GET_16(abfd, src->MinorSubsystemVersion);
-  a->Reserved1 = H_GET_32(abfd, src->Reserved1);
-  a->SizeOfImage = H_GET_32(abfd, src->SizeOfImage);
-  a->SizeOfHeaders = H_GET_32(abfd, src->SizeOfHeaders);
-  a->CheckSum = H_GET_32(abfd, src->CheckSum);
-  a->Subsystem = H_GET_16(abfd, src->Subsystem);
-  a->DllCharacteristics = H_GET_16(abfd, src->DllCharacteristics);
+    (short)H_GET_16(abfd, src->MinorOperatingSystemVersion);
+  a->MajorImageVersion = (short)H_GET_16(abfd, src->MajorImageVersion);
+  a->MinorImageVersion = (short)H_GET_16(abfd, src->MinorImageVersion);
+  a->MajorSubsystemVersion = (short)H_GET_16(abfd, src->MajorSubsystemVersion);
+  a->MinorSubsystemVersion = (short)H_GET_16(abfd, src->MinorSubsystemVersion);
+  a->Reserved1 = (long)H_GET_32(abfd, src->Reserved1);
+  a->SizeOfImage = (long)H_GET_32(abfd, src->SizeOfImage);
+  a->SizeOfHeaders = (long)H_GET_32(abfd, src->SizeOfHeaders);
+  a->CheckSum = (long)H_GET_32(abfd, src->CheckSum);
+  a->Subsystem = (short)H_GET_16(abfd, src->Subsystem);
+  a->DllCharacteristics = (short)H_GET_16(abfd, src->DllCharacteristics);
   a->SizeOfStackReserve =
     GET_OPTHDR_SIZE_OF_STACK_RESERVE(abfd, src->SizeOfStackReserve);
   a->SizeOfStackCommit =
@@ -438,8 +438,8 @@ _bfd_XXi_swap_aouthdr_in(bfd *abfd, void *aouthdr_ext1, void *aouthdr_int1)
     GET_OPTHDR_SIZE_OF_HEAP_RESERVE(abfd, src->SizeOfHeapReserve);
   a->SizeOfHeapCommit =
     GET_OPTHDR_SIZE_OF_HEAP_COMMIT(abfd, src->SizeOfHeapCommit);
-  a->LoaderFlags = H_GET_32(abfd, src->LoaderFlags);
-  a->NumberOfRvaAndSizes = H_GET_32(abfd, src->NumberOfRvaAndSizes);
+  a->LoaderFlags = (long)H_GET_32(abfd, src->LoaderFlags);
+  a->NumberOfRvaAndSizes = (long)H_GET_32(abfd, src->NumberOfRvaAndSizes);
 
   {
     int idx;
@@ -509,7 +509,7 @@ add_data_entry(bfd *abfd, struct internal_extra_pe_aouthdr *aout,
     {
       /* If data directory is empty, rva also should be 0.  */
       size_t size = (size_t)pei_section_data(abfd, sec)->virt_size;
-      aout->DataDirectory[idx].Size = size;
+      aout->DataDirectory[idx].Size = (long)size;
 
       if (size)
 	{
@@ -540,7 +540,7 @@ _bfd_XXi_swap_aouthdr_out(bfd *abfd, void *in, void *out)
     }
 
   if (extra->Subsystem == IMAGE_SUBSYSTEM_UNKNOWN)
-    extra->Subsystem = pe->target_subsystem;
+    extra->Subsystem = (short)pe->target_subsystem;
 
   sa = extra->SectionAlignment;
   fa = extra->FileAlignment;
@@ -646,8 +646,8 @@ _bfd_XXi_swap_aouthdr_out(bfd *abfd, void *in, void *out)
 
     aouthdr_in->dsize = dsize;
     aouthdr_in->tsize = tsize;
-    extra->SizeOfHeaders = hsize;
-    extra->SizeOfImage = SA(hsize) + isize;
+    extra->SizeOfHeaders = (long)hsize;
+    extra->SizeOfImage = (long)(SA(hsize) + isize);
   }
 
   H_PUT_16(abfd, (bfd_vma)aouthdr_in->magic, aouthdr_out->standard.magic);
@@ -1156,7 +1156,7 @@ pe_print_idata (bfd * abfd, void * vfile)
       fprintf (file,
 	       _("\nNo reldata section! Function descriptor not decoded.\n"));
     }
-#endif
+#endif /* POWERPC_LE_PE */
 
   fprintf (file,
 	   _("\nThe Import Tables (interpreted %s section contents)\n"),
@@ -1174,10 +1174,10 @@ pe_print_idata (bfd * abfd, void * vfile)
       return FALSE;
     }
 
-  adj = (section->vma - extra->ImageBase);
+  adj = (bfd_signed_vma)(section->vma - extra->ImageBase);
 
   /* Print all image import descriptors.  */
-  for (i = 0; i < datasize; i += onaline)
+  for (i = 0; i < datasize; i += (bfd_size_type)onaline)
     {
       bfd_vma hint_addr;
       bfd_vma time_stamp;
@@ -1189,7 +1189,7 @@ pe_print_idata (bfd * abfd, void * vfile)
       char *dll;
 
       /* Print (i + extra->DataDirectory[1].VirtualAddress).  */
-      fprintf(file, " %08lx\t", (unsigned long)(i + adj + dataoff));
+      fprintf(file, " %08lx\t", (i + (unsigned long)adj + dataoff));
       hint_addr = bfd_get_32 (abfd, data + i + dataoff);
       time_stamp = bfd_get_32 (abfd, data + i + 4 + dataoff);
       forward_chain = bfd_get_32 (abfd, data + i + 8 + dataoff);
@@ -1206,7 +1206,7 @@ pe_print_idata (bfd * abfd, void * vfile)
       if (hint_addr == 0 && first_thunk == 0)
 	break;
 
-      if (dll_name - adj >= section->size)
+      if ((dll_name - (bfd_vma)adj) >= section->size)
         break;
 
       dll = (char *) data + dll_name - adj;
@@ -1223,11 +1223,11 @@ pe_print_idata (bfd * abfd, void * vfile)
 
 	  fprintf (file, _("\tvma:  Hint/Ord Member-Name Bound-To\n"));
 
-	  idx = (int)(hint_addr - adj);
+	  idx = (int)(hint_addr - (bfd_vma)adj);
 
 	  ft_addr = first_thunk + extra->ImageBase;
 	  ft_data = data;
-	  ft_idx = (int)(first_thunk - adj);
+	  ft_idx = (int)(first_thunk - (bfd_vma)adj);
 	  ft_allocated = 0;
 
 	  if (first_thunk != hint_addr)
@@ -1255,7 +1255,7 @@ pe_print_idata (bfd * abfd, void * vfile)
 	      if (ft_section == section)
 		{
 		  ft_data = data;
-		  ft_idx = (int)(first_thunk - adj);
+		  ft_idx = (int)(first_thunk - (bfd_vma)adj);
 		}
 	      else
 		{
@@ -1410,17 +1410,17 @@ pe_print_edata(bfd *abfd, void *vfile)
     return FALSE;
 
   /* Go get Export Directory Table: */
-  edt.export_flags  = bfd_get_32(abfd, data +  0);
-  edt.time_stamp    = bfd_get_32(abfd, data +  4);
-  edt.major_ver     = bfd_get_16(abfd, data +  8);
-  edt.minor_ver     = bfd_get_16(abfd, data + 10);
-  edt.name          = bfd_get_32(abfd, data + 12);
-  edt.base          = bfd_get_32(abfd, data + 16);
-  edt.num_functions = bfd_get_32(abfd, data + 20);
-  edt.num_names     = bfd_get_32(abfd, data + 24);
-  edt.eat_addr      = bfd_get_32(abfd, data + 28);
-  edt.npt_addr      = bfd_get_32(abfd, data + 32);
-  edt.ot_addr       = bfd_get_32(abfd, data + 36);
+  edt.export_flags = (long)bfd_get_32(abfd, (data + 0));
+  edt.time_stamp = (long)bfd_get_32(abfd, (data + 4));
+  edt.major_ver = (short)bfd_get_16(abfd, (data + 8));
+  edt.minor_ver = (short)bfd_get_16(abfd, (data + 10));
+  edt.name = bfd_get_32(abfd, (data + 12));
+  edt.base = (long)bfd_get_32(abfd, (data + 16));
+  edt.num_functions = bfd_get_32(abfd, (data + 20));
+  edt.num_names = bfd_get_32(abfd, (data + 24));
+  edt.eat_addr = bfd_get_32(abfd, (data + 28));
+  edt.npt_addr = bfd_get_32(abfd, (data + 32));
+  edt.ot_addr = bfd_get_32(abfd, (data + 36));
 
   adj = (bfd_signed_vma)(section->vma - extra->ImageBase + dataoff);
 
@@ -1495,27 +1495,20 @@ pe_print_edata(bfd *abfd, void *vfile)
       if (eat_member == 0)
 	continue;
 
-      if ((eat_member - adj) <= datasize)
+      if ((eat_member - (bfd_vma)adj) <= datasize)
 	{
-	  /* This rva is to a name (forwarding function) in our section.  */
+	  /* This rva is to a name (forwarding function) in our section: */
 	  /* Should locate a function descriptor.  */
-	  fprintf (file,
-		   "\t[%4ld] +base[%4ld] %04lx %s -- %s\n",
-		   (long) i,
-		   (long) (i + edt.base),
-		   (unsigned long) eat_member,
-		   _("Forwarder RVA"),
-		   data + eat_member - adj);
+	  fprintf(file, "\t[%4ld] +base[%4ld] %04lx %s -- %s\n", (long)i,
+		  ((long)i + edt.base), (unsigned long)eat_member,
+		  _("Forwarder RVA"), (data + eat_member - adj));
 	}
       else
 	{
-	  /* Should locate a function descriptor in the reldata section.  */
-	  fprintf (file,
-		   "\t[%4ld] +base[%4ld] %04lx %s\n",
-		   (long) i,
-		   (long) (i + edt.base),
-		   (unsigned long) eat_member,
-		   _("Export RVA"));
+	  /* Should locate a function descriptor in the reldata section: */
+	  fprintf(file, "\t[%4ld] +base[%4ld] %04lx %s\n", (long)i,
+		  ((long)i + edt.base), (unsigned long)eat_member,
+		  _("Export RVA"));
 	}
     }
 
@@ -1750,28 +1743,28 @@ pe_print_reloc(bfd *abfd, void *vfile)
 
       for (j = 0; j < number; ++j)
 	{
-	  unsigned short e = bfd_get_16 (abfd, data + i + 8 + j * 2);
-	  unsigned int t = (e & 0xF000) >> 12;
-	  int off = e & 0x0FFF;
+	  unsigned short e =
+            (unsigned short)bfd_get_16(abfd, (data + i + 8 + (j * 2)));
+	  unsigned int t = ((e & 0xF000) >> 12);
+	  int off = (e & 0x0FFF);
 
-	  if (t >= sizeof (tbl) / sizeof (tbl[0]))
-	    t = (sizeof (tbl) / sizeof (tbl[0])) - 1;
+	  if (t >= (sizeof(tbl) / sizeof(tbl[0])))
+	    t = ((sizeof(tbl) / sizeof(tbl[0])) - 1U);
 
-	  fprintf (file,
-		   _("\treloc %4d offset %4x [%4lx] %s"),
-		   j, off, (long) (off + virtual_address), tbl[t]);
+	  fprintf(file, _("\treloc %4d offset %4x [%4lx] %s"), j, off,
+   		  (long)((bfd_vma)off + virtual_address), tbl[t]);
 
 	  /* HIGHADJ takes an argument, - the next record *is* the
 	     low 16 bits of addend.  */
 	  if (t == IMAGE_REL_BASED_HIGHADJ)
 	    {
-	      fprintf (file, " (%4x)",
-		       ((unsigned int)
-			bfd_get_16 (abfd, data + i + 8 + j * 2 + 2)));
+	      fprintf(file, " (%4x)",
+                      ((unsigned int)
+                       bfd_get_16(abfd, (data + i + 8 + (j * 2) + 2))));
 	      j++;
 	    }
 
-	  fprintf (file, "\n");
+	  fprintf(file, "\n");
 	}
 
       i += (bfd_size_type)size;
@@ -1990,49 +1983,49 @@ _bfd_XXi_final_link_postscript (bfd * abfd, struct coff_final_link_info *pfinfo)
 
   /* The import directory.  This is the address of .idata$2, with size
      of .idata$2 + .idata$3.  */
-  h1 = coff_link_hash_lookup (coff_hash_table (info),
-			      ".idata$2", FALSE, FALSE, TRUE);
+  h1 = coff_link_hash_lookup(coff_hash_table(info),
+			     ".idata$2", FALSE, FALSE, TRUE);
   if (h1 != NULL)
     {
-      pe_data (abfd)->pe_opthdr.DataDirectory[1].VirtualAddress =
+      pe_data(abfd)->pe_opthdr.DataDirectory[1].VirtualAddress =
 	(h1->root.u.def.value
 	 + h1->root.u.def.section->output_section->vma
 	 + h1->root.u.def.section->output_offset);
-      h1 = coff_link_hash_lookup (coff_hash_table (info),
-				  ".idata$4", FALSE, FALSE, TRUE);
-      pe_data (abfd)->pe_opthdr.DataDirectory[1].Size =
-	((h1->root.u.def.value
-	  + h1->root.u.def.section->output_section->vma
-	  + h1->root.u.def.section->output_offset)
-	 - pe_data (abfd)->pe_opthdr.DataDirectory[1].VirtualAddress);
+      h1 = coff_link_hash_lookup(coff_hash_table(info),
+				 ".idata$4", FALSE, FALSE, TRUE);
+      pe_data(abfd)->pe_opthdr.DataDirectory[1].Size =
+	(long)((h1->root.u.def.value
+                + h1->root.u.def.section->output_section->vma
+	  	+ h1->root.u.def.section->output_offset)
+               - pe_data(abfd)->pe_opthdr.DataDirectory[1].VirtualAddress);
 
       /* The import address table.  This is the size/address of
          .idata$5.  */
-      h1 = coff_link_hash_lookup (coff_hash_table (info),
-				  ".idata$5", FALSE, FALSE, TRUE);
-      pe_data (abfd)->pe_opthdr.DataDirectory[12].VirtualAddress =
+      h1 = coff_link_hash_lookup(coff_hash_table (info),
+				 ".idata$5", FALSE, FALSE, TRUE);
+      pe_data(abfd)->pe_opthdr.DataDirectory[12].VirtualAddress =
 	(h1->root.u.def.value
 	 + h1->root.u.def.section->output_section->vma
 	 + h1->root.u.def.section->output_offset);
-      h1 = coff_link_hash_lookup (coff_hash_table (info),
-				  ".idata$6", FALSE, FALSE, TRUE);
-      pe_data (abfd)->pe_opthdr.DataDirectory[12].Size =
-	((h1->root.u.def.value
-	  + h1->root.u.def.section->output_section->vma
-	  + h1->root.u.def.section->output_offset)
-	 - pe_data (abfd)->pe_opthdr.DataDirectory[12].VirtualAddress);
+      h1 = coff_link_hash_lookup(coff_hash_table(info),
+				 ".idata$6", FALSE, FALSE, TRUE);
+      pe_data(abfd)->pe_opthdr.DataDirectory[12].Size =
+	(long)((h1->root.u.def.value
+	  	+ h1->root.u.def.section->output_section->vma
+	  	+ h1->root.u.def.section->output_offset)
+               - pe_data(abfd)->pe_opthdr.DataDirectory[12].VirtualAddress);
     }
 
-  h1 = coff_link_hash_lookup (coff_hash_table (info),
-			      "__tls_used", FALSE, FALSE, TRUE);
+  h1 = coff_link_hash_lookup(coff_hash_table(info),
+			     "__tls_used", FALSE, FALSE, TRUE);
   if (h1 != NULL)
     {
-      pe_data (abfd)->pe_opthdr.DataDirectory[9].VirtualAddress =
+      pe_data(abfd)->pe_opthdr.DataDirectory[9].VirtualAddress =
 	(h1->root.u.def.value
 	 + h1->root.u.def.section->output_section->vma
 	 + h1->root.u.def.section->output_offset
-	 - pe_data (abfd)->pe_opthdr.ImageBase);
-      pe_data (abfd)->pe_opthdr.DataDirectory[9].Size = 0x18;
+	 - pe_data(abfd)->pe_opthdr.ImageBase);
+      pe_data(abfd)->pe_opthdr.DataDirectory[9].Size = 0x18;
     }
 
   /* If we could NOT find idata$2, we either have an excessively trivial

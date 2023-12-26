@@ -137,7 +137,7 @@ MY(reloc_howto)(bfd *abfd, struct reloc_std_external *rel,
       r_length     = ((rel->r_type[0] & RELOC_STD_BITS_LENGTH_LITTLE)
 		      >> RELOC_STD_BITS_LENGTH_SH_LITTLE);
   }
-  local_index = (r_length + (4 * r_pcrel_done) + (8 * r_neg));
+  local_index = (int)(r_length + (4 * r_pcrel_done) + (8 * r_neg));
   if (local_index == 3) {
       *r_pcrel = 1;
   }
@@ -162,7 +162,7 @@ MY (put_reloc) (bfd *abfd,
 
   PUT_WORD (abfd, value, reloc->r_address);
   /* Size as a power of two.  */
-  r_length = howto->size;
+  r_length = (unsigned int)howto->size;
 
   /* Special case for branch relocations.  */
   if ((howto->type == 3) || (howto->type == 7)) {
@@ -173,8 +173,8 @@ MY (put_reloc) (bfd *abfd,
   r_neg = (howto->type & 8); /* Negative relocation. */
 
   if (bfd_header_big_endian(abfd)) {
-      reloc->r_index[0] = (r_index >> 16);
-      reloc->r_index[1] = (r_index >> 8);
+      reloc->r_index[0] = (r_index >> 16U);
+      reloc->r_index[1] = (r_index >> 8U);
       reloc->r_index[2] = r_index;
       reloc->r_type[0] =
 	((r_extern ?     RELOC_STD_BITS_EXTERN_BIG : 0)
@@ -182,8 +182,8 @@ MY (put_reloc) (bfd *abfd,
 	 | (r_neg ?	 RELOC_ARM_BITS_NEG_BIG : 0)
 	 | (r_length <<  RELOC_STD_BITS_LENGTH_SH_BIG));
   } else {
-      reloc->r_index[2] = (r_index >> 16);
-      reloc->r_index[1] = (r_index >> 8);
+      reloc->r_index[2] = (r_index >> 16U);
+      reloc->r_index[1] = (r_index >> 8U);
       reloc->r_index[0] = r_index;
       reloc->r_type[0] =
 	((r_extern ?     RELOC_STD_BITS_EXTERN_LITTLE : 0)
@@ -429,8 +429,8 @@ MY_swap_std_reloc_out (bfd *abfd,
   /* Now the fun stuff.  */
   if (bfd_header_big_endian (abfd))
     {
-      natptr->r_index[0] = r_index >> 16;
-      natptr->r_index[1] = r_index >> 8;
+      natptr->r_index[0] = (r_index >> 16U);
+      natptr->r_index[1] = (r_index >> 8U);
       natptr->r_index[2] = r_index;
       natptr->r_type[0] =
 	(  (r_extern ?   RELOC_STD_BITS_EXTERN_BIG: 0)
@@ -440,8 +440,8 @@ MY_swap_std_reloc_out (bfd *abfd,
     }
   else
     {
-      natptr->r_index[2] = r_index >> 16;
-      natptr->r_index[1] = r_index >> 8;
+      natptr->r_index[2] = (r_index >> 16U);
+      natptr->r_index[1] = (r_index >> 8U);
       natptr->r_index[0] = r_index;
       natptr->r_type[0] =
 	(  (r_extern ?   RELOC_STD_BITS_EXTERN_LITTLE: 0)
