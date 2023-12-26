@@ -29,6 +29,10 @@ fi
 rm -rf *.dSYM
 AM_PROG_AS
 rm -rf *.dSYM
+if test "x${ac_cv_prog_AR}" = "x"; then
+  test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+  AC_PROG_AR
+fi
 if test "x${CC}" = "x"; then
   test -z "${CC}"
   AC_PROG_CC
@@ -48,6 +52,7 @@ AC_PROG_LN_S
 AC_EXEEXT
 
 AC_PROG_YACC
+AC_PROG_LEX([yywrap])
 AM_PROG_LEX
 
 if test -z "${CVS_RSH}"; then

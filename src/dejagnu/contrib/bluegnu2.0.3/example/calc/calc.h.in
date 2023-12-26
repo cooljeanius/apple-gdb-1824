@@ -1,33 +1,33 @@
 /* calc.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Define to 1 if you have the `atoi' function. */
+/* Define to 1 if you have the 'atoi' function. */
 #undef HAVE_ATOI
 
 /* Define to 1 if you have the <ctype.h> header file. */
 #undef HAVE_CTYPE_H
 
-/* Define to 1 if you have the declaration of `NWORD', and to 0 if you don't.
+/* Define to 1 if you have the declaration of 'NWORD', and to 0 if you don't.
    */
 #undef HAVE_DECL_NWORD
 
-/* Define to 1 if you have the declaration of `SIZE', and to 0 if you don't.
+/* Define to 1 if you have the declaration of 'SIZE', and to 0 if you don't.
    */
 #undef HAVE_DECL_SIZE
 
-/* Define to 1 if you have the declaration of `VERSION', and to 0 if you
+/* Define to 1 if you have the declaration of 'VERSION', and to 0 if you
    don't. */
 #undef HAVE_DECL_VERSION
 
-/* Define to 1 if you have the `fflush' function. */
+/* Define to 1 if you have the 'fflush' function. */
 #undef HAVE_FFLUSH
 
-/* Define to 1 if you have the `fgets' function. */
+/* Define to 1 if you have the 'fgets' function. */
 #undef HAVE_FGETS
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if you have the `printf' function. */
+/* Define to 1 if you have the 'printf' function. */
 #undef HAVE_PRINTF
 
 /* Define to 1 if you have the <stdint.h> header file. */
@@ -75,7 +75,7 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* Define to 1 if all of the C90 standard headers exist (not just the ones
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
 #undef STDC_HEADERS

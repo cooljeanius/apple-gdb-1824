@@ -126,6 +126,8 @@ CFLAGS 				= 	-gdwarf-2		\
 					-Wno-error		\
 					$(INCLUDES)
 
+TARGET_ARCHITECTURE		=	ppc
+
 OBJS				=	$(CFILES:%.c=$(OFILE_DIR)/%.o)
 
 INSTALLSRC_FILES		=	$(CFILES)		\
@@ -170,7 +172,7 @@ install				:	all $(DSTDIR)
 #                        *-------------*
 
 $(SYMROOT)/gdb_plugin_support.o	: 	$(OBJS)
-	ld -r $(OBJS) -arch ppc -o $(SYMROOT)/gdb_plugin_support.o
+	ld -r $(OBJS) -arch $(TARGET_ARCHITECTURE) -o $(SYMROOT)/gdb_plugin_support.o
 
 $(OFILE_DIR)/%.o		:	%.c $(HFILES)
 	$(CC) $(CFLAGS) $(RC_CFLAGS) -o $(OFILE_DIR)/$(notdir $*).o $<

@@ -138,6 +138,8 @@ CFLAGS 				= 	-gdwarf-2			\
 					-DVERSION=\""$(VERSION)"\"	\
 					$(INCLUDES)
 
+TARGET_ARCHITECTURE		=	ppc
+
 ifneq ($(BUILD_VERSION),10.0)
 LDFLAGS				=	-bundle 			\
 					-bundle_loader $(GDBROOT)$(GDBDIR)/gdb-powerpc-apple-darwin \
@@ -230,7 +232,7 @@ install				:	all $(DSTDIR)
 #             *-------------*
 
 $(SYMROOT)/$(PLUGIN) 		: 	gdb_plugin_support.o $(OBJS) 
-	$(CC) $(LDFLAGS) $(OBJS) -arch ppc $(gdb_plugin_support.o) -o $(SYMROOT)/$(PLUGIN)
+	$(CC) $(LDFLAGS) $(OBJS) -arch $(TARGET_ARCHITECTURE) $(gdb_plugin_support.o) -o $(SYMROOT)/$(PLUGIN)
 	-$(FIXUP)
 
 $(OFILE_DIR)/MacsBug_utils.o 	: 	MacsBug_utils.c MacsBug_testing.i 	\
