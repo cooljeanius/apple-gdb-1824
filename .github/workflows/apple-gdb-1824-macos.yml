@@ -88,9 +88,9 @@ jobs:
         if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
           echo "nproc says we can use $(nproc) build jobs"; \
           if "$(nproc)" -eq 4; then \
-            (make -j"$(nproc)" || make -j2 || remake); \
+            (make -j"$(nproc)" || make -j2 || remake -dpPw --trace=full); \
           else
-            (make -j"$(nproc)" || make || remake); \
+            (make -j"$(nproc)" || make || remake -dpPw --trace=full); \
           fi; \
         elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
           echo "gnproc says we can use $(gnproc) build jobs"; \
@@ -109,7 +109,7 @@ jobs:
           make check-bfd; \
           make check-mmalloc; \
           cd electric-fence; \
-          make check-local || make check info dvi stamp-framework ls; \
+          make check-local || make check stamp-framework ls; \
         elif test ${{ matrix.compiler }} == gcc; then \
           pushd bfd; \
           make check-DEJAGNU; \
@@ -118,7 +118,7 @@ jobs:
           make info dvi stamp-framework-headers ls; \
           popd; \
           pushd electric-fence; \
-          make check info dvi stamp-framework ls; \
+          make check stamp-framework ls; \
           popd; \
         else \
           echo "error, unhandled compiler!" >&2 && exit 1; \
