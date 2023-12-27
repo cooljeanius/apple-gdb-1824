@@ -1832,20 +1832,24 @@ mips_elf_hash_bfd_vma(bfd_vma addr)
    union members.  */
 
 static hashval_t
-mips_elf_got_entry_hash (const void *entry_)
+mips_elf_got_entry_hash(const void *entry_)
 {
   const struct mips_got_entry *entry = (struct mips_got_entry *)entry_;
 
-  return entry->symndx
-    + ((entry->tls_type & GOT_TLS_LDM) << 17)
-    + (! entry->abfd ? mips_elf_hash_bfd_vma (entry->d.address)
-       : entry->abfd->id
-         + (entry->symndx >= 0 ? mips_elf_hash_bfd_vma (entry->d.addend)
-	    : entry->d.h->root.root.root.hash));
+  return
+    ((hashval_t)entry->symndx
+     + ((entry->tls_type & GOT_TLS_LDM) << 17U)
+     + ((!entry->abfd)
+        ? mips_elf_hash_bfd_vma(entry->d.address)
+        : (entry->abfd->id
+           + ((entry->symndx >= 0)
+              ? mips_elf_hash_bfd_vma(entry->d.addend)
+              : (hashval_t)entry->d.h->root.root.root.hash))));
 }
 
+/* */
 static int
-mips_elf_got_entry_eq (const void *entry1, const void *entry2)
+mips_elf_got_entry_eq(const void *entry1, const void *entry2)
 {
   const struct mips_got_entry *e1 = (struct mips_got_entry *)entry1;
   const struct mips_got_entry *e2 = (struct mips_got_entry *)entry2;
@@ -1864,9 +1868,8 @@ mips_elf_got_entry_eq (const void *entry1, const void *entry2)
    even if the input bfd in which they're referenced differs, so the
    hash computation and compare functions are adjusted
    accordingly.  */
-
 static hashval_t
-mips_elf_multi_got_entry_hash (const void *entry_)
+mips_elf_multi_got_entry_hash(const void *entry_)
 {
   const struct mips_got_entry *entry = (struct mips_got_entry *)entry_;
 
@@ -1881,8 +1884,9 @@ mips_elf_multi_got_entry_hash (const void *entry_)
        : entry->d.h->root.root.root.hash);
 }
 
+/* */
 static int
-mips_elf_multi_got_entry_eq (const void *entry1, const void *entry2)
+mips_elf_multi_got_entry_eq(const void *entry1, const void *entry2)
 {
   const struct mips_got_entry *e1 = (struct mips_got_entry *)entry1;
   const struct mips_got_entry *e2 = (struct mips_got_entry *)entry2;

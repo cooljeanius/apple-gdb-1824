@@ -572,25 +572,25 @@ bfd_elf_link_record_local_dynamic_symbol(struct bfd_link_info *info,
     }
 
   name =
-    (bfd_elf_string_from_elf_section(input_bfd,
-				     elf_tdata(input_bfd)->symtab_hdr.sh_link,
-				     entry->isym.st_name));
+    bfd_elf_string_from_elf_section(input_bfd,
+                                    (unsigned int)elf_tdata(input_bfd)->symtab_hdr.sh_link,
+                                    (unsigned int)entry->isym.st_name);
 
-  dynstr = elf_hash_table (info)->dynstr;
+  dynstr = elf_hash_table(info)->dynstr;
   if (dynstr == NULL)
     {
-      /* Create a strtab to hold the dynamic symbol names.  */
-      elf_hash_table (info)->dynstr = dynstr = _bfd_elf_strtab_init ();
+      /* Create a strtab to hold the dynamic symbol names: */
+      elf_hash_table(info)->dynstr = dynstr = _bfd_elf_strtab_init();
       if (dynstr == NULL)
 	return 0;
     }
 
-  dynstr_index = _bfd_elf_strtab_add (dynstr, name, FALSE);
-  if (dynstr_index == (unsigned long) -1)
+  dynstr_index = _bfd_elf_strtab_add(dynstr, name, FALSE);
+  if (dynstr_index == (unsigned long)-1)
     return 0;
   entry->isym.st_name = dynstr_index;
 
-  eht = elf_hash_table (info);
+  eht = elf_hash_table(info);
 
   entry->next = eht->dynlocal;
   eht->dynlocal = entry;
@@ -7934,9 +7934,9 @@ bfd_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 		  unsigned int alt_count;
 		  unsigned int *rel_count2;
 
-		  BFD_ASSERT (entsize2 != entsize1
-			      && (entsize2 == bed->s->sizeof_rel
-				  || entsize2 == bed->s->sizeof_rela));
+		  BFD_ASSERT((entsize2 != entsize1)
+			     && ((entsize2 == bed->s->sizeof_rel)
+                                 || (entsize2 == bed->s->sizeof_rela)));
 
 		  rel_count2 = &esdo->rel_count2;
 		  if (!same_size)
@@ -7944,8 +7944,8 @@ bfd_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 
 		  /* The following is probably too simplistic if the
 		     backend counts output relocs unusually.  */
-		  BFD_ASSERT (bed->elf_backend_count_relocs == NULL);
-		  alt_count = NUM_SHDR_ENTRIES (esdi->rel_hdr2);
+		  BFD_ASSERT(bed->elf_backend_count_relocs == NULL);
+		  alt_count = (unsigned int)NUM_SHDR_ENTRIES(esdi->rel_hdr2);
 		  *rel_count2 += alt_count;
 		  reloc_count -= alt_count;
 		}

@@ -796,42 +796,44 @@ xstormy16_elf_relocate_section (bfd *                   output_bfd ATTRIBUTE_UNU
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
-	  sec = local_sections [r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  sym = (local_syms + r_symndx);
+	  sec = local_sections[r_symndx];
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 	}
       else
 	{
 	  bfd_boolean unresolved_reloc, warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 	}
 
       if (h != NULL)
 	name = h->root.root.string;
       else
 	{
-	  name = (bfd_elf_string_from_elf_section
-		  (input_bfd, symtab_hdr->sh_link, sym->st_name));
+	  name =
+            bfd_elf_string_from_elf_section(input_bfd,
+                                            (unsigned int)symtab_hdr->sh_link,
+                                            (unsigned int)sym->st_name);
 	  if (name == NULL || *name == '\0')
-	    name = bfd_section_name (input_bfd, sec);
+	    name = bfd_section_name(input_bfd, sec);
 	}
 
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
 	{
 	case R_XSTORMY16_24:
 	  {
-	    bfd_vma reloc = relocation + rel->r_addend;
+	    bfd_vma reloc = (relocation + rel->r_addend);
 	    unsigned int x;
 
-	    x = bfd_get_32 (input_bfd, contents + rel->r_offset);
+	    x = (unsigned int)bfd_get_32(input_bfd, (contents + rel->r_offset));
 	    x &= 0x0000ff00;
-	    x |= reloc & 0xff;
-	    x |= (reloc << 8) & 0xffff0000;
-	    bfd_put_32 (input_bfd, x, contents + rel->r_offset);
+	    x |= (reloc & 0xff);
+	    x |= ((reloc << 8) & 0xffff0000);
+	    bfd_put_32(input_bfd, x, (contents + rel->r_offset));
 
 	    if (reloc & ~0xffffff)
 	      r = bfd_reloc_overflow;
@@ -940,11 +942,10 @@ xstormy16_elf_relocate_section (bfd *                   output_bfd ATTRIBUTE_UNU
   return TRUE;
 }
 
-/* This must exist if dynobj is ever set.  */
-
+/* This must exist if dynobj is ever set: */
 static bfd_boolean
-xstormy16_elf_finish_dynamic_sections (bfd *abfd ATTRIBUTE_UNUSED,
-				       struct bfd_link_info *info)
+xstormy16_elf_finish_dynamic_sections(bfd *abfd ATTRIBUTE_UNUSED,
+				      struct bfd_link_info *info)
 {
   bfd *dynobj;
   asection *splt;
@@ -952,17 +953,17 @@ xstormy16_elf_finish_dynamic_sections (bfd *abfd ATTRIBUTE_UNUSED,
   /* As an extra sanity check, verify that all plt entries have
      been filled in.  */
 
-  if ((dynobj = elf_hash_table (info)->dynobj) != NULL
-      && (splt = bfd_get_section_by_name (dynobj, ".plt")) != NULL)
+  if (((dynobj = elf_hash_table(info)->dynobj) != NULL)
+      && ((splt = bfd_get_section_by_name(dynobj, ".plt")) != NULL))
     {
       bfd_byte *contents = splt->contents;
-      unsigned int i, size = splt->size;
+      unsigned int i, size = (unsigned int)splt->size;
 
       for (i = 0; i < size; i += 4)
 	{
-	  unsigned int x = bfd_get_32 (dynobj, contents + i);
+	  unsigned int x = (unsigned int)bfd_get_32(dynobj, (contents + i));
 
-	  BFD_ASSERT (x != 0);
+	  BFD_ASSERT(x != 0);
 	}
     }
 
@@ -973,15 +974,15 @@ xstormy16_elf_finish_dynamic_sections (bfd *abfd ATTRIBUTE_UNUSED,
    relocation.  */
 
 static asection *
-xstormy16_elf_gc_mark_hook (asection *                   sec,
-			    struct bfd_link_info *       info ATTRIBUTE_UNUSED,
-			    Elf_Internal_Rela *          rel,
-			    struct elf_link_hash_entry * h,
-			    Elf_Internal_Sym *           sym)
+xstormy16_elf_gc_mark_hook(asection *sec,
+			   struct bfd_link_info *info ATTRIBUTE_UNUSED,
+			   Elf_Internal_Rela *rel,
+			   struct elf_link_hash_entry *h,
+			   Elf_Internal_Sym *sym)
 {
   if (h != NULL)
     {
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
 	{
 	case R_XSTORMY16_GNU_VTINHERIT:
 	case R_XSTORMY16_GNU_VTENTRY:

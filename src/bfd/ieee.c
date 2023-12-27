@@ -1008,10 +1008,10 @@ ieee_canonicalize_symtab (bfd *abfd, asymbol **location)
 
   if (abfd->symcount)
     {
-      ieee_data_type *ieee = IEEE_DATA (abfd);
+      ieee_data_type *ieee = IEEE_DATA(abfd);
 
       dummy_bfd.xvec = &ieee_vec;
-      if (! ieee_slurp_symbol_table (abfd))
+      if (! ieee_slurp_symbol_table(abfd))
 	return -1;
 
       if (! ieee->symbol_table_full)
@@ -1025,8 +1025,8 @@ ieee_canonicalize_symtab (bfd *abfd, asymbol **location)
 	}
 
       ieee->external_symbol_base_offset = -ieee->external_symbol_min_index;
-      for (symp = IEEE_DATA (abfd)->external_symbols;
-	   symp != (ieee_symbol_type *) NULL;
+      for (symp = IEEE_DATA(abfd)->external_symbols;
+	   symp != (ieee_symbol_type *)NULL;
 	   symp = symp->next)
 	/* Place into table at correct index locations.  */
 	location[symp->index + ieee->external_symbol_base_offset] = &symp->symbol;
@@ -1035,15 +1035,15 @@ ieee_canonicalize_symtab (bfd *abfd, asymbol **location)
       ieee->external_reference_base_offset =
 	-ieee->external_reference_min_index + ieee->external_symbol_count;
 
-      for (symp = IEEE_DATA (abfd)->external_reference;
-	   symp != (ieee_symbol_type *) NULL;
+      for (symp = IEEE_DATA(abfd)->external_reference;
+	   symp != (ieee_symbol_type *)NULL;
 	   symp = symp->next)
 	location[symp->index + ieee->external_reference_base_offset] =
 	  &symp->symbol;
     }
 
   if (abfd->symcount)
-    location[abfd->symcount] = (asymbol *) NULL;
+    location[abfd->symcount] = (asymbol *)NULL;
 
   return abfd->symcount;
 }
@@ -2346,7 +2346,7 @@ do_with_relocs(bfd *abfd, asection *s)
 		      break;
 		    case 0:
 		      ov = bfd_get_signed_8(abfd,
-					    stream + current_byte_index);
+					    (stream + current_byte_index));
 		      current_byte_index++;
 		      break;
 		    default:
@@ -2366,7 +2366,8 @@ do_with_relocs(bfd *abfd, asection *s)
 
 		  if (r->sym_ptr_ptr != (asymbol **)NULL)
 		    {
-		      if (! ieee_write_expression(abfd, (r->addend + ov),
+		      if (! ieee_write_expression(abfd,
+        					  (r->addend + (bfd_vma)ov),
 						  *(r->sym_ptr_ptr),
 						  r->howto->pc_relative,
 						  (unsigned int)s->index))
@@ -2374,22 +2375,21 @@ do_with_relocs(bfd *abfd, asection *s)
 		    }
 		  else
 		    {
-		      if (! ieee_write_expression (abfd, r->addend + ov,
-						   (asymbol *) NULL,
-						   r->howto->pc_relative,
-						   (unsigned) s->index))
+		      if (! ieee_write_expression(abfd,
+        					  (r->addend + (bfd_vma)ov),
+						  (asymbol *)NULL,
+						  r->howto->pc_relative,
+						  (unsigned int)s->index))
 			return FALSE;
 		    }
 
-		  if (number_of_maus_in_address
-		      != bfd_get_reloc_size (r->howto))
+		  if (number_of_maus_in_address != bfd_get_reloc_size(r->howto))
 		    {
-		      bfd_vma rsize = bfd_get_reloc_size (r->howto);
-		      if (! ieee_write_int (abfd, rsize))
+		      bfd_vma rsize = bfd_get_reloc_size(r->howto);
+		      if (! ieee_write_int(abfd, rsize))
 			return FALSE;
 		    }
-		  if (! ieee_write_byte (abfd,
-					 ieee_function_either_close_b_enum))
+		  if (!ieee_write_byte(abfd, ieee_function_either_close_b_enum))
 		    return FALSE;
 
 		  relocs_to_go--;
@@ -3597,8 +3597,8 @@ ieee_write_object_contents(bfd *abfd)
 	|| ! ieee_write_byte(abfd, 0x21)
 	|| ! ieee_write_byte(abfd, 0)
 	|| ! ieee_write_byte(abfd, 50)
-	|| ! ieee_write_int(abfd, (bfd_vma)(t->tm_year + 1900UL))
-	|| ! ieee_write_int(abfd, (bfd_vma)(t->tm_mon + 1UL))
+	|| ! ieee_write_int(abfd, ((bfd_vma)t->tm_year + 1900UL))
+	|| ! ieee_write_int(abfd, ((bfd_vma)t->tm_mon + 1UL))
 	|| ! ieee_write_int(abfd, (bfd_vma)t->tm_mday)
 	|| ! ieee_write_int(abfd, (bfd_vma)t->tm_hour)
 	|| ! ieee_write_int(abfd, (bfd_vma)t->tm_min)
@@ -3686,7 +3686,7 @@ ieee_openr_next_archived_file(bfd *arch, bfd *prev)
 	      if (p->abfd == (bfd *)NULL)
 		{
 		  p->abfd = _bfd_create_empty_archive_element_shell(arch);
-		  p->abfd->origin = p->file_offset;
+		  p->abfd->origin = (ufile_ptr)p->file_offset;
 		}
 	      return p->abfd;
 	    }

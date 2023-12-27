@@ -261,7 +261,7 @@ MY(callback)(bfd *abfd)
   obj_datasec(abfd)->rel_filepos = (file_ptr)N_DRELOFF(*execp);
 
   /* The file offsets of the string table and symbol table: */
-  obj_sym_filepos(abfd) = N_SYMOFF(*execp);
+  obj_sym_filepos(abfd) = (file_ptr)N_SYMOFF(*execp);
   obj_str_filepos(abfd) = N_STROFF(*execp);
 
   /* Determine the architecture and machine type of the object file: */
@@ -274,12 +274,12 @@ MY(callback)(bfd *abfd)
   if (obj_aout_subformat(abfd) == gnu_encap_format)
     {
       /* The file offsets of the relocation info: */
-      obj_textsec(abfd)->rel_filepos = N_GNU_TRELOFF(*execp);
-      obj_datasec(abfd)->rel_filepos = N_GNU_DRELOFF(*execp);
+      obj_textsec(abfd)->rel_filepos = (file_ptr)N_GNU_TRELOFF(*execp);
+      obj_datasec(abfd)->rel_filepos = (file_ptr)N_GNU_DRELOFF(*execp);
 
       /* The file offsets of the string table and symbol table: */
-      obj_sym_filepos(abfd) = N_GNU_SYMOFF(*execp);
-      obj_str_filepos(abfd) = (obj_sym_filepos(abfd) + execp->a_syms);
+      obj_sym_filepos(abfd) = (file_ptr)N_GNU_SYMOFF(*execp);
+      obj_str_filepos(abfd) = (obj_sym_filepos(abfd) + (file_ptr)execp->a_syms);
 
       abfd->flags |= (HAS_LINENO | HAS_DEBUG | HAS_SYMS | HAS_LOCALS);
       bfd_get_symcount(abfd) = (unsigned int)(execp->a_syms / 12);
@@ -447,7 +447,7 @@ convert_sym_type(struct external_nlist *sym_pointer ATTRIBUTE_UNUSED,
 	    }
 	}
     }
-  cache_ptr->type = new_type;
+  cache_ptr->type = (unsigned char)new_type;
 }
 
 /*
@@ -501,8 +501,8 @@ NAME (aout,swap_exec_header_in)(bfd *abfd, struct external_exec *raw_bytes,
       if (syms == 0)
 	break;
 
-      /* OK, we've passed the test as best as we can determine */
-      execp->a_syms = syms;
+      /* OK, we have passed the test as best as we can determine */
+      execp->a_syms = (bfd_vma)syms;
 
       /* allocate storage for where we will store this result */
       amt = sizeof (*rawptr);
@@ -604,12 +604,12 @@ MY(slurp_symbol_table)(bfd *abfd)
 	unsigned int length;
 	BFD_ASSERT(cache_ptr != NULL);
 	cache_ptr->symbol.the_bfd = abfd;
-	cache_ptr->symbol.value = GET_SWORD(abfd, sym_pointer->e_value);
-	cache_ptr->desc = bfd_get_16(abfd, sym_pointer->e_almod);
+	cache_ptr->symbol.value = (symvalue)GET_SWORD(abfd, sym_pointer->e_value);
+	cache_ptr->desc = (short)bfd_get_16(abfd, sym_pointer->e_almod);
 	cache_ptr->type = bfd_get_8(abfd, sym_pointer->e_type);
 	cache_ptr->symbol.udata.p = NULL;
 	length = bfd_get_8(abfd, sym_pointer->e_length);
-	cache_ptr->other = length;	/* other not used, save length here */
+	cache_ptr->other = (char)length; /* other not used, save length here */
 
 	cache_save = *cache_ptr;
 	convert_sym_type(sym_pointer, cache_ptr, abfd);

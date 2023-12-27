@@ -2168,7 +2168,7 @@ mips_elf_n32_object_p(bfd *abfd)
   if (SGI_COMPAT(abfd))
     elf_bad_symtab(abfd) = TRUE;
 
-  mach = (unsigned long)_bfd_elf_mips_mach(elf_elfheader(abfd)->e_flags);
+  mach = _bfd_elf_mips_mach((flagword)elf_elfheader(abfd)->e_flags);
   bfd_default_set_arch_mach(abfd, bfd_arch_mips, mach);
 
   if (! ABI_N32_P(abfd))
@@ -2230,11 +2230,11 @@ elf32_mips_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
      implementations, so strip it off if it exists.  */
 
   {
-    char *command = elf_tdata (abfd)->core_command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    size_t n = strlen(command);
 
-    if (0 < n && command[n - 1] == ' ')
-      command[n - 1] = '\0';
+    if ((n > 0UL) && (command[n - 1UL] == ' '))
+      command[n - 1UL] = '\0';
   }
 
   return TRUE;

@@ -498,10 +498,10 @@ static const bfd_byte elf_xtensa_le_plt_entry[PLT_ENTRY_SIZE] =
   0			/* unused */
 };
 
-
+/* */
 static inline bfd_boolean
-xtensa_elf_dynamic_symbol_p (struct elf_link_hash_entry *h,
-			     struct bfd_link_info *info)
+xtensa_elf_dynamic_symbol_p(struct elf_link_hash_entry *h,
+			    struct bfd_link_info *info)
 {
   /* Check if we should do dynamic things to this symbol.  The
      "ignore_protected" argument need not be set, because Xtensa code
@@ -509,20 +509,21 @@ xtensa_elf_dynamic_symbol_p (struct elf_link_hash_entry *h,
      pointer comparisons work properly.  The PLT addresses are never
      used for function pointers.  */
 
-  return _bfd_elf_dynamic_symbol_p (h, info, 0);
+  return _bfd_elf_dynamic_symbol_p(h, info, 0);
 }
 
 
+/* fo qsort(): */
 static int
-property_table_compare (const void *ap, const void *bp)
+property_table_compare(const void *ap, const void *bp)
 {
-  const property_table_entry *a = (const property_table_entry *) ap;
-  const property_table_entry *b = (const property_table_entry *) bp;
+  const property_table_entry *a = (const property_table_entry *)ap;
+  const property_table_entry *b = (const property_table_entry *)bp;
 
   if (a->address == b->address)
     {
       if (a->size != b->size)
-	return (a->size - b->size);
+	return (int)(a->size - b->size);
 
       if ((a->flags & XTENSA_PROP_ALIGN) != (b->flags & XTENSA_PROP_ALIGN))
 	return ((b->flags & XTENSA_PROP_ALIGN)
@@ -542,22 +543,22 @@ property_table_compare (const void *ap, const void *bp)
       return (a->flags - b->flags);
     }
 
-  return (a->address - b->address);
+  return (int)(a->address - b->address);
 }
 
-
+/* for bsearch(): */
 static int
-property_table_matches (const void *ap, const void *bp)
+property_table_matches(const void *ap, const void *bp)
 {
-  const property_table_entry *a = (const property_table_entry *) ap;
-  const property_table_entry *b = (const property_table_entry *) bp;
+  const property_table_entry *a = (const property_table_entry *)ap;
+  const property_table_entry *b = (const property_table_entry *)bp;
 
   /* Check if one entry overlaps with the other.  */
   if ((b->address >= a->address && b->address < (a->address + a->size))
       || (a->address >= b->address && a->address < (b->address + b->size)))
     return 0;
 
-  return (a->address - b->address);
+  return (int)(a->address - b->address);
 }
 
 

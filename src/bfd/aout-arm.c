@@ -173,23 +173,23 @@ MY (put_reloc) (bfd *abfd,
   r_neg = (howto->type & 8); /* Negative relocation. */
 
   if (bfd_header_big_endian(abfd)) {
-      reloc->r_index[0] = (r_index >> 16U);
-      reloc->r_index[1] = (r_index >> 8U);
-      reloc->r_index[2] = r_index;
+      reloc->r_index[0] = (bfd_byte)(r_index >> 16U);
+      reloc->r_index[1] = (bfd_byte)(r_index >> 8U);
+      reloc->r_index[2] = (bfd_byte)r_index;
       reloc->r_type[0] =
-	((r_extern ?     RELOC_STD_BITS_EXTERN_BIG : 0)
-	 | (r_pcrel ?    RELOC_STD_BITS_PCREL_BIG : 0)
-	 | (r_neg ?	 RELOC_ARM_BITS_NEG_BIG : 0)
-	 | (r_length <<  RELOC_STD_BITS_LENGTH_SH_BIG));
+	((r_extern ? RELOC_STD_BITS_EXTERN_BIG : 0U)
+	 | (r_pcrel ? RELOC_STD_BITS_PCREL_BIG : 0U)
+	 | (r_neg ? RELOC_ARM_BITS_NEG_BIG : 0U)
+	 | (bfd_byte)(r_length << RELOC_STD_BITS_LENGTH_SH_BIG));
   } else {
-      reloc->r_index[2] = (r_index >> 16U);
-      reloc->r_index[1] = (r_index >> 8U);
-      reloc->r_index[0] = r_index;
+      reloc->r_index[2] = (bfd_byte)(r_index >> 16U);
+      reloc->r_index[1] = (bfd_byte)(r_index >> 8U);
+      reloc->r_index[0] = (bfd_byte)r_index;
       reloc->r_type[0] =
-	((r_extern ?     RELOC_STD_BITS_EXTERN_LITTLE : 0)
-	 | (r_pcrel ?    RELOC_STD_BITS_PCREL_LITTLE : 0)
-	 | (r_neg ?	 RELOC_ARM_BITS_NEG_LITTLE : 0)
-	 | (r_length <<  RELOC_STD_BITS_LENGTH_SH_LITTLE));
+	((r_extern ? RELOC_STD_BITS_EXTERN_LITTLE : 0U)
+	 | (r_pcrel ? RELOC_STD_BITS_PCREL_LITTLE : 0U)
+	 | (r_neg ? RELOC_ARM_BITS_NEG_LITTLE : 0U)
+	 | (bfd_byte)(r_length << RELOC_STD_BITS_LENGTH_SH_LITTLE));
     }
 }
 
