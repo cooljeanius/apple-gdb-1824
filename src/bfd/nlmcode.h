@@ -917,9 +917,9 @@ nlm_slurp_symbol_table (bfd *abfd)
 
   abfd->symcount = 0;
   i_fxdhdrp = nlm_fixed_header(abfd);
-  totsymcount = (i_fxdhdrp->numberOfPublics
-		 + i_fxdhdrp->numberOfDebugRecords
-		 + i_fxdhdrp->numberOfExternalReferences);
+  totsymcount = (bfd_size_type)(i_fxdhdrp->numberOfPublics
+		 		+ i_fxdhdrp->numberOfDebugRecords
+		 		+ i_fxdhdrp->numberOfExternalReferences);
   if (totsymcount == 0)
     return TRUE;
 
@@ -971,11 +971,11 @@ nlm_slurp_symbol_table (bfd *abfd)
 	      sym->symbol.value &= ~NLM_HIBIT;
 	      sym->symbol.flags |= BSF_FUNCTION;
 	      sym->symbol.section =
-		bfd_get_section_by_name (abfd, NLM_CODE_NAME);
+		bfd_get_section_by_name(abfd, NLM_CODE_NAME);
 	    }
 	  else
 	    sym->symbol.section =
-	      bfd_get_section_by_name (abfd, NLM_INITIALIZED_DATA_NAME);
+	      bfd_get_section_by_name(abfd, NLM_INITIALIZED_DATA_NAME);
 	}
       sym->rcnt = 0;
       abfd->symcount++;
@@ -986,13 +986,13 @@ nlm_slurp_symbol_table (bfd *abfd)
 
   if (i_fxdhdrp->numberOfDebugRecords > 0)
     {
-      if (bfd_seek (abfd, i_fxdhdrp->debugInfoOffset, SEEK_SET) != 0)
+      if (bfd_seek(abfd, i_fxdhdrp->debugInfoOffset, SEEK_SET) != 0)
 	return FALSE;
 
-      symcount += i_fxdhdrp->numberOfDebugRecords;
+      symcount += (bfd_size_type)i_fxdhdrp->numberOfDebugRecords;
       while (abfd->symcount < symcount)
 	{
-	  amt = sizeof (symtype);
+	  amt = sizeof(symtype);
 	  if (bfd_bread((void *)&symtype, amt, abfd) != amt)
 	    return FALSE;
 	  amt = sizeof(temp);
@@ -1003,7 +1003,7 @@ nlm_slurp_symbol_table (bfd *abfd)
 	    return FALSE;
 	  amt = symlength;
 	  sym->symbol.the_bfd = abfd;
-	  sym->symbol.name = (const char *)bfd_alloc(abfd, amt + 1);
+	  sym->symbol.name = (const char *)bfd_alloc(abfd, (amt + 1));
 	  if (!sym->symbol.name)
 	    return FALSE;
 	  if (bfd_bread((void *)sym->symbol.name, amt, abfd) != amt)
@@ -1011,16 +1011,16 @@ nlm_slurp_symbol_table (bfd *abfd)
 	  /* Cast away const: */
 	  ((char *)(sym->symbol.name))[symlength] = '\0';
 	  sym->symbol.flags = BSF_LOCAL;
-	  sym->symbol.value = get_word (abfd, temp);
+	  sym->symbol.value = get_word(abfd, temp);
 
 	  if (symtype == 0)
 	    sym->symbol.section =
-	      bfd_get_section_by_name (abfd, NLM_INITIALIZED_DATA_NAME);
+	      bfd_get_section_by_name(abfd, NLM_INITIALIZED_DATA_NAME);
 	  else if (symtype == 1)
 	    {
 	      sym->symbol.flags |= BSF_FUNCTION;
 	      sym->symbol.section =
-		bfd_get_section_by_name (abfd, NLM_CODE_NAME);
+		bfd_get_section_by_name(abfd, NLM_CODE_NAME);
 	    }
 	  else
 	    sym->symbol.section = bfd_abs_section_ptr;
@@ -1033,16 +1033,16 @@ nlm_slurp_symbol_table (bfd *abfd)
 
   /* Read in the import records.  We can only do this if we know how
      to read relocs for this target.  */
-  read_import_func = nlm_read_import_func (abfd);
+  read_import_func = nlm_read_import_func(abfd);
   if (read_import_func != NULL)
     {
-      if (bfd_seek (abfd, i_fxdhdrp->externalReferencesOffset, SEEK_SET) != 0)
+      if (bfd_seek(abfd, i_fxdhdrp->externalReferencesOffset, SEEK_SET) != 0)
 	return FALSE;
 
-      symcount += i_fxdhdrp->numberOfExternalReferences;
+      symcount += (bfd_size_type)i_fxdhdrp->numberOfExternalReferences;
       while (abfd->symcount < symcount)
 	{
-	  if (! (*read_import_func) (abfd, sym))
+	  if (!(*read_import_func)(abfd, sym))
 	    return FALSE;
 	  sym++;
 	  abfd->symcount++;
@@ -1152,7 +1152,7 @@ nlm_slurp_reloc_fixups(bfd *abfd)
     return FALSE;
   }
 
-  count = nlm_fixed_header (abfd)->numberOfRelocationFixups;
+  count = (bfd_size_type)nlm_fixed_header(abfd)->numberOfRelocationFixups;
   amt = count * sizeof(arelent);
   rels = (arelent *)bfd_alloc(abfd, amt);
   amt = count * sizeof(asection *);
@@ -1216,31 +1216,28 @@ nlm_get_reloc_upper_bound (bfd *abfd, asection *sec)
   return (ret + 1) * sizeof (arelent *);
 }
 
-/* Get the relocs themselves.  */
-
+/* Get the relocs themselves: */
 long
-nlm_canonicalize_reloc (bfd *abfd,
-			asection *sec,
-			arelent **relptr,
-			asymbol **symbols)
+nlm_canonicalize_reloc(bfd *abfd, asection *sec, arelent **relptr,
+                       asymbol **symbols)
 {
   arelent *rels;
   asection **secs;
   bfd_size_type count, i;
   long ret;
 
-  /* Get the relocation fixups.  */
-  rels = nlm_relocation_fixups (abfd);
+  /* Get the relocation fixups: */
+  rels = nlm_relocation_fixups(abfd);
   if (rels == NULL)
     {
-      if (! nlm_slurp_reloc_fixups (abfd))
+      if (! nlm_slurp_reloc_fixups(abfd))
 	return -1;
-      rels = nlm_relocation_fixups (abfd);
+      rels = nlm_relocation_fixups(abfd);
     }
-  secs = nlm_relocation_fixup_secs (abfd);
+  secs = nlm_relocation_fixup_secs(abfd);
 
   ret = 0;
-  count = nlm_fixed_header (abfd)->numberOfRelocationFixups;
+  count = (bfd_size_type)nlm_fixed_header(abfd)->numberOfRelocationFixups;
   for (i = 0; i < count; i++, rels++, secs++)
     {
       if (*secs == sec)
@@ -1250,19 +1247,19 @@ nlm_canonicalize_reloc (bfd *abfd,
 	}
     }
 
-  /* Get the import symbols.  */
-  count = bfd_get_symcount (abfd);
+  /* Get the import symbols: */
+  count = bfd_get_symcount(abfd);
   for (i = 0; i < count; i++, symbols++)
     {
       asymbol *sym;
 
       sym = *symbols;
-      if (bfd_asymbol_flavour (sym) == bfd_target_nlm_flavour)
+      if (bfd_asymbol_flavour(sym) == bfd_target_nlm_flavour)
 	{
 	  nlm_symbol_type *nlm_sym;
 	  bfd_size_type j;
 
-	  nlm_sym = (nlm_symbol_type *) sym;
+	  nlm_sym = (nlm_symbol_type *)sym;
 	  for (j = 0; j < nlm_sym->rcnt; j++)
 	    {
 	      if (nlm_sym->relocs[j].section == sec)
@@ -1326,7 +1323,8 @@ nlm_compute_section_file_positions (bfd *abfd)
   abfd->output_has_begun = TRUE;
 
   /* The fixed header.  */
-  sofar = nlm_optional_prefix_size (abfd) + nlm_fixed_header_size (abfd);
+  sofar = (file_ptr)(nlm_optional_prefix_size(abfd)
+                     + nlm_fixed_header_size(abfd));
 
   /* The variable header.  */
   sofar += (sizeof (nlm_variable_header (abfd)->descriptionLength)
@@ -1415,9 +1413,9 @@ nlm_compute_section_file_positions (bfd *abfd)
       bss = 0;
     }
 
-  text_ptr = BFD_ALIGN(sofar, (1 << text_align));
-  data_ptr = BFD_ALIGN((text_ptr + text), (1 << data_align));
-  other_ptr = BFD_ALIGN((data_ptr + data), (1 << other_align));
+  text_ptr = (file_ptr)BFD_ALIGN(sofar, (1 << text_align));
+  data_ptr = (file_ptr)BFD_ALIGN(((bfd_vma)text_ptr + text), (1 << data_align));
+  other_ptr = (file_ptr)BFD_ALIGN(((bfd_vma)data_ptr + data), (1 << other_align));
 
   /* Fill in some fields in the header for which we now have the
      information.  */
@@ -1896,7 +1894,7 @@ nlm_write_object_contents(bfd *abfd)
 		  != sizeof(temp))
 		goto error_return;
 
-	      len = strlen(sym->name);
+	      len = (bfd_byte)strlen(sym->name);
 	      if ((bfd_bwrite(&len, (bfd_size_type)sizeof(bfd_byte), abfd)
 		   != sizeof(bfd_byte))
 		  || bfd_bwrite(sym->name, (bfd_size_type)len, abfd) != len)
@@ -1932,7 +1930,7 @@ nlm_write_object_contents(bfd *abfd)
          NLM_SIGNATURE_SIZE);
   nlm_fixed_header(abfd)->version = NLM_HEADER_VERSION;
   nlm_fixed_header(abfd)->codeStartOffset =
-    (bfd_get_start_address(abfd) - nlm_get_text_low(abfd));
+    (file_ptr)(bfd_get_start_address(abfd) - nlm_get_text_low(abfd));
 
   /* We have no convenient way for the caller to pass in the exit
      procedure or the check unload procedure, so the caller must set

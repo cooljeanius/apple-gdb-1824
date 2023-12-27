@@ -532,7 +532,7 @@ nlm_alpha_read_reloc (bfd *abfd,
 
     case ALPHA_R_GPVALUE:
       /* Record the new gp value: */
-      gp_value += r_symndx;
+      gp_value += (bfd_vma)r_symndx;
       rel->addend = gp_value;
       break;
 
@@ -560,10 +560,10 @@ nlm_alpha_read_reloc (bfd *abfd,
       else if (r_size == ALPHA_R_NW_RELOC_LITA)
 	{
 	  lita_address = r_vaddr;
-	  rel->addend = r_symndx + 1;
+	  rel->addend = ((bfd_vma)r_symndx + 1UL);
 	}
       else
-	BFD_ASSERT (0);
+	BFD_ASSERT(0);
       rel->sym_ptr_ptr = bfd_abs_section_ptr->symbol_ptr_ptr;
       break;
 
@@ -654,7 +654,7 @@ nlm_alpha_write_import (bfd * abfd, asection * sec, arelent * rel)
   sym = *rel->sym_ptr_ptr;
 
   /* Get values for the relocation fields.  */
-  r_type = rel->howto->type;
+  r_type = (int)rel->howto->type;
   if (r_type != ALPHA_R_NW_RELOC)
     {
       r_vaddr = bfd_get_section_vma (abfd, sec) + rel->address;
@@ -772,35 +772,31 @@ nlm_alpha_set_public_section (bfd * abfd, nlmNAME (symbol_type) * sym)
   return TRUE;
 }
 
-/* Get the offset to write out for a public symbol.  */
-
+/* Get the offset to write out for a public symbol: */
 static bfd_vma
-nlm_alpha_get_public_offset (bfd * abfd ATTRIBUTE_UNUSED, asymbol * sym)
+nlm_alpha_get_public_offset(bfd *abfd ATTRIBUTE_UNUSED, asymbol * sym)
 {
-  return bfd_asymbol_value (sym);
+  return bfd_asymbol_value(sym);
 }
 
-/* Write an Alpha NLM external symbol.  */
-
+/* Write an Alpha NLM external symbol: */
 static bfd_boolean
-nlm_alpha_write_external (bfd *abfd,
-			  bfd_size_type count,
-			  asymbol *sym,
-			  struct reloc_and_sec *relocs)
+nlm_alpha_write_external(bfd *abfd, bfd_size_type count, asymbol *sym,
+			 struct reloc_and_sec *relocs)
 {
   bfd_size_type i;
   bfd_byte len;
   unsigned char temp[NLM_TARGET_LONG_SIZE];
   arelent r;
 
-  len = strlen (sym->name);
-  if ((bfd_bwrite (&len, (bfd_size_type) sizeof (bfd_byte), abfd)
-       != sizeof (bfd_byte))
-      || bfd_bwrite (sym->name, (bfd_size_type) len, abfd) != len)
+  len = (bfd_byte)strlen(sym->name);
+  if ((bfd_bwrite(&len, (bfd_size_type)sizeof(bfd_byte), abfd)
+       != sizeof(bfd_byte))
+      || bfd_bwrite(sym->name, (bfd_size_type)len, abfd) != len)
     return FALSE;
 
-  bfd_put_32 (abfd, count + 2, temp);
-  if (bfd_bwrite (temp, (bfd_size_type) sizeof (temp), abfd) != sizeof (temp))
+  bfd_put_32(abfd, (count + 2), temp);
+  if (bfd_bwrite(temp, (bfd_size_type)sizeof(temp), abfd) != sizeof(temp))
     return FALSE;
 
   /* The first two relocs for each external symbol are the .lita
@@ -808,18 +804,18 @@ nlm_alpha_write_external (bfd *abfd,
   r.sym_ptr_ptr = bfd_abs_section_ptr->symbol_ptr_ptr;
   r.howto = &nlm32_alpha_nw_howto;
 
-  r.address = nlm_alpha_backend_data (abfd)->lita_address;
-  r.addend = nlm_alpha_backend_data (abfd)->lita_size + 1;
-  if (! nlm_alpha_write_import (abfd, NULL, &r))
+  r.address = nlm_alpha_backend_data(abfd)->lita_address;
+  r.addend = (nlm_alpha_backend_data(abfd)->lita_size + 1);
+  if (! nlm_alpha_write_import(abfd, NULL, &r))
     return FALSE;
 
-  r.address = nlm_alpha_backend_data (abfd)->gp;
+  r.address = nlm_alpha_backend_data(abfd)->gp;
   r.addend = 0;
-  if (! nlm_alpha_write_import (abfd, NULL, &r))
+  if (! nlm_alpha_write_import(abfd, NULL, &r))
     return FALSE;
 
   for (i = 0; i < count; i++)
-    if (! nlm_alpha_write_import (abfd, relocs[i].sec, relocs[i].rel))
+    if (! nlm_alpha_write_import(abfd, relocs[i].sec, relocs[i].rel))
       return FALSE;
 
   return TRUE;

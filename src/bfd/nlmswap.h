@@ -33,60 +33,59 @@
    file header in internal format.  */
 
 static void
-nlm_swap_fixed_header_in (bfd *abfd,
-			  void * realsrc,
-			  Nlm_Internal_Fixed_Header *dst)
+nlm_swap_fixed_header_in(bfd *abfd, void *realsrc,
+			 Nlm_Internal_Fixed_Header *dst)
 {
-  Nlm_External_Fixed_Header *src = (Nlm_External_Fixed_Header *) realsrc;
+  Nlm_External_Fixed_Header *src = (Nlm_External_Fixed_Header *)realsrc;
 
-  memcpy (dst->signature, src->signature, NLM_SIGNATURE_SIZE);
-  memcpy (dst->moduleName, src->moduleName, NLM_MODULE_NAME_SIZE);
+  memcpy(dst->signature, src->signature, NLM_SIGNATURE_SIZE);
+  memcpy(dst->moduleName, src->moduleName, NLM_MODULE_NAME_SIZE);
   dst->version =
-    H_GET_32 (abfd, src->version);
+    (long)H_GET_32(abfd, src->version);
   dst->codeImageOffset =
-    H_GET_32 (abfd, src->codeImageOffset);
+    (file_ptr)H_GET_32(abfd, src->codeImageOffset);
   dst->codeImageSize =
-    H_GET_32 (abfd, src->codeImageSize);
+    H_GET_32(abfd, src->codeImageSize);
   dst->dataImageOffset =
-    H_GET_32 (abfd, src->dataImageOffset);
+    (file_ptr)H_GET_32(abfd, src->dataImageOffset);
   dst->dataImageSize =
-    H_GET_32 (abfd, src->dataImageSize);
+    H_GET_32(abfd, src->dataImageSize);
   dst->uninitializedDataSize =
-    H_GET_32 (abfd, src->uninitializedDataSize);
+    H_GET_32(abfd, src->uninitializedDataSize);
   dst->customDataOffset =
-    H_GET_32 (abfd, src->customDataOffset);
+    (file_ptr)H_GET_32(abfd, src->customDataOffset);
   dst->customDataSize =
-    H_GET_32 (abfd, src->customDataSize);
+    H_GET_32(abfd, src->customDataSize);
   dst->moduleDependencyOffset =
-    H_GET_32 (abfd, src->moduleDependencyOffset);
+    (file_ptr)H_GET_32(abfd, src->moduleDependencyOffset);
   dst->numberOfModuleDependencies =
-    H_GET_32 (abfd, src->numberOfModuleDependencies);
+    (long)H_GET_32(abfd, src->numberOfModuleDependencies);
   dst->relocationFixupOffset =
-    H_GET_32 (abfd, src->relocationFixupOffset);
+    (file_ptr)H_GET_32(abfd, src->relocationFixupOffset);
   dst->numberOfRelocationFixups =
-    H_GET_32 (abfd, src->numberOfRelocationFixups);
+    (long)H_GET_32(abfd, src->numberOfRelocationFixups);
   dst->externalReferencesOffset =
-    H_GET_32 (abfd, src->externalReferencesOffset);
+    (file_ptr)H_GET_32(abfd, src->externalReferencesOffset);
   dst->numberOfExternalReferences =
-    H_GET_32 (abfd, src->numberOfExternalReferences);
+    (long)H_GET_32(abfd, src->numberOfExternalReferences);
   dst->publicsOffset =
-    H_GET_32 (abfd, src->publicsOffset);
+    (file_ptr)H_GET_32(abfd, src->publicsOffset);
   dst->numberOfPublics =
-    H_GET_32 (abfd, src->numberOfPublics);
+    (long)H_GET_32(abfd, src->numberOfPublics);
   dst->debugInfoOffset =
-    H_GET_32 (abfd, src->debugInfoOffset);
+    (file_ptr)H_GET_32(abfd, src->debugInfoOffset);
   dst->numberOfDebugRecords =
-    H_GET_32 (abfd, src->numberOfDebugRecords);
+    (long)H_GET_32(abfd, src->numberOfDebugRecords);
   dst->codeStartOffset =
-    H_GET_32 (abfd, src->codeStartOffset);
+    (file_ptr)H_GET_32(abfd, src->codeStartOffset);
   dst->exitProcedureOffset =
-    H_GET_32 (abfd, src->exitProcedureOffset);
+    (file_ptr)H_GET_32(abfd, src->exitProcedureOffset);
   dst->checkUnloadProcedureOffset =
-    H_GET_32 (abfd, src->checkUnloadProcedureOffset);
+    (file_ptr)H_GET_32(abfd, src->checkUnloadProcedureOffset);
   dst->moduleType =
-    H_GET_32 (abfd, src->moduleType);
+    (long)H_GET_32(abfd, src->moduleType);
   dst->flags =
-    H_GET_32 (abfd, src->flags);
+    (long)H_GET_32(abfd, src->flags);
 }
 
 /* Translate an NLM fixed length file header in internal format into

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-26 18:52-0500\n"
+"POT-Creation-Date: 2023-12-26 19:50-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3158,132 +3158,132 @@ msgstr ""
 msgid "%s: No core to allocate a symbol %d bytes long\n"
 msgstr ""
 
-#: mmo.c:1194
+#: mmo.c:1196
 #, c-format
 msgid "%s: invalid mmo file: initialization value for $255 is not `Main'\n"
 msgstr ""
 
-#: mmo.c:1339
+#: mmo.c:1341
 #, c-format
 msgid ""
 "%s: unsupported wide character sequence 0x%02X 0x%02X after symbol name "
 "starting with `%s'\n"
 msgstr ""
 
-#: mmo.c:1576
+#: mmo.c:1578
 #, c-format
 msgid "%s: invalid mmo file: unsupported lopcode `%d'\n"
 msgstr ""
 
-#: mmo.c:1586
+#: mmo.c:1588
 #, c-format
 msgid "%s: invalid mmo file: expected YZ = 1 got YZ = %d for lop_quote\n"
 msgstr ""
 
-#: mmo.c:1622
+#: mmo.c:1624
 #, c-format
 msgid "%s: invalid mmo file: expected z = 1 or z = 2, got z = %d for lop_loc\n"
 msgstr ""
 
-#: mmo.c:1668
+#: mmo.c:1670
 #, c-format
 msgid ""
 "%s: invalid mmo file: expected z = 1 or z = 2, got z = %d for lop_fixo\n"
 msgstr ""
 
-#: mmo.c:1707
+#: mmo.c:1709
 #, c-format
 msgid "%s: invalid mmo file: expected y = 0, got y = %d for lop_fixrx\n"
 msgstr ""
 
-#: mmo.c:1716
+#: mmo.c:1718
 #, c-format
 msgid ""
 "%s: invalid mmo file: expected z = 16 or z = 24, got z = %d for lop_fixrx\n"
 msgstr ""
 
-#: mmo.c:1739
+#: mmo.c:1741
 #, c-format
 msgid ""
 "%s: invalid mmo file: leading byte of operand word must be 0 or 1, got %d "
 "for lop_fixrx\n"
 msgstr ""
 
-#: mmo.c:1762
+#: mmo.c:1764
 #, c-format
 msgid "%s: cannot allocate file name for file number %d, %d bytes\n"
 msgstr ""
 
-#: mmo.c:1782
+#: mmo.c:1784
 #, c-format
 msgid ""
 "%s: invalid mmo file: file number %d `%s', was already entered as `%s'\n"
 msgstr ""
 
-#: mmo.c:1795
+#: mmo.c:1797
 #, c-format
 msgid ""
 "%s: invalid mmo file: file name for number %d was not specified before use\n"
 msgstr ""
 
-#: mmo.c:1903
+#: mmo.c:1905
 #, c-format
 msgid ""
 "%s: invalid mmo file: fields y and z of lop_stab non-zero, y: %d, z: %d\n"
 msgstr ""
 
-#: mmo.c:1939
+#: mmo.c:1941
 #, c-format
 msgid "%s: invalid mmo file: lop_end not last item in file\n"
 msgstr ""
 
-#: mmo.c:1952
+#: mmo.c:1954
 #, c-format
 msgid ""
 "%s: invalid mmo file: YZ of lop_end (%ld) not equal to the number of tetras "
 "to the preceding lop_stab (%ld)\n"
 msgstr ""
 
-#: mmo.c:2661
+#: mmo.c:2663
 #, c-format
 msgid "%s: invalid symbol table: duplicate symbol `%s'\n"
 msgstr ""
 
-#: mmo.c:2904
+#: mmo.c:2906
 #, c-format
 msgid ""
 "%s: Bad symbol definition: `Main' set to %s rather than the start address "
 "%s\n"
 msgstr ""
 
-#: mmo.c:2996
+#: mmo.c:2998
 #, c-format
 msgid ""
 "%s: warning: symbol table too large for mmo, larger than 65535 32-bit words: "
 "%d.  Only `Main' will be emitted.\n"
 msgstr ""
 
-#: mmo.c:3041
+#: mmo.c:3043
 #, c-format
 msgid "%s: internal error, symbol table changed size from %d to %d words\n"
 msgstr ""
 
-#: mmo.c:3093
+#: mmo.c:3095
 #, c-format
 msgid "%s: internal error, internal register section %s had contents\n"
 msgstr ""
 
-#: mmo.c:3144
+#: mmo.c:3146
 #, c-format
 msgid "%s: no initialized registers; section length 0\n"
 msgstr ""
 
-#: mmo.c:3150
+#: mmo.c:3152
 #, c-format
 msgid "%s: too many initialized registers; section length %ld\n"
 msgstr ""
 
-#: mmo.c:3155
+#: mmo.c:3157
 #, c-format
 msgid ""
 "%s: invalid start address for initialized registers of length %ld: 0x%lx"

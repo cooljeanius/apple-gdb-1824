@@ -175,30 +175,30 @@ ieee_write_id (bfd *abfd, const char *id)
 #define this_byte_and_next(ieee) (*((ieee)->input_p++))
 
 static unsigned short
-read_2bytes (common_header_type *ieee)
+read_2bytes(common_header_type *ieee)
 {
-  unsigned char c1 = this_byte_and_next (ieee);
-  unsigned char c2 = this_byte_and_next (ieee);
+  unsigned char c1 = this_byte_and_next(ieee);
+  unsigned char c2 = this_byte_and_next(ieee);
 
-  return (c1 << 8) | c2;
+  return (unsigned short)((c1 << 8U) | c2);
 }
 
 static void
-bfd_get_string (common_header_type *ieee, char *string, size_t length)
+bfd_get_string(common_header_type *ieee, char *string, size_t length)
 {
   size_t i;
 
   for (i = 0; i < length; i++)
-    string[i] = this_byte_and_next (ieee);
+    string[i] = (size_t)this_byte_and_next(ieee);
 }
 
 static char *
-read_id (common_header_type *ieee)
+read_id(common_header_type *ieee)
 {
   size_t length;
   char *string;
 
-  length = this_byte_and_next (ieee);
+  length = this_byte_and_next(ieee);
   if (length <= 0x7f)
     /* Simple string of length 0 to 127.  */
     ;

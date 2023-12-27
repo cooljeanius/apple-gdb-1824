@@ -92,9 +92,9 @@ jobs:
         if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
           echo "nproc says we can use $(nproc) build jobs"; \
           if test "$(nproc)" -eq 4; then \
-            (make -j"$(nproc)" || make -j2 || remake -dpPw --trace=full); \
+            (make -j"$(nproc)" || make -j2 || make || remake -dpPw --trace=command); \
           else
-            (make -j"$(nproc)" || make || remake -dpPw --trace=full); \
+            (make -j"$(nproc)" || make || remake -dpPw --trace=command); \
           fi; \
         elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
           echo "gnproc says we can use $(gnproc) build jobs"; \
