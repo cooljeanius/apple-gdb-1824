@@ -279,14 +279,14 @@ oasys_archive_p(bfd *abfd)
 	    if (bfd_bread((void *)&record_ext, amt, abfd) != amt)
 	      return NULL;
 
-	    record.mod_size = H_GET_32(abfd, record_ext.mod_size);
+	    record.mod_size = (unsigned int)H_GET_32(abfd, record_ext.mod_size);
 	    record.file_offset = H_GET_32(abfd, record_ext.file_offset);
 
-	    record.dep_count = H_GET_32(abfd, record_ext.dep_count);
-	    record.depee_count = H_GET_32(abfd, record_ext.depee_count);
-	    record.sect_count = H_GET_32(abfd, record_ext.sect_count);
-	    record.module_name_size = H_GET_32(abfd,
-                                               record_ext.mod_name_length);
+	    record.dep_count = (unsigned int)H_GET_32(abfd, record_ext.dep_count);
+	    record.depee_count = (unsigned int)H_GET_32(abfd, record_ext.depee_count);
+	    record.sect_count = (unsigned int)H_GET_32(abfd, record_ext.sect_count);
+	    record.module_name_size =
+      	      (unsigned int)H_GET_32(abfd, record_ext.mod_name_length);
 
 	    amt = record.module_name_size;
 	    module[i].name = (char *)bfd_alloc(abfd, amt + 1);

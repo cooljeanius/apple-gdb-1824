@@ -36,8 +36,8 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   export TARGET_ARCHITECTURE="${target_cpu}"
   AC_SUBST([TARGET_ARCHITECTURE])
 fi
-AC_SEARCH_LIBS([strerror],[cposix])dnl# what used to be AC\_ISC\_POSIX
 AC_USE_SYSTEM_EXTENSIONS
+AC_SEARCH_LIBS([strerror],[cposix])dnl# what used to be AC\_ISC\_POSIX
 if test -n "${HOST_ARCHITECTURE}"; then
   ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
   AC_SUBST([C_ARCHFLAGS])
@@ -63,6 +63,10 @@ if test "x${AR}" = "x"; then
   test -z "${AR}"
   AC_CHECK_TOOLS([AR],[ar gar])dnl
   ## ok (might want to switch it around though)
+  if test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    AC_PROG_AR
+  fi
 else
   test ! -z "${AR}" && export AR
   AC_SUBST([AR])dnl
@@ -215,8 +219,7 @@ if test "x${CC}" = "x"; then
   test -z "${CC}"
   AC_PROG_CC
 else
-  test ! -z "${CC}"
-  AC_PROG_GCC_TRADITIONAL
+  test -n "${CC}" && export CC
 fi
 
 dnl# APPLE LOCAL:  mmap() always works right on Darwin. Take our word for

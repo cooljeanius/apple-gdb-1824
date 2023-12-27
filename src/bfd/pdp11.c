@@ -3148,29 +3148,29 @@ aout_link_reloc_link_order (struct aout_final_link_info *finfo,
     PUT_WORD (finfo->output_bfd, p->offset, srel.r_address);
     if (bfd_header_big_endian (finfo->output_bfd))
       {
-	srel.r_index[0] = r_index >> 16;
-	srel.r_index[1] = r_index >> 8;
-	srel.r_index[2] = r_index;
+	srel.r_index[0] = (bfd_byte)(r_index >> 16U);
+	srel.r_index[1] = (bfd_byte)(r_index >> 8U);
+	srel.r_index[2] = (bfd_byte)r_index;
 	srel.r_type[0] =
-	  ((r_extern ?     RELOC_STD_BITS_EXTERN_BIG : 0)
-	   | (r_pcrel ?    RELOC_STD_BITS_PCREL_BIG : 0)
-	   | (r_baserel ?  RELOC_STD_BITS_BASEREL_BIG : 0)
+	  ((r_extern ? RELOC_STD_BITS_EXTERN_BIG : 0)
+	   | (r_pcrel ? RELOC_STD_BITS_PCREL_BIG : 0)
+	   | (r_baserel ? RELOC_STD_BITS_BASEREL_BIG : 0)
 	   | (r_jmptable ? RELOC_STD_BITS_JMPTABLE_BIG : 0)
 	   | (r_relative ? RELOC_STD_BITS_RELATIVE_BIG : 0)
-	   | (r_length <<  RELOC_STD_BITS_LENGTH_SH_BIG));
+	   | (bfd_byte)(r_length << RELOC_STD_BITS_LENGTH_SH_BIG));
       }
     else
       {
-	srel.r_index[2] = r_index >> 16;
-	srel.r_index[1] = r_index >> 8;
-	srel.r_index[0] = r_index;
+	srel.r_index[2] = (bfd_byte)(r_index >> 16U);
+	srel.r_index[1] = (bfd_byte)(r_index >> 8U);
+	srel.r_index[0] = (bfd_byte)r_index;
 	srel.r_type[0] =
-	  ((r_extern ?     RELOC_STD_BITS_EXTERN_LITTLE : 0)
-	   | (r_pcrel ?    RELOC_STD_BITS_PCREL_LITTLE : 0)
-	   | (r_baserel ?  RELOC_STD_BITS_BASEREL_LITTLE : 0)
+	  ((r_extern ? RELOC_STD_BITS_EXTERN_LITTLE : 0)
+	   | (r_pcrel ? RELOC_STD_BITS_PCREL_LITTLE : 0)
+	   | (r_baserel ? RELOC_STD_BITS_BASEREL_LITTLE : 0)
 	   | (r_jmptable ? RELOC_STD_BITS_JMPTABLE_LITTLE : 0)
 	   | (r_relative ? RELOC_STD_BITS_RELATIVE_LITTLE : 0)
-	   | (r_length <<  RELOC_STD_BITS_LENGTH_SH_LITTLE));
+	   | (bfd_byte)(r_length << RELOC_STD_BITS_LENGTH_SH_LITTLE));
       }
   }
 #endif
@@ -3318,16 +3318,16 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
       {
 	unsigned int howto_idx;
 
-	r_index = (reloc_entry & RIDXMASK) >> 4;
-	r_type = reloc_entry & RTYPE;
-	r_pcrel = reloc_entry & RELFLG;
-	r_addr = (char *) rel - (char *) relocs;
+	r_index = ((reloc_entry & RIDXMASK) >> 4);
+	r_type = (reloc_entry & RTYPE);
+	r_pcrel = (reloc_entry & RELFLG);
+	r_addr = (bfd_vma)((char *)rel - (char *)relocs);
 
 	r_extern = (r_type == REXT);
 
-	howto_idx = r_pcrel;
-	BFD_ASSERT (howto_idx < TABLE_SIZE (howto_table_pdp11));
-	howto = howto_table_pdp11 + howto_idx;
+	howto_idx = (unsigned int)r_pcrel;
+	BFD_ASSERT(howto_idx < TABLE_SIZE(howto_table_pdp11));
+	howto = (howto_table_pdp11 + howto_idx);
       }
 
       if (relocatable)
@@ -3982,7 +3982,8 @@ NAME (aout, final_link) (bfd *abfd,
   /* Update the header information.  */
   abfd->symcount = (unsigned int)obj_aout_external_sym_count(abfd);
   exec_hdr(abfd)->a_syms = (abfd->symcount * EXTERNAL_NLIST_SIZE);
-  obj_str_filepos(abfd) = (obj_sym_filepos(abfd) + exec_hdr(abfd)->a_syms);
+  obj_str_filepos(abfd) = (obj_sym_filepos(abfd)
+  			   + (file_ptr)exec_hdr(abfd)->a_syms);
   obj_textsec(abfd)->reloc_count =
     (unsigned int)(exec_hdr(abfd)->a_trsize / obj_reloc_entry_size(abfd));
   obj_datasec(abfd)->reloc_count =
@@ -3991,22 +3992,21 @@ NAME (aout, final_link) (bfd *abfd,
   /* Write out the string table, unless there are no symbols.  */
   if (abfd->symcount > 0)
     {
-      if (bfd_seek (abfd, obj_str_filepos (abfd), SEEK_SET) != 0
-	  || ! emit_stringtab (abfd, aout_info.strtab))
+      if ((bfd_seek(abfd, obj_str_filepos(abfd), SEEK_SET) != 0)
+	  || ! emit_stringtab(abfd, aout_info.strtab))
 	goto error_return;
     }
-  else if (obj_textsec (abfd)->reloc_count == 0
-	   && obj_datasec (abfd)->reloc_count == 0)
+  else if ((obj_textsec(abfd)->reloc_count == 0)
+	   && (obj_datasec(abfd)->reloc_count == 0))
     {
       bfd_byte b;
 
       b = 0;
-      if (bfd_seek (abfd,
-		    (file_ptr) (obj_datasec (abfd)->filepos
-				+ exec_hdr (abfd)->a_data
-				- 1),
-		    SEEK_SET) != 0
-	  || bfd_bwrite (&b, (bfd_size_type) 1, abfd) != 1)
+      if ((bfd_seek(abfd,
+		    (obj_datasec(abfd)->filepos
+                     + (file_ptr)exec_hdr(abfd)->a_data - 1L),
+		    SEEK_SET) != 0)
+	  || (bfd_bwrite(&b, (bfd_size_type)1UL, abfd) != 1))
 	goto error_return;
     }
 
@@ -4090,7 +4090,7 @@ aout_link_write_symbols (struct aout_final_link_info *finfo, bfd *input_bfd)
       struct aout_link_hash_entry *h;
       bfd_boolean skip;
       asection *symsec;
-      bfd_vma val = 0;
+      bfd_vma val = 0UL;
       bfd_boolean copy;
 
       /* We set *symbol_map to 0 above for all symbols.  If it has
@@ -4396,7 +4396,7 @@ aout_link_write_symbols (struct aout_final_link_info *finfo, bfd *input_bfd)
 		      s = strings + GET_WORD(input_bfd, incl_sym->e_strx);
 		      for (; *s != '\0'; s++)
 			{
-			  val += *s;
+			  val += (bfd_vma)*s;
 			  if (*s == '(')
 			    {
 			      /* Skip the file number: */

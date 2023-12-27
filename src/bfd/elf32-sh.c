@@ -3004,6 +3004,10 @@ sh_elf_align_loads (bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
       else
 	stop = sec->size;
 
+      if (start == stop) {
+        ; /* ??? */
+      }
+
       if (! _bfd_sh_align_load_span(abfd, sec, contents, sh_elf_swap_insns,
 				    internal_relocs, &label,
 				    label_end, start, stop, pswapped))
@@ -3017,6 +3021,7 @@ sh_elf_align_loads (bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
  error_return:
   if (labels != NULL)
     free(labels);
+  (void)label;
   return FALSE;
 }
 
@@ -6206,8 +6211,16 @@ sh_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
   if (!elf_bad_symtab(abfd))
     sym_hashes_end -= symtab_hdr->sh_info;
 
+  if (sym_hashes_end == NULL) {
+    ; /* ??? */
+  }
+
   htab = sh_elf_hash_table(info);
   local_got_offsets = elf_local_got_offsets(abfd);
+
+  if (local_got_offsets == NULL) {
+    ; /* ??? */
+  }
 
   rel_end = (relocs + sec->reloc_count);
   for (rel = relocs; rel < rel_end; rel++)

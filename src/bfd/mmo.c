@@ -1966,7 +1966,7 @@ mmo_scan(bfd *abfd)
       else
 	{
 	  /* This wasn't a lopcode, so store it in the current section.  */
-	  mmo_xore_32 (sec, vma & ~3, bfd_get_32 (abfd, buf));
+	  mmo_xore_32(sec, (vma & ~3), bfd_get_32(abfd, buf));
 	  vma += 4;
 	  vma &= ~3;
 	  lineno++;
@@ -2054,7 +2054,7 @@ mmo_get_section_contents(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
       bfd_byte *loc;
 
       do {
-	loc = mmo_get_loc(sec, (sec->vma + offset), chunk_size);
+	loc = mmo_get_loc(sec, (sec->vma + offset), (int)chunk_size);
       } while (loc == NULL && (chunk_size /= 2) != 0);
 
       if (chunk_size == 0)

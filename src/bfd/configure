@@ -9435,7 +9435,7 @@ else case e in #(
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
   fi
-  rm -f conftest* ;;
+  rm -rf conftest* ;;
 esac
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_nm_interface" >&5
@@ -11006,7 +11006,7 @@ for ac_symprfx in "" "_"; do
   # Check to see that the pipe works correctly.
   pipe_works=no
 
-  rm -f conftest*
+  rm -rf conftest*
   cat > conftest.$ac_ext <<_LT_EOF
 #ifdef __cplusplus
 extern "C" {
@@ -11699,7 +11699,7 @@ else case e in #(
   if $GREP 'Manifest Tool' conftest.out > /dev/null; then
     lt_cv_path_mainfest_tool=yes
   fi
-  rm -f conftest* ;;
+  rm -rf conftest* ;;
 esac
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_path_mainfest_tool" >&5
@@ -13298,7 +13298,7 @@ ac_outfile=conftest.$ac_objext
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM conftest*
+$RM -r conftest*
 
 ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -13356,7 +13356,7 @@ else case e in #(
        lt_cv_prog_compiler_rtti_exceptions=yes
      fi
    fi
-   $RM conftest*
+   $RM -r conftest*
  ;;
 esac
 fi
@@ -13768,7 +13768,7 @@ else case e in #(
        lt_cv_prog_compiler_pic_works=yes
      fi
    fi
-   $RM conftest*
+   $RM -r conftest*
  ;;
 esac
 fi
@@ -13884,14 +13884,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM conftest*
+   $RM -r conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM conftest*
+   $RM -r conftest*
  ;;
 esac
 fi
@@ -13941,14 +13941,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM conftest*
+   $RM -r conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM conftest*
+   $RM -r conftest*
  ;;
 esac
 fi
@@ -13964,7 +13964,7 @@ if test no = "$lt_cv_prog_compiler_c_o" && test no != "$need_locks"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 printf %s "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM conftest*
+  $RM -r conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -15301,7 +15301,7 @@ if test ${lt_cv_archive_cmds_need_lc+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
-  e) $RM conftest*
+  e) $RM -r conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -15336,7 +15336,7 @@ else case e in #(
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM conftest*
+	$RM -r conftest*
 	 ;;
 esac
 fi
@@ -17383,7 +17383,7 @@ compiler=$CC
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM conftest*
+$RM -r conftest*
 
   ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -19243,7 +19243,7 @@ else case e in #(
        lt_cv_prog_compiler_pic_works_CXX=yes
      fi
    fi
-   $RM conftest*
+   $RM -r conftest*
  ;;
 esac
 fi
@@ -19350,14 +19350,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM conftest*
+   $RM -r conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM conftest*
+   $RM -r conftest*
  ;;
 esac
 fi
@@ -19404,14 +19404,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM conftest*
+   $RM -r conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM conftest*
+   $RM -r conftest*
  ;;
 esac
 fi
@@ -19427,7 +19427,7 @@ if test no = "$lt_cv_prog_compiler_c_o_CXX" && test no != "$need_locks"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 printf %s "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM conftest*
+  $RM -r conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -19519,7 +19519,7 @@ if test ${lt_cv_archive_cmds_need_lc_CXX+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
-  e) $RM conftest*
+  e) $RM -r conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -19554,7 +19554,7 @@ else case e in #(
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM conftest*
+	$RM -r conftest*
 	 ;;
 esac
 fi

@@ -857,17 +857,17 @@ nlm_swap_auxiliary_headers_out (bfd *abfd)
    on this size.  */
 
 long
-nlm_get_symtab_upper_bound (bfd *abfd)
+nlm_get_symtab_upper_bound(bfd *abfd)
 {
   Nlm_Internal_Fixed_Header *i_fxdhdrp;	/* Nlm file header, internal form.  */
   long symcount;
-  long symtab_size = 0;
+  long symtab_size = 0L;
 
-  i_fxdhdrp = nlm_fixed_header (abfd);
+  i_fxdhdrp = nlm_fixed_header(abfd);
   symcount = (i_fxdhdrp->numberOfPublics
 	      + i_fxdhdrp->numberOfDebugRecords
 	      + i_fxdhdrp->numberOfExternalReferences);
-  symtab_size = (symcount + 1) * (sizeof (asymbol));
+  symtab_size = ((symcount + 1L) * (long)sizeof(asymbol));
   return symtab_size;
 }
 
@@ -937,7 +937,7 @@ nlm_slurp_symbol_table (bfd *abfd)
      were read.  */
 
   set_public_section_func = nlm_set_public_section_func(abfd);
-  symcount = i_fxdhdrp->numberOfPublics;
+  symcount = (bfd_size_type)i_fxdhdrp->numberOfPublics;
   while (abfd->symcount < symcount)
     {
       amt = sizeof(symlength);
@@ -945,7 +945,7 @@ nlm_slurp_symbol_table (bfd *abfd)
 	return FALSE;
       amt = symlength;
       sym->symbol.the_bfd = abfd;
-      sym->symbol.name = (const char *)bfd_alloc(abfd, amt + 1);
+      sym->symbol.name = (const char *)bfd_alloc(abfd, (amt + 1));
       if (!sym->symbol.name)
 	return FALSE;
       if (bfd_bread((void *)sym->symbol.name, amt, abfd) != amt)

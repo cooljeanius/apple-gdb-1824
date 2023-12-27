@@ -1206,6 +1206,7 @@ mmix_elf_perform_relocation(asection *isec, reloc_howto_type *howto,
 	      (INCH_INSN_BYTE << 24) | ((value >> 48) & 0xffff) | (reg << 16),
 	      (bfd_byte *) datap + offs + 12);
 
+  (void)r;
   return flag;
 }
 
@@ -1277,6 +1278,9 @@ mmix_elf_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, PTR data,
   /* Get position of relocation: */
   addr = (reloc_entry->address + input_section->output_section->vma
 	  + input_section->output_offset);
+  if (addr == 0UL) {
+    ; /* ??? */
+  }
   if (output_bfd != (bfd *)NULL)
     {
       /* Add in supplied addend.  */

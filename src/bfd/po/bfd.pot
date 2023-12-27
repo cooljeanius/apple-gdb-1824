@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-26 02:32-0500\n"
+"POT-Creation-Date: 2023-12-26 18:52-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -676,7 +676,7 @@ msgstr ""
 #: elf32-microblaze.c:1560 elf32-moxie.c:282 elf32-ms1.c:373 elf32-msp430.c:509
 #: elf32-mt.c:395 elf32-nds32.c:4910 elf32-openrisc.c:383 elf32-or1k.c:1263
 #: elf32-score.c:2729 elf32-score7.c:2537 elf32-spu.c:5041 elf32-tilepro.c:3666
-#: elf32-v850.c:1675 elf32-xstormy16.c:915 elf64-mmix.c:1499
+#: elf32-v850.c:1675 elf32-xstormy16.c:915 elf64-mmix.c:1503
 msgid "internal error: out of range error"
 msgstr ""
 
@@ -688,7 +688,7 @@ msgstr ""
 #: elf32-metag.c:1996 elf32-microblaze.c:1564 elf32-moxie.c:286
 #: elf32-msp430.c:513 elf32-nds32.c:4914 elf32-openrisc.c:387 elf32-or1k.c:1267
 #: elf32-score.c:2733 elf32-score7.c:2541 elf32-spu.c:5045 elf32-tilepro.c:3670
-#: elf32-v850.c:1679 elf32-xstormy16.c:919 elf64-mmix.c:1503 elfxx-mips.c:7210
+#: elf32-v850.c:1679 elf32-xstormy16.c:919 elf64-mmix.c:1507 elfxx-mips.c:7210
 msgid "internal error: unsupported relocation error"
 msgstr ""
 
@@ -709,7 +709,7 @@ msgstr ""
 #: elf32-microblaze.c:1572 elf32-moxie.c:294 elf32-ms1.c:381 elf32-msp430.c:521
 #: elf32-mt.c:403 elf32-nds32.c:4922 elf32-openrisc.c:395 elf32-or1k.c:1275
 #: elf32-score.c:2746 elf32-score7.c:2549 elf32-spu.c:5053 elf32-tilepro.c:3678
-#: elf32-v850.c:1699 elf32-xstormy16.c:927 elf64-mmix.c:1511
+#: elf32-v850.c:1699 elf32-xstormy16.c:927 elf64-mmix.c:1515
 msgid "internal error: unknown error"
 msgstr ""
 
@@ -846,7 +846,7 @@ msgstr ""
 msgid "%B(%A+0x%lx): R_ARM_TLS_LE32 relocation not permitted in shared object"
 msgstr ""
 
-#: elf32-arm.c:4107 elf32-sh.c:4620 elf64-sh64.c:1541
+#: elf32-arm.c:4107 elf32-sh.c:4625 elf64-sh64.c:1541
 msgid "%B(%A+0x%lx): %s relocation against SEC_MERGE section"
 msgstr ""
 
@@ -1030,7 +1030,7 @@ msgstr ""
 #: elf32-iq2000.c:628 elf32-m32c.c:480 elf32-mep.c:543 elf32-metag.c:2000
 #: elf32-moxie.c:290 elf32-ms1.c:377 elf32-msp430.c:517 elf32-mt.c:399
 #: elf32-openrisc.c:391 elf32-or1k.c:1271 elf32-tilepro.c:3674
-#: elf32-v850.c:1683 elf32-xstormy16.c:923 elf64-mmix.c:1507
+#: elf32-v850.c:1683 elf32-xstormy16.c:923 elf64-mmix.c:1511
 msgid "internal error: dangerous relocation"
 msgstr ""
 
@@ -1332,7 +1332,7 @@ msgstr ""
 msgid "%B: invalid relocation type %d"
 msgstr ""
 
-#: elf32-i386.c:1022 elf32-s390.c:1147 elf32-sh.c:6410 elf32-tilepro.c:1627
+#: elf32-i386.c:1022 elf32-s390.c:1147 elf32-sh.c:6423 elf32-tilepro.c:1627
 #: elf64-s390.c:1109 elfxx-sparc.c:1154
 msgid "%B: `%s' accessed both as normal and thread local symbol"
 msgstr ""
@@ -1959,35 +1959,35 @@ msgstr ""
 msgid "%B: 0x%lx: warning: bad count"
 msgstr ""
 
-#: elf32-sh.c:2771 elf32-sh.c:3142
+#: elf32-sh.c:2771 elf32-sh.c:3147
 msgid "%B: 0x%lx: fatal: reloc overflow while relaxing"
 msgstr ""
 
-#: elf32-sh.c:4568 elf64-sh64.c:1513
+#: elf32-sh.c:4573 elf64-sh64.c:1513
 msgid "Unexpected STO_SH5_ISA32 on local symbol is not handled"
 msgstr ""
 
-#: elf32-sh.c:4719
+#: elf32-sh.c:4724
 msgid "%B(%A): unresolvable relocation against symbol `%s'"
 msgstr ""
 
-#: elf32-sh.c:4789
+#: elf32-sh.c:4794
 msgid "%B: 0x%lx: fatal: unaligned branch target for relax-support relocation"
 msgstr ""
 
-#: elf32-sh.c:4822 elf32-sh.c:4837
+#: elf32-sh.c:4827 elf32-sh.c:4842
 msgid "%B: 0x%lx: fatal: unaligned %s relocation 0x%lx"
 msgstr ""
 
-#: elf32-sh.c:4851
+#: elf32-sh.c:4856
 msgid "%B: 0x%lx: fatal: R_SH_PSHA relocation %d not in range -32..32"
 msgstr ""
 
-#: elf32-sh.c:4865
+#: elf32-sh.c:4870
 msgid "%B: 0x%lx: fatal: R_SH_PSHL relocation %d not in range -32..32"
 msgstr ""
 
-#: elf32-sh.c:6622 elf64-alpha.c:4535
+#: elf32-sh.c:6635 elf64-alpha.c:4535
 msgid "%B: TLS local exec code cannot be linked into shared objects"
 msgstr ""
 
@@ -2556,51 +2556,51 @@ msgid ""
 "%08lx\n"
 msgstr ""
 
-#: elf64-mmix.c:1576
+#: elf64-mmix.c:1580
 #, c-format
 msgid ""
 "%s: base-plus-offset relocation against register symbol: (unknown) in %s"
 msgstr ""
 
-#: elf64-mmix.c:1581
+#: elf64-mmix.c:1585
 #, c-format
 msgid "%s: base-plus-offset relocation against register symbol: %s in %s"
 msgstr ""
 
-#: elf64-mmix.c:1625
+#: elf64-mmix.c:1629
 #, c-format
 msgid "%s: register relocation against non-register symbol: (unknown) in %s"
 msgstr ""
 
-#: elf64-mmix.c:1630
+#: elf64-mmix.c:1634
 #, c-format
 msgid "%s: register relocation against non-register symbol: %s in %s"
 msgstr ""
 
-#: elf64-mmix.c:1668
+#: elf64-mmix.c:1672
 #, c-format
 msgid "%s: directive LOCAL valid only with a register or absolute value"
 msgstr ""
 
-#: elf64-mmix.c:1697
+#: elf64-mmix.c:1701
 #, c-format
 msgid ""
 "%s: LOCAL directive: Register $%ld is not a local register.  First global "
 "register is $%ld."
 msgstr ""
 
-#: elf64-mmix.c:2166
+#: elf64-mmix.c:2170
 #, c-format
 msgid ""
 "%s: Error: multiple definition of `%s'; start of %s is set in a earlier "
 "linked file\n"
 msgstr ""
 
-#: elf64-mmix.c:2218
+#: elf64-mmix.c:2222
 msgid "Register section has contents\n"
 msgstr ""
 
-#: elf64-mmix.c:2404
+#: elf64-mmix.c:2408
 #, c-format
 msgid ""
 "Internal inconsistency: remaining %u != max %u.\n"

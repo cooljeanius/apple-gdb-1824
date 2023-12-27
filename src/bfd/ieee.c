@@ -51,40 +51,40 @@ static bfd *output_bfd;
 static int output_buffer;
 
 
-static void block (void);
+static void block(void);
 
 /* Functions for writing to ieee files in the strange way that the
    standard requires.  */
 
 static bfd_boolean
-ieee_write_byte (bfd *abfd, int barg)
+ieee_write_byte(bfd *abfd, int barg)
 {
   bfd_byte byte;
 
-  byte = barg;
+  byte = (bfd_byte)barg;
   if (bfd_bwrite ((void *) &byte, (bfd_size_type) 1, abfd) != 1)
     return FALSE;
   return TRUE;
 }
 
 static bfd_boolean
-ieee_write_2bytes (bfd *abfd, int bytes)
+ieee_write_2bytes(bfd *abfd, int bytes)
 {
   bfd_byte buffer[2];
 
-  buffer[0] = bytes >> 8;
-  buffer[1] = bytes & 0xff;
-  if (bfd_bwrite ((void *) buffer, (bfd_size_type) 2, abfd) != 2)
+  buffer[0] = (bfd_byte)(bytes >> 8U);
+  buffer[1] = (bytes & 0xff);
+  if (bfd_bwrite((void *)buffer, (bfd_size_type)2UL, abfd) != 2)
     return FALSE;
   return TRUE;
 }
 
 static bfd_boolean
-ieee_write_int (bfd *abfd, bfd_vma value)
+ieee_write_int(bfd *abfd, bfd_vma value)
 {
   if (value <= 127)
     {
-      if (! ieee_write_byte (abfd, (bfd_byte) value))
+      if (! ieee_write_byte(abfd, (bfd_byte)value))
 	return FALSE;
     }
   else

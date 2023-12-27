@@ -69,7 +69,7 @@ jobs:
           elif test ! -e ../include/arparse.h; then \
             cp -v arparse.h ../include; \
           else \
-            stat arparse.h \
+            stat arparse.h; \
           fi; \
         else \
           ls ./*.h || ls || pwd; \

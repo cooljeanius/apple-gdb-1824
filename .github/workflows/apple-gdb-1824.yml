@@ -17,8 +17,8 @@ jobs:
     - run: test -e ./.profile_generic && source ./.profile_generic && (env | uniq | sort | uniq) && sleep 1
     - run: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: cd src && make configure-bfd
-    - run: cd src && make -C bfd headers && (ls bfd/bfd*.h || stat bfd)
-    - run: cd src && if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi && find . -name bfd.h -print
+    - run: cd src && make -C bfd headers && (ls bfd/bfd*.h || stat bfd) && sleep 1
+    - run: cd src && if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi && find . -name bfd.h -print && sleep 1
     - run: cd src && if test -e autogen/Makefile; then make -C autogen; elif test -d autogen; then (echo "listing autogen Makefiles present" && ls autogen/Makefile* && sleep 1); else echo "skipping autogen"; fi
     - run: cd src && make -C bfd diststuff
     - run: cd src && make all-cgen
@@ -34,7 +34,7 @@ jobs:
     - run: cd src && make check-libiberty
     - run: cd src && make -C tcl/unix tcltest
     - run: cd src && for dir in sim itcl; do if test -e ${dir}/Makefile; then (echo "running testsuite for ${dir}" && make check-${dir} V=0 RUNTESTFLAGS="-v" && sleep 1); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
-    - run: time (pwd && ls && stat .)
+    - run: (time (pwd && ls && stat .)) && sleep 1
       if: "${{ success() }}"
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.0.0

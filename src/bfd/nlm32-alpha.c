@@ -501,7 +501,7 @@ nlm_alpha_read_reloc (bfd *abfd,
       break;
 
     case ALPHA_R_LITERAL:
-      BFD_ASSERT (! r_extern);
+      BFD_ASSERT(! r_extern);
       rel->addend += lita_address;
       break;
 
@@ -510,7 +510,7 @@ nlm_alpha_read_reloc (bfd *abfd,
       /* The LITUSE and GPDISP relocs do not use a symbol, or an
 	 addend, but they do use a special code.  Put this code in the
 	 addend field.  */
-      rel->addend = r_symndx;
+      rel->addend = (bfd_vma)r_symndx;
       rel->sym_ptr_ptr = bfd_abs_section_ptr->symbol_ptr_ptr;
       break;
 
@@ -518,7 +518,7 @@ nlm_alpha_read_reloc (bfd *abfd,
       /* The STORE reloc needs the size and offset fields.  We store
 	 them in the addend.  */
       BFD_ASSERT((r_offset < 256) && (r_size < 256));
-      rel->addend = ((r_offset << 8) + r_size);
+      rel->addend = (bfd_vma)((r_offset << 8U) + r_size);
       break;
 
     case ALPHA_R_OP_PUSH:
