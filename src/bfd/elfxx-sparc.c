@@ -577,23 +577,22 @@ sparc_elf_r_symndx_32(bfd_vma r_info)
 #define PLT32_ENTRY_WORD2 SPARC_NOP
 
 static int
-sparc32_plt_entry_build (bfd *output_bfd, asection *splt, bfd_vma offset,
-			 bfd_vma max ATTRIBUTE_UNUSED,
-			 bfd_vma *r_offset)
+sparc32_plt_entry_build(bfd *output_bfd, asection *splt, bfd_vma offset,
+                        bfd_vma max ATTRIBUTE_UNUSED,
+                        bfd_vma *r_offset)
 {
-      bfd_put_32 (output_bfd,
-		  PLT32_ENTRY_WORD0 + offset,
-		  splt->contents + offset);
-      bfd_put_32 (output_bfd,
-		  (PLT32_ENTRY_WORD1
-		   + (((- (offset + 4)) >> 2) & 0x3fffff)),
-		  splt->contents + offset + 4);
-      bfd_put_32 (output_bfd, (bfd_vma) PLT32_ENTRY_WORD2,
-		  splt->contents + offset + 8);
+      bfd_put_32(output_bfd, (PLT32_ENTRY_WORD0 + offset),
+                 (splt->contents + offset));
+      bfd_put_32(output_bfd,
+                 (PLT32_ENTRY_WORD1
+                  + (((- (offset + 4)) >> 2) & 0x3fffff)),
+                 (splt->contents + offset + 4));
+      bfd_put_32(output_bfd, (bfd_vma)PLT32_ENTRY_WORD2,
+                 (splt->contents + offset + 8));
 
       *r_offset = offset;
 
-      return offset / PLT32_ENTRY_SIZE - 4;
+      return (int)((offset / PLT32_ENTRY_SIZE) - 4);
 }
 
 /* Both the headers and the entries are icache aligned.  */
@@ -615,7 +614,7 @@ sparc64_plt_entry_build(bfd *output_bfd, asection *splt, bfd_vma offset,
 
       *r_offset = offset;
 
-      i_index = (offset / PLT64_ENTRY_SIZE);
+      i_index = (int)(offset / PLT64_ENTRY_SIZE);
 
       sethi = (0x03000000 | (i_index * PLT64_ENTRY_SIZE));
       ba = (0x30680000

@@ -2592,7 +2592,7 @@ mmo_set_section_contents(bfd *abfd ATTRIBUTE_UNUSED, sec_ptr sec,
       bfd_byte *loc;
 
       do {
-	loc = mmo_get_loc(sec, (sec->vma + offset), chunk_size);
+	loc = mmo_get_loc(sec, (sec->vma + offset), (int)chunk_size);
       } while (loc == NULL && (chunk_size /= 2) != 0);
 
       if (chunk_size == 0)

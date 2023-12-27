@@ -254,11 +254,11 @@ MY(callback)(bfd *abfd)
 
   /* The file offsets of the sections: */
   obj_textsec(abfd)->filepos = N_TXTOFF(*execp);
-  obj_datasec(abfd)->filepos = N_DATOFF(*execp);
+  obj_datasec(abfd)->filepos = (file_ptr)N_DATOFF(*execp);
 
   /* The file offsets of the relocation info: */
-  obj_textsec(abfd)->rel_filepos = N_TRELOFF(*execp);
-  obj_datasec(abfd)->rel_filepos = N_DRELOFF(*execp);
+  obj_textsec(abfd)->rel_filepos = (file_ptr)N_TRELOFF(*execp);
+  obj_datasec(abfd)->rel_filepos = (file_ptr)N_DRELOFF(*execp);
 
   /* The file offsets of the string table and symbol table: */
   obj_sym_filepos(abfd) = N_SYMOFF(*execp);

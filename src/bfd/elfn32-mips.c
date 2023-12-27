@@ -2156,21 +2156,20 @@ mips_elf_sym_is_global (bfd *abfd ATTRIBUTE_UNUSED, asymbol *sym)
 	    || bfd_is_com_section (bfd_get_section (sym)));
 }
 
-/* Set the right machine number for a MIPS ELF file.  */
-
+/* Set the right machine number for a MIPS ELF file: */
 static bfd_boolean
-mips_elf_n32_object_p (bfd *abfd)
+mips_elf_n32_object_p(bfd *abfd)
 {
   unsigned long mach;
 
   /* Irix 5 and 6 are broken.  Object file symbol tables are not always
      sorted correctly such that local symbols precede global symbols,
      and the sh_info field in the symbol table is not always right.  */
-  if (SGI_COMPAT (abfd))
-    elf_bad_symtab (abfd) = TRUE;
+  if (SGI_COMPAT(abfd))
+    elf_bad_symtab(abfd) = TRUE;
 
-  mach = _bfd_elf_mips_mach (elf_elfheader (abfd)->e_flags);
-  bfd_default_set_arch_mach (abfd, bfd_arch_mips, mach);
+  mach = (unsigned long)_bfd_elf_mips_mach(elf_elfheader(abfd)->e_flags);
+  bfd_default_set_arch_mach(abfd, bfd_arch_mips, mach);
 
   if (! ABI_N32_P(abfd))
     return FALSE;
@@ -2180,7 +2179,7 @@ mips_elf_n32_object_p (bfd *abfd)
 
 /* Support for core dump NOTE sections.  */
 static bfd_boolean
-elf32_mips_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
+elf32_mips_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   int offset;
   unsigned int size;
@@ -2192,10 +2191,12 @@ elf32_mips_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 
       case 440:		/* Linux/MIPS N32 */
 	/* pr_cursig */
-	elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
+	elf_tdata(abfd)->core_signal =
+          (int)bfd_get_16(abfd, (note->descdata + 12));
 
 	/* pr_pid */
-	elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 24);
+	elf_tdata(abfd)->core_pid =
+	  (int)bfd_get_32(abfd, (note->descdata + 24));
 
 	/* pr_reg */
 	offset = 72;
@@ -2205,8 +2206,8 @@ elf32_mips_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
     }
 
   /* Make a ".reg/999" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg", size,
-					  note->descpos + offset);
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+					 (note->descpos + offset));
 }
 
 static bfd_boolean

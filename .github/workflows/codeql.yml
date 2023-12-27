@@ -71,15 +71,17 @@ jobs:
 
     - name: Create builddirs
       run: |
-        if test ! -d build; then mkdir build; else stat build; fi
+        if test ! -d build; then mkdir build; else (sync && stat build); fi
         if test ! -d /home/runner/work/apple-gdb-1824/build; then \
           if test -w /home/runner/work/apple-gdb-1824; then \
-            mkdir /home/runner/work/apple-gdb-1824/build; \
+            mkdir -v /home/runner/work/apple-gdb-1824/build; \
           elif test -w /home/runner/work -o -w /home/runner -o -w /home; then \
-            mkdir -p /home/runner/work/apple-gdb-1824/build; \
+            mkdir -pv /home/runner/work/apple-gdb-1824/build; \
+          else \
+            echo "unable to make the necessary builddir due to unwriteable directories"; \
           fi; \
         else \
-          stat /home/runner/work/apple-gdb-1824/build; \
+          (sync && stat /home/runner/work/apple-gdb-1824/build); \
         fi
         cd src
 

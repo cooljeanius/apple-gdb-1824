@@ -637,8 +637,8 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
 	}
 
       is = f->h->root.root.u.def.section;
-      section_offset = (is->output_section->vma + is->output_offset);
-      new_addr = (f->h->root.root.u.def.value + section_offset);
+      section_offset = (int)(is->output_section->vma + is->output_offset);
+      new_addr = (unsigned int)(f->h->root.root.u.def.value + section_offset);
 
 #if defined(LINUX_LINK_DEBUG) && 0
       printf("Fixup(%d) %s: %x %lx\n",f->jump, f->h->root.root.string,
@@ -648,7 +648,7 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
       if (f->jump)
 	{
 	  /* Relative address: */
-	  new_addr = (new_addr - (f->value + 5));
+	  new_addr = (unsigned int)(new_addr - (f->value + 5));
 	  bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
 	  fixup_table += 4;
 	  bfd_put_32(output_bfd, (f->value + 1), fixup_table);
@@ -687,8 +687,8 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
 	    }
 
 	  is = f->h->root.root.u.def.section;
-	  section_offset = (is->output_section->vma + is->output_offset);
-	  new_addr = (f->h->root.root.u.def.value + section_offset);
+	  section_offset = (int)(is->output_section->vma + is->output_offset);
+	  new_addr = (unsigned int)(f->h->root.root.u.def.value + section_offset);
 
 #if defined(LINUX_LINK_DEBUG) && 0
 	  printf("Fixup(B) %s: %x %lx\n", f->h->root.root.string,
@@ -725,8 +725,8 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
 	  || (h->root.root.type == bfd_link_hash_defweak)))
     {
       is = h->root.root.u.def.section;
-      section_offset = (is->output_section->vma + is->output_offset);
-      new_addr = (h->root.root.u.def.value + section_offset);
+      section_offset = (int)(is->output_section->vma + is->output_offset);
+      new_addr = (unsigned int)(h->root.root.u.def.value + section_offset);
 
 #ifdef LINUX_LINK_DEBUG
       printf("Builtin fixup table at %x\n", new_addr);

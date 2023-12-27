@@ -419,76 +419,76 @@ NAME(lynx,slurp_reloc_table)(bfd *abfd, sec_ptr asect, asymbol **symbols)
   if (asect->flags & SEC_CONSTRUCTOR)
     return TRUE;
 
-  if (asect == obj_datasec (abfd))
+  if (asect == obj_datasec(abfd))
     {
-      reloc_size = exec_hdr (abfd)->a_drsize;
+      reloc_size = exec_hdr(abfd)->a_drsize;
       goto doit;
     }
 
-  if (asect == obj_textsec (abfd))
+  if (asect == obj_textsec(abfd))
     {
-      reloc_size = exec_hdr (abfd)->a_trsize;
+      reloc_size = exec_hdr(abfd)->a_trsize;
       goto doit;
     }
 
-  bfd_set_error (bfd_error_invalid_operation);
+  bfd_set_error(bfd_error_invalid_operation);
   return FALSE;
 
 doit:
-  if (bfd_seek (abfd, asect->rel_filepos, SEEK_SET) != 0)
+  if (bfd_seek(abfd, asect->rel_filepos, SEEK_SET) != 0)
     return FALSE;
-  each_size = obj_reloc_entry_size (abfd);
+  each_size = obj_reloc_entry_size(abfd);
 
-  count = reloc_size / each_size;
+  count = (reloc_size / each_size);
 
-
-  reloc_cache = (arelent *) bfd_zmalloc (count * sizeof (arelent));
+  /* */
+  reloc_cache = (arelent *)bfd_zmalloc(count * sizeof(arelent));
   if (!reloc_cache && count != 0)
     return FALSE;
 
-  relocs = (PTR) bfd_alloc (abfd, reloc_size);
-  if (!relocs && reloc_size != 0)
+  relocs = (PTR)bfd_alloc(abfd, reloc_size);
+  if (!relocs && (reloc_size != 0))
     {
-      free (reloc_cache);
+      free(reloc_cache);
       return FALSE;
     }
 
-  if (bfd_bread (relocs, reloc_size, abfd) != reloc_size)
+  if (bfd_bread(relocs, reloc_size, abfd) != reloc_size)
     {
-      bfd_release (abfd, relocs);
-      free (reloc_cache);
+      bfd_release(abfd, relocs);
+      free(reloc_cache);
       return FALSE;
     }
 
   if (each_size == RELOC_EXT_SIZE)
     {
-      register struct reloc_ext_external *rptr = (struct reloc_ext_external *) relocs;
+      register struct reloc_ext_external *rptr = (struct reloc_ext_external *)relocs;
       unsigned int counter = 0;
       arelent *cache_ptr = reloc_cache;
 
       for (; counter < count; counter++, rptr++, cache_ptr++)
 	{
-	  NAME(lynx,swap_ext_reloc_in) (abfd, rptr, cache_ptr, symbols,
-					(bfd_size_type) bfd_get_symcount (abfd));
+	  NAME(lynx,swap_ext_reloc_in)(abfd, rptr, cache_ptr, symbols,
+                                       (bfd_size_type)bfd_get_symcount(abfd));
 	}
     }
   else
     {
-      register struct reloc_std_external *rptr = (struct reloc_std_external *) relocs;
+      register struct reloc_std_external *rptr = (struct reloc_std_external *)relocs;
       unsigned int counter = 0;
       arelent *cache_ptr = reloc_cache;
 
       for (; counter < count; counter++, rptr++, cache_ptr++)
 	{
-	  NAME(lynx,swap_std_reloc_in) (abfd, rptr, cache_ptr, symbols,
-					(bfd_size_type) bfd_get_symcount (abfd));
+	  NAME(lynx,swap_std_reloc_in)(abfd, rptr, cache_ptr, symbols,
+                                       (bfd_size_type)bfd_get_symcount(abfd));
 	}
 
     }
 
   bfd_release(abfd, relocs);
   asect->relocation = reloc_cache;
-  asect->reloc_count = count;
+  asect->reloc_count = (unsigned int)count;
   return TRUE;
 }
 

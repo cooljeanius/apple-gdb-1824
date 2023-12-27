@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-26 19:50-0500\n"
+"POT-Creation-Date: 2023-12-26 20:50-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1021,7 +1021,7 @@ msgstr ""
 
 #: elf32-arm.c:4921 elf32-i386.c:909 elf32-s390.c:964 elf32-tic6x.c:2812
 #: elf32-tilepro.c:1511 elf32-xtensa.c:787 elf64-s390.c:918 elf64-x86-64.c:670
-#: elfxx-sparc.c:1024 elfnn-aarch64.c:5082
+#: elfxx-sparc.c:1023 elfnn-aarch64.c:5082
 msgid "%B: bad symbol index: %d"
 msgstr ""
 
@@ -1039,7 +1039,7 @@ msgid "relocation should be even number"
 msgstr ""
 
 #: elf32-bfin.c:1601 elf32-i386.c:3042 elf32-m68k.c:1697 elf32-s390.c:2957
-#: elf32-xtensa.c:2310 elf64-s390.c:2965 elf64-x86-64.c:2516 elfxx-sparc.c:3149
+#: elf32-xtensa.c:2310 elf64-s390.c:2965 elf64-x86-64.c:2516 elfxx-sparc.c:3148
 msgid "%B(%A+0x%lx): unresolvable relocation against symbol `%s'"
 msgstr ""
 
@@ -1333,7 +1333,7 @@ msgid "%B: invalid relocation type %d"
 msgstr ""
 
 #: elf32-i386.c:1022 elf32-s390.c:1147 elf32-sh.c:6423 elf32-tilepro.c:1627
-#: elf64-s390.c:1109 elfxx-sparc.c:1154
+#: elf64-s390.c:1109 elfxx-sparc.c:1153
 msgid "%B: `%s' accessed both as normal and thread local symbol"
 msgstr ""
 
@@ -1571,7 +1571,7 @@ msgid "%s: The target (%s) of an %s relocation is in the wrong section (%s)"
 msgstr ""
 
 #: elf32-microblaze.c:1484 elf32-or1k.c:1077 elf32-tilepro.c:3320
-#: elfxx-sparc.c:2792
+#: elfxx-sparc.c:2791
 msgid "%B: probably compiled without -fPIC?"
 msgstr ""
 
