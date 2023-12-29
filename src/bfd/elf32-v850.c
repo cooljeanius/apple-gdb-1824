@@ -1641,15 +1641,17 @@ v850_elf_relocate_section (bfd *output_bfd,
 
       if (r != bfd_reloc_ok)
 	{
-	  const char * name;
-	  const char * msg = NULL;
+	  const char *name;
+	  const char *msg = NULL;
 
 	  if (h != NULL)
 	    name = h->root.root.string;
 	  else
 	    {
-	      name = (bfd_elf_string_from_elf_section
-		      (input_bfd, symtab_hdr->sh_link, sym->st_name));
+	      name =
+        	bfd_elf_string_from_elf_section(input_bfd,
+          					(unsigned int)symtab_hdr->sh_link,
+                    				(unsigned int)sym->st_name);
 	      if (name == NULL || *name == '\0')
 		name = bfd_section_name (input_bfd, sec);
 	    }
@@ -1816,19 +1818,19 @@ v850_elf_set_private_flags (bfd *abfd, flagword flags)
    to the output object file when linking.  */
 
 static bfd_boolean
-v850_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
+v850_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   flagword out_flags;
   flagword in_flags;
 
-  if (   bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
-  in_flags = elf_elfheader (ibfd)->e_flags;
-  out_flags = elf_elfheader (obfd)->e_flags;
+  in_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  out_flags = (flagword)elf_elfheader(obfd)->e_flags;
 
-  if (! elf_flags_init (obfd))
+  if (! elf_flags_init(obfd))
     {
       /* If the input is the default architecture then do not
 	 bother setting the flags for the output architecture,
@@ -1836,15 +1838,15 @@ v850_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
 	 merges ever set these flags then they will retain their
 	 unitialised values, which surprise surprise, correspond
 	 to the default values.  */
-      if (bfd_get_arch_info (ibfd)->the_default)
+      if (bfd_get_arch_info(ibfd)->the_default)
 	return TRUE;
 
-      elf_flags_init (obfd) = TRUE;
-      elf_elfheader (obfd)->e_flags = in_flags;
+      elf_flags_init(obfd) = TRUE;
+      elf_elfheader(obfd)->e_flags = in_flags;
 
-      if (bfd_get_arch (obfd) == bfd_get_arch (ibfd)
-	  && bfd_get_arch_info (obfd)->the_default)
-	return bfd_set_arch_mach (obfd, bfd_get_arch (ibfd), bfd_get_mach (ibfd));
+      if (bfd_get_arch(obfd) == bfd_get_arch(ibfd)
+	  && bfd_get_arch_info(obfd)->the_default)
+	return bfd_set_arch_mach(obfd, bfd_get_arch(ibfd), bfd_get_mach(ibfd));
 
       return TRUE;
     }
@@ -2534,7 +2536,7 @@ v850_elf_relax_section(bfd *abfd, asection *sec,
 	      /* Check code for -mlong-calls output: */
 	      if ((laddr + 16) <= (bfd_vma)sec->size)
 		{
-		  insn[0] = bfd_get_16(abfd, (contents + laddr));
+		  insn[0] = (int)bfd_get_16(abfd, (contents + laddr));
 		  insn[1] = (int)bfd_get_16(abfd, (contents + laddr + 4));
 		  insn[2] = (int)bfd_get_32(abfd, (contents + laddr + 8));
 		  insn[3] = (int)bfd_get_16(abfd, (contents + laddr + 12));
@@ -2850,8 +2852,9 @@ v850_elf_relax_section(bfd *abfd, asection *sec,
 #ifdef DEBUG_RELAX
 		  {
 		    const char *name =
-		      bfd_elf_string_from_elf_section(abfd, symtab_hdr->sh_link,
-						      isym->st_name);
+		      bfd_elf_string_from_elf_section(abfd,
+                                                      (unsigned int)symtab_hdr->sh_link,
+						      (unsigned int)isym->st_name);
 
 		    fprintf(stderr,
 			    "relax long jump local: sec: %s, sym: %s (%lu), "

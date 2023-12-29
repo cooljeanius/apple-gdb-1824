@@ -93,6 +93,10 @@
 /* Define to 1 if you have the declaration of 'ffs', and to 0 if you don't. */
 #undef HAVE_DECL_FFS
 
+/* Define to 1 if you have the declaration of 'ffsl', and to 0 if you don't.
+   */
+#undef HAVE_DECL_FFSL
+
 /* Define to 1 if you have the declaration of 'free', and to 0 if you don't.
    */
 #undef HAVE_DECL_FREE

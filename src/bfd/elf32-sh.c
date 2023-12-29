@@ -6711,13 +6711,13 @@ sh_elf_set_private_flags (bfd *abfd, flagword flags)
 /* Copy backend specific data from one object module to another */
 
 static bfd_boolean
-sh_elf_copy_private_data (bfd * ibfd, bfd * obfd)
+sh_elf_copy_private_data(bfd * ibfd, bfd * obfd)
 {
-  if (   bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
-  return sh_elf_set_private_flags(obfd, elf_elfheader(ibfd)->e_flags);
+  return sh_elf_set_private_flags(obfd, (flagword)elf_elfheader(ibfd)->e_flags);
 }
 #endif /* not sh_elf_copy_private_data */
 
@@ -7256,10 +7256,10 @@ elf32_shlin_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 
       case 168:		/* Linux/SH */
 	/* pr_cursig */
-	elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
+	elf_tdata(abfd)->core_signal = bfd_get_16(abfd, note->descdata + 12);
 
 	/* pr_pid */
-	elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 24);
+	elf_tdata(abfd)->core_pid = bfd_get_32(abfd, note->descdata + 24);
 
 	/* pr_reg */
 	offset = 72;

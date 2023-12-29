@@ -791,6 +791,7 @@ AC_CHECK_DECLS([fseeko64])dnl
 BFD_BINARY_FOPEN
 
 AC_CHECK_DECLS([ffs])dnl
+AC_CHECK_DECLS([ffsl])dnl
 AC_CHECK_DECLS([free])dnl
 AC_CHECK_DECLS([getenv])dnl
 AC_CHECK_DECLS_ONCE([getopt])dnl

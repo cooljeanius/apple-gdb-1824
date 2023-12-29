@@ -1753,9 +1753,9 @@ elf_vax_relocate_section (bfd *output_bfd,
       if (howto->pc_relative && howto->pcrel_offset)
 	relocation -= bfd_get_reloc_size(howto);
 
-      r = _bfd_final_link_relocate (howto, input_bfd, input_section,
-				    contents, rel->r_offset,
-				    relocation, rel->r_addend);
+      r = _bfd_final_link_relocate(howto, input_bfd, input_section,
+				   contents, rel->r_offset,
+				   relocation, rel->r_addend);
 
       if (r != bfd_reloc_ok)
 	{
@@ -1763,7 +1763,7 @@ elf_vax_relocate_section (bfd *output_bfd,
 	    {
 	    default:
 	    case bfd_reloc_outofrange:
-	      abort ();
+	      abort();
 	    case bfd_reloc_overflow:
 	      {
 		const char *name;
@@ -1772,9 +1772,10 @@ elf_vax_relocate_section (bfd *output_bfd,
 		  name = NULL;
 		else
 		  {
-		    name = bfd_elf_string_from_elf_section (input_bfd,
-							    symtab_hdr->sh_link,
-							    sym->st_name);
+		    name =
+                      bfd_elf_string_from_elf_section(input_bfd,
+                                                      (unsigned int)symtab_hdr->sh_link,
+                                                      (unsigned int)sym->st_name);
 		    if (name == NULL)
 		      return FALSE;
 		    if (*name == '\0')

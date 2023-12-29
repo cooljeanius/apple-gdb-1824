@@ -1873,15 +1873,16 @@ mips_elf_multi_got_entry_hash(const void *entry_)
 {
   const struct mips_got_entry *entry = (struct mips_got_entry *)entry_;
 
-  return entry->symndx
-    + (! entry->abfd
-       ? mips_elf_hash_bfd_vma (entry->d.address)
-       : entry->symndx >= 0
-       ? ((entry->tls_type & GOT_TLS_LDM)
-	  ? (GOT_TLS_LDM << 17)
-	  : (entry->abfd->id
-	     + mips_elf_hash_bfd_vma (entry->d.addend)))
-       : entry->d.h->root.root.root.hash);
+  return
+    ((hashval_t)entry->symndx
+     + ((!entry->abfd)
+        ? mips_elf_hash_bfd_vma(entry->d.address)
+        : ((entry->symndx >= 0L)
+           ? ((entry->tls_type & GOT_TLS_LDM)
+	      ? (GOT_TLS_LDM << 17U)
+	      : (entry->abfd->id
+	         + mips_elf_hash_bfd_vma(entry->d.addend)))
+           : (hashval_t)entry->d.h->root.root.root.hash)));
 }
 
 /* */
@@ -3216,9 +3217,9 @@ mips_elf_multi_got (bfd *abfd, struct bfd_link_info *info,
   /* Taking out PAGES entries is a worst-case estimate.  We could
      compute the maximum number of pages that each separate input bfd
      uses, but it's probably not worth it.  */
-  got_per_bfd_arg.max_count = ((MIPS_ELF_GOT_MAX_SIZE (abfd)
-				/ MIPS_ELF_GOT_SIZE (abfd))
-			       - MIPS_RESERVED_GOTNO - pages);
+  got_per_bfd_arg.max_count = ((MIPS_ELF_GOT_MAX_SIZE(abfd)
+				/ MIPS_ELF_GOT_SIZE(abfd))
+			       - MIPS_RESERVED_GOTNO - (unsigned int)pages);
   /* The number of globals that will be included in the primary GOT.
      See the calls to mips_elf_set_global_got_offset below for more
      information.  */
@@ -9251,7 +9252,7 @@ _bfd_mips_elf_final_link(bfd *abfd, struct bfd_link_info *info)
 		    {
 		      BFD_ASSERT(ext.ifd
 				 < input_debug.symbolic_header.ifdMax);
-		      ext.ifd = input_debug.ifdmap[ext.ifd];
+		      ext.ifd = (int)input_debug.ifdmap[ext.ifd];
 		    }
 
 		  h->esym = ext;
