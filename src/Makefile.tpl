@@ -169,7 +169,8 @@ BASE_EXPORTS = \
 	BISON="$(BISON)"; export BISON; \
 	YACC="$(YACC)"; export YACC; \
 	M4="$(M4)"; export M4; \
-	MAKEINFO="$(MAKEINFO)"; export MAKEINFO;
+	MAKEINFO="$(MAKEINFO)"; export MAKEINFO; \
+	GUILE="$(GUILE)"; export GUILE;
 
 # This is the list of variables to export in the environment when
 # configuring subdirectories for the build system.
@@ -468,6 +469,7 @@ CC = @CC@
 CFLAGS = @CFLAGS@
 LIBCFLAGS = $(CFLAGS) $(C_HOST_ARCHFLAGS)
 GOCFLAGS = $(CFLAGS)
+GM2FLAGS = $(CFLAGS)
 
 CCAS = @CCAS@
 CCASFLAGS = @CCASFLAGS@
@@ -508,6 +510,8 @@ WINDMC = @WINDMC@
 
 GNATBIND = @GNATBIND@
 GNATMAKE = @GNATMAKE@
+
+GUILE = guile
 
 YFLAGS = @YFLAGS@
 
