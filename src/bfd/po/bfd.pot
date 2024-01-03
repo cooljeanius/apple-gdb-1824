@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-26 23:09-0500\n"
+"POT-Creation-Date: 2024-01-03 08:11-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -484,7 +484,7 @@ msgstr ""
 msgid "%B: bad string table size %lu"
 msgstr ""
 
-#: cofflink.c:519 elf64-ia64-vms.c:5173 elflink.c:3987
+#: cofflink.c:519 elf64-ia64-vms.c:5173 elflink.c:3996
 msgid "Warning: type of symbol `%s' changed from %d to %d in %B"
 msgstr ""
 
@@ -673,8 +673,8 @@ msgstr ""
 #: elf32-frv.c:4076 elf32-h8300.c:497 elf32-i860.c:1183 elf32-ip2k.c:1478
 #: elf32-iq2000.c:620 elf32-lm32.c:1160 elf32-m32c.c:472 elf32-m32r.c:3090
 #: elf32-m68hc1x.c:1202 elf32-mep.c:535 elf32-metag.c:1992
-#: elf32-microblaze.c:1560 elf32-moxie.c:282 elf32-ms1.c:373 elf32-msp430.c:509
-#: elf32-mt.c:395 elf32-nds32.c:4910 elf32-openrisc.c:383 elf32-or1k.c:1263
+#: elf32-microblaze.c:1560 elf32-moxie.c:282 elf32-ms1.c:372 elf32-msp430.c:510
+#: elf32-mt.c:395 elf32-nds32.c:4910 elf32-openrisc.c:385 elf32-or1k.c:1263
 #: elf32-score.c:2729 elf32-score7.c:2537 elf32-spu.c:5041 elf32-tilepro.c:3666
 #: elf32-v850.c:1677 elf32-xstormy16.c:917 elf64-mmix.c:1503
 msgid "internal error: out of range error"
@@ -686,7 +686,7 @@ msgstr ""
 #: elf32-h8300.c:501 elf32-i860.c:1187 elf32-iq2000.c:624 elf32-lm32.c:1164
 #: elf32-m32c.c:476 elf32-m32r.c:3094 elf32-m68hc1x.c:1206 elf32-mep.c:539
 #: elf32-metag.c:1996 elf32-microblaze.c:1564 elf32-moxie.c:286
-#: elf32-msp430.c:513 elf32-nds32.c:4914 elf32-openrisc.c:387 elf32-or1k.c:1267
+#: elf32-msp430.c:514 elf32-nds32.c:4914 elf32-openrisc.c:389 elf32-or1k.c:1267
 #: elf32-score.c:2733 elf32-score7.c:2541 elf32-spu.c:5045 elf32-tilepro.c:3670
 #: elf32-v850.c:1681 elf32-xstormy16.c:921 elf64-mmix.c:1507 elfxx-mips.c:7215
 msgid "internal error: unsupported relocation error"
@@ -706,8 +706,8 @@ msgstr ""
 #: elf32-frv.c:4088 elf32-h8300.c:509 elf32-i860.c:1195 elf32-ip2k.c:1493
 #: elf32-iq2000.c:632 elf32-lm32.c:1172 elf32-m32c.c:484 elf32-m32r.c:3102
 #: elf32-m68hc1x.c:1214 elf32-mep.c:547 elf32-metag.c:2004
-#: elf32-microblaze.c:1572 elf32-moxie.c:294 elf32-ms1.c:381 elf32-msp430.c:521
-#: elf32-mt.c:403 elf32-nds32.c:4922 elf32-openrisc.c:395 elf32-or1k.c:1275
+#: elf32-microblaze.c:1572 elf32-moxie.c:294 elf32-ms1.c:380 elf32-msp430.c:522
+#: elf32-mt.c:403 elf32-nds32.c:4922 elf32-openrisc.c:397 elf32-or1k.c:1275
 #: elf32-score.c:2746 elf32-score7.c:2549 elf32-spu.c:5053 elf32-tilepro.c:3678
 #: elf32-v850.c:1701 elf32-xstormy16.c:929 elf64-mmix.c:1515
 msgid "internal error: unknown error"
@@ -772,7 +772,7 @@ msgstr ""
 msgid "%B: invalid link %lu for reloc section %s (index %u)"
 msgstr ""
 
-#: elf.c:3117 elflink.c:7630
+#: elf.c:3117 elflink.c:7642
 msgid "%B: warning: sh_link not set for section `%A'"
 msgstr ""
 
@@ -1028,8 +1028,8 @@ msgstr ""
 #: elf32-avr.c:871 elf32-bfin.c:3228 elf32-cris.c:1503 elf32-epiphany.c:568
 #: elf32-fr30.c:575 elf32-frv.c:4084 elf32-i860.c:1191 elf32-ip2k.c:1489
 #: elf32-iq2000.c:628 elf32-m32c.c:480 elf32-mep.c:543 elf32-metag.c:2000
-#: elf32-moxie.c:290 elf32-ms1.c:377 elf32-msp430.c:517 elf32-mt.c:399
-#: elf32-openrisc.c:391 elf32-or1k.c:1271 elf32-tilepro.c:3674
+#: elf32-moxie.c:290 elf32-ms1.c:376 elf32-msp430.c:518 elf32-mt.c:399
+#: elf32-openrisc.c:393 elf32-or1k.c:1271 elf32-tilepro.c:3674
 #: elf32-v850.c:1685 elf32-xstormy16.c:925 elf64-mmix.c:1511
 msgid "internal error: dangerous relocation"
 msgstr ""
@@ -1038,12 +1038,12 @@ msgstr ""
 msgid "relocation should be even number"
 msgstr ""
 
-#: elf32-bfin.c:1601 elf32-i386.c:3042 elf32-m68k.c:1697 elf32-s390.c:2957
+#: elf32-bfin.c:1601 elf32-i386.c:3042 elf32-m68k.c:1697 elf32-s390.c:2960
 #: elf32-xtensa.c:2310 elf64-s390.c:2965 elf64-x86-64.c:2516 elfxx-sparc.c:3149
 msgid "%B(%A+0x%lx): unresolvable relocation against symbol `%s'"
 msgstr ""
 
-#: elf32-bfin.c:1634 elf32-i386.c:3082 elf32-m68k.c:1737 elf32-s390.c:3008
+#: elf32-bfin.c:1634 elf32-i386.c:3082 elf32-m68k.c:1737 elf32-s390.c:3013
 #: elf64-s390.c:3016 elf64-x86-64.c:2560
 msgid "%B(%A+0x%lx): reloc against `%s': error %d"
 msgstr ""
@@ -1280,7 +1280,7 @@ msgid ""
 "%lx)"
 msgstr ""
 
-#: elf32-frv.c:6746 elf32-iq2000.c:842 elf32-m32c.c:829 elf32-ms1.c:595
+#: elf32-frv.c:6746 elf32-iq2000.c:842 elf32-m32c.c:829 elf32-ms1.c:594
 #: elf32-mt.c:580 elf32-rl78.c:1069 elf32-rx.c:3040
 #, c-format
 msgid "private flags = 0x%lx:"
@@ -1457,7 +1457,7 @@ msgstr ""
 msgid "%B: linking files compiled for HCS12 with others compiled for HC12"
 msgstr ""
 
-#: elf32-m68hc1x.c:1320 elf32-ppc.c:3577 elf64-sparc.c:698 elfxx-mips.c:9879
+#: elf32-m68hc1x.c:1320 elf32-ppc.c:3581 elf64-sparc.c:698 elfxx-mips.c:9879
 msgid "%B: uses different e_flags (0x%lx) fields than previous modules (0x%lx)"
 msgstr ""
 
@@ -1753,76 +1753,76 @@ msgstr ""
 msgid "generic linker can't handle %s"
 msgstr ""
 
-#: elf32-ppc.c:2076
+#: elf32-ppc.c:2080
 msgid "corrupt or empty %s section in %B"
 msgstr ""
 
-#: elf32-ppc.c:2083
+#: elf32-ppc.c:2087
 msgid "unable to read in %s section from %B"
 msgstr ""
 
-#: elf32-ppc.c:2089
+#: elf32-ppc.c:2093
 msgid "corrupt %s section in %B"
 msgstr ""
 
-#: elf32-ppc.c:2132
+#: elf32-ppc.c:2136
 msgid "warning: unable to set size of %s section in %B"
 msgstr ""
 
-#: elf32-ppc.c:2178
+#: elf32-ppc.c:2182
 msgid "failed to allocate space for new APUinfo section."
 msgstr ""
 
-#: elf32-ppc.c:2197
+#: elf32-ppc.c:2201
 msgid "failed to compute new APUinfo section."
 msgstr ""
 
-#: elf32-ppc.c:2200
+#: elf32-ppc.c:2204
 msgid "failed to install new APUinfo section."
 msgstr ""
 
-#: elf32-ppc.c:2945
+#: elf32-ppc.c:2949
 msgid "%B: relocation %s cannot be used when making a shared object"
 msgstr ""
 
 #. It does not make sense to have a procedure linkage
 #. table entry for a local symbol.
-#: elf32-ppc.c:3215
+#: elf32-ppc.c:3219
 msgid "%B(%A+0x%lx): %s reloc against local symbol"
 msgstr ""
 
-#: elf32-ppc.c:3542
+#: elf32-ppc.c:3546
 msgid ""
 "%B: compiled with -mrelocatable and linked with modules compiled normally"
 msgstr ""
 
-#: elf32-ppc.c:3550
+#: elf32-ppc.c:3554
 msgid ""
 "%B: compiled normally and linked with modules compiled with -mrelocatable"
 msgstr ""
 
-#: elf32-ppc.c:5761 elf64-ppc.c:10105
+#: elf32-ppc.c:5765 elf64-ppc.c:10105
 msgid "%B: unknown relocation type %d for symbol %s"
 msgstr ""
 
-#: elf32-ppc.c:6011
+#: elf32-ppc.c:6015
 msgid "%B(%A+0x%lx): non-zero addend on %s reloc against `%s'"
 msgstr ""
 
-#: elf32-ppc.c:6358 elf32-ppc.c:6384 elf32-ppc.c:6443
+#: elf32-ppc.c:6362 elf32-ppc.c:6388 elf32-ppc.c:6447
 msgid ""
 "%B: the target (%s) of a %s relocation is in the wrong output section (%s)"
 msgstr ""
 
-#: elf32-ppc.c:6496
+#: elf32-ppc.c:6500
 msgid "%B: relocation %s is not yet supported for symbol %s."
 msgstr ""
 
-#: elf32-ppc.c:6552 elf32-tilepro.c:3569 elf64-ppc.c:10744 elfnn-aarch64.c:4468
+#: elf32-ppc.c:6556 elf32-tilepro.c:3569 elf64-ppc.c:10744 elfnn-aarch64.c:4468
 msgid "%B(%A+0x%lx): unresolvable %s relocation against symbol `%s'"
 msgstr ""
 
-#: elf32-ppc.c:6601 elf64-ppc.c:10785
+#: elf32-ppc.c:6605 elf64-ppc.c:10785
 msgid "%B(%A+0x%lx): %s reloc against `%s': error %d"
 msgstr ""
 
@@ -2373,31 +2373,31 @@ msgstr ""
 msgid "%B: incompatible machine type. Output is 0x%x. Input is 0x%x"
 msgstr ""
 
-#: elf32-xtensa.c:3880 elf32-xtensa.c:3888
+#: elf32-xtensa.c:3871 elf32-xtensa.c:3879
 msgid "Attempt to convert L32R/CALLX to CALL failed"
 msgstr ""
 
-#: elf32-xtensa.c:5469 elf32-xtensa.c:5545 elf32-xtensa.c:6505
-#: elf32-xtensa.c:6559
+#: elf32-xtensa.c:5460 elf32-xtensa.c:5536 elf32-xtensa.c:6496
+#: elf32-xtensa.c:6550
 msgid ""
 "%B(%A+0x%lx): could not decode instruction; possible configuration mismatch"
 msgstr ""
 
-#: elf32-xtensa.c:6376 elf32-xtensa.c:6541
+#: elf32-xtensa.c:6367 elf32-xtensa.c:6532
 msgid ""
 "%B(%A+0x%lx): could not decode instruction for XTENSA_ASM_SIMPLIFY "
 "relocation; possible configuration mismatch"
 msgstr ""
 
-#: elf32-xtensa.c:7861
+#: elf32-xtensa.c:7852
 msgid "invalid relocation address"
 msgstr ""
 
-#: elf32-xtensa.c:7914
+#: elf32-xtensa.c:7905
 msgid "overflow after relaxation"
 msgstr ""
 
-#: elf32-xtensa.c:9057
+#: elf32-xtensa.c:9048
 msgid "%B(%A+0x%lx): unexpected fix for %s relocation"
 msgstr ""
 
@@ -2540,11 +2540,11 @@ msgid ""
 "alignment (%u) of its section %A"
 msgstr ""
 
-#: elf64-ia64-vms.c:5131 elflink.c:3951
+#: elf64-ia64-vms.c:5131 elflink.c:3960
 msgid "Warning: alignment %u of symbol `%s' in %B is smaller than %u in %B"
 msgstr ""
 
-#: elf64-ia64-vms.c:5146 elflink.c:3963
+#: elf64-ia64-vms.c:5146 elflink.c:3972
 msgid "Warning: size of symbol `%s' changed from %lu in %B to %lu in %B"
 msgstr ""
 
@@ -2789,87 +2789,87 @@ msgstr ""
 msgid "warning: creating a DT_TEXTREL in a shared object."
 msgstr ""
 
-#: elflink.c:3735
+#: elflink.c:3744
 msgid "%B: %s: invalid version %u (max %d)"
 msgstr ""
 
-#: elflink.c:3771
+#: elflink.c:3780
 msgid "%B: %s: invalid needed version %d"
 msgstr ""
 
-#: elflink.c:4132
+#: elflink.c:4141
 #, c-format
 msgid "%s: invalid DSO for symbol `%s' definition"
 msgstr ""
 
-#: elflink.c:5185
+#: elflink.c:5194
 #, c-format
 msgid "%s: undefined version: %s"
 msgstr ""
 
-#: elflink.c:5252
+#: elflink.c:5261
 msgid "%B: .preinit_array section is not allowed in DSO"
 msgstr ""
 
-#: elflink.c:6010
+#: elflink.c:6019
 msgid "Not enough memory to sort relocations"
 msgstr ""
 
-#: elflink.c:6403
+#: elflink.c:6413
 msgid "%B: %s symbol `%s' in %B is referenced by DSO"
 msgstr ""
 
-#: elflink.c:6486
+#: elflink.c:6496
 msgid "%B: could not find output section %A for input section %A"
 msgstr ""
 
-#: elflink.c:6583
+#: elflink.c:6593
 msgid "%B: %s symbol `%s' isn't defined"
 msgstr ""
 
-#: elflink.c:7066
+#: elflink.c:7076
 msgid ""
 "error: %B contains a reloc (0x%s) for section %A that references a non-"
 "existent global symbol"
 msgstr ""
 
-#: elflink.c:7100
+#: elflink.c:7110
 msgid ""
 "%X`%s' referenced in section `%A' of %B: defined in discarded section `%A' "
 "of %B\n"
 msgstr ""
 
-#: elflink.c:7703
+#: elflink.c:7715
 #, c-format
 msgid "%A has both ordered and unordered sections"
 msgstr ""
 
-#: elflink.c:8516 elflink.c:8557
+#: elflink.c:8528 elflink.c:8569
 msgid "%B: could not find output section %s"
 msgstr ""
 
-#: elflink.c:8521
+#: elflink.c:8533
 #, c-format
 msgid "warning: %s section has zero size"
 msgstr ""
 
-#: elflink.c:9131
+#: elflink.c:9143
 msgid "Warning: gc-sections option ignored"
 msgstr ""
 
-#: elflink.c:9753
+#: elflink.c:9765
 msgid "%B: ignoring duplicate section `%A'"
 msgstr ""
 
-#: elflink.c:9760 elflink.c:9767
+#: elflink.c:9772 elflink.c:9779
 msgid "%B: duplicate section `%A' has different size"
 msgstr ""
 
-#: elflink.c:9776 elflink.c:9781
+#: elflink.c:9788 elflink.c:9793
 msgid "%B: warning: could not read contents of section `%A'"
 msgstr ""
 
-#: elflink.c:9785
+#: elflink.c:9797
 msgid "%B: warning: duplicate section `%A' has different contents"
 msgstr ""
 

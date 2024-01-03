@@ -2672,7 +2672,7 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  else
 	    {
 	      if (local_got_offsets == NULL)
-		abort ();
+		abort();
 
 	      off = local_got_offsets[r_symndx];
 	    }
@@ -2688,43 +2688,43 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      int dr_type, indx;
 
 	      if (htab->srelgot == NULL)
-		abort ();
+		abort();
 
 	      outrel.r_offset = (htab->sgot->output_section->vma
 				 + htab->sgot->output_offset + off);
 
-	      indx = h && h->dynindx != -1 ? h->dynindx : 0;
+	      indx = ((h && (h->dynindx != -1)) ? (int)h->dynindx : 0);
 	      if (r_type == R_390_TLS_GD32)
 		dr_type = R_390_TLS_DTPMOD;
 	      else
 		dr_type = R_390_TLS_TPOFF;
 	      if (dr_type == R_390_TLS_TPOFF && indx == 0)
-		outrel.r_addend = relocation - dtpoff_base (info);
+		outrel.r_addend = (relocation - dtpoff_base(info));
 	      else
 		outrel.r_addend = 0;
-	      outrel.r_info = ELF32_R_INFO (indx, dr_type);
+	      outrel.r_info = ELF32_R_INFO(indx, dr_type);
 	      loc = htab->srelgot->contents;
-	      loc += htab->srelgot->reloc_count++
-		* sizeof (Elf32_External_Rela);
-	      bfd_elf32_swap_reloca_out (output_bfd, &outrel, loc);
+	      loc += (htab->srelgot->reloc_count++
+		      * sizeof(Elf32_External_Rela));
+	      bfd_elf32_swap_reloca_out(output_bfd, &outrel, loc);
 
 	      if (r_type == R_390_TLS_GD32)
 		{
 		  if (indx == 0)
 		    {
-		      BFD_ASSERT (! unresolved_reloc);
-		      bfd_put_32 (output_bfd,
-				  relocation - dtpoff_base (info),
-				  htab->sgot->contents + off + GOT_ENTRY_SIZE);
+		      BFD_ASSERT(!unresolved_reloc);
+		      bfd_put_32(output_bfd,
+				 (relocation - dtpoff_base(info)),
+				 (htab->sgot->contents + off + GOT_ENTRY_SIZE));
 		    }
 		  else
 		    {
-		      outrel.r_info = ELF32_R_INFO (indx, R_390_TLS_DTPOFF);
+		      outrel.r_info = ELF32_R_INFO(indx, R_390_TLS_DTPOFF);
 		      outrel.r_offset += GOT_ENTRY_SIZE;
 		      outrel.r_addend = 0;
 		      htab->srelgot->reloc_count++;
-		      loc += sizeof (Elf32_External_Rela);
-		      bfd_elf32_swap_reloca_out (output_bfd, &outrel, loc);
+		      loc += sizeof(Elf32_External_Rela);
+		      bfd_elf32_swap_reloca_out(output_bfd, &outrel, loc);
 		    }
 		}
 
@@ -2790,7 +2790,7 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	    continue;
 
 	  if (htab->sgot == NULL)
-	    abort ();
+	    abort();
 
 	  off = htab->tls_ldm_got.offset;
 	  if (off & 1)
@@ -2801,22 +2801,22 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      bfd_byte *loc;
 
 	      if (htab->srelgot == NULL)
-		abort ();
+		abort();
 
 	      outrel.r_offset = (htab->sgot->output_section->vma
 				 + htab->sgot->output_offset + off);
 
-	      bfd_put_32 (output_bfd, 0,
-			  htab->sgot->contents + off + GOT_ENTRY_SIZE);
-	      outrel.r_info = ELF32_R_INFO (0, R_390_TLS_DTPMOD);
+	      bfd_put_32(output_bfd, 0,
+			 (htab->sgot->contents + off + GOT_ENTRY_SIZE));
+	      outrel.r_info = ELF32_R_INFO(0, R_390_TLS_DTPMOD);
 	      outrel.r_addend = 0;
 	      loc = htab->srelgot->contents;
-	      loc += htab->srelgot->reloc_count++
-		* sizeof (Elf32_External_Rela);
-	      bfd_elf32_swap_reloca_out (output_bfd, &outrel, loc);
+	      loc += (htab->srelgot->reloc_count++
+                      * sizeof(Elf32_External_Rela));
+	      bfd_elf32_swap_reloca_out(output_bfd, &outrel, loc);
 	      htab->tls_ldm_got.offset |= 1;
 	    }
-	  relocation = htab->sgot->output_offset + off;
+	  relocation = (htab->sgot->output_offset + off);
 	  unresolved_reloc = FALSE;
 	  break;
 
@@ -2830,30 +2830,30 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      bfd_byte *loc;
 	      int indx;
 
-	      outrel.r_offset = rel->r_offset
-				+ input_section->output_section->vma
-				+ input_section->output_offset;
-	      if (h != NULL && h->dynindx != -1)
-		indx = h->dynindx;
+	      outrel.r_offset = (rel->r_offset
+				 + input_section->output_section->vma
+				 + input_section->output_offset);
+	      if ((h != NULL) && (h->dynindx != -1))
+		indx = (int)h->dynindx;
 	      else
 		indx = 0;
-	      outrel.r_info = ELF32_R_INFO (indx, R_390_TLS_TPOFF);
+	      outrel.r_info = ELF32_R_INFO(indx, R_390_TLS_TPOFF);
 	      if (indx == 0)
-		outrel.r_addend = relocation - dtpoff_base (info);
+		outrel.r_addend = (relocation - dtpoff_base(info));
 	      else
 		outrel.r_addend = 0;
-	      sreloc = elf_section_data (input_section)->sreloc;
+	      sreloc = elf_section_data(input_section)->sreloc;
 	      if (sreloc == NULL)
-		abort ();
+		abort();
 	      loc = sreloc->contents;
-	      loc += sreloc->reloc_count++ * sizeof (Elf32_External_Rela);
-	      bfd_elf32_swap_reloca_out (output_bfd, &outrel, loc);
+	      loc += (sreloc->reloc_count++ * sizeof(Elf32_External_Rela));
+	      bfd_elf32_swap_reloca_out(output_bfd, &outrel, loc);
 	    }
 	  else
 	    {
-	      BFD_ASSERT (! unresolved_reloc);
-	      bfd_put_32 (output_bfd, -tpoff (info, relocation),
-			  contents + rel->r_offset);
+	      BFD_ASSERT(!unresolved_reloc);
+	      bfd_put_32(output_bfd, -tpoff(info, relocation),
+			 (contents + rel->r_offset));
 	    }
 	  continue;
 
@@ -2889,7 +2889,8 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		     l %rx,0(%r12,%ry) -> lr %rx,%ry + bcr 0,0 */
 		  unsigned int insn, ry;
 
-		  insn = bfd_get_32 (input_bfd, contents + rel->r_offset);
+		  insn = (unsigned int)bfd_get_32(input_bfd,
+    						  (contents + rel->r_offset));
 		  ry = 0;
 		  if ((insn & 0xff00f000) == 0x58000000)
 		    /* l %rx,0(%ry,0) -> lr %rx,%ry + bcr 0,0  */
@@ -2904,18 +2905,19 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		    /* l %rx,0(%r12,%ry) -> lr %rx,%ry + bcr 0,0  */
 		    ry = (insn & 0x0000f000) << 4;
 		  else
-		    invalid_tls_insn (input_bfd, input_section, rel);
-		  insn = 0x18000700 | (insn & 0x00f00000) | ry;
-		  bfd_put_32 (output_bfd, insn, contents + rel->r_offset);
+		    invalid_tls_insn(input_bfd, input_section, rel);
+		  insn = (0x18000700 | (insn & 0x00f00000) | ry);
+		  bfd_put_32(output_bfd, insn, (contents + rel->r_offset));
 		}
 	    }
 	  else if (r_type == R_390_TLS_GDCALL)
 	    {
 	      unsigned int insn;
 
-	      insn = bfd_get_32 (input_bfd, contents + rel->r_offset);
+	      insn = (unsigned int)bfd_get_32(input_bfd,
+                                              (contents + rel->r_offset));
 	      if ((insn & 0xff000fff) != 0x4d000000)
-		invalid_tls_insn (input_bfd, input_section, rel);
+		invalid_tls_insn(input_bfd, input_section, rel);
 	      if (!info->shared && (h == NULL || h->dynindx == -1))
 		/* GD->LE transition.
 		   bas %r14,0(%rx,%r13) -> bc 0,0  */
@@ -2924,7 +2926,7 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		/* GD->IE transition.
 		   bas %r14,0(%rx,%r13) -> l %r2,0(%r2,%r12)  */
 		insn = 0x5822c000;
-	      bfd_put_32 (output_bfd, insn, contents + rel->r_offset);
+	      bfd_put_32(output_bfd, insn, (contents + rel->r_offset));
 	    }
 	  else if (r_type == R_390_TLS_LDCALL)
 	    {
@@ -2932,13 +2934,14 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		{
 		  unsigned int insn;
 
-		  insn = bfd_get_32 (input_bfd, contents + rel->r_offset);
+		  insn = (unsigned int)bfd_get_32(input_bfd,
+                                                  (contents + rel->r_offset));
 		  if ((insn & 0xff000fff) != 0x4d000000)
-		    invalid_tls_insn (input_bfd, input_section, rel);
+		    invalid_tls_insn(input_bfd, input_section, rel);
 		  /* LD->LE transition.
 		     bas %r14,0(%rx,%r13) -> bc 0,0  */
 		  insn = 0x47000000;
-		  bfd_put_32 (output_bfd, insn, contents + rel->r_offset);
+		  bfd_put_32(output_bfd, insn, (contents + rel->r_offset));
 		}
 	    }
 	  continue;
@@ -2951,13 +2954,13 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	 because such sections are not SEC_ALLOC and thus ld.so will
 	 not process them.  */
       if (unresolved_reloc
-	  && !((input_section->flags & SEC_DEBUGGING) != 0
+	  && !(((input_section->flags & SEC_DEBUGGING) != 0)
 	       && h->def_dynamic))
 	(*_bfd_error_handler)
 	  (_("%B(%A+0x%lx): unresolvable relocation against symbol `%s'"),
 	   input_bfd,
 	   input_section,
-	   (long) rel->r_offset,
+	   (long)rel->r_offset,
 	   h->root.root.string);
 
       if (r_type == R_390_20
@@ -2966,15 +2969,16 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  || r_type == R_390_TLS_GOTIE20)
 	{
 	  relocation += rel->r_addend;
-	  relocation = (relocation&0xfff) << 8 | (relocation&0xff000) >> 12;
-	  r = _bfd_final_link_relocate (howto, input_bfd, input_section,
-					contents, rel->r_offset,
-					relocation, 0);
+	  relocation = (((relocation & 0xfff) << 8)
+    			| ((relocation & 0xff000) >> 12));
+	  r = _bfd_final_link_relocate(howto, input_bfd, input_section,
+                                       contents, rel->r_offset,
+                                       relocation, 0);
 	}
       else
-	r = _bfd_final_link_relocate (howto, input_bfd, input_section,
-				      contents, rel->r_offset,
-				      relocation, rel->r_addend);
+	r = _bfd_final_link_relocate(howto, input_bfd, input_section,
+				     contents, rel->r_offset,
+				     relocation, rel->r_addend);
 
       if (r != bfd_reloc_ok)
 	{
@@ -2984,22 +2988,23 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	    name = h->root.root.string;
 	  else
 	    {
-	      name = bfd_elf_string_from_elf_section (input_bfd,
-						      symtab_hdr->sh_link,
-						      sym->st_name);
+	      name =
+        	bfd_elf_string_from_elf_section(input_bfd,
+                                                (unsigned int)symtab_hdr->sh_link,
+                                                (unsigned int)sym->st_name);
 	      if (name == NULL)
 		return FALSE;
 	      if (*name == '\0')
-		name = bfd_section_name (input_bfd, sec);
+		name = bfd_section_name(input_bfd, sec);
 	    }
 
 	  if (r == bfd_reloc_overflow)
 	    {
 
-	      if (! ((*info->callbacks->reloc_overflow)
-		     (info, (h ? &h->root : NULL), name, howto->name,
-		      (bfd_vma) 0, input_bfd, input_section,
-		      rel->r_offset)))
+	      if (!((*info->callbacks->reloc_overflow)
+		    (info, (h ? &h->root : NULL), name, howto->name,
+		     (bfd_vma)0UL, input_bfd, input_section,
+		     rel->r_offset)))
 		return FALSE;
 	    }
 	  else
@@ -3007,7 +3012,7 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      (*_bfd_error_handler)
 		(_("%B(%A+0x%lx): reloc against `%s': error %d"),
 		 input_bfd, input_section,
-		 (long) rel->r_offset, name, (int) r);
+		 (long)rel->r_offset, name, (int)r);
 	      return FALSE;
 	    }
 	}
@@ -3363,22 +3368,22 @@ elf_s390_finish_dynamic_sections(bfd *output_bfd, struct bfd_link_info *info)
       /* Fill in the first three entries in the global offset table.  */
       if (htab->sgotplt->size > 0)
 	{
-	  bfd_put_32 (output_bfd,
-		      (sdyn == NULL ? (bfd_vma) 0
-		       : sdyn->output_section->vma + sdyn->output_offset),
-		      htab->sgotplt->contents);
+	  bfd_put_32(output_bfd,
+		     ((sdyn == NULL) ? (bfd_vma)0UL
+		      : (sdyn->output_section->vma + sdyn->output_offset)),
+		     htab->sgotplt->contents);
 	  /* One entry for shared object struct ptr.  */
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, htab->sgotplt->contents + 4);
+	  bfd_put_32(output_bfd, (bfd_vma)0UL, (htab->sgotplt->contents + 4));
 	  /* One entry for _dl_runtime_resolve.  */
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, htab->sgotplt->contents + 8);
+	  bfd_put_32(output_bfd, (bfd_vma)0UL, (htab->sgotplt->contents + 8));
 	}
 
-      elf_section_data (htab->sgotplt->output_section)
-	->this_hdr.sh_entsize = 4;
+      elf_section_data(htab->sgotplt->output_section)->this_hdr.sh_entsize = 4;
     }
   return TRUE;
 }
 
+/* */
 static bfd_boolean
 elf_s390_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
@@ -3392,10 +3397,12 @@ elf_s390_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 
       case 224:		/* S/390 Linux.  */
 	/* pr_cursig */
-	elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
+	elf_tdata(abfd)->core_signal = (int)bfd_get_16(abfd,
+                                                       (note->descdata + 12));
 
 	/* pr_pid */
-	elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 24);
+	elf_tdata(abfd)->core_pid = (int)bfd_get_32(abfd,
+                                                    (note->descdata + 24));
 
 	/* pr_reg */
 	offset = 72;
@@ -3404,18 +3411,18 @@ elf_s390_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
     }
 
   /* Make a ".reg/999" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  size, note->descpos + offset);
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+  					 (note->descpos + offset));
 }
 
 /* Return address for Ith PLT stub in section PLT, for relocation REL
    or (bfd_vma) -1 if it should not be included.  */
 
 static bfd_vma
-elf_s390_plt_sym_val (bfd_vma i, const asection *plt,
-		      const arelent *rel ATTRIBUTE_UNUSED)
+elf_s390_plt_sym_val(bfd_vma i, const asection *plt,
+		     const arelent *rel ATTRIBUTE_UNUSED)
 {
-  return plt->vma + PLT_FIRST_ENTRY_SIZE + i * PLT_ENTRY_SIZE;
+  return (plt->vma + PLT_FIRST_ENTRY_SIZE + (i * PLT_ENTRY_SIZE));
 }
 
 

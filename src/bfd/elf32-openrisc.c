@@ -329,38 +329,40 @@ openrisc_elf_relocate_section (bfd *output_bfd,
 	  || r_type == R_OPENRISC_GNU_VTENTRY)
 	continue;
 
-      if ((unsigned int) r_type >
-	  (sizeof openrisc_elf_howto_table / sizeof (reloc_howto_type)))
+      if ((unsigned int)r_type >
+	  (sizeof(openrisc_elf_howto_table) / sizeof(reloc_howto_type)))
 	abort ();
 
-      /* This is a final link.  */
-      howto = openrisc_elf_howto_table + ELF32_R_TYPE (rel->r_info);
+      /* This is a final link: */
+      howto = (openrisc_elf_howto_table + ELF32_R_TYPE(rel->r_info));
       h = NULL;
       sym = NULL;
       sec = NULL;
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
+	  sym = (local_syms + r_symndx);
 	  sec = local_sections[r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 
-	  name = bfd_elf_string_from_elf_section
-	    (input_bfd, symtab_hdr->sh_link, sym->st_name);
-	  name = (name == NULL) ? bfd_section_name (input_bfd, sec) : name;
+	  name =
+            bfd_elf_string_from_elf_section(input_bfd,
+                                            symtab_hdr->sh_link,
+                                            sym->st_name);
+	  name = ((name == NULL) ? bfd_section_name(input_bfd, sec) : name);
 	}
       else
 	{
 	  bfd_boolean unresolved_reloc, warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 	}
 
-      r = openrisc_final_link_relocate (howto, input_bfd, input_section,
-					contents, rel, relocation);
+      r = openrisc_final_link_relocate(howto, input_bfd, input_section,
+                                       contents, rel, relocation);
 
       if (r != bfd_reloc_ok)
 	{

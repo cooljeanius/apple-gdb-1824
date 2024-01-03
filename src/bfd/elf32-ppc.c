@@ -1731,23 +1731,21 @@ ppc_elf_object_p (bfd *abfd)
   return TRUE;
 }
 
-/* Function to set whether a module needs the -mrelocatable bit set.  */
-
+/* Function to set whether a module needs the -mrelocatable bit set: */
 static bfd_boolean
-ppc_elf_set_private_flags (bfd *abfd, flagword flags)
+ppc_elf_set_private_flags(bfd *abfd, flagword flags)
 {
-  BFD_ASSERT (!elf_flags_init (abfd)
-	      || elf_elfheader (abfd)->e_flags == flags);
+  BFD_ASSERT(!elf_flags_init(abfd)
+	     || (elf_elfheader(abfd)->e_flags == flags));
 
-  elf_elfheader (abfd)->e_flags = flags;
-  elf_flags_init (abfd) = TRUE;
+  elf_elfheader(abfd)->e_flags = flags;
+  elf_flags_init(abfd) = TRUE;
   return TRUE;
 }
 
-/* Support for core dump NOTE sections.  */
-
+/* Support for core dump NOTE sections: */
 static bfd_boolean
-ppc_elf_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
+ppc_elf_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   int offset;
   unsigned int size;
@@ -1759,10 +1757,12 @@ ppc_elf_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 
     case 268:		/* Linux/PPC.  */
       /* pr_cursig */
-      elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
+      elf_tdata(abfd)->core_signal = (int)bfd_get_16(abfd,
+                                                     (note->descdata + 12));
 
       /* pr_pid */
-      elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 24);
+      elf_tdata(abfd)->core_pid = (int)bfd_get_32(abfd,
+      						  (note->descdata + 24));
 
       /* pr_reg */
       offset = 72;
@@ -1772,12 +1772,13 @@ ppc_elf_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
     }
 
   /* Make a ".reg/999" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  size, note->descpos + offset);
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+  					 (note->descpos + offset));
 }
 
+/* */
 static bfd_boolean
-ppc_elf_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
+ppc_elf_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
   switch (note->descsz)
     {
@@ -1785,10 +1786,10 @@ ppc_elf_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
       return FALSE;
 
     case 128:		/* Linux/PPC elf_prpsinfo.  */
-      elf_tdata (abfd)->core_program
-	= _bfd_elfcore_strndup (abfd, note->descdata + 32, 16);
-      elf_tdata (abfd)->core_command
-	= _bfd_elfcore_strndup (abfd, note->descdata + 48, 80);
+      elf_tdata(abfd)->core_program =
+      	_bfd_elfcore_strndup(abfd, (note->descdata + 32), 16);
+      elf_tdata(abfd)->core_command =
+      	_bfd_elfcore_strndup(abfd, (note->descdata + 48), 80);
     }
 
   /* Note that for some reason, a spurious space is tacked
@@ -1796,11 +1797,11 @@ ppc_elf_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
      implementations, so strip it off if it exists.  */
 
   {
-    char *command = elf_tdata (abfd)->core_command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    size_t n = strlen(command);
 
-    if (0 < n && command[n - 1] == ' ')
-      command[n - 1] = '\0';
+    if ((n > 0UL) && command[n - 1UL] == ' ')
+      command[n - 1UL] = '\0';
   }
 
   return TRUE;
@@ -1963,7 +1964,8 @@ apuinfo_list_add(unsigned long value)
   head = entry;
 }
 
-static unsigned
+/* */
+static unsigned int
 apuinfo_list_length(void)
 {
   apuinfo_list *entry;
@@ -1974,13 +1976,14 @@ apuinfo_list_length(void)
        entry = entry->next)
     ++count;
 
-  return count;
+  return (unsigned int)count;
 }
 
+/* */
 static inline unsigned long
 apuinfo_list_element(unsigned long number)
 {
-  apuinfo_list * entry;
+  apuinfo_list *entry;
 
   for (entry = head;
        entry && number--;
@@ -1990,6 +1993,7 @@ apuinfo_list_element(unsigned long number)
   return (entry ? entry->value : 0);
 }
 
+/* */
 static void
 apuinfo_list_finish(void)
 {

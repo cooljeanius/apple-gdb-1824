@@ -1352,54 +1352,52 @@ mips_info_to_howto_rela (bfd *abfd, arelent *cache_ptr, Elf_Internal_Rela *dst)
    and externally visible symbols.  */
 
 static bfd_boolean
-mips_elf_sym_is_global (bfd *abfd ATTRIBUTE_UNUSED, asymbol *sym)
+mips_elf_sym_is_global(bfd *abfd ATTRIBUTE_UNUSED, asymbol *sym)
 {
-  if (SGI_COMPAT (abfd))
-    return (sym->flags & BSF_SECTION_SYM) == 0;
+  if (SGI_COMPAT(abfd))
+    return ((sym->flags & BSF_SECTION_SYM) == 0);
   else
-    return ((sym->flags & (BSF_GLOBAL | BSF_WEAK)) != 0
-	    || bfd_is_und_section (bfd_get_section (sym))
-	    || bfd_is_com_section (bfd_get_section (sym)));
+    return (((sym->flags & (BSF_GLOBAL | BSF_WEAK)) != 0)
+	    || bfd_is_und_section(bfd_get_section(sym))
+	    || bfd_is_com_section(bfd_get_section(sym)));
 }
 
-/* Set the right machine number for a MIPS ELF file.  */
-
+/* Set the right machine number for a MIPS ELF file: */
 static bfd_boolean
-mips_elf32_object_p (bfd *abfd)
+mips_elf32_object_p(bfd *abfd)
 {
   unsigned long mach;
 
   /* Irix 5 and 6 are broken.  Object file symbol tables are not always
      sorted correctly such that local symbols precede global symbols,
      and the sh_info field in the symbol table is not always right.  */
-  if (SGI_COMPAT (abfd))
-    elf_bad_symtab (abfd) = TRUE;
+  if (SGI_COMPAT(abfd))
+    elf_bad_symtab(abfd) = TRUE;
 
-  if (ABI_N32_P (abfd))
+  if (ABI_N32_P(abfd))
     return FALSE;
 
-  mach = _bfd_elf_mips_mach (elf_elfheader (abfd)->e_flags);
-  bfd_default_set_arch_mach (abfd, bfd_arch_mips, mach);
+  mach = _bfd_elf_mips_mach(elf_elfheader(abfd)->e_flags);
+  bfd_default_set_arch_mach(abfd, bfd_arch_mips, mach);
 
   return TRUE;
 }
 
 /* MIPS ELF local labels start with '$', not 'L'.  */
-
 static bfd_boolean
-mips_elf_is_local_label_name (bfd *abfd, const char *name)
+mips_elf_is_local_label_name(bfd *abfd, const char *name)
 {
   if (name[0] == '$')
     return TRUE;
 
   /* On Irix 6, the labels go back to starting with '.', so we accept
      the generic ELF local label syntax as well.  */
-  return _bfd_elf_is_local_label_name (abfd, name);
+  return _bfd_elf_is_local_label_name(abfd, name);
 }
 
 /* Support for core dump NOTE sections.  */
 static bfd_boolean
-elf32_mips_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
+elf32_mips_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   int offset;
   unsigned int size;
@@ -1411,10 +1409,12 @@ elf32_mips_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 
       case 256:		/* Linux/MIPS */
 	/* pr_cursig */
-	elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
+	elf_tdata(abfd)->core_signal = (int)bfd_get_16(abfd,
+                                                       (note->descdata + 12));
 
 	/* pr_pid */
-	elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 24);
+	elf_tdata(abfd)->core_pid = (int)bfd_get_32(abfd,
+                                                    (note->descdata + 24));
 
 	/* pr_reg */
 	offset = 72;
@@ -1424,12 +1424,13 @@ elf32_mips_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
     }
 
   /* Make a ".reg/999" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  size, note->descpos + offset);
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+  					 (note->descpos + offset));
 }
 
+/* */
 static bfd_boolean
-elf32_mips_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
+elf32_mips_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
   switch (note->descsz)
     {
@@ -1437,10 +1438,10 @@ elf32_mips_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
 	return FALSE;
 
       case 128:		/* Linux/MIPS elf_prpsinfo */
-	elf_tdata (abfd)->core_program
-	 = _bfd_elfcore_strndup (abfd, note->descdata + 32, 16);
-	elf_tdata (abfd)->core_command
-	 = _bfd_elfcore_strndup (abfd, note->descdata + 48, 80);
+	elf_tdata(abfd)->core_program =
+          _bfd_elfcore_strndup(abfd, (note->descdata + 32), 16);
+	elf_tdata(abfd)->core_command =
+          _bfd_elfcore_strndup(abfd, (note->descdata + 48), 80);
     }
 
   /* Note that for some reason, a spurious space is tacked
@@ -1448,11 +1449,11 @@ elf32_mips_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
      implementations, so strip it off if it exists.  */
 
   {
-    char *command = elf_tdata (abfd)->core_command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    size_t n = strlen(command);
 
-    if (0 < n && command[n - 1] == ' ')
-      command[n - 1] = '\0';
+    if ((n > 0UL) && (command[n - 1UL] == ' '))
+      command[n - 1UL] = '\0';
   }
 
   return TRUE;

@@ -470,26 +470,27 @@ elf32_msp430_relocate_section (bfd * output_bfd ATTRIBUTE_UNUSED,
 	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 
 	  name =
-            bfd_elf_string_from_elf_section(input_bfd, symtab_hdr->sh_link,
-                                            sym->st_name);
+            bfd_elf_string_from_elf_section(input_bfd,
+                                            (unsigned int)symtab_hdr->sh_link,
+                                            (unsigned int)sym->st_name);
 	  name = ((name == NULL) ? bfd_section_name(input_bfd, sec) : name);
 	}
       else
 	{
 	  bfd_boolean unresolved_reloc, warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 	}
 
-      r = msp430_final_link_relocate (howto, input_bfd, input_section,
-				      contents, rel, relocation);
+      r = msp430_final_link_relocate(howto, input_bfd, input_section,
+				     contents, rel, relocation);
 
       if (r != bfd_reloc_ok)
 	{
-	  const char *msg = (const char *) NULL;
+	  const char *msg = (const char *)NULL;
 
 	  switch (r)
 	    {
@@ -790,13 +791,10 @@ static struct rcodes_s
   { 0, 	    0, 	    0, 	    0, 	    0, 0, 0, 0,  0}
 };
 
-/* Return TRUE if a symbol exists at the given address.  */
-
+/* Return TRUE if a symbol exists at the given address: */
 static bfd_boolean
-msp430_elf_symbol_address_p (bfd * abfd,
-			     asection * sec,
-			     Elf_Internal_Sym * isym,
-			     bfd_vma addr)
+msp430_elf_symbol_address_p(bfd *abfd, asection *sec, Elf_Internal_Sym *isym,
+			    bfd_vma addr)
 {
   Elf_Internal_Shdr *symtab_hdr;
   unsigned int sec_shndx;
@@ -805,18 +803,18 @@ msp430_elf_symbol_address_p (bfd * abfd,
   struct elf_link_hash_entry **end_hashes;
   unsigned int symcount;
 
-  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
   /* Examine all the local symbols.  */
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  for (isymend = isym + symtab_hdr->sh_info; isym < isymend; isym++)
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  for (isymend = (isym + symtab_hdr->sh_info); isym < isymend; isym++)
     if (isym->st_shndx == sec_shndx && isym->st_value == addr)
       return TRUE;
 
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+  symcount = (symtab_hdr->sh_size / sizeof(Elf32_External_Sym)
 	      - symtab_hdr->sh_info);
-  sym_hashes = elf_sym_hashes (abfd);
-  end_hashes = sym_hashes + symcount;
+  sym_hashes = elf_sym_hashes(abfd);
+  end_hashes = (sym_hashes + symcount);
   for (; sym_hashes < end_hashes; sym_hashes++)
     {
       struct elf_link_hash_entry *sym_hash = *sym_hashes;
@@ -1031,7 +1029,7 @@ msp430_elf_relax_section (bfd * abfd, asection * sec,
       /* Try to turn a 16bit pc-relative branch into a 10bit pc-relative
          branch.  */
       /* Paranoia? paranoia...  */      
-      if (ELF32_R_TYPE (irel->r_info) == (int) R_MSP430_RL_PCREL)
+      if (ELF32_R_TYPE(irel->r_info) == (int)R_MSP430_RL_PCREL)
 	{
 	  bfd_vma value = symval;
 
@@ -1043,7 +1041,7 @@ msp430_elf_relax_section (bfd * abfd, asection * sec,
 	  /* See if the value will fit in 10 bits, note the high value is
 	     1016 as the target will be two bytes closer if we are
 	     able to relax. */
-	  if ((long) value < 1016 && (long) value > -1016)
+	  if (((long)value < 1016L) && ((long)value > -1016L))
 	    {
 	      int code0 = 0, code1 = 0, code2 = 0;
 	      int i;
@@ -1051,12 +1049,12 @@ msp430_elf_relax_section (bfd * abfd, asection * sec,
 
 	      /* Get the opcode.  */
 	      if (irel->r_offset >= 6)
-		code0 = bfd_get_16 (abfd, contents + irel->r_offset - 6);
+		code0 = (int)bfd_get_16(abfd, (contents + irel->r_offset - 6));
 
 	      if (irel->r_offset >= 4)
-		code1 = bfd_get_16 (abfd, contents + irel->r_offset - 4);
+		code1 = (int)bfd_get_16(abfd, (contents + irel->r_offset - 4));
 
-	      code2 = bfd_get_16 (abfd, contents + irel->r_offset - 2);
+	      code2 = (int)bfd_get_16(abfd, (contents + irel->r_offset - 2));
 
 	      if (code2 != 0x4010)
 		continue;
@@ -1069,7 +1067,7 @@ msp430_elf_relax_section (bfd * abfd, asection * sec,
 		    break;
 		  else if (rx->cdx == 1 && rx->f1 == code1)
 		    break;
-		  else if (rx->cdx == 0)	/* This is an unconditional jump.  */
+		  else if (rx->cdx == 0) /* This is an unconditional jump.  */
 		    break;
 		}
 

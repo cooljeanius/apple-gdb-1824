@@ -7244,7 +7244,7 @@ sh_elf_reloc_type_class (const Elf_Internal_Rela *rela)
 /* Support for Linux core dump NOTE sections.  */
 
 static bfd_boolean
-elf32_shlin_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
+elf32_shlin_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   int offset;
   unsigned int size;
@@ -7256,10 +7256,12 @@ elf32_shlin_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 
       case 168:		/* Linux/SH */
 	/* pr_cursig */
-	elf_tdata(abfd)->core_signal = bfd_get_16(abfd, note->descdata + 12);
+	elf_tdata(abfd)->core_signal = (int)bfd_get_16(abfd,
+                                                       (note->descdata + 12));
 
 	/* pr_pid */
-	elf_tdata(abfd)->core_pid = bfd_get_32(abfd, note->descdata + 24);
+	elf_tdata(abfd)->core_pid = (int)bfd_get_32(abfd,
+                                                    (note->descdata + 24));
 
 	/* pr_reg */
 	offset = 72;
@@ -7269,12 +7271,13 @@ elf32_shlin_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
     }
 
   /* Make a ".reg/999" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  size, note->descpos + offset);
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+  					 (note->descpos + offset));
 }
 
+/* */
 static bfd_boolean
-elf32_shlin_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
+elf32_shlin_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
   switch (note->descsz)
     {
@@ -7282,10 +7285,10 @@ elf32_shlin_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
 	return FALSE;
 
       case 124:		/* Linux/SH elf_prpsinfo */
-	elf_tdata (abfd)->core_program
-	 = _bfd_elfcore_strndup (abfd, note->descdata + 28, 16);
-	elf_tdata (abfd)->core_command
-	 = _bfd_elfcore_strndup (abfd, note->descdata + 44, 80);
+	elf_tdata(abfd)->core_program =
+	  _bfd_elfcore_strndup(abfd, (note->descdata + 28), 16);
+	elf_tdata(abfd)->core_command =
+	  _bfd_elfcore_strndup(abfd, (note->descdata + 44), 80);
     }
 
   /* Note that for some reason, a spurious space is tacked
@@ -7293,11 +7296,11 @@ elf32_shlin_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
      implementations, so strip it off if it exists.  */
 
   {
-    char *command = elf_tdata (abfd)->core_command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    size_t n = strlen(command);
 
-    if (0 < n && command[n - 1] == ' ')
-      command[n - 1] = '\0';
+    if ((n > 0UL) && (command[n - 1UL] == ' '))
+      command[n - 1UL] = '\0';
   }
 
   return TRUE;
@@ -7309,10 +7312,10 @@ elf32_shlin_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
    or (bfd_vma) -1 if it should not be included.  */
 
 static bfd_vma
-sh_elf_plt_sym_val (bfd_vma i, const asection *plt,
-		    const arelent *rel ATTRIBUTE_UNUSED)
+sh_elf_plt_sym_val(bfd_vma i, const asection *plt,
+		   const arelent *rel ATTRIBUTE_UNUSED)
 {
-  return plt->vma + (i + 1) * PLT_ENTRY_SIZE;
+  return (plt->vma + (i + 1) * PLT_ENTRY_SIZE);
 }
 
 #if !defined SH_TARGET_ALREADY_DEFINED

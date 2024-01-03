@@ -3347,28 +3347,26 @@ is_operand_relocation (int r_type)
 #define MIN_INSN_LENGTH 2
 
 /* Return 0 if it fails to decode.  */
-
 bfd_size_type
-insn_decode_len (bfd_byte *contents,
-		 bfd_size_type content_len,
-		 bfd_size_type offset)
+insn_decode_len(bfd_byte *contents, bfd_size_type content_len,
+                bfd_size_type offset)
 {
   int insn_len;
   xtensa_isa isa = xtensa_default_isa;
   xtensa_format fmt;
   static xtensa_insnbuf ibuff = NULL;
 
-  if (offset + MIN_INSN_LENGTH > content_len)
+  if ((offset + MIN_INSN_LENGTH) > content_len)
     return 0;
 
   if (ibuff == NULL)
-    ibuff = xtensa_insnbuf_alloc (isa);
-  xtensa_insnbuf_from_chars (isa, ibuff, &contents[offset],
-			     content_len - offset);
-  fmt = xtensa_format_decode (isa, ibuff);
+    ibuff = xtensa_insnbuf_alloc(isa);
+  xtensa_insnbuf_from_chars(isa, ibuff, &contents[offset],
+			    (int)(content_len - offset));
+  fmt = xtensa_format_decode(isa, ibuff);
   if (fmt == XTENSA_UNDEFINED)
     return 0;
-  insn_len = xtensa_format_length (isa, fmt);
+  insn_len = xtensa_format_length(isa, fmt);
   if (insn_len ==  XTENSA_UNDEFINED)
     return 0;
   return insn_len;
@@ -3377,92 +3375,85 @@ insn_decode_len (bfd_byte *contents,
 
 /* Decode the opcode for a single slot instruction.
    Return 0 if it fails to decode or the instruction is multi-slot.  */
-
 xtensa_opcode
-insn_decode_opcode (bfd_byte *contents,
-		    bfd_size_type content_len,
-		    bfd_size_type offset,
-		    int slot)
+insn_decode_opcode(bfd_byte *contents, bfd_size_type content_len,
+		   bfd_size_type offset, int slot)
 {
   xtensa_isa isa = xtensa_default_isa;
   xtensa_format fmt;
   static xtensa_insnbuf insnbuf = NULL;
   static xtensa_insnbuf slotbuf = NULL;
 
-  if (offset + MIN_INSN_LENGTH > content_len)
+  if ((offset + MIN_INSN_LENGTH) > content_len)
     return XTENSA_UNDEFINED;
 
   if (insnbuf == NULL)
     {
-      insnbuf = xtensa_insnbuf_alloc (isa);
-      slotbuf = xtensa_insnbuf_alloc (isa);
+      insnbuf = xtensa_insnbuf_alloc(isa);
+      slotbuf = xtensa_insnbuf_alloc(isa);
     }
 
-  xtensa_insnbuf_from_chars (isa, insnbuf, &contents[offset],
-			     content_len - offset);
-  fmt = xtensa_format_decode (isa, insnbuf);
+  xtensa_insnbuf_from_chars(isa, insnbuf, &contents[offset],
+			    (int)(content_len - offset));
+  fmt = xtensa_format_decode(isa, insnbuf);
   if (fmt == XTENSA_UNDEFINED)
     return XTENSA_UNDEFINED;
 
-  if (slot >= xtensa_format_num_slots (isa, fmt))
+  if (slot >= xtensa_format_num_slots(isa, fmt))
     return XTENSA_UNDEFINED;
 
-  xtensa_format_get_slot (isa, fmt, slot, insnbuf, slotbuf);
-  return xtensa_opcode_decode (isa, fmt, slot, slotbuf);
+  xtensa_format_get_slot(isa, fmt, slot, insnbuf, slotbuf);
+  return xtensa_opcode_decode(isa, fmt, slot, slotbuf);
 }
 
 
 /* The offset is the offset in the contents.
    The address is the address of that offset.  */
-
 static bfd_boolean
-check_branch_target_aligned (bfd_byte *contents,
-			     bfd_size_type content_length,
-			     bfd_vma offset,
-			     bfd_vma address)
+check_branch_target_aligned(bfd_byte *contents, bfd_size_type content_length,
+			    bfd_vma offset, bfd_vma address)
 {
-  bfd_size_type insn_len = insn_decode_len (contents, content_length, offset);
+  bfd_size_type insn_len = insn_decode_len(contents, content_length, offset);
   if (insn_len == 0)
     return FALSE;
-  return check_branch_target_aligned_address (address, insn_len);
+  return check_branch_target_aligned_address(address, (int)insn_len);
 }
 
-
+/* */
 static bfd_boolean
-check_loop_aligned (bfd_byte *contents,
-		    bfd_size_type content_length,
-		    bfd_vma offset,
-		    bfd_vma address)
+check_loop_aligned(bfd_byte *contents, bfd_size_type content_length,
+		   bfd_vma offset, bfd_vma address)
 {
   bfd_size_type loop_len, insn_len;
   xtensa_opcode opcode =
-    insn_decode_opcode (contents, content_length, offset, 0);
-  BFD_ASSERT (opcode != XTENSA_UNDEFINED);
+    insn_decode_opcode(contents, content_length, offset, 0);
+  BFD_ASSERT(opcode != XTENSA_UNDEFINED);
   if (opcode != XTENSA_UNDEFINED)
     return FALSE;
-  BFD_ASSERT (xtensa_opcode_is_loop (xtensa_default_isa, opcode));
-  if (!xtensa_opcode_is_loop (xtensa_default_isa, opcode))
+  BFD_ASSERT(xtensa_opcode_is_loop(xtensa_default_isa, opcode));
+  if (!xtensa_opcode_is_loop(xtensa_default_isa, opcode))
     return FALSE;
 
-  loop_len = insn_decode_len (contents, content_length, offset);
-  BFD_ASSERT (loop_len != 0);
+  loop_len = insn_decode_len(contents, content_length, offset);
+  BFD_ASSERT(loop_len != 0);
   if (loop_len == 0)
     return FALSE;
 
-  insn_len = insn_decode_len (contents, content_length, offset + loop_len);
-  BFD_ASSERT (insn_len != 0);
+  insn_len = insn_decode_len(contents, content_length, (offset + loop_len));
+  BFD_ASSERT(insn_len != 0);
   if (insn_len == 0)
     return FALSE;
 
-  return check_branch_target_aligned_address (address + loop_len, insn_len);
+  return check_branch_target_aligned_address((address + loop_len),
+                                             (int)insn_len);
 }
 
-
+/* */
 static bfd_boolean
-check_branch_target_aligned_address (bfd_vma addr, int len)
+check_branch_target_aligned_address(bfd_vma addr, int len)
 {
   if (len == 8)
-    return (addr % 8 == 0);
+    return ((addr % 8) == 0);
   return ((addr >> 2) == ((addr + len - 1) >> 2));
 }
 
@@ -3588,10 +3579,10 @@ narrow_instruction (bfd_byte *contents,
 
   if (insnbuf == NULL)
     {
-      insnbuf = xtensa_insnbuf_alloc (isa);
-      slotbuf = xtensa_insnbuf_alloc (isa);
-      o_insnbuf = xtensa_insnbuf_alloc (isa);
-      o_slotbuf = xtensa_insnbuf_alloc (isa);
+      insnbuf = xtensa_insnbuf_alloc(isa);
+      slotbuf = xtensa_insnbuf_alloc(isa);
+      o_insnbuf = xtensa_insnbuf_alloc(isa);
+      o_slotbuf = xtensa_insnbuf_alloc(isa);
     }
 
   BFD_ASSERT (offset < content_length);
@@ -3601,27 +3592,27 @@ narrow_instruction (bfd_byte *contents,
 
   /* We will hand-code a few of these for a little while.
      These have all been specified in the assembler aleady.  */
-  xtensa_insnbuf_from_chars (isa, insnbuf, &contents[offset],
-			     content_length - offset);
-  fmt = xtensa_format_decode (isa, insnbuf);
-  if (xtensa_format_num_slots (isa, fmt) != 1)
+  xtensa_insnbuf_from_chars(isa, insnbuf, &contents[offset],
+			    (int)(content_length - offset));
+  fmt = xtensa_format_decode(isa, insnbuf);
+  if (xtensa_format_num_slots(isa, fmt) != 1)
     return FALSE;
 
-  if (xtensa_format_get_slot (isa, fmt, 0, insnbuf, slotbuf) != 0)
+  if (xtensa_format_get_slot(isa, fmt, 0, insnbuf, slotbuf) != 0)
     return FALSE;
 
-  opcode = xtensa_opcode_decode (isa, fmt, 0, slotbuf);
+  opcode = xtensa_opcode_decode(isa, fmt, 0, slotbuf);
   if (opcode == XTENSA_UNDEFINED)
     return FALSE;
-  insn_len = xtensa_format_length (isa, fmt);
+  insn_len = xtensa_format_length(isa, fmt);
   if (insn_len > content_length)
     return FALSE;
 
-  for (opi = 0; opi < (sizeof (narrowable)/sizeof (struct string_pair)); ++opi)
+  for (opi = 0; opi < (sizeof(narrowable) / sizeof(struct string_pair)); ++opi)
     {
-      bfd_boolean is_or = (strcmp ("or", narrowable[opi].wide) == 0);
+      bfd_boolean is_or = (strcmp("or", narrowable[opi].wide) == 0);
 
-      if (opcode == xtensa_opcode_lookup (isa, narrowable[opi].wide))
+      if (opcode == xtensa_opcode_lookup(isa, narrowable[opi].wide))
 	{
 	  uint32 value, newval;
 	  int i, operand_count, o_operand_count;
