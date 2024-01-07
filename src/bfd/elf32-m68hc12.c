@@ -493,12 +493,12 @@ m68hc12_elf_size_one_stub (struct bfd_hash_entry *gen_entry,
 /* Create a 68HC12 ELF linker hash table.  */
 
 static struct bfd_link_hash_table *
-m68hc12_elf_bfd_link_hash_table_create (bfd *abfd)
+m68hc12_elf_bfd_link_hash_table_create(bfd *abfd)
 {
   struct m68hc11_elf_link_hash_table *ret;
 
-  ret = m68hc11_elf_hash_table_create (abfd);
-  if (ret == (struct m68hc11_elf_link_hash_table *) NULL)
+  ret = m68hc11_elf_hash_table_create(abfd);
+  if (ret == (struct m68hc11_elf_link_hash_table *)NULL)
     return NULL;
 
   ret->size_one_stub = m68hc12_elf_size_one_stub;
@@ -507,22 +507,23 @@ m68hc12_elf_bfd_link_hash_table_create (bfd *abfd)
   return &ret->root.root;
 }
 
+/* */
 static bfd_boolean
-m68hc12_elf_set_mach_from_flags (bfd *abfd)
+m68hc12_elf_set_mach_from_flags(bfd *abfd)
 {
-  flagword flags = elf_elfheader (abfd)->e_flags;
+  flagword flags = (flagword)elf_elfheader(abfd)->e_flags;
 
   switch (flags & EF_M68HC11_MACH_MASK)
     {
     case EF_M68HC12_MACH:
-      bfd_default_set_arch_mach (abfd, bfd_arch_m68hc12, bfd_mach_m6812);
+      bfd_default_set_arch_mach(abfd, bfd_arch_m68hc12, bfd_mach_m6812);
       break;
     case EF_M68HCS12_MACH:
-      bfd_default_set_arch_mach (abfd, bfd_arch_m68hc12, bfd_mach_m6812s);
+      bfd_default_set_arch_mach(abfd, bfd_arch_m68hc12, bfd_mach_m6812s);
       break;
     case EF_M68HC11_GENERIC:
-      bfd_default_set_arch_mach (abfd, bfd_arch_m68hc12,
-                                 bfd_mach_m6812_default);
+      bfd_default_set_arch_mach(abfd, bfd_arch_m68hc12,
+                                bfd_mach_m6812_default);
       break;
     default:
       return FALSE;

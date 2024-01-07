@@ -3038,15 +3038,15 @@ m32r_elf_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 
 	    default : /* OLD_M32R_RELOC */
 
-	      r = _bfd_final_link_relocate (howto, input_bfd, input_section,
-					    contents, offset,
-					    relocation, addend);
+	      r = _bfd_final_link_relocate(howto, input_bfd, input_section,
+					   contents, offset,
+					   relocation, addend);
 	      goto check_reloc;
 	    }
 
-          r = _bfd_final_link_relocate (howto, input_bfd, input_section,
-                                        contents, rel->r_offset,
-                                        relocation, rel->r_addend);
+          r = _bfd_final_link_relocate(howto, input_bfd, input_section,
+                                       contents, rel->r_offset,
+                                       relocation, rel->r_addend);
 
 	}
 
@@ -3054,17 +3054,19 @@ m32r_elf_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 
       if (r != bfd_reloc_ok)
 	{
-	  /* FIXME: This should be generic enough to go in a utility.  */
+	  /* FIXME: This should be generic enough to go in a utility: */
 	  const char *name;
 
 	  if (h != NULL)
 	    name = h->root.root.string;
 	  else
 	    {
-	      name = (bfd_elf_string_from_elf_section
-		      (input_bfd, symtab_hdr->sh_link, sym->st_name));
+	      name =
+        	(bfd_elf_string_from_elf_section(input_bfd,
+         					 (unsigned int)symtab_hdr->sh_link,
+                     				 (unsigned int)sym->st_name));
 	      if (name == NULL || *name == '\0')
-		name = bfd_section_name (input_bfd, sec);
+		name = bfd_section_name(input_bfd, sec);
 	    }
 
 	  if (errmsg != NULL)
@@ -3073,16 +3075,16 @@ m32r_elf_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 	  switch (r)
 	    {
 	    case bfd_reloc_overflow:
-	      if (! ((*info->callbacks->reloc_overflow)
-		     (info, (h ? &h->root : NULL), name, howto->name,
-		      (bfd_vma) 0, input_bfd, input_section, offset)))
+	      if (!((*info->callbacks->reloc_overflow)
+		    (info, (h ? &h->root : NULL), name, howto->name,
+		     (bfd_vma)0UL, input_bfd, input_section, offset)))
 		return FALSE;
 	      break;
 
 	    case bfd_reloc_undefined:
-	      if (! ((*info->callbacks->undefined_symbol)
-		     (info, name, input_bfd, input_section,
-		      offset, TRUE)))
+	      if (!((*info->callbacks->undefined_symbol)
+		    (info, name, input_bfd, input_section,
+		     offset, TRUE)))
 		return FALSE;
 	      break;
 
@@ -3457,16 +3459,15 @@ m32r_elf_finish_dynamic_sections (bfd *output_bfd,
 
 
 /* Set the right machine number.  */
-
 static bfd_boolean
-m32r_elf_object_p (bfd *abfd)
+m32r_elf_object_p(bfd *abfd)
 {
-  switch (elf_elfheader (abfd)->e_flags & EF_M32R_ARCH)
+  switch (elf_elfheader(abfd)->e_flags & EF_M32R_ARCH)
     {
     default:
-    case E_M32R_ARCH:   (void) bfd_default_set_arch_mach (abfd, bfd_arch_m32r, bfd_mach_m32r);  break;
-    case E_M32RX_ARCH:  (void) bfd_default_set_arch_mach (abfd, bfd_arch_m32r, bfd_mach_m32rx); break;
-    case E_M32R2_ARCH:  (void) bfd_default_set_arch_mach (abfd, bfd_arch_m32r, bfd_mach_m32r2); break;
+    case E_M32R_ARCH: (void)bfd_default_set_arch_mach(abfd, bfd_arch_m32r, bfd_mach_m32r);  break;
+    case E_M32RX_ARCH: (void)bfd_default_set_arch_mach(abfd, bfd_arch_m32r, bfd_mach_m32rx); break;
+    case E_M32R2_ARCH: (void)bfd_default_set_arch_mach(abfd, bfd_arch_m32r, bfd_mach_m32r2); break;
     }
   return TRUE;
 }
@@ -3474,33 +3475,32 @@ m32r_elf_object_p (bfd *abfd)
 /* Store the machine number in the flags field.  */
 
 static void
-m32r_elf_final_write_processing (bfd *abfd,
-				 bfd_boolean linker ATTRIBUTE_UNUSED)
+m32r_elf_final_write_processing(bfd *abfd, bfd_boolean linker ATTRIBUTE_UNUSED)
 {
   unsigned long val;
 
-  switch (bfd_get_mach (abfd))
+  switch (bfd_get_mach(abfd))
     {
     default:
-    case bfd_mach_m32r:  val = E_M32R_ARCH; break;
+    case bfd_mach_m32r: val = E_M32R_ARCH; break;
     case bfd_mach_m32rx: val = E_M32RX_ARCH; break;
     case bfd_mach_m32r2: val = E_M32R2_ARCH; break;
     }
 
-  elf_elfheader (abfd)->e_flags &=~ EF_M32R_ARCH;
-  elf_elfheader (abfd)->e_flags |= val;
+  elf_elfheader(abfd)->e_flags &=~ EF_M32R_ARCH;
+  elf_elfheader(abfd)->e_flags |= val;
 }
 
 /* Function to keep M32R specific file flags.  */
 
 static bfd_boolean
-m32r_elf_set_private_flags (bfd *abfd, flagword flags)
+m32r_elf_set_private_flags(bfd *abfd, flagword flags)
 {
-  BFD_ASSERT (!elf_flags_init (abfd)
-	      || elf_elfheader (abfd)->e_flags == flags);
+  BFD_ASSERT(!elf_flags_init(abfd)
+	     || elf_elfheader(abfd)->e_flags == flags);
 
-  elf_elfheader (abfd)->e_flags = flags;
-  elf_flags_init (abfd) = TRUE;
+  elf_elfheader(abfd)->e_flags = flags;
+  elf_flags_init(abfd) = TRUE;
   return TRUE;
 }
 
@@ -3508,19 +3508,19 @@ m32r_elf_set_private_flags (bfd *abfd, flagword flags)
    object file when linking.  */
 
 static bfd_boolean
-m32r_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
+m32r_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   flagword out_flags;
   flagword in_flags;
 
-  if (   bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
-  in_flags  = elf_elfheader (ibfd)->e_flags;
-  out_flags = elf_elfheader (obfd)->e_flags;
+  in_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  out_flags = (flagword)elf_elfheader(obfd)->e_flags;
 
-  if (! elf_flags_init (obfd))
+  if (!elf_flags_init(obfd))
     {
       /* If the input is the default architecture then do not
 	 bother setting the flags for the output architecture,
@@ -3528,16 +3528,16 @@ m32r_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
 	 merges ever set these flags then they will retain their
 	 unitialised values, which surprise surprise, correspond
 	 to the default values.  */
-      if (bfd_get_arch_info (ibfd)->the_default)
+      if (bfd_get_arch_info(ibfd)->the_default)
 	return TRUE;
 
-      elf_flags_init (obfd) = TRUE;
-      elf_elfheader (obfd)->e_flags = in_flags;
+      elf_flags_init(obfd) = TRUE;
+      elf_elfheader(obfd)->e_flags = in_flags;
 
-      if (bfd_get_arch (obfd) == bfd_get_arch (ibfd)
-	  && bfd_get_arch_info (obfd)->the_default)
-	return bfd_set_arch_mach (obfd, bfd_get_arch (ibfd),
-				  bfd_get_mach (ibfd));
+      if (bfd_get_arch(obfd) == bfd_get_arch(ibfd)
+	  && bfd_get_arch_info(obfd)->the_default)
+	return bfd_set_arch_mach(obfd, bfd_get_arch(ibfd),
+				 bfd_get_mach(ibfd));
 
       return TRUE;
     }

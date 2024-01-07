@@ -2813,10 +2813,9 @@ elf_create_pointer_linker_section (bfd *abfd,
       struct ppc_elf_link_hash_entry *eh;
 
       /* Has this symbol already been allocated?  If so, our work is done.  */
-      eh = (struct ppc_elf_link_hash_entry *) h;
-      if (elf_find_pointer_linker_section (eh->linker_section_pointer,
-					   rel->r_addend,
-					   lsect))
+      eh = (struct ppc_elf_link_hash_entry *)h;
+      if (elf_find_pointer_linker_section(eh->linker_section_pointer,
+					  rel->r_addend, lsect))
 	return TRUE;
 
       ptr_linker_section_ptr = &eh->linker_section_pointer;
@@ -2829,7 +2828,8 @@ elf_create_pointer_linker_section (bfd *abfd,
       /* Allocate a table to hold the local symbols if first time: */
       if (!ptr)
 	{
-	  unsigned int num_symbols = elf_tdata(abfd)->symtab_hdr.sh_info;
+	  unsigned int num_symbols;
+          num_symbols = (unsigned int)elf_tdata(abfd)->symtab_hdr.sh_info;
 
 	  amt = num_symbols;
 	  amt *= sizeof(elf_linker_section_pointers_t *);
@@ -2842,9 +2842,8 @@ elf_create_pointer_linker_section (bfd *abfd,
 	}
 
       /* Has this symbol already been allocated?  If so, our work is done.  */
-      if (elf_find_pointer_linker_section (ptr[r_symndx],
-					   rel->r_addend,
-					   lsect))
+      if (elf_find_pointer_linker_section(ptr[r_symndx], rel->r_addend,
+					  lsect))
 	return TRUE;
 
       ptr_linker_section_ptr = &ptr[r_symndx];
@@ -3505,27 +3504,27 @@ ppc_elf_check_relocs (bfd *abfd,
    object file when linking.  */
 
 static bfd_boolean
-ppc_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
+ppc_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   flagword old_flags;
   flagword new_flags;
   bfd_boolean error;
 
-  if (!is_ppc_elf_target (ibfd->xvec)
-      || !is_ppc_elf_target (obfd->xvec))
+  if (!is_ppc_elf_target(ibfd->xvec)
+      || !is_ppc_elf_target(obfd->xvec))
     return TRUE;
 
   /* Check if we have the same endianess.  */
-  if (! _bfd_generic_verify_endian_match (ibfd, obfd))
+  if (! _bfd_generic_verify_endian_match(ibfd, obfd))
     return FALSE;
 
-  new_flags = elf_elfheader (ibfd)->e_flags;
-  old_flags = elf_elfheader (obfd)->e_flags;
-  if (!elf_flags_init (obfd))
+  new_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  old_flags = (flagword)elf_elfheader(obfd)->e_flags;
+  if (!elf_flags_init(obfd))
     {
       /* First call, no flags set.  */
-      elf_flags_init (obfd) = TRUE;
-      elf_elfheader (obfd)->e_flags = new_flags;
+      elf_flags_init(obfd) = TRUE;
+      elf_elfheader(obfd)->e_flags = new_flags;
     }
 
   /* Compatible flags are ok.  */
@@ -4209,13 +4208,13 @@ ppc_elf_adjust_dynamic_symbol (struct bfd_link_info *info,
    Handles allocation of the got header when crossing 32k.  */
 
 static bfd_vma
-allocate_got (struct ppc_elf_link_hash_table *htab, unsigned int need)
+allocate_got(struct ppc_elf_link_hash_table *htab, unsigned int need)
 {
   bfd_vma where;
-  unsigned int max_before_header = 32768;
+  unsigned int max_before_header = 32768U;
 
   if (htab->old_plt)
-    max_before_header = 32764;
+    max_before_header = 32764U;
 
   if (htab->is_vxworks)
     {
@@ -4224,16 +4223,16 @@ allocate_got (struct ppc_elf_link_hash_table *htab, unsigned int need)
     }
   else if (need <= htab->got_gap)
     {
-      where = max_before_header - htab->got_gap;
+      where = (max_before_header - htab->got_gap);
       htab->got_gap -= need;
     }
   else
     {
-      if (htab->got->size + need > max_before_header
-	  && htab->got->size <= max_before_header)
+      if (((htab->got->size + need) > max_before_header)
+	  && (htab->got->size <= max_before_header))
 	{
-	  htab->got_gap = max_before_header - htab->got->size;
-	  htab->got->size = max_before_header + htab->got_header_size;
+	  htab->got_gap = (unsigned int)(max_before_header - htab->got->size);
+	  htab->got->size = (max_before_header + htab->got_header_size);
 	}
       where = htab->got->size;
       htab->got->size += need;
@@ -4727,7 +4726,7 @@ ppc_elf_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	 corresponding ranges are 0 to 32768 and 32780 to 65536.  */
       if (htab->got->size <= 32768)
 	{
-	  g_o_t = htab->got->size;
+	  g_o_t = (unsigned int)htab->got->size;
 	  if (htab->old_plt)
 	    g_o_t += 4;
 	  htab->got->size += htab->got_header_size;

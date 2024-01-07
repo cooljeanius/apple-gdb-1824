@@ -340,30 +340,32 @@ m32c_elf_relocate_section
 	}
 
       /* This is a final link.  */
-      howto  = m32c_elf_howto_table + ELF32_R_TYPE (rel->r_info);
-      h      = NULL;
-      sym    = NULL;
-      sec    = NULL;
+      howto = (m32c_elf_howto_table + ELF32_R_TYPE(rel->r_info));
+      h = NULL;
+      sym = NULL;
+      sec = NULL;
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
-	  sec = local_sections [r_symndx];
+	  sym = (local_syms + r_symndx);
+	  sec = local_sections[r_symndx];
 	  relocation = (sec->output_section->vma
 			+ sec->output_offset
 			+ sym->st_value);
 
-	  name = bfd_elf_string_from_elf_section
-	    (input_bfd, symtab_hdr->sh_link, sym->st_name);
-	  name = (name == NULL) ? bfd_section_name (input_bfd, sec) : name;
+	  name =
+            bfd_elf_string_from_elf_section(input_bfd,
+                                            (unsigned int)symtab_hdr->sh_link,
+                                            (unsigned int)sym->st_name);
+	  name = ((name == NULL) ? bfd_section_name(input_bfd, sec) : name);
 	}
       else
 	{
-	  h = sym_hashes [r_symndx - symtab_hdr->sh_info];
+	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
 
 	  while (h->root.type == bfd_link_hash_indirect
 		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 
 	  name = h->root.root.string;
 
@@ -677,24 +679,26 @@ m32c_elf_finish_dynamic_sections(bfd *abfd ATTRIBUTE_UNUSED,
   /* As an extra sanity check, verify that all plt entries have
      been filled in.  */
 
-  if ((dynobj = elf_hash_table (info)->dynobj) != NULL
-      && (splt = bfd_get_section_by_name (dynobj, ".plt")) != NULL)
+  if (((dynobj = elf_hash_table(info)->dynobj) != NULL)
+      && ((splt = bfd_get_section_by_name(dynobj, ".plt")) != NULL))
     {
       bfd_byte *contents = splt->contents;
-      unsigned int i, size = splt->size;
+      unsigned int i;
+      bfd_size_type size = splt->size;
       for (i = 0; i < size; i += 4)
 	{
-	  unsigned int x = bfd_get_32 (dynobj, contents + i);
-	  BFD_ASSERT (x != 0);
+	  unsigned int x = (unsigned int)bfd_get_32(dynobj, (contents + i));
+	  BFD_ASSERT(x != 0U);
 	}
     }
 
   return TRUE;
 }
 
+/* */
 static bfd_boolean
-m32c_elf_always_size_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
-                               struct bfd_link_info *info)
+m32c_elf_always_size_sections(bfd *output_bfd ATTRIBUTE_UNUSED,
+                              struct bfd_link_info *info)
 {
   bfd *dynobj;
   asection *splt;
@@ -730,7 +734,7 @@ m32c_elf_set_private_flags (bfd *abfd, flagword flags)
    object file when linking.  */
 
 static bfd_boolean
-m32c_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
+m32c_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   flagword old_flags, old_partial;
   flagword new_flags, new_partial;
@@ -739,20 +743,20 @@ m32c_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
   char old_opt[80];
 
   new_opt[0] = old_opt[0] = '\0';
-  new_flags = elf_elfheader (ibfd)->e_flags;
-  old_flags = elf_elfheader (obfd)->e_flags;
+  new_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  old_flags = (flagword)elf_elfheader(obfd)->e_flags;
 
 #ifdef DEBUG
-  (*_bfd_error_handler) ("old_flags = 0x%.8lx, new_flags = 0x%.8lx, init = %s, filename = %s",
-			 old_flags, new_flags, elf_flags_init (obfd) ? "yes" : "no",
-			 bfd_get_filename (ibfd));
-#endif
+  (*_bfd_error_handler)("old_flags = 0x%.8lx, new_flags = 0x%.8lx, init = %s, filename = %s",
+                        old_flags, new_flags, elf_flags_init(obfd) ? "yes" : "no",
+                        bfd_get_filename(ibfd));
+#endif /* DEBUG */
 
-  if (!elf_flags_init (obfd))
+  if (!elf_flags_init(obfd))
     {
       /* First call, no flags set.  */
-      elf_flags_init (obfd) = TRUE;
-      elf_elfheader (obfd)->e_flags = new_flags;
+      elf_flags_init(obfd) = TRUE;
+      elf_elfheader(obfd)->e_flags = new_flags;
     }
 
   else if (new_flags == old_flags)
@@ -825,7 +829,7 @@ m32c_elf_print_private_bfd_data(bfd *abfd, PTR ptr)
   /* Print normal ELF private data: */
   _bfd_elf_print_private_bfd_data(abfd, ptr);
 
-  flags = elf_elfheader(abfd)->e_flags;
+  flags = (flagword)elf_elfheader(abfd)->e_flags;
   fprintf(file, _("private flags = 0x%lx:"), (long)flags);
 
   switch (flags & EF_M32C_CPU_MASK)
@@ -1133,14 +1137,14 @@ m32c_elf_relax_plt_section (bfd *dynobj,
       for (ibfd = info->input_bfds; ibfd ; ibfd = ibfd->link_next)
 	{
 	  bfd_vma *local_plt_offsets = elf_local_got_offsets (ibfd);
-	  unsigned int nlocals = elf_tdata (ibfd)->symtab_hdr.sh_info;
+	  unsigned long nlocals = elf_tdata(ibfd)->symtab_hdr.sh_info;
 	  unsigned int idx;
 
 	  if (! local_plt_offsets)
 	    continue;
 
 	  for (idx = 0; idx < nlocals; ++idx)
-	    if (local_plt_offsets[idx] != (bfd_vma) -1)
+	    if (local_plt_offsets[idx] != (bfd_vma)-1L)
 	      {
 	        local_plt_offsets[idx] = entry;
 		entry += 4;
@@ -1606,11 +1610,7 @@ m32c_elf_relax_section
 /* Delete some bytes from a section while relaxing.  */
 
 static bfd_boolean
-m32c_elf_relax_delete_bytes
- (bfd *      abfd,
-  asection * sec,
-  bfd_vma    addr,
-  int        count)
+m32c_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
 {
   Elf_Internal_Shdr *symtab_hdr;
   Elf_Internal_Shdr *shndx_hdr;
@@ -1625,76 +1625,79 @@ m32c_elf_relax_delete_bytes
   Elf32_External_Sym *extsyms;
   Elf_External_Sym_Shndx *shndx_buf;
   Elf_External_Sym_Shndx *shndx;
-  struct elf_link_hash_entry ** sym_hashes;
-  struct elf_link_hash_entry ** end_hashes;
-  unsigned int                  symcount;
+  struct elf_link_hash_entry **sym_hashes;
+  struct elf_link_hash_entry **end_hashes;
+  unsigned long symcount;
 
-  symtab_hdr = & elf_tdata (abfd)->symtab_hdr;
-  extsyms = (Elf32_External_Sym *) symtab_hdr->contents;
-  shndx_hdr  = & elf_tdata (abfd)->symtab_shndx_hdr;
-  shndx_buf  = (Elf_External_Sym_Shndx *) shndx_hdr->contents;
-  sec_shndx  = _bfd_elf_section_from_bfd_section (abfd, sec);
-  contents   = elf_section_data (sec)->this_hdr.contents;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  extsyms = (Elf32_External_Sym *)symtab_hdr->contents;
+  shndx_hdr = &elf_tdata(abfd)->symtab_shndx_hdr;
+  shndx_buf = (Elf_External_Sym_Shndx *)shndx_hdr->contents;
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
+  contents = elf_section_data(sec)->this_hdr.contents;
 
   /* The deletion must stop at the next ALIGN reloc for an aligment
      power larger than the number of bytes we are deleting.  */
   irelalign = NULL;
   toaddr = sec->size;
 
-  irel = elf_section_data (sec)->relocs;
-  irelend = irel + sec->reloc_count;
+  irel = elf_section_data(sec)->relocs;
+  irelend = (irel + sec->reloc_count);
 
   /* Actually delete the bytes.  */
-  memmove (contents + addr, contents + addr + count, (size_t) (toaddr - addr - count));
+  memmove((contents + addr), (contents + addr + count),
+  	  (size_t)(toaddr - addr - count));
   sec->size -= count;
 
   /* Adjust all the relocs.  */
-  for (irel = elf_section_data (sec)->relocs; irel < irelend; irel ++)
+  for (irel = elf_section_data(sec)->relocs; irel < irelend; irel ++)
     {
       /* Get the new reloc address.  */
-      if (irel->r_offset > addr && irel->r_offset < toaddr)
+      if ((irel->r_offset > addr) && (irel->r_offset < toaddr))
 	irel->r_offset -= count;
-      if (irel->r_addend > addr && irel->r_addend < toaddr)
+      if ((irel->r_addend > addr) && (irel->r_addend < toaddr))
 	irel->r_addend -= count;
     }
 
   /* Adjust the local symbols defined in this section.  */
   shndx = shndx_buf;
   esym = extsyms;
-  esymend = esym + symtab_hdr->sh_info;
-  for (; esym < esymend; esym++, shndx = (shndx ? shndx + 1 : NULL))
+  esymend = (esym + symtab_hdr->sh_info);
+  for (; esym < esymend; esym++, shndx = (shndx ? (shndx + 1) : NULL))
     {
       Elf_Internal_Sym isym;
       Elf_External_Sym_Shndx dummy;
 
-      bfd_elf32_swap_symbol_in (abfd, esym, shndx, &isym);
+      bfd_elf32_swap_symbol_in(abfd, esym, shndx, &isym);
 
-      if ((int) isym.st_shndx == sec_shndx
-	  && isym.st_value > addr
-	  && isym.st_value < toaddr)
+      if ((int)isym.st_shndx == sec_shndx
+	  && (isym.st_value > addr)
+	  && (isym.st_value < toaddr))
 	{
 	  isym.st_value -= count;
-	  bfd_elf32_swap_symbol_out (abfd, &isym, (PTR) esym, (PTR) & dummy);
+	  bfd_elf32_swap_symbol_out(abfd, &isym, (PTR)esym, (PTR)&dummy);
 	}
     }
 
   /* Now adjust the global symbols defined in this section.  */
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 	      - symtab_hdr->sh_info);
-  sym_hashes = elf_sym_hashes (abfd);
-  //  sym_hashes += symtab_hdr->sh_info;
-  end_hashes = sym_hashes + symcount;
+  sym_hashes = elf_sym_hashes(abfd);
+#if 0
+  sym_hashes += symtab_hdr->sh_info;
+#endif /* 0 */
+  end_hashes = (sym_hashes + symcount);
 
-  for (; sym_hashes < end_hashes; sym_hashes ++)
+  for (; sym_hashes < end_hashes; sym_hashes++)
     {
-      struct elf_link_hash_entry * sym_hash = * sym_hashes;
+      struct elf_link_hash_entry *sym_hash = *sym_hashes;
 
-      if (sym_hash &&
-	  (   sym_hash->root.type == bfd_link_hash_defined
-	   || sym_hash->root.type == bfd_link_hash_defweak)
-	  && sym_hash->root.u.def.section == sec
-	  && sym_hash->root.u.def.value > addr
-	  && sym_hash->root.u.def.value < toaddr)
+      if ((sym_hash != NULL)
+          && ((sym_hash->root.type == bfd_link_hash_defined)
+	      || (sym_hash->root.type == bfd_link_hash_defweak))
+	  && (sym_hash->root.u.def.section == sec)
+	  && (sym_hash->root.u.def.value > addr)
+	  && (sym_hash->root.u.def.value < toaddr))
 	sym_hash->root.u.def.value -= count;
     }
 

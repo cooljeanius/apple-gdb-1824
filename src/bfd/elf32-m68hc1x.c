@@ -436,14 +436,14 @@ elf32_m68hc11_size_stubs(bfd *output_bfd, bfd *stub_bfd,
 
               /* Now determine the call target, its name, value,
                  section.  */
-              r_indx = ELF32_R_SYM(irela->r_info);
+              r_indx = (unsigned int)ELF32_R_SYM(irela->r_info);
               if (r_indx < symtab_hdr->sh_info)
                 {
                   /* It is a local symbol: */
                   Elf_Internal_Shdr *hdr;
                   bfd_boolean is_far;
 
-                  sym = local_internal_syms + r_indx;
+                  sym = (local_internal_syms + r_indx);
                   is_far = (sym && (sym->st_other & STO_M68HC12_FAR));
                   if (!is_far)
                     continue;
@@ -452,8 +452,8 @@ elf32_m68hc11_size_stubs(bfd *output_bfd, bfd *stub_bfd,
                   sym_sec = hdr->bfd_section;
                   stub_name =
                     (bfd_elf_string_from_elf_section(input_bfd,
-                                                     symtab_hdr->sh_link,
-                                                     sym->st_name));
+                                                     (unsigned int)symtab_hdr->sh_link,
+                                                     (unsigned int)sym->st_name));
                   sym_value = sym->st_value;
                   hash = NULL;
                 }
@@ -462,7 +462,7 @@ elf32_m68hc11_size_stubs(bfd *output_bfd, bfd *stub_bfd,
                   /* It is an external symbol: */
                   int e_indx;
 
-                  e_indx = (r_indx - symtab_hdr->sh_info);
+                  e_indx = (int)(r_indx - symtab_hdr->sh_info);
                   hash = (struct elf_link_hash_entry *)
                     (sym_hashes[e_indx]);
 
@@ -917,14 +917,15 @@ elf32_m68hc11_check_relocs (bfd *abfd, struct bfd_link_info *info,
   return TRUE;
 }
 
+/* */
 static bfd_boolean
-m68hc11_get_relocation_value (bfd *input_bfd, struct bfd_link_info *info,
-			      asection *input_section,
-                              asection **local_sections,
-                              Elf_Internal_Sym *local_syms,
-                              Elf_Internal_Rela *rel,
-                              const char **name,
-                              bfd_vma *relocation, bfd_boolean *is_far)
+m68hc11_get_relocation_value(bfd *input_bfd, struct bfd_link_info *info,
+			     asection *input_section,
+                             asection **local_sections,
+                             Elf_Internal_Sym *local_syms,
+                             Elf_Internal_Rela *rel,
+                             const char **name,
+                             bfd_vma *relocation, bfd_boolean *is_far)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
@@ -932,12 +933,12 @@ m68hc11_get_relocation_value (bfd *input_bfd, struct bfd_link_info *info,
   asection *sec;
   struct elf_link_hash_entry *h;
   Elf_Internal_Sym *sym;
-  const char* stub_name = 0;
+  const char *stub_name = (const char *)0;
 
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
 
-  r_symndx = ELF32_R_SYM (rel->r_info);
+  r_symndx = ELF32_R_SYM(rel->r_info);
 
   /* This is a final link.  */
   h = NULL;
@@ -945,52 +946,59 @@ m68hc11_get_relocation_value (bfd *input_bfd, struct bfd_link_info *info,
   sec = NULL;
   if (r_symndx < symtab_hdr->sh_info)
     {
-      sym = local_syms + r_symndx;
+      sym = (local_syms + r_symndx);
       sec = local_sections[r_symndx];
       *relocation = (sec->output_section->vma
                      + sec->output_offset
                      + sym->st_value);
       *is_far = (sym && (sym->st_other & STO_M68HC12_FAR));
       if (*is_far)
-        stub_name = (bfd_elf_string_from_elf_section
-                     (input_bfd, symtab_hdr->sh_link,
-                      sym->st_name));
+        stub_name =
+          (bfd_elf_string_from_elf_section(input_bfd,
+                                           (unsigned int)symtab_hdr->sh_link,
+                                           (unsigned int)sym->st_name));
     }
   else
     {
       bfd_boolean unresolved_reloc, warned;
 
-      RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-			       r_symndx, symtab_hdr, sym_hashes,
-			       h, sec, *relocation, unresolved_reloc, warned);
+      RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+			      r_symndx, symtab_hdr, sym_hashes,
+			      h, sec, *relocation, unresolved_reloc, warned);
 
       *is_far = (h && (h->other & STO_M68HC12_FAR));
       stub_name = h->root.root.string;
     }
 
+  if (stub_name == NULL) {
+    ; /* ??? */
+  }
+
   if (h != NULL)
     *name = h->root.root.string;
   else
     {
-      *name = (bfd_elf_string_from_elf_section
-               (input_bfd, symtab_hdr->sh_link, sym->st_name));
+      *name =
+        (bfd_elf_string_from_elf_section(input_bfd,
+                                         (unsigned int)symtab_hdr->sh_link,
+                                         (unsigned int)sym->st_name));
       if (*name == NULL || **name == '\0')
-        *name = bfd_section_name (input_bfd, sec);
+        *name = bfd_section_name(input_bfd, sec);
     }
 
-  if (*is_far && ELF32_R_TYPE (rel->r_info) == R_M68HC11_16)
+  if (*is_far && ELF32_R_TYPE(rel->r_info) == R_M68HC11_16)
     {
-      struct elf32_m68hc11_stub_hash_entry* stub;
+      struct elf32_m68hc11_stub_hash_entry *stub;
       struct m68hc11_elf_link_hash_table *htab;
 
-      htab = m68hc11_elf_hash_table (info);
-      stub = m68hc12_stub_hash_lookup (htab->stub_hash_table,
-                                       *name, FALSE, FALSE);
+      htab = m68hc11_elf_hash_table(info);
+      stub = m68hc12_stub_hash_lookup(htab->stub_hash_table,
+                                      *name, FALSE, FALSE);
       if (stub)
         {
-          *relocation = stub->stub_offset
-            + stub->stub_sec->output_section->vma
-            + stub->stub_sec->output_offset;
+          *relocation = (stub->stub_offset
+            		 + stub->stub_sec->output_section->vma
+            		 + stub->stub_sec->output_offset);
           *is_far = FALSE;
         }
     }
@@ -1245,36 +1253,36 @@ _bfd_m68hc11_elf_set_private_flags(bfd *abfd, flagword flags)
    object file when linking.  */
 
 bfd_boolean
-_bfd_m68hc11_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
+_bfd_m68hc11_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   flagword old_flags;
   flagword new_flags;
   bfd_boolean ok = TRUE;
 
   /* Check if we have the same endianess */
-  if (!_bfd_generic_verify_endian_match (ibfd, obfd))
+  if (!_bfd_generic_verify_endian_match(ibfd, obfd))
     return FALSE;
 
-  if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
-  new_flags = elf_elfheader (ibfd)->e_flags;
-  elf_elfheader (obfd)->e_flags |= new_flags & EF_M68HC11_ABI;
-  old_flags = elf_elfheader (obfd)->e_flags;
+  new_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  elf_elfheader(obfd)->e_flags |= (new_flags & EF_M68HC11_ABI);
+  old_flags = (flagword)elf_elfheader(obfd)->e_flags;
 
-  if (! elf_flags_init (obfd))
+  if (!elf_flags_init(obfd))
     {
-      elf_flags_init (obfd) = TRUE;
-      elf_elfheader (obfd)->e_flags = new_flags;
-      elf_elfheader (obfd)->e_ident[EI_CLASS]
-	= elf_elfheader (ibfd)->e_ident[EI_CLASS];
+      elf_flags_init(obfd) = TRUE;
+      elf_elfheader(obfd)->e_flags = new_flags;
+      elf_elfheader(obfd)->e_ident[EI_CLASS] =
+        elf_elfheader(ibfd)->e_ident[EI_CLASS];
 
-      if (bfd_get_arch (obfd) == bfd_get_arch (ibfd)
-	  && bfd_get_arch_info (obfd)->the_default)
+      if (bfd_get_arch(obfd) == bfd_get_arch(ibfd)
+	  && bfd_get_arch_info(obfd)->the_default)
 	{
-	  if (! bfd_set_arch_mach (obfd, bfd_get_arch (ibfd),
-				   bfd_get_mach (ibfd)))
+	  if (!bfd_set_arch_mach(obfd, bfd_get_arch(ibfd),
+                                 bfd_get_mach(ibfd)))
 	    return FALSE;
 	}
 

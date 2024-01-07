@@ -1046,14 +1046,14 @@ i860_final_link_relocate (reloc_howto_type *howto,
    section, which means that the addend must be adjusted
    accordingly.  */
 static bfd_boolean
-elf32_i860_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
-			     struct bfd_link_info *info,
-			     bfd *input_bfd,
-			     asection *input_section,
-			     bfd_byte *contents,
-			     Elf_Internal_Rela *relocs,
-			     Elf_Internal_Sym *local_syms,
-			     asection **local_sections)
+elf32_i860_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
+			    struct bfd_link_info *info,
+			    bfd *input_bfd,
+			    asection *input_section,
+			    bfd_byte *contents,
+			    Elf_Internal_Rela *relocs,
+			    Elf_Internal_Sym *local_syms,
+			    asection **local_sections)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
@@ -1063,48 +1063,50 @@ elf32_i860_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = & elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
-  relend     = relocs + input_section->reloc_count;
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
+  relend = (relocs + input_section->reloc_count);
 
   for (rel = relocs; rel < relend; rel ++)
     {
-      reloc_howto_type *           howto;
-      unsigned long                r_symndx;
-      Elf_Internal_Sym *           sym;
-      asection *                   sec;
-      struct elf_link_hash_entry * h;
-      bfd_vma                      relocation;
-      bfd_reloc_status_type        r;
-      const char *                 name = NULL;
-      int                          r_type;
+      reloc_howto_type *howto;
+      unsigned long r_symndx;
+      Elf_Internal_Sym *sym;
+      asection *sec;
+      struct elf_link_hash_entry *h;
+      bfd_vma relocation;
+      bfd_reloc_status_type r;
+      const char *name = NULL;
+      int r_type;
 
-      r_type = ELF32_R_TYPE (rel->r_info);
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_type = ELF32_R_TYPE(rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
 
-      howto = lookup_howto ((unsigned) ELF32_R_TYPE (rel->r_info));
-      h     = NULL;
-      sym   = NULL;
-      sec   = NULL;
+      howto = lookup_howto((unsigned int)ELF32_R_TYPE(rel->r_info));
+      h = NULL;
+      sym = NULL;
+      sec = NULL;
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
-	  sec = local_sections [r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  sym = (local_syms + r_symndx);
+	  sec = local_sections[r_symndx];
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 
-	  name = bfd_elf_string_from_elf_section
-	    (input_bfd, symtab_hdr->sh_link, sym->st_name);
-	  name = (name == NULL) ? bfd_section_name (input_bfd, sec) : name;
+	  name =
+            bfd_elf_string_from_elf_section(input_bfd,
+                                            (unsigned int)symtab_hdr->sh_link,
+                                            (unsigned int)sym->st_name);
+	  name = ((name == NULL) ? bfd_section_name(input_bfd, sec) : name);
 	}
       else
 	{
 	  bfd_boolean unresolved_reloc, warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 	}
 
       switch (r_type)

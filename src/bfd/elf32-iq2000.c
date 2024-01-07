@@ -550,35 +550,37 @@ iq2000_elf_relocate_section (bfd *		     output_bfd ATTRIBUTE_UNUSED,
 	  || r_type == R_IQ2000_GNU_VTENTRY)
 	continue;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
 
       /* This is a final link.	*/
-      howto  = iq2000_elf_howto_table + ELF32_R_TYPE (rel->r_info);
-      h	     = NULL;
-      sym    = NULL;
-      sec    = NULL;
+      howto = (iq2000_elf_howto_table + ELF32_R_TYPE(rel->r_info));
+      h	= NULL;
+      sym = NULL;
+      sec = NULL;
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
-	  sec = local_sections [r_symndx];
+	  sym = (local_syms + r_symndx);
+	  sec = local_sections[r_symndx];
 	  relocation = (sec->output_section->vma
 			+ sec->output_offset
 			+ sym->st_value);
 
-	  name = bfd_elf_string_from_elf_section
-	    (input_bfd, symtab_hdr->sh_link, sym->st_name);
-	  name = (name == NULL) ? bfd_section_name (input_bfd, sec) : name;
+	  name =
+            bfd_elf_string_from_elf_section(input_bfd,
+                                            (unsigned int)symtab_hdr->sh_link,
+                                            (unsigned int)sym->st_name);
+	  name = ((name == NULL) ? bfd_section_name(input_bfd, sec) : name);
 	}
       else
 	{
 	  bfd_boolean unresolved_reloc;
 	  bfd_boolean warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 
 	  name = h->root.root.string;
 	}
@@ -586,7 +588,7 @@ iq2000_elf_relocate_section (bfd *		     output_bfd ATTRIBUTE_UNUSED,
       switch (r_type)
 	{
 	case R_IQ2000_HI16:
-	  r = iq2000_elf_relocate_hi16 (input_bfd, rel, contents, relocation);
+	  r = iq2000_elf_relocate_hi16(input_bfd, rel, contents, relocation);
 	  break;
 
 	case R_IQ2000_PC16:

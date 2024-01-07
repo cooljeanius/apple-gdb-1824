@@ -620,16 +620,16 @@ m68hc11_relax_group (bfd *abfd, asection *sec, bfd_byte *contents,
         default:
           return;
         }
-      new_value = (unsigned) bfd_get_8 (abfd, contents + offset + 1);
+      new_value = (unsigned int)bfd_get_8(abfd, (contents + offset + 1));
       new_value += value;
       if ((new_value & 0xff00) == 0 && bset_use_y == relax_ldy)
         {
-          bfd_put_8 (abfd, code, contents + offset);
-          bfd_put_8 (abfd, new_value, contents + offset + 1);
+          bfd_put_8(abfd, code, (contents + offset));
+          bfd_put_8(abfd, new_value, (contents + offset + 1));
           if (start_offset != offset)
             {
-              m68hc11_elf_relax_delete_bytes (abfd, sec, start_offset,
-                                              offset - start_offset);
+              m68hc11_elf_relax_delete_bytes(abfd, sec, start_offset,
+                                             (int)(offset - start_offset));
               end_group--;
             }
         }
@@ -642,7 +642,7 @@ m68hc11_relax_group (bfd *abfd, asection *sec, bfd_byte *contents,
   if (can_delete_ldx)
     {
       /* Remove the move instruction (3 or 4 bytes win).  */
-      m68hc11_elf_relax_delete_bytes (abfd, sec, ldx_offset, ldx_size);
+      m68hc11_elf_relax_delete_bytes(abfd, sec, ldx_offset, (int)ldx_size);
     }
 }
 
@@ -844,7 +844,7 @@ m68hc11_elf_relax_section (bfd *abfd, asection *sec,
 
           prev_insn_group = irel;
 	  BFD_ASSERT(isym != NULL);
-          insn_group_value = isym->st_value;
+          insn_group_value = (unsigned int)isym->st_value;
           continue;
         }
 
@@ -1095,8 +1095,8 @@ m68hc11_elf_relax_section (bfd *abfd, asection *sec,
 /* Delete some bytes from a section while relaxing.  */
 
 static void
-m68hc11_elf_relax_delete_bytes (bfd *abfd, asection *sec,
-                                bfd_vma addr, int count)
+m68hc11_elf_relax_delete_bytes(bfd *abfd, asection *sec,
+                               bfd_vma addr, int count)
 {
   Elf_Internal_Shdr *symtab_hdr;
   unsigned int sec_shndx;
@@ -1106,28 +1106,28 @@ m68hc11_elf_relax_delete_bytes (bfd *abfd, asection *sec,
   Elf_Internal_Sym *isymbuf, *isym, *isymend;
   struct elf_link_hash_entry **sym_hashes;
   struct elf_link_hash_entry **end_hashes;
-  unsigned int symcount;
+  unsigned long symcount;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  isymbuf = (Elf_Internal_Sym *)symtab_hdr->contents;
 
-  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
-  contents = elf_section_data (sec)->this_hdr.contents;
+  contents = elf_section_data(sec)->this_hdr.contents;
 
   toaddr = sec->size;
 
-  irel = elf_section_data (sec)->relocs;
-  irelend = irel + sec->reloc_count;
+  irel = elf_section_data(sec)->relocs;
+  irelend = (irel + sec->reloc_count);
 
   /* Actually delete the bytes.  */
-  memmove (contents + addr, contents + addr + count,
-	   (size_t) (toaddr - addr - count));
+  memmove((contents + addr), (contents + addr + count),
+	  (size_t)(toaddr - addr - count));
 
   sec->size -= count;
 
   /* Adjust all the relocs.  */
-  for (irel = elf_section_data (sec)->relocs; irel < irelend; irel++)
+  for (irel = elf_section_data(sec)->relocs; irel < irelend; irel++)
     {
       unsigned char code;
       unsigned char offset;
@@ -1140,28 +1140,27 @@ m68hc11_elf_relax_delete_bytes (bfd *abfd, asection *sec,
       /* See if this reloc was for the bytes we have deleted, in which
 	 case we no longer care about it.  Don't delete relocs which
 	 represent addresses, though.  */
-      if (ELF32_R_TYPE (irel->r_info) != R_M68HC11_RL_JUMP
-          && irel->r_offset >= addr && irel->r_offset < addr + count)
-        irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info),
-                                     R_M68HC11_NONE);
+      if ((ELF32_R_TYPE(irel->r_info) != R_M68HC11_RL_JUMP)
+          && (irel->r_offset >= addr) && (irel->r_offset < (addr + count)))
+        irel->r_info = ELF32_R_INFO(ELF32_R_SYM(irel->r_info),
+                                    R_M68HC11_NONE);
 
-      if (ELF32_R_TYPE (irel->r_info) == R_M68HC11_NONE)
+      if (ELF32_R_TYPE(irel->r_info) == R_M68HC11_NONE)
         continue;
 
       /* Get the new reloc address.  */
-      if ((irel->r_offset > addr
-	   && irel->r_offset < toaddr))
+      if ((irel->r_offset > addr) && (irel->r_offset < toaddr))
 	irel->r_offset -= count;
 
       /* If this is a PC relative reloc, see if the range it covers
          includes the bytes we have deleted.  */
-      switch (ELF32_R_TYPE (irel->r_info))
+      switch (ELF32_R_TYPE(irel->r_info))
 	{
 	default:
 	  break;
 
 	case R_M68HC11_RL_JUMP:
-          code = bfd_get_8 (abfd, contents + irel->r_offset);
+          code = bfd_get_8(abfd, (contents + irel->r_offset));
           switch (code)
             {
               /* jsr and jmp instruction are also marked with RL_JUMP
@@ -1200,23 +1199,25 @@ m68hc11_elf_relax_delete_bytes (bfd *abfd, asection *sec,
               raddr = 2;
               break;
             }
-          offset = bfd_get_8 (abfd, contents + irel->r_offset + branch_pos);
+          offset = bfd_get_8(abfd, (contents + irel->r_offset + branch_pos));
           raddr += old_offset;
-          raddr += ((unsigned short) offset | ((offset & 0x80) ? 0xff00 : 0));
-          if (irel->r_offset < addr && raddr > addr)
+          raddr += ((unsigned short)offset | ((offset & 0x80) ? 0xff00 : 0));
+          if ((irel->r_offset < addr) && (raddr > addr))
             {
               offset -= count;
-              bfd_put_8 (abfd, offset, contents + irel->r_offset + branch_pos);
+              bfd_put_8(abfd, offset, (contents + irel->r_offset + branch_pos));
             }
-          else if (irel->r_offset >= addr && raddr <= addr)
+          else if ((irel->r_offset >= addr) && (raddr <= addr))
             {
               offset += count;
-              bfd_put_8 (abfd, offset, contents + irel->r_offset + branch_pos);
+              bfd_put_8(abfd, offset, (contents + irel->r_offset + branch_pos));
             }
           else
             {
-              /*printf ("Not adjusted 0x%04x [0x%4x 0x%4x]\n", raddr,
-                irel->r_offset, addr);*/
+#ifdef DEBUG
+               printf("Not adjusted 0x%04x [0x%4x 0x%4x]\n", raddr,
+                      irel->r_offset, addr);
+#endif /* DEBUG */
             }
 
           break;
@@ -1224,7 +1225,7 @@ m68hc11_elf_relax_delete_bytes (bfd *abfd, asection *sec,
     }
 
   /* Adjust the local symbols defined in this section.  */
-  isymend = isymbuf + symtab_hdr->sh_info;
+  isymend = (isymbuf + symtab_hdr->sh_info);
   for (isym = isymbuf; isym < isymend; isym++)
     {
       if (isym->st_shndx == sec_shndx
@@ -1234,10 +1235,10 @@ m68hc11_elf_relax_delete_bytes (bfd *abfd, asection *sec,
     }
 
   /* Now adjust the global symbols defined in this section.  */
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 	      - symtab_hdr->sh_info);
-  sym_hashes = elf_sym_hashes (abfd);
-  end_hashes = sym_hashes + symcount;
+  sym_hashes = elf_sym_hashes(abfd);
+  end_hashes = (sym_hashes + symcount);
   for (; sym_hashes < end_hashes; sym_hashes++)
     {
       struct elf_link_hash_entry *sym_hash = *sym_hashes;

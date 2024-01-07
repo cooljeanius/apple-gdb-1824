@@ -3412,7 +3412,7 @@ compute_function_info(bfd *abfd,
     }
   else if ((byte1 == 0xfa) && (byte2 == 0xfe))
     {
-      int temp = bfd_get_16(abfd, (contents + addr + 2));
+      int temp = (int)bfd_get_16(abfd, (contents + addr + 2));
       temp = (((temp & 0xffff) ^ (~0x7fff)) + 0x8000);
       temp = -temp;
 

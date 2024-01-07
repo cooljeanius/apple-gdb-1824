@@ -35,13 +35,13 @@
 /* Function to set whether a module needs the -mrelocatable bit set.  */
 
 static bfd_boolean
-mcore_elf_set_private_flags (bfd * abfd, flagword flags)
+mcore_elf_set_private_flags(bfd *abfd, flagword flags)
 {
-  BFD_ASSERT (! elf_flags_init (abfd)
-	      || elf_elfheader (abfd)->e_flags == flags);
+  BFD_ASSERT(!elf_flags_init(abfd)
+	     || elf_elfheader(abfd)->e_flags == flags);
 
-  elf_elfheader (abfd)->e_flags = flags;
-  elf_flags_init (abfd) = TRUE;
+  elf_elfheader(abfd)->e_flags = flags;
+  elf_flags_init(abfd) = TRUE;
   return TRUE;
 }
 
@@ -49,34 +49,34 @@ mcore_elf_set_private_flags (bfd * abfd, flagword flags)
    object file when linking.  */
 
 static bfd_boolean
-mcore_elf_merge_private_bfd_data (bfd * ibfd, bfd * obfd)
+mcore_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   flagword old_flags;
   flagword new_flags;
 
-  /* Check if we have the same endianess.  */
-  if (! _bfd_generic_verify_endian_match (ibfd, obfd))
+  /* Check if we have the same endianess: */
+  if (!_bfd_generic_verify_endian_match(ibfd, obfd))
     return FALSE;
 
-  if (   bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
-  new_flags = elf_elfheader (ibfd)->e_flags;
-  old_flags = elf_elfheader (obfd)->e_flags;
+  new_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  old_flags = (flagword)elf_elfheader(obfd)->e_flags;
 
-  if (! elf_flags_init (obfd))
+  if (! elf_flags_init(obfd))
     {
       	/* First call, no flags set.  */
-      elf_flags_init (obfd) = TRUE;
-      elf_elfheader (obfd)->e_flags = new_flags;
+      elf_flags_init(obfd) = TRUE;
+      elf_elfheader(obfd)->e_flags = new_flags;
     }
   else if (new_flags == old_flags)
     /* Compatible flags are OK.  */
     ;
   else
     {
-      /* FIXME */
+      ; /* FIXME: ??? */
     }
 
   return TRUE;
@@ -458,17 +458,17 @@ mcore_elf_relocate_section (bfd * output_bfd,
 	}
 
 #ifdef DEBUG
-      fprintf (stderr, "\ttype = %s (%d), symbol index = %ld, offset = %ld, addend = %ld\n",
-	       howto->name, r_type, r_symndx, (long) offset, (long) addend);
-#endif
+      fprintf(stderr, "\ttype = %s (%d), symbol index = %ld, offset = %ld, addend = %ld\n",
+              howto->name, r_type, r_symndx, (long)offset, (long)addend);
+#endif /* DEBUG */
 
-      r = _bfd_final_link_relocate
-	(howto, input_bfd, input_section, contents, offset, relocation, addend);
+      r = _bfd_final_link_relocate(howto, input_bfd, input_section, contents,
+                                   offset, relocation, addend);
 
       if (r != bfd_reloc_ok && r_type == R_MCORE_PCRELJSR_IMM11BY2)
 	{
 	  /* Wasn't ok, back it out and give up.  */
-	  bfd_put_16 (input_bfd, (bfd_vma) oldinst, contents + offset);
+	  bfd_put_16(input_bfd, (bfd_vma)oldinst, (contents + offset));
 	  r = bfd_reloc_ok;
 	}
 
@@ -483,25 +483,27 @@ mcore_elf_relocate_section (bfd * output_bfd,
 
 	    case bfd_reloc_overflow:
 	      {
-		const char * name;
+		const char *name;
 
 		if (h != NULL)
 		  name = NULL;
 		else
 		  {
-		    name = bfd_elf_string_from_elf_section
-		      (input_bfd, symtab_hdr->sh_link, sym->st_name);
+		    name =
+                      bfd_elf_string_from_elf_section(input_bfd,
+                                                      (unsigned int)symtab_hdr->sh_link,
+                                                      (unsigned int)sym->st_name);
 
 		    if (name == NULL)
 		      break;
 
-		    if (* name == '\0')
-		      name = bfd_section_name (input_bfd, sec);
+		    if (*name == '\0')
+		      name = bfd_section_name(input_bfd, sec);
 		  }
 
 		(*info->callbacks->reloc_overflow)
 		  (info, (h ? &h->root : NULL), name, howto->name,
-		   (bfd_vma) 0, input_bfd, input_section, offset);
+		   (bfd_vma)0UL, input_bfd, input_section, offset);
 	      }
 	      break;
 	    }
@@ -509,8 +511,8 @@ mcore_elf_relocate_section (bfd * output_bfd,
     }
 
 #ifdef DEBUG
-  fprintf (stderr, "\n");
-#endif
+  fprintf(stderr, "\n");
+#endif /* DEBUG */
 
   return ret;
 }

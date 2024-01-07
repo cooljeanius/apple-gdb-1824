@@ -556,12 +556,8 @@ ip2k_test_page_insn (bfd *abfd ATTRIBUTE_UNUSED,
 /* Adjust all the relocations entries after adding or inserting instructions.  */
 
 static void
-adjust_all_relocations (bfd *abfd,
-			asection *sec,
-			bfd_vma addr,
-			bfd_vma endaddr,
-			int count,
-			int noadj)
+adjust_all_relocations(bfd *abfd, asection *sec, bfd_vma addr, bfd_vma endaddr,
+                       int count, int noadj)
 {
   Elf_Internal_Shdr *symtab_hdr;
   Elf_Internal_Sym *isymbuf, *isym, *isymend;
@@ -570,90 +566,90 @@ adjust_all_relocations (bfd *abfd,
   Elf_Internal_Rela *irel, *irelend, *irelbase;
   struct elf_link_hash_entry **sym_hashes;
   struct elf_link_hash_entry **end_hashes;
-  unsigned int symcount;
+  unsigned long symcount;
   asection *stab;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  isymbuf = (Elf_Internal_Sym *)symtab_hdr->contents;
 
-  shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
-  contents = elf_section_data (sec)->this_hdr.contents;
+  contents = elf_section_data(sec)->this_hdr.contents;
 
-  irelbase = elf_section_data (sec)->relocs;
-  irelend = irelbase + sec->reloc_count;
+  irelbase = elf_section_data(sec)->relocs;
+  irelend = (irelbase + sec->reloc_count);
 
   for (irel = irelbase; irel < irelend; irel++)
     {
-      if (ELF32_R_TYPE (irel->r_info) != R_IP2K_NONE)
+      if (ELF32_R_TYPE(irel->r_info) != R_IP2K_NONE)
         {
-          /* Get the value of the symbol referred to by the reloc.  */
-          if (ELF32_R_SYM (irel->r_info) < symtab_hdr->sh_info)
+          /* Get the value of the symbol referred to by the reloc: */
+          if (ELF32_R_SYM(irel->r_info) < symtab_hdr->sh_info)
             {
               asection *sym_sec;
 
-              /* A local symbol.  */
-	      isym = isymbuf + ELF32_R_SYM (irel->r_info);
-              sym_sec = bfd_section_from_elf_index (abfd, isym->st_shndx);
+              /* A local symbol: */
+	      isym = (isymbuf + ELF32_R_SYM(irel->r_info));
+              sym_sec = bfd_section_from_elf_index(abfd, isym->st_shndx);
 
               if (isym->st_shndx == shndx)
                 {
-                  bfd_vma baseaddr = BASEADDR (sec);
-                  bfd_vma symval = BASEADDR (sym_sec) + isym->st_value
-                                   + irel->r_addend;
+                  bfd_vma baseaddr = BASEADDR(sec);
+                  bfd_vma symval = (BASEADDR(sym_sec) + isym->st_value
+                                    + irel->r_addend);
 
-                  if ((baseaddr + addr + noadj) <= symval
-                      && symval < (baseaddr + endaddr))
+                  if (((baseaddr + addr + noadj) <= symval)
+                      && (symval < (baseaddr + endaddr)))
                     irel->r_addend += count;
                 }
             }
         }
 
       /* Do this only for PC space relocations.  */
-      if (addr <= irel->r_offset && irel->r_offset < endaddr)
+      if ((addr <= irel->r_offset) && (irel->r_offset < endaddr))
         irel->r_offset += count;
     }
 
   /* Now fix the stab relocations.  */
-  stab = bfd_get_section_by_name (abfd, ".stab");
+  stab = bfd_get_section_by_name(abfd, ".stab");
   if (stab)
     {
       bfd_byte *stabcontents, *stabend, *stabp;
-      bfd_size_type stab_size = stab->rawsize ? stab->rawsize : stab->size;
+      bfd_size_type stab_size = (stab->rawsize ? stab->rawsize : stab->size);
 
-      irelbase = elf_section_data (stab)->relocs;
-      irelend = irelbase + stab->reloc_count;
+      irelbase = elf_section_data(stab)->relocs;
+      irelend = (irelbase + stab->reloc_count);
 
-      /* Pull out the contents of the stab section.  */
-      if (elf_section_data (stab)->this_hdr.contents != NULL)
-	stabcontents = elf_section_data (stab)->this_hdr.contents;
+      /* Pull out the contents of the stab section: */
+      if (elf_section_data(stab)->this_hdr.contents != NULL)
+	stabcontents = elf_section_data(stab)->this_hdr.contents;
       else
 	{
-	  if (!bfd_malloc_and_get_section (abfd, stab, &stabcontents))
+	  if (!bfd_malloc_and_get_section(abfd, stab, &stabcontents))
 	    {
 	      if (stabcontents != NULL)
-		free (stabcontents);
+		free(stabcontents);
 	      return;
 	    }
 
 	  /* We need to remember this.  */
-	  elf_section_data (stab)->this_hdr.contents = stabcontents;
+	  elf_section_data(stab)->this_hdr.contents = stabcontents;
 	}
 
-      stabend = stabcontents + stab_size;
+      stabend = (stabcontents + stab_size);
 
       for (irel = irelbase; irel < irelend; irel++)
 	{
-	  if (ELF32_R_TYPE (irel->r_info) != R_IP2K_NONE)
+	  if (ELF32_R_TYPE(irel->r_info) != R_IP2K_NONE)
 	    {
-	      /* Get the value of the symbol referred to by the reloc.  */
-	      if (ELF32_R_SYM (irel->r_info) < symtab_hdr->sh_info)
+	      /* Get the value of the symbol referred to by the reloc: */
+	      if (ELF32_R_SYM(irel->r_info) < symtab_hdr->sh_info)
 		{
 		  asection *sym_sec;
 
 		  /* A local symbol.  */
-		  isym = isymbuf + ELF32_R_SYM (irel->r_info);
-		  sym_sec = bfd_section_from_elf_index (abfd, isym->st_shndx);
+		  isym = (isymbuf + ELF32_R_SYM(irel->r_info));
+		  sym_sec = bfd_section_from_elf_index(abfd, isym->st_shndx);
 
 		  if (sym_sec == sec)
 		    {
@@ -662,73 +658,75 @@ adjust_all_relocations (bfd *abfd,
 		      unsigned char type, other;
 		      unsigned short desc;
 		      bfd_vma value;
-		      bfd_vma baseaddr = BASEADDR (sec);
-		      bfd_vma symval = BASEADDR (sym_sec) + isym->st_value
-			+ irel->r_addend;
+		      bfd_vma baseaddr = BASEADDR(sec);
+		      bfd_vma symval = (BASEADDR(sym_sec) + isym->st_value
+					+ irel->r_addend);
 
-		      if ((baseaddr + addr) <= symval
-			  && symval <= (baseaddr + endaddr))
+		      if (((baseaddr + addr) <= symval)
+			  && (symval <= (baseaddr + endaddr)))
 			irel->r_addend += count;
 
-		      /* Go hunt up a function and fix its line info if needed.  */
-		      stabp = stabcontents + irel->r_offset - 8;
+		      /* Go hunt up a function & fix its line info if needed: */
+		      stabp = (stabcontents + irel->r_offset - 8);
 
 		      /* Go pullout the stab entry.  */
-		      strx  = bfd_h_get_32 (abfd, stabp + STRDXOFF);
-		      type  = bfd_h_get_8 (abfd, stabp + TYPEOFF);
-		      other = bfd_h_get_8 (abfd, stabp + OTHEROFF);
-		      desc  = bfd_h_get_16 (abfd, stabp + DESCOFF);
-		      value = bfd_h_get_32 (abfd, stabp + VALOFF);
+		      strx = bfd_h_get_32(abfd, (stabp + STRDXOFF));
+		      type = bfd_h_get_8(abfd, (stabp + TYPEOFF));
+		      other = bfd_h_get_8(abfd, (stabp + OTHEROFF));
+		      desc = bfd_h_get_16(abfd, (stabp + DESCOFF));
+		      value = bfd_h_get_32(abfd, (stabp + VALOFF));
 
-		      name = bfd_get_stab_name (type);
+		      name = bfd_get_stab_name(type);
 
-		      if (strcmp (name, "FUN") == 0)
+		      if (strcmp(name, "FUN") == 0)
 			{
 			  int function_adjusted = 0;
 
 			  if (symval > (baseaddr + addr))
-			    /* Not in this function.  */
+			    /* Not in this function: */
 			    continue;
 
-			  /* Hey we got a function hit.  */
+			  /* Hey we got a function hit: */
 			  stabp += STABSIZE;
-			  for (;stabp < stabend; stabp += STABSIZE)
+			  for (; stabp < stabend; stabp += STABSIZE)
 			    {
 			      /* Go pullout the stab entry.  */
-			      strx  = bfd_h_get_32 (abfd, stabp + STRDXOFF);
-			      type  = bfd_h_get_8 (abfd, stabp + TYPEOFF);
-			      other = bfd_h_get_8 (abfd, stabp + OTHEROFF);
-			      desc  = bfd_h_get_16 (abfd, stabp + DESCOFF);
-			      value = bfd_h_get_32 (abfd, stabp + VALOFF);
+			      strx = bfd_h_get_32(abfd, (stabp + STRDXOFF));
+			      type = bfd_h_get_8(abfd, (stabp + TYPEOFF));
+			      other = bfd_h_get_8(abfd, (stabp + OTHEROFF));
+			      desc = bfd_h_get_16(abfd, (stabp + DESCOFF));
+			      value = bfd_h_get_32(abfd, (stabp + VALOFF));
 
-			      name = bfd_get_stab_name (type);
+			      name = bfd_get_stab_name(type);
 
-			      if (strcmp (name, "FUN") == 0)
+			      if (strcmp(name, "FUN") == 0)
 				{
-				  /* Hit another function entry.  */
+				  /* Hit another function entry: */
 				  if (function_adjusted)
 				    {
-				      /* Adjust the value.  */
+				      /* Adjust the value: */
 				      value += count;
 
-				      /* We need to put it back.  */
-				      bfd_h_put_32 (abfd, value,stabp + VALOFF);
+				      /* We need to put it back: */
+				      bfd_h_put_32(abfd, value,
+                                                   (stabp + VALOFF));
 				    }
 
-				  /* And then bale out.  */
+				  /* And then bail out: */
 				  break;
 				}
 
-			      if (strcmp (name, "SLINE") == 0)
+			      if (strcmp(name, "SLINE") == 0)
 				{
 				  /* Got a line entry.  */
 				  if ((baseaddr + addr) <= (symval + value))
 				    {
-				      /* Adjust the line entry.  */
+				      /* Adjust the line entry: */
 				      value += count;
 
-				      /* We need to put it back.  */
-				      bfd_h_put_32 (abfd, value,stabp + VALOFF);
+				      /* We need to put it back: */
+				      bfd_h_put_32(abfd, value,
+                                                   (stabp + VALOFF));
 				      function_adjusted = 1;
 				    }
 				}
@@ -749,20 +747,19 @@ adjust_all_relocations (bfd *abfd,
   addr += noadj;
 
   /* Adjust the local symbols defined in this section.  */
-  isymend = isymbuf + symtab_hdr->sh_info;
+  isymend = (isymbuf + symtab_hdr->sh_info);
   for (isym = isymbuf; isym < isymend; isym++)
     {
-      if (isym->st_shndx == shndx
-	  && addr <= isym->st_value
-	  && isym->st_value < endaddr)
+      if ((isym->st_shndx == shndx) && (addr <= isym->st_value)
+	  && (isym->st_value < endaddr))
 	isym->st_value += count;
     }
 
   /* Now adjust the global symbols defined in this section.  */
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 	      - symtab_hdr->sh_info);
-  sym_hashes = elf_sym_hashes (abfd);
-  end_hashes = sym_hashes + symcount;
+  sym_hashes = elf_sym_hashes(abfd);
+  end_hashes = (sym_hashes + symcount);
   for (; sym_hashes < end_hashes; sym_hashes++)
     {
       struct elf_link_hash_entry *sym_hash = *sym_hashes;
@@ -771,8 +768,8 @@ adjust_all_relocations (bfd *abfd,
 	   || sym_hash->root.type == bfd_link_hash_defweak)
 	  && sym_hash->root.u.def.section == sec)
 	{
-          if (addr <= sym_hash->root.u.def.value
-              && sym_hash->root.u.def.value < endaddr)
+          if ((addr <= sym_hash->root.u.def.value)
+              && (sym_hash->root.u.def.value < endaddr))
 	    sym_hash->root.u.def.value += count;
 	}
     }
@@ -781,23 +778,20 @@ adjust_all_relocations (bfd *abfd,
 }
 
 /* Delete some bytes from a section while relaxing.  */
-
 static bfd_boolean
-ip2k_elf_relax_delete_bytes (bfd *abfd,
-			     asection *sec,
-			     bfd_vma addr,
-			     int count)
+ip2k_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
+			    int count)
 {
-  bfd_byte *contents = elf_section_data (sec)->this_hdr.contents;
+  bfd_byte *contents = elf_section_data(sec)->this_hdr.contents;
   bfd_vma endaddr = sec->size;
 
   /* Actually delete the bytes.  */
-  memmove (contents + addr, contents + addr + count,
-	   endaddr - addr - count);
+  memmove((contents + addr), (contents + addr + count),
+	  (endaddr - addr - count));
 
   sec->size -= count;
 
-  adjust_all_relocations (abfd, sec, addr + count, endaddr, -count, 0);
+  adjust_all_relocations(abfd, sec, (addr + count), endaddr, -count, 0);
   return TRUE;
 }
 

@@ -801,7 +801,7 @@ msp430_elf_symbol_address_p(bfd *abfd, asection *sec, Elf_Internal_Sym *isym,
   Elf_Internal_Sym *isymend;
   struct elf_link_hash_entry **sym_hashes;
   struct elf_link_hash_entry **end_hashes;
-  unsigned int symcount;
+  unsigned long symcount;
 
   sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
@@ -811,7 +811,7 @@ msp430_elf_symbol_address_p(bfd *abfd, asection *sec, Elf_Internal_Sym *isym,
     if (isym->st_shndx == sec_shndx && isym->st_value == addr)
       return TRUE;
 
-  symcount = (symtab_hdr->sh_size / sizeof(Elf32_External_Sym)
+  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 	      - symtab_hdr->sh_info);
   sym_hashes = elf_sym_hashes(abfd);
   end_hashes = (sym_hashes + symcount);
@@ -846,11 +846,11 @@ msp430_elf_relax_delete_bytes (bfd * abfd, asection * sec, bfd_vma addr,
   Elf_Internal_Sym *isymend;
   struct elf_link_hash_entry **sym_hashes;
   struct elf_link_hash_entry **end_hashes;
-  unsigned int symcount;
+  unsigned long symcount;
 
-  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
-  contents = elf_section_data (sec)->this_hdr.contents;
+  contents = elf_section_data(sec)->this_hdr.contents;
 
   /* The deletion must stop at the next ALIGN reloc for an aligment
      power larger than the number of bytes we are deleting.  */
@@ -858,45 +858,45 @@ msp430_elf_relax_delete_bytes (bfd * abfd, asection * sec, bfd_vma addr,
   irelalign = NULL;
   toaddr = sec->size;
 
-  irel = elf_section_data (sec)->relocs;
-  irelend = irel + sec->reloc_count;
+  irel = elf_section_data(sec)->relocs;
+  irelend = (irel + sec->reloc_count);
 
   /* Actually delete the bytes.  */
-  memmove (contents + addr, contents + addr + count,
-	   (size_t) (toaddr - addr - count));
+  memmove(contents + addr, contents + addr + count,
+	  (size_t)(toaddr - addr - count));
   sec->size -= count;
 
   /* Adjust all the relocs.  */
-  symtab_hdr = & elf_tdata (abfd)->symtab_hdr;
-  isym = (Elf_Internal_Sym *) symtab_hdr->contents;
-  for (irel = elf_section_data (sec)->relocs; irel < irelend; irel++)
+  symtab_hdr = & elf_tdata(abfd)->symtab_hdr;
+  isym = (Elf_Internal_Sym *)symtab_hdr->contents;
+  for (irel = elf_section_data(sec)->relocs; irel < irelend; irel++)
     {
-      int sidx = ELF32_R_SYM(irel->r_info);
-      Elf_Internal_Sym *lsym = isym + sidx;
+      long sidx = ELF32_R_SYM(irel->r_info);
+      Elf_Internal_Sym *lsym = (isym + sidx);
       
       /* Get the new reloc address.  */
-      if ((irel->r_offset > addr && irel->r_offset < toaddr))
+      if ((irel->r_offset > addr) && (irel->r_offset < toaddr))
 	irel->r_offset -= count;
 
       /* Adjust symbols referenced by .sec+0xXX */
-      if (irel->r_addend > addr && irel->r_addend < toaddr 
+      if ((irel->r_addend > addr) && (irel->r_addend < toaddr)
 	  && lsym->st_shndx == sec_shndx)
 	irel->r_addend -= count;
     }
 
   /* Adjust the local symbols defined in this section.  */
-  symtab_hdr = & elf_tdata (abfd)->symtab_hdr;
-  isym = (Elf_Internal_Sym *) symtab_hdr->contents;
-  for (isymend = isym + symtab_hdr->sh_info; isym < isymend; isym++)
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  isym = (Elf_Internal_Sym *)symtab_hdr->contents;
+  for (isymend = (isym + symtab_hdr->sh_info); isym < isymend; isym++)
     if (isym->st_shndx == sec_shndx
 	&& isym->st_value > addr && isym->st_value < toaddr)
       isym->st_value -= count;
 
   /* Now adjust the global symbols defined in this section.  */
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 	      - symtab_hdr->sh_info);
-  sym_hashes = elf_sym_hashes (abfd);
-  end_hashes = sym_hashes + symcount;
+  sym_hashes = elf_sym_hashes(abfd);
+  end_hashes = (sym_hashes + symcount);
   for (; sym_hashes < end_hashes; sym_hashes++)
     {
       struct elf_link_hash_entry *sym_hash = *sym_hashes;
@@ -912,18 +912,18 @@ msp430_elf_relax_delete_bytes (bfd * abfd, asection * sec, bfd_vma addr,
   return TRUE;
 }
 
-
+/* */
 static bfd_boolean
-msp430_elf_relax_section (bfd * abfd, asection * sec,
-			  struct bfd_link_info * link_info,
-			  bfd_boolean * again)
+msp430_elf_relax_section(bfd *abfd, asection *sec,
+			 struct bfd_link_info *link_info,
+			 bfd_boolean *again)
 {
-  Elf_Internal_Shdr * symtab_hdr;
-  Elf_Internal_Rela * internal_relocs;
-  Elf_Internal_Rela * irel;
-  Elf_Internal_Rela * irelend;
-  bfd_byte *          contents = NULL;
-  Elf_Internal_Sym *  isymbuf = NULL;
+  Elf_Internal_Shdr *symtab_hdr;
+  Elf_Internal_Rela *internal_relocs;
+  Elf_Internal_Rela *irel;
+  Elf_Internal_Rela *irelend;
+  bfd_byte *contents = NULL;
+  Elf_Internal_Sym *isymbuf = NULL;
 
   /* Assume nothing changes.  */
   *again = FALSE;

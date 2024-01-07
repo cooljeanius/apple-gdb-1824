@@ -386,8 +386,8 @@ elf32_m68k_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
       || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
     return TRUE;
 
-  in_flags  = elf_elfheader (ibfd)->e_flags;
-  out_flags = elf_elfheader (obfd)->e_flags;
+  in_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  out_flags = (flagword)elf_elfheader(obfd)->e_flags;
 
   if (!elf_flags_init (obfd))
     {
@@ -1697,14 +1697,14 @@ elf_m68k_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	    (_("%B(%A+0x%lx): unresolvable relocation against symbol `%s'"),
 	     input_bfd,
 	     input_section,
-	     (long) rel->r_offset,
+	     (long)rel->r_offset,
 	     h->root.root.string);
 	  return FALSE;
 	}
 
-      r = _bfd_final_link_relocate (howto, input_bfd, input_section,
-				    contents, rel->r_offset,
-				    relocation, rel->r_addend);
+      r = _bfd_final_link_relocate(howto, input_bfd, input_section,
+				   contents, rel->r_offset,
+				   relocation, rel->r_addend);
 
       if (r != bfd_reloc_ok)
 	{
@@ -1714,20 +1714,21 @@ elf_m68k_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	    name = h->root.root.string;
 	  else
 	    {
-	      name = bfd_elf_string_from_elf_section (input_bfd,
-						      symtab_hdr->sh_link,
-						      sym->st_name);
+	      name =
+        	bfd_elf_string_from_elf_section(input_bfd,
+                                                (unsigned int)symtab_hdr->sh_link,
+                                                (unsigned int)sym->st_name);
 	      if (name == NULL)
 		return FALSE;
 	      if (*name == '\0')
-		name = bfd_section_name (input_bfd, sec);
+		name = bfd_section_name(input_bfd, sec);
 	    }
 
 	  if (r == bfd_reloc_overflow)
 	    {
 	      if (!(info->callbacks->reloc_overflow
 		    (info, (h ? &h->root : NULL), name, howto->name,
-		     (bfd_vma) 0, input_bfd, input_section,
+		     (bfd_vma)0UL, input_bfd, input_section,
 		     rel->r_offset)))
 		return FALSE;
 	    }
@@ -1736,7 +1737,7 @@ elf_m68k_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      (*_bfd_error_handler)
 		(_("%B(%A+0x%lx): reloc against `%s': error %d"),
 		 input_bfd, input_section,
-		 (long) rel->r_offset, name, (int) r);
+		 (long)rel->r_offset, name, (int)r);
 	      return FALSE;
 	    }
 	}
