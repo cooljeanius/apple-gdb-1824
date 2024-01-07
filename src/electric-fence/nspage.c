@@ -1,4 +1,4 @@
-/*
+/* -*- C -*-
  * nspage.c
  */
 
@@ -70,6 +70,7 @@ typedef int vm_prot_t;
    mach_check_noerror(ret, __FILE__, __LINE__, __MACH_CHECK_FUNCTION);
 #endif /* !MACH_CHECK_NOERROR */
 
+/* */
 static void mach_check_error(kern_return_t ret, const char *file,
                              unsigned int line, const char *func)
 {
@@ -81,9 +82,10 @@ static void mach_check_error(kern_return_t ret, const char *file,
   }
 
   EF_Exit("fatal Mach error on line %u of \"%s\" in function \"%s\": %s\n",
-          line, file, func, mach_error_string (ret));
+          line, file, func, mach_error_string(ret));
 }
 
+/* */
 void *Page_Create(size_t size)
 {
   kern_return_t kret;
@@ -95,6 +97,7 @@ void *Page_Create(size_t size)
   return ((void *)address);
 }
 
+/* */
 void Page_AllowAccess(void *address, size_t size)
 {
   kern_return_t kret;
@@ -104,6 +107,7 @@ void Page_AllowAccess(void *address, size_t size)
   MACH_CHECK_ERROR(kret);
 }
 
+/* */
 void Page_DenyAccess(void *address, size_t size)
 {
   kern_return_t kret;
@@ -113,6 +117,7 @@ void Page_DenyAccess(void *address, size_t size)
   MACH_CHECK_ERROR(kret);
 }
 
+/* */
 void Page_Delete(void *address, size_t size)
 {
   kern_return_t kret;
@@ -121,6 +126,7 @@ void Page_Delete(void *address, size_t size)
   MACH_CHECK_ERROR(kret);
 }
 
+/* */
 size_t Page_Size(void)
 {
 #if defined(__MACH30__)

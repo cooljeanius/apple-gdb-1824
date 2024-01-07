@@ -23,7 +23,18 @@ Boston, MA 02111-1307, USA.  */
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <mach/mach.h>
+#if !defined(__has_include)
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
+#if defined(HAVE_MACH_MACH_H) || __has_include(<mach/mach.h>) || \
+    defined(__MACH__) || defined(__APPLE__)
+# include <mach/mach.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "pagecheck-sup.c expects <mach/mach.h> to be included."
+# endif /* __GNUC__ && !defined(__STRICT_ANSI__) */
+#endif /* HAVE_MACH_MACH_H || __MACH__ || __APPLE__ */
 #include <mach/mach_error.h>
 
 #include "mmprivate.h"

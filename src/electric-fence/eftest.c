@@ -1,4 +1,4 @@
-/*
+/* -*- C -*-
  * eftest.c
  */
 
@@ -20,9 +20,9 @@
 #endif /* !PAGE_PROTECTION_VIOLATED_SIGNAL */
 
 struct diagnostic {
-	int	(*test)(void);
-	int	expectedStatus;
-	const char *explanation;
+  int (*test)(void);
+  int expectedStatus;
+  const char *explanation;
 };
 
 extern int EF_PROTECT_BELOW;
@@ -34,10 +34,8 @@ static jmp_buf env;
  * There is still too little standardization of the arguments and return
  * type of signal handler functions.
  */
-static
-void
-segmentationFaultHandler(
-int signalNumber
+static void
+segmentationFaultHandler(int signalNumber
 #if defined(_AIX)
 , ...
 #endif /* _AIX */
@@ -50,91 +48,100 @@ int signalNumber
 	longjmp(env, 1);
 }
 
+/* */
 static int
 gotSegmentationFault(int (*test)(void))
 {
-	if (setjmp(env) == 0) {
-		int status;
+  if (setjmp(env) == 0) {
+    int status;
 
-		signal(PAGE_PROTECTION_VIOLATED_SIGNAL, segmentationFaultHandler);
-		status = (*test)();
-		signal(PAGE_PROTECTION_VIOLATED_SIGNAL, SIG_DFL);
-		return status;
-	} else {
-		return 1;
-	}
+    signal(PAGE_PROTECTION_VIOLATED_SIGNAL, segmentationFaultHandler);
+    status = (*test)();
+    signal(PAGE_PROTECTION_VIOLATED_SIGNAL, SIG_DFL);
+    return status;
+  } else {
+    return 1;
+  }
 }
 
 static char *allocation;
 /* c is global so that assignments to it will NOT be optimized out. */
 char c;
 
+/* */
 static int
 testSizes(void)
 {
-	/*
-	 * If ef_number cannot hold all of the bits of a void *, have the user
-	 * add -DUSE_ LONG_LONG to the compiler flags so that ef_number will be
-	 * declared as "unsigned long long" instead of "unsigned long".
-	 */
-	return (sizeof(ef_number) < sizeof(void *));
+  /*
+   * If ef_number cannot hold all of the bits of a void *, have the user
+   * add -DUSE_LONG_LONG to the compiler flags so that ef_number will be
+   * declared as "unsigned long long" instead of "unsigned long".
+   */
+  return (sizeof(ef_number) < sizeof(void *));
 }
 
+/* */
 static int
 allocateMemory(void)
 {
-	allocation = (char *)malloc(1);
+  allocation = (char *)malloc(1UL);
 
-	if (allocation != 0) {
-		return 0;
-	} else {
-		return 1;
-	}
+  if (allocation != 0) {
+    return 0;
+  } else {
+    return 1;
+  }
 }
 
+/* */
 static int
 freeMemory(void)
 {
-	free(allocation);
-	return 0;
+  free(allocation);
+  return 0;
 }
 
+/* */
 static int
 protectBelow(void)
 {
-	EF_PROTECT_BELOW = 1;
-	return 0;
+  EF_PROTECT_BELOW = 1;
+  return 0;
 }
 
+/* */
 static int
 read0(void)
 {
-	c = *allocation;
+  c = *allocation;
 
-	return 0;
+  return 0;
 }
 
+/* */
 static int
 write0(void)
 {
-	*allocation = 1;
+  *allocation = 1;
 
-	return 0;
+  return 0;
 }
 
+/* */
 static int
 read1(void)
 {
-	c = allocation[1];
+  c = allocation[1];
 
-	return 0;
+  return 0;
 }
 
+/* */
 static int
 readMinus1(void)
 {
-	c = allocation[-1];
-	return 0;
+  c = allocation[-1];
+  return 0;
 }
 
 static struct diagnostic diagnostics[] = {
@@ -208,7 +215,7 @@ main(int argc, char **argv)
 	EF_ALIGNMENT = 0;
 
 	while (diag->explanation != 0) {
-		int	status = gotSegmentationFault(diag->test);
+		int status = gotSegmentationFault(diag->test);
 
 		if (status != diag->expectedStatus) {
 			/*

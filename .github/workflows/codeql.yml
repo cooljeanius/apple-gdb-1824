@@ -71,12 +71,12 @@ jobs:
 
     - name: Create builddirs
       run: |
-        if test ! -d build; then mkdir build; else (sync && stat build); fi
+        if test ! -d build; then (sync && mkdir build); else (sync && stat build); fi
         if test ! -d /home/runner/work/apple-gdb-1824/build; then \
           if test -w /home/runner/work/apple-gdb-1824; then \
-            mkdir -v /home/runner/work/apple-gdb-1824/build; \
+            (sync && mkdir -v /home/runner/work/apple-gdb-1824/build); \
           elif test -w /home/runner/work -o -w /home/runner -o -w /home; then \
-            mkdir -pv /home/runner/work/apple-gdb-1824/build; \
+            (sync && mkdir -pv /home/runner/work/apple-gdb-1824/build); \
           else \
             echo "unable to make the necessary builddir due to unwriteable directories"; \
           fi; \
@@ -123,14 +123,14 @@ jobs:
           fi; \
           (bundle install && bundle check) || ruby -cwv Gemfile || ruby -c Gemfile; \
           (bundle clean && ls) || stat Gemfile || wc -l Gemfile || du Gemfile; \
-          echo "leaving $(pwd)..."; \
+          sync && echo "leaving $(pwd)..."; \
           popd || exit; \
         elif test ${{ matrix.language }} = 'javascript-typescript' && test -x "$(which node)"; then \
           (find . -name '*.js' -print0 | xargs -0 node -c) || find . -name '*.js' -print -exec node -c '{}' ';'; \
           if test -x "$(which npx)"; then \
             pushd src/texinfo/js || exit; \
             (npx eslint -c build-aux/eslint.json info.js -f unix) || (npx tsc --allowJs --checkJS --noEmit --lib dom,es2017 info.js) || (npx uglifyjs info.js -o info.min.js --mangle --compress) || (npx modernizr -c build-aux/modernizr.json) || (npx esparse info.js info.js.json) || (npx esvalidate info.js); \
-            echo "Done with texinfo javascript."; \
+            sync && echo "Done with texinfo javascript."; \
             popd || exit; \
           fi; \
         else \
@@ -143,13 +143,16 @@ jobs:
     - name: Run build with Gradle Wrapper
       if: matrix.language == 'java-kotlin' && success()
       run: |
-        ./gradlew build || ./gradlew assemble || stat ./gradlew
+        ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
+        sync && echo "done with top-level; next is jzlib..."
         pushd src/zlib/contrib/java/jzlib-1.1.2 || exit
-        ./gradlew build || ./gradlew assemble || stat ./gradlew
+        ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
         popd || exit
+        sync && echo "done with jzlib; next is testsuite..."
         pushd src/gdb/testsuite/gdb.java || exit
-        ./gradlew build || ./gradlew assemble || stat ./gradlew
+        ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
         popd || exit
+        sync && echo "done with attempts at using the gradle wrapper..."
 
     # Can try bringing back autobuild for 'c-cpp' once darling has xcrun:
     - name: Autobuild
@@ -388,7 +391,7 @@ jobs:
             if test -e ${subdir}/Makefile; then \
               pushd "${subdir}"; \
               for srcfile in *.c; do \
-                make "$(echo "${srcfile}" | sed "s/\.c/.plist/g")" || stat "${srcfile}"; \
+                make "$(echo "${srcfile}" | sed "s/\.c/.plist/g")" || stat -t "${srcfile}"; \
               done; \
               popd; \
             elif test -d "${subdir}"; \
