@@ -142,7 +142,6 @@ test -n "${GCC}" && test -n "${auto_cflags}" && CFLAGS="${CFLAGS} -O1"
 AC_MSG_CHECKING([programs])
 AC_MSG_RESULT([ ])
 AC_PROG_AWK
-AC_PROG_GCC_TRADITIONAL
 AC_DEFUN([AC_REQUIRE_GREPS],[
   AC_REQUIRE([AC_PROG_GREP])dnl
   AC_REQUIRE([AC_PROG_EGREP])dnl
@@ -164,6 +163,11 @@ test -n "${ARFLAGS}" || ARFLAGS="cr"
 if test "x${AR}" = "x"; then
   test -z "${AR}"
   AM_PROG_AR
+  ## might want to switch around these checks...
+  if test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    AC_PROG_AR
+  fi
 fi
 if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}"
@@ -314,7 +318,9 @@ AC_MSG_RESULT([ ])
 AC_HEADER_DIRENT
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it.
 AC_HEADER_STAT
-AC_HEADER_TIME
+m4_ifdef([AC_HEADER_TIME],[
+  AC_HEADER_TIME dnl# (technically obsolete now, but keep it anyways)
+])dnl
 AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS([arpa/inet.h errno.h fcntl.h features.h limits.h \
                   locale.h malloc.h malloca.h malloc/malloc.h netdb.h \

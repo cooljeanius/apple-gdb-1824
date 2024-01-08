@@ -426,8 +426,8 @@ nonlibtool_libopcodes.a: stamp-lib
 .PHONY: nonlibtool_libopcodes.a
 
 $(BFD_H): ../bfd/Makefile
-	(cd ../bfd && $(MAKE) bfd.h)
-	test -e $(BFD_H)
+	(cd ../bfd && $(MAKE) -w bfd.h)
+	test -e $(BFD_H) || echo "warning: BFD_H ($(BFD_H)) went missing..." >&2
 
 # APPLE LOCAL: begin framework building:
 SYSTEM_FRAMEWORK = -framework System @SYSTEM_FRAMEWORK_LIBS@
@@ -454,13 +454,12 @@ stamp-framework-headers:
 	$(AM_V_at)touch stamp-framework-headers
 
 stamp-framework: $(libopcodes_la_OBJECTS) $(libopcodes_la_DEPENDENCIES)
-	$(MAKE) $(FRAMEWORK_OFILES)
+	$(MAKE) -w $(FRAMEWORK_OFILES)
 	rm -f stamp-framework-headers
-	$(MAKE) stamp-framework-headers
+	$(MAKE) -w stamp-framework-headers
 	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
 	$(LN_S) $(AM_V_v) Versions/Current/Resources $(FRAMEWORK).framework/Resources
 	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
-
 	set -ex; \
 	if [ "x$(FRAMEWORK_SUFFIX)" != "x" ]; then \
 	    test -n "$(FRAMEWORK_SUFFIX)" && echo "$(FRAMEWORK_SUFFIX)"; \
@@ -474,7 +473,7 @@ stamp-framework: $(libopcodes_la_OBJECTS) $(libopcodes_la_DEPENDENCIES)
 	    $(NSLIBTOOL) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
 	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
 	fi
-	$(AM_V_at)touch stamp-framework
+	$(AM_V_at)if test $@ -ot stamp-framework-headers; then touch $@; fi
 # APPLE LOCAL: end framework building
 
 POTFILES = $(HFILES) $(CFILES)
@@ -561,14 +560,14 @@ run-cgen: config.status
 	$(SHELL) $(srcdir)/cgen.sh opcodes $(srcdir) $(CGEN) \
 	  $(CGENDIR) "$(CGENFLAGS)" $(arch) $(prefix) $(archfile) $(opcfile) \
 	  "$(options)" "$(extrafiles)"
-	touch stamp-${prefix}
+	$(AM_V_at)touch stamp-${prefix}
 .PHONY: run-cgen
 
 # Maintainer utility rule to regenerate all cgen files.
 run-cgen-all: config.status
 	for c in $(CGEN_CPUS); \
 	do \
-		$(MAKE) stamp-$${c} || exit 1; \
+		$(MAKE) -w stamp-$${c} || exit 1; \
 	done
 .PHONY: run-cgen-all
 
@@ -576,13 +575,13 @@ run-cgen-all: config.status
 $(srcdir)/ip2k-desc.h $(srcdir)/ip2k-desc.c $(srcdir)/ip2k-opc.h $(srcdir)/ip2k-opc.c $(srcdir)/ip2k-ibld.c $(srcdir)/ip2k-asm.c $(srcdir)/ip2k-dis.c: $(IP2K_DEPS)
 	@echo "ensuring $@ is up-to-date"
 stamp-ip2k: $(CGENDEPS) $(CPUDIR)/ip2k.cpu $(CPUDIR)/ip2k.opc
-	$(MAKE) run-cgen arch=ip2k prefix=ip2k options="" \
+	$(MAKE) -w run-cgen arch=ip2k prefix=ip2k options="" \
 		archfile=$(CPUDIR)/ip2k.cpu opcfile=$(CPUDIR)/ip2k.opc extrafiles=""
 
 $(srcdir)/m32c-desc.h $(srcdir)/m32c-desc.c $(srcdir)/m32c-opc.h $(srcdir)/m32c-opc.c $(srcdir)/m32c-ibld.c $(srcdir)/m32c-asm.c $(srcdir)/m32c-dis.c: $(M32C_DEPS)
 	@echo "ensuring $@ is up-to-date" || true
 stamp-m32c: $(CGENDEPS) $(srcdir)/../cpu/m32c.cpu $(srcdir)/../cpu/m32c.opc
-	$(MAKE) run-cgen arch=m32c prefix=m32c options="" \
+	$(MAKE) -w run-cgen arch=m32c prefix=m32c options="" \
 		archfile=$(srcdir)/../cpu/m32c.cpu \
 		opcfile=$(srcdir)/../cpu/m32c.opc extrafiles=""
 m32c_opc_h = m32c-opc.h cgen-types.h cgen-ops.h
@@ -612,33 +611,33 @@ m32c-opc.o: m32c-opc.lo
 $(srcdir)/m32r-desc.h $(srcdir)/m32r-desc.c $(srcdir)/m32r-opc.h $(srcdir)/m32r-opc.c $(srcdir)/m32r-ibld.c $(srcdir)/m32r-opinst.c $(srcdir)/m32r-asm.c $(srcdir)/m32r-dis.c: $(M32R_DEPS)
 	@echo "ensuring $@ is up-to-date"
 stamp-m32r: $(CGENDEPS) $(srcdir)/../cpu/m32r.cpu $(srcdir)/../cpu/m32r.opc
-	$(MAKE) run-cgen arch=m32r prefix=m32r options=opinst \
+	$(MAKE) -w run-cgen arch=m32r prefix=m32r options=opinst \
 		archfile=$(srcdir)/../cpu/m32r.cpu \
 		opcfile=$(srcdir)/../cpu/m32r.opc extrafiles=opinst
 
 $(srcdir)/fr30-desc.h $(srcdir)/fr30-desc.c $(srcdir)/fr30-opc.h $(srcdir)/fr30-opc.c $(srcdir)/fr30-ibld.c $(srcdir)/fr30-asm.c $(srcdir)/fr30-dis.c: $(FR30_DEPS)
 	@echo "ensuring $@ is up-to-date"
 stamp-fr30: $(CGENDEPS) $(CPUDIR)/fr30.cpu $(CPUDIR)/fr30.opc
-	$(MAKE) run-cgen arch=fr30 prefix=fr30 options="" \
+	$(MAKE) -w run-cgen arch=fr30 prefix=fr30 options="" \
 		archfile=$(CPUDIR)/fr30.cpu opcfile=$(CPUDIR)/fr30.opc extrafiles=""
 
 $(srcdir)/frv-desc.h $(srcdir)/frv-desc.c $(srcdir)/frv-opc.h $(srcdir)/frv-opc.c $(srcdir)/frv-ibld.c $(srcdir)/frv-asm.c $(srcdir)/frv-dis.c: $(FRV_DEPS)
 	@echo "ensuring $@ is up-to-date"
 stamp-frv: $(CGENDEPS) $(srcdir)/../cpu/frv.cpu $(srcdir)/../cpu/frv.opc
-	$(MAKE) run-cgen arch=frv prefix=frv options="" \
+	$(MAKE) -w run-cgen arch=frv prefix=frv options="" \
 		archfile=$(srcdir)/../cpu/frv.cpu opcfile=$(srcdir)/../cpu/frv.opc extrafiles=""
 
 $(srcdir)/ms1-desc.h $(srcdir)/ms1-desc.c $(srcdir)/ms1-opc.h $(srcdir)/ms1-opc.c $(srcdir)/ms1-ibld.c $(srcdir)/ms1-asm.c $(srcdir)/ms1-dis.c: $(MS1_DEPS)
 	@echo "ensuring $@ is up-to-date"
 stamp-ms1: $(CGENDEPS) $(srcdir)/../cpu/ms1.cpu $(srcdir)/../cpu/ms1.opc
-	$(MAKE) run-cgen arch=ms1 prefix=ms1 options="" \
+	$(MAKE) -w run-cgen arch=ms1 prefix=ms1 options="" \
 		archfile=$(srcdir)/../cpu/ms1.cpu \
 		opcfile=$(srcdir)/../cpu/ms1.opc extrafiles=""
 
 $(srcdir)/openrisc-desc.h $(srcdir)/openrisc-desc.c $(srcdir)/openrisc-opc.h $(srcdir)/openrisc-opc.c $(srcdir)/openrisc-ibld.c $(srcdir)/openrisc-asm.c $(srcdir)/openrisc-dis.c: $(OPENRISC_DEPS)
 	@echo "ensuring $@ is up-to-date"
 stamp-openrisc: $(CGENDEPS) $(CPUDIR)/openrisc.cpu $(CPUDIR)/openrisc.opc
-	$(MAKE) run-cgen arch=openrisc prefix=openrisc options="" \
+	$(MAKE) -w run-cgen arch=openrisc prefix=openrisc options="" \
 		archfile=$(CPUDIR)/openrisc.cpu opcfile=$(CPUDIR)/openrisc.opc extrafiles=""
 
 $(srcdir)/iq2000-desc.h $(srcdir)/iq2000-desc.c $(srcdir)/iq2000-opc.h $(srcdir)/iq2000-opc.c $(srcdir)/iq2000-ibld.c $(srcdir)/iq2000-asm.c $(srcdir)/iq2000-dis.c: $(IQ2000_DEPS)
@@ -646,14 +645,14 @@ $(srcdir)/iq2000-desc.h $(srcdir)/iq2000-desc.c $(srcdir)/iq2000-opc.h $(srcdir)
 stamp-iq2000: $(CGENDEPS) $(srcdir)/../cpu/iq2000.cpu \
 		$(srcdir)/../cpu/iq2000.opc $(srcdir)/../cpu/iq2000m.cpu \
 		$(srcdir)/../cpu/iq10.cpu
-	$(MAKE) run-cgen arch=iq2000 prefix=iq2000 options="" \
+	$(MAKE) -w run-cgen arch=iq2000 prefix=iq2000 options="" \
 		archfile=$(srcdir)/../cpu/iq2000.cpu \
 		opcfile=$(srcdir)/../cpu/iq2000.opc extrafiles=""
 
 $(srcdir)/xstormy16-desc.h $(srcdir)/xstormy16-desc.c $(srcdir)/xstormy16-opc.h $(srcdir)/xstormy16-opc.c $(srcdir)/xstormy16-ibld.c $(srcdir)/xstormy16-asm.c $(srcdir)/xstormy16-dis.c: $(XSTORMY16_DEPS)
 	@echo "ensuring $@ is up-to-date"
 stamp-xstormy16: $(CGENDEPS) $(CPUDIR)/xstormy16.cpu $(CPUDIR)/xstormy16.opc
-	$(MAKE) run-cgen arch=xstormy16 prefix=xstormy16 options="" \
+	$(MAKE) -w run-cgen arch=xstormy16 prefix=xstormy16 options="" \
 		archfile=$(CPUDIR)/xstormy16.cpu opcfile=$(CPUDIR)/xstormy16.opc extrafiles=""
 
 i386-gen: i386-gen.o @MAINT@ $(LIBIBERTY)
@@ -703,7 +702,7 @@ sh-dis.o: sh-dis.lo
 # includes all of $(CFILES).
 DEP: dep.sed $(CFILES) $(HFILES) config.h
 	rm -f $(AM_V_v) DEP1
-	$(MAKE) MKDEP="$(MKDEP)" DEP1
+	$(MAKE) -w MKDEP="$(MKDEP)" DEP1
 	$(SED) -f dep.sed < DEP1 $(AM_V_redir) DEPA
 	echo '# IF YOU PUT ANYTHING HERE IT WILL GO AWAY' >> DEPA
 	if $(GREP) ' /' DEPA > /dev/null 2> /dev/null; then \
@@ -718,9 +717,9 @@ DEP: dep.sed $(CFILES) $(HFILES) config.h
 DEP1: $(CFILES)
 	echo '# DO NOT DELETE THIS LINE -- mkdep uses it.' > DEP2
 	echo '# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.' >> DEP2
-	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? | tee -a DEP2
+	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? $(AM_V_redir_a) DEP2
 	mv -f $(AM_V_v) DEP2 $@
-	$(AM_V_at)touch $@
+	$(AM_V_at)if test DEP1 -ot DEP2; then touch $@; fi
 
 #FIXME: this sed script is broken and hack-ish:
 dep.sed: dep-in.sed @MAINT@ config.status
@@ -736,14 +735,16 @@ dep: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < Makefile > tmp-Makefile
 	cat DEP >> tmp-Makefile
 	$(RUN_MOVEIFCHANGE) tmp-Makefile Makefile
-	$(AM_V_at)touch Makefile
+	$(AM_V_at)if test Makefile -ot DEP; then touch Makefile; fi
 
 #FIXME: this target relies on dep.sed, which is broken (see above)
 dep-in: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.in > tmp-Makefile.in
 	cat DEP >> tmp-Makefile.in
 	$(RUN_MOVEIFCHANGE) tmp-Makefile.in $(srcdir)/Makefile.in
-	$(AM_V_at)touch $(srcdir)/Makefile.in
+	$(AM_V_at)if test $(srcdir)/Makefile.in -ot DEP; then \
+	  touch $(srcdir)/Makefile.in; \
+	fi
 
 #FIXME: this target relies on dep.sed, which is broken (see above)
 dep-am: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
@@ -753,7 +754,9 @@ dep-am: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.am > tmp-Makefile.am
 	cat DEP >> tmp-Makefile.am
 	$(RUN_MOVEIFCHANGE) tmp-Makefile.am $(srcdir)/Makefile.am
-	$(AM_V_at)touch $(srcdir)/Makefile.am
+	$(AM_V_at)if test $(srcdir)/Makefile.am -ot DEP; then \
+	  touch $(srcdir)/Makefile.am; \
+	fi
 
 .PHONY: dep dep-in dep-am
 

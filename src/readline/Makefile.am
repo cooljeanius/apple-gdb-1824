@@ -166,6 +166,15 @@ all: config.status $(TARGETS)
 everything: config.status all @MAINT@ examples
 
 static: $(STATIC_LIBS)
+	for mylib in $(STATIC_LIBS); do \
+	  if test -e $${mylib}; then \
+	    stat $${mylib}; \
+	  elif test -e Makefile; then \
+	    $(MAKE) -w $${mylib}; \
+	  else \
+	    echo "unsure how to make $${mylib}"; \
+	  fi; \
+	done
 
 libreadline.a: $(OBJECTS) $(HISTOBJ) $(TILDEOBJ) $(XMALLOCOBJ) ${LIBOBJDIR}compat$U.o ${LIBOBJDIR}malloc$U.o ${LIBOBJDIR}realloc$U.o
 	$(RM) $@

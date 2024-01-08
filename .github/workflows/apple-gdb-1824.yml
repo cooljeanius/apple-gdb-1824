@@ -17,7 +17,7 @@ jobs:
     - run: test -e ./.profile_generic && source ./.profile_generic && (env | uniq | sort | uniq) && sync && sleep 1
     - run: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: cd src && make configure-bfd
-    - run: cd src && sync && make -C bfd headers && sync && (ls bfd/bfd*.h || stat bfd) && sync && sleep 1
+    - run: cd src && sync && make -C bfd headers && sync && make -C bfd stamp-framework-headers && sync && (ls bfd/bfd*.h || stat bfd) && sync && sleep 1
     - run: cd src && if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi && find . -name bfd.h -print && sleep 1
     - run: cd src && if test -e autogen/Makefile; then make -C autogen; elif test -d autogen; then (echo "listing autogen Makefiles present" && ls autogen/Makefile* && sleep 1); else echo "skipping autogen"; fi
     - run: cd src && make -C bfd diststuff
@@ -32,7 +32,7 @@ jobs:
     - run: cd src && for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/configure; then (echo "configuring in ${dir}" && make configure-${dir}); elif test -d ${dir}; then ls ${dir}/configure*; else echo "skipping configuring in ${dir}"; fi; done
     - run: cd src && for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then (echo "building in ${dir}" && make -C ${dir}); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
     - run: cd src && make check-libiberty
-    - run: cd src && make -C tcl/unix tcltest
+    - run: cd src && sync && make -C tcl/unix tcltest && sync
     - run: cd src && for dir in sim itcl; do if test -e ${dir}/Makefile; then (echo "running testsuite for ${dir}" && make check-${dir} V=0 RUNTESTFLAGS="-v" && sleep 1); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
     - run: (time (pwd && ls && stat . && sync)) && sleep 1
       if: "${{ success() }}"

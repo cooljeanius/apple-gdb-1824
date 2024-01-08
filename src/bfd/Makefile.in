@@ -9628,6 +9628,7 @@ all: info @MAINT@ config.status
 .PHONY: all info info-am
 
 diststuff: info @MAINT@ config.status
+	find . -name *.info -print
 .PHONY: diststuff
 
 all_machines: $(ALL_MACHINES)
@@ -9713,7 +9714,7 @@ plistfiles: stamp-plistfiles
 
 # FIXME: Even the hack fails now... (does it still? I think we are okay...)
 stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
-	if test ! -e stamp-staticlib; then $(MAKE) stamp-staticlib; fi
+	if test ! -e stamp-staticlib; then $(MAKE) -w stamp-staticlib; fi
 	libtooldir=`$(LIBTOOL) --config | $(SED) -n -e 's/^objdir=//p'`; \
 	if test -z "$${libtooldir}"; then \
 	  echo "" && echo "error: libtooldir is unset" >&2 && exit 1; \
@@ -9737,10 +9738,10 @@ stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
 # as part of a rule instead:
 stamp-staticlib: stamp-ofiles @MAINT@ bfd.h
 	rm -f $(AM_V_v) stamp-staticlib
-	if test ! -e $(BFD_H); then $(MAKE) $(BFD_H); fi
-	$(MAKE) $(OFILES)
+	if test ! -e $(BFD_H); then $(MAKE) -w $(BFD_H); fi
+	$(MAKE) -w $(OFILES)
 	if test -n "$(libbfd_a_OBJECTS)"; then \
-	  $(MAKE) $(libbfd_a_OBJECTS); \
+	  $(MAKE) -w $(libbfd_a_OBJECTS); \
 	fi
 	if [ -f libbfd.a ]; then \
 	  $(RANLIB) libbfd.a; \
@@ -9755,7 +9756,7 @@ stamp-staticlib: stamp-ofiles @MAINT@ bfd.h
 
 # likewise with making PLISTFILES when running `make check`:
 check-local: stamp-plistfiles @MAINT@ plistfiles
-	$(MAKE) $(BFD32_PLISTS) $(BFD64_PLISTS) $(PLISTFILES)
+	$(MAKE) -w $(BFD32_PLISTS) $(BFD64_PLISTS) $(PLISTFILES)
 .PHONY: check-local
 
 # stamp-staticlib just makes the OFILES that libbfd.a depends upon, need
@@ -9916,7 +9917,7 @@ uninstall_libbfd: @MAINT@ ltmain.sh
 # includes all of $(CFILES).
 DEP: dep.sed $(CFILES) $(HFILES) bfd.h
 	rm -f $(AM_V_v) DEP1
-	$(MAKE) MKDEP="$(MKDEP)" DEP1
+	$(MAKE) -w MKDEP="$(MKDEP)" DEP1
 	$(SED) -f dep.sed < DEP1 $(AM_V_redir) DEPA
 	echo '# IF YOU PUT ANYTHING HERE IT WILL GO AWAY' >> DEPA
 	if $(GREP) ' /' DEPA > /dev/null 2>/dev/null; then \
@@ -9946,7 +9947,7 @@ dep.sed: dep-in.sed @MAINT@ config.status
 		-e 's!@BFD_H@!$(BFD_H)!'	\
 		-e 's!@SRCDIR@!$(srcdir)!'	\
 		-e 's!@TOPDIR@!'`echo $(srcdir) | $(SED) -e s,/bfd$$,,`'!'
-	if test $@ -ot dep-in.sed; then touch $@; fi
+	$(AM_V_at)if test $@ -ot dep-in.sed; then touch $@; fi
 
 #FIXME: this target relies on dep.sed, which is broken (see above)
 dep: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
@@ -10001,21 +10002,21 @@ $(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h bfd-in3.h $(srcdir)/libbfd.h \
   $(srcdir)/libcoff.h @MAINT@ $(srcdir)/Makefile
 	if test -e $(srcdir)/Makefile -a -d $(srcdir)/.deps; then \
 	  echo "making headers in srcdir ($(srcdir))..."; \
-	  (cd $(srcdir) && $(MAKE) headers $(FLAGS_TO_PASS)); \
+	  (cd $(srcdir) && $(MAKE) -w headers $(FLAGS_TO_PASS)); \
 	elif test -e ./Makefile -a -d ./.deps; then \
 	  echo "making headers in the current directory (`pwd`)..."; \
-	  (cd . && $(MAKE) headers $(FLAGS_TO_PASS)); \
+	  (cd . && $(MAKE) -w headers $(FLAGS_TO_PASS)); \
 	elif test -e $(builddir)/Makefile -a -d $(builddir)/.deps; then \
 	  echo "making headers in builddir ($(builddir))..."; \
-	  (cd $(builddir) && $(MAKE) headers $(FLAGS_TO_PASS)); \
+	  (cd $(builddir) && $(MAKE) -w headers $(FLAGS_TO_PASS)); \
 	else \
 	  echo "$@ target: unsure where to make headers..."; \
 	fi
 	-if test ! -e $(BFD_H); then \
 	  if test -e $(srcdir)/Makefile; then \
-	    (cd $(srcdir) && $(MAKE) stmp-bfd-h $(FLAGS_TO_PASS)); \
+	    (cd $(srcdir) && $(MAKE) -w stmp-bfd-h $(FLAGS_TO_PASS)); \
 	  elif test -e ./Makefile; then \
-	    (cd . && $(MAKE) stmp-bfd-h $(FLAGS_TO_PASS)); \
+	    (cd . && $(MAKE) -w stmp-bfd-h $(FLAGS_TO_PASS)); \
 	  elif test -d ../../.git && test -x "`which git`"; then \
 	    if test -n "`git status -s $(BFD_H) | grep D`"; then \
 	      echo "BFD_H ($(BFD_H)) appears to have been deleted; attempting to restore it..."; \
@@ -10024,7 +10025,7 @@ $(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h bfd-in3.h $(srcdir)/libbfd.h \
 	      git status -s $(BFD_H); \
 	    fi; \
 	  elif test -e $(builddir)/Makefile; then \
-	    (cd $(builddir) && $(MAKE) stmp-bfd-h $(FLAGS_TO_PASS)); \
+	    (cd $(builddir) && $(MAKE) -w stmp-bfd-h $(FLAGS_TO_PASS)); \
 	  else \
 	    echo "unsure how to restore BFD_H ($(BFD_H))..."; \
 	  fi; \
@@ -10056,9 +10057,9 @@ stamp-framework-headers: bfd.h headers
 	$(AM_V_at)if test $@ -ot bfd.h; then touch stamp-framework-headers; fi
 
 stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
-	$(MAKE) $(FRAMEWORK_OFILES)
+	$(MAKE) -w $(FRAMEWORK_OFILES)
 	rm -f stamp-framework-headers
-	$(MAKE) stamp-framework-headers
+	$(MAKE) -w stamp-framework-headers
 	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
 	$(LN_S) $(AM_V_v) Versions/Current/Resources $(FRAMEWORK).framework/Resources
 	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
@@ -10080,27 +10081,35 @@ stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 
 # Could really use a "copy-if-change"...
 headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH_TO_MOVEIFCHANGE)
-	(cd $(sdocdir); $(MAKE) protos $(FLAGS_TO_PASS))
+	(cd $(sdocdir); $(MAKE) -w protos $(FLAGS_TO_PASS))
 	if test ! -e $(sdocdir)/libbfd.h || test $(sdocdir)/libbfd.h -ot $(sdocdir)/Makefile; then \
-	  (cd $(sdocdir); $(MAKE) libbfd.h $(FLAGS_TO_PASS)); \
+	  (cd $(sdocdir); $(MAKE) -w libbfd.h $(FLAGS_TO_PASS)); \
+	elif test -r $(sdocdir)/libbfd.h; then \
+	  stat $(sdocdir)/libbfd.h; \
 	fi
 	if test ! -e $(sdocdir)/libcoff.h || test $(sdocdir)/libcoff.h -ot $(sdocdir)/Makefile; then \
-	  (cd $(sdocdir); $(MAKE) libcoff.h $(FLAGS_TO_PASS)); \
+	  (cd $(sdocdir); $(MAKE) -w libcoff.h $(FLAGS_TO_PASS)); \
+	elif test -r $(sdocdir)/libcoff.h; then \
+	  stat $(sdocdir)/libcoff.h; \
 	fi
 	if test ! -e $(sdocdir)/bfd.h || test $(sdocdir)/bfd.h -ot $(sdocdir)/Makefile; then \
-	  (cd $(sdocdir); $(MAKE) bfd.h $(FLAGS_TO_PASS)); \
+	  (cd $(sdocdir); $(MAKE) -w bfd.h $(FLAGS_TO_PASS)); \
+	elif test -r $(sdocdir)/bfd.h; then \
+	  stat $(sdocdir)/bfd.h; \
 	fi
 	if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
-	  (cd $(sdocdir); $(MAKE) $(srcdir)/libbfd.h $(FLAGS_TO_PASS)); \
-	  (cd $(sdocdir); $(MAKE) $(srcdir)/libcoff.h $(FLAGS_TO_PASS)); \
-	  (cd $(sdocdir); $(MAKE) $(srcdir)/bfd.h $(FLAGS_TO_PASS)); \
+	  (cd $(sdocdir); $(MAKE) -w $(srcdir)/libbfd.h $(FLAGS_TO_PASS)); \
+	  (cd $(sdocdir); $(MAKE) -w $(srcdir)/libcoff.h $(FLAGS_TO_PASS)); \
+	  (cd $(sdocdir); $(MAKE) -w $(srcdir)/bfd.h $(FLAGS_TO_PASS)); \
 	else \
 	  echo "$@ target: already in srcdir ($(srcdir)): `pwd`"; \
 	fi
 	if test ! -e bfd-in2.h-new || test bfd-in2.h-new -ot $(sdocdir)/bfd.h; then \
 	  cp $(AM_V_v) $(sdocdir)/bfd.h bfd-in2.h-new; \
 	  $(RUN_MOVEIFCHANGE) bfd-in2.h-new $(srcdir)/bfd-in2.h; \
+	elif test -r bfd-in2.h-new; then \
+	  stat bfd-in2.h-new; \
 	fi
 	$(AM_V_at)if test $(srcdir)/bfd-in2.h -ot stmp-bin2-h; then \
 	  touch $(srcdir)/bfd-in2.h; \
@@ -10110,6 +10119,8 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	if test ! -e libbfd.h-new || test libbfd.h-new -ot $(sdocdir)/libbfd.h; then \
 	  cp $(AM_V_v) $(sdocdir)/libbfd.h libbfd.h-new; \
 	  $(RUN_MOVEIFCHANGE) libbfd.h-new $(srcdir)/libbfd.h; \
+	elif test -r libbfd.h-new; then \
+	  stat libbfd.h-new; \
 	fi
 	$(AM_V_at)if test $(srcdir)/libbfd.h -ot stmp-lbfd-h; then \
 	  touch $(srcdir)/libbfd.h; \
@@ -10119,6 +10130,8 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	if test ! -e libcoff.h-new || test libcoff.h-new -ot $(sdocdir)/libcoff.h; then \
 	  cp $(AM_V_v) $(sdocdir)/libcoff.h libcoff.h-new; \
 	  $(RUN_MOVEIFCHANGE) libcoff.h-new $(srcdir)/libcoff.h; \
+	elif test -r libcoff.h-new; then \
+	  stat libcoff.h-new; \
 	fi
 	$(AM_V_at)if test $(srcdir)/libcoff.h -ot stmp-lcoff-h; then \
 	  touch $(srcdir)/libcoff.h; \
@@ -10144,7 +10157,7 @@ $(sdocdir)/Makefile: $(sdocdir)/Makefile.in $(top_builddir)/config.status
 	  fi; \
 	fi
 	if test -e Makefile -a ! -e $(srcdir)/Makefile -a -d .deps; then \
-	  $(MAKE) $(srcdir)/Makefile; \
+	  $(MAKE) -w $(srcdir)/Makefile; \
 	fi
 
 @ifGNUmake@ifneq ($(srcdir),.)
@@ -10170,10 +10183,10 @@ $(sdocdir)/Makefile: $(sdocdir)/Makefile.in $(top_builddir)/config.status
 $(srcdir)/bfd-in2.h: @MAINT@ stmp-bin2-h
 	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
 stmp-bin2-h: $(sdocdir)/Makefile $(BFD_H_FILES) $(BFD64_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
-	(cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) bfd.h)
+	(cd $(sdocdir); $(MAKE) -w $(FLAGS_TO_PASS) bfd.h)
 	if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
-	  (cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/bfd.h); \
+	  (cd $(sdocdir); $(MAKE) -w $(FLAGS_TO_PASS) $(srcdir)/bfd.h); \
 	else \
 	  echo "$@ target: already in srcdir ($(srcdir)): `pwd`"; \
 	fi
@@ -10188,10 +10201,10 @@ stmp-bin2-h: $(sdocdir)/Makefile $(BFD_H_FILES) $(BFD64_H_FILES) @MAINT@ $(PATH_
 $(srcdir)/libbfd.h: @MAINT@ stmp-lbfd-h
 	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
 stmp-lbfd-h: $(LIBBFD_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
-	(cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) libbfd.h)
+	(cd $(sdocdir); $(MAKE) -w $(FLAGS_TO_PASS) libbfd.h)
 	if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
-	  (cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libbfd.h); \
+	  (cd $(sdocdir); $(MAKE) -w $(FLAGS_TO_PASS) $(srcdir)/libbfd.h); \
 	else \
 	  echo "$@ target: already in srcdir ($(srcdir)): `pwd`"; \
 	fi
@@ -10206,10 +10219,10 @@ stmp-lbfd-h: $(LIBBFD_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 $(srcdir)/libcoff.h: @MAINT@ stmp-lcoff-h
 	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
 stmp-lcoff-h: $(LIBCOFF_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
-	(cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) libcoff.h)
+	(cd $(sdocdir); $(MAKE) -w $(FLAGS_TO_PASS) libcoff.h)
 	if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
-	  (cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libcoff.h); \
+	  (cd $(sdocdir); $(MAKE) -w $(FLAGS_TO_PASS) $(srcdir)/libcoff.h); \
 	else \
 	  echo "$@ target: already in srcdir ($(srcdir)): `pwd`"; \
 	fi
@@ -10222,7 +10235,7 @@ stmp-lcoff-h: $(LIBCOFF_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	fi
 
 apple-clean: @MAINT@ mostlyclean
-	(cd $(sdocdir); $(MAKE) apple-clean $(FLAGS_TO_PASS))
+	(cd $(sdocdir); $(MAKE) -w apple-clean $(FLAGS_TO_PASS))
 	rm -rfv $(FRAMEWORK).framework || rmdir $(FRAMEWORK).framework
 .PHONY: apple-clean
 

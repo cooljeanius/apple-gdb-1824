@@ -18,7 +18,7 @@ AC_DEFUN([BASH_C_LONG_LONG],
 else
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 int
-main()
+main(void)
 {
 long long foo = 0;
 exit(sizeof(long long) < sizeof(long));
@@ -41,7 +41,7 @@ AC_DEFUN([BASH_C_LONG_DOUBLE],
 else
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 int
-main()
+main(void)
 {
   /* The Stardent Vistra knows sizeof(long double), but does not
      support it. */
@@ -75,7 +75,9 @@ dnl#
 dnl# BASH_CHECK_TYPE([TYPE],[HEADERS],[DEFAULT],[VALUE-IF-FOUND])
 AC_DEFUN([BASH_CHECK_TYPE],
 [
+m4_ifdef([AC_HEADER_STDC],[
 AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([BASH_HEADER_INTTYPES])
 AC_REQUIRE([AC_PROG_CPP])
 AC_REQUIRE([AC_PROG_EGREP])
@@ -108,7 +110,9 @@ dnl# AC_CHECK_DECL
 dnl#
 AC_DEFUN([BASH_CHECK_DECL],
 [
-AC_REQUIRE([AC_HEADER_STDC])
+m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([BASH_HEADER_INTTYPES])
 AC_CACHE_CHECK([for declaration of $1], bash_cv_decl_$1,
 [AC_LINK_IFELSE([AC_LANG_PROGRAM([[
@@ -128,7 +132,9 @@ fi
 ])
 
 AC_DEFUN([BASH_DECL_PRINTF],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_C_CONST])
 AC_MSG_CHECKING([for declaration of printf in <stdio.h>])
 AC_CACHE_VAL([bash_cv_printf_declared],
@@ -139,7 +145,8 @@ typedef int (*_bashfunc)(const char *, ...);
 #else
 typedef int (*_bashfunc)();
 #endif /* __STDC__ */
-main()
+int
+main(void)
 {
 _bashfunc pf;
 pf = (_bashfunc) printf;
@@ -172,7 +179,9 @@ dnl# Check for sys_siglist[] or _sys_siglist[]
 dnl#
 AC_DEFUN([BASH_DECL_UNDER_SYS_SIGLIST],
 [AC_REQUIRE([AC_PROG_CC])
-AC_REQUIRE([AC_HEADER_STDC])
+m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_MSG_CHECKING([for _sys_siglist in signal.h or unistd.h])
 AC_CACHE_VAL([bash_cv_decl_under_sys_siglist],
 [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -192,7 +201,9 @@ fi
 
 AC_DEFUN([BASH_UNDER_SYS_SIGLIST],
 [AC_REQUIRE([BASH_DECL_UNDER_SYS_SIGLIST])
-AC_REQUIRE([AC_HEADER_STDC])
+m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_MSG_CHECKING([for _sys_siglist in system C library])
 AC_CACHE_VAL([bash_cv_under_sys_siglist],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
@@ -204,7 +215,8 @@ AC_CACHE_VAL([bash_cv_under_sys_siglist],
 #ifndef UNDER_SYS_SIGLIST_DECLARED
 extern char *_sys_siglist[];
 #endif
-main()
+int
+main(void)
 {
 char *msg = (char *)_sys_siglist[2];
 exit(msg == 0);
@@ -217,7 +229,9 @@ fi
 ])
 
 AC_DEFUN([BASH_SYS_SIGLIST],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_CHECK_DECLS([sys_siglist],[],[],[#include <signal.h>
 /* NetBSD declares sys_siglist in unistd.h.  */
 #ifdef HAVE_UNISTD_H
@@ -236,7 +250,8 @@ AC_CACHE_VAL([bash_cv_sys_siglist],
 #ifndef SYS_SIGLIST_DECLARED
 extern char *sys_siglist[];
 #endif
-main()
+int
+main(void)
 {
 char *msg = sys_siglist[2];
 exit(msg == 0);
@@ -279,13 +294,15 @@ dnl#
 dnl# Check if dup2() does not clear the close on exec flag
 dnl#
 AC_DEFUN([BASH_FUNC_DUP2_CLOEXEC_CHECK],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC].[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_MSG_CHECKING([if dup2 fails to clear the close-on-exec flag])
 AC_CACHE_VAL([bash_cv_dup2_broken],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <sys/types.h>
 #include <fcntl.h>
-main()
+int main(void)
 {
   int fd1, fd2, fl;
   fd1 = open("/dev/null", 2);
@@ -344,7 +361,8 @@ AC_CACHE_VAL([bash_cv_opendir_not_robust],
 #  include <ndir.h>
 # endif /* HAVE_NDIR_H */
 #endif /* HAVE_DIRENT_H */
-main()
+int
+main(void)
 {
 DIR *dir;
 int fd, err;
@@ -511,7 +529,9 @@ dnl# long and still others use int (HP-UX 9.01, SunOS 4.1.3).  To simplify
 dnl# matters, this just checks for rlim_t, quad_t, or long.
 dnl#
 AC_DEFUN([BASH_TYPE_RLIMIT],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_MSG_CHECKING([for size and type of struct rlimit fields])
 AC_CACHE_VAL([bash_cv_type_rlimit],
 [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
@@ -520,7 +540,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-main()
+int main(void)
 {
 #ifdef HAVE_QUAD_T
   struct rlimit rl;
@@ -543,7 +563,9 @@ fi
 AC_DEFUN([BASH_FUNC_LSTAT],
 [dnl# Cannot use AC_CHECK_FUNCS([lstat]) because Linux defines lstat() as an
 dnl #inline function in <sys/stat.h>.
-AC_REQUIRE([AC_HEADER_STDC])
+m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_C_INLINE])
 AC_REQUIRE([AC_FUNC_LSTAT])
 AC_CACHE_CHECK([for lstat],[bash_cv_func_lstat],
@@ -577,7 +599,9 @@ fi
 ])
 
 AC_DEFUN([BASH_FUNC_GETENV],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_CANONICAL_TARGET])
 AC_REQUIRE([AC_C_CONST])
 AC_MSG_CHECKING([to see if getenv can be redefined])
@@ -601,7 +625,9 @@ getenv (name)
 {
 return "42";
 }
-main()
+
+int
+main(void)
 {
 char *s;
 /* The NeXT operating system allows this program to run, but does not allow bash
@@ -625,7 +651,9 @@ fi
 # We should check for putenv before calling this
 AC_DEFUN([BASH_FUNC_STD_PUTENV],
 [
-AC_REQUIRE([AC_HEADER_STDC])
+m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_C_PROTOTYPES])
 AC_REQUIRE([AC_C_CONST])
 AC_CACHE_CHECK([for standard-conformant putenv declaration],[bash_cv_std_putenv],
@@ -654,7 +682,9 @@ fi
 # We should check for unsetenv before calling this
 AC_DEFUN([BASH_FUNC_STD_UNSETENV],
 [
-AC_REQUIRE([AC_HEADER_STDC])
+m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_C_PROTOTYPES])
 AC_REQUIRE([AC_C_CONST])
 AC_CACHE_CHECK([for standard-conformant unsetenv declaration],[bash_cv_std_unsetenv],
@@ -684,7 +714,8 @@ AC_DEFUN([BASH_FUNC_ULIMIT_MAXFDS],
 [AC_MSG_CHECKING([whether ulimit can substitute for getdtablesize])
 AC_CACHE_VAL([bash_cv_ulimit_maxfds],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
-main()
+int
+main(void)
 {
 long maxfds = ulimit(4, 0L);
 exit (maxfds == -1L);
@@ -699,7 +730,9 @@ fi
 ])
 
 AC_DEFUN([BASH_FUNC_GETCWD],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_C_CONST])
 AC_MSG_CHECKING([if getcwd() calls popen()])
 AC_CACHE_VAL([bash_cv_getcwd_calls_popen],
@@ -718,41 +751,37 @@ AC_CACHE_VAL([bash_cv_getcwd_calls_popen],
 int popen_called;
 
 FILE *
-popen(command, type)
-     const char *command;
-     const char *type;
+popen(const char *command, const char *type)
 {
 	popen_called = 1;
 	return (FILE *)NULL;
 }
 
-FILE *_popen(command, type)
-     const char *command;
-     const char *type;
+FILE *
+_popen(const char *command, const char *type)
 {
-  return (popen (command, type));
+  return (popen(command, type));
 }
 
 int
-pclose(stream)
-FILE *stream;
+pclose(FILE *stream)
 {
 	return 0;
 }
 
 int
-_pclose(stream)
-FILE *stream;
+_pclose(FILE *stream)
 {
 	return 0;
 }
 
-main()
+int
+main(void)
 {
-	char	lbuf[32];
+	char lbuf[32];
 	popen_called = 0;
 	getcwd(lbuf, 32);
-	exit (popen_called);
+	exit(popen_called);
 }
 ]])],[bash_cv_getcwd_calls_popen=no],[bash_cv_getcwd_calls_popen=yes],[AC_MSG_WARN([cannot check whether getcwd calls popen if cross compiling -- defaulting to no])
     bash_cv_getcwd_calls_popen=no
@@ -796,7 +825,8 @@ AC_CACHE_VAL([bash_cv_fnm_extmatch],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <fnmatch.h>
 
-main()
+int
+main(void)
 {
 #ifdef FNM_EXTMATCH
   exit (0);
@@ -814,7 +844,9 @@ fi
 ])
 
 AC_DEFUN([BASH_FUNC_POSIX_SETJMP],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([BASH_SYS_SIGNAL_VINTAGE])
 AC_MSG_CHECKING([for presence of POSIX-style sigsetjmp/siglongjmp])
 AC_CACHE_VAL([bash_cv_func_sigsetjmp],
@@ -826,7 +858,8 @@ AC_CACHE_VAL([bash_cv_func_sigsetjmp],
 #include <signal.h>
 #include <setjmp.h>
 
-main()
+int
+main(void)
 {
 #if !defined (_POSIX_VERSION) || !defined (HAVE_POSIX_SIGNALS)
 exit (1);
@@ -865,7 +898,9 @@ fi
 ])
 
 AC_DEFUN([BASH_FUNC_STRCOLL],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_FUNC_STRCOLL])
 AC_MSG_CHECKING([whether or not strcoll and strcmp differ])
 AC_CACHE_VAL([bash_cv_func_strcoll_broken],
@@ -875,9 +910,8 @@ AC_CACHE_VAL([bash_cv_func_strcoll_broken],
 # include <locale.h>
 #endif /* HAVE_LOCALE_H */
 
-main(c, v)
-int     c;
-char    *v[];
+int
+main(int c, char *v[])
 {
         int     r1, r2;
         char    *deflocale, *defcoll;
@@ -914,7 +948,9 @@ fi
 ])
 
 AC_DEFUN([BASH_FUNC_PRINTF_A_FORMAT],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_MSG_CHECKING([for printf floating point output in hex notation])
 AC_CACHE_VAL([bash_cv_printf_a_format],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
@@ -922,7 +958,7 @@ AC_CACHE_VAL([bash_cv_printf_a_format],
 #include <string.h>
 
 int
-main()
+main(void)
 {
 	double y = 0.0;
 	char abuf[1024];
@@ -963,7 +999,9 @@ dnl#
 dnl# unused for now; we shall see how AC_CHECK_MEMBERS works
 dnl#
 AC_DEFUN([BASH_STRUCT_ST_BLOCKS],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_PROG_CC])
 AC_MSG_CHECKING([for struct stat.st_blocks])
 AC_CACHE_VAL([bash_cv_struct_stat_st_blocks],
@@ -971,7 +1009,8 @@ AC_CACHE_VAL([bash_cv_struct_stat_st_blocks],
 #include <sys/types.h>
 #include <sys/stat.h>
 ]],[[
-main()
+int
+main(void)
 {
 static struct stat a;
 if (a.st_blocks) return 0;
@@ -1073,7 +1112,9 @@ fi
 ])
 
 AC_DEFUN([BASH_STRUCT_DIRENT_D_INO],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_HEADER_DIRENT])
 AC_MSG_CHECKING([if struct dirent has a d_ino member])
 AC_CACHE_VAL([bash_cv_dirent_has_dino],
@@ -1107,7 +1148,9 @@ fi
 ])
 
 AC_DEFUN([BASH_STRUCT_DIRENT_D_FILENO],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_HEADER_DIRENT])
 AC_MSG_CHECKING([if struct dirent has a d_fileno member])
 AC_CACHE_VAL([bash_cv_dirent_has_d_fileno],
@@ -1141,7 +1184,9 @@ fi
 ])
 
 AC_DEFUN([BASH_STRUCT_TIMEVAL],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_PROG_EGREP])
 AC_REQUIRE([AC_PROG_CPP])
 AC_MSG_CHECKING([for struct timeval in sys/time.h and time.h])
@@ -1220,14 +1265,17 @@ fi
 dnl# Check if the pgrp of setpgrp() cannot be the pid of a zombie process.
 AC_DEFUN([BASH_SYS_PGRP_SYNC],
 [AC_REQUIRE([AC_FUNC_GETPGRP])
-AC_REQUIRE([AC_HEADER_STDC])
+m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_MSG_CHECKING([whether pgrps need synchronization])
 AC_CACHE_VAL([bash_cv_pgrp_pipe],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif /* HAVE_UNISTD_H */
-main()
+int
+main(void)
 {
 # ifdef GETPGRP_VOID
 #  define getpgID()	getpgrp()
@@ -1282,7 +1330,9 @@ fi
 
 AC_DEFUN([BASH_SYS_REINSTALL_SIGHANDLERS],
 [AC_REQUIRE([AC_TYPE_SIGNAL])
-AC_REQUIRE([AC_HEADER_STDC])
+m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([BASH_SYS_SIGNAL_VINTAGE])
 AC_MSG_CHECKING([if signal handlers must be reinstalled when invoked])
 AC_CACHE_VAL([bash_cv_must_reinstall_sighandlers],
@@ -1298,9 +1348,7 @@ int nsigint;
 
 #ifdef HAVE_POSIX_SIGNALS
 sigfunc *
-set_signal_handler(sig, handler)
-     int sig;
-     sigfunc *handler;
+set_signal_handler(int sig, sigfunc *handler)
 {
   struct sigaction act, oact;
   act.sa_handler = handler;
@@ -1315,13 +1363,13 @@ set_signal_handler(sig, handler)
 #endif
 
 RETSIGTYPE
-sigint(s)
-int s;
+sigint(int s)
 {
   nsigint++;
 }
 
-main()
+int
+main(void)
 {
 	nsigint = 0;
 	set_signal_handler(SIGINT, sigint);
@@ -1340,7 +1388,9 @@ fi
 
 dnl# check that some necessary job control definitions are present
 AC_DEFUN([BASH_SYS_JOB_CONTROL_MISSING],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([BASH_SYS_SIGNAL_VINTAGE])
 AC_MSG_CHECKING([for presence of necessary job control definitions])
 AC_CACHE_VAL([bash_cv_job_control_missing],
@@ -1355,7 +1405,8 @@ AC_CACHE_VAL([bash_cv_job_control_missing],
 #include <signal.h>
 
 /* Add more tests in here as appropriate. */
-main()
+int
+main(void)
 {
 /* signal type */
 #if !defined (HAVE_POSIX_SIGNALS) && !defined (HAVE_BSD_SIGNALS)
@@ -1399,7 +1450,9 @@ fi
 dnl# check whether named pipes are present
 dnl# this requires a previous check for mkfifo, but that is awkward to specify
 AC_DEFUN([BASH_SYS_NAMED_PIPES],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_MSG_CHECKING([for presence of named pipes])
 AC_CACHE_VAL([bash_cv_sys_named_pipes],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
@@ -1410,7 +1463,8 @@ AC_CACHE_VAL([bash_cv_sys_named_pipes],
 #endif /* HAVE_UNISTD_H */
 
 /* Add more tests in here as appropriate. */
-main()
+int
+main(void)
 {
 int fd, err;
 
@@ -1507,7 +1561,9 @@ dnl# but you can only get speed_t if you include <termios.h> (on some
 dnl# versions) or <sys/types.h> (on others).
 dnl#
 AC_DEFUN([BASH_CHECK_SPEED_T],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_PROG_CC])
 AC_MSG_CHECKING([for speed_t in sys/types.h])
 AC_CACHE_VAL(bash_cv_speed_t_in_sys_types,
@@ -1613,7 +1669,9 @@ dnl# C does not allow duplicate case labels, so the compile will fail if
 dnl# sizeof(off_t) is > 4.
 dnl#
 AC_DEFUN([BASH_CHECK_OFF_T_64],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_TYPE_OFF_T])
 AC_REQUIRE([AC_PROG_CC])
 AC_REQUIRE([AC_FUNC_MALLOC])
@@ -1736,7 +1794,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdlib.h>
 #include <readline/readline.h>
 
-int main()
+int main(void)
 {
 	FILE *fp;
 	fp = fopen("conftest.rlv", "w");
