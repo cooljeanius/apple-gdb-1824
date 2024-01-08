@@ -1,3 +1,1029 @@
+2024-01-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more -Wconversion in bfd/elf*.c
+
+	Change-Id: I7231e94b3e863c9648df3b416b4e17e4ff9bf088
+
+2024-01-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more -Wconversion in bfd/elf32-*.c
+
+	Change-Id: I75eea1441d7b799f4fa1819b0432708914be26c2
+
+2024-01-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	messing with CI output
+
+	Change-Id: Idef1adef485a26df77854f8161c6c42c61a24782
+
+2024-01-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more -Wcoversion in bfd/elf32-*.c
+
+	Change-Id: I3190100277680abe6094379e4ebc017bd79a832c
+
+2024-01-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	continuing as per previously
+
+	Change-Id: Ia7d28e0c3fd0a87f75bb833ed928dc60aab25a08
+
+2023-12-31  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	apply patch from gcc mailing list
+
+	see https://gcc.gnu.org/pipermail/gcc-patches/2023-December/641593.html
+	from @tromey
+
+	Change-Id: I6950d19d9ab8eb77b16f6baac1fafeb832cd1e11
+
+2023-12-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	some further bfd changes I forgot to commit
+
+	Change-Id: Ib49c0675252a718ffc34e72b26e3f5bb805d6ba2
+
+2023-12-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	continuing silencing -Wconversion for bfd
+
+	Change-Id: Ie311d8c5b2bb6003890c47630bee3394c2edebc9
+
+2023-12-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	continuing with bfd
+
+	Change-Id: Ie36ff27adae0ec6f118793ffb9197f1a003a0fd6
+
+2023-12-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	idk where that last failure came from
+
+	Change-Id: I073a8f0a8b526bcdbfd79f0a5606df129718851c
+
+2023-12-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	oops
+
+	Change-Id: I0260f4ed3cd966b224404b92fbf7962b35469a26
+
+2023-12-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	tryna fix libbacktrace testsuite
+
+	currently failing with:
+	$ ./btest
+	test1: [0]: missing file name or function name
+	FAIL: backtrace_full noinline
+	test2: [0]: missing file name or function name
+	FAIL: backtrace_full inline
+	test3: [0]: missing file name or function name
+	FAIL: backtrace_simple noinline
+	test4: [0]: missing file name or function name
+	FAIL: backtrace_simple inline
+	skipping test5 due to lack of support for data in libbacktrace.
+
+	Change-Id: Ic5c73320065de05cd0aec216685094c793e0a31f
+
+2023-12-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	another run
+
+	Change-Id: Iaf7c5f49cdc2bb0572701bd26b53d3be9e4c3185
+
+2023-12-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a bit more CI tweaking
+
+	Change-Id: Ic870128f0ca63f17e3c60e59bdc1e14e15ceba5c
+
+2023-12-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try recovering from some CI failures
+
+	Change-Id: Ic4ff6ce7c3167b53e94ee7ea3f1f8c11e509c072
+
+2023-12-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more CI tweaks
+
+	Change-Id: I876c210d499fca251df05409965672e71e0420c1
+
+2023-12-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #34 from cooljeanius/dependabot/gradle/com.google.guava-guava-33.0.0-jre
+
+	Bump com.google.guava:guava from 32.1.3-jre to 33.0.0-jre
+
+2023-12-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #33 from cooljeanius/dependabot/maven/src/zlib/contrib/java/jzlib-1.1.2/org.apache.maven.plugins-maven-compiler-plugin-3.12.1
+
+	Bump org.apache.maven.plugins:maven-compiler-plugin from 3.11.0 to 3.12.1 in /src/zlib/contrib/java/jzlib-1.1.2
+
+2023-12-25  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump com.google.guava:guava from 32.1.3-jre to 33.0.0-jre
+
+	Bumps [com.google.guava:guava](https://github.com/google/guava) from 32.1.3-jre to 33.0.0-jre.
+	- [Release notes](https://github.com/google/guava/releases)
+	- [Commits](https://github.com/google/guava/commits)
+
+	---
+	updated-dependencies:
+	- dependency-name: com.google.guava:guava
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	...
+
+2023-12-25  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump org.apache.maven.plugins:maven-compiler-plugin
+
+	Bumps [org.apache.maven.plugins:maven-compiler-plugin](https://github.com/apache/maven-compiler-plugin) from 3.11.0 to 3.12.1.
+	- [Release notes](https://github.com/apache/maven-compiler-plugin/releases)
+	- [Commits](https://github.com/apache/maven-compiler-plugin/compare/maven-compiler-plugin-3.11.0...maven-compiler-plugin-3.12.1)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.apache.maven.plugins:maven-compiler-plugin
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	...
+
+2023-12-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try testing some more stuff
+
+	Change-Id: Iec445c29ad0d01f75a7e0e5f391989eea2bd8667
+
+2023-12-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more autoconf 2.72 updates
+
+	also I might have finally figured out the bison/yacc stuff that was preventing me from building binutils on the macOS CI job?
+
+	Change-Id: I1ddf87cec0499b2cfb7c3363c40e4dc4b4d9dba1
+
+2023-12-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more static analysis of bfd
+
+	also beginnings of move to autoconf 2.72
+
+	Change-Id: I4a83242c46f198fae9292b4c960654544d44d6b3
+
+2023-12-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more static analysis of bfd
+
+	Change-Id: Ic6bcf97538e59e1173b3d925ccfd8ca0603a45b1
+
+2023-12-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #32 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-8.56.0
+
+	Bump eslint from 8.55.0 to 8.56.0 in /src/texinfo/js
+
+2023-12-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #31 from cooljeanius/dependabot/github_actions/github/codeql-action-3
+
+	Bump github/codeql-action from 2 to 3
+
+2023-12-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #30 from cooljeanius/dependabot/github_actions/actions/upload-artifact-4.0.0
+
+	Bump actions/upload-artifact from 3.1.3 to 4.0.0
+
+2023-12-18  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 8.55.0 to 8.56.0 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 8.55.0 to 8.56.0.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v8.55.0...v8.56.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2023-12-18  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump github/codeql-action from 2 to 3
+
+	Bumps [github/codeql-action](https://github.com/github/codeql-action) from 2 to 3.
+	- [Release notes](https://github.com/github/codeql-action/releases)
+	- [Changelog](https://github.com/github/codeql-action/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/github/codeql-action/compare/v2...v3)
+
+	---
+	updated-dependencies:
+	- dependency-name: github/codeql-action
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	...
+
+2023-12-18  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump actions/upload-artifact from 3.1.3 to 4.0.0
+
+	Bumps [actions/upload-artifact](https://github.com/actions/upload-artifact) from 3.1.3 to 4.0.0.
+	- [Release notes](https://github.com/actions/upload-artifact/releases)
+	- [Commits](https://github.com/actions/upload-artifact/compare/v3.1.3...v4.0.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/upload-artifact
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	...
+
+2023-12-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	minor tweaks to output
+
+	Change-Id: I415ca869686b665b91b521b729e481053bbda38e
+
+2023-12-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	primarily tweaking codeql build
+
+	Change-Id: Ic97781a5c022012e12875413ed9b96196652dda1
+
+2023-12-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	as with previously
+
+	Change-Id: I33188e4f6f37699f13cad7912fc18ec4b6c67471
+
+2023-12-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	continuing as in the previous commit
+
+	Change-Id: I84e3fb6a0348844dc17afd13449fb04809fe7c90
+
+2023-12-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more warnings & static analysis of bfd
+
+	Change-Id: I6c5f1e903bc9bfce84450d35bcd3ee0d271cf954
+
+2023-12-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	CI dependencies updates
+
+	Change-Id: Id909edfa0c6f7a35323f848aa83eda2e44f34776
+
+2023-12-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	add some additional dependencies
+
+	Change-Id: I01baecf5c4f1ea88c9ac6a5007e3b7177a44541c
+
+2023-12-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #29 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/typescript-5.3.3
+
+	Bump typescript from 5.3.2 to 5.3.3 in /src/texinfo/js
+
+2023-12-11  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump typescript from 5.3.2 to 5.3.3 in /src/texinfo/js
+
+	Bumps [typescript](https://github.com/Microsoft/TypeScript) from 5.3.2 to 5.3.3.
+	- [Release notes](https://github.com/Microsoft/TypeScript/releases)
+	- [Commits](https://github.com/Microsoft/TypeScript/compare/v5.3.2...v5.3.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	...
+
+2023-12-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	back to bfd
+
+	Change-Id: I06702d431aa61ca8c3948578b50ce3ce55c49655
+
+2023-12-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	readline examples updates
+
+	Change-Id: Ibee61dce0173072e2496b80b8418db9301c7c443
+
+2023-12-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	sim updates
+
+	Change-Id: Ifc8d58e8c64b8e7624a42032373f9b53c5d47201
+
+2023-12-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor updates
+
+	Change-Id: I877eb3ea9dcb7a347f6225ba0f5eb334b705570d
+
+2023-12-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try silencing some codeql warnings
+
+	Change-Id: Iebdcfe4788ad709132595f5be5c95ac0ceb7ace7
+
+2023-12-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	new build from clean status with GCC 14
+
+	Change-Id: Ia65e9e485976e1abc1ed006c9105636ec992fa0f
+
+2023-12-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more bfd stuff
+
+	Change-Id: Ic29d51e93218857f74ef5e8bd1ead5e0eb87b269
+
+2023-12-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	continuing
+
+	Change-Id: I2098cf92f053316903b21e72ad210d8bb026c2d0
+
+2023-12-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more fixing of bfd warnings & static analysis
+
+	Change-Id: Ibf0bdb1a956cc59c673e0dd71d0a226b81633864
+
+2023-12-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more bfd stuff
+
+	Change-Id: I1a13acf3bcc6d69c596eb7d4d7e474ea444721f3
+
+2023-12-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	trying to figure out where to specify gradle vers.
+
+	Change-Id: Iede84dc9d6b39885522e17a43360750d72484e84
+
+2023-12-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #28 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-8.55.0
+
+	Bump eslint from 8.54.0 to 8.55.0 in /src/texinfo/js
+
+2023-12-04  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 8.54.0 to 8.55.0 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 8.54.0 to 8.55.0.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v8.54.0...v8.55.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2023-12-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more bfd tinkering, continued
+
+	Change-Id: If6c07a73ced1f812d2d51a6820d8282fb7d4bcda
+
+2023-12-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more bfd tinkering
+
+	Change-Id: I766d1967de6bf3ee71cdc1c4fc5550ecd42a9e8b
+
+2023-12-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	doing stuff from Xcode
+
+	Change-Id: Ie5b22dcfb906934c7e0087743cdb8114e4383457
+
+2023-11-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try getting the MacsBug plugin to build a bit further
+
+	Change-Id: I8222d2c061907c3f7c14ccaed92cd27c8d861796
+
+2023-11-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok let's fix some things from that prev. commit
+
+	Change-Id: I0a660765c5c46eef196fd85e719b7021adea1c58
+
+2023-11-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	this might break some stuff
+
+	but, well, let's see
+
+	Change-Id: I02c72825fa30627f2d641698a63e0875783569c9
+
+2023-11-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	additional packages
+
+	Change-Id: Ice3ec241c0d9f466b875cbca6ad728a3c3e7a05b
+
+2023-11-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	tighten up a few things
+
+	Change-Id: I2e0e671bcfdfe4a88f63c533d111c8bdb1cfdf93
+
+2023-11-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	some guesses at a particular codeql warning
+
+	Change-Id: Idc6f2648bb189f6c106db65a07e1458de7683021
+
+2023-11-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	see if can find out stuff
+
+	Change-Id: I0257387d775c077ed22840fa1ea57aaefe5a4f40
+
+2023-11-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update some expect stuff
+
+	Change-Id: I0606155e3476afdfcfc7f6eadabcec80b723e441
+
+2023-11-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more dependencies adjustment
+
+	Change-Id: I38db3029789c63ddfcae6d917c406dd6643f2ec5
+
+2023-11-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	pare down dependencies list a bit
+
+	Change-Id: I397af87038fd536434a704f260f7e3dde587f7d6
+
+2023-11-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try figuring out which brew dependencies are taking a long time
+
+	also some stuff in bfd
+
+	Change-Id: If953bd50bdeb53b21ebe4a7c99e292d8fe155b5e
+
+2023-11-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	CI: upload logfiles and plists
+
+	Change-Id: Ib8cf0db6ebcd115c85f68eb5424745cbb41313f3
+
+2023-11-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more messing with GitHub stuff
+
+	Change-Id: I54215e81b4c8d489a323c683b05d266f8e4605a8
+
+2023-11-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	some updates for threads testsuite
+
+	Change-Id: Ia3815143a34a5c9abbe2c0897048326e49cc36e1
+
+2023-11-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #27 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/typescript-5.3.2
+
+	Bump typescript from 2.9.2 to 5.3.2 in /src/texinfo/js
+
+2023-11-29  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump typescript from 2.9.2 to 5.3.2 in /src/texinfo/js
+
+	Bumps [typescript](https://github.com/Microsoft/TypeScript) from 2.9.2 to 5.3.2.
+	- [Release notes](https://github.com/Microsoft/TypeScript/releases)
+	- [Commits](https://github.com/Microsoft/TypeScript/compare/v2.9.2...v5.3.2)
+
+	---
+	updated-dependencies:
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-major
+	...
+
+2023-11-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update some ruby stuff
+
+	Change-Id: I9c143b7efbead928dd4f2256583da085cd658570
+
+2023-11-28  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	misc. stuff
+
+	Change-Id: If7d97e934bbcbe31bda10cc7728c60c08fb2e355
+
+2023-11-28  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #26 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/ajv-and-eslint-6.12.6
+
+	Bump ajv and eslint in /src/texinfo/js
+
+2023-11-28  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #25 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/typescript-5.3.2
+
+	Bump typescript from 2.9.2 to 5.3.2 in /src/texinfo/js
+
+2023-11-28  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump ajv and eslint in /src/texinfo/js
+
+	Bumps [ajv](https://github.com/ajv-validator/ajv) to 6.12.6 and updates ancestor dependency [eslint](https://github.com/eslint/eslint). These dependencies need to be updated together.
+
+
+	Updates `ajv` from 5.5.2 to 6.12.6
+	- [Release notes](https://github.com/ajv-validator/ajv/releases)
+	- [Commits](https://github.com/ajv-validator/ajv/compare/v5.5.2...v6.12.6)
+
+	Updates `eslint` from 4.19.1 to 8.54.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v4.19.1...v8.54.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: ajv
+	  dependency-type: indirect
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	...
+
+2023-11-28  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more messing with javascript stuff
+
+	Change-Id: Ieebb73e7396250139c6ca226fd121cee6efbec24
+
+2023-11-28  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump typescript from 2.9.2 to 5.3.2 in /src/texinfo/js
+
+	Bumps [typescript](https://github.com/Microsoft/TypeScript) from 2.9.2 to 5.3.2.
+	- [Release notes](https://github.com/Microsoft/TypeScript/releases)
+	- [Commits](https://github.com/Microsoft/TypeScript/compare/v2.9.2...v5.3.2)
+
+	---
+	updated-dependencies:
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-major
+	...
+
+2023-11-28  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	copy over some texinfo stuff
+
+	mostly to give the javascript codeql scan something to do
+
+	Change-Id: Iaa6a392e8d6d934ccd65e2b95223ae0057872fef
+
+2023-11-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update FUNDING.yml
+
+	add kofi
+
+2023-11-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Makefile updates
+
+	Change-Id: Ie5da9a55e6250e9ba07a1a5405c9dd68811bd191
+
+2023-11-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Create CONTRIBUTING.md
+
+	[ci skip]
+
+2023-11-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor tweaks
+
+	Change-Id: I58e6759ec996ec6d49fc9f3dbc201c20db7384ec
+
+2023-11-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	tinkering with some old regex code
+
+	Change-Id: I9b4070123aa43f6adcc969f967012b7c9f6e4ca0
+
+2023-11-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	updates for gnulib and readline
+
+	Change-Id: I7bd57ed17fbd41557d0598d654ac515234e46139
+
+2023-11-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	allow some gradle build output in repo
+
+	Change-Id: Ibdbf0a0e25bdca9e045a879b74ef176624dcd01b
+
+2023-11-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	what the heck, let's kick off another run
+
+	Change-Id: I1796c31600312341abfb8f9b5aa7ebeb3752492b
+
+2023-11-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	sigh
+
+	Change-Id: I08c8aa733d2a96cd21a64fb22b46224465c8560e
+
+2023-11-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	gotta remove check-dejagnu from Linux CI again too
+
+	Change-Id: Ib82c7d874e50b030a27a471f9f7d4f32adec915b
+
+2023-11-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok, looks like check-expect fails on Linux CI
+
+	Change-Id: I56738a48520d70e5488074200dc92af4c08b4d5b
+
+2023-11-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try dealing with some codeql reports
+
+	Change-Id: I4452c9b2c2807c48564be8871d73a1bd63e8b69b
+
+2023-11-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok so I learned a few things from that last run
+
+	Change-Id: I8df1959ef6ffdfbc45d2bdd343454c55c5375b0c
+
+2023-11-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try testing in some additional dirs
+
+	Change-Id: I4753a3934f91d2f1df71a5f26ec1e3d74f9ab13c
+
+2023-11-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	bit more CI tinkering
+
+	Change-Id: I11a1b60078bb54e42d37ff6764558f360c6ed3b1
+
+2023-11-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more CI tinkering
+
+	Change-Id: Ie752c6f3b8d9b61c4dbd4baf7462b546a5a034df
+
+2023-11-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	split up the extra coverage build into another step
+
+	Change-Id: Ic757fc747e9030349ba200b1ba4754c64f806edf
+
+2023-11-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more bfd codescanning
+
+	Change-Id: I4807899ebd620370118caa3505cda26ce81d2fdc
+
+2023-11-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor changes in BFD
+
+	address some warnings, errors, and static analysis results
+
+	Change-Id: Ic4a8330992c94a82941694f9613123b3a7baae5f
+
+2023-11-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	some things for macsbug and efence
+
+	Change-Id: Ia804387d9de95963f5b1a800f8c98d1d2dfce30d
+
+2023-11-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more things noticed on CI
+
+	Change-Id: If0000fc5c0205236c6184940098309f06ea822f2
+
+2023-11-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	some things noticed from CI
+
+	Change-Id: Ice02f361205f2c0e790423e61bbdb20f234398fa
+
+2023-11-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Try dealing with VSCode misdetecting some files
+
+	Change-Id: I71566f7ea423c6c4001184ecc7ee38d95c8bc0b0
+
+2023-11-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	open in VSCode
+
+	Change-Id: I609b76648bf33922eba0593896354431c1151513
+
+2023-11-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #23 from cooljeanius/dependabot/gradle/org.junit.jupiter-junit-jupiter-5.10.1
+
+	Bump org.junit.jupiter:junit-jupiter from 5.10.0 to 5.10.1
+
+2023-11-06  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump org.junit.jupiter:junit-jupiter from 5.10.0 to 5.10.1
+
+	Bumps [org.junit.jupiter:junit-jupiter](https://github.com/junit-team/junit5) from 5.10.0 to 5.10.1.
+	- [Release notes](https://github.com/junit-team/junit5/releases)
+	- [Commits](https://github.com/junit-team/junit5/compare/r5.10.0...r5.10.1)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.junit.jupiter:junit-jupiter
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	...
+
+2023-10-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	CI caught something I missed
+
+	I've usually had maintainer mode on lately, so it reminded me that intl doesn't actually use -save-temps without it
+
+	Change-Id: I532ea396cf04a48ea8870f03a1d2f03586a76fd0
+
+2023-10-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update .github/workflows/apple-gdb-1824-macos.yml
+
+	restrict "check" target a bit
+
+	Change-Id: Ic31b149ff39c16dfd6757c8b566d072854eb1859
+
+2023-10-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	looks like readline needs texlive for docs...
+
+	Change-Id: I6f62e6aaeaf4e0af6a02fae874f211c2dc366719
+
+2023-10-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	oops, I made a mistake in readline
+
+	Change-Id: Id9f9f89dfa7ec9e7bdf37a99dadc468dcab54023
+
+2023-10-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	ok I give up on binutils; let's try some other directories instead
+
+	Change-Id: Ic9a73ada64bc65bfc6f4c99f33136688a2ac9095
+
+2023-10-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	remove bison-specific flags
+
+	Change-Id: Idf45e3d330b42def93e2b64fd7956e6cc3b63d71
+
+2023-10-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	hm, maybe shellcheck was actually wrong about quoting that one thing?
+
+	Change-Id: Ib87f1d12727351bcd6a028e06d6ca38485467206
+
+2023-10-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	I'd better not have to do this for every single yacced header...
+
+	Change-Id: I665bfc7cd62d759191d420dfc16f44587f8c894b
+
+2023-10-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	grrrr
+
+	Change-Id: Iee4183a831b449f4b093c4a4e0b426268cd22cc4
+
+2023-10-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	dunno why arparse.h disappears...
+
+	Change-Id: I96b98a3949a7f1a983970bc80b6e2de23d0ce795
+
+2023-10-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	binutils has its own annoying header
+
+	Change-Id: I1e70531707c81a8e0040b8c509e4eaeb4261ba3d
+
+2023-10-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	that darn bfd header is really annoying
+
+	Change-Id: I71e0f40c47df3b3cd493d46ddca96bc50455d8f6
+
+2023-10-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	remove some bad dependencies
+
+	Change-Id: I287d750b9fdd8cbb166f49192f6df3bfc58d8705
+
+2023-10-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	oops
+
+	bedtime
+
+	Change-Id: I09d76160a14a729678458fd8d4928e75fd888bf2
+
+2023-10-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try adding a macos CI runner
+
+	Change-Id: I1e24d7ab1cb1f1df05fd3ba9ebb54c04be0908b9
+
+2023-10-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	a bit more tinkering
+
+	Change-Id: I87386fad32c99d3c0049ef68f427ce0ec3fc9687
+
+2023-10-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Cleaning up stuff_old.c a bit
+
+	and some other files, too
+
+	Change-Id: I94c2100be13428653048390132d56c0fab26f1df
+
+2023-10-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	a bit more tweaking
+
+	Change-Id: Iee8be7d8f33fcce80c912cd509bbb5a79e2ee684
+
+2023-10-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try spreading around -Wfatal-errors more
+
+	Change-Id: Ib3be45fb09a7715ab1dd3f407770b298f4a3d422
+
+2023-10-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	fix script mistake, and reorder shellcheck disablement comments
+
+	Change-Id: Idc87c700228158cd6b68551e1433f8df01890f73
+
+2023-10-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try including gdb's java testsuite in java build
+
+	Change-Id: I5fe7b947373ef1cf82e0cd641426dabd60bf6c50
+
+2023-10-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try including jzlib in java build
+
+	Change-Id: I1812f463844e3fa79a23f4ed87265eb827229043
+
+2023-10-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	bleh
+
+	Change-Id: Ib608cebaff084a53e0f8bb1b3da123c5ec573994
+
+2023-10-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #20 from cooljeanius/dependabot/gradle/org.junit.jupiter-junit-jupiter-5.10.0
+
+	Bump org.junit.jupiter:junit-jupiter from 5.9.3 to 5.10.0
+
+2023-10-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #21 from cooljeanius/dependabot/gradle/com.google.guava-guava-32.1.3-jre
+
+	Bump com.google.guava:guava from 32.1.1-jre to 32.1.3-jre
+
+2023-10-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	remove qodana stuff
+
+	I couldn't figure it out
+
+	Change-Id: I109cc99f831a838ea2649a4a07a8cbab54f49878
+
+2023-10-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update qodana_code_quality.yml
+
+	1 more try at fixing it and then I'm giving it up
+
+	Change-Id: I169117fa10e0e9e46d986f21375d60baed054991
+
+2023-10-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update qodana_code_quality.yml
+
+	more attempts to debug qodana failure
+
+	Change-Id: Ib14f9855afd604c12775336f4d3a76e89a2929b0
+
+2023-10-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try to figure out why Qodana is failing
+
+	Change-Id: I70fdf08336709917d005193251763e2b658121fb
+
+2023-10-25  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump com.google.guava:guava from 32.1.1-jre to 32.1.3-jre
+
+	Bumps [com.google.guava:guava](https://github.com/google/guava) from 32.1.1-jre to 32.1.3-jre.
+	- [Release notes](https://github.com/google/guava/releases)
+	- [Commits](https://github.com/google/guava/commits)
+
+	---
+	updated-dependencies:
+	- dependency-name: com.google.guava:guava
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	...
+
+2023-10-25  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump org.junit.jupiter:junit-jupiter from 5.9.3 to 5.10.0
+
+	Bumps [org.junit.jupiter:junit-jupiter](https://github.com/junit-team/junit5) from 5.9.3 to 5.10.0.
+	- [Release notes](https://github.com/junit-team/junit5/releases)
+	- [Commits](https://github.com/junit-team/junit5/compare/r5.9.3...r5.10.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.junit.jupiter:junit-jupiter
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	...
+
+2023-10-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok, distcleaning works properly again
+
+	...even with maintainer mode turned on now!
+
+	Change-Id: I657f6acdbc9c7126a8f1f1890d0182bd265c155b
+
 2023-10-25  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	doing stuff

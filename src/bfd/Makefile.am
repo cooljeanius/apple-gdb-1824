@@ -1368,20 +1368,36 @@ gen-aout: $(srcdir)/gen-aout.c @MAINT@ Makefile
 $(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h bfd-in3.h $(srcdir)/libbfd.h \
   $(srcdir)/libcoff.h @MAINT@ $(srcdir)/Makefile
 	if test -e $(srcdir)/Makefile -a -d $(srcdir)/.deps; then \
-	  echo "making headers in $(srcdir)"; \
+	  echo "making headers in srcdir ($(srcdir))..."; \
 	  (cd $(srcdir) && $(MAKE) headers $(FLAGS_TO_PASS)); \
 	elif test -e ./Makefile -a -d ./.deps; then \
-	  echo "making headers in the current directory"; \
+	  echo "making headers in the current directory (`pwd`)..."; \
 	  (cd . && $(MAKE) headers $(FLAGS_TO_PASS)); \
+	elif test -e $(builddir)/Makefile -a -d $(builddir)/.deps; then \
+	  echo "making headers in builddir ($(builddir))..."; \
+	  (cd $(builddir) && $(MAKE) headers $(FLAGS_TO_PASS)); \
+	else \
+	  echo "$@ target: unsure where to make headers..."; \
 	fi
 	-if test ! -e $(BFD_H); then \
 	  if test -e $(srcdir)/Makefile; then \
 	    (cd $(srcdir) && $(MAKE) stmp-bfd-h $(FLAGS_TO_PASS)); \
 	  elif test -e ./Makefile; then \
 	    (cd . && $(MAKE) stmp-bfd-h $(FLAGS_TO_PASS)); \
+	  elif test -d ../../.git && test -x "`which git`"; then \
+	    if test -n "`git status -s $(BFD_H) | grep D`"; then \
+	      echo "BFD_H ($(BFD_H)) appears to have been deleted; attempting to restore it..."; \
+	      git restore $(BFD_H); \
+	    else \
+	      git status -s $(BFD_H); \
+	    fi; \
+	  elif test -e $(builddir)/Makefile; then \
+	    (cd $(builddir) && $(MAKE) stmp-bfd-h $(FLAGS_TO_PASS)); \
+	  else \
+	    echo "unsure how to restore BFD_H ($(BFD_H))..."; \
 	  fi; \
 	else \
-	  stat $(BFD_H); \
+	  echo "checking status of BFD_H ($(BFD_H))..." && stat $(BFD_H); \
 	fi
 
 stmp-bfd-h: bfd-in3.h @MAINT@ headers @MAINT@ $(PATH_TO_MOVEIFCHANGE)
@@ -1456,9 +1472,12 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	(cd $(sdocdir); $(MAKE) libcoff.h $(FLAGS_TO_PASS))
 	(cd $(sdocdir); $(MAKE) bfd.h $(FLAGS_TO_PASS))
 	if test $(srcdir) != "."; then \
+	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  (cd $(sdocdir); $(MAKE) $(srcdir)/libbfd.h $(FLAGS_TO_PASS)); \
 	  (cd $(sdocdir); $(MAKE) $(srcdir)/libcoff.h $(FLAGS_TO_PASS)); \
 	  (cd $(sdocdir); $(MAKE) $(srcdir)/bfd.h $(FLAGS_TO_PASS)); \
+	else \
+	  echo "$@ target: already in srcdir ($(srcdir)): `pwd`"; \
 	fi
 	cp $(AM_V_v) $(sdocdir)/bfd.h bfd-in2.h-new
 	$(RUN_MOVEIFCHANGE) bfd-in2.h-new $(srcdir)/bfd-in2.h
@@ -1473,6 +1492,7 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 
 $(sdocdir)/Makefile: $(sdocdir)/Makefile.in $(top_builddir)/config.status
 	if test $(srcdir) != "."; then \
+	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  if test -e ./doc/Makefile -a ! -e $(sdocdir)/Makefile; then \
 	    cp $(AM_V_v) ./doc/Makefile $(sdocdir)/Makefile; \
 	  elif test -e $(srcdir)/config.status; then \
@@ -1514,7 +1534,10 @@ $(srcdir)/bfd-in2.h: @MAINT@ stmp-bin2-h
 stmp-bin2-h: $(sdocdir)/Makefile $(BFD_H_FILES) $(BFD64_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) bfd.h)
 	if test $(srcdir) != "."; then \
+	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  (cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/bfd.h); \
+	else \
+	  echo "$@ target: already in srcdir ($(srcdir)): `pwd`"; \
 	fi
 	cp $(AM_V_v) $(sdocdir)/bfd.h bfd-in2.h-new
 	$(RUN_MOVEIFCHANGE) bfd-in2.h-new $(srcdir)/bfd-in2.h
@@ -1526,7 +1549,10 @@ $(srcdir)/libbfd.h: @MAINT@ stmp-lbfd-h
 stmp-lbfd-h: $(LIBBFD_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) libbfd.h)
 	if test $(srcdir) != "."; then \
+	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  (cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libbfd.h); \
+	else \
+	  echo "$@ target: already in srcdir ($(srcdir)): `pwd`"; \
 	fi
 	cp $(AM_V_v) $(sdocdir)/libbfd.h libbfd.h-new
 	$(RUN_MOVEIFCHANGE) libbfd.h-new $(srcdir)/libbfd.h
@@ -1538,7 +1564,10 @@ $(srcdir)/libcoff.h: @MAINT@ stmp-lcoff-h
 stmp-lcoff-h: $(LIBCOFF_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) libcoff.h)
 	if test $(srcdir) != "."; then \
+	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  (cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libcoff.h); \
+	else \
+	  echo "$@ target: already in srcdir ($(srcdir)): `pwd`"; \
 	fi
 	cp $(AM_V_v) $(sdocdir)/libcoff.h libcoff.h-new
 	$(RUN_MOVEIFCHANGE) libcoff.h-new $(srcdir)/libcoff.h

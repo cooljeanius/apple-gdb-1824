@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-07 22:32-0500\n"
+"POT-Creation-Date: 2024-01-08 10:36-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -667,9 +667,9 @@ msgid ""
 "pie\n"
 msgstr ""
 
-#: elf-m10200.c:412 elf-m10300.c:1512 elf32-arm.c:4225 elf32-avr.c:863
-#: elf32-bfin.c:3220 elf32-cr16.c:1484 elf32-cr16c.c:776 elf32-cris.c:1495
-#: elf32-crx.c:914 elf32-d10v.c:537 elf32-epiphany.c:557 elf32-fr30.c:569
+#: elf-m10200.c:412 elf-m10300.c:1512 elf32-arm.c:4225 elf32-avr.c:865
+#: elf32-bfin.c:3220 elf32-cr16.c:1484 elf32-cr16c.c:777 elf32-cris.c:1499
+#: elf32-crx.c:915 elf32-d10v.c:539 elf32-epiphany.c:557 elf32-fr30.c:569
 #: elf32-frv.c:4077 elf32-h8300.c:497 elf32-i860.c:1185 elf32-ip2k.c:1474
 #: elf32-iq2000.c:622 elf32-lm32.c:1160 elf32-m32c.c:474 elf32-m32r.c:3092
 #: elf32-m68hc1x.c:1210 elf32-mep.c:535 elf32-metag.c:1992
@@ -680,9 +680,9 @@ msgstr ""
 msgid "internal error: out of range error"
 msgstr ""
 
-#: elf-m10200.c:416 elf-m10300.c:1516 elf32-arm.c:4229 elf32-avr.c:867
-#: elf32-bfin.c:3224 elf32-cr16.c:1488 elf32-cr16c.c:780 elf32-cris.c:1499
-#: elf32-crx.c:918 elf32-d10v.c:541 elf32-fr30.c:573 elf32-frv.c:4081
+#: elf-m10200.c:416 elf-m10300.c:1516 elf32-arm.c:4229 elf32-avr.c:869
+#: elf32-bfin.c:3224 elf32-cr16.c:1488 elf32-cr16c.c:781 elf32-cris.c:1503
+#: elf32-crx.c:919 elf32-d10v.c:543 elf32-fr30.c:573 elf32-frv.c:4081
 #: elf32-h8300.c:501 elf32-i860.c:1189 elf32-iq2000.c:626 elf32-lm32.c:1164
 #: elf32-m32c.c:478 elf32-m32r.c:3096 elf32-m68hc1x.c:1214 elf32-mep.c:539
 #: elf32-metag.c:1996 elf32-microblaze.c:1564 elf32-moxie.c:286
@@ -693,16 +693,16 @@ msgid "internal error: unsupported relocation error"
 msgstr ""
 
 #: elf-m10200.c:420 elf-m10300.c:1520 elf32-arm.c:4233 elf32-cr16.c:1492
-#: elf32-cr16c.c:784 elf32-crx.c:922 elf32-d10v.c:545 elf32-h8300.c:505
+#: elf32-cr16c.c:785 elf32-crx.c:923 elf32-d10v.c:547 elf32-h8300.c:505
 #: elf32-lm32.c:1168 elf32-m32r.c:3100 elf32-m68hc1x.c:1218
 #: elf32-microblaze.c:1568 elf32-nds32.c:4918 elf32-score.c:2737
 #: elf32-score7.c:2545 elf32-spu.c:5049
 msgid "internal error: dangerous error"
 msgstr ""
 
-#: elf-m10200.c:424 elf-m10300.c:1524 elf32-arm.c:4237 elf32-avr.c:875
-#: elf32-bfin.c:3232 elf32-cr16.c:1496 elf32-cr16c.c:788 elf32-cris.c:1507
-#: elf32-crx.c:926 elf32-d10v.c:549 elf32-epiphany.c:572 elf32-fr30.c:581
+#: elf-m10200.c:424 elf-m10300.c:1524 elf32-arm.c:4237 elf32-avr.c:877
+#: elf32-bfin.c:3232 elf32-cr16.c:1496 elf32-cr16c.c:789 elf32-cris.c:1511
+#: elf32-crx.c:927 elf32-d10v.c:551 elf32-epiphany.c:572 elf32-fr30.c:581
 #: elf32-frv.c:4089 elf32-h8300.c:509 elf32-i860.c:1197 elf32-ip2k.c:1489
 #: elf32-iq2000.c:634 elf32-lm32.c:1172 elf32-m32c.c:486 elf32-m32r.c:3104
 #: elf32-m68hc1x.c:1222 elf32-mep.c:547 elf32-metag.c:2004
@@ -907,7 +907,7 @@ msgstr ""
 #. Ignore init flag - it may not be set, despite the flags field containing valid data.
 #. Ignore init flag - it may not be set, despite the flags field
 #. containing valid data.
-#: elf32-arm.c:4581 elf32-bfin.c:4988 elf32-cris.c:3195 elf32-m68hc1x.c:1353
+#: elf32-arm.c:4581 elf32-bfin.c:4988 elf32-cris.c:3199 elf32-m68hc1x.c:1353
 #: elf32-m68k.c:415 elf32-score.c:4004 elf32-score7.c:3808 elf32-vax.c:527
 #: elf32-xgate.c:674 elfxx-mips.c:9917 elfnn-aarch64.c:4688
 #, c-format
@@ -1025,7 +1025,7 @@ msgstr ""
 msgid "%B: bad symbol index: %d"
 msgstr ""
 
-#: elf32-avr.c:871 elf32-bfin.c:3228 elf32-cris.c:1503 elf32-epiphany.c:568
+#: elf32-avr.c:873 elf32-bfin.c:3228 elf32-cris.c:1507 elf32-epiphany.c:568
 #: elf32-fr30.c:577 elf32-frv.c:4085 elf32-i860.c:1193 elf32-ip2k.c:1485
 #: elf32-iq2000.c:630 elf32-m32c.c:482 elf32-mep.c:543 elf32-metag.c:2000
 #: elf32-moxie.c:290 elf32-ms1.c:376 elf32-msp430.c:518 elf32-mt.c:399
@@ -1100,88 +1100,88 @@ msgstr ""
 msgid "*** check this relocation %s"
 msgstr ""
 
-#: elf32-cris.c:1024
+#: elf32-cris.c:1028
 msgid "%B, section %A: unresolvable relocation %s against symbol `%s'"
 msgstr ""
 
-#: elf32-cris.c:1079
+#: elf32-cris.c:1083
 msgid "%B, section %A: No PLT nor GOT for relocation %s against symbol `%s'"
 msgstr ""
 
-#: elf32-cris.c:1081
+#: elf32-cris.c:1085
 msgid "%B, section %A: No PLT for relocation %s against symbol `%s'"
 msgstr ""
 
-#: elf32-cris.c:1087 elf32-cris.c:1232 elf32-tic6x.c:2645
+#: elf32-cris.c:1091 elf32-cris.c:1236 elf32-tic6x.c:2645
 msgid "[whose name is lost]"
 msgstr ""
 
-#: elf32-cris.c:1217 elf32-tic6x.c:2630
+#: elf32-cris.c:1221 elf32-tic6x.c:2630
 msgid ""
 "%B, section %A: relocation %s with non-zero addend %d against local symbol"
 msgstr ""
 
-#: elf32-cris.c:1225 elf32-tic6x.c:2638
+#: elf32-cris.c:1229 elf32-tic6x.c:2638
 msgid ""
 "%B, section %A: relocation %s with non-zero addend %d against symbol `%s'"
 msgstr ""
 
-#: elf32-cris.c:1252
+#: elf32-cris.c:1256
 msgid "%B, section %A: relocation %s is not allowed for global symbol: `%s'"
 msgstr ""
 
-#: elf32-cris.c:1268
+#: elf32-cris.c:1272
 msgid "%B, section %A: relocation %s with no GOT created"
 msgstr ""
 
-#: elf32-cris.c:1387
+#: elf32-cris.c:1391
 msgid "%B: Internal inconsistency; no relocation section %s"
 msgstr ""
 
-#: elf32-cris.c:2485
+#: elf32-cris.c:2489
 msgid ""
 "%B, section %A:\n"
 "  v10/v32 compatible object %s must not contain a PIC relocation"
 msgstr ""
 
-#: elf32-cris.c:2672 elf32-cris.c:2740
+#: elf32-cris.c:2676 elf32-cris.c:2744
 msgid ""
 "%B, section %A:\n"
 "  relocation %s should not be used in a shared object; recompile with -fPIC"
 msgstr ""
 
-#: elf32-cris.c:3150
+#: elf32-cris.c:3154
 msgid "Unexpected machine number"
 msgstr ""
 
-#: elf32-cris.c:3198
+#: elf32-cris.c:3202
 #, c-format
 msgid " [symbols have a _ prefix]"
 msgstr ""
 
-#: elf32-cris.c:3201
+#: elf32-cris.c:3205
 #, c-format
 msgid " [v10 and v32]"
 msgstr ""
 
-#: elf32-cris.c:3204
+#: elf32-cris.c:3208
 #, c-format
 msgid " [v32]"
 msgstr ""
 
-#: elf32-cris.c:3246
+#: elf32-cris.c:3250
 msgid "%B: uses _-prefixed symbols, but writing file with non-prefixed symbols"
 msgstr ""
 
-#: elf32-cris.c:3247
+#: elf32-cris.c:3251
 msgid "%B: uses non-prefixed symbols, but writing file with _-prefixed symbols"
 msgstr ""
 
-#: elf32-cris.c:3266
+#: elf32-cris.c:3270
 msgid "%B contains CRIS v32 code, incompatible with previous objects"
 msgstr ""
 
-#: elf32-cris.c:3268
+#: elf32-cris.c:3272
 msgid "%B contains non-CRIS-v32 code, incompatible with previous objects"
 msgstr ""
 
@@ -1294,7 +1294,7 @@ msgstr ""
 msgid "%B: cannot create stub entry %s"
 msgstr ""
 
-#: elf32-hppa.c:833 elf32-hppa.c:3425
+#: elf32-hppa.c:833 elf32-hppa.c:3424
 msgid "%B(%A+0x%lx): cannot reach %s, recompile with -ffunction-sections"
 msgstr ""
 
@@ -1318,11 +1318,11 @@ msgid ""
 "%B(%A+0x%lx): %s fixup for insn 0x%x is not supported in a non-shared link"
 msgstr ""
 
-#: elf32-hppa.c:3909
+#: elf32-hppa.c:3903
 msgid "%B(%A+0x%lx): cannot handle %s for %s"
 msgstr ""
 
-#: elf32-hppa.c:4211
+#: elf32-hppa.c:4202
 msgid ".got section not immediately after .plt section"
 msgstr ""
 

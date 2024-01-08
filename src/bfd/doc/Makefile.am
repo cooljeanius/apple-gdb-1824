@@ -143,6 +143,7 @@ chew.o: chew.c $(srcdir_high)/include/ansidecl.h @MAINT@ Makefile
 	  $(CFLAGS_FOR_BUILD) $(srcdir)/chew.c
 
 protos: $(BUILD_HFILES)
+	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: protos
 
 $(srcdir)/bfd.info bfd.dvi: $(DOCFILES) bfdsumm.texi bfd.texinfo $(MKDOC)
@@ -389,6 +390,7 @@ libbfd.h: $(LIBBFD_H_DEP) @MAINT@ $(src_MKDOC) Makefile.am
 	echo "#endif /* __LIBBFD_H__ */" >> $@
 	echo "" >> $@
 	echo "/* End of libbfd.h */" >> $@
+	$(AM_V_at)touch $@
 
 LIBCOFF_H_DEP = \
 	$(srcdir_up)/libcoff-in.h	\
@@ -409,6 +411,7 @@ libcoff.h: $(LIBCOFF_H_DEP) @MAINT@ $(src_MKDOC)
 		$(src_MKDOC) -i -f $(srcdir)/proto.str < $${file} >>$@ ;; \
 	  esac; \
 	done
+	$(AM_V_at)touch $@
 
 BFD_H_DEP = \
 	$(srcdir_up)/bfd-in.h 		\
@@ -440,6 +443,7 @@ am--refresh: Makefile $(srcdir_up)/Makefile
 
 $(srcdir_up)/Makefile: $(srcdir_up)/Makefile.in $(top_builddir)/config.status
 	if test $(srcdir) != "."; then \
+	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  if test -e ../Makefile -a ! -e $(srcdir_up)/Makefile; then \
 	    cp $(AM_V_v) ../Makefile $(srcdir_up)/Makefile; \
 	  elif test -e $(srcdir_up)/config.status; then \
@@ -469,16 +473,21 @@ bfd.h: $(BFD_H_DEP) @MAINT@ $(src_MKDOC)
 	echo "}" >> $@
 	echo "#endif /* __cplusplus */" >> $@
 	echo "#endif" >> $@
+	$(AM_V_at)touch $@
 
 bfdver.texi: @MAINT@ $(srcdir)/Makefile.in
 	@echo "creating $@"; \
 	echo "@set VERSION $(VERSION)" $(AM_V_redir) bfdver.texi; \
 	if [ -n "$(PKGVERSION)" ]; then \
 	  echo "@set VERSION_PACKAGE $(PKGVERSION)" $(AM_V_redir_a) bfdver.texi; \
+	else \
+	  echo "warning: PKGVERSION unset"; \
 	fi; \
 	echo "@set UPDATED `date '+%B %Y'`" $(AM_V_redir_a) bfdver.texi; \
 	if [ -n "$(REPORT_BUGS_TEXI)" ]; then \
 	  echo "@set BUGURL $(REPORT_BUGS_TEXI)" $(AM_V_redir_a) bfdver.texi; \
+	else \
+	  echo "warning: bug reporting URL unset"; \
 	fi
 
 noinst_TEXINFOS = bfdint.texi

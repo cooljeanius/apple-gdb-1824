@@ -48,3 +48,4 @@ $(SYMROOT)/$(LIB) : $(OBJS)
 		-single_module -compatibility_version 1 \
 		-current_version 1 $(OBJS) -framework ApplicationServices
 	stat $(SYMROOT)/$(LIB) || stat $(GDBDIR)/$(LIB) || stat $(OBJS)
+	du $(SYMROOT)/$(LIB) || du $(GDBDIR)/$(LIB) || du $(OBJS)

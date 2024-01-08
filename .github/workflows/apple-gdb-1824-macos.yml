@@ -29,7 +29,7 @@ jobs:
         fi
         date && sync
         brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar openssl@3 gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk "${COMPILER_FORMULA}"
-    - run: test -e ./.profile_generic && test -r ./.profile_generic && source ./.profile_generic && (env | uniq | sort | uniq) && sync
+    - run: test -e ./.profile_generic && test -r ./.profile_generic && source ./.profile_generic && sync && (env | uniq | sort | uniq) && sync
     - run: ./configure --enable-silent-rules CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
     - run: if test ! -e libcheckpoint/libcheckpoint.dylib; then (sync && echo "ensuring libcheckpoint is built" && sync && make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" && sync) || (sync && make -ki -C macsbug) || (sync && make -ki -C macsbug/gdb_plugin_support) || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else (sync && stat libcheckpoint/libcheckpoint.dylib); fi
@@ -49,7 +49,7 @@ jobs:
     - name: Backup that annoying arparse.h header
       run: |
         cd src/binutils
-        make arparse.h
+        sync && make arparse.h
         if test ! -e arparse.h; then \
           echo "make my_arparse.h"; \
           make my_arparse.h; \
@@ -78,7 +78,7 @@ jobs:
             sync && stat arparse.h; \
           fi; \
         else \
-          ls ./*.h || ls || pwd; \
+          sync && (ls ./*.h || ls || pwd); \
         fi
         sync && find . -name arparse.h -type f -print
     - run: cd src && make all-binutils

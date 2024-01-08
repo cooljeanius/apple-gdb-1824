@@ -173,7 +173,12 @@ install				:	all $(DSTDIR)
 
 $(SYMROOT)/gdb_plugin_support.o	: 	$(OBJS)
 	ld -r $(OBJS) -arch $(TARGET_ARCHITECTURE) -o $(SYMROOT)/gdb_plugin_support.o
-	if test -d $(SYMROOT); then stat $(SYMROOT)/gdb_plugin_support.o; fi
+	if test -d $(SYMROOT) && test -e $(SYMROOT)/gdb_plugin_support.o; then \
+	  stat $(SYMROOT)/gdb_plugin_support.o; \
+	  du $(SYMROOT)/gdb_plugin_support.o; \
+	elif test -n "$(OBJS)"; then \
+	  echo "OBJS are $(OBJS)"; \
+	fi
 
 $(OFILE_DIR)/%.o		:	%.c $(HFILES)
 	$(CC) $(CFLAGS) $(RC_CFLAGS) -o $(OFILE_DIR)/$(notdir $*).o $<
