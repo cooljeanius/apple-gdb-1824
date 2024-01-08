@@ -84,7 +84,7 @@ jobs:
           (sync && stat /home/runner/work/apple-gdb-1824/build); \
         fi
         (cd src && sync && echo "now in $(pwd)..." && sync)
-        if test ${{ matrix.language }} == 'go'; then sleep 1; fi
+        if test ${{ matrix.language }} == 'go' || test ${{ matrix.language }} == 'csharp'; then sleep 1; fi
 
     - name: Dependencies
       if: matrix.language == 'c-cpp'

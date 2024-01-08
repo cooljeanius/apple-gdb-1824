@@ -998,7 +998,7 @@ stamp-lofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	done; \
 	echo $${f} $(AM_V_redir) tlofiles
 	$(RUN_MOVEIFCHANGE) tlofiles lofiles
-	$(AM_V_at)touch stamp-lofiles
+	$(AM_V_at)if test stamp-lofiles -ot lofiles; then touch stamp-lofiles; fi
 
 stamp-ofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	rm -f $(AM_V_v) tofiles
@@ -1011,7 +1011,7 @@ stamp-ofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	done; \
 	echo $${f} $(AM_V_redir) tofiles
 	$(RUN_MOVEIFCHANGE) tofiles ofiles
-	$(AM_V_at)touch stamp-ofiles
+	$(AM_V_at)if test stamp-ofiles -ot ofiles; then touch stamp-ofiles; fi
 
 stamp-plistfiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	rm -f $(AM_V_v) tplistfiles
@@ -1024,7 +1024,9 @@ stamp-plistfiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	done; \
 	echo $${f} $(AM_V_redir) tplistfiles
 	$(RUN_MOVEIFCHANGE) tplistfiles plistfiles
-	$(AM_V_at)touch stamp-plistfiles
+	$(AM_V_at)if test stamp-plistfiles -ot plistfiles; then \
+	  touch stamp-plistfiles; \
+	fi
 
 lofiles: stamp-lofiles
 	@echo "this target, '$@', just makes its dependency, '$<'"
@@ -1097,7 +1099,7 @@ stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
 	    $(RANLIB) libbfd.a; \
 	  fi; \
 	fi
-	$(AM_V_at)touch stamp-lib
+	$(AM_V_at)if test $@ -ot stamp-staticlib; then touch stamp-lib; fi
 
 # since OFILES no longer works as a dependency, have to make it explicitly
 # as part of a rule instead:
@@ -1110,8 +1112,14 @@ stamp-staticlib: stamp-ofiles @MAINT@ bfd.h
 	fi
 	if [ -f libbfd.a ]; then \
 	  $(RANLIB) libbfd.a; \
+	elif [ -f $(srcdir)/libbfd.a ]; then \
+	  cp $(AM_V_v) $(srcdir)/libbfd.a .; \
+	elif [ -f $(builddir)/libbfd.a ]; then \
+	  cp $(AM_V_v) $(builddir)/libbfd.a .; \
+	else \
+	  echo "$@ target: warning: missing libbfd.a" >&2; \
 	fi
-	$(AM_V_at)touch stamp-staticlib
+	$(AM_V_at)if test $@ -ot libbfd.a; then touch stamp-staticlib; fi
 
 # likewise with making PLISTFILES when running `make check`:
 check-local: stamp-plistfiles @MAINT@ plistfiles
@@ -1297,7 +1305,7 @@ DEP: dep.sed $(CFILES) $(HFILES) bfd.h
 	else \
 	  mv -f $(AM_V_v) DEPA $@; \
 	fi
-	$(AM_V_at)touch $@
+	$(AM_V_at)if test $@ -ot dep.sed; then touch $@; fi
 # I also want to include a check for variables not being closed properly
 # (missing parentheses), but I am not sure how to do that in a way where
 # the bad syntax for which we would be grepping does not also get
@@ -1310,7 +1318,7 @@ DEP1: $(CFILES)
 	echo '# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.' >>DEP2
 	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? $(AM_V_redir_a) DEP2
 	mv -f $(AM_V_v) DEP2 $@
-	$(AM_V_at)touch $@
+	$(AM_V_at)if test $@ -ot DEP2; then touch $@; fi
 
 #FIXME: this sed script is broken and hack-ish:
 dep.sed: dep-in.sed @MAINT@ config.status
@@ -1318,31 +1326,35 @@ dep.sed: dep-in.sed @MAINT@ config.status
 		-e 's!@BFD_H@!$(BFD_H)!'	\
 		-e 's!@SRCDIR@!$(srcdir)!'	\
 		-e 's!@TOPDIR@!'`echo $(srcdir) | $(SED) -e s,/bfd$$,,`'!'
-	touch $@
+	if test $@ -ot dep-in.sed; then touch $@; fi
 
 #FIXME: this target relies on dep.sed, which is broken (see above)
 dep: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < Makefile > tmp-Makefile
 	cat DEP >> tmp-Makefile
 	$(RUN_MOVEIFCHANGE) tmp-Makefile Makefile
-	$(AM_V_at)touch Makefile
+	$(AM_V_at)if test Makefile -ot DEP; then touch Makefile; fi
 
 #FIXME: this target relies on dep.sed, which is broken (see above)
 dep-in: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.in > tmp-Makefile.in
 	cat DEP >> tmp-Makefile.in
 	$(RUN_MOVEIFCHANGE) tmp-Makefile.in $(srcdir)/Makefile.in
-	$(AM_V_at)touch $(srcdir)/Makefile.in
+	$(AM_V_at)if test $(srcdir)/Makefile.in -ot DEP; then \
+	  touch $(srcdir)/Makefile.in; \
+	fi
 
 #FIXME: this target relies on dep.sed, which is broken (see above)
 dep-am: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	@echo "this target is broken/dangerous; not letting you use it" >&2
-	@echo "edit Makefile.am if you have fixed things"
+	@echo "edit Makefile.am manually if you have fixed things"
 	exit 1
 	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.am > tmp-Makefile.am
 	cat DEP >> tmp-Makefile.am
 	$(RUN_MOVEIFCHANGE) tmp-Makefile.am $(srcdir)/Makefile.am
-	$(AM_V_at)touch $(srcdir)/Makefile.am
+	$(AM_V_at)if test $(srcdir)/Makefile.am -ot DEP; then \
+	  touch $(srcdir)/Makefile.am; \
+	fi
 
 # Some manually-specified dependencies:
 archive64.o: archive64.lo
@@ -1398,15 +1410,17 @@ $(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h bfd-in3.h $(srcdir)/libbfd.h \
 	  fi; \
 	else \
 	  echo "checking status of BFD_H ($(BFD_H))..." && stat $(BFD_H); \
+	  echo "also checking its length..." && wc -l $(BFD_H); \
+	  echo "also checking its disk usage..." && du $(BFD_H); \
 	fi
 
 stmp-bfd-h: bfd-in3.h @MAINT@ headers @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	rm -f $(AM_V_v) bfd-tmp.h
 	cp $(AM_V_v) bfd-in3.h bfd-tmp.h
 	$(RUN_MOVEIFCHANGE) bfd-tmp.h $(BFD_H)
-	$(AM_V_at)touch $(BFD_H)
+	$(AM_V_at)if test $(BFD_H) -ot $@; then touch $(BFD_H); fi
 	rm -f $(AM_V_v) bfd-tmp.h
-	touch $@
+	if test $@ -ot bfd-in3.h; then touch $@; fi
 
 BFD_H_FILES = bfd-in.h init.c opncls.c libbfd.c section.c archures.c \
 	reloc.c syms.c bfd.c bfdio.c bfdwin.c \
@@ -1439,7 +1453,7 @@ stamp-framework-headers: bfd.h headers
 	cp -p $(AM_V_v) $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
 	cp -p $(AM_V_v) *.h $(FRAMEWORK).framework/Versions/Current/Headers/
 	cp -p $(AM_V_v) $(BFD_H_DEPS) $(FRAMEWORK).framework/Versions/Current/Headers/
-	$(AM_V_at)touch stamp-framework-headers
+	$(AM_V_at)if test $@ -ot bfd.h; then touch stamp-framework-headers; fi
 
 stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 	$(MAKE) $(FRAMEWORK_OFILES)
@@ -1448,7 +1462,6 @@ stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
 	$(LN_S) $(AM_V_v) Versions/Current/Resources $(FRAMEWORK).framework/Resources
 	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
-
 	set -ex; \
 	if [ "x$(FRAMEWORK_SUFFIX)" != "x" ]; then \
 	    test -n "$(FRAMEWORK_SUFFIX)" && echo "$(FRAMEWORK_SUFFIX)"; \
@@ -1462,15 +1475,21 @@ stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
 	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
 	fi
-	$(AM_V_at)touch stamp-framework
+	$(AM_V_at)if test $@ -ot stamp-framework-headers; then touch $@; fi
 # APPLE LOCAL end framework building.
 
 # Could really use a "copy-if-change"...
 headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) protos $(FLAGS_TO_PASS))
-	(cd $(sdocdir); $(MAKE) libbfd.h $(FLAGS_TO_PASS))
-	(cd $(sdocdir); $(MAKE) libcoff.h $(FLAGS_TO_PASS))
-	(cd $(sdocdir); $(MAKE) bfd.h $(FLAGS_TO_PASS))
+	if test ! -e $(sdocdir)/libbfd.h || test $(sdocdir)/libbfd.h -ot $(sdocdir)/Makefile; then \
+	  (cd $(sdocdir); $(MAKE) libbfd.h $(FLAGS_TO_PASS)); \
+	fi
+	if test ! -e $(sdocdir)/libcoff.h || test $(sdocdir)/libcoff.h -ot $(sdocdir)/Makefile; then \
+	  (cd $(sdocdir); $(MAKE) libcoff.h $(FLAGS_TO_PASS)); \
+	fi
+	if test ! -e $(sdocdir)/bfd.h || test $(sdocdir)/bfd.h -ot $(sdocdir)/Makefile; then \
+	  (cd $(sdocdir); $(MAKE) bfd.h $(FLAGS_TO_PASS)); \
+	fi
 	if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  (cd $(sdocdir); $(MAKE) $(srcdir)/libbfd.h $(FLAGS_TO_PASS)); \
@@ -1479,15 +1498,34 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	else \
 	  echo "$@ target: already in srcdir ($(srcdir)): `pwd`"; \
 	fi
-	cp $(AM_V_v) $(sdocdir)/bfd.h bfd-in2.h-new
-	$(RUN_MOVEIFCHANGE) bfd-in2.h-new $(srcdir)/bfd-in2.h
-	$(AM_V_at)touch $(srcdir)/bfd-in2.h
-	cp $(AM_V_v) $(sdocdir)/libbfd.h libbfd.h-new
-	$(RUN_MOVEIFCHANGE) libbfd.h-new $(srcdir)/libbfd.h
-	$(AM_V_at)touch $(srcdir)/libbfd.h
-	cp $(AM_V_v) $(sdocdir)/libcoff.h libcoff.h-new
-	$(RUN_MOVEIFCHANGE) libcoff.h-new $(srcdir)/libcoff.h
-	$(AM_V_at)touch $(srcdir)/libcoff.h
+	if test ! -e bfd-in2.h-new || test bfd-in2.h-new -ot $(sdocdir)/bfd.h; then \
+	  cp $(AM_V_v) $(sdocdir)/bfd.h bfd-in2.h-new; \
+	  $(RUN_MOVEIFCHANGE) bfd-in2.h-new $(srcdir)/bfd-in2.h; \
+	fi
+	$(AM_V_at)if test $(srcdir)/bfd-in2.h -ot stmp-bin2-h; then \
+	  touch $(srcdir)/bfd-in2.h; \
+	elif test stmp-bin2-h -ot $(srcdir)/bfd-in2.h; then \
+	  touch stmp-bin2-h; \
+	fi
+	if test ! -e libbfd.h-new || test libbfd.h-new -ot $(sdocdir)/libbfd.h; then \
+	  cp $(AM_V_v) $(sdocdir)/libbfd.h libbfd.h-new; \
+	  $(RUN_MOVEIFCHANGE) libbfd.h-new $(srcdir)/libbfd.h; \
+	fi
+	$(AM_V_at)if test $(srcdir)/libbfd.h -ot stmp-lbfd-h; then \
+	  touch $(srcdir)/libbfd.h; \
+	elif test stmp-lbfd-h -ot $(srcdir)/libbfd.h; then \
+	  touch stmp-lbfd-h; \
+	fi
+	if test ! -e libcoff.h-new || test libcoff.h-new -ot $(sdocdir)/libcoff.h; then \
+	  cp $(AM_V_v) $(sdocdir)/libcoff.h libcoff.h-new; \
+	  $(RUN_MOVEIFCHANGE) libcoff.h-new $(srcdir)/libcoff.h; \
+	fi
+	$(AM_V_at)if test $(srcdir)/libcoff.h -ot stmp-lcoff-h; then \
+	  touch $(srcdir)/libcoff.h; \
+	elif test stmp-lcoff-h -ot $(srcdir)/libcoff.h; then \
+	  touch stmp-lcoff-h; \
+	fi
+	-rm -f $(AM_V_v) *.h-new || echo "done with $@ target"
 .PHONY: headers
 
 $(sdocdir)/Makefile: $(sdocdir)/Makefile.in $(top_builddir)/config.status
@@ -1541,8 +1579,11 @@ stmp-bin2-h: $(sdocdir)/Makefile $(BFD_H_FILES) $(BFD64_H_FILES) @MAINT@ $(PATH_
 	fi
 	cp $(AM_V_v) $(sdocdir)/bfd.h bfd-in2.h-new
 	$(RUN_MOVEIFCHANGE) bfd-in2.h-new $(srcdir)/bfd-in2.h
-	$(AM_V_at)touch $(srcdir)/bfd-in2.h
-	touch $@
+	$(AM_V_at)if test $(srcdir)/bfd-in2.h -ot $@; then \
+	  touch $(srcdir)/bfd-in2.h; \
+	elif test $@ -ot $(srcdir)/bfd-in2.h; then \
+	  touch $@; \
+	fi
 
 $(srcdir)/libbfd.h: @MAINT@ stmp-lbfd-h
 	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
@@ -1556,8 +1597,11 @@ stmp-lbfd-h: $(LIBBFD_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	fi
 	cp $(AM_V_v) $(sdocdir)/libbfd.h libbfd.h-new
 	$(RUN_MOVEIFCHANGE) libbfd.h-new $(srcdir)/libbfd.h
-	$(AM_V_at)touch $(srcdir)/libbfd.h
-	touch $@
+	$(AM_V_at)if test $(srcdir)/libbfd.h -ot $@; then \
+	  touch $(srcdir)/libbfd.h; \
+	elif test $@ -ot $(srcdir)/libbfd.h; then \
+	  touch $@; \
+	fi
 
 $(srcdir)/libcoff.h: @MAINT@ stmp-lcoff-h
 	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
@@ -1571,8 +1615,11 @@ stmp-lcoff-h: $(LIBCOFF_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	fi
 	cp $(AM_V_v) $(sdocdir)/libcoff.h libcoff.h-new
 	$(RUN_MOVEIFCHANGE) libcoff.h-new $(srcdir)/libcoff.h
-	$(AM_V_at)touch $(srcdir)/libcoff.h
-	touch $@
+	$(AM_V_at)if test $(srcdir)/libcoff.h -ot $@; then \
+	  touch $(srcdir)/libcoff.h; \
+	elif test $@ -ot $(srcdir)/libcoff.h; then \
+	  touch $@; \
+	fi
 
 MOSTLYCLEANFILES = tofiles ofiles stamp-ofiles
 MOSTLYCLEANFILES += tlofiles lofiles stamp-lofiles
@@ -1615,7 +1662,7 @@ bfdver.h: $(srcdir)/version.h @MAINT@ $(srcdir)/development.sh \
 	echo "$${bfd_soversion}" > libtool-soversion
 
 libtool-soversion: bfdver.h
-	stat $@ || touch $@
+	stat $@ || (if test $@ -ot $<; then touch $@; fi)
 
 # Disable -Werror, if it has been enabled, since coffswap.h fails
 # to compile with gcc 4.5 and above:
