@@ -573,8 +573,8 @@ crx_elf_final_link_relocate (reloc_howto_type *howto, bfd *input_bfd,
 /* Delete some bytes from a section while relaxing.  */
 
 static bfd_boolean
-elf32_crx_relax_delete_bytes (struct bfd_link_info *link_info, bfd *abfd,
-			      asection *sec, bfd_vma addr, int count)
+elf32_crx_relax_delete_bytes(struct bfd_link_info *link_info, bfd *abfd,
+			     asection *sec, bfd_vma addr, int count)
 {
   Elf_Internal_Shdr *symtab_hdr;
   unsigned int sec_shndx;
@@ -587,11 +587,11 @@ elf32_crx_relax_delete_bytes (struct bfd_link_info *link_info, bfd *abfd,
   struct elf_link_hash_entry **sym_hashes;
   struct elf_link_hash_entry **end_hashes;
   struct elf_link_hash_entry **start_hashes;
-  unsigned int symcount;
+  unsigned long symcount;
 
-  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
-  contents = elf_section_data (sec)->this_hdr.contents;
+  contents = elf_section_data(sec)->this_hdr.contents;
 
   /* The deletion must stop at the next ALIGN reloc for an aligment
      power larger than the number of bytes we are deleting.  */
@@ -599,48 +599,47 @@ elf32_crx_relax_delete_bytes (struct bfd_link_info *link_info, bfd *abfd,
   irelalign = NULL;
   toaddr = sec->size;
 
-  irel = elf_section_data (sec)->relocs;
-  irelend = irel + sec->reloc_count;
+  irel = elf_section_data(sec)->relocs;
+  irelend = (irel + sec->reloc_count);
 
   /* Actually delete the bytes.  */
-  memmove (contents + addr, contents + addr + count,
-	   (size_t) (toaddr - addr - count));
+  memmove((contents + addr), (contents + addr + count),
+	  (size_t)(toaddr - addr - count));
   sec->size -= count;
 
   /* Adjust all the relocs.  */
-  for (irel = elf_section_data (sec)->relocs; irel < irelend; irel++)
+  for (irel = elf_section_data(sec)->relocs; irel < irelend; irel++)
     {
       /* Get the new reloc address.  */
-      if ((irel->r_offset > addr
-	   && irel->r_offset < toaddr))
+      if ((irel->r_offset > addr) && (irel->r_offset < toaddr))
 	irel->r_offset -= count;
     }
 
   /* Adjust the local symbols defined in this section.  */
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  isym = (Elf_Internal_Sym *) symtab_hdr->contents;
-  for (isymend = isym + symtab_hdr->sh_info; isym < isymend; isym++)
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  isym = (Elf_Internal_Sym *)symtab_hdr->contents;
+  for (isymend = (isym + symtab_hdr->sh_info); isym < isymend; isym++)
     {
-      if (isym->st_shndx == sec_shndx
-	  && isym->st_value > addr
-	  && isym->st_value < toaddr)
+      if ((isym->st_shndx == sec_shndx)
+	  && (isym->st_value > addr)
+	  && (isym->st_value < toaddr))
 	{
 	  /* Adjust the addend of SWITCH relocations in this section,
 	     which reference this local symbol.  */
-	  for (irel = elf_section_data (sec)->relocs; irel < irelend; irel++)
+	  for (irel = elf_section_data(sec)->relocs; irel < irelend; irel++)
 	    {
 	      unsigned long r_symndx;
 	      Elf_Internal_Sym *rsym;
 	      bfd_vma addsym, subsym;
 
 	      /* Skip if not a SWITCH relocation.  */
-	      if (ELF32_R_TYPE (irel->r_info) != (int) R_CRX_SWITCH8
-		  && ELF32_R_TYPE (irel->r_info) != (int) R_CRX_SWITCH16
-		  && ELF32_R_TYPE (irel->r_info) != (int) R_CRX_SWITCH32)
+	      if ((ELF32_R_TYPE(irel->r_info) != (int)R_CRX_SWITCH8)
+		  && (ELF32_R_TYPE(irel->r_info) != (int)R_CRX_SWITCH16)
+		  && (ELF32_R_TYPE(irel->r_info) != (int)R_CRX_SWITCH32))
 		  continue;
 
-	      r_symndx = ELF32_R_SYM (irel->r_info);
-	      rsym = (Elf_Internal_Sym *) symtab_hdr->contents + r_symndx;
+	      r_symndx = ELF32_R_SYM(irel->r_info);
+	      rsym = (Elf_Internal_Sym *)symtab_hdr->contents + r_symndx;
 
 	      /* Skip if not the local adjusted symbol.  */
 	      if (rsym != isym)
@@ -856,41 +855,43 @@ elf32_crx_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
       sec = NULL;
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
+	  sym = (local_syms + r_symndx);
           if (local_sections != NULL)
 	    sec = local_sections[r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 	}
       else
 	{
 	  bfd_boolean unresolved_reloc, warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 	}
 
-      r = crx_elf_final_link_relocate (howto, input_bfd, output_bfd,
-					input_section,
-					contents, rel->r_offset,
-					relocation, rel->r_addend,
-					info, sec, h == NULL);
+      r = crx_elf_final_link_relocate(howto, input_bfd, output_bfd,
+                                      input_section, contents, rel->r_offset,
+                                      relocation, rel->r_addend, info, sec,
+                                      h == NULL);
 
       if (r != bfd_reloc_ok)
 	{
 	  const char *name;
-	  const char *msg = (const char *) 0;
+	  const char *msg = (const char *)0;
 
 	  if (h != NULL)
 	    name = h->root.root.string;
 	  else
 	    {
-	      name = (bfd_elf_string_from_elf_section
-		      (input_bfd, symtab_hdr->sh_link,
-                       ((sym != NULL) ? sym->st_name : 0U)));
+	      name =
+        	bfd_elf_string_from_elf_section(input_bfd,
+                                                (unsigned int)symtab_hdr->sh_link,
+                       				((sym != NULL)
+                               			 ? (unsigned int)sym->st_name
+                                                 : 0U));
 	      if (name == NULL || *name == '\0')
-		name = bfd_section_name (input_bfd, sec);
+		name = bfd_section_name(input_bfd, sec);
 	    }
 
 	  switch (r)

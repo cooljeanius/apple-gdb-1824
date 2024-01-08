@@ -3466,27 +3466,27 @@ elf_i386_finish_dynamic_sections (bfd *output_bfd,
 	  /* Correct the .rel.plt.unloaded relocations.  */
 	  if (htab->is_vxworks && !info->shared)
 	    {
-	      int num_plts = (htab->splt->size / PLT_ENTRY_SIZE) - 1;
+	      int num_plts = (int)((htab->splt->size / PLT_ENTRY_SIZE) - 1);
 	      unsigned char *p;
 
 	      p = htab->srelplt2->contents;
 	      if (info->shared)
-		p += PLTRESOLVE_RELOCS_SHLIB * sizeof (Elf32_External_Rel);
+		p += (PLTRESOLVE_RELOCS_SHLIB * sizeof(Elf32_External_Rel));
 	      else
-		p += PLTRESOLVE_RELOCS * sizeof (Elf32_External_Rel);
+		p += (PLTRESOLVE_RELOCS * sizeof(Elf32_External_Rel));
 
 	      for (; num_plts; num_plts--)
 		{
 		  Elf_Internal_Rela rel;
-		  bfd_elf32_swap_reloc_in (output_bfd, p, &rel);
-		  rel.r_info = ELF32_R_INFO (htab->hgot->indx, R_386_32);
-		  bfd_elf32_swap_reloc_out (output_bfd, &rel, p);
-		  p += sizeof (Elf32_External_Rel);
+		  bfd_elf32_swap_reloc_in(output_bfd, p, &rel);
+		  rel.r_info = ELF32_R_INFO(htab->hgot->indx, R_386_32);
+		  bfd_elf32_swap_reloc_out(output_bfd, &rel, p);
+		  p += sizeof(Elf32_External_Rel);
 
-		  bfd_elf32_swap_reloc_in (output_bfd, p, &rel);
-		  rel.r_info = ELF32_R_INFO (htab->hplt->indx, R_386_32);
-		  bfd_elf32_swap_reloc_out (output_bfd, &rel, p);
-		  p += sizeof (Elf32_External_Rel);
+		  bfd_elf32_swap_reloc_in(output_bfd, p, &rel);
+		  rel.r_info = ELF32_R_INFO(htab->hplt->indx, R_386_32);
+		  bfd_elf32_swap_reloc_out(output_bfd, &rel, p);
+		  p += sizeof(Elf32_External_Rel);
 		}
 	    }
 	}

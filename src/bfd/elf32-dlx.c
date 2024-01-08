@@ -148,10 +148,10 @@ elf32_dlx_relocate16(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
             allignment) & ~allignment);
 
   /* val is the displacement (PC relative to next instruction).  */
-  val = ((symbol->section->output_offset
-          + symbol->section->output_section->vma
-          + symbol->value)
-         - (int)vallo);
+  val = (int)((symbol->section->output_offset
+               + symbol->section->output_section->vma
+               + symbol->value)
+              - vallo);
 
   if (abs((int)val) > 0x00007FFF)
     return bfd_reloc_outofrange;
@@ -208,9 +208,9 @@ elf32_dlx_relocate26(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 	     allignment) & ~allignment);
 
   /* val is the displacement (PC relative to next instruction).  */
-  val = ((symbol->section->output_offset
-  	  + symbol->section->output_section->vma + symbol->value)
-    	 - (int)vallo);
+  val = (int)((symbol->section->output_offset
+               + symbol->section->output_section->vma + symbol->value)
+              - vallo);
 
   if (abs((int)val) > 0x01FFFFFF)
     return bfd_reloc_outofrange;

@@ -1144,10 +1144,10 @@ frvfdpic_relocs_info_hash(const void *entry_)
   const struct frvfdpic_relocs_info *entry =
     (const struct frvfdpic_relocs_info *)entry_;
 
-  return (((entry->symndx == -1)
-	   ? (long)entry->d.h->root.root.hash
-	   : (entry->symndx + ((long)entry->d.abfd->id * 257L)))
-          + (hashval_t)entry->addend);
+  return (hashval_t)(((entry->symndx == -1)
+                      ? (long)entry->d.h->root.root.hash
+                      : (entry->symndx + ((long)entry->d.abfd->id * 257L)))
+                     + entry->addend);
 }
 
 /* Test whether the key fields of two frvfdpic_relocs_info entries are
@@ -1340,21 +1340,21 @@ _frvfdpic_add_rofixup(bfd *output_bfd, asection *rofixup, bfd_vma offset,
 /* Find the segment number in which OSEC, and output section, is
    located.  */
 
-static unsigned
-_frvfdpic_osec_to_segment (bfd *output_bfd, asection *osec)
+static unsigned int
+_frvfdpic_osec_to_segment(bfd *output_bfd, asection *osec)
 {
   struct elf_segment_map *m;
   Elf_Internal_Phdr *p;
 
   /* Find the segment that contains the output_section.  */
-  for (m = elf_tdata (output_bfd)->segment_map,
-	 p = elf_tdata (output_bfd)->phdr;
+  for (m = elf_tdata(output_bfd)->segment_map,
+	 p = elf_tdata(output_bfd)->phdr;
        m != NULL;
        m = m->next, p++)
     {
       int i;
 
-      for (i = m->count - 1; i >= 0; i--)
+      for (i = (m->count - 1); i >= 0; i--)
 	if (m->sections[i] == osec)
 	  break;
 
@@ -1362,15 +1362,15 @@ _frvfdpic_osec_to_segment (bfd *output_bfd, asection *osec)
 	break;
     }
 
-  return p - elf_tdata (output_bfd)->phdr;
+  return (unsigned int)(p - elf_tdata(output_bfd)->phdr);
 }
 
 inline static bfd_boolean
-_frvfdpic_osec_readonly_p (bfd *output_bfd, asection *osec)
+_frvfdpic_osec_readonly_p(bfd *output_bfd, asection *osec)
 {
-  unsigned seg = _frvfdpic_osec_to_segment (output_bfd, osec);
+  unsigned int seg = _frvfdpic_osec_to_segment(output_bfd, osec);
 
-  return ! (elf_tdata (output_bfd)->phdr[seg].p_flags & PF_W);
+  return !(elf_tdata(output_bfd)->phdr[seg].p_flags & PF_W);
 }
 
 #define FRVFDPIC_TLS_BIAS (2048 - 16)
@@ -1392,12 +1392,12 @@ tls_biased_base (struct bfd_link_info *info)
    code for PLT and lazy PLT entries.  */
 
 inline static bfd_boolean
-_frvfdpic_emit_got_relocs_plt_entries (struct frvfdpic_relocs_info *entry,
-				       bfd *output_bfd,
-				       struct bfd_link_info *info,
-				       asection *sec,
-				       Elf_Internal_Sym *sym,
-				       bfd_vma addend)
+_frvfdpic_emit_got_relocs_plt_entries(struct frvfdpic_relocs_info *entry,
+				      bfd *output_bfd,
+				      struct bfd_link_info *info,
+				      asection *sec,
+				      Elf_Internal_Sym *sym,
+				      bfd_vma addend)
 
 {
   bfd_vma fd_lazy_rel_offset = (bfd_vma)-1;
@@ -1413,13 +1413,13 @@ _frvfdpic_emit_got_relocs_plt_entries (struct frvfdpic_relocs_info *entry,
       /* If the symbol is dynamic, consider it for dynamic
 	 relocations, otherwise decay to section + offset.  */
       if (entry->symndx == -1 && entry->d.h->dynindx != -1)
-	dynindx = entry->d.h->dynindx;
+	dynindx = (int)entry->d.h->dynindx;
       else
 	{
 	  if (sec->output_section
-	      && ! bfd_is_abs_section (sec->output_section)
-	      && ! bfd_is_und_section (sec->output_section))
-	    dynindx = elf_section_data (sec->output_section)->dynindx;
+	      && ! bfd_is_abs_section(sec->output_section)
+	      && ! bfd_is_und_section(sec->output_section))
+	    dynindx = elf_section_data(sec->output_section)->dynindx;
 	  else
 	    dynindx = 0;
 	}

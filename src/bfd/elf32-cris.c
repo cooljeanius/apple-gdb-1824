@@ -513,11 +513,12 @@ cris_elf_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 
       case 202:		/* Linux/CRISv32 */
 	/* pr_cursig */
-	elf_tdata(abfd)->core_signal = bfd_get_16(abfd,
-                                                  (note->descdata + 12));
+	elf_tdata(abfd)->core_signal = (int)bfd_get_16(abfd,
+                                                       (note->descdata + 12));
 
 	/* pr_pid */
-	elf_tdata(abfd)->core_pid = bfd_get_32(abfd, note->descdata + 22);
+	elf_tdata(abfd)->core_pid = (int)bfd_get_32(abfd,
+                                                    (note->descdata + 22));
 
 	/* pr_reg */
 	offset = 70;
@@ -533,10 +534,12 @@ cris_elf_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 
       case 214:		/* Linux/CRIS */
 	/* pr_cursig */
-	elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
+	elf_tdata(abfd)->core_signal = (int)bfd_get_16(abfd,
+                                                       (note->descdata + 12));
 
 	/* pr_pid */
-	elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 22);
+	elf_tdata(abfd)->core_pid = (int)bfd_get_32(abfd,
+                                                    (note->descdata + 22));
 
 	/* pr_reg */
 	offset = 70;
@@ -546,24 +549,25 @@ cris_elf_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
       }
 
   /* Make a ".reg/999" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  size, note->descpos + offset);
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+  					 (note->descpos + offset));
 }
 
+/* */
 static bfd_boolean
 cris_elf_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
-  if (bfd_get_mach (abfd) == bfd_mach_cris_v32)
+  if (bfd_get_mach(abfd) == bfd_mach_cris_v32)
     switch (note->descsz)
       {
       default:
 	return FALSE;
 
       case 124:		/* Linux/CRISv32 elf_prpsinfo */
-	elf_tdata (abfd)->core_program
-	  = _bfd_elfcore_strndup (abfd, note->descdata + 28, 16);
-	elf_tdata (abfd)->core_command
-	  = _bfd_elfcore_strndup (abfd, note->descdata + 44, 80);
+	elf_tdata(abfd)->core_program =
+          _bfd_elfcore_strndup(abfd, (note->descdata + 28), 16);
+	elf_tdata(abfd)->core_command =
+          _bfd_elfcore_strndup(abfd, (note->descdata + 44), 80);
       }
   else
     switch (note->descsz)
@@ -572,10 +576,10 @@ cris_elf_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 	return FALSE;
 
       case 124:		/* Linux/CRIS elf_prpsinfo */
-	elf_tdata (abfd)->core_program
-	  = _bfd_elfcore_strndup (abfd, note->descdata + 28, 16);
-	elf_tdata (abfd)->core_command
-	  = _bfd_elfcore_strndup (abfd, note->descdata + 44, 80);
+	elf_tdata(abfd)->core_program =
+          _bfd_elfcore_strndup(abfd, (note->descdata + 28), 16);
+	elf_tdata(abfd)->core_command =
+          _bfd_elfcore_strndup(abfd, (note->descdata + 44), 80);
       }
 
   /* Note that for some reason, a spurious space is tacked
@@ -583,11 +587,11 @@ cris_elf_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
      implementations, so strip it off if it exists.  */
 
   {
-    char *command = elf_tdata (abfd)->core_command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    size_t n = strlen(command);
 
-    if (0 < n && command[n - 1] == ' ')
-      command[n - 1] = '\0';
+    if ((n > 0UL) && command[n - 1UL] == ' ')
+      command[n - 1UL] = '\0';
   }
 
   return TRUE;

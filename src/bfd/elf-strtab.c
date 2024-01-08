@@ -153,7 +153,7 @@ _bfd_elf_strtab_add(struct elf_strtab_hash *tab, const char *str,
   entry->refcount++;
   if (entry->len == 0)
     {
-      entry->len = (strlen(str) + 1UL);
+      entry->len = (int)(strlen(str) + 1UL);
       /* 2G strings lose: */
       BFD_ASSERT(entry->len > 0);
       if (tab->size == tab->alloced)

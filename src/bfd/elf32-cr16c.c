@@ -720,39 +720,40 @@ elf32_cr16c_relocate_section (bfd *output_bfd,
       sec = NULL;
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
+	  sym = (local_syms + r_symndx);
 	  sec = local_sections[r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 	}
       else
 	{
 	  bfd_boolean unresolved_reloc, warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 	}
 
-      r = cr16c_elf_final_link_relocate (howto, input_bfd, output_bfd,
-					 input_section,
-					 contents, rel->r_offset,
-					 relocation, rel->r_addend,
-					 info, sec, h == NULL);
+      r = cr16c_elf_final_link_relocate(howto, input_bfd, output_bfd,
+      					input_section, contents, rel->r_offset,
+                                        relocation, rel->r_addend, info, sec,
+                                        h == NULL);
 
       if (r != bfd_reloc_ok)
 	{
 	  const char *name;
-	  const char *msg = (const char *) 0;
+	  const char *msg = (const char *)0;
 
 	  if (h != NULL)
 	    name = h->root.root.string;
 	  else
 	    {
-	      name = (bfd_elf_string_from_elf_section
-		      (input_bfd, symtab_hdr->sh_link, sym->st_name));
+	      name =
+        	bfd_elf_string_from_elf_section(input_bfd,
+                                                (unsigned int)symtab_hdr->sh_link,
+                                                (unsigned int)sym->st_name);
 	      if (name == NULL || *name == '\0')
-		name = bfd_section_name (input_bfd, sec);
+		name = bfd_section_name(input_bfd, sec);
 	    }
 
 	  switch (r)
@@ -760,7 +761,7 @@ elf32_cr16c_relocate_section (bfd *output_bfd,
 	    case bfd_reloc_overflow:
 	      if (!((*info->callbacks->reloc_overflow)
 		    (info, (h ? &h->root : NULL), name, howto->name,
-		     (bfd_vma) 0, input_bfd, input_section,
+		     (bfd_vma)0UL, input_bfd, input_section,
 		     rel->r_offset)))
 		return FALSE;
 	      break;

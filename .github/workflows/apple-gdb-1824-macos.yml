@@ -33,12 +33,12 @@ jobs:
     - run: ./configure --enable-silent-rules CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
     - run: if test ! -e libcheckpoint/libcheckpoint.dylib; then (sync && echo "ensuring libcheckpoint is built" && sync && make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" && sync) || (sync && make -ki -C macsbug) || (sync && make -ki -C macsbug/gdb_plugin_support) || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else (sync && stat libcheckpoint/libcheckpoint.dylib); fi
-    - run: if test -d .. && test -w .. && test ! -e ../gdb; then (echo "symlinking source directory" && pushd .. && ln -sv apple-gdb-1824 gdb && sync && readlink gdb && sync && popd); else (sync && stat .. && ls ..); fi
+    - run: if test -d .. && test -w .. && test ! -e ../gdb; then (echo "symlinking source directory" && pushd .. && sync && ln -sv apple-gdb-1824 gdb && sync && readlink gdb && sync && popd); else (sync && stat .. && ls ..); fi
     - run: (if test -n "$(type ant 2>/dev/null)" && test -x "$(which ant)" && test -r build.xml; then if test ! -d build; then mkdir build; elif test ! -d "${HOME}"/work/apple-gdb-1824/build; then mkdir -pv "${HOME}"/work/apple-gdb-1824/build; fi; ant; else (echo "ant missing" && sync); fi) || (if test -x ./gradlew; then (./gradlew build || ./gradlew assemble || ./gradlew); elif test -r ./gradlew; then sh ./gradlew; elif test -e ./gradlew; then stat ./gradlew; else echo "gradlewrapper missing"; fi) || (if test -x "$(which gradle)"; then gradle; else echo "gradle missing"; fi) || (if test -x ~rc/bin/buildit; then sudo ~rc/bin/buildit "$(pwd)" -arch ppc -arch i386 -arch armv5 -target cross -project gdb -release RELEASENAME RC_CROSS_ARCHS=armv6; else echo "buildit missing"; fi) || ls
     - run: (if test -x ./gradlew; then (./gradlew build || ./gradlew assemble || ./gradlew); elif test -r ./gradlew; then sh ./gradlew; elif test -e ./gradlew; then stat ./gradlew; else echo "gradlewrapper missing" >&2; fi) || (if test -x "$(which gradle)"; then gradle; else echo "gradle missing"; fi) || (if test -x ~rc/bin/buildit; then sudo ~rc/bin/buildit "$(pwd)" -arch ppc -arch i386 -arch armv5 -target cross -project gdb -release RELEASENAME RC_CROSS_ARCHS=armv6; else echo "buildit missing"; fi) || ls
     - run: cd src && ./configure --disable-werror --disable-opts-test --enable-carbon-framework --enable-debug-symbols-framework --enable-64-bit-bfd --enable-silent-rules CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: cd src && make configure-bfd
-    - run: cd src && make -C bfd headers
+    - run: cd src && sync && make -C bfd headers && sync
     - run: cd src && if test ! -e bfd/bfd.h; then (sync && make -C bfd bfd.h); else (sync && stat bfd/bfd.h); fi
     - run: cd src && make -C bfd diststuff
     - run: cd src && make all-bfd
@@ -54,20 +54,20 @@ jobs:
           echo "make my_arparse.h"; \
           make my_arparse.h; \
         else \
-          sync && stat arparse.h; \
+          sync && echo "arparse.h exists" && sync && stat arparse.h; \
         fi
         if test ! -f arparse.h; then \
           echo "remake arparse.c"; \
           remake arparse.c; \
         else \
-          sync && wc -l arparse.h; \
+          sync && echo "checking arparse.h length" && sync && wc -l arparse.h; \
         fi
         # shellcheck disable=SC2046
         if test ! -e arparse.h; then \
           echo "trying the relevant Makefile rule as copied into this CI workflow"; \
           /bin/sh ./../ylwrap arparse.y y.tab.c arparse.c y.tab.h "$(echo arparse.c | sed -e s/cc$/hh/ -e s/cpp$/hpp/ -e s/cxx$/hxx/ -e s/c++$/h++/ -e s/c$/h/)" y.output arparse.output -- $(if [ -f ../bison/bison ]; then echo ../bison/bison -y -L./../bison/; else echo bison -o y.tab.c; fi) -d -t -v -k; \
         else \
-          sync && du arparse.h; \
+          sync && echo "checking arparse.h disk usage" && sync && du arparse.h; \
         fi
         if test -e arparse.h; then \
           if test ! -e ../bfd/arparse.h; then \
@@ -139,7 +139,7 @@ jobs:
     - run: cd src && make check-opcodes && sync && make check-intl
     - run: cd src && make check-binutils
     - run: cd src && make check-utils
-    - run: time (pwd && sync && ls)
+    - run: time (pwd && sync && ls && sync)
       if: "${{ success() }}"
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.0.0

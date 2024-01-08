@@ -2631,12 +2631,12 @@ get_local_syms(bfd *output_bfd, bfd *input_bfd, struct bfd_link_info *info)
 	{
 	  struct elf_link_hash_entry **eh_syms;
 	  struct elf_link_hash_entry **eh_symend;
-	  unsigned int symcount;
+	  unsigned long symcount;
 
-	  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+	  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 		      - symtab_hdr->sh_info);
-	  eh_syms = (struct elf_link_hash_entry **) elf_sym_hashes (input_bfd);
-	  eh_symend = (struct elf_link_hash_entry **) (eh_syms + symcount);
+	  eh_syms = (struct elf_link_hash_entry **)elf_sym_hashes(input_bfd);
+	  eh_symend = (struct elf_link_hash_entry **)(eh_syms + symcount);
 
 	  /* Look through the global syms for functions;  We need to
 	     build export stubs for all globally visible functions.  */
@@ -2644,7 +2644,7 @@ get_local_syms(bfd *output_bfd, bfd *input_bfd, struct bfd_link_info *info)
 	    {
 	      struct elf32_hppa_link_hash_entry *hh;
 
-	      hh = hppa_elf_hash_entry (*eh_syms);
+	      hh = hppa_elf_hash_entry(*eh_syms);
 
 	      while (hh->eh.root.type == bfd_link_hash_indirect
 		     || hh->eh.root.type == bfd_link_hash_warning)
@@ -2815,7 +2815,7 @@ elf32_hppa_size_stubs
 
 	      /* Now examine each relocation.  */
 	      irela = internal_relocs;
-	      irelaend = irela + section->reloc_count;
+	      irelaend = (irela + section->reloc_count);
 	      for (; irela < irelaend; irela++)
 		{
 		  unsigned int r_type, r_indx;
@@ -2828,10 +2828,10 @@ elf32_hppa_size_stubs
 		  char *stub_name;
 		  const asection *id_sec;
 
-		  r_type = ELF32_R_TYPE (irela->r_info);
-		  r_indx = ELF32_R_SYM (irela->r_info);
+		  r_type = ELF32_R_TYPE(irela->r_info);
+		  r_indx = (unsigned int)ELF32_R_SYM(irela->r_info);
 
-		  if (r_type >= (unsigned int) R_PARISC_UNIMPLEMENTED)
+		  if (r_type >= (unsigned int)R_PARISC_UNIMPLEMENTED)
 		    {
 		      bfd_set_error (bfd_error_bad_value);
 		    error_ret_free_internal:
@@ -2872,8 +2872,8 @@ elf32_hppa_size_stubs
 		      /* It's an external symbol.  */
 		      int e_indx;
 
-		      e_indx = r_indx - symtab_hdr->sh_info;
-		      hh = hppa_elf_hash_entry (elf_sym_hashes (input_bfd)[e_indx]);
+		      e_indx = (int)(r_indx - symtab_hdr->sh_info);
+		      hh = hppa_elf_hash_entry(elf_sym_hashes(input_bfd)[e_indx]);
 
 		      while (hh->eh.root.type == bfd_link_hash_indirect
 			     || hh->eh.root.type == bfd_link_hash_warning)
@@ -3176,7 +3176,7 @@ final_link_relocate (asection *input_section,
   if (r_type == R_PARISC_NONE)
     return bfd_reloc_ok;
 
-  insn = bfd_get_32 (input_bfd, hit_data);
+  insn = (int)bfd_get_32(input_bfd, hit_data);
 
   /* Find out where we are and where we're going.  */
   location = (offset +
@@ -3397,8 +3397,7 @@ final_link_relocate (asection *input_section,
 	 call to the local stub for this function.  */
       if (value + addend + max_branch_offset >= 2*max_branch_offset)
 	{
-	  hsh = hppa_get_stub_entry (input_section, sym_sec,
-					    hh, rela, htab);
+	  hsh = hppa_get_stub_entry(input_section, sym_sec, hh, rela, htab);
 	  if (hsh == NULL)
 	    return bfd_reloc_undefined;
 
@@ -3418,20 +3417,18 @@ final_link_relocate (asection *input_section,
     }
 
   /* Make sure we can reach the stub.  */
-  if (max_branch_offset != 0
-      && value + addend + max_branch_offset >= 2*max_branch_offset)
+  if ((max_branch_offset != 0)
+      && ((value + addend + max_branch_offset) >= (2 * max_branch_offset)))
     {
       (*_bfd_error_handler)
 	(_("%B(%A+0x%lx): cannot reach %s, recompile with -ffunction-sections"),
-	 input_bfd,
-	 input_section,
-	 offset,
+	 input_bfd, input_section, offset,
 	 ((hsh != NULL) ? hsh->bh_root.string : "hsh->bh_root.string"));
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
       return bfd_reloc_notsupported;
     }
 
-  val = hppa_field_adjust (value, addend, r_field);
+  val = (int)hppa_field_adjust(value, addend, r_field);
 
   switch (r_type)
     {
@@ -3463,14 +3460,11 @@ final_link_relocate (asection *input_section,
 /* Relocate an HPPA ELF section.  */
 
 static bfd_boolean
-elf32_hppa_relocate_section (bfd *output_bfd,
-			     struct bfd_link_info *info,
-			     bfd *input_bfd,
-			     asection *input_section,
-			     bfd_byte *contents,
-			     Elf_Internal_Rela *relocs,
-			     Elf_Internal_Sym *local_syms,
-			     asection **local_sections)
+elf32_hppa_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+			    bfd *input_bfd, asection *input_section,
+			    bfd_byte *contents, Elf_Internal_Rela *relocs,
+			    Elf_Internal_Sym *local_syms,
+			    asection **local_sections)
 {
   bfd_vma *local_got_offsets;
   struct elf32_hppa_link_hash_table *htab;
@@ -3481,13 +3475,13 @@ elf32_hppa_relocate_section (bfd *output_bfd,
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
 
-  htab = hppa_link_hash_table (info);
-  local_got_offsets = elf_local_got_offsets (input_bfd);
+  htab = hppa_link_hash_table(info);
+  local_got_offsets = elf_local_got_offsets(input_bfd);
 
   rela = relocs;
-  relend = relocs + input_section->reloc_count;
+  relend = (relocs + input_section->reloc_count);
   for (; rela < relend; rela++)
     {
       unsigned int r_type;
@@ -3502,18 +3496,18 @@ elf32_hppa_relocate_section (bfd *output_bfd,
       bfd_boolean plabel;
       bfd_boolean warned_undef;
 
-      r_type = ELF32_R_TYPE (rela->r_info);
-      if (r_type >= (unsigned int) R_PARISC_UNIMPLEMENTED)
+      r_type = ELF32_R_TYPE(rela->r_info);
+      if (r_type >= (unsigned int)R_PARISC_UNIMPLEMENTED)
 	{
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  return FALSE;
 	}
-      if (r_type == (unsigned int) R_PARISC_GNU_VTENTRY
-	  || r_type == (unsigned int) R_PARISC_GNU_VTINHERIT)
+      if (r_type == (unsigned int)R_PARISC_GNU_VTENTRY
+	  || r_type == (unsigned int)R_PARISC_GNU_VTINHERIT)
 	continue;
 
       /* This is a final link.  */
-      r_symndx = ELF32_R_SYM (rela->r_info);
+      r_symndx = (unsigned int)ELF32_R_SYM(rela->r_info);
       hh = NULL;
       sym = NULL;
       sym_sec = NULL;
@@ -3521,20 +3515,20 @@ elf32_hppa_relocate_section (bfd *output_bfd,
       if (r_symndx < symtab_hdr->sh_info)
 	{
 	  /* This is a local symbol, h defaults to NULL.  */
-	  sym = local_syms + r_symndx;
+	  sym = (local_syms + r_symndx);
 	  sym_sec = local_sections[r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sym_sec, rela);
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sym_sec, rela);
 	}
       else
 	{
 	  struct elf_link_hash_entry *eh;
 	  bfd_boolean unresolved_reloc;
-	  struct elf_link_hash_entry **sym_hashes = elf_sym_hashes (input_bfd);
+	  struct elf_link_hash_entry **sym_hashes = elf_sym_hashes(input_bfd);
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rela,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   eh, sym_sec, relocation,
-				   unresolved_reloc, warned_undef);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rela,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  eh, sym_sec, relocation,
+				  unresolved_reloc, warned_undef);
 
 	  if (relocation == 0
 	      && eh->root.type != bfd_link_hash_defined
@@ -3821,17 +3815,17 @@ elf32_hppa_relocate_section (bfd *output_bfd,
 
 	      if (skip)
 		{
-		  memset (&outrel, 0, sizeof (outrel));
+		  memset(&outrel, 0, sizeof(outrel));
 		}
-	      else if (hh != NULL
-		       && hh->eh.dynindx != -1
+	      else if ((hh != NULL)
+		       && (hh->eh.dynindx != -1)
 		       && (plabel
-			   || !IS_ABSOLUTE_RELOC (r_type)
+			   || !IS_ABSOLUTE_RELOC(r_type)
 			   || !info->shared
 			   || !info->symbolic
 			   || !hh->eh.def_regular))
 		{
-		  outrel.r_info = ELF32_R_INFO (hh->eh.dynindx, r_type);
+		  outrel.r_info = ELF32_R_INFO(hh->eh.dynindx, r_type);
 		}
 	      else /* It's a local symbol, or one marked to become local.  */
 		{
@@ -3847,16 +3841,16 @@ elf32_hppa_relocate_section (bfd *output_bfd,
 		     providing the function symbol for a global plabel
 		     reloc, and no symbol for local plabels.  */
 		  if (! plabel
-		      && sym_sec != NULL
-		      && sym_sec->output_section != NULL
-		      && ! bfd_is_abs_section (sym_sec))
+		      && (sym_sec != NULL)
+		      && (sym_sec->output_section != NULL)
+		      && !bfd_is_abs_section(sym_sec))
 		    {
 		      /* Skip this relocation if the output section has
 			 been discarded.  */
-		      if (bfd_is_abs_section (sym_sec->output_section))
+		      if (bfd_is_abs_section(sym_sec->output_section))
 			break;
 
-		      indx = elf_section_data (sym_sec->output_section)->dynindx;
+		      indx = elf_section_data(sym_sec->output_section)->dynindx;
 		      /* We are turning this relocation into one
 			 against a section symbol, so subtract out the
 			 output section's address but not the offset
@@ -3864,15 +3858,15 @@ elf32_hppa_relocate_section (bfd *output_bfd,
 		      outrel.r_addend -= sym_sec->output_section->vma;
 		    }
 
-		  outrel.r_info = ELF32_R_INFO (indx, r_type);
+		  outrel.r_info = ELF32_R_INFO(indx, r_type);
 		}
-	      sreloc = elf_section_data (input_section)->sreloc;
+	      sreloc = elf_section_data(input_section)->sreloc;
 	      if (sreloc == NULL)
-		abort ();
+		abort();
 
 	      loc = sreloc->contents;
-	      loc += sreloc->reloc_count++ * sizeof (Elf32_External_Rela);
-	      bfd_elf32_swap_reloca_out (output_bfd, &outrel, loc);
+	      loc += (sreloc->reloc_count++ * sizeof(Elf32_External_Rela));
+	      bfd_elf32_swap_reloca_out(output_bfd, &outrel, loc);
 	    }
 	  break;
 
@@ -3880,8 +3874,8 @@ elf32_hppa_relocate_section (bfd *output_bfd,
 	  break;
 	}
 
-      rstatus = final_link_relocate (input_section, contents, rela, relocation,
-			       htab, sym_sec, hh, info);
+      rstatus = final_link_relocate(input_section, contents, rela, relocation,
+                                    htab, sym_sec, hh, info);
 
       if (rstatus == bfd_reloc_ok)
 	continue;
@@ -3890,16 +3884,16 @@ elf32_hppa_relocate_section (bfd *output_bfd,
 	sym_name = hh->eh.root.root.string;
       else
 	{
-	  sym_name = bfd_elf_string_from_elf_section (input_bfd,
-						      symtab_hdr->sh_link,
-						      sym->st_name);
+	  sym_name = bfd_elf_string_from_elf_section(input_bfd,
+                                                     (unsigned int)symtab_hdr->sh_link,
+                                                     (unsigned int)sym->st_name);
 	  if (sym_name == NULL)
 	    return FALSE;
 	  if (*sym_name == '\0')
-	    sym_name = bfd_section_name (input_bfd, sym_sec);
+	    sym_name = bfd_section_name(input_bfd, sym_sec);
 	}
 
-      howto = elf_hppa_howto_table + r_type;
+      howto = (elf_hppa_howto_table + r_type);
 
       if (rstatus == bfd_reloc_undefined || rstatus == bfd_reloc_notsupported)
 	{
@@ -3907,12 +3901,9 @@ elf32_hppa_relocate_section (bfd *output_bfd,
 	    {
 	      (*_bfd_error_handler)
 		(_("%B(%A+0x%lx): cannot handle %s for %s"),
-		 input_bfd,
-		 input_section,
-		 (long) rela->r_offset,
-		 howto->name,
+		 input_bfd, input_section, (long)rela->r_offset, howto->name,
 		 sym_name);
-	      bfd_set_error (bfd_error_bad_value);
+	      bfd_set_error(bfd_error_bad_value);
 	      return FALSE;
 	    }
 	}

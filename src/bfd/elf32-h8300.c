@@ -609,7 +609,7 @@ static bfd_boolean
 elf32_h8_object_p(bfd *abfd)
 {
   bfd_default_set_arch_mach(abfd, bfd_arch_h8300,
-			    elf32_h8_mach(elf_elfheader(abfd)->e_flags));
+			    elf32_h8_mach((flagword)elf_elfheader(abfd)->e_flags));
   return TRUE;
 }
 
@@ -1353,14 +1353,14 @@ elf32_h8_symbol_address_p (bfd *abfd, asection *sec, bfd_vma addr)
   Elf_Internal_Sym *isymend;
   struct elf_link_hash_entry **sym_hashes;
   struct elf_link_hash_entry **end_hashes;
-  unsigned int symcount;
+  unsigned long symcount;
 
-  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
   /* Examine all the symbols.  */
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  isym = (Elf_Internal_Sym *) symtab_hdr->contents;
-  isymend = isym + symtab_hdr->sh_info;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  isym = (Elf_Internal_Sym *)symtab_hdr->contents;
+  isymend = (isym + symtab_hdr->sh_info);
   for (; isym < isymend; isym++)
     {
       if (isym->st_shndx == sec_shndx
@@ -1368,10 +1368,10 @@ elf32_h8_symbol_address_p (bfd *abfd, asection *sec, bfd_vma addr)
 	return TRUE;
     }
 
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 	      - symtab_hdr->sh_info);
-  sym_hashes = elf_sym_hashes (abfd);
-  end_hashes = sym_hashes + symcount;
+  sym_hashes = elf_sym_hashes(abfd);
+  end_hashes = (sym_hashes + symcount);
   for (; sym_hashes < end_hashes; sym_hashes++)
     {
       struct elf_link_hash_entry *sym_hash = *sym_hashes;

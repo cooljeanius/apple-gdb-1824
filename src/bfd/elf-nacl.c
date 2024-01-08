@@ -57,7 +57,7 @@ segment_eligible_for_headers (struct elf_segment_map *seg,
     return FALSE;
   for (i = 0; i < seg->count; ++i)
     {
-      if ((seg->sections[i]->flags & (SEC_CODE|SEC_READONLY)) != SEC_READONLY)
+      if ((seg->sections[i]->flags & (SEC_CODE | SEC_READONLY)) != SEC_READONLY)
 	return FALSE;
     }
   return TRUE;
@@ -68,14 +68,15 @@ segment_eligible_for_headers (struct elf_segment_map *seg,
    The first non-executable PT_LOAD segment appears first in the file
    and contains the ELF file header and phdrs.  */
 bfd_boolean
-nacl_modify_segment_map (bfd *abfd, struct bfd_link_info *info)
+nacl_modify_segment_map(bfd *abfd, struct bfd_link_info *info)
 {
-  struct elf_segment_map **m = &elf_seg_map (abfd);
+  struct elf_segment_map **m = &elf_seg_map(abfd);
   struct elf_segment_map **first_load = NULL;
   struct elf_segment_map **last_load = NULL;
   bfd_boolean moved_headers = FALSE;
-  int sizeof_headers = info == NULL ? 0 : bfd_sizeof_headers (abfd, info);
-  bfd_vma minpagesize = get_elf_backend_data (abfd)->minpagesize;
+  int sizeof_headers = ((info == NULL)
+  			? 0 : bfd_sizeof_headers(abfd, info));
+  bfd_vma minpagesize = get_elf_backend_data(abfd)->minpagesize;
 
   if (info != NULL && info->user_phdrs)
     /* The linker script used PHDRS explicitly, so don't change what the
@@ -88,15 +89,15 @@ nacl_modify_segment_map (bfd *abfd, struct bfd_link_info *info)
 
       if (seg->p_type == PT_LOAD)
 	{
-	  bfd_boolean executable = segment_executable (seg);
+	  bfd_boolean executable = segment_executable(seg);
 
 	  if (executable
-	      && seg->count > 0
-	      && seg->sections[0]->vma % minpagesize == 0)
+	      && (seg->count > 0)
+	      && ((seg->sections[0]->vma % minpagesize) == 0))
 	    {
 	      asection *lastsec = seg->sections[seg->count - 1];
-	      bfd_vma end = lastsec->vma + lastsec->size;
-	      if (end % minpagesize != 0)
+	      bfd_vma end = (lastsec->vma + lastsec->size);
+	      if ((end % minpagesize) != 0)
 		{
 		  /* This is an executable segment that starts on a page
 		     boundary but does not end on a page boundary.  Fill

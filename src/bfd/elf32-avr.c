@@ -784,66 +784,68 @@ elf32_avr_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
                            Elf_Internal_Sym *local_syms,
                            asection **local_sections)
 {
-  Elf_Internal_Shdr *           symtab_hdr;
-  struct elf_link_hash_entry ** sym_hashes;
-  Elf_Internal_Rela *           rel;
-  Elf_Internal_Rela *           relend;
+  Elf_Internal_Shdr *symtab_hdr;
+  struct elf_link_hash_entry **sym_hashes;
+  Elf_Internal_Rela *rel;
+  Elf_Internal_Rela *relend;
 
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = & elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
-  relend     = relocs + input_section->reloc_count;
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
+  relend = (relocs + input_section->reloc_count);
 
   for (rel = relocs; rel < relend; rel ++)
     {
-      reloc_howto_type *           howto;
-      unsigned long                r_symndx;
-      Elf_Internal_Sym *           sym;
-      asection *                   sec;
-      struct elf_link_hash_entry * h;
-      bfd_vma                      relocation;
-      bfd_reloc_status_type        r;
-      const char *                 name;
-      int                          r_type;
+      reloc_howto_type *howto;
+      unsigned long r_symndx;
+      Elf_Internal_Sym *sym;
+      asection *sec;
+      struct elf_link_hash_entry *h;
+      bfd_vma relocation;
+      bfd_reloc_status_type r;
+      const char *name;
+      int r_type;
 
       /* This is a final link.  */
-      r_type = ELF32_R_TYPE (rel->r_info);
-      r_symndx = ELF32_R_SYM (rel->r_info);
-      howto  = elf_avr_howto_table + ELF32_R_TYPE (rel->r_info);
-      h      = NULL;
-      sym    = NULL;
-      sec    = NULL;
+      r_type = ELF32_R_TYPE(rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
+      howto = (elf_avr_howto_table + r_type);
+      h = NULL;
+      sym = NULL;
+      sec = NULL;
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
-	  sec = local_sections [r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  sym = (local_syms + r_symndx);
+	  sec = local_sections[r_symndx];
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 
-	  name = bfd_elf_string_from_elf_section
-	    (input_bfd, symtab_hdr->sh_link, sym->st_name);
-	  name = (name == NULL) ? bfd_section_name (input_bfd, sec) : name;
+	  name =
+            bfd_elf_string_from_elf_section(input_bfd,
+                                            (unsigned int)symtab_hdr->sh_link,
+                                            (unsigned int)sym->st_name);
+	  name = ((name == NULL) ? bfd_section_name(input_bfd, sec) : name);
 	}
       else
 	{
 	  bfd_boolean unresolved_reloc, warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 
 	  name = h->root.root.string;
 	}
 
-      r = avr_final_link_relocate (howto, input_bfd, input_section,
-				   contents, rel, relocation);
+      r = avr_final_link_relocate(howto, input_bfd, input_section,
+				  contents, rel, relocation);
 
       if (r != bfd_reloc_ok)
 	{
-	  const char * msg = (const char *) NULL;
+	  const char *msg = (const char *)NULL;
 
 	  switch (r)
 	    {

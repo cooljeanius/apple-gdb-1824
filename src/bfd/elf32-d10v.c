@@ -468,53 +468,55 @@ elf32_d10v_relocate_section (bfd *output_bfd,
       sec = NULL;
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
+	  sym = (local_syms + r_symndx);
 	  sec = local_sections[r_symndx];
 	  relocation = (sec->output_section->vma
 			+ sec->output_offset
 			+ sym->st_value);
 	  if ((sec->flags & SEC_MERGE)
-	      && ELF_ST_TYPE (sym->st_info) == STT_SECTION)
+	      && ELF_ST_TYPE(sym->st_info) == STT_SECTION)
 	    {
 	      asection *msec;
 	      bfd_vma addend;
-	      bfd_byte *where = contents + rel->r_offset;
+	      bfd_byte *where = (contents + rel->r_offset);
 
-	      addend = extract_rel_addend (input_bfd, where, howto);
+	      addend = extract_rel_addend(input_bfd, where, howto);
 	      msec = sec;
-	      addend = _bfd_elf_rel_local_sym (output_bfd, sym, &msec, addend);
+	      addend = _bfd_elf_rel_local_sym(output_bfd, sym, &msec, addend);
 	      addend -= relocation;
-	      addend += msec->output_section->vma + msec->output_offset;
-	      insert_rel_addend (input_bfd, where, howto, addend);
+	      addend += (msec->output_section->vma + msec->output_offset);
+	      insert_rel_addend(input_bfd, where, howto, addend);
 	    }
 	}
       else
 	{
 	  bfd_boolean unresolved_reloc, warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 	}
 
       if (h != NULL)
 	name = h->root.root.string;
       else
 	{
-	  name = (bfd_elf_string_from_elf_section
-		  (input_bfd, symtab_hdr->sh_link, sym->st_name));
+	  name =
+            bfd_elf_string_from_elf_section(input_bfd,
+                                            (unsigned int)symtab_hdr->sh_link,
+                                            (unsigned int)sym->st_name);
 	  if (name == NULL || *name == '\0')
-	    name = bfd_section_name (input_bfd, sec);
+	    name = bfd_section_name(input_bfd, sec);
 	}
 
-      r = _bfd_final_link_relocate (howto, input_bfd, input_section,
-                                    contents, rel->r_offset,
-                                    relocation, (bfd_vma) 0);
+      r = _bfd_final_link_relocate(howto, input_bfd, input_section,
+                                   contents, rel->r_offset,
+                                   relocation, (bfd_vma)0UL);
 
       if (r != bfd_reloc_ok)
 	{
-	  const char * msg = (const char *) 0;
+	  const char *msg = (const char *)0;
 
 	  switch (r)
 	    {
