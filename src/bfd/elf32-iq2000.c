@@ -746,7 +746,7 @@ iq2000_elf_copy_private_bfd_data (bfd *ibfd, bfd *obfd)
    file to the output object file when linking.  */
 
 static bfd_boolean
-iq2000_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
+iq2000_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
   flagword old_flags, old_partial;
   flagword new_flags, new_partial;
@@ -755,16 +755,15 @@ iq2000_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
   char old_opt[80];
 
   new_opt[0] = old_opt[0] = '\0';
-  new_flags = elf_elfheader (ibfd)->e_flags;
-  old_flags = elf_elfheader (obfd)->e_flags;
+  new_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  old_flags = (flagword)elf_elfheader(obfd)->e_flags;
 
-  if (!elf_flags_init (obfd))
+  if (!elf_flags_init(obfd))
     {
-      /* First call, no flags set.  */
-      elf_flags_init (obfd) = TRUE;
-      elf_elfheader (obfd)->e_flags = new_flags;
+      /* First call, no flags set: */
+      elf_flags_init(obfd) = TRUE;
+      elf_elfheader(obfd)->e_flags = new_flags;
     }
-
   else if (new_flags != old_flags)
     {
       /* Warn if different cpu is used, but allow a
@@ -777,24 +776,24 @@ iq2000_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
 	  switch (new_partial)
 	    {
 	    case EF_IQ2000_CPU_IQ10:
-	      strcat (new_opt, " -m10");
+	      strncat(new_opt, " -m10", 5UL);
 	      break;
 
 	    default:
 	    case EF_IQ2000_CPU_IQ2000:
-	      strcat (new_opt, " -m2000");
+	      strncat(new_opt, " -m2000", 7UL);
 	      break;
 	    }
 
 	  switch (old_partial)
 	    {
 	    case EF_IQ2000_CPU_IQ10:
-	      strcat (old_opt, " -m10");
+	      strncat(old_opt, " -m10", 5UL);
 	      break;
 
 	    default:
 	    case EF_IQ2000_CPU_IQ2000:
-	      strcat (old_opt, " -m2000");
+	      strncat(old_opt, " -m2000", 7UL);
 	      break;
 	    }
 	}
@@ -805,7 +804,7 @@ iq2000_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
 	  error = TRUE;
 	  _bfd_error_handler
 	    (_("%s: compiled with %s and linked with modules compiled with %s"),
-	     bfd_get_filename (ibfd), new_opt, old_opt);
+	     bfd_get_filename(ibfd), new_opt, old_opt);
 	}
 
       new_flags &= ~ EF_IQ2000_ALL_FLAGS;
@@ -817,54 +816,55 @@ iq2000_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
 	  error = TRUE;
 
 	  _bfd_error_handler
-	    (_("%s: uses different e_flags (0x%lx) fields than previous modules (0x%lx)"),
-	     bfd_get_filename (ibfd), (long)new_flags, (long)old_flags);
+	    (_("%s: uses diff. e_flags (0x%lx) fields than prev. modules (0x%lx)"),
+	     bfd_get_filename(ibfd), (long)new_flags, (long)old_flags);
 	}
     }
 
   if (error)
-    bfd_set_error (bfd_error_bad_value);
+    bfd_set_error(bfd_error_bad_value);
 
   return !error;
 }
 
 
+/* */
 static bfd_boolean
-iq2000_elf_print_private_bfd_data (bfd *abfd, void * ptr)
+iq2000_elf_print_private_bfd_data(bfd *abfd, void * ptr)
 {
-  FILE *file = (FILE *) ptr;
+  FILE *file = (FILE *)ptr;
   flagword flags;
 
-  BFD_ASSERT (abfd != NULL && ptr != NULL);
+  BFD_ASSERT((abfd != NULL) && (ptr != NULL));
 
-  /* Print normal ELF private data.  */
-  _bfd_elf_print_private_bfd_data (abfd, ptr);
+  /* Print normal ELF private data: */
+  _bfd_elf_print_private_bfd_data(abfd, ptr);
 
-  flags = elf_elfheader (abfd)->e_flags;
-  fprintf (file, _("private flags = 0x%lx:"), (long)flags);
+  flags = (flagword)elf_elfheader(abfd)->e_flags;
+  fprintf(file, _("private flags = 0x%lx:"), (long)flags);
 
   switch (flags & EF_IQ2000_CPU_MASK)
     {
     case EF_IQ2000_CPU_IQ10:
-      fprintf (file, " -m10");
+      fprintf(file, " -m10");
       break;
     case EF_IQ2000_CPU_IQ2000:
-      fprintf (file, " -m2000");
+      fprintf(file, " -m2000");
       break;
     default:
       break;
     }
 
-  fputc ('\n', file);
+  fputc('\n', file);
   return TRUE;
 }
 
-static
-bfd_boolean
-iq2000_elf_object_p (bfd *abfd)
+/* */
+static bfd_boolean
+iq2000_elf_object_p(bfd *abfd)
 {
-  bfd_default_set_arch_mach (abfd, bfd_arch_iq2000,
-			     elf32_iq2000_machine (abfd));
+  bfd_default_set_arch_mach(abfd, bfd_arch_iq2000,
+                            elf32_iq2000_machine(abfd));
   return TRUE;
 }
 

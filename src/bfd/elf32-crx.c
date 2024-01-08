@@ -661,10 +661,10 @@ elf32_crx_relax_delete_bytes (struct bfd_link_info *link_info, bfd *abfd,
     }
 
   /* Now adjust the global symbols defined in this section.  */
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 	      - symtab_hdr->sh_info);
-  sym_hashes = start_hashes = elf_sym_hashes (abfd);
-  end_hashes = sym_hashes + symcount;
+  sym_hashes = start_hashes = elf_sym_hashes(abfd);
+  end_hashes = (sym_hashes + symcount);
 
   for (; sym_hashes < end_hashes; sym_hashes++)
     {

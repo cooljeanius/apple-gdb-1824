@@ -469,9 +469,9 @@ elf32_h8_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	    {
               if (sym)
 	        name =
-          	  (bfd_elf_string_from_elf_section(input_bfd,
-                                                   symtab_hdr->sh_link,
-                                                   sym->st_name));
+          	  bfd_elf_string_from_elf_section(input_bfd,
+                                                  (unsigned int)symtab_hdr->sh_link,
+                                                  (unsigned int)sym->st_name);
 	      if ((name == NULL) || (*name == '\0'))
 		name = bfd_section_name(input_bfd, sec);
 	    }
@@ -479,17 +479,17 @@ elf32_h8_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	  switch (r)
 	    {
 	    case bfd_reloc_overflow:
-	      if (! ((*info->callbacks->reloc_overflow)
-		     (info, (h ? &h->root : NULL), name, howto->name,
-		      (bfd_vma) 0, input_bfd, input_section,
-		      rel->r_offset)))
+	      if (!((*info->callbacks->reloc_overflow)
+		    (info, (h ? &h->root : NULL), name, howto->name,
+		     (bfd_vma)0UL, input_bfd, input_section,
+		     rel->r_offset)))
 		return FALSE;
 	      break;
 
 	    case bfd_reloc_undefined:
-	      if (! ((*info->callbacks->undefined_symbol)
-		     (info, name, input_bfd, input_section,
-		      rel->r_offset, TRUE)))
+	      if (!((*info->callbacks->undefined_symbol)
+		    (info, name, input_bfd, input_section,
+		     rel->r_offset, TRUE)))
 		return FALSE;
 	      break;
 
@@ -598,18 +598,18 @@ elf32_h8_final_write_processing (bfd *abfd,
       break;
     }
 
-  elf_elfheader (abfd)->e_flags &= ~ (EF_H8_MACH);
-  elf_elfheader (abfd)->e_flags |= val;
+  elf_elfheader(abfd)->e_flags &= ~(EF_H8_MACH);
+  elf_elfheader(abfd)->e_flags |= val;
 }
 
 /* Return nonzero if ABFD represents a valid H8 ELF object file; also
    record the encoded machine type found in the ELF flags.  */
 
 static bfd_boolean
-elf32_h8_object_p (bfd *abfd)
+elf32_h8_object_p(bfd *abfd)
 {
-  bfd_default_set_arch_mach (abfd, bfd_arch_h8300,
-			     elf32_h8_mach (elf_elfheader (abfd)->e_flags));
+  bfd_default_set_arch_mach(abfd, bfd_arch_h8300,
+			    elf32_h8_mach(elf_elfheader(abfd)->e_flags));
   return TRUE;
 }
 
@@ -618,17 +618,17 @@ elf32_h8_object_p (bfd *abfd)
    time is the architecture/machine information.  */
 
 static bfd_boolean
-elf32_h8_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
+elf32_h8_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
-  if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
-  if (bfd_get_arch (obfd) == bfd_get_arch (ibfd)
-      && bfd_get_mach (obfd) < bfd_get_mach (ibfd))
+  if (bfd_get_arch(obfd) == bfd_get_arch(ibfd)
+      && bfd_get_mach(obfd) < bfd_get_mach(ibfd))
     {
-      if (! bfd_set_arch_mach (obfd, bfd_get_arch (ibfd),
-			       bfd_get_mach (ibfd)))
+      if (!bfd_set_arch_mach(obfd, bfd_get_arch(ibfd),
+                             bfd_get_mach(ibfd)))
 	return FALSE;
     }
 
@@ -1269,7 +1269,7 @@ elf32_h8_relax_section (bfd *abfd, asection *sec,
 /* Delete some bytes from a section while relaxing.  */
 
 static bfd_boolean
-elf32_h8_relax_delete_bytes (bfd *abfd, asection *sec, bfd_vma addr, int count)
+elf32_h8_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
 {
   Elf_Internal_Shdr *symtab_hdr;
   unsigned int sec_shndx;
@@ -1281,11 +1281,11 @@ elf32_h8_relax_delete_bytes (bfd *abfd, asection *sec, bfd_vma addr, int count)
   bfd_vma toaddr;
   struct elf_link_hash_entry **sym_hashes;
   struct elf_link_hash_entry **end_hashes;
-  unsigned int symcount;
+  unsigned long symcount;
 
-  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
-  contents = elf_section_data (sec)->this_hdr.contents;
+  contents = elf_section_data(sec)->this_hdr.contents;
 
   /* The deletion must stop at the next ALIGN reloc for an aligment
      power larger than the number of bytes we are deleting.  */
@@ -1293,40 +1293,39 @@ elf32_h8_relax_delete_bytes (bfd *abfd, asection *sec, bfd_vma addr, int count)
   irelalign = NULL;
   toaddr = sec->size;
 
-  irel = elf_section_data (sec)->relocs;
-  irelend = irel + sec->reloc_count;
+  irel = elf_section_data(sec)->relocs;
+  irelend = (irel + sec->reloc_count);
 
   /* Actually delete the bytes.  */
-  memmove (contents + addr, contents + addr + count,
-	   (size_t) (toaddr - addr - count));
+  memmove((contents + addr), (contents + addr + count),
+	  (size_t)(toaddr - addr - count));
   sec->size -= count;
 
   /* Adjust all the relocs.  */
-  for (irel = elf_section_data (sec)->relocs; irel < irelend; irel++)
+  for (irel = elf_section_data(sec)->relocs; irel < irelend; irel++)
     {
-      /* Get the new reloc address.  */
-      if ((irel->r_offset > addr
-	   && irel->r_offset < toaddr))
+      /* Get the new reloc address: */
+      if ((irel->r_offset > addr) && (irel->r_offset < toaddr))
 	irel->r_offset -= count;
     }
 
   /* Adjust the local symbols defined in this section.  */
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  isym = (Elf_Internal_Sym *) symtab_hdr->contents;
-  isymend = isym + symtab_hdr->sh_info;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  isym = (Elf_Internal_Sym *)symtab_hdr->contents;
+  isymend = (isym + symtab_hdr->sh_info);
   for (; isym < isymend; isym++)
     {
-      if (isym->st_shndx == sec_shndx
-	  && isym->st_value > addr
-	  && isym->st_value < toaddr)
+      if ((isym->st_shndx == sec_shndx)
+	  && (isym->st_value > addr)
+	  && (isym->st_value < toaddr))
 	isym->st_value -= count;
     }
 
   /* Now adjust the global symbols defined in this section.  */
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 	      - symtab_hdr->sh_info);
-  sym_hashes = elf_sym_hashes (abfd);
-  end_hashes = sym_hashes + symcount;
+  sym_hashes = elf_sym_hashes(abfd);
+  end_hashes = (sym_hashes + symcount);
   for (; sym_hashes < end_hashes; sym_hashes++)
     {
       struct elf_link_hash_entry *sym_hash = *sym_hashes;

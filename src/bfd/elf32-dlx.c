@@ -105,16 +105,12 @@ _bfd_dlx_elf_hi16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
    relocatable output against an external symbol.  */
 
 static bfd_reloc_status_type
-elf32_dlx_relocate16 (bfd *abfd,
-		      arelent *reloc_entry,
-		      asymbol *symbol,
-		      void * data,
-		      asection *input_section,
-		      bfd *output_bfd,
-		      const char **error_message ATTRIBUTE_UNUSED)
+elf32_dlx_relocate16(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+		     void *data, asection *input_section, bfd *output_bfd,
+		     const char **error_message ATTRIBUTE_UNUSED)
 {
   unsigned long insn, vallo, allignment;
-  int           val;
+  int val;
 
   /* HACK: I think this first condition is necessary when producing
      relocatable output.  After the end of HACK, the code is identical
@@ -122,29 +118,29 @@ elf32_dlx_relocate16 (bfd *abfd,
      belongs there rather than here.  martindo 1998-10-23.  */
 
   if (skip_dlx_elf_hi16_reloc)
-    return bfd_elf_generic_reloc (abfd, reloc_entry, symbol, data,
+    return bfd_elf_generic_reloc(abfd, reloc_entry, symbol, data,
                                  input_section, output_bfd, error_message);
 
   /* Check undefined section and undefined symbols.  */
-  if (bfd_is_und_section (symbol->section)
-      && output_bfd == (bfd *) NULL)
+  if (bfd_is_und_section(symbol->section)
+      && output_bfd == (bfd *)NULL)
     return bfd_reloc_undefined;
 
   /* Can not support a long jump to sections other then .text.  */
-  if (strcmp (input_section->name, symbol->section->output_section->name) != 0)
+  if (strcmp(input_section->name, symbol->section->output_section->name) != 0)
     {
-      fprintf (stderr,
-	       "BFD Link Error: branch (PC rel16) to section (%s) not supported\n",
-	       symbol->section->output_section->name);
+      fprintf(stderr,
+	      "BFD Link Error: branch (PC rel16) to section (%s) not supported\n",
+	      symbol->section->output_section->name);
       return bfd_reloc_undefined;
     }
 
-  insn  = bfd_get_32 (abfd, (bfd_byte *)data + reloc_entry->address);
-  allignment = 1 << (input_section->output_section->alignment_power - 1);
-  vallo = insn & 0x0000FFFF;
+  insn = bfd_get_32(abfd, (bfd_byte *)data + reloc_entry->address);
+  allignment = (1 << (input_section->output_section->alignment_power - 1));
+  vallo = (insn & 0x0000FFFF);
 
   if (vallo & 0x8000)
-    vallo = ~(vallo | 0xFFFF0000) + 1;
+    vallo = (~(vallo | 0xFFFF0000) + 1);
 
   /* vallo points to the vma of next instruction.  */
   vallo += (((unsigned long)(input_section->output_section->vma +
@@ -152,32 +148,29 @@ elf32_dlx_relocate16 (bfd *abfd,
             allignment) & ~allignment);
 
   /* val is the displacement (PC relative to next instruction).  */
-  val =  (symbol->section->output_offset +
-	  symbol->section->output_section->vma +
-	  symbol->value) - vallo;
+  val = ((symbol->section->output_offset
+          + symbol->section->output_section->vma
+          + symbol->value)
+         - (int)vallo);
 
-  if (abs ((int) val) > 0x00007FFF)
+  if (abs((int)val) > 0x00007FFF)
     return bfd_reloc_outofrange;
 
-  insn  = (insn & 0xFFFF0000) | (val & 0x0000FFFF);
+  insn = (insn & 0xFFFF0000) | (val & 0x0000FFFF);
 
-  bfd_put_32 (abfd, insn,
-              (bfd_byte *) data + reloc_entry->address);
+  bfd_put_32(abfd, insn, (bfd_byte *)data + reloc_entry->address);
 
   return bfd_reloc_ok;
 }
 
+/* */
 static bfd_reloc_status_type
-elf32_dlx_relocate26 (bfd *abfd,
-		      arelent *reloc_entry,
-		      asymbol *symbol,
-		      void * data,
-		      asection *input_section,
-		      bfd *output_bfd,
-		      const char **error_message ATTRIBUTE_UNUSED)
+elf32_dlx_relocate26(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+		     void *data, asection *input_section, bfd *output_bfd,
+		     const char **error_message ATTRIBUTE_UNUSED)
 {
   unsigned long insn, vallo, allignment;
-  int           val;
+  int val;
 
   /* HACK: I think this first condition is necessary when producing
      relocatable output.  After the end of HACK, the code is identical
@@ -185,46 +178,45 @@ elf32_dlx_relocate26 (bfd *abfd,
      belongs there rather than here.  martindo 1998-10-23.  */
 
   if (skip_dlx_elf_hi16_reloc)
-    return bfd_elf_generic_reloc (abfd, reloc_entry, symbol, data,
+    return bfd_elf_generic_reloc(abfd, reloc_entry, symbol, data,
                                  input_section, output_bfd, error_message);
 
   /* Check undefined section and undefined symbols.  */
-  if (bfd_is_und_section (symbol->section)
-      && output_bfd == (bfd *) NULL)
+  if (bfd_is_und_section(symbol->section)
+      && output_bfd == (bfd *)NULL)
     return bfd_reloc_undefined;
 
   /* Can not support a long jump to sections other then .text   */
-  if (strcmp (input_section->name, symbol->section->output_section->name) != 0)
+  if (strcmp(input_section->name, symbol->section->output_section->name) != 0)
     {
-      fprintf (stderr,
-	       "BFD Link Error: jump (PC rel26) to section (%s) not supported\n",
-	       symbol->section->output_section->name);
+      fprintf(stderr,
+	      "BFD Link Error: jump (PC rel26) to section (%s) not supported\n",
+	      symbol->section->output_section->name);
       return bfd_reloc_undefined;
     }
 
-  insn  = bfd_get_32 (abfd, (bfd_byte *)data + reloc_entry->address);
-  allignment = 1 << (input_section->output_section->alignment_power - 1);
-  vallo = insn & 0x03FFFFFF;
+  insn = bfd_get_32(abfd, (bfd_byte *)data + reloc_entry->address);
+  allignment = (1 << (input_section->output_section->alignment_power - 1));
+  vallo = (insn & 0x03FFFFFF);
 
   if (vallo & 0x03000000)
-    vallo = ~(vallo | 0xFC000000) + 1;
+    vallo = (~(vallo | 0xFC000000) + 1);
 
   /* vallo is the vma for the next instruction.  */
-  vallo += (((unsigned long) (input_section->output_section->vma +
-			      input_section->output_offset) +
+  vallo += (((unsigned long)(input_section->output_section->vma
+                             + input_section->output_offset) +
 	     allignment) & ~allignment);
 
   /* val is the displacement (PC relative to next instruction).  */
-  val = (symbol->section->output_offset +
-	 symbol->section->output_section->vma + symbol->value)
-    - vallo;
+  val = ((symbol->section->output_offset
+  	  + symbol->section->output_section->vma + symbol->value)
+    	 - (int)vallo);
 
-  if (abs ((int) val) > 0x01FFFFFF)
+  if (abs((int)val) > 0x01FFFFFF)
     return bfd_reloc_outofrange;
 
-  insn  = (insn & 0xFC000000) | (val & 0x03FFFFFF);
-  bfd_put_32 (abfd, insn,
-              (bfd_byte *) data + reloc_entry->address);
+  insn = ((insn & 0xFC000000) | (val & 0x03FFFFFF));
+  bfd_put_32(abfd, insn, (bfd_byte *)data + reloc_entry->address);
 
   return bfd_reloc_ok;
 }

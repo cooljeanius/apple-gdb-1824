@@ -1139,20 +1139,21 @@ struct frvfdpic_relocs_info
 
 /* Compute a hash with the key fields of an frvfdpic_relocs_info entry.  */
 static hashval_t
-frvfdpic_relocs_info_hash (const void *entry_)
+frvfdpic_relocs_info_hash(const void *entry_)
 {
   const struct frvfdpic_relocs_info *entry =
     (const struct frvfdpic_relocs_info *)entry_;
 
-  return (entry->symndx == -1
-	  ? (long) entry->d.h->root.root.hash
-	  : entry->symndx + (long) entry->d.abfd->id * 257) + entry->addend;
+  return (((entry->symndx == -1)
+	   ? (long)entry->d.h->root.root.hash
+	   : (entry->symndx + ((long)entry->d.abfd->id * 257L)))
+          + (hashval_t)entry->addend);
 }
 
 /* Test whether the key fields of two frvfdpic_relocs_info entries are
    identical.  */
 static int
-frvfdpic_relocs_info_eq (const void *entry1, const void *entry2)
+frvfdpic_relocs_info_eq(const void *entry1, const void *entry2)
 {
   const struct frvfdpic_relocs_info *e1 =
     (const struct frvfdpic_relocs_info *)entry1;

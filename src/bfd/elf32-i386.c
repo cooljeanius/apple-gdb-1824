@@ -338,38 +338,40 @@ elf_i386_info_to_howto_rel (bfd *abfd ATTRIBUTE_UNUSED,
    _bfd_elf_is_local_label_name.  */
 
 static bfd_boolean
-elf_i386_is_local_label_name (bfd *abfd, const char *name)
+elf_i386_is_local_label_name(bfd *abfd, const char *name)
 {
   if (name[0] == '.' && name[1] == 'X')
     return TRUE;
 
-  return _bfd_elf_is_local_label_name (abfd, name);
+  return _bfd_elf_is_local_label_name(abfd, name);
 }
 
 /* Support for core dump NOTE sections.  */
 
 static bfd_boolean
-elf_i386_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
+elf_i386_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   int offset;
   size_t size;
 
-  if (note->namesz == 8 && strcmp (note->namedata, "FreeBSD") == 0)
+  if (note->namesz == 8 && strcmp(note->namedata, "FreeBSD") == 0)
     {
-      int pr_version = bfd_get_32 (abfd, note->descdata);
+      int pr_version = (int)bfd_get_32(abfd, note->descdata);
 
       if (pr_version != 1)
  	return FALSE;
 
       /* pr_cursig */
-      elf_tdata (abfd)->core_signal = bfd_get_32 (abfd, note->descdata + 20);
+      elf_tdata(abfd)->core_signal =
+      	(int)bfd_get_32(abfd, (note->descdata + 20));
 
       /* pr_pid */
-      elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 24);
+      elf_tdata(abfd)->core_pid =
+      	(int)bfd_get_32(abfd, (note->descdata + 24));
 
       /* pr_reg */
       offset = 28;
-      size = bfd_get_32 (abfd, note->descdata + 8);
+      size = bfd_get_32(abfd, (note->descdata + 8));
     }
   else
     {
@@ -380,10 +382,12 @@ elf_i386_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 
 	case 144:		/* Linux/i386 */
 	  /* pr_cursig */
-	  elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
+	  elf_tdata(abfd)->core_signal =
+    	    (int)bfd_get_16(abfd, (note->descdata + 12));
 
 	  /* pr_pid */
-	  elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 24);
+	  elf_tdata(abfd)->core_pid =
+            (int)bfd_get_32(abfd, (note->descdata + 24));
 
 	  /* pr_reg */
 	  offset = 72;
@@ -394,24 +398,25 @@ elf_i386_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
     }
 
   /* Make a ".reg/999" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  size, note->descpos + offset);
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+  					 (note->descpos + offset));
 }
 
+/* */
 static bfd_boolean
-elf_i386_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
+elf_i386_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
-  if (note->namesz == 8 && strcmp (note->namedata, "FreeBSD") == 0)
+  if (note->namesz == 8 && strcmp(note->namedata, "FreeBSD") == 0)
     {
-      int pr_version = bfd_get_32 (abfd, note->descdata);
+      int pr_version = (int)bfd_get_32(abfd, note->descdata);
 
       if (pr_version != 1)
 	return FALSE;
 
-      elf_tdata (abfd)->core_program
-	= _bfd_elfcore_strndup (abfd, note->descdata + 8, 17);
-      elf_tdata (abfd)->core_command
-	= _bfd_elfcore_strndup (abfd, note->descdata + 25, 81);
+      elf_tdata(abfd)->core_program =
+        _bfd_elfcore_strndup(abfd, (note->descdata + 8), 17);
+      elf_tdata(abfd)->core_command =
+        _bfd_elfcore_strndup(abfd, (note->descdata + 25), 81);
     }
   else
     {
@@ -421,10 +426,10 @@ elf_i386_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
 	  return FALSE;
 
 	case 124:		/* Linux/i386 elf_prpsinfo.  */
-	  elf_tdata (abfd)->core_program
-	    = _bfd_elfcore_strndup (abfd, note->descdata + 28, 16);
-	  elf_tdata (abfd)->core_command
-	    = _bfd_elfcore_strndup (abfd, note->descdata + 44, 80);
+	  elf_tdata(abfd)->core_program =
+            _bfd_elfcore_strndup(abfd, (note->descdata + 28), 16);
+	  elf_tdata(abfd)->core_command =
+            _bfd_elfcore_strndup(abfd, (note->descdata + 44), 80);
 	}
     }
 
@@ -432,11 +437,11 @@ elf_i386_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
      onto the end of the args in some (at least one anyway)
      implementations, so strip it off if it exists.  */
   {
-    char *command = elf_tdata (abfd)->core_command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    size_t n = strlen(command);
 
-    if (0 < n && command[n - 1] == ' ')
-      command[n - 1] = '\0';
+    if ((n > 0UL) && command[n - 1UL] == ' ')
+      command[n - 1UL] = '\0';
   }
 
   return TRUE;
@@ -2777,7 +2782,7 @@ elf_i386_relocate_section (bfd *output_bfd,
 	      outrel.r_offset = (htab->sgot->output_section->vma
 				 + htab->sgot->output_offset + off);
 
-	      sindx0 = (h && (h->dynindx != -1) ? h->dynindx : 0);
+	      sindx0 = (int)((h && (h->dynindx != -1)) ? h->dynindx : 0);
 	      if (r_type == R_386_TLS_GD)
 		dr_type = R_386_TLS_DTPMOD32;
 	      else if (tls_type == GOT_TLS_IE_POS)
@@ -2982,10 +2987,10 @@ elf_i386_relocate_section (bfd *output_bfd,
 
 	case R_386_TLS_LDO_32:
 	  if (info->shared || (input_section->flags & SEC_CODE) == 0)
-	    relocation -= dtpoff_base (info);
+	    relocation -= dtpoff_base(info);
 	  else
-	    /* When converting LDO to LE, we must negate.  */
-	    relocation = -tpoff (info, relocation);
+	    /* When converting LDO to LE, we must negate: */
+	    relocation = -tpoff(info, relocation);
 	  break;
 
 	case R_386_TLS_LE_32:
@@ -3001,7 +3006,7 @@ elf_i386_relocate_section (bfd *output_bfd,
                                  + input_section->output_section->vma
                                  + input_section->output_offset);
 	      if ((h != NULL) && (h->dynindx != -1))
-		sindx1 = h->dynindx;
+		sindx1 = (int)h->dynindx;
 	      else
 		sindx1 = 0;
 	      if (r_type == R_386_TLS_LE_32)
@@ -3022,9 +3027,9 @@ elf_i386_relocate_section (bfd *output_bfd,
 		relocation -= dtpoff_base(info);
 	    }
 	  else if (r_type == R_386_TLS_LE_32)
-	    relocation = tpoff (info, relocation);
+	    relocation = tpoff(info, relocation);
 	  else
-	    relocation = -tpoff (info, relocation);
+	    relocation = -tpoff(info, relocation);
 	  break;
 
 	default:
@@ -3040,16 +3045,14 @@ elf_i386_relocate_section (bfd *output_bfd,
 	{
 	  (*_bfd_error_handler)
 	    (_("%B(%A+0x%lx): unresolvable relocation against symbol `%s'"),
-	     input_bfd,
-	     input_section,
-	     (long) rel->r_offset,
+	     input_bfd, input_section, (long)rel->r_offset,
 	     h->root.root.string);
 	  return FALSE;
 	}
 
-      r = _bfd_final_link_relocate (howto, input_bfd, input_section,
-				    contents, rel->r_offset,
-				    relocation, 0);
+      r = _bfd_final_link_relocate(howto, input_bfd, input_section,
+				   contents, rel->r_offset,
+				   relocation, 0);
 
       if (r != bfd_reloc_ok)
 	{
@@ -3059,29 +3062,28 @@ elf_i386_relocate_section (bfd *output_bfd,
 	    name = h->root.root.string;
 	  else
 	    {
-	      name = bfd_elf_string_from_elf_section (input_bfd,
-						      symtab_hdr->sh_link,
-						      sym->st_name);
+	      name =
+        	bfd_elf_string_from_elf_section(input_bfd,
+                                                (unsigned int)symtab_hdr->sh_link,
+                                                (unsigned int)sym->st_name);
 	      if (name == NULL)
 		return FALSE;
 	      if (*name == '\0')
-		name = bfd_section_name (input_bfd, sec);
+		name = bfd_section_name(input_bfd, sec);
 	    }
 
 	  if (r == bfd_reloc_overflow)
 	    {
-	      if (! ((*info->callbacks->reloc_overflow)
-		     (info, (h ? &h->root : NULL), name, howto->name,
-		      (bfd_vma) 0, input_bfd, input_section,
-		      rel->r_offset)))
+	      if (!((*info->callbacks->reloc_overflow)
+		    (info, (h ? &h->root : NULL), name, howto->name,
+		     (bfd_vma)0UL, input_bfd, input_section, rel->r_offset)))
 		return FALSE;
 	    }
 	  else
 	    {
 	      (*_bfd_error_handler)
 		(_("%B(%A+0x%lx): reloc against `%s': error %d"),
-		 input_bfd, input_section,
-		 (long) rel->r_offset, name, (int) r);
+		 input_bfd, input_section, (long)rel->r_offset, name, (int)r);
 	      return FALSE;
 	    }
 	}
@@ -3133,13 +3135,13 @@ elf_i386_finish_dynamic_symbol (bfd *output_bfd,
       /* Fill in the entry in the procedure linkage table.  */
       if (! info->shared)
 	{
-	  memcpy (htab->splt->contents + h->plt.offset, elf_i386_plt_entry,
-		  PLT_ENTRY_SIZE);
-	  bfd_put_32 (output_bfd,
-		      (htab->sgotplt->output_section->vma
-		       + htab->sgotplt->output_offset
-		       + got_offset),
-		      htab->splt->contents + h->plt.offset + 2);
+	  memcpy(htab->splt->contents + h->plt.offset, elf_i386_plt_entry,
+		 PLT_ENTRY_SIZE);
+	  bfd_put_32(output_bfd,
+		     (htab->sgotplt->output_section->vma
+		      + htab->sgotplt->output_offset
+		      + got_offset),
+		     (htab->splt->contents + h->plt.offset + 2));
 
 	  if (htab->is_vxworks)
 	    {
@@ -3149,7 +3151,7 @@ elf_i386_finish_dynamic_symbol (bfd *output_bfd,
 		 for this PLT entry.  */
 
 	      /* S: Current slot number (zero-based).  */
-	      s = (h->plt.offset - PLT_ENTRY_SIZE) / PLT_ENTRY_SIZE;
+	      s = (int)((h->plt.offset - PLT_ENTRY_SIZE) / PLT_ENTRY_SIZE);
 	      /* K: Number of relocations for PLTResolve. */
 	      if (info->shared)
 		k = PLTRESOLVE_RELOCS_SHLIB;
@@ -3159,13 +3161,13 @@ elf_i386_finish_dynamic_symbol (bfd *output_bfd,
 		 the other PLT slots. */
 	      reloc_index = k + s * PLT_NON_JUMP_SLOT_RELOCS;
 	      loc = (htab->srelplt2->contents + reloc_index
-		     * sizeof (Elf32_External_Rel));
+		     * sizeof(Elf32_External_Rel));
 
 	      rel.r_offset = (htab->splt->output_section->vma
 			      + htab->splt->output_offset
 			      + h->plt.offset + 2);
-	      rel.r_info = ELF32_R_INFO (htab->hgot->indx, R_386_32);
-	      bfd_elf32_swap_reloc_out (output_bfd, &rel, loc);
+	      rel.r_info = ELF32_R_INFO(htab->hgot->indx, R_386_32);
+	      bfd_elf32_swap_reloc_out(output_bfd, &rel, loc);
 
 	      /* Create the R_386_32 relocation referencing the beginning of
 		 the PLT for this GOT entry.  */

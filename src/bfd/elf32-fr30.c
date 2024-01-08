@@ -507,47 +507,49 @@ fr30_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
       const char *name;
       int r_type;
 
-      r_type = ELF32_R_TYPE (rel->r_info);
+      r_type = ELF32_R_TYPE(rel->r_info);
 
-      if (   r_type == R_FR30_GNU_VTINHERIT
-	  || r_type == R_FR30_GNU_VTENTRY)
+      if ((r_type == R_FR30_GNU_VTINHERIT)
+	  || (r_type == R_FR30_GNU_VTENTRY))
 	continue;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
 
-      howto  = fr30_elf_howto_table + ELF32_R_TYPE (rel->r_info);
-      h      = NULL;
-      sym    = NULL;
-      sec    = NULL;
+      howto = (fr30_elf_howto_table + ELF32_R_TYPE(rel->r_info));
+      h = NULL;
+      sym = NULL;
+      sec = NULL;
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
+	  sym = (local_syms + r_symndx);
 	  sec = local_sections [r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 
-	  name = bfd_elf_string_from_elf_section
-	    (input_bfd, symtab_hdr->sh_link, sym->st_name);
-	  name = (name == NULL) ? bfd_section_name (input_bfd, sec) : name;
+	  name =
+            bfd_elf_string_from_elf_section(input_bfd,
+                                            (unsigned int)symtab_hdr->sh_link,
+                                            (unsigned int)sym->st_name);
+	  name = ((name == NULL) ? bfd_section_name(input_bfd, sec) : name);
 	}
       else
 	{
 	  bfd_boolean unresolved_reloc, warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 
 	  name = h->root.root.string;
 	}
 
-      r = fr30_final_link_relocate (howto, input_bfd, input_section,
-				     contents, rel, relocation);
+      r = fr30_final_link_relocate(howto, input_bfd, input_section,
+                                   contents, rel, relocation);
 
       if (r != bfd_reloc_ok)
 	{
-	  const char * msg = (const char *) NULL;
+	  const char *msg = (const char *)NULL;
 
 	  switch (r)
 	    {

@@ -726,11 +726,11 @@ hppa_build_one_stub (struct bfd_hash_entry *bh, void *in_arg)
 		   + hsh->target_section->output_offset
 		   + hsh->target_section->output_section->vma);
 
-      val = hppa_field_adjust(sym_value, 0, e_lrsel);
+      val = (int)hppa_field_adjust(sym_value, 0, e_lrsel);
       insn = hppa_rebuild_insn((int)LDIL_R1, val, 21);
       bfd_put_32(stub_bfd, insn, loc);
 
-      val = (hppa_field_adjust(sym_value, 0, e_rrsel) >> 2);
+      val = (int)(hppa_field_adjust(sym_value, 0, e_rrsel) >> 2);
       insn = hppa_rebuild_insn((int)BE_SR4_R1, val, 17);
       bfd_put_32(stub_bfd, insn, (loc + 4));
 
@@ -749,11 +749,11 @@ hppa_build_one_stub (struct bfd_hash_entry *bh, void *in_arg)
 		    + stub_sec->output_section->vma);
 
       bfd_put_32(stub_bfd, (bfd_vma)BL_R1, loc);
-      val = hppa_field_adjust(sym_value, (bfd_signed_vma)-8, e_lrsel);
+      val = (int)hppa_field_adjust(sym_value, (bfd_signed_vma)-8, e_lrsel);
       insn = hppa_rebuild_insn((int)ADDIL_R1, val, 21);
       bfd_put_32(stub_bfd, insn, (loc + 4));
 
-      val = (hppa_field_adjust(sym_value, (bfd_signed_vma)-8, e_rrsel) >> 2);
+      val = (int)(hppa_field_adjust(sym_value, (bfd_signed_vma)-8, e_rrsel) >> 2);
       insn = hppa_rebuild_insn((int)BE_SR4_R1, val, 17);
       bfd_put_32(stub_bfd, insn, (loc + 8));
       size = 12;
@@ -776,7 +776,7 @@ hppa_build_one_stub (struct bfd_hash_entry *bh, void *in_arg)
       if (hsh->stub_type == hppa_stub_import_shared)
 	insn = ADDIL_R19;
 #endif /* R19_STUBS */
-      val = hppa_field_adjust(sym_value, 0, e_lrsel);
+      val = (int)hppa_field_adjust(sym_value, 0, e_lrsel);
       insn = hppa_rebuild_insn((int)insn, val, 21);
       bfd_put_32(stub_bfd, insn, loc);
 
@@ -785,29 +785,29 @@ hppa_build_one_stub (struct bfd_hash_entry *bh, void *in_arg)
 	 lsel/rsel then with unfortunate sym_values we will round
 	 sym_value+4 up to the next 2k block leading to a mis-match
 	 between the lsel and rsel value.  */
-      val = hppa_field_adjust(sym_value, 0, e_rrsel);
+      val = (int)hppa_field_adjust(sym_value, 0, e_rrsel);
       insn = hppa_rebuild_insn((int)LDW_R1_R21, val, 14);
       bfd_put_32(stub_bfd, insn, (loc + 4));
 
       if (htab->multi_subspace)
 	{
-	  val = hppa_field_adjust(sym_value, (bfd_signed_vma)4L, e_rrsel);
+	  val = (int)hppa_field_adjust(sym_value, (bfd_signed_vma)4L, e_rrsel);
 	  insn = hppa_rebuild_insn((int)LDW_R1_DLT, val, 14);
-	  bfd_put_32 (stub_bfd, insn, loc + 8);
+	  bfd_put_32(stub_bfd, insn, (loc + 8));
 
-	  bfd_put_32 (stub_bfd, (bfd_vma) LDSID_R21_R1, loc + 12);
-	  bfd_put_32 (stub_bfd, (bfd_vma) MTSP_R1,      loc + 16);
-	  bfd_put_32 (stub_bfd, (bfd_vma) BE_SR0_R21,   loc + 20);
-	  bfd_put_32 (stub_bfd, (bfd_vma) STW_RP,       loc + 24);
+	  bfd_put_32(stub_bfd, (bfd_vma)LDSID_R21_R1, (loc + 12));
+	  bfd_put_32(stub_bfd, (bfd_vma)MTSP_R1, (loc + 16));
+	  bfd_put_32(stub_bfd, (bfd_vma)BE_SR0_R21, (loc + 20));
+	  bfd_put_32(stub_bfd, (bfd_vma)STW_RP, (loc + 24));
 
 	  size = 28;
 	}
       else
 	{
-	  bfd_put_32 (stub_bfd, (bfd_vma) BV_R0_R21, loc + 8);
-	  val = hppa_field_adjust (sym_value, (bfd_signed_vma) 4, e_rrsel);
-	  insn = hppa_rebuild_insn ((int) LDW_R1_DLT, val, 14);
-	  bfd_put_32 (stub_bfd, insn, loc + 12);
+	  bfd_put_32(stub_bfd, (bfd_vma)BV_R0_R21, (loc + 8));
+	  val = (int)hppa_field_adjust(sym_value, (bfd_signed_vma)4L, e_rrsel);
+	  insn = hppa_rebuild_insn((int)LDW_R1_DLT, val, 14);
+	  bfd_put_32(stub_bfd, insn, (loc + 12));
 
 	  size = 16;
 	}
@@ -831,26 +831,24 @@ hppa_build_one_stub (struct bfd_hash_entry *bh, void *in_arg)
 	{
 	  (*_bfd_error_handler)
 	    (_("%B(%A+0x%lx): cannot reach %s, recompile with -ffunction-sections"),
-	     hsh->target_section->owner,
-	     stub_sec,
-	     (long) hsh->stub_offset,
+	     hsh->target_section->owner, stub_sec, (long)hsh->stub_offset,
 	     hsh->bh_root.string);
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  return FALSE;
 	}
 
-      val = hppa_field_adjust (sym_value, (bfd_signed_vma) -8, e_fsel) >> 2;
+      val = (int)(hppa_field_adjust(sym_value, (bfd_signed_vma)-8L, e_fsel) >> 2);
       if (!htab->has_22bit_branch)
-	insn = hppa_rebuild_insn ((int) BL_RP, val, 17);
+	insn = hppa_rebuild_insn((int)BL_RP, val, 17);
       else
-	insn = hppa_rebuild_insn ((int) BL22_RP, val, 22);
-      bfd_put_32 (stub_bfd, insn, loc);
+	insn = hppa_rebuild_insn((int)BL22_RP, val, 22);
+      bfd_put_32(stub_bfd, insn, loc);
 
-      bfd_put_32 (stub_bfd, (bfd_vma) NOP,         loc + 4);
-      bfd_put_32 (stub_bfd, (bfd_vma) LDW_RP,      loc + 8);
-      bfd_put_32 (stub_bfd, (bfd_vma) LDSID_RP_R1, loc + 12);
-      bfd_put_32 (stub_bfd, (bfd_vma) MTSP_R1,     loc + 16);
-      bfd_put_32 (stub_bfd, (bfd_vma) BE_SR0_RP,   loc + 20);
+      bfd_put_32(stub_bfd, (bfd_vma)NOP, (loc + 4));
+      bfd_put_32(stub_bfd, (bfd_vma)LDW_RP, (loc + 8));
+      bfd_put_32(stub_bfd, (bfd_vma)LDSID_RP_R1, (loc + 12));
+      bfd_put_32(stub_bfd, (bfd_vma)MTSP_R1, (loc + 16));
+      bfd_put_32(stub_bfd, (bfd_vma)BE_SR0_RP, (loc + 20));
 
       /* Point the function symbol at the stub.  */
       hsh->hh->eh.root.u.def.section = stub_sec;
@@ -860,7 +858,7 @@ hppa_build_one_stub (struct bfd_hash_entry *bh, void *in_arg)
       break;
 
     default:
-      BFD_FAIL ();
+      BFD_FAIL();
       return FALSE;
     }
 
@@ -929,26 +927,26 @@ hppa_size_one_stub (struct bfd_hash_entry *bh, void *in_arg)
    Additionally we set the default architecture and machine.  */
 
 static bfd_boolean
-elf32_hppa_object_p (bfd *abfd)
+elf32_hppa_object_p(bfd *abfd)
 {
   Elf_Internal_Ehdr * i_ehdrp;
   unsigned int flags;
 
-  i_ehdrp = elf_elfheader (abfd);
-  if (strcmp (bfd_get_target (abfd), "elf32-hppa-linux") == 0)
+  i_ehdrp = elf_elfheader(abfd);
+  if (strcmp(bfd_get_target(abfd), "elf32-hppa-linux") == 0)
     {
       /* GCC on hppa-linux produces binaries with OSABI=Linux,
 	 but the kernel produces corefiles with OSABI=SysV.  */
-      if (i_ehdrp->e_ident[EI_OSABI] != ELFOSABI_LINUX &&
-	  i_ehdrp->e_ident[EI_OSABI] != ELFOSABI_NONE) /* aka SYSV */
+      if ((i_ehdrp->e_ident[EI_OSABI] != ELFOSABI_LINUX)
+          && (i_ehdrp->e_ident[EI_OSABI] != ELFOSABI_NONE)) /* aka SYSV */
 	return FALSE;
     }
-  else if (strcmp (bfd_get_target (abfd), "elf32-hppa-netbsd") == 0)
+  else if (strcmp(bfd_get_target(abfd), "elf32-hppa-netbsd") == 0)
     {
       /* GCC on hppa-netbsd produces binaries with OSABI=NetBSD,
 	 but the kernel produces corefiles with OSABI=SysV.  */
-      if (i_ehdrp->e_ident[EI_OSABI] != ELFOSABI_NETBSD &&
-	  i_ehdrp->e_ident[EI_OSABI] != ELFOSABI_NONE) /* aka SYSV */
+      if ((i_ehdrp->e_ident[EI_OSABI] != ELFOSABI_NETBSD)
+          && (i_ehdrp->e_ident[EI_OSABI] != ELFOSABI_NONE)) /* aka SYSV */
 	return FALSE;
     }
   else
@@ -957,7 +955,7 @@ elf32_hppa_object_p (bfd *abfd)
 	return FALSE;
     }
 
-  flags = i_ehdrp->e_flags;
+  flags = (unsigned int)i_ehdrp->e_flags;
   switch (flags & (EF_PARISC_ARCH | EF_PARISC_WIDE))
     {
     case EFA_PARISC_1_0:
@@ -1104,13 +1102,13 @@ elf32_hppa_check_relocs (bfd *abfd,
   if (info->relocatable)
     return TRUE;
 
-  htab = hppa_link_hash_table (info);
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  eh_syms = elf_sym_hashes (abfd);
+  htab = hppa_link_hash_table(info);
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  eh_syms = elf_sym_hashes(abfd);
   sreloc = NULL;
   stubreloc = NULL;
 
-  rela_end = relocs + sec->reloc_count;
+  rela_end = (relocs + sec->reloc_count);
   for (rela = relocs; rela < rela_end; rela++)
     {
       enum {
@@ -1124,19 +1122,19 @@ elf32_hppa_check_relocs (bfd *abfd,
       struct elf32_hppa_link_hash_entry *hh;
       int need_entry = 0;
 
-      r_symndx = ELF32_R_SYM (rela->r_info);
+      r_symndx = (unsigned int)ELF32_R_SYM(rela->r_info);
 
       if (r_symndx < symtab_hdr->sh_info)
 	hh = NULL;
       else
 	{
-	  hh =  hppa_elf_hash_entry (eh_syms[r_symndx - symtab_hdr->sh_info]);
+	  hh =  hppa_elf_hash_entry(eh_syms[r_symndx - symtab_hdr->sh_info]);
 	  while (hh->eh.root.type == bfd_link_hash_indirect
 		 || hh->eh.root.type == bfd_link_hash_warning)
-	    hh = hppa_elf_hash_entry (hh->eh.root.u.i.link);
+	    hh = hppa_elf_hash_entry(hh->eh.root.u.i.link);
 	}
 
-      r_type = ELF32_R_TYPE (rela->r_info);
+      r_type = ELF32_R_TYPE(rela->r_info);
 
       switch (r_type)
 	{
@@ -1649,7 +1647,7 @@ elf32_hppa_gc_sweep_hook (bfd *abfd,
 /* Support for core dump NOTE sections.  */
 
 static bfd_boolean
-elf32_hppa_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
+elf32_hppa_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   int offset;
   size_t size;
@@ -1661,10 +1659,12 @@ elf32_hppa_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 
       case 396:		/* Linux/hppa */
 	/* pr_cursig */
-	elf_tdata(abfd)->core_signal = bfd_get_16(abfd, note->descdata + 12);
+	elf_tdata(abfd)->core_signal =
+	  (int)bfd_get_16(abfd, (note->descdata + 12));
 
 	/* pr_pid */
-	elf_tdata(abfd)->core_pid = bfd_get_32(abfd, note->descdata + 24);
+	elf_tdata(abfd)->core_pid =
+	  (int)bfd_get_32(abfd, (note->descdata + 24));
 
 	/* pr_reg */
 	offset = 72;
@@ -1674,12 +1674,13 @@ elf32_hppa_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
     }
 
   /* Make a ".reg/999" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  size, note->descpos + offset);
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+  					 (note->descpos + offset));
 }
 
+/* */
 static bfd_boolean
-elf32_hppa_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
+elf32_hppa_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
   switch (note->descsz)
     {

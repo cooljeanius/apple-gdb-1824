@@ -83,7 +83,7 @@ jobs:
         else \
           (sync && stat /home/runner/work/apple-gdb-1824/build); \
         fi
-        cd src
+        (cd src && sync && echo "now in $(pwd)...")
 
     - name: Dependencies
       if: matrix.language == 'c-cpp'
