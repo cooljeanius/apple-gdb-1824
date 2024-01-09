@@ -10268,7 +10268,7 @@ bfdver.h: $(srcdir)/version.h @MAINT@ $(srcdir)/development.sh \
 	echo "$${bfd_soversion}" > libtool-soversion
 
 libtool-soversion: bfdver.h
-	stat $@ || (if test $@ -ot $<; then touch $@; fi)
+	$(AM_V_at)stat $@ || (if test $@ -ot $<; then touch $@; fi)
 
 # Disable -Werror, if it has been enabled, since coffswap.h fails
 # to compile with gcc 4.5 and above:

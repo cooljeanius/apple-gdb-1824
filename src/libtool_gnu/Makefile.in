@@ -697,6 +697,7 @@ LTLIBOBJS = @LTLIBOBJS@
 LT_CONFIG_H = @LT_CONFIG_H@
 LT_DLLOADERS = @LT_DLLOADERS@
 LT_DLPREOPEN = @LT_DLPREOPEN@
+M4 = @M4@
 M4SH = @M4SH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
@@ -704,6 +705,7 @@ MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
 NMEDIT = @NMEDIT@
+NO_DISCARD_STDERR = @NO_DISCARD_STDERR@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 ORDER = @ORDER@
@@ -964,7 +966,7 @@ doc_libtool_TEXINFOS = doc/PLATFORMS doc/fdl.texi doc/notes.texi
 dist_man1_MANS = $(srcdir)/doc/libtool.1 $(srcdir)/doc/libtoolize.1
 update_mans = \
   PATH=".$(PATH_SEPARATOR)$${PATH}"; export PATH; \
-  $(HELP2MAN) --output=$@
+  $(HELP2MAN) $(NO_DISCARD_STDERR) --output=$@
 
 
 # These are required by libtoolize and must be executable when installed.

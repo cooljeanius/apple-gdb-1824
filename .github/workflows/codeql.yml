@@ -125,6 +125,9 @@ jobs:
           fi; \
           (bundle install && bundle check) || ruby -cwv Gemfile || ruby -c Gemfile; \
           (bundle clean && ls) || stat Gemfile || wc -l Gemfile || du Gemfile; \
+          if test -d vendor && test -r vendor && test -w vendor; then \
+            (sync && (find vendor -name '*.rb' -delete || rm -rf vendor || rmdir vendor)); \
+          fi; \
           sync && echo "leaving $(pwd)..."; \
           popd || exit; \
         elif test ${{ matrix.language }} = 'javascript-typescript' && test -x "$(which node)"; then \

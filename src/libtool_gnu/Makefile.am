@@ -355,7 +355,7 @@ dist_man1_MANS		= $(srcdir)/doc/libtool.1 $(srcdir)/doc/libtoolize.1
 MAINTAINERCLEANFILES	+= $(dist_man1_MANS)
 update_mans = \
   PATH=".$(PATH_SEPARATOR)$${PATH}"; export PATH; \
-  $(HELP2MAN) --output=$@
+  $(HELP2MAN) $(NO_DISCARD_STDERR) --output=$@
 $(srcdir)/doc/libtool.1: $(srcdir)/$(auxdir)/ltmain.sh
 	$(update_mans) --help-option=--help-all libtool
 $(srcdir)/doc/libtoolize.1: $(srcdir)/libtoolize.in

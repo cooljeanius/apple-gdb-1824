@@ -47,6 +47,9 @@ AC_CONFIG_LIBOBJ_DIR([libltdl])dnl
 ## ------------------------ ##
 
 AC_CONFIG_TESTDIR([tests])dnl
+AC_PATH_PROGS([AUTOM4TE],[autom4te gautom4te],[autom4te])dnl
+AC_PATH_PROGS([M4],[m4 gm4 gnum4],[m4])dnl
+export M4=${M4-m4}
 AC_SUBST([AUTOM4TE],[${AUTOM4TE=autom4te}])dnl
 AC_SUBST([AUTOTEST],['$(AUTOM4TE) --language=autotest'])dnl
 
@@ -290,11 +293,17 @@ if test "x${HELP2MAN}" = "x"; then
 fi
 AC_CACHE_CHECK([if ${HELP2MAN} supports --no-discard-stderr],
                [ac_cv_help2man_supports_no_discard_stderr],
-  [AC_PATH_PROGS_FEATURE_CHECK([HELP2MAN],[${HELP2MAN} help2man `which help2man`],
-    [[${ac_path_HELP2MAN} --no-discard-stderr ${ac_path_HELP2MAN} >/dev/null 2>&1 \
+  [AC_PATH_PROGS_FEATURE_CHECK([HELP2MAN],
+                               [${HELP2MAN} help2man ghelp2man `which help2man`],
+    [[echo "checking ${ac_path_HELP2MAN}"
+      ${ac_path_HELP2MAN} --no-discard-stderr ${ac_path_HELP2MAN} >/dev/null 2>&1 \
       ac_cv_path_HELP2MAN=${ac_path_HELP2MAN}
-      ac_path_HELP2MAN_found=:]],
-    [AC_MSG_WARN([help2man should support the --no-discard-stderr flag])],
+      ac_path_HELP2MAN_found=:
+      ac_cv_help2man_supports_no_discard_stderr=yes
+      export NO_DISCARD_STDERR="--no-discard-stderr"]],
+    [AC_MSG_WARN([help2man should support the --no-discard-stderr flag])
+     ac_cv_help2man_supports_no_discard_stderr=no
+     export NO_DISCARD_STDERR=""],
     [${PATH}])dnl# end program check
   ])dnl# end cache check
   ## (need this extra line here)
@@ -306,7 +315,12 @@ elif test "x${ac_cv_path_HELP2MAN}" != "x"; then
   if test "x${ac_cv_help2man_supports_no_discard_stderr}" != "x"; then
     test -n "${ac_cv_path_HELP2MAN}" && test -n "${ac_cv_help2man_supports_no_discard_stderr}" && echo "ac_cv_path_HELP2MAN is ${ac_cv_path_HELP2MAN} (${ac_cv_help2man_supports_no_discard_stderr})"
   else
-    test -n "${ac_cv_path_HELP2MAN}" && test -z "${ac_cv_help2man_supports_no_discard_stderr}" && echo "ac_cv_path_HELP2MAN is ${ac_cv_path_HELP2MAN}"
+    test -n "${ac_cv_path_HELP2MAN}" && test -z "${ac_cv_help2man_supports_no_discard_stderr}" && echo "ac_cv_path_HELP2MAN is ${ac_cv_path_HELP2MAN} (other cache value unset)"
+  fi
+  if test "x${NO_DISCARD_STDERR}" != "x"; then
+    test -n "${NO_DISCARD_STDERR}" && echo "NO_DISCARD_STDERR is ${NO_DISCARD_STDERR}"
+  else
+    test -z "${NO_DISCARD_STDERR}" && echo "NO_DISCARD_STDERR is unset"
   fi
 elif test "x${ac_path_HELP2MAN}" != "x"; then
   test -n "${ac_path_HELP2MAN}" && echo "ac_path_HELP2MAN is ${ac_path_HELP2MAN}"
@@ -317,6 +331,7 @@ else
 fi
 AC_SUBST([ac_cv_help2man_supports_no_discard_stderr])dnl
 AC_SUBST([HELP2MAN],[${ac_cv_path_HELP2MAN-${HELP2MAN-help2man}}])dnl
+AC_SUBST([NO_DISCARD_STDERR])dnl
 
 ## -------- ##
 ## Outputs. ##

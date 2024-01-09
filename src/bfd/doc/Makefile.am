@@ -115,7 +115,7 @@ chew_am_SOURCES = $(srcdir)/chew.c $(srcdir_high)/include/ansidecl.h
 chew_am_CFLAGS = $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(H_CFLAGS)
 chew_am_LDFLAGS = -L$(srcdir_high)/intl -L../../intl $(LDFLAGS_FOR_BUILD) \
   $(WARN_LDFLAGS)
-EXTRA_chew_am_DEPENDENCIES = Makefile $(srcdir_up)/config.h
+EXTRA_chew_am_DEPENDENCIES = Makefile $(srcdir_up)/config.h chew_am-chew.o
 
 chew_am-chew.o: chew.c $(srcdir_high)/include/ansidecl.h Makefile
 	$(AM_V_at)if test -e $(srcdir)/chew_am-chew.o -a -w $(srcdir); then \
@@ -129,6 +129,8 @@ chew_am-chew.o: chew.c $(srcdir_high)/include/ansidecl.h Makefile
 	else \
 	  if test -x "`which sync`"; then sync; fi; \
 	fi
+
+.NOTPARALLEL: chew_am-chew.o chew_am
 
 ## yes, I do mean to override this here, to avoid an error with libtool:
 LDFLAGS =
