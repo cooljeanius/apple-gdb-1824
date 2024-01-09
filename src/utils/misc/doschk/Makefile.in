@@ -140,6 +140,7 @@ doschk: doschk.o
 	$(CC) $(LDFLAGS) $(ALL_CFLAGS) $< -o $@
 
 doschk_check: doschk
+	@rm -f *~
 	ls -1 -d * | ./doschk
 .PHONY: doschk_check
 
@@ -147,7 +148,7 @@ doschk_check: doschk
 ## of the rule instead:
 check-local: config.h @MAINT@ all
 	$(MKDIR_P) $(analysisdir)
-	$(MAKE) doschk.plist
+	$(MAKE) -w doschk.plist
 .PHONY: check-local
 
 # Prevent GNU make v3 from overflowing arg limit on SysV.

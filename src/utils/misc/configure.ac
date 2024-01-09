@@ -1,5 +1,5 @@
-#                                               -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
+dnl#                                               -*- Autoconf -*-
+dnl# Process this file with autoconf to produce a configure script.
 
 # This file is a shell script fragment that supplies the information
 # necessary to tailor a template configure script into the configure
@@ -9,14 +9,17 @@
 AC_PREREQ([2.69])
 AC_INIT([MiscUtilities],[unknown],[/dev/null])
 AC_CONFIG_SRCDIR([Makefile.in])
+AC_CONFIG_AUX_DIR([../..])
 AC_CANONICAL_TARGET
 
 srctrigger=Makefile.in
 srcname="MiscUtilities"
 target_dependent=true
-AC_SUBST([srctrigger])
-AC_SUBST([srcname])
-AC_SUBST([target_dependent])
+AC_SUBST([srctrigger])dnl
+AC_SUBST([srcname])dnl
+AC_SUBST([target_dependent])dnl
+
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
 
 # per-host:
 case "${host}" in
@@ -26,7 +29,7 @@ case "${host}" in
   *)
     ;;
 esac
-AC_SUBST([host_subdirs])
+AC_SUBST([host_subdirs])dnl
 
 # per-target:
 case "${target}" in
@@ -36,12 +39,13 @@ case "${target}" in
   *)
     ;;
 esac
-AC_SUBST([target_subdirs])
+AC_SUBST([target_subdirs])dnl
 
 configdirs="doschk"
-AC_SUBST([configdirs])
+AC_SUBST([configdirs])dnl
 
 # Checks for programs.
+AC_PROG_AR
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_RANLIB

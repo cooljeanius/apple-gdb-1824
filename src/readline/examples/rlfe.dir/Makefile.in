@@ -47,6 +47,23 @@ HFILES= extern.h os.h screen.h
 EXTRA_DIST=configure.ac configure Makefile.in config.h.in ChangeLog README
 OFILES=	rlfe.o pty.o
 
+## automake-style verbosity control:
+V = @V@
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
+
+AM_V_at = $(am__v_at_@AM_V@)
+am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
+am__v_at_0 = @
+am__v_at_1 =
+
+AM_V_MFLAG = $(am__v_MFLAG_@AM_V@)
+am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
+am__v_MFLAG_0 = -s
+am__v_MFLAG_1 = -w
+
 all:	rlfe
 
 rlfe: $(OFILES)
@@ -60,26 +77,26 @@ rlfe-$(VERSION).tar.gz:
 
 install_bin: .version screen
 	-if [ -f $(DESTDIR)$(bindir)/$(SCREEN) ] && [ ! -f $(DESTDIR)$(bindir)/$(SCREEN).old ]; \
-		then mv $(DESTDIR)$(bindir)/$(SCREEN) $(DESTDIR)$(bindir)/$(SCREEN).old; fi
+		then mv $(AM_V_v) $(DESTDIR)$(bindir)/$(SCREEN) $(DESTDIR)$(bindir)/$(SCREEN).old; fi
 	$(INSTALL_PROGRAM) screen $(DESTDIR)$(bindir)/$(SCREEN)
 	-chown root $(DESTDIR)$(bindir)/$(SCREEN) && chmod 4755 $(DESTDIR)$(bindir)/$(SCREEN)
 # This does NOT work if $(bindir)/screen is a symlink
 	-if [ -f $(DESTDIR)$(bindir)/screen ] && [ ! -f $(DESTDIR)$(bindir)/screen.old ]; then mv $(DESTDIR)$(bindir)/screen $(DESTDIR)$(bindir)/screen.old; fi
-	rm -f $(DESTDIR)$(bindir)/screen
-	(cd $(DESTDIR)$(bindir) && ln -sf $(SCREEN) screen)
-	cp $(srcdir)/utf8encodings/?? $(DESTDIR)$(SCREENENCODINGS)
+	rm -f $(AM_V_v) $(DESTDIR)$(bindir)/screen
+	(cd $(DESTDIR)$(bindir) && ln -sf $(AM_V_v) $(SCREEN) screen)
+	cp $(AM_V_v) $(srcdir)/utf8encodings/?? $(DESTDIR)$(SCREENENCODINGS)
 
 
 uninstall: .version
-	rm -f $(DESTDIR)$(bindir)/$(SCREEN)
-	rm -f $(DESTDIR)$(bindir)/screen
-	-mv $(DESTDIR)$(bindir)/screen.old $(DESTDIR)$(bindir)/screen
-	rm -f $(DESTDIR)$(ETCSCREENRC)
-	cd doc; $(MAKE) -w uninstall
+	rm -f $(AM_V_v) $(DESTDIR)$(bindir)/$(SCREEN)
+	rm -f $(AM_V_v) $(DESTDIR)$(bindir)/screen
+	-mv $(AM_V_v) $(DESTDIR)$(bindir)/screen.old $(DESTDIR)$(bindir)/screen
+	rm -f $(AM_V_v) $(DESTDIR)$(ETCSCREENRC)
+	cd doc; $(MAKE) $(AM_V_MFLAG) uninstall
 
 shadow:
 	mkdir shadow;
-	cd shadow; ln -s ../*.[ch] ../*.in ../*.sh ../configure ../doc ../terminfo ../etc .
+	cd shadow; ln -s $(AM_V_v) ../*.[ch] ../*.in ../*.sh ../configure ../doc ../terminfo ../etc .
 	rm -f shadow/term.h shadow/tty.c shadow/comm.h shadow/osdef.h
 	echo "install all Makefiles and config:" > shadow/Makefile
 	echo "	rm -f config.cache" >> shadow/Makefile
@@ -94,11 +111,11 @@ tty.c:	tty.sh
 	sh $(srcdir)/tty.sh tty.c
 
 mostlyclean mostlyclean-local:
-	rm -f $(OFILES) rlfe *.o
+	rm -f $(AM_V_v) $(OFILES) rlfe *.o
 .PHONY: mostlyclean mostlyclean-local
 
 clean clean-local: mostlyclean
-	rm -f tty.c term.h comm.h osdef.h kmapdef.c core *~
+	rm -f $(AM_V_v) tty.c term.h comm.h osdef.h kmapdef.c core *~
 .PHONY: clean clean-local
 
 # Delete all files from the current directory that are created by 
@@ -107,10 +124,10 @@ clean clean-local: mostlyclean
 # we keep config.h, as this file knows where 'make dist' finds the
 # ETCSCREENRC.
 distclean-local: mostlyclean
-	rm -f $(SCREEN).tar $(SCREEN).tar.gz
+	rm -f $(AM_V_v) $(SCREEN).tar $(SCREEN).tar.gz
 	rm -f Makefile
 	rm -f osdef.h doc/Makefile
-	rm -rf autom4te.cache || rmdir autom4te.cache
+	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 .PHONY: distclean-local
 
 distclean: clean distclean-local
@@ -129,7 +146,7 @@ maintainer-clean-local: distclean-local
 # Delete everything from the current directory that can be
 # reconstructed with this Makefile.
 realclean: maintainer-clean .version mostlyclean
-	rm -f $(SCREEN).tar $(SCREEN).tar.gz
+	rm -f $(AM_V_v) $(SCREEN).tar $(SCREEN).tar.gz
 	rm -f config.status Makefile doc/Makefile
 	rm -f tty.c term.h comm.h osdef.h kmapdef.c
 	rm -f config.h
@@ -150,13 +167,13 @@ check:
 .PHONY: check
 
 config: configure
-	rm -f config.cache
+	$(AM_V_at)rm -f config.cache
 	sh ./configure
 .PHONY: config
 
 Makefile: Makefile.in config.status
 	./config.status || $(SHELL) config.status
-	@if test Makefile -ot Makefile.in; then touch Makefile; fi
+	$(AM_V_at)if test Makefile -ot Makefile.in; then touch Makefile; fi
 
 ###########################################################################
 
@@ -171,11 +188,11 @@ Makefile: Makefile.in config.status
 ###########################################################################
 
 mdepend: $(CFILES) term.h
-	@rm -f DEPEND ; \
-	for i in ${CFILES} ; do \
-	  echo "$$i" ; \
-	  echo `echo "$$i" | sed -e 's/.c$$/.o/'`": $$i" `\
-            cc -E $$i |\
+	$(AM_V_at)rm -f DEPEND; \
+	for i in ${CFILES}; do \
+	  echo "$${i}"; \
+	  echo `echo "$$i" | sed -e 's/.c$$/.o/'`": $${i}" `\
+            cc -E $${i} |\
             grep '^# .*"\./.*\.h"' |\
             (sort -t'"' -u -k 2,2 2>/dev/null || sort -t'"' -u +1 -2) |\
             sed -e 's/.*"\.\/\(.*\)".*/\1/'\
@@ -188,7 +205,7 @@ depend: depend.in config.status configure
 depend.in: $(CFILES) term.h
 	cp Makefile.in Makefile.in~
 	sed -e '/\#\#\# Dependencies/q' < Makefile.in > tmp_make
-	for i in $(CFILES); do echo $$i; $(CPP_DEPEND) $$i >> tmp_make; done 
+	for i in $(CFILES); do echo $${i}; $(CPP_DEPEND) $${i} >> tmp_make; done 
 	mv tmp_make Makefile.in
 
 ###########################################################################

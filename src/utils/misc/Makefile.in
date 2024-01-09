@@ -44,6 +44,18 @@ MAKEINFO = makeinfo
 
 SUBDIRS = doschk
 
+## automake-style verbosity control:
+V = @V@
+AM_V_at = $(am__v_at_@AM_V@)
+am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
+am__v_at_0 = @
+am__v_at_1 =
+
+AM_V_MFLAG = $(am__v_MFLAG_@AM_V@)
+am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
+am__v_MFLAG_0 = -s
+am__v_MFLAG_1 = -w
+
 .NOEXPORT:
 MAKEOVERRIDES=
 
@@ -64,47 +76,47 @@ FLAGS_TO_PASS = \
 	"INCLUDES=$(INCLUDES)"
 
 all:
-	@for dir in ${SUBDIRS}; do \
+	$(AM_V_at)for dir in ${SUBDIRS}; do \
 	if [ -d $${dir} ]; then \
-	    (rootme=`pwd`/ ; export rootme ; \
-	    rootsrc=`cd $(srcdir); pwd`/ ; export rootsrc ; \
-	    cd $${dir}; $(MAKE) $(FLAGS_TO_PASS)); \
+	    (rootme=`pwd`/; export rootme; \
+	    rootsrc=`cd $(srcdir); pwd`/; export rootsrc; \
+	    cd $${dir}; $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS)); \
 	    fi; \
 	done
 
 install:
-	@for dir in ${SUBDIRS}; do \
-	    echo "$${dir}:"; \
+	$(AM_V_at)for dir in ${SUBDIRS}; do \
+	    echo "doing $@ for $${dir}:"; \
 	    if [ -d $${dir} ]; then \
-		(cd $${dir}; $(MAKE) install); \
+		(cd $${dir}; $(MAKE) $(AM_V_MFLAG) install); \
 		fi; \
 	    done
 
 mostlyclean:
-	-rm -f .DS_Store
+	-rm -f *~ .DS_Store
 clean: mostlyclean
 	-rm -f *~ core *.o a.out 
-	@for dir in ${SUBDIRS}; do \
-	    echo "$${dir}:"; \
+	$(AM_V_at)for dir in ${SUBDIRS}; do \
+	    echo "doing $@ for $${dir}:"; \
 	    if [ -d $${dir} ]; then \
-		(cd $${dir}; $(MAKE) clean); \
+		(cd $${dir}; $(MAKE) $(AM_V_MFLAG) clean); \
 		fi; \
 	    done
 
 distclean maintainer-clean realclean: clean
-	@for dir in ${SUBDIRS}; do \
-	    echo "$${dir}:"; \
-	    (cd $${dir}; $(MAKE) distclean); \
+	$(AM_V_at)for dir in ${SUBDIRS}; do \
+	    echo "doing $@ for $${dir}:"; \
+	    (cd $${dir}; $(MAKE) $(AM_V_MFLAG) distclean); \
 	done
 	-rm -f *~ core
 	-rm -f Makefile config.status config.log
 	-rm -rf autom4te.cache || rmdir autom4te.cache
 
 check:
-	@for dir in ${SUBDIRS}; do \
-	    echo "$${dir}:"; \
+	$(AM_V_at)for dir in ${SUBDIRS}; do \
+	    echo "doing $@ for $${dir}:"; \
 	    if [ -d $${dir} ]; then \
-		(cd $${dir}; $(MAKE) check); \
+		(cd $${dir}; $(MAKE) $(AM_V_MFLAG) check); \
 		fi; \
 	    done
 

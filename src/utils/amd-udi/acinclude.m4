@@ -60,7 +60,9 @@ fi
 
 AC_DEFUN([BASH_SYS_REINSTALL_SIGHANDLERS],
 [AC_REQUIRE([AC_TYPE_SIGNAL])
-AC_REQUIRE([AC_HEADER_STDC])
+m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([BASH_SYS_SIGNAL_VINTAGE])
 AC_MSG_CHECKING([if signal handlers must be reinstalled when invoked])
 AC_CACHE_VAL([bash_cv_must_reinstall_sighandlers],
@@ -76,9 +78,7 @@ int nsigint;
 
 #ifdef HAVE_POSIX_SIGNALS
 sigfunc *
-set_signal_handler(sig, handler)
-     int sig;
-     sigfunc *handler;
+set_signal_handler(int sig, sigfunc *handler)
 {
   struct sigaction act, oact;
   act.sa_handler = handler;
@@ -93,13 +93,13 @@ set_signal_handler(sig, handler)
 #endif
 
 RETSIGTYPE
-sigint(s)
-int s;
+sigint(int s)
 {
   nsigint++;
 }
 
-main()
+int
+main(void)
 {
 	nsigint = 0;
 	set_signal_handler(SIGINT, sigint);
@@ -118,7 +118,9 @@ fi
 
 dnl# check that some necessary job control definitions are present
 AC_DEFUN([BASH_SYS_JOB_CONTROL_MISSING],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([BASH_SYS_SIGNAL_VINTAGE])
 AC_MSG_CHECKING([for presence of necessary job control definitions])
 AC_CACHE_VAL([bash_cv_job_control_missing],
@@ -133,7 +135,8 @@ AC_CACHE_VAL([bash_cv_job_control_missing],
 #include <signal.h>
 
 /* Add more tests in here as appropriate. */
-main()
+int
+main(void)
 {
 /* signal type */
 #if !defined (HAVE_POSIX_SIGNALS) && !defined (HAVE_BSD_SIGNALS)
@@ -250,7 +253,9 @@ dnl# but you can only get speed_t if you include <termios.h> (on some
 dnl# versions) or <sys/types.h> (on others).
 dnl#
 AC_DEFUN([BASH_CHECK_SPEED_T],
-[AC_REQUIRE([AC_HEADER_STDC])
+[m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_PROG_CC])
 AC_MSG_CHECKING([for speed_t in sys/types.h])
 AC_CACHE_VAL(bash_cv_speed_t_in_sys_types,
@@ -291,7 +296,7 @@ AC_DEFUN([SC_SERIAL_PORT],[
     AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <termios.h>
 
-int main() {
+int main(void) {
     struct termios t;
     if (tcgetattr(0, &t) == 0) {
 	cfsetospeed(&t, 0);
@@ -304,7 +309,7 @@ int main() {
 	AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <termio.h>
 
-int main() {
+int main(void) {
     struct termio t;
     if (ioctl(0, TCGETA, &t) == 0) {
 	t.c_cflag |= CBAUD | PARENB | PARODD | CSIZE | CSTOPB;
@@ -317,7 +322,7 @@ int main() {
 	AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <sgtty.h>
 
-int main() {
+int main(void) {
     struct sgttyb t;
     if (ioctl(0, TIOCGETP, &t) == 0) {
 	t.sg_ospeed = 0;
@@ -332,7 +337,7 @@ int main() {
 #include <termios.h>
 #include <errno.h>
 
-int main() {
+int main(void) {
     struct termios t;
     if (tcgetattr(0, &t) == 0
 	|| errno == ENOTTY || errno == ENXIO || errno == EINVAL) {
@@ -348,7 +353,7 @@ int main() {
 #include <termio.h>
 #include <errno.h>
 
-int main() {
+int main(void) {
     struct termio t;
     if (ioctl(0, TCGETA, &t) == 0
 	|| errno == ENOTTY || errno == ENXIO || errno == EINVAL) {
@@ -363,7 +368,7 @@ int main() {
 #include <sgtty.h>
 #include <errno.h>
 
-int main() {
+int main(void) {
     struct sgttyb t;
     if (ioctl(0, TIOCGETP, &t) == 0
 	|| errno == ENOTTY || errno == ENXIO || errno == EINVAL) {
@@ -387,7 +392,9 @@ dnl#
 # stolen from expect's configure script
 
 AC_DEFUN([AC_EXPECT_TCGETS_OR_TCGETA],[
-AC_REQUIRE([AC_HEADER_STDC])
+m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_MSG_CHECKING([if TCGETS or TCGETA is in termios.h])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 /* including termios.h on Solaris 5.6 fails unless inttypes.h included */
@@ -397,7 +404,8 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 # warning this conftest expects <inttypes.h> to be included.
 #endif /* HAVE_INTTYPES_H */
 #include <termios.h>
-main() {
+int
+main(void) {
 #if defined(TCGETS) || defined(TCGETA)
 	return 0;
 #else
@@ -418,7 +426,9 @@ main() {
 # also stolen from expect's configure script
 
 AC_DEFUN([AC_EXPECT_TIOCGWINSZ],[
-AC_REQUIRE([AC_HEADER_STDC])
+m4_ifdef([AC_HEADER_STDC],[
+AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE([AC_HEADER_TIOCGWINSZ])
 AC_MSG_CHECKING([if TIOCGWINSZ is in termios.h])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
@@ -429,7 +439,8 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 # warning this conftest expects <inttypes.h> to be included.
 #endif /* HAVE_INTTYPES_H */
 #include <termios.h>
-main() {
+int
+main(void) {
 #ifdef TIOCGWINSZ
 	return 0;
 #else

@@ -1,16 +1,42 @@
 #!/bin/sh
 #
-# runtest -- basically all this script does is find the proper expect
-#	     shell and then run DejaGnu.
+# Copyright (C) 1992-2016, 2021 Free Software Foundation, Inc.
 #
-# Written by Rob Savoye <rob@welcomehome.org>
+# This file is part of DejaGnu.
 #
+# DejaGnu is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# DejaGnu is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with DejaGnu; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
-#
+# This script was written by Rob Savoye. The script finds the proper
+# expect shell and then starts DejaGnu.
+
+# shellcheck disable=SC2003
+# The shellcheck tool complains about use of expr and recommends using
+# newer shell features instead.  Solaris 10 /bin/sh does not support the
+# newer features, so we must use expr in this script.
+
+# shellcheck disable=SC2006
+# The shellcheck tool complains about the old style backtick command
+# substitution.  Solaris 10 /bin/sh does not support the new style $()
+# command substitution and the usage of command substitution in this script
+# is simple enough to work.  Most notably, nesting backtick command
+# substitution is tricky, but we do not do that.
+
 # Get the execution path to this script and the current directory.
-#
+
 mypath=${0-.}
-if expr ${mypath} : '.*/.*' > /dev/null
+if expr "$mypath" : '.*/.*' > /dev/null
 then
     :
 else
@@ -18,105 +44,120 @@ else
     for dir in $PATH
     do
 	test -z "$dir" && dir=.
-	if test -x $dir/$mypath
+	if test -x "$dir/$mypath"
 	then
-	    mypath=$dir/$mypath
+	    mypath="$dir/$mypath"
 	    break
 	fi
     done
     IFS="$save_ifs"
 fi
-execpath=`echo ${mypath} | sed  -e 's@/[^/]*$@@'`
-# rootme=`pwd`
+execpath=`echo "$mypath" | sed -e 's@/[^/]*$@@'`
 
-#
-# get the name by which runtest was invoked and extract the config triplet
-#
-runtest=`echo ${mypath} | sed -e 's@^.*/@@'`
-target=`echo $runtest | sed -e 's/-runtest$//'`
+# Get the name by which runtest was invoked and extract the config
+# triplet.
+
+runtest=`echo "$mypath" | sed -e 's@^.*/@@'`
+target=`echo "$runtest" | sed -e 's/-runtest$//'`
 if [ "$target" != runtest ] ; then
     target="--target ${target}"
 else
     target=""
 fi
 
-#
-# Find the right expect binary to use. If a variable EXPECT exists,
-# it takes precedence over all other tests. Otherwise look for a freshly
+# Find the right expect binary to use. If a variable EXPECT exists, it
+# takes precedence over all other tests. Otherwise look for a freshly
 # built one, and then use one in the path.
-#
-if [ x"$EXPECT" != x ] ; then
-  expectbin=$EXPECT
+
+if [ -n "$EXPECT" ] ; then
+  expectbin="$EXPECT"
 else
   if [ -x "$execpath/expect" ] ; then
-    expectbin=$execpath/expect
+    expectbin="$execpath/expect"
   else
-      expectbin=expect
-    fi
+    expectbin=expect
+  fi
 fi
 
-# just to be safe...
+# Just to be safe ..
+
 if [ -z "$expectbin" ]; then
   echo "ERROR: No expect shell found"
   exit 1
 fi
 
-# This wrapper script will set up run-time library search PATHs
+# This wrapper script will set up run-time library search PATHs.
+
 if [ -x "$expectbin-bld.sh" ]; then
   expectbin="${CONFIG_SHELL-/bin/sh} $expectbin-bld.sh"
 fi
 
-#
 # Extract a few options from the option list.
-#
+
 verbose=0
 debug=""
 for a in "$@" ; do
-  case $a in	    
-      -v|--v|-verb*|--verb*)    verbose=`expr $verbose + 1`;;
+  case $a in
+      -v|--v|-verb*|--verb*)    verbose=`expr $verbose + 1` ;;
       -D0|--D0)       debug="-D 0" ;;
       -D1|--D1)       debug="-D 1" ;;
   esac
 done
 
-if expr $verbose \> 0 > /dev/null ; then
-  echo Expect binary is $expectbin
+if expr "$verbose" \> 0 > /dev/null ; then
+  echo Expect binary is "$expectbin"
 fi
 
+# Find runtest.exp. First we look in its installed location,
+# otherwise start if from the source tree.
 #
-# find runtest.exp. First we look in it's installed location, otherwise
-# start if from the source tree.
+# runtest.exp is found in @datadir@ (set by configure), but $execpath
+# is @bindir@.  We're assuming that:
 #
-# runtest.exp is found in (autoconf-configure-set) @datadir@, but
-# $execpath is @bindir@.  We're assuming that 
+#   @datadir@ == @bindir@/../share
+#   or
+#   @datadir@ == @bindir@/../../share
 #
-# @datadir@ == @bindir@/../share
-# or
-# @datadir@ == @bindir@/../../share
-#
-# which is a very weak assumption
-#
-for i in `echo ${execpath} | sed  -e 's@/[^/]*$@/share/dejagnu@'` `echo ${execpath} | sed  -e 's@/[^/]*/[^/]*$@/share/dejagnu@'` $execpath ; do
-    if expr $verbose \> 1 > /dev/null ; then
-	echo Looking for $i/runtest.exp.
-    fi  
-    if [ -f $i/runtest.exp ] ; then
-	runpath=$i
-	if expr $verbose \> 0 > /dev/null ; then
-	    echo Using $i/runtest.exp as main test driver
+# .. which is a very weak assumption
+
+bindir1up_check=`echo "$execpath" | sed -e 's@/[^/]*$@/share/dejagnu@'`
+bindir2up_check=`echo "$execpath" | sed -e 's@/[^/]*/[^/]*$@/share/dejagnu@'`
+
+for i in \
+    "${bindir1up_check}" "${bindir2up_check}" "$execpath" \
+    /usr/share/dejagnu \
+    /usr/local/share/dejagnu ; do
+    if expr "$verbose" \> 1 > /dev/null ; then
+	echo Looking for "$i"/runtest.exp.
+    fi
+    if [ -f "$i/runtest.exp" ] ; then
+	runpath="$i"
+	if expr "$verbose" \> 0 > /dev/null ; then
+	    echo Using "$i"/runtest.exp as main test driver
 	fi
+	break
     fi
 done
-# check for an environment variable
-if [ x"$DEJAGNULIBS" != x ] ; then
-    runpath=$DEJAGNULIBS
-    if expr $verbose \> 0 > /dev/null ; then
-	echo Using $DEJAGNULIBS/runtest.exp as main test driver
+
+# Check for an environment variable.
+
+if [ -n "$DEJAGNULIBS" ] ; then
+    runpath="$DEJAGNULIBS"
+    if expr "$verbose" \> 0 > /dev/null ; then
+	echo Using "$DEJAGNULIBS"/runtest.exp as main test driver
     fi
 fi
-if [ x"$runpath" = x ] ; then
-    echo "ERROR: runtest.exp does not exist."
+if [ -z "$runpath" ] ; then
+    echo "ERROR: runtest.exp does not exist"
     exit 1
 fi
 
-exec $expectbin $debug -- $runpath/runtest.exp $target ${1+"$@"}
+if command -v "$expectbin" > /dev/null ; then :; else
+    echo "ERROR: unable to find expect in the PATH"
+    exit 1
+fi
+
+# The `debug' and `target' variables are _intended_ to contain zero or two
+# words each.  Word splitting is desired here.
+# shellcheck disable=SC2086
+exec "$expectbin" $debug -- "$runpath"/runtest.exp $target ${1+"$@"}

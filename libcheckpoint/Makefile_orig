@@ -55,3 +55,6 @@ $(SYMROOT)/$(LIB) : $(OBJS)
 	else \
 	  echo "no usable machocheck found; skipping running on $(SYMROOT)/$(LIB)"; \
 	fi
+	if test -x "`which size`"; then \
+	  size $(SYMROOT)/$(LIB); \
+	fi

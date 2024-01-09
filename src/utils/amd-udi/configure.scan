@@ -1,13 +1,14 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.72])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CXX
+AC_PROG_AR
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
@@ -16,7 +17,7 @@ AC_PROG_RANLIB
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h malloc.h memory.h netdb.h netinet/in.h sgtty.h stdlib.h string.h strings.h sys/file.h sys/ioctl.h sys/socket.h sys/time.h sys/timeb.h termio.h termios.h unistd.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h malloc.h netdb.h netinet/in.h sgtty.h strings.h sys/file.h sys/ioctl.h sys/socket.h sys/time.h sys/timeb.h termio.h termios.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_OFF_T

@@ -123,7 +123,7 @@ am__v_MFLAG_1 = -w
 
 all: $(BUILT_SOURCES) $(libbacktrace_la_OBJECTS) $(noinst_LTLIBRARIES)
 all-local: Makefile $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la
-	for mytarg in $(libbacktrace_la_OBJECTS) $(noinst_LTLIBRARIES); do \
+	$(AM_V_at)for mytarg in $(libbacktrace_la_OBJECTS) $(noinst_LTLIBRARIES); do \
 	  if test ! -e $${mytarg} || test $${mytarg} -ot Makefile; then \
 	    $(MAKE) $(AM_V_MFLAG) $${mytarg}; \
 	  elif test -r $${mytarg}; then \
@@ -133,7 +133,7 @@ all-local: Makefile $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la
 	  fi; \
 	done 
 default: all-local @MAINT@ $(builddir)/Makefile $(builddir)/config.h # all
-	for mydeftarg in $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la; do \
+	$(AM_V_at)for mydeftarg in $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la; do \
 	  if test ! -e $${mydeftarg} || test $${mydeftarg} -ot Makefile; then \
 	    $(MAKE) $(AM_V_MFLAG) $${mydeftarg}; \
 	  elif test -r $${mydeftarg}; then \
@@ -143,7 +143,7 @@ default: all-local @MAINT@ $(builddir)/Makefile $(builddir)/config.h # all
 	  fi; \
 	done
 all-am: default all-multi @MAINT@ Makefile.am
-	for tg in $(libbacktrace_la_DEPENDENCIES) $(EXTRA_builddir_LTOBJECTS); do \
+	$(AM_V_at)for tg in $(libbacktrace_la_DEPENDENCIES) $(EXTRA_builddir_LTOBJECTS); do \
 	  if test ! -e $${tg} || test $${tg} -ot Makefile; then \
 	    $(MAKE) $(AM_V_MFLAG) $${tg}; \
 	  elif test -r $${tg}; then \

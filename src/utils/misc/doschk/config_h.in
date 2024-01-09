@@ -6,13 +6,13 @@
 /* Define to 1 if you have the <ctype.h> header file. */
 #undef HAVE_CTYPE_H
 
-/* Define to 1 if you have the `exit' function. */
+/* Define to 1 if you have the 'exit' function. */
 #undef HAVE_EXIT
 
-/* Define to 1 if you have the `fgets' function. */
+/* Define to 1 if you have the 'fgets' function. */
 #undef HAVE_FGETS
 
-/* Define to 1 if you have the `fprintf' function. */
+/* Define to 1 if you have the 'fprintf' function. */
 #undef HAVE_FPRINTF
 
 /* Define to 1 if you have the <inttypes.h> header file. */
@@ -21,7 +21,7 @@
 /* Define to 1 if you support file names longer than 14 characters. */
 #undef HAVE_LONG_FILE_NAMES
 
-/* Define to 1 if your system has a GNU libc compatible `malloc' function, and
+/* Define to 1 if your system has a GNU libc compatible 'malloc' function, and
    to 0 otherwise. */
 #undef HAVE_MALLOC
 
@@ -31,19 +31,16 @@
 /* Define to 1 if you have the <malloc/malloc.h> header file. */
 #undef HAVE_MALLOC_MALLOC_H
 
-/* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
-
-/* Define to 1 if you have the `memset' function. */
+/* Define to 1 if you have the 'memset' function. */
 #undef HAVE_MEMSET
 
-/* Define to 1 if you have the `printf' function. */
+/* Define to 1 if you have the 'printf' function. */
 #undef HAVE_PRINTF
 
-/* Define to 1 if you have the `putchar' function. */
+/* Define to 1 if you have the 'putchar' function. */
 #undef HAVE_PUTCHAR
 
-/* Define to 1 if you have the `qsort' function. */
+/* Define to 1 if you have the 'qsort' function. */
 #undef HAVE_QSORT
 
 /* Define to 1 if you have the <stdint.h> header file. */
@@ -55,10 +52,10 @@
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
 
-/* Define to 1 if you have the `strcmp' function. */
+/* Define to 1 if you have the 'strcmp' function. */
 #undef HAVE_STRCMP
 
-/* Define to 1 if you have the `strcpy' function. */
+/* Define to 1 if you have the 'strcpy' function. */
 #undef HAVE_STRCPY
 
 /* Define to 1 if you have the <strings.h> header file. */
@@ -67,16 +64,16 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
-/* Define to 1 if you have the `strlen' function. */
+/* Define to 1 if you have the 'strlen' function. */
 #undef HAVE_STRLEN
 
-/* Define to 1 if you have the `strncmp' function. */
+/* Define to 1 if you have the 'strncmp' function. */
 #undef HAVE_STRNCMP
 
-/* Define to 1 if you have the `strncpy' function. */
+/* Define to 1 if you have the 'strncpy' function. */
 #undef HAVE_STRNCPY
 
-/* Define to 1 if you have the `strrchr' function. */
+/* Define to 1 if you have the 'strrchr' function. */
 #undef HAVE_STRRCHR
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
@@ -88,7 +85,7 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define to 1 if you have the `xmalloc' function. */
+/* Define to 1 if you have the 'xmalloc' function. */
 #undef HAVE_XMALLOC
 
 /* Define to the address where bug reports for this package should be sent. */
@@ -112,7 +109,9 @@
 /* Define to 1 if the C compiler supports function prototypes. */
 #undef PROTOTYPES
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
@@ -127,16 +126,17 @@
 # endif
 #endif
 
-/* Enable large inode numbers on Mac OS X 10.5.  */
-#ifndef _DARWIN_USE_64_BIT_INODE
-# define _DARWIN_USE_64_BIT_INODE 1
-#endif
-
 /* Number of bits in a file offset, on hosts where this is settable. */
 #undef _FILE_OFFSET_BITS
 
-/* Define for large files, on AIX-style hosts. */
+/* Define to 1 on platforms where this makes off_t a 64-bit type. */
 #undef _LARGE_FILES
+
+/* Number of bits in time_t, on hosts where this is settable. */
+#undef _TIME_BITS
+
+/* Define to 1 on platforms where this makes time_t a 64-bit type. */
+#undef __MINGW_USE_VC2005_COMPAT
 
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES
@@ -144,5 +144,5 @@
 /* Define to rpl_malloc if the replacement function should be used. */
 #undef malloc
 
-/* Define to `unsigned int' if <sys/types.h> does not define. */
+/* Define as 'unsigned int' if <stddef.h> doesn't define. */
 #undef size_t

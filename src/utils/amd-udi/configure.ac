@@ -4,6 +4,7 @@ dnl# Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.12])
 AC_INIT([amd-udi],[2.2],[/dev/null])
 AC_CONFIG_SRCDIR([mondfe/bkpt.c])
+AC_CONFIG_AUX_DIR([../..])
 AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_TARGET
 AC_EXEEXT
@@ -39,11 +40,11 @@ esac
 # Checks for programs.
 MY_CC=${CC-cc}
 AC_SUBST([MY_CC])dnl
+AC_PROG_AR
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_EGREP
-AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
 AC_PROG_RANLIB
@@ -51,7 +52,9 @@ AM_PROG_AS
 AM_CONDITIONAL([LINKER_IS_COMPILER],[test "x${LD}" = "x${CC}"])dnl
 
 # Checks for header files.
-AC_HEADER_TIME
+m4_ifdef([AC_HEADER_TIME],[
+  AC_HEADER_TIME dnl# (technically obsolete now, but keep it anyways)
+])dnl
 AC_SYS_POSIX_TERMIOS
 AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS([arpa/inet.h bios.h conio.h ctype.h dos.h errno.h \
@@ -60,6 +63,15 @@ AC_CHECK_HEADERS([arpa/inet.h bios.h conio.h ctype.h dos.h errno.h \
                   socket.h stdio.h sys/fcntl.h sys/file.h sys/ioctl.h \
                   sys/ioctl_compat.h sys/socket.h sys/sockio.h \
                   sys/time.h sys/timeb.h term.h termio.h termios.h])dnl
+
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}" || unset ac_cv_header_strings_h
+  AC_CHECK_HEADERS([strings.h])
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
+  AC_CHECK_HEADERS([unistd.h])
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN

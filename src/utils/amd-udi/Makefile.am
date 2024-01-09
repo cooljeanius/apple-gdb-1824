@@ -21,7 +21,7 @@
 
 ## Automake-specific things:
 all-local:
-	@echo "TODO: find out what is supposed to be going on here."
+	@echo "TODO: find out what is supposed to be going on here (in `pwd`)."
 
 CLEANFILES = *.o *~
 
@@ -91,6 +91,17 @@ TEXI2DVI = texi2dvi
 
 MY_SUBDIRS = udi mondfe montip
 
+## hacks to extend the verbosity control:
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
+
+AM_V_MFLAG = $(am__v_MFLAG_@AM_V@)
+am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
+am__v_MFLAG_0 = -s
+am__v_MFLAG_1 = -w
+
 # These are roughly topologically sorted in order to make porting more
 # streamlined.
 FLAGS_TO_PASS = \
@@ -109,41 +120,41 @@ FLAGS_TO_PASS = \
 	"INCLUDES=$(INCLUDES)"
 
 all_old:
-	@for dir in ${SUBDIRS}; do \
+	$(AM_V_at)for dir in ${SUBDIRS}; do \
 	if [ -d $${dir} ]; then \
-	    (rootme=`pwd`/ ; export rootme ; \
-	    rootsrc=`cd $(srcdir); pwd`/ ; export rootsrc ; \
-	    cd $${dir}; $(MAKE) $(FLAGS_TO_PASS)); \
+	    (rootme=`pwd`/; export rootme; \
+	    rootsrc=`cd $(srcdir); pwd`/; export rootsrc ; \
+	    cd $${dir}; $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS)); \
 	    fi; \
 	done
 .PHONY: all_old
 
 install_amd-udi:
-	@for dir in ${SUBDIRS}; do \
-	    echo "$${dir}:"; \
+	$(AM_V_at)for dir in ${SUBDIRS}; do \
+	    echo "doing $@ in $${dir}:"; \
 	    if [ -d $${dir} ]; then \
-		(cd $${dir}; $(MAKE) install); \
+		(cd $${dir}; $(MAKE) $(AM_V_MFLAG) install); \
 		fi; \
 	    done
 .PHONY: install_amd-udi
 
 clean-local mostlyclean-local:
-	-rm -f *~ core *.o a.out .DS_Store
-	@for dir in ${SUBDIRS}; do \
-	    echo "$${dir}:"; \
+	-rm -f $(AM_V_v) *~ core *.o a.out .DS_Store
+	$(AM_V_at)for dir in ${SUBDIRS}; do \
+	    echo "doing $@ in $${dir}:"; \
 	    if [ -d $${dir} ]; then \
-		(cd $${dir}; $(MAKE) $@); \
+		(cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); \
 		fi; \
 	    done
 .PHONY: clean-local mostlyclean-local
 
 distclean-local maintainer-clean-local realclean-local: clean-local
-	@for dir in ${SUBDIRS}; do \
-	    echo "$${dir}:"; \
-	    (cd $${dir}; $(MAKE) $@); \
+	$(AM_V_at)for dir in ${SUBDIRS}; do \
+	    echo "doing $@ in $${dir}:"; \
+	    (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); \
 	done
-	-rm -f *~ core
-	-rm -fr autom4te.cache || rmdir autom4te.cache
+	-rm -f $(AM_V_v) *~ core
+	-rm -fr $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 	-rm -f Makefile config.status
 .PHONY: distclean-local maintainer-clean-local realclean-local
 
