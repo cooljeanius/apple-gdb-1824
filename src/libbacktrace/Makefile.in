@@ -1174,11 +1174,29 @@ uninstall-am:
 
 all: $(BUILT_SOURCES) $(libbacktrace_la_OBJECTS) $(noinst_LTLIBRARIES)
 all-local: Makefile $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la
-	$(MAKE) $(libbacktrace_la_OBJECTS) $(noinst_LTLIBRARIES)
+	for mytarg in $(libbacktrace_la_OBJECTS) $(noinst_LTLIBRARIES); do \
+	  if test ! -e $${mytarg} || test $${mytarg} -ot Makefile; then \
+	    $(MAKE) -s $${mytarg}; \
+	  elif test -r $${mytarg}; then \
+	    stat $${mytarg}; \
+	  fi; \
+	done 
 default: all-local @MAINT@ $(builddir)/Makefile $(builddir)/config.h # all
-	$(MAKE) $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la
+	for mydeftarg in $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la; do \
+	  if test ! -e $${mydeftarg} || test $${mydeftarg} -ot Makefile; then \
+	    $(MAKE) -s $${mydeftarg}; \
+	  elif test -r $${mydeftarg}; then \
+	    stat $${mydeftarg}; \
+	  fi; \
+	done
 all-am: default all-multi @MAINT@ Makefile.am
-	$(MAKE) $(libbacktrace_la_DEPENDENCIES) $(EXTRA_builddir_LTOBJECTS)
+	for tg in $(libbacktrace_la_DEPENDENCIES) $(EXTRA_builddir_LTOBJECTS); do \
+	  if test ! -e $${tg} || test $${tg} -ot Makefile; then \
+	    $(MAKE) -s $${tg}; \
+	  elif test -r $${tg}; then \
+	    stat $${tg}; \
+	  fi; \
+	done
 install-exec-local: install-multi
 
 @HAVE_DSYMUTIL_TRUE@%.dSYM: %

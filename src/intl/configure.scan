@@ -1,13 +1,18 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.72])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
-AC_CONFIG_SRCDIR([acconfig_obsolete.h])
+AC_CONFIG_SRCDIR([dcigettext.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
+AC_PROG_CXX
+AC_PROG_AR
+AC_PROG_AWK
+AC_PROG_YACC
 AC_PROG_CC
+AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -17,7 +22,7 @@ AC_PROG_RANLIB
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([argz.h fcntl.h langinfo.h libintl.h limits.h locale.h malloc.h nl_types.h stddef.h stdlib.h string.h strings.h sys/param.h unistd.h wchar.h])
+AC_CHECK_HEADERS([argz.h fcntl.h langinfo.h libintl.h malloc.h nl_types.h strings.h sys/param.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL

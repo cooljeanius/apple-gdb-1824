@@ -177,6 +177,9 @@ $(SYMROOT)/gdb_plugin_support.o	: 	$(OBJS)
 	  stat $(SYMROOT)/gdb_plugin_support.o; \
 	  du $(SYMROOT)/gdb_plugin_support.o; \
 	  if test -x "`which sync`"; then sync; fi; \
+	  if test -x "`which nm`"; then \
+	    echo "$(nm gdb_plugin_support.o | wc -l) symbols in gdb_plugin_support.o"; \
+	  fi; \
 	elif test -n "$(OBJS)"; then \
 	  echo "OBJS are $(OBJS)"; \
 	fi

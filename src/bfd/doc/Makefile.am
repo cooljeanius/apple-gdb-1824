@@ -115,8 +115,15 @@ EXTRA_chew_am_DEPENDENCIES = Makefile $(srcdir_up)/config.h
 chew_am-chew.o: chew.c $(srcdir_high)/include/ansidecl.h Makefile
 	$(AM_V_at)if test -e $(srcdir)/chew_am-chew.o -a -w $(srcdir); then \
 	  rm -f $(AM_V_v) $(srcdir)/chew_am-chew.o; \
+	else \
+	  if test -x "`which sync`"; then sync; fi; \
 	fi
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(chew_am_CFLAGS) $(CFLAGS) -c -o chew_am-chew.o `test -f '$(srcdir)/chew.c' || echo '$(srcdir)/'`$(srcdir)/chew.c
+	if test -e $(srcdir)/chew_am-chew.o -a ! -e chew_am-chew.o; then \
+	  mv -f $(AM_V_v) $(srcdir)/chew_am-chew.o chew_am-chew.o; \
+	else \
+	  if test -x "`which sync`"; then sync; fi; \
+	fi
 
 ## yes, I do mean to override this here, to avoid an error with libtool:
 LDFLAGS =
@@ -163,7 +170,7 @@ aoutx.texi: $(srcdir_up)/aoutx.h $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVE
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/aoutx.h > aoutx.tmp
 	$(RUN_MOVEIFCHANGE) aoutx.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 archive.texi: $(srcdir_up)/archive.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -172,7 +179,7 @@ archive.texi: $(srcdir_up)/archive.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/archive.c >archive.tmp
 	$(RUN_MOVEIFCHANGE) archive.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 archures.texi: $(srcdir_up)/archures.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -181,7 +188,7 @@ archures.texi: $(srcdir_up)/archures.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_T
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str < $(srcdir_up)/archures.c >archures.tmp
 	$(RUN_MOVEIFCHANGE) archures.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 # We use bfdt.texi, rather than bfd.texi, to avoid conflicting with
 # bfd.texinfo on an 8.3 filesystem.
@@ -192,7 +199,7 @@ bfdt.texi: $(srcdir_up)/bfd.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFC
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str < $(srcdir_up)/bfd.c > bfd.tmp
 	$(RUN_MOVEIFCHANGE) bfd.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 cache.texi: $(srcdir_up)/cache.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -201,7 +208,7 @@ cache.texi: $(srcdir_up)/cache.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVE
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str < $(srcdir_up)/cache.c >cache.tmp
 	$(RUN_MOVEIFCHANGE) cache.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 coffcode.texi: $(srcdir_up)/coffcode.h $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -210,7 +217,7 @@ coffcode.texi: $(srcdir_up)/coffcode.h $(srcdir)/doc.str @MAINT@ chew.c $(PATH_T
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/coffcode.h >coffcode.tmp
 	$(RUN_MOVEIFCHANGE) coffcode.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 core.texi: $(srcdir_up)/corefile.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -219,7 +226,7 @@ core.texi: $(srcdir_up)/corefile.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MO
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/corefile.c >core.tmp
 	$(RUN_MOVEIFCHANGE) core.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 elf.texi: $(srcdir_up)/elf.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -228,7 +235,7 @@ elf.texi: $(srcdir_up)/elf.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCH
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/elf.c > elf.tmp
 	$(RUN_MOVEIFCHANGE) elf.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 elfcode.texi: $(srcdir_up)/elfcode.h $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -237,7 +244,7 @@ elfcode.texi: $(srcdir_up)/elfcode.h $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/elfcode.h >elfcode.tmp
 	$(RUN_MOVEIFCHANGE) elfcode.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 mmo.texi: $(srcdir_up)/mmo.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -246,7 +253,7 @@ mmo.texi: $(srcdir_up)/mmo.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCH
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/mmo.c > mmo.tmp
 	$(RUN_MOVEIFCHANGE) mmo.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 format.texi: $(srcdir_up)/format.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -255,7 +262,7 @@ format.texi: $(srcdir_up)/format.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MO
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/format.c >format.tmp
 	$(RUN_MOVEIFCHANGE) format.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 libbfd.texi: $(srcdir_up)/libbfd.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -264,7 +271,7 @@ libbfd.texi: $(srcdir_up)/libbfd.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MO
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str < $(srcdir_up)/libbfd.c >libbfd.tmp
 	$(RUN_MOVEIFCHANGE) libbfd.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 bfdio.texi: $(srcdir_up)/bfdio.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -273,7 +280,7 @@ bfdio.texi: $(srcdir_up)/bfdio.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVE
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str < $(srcdir_up)/bfdio.c >bfdio.tmp
 	$(RUN_MOVEIFCHANGE) bfdio.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 bfdwin.texi: $(srcdir_up)/bfdwin.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -282,7 +289,7 @@ bfdwin.texi: $(srcdir_up)/bfdwin.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MO
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str < $(srcdir_up)/bfdwin.c >bfdwin.tmp
 	$(RUN_MOVEIFCHANGE) bfdwin.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 opncls.texi: $(srcdir_up)/opncls.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -291,7 +298,7 @@ opncls.texi: $(srcdir_up)/opncls.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MO
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/opncls.c >opncls.tmp
 	$(RUN_MOVEIFCHANGE) opncls.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 reloc.texi: $(srcdir_up)/reloc.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -300,7 +307,7 @@ reloc.texi: $(srcdir_up)/reloc.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVE
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/reloc.c >reloc.tmp
 	$(RUN_MOVEIFCHANGE) reloc.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 section.texi: $(srcdir_up)/section.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -309,7 +316,7 @@ section.texi: $(srcdir_up)/section.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/section.c >section.tmp
 	$(RUN_MOVEIFCHANGE) section.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 syms.texi: $(srcdir_up)/syms.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -318,7 +325,7 @@ syms.texi: $(srcdir_up)/syms.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIF
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/syms.c > syms.tmp
 	$(RUN_MOVEIFCHANGE) syms.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 targets.texi: $(srcdir_up)/targets.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -327,7 +334,7 @@ targets.texi: $(srcdir_up)/targets.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/targets.c >targets.tmp
 	$(RUN_MOVEIFCHANGE) targets.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 init.texi: $(srcdir_up)/init.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -336,7 +343,7 @@ init.texi: $(srcdir_up)/init.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIF
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/init.c > init.tmp
 	$(RUN_MOVEIFCHANGE) init.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 hash.texi: $(srcdir_up)/hash.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -345,7 +352,7 @@ hash.texi: $(srcdir_up)/hash.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIF
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/hash.c > hash.tmp
 	$(RUN_MOVEIFCHANGE) hash.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 linker.texi: $(srcdir_up)/linker.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MOVEIFCHANGE) $(src_MKDOC)
 	$(AM_V_at)if test ! -e $(MKDOC); then $(MAKE) -w $(MKDOC); fi
@@ -354,7 +361,7 @@ linker.texi: $(srcdir_up)/linker.c $(srcdir)/doc.str @MAINT@ chew.c $(PATH_TO_MO
 	fi
 	$(src_MKDOC) -f $(srcdir)/doc.str <$(srcdir_up)/linker.c >linker.tmp
 	$(RUN_MOVEIFCHANGE) linker.tmp $@
-	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
+	$(AM_V_at)if test $@ -ot $< || test $@ -ot $(src_MKDOC); then touch $@; fi
 
 LIBBFD_H_DEP = \
 	$(srcdir_up)/libbfd-in.h	\
@@ -442,7 +449,7 @@ am--refresh: Makefile $(srcdir_up)/Makefile
 	@pwd || echo "am--refresh"
 
 $(srcdir_up)/Makefile: $(srcdir_up)/Makefile.in $(top_builddir)/config.status
-	if test $(srcdir) != "."; then \
+	$(AM_V_at)if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  if test -e ../Makefile -a ! -e $(srcdir_up)/Makefile; then \
 	    cp $(AM_V_v) ../Makefile $(srcdir_up)/Makefile; \

@@ -158,7 +158,7 @@ libintl.h: @MAINT@ config.status
 	./config.status libintl_h_compat
 
 libintl.a: $(OBJECTS) $(LTOBJECTS)
-	rm -f $@
+	$(AM_V_at)rm -f $@
 	$(AR) cru $@ $(OBJECTS)
 	$(RANLIB) $@
 
@@ -167,10 +167,10 @@ libintl.la: $(LTOBJECTS) $(OBJECTS)
 		   -o $@ $(LTOBJECTS) -version-info 1:0 -rpath $(libdir)
 
 ../po/cat-id-tbl.lo: ../po/cat-id-tbl.c $(top_srcdir)/po/$(PACKAGE).pot
-	cd ../po && $(MAKE) cat-id-tbl.lo
+	cd ../po && $(MAKE) -w cat-id-tbl.lo
 
 ../po/cat-id-tbl.o: ../po/cat-id-tbl.c $(top_srcdir)/po/$(PACKAGE).pot
-	cd ../po && $(MAKE) cat-id-tbl.o
+	cd ../po && $(MAKE) -w cat-id-tbl.o
 
 EXTRA_DIST += po/Makevars.in
 
@@ -313,7 +313,7 @@ mostlyclean-local: @MAINT@ config.status
 
 clean-local: mostlyclean-local @MAINT@ config.status
 	rm -f $(AM_V_v) *.s *.i *.bc
-	-if test ! -e po/Makefile; then $(MAKE) po/Makefile; fi
+	-if test ! -e po/Makefile; then $(MAKE) -w po/Makefile; fi
 .PHONY: clean-local
 
 distclean-local: clean-local @MAINT@ config.status
@@ -329,7 +329,7 @@ distclean-local: clean-local @MAINT@ config.status
 	rm -f $(AM_V_v) *.output Makefile*orig *~ m4/*~ po/*~
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 	-rm -f .DS_Store
-	-if test ! -e po/Makefile; then $(MAKE) po/Makefile; fi
+	-if test ! -e po/Makefile; then $(MAKE) -w po/Makefile; fi
 .PHONY: distclean-local
 
 maintainer-clean-local: distclean-local @MAINT@ config.status

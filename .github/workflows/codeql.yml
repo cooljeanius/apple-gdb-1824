@@ -78,13 +78,14 @@ jobs:
           elif test -w /home/runner/work -o -w /home/runner -o -w /home; then \
             (sync && mkdir -pv /home/runner/work/apple-gdb-1824/build); \
           else \
+            (sync && (stat /home/runner/work || stat /home/runner || stat /home)); \
             echo "unable to make the necessary builddir due to unwriteable directories"; \
           fi; \
         else \
           (sync && stat /home/runner/work/apple-gdb-1824/build); \
         fi
         (cd src && sync && echo "now in $(pwd)..." && sync)
-        if test ${{ matrix.language }} != 'c-cpp'; then sleep 1; fi
+        if test ${{ matrix.language }} != 'c-cpp'; then sleep 1; else true; fi
 
     - name: Dependencies
       if: matrix.language == 'c-cpp'
