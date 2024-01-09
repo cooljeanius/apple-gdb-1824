@@ -225,6 +225,11 @@ am__v_ARFLAGS_ = $(am__v_ARFLAGS_@AM_DEFAULT_V@)
 am__v_ARFLAGS_0 = qc
 am__v_ARFLAGS_1 = qv
 
+AM_V_MFLAG = $(am__v_MFLAG_@AM_V@)
+am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
+am__v_MFLAG_0 = -s
+am__v_MFLAG_1 = -w
+
 AM_V_splint = $(am__v_splint_@AM_V@)
 am__v_splint_ = $(am__v_splint_@AM_DEFAULT_V@)
 am__v_splint_0 =
@@ -1507,7 +1512,7 @@ generated_files = config.h observer.h observer.inc ada-lex.c jit-reader.h \
 ## Old rule was: $(AM_V_CC)$(CC) -c $(INTERNAL_CFLAGS) $<
 
 all: gdb$(EXEEXT) $(CONFIG_ALL)
-	@$(MAKE) $(FLAGS_TO_PASS) DO=all \
+	$(AM_V_at)$(MAKE) -w $(FLAGS_TO_PASS) DO=all \
 	  "DODIRS=`echo $(SUBDIRS) | $(SED) 's/testsuite//'`" subdir_do
 .PHONY: all-tui
 all-tui: $(TUI)$(EXEEXT)
@@ -1515,7 +1520,7 @@ all-tui: $(TUI)$(EXEEXT)
 # Convenience rule to handle recursion.
 $(LIBGNU) $(GNULIB_H): all-lib
 all-lib: $(GNULIB_BUILDDIR)/Makefile
-	@$(MAKE) $(FLAGS_TO_PASS) DO=all DODIRS=$(GNULIB_BUILDDIR) subdir_do
+	$(AM_V_at)$(MAKE) -w $(FLAGS_TO_PASS) DO=all DODIRS=$(GNULIB_BUILDDIR) subdir_do
 .PHONY: all-lib
 
 installcheck:
@@ -1527,7 +1532,7 @@ check: force
 	  rootme=`pwd`; export rootme; \
 	  rootsrc=`cd $(srcdir); pwd`; export rootsrc; \
 	  cd testsuite; \
-	  $(MAKE) $(TARGET_FLAGS_TO_PASS) check; \
+	  $(MAKE) -w $(TARGET_FLAGS_TO_PASS) check; \
 	else echo "no Makefile for testsuite"; fi
 
 # The idea is to parallelize testing of multilibs, for example:
@@ -1553,13 +1558,13 @@ check//%: force
 		 --recheck && \
 	       $(SHELL) ./config.status); done; \
 	  else echo "no Makefile in $${testdir}"; fi && cd $${testdir} && \
-	  $(MAKE) $(TARGET_FLAGS_TO_PASS) \
+	  $(MAKE) -w $(TARGET_FLAGS_TO_PASS) \
 	    RUNTESTFLAGS="--target_board=$${variant} $(RUNTESTFLAGS)" \
 	    "$${target}"; \
 	else echo "testsuite is not configured"; fi
 
 info dvi install-info clean-info html install-html pdf-local: force
-	@$(MAKE) $(FLAGS_TO_PASS) DO=$@ "DODIRS=$(SUBDIRS)" subdir_do
+	$(AM_V_at)$(MAKE) -w $(FLAGS_TO_PASS) DO=$@ "DODIRS=$(SUBDIRS)" subdir_do
 .PHONY: info dvi install-info clean-info html install-html pdf-local
 
 pdf: pdf-local
@@ -1592,7 +1597,7 @@ install-only: $(CONFIG_INSTALL)
 			$(DESTDIR)$(man1dir); \
 		$(INSTALL_DATA) $(srcdir)/gdb.1 \
 			$(DESTDIR)$(man1dir)/$${transformed_name}.1
-	@$(MAKE) DO=install "DODIRS=$(SUBDIRS)" $(FLAGS_TO_PASS) subdir_do
+	$(AM_V_at)$(MAKE) -w DO=install "DODIRS=$(SUBDIRS)" $(FLAGS_TO_PASS) subdir_do
 .PHONY: install-tui
 install-tui:
 	transformed_name=`t='$(program_transform_name)'; \
@@ -1621,7 +1626,7 @@ uninstall: force $(CONFIG_UNINSTALL)
 	  fi; \
 	rm -f $(AM_V_v) $(DESTDIR)$(bindir)/$${transformed_name}$(EXEEXT) \
 	      $(DESTDIR)$(man1dir)/$${transformed_name}.1
-	@$(MAKE) DO=uninstall "DODIRS=$(SUBDIRS)" $(FLAGS_TO_PASS) subdir_do
+	$(AM_V_at)$(MAKE) -w DO=uninstall "DODIRS=$(SUBDIRS)" $(FLAGS_TO_PASS) subdir_do
 .PHONY: uninstall-tui
 uninstall-tui:
 	transformed_name=`t='$(program_transform_name)'; \
@@ -1771,7 +1776,7 @@ TMPDIR = /tmp
 
 # Removing the old gdb 1st works better if running, at least on SunOS.
 gdb$(EXEEXT): gdb.o libgdb.a $(CONFIG_OBS) $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
-	$(MAKE) version.o
+	$(AM_V_at)$(MAKE) -w version.o
 	$(AM_V_at)rm -f $(AM_V_v) gdb$(EXEEXT)
 	$(AM_V_at)rm -f -r $(AM_V_v) gdb$(EXEEXT).dSYM
 	$(AM_V_LINKER)$(LINK) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
@@ -1805,7 +1810,7 @@ $(TUI)$(EXEEXT): tui-main.o libgdb.a $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
 	$(AM_V_at)rm -f $(AM_V_v) $(TMPDIR)/macosx-syms-to-remove;
 
 nlm:	force
-	rootme=`pwd`; export rootme; $(MAKE) $(TARGET_FLAGS_TO_PASS) \
+	rootme=`pwd`; export rootme; $(MAKE) -w $(TARGET_FLAGS_TO_PASS) \
 	  DO=all DODIRS=nlm subdir_do
 
 # Create a library of the gdb object files and build GDB by linking
@@ -1836,7 +1841,7 @@ stopgdb: stop-gdb$(EXEEXT)
 # Removing gdb1 before the copy is the right thing if gdb1 is open
 # in another process.
 gdb1$(EXEEXT): gdb$(EXEEXT)
-	rm -f $(AM_V_v) gdb1$(EXEEXT)
+	$(AM_V_at)rm -f $(AM_V_v) gdb1$(EXEEXT)
 	cp $(AM_V_v) gdb$(EXEEXT) gdb1$(EXEEXT)
 
 # Put the proper machine-specific files first, so M-. on a machine
@@ -1879,10 +1884,10 @@ tags: TAGS
 # clean rules to their makefile fragments
 # 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:: $(CONFIG_CLEAN)
-	@$(MAKE) $(FLAGS_TO_PASS) DO=clean "DODIRS=$(SUBDIRS)" subdir_do
+	$(AM_V_at)$(MAKE) -w $(FLAGS_TO_PASS) DO=clean "DODIRS=$(SUBDIRS)" subdir_do
 	-for dir in $(CLEANDIRS); do \
 	  if test -d $${dir} && test -e $${dir}/Makefile; then \
-	    cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) clean; \
+	    cd $${dir} && $(MAKE) -w $(FLAGS_TO_PASS) clean; \
 	  else \
 	    echo "skipping cleaning $${dir}"; \
 	  fi; \
@@ -1893,13 +1898,13 @@ clean mostlyclean:: $(CONFIG_CLEAN)
 	      if test "x$${dir}" = "xgnulib"; then \
 	        if test -e $${dir}/import/Makefile; then \
 	          echo "$${dir} exists and it and its subdir both have Makefiles; attempting to clean it..."; \
-	          cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) clean; \
+	          cd $${dir} && $(MAKE) -w $(FLAGS_TO_PASS) clean; \
 	        else \
 	          echo "skipping cleaning $${dir}; no Makefile in its import subdir"; \
 	        fi; \
 	      else \
 	        echo "$${dir} exists and has a Makefile; attempting to clean it..."; \
-	        cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) clean; \
+	        cd $${dir} && $(MAKE) -w $(FLAGS_TO_PASS) clean; \
 	      fi; \
 	    else \
 	      if test ! -d $${dir}; then \
@@ -1919,8 +1924,8 @@ clean mostlyclean:: $(CONFIG_CLEAN)
 	rm -f $(AM_V_v) gdb$(EXEEXT) core make.log
 	rm -f $(AM_V_v) gdb[0-9]$(EXEEXT)
 	rm -f stop-gdb$(EXEEXT)
-	if test -e $(TUI)$(EXEEXT); then $(MAKE) clean-tui; fi
-	if test -e insight$(EXEEXT); then $(MAKE) clean-gdbtk; fi
+	if test -e $(TUI)$(EXEEXT); then $(MAKE) -w clean-tui; fi
+	if test -e insight$(EXEEXT); then $(MAKE) -w clean-gdbtk; fi
 	rm -f $(AM_V_v) test-cp-name-parser$(EXEEXT)
 	rm -f $(AM_V_v) *.rsrc
 	-rm -f $(AM_V_v) gnulib/*.o gdbserver/*.o
@@ -1939,20 +1944,20 @@ clean-tui:
 # NB: While GDBSERVER might be configured on native systems, it is NOT
 # always included in SUBDIRS. Remove the gdbserver files explictly.
 distclean: clean clean-tui clean-gdbtk @MAINT@ clean-po
-	@$(MAKE) $(FLAGS_TO_PASS) DO=distclean "DODIRS=$(SUBDIRS)" \
+	$(AM_V_at)$(MAKE) -w $(FLAGS_TO_PASS) DO=distclean "DODIRS=$(SUBDIRS)" \
 	  subdir_do
 	-for dir in $(UNUSED_SUBDIRS); do \
 	  if test -d $${dir} && test -e $${dir}/Makefile; then \
 	    if test "x$${dir}" = "xgnulib"; then \
 	      if test -e $${dir}/import/Makefile; then \
 	        echo "$${dir} exists and it and its subdir both have Makefiles; attempting to make it be distclean..."; \
-	        cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) distclean; \
+	        cd $${dir} && $(MAKE) -w $(FLAGS_TO_PASS) distclean; \
 	      else \
 	        echo "skipping making $${dir} be distclean; no Makefile in its import subdir"; \
 	      fi; \
 	    else \
 	      echo "$${dir} exists and has a Makefile; attempting to make it be distclean..."; \
-	      cd $${dir} && $(MAKE) $(FLAGS_TO_PASS) distclean; \
+	      cd $${dir} && $(MAKE) -w $(FLAGS_TO_PASS) distclean; \
 	    fi; \
 	  else \
 	    if test ! -d $${dir}; then \
@@ -2010,25 +2015,25 @@ local-maintainer-clean: mostlyclean @MAINT@ clean-tui clean-gdbtk
 	  (test -w $(TMPDIR) && mv -f $(AM_V_v) config.status $(TMPDIR)/cfg_stat.sh)
 
 do-maintainer-clean:
-	@$(MAKE) $(FLAGS_TO_PASS) DO=maintainer-clean "DODIRS=$(SUBDIRS)" \
-		subdir_do
+	$(AM_V_at)$(MAKE) -w $(FLAGS_TO_PASS) DO=maintainer-clean \
+		"DODIRS=$(SUBDIRS)" subdir_do
 
 diststuff: $(DISTSTUFF) $(PACKAGE).pot $(CATALOGS)
-	cd doc; $(MAKE) $(MFLAGS) diststuff
+	$(AM_V_at)cd doc; $(MAKE) -w $(MFLAGS) diststuff
 
 subdir_do: force
-	@for i in $(DODIRS); do \
+	$(AM_V_at)for i in $(DODIRS); do \
 	  if [ "x$${i}" = "xgnulib" -o "x$${i}" = "xbuild-gnulib" ]; then \
 	   if [ -f ./$${i}/Makefile -a -f ./$${i}/import/Makefile ]; then \
 	     if (cd ./$${i}; \
-	       $(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
+	       $(MAKE) -w $(FLAGS_TO_PASS) $(DO)); then \
 	       echo "'$@' succeeded for '$${i}'"; \
 	     else echo "gdb/Makefile: '$@' failed for '$${i}'" >&2; exit 1; fi; \
 	   else echo "at least one Makefile missing for '$${i}'"; fi; \
 	  else \
 	    if [ -f ./$${i}/Makefile ]; then \
 	      if (cd ./$${i}; \
-	        $(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
+	        $(MAKE) -w $(FLAGS_TO_PASS) $(DO)); then \
 	        echo "'$@' succeeded for '$${i}'"; \
 	      else \
 	        echo "gdb/Makefile: '$@' failed for '$${i}'" >&2; \
@@ -2040,7 +2045,10 @@ subdir_do: force
 
 Makefile: Makefile.in config.status @frags@
 	$(SHELL) config.status
-	touch Makefile stamp-h
+	$(AM_V_at)if test Makefile -ot Makefile.in; then touch Makefile; fi
+	$(AM_V_at)if test ! -e stamp-h || test stamp-h -ot config.status; then \
+	  touch stamp-h; \
+	fi
 
 gnulib/Makefile: gnulib/Makefile.in config.status @frags@
 	CONFIG_FILES="gnulib/Makefile" \
@@ -2066,7 +2074,9 @@ config.h: stamp-h
 	@echo "this target, '$@' just makes its dep, '$<'"
 stamp-h: config.in config.status
 	$(SHELL) config.status
-	touch stamp-h
+	$(AM_V_at)if test ! -e stamp-h || test stamp-h -ot config.in; then \
+	  touch stamp-h; \
+	fi
 
 config.status: configure configure.tgt configure.host
 	if test -r config.status && test -x config.status; then \
@@ -2076,7 +2086,7 @@ config.status: configure configure.tgt configure.host
 	    CONFIG_SHELL=$(SHELL) $(SHELL) ./configure --no-create --no-recursion; \
 	  fi; \
 	fi
-	touch config.status
+	$(AM_V_at)if test config.status -ot configure; then touch config.status; fi
 
 # a compromise between the built-in rule and the automake rule:
 configure: @MAINT@ configure.ac configure.sh
@@ -2095,27 +2105,27 @@ force:
 # Documentation!
 # GDB QUICK REFERENCE (TeX dvi file, CM fonts)
 doc/refcard.dvi:
-	cd doc; $(MAKE) refcard.dvi $(FLAGS_TO_PASS)
+	$(AM_V_at)cd doc; $(MAKE) -w refcard.dvi $(FLAGS_TO_PASS)
 
 # GDB QUICK REFERENCE (PostScript output, common PS fonts)
 doc/refcard.ps:
-	cd doc; $(MAKE) refcard.ps $(FLAGS_TO_PASS)
+	$(AM_V_at)cd doc; $(MAKE) -w refcard.ps $(FLAGS_TO_PASS)
 
 ps: doc/refcard.ps
-	cd doc; $(MAKE) dvi $(FLAGS_TO_PASS)
+	$(AM_V_at)cd doc; $(MAKE) -w dvi $(FLAGS_TO_PASS)
 .PHONY: ps
 
 # GDB MANUAL: TeX dvi file
 doc/gdb.dvi:
-	cd doc; $(MAKE) gdb.dvi $(FLAGS_TO_PASS)
+	$(AM_V_at)cd doc; $(MAKE) -w gdb.dvi $(FLAGS_TO_PASS)
 
 dvi-local: doc/gdb.dvi doc/refcard.dvi
-	cd doc; $(MAKE) dvi $(FLAGS_TO_PASS)
+	$(AM_V_at)cd doc; $(MAKE) -w dvi $(FLAGS_TO_PASS)
 .PHONY: dvi-local
 
 # GDB MANUAL: info file
 doc/gdb.info:
-	cd doc; $(MAKE) gdb.info $(FLAGS_TO_PASS)
+	$(AM_V_at)cd doc; $(MAKE) -w gdb.info $(FLAGS_TO_PASS)
 
 # Make copying.c from COPYING
 $(srcdir)/copying.c: @MAINTAINER_MODE_TRUE@ \
@@ -2201,16 +2211,16 @@ stamp-splint: $(LINTFILES)
 # clang analysis output:
 .SUFFIXES: .c .plist
 .c.plist:
-	@if test ! -d $(analysisdir); then $(MKDIR_P) $(analysisdir); fi
+	$(AM_V_at)if test ! -d $(analysisdir); then $(MKDIR_P) $(analysisdir); fi
 	$(AM_V_CLANG)$(RUN_CLANG_ANALYZER) -Wall -Wextra \
 	  -o $(analysisdir)/$@ $<
 
 # To actually run clang:
 lint-local: stamp-clang stamp-gcc-analysis
 stamp-clang: $(LINTFILES) $(DEPFILES)
-	$(MAKE) `echo "$(LINTFILES) init.c" | uniq | $(SED) 's/\.c /\.plist /g' | $(SED) 's/\.y /\.plist /g'`
-	$(MAKE) `echo "$(DEPFILES) init.o" | uniq | $(SED) 's/\.o /\.plist /g'`
-	touch $@
+	$(MAKE) -w `echo "$(LINTFILES) init.c" | uniq | $(SED) 's/\.c /\.plist /g' | $(SED) 's/\.y /\.plist /g'`
+	$(MAKE) -w `echo "$(DEPFILES) init.o" | uniq | $(SED) 's/\.o /\.plist /g'`
+	$(AM_V_at)if test ! -e $@ || test $@ -ot Makefile; then touch $@; fi
 .PHONY: lint-local
 stamp-gcc-analysis: $(LINTFILES) $(DEPFILES)
 	echo "TODO: set up static analysis with gcc"
@@ -4319,7 +4329,7 @@ rdi-share/libangsd.a:	force
 	if [ -f ./$${dir}/Makefile ]; then \
 	  r=`pwd`; export r; \
 	  srcroot=`cd $(srcdir); pwd`; export srcroot; \
-	  (cd $${dir}; $(MAKE) $(FLAGS_TO_PASS) all); \
+	  (cd $${dir}; $(MAKE) -w $(FLAGS_TO_PASS) all); \
 	else \
 	  echo "no Makefile for '$${dir}'"; \
 	fi
@@ -4495,13 +4505,12 @@ stamp-framework-headers:
 	cp -p $(AM_V_v) $(cli_srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/cli/
 
 stamp-framework:
-	$(MAKE) $(FRAMEWORK_OFILES)
+	$(MAKE) -w $(FRAMEWORK_OFILES)
 	$(RM) -f $(AM_V_v) stamp-framework-headers
-	$(MAKE) stamp-framework-headers
+	$(MAKE) -w stamp-framework-headers
 	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
 	$(LN_S) $(AM_V_v) Versions/Current/Resources $(FRAMEWORK).framework/Resources
 	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
-
 	set -ex; \
 	if [ "x$(FRAMEWORK_SUFFIX)" != "x" ]; then \
 	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \

@@ -53,6 +53,12 @@ LIBIBERTY_LIB = ../../libiberty/libiberty.a
 
 TERMCAP_LIB = @TERMCAP_LIB@
 
+## extend the automake verbosity control:
+AM_V_MFLAG = $(am__v_MFLAG_@AM_V@)
+am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
+am__v_MFLAG_0 = -s
+am__v_MFLAG_1 = -w
+
 .c.o:
 	${RM} $@
 	$(CC) $(CCFLAGS) -c $<
@@ -64,43 +70,43 @@ all: $(EXECUTABLES)
 everything: all rlfe
 
 rl: rl.o $(READLINE_LIB) $(HISTORY_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) ./rl.o
-	if test -e $(srcdir)/rl.o -a ! -e rl.o; then \
+	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rl.o
+	$(AM_V_at)if test -e $(srcdir)/rl.o -a ! -e rl.o; then \
 	  cp -v $(srcdir)/rl.o rl.o; \
 	fi
 	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rl.o -lreadline -lhistory $(READLINE_LIB) $(TERMCAP_LIB)
 
 rlcat: rlcat.o $(READLINE_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) ./rlcat.o
-	if test -e $(srcdir)/rlcat.o -a ! -e rlcat.o; then \
+	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rlcat.o
+	$(AM_V_at)if test -e $(srcdir)/rlcat.o -a ! -e rlcat.o; then \
 	  cp -v $(srcdir)/rlcat.o rlcat.o; \
 	fi
 	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlcat.o -lreadline $(READLINE_LIB) $(TERMCAP_LIB)
 
 fileman: fileman.o $(READLINE_LIB) $(HISTORY_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) ./fileman.o
-	if test -e $(srcdir)/fileman.o -a ! -e fileman.o; then \
+	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./fileman.o
+	$(AM_V_at)if test -e $(srcdir)/fileman.o -a ! -e fileman.o; then \
 	  cp -v $(srcdir)/fileman.o fileman.o; \
 	fi
 	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ fileman.o $(LIBS) $(READLINE_LIB) $(HISTORY_LIB) $(TERMCAP_LIB)
 
 rltest: rltest.o $(READLINE_LIB) $(HISTORY_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) ./rltest.o
-	if test -e $(srcdir)/rltest.o -a ! -e rltest.o; then \
+	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rltest.o
+	$(AM_V_at)if test -e $(srcdir)/rltest.o -a ! -e rltest.o; then \
 	  cp -v $(srcdir)/rltest.o rltest.o; \
 	fi
 	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rltest.o -lreadline -lhistory $(TERMCAP_LIB)
 
 rlversion: rlversion.o $(READLINE_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) ./rlversion.o
-	if test -e $(srcdir)/rlversion.o -a ! -e rlversion.o; then \
+	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rlversion.o
+	$(AM_V_at)if test -e $(srcdir)/rlversion.o -a ! -e rlversion.o; then \
 	  cp -v $(srcdir)/rlversion.o rlversion.o; \
 	fi
 	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlversion.o -lreadline $(TERMCAP_LIB)
 
 histexamp: histexamp.o $(HISTORY_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) ./histexamp.o
-	if test -e $(srcdir)/histexamp.o -a ! -e histexamp.o; then \
+	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./histexamp.o
+	$(AM_V_at)if test -e $(srcdir)/histexamp.o -a ! -e histexamp.o; then \
 	  cp -v $(srcdir)/histexamp.o histexamp.o; \
 	fi
 	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ histexamp.o -lhistory $(TERMCAP_LIB)
@@ -133,8 +139,8 @@ histexamp.o: $(top_srcdir)/history.h
 # Stuff for Per Bothner's `rlfe' program
  
 rlfe: rlfe.o $(READLINE_LIB) $(HISTORY_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) ./rlfe.o
-	if test -e $(srcdir)/rlfe.o -a ! -e rlfe.o; then \
+	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rlfe.o
+	$(AM_V_at)if test -e $(srcdir)/rlfe.o -a ! -e rlfe.o; then \
 	  cp -v $(srcdir)/rlfe.o rlfe.o; \
 	fi
 	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlfe.o -lreadline -lhistory ${TERMCAP_LIB}

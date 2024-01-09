@@ -98,7 +98,7 @@ jobs:
         if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
           echo "nproc says we can use $(nproc) build jobs"; \
           if test "$(nproc)" -eq 4; then \
-            (make -j"$(nproc)" || make -j2 || make || remake -dpPw --trace=read); \
+            (make -j"$(nproc)" || make -j2 || make || remake -dpPw --trace=noshell); \
           else
             (make -j"$(nproc)" || make || remake -dpPw --trace=command); \
           fi; \

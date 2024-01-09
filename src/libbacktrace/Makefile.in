@@ -646,6 +646,10 @@ MULTIDIRS =
 MULTISUBDIR = 
 MULTIDO = true
 MULTICLEAN = true
+AM_V_MFLAG = $(am__v_MFLAG_@AM_V@)
+am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
+am__v_MFLAG_0 = -s
+am__v_MFLAG_1 = -w
 
 # Add a test to this variable if you want it to be run.
 TESTS = $(check_PROGRAMS)
@@ -1176,25 +1180,31 @@ all: $(BUILT_SOURCES) $(libbacktrace_la_OBJECTS) $(noinst_LTLIBRARIES)
 all-local: Makefile $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la
 	for mytarg in $(libbacktrace_la_OBJECTS) $(noinst_LTLIBRARIES); do \
 	  if test ! -e $${mytarg} || test $${mytarg} -ot Makefile; then \
-	    $(MAKE) -s $${mytarg}; \
+	    $(MAKE) $(AM_V_MFLAG) $${mytarg}; \
 	  elif test -r $${mytarg}; then \
 	    stat $${mytarg}; \
+	  else \
+	    echo "dunno about $${mytarg}..."; \
 	  fi; \
 	done 
 default: all-local @MAINT@ $(builddir)/Makefile $(builddir)/config.h # all
 	for mydeftarg in $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la; do \
 	  if test ! -e $${mydeftarg} || test $${mydeftarg} -ot Makefile; then \
-	    $(MAKE) -s $${mydeftarg}; \
+	    $(MAKE) $(AM_V_MFLAG) $${mydeftarg}; \
 	  elif test -r $${mydeftarg}; then \
 	    stat $${mydeftarg}; \
+	  else \
+	    echo "dunno about $${mydeftarg}..."; \
 	  fi; \
 	done
 all-am: default all-multi @MAINT@ Makefile.am
 	for tg in $(libbacktrace_la_DEPENDENCIES) $(EXTRA_builddir_LTOBJECTS); do \
 	  if test ! -e $${tg} || test $${tg} -ot Makefile; then \
-	    $(MAKE) -s $${tg}; \
+	    $(MAKE) $(AM_V_MFLAG) $${tg}; \
 	  elif test -r $${tg}; then \
 	    stat $${tg}; \
+	  else \
+	    echo "dunno about $${tg}..."; \
 	  fi; \
 	done
 install-exec-local: install-multi

@@ -154,6 +154,12 @@ INSTALLED_HEADERS = readline.h chardefs.h keymaps.h history.h tilde.h \
 		    rlstdc.h rlconf.h rltypedefs.h
 INSTALLEDdir = @INSTALLEDdir@
 
+## extend the automake verbosity control:
+AM_V_MFLAG = $(am__v_MFLAG_@AM_V@)
+am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
+am__v_MFLAG_0 = -s
+am__v_MFLAG_1 = -w
+
 ##########################################################################
 TARGETS = @STATIC_TARGET@ @SHARED_TARGET@
 INSTALL_TARGETS = @STATIC_INSTALL_TARGET@ @SHARED_INSTALL_TARGET@
@@ -170,7 +176,7 @@ static: $(STATIC_LIBS)
 	  if test -e $${mylib}; then \
 	    stat $${mylib}; \
 	  elif test -e Makefile; then \
-	    $(MAKE) -w $${mylib}; \
+	    $(MAKE) $(AM_V_MFLAG) $${mylib}; \
 	  else \
 	    echo "unsure how to make $${mylib}"; \
 	  fi; \
@@ -211,7 +217,7 @@ readline: $(OBJECTS) readline.h rldefs.h chardefs.h examples/rl.c ./libreadline.
 	$(CC) $(CCFLAGS) -o $@ ./examples/rl.c ./libreadline.a ${TERMCAP_LIB}
 
 lint lint-local: force
-	$(MAKE) $(MFLAGS) CCFLAGS='$(GCC_LINT_CFLAGS)' static
+	$(MAKE) $(AM_V_MFLAG) $(MFLAGS) CCFLAGS='$(GCC_LINT_CFLAGS)' static
 .PHONY: lint lint-local
 
 am_Makefile am_makefile: config.status $(srcdir)/Makefile.in
@@ -242,15 +248,15 @@ stamp-h: config.status $(srcdir)/config.h.in
 
 shared: force shlib/Makefile
 	-test -d shlib || mkdir shlib
-	-( cd shlib; ${MAKE} ${MFLAGS} all )
+	-( cd shlib; ${MAKE} $(AM_V_MFLAG) ${MFLAGS} all )
 
 documentation: force doc/Makefile
 	-test -d doc || mkdir doc
-	-( cd doc && $(MAKE) $(MFLAGS) )
+	-( cd doc && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) )
 
 examples: force examples/Makefile
 	-test -d examples || mkdir examples
-	-(cd examples && ${MAKE} ${MFLAGS} all )
+	-(cd examples && ${MAKE} $(AM_V_MFLAG) ${MFLAGS} all )
 
 force:
 
@@ -353,7 +359,7 @@ CLEANFILES = *~ m4/*~
 DISTCLEANFILES = .DS_Store stamp-h
 
 info dvi: doc/Makefile
-	-( cd doc && $(MAKE) $(MFLAGS) $@ )
+	-( cd doc && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ )
 
 install-info-local:
 check:
@@ -390,7 +396,7 @@ stamp-framework-headers:
 	$(LN_S) -v A $(FRAMEWORK).framework/Versions/Current
 	cp -pv $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
 	cp -pv *.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	touch stamp-framework-headers
+	$(AM_V_at)touch stamp-framework-headers
 
 stamp-framework: $(FRAMEWORK_OFILES)
 	$(RM) -f stamp-framework-headers
@@ -410,7 +416,7 @@ stamp-framework: $(FRAMEWORK_OFILES)
 	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE)  -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
 	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
 	fi
-	touch stamp-framework
+	$(AM_V_at)touch stamp-framework
 
 # Dependencies:
 bind.o: ansi_stdlib.h posixstat.h

@@ -61,6 +61,11 @@ am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
 am__v_v_0 =
 am__v_v_1 = -v
 
+AM_V_MFLAG = $(am__v_MFLAG_@AM_V@)
+am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
+am__v_MFLAG_0 = -s
+am__v_MFLAG_1 = -w
+
 ## architecture flags:
 C_ARCHFLAGS = @C_ARCHFLAGS@
 XC_ARCHFLAGS = @XC_ARCHFLAGS@
@@ -167,10 +172,10 @@ libintl.la: $(LTOBJECTS) $(OBJECTS)
 		   -o $@ $(LTOBJECTS) -version-info 1:0 -rpath $(libdir)
 
 ../po/cat-id-tbl.lo: ../po/cat-id-tbl.c $(top_srcdir)/po/$(PACKAGE).pot
-	cd ../po && $(MAKE) -w cat-id-tbl.lo
+	cd ../po && $(MAKE) $(AM_V_MFLAG) cat-id-tbl.lo
 
 ../po/cat-id-tbl.o: ../po/cat-id-tbl.c $(top_srcdir)/po/$(PACKAGE).pot
-	cd ../po && $(MAKE) -w cat-id-tbl.o
+	cd ../po && $(MAKE) $(AM_V_MFLAG) cat-id-tbl.o
 
 EXTRA_DIST += po/Makevars.in
 
@@ -313,7 +318,7 @@ mostlyclean-local: @MAINT@ config.status
 
 clean-local: mostlyclean-local @MAINT@ config.status
 	rm -f $(AM_V_v) *.s *.i *.bc
-	-if test ! -e po/Makefile; then $(MAKE) -w po/Makefile; fi
+	-if test ! -e po/Makefile; then $(MAKE) $(AM_V_MFLAG) po/Makefile; fi
 .PHONY: clean-local
 
 distclean-local: clean-local @MAINT@ config.status
@@ -329,7 +334,7 @@ distclean-local: clean-local @MAINT@ config.status
 	rm -f $(AM_V_v) *.output Makefile*orig *~ m4/*~ po/*~
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 	-rm -f .DS_Store
-	-if test ! -e po/Makefile; then $(MAKE) -w po/Makefile; fi
+	-if test ! -e po/Makefile; then $(MAKE) $(AM_V_MFLAG) po/Makefile; fi
 .PHONY: distclean-local
 
 maintainer-clean-local: distclean-local @MAINT@ config.status

@@ -75,7 +75,7 @@ uninstall: .version
 	rm -f $(DESTDIR)$(bindir)/screen
 	-mv $(DESTDIR)$(bindir)/screen.old $(DESTDIR)$(bindir)/screen
 	rm -f $(DESTDIR)$(ETCSCREENRC)
-	cd doc; $(MAKE) uninstall
+	cd doc; $(MAKE) -w uninstall
 
 shadow:
 	mkdir shadow;
@@ -156,7 +156,7 @@ config: configure
 
 Makefile: Makefile.in config.status
 	./config.status || $(SHELL) config.status
-	touch Makefile
+	@if test Makefile -ot Makefile.in; then touch Makefile; fi
 
 ###########################################################################
 

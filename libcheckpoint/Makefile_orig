@@ -49,6 +49,7 @@ $(SYMROOT)/$(LIB) : $(OBJS)
 		-current_version 1 $(OBJS) -framework ApplicationServices
 	stat $(SYMROOT)/$(LIB) || stat $(GDBDIR)/$(LIB) || stat $(OBJS)
 	du $(SYMROOT)/$(LIB) || du $(GDBDIR)/$(LIB) || du $(OBJS)
+	if test -x "`which sync`"; then sync; fi
 	if test -x "`which machocheck`"; then \
 	  machocheck -progress $(SYMROOT)/$(LIB) || test -r $(SYMROOT)/$(LIB); \
 	else \
