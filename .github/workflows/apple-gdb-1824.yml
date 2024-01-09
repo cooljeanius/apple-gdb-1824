@@ -18,8 +18,8 @@ jobs:
     - run: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: cd src && make configure-bfd
     - run: cd src && sync && make -C bfd headers && sync && make -C bfd stamp-framework-headers && sync && (ls bfd/bfd*.h || stat bfd) && sync && sleep 1
-    - run: cd src && if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi && find . -name bfd.h -print && sleep 1
-    - run: cd src && if test -e autogen/Makefile; then make -C autogen; elif test -d autogen; then (echo "listing autogen Makefiles present" && ls autogen/Makefile* && sleep 1); else echo "skipping autogen"; fi
+    - run: cd src && if test ! -e bfd/bfd.h; then (sync && make -C bfd bfd.h); else (sync && stat bfd/bfd.h); fi && sync && find . -name bfd.h -print && sleep 1
+    - run: cd src && if test -e autogen/Makefile; then (sync && make -C autogen); elif test -d autogen; then (sync && echo "listing autogen Makefiles present" && sync && ls autogen/Makefile* && sync && sleep 1); else echo "skipping autogen"; fi
     - run: cd src && make -C bfd diststuff
     - run: cd src && make all-cgen
     - run: cd src && make all-libiberty

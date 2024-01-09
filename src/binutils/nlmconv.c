@@ -742,7 +742,7 @@ main(int argc, char **argv)
 	      || ! bfd_set_section_flags(outbfd, help_section,
                                          SEC_HAS_CONTENTS))
 	    bfd_fatal(_("help section"));
-	  strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 9UL);
+	  strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 8UL);
 	}
     }
   if (message_file != NULL)
@@ -764,7 +764,7 @@ main(int argc, char **argv)
 	      || ! bfd_set_section_flags(outbfd, message_section,
                                          SEC_HAS_CONTENTS))
 	    bfd_fatal(_("message section"));
-	  strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 9UL);
+	  strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 8UL);
 	}
     }
   if (modules != NULL)
@@ -800,7 +800,7 @@ main(int argc, char **argv)
 	      || ! bfd_set_section_flags(outbfd, rpc_section,
                                          SEC_HAS_CONTENTS))
 	    bfd_fatal(_("rpc section"));
-	  strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 9UL);
+	  strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 8UL);
 	}
     }
   if (sharelib_file != NULL)
@@ -857,7 +857,7 @@ main(int argc, char **argv)
 		  || ! bfd_set_section_flags(outbfd, shared_section,
                                              SEC_HAS_CONTENTS))
 		bfd_fatal(_("shared section"));
-	      strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 9UL);
+	      strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 8UL);
 	    }
 	}
     }
@@ -868,9 +868,9 @@ main(int argc, char **argv)
 
   /* At least for now, always create an extended header, because that
      is what NLMLINK does.  */
-  strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 9UL);
+  strncpy(nlm_extended_header(outbfd)->stamp, "MeSsAgEs", 8UL);
 
-  strncpy(nlm_cygnus_ext_header(outbfd)->stamp, "CyGnUsEx", 9UL);
+  strncpy(nlm_cygnus_ext_header(outbfd)->stamp, "CyGnUsEx", 8UL);
 
   /* If the date was not given, then force it in: */
   if ((nlm_version_header(outbfd)->month == 0)
@@ -885,7 +885,7 @@ main(int argc, char **argv)
       nlm_version_header(outbfd)->month = (ptm->tm_mon + 1);
       nlm_version_header(outbfd)->day = ptm->tm_mday;
       nlm_version_header(outbfd)->year = (ptm->tm_year + 1900);
-      strncpy(version_hdr->stamp, "VeRsIoN#", 9UL);
+      strncpy(version_hdr->stamp, "VeRsIoN#", 8UL);
     }
 
 #ifdef NLMCONV_POWERPC

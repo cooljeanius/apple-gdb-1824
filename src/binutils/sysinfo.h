@@ -63,7 +63,7 @@ typedef union YYSTYPE
 #line 59 "sysinfo.y"
 {
  int i;
- char *s;
+ const char *s;
 }
 /* Line 1529 of yacc.c.  */
 #line 70 "sysinfo.h"

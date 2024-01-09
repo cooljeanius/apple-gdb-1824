@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-25 00:23-0500\n"
+"POT-Creation-Date: 2024-01-08 18:49-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,8 +50,8 @@ msgid ""
 msgstr ""
 
 #: addr2line.c:93 ar.c:371 coffdump.c:531 elfedit.c:644 nlmconv.c:1116
-#: objcopy.c:489 objcopy.c:525 readelf.c:2736 size.c:107 srconv.c:1762
-#: strings.c:777 sysdump.c:656 windmc.c:234 windres.c:673
+#: objcopy.c:489 objcopy.c:525 readelf.c:2736 size.c:107 srconv.c:1771
+#: strings.c:789 sysdump.c:656 windmc.c:234 windres.c:677
 #, c-format
 msgid "Report bugs to %s\n"
 msgstr ""
@@ -488,7 +488,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: coffdump.c:592 srconv.c:1851 sysdump.c:710
+#: coffdump.c:592 srconv.c:1860 sysdump.c:710
 msgid "no input file specified"
 msgstr ""
 
@@ -2776,7 +2776,7 @@ msgstr ""
 msgid " Update the ELF header of ELF files\n"
 msgstr ""
 
-#: elfedit.c:631 objcopy.c:405 objcopy.c:500 strings.c:753
+#: elfedit.c:631 objcopy.c:405 objcopy.c:500 strings.c:765
 #, c-format
 msgid " The options are:\n"
 msgstr ""
@@ -3054,7 +3054,7 @@ msgstr ""
 msgid "Duplicate symbol entered into keyword list."
 msgstr ""
 
-#: nlmconv.c:274 srconv.c:1842
+#: nlmconv.c:274 srconv.c:1851
 msgid "input and output files must be different"
 msgstr ""
 
@@ -3241,7 +3241,7 @@ msgstr ""
 msgid "Execution of %s failed"
 msgstr ""
 
-#: nm.c:226 size.c:88 strings.c:751
+#: nm.c:226 size.c:88 strings.c:763
 #, c-format
 msgid "Usage: %s [option(s)] [file(s)]\n"
 msgstr ""
@@ -3395,12 +3395,12 @@ msgstr ""
 msgid "will produce no output, since undefined symbols have no size."
 msgstr ""
 
-#: nm.c:1664
+#: nm.c:1665
 #, c-format
 msgid "data size %ld"
 msgstr ""
 
-#: objcopy.c:403 srconv.c:1751
+#: objcopy.c:403 srconv.c:1760
 #, c-format
 msgid "Usage: %s [option(s)] in-file [out-file]\n"
 msgstr ""
@@ -6837,12 +6837,12 @@ msgstr ""
 msgid "Invalid radix: %s\n"
 msgstr ""
 
-#: srconv.c:1753
+#: srconv.c:1762
 #, c-format
 msgid "Convert a COFF object file into a SYSROFF object file\n"
 msgstr ""
 
-#: srconv.c:1754
+#: srconv.c:1763
 #, c-format
 msgid ""
 " The options are:\n"
@@ -6853,7 +6853,7 @@ msgid ""
 "  -v --version     Print the version number of the program\n"
 msgstr ""
 
-#: srconv.c:1897
+#: srconv.c:1906
 #, c-format
 msgid "unable to open output file %s"
 msgstr ""
@@ -7001,17 +7001,17 @@ msgstr ""
 msgid "Warning: failed to locate '%s'.  reason: %s"
 msgstr ""
 
-#: strings.c:742
+#: strings.c:754
 #, c-format
 msgid "invalid integer argument %s"
 msgstr ""
 
-#: strings.c:752
+#: strings.c:764
 #, c-format
 msgid " Display printable strings in [file(s)] (stdin by default)\n"
 msgstr ""
 
-#: strings.c:756
+#: strings.c:768
 #, c-format
 msgid ""
 "  -a - --all                Scan the entire file, not just the data section "
@@ -7019,7 +7019,7 @@ msgid ""
 "  -d --data                 Only scan the data sections in the file\n"
 msgstr ""
 
-#: strings.c:760
+#: strings.c:772
 #, c-format
 msgid ""
 "  -a - --all                Scan the entire file, not just the data section\n"
@@ -7027,7 +7027,7 @@ msgid ""
 "[default]\n"
 msgstr ""
 
-#: strings.c:764
+#: strings.c:776
 #, c-format
 msgid ""
 "  -f --print-file-name      Print the name of the file before each string\n"
@@ -7121,7 +7121,7 @@ msgid ""
 "  -V --version                 Print version information\n"
 msgstr ""
 
-#: windmc.c:274 windmc.c:284 windres.c:392
+#: windmc.c:274 windmc.c:284 windres.c:396
 #, c-format
 msgid "%s: warning: "
 msgstr ""
@@ -7159,53 +7159,53 @@ msgstr ""
 msgid "input file does not seems to be UFT16.\n"
 msgstr ""
 
-#: windres.c:199
+#: windres.c:203
 #, c-format
 msgid "cannot open %s `%s': %s"
 msgstr ""
 
-#: windres.c:364
+#: windres.c:368
 #, c-format
 msgid ": expected to be a directory\n"
 msgstr ""
 
-#: windres.c:376
+#: windres.c:380
 #, c-format
 msgid ": unexpectedly NULL\n"
 msgstr ""
 
-#: windres.c:383
+#: windres.c:387
 #, c-format
 msgid ": expected to be a leaf\n"
 msgstr ""
 
-#: windres.c:394
+#: windres.c:398
 #, c-format
 msgid ": duplicate value\n"
 msgstr ""
 
-#: windres.c:544
+#: windres.c:548
 #, c-format
 msgid "unknown format type `%s'"
 msgstr ""
 
-#: windres.c:545
+#: windres.c:549
 #, c-format
 msgid "%s: supported formats:"
 msgstr ""
 
 #. Otherwise, we give up.
-#: windres.c:629
+#: windres.c:633
 #, c-format
 msgid "can not determine type of file `%s'; use the -J option"
 msgstr ""
 
-#: windres.c:640
+#: windres.c:644
 #, c-format
 msgid "Usage: %s [option(s)] [input-file] [output-file]\n"
 msgstr ""
 
-#: windres.c:642
+#: windres.c:646
 #, c-format
 msgid ""
 " The options are:\n"
@@ -7226,12 +7226,12 @@ msgid ""
 "     --no-use-temp-file        Use popen (default)\n"
 msgstr ""
 
-#: windres.c:658
+#: windres.c:662
 #, c-format
 msgid "     --yydebug                 Turn on parser debugging\n"
 msgstr ""
 
-#: windres.c:661
+#: windres.c:665
 #, c-format
 msgid ""
 "  -r                           Ignored for compatibility with rc\n"
@@ -7239,7 +7239,7 @@ msgid ""
 "  -V --version                 Print version information\n"
 msgstr ""
 
-#: windres.c:665
+#: windres.c:669
 #, c-format
 msgid ""
 "FORMAT is one of rc, res, or coff, and is deduced from the file name\n"
@@ -7247,22 +7247,22 @@ msgid ""
 "No input-file is stdin, default rc.  No output-file is stdout, default rc.\n"
 msgstr ""
 
-#: windres.c:800
+#: windres.c:804
 msgid "invalid option -f\n"
 msgstr ""
 
-#: windres.c:805
+#: windres.c:809
 msgid "No filename following the -fo option.\n"
 msgstr ""
 
-#: windres.c:866
+#: windres.c:870
 #, c-format
 msgid ""
 "Option -I is deprecated for setting the input format, please use -J "
 "instead.\n"
 msgstr ""
 
-#: windres.c:986
+#: windres.c:990
 msgid "no resources"
 msgstr ""
 

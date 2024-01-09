@@ -62111,8 +62111,8 @@ install-gdb: $(INSTALL_GDB_TK)
 
 # Special-case for this one annoying target:
 bfd-headers: configure-bfd
-	$(MAKE) -C bfd headers
-	if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi
+	$(MAKE) -w -C bfd headers
+	if test ! -e bfd/bfd.h; then $(MAKE) -w -C bfd bfd.h; else stat bfd/bfd.h; fi
 .PHONY: bfd-headers
 all-bfd: bfd-headers
 

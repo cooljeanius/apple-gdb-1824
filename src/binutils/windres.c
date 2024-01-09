@@ -136,11 +136,15 @@ res_init(void)
   obstack_init(&res_obstack);
 }
 
+#if defined(__clang__) && (__clang__ >= 1)
+# pragma clang diagnostic ignored "-Wnull-pointer-arithmetic"
+#endif /* __clang__ */
 /* Allocate space on the resource building obstack: */
 void *
 res_alloc(size_t bytes)
 {
-  return (void *)obstack_alloc(&res_obstack, bytes);
+  assert(&res_obstack != NULL);
+  return __extension__ (void *)obstack_alloc(&res_obstack, bytes);
 }
 
 /* We also use an obstack to save memory used while writing out a set

@@ -89,33 +89,33 @@ extern int yyinunput(void);
 "\t" { ; }
 "\n" { ; }
 "\""[^\"]*"\"" {
-	yylval.s = (char *)malloc(yyleng - 1);
-	memcpy(yylval.s, (yytext + 1), (yyleng - 2));
-	yylval.s[yyleng - 2] = '\0';
+	yylval.s = (const char *)malloc(yyleng - 1);
+	memcpy((void *)yylval.s, (yytext + 1), (yyleng - 2));
+	*(char *)&yylval.s[yyleng - 2] = '\0';
         return NAME;
 	}
 
 0x[0-9a-f]+ {
         yylval.i = (int)strtol(yytext, 0, 16);
-	return  NUMBER;
+	return NUMBER;
 	}
 
 [0-9]+ {
         yylval.i = atoi(yytext);
-	return  NUMBER;
+	return NUMBER;
 	}
 
 
-"bits" { yylval.i =1 ;return UNIT;}
-"bit" { yylval.i = 1; return UNIT;}
-"bytes" { yylval.i= 8; return UNIT;}
-"byte" { yylval.i = 8; return UNIT;}
+"bits" { yylval.i = 1; return UNIT; }
+"bit" { yylval.i = 1; return UNIT; }
+"bytes" { yylval.i = 8; return UNIT; }
+"byte" { yylval.i = 8; return UNIT; }
 
-"int" { yylval.s = (char *)"INT"; return TYPE;}
-"barray" { yylval.s = (char *)"BARRAY"; return TYPE;}
-"chars" { yylval.s = (char *)"CHARS"; return TYPE;}
-"variable" { yylval.i = 0; return NUMBER;}
-"counted" { yylval.i = -4; return NUMBER;}
+"int" { yylval.s = "INT"; return TYPE; }
+"barray" { yylval.s = "BARRAY"; return TYPE; }
+"chars" { yylval.s = "CHARS"; return TYPE; }
+"variable" { yylval.i = 0; return NUMBER; }
+"counted" { yylval.i = -4; return NUMBER; }
 "addrsize" { yylval.i = -2; return NUMBER; }
 "segsize" { yylval.i = -1; return NUMBER; }
 "cond" { return COND;}

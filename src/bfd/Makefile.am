@@ -989,7 +989,7 @@ OFILES = `echo $(LOFILES) | $(SED) -e 's/\.lo/\.o/g'`
 PLISTFILES = `echo $(LOFILES) | $(SED) -e 's/\.lo/\.plist/g'`
 
 stamp-lofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
-	rm -f $(AM_V_v) tlofiles
+	$(AM_V_at)rm -f $(AM_V_v) tlofiles
 	f=""; \
 	for i in $(LOFILES); do \
 	  case " $${f} " in \
@@ -1002,7 +1002,7 @@ stamp-lofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(AM_V_at)if test stamp-lofiles -ot lofiles; then touch stamp-lofiles; fi
 
 stamp-ofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
-	rm -f $(AM_V_v) tofiles
+	$(AM_V_at)rm -f $(AM_V_v) tofiles
 	f=""; \
 	for i in $(OFILES); do \
 	  case " $${f} " in \
@@ -1015,7 +1015,7 @@ stamp-ofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(AM_V_at)if test stamp-ofiles -ot ofiles; then touch stamp-ofiles; fi
 
 stamp-plistfiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
-	rm -f $(AM_V_v) tplistfiles
+	$(AM_V_at)rm -f $(AM_V_v) tplistfiles
 	f=""; \
 	for i in $(PLISTFILES); do \
 	  case " $${f} " in \
@@ -1105,7 +1105,7 @@ stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
 # since OFILES no longer works as a dependency, have to make it explicitly
 # as part of a rule instead:
 stamp-staticlib: stamp-ofiles @MAINT@ bfd.h
-	rm -f $(AM_V_v) stamp-staticlib
+	$(AM_V_at)rm -f $(AM_V_v) stamp-staticlib
 	if test ! -e $(BFD_H); then $(MAKE) -w $(BFD_H); fi
 	$(MAKE) -w $(OFILES)
 	if test -n "$(libbfd_a_OBJECTS)"; then \
@@ -1146,7 +1146,7 @@ libbfd_a: libbfd.a
 # vector names. It is built from config.bfd. It is not compiled by
 # itself, but is included by targets.c.
 targmatch.h: config.bfd $(srcdir)/targmatch.sed @MAINT@ config.status
-	rm -f $(AM_V_v) targmatch.h
+	$(AM_V_at)rm -f $(AM_V_v) targmatch.h
 	echo "/* $@ is generated from multiple files */" > targmatch.new
 	$(SED) -f $(srcdir)/targmatch.sed < $(srcdir)/config.bfd >> targmatch.new
 	mv -f $(AM_V_v) targmatch.new targmatch.h
@@ -1191,55 +1191,55 @@ libbfd_a-dwarf2.o: dwarf2.c @MAINT@ Makefile
 	  $(srcdir)/dwarf2.c
 
 elf32-target.h : elfxx-target.h
-	rm -f $(AM_V_v) $@
+	$(AM_V_at)rm -f $(AM_V_v) $@
 	echo "/* $@ is generated from $< */" > elf32-target.new
 	$(SED) -e s/NN/32/g < $(srcdir)/elfxx-target.h >> elf32-target.new
 	mv -f $(AM_V_v) elf32-target.new $@
 
 elf64-target.h : elfxx-target.h
-	rm -f $(AM_V_v) $@
+	$(AM_V_at)rm -f $(AM_V_v) $@
 	echo "/* $@ is generated from $< */" > elf64-target.new
 	$(SED) -e s/NN/64/g < $(srcdir)/elfxx-target.h >> elf64-target.new
 	mv -f $(AM_V_v) elf64-target.new $@
 
 elf32-aarch64.c : elfnn-aarch64.c
-	rm -f $(AM_V_v) $@
+	$(AM_V_at)rm -f $(AM_V_v) $@
 	echo "#line 1 \"$(srcdir)/elfnn-aarch64.c\"" > elf32-aarch64.new
 	$(SED) -e s/NN/32/g < $(srcdir)/elfnn-aarch64.c >>elf32-aarch64.new
 	mv -f $(AM_V_v) elf32-aarch64.new $@
 
 elf64-aarch64.c : elfnn-aarch64.c
-	rm -f $(AM_V_v) $@
+	$(AM_V_at)rm -f $(AM_V_v) $@
 	echo "#line 1 \"$(srcdir)/elfnn-aarch64.c\"" > elf64-aarch64.new
 	$(SED) -e s/NN/64/g < $(srcdir)/elfnn-aarch64.c >>elf64-aarch64.new
 	mv -f $(AM_V_v) elf64-aarch64.new $@
 
 elf32-ia64.c : elfxx-ia64.c
-	rm -f $(AM_V_v) $@
+	$(AM_V_at)rm -f $(AM_V_v) $@
 	echo "/* $@ is generated from $< */" > elf32-ia64.new
 	$(SED) -e s/NN/32/g < $(srcdir)/elfxx-ia64.c >> elf32-ia64.new
 	mv -f $(AM_V_v) elf32-ia64.new $@
 
 elf64-ia64.c : elfxx-ia64.c
-	rm -f $(AM_V_v) $@
+	$(AM_V_at)rm -f $(AM_V_v) $@
 	echo "/* $@ is generated from $< */" > elf64-ia64.new
 	$(SED) -e s/NN/64/g < $(srcdir)/elfxx-ia64.c >> elf64-ia64.new
 	mv -f $(AM_V_v) elf64-ia64.new $@
 
 peigen.c : peXXigen.c
-	rm -f $(AM_V_v) $@
+	$(AM_V_at)rm -f $(AM_V_v) $@
 	echo "/* $@ is generated from $< */" > peigen.new
 	$(SED) -e s/XX/pe/g < $(srcdir)/peXXigen.c >> peigen.new
 	mv -f $(AM_V_v) peigen.new $@
 
 pepigen.c : peXXigen.c
-	rm -f $(AM_V_v) $@
+	$(AM_V_at)rm -f $(AM_V_v) $@
 	echo "/* $@ is generated from $< */" > pepigen.new
 	$(SED) -e s/XX/pep/g < $(srcdir)/peXXigen.c >> pepigen.new
 	mv -f $(AM_V_v) pepigen.new $@
 
 pex64igen.c : peXXigen.c
-	rm -f $(AM_V_v) $@
+	$(AM_V_at)rm -f $(AM_V_v) $@
 	echo "/* $@ is generated from $< */" > pex64igen.new
 	$(SED) -e s/XX/pex64/g < $(srcdir)/peXXigen.c >> pex64igen.new
 	mv -f $(AM_V_v) pex64igen.new pex64igen.c
@@ -1296,7 +1296,7 @@ uninstall_libbfd: @MAINT@ ltmain.sh
 # Have to get rid of any pre-existing DEP1 here, so that "$?" later
 # includes all of $(CFILES).
 DEP: dep.sed $(CFILES) $(HFILES) bfd.h
-	rm -f $(AM_V_v) DEP1
+	$(AM_V_at)rm -f $(AM_V_v) DEP1
 	$(MAKE) -w MKDEP="$(MKDEP)" DEP1
 	$(SED) -f dep.sed < DEP1 $(AM_V_redir) DEPA
 	echo '# IF YOU PUT ANYTHING HERE IT WILL GO AWAY' >> DEPA
@@ -1380,7 +1380,7 @@ gen-aout: $(srcdir)/gen-aout.c @MAINT@ Makefile
 
 $(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h bfd-in3.h $(srcdir)/libbfd.h \
   $(srcdir)/libcoff.h @MAINT@ $(srcdir)/Makefile
-	if test -e $(srcdir)/Makefile -a -d $(srcdir)/.deps; then \
+	$(AM_V_at)if test -e $(srcdir)/Makefile -a -d $(srcdir)/.deps; then \
 	  echo "making headers in srcdir ($(srcdir))..."; \
 	  (cd $(srcdir) && $(MAKE) -w headers $(FLAGS_TO_PASS)); \
 	elif test -e ./Makefile -a -d ./.deps; then \
@@ -1416,11 +1416,11 @@ $(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h bfd-in3.h $(srcdir)/libbfd.h \
 	fi
 
 stmp-bfd-h: bfd-in3.h @MAINT@ headers @MAINT@ $(PATH_TO_MOVEIFCHANGE)
-	rm -f $(AM_V_v) bfd-tmp.h
+	$(AM_V_at)rm -f $(AM_V_v) bfd-tmp.h
 	cp $(AM_V_v) bfd-in3.h bfd-tmp.h
 	$(RUN_MOVEIFCHANGE) bfd-tmp.h $(BFD_H)
 	$(AM_V_at)if test $(BFD_H) -ot $@; then touch $(BFD_H); fi
-	rm -f $(AM_V_v) bfd-tmp.h
+	$(AM_V_at)rm -f $(AM_V_v) bfd-tmp.h
 	if test $@ -ot bfd-in3.h; then touch $@; fi
 
 BFD_H_FILES = bfd-in.h init.c opncls.c libbfd.c section.c archures.c \
@@ -1444,7 +1444,7 @@ FRAMEWORK_OFILES = `echo $(libbfd_la_OBJECTS) | $(SED) -e 's/\.lo/\.o/g'` `(cat 
 FRAMEWORK_LIB = -F../libiberty -framework liberty -F../mmalloc -framework mmalloc $(SYSTEM_FRAMEWORK) $(LDFLAGS)
 
 stamp-framework-headers: bfd.h headers
-	rm -f stamp-framework stamp-framework-headers
+	$(AM_V_at)rm -f stamp-framework stamp-framework-headers
 	rm -rf $(AM_V_v) $(FRAMEWORK).framework
 	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
 	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
@@ -1458,7 +1458,7 @@ stamp-framework-headers: bfd.h headers
 
 stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 	$(MAKE) -w $(FRAMEWORK_OFILES)
-	rm -f stamp-framework-headers
+	$(AM_V_at)rm -f stamp-framework-headers
 	$(MAKE) -w stamp-framework-headers
 	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
 	$(LN_S) $(AM_V_v) Versions/Current/Resources $(FRAMEWORK).framework/Resources
@@ -1482,22 +1482,22 @@ stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 # Could really use a "copy-if-change"...
 headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) -w protos $(FLAGS_TO_PASS))
-	if test ! -e $(sdocdir)/libbfd.h || test $(sdocdir)/libbfd.h -ot $(sdocdir)/Makefile; then \
+	$(AM_V_at)if test ! -e $(sdocdir)/libbfd.h || test $(sdocdir)/libbfd.h -ot $(sdocdir)/Makefile; then \
 	  (cd $(sdocdir); $(MAKE) -w libbfd.h $(FLAGS_TO_PASS)); \
 	elif test -r $(sdocdir)/libbfd.h; then \
 	  stat $(sdocdir)/libbfd.h; \
 	fi
-	if test ! -e $(sdocdir)/libcoff.h || test $(sdocdir)/libcoff.h -ot $(sdocdir)/Makefile; then \
+	$(AM_V_at)if test ! -e $(sdocdir)/libcoff.h || test $(sdocdir)/libcoff.h -ot $(sdocdir)/Makefile; then \
 	  (cd $(sdocdir); $(MAKE) -w libcoff.h $(FLAGS_TO_PASS)); \
 	elif test -r $(sdocdir)/libcoff.h; then \
 	  stat $(sdocdir)/libcoff.h; \
 	fi
-	if test ! -e $(sdocdir)/bfd.h || test $(sdocdir)/bfd.h -ot $(sdocdir)/Makefile; then \
+	$(AM_V_at)if test ! -e $(sdocdir)/bfd.h || test $(sdocdir)/bfd.h -ot $(sdocdir)/Makefile; then \
 	  (cd $(sdocdir); $(MAKE) -w bfd.h $(FLAGS_TO_PASS)); \
 	elif test -r $(sdocdir)/bfd.h; then \
 	  stat $(sdocdir)/bfd.h; \
 	fi
-	if test $(srcdir) != "."; then \
+	$(AM_V_at)if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  (cd $(sdocdir); $(MAKE) -w $(srcdir)/libbfd.h $(FLAGS_TO_PASS)); \
 	  (cd $(sdocdir); $(MAKE) -w $(srcdir)/libcoff.h $(FLAGS_TO_PASS)); \
@@ -1505,7 +1505,7 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	else \
 	  echo "$@ target: already in srcdir ($(srcdir)): `pwd`"; \
 	fi
-	if test ! -e bfd-in2.h-new || test bfd-in2.h-new -ot $(sdocdir)/bfd.h; then \
+	$(AM_V_at)if test ! -e bfd-in2.h-new || test bfd-in2.h-new -ot $(sdocdir)/bfd.h; then \
 	  cp $(AM_V_v) $(sdocdir)/bfd.h bfd-in2.h-new; \
 	  $(RUN_MOVEIFCHANGE) bfd-in2.h-new $(srcdir)/bfd-in2.h; \
 	elif test -r bfd-in2.h-new; then \
@@ -1516,7 +1516,7 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	elif test stmp-bin2-h -ot $(srcdir)/bfd-in2.h; then \
 	  touch stmp-bin2-h; \
 	fi
-	if test ! -e libbfd.h-new || test libbfd.h-new -ot $(sdocdir)/libbfd.h; then \
+	$(AM_V_at)if test ! -e libbfd.h-new || test libbfd.h-new -ot $(sdocdir)/libbfd.h; then \
 	  cp $(AM_V_v) $(sdocdir)/libbfd.h libbfd.h-new; \
 	  $(RUN_MOVEIFCHANGE) libbfd.h-new $(srcdir)/libbfd.h; \
 	elif test -r libbfd.h-new; then \
@@ -1527,7 +1527,7 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	elif test stmp-lbfd-h -ot $(srcdir)/libbfd.h; then \
 	  touch stmp-lbfd-h; \
 	fi
-	if test ! -e libcoff.h-new || test libcoff.h-new -ot $(sdocdir)/libcoff.h; then \
+	$(AM_V_at)if test ! -e libcoff.h-new || test libcoff.h-new -ot $(sdocdir)/libcoff.h; then \
 	  cp $(AM_V_v) $(sdocdir)/libcoff.h libcoff.h-new; \
 	  $(RUN_MOVEIFCHANGE) libcoff.h-new $(srcdir)/libcoff.h; \
 	elif test -r libcoff.h-new; then \
@@ -1584,7 +1584,7 @@ $(srcdir)/bfd-in2.h: @MAINT@ stmp-bin2-h
 	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
 stmp-bin2-h: $(sdocdir)/Makefile $(BFD_H_FILES) $(BFD64_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) -w $(FLAGS_TO_PASS) bfd.h)
-	if test $(srcdir) != "."; then \
+	$(AM_V_at)if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  (cd $(sdocdir); $(MAKE) -w $(FLAGS_TO_PASS) $(srcdir)/bfd.h); \
 	else \
@@ -1602,7 +1602,7 @@ $(srcdir)/libbfd.h: @MAINT@ stmp-lbfd-h
 	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
 stmp-lbfd-h: $(LIBBFD_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) -w $(FLAGS_TO_PASS) libbfd.h)
-	if test $(srcdir) != "."; then \
+	$(AM_V_at)if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  (cd $(sdocdir); $(MAKE) -w $(FLAGS_TO_PASS) $(srcdir)/libbfd.h); \
 	else \
@@ -1620,7 +1620,7 @@ $(srcdir)/libcoff.h: @MAINT@ stmp-lcoff-h
 	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
 stmp-lcoff-h: $(LIBCOFF_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) -w $(FLAGS_TO_PASS) libcoff.h)
-	if test $(srcdir) != "."; then \
+	$(AM_V_at)if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  (cd $(sdocdir); $(MAKE) -w $(FLAGS_TO_PASS) $(srcdir)/libcoff.h); \
 	else \

@@ -58,15 +58,15 @@ static void show_usage(FILE *, int);
 
 extern int main(int, char **);
 
-static char *
+static const char *
 getCHARS(unsigned char *ptr, int *idx, int size, int max)
 {
   int oc = (*idx / 8);
-  char *r;
+  const char *r;
   int b = size;
 
   if (b >= max)
-    return (char *)"*undefined*";
+    return "*undefined*";
 
   if (b == 0)
     {
@@ -76,9 +76,9 @@ getCHARS(unsigned char *ptr, int *idx, int size, int max)
     }
 
   *idx += (b * 8);
-  r = (char *)xcalloc(b + 1, 1);
-  memcpy(r, ptr + oc, b);
-  r[b] = 0;
+  r = (const char *)xcalloc(b + 1, 1);
+  memcpy((void *)r, (ptr + oc), b);
+  *(char *)&r[b] = 0;
 
   return r;
 }
@@ -660,7 +660,7 @@ show_usage(FILE *the_file, int status)
 int
 main(int ac, char **av)
 {
-  char *input_file = NULL;
+  const char *input_file = NULL;
   int opt;
   static struct option long_options[] =
   {

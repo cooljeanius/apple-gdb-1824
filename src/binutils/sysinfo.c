@@ -148,7 +148,7 @@ typedef union YYSTYPE
 #line 59 "sysinfo.y"
 {
  int i;
- char *s;
+ const char *s;
 }
 /* Line 193 of yacc.c.  */
 #line 155 "sysinfo.c"
@@ -456,9 +456,9 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    73,    73,    73,   114,   115,   120,   119,   198,   199,
-     200,   201,   205,   204,   253,   252,   283,   282,   371,   372,
-     376,   381,   387,   388,   391,   392,   394,   396
+       0,    73,    73,    73,   122,   123,   128,   127,   206,   207,
+     208,   209,   213,   212,   261,   260,   291,   290,   379,   380,
+     384,   389,   395,   396,   399,   400,   402,   404
 };
 #endif
 
@@ -1397,6 +1397,7 @@ yyreduce:
       printf("#ifdef SYSROFF_p\n");
       break;
     case 'd':
+      printf("/* (d) */\n");
       break;
     case 'g':
       printf("#ifdef SYSROFF_SWAP_OUT\n");
@@ -1414,16 +1415,23 @@ yyreduce:
     break;
 
   case 3:
-#line 97 "sysinfo.y"
+#line 98 "sysinfo.y"
     {
   switch (writecode) {
   case 'i':
+    printf("#endif /* SYSROFF_SWAP_IN */\n");
+    break;
   case 'p':
+    printf("#endif /* SYSROFF_p */\n");
+    break;
   case 'g':
+    printf("#endif /* SYSROFF_SWAP_OUT */\n");
+    break;
   case 'c':
-    printf("#endif\n");
+    printf("#endif /* SYSROFF_PRINT */\n");
     break;
   case 'd':
+    printf("/* (d) */\n");
     break;
   default:;
   }
@@ -1431,7 +1439,7 @@ yyreduce:
     break;
 
   case 6:
-#line 120 "sysinfo.y"
+#line 128 "sysinfo.y"
     {
 	it = (yyvsp[(2) - (3)].s); code = (yyvsp[(3) - (3)].i);
 	switch (writecode)
@@ -1489,7 +1497,7 @@ yyreduce:
     break;
 
   case 7:
-#line 176 "sysinfo.y"
+#line 184 "sysinfo.y"
     {
   switch (writecode) {
   case 'd':
@@ -1510,7 +1518,7 @@ yyreduce:
     break;
 
   case 12:
-#line 205 "sysinfo.y"
+#line 213 "sysinfo.y"
     {
 	  rdepth++;
 	  switch (writecode)
@@ -1541,7 +1549,7 @@ yyreduce:
     break;
 
   case 13:
-#line 235 "sysinfo.y"
+#line 243 "sysinfo.y"
     {
 	  repeat = oldrepeat;
 	  oldrepeat =0;
@@ -1559,7 +1567,7 @@ yyreduce:
     break;
 
   case 14:
-#line 253 "sysinfo.y"
+#line 261 "sysinfo.y"
     {
 	  switch (writecode)
 	    {
@@ -1576,7 +1584,7 @@ yyreduce:
     break;
 
   case 15:
-#line 268 "sysinfo.y"
+#line 276 "sysinfo.y"
     {
 	  switch (writecode)
 	    {
@@ -1591,17 +1599,17 @@ yyreduce:
     break;
 
   case 16:
-#line 283 "sysinfo.y"
+#line 291 "sysinfo.y"
     {name = (yyvsp[(7) - (7)].s); ;}
     break;
 
   case 17:
-#line 285 "sysinfo.y"
+#line 293 "sysinfo.y"
     {
-	  char *desc = (yyvsp[(2) - (10)].s);
-	  char *type = (yyvsp[(4) - (10)].s);
+	  const char *desc = (yyvsp[(2) - (10)].s);
+	  const char *type = (yyvsp[(4) - (10)].s);
 	  int size = (yyvsp[(5) - (10)].i);
-	  char *the_id = (yyvsp[(7) - (10)].s);
+	  const char *the_id = (yyvsp[(7) - (10)].s);
           const char *p = names[rdepth];
           const char *ptr = pnames[rdepth];
 	  switch (writecode)
@@ -1655,7 +1663,7 @@ yyreduce:
               if (type[0] == 'I') {
                 printf("\tint %s%s; \t/* %s */\n", ptr, the_id, desc);
               } else if (type[0] =='C') {
-                printf("\tchar %s*%s;\t /* %s */\n", ptr, the_id, desc);
+                printf("\tconst char %s*%s;\t /* %s */\n", ptr, the_id, desc);
               } else {
                 printf("\tbarray %s%s;\t /* %s */\n", ptr, the_id, desc);
               }
@@ -1681,37 +1689,37 @@ yyreduce:
     break;
 
   case 18:
-#line 371 "sysinfo.y"
+#line 379 "sysinfo.y"
     { (yyval.s) = (yyvsp[(1) - (1)].s); ;}
     break;
 
   case 19:
-#line 372 "sysinfo.y"
-    { (yyval.s) = (char *)"INT";;}
+#line 380 "sysinfo.y"
+    { (yyval.s) = "INT";;}
     break;
 
   case 20:
-#line 377 "sysinfo.y"
+#line 385 "sysinfo.y"
     { (yyval.s) = (yyvsp[(2) - (3)].s); ;}
     break;
 
   case 21:
-#line 382 "sysinfo.y"
+#line 390 "sysinfo.y"
     { (yyval.i) = (yyvsp[(1) - (2)].i) * (yyvsp[(2) - (2)].i); ;}
     break;
 
   case 22:
-#line 387 "sysinfo.y"
+#line 395 "sysinfo.y"
     { (yyval.s) = (yyvsp[(2) - (3)].s); ;}
     break;
 
   case 23:
-#line 388 "sysinfo.y"
-    { (yyval.s) = (char *)"dummy";;}
+#line 396 "sysinfo.y"
+    { (yyval.s) = "dummy";;}
     break;
 
   case 27:
-#line 396 "sysinfo.y"
+#line 404 "sysinfo.y"
     {
 	  switch (writecode)
 	    {
@@ -1728,7 +1736,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1732 "sysinfo.c"
+#line 1740 "sysinfo.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1942,7 +1950,7 @@ yyreturn:
 }
 
 
-#line 413 "sysinfo.y"
+#line 421 "sysinfo.y"
 
 /* four modes
 
@@ -1965,7 +1973,7 @@ main(int ac, char **av)
     {
       printf("typedef struct { unsigned char *data; int len; } barray; \n");
       printf("typedef int INT;\n");
-      printf("typedef char *CHARS;\n");
+      printf("typedef const char *CHARS;\n");
       printf("\n/* End text from main() in sysinfo.y */");
     }
   yyparse();

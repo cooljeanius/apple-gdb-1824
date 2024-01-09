@@ -58,7 +58,7 @@ extern int yylex(void);
 
 %union {
  int i;
- char *s;
+ const char *s;
 }
 %token COND
 %token REPEAT
@@ -80,6 +80,7 @@ top:  {
       printf("#ifdef SYSROFF_p\n");
       break;
     case 'd':
+      printf("/* (d) */\n");
       break;
     case 'g':
       printf("#ifdef SYSROFF_SWAP_OUT\n");
@@ -97,12 +98,19 @@ top:  {
 it_list {
   switch (writecode) {
   case 'i':
+    printf("#endif /* SYSROFF_SWAP_IN */\n");
+    break;
   case 'p':
+    printf("#endif /* SYSROFF_p */\n");
+    break;
   case 'g':
+    printf("#endif /* SYSROFF_SWAP_OUT */\n");
+    break;
   case 'c':
-    printf("#endif\n");
+    printf("#endif /* SYSROFF_PRINT */\n");
     break;
   case 'd':
+    printf("/* (d) */\n");
     break;
   default:;
   }
@@ -283,10 +291,10 @@ it_field:
 	{name = $7; }
 	enums ')'
 	{
-	  char *desc = $2;
-	  char *type = $4;
+	  const char *desc = $2;
+	  const char *type = $4;
 	  int size = $5;
-	  char *the_id = $7;
+	  const char *the_id = $7;
           const char *p = names[rdepth];
           const char *ptr = pnames[rdepth];
 	  switch (writecode)
@@ -340,7 +348,7 @@ it_field:
               if (type[0] == 'I') {
                 printf("\tint %s%s; \t/* %s */\n", ptr, the_id, desc);
               } else if (type[0] =='C') {
-                printf("\tchar %s*%s;\t /* %s */\n", ptr, the_id, desc);
+                printf("\tconst char %s*%s;\t /* %s */\n", ptr, the_id, desc);
               } else {
                 printf("\tbarray %s%s;\t /* %s */\n", ptr, the_id, desc);
               }
@@ -369,7 +377,7 @@ it_field:
 
 attr_type:
 	 TYPE { $$ = $1; }
- 	|  { $$ = (char *)"INT";}
+ 	|  { $$ = "INT";}
 	;
 
 attr_desc:
@@ -385,7 +393,7 @@ attr_size:
 
 attr_id:
 		'(' NAME ')'	{ $$ = $2; }
-	|	{ $$ = (char *)"dummy";}
+	|	{ $$ = "dummy";}
 	;
 
 enums:
@@ -432,7 +440,7 @@ main(int ac, char **av)
     {
       printf("typedef struct { unsigned char *data; int len; } barray; \n");
       printf("typedef int INT;\n");
-      printf("typedef char *CHARS;\n");
+      printf("typedef const char *CHARS;\n");
       printf("\n/* End text from main() in sysinfo.y */");
     }
   yyparse();

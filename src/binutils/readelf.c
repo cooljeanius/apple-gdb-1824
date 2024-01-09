@@ -6875,25 +6875,25 @@ process_symbol_table(FILE *file)
 	      Elf_Internal_Sym *psym;
 	      int n;
 
-	      psym = dynamic_symbols + si;
+	      psym = (dynamic_symbols + si);
 
-	      n = print_vma (si, DEC_5);
+	      n = print_vma(si, DEC_5);
 	      if (n < 5)
-		fputs ("     " + n, stdout); /* FIXME: -Wstring-plus-int */
-	      printf (" %3lu: ", hn);
-	      print_vma (psym->st_value, LONG_HEX);
-	      putchar (' ');
-	      print_vma (psym->st_size, DEC_5);
+		fputs(&"     "[n], stdout);
+	      printf(" %3lu: ", hn);
+	      print_vma(psym->st_value, LONG_HEX);
+	      putchar(' ');
+	      print_vma(psym->st_size, DEC_5);
 
-	      printf ("  %6s", get_symbol_type (ELF_ST_TYPE (psym->st_info)));
-	      printf (" %6s",  get_symbol_binding (ELF_ST_BIND (psym->st_info)));
-	      printf (" %3s",  get_symbol_visibility (ELF_ST_VISIBILITY (psym->st_other)));
-	      printf (" %3.3s ", get_symbol_index_type (psym->st_shndx));
-	      if (VALID_DYNAMIC_NAME (psym->st_name))
-		print_symbol (25, GET_DYNAMIC_NAME (psym->st_name));
+	      printf("  %6s", get_symbol_type(ELF_ST_TYPE(psym->st_info)));
+	      printf(" %6s",  get_symbol_binding(ELF_ST_BIND(psym->st_info)));
+	      printf(" %3s",  get_symbol_visibility(ELF_ST_VISIBILITY(psym->st_other)));
+	      printf(" %3.3s ", get_symbol_index_type(psym->st_shndx));
+	      if (VALID_DYNAMIC_NAME(psym->st_name))
+		print_symbol(25, GET_DYNAMIC_NAME(psym->st_name));
 	      else
-		printf (" <corrupt: %14ld>", psym->st_name);
-	      putchar ('\n');
+		printf(" <corrupt: %14ld>", psym->st_name);
+	      putchar('\n');
 	    }
 	}
     }

@@ -1656,14 +1656,16 @@ main (int argc, char **argv)
 
   END_PROGRESS(program_name);
 
-#ifdef HAVE_SBRK
+#if defined(HAVE_SBRK) && HAVE_SBRK && !defined(__STRICT_ANSI__)
+# if defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE < 200112L)
   if (show_stats)
     {
       char *lim = (char *)sbrk(0);
 
       non_fatal(_("data size %ld"), (long)(lim - (char *)&environ));
     }
-#endif /* HAVE_SBRK */
+# endif /* old _POSIX_C_SOURCE */
+#endif /* HAVE_SBRK && !__STRICT_ANSI__ */
 
   xexit(retval);
 #if !defined(__clang__)

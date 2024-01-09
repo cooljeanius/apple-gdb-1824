@@ -1066,9 +1066,9 @@ case 9:
 YY_RULE_SETUP
 #line 91 "syslex.l"
 {
-	yylval.s = (char *)malloc(yyleng - 1);
-	memcpy(yylval.s, (yytext + 1), (yyleng - 2));
-	yylval.s[yyleng - 2] = '\0';
+	yylval.s = (const char *)malloc(yyleng - 1);
+	memcpy((void *)yylval.s, (yytext + 1), (yyleng - 2));
+	*(char *)&yylval.s[yyleng - 2] = '\0';
         return NAME;
 	}
 	YY_BREAK
@@ -1077,7 +1077,7 @@ YY_RULE_SETUP
 #line 98 "syslex.l"
 {
         yylval.i = (int)strtol(yytext, 0, 16);
-	return  NUMBER;
+	return NUMBER;
 	}
 	YY_BREAK
 case 11:
@@ -1085,53 +1085,53 @@ YY_RULE_SETUP
 #line 103 "syslex.l"
 {
         yylval.i = atoi(yytext);
-	return  NUMBER;
+	return NUMBER;
 	}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 109 "syslex.l"
-{ yylval.i =1 ;return UNIT;}
+{ yylval.i = 1; return UNIT; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 110 "syslex.l"
-{ yylval.i = 1; return UNIT;}
+{ yylval.i = 1; return UNIT; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 111 "syslex.l"
-{ yylval.i= 8; return UNIT;}
+{ yylval.i = 8; return UNIT; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 112 "syslex.l"
-{ yylval.i = 8; return UNIT;}
+{ yylval.i = 8; return UNIT; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 114 "syslex.l"
-{ yylval.s = (char *)"INT"; return TYPE;}
+{ yylval.s = "INT"; return TYPE; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 115 "syslex.l"
-{ yylval.s = (char *)"BARRAY"; return TYPE;}
+{ yylval.s = "BARRAY"; return TYPE; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 116 "syslex.l"
-{ yylval.s = (char *)"CHARS"; return TYPE;}
+{ yylval.s = "CHARS"; return TYPE; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 117 "syslex.l"
-{ yylval.i = 0; return NUMBER;}
+{ yylval.i = 0; return NUMBER; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 118 "syslex.l"
-{ yylval.i = -4; return NUMBER;}
+{ yylval.i = -4; return NUMBER; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP

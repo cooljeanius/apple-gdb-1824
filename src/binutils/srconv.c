@@ -54,7 +54,7 @@ static void checksum (FILE *, unsigned char *, int, int);
 static void writeINT (int, unsigned char *, int *, int, FILE *);
 static void writeBITS (int, unsigned char *, int *, int);
 static void writeBARRAY (barray, unsigned char *, int *, int, FILE *);
-static void writeCHARS (char *, unsigned char *, int *, int, FILE *);
+static void writeCHARS (const char *, unsigned char *, int *, int, FILE *);
 static void wr_tr (void);
 static void wr_un (struct coff_ofile *, struct coff_sfile *, int, int);
 static void wr_hd (struct coff_ofile *);
@@ -260,7 +260,8 @@ writeBARRAY(barray data, unsigned char *ptr, int *idx,
 
 /* */
 static void
-writeCHARS(char *string, unsigned char *ptr, int *idx, int size, FILE *file)
+writeCHARS(const char *string, unsigned char *ptr, int *idx, int size,
+           FILE *file)
 {
   int i = (*idx / 8);
 
@@ -321,13 +322,20 @@ static void
 wr_un(struct coff_ofile *ptr, struct coff_sfile *sfile, int first,
       int nsecs ATTRIBUTE_UNUSED)
 {
-  /* FIXME: where is this from? */
+  /* struct IT_un is from sysroff.h, which is a generated file, which is why
+   * `git grep` fails to find it: */
   struct IT_un un;
   struct coff_symbol *s;
 
+  if (sizeof(un) > 1UL) {
+    ; /* (ok) */
+  } else {
+    xexit(EXIT_FAILURE);
+  }
+
   un.spare1 = 0;
 
-  if (bfd_get_file_flags (abfd) & EXEC_P)
+  if (bfd_get_file_flags(abfd) & EXEC_P)
     un.format = FORMAT_LM;
   else
     un.format = FORMAT_OM;
@@ -427,9 +435,10 @@ wr_hd(struct coff_ofile *p)
       abort();
     }
 
-  /* not sure how to fix the warning from '-Wparentheses' here, as I cannot
-   * tell what the original author was going for: */
-  if (! bfd_get_file_flags(abfd) & EXEC_P) {
+  /* I am not quite sure how to fix the warning from either '-Wparentheses' or
+   * '-Wlogical-not-parentheses' here, as I cannot tell what the original
+   * author was going for, but here is a try: */
+  if (!(bfd_get_file_flags(abfd) & EXEC_P)) {
       hd.ep = 0;
   } else {
       hd.ep = 1;
@@ -1303,7 +1312,7 @@ wr_dus(struct coff_ofile *p ATTRIBUTE_UNUSED, struct coff_sfile *sfile)
   dus.efn = 0x1001;
   dus.ns = 1;			/* p->nsources; sac 14 jul 94 */
   dus.drb = nints(dus.ns);
-  dus.fname = (char **)xcalloc(sizeof(char *), dus.ns);
+  dus.fname = (const char **)xcalloc(sizeof(const char *), dus.ns);
   dus.spare = nints(dus.ns);
   dus.ndir = 0;
   /* Find the filenames.  */

@@ -632,10 +632,14 @@ print_strings(const char *filename, FILE *stream, file_off address,
 	  {
 	  case 8:
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || \
-    (defined(__GNUC__) && (__GNUC__ >= 2))
-	    if (sizeof(start) > sizeof(long))
+    (defined(__GNUC__) && (__GNUC__ >= 2) && !defined(__STRICT_ANSI__))
+	    if (sizeof(start) > sizeof(long)) {
+# if defined(__clang__) || defined(__STRICT_ANSI__)
+	      printf("%7llo ", (unsigned long long)start);
+# else
 	      printf("%7Lo ", (unsigned long long)start);
-	    else
+# endif /* __clang__ || __STRICT_ANSI__ */
+	    } else
 #else
 # if !BFD_HOST_64BIT_LONG
 	    if (start != (unsigned long)start)
@@ -648,10 +652,14 @@ print_strings(const char *filename, FILE *stream, file_off address,
 
 	  case 10:
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || \
-    (defined(__GNUC__) && (__GNUC__ >= 2))
-	    if (sizeof(start) > sizeof(long))
+    (defined(__GNUC__) && (__GNUC__ >= 2) && !defined(__STRICT_ANSI__))
+	    if (sizeof(start) > sizeof(long)) {
+# if defined(__clang__) || defined(__STRICT_ANSI__)
+	      printf("%7lld ", (unsigned long long)start);
+# else
 	      printf("%7Ld ", (unsigned long long)start);
-	    else
+# endif /* __clang__ || __STRICT_ANSI__ */
+	    } else
 #else
 # if !BFD_HOST_64BIT_LONG
 	    if (start != (unsigned long)start)
@@ -664,10 +672,14 @@ print_strings(const char *filename, FILE *stream, file_off address,
 
 	  case 16:
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || \
-    (defined(__GNUC__) && (__GNUC__ >= 2))
-	    if (sizeof(start) > sizeof(long))
+    (defined(__GNUC__) && (__GNUC__ >= 2) && !defined(__STRICT_ANSI__))
+	    if (sizeof(start) > sizeof(long)) {
+# if defined(__clang__) || defined(__STRICT_ANSI__)
+	      printf("%7llx ", (unsigned long long)start);
+# else
 	      printf("%7Lx ", (unsigned long long)start);
-	    else
+# endif /* __clang__ || __STRICT_ANSI__ */
+	    } else
 #else
 # if !BFD_HOST_64BIT_LONG
 	    if (start != (unsigned long)start)
