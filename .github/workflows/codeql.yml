@@ -193,7 +193,7 @@ jobs:
         make configure-readline
         for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do \
           if test -e ${dir}/configure; then \
-            make configure-${dir}; \
+            make configure-${dir} || (if test -e ${dir}/config.cache; then cat ${dir}/config.cache >&2 && exit 1; fi); \
           elif test -d ${dir}; then \
             ls ${dir}/configure*; \
           else \
@@ -219,6 +219,9 @@ jobs:
             echo "skipping testing ${dir}"; \
           fi; \
         done
+
+    - run: find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
+      if: "${{ failure() }}"
 
     - name: Extra coverage build (C)
       if: matrix.language == 'c-cpp' && success()
