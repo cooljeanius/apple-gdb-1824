@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-09 11:32-0500\n"
+"POT-Creation-Date: 2024-01-10 09:28-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -667,7 +667,7 @@ msgid ""
 "pie\n"
 msgstr ""
 
-#: elf-m10200.c:412 elf-m10300.c:1512 elf32-arm.c:4225 elf32-avr.c:865
+#: elf-m10200.c:415 elf-m10300.c:1512 elf32-arm.c:4225 elf32-avr.c:865
 #: elf32-bfin.c:3220 elf32-cr16.c:1484 elf32-cr16c.c:777 elf32-cris.c:1499
 #: elf32-crx.c:915 elf32-d10v.c:539 elf32-epiphany.c:557 elf32-fr30.c:569
 #: elf32-frv.c:4077 elf32-h8300.c:497 elf32-i860.c:1185 elf32-ip2k.c:1474
@@ -680,7 +680,7 @@ msgstr ""
 msgid "internal error: out of range error"
 msgstr ""
 
-#: elf-m10200.c:416 elf-m10300.c:1516 elf32-arm.c:4229 elf32-avr.c:869
+#: elf-m10200.c:419 elf-m10300.c:1516 elf32-arm.c:4229 elf32-avr.c:869
 #: elf32-bfin.c:3224 elf32-cr16.c:1488 elf32-cr16c.c:781 elf32-cris.c:1503
 #: elf32-crx.c:919 elf32-d10v.c:543 elf32-fr30.c:573 elf32-frv.c:4081
 #: elf32-h8300.c:501 elf32-i860.c:1189 elf32-iq2000.c:626 elf32-lm32.c:1164
@@ -692,7 +692,7 @@ msgstr ""
 msgid "internal error: unsupported relocation error"
 msgstr ""
 
-#: elf-m10200.c:420 elf-m10300.c:1520 elf32-arm.c:4233 elf32-cr16.c:1492
+#: elf-m10200.c:423 elf-m10300.c:1520 elf32-arm.c:4233 elf32-cr16.c:1492
 #: elf32-cr16c.c:785 elf32-crx.c:923 elf32-d10v.c:547 elf32-h8300.c:505
 #: elf32-lm32.c:1168 elf32-m32r.c:3100 elf32-m68hc1x.c:1218
 #: elf32-microblaze.c:1568 elf32-nds32.c:4918 elf32-score.c:2737
@@ -700,7 +700,7 @@ msgstr ""
 msgid "internal error: dangerous error"
 msgstr ""
 
-#: elf-m10200.c:424 elf-m10300.c:1524 elf32-arm.c:4237 elf32-avr.c:877
+#: elf-m10200.c:427 elf-m10300.c:1524 elf32-arm.c:4237 elf32-avr.c:877
 #: elf32-bfin.c:3232 elf32-cr16.c:1496 elf32-cr16c.c:789 elf32-cris.c:1511
 #: elf32-crx.c:927 elf32-d10v.c:551 elf32-epiphany.c:572 elf32-fr30.c:581
 #: elf32-frv.c:4089 elf32-h8300.c:509 elf32-i860.c:1197 elf32-ip2k.c:1489

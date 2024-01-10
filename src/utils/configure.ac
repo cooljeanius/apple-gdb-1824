@@ -8,6 +8,7 @@ AC_INIT([gdb-utils],[???],[/dev/null])
 AC_CONFIG_SRCDIR([Makefile.in])
 AC_CONFIG_AUX_DIR([..])
 AM_SANITY_CHECK
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
 
 # Checks for programs.
 AC_PROG_INSTALL
@@ -18,8 +19,18 @@ AC_PROG_CXX
 AC_PROG_CXXCPP
 m4_ifdef([AM_PROG_AR],[
   AM_PROG_AR
+  if test "x${AR}" = "x" && test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${AR}" || unset AR
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    AC_PROG_AR
+  fi
 ],[
-  test -n "${AR}"
+  if test "x${AR}" = "x"; then
+    test -z "${AR}" || unset AR
+    AC_PROG_AR
+  else
+    test -n "${AR}" && export AR
+  fi
   AC_SUBST([AR])dnl
 ])dnl
 m4_ifdef([AM_PROG_AS],[

@@ -155,6 +155,11 @@ INSTALLED_HEADERS = readline.h chardefs.h keymaps.h history.h tilde.h \
 INSTALLEDdir = @INSTALLEDdir@
 
 ## extend the automake verbosity control:
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
+
 AM_V_MFLAG = $(am__v_MFLAG_@AM_V@)
 am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
 am__v_MFLAG_0 = -s
@@ -172,7 +177,7 @@ all: config.status $(TARGETS)
 everything: config.status all @MAINT@ examples
 
 static: $(STATIC_LIBS)
-	for mylib in $(STATIC_LIBS); do \
+	$(AM_V_at)for mylib in $(STATIC_LIBS); do \
 	  if test -e $${mylib}; then \
 	    stat $${mylib}; \
 	  elif test -e Makefile; then \
@@ -183,34 +188,34 @@ static: $(STATIC_LIBS)
 	done
 
 libreadline.a: $(OBJECTS) $(HISTOBJ) $(TILDEOBJ) $(XMALLOCOBJ) ${LIBOBJDIR}compat$U.o ${LIBOBJDIR}malloc$U.o ${LIBOBJDIR}realloc$U.o
-	$(RM) $@
-	test -e ./Makefile && $(MAKE) ./compat.o ./malloc.o ./realloc.o
-	if test -e $(srcdir)/compat.o -a ! -e compat.o; then \
-	  cp -v $(srcdir)/compat.o compat.o; \
+	$(AM_V_at)$(RM) $@
+	$(AM_V_at)test -e ./Makefile && $(MAKE) $(AM_V_MFLAG) ./compat.o ./malloc.o ./realloc.o
+	$(AM_V_at)if test -e $(srcdir)/compat.o -a ! -e compat.o; then \
+	  cp $(AM_V_v) $(srcdir)/compat.o compat.o; \
 	fi
-	if test -e $(srcdir)/malloc.o -a ! -e malloc.o; then \
-	  cp -v $(srcdir)/malloc.o malloc.o; \
+	$(AM_V_at)if test -e $(srcdir)/malloc.o -a ! -e malloc.o; then \
+	  cp $(AM_V_v) $(srcdir)/malloc.o malloc.o; \
 	fi
-	if test -e $(srcdir)/realloc.o -a ! -e realloc.o; then \
-	  cp -v $(srcdir)/realloc.o realloc.o; \
+	$(AM_V_at)if test -e $(srcdir)/realloc.o -a ! -e realloc.o; then \
+	  cp $(AM_V_v) $(srcdir)/realloc.o realloc.o; \
 	fi
 	$(AR) $(ARFLAGS) $@ $(OBJECTS)
 	-test -n "$(RANLIB)" && $(RANLIB) $@
 
 libhistory.a: $(HISTOBJ) $(XMALLOCOBJ) ${LIBOBJDIR}malloc$U.o ${LIBOBJDIR}realloc$U.o @MAINT@ Makefile
-	$(RM) $@
-	test -e Makefile && test -w . && $(MAKE) ./malloc.o ./realloc.o
+	$(AM_V_at)$(RM) $@
+	$(AM_V_at)test -e Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./malloc.o ./realloc.o
 	$(AR) $(ARFLAGS) $@ $(HISTOBJ) $(XMALLOCOBJ)
 	-test -n "$(RANLIB)" && $(RANLIB) $@
 
 wcwidth.o: $(srcdir)/support/wcwidth.c
-	$(RM) $@
+	$(AM_V_at)$(RM) $@
 	$(CC) $(CCFLAGS) -c $(srcdir)/support/wcwidth.c
 
 # Since tilde.c is shared between readline and bash, make sure we compile
 # it with the right flags when it is built as part of readline
 tilde.o: tilde.c
-	rm -rf $@
+	$(AM_V_at)rm -rf $@
 	$(CC) $(CCFLAGS) -DREADLINE_LIBRARY -c $(srcdir)/tilde.c
 
 readline: $(OBJECTS) readline.h rldefs.h chardefs.h examples/rl.c ./libreadline.a
@@ -231,7 +236,7 @@ examples/Makefile: config.status $(srcdir)/Makefile.in
 	CONFIG_FILES=examples/Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
 
 Makefiles makefiles: config.status $(srcdir)/Makefile.in
-	@for mf in $(CREATED_MAKEFILES); do \
+	$(AM_V_at)for mf in $(CREATED_MAKEFILES); do \
 	  CONFIG_FILES=$${mf} CONFIG_HEADERS="" $(SHELL) ./config.status; \
 	done
 
@@ -248,7 +253,7 @@ stamp-h: config.status $(srcdir)/config.h.in
 
 shared: force shlib/Makefile
 	-test -d shlib || mkdir shlib
-	-( cd shlib; ${MAKE} $(AM_V_MFLAG) ${MFLAGS} all )
+	-( cd shlib; $(MAKE) $(AM_V_MFLAG) ${MFLAGS} all )
 
 documentation: force doc/Makefile
 	-test -d doc || mkdir doc
@@ -256,13 +261,13 @@ documentation: force doc/Makefile
 
 examples: force examples/Makefile
 	-test -d examples || mkdir examples
-	-(cd examples && ${MAKE} $(AM_V_MFLAG) ${MFLAGS} all )
+	-(cd examples && $(MAKE) $(AM_V_MFLAG) ${MFLAGS} all )
 
 force:
 
 install-headers: installdirs ${INSTALLED_HEADERS}
 	for f in ${INSTALLED_HEADERS}; do \
-	$(INSTALL_DATA) $(srcdir)/$${f} $(DESTDIR)$(includedir)/readline; \
+	  $(INSTALL_DATA) $(srcdir)/$${f} $(DESTDIR)$(includedir)/readline; \
 	done
 
 uninstall-headers:
@@ -326,30 +331,30 @@ tags-local: force
 clean-local: config.status force
 	$(RM) $(OBJECTS) $(STATIC_LIBS)
 	$(RM) readline readline.exe
-	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ ; fi )
+	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ ; fi )
 
 mostlyclean-local: clean-local config.status
-	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ ; fi )
+	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ ; fi )
 
 distclean-local: clean-local config.status
-	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e examples/rlfe.dir/Makefile && test -x examples/rlfe.dir/config.status; then cd examples/rlfe.dir && cp -v Makefile Makefile.bak && $(MAKE) $(MFLAGS) $@ && mv -v Makefile.bak Makefile; fi )
+	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(AM_V_FLAG) $(MFLAGS) $@ ; fi )
+	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(AM_V_FLAG) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(AM_V_FLAG) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/rlfe.dir/Makefile && test -x examples/rlfe.dir/config.status; then cd examples/rlfe.dir && cp $(AM_V_v) Makefile Makefile.bak && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ && mv $(AM_V_v) Makefile.bak Makefile; fi )
 	$(RM) $(CREATED_TAGS)
 	$(RM) -r autom4te.cache || rmdir autom4te.cache
 
 maintainer-clean-local: distclean-local
-	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
-	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ ; fi )
+	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/rlfe.dir/Makefile; then cd examples/rlfe.dir && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ ; fi )
 	if test -e config.h; then $(RM) config.h; \
 	elif test -e config.h.in; then $(RM) config.h.in; fi
 	if test -e Makefile_orig; then $(RM) Makefile_orig; \
@@ -387,34 +392,33 @@ MMALLOC_FRAMEWORKS = ../mmalloc
 FRAMEWORK_LIB = -F$(BINUTILS_FRAMEWORKS) -L$(BINUTILS_FRAMEWORKS) -F$(LIBIBERTY_FRAMEWORKS) -L$(LIBIBERTY_FRAMEWORKS) -F$(MMALLOC_FRAMEWORKS) -L$(MMALLOC_FRAMEWORKS) -framework liberty -framework mmalloc $(SYSTEM_FRAMEWORK)
 
 stamp-framework-headers:
-	$(RM) -f stamp-framework stamp-framework-headers
-	$(RM) -rfv $(FRAMEWORK).framework
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
-	$(LN_S) -v Versions/Current/Headers $(FRAMEWORK).framework/Headers
-	$(LN_S) -v Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
-	$(LN_S) -v A $(FRAMEWORK).framework/Versions/Current
-	cp -pv $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	cp -pv *.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	$(AM_V_at)$(RM) -f stamp-framework stamp-framework-headers
+	$(RM) -rf $(AM_V_v) $(FRAMEWORK).framework
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
+	$(LN_S) $(AM_V_v) Versions/Current/Headers $(FRAMEWORK).framework/Headers
+	$(LN_S) $(AM_V_v) Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
+	$(LN_S) $(AM_V_v) A $(FRAMEWORK).framework/Versions/Current
+	cp -p $(AM_V_v) $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	cp -p $(AM_V_v) *.h $(FRAMEWORK).framework/Versions/Current/Headers/
 	$(AM_V_at)touch stamp-framework-headers
 
 stamp-framework: $(FRAMEWORK_OFILES)
-	$(RM) -f stamp-framework-headers
-	$(MAKE) stamp-framework-headers
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
-	$(LN_S) -v Versions/Current/Resources $(FRAMEWORK).framework/Resources
-	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
-
+	$(AM_V_at)$(RM) -f stamp-framework-headers
+	$(MAKE) $(AM_V_MFLAG) stamp-framework-headers
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
+	$(LN_S) $(AM_V_v) Versions/Current/Resources $(FRAMEWORK).framework/Resources
+	$(MKDIR_P) $(AM_V_v) $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
 	set -ex; \
 	if [ "x$(FRAMEWORK_SUFFIX)" != "x" ]; then \
 	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
-	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
+	    $(LN_S) $(AM_V_v) $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) $(AM_V_v) $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
 	else \
 	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE)  -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
+	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
 	fi
 	$(AM_V_at)touch stamp-framework
 

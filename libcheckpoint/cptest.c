@@ -9,6 +9,7 @@
 #include <errno.h> /* for errno */
 #include <signal.h> /* for kill() */
 #include <stdio.h> /* for fprintf() */
+#include <string.h> /* for strerror() */
 
 /* prototypes: */
 extern int _gdbcp_cg_save(pid_t);
@@ -68,6 +69,9 @@ int main(void)
             } else if (errno == ESRCH) {
                 fprintf(stderr,
                         "Uh oh, something must have happened to the child...\n");
+            } else {
+            	fprintf(stderr, "Unhandled errno value: %d (%s).\n",
+             		errno, strerror(errno));
             }
         } else {
             printf("Killed.\n");

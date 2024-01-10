@@ -1174,10 +1174,10 @@ libintl.la: $(LTOBJECTS) $(OBJECTS)
 		   -o $@ $(LTOBJECTS) -version-info 1:0 -rpath $(libdir)
 
 ../po/cat-id-tbl.lo: ../po/cat-id-tbl.c $(top_srcdir)/po/$(PACKAGE).pot
-	cd ../po && $(MAKE) $(AM_V_MFLAG) cat-id-tbl.lo
+	$(AM_V_at)cd ../po && $(MAKE) $(AM_V_MFLAG) cat-id-tbl.lo
 
 ../po/cat-id-tbl.o: ../po/cat-id-tbl.c $(top_srcdir)/po/$(PACKAGE).pot
-	cd ../po && $(MAKE) $(AM_V_MFLAG) cat-id-tbl.o
+	$(AM_V_at)cd ../po && $(MAKE) $(AM_V_MFLAG) cat-id-tbl.o
 
 check: all @MAINT@ config.status
 	ls ./*.i || ls ./*.s || ls ./*.bc || ls
@@ -1363,7 +1363,7 @@ Makefile-original: Makefile.in config.status
 .PHONY: Makefile-original
 
 po/Makefile: po/Makefile.in.in po/Makevars $(top_builddir)/config.status @POMAKEFILEDEPS@
-	cd $(top_builddir) \
+	$(AM_V_at)cd $(top_builddir) \
 	  && @SHELL@ ./config.status $(subdir)/$@.in po-directories
 
 # The dependency for intlh.inst is different in gettext and all other

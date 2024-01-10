@@ -357,23 +357,23 @@ mn10200_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  sym = (local_syms + r_symndx);
           if (local_sections != NULL)
 	    sec = local_sections[r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 	}
       else
 	{
 	  bfd_boolean unresolved_reloc, warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 	}
 
-      r = mn10200_elf_final_link_relocate (howto, input_bfd, output_bfd,
-					   input_section,
-					   contents, rel->r_offset,
-					   relocation, rel->r_addend,
-					   info, sec, h == NULL);
+      r = mn10200_elf_final_link_relocate(howto, input_bfd, output_bfd,
+					  input_section,
+					  contents, rel->r_offset,
+					  relocation, rel->r_addend,
+					  info, sec, h == NULL);
 
       if (r != bfd_reloc_ok)
 	{
@@ -384,27 +384,30 @@ mn10200_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	    name = h->root.root.string;
 	  else
 	    {
-	      name = (bfd_elf_string_from_elf_section
-		      (input_bfd, symtab_hdr->sh_link,
-                       ((sym != NULL) ? sym->st_name : 0U)));
+	      name =
+        	bfd_elf_string_from_elf_section(input_bfd,
+                                                (unsigned int)symtab_hdr->sh_link,
+                       				((sym != NULL)
+                                                 ? (unsigned int)sym->st_name
+                                                 : 0U));
 	      if (name == NULL || *name == '\0')
-		name = bfd_section_name (input_bfd, sec);
+		name = bfd_section_name(input_bfd, sec);
 	    }
 
 	  switch (r)
 	    {
 	    case bfd_reloc_overflow:
-	      if (! ((*info->callbacks->reloc_overflow)
-		     (info, (h ? &h->root : NULL), name, howto->name,
-		      (bfd_vma) 0, input_bfd, input_section,
-		      rel->r_offset)))
+	      if (!((*info->callbacks->reloc_overflow)
+		    (info, (h ? &h->root : NULL), name, howto->name,
+		     (bfd_vma)0UL, input_bfd, input_section,
+		     rel->r_offset)))
 		return FALSE;
 	      break;
 
 	    case bfd_reloc_undefined:
-	      if (! ((*info->callbacks->undefined_symbol)
-		     (info, name, input_bfd, input_section,
-		      rel->r_offset, TRUE)))
+	      if (!((*info->callbacks->undefined_symbol)
+		    (info, name, input_bfd, input_section,
+		     rel->r_offset, TRUE)))
 		return FALSE;
 	      break;
 

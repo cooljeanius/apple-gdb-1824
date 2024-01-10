@@ -472,47 +472,47 @@ _bfd_elf_discard_section_eh_frame
 	  sec_info->alloced += 100;
 
 	  /* Now fix any pointers into the array.  */
-	  if (last_cie_inf >= old_entry
-	      && last_cie_inf < old_entry + sec_info->count)
-	    last_cie_inf = sec_info->entry + (last_cie_inf - old_entry);
+	  if ((last_cie_inf >= old_entry)
+	      && (last_cie_inf < (old_entry + sec_info->count)))
+	    last_cie_inf = (sec_info->entry + (last_cie_inf - old_entry));
 	}
 
-      this_inf = sec_info->entry + sec_info->count;
+      this_inf = (sec_info->entry + sec_info->count);
       last_fde = buf;
       /* If we are at the end of the section, we still need to decide
 	 on whether to output or discard last encountered CIE (if any).  */
-      if ((bfd_size_type) (buf - ehbuf) == sec->size)
+      if ((bfd_size_type)(buf - ehbuf) == sec->size)
 	{
 	  hdr.length = 0;
-	  hdr.id = (unsigned int) -1;
+	  hdr.id = (unsigned int)-1;
 	  end = buf;
 	}
       else
 	{
 	  /* Read the length of the entry.  */
-	  REQUIRE (skip_bytes (&buf, ehbuf + sec->size, 4));
-	  hdr.length = bfd_get_32 (abfd, buf - 4);
+	  REQUIRE(skip_bytes(&buf, (ehbuf + sec->size), 4));
+	  hdr.length = (unsigned int)bfd_get_32(abfd, (buf - 4));
 
 	  /* 64-bit .eh_frame is not supported.  */
-	  REQUIRE (hdr.length != 0xffffffff);
+	  REQUIRE(hdr.length != 0xffffffff);
 
 	  /* The CIE/FDE must be fully contained in this input section.  */
-	  REQUIRE ((bfd_size_type) (buf - ehbuf) + hdr.length <= sec->size);
-	  end = buf + hdr.length;
+	  REQUIRE((bfd_size_type)(buf - ehbuf) + hdr.length <= sec->size);
+	  end = (buf + hdr.length);
 
-	  this_inf->offset = last_fde - ehbuf;
-	  this_inf->size = 4 + hdr.length;
+	  this_inf->offset = (unsigned int)(last_fde - ehbuf);
+	  this_inf->size = (4 + hdr.length);
 
 	  if (hdr.length == 0)
 	    {
 	      /* A zero-length CIE should only be found at the end of
 		 the section.  */
-	      REQUIRE ((bfd_size_type) (buf - ehbuf) == sec->size);
-	      ENSURE_NO_RELOCS (buf);
+	      REQUIRE((bfd_size_type)(buf - ehbuf) == sec->size);
+	      ENSURE_NO_RELOCS(buf);
 	      sec_info->count++;
 	      /* Now just finish last encountered CIE processing and break
 		 the loop.  */
-	      hdr.id = (unsigned int) -1;
+	      hdr.id = (unsigned int)-1;
 	    }
 	  else
 	    {

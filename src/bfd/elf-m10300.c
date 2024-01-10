@@ -1829,12 +1829,12 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 		  unsigned int sec_shndx;
 		  struct elf_link_hash_entry **hashes;
 		  struct elf_link_hash_entry **end_hashes;
-		  unsigned int symcount;
+		  unsigned long symcount;
 
-		  sec_shndx = _bfd_elf_section_from_bfd_section (input_bfd,
-								 section);
+		  sec_shndx = _bfd_elf_section_from_bfd_section(input_bfd,
+                                                                section);
 
-		  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+		  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 			      - symtab_hdr->sh_info);
 		  hashes = elf_sym_hashes (input_bfd);
 		  end_hashes = hashes + symcount;
@@ -1874,21 +1874,23 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 			    sym_sec = bfd_com_section_ptr;
 			  else
 			    sym_sec
-			      = bfd_section_from_elf_index (input_bfd,
-							    isym->st_shndx);
+			      = bfd_section_from_elf_index(input_bfd,
+                                                           isym->st_shndx);
 
-			  sym_name = (bfd_elf_string_from_elf_section
-				      (input_bfd, symtab_hdr->sh_link,
-				       isym->st_name));
+			  sym_name =
+                            bfd_elf_string_from_elf_section(input_bfd,
+                                                            (unsigned int)symtab_hdr->sh_link,
+                                                            (unsigned int)isym->st_name);
 
 			  /* Tack on an ID so we can uniquely identify this
 			     local symbol in the global hash table.  */
-			  amt = strlen(sym_name) + 10;
+			  amt = (strlen(sym_name) + 10UL);
 			  new_name = (char *)bfd_malloc(amt);
 			  if (new_name == 0)
 			    goto error_return;
 
-			  sprintf (new_name, "%s_%08x", sym_name, sym_sec->id);
+			  snprintf(new_name, amt, "%s_%08x", sym_name,
+        			   sym_sec->id);
 			  sym_name = new_name;
 
 			  elftab = &hash_table->static_hash_table->root;
@@ -1992,7 +1994,7 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 	      Elf_Internal_Sym *isym, *isymend;
 	      struct elf_link_hash_entry **hashes;
 	      struct elf_link_hash_entry **end_hashes;
-	      unsigned int symcount;
+	      unsigned long symcount;
 
 	      /* Skip non-code sections and empty sections.  */
 	      if ((section->flags & SEC_CODE) == 0 || section->size == 0)
@@ -2046,28 +2048,28 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 		    sym_sec = bfd_com_section_ptr;
 		  else
 		    sym_sec
-		      = bfd_section_from_elf_index (input_bfd, isym->st_shndx);
+		      = bfd_section_from_elf_index(input_bfd, isym->st_shndx);
 
-		  sym_name
-		    = bfd_elf_string_from_elf_section (input_bfd,
-						       symtab_hdr->sh_link,
-						       isym->st_name);
+		  sym_name =
+                    bfd_elf_string_from_elf_section(input_bfd,
+                                                    (unsigned int)symtab_hdr->sh_link,
+                                                    (unsigned int)isym->st_name);
 
 		  /* Tack on an ID so we can uniquely identify this
 		     local symbol in the global hash table.  */
-		  amt = strlen(sym_name) + 10;
+		  amt = (strlen(sym_name) + 10UL);
 		  new_name = (char *)bfd_malloc(amt);
 		  if (new_name == 0)
 		    goto error_return;
-		  sprintf (new_name, "%s_%08x", sym_name, sym_sec->id);
+		  snprintf(new_name, amt, "%s_%08x", sym_name, sym_sec->id);
 		  sym_name = new_name;
 
 		  elftab = &hash_table->static_hash_table->root;
 		  sym_hash = ((struct elf32_mn10300_link_hash_entry *)
-			      elf_link_hash_lookup (elftab, sym_name,
-						    FALSE, FALSE, FALSE));
+			      elf_link_hash_lookup(elftab, sym_name,
+						   FALSE, FALSE, FALSE));
 
-		  free (new_name);
+		  free(new_name);
 		  if (sym_hash == NULL)
 		    continue;
 
@@ -2112,7 +2114,7 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 
 	      /* Look for any global functions in this section which
 		 need insns deleted from their prologues.  */
-	      symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+	      symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 			  - symtab_hdr->sh_info);
 	      hashes = elf_sym_hashes (input_bfd);
 	      end_hashes = hashes + symcount;

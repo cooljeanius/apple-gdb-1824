@@ -938,12 +938,14 @@ SUFFIXES = .c .o .lo .plist
 	$(RUN_CLANG_ANALYZER) -o $(analysisdir)/$@ $<
 
 po/SRC-POTFILES.in: @MAINT@ Makefile $(SRC_POTFILES)
-	$(AM_V_GEN)for file in $(SRC_POTFILES); do echo $${file}; done \
+	$(AM_V_GEN)if test ! -e tmp.src; then touch tmp.src; fi; \
+	for file in $(SRC_POTFILES); do echo $${file}; done \
 	  | LC_ALL=C LC_COLLATE="" sort $(AM_V_redir) tmp.src \
 	  && mv $(AM_V_v) tmp.src $(srcdir)/po/SRC-POTFILES.in
 
 po/BLD-POTFILES.in: @MAINT@ Makefile $(BLD_POTFILES)
-	$(AM_V_GEN)for file in $(BLD_POTFILES); do echo $${file}; done \
+	$(AM_V_GEN)if test ! -e tmp.bld; then touch tmp.bld; fi; \
+	for file in $(BLD_POTFILES); do echo $${file}; done \
 	  | LC_ALL=C LC_COLLATE="" sort $(AM_V_redir) tmp.bld \
 	  && mv $(AM_V_v) tmp.bld $(srcdir)/po/BLD-POTFILES.in
 
@@ -995,39 +997,42 @@ PLISTFILES = `echo $(LOFILES) | $(SED) -e 's/\.lo/\.plist/g'`
 
 stamp-lofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(AM_V_at)rm -f $(AM_V_v) tlofiles
-	f=""; \
+	$(AM_V_at)f=""; \
 	for i in $(LOFILES); do \
 	  case " $${f} " in \
 	    *" $${i} "*) ;; \
 	    *) f="$${f} $${i}" ;; \
 	  esac; \
 	done; \
+	if test ! -e tlofiles; then touch tlofiles; fi; \
 	echo $${f} $(AM_V_redir) tlofiles
 	$(RUN_MOVEIFCHANGE) tlofiles lofiles
 	$(AM_V_at)if test stamp-lofiles -ot lofiles; then touch stamp-lofiles; fi
 
 stamp-ofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(AM_V_at)rm -f $(AM_V_v) tofiles
-	f=""; \
+	$(AM_V_at)f=""; \
 	for i in $(OFILES); do \
 	  case " $${f} " in \
 	    *" $${i} "*) ;; \
 	    *) f="$${f} $${i}" ;; \
 	  esac; \
 	done; \
+	if test ! -e tofiles; then touch tofiles; fi; \
 	echo $${f} $(AM_V_redir) tofiles
 	$(RUN_MOVEIFCHANGE) tofiles ofiles
 	$(AM_V_at)if test stamp-ofiles -ot ofiles; then touch stamp-ofiles; fi
 
 stamp-plistfiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(AM_V_at)rm -f $(AM_V_v) tplistfiles
-	f=""; \
+	$(AM_V_at)f=""; \
 	for i in $(PLISTFILES); do \
 	  case " $${f} " in \
 	    *" $${i} "*) ;; \
 	    *) f="$${f} $${i}" ;; \
 	  esac; \
 	done; \
+	if test ! -e tplistfiles; then touch tplistfiles; fi; \
 	echo $${f} $(AM_V_redir) tplistfiles
 	$(RUN_MOVEIFCHANGE) tplistfiles plistfiles
 	$(AM_V_at)if test stamp-plistfiles -ot plistfiles; then \
@@ -1367,7 +1372,7 @@ archive64.o: archive64.lo
 host-aout.lo: Makefile
 host-aout.o: host-aout.lo
 mach-o.lo: $(BFD_H) bfd.h bfd-in2.h bfd-in3.h mach-o-target.c \
-  bfd_stdint.h @MAINT@ headers
+  bfd_stdint.h
 mach-o.o: mach-o.lo
 pef.o: pef.lo
 xsym.o: xsym.lo
@@ -1422,11 +1427,15 @@ $(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h bfd-in3.h $(srcdir)/libbfd.h \
 
 stmp-bfd-h: bfd-in3.h @MAINT@ headers @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(AM_V_at)rm -f $(AM_V_v) bfd-tmp.h
-	cp $(AM_V_v) bfd-in3.h bfd-tmp.h
-	$(RUN_MOVEIFCHANGE) bfd-tmp.h $(BFD_H)
+	$(AM_V_at)if test ! -e bfd-tmp.h || test bfd-tmp.h -ot bfd-in3.h; then \
+	  cp $(AM_V_v) bfd-in3.h bfd-tmp.h; \
+	  $(RUN_MOVEIFCHANGE) bfd-tmp.h $(BFD_H); \
+	elif test -r bfd-in3.h; then \
+	  stat bfd-in3.h; \
+	fi
 	$(AM_V_at)if test $(BFD_H) -ot $@; then touch $(BFD_H); fi
 	$(AM_V_at)rm -f $(AM_V_v) bfd-tmp.h
-	if test $@ -ot bfd-in3.h; then touch $@; fi
+	$(AM_V_at)if test $@ -ot bfd-in3.h; then touch $@; fi
 
 BFD_H_FILES = bfd-in.h init.c opncls.c libbfd.c section.c archures.c \
 	reloc.c syms.c bfd.c bfdio.c bfdwin.c \
@@ -1547,7 +1556,7 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 .PHONY: headers
 
 $(sdocdir)/Makefile: $(sdocdir)/Makefile.in $(top_builddir)/config.status
-	if test $(srcdir) != "."; then \
+	$(AM_V_at)if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  if test -e ./doc/Makefile -a ! -e $(sdocdir)/Makefile; then \
 	    cp $(AM_V_v) ./doc/Makefile $(sdocdir)/Makefile; \
@@ -1561,7 +1570,7 @@ $(sdocdir)/Makefile: $(sdocdir)/Makefile.in $(top_builddir)/config.status
 	    $(SHELL) $(top_builddir)/config.status; \
 	  fi; \
 	fi
-	if test -e Makefile -a ! -e $(srcdir)/Makefile -a -d .deps; then \
+	$(AM_V_at)if test -e Makefile -a ! -e $(srcdir)/Makefile -a -d .deps; then \
 	  $(MAKE) $(AM_V_MFLAG) $(srcdir)/Makefile; \
 	fi
 

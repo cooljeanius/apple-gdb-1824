@@ -43,7 +43,7 @@
 /* APPLE LOCAL begin dwarf repository  */
 /* NOTE:  Everything from here to the end of the file is APPLE LOCAL  */
 /* ********************** REPOSITORY STUFF STARTS HERE ********************** */
-/* TODO: move to separate file
+/* DONE: moved to separate file (here, this one)
  This "section" contains several sub-sections:
 
  1. Red Black Trees.  This sub-section contains code for defining, creating

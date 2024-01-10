@@ -299,8 +299,8 @@ READLINELIBS_DEP = $(READLINELIBS)
 
 POTFILES = $(CFILES) $(DEBUG_SRCS) $(HFILES)
 po/POTFILES.in: @MAINT@ Makefile
-	for f in $(POTFILES); do echo "$${f}"; done | \
-	  LC_COLLATE="" sort > tmp && \
+	$(AM_V_at)for f in $(POTFILES); do echo "$${f}"; done | \
+	  LC_COLLATE="" sort $(AM_V_redir) tmp && \
 	  mv $(AM_V_v) tmp $(srcdir)/po/POTFILES.in
 
 my_EXPECT = expect
@@ -463,7 +463,7 @@ sysroff.h: sysinfo$(EXEEXT_FOR_BUILD) sysroff.info
 sysinfo$(EXEEXT_FOR_BUILD): sysinfo.@OBJEXT@ syslex_wrap.@OBJEXT@ sysinfo.h
 	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./sysinfo.@OBJEXT@
 	if test -e $(srcdir)/sysinfo.@OBJEXT@ -a ! -e sysinfo.@OBJEXT@; then \
-	  cp -v $(srcdir)/sysinfo.@OBJEXT@ sysinfo.@OBJEXT@; \
+	  cp $(AM_V_v) $(srcdir)/sysinfo.@OBJEXT@ sysinfo.@OBJEXT@; \
 	fi
 	$(AM_V_CCLD)$(CC_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(C_ARCHFLAGS) $(DEFS) $(LDFLAGS_FOR_BUILD) -o $@ sysinfo.@OBJEXT@ syslex_wrap.@OBJEXT@
 
@@ -492,7 +492,7 @@ bin2c$(EXEEXT_FOR_BUILD): bin2c.c $(INCDIR)/binary-io.h
 	  $(srcdir)/bin2c.c
 
 embedspu: embedspu.sh Makefile
-	$(AWK) '/^program_transform_name=/ {print "program_transform_name=\"$(program_transform_name)\""; next} {print}' < $< > $@
+	$(AWK) '/^program_transform_name=/ {print "program_transform_name=\"$(program_transform_name)\""; next} {print}' < $< $(AM_V_redir) $@
 	chmod a+x $@
 
 # We need these for parallel make.
@@ -716,9 +716,15 @@ EXTRA_DIST = arparse.c arparse.h arlex.c nlmheader.c sysinfo.c sysinfo.h \
 diststuff: $(EXTRA_DIST) info
 all: $(OFILES) info
 all-local: $(PROGS)
-	for myprog in $(PROGS); do \
+	$(AM_V_at)for myprog in $(PROGS); do \
 	  if test -r "$${myprog}" && test -x "$${myprog}"; then \
-	    echo "ok: $${myprog}"; \
+	    if [ "x$(AM_V_P)" != "xfalse" ]; then \
+	      echo "ok: $${myprog}"; \
+	    elif test -x "`which sync`"; then \
+	      sync; \
+	    else \
+	      test -s "$${myprog}" || true; \
+	    fi; \
 	  else \
 	    echo "warning: missing/unusable $${myprog}" >&2; \
 	  fi; \
@@ -752,7 +758,7 @@ Makefile_depends: $(BFDDIR)/configure.ac config.status
 # Have to get rid of any pre-existing DEP1 here, so that "$?" later
 # includes all of $(CFILES).
 DEP: dep.sed $(CFILES) $(HFILES) $(GENERATED_CFILES) $(GENERATED_HFILES) config.h
-	rm -f $(AM_V_v) DEP1
+	$(AM_V_at)rm -f $(AM_V_v) DEP1
 	$(MAKE) $(AM_V_MFLAG) MKDEP="$(MKDEP)" DEP1
 	$(SED) -f dep.sed < DEP1 | uniq $(AM_V_redir) DEPA
 	echo '# IF YOU PUT ANYTHING HERE IT WILL GO AWAY' >> DEPA
@@ -844,8 +850,8 @@ BINUTILS_OFILES = version.o
 BINUTILS_LIB = $(SYSTEM_FRAMEWORK)
 
 stamp-framework-headers-binutils:
-	$(RM) -f $(AM_V_v) stamp-framework-binutils stamp-framework-headers-binutils
-	$(RM) -rf $(AM_V_v) $(BINUTILS).framework
+	$(AM_V_at)$(RM) -f $(AM_V_v) stamp-framework-binutils stamp-framework-headers-binutils
+	$(AM_V_at)$(RM) -rf $(AM_V_v) $(BINUTILS).framework
 	$(MKDIR_P) $(AM_V_v) $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Headers
 	$(MKDIR_P) $(AM_V_v) $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/PrivateHeaders
 	$(LN_S) $(AM_V_v) Versions/Current/Headers $(BINUTILS).framework/Headers
@@ -856,7 +862,7 @@ stamp-framework-headers-binutils:
 	$(AM_V_at)touch stamp-framework-headers-binutils
 
 stamp-framework-binutils: $(BINUTILS_OFILES)
-	$(RM) -f $(AM_V_v) stamp-framework-headers-binutils
+	$(AM_V_at)$(RM) -f $(AM_V_v) stamp-framework-headers-binutils
 	$(MAKE) $(AM_V_MFLAG) stamp-framework-headers-binutils
 	$(MKDIR_P) $(AM_V_v) $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Resources
 	$(LN_S) $(AM_V_v) Versions/Current/Resources $(BINUTILS).framework/Resources

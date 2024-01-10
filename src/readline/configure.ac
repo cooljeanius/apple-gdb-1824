@@ -168,6 +168,8 @@ if test "x${AR}" = "x"; then
     test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
     AC_PROG_AR
   fi
+else
+  test -n "${AR}" && export AR
 fi
 if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}"

@@ -138,7 +138,7 @@ jobs:
         else \
           echo "error, unhandled compiler!" >&2 && exit 1; \
         fi
-    - run: cd src && make check-opcodes && sync && make check-intl
+    - run: cd src && sync && make check-opcodes && sync && make check-intl && sync
     - run: cd src && make check-binutils
     - run: cd src && make check-utils
     - run: time (pwd && sync && ls && sync)
