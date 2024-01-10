@@ -205,6 +205,11 @@ AC_PROG_MAKE_SET
 # Check Make features:
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
 
+if test "x${V}" = "x"; then
+  test -z "${V}" && export V=0
+fi
+AC_SUBST([V])dnl
+
 dnl########################################################################
 dnl# Port to Automake 1.11.
 dnl# This section can be removed once we assume Automake 1.14 or later.

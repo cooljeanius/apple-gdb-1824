@@ -10,6 +10,11 @@ AC_CONFIG_AUX_DIR([..])
 AM_SANITY_CHECK
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
 
+if test "x${V}" = "x"; then
+  test -z "${V}" && export V=0
+fi
+AC_SUBST([V])dnl
+
 # Checks for programs.
 AC_PROG_INSTALL
 AC_CANONICAL_TARGET

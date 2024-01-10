@@ -406,7 +406,7 @@ esac
 
 case "${host_os}" in
 isc*)	 LOCAL_CFLAGS=-Disc386 ;;
-darwin*) echo "FIXME: add some LOCAL_CFLAGS for darwin" ;;
+darwin*) LOCAL_CFLAGS="-mmacosx-version-min=10.6" ;;
 esac
 
 # Automake:

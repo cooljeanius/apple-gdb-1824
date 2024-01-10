@@ -842,6 +842,7 @@ host_subdir
 build_subdir
 AWK
 AUTOCONF
+V
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -6470,6 +6471,10 @@ else
   AM_DEFAULT_V=$AM_DEFAULT_VERBOSITY
 fi
 AM_BACKSLASH='\'
+
+if test "x${V}" = "x"; then
+  test -z "${V}" && export V=0
+fi
 
 : ${AM_DEFAULT_VERBOSITY=1}
 : ${AM_V=${AM_DEFAULT_VERBOSITY}}

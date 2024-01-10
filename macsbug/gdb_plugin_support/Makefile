@@ -186,6 +186,7 @@ $(SYMROOT)/gdb_plugin_support.o	: 	$(OBJS)
 	    size $(SYMROOT)/gdb_plugin_support.o; \
 	  fi; \
 	  if test -x "`which strings`"; then \
+	    echo "----------------------------------"; \
 	    echo "`strings $@ | wc -l` strings in $@"; \
 	  fi; \
 	elif test -n "$(OBJS)"; then \

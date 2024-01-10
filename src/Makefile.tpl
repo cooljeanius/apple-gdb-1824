@@ -115,7 +115,7 @@ am__v_v_1 = -v
 
 AM_V_MFLAG = $(am__v_MFLAG_@AM_V@)
 am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
-am__v_MFLAG_0 = -s
+am__v_MFLAG_0 = @MAINT@ --no-print-directory
 am__v_MFLAG_1 = -w
 
 # -------------------------------------------------
@@ -823,7 +823,7 @@ BASE_FLAGS_TO_PASS = [+ FOR flags_to_pass +]\
 # We leave this in just in case, but it is not needed anymore.
 RECURSE_FLAGS_TO_PASS = $(BASE_FLAGS_TO_PASS)
 
-FLAGS_TO_PASS_WITH_VERBOSITY = $(RECURSE_FLAGS_TO_PASS) \
+UNUSED_FLAGS_TO_PASS_WITH_VERBOSITY = $(RECURSE_FLAGS_TO_PASS) \
 	"V=$(V_TO_PASS)"
 
 # Flags to pass down to most sub-makes, in which we are building with

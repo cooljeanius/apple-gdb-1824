@@ -236,13 +236,18 @@ AC_FUNC_REALLOC
 AC_FUNC_STRNLEN
 AC_CHECK_FUNCS_ONCE([gettext _gettext])dnl
 AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify \
-                dcgettext__ dgettext__ errno free fgets getcwd \
-                getenv getwd memcpy mempcpy munmap nl_langinfo \
-                putenv raise setenv setlocale stpcpy strcasecmp \
-                strchr strdup strlen strstr strtoul system \
-                tolower])dnl
+                __dcgettext __dgettext dcgettext__ dgettext__ \
+                errno free fgets getcwd getenv getwd \
+                libintl_dcgettext libintl_dgettext memcpy \
+                mempcpy munmap nl_langinfo putenv raise setenv \
+                setlocale stpcpy strcasecmp strchr strdup strlen \
+                strstr strtoul system tolower])dnl
+AC_CHECK_DECLS([__dcgettext])dnl
+AC_CHECK_DECLS([__dgettext])dnl
 AC_CHECK_DECLS([dcgettext__])dnl
 AC_CHECK_DECLS([dgettext__])dnl
+AC_CHECK_DECLS([libintl_dcgettext])dnl
+AC_CHECK_DECLS([libintl_dgettext])dnl
 AC_CHECK_DECLS([free])dnl
 AC_CHECK_DECLS([index])dnl
 AC_CHECK_DECLS([NULL])dnl

@@ -1,4 +1,4 @@
-/* Implementation of the dgettext(3) function
+/* dgettext.c: Implementation of the dgettext(3) function -*- C -*-
    Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
@@ -31,11 +31,15 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LOCALE_H */
 
+#include "gettext.h"
+#include "gettextP.h"
 #if defined _LIBC || defined HAVE_LIBINTL_H
 # include <libintl.h>
 #else
 # include "libgettext.h"
+# include "libgnuintl.h"
 #endif /* HAVE_LIBINTL_H */
+#include "hash-string.h"
 
 /* @@ end of prolog @@ */
 
@@ -48,7 +52,15 @@
 # define DCGETTEXT __dcgettext
 #else
 # define DGETTEXT dgettext__
-# define DCGETTEXT dcgettext__
+# if defined(HAVE_DCGETTEXT__) || (defined(HAVE_DECL_DCGETTEXT__) && HAVE_DECL_DCGETTEXT__)
+#  define DCGETTEXT dcgettext__
+# elif defined(__HAVE_DCGETTEXT) || (defined(HAVE___DECL_DCGETTEXT) && HAVE___DECL_DCGETTEXT)
+#  define DCGETTEXT __dcgettext
+# elif defined(HAVE_LIBINTL_DCGETTEXT) || (defined(HAVE_DECL_LIBINTL_DCGETTEXT) && HAVE_DECL_LIBINTL_DCGETTEXT)
+#  define DCGETTEXT libintl_dcgettext
+# else
+#  define DCGETTEXT dcgettext
+# endif /* HAVE_DCGETTEXT__ || HAVE_DECL_DCGETTEXT__ || etc. */
 #endif /* _LIBC */
 
 /* Look up MSGID in the DOMAINNAME message catalog of the current
