@@ -45,7 +45,7 @@ jobs:
         # A file, directory or wildcard pattern that describes what to upload
         path: |
             **/*.log
-    - run: find . -name config.log -print0 | xargs cat | grep -i error | sort | uniq
+    - run: find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
       if: "${{ failure() }}"
     strategy:
       fail-fast: false

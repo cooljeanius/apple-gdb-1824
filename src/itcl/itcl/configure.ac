@@ -22,7 +22,7 @@ AC_CONFIG_SRCDIR([generic/itcl.h])
 # CYGNUS LOCAL
 AC_CONFIG_AUX_DIR([../..])
 # END CYGNUS LOCAL
-AC_CONFIG_MACRO_DIR([..])
+AC_CONFIG_MACRO_DIR([..])dnl
 
 #--------------------------------------------------------------------
 # __CHANGE__
@@ -56,11 +56,11 @@ eval AC_DEFINE_UNQUOTED(VERSION, "${VERSION}")
 # Handle the --prefix=... option
 #------------------------------------------------------------------------
 
-if test "${prefix}" = "NONE"; then
+if test "x${prefix}" = "xNONE"; then
     prefix=/usr/local
 fi
-if test "${exec_prefix}" = "NONE"; then
-    exec_prefix=$prefix
+if test "x${exec_prefix}" = "xNONE"; then
+    exec_prefix="${prefix}"
 fi
 
 #--------------------------------------------------------------------
@@ -73,7 +73,12 @@ fi
 
 # CYGNUS LOCAL
 m4_ifdef([SC_ENABLE_GCC],[
+  echo "using special GCC detection macro..."
   SC_ENABLE_GCC
+],[
+  if test "x${CC}" != "x"; then
+    test -n "${CC}" && echo "CC is currently set to '${CC}' for `pwd`"
+  fi
 ])dnl
   ## generic autoconf version:
 AC_PROG_CC

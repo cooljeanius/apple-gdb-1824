@@ -2548,7 +2548,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 # END CYGNUS LOCAL
 
-
 #--------------------------------------------------------------------
 # __CHANGE__
 # Set your package name and version numbers here.  The NODOT_VERSION is
@@ -2580,11 +2579,11 @@ eval printf "%s\n" "#define VERSION \"${VERSION}\"" >>confdefs.h
 # Handle the --prefix=... option
 #------------------------------------------------------------------------
 
-if test "${prefix}" = "NONE"; then
+if test "x${prefix}" = "xNONE"; then
     prefix=/usr/local
 fi
-if test "${exec_prefix}" = "NONE"; then
-    exec_prefix=$prefix
+if test "x${exec_prefix}" = "xNONE"; then
+    exec_prefix="${prefix}"
 fi
 
 #--------------------------------------------------------------------
@@ -2596,6 +2595,10 @@ fi
 #--------------------------------------------------------------------
 
 # CYGNUS LOCAL
+
+  if test "x${CC}" != "x"; then
+    test -n "${CC}" && echo "CC is currently set to '${CC}' for `pwd`"
+  fi
   ## generic autoconf version:
 
 
