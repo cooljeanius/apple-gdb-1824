@@ -111,8 +111,8 @@ jobs:
           (make || remake); \
         fi
     - run: cd src && make check-libiberty
-    - run: cd src && make -C tcl/unix tcltest
-    - run: cd src && for dir in cgen sim expect dejagnu itcl libgui; do if test -r ${dir}/Makefile; then (echo "running testsuite for ${dir}" && make check-${dir} V=0 RUNTESTFLAGS="-v"); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
+    - run: cd src && sync && make -C tcl/unix tcltest && sync
+    - run: cd src && for dir in cgen sim expect dejagnu itcl libgui; do if test -r ${dir}/Makefile; then (sync && echo "running testsuite for ${dir}" && sync && make check-${dir} V=0 RUNTESTFLAGS="-v" && sync); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
     - name: Possibly do static analysis
       run: |
         cd src
@@ -141,7 +141,7 @@ jobs:
     - run: cd src && sync && make check-opcodes && sync && make check-intl && sync
     - run: cd src && make check-binutils
     - run: cd src && make check-utils
-    - run: time (pwd && sync && ls && sync)
+    - run: time (sync && pwd && sync && ls && sync)
       if: "${{ success() }}"
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.0.0

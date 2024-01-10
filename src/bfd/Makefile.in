@@ -10021,7 +10021,7 @@ $(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h bfd-in3.h $(srcdir)/libbfd.h \
 	else \
 	  echo "$@ target: unsure where to make headers..."; \
 	fi
-	-if test ! -e $(BFD_H); then \
+	$(AM_V_at)-if test ! -e $(BFD_H); then \
 	  if test -e $(srcdir)/Makefile; then \
 	    (cd $(srcdir) && $(MAKE) $(AM_V_MFLAG) stmp-bfd-h $(FLAGS_TO_PASS)); \
 	  elif test -e ./Makefile; then \
@@ -10099,16 +10099,22 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	  (cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) libbfd.h $(FLAGS_TO_PASS)); \
 	elif test -r $(sdocdir)/libbfd.h && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat $(sdocdir)/libbfd.h; \
+	elif test -x "`which sync`"; then \
+	  sync; \
 	fi
 	$(AM_V_at)if test ! -e $(sdocdir)/libcoff.h || test $(sdocdir)/libcoff.h -ot $(sdocdir)/Makefile; then \
 	  (cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) libcoff.h $(FLAGS_TO_PASS)); \
 	elif test -r $(sdocdir)/libcoff.h && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat $(sdocdir)/libcoff.h; \
+	elif test -x "`which sync`"; then \
+	  sync; \
 	fi
 	$(AM_V_at)if test ! -e $(sdocdir)/bfd.h || test $(sdocdir)/bfd.h -ot $(sdocdir)/Makefile; then \
 	  (cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) bfd.h $(FLAGS_TO_PASS)); \
 	elif test -r $(sdocdir)/bfd.h && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat $(sdocdir)/bfd.h; \
+	elif test -x "`which sync`"; then \
+	  sync; \
 	fi
 	$(AM_V_at)if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
@@ -10123,35 +10129,47 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	  $(RUN_MOVEIFCHANGE) bfd-in2.h-new $(srcdir)/bfd-in2.h; \
 	elif test -r bfd-in2.h-new && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat bfd-in2.h-new; \
+	elif test -x "`which sync`"; then \
+	  sync; \
 	fi
 	$(AM_V_at)if test $(srcdir)/bfd-in2.h -ot stmp-bin2-h; then \
 	  touch $(srcdir)/bfd-in2.h; \
 	elif test stmp-bin2-h -ot $(srcdir)/bfd-in2.h; then \
 	  touch stmp-bin2-h; \
+	elif test -x "`which sync`"; then \
+	  sync; \
 	fi
 	$(AM_V_at)if test ! -e libbfd.h-new || test libbfd.h-new -ot $(sdocdir)/libbfd.h; then \
 	  cp $(AM_V_v) $(sdocdir)/libbfd.h libbfd.h-new; \
 	  $(RUN_MOVEIFCHANGE) libbfd.h-new $(srcdir)/libbfd.h; \
 	elif test -r libbfd.h-new && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat libbfd.h-new; \
+	elif test -x "`which sync`"; then \
+	  sync; \
 	fi
 	$(AM_V_at)if test $(srcdir)/libbfd.h -ot stmp-lbfd-h; then \
 	  touch $(srcdir)/libbfd.h; \
 	elif test stmp-lbfd-h -ot $(srcdir)/libbfd.h; then \
 	  touch stmp-lbfd-h; \
+	elif test -x "`which sync`"; then \
+	  sync; \
 	fi
 	$(AM_V_at)if test ! -e libcoff.h-new || test libcoff.h-new -ot $(sdocdir)/libcoff.h; then \
 	  cp $(AM_V_v) $(sdocdir)/libcoff.h libcoff.h-new; \
 	  $(RUN_MOVEIFCHANGE) libcoff.h-new $(srcdir)/libcoff.h; \
 	elif test -r libcoff.h-new && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat libcoff.h-new; \
+	elif test -x "`which sync`"; then \
+	  sync; \
 	fi
 	$(AM_V_at)if test $(srcdir)/libcoff.h -ot stmp-lcoff-h; then \
 	  touch $(srcdir)/libcoff.h; \
 	elif test stmp-lcoff-h -ot $(srcdir)/libcoff.h; then \
 	  touch stmp-lcoff-h; \
+	elif test -x "`which sync`"; then \
+	  sync; \
 	fi
-	-rm -f $(AM_V_v) *.h-new || echo "done with $@ target"
+	$(AM_V_at)-rm -f $(AM_V_v) *.h-new || echo "done with $@ target in `pwd`"
 .PHONY: headers
 
 $(sdocdir)/Makefile: $(sdocdir)/Makefile.in $(top_builddir)/config.status

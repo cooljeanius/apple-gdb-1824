@@ -240,6 +240,11 @@ am__v_CLANG_ = $(am__v_CLANG_@AM_DEFAULT_V@)
 am__v_CLANG_0 = @echo "  CLANG      " $@;
 am__v_CLANG_1 =
 
+AM_V_REZFLAG = $(am_v_REZFLAG_@AM_V@)
+am__v_REZFLAG_ = $(am__v_REZFLAG_@AM_DEFAULT_V@)
+am__v_REZFLAG_0 =
+am__v_REZFLAG_1 = -progress
+
 AR_FLAGS = $(AM_V_ARFLAGS)
 
 # configure our bison/yacc usage:
@@ -1785,7 +1790,7 @@ gdb$(EXEEXT): gdb.o libgdb.a $(CONFIG_OBS) $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
 		$(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
 	@echo "stripping __objcInit from $@";
 	$(AM_V_at)echo "__objcInit" > $(TMPDIR)/macosx-syms-to-remove;
-	-if [ -f .libs/gdb$(EXEEXT) ]; then \
+	$(AM_V_at)-if [ -f .libs/gdb$(EXEEXT) ]; then \
 	  $(STRIP) -R $(TMPDIR)/macosx-syms-to-remove -X .libs/gdb$(EXEEXT); \
 	else \
 	  $(STRIP) -R $(TMPDIR)/macosx-syms-to-remove -X gdb$(EXEEXT); \
@@ -4563,10 +4568,10 @@ mac-xdep.o: $(srcdir)/mac-xdep.c $(defs_h) $(srcdir)/config/xm-mpw.h
 	$(AM_V_CC)$(MAC_CC) -c $(MAC_CFLAGS) $(MAC_DEFS) $(MAC_INCLUDES) \
 	  $(MAC_WARNINGS) '-Wno-#warnings' mac-xdep.c
 
-# can add "-progress" for more verbose output:
+# AM_V_REZFLAG can be "-progress" for more verbose output:
 mac-gdb.rsrc: CodeFragmentTypes.r mac-gdb.r SysTypes.r Types.r
-	$(REZ) -o $@ $(C_ARCHFLAGS) -d Macgdb \
-	  -d VERSION_STRING="\"$(PACKAGE) $(VERSION)\"" \
+	$(AM_V_GEN)$(REZ) -o $@ $(C_ARCHFLAGS) -d Macgdb \
+	  $(AM_V_REZFLAG) -d VERSION_STRING="\"$(PACKAGE) $(VERSION)\"" \
 	  CodeFragmentTypes.r mac-gdb.r SysTypes.r Types.r 2>&1
 
 # This rule codesigns gdb. To use it you have to make a Certificate called

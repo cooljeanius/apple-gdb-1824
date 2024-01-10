@@ -514,13 +514,15 @@ CLEANFILES = *.p *.ip *.dSYM
 
 apple-clean:
 	-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
-	-if test -w $(srcdir); then \
+	$(AM_V_at)-if test -w $(srcdir); then \
 	  rm -rf $(AM_V_v) $(srcdir)/*.dSYM || rmdir $(srcdir)/*.dSYM; \
 	fi
 .PHONY: apple-clean
 
 clean-local: Makefile @MAINT@ apple-clean
-	-if test -w $(srcdir); then rm -f $(AM_V_v) $(srcdir)/*.o; fi
+	-if test -w $(srcdir) && test "x$(srcdir)" != "x$(builddir)"; then \
+	  rm -f $(AM_V_v) $(srcdir)/*.o; \
+	fi
 .PHONY: clean-local
 
 all-local: clean-local $(build_MKDOC) protos
