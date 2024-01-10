@@ -23,12 +23,24 @@ subdirs =	@subdirs@
 # determine which shell to use for executing commands:
 SHELL =		/bin/sh
 
+## automake-style verbosity control:
+V = @V@
+AM_V_at = $(am__v_at_@AM_V@)
+am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
+am__v_at_0 = @
+am__v_at_1 =
+
+AM_V_MFLAG = $(am__v_MFLAG_@AM_V@)
+am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
+am__v_MFLAG_0 = -s
+am__v_MFLAG_1 = -w
+
 all:
-	for dir in $(subdirs); do \
+	$(AM_V_at)for dir in $(subdirs); do \
 		if test -d $${dir}; then \
-		    echo "$${dir}: $(MAKE) $@"; \
-		    if (cd $${dir}; $(MAKE) $@); then \
-		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
+		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
+		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
 		    else exit 1; fi; \
 		else \
 		    exit 1; \
@@ -36,11 +48,11 @@ all:
 	done;
 
 test check:
-	for dir in itcl itk iwidgets; do \
+	$(AM_V_at)for dir in itcl itk iwidgets; do \
 		if test -d $${dir}; then \
-		    echo "$${dir}: $(MAKE) $@"; \
-		    if (cd $${dir}; $(MAKE) $@); then \
-		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
+		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
+		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
 		    else exit 1; fi; \
 		else \
 		    exit 1; \
@@ -48,11 +60,11 @@ test check:
 	done;
 
 static:
-	for dir in $(subdirs); do \
+	$(AM_V_at)for dir in $(subdirs); do \
 		if test -d $${dir}; then \
-		    echo "$${dir}: $(MAKE) $@"; \
-		    if (cd $${dir}; $(MAKE) $@); then \
-		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
+		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
+		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
 		    else exit 1; fi; \
 		else \
 		    exit 1; \
@@ -60,11 +72,11 @@ static:
 	done;
 
 standalone:
-	for dir in $(subdirs); do \
+	$(AM_V_at)for dir in $(subdirs); do \
 		if test -d $${dir}; then \
-		    echo "$${dir}: $(MAKE) $@"; \
-		    if (cd $${dir}; $(MAKE) $@); then \
-		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
+		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
+		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
 		    else exit 1; fi; \
 		else \
 		    exit 1; \
@@ -72,11 +84,11 @@ standalone:
 	done;
 
 plusplus:
-	for dir in $(subdirs); do \
+	$(AM_V_at)for dir in $(subdirs); do \
 		if test -d $${dir}; then \
-		    echo "$${dir}: $(MAKE) $@"; \
-		    if (cd $${dir}; $(MAKE) $@); then \
-		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
+		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
+		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
 		    else exit 1; fi; \
 		else \
 		    exit 1; \
@@ -84,11 +96,11 @@ plusplus:
 	done;
 
 install:
-	for dir in $(subdirs); do \
+	$(AM_V_at)for dir in $(subdirs); do \
 		if test -d $${dir}; then \
-		    echo "$${dir}: $(MAKE) $@"; \
-		    if (cd $${dir}; $(MAKE) $@); then \
-		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
+		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
+		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
 		    else exit 1; fi; \
 		else \
 		    exit 1; \
@@ -96,11 +108,11 @@ install:
 	done;
 
 install-binaries:
-	for dir in $(subdirs); do \
+	$(AM_V_at)for dir in $(subdirs); do \
 		if test -d $${dir}; then \
-		    echo "$${dir}: $(MAKE) $@"; \
-		    if (cd $${dir}; $(MAKE) $@); then \
-		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
+		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
+		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
 		    else exit 1; fi; \
 		else \
 		    exit 1; \
@@ -108,11 +120,11 @@ install-binaries:
 	done;
 
 install-libraries:
-	for dir in $(subdirs); do \
+	$(AM_V_at)for dir in $(subdirs); do \
 		if test -d $${dir}; then \
-		    echo "$${dir}: $(MAKE) $@"; \
-		    if (cd $${dir}; $(MAKE) $@); then \
-		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
+		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
+		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
 		    else exit 1; fi; \
 		else \
 		    exit 1; \
@@ -122,11 +134,11 @@ install-libraries:
 install-info info install-check:
 
 clean:
-	for dir in $(subdirs); do \
+	$(AM_V_at)for dir in $(subdirs); do \
 		if test -d $${dir}; then \
-		    echo "$${dir}: $(MAKE) $@"; \
-		    if (cd $${dir}; $(MAKE) $@); then \
-		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
+		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
+		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
 		    else exit 1; fi; \
 		else \
 		    exit 1; \
@@ -136,11 +148,11 @@ clean:
 distclean:
 	rm -f Makefile config.log config.status config.cache
 	rm -rf autom4te.cache || rmdir autom4te.cache
-	for dir in $(subdirs); do \
+	$(AM_V_at)for dir in $(subdirs); do \
 		if test -d $${dir}; then \
-		    echo "$${dir}: $(MAKE) $@"; \
-		    if (cd $${dir}; $(MAKE) $@); then \
-		      echo "$(MAKE) $@ succeeded for $${dir}"; \
+		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
+		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
+		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
 		    else exit 1; fi; \
 		else \
 		    exit 1; \
@@ -157,7 +169,7 @@ distclean:
 AUTOCONF = autoconf
 cygnus_local_configure: configure.ac
 	$(AUTOCONF)
-	for dir in $(subdirs); do \
+	$(AM_V_at)for dir in $(subdirs); do \
 		if (cd $${dir}; $(AUTOCONF)); then \
 		  echo "$(AUTOCONF) succeeded for $${dir}"; \
 		else exit 1; fi; \

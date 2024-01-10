@@ -1784,7 +1784,7 @@ gdb$(EXEEXT): gdb.o libgdb.a $(CONFIG_OBS) $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
 		-o gdb$(EXEEXT) gdb.o $(CONFIG_OBS) libgdb.a \
 		$(TDEPLIBS) $(TUI_LIBRARY) $(CLIBS) $(LOADLIBES)
 	@echo "stripping __objcInit from $@";
-	echo "__objcInit" > $(TMPDIR)/macosx-syms-to-remove;
+	$(AM_V_at)echo "__objcInit" > $(TMPDIR)/macosx-syms-to-remove;
 	-if [ -f .libs/gdb$(EXEEXT) ]; then \
 	  $(STRIP) -R $(TMPDIR)/macosx-syms-to-remove -X .libs/gdb$(EXEEXT); \
 	else \

@@ -1430,7 +1430,7 @@ stmp-bfd-h: bfd-in3.h @MAINT@ headers @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(AM_V_at)if test ! -e bfd-tmp.h || test bfd-tmp.h -ot bfd-in3.h; then \
 	  cp $(AM_V_v) bfd-in3.h bfd-tmp.h; \
 	  $(RUN_MOVEIFCHANGE) bfd-tmp.h $(BFD_H); \
-	elif test -r bfd-in3.h; then \
+	elif test -r bfd-in3.h && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat bfd-in3.h; \
 	fi
 	$(AM_V_at)if test $(BFD_H) -ot $@; then touch $(BFD_H); fi
@@ -1498,17 +1498,17 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	(cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) protos $(FLAGS_TO_PASS))
 	$(AM_V_at)if test ! -e $(sdocdir)/libbfd.h || test $(sdocdir)/libbfd.h -ot $(sdocdir)/Makefile; then \
 	  (cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) libbfd.h $(FLAGS_TO_PASS)); \
-	elif test -r $(sdocdir)/libbfd.h; then \
+	elif test -r $(sdocdir)/libbfd.h && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat $(sdocdir)/libbfd.h; \
 	fi
 	$(AM_V_at)if test ! -e $(sdocdir)/libcoff.h || test $(sdocdir)/libcoff.h -ot $(sdocdir)/Makefile; then \
 	  (cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) libcoff.h $(FLAGS_TO_PASS)); \
-	elif test -r $(sdocdir)/libcoff.h; then \
+	elif test -r $(sdocdir)/libcoff.h && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat $(sdocdir)/libcoff.h; \
 	fi
 	$(AM_V_at)if test ! -e $(sdocdir)/bfd.h || test $(sdocdir)/bfd.h -ot $(sdocdir)/Makefile; then \
 	  (cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) bfd.h $(FLAGS_TO_PASS)); \
-	elif test -r $(sdocdir)/bfd.h; then \
+	elif test -r $(sdocdir)/bfd.h && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat $(sdocdir)/bfd.h; \
 	fi
 	$(AM_V_at)if test $(srcdir) != "."; then \
@@ -1522,7 +1522,7 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	$(AM_V_at)if test ! -e bfd-in2.h-new || test bfd-in2.h-new -ot $(sdocdir)/bfd.h; then \
 	  cp $(AM_V_v) $(sdocdir)/bfd.h bfd-in2.h-new; \
 	  $(RUN_MOVEIFCHANGE) bfd-in2.h-new $(srcdir)/bfd-in2.h; \
-	elif test -r bfd-in2.h-new; then \
+	elif test -r bfd-in2.h-new && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat bfd-in2.h-new; \
 	fi
 	$(AM_V_at)if test $(srcdir)/bfd-in2.h -ot stmp-bin2-h; then \
@@ -1533,7 +1533,7 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	$(AM_V_at)if test ! -e libbfd.h-new || test libbfd.h-new -ot $(sdocdir)/libbfd.h; then \
 	  cp $(AM_V_v) $(sdocdir)/libbfd.h libbfd.h-new; \
 	  $(RUN_MOVEIFCHANGE) libbfd.h-new $(srcdir)/libbfd.h; \
-	elif test -r libbfd.h-new; then \
+	elif test -r libbfd.h-new && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat libbfd.h-new; \
 	fi
 	$(AM_V_at)if test $(srcdir)/libbfd.h -ot stmp-lbfd-h; then \
@@ -1544,7 +1544,7 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	$(AM_V_at)if test ! -e libcoff.h-new || test libcoff.h-new -ot $(sdocdir)/libcoff.h; then \
 	  cp $(AM_V_v) $(sdocdir)/libcoff.h libcoff.h-new; \
 	  $(RUN_MOVEIFCHANGE) libcoff.h-new $(srcdir)/libcoff.h; \
-	elif test -r libcoff.h-new; then \
+	elif test -r libcoff.h-new && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat libcoff.h-new; \
 	fi
 	$(AM_V_at)if test $(srcdir)/libcoff.h -ot stmp-lcoff-h; then \

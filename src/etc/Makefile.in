@@ -53,7 +53,7 @@ INFOFILES = standards.info configure.info
 DVIFILES = standards.dvi configure.dvi
 
 all:
-	(pwd && ls)
+	@if test -d . && test -r .; then (pwd && ls); fi
 
 # We want install to imply install-info as per GNU standards.
 install: install-info

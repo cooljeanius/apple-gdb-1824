@@ -70,7 +70,8 @@ subdir_do: force
 	     if (rootme=`pwd`/; export rootme; \
 	       rootsrc=`cd $(srcdir); pwd`/; export rootsrc; \
 	       cd ./$${i}; \
-	       $(MAKE) $(FLAGS_TO_PASS) $(DO)); then echo "It worked."; \
+	       $(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
+	       echo "$@ target in `pwd` for $${i}: It worked."; \
 	     else exit 1; fi; \
 	   else echo "$${i} is not an existing directory."; fi; \
 	done

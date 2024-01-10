@@ -21,6 +21,11 @@ AC_SUBST([target_dependent])dnl
 
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
 
+if test "x${V}" = "x"; then
+  test -z "${V}" && export V=0
+fi
+AC_SUBST([V])dnl
+
 # per-host:
 case "${host}" in
   *dos*)
