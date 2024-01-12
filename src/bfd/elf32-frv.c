@@ -2732,51 +2732,53 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
       struct elf_link_hash_entry *h;
       bfd_vma relocation;
       bfd_reloc_status_type r;
-      const char * name = NULL;
+      const char *name = NULL;
       int r_type;
       asection *osec;
       struct frvfdpic_relocs_info *picrel;
       bfd_vma orig_addend = rel->r_addend;
 
-      r_type = ELF32_R_TYPE (rel->r_info);
+      r_type = ELF32_R_TYPE(rel->r_info);
 
-      if (   r_type == R_FRV_GNU_VTINHERIT
-	  || r_type == R_FRV_GNU_VTENTRY)
+      if ((r_type == R_FRV_GNU_VTINHERIT)
+	  || (r_type == R_FRV_GNU_VTENTRY))
 	continue;
 
-      /* This is a final link.  */
-      r_symndx = ELF32_R_SYM (rel->r_info);
-      howto  = elf32_frv_howto_table + ELF32_R_TYPE (rel->r_info);
-      h      = NULL;
-      sym    = NULL;
-      sec    = NULL;
+      /* This is a final link: */
+      r_symndx = ELF32_R_SYM(rel->r_info);
+      howto = (elf32_frv_howto_table + ELF32_R_TYPE(rel->r_info));
+      h = NULL;
+      sym = NULL;
+      sec = NULL;
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
-	  osec = sec = local_sections [r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  sym = (local_syms + r_symndx);
+	  osec = sec = local_sections[r_symndx];
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 
-	  name = bfd_elf_string_from_elf_section
-	    (input_bfd, symtab_hdr->sh_link, sym->st_name);
-	  name = (name == NULL) ? bfd_section_name (input_bfd, sec) : name;
+	  name =
+            bfd_elf_string_from_elf_section(input_bfd,
+                                            (unsigned int)symtab_hdr->sh_link,
+                                            (unsigned int)sym->st_name);
+	  name = ((name == NULL) ? bfd_section_name(input_bfd, sec) : name);
 	}
       else
 	{
-	  h = sym_hashes [r_symndx - symtab_hdr->sh_info];
+	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
 
-	  while (h->root.type == bfd_link_hash_indirect
-		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	  while ((h->root.type == bfd_link_hash_indirect)
+		 || (h->root.type == bfd_link_hash_warning))
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 
 	  name = h->root.root.string;
 
-	  if ((h->root.type == bfd_link_hash_defined
-	       || h->root.type == bfd_link_hash_defweak))
+	  if ((h->root.type == bfd_link_hash_defined)
+	       || (h->root.type == bfd_link_hash_defweak))
 	    {
-	      if (/* TLSMOFF forces local binding.  */
-		  r_type != R_FRV_TLSMOFF
-		  && ! FRVFDPIC_SYM_LOCAL (info, h))
+	      if (/* TLSMOFF forces local binding: */
+		  (r_type != R_FRV_TLSMOFF)
+		  && !FRVFDPIC_SYM_LOCAL(info, h))
 		{
 		  sec = NULL;
 		  relocation = 0;
@@ -3546,7 +3548,7 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 
 	case R_FRV_FUNCDESC:
 	  {
-	    int dynindx;
+            long dynindx;
 	    bfd_vma addend = rel->r_addend;
 
 	    if (! (h && h->root.type == bfd_link_hash_undefweak
@@ -3674,12 +3676,12 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	  /* Fall through.  */
 	case R_FRV_FUNCDESC_VALUE:
 	  {
-	    int dynindx;
+	    long dynindx;
 	    bfd_vma addend = rel->r_addend;
 
 	    /* If the symbol is dynamic but binds locally, use
 	       section+offset.  */
-	    if (h && ! FRVFDPIC_SYM_LOCAL (info, h))
+	    if (h && ! FRVFDPIC_SYM_LOCAL(info, h))
 	      {
 		if (addend && r_type == R_FRV_FUNCDESC_VALUE)
 		  {
@@ -3699,9 +3701,9 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 		if (osec)
 		  addend += osec->output_offset;
 		if (osec && osec->output_section
-		    && ! bfd_is_abs_section (osec->output_section)
-		    && ! bfd_is_und_section (osec->output_section))
-		  dynindx = elf_section_data (osec->output_section)->dynindx;
+		    && !bfd_is_abs_section(osec->output_section)
+		    && !bfd_is_und_section(osec->output_section))
+		  dynindx = elf_section_data(osec->output_section)->dynindx;
 		else
 		  dynindx = 0;
 	      }
@@ -3711,18 +3713,18 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	       is defined in the current link unit (which is implied
 	       by its output section not being NULL).  */
 	    if (info->executable && !info->pie
-		&& (!h || FRVFDPIC_SYM_LOCAL (info, h)))
+		&& (!h || FRVFDPIC_SYM_LOCAL(info, h)))
 	      {
 		if (osec && osec->output_section)
 		  addend += osec->output_section->vma;
-		if (IS_FDPIC (input_bfd)
-		    && (bfd_get_section_flags (output_bfd,
-					       input_section->output_section)
+		if (IS_FDPIC(input_bfd)
+		    && (bfd_get_section_flags(output_bfd,
+					      input_section->output_section)
 			& (SEC_ALLOC | SEC_LOAD)) == (SEC_ALLOC | SEC_LOAD))
 		  {
-		    if (_frvfdpic_osec_readonly_p (output_bfd,
-						   input_section
-						   ->output_section))
+		    if (_frvfdpic_osec_readonly_p(output_bfd,
+						  input_section
+						  ->output_section))
 		      {
 			info->callbacks->warning
 			  (info,
@@ -3732,20 +3734,19 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 		      }
 		    if (!h || h->root.type != bfd_link_hash_undefweak)
 		      {
-			_frvfdpic_add_rofixup (output_bfd,
-					       frvfdpic_gotfixup_section
-					       (info),
-					       _bfd_elf_section_offset
-					       (output_bfd, info,
+			_frvfdpic_add_rofixup(output_bfd,
+					      frvfdpic_gotfixup_section(info),
+					      _bfd_elf_section_offset
+					      (output_bfd, info,
 						input_section, rel->r_offset)
-					       + input_section
-					       ->output_section->vma
-					       + input_section->output_offset,
-					       picrel);
+					      + input_section
+					      ->output_section->vma
+					      + input_section->output_offset,
+					      picrel);
 			if (r_type == R_FRV_FUNCDESC_VALUE)
 			  _frvfdpic_add_rofixup
 			    (output_bfd,
-			     frvfdpic_gotfixup_section (info),
+			     frvfdpic_gotfixup_section(info),
 			     _bfd_elf_section_offset
 			     (output_bfd, info,
 			      input_section, rel->r_offset)
@@ -3756,13 +3757,13 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	      }
 	    else
 	      {
-		if ((bfd_get_section_flags (output_bfd,
-					    input_section->output_section)
+		if ((bfd_get_section_flags(output_bfd,
+					   input_section->output_section)
 		     & (SEC_ALLOC | SEC_LOAD)) == (SEC_ALLOC | SEC_LOAD))
 		  {
-		    if (_frvfdpic_osec_readonly_p (output_bfd,
-						   input_section
-						   ->output_section))
+		    if (_frvfdpic_osec_readonly_p(output_bfd,
+						  input_section
+						  ->output_section))
 		      {
 			info->callbacks->warning
 			  (info,
@@ -3770,22 +3771,22 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 			   name, input_bfd, input_section, rel->r_offset);
 			return FALSE;
 		      }
-		    _frvfdpic_add_dyn_reloc (output_bfd,
-					     frvfdpic_gotrel_section (info),
-					     _bfd_elf_section_offset
-					     (output_bfd, info,
-					      input_section, rel->r_offset)
-					     + input_section
-					     ->output_section->vma
-					     + input_section->output_offset,
-					     r_type, dynindx, addend, picrel);
+		    _frvfdpic_add_dyn_reloc(output_bfd,
+					    frvfdpic_gotrel_section(info),
+					    _bfd_elf_section_offset
+					    (output_bfd, info,
+					     input_section, rel->r_offset)
+					    + input_section
+					    ->output_section->vma
+					    + input_section->output_offset,
+					    r_type, dynindx, addend, picrel);
 		  }
 		else if (osec && osec->output_section)
 		  addend += osec->output_section->vma;
 		/* We want the addend in-place because dynamic
 		   relocations are REL.  Setting relocation to it
 		   should arrange for it to be installed.  */
-		relocation = addend - rel->r_addend;
+		relocation = (addend - rel->r_addend);
 	      }
 
 	    if (r_type == R_FRV_FUNCDESC_VALUE)
@@ -6473,27 +6474,26 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
   char old_opt[80];
 
   new_opt[0] = old_opt[0] = '\0';
-  new_flags = elf_elfheader (ibfd)->e_flags;
-  old_flags = elf_elfheader (obfd)->e_flags;
+  new_flags = (flagword)elf_elfheader(ibfd)->e_flags;
+  old_flags = (flagword)elf_elfheader(obfd)->e_flags;
 
   if (new_flags & EF_FRV_FDPIC)
     new_flags &= ~EF_FRV_PIC;
 
 #ifdef DEBUG
-  (*_bfd_error_handler) ("old_flags = 0x%.8lx, new_flags = 0x%.8lx, init = %s, filename = %s",
-			 old_flags, new_flags, elf_flags_init (obfd) ? "yes" : "no",
-			 bfd_get_filename (ibfd));
-#endif
+  (*_bfd_error_handler)("old_flags = 0x%.8lx, new_flags = 0x%.8lx, init = %s, filename = %s",
+                        old_flags, new_flags, elf_flags_init(obfd) ? "yes" : "no",
+                        bfd_get_filename(ibfd));
+#endif /* DEBUG */
 
-  if (!elf_flags_init (obfd))			/* First call, no flags set.  */
+  if (!elf_flags_init(obfd))			/* First call, no flags set.  */
     {
-      elf_flags_init (obfd) = TRUE;
+      elf_flags_init(obfd) = TRUE;
       old_flags = new_flags;
     }
 
   else if (new_flags == old_flags)		/* Compatible flags are ok.  */
     ;
-
   else						/* Possibly incompatible flags.  */
     {
       /* Warn if different # of gprs are used.  Note, 0 means nothing is
@@ -6502,27 +6502,30 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
       old_partial = (old_flags & EF_FRV_GPR_MASK);
       if (new_partial == old_partial)
 	;
-
       else if (new_partial == 0)
 	;
-
       else if (old_partial == 0)
 	old_flags |= new_partial;
-
       else
 	{
 	  switch (new_partial)
 	    {
-	    default:		strcat (new_opt, " -mgpr-??"); break;
-	    case EF_FRV_GPR_32: strcat (new_opt, " -mgpr-32"); break;
-	    case EF_FRV_GPR_64: strcat (new_opt, " -mgpr-64"); break;
+	    default:
+              strncat(new_opt, " -mgpr-??", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_GPR_32:
+              strncat(new_opt, " -mgpr-32", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_GPR_64:
+              strncat(new_opt, " -mgpr-64", (sizeof(new_opt) - 1UL)); break;
 	    }
 
 	  switch (old_partial)
 	    {
-	    default:		strcat (old_opt, " -mgpr-??"); break;
-	    case EF_FRV_GPR_32: strcat (old_opt, " -mgpr-32"); break;
-	    case EF_FRV_GPR_64: strcat (old_opt, " -mgpr-64"); break;
+	    default:
+              strncat(old_opt, " -mgpr-??", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_GPR_32:
+              strncat(old_opt, " -mgpr-32", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_GPR_64:
+              strncat(old_opt, " -mgpr-64", (sizeof(old_opt) - 1UL)); break;
 	    }
 	}
 
@@ -6532,29 +6535,26 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
       old_partial = (old_flags & EF_FRV_FPR_MASK);
       if (new_partial == old_partial)
 	;
-
       else if (new_partial == 0)
 	;
-
       else if (old_partial == 0)
 	old_flags |= new_partial;
-
       else
 	{
 	  switch (new_partial)
 	    {
-	    default:		  strcat (new_opt, " -mfpr-?");      break;
-	    case EF_FRV_FPR_32:   strcat (new_opt, " -mfpr-32");     break;
-	    case EF_FRV_FPR_64:   strcat (new_opt, " -mfpr-64");     break;
-	    case EF_FRV_FPR_NONE: strcat (new_opt, " -msoft-float"); break;
+	    default: strcat(new_opt, " -mfpr-?"); break;
+	    case EF_FRV_FPR_32: strcat(new_opt, " -mfpr-32"); break;
+	    case EF_FRV_FPR_64: strcat(new_opt, " -mfpr-64"); break;
+	    case EF_FRV_FPR_NONE: strcat(new_opt, " -msoft-float"); break;
 	    }
 
 	  switch (old_partial)
 	    {
-	    default:		  strcat (old_opt, " -mfpr-?");      break;
-	    case EF_FRV_FPR_32:   strcat (old_opt, " -mfpr-32");     break;
-	    case EF_FRV_FPR_64:   strcat (old_opt, " -mfpr-64");     break;
-	    case EF_FRV_FPR_NONE: strcat (old_opt, " -msoft-float"); break;
+	    default: strcat(old_opt, " -mfpr-?"); break;
+	    case EF_FRV_FPR_32: strcat(old_opt, " -mfpr-32"); break;
+	    case EF_FRV_FPR_64: strcat(old_opt, " -mfpr-64"); break;
+	    case EF_FRV_FPR_NONE: strcat(old_opt, " -msoft-float"); break;
 	    }
 	}
 
@@ -6564,27 +6564,24 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
       old_partial = (old_flags & EF_FRV_DWORD_MASK);
       if (new_partial == old_partial)
 	;
-
       else if (new_partial == 0)
 	;
-
       else if (old_partial == 0)
 	old_flags |= new_partial;
-
       else
 	{
 	  switch (new_partial)
 	    {
-	    default:		   strcat (new_opt, " -mdword-?");  break;
-	    case EF_FRV_DWORD_YES: strcat (new_opt, " -mdword");    break;
-	    case EF_FRV_DWORD_NO:  strcat (new_opt, " -mno-dword"); break;
+	    default: strcat(new_opt, " -mdword-?"); break;
+	    case EF_FRV_DWORD_YES: strcat(new_opt, " -mdword"); break;
+	    case EF_FRV_DWORD_NO: strcat(new_opt, " -mno-dword"); break;
 	    }
 
 	  switch (old_partial)
 	    {
-	    default:		   strcat (old_opt, " -mdword-?");  break;
-	    case EF_FRV_DWORD_YES: strcat (old_opt, " -mdword");    break;
-	    case EF_FRV_DWORD_NO:  strcat (old_opt, " -mno-dword"); break;
+	    default: strcat(old_opt, " -mdword-?"); break;
+	    case EF_FRV_DWORD_YES: strcat(old_opt, " -mdword"); break;
+	    case EF_FRV_DWORD_NO: strcat(old_opt, " -mno-dword"); break;
 	    }
 	}
 
@@ -6732,83 +6729,84 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 }
 
 
+/* */
 bfd_boolean
 frv_elf_print_private_bfd_data(bfd *abfd, PTR ptr)
 {
-  FILE *file = (FILE *) ptr;
+  FILE *file = (FILE *)ptr;
   flagword flags;
 
-  BFD_ASSERT (abfd != NULL && ptr != NULL);
+  BFD_ASSERT((abfd != NULL) && (ptr != NULL));
 
-  /* Print normal ELF private data.  */
-  _bfd_elf_print_private_bfd_data (abfd, ptr);
+  /* Print normal ELF private data: */
+  _bfd_elf_print_private_bfd_data(abfd, ptr);
 
-  flags = elf_elfheader (abfd)->e_flags;
-  fprintf (file, _("private flags = 0x%lx:"), (long)flags);
+  flags = (flagword)elf_elfheader(abfd)->e_flags;
+  fprintf(file, _("private flags = 0x%lx:"), (long)flags);
 
   switch (flags & EF_FRV_CPU_MASK)
     {
-    default:							break;
-    case EF_FRV_CPU_SIMPLE: fprintf (file, " -mcpu=simple");	break;
-    case EF_FRV_CPU_FR550:  fprintf (file, " -mcpu=fr550");	break;
-    case EF_FRV_CPU_FR500:  fprintf (file, " -mcpu=fr500");	break;
-    case EF_FRV_CPU_FR450:  fprintf (file, " -mcpu=fr450");	break;
-    case EF_FRV_CPU_FR405:  fprintf (file, " -mcpu=fr405");	break;
-    case EF_FRV_CPU_FR400:  fprintf (file, " -mcpu=fr400");	break;
-    case EF_FRV_CPU_FR300:  fprintf (file, " -mcpu=fr300");	break;
-    case EF_FRV_CPU_TOMCAT: fprintf (file, " -mcpu=tomcat");	break;
+    default: break;
+    case EF_FRV_CPU_SIMPLE: fprintf(file, " -mcpu=simple"); break;
+    case EF_FRV_CPU_FR550: fprintf(file, " -mcpu=fr550"); break;
+    case EF_FRV_CPU_FR500: fprintf(file, " -mcpu=fr500"); break;
+    case EF_FRV_CPU_FR450: fprintf(file, " -mcpu=fr450"); break;
+    case EF_FRV_CPU_FR405: fprintf(file, " -mcpu=fr405"); break;
+    case EF_FRV_CPU_FR400: fprintf(file, " -mcpu=fr400"); break;
+    case EF_FRV_CPU_FR300: fprintf(file, " -mcpu=fr300"); break;
+    case EF_FRV_CPU_TOMCAT: fprintf(file, " -mcpu=tomcat"); break;
     }
 
   switch (flags & EF_FRV_GPR_MASK)
     {
-    default:							break;
-    case EF_FRV_GPR_32: fprintf (file, " -mgpr-32");		break;
-    case EF_FRV_GPR_64: fprintf (file, " -mgpr-64");		break;
+    default: break;
+    case EF_FRV_GPR_32: fprintf(file, " -mgpr-32"); break;
+    case EF_FRV_GPR_64: fprintf(file, " -mgpr-64"); break;
     }
 
   switch (flags & EF_FRV_FPR_MASK)
     {
-    default:							break;
-    case EF_FRV_FPR_32:   fprintf (file, " -mfpr-32");		break;
-    case EF_FRV_FPR_64:   fprintf (file, " -mfpr-64");		break;
-    case EF_FRV_FPR_NONE: fprintf (file, " -msoft-float");	break;
+    default: break;
+    case EF_FRV_FPR_32: fprintf(file, " -mfpr-32"); break;
+    case EF_FRV_FPR_64: fprintf(file, " -mfpr-64"); break;
+    case EF_FRV_FPR_NONE: fprintf(file, " -msoft-float"); break;
     }
 
   switch (flags & EF_FRV_DWORD_MASK)
     {
-    default:							break;
-    case EF_FRV_DWORD_YES: fprintf (file, " -mdword");		break;
-    case EF_FRV_DWORD_NO:  fprintf (file, " -mno-dword");	break;
+    default: break;
+    case EF_FRV_DWORD_YES: fprintf(file, " -mdword"); break;
+    case EF_FRV_DWORD_NO:  fprintf(file, " -mno-dword"); break;
     }
 
   if (flags & EF_FRV_DOUBLE)
-    fprintf (file, " -mdouble");
+    fprintf(file, " -mdouble");
 
   if (flags & EF_FRV_MEDIA)
-    fprintf (file, " -mmedia");
+    fprintf(file, " -mmedia");
 
   if (flags & EF_FRV_MULADD)
-    fprintf (file, " -mmuladd");
+    fprintf(file, " -mmuladd");
 
   if (flags & EF_FRV_PIC)
-    fprintf (file, " -fpic");
+    fprintf(file, " -fpic");
 
   if (flags & EF_FRV_BIGPIC)
-    fprintf (file, " -fPIC");
+    fprintf(file, " -fPIC");
 
   if (flags & EF_FRV_LIBPIC)
-    fprintf (file, " -mlibrary-pic");
+    fprintf(file, " -mlibrary-pic");
 
   if (flags & EF_FRV_FDPIC)
-    fprintf (file, " -mfdpic");
+    fprintf(file, " -mfdpic");
 
   if (flags & EF_FRV_NON_PIC_RELOCS)
-    fprintf (file, " non-pic relocations");
+    fprintf(file, " non-pic relocations");
 
   if (flags & EF_FRV_G0)
-    fprintf (file, " -G0");
+    fprintf(file, " -G0");
 
-  fputc ('\n', file);
+  fputc('\n', file);
   return TRUE;
 }
 

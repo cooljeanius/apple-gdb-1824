@@ -1011,10 +1011,10 @@ ieee_canonicalize_symtab (bfd *abfd, asymbol **location)
       ieee_data_type *ieee = IEEE_DATA(abfd);
 
       dummy_bfd.xvec = &ieee_vec;
-      if (! ieee_slurp_symbol_table(abfd))
+      if (!ieee_slurp_symbol_table(abfd))
 	return -1;
 
-      if (! ieee->symbol_table_full)
+      if (!ieee->symbol_table_full)
 	{
 	  /* Arrgh - there are gaps in the table, run through and fill them
 	     up with pointers to a null place.  */
@@ -1028,12 +1028,13 @@ ieee_canonicalize_symtab (bfd *abfd, asymbol **location)
       for (symp = IEEE_DATA(abfd)->external_symbols;
 	   symp != (ieee_symbol_type *)NULL;
 	   symp = symp->next)
-	/* Place into table at correct index locations.  */
+	/* Place into table at correct index locations: */
 	location[symp->index + ieee->external_symbol_base_offset] = &symp->symbol;
 
-      /* The external refs are indexed in a bit.  */
+      /* The external refs are indexed in a bit: */
       ieee->external_reference_base_offset =
-	-ieee->external_reference_min_index + ieee->external_symbol_count;
+	(-ieee->external_reference_min_index
+	 + ieee->external_symbol_count);
 
       for (symp = IEEE_DATA(abfd)->external_reference;
 	   symp != (ieee_symbol_type *)NULL;

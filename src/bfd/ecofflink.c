@@ -127,8 +127,8 @@ _bfd_ecoff_swap_tir_out(int bigend, const TIR *intern_copy,
 
   /* now the fun stuff...  */
   if (bigend) {
-    ext->t_bits1[0] = ((intern->fBitfield ? TIR_BITS1_FBITFIELD_BIG : 0)
-		       | (intern->continued ? TIR_BITS1_CONTINUED_BIG : 0)
+    ext->t_bits1[0] = ((intern->fBitfield ? TIR_BITS1_FBITFIELD_BIG : 0U)
+		       | (intern->continued ? TIR_BITS1_CONTINUED_BIG : 0U)
 		       | ((intern->bt << TIR_BITS1_BT_SH_BIG)
 			  & TIR_BITS1_BT_BIG));
     ext->t_tq45[0] = (((intern->tq4 << TIR_BITS_TQ4_SH_BIG)
@@ -144,8 +144,8 @@ _bfd_ecoff_swap_tir_out(int bigend, const TIR *intern_copy,
 		      | ((intern->tq3 << TIR_BITS_TQ3_SH_BIG)
 			 & TIR_BITS_TQ3_BIG));
   } else {
-    ext->t_bits1[0] = ((intern->fBitfield ? TIR_BITS1_FBITFIELD_LITTLE : 0)
-		       | (intern->continued ? TIR_BITS1_CONTINUED_LITTLE : 0)
+    ext->t_bits1[0] = ((intern->fBitfield ? TIR_BITS1_FBITFIELD_LITTLE : 0U)
+		       | (intern->continued ? TIR_BITS1_CONTINUED_LITTLE : 0U)
 		       | ((intern->bt << TIR_BITS1_BT_SH_LITTLE)
 			  & TIR_BITS1_BT_LITTLE));
     ext->t_tq45[0] = (((intern->tq4 << TIR_BITS_TQ4_SH_LITTLE)
@@ -181,22 +181,22 @@ _bfd_ecoff_swap_rndx_in(int bigend, const struct rndx_ext *ext_copy,
 
   /* now the fun stuff...  */
   if (bigend) {
-    intern->rfd   = (ext->r_bits[0] << RNDX_BITS0_RFD_SH_LEFT_BIG)
-		  | ((ext->r_bits[1] & RNDX_BITS1_RFD_BIG)
-		    		    >> RNDX_BITS1_RFD_SH_BIG);
-    intern->index = ((ext->r_bits[1] & RNDX_BITS1_INDEX_BIG)
-		    		    << RNDX_BITS1_INDEX_SH_LEFT_BIG)
-		  | (ext->r_bits[2] << RNDX_BITS2_INDEX_SH_LEFT_BIG)
-		  | (ext->r_bits[3] << RNDX_BITS3_INDEX_SH_LEFT_BIG);
+    intern->rfd = ((ext->r_bits[0] << RNDX_BITS0_RFD_SH_LEFT_BIG)
+                   | ((ext->r_bits[1] & RNDX_BITS1_RFD_BIG)
+                      >> RNDX_BITS1_RFD_SH_BIG));
+    intern->index = (((ext->r_bits[1] & RNDX_BITS1_INDEX_BIG)
+                      << RNDX_BITS1_INDEX_SH_LEFT_BIG)
+                     | (ext->r_bits[2] << RNDX_BITS2_INDEX_SH_LEFT_BIG)
+                     | (ext->r_bits[3] << RNDX_BITS3_INDEX_SH_LEFT_BIG));
   } else {
-    intern->rfd   = (ext->r_bits[0] << RNDX_BITS0_RFD_SH_LEFT_LITTLE)
-		  | ((ext->r_bits[1] & RNDX_BITS1_RFD_LITTLE)
-		    		    << RNDX_BITS1_RFD_SH_LEFT_LITTLE);
-    intern->index = ((ext->r_bits[1] & RNDX_BITS1_INDEX_LITTLE)
-		    		    >> RNDX_BITS1_INDEX_SH_LITTLE)
-		  | (ext->r_bits[2] << RNDX_BITS2_INDEX_SH_LEFT_LITTLE)
-		  | ((unsigned int) ext->r_bits[3]
-		     << RNDX_BITS3_INDEX_SH_LEFT_LITTLE);
+    intern->rfd = ((ext->r_bits[0] << RNDX_BITS0_RFD_SH_LEFT_LITTLE)
+                   | ((ext->r_bits[1] & RNDX_BITS1_RFD_LITTLE)
+                      << RNDX_BITS1_RFD_SH_LEFT_LITTLE));
+    intern->index = (((ext->r_bits[1] & RNDX_BITS1_INDEX_LITTLE)
+                      >> RNDX_BITS1_INDEX_SH_LITTLE)
+                     | (ext->r_bits[2] << RNDX_BITS2_INDEX_SH_LEFT_LITTLE)
+                     | ((unsigned int)ext->r_bits[3]
+                        << RNDX_BITS3_INDEX_SH_LEFT_LITTLE));
   }
 
 #ifdef TEST
@@ -214,25 +214,25 @@ _bfd_ecoff_swap_rndx_out(int bigend, const RNDXR *intern_copy,
 {
   RNDXR intern[1];
 
-  *intern = *intern_copy;	/* Make it reasonable to do in-place.  */
+  *intern = *intern_copy; /* Make it reasonable to do in-place.  */
 
   /* now the fun stuff...  */
   if (bigend) {
-    ext->r_bits[0] = intern->rfd >> RNDX_BITS0_RFD_SH_LEFT_BIG;
+    ext->r_bits[0] = (intern->rfd >> RNDX_BITS0_RFD_SH_LEFT_BIG);
     ext->r_bits[1] = (((intern->rfd << RNDX_BITS1_RFD_SH_BIG)
-		       & RNDX_BITS1_RFD_BIG)
-		      | ((intern->index >> RNDX_BITS1_INDEX_SH_LEFT_BIG)
-			 & RNDX_BITS1_INDEX_BIG));
-    ext->r_bits[2] = intern->index >> RNDX_BITS2_INDEX_SH_LEFT_BIG;
-    ext->r_bits[3] = intern->index >> RNDX_BITS3_INDEX_SH_LEFT_BIG;
+                       & RNDX_BITS1_RFD_BIG)
+                      | ((intern->index >> RNDX_BITS1_INDEX_SH_LEFT_BIG)
+                         & RNDX_BITS1_INDEX_BIG));
+    ext->r_bits[2] = (intern->index >> RNDX_BITS2_INDEX_SH_LEFT_BIG);
+    ext->r_bits[3] = (intern->index >> RNDX_BITS3_INDEX_SH_LEFT_BIG);
   } else {
-    ext->r_bits[0] = intern->rfd >> RNDX_BITS0_RFD_SH_LEFT_LITTLE;
+    ext->r_bits[0] = (intern->rfd >> RNDX_BITS0_RFD_SH_LEFT_LITTLE);
     ext->r_bits[1] = (((intern->rfd >> RNDX_BITS1_RFD_SH_LEFT_LITTLE)
-		       & RNDX_BITS1_RFD_LITTLE)
-		      | ((intern->index << RNDX_BITS1_INDEX_SH_LITTLE)
-			 & RNDX_BITS1_INDEX_LITTLE));
-    ext->r_bits[2] = intern->index >> RNDX_BITS2_INDEX_SH_LEFT_LITTLE;
-    ext->r_bits[3] = intern->index >> RNDX_BITS3_INDEX_SH_LEFT_LITTLE;
+                       & RNDX_BITS1_RFD_LITTLE)
+                      | ((intern->index << RNDX_BITS1_INDEX_SH_LITTLE)
+                         & RNDX_BITS1_INDEX_LITTLE));
+    ext->r_bits[2] = (intern->index >> RNDX_BITS2_INDEX_SH_LEFT_LITTLE);
+    ext->r_bits[3] = (intern->index >> RNDX_BITS3_INDEX_SH_LEFT_LITTLE);
   }
 
 #ifdef TEST
@@ -252,20 +252,20 @@ ecoff_add_bytes(char **buf, char **bufend, size_t need)
   size_t want;
   char *newbuf;
 
-  have = *bufend - *buf;
+  have = (size_t)(*bufend - *buf);
   if (have > need)
     want = ALLOC_SIZE;
   else
     {
-      want = need - have;
+      want = (need - have);
       if (want < ALLOC_SIZE)
 	want = ALLOC_SIZE;
     }
-  newbuf = (char *) bfd_realloc (*buf, (bfd_size_type) have + want);
+  newbuf = (char *)bfd_realloc(*buf, (bfd_size_type)have + want);
   if (newbuf == NULL)
     return FALSE;
   *buf = newbuf;
-  *bufend = *buf + have + want;
+  *bufend = (*buf + have + want);
   return TRUE;
 }
 

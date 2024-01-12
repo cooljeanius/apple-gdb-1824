@@ -938,39 +938,41 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
       const char *symname = NULL;
       int r_type;
 
-      r_type = ELF32_R_TYPE (rel->r_info);
+      r_type = ELF32_R_TYPE(rel->r_info);
 
-      if (   r_type == R_CRIS_GNU_VTINHERIT
-	  || r_type == R_CRIS_GNU_VTENTRY)
+      if ((r_type == R_CRIS_GNU_VTINHERIT)
+	  || (r_type == R_CRIS_GNU_VTENTRY))
 	continue;
 
-      /* This is a final link.  */
-      r_symndx = ELF32_R_SYM (rel->r_info);
-      howto  = cris_elf_howto_table + r_type;
-      h      = NULL;
-      sym    = NULL;
-      sec    = NULL;
+      /* This is a final link: */
+      r_symndx = ELF32_R_SYM(rel->r_info);
+      howto = (cris_elf_howto_table + r_type);
+      h = NULL;
+      sym = NULL;
+      sec = NULL;
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
-	  sec = local_sections [r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  sym = (local_syms + r_symndx);
+	  sec = local_sections[r_symndx];
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 
-	  symname = (bfd_elf_string_from_elf_section
-		     (input_bfd, symtab_hdr->sh_link, sym->st_name));
+	  symname =
+            bfd_elf_string_from_elf_section(input_bfd,
+                                            (unsigned int)symtab_hdr->sh_link,
+                                            (unsigned int)sym->st_name);
 	  if (symname == NULL)
-	    symname = bfd_section_name (input_bfd, sec);
+	    symname = bfd_section_name(input_bfd, sec);
 	}
       else
 	{
 	  bfd_boolean warned;
 	  bfd_boolean unresolved_reloc;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 
 	  if (unresolved_reloc && (sec != NULL)
 	      /* Perhaps we should detect the cases that
@@ -3190,24 +3192,24 @@ cris_elf_set_mach_from_flags(bfd *abfd, unsigned long flags)
 static bfd_boolean
 cris_elf_print_private_bfd_data(bfd *abfd, PTR ptr)
 {
-  FILE *file = (FILE *) ptr;
+  FILE *file = (FILE *)ptr;
 
-  BFD_ASSERT (abfd != NULL && ptr != NULL);
+  BFD_ASSERT((abfd != NULL) && (ptr != NULL));
 
   _bfd_elf_print_private_bfd_data (abfd, ptr);
 
-  fprintf (file, _("private flags = %lx:"), elf_elfheader (abfd)->e_flags);
+  fprintf(file, _("private flags = %lx:"), elf_elfheader(abfd)->e_flags);
 
-  if (elf_elfheader (abfd)->e_flags & EF_CRIS_UNDERSCORE)
-    fprintf (file, _(" [symbols have a _ prefix]"));
-  if ((elf_elfheader (abfd)->e_flags & EF_CRIS_VARIANT_MASK)
+  if (elf_elfheader(abfd)->e_flags & EF_CRIS_UNDERSCORE)
+    fprintf(file, _(" [symbols have a _ prefix]"));
+  if ((elf_elfheader(abfd)->e_flags & EF_CRIS_VARIANT_MASK)
       == EF_CRIS_VARIANT_COMMON_V10_V32)
-    fprintf (file, _(" [v10 and v32]"));
-  if ((elf_elfheader (abfd)->e_flags & EF_CRIS_VARIANT_MASK)
+    fprintf(file, _(" [v10 and v32]"));
+  if ((elf_elfheader(abfd)->e_flags & EF_CRIS_VARIANT_MASK)
       == EF_CRIS_VARIANT_V32)
-    fprintf (file, _(" [v32]"));
+    fprintf(file, _(" [v32]"));
 
-  fputc ('\n', file);
+  fputc('\n', file);
   return TRUE;
 }
 
@@ -3215,21 +3217,21 @@ cris_elf_print_private_bfd_data(bfd *abfd, PTR ptr)
 static bfd_boolean
 cris_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
-  int imach, omach;
+  unsigned long imach, omach;
 
-  if (! _bfd_generic_verify_endian_match (ibfd, obfd))
+  if (!_bfd_generic_verify_endian_match(ibfd, obfd))
     return FALSE;
 
-  if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
     return TRUE;
 
-  imach = bfd_get_mach (ibfd);
+  imach = bfd_get_mach(ibfd);
 
-  if (! elf_flags_init (obfd))
+  if (!elf_flags_init(obfd))
     {
-      /* This happens when ld starts out with a 'blank' output file.  */
-      elf_flags_init (obfd) = TRUE;
+      /* This happens when ld starts out with a 'blank' output file: */
+      elf_flags_init(obfd) = TRUE;
 
       /* We ignore the linker-set mach, and instead set it according to
 	 the first input file.  This would also happen if we could
@@ -3238,15 +3240,14 @@ cris_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 	 cris(v0..v10) and crisv32.  The drawback is that we can't force
 	 the output type, which might be a sane thing to do for a
 	 v10+v32 compatibility object.  */
-      if (! bfd_set_arch_mach (obfd, bfd_arch_cris, imach))
+      if (!bfd_set_arch_mach(obfd, bfd_arch_cris, imach))
 	return FALSE;
     }
 
-  if (bfd_get_symbol_leading_char (ibfd)
-      != bfd_get_symbol_leading_char (obfd))
+  if (bfd_get_symbol_leading_char(ibfd) != bfd_get_symbol_leading_char(obfd))
     {
       (*_bfd_error_handler)
-	(bfd_get_symbol_leading_char (ibfd) == '_'
+	((bfd_get_symbol_leading_char(ibfd) == '_')
 	 ? _("%B: uses _-prefixed symbols, but writing file with non-prefixed symbols")
 	 : _("%B: uses non-prefixed symbols, but writing file with _-prefixed symbols"),
 	 ibfd);
@@ -3254,7 +3255,7 @@ cris_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
       return FALSE;
     }
 
-  omach = bfd_get_mach (obfd);
+  omach = bfd_get_mach(obfd);
 
   if (imach != omach)
     {
@@ -3272,15 +3273,15 @@ cris_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 	     : _("%B contains non-CRIS-v32 code, incompatible"
 		 " with previous objects"),
 	     ibfd);
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  return FALSE;
 	}
 
       /* We don't have to check the case where the input is compatible
 	 with v10 and v32, because the output is already known to be set
 	 to the other (compatible) mach.  */
-      if (omach == bfd_mach_cris_v10_v32
-	  && ! bfd_set_arch_mach (obfd, bfd_arch_cris, imach))
+      if ((omach == bfd_mach_cris_v10_v32)
+	  && !bfd_set_arch_mach(obfd, bfd_arch_cris, imach))
 	return FALSE;
     }
 

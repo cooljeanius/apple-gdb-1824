@@ -1463,48 +1463,51 @@ mn10300_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  else if (unresolved_reloc)
 	    (*_bfd_error_handler)
 	      (_("%s: warning: unresolvable relocation against symbol `%s' from %s section"),
-	       bfd_get_filename (input_bfd), h->root.root.root.string,
-	       bfd_get_section_name (input_bfd, input_section));
+	       bfd_get_filename(input_bfd), h->root.root.root.string,
+	       bfd_get_section_name(input_bfd, input_section));
 	}
 
-      r = mn10300_elf_final_link_relocate (howto, input_bfd, output_bfd,
-					   input_section,
-					   contents, rel->r_offset,
-					   relocation, rel->r_addend,
-					   (struct elf_link_hash_entry *)h,
-					   r_symndx,
-					   info, sec, h == NULL);
+      r = mn10300_elf_final_link_relocate(howto, input_bfd, output_bfd,
+					  input_section,
+					  contents, rel->r_offset,
+					  relocation, rel->r_addend,
+					  (struct elf_link_hash_entry *)h,
+					  r_symndx,
+					  info, sec, h == NULL);
 
       if (r != bfd_reloc_ok)
 	{
 	  const char *name;
-	  const char *msg = (const char *) 0;
+	  const char *msg = (const char *)0;
 
 	  if (h != NULL)
 	    name = h->root.root.root.string;
 	  else
 	    {
-	      name = (bfd_elf_string_from_elf_section
-		      (input_bfd, symtab_hdr->sh_link,
-                       ((sym != NULL) ? sym->st_name : 0U)));
+	      name =
+        	bfd_elf_string_from_elf_section(input_bfd,
+         		 			(unsigned int)symtab_hdr->sh_link,
+                       				((sym != NULL)
+                           	    		 ? (unsigned int)sym->st_name
+                                   	   	 : 0U));
 	      if (name == NULL || *name == '\0')
-		name = bfd_section_name (input_bfd, sec);
+		name = bfd_section_name(input_bfd, sec);
 	    }
 
 	  switch (r)
 	    {
 	    case bfd_reloc_overflow:
-	      if (! ((*info->callbacks->reloc_overflow)
-		     (info, (h ? &h->root.root : NULL), name,
-		      howto->name, (bfd_vma) 0, input_bfd,
-		      input_section, rel->r_offset)))
+	      if (!((*info->callbacks->reloc_overflow)
+		    (info, (h ? &h->root.root : NULL), name,
+		     howto->name, (bfd_vma)0UL, input_bfd,
+		     input_section, rel->r_offset)))
 		return FALSE;
 	      break;
 
 	    case bfd_reloc_undefined:
-	      if (! ((*info->callbacks->undefined_symbol)
-		     (info, name, input_bfd, input_section,
-		      rel->r_offset, TRUE)))
+	      if (!((*info->callbacks->undefined_symbol)
+		    (info, name, input_bfd, input_section,
+		     rel->r_offset, TRUE)))
 		return FALSE;
 	      break;
 
@@ -1766,8 +1769,8 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 
 			  sym_name =
                             bfd_elf_string_from_elf_section(input_bfd,
-                                                            (symtab_hdr->sh_link),
-                                                            isym->st_name);
+                                                            (unsigned int)symtab_hdr->sh_link,
+                                                            (unsigned int)isym->st_name);
 
 			  /* If it isn't a function, then we don't care
 			     about it.  */
@@ -2270,7 +2273,7 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 	}
 
       /* Get the value of the symbol referred to by the reloc.  */
-      if (ELF32_R_SYM (irel->r_info) < symtab_hdr->sh_info)
+      if (ELF32_R_SYM(irel->r_info) < symtab_hdr->sh_info)
 	{
 	  Elf_Internal_Sym *isym;
 	  asection *sym_sec = NULL;
@@ -2279,7 +2282,7 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 	  bfd_vma saved_addend;
 
 	  /* A local symbol.  */
-	  isym = isymbuf + ELF32_R_SYM (irel->r_info);
+	  isym = (isymbuf + ELF32_R_SYM(irel->r_info));
 	  if (isym->st_shndx == SHN_UNDEF)
 	    sym_sec = bfd_und_section_ptr;
 	  else if (isym->st_shndx == SHN_ABS)
@@ -2287,18 +2290,19 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 	  else if (isym->st_shndx == SHN_COMMON)
 	    sym_sec = bfd_com_section_ptr;
 	  else
-	    sym_sec = bfd_section_from_elf_index (abfd, isym->st_shndx);
+	    sym_sec = bfd_section_from_elf_index(abfd, isym->st_shndx);
 
-	  sym_name = bfd_elf_string_from_elf_section (abfd,
-						      symtab_hdr->sh_link,
-						      isym->st_name);
+	  sym_name =
+            bfd_elf_string_from_elf_section(abfd,
+                                            (unsigned int)symtab_hdr->sh_link,
+                                            (unsigned int)isym->st_name);
 
 	  if ((sym_sec->flags & SEC_MERGE)
-	      && ELF_ST_TYPE (isym->st_info) == STT_SECTION
+	      && ELF_ST_TYPE(isym->st_info) == STT_SECTION
 	      && sym_sec->sec_info_type == ELF_INFO_TYPE_MERGE)
 	    {
 	      saved_addend = irel->r_addend;
-	      symval = _bfd_elf_rela_local_sym (abfd, isym, &sym_sec, irel);
+	      symval = _bfd_elf_rela_local_sym(abfd, isym, &sym_sec, irel);
 	      symval += irel->r_addend;
 	      irel->r_addend = saved_addend;
 	    }
@@ -3445,11 +3449,11 @@ mn10300_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
   Elf_Internal_Sym *isym, *isymend;
   struct elf_link_hash_entry **sym_hashes;
   struct elf_link_hash_entry **end_hashes;
-  unsigned int symcount;
+  unsigned long symcount;
 
-  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
-  contents = elf_section_data (sec)->this_hdr.contents;
+  contents = elf_section_data(sec)->this_hdr.contents;
 
   /* The deletion must stop at the next ALIGN reloc for an aligment
      power larger than the number of bytes we are deleting.  */
@@ -3457,39 +3461,37 @@ mn10300_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
   irelalign = NULL;
   toaddr = sec->size;
 
-  irel = elf_section_data (sec)->relocs;
-  irelend = irel + sec->reloc_count;
+  irel = elf_section_data(sec)->relocs;
+  irelend = (irel + sec->reloc_count);
 
-  /* Actually delete the bytes.  */
-  memmove (contents + addr, contents + addr + count,
-	   (size_t) (toaddr - addr - count));
+  /* Actually delete the bytes: */
+  memmove((contents + addr), (contents + addr + count),
+	  (size_t)(toaddr - addr - count));
   sec->size -= count;
 
-  /* Adjust all the relocs.  */
-  for (irel = elf_section_data (sec)->relocs; irel < irelend; irel++)
+  /* Adjust all the relocs: */
+  for (irel = elf_section_data(sec)->relocs; irel < irelend; irel++)
     {
-      /* Get the new reloc address.  */
-      if ((irel->r_offset > addr
-	   && irel->r_offset < toaddr))
+      /* Get the new reloc address: */
+      if ((irel->r_offset > addr) && (irel->r_offset < toaddr))
 	irel->r_offset -= count;
     }
 
-  /* Adjust the local symbols defined in this section.  */
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  isym = (Elf_Internal_Sym *) symtab_hdr->contents;
-  for (isymend = isym + symtab_hdr->sh_info; isym < isymend; isym++)
+  /* Adjust the local symbols defined in this section: */
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  isym = (Elf_Internal_Sym *)symtab_hdr->contents;
+  for (isymend = (isym + symtab_hdr->sh_info); isym < isymend; isym++)
     {
-      if (isym->st_shndx == sec_shndx
-	  && isym->st_value > addr
-	  && isym->st_value < toaddr)
+      if ((isym->st_shndx == sec_shndx) && (isym->st_value > addr)
+	  && (isym->st_value < toaddr))
 	isym->st_value -= count;
     }
 
   /* Now adjust the global symbols defined in this section.  */
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 	      - symtab_hdr->sh_info);
-  sym_hashes = elf_sym_hashes (abfd);
-  end_hashes = sym_hashes + symcount;
+  sym_hashes = elf_sym_hashes(abfd);
+  end_hashes = (sym_hashes + symcount);
   for (; sym_hashes < end_hashes; sym_hashes++)
     {
       struct elf_link_hash_entry *sym_hash = *sym_hashes;
@@ -3517,23 +3519,22 @@ mn10300_elf_symbol_address_p(bfd *abfd, asection *sec,
   Elf_Internal_Sym *isymend;
   struct elf_link_hash_entry **sym_hashes;
   struct elf_link_hash_entry **end_hashes;
-  unsigned int symcount;
+  unsigned long symcount;
 
-  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
-  /* Examine all the symbols.  */
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  for (isymend = isym + symtab_hdr->sh_info; isym < isymend; isym++)
+  /* Examine all the symbols: */
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  for (isymend = (isym + symtab_hdr->sh_info); isym < isymend; isym++)
     {
-      if (isym->st_shndx == sec_shndx
-	  && isym->st_value == addr)
+      if ((isym->st_shndx == sec_shndx) && (isym->st_value == addr))
 	return TRUE;
     }
 
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 	      - symtab_hdr->sh_info);
-  sym_hashes = elf_sym_hashes (abfd);
-  end_hashes = sym_hashes + symcount;
+  sym_hashes = elf_sym_hashes(abfd);
+  end_hashes = (sym_hashes + symcount);
   for (; sym_hashes < end_hashes; sym_hashes++)
     {
       struct elf_link_hash_entry *sym_hash = *sym_hashes;
@@ -3785,15 +3786,15 @@ _bfd_mn10300_elf_final_write_processing(bfd *abfd,
       break;
     }
 
-  elf_elfheader (abfd)->e_flags &= ~ (EF_MN10300_MACH);
-  elf_elfheader (abfd)->e_flags |= val;
+  elf_elfheader(abfd)->e_flags &= ~(EF_MN10300_MACH);
+  elf_elfheader(abfd)->e_flags |= val;
 }
 
 bfd_boolean
 _bfd_mn10300_elf_object_p(bfd *abfd)
 {
   bfd_default_set_arch_mach(abfd, bfd_arch_mn10300,
-                            elf_mn10300_mach(elf_elfheader(abfd)->e_flags));
+                            elf_mn10300_mach((flagword)elf_elfheader(abfd)->e_flags));
   return TRUE;
 }
 

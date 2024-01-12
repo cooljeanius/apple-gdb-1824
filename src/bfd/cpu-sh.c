@@ -389,19 +389,18 @@ static struct { unsigned long bfd_mach, arch, arch_up; } bfd_to_arch_table[] =
 
 /* Convert a BFD mach number into the right opcodes arch flags
    using the table above.  */
-
 unsigned int
-sh_get_arch_from_bfd_mach (unsigned long mach)
+sh_get_arch_from_bfd_mach(unsigned long mach)
 {
   int i = 0;
 
   while (bfd_to_arch_table[i].bfd_mach != 0)
     if (bfd_to_arch_table[i].bfd_mach == mach)
-      return bfd_to_arch_table[i].arch;
+      return (unsigned int)bfd_to_arch_table[i].arch;
     else
       i++;
 
-  /* Machine not found.   */
+  /* Machine not found: */
   BFD_FAIL();
 
   return SH_ARCH_UNKNOWN_ARCH;
@@ -411,19 +410,18 @@ sh_get_arch_from_bfd_mach (unsigned long mach)
 /* Convert a BFD mach number into a set of opcodes arch flags
    describing all the compatible architectures (i.e. arch_up)
    using the table above.  */
-
 unsigned int
-sh_get_arch_up_from_bfd_mach (unsigned long mach)
+sh_get_arch_up_from_bfd_mach(unsigned long mach)
 {
   int i = 0;
 
   while (bfd_to_arch_table[i].bfd_mach != 0)
     if (bfd_to_arch_table[i].bfd_mach == mach)
-      return bfd_to_arch_table[i].arch_up;
+      return (unsigned int)bfd_to_arch_table[i].arch_up;
     else
       i++;
 
-  /* Machine not found.  */
+  /* Machine not found: */
   BFD_FAIL();
 
   return SH_ARCH_UNKNOWN_ARCH;

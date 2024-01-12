@@ -170,43 +170,43 @@ struct tir_ext {
 	unsigned char	t_tq23[1];
 };
 
-#define	TIR_BITS1_FBITFIELD_BIG		((unsigned int) 0x80)
-#define	TIR_BITS1_FBITFIELD_LITTLE	((unsigned int) 0x01)
+#define	TIR_BITS1_FBITFIELD_BIG		((unsigned int)0x80)
+#define	TIR_BITS1_FBITFIELD_LITTLE	((unsigned int)0x01)
 
-#define	TIR_BITS1_CONTINUED_BIG		((unsigned int) 0x40)
-#define	TIR_BITS1_CONTINUED_LITTLE	((unsigned int) 0x02)
+#define	TIR_BITS1_CONTINUED_BIG		((unsigned int)0x40)
+#define	TIR_BITS1_CONTINUED_LITTLE	((unsigned int)0x02)
 
-#define	TIR_BITS1_BT_BIG		((unsigned int) 0x3F)
-#define	TIR_BITS1_BT_SH_BIG		0
-#define	TIR_BITS1_BT_LITTLE		((unsigned int) 0xFC)
-#define	TIR_BITS1_BT_SH_LITTLE		2
+#define	TIR_BITS1_BT_BIG		((unsigned int)0x3F)
+#define	TIR_BITS1_BT_SH_BIG		0U
+#define	TIR_BITS1_BT_LITTLE		((unsigned int)0xFC)
+#define	TIR_BITS1_BT_SH_LITTLE		2U
 
-#define	TIR_BITS_TQ4_BIG		((unsigned int) 0xF0)
-#define	TIR_BITS_TQ4_SH_BIG		4
-#define	TIR_BITS_TQ5_BIG		((unsigned int) 0x0F)
-#define	TIR_BITS_TQ5_SH_BIG		0
-#define	TIR_BITS_TQ4_LITTLE		((unsigned int) 0x0F)
-#define	TIR_BITS_TQ4_SH_LITTLE		0
-#define	TIR_BITS_TQ5_LITTLE		((unsigned int) 0xF0)
-#define	TIR_BITS_TQ5_SH_LITTLE		4
+#define	TIR_BITS_TQ4_BIG		((unsigned int)0xF0)
+#define	TIR_BITS_TQ4_SH_BIG		4U
+#define	TIR_BITS_TQ5_BIG		((unsigned int)0x0F)
+#define	TIR_BITS_TQ5_SH_BIG		0U
+#define	TIR_BITS_TQ4_LITTLE		((unsigned int)0x0F)
+#define	TIR_BITS_TQ4_SH_LITTLE		0U
+#define	TIR_BITS_TQ5_LITTLE		((unsigned int)0xF0)
+#define	TIR_BITS_TQ5_SH_LITTLE		4U
 
-#define	TIR_BITS_TQ0_BIG		((unsigned int) 0xF0)
-#define	TIR_BITS_TQ0_SH_BIG		4
-#define	TIR_BITS_TQ1_BIG		((unsigned int) 0x0F)
-#define	TIR_BITS_TQ1_SH_BIG		0
-#define	TIR_BITS_TQ0_LITTLE		((unsigned int) 0x0F)
-#define	TIR_BITS_TQ0_SH_LITTLE		0
-#define	TIR_BITS_TQ1_LITTLE		((unsigned int) 0xF0)
-#define	TIR_BITS_TQ1_SH_LITTLE		4
+#define	TIR_BITS_TQ0_BIG		((unsigned int)0xF0)
+#define	TIR_BITS_TQ0_SH_BIG		4U
+#define	TIR_BITS_TQ1_BIG		((unsigned int)0x0F)
+#define	TIR_BITS_TQ1_SH_BIG		0U
+#define	TIR_BITS_TQ0_LITTLE		((unsigned int)0x0F)
+#define	TIR_BITS_TQ0_SH_LITTLE		0U
+#define	TIR_BITS_TQ1_LITTLE		((unsigned int)0xF0)
+#define	TIR_BITS_TQ1_SH_LITTLE		4U
 
-#define	TIR_BITS_TQ2_BIG		((unsigned int) 0xF0)
-#define	TIR_BITS_TQ2_SH_BIG		4
-#define	TIR_BITS_TQ3_BIG		((unsigned int) 0x0F)
-#define	TIR_BITS_TQ3_SH_BIG		0
-#define	TIR_BITS_TQ2_LITTLE		((unsigned int) 0x0F)
-#define	TIR_BITS_TQ2_SH_LITTLE		0
-#define	TIR_BITS_TQ3_LITTLE		((unsigned int) 0xF0)
-#define	TIR_BITS_TQ3_SH_LITTLE		4
+#define	TIR_BITS_TQ2_BIG		((unsigned int)0xF0)
+#define	TIR_BITS_TQ2_SH_BIG		4U
+#define	TIR_BITS_TQ3_BIG		((unsigned int)0x0F)
+#define	TIR_BITS_TQ3_SH_BIG		0U
+#define	TIR_BITS_TQ2_LITTLE		((unsigned int)0x0F)
+#define	TIR_BITS_TQ2_SH_LITTLE		0U
+#define	TIR_BITS_TQ3_LITTLE		((unsigned int)0xF0)
+#define	TIR_BITS_TQ3_SH_LITTLE		4U
 
 /* Relative symbol external record */
 

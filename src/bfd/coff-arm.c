@@ -1566,9 +1566,10 @@ coff_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      if ((bfd_signed_vma)relocation >= 0)
 		signed_check = (bfd_signed_vma)check;
 	      else
-		signed_check = (check
-				| ((bfd_vma)-1L
-				   & ~((bfd_vma)-1 >> howto->rightshift)));
+		signed_check = (bfd_signed_vma)(check
+						| ((bfd_vma)-1L
+                                                   & ~((bfd_vma)-1
+                                                       >> howto->rightshift)));
 
 	      /* Get the value from the object file: */
 	      if (bfd_big_endian(input_bfd))

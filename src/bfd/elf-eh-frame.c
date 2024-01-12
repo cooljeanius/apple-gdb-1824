@@ -516,13 +516,13 @@ _bfd_elf_discard_section_eh_frame
 	    }
 	  else
 	    {
-	      REQUIRE (skip_bytes (&buf, end, 4));
-	      hdr.id = bfd_get_32 (abfd, buf - 4);
-	      REQUIRE (hdr.id != (unsigned int) -1);
+	      REQUIRE(skip_bytes(&buf, end, 4));
+	      hdr.id = (unsigned int)bfd_get_32(abfd, (buf - 4));
+	      REQUIRE(hdr.id != (unsigned int)-1);
 	    }
 	}
 
-      if (hdr.id == 0 || hdr.id == (unsigned int) -1)
+      if (hdr.id == 0 || hdr.id == (unsigned int)-1)
 	{
 	  unsigned int initial_insn_length;
 
@@ -702,27 +702,27 @@ _bfd_elf_discard_section_eh_frame
 	  if (cie.fde_encoding == DW_EH_PE_omit)
 	    cie.fde_encoding = DW_EH_PE_absptr;
 
-	  initial_insn_length = end - buf;
+	  initial_insn_length = (unsigned int)(end - buf);
 	  if (initial_insn_length <= 50)
 	    {
 	      cie.initial_insn_length = initial_insn_length;
-	      memcpy (cie.initial_instructions, buf, initial_insn_length);
+	      memcpy(cie.initial_instructions, buf, initial_insn_length);
 	    }
 	  insns = buf;
 	  buf += initial_insn_length;
-	  ENSURE_NO_RELOCS (buf);
+	  ENSURE_NO_RELOCS(buf);
 	  last_cie = last_fde;
 	}
       else
 	{
 	  /* Ensure this FDE uses the last CIE encountered.  */
-	  REQUIRE (last_cie);
-	  REQUIRE (hdr.id == (unsigned int) (buf - 4 - last_cie));
+	  REQUIRE(last_cie);
+	  REQUIRE(hdr.id == (unsigned int)(buf - 4 - last_cie));
 
-	  ENSURE_NO_RELOCS (buf);
-	  REQUIRE (GET_RELOC (buf));
+	  ENSURE_NO_RELOCS(buf);
+	  REQUIRE(GET_RELOC(buf));
 
-	  if ((*reloc_symbol_deleted_p) (buf - ehbuf, cookie))
+	  if ((*reloc_symbol_deleted_p)((buf - ehbuf), cookie))
 	    /* This is a FDE against a discarded section.  It should
 	       be deleted.  */
 	    this_inf->removed = 1;
@@ -758,41 +758,41 @@ _bfd_elf_discard_section_eh_frame
 	     be adjusted if any future augmentations do the same thing.  */
 	  if (cie.lsda_encoding != DW_EH_PE_omit)
 	    {
-	      this_inf->lsda_offset = buf - start;
+	      this_inf->lsda_offset = (buf - start);
 	      /* If there's no 'z' augmentation, we don't know where the
 		 CFA insns begin.  Assume no padding.  */
 	      if (cie.augmentation[0] != 'z')
-		length = end - buf;
+		length = (end - buf);
 	    }
 
 	  /* Skip over the augmentation data.  */
-	  REQUIRE (skip_bytes (&buf, end, length));
+	  REQUIRE(skip_bytes(&buf, end, length));
 	  insns = buf;
 
-	  buf = last_fde + 4 + hdr.length;
-	  SKIP_RELOCS (buf);
+	  buf = (last_fde + 4 + hdr.length);
+	  SKIP_RELOCS(buf);
 	}
 
       /* Try to interpret the CFA instructions and find the first
 	 padding nop.  Shrink this_inf's size so that it doesn't
 	 including the padding.  */
-      length = get_DW_EH_PE_width (cie.fde_encoding, ptr_size);
-      insns = skip_non_nops (insns, end, length);
+      length = get_DW_EH_PE_width(cie.fde_encoding, ptr_size);
+      insns = skip_non_nops(insns, end, (unsigned int)length);
       if (insns != 0)
-	this_inf->size -= end - insns;
+	this_inf->size -= (end - insns);
 
       this_inf->fde_encoding = cie.fde_encoding;
       this_inf->lsda_encoding = cie.lsda_encoding;
       sec_info->count++;
     }
 
-  elf_section_data (sec)->sec_info = sec_info;
+  elf_section_data(sec)->sec_info = sec_info;
   sec->sec_info_type = ELF_INFO_TYPE_EH_FRAME;
 
   /* Ok, now we can assign new offsets.  */
   offset = 0;
   last_cie_inf = hdr_info->last_cie_inf;
-  for (ent = sec_info->entry; ent < sec_info->entry + sec_info->count; ++ent)
+  for (ent = sec_info->entry; ent < (sec_info->entry + sec_info->count); ++ent)
     if (!ent->removed)
       {
 	if (ent->cie)

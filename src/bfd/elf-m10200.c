@@ -1160,9 +1160,9 @@ mn10200_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
   Elf_Internal_Sym *isymend;
   struct elf_link_hash_entry **sym_hashes;
   struct elf_link_hash_entry **end_hashes;
-  unsigned int symcount;
+  unsigned long symcount;
 
-  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
   contents = elf_section_data (sec)->this_hdr.contents;
 
@@ -1172,39 +1172,37 @@ mn10200_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
   irelalign = NULL;
   toaddr = sec->size;
 
-  irel = elf_section_data (sec)->relocs;
-  irelend = irel + sec->reloc_count;
+  irel = elf_section_data(sec)->relocs;
+  irelend = (irel + sec->reloc_count);
 
   /* Actually delete the bytes.  */
-  memmove (contents + addr, contents + addr + count,
-	   (size_t) (toaddr - addr - count));
+  memmove((contents + addr), (contents + addr + count),
+	  (size_t)(toaddr - addr - count));
   sec->size -= count;
 
   /* Adjust all the relocs.  */
-  for (irel = elf_section_data (sec)->relocs; irel < irelend; irel++)
+  for (irel = elf_section_data(sec)->relocs; irel < irelend; irel++)
     {
       /* Get the new reloc address.  */
-      if ((irel->r_offset > addr
-	   && irel->r_offset < toaddr))
+      if ((irel->r_offset > addr) && (irel->r_offset < toaddr))
 	irel->r_offset -= count;
     }
 
   /* Adjust the local symbols defined in this section.  */
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  isym = (Elf_Internal_Sym *) symtab_hdr->contents;
-  for (isymend = isym + symtab_hdr->sh_info; isym < isymend; isym++)
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  isym = (Elf_Internal_Sym *)symtab_hdr->contents;
+  for (isymend = (isym + symtab_hdr->sh_info); isym < isymend; isym++)
     {
-      if (isym->st_shndx == sec_shndx
-	  && isym->st_value > addr
-	  && isym->st_value < toaddr)
+      if ((isym->st_shndx == sec_shndx) && (isym->st_value > addr)
+	  && (isym->st_value < toaddr))
 	isym->st_value -= count;
     }
 
   /* Now adjust the global symbols defined in this section.  */
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 	      - symtab_hdr->sh_info);
-  sym_hashes = elf_sym_hashes (abfd);
-  end_hashes = sym_hashes + symcount;
+  sym_hashes = elf_sym_hashes(abfd);
+  end_hashes = (sym_hashes + symcount);
   for (; sym_hashes < end_hashes; sym_hashes++)
     {
       struct elf_link_hash_entry *sym_hash = *sym_hashes;
@@ -1232,23 +1230,23 @@ mn10200_elf_symbol_address_p(bfd *abfd, asection *sec,
   Elf_Internal_Sym *isymend;
   struct elf_link_hash_entry **sym_hashes;
   struct elf_link_hash_entry **end_hashes;
-  unsigned int symcount;
+  unsigned long symcount;
 
   sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
-  /* Examine all the local symbols.  */
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  for (isymend = isym + symtab_hdr->sh_info; isym < isymend; isym++)
+  /* Examine all the local symbols: */
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  for (isymend = (isym + symtab_hdr->sh_info); isym < isymend; isym++)
     {
       if (isym->st_shndx == sec_shndx
 	  && isym->st_value == addr)
 	return TRUE;
     }
 
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+  symcount = ((symtab_hdr->sh_size / sizeof(Elf32_External_Sym))
 	      - symtab_hdr->sh_info);
-  sym_hashes = elf_sym_hashes (abfd);
-  end_hashes = sym_hashes + symcount;
+  sym_hashes = elf_sym_hashes(abfd);
+  end_hashes = (sym_hashes + symcount);
   for (; sym_hashes < end_hashes; sym_hashes++)
     {
       struct elf_link_hash_entry *sym_hash = *sym_hashes;
