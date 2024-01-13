@@ -117,42 +117,45 @@ ext_immu(const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
   return 0;
 }
 
+/* */
 static const char*
-ins_immus8 (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
+ins_immus8(const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 {
   if (value & 0x7)
     return "value not an integer multiple of 8";
-  return ins_immu (self, value >> 3, code);
+  return ins_immu(self, (value >> 3), code);
 }
 
+/* */
 static const char*
-ext_immus8 (const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
+ext_immus8(const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
 {
   const char *result;
 
-  result = ext_immu (self, code, valuep);
+  result = ext_immu(self, code, valuep);
   if (result)
     return result;
 
-  *valuep = *valuep << 3;
+  *valuep = (*valuep << 3);
   return 0;
 }
 
+/* */
 static const char*
-ins_imms_scaled (const struct ia64_operand *self, ia64_insn value,
-		 ia64_insn *code, int scale)
+ins_imms_scaled(const struct ia64_operand *self, ia64_insn value,
+                ia64_insn *code, int scale)
 {
-  BFD_HOST_64_BIT svalue = value, sign_bit = 0;
+  BFD_HOST_64_BIT svalue = (BFD_HOST_64_BIT)value, sign_bit = 0;
   ia64_insn new = 0;
   int i;
 
   svalue >>= scale;
 
-  for (i = 0; i < NELEMS (self->field) && self->field[i].bits; ++i)
+  for (i = 0; (i < NELEMS(self->field)) && self->field[i].bits; ++i)
     {
-      new |= ((svalue & ((((ia64_insn) 1) << self->field[i].bits) - 1))
+      new |= (((ia64_insn)svalue & ((((ia64_insn)1) << self->field[i].bits) - 1))
 	      << self->field[i].shift);
-      sign_bit = (svalue >> (self->field[i].bits - 1)) & 1;
+      sign_bit = ((svalue >> (self->field[i].bits - 1)) & 1);
       svalue >>= self->field[i].bits;
     }
   if ((!sign_bit && svalue != 0) || (sign_bit && svalue != -1))
@@ -162,6 +165,7 @@ ins_imms_scaled (const struct ia64_operand *self, ia64_insn value,
   return 0;
 }
 
+/* */
 static const char*
 ext_imms_scaled(const struct ia64_operand *self, ia64_insn code,
                 ia64_insn *valuep, int scale)
@@ -169,7 +173,7 @@ ext_imms_scaled(const struct ia64_operand *self, ia64_insn code,
   int i, bits = 0, total = 0;
   BFD_HOST_64_BIT val = 0L, sign;
 
-  for (i = 0; i < NELEMS(self->field) && self->field[i].bits; ++i)
+  for (i = 0; (i < NELEMS(self->field)) && self->field[i].bits; ++i)
     {
       bits = self->field[i].bits;
       val |= (((code >> self->field[i].shift)
@@ -180,10 +184,11 @@ ext_imms_scaled(const struct ia64_operand *self, ia64_insn code,
   sign = ((BFD_HOST_64_BIT)1 << (total - 1));
   val = ((val ^ sign) - sign);
 
-  *valuep = (val << scale);
+  *valuep = (ia64_insn)(val << scale);
   return 0;
 }
 
+/* */
 static const char*
 ins_imms(const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 {
@@ -367,10 +372,11 @@ ext_cnt2c(const struct ia64_operand *self, ia64_insn code,
   return 0;
 }
 
+/* */
 static const char*
-ins_inc3 (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
+ins_inc3(const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 {
-  BFD_HOST_64_BIT val = value;
+  BFD_HOST_64_BIT val = (BFD_HOST_64_BIT)value;
   BFD_HOST_U_64_BIT sign = 0;
 
   if (val < 0)
@@ -380,11 +386,11 @@ ins_inc3 (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
     }
   switch (value)
     {
-    case  1:	value = 3; break;
-    case  4:	value = 2; break;
-    case  8:	value = 1; break;
-    case 16:	value = 0; break;
-    default:	return "count must be +/- 1, 4, 8, or 16";
+    case 1: value = 3; break;
+    case 4: value = 2; break;
+    case 8: value = 1; break;
+    case 16: value = 0; break;
+    default: return "count must be +/- 1, 4, 8, or 16";
     }
   *code |= ((sign | value) << self->field[0].shift);
   return 0;
@@ -411,7 +417,7 @@ ext_inc3(const struct ia64_operand *self, ia64_insn code,
     val = -val;
   }
 
-  *valuep = val;
+  *valuep = (ia64_insn)val;
   return 0;
 }
 

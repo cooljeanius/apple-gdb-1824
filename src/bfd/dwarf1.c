@@ -381,32 +381,32 @@ parse_functions_in_unit (struct dwarf1_debug* stash, struct dwarf1_unit* aUnit)
    Return whether we found the line (or a function) without error.  */
 
 static bfd_boolean
-dwarf1_unit_find_nearest_line (struct dwarf1_debug* stash,
-			       struct dwarf1_unit* aUnit,
-			       unsigned long addr,
-			       const char **filename_ptr,
-			       const char **functionname_ptr,
-			       unsigned int *linenumber_ptr)
+dwarf1_unit_find_nearest_line(struct dwarf1_debug* stash,
+			      struct dwarf1_unit* aUnit,
+			      unsigned long addr,
+			      const char **filename_ptr,
+			      const char **functionname_ptr,
+			      unsigned int *linenumber_ptr)
 {
   int line_p = FALSE;
   int func_p = FALSE;
 
-  if (aUnit->low_pc <= addr && addr < aUnit->high_pc)
+  if ((aUnit->low_pc <= addr) && (addr < aUnit->high_pc))
     {
       if (aUnit->has_stmt_list)
 	{
 	  unsigned long i;
 	  struct dwarf1_func* eachFunc;
 
-	  if (! aUnit->linenumber_table)
+	  if (!aUnit->linenumber_table)
 	    {
-	      if (! parse_line_table (stash, aUnit))
+	      if (!parse_line_table(stash, aUnit))
 		return FALSE;
 	    }
 
-	  if (! aUnit->func_list)
+	  if (!aUnit->func_list)
 	    {
-	      if (! parse_functions_in_unit (stash, aUnit))
+	      if (!parse_functions_in_unit(stash, aUnit))
 		return FALSE;
 	    }
 
@@ -417,7 +417,8 @@ dwarf1_unit_find_nearest_line (struct dwarf1_debug* stash,
 		  && (addr < aUnit->linenumber_table[i + 1].addr))
 		{
 		  *filename_ptr = aUnit->name;
-		  *linenumber_ptr = aUnit->linenumber_table[i].linenumber;
+		  *linenumber_ptr =
+                    (unsigned int)aUnit->linenumber_table[i].linenumber;
 		  line_p = TRUE;
 		  break;
 		}
@@ -427,8 +428,8 @@ dwarf1_unit_find_nearest_line (struct dwarf1_debug* stash,
 	       eachFunc;
 	       eachFunc = eachFunc->prev)
 	    {
-	      if (eachFunc->low_pc <= addr
-		  && addr < eachFunc->high_pc)
+	      if ((eachFunc->low_pc <= addr)
+		  && (addr < eachFunc->high_pc))
 		{
 		  *functionname_ptr = eachFunc->name;
 		  func_p = TRUE;
@@ -438,7 +439,7 @@ dwarf1_unit_find_nearest_line (struct dwarf1_debug* stash,
 	}
     }
 
-  return line_p || func_p;
+  return (line_p || func_p);
 }
 
 /* The DWARF 1 version of find_nearest line.

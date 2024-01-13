@@ -999,23 +999,23 @@ _bfd_coff_final_link (bfd *abfd,
   if (info->task_link)
     {
       finfo.failed = FALSE;
-      coff_link_hash_traverse (coff_hash_table (info),
-			       _bfd_coff_write_task_globals, &finfo);
+      coff_link_hash_traverse(coff_hash_table(info),
+			      _bfd_coff_write_task_globals, &finfo);
       if (finfo.failed)
 	goto error_return;
     }
 
-  /* Write out the global symbols.  */
+  /* Write out the global symbols: */
   finfo.failed = FALSE;
-  coff_link_hash_traverse (coff_hash_table (info),
-			   _bfd_coff_write_global_sym, &finfo);
+  coff_link_hash_traverse(coff_hash_table(info),
+			  _bfd_coff_write_global_sym, &finfo);
   if (finfo.failed)
     goto error_return;
 
-  /* The outsyms buffer is used by _bfd_coff_write_global_sym.  */
+  /* The outsyms buffer is used by _bfd_coff_write_global_sym: */
   if (finfo.outsyms != NULL)
     {
-      free (finfo.outsyms);
+      free(finfo.outsyms);
       finfo.outsyms = NULL;
     }
 
@@ -1055,7 +1055,7 @@ _bfd_coff_final_link (bfd *abfd,
 
 	  if (bfd_seek(abfd, o->rel_filepos, SEEK_SET) != 0)
 	    goto error_return;
-	  if (obj_pe(abfd) && o->reloc_count >= 0xffff)
+	  if (obj_pe(abfd) && (o->reloc_count >= 0xffff))
 	    {
 	      /* In PE COFF, write the count of relocs as the first
 		 reloc.  The header overflow bit will be set
@@ -1069,19 +1069,19 @@ _bfd_coff_final_link (bfd *abfd,
 	      if (bfd_bwrite(excount, (bfd_size_type)relsz, abfd) != relsz)
 		/* We'll leak, but it's an error anyway. */
 		goto error_return;
-	      free (excount);
+	      free(excount);
 	    }
-	  if (bfd_bwrite (external_relocs,
-			  (bfd_size_type) relsz * o->reloc_count, abfd)
-	      != (bfd_size_type) relsz * o->reloc_count)
+	  if (bfd_bwrite(external_relocs,
+			 (bfd_size_type)relsz * o->reloc_count, abfd)
+	      != (bfd_size_type)relsz * o->reloc_count)
 	    goto error_return;
 	}
 
-      free (external_relocs);
+      free(external_relocs);
       external_relocs = NULL;
     }
 
-  /* Free up the section information.  */
+  /* Free up the section information: */
   if (finfo.section_info != NULL)
     {
       unsigned int i;
@@ -1089,62 +1089,62 @@ _bfd_coff_final_link (bfd *abfd,
       for (i = 0; i < abfd->section_count; i++)
 	{
 	  if (finfo.section_info[i].relocs != NULL)
-	    free (finfo.section_info[i].relocs);
+	    free(finfo.section_info[i].relocs);
 	  if (finfo.section_info[i].rel_hashes != NULL)
-	    free (finfo.section_info[i].rel_hashes);
+	    free(finfo.section_info[i].rel_hashes);
 	}
-      free (finfo.section_info);
+      free(finfo.section_info);
       finfo.section_info = NULL;
     }
 
-  /* If we have optimized stabs strings, output them.  */
-  if (coff_hash_table (info)->stab_info.stabstr != NULL)
+  /* If we have optimized stabs strings, output them: */
+  if (coff_hash_table(info)->stab_info.stabstr != NULL)
     {
-      if (! _bfd_write_stab_strings (abfd, &coff_hash_table (info)->stab_info))
+      if (!_bfd_write_stab_strings(abfd, &coff_hash_table(info)->stab_info))
 	return FALSE;
     }
 
-  /* Write out the string table.  */
-  if (obj_raw_syment_count (abfd) != 0 || long_section_names)
+  /* Write out the string table: */
+  if ((obj_raw_syment_count(abfd) != 0) || long_section_names)
     {
       file_ptr pos;
 
       pos = (obj_sym_filepos(abfd) + (obj_raw_syment_count(abfd)
 				      * (file_ptr)symesz));
-      if (bfd_seek (abfd, pos, SEEK_SET) != 0)
+      if (bfd_seek(abfd, pos, SEEK_SET) != 0)
 	return FALSE;
 
 #if STRING_SIZE_SIZE == 4
-      H_PUT_32 (abfd,
-		_bfd_stringtab_size (finfo.strtab) + STRING_SIZE_SIZE,
-		strbuf);
+      H_PUT_32(abfd,
+               (_bfd_stringtab_size(finfo.strtab) + STRING_SIZE_SIZE),
+               strbuf);
 #else
  #error Change H_PUT_32 above
 #endif
 
-      if (bfd_bwrite (strbuf, (bfd_size_type) STRING_SIZE_SIZE, abfd)
+      if (bfd_bwrite(strbuf, (bfd_size_type)STRING_SIZE_SIZE, abfd)
 	  != STRING_SIZE_SIZE)
 	return FALSE;
 
-      if (! _bfd_stringtab_emit (abfd, finfo.strtab))
+      if (!_bfd_stringtab_emit(abfd, finfo.strtab))
 	return FALSE;
 
-      obj_coff_strings_written (abfd) = TRUE;
+      obj_coff_strings_written(abfd) = TRUE;
     }
 
-  _bfd_stringtab_free (finfo.strtab);
+  _bfd_stringtab_free(finfo.strtab);
 
   /* Setting bfd_get_symcount to 0 will cause write_object_contents to
      not try to write out the symbols.  */
-  bfd_get_symcount (abfd) = 0;
+  bfd_get_symcount(abfd) = 0;
 
   return TRUE;
 
  error_return:
   if (debug_merge_allocated)
-    coff_debug_merge_hash_table_free (&finfo.debug_merge);
+    coff_debug_merge_hash_table_free(&finfo.debug_merge);
   if (finfo.strtab != NULL)
-    _bfd_stringtab_free (finfo.strtab);
+    _bfd_stringtab_free(finfo.strtab);
   if (finfo.section_info != NULL)
     {
       unsigned int i;
@@ -1152,30 +1152,30 @@ _bfd_coff_final_link (bfd *abfd,
       for (i = 0; i < abfd->section_count; i++)
 	{
 	  if (finfo.section_info[i].relocs != NULL)
-	    free (finfo.section_info[i].relocs);
+	    free(finfo.section_info[i].relocs);
 	  if (finfo.section_info[i].rel_hashes != NULL)
-	    free (finfo.section_info[i].rel_hashes);
+	    free(finfo.section_info[i].rel_hashes);
 	}
       free (finfo.section_info);
     }
   if (finfo.internal_syms != NULL)
-    free (finfo.internal_syms);
+    free(finfo.internal_syms);
   if (finfo.sec_ptrs != NULL)
-    free (finfo.sec_ptrs);
+    free(finfo.sec_ptrs);
   if (finfo.sym_indices != NULL)
-    free (finfo.sym_indices);
+    free(finfo.sym_indices);
   if (finfo.outsyms != NULL)
-    free (finfo.outsyms);
+    free(finfo.outsyms);
   if (finfo.linenos != NULL)
-    free (finfo.linenos);
+    free(finfo.linenos);
   if (finfo.contents != NULL)
-    free (finfo.contents);
+    free(finfo.contents);
   if (finfo.external_relocs != NULL)
-    free (finfo.external_relocs);
+    free(finfo.external_relocs);
   if (finfo.internal_relocs != NULL)
-    free (finfo.internal_relocs);
+    free(finfo.internal_relocs);
   if (external_relocs != NULL)
-    free (external_relocs);
+    free(external_relocs);
   return FALSE;
 }
 
@@ -1732,7 +1732,7 @@ _bfd_coff_link_input_bfd(struct coff_final_link_info *finfo, bfd *input_bfd)
 		  /* This is a redefinition which can be merged: */
 		  bfd_release(input_bfd, mt);
 		  *indexp = mtl->indx;
-		  add = ((eslend - esym) / (int)isymesz);
+		  add = (int)((eslend - esym) / (int)isymesz);
 		  skip = TRUE;
 		}
 	    }
@@ -2995,8 +2995,8 @@ _bfd_coff_generic_relocate_section (bfd *output_bfd,
 
       if (info->base_file)
 	{
-	  /* Emit a reloc if the backend thinks it needs it.  */
-	  if (sym && pe_data (output_bfd)->in_reloc_p (output_bfd, howto))
+	  /* Emit a reloc if the backend thinks it needs it: */
+	  if (sym && pe_data(output_bfd)->in_reloc_p(output_bfd, howto))
 	    {
 	      /* Relocation to a symbol in a section which isn't
 		 absolute.  We output the address here to a file.
@@ -3019,21 +3019,21 @@ _bfd_coff_generic_relocate_section (bfd *output_bfd,
 	    }
 	}
 
-      rstat = _bfd_final_link_relocate (howto, input_bfd, input_section,
-					contents,
-					rel->r_vaddr - input_section->vma,
-					val, addend);
+      rstat = _bfd_final_link_relocate(howto, input_bfd, input_section,
+                                       contents,
+                                       (rel->r_vaddr - input_section->vma),
+                                       val, addend);
 
       switch (rstat)
 	{
 	default:
-	  abort ();
+	  abort();
 	case bfd_reloc_ok:
 	  break;
 	case bfd_reloc_outofrange:
 	  (*_bfd_error_handler)
 	    (_("%B: bad reloc address 0x%lx in section `%A'"),
-	     input_bfd, input_section, (unsigned long) rel->r_vaddr);
+	     input_bfd, input_section, (unsigned long)rel->r_vaddr);
 	  return FALSE;
 	case bfd_reloc_overflow:
 	  {
@@ -3046,15 +3046,15 @@ _bfd_coff_generic_relocate_section (bfd *output_bfd,
 	      name = NULL;
 	    else
 	      {
-		name = _bfd_coff_internal_syment_name (input_bfd, sym, buf);
+		name = _bfd_coff_internal_syment_name(input_bfd, sym, buf);
 		if (name == NULL)
 		  return FALSE;
 	      }
 
-	    if (! ((*info->callbacks->reloc_overflow)
-		   (info, (h ? &h->root : NULL), name, howto->name,
-		    (bfd_vma) 0, input_bfd, input_section,
-		    rel->r_vaddr - input_section->vma)))
+	    if (!((*info->callbacks->reloc_overflow)
+		  (info, (h ? &h->root : NULL), name, howto->name,
+		   (bfd_vma)0UL, input_bfd, input_section,
+		   (rel->r_vaddr - input_section->vma))))
 	      return FALSE;
 	  }
 	}

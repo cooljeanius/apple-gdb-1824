@@ -108,12 +108,12 @@ _bfd_ecoff_mkobject_hook(bfd *abfd, void *filehdr, void *aouthdr)
   struct internal_aouthdr *internal_a = (struct internal_aouthdr *)aouthdr;
   ecoff_data_type *ecoff;
 
-  if (! _bfd_ecoff_mkobject (abfd))
+  if (!_bfd_ecoff_mkobject(abfd))
     return NULL;
 
-  ecoff = ecoff_data (abfd);
+  ecoff = ecoff_data(abfd);
   ecoff->gp_size = 8;
-  ecoff->sym_filepos = internal_f->f_symptr;
+  ecoff->sym_filepos = (file_ptr)internal_f->f_symptr;
 
   if (internal_a != NULL)
     {
@@ -130,7 +130,7 @@ _bfd_ecoff_mkobject_hook(bfd *abfd, void *filehdr, void *aouthdr)
       if (internal_a->magic == ECOFF_AOUT_ZMAGIC)
 	abfd->flags |= D_PAGED;
       else
-	abfd->flags &=~ D_PAGED;
+	abfd->flags &= (unsigned int)(~D_PAGED);
     }
 
   /* It turns out that no special action is required by the MIPS or
@@ -139,7 +139,7 @@ _bfd_ecoff_mkobject_hook(bfd *abfd, void *filehdr, void *aouthdr)
      fprmask) and let the swapping routines ensure that only relevant
      information is written out.  */
 
-  return (void *) ecoff;
+  return (void *)ecoff;
 }
 
 /* Initialize a new section.  */
@@ -154,7 +154,7 @@ _bfd_ecoff_new_section_hook (bfd *abfd ATTRIBUTE_UNUSED,
     const char * name;
     flagword flags;
   }
-  section_flags [] =
+  section_flags[] =
   {
     { _TEXT,   SEC_ALLOC | SEC_CODE | SEC_LOAD },
     { _INIT,   SEC_ALLOC | SEC_CODE | SEC_LOAD },
@@ -288,10 +288,10 @@ ecoff_sec_to_styp_flags (const char *name, flagword flags)
   unsigned int i;
   static struct
   {
-    const char * name;
+    const char *name;
     long flags;
   }
-  styp_flags [] =
+  styp_flags[] =
   {
     { _TEXT,    STYP_TEXT       },
     { _DATA,    STYP_DATA       },
@@ -319,8 +319,8 @@ ecoff_sec_to_styp_flags (const char *name, flagword flags)
   };
   long styp = 0;
 
-  for (i = 0; i < ARRAY_SIZE (styp_flags); i++)
-    if (streq (name, styp_flags[i].name))
+  for (i = 0; i < ARRAY_SIZE(styp_flags); i++)
+    if (streq(name, styp_flags[i].name))
       {
 	styp = styp_flags[i].flags;
 	break;
@@ -328,10 +328,10 @@ ecoff_sec_to_styp_flags (const char *name, flagword flags)
 
   if (styp == 0)
     {
-      if (streq (name, _COMMENT))
+      if (streq(name, _COMMENT))
 	{
 	  styp = STYP_COMMENT;
-	  flags &=~ SEC_NEVER_LOAD;
+	  flags &= (unsigned int)(~SEC_NEVER_LOAD);
 	}
       else if (flags & SEC_CODE)
 	styp = STYP_TEXT;
@@ -416,70 +416,69 @@ _bfd_ecoff_styp_to_sec_flags(bfd *abfd ATTRIBUTE_UNUSED,
   else
     sec_flags |= SEC_ALLOC | SEC_LOAD;
 
-  * flags_ptr = sec_flags;
+  *flags_ptr = sec_flags;
   return TRUE;
 }
 
-/* Read in the symbolic header for an ECOFF object file.  */
-
+/* Read in the symbolic header for an ECOFF object file: */
 static bfd_boolean
-ecoff_slurp_symbolic_header (bfd *abfd)
+ecoff_slurp_symbolic_header(bfd *abfd)
 {
-  const struct ecoff_backend_data * const backend = ecoff_backend (abfd);
+  const struct ecoff_backend_data *const backend = ecoff_backend(abfd);
   bfd_size_type external_hdr_size;
-  void * raw = NULL;
+  void *raw = NULL;
   HDRR *internal_symhdr;
 
-  /* See if we've already read it in.  */
-  if (ecoff_data (abfd)->debug_info.symbolic_header.magic ==
-      backend->debug_swap.sym_magic)
+  /* See if we have already read it in: */
+  if (ecoff_data(abfd)->debug_info.symbolic_header.magic
+      == backend->debug_swap.sym_magic)
     return TRUE;
 
-  /* See whether there is a symbolic header.  */
-  if (ecoff_data (abfd)->sym_filepos == 0)
+  /* See whether there is a symbolic header: */
+  if (ecoff_data(abfd)->sym_filepos == 0)
     {
-      bfd_get_symcount (abfd) = 0;
+      bfd_get_symcount(abfd) = 0;
       return TRUE;
     }
 
-  /* At this point bfd_get_symcount (abfd) holds the number of symbols
+  /* At this point bfd_get_symcount(abfd) holds the number of symbols
      as read from the file header, but on ECOFF this is always the
      size of the symbolic information header.  It would be cleaner to
      handle this when we first read the file in coffgen.c.  */
   external_hdr_size = backend->debug_swap.external_hdr_size;
-  if (bfd_get_symcount (abfd) != external_hdr_size)
+  if (bfd_get_symcount(abfd) != external_hdr_size)
     {
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
       return FALSE;
     }
 
-  /* Read the symbolic information header.  */
-  raw = bfd_malloc (external_hdr_size);
+  /* Read the symbolic information header: */
+  raw = bfd_malloc(external_hdr_size);
   if (raw == NULL)
     goto error_return;
 
-  if (bfd_seek (abfd, ecoff_data (abfd)->sym_filepos, SEEK_SET) != 0
-      || bfd_bread (raw, external_hdr_size, abfd) != external_hdr_size)
+  if ((bfd_seek(abfd, ecoff_data(abfd)->sym_filepos, SEEK_SET) != 0)
+      || (bfd_bread(raw, external_hdr_size, abfd) != external_hdr_size))
     goto error_return;
-  internal_symhdr = &ecoff_data (abfd)->debug_info.symbolic_header;
-  (*backend->debug_swap.swap_hdr_in) (abfd, raw, internal_symhdr);
+  internal_symhdr = &ecoff_data(abfd)->debug_info.symbolic_header;
+  (*backend->debug_swap.swap_hdr_in)(abfd, raw, internal_symhdr);
 
   if (internal_symhdr->magic != backend->debug_swap.sym_magic)
     {
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
       goto error_return;
     }
 
-  /* Now we can get the correct number of symbols.  */
-  bfd_get_symcount (abfd) = (internal_symhdr->isymMax
-			     + internal_symhdr->iextMax);
+  /* Now we can get the correct number of symbols: */
+  bfd_get_symcount(abfd) = (internal_symhdr->isymMax
+                            + internal_symhdr->iextMax);
 
   if (raw != NULL)
-    free (raw);
+    free(raw);
   return TRUE;
  error_return:
   if (raw != NULL)
-    free (raw);
+    free(raw);
   return FALSE;
 }
 
@@ -496,7 +495,7 @@ _bfd_ecoff_slurp_symbolic_info(bfd *abfd,
   HDRR *internal_symhdr;
   bfd_size_type raw_base;
   bfd_size_type raw_size;
-  void * raw;
+  void *raw;
   bfd_size_type external_fdr_size;
   char *fraw_src;
   char *fraw_end;
@@ -518,13 +517,13 @@ _bfd_ecoff_slurp_symbolic_info(bfd *abfd,
       return TRUE;
     }
 
-  if (! ecoff_slurp_symbolic_header(abfd))
+  if (!ecoff_slurp_symbolic_header(abfd))
     return FALSE;
 
   internal_symhdr = &debug->symbolic_header;
 
   /* Read all the symbolic information at once: */
-  raw_base = (ecoff_data (abfd)->sym_filepos
+  raw_base = ((bfd_size_type)ecoff_data(abfd)->sym_filepos
 	      + backend->debug_swap.external_hdr_size);
 
   /* Alpha ecoff makes the determination of raw_size difficult. It has
@@ -535,7 +534,9 @@ _bfd_ecoff_slurp_symbolic_info(bfd *abfd,
   raw_end = 0;
 
 #define UPDATE_RAW_END(start, count, size) \
-  cb_end = (internal_symhdr->start + internal_symhdr->count * (size)); \
+  cb_end = (bfd_size_type)(internal_symhdr->start \
+                           + (bfd_vma)((__typeof__(size))internal_symhdr->count \
+                                       * (size))); \
   if (cb_end > raw_end) \
     raw_end = cb_end
 

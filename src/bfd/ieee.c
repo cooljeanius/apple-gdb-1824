@@ -989,7 +989,7 @@ ieee_get_symtab_upper_bound (bfd *abfd)
 extern const bfd_target ieee_vec;
 
 static long
-ieee_canonicalize_symtab (bfd *abfd, asymbol **location)
+ieee_canonicalize_symtab(bfd *abfd, asymbol **location)
 {
   ieee_symbol_type *symp;
   static bfd dummy_bfd;
@@ -997,13 +997,13 @@ ieee_canonicalize_symtab (bfd *abfd, asymbol **location)
   {
     &dummy_bfd,
     " ieee empty",
-    (symvalue) 0,
+    (symvalue)0,
     BSF_DEBUGGING,
     bfd_abs_section_ptr
 #ifdef __STDC__
     /* K&R compilers can't initialise unions.  */
     , { 0 }
-#endif
+#endif /* __STDC__ */
   };
 
   if (abfd->symcount)
@@ -1024,22 +1024,22 @@ ieee_canonicalize_symtab (bfd *abfd, asymbol **location)
 	    location[i] = &empty_symbol;
 	}
 
-      ieee->external_symbol_base_offset = -ieee->external_symbol_min_index;
+      ieee->external_symbol_base_offset = (int)-ieee->external_symbol_min_index;
       for (symp = IEEE_DATA(abfd)->external_symbols;
 	   symp != (ieee_symbol_type *)NULL;
 	   symp = symp->next)
 	/* Place into table at correct index locations: */
-	location[symp->index + ieee->external_symbol_base_offset] = &symp->symbol;
+	location[symp->index + (unsigned int)ieee->external_symbol_base_offset] = &symp->symbol;
 
       /* The external refs are indexed in a bit: */
       ieee->external_reference_base_offset =
-	(-ieee->external_reference_min_index
-	 + ieee->external_symbol_count);
+	(int)(-ieee->external_reference_min_index
+              + ieee->external_symbol_count);
 
       for (symp = IEEE_DATA(abfd)->external_reference;
 	   symp != (ieee_symbol_type *)NULL;
 	   symp = symp->next)
-	location[symp->index + ieee->external_reference_base_offset] =
+	location[symp->index + (unsigned int)ieee->external_reference_base_offset] =
 	  &symp->symbol;
     }
 

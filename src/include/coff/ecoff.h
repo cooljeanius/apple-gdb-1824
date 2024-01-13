@@ -214,23 +214,23 @@ struct rndx_ext {
 	unsigned char	r_bits[4];
 };
 
-#define	RNDX_BITS0_RFD_SH_LEFT_BIG	4
-#define	RNDX_BITS1_RFD_BIG		((unsigned int) 0xF0)
-#define	RNDX_BITS1_RFD_SH_BIG		4
+#define	RNDX_BITS0_RFD_SH_LEFT_BIG	4U
+#define	RNDX_BITS1_RFD_BIG		((unsigned int)0xF0)
+#define	RNDX_BITS1_RFD_SH_BIG		4U
 
-#define	RNDX_BITS0_RFD_SH_LEFT_LITTLE	0
-#define	RNDX_BITS1_RFD_LITTLE		((unsigned int) 0x0F)
-#define	RNDX_BITS1_RFD_SH_LEFT_LITTLE	8
+#define	RNDX_BITS0_RFD_SH_LEFT_LITTLE	0U
+#define	RNDX_BITS1_RFD_LITTLE		((unsigned int)0x0F)
+#define	RNDX_BITS1_RFD_SH_LEFT_LITTLE	8U
 
-#define	RNDX_BITS1_INDEX_BIG		((unsigned int) 0x0F)
-#define	RNDX_BITS1_INDEX_SH_LEFT_BIG	16
-#define	RNDX_BITS2_INDEX_SH_LEFT_BIG	8
-#define	RNDX_BITS3_INDEX_SH_LEFT_BIG	0
+#define	RNDX_BITS1_INDEX_BIG		((unsigned int)0x0F)
+#define	RNDX_BITS1_INDEX_SH_LEFT_BIG	16U
+#define	RNDX_BITS2_INDEX_SH_LEFT_BIG	8U
+#define	RNDX_BITS3_INDEX_SH_LEFT_BIG	0U
 
-#define	RNDX_BITS1_INDEX_LITTLE		((unsigned int) 0xF0)
-#define	RNDX_BITS1_INDEX_SH_LITTLE	4
-#define	RNDX_BITS2_INDEX_SH_LEFT_LITTLE	4
-#define	RNDX_BITS3_INDEX_SH_LEFT_LITTLE	12
+#define	RNDX_BITS1_INDEX_LITTLE		((unsigned int)0xF0)
+#define	RNDX_BITS1_INDEX_SH_LITTLE	4U
+#define	RNDX_BITS2_INDEX_SH_LEFT_LITTLE	4U
+#define	RNDX_BITS3_INDEX_SH_LEFT_LITTLE	12U
 
 /* Auxiliary symbol information external record */
 

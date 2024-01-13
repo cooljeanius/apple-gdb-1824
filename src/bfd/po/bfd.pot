@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-12 11:41-0500\n"
+"POT-Creation-Date: 2024-01-13 11:01-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -585,61 +585,61 @@ msgstr ""
 msgid "Dwarf Error: Bad abbrev number: %u."
 msgstr ""
 
-#: ecoff.c:1225
+#: ecoff.c:1226
 #, c-format
 msgid "Unknown basic type %d"
 msgstr ""
 
-#: ecoff.c:1484
+#: ecoff.c:1485
 #, c-format
 msgid ""
 "\n"
 "      End+1 symbol: %ld"
 msgstr ""
 
-#: ecoff.c:1491 ecoff.c:1494
+#: ecoff.c:1492 ecoff.c:1495
 #, c-format
 msgid ""
 "\n"
 "      First symbol: %ld"
 msgstr ""
 
-#: ecoff.c:1506
+#: ecoff.c:1507
 #, c-format
 msgid ""
 "\n"
 "      End+1 symbol: %-7ld   Type:  %s"
 msgstr ""
 
-#: ecoff.c:1513
+#: ecoff.c:1514
 #, c-format
 msgid ""
 "\n"
 "      Local symbol: %ld"
 msgstr ""
 
-#: ecoff.c:1521
+#: ecoff.c:1522
 #, c-format
 msgid ""
 "\n"
 "      struct; End+1 symbol: %ld"
 msgstr ""
 
-#: ecoff.c:1526
+#: ecoff.c:1527
 #, c-format
 msgid ""
 "\n"
 "      union; End+1 symbol: %ld"
 msgstr ""
 
-#: ecoff.c:1531
+#: ecoff.c:1532
 #, c-format
 msgid ""
 "\n"
 "      enum; End+1 symbol: %ld"
 msgstr ""
 
-#: ecoff.c:1537
+#: ecoff.c:1538
 #, c-format
 msgid ""
 "\n"
