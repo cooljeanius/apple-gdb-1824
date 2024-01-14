@@ -112,17 +112,21 @@ ieee_write_int(bfd *abfd, bfd_vma value)
 	  if (! ieee_write_byte(abfd, (bfd_byte)(value >> 24)))
 	    return FALSE;
 	  /* Fall through.  */
+          ATTRIBUTE_FALLTHROUGH;
 	case 3:
 	  if (! ieee_write_byte(abfd, (bfd_byte)(value >> 16)))
 	    return FALSE;
 	  /* Fall through.  */
+          ATTRIBUTE_FALLTHROUGH;
 	case 2:
 	  if (! ieee_write_byte(abfd, (bfd_byte)(value >> 8)))
 	    return FALSE;
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case 1:
 	  if (! ieee_write_byte(abfd, (bfd_byte)(value)))
 	    return FALSE;
+     	  ATTRIBUTE_FALLTHROUGH;
         default:
           break;
 	}
@@ -2749,43 +2753,43 @@ copy_int(void)
     }
 }
 
-#define ID      copy_id ()
-#define INT     copy_int ()
-#define EXP     copy_expression ()
-#define INTn(q) copy_int ()
-#define EXPn(q) copy_expression ()
+#define ID copy_id()
+#define INT copy_int()
+#define EXP copy_expression()
+#define INTn(q) copy_int()
+#define EXPn(q) copy_expression()
 
 static void
-copy_till_end (void)
+copy_till_end(void)
 {
-  int ch = THIS ();
+  int ch = THIS();
 
   while (1)
     {
       while (ch <= 0x80)
 	{
-	  OUT (ch);
-	  NEXT ();
-	  ch = THIS ();
+	  OUT(ch);
+	  NEXT();
+	  ch = THIS();
 	}
       switch (ch)
 	{
 	case 0x84:
-	  OUT (THIS ());
-	  NEXT ();
+	  OUT(THIS());
+	  NEXT();
 	case 0x83:
-	  OUT (THIS ());
-	  NEXT ();
+	  OUT(THIS());
+	  NEXT();
 	case 0x82:
-	  OUT (THIS ());
-	  NEXT ();
+	  OUT(THIS());
+	  NEXT();
 	case 0x81:
-	  OUT (THIS ());
-	  NEXT ();
-	  OUT (THIS ());
-	  NEXT ();
+	  OUT(THIS());
+	  NEXT();
+	  OUT(THIS());
+	  NEXT();
 
-	  ch = THIS ();
+	  ch = THIS();
 	  break;
 	default:
 	  return;

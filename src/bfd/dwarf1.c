@@ -195,7 +195,7 @@ parse_die (bfd *             abfd,
     }
 
   /* Then the tag.  */
-  aDieInfo->tag = bfd_get_16 (abfd, (bfd_byte *) xptr);
+  aDieInfo->tag = (unsigned short)bfd_get_16(abfd, (bfd_byte *)xptr);
   xptr += 2;
 
   /* Then the attributes.  */
@@ -206,7 +206,7 @@ parse_die (bfd *             abfd,
       /* Parse the attribute based on its form.  This section
          must handle all dwarf1 forms, but need only handle the
 	 actual attributes that we care about.  */
-      attr = bfd_get_16(abfd, (bfd_byte *)xptr);
+      attr = (unsigned short)bfd_get_16(abfd, (bfd_byte *)xptr);
       xptr += 2;
 
       switch (FORM_FROM_ATTR(attr))
@@ -298,16 +298,16 @@ parse_line_table (struct dwarf1_debug* stash, struct dwarf1_unit* aUnit)
       bfd_size_type amt;
 
       /* First comes the length.  */
-      tblend = bfd_get_32 (stash->abfd, (bfd_byte *) xptr) + xptr;
+      tblend = (bfd_get_32(stash->abfd, (bfd_byte *)xptr) + xptr);
       xptr += 4;
 
       /* Then the base address for each address in the table.  */
-      base = bfd_get_32 (stash->abfd, (bfd_byte *) xptr);
+      base = bfd_get_32(stash->abfd, (bfd_byte *)xptr);
       xptr += 4;
 
       /* How many line entrys?
 	 10 = 4 (line number) + 2 (pos in line) + 4 (address in line).  */
-      aUnit->line_count = ((tblend - xptr) / 10);
+      aUnit->line_count = ((unsigned long)(tblend - xptr) / 10UL);
 
       /* Allocate an array for the entries: */
       amt = (sizeof(struct linenumber) * aUnit->line_count);

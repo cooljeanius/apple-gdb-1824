@@ -477,9 +477,8 @@ coff_swap_aux_in(bfd *abfd, void *ext1, int type, int classnum, int indx,
 }
 
 static unsigned int
-coff_swap_aux_out(bfd *abfd, void *inp, int type, int classnum,
-		  int indx ATTRIBUTE_UNUSED, int numaux ATTRIBUTE_UNUSED,
-		  void *extp)
+coff_swap_aux_out(bfd *abfd, void *inp, int type, int classnum, int indx,
+		  int numaux, void *extp)
 {
   union internal_auxent *innit = (union internal_auxent *)inp;
   AUXENT *ext = (AUXENT *)extp;
@@ -555,6 +554,8 @@ coff_swap_aux_out(bfd *abfd, void *inp, int type, int classnum,
 #ifdef COFF_ADJUST_AUX_OUT_POST
   COFF_ADJUST_AUX_OUT_POST(abfd, inp, type, classnum, indx, numaux, extp);
 #endif /* COFF_ADJUST_AUX_OUT_POST */
+  (void)indx;
+  (void)numaux;
   return AUXESZ;
 }
 #endif /* NO_COFF_SYMBOLS */

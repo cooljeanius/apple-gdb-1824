@@ -434,8 +434,7 @@ coff_pe_i386_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 /* Convert an rtype to howto for the COFF backend linker: */
 static reloc_howto_type *
-coff_i386_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
-                         struct internal_reloc *rel,
+coff_i386_rtype_to_howto(bfd *abfd, asection *sec, struct internal_reloc *rel,
                          struct coff_link_hash_entry *h,
                          struct internal_syment *sym, bfd_vma *addendp)
 {
@@ -531,6 +530,8 @@ coff_i386_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
 
       *addendp -= osect_vma;
     }
+#else
+  (void)abfd;
 #endif /* COFF_WITH_PE */
 
   return howto;

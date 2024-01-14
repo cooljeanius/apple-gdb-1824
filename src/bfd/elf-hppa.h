@@ -920,7 +920,7 @@ elf_hppa_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
 
 /* Return TRUE if SYM represents a local label symbol: */
 static bfd_boolean
-elf_hppa_is_local_label_name(bfd *abfd ATTRIBUTE_UNUSED, const char *name)
+elf_hppa_is_local_label_name(bfd *abfd, const char *name)
 {
   if ((name[0] == 'L') && (name[1] == '$')) {
       return 1;

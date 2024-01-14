@@ -470,8 +470,8 @@ ecoff_slurp_symbolic_header(bfd *abfd)
     }
 
   /* Now we can get the correct number of symbols: */
-  bfd_get_symcount(abfd) = (internal_symhdr->isymMax
-                            + internal_symhdr->iextMax);
+  bfd_get_symcount(abfd) = (unsigned int)(internal_symhdr->isymMax
+                                          + internal_symhdr->iextMax);
 
   if (raw != NULL)
     free(raw);
@@ -607,7 +607,7 @@ _bfd_ecoff_slurp_symbolic_info(bfd *abfd,
 
      We need to look at the fdr to deal with a lot of information in
      the symbols, so we swap them here.  */
-  amt = internal_symhdr->ifdMax;
+  amt = (bfd_size_type)internal_symhdr->ifdMax;
   amt *= sizeof(struct fdr);
   debug->fdr = (struct fdr *)bfd_alloc(abfd, amt);
   if (debug->fdr == NULL)
@@ -615,7 +615,8 @@ _bfd_ecoff_slurp_symbolic_info(bfd *abfd,
   external_fdr_size = backend->debug_swap.external_fdr_size;
   fdr_ptr = debug->fdr;
   fraw_src = (char *)debug->external_fdr;
-  fraw_end = (fraw_src + internal_symhdr->ifdMax * external_fdr_size);
+  fraw_end = (fraw_src + ((bfd_size_type)internal_symhdr->ifdMax
+                          * external_fdr_size));
   for (; fraw_src < fraw_end; fraw_src += external_fdr_size, fdr_ptr++)
     (*backend->debug_swap.swap_fdr_in)(abfd, (void *)fraw_src, fdr_ptr);
 
@@ -768,6 +769,7 @@ ecoff_set_symbol_info(bfd *abfd, SYMR *ecoff_sym, asymbol *asym,
 	  break;
 	}
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case scSCommon:
       if (ecoff_scom_section.name == NULL)
 	{
@@ -818,9 +820,9 @@ ecoff_set_symbol_info(bfd *abfd, SYMR *ecoff_sym, asymbol *asym,
   /* Look for special constructors symbols and make relocation entries
      in a special construction section.  These are produced by the
      -fgnu-linker argument to g++.  */
-  if (ECOFF_IS_STAB (ecoff_sym))
+  if (ECOFF_IS_STAB(ecoff_sym))
     {
-      switch (ECOFF_UNMARK_STAB (ecoff_sym->index))
+      switch (ECOFF_UNMARK_STAB(ecoff_sym->index))
 	{
 	default:
 	  break;
@@ -877,62 +879,64 @@ _bfd_ecoff_slurp_symbol_table(bfd *abfd)
 
   internal_ptr = internal;
   eraw_src = (char *)ecoff_data(abfd)->debug_info.external_ext;
-  eraw_end = (eraw_src
-	      + (ecoff_data(abfd)->debug_info.symbolic_header.iextMax
-		 * external_ext_size));
+  eraw_end =
+    (eraw_src
+     + ((bfd_size_type)ecoff_data(abfd)->debug_info.symbolic_header.iextMax
+        * external_ext_size));
   for (; eraw_src < eraw_end; eraw_src += external_ext_size, internal_ptr++)
     {
       EXTR internal_esym;
 
-      (*swap_ext_in) (abfd, (void *) eraw_src, &internal_esym);
-      internal_ptr->symbol.name = (ecoff_data (abfd)->debug_info.ssext
+      (*swap_ext_in)(abfd, (void *)eraw_src, &internal_esym);
+      internal_ptr->symbol.name = (ecoff_data(abfd)->debug_info.ssext
 				   + internal_esym.asym.iss);
-      if (!ecoff_set_symbol_info (abfd, &internal_esym.asym,
-				  &internal_ptr->symbol, 1,
-				  internal_esym.weakext))
+      if (!ecoff_set_symbol_info(abfd, &internal_esym.asym,
+				 &internal_ptr->symbol, 1,
+				 internal_esym.weakext))
 	return FALSE;
       /* The alpha uses a negative ifd field for section symbols.  */
       if (internal_esym.ifd >= 0)
-	internal_ptr->fdr = (ecoff_data (abfd)->debug_info.fdr
+	internal_ptr->fdr = (ecoff_data(abfd)->debug_info.fdr
 			     + internal_esym.ifd);
       else
 	internal_ptr->fdr = NULL;
       internal_ptr->local = FALSE;
-      internal_ptr->native = (void *) eraw_src;
+      internal_ptr->native = (void *)eraw_src;
     }
 
   /* The local symbols must be accessed via the fdr's, because the
      string and aux indices are relative to the fdr information.  */
-  fdr_ptr = ecoff_data (abfd)->debug_info.fdr;
-  fdr_end = fdr_ptr + ecoff_data (abfd)->debug_info.symbolic_header.ifdMax;
+  fdr_ptr = ecoff_data(abfd)->debug_info.fdr;
+  fdr_end = (fdr_ptr + ecoff_data(abfd)->debug_info.symbolic_header.ifdMax);
   for (; fdr_ptr < fdr_end; fdr_ptr++)
     {
       char *lraw_src;
       char *lraw_end;
 
-      lraw_src = ((char *) ecoff_data (abfd)->debug_info.external_sym
-		  + fdr_ptr->isymBase * external_sym_size);
-      lraw_end = lraw_src + fdr_ptr->csym * external_sym_size;
+      lraw_src = ((char *)ecoff_data(abfd)->debug_info.external_sym
+		  + ((bfd_size_type)fdr_ptr->isymBase * external_sym_size));
+      lraw_end = (lraw_src
+                  + ((bfd_size_type)fdr_ptr->csym * external_sym_size));
       for (;
 	   lraw_src < lraw_end;
 	   lraw_src += external_sym_size, internal_ptr++)
 	{
 	  SYMR internal_sym;
 
-	  (*swap_sym_in) (abfd, (void *) lraw_src, &internal_sym);
-	  internal_ptr->symbol.name = (ecoff_data (abfd)->debug_info.ss
+	  (*swap_sym_in)(abfd, (void *)lraw_src, &internal_sym);
+	  internal_ptr->symbol.name = (ecoff_data(abfd)->debug_info.ss
 				       + fdr_ptr->issBase
 				       + internal_sym.iss);
-	  if (!ecoff_set_symbol_info (abfd, &internal_sym,
-				      &internal_ptr->symbol, 0, 0))
+	  if (!ecoff_set_symbol_info(abfd, &internal_sym,
+				     &internal_ptr->symbol, 0, 0))
 	    return FALSE;
 	  internal_ptr->fdr = fdr_ptr;
 	  internal_ptr->local = TRUE;
-	  internal_ptr->native = (void *) lraw_src;
+	  internal_ptr->native = (void *)lraw_src;
 	}
     }
 
-  ecoff_data (abfd)->canonical_symbols = internal;
+  ecoff_data(abfd)->canonical_symbols = internal;
 
   return TRUE;
 }
@@ -983,22 +987,18 @@ _bfd_ecoff_canonicalize_symtab (bfd *abfd, asymbol **alocation)
 /* Write aggregate information to a string.  */
 
 static void
-ecoff_emit_aggregate (bfd *abfd,
-		      FDR *fdr,
-		      char *string,
-		      RNDXR *rndx,
-		      long isym,
-		      const char *which)
+ecoff_emit_aggregate(bfd *abfd, FDR *fdr, char *string, RNDXR *rndx, long isym,
+		     const char *which)
 {
-  const struct ecoff_debug_swap * const debug_swap =
-    &ecoff_backend (abfd)->debug_swap;
-  struct ecoff_debug_info * const debug_info = &ecoff_data (abfd)->debug_info;
+  const struct ecoff_debug_swap *const debug_swap =
+    &ecoff_backend(abfd)->debug_swap;
+  struct ecoff_debug_info *const debug_info = &ecoff_data(abfd)->debug_info;
   unsigned int ifd = rndx->rfd;
   unsigned int indx = rndx->index;
   const char *name;
 
   if (ifd == 0xfff)
-    ifd = isym;
+    ifd = (unsigned int)isym;
 
   /* An ifd of -1 is an opaque type.  An escaped index of 0 is a
      struct return type of a procedure compiled without -g.  */
@@ -1012,34 +1012,34 @@ ecoff_emit_aggregate (bfd *abfd,
       SYMR sym;
 
       if (debug_info->external_rfd == NULL)
-	fdr = debug_info->fdr + ifd;
+	fdr = (debug_info->fdr + ifd);
       else
 	{
 	  RFDT rfd;
 
-	  (*debug_swap->swap_rfd_in) (abfd,
-				      ((char *) debug_info->external_rfd
-				       + ((fdr->rfdBase + ifd)
-					  * debug_swap->external_rfd_size)),
-				      &rfd);
-	  fdr = debug_info->fdr + rfd;
+	  (*debug_swap->swap_rfd_in)(abfd,
+				     ((char *)debug_info->external_rfd
+				      + (((unsigned int)fdr->rfdBase + ifd)
+				  	 * debug_swap->external_rfd_size)),
+				     &rfd);
+	  fdr = (debug_info->fdr + rfd);
 	}
 
       indx += fdr->isymBase;
 
-      (*debug_swap->swap_sym_in) (abfd,
-				  ((char *) debug_info->external_sym
-				   + indx * debug_swap->external_sym_size),
-				  &sym);
+      (*debug_swap->swap_sym_in)(abfd,
+				 ((char *)debug_info->external_sym
+				  + (indx * debug_swap->external_sym_size)),
+				 &sym);
 
-      name = debug_info->ss + fdr->issBase + sym.iss;
+      name = (debug_info->ss + fdr->issBase + sym.iss);
     }
 
-  sprintf (string,
-	   "%s %s { ifd = %u, index = %lu }",
-	   which, name, ifd,
-	   ((long) indx
-	    + debug_info->symbolic_header.iextMax));
+  sprintf(string,
+	  "%s %s { ifd = %u, index = %lu }",
+	  which, name, ifd,
+	  ((long)indx
+	   + debug_info->symbolic_header.iextMax));
 }
 
 /* Convert the type information to string format: */

@@ -1099,6 +1099,7 @@ mmix_elf_perform_relocation(asection *isec, reloc_howto_type *howto,
 	  break;
 	}
       /* FALLTHROUGH.  */
+      ATTRIBUTE_FALLTHROUGH;
     case R_MMIX_ADDR19:
     case R_MMIX_ADDR27:
     pcrel_mmix_reloc_fits:
@@ -1229,7 +1230,7 @@ mmix_info_to_howto_rela(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
 static bfd_reloc_status_type
 mmix_elf_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, PTR data,
                asection *input_section, bfd *output_bfd,
-               const char **error_message ATTRIBUTE_UNUSED)
+               const char **error_message)
 {
   bfd_vma relocation;
   bfd_reloc_status_type r;
@@ -1305,10 +1306,9 @@ mmix_elf_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, PTR data,
    for guidance if you're thinking of copying this.  */
 
 static bfd_boolean
-mmix_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
-                          struct bfd_link_info *info, bfd *input_bfd,
-                          asection *input_section, bfd_byte *contents,
-                          Elf_Internal_Rela *relocs,
+mmix_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                          bfd *input_bfd, asection *input_section,
+                          bfd_byte *contents, Elf_Internal_Rela *relocs,
                           Elf_Internal_Sym *local_syms,
                           asection **local_sections)
 {
@@ -1763,7 +1763,7 @@ mmix_elf_gc_mark_hook(asection *sec,
 static bfd_boolean
 mmix_elf_gc_sweep_hook(bfd *abfd ATTRIBUTE_UNUSED,
                        struct bfd_link_info *info ATTRIBUTE_UNUSED,
-                       asection *sec ATTRIBUTE_UNUSED,
+                       asection *sec,
                        const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED)
 {
   struct bpo_reloc_section_info *bpodata =
@@ -1776,7 +1776,7 @@ mmix_elf_gc_sweep_hook(bfd *abfd ATTRIBUTE_UNUSED,
 
   allocated_gregs_section = bpodata->bpo_greg_section;
 
-  mmix_elf_section_data (allocated_gregs_section)->bpo.greg->n_bpo_relocs
+  mmix_elf_section_data(allocated_gregs_section)->bpo.greg->n_bpo_relocs
     -= bpodata->n_bpo_relocs_this_section;
 
   return TRUE;

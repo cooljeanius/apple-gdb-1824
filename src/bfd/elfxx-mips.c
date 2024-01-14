@@ -1273,7 +1273,7 @@ static struct mips_hi16 *mips_hi16_list;
    simplies the relocation handling in gcc.  */
 
 bfd_reloc_status_type
-_bfd_mips_elf_hi16_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
+_bfd_mips_elf_hi16_reloc(bfd *abfd, arelent *reloc_entry,
                          asymbol *symbol ATTRIBUTE_UNUSED, void *data,
                          asection *input_section, bfd *output_bfd,
                          const char **error_message ATTRIBUTE_UNUSED)
@@ -1283,7 +1283,7 @@ _bfd_mips_elf_hi16_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
   if (reloc_entry->address > bfd_get_section_limit(abfd, input_section))
     return bfd_reloc_outofrange;
 
-  n = (struct mips_hi16 *)bfd_malloc(sizeof *n);
+  n = (struct mips_hi16 *)bfd_malloc(sizeof(*n));
   if (n == NULL)
     return bfd_reloc_outofrange;
 
@@ -1380,9 +1380,9 @@ _bfd_mips_elf_lo16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
    bfd_perform_relocation and bfd_install_relocation.  */
 
 bfd_reloc_status_type
-_bfd_mips_elf_generic_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
-			    asymbol *symbol, void *data ATTRIBUTE_UNUSED,
-			    asection *input_section, bfd *output_bfd,
+_bfd_mips_elf_generic_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                            void *data, asection *input_section,
+                            bfd *output_bfd,
 			    const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_signed_vma val;
@@ -1594,8 +1594,7 @@ sort_dynamic_relocs(const void *arg1, const void *arg2)
 
 /* Like sort_dynamic_relocs, but used for elf64 relocations: */
 static int
-sort_dynamic_relocs_64(const void *arg1 ATTRIBUTE_UNUSED,
-                       const void *arg2 ATTRIBUTE_UNUSED)
+sort_dynamic_relocs_64(const void *arg1, const void *arg2)
 {
 #ifdef BFD64
   Elf_Internal_Rela int_reloc1[3];
@@ -1609,6 +1608,8 @@ sort_dynamic_relocs_64(const void *arg1 ATTRIBUTE_UNUSED,
   return (ELF64_R_SYM(int_reloc1[0].r_info)
 	  - ELF64_R_SYM(int_reloc2[0].r_info));
 #else
+  (void)arg1;
+  (void)arg2;
   abort();
 #endif /* BFD64 */
 }
@@ -3377,9 +3378,8 @@ mips_elf_multi_got (bfd *abfd, struct bfd_link_info *info,
 	htab_traverse (g->got_entries, mips_elf_set_no_stub, NULL);
   } while (g);
 
-  got->size = (gg->next->local_gotno
-		    + gg->next->global_gotno
-		    + gg->next->tls_gotno) * MIPS_ELF_GOT_SIZE (abfd);
+  got->size = ((gg->next->local_gotno + gg->next->global_gotno
+                + gg->next->tls_gotno) * MIPS_ELF_GOT_SIZE(abfd));
 
   return TRUE;
 }
@@ -3389,20 +3389,20 @@ mips_elf_multi_got (bfd *abfd, struct bfd_link_info *info,
    RELOCATION.  RELEND is one-past-the-end of the relocation table.  */
 
 static const Elf_Internal_Rela *
-mips_elf_next_relocation (bfd *abfd ATTRIBUTE_UNUSED, unsigned int r_type,
-			  const Elf_Internal_Rela *relocation,
-			  const Elf_Internal_Rela *relend)
+mips_elf_next_relocation(bfd *abfd, unsigned int r_type,
+			 const Elf_Internal_Rela *relocation,
+			 const Elf_Internal_Rela *relend)
 {
   while (relocation < relend)
     {
-      if (ELF_R_TYPE (abfd, relocation->r_info) == r_type)
+      if (ELF_R_TYPE(abfd, relocation->r_info) == r_type)
 	return relocation;
 
       ++relocation;
     }
 
-  /* We didn't find it.  */
-  bfd_set_error (bfd_error_bad_value);
+  /* We failed to find it: */
+  bfd_set_error(bfd_error_bad_value);
   return NULL;
 }
 
@@ -3488,27 +3488,29 @@ mips_elf_high (bfd_vma value)
 /* Calculate the %higher function.  */
 
 static bfd_vma
-mips_elf_higher (bfd_vma value ATTRIBUTE_UNUSED)
+mips_elf_higher(bfd_vma value)
 {
 #ifdef BFD64
-  return ((value + (bfd_vma) 0x80008000) >> 32) & 0xffff;
+  return (((value + (bfd_vma)0x80008000) >> 32) & 0xffff);
 #else
-  abort ();
+  (void)value;
+  abort();
   return MINUS_ONE;
-#endif
+#endif /* BFD64 */
 }
 
 /* Calculate the %highest function.  */
 
 static bfd_vma
-mips_elf_highest (bfd_vma value ATTRIBUTE_UNUSED)
+mips_elf_highest(bfd_vma value)
 {
 #ifdef BFD64
-  return ((value + (((bfd_vma) 0x8000 << 32) | 0x80008000)) >> 48) & 0xffff;
+  return (((value + (((bfd_vma)0x8000 << 32) | 0x80008000)) >> 48) & 0xffff);
 #else
-  abort ();
+  (void)value;
+  abort();
   return MINUS_ONE;
-#endif
+#endif /* BFD64 */
 }
 
 /* Create the .compact_rel section.  */
@@ -3901,7 +3903,7 @@ mips_elf_calculate_relocation(bfd *abfd, bfd *input_bfd,
       if (local_p || r_type == R_MIPS_GOT_OFST)
 	break;
       /* Fall through.  */
-
+      ATTRIBUTE_FALLTHROUGH;
     case R_MIPS_CALL16:
     case R_MIPS_GOT16:
     case R_MIPS_GOT_DISP:
@@ -4192,7 +4194,7 @@ mips_elf_calculate_relocation(bfd *abfd, bfd *input_bfd,
 	}
 
       /* Fall through.  */
-
+      ATTRIBUTE_FALLTHROUGH;
     case R_MIPS_TLS_GD:
     case R_MIPS_TLS_GOTTPREL:
     case R_MIPS_TLS_LDM:
@@ -4796,6 +4798,7 @@ _bfd_mips_elf_symbol_processing(bfd *abfd, asymbol *asym)
 	  || (IRIX_COMPAT(abfd) == ict_irix6))
 	break;
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case SHN_MIPS_SCOMMON:
       if (mips_elf_scom_section.name == NULL)
 	{
@@ -5439,6 +5442,7 @@ _bfd_mips_elf_add_symbol_hook(bfd *abfd, struct bfd_link_info *info,
 	  || (IRIX_COMPAT(abfd) == ict_irix6))
 	break;
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case SHN_MIPS_SCOMMON:
       *secp = bfd_make_section_old_way(abfd, ".scommon");
       (*secp)->flags |= SEC_IS_COMMON;
@@ -6047,7 +6051,7 @@ _bfd_mips_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
 	      return FALSE;
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_MIPS_CALL_HI16:
 	case R_MIPS_CALL_LO16:
 	  if (h != NULL)
@@ -6085,7 +6089,7 @@ _bfd_mips_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
 		break;
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_MIPS_GOT16:
 	case R_MIPS_GOT_HI16:
 	case R_MIPS_GOT_LO16:
@@ -6098,7 +6102,7 @@ _bfd_mips_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
 	  if (info->shared)
 	    info->flags |= DF_STATIC_TLS;
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_MIPS_TLS_LDM:
 	  if (r_type == R_MIPS_TLS_LDM)
 	    {
@@ -6106,7 +6110,7 @@ _bfd_mips_elf_check_relocs (bfd *abfd, struct bfd_link_info *info,
 	      h = NULL;
 	    }
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_MIPS_TLS_GD:
 	  /* This symbol requires a global offset table entry, or two
 	     for TLS GD relocations.  */
@@ -7678,7 +7682,7 @@ _bfd_mips_elf_finish_dynamic_sections(bfd *output_bfd,
 	      /* In case if we do NOT have global got symbols we default
 		 to setting DT_MIPS_GOTSYM to the same value as
 		 DT_MIPS_SYMTABNO, so we just fall through.  */
-
+	      ATTRIBUTE_FALLTHROUGH;
 	    case DT_MIPS_SYMTABNO:
 	      name = ".dynsym";
 	      elemsize = MIPS_ELF_SYM_SIZE(output_bfd);

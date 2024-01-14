@@ -614,8 +614,15 @@ sh_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
 	sym_value -= 0x1000;
       insn = (unsigned long)((insn & 0xf000) | (sym_value & 0xfff));
       bfd_put_16(abfd, (bfd_vma)insn, hit_data);
+#if defined(__clang__) && (__clang__ >= 1)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wtautological-overlap-compare"
+#endif /* __clang__ */
       if ((sym_value < (bfd_vma)-0x1000) || (sym_value >= 0x1000))
 	return bfd_reloc_overflow;
+#if defined(__clang__) && (__clang__ >= 1)
+# pragma clang diagnostic pop
+#endif /* __clang__ */
       break;
     default:
       abort();
@@ -738,11 +745,11 @@ sh_relax_section(bfd *abfd, asection *sec, struct bfd_link_info *link_info,
       /* Get the section contents.  */
       if (contents == NULL)
 	{
-	  if (coff_section_data (abfd, sec)->contents != NULL)
-	    contents = coff_section_data (abfd, sec)->contents;
+	  if (coff_section_data(abfd, sec)->contents != NULL)
+	    contents = coff_section_data(abfd, sec)->contents;
 	  else
 	    {
-	      if (!bfd_malloc_and_get_section (abfd, sec, &contents))
+	      if (!bfd_malloc_and_get_section(abfd, sec, &contents))
 		goto error_return;
 	    }
 	}
@@ -751,23 +758,23 @@ sh_relax_section(bfd *abfd, asection *sec, struct bfd_link_info *link_info,
          the register load.  The 4 is because the r_offset field is
          computed as though it were a jump offset, which are based
          from 4 bytes after the jump instruction.  */
-      laddr = irel->r_vaddr - sec->vma + 4;
+      laddr = (irel->r_vaddr - sec->vma + 4);
       /* Careful to sign extend the 32-bit offset.  */
-      laddr += ((irel->r_offset & 0xffffffff) ^ 0x80000000) - 0x80000000;
+      laddr += (((irel->r_offset & 0xffffffff) ^ 0x80000000) - 0x80000000);
       if (laddr >= sec->size)
 	{
-	  (*_bfd_error_handler) ("%B: 0x%lx: warning: bad R_SH_USES offset",
-				 abfd, (unsigned long) irel->r_vaddr);
+	  (*_bfd_error_handler)("%B: 0x%lx: warning: bad R_SH_USES offset",
+                                abfd, (unsigned long)irel->r_vaddr);
 	  continue;
 	}
-      insn = bfd_get_16 (abfd, contents + laddr);
+      insn = (unsigned short)bfd_get_16(abfd, (contents + laddr));
 
       /* If the instruction is not mov.l NN,rN, we don't know what to do.  */
       if ((insn & 0xf000) != 0xd000)
 	{
 	  ((*_bfd_error_handler)
 	   ("%B: 0x%lx: warning: R_SH_USES points to unrecognized insn 0x%x",
-	    abfd, (unsigned long) irel->r_vaddr, insn));
+	    abfd, (unsigned long)irel->r_vaddr, insn));
 	  continue;
 	}
 
@@ -839,10 +846,10 @@ sh_relax_section(bfd *abfd, asection *sec, struct bfd_link_info *link_info,
 	{
 	  struct coff_link_hash_entry *h;
 
-	  h = obj_coff_sym_hashes (abfd)[irelfn->r_symndx];
-	  BFD_ASSERT (h != NULL);
-	  if (h->root.type != bfd_link_hash_defined
-	      && h->root.type != bfd_link_hash_defweak)
+	  h = obj_coff_sym_hashes(abfd)[irelfn->r_symndx];
+	  BFD_ASSERT(h != NULL);
+	  if ((h->root.type != bfd_link_hash_defined)
+	      && (h->root.type != bfd_link_hash_defweak))
 	    {
 	      /* This appears to be a reference to an undefined
                  symbol.  Just ignore it--it will be caught by the
@@ -855,18 +862,16 @@ sh_relax_section(bfd *abfd, asection *sec, struct bfd_link_info *link_info,
 		    + h->root.u.def.section->output_offset);
 	}
 
-      symval += bfd_get_32 (abfd, contents + paddr - sec->vma);
+      symval += bfd_get_32(abfd, (contents + paddr - sec->vma));
 
       /* See if this function call can be shortened.  */
-      foff = (symval
-	      - (irel->r_vaddr
-		 - sec->vma
-		 + sec->output_section->vma
-		 + sec->output_offset
-		 + 4));
-      if (foff < -0x1000 || foff >= 0x1000)
+      foff = (bfd_signed_vma)(symval
+                              - (irel->r_vaddr - sec->vma
+       				 + sec->output_section->vma
+            		    	 + sec->output_offset + 4));
+      if ((foff < -0x1000) || (foff >= 0x1000))
 	{
-	  /* After all that work, we can't shorten this function call.  */
+	  /* After all that work, we cannot shorten this function call: */
 	  continue;
 	}
 
@@ -1052,7 +1057,7 @@ sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
   struct coff_link_hash_entry **sym_hash;
   asection *o;
 
-  contents = coff_section_data (abfd, sec)->contents;
+  contents = coff_section_data(abfd, sec)->contents;
 
   /* The deletion must stop at the next ALIGN reloc for an aligment
      power larger than the number of bytes we are deleting.  */
@@ -1060,60 +1065,60 @@ sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
   irelalign = NULL;
   toaddr = sec->size;
 
-  irel = coff_section_data (abfd, sec)->relocs;
-  irelend = irel + sec->reloc_count;
+  irel = coff_section_data(abfd, sec)->relocs;
+  irelend = (irel + sec->reloc_count);
   for (; irel < irelend; irel++)
     {
-      if (irel->r_type == R_SH_ALIGN
-	  && irel->r_vaddr - sec->vma > addr
-	  && count < (1 << irel->r_offset))
+      if ((irel->r_type == R_SH_ALIGN)
+	  && ((irel->r_vaddr - sec->vma) > addr)
+	  && (count < (1 << irel->r_offset)))
 	{
 	  irelalign = irel;
-	  toaddr = irel->r_vaddr - sec->vma;
+	  toaddr = (irel->r_vaddr - sec->vma);
 	  break;
 	}
     }
 
   /* Actually delete the bytes.  */
-  memmove (contents + addr, contents + addr + count,
-	   (size_t) (toaddr - addr - count));
+  memmove((contents + addr), (contents + addr + count),
+	  (size_t)(toaddr - addr - (bfd_vma)count));
   if (irelalign == NULL)
-    sec->size -= count;
+    sec->size -= (bfd_size_type)count;
   else
     {
       int i;
 
 #define NOP_OPCODE (0x0009)
 
-      BFD_ASSERT ((count & 1) == 0);
+      BFD_ASSERT((count & 1) == 0);
       for (i = 0; i < count; i += 2)
-	bfd_put_16 (abfd, (bfd_vma) NOP_OPCODE, contents + toaddr - count + i);
+	bfd_put_16(abfd, (bfd_vma)NOP_OPCODE, (contents + toaddr - count + i));
     }
 
   /* Adjust all the relocs.  */
-  for (irel = coff_section_data (abfd, sec)->relocs; irel < irelend; irel++)
+  for (irel = coff_section_data(abfd, sec)->relocs; irel < irelend; irel++)
     {
       bfd_vma nraddr, stop;
-      bfd_vma start = 0;
+      bfd_vma start = 0UL;
       int insn = 0;
       struct internal_syment sym;
       int off, adjust, oinsn;
-      bfd_signed_vma voff = 0;
+      bfd_signed_vma voff = 0L;
       bfd_boolean overflow;
 
       /* Get the new reloc address: */
       nraddr = (irel->r_vaddr - sec->vma);
-      if ((irel->r_vaddr - sec->vma > addr
-	   && irel->r_vaddr - sec->vma < toaddr)
-	  || (irel->r_type == R_SH_ALIGN
-	      && irel->r_vaddr - sec->vma == toaddr))
+      if ((((irel->r_vaddr - sec->vma) > addr)
+	   && ((irel->r_vaddr - sec->vma) < toaddr))
+	  || ((irel->r_type == R_SH_ALIGN)
+	      && ((irel->r_vaddr - sec->vma) == toaddr)))
 	nraddr -= (bfd_vma)count;
 
       /* See if this reloc was for the bytes we have deleted, in which
 	 case we no longer care about it.  Don't delete relocs which
 	 represent addresses, though.  */
       if (((irel->r_vaddr - sec->vma) >= addr)
-	  && ((irel->r_vaddr - sec->vma) < (addr + count))
+	  && ((irel->r_vaddr - sec->vma) < (addr + (bfd_vma)count))
 	  && (irel->r_type != R_SH_ALIGN)
 	  && (irel->r_type != R_SH_CODE)
 	  && (irel->r_type != R_SH_DATA)
@@ -1151,58 +1156,58 @@ sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
              section, and the symbol will not be adjusted below, we
              must check the addend to see it will put the value in
              range to be adjusted, and hence must be changed.  */
-	  bfd_coff_swap_sym_in (abfd,
-				((bfd_byte *) obj_coff_external_syms (abfd)
-				 + (irel->r_symndx
-				    * bfd_coff_symesz (abfd))),
-				&sym);
-	  if (sym.n_sclass != C_EXT
-	      && sym.n_scnum == sec->target_index
-	      && ((bfd_vma) sym.n_value <= addr
-		  || (bfd_vma) sym.n_value >= toaddr))
+	  bfd_coff_swap_sym_in(abfd,
+                               ((bfd_byte *)obj_coff_external_syms(abfd)
+                                + (irel->r_symndx
+                                   * bfd_coff_symesz(abfd))),
+                               &sym);
+	  if ((sym.n_sclass != C_EXT)
+	      && (sym.n_scnum == sec->target_index)
+	      && (((bfd_vma)sym.n_value <= addr)
+		  || ((bfd_vma)sym.n_value >= toaddr)))
 	    {
 	      bfd_vma val;
 
-	      val = bfd_get_32 (abfd, contents + nraddr);
+	      val = bfd_get_32(abfd, (contents + nraddr));
 	      val += sym.n_value;
-	      if (val > addr && val < toaddr)
-		bfd_put_32 (abfd, val - count, contents + nraddr);
+	      if ((val > addr) && (val < toaddr))
+		bfd_put_32(abfd, (val - (bfd_vma)count), (contents + nraddr));
 	    }
 	  start = stop = addr;
 	  break;
 
 	case R_SH_PCDISP8BY2:
-	  off = insn & 0xff;
+	  off = (insn & 0xff);
 	  if (off & 0x80)
 	    off -= 0x100;
-	  stop = (bfd_vma) ((bfd_signed_vma) start + 4 + off * 2);
+	  stop = (bfd_vma)((bfd_signed_vma)start + 4 + (off * 2));
 	  break;
 
 	case R_SH_PCDISP:
-	  bfd_coff_swap_sym_in (abfd,
-				((bfd_byte *) obj_coff_external_syms (abfd)
-				 + (irel->r_symndx
-				    * bfd_coff_symesz (abfd))),
-				&sym);
+	  bfd_coff_swap_sym_in(abfd,
+                               ((bfd_byte *)obj_coff_external_syms(abfd)
+                                + (irel->r_symndx
+                                   * bfd_coff_symesz(abfd))),
+                               &sym);
 	  if (sym.n_sclass == C_EXT)
 	    start = stop = addr;
 	  else
 	    {
-	      off = insn & 0xfff;
+	      off = (insn & 0xfff);
 	      if (off & 0x800)
 		off -= 0x1000;
-	      stop = (bfd_vma) ((bfd_signed_vma) start + 4 + off * 2);
+	      stop = (bfd_vma)((bfd_signed_vma)start + 4 + (off * 2));
 	    }
 	  break;
 
 	case R_SH_PCRELIMM8BY2:
-	  off = insn & 0xff;
-	  stop = start + 4 + off * 2;
+	  off = (insn & 0xff);
+	  stop = (start + 4UL + (bfd_vma)(off * 2));
 	  break;
 
 	case R_SH_PCRELIMM8BY4:
-	  off = insn & 0xff;
-	  stop = (start &~ (bfd_vma) 3) + 4 + off * 4;
+	  off = (insn & 0xff);
+	  stop = ((start &~ (bfd_vma)3UL) + 4UL + (bfd_vma)(off * 4));
 	  break;
 
 	case R_SH_SWITCH8:
@@ -1215,46 +1220,41 @@ sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
 	     adding in the contents gives us the top.  We must adjust
 	     both the r_offset field and the section contents.  */
 
-	  start = irel->r_vaddr - sec->vma;
-	  stop = (bfd_vma) ((bfd_signed_vma) start - (long) irel->r_offset);
+	  start = (irel->r_vaddr - sec->vma);
+	  stop = (bfd_vma)((bfd_signed_vma)start - (long)irel->r_offset);
 
-	  if (start > addr
-	      && start < toaddr
-	      && (stop <= addr || stop >= toaddr))
-	    irel->r_offset += count;
-	  else if (stop > addr
-		   && stop < toaddr
-		   && (start <= addr || start >= toaddr))
-	    irel->r_offset -= count;
+	  if ((start > addr) && (start < toaddr)
+	      && ((stop <= addr) || (stop >= toaddr)))
+	    irel->r_offset += (unsigned long)count;
+	  else if ((stop > addr) && (stop < toaddr)
+		   && ((start <= addr) || (start >= toaddr)))
+	    irel->r_offset -= (unsigned long)count;
 
 	  start = stop;
 
 	  if (irel->r_type == R_SH_SWITCH16)
-	    voff = bfd_get_signed_16 (abfd, contents + nraddr);
+	    voff = bfd_get_signed_16(abfd, (contents + nraddr));
 	  else if (irel->r_type == R_SH_SWITCH8)
-	    voff = bfd_get_8 (abfd, contents + nraddr);
+	    voff = bfd_get_8(abfd, (contents + nraddr));
 	  else
-	    voff = bfd_get_signed_32 (abfd, contents + nraddr);
-	  stop = (bfd_vma) ((bfd_signed_vma) start + voff);
+	    voff = bfd_get_signed_32(abfd, (contents + nraddr));
+	  stop = (bfd_vma)((bfd_signed_vma)start + voff);
 
 	  break;
 
 	case R_SH_USES:
-	  start = irel->r_vaddr - sec->vma;
-	  stop = (bfd_vma) ((bfd_signed_vma) start
-			    + (long) irel->r_offset
-			    + 4);
+	  start = (irel->r_vaddr - sec->vma);
+	  stop = (bfd_vma)((bfd_signed_vma)start
+			   + (long)irel->r_offset + 4L);
 	  break;
 	}
 
-      if (start > addr
-	  && start < toaddr
-	  && (stop <= addr || stop >= toaddr))
+      if ((start > addr) && (start < toaddr)
+	  && ((stop <= addr) || (stop >= toaddr)))
 	adjust = count;
-      else if (stop > addr
-	       && stop < toaddr
-	       && (start <= addr || start >= toaddr))
-	adjust = - count;
+      else if ((stop > addr) && (stop < toaddr)
+	       && ((start <= addr) || (start >= toaddr)))
+	adjust = (0 - count);
       else
 	adjust = 0;
 
@@ -1294,30 +1294,30 @@ sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
 		}
 	      if ((oinsn & 0xff00) != (insn & 0xff00))
 		overflow = TRUE;
-	      bfd_put_16 (abfd, (bfd_vma) insn, contents + nraddr);
+	      bfd_put_16(abfd, (bfd_vma)insn, (contents + nraddr));
 	      break;
 
 	    case R_SH_SWITCH8:
 	      voff += adjust;
-	      if (voff < 0 || voff >= 0xff)
+	      if ((voff < 0) || (voff >= 0xff))
 		overflow = TRUE;
-	      bfd_put_8 (abfd, (bfd_vma) voff, contents + nraddr);
+	      bfd_put_8(abfd, (bfd_vma)voff, (contents + nraddr));
 	      break;
 
 	    case R_SH_SWITCH16:
 	      voff += adjust;
-	      if (voff < - 0x8000 || voff >= 0x8000)
+	      if ((voff < -0x8000) || (voff >= 0x8000))
 		overflow = TRUE;
-	      bfd_put_signed_16 (abfd, (bfd_vma) voff, contents + nraddr);
+	      bfd_put_signed_16(abfd, (bfd_vma)voff, (contents + nraddr));
 	      break;
 
 	    case R_SH_SWITCH32:
 	      voff += adjust;
-	      bfd_put_signed_32 (abfd, (bfd_vma) voff, contents + nraddr);
+	      bfd_put_signed_32(abfd, (bfd_vma)voff, (contents + nraddr));
 	      break;
 
 	    case R_SH_USES:
-	      irel->r_offset += adjust;
+	      irel->r_offset += (unsigned long)adjust;
 	      break;
 	    }
 
@@ -1325,13 +1325,13 @@ sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
 	    {
 	      ((*_bfd_error_handler)
 	       ("%B: 0x%lx: fatal: reloc overflow while relaxing",
-		abfd, (unsigned long) irel->r_vaddr));
-	      bfd_set_error (bfd_error_bad_value);
+		abfd, (unsigned long)irel->r_vaddr));
+	      bfd_set_error(bfd_error_bad_value);
 	      return FALSE;
 	    }
 	}
 
-      irel->r_vaddr = nraddr + sec->vma;
+      irel->r_vaddr = (nraddr + sec->vma);
     }
 
   /* Look through all the other sections.  If there contain any IMM32
@@ -1351,62 +1351,62 @@ sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
       /* We always cache the relocs.  Perhaps, if info->keep_memory is
          FALSE, we should free them, if we are permitted to, when we
          leave sh_coff_relax_section.  */
-      internal_relocs = (_bfd_coff_read_internal_relocs
-			 (abfd, o, TRUE, (bfd_byte *) NULL, FALSE,
-			  (struct internal_reloc *) NULL));
+      internal_relocs =
+      	_bfd_coff_read_internal_relocs(abfd, o, TRUE, (bfd_byte *)NULL, FALSE,
+                                       (struct internal_reloc *)NULL);
       if (internal_relocs == NULL)
 	return FALSE;
 
       ocontents = NULL;
-      irelscanend = internal_relocs + o->reloc_count;
+      irelscanend = (internal_relocs + o->reloc_count);
       for (irelscan = internal_relocs; irelscan < irelscanend; irelscan++)
 	{
 	  struct internal_syment sym;
 
 #ifdef COFF_WITH_PE
-	  if (irelscan->r_type != R_SH_IMM32
-	      && irelscan->r_type != R_SH_IMAGEBASE
-	      && irelscan->r_type != R_SH_IMM32CE)
+	  if ((irelscan->r_type != R_SH_IMM32)
+	      && (irelscan->r_type != R_SH_IMAGEBASE)
+	      && (irelscan->r_type != R_SH_IMM32CE))
 #else
 	  if (irelscan->r_type != R_SH_IMM32)
 #endif
 	    continue;
 
-	  bfd_coff_swap_sym_in (abfd,
-				((bfd_byte *) obj_coff_external_syms (abfd)
-				 + (irelscan->r_symndx
-				    * bfd_coff_symesz (abfd))),
-				&sym);
-	  if (sym.n_sclass != C_EXT
-	      && sym.n_scnum == sec->target_index
-	      && ((bfd_vma) sym.n_value <= addr
-		  || (bfd_vma) sym.n_value >= toaddr))
+	  bfd_coff_swap_sym_in(abfd,
+                               ((bfd_byte *)obj_coff_external_syms(abfd)
+                                + (irelscan->r_symndx
+                                   * bfd_coff_symesz(abfd))),
+                               &sym);
+	  if ((sym.n_sclass != C_EXT)
+	      && (sym.n_scnum == sec->target_index)
+	      && (((bfd_vma)sym.n_value <= addr)
+		  || ((bfd_vma)sym.n_value >= toaddr)))
 	    {
 	      bfd_vma val;
 
 	      if (ocontents == NULL)
 		{
-		  if (coff_section_data (abfd, o)->contents != NULL)
-		    ocontents = coff_section_data (abfd, o)->contents;
+		  if (coff_section_data(abfd, o)->contents != NULL)
+		    ocontents = coff_section_data(abfd, o)->contents;
 		  else
 		    {
-		      if (!bfd_malloc_and_get_section (abfd, o, &ocontents))
+		      if (!bfd_malloc_and_get_section(abfd, o, &ocontents))
 			return FALSE;
 		      /* We always cache the section contents.
                          Perhaps, if info->keep_memory is FALSE, we
                          should free them, if we are permitted to,
                          when we leave sh_coff_relax_section.  */
-		      coff_section_data (abfd, o)->contents = ocontents;
+		      coff_section_data(abfd, o)->contents = ocontents;
 		    }
 		}
 
-	      val = bfd_get_32 (abfd, ocontents + irelscan->r_vaddr - o->vma);
+	      val = bfd_get_32(abfd, (ocontents + irelscan->r_vaddr - o->vma));
 	      val += sym.n_value;
-	      if (val > addr && val < toaddr)
-		bfd_put_32 (abfd, val - count,
-			    ocontents + irelscan->r_vaddr - o->vma);
+	      if ((val > addr) && (val < toaddr))
+		bfd_put_32(abfd, (val - (bfd_vma)count),
+			   (ocontents + irelscan->r_vaddr - o->vma));
 
-	      coff_section_data (abfd, o)->keep_contents = TRUE;
+	      coff_section_data(abfd, o)->keep_contents = TRUE;
 	    }
 	}
     }
@@ -1415,46 +1415,46 @@ sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
      already retrieved the generic symbols.  It would be possible to
      make this work by adjusting the generic symbols at the same time.
      However, this case should not arise in normal usage.  */
-  if (obj_symbols (abfd) != NULL
-      || obj_raw_syments (abfd) != NULL)
+  if ((obj_symbols(abfd) != NULL)
+      || (obj_raw_syments(abfd) != NULL))
     {
       ((*_bfd_error_handler)
        ("%B: fatal: generic symbols retrieved before relaxing", abfd));
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return FALSE;
     }
 
   /* Adjust all the symbols.  */
-  sym_hash = obj_coff_sym_hashes (abfd);
-  symesz = bfd_coff_symesz (abfd);
-  esym = (bfd_byte *) obj_coff_external_syms (abfd);
-  esymend = esym + obj_raw_syment_count (abfd) * symesz;
+  sym_hash = obj_coff_sym_hashes(abfd);
+  symesz = bfd_coff_symesz(abfd);
+  esym = (bfd_byte *)obj_coff_external_syms(abfd);
+  esymend = (esym + (obj_raw_syment_count(abfd) * symesz));
   while (esym < esymend)
     {
       struct internal_syment isym;
 
-      bfd_coff_swap_sym_in (abfd, (PTR) esym, (PTR) &isym);
+      bfd_coff_swap_sym_in(abfd, (PTR)esym, (PTR)&isym);
 
-      if (isym.n_scnum == sec->target_index
-	  && (bfd_vma) isym.n_value > addr
-	  && (bfd_vma) isym.n_value < toaddr)
+      if ((isym.n_scnum == sec->target_index)
+	  && ((bfd_vma)isym.n_value > addr)
+	  && ((bfd_vma)isym.n_value < toaddr))
 	{
-	  isym.n_value -= count;
+	  isym.n_value -= (bfd_vma)count;
 
-	  bfd_coff_swap_sym_out (abfd, (PTR) &isym, (PTR) esym);
+	  bfd_coff_swap_sym_out(abfd, (PTR)&isym, (PTR)esym);
 
 	  if (*sym_hash != NULL)
 	    {
-	      BFD_ASSERT ((*sym_hash)->root.type == bfd_link_hash_defined
-			  || (*sym_hash)->root.type == bfd_link_hash_defweak);
-	      BFD_ASSERT ((*sym_hash)->root.u.def.value >= addr
-			  && (*sym_hash)->root.u.def.value < toaddr);
-	      (*sym_hash)->root.u.def.value -= count;
+	      BFD_ASSERT((*sym_hash)->root.type == bfd_link_hash_defined
+			 || (*sym_hash)->root.type == bfd_link_hash_defweak);
+	      BFD_ASSERT((*sym_hash)->root.u.def.value >= addr
+			 && (*sym_hash)->root.u.def.value < toaddr);
+	      (*sym_hash)->root.u.def.value -= (bfd_vma)count;
 	    }
 	}
 
-      esym += (isym.n_numaux + 1) * symesz;
-      sym_hash += isym.n_numaux + 1;
+      esym += ((isym.n_numaux + 1) * symesz);
+      sym_hash += (isym.n_numaux + 1);
     }
 
   /* See if we can move the ALIGN reloc forward.  We have adjusted
@@ -1463,14 +1463,14 @@ sh_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr, int count)
     {
       bfd_vma alignto, alignaddr;
 
-      alignto = BFD_ALIGN (toaddr, 1 << irelalign->r_offset);
-      alignaddr = BFD_ALIGN (irelalign->r_vaddr - sec->vma,
-			     1 << irelalign->r_offset);
+      alignto = BFD_ALIGN(toaddr, 1 << irelalign->r_offset);
+      alignaddr = BFD_ALIGN((irelalign->r_vaddr - sec->vma),
+			    (1 << irelalign->r_offset));
       if (alignto != alignaddr)
 	{
 	  /* Tail recursion.  */
-	  return sh_relax_delete_bytes (abfd, sec, alignaddr,
-					(int) (alignto - alignaddr));
+	  return sh_relax_delete_bytes(abfd, sec, alignaddr,
+                                       (int)(alignto - alignaddr));
 	}
     }
 
@@ -2568,13 +2568,13 @@ sh_swap_insns(bfd *abfd, asection *sec, PTR relocs, bfd_byte *contents,
   struct internal_reloc *irel, *irelend;
 
   /* Swap the instructions themselves.  */
-  i1 = bfd_get_16 (abfd, contents + addr);
-  i2 = bfd_get_16 (abfd, contents + addr + 2);
-  bfd_put_16 (abfd, (bfd_vma) i2, contents + addr);
-  bfd_put_16 (abfd, (bfd_vma) i1, contents + addr + 2);
+  i1 = (unsigned short)bfd_get_16(abfd, (contents + addr));
+  i2 = (unsigned short)bfd_get_16(abfd, (contents + addr + 2));
+  bfd_put_16(abfd, (bfd_vma)i2, (contents + addr));
+  bfd_put_16(abfd, (bfd_vma)i1, (contents + addr + 2));
 
   /* Adjust all reloc addresses.  */
-  irelend = internal_relocs + sec->reloc_count;
+  irelend = (internal_relocs + sec->reloc_count);
   for (irel = internal_relocs; irel < irelend; irel++)
     {
       int type, add;
@@ -2625,7 +2625,7 @@ sh_swap_insns(bfd *abfd, asection *sec, PTR relocs, bfd_byte *contents,
 	  unsigned short insn, oinsn;
 	  bfd_boolean overflow;
 
-	  loc = contents + irel->r_vaddr - sec->vma;
+	  loc = (contents + irel->r_vaddr - sec->vma);
 	  overflow = FALSE;
 	  switch (type)
 	    {
@@ -2634,21 +2634,21 @@ sh_swap_insns(bfd *abfd, asection *sec, PTR relocs, bfd_byte *contents,
 
 	    case R_SH_PCDISP8BY2:
 	    case R_SH_PCRELIMM8BY2:
-	      insn = bfd_get_16 (abfd, loc);
+	      insn = (unsigned short)bfd_get_16(abfd, loc);
 	      oinsn = insn;
-	      insn += add / 2;
+	      insn += (add / 2);
 	      if ((oinsn & 0xff00) != (insn & 0xff00))
 		overflow = TRUE;
-	      bfd_put_16 (abfd, (bfd_vma) insn, loc);
+	      bfd_put_16(abfd, (bfd_vma)insn, loc);
 	      break;
 
 	    case R_SH_PCDISP:
-	      insn = bfd_get_16 (abfd, loc);
+	      insn = (unsigned short)bfd_get_16(abfd, loc);
 	      oinsn = insn;
 	      insn += add / 2;
 	      if ((oinsn & 0xf000) != (insn & 0xf000))
 		overflow = TRUE;
-	      bfd_put_16 (abfd, (bfd_vma) insn, loc);
+	      bfd_put_16(abfd, (bfd_vma)insn, loc);
 	      break;
 
 	    case R_SH_PCRELIMM8BY4:
@@ -2660,12 +2660,12 @@ sh_swap_insns(bfd *abfd, asection *sec, PTR relocs, bfd_byte *contents,
                  four byte boundary, and must be adjusted.  */
 	      if ((addr & 3) != 0)
 		{
-		  insn = bfd_get_16 (abfd, loc);
+		  insn = (unsigned short)bfd_get_16(abfd, loc);
 		  oinsn = insn;
-		  insn += add / 2;
+		  insn += (add / 2);
 		  if ((oinsn & 0xff00) != (insn & 0xff00))
 		    overflow = TRUE;
-		  bfd_put_16 (abfd, (bfd_vma) insn, loc);
+		  bfd_put_16(abfd, (bfd_vma)insn, loc);
 		}
 
 	      break;

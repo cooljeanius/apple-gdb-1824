@@ -2951,10 +2951,9 @@ sh_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
    boundaries.  This is like sh_align_loads in coff-sh.c.  */
 
 static bfd_boolean
-sh_elf_align_loads (bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
-		    Elf_Internal_Rela *internal_relocs,
-		    bfd_byte *contents ATTRIBUTE_UNUSED,
-		    bfd_boolean *pswapped)
+sh_elf_align_loads(bfd *abfd, asection *sec,
+                   Elf_Internal_Rela *internal_relocs,
+		   bfd_byte *contents, bfd_boolean *pswapped)
 {
   Elf_Internal_Rela *irel, *irelend;
   bfd_vma *labels = NULL;
@@ -2963,18 +2962,18 @@ sh_elf_align_loads (bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
 
   *pswapped = FALSE;
 
-  irelend = internal_relocs + sec->reloc_count;
+  irelend = (internal_relocs + sec->reloc_count);
 
-  /* Get all the addresses with labels on them.  */
+  /* Get all the addresses with labels on them: */
   amt = sec->reloc_count;
   amt *= sizeof (bfd_vma);
-  labels = (bfd_vma *) bfd_malloc (amt);
+  labels = (bfd_vma *)bfd_malloc(amt);
   if (labels == NULL)
     goto error_return;
   label_end = labels;
   for (irel = internal_relocs; irel < irelend; irel++)
     {
-      if (ELF32_R_TYPE (irel->r_info) == (int) R_SH_LABEL)
+      if (ELF32_R_TYPE(irel->r_info) == (int)R_SH_LABEL)
 	{
 	  *label_end = irel->r_offset;
 	  ++label_end;
@@ -5995,7 +5994,7 @@ sh_elf_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info,
 		    local_got_refcounts[symtab_hdr->sh_info + r_symndx] -= 1;
 		}
 	      else
-#endif
+#endif /* INCLUDE_SHMEDIA */
 		if (local_got_refcounts[r_symndx] > 0)
 		  local_got_refcounts[r_symndx] -= 1;
 	    }
@@ -6006,14 +6005,14 @@ sh_elf_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info,
 	  if (info->shared)
 	    break;
 	  /* Fall thru */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_SH_PLT32:
 #ifdef INCLUDE_SHMEDIA
 	case R_SH_PLT_LOW16:
 	case R_SH_PLT_MEDLOW16:
 	case R_SH_PLT_MEDHI16:
 	case R_SH_PLT_HI16:
-#endif
+#endif /* INCLUDE_SHMEDIA */
 	  if (h != NULL)
 	    {
 	      if (h->plt.refcount > 0)
@@ -6029,7 +6028,7 @@ sh_elf_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info,
 	case R_SH_GOTPLT_HI16:
 	case R_SH_GOTPLT10BY4:
 	case R_SH_GOTPLT10BY8:
-#endif
+#endif /* INCLUDE_SHMEDIA */
 	  if (h != NULL)
 	    {
 	      struct elf_sh_link_hash_entry *eh;

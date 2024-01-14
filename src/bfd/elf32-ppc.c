@@ -1906,16 +1906,16 @@ static struct bfd_elf_special_section ppc_alt_plt =
   { ".plt",              4,  0, SHT_PROGBITS, SHF_ALLOC };
 
 static const struct bfd_elf_special_section *
-ppc_elf_get_sec_type_attr (bfd *abfd ATTRIBUTE_UNUSED, asection *sec)
+ppc_elf_get_sec_type_attr(bfd *abfd, asection *sec)
 {
   const struct bfd_elf_special_section *ssect;
 
-  /* See if this is one of the special sections.  */
+  /* See if this is one of the special sections: */
   if (sec->name == NULL)
     return NULL;
 
-  ssect = _bfd_elf_get_special_section (sec->name, ppc_elf_special_sections,
-					sec->use_rela_p);
+  ssect = _bfd_elf_get_special_section(sec->name, ppc_elf_special_sections,
+                                       sec->use_rela_p);
   if (ssect != NULL)
     {
       if (ssect == ppc_elf_special_sections && (sec->flags & SEC_LOAD) != 0)
@@ -1923,7 +1923,7 @@ ppc_elf_get_sec_type_attr (bfd *abfd ATTRIBUTE_UNUSED, asection *sec)
       return ssect;
     }
 
-  return _bfd_elf_get_sec_type_attr (abfd, sec);
+  return _bfd_elf_get_sec_type_attr(abfd, sec);
 }
 
 /* Very simple linked list structure for recording apuinfo values.  */
@@ -3063,7 +3063,7 @@ ppc_elf_check_relocs (bfd *abfd,
 	dogottls:
 	  sec->has_tls_reloc = 1;
 	  /* Fall thru */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	  /* GOT16 relocations */
 	case R_PPC_GOT16:
 	case R_PPC_GOT16_LO:
@@ -3328,13 +3328,13 @@ ppc_elf_check_relocs (bfd *abfd,
 		 PLT call stubs.  */
 	      asection *s;
 
-	      s = bfd_section_from_r_symndx (abfd, &htab->sym_sec, sec,
-					     r_symndx);
+	      s = bfd_section_from_r_symndx(abfd, &htab->sym_sec, sec,
+					    r_symndx);
 	      if (s == got2)
 		htab->old_plt = 1;
 	    }
 	  /* fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_PPC_REL24:
 	case R_PPC_REL14:
 	case R_PPC_REL14_BRTAKEN:
@@ -3347,7 +3347,7 @@ ppc_elf_check_relocs (bfd *abfd,
 	      break;
 	    }
 	  /* fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_PPC_ADDR32:
 	case R_PPC_ADDR24:
 	case R_PPC_ADDR16:
@@ -3781,7 +3781,7 @@ ppc_elf_gc_sweep_hook (bfd *abfd,
 	  if (h == NULL || h == htab->elf.hgot)
 	    break;
 	  /* Fall thru */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_PPC_ADDR32:
 	case R_PPC_ADDR24:
 	case R_PPC_ADDR16:

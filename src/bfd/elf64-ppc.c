@@ -2106,8 +2106,7 @@ ppc64_elf_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
 
 /* Set the howto pointer for a PowerPC ELF reloc: */
 static void
-ppc64_elf_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
-                        Elf_Internal_Rela *dst)
+ppc64_elf_info_to_howto(bfd *abfd, arelent *cache_ptr, Elf_Internal_Rela *dst)
 {
   unsigned int type;
 
@@ -4361,7 +4360,7 @@ ppc64_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
 	dogottls:
 	  sec->has_tls_reloc = 1;
 	  /* Fall thru */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_PPC64_GOT16:
 	case R_PPC64_GOT16_DS:
 	case R_PPC64_GOT16_HA:
@@ -4481,7 +4480,7 @@ ppc64_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
 	case R_PPC64_REL14_BRNTAKEN:
 	  htab->has_14bit_branch = 1;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_PPC64_REL24:
 	  if (h != NULL)
 	    {
@@ -4613,7 +4612,7 @@ ppc64_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
 		}
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_PPC64_REL30:
 	case R_PPC64_REL32:
 	case R_PPC64_REL64:
@@ -9913,7 +9912,7 @@ ppc64_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_PPC64_REL14_BRTAKEN:
 	  insn = 0x01 << 21; /* 'y' or 't' bit, lowest bit of BO field.  */
 	  /* Fall thru.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	  /* Branch not taken prediction relocations.  */
 	case R_PPC64_ADDR14_BRNTAKEN:
 	case R_PPC64_REL14_BRNTAKEN:
@@ -9922,11 +9921,11 @@ ppc64_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
                                (contents + rel->r_offset))
                     & ~(0x01 << 21)));
 	  /* Fall thru.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_PPC64_REL14:
 	  max_br_offset = 1 << 15;
 	  /* Fall thru.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_PPC64_REL24:
 	  /* Calls to functions with a different TOC, such as calls to
 	     shared objects, need to alter the TOC pointer.  This is
@@ -10437,7 +10436,7 @@ ppc64_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_PPC64_DTPREL64:
 	  addend -= htab->elf.tls_sec->vma + DTP_OFFSET;
 	  /* Fall thru */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	  /* Relocations that may need to be propagated if this is a
 	     dynamic object.  */
 	case R_PPC64_REL30:

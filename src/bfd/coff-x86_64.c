@@ -139,8 +139,8 @@ coff_amd64_reloc (bfd *abfd,
 #endif
 
 #define DOIT(x, t) \
-  x = (t)((x & (t)~howto->dst_mask) \
-	  | (((x & (t)howto->src_mask) + diff) \
+  x = (t)((unsigned long)(x & (t)~howto->dst_mask) \
+	  | (((symvalue)(x & (t)howto->src_mask) + diff) \
 	     & howto->dst_mask))
 
     if (diff != 0)
@@ -160,7 +160,7 @@ coff_amd64_reloc (bfd *abfd,
 
 	  case 1:
 	    {
-	      short x = bfd_get_16(abfd, addr);
+	      short x = (short)bfd_get_16(abfd, addr);
 	      DOIT(x, short);
 	      bfd_put_16(abfd, (bfd_vma)x, addr);
 	    }
@@ -175,7 +175,7 @@ coff_amd64_reloc (bfd *abfd,
 	    break;
 	  case 4:
 	    {
-	      long long x = bfd_get_64(abfd, addr);
+	      long long x = (long long)bfd_get_64(abfd, addr);
 	      DOIT(x, long long);
 	      bfd_put_64(abfd, (bfd_vma)x, addr);
 	    }
@@ -455,7 +455,7 @@ static reloc_howto_type howto_table[] =
 
 /* Turn a howto into a reloc  nunmber */
 
-#define SELECT_RELOC(x,howto) { x.r_type = howto->type; }
+#define SELECT_RELOC(x,howto) { x.r_type = (unsigned short)howto->type; }
 #define I386  1			/* Customize coffcode.h */
 #ifndef AMD64
 # define AMD64 1

@@ -2020,12 +2020,12 @@ mmo_scan(bfd *abfd)
    we point out the shape of allocated section contents.  */
 
 static bfd_boolean
-mmo_new_section_hook (bfd *abfd ATTRIBUTE_UNUSED, asection *newsect)
+mmo_new_section_hook(bfd *abfd, asection *newsect)
 {
   /* We zero-fill all fields and assume NULL is represented by an all
      zero-bit pattern.  */
   newsect->used_by_bfd =
-    bfd_zalloc (abfd, sizeof (struct mmo_section_data_struct));
+    bfd_zalloc(abfd, sizeof(struct mmo_section_data_struct));
 
   if (!newsect->used_by_bfd)
     return FALSE;

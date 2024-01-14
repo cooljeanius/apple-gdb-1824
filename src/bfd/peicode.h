@@ -276,8 +276,7 @@ pe_mkobject(bfd * abfd)
 
 /* Create the COFF backend specific information: */
 static void *
-pe_mkobject_hook(bfd *abfd, void *filehdr,
-		 void *aouthdr ATTRIBUTE_UNUSED)
+pe_mkobject_hook(bfd *abfd, void *filehdr, void *aouthdr)
 {
   struct internal_filehdr *internal_f = (struct internal_filehdr *)filehdr;
   pe_data_type *pe;
@@ -313,15 +312,17 @@ pe_mkobject_hook(bfd *abfd, void *filehdr,
 
 #ifdef COFF_IMAGE_WITH_PE
   if (aouthdr)
-    pe->pe_opthdr = ((struct internal_aouthdr *) aouthdr)->pe;
-#endif
+    pe->pe_opthdr = ((struct internal_aouthdr *)aouthdr)->pe;
+#else
+  (void)aouthdr;
+#endif /* COFF_IMAGE_WITH_PE */
 
-#ifdef ARM
-  if (! _bfd_coff_arm_set_private_flags (abfd, internal_f->f_flags))
-    coff_data (abfd) ->flags = 0;
-#endif
+#if defined(ARM) || defined(__arm__)
+  if (!_bfd_coff_arm_set_private_flags(abfd, internal_f->f_flags))
+    coff_data(abfd)->flags = 0;
+#endif /* ARM || __arm__ */
 
-  return (void *) pe;
+  return (void *)pe;
 }
 
 static bfd_boolean

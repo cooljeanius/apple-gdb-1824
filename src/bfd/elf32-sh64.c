@@ -638,8 +638,7 @@ sh64_find_section_for_address (bfd *abfd ATTRIBUTE_UNUSED,
    executables (final linking and objcopy).  */
 
 static void
-sh64_elf_final_write_processing(bfd *abfd,
-                                bfd_boolean linker ATTRIBUTE_UNUSED)
+sh64_elf_final_write_processing(bfd *abfd, bfd_boolean linker)
 {
   bfd_vma ld_generated_cranges_size;
   asection *cranges

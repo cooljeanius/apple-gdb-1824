@@ -953,6 +953,7 @@ handle_COMDAT(bfd *abfd, flagword sec_flags, void *hdr, const char *name,
 		  continue;
 		}
 	      /* Fall through.  */
+              ATTRIBUTE_FALLTHROUGH;
 	    case 1:
 	      /* MSVC mode: the lexically second symbol (or drop through
 	       * from the above). */
@@ -1652,8 +1653,7 @@ coff_set_alignment_hook(bfd *abfd ATTRIBUTE_UNUSED, asection *section,
     }
 
 static void
-coff_set_alignment_hook(bfd *abfd ATTRIBUTE_UNUSED, asection *section,
-                        void *scnhdr)
+coff_set_alignment_hook(bfd *abfd, asection *section, void *scnhdr)
 {
   struct internal_scnhdr *hdr = (struct internal_scnhdr *)scnhdr;
   bfd_size_type amt;

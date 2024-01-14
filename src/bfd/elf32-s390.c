@@ -345,7 +345,7 @@ elf_s390_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
    and elf32-s390.c has its own copy.  */
 
 static void
-elf_s390_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+elf_s390_info_to_howto(bfd *abfd, arelent *cache_ptr,
 		       Elf_Internal_Rela *dst)
 {
   unsigned int r_type = ELF32_R_TYPE(dst->r_info);
@@ -360,10 +360,10 @@ elf_s390_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
       break;
 
     default:
-      if (r_type >= sizeof (elf_howto_table) / sizeof (elf_howto_table[0]))
+      if (r_type >= sizeof(elf_howto_table) / sizeof(elf_howto_table[0]))
 	{
-	  (*_bfd_error_handler) (_("%B: invalid relocation type %d"),
-				 abfd, (int) r_type);
+	  (*_bfd_error_handler)(_("%B: invalid relocation type %d"),
+                                abfd, (int)r_type);
 	  r_type = R_390_NONE;
 	}
       cache_ptr->howto = &elf_howto_table[r_type];
@@ -1016,6 +1016,7 @@ elf_s390_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 		= (char *) (local_got_refcounts + symtab_hdr->sh_info);
 	    }
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_GOTOFF16:
 	case R_390_GOTOFF32:
 	case R_390_GOTPC:
@@ -2273,12 +2274,12 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	}
       else
 	{
-	  bfd_boolean warned ATTRIBUTE_UNUSED;
+	  bfd_boolean warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 	}
 
       switch (r_type)
@@ -2316,7 +2317,7 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      break;
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_GOT12:
 	case R_390_GOT16:
 	case R_390_GOT20:

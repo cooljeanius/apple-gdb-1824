@@ -511,14 +511,16 @@ etir_sto (bfd * abfd, int cmd, unsigned char *ptr)
    see table B-10 of the openVMS linker manual.  */
 
 static bfd_boolean
-etir_opr (bfd * abfd, int cmd, unsigned char *ptr ATTRIBUTE_UNUSED)
+etir_opr(bfd *abfd, int cmd, unsigned char *ptr)
 {
   long op1, op2;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug(5, "etir_opr %d/%x\n", cmd, cmd);
   _bfd_hexdump(8, ptr, 16, (int)(intptr_t)ptr);
-#endif
+#else
+  (void)ptr;
+#endif /* VMS_DEBUG */
 
   switch (cmd)
     {
@@ -591,7 +593,7 @@ etir_opr (bfd * abfd, int cmd, unsigned char *ptr ATTRIBUTE_UNUSED)
       break;
 
     case ETIR_S_C_OPR_INSV:      /* Insert field.   */
-      (void) _bfd_vms_pop (abfd, NULL);
+      (void)_bfd_vms_pop(abfd, NULL);
     case ETIR_S_C_OPR_USH:       /* Unsigned shift.   */
     case ETIR_S_C_OPR_ROT:       /* Rotate.  */
     case ETIR_S_C_OPR_REDEF:     /* Redefine symbol to current location.  */
@@ -683,12 +685,14 @@ etir_ctl(bfd *abfd, int cmd, unsigned char *ptr)
    See table B-12 and B-13 of the openVMS linker manual.  */
 
 static bfd_boolean
-etir_stc (bfd * abfd, int cmd, unsigned char *ptr ATTRIBUTE_UNUSED)
+etir_stc(bfd *abfd, int cmd, unsigned char *ptr)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug(5, "etir_stc %d/%x\n", cmd, cmd);
   _bfd_hexdump(8, ptr, 16, (int)(intptr_t)ptr);
-#endif
+#else
+  (void)ptr;
+#endif /* VMS_DEBUG */
 
   switch (cmd)
     {
@@ -1836,13 +1840,15 @@ static void sto_imm(bfd *abfd, vms_section *sptr, bfd_vma vaddr, int my_index)
 
 /* Write section contents for bfd abfd: */
 int
-_bfd_vms_write_tir(bfd *abfd, int objtype ATTRIBUTE_UNUSED)
+_bfd_vms_write_tir(bfd *abfd, int objtype)
 {
   asection *section;
   vms_section *sptr;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug(2, "vms_write_tir (%p, %d)\n", (void *)abfd, objtype);
+#else
+  (void)objtype;
 #endif /* VMS_DEBUG */
 
   _bfd_vms_output_alignment(abfd, 4);
@@ -2213,11 +2219,13 @@ _bfd_vms_write_tir(bfd *abfd, int objtype ATTRIBUTE_UNUSED)
 
 /* Write traceback data for bfd abfd.  */
 int
-_bfd_vms_write_tbt(bfd *abfd ATTRIBUTE_UNUSED,
-		   int objtype ATTRIBUTE_UNUSED)
+_bfd_vms_write_tbt(bfd *abfd, int objtype)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug(2, "vms_write_tbt (%p, %d)\n", (void *)abfd, objtype);
+#else
+  (void)abfd;
+  (void)objtype;
 #endif /* VMS_DEBUG */
 
   return 0;
@@ -2225,11 +2233,13 @@ _bfd_vms_write_tbt(bfd *abfd ATTRIBUTE_UNUSED,
 
 /* Write debug info for bfd abfd.  */
 int
-_bfd_vms_write_dbg(bfd *abfd ATTRIBUTE_UNUSED,
-		   int objtype ATTRIBUTE_UNUSED)
+_bfd_vms_write_dbg(bfd *abfd, int objtype)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug(2, "vms_write_dbg (%p, objtype: %d)\n", (void *)abfd, objtype);
+#else
+  (void)abfd;
+  (void)objtype;
 #endif /* VMS_DEBUG */
 
   return 0;

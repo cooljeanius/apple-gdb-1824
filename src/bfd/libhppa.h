@@ -173,10 +173,9 @@ static inline int re_assemble_14 (int) ATTRIBUTE_UNUSED;
 static inline int re_assemble_16 (int) ATTRIBUTE_UNUSED;
 static inline int re_assemble_17 (int) ATTRIBUTE_UNUSED;
 static inline int re_assemble_21 (int) ATTRIBUTE_UNUSED;
-static inline int re_assemble_22 (int) ATTRIBUTE_UNUSED;
+static inline int re_assemble_22 (int);
 static inline bfd_signed_vma hppa_field_adjust
-  (bfd_vma, bfd_signed_vma, enum hppa_reloc_field_selector_type_alt)
-  ATTRIBUTE_UNUSED;
+  (bfd_vma, bfd_signed_vma, enum hppa_reloc_field_selector_type_alt);
 static inline int bfd_hppa_insn2fmt (bfd *, int) ATTRIBUTE_UNUSED;
 static inline int hppa_rebuild_insn (int, int, int) ATTRIBUTE_UNUSED;
 
@@ -529,6 +528,7 @@ bfd_hppa_insn2fmt(bfd *abfd, int insn)
       if ((insn & 0x8000) != 0)
 	return 22;
       /* fall thru */
+      ATTRIBUTE_FALLTHROUGH;
     case OP_BE:
     case OP_BLE:
       return 17;

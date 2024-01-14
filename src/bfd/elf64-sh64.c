@@ -1422,12 +1422,11 @@ sh_elf64_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
    See sh_elf_info_to_howto in elf32-sh.c for the original.  */
 
 static bfd_boolean
-sh_elf64_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
-			   struct bfd_link_info *info, bfd *input_bfd,
-			   asection *input_section, bfd_byte *contents,
-			   Elf_Internal_Rela *relocs,
-			   Elf_Internal_Sym *local_syms,
-			   asection **local_sections)
+sh_elf64_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+			  bfd *input_bfd, asection *input_section,
+                          bfd_byte *contents, Elf_Internal_Rela *relocs,
+                          Elf_Internal_Sym *local_syms,
+                          asection **local_sections)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
@@ -1440,10 +1439,10 @@ sh_elf64_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
   asection *sreloc;
   bfd_vma disp, dropped;
 
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
-  dynobj = elf_hash_table (info)->dynobj;
-  local_got_offsets = elf_local_got_offsets (input_bfd);
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
+  dynobj = elf_hash_table(info)->dynobj;
+  local_got_offsets = elf_local_got_offsets(input_bfd);
 
   sgot = NULL;
   sgotplt = NULL;
@@ -1451,7 +1450,7 @@ sh_elf64_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
   sreloc = NULL;
 
   rel = relocs;
-  relend = relocs + input_section->reloc_count;
+  relend = (relocs + input_section->reloc_count);
   for (; rel < relend; rel++)
     {
       int r_type;
@@ -1461,7 +1460,7 @@ sh_elf64_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
       asection *sec;
       struct elf_link_hash_entry *h;
       bfd_vma relocation;
-      bfd_vma addend = (bfd_vma)0;
+      bfd_vma addend = (bfd_vma)0UL;
       bfd_reloc_status_type r;
       int seen_stt_datalabel = 0;
 
@@ -1519,15 +1518,15 @@ sh_elf64_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 		 anything, unless the reloc is against a section symbol,
 		 in which case we have to adjust according to where the
 		 section symbol winds up in the output section.  */
-	      sym = local_syms + r_symndx;
-	      if (ELF_ST_TYPE (sym->st_info) == STT_SECTION)
+	      sym = (local_syms + r_symndx);
+	      if (ELF_ST_TYPE(sym->st_info) == STT_SECTION)
 		goto final_link_relocate;
 
 	      continue;
 	    }
 	  else if (! howto->partial_inplace)
 	    {
-	      relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	      relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 	      relocation |= ((sym->st_other & STO_SH5_ISA32) != 0);
 	    }
 	  else if ((sec->flags & SEC_MERGE)
@@ -2051,6 +2050,7 @@ sh_elf64_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 	case R_SH_IMM_HI16_PCREL:
 	  addend = rel->r_addend;
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case R_SH_REL32:
 	final_link_relocate:
 	  r = _bfd_final_link_relocate (howto, input_bfd, input_section,

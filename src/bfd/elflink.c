@@ -380,7 +380,7 @@ bfd_elf_link_record_dynamic_symbol (struct bfd_link_info *info,
 	 internal symbols into STB_LOCAL symbols when producing the
 	 DSO. However, if ld.so honors st_other in the dynamic table,
 	 this would not be necessary.  */
-      switch (ELF_ST_VISIBILITY (h->other))
+      switch (ELF_ST_VISIBILITY(h->other))
 	{
 	case STV_INTERNAL:
 	case STV_HIDDEN:
@@ -396,14 +396,14 @@ bfd_elf_link_record_dynamic_symbol (struct bfd_link_info *info,
 	  break;
 	}
 
-      h->dynindx = elf_hash_table (info)->dynsymcount;
-      ++elf_hash_table (info)->dynsymcount;
+      h->dynindx = elf_hash_table(info)->dynsymcount;
+      ++elf_hash_table(info)->dynsymcount;
 
-      dynstr = elf_hash_table (info)->dynstr;
+      dynstr = elf_hash_table(info)->dynstr;
       if (dynstr == NULL)
 	{
-	  /* Create a strtab to hold the dynamic symbol names.  */
-	  elf_hash_table (info)->dynstr = dynstr = _bfd_elf_strtab_init ();
+	  /* Create a strtab to hold the dynamic symbol names: */
+	  elf_hash_table(info)->dynstr = dynstr = _bfd_elf_strtab_init();
 	  if (dynstr == NULL)
 	    return FALSE;
 	}
@@ -411,7 +411,7 @@ bfd_elf_link_record_dynamic_symbol (struct bfd_link_info *info,
       /* We don't put any version information in the dynamic string
 	 table.  */
       name = h->root.root.string;
-      p = strchr (name, ELF_VER_CHR);
+      p = strchr(name, ELF_VER_CHR);
       if (p != NULL)
 	/* We know that the p points into writable memory.  In fact,
 	   there are only a few symbols that have read-only names, being
@@ -2653,18 +2653,17 @@ _bfd_elf_tls_setup (bfd *obfd, struct bfd_link_info *info)
 
 /* Return TRUE iff this is a non-common, definition of a non-function symbol.  */
 static bfd_boolean
-is_global_data_symbol_definition (bfd *abfd ATTRIBUTE_UNUSED,
-				  Elf_Internal_Sym *sym)
+is_global_data_symbol_definition(bfd *abfd, Elf_Internal_Sym *sym)
 {
   const struct elf_backend_data *bed;
 
   /* Local symbols do not count, but target specific ones might.  */
-  if (ELF_ST_BIND (sym->st_info) != STB_GLOBAL
-      && ELF_ST_BIND (sym->st_info) < STB_LOOS)
+  if ((ELF_ST_BIND(sym->st_info) != STB_GLOBAL)
+      && (ELF_ST_BIND(sym->st_info) < STB_LOOS))
     return FALSE;
 
   /* Function symbols do not count.  */
-  if (ELF_ST_TYPE (sym->st_info) == STT_FUNC)
+  if (ELF_ST_TYPE(sym->st_info) == STT_FUNC)
     return FALSE;
 
   /* If the section is undefined, then so is the symbol.  */
@@ -2673,16 +2672,16 @@ is_global_data_symbol_definition (bfd *abfd ATTRIBUTE_UNUSED,
 
   /* If the symbol is defined in the common section, then
      it is a common definition and so does not count.  */
-  bed = get_elf_backend_data (abfd);
-  if (bed->common_definition (sym))
+  bed = get_elf_backend_data(abfd);
+  if (bed->common_definition(sym))
     return FALSE;
 
   /* If the symbol is in a target specific section then we
      must rely upon the backend to tell us what it is.  */
-  if (sym->st_shndx >= SHN_LORESERVE && sym->st_shndx < SHN_ABS)
-    /* FIXME - this function is not coded yet:
+  if ((sym->st_shndx >= SHN_LORESERVE) && (sym->st_shndx < SHN_ABS))
+    /* FIXME: this function is not coded yet:
 
-       return _bfd_is_global_symbol_definition (abfd, sym);
+       return _bfd_is_global_symbol_definition(abfd, sym);
 
        Instead for now assume that the definition is not global,
        Even if this is wrong, at least the linker will behave
@@ -9294,10 +9293,8 @@ bfd_elf_gc_record_vtinherit (bfd *abfd,
 /* Called from check_relocs to record the existence of a VTENTRY reloc.  */
 
 bfd_boolean
-bfd_elf_gc_record_vtentry(bfd *abfd ATTRIBUTE_UNUSED,
-			  asection *sec ATTRIBUTE_UNUSED,
-			  struct elf_link_hash_entry *h,
-			  bfd_vma addend)
+bfd_elf_gc_record_vtentry(bfd *abfd, asection *sec ATTRIBUTE_UNUSED,
+			  struct elf_link_hash_entry *h, bfd_vma addend)
 {
   const struct elf_backend_data *bed = get_elf_backend_data(abfd);
   unsigned int log_file_align = bed->s->log_file_align;

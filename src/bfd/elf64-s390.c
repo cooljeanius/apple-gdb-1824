@@ -367,8 +367,7 @@ elf_s390_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
    and elf64-s390.c has its own copy.  */
 
 static void
-elf_s390_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
-                       Elf_Internal_Rela *dst)
+elf_s390_info_to_howto(bfd *abfd, arelent *cache_ptr, Elf_Internal_Rela *dst)
 {
   unsigned int r_type = (unsigned int)ELF64_R_TYPE(dst->r_info);
   switch (r_type)
@@ -972,6 +971,7 @@ elf_s390_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 		= (char *) (local_got_refcounts + symtab_hdr->sh_info);
 	    }
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_GOTOFF16:
 	case R_390_GOTOFF32:
 	case R_390_GOTOFF64:
@@ -984,6 +984,7 @@ elf_s390_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	      if (!create_got_section (htab->elf.dynobj, info))
 		return FALSE;
 	    }
+     	  ATTRIBUTE_FALLTHROUGH;
         default:;
 	}
 
@@ -1056,7 +1057,7 @@ elf_s390_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	  if (info->shared)
 	    info->flags |= DF_STATIC_TLS;
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_GOT12:
 	case R_390_GOT16:
 	case R_390_GOT20:
@@ -1125,13 +1126,13 @@ elf_s390_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	  if (r_type != R_390_TLS_IE64)
 	    break;
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_TLS_LE64:
 	  if (!info->shared)
 	    break;
 	  info->flags |= DF_STATIC_TLS;
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_8:
 	case R_390_16:
 	case R_390_32:
@@ -1449,7 +1450,7 @@ elf_s390_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	  if (info->shared)
 	    break;
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_PLT16DBL:
 	case R_390_PLT32:
 	case R_390_PLT32DBL:
@@ -2244,12 +2245,12 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	}
       else
 	{
-	  bfd_boolean warned ATTRIBUTE_UNUSED;
+	  bfd_boolean warned;
 
-	  RELOC_FOR_GLOBAL_SYMBOL (info, input_bfd, input_section, rel,
-				   r_symndx, symtab_hdr, sym_hashes,
-				   h, sec, relocation,
-				   unresolved_reloc, warned);
+	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
+				  r_symndx, symtab_hdr, sym_hashes,
+				  h, sec, relocation,
+				  unresolved_reloc, warned);
 	}
 
       switch (r_type)
@@ -2288,7 +2289,7 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      break;
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_GOT12:
 	case R_390_GOT16:
 	case R_390_GOT20:
@@ -2619,7 +2620,7 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      bfd_elf64_swap_reloc_out (output_bfd, &outrel, loc);
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_TLS_GD64:
 	case R_390_TLS_GOTIE64:
 	  r_type = elf_s390_tls_transition (info, r_type, h == NULL);

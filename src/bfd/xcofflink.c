@@ -2362,6 +2362,7 @@ xcoff_mark (struct bfd_link_info *info, asection *sec)
 				      & XCOFF_DEF_REGULAR) == 0))))
 		    break;
 		  /* Fall through.  */
+                  ATTRIBUTE_FALLTHROUGH;
 		case R_POS:
 		case R_NEG:
 		case R_RL:

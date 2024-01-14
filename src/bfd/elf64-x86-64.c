@@ -706,7 +706,7 @@ elf64_x86_64_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	  if (info->shared)
 	    info->flags |= DF_STATIC_TLS;
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_X86_64_GOT32:
 	case R_X86_64_GOTPCREL:
 	case R_X86_64_TLSGD:
@@ -770,13 +770,13 @@ elf64_x86_64_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	    if (old_tls_type != tls_type)
 	      {
 		if (h != NULL)
-		  elf64_x86_64_hash_entry (h)->tls_type = tls_type;
+		  elf64_x86_64_hash_entry(h)->tls_type = tls_type;
 		else
-		  elf64_x86_64_local_got_tls_type (abfd) [r_symndx] = tls_type;
+		  elf64_x86_64_local_got_tls_type(abfd)[r_symndx] = tls_type;
 	      }
 	  }
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_X86_64_GOTOFF64:
 	case R_X86_64_GOTPC32:
 	create_got:
@@ -784,7 +784,7 @@ elf64_x86_64_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	    {
 	      if (htab->elf.dynobj == NULL)
 		htab->elf.dynobj = abfd;
-	      if (!create_got_section (htab->elf.dynobj, info))
+	      if (!create_got_section(htab->elf.dynobj, info))
 		return FALSE;
 	    }
 	  break;
@@ -827,7 +827,7 @@ elf64_x86_64_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	      return FALSE;
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_X86_64_PC8:
 	case R_X86_64_PC16:
 	case R_X86_64_PC32:
@@ -1128,7 +1128,7 @@ elf64_x86_64_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info,
 	  if (info->shared)
 	    break;
 	  /* Fall thru */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_X86_64_PLT32:
 	  if (h != NULL)
 	    {
@@ -2067,7 +2067,7 @@ elf64_x86_64_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      return FALSE;
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_X86_64_8:
 	case R_X86_64_16:
 	case R_X86_64_32:

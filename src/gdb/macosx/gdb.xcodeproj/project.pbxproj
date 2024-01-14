@@ -15409,6 +15409,7 @@
 					"-Wswitch-default",
 					"-Wwrite-strings",
 					"-Wused-but-marked-unused",
+					"-Wimplicit-fallthrough",
 				);
 			};
 			name = Debug;

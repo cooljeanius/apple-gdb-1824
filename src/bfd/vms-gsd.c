@@ -424,9 +424,10 @@ _bfd_vms_slurp_gsd(bfd * abfd, int objtype)
 	case GSD_S_C_EPM:
 	case GSD_S_C_EPMW:
 #if defined(VMS_DEBUG) && VMS_DEBUG
-	  vms_debug (4, "gsd epm\n");
-#endif
+	  vms_debug(4, "gsd epm\n");
+#endif /* VMS_DEBUG */
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case GSD_S_C_SYM:
 	case GSD_S_C_SYMW:
 	  {
@@ -697,7 +698,7 @@ _bfd_vms_slurp_gsd(bfd * abfd, int objtype)
 /* Write section and symbol directory of bfd abfd.  */
 
 int
-_bfd_vms_write_gsd (bfd *abfd, int objtype ATTRIBUTE_UNUSED)
+_bfd_vms_write_gsd (bfd *abfd, int objtype)
 {
   asection *section;
   asymbol *symbol;
@@ -709,27 +710,30 @@ _bfd_vms_write_gsd (bfd *abfd, int objtype ATTRIBUTE_UNUSED)
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(2, "vms_write_gsd (%p, %d)\n", (void *)abfd, objtype);
-#endif
+#else
+  (void)objtype;
+#endif /* VMS_DEBUG */
 
   /* Output sections.  */
   section = abfd->sections;
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  vms_debug (3, "%d sections found\n", abfd->section_count);
-#endif
+  vms_debug(3, "%d sections found\n", abfd->section_count);
+#endif /* VMS_DEBUG */
 
   /* Egsd is quadword aligned.  */
-  _bfd_vms_output_alignment (abfd, 8);
+  _bfd_vms_output_alignment(abfd, 8);
 
-  _bfd_vms_output_begin (abfd, EOBJ_S_C_EGSD, -1);
-  _bfd_vms_output_long (abfd, 0);
+  _bfd_vms_output_begin(abfd, EOBJ_S_C_EGSD, -1);
+  _bfd_vms_output_long(abfd, 0);
   /* Prepare output for subrecords.  */
-  _bfd_vms_output_push (abfd);
+  _bfd_vms_output_push(abfd);
 
   while (section != 0)
     {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-      vms_debug (3, "Section #%d %s, %d bytes\n", section->index, section->name, (int)section->size);
-#endif
+      vms_debug(3, "Section #%d %s, %d bytes\n", section->index, section->name,
+      		(int)section->size);
+#endif /* VMS_DEBUG */
 
       /* 13 bytes egsd, max 31 chars name -> should be 44 bytes.  */
       if (_bfd_vms_output_check (abfd, 64) < 0)

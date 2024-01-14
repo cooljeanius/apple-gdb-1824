@@ -455,11 +455,13 @@ vms_close_and_cleanup(bfd *abfd)
 /* Ask the BFD to free all cached information.  */
 
 static bfd_boolean
-vms_bfd_free_cached_info(bfd *abfd ATTRIBUTE_UNUSED)
+vms_bfd_free_cached_info(bfd *abfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_free_cached_info (%p)\n", (void *)abfd);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
   return TRUE;
 }
 
@@ -504,16 +506,19 @@ vms_new_section_hook (bfd * abfd, asection *section)
    section data (starting at offset into section)  */
 
 static bfd_boolean
-vms_get_section_contents (bfd * abfd ATTRIBUTE_UNUSED,
-			  asection *section ATTRIBUTE_UNUSED,
-			  void * buf ATTRIBUTE_UNUSED,
-			  file_ptr offset ATTRIBUTE_UNUSED,
-			  bfd_size_type buf_size ATTRIBUTE_UNUSED)
+vms_get_section_contents(bfd *abfd, asection *section, void *buf,
+			 file_ptr offset, bfd_size_type buf_size)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_get_section_contents (%p, %s, %p, off %ld, size %d)\n",
 	    (void *)abfd, section->name, buf, (long)offset, (int)buf_size);
-#endif
+#else
+  (void)abfd;
+  (void)section;
+  (void)buf;
+  (void)offset;
+  (void)buf_size;
+#endif /* VMS_DEBUG */
 
   /* Shouldn't be called, since all sections are IN_MEMORY.  */
   return FALSE;
@@ -524,16 +529,18 @@ vms_get_section_contents (bfd * abfd ATTRIBUTE_UNUSED,
    section data (starting at offset into section).  */
 
 static bfd_boolean
-vms_get_section_contents_in_window (bfd * abfd ATTRIBUTE_UNUSED,
-				    asection *section ATTRIBUTE_UNUSED,
-				    bfd_window *w ATTRIBUTE_UNUSED,
-				    file_ptr offset ATTRIBUTE_UNUSED,
-				    bfd_size_type count ATTRIBUTE_UNUSED)
+vms_get_section_contents_in_window(bfd *abfd, asection *section, bfd_window *w,
+				   file_ptr offset, bfd_size_type count)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_get_section_contents_in_window (%p, %s, %p, off %ld, count %d)\n",
 	    (void *)abfd, section->name, (void *)w, (long)offset, (int)count);
-#endif
+#else
+  (void)bfd;
+  (void)w;
+  (void)offset;
+  (void)count;
+#endif /* VMS_DEBUG */
 
   /* Shouldn't be called, since all sections are IN_MEMORY.  */
   return FALSE;
@@ -545,13 +552,15 @@ vms_get_section_contents_in_window (bfd * abfd ATTRIBUTE_UNUSED,
    to another.  */
 
 static bfd_boolean
-vms_bfd_copy_private_bfd_data (bfd *src ATTRIBUTE_UNUSED,
-			       bfd *dest ATTRIBUTE_UNUSED)
+vms_bfd_copy_private_bfd_data(bfd *src, bfd *dest)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_copy_private_bfd_data (%p, %p)\n", (void *)src,
 	    (void *)dest);
-#endif
+#else
+  (void)src;
+  (void)dest;
+#endif /* VMS_DEBUG */
   return TRUE;
 }
 
@@ -563,13 +572,15 @@ vms_bfd_copy_private_bfd_data (bfd *src ATTRIBUTE_UNUSED,
      Not enough memory exists to create private data for @var{obfd}.  */
 
 static bfd_boolean
-vms_bfd_merge_private_bfd_data (bfd * ibfd ATTRIBUTE_UNUSED,
-				bfd * obfd ATTRIBUTE_UNUSED)
+vms_bfd_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1,"vms_bfd_merge_private_bfd_data (%p, %p)\n", (void *)ibfd,
 	    (void *)obfd);
-#endif
+#else
+  (void)ibfd;
+  (void)obfd;
+#endif /* VMS_DEBUG */
   return TRUE;
 }
 
@@ -581,13 +592,15 @@ vms_bfd_merge_private_bfd_data (bfd * ibfd ATTRIBUTE_UNUSED,
      Not enough memory exists to create private data for @var{obfd}.  */
 
 static bfd_boolean
-vms_bfd_set_private_flags (bfd * abfd ATTRIBUTE_UNUSED,
-			   flagword flags ATTRIBUTE_UNUSED)
+vms_bfd_set_private_flags(bfd *abfd, flagword flags)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_set_private_flags (%p, %lx)\n", (void *)abfd,
 	    (long)flags);
-#endif
+#else
+  (void)abfd;
+  (void)flags;
+#endif /* VMS_DEBUG */
   return TRUE;
 }
 
@@ -595,15 +608,18 @@ vms_bfd_set_private_flags (bfd * abfd ATTRIBUTE_UNUSED,
    to another.  */
 
 static bfd_boolean
-vms_bfd_copy_private_section_data (bfd *srcbfd ATTRIBUTE_UNUSED,
-				   asection *srcsec ATTRIBUTE_UNUSED,
-				   bfd *dstbfd ATTRIBUTE_UNUSED,
-				   asection *dstsec ATTRIBUTE_UNUSED)
+vms_bfd_copy_private_section_data(bfd *srcbfd, asection *srcsec,
+				  bfd *dstbfd, asection *dstsec)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_copy_private_section_data (%p, %s, %p, %s)\n",
 	    (void *)srcbfd, srcsec->name, (void *)dstbfd, dstsec->name);
-#endif
+#else
+  (void)srcbfd;
+  (void)srcsec;
+  (void)dstbfd;
+  (void)dstsec;
+#endif /* VMS_DEBUG */
   return TRUE;
 }
 
@@ -611,15 +627,18 @@ vms_bfd_copy_private_section_data (bfd *srcbfd ATTRIBUTE_UNUSED,
    to another.  */
 
 static bfd_boolean
-vms_bfd_copy_private_symbol_data (bfd *ibfd ATTRIBUTE_UNUSED,
-				  asymbol *isym ATTRIBUTE_UNUSED,
-				  bfd *obfd ATTRIBUTE_UNUSED,
-				  asymbol *osym ATTRIBUTE_UNUSED)
+vms_bfd_copy_private_symbol_data(bfd *ibfd, asymbol *isym, bfd *obfd,
+				 asymbol *osym)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_copy_private_symbol_data (%p, %s, %p, %s)\n",
 	    (void *)ibfd, isym->name, (void *)obfd, osym->name);
-#endif
+#else
+  (void)ibfd;
+  (void)isym;
+  (void)obfd;
+  (void)osym;
+#endif /* VMS_DEBUG */
   return TRUE;
 }
 
@@ -629,11 +648,13 @@ vms_bfd_copy_private_symbol_data (bfd *ibfd ATTRIBUTE_UNUSED,
    when it failed and produced the core file abfd.  */
 
 static char *
-vms_core_file_failing_command (bfd * abfd ATTRIBUTE_UNUSED)
+vms_core_file_failing_command(bfd *abfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_core_file_failing_command (%p)\n", (void *)abfd);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
   return NULL;
 }
 
@@ -641,11 +662,13 @@ vms_core_file_failing_command (bfd * abfd ATTRIBUTE_UNUSED)
    generated the file the BFD abfd is attached to.  */
 
 static int
-vms_core_file_failing_signal (bfd * abfd ATTRIBUTE_UNUSED)
+vms_core_file_failing_signal(bfd *abfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_core_file_failing_signal (%p)\n", (void *)abfd);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
   return 0;
 }
 
@@ -653,27 +676,31 @@ vms_core_file_failing_signal (bfd * abfd ATTRIBUTE_UNUSED)
    by a run of the executable file attached to exec_bfd, FALSE otherwise.  */
 
 static bfd_boolean
-vms_core_file_matches_executable_p (bfd * abfd ATTRIBUTE_UNUSED,
-				    bfd *bbfd ATTRIBUTE_UNUSED)
+vms_core_file_matches_executable_p(bfd *abfd, bfd *bbfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_core_file_matches_executable_p (%p, %p)\n", (void *)abfd,
 	    (void *)bbfd);
-#endif
+#else
+  (void)abfd;
+  (void)bbfd;
+#endif /* VMS_DEBUG */
   return FALSE;
 }
 
 /* Part 4.4, archive.  */
 
-/* ???	do something with an archive map.
+/* ???: do something with an archive map.
    Return FALSE on error, TRUE otherwise.  */
 
 static bfd_boolean
-vms_slurp_armap (bfd * abfd ATTRIBUTE_UNUSED)
+vms_slurp_armap(bfd *abfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_slurp_armap (%p)\n", (void *)abfd);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
   return FALSE;
 }
 
@@ -681,11 +708,13 @@ vms_slurp_armap (bfd * abfd ATTRIBUTE_UNUSED)
    Return FALSE on error, TRUE otherwise.  */
 
 static bfd_boolean
-vms_slurp_extended_name_table (bfd * abfd ATTRIBUTE_UNUSED)
+vms_slurp_extended_name_table(bfd *abfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_slurp_extended_name_table (%p)\n", (void *)abfd);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
   return FALSE;
 }
 
@@ -693,55 +722,63 @@ vms_slurp_extended_name_table (bfd * abfd ATTRIBUTE_UNUSED)
    Return FALSE on error, TRUE otherwise.  */
 
 static bfd_boolean
-vms_construct_extended_name_table (bfd * abfd ATTRIBUTE_UNUSED,
-				   char **tabloc ATTRIBUTE_UNUSED,
-				   bfd_size_type *tablen ATTRIBUTE_UNUSED,
-				   const char **name ATTRIBUTE_UNUSED)
+vms_construct_extended_name_table(bfd *abfd, char **tabloc ATTRIBUTE_UNUSED,
+				  bfd_size_type *tablen ATTRIBUTE_UNUSED,
+				  const char **name ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_construct_extended_name_table (%p)\n", (void *)abfd);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
   return FALSE;
 }
 
 /* Truncate the name of an archive to match system-dependent restrictions.  */
 
 static void
-vms_truncate_arname (bfd * abfd ATTRIBUTE_UNUSED,
-		     const char *pathname ATTRIBUTE_UNUSED,
-		     char *arhdr ATTRIBUTE_UNUSED)
+vms_truncate_arname(bfd *abfd, const char *pathname, char *arhdr)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_truncate_arname (%p, %s, %s)\n", (void *)abfd, pathname,
 	    arhdr);
-#endif
+#else
+  (void)abfd;
+  (void)pathname;
+  (void)arhdr;
+#endif /* VMS_DEBUG */
   return;
 }
 
-/* ???	write archive map.  */
+/* ???: write archive map.  */
 
 static bfd_boolean
-vms_write_armap (bfd *arch ATTRIBUTE_UNUSED,
-		 unsigned int elength ATTRIBUTE_UNUSED,
-		 struct orl *map ATTRIBUTE_UNUSED,
-		 unsigned int orl_count ATTRIBUTE_UNUSED,
-		 int stridx ATTRIBUTE_UNUSED)
+vms_write_armap(bfd *arch, unsigned int elength, struct orl *map,
+                unsigned int orl_count, int stridx)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_write_armap (%p, %d, %p, %d %d)\n",
 	    (void *)arch, elength, (void *)map, orl_count, stridx);
-#endif
+#else
+  (void)arch;
+  (void)elength;
+  (void)map;
+  (void)orl_count;
+  (void)stridx;
+#endif /* VMS_DEBUG */
   return TRUE;
 }
 
 /* Read archive header ???  */
 
 static void *
-vms_read_ar_hdr (bfd * abfd ATTRIBUTE_UNUSED)
+vms_read_ar_hdr(bfd *abfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_read_ar_hdr (%p)\n", (void *)abfd);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
   return NULL;
 }
 
@@ -752,13 +789,15 @@ vms_read_ar_hdr (bfd * abfd ATTRIBUTE_UNUSED)
    NULL is returned when there are no more.  */
 
 static bfd *
-vms_openr_next_archived_file (bfd *arch ATTRIBUTE_UNUSED,
-			      bfd *prev ATTRIBUTE_UNUSED)
+vms_openr_next_archived_file(bfd *arch, bfd *prev)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_openr_next_archived_file (%p, %p)\n", (void *)arch,
 	    (void *)prev);
-#endif
+#else
+  (void)arch;
+  (void)prev;
+#endif /* VMS_DEBUG */
   return NULL;
 }
 
@@ -766,7 +805,7 @@ vms_openr_next_archived_file (bfd *arch ATTRIBUTE_UNUSED,
    INDEX.  INDEX should have been returned by bfd_get_next_mapent.  */
 
 static bfd *
-vms_get_elt_at_index(bfd * abfd, symindex local_index)
+vms_get_elt_at_index(bfd *abfd, symindex local_index)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_get_elt_at_index (%p, %p)\n", (void *)abfd,
@@ -775,7 +814,7 @@ vms_get_elt_at_index(bfd * abfd, symindex local_index)
   return _bfd_generic_get_elt_at_index(abfd, local_index);
 }
 
-/* ???
+/* ???: ?
    -> bfd_generic_stat_arch_elt.  */
 
 static int
@@ -791,11 +830,13 @@ vms_generic_stat_arch_elt (bfd * abfd, struct stat *st)
 /* This is a new function in bfd 2.5.  */
 
 static bfd_boolean
-vms_update_armap_timestamp (bfd * abfd ATTRIBUTE_UNUSED)
+vms_update_armap_timestamp(bfd *abfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_update_armap_timestamp (%p)\n", (void *)abfd);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
   return TRUE;
 }
 
@@ -807,7 +848,7 @@ vms_update_armap_timestamp (bfd * abfd ATTRIBUTE_UNUSED)
    then return 0.  If an error occurs, return -1.  */
 
 static long
-vms_get_symtab_upper_bound (bfd * abfd)
+vms_get_symtab_upper_bound(bfd *abfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_get_symtab_upper_bound (%p), %d symbols\n", (void *)abfd,
@@ -907,16 +948,16 @@ vms_print_symbol(bfd * abfd, void * file, asymbol *symbol,
 	-	debug.  */
 
 static void
-vms_get_symbol_info (bfd * abfd ATTRIBUTE_UNUSED,
-		     asymbol *symbol,
-		     symbol_info *ret)
+vms_get_symbol_info(bfd *abfd, asymbol *symbol, symbol_info *ret)
 {
   asection *sec;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_get_symbol_info (%p, %p, %p)\n", (void *)abfd,
 	    (void *)symbol, (void *)ret);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
 
   sec = symbol->section;
 
@@ -951,24 +992,27 @@ vms_get_symbol_info (bfd * abfd ATTRIBUTE_UNUSED,
    a compiler generated local label, else return FALSE.  */
 
 static bfd_boolean
-vms_bfd_is_local_label_name (bfd * abfd ATTRIBUTE_UNUSED,
-			     const char *name)
+vms_bfd_is_local_label_name(bfd *abfd, const char *name)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_is_local_label_name (%p, %s)\n", (void *)abfd, name);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
   return name[0] == '$';
 }
 
 /* Get source line number for symbol.  */
 
 static alent *
-vms_get_lineno (bfd * abfd ATTRIBUTE_UNUSED,
-		asymbol *symbol ATTRIBUTE_UNUSED)
+vms_get_lineno(bfd *abfd, asymbol *symbol)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_get_lineno (%p, %p)\n", (void *)abfd, (void *)symbol);
-#endif
+#else
+  (void)abfd;
+  (void)symbol;
+#endif /* VMS_DEBUG */
   return NULL;
 }
 
@@ -977,31 +1021,34 @@ vms_get_lineno (bfd * abfd ATTRIBUTE_UNUSED,
    location.  */
 
 static bfd_boolean
-vms_find_nearest_line (bfd * abfd ATTRIBUTE_UNUSED,
-		       asection *section ATTRIBUTE_UNUSED,
-		       asymbol **symbols ATTRIBUTE_UNUSED,
-		       bfd_vma offset ATTRIBUTE_UNUSED,
-		       const char **file ATTRIBUTE_UNUSED,
-		       const char **func ATTRIBUTE_UNUSED,
-		       unsigned int *line ATTRIBUTE_UNUSED)
+vms_find_nearest_line(bfd *abfd, asection *section, asymbol **symbols,
+		      bfd_vma offset, const char **file ATTRIBUTE_UNUSED,
+		      const char **func ATTRIBUTE_UNUSED,
+		      unsigned int *line ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_find_nearest_line (%p, %s, %p, %ld, <ret>, <ret>, <ret>)\n",
 	    (void *)abfd, section->name, (void *)symbols, (long int)offset);
-#endif
+#else
+  (void)abfd;
+  (void)section;
+  (void)symbols;
+  (void)offset;
+#endif /* VMS_DEBUG */
   return FALSE;
 }
 
 static bfd_boolean
-vms_find_inliner_info (bfd * abfd ATTRIBUTE_UNUSED,
-		       const char **file ATTRIBUTE_UNUSED,
-		       const char **func ATTRIBUTE_UNUSED,
-		       unsigned int *line ATTRIBUTE_UNUSED)
+vms_find_inliner_info(bfd *abfd, const char **file ATTRIBUTE_UNUSED,
+		      const char **func ATTRIBUTE_UNUSED,
+		      unsigned int *line ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_find_inliner_info (%p, <ret>, <ret>, <ret>)\n",
 	    (void *)abfd);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
   return FALSE;
 }
 
@@ -1010,14 +1057,16 @@ vms_find_inliner_info (bfd * abfd ATTRIBUTE_UNUSED,
    when creating COFF files.  */
 
 static asymbol *
-vms_bfd_make_debug_symbol (bfd * abfd ATTRIBUTE_UNUSED,
-			   void *ptr ATTRIBUTE_UNUSED,
-			   unsigned long size ATTRIBUTE_UNUSED)
+vms_bfd_make_debug_symbol(bfd *abfd, void *ptr, unsigned long size)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_make_debug_symbol (%p, %p, %ld)\n", (void *)abfd, ptr,
 	    size);
-#endif
+#else
+  (void)abfd;
+  (void)ptr;
+  (void)size;
+#endif /* VMS_DEBUG */
   return NULL;
 }
 
@@ -1032,8 +1081,8 @@ vms_read_minisymbols(bfd *abfd, bfd_boolean dynamic, void **minisymsp,
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_read_minisymbols (%p, %d, %p, %d)\n", (void *)abfd, dynamic,
 	    *minisymsp, *sizep);
-#endif
-  return _bfd_generic_read_minisymbols (abfd, dynamic, minisymsp, sizep);
+#endif /* VMS_DEBUG */
+  return _bfd_generic_read_minisymbols(abfd, dynamic, minisymsp, sizep);
 }
 
 /* Convert a minisymbol to a BFD asymbol.  A minisymbol is just an

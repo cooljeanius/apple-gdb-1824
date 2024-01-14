@@ -82,10 +82,11 @@ tic30_coff_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
 static int
 coff_tic30_select_reloc(reloc_howto_type *howto)
 {
-  return howto->type;
+  return (int)howto->type;
 }
 
-#define SELECT_RELOC(x,howto) x.r_type = coff_tic30_select_reloc(howto)
+#define SELECT_RELOC(x,howto) \
+  { x.r_type = (unsigned short)coff_tic30_select_reloc(howto); }
 
 #define BADMAG(x) TIC30BADMAG(x)
 #define TIC30 1			/* Customize coffcode.h */

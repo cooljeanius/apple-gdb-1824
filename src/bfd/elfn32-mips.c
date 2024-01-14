@@ -1727,10 +1727,9 @@ mips_elf_final_gp(bfd *output_bfd, asymbol *symbol, bfd_boolean relocatable,
    become the offset from the gp register.  */
 
 static bfd_reloc_status_type
-mips_elf_gprel16_reloc (bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
-			asymbol *symbol, void *data ATTRIBUTE_UNUSED,
-			asection *input_section, bfd *output_bfd,
-			const char **error_message)
+mips_elf_gprel16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                       void *data, asection *input_section, bfd *output_bfd,
+                       const char **error_message)
 {
   bfd_boolean relocatable;
   bfd_reloc_status_type ret;
@@ -1749,17 +1748,17 @@ mips_elf_gprel16_reloc (bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
   if (ret != bfd_reloc_ok)
     return ret;
 
-  return _bfd_mips_elf_gprel16_with_gp (abfd, symbol, reloc_entry,
-					input_section, relocatable,
-					data, gp);
+  return _bfd_mips_elf_gprel16_with_gp(abfd, symbol, reloc_entry,
+                                       input_section, relocatable,
+                                       data, gp);
 }
 
 /* Do a R_MIPS_LITERAL relocation.  */
 
 static bfd_reloc_status_type
-mips_elf_literal_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
-			void *data, asection *input_section, bfd *output_bfd,
-			const char **error_message)
+mips_elf_literal_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                       void *data, asection *input_section, bfd *output_bfd,
+                       const char **error_message)
 {
   bfd_boolean relocatable;
   bfd_reloc_status_type ret;
@@ -2129,13 +2128,13 @@ mips_info_to_howto_rel (bfd *abfd, arelent *cache_ptr, Elf_Internal_Rela *dst)
 /* Given a MIPS Elf_Internal_Rela, fill in an arelent structure.  */
 
 static void
-mips_info_to_howto_rela (bfd *abfd ATTRIBUTE_UNUSED,
-			 arelent *cache_ptr, Elf_Internal_Rela *dst)
+mips_info_to_howto_rela(bfd *abfd ATTRIBUTE_UNUSED,
+                        arelent *cache_ptr, Elf_Internal_Rela *dst)
 {
   unsigned int r_type;
 
-  r_type = ELF32_R_TYPE (dst->r_info);
-  cache_ptr->howto = mips_elf_n32_rtype_to_howto (r_type, TRUE);
+  r_type = ELF32_R_TYPE(dst->r_info);
+  cache_ptr->howto = mips_elf_n32_rtype_to_howto(r_type, TRUE);
   cache_ptr->addend = dst->r_addend;
 }
 
@@ -2146,14 +2145,14 @@ mips_info_to_howto_rela (bfd *abfd ATTRIBUTE_UNUSED,
    and externally visible symbols.  */
 
 static bfd_boolean
-mips_elf_sym_is_global (bfd *abfd ATTRIBUTE_UNUSED, asymbol *sym)
+mips_elf_sym_is_global(bfd *abfd, asymbol *sym)
 {
-  if (SGI_COMPAT (abfd))
-    return (sym->flags & BSF_SECTION_SYM) == 0;
+  if (SGI_COMPAT(abfd))
+    return ((sym->flags & BSF_SECTION_SYM) == 0);
   else
-    return ((sym->flags & (BSF_GLOBAL | BSF_WEAK)) != 0
-	    || bfd_is_und_section (bfd_get_section (sym))
-	    || bfd_is_com_section (bfd_get_section (sym)));
+    return (((sym->flags & (BSF_GLOBAL | BSF_WEAK)) != 0)
+	    || bfd_is_und_section(bfd_get_section(sym))
+	    || bfd_is_com_section(bfd_get_section(sym)));
 }
 
 /* Set the right machine number for a MIPS ELF file: */

@@ -1109,8 +1109,9 @@ _bfd_coff_final_link (bfd *abfd,
     {
       file_ptr pos;
 
-      pos = (obj_sym_filepos(abfd) + (obj_raw_syment_count(abfd)
-				      * (file_ptr)symesz));
+      pos = (file_ptr)(obj_sym_filepos(abfd)
+                       + (file_ptr)(obj_raw_syment_count(abfd)
+                                    * symesz));
       if (bfd_seek(abfd, pos, SEEK_SET) != 0)
 	return FALSE;
 
@@ -1794,6 +1795,7 @@ _bfd_coff_link_input_bfd(struct coff_final_link_info *finfo, bfd *input_bfd)
 		  break;
 		}
 	      /* Fall through.  */
+              ATTRIBUTE_FALLTHROUGH;
 	    default:
 	    case C_LABEL:  /* Not completely sure about these 2... */
 	    case C_EXTDEF:
@@ -2911,7 +2913,7 @@ _bfd_coff_generic_relocate_section (bfd *output_bfd,
 	{
 	  if (info->relocatable)
 	    continue;
-	  if (sym != NULL && sym->n_scnum != 0)
+	  if ((sym != NULL) && (sym->n_scnum != 0))
 	    addend += sym->n_value;
 	}
 
@@ -2924,6 +2926,9 @@ _bfd_coff_generic_relocate_section (bfd *output_bfd,
 	  if (symndx == -1)
 	    {
 	      sec = bfd_abs_section_ptr;
+              if (sec == NULL) {
+                ; /* ??? */
+              }
 	      val = 0;
 	    }
 	  else
@@ -2970,6 +2975,9 @@ _bfd_coff_generic_relocate_section (bfd *output_bfd,
 		  if (!h2 || h2->root.type == bfd_link_hash_undefined)
 		    {
 		      sec = bfd_abs_section_ptr;
+                      if (sec == NULL) {
+                        ; /* ??? */
+                      }
 		      val = 0;
 		    }
 		  else

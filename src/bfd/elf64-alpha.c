@@ -1866,7 +1866,7 @@ elf64_alpha_check_relocs (bfd *abfd, struct bfd_link_info *info,
 	  h = 0;
 	  maybe_dynamic = FALSE;
 	  /* FALLTHRU */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_ALPHA_TLSGD:
 	case R_ALPHA_GOTDTPREL:
 	  need = NEED_GOT | NEED_GOT_ENTRY;
@@ -3531,7 +3531,7 @@ elf64_alpha_relax_tls_get_addr(struct alpha_relax_info *info, bfd_vma symval,
 	  }
       }
       /* FALLTHRU */
-
+      ATTRIBUTE_FALLTHROUGH;
     default:
       use_gottprel = TRUE;
 
@@ -4261,7 +4261,7 @@ elf64_alpha_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      break;
 	    }
 	  /* FALLTHRU */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_ALPHA_GPREL16:
 	case R_ALPHA_GPRELLOW:
 	  if (dynamic_symbol_p)
@@ -4468,7 +4468,7 @@ elf64_alpha_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	     the current module.  */
 	  dynamic_symbol_p = 0;
 	  /* FALLTHRU */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_ALPHA_TLSGD:
 	  if ((gotent != NULL) && !gotent->reloc_done)
 	    {

@@ -504,20 +504,24 @@ sparc_put_word_64(bfd *abfd, bfd_vma val, void *ptr)
   bfd_put_64(abfd, val, ptr);
 }
 
+/* */
 static void
-sparc_elf_append_rela_64 (bfd *abfd ATTRIBUTE_UNUSED,
-			  asection *s ATTRIBUTE_UNUSED,
-			  Elf_Internal_Rela *rel ATTRIBUTE_UNUSED)
+sparc_elf_append_rela_64(bfd *abfd, asection *s, Elf_Internal_Rela *rel)
 {
 #ifdef BFD64
   Elf64_External_Rela *loc64;
 
-  loc64 = (Elf64_External_Rela *) s->contents;
+  loc64 = (Elf64_External_Rela *)s->contents;
   loc64 += s->reloc_count++;
-  bfd_elf64_swap_reloca_out (abfd, rel, (bfd_byte *) loc64);
-#endif
+  bfd_elf64_swap_reloca_out(abfd, rel, (bfd_byte *)loc64);
+#else
+  (void)abfd;
+  (void)s;
+  (void)rel;
+#endif /* BFD64 */
 }
 
+/* */
 static void
 sparc_elf_append_rela_32(bfd *abfd, asection *s, Elf_Internal_Rela *rel)
 {
@@ -528,10 +532,10 @@ sparc_elf_append_rela_32(bfd *abfd, asection *s, Elf_Internal_Rela *rel)
   bfd_elf32_swap_reloca_out(abfd, rel, (bfd_byte *)loc32);
 }
 
+/* */
 static bfd_vma
-sparc_elf_r_info_64(Elf_Internal_Rela *in_rel ATTRIBUTE_UNUSED,
-		    bfd_vma unused_index ATTRIBUTE_UNUSED,
-		    bfd_vma type ATTRIBUTE_UNUSED)
+sparc_elf_r_info_64(Elf_Internal_Rela *in_rel, bfd_vma unused_index,
+                    bfd_vma type)
 {
   return ELF64_R_INFO(unused_index,
 		      (in_rel ?
@@ -1082,7 +1086,7 @@ _bfd_sparc_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
 	  if (info->shared)
 	    info->flags |= DF_STATIC_TLS;
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_SPARC_GOT10:
 	case R_SPARC_GOT13:
 	case R_SPARC_GOT22:
@@ -1192,7 +1196,7 @@ _bfd_sparc_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
 	  else
 	    break;
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_SPARC_PLT32:
 	case R_SPARC_WPLT30:
 	case R_SPARC_HIPLT22:
@@ -1251,7 +1255,7 @@ _bfd_sparc_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
 	      && strcmp (h->root.root.string, "_GLOBAL_OFFSET_TABLE_") == 0)
 	    break;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_SPARC_DISP8:
 	case R_SPARC_DISP16:
 	case R_SPARC_DISP32:
@@ -1566,7 +1570,7 @@ _bfd_sparc_elf_gc_sweep_hook (bfd *abfd, struct bfd_link_info *info,
 	      && strcmp (h->root.root.string, "_GLOBAL_OFFSET_TABLE_") == 0)
 	    break;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_SPARC_DISP8:
 	case R_SPARC_DISP16:
 	case R_SPARC_DISP32:
@@ -1604,7 +1608,7 @@ _bfd_sparc_elf_gc_sweep_hook (bfd *abfd, struct bfd_link_info *info,
 	  if (info->shared)
 	    break;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_SPARC_WPLT30:
 	  if (h != NULL)
 	    {
@@ -2563,7 +2567,7 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      goto r_sparc_plt32;
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_SPARC_WPLT30:
 	case R_SPARC_HIPLT22:
 	case R_SPARC_LOPLT10:
@@ -2617,6 +2621,7 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      && strcmp (h->root.root.string, "_GLOBAL_OFFSET_TABLE_") == 0)
 	    break;
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case R_SPARC_DISP8:
 	case R_SPARC_DISP16:
 	case R_SPARC_DISP32:
@@ -2819,7 +2824,7 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      break;
 	    }
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_SPARC_TLS_GD_LO10:
 	case R_SPARC_TLS_IE_HI22:
 	case R_SPARC_TLS_IE_LO10:
@@ -2973,7 +2978,7 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	  r_type = (r_type == R_SPARC_TLS_LDO_HIX22
 		    ? R_SPARC_TLS_LE_HIX22 : R_SPARC_TLS_LE_LOX10);
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_SPARC_TLS_LE_HIX22:
 	case R_SPARC_TLS_LE_LOX10:
 	  if (info->shared)
@@ -3016,7 +3021,7 @@ _bfd_sparc_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      continue;
 	    }
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_SPARC_TLS_GD_CALL:
 	  tls_type = GOT_UNKNOWN;
 	  if (h == NULL && local_got_offsets)
@@ -3599,6 +3604,7 @@ sparc64_finish_dyn(bfd *output_bfd, struct bfd_link_info *info,
 	  dyn.d_un.d_val = stt_regidx++;
 	  bfd_elf64_swap_dyn_out(output_bfd, &dyn, dyncon);
 	  /* fallthrough */
+   	  ATTRIBUTE_FALLTHROUGH;
 	default: name = NULL; size = FALSE; break;
 	}
 

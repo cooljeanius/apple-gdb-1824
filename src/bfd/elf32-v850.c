@@ -749,7 +749,7 @@ v850_elf_perform_relocation (bfd *abfd,
 /* Insert the addend into the instruction.  */
 
 static bfd_reloc_status_type
-v850_elf_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc, asymbol *symbol,
+v850_elf_reloc(bfd *abfd, arelent *reloc, asymbol *symbol,
 	       void *data ATTRIBUTE_UNUSED, asection *isection, bfd *obfd,
 	       const char **err ATTRIBUTE_UNUSED)
 {

@@ -122,7 +122,7 @@ static const unsigned char stub_bytes[STUBSIZE] =
 /* This macro is used for adjusting the filepointers, which is done only
  * if the pointer is nonzero: */
 #define ADJUST_VAL(val,diff) \
-  if (val != 0) val += diff
+  if (val != 0) val += (__typeof__(val))diff
 
 static void
 adjust_filehdr_in_post(bfd *abfd, PTR src, PTR dst)
@@ -158,9 +158,9 @@ adjust_filehdr_out_pre(bfd *abfd, PTR in, PTR out)
     memcpy(filehdr_out->stub, bfd_coff_go32stub(abfd), STUBSIZE);
   else
     /* Use the default.  */
-    memcpy (filehdr_out->stub, stub_bytes, STUBSIZE);
+    memcpy(filehdr_out->stub, stub_bytes, STUBSIZE);
 
-  ADJUST_VAL (filehdr_in->f_symptr, -STUBSIZE);
+  ADJUST_VAL(filehdr_in->f_symptr, -STUBSIZE);
 }
 
 static void
@@ -298,9 +298,9 @@ create_go32_stub(bfd *abfd)
 	}
       /* Compute the size of the stub (it is every thing up
          to the beginning of the coff image).  */
-      coff_start = (long)_H(2) * 512L;
+      coff_start = (unsigned long)((long)_H(2) * 512L);
       if (_H(1))
-	coff_start += (long)_H(1) - 512L;
+	coff_start += (unsigned long)((long)_H(1) - 512L);
 
       /* Currently there is only a fixed stub size of 2048 bytes
          supported.  */

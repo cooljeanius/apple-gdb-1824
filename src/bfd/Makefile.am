@@ -961,7 +961,7 @@ all_machines: $(ALL_MACHINES)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: all_machines
 
-## currently breaks on coff-sh.c:
+## currently breaks on ecoff.c:
 bfd32_backends: $(BFD32_BACKENDS)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: bfd32_backends

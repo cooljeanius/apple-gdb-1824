@@ -704,6 +704,7 @@ elf_vax_check_relocs (bfd *abfd, struct bfd_link_info *info, asection *sec,
 	      break;
 	    }
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case R_VAX_8:
 	case R_VAX_16:
 	case R_VAX_32:
@@ -1590,9 +1591,9 @@ elf_vax_relocate_section (bfd *output_bfd,
 	  else if (rel->r_addend != 0)
 	    (*_bfd_error_handler)
 	      (_("%s: warning: PLT addend of %d to `%s' from %s section ignored"),
-		      bfd_get_filename (input_bfd), rel->r_addend,
-		      h->root.root.string,
-		      bfd_get_section_name (input_bfd, input_section));
+               bfd_get_filename(input_bfd), rel->r_addend,
+               h->root.root.string, bfd_get_section_name(input_bfd,
+               						 input_section));
 	  rel->r_addend = 0;
 
 	  break;
@@ -1603,6 +1604,7 @@ elf_vax_relocate_section (bfd *output_bfd,
 	  if (h == NULL)
 	    break;
 	  /* Fall through.  */
+          ATTRIBUTE_FALLTHROUGH;
 	case R_VAX_8:
 	case R_VAX_16:
 	case R_VAX_32:
