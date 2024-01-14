@@ -499,10 +499,11 @@ coff_i960_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 						 (contents
 						  + (rel->r_vaddr
 						     - input_section->vma)));
-		word = (unsigned long)(((word + olf - val) & BAL_MASK) | BAL);
+                word = (unsigned long)(((word + (unsigned long)olf - val)
+                                        & BAL_MASK) | BAL);
 		bfd_put_32(input_bfd,
                            (bfd_vma)word,
-                           contents + (rel->r_vaddr - input_section->vma));
+                           (contents + (rel->r_vaddr - input_section->vma)));
 		done = TRUE;
 	      }
 	      break;

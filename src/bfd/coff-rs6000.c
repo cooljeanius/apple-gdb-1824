@@ -505,8 +505,7 @@ unsigned int _bfd_xcoff_swap_aux_out
 
 unsigned int
 _bfd_xcoff_swap_aux_out(bfd *abfd, PTR inp, int type, int the_class,
-                        int indx ATTRIBUTE_UNUSED,
-                        int numaux ATTRIBUTE_UNUSED, PTR extp)
+                        int indx, int numaux, PTR extp)
 {
   union internal_auxent *in = (union internal_auxent *)inp;
   AUXENT *ext = (AUXENT *)extp;
@@ -2007,21 +2006,22 @@ xcoff_write_armap_big(bfd *abfd, unsigned int elength ATTRIBUTE_UNUSED,
 	    arch_info = bfd_get_arch_info(current_bfd);
 	}
 
-      bfd_bwrite (symbol_table, symbol_table_size, abfd);
+      bfd_bwrite(symbol_table, symbol_table_size, abfd);
 
-      free (symbol_table);
+      free(symbol_table);
 
-      PRINT20 (fhdr->symoff64, nextoff);
+      PRINT20(fhdr->symoff64, nextoff);
     }
   else
-    PRINT20 (fhdr->symoff64, 0);
+    PRINT20(fhdr->symoff64, 0);
 
   return TRUE;
 }
 
+/* */
 bfd_boolean
-_bfd_xcoff_write_armap(bfd *abfd, unsigned int elength ATTRIBUTE_UNUSED,
-                       struct orl *map, unsigned int orl_count, int stridx)
+_bfd_xcoff_write_armap(bfd *abfd, unsigned int elength, struct orl *map,
+                       unsigned int orl_count, int stridx)
 {
   if (! xcoff_big_format_p(abfd))
     return xcoff_write_armap_old(abfd, elength, map, orl_count, stridx);
@@ -2891,6 +2891,7 @@ xcoff_reloc_type_br(bfd *input_bfd, asection *input_section,
   return TRUE;
 }
 
+/* */
 bfd_boolean
 xcoff_reloc_type_crel(bfd *input_bfd ATTRIBUTE_UNUSED,
                       asection *input_section,
@@ -2898,8 +2899,7 @@ xcoff_reloc_type_crel(bfd *input_bfd ATTRIBUTE_UNUSED,
                       struct internal_reloc *rel ATTRIBUTE_UNUSED,
                       struct internal_syment *sym ATTRIBUTE_UNUSED,
                       struct reloc_howto_struct *howto,
-                      bfd_vma val ATTRIBUTE_UNUSED, bfd_vma addend,
-                      bfd_vma *relocation,
+                      bfd_vma val, bfd_vma addend, bfd_vma *relocation,
                       bfd_byte *contents ATTRIBUTE_UNUSED)
 {
   howto->pc_relative = TRUE;

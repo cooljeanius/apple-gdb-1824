@@ -557,7 +557,7 @@ sh_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
   bfd_vma addr = reloc_entry->address;
   bfd_byte *hit_data = (addr + (bfd_byte *)data);
 
-  r_type = reloc_entry->howto->type;
+  r_type = (unsigned short)reloc_entry->howto->type;
 
   if (output_bfd != NULL)
     {
@@ -582,7 +582,7 @@ sh_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
     return bfd_reloc_undefined;
 
   if (symbol_in != NULL)
-    sym_value = get_symbol_value(symbol_in);
+    sym_value = (bfd_vma)get_symbol_value(symbol_in);
   else
     sym_value = 0UL;
 

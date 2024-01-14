@@ -197,8 +197,8 @@ ecoff_swap_fdr_in(bfd *abfd, void *ext_copy, FDR *intern)
   intern->ioptBase      = (long)H_GET_32(abfd, ext->f_ioptBase);
   intern->copt          = (long)H_GET_32(abfd, ext->f_copt);
 #if defined(ECOFF_32) || defined(ECOFF_SIGNED_32)
-  intern->ipdFirst      = H_GET_16(abfd, ext->f_ipdFirst);
-  intern->cpd           = H_GET_16(abfd, ext->f_cpd);
+  intern->ipdFirst      = (unsigned short)H_GET_16(abfd, ext->f_ipdFirst);
+  intern->cpd           = (short)H_GET_16(abfd, ext->f_cpd);
 #endif /* ECOFF_32 || ECOFF_SIGNED_32 */
 #if defined(ECOFF_64) || defined(ECOFF_SIGNED_64)
   intern->ipdFirst      = (unsigned short)H_GET_32(abfd, ext->f_ipdFirst);

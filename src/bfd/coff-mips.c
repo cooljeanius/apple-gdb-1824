@@ -306,9 +306,10 @@ mips_ecoff_swap_reloc_in(bfd *abfd, PTR ext_ptr,
 			  | ((int)ext->r_bits[2]
 			     << RELOC_BITS2_SYMNDX_SH_LEFT_LITTLE));
       intern->r_type = (((ext->r_bits[3] & RELOC_BITS3_TYPE_LITTLE)
-			 >> RELOC_BITS3_TYPE_SH_LITTLE)
-			| ((ext->r_bits[3] & RELOC_BITS3_TYPEHI_LITTLE)
-			   << RELOC_BITS3_TYPEHI_SH_LITTLE));
+                         >> RELOC_BITS3_TYPE_SH_LITTLE)
+                        | (unsigned short)((ext->r_bits[3]
+                                            & RELOC_BITS3_TYPEHI_LITTLE)
+                                           << RELOC_BITS3_TYPEHI_SH_LITTLE));
       intern->r_extern = (ext->r_bits[3] & RELOC_BITS3_EXTERN_LITTLE) != 0;
     }
 }
@@ -329,23 +330,29 @@ mips_ecoff_swap_reloc_out(bfd *abfd, const struct internal_reloc *intern,
   H_PUT_32 (abfd, intern->r_vaddr, ext->r_vaddr);
   if (bfd_header_big_endian(abfd))
     {
-      ext->r_bits[0] = (r_symndx >> RELOC_BITS0_SYMNDX_SH_LEFT_BIG);
-      ext->r_bits[1] = (r_symndx >> RELOC_BITS1_SYMNDX_SH_LEFT_BIG);
-      ext->r_bits[2] = (r_symndx >> RELOC_BITS2_SYMNDX_SH_LEFT_BIG);
+      ext->r_bits[0] =
+      	(unsigned char)(r_symndx >> RELOC_BITS0_SYMNDX_SH_LEFT_BIG);
+      ext->r_bits[1] =
+      	(unsigned char)(r_symndx >> RELOC_BITS1_SYMNDX_SH_LEFT_BIG);
+      ext->r_bits[2] =
+      	(unsigned char)(r_symndx >> RELOC_BITS2_SYMNDX_SH_LEFT_BIG);
       ext->r_bits[3] = (((intern->r_type << RELOC_BITS3_TYPE_SH_BIG)
 			 & RELOC_BITS3_TYPE_BIG)
-			| (intern->r_extern ? RELOC_BITS3_EXTERN_BIG : 0));
+			| (intern->r_extern ? RELOC_BITS3_EXTERN_BIG : 0U));
     }
   else
     {
-      ext->r_bits[0] = (r_symndx >> RELOC_BITS0_SYMNDX_SH_LEFT_LITTLE);
-      ext->r_bits[1] = (r_symndx >> RELOC_BITS1_SYMNDX_SH_LEFT_LITTLE);
-      ext->r_bits[2] = (r_symndx >> RELOC_BITS2_SYMNDX_SH_LEFT_LITTLE);
+      ext->r_bits[0] =
+      	(unsigned char)(r_symndx >> RELOC_BITS0_SYMNDX_SH_LEFT_LITTLE);
+      ext->r_bits[1] =
+      	(unsigned char)(r_symndx >> RELOC_BITS1_SYMNDX_SH_LEFT_LITTLE);
+      ext->r_bits[2] =
+      	(unsigned char)(r_symndx >> RELOC_BITS2_SYMNDX_SH_LEFT_LITTLE);
       ext->r_bits[3] = (((intern->r_type << RELOC_BITS3_TYPE_SH_LITTLE)
 			 & RELOC_BITS3_TYPE_LITTLE)
 			| ((intern->r_type >> RELOC_BITS3_TYPEHI_SH_LITTLE
 			    & RELOC_BITS3_TYPEHI_LITTLE))
-			| (intern->r_extern ? RELOC_BITS3_EXTERN_LITTLE : 0));
+			| (intern->r_extern ? RELOC_BITS3_EXTERN_LITTLE : 0U));
     }
 }
 
@@ -431,10 +438,11 @@ struct mips_hi
 /* FIXME: This should not be a static variable: */
 static struct mips_hi *mips_refhi_list;
 
+/* */
 static bfd_reloc_status_type
-mips_refhi_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
-		 asymbol *symbol, PTR data, asection *input_section,
-		 bfd *output_bfd, const char **error_message ATTRIBUTE_UNUSED)
+mips_refhi_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, PTR data,
+		 asection *input_section, bfd *output_bfd,
+                 const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_reloc_status_type ret;
   bfd_vma relocation;

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-13 11:01-0500\n"
+"POT-Creation-Date: 2024-01-13 20:10-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,20 +17,20 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: aout-adobe.c:119
+#: aout-adobe.c:122
 msgid "%B: Unknown section type in a.out.adobe file: %x\n"
 msgstr ""
 
-#: aout-cris.c:209
+#: aout-cris.c:208
 #, c-format
 msgid "%s: Invalid relocation type exported: %d"
 msgstr ""
 
-#: aout-cris.c:251
+#: aout-cris.c:250
 msgid "%B: Invalid relocation type imported: %d"
 msgstr ""
 
-#: aout-cris.c:262
+#: aout-cris.c:261
 msgid "%B: Bad relocation record imported: %d"
 msgstr ""
 
@@ -210,7 +210,7 @@ msgstr ""
 msgid "%B: unknown/unsupported relocation type %d"
 msgstr ""
 
-#: coff-alpha.c:878 coff-alpha.c:915 coff-alpha.c:1994 coff-mips.c:921
+#: coff-alpha.c:878 coff-alpha.c:915 coff-alpha.c:1994 coff-mips.c:929
 msgid "GP relative relocation used when GP not defined"
 msgstr ""
 
@@ -359,17 +359,17 @@ msgstr ""
 msgid "Warning: Clearing the interworking flag of %B due to outside request"
 msgstr ""
 
-#: coff-h8300.c:1136
+#: coff-h8300.c:1132
 #, c-format
 msgid "cannot handle R_MEM_INDIRECT reloc when using %s output"
 msgstr ""
 
-#: coff-i860.c:144
+#: coff-i860.c:140
 #, c-format
 msgid "Relocation `%s' not yet implemented\n"
 msgstr ""
 
-#: coff-i860.c:588 coff-tic54x.c:347 coffcode.h:5010
+#: coff-i860.c:585 coff-tic54x.c:347 coffcode.h:5014
 msgid "%B: warning: illegal symbol index %ld in relocs"
 msgstr ""
 
@@ -381,27 +381,31 @@ msgstr ""
 msgid "unsupported reloc type"
 msgstr ""
 
-#: coff-maxq.c:126
+#: coff-maxq.c:128
 msgid "Cannot Make it a Short Jump"
 msgstr ""
 
-#: coff-maxq.c:193
+#: coff-maxq.c:195
 msgid "Exceeds Long Jump Range"
 msgstr ""
 
-#: coff-maxq.c:204 coff-maxq.c:278
+#: coff-maxq.c:206 coff-maxq.c:280
 msgid "Absolute address Exceeds 16 bit Range"
 msgstr ""
 
-#: coff-maxq.c:242
+#: coff-maxq.c:244
 msgid "Absolute address Exceeds 8 bit Range"
 msgstr ""
 
-#: coff-maxq.c:336
+#: coff-maxq.c:323
+msgid "Absolute address Exceeds 32 bit Range"
+msgstr ""
+
+#: coff-maxq.c:338
 msgid "Unrecognized Reloc Type"
 msgstr ""
 
-#: coff-mips.c:631 elf32-mips.c:940 elf32-score.c:431 elf32-score7.c:330
+#: coff-mips.c:639 elf32-mips.c:940 elf32-score.c:431 elf32-score7.c:330
 #: elf64-mips.c:1857 elfn32-mips.c:1718
 msgid "GP relative relocation when _gp not defined"
 msgstr ""
@@ -451,32 +455,32 @@ msgstr ""
 msgid "%B (%s): Section flag %s (0x%x) ignored"
 msgstr ""
 
-#: coffcode.h:2234
+#: coffcode.h:2235
 #, c-format
 msgid "Unrecognized TI COFF target id '0x%x'"
 msgstr ""
 
-#: coffcode.h:4371
+#: coffcode.h:4375
 msgid "%B: warning: line number table read failed"
 msgstr ""
 
-#: coffcode.h:4402
+#: coffcode.h:4406
 msgid "%B: warning: illegal symbol index %ld in line numbers"
 msgstr ""
 
-#: coffcode.h:4416
+#: coffcode.h:4420
 msgid "%B: warning: duplicate line number information for `%s'"
 msgstr ""
 
-#: coffcode.h:4775
+#: coffcode.h:4779
 msgid "%B: Unrecognized storage class %d for %s symbol `%s'"
 msgstr ""
 
-#: coffcode.h:4901
+#: coffcode.h:4905
 msgid "warning: %B: local symbol `%s' has no section"
 msgstr ""
 
-#: coffcode.h:5052
+#: coffcode.h:5056
 msgid "%B: illegal relocation type %d at address 0x%lx"
 msgstr ""
 
@@ -3068,15 +3072,15 @@ msgstr ""
 msgid "%s: unrecognized symbol `%s' flags 0x%x"
 msgstr ""
 
-#: ieee.c:792
+#: ieee.c:793
 msgid "%B: unimplemented ATI record %u for symbol %u"
 msgstr ""
 
-#: ieee.c:816
+#: ieee.c:817
 msgid "%B: unexpected ATN type %d in external part"
 msgstr ""
 
-#: ieee.c:838
+#: ieee.c:839
 msgid "%B: unexpected type after ATN"
 msgstr ""
 

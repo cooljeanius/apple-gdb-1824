@@ -1,4 +1,4 @@
-/* compress.c
+/* compress.c -*- C -*-
    Compressed section support (intended for debug sections).
    Copyright 2008, 2010, 2011, 2012
    Free Software Foundation, Inc.
@@ -26,7 +26,9 @@
 #ifdef HAVE_ZLIB_H
 # include <zlib.h>
 #else
-# warning compress.c expects <zlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "compress.c expects <zlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI */
 #endif /* HAVE_ZLIB_H */
 
 #ifdef HAVE_ZLIB_H
@@ -44,9 +46,9 @@ decompress_contents (bfd_byte *compressed_buffer,
   strm.zalloc = NULL;
   strm.zfree = NULL;
   strm.opaque = NULL;
-  strm.avail_in = (compressed_size - 12);
+  strm.avail_in = (uInt)(compressed_size - 12U);
   strm.next_in = (Bytef*)compressed_buffer + 12;
-  strm.avail_out = uncompressed_size;
+  strm.avail_out = (uInt)uncompressed_size;
 
   BFD_ASSERT(Z_OK == 0);
   rc = inflateInit(&strm);
@@ -88,10 +90,10 @@ DESCRIPTION
 */
 
 bfd_boolean
-bfd_compress_section_contents (bfd *abfd ATTRIBUTE_UNUSED,
-			       sec_ptr sec ATTRIBUTE_UNUSED,
-			       bfd_byte *uncompressed_buffer ATTRIBUTE_UNUSED,
-			       bfd_size_type uncompressed_size ATTRIBUTE_UNUSED)
+bfd_compress_section_contents(bfd *abfd ATTRIBUTE_UNUSED,
+			      sec_ptr sec ATTRIBUTE_UNUSED,
+			      bfd_byte *uncompressed_buffer ATTRIBUTE_UNUSED,
+			      bfd_size_type uncompressed_size ATTRIBUTE_UNUSED)
 {
 #ifndef HAVE_ZLIB_H
   bfd_set_error(bfd_error_invalid_operation);
@@ -100,8 +102,8 @@ bfd_compress_section_contents (bfd *abfd ATTRIBUTE_UNUSED,
   uLong compressed_size;
   bfd_byte *compressed_buffer;
 
-  compressed_size = compressBound (uncompressed_size) + 12;
-  compressed_buffer = (bfd_byte *) bfd_malloc (compressed_size);
+  compressed_size = (compressBound(uncompressed_size) + 12);
+  compressed_buffer = (bfd_byte *)bfd_malloc(compressed_size);
 
   if (compressed_buffer == NULL)
     return FALSE;

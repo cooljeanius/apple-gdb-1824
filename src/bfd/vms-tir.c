@@ -23,7 +23,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* The following type abbreviations are used:
 
@@ -40,6 +40,7 @@
 #include "libbfd.h"
 #include "vms.h"
 
+/* */
 static int
 check_section(bfd *abfd, int size)
 {
@@ -65,118 +66,111 @@ check_section(bfd *abfd, int size)
 
 /* Routines to fill sections contents during tir/etir read.  */
 
-/* Initialize image buffer pointer to be filled.  */
-
+/* Initialize image buffer pointer to be filled: */
 static void
-image_set_ptr (bfd * abfd, int psect, uquad offset)
+image_set_ptr(bfd *abfd, int psect, uquad offset)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug(4, "image_set_ptr (%d=%s, %d)\n",
 		 psect, PRIV(sections)[psect]->name, (int)offset);
-#endif
+#endif /* VMS_DEBUG */
 
-  PRIV (image_ptr) = PRIV (sections)[psect]->contents + offset;
-  PRIV (image_section) = PRIV (sections)[psect];
+  PRIV(image_ptr) = (PRIV(sections)[psect]->contents + offset);
+  PRIV(image_section) = PRIV(sections)[psect];
 }
 
-/* Increment image buffer pointer by offset.  */
-
+/* Increment image buffer pointer by offset: */
 static void
-image_inc_ptr (bfd * abfd, uquad offset)
+image_inc_ptr(bfd *abfd, uquad offset)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug(4, "image_inc_ptr (%d)\n", (int)offset);
-#endif
+#endif /* VMS_DEBUG */
 
-  PRIV (image_ptr) += offset;
+  PRIV(image_ptr) += offset;
 }
 
-/* Dump multiple bytes to section image.  */
-
+/* Dump multiple bytes to section image: */
 static void
-image_dump (bfd * abfd,
-	    unsigned char *ptr,
-	    int size,
-	    int offset ATTRIBUTE_UNUSED)
+image_dump(bfd *abfd, unsigned char *ptr, int size, int offset)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug(8, "image_dump from (%p, %d) to (%p)\n", (void *)ptr, size,
                  (void *)PRIV(image_ptr));
   _bfd_hexdump(9, ptr, size, offset);
-#endif
+#else
+  (void)offset;
+#endif /* VMS_DEBUG */
 
-  if (PRIV (is_vax) && check_section (abfd, size))
+  if (PRIV(is_vax) && check_section(abfd, size))
     return;
 
   while (size-- > 0)
-    *PRIV (image_ptr)++ = *ptr++;
+    *PRIV(image_ptr)++ = *ptr++;
 }
 
-/* Write byte to section image.  */
-
+/* Write byte to section image: */
 static void
-image_write_b (bfd * abfd, unsigned int value)
+image_write_b(bfd *abfd, unsigned int value)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (6, "image_write_b (%02x)\n", (int) value);
-#endif
+  _bfd_vms_debug(6, "image_write_b (%02x)\n", (int)value);
+#endif /* VMS_DEBUG */
 
-  if (PRIV (is_vax) && check_section (abfd, 1))
+  if (PRIV(is_vax) && check_section(abfd, 1))
     return;
 
-  *PRIV (image_ptr)++ = (value & 0xff);
+  *PRIV(image_ptr)++ = (value & 0xff);
 }
 
-/* Write 2-byte word to image.  */
-
+/* Write 2-byte word to image: */
 static void
-image_write_w (bfd * abfd, unsigned int value)
+image_write_w(bfd *abfd, unsigned int value)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (6, "image_write_w (%04x)\n", (int) value);
-#endif
+  _bfd_vms_debug(6, "image_write_w (%04x)\n", (int)value);
+#endif /* VMS_DEBUG */
 
-  if (PRIV (is_vax) && check_section (abfd, 2))
+  if (PRIV(is_vax) && check_section(abfd, 2))
     return;
 
-  bfd_putl16 ((bfd_vma) value, PRIV (image_ptr));
-  PRIV (image_ptr) += 2;
+  bfd_putl16((bfd_vma)value, PRIV(image_ptr));
+  PRIV(image_ptr) += 2;
 }
 
-/* Write 4-byte long to image.  */
-
+/* Write 4-byte long to image: */
 static void
-image_write_l (bfd * abfd, unsigned long value)
+image_write_l(bfd *abfd, unsigned long value)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (6, "image_write_l (%08lx)\n", value);
-#endif
+  _bfd_vms_debug(6, "image_write_l (%08lx)\n", value);
+#endif /* VMS_DEBUG */
 
-  if (PRIV (is_vax) && check_section (abfd, 4))
+  if (PRIV(is_vax) && check_section(abfd, 4))
     return;
 
-  bfd_putl32 ((bfd_vma) value, PRIV (image_ptr));
-  PRIV (image_ptr) += 4;
+  bfd_putl32((bfd_vma)value, PRIV(image_ptr));
+  PRIV(image_ptr) += 4;
 }
 
-/* Write 8-byte quad to image.  */
-
+/* Write 8-byte quad to image: */
 static void
-image_write_q (bfd * abfd, uquad value)
+image_write_q(bfd *abfd, uquad value)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (6, "image_write_q (%016lx)\n", (unsigned long)value);
-#endif
+  _bfd_vms_debug(6, "image_write_q (%016lx)\n", (unsigned long)value);
+#endif /* VMS_DEBUG */
 
-  if (PRIV (is_vax) && check_section (abfd, 8))
+  if (PRIV(is_vax) && check_section(abfd, 8))
     return;
 
-  bfd_putl64 (value, PRIV (image_ptr));
-  PRIV (image_ptr) += 8;
+  bfd_putl64(value, PRIV(image_ptr));
+  PRIV(image_ptr) += 8;
 }
 
+/* */
 static const char *
-cmd_name (int cmd)
+cmd_name(int cmd)
 {
   switch (cmd)
     {

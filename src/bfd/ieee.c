@@ -519,7 +519,8 @@ parse_expression(ieee_data_type *ieee, bfd_vma *value,
 
   /* The stack pointer always points to the next unused location.  */
 #define PUSH(x,y,z) TOS.symbol = x; TOS.section = y; TOS.value = z; INC;
-#define POP(x,y,z)  DEC; x = TOS.symbol; y = TOS.section; z = TOS.value;
+#define POP(x,y,z) \
+  DEC; x = TOS.symbol; y = TOS.section; z = (__typeof__(z))TOS.value;
 
   while (loop && (ieee->h.input_p < ieee->h.last_byte))
     {

@@ -1787,13 +1787,12 @@ coff_mkobject(bfd *abfd)
 /* Create the COFF backend specific information: */
 #ifndef coff_mkobject_hook
 static void *
-coff_mkobject_hook(bfd *abfd, void *filehdr,
-                   void *aouthdr ATTRIBUTE_UNUSED)
+coff_mkobject_hook(bfd *abfd, void *filehdr, void *aouthdr)
 {
   struct internal_filehdr *internal_f = (struct internal_filehdr *)filehdr;
   coff_data_type *coff;
 
-  if (! coff_mkobject (abfd)) {
+  if (!coff_mkobject(abfd)) {
     return NULL;
   }
 
@@ -1827,7 +1826,7 @@ coff_mkobject_hook(bfd *abfd, void *filehdr,
 	(struct internal_aouthdr *)aouthdr;
       struct xcoff_tdata *xcoff;
 
-      xcoff = xcoff_data (abfd);
+      xcoff = xcoff_data(abfd);
 # ifdef U803XTOCMAGIC
       xcoff->xcoff64 = internal_f->f_magic == U803XTOCMAGIC;
 # else
@@ -1851,11 +1850,13 @@ coff_mkobject_hook(bfd *abfd, void *filehdr,
       xcoff->maxdata = internal_a->o_maxdata;
       xcoff->maxstack = internal_a->o_maxstack;
     }
+#else
+  (void)aouthdr;
 #endif /* RS6000COFF_C */
 
 #ifdef ARM
   /* Set the flags field from the COFF header read in: */
-  if (! _bfd_coff_arm_set_private_flags(abfd, internal_f->f_flags)) {
+  if (!_bfd_coff_arm_set_private_flags(abfd, internal_f->f_flags)) {
     coff->flags = 0;
   }
 #endif /* ARM */
@@ -2339,12 +2340,9 @@ coff_pointerize_aux_hook (bfd *abfd ATTRIBUTE_UNUSED,
 
 /* Print an aux entry.  This returns TRUE if it has printed it: */
 static bfd_boolean
-coff_print_aux(bfd *abfd ATTRIBUTE_UNUSED,
-               FILE *file ATTRIBUTE_UNUSED,
-               combined_entry_type *table_base ATTRIBUTE_UNUSED,
-               combined_entry_type *symbol ATTRIBUTE_UNUSED,
-               combined_entry_type *aux ATTRIBUTE_UNUSED,
-               unsigned int indaux ATTRIBUTE_UNUSED)
+coff_print_aux(bfd *abfd ATTRIBUTE_UNUSED, FILE *file,
+               combined_entry_type *table_base, combined_entry_type *symbol,
+               combined_entry_type *aux, unsigned int indaux)
 {
 #ifdef RS6000COFF_C
   if (((symbol->u.syment.n_sclass == C_EXT)
@@ -2365,8 +2363,8 @@ coff_print_aux(bfd *abfd ATTRIBUTE_UNUSED,
 	}
       else
 	{
-	  fprintf (file, "indx ");
-	  if (! aux->fix_scnlen)
+	  fprintf(file, "indx ");
+	  if (!aux->fix_scnlen)
 # ifdef XCOFF64
 	    fprintf(file, "%4lld",
                     (long long)aux->u.auxent.x_csect.x_scnlen.l);
@@ -2388,6 +2386,12 @@ coff_print_aux(bfd *abfd ATTRIBUTE_UNUSED,
 	      (unsigned int)aux->u.auxent.x_csect.x_snstab);
       return TRUE;
     }
+#else
+  (void)symbol;
+  (void)indaux;
+  (void)file;
+  (void)aux;
+  (void)table_base;
 #endif /* RS6000COFF_C */
 
   /* Return FALSE to indicate that no special action was taken: */
@@ -2589,7 +2593,7 @@ coff_set_flags(bfd *abfd, unsigned int *magicp, unsigned short *flagsp)
 #ifdef I960ROMAGIC
     case bfd_arch_i960:
       {
-	unsigned flags;
+	unsigned int flags;
 
 	*magicp = I960ROMAGIC;
 
@@ -2605,7 +2609,7 @@ coff_set_flags(bfd *abfd, unsigned int *magicp, unsigned short *flagsp)
 	  case bfd_mach_i960_hx:    flags = F_I960HX;	break;
 	  default:	            return FALSE;
 	  }
-	*flagsp = flags;
+	*flagsp = (unsigned short)flags;
 	return TRUE;
       }
       break;

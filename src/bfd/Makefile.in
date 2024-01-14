@@ -10293,6 +10293,7 @@ bfdver.h: $(srcdir)/version.h @MAINT@ $(srcdir)/development.sh \
 	    -e "s,@report_bugs_to@,$${report_bugs_to}," \
 	    < $(srcdir)/version.h $(AM_V_redir) $@; \
 	echo "$${bfd_soversion}" > libtool-soversion
+	$(AM_V_at)if test $@ -ot $(srcdir)/version.h; then touch $@; fi
 
 libtool-soversion: bfdver.h
 	$(AM_V_at)stat $@ || (if test $@ -ot $<; then touch $@; fi)

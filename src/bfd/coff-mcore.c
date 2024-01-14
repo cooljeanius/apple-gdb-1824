@@ -518,7 +518,8 @@ coff_mcore_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 #define coff_relocate_section        coff_mcore_relocate_section
 #define coff_rtype_to_howto          coff_mcore_rtype_to_howto
 
-#define SELECT_RELOC(internal, howto) {internal.r_type = howto->type;}
+#define SELECT_RELOC(internal, howto) \
+  { internal.r_type = (unsigned short)howto->type; }
 
 /* Make sure that the 'r_offset' field is copied properly
    so that identical binaries will compare the same.  */

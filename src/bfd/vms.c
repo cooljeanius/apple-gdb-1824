@@ -308,8 +308,8 @@ vms_object_p (bfd * abfd)
   if (arch == NULL)
     {
 #if defined(VMS_DEBUG) && VMS_DEBUG
-      vms_debug (2, "arch not found\n");
-#endif
+      vms_debug(2, "arch not found\n");
+#endif /* VMS_DEBUG */
       goto err_wrong_format;
     }
   abfd->arch_info = arch;
@@ -317,12 +317,12 @@ vms_object_p (bfd * abfd)
   return target_vector;
 
  err_wrong_format:
-  bfd_set_error (bfd_error_wrong_format);
+  bfd_set_error(bfd_error_wrong_format);
  error_ret:
-  if (abfd->tdata.any != tdata_save && abfd->tdata.any != NULL)
-    bfd_release (abfd, abfd->tdata.any);
+  if ((abfd->tdata.any != tdata_save) && (abfd->tdata.any != NULL))
+    bfd_release(abfd, abfd->tdata.any);
   abfd->tdata.any = tdata_save;
-  bfd_set_start_address (abfd, saddr_save);
+  bfd_set_start_address(abfd, saddr_save);
   return NULL;
 }
 
@@ -330,11 +330,13 @@ vms_object_p (bfd * abfd)
    Return a (bfd_target *) if it's an archive file or zero.  */
 
 static const struct bfd_target *
-vms_archive_p(bfd *abfd ATTRIBUTE_UNUSED)
+vms_archive_p(bfd *abfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_archive_p (%p)\n", (void *)abfd);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
 
   return NULL;
 }
@@ -346,9 +348,9 @@ vms_mkobject(bfd *abfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_mkobject (%p)\n", (void *)abfd);
-#endif
+#endif /* VMS_DEBUG */
 
-  if (!vms_initialize (abfd))
+  if (!vms_initialize(abfd))
     return FALSE;
 
   {
@@ -360,7 +362,7 @@ vms_mkobject(bfd *abfd)
     const bfd_arch_info_type *arch = bfd_scan_arch(tmpstr);
     if (arch == NULL)
       {
-	bfd_set_error (bfd_error_wrong_format);
+	bfd_set_error(bfd_error_wrong_format);
 	return FALSE;
       }
     abfd->arch_info = arch;

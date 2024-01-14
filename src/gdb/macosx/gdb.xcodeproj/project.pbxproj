@@ -15408,6 +15408,7 @@
 					"-Woverlength-strings",
 					"-Wswitch-default",
 					"-Wwrite-strings",
+					"-Wused-but-marked-unused",
 				);
 			};
 			name = Debug;

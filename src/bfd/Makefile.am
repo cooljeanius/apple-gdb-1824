@@ -961,7 +961,7 @@ all_machines: $(ALL_MACHINES)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: all_machines
 
-## currently breaks on coff-i960.c:
+## currently breaks on coff-sh.c:
 bfd32_backends: $(BFD32_BACKENDS)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: bfd32_backends
@@ -1705,6 +1705,7 @@ bfdver.h: $(srcdir)/version.h @MAINT@ $(srcdir)/development.sh \
 	    -e "s,@report_bugs_to@,$${report_bugs_to}," \
 	    < $(srcdir)/version.h $(AM_V_redir) $@; \
 	echo "$${bfd_soversion}" > libtool-soversion
+	$(AM_V_at)if test $@ -ot $(srcdir)/version.h; then touch $@; fi
 
 libtool-soversion: bfdver.h
 	$(AM_V_at)stat $@ || (if test $@ -ot $<; then touch $@; fi)
