@@ -1,9 +1,9 @@
-/* BFD support for the Infineon XC16X Microcontroller.
+/* cpu-xc16x.c: BFD support for the Infineon XC16X Microcontroller.
    Copyright 2006, 2007 Free Software Foundation, Inc.
    Contributed by KPIT Cummins Infosystems
 
    This file is part of BFD, the Binary File Descriptor library.
-   Contributed by Anil Paranjpe(anilp1@kpitcummins.com)
+   Contributed by Anil Paranjpe <anilp1@kpitcummins.com>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,6 +20,9 @@
    Foundation, 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"

@@ -19,6 +19,9 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"
@@ -54,5 +57,5 @@ const bfd_arch_info_type bfd_epiphany_arch =
   bfd_default_compatible,	/* Architecture comparison fn.  */
   bfd_default_scan,		/* String to architecture convert fn.  */
   bfd_arch_default_fill,	/* Default fill.  */
-  & bfd_epiphany16_arch	/* Next in list.  */
+  &bfd_epiphany16_arch	/* Next in list.  */
 };

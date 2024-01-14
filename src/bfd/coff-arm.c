@@ -2443,8 +2443,7 @@ coff_arm_link_output_has_begun(bfd *sub, struct coff_final_link_info *info)
 }
 
 static bfd_boolean
-coff_arm_final_link_postscript(bfd *abfd ATTRIBUTE_UNUSED,
-                               struct coff_final_link_info *pfinfo)
+coff_arm_final_link_postscript(bfd *abfd, struct coff_final_link_info *pfinfo)
 {
   struct coff_arm_link_hash_table *globals;
 

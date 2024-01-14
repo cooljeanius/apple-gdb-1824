@@ -178,16 +178,16 @@ MY(put_reloc)(bfd *abfd, int r_extern, int r_index, bfd_vma value,
   PUT_WORD(abfd, value, reloc->r_address);
   r_length = (unsigned int)howto->size;	/* Size as a power of two.  */
   r_pcrel = (int)howto->pc_relative; /* Relative to PC?  */
-  r_ns32k_type = ((howto - MY(howto_table)) / 6U);
+  r_ns32k_type = (int)((howto - MY(howto_table)) / 6U);
 
-  reloc->r_index[2] = (r_index >> 16U);
-  reloc->r_index[1] = (r_index >> 8U);
-  reloc->r_index[0] = r_index;
+  reloc->r_index[2] = (bfd_byte)(r_index >> 16U);
+  reloc->r_index[1] = (bfd_byte)(r_index >> 8U);
+  reloc->r_index[0] = (bfd_byte)r_index;
   reloc->r_type[0] =
-    ((r_extern ? RELOC_STD_BITS_EXTERN_LITTLE : 0)
-     | (r_pcrel ? RELOC_STD_BITS_PCREL_LITTLE : 0)
-     | (r_length << RELOC_STD_BITS_LENGTH_SH_LITTLE)
-     | (r_ns32k_type << RELOC_STD_BITS_NS32K_TYPE_SH_LITTLE));
+    ((r_extern ? RELOC_STD_BITS_EXTERN_LITTLE : 0U)
+     | (r_pcrel ? RELOC_STD_BITS_PCREL_LITTLE : 0U)
+     | (bfd_byte)(r_length << RELOC_STD_BITS_LENGTH_SH_LITTLE)
+     | (bfd_byte)(r_ns32k_type << RELOC_STD_BITS_NS32K_TYPE_SH_LITTLE));
 }
 
 #define MY_put_reloc(BFD, EXT, IDX, VAL, HOWTO, RELOC) \
@@ -335,7 +335,7 @@ bfd_reloc_status_type
 _bfd_ns32k_relocate_contents(reloc_howto_type *howto, bfd *input_bfd,
                              bfd_vma relocation, bfd_byte *location)
 {
-  int r_ns32k_type = ((howto - MY(howto_table)) / 6);
+  int r_ns32k_type = (int)((howto - MY(howto_table)) / 6);
   bfd_vma (*get_data)(bfd_byte *, int);
   void (*put_data)(bfd_vma, bfd_byte *, int);
 

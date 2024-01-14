@@ -961,12 +961,12 @@ all_machines: $(ALL_MACHINES)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: all_machines
 
-## currently breaks on aout-adobe.c:
+## currently breaks on coff-i960.c:
 bfd32_backends: $(BFD32_BACKENDS)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: bfd32_backends
 
-## currently breaks on elf32-aarch64.c:
+## currently breaks on coff-x86_64.c:
 bfd64_backends: $(BFD64_BACKENDS)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: bfd64_backends
@@ -1130,7 +1130,7 @@ stamp-staticlib: stamp-ofiles @MAINT@ bfd.h
 	else \
 	  echo "$@ target: warning: missing libbfd.a" >&2; \
 	fi
-	$(AM_V_at)if test $@ -ot libbfd.a; then touch stamp-staticlib; fi
+	$(AM_V_at)if test ! -e $@ || test $@ -ot libbfd.a; then touch $@; fi
 
 # likewise with making PLISTFILES when running `make check`:
 check-local: stamp-plistfiles @MAINT@ plistfiles

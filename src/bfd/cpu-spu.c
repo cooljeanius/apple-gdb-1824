@@ -1,4 +1,4 @@
-/* Copyright 2006, 2007 Free Software Foundation, Inc.
+/* cpu-spu.c: Copyright 2006, 2007 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
 
@@ -16,21 +16,24 @@
    with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"
 
-
+/* */
 static const bfd_arch_info_type *
-spu_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
+spu_compatible(const bfd_arch_info_type *a, const bfd_arch_info_type *b)
 {
-  BFD_ASSERT (a->arch == bfd_arch_spu);
+  BFD_ASSERT(a->arch == bfd_arch_spu);
   switch (b->arch)
     {
     default:
       return NULL;
     case bfd_arch_spu:
-      return bfd_default_compatible (a, b);
+      return bfd_default_compatible(a, b);
     }
   /*NOTREACHED*/
 }

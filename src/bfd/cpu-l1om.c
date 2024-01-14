@@ -1,4 +1,4 @@
-/* BFD support for the Intel L1OM architecture.
+/* cpu-l1om.c: BFD support for the Intel L1OM architecture.
    Copyright 2009
    Free Software Foundation, Inc.
 
@@ -19,12 +19,15 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"
 
-extern void * bfd_arch_i386_short_nop_fill (bfd_size_type, bfd_boolean,
-					    bfd_boolean);
+extern void *bfd_arch_i386_short_nop_fill(bfd_size_type, bfd_boolean,
+                                          bfd_boolean);
 
 static const bfd_arch_info_type bfd_l1om_arch_intel_syntax =
 {

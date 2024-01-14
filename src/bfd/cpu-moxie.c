@@ -1,4 +1,4 @@
-/* BFD support for the moxie processor.
+/* cpu-moxie.c: BFD support for the moxie processor.
    Copyright 2009 Free Software Foundation, Inc.
    Written by Anthony Green
 
@@ -18,6 +18,9 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"

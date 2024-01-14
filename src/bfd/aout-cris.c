@@ -125,25 +125,25 @@ static bfd_boolean MY (set_sizes) (bfd *);
 /* We need our own version to set header flags.  */
 
 static bfd_boolean
-MY (write_object_contents) (bfd *abfd)
+MY(write_object_contents)(bfd *abfd)
 {
   struct external_exec exec_bytes;
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
 
   /* We set the reloc type to RELOC_EXT_SIZE, although setting it at all
      seems unnecessary when inspecting as and ld behavior (not an
      exhaustive inspection).  The default write_object_contents
      definition sets RELOC_EXT_SIZE, so we follow suite and set it too.  */
-  obj_reloc_entry_size (abfd) = RELOC_EXT_SIZE;
+  obj_reloc_entry_size(abfd) = RELOC_EXT_SIZE;
 
   /* Setting N_SET_MACHTYPE and using N_SET_FLAGS is not performed by
      the default definition.  */
-  if (bfd_get_arch (abfd) == bfd_arch_cris)
-    N_SET_MACHTYPE (*execp, M_CRIS);
+  if (bfd_get_arch(abfd) == bfd_arch_cris)
+    N_SET_MACHTYPE(*execp, M_CRIS);
 
-  N_SET_FLAGS (*execp, aout_backend_info (abfd)->exec_hdr_flags);
+  N_SET_FLAGS(*execp, aout_backend_info(abfd)->exec_hdr_flags);
 
-  WRITE_HEADERS (abfd, execp);
+  WRITE_HEADERS(abfd, execp);
 
   return TRUE;
 }
@@ -153,9 +153,8 @@ MY (write_object_contents) (bfd *abfd)
    - Fix what seems to be a weak-bug (perhaps there for valid reasons).  */
 
 static void
-MY (swap_ext_reloc_out) (bfd *abfd,
-			 arelent *g,
-			 struct reloc_ext_external *natptr)
+MY(swap_ext_reloc_out)(bfd *abfd, arelent *g,
+                       struct reloc_ext_external *natptr)
 {
   int r_index;
   int r_extern;
@@ -164,9 +163,9 @@ MY (swap_ext_reloc_out) (bfd *abfd,
   asymbol *sym = *(g->sym_ptr_ptr);
   asection *output_section = sym->section->output_section;
 
-  PUT_WORD (abfd, g->address, natptr->r_address);
+  PUT_WORD(abfd, g->address, natptr->r_address);
 
-  r_type = (unsigned int) g->howto->type;
+  r_type = (unsigned int)g->howto->type;
 
   r_addend = g->addend;
   if ((sym->flags & BSF_SECTION_SYM) != 0)
@@ -179,20 +178,20 @@ MY (swap_ext_reloc_out) (bfd *abfd,
      from the abs section, or as a symbol which has an abs value.
      check for that here.  */
 
-  if (bfd_is_abs_section (bfd_get_section (sym)))
+  if (bfd_is_abs_section(bfd_get_section(sym)))
     {
       r_extern = 0;
       r_index = N_ABS;
     }
   else if ((sym->flags & BSF_SECTION_SYM) == 0)
     {
-      if (bfd_is_und_section (bfd_get_section (sym))
+      if (bfd_is_und_section(bfd_get_section(sym))
 	  /* Remember to check for weak symbols; they count as global: */
 	  || (sym->flags & (BSF_GLOBAL | BSF_WEAK)) != 0)
 	r_extern = 1;
       else
 	r_extern = 0;
-      r_index = (*(g->sym_ptr_ptr))->KEEPIT;
+      r_index = (int)(*(g->sym_ptr_ptr))->KEEPIT;
     }
   else
     {
@@ -206,19 +205,19 @@ MY (swap_ext_reloc_out) (bfd *abfd,
      We may change this later, but assert this for the moment.  */
   if (r_type > 2)
     {
-      (*_bfd_error_handler) (_("%s: Invalid relocation type exported: %d"),
-			     bfd_get_filename (abfd), r_type);
+      (*_bfd_error_handler)(_("%s: Invalid relocation type exported: %d"),
+			    bfd_get_filename(abfd), r_type);
 
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
     }
 
   /* Now the fun stuff: */
-  natptr->r_index[2] = (r_index >> 16U);
-  natptr->r_index[1] = (r_index >> 8U);
-  natptr->r_index[0] = r_index;
+  natptr->r_index[2] = (bfd_byte)(r_index >> 16U);
+  natptr->r_index[1] = (bfd_byte)(r_index >> 8U);
+  natptr->r_index[0] = (bfd_byte)r_index;
   natptr->r_type[0] =
-     (r_extern ? RELOC_EXT_BITS_EXTERN_LITTLE : 0)
-      | (r_type << RELOC_EXT_BITS_TYPE_SH_LITTLE);
+     (r_extern ? RELOC_EXT_BITS_EXTERN_LITTLE : 0U)
+      | (bfd_byte)(r_type << RELOC_EXT_BITS_TYPE_SH_LITTLE);
 
   PUT_WORD(abfd, r_addend, natptr->r_addend);
 }
@@ -236,12 +235,12 @@ MY(swap_ext_reloc_in)(bfd *abfd,
   unsigned int r_type;
   struct aoutdata *su = &(abfd->tdata.aout_data->a);
 
-  cache_ptr->address = (GET_SWORD(abfd, bytes->r_address));
+  cache_ptr->address = (bfd_size_type)GET_SWORD(abfd, bytes->r_address);
 
   /* Now the fun stuff: */
-  r_index = ((bytes->r_index[2] << 16U)
-             | (bytes->r_index[1] << 8U)
-             | bytes->r_index[0]);
+  r_index = (unsigned int)((bytes->r_index[2] << 16U)
+                           | (bytes->r_index[1] << 8U)
+                           | bytes->r_index[0]);
   r_extern = (0 != (bytes->r_type[0] & RELOC_EXT_BITS_EXTERN_LITTLE));
   r_type = (((bytes->r_type[0]) >> RELOC_EXT_BITS_TYPE_SH_LITTLE)
             & RELOC_EXT_BITS_TYPE_LITTLE);
@@ -278,21 +277,23 @@ MY(swap_ext_reloc_in)(bfd *abfd,
    NAME (aout, set_arch_mach) in aoutx.  */
 
 static bfd_boolean
-MY (set_sizes) (bfd *abfd)
+MY(set_sizes)(bfd *abfd)
 {
   /* Just as the default in aout-target.h (with some #ifdefs folded)...  */
 
-  adata (abfd).page_size = TARGET_PAGE_SIZE;
-  adata (abfd).segment_size = SEGMENT_SIZE;
-  adata (abfd).zmagic_disk_block_size = ZMAGIC_DISK_BLOCK_SIZE;
-  adata (abfd).exec_bytes_size = EXEC_BYTES_SIZE;
+  adata(abfd).page_size = TARGET_PAGE_SIZE;
+  adata(abfd).segment_size = SEGMENT_SIZE;
+  adata(abfd).zmagic_disk_block_size = ZMAGIC_DISK_BLOCK_SIZE;
+  adata(abfd).exec_bytes_size = EXEC_BYTES_SIZE;
 
   /* ... except for that we have the extended reloc.  The alternative
      would be to add a check on bfd_arch_cris in NAME (aout,
      set_arch_mach) in aoutx.h, but I don't want to do that since
      target-specific things should not be added there.  */
 
-  obj_reloc_entry_size (abfd) = RELOC_EXT_SIZE;
+  obj_reloc_entry_size(abfd) = RELOC_EXT_SIZE;
 
   return TRUE;
 }
+
+/* EOF */

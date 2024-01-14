@@ -347,20 +347,22 @@ ecoff_swap_pdr_in(bfd *abfd, void *ext_copy, PDR *intern)
       intern->gp_used = 0 != (ext->p_bits1[0] & PDR_BITS1_GP_USED_BIG);
       intern->reg_frame = 0 != (ext->p_bits1[0] & PDR_BITS1_REG_FRAME_BIG);
       intern->prof = 0 != (ext->p_bits1[0] & PDR_BITS1_PROF_BIG);
-      intern->reserved = (((ext->p_bits1[0] & PDR_BITS1_RESERVED_BIG)
-			   << PDR_BITS1_RESERVED_SH_LEFT_BIG)
-			  | ((ext->p_bits2[0] & PDR_BITS2_RESERVED_BIG)
-			     >> PDR_BITS2_RESERVED_SH_BIG));
+      intern->reserved =
+        (((unsigned int)(ext->p_bits1[0] & PDR_BITS1_RESERVED_BIG)
+          << PDR_BITS1_RESERVED_SH_LEFT_BIG)
+         | (unsigned int)((ext->p_bits2[0] & PDR_BITS2_RESERVED_BIG)
+                          >> PDR_BITS2_RESERVED_SH_BIG));
     }
   else
     {
       intern->gp_used = 0 != (ext->p_bits1[0] & PDR_BITS1_GP_USED_LITTLE);
       intern->reg_frame = 0 != (ext->p_bits1[0] & PDR_BITS1_REG_FRAME_LITTLE);
       intern->prof = 0 != (ext->p_bits1[0] & PDR_BITS1_PROF_LITTLE);
-      intern->reserved = (((ext->p_bits1[0] & PDR_BITS1_RESERVED_LITTLE)
-			   >> PDR_BITS1_RESERVED_SH_LITTLE)
-			  | ((ext->p_bits2[0] & PDR_BITS2_RESERVED_LITTLE)
-			     << PDR_BITS2_RESERVED_SH_LEFT_LITTLE));
+      intern->reserved =
+        (((ext->p_bits1[0] & PDR_BITS1_RESERVED_LITTLE)
+          >> PDR_BITS1_RESERVED_SH_LITTLE)
+         | (unsigned int)((ext->p_bits2[0] & PDR_BITS2_RESERVED_LITTLE)
+                          << PDR_BITS2_RESERVED_SH_LEFT_LITTLE));
     }
   intern->localoff = H_GET_8(abfd, ext->p_localoff);
 #endif /* ECOFF_64 || ECOFF_SIGNED_64 */
@@ -450,38 +452,42 @@ ecoff_swap_sym_in(bfd *abfd, void *ext_copy, SYMR *intern)
   /* Now the fun stuff...  (GCC PR 39170 all throughout here) */
   if (bfd_header_big_endian(abfd))
     {
-      intern->st          =  (ext->s_bits1[0] & SYM_BITS1_ST_BIG)
-					     >> SYM_BITS1_ST_SH_BIG;
-      intern->sc          = ((ext->s_bits1[0] & SYM_BITS1_SC_BIG)
-					     << SYM_BITS1_SC_SH_LEFT_BIG)
-			  | ((ext->s_bits2[0] & SYM_BITS2_SC_BIG)
-					     >> SYM_BITS2_SC_SH_BIG);
-      intern->reserved    = 0 != (ext->s_bits2[0] & SYM_BITS2_RESERVED_BIG);
-      intern->index       = ((ext->s_bits2[0] & SYM_BITS2_INDEX_BIG)
-					     << SYM_BITS2_INDEX_SH_LEFT_BIG)
-			  | (ext->s_bits3[0] << SYM_BITS3_INDEX_SH_LEFT_BIG)
-			  | (ext->s_bits4[0] << SYM_BITS4_INDEX_SH_LEFT_BIG);
+      intern->st = ((ext->s_bits1[0] & SYM_BITS1_ST_BIG)
+                    >> SYM_BITS1_ST_SH_BIG);
+      intern->sc = (((unsigned int)(ext->s_bits1[0] & SYM_BITS1_SC_BIG)
+                     << SYM_BITS1_SC_SH_LEFT_BIG)
+                    | (unsigned int)((unsigned int)(ext->s_bits2[0]
+                                                    & SYM_BITS2_SC_BIG)
+                                     >> SYM_BITS2_SC_SH_BIG));
+      intern->reserved = (0 != (ext->s_bits2[0] & SYM_BITS2_RESERVED_BIG));
+      intern->index = (((unsigned int)(ext->s_bits2[0] & SYM_BITS2_INDEX_BIG)
+                        << SYM_BITS2_INDEX_SH_LEFT_BIG)
+                       | (unsigned int)(ext->s_bits3[0]
+                                        << SYM_BITS3_INDEX_SH_LEFT_BIG)
+                       | (unsigned int)(ext->s_bits4[0]
+                                        << SYM_BITS4_INDEX_SH_LEFT_BIG));
     }
   else
     {
-      intern->st          =  (ext->s_bits1[0] & SYM_BITS1_ST_LITTLE)
-					     >> SYM_BITS1_ST_SH_LITTLE;
-      intern->sc          = ((ext->s_bits1[0] & SYM_BITS1_SC_LITTLE)
-					     >> SYM_BITS1_SC_SH_LITTLE)
-			  | ((ext->s_bits2[0] & SYM_BITS2_SC_LITTLE)
-					     << SYM_BITS2_SC_SH_LEFT_LITTLE);
-      intern->reserved    = 0 != (ext->s_bits2[0] & SYM_BITS2_RESERVED_LITTLE);
-      intern->index       = ((ext->s_bits2[0] & SYM_BITS2_INDEX_LITTLE)
-					     >> SYM_BITS2_INDEX_SH_LITTLE)
-			  | (ext->s_bits3[0] << SYM_BITS3_INDEX_SH_LEFT_LITTLE)
-			  | ((unsigned int) ext->s_bits4[0]
-			     << SYM_BITS4_INDEX_SH_LEFT_LITTLE);
+      intern->st = ((ext->s_bits1[0] & SYM_BITS1_ST_LITTLE)
+                    >> SYM_BITS1_ST_SH_LITTLE);
+      intern->sc = (((ext->s_bits1[0] & SYM_BITS1_SC_LITTLE)
+                     >> SYM_BITS1_SC_SH_LITTLE)
+                    | (unsigned int)((ext->s_bits2[0] & SYM_BITS2_SC_LITTLE)
+                                     << SYM_BITS2_SC_SH_LEFT_LITTLE));
+      intern->reserved = (0 != (ext->s_bits2[0] & SYM_BITS2_RESERVED_LITTLE));
+      intern->index = (((ext->s_bits2[0] & SYM_BITS2_INDEX_LITTLE)
+                        >> SYM_BITS2_INDEX_SH_LITTLE)
+                       | (unsigned int)(ext->s_bits3[0]
+                                        << SYM_BITS3_INDEX_SH_LEFT_LITTLE)
+                       | ((unsigned int)ext->s_bits4[0]
+                          << SYM_BITS4_INDEX_SH_LEFT_LITTLE));
     }
 
 #ifdef TEST
   if (memcmp((char *)ext, (char *)intern, sizeof(*intern)) != 0)
     abort();
-#endif
+#endif /* TEST */
 }
 
 /* Swap out a symbol record: */
@@ -530,7 +536,7 @@ ecoff_swap_sym_out(bfd *abfd, const SYMR *intern_copy, void *ext_ptr)
 #ifdef TEST
   if (memcmp((char *)ext, (char *)intern, sizeof(*intern)) != 0)
     abort();
-#endif
+#endif /* TEST */
 }
 
 /* Swap in an external symbol record: */
@@ -670,9 +676,10 @@ ecoff_swap_opt_in(bfd *abfd, void *ext_copy, OPTR *intern)
   else
     {
       intern->ot = ext->o_bits1[0];
-      intern->value = ((ext->o_bits2[0] << OPT_BITS2_VALUE_SH_LEFT_LITTLE)
-		       | (ext->o_bits3[0] << OPT_BITS2_VALUE_SH_LEFT_LITTLE)
-		       | (ext->o_bits4[0] << OPT_BITS2_VALUE_SH_LEFT_LITTLE));
+      intern->value =
+      	((unsigned int)(ext->o_bits2[0] << OPT_BITS2_VALUE_SH_LEFT_LITTLE)
+         | (unsigned int)(ext->o_bits3[0] << OPT_BITS2_VALUE_SH_LEFT_LITTLE)
+         | (unsigned int)(ext->o_bits4[0] << OPT_BITS2_VALUE_SH_LEFT_LITTLE));
     }
 
   _bfd_ecoff_swap_rndx_in(bfd_header_big_endian(abfd),

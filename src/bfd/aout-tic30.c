@@ -278,7 +278,7 @@ tic30_aout_reloc_howto(bfd *abfd, struct reloc_std_external *relocs,
   int local_index;
 
   *r_pcrel = 0;
-  if (bfd_header_big_endian (abfd))
+  if (bfd_header_big_endian(abfd))
     {
       *r_index = ((relocs->r_index[0] << 16) | (relocs->r_index[1] << 8) | relocs->r_index[2]);
       *r_extern = (0 != (relocs->r_type[0] & RELOC_STD_BITS_EXTERN_BIG));
@@ -292,21 +292,21 @@ tic30_aout_reloc_howto(bfd *abfd, struct reloc_std_external *relocs,
       r_pcrel_done = (0 != (relocs->r_type[0] & RELOC_STD_BITS_PCREL_LITTLE));
       r_length = ((relocs->r_type[0] & RELOC_STD_BITS_LENGTH_LITTLE) >> RELOC_STD_BITS_LENGTH_SH_LITTLE);
     }
-  local_index = r_length + 4 * r_pcrel_done;
-  return tic30_aout_howto_table + local_index;
+  local_index = (int)(r_length + (4 * r_pcrel_done));
+  return (tic30_aout_howto_table + local_index);
 }
 
 /* These macros will get 24-bit values from the bfd definition.
    Big-endian only.  */
 #define bfd_getb_24(BFD,ADDR)			\
- (bfd_get_8 (BFD, ADDR    ) << 16) |		\
- (bfd_get_8 (BFD, ADDR + 1) <<  8) |		\
- (bfd_get_8 (BFD, ADDR + 2)      )
+ (bfd_get_8(BFD, ADDR) << 16UL) |		\
+ (unsigned long)(bfd_get_8(BFD, (ADDR + 1UL)) << 8UL) |		\
+ (unsigned long)(bfd_get_8(BFD, (ADDR + 2UL)))
 
 #define bfd_putb_24(BFD,DATA,ADDR)				\
- bfd_put_8 (BFD, (bfd_byte) ((DATA >> 16) & 0xFF), ADDR    );	\
- bfd_put_8 (BFD, (bfd_byte) ((DATA >>  8) & 0xFF), ADDR + 1);	\
- bfd_put_8 (BFD, (bfd_byte) ( DATA        & 0xFF), ADDR + 2)
+ bfd_put_8(BFD, (bfd_byte)((DATA >> 16) & 0xFF), ADDR);		\
+ bfd_put_8(BFD, (bfd_byte)((DATA >> 8) & 0xFF), (ADDR + 1));	\
+ bfd_put_8(BFD, (bfd_byte)(DATA & 0xFF), (ADDR + 2))
 
 /* Set parameters about this a.out file that are machine-dependent.
  * Routine is called from some_aout_object_p just before it returns: */
@@ -317,35 +317,35 @@ static const bfd_target *tic30_aout_callback(bfd *abfd)
   unsigned long arch_align;
 
   /* Calculate file positions of the parts of a newly read aout header: */
-  obj_textsec (abfd)->size = N_TXTSIZE (*execp);
+  obj_textsec(abfd)->size = N_TXTSIZE(*execp);
 
-  /* The virtual memory addresses of the sections.  */
-  obj_textsec (abfd)->vma = N_TXTADDR (*execp);
-  obj_datasec (abfd)->vma = N_DATADDR (*execp);
-  obj_bsssec (abfd)->vma = N_BSSADDR (*execp);
+  /* The virtual memory addresses of the sections: */
+  obj_textsec(abfd)->vma = N_TXTADDR(*execp);
+  obj_datasec(abfd)->vma = N_DATADDR(*execp);
+  obj_bsssec(abfd)->vma = N_BSSADDR(*execp);
 
-  obj_textsec (abfd)->lma = obj_textsec (abfd)->vma;
-  obj_datasec (abfd)->lma = obj_datasec (abfd)->vma;
-  obj_bsssec (abfd)->lma = obj_bsssec (abfd)->vma;
+  obj_textsec(abfd)->lma = obj_textsec(abfd)->vma;
+  obj_datasec(abfd)->lma = obj_datasec(abfd)->vma;
+  obj_bsssec(abfd)->lma = obj_bsssec(abfd)->vma;
 
-  /* The file offsets of the sections.  */
-  obj_textsec (abfd)->filepos = N_TXTOFF (*execp);
-  obj_datasec (abfd)->filepos = N_DATOFF (*execp);
+  /* The file offsets of the sections: */
+  obj_textsec(abfd)->filepos = N_TXTOFF(*execp);
+  obj_datasec(abfd)->filepos = (file_ptr)N_DATOFF(*execp);
 
-  /* The file offsets of the relocation info.  */
-  obj_textsec (abfd)->rel_filepos = N_TRELOFF (*execp);
-  obj_datasec (abfd)->rel_filepos = N_DRELOFF (*execp);
+  /* The file offsets of the relocation info: */
+  obj_textsec(abfd)->rel_filepos = (file_ptr)N_TRELOFF(*execp);
+  obj_datasec(abfd)->rel_filepos = (file_ptr)N_DRELOFF(*execp);
 
-  /* The file offsets of the string table and symbol table.  */
-  obj_sym_filepos (abfd) = N_SYMOFF (*execp);
-  obj_str_filepos (abfd) = N_STROFF (*execp);
+  /* The file offsets of the string table and symbol table: */
+  obj_sym_filepos(abfd) = (file_ptr)N_SYMOFF(*execp);
+  obj_str_filepos(abfd) = (file_ptr)N_STROFF(*execp);
 
-  /* Determine the architecture and machine type of the object file.  */
+  /* Determine the architecture and machine type of the object file: */
 #ifdef SET_ARCH_MACH
-  SET_ARCH_MACH (abfd, *execp);
+  SET_ARCH_MACH(abfd, *execp);
 #else
-  bfd_default_set_arch_mach (abfd, DEFAULT_ARCH, 0L);
-#endif
+  bfd_default_set_arch_mach(abfd, DEFAULT_ARCH, 0L);
+#endif /* SET_ARCH_MACH */
 
   /* Now that we know the architecture, set the alignments of the
      sections.  This is normally done by NAME (aout,new_section_hook),
@@ -353,22 +353,23 @@ static const bfd_target *tic30_aout_callback(bfd *abfd)
      not yet been set.  However, for backward compatibility, we don't
      set the alignment power any higher than as required by the size
      of the section.  */
-  arch_align_power = bfd_get_arch_info (abfd)->section_align_power;
-  arch_align = 1 << arch_align_power;
-  if ((BFD_ALIGN (obj_textsec (abfd)->size, arch_align)
-       == obj_textsec (abfd)->size)
-      && (BFD_ALIGN (obj_datasec (abfd)->size, arch_align)
-	  == obj_datasec (abfd)->size)
-      && (BFD_ALIGN (obj_bsssec (abfd)->size, arch_align)
-	  == obj_bsssec (abfd)->size))
+  arch_align_power = bfd_get_arch_info(abfd)->section_align_power;
+  arch_align = (1 << arch_align_power);
+  if ((BFD_ALIGN(obj_textsec(abfd)->size, arch_align)
+       == obj_textsec(abfd)->size)
+      && (BFD_ALIGN(obj_datasec(abfd)->size, arch_align)
+	  == obj_datasec(abfd)->size)
+      && (BFD_ALIGN(obj_bsssec(abfd)->size, arch_align)
+	  == obj_bsssec(abfd)->size))
     {
-      obj_textsec (abfd)->alignment_power = arch_align_power;
-      obj_datasec (abfd)->alignment_power = arch_align_power;
-      obj_bsssec (abfd)->alignment_power = arch_align_power;
+      obj_textsec(abfd)->alignment_power = arch_align_power;
+      obj_datasec(abfd)->alignment_power = arch_align_power;
+      obj_bsssec(abfd)->alignment_power = arch_align_power;
     }
   return abfd->xvec;
 }
 
+/* */
 static bfd_reloc_status_type
 tic30_aout_relocate_contents(reloc_howto_type *howto, bfd *input_bfd,
                              bfd_vma relocation, bfd_byte *location)
@@ -386,16 +387,16 @@ tic30_aout_relocate_contents(reloc_howto_type *howto, bfd *input_bfd,
       abort();
       break;
     case 1:
-      x = bfd_get_16 (input_bfd, location);
+      x = bfd_get_16(input_bfd, location);
       break;
     case 2:
-      x = bfd_getb_24 (input_bfd, location);
+      x = (bfd_vma)bfd_getb_24(input_bfd, location);
       break;
     case 3:
-      x = bfd_get_8 (input_bfd, location);
+      x = bfd_get_8(input_bfd, location);
       break;
     case 4:
-      x = bfd_get_32 (input_bfd, location);
+      x = bfd_get_32(input_bfd, location);
       break;
     }
 
@@ -415,16 +416,19 @@ tic30_aout_relocate_contents(reloc_howto_type *howto, bfd *input_bfd,
 	}
       else
 	{
-	  check = relocation >> howto->rightshift;
-	  if ((bfd_signed_vma) relocation >= 0)
-	    signed_check = check;
+	  check = (relocation >> howto->rightshift);
+	  if ((bfd_signed_vma)relocation >= 0)
+	    signed_check = (bfd_signed_vma)check;
 	  else
-	    signed_check = (check | ((bfd_vma) - 1 & ~((bfd_vma) - 1 >> howto->rightshift)));
+	    signed_check = (bfd_signed_vma)(check
+                                            | ((bfd_vma)-1
+                                               & ~((bfd_vma)-1
+                                                   >> howto->rightshift)));
 	}
-      add = x & howto->src_mask;
-      signed_add = add;
+      add = (x & howto->src_mask);
+      signed_add = (bfd_signed_vma)add;
       if ((add & (((~howto->src_mask) >> 1) & howto->src_mask)) != 0)
-	signed_add -= (((~howto->src_mask) >> 1) & howto->src_mask) << 1;
+	signed_add -= ((((~howto->src_mask) >> 1) & howto->src_mask) << 1);
       if (howto->bitpos == 0)
 	{
 	  check += add;
@@ -432,26 +436,29 @@ tic30_aout_relocate_contents(reloc_howto_type *howto, bfd *input_bfd,
 	}
       else
 	{
-	  check += add >> howto->bitpos;
+	  check += (add >> howto->bitpos);
 	  if (signed_add >= 0)
-	    signed_check += add >> howto->bitpos;
+	    signed_check += (add >> howto->bitpos);
 	  else
-	    signed_check += ((add >> howto->bitpos) | ((bfd_vma) - 1 & ~((bfd_vma) - 1 >> howto->bitpos)));
+	    signed_check += ((add >> howto->bitpos)
+                             | ((bfd_vma)-1 & ~((bfd_vma)-1 >> howto->bitpos)));
 	}
       switch (howto->complain_on_overflow)
 	{
 	case complain_overflow_signed:
 	  {
-	    bfd_signed_vma reloc_signed_max = (1 << (howto->bitsize - 1)) - 1;
+	    bfd_signed_vma reloc_signed_max = ((1 << (howto->bitsize - 1)) - 1);
 	    bfd_signed_vma reloc_signed_min = ~reloc_signed_max;
 
-	    if (signed_check > reloc_signed_max || signed_check < reloc_signed_min)
+	    if ((signed_check > reloc_signed_max)
+                || (signed_check < reloc_signed_min))
 	      overflow = TRUE;
 	  }
 	  break;
 	case complain_overflow_unsigned:
 	  {
-	    bfd_vma reloc_unsigned_max = (((1 << (howto->bitsize - 1)) - 1) << 1) | 1;
+	    bfd_vma reloc_unsigned_max =
+              ((((1UL << (howto->bitsize - 1UL)) - 1UL) << 1UL) | 1UL);
 
 	    if (check > reloc_unsigned_max)
 	      overflow = TRUE;
@@ -459,20 +466,21 @@ tic30_aout_relocate_contents(reloc_howto_type *howto, bfd *input_bfd,
 	  break;
 	case complain_overflow_bitfield:
 	  {
-	    bfd_vma reloc_bits = (((1 << (howto->bitsize - 1)) - 1) << 1) | 1;
+	    bfd_vma reloc_bits =
+              ((((1UL << (howto->bitsize - 1UL)) - 1UL) << 1UL) | 1UL);
 
-	    if ((check & ~reloc_bits) != 0
-		&& (((bfd_vma) signed_check & ~reloc_bits)
-		    != ((bfd_vma) -1 & ~reloc_bits)))
+	    if (((check & ~reloc_bits) != 0)
+		&& (((bfd_vma)signed_check & ~reloc_bits)
+		    != ((bfd_vma)-1 & ~reloc_bits)))
 	      overflow = TRUE;
 	  }
 	  break;
 	default:
-	  abort ();
+	  abort();
 	}
     }
-  relocation >>= (bfd_vma) howto->rightshift;
-  relocation <<= (bfd_vma) howto->bitpos;
+  relocation >>= (bfd_vma)howto->rightshift;
+  relocation <<= (bfd_vma)howto->bitpos;
   x = ((x & ~howto->dst_mask) | (((x & howto->src_mask) + relocation) & howto->dst_mask));
   switch (howto->size)
     {
@@ -663,9 +671,9 @@ MY_final_link_callback(bfd *abfd, file_ptr *ptreloff, file_ptr *pdreloff,
 {
   struct internal_exec *execp = exec_hdr(abfd);
 
-  *ptreloff = (obj_datasec(abfd)->filepos + execp->a_data);
-  *pdreloff = (*ptreloff + execp->a_trsize);
-  *psymoff = (*pdreloff + execp->a_drsize);
+  *ptreloff = (obj_datasec(abfd)->filepos + (file_ptr)execp->a_data);
+  *pdreloff = (*ptreloff + (file_ptr)execp->a_trsize);
+  *psymoff = (*pdreloff + (file_ptr)execp->a_drsize);
 }
 
 #endif /* !MY_final_link_callback */
@@ -710,14 +718,14 @@ MY_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
 
   obj_datasec(abfd)->user_set_vma = 1;
   vma = obj_datasec(abfd)->vma;
-  obj_datasec(abfd)->filepos = (vma + adata(abfd).exec_bytes_size);
+  obj_datasec(abfd)->filepos = (file_ptr)(vma + adata(abfd).exec_bytes_size);
   execp->a_text = (vma - obj_textsec(abfd)->vma);
   obj_textsec(abfd)->size = execp->a_text;
 
   /* Since BSS follows data immediately, see if it needs alignment: */
   vma += obj_datasec(abfd)->size;
-  pad = (int)(align_power(vma, obj_bsssec (abfd)->alignment_power) - vma);
-  obj_datasec(abfd)->size += pad;
+  pad = (int)(align_power(vma, obj_bsssec(abfd)->alignment_power) - vma);
+  obj_datasec(abfd)->size += (bfd_size_type)pad;
   pos += obj_datasec(abfd)->size;
 
   if (pos == 0) {
@@ -737,6 +745,7 @@ MY_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
 }
 #endif /* !MY_bfd_final_link */
 
+/* */
 static enum machine_type
 tic30_aout_machine_type(enum bfd_architecture arch,
                         unsigned long machine ATTRIBUTE_UNUSED,
@@ -760,6 +769,7 @@ tic30_aout_machine_type(enum bfd_architecture arch,
   return arch_flags;
 }
 
+/* */
 static bfd_boolean
 tic30_aout_set_arch_mach(bfd *abfd, enum bfd_architecture arch,
                          unsigned long machine)

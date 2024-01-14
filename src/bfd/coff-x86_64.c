@@ -152,7 +152,7 @@ coff_amd64_reloc (bfd *abfd,
 	  {
 	  case 0:
 	    {
-	      char x = bfd_get_8(abfd, addr);
+	      char x = (char)bfd_get_8(abfd, addr);
 	      DOIT(x, char);
 	      bfd_put_8(abfd, x, addr);
 	    }

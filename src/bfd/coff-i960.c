@@ -329,7 +329,7 @@ coff_i960_start_final_link(bfd *abfd, struct bfd_link_info *info)
 
       strncpy(isym._n._n_name, o->name, (size_t)SYMNMLEN);
       isym.n_value = 0;
-      isym.n_scnum = o->target_index;
+      isym.n_scnum = (short)o->target_index;
       isym.n_type = T_NULL;
       isym.n_sclass = C_STAT;
       isym.n_numaux = 0;
@@ -479,7 +479,7 @@ coff_i960_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 		if (h != NULL)
 		  {
 		    BFD_ASSERT(h->numaux == 2);
-		    olf = h->aux[1].x_bal.x_balntry;
+		    olf = (long)h->aux[1].x_bal.x_balntry;
 		  }
 		else
 		  {
@@ -488,11 +488,11 @@ coff_i960_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 
 		    BFD_ASSERT(sym->n_numaux == 2);
 		    esyms = (bfd_byte *)obj_coff_external_syms(input_bfd);
-		    esyms += (symndx + 2) * bfd_coff_symesz(input_bfd);
+		    esyms += ((symndx + 2) * bfd_coff_symesz(input_bfd));
 		    bfd_coff_swap_aux_in(input_bfd, (PTR)esyms,
                                          sym->n_type, sym->n_sclass, 1,
                                          sym->n_numaux, (PTR)&aux);
-		    olf = aux.x_bal.x_balntry;
+		    olf = (long)aux.x_bal.x_balntry;
 		  }
 
 		word = (unsigned long)bfd_get_32(input_bfd,

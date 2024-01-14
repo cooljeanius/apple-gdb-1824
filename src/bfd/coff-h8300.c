@@ -1,4 +1,4 @@
-/* BFD back-end for Renesas H8/300 COFF binaries.
+/* coff-h8300.c: BFD back-end for Renesas H8/300 COFF binaries.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -18,7 +18,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -230,18 +230,15 @@ h8300_coff_link_hash_table_create (bfd *abfd)
    the addend until the final link.  */
 
 static bfd_reloc_status_type
-special (bfd *abfd ATTRIBUTE_UNUSED,
-	 arelent *reloc_entry ATTRIBUTE_UNUSED,
-	 asymbol *symbol ATTRIBUTE_UNUSED,
-	 PTR data ATTRIBUTE_UNUSED,
-	 asection *input_section ATTRIBUTE_UNUSED,
-	 bfd *output_bfd,
-	 const char **error_message ATTRIBUTE_UNUSED)
+special(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
+        asymbol *symbol ATTRIBUTE_UNUSED, PTR data ATTRIBUTE_UNUSED,
+        asection *input_section, bfd *output_bfd,
+        const char **error_message ATTRIBUTE_UNUSED)
 {
-  if (output_bfd == (bfd *) NULL)
+  if (output_bfd == (bfd *)NULL)
     return bfd_reloc_continue;
 
-  /* Adjust the reloc address to that in the output section.  */
+  /* Adjust the reloc address to that in the output section: */
   reloc_entry->address += input_section->output_offset;
   return bfd_reloc_ok;
 }
@@ -283,7 +280,7 @@ static reloc_howto_type howto_table[] = {
 /* Turn a howto into a reloc number.  */
 
 #define SELECT_RELOC(x,howto) \
-  { x.r_type = select_reloc (howto); }
+  { x.r_type = (unsigned short)select_reloc(howto); }
 
 #define BADMAG(x) (H8300BADMAG (x) && H8300HBADMAG (x) && H8300SBADMAG (x) \
 				   && H8300HNBADMAG(x) && H8300SNBADMAG(x))
@@ -301,7 +298,7 @@ static reloc_howto_type howto_table[] = {
 
 static int select_reloc(reloc_howto_type *howto)
 {
-  return howto->type;
+  return (int)howto->type;
 }
 
 /* Code to turn a r_type into a howto ptr, uses the above howto table: */
@@ -434,8 +431,8 @@ h8300_symbol_address_p (bfd *abfd, asection *input_section, bfd_vma address)
    in the howto table.  This needs to be fixed.  */
 
 static int
-h8300_reloc16_estimate (bfd *abfd, asection *input_section, arelent *reloc,
-			unsigned int shrink, struct bfd_link_info *link_info)
+h8300_reloc16_estimate(bfd *abfd, asection *input_section, arelent *reloc,
+                       unsigned int shrink, struct bfd_link_info *link_info)
 {
   bfd_vma value;
   bfd_vma dot;
@@ -447,20 +444,20 @@ h8300_reloc16_estimate (bfd *abfd, asection *input_section, arelent *reloc,
      the size of the shrink - but we don't change reloc->address here,
      since we need it to know where the relocation lives in the source
      uncooked section.  */
-  bfd_vma address = reloc->address - shrink;
+  bfd_vma address = (reloc->address - shrink);
 
   if (input_section != last_input_section)
     last_reloc = NULL;
 
-  /* Only examine the relocs which might be relaxable.  */
+  /* Only examine the relocs which might be relaxable: */
   switch (reloc->howto->type)
     {
       /* This is the 16-/24-bit absolute branch which could become an
 	 8-bit pc-relative branch.  */
     case R_JMP1:
     case R_JMPL1:
-      /* Get the address of the target of this branch.  */
-      value = bfd_coff_reloc16_get_value (reloc, link_info, input_section);
+      /* Get the address of the target of this branch: */
+      value = bfd_coff_reloc16_get_value(reloc, link_info, input_section);
 
       /* Get the address of the next instruction (not the reloc).  */
       if (input_section != NULL) {
@@ -471,7 +468,7 @@ h8300_reloc16_estimate (bfd *abfd, asection *input_section, arelent *reloc,
       }
 
       /* Adjust for R_JMP1 vs R_JMPL1.  */
-      dot += (reloc->howto->type == R_JMP1 ? 1 : 2);
+      dot += ((reloc->howto->type == R_JMP1) ? 1 : 2);
 
       /* Compute the distance from this insn to the branch target.  */
       gap = value - dot;
@@ -517,35 +514,33 @@ h8300_reloc16_estimate (bfd *abfd, asection *input_section, arelent *reloc,
 		      _bar:  rts
 
 	     which changes the call (jsr) into a branch (bne).  */
-	  if (code == 0x5a
-	      && gap <= 126
-	      && last_reloc
-	      && last_reloc->howto->type == R_PCRBYTE)
+	  if ((code == 0x5a) && (gap <= 126) && (last_reloc != NULL)
+	      && (last_reloc->howto->type == R_PCRBYTE))
 	    {
 	      bfd_vma last_value;
-	      last_value = bfd_coff_reloc16_get_value (last_reloc, link_info,
-						       input_section) + 1;
+	      last_value = (bfd_coff_reloc16_get_value(last_reloc, link_info,
+						       input_section) + 1UL);
 
-	      if (last_value == dot + 2
-		  && last_reloc->address + 1 == reloc->address
-		  && !h8300_symbol_address_p (abfd, input_section, dot - 2))
+	      if ((last_value == (dot + 2))
+		  && ((last_reloc->address + 1) == reloc->address)
+		  && !h8300_symbol_address_p(abfd, input_section, (dot - 2)))
 		{
-		  reloc->howto = howto_table + 19;
-		  last_reloc->howto = howto_table + 18;
+		  reloc->howto = (howto_table + 19);
+		  last_reloc->howto = (howto_table + 18);
 		  last_reloc->sym_ptr_ptr = reloc->sym_ptr_ptr;
 		  last_reloc->addend = reloc->addend;
 		  shrink += 4;
-		  bfd_perform_slip (abfd, 4, input_section, address);
+		  bfd_perform_slip(abfd, 4, input_section, address);
 		  break;
 		}
 	    }
 
-	  /* Change the reloc type.  */
-	  reloc->howto = reloc->howto + 1;
+	  /* Change the reloc type: */
+	  reloc->howto = (reloc->howto + 1);
 
-	  /* This shrinks this section by two bytes.  */
+	  /* This shrinks this section by two bytes: */
 	  shrink += 2;
-	  bfd_perform_slip (abfd, 2, input_section, address);
+	  bfd_perform_slip(abfd, 2, input_section, address);
 	}
       break;
 
@@ -556,7 +551,7 @@ h8300_reloc16_estimate (bfd *abfd, asection *input_section, arelent *reloc,
 	 because the addend field in PCrel jumps is off by -1.  */
       value = bfd_coff_reloc16_get_value (reloc, link_info, input_section) + 1;
 
-      /* Get the address of the next instruction if we were to relax.  */
+      /* Get the address of the next instruction if we were to relax: */
       if (input_section != NULL) {
 	dot = (input_section->output_section->vma
 	       + input_section->output_offset + address);
@@ -564,18 +559,18 @@ h8300_reloc16_estimate (bfd *abfd, asection *input_section, arelent *reloc,
 	dot = address;
       }
 
-      /* Compute the distance from this insn to the branch target.  */
-      gap = value - dot;
+      /* Compute the distance from this insn to the branch target: */
+      gap = (value - dot);
 
       /* If the distance is within -128..+128 inclusive, then we can relax
 	 this jump.  +128 is valid since the target will move two bytes
 	 closer if we do relax this branch.  */
-      if ((int) gap >= -128 && (int) gap <= 128)
+      if (((int)gap >= -128) && ((int)gap <= 128))
 	{
-	  /* Change the reloc type.  */
-	  reloc->howto = howto_table + 15;
+	  /* Change the reloc type: */
+	  reloc->howto = (howto_table + 15);
 
-	  /* This shrinks this section by two bytes.  */
+	  /* This shrinks this section by two bytes: */
 	  shrink += 2;
 	  bfd_perform_slip (abfd, 2, input_section, address);
 	}
@@ -584,20 +579,20 @@ h8300_reloc16_estimate (bfd *abfd, asection *input_section, arelent *reloc,
     /* This is a 16-bit absolute address in a mov.b insn, which can
        become an 8-bit absolute address if it's in the right range.  */
     case R_MOV16B1:
-      /* Get the address of the data referenced by this mov.b insn.  */
-      value = bfd_coff_reloc16_get_value (reloc, link_info, input_section);
-      value = bfd_h8300_pad_address (abfd, value);
+      /* Get the address of the data referenced by this mov.b insn: */
+      value = bfd_coff_reloc16_get_value(reloc, link_info, input_section);
+      value = bfd_h8300_pad_address(abfd, value);
 
       /* If the address is in the top 256 bytes of the address space
 	 then we can relax this instruction.  */
       if (value >= 0xffffff00u)
 	{
-	  /* Change the reloc type.  */
-	  reloc->howto = reloc->howto + 1;
+	  /* Change the reloc type: */
+	  reloc->howto = (reloc->howto + 1);
 
-	  /* This shrinks this section by two bytes.  */
+	  /* This shrinks this section by two bytes: */
 	  shrink += 2;
-	  bfd_perform_slip (abfd, 2, input_section, address);
+	  bfd_perform_slip(abfd, 2, input_section, address);
 	}
       break;
 
@@ -606,42 +601,43 @@ h8300_reloc16_estimate (bfd *abfd, asection *input_section, arelent *reloc,
        and try to relax it into a 16-bit absolute.  */
     case R_MOV24B1:
       /* Get the address of the data referenced by this mov.b insn.  */
-      value = bfd_coff_reloc16_get_value (reloc, link_info, input_section);
-      value = bfd_h8300_pad_address (abfd, value);
+      value = bfd_coff_reloc16_get_value(reloc, link_info, input_section);
+      value = bfd_h8300_pad_address(abfd, value);
 
       if (value >= 0xffffff00u)
 	{
-	  /* Change the reloc type.  */
-	  reloc->howto = reloc->howto + 1;
+	  /* Change the reloc type: */
+	  reloc->howto = (reloc->howto + 1);
 
-	  /* This shrinks this section by four bytes.  */
+	  /* This shrinks this section by four bytes: */
 	  shrink += 4;
-	  bfd_perform_slip (abfd, 4, input_section, address);
+	  bfd_perform_slip(abfd, 4, input_section, address);
 
-	  /* Done with this reloc.  */
+	  /* Done with this reloc: */
 	  break;
 	}
 
       /* FALLTHROUGH and try to turn the 24-/32-bit reloc into a 16-bit
 	 reloc.  */
+      ATTRIBUTE_FALLTHROUGH;
 
     /* This is a 24-/32-bit absolute address in a mov insn, which can
        become an 16-bit absolute address if it's in the right range.  */
     case R_MOVL1:
       /* Get the address of the data referenced by this mov insn.  */
-      value = bfd_coff_reloc16_get_value (reloc, link_info, input_section);
-      value = bfd_h8300_pad_address (abfd, value);
+      value = bfd_coff_reloc16_get_value(reloc, link_info, input_section);
+      value = bfd_h8300_pad_address(abfd, value);
 
       /* If the address is a sign-extended 16-bit value then we can
          relax this instruction.  */
-      if (value <= 0x7fff || value >= 0xffff8000u)
+      if ((value <= 0x7fff) || (value >= 0xffff8000u))
 	{
-	  /* Change the reloc type.  */
-	  reloc->howto = howto_table + 17;
+	  /* Change the reloc type: */
+	  reloc->howto = (howto_table + 17);
 
-	  /* This shrinks this section by two bytes.  */
+	  /* This shrinks this section by two bytes: */
 	  shrink += 2;
-	  bfd_perform_slip (abfd, 2, input_section, address);
+	  bfd_perform_slip(abfd, 2, input_section, address);
 	}
       break;
 
@@ -652,7 +648,7 @@ h8300_reloc16_estimate (bfd *abfd, asection *input_section, arelent *reloc,
 
   last_reloc = reloc;
   last_input_section = input_section;
-  return shrink;
+  return (int)shrink;
 }
 
 /* Handle relocations for the H8/300, including relocs for relaxed
@@ -661,10 +657,10 @@ h8300_reloc16_estimate (bfd *abfd, asection *input_section, arelent *reloc,
    FIXME: Not all relocations check for overflow!  */
 
 static void
-h8300_reloc16_extra_cases (bfd *abfd, struct bfd_link_info *link_info,
-			   struct bfd_link_order *link_order, arelent *reloc,
-			   bfd_byte *data, unsigned int *src_ptr,
-			   unsigned int *dst_ptr)
+h8300_reloc16_extra_cases(bfd *abfd, struct bfd_link_info *link_info,
+			  struct bfd_link_order *link_order, arelent *reloc,
+			  bfd_byte *data, unsigned int *src_ptr,
+			  unsigned int *dst_ptr)
 {
   unsigned int src_address = *src_ptr;
   unsigned int dst_address = *dst_ptr;

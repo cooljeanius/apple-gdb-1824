@@ -46,20 +46,16 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
    reloc type to make any required adjustments.  */
 
 static bfd_reloc_status_type
-coff_i860_reloc (bfd *abfd,
-		 arelent *reloc_entry,
-		 asymbol *symbol,
-		 void *data,
-		 asection *input_section ATTRIBUTE_UNUSED,
-		 bfd *output_bfd,
-		 const char **error_message ATTRIBUTE_UNUSED)
+coff_i860_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                void *data, asection *input_section ATTRIBUTE_UNUSED,
+                bfd *output_bfd, const char **error_message ATTRIBUTE_UNUSED)
 {
   symvalue diff;
 
-  if (output_bfd == (bfd *) NULL)
+  if (output_bfd == (bfd *)NULL)
     return bfd_reloc_continue;
 
-  if (bfd_is_com_section (symbol->section))
+  if (bfd_is_com_section(symbol->section))
     {
       /* We are relocating a common symbol.  The current value in the
 	 object file is ORIG + OFFSET, where ORIG is the value of the
@@ -72,7 +68,7 @@ coff_i860_reloc (bfd *abfd,
 	 the object file with NEW + OFFSET, where NEW is the value of
 	 the common symbol which we are going to put in the final
 	 object file.  NEW is symbol->value.  */
-      diff = symbol->value + reloc_entry->addend;
+      diff = (symbol->value + reloc_entry->addend);
     }
   else
     {
@@ -84,20 +80,20 @@ coff_i860_reloc (bfd *abfd,
     }
 
 #define DOIT(x, t) \
-  x = (t)((x & (t)~howto->dst_mask) \
-	  | (((x & (t)howto->src_mask) + diff) \
+  x = (t)((unsigned long)(x & (t)~howto->dst_mask) \
+	  | (((symvalue)(x & (t)howto->src_mask) + diff) \
 	     & howto->dst_mask))
 
     if (diff != 0)
       {
 	reloc_howto_type *howto = reloc_entry->howto;
-	unsigned char *addr = (unsigned char *) data + reloc_entry->address;
+	unsigned char *addr = ((unsigned char *)data + reloc_entry->address);
 
 	switch (howto->size)
 	  {
 	  case 0:
 	    {
-	      char x = bfd_get_8(abfd, addr);
+	      char x = (char)bfd_get_8(abfd, addr);
 	      DOIT(x, char);
 	      bfd_put_8(abfd, x, addr);
 	    }
@@ -105,7 +101,7 @@ coff_i860_reloc (bfd *abfd,
 
 	  case 1:
 	    {
-	      short x = bfd_get_16(abfd, addr);
+	      short x = (short)bfd_get_16(abfd, addr);
 	      DOIT(x, short);
 	      bfd_put_16(abfd, (bfd_vma)x, addr);
 	    }
@@ -437,7 +433,7 @@ static reloc_howto_type howto_table[] =
 
 /* Turn a howto into a reloc number.  */
 
-#define SELECT_RELOC(x,howto) { x.r_type = howto->type; }
+#define SELECT_RELOC(x,howto) { x.r_type = (unsigned short)howto->type; }
 #define BADMAG(x) I860BADMAG(x)
 #define I860 1			/* Customize coffcode.h */
 
@@ -520,39 +516,40 @@ coff_i860_rtype_to_howto (bfd *abfd ATTRIBUTE_UNUSED,
   return howto;
 }
 
+/* */
 static reloc_howto_type *
-coff_i860_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
-			     bfd_reloc_code_real_type code)
+coff_i860_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+			    bfd_reloc_code_real_type code)
 {
   switch (code)
     {
     case BFD_RELOC_32:
-      return howto_table + R_DIR32;
+      return (howto_table + R_DIR32);
     case BFD_RELOC_860_PC26:
-      return howto_table + COFF860_R_BRADDR;
+      return (howto_table + COFF860_R_BRADDR);
     case BFD_RELOC_860_PC16:
-      /* ??? How to handle PC16 for COFF?  SPLIT0 is close for now.  */
-      return howto_table + COFF860_R_SPLIT0;
+      /* ???: How to handle PC16 for COFF?  SPLIT0 is close for now.  */
+      return (howto_table + COFF860_R_SPLIT0);
     case BFD_RELOC_860_LOW0:
-      return howto_table + COFF860_R_LOW0;
+      return (howto_table + COFF860_R_LOW0);
     case BFD_RELOC_860_SPLIT0:
-      return howto_table + COFF860_R_SPLIT0;
+      return (howto_table + COFF860_R_SPLIT0);
     case BFD_RELOC_860_LOW1:
-      return howto_table + COFF860_R_LOW1;
+      return (howto_table + COFF860_R_LOW1);
     case BFD_RELOC_860_SPLIT1:
-      return howto_table + COFF860_R_SPLIT1;
+      return (howto_table + COFF860_R_SPLIT1);
     case BFD_RELOC_860_LOW2:
-      return howto_table + COFF860_R_LOW2;
+      return (howto_table + COFF860_R_LOW2);
     case BFD_RELOC_860_SPLIT2:
-      return howto_table + COFF860_R_SPLIT2;
+      return (howto_table + COFF860_R_SPLIT2);
     case BFD_RELOC_860_LOW3:
-      return howto_table + COFF860_R_LOW3;
+      return (howto_table + COFF860_R_LOW3);
     case BFD_RELOC_860_HIGHADJ:
-      return howto_table + COFF860_R_HIGHADJ;
+      return (howto_table + COFF860_R_HIGHADJ);
     case BFD_RELOC_860_HIGH:
-      return howto_table + COFF860_R_HIGH;
+      return (howto_table + COFF860_R_HIGH);
     default:
-      BFD_FAIL ();
+      BFD_FAIL();
       return 0;
     }
 }
@@ -562,15 +559,15 @@ coff_i860_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
    which has a different meaning for the `r_symndx' field.  */
 
 static void
-i860_reloc_processing (arelent *cache_ptr, struct internal_reloc *dst,
-		       asymbol **symbols, bfd *abfd, asection *asect)
+i860_reloc_processing(arelent *cache_ptr, struct internal_reloc *dst,
+		      asymbol **symbols, bfd *abfd, asection *asect)
 {
   if (dst->r_type == COFF860_R_PAIR)
     {
-      /* Handle the PAIR relocation specially.  */
-      cache_ptr->howto = howto_table + dst->r_type;
+      /* Handle the PAIR relocation specially: */
+      cache_ptr->howto = (howto_table + dst->r_type);
       cache_ptr->address = dst->r_vaddr;
-      cache_ptr->addend = dst->r_symndx;
+      cache_ptr->addend = (bfd_vma)dst->r_symndx;
       cache_ptr->sym_ptr_ptr= bfd_abs_section_ptr->symbol_ptr_ptr;
     }
   else
@@ -582,7 +579,7 @@ i860_reloc_processing (arelent *cache_ptr, struct internal_reloc *dst,
 
       if (dst->r_symndx != -1)
 	{
-	  if (dst->r_symndx < 0 || dst->r_symndx >= obj_conv_table_size (abfd))
+	  if (dst->r_symndx < 0 || dst->r_symndx >= obj_conv_table_size(abfd))
 	    {
 	      (*_bfd_error_handler)
 		(_("%B: warning: illegal symbol index %ld in relocs"),
@@ -593,8 +590,11 @@ i860_reloc_processing (arelent *cache_ptr, struct internal_reloc *dst,
 	  else
 	    {
 	      cache_ptr->sym_ptr_ptr = (symbols
-					+ obj_convert (abfd)[dst->r_symndx]);
+					+ obj_convert(abfd)[dst->r_symndx]);
 	      ptr = *(cache_ptr->sym_ptr_ptr);
+              if (ptr == NULL) {
+                ; /* ??? */
+              }
 	    }
 	}
       else
@@ -611,12 +611,12 @@ i860_reloc_processing (arelent *cache_ptr, struct internal_reloc *dst,
 	 Note that symbols which used to be common must be left alone.  */
 
       /* Calculate any reloc addend by looking at the symbol.  */
-      CALC_ADDEND (abfd, ptr, (*dst), cache_ptr);
+      CALC_ADDEND(abfd, ptr, (*dst), cache_ptr);
 
       cache_ptr->address -= asect->vma;
 
       /* Fill in the cache_ptr->howto field from dst->r_type.  */
-      RTYPE2HOWTO (cache_ptr, dst);
+      RTYPE2HOWTO(cache_ptr, dst);
     }
 }
 

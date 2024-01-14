@@ -423,31 +423,31 @@ MY_swap_std_reloc_out (bfd *abfd,
     {
       /* Just an ordinary section.  */
       r_extern = 0;
-      r_index  = output_section->target_index;
+      r_index = output_section->target_index;
     }
 
   /* Now the fun stuff.  */
-  if (bfd_header_big_endian (abfd))
+  if (bfd_header_big_endian(abfd))
     {
-      natptr->r_index[0] = (r_index >> 16U);
-      natptr->r_index[1] = (r_index >> 8U);
-      natptr->r_index[2] = r_index;
+      natptr->r_index[0] = (bfd_byte)(r_index >> 16U);
+      natptr->r_index[1] = (bfd_byte)(r_index >> 8U);
+      natptr->r_index[2] = (bfd_byte)r_index;
       natptr->r_type[0] =
-	(  (r_extern ?   RELOC_STD_BITS_EXTERN_BIG: 0)
-	 | (r_pcrel  ?   RELOC_STD_BITS_PCREL_BIG: 0)
-	 | (r_neg    ?   RELOC_ARM_BITS_NEG_BIG: 0)
-	 | (r_length <<  RELOC_STD_BITS_LENGTH_SH_BIG));
+	((r_extern ? RELOC_STD_BITS_EXTERN_BIG : 0U)
+	 | (r_pcrel ? RELOC_STD_BITS_PCREL_BIG : 0U)
+	 | (r_neg ? RELOC_ARM_BITS_NEG_BIG : 0U)
+	 | (bfd_byte)(r_length << RELOC_STD_BITS_LENGTH_SH_BIG));
     }
   else
     {
-      natptr->r_index[2] = (r_index >> 16U);
-      natptr->r_index[1] = (r_index >> 8U);
-      natptr->r_index[0] = r_index;
+      natptr->r_index[2] = (bfd_byte)(r_index >> 16U);
+      natptr->r_index[1] = (bfd_byte)(r_index >> 8U);
+      natptr->r_index[0] = (bfd_byte)r_index;
       natptr->r_type[0] =
-	(  (r_extern ?   RELOC_STD_BITS_EXTERN_LITTLE: 0)
-	 | (r_pcrel  ?   RELOC_STD_BITS_PCREL_LITTLE: 0)
-	 | (r_neg    ?   RELOC_ARM_BITS_NEG_LITTLE: 0)
-	 | (r_length <<  RELOC_STD_BITS_LENGTH_SH_LITTLE));
+	((r_extern ? RELOC_STD_BITS_EXTERN_LITTLE : 0U)
+	 | (r_pcrel ? RELOC_STD_BITS_PCREL_LITTLE : 0U)
+	 | (r_neg ? RELOC_ARM_BITS_NEG_LITTLE : 0U)
+	 | (bfd_byte)(r_length << RELOC_STD_BITS_LENGTH_SH_LITTLE));
     }
 }
 

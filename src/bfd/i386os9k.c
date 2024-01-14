@@ -247,8 +247,8 @@ const bfd_target i386os9k_vec =
     aout_64_get_lineno,
     aout_64_find_nearest_line,
     _bfd_generic_find_line,
-    _bfd_dwarf2_find_inliner_info,
-    _bfd_generic_make_empty_symbol,
+    aout_32_find_inliner_info,
+    aout_32_bfd_make_debug_symbol,
     aout_64_read_minisymbols,
     aout_64_minisymbol_to_symbol,
 # endif /* BFD_JUMP_TABLE_SYMBOLS */

@@ -1,4 +1,4 @@
-/* BFD support for the Toshiba Media Engine Processor.
+/* cpu-mep.c: BFD support for the Toshiba Media Engine Processor.
    Copyright (C) 2001, 2002, 2004, 2007, 2009 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -15,8 +15,11 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"

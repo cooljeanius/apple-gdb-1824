@@ -157,7 +157,7 @@ chew.o: chew.c $(srcdir_high)/include/ansidecl.h @MAINT@ Makefile
 	  $(CFLAGS_FOR_BUILD) $(srcdir)/chew.c
 
 protos: $(BUILD_HFILES)
-	@echo "this target, '$@', just makes its dependencies, '$^'"
+	@echo "this target, '$@' (in `pwd`), just makes its dependencies, '$^'"
 .PHONY: protos
 
 $(srcdir)/bfd.info bfd.dvi: $(DOCFILES) bfdsumm.texi bfd.texinfo $(MKDOC)

@@ -19,6 +19,9 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"
@@ -30,7 +33,7 @@ extern const bfd_arch_info_type bfd_z80_arch;
    returns whether they'd be compatible.  */
 
 static const bfd_arch_info_type *
-compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
+compatible(const bfd_arch_info_type *a, const bfd_arch_info_type *b)
 {
   if (a->arch != b->arch)
     return NULL;
@@ -38,7 +41,7 @@ compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
   if (a->mach == b->mach)
     return a;
 
-  return (a->arch == bfd_arch_z80) ? & bfd_z80_arch : NULL;
+  return ((a->arch == bfd_arch_z80) ? & bfd_z80_arch : NULL);
 }
 
 #define N(name,print,default,next)  \
@@ -49,12 +52,12 @@ compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
 
 static const bfd_arch_info_type arch_info_struct[] =
 {
-  N (bfd_mach_z80strict, "z80-strict", FALSE, M(1)),
-  N (bfd_mach_z80,       "z80",        FALSE, M(2)),
-  N (bfd_mach_z80full,   "z80-full",   FALSE, M(3)),
-  N (bfd_mach_r800,      "r800",       FALSE, NULL)
+  N(bfd_mach_z80strict, "z80-strict", FALSE, M(1)),
+  N(bfd_mach_z80, "z80", FALSE, M(2)),
+  N(bfd_mach_z80full, "z80-full", FALSE, M(3)),
+  N(bfd_mach_r800, "r800", FALSE, NULL)
 };
 
-const bfd_arch_info_type bfd_z80_arch = N (0, "z80-any", TRUE, M(0));
+const bfd_arch_info_type bfd_z80_arch = N(0, "z80-any", TRUE, M(0));
 
 /* EOF */

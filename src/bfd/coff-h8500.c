@@ -1,4 +1,4 @@
-/* BFD back-end for Renesas H8/500 COFF binaries.
+/* coff-h8500.c: BFD back-end for Renesas H8/500 COFF binaries.
    Copyright 1993, 1994, 1995, 1997, 1999, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
    Contributed by Cygnus Support.
@@ -18,7 +18,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -73,10 +73,11 @@ HOWTO (R_H8500_HIGH16, 0, 1, 8, FALSE, 0,
 static int
 coff_h8500_select_reloc(reloc_howto_type *howto)
 {
-  return howto->type;
+  return (int)howto->type;
 }
 
-#define SELECT_RELOC(x,howto) x.r_type = coff_h8500_select_reloc(howto)
+#define SELECT_RELOC(x,howto) \
+  { x.r_type = (unsigned short)coff_h8500_select_reloc(howto); }
 
 #define BADMAG(x) H8500BADMAG(x)
 #ifndef H8500
@@ -157,6 +158,7 @@ static void reloc_processing(arelent *relent, struct internal_reloc *reloc,
   relent->address -= section->vma;
 }
 
+/* */
 static void
 extra_case(bfd *in_abfd, struct bfd_link_info *link_info,
            struct bfd_link_order *link_order, arelent *reloc,

@@ -1,9 +1,9 @@
-/* BFD support for the score processor
-   Copyright 2006, 2007, 2008, 2009, 2012 Free Software Foundation, Inc.
+/* cpu-score.c: BFD support for the score processor
+   Copyright 2006-2009, 2012 Free Software Foundation, Inc.
    Contributed by
-   Brain.lin (brain.lin@sunplusct.com)
-   Mei Ligang (ligang@sunnorth.com.cn)
-   Pei-Lin Tsai (pltsai@sunplus.com)
+   Brain.lin <brain.lin@sunplusct.com>
+   Mei Ligang <ligang@sunnorth.com.cn>
+   Pei-Lin Tsai <pltsai@sunplus.com>
 
    This file is part of BFD, the Binary File Descriptor library.
 
@@ -22,6 +22,9 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"
@@ -31,7 +34,7 @@
    to its info structure.  */
 
 static const bfd_arch_info_type *
-compatible (const bfd_arch_info_type * a, const bfd_arch_info_type * b)
+compatible(const bfd_arch_info_type *a, const bfd_arch_info_type *b)
 {
   /* If a & b are for different architectures we can do nothing.  */
   if (a->arch != b->arch)
