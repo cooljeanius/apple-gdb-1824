@@ -29,6 +29,7 @@
 
 
 
+
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
     false; \
@@ -131,6 +132,7 @@ CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = Makefile_orig
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
 AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
@@ -189,6 +191,50 @@ am__objects_2 = libreadline_am_a-readline.$(OBJEXT) \
 	support/libreadline_am_a-wcwidth.$(OBJEXT)
 am_libreadline_am_a_OBJECTS = $(am__objects_2)
 libreadline_am_a_OBJECTS = $(am_libreadline_am_a_OBJECTS)
+libhistory_lt_la_LIBADD =
+am__objects_3 = libhistory_lt_la-history.lo \
+	libhistory_lt_la-histexpand.lo libhistory_lt_la-histfile.lo \
+	libhistory_lt_la-histsearch.lo libhistory_lt_la-malloc.lo \
+	libhistory_lt_la-realloc.lo libhistory_lt_la-shell.lo \
+	libhistory_lt_la-mbutil.lo
+am_libhistory_lt_la_OBJECTS = $(am__objects_3)
+libhistory_lt_la_OBJECTS = $(am_libhistory_lt_la_OBJECTS)
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
+libhistory_lt_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(libhistory_lt_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
+libreadline_lt_la_LIBADD =
+am__objects_4 = libreadline_lt_la-readline.lo \
+	libreadline_lt_la-funmap.lo libreadline_lt_la-keymaps.lo \
+	libreadline_lt_la-vi_mode.lo libreadline_lt_la-parens.lo \
+	libreadline_lt_la-rltty.lo libreadline_lt_la-complete.lo \
+	libreadline_lt_la-bind.lo libreadline_lt_la-isearch.lo \
+	libreadline_lt_la-display.lo libreadline_lt_la-signals.lo \
+	libreadline_lt_la-emacs_keymap.lo \
+	libreadline_lt_la-vi_keymap.lo libreadline_lt_la-util.lo \
+	libreadline_lt_la-kill.lo libreadline_lt_la-undo.lo \
+	libreadline_lt_la-macro.lo libreadline_lt_la-input.lo \
+	libreadline_lt_la-callback.lo libreadline_lt_la-terminal.lo \
+	libreadline_lt_la-xmalloc.lo libreadline_lt_la-history.lo \
+	libreadline_lt_la-histsearch.lo \
+	libreadline_lt_la-histexpand.lo libreadline_lt_la-histfile.lo \
+	libreadline_lt_la-nls.lo libreadline_lt_la-search.lo \
+	libreadline_lt_la-shell.lo libreadline_lt_la-savestring.lo \
+	libreadline_lt_la-tilde.lo libreadline_lt_la-text.lo \
+	libreadline_lt_la-misc.lo libreadline_lt_la-compat.lo \
+	libreadline_lt_la-realloc.lo libreadline_lt_la-mbutil.lo \
+	libreadline_lt_la-malloc.lo \
+	support/libreadline_lt_la-wcwidth.lo
+am_libreadline_lt_la_OBJECTS = $(am__objects_4)
+libreadline_lt_la_OBJECTS = $(am_libreadline_lt_la_OBJECTS)
+libreadline_lt_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(libreadline_lt_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -212,6 +258,14 @@ am__depfiles_remade = ./$(DEPDIR)/libhistory_am_a-histexpand.Po \
 	./$(DEPDIR)/libhistory_am_a-mbutil.Po \
 	./$(DEPDIR)/libhistory_am_a-realloc.Po \
 	./$(DEPDIR)/libhistory_am_a-shell.Po \
+	./$(DEPDIR)/libhistory_lt_la-histexpand.Plo \
+	./$(DEPDIR)/libhistory_lt_la-histfile.Plo \
+	./$(DEPDIR)/libhistory_lt_la-history.Plo \
+	./$(DEPDIR)/libhistory_lt_la-histsearch.Plo \
+	./$(DEPDIR)/libhistory_lt_la-malloc.Plo \
+	./$(DEPDIR)/libhistory_lt_la-mbutil.Plo \
+	./$(DEPDIR)/libhistory_lt_la-realloc.Plo \
+	./$(DEPDIR)/libhistory_lt_la-shell.Plo \
 	./$(DEPDIR)/libreadline_am_a-bind.Po \
 	./$(DEPDIR)/libreadline_am_a-callback.Po \
 	./$(DEPDIR)/libreadline_am_a-compat.Po \
@@ -248,12 +302,45 @@ am__depfiles_remade = ./$(DEPDIR)/libhistory_am_a-histexpand.Po \
 	./$(DEPDIR)/libreadline_am_a-vi_keymap.Po \
 	./$(DEPDIR)/libreadline_am_a-vi_mode.Po \
 	./$(DEPDIR)/libreadline_am_a-xmalloc.Po \
-	support/$(DEPDIR)/libreadline_am_a-wcwidth.Po
+	./$(DEPDIR)/libreadline_lt_la-bind.Plo \
+	./$(DEPDIR)/libreadline_lt_la-callback.Plo \
+	./$(DEPDIR)/libreadline_lt_la-compat.Plo \
+	./$(DEPDIR)/libreadline_lt_la-complete.Plo \
+	./$(DEPDIR)/libreadline_lt_la-display.Plo \
+	./$(DEPDIR)/libreadline_lt_la-emacs_keymap.Plo \
+	./$(DEPDIR)/libreadline_lt_la-funmap.Plo \
+	./$(DEPDIR)/libreadline_lt_la-histexpand.Plo \
+	./$(DEPDIR)/libreadline_lt_la-histfile.Plo \
+	./$(DEPDIR)/libreadline_lt_la-history.Plo \
+	./$(DEPDIR)/libreadline_lt_la-histsearch.Plo \
+	./$(DEPDIR)/libreadline_lt_la-input.Plo \
+	./$(DEPDIR)/libreadline_lt_la-isearch.Plo \
+	./$(DEPDIR)/libreadline_lt_la-keymaps.Plo \
+	./$(DEPDIR)/libreadline_lt_la-kill.Plo \
+	./$(DEPDIR)/libreadline_lt_la-macro.Plo \
+	./$(DEPDIR)/libreadline_lt_la-malloc.Plo \
+	./$(DEPDIR)/libreadline_lt_la-mbutil.Plo \
+	./$(DEPDIR)/libreadline_lt_la-misc.Plo \
+	./$(DEPDIR)/libreadline_lt_la-nls.Plo \
+	./$(DEPDIR)/libreadline_lt_la-parens.Plo \
+	./$(DEPDIR)/libreadline_lt_la-readline.Plo \
+	./$(DEPDIR)/libreadline_lt_la-realloc.Plo \
+	./$(DEPDIR)/libreadline_lt_la-rltty.Plo \
+	./$(DEPDIR)/libreadline_lt_la-savestring.Plo \
+	./$(DEPDIR)/libreadline_lt_la-search.Plo \
+	./$(DEPDIR)/libreadline_lt_la-shell.Plo \
+	./$(DEPDIR)/libreadline_lt_la-signals.Plo \
+	./$(DEPDIR)/libreadline_lt_la-terminal.Plo \
+	./$(DEPDIR)/libreadline_lt_la-text.Plo \
+	./$(DEPDIR)/libreadline_lt_la-tilde.Plo \
+	./$(DEPDIR)/libreadline_lt_la-undo.Plo \
+	./$(DEPDIR)/libreadline_lt_la-util.Plo \
+	./$(DEPDIR)/libreadline_lt_la-vi_keymap.Plo \
+	./$(DEPDIR)/libreadline_lt_la-vi_mode.Plo \
+	./$(DEPDIR)/libreadline_lt_la-xmalloc.Plo \
+	support/$(DEPDIR)/libreadline_am_a-wcwidth.Po \
+	support/$(DEPDIR)/libreadline_lt_la-wcwidth.Plo
 am__mv = mv -f
-AM_V_lt = $(am__v_lt_@AM_V@)
-am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
-am__v_lt_0 = --silent
-am__v_lt_1 = 
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -272,7 +359,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libhistory_am_a_SOURCES) $(libreadline_am_a_SOURCES)
+SOURCES = $(libhistory_am_a_SOURCES) $(libreadline_am_a_SOURCES) \
+	$(libhistory_lt_la_SOURCES) $(libreadline_lt_la_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -631,6 +719,7 @@ DESTDIR =
 my_ETAGS = etags -tw
 my_CTAGS = ctags -tw
 VERS_FLAG = -DRL_LIBRARY_VERSION='"$(RL_LIBRARY_VERSION)"'
+AM_CFLAGS = $(LOCAL_CFLAGS)
 XMALLOCOBJ = xmalloc.o
 
 # For libraries which include headers from other libraries.
@@ -653,6 +742,7 @@ GCC_LINT_CFLAGS = $(XCCFLAGS) $(GCC_LINT_FLAGS) @CFLAGS@ @LOCAL_CFLAGS@
 LIBRARY_NAME = libreadline.a
 STATIC_LIBS = libreadline.a libhistory.a
 noinst_LIBRARIES = libreadline_am.a libhistory_am.a
+noinst_LTLIBRARIES = libreadline_lt.la libhistory_lt.la
 
 # The C code source files for this library.
 CSOURCES = $(srcdir)/readline.c $(srcdir)/funmap.c $(srcdir)/keymaps.c \
@@ -673,6 +763,9 @@ CSOURCES = $(srcdir)/readline.c $(srcdir)/funmap.c $(srcdir)/keymaps.c \
 libreadline_am_a_SOURCES = $(CSOURCES)
 libreadline_am_a_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
 libreadline_am_a_CPPFLAGS = -I..
+libreadline_lt_la_SOURCES = $(CSOURCES)
+libreadline_lt_la_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+libreadline_lt_la_CPPFLAGS = -I..
 
 # The header files for this library.
 HSOURCES = readline.h rldefs.h chardefs.h keymaps.h history.h histlib.h \
@@ -685,6 +778,8 @@ HISTSOURCES = history.c histexpand.c histfile.c histsearch.c \
 
 libhistory_am_a_SOURCES = $(HISTSOURCES)
 libhistory_am_a_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+libhistory_lt_la_SOURCES = $(HISTSOURCES)
+libhistory_lt_la_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
 HISTOBJ = history.o histexpand.o histfile.o histsearch.o \
 	  malloc.o realloc.o shell.o mbutil.o
 
@@ -794,6 +889,17 @@ Makefile_orig: $(top_builddir)/config.status $(srcdir)/Makefile_orig.in
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; \
+	locs=`for p in $$list; do echo $$p; done | \
+	      sed 's|^[^/]*$$|.|; s|/[^/]*$$||; s|$$|/so_locations|' | \
+	      sort -u`; \
+	test -z "$$locs" || { \
+	  echo rm -f $${locs}; \
+	  rm -f $${locs}; \
+	}
+
 libhistory_am.a: $(libhistory_am_a_OBJECTS) $(libhistory_am_a_DEPENDENCIES) $(EXTRA_libhistory_am_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libhistory_am.a
 	$(AM_V_AR)$(libhistory_am_a_AR) libhistory_am.a $(libhistory_am_a_OBJECTS) $(libhistory_am_a_LIBADD)
@@ -812,9 +918,18 @@ libreadline_am.a: $(libreadline_am_a_OBJECTS) $(libreadline_am_a_DEPENDENCIES) $
 	$(AM_V_AR)$(libreadline_am_a_AR) libreadline_am.a $(libreadline_am_a_OBJECTS) $(libreadline_am_a_LIBADD)
 	$(AM_V_at)$(RANLIB) libreadline_am.a
 
+libhistory_lt.la: $(libhistory_lt_la_OBJECTS) $(libhistory_lt_la_DEPENDENCIES) $(EXTRA_libhistory_lt_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libhistory_lt_la_LINK)  $(libhistory_lt_la_OBJECTS) $(libhistory_lt_la_LIBADD) $(LIBS)
+support/libreadline_lt_la-wcwidth.lo: support/$(am__dirstamp) \
+	support/$(DEPDIR)/$(am__dirstamp)
+
+libreadline_lt.la: $(libreadline_lt_la_OBJECTS) $(libreadline_lt_la_DEPENDENCIES) $(EXTRA_libreadline_lt_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libreadline_lt_la_LINK)  $(libreadline_lt_la_OBJECTS) $(libreadline_lt_la_LIBADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f support/*.$(OBJEXT)
+	-rm -f support/*.lo
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -827,6 +942,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_am_a-mbutil.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_am_a-realloc.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_am_a-shell.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_lt_la-histexpand.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_lt_la-histfile.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_lt_la-history.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_lt_la-histsearch.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_lt_la-malloc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_lt_la-mbutil.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_lt_la-realloc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_lt_la-shell.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-bind.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-callback.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-compat.Po@am__quote@ # am--include-marker
@@ -863,7 +986,44 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-vi_keymap.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-vi_mode.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-xmalloc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-bind.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-callback.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-compat.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-complete.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-display.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-emacs_keymap.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-funmap.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-histexpand.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-histfile.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-history.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-histsearch.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-input.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-isearch.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-keymaps.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-kill.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-macro.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-malloc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-mbutil.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-misc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-nls.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-parens.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-readline.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-realloc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-rltty.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-savestring.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-search.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-shell.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-signals.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-terminal.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-text.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-tilde.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-undo.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-util.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-vi_keymap.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-vi_mode.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_lt_la-xmalloc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@support/$(DEPDIR)/libreadline_am_a-wcwidth.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@support/$(DEPDIR)/libreadline_lt_la-wcwidth.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -1525,11 +1685,327 @@ support/libreadline_am_a-wcwidth.obj: support/wcwidth.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o support/libreadline_am_a-wcwidth.obj `if test -f 'support/wcwidth.c'; then $(CYGPATH_W) 'support/wcwidth.c'; else $(CYGPATH_W) '$(srcdir)/support/wcwidth.c'; fi`
 
+libhistory_lt_la-history.lo: history.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -MT libhistory_lt_la-history.lo -MD -MP -MF $(DEPDIR)/libhistory_lt_la-history.Tpo -c -o libhistory_lt_la-history.lo `test -f 'history.c' || echo '$(srcdir)/'`history.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_lt_la-history.Tpo $(DEPDIR)/libhistory_lt_la-history.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='history.c' object='libhistory_lt_la-history.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -c -o libhistory_lt_la-history.lo `test -f 'history.c' || echo '$(srcdir)/'`history.c
+
+libhistory_lt_la-histexpand.lo: histexpand.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -MT libhistory_lt_la-histexpand.lo -MD -MP -MF $(DEPDIR)/libhistory_lt_la-histexpand.Tpo -c -o libhistory_lt_la-histexpand.lo `test -f 'histexpand.c' || echo '$(srcdir)/'`histexpand.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_lt_la-histexpand.Tpo $(DEPDIR)/libhistory_lt_la-histexpand.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histexpand.c' object='libhistory_lt_la-histexpand.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -c -o libhistory_lt_la-histexpand.lo `test -f 'histexpand.c' || echo '$(srcdir)/'`histexpand.c
+
+libhistory_lt_la-histfile.lo: histfile.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -MT libhistory_lt_la-histfile.lo -MD -MP -MF $(DEPDIR)/libhistory_lt_la-histfile.Tpo -c -o libhistory_lt_la-histfile.lo `test -f 'histfile.c' || echo '$(srcdir)/'`histfile.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_lt_la-histfile.Tpo $(DEPDIR)/libhistory_lt_la-histfile.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histfile.c' object='libhistory_lt_la-histfile.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -c -o libhistory_lt_la-histfile.lo `test -f 'histfile.c' || echo '$(srcdir)/'`histfile.c
+
+libhistory_lt_la-histsearch.lo: histsearch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -MT libhistory_lt_la-histsearch.lo -MD -MP -MF $(DEPDIR)/libhistory_lt_la-histsearch.Tpo -c -o libhistory_lt_la-histsearch.lo `test -f 'histsearch.c' || echo '$(srcdir)/'`histsearch.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_lt_la-histsearch.Tpo $(DEPDIR)/libhistory_lt_la-histsearch.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histsearch.c' object='libhistory_lt_la-histsearch.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -c -o libhistory_lt_la-histsearch.lo `test -f 'histsearch.c' || echo '$(srcdir)/'`histsearch.c
+
+libhistory_lt_la-malloc.lo: malloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -MT libhistory_lt_la-malloc.lo -MD -MP -MF $(DEPDIR)/libhistory_lt_la-malloc.Tpo -c -o libhistory_lt_la-malloc.lo `test -f 'malloc.c' || echo '$(srcdir)/'`malloc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_lt_la-malloc.Tpo $(DEPDIR)/libhistory_lt_la-malloc.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='malloc.c' object='libhistory_lt_la-malloc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -c -o libhistory_lt_la-malloc.lo `test -f 'malloc.c' || echo '$(srcdir)/'`malloc.c
+
+libhistory_lt_la-realloc.lo: realloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -MT libhistory_lt_la-realloc.lo -MD -MP -MF $(DEPDIR)/libhistory_lt_la-realloc.Tpo -c -o libhistory_lt_la-realloc.lo `test -f 'realloc.c' || echo '$(srcdir)/'`realloc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_lt_la-realloc.Tpo $(DEPDIR)/libhistory_lt_la-realloc.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='realloc.c' object='libhistory_lt_la-realloc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -c -o libhistory_lt_la-realloc.lo `test -f 'realloc.c' || echo '$(srcdir)/'`realloc.c
+
+libhistory_lt_la-shell.lo: shell.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -MT libhistory_lt_la-shell.lo -MD -MP -MF $(DEPDIR)/libhistory_lt_la-shell.Tpo -c -o libhistory_lt_la-shell.lo `test -f 'shell.c' || echo '$(srcdir)/'`shell.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_lt_la-shell.Tpo $(DEPDIR)/libhistory_lt_la-shell.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='shell.c' object='libhistory_lt_la-shell.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -c -o libhistory_lt_la-shell.lo `test -f 'shell.c' || echo '$(srcdir)/'`shell.c
+
+libhistory_lt_la-mbutil.lo: mbutil.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -MT libhistory_lt_la-mbutil.lo -MD -MP -MF $(DEPDIR)/libhistory_lt_la-mbutil.Tpo -c -o libhistory_lt_la-mbutil.lo `test -f 'mbutil.c' || echo '$(srcdir)/'`mbutil.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_lt_la-mbutil.Tpo $(DEPDIR)/libhistory_lt_la-mbutil.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mbutil.c' object='libhistory_lt_la-mbutil.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_lt_la_CFLAGS) $(CFLAGS) -c -o libhistory_lt_la-mbutil.lo `test -f 'mbutil.c' || echo '$(srcdir)/'`mbutil.c
+
+libreadline_lt_la-readline.lo: readline.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-readline.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-readline.Tpo -c -o libreadline_lt_la-readline.lo `test -f 'readline.c' || echo '$(srcdir)/'`readline.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-readline.Tpo $(DEPDIR)/libreadline_lt_la-readline.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='readline.c' object='libreadline_lt_la-readline.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-readline.lo `test -f 'readline.c' || echo '$(srcdir)/'`readline.c
+
+libreadline_lt_la-funmap.lo: funmap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-funmap.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-funmap.Tpo -c -o libreadline_lt_la-funmap.lo `test -f 'funmap.c' || echo '$(srcdir)/'`funmap.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-funmap.Tpo $(DEPDIR)/libreadline_lt_la-funmap.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='funmap.c' object='libreadline_lt_la-funmap.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-funmap.lo `test -f 'funmap.c' || echo '$(srcdir)/'`funmap.c
+
+libreadline_lt_la-keymaps.lo: keymaps.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-keymaps.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-keymaps.Tpo -c -o libreadline_lt_la-keymaps.lo `test -f 'keymaps.c' || echo '$(srcdir)/'`keymaps.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-keymaps.Tpo $(DEPDIR)/libreadline_lt_la-keymaps.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='keymaps.c' object='libreadline_lt_la-keymaps.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-keymaps.lo `test -f 'keymaps.c' || echo '$(srcdir)/'`keymaps.c
+
+libreadline_lt_la-vi_mode.lo: vi_mode.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-vi_mode.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-vi_mode.Tpo -c -o libreadline_lt_la-vi_mode.lo `test -f 'vi_mode.c' || echo '$(srcdir)/'`vi_mode.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-vi_mode.Tpo $(DEPDIR)/libreadline_lt_la-vi_mode.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vi_mode.c' object='libreadline_lt_la-vi_mode.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-vi_mode.lo `test -f 'vi_mode.c' || echo '$(srcdir)/'`vi_mode.c
+
+libreadline_lt_la-parens.lo: parens.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-parens.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-parens.Tpo -c -o libreadline_lt_la-parens.lo `test -f 'parens.c' || echo '$(srcdir)/'`parens.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-parens.Tpo $(DEPDIR)/libreadline_lt_la-parens.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parens.c' object='libreadline_lt_la-parens.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-parens.lo `test -f 'parens.c' || echo '$(srcdir)/'`parens.c
+
+libreadline_lt_la-rltty.lo: rltty.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-rltty.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-rltty.Tpo -c -o libreadline_lt_la-rltty.lo `test -f 'rltty.c' || echo '$(srcdir)/'`rltty.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-rltty.Tpo $(DEPDIR)/libreadline_lt_la-rltty.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rltty.c' object='libreadline_lt_la-rltty.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-rltty.lo `test -f 'rltty.c' || echo '$(srcdir)/'`rltty.c
+
+libreadline_lt_la-complete.lo: complete.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-complete.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-complete.Tpo -c -o libreadline_lt_la-complete.lo `test -f 'complete.c' || echo '$(srcdir)/'`complete.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-complete.Tpo $(DEPDIR)/libreadline_lt_la-complete.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='complete.c' object='libreadline_lt_la-complete.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-complete.lo `test -f 'complete.c' || echo '$(srcdir)/'`complete.c
+
+libreadline_lt_la-bind.lo: bind.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-bind.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-bind.Tpo -c -o libreadline_lt_la-bind.lo `test -f 'bind.c' || echo '$(srcdir)/'`bind.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-bind.Tpo $(DEPDIR)/libreadline_lt_la-bind.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='bind.c' object='libreadline_lt_la-bind.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-bind.lo `test -f 'bind.c' || echo '$(srcdir)/'`bind.c
+
+libreadline_lt_la-isearch.lo: isearch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-isearch.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-isearch.Tpo -c -o libreadline_lt_la-isearch.lo `test -f 'isearch.c' || echo '$(srcdir)/'`isearch.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-isearch.Tpo $(DEPDIR)/libreadline_lt_la-isearch.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='isearch.c' object='libreadline_lt_la-isearch.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-isearch.lo `test -f 'isearch.c' || echo '$(srcdir)/'`isearch.c
+
+libreadline_lt_la-display.lo: display.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-display.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-display.Tpo -c -o libreadline_lt_la-display.lo `test -f 'display.c' || echo '$(srcdir)/'`display.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-display.Tpo $(DEPDIR)/libreadline_lt_la-display.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='display.c' object='libreadline_lt_la-display.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-display.lo `test -f 'display.c' || echo '$(srcdir)/'`display.c
+
+libreadline_lt_la-signals.lo: signals.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-signals.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-signals.Tpo -c -o libreadline_lt_la-signals.lo `test -f 'signals.c' || echo '$(srcdir)/'`signals.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-signals.Tpo $(DEPDIR)/libreadline_lt_la-signals.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='signals.c' object='libreadline_lt_la-signals.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-signals.lo `test -f 'signals.c' || echo '$(srcdir)/'`signals.c
+
+libreadline_lt_la-emacs_keymap.lo: emacs_keymap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-emacs_keymap.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-emacs_keymap.Tpo -c -o libreadline_lt_la-emacs_keymap.lo `test -f 'emacs_keymap.c' || echo '$(srcdir)/'`emacs_keymap.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-emacs_keymap.Tpo $(DEPDIR)/libreadline_lt_la-emacs_keymap.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='emacs_keymap.c' object='libreadline_lt_la-emacs_keymap.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-emacs_keymap.lo `test -f 'emacs_keymap.c' || echo '$(srcdir)/'`emacs_keymap.c
+
+libreadline_lt_la-vi_keymap.lo: vi_keymap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-vi_keymap.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-vi_keymap.Tpo -c -o libreadline_lt_la-vi_keymap.lo `test -f 'vi_keymap.c' || echo '$(srcdir)/'`vi_keymap.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-vi_keymap.Tpo $(DEPDIR)/libreadline_lt_la-vi_keymap.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vi_keymap.c' object='libreadline_lt_la-vi_keymap.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-vi_keymap.lo `test -f 'vi_keymap.c' || echo '$(srcdir)/'`vi_keymap.c
+
+libreadline_lt_la-util.lo: util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-util.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-util.Tpo -c -o libreadline_lt_la-util.lo `test -f 'util.c' || echo '$(srcdir)/'`util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-util.Tpo $(DEPDIR)/libreadline_lt_la-util.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='util.c' object='libreadline_lt_la-util.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-util.lo `test -f 'util.c' || echo '$(srcdir)/'`util.c
+
+libreadline_lt_la-kill.lo: kill.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-kill.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-kill.Tpo -c -o libreadline_lt_la-kill.lo `test -f 'kill.c' || echo '$(srcdir)/'`kill.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-kill.Tpo $(DEPDIR)/libreadline_lt_la-kill.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kill.c' object='libreadline_lt_la-kill.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-kill.lo `test -f 'kill.c' || echo '$(srcdir)/'`kill.c
+
+libreadline_lt_la-undo.lo: undo.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-undo.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-undo.Tpo -c -o libreadline_lt_la-undo.lo `test -f 'undo.c' || echo '$(srcdir)/'`undo.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-undo.Tpo $(DEPDIR)/libreadline_lt_la-undo.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='undo.c' object='libreadline_lt_la-undo.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-undo.lo `test -f 'undo.c' || echo '$(srcdir)/'`undo.c
+
+libreadline_lt_la-macro.lo: macro.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-macro.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-macro.Tpo -c -o libreadline_lt_la-macro.lo `test -f 'macro.c' || echo '$(srcdir)/'`macro.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-macro.Tpo $(DEPDIR)/libreadline_lt_la-macro.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='macro.c' object='libreadline_lt_la-macro.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-macro.lo `test -f 'macro.c' || echo '$(srcdir)/'`macro.c
+
+libreadline_lt_la-input.lo: input.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-input.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-input.Tpo -c -o libreadline_lt_la-input.lo `test -f 'input.c' || echo '$(srcdir)/'`input.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-input.Tpo $(DEPDIR)/libreadline_lt_la-input.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='input.c' object='libreadline_lt_la-input.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-input.lo `test -f 'input.c' || echo '$(srcdir)/'`input.c
+
+libreadline_lt_la-callback.lo: callback.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-callback.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-callback.Tpo -c -o libreadline_lt_la-callback.lo `test -f 'callback.c' || echo '$(srcdir)/'`callback.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-callback.Tpo $(DEPDIR)/libreadline_lt_la-callback.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='callback.c' object='libreadline_lt_la-callback.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-callback.lo `test -f 'callback.c' || echo '$(srcdir)/'`callback.c
+
+libreadline_lt_la-terminal.lo: terminal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-terminal.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-terminal.Tpo -c -o libreadline_lt_la-terminal.lo `test -f 'terminal.c' || echo '$(srcdir)/'`terminal.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-terminal.Tpo $(DEPDIR)/libreadline_lt_la-terminal.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='terminal.c' object='libreadline_lt_la-terminal.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-terminal.lo `test -f 'terminal.c' || echo '$(srcdir)/'`terminal.c
+
+libreadline_lt_la-xmalloc.lo: xmalloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-xmalloc.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-xmalloc.Tpo -c -o libreadline_lt_la-xmalloc.lo `test -f 'xmalloc.c' || echo '$(srcdir)/'`xmalloc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-xmalloc.Tpo $(DEPDIR)/libreadline_lt_la-xmalloc.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xmalloc.c' object='libreadline_lt_la-xmalloc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-xmalloc.lo `test -f 'xmalloc.c' || echo '$(srcdir)/'`xmalloc.c
+
+libreadline_lt_la-history.lo: history.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-history.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-history.Tpo -c -o libreadline_lt_la-history.lo `test -f 'history.c' || echo '$(srcdir)/'`history.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-history.Tpo $(DEPDIR)/libreadline_lt_la-history.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='history.c' object='libreadline_lt_la-history.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-history.lo `test -f 'history.c' || echo '$(srcdir)/'`history.c
+
+libreadline_lt_la-histsearch.lo: histsearch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-histsearch.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-histsearch.Tpo -c -o libreadline_lt_la-histsearch.lo `test -f 'histsearch.c' || echo '$(srcdir)/'`histsearch.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-histsearch.Tpo $(DEPDIR)/libreadline_lt_la-histsearch.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histsearch.c' object='libreadline_lt_la-histsearch.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-histsearch.lo `test -f 'histsearch.c' || echo '$(srcdir)/'`histsearch.c
+
+libreadline_lt_la-histexpand.lo: histexpand.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-histexpand.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-histexpand.Tpo -c -o libreadline_lt_la-histexpand.lo `test -f 'histexpand.c' || echo '$(srcdir)/'`histexpand.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-histexpand.Tpo $(DEPDIR)/libreadline_lt_la-histexpand.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histexpand.c' object='libreadline_lt_la-histexpand.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-histexpand.lo `test -f 'histexpand.c' || echo '$(srcdir)/'`histexpand.c
+
+libreadline_lt_la-histfile.lo: histfile.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-histfile.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-histfile.Tpo -c -o libreadline_lt_la-histfile.lo `test -f 'histfile.c' || echo '$(srcdir)/'`histfile.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-histfile.Tpo $(DEPDIR)/libreadline_lt_la-histfile.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histfile.c' object='libreadline_lt_la-histfile.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-histfile.lo `test -f 'histfile.c' || echo '$(srcdir)/'`histfile.c
+
+libreadline_lt_la-nls.lo: nls.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-nls.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-nls.Tpo -c -o libreadline_lt_la-nls.lo `test -f 'nls.c' || echo '$(srcdir)/'`nls.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-nls.Tpo $(DEPDIR)/libreadline_lt_la-nls.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='nls.c' object='libreadline_lt_la-nls.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-nls.lo `test -f 'nls.c' || echo '$(srcdir)/'`nls.c
+
+libreadline_lt_la-search.lo: search.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-search.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-search.Tpo -c -o libreadline_lt_la-search.lo `test -f 'search.c' || echo '$(srcdir)/'`search.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-search.Tpo $(DEPDIR)/libreadline_lt_la-search.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='search.c' object='libreadline_lt_la-search.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-search.lo `test -f 'search.c' || echo '$(srcdir)/'`search.c
+
+libreadline_lt_la-shell.lo: shell.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-shell.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-shell.Tpo -c -o libreadline_lt_la-shell.lo `test -f 'shell.c' || echo '$(srcdir)/'`shell.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-shell.Tpo $(DEPDIR)/libreadline_lt_la-shell.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='shell.c' object='libreadline_lt_la-shell.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-shell.lo `test -f 'shell.c' || echo '$(srcdir)/'`shell.c
+
+libreadline_lt_la-savestring.lo: savestring.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-savestring.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-savestring.Tpo -c -o libreadline_lt_la-savestring.lo `test -f 'savestring.c' || echo '$(srcdir)/'`savestring.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-savestring.Tpo $(DEPDIR)/libreadline_lt_la-savestring.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='savestring.c' object='libreadline_lt_la-savestring.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-savestring.lo `test -f 'savestring.c' || echo '$(srcdir)/'`savestring.c
+
+libreadline_lt_la-tilde.lo: tilde.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-tilde.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-tilde.Tpo -c -o libreadline_lt_la-tilde.lo `test -f 'tilde.c' || echo '$(srcdir)/'`tilde.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-tilde.Tpo $(DEPDIR)/libreadline_lt_la-tilde.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tilde.c' object='libreadline_lt_la-tilde.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-tilde.lo `test -f 'tilde.c' || echo '$(srcdir)/'`tilde.c
+
+libreadline_lt_la-text.lo: text.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-text.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-text.Tpo -c -o libreadline_lt_la-text.lo `test -f 'text.c' || echo '$(srcdir)/'`text.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-text.Tpo $(DEPDIR)/libreadline_lt_la-text.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='text.c' object='libreadline_lt_la-text.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-text.lo `test -f 'text.c' || echo '$(srcdir)/'`text.c
+
+libreadline_lt_la-misc.lo: misc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-misc.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-misc.Tpo -c -o libreadline_lt_la-misc.lo `test -f 'misc.c' || echo '$(srcdir)/'`misc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-misc.Tpo $(DEPDIR)/libreadline_lt_la-misc.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='misc.c' object='libreadline_lt_la-misc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-misc.lo `test -f 'misc.c' || echo '$(srcdir)/'`misc.c
+
+libreadline_lt_la-compat.lo: compat.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-compat.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-compat.Tpo -c -o libreadline_lt_la-compat.lo `test -f 'compat.c' || echo '$(srcdir)/'`compat.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-compat.Tpo $(DEPDIR)/libreadline_lt_la-compat.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='compat.c' object='libreadline_lt_la-compat.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-compat.lo `test -f 'compat.c' || echo '$(srcdir)/'`compat.c
+
+libreadline_lt_la-realloc.lo: realloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-realloc.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-realloc.Tpo -c -o libreadline_lt_la-realloc.lo `test -f 'realloc.c' || echo '$(srcdir)/'`realloc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-realloc.Tpo $(DEPDIR)/libreadline_lt_la-realloc.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='realloc.c' object='libreadline_lt_la-realloc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-realloc.lo `test -f 'realloc.c' || echo '$(srcdir)/'`realloc.c
+
+libreadline_lt_la-mbutil.lo: mbutil.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-mbutil.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-mbutil.Tpo -c -o libreadline_lt_la-mbutil.lo `test -f 'mbutil.c' || echo '$(srcdir)/'`mbutil.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-mbutil.Tpo $(DEPDIR)/libreadline_lt_la-mbutil.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mbutil.c' object='libreadline_lt_la-mbutil.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-mbutil.lo `test -f 'mbutil.c' || echo '$(srcdir)/'`mbutil.c
+
+libreadline_lt_la-malloc.lo: malloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT libreadline_lt_la-malloc.lo -MD -MP -MF $(DEPDIR)/libreadline_lt_la-malloc.Tpo -c -o libreadline_lt_la-malloc.lo `test -f 'malloc.c' || echo '$(srcdir)/'`malloc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_lt_la-malloc.Tpo $(DEPDIR)/libreadline_lt_la-malloc.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='malloc.c' object='libreadline_lt_la-malloc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o libreadline_lt_la-malloc.lo `test -f 'malloc.c' || echo '$(srcdir)/'`malloc.c
+
+support/libreadline_lt_la-wcwidth.lo: support/wcwidth.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -MT support/libreadline_lt_la-wcwidth.lo -MD -MP -MF support/$(DEPDIR)/libreadline_lt_la-wcwidth.Tpo -c -o support/libreadline_lt_la-wcwidth.lo `test -f 'support/wcwidth.c' || echo '$(srcdir)/'`support/wcwidth.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) support/$(DEPDIR)/libreadline_lt_la-wcwidth.Tpo support/$(DEPDIR)/libreadline_lt_la-wcwidth.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='support/wcwidth.c' object='support/libreadline_lt_la-wcwidth.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_lt_la_CPPFLAGS) $(CPPFLAGS) $(libreadline_lt_la_CFLAGS) $(CFLAGS) -c -o support/libreadline_lt_la-wcwidth.lo `test -f 'support/wcwidth.c' || echo '$(srcdir)/'`support/wcwidth.c
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
+	-rm -rf support/.libs support/_libs
 
 distclean-libtool:
 	-rm -f libtool config.lt
@@ -1726,9 +2202,10 @@ distclean-DEJAGNU:
 	  rm -f $$tool.sum $$tool.log; \
 	done
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU
+	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU check-local
 check: check-recursive
-all-am: Makefile $(LIBRARIES) $(DATA) $(HEADERS) config.h
+all-am: Makefile $(LIBRARIES) $(LTLIBRARIES) $(DATA) $(HEADERS) \
+		config.h
 installdirs: installdirs-recursive
 installdirs-am: installdirs-local
 	for dir in "$(DESTDIR)$(INSTALLdir)" "$(DESTDIR)$(INSTALLEDdir)"; do \
@@ -1771,7 +2248,7 @@ maintainer-clean-generic:
 clean: clean-recursive
 
 clean-am: clean-generic clean-libtool clean-local \
-	clean-noinstLIBRARIES mostlyclean-am
+	clean-noinstLIBRARIES clean-noinstLTLIBRARIES mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -1783,6 +2260,14 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/libhistory_am_a-mbutil.Po
 	-rm -f ./$(DEPDIR)/libhistory_am_a-realloc.Po
 	-rm -f ./$(DEPDIR)/libhistory_am_a-shell.Po
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-histexpand.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-histfile.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-history.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-histsearch.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-malloc.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-mbutil.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-realloc.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-shell.Plo
 	-rm -f ./$(DEPDIR)/libreadline_am_a-bind.Po
 	-rm -f ./$(DEPDIR)/libreadline_am_a-callback.Po
 	-rm -f ./$(DEPDIR)/libreadline_am_a-compat.Po
@@ -1819,7 +2304,44 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/libreadline_am_a-vi_keymap.Po
 	-rm -f ./$(DEPDIR)/libreadline_am_a-vi_mode.Po
 	-rm -f ./$(DEPDIR)/libreadline_am_a-xmalloc.Po
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-bind.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-callback.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-compat.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-complete.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-display.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-emacs_keymap.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-funmap.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-histexpand.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-histfile.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-history.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-histsearch.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-input.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-isearch.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-keymaps.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-kill.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-macro.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-malloc.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-mbutil.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-misc.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-nls.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-parens.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-readline.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-realloc.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-rltty.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-savestring.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-search.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-shell.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-signals.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-terminal.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-text.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-tilde.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-undo.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-util.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-vi_keymap.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-vi_mode.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-xmalloc.Plo
 	-rm -f support/$(DEPDIR)/libreadline_am_a-wcwidth.Po
+	-rm -f support/$(DEPDIR)/libreadline_lt_la-wcwidth.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-DEJAGNU distclean-compile \
 	distclean-generic distclean-hdr distclean-libtool \
@@ -1876,6 +2398,14 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/libhistory_am_a-mbutil.Po
 	-rm -f ./$(DEPDIR)/libhistory_am_a-realloc.Po
 	-rm -f ./$(DEPDIR)/libhistory_am_a-shell.Po
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-histexpand.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-histfile.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-history.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-histsearch.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-malloc.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-mbutil.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-realloc.Plo
+	-rm -f ./$(DEPDIR)/libhistory_lt_la-shell.Plo
 	-rm -f ./$(DEPDIR)/libreadline_am_a-bind.Po
 	-rm -f ./$(DEPDIR)/libreadline_am_a-callback.Po
 	-rm -f ./$(DEPDIR)/libreadline_am_a-compat.Po
@@ -1912,7 +2442,44 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/libreadline_am_a-vi_keymap.Po
 	-rm -f ./$(DEPDIR)/libreadline_am_a-vi_mode.Po
 	-rm -f ./$(DEPDIR)/libreadline_am_a-xmalloc.Po
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-bind.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-callback.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-compat.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-complete.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-display.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-emacs_keymap.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-funmap.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-histexpand.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-histfile.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-history.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-histsearch.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-input.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-isearch.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-keymaps.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-kill.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-macro.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-malloc.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-mbutil.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-misc.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-nls.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-parens.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-readline.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-realloc.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-rltty.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-savestring.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-search.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-shell.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-signals.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-terminal.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-text.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-tilde.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-undo.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-util.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-vi_keymap.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-vi_mode.Plo
+	-rm -f ./$(DEPDIR)/libreadline_lt_la-xmalloc.Plo
 	-rm -f support/$(DEPDIR)/libreadline_am_a-wcwidth.Po
+	-rm -f support/$(DEPDIR)/libreadline_lt_la-wcwidth.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic \
 	maintainer-clean-local
@@ -1936,24 +2503,25 @@ uninstall-am: uninstall-INSTALLDATA uninstall-INSTALLEDHEADERS \
 .MAKE: $(am__recursive_targets) all check-am install-am install-strip
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
-	am--depfiles am--refresh check check-DEJAGNU check-am clean \
-	clean-cscope clean-generic clean-libtool clean-local \
-	clean-noinstLIBRARIES cscope cscopelist-am ctags ctags-am \
-	distclean distclean-DEJAGNU distclean-compile \
-	distclean-generic distclean-hdr distclean-libtool \
-	distclean-local distclean-tags dvi dvi-am html html-am info \
-	info-am install install-INSTALLDATA install-INSTALLEDHEADERS \
-	install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am \
-	install-info-local install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installcheck-local installdirs installdirs-am \
-	installdirs-local maintainer-clean maintainer-clean-generic \
-	maintainer-clean-local mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool mostlyclean-local pdf \
-	pdf-am ps ps-am tags tags-am uninstall uninstall-INSTALLDATA \
-	uninstall-INSTALLEDHEADERS uninstall-am uninstall-local
+	am--depfiles am--refresh check check-DEJAGNU check-am \
+	check-local clean clean-cscope clean-generic clean-libtool \
+	clean-local clean-noinstLIBRARIES clean-noinstLTLIBRARIES \
+	cscope cscopelist-am ctags ctags-am distclean \
+	distclean-DEJAGNU distclean-compile distclean-generic \
+	distclean-hdr distclean-libtool distclean-local distclean-tags \
+	dvi dvi-am html html-am info info-am install \
+	install-INSTALLDATA install-INSTALLEDHEADERS install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-info-local install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installcheck-local \
+	installdirs installdirs-am installdirs-local maintainer-clean \
+	maintainer-clean-generic maintainer-clean-local mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	mostlyclean-local pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-INSTALLDATA uninstall-INSTALLEDHEADERS uninstall-am \
+	uninstall-local
 
 .PRECIOUS: Makefile
 
@@ -2158,7 +2726,8 @@ info dvi: doc/Makefile
 	-( cd doc && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ )
 
 install-info-local:
-check:
+check: @MAINT@ lint
+check-local: @MAINT@ lint-local
 installcheck-local:
 
 dist-local: force

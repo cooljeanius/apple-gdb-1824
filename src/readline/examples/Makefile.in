@@ -106,6 +106,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+check_PROGRAMS = fileman_am$(EXEEXT) rltest_am$(EXEEXT) rl_am$(EXEEXT) \
+	rlcat_am$(EXEEXT) rlversion_am$(EXEEXT) histexamp_am$(EXEEXT)
 subdir = examples
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_gnu_make.m4 \
@@ -130,6 +132,41 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/support/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES = Makefile_orig
 CONFIG_CLEAN_VPATH_FILES =
+am_fileman_am_OBJECTS = fileman_am-fileman.$(OBJEXT)
+fileman_am_OBJECTS = $(am_fileman_am_OBJECTS)
+am__DEPENDENCIES_1 =
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
+fileman_am_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(fileman_am_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_histexamp_am_OBJECTS = histexamp_am-histexamp.$(OBJEXT)
+histexamp_am_OBJECTS = $(am_histexamp_am_OBJECTS)
+histexamp_am_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(histexamp_am_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_rl_am_OBJECTS = rl_am-rl.$(OBJEXT)
+rl_am_OBJECTS = $(am_rl_am_OBJECTS)
+rl_am_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(rl_am_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_rlcat_am_OBJECTS = rlcat_am-rlcat.$(OBJEXT)
+rlcat_am_OBJECTS = $(am_rlcat_am_OBJECTS)
+rlcat_am_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(rlcat_am_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_rltest_am_OBJECTS = rltest_am-rltest.$(OBJEXT)
+rltest_am_OBJECTS = $(am_rltest_am_OBJECTS)
+rltest_am_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(rltest_am_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_rlversion_am_OBJECTS = rlversion_am-rlversion.$(OBJEXT)
+rlversion_am_OBJECTS = $(am_rlversion_am_OBJECTS)
+rlversion_am_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(rlversion_am_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -142,13 +179,57 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-SOURCES =
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+depcomp = $(SHELL) $(top_srcdir)/support/depcomp
+am__maybe_remake_depfiles = depfiles
+am__depfiles_remade = ./$(DEPDIR)/fileman_am-fileman.Po \
+	./$(DEPDIR)/histexamp_am-histexamp.Po ./$(DEPDIR)/rl_am-rl.Po \
+	./$(DEPDIR)/rlcat_am-rlcat.Po ./$(DEPDIR)/rltest_am-rltest.Po \
+	./$(DEPDIR)/rlversion_am-rlversion.Po
+am__mv = mv -f
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
+SOURCES = $(fileman_am_SOURCES) $(histexamp_am_SOURCES) \
+	$(rl_am_SOURCES) $(rlcat_am_SOURCES) $(rltest_am_SOURCES) \
+	$(rlversion_am_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
+# Read a list of newline-separated strings from the standard input,
+# and print each of them once, without duplicates.  Input order is
+# *not* preserved.
+am__uniquify_input = $(AWK) '\
+  BEGIN { nonempty = 0; } \
+  { items[$$0] = 1; nonempty = 1; } \
+  END { if (nonempty) { for (i in items) print i; }; } \
+'
+# Make sure the list of sources is unique.  This is necessary because,
+# e.g., the same source file might be shared among _SOURCES variables
+# for different programs/libraries.
+am__define_uniq_tagged_files = \
+  list='$(am__tagged_files)'; \
+  unique=`for i in $$list; do \
+    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+  done | $(am__uniquify_input)`
 DEJATOOL = $(PACKAGE)
 RUNTESTDEFAULTFLAGS = --tool $$tool --srcdir $$srcdir
 EXPECT = expect
@@ -421,22 +502,53 @@ RM = rm -f
 
 # Support an alternate destination root directory for package building
 DESTDIR = 
+MY_CFLAGS = @CFLAGS@
+MY_CPPFLAGS = @CPPFLAGS@
 AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir) -I..
-CCFLAGS = $(DEFS) $(LOCAL_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS) $(CFLAGS) $(C_ARCHFLAGS)
+CCFLAGS = $(DEFS) $(LOCAL_CFLAGS) $(CPPFLAGS) $(MY_CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS) $(CFLAGS) $(MY_CFLAGS) $(C_ARCHFLAGS)
+AM_CFLAGS = $(CCFLAGS)
 AM_LDFLAGS = -ggdb -L.. -L../.. -L../../libiberty @LDFLAGS@
 READLINE_LIB = ../libreadline.a
 HISTORY_LIB = ../libhistory.a
 LIBIBERTY_LIB = ../../libiberty/libiberty.a
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 = 
+am__v_v_1 = -v
 AM_V_MFLAG = $(am__v_MFLAG_@AM_V@)
 am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
 am__v_MFLAG_0 = -s
 am__v_MFLAG_1 = -w
 EXECUTABLES = fileman rltest rl rlcat rlversion histexamp 
 OBJECTS = fileman.o rltest.o rl.o rlcat.o rlversion.o histexamp.o
+fileman_am_SOURCES = fileman.c
+fileman_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+fileman_am_LDADD = $(READLINE_LIB) $(HISTORY_LIB) $(TERMCAP_LIB)
+fileman_am_DEPENDENCIES = fileman.o $(READLINE_LIB) $(HISTORY_LIB)
+rltest_am_SOURCES = rltest.c
+rltest_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+rltest_am_LDADD = $(READLINE_LIB) $(HISTORY_LIB) $(TERMCAP_LIB)
+rltest_am_DEPENDENCIES = rltest.o $(READLINE_LIB) $(HISTORY_LIB)
+rl_am_SOURCES = rl.c
+rl_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+rl_am_LDADD = $(READLINE_LIB) $(HISTORY_LIB) $(TERMCAP_LIB)
+rl_am_DEPENDENCIES = rl.o $(READLINE_LIB) $(HISTORY_LIB)
+rlcat_am_SOURCES = rlcat.c
+rlcat_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+rlcat_am_LDADD = $(READLINE_LIB) $(TERMCAP_LIB)
+rlcat_am_DEPENDENCIES = rlcat.o $(READLINE_LIB)
+rlversion_am_SOURCES = rlversion.c
+rlversion_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+rlversion_am_LDADD = $(READLINE_LIB) $(TERMCAP_LIB)
+rlversion_am_DEPENDENCIES = rlversion.o $(READLINE_LIB)
+histexamp_am_SOURCES = histexamp.c
+histexamp_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+histexamp_am_LDADD = $(HISTORY_LIB) $(TERMCAP_LIB)
+histexamp_am_DEPENDENCIES = histexamp.o $(HISTORY_LIB)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .o
+.SUFFIXES: .c .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -469,17 +581,223 @@ $(am__aclocal_m4_deps):
 Makefile_orig: $(top_builddir)/config.status $(srcdir)/Makefile_orig.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
+clean-checkPROGRAMS:
+	@list='$(check_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
+
+fileman_am$(EXEEXT): $(fileman_am_OBJECTS) $(fileman_am_DEPENDENCIES) $(EXTRA_fileman_am_DEPENDENCIES) 
+	@rm -f fileman_am$(EXEEXT)
+	$(AM_V_CCLD)$(fileman_am_LINK) $(fileman_am_OBJECTS) $(fileman_am_LDADD) $(LIBS)
+
+histexamp_am$(EXEEXT): $(histexamp_am_OBJECTS) $(histexamp_am_DEPENDENCIES) $(EXTRA_histexamp_am_DEPENDENCIES) 
+	@rm -f histexamp_am$(EXEEXT)
+	$(AM_V_CCLD)$(histexamp_am_LINK) $(histexamp_am_OBJECTS) $(histexamp_am_LDADD) $(LIBS)
+
+rl_am$(EXEEXT): $(rl_am_OBJECTS) $(rl_am_DEPENDENCIES) $(EXTRA_rl_am_DEPENDENCIES) 
+	@rm -f rl_am$(EXEEXT)
+	$(AM_V_CCLD)$(rl_am_LINK) $(rl_am_OBJECTS) $(rl_am_LDADD) $(LIBS)
+
+rlcat_am$(EXEEXT): $(rlcat_am_OBJECTS) $(rlcat_am_DEPENDENCIES) $(EXTRA_rlcat_am_DEPENDENCIES) 
+	@rm -f rlcat_am$(EXEEXT)
+	$(AM_V_CCLD)$(rlcat_am_LINK) $(rlcat_am_OBJECTS) $(rlcat_am_LDADD) $(LIBS)
+
+rltest_am$(EXEEXT): $(rltest_am_OBJECTS) $(rltest_am_DEPENDENCIES) $(EXTRA_rltest_am_DEPENDENCIES) 
+	@rm -f rltest_am$(EXEEXT)
+	$(AM_V_CCLD)$(rltest_am_LINK) $(rltest_am_OBJECTS) $(rltest_am_LDADD) $(LIBS)
+
+rlversion_am$(EXEEXT): $(rlversion_am_OBJECTS) $(rlversion_am_DEPENDENCIES) $(EXTRA_rlversion_am_DEPENDENCIES) 
+	@rm -f rlversion_am$(EXEEXT)
+	$(AM_V_CCLD)$(rlversion_am_LINK) $(rlversion_am_OBJECTS) $(rlversion_am_LDADD) $(LIBS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fileman_am-fileman.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/histexamp_am-histexamp.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_am-rl.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rlcat_am-rlcat.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rltest_am-rltest.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rlversion_am-rlversion.Po@am__quote@ # am--include-marker
+
+$(am__depfiles_remade):
+	@$(MKDIR_P) $(@D)
+	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
+
+am--depfiles: $(am__depfiles_remade)
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+fileman_am-fileman.o: fileman.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(fileman_am_CFLAGS) $(CFLAGS) -MT fileman_am-fileman.o -MD -MP -MF $(DEPDIR)/fileman_am-fileman.Tpo -c -o fileman_am-fileman.o `test -f 'fileman.c' || echo '$(srcdir)/'`fileman.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/fileman_am-fileman.Tpo $(DEPDIR)/fileman_am-fileman.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='fileman.c' object='fileman_am-fileman.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(fileman_am_CFLAGS) $(CFLAGS) -c -o fileman_am-fileman.o `test -f 'fileman.c' || echo '$(srcdir)/'`fileman.c
+
+fileman_am-fileman.obj: fileman.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(fileman_am_CFLAGS) $(CFLAGS) -MT fileman_am-fileman.obj -MD -MP -MF $(DEPDIR)/fileman_am-fileman.Tpo -c -o fileman_am-fileman.obj `if test -f 'fileman.c'; then $(CYGPATH_W) 'fileman.c'; else $(CYGPATH_W) '$(srcdir)/fileman.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/fileman_am-fileman.Tpo $(DEPDIR)/fileman_am-fileman.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='fileman.c' object='fileman_am-fileman.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(fileman_am_CFLAGS) $(CFLAGS) -c -o fileman_am-fileman.obj `if test -f 'fileman.c'; then $(CYGPATH_W) 'fileman.c'; else $(CYGPATH_W) '$(srcdir)/fileman.c'; fi`
+
+histexamp_am-histexamp.o: histexamp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(histexamp_am_CFLAGS) $(CFLAGS) -MT histexamp_am-histexamp.o -MD -MP -MF $(DEPDIR)/histexamp_am-histexamp.Tpo -c -o histexamp_am-histexamp.o `test -f 'histexamp.c' || echo '$(srcdir)/'`histexamp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/histexamp_am-histexamp.Tpo $(DEPDIR)/histexamp_am-histexamp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histexamp.c' object='histexamp_am-histexamp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(histexamp_am_CFLAGS) $(CFLAGS) -c -o histexamp_am-histexamp.o `test -f 'histexamp.c' || echo '$(srcdir)/'`histexamp.c
+
+histexamp_am-histexamp.obj: histexamp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(histexamp_am_CFLAGS) $(CFLAGS) -MT histexamp_am-histexamp.obj -MD -MP -MF $(DEPDIR)/histexamp_am-histexamp.Tpo -c -o histexamp_am-histexamp.obj `if test -f 'histexamp.c'; then $(CYGPATH_W) 'histexamp.c'; else $(CYGPATH_W) '$(srcdir)/histexamp.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/histexamp_am-histexamp.Tpo $(DEPDIR)/histexamp_am-histexamp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histexamp.c' object='histexamp_am-histexamp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(histexamp_am_CFLAGS) $(CFLAGS) -c -o histexamp_am-histexamp.obj `if test -f 'histexamp.c'; then $(CYGPATH_W) 'histexamp.c'; else $(CYGPATH_W) '$(srcdir)/histexamp.c'; fi`
+
+rl_am-rl.o: rl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rl_am_CFLAGS) $(CFLAGS) -MT rl_am-rl.o -MD -MP -MF $(DEPDIR)/rl_am-rl.Tpo -c -o rl_am-rl.o `test -f 'rl.c' || echo '$(srcdir)/'`rl.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rl_am-rl.Tpo $(DEPDIR)/rl_am-rl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rl.c' object='rl_am-rl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rl_am_CFLAGS) $(CFLAGS) -c -o rl_am-rl.o `test -f 'rl.c' || echo '$(srcdir)/'`rl.c
+
+rl_am-rl.obj: rl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rl_am_CFLAGS) $(CFLAGS) -MT rl_am-rl.obj -MD -MP -MF $(DEPDIR)/rl_am-rl.Tpo -c -o rl_am-rl.obj `if test -f 'rl.c'; then $(CYGPATH_W) 'rl.c'; else $(CYGPATH_W) '$(srcdir)/rl.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rl_am-rl.Tpo $(DEPDIR)/rl_am-rl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rl.c' object='rl_am-rl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rl_am_CFLAGS) $(CFLAGS) -c -o rl_am-rl.obj `if test -f 'rl.c'; then $(CYGPATH_W) 'rl.c'; else $(CYGPATH_W) '$(srcdir)/rl.c'; fi`
+
+rlcat_am-rlcat.o: rlcat.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rlcat_am_CFLAGS) $(CFLAGS) -MT rlcat_am-rlcat.o -MD -MP -MF $(DEPDIR)/rlcat_am-rlcat.Tpo -c -o rlcat_am-rlcat.o `test -f 'rlcat.c' || echo '$(srcdir)/'`rlcat.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rlcat_am-rlcat.Tpo $(DEPDIR)/rlcat_am-rlcat.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rlcat.c' object='rlcat_am-rlcat.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rlcat_am_CFLAGS) $(CFLAGS) -c -o rlcat_am-rlcat.o `test -f 'rlcat.c' || echo '$(srcdir)/'`rlcat.c
+
+rlcat_am-rlcat.obj: rlcat.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rlcat_am_CFLAGS) $(CFLAGS) -MT rlcat_am-rlcat.obj -MD -MP -MF $(DEPDIR)/rlcat_am-rlcat.Tpo -c -o rlcat_am-rlcat.obj `if test -f 'rlcat.c'; then $(CYGPATH_W) 'rlcat.c'; else $(CYGPATH_W) '$(srcdir)/rlcat.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rlcat_am-rlcat.Tpo $(DEPDIR)/rlcat_am-rlcat.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rlcat.c' object='rlcat_am-rlcat.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rlcat_am_CFLAGS) $(CFLAGS) -c -o rlcat_am-rlcat.obj `if test -f 'rlcat.c'; then $(CYGPATH_W) 'rlcat.c'; else $(CYGPATH_W) '$(srcdir)/rlcat.c'; fi`
+
+rltest_am-rltest.o: rltest.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rltest_am_CFLAGS) $(CFLAGS) -MT rltest_am-rltest.o -MD -MP -MF $(DEPDIR)/rltest_am-rltest.Tpo -c -o rltest_am-rltest.o `test -f 'rltest.c' || echo '$(srcdir)/'`rltest.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rltest_am-rltest.Tpo $(DEPDIR)/rltest_am-rltest.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rltest.c' object='rltest_am-rltest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rltest_am_CFLAGS) $(CFLAGS) -c -o rltest_am-rltest.o `test -f 'rltest.c' || echo '$(srcdir)/'`rltest.c
+
+rltest_am-rltest.obj: rltest.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rltest_am_CFLAGS) $(CFLAGS) -MT rltest_am-rltest.obj -MD -MP -MF $(DEPDIR)/rltest_am-rltest.Tpo -c -o rltest_am-rltest.obj `if test -f 'rltest.c'; then $(CYGPATH_W) 'rltest.c'; else $(CYGPATH_W) '$(srcdir)/rltest.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rltest_am-rltest.Tpo $(DEPDIR)/rltest_am-rltest.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rltest.c' object='rltest_am-rltest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rltest_am_CFLAGS) $(CFLAGS) -c -o rltest_am-rltest.obj `if test -f 'rltest.c'; then $(CYGPATH_W) 'rltest.c'; else $(CYGPATH_W) '$(srcdir)/rltest.c'; fi`
+
+rlversion_am-rlversion.o: rlversion.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rlversion_am_CFLAGS) $(CFLAGS) -MT rlversion_am-rlversion.o -MD -MP -MF $(DEPDIR)/rlversion_am-rlversion.Tpo -c -o rlversion_am-rlversion.o `test -f 'rlversion.c' || echo '$(srcdir)/'`rlversion.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rlversion_am-rlversion.Tpo $(DEPDIR)/rlversion_am-rlversion.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rlversion.c' object='rlversion_am-rlversion.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rlversion_am_CFLAGS) $(CFLAGS) -c -o rlversion_am-rlversion.o `test -f 'rlversion.c' || echo '$(srcdir)/'`rlversion.c
+
+rlversion_am-rlversion.obj: rlversion.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rlversion_am_CFLAGS) $(CFLAGS) -MT rlversion_am-rlversion.obj -MD -MP -MF $(DEPDIR)/rlversion_am-rlversion.Tpo -c -o rlversion_am-rlversion.obj `if test -f 'rlversion.c'; then $(CYGPATH_W) 'rlversion.c'; else $(CYGPATH_W) '$(srcdir)/rlversion.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rlversion_am-rlversion.Tpo $(DEPDIR)/rlversion_am-rlversion.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rlversion.c' object='rlversion_am-rlversion.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rlversion_am_CFLAGS) $(CFLAGS) -c -o rlversion_am-rlversion.obj `if test -f 'rlversion.c'; then $(CYGPATH_W) 'rlversion.c'; else $(CYGPATH_W) '$(srcdir)/rlversion.c'; fi`
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
-tags TAGS:
 
-ctags CTAGS:
+ID: $(am__tagged_files)
+	$(am__define_uniq_tagged_files); mkid -fID $$unique
+tags: tags-am
+TAGS: tags
 
-cscope cscopelist:
+tags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
+	set x; \
+	here=`pwd`; \
+	$(am__define_uniq_tagged_files); \
+	shift; \
+	if test -z "$(ETAGS_ARGS)$$*$$unique"; then :; else \
+	  test -n "$$unique" || unique=$$empty_fix; \
+	  if test $$# -gt 0; then \
+	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
+	      "$$@" $$unique; \
+	  else \
+	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
+	      $$unique; \
+	  fi; \
+	fi
+ctags: ctags-am
 
+CTAGS: ctags
+ctags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
+	$(am__define_uniq_tagged_files); \
+	test -z "$(CTAGS_ARGS)$$unique" \
+	  || $(CTAGS) $(CTAGSFLAGS) $(AM_CTAGSFLAGS) $(CTAGS_ARGS) \
+	     $$unique
+
+GTAGS:
+	here=`$(am__cd) $(top_builddir) && pwd` \
+	  && $(am__cd) $(top_srcdir) \
+	  && gtags -i $(GTAGS_ARGS) "$$here"
+cscopelist: cscopelist-am
+
+cscopelist-am: $(am__tagged_files)
+	list='$(am__tagged_files)'; \
+	case "$(srcdir)" in \
+	  [\\/]* | ?:[\\/]*) sdir="$(srcdir)" ;; \
+	  *) sdir=$(subdir)/$(srcdir) ;; \
+	esac; \
+	for i in $$list; do \
+	  if test -f "$$i"; then \
+	    echo "$(subdir)/$$i"; \
+	  else \
+	    echo "$$sdir/$$i"; \
+	  fi; \
+	done >> $(top_builddir)/cscope.files
+
+distclean-tags:
+	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 check-DEJAGNU: site.exp
 	srcdir='$(srcdir)'; export srcdir; \
@@ -525,6 +843,7 @@ distclean-DEJAGNU:
 	  rm -f $$tool.sum $$tool.log; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU
 check: check-am
 all-am: Makefile
@@ -561,12 +880,19 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
+	mostlyclean-am
 
 distclean: distclean-am
+		-rm -f ./$(DEPDIR)/fileman_am-fileman.Po
+	-rm -f ./$(DEPDIR)/histexamp_am-histexamp.Po
+	-rm -f ./$(DEPDIR)/rl_am-rl.Po
+	-rm -f ./$(DEPDIR)/rlcat_am-rlcat.Po
+	-rm -f ./$(DEPDIR)/rltest_am-rltest.Po
+	-rm -f ./$(DEPDIR)/rlversion_am-rlversion.Po
 	-rm -f Makefile
-distclean-am: clean-am distclean-DEJAGNU distclean-generic \
-	distclean-local
+distclean-am: clean-am distclean-DEJAGNU distclean-compile \
+	distclean-generic distclean-local distclean-tags
 
 dvi: dvi-am
 
@@ -609,13 +935,20 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
+		-rm -f ./$(DEPDIR)/fileman_am-fileman.Po
+	-rm -f ./$(DEPDIR)/histexamp_am-histexamp.Po
+	-rm -f ./$(DEPDIR)/rl_am-rl.Po
+	-rm -f ./$(DEPDIR)/rlcat_am-rlcat.Po
+	-rm -f ./$(DEPDIR)/rltest_am-rltest.Po
+	-rm -f ./$(DEPDIR)/rlversion_am-rlversion.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic \
 	maintainer-clean-local
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic mostlyclean-libtool
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -629,76 +962,84 @@ uninstall-am:
 
 .MAKE: check-am install-am install-strip
 
-.PHONY: all all-am check check-DEJAGNU check-am clean clean-generic \
-	clean-libtool cscopelist-am ctags-am distclean \
-	distclean-DEJAGNU distclean-generic distclean-libtool \
-	distclean-local dvi dvi-am html html-am info info-am install \
-	install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic \
-	maintainer-clean-local mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags-am uninstall \
-	uninstall-am
+.PHONY: CTAGS GTAGS TAGS all all-am am--depfiles check check-DEJAGNU \
+	check-am clean clean-checkPROGRAMS clean-generic clean-libtool \
+	cscopelist-am ctags ctags-am distclean distclean-DEJAGNU \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-local distclean-tags dvi dvi-am html html-am info \
+	info-am install install-am install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	maintainer-clean-local mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
 
-.c.o:
-	${RM} $@
-	$(CC) $(CCFLAGS) -c $<
+@ifGNUmake@ifneq (.@OBJEXT@,.o)
+@ifGNUmake@.c.@OBJEXT@:
+@ifGNUmake@	$(AM_V_at)${RM} $@
+@ifGNUmake@	$(AM_V_CC)$(CC) $(CCFLAGS) -c $<
+@ifGNUmake@endif
 
 all: $(EXECUTABLES)
 everything: all rlfe
 
-rl: rl.o $(READLINE_LIB) $(HISTORY_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rl.o
+$(READLINE_LIB): ../Makefile
+	$(MAKE) -C .. $(AM_V_MFLAG) libreadline.a
+$(HISTORY_LIB): ../Makefile
+	$(MAKE) -C .. $(AM_V_MFLAG) libhistory.a
+
+rl$(EXEEXT): rl.o $(READLINE_LIB) $(HISTORY_LIB)
+	$(AM_V_at)test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rl.o
 	$(AM_V_at)if test -e $(srcdir)/rl.o -a ! -e rl.o; then \
-	  cp -v $(srcdir)/rl.o rl.o; \
+	  cp $(AM_V_v) $(srcdir)/rl.o rl.o; \
 	fi
-	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rl.o -lreadline -lhistory $(READLINE_LIB) $(TERMCAP_LIB)
+	$(AM_V_CCLD)$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rl.o -lreadline -lhistory $(READLINE_LIB) $(TERMCAP_LIB)
 
-rlcat: rlcat.o $(READLINE_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rlcat.o
+rlcat$(EXEEXT): rlcat.o $(READLINE_LIB)
+	$(AM_V_at)test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rlcat.o
 	$(AM_V_at)if test -e $(srcdir)/rlcat.o -a ! -e rlcat.o; then \
-	  cp -v $(srcdir)/rlcat.o rlcat.o; \
+	  cp $(AM_V_v) $(srcdir)/rlcat.o rlcat.o; \
 	fi
-	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlcat.o -lreadline $(READLINE_LIB) $(TERMCAP_LIB)
+	$(AM_V_CCLD)$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlcat.o -lreadline $(READLINE_LIB) $(TERMCAP_LIB)
 
-fileman: fileman.o $(READLINE_LIB) $(HISTORY_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./fileman.o
+fileman$(EXEEXT): fileman.o $(READLINE_LIB) $(HISTORY_LIB)
+	$(AM_V_at)test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./fileman.o
 	$(AM_V_at)if test -e $(srcdir)/fileman.o -a ! -e fileman.o; then \
-	  cp -v $(srcdir)/fileman.o fileman.o; \
+	  cp $(AM_V_v) $(srcdir)/fileman.o fileman.o; \
 	fi
-	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ fileman.o $(LIBS) $(READLINE_LIB) $(HISTORY_LIB) $(TERMCAP_LIB)
+	$(AM_V_CCLD)$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ fileman.o $(LIBS) $(READLINE_LIB) $(HISTORY_LIB) $(TERMCAP_LIB)
 
-rltest: rltest.o $(READLINE_LIB) $(HISTORY_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rltest.o
+rltest$(EXEEXT): rltest.o $(READLINE_LIB) $(HISTORY_LIB)
+	$(AM_V_at)test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rltest.o
 	$(AM_V_at)if test -e $(srcdir)/rltest.o -a ! -e rltest.o; then \
-	  cp -v $(srcdir)/rltest.o rltest.o; \
+	  cp $(AM_V_v) $(srcdir)/rltest.o rltest.o; \
 	fi
-	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rltest.o -lreadline -lhistory $(TERMCAP_LIB)
+	$(AM_V_CCLD)$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rltest.o -lreadline -lhistory $(TERMCAP_LIB)
 
-rlversion: rlversion.o $(READLINE_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rlversion.o
+rlversion$(EXEEXT): rlversion.o $(READLINE_LIB)
+	$(AM_V_at)test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rlversion.o
 	$(AM_V_at)if test -e $(srcdir)/rlversion.o -a ! -e rlversion.o; then \
-	  cp -v $(srcdir)/rlversion.o rlversion.o; \
+	  cp $(AM_V_v) $(srcdir)/rlversion.o rlversion.o; \
 	fi
-	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlversion.o -lreadline $(TERMCAP_LIB)
+	$(AM_V_CCLD)$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlversion.o -lreadline $(TERMCAP_LIB)
 
-histexamp: histexamp.o $(HISTORY_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./histexamp.o
+histexamp$(EXEEXT): histexamp.o $(HISTORY_LIB)
+	$(AM_V_at)test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./histexamp.o
 	$(AM_V_at)if test -e $(srcdir)/histexamp.o -a ! -e histexamp.o; then \
-	  cp -v $(srcdir)/histexamp.o histexamp.o; \
+	  cp $(AM_V_v) $(srcdir)/histexamp.o histexamp.o; \
 	fi
-	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ histexamp.o -lhistory $(TERMCAP_LIB)
+	$(AM_V_CCLD)$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ histexamp.o -lhistory $(TERMCAP_LIB)
 
 clean-local mostlyclean-local:
 	$(RM) $(OBJECTS)
 	$(RM) $(EXECUTABLES) *.exe
-	$(RM) -rv *.dSYM || rmdir *.dSYM
+	$(RM) -r $(AM_V_v) *.dSYM || rmdir *.dSYM
 	$(RM) rlfe.o rlfe
 
 distclean-local: clean-local
@@ -723,11 +1064,11 @@ histexamp.o: $(top_srcdir)/history.h
 # Stuff for Per Bothner's `rlfe' program
 
 rlfe: rlfe.o $(READLINE_LIB) $(HISTORY_LIB)
-	test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rlfe.o
+	$(AM_V_at)test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rlfe.o
 	$(AM_V_at)if test -e $(srcdir)/rlfe.o -a ! -e rlfe.o; then \
-	  cp -v $(srcdir)/rlfe.o rlfe.o; \
+	  cp $(AM_V_v) $(srcdir)/rlfe.o rlfe.o; \
 	fi
-	$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlfe.o -lreadline -lhistory ${TERMCAP_LIB}
+	$(AM_V_CCLD)$(CC) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlfe.o -lreadline -lhistory ${TERMCAP_LIB}
 
 rlfe.o: rlfe.c
 

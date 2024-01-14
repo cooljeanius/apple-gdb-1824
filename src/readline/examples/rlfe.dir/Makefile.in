@@ -163,7 +163,7 @@ dist: .version $(SCREEN).tar.gz
 
 # Perform self-tests (if any).
 check:
-	@true
+	@echo "$@ target in `pwd`: TODO: add some checks"
 .PHONY: check
 
 config: configure

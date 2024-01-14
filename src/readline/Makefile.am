@@ -69,6 +69,7 @@ SHOBJ_CFLAGS = @SHOBJ_CFLAGS@
 
 VERS_FLAG = -DRL_LIBRARY_VERSION='"$(RL_LIBRARY_VERSION)"'
 LOCAL_CFLAGS = @LOCAL_CFLAGS@ $(VERS_FLAG)
+AM_CFLAGS = $(LOCAL_CFLAGS)
 CPPFLAGS = @CPPFLAGS@
 
 DEFS = @DEFS@
@@ -108,6 +109,7 @@ GCC_LINT_CFLAGS = $(XCCFLAGS) $(GCC_LINT_FLAGS) @CFLAGS@ @LOCAL_CFLAGS@
 LIBRARY_NAME = libreadline.a
 STATIC_LIBS = libreadline.a libhistory.a
 noinst_LIBRARIES = libreadline_am.a libhistory_am.a
+noinst_LTLIBRARIES = libreadline_lt.la libhistory_lt.la
 
 WCWIDTH_OBJ = @WCWIDTH_OBJ@
 
@@ -131,6 +133,10 @@ libreadline_am_a_SOURCES = $(CSOURCES)
 libreadline_am_a_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
 libreadline_am_a_CPPFLAGS = -I..
 
+libreadline_lt_la_SOURCES = $(CSOURCES)
+libreadline_lt_la_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+libreadline_lt_la_CPPFLAGS = -I..
+
 # The header files for this library.
 HSOURCES = readline.h rldefs.h chardefs.h keymaps.h history.h histlib.h \
 	   posixstat.h posixdir.h posixjmp.h tilde.h rlconf.h rltty.h \
@@ -141,6 +147,8 @@ HISTSOURCES = history.c histexpand.c histfile.c histsearch.c \
 	  malloc.c realloc.c shell.c mbutil.c
 libhistory_am_a_SOURCES = $(HISTSOURCES)
 libhistory_am_a_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+libhistory_lt_la_SOURCES = $(HISTSOURCES)
+libhistory_lt_la_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
 HISTOBJ = history.o histexpand.o histfile.o histsearch.o \
 	  malloc.o realloc.o shell.o mbutil.o
 TILDEOBJ = tilde.o
@@ -383,7 +391,8 @@ info dvi: doc/Makefile
 	-( cd doc && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ )
 
 install-info-local:
-check:
+check: @MAINT@ lint
+check-local: @MAINT@ lint-local
 installcheck-local:
 
 dist-local: force
