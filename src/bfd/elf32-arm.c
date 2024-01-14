@@ -4140,7 +4140,7 @@ elf32_arm_relocate_section (bfd *                  output_bfd,
 	}
       else
 	{
-	  bfd_boolean warned ATTRIBUTE_UNUSED;
+	  bfd_boolean warned;
 
 	  RELOC_FOR_GLOBAL_SYMBOL(info, input_bfd, input_section, rel,
 				  r_symndx, symtab_hdr, sym_hashes,
@@ -6422,14 +6422,14 @@ elf32_arm_finish_dynamic_sections (bfd * output_bfd, struct bfd_link_info * info
 
 /* */
 static void
-elf32_arm_post_process_headers(bfd *abfd, struct bfd_link_info *link_info ATTRIBUTE_UNUSED)
+elf32_arm_post_process_headers(bfd *abfd, struct bfd_link_info *link_info)
 {
-  Elf_Internal_Ehdr * i_ehdrp;	/* ELF file header, internal form.  */
+  Elf_Internal_Ehdr *i_ehdrp;	/* ELF file header, internal form.  */
   struct elf32_arm_link_hash_table *globals;
 
-  i_ehdrp = elf_elfheader (abfd);
+  i_ehdrp = elf_elfheader(abfd);
 
-  if (EF_ARM_EABI_VERSION (i_ehdrp->e_flags) == EF_ARM_EABI_UNKNOWN)
+  if (EF_ARM_EABI_VERSION(i_ehdrp->e_flags) == EF_ARM_EABI_UNKNOWN)
     i_ehdrp->e_ident[EI_OSABI] = ELFOSABI_ARM;
   else
     i_ehdrp->e_ident[EI_OSABI] = 0;
@@ -6437,16 +6437,17 @@ elf32_arm_post_process_headers(bfd *abfd, struct bfd_link_info *link_info ATTRIB
 
   if (link_info)
     {
-      globals = elf32_arm_hash_table (link_info);
+      globals = elf32_arm_hash_table(link_info);
       if (globals->byteswap_code)
 	i_ehdrp->e_flags |= EF_ARM_BE8;
     }
 }
 
+/* */
 static enum elf_reloc_type_class
-elf32_arm_reloc_type_class (const Elf_Internal_Rela *rela)
+elf32_arm_reloc_type_class(const Elf_Internal_Rela *rela)
 {
-  switch ((int) ELF32_R_TYPE (rela->r_info))
+  switch ((int)ELF32_R_TYPE(rela->r_info))
     {
     case R_ARM_RELATIVE:
       return reloc_class_relative;

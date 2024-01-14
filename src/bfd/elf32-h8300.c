@@ -273,15 +273,16 @@ elf32_h8_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *bfd_reloc,
   abort();
 }
 
+/* */
 static void ATTRIBUTE_NORETURN
 elf32_h8_info_to_howto_rel(bfd *abfd ATTRIBUTE_UNUSED, arelent *bfd_reloc,
-                           Elf_Internal_Rela *elf_reloc ATTRIBUTE_UNUSED)
+                           Elf_Internal_Rela *elf_reloc)
 {
   unsigned int r;
 
-  abort();
   r = ELF32_R_TYPE(elf_reloc->r_info);
   bfd_reloc->howto = &h8_elf_howto_table[r];
+  abort();
 }
 
 /* Special handling for H8/300 relocs.
@@ -289,15 +290,12 @@ elf32_h8_info_to_howto_rel(bfd *abfd ATTRIBUTE_UNUSED, arelent *bfd_reloc,
    When doing -r, we can't do any arithmetic for the pcrel stuff, because
    we support relaxing on the H8/300 series chips.  */
 static bfd_reloc_status_type
-special (bfd *abfd ATTRIBUTE_UNUSED,
-	 arelent *reloc_entry ATTRIBUTE_UNUSED,
-	 asymbol *symbol ATTRIBUTE_UNUSED,
-	 PTR data ATTRIBUTE_UNUSED,
-	 asection *input_section ATTRIBUTE_UNUSED,
-	 bfd *output_bfd,
-	 const char **error_message ATTRIBUTE_UNUSED)
+special(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
+        asymbol *symbol ATTRIBUTE_UNUSED, PTR data ATTRIBUTE_UNUSED,
+        asection *input_section, bfd *output_bfd,
+        const char **error_message ATTRIBUTE_UNUSED)
 {
-  if (output_bfd == (bfd *) NULL)
+  if (output_bfd == (bfd *)NULL)
     return bfd_reloc_continue;
 
   /* Adjust the reloc address to that in the output section.  */
@@ -307,14 +305,13 @@ special (bfd *abfd ATTRIBUTE_UNUSED,
 
 /* Perform a relocation as part of a final link.  */
 static bfd_reloc_status_type
-elf32_h8_final_link_relocate (unsigned long r_type, bfd *input_bfd,
-			      bfd *output_bfd ATTRIBUTE_UNUSED,
-			      asection *input_section ATTRIBUTE_UNUSED,
-			      bfd_byte *contents, bfd_vma offset,
-			      bfd_vma value, bfd_vma addend,
-			      struct bfd_link_info *info ATTRIBUTE_UNUSED,
-			      asection *sym_sec ATTRIBUTE_UNUSED,
-			      int is_local ATTRIBUTE_UNUSED)
+elf32_h8_final_link_relocate(unsigned long r_type, bfd *input_bfd,
+			     bfd *output_bfd ATTRIBUTE_UNUSED,
+			     asection *input_section, bfd_byte *contents,
+                             bfd_vma offset, bfd_vma value, bfd_vma addend,
+			     struct bfd_link_info *info ATTRIBUTE_UNUSED,
+			     asection *sym_sec ATTRIBUTE_UNUSED,
+			     int is_local ATTRIBUTE_UNUSED)
 {
   bfd_byte *hit_data = contents + offset;
 

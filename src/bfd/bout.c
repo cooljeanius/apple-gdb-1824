@@ -1047,20 +1047,17 @@ perform_slip(bfd *abfd, unsigned int slip, asection *input_section,
    If it can, then it changes the amode.  */
 
 static int
-abs32code (bfd *abfd,
-	   asection *input_section,
-	   arelent *r,
-	   unsigned int shrink,
-	   struct bfd_link_info *link_info)
+abs32code(bfd *abfd, asection *input_section, arelent *r,
+	  unsigned int shrink, struct bfd_link_info *link_info)
 {
-  bfd_vma value = get_value (r, link_info, input_section);
-  bfd_vma dot = output_addr (input_section) + r->address;
+  bfd_vma value = get_value(r, link_info, input_section);
+  bfd_vma dot = (output_addr(input_section) + r->address);
   bfd_vma gap;
 
   /* See if the address we're looking at within 2^23 bytes of where
      we are, if so then we can use a small branch rather than the
      jump we were going to.  */
-  gap = value - (dot - shrink);
+  gap = (value - (dot - shrink));
 
   if (((-1U << 23) < gap) && (gap < (1U << 23)))
     {
@@ -1071,7 +1068,7 @@ abs32code (bfd *abfd,
       r->address -=4;
 
       /* This will be four bytes smaller in the long run: */
-      shrink += 4 ;
+      shrink += 4;
       perform_slip(abfd, 4, input_section, (r->address-shrink + 4));
     }
 

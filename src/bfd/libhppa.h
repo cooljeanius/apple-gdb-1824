@@ -162,7 +162,8 @@ enum hppa_reloc_expr_type_alt
 
 /* Some functions to manipulate PA instructions.  */
 
-/* Declare (some of) the functions with the unused attribute to avoid warnings.  */
+/* Using the unused attribute here can actually provoke more new warnings
+ * (from -Wused-but-marked-unused) than it silences, so be careful: */
 static inline int sign_extend (int, int) ATTRIBUTE_UNUSED;
 static inline int low_sign_extend (int, int) ATTRIBUTE_UNUSED;
 static inline int sign_unext (int, int);
@@ -177,7 +178,7 @@ static inline int re_assemble_22 (int);
 static inline bfd_signed_vma hppa_field_adjust
   (bfd_vma, bfd_signed_vma, enum hppa_reloc_field_selector_type_alt);
 static inline int bfd_hppa_insn2fmt (bfd *, int) ATTRIBUTE_UNUSED;
-static inline int hppa_rebuild_insn (int, int, int) ATTRIBUTE_UNUSED;
+static inline int hppa_rebuild_insn (int, int, int);
 
 
 /* The *sign_extend functions are used to assemble various bitfields

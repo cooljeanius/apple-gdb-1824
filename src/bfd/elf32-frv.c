@@ -2675,10 +2675,9 @@ frv_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
    accordingly.  */
 
 static bfd_boolean
-elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
-			   struct bfd_link_info *info, bfd *input_bfd,
-			   asection *input_section, bfd_byte *contents,
-			   Elf_Internal_Rela *relocs,
+elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                           bfd *input_bfd, asection *input_section,
+                           bfd_byte *contents, Elf_Internal_Rela *relocs,
 			   Elf_Internal_Sym *local_syms,
 			   asection **local_sections)
 {
@@ -4199,12 +4198,11 @@ elf32_frv_add_symbol_hook(bfd *abfd, struct bfd_link_info *info,
 /* We need dynamic symbols for every section, since segments can
    relocate independently.  */
 static bfd_boolean
-_frvfdpic_link_omit_section_dynsym (bfd *output_bfd ATTRIBUTE_UNUSED,
-				    struct bfd_link_info *info
-				    ATTRIBUTE_UNUSED,
-				    asection *p ATTRIBUTE_UNUSED)
+_frvfdpic_link_omit_section_dynsym(bfd *output_bfd ATTRIBUTE_UNUSED,
+				   struct bfd_link_info *info ATTRIBUTE_UNUSED,
+				   asection *p)
 {
-  switch (elf_section_data (p)->this_hdr.sh_type)
+  switch (elf_section_data(p)->this_hdr.sh_type)
     {
     case SHT_PROGBITS:
     case SHT_NOBITS:
@@ -5893,15 +5891,14 @@ elf32_frvfdpic_finish_dynamic_sections (bfd *output_bfd,
    regular object.  */
 
 static bfd_boolean
-elf32_frvfdpic_adjust_dynamic_symbol
-(struct bfd_link_info *info ATTRIBUTE_UNUSED,
- struct elf_link_hash_entry *h ATTRIBUTE_UNUSED)
+elf32_frvfdpic_adjust_dynamic_symbol(struct bfd_link_info *info,
+                                     struct elf_link_hash_entry *h)
 {
-  bfd * dynobj;
+  bfd *dynobj;
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
 
-  /* Make sure we know what is going on here.  */
+  /* Make sure we know what is going on here: */
   BFD_ASSERT (dynobj != NULL
 	      && (h->u.weakdef != NULL
 		  || (h->def_dynamic

@@ -8090,8 +8090,9 @@ bfd_get_elf_phdrs(bfd *abfd, void *phdrs)
   return num_phdrs;
 }
 
+/* */
 void
-_bfd_elf_sprintf_vma(bfd *abfd ATTRIBUTE_UNUSED, char *buf, bfd_vma value)
+_bfd_elf_sprintf_vma(bfd *abfd, char *buf, bfd_vma value)
 {
 #ifdef BFD64
   Elf_Internal_Ehdr *i_ehdrp;	/* Elf file header, internal form */
@@ -8115,12 +8116,13 @@ _bfd_elf_sprintf_vma(bfd *abfd ATTRIBUTE_UNUSED, char *buf, bfd_vma value)
     }
 #else
   sprintf_vma(buf, value);
+  (void)abfd;
 #endif /* BFD64 */
 }
 
+/* */
 void
-_bfd_elf_fprintf_vma(bfd *abfd ATTRIBUTE_UNUSED, void *stream,
-                     bfd_vma value)
+_bfd_elf_fprintf_vma(bfd *abfd, void *stream, bfd_vma value)
 {
 #ifdef BFD64
   Elf_Internal_Ehdr *i_ehdrp;	/* Elf file header, internal form */
@@ -8143,6 +8145,7 @@ _bfd_elf_fprintf_vma(bfd *abfd ATTRIBUTE_UNUSED, void *stream,
     }
 #else
   fprintf_vma((FILE *)stream, value);
+  (void)abfd;
 #endif /* BFD64 */
 }
 

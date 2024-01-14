@@ -28,13 +28,11 @@
 
 /* Tweak magic VxWorks symbols as they are loaded.  */
 bfd_boolean
-elf_vxworks_add_symbol_hook (bfd *abfd ATTRIBUTE_UNUSED,
-			     struct bfd_link_info *info,
-			     Elf_Internal_Sym *sym,
-			     const char **namep,
-			     flagword *flagsp,
-			     asection **secp ATTRIBUTE_UNUSED,
-			     bfd_vma *valp ATTRIBUTE_UNUSED)
+elf_vxworks_add_symbol_hook(bfd *abfd, struct bfd_link_info *info,
+			    Elf_Internal_Sym *sym, const char **namep,
+			    flagword *flagsp,
+			    asection **secp ATTRIBUTE_UNUSED,
+			    bfd_vma *valp ATTRIBUTE_UNUSED)
 {
   /* Ideally these "magic" symbols would be exported by libc.so.1
      which would be found via a DT_NEEDED tag, and then handled

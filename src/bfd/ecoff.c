@@ -1359,14 +1359,13 @@ _bfd_ecoff_bfd_is_local_label_name (bfd *abfd ATTRIBUTE_UNUSED,
   return name[0] == '$';
 }
 
-/* Print information about an ECOFF symbol.  */
-
+/* Print information about an ECOFF symbol: */
 void
 _bfd_ecoff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
                         bfd_print_symbol_type how)
 {
-  const struct ecoff_debug_swap * const debug_swap
-    = &ecoff_backend(abfd)->debug_swap;
+  const struct ecoff_debug_swap *const debug_swap =
+    &ecoff_backend(abfd)->debug_swap;
   FILE *file = (FILE *)filep;
 
   switch (how)
@@ -1379,23 +1378,23 @@ _bfd_ecoff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
 	{
 	  SYMR ecoff_sym;
 
-	  (*debug_swap->swap_sym_in) (abfd, ecoffsymbol(symbol)->native,
-				      &ecoff_sym);
-	  fprintf (file, "ecoff local ");
-	  fprintf_vma (file, (bfd_vma) ecoff_sym.value);
-	  fprintf (file, " %x %x", (unsigned) ecoff_sym.st,
-		   (unsigned) ecoff_sym.sc);
+	  (*debug_swap->swap_sym_in)(abfd, ecoffsymbol(symbol)->native,
+				     &ecoff_sym);
+	  fprintf(file, "ecoff local ");
+	  fprintf_vma(file, (bfd_vma)ecoff_sym.value);
+	  fprintf(file, " %x %x", (unsigned int)ecoff_sym.st,
+		  (unsigned int)ecoff_sym.sc);
 	}
       else
 	{
 	  EXTR ecoff_ext;
 
-	  (*debug_swap->swap_ext_in) (abfd, ecoffsymbol (symbol)->native,
-				      &ecoff_ext);
-	  fprintf (file, "ecoff extern ");
-	  fprintf_vma (file, (bfd_vma) ecoff_ext.asym.value);
-	  fprintf (file, " %x %x", (unsigned) ecoff_ext.asym.st,
-		   (unsigned) ecoff_ext.asym.sc);
+	  (*debug_swap->swap_ext_in)(abfd, ecoffsymbol(symbol)->native,
+				     &ecoff_ext);
+	  fprintf(file, "ecoff extern ");
+	  fprintf_vma(file, (bfd_vma)ecoff_ext.asym.value);
+	  fprintf(file, " %x %x", (unsigned int)ecoff_ext.asym.st,
+		  (unsigned int)ecoff_ext.asym.sc);
 	}
       break;
     case bfd_print_symbol_all:
@@ -1408,14 +1407,14 @@ _bfd_ecoff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
 	char cobol_main;
 	char weakext;
 
-	if (ecoffsymbol (symbol)->local)
+	if (ecoffsymbol(symbol)->local)
 	  {
-	    (*debug_swap->swap_sym_in) (abfd, ecoffsymbol (symbol)->native,
-					&ecoff_ext.asym);
+	    (*debug_swap->swap_sym_in)(abfd, ecoffsymbol(symbol)->native,
+                                       &ecoff_ext.asym);
 	    type = 'l';
 	    pos = (int)((((char *)ecoffsymbol(symbol)->native
 			  - (char *)ecoff_data(abfd)->debug_info.external_sym)
-			 / debug_swap->external_sym_size)
+			 / (long)debug_swap->external_sym_size)
 			+ ecoff_data(abfd)->debug_info.symbolic_header.iextMax);
 	    jmptbl = ' ';
 	    cobol_main = ' ';
@@ -1423,29 +1422,27 @@ _bfd_ecoff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
 	  }
 	else
 	  {
-	    (*debug_swap->swap_ext_in) (abfd, ecoffsymbol (symbol)->native,
-					&ecoff_ext);
+	    (*debug_swap->swap_ext_in)(abfd, ecoffsymbol(symbol)->native,
+                                       &ecoff_ext);
 	    type = 'e';
 	    pos = (int)(((char *)ecoffsymbol(symbol)->native
 			 - (char *)ecoff_data(abfd)->debug_info.external_ext)
-			/ debug_swap->external_ext_size);
-	    jmptbl = ecoff_ext.jmptbl ? 'j' : ' ';
-	    cobol_main = ecoff_ext.cobol_main ? 'c' : ' ';
-	    weakext = ecoff_ext.weakext ? 'w' : ' ';
+			/ (ptrdiff_t)debug_swap->external_ext_size);
+	    jmptbl = (ecoff_ext.jmptbl ? 'j' : ' ');
+	    cobol_main = (ecoff_ext.cobol_main ? 'c' : ' ');
+	    weakext = (ecoff_ext.weakext ? 'w' : ' ');
 	  }
 
-	fprintf (file, "[%3d] %c ",
-		 pos, type);
-	fprintf_vma (file, (bfd_vma) ecoff_ext.asym.value);
-	fprintf (file, " st %x sc %x indx %x %c%c%c %s",
-		 (unsigned) ecoff_ext.asym.st,
-		 (unsigned) ecoff_ext.asym.sc,
-		 (unsigned) ecoff_ext.asym.index,
-		 jmptbl, cobol_main, weakext,
-		 symbol->name);
+	fprintf(file, "[%3d] %c ", pos, type);
+	fprintf_vma(file, (bfd_vma)ecoff_ext.asym.value);
+	fprintf(file, " st %x sc %x indx %x %c%c%c %s",
+                (unsigned int)ecoff_ext.asym.st,
+                (unsigned int)ecoff_ext.asym.sc,
+                (unsigned int)ecoff_ext.asym.index,
+                jmptbl, cobol_main, weakext, symbol->name);
 
-	if (ecoffsymbol (symbol)->fdr != NULL
-	    && ecoff_ext.asym.index != indexNil)
+	if ((ecoffsymbol(symbol)->fdr != NULL)
+	    && (ecoff_ext.asym.index != indexNil))
 	  {
 	    FDR *fdr;
 	    unsigned int indx;
@@ -1453,20 +1450,20 @@ _bfd_ecoff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
 	    bfd_size_type sym_base;
 	    union aux_ext *aux_base;
 
-	    fdr = ecoffsymbol (symbol)->fdr;
+	    fdr = ecoffsymbol(symbol)->fdr;
 	    indx = ecoff_ext.asym.index;
 
 	    /* sym_base is used to map the fdr relative indices which
 	       appear in the file to the position number which we are
 	       using.  */
-	    sym_base = fdr->isymBase;
-	    if (ecoffsymbol (symbol)->local)
+	    sym_base = (bfd_size_type)fdr->isymBase;
+	    if (ecoffsymbol(symbol)->local)
 	      sym_base +=
-		ecoff_data (abfd)->debug_info.symbolic_header.iextMax;
+		(bfd_size_type)ecoff_data(abfd)->debug_info.symbolic_header.iextMax;
 
 	    /* aux_base is the start of the aux entries for this file;
 	       asym.index is an offset from this.  */
-	    aux_base = (ecoff_data (abfd)->debug_info.external_aux
+	    aux_base = (ecoff_data(abfd)->debug_info.external_aux
 			+ fdr->iauxBase);
 
 	    /* The aux entries are stored in host byte order; the
@@ -1482,61 +1479,61 @@ _bfd_ecoff_print_symbol(bfd *abfd, void *filep, asymbol *symbol,
 
 	      case stFile:
 	      case stBlock:
-		fprintf (file, _("\n      End+1 symbol: %ld"),
-			 (long) (indx + sym_base));
+		fprintf(file, _("\n      End+1 symbol: %ld"),
+                        (long)(indx + sym_base));
 		break;
 
 	      case stEnd:
 		if (ecoff_ext.asym.sc == scText
 		    || ecoff_ext.asym.sc == scInfo)
-		  fprintf (file, _("\n      First symbol: %ld"),
-			   (long) (indx + sym_base));
+		  fprintf(file, _("\n      First symbol: %ld"),
+			  (long)(indx + sym_base));
 		else
-		  fprintf (file, _("\n      First symbol: %ld"),
-			   ((long)
-			    (AUX_GET_ISYM (bigendian,
-					   &aux_base[ecoff_ext.asym.index])
-			     + sym_base)));
+		  fprintf(file, _("\n      First symbol: %ld"),
+			  ((long)
+			   (AUX_GET_ISYM(bigendian,
+                                         &aux_base[ecoff_ext.asym.index])
+			    + sym_base)));
 		break;
 
 	      case stProc:
 	      case stStaticProc:
-		if (ECOFF_IS_STAB (&ecoff_ext.asym))
+		if (ECOFF_IS_STAB(&ecoff_ext.asym))
 		  ;
-		else if (ecoffsymbol (symbol)->local)
-		  fprintf (file, _("\n      End+1 symbol: %-7ld   Type:  %s"),
-			   ((long)
-			    (AUX_GET_ISYM (bigendian,
-					   &aux_base[ecoff_ext.asym.index])
-			     + sym_base)),
-			   ecoff_type_to_string (abfd, fdr, indx + 1));
+		else if (ecoffsymbol(symbol)->local)
+		  fprintf(file, _("\n      End+1 symbol: %-7ld   Type:  %s"),
+			  ((long)
+			   (AUX_GET_ISYM(bigendian,
+                                         &aux_base[ecoff_ext.asym.index])
+			    + sym_base)),
+			  ecoff_type_to_string(abfd, fdr, indx + 1));
 		else
-		  fprintf (file, _("\n      Local symbol: %ld"),
-			   ((long) indx
-			    + (long) sym_base
-			    + (ecoff_data (abfd)
-			       ->debug_info.symbolic_header.iextMax)));
+		  fprintf(file, _("\n      Local symbol: %ld"),
+			  ((long)indx
+			   + (long)sym_base
+			   + (ecoff_data(abfd)
+			      ->debug_info.symbolic_header.iextMax)));
 		break;
 
 	      case stStruct:
-		fprintf (file, _("\n      struct; End+1 symbol: %ld"),
-			 (long) (indx + sym_base));
+		fprintf(file, _("\n      struct; End+1 symbol: %ld"),
+                        (long)(indx + sym_base));
 		break;
 
 	      case stUnion:
-		fprintf (file, _("\n      union; End+1 symbol: %ld"),
-			 (long) (indx + sym_base));
+		fprintf(file, _("\n      union; End+1 symbol: %ld"),
+                        (long)(indx + sym_base));
 		break;
 
 	      case stEnum:
-		fprintf (file, _("\n      enum; End+1 symbol: %ld"),
-			 (long) (indx + sym_base));
+		fprintf(file, _("\n      enum; End+1 symbol: %ld"),
+                        (long)(indx + sym_base));
 		break;
 
 	      default:
-		if (! ECOFF_IS_STAB (&ecoff_ext.asym))
-		  fprintf (file, _("\n      Type: %s"),
-			   ecoff_type_to_string (abfd, fdr, indx));
+		if (!ECOFF_IS_STAB(&ecoff_ext.asym))
+		  fprintf(file, _("\n      Type: %s"),
+			  ecoff_type_to_string(abfd, fdr, indx));
 		break;
 	      }
 	  }
@@ -1881,33 +1878,28 @@ _bfd_ecoff_sizeof_headers (bfd *abfd, bfd_boolean reloc ATTRIBUTE_UNUSED)
        current = current->next)
     ++c;
 
-  ret = (bfd_coff_filhsz(abfd)
-	 + bfd_coff_aoutsz(abfd)
-	 + (c * bfd_coff_scnhsz(abfd)));
+  ret = ((int)bfd_coff_filhsz(abfd)
+	 + (int)bfd_coff_aoutsz(abfd)
+	 + (c * (int)bfd_coff_scnhsz(abfd)));
   return (int)BFD_ALIGN(ret, 16);
 }
 
-/* Get the contents of a section.  */
-
+/* Get the contents of a section: */
 bfd_boolean
-_bfd_ecoff_get_section_contents (bfd *abfd,
-				 asection *section,
-				 void * location,
-				 file_ptr offset,
-				 bfd_size_type count)
+_bfd_ecoff_get_section_contents(bfd *abfd, asection *section, void *location,
+                                file_ptr offset, bfd_size_type count)
 {
-  return _bfd_generic_get_section_contents (abfd, section, location,
-					    offset, count);
+  return _bfd_generic_get_section_contents(abfd, section, location,
+					   offset, count);
 }
 
 /* Sort sections by VMA, but put SEC_ALLOC sections first.  This is
    called via qsort.  */
-
 static int
-ecoff_sort_hdrs (const void * arg1, const void * arg2)
+ecoff_sort_hdrs(const void * arg1, const void * arg2)
 {
-  const asection *hdr1 = *(const asection **) arg1;
-  const asection *hdr2 = *(const asection **) arg2;
+  const asection *hdr1 = *(const asection **)arg1;
+  const asection *hdr2 = *(const asection **)arg2;
 
   if ((hdr1->flags & SEC_ALLOC) != 0)
     {
@@ -1994,8 +1986,8 @@ ecoff_compute_section_file_positions(bfd *abfd)
 	 supposed to indicate the number of .pdata entries that are
 	 really in the section.  Each entry is 8 bytes.  We store this
 	 away in line_filepos before increasing the section size.  */
-      if (streq (current->name, _PDATA))
-	current->line_filepos = current->size / 8;
+      if (streq(current->name, _PDATA))
+	current->line_filepos = (current->size / 8);
 
       alignment_power = current->alignment_power;
 
@@ -2005,52 +1997,48 @@ ecoff_compute_section_file_positions(bfd *abfd)
 	 other platforms?  It requires some modification for the
 	 Alpha, because .rdata on the Alpha goes with the text, not
 	 the data.  */
-      if ((abfd->flags & EXEC_P) != 0
-	  && (abfd->flags & D_PAGED) != 0
-	  && ! first_data
-	  && (current->flags & SEC_CODE) == 0
-	  && (! rdata_in_text
-	      || ! streq (current->name, _RDATA))
-	  && ! streq (current->name, _PDATA)
-	  && ! streq (current->name, _RCONST))
+      if (((abfd->flags & EXEC_P) != 0) && ((abfd->flags & D_PAGED) != 0)
+	  && !first_data && ((current->flags & SEC_CODE) == 0)
+	  && (!rdata_in_text || !streq(current->name, _RDATA))
+	  && !streq(current->name, _PDATA)
+	  && !streq(current->name, _RCONST))
 	{
-	  sofar = (sofar + round - 1) &~ (round - 1);
-	  file_sofar = (file_sofar + round - 1) &~ (round - 1);
+	  sofar = (file_ptr)((sofar + round - 1L) &~ (round - 1L));
+	  file_sofar = (file_ptr)((file_sofar + round - 1L) &~ (round - 1L));
 	  first_data = FALSE;
 	}
-      else if (streq (current->name, _LIB))
+      else if (streq(current->name, _LIB))
 	{
 	  /* On Irix 4, the location of contents of the .lib section
 	     from a shared library section is also rounded up to a
 	     page boundary.  */
 
-	  sofar = (sofar + round - 1) &~ (round - 1);
-	  file_sofar = (file_sofar + round - 1) &~ (round - 1);
+	  sofar = (file_ptr)((sofar + round - 1L) &~ (round - 1L));
+	  file_sofar = (file_ptr)((file_sofar + round - 1L) &~ (round - 1L));
 	}
-      else if (first_nonalloc
-	       && (current->flags & SEC_ALLOC) == 0
-	       && (abfd->flags & D_PAGED) != 0)
+      else if (first_nonalloc && ((current->flags & SEC_ALLOC) == 0)
+	       && ((abfd->flags & D_PAGED) != 0))
 	{
 	  /* Skip up to the next page for an unallocated section, such
              as the .comment section on the Alpha.  This leaves room
              for the .bss section.  */
 	  first_nonalloc = FALSE;
-	  sofar = (sofar + round - 1) &~ (round - 1);
-	  file_sofar = (file_sofar + round - 1) &~ (round - 1);
+	  sofar = (file_ptr)((sofar + round - 1L) &~ (round - 1L));
+	  file_sofar = (file_ptr)((file_sofar + round - 1L) &~ (round - 1L));
 	}
 
       /* Align the sections in the file to the same boundary on
 	 which they are aligned in virtual memory.  */
-      sofar = BFD_ALIGN (sofar, 1 << alignment_power);
+      sofar = (file_ptr)BFD_ALIGN(sofar, (1L << alignment_power));
       if ((current->flags & SEC_HAS_CONTENTS) != 0)
-	file_sofar = BFD_ALIGN (file_sofar, 1 << alignment_power);
+	file_sofar = (file_ptr)BFD_ALIGN(file_sofar, (1L << alignment_power));
 
-      if ((abfd->flags & D_PAGED) != 0
-	  && (current->flags & SEC_ALLOC) != 0)
+      if (((abfd->flags & D_PAGED) != 0)
+	  && ((current->flags & SEC_ALLOC) != 0))
 	{
-	  sofar += (current->vma - sofar) % round;
+	  sofar += (file_ptr)(((file_ptr)current->vma - sofar) % (file_ptr)round);
 	  if ((current->flags & SEC_HAS_CONTENTS) != 0)
-	    file_sofar += (current->vma - file_sofar) % round;
+	    file_sofar += (file_ptr)(((file_ptr)current->vma - file_sofar) % (file_ptr)round);
 	}
 
       if ((current->flags & (SEC_HAS_CONTENTS | SEC_LOAD)) != 0)
@@ -2062,16 +2050,16 @@ ecoff_compute_section_file_positions(bfd *abfd)
 
       /* Make sure that this section is of the right size too.  */
       old_sofar = sofar;
-      sofar = BFD_ALIGN (sofar, 1 << alignment_power);
+      sofar = (file_ptr)BFD_ALIGN(sofar, (1L << alignment_power));
       if ((current->flags & SEC_HAS_CONTENTS) != 0)
-	file_sofar = BFD_ALIGN (file_sofar, 1 << alignment_power);
-      current->size += sofar - old_sofar;
+	file_sofar = (file_ptr)BFD_ALIGN(file_sofar, (1L << alignment_power));
+      current->size += (bfd_size_type)(sofar - old_sofar);
     }
 
-  free (sorted_hdrs);
+  free(sorted_hdrs);
   sorted_hdrs = NULL;
 
-  ecoff_data (abfd)->reloc_filepos = file_sofar;
+  ecoff_data(abfd)->reloc_filepos = file_sofar;
 
   return TRUE;
 }
@@ -2081,10 +2069,10 @@ ecoff_compute_section_file_positions(bfd *abfd)
    information.  */
 
 static bfd_size_type
-ecoff_compute_reloc_file_positions (bfd *abfd)
+ecoff_compute_reloc_file_positions(bfd *abfd)
 {
   const bfd_size_type external_reloc_size =
-    ecoff_backend (abfd)->external_reloc_size;
+    ecoff_backend(abfd)->external_reloc_size;
   file_ptr reloc_base;
   bfd_size_type reloc_size;
   asection *current;
@@ -2092,12 +2080,12 @@ ecoff_compute_reloc_file_positions (bfd *abfd)
 
   if (! abfd->output_has_begun)
     {
-      if (! ecoff_compute_section_file_positions (abfd))
-	abort ();
+      if (! ecoff_compute_section_file_positions(abfd))
+	abort();
       abfd->output_has_begun = TRUE;
     }
 
-  reloc_base = ecoff_data (abfd)->reloc_filepos;
+  reloc_base = ecoff_data(abfd)->reloc_filepos;
 
   reloc_size = 0;
   for (current = abfd->sections;
@@ -2111,47 +2099,44 @@ ecoff_compute_reloc_file_positions (bfd *abfd)
 	  bfd_size_type relsize;
 
 	  current->rel_filepos = reloc_base;
-	  relsize = current->reloc_count * external_reloc_size;
+	  relsize = (current->reloc_count * external_reloc_size);
 	  reloc_size += relsize;
 	  reloc_base += relsize;
 	}
     }
 
-  sym_base = ecoff_data (abfd)->reloc_filepos + reloc_size;
+  sym_base = (ecoff_data(abfd)->reloc_filepos + (file_ptr)reloc_size);
 
   /* At least on Ultrix, the symbol table of an executable file must
      be aligned to a page boundary.  FIXME: Is this true on other
      platforms?  */
-  if ((abfd->flags & EXEC_P) != 0
-      && (abfd->flags & D_PAGED) != 0)
-    sym_base = ((sym_base + ecoff_backend (abfd)->round - 1)
-		&~ (ecoff_backend (abfd)->round - 1));
+  if (((abfd->flags & EXEC_P) != 0)
+      && ((abfd->flags & D_PAGED) != 0))
+    sym_base = (file_ptr)((sym_base + ecoff_backend(abfd)->round - 1L)
+                          &~ (ecoff_backend(abfd)->round - 1L));
 
-  ecoff_data (abfd)->sym_filepos = sym_base;
+  ecoff_data(abfd)->sym_filepos = sym_base;
 
   return reloc_size;
 }
 
-/* Set the contents of a section.  */
-
+/* Set the contents of a section: */
 bfd_boolean
-_bfd_ecoff_set_section_contents (bfd *abfd,
-				 asection *section,
-				 const void * location,
-				 file_ptr offset,
-				 bfd_size_type count)
+_bfd_ecoff_set_section_contents(bfd *abfd, asection *section,
+				const void *location, file_ptr offset,
+                                bfd_size_type count)
 {
   file_ptr pos;
 
   /* This must be done first, because bfd_set_section_contents is
      going to set output_has_begun to TRUE.  */
   if (! abfd->output_has_begun
-      && ! ecoff_compute_section_file_positions (abfd))
+      && ! ecoff_compute_section_file_positions(abfd))
     return FALSE;
 
   /* Handle the .lib section specially so that Irix 4 shared libraries
      work out.  See coff_set_section_contents in coffcode.h.  */
-  if (streq (section->name, _LIB))
+  if (streq(section->name, _LIB))
     {
       bfd_byte *rec, *recend;
 
@@ -2297,10 +2282,10 @@ ecoff_get_extr (asymbol *sym, EXTR *esym)
     {
       struct ecoff_debug_info *input_debug;
 
-      input_debug = &ecoff_data (input_bfd)->debug_info;
-      BFD_ASSERT (esym->ifd < input_debug->symbolic_header.ifdMax);
+      input_debug = &ecoff_data(input_bfd)->debug_info;
+      BFD_ASSERT(esym->ifd < input_debug->symbolic_header.ifdMax);
       if (input_debug->ifdmap != NULL)
-	esym->ifd = input_debug->ifdmap[esym->ifd];
+	esym->ifd = (int)input_debug->ifdmap[esym->ifd];
     }
 
   return TRUE;
@@ -2358,12 +2343,12 @@ _bfd_ecoff_write_object_contents(bfd *abfd)
        current != NULL;
        current = current->next)
     {
-      current->target_index = count;
+      current->target_index = (int)count;
       ++count;
     }
 
   if ((abfd->flags & D_PAGED) != 0)
-    text_size = _bfd_ecoff_sizeof_headers(abfd, FALSE);
+    text_size = (bfd_size_type)_bfd_ecoff_sizeof_headers(abfd, FALSE);
   else
     text_size = 0;
   text_start = 0;
@@ -2419,8 +2404,8 @@ _bfd_ecoff_write_object_contents(bfd *abfd)
       if ((current->flags & (SEC_LOAD | SEC_HAS_CONTENTS)) == 0)
 	section.s_scnptr = 0;
       else
-	section.s_scnptr = current->filepos;
-      section.s_relptr = current->rel_filepos;
+	section.s_scnptr = (bfd_vma)current->filepos;
+      section.s_relptr = (bfd_vma)current->rel_filepos;
 
       /* FIXME: the lnnoptr of the .sbss or .sdata section of an
 	 object file produced by the assembler is supposed to point to
@@ -2429,7 +2414,7 @@ _bfd_ecoff_write_object_contents(bfd *abfd)
 	 want the linker to compute the best size to use, or
 	 something.  I do NOT know what happens if the information is
 	 not present.  */
-      if (! streq (current->name, _PDATA))
+      if (! streq(current->name, _PDATA))
 	section.s_lnnoptr = 0;
       else
 	{
@@ -2437,7 +2422,7 @@ _bfd_ecoff_write_object_contents(bfd *abfd)
 	     hold the number of entries in the section (each entry is
 	     8 bytes).  We stored this in the line_filepos field in
 	     ecoff_compute_section_file_positions.  */
-	  section.s_lnnoptr = current->line_filepos;
+	  section.s_lnnoptr = (bfd_vma)current->line_filepos;
 	}
 
       section.s_nreloc = current->reloc_count;
@@ -3792,10 +3777,10 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
 	}
 
       /* Look for this symbol in the archive hash table.  */
-      hash = ecoff_armap_hash (h->root.string, &rehash, armap_count,
-			       armap_log);
+      hash = ecoff_armap_hash(h->root.string, &rehash,
+                              (unsigned int)armap_count, armap_log);
 
-      file_offset = (unsigned long)H_GET_32(abfd, hashtable + (hash * 8) + 4);
+      file_offset = (unsigned long)H_GET_32(abfd, (hashtable + (hash * 8) + 4));
       if (file_offset == 0)
 	{
 	  /* Nothing in this slot.  */
@@ -3803,9 +3788,9 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
 	  continue;
 	}
 
-      name = stringbase + H_GET_32 (abfd, hashtable + (hash * 8));
-      if (name[0] != h->root.string[0]
-	  || ! streq (name, h->root.string))
+      name = (stringbase + H_GET_32(abfd, (hashtable + (hash * 8))));
+      if ((name[0] != h->root.string[0])
+	  || ! streq(name, h->root.string))
 	{
 	  unsigned int srch;
 	  bfd_boolean found;
@@ -4376,7 +4361,7 @@ ecoff_link_write_external (struct ecoff_link_hash_entry *h, void * data)
 		break;
 	      }
 
-	  if (i == ARRAY_SIZE (section_storage_classes))
+	  if (i == ARRAY_SIZE(section_storage_classes))
 	    h->esym.asym.sc = scAbs;
 	}
 
@@ -4389,10 +4374,10 @@ ecoff_link_write_external (struct ecoff_link_hash_entry *h, void * data)
 
       /* Adjust the FDR index for the symbol by that used for the
 	 input BFD.  */
-      debug = &ecoff_data (h->abfd)->debug_info;
-      BFD_ASSERT (h->esym.ifd >= 0
-		  && h->esym.ifd < debug->symbolic_header.ifdMax);
-      h->esym.ifd = debug->ifdmap[h->esym.ifd];
+      debug = &ecoff_data(h->abfd)->debug_info;
+      BFD_ASSERT((h->esym.ifd >= 0)
+		 && (h->esym.ifd < debug->symbolic_header.ifdMax));
+      h->esym.ifd = (int)debug->ifdmap[h->esym.ifd];
     }
 
   switch (h->root.type)

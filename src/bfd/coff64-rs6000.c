@@ -434,10 +434,10 @@ _bfd_xcoff64_swap_aux_in(bfd *abfd, PTR ext1, int type, int classparam,
  end: ;
 }
 
+/* */
 static unsigned int
 _bfd_xcoff64_swap_aux_out(bfd *abfd, PTR inp, int type, int the_class,
-                          int indx ATTRIBUTE_UNUSED,
-                          int numaux ATTRIBUTE_UNUSED, PTR extp)
+                          int indx, int numaux, PTR extp)
 {
   union internal_auxent *in = (union internal_auxent *)inp;
   union external_auxent *ext = (union external_auxent *)extp;
@@ -746,14 +746,14 @@ xcoff64_write_object_contents(bfd *abfd)
   for (current = abfd->sections; current != NULL; current = current->next)
     reloc_size += (current->reloc_count * bfd_coff_relsz(abfd));
 
-  lineno_base = (reloc_base + reloc_size);
+  lineno_base = (reloc_base + (file_ptr)reloc_size);
 
   /* Make a pass through the symbol table to count line number entries and
      put them into the correct asections.  */
   lnno_size = ((unsigned int)coff_count_linenumbers(abfd)
                * bfd_coff_linesz(abfd));
 
-  sym_base = (lineno_base + lnno_size);
+  sym_base = (lineno_base + (file_ptr)lnno_size);
 
   /* Indicate in each section->line_filepos its actual file address: */
   for (current = abfd->sections; current != NULL; current = current->next)
@@ -1842,7 +1842,7 @@ xcoff64_slurp_armap(bfd *abfd)
 
   /* Skip the name (normally empty): */
   namlen = (size_t)strtol(hdr.namlen, (char **)NULL, 10);
-  pos = ((namlen + 1) & ~(size_t)1UL) + SXCOFFARFMAG;
+  pos = (file_ptr)(((namlen + 1UL) & ~(size_t)1UL) + SXCOFFARFMAG);
   if (bfd_seek(abfd, pos, SEEK_CUR) != 0)
     return FALSE;
 

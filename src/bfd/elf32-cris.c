@@ -471,11 +471,11 @@ cris_info_to_howto_rela(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
   cache_ptr->howto = &cris_elf_howto_table[r_type];
 }
 
+/* */
 bfd_reloc_status_type
-cris_elf_pcrel_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
-		     asymbol *symbol, PTR data ATTRIBUTE_UNUSED,
-		     asection *input_section, bfd *output_bfd,
-		     const char **error_message ATTRIBUTE_UNUSED)
+cris_elf_pcrel_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                     PTR data, asection *input_section, bfd *output_bfd,
+		     const char **error_message)
 {
   /* By default (using only bfd_elf_generic_reloc when linking to
      non-ELF formats) PC-relative relocs are relative to the beginning
@@ -486,12 +486,12 @@ cris_elf_pcrel_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
      definition.)  Still, we use as much generic machinery as we can.
 
      Only adjust when doing a final link.  */
-  if (output_bfd == (bfd *) NULL)
-    reloc_entry->addend -= 1 << reloc_entry->howto->size;
+  if (output_bfd == (bfd *)NULL)
+    reloc_entry->addend -= (1 << reloc_entry->howto->size);
 
   return
-    bfd_elf_generic_reloc (abfd, reloc_entry, symbol, data,
-			   input_section, output_bfd, error_message);
+    bfd_elf_generic_reloc(abfd, reloc_entry, symbol, data,
+			  input_section, output_bfd, error_message);
 }
 
 /* Support for core dump NOTE sections.
@@ -891,10 +891,9 @@ cris_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
    copied, for further comments.  */
 
 static bfd_boolean
-cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
-			  struct bfd_link_info *info, bfd *input_bfd,
-			  asection *input_section, bfd_byte *contents,
-			  Elf_Internal_Rela *relocs,
+cris_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+			  bfd *input_bfd, asection *input_section,
+     	   		  bfd_byte *contents, Elf_Internal_Rela *relocs,
 			  Elf_Internal_Sym *local_syms,
 			  asection **local_sections)
 {
@@ -911,11 +910,11 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
   if (info->relocatable)
     return TRUE;
 
-  dynobj = elf_hash_table (info)->dynobj;
-  local_got_offsets = elf_local_got_offsets (input_bfd);
-  symtab_hdr = & elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
-  relend     = relocs + input_section->reloc_count;
+  dynobj = elf_hash_table(info)->dynobj;
+  local_got_offsets = elf_local_got_offsets(input_bfd);
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
+  relend = (relocs + input_section->reloc_count);
 
   sgot = NULL;
   splt = NULL;
@@ -923,8 +922,8 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 
   if (dynobj != NULL)
     {
-      splt = bfd_get_section_by_name (dynobj, ".plt");
-      sgot = bfd_get_section_by_name (dynobj, ".got");
+      splt = bfd_get_section_by_name(dynobj, ".plt");
+      sgot = bfd_get_section_by_name(dynobj, ".got");
     }
 
   for (rel = relocs; rel < relend; rel ++)
@@ -1949,10 +1948,8 @@ cris_elf_gc_mark_hook(asection *sec,
 
 /* Update the got entry reference counts for the section being removed: */
 static bfd_boolean
-cris_elf_gc_sweep_hook(bfd *abfd ATTRIBUTE_UNUSED,
-		       struct bfd_link_info *info ATTRIBUTE_UNUSED,
-		       asection *sec ATTRIBUTE_UNUSED,
-		       const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED)
+cris_elf_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info, asection *sec,
+		       const Elf_Internal_Rela *relocs)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
@@ -1962,33 +1959,33 @@ cris_elf_gc_sweep_hook(bfd *abfd ATTRIBUTE_UNUSED,
   asection *sgot;
   asection *srelgot;
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
   if (dynobj == NULL)
     return TRUE;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
-  local_got_refcounts = elf_local_got_refcounts (abfd);
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
+  local_got_refcounts = elf_local_got_refcounts(abfd);
 
-  sgot = bfd_get_section_by_name (dynobj, ".got");
-  srelgot = bfd_get_section_by_name (dynobj, ".rela.got");
+  sgot = bfd_get_section_by_name(dynobj, ".got");
+  srelgot = bfd_get_section_by_name(dynobj, ".rela.got");
 
-  relend = relocs + sec->reloc_count;
+  relend = (relocs + sec->reloc_count);
   for (rel = relocs; rel < relend; rel++)
     {
       unsigned long r_symndx;
       struct elf_link_hash_entry *h = NULL;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
       if (r_symndx >= symtab_hdr->sh_info)
 	{
 	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
 	  while (h->root.type == bfd_link_hash_indirect
 		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	}
 
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
 	{
 	case R_CRIS_16_GOT:
 	case R_CRIS_32_GOT:

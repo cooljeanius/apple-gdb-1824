@@ -3543,7 +3543,7 @@ coff_write_object_contents(bfd *abfd)
       section.s_paddr = current->lma;
       section.s_size =  current->size;
 #ifdef coff_get_section_load_page
-      section.s_page = coff_get_section_load_page(current);
+      section.s_page = (unsigned char)coff_get_section_load_page(current);
 #endif /* coff_get_section_load_page */
 
 #ifdef COFF_WITH_PE

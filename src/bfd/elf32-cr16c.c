@@ -175,17 +175,16 @@ elf_cr16c_info_to_howto_rel (bfd *abfd ATTRIBUTE_UNUSED,
 /* Perform a relocation as part of a final link.  */
 
 static bfd_reloc_status_type
-cr16c_elf_final_link_relocate (reloc_howto_type *howto,
-			       bfd *abfd,
-			       bfd *output_bfd ATTRIBUTE_UNUSED,
-			       asection *input_section,
-			       bfd_byte *data,
-			       bfd_vma octets,
-			       bfd_vma Rvalue,
-			       bfd_vma addend ATTRIBUTE_UNUSED,
-			       struct bfd_link_info *info ATTRIBUTE_UNUSED,
-			       asection *sym_sec ATTRIBUTE_UNUSED,
-			       int is_local ATTRIBUTE_UNUSED)
+cr16c_elf_final_link_relocate(reloc_howto_type *howto, bfd *abfd,
+			      bfd *output_bfd ATTRIBUTE_UNUSED,
+			      asection *input_section,
+			      bfd_byte *data,
+			      bfd_vma octets,
+			      bfd_vma Rvalue,
+			      bfd_vma addend ATTRIBUTE_UNUSED,
+			      struct bfd_link_info *info ATTRIBUTE_UNUSED,
+			      asection *sym_sec,
+			      int is_local ATTRIBUTE_UNUSED)
 {
   long value;
   short sword;			/* Extracted from the hole and put back.  */

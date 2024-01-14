@@ -106,7 +106,7 @@ struct external_filehdr
   do									\
     {									\
       ((struct internal_filehdr *)(dst))->f_target_id =			\
-	H_GET_16 (abfd, ((FILHDR *)(src))->f_target_id);		\
+	(unsigned short)H_GET_16(abfd, ((FILHDR *)(src))->f_target_id);	\
     }									\
   while (0)
 #endif
