@@ -814,6 +814,7 @@ bfd_ecoff_debug_accumulate(PTR handle, bfd *output_bfd,
 	      if (ECOFF_IS_STAB(&internal_sym))
 		break;
 	      /* Fall through.  */
+              ATTRIBUTE_FALLTHROUGH;
 	    case stGlobal:
 	    case stStatic:
 	    case stLabel:

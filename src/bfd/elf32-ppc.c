@@ -1595,13 +1595,10 @@ ppc_elf_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
 /* Handle the R_PPC_ADDR16_HA and R_PPC_REL16_HA relocs.  */
 
 static bfd_reloc_status_type
-ppc_elf_addr16_ha_reloc (bfd *abfd ATTRIBUTE_UNUSED,
-			 arelent *reloc_entry,
-			 asymbol *symbol,
-			 void *data ATTRIBUTE_UNUSED,
-			 asection *input_section,
-			 bfd *output_bfd,
-			 const char **error_message ATTRIBUTE_UNUSED)
+ppc_elf_addr16_ha_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                        void *data ATTRIBUTE_UNUSED, asection *input_section,
+                        bfd *output_bfd,
+                        const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
 
@@ -1611,10 +1608,10 @@ ppc_elf_addr16_ha_reloc (bfd *abfd ATTRIBUTE_UNUSED,
       return bfd_reloc_ok;
     }
 
-  if (reloc_entry->address > bfd_get_section_limit (abfd, input_section))
+  if (reloc_entry->address > bfd_get_section_limit(abfd, input_section))
     return bfd_reloc_outofrange;
 
-  if (bfd_is_com_section (symbol->section))
+  if (bfd_is_com_section(symbol->section))
     relocation = 0;
   else
     relocation = symbol->value;
@@ -1625,11 +1622,12 @@ ppc_elf_addr16_ha_reloc (bfd *abfd ATTRIBUTE_UNUSED,
   if (reloc_entry->howto->pc_relative)
     relocation -= reloc_entry->address;
 
-  reloc_entry->addend += (relocation & 0x8000) << 1;
+  reloc_entry->addend += ((relocation & 0x8000) << 1);
 
   return bfd_reloc_continue;
 }
 
+/* */
 static bfd_reloc_status_type
 ppc_elf_unhandled_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 			void *data, asection *input_section, bfd *output_bfd,
@@ -7462,24 +7460,21 @@ ppc_elf_vxworks_link_hash_table_create (bfd *abfd)
 
 /* Tweak magic VxWorks symbols as they are loaded.  */
 static bfd_boolean
-ppc_elf_vxworks_add_symbol_hook (bfd *abfd,
-				 struct bfd_link_info *info,
-				 Elf_Internal_Sym *sym,
-				 const char **namep ATTRIBUTE_UNUSED,
-				 flagword *flagsp ATTRIBUTE_UNUSED,
-				 asection **secp,
-				 bfd_vma *valp)
+ppc_elf_vxworks_add_symbol_hook(bfd *abfd, struct bfd_link_info *info,
+                                Elf_Internal_Sym *sym, const char **namep,
+                                flagword *flagsp, asection **secp,
+                                bfd_vma *valp)
 {
-  if (!elf_vxworks_add_symbol_hook(abfd, info, sym,namep, flagsp, secp,
+  if (!elf_vxworks_add_symbol_hook(abfd, info, sym, namep, flagsp, secp,
 				   valp))
     return FALSE;
 
-  return ppc_elf_add_symbol_hook(abfd, info, sym,namep, flagsp, secp, valp);
+  return ppc_elf_add_symbol_hook(abfd, info, sym, namep, flagsp, secp, valp);
 }
 
 /* Tweak magic VxWorks symbols as they are written to the output file.  */
 static bfd_boolean
-elf_i386_vxworks_link_output_symbol_hook (struct bfd_link_info *info
+elf_i386_vxworks_link_output_symbol_hook(struct bfd_link_info *info
 					   ATTRIBUTE_UNUSED,
 					 const char *name,
 					 Elf_Internal_Sym *sym,
@@ -7491,11 +7486,12 @@ elf_i386_vxworks_link_output_symbol_hook (struct bfd_link_info *info
   if (!name)
     return TRUE;
 
-  return elf_vxworks_link_output_symbol_hook (name, sym);
+  return elf_vxworks_link_output_symbol_hook(name, sym);
 }
 
+/* */
 static void
-ppc_elf_vxworks_final_write_processing (bfd *abfd, bfd_boolean linker)
+ppc_elf_vxworks_final_write_processing(bfd *abfd, bfd_boolean linker)
 {
   ppc_elf_final_write_processing(abfd, linker);
   elf_vxworks_final_write_processing(abfd, linker);

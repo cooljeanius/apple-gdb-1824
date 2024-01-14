@@ -2951,9 +2951,8 @@ sh_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
    boundaries.  This is like sh_align_loads in coff-sh.c.  */
 
 static bfd_boolean
-sh_elf_align_loads(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
-                   Elf_Internal_Rela *internal_relocs,
-		   bfd_byte *contents ATTRIBUTE_UNUSED, bfd_boolean *pswapped)
+sh_elf_align_loads(bfd *abfd, asection *sec, Elf_Internal_Rela *internal_relocs,
+		   bfd_byte *contents, bfd_boolean *pswapped)
 {
   Elf_Internal_Rela *irel, *irelend;
   bfd_vma *labels = NULL;
@@ -2985,6 +2984,9 @@ sh_elf_align_loads(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
      the label values and the relocs.  */
 
   label = labels;
+  if (label == NULL) {
+    ; /* ??? */
+  }
 
   for (irel = internal_relocs; irel < irelend; irel++)
     {
@@ -3007,9 +3009,9 @@ sh_elf_align_loads(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
         ; /* ??? */
       }
 
-      if (! _bfd_sh_align_load_span(abfd, sec, contents, sh_elf_swap_insns,
-				    internal_relocs, &label,
-				    label_end, start, stop, pswapped))
+      if (!_bfd_sh_align_load_span(abfd, sec, contents, sh_elf_swap_insns,
+                                   internal_relocs, &label,
+                                   label_end, start, stop, pswapped))
 	goto error_return;
     }
 
@@ -3021,6 +3023,10 @@ sh_elf_align_loads(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
   if (labels != NULL)
     free(labels);
   (void)label;
+#ifdef SH64_ELF
+  (void)abfd;
+  (void)contents;
+#endif /* SH64_ELF */
   return FALSE;
 }
 

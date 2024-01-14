@@ -1352,7 +1352,7 @@ mips_info_to_howto_rela (bfd *abfd, arelent *cache_ptr, Elf_Internal_Rela *dst)
    and externally visible symbols.  */
 
 static bfd_boolean
-mips_elf_sym_is_global(bfd *abfd ATTRIBUTE_UNUSED, asymbol *sym)
+mips_elf_sym_is_global(bfd *abfd, asymbol *sym)
 {
   if (SGI_COMPAT(abfd))
     return ((sym->flags & BSF_SECTION_SYM) == 0);

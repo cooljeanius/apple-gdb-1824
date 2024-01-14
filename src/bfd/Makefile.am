@@ -861,7 +861,7 @@ AM_CPPFLAGS = @HDEFINES@ @COREFLAG@ @TDEFINES@ $(CSEARCH) $(CSWITCHES) \
 	$(HAVEVECS) $(INCINTL) $(AM_DEFS)
 
 RUN_CLANG_ANALYZER = $(CLANG_ANALYZER) $(DEFS) $(CPPFLAGS) $(CFLAGS) \
-	$(CSEARCH) $(HAVEVECS) $(INCINTL) --analyze
+  $(CSEARCH) $(HAVEVECS) $(INCINTL) --analyze @MAINT@ -Weverything -ferror-limit=1
 
 # C source files that correspond to .o's.
 SOURCE_CFILES = \
@@ -924,6 +924,11 @@ am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
 am__v_MFLAG_0 = -s
 am__v_MFLAG_1 = -w
 
+AM_V_CLANG = $(am__v_CLANG_@AM_V@)
+am__v_CLANG_ = $(am__v_CLANG_@AM_DEFAULT_V@)
+am__v_CLANG_0 = @echo "  CLANG      " $@;
+am__v_CLANG_1 = 
+
 # files to check for translations (I think?):
 SRC_POTFILES = $(SOURCE_CFILES) $(SOURCE_HFILES)
 BLD_POTFILES = $(BUILD_CFILES) $(BUILD_HFILES)
@@ -935,7 +940,7 @@ SUFFIXES = .c .o .lo .plist
 
 .c.plist:
 	@if test ! -d $(analysisdir); then $(MKDIR_P) $(analysisdir); fi
-	$(RUN_CLANG_ANALYZER) -o $(analysisdir)/$@ $<
+	$(AM_V_CLANG)$(RUN_CLANG_ANALYZER) -o $(analysisdir)/$@ $<
 
 po/SRC-POTFILES.in: @MAINT@ Makefile $(SRC_POTFILES)
 	$(AM_V_GEN)if test ! -e tmp.src; then touch tmp.src; fi; \
@@ -994,6 +999,8 @@ OFILES = `echo $(LOFILES) | $(SED) -e 's/\.lo/\.o/g'`
 # We can use the same method to get a list of clang static analyzer plists
 # to make:
 PLISTFILES = `echo $(LOFILES) | $(SED) -e 's/\.lo/\.plist/g'`
+# ... and also:
+PLISTFILES_FROM_CFILES = `echo $(CFILES) | $(SED) -e 's/\.c/\.plist/g'`
 
 stamp-lofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(AM_V_at)rm -f $(AM_V_v) tlofiles
@@ -1133,9 +1140,34 @@ stamp-staticlib: stamp-ofiles @MAINT@ bfd.h
 	$(AM_V_at)if test ! -e $@ || test $@ -ot libbfd.a; then touch $@; fi
 
 # likewise with making PLISTFILES when running `make check`:
-check-local: stamp-plistfiles @MAINT@ plistfiles
-	$(MAKE) $(AM_V_MFLAG) $(BFD32_PLISTS) $(BFD64_PLISTS) $(PLISTFILES)
+check-local: Makefile stamp-plistfiles @MAINT@ plistfiles
+	for myplist in $(BFD32_PLISTS) $(BFD64_PLISTS) $(PLISTFILES); do \
+	  echo "$@: using $(CLANG_ANALYZER) to make $(analysisdir)/$${myplist}"; \
+	  $(MAKE) $(AM_V_MFLAG) $${myplist} || stat $(analysisdir)/$${myplist}; \
+	done
+	@echo "$@ target (in `pwd`): done."
 .PHONY: check-local
+
+check-everything: Makefile stamp-plistfiles @MAINT@ plistfiles
+	for myplist in $(PLISTFILES_FROM_CFILES); do \
+	  export mysubplist="$(analysisdir)/$${myplist}"; \
+	  if test ! -e $${mysubplist} || test $${mysubplist} -ot stamp-plistfiles || test $${mysubplist} -ot plistfiles || test $${mysubplist} -ot Makefile; then \
+	    printf "\n"; \
+	    echo "$@: using $(CLANG_ANALYZER) to make $${mysubplist}..."; \
+	    $(MAKE) $(AM_V_MFLAG) $${myplist} || \
+	      (if test -d $(analysisdir); then \
+	         stat $${mysubplist} || (test -x "`which sync`" && sync); \
+	       else \
+	         stat $${myplist} || (test -x "`which sync`" && sync); \
+	       fi); \
+	  elif test "x$(AM_V_P)" != "xfalse"; then \
+	    stat $${mysubplist} || (test -x "`which sync`" && sync); \
+	  else \
+	    printf "."; \
+	  fi; \
+	done
+	@printf "\n" && echo "$@ target (in `pwd`): done."
+.PHONY: check-everything
 
 # stamp-staticlib just makes the OFILES that libbfd.a depends upon, need
 # to make the 'stamp-lib' target instead to actually make the static

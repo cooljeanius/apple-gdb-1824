@@ -274,10 +274,9 @@ ms1_final_link_relocate
    accordingly.  */
 
 static bfd_boolean
-ms1_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
-			 struct bfd_link_info *info, bfd *input_bfd,
-     			 asection *input_section, bfd_byte *contents,
-                         Elf_Internal_Rela *relocs,
+ms1_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+			 bfd *input_bfd, asection *input_section,
+    		   	 bfd_byte *contents, Elf_Internal_Rela *relocs,
                          Elf_Internal_Sym *local_syms,
      			 asection **local_sections)
 {

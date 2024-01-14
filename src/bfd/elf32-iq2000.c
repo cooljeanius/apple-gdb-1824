@@ -235,20 +235,16 @@ static reloc_howto_type iq2000_elf_vtentry_howto =
 
 
 static bfd_reloc_status_type
-iq2000_elf_howto_hi16_reloc (bfd *abfd ATTRIBUTE_UNUSED,
-			     arelent *reloc_entry,
-			     asymbol *symbol,
-			     void * data,
-			     asection *input_section,
-			     bfd *output_bfd,
-			     const char **error_message ATTRIBUTE_UNUSED)
+iq2000_elf_howto_hi16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+			    void *data, asection *input_section,
+                            bfd *output_bfd, const char **error_message)
 {
   bfd_reloc_status_type ret;
   bfd_vma relocation;
 
   /* If we're relocating and this an external symbol,
      we don't want to change anything.  */
-  if (output_bfd != (bfd *) NULL
+  if ((output_bfd != (bfd *)NULL)
       && (symbol->flags & BSF_SECTION_SYM) == 0
       && reloc_entry->addend == 0)
     {
@@ -256,7 +252,7 @@ iq2000_elf_howto_hi16_reloc (bfd *abfd ATTRIBUTE_UNUSED,
       return bfd_reloc_ok;
     }
 
-  if (bfd_is_com_section (symbol->section))
+  if (bfd_is_com_section(symbol->section))
     relocation = 0;
   else
     relocation = symbol->value;
@@ -265,13 +261,13 @@ iq2000_elf_howto_hi16_reloc (bfd *abfd ATTRIBUTE_UNUSED,
   relocation += symbol->section->output_offset;
   relocation += reloc_entry->addend;
 
-  /* If %lo will have sign-extension, compensate by add 0x10000 to hi portion.  */
+  /* If %lo will have sign-extension, compensate by add 0x10000 to hi portion: */
   if (relocation & 0x8000)
     reloc_entry->addend += 0x10000;
 
   /* Now do the reloc in the usual way.	 */
-  ret = bfd_elf_generic_reloc (abfd, reloc_entry, symbol, data,
-				input_section, output_bfd, error_message);
+  ret = bfd_elf_generic_reloc(abfd, reloc_entry, symbol, data,
+                              input_section, output_bfd, error_message);
 
   /* Put it back the way it was.  */
   if (relocation & 0x8000)

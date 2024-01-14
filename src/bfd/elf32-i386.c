@@ -308,12 +308,12 @@ elf_i386_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
   return 0;
 }
 
+/* */
 static void
-elf_i386_info_to_howto_rel (bfd *abfd ATTRIBUTE_UNUSED,
-			    arelent *cache_ptr,
-			    Elf_Internal_Rela *dst)
+elf_i386_info_to_howto_rel(bfd *abfd, arelent *cache_ptr,
+                           Elf_Internal_Rela *dst)
 {
-  unsigned int r_type = ELF32_R_TYPE (dst->r_info);
+  unsigned int r_type = ELF32_R_TYPE(dst->r_info);
   unsigned int indx;
 
   if ((indx = r_type) >= R_386_standard
@@ -324,8 +324,8 @@ elf_i386_info_to_howto_rel (bfd *abfd ATTRIBUTE_UNUSED,
       && ((indx = r_type - R_386_vt_offset) - R_386_tls
 	  >= R_386_vt - R_386_tls))
     {
-      (*_bfd_error_handler) (_("%B: invalid relocation type %d"),
-			     abfd, (int) r_type);
+      (*_bfd_error_handler)(_("%B: invalid relocation type %d"),
+			    abfd, (int)r_type);
       indx = R_386_NONE;
     }
   cache_ptr->howto = &elf_howto_table[indx];

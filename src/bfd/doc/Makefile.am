@@ -513,20 +513,25 @@ MOSTLYCLEANFILES = $(MKDOC) *.o *.stamp
 CLEANFILES = *.p *.ip *.dSYM
 
 apple-clean:
-	-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
+	$(AM_V_at)-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
 	$(AM_V_at)-if test -w $(srcdir); then \
 	  rm -rf $(AM_V_v) $(srcdir)/*.dSYM || rmdir $(srcdir)/*.dSYM; \
 	fi
 .PHONY: apple-clean
 
 clean-local: Makefile @MAINT@ apple-clean
-	-if test -w $(srcdir) && test "x$(srcdir)" != "x$(builddir)"; then \
+	$(AM_V_at)-if test -w $(srcdir) && test "x$(srcdir)" != "x$(builddir)"; then \
 	  rm -f $(AM_V_v) $(srcdir)/*.o; \
 	fi
 .PHONY: clean-local
 
-all-local: clean-local $(build_MKDOC) protos
-	-if test -d chew_am.dSYM; then $(MAKE) $(AM_V_MFLAG) apple-clean; fi
+all-local: Makefile $(build_MKDOC) protos @MAINT@ clean-local
+	$(AM_V_at)-if test -d chew_am.dSYM && test -r Makefile && test -w .; then \
+	  $(MAKE) $(AM_V_MFLAG) apple-clean; \
+	else \
+	  echo "build_MKDOC (in `pwd`) is $(build_MKDOC)"; \
+	  stat $(build_MKDOC) || ls $(BUILD_HFILES) || echo "$@ in `pwd`: done"; \
+	fi
 .PHONY: all-local
 
 DISTCLEANFILES = bfd.?? bfd.??? bfd.h libbfd.h libcoff.h texput.log

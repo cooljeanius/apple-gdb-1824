@@ -3434,6 +3434,7 @@ ecoff_link_add_externals(bfd *abfd, struct bfd_link_info *info,
 	      break;
 	    }
 	  /* Fall through.  */
+          ATTRIBUTE_FALLTHROUGH;
 	case scSCommon:
 	  if (ecoff_scom_section.name == NULL)
 	    {

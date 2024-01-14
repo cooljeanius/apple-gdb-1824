@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-13 23:50-0500\n"
+"POT-Creation-Date: 2024-01-14 01:20-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -226,7 +226,7 @@ msgstr ""
 msgid "%B: unsupported relocation: ALPHA_R_GPRELLOW"
 msgstr ""
 
-#: coff-alpha.c:1536 elf32-m32r.c:2452 elf64-alpha.c:3972 elf64-alpha.c:4098
+#: coff-alpha.c:1536 elf32-m32r.c:2449 elf64-alpha.c:3972 elf64-alpha.c:4098
 #: elf64-ia64-vms.c:3429 elf32-ia64.c:4103 elf64-ia64.c:4103
 msgid "%B: unknown relocation type %d"
 msgstr ""
@@ -672,12 +672,12 @@ msgid ""
 msgstr ""
 
 #: elf-m10200.c:415 elf-m10300.c:1514 elf32-arm.c:4229 elf32-avr.c:865
-#: elf32-bfin.c:3220 elf32-cr16.c:1484 elf32-cr16c.c:777 elf32-cris.c:1502
+#: elf32-bfin.c:3220 elf32-cr16.c:1484 elf32-cr16c.c:777 elf32-cris.c:1503
 #: elf32-crx.c:915 elf32-d10v.c:539 elf32-epiphany.c:557 elf32-fr30.c:569
-#: elf32-frv.c:4079 elf32-h8300.c:497 elf32-i860.c:1185 elf32-ip2k.c:1474
-#: elf32-iq2000.c:622 elf32-lm32.c:1160 elf32-m32c.c:474 elf32-m32r.c:3091
+#: elf32-frv.c:4081 elf32-h8300.c:497 elf32-i860.c:1185 elf32-ip2k.c:1474
+#: elf32-iq2000.c:618 elf32-lm32.c:1160 elf32-m32c.c:474 elf32-m32r.c:3088
 #: elf32-m68hc1x.c:1208 elf32-mep.c:535 elf32-metag.c:1992
-#: elf32-microblaze.c:1560 elf32-moxie.c:282 elf32-ms1.c:372 elf32-msp430.c:510
+#: elf32-microblaze.c:1560 elf32-moxie.c:282 elf32-ms1.c:371 elf32-msp430.c:507
 #: elf32-mt.c:395 elf32-nds32.c:4910 elf32-openrisc.c:385 elf32-or1k.c:1263
 #: elf32-score.c:2729 elf32-score7.c:2537 elf32-spu.c:5041 elf32-tilepro.c:3666
 #: elf32-v850.c:1677 elf32-xstormy16.c:914 elf64-mmix.c:1503
@@ -685,12 +685,12 @@ msgid "internal error: out of range error"
 msgstr ""
 
 #: elf-m10200.c:419 elf-m10300.c:1518 elf32-arm.c:4233 elf32-avr.c:869
-#: elf32-bfin.c:3224 elf32-cr16.c:1488 elf32-cr16c.c:781 elf32-cris.c:1506
-#: elf32-crx.c:919 elf32-d10v.c:543 elf32-fr30.c:573 elf32-frv.c:4083
-#: elf32-h8300.c:501 elf32-i860.c:1189 elf32-iq2000.c:626 elf32-lm32.c:1164
-#: elf32-m32c.c:478 elf32-m32r.c:3095 elf32-m68hc1x.c:1212 elf32-mep.c:539
+#: elf32-bfin.c:3224 elf32-cr16.c:1488 elf32-cr16c.c:781 elf32-cris.c:1507
+#: elf32-crx.c:919 elf32-d10v.c:543 elf32-fr30.c:573 elf32-frv.c:4085
+#: elf32-h8300.c:501 elf32-i860.c:1189 elf32-iq2000.c:622 elf32-lm32.c:1164
+#: elf32-m32c.c:478 elf32-m32r.c:3092 elf32-m68hc1x.c:1212 elf32-mep.c:539
 #: elf32-metag.c:1996 elf32-microblaze.c:1564 elf32-moxie.c:286
-#: elf32-msp430.c:514 elf32-nds32.c:4914 elf32-openrisc.c:389 elf32-or1k.c:1267
+#: elf32-msp430.c:511 elf32-nds32.c:4914 elf32-openrisc.c:389 elf32-or1k.c:1267
 #: elf32-score.c:2733 elf32-score7.c:2541 elf32-spu.c:5045 elf32-tilepro.c:3670
 #: elf32-v850.c:1681 elf32-xstormy16.c:918 elf64-mmix.c:1507 elfxx-mips.c:7219
 msgid "internal error: unsupported relocation error"
@@ -698,26 +698,26 @@ msgstr ""
 
 #: elf-m10200.c:423 elf-m10300.c:1522 elf32-arm.c:4237 elf32-cr16.c:1492
 #: elf32-cr16c.c:785 elf32-crx.c:923 elf32-d10v.c:547 elf32-h8300.c:505
-#: elf32-lm32.c:1168 elf32-m32r.c:3099 elf32-m68hc1x.c:1216
+#: elf32-lm32.c:1168 elf32-m32r.c:3096 elf32-m68hc1x.c:1216
 #: elf32-microblaze.c:1568 elf32-nds32.c:4918 elf32-score.c:2737
 #: elf32-score7.c:2545 elf32-spu.c:5049
 msgid "internal error: dangerous error"
 msgstr ""
 
 #: elf-m10200.c:427 elf-m10300.c:1526 elf32-arm.c:4241 elf32-avr.c:877
-#: elf32-bfin.c:3232 elf32-cr16.c:1496 elf32-cr16c.c:789 elf32-cris.c:1514
+#: elf32-bfin.c:3232 elf32-cr16.c:1496 elf32-cr16c.c:789 elf32-cris.c:1515
 #: elf32-crx.c:927 elf32-d10v.c:551 elf32-epiphany.c:572 elf32-fr30.c:581
-#: elf32-frv.c:4091 elf32-h8300.c:509 elf32-i860.c:1197 elf32-ip2k.c:1489
-#: elf32-iq2000.c:634 elf32-lm32.c:1172 elf32-m32c.c:486 elf32-m32r.c:3103
+#: elf32-frv.c:4093 elf32-h8300.c:509 elf32-i860.c:1197 elf32-ip2k.c:1489
+#: elf32-iq2000.c:630 elf32-lm32.c:1172 elf32-m32c.c:486 elf32-m32r.c:3100
 #: elf32-m68hc1x.c:1220 elf32-mep.c:547 elf32-metag.c:2004
-#: elf32-microblaze.c:1572 elf32-moxie.c:294 elf32-ms1.c:380 elf32-msp430.c:522
+#: elf32-microblaze.c:1572 elf32-moxie.c:294 elf32-ms1.c:379 elf32-msp430.c:519
 #: elf32-mt.c:403 elf32-nds32.c:4922 elf32-openrisc.c:397 elf32-or1k.c:1275
 #: elf32-score.c:2746 elf32-score7.c:2549 elf32-spu.c:5053 elf32-tilepro.c:3678
 #: elf32-v850.c:1701 elf32-xstormy16.c:926 elf64-mmix.c:1515
 msgid "internal error: unknown error"
 msgstr ""
 
-#: elf-m10300.c:1464 elf32-m32r.c:2634 elf64-sh64.c:1629
+#: elf-m10300.c:1464 elf32-m32r.c:2631 elf64-sh64.c:1629
 #, c-format
 msgid ""
 "%s: warning: unresolvable relocation against symbol `%s' from %s section"
@@ -850,7 +850,7 @@ msgstr ""
 msgid "%B(%A+0x%lx): R_ARM_TLS_LE32 relocation not permitted in shared object"
 msgstr ""
 
-#: elf32-arm.c:4111 elf32-sh.c:4624 elf64-sh64.c:1540
+#: elf32-arm.c:4111 elf32-sh.c:4630 elf64-sh64.c:1540
 msgid "%B(%A+0x%lx): %s relocation against SEC_MERGE section"
 msgstr ""
 
@@ -911,7 +911,7 @@ msgstr ""
 #. Ignore init flag - it may not be set, despite the flags field containing valid data.
 #. Ignore init flag - it may not be set, despite the flags field
 #. containing valid data.
-#: elf32-arm.c:4587 elf32-bfin.c:4988 elf32-cris.c:3202 elf32-m68hc1x.c:1351
+#: elf32-arm.c:4587 elf32-bfin.c:4988 elf32-cris.c:3203 elf32-m68hc1x.c:1351
 #: elf32-m68k.c:415 elf32-score.c:4004 elf32-score7.c:3808 elf32-vax.c:527
 #: elf32-xgate.c:674 elfxx-mips.c:9921 elfnn-aarch64.c:4688
 #, c-format
@@ -1023,16 +1023,16 @@ msgstr ""
 msgid "<Unrecognised flag bits set>"
 msgstr ""
 
-#: elf32-arm.c:4927 elf32-i386.c:914 elf32-s390.c:964 elf32-tic6x.c:2812
+#: elf32-arm.c:4927 elf32-i386.c:914 elf32-s390.c:963 elf32-tic6x.c:2812
 #: elf32-tilepro.c:1511 elf32-xtensa.c:788 elf64-s390.c:917 elf64-x86-64.c:670
 #: elfxx-sparc.c:1027 elfnn-aarch64.c:5082
 msgid "%B: bad symbol index: %d"
 msgstr ""
 
-#: elf32-avr.c:873 elf32-bfin.c:3228 elf32-cris.c:1510 elf32-epiphany.c:568
-#: elf32-fr30.c:577 elf32-frv.c:4087 elf32-i860.c:1193 elf32-ip2k.c:1485
-#: elf32-iq2000.c:630 elf32-m32c.c:482 elf32-mep.c:543 elf32-metag.c:2000
-#: elf32-moxie.c:290 elf32-ms1.c:376 elf32-msp430.c:518 elf32-mt.c:399
+#: elf32-avr.c:873 elf32-bfin.c:3228 elf32-cris.c:1511 elf32-epiphany.c:568
+#: elf32-fr30.c:577 elf32-frv.c:4089 elf32-i860.c:1193 elf32-ip2k.c:1485
+#: elf32-iq2000.c:626 elf32-m32c.c:482 elf32-mep.c:543 elf32-metag.c:2000
+#: elf32-moxie.c:290 elf32-ms1.c:375 elf32-msp430.c:515 elf32-mt.c:399
 #: elf32-openrisc.c:393 elf32-or1k.c:1271 elf32-tilepro.c:3674
 #: elf32-v850.c:1685 elf32-xstormy16.c:922 elf64-mmix.c:1511
 msgid "internal error: dangerous relocation"
@@ -1042,12 +1042,12 @@ msgstr ""
 msgid "relocation should be even number"
 msgstr ""
 
-#: elf32-bfin.c:1601 elf32-i386.c:3047 elf32-m68k.c:1701 elf32-s390.c:2961
+#: elf32-bfin.c:1601 elf32-i386.c:3047 elf32-m68k.c:1701 elf32-s390.c:2960
 #: elf32-xtensa.c:2309 elf64-s390.c:2966 elf64-x86-64.c:2516 elfxx-sparc.c:3154
 msgid "%B(%A+0x%lx): unresolvable relocation against symbol `%s'"
 msgstr ""
 
-#: elf32-bfin.c:1634 elf32-i386.c:3085 elf32-m68k.c:1742 elf32-s390.c:3014
+#: elf32-bfin.c:1634 elf32-i386.c:3085 elf32-m68k.c:1742 elf32-s390.c:3013
 #: elf64-s390.c:3017 elf64-x86-64.c:2560
 msgid "%B(%A+0x%lx): reloc against `%s': error %d"
 msgstr ""
@@ -1064,11 +1064,11 @@ msgstr ""
 msgid "R_BFIN_FUNCDESC references dynamic symbol with nonzero addend"
 msgstr ""
 
-#: elf32-bfin.c:2886 elf32-bfin.c:3009 elf32-frv.c:3619 elf32-frv.c:3732
+#: elf32-bfin.c:2886 elf32-bfin.c:3009 elf32-frv.c:3619 elf32-frv.c:3733
 msgid "cannot emit fixups in read-only section"
 msgstr ""
 
-#: elf32-bfin.c:2917 elf32-bfin.c:3047 elf32-frv.c:3645 elf32-frv.c:3771
+#: elf32-bfin.c:2917 elf32-bfin.c:3047 elf32-frv.c:3645 elf32-frv.c:3772
 #: elf32-lm32.c:1095
 msgid "cannot emit dynamic relocations in read-only section"
 msgstr ""
@@ -1085,16 +1085,16 @@ msgstr ""
 msgid "warning: relocation references a different segment"
 msgstr ""
 
-#: elf32-bfin.c:4907 elf32-frv.c:6330
+#: elf32-bfin.c:4907 elf32-frv.c:6333
 msgid "%B: unsupported relocation type %i"
 msgstr ""
 
-#: elf32-bfin.c:5034 elf32-frv.c:6718
+#: elf32-bfin.c:5034 elf32-frv.c:6721
 #, c-format
 msgid "%s: cannot link non-fdpic object file into fdpic executable"
 msgstr ""
 
-#: elf32-bfin.c:5038 elf32-frv.c:6722
+#: elf32-bfin.c:5038 elf32-frv.c:6725
 #, c-format
 msgid "%s: cannot link fdpic object file into non-fdpic executable"
 msgstr ""
@@ -1138,54 +1138,54 @@ msgstr ""
 msgid "%B, section %A: relocation %s with no GOT created"
 msgstr ""
 
-#: elf32-cris.c:1394
+#: elf32-cris.c:1395
 msgid "%B: Internal inconsistency; no relocation section %s"
 msgstr ""
 
-#: elf32-cris.c:2492
+#: elf32-cris.c:2493
 msgid ""
 "%B, section %A:\n"
 "  v10/v32 compatible object %s must not contain a PIC relocation"
 msgstr ""
 
-#: elf32-cris.c:2679 elf32-cris.c:2747
+#: elf32-cris.c:2680 elf32-cris.c:2748
 msgid ""
 "%B, section %A:\n"
 "  relocation %s should not be used in a shared object; recompile with -fPIC"
 msgstr ""
 
-#: elf32-cris.c:3157
+#: elf32-cris.c:3158
 msgid "Unexpected machine number"
 msgstr ""
 
-#: elf32-cris.c:3205
+#: elf32-cris.c:3206
 #, c-format
 msgid " [symbols have a _ prefix]"
 msgstr ""
 
-#: elf32-cris.c:3208
+#: elf32-cris.c:3209
 #, c-format
 msgid " [v10 and v32]"
 msgstr ""
 
-#: elf32-cris.c:3211
+#: elf32-cris.c:3212
 #, c-format
 msgid " [v32]"
 msgstr ""
 
-#: elf32-cris.c:3252
+#: elf32-cris.c:3253
 msgid "%B: uses _-prefixed symbols, but writing file with non-prefixed symbols"
 msgstr ""
 
-#: elf32-cris.c:3253
+#: elf32-cris.c:3254
 msgid "%B: uses non-prefixed symbols, but writing file with _-prefixed symbols"
 msgstr ""
 
-#: elf32-cris.c:3272
+#: elf32-cris.c:3273
 msgid "%B contains CRIS v32 code, incompatible with previous objects"
 msgstr ""
 
-#: elf32-cris.c:3274
+#: elf32-cris.c:3275
 msgid "%B contains non-CRIS-v32 code, incompatible with previous objects"
 msgstr ""
 
@@ -1254,37 +1254,37 @@ msgstr ""
 msgid "R_FRV_FUNCDESC references dynamic symbol with nonzero addend"
 msgstr ""
 
-#: elf32-frv.c:3690
+#: elf32-frv.c:3691
 msgid "R_FRV_FUNCDESC_VALUE references dynamic symbol with nonzero addend"
 msgstr ""
 
-#: elf32-frv.c:3942 elf32-frv.c:4098
+#: elf32-frv.c:3943 elf32-frv.c:4100
 msgid "%B(%A+0x%lx): reloc against `%s': %s"
 msgstr ""
 
-#: elf32-frv.c:3944 elf32-frv.c:3948
+#: elf32-frv.c:3945 elf32-frv.c:3949
 msgid "relocation references a different segment"
 msgstr ""
 
-#: elf32-frv.c:6632
+#: elf32-frv.c:6635
 #, c-format
 msgid ""
 "%s: compiled with %s and linked with modules that use non-pic relocations"
 msgstr ""
 
-#: elf32-frv.c:6685 elf32-iq2000.c:806 elf32-m32c.c:797
+#: elf32-frv.c:6688 elf32-iq2000.c:802 elf32-m32c.c:797
 #, c-format
 msgid "%s: compiled with %s and linked with modules compiled with %s"
 msgstr ""
 
-#: elf32-frv.c:6697
+#: elf32-frv.c:6700
 #, c-format
 msgid ""
 "%s: uses different unknown e_flags (0x%lx) fields than previous modules (0x"
 "%lx)"
 msgstr ""
 
-#: elf32-frv.c:6746 elf32-iq2000.c:844 elf32-m32c.c:833 elf32-ms1.c:594
+#: elf32-frv.c:6749 elf32-iq2000.c:840 elf32-m32c.c:833 elf32-ms1.c:593
 #: elf32-mt.c:580 elf32-rl78.c:1069 elf32-rx.c:3040
 #, c-format
 msgid "private flags = 0x%lx:"
@@ -1336,12 +1336,12 @@ msgstr ""
 msgid "%B: invalid relocation type %d"
 msgstr ""
 
-#: elf32-i386.c:1027 elf32-s390.c:1148 elf32-sh.c:6422 elf32-tilepro.c:1627
+#: elf32-i386.c:1027 elf32-s390.c:1147 elf32-sh.c:6428 elf32-tilepro.c:1627
 #: elf64-s390.c:1110 elfxx-sparc.c:1157
 msgid "%B: `%s' accessed both as normal and thread local symbol"
 msgstr ""
 
-#: elf32-i386.c:1142 elf32-or1k.c:1646 elf32-s390.c:1257 elf64-ppc.c:4703
+#: elf32-i386.c:1142 elf32-or1k.c:1646 elf32-s390.c:1256 elf64-ppc.c:4703
 #: elf64-s390.c:1222 elf64-x86-64.c:914
 msgid "%B: bad relocation section name `%s'"
 msgstr ""
@@ -1375,7 +1375,7 @@ msgstr ""
 msgid "ip2k linker: redundant page instruction at 0x%08lx (dest = 0x%08lx)."
 msgstr ""
 
-#: elf32-iq2000.c:819
+#: elf32-iq2000.c:815
 #, c-format
 msgid "%s: uses diff. e_flags (0x%lx) fields than prev. modules (0x%lx)"
 msgstr ""
@@ -1401,30 +1401,30 @@ msgstr ""
 msgid "SDA relocation when _SDA_BASE_ not defined"
 msgstr ""
 
-#: elf32-m32r.c:3026
+#: elf32-m32r.c:3023
 msgid "%B: The target (%s) of an %s relocation is in the wrong section (%A)"
 msgstr ""
 
-#: elf32-m32r.c:3555
+#: elf32-m32r.c:3552
 msgid "%B: Instruction set mismatch with previous modules"
 msgstr ""
 
-#: elf32-m32r.c:3576 elf32-nds32.c:5636
+#: elf32-m32r.c:3573 elf32-nds32.c:5636
 #, c-format
 msgid "private flags = %lx"
 msgstr ""
 
-#: elf32-m32r.c:3581
+#: elf32-m32r.c:3578
 #, c-format
 msgid ": m32r instructions"
 msgstr ""
 
-#: elf32-m32r.c:3582
+#: elf32-m32r.c:3579
 #, c-format
 msgid ": m32rx instructions"
 msgstr ""
 
-#: elf32-m32r.c:3583
+#: elf32-m32r.c:3580
 #, c-format
 msgid ": m32r2 instructions"
 msgstr ""
@@ -1466,7 +1466,7 @@ msgstr ""
 msgid "%B: linking files compiled for HCS12 with others compiled for HC12"
 msgstr ""
 
-#: elf32-m68hc1x.c:1326 elf32-ppc.c:3580 elf64-sparc.c:698 elfxx-mips.c:9883
+#: elf32-m68hc1x.c:1326 elf32-ppc.c:3578 elf64-sparc.c:698 elfxx-mips.c:9883
 msgid "%B: uses different e_flags (0x%lx) fields than previous modules (0x%lx)"
 msgstr ""
 
@@ -1757,81 +1757,81 @@ msgstr ""
 msgid "%B: EF_OR1K_NODELAY flag mismatch with previous modules"
 msgstr ""
 
-#: elf32-ppc.c:1648
+#: elf32-ppc.c:1646
 #, c-format
 msgid "generic linker can't handle %s"
 msgstr ""
 
-#: elf32-ppc.c:2080
+#: elf32-ppc.c:2078
 msgid "corrupt or empty %s section in %B"
 msgstr ""
 
-#: elf32-ppc.c:2087
+#: elf32-ppc.c:2085
 msgid "unable to read in %s section from %B"
 msgstr ""
 
-#: elf32-ppc.c:2093
+#: elf32-ppc.c:2091
 msgid "corrupt %s section in %B"
 msgstr ""
 
-#: elf32-ppc.c:2136
+#: elf32-ppc.c:2134
 msgid "warning: unable to set size of %s section in %B"
 msgstr ""
 
-#: elf32-ppc.c:2182
+#: elf32-ppc.c:2180
 msgid "failed to allocate space for new APUinfo section."
 msgstr ""
 
-#: elf32-ppc.c:2201
+#: elf32-ppc.c:2199
 msgid "failed to compute new APUinfo section."
 msgstr ""
 
-#: elf32-ppc.c:2204
+#: elf32-ppc.c:2202
 msgid "failed to install new APUinfo section."
 msgstr ""
 
-#: elf32-ppc.c:2948
+#: elf32-ppc.c:2946
 msgid "%B: relocation %s cannot be used when making a shared object"
 msgstr ""
 
 #. It does not make sense to have a procedure linkage
 #. table entry for a local symbol.
-#: elf32-ppc.c:3218
+#: elf32-ppc.c:3216
 msgid "%B(%A+0x%lx): %s reloc against local symbol"
 msgstr ""
 
-#: elf32-ppc.c:3545
+#: elf32-ppc.c:3543
 msgid ""
 "%B: compiled with -mrelocatable and linked with modules compiled normally"
 msgstr ""
 
-#: elf32-ppc.c:3553
+#: elf32-ppc.c:3551
 msgid ""
 "%B: compiled normally and linked with modules compiled with -mrelocatable"
 msgstr ""
 
-#: elf32-ppc.c:5764 elf64-ppc.c:10104
+#: elf32-ppc.c:5762 elf64-ppc.c:10104
 msgid "%B: unknown relocation type %d for symbol %s"
 msgstr ""
 
-#: elf32-ppc.c:6014
+#: elf32-ppc.c:6012
 msgid "%B(%A+0x%lx): non-zero addend on %s reloc against `%s'"
 msgstr ""
 
-#: elf32-ppc.c:6361 elf32-ppc.c:6387 elf32-ppc.c:6446
+#: elf32-ppc.c:6359 elf32-ppc.c:6385 elf32-ppc.c:6444
 msgid ""
 "%B: the target (%s) of a %s relocation is in the wrong output section (%s)"
 msgstr ""
 
-#: elf32-ppc.c:6499
+#: elf32-ppc.c:6497
 msgid "%B: relocation %s is not yet supported for symbol %s."
 msgstr ""
 
-#: elf32-ppc.c:6555 elf32-tilepro.c:3569 elf64-ppc.c:10743 elfnn-aarch64.c:4468
+#: elf32-ppc.c:6553 elf32-tilepro.c:3569 elf64-ppc.c:10743 elfnn-aarch64.c:4468
 msgid "%B(%A+0x%lx): unresolvable %s relocation against symbol `%s'"
 msgstr ""
 
-#: elf32-ppc.c:6604 elf64-ppc.c:10784
+#: elf32-ppc.c:6602 elf64-ppc.c:10784
 msgid "%B(%A+0x%lx): %s reloc against `%s': error %d"
 msgstr ""
 
@@ -1893,7 +1893,7 @@ msgstr ""
 msgid "Warning: RX_SYM reloc with an unknown symbol"
 msgstr ""
 
-#: elf32-s390.c:2205 elf64-s390.c:2176
+#: elf32-s390.c:2204 elf64-s390.c:2176
 msgid "%B(%A+0x%lx): invalid instruction for TLS relocation %s"
 msgstr ""
 
@@ -1968,35 +1968,35 @@ msgstr ""
 msgid "%B: 0x%lx: warning: bad count"
 msgstr ""
 
-#: elf32-sh.c:2771 elf32-sh.c:3146
+#: elf32-sh.c:2771 elf32-sh.c:3152
 msgid "%B: 0x%lx: fatal: reloc overflow while relaxing"
 msgstr ""
 
-#: elf32-sh.c:4572 elf64-sh64.c:1512
+#: elf32-sh.c:4578 elf64-sh64.c:1512
 msgid "Unexpected STO_SH5_ISA32 on local symbol is not handled"
 msgstr ""
 
-#: elf32-sh.c:4723
+#: elf32-sh.c:4729
 msgid "%B(%A): unresolvable relocation against symbol `%s'"
 msgstr ""
 
-#: elf32-sh.c:4793
+#: elf32-sh.c:4799
 msgid "%B: 0x%lx: fatal: unaligned branch target for relax-support relocation"
 msgstr ""
 
-#: elf32-sh.c:4826 elf32-sh.c:4841
+#: elf32-sh.c:4832 elf32-sh.c:4847
 msgid "%B: 0x%lx: fatal: unaligned %s relocation 0x%lx"
 msgstr ""
 
-#: elf32-sh.c:4855
+#: elf32-sh.c:4861
 msgid "%B: 0x%lx: fatal: R_SH_PSHA relocation %d not in range -32..32"
 msgstr ""
 
-#: elf32-sh.c:4869
+#: elf32-sh.c:4875
 msgid "%B: 0x%lx: fatal: R_SH_PSHL relocation %d not in range -32..32"
 msgstr ""
 
-#: elf32-sh.c:6634 elf64-alpha.c:4535
+#: elf32-sh.c:6640 elf64-alpha.c:4535
 msgid "%B: TLS local exec code cannot be linked into shared objects"
 msgstr ""
 

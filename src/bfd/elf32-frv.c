@@ -2816,7 +2816,7 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	{
 	case R_FRV_LABEL24:
 	case R_FRV_32:
-	  if (! IS_FDPIC (output_bfd))
+	  if (!IS_FDPIC(output_bfd))
 	    goto non_fdpic;
 
 	case R_FRV_GOT12:
@@ -3675,6 +3675,7 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	      break;
 	    }
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case R_FRV_FUNCDESC_VALUE:
 	  {
 	    long dynindx;
@@ -3950,7 +3951,7 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	    }
 	  if (!silence_segment_error && (info->shared || info->pie))
 	    return FALSE;
-	  elf_elfheader (output_bfd)->e_flags |= EF_FRV_PIC;
+	  elf_elfheader(output_bfd)->e_flags |= EF_FRV_PIC;
 	}
 
       switch (r_type)
@@ -3961,6 +3962,7 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	     value right.  */
 	  relocation += rel->r_addend;
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case R_FRV_GOTHI:
 	case R_FRV_FUNCDESC_GOTHI:
 	case R_FRV_FUNCDESC_GOTOFFHI:
@@ -3968,7 +3970,7 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	case R_FRV_GOTTLSDESCHI:
 	  relocation >>= 16;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_FRV_GOTLO:
 	case R_FRV_FUNCDESC_GOTLO:
 	case R_FRV_GOTOFFLO:
@@ -3989,7 +3991,7 @@ elf32_frv_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	  if (!IS_FDPIC(output_bfd) || ((picrel != NULL) && !picrel->plt))
 	    break;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	  /* When referencing a GOT entry, a function descriptor or a
 	     PLT, we don't want the addend to apply to the reference,
 	     but rather to the referenced symbol.  The actual entry
@@ -6147,9 +6149,10 @@ elf32_frv_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	case R_FRV_TLSMOFFHI:
 	case R_FRV_TLSMOFFLO:
 	case R_FRV_TLSMOFF:
-	  if (! IS_FDPIC (abfd))
+	  if (!IS_FDPIC(abfd))
 	    goto bad_reloc;
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case R_FRV_GPREL12:
 	case R_FRV_GPRELU12:
 	case R_FRV_GPRELHI:
@@ -6198,25 +6201,25 @@ elf32_frv_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	}
 
       BFD_ASSERT(picrel != NULL);
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
         {
 	case R_FRV_LABEL24:
-	  if (IS_FDPIC (abfd))
+	  if (IS_FDPIC(abfd))
 	    picrel->call = 1;
 	  break;
 
 	case R_FRV_FUNCDESC_VALUE:
 	  picrel->relocsfdv++;
-	  if (bfd_get_section_flags (abfd, sec) & SEC_ALLOC)
+	  if (bfd_get_section_flags(abfd, sec) & SEC_ALLOC)
 	    picrel->relocs32--;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_FRV_32:
-	  if (! IS_FDPIC (abfd))
+	  if (! IS_FDPIC(abfd))
 	    break;
 
 	  picrel->sym = 1;
-	  if (bfd_get_section_flags (abfd, sec) & SEC_ALLOC)
+	  if (bfd_get_section_flags(abfd, sec) & SEC_ALLOC)
 	    picrel->relocs32++;
 	  break;
 

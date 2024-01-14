@@ -107,7 +107,7 @@ _bfd_dlx_elf_hi16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 elf32_dlx_relocate16(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		     void *data, asection *input_section, bfd *output_bfd,
-		     const char **error_message ATTRIBUTE_UNUSED)
+		     const char **error_message)
 {
   unsigned long insn, vallo, allignment;
   int val;
@@ -167,7 +167,7 @@ elf32_dlx_relocate16(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 static bfd_reloc_status_type
 elf32_dlx_relocate26(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 		     void *data, asection *input_section, bfd *output_bfd,
-		     const char **error_message ATTRIBUTE_UNUSED)
+		     const char **error_message)
 {
   unsigned long insn, vallo, allignment;
   int val;

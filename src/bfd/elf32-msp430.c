@@ -424,14 +424,11 @@ msp430_final_link_relocate (reloc_howto_type * howto, bfd * input_bfd,
 /* Relocate an MSP430 ELF section.  */
 
 static bfd_boolean
-elf32_msp430_relocate_section (bfd * output_bfd ATTRIBUTE_UNUSED,
-			       struct bfd_link_info * info,
-			       bfd * input_bfd,
-			       asection * input_section,
-			       bfd_byte * contents,
-			       Elf_Internal_Rela * relocs,
-			       Elf_Internal_Sym * local_syms,
-			       asection ** local_sections)
+elf32_msp430_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+			      bfd *input_bfd, asection *input_section,
+			      bfd_byte *contents, Elf_Internal_Rela *relocs,
+			      Elf_Internal_Sym *local_syms,
+			      asection **local_sections)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
@@ -440,7 +437,7 @@ elf32_msp430_relocate_section (bfd * output_bfd ATTRIBUTE_UNUSED,
 
   symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
   sym_hashes = elf_sym_hashes(input_bfd);
-  relend = relocs + input_section->reloc_count;
+  relend = (relocs + input_section->reloc_count);
 
   for (rel = relocs; rel < relend; rel++)
     {

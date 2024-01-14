@@ -2396,36 +2396,33 @@ m32r_elf_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
    accordingly.  */
 
 static bfd_boolean
-m32r_elf_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
-			   struct bfd_link_info *info,
-			   bfd *input_bfd,
-			   asection *input_section,
-			   bfd_byte *contents,
-			   Elf_Internal_Rela *relocs,
-			   Elf_Internal_Sym *local_syms,
-			   asection **local_sections)
+m32r_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+			  bfd *input_bfd, asection *input_section,
+			  bfd_byte *contents, Elf_Internal_Rela *relocs,
+			  Elf_Internal_Sym *local_syms,
+			  asection **local_sections)
 {
-  Elf_Internal_Shdr *symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
-  struct elf_link_hash_entry **sym_hashes = elf_sym_hashes (input_bfd);
+  Elf_Internal_Shdr *symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  struct elf_link_hash_entry **sym_hashes = elf_sym_hashes(input_bfd);
   Elf_Internal_Rela *rel, *relend;
   /* Assume success.  */
   bfd_boolean ret = TRUE;
 
-  struct elf_m32r_link_hash_table *htab = m32r_elf_hash_table (info);
+  struct elf_m32r_link_hash_table *htab = m32r_elf_hash_table(info);
   bfd *dynobj;
   bfd_vma *local_got_offsets;
   asection *sgot, *splt, *sreloc;
-  bfd_vma high_address = bfd_get_section_limit (input_bfd, input_section);
+  bfd_vma high_address = bfd_get_section_limit(input_bfd, input_section);
 
   dynobj = htab->root.dynobj;
-  local_got_offsets = elf_local_got_offsets (input_bfd);
+  local_got_offsets = elf_local_got_offsets(input_bfd);
 
   sgot = htab->sgot;
   splt = htab->splt;
   sreloc = NULL;
 
   rel = relocs;
-  relend = relocs + input_section->reloc_count;
+  relend = (relocs + input_section->reloc_count);
   for (; rel < relend; rel++)
     {
       int r_type;
@@ -2544,7 +2541,7 @@ m32r_elf_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 
               if (!use_rel)
                 {
-	          relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	          relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 	          addend = rel->r_addend;
 
                   if (info->relocatable)
@@ -2851,7 +2848,7 @@ m32r_elf_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 	      if ((relocation + rel->r_addend) & 0x8000)
 		rel->r_addend += 0x10000;
               /* Fall through.  */
-
+              ATTRIBUTE_FALLTHROUGH;
             case R_M32R_16_RELA:
             case R_M32R_24_RELA:
             case R_M32R_32_RELA:
@@ -3034,8 +3031,8 @@ m32r_elf_relocate_section (bfd *output_bfd ATTRIBUTE_UNUSED,
 		  }
 	      }
               /* Fall through.  */
-
-	    default : /* OLD_M32R_RELOC */
+              ATTRIBUTE_FALLTHROUGH;
+	    default: /* OLD_M32R_RELOC */
 
 	      r = _bfd_final_link_relocate(howto, input_bfd, input_section,
 					   contents, offset,
@@ -3628,7 +3625,7 @@ m32r_elf_gc_mark_hook (asection *sec,
 
 /* */
 static bfd_boolean
-m32r_elf_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info ATTRIBUTE_UNUSED,
+m32r_elf_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info,
                        asection *sec, const Elf_Internal_Rela *relocs)
 {
   /* Update the got entry reference counts for the section being removed.  */

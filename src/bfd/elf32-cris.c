@@ -1100,7 +1100,7 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	      return FALSE;
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	  /* The size of the actual relocation is not used here; we only
 	     fill in the GOT table here.  */
 	case R_CRIS_16_GOT:
@@ -1346,6 +1346,7 @@ cris_elf_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	    break;
 
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case R_CRIS_8:
 	case R_CRIS_16:
 	case R_CRIS_32:
@@ -2029,13 +2030,13 @@ cris_elf_gc_sweep_hook(bfd *abfd ATTRIBUTE_UNUSED,
 	  if (h == NULL)
 	    goto local_got_reloc;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_CRIS_32_PLT_GOTREL:
 	  /* FIXME: We don't garbage-collect away the .got section.  */
 	  if (local_got_refcounts != NULL)
 	    local_got_refcounts[-1]--;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_CRIS_8_PCREL:
 	case R_CRIS_16_PCREL:
 	case R_CRIS_32_PCREL:
@@ -2541,7 +2542,7 @@ cris_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 		}
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_CRIS_32_GOTREL:
 	case R_CRIS_32_PLT_GOTREL:
 	  if (sgot == NULL)
@@ -2584,7 +2585,7 @@ cris_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	  /* If h is NULL then this is a local symbol, and we must make a
 	     GOT entry for it, so handle it like a GOT reloc.  */
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_CRIS_16_GOT:
 	case R_CRIS_32_GOT:
 	  /* This symbol requires a global offset table entry.  */
@@ -2638,7 +2639,7 @@ cris_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	  /* This reference requires a global offset table.  */
 	  local_got_refcounts[-1]++;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_CRIS_32_PLT_PCREL:
 	  /* This symbol requires a procedure linkage table entry.  We
 	     actually build the entry in adjust_dynamic_symbol,
@@ -2683,7 +2684,7 @@ cris_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 		 cris_elf_howto_table[r_type].name);
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_CRIS_8_PCREL:
 	case R_CRIS_16_PCREL:
 	case R_CRIS_32_PCREL:

@@ -28,13 +28,9 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
 /* special_function for R_860_PC26 relocation.  */
 static bfd_reloc_status_type
-i860_howto_pc26_reloc (bfd *abfd ATTRIBUTE_UNUSED,
-                       arelent *reloc_entry,
-                       asymbol *symbol,
-                       void *data ATTRIBUTE_UNUSED,
-                       asection *input_section,
-                       bfd *output_bfd,
-                       const char **error_message ATTRIBUTE_UNUSED)
+i860_howto_pc26_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                      void *data, asection *input_section, bfd *output_bfd,
+                      const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma insn;
   bfd_vma relocation;
@@ -1046,12 +1042,9 @@ i860_final_link_relocate (reloc_howto_type *howto,
    section, which means that the addend must be adjusted
    accordingly.  */
 static bfd_boolean
-elf32_i860_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
-			    struct bfd_link_info *info,
-			    bfd *input_bfd,
-			    asection *input_section,
-			    bfd_byte *contents,
-			    Elf_Internal_Rela *relocs,
+elf32_i860_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+			    bfd *input_bfd, asection *input_section,
+			    bfd_byte *contents, Elf_Internal_Rela *relocs,
 			    Elf_Internal_Sym *local_syms,
 			    asection **local_sections)
 {

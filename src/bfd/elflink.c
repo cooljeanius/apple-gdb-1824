@@ -384,11 +384,11 @@ bfd_elf_link_record_dynamic_symbol (struct bfd_link_info *info,
 	{
 	case STV_INTERNAL:
 	case STV_HIDDEN:
-	  if (h->root.type != bfd_link_hash_undefined
-	      && h->root.type != bfd_link_hash_undefweak)
+	  if ((h->root.type != bfd_link_hash_undefined)
+	      && (h->root.type != bfd_link_hash_undefweak))
 	    {
 	      h->forced_local = 1;
-	      if (!elf_hash_table (info)->is_relocatable_executable)
+	      if (!elf_hash_table(info)->is_relocatable_executable)
 		return TRUE;
 	    }
 

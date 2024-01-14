@@ -408,8 +408,8 @@ ip2k_is_switch_table_128(bfd *abfd, asection *sec, bfd_vma addr,
           jmp     $nnnN  */
 
 static int
-ip2k_is_switch_table_256(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
-			 bfd_vma addr, bfd_byte *contents)
+ip2k_is_switch_table_256(bfd *abfd, asection *sec, bfd_vma addr,
+			 bfd_byte *contents)
 {
   bfd_byte code[16];
   int i_index = 0;
@@ -419,8 +419,8 @@ ip2k_is_switch_table_256(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
     return -1;
 
   ip2k_get_mem(abfd, (contents + addr), 4, code);
-  if ((! IS_PAGE_OPCODE(code + 0))
-      || (! IS_JMP_OPCODE(code + 2)))
+  if ((!IS_PAGE_OPCODE(code + 0))
+      || (!IS_JMP_OPCODE(code + 2)))
     return -1;
 
   /* Search back: */
@@ -467,47 +467,45 @@ ip2k_is_switch_table_256(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
    the effect of page instructions.  */
 
 static bfd_vma
-ip2k_nominal_page_bits (bfd *abfd ATTRIBUTE_UNUSED,
-			asection *sec,
-			bfd_vma addr,
-			bfd_byte *contents)
+ip2k_nominal_page_bits(bfd *abfd, asection *sec, bfd_vma addr,
+                       bfd_byte *contents)
 {
-  bfd_vma page = PAGENO (BASEADDR (sec) + addr);
+  bfd_vma page = PAGENO(BASEADDR(sec) + addr);
 
   /* Check if section flows into this page. If not then the page
      bits are assumed to match the PC. This will be true unless
      the user has a page instruction without a call/jump, in which
      case they are on their own.  */
-  if (PAGENO (BASEADDR (sec)) == page)
+  if (PAGENO(BASEADDR(sec)) == page)
     return page;
 
   /* Section flows across page boundary. The page bits should match
      the PC unless there is a possible flow from the previous page,
      in which case it is not possible to determine the value of the
      page bits.  */
-  while (PAGENO (BASEADDR (sec) + addr - 2) == page)
+  while (PAGENO(BASEADDR(sec) + addr - 2) == page)
     {
       bfd_byte code[2];
 
       addr -= 2;
-      ip2k_get_mem (abfd, contents + addr, 2, code);
-      if (!IS_PAGE_OPCODE (code))
+      ip2k_get_mem(abfd, (contents + addr), 2, code);
+      if (!IS_PAGE_OPCODE(code))
 	continue;
 
       /* Found a page instruction, check if jump table.  */
-      if (ip2k_is_switch_table_128 (abfd, sec, addr, contents) != -1)
+      if (ip2k_is_switch_table_128(abfd, sec, addr, contents) != -1)
 	/* Jump table => page is conditional.  */
 	continue;
 
-      if (ip2k_is_switch_table_256 (abfd, sec, addr, contents) != -1)
+      if (ip2k_is_switch_table_256(abfd, sec, addr, contents) != -1)
 	/* Jump table => page is conditional.  */
 	continue;
 
       /* Found a page instruction, check if conditional.  */
       if (addr >= 2)
         {
-	  ip2k_get_mem (abfd, contents + addr - 2, 2, code);
-          if (IS_SKIP_OPCODE (code))
+	  ip2k_get_mem(abfd, (contents + addr - 2), 2, code);
+          if (IS_SKIP_OPCODE(code))
 	    /* Page is conditional.  */
 	    continue;
         }
@@ -520,16 +518,15 @@ ip2k_nominal_page_bits (bfd *abfd ATTRIBUTE_UNUSED,
   return 0;
 }
 
+/* */
 static bfd_boolean
-ip2k_test_page_insn (bfd *abfd ATTRIBUTE_UNUSED,
-		     asection *sec,
-		     Elf_Internal_Rela *irel,
-		     struct misc *misc)
+ip2k_test_page_insn(bfd *abfd, asection *sec, Elf_Internal_Rela *irel,
+		    struct misc *misc)
 {
   bfd_vma symval;
 
-  /* Get the value of the symbol referred to by the reloc.  */
-  symval = symbol_value (abfd, misc->symtab_hdr, misc->isymbuf, irel);
+  /* Get the value of the symbol referred to by the reloc: */
+  symval = symbol_value(abfd, misc->symtab_hdr, misc->isymbuf, irel);
   if (symval == UNDEFINED_SYMBOL)
     /* This appears to be a reference to an undefined
        symbol.  Just ignore it--it will be caught by the
@@ -537,8 +534,8 @@ ip2k_test_page_insn (bfd *abfd ATTRIBUTE_UNUSED,
     return FALSE;
 
   /* Test if we can delete this page instruction.  */
-  if (PAGENO (symval + irel->r_addend) !=
-      ip2k_nominal_page_bits (abfd, sec, irel->r_offset, misc->contents))
+  if (PAGENO(symval + irel->r_addend) !=
+      ip2k_nominal_page_bits(abfd, sec, irel->r_offset, misc->contents))
     return FALSE;
 
   return TRUE;
@@ -795,53 +792,49 @@ ip2k_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
   return TRUE;
 }
 
+/* */
 static bfd_boolean
-ip2k_delete_page_insn (bfd *abfd ATTRIBUTE_UNUSED,
-		       asection *sec,
-		       Elf_Internal_Rela *irel,
-		       bfd_boolean *again,
-		       struct misc *misc)
+ip2k_delete_page_insn(bfd *abfd, asection *sec, Elf_Internal_Rela *irel,
+		      bfd_boolean *again, struct misc *misc)
 {
-  /* Note that we've changed the relocs, section contents, etc.  */
-  elf_section_data (sec)->relocs = misc->irelbase;
-  elf_section_data (sec)->this_hdr.contents = misc->contents;
-  misc->symtab_hdr->contents = (bfd_byte *) misc->isymbuf;
+  /* Note that we have changed the relocs, section contents, and so on:  */
+  elf_section_data(sec)->relocs = misc->irelbase;
+  elf_section_data(sec)->this_hdr.contents = misc->contents;
+  misc->symtab_hdr->contents = (bfd_byte *)misc->isymbuf;
 
-  /* Fix the relocation's type.  */
-  irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info), R_IP2K_NONE);
+  /* Fix the relocation's type: */
+  irel->r_info = ELF32_R_INFO(ELF32_R_SYM(irel->r_info), R_IP2K_NONE);
 
   /* Delete the PAGE insn.  */
-  if (!ip2k_elf_relax_delete_bytes (abfd, sec, irel->r_offset, 2))
+  if (!ip2k_elf_relax_delete_bytes(abfd, sec, irel->r_offset, 2))
     return FALSE;
 
-  /* Modified => will need to iterate relaxation again.  */
+  /* Modified => will need to iterate relaxation again: */
   *again = TRUE;
 
   return TRUE;
 }
 
+/* */
 static bfd_boolean
-ip2k_relax_switch_table_128 (bfd *abfd ATTRIBUTE_UNUSED,
-			     asection *sec,
-			     Elf_Internal_Rela *irel,
-			     bfd_boolean *again,
-			     struct misc *misc)
+ip2k_relax_switch_table_128(bfd *abfd, asection *sec, Elf_Internal_Rela *irel,
+			    bfd_boolean *again, struct misc *misc)
 {
-  Elf_Internal_Rela *irelend = misc->irelbase + sec->reloc_count;
+  Elf_Internal_Rela *irelend = (misc->irelbase + sec->reloc_count);
   Elf_Internal_Rela *ireltest = irel;
   bfd_byte code[4];
   bfd_vma addr;
 
-  /* Test all page instructions.  */
+  /* Test all page instructions: */
   addr = irel->r_offset;
   while (1)
     {
-      if (addr + 4 > sec->size)
+      if ((addr + 4) > sec->size)
 	break;
 
-      ip2k_get_mem (abfd, misc->contents + addr, 4, code);
-      if ((! IS_PAGE_OPCODE (code + 0))
-	  || (! IS_JMP_OPCODE (code + 2)))
+      ip2k_get_mem(abfd, (misc->contents + addr), 4, code);
+      if ((!IS_PAGE_OPCODE(code + 0))
+	  || (!IS_JMP_OPCODE(code + 2)))
 	break;
 
       /* Validate relocation entry (every entry should have a matching
@@ -891,30 +884,28 @@ ip2k_relax_switch_table_128 (bfd *abfd ATTRIBUTE_UNUSED,
   return TRUE;
 }
 
+/* */
 static bfd_boolean
-ip2k_relax_switch_table_256 (bfd *abfd ATTRIBUTE_UNUSED,
-			     asection *sec,
-			     Elf_Internal_Rela *irel,
-			     bfd_boolean *again,
-			     struct misc *misc)
+ip2k_relax_switch_table_256(bfd *abfd, asection *sec, Elf_Internal_Rela *irel,
+			    bfd_boolean *again, struct misc *misc)
 {
-  Elf_Internal_Rela *irelend = misc->irelbase + sec->reloc_count;
+  Elf_Internal_Rela *irelend = (misc->irelbase + sec->reloc_count);
   Elf_Internal_Rela *ireltest = irel;
   bfd_byte code[12];
   bfd_vma addr;
 
-  /* Test all page instructions.  */
+  /* Test all page instructions: */
   addr = irel->r_offset;
 
   while (1)
     {
-      if (addr + 4 > sec->size)
+      if ((addr + 4) > sec->size)
 	break;
 
-      ip2k_get_mem (abfd, misc->contents + addr, 4, code);
+      ip2k_get_mem(abfd, (misc->contents + addr), 4, code);
 
-      if ((! IS_PAGE_OPCODE (code + 0))
-	  || (! IS_JMP_OPCODE (code + 2)))
+      if ((!IS_PAGE_OPCODE(code + 0))
+	  || (!IS_JMP_OPCODE(code + 2)))
 	break;
 
       /* Validate relocation entry (every entry should have a matching

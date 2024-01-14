@@ -153,13 +153,9 @@ struct or32_consth
 static struct or32_consth *or32_consth_list;
 
 static bfd_reloc_status_type
-or32_elf_consth_reloc (bfd *abfd ATTRIBUTE_UNUSED,
-		       arelent *reloc_entry,
-		       asymbol *symbol,
-		       void * data,
-		       asection *input_section,
-		       bfd *output_bfd,
-		       const char **error_message ATTRIBUTE_UNUSED)
+or32_elf_consth_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+		      void *data, asection *input_section, bfd *output_bfd,
+		      const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_reloc_status_type ret;
   bfd_vma relocation;
@@ -183,7 +179,7 @@ or32_elf_consth_reloc (bfd *abfd ATTRIBUTE_UNUSED,
     return bfd_reloc_outofrange;
 
   /* Save the information, and let LO16 do the actual relocation: */
-  n = (struct or32_consth *)bfd_malloc(sizeof *n);
+  n = (struct or32_consth *)bfd_malloc(sizeof(*n));
   if (n == NULL)
     return bfd_reloc_outofrange;
   n->addr = (bfd_byte *) data + reloc_entry->address;

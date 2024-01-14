@@ -1362,7 +1362,7 @@ mn10300_elf_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	  return bfd_reloc_ok;
 	}
       /* Fall through.  */
-
+      ATTRIBUTE_FALLTHROUGH;
     default:
       return bfd_reloc_notsupported;
     }
