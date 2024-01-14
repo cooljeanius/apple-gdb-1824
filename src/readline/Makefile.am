@@ -98,13 +98,16 @@ GCC_HARDCODED_LINT_FLAGS = -ansi -Wall -Wshadow -Wpointer-arith \
 		 -Wmissing-declarations
 GCC_LINT_CFLAGS = $(XCCFLAGS) $(GCC_LINT_FLAGS) @CFLAGS@ @LOCAL_CFLAGS@
 
-.c.o:
-	${RM} $@
-	$(CC) -c $(CCFLAGS) $<
+@ifGNUmake@ifneq (.@OBJEXT@,.o)
+@ifGNUmake@.c.@OBJEXT@:
+@ifGNUmake@	$(AM_V_at)${RM} $@
+@ifGNUmake@	$(AM_V_CC)$(CC) -c $(CCFLAGS) $<
+@ifGNUmake@endif
 
 # The name of the main library target.
 LIBRARY_NAME = libreadline.a
 STATIC_LIBS = libreadline.a libhistory.a
+noinst_LIBRARIES = libreadline_am.a libhistory_am.a
 
 WCWIDTH_OBJ = @WCWIDTH_OBJ@
 
@@ -124,12 +127,20 @@ CSOURCES = $(srcdir)/readline.c $(srcdir)/funmap.c $(srcdir)/keymaps.c \
 	   $(srcdir)/realloc.c $(srcdir)/mbutil.c $(srcdir)/malloc.c \
 	   $(srcdir)/support/wcwidth.c
 
+libreadline_am_a_SOURCES = $(CSOURCES)
+libreadline_am_a_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+libreadline_am_a_CPPFLAGS = -I..
+
 # The header files for this library.
 HSOURCES = readline.h rldefs.h chardefs.h keymaps.h history.h histlib.h \
 	   posixstat.h posixdir.h posixjmp.h tilde.h rlconf.h rltty.h \
 	   ansi_stdlib.h tcap.h rlstdc.h xmalloc.h rlprivate.h rlshell.h \
 	   rltypedefs.h rlmbutil.h
 
+HISTSOURCES = history.c histexpand.c histfile.c histsearch.c \
+	  malloc.c realloc.c shell.c mbutil.c
+libhistory_am_a_SOURCES = $(HISTSOURCES)
+libhistory_am_a_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
 HISTOBJ = history.o histexpand.o histfile.o histsearch.o \
 	  malloc.o realloc.o shell.o mbutil.o
 TILDEOBJ = tilde.o
@@ -177,11 +188,12 @@ all: config.status $(TARGETS)
 everything: config.status all @MAINT@ examples
 
 static: $(STATIC_LIBS)
-	$(AM_V_at)for mylib in $(STATIC_LIBS); do \
-	  if test -e $${mylib}; then \
+	$(AM_V_at)for mylib in $(STATIC_LIBS) $(noinst_LIBRARIES); do \
+	  if test -e $${mylib} && test $${mylib} -nt Makefile; then \
 	    stat $${mylib}; \
 	  elif test -e Makefile; then \
-	    $(MAKE) $(AM_V_MFLAG) $${mylib}; \
+	    echo "$@ target: using '$${CCFLAGS}' for CCFLAGS for $${mylib}"; \
+	    $(MAKE) $(AM_V_MFLAG) $(MFLAGS) "CCFLAGS=$${CCFLAGS}" $${mylib}; \
 	  else \
 	    echo "unsure how to make $${mylib}"; \
 	  fi; \
@@ -199,30 +211,34 @@ libreadline.a: $(OBJECTS) $(HISTOBJ) $(TILDEOBJ) $(XMALLOCOBJ) ${LIBOBJDIR}compa
 	$(AM_V_at)if test -e $(srcdir)/realloc.o -a ! -e realloc.o; then \
 	  cp $(AM_V_v) $(srcdir)/realloc.o realloc.o; \
 	fi
-	$(AR) $(ARFLAGS) $@ $(OBJECTS)
-	-test -n "$(RANLIB)" && $(RANLIB) $@
+	$(AM_V_AR)$(AR) $(ARFLAGS) $@ $(OBJECTS)
+	$(AM_V_at)-test -n "$(RANLIB)" && $(RANLIB) $@
 
 libhistory.a: $(HISTOBJ) $(XMALLOCOBJ) ${LIBOBJDIR}malloc$U.o ${LIBOBJDIR}realloc$U.o @MAINT@ Makefile
 	$(AM_V_at)$(RM) $@
 	$(AM_V_at)test -e Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./malloc.o ./realloc.o
-	$(AR) $(ARFLAGS) $@ $(HISTOBJ) $(XMALLOCOBJ)
-	-test -n "$(RANLIB)" && $(RANLIB) $@
+	$(AM_V_AR)$(AR) $(ARFLAGS) $@ $(HISTOBJ) $(XMALLOCOBJ)
+	$(AM_V_at)-test -n "$(RANLIB)" && $(RANLIB) $@
 
 wcwidth.o: $(srcdir)/support/wcwidth.c
 	$(AM_V_at)$(RM) $@
-	$(CC) $(CCFLAGS) -c $(srcdir)/support/wcwidth.c
+	$(AM_V_CC)$(CC) $(CCFLAGS) -c $(srcdir)/support/wcwidth.c
 
 # Since tilde.c is shared between readline and bash, make sure we compile
 # it with the right flags when it is built as part of readline
 tilde.o: tilde.c
 	$(AM_V_at)rm -rf $@
-	$(CC) $(CCFLAGS) -DREADLINE_LIBRARY -c $(srcdir)/tilde.c
+	$(AM_V_CC)$(CC) $(CCFLAGS) -DREADLINE_LIBRARY -c $(srcdir)/tilde.c
 
 readline: $(OBJECTS) readline.h rldefs.h chardefs.h examples/rl.c ./libreadline.a
-	$(CC) $(CCFLAGS) -o $@ ./examples/rl.c ./libreadline.a ${TERMCAP_LIB}
+	$(AM_V_CCLD)$(CC) $(CCFLAGS) -o $@ ./examples/rl.c ./libreadline.a \
+	  ${TERMCAP_LIB}
 
 lint lint-local: force
-	$(MAKE) $(AM_V_MFLAG) $(MFLAGS) CCFLAGS='$(GCC_LINT_CFLAGS)' static
+	export CFLAGS='$(GCC_LINT_CFLAGS)'; \
+	export CCFLAGS='$(GCC_LINT_CFLAGS)'; \
+	$(MAKE) $(AM_V_MFLAG) $(MFLAGS) CCFLAGS='$(GCC_LINT_CFLAGS)' \
+	  CFLAGS='$(GCC_LINT_CFLAGS)' static
 .PHONY: lint lint-local
 
 am_Makefile am_makefile: config.status $(srcdir)/Makefile.in

@@ -28,6 +28,7 @@
 # GNU General Public License for more details.
 
 
+
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
     false; \
@@ -104,7 +105,7 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps =  \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_gnu_make.m4 \
 	$(top_srcdir)/m4/ax_check_page_aligned_malloc.m4 \
 	$(top_srcdir)/m4/ax_gcc_malloc_call.m4 \
 	$(top_srcdir)/m4/eealloc.m4 $(top_srcdir)/m4/inline.m4 \
@@ -129,6 +130,65 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/support/mkinstalldirs
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = Makefile_orig
 CONFIG_CLEAN_VPATH_FILES =
+LIBRARIES = $(noinst_LIBRARIES)
+AM_V_AR = $(am__v_AR_@AM_V@)
+am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
+am__v_AR_0 = @echo "  AR      " $@;
+am__v_AR_1 = 
+libhistory_am_a_AR = $(AR) $(ARFLAGS)
+libhistory_am_a_LIBADD =
+am__objects_1 = libhistory_am_a-history.$(OBJEXT) \
+	libhistory_am_a-histexpand.$(OBJEXT) \
+	libhistory_am_a-histfile.$(OBJEXT) \
+	libhistory_am_a-histsearch.$(OBJEXT) \
+	libhistory_am_a-malloc.$(OBJEXT) \
+	libhistory_am_a-realloc.$(OBJEXT) \
+	libhistory_am_a-shell.$(OBJEXT) \
+	libhistory_am_a-mbutil.$(OBJEXT)
+am_libhistory_am_a_OBJECTS = $(am__objects_1)
+libhistory_am_a_OBJECTS = $(am_libhistory_am_a_OBJECTS)
+libreadline_am_a_AR = $(AR) $(ARFLAGS)
+libreadline_am_a_LIBADD =
+am__dirstamp = $(am__leading_dot)dirstamp
+am__objects_2 = libreadline_am_a-readline.$(OBJEXT) \
+	libreadline_am_a-funmap.$(OBJEXT) \
+	libreadline_am_a-keymaps.$(OBJEXT) \
+	libreadline_am_a-vi_mode.$(OBJEXT) \
+	libreadline_am_a-parens.$(OBJEXT) \
+	libreadline_am_a-rltty.$(OBJEXT) \
+	libreadline_am_a-complete.$(OBJEXT) \
+	libreadline_am_a-bind.$(OBJEXT) \
+	libreadline_am_a-isearch.$(OBJEXT) \
+	libreadline_am_a-display.$(OBJEXT) \
+	libreadline_am_a-signals.$(OBJEXT) \
+	libreadline_am_a-emacs_keymap.$(OBJEXT) \
+	libreadline_am_a-vi_keymap.$(OBJEXT) \
+	libreadline_am_a-util.$(OBJEXT) \
+	libreadline_am_a-kill.$(OBJEXT) \
+	libreadline_am_a-undo.$(OBJEXT) \
+	libreadline_am_a-macro.$(OBJEXT) \
+	libreadline_am_a-input.$(OBJEXT) \
+	libreadline_am_a-callback.$(OBJEXT) \
+	libreadline_am_a-terminal.$(OBJEXT) \
+	libreadline_am_a-xmalloc.$(OBJEXT) \
+	libreadline_am_a-history.$(OBJEXT) \
+	libreadline_am_a-histsearch.$(OBJEXT) \
+	libreadline_am_a-histexpand.$(OBJEXT) \
+	libreadline_am_a-histfile.$(OBJEXT) \
+	libreadline_am_a-nls.$(OBJEXT) \
+	libreadline_am_a-search.$(OBJEXT) \
+	libreadline_am_a-shell.$(OBJEXT) \
+	libreadline_am_a-savestring.$(OBJEXT) \
+	libreadline_am_a-tilde.$(OBJEXT) \
+	libreadline_am_a-text.$(OBJEXT) \
+	libreadline_am_a-misc.$(OBJEXT) \
+	libreadline_am_a-compat.$(OBJEXT) \
+	libreadline_am_a-realloc.$(OBJEXT) \
+	libreadline_am_a-mbutil.$(OBJEXT) \
+	libreadline_am_a-malloc.$(OBJEXT) \
+	support/libreadline_am_a-wcwidth.$(OBJEXT)
+am_libreadline_am_a_OBJECTS = $(am__objects_2)
+libreadline_am_a_OBJECTS = $(am_libreadline_am_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -141,7 +201,78 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-SOURCES =
+DEFAULT_INCLUDES = -I.@am__isrc@
+depcomp = $(SHELL) $(top_srcdir)/support/depcomp
+am__maybe_remake_depfiles = depfiles
+am__depfiles_remade = ./$(DEPDIR)/libhistory_am_a-histexpand.Po \
+	./$(DEPDIR)/libhistory_am_a-histfile.Po \
+	./$(DEPDIR)/libhistory_am_a-history.Po \
+	./$(DEPDIR)/libhistory_am_a-histsearch.Po \
+	./$(DEPDIR)/libhistory_am_a-malloc.Po \
+	./$(DEPDIR)/libhistory_am_a-mbutil.Po \
+	./$(DEPDIR)/libhistory_am_a-realloc.Po \
+	./$(DEPDIR)/libhistory_am_a-shell.Po \
+	./$(DEPDIR)/libreadline_am_a-bind.Po \
+	./$(DEPDIR)/libreadline_am_a-callback.Po \
+	./$(DEPDIR)/libreadline_am_a-compat.Po \
+	./$(DEPDIR)/libreadline_am_a-complete.Po \
+	./$(DEPDIR)/libreadline_am_a-display.Po \
+	./$(DEPDIR)/libreadline_am_a-emacs_keymap.Po \
+	./$(DEPDIR)/libreadline_am_a-funmap.Po \
+	./$(DEPDIR)/libreadline_am_a-histexpand.Po \
+	./$(DEPDIR)/libreadline_am_a-histfile.Po \
+	./$(DEPDIR)/libreadline_am_a-history.Po \
+	./$(DEPDIR)/libreadline_am_a-histsearch.Po \
+	./$(DEPDIR)/libreadline_am_a-input.Po \
+	./$(DEPDIR)/libreadline_am_a-isearch.Po \
+	./$(DEPDIR)/libreadline_am_a-keymaps.Po \
+	./$(DEPDIR)/libreadline_am_a-kill.Po \
+	./$(DEPDIR)/libreadline_am_a-macro.Po \
+	./$(DEPDIR)/libreadline_am_a-malloc.Po \
+	./$(DEPDIR)/libreadline_am_a-mbutil.Po \
+	./$(DEPDIR)/libreadline_am_a-misc.Po \
+	./$(DEPDIR)/libreadline_am_a-nls.Po \
+	./$(DEPDIR)/libreadline_am_a-parens.Po \
+	./$(DEPDIR)/libreadline_am_a-readline.Po \
+	./$(DEPDIR)/libreadline_am_a-realloc.Po \
+	./$(DEPDIR)/libreadline_am_a-rltty.Po \
+	./$(DEPDIR)/libreadline_am_a-savestring.Po \
+	./$(DEPDIR)/libreadline_am_a-search.Po \
+	./$(DEPDIR)/libreadline_am_a-shell.Po \
+	./$(DEPDIR)/libreadline_am_a-signals.Po \
+	./$(DEPDIR)/libreadline_am_a-terminal.Po \
+	./$(DEPDIR)/libreadline_am_a-text.Po \
+	./$(DEPDIR)/libreadline_am_a-tilde.Po \
+	./$(DEPDIR)/libreadline_am_a-undo.Po \
+	./$(DEPDIR)/libreadline_am_a-util.Po \
+	./$(DEPDIR)/libreadline_am_a-vi_keymap.Po \
+	./$(DEPDIR)/libreadline_am_a-vi_mode.Po \
+	./$(DEPDIR)/libreadline_am_a-xmalloc.Po \
+	support/$(DEPDIR)/libreadline_am_a-wcwidth.Po
+am__mv = mv -f
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
+SOURCES = $(libhistory_am_a_SOURCES) $(libreadline_am_a_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -293,6 +424,7 @@ GNULIB_UNSETENV = @GNULIB_UNSETENV@
 GNULIB_WCTOMB = @GNULIB_WCTOMB@
 GNULIB__EXIT = @GNULIB__EXIT@
 GREP = @GREP@
+GTOGGLE = @GTOGGLE@
 HAVE_ATOLL = @HAVE_ATOLL@
 HAVE_CANONICALIZE_FILE_NAME = @HAVE_CANONICALIZE_FILE_NAME@
 HAVE_DECL_GETLOADAVG = @HAVE_DECL_GETLOADAVG@
@@ -448,6 +580,8 @@ host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
 htmldir = @htmldir@
+ifGNUmake = @ifGNUmake@
+ifnGNUmake = @ifnGNUmake@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
@@ -518,6 +652,7 @@ GCC_LINT_CFLAGS = $(XCCFLAGS) $(GCC_LINT_FLAGS) @CFLAGS@ @LOCAL_CFLAGS@
 # The name of the main library target.
 LIBRARY_NAME = libreadline.a
 STATIC_LIBS = libreadline.a libhistory.a
+noinst_LIBRARIES = libreadline_am.a libhistory_am.a
 
 # The C code source files for this library.
 CSOURCES = $(srcdir)/readline.c $(srcdir)/funmap.c $(srcdir)/keymaps.c \
@@ -535,6 +670,9 @@ CSOURCES = $(srcdir)/readline.c $(srcdir)/funmap.c $(srcdir)/keymaps.c \
 	   $(srcdir)/realloc.c $(srcdir)/mbutil.c $(srcdir)/malloc.c \
 	   $(srcdir)/support/wcwidth.c
 
+libreadline_am_a_SOURCES = $(CSOURCES)
+libreadline_am_a_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+libreadline_am_a_CPPFLAGS = -I..
 
 # The header files for this library.
 HSOURCES = readline.h rldefs.h chardefs.h keymaps.h history.h histlib.h \
@@ -542,6 +680,11 @@ HSOURCES = readline.h rldefs.h chardefs.h keymaps.h history.h histlib.h \
 	   ansi_stdlib.h tcap.h rlstdc.h xmalloc.h rlprivate.h rlshell.h \
 	   rltypedefs.h rlmbutil.h
 
+HISTSOURCES = history.c histexpand.c histfile.c histsearch.c \
+	  malloc.c realloc.c shell.c mbutil.c
+
+libhistory_am_a_SOURCES = $(HISTSOURCES)
+libhistory_am_a_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
 HISTOBJ = history.o histexpand.o histfile.o histsearch.o \
 	  malloc.o realloc.o shell.o mbutil.o
 
@@ -596,7 +739,7 @@ all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .c .o
+.SUFFIXES: .c .lo .o .obj
 am--refresh: Makefile
 	@:
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
@@ -647,6 +790,740 @@ distclean-hdr:
 	-rm -f config.h stamp-h1
 Makefile_orig: $(top_builddir)/config.status $(srcdir)/Makefile_orig.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
+
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+
+libhistory_am.a: $(libhistory_am_a_OBJECTS) $(libhistory_am_a_DEPENDENCIES) $(EXTRA_libhistory_am_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libhistory_am.a
+	$(AM_V_AR)$(libhistory_am_a_AR) libhistory_am.a $(libhistory_am_a_OBJECTS) $(libhistory_am_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libhistory_am.a
+support/$(am__dirstamp):
+	@$(MKDIR_P) support
+	@: > support/$(am__dirstamp)
+support/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) support/$(DEPDIR)
+	@: > support/$(DEPDIR)/$(am__dirstamp)
+support/libreadline_am_a-wcwidth.$(OBJEXT): support/$(am__dirstamp) \
+	support/$(DEPDIR)/$(am__dirstamp)
+
+libreadline_am.a: $(libreadline_am_a_OBJECTS) $(libreadline_am_a_DEPENDENCIES) $(EXTRA_libreadline_am_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libreadline_am.a
+	$(AM_V_AR)$(libreadline_am_a_AR) libreadline_am.a $(libreadline_am_a_OBJECTS) $(libreadline_am_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libreadline_am.a
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
+	-rm -f support/*.$(OBJEXT)
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_am_a-histexpand.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_am_a-histfile.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_am_a-history.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_am_a-histsearch.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_am_a-malloc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_am_a-mbutil.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_am_a-realloc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhistory_am_a-shell.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-bind.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-callback.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-compat.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-complete.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-display.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-emacs_keymap.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-funmap.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-histexpand.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-histfile.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-history.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-histsearch.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-input.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-isearch.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-keymaps.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-kill.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-macro.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-malloc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-mbutil.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-misc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-nls.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-parens.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-readline.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-realloc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-rltty.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-savestring.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-search.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-shell.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-signals.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-terminal.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-text.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-tilde.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-undo.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-util.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-vi_keymap.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-vi_mode.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libreadline_am_a-xmalloc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@support/$(DEPDIR)/libreadline_am_a-wcwidth.Po@am__quote@ # am--include-marker
+
+$(am__depfiles_remade):
+	@$(MKDIR_P) $(@D)
+	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
+
+am--depfiles: $(am__depfiles_remade)
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+libhistory_am_a-history.o: history.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-history.o -MD -MP -MF $(DEPDIR)/libhistory_am_a-history.Tpo -c -o libhistory_am_a-history.o `test -f 'history.c' || echo '$(srcdir)/'`history.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-history.Tpo $(DEPDIR)/libhistory_am_a-history.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='history.c' object='libhistory_am_a-history.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-history.o `test -f 'history.c' || echo '$(srcdir)/'`history.c
+
+libhistory_am_a-history.obj: history.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-history.obj -MD -MP -MF $(DEPDIR)/libhistory_am_a-history.Tpo -c -o libhistory_am_a-history.obj `if test -f 'history.c'; then $(CYGPATH_W) 'history.c'; else $(CYGPATH_W) '$(srcdir)/history.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-history.Tpo $(DEPDIR)/libhistory_am_a-history.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='history.c' object='libhistory_am_a-history.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-history.obj `if test -f 'history.c'; then $(CYGPATH_W) 'history.c'; else $(CYGPATH_W) '$(srcdir)/history.c'; fi`
+
+libhistory_am_a-histexpand.o: histexpand.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-histexpand.o -MD -MP -MF $(DEPDIR)/libhistory_am_a-histexpand.Tpo -c -o libhistory_am_a-histexpand.o `test -f 'histexpand.c' || echo '$(srcdir)/'`histexpand.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-histexpand.Tpo $(DEPDIR)/libhistory_am_a-histexpand.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histexpand.c' object='libhistory_am_a-histexpand.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-histexpand.o `test -f 'histexpand.c' || echo '$(srcdir)/'`histexpand.c
+
+libhistory_am_a-histexpand.obj: histexpand.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-histexpand.obj -MD -MP -MF $(DEPDIR)/libhistory_am_a-histexpand.Tpo -c -o libhistory_am_a-histexpand.obj `if test -f 'histexpand.c'; then $(CYGPATH_W) 'histexpand.c'; else $(CYGPATH_W) '$(srcdir)/histexpand.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-histexpand.Tpo $(DEPDIR)/libhistory_am_a-histexpand.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histexpand.c' object='libhistory_am_a-histexpand.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-histexpand.obj `if test -f 'histexpand.c'; then $(CYGPATH_W) 'histexpand.c'; else $(CYGPATH_W) '$(srcdir)/histexpand.c'; fi`
+
+libhistory_am_a-histfile.o: histfile.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-histfile.o -MD -MP -MF $(DEPDIR)/libhistory_am_a-histfile.Tpo -c -o libhistory_am_a-histfile.o `test -f 'histfile.c' || echo '$(srcdir)/'`histfile.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-histfile.Tpo $(DEPDIR)/libhistory_am_a-histfile.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histfile.c' object='libhistory_am_a-histfile.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-histfile.o `test -f 'histfile.c' || echo '$(srcdir)/'`histfile.c
+
+libhistory_am_a-histfile.obj: histfile.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-histfile.obj -MD -MP -MF $(DEPDIR)/libhistory_am_a-histfile.Tpo -c -o libhistory_am_a-histfile.obj `if test -f 'histfile.c'; then $(CYGPATH_W) 'histfile.c'; else $(CYGPATH_W) '$(srcdir)/histfile.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-histfile.Tpo $(DEPDIR)/libhistory_am_a-histfile.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histfile.c' object='libhistory_am_a-histfile.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-histfile.obj `if test -f 'histfile.c'; then $(CYGPATH_W) 'histfile.c'; else $(CYGPATH_W) '$(srcdir)/histfile.c'; fi`
+
+libhistory_am_a-histsearch.o: histsearch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-histsearch.o -MD -MP -MF $(DEPDIR)/libhistory_am_a-histsearch.Tpo -c -o libhistory_am_a-histsearch.o `test -f 'histsearch.c' || echo '$(srcdir)/'`histsearch.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-histsearch.Tpo $(DEPDIR)/libhistory_am_a-histsearch.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histsearch.c' object='libhistory_am_a-histsearch.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-histsearch.o `test -f 'histsearch.c' || echo '$(srcdir)/'`histsearch.c
+
+libhistory_am_a-histsearch.obj: histsearch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-histsearch.obj -MD -MP -MF $(DEPDIR)/libhistory_am_a-histsearch.Tpo -c -o libhistory_am_a-histsearch.obj `if test -f 'histsearch.c'; then $(CYGPATH_W) 'histsearch.c'; else $(CYGPATH_W) '$(srcdir)/histsearch.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-histsearch.Tpo $(DEPDIR)/libhistory_am_a-histsearch.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histsearch.c' object='libhistory_am_a-histsearch.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-histsearch.obj `if test -f 'histsearch.c'; then $(CYGPATH_W) 'histsearch.c'; else $(CYGPATH_W) '$(srcdir)/histsearch.c'; fi`
+
+libhistory_am_a-malloc.o: malloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-malloc.o -MD -MP -MF $(DEPDIR)/libhistory_am_a-malloc.Tpo -c -o libhistory_am_a-malloc.o `test -f 'malloc.c' || echo '$(srcdir)/'`malloc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-malloc.Tpo $(DEPDIR)/libhistory_am_a-malloc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='malloc.c' object='libhistory_am_a-malloc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-malloc.o `test -f 'malloc.c' || echo '$(srcdir)/'`malloc.c
+
+libhistory_am_a-malloc.obj: malloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-malloc.obj -MD -MP -MF $(DEPDIR)/libhistory_am_a-malloc.Tpo -c -o libhistory_am_a-malloc.obj `if test -f 'malloc.c'; then $(CYGPATH_W) 'malloc.c'; else $(CYGPATH_W) '$(srcdir)/malloc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-malloc.Tpo $(DEPDIR)/libhistory_am_a-malloc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='malloc.c' object='libhistory_am_a-malloc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-malloc.obj `if test -f 'malloc.c'; then $(CYGPATH_W) 'malloc.c'; else $(CYGPATH_W) '$(srcdir)/malloc.c'; fi`
+
+libhistory_am_a-realloc.o: realloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-realloc.o -MD -MP -MF $(DEPDIR)/libhistory_am_a-realloc.Tpo -c -o libhistory_am_a-realloc.o `test -f 'realloc.c' || echo '$(srcdir)/'`realloc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-realloc.Tpo $(DEPDIR)/libhistory_am_a-realloc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='realloc.c' object='libhistory_am_a-realloc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-realloc.o `test -f 'realloc.c' || echo '$(srcdir)/'`realloc.c
+
+libhistory_am_a-realloc.obj: realloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-realloc.obj -MD -MP -MF $(DEPDIR)/libhistory_am_a-realloc.Tpo -c -o libhistory_am_a-realloc.obj `if test -f 'realloc.c'; then $(CYGPATH_W) 'realloc.c'; else $(CYGPATH_W) '$(srcdir)/realloc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-realloc.Tpo $(DEPDIR)/libhistory_am_a-realloc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='realloc.c' object='libhistory_am_a-realloc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-realloc.obj `if test -f 'realloc.c'; then $(CYGPATH_W) 'realloc.c'; else $(CYGPATH_W) '$(srcdir)/realloc.c'; fi`
+
+libhistory_am_a-shell.o: shell.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-shell.o -MD -MP -MF $(DEPDIR)/libhistory_am_a-shell.Tpo -c -o libhistory_am_a-shell.o `test -f 'shell.c' || echo '$(srcdir)/'`shell.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-shell.Tpo $(DEPDIR)/libhistory_am_a-shell.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='shell.c' object='libhistory_am_a-shell.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-shell.o `test -f 'shell.c' || echo '$(srcdir)/'`shell.c
+
+libhistory_am_a-shell.obj: shell.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-shell.obj -MD -MP -MF $(DEPDIR)/libhistory_am_a-shell.Tpo -c -o libhistory_am_a-shell.obj `if test -f 'shell.c'; then $(CYGPATH_W) 'shell.c'; else $(CYGPATH_W) '$(srcdir)/shell.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-shell.Tpo $(DEPDIR)/libhistory_am_a-shell.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='shell.c' object='libhistory_am_a-shell.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-shell.obj `if test -f 'shell.c'; then $(CYGPATH_W) 'shell.c'; else $(CYGPATH_W) '$(srcdir)/shell.c'; fi`
+
+libhistory_am_a-mbutil.o: mbutil.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-mbutil.o -MD -MP -MF $(DEPDIR)/libhistory_am_a-mbutil.Tpo -c -o libhistory_am_a-mbutil.o `test -f 'mbutil.c' || echo '$(srcdir)/'`mbutil.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-mbutil.Tpo $(DEPDIR)/libhistory_am_a-mbutil.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mbutil.c' object='libhistory_am_a-mbutil.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-mbutil.o `test -f 'mbutil.c' || echo '$(srcdir)/'`mbutil.c
+
+libhistory_am_a-mbutil.obj: mbutil.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -MT libhistory_am_a-mbutil.obj -MD -MP -MF $(DEPDIR)/libhistory_am_a-mbutil.Tpo -c -o libhistory_am_a-mbutil.obj `if test -f 'mbutil.c'; then $(CYGPATH_W) 'mbutil.c'; else $(CYGPATH_W) '$(srcdir)/mbutil.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libhistory_am_a-mbutil.Tpo $(DEPDIR)/libhistory_am_a-mbutil.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mbutil.c' object='libhistory_am_a-mbutil.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libhistory_am_a_CFLAGS) $(CFLAGS) -c -o libhistory_am_a-mbutil.obj `if test -f 'mbutil.c'; then $(CYGPATH_W) 'mbutil.c'; else $(CYGPATH_W) '$(srcdir)/mbutil.c'; fi`
+
+libreadline_am_a-readline.o: readline.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-readline.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-readline.Tpo -c -o libreadline_am_a-readline.o `test -f 'readline.c' || echo '$(srcdir)/'`readline.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-readline.Tpo $(DEPDIR)/libreadline_am_a-readline.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='readline.c' object='libreadline_am_a-readline.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-readline.o `test -f 'readline.c' || echo '$(srcdir)/'`readline.c
+
+libreadline_am_a-readline.obj: readline.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-readline.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-readline.Tpo -c -o libreadline_am_a-readline.obj `if test -f 'readline.c'; then $(CYGPATH_W) 'readline.c'; else $(CYGPATH_W) '$(srcdir)/readline.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-readline.Tpo $(DEPDIR)/libreadline_am_a-readline.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='readline.c' object='libreadline_am_a-readline.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-readline.obj `if test -f 'readline.c'; then $(CYGPATH_W) 'readline.c'; else $(CYGPATH_W) '$(srcdir)/readline.c'; fi`
+
+libreadline_am_a-funmap.o: funmap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-funmap.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-funmap.Tpo -c -o libreadline_am_a-funmap.o `test -f 'funmap.c' || echo '$(srcdir)/'`funmap.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-funmap.Tpo $(DEPDIR)/libreadline_am_a-funmap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='funmap.c' object='libreadline_am_a-funmap.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-funmap.o `test -f 'funmap.c' || echo '$(srcdir)/'`funmap.c
+
+libreadline_am_a-funmap.obj: funmap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-funmap.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-funmap.Tpo -c -o libreadline_am_a-funmap.obj `if test -f 'funmap.c'; then $(CYGPATH_W) 'funmap.c'; else $(CYGPATH_W) '$(srcdir)/funmap.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-funmap.Tpo $(DEPDIR)/libreadline_am_a-funmap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='funmap.c' object='libreadline_am_a-funmap.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-funmap.obj `if test -f 'funmap.c'; then $(CYGPATH_W) 'funmap.c'; else $(CYGPATH_W) '$(srcdir)/funmap.c'; fi`
+
+libreadline_am_a-keymaps.o: keymaps.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-keymaps.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-keymaps.Tpo -c -o libreadline_am_a-keymaps.o `test -f 'keymaps.c' || echo '$(srcdir)/'`keymaps.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-keymaps.Tpo $(DEPDIR)/libreadline_am_a-keymaps.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='keymaps.c' object='libreadline_am_a-keymaps.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-keymaps.o `test -f 'keymaps.c' || echo '$(srcdir)/'`keymaps.c
+
+libreadline_am_a-keymaps.obj: keymaps.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-keymaps.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-keymaps.Tpo -c -o libreadline_am_a-keymaps.obj `if test -f 'keymaps.c'; then $(CYGPATH_W) 'keymaps.c'; else $(CYGPATH_W) '$(srcdir)/keymaps.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-keymaps.Tpo $(DEPDIR)/libreadline_am_a-keymaps.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='keymaps.c' object='libreadline_am_a-keymaps.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-keymaps.obj `if test -f 'keymaps.c'; then $(CYGPATH_W) 'keymaps.c'; else $(CYGPATH_W) '$(srcdir)/keymaps.c'; fi`
+
+libreadline_am_a-vi_mode.o: vi_mode.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-vi_mode.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-vi_mode.Tpo -c -o libreadline_am_a-vi_mode.o `test -f 'vi_mode.c' || echo '$(srcdir)/'`vi_mode.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-vi_mode.Tpo $(DEPDIR)/libreadline_am_a-vi_mode.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vi_mode.c' object='libreadline_am_a-vi_mode.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-vi_mode.o `test -f 'vi_mode.c' || echo '$(srcdir)/'`vi_mode.c
+
+libreadline_am_a-vi_mode.obj: vi_mode.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-vi_mode.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-vi_mode.Tpo -c -o libreadline_am_a-vi_mode.obj `if test -f 'vi_mode.c'; then $(CYGPATH_W) 'vi_mode.c'; else $(CYGPATH_W) '$(srcdir)/vi_mode.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-vi_mode.Tpo $(DEPDIR)/libreadline_am_a-vi_mode.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vi_mode.c' object='libreadline_am_a-vi_mode.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-vi_mode.obj `if test -f 'vi_mode.c'; then $(CYGPATH_W) 'vi_mode.c'; else $(CYGPATH_W) '$(srcdir)/vi_mode.c'; fi`
+
+libreadline_am_a-parens.o: parens.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-parens.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-parens.Tpo -c -o libreadline_am_a-parens.o `test -f 'parens.c' || echo '$(srcdir)/'`parens.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-parens.Tpo $(DEPDIR)/libreadline_am_a-parens.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parens.c' object='libreadline_am_a-parens.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-parens.o `test -f 'parens.c' || echo '$(srcdir)/'`parens.c
+
+libreadline_am_a-parens.obj: parens.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-parens.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-parens.Tpo -c -o libreadline_am_a-parens.obj `if test -f 'parens.c'; then $(CYGPATH_W) 'parens.c'; else $(CYGPATH_W) '$(srcdir)/parens.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-parens.Tpo $(DEPDIR)/libreadline_am_a-parens.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parens.c' object='libreadline_am_a-parens.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-parens.obj `if test -f 'parens.c'; then $(CYGPATH_W) 'parens.c'; else $(CYGPATH_W) '$(srcdir)/parens.c'; fi`
+
+libreadline_am_a-rltty.o: rltty.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-rltty.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-rltty.Tpo -c -o libreadline_am_a-rltty.o `test -f 'rltty.c' || echo '$(srcdir)/'`rltty.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-rltty.Tpo $(DEPDIR)/libreadline_am_a-rltty.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rltty.c' object='libreadline_am_a-rltty.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-rltty.o `test -f 'rltty.c' || echo '$(srcdir)/'`rltty.c
+
+libreadline_am_a-rltty.obj: rltty.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-rltty.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-rltty.Tpo -c -o libreadline_am_a-rltty.obj `if test -f 'rltty.c'; then $(CYGPATH_W) 'rltty.c'; else $(CYGPATH_W) '$(srcdir)/rltty.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-rltty.Tpo $(DEPDIR)/libreadline_am_a-rltty.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rltty.c' object='libreadline_am_a-rltty.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-rltty.obj `if test -f 'rltty.c'; then $(CYGPATH_W) 'rltty.c'; else $(CYGPATH_W) '$(srcdir)/rltty.c'; fi`
+
+libreadline_am_a-complete.o: complete.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-complete.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-complete.Tpo -c -o libreadline_am_a-complete.o `test -f 'complete.c' || echo '$(srcdir)/'`complete.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-complete.Tpo $(DEPDIR)/libreadline_am_a-complete.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='complete.c' object='libreadline_am_a-complete.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-complete.o `test -f 'complete.c' || echo '$(srcdir)/'`complete.c
+
+libreadline_am_a-complete.obj: complete.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-complete.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-complete.Tpo -c -o libreadline_am_a-complete.obj `if test -f 'complete.c'; then $(CYGPATH_W) 'complete.c'; else $(CYGPATH_W) '$(srcdir)/complete.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-complete.Tpo $(DEPDIR)/libreadline_am_a-complete.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='complete.c' object='libreadline_am_a-complete.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-complete.obj `if test -f 'complete.c'; then $(CYGPATH_W) 'complete.c'; else $(CYGPATH_W) '$(srcdir)/complete.c'; fi`
+
+libreadline_am_a-bind.o: bind.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-bind.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-bind.Tpo -c -o libreadline_am_a-bind.o `test -f 'bind.c' || echo '$(srcdir)/'`bind.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-bind.Tpo $(DEPDIR)/libreadline_am_a-bind.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='bind.c' object='libreadline_am_a-bind.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-bind.o `test -f 'bind.c' || echo '$(srcdir)/'`bind.c
+
+libreadline_am_a-bind.obj: bind.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-bind.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-bind.Tpo -c -o libreadline_am_a-bind.obj `if test -f 'bind.c'; then $(CYGPATH_W) 'bind.c'; else $(CYGPATH_W) '$(srcdir)/bind.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-bind.Tpo $(DEPDIR)/libreadline_am_a-bind.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='bind.c' object='libreadline_am_a-bind.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-bind.obj `if test -f 'bind.c'; then $(CYGPATH_W) 'bind.c'; else $(CYGPATH_W) '$(srcdir)/bind.c'; fi`
+
+libreadline_am_a-isearch.o: isearch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-isearch.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-isearch.Tpo -c -o libreadline_am_a-isearch.o `test -f 'isearch.c' || echo '$(srcdir)/'`isearch.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-isearch.Tpo $(DEPDIR)/libreadline_am_a-isearch.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='isearch.c' object='libreadline_am_a-isearch.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-isearch.o `test -f 'isearch.c' || echo '$(srcdir)/'`isearch.c
+
+libreadline_am_a-isearch.obj: isearch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-isearch.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-isearch.Tpo -c -o libreadline_am_a-isearch.obj `if test -f 'isearch.c'; then $(CYGPATH_W) 'isearch.c'; else $(CYGPATH_W) '$(srcdir)/isearch.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-isearch.Tpo $(DEPDIR)/libreadline_am_a-isearch.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='isearch.c' object='libreadline_am_a-isearch.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-isearch.obj `if test -f 'isearch.c'; then $(CYGPATH_W) 'isearch.c'; else $(CYGPATH_W) '$(srcdir)/isearch.c'; fi`
+
+libreadline_am_a-display.o: display.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-display.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-display.Tpo -c -o libreadline_am_a-display.o `test -f 'display.c' || echo '$(srcdir)/'`display.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-display.Tpo $(DEPDIR)/libreadline_am_a-display.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='display.c' object='libreadline_am_a-display.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-display.o `test -f 'display.c' || echo '$(srcdir)/'`display.c
+
+libreadline_am_a-display.obj: display.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-display.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-display.Tpo -c -o libreadline_am_a-display.obj `if test -f 'display.c'; then $(CYGPATH_W) 'display.c'; else $(CYGPATH_W) '$(srcdir)/display.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-display.Tpo $(DEPDIR)/libreadline_am_a-display.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='display.c' object='libreadline_am_a-display.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-display.obj `if test -f 'display.c'; then $(CYGPATH_W) 'display.c'; else $(CYGPATH_W) '$(srcdir)/display.c'; fi`
+
+libreadline_am_a-signals.o: signals.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-signals.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-signals.Tpo -c -o libreadline_am_a-signals.o `test -f 'signals.c' || echo '$(srcdir)/'`signals.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-signals.Tpo $(DEPDIR)/libreadline_am_a-signals.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='signals.c' object='libreadline_am_a-signals.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-signals.o `test -f 'signals.c' || echo '$(srcdir)/'`signals.c
+
+libreadline_am_a-signals.obj: signals.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-signals.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-signals.Tpo -c -o libreadline_am_a-signals.obj `if test -f 'signals.c'; then $(CYGPATH_W) 'signals.c'; else $(CYGPATH_W) '$(srcdir)/signals.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-signals.Tpo $(DEPDIR)/libreadline_am_a-signals.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='signals.c' object='libreadline_am_a-signals.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-signals.obj `if test -f 'signals.c'; then $(CYGPATH_W) 'signals.c'; else $(CYGPATH_W) '$(srcdir)/signals.c'; fi`
+
+libreadline_am_a-emacs_keymap.o: emacs_keymap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-emacs_keymap.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-emacs_keymap.Tpo -c -o libreadline_am_a-emacs_keymap.o `test -f 'emacs_keymap.c' || echo '$(srcdir)/'`emacs_keymap.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-emacs_keymap.Tpo $(DEPDIR)/libreadline_am_a-emacs_keymap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='emacs_keymap.c' object='libreadline_am_a-emacs_keymap.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-emacs_keymap.o `test -f 'emacs_keymap.c' || echo '$(srcdir)/'`emacs_keymap.c
+
+libreadline_am_a-emacs_keymap.obj: emacs_keymap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-emacs_keymap.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-emacs_keymap.Tpo -c -o libreadline_am_a-emacs_keymap.obj `if test -f 'emacs_keymap.c'; then $(CYGPATH_W) 'emacs_keymap.c'; else $(CYGPATH_W) '$(srcdir)/emacs_keymap.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-emacs_keymap.Tpo $(DEPDIR)/libreadline_am_a-emacs_keymap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='emacs_keymap.c' object='libreadline_am_a-emacs_keymap.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-emacs_keymap.obj `if test -f 'emacs_keymap.c'; then $(CYGPATH_W) 'emacs_keymap.c'; else $(CYGPATH_W) '$(srcdir)/emacs_keymap.c'; fi`
+
+libreadline_am_a-vi_keymap.o: vi_keymap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-vi_keymap.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-vi_keymap.Tpo -c -o libreadline_am_a-vi_keymap.o `test -f 'vi_keymap.c' || echo '$(srcdir)/'`vi_keymap.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-vi_keymap.Tpo $(DEPDIR)/libreadline_am_a-vi_keymap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vi_keymap.c' object='libreadline_am_a-vi_keymap.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-vi_keymap.o `test -f 'vi_keymap.c' || echo '$(srcdir)/'`vi_keymap.c
+
+libreadline_am_a-vi_keymap.obj: vi_keymap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-vi_keymap.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-vi_keymap.Tpo -c -o libreadline_am_a-vi_keymap.obj `if test -f 'vi_keymap.c'; then $(CYGPATH_W) 'vi_keymap.c'; else $(CYGPATH_W) '$(srcdir)/vi_keymap.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-vi_keymap.Tpo $(DEPDIR)/libreadline_am_a-vi_keymap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vi_keymap.c' object='libreadline_am_a-vi_keymap.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-vi_keymap.obj `if test -f 'vi_keymap.c'; then $(CYGPATH_W) 'vi_keymap.c'; else $(CYGPATH_W) '$(srcdir)/vi_keymap.c'; fi`
+
+libreadline_am_a-util.o: util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-util.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-util.Tpo -c -o libreadline_am_a-util.o `test -f 'util.c' || echo '$(srcdir)/'`util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-util.Tpo $(DEPDIR)/libreadline_am_a-util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='util.c' object='libreadline_am_a-util.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-util.o `test -f 'util.c' || echo '$(srcdir)/'`util.c
+
+libreadline_am_a-util.obj: util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-util.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-util.Tpo -c -o libreadline_am_a-util.obj `if test -f 'util.c'; then $(CYGPATH_W) 'util.c'; else $(CYGPATH_W) '$(srcdir)/util.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-util.Tpo $(DEPDIR)/libreadline_am_a-util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='util.c' object='libreadline_am_a-util.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-util.obj `if test -f 'util.c'; then $(CYGPATH_W) 'util.c'; else $(CYGPATH_W) '$(srcdir)/util.c'; fi`
+
+libreadline_am_a-kill.o: kill.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-kill.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-kill.Tpo -c -o libreadline_am_a-kill.o `test -f 'kill.c' || echo '$(srcdir)/'`kill.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-kill.Tpo $(DEPDIR)/libreadline_am_a-kill.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kill.c' object='libreadline_am_a-kill.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-kill.o `test -f 'kill.c' || echo '$(srcdir)/'`kill.c
+
+libreadline_am_a-kill.obj: kill.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-kill.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-kill.Tpo -c -o libreadline_am_a-kill.obj `if test -f 'kill.c'; then $(CYGPATH_W) 'kill.c'; else $(CYGPATH_W) '$(srcdir)/kill.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-kill.Tpo $(DEPDIR)/libreadline_am_a-kill.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='kill.c' object='libreadline_am_a-kill.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-kill.obj `if test -f 'kill.c'; then $(CYGPATH_W) 'kill.c'; else $(CYGPATH_W) '$(srcdir)/kill.c'; fi`
+
+libreadline_am_a-undo.o: undo.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-undo.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-undo.Tpo -c -o libreadline_am_a-undo.o `test -f 'undo.c' || echo '$(srcdir)/'`undo.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-undo.Tpo $(DEPDIR)/libreadline_am_a-undo.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='undo.c' object='libreadline_am_a-undo.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-undo.o `test -f 'undo.c' || echo '$(srcdir)/'`undo.c
+
+libreadline_am_a-undo.obj: undo.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-undo.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-undo.Tpo -c -o libreadline_am_a-undo.obj `if test -f 'undo.c'; then $(CYGPATH_W) 'undo.c'; else $(CYGPATH_W) '$(srcdir)/undo.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-undo.Tpo $(DEPDIR)/libreadline_am_a-undo.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='undo.c' object='libreadline_am_a-undo.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-undo.obj `if test -f 'undo.c'; then $(CYGPATH_W) 'undo.c'; else $(CYGPATH_W) '$(srcdir)/undo.c'; fi`
+
+libreadline_am_a-macro.o: macro.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-macro.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-macro.Tpo -c -o libreadline_am_a-macro.o `test -f 'macro.c' || echo '$(srcdir)/'`macro.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-macro.Tpo $(DEPDIR)/libreadline_am_a-macro.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='macro.c' object='libreadline_am_a-macro.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-macro.o `test -f 'macro.c' || echo '$(srcdir)/'`macro.c
+
+libreadline_am_a-macro.obj: macro.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-macro.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-macro.Tpo -c -o libreadline_am_a-macro.obj `if test -f 'macro.c'; then $(CYGPATH_W) 'macro.c'; else $(CYGPATH_W) '$(srcdir)/macro.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-macro.Tpo $(DEPDIR)/libreadline_am_a-macro.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='macro.c' object='libreadline_am_a-macro.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-macro.obj `if test -f 'macro.c'; then $(CYGPATH_W) 'macro.c'; else $(CYGPATH_W) '$(srcdir)/macro.c'; fi`
+
+libreadline_am_a-input.o: input.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-input.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-input.Tpo -c -o libreadline_am_a-input.o `test -f 'input.c' || echo '$(srcdir)/'`input.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-input.Tpo $(DEPDIR)/libreadline_am_a-input.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='input.c' object='libreadline_am_a-input.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-input.o `test -f 'input.c' || echo '$(srcdir)/'`input.c
+
+libreadline_am_a-input.obj: input.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-input.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-input.Tpo -c -o libreadline_am_a-input.obj `if test -f 'input.c'; then $(CYGPATH_W) 'input.c'; else $(CYGPATH_W) '$(srcdir)/input.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-input.Tpo $(DEPDIR)/libreadline_am_a-input.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='input.c' object='libreadline_am_a-input.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-input.obj `if test -f 'input.c'; then $(CYGPATH_W) 'input.c'; else $(CYGPATH_W) '$(srcdir)/input.c'; fi`
+
+libreadline_am_a-callback.o: callback.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-callback.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-callback.Tpo -c -o libreadline_am_a-callback.o `test -f 'callback.c' || echo '$(srcdir)/'`callback.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-callback.Tpo $(DEPDIR)/libreadline_am_a-callback.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='callback.c' object='libreadline_am_a-callback.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-callback.o `test -f 'callback.c' || echo '$(srcdir)/'`callback.c
+
+libreadline_am_a-callback.obj: callback.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-callback.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-callback.Tpo -c -o libreadline_am_a-callback.obj `if test -f 'callback.c'; then $(CYGPATH_W) 'callback.c'; else $(CYGPATH_W) '$(srcdir)/callback.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-callback.Tpo $(DEPDIR)/libreadline_am_a-callback.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='callback.c' object='libreadline_am_a-callback.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-callback.obj `if test -f 'callback.c'; then $(CYGPATH_W) 'callback.c'; else $(CYGPATH_W) '$(srcdir)/callback.c'; fi`
+
+libreadline_am_a-terminal.o: terminal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-terminal.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-terminal.Tpo -c -o libreadline_am_a-terminal.o `test -f 'terminal.c' || echo '$(srcdir)/'`terminal.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-terminal.Tpo $(DEPDIR)/libreadline_am_a-terminal.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='terminal.c' object='libreadline_am_a-terminal.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-terminal.o `test -f 'terminal.c' || echo '$(srcdir)/'`terminal.c
+
+libreadline_am_a-terminal.obj: terminal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-terminal.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-terminal.Tpo -c -o libreadline_am_a-terminal.obj `if test -f 'terminal.c'; then $(CYGPATH_W) 'terminal.c'; else $(CYGPATH_W) '$(srcdir)/terminal.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-terminal.Tpo $(DEPDIR)/libreadline_am_a-terminal.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='terminal.c' object='libreadline_am_a-terminal.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-terminal.obj `if test -f 'terminal.c'; then $(CYGPATH_W) 'terminal.c'; else $(CYGPATH_W) '$(srcdir)/terminal.c'; fi`
+
+libreadline_am_a-xmalloc.o: xmalloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-xmalloc.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-xmalloc.Tpo -c -o libreadline_am_a-xmalloc.o `test -f 'xmalloc.c' || echo '$(srcdir)/'`xmalloc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-xmalloc.Tpo $(DEPDIR)/libreadline_am_a-xmalloc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xmalloc.c' object='libreadline_am_a-xmalloc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-xmalloc.o `test -f 'xmalloc.c' || echo '$(srcdir)/'`xmalloc.c
+
+libreadline_am_a-xmalloc.obj: xmalloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-xmalloc.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-xmalloc.Tpo -c -o libreadline_am_a-xmalloc.obj `if test -f 'xmalloc.c'; then $(CYGPATH_W) 'xmalloc.c'; else $(CYGPATH_W) '$(srcdir)/xmalloc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-xmalloc.Tpo $(DEPDIR)/libreadline_am_a-xmalloc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xmalloc.c' object='libreadline_am_a-xmalloc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-xmalloc.obj `if test -f 'xmalloc.c'; then $(CYGPATH_W) 'xmalloc.c'; else $(CYGPATH_W) '$(srcdir)/xmalloc.c'; fi`
+
+libreadline_am_a-history.o: history.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-history.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-history.Tpo -c -o libreadline_am_a-history.o `test -f 'history.c' || echo '$(srcdir)/'`history.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-history.Tpo $(DEPDIR)/libreadline_am_a-history.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='history.c' object='libreadline_am_a-history.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-history.o `test -f 'history.c' || echo '$(srcdir)/'`history.c
+
+libreadline_am_a-history.obj: history.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-history.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-history.Tpo -c -o libreadline_am_a-history.obj `if test -f 'history.c'; then $(CYGPATH_W) 'history.c'; else $(CYGPATH_W) '$(srcdir)/history.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-history.Tpo $(DEPDIR)/libreadline_am_a-history.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='history.c' object='libreadline_am_a-history.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-history.obj `if test -f 'history.c'; then $(CYGPATH_W) 'history.c'; else $(CYGPATH_W) '$(srcdir)/history.c'; fi`
+
+libreadline_am_a-histsearch.o: histsearch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-histsearch.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-histsearch.Tpo -c -o libreadline_am_a-histsearch.o `test -f 'histsearch.c' || echo '$(srcdir)/'`histsearch.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-histsearch.Tpo $(DEPDIR)/libreadline_am_a-histsearch.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histsearch.c' object='libreadline_am_a-histsearch.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-histsearch.o `test -f 'histsearch.c' || echo '$(srcdir)/'`histsearch.c
+
+libreadline_am_a-histsearch.obj: histsearch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-histsearch.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-histsearch.Tpo -c -o libreadline_am_a-histsearch.obj `if test -f 'histsearch.c'; then $(CYGPATH_W) 'histsearch.c'; else $(CYGPATH_W) '$(srcdir)/histsearch.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-histsearch.Tpo $(DEPDIR)/libreadline_am_a-histsearch.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histsearch.c' object='libreadline_am_a-histsearch.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-histsearch.obj `if test -f 'histsearch.c'; then $(CYGPATH_W) 'histsearch.c'; else $(CYGPATH_W) '$(srcdir)/histsearch.c'; fi`
+
+libreadline_am_a-histexpand.o: histexpand.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-histexpand.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-histexpand.Tpo -c -o libreadline_am_a-histexpand.o `test -f 'histexpand.c' || echo '$(srcdir)/'`histexpand.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-histexpand.Tpo $(DEPDIR)/libreadline_am_a-histexpand.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histexpand.c' object='libreadline_am_a-histexpand.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-histexpand.o `test -f 'histexpand.c' || echo '$(srcdir)/'`histexpand.c
+
+libreadline_am_a-histexpand.obj: histexpand.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-histexpand.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-histexpand.Tpo -c -o libreadline_am_a-histexpand.obj `if test -f 'histexpand.c'; then $(CYGPATH_W) 'histexpand.c'; else $(CYGPATH_W) '$(srcdir)/histexpand.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-histexpand.Tpo $(DEPDIR)/libreadline_am_a-histexpand.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histexpand.c' object='libreadline_am_a-histexpand.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-histexpand.obj `if test -f 'histexpand.c'; then $(CYGPATH_W) 'histexpand.c'; else $(CYGPATH_W) '$(srcdir)/histexpand.c'; fi`
+
+libreadline_am_a-histfile.o: histfile.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-histfile.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-histfile.Tpo -c -o libreadline_am_a-histfile.o `test -f 'histfile.c' || echo '$(srcdir)/'`histfile.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-histfile.Tpo $(DEPDIR)/libreadline_am_a-histfile.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histfile.c' object='libreadline_am_a-histfile.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-histfile.o `test -f 'histfile.c' || echo '$(srcdir)/'`histfile.c
+
+libreadline_am_a-histfile.obj: histfile.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-histfile.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-histfile.Tpo -c -o libreadline_am_a-histfile.obj `if test -f 'histfile.c'; then $(CYGPATH_W) 'histfile.c'; else $(CYGPATH_W) '$(srcdir)/histfile.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-histfile.Tpo $(DEPDIR)/libreadline_am_a-histfile.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='histfile.c' object='libreadline_am_a-histfile.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-histfile.obj `if test -f 'histfile.c'; then $(CYGPATH_W) 'histfile.c'; else $(CYGPATH_W) '$(srcdir)/histfile.c'; fi`
+
+libreadline_am_a-nls.o: nls.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-nls.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-nls.Tpo -c -o libreadline_am_a-nls.o `test -f 'nls.c' || echo '$(srcdir)/'`nls.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-nls.Tpo $(DEPDIR)/libreadline_am_a-nls.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='nls.c' object='libreadline_am_a-nls.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-nls.o `test -f 'nls.c' || echo '$(srcdir)/'`nls.c
+
+libreadline_am_a-nls.obj: nls.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-nls.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-nls.Tpo -c -o libreadline_am_a-nls.obj `if test -f 'nls.c'; then $(CYGPATH_W) 'nls.c'; else $(CYGPATH_W) '$(srcdir)/nls.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-nls.Tpo $(DEPDIR)/libreadline_am_a-nls.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='nls.c' object='libreadline_am_a-nls.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-nls.obj `if test -f 'nls.c'; then $(CYGPATH_W) 'nls.c'; else $(CYGPATH_W) '$(srcdir)/nls.c'; fi`
+
+libreadline_am_a-search.o: search.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-search.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-search.Tpo -c -o libreadline_am_a-search.o `test -f 'search.c' || echo '$(srcdir)/'`search.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-search.Tpo $(DEPDIR)/libreadline_am_a-search.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='search.c' object='libreadline_am_a-search.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-search.o `test -f 'search.c' || echo '$(srcdir)/'`search.c
+
+libreadline_am_a-search.obj: search.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-search.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-search.Tpo -c -o libreadline_am_a-search.obj `if test -f 'search.c'; then $(CYGPATH_W) 'search.c'; else $(CYGPATH_W) '$(srcdir)/search.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-search.Tpo $(DEPDIR)/libreadline_am_a-search.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='search.c' object='libreadline_am_a-search.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-search.obj `if test -f 'search.c'; then $(CYGPATH_W) 'search.c'; else $(CYGPATH_W) '$(srcdir)/search.c'; fi`
+
+libreadline_am_a-shell.o: shell.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-shell.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-shell.Tpo -c -o libreadline_am_a-shell.o `test -f 'shell.c' || echo '$(srcdir)/'`shell.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-shell.Tpo $(DEPDIR)/libreadline_am_a-shell.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='shell.c' object='libreadline_am_a-shell.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-shell.o `test -f 'shell.c' || echo '$(srcdir)/'`shell.c
+
+libreadline_am_a-shell.obj: shell.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-shell.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-shell.Tpo -c -o libreadline_am_a-shell.obj `if test -f 'shell.c'; then $(CYGPATH_W) 'shell.c'; else $(CYGPATH_W) '$(srcdir)/shell.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-shell.Tpo $(DEPDIR)/libreadline_am_a-shell.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='shell.c' object='libreadline_am_a-shell.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-shell.obj `if test -f 'shell.c'; then $(CYGPATH_W) 'shell.c'; else $(CYGPATH_W) '$(srcdir)/shell.c'; fi`
+
+libreadline_am_a-savestring.o: savestring.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-savestring.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-savestring.Tpo -c -o libreadline_am_a-savestring.o `test -f 'savestring.c' || echo '$(srcdir)/'`savestring.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-savestring.Tpo $(DEPDIR)/libreadline_am_a-savestring.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='savestring.c' object='libreadline_am_a-savestring.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-savestring.o `test -f 'savestring.c' || echo '$(srcdir)/'`savestring.c
+
+libreadline_am_a-savestring.obj: savestring.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-savestring.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-savestring.Tpo -c -o libreadline_am_a-savestring.obj `if test -f 'savestring.c'; then $(CYGPATH_W) 'savestring.c'; else $(CYGPATH_W) '$(srcdir)/savestring.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-savestring.Tpo $(DEPDIR)/libreadline_am_a-savestring.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='savestring.c' object='libreadline_am_a-savestring.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-savestring.obj `if test -f 'savestring.c'; then $(CYGPATH_W) 'savestring.c'; else $(CYGPATH_W) '$(srcdir)/savestring.c'; fi`
+
+libreadline_am_a-tilde.o: tilde.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-tilde.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-tilde.Tpo -c -o libreadline_am_a-tilde.o `test -f 'tilde.c' || echo '$(srcdir)/'`tilde.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-tilde.Tpo $(DEPDIR)/libreadline_am_a-tilde.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tilde.c' object='libreadline_am_a-tilde.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-tilde.o `test -f 'tilde.c' || echo '$(srcdir)/'`tilde.c
+
+libreadline_am_a-tilde.obj: tilde.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-tilde.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-tilde.Tpo -c -o libreadline_am_a-tilde.obj `if test -f 'tilde.c'; then $(CYGPATH_W) 'tilde.c'; else $(CYGPATH_W) '$(srcdir)/tilde.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-tilde.Tpo $(DEPDIR)/libreadline_am_a-tilde.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tilde.c' object='libreadline_am_a-tilde.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-tilde.obj `if test -f 'tilde.c'; then $(CYGPATH_W) 'tilde.c'; else $(CYGPATH_W) '$(srcdir)/tilde.c'; fi`
+
+libreadline_am_a-text.o: text.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-text.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-text.Tpo -c -o libreadline_am_a-text.o `test -f 'text.c' || echo '$(srcdir)/'`text.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-text.Tpo $(DEPDIR)/libreadline_am_a-text.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='text.c' object='libreadline_am_a-text.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-text.o `test -f 'text.c' || echo '$(srcdir)/'`text.c
+
+libreadline_am_a-text.obj: text.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-text.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-text.Tpo -c -o libreadline_am_a-text.obj `if test -f 'text.c'; then $(CYGPATH_W) 'text.c'; else $(CYGPATH_W) '$(srcdir)/text.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-text.Tpo $(DEPDIR)/libreadline_am_a-text.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='text.c' object='libreadline_am_a-text.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-text.obj `if test -f 'text.c'; then $(CYGPATH_W) 'text.c'; else $(CYGPATH_W) '$(srcdir)/text.c'; fi`
+
+libreadline_am_a-misc.o: misc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-misc.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-misc.Tpo -c -o libreadline_am_a-misc.o `test -f 'misc.c' || echo '$(srcdir)/'`misc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-misc.Tpo $(DEPDIR)/libreadline_am_a-misc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='misc.c' object='libreadline_am_a-misc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-misc.o `test -f 'misc.c' || echo '$(srcdir)/'`misc.c
+
+libreadline_am_a-misc.obj: misc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-misc.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-misc.Tpo -c -o libreadline_am_a-misc.obj `if test -f 'misc.c'; then $(CYGPATH_W) 'misc.c'; else $(CYGPATH_W) '$(srcdir)/misc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-misc.Tpo $(DEPDIR)/libreadline_am_a-misc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='misc.c' object='libreadline_am_a-misc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-misc.obj `if test -f 'misc.c'; then $(CYGPATH_W) 'misc.c'; else $(CYGPATH_W) '$(srcdir)/misc.c'; fi`
+
+libreadline_am_a-compat.o: compat.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-compat.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-compat.Tpo -c -o libreadline_am_a-compat.o `test -f 'compat.c' || echo '$(srcdir)/'`compat.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-compat.Tpo $(DEPDIR)/libreadline_am_a-compat.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='compat.c' object='libreadline_am_a-compat.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-compat.o `test -f 'compat.c' || echo '$(srcdir)/'`compat.c
+
+libreadline_am_a-compat.obj: compat.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-compat.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-compat.Tpo -c -o libreadline_am_a-compat.obj `if test -f 'compat.c'; then $(CYGPATH_W) 'compat.c'; else $(CYGPATH_W) '$(srcdir)/compat.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-compat.Tpo $(DEPDIR)/libreadline_am_a-compat.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='compat.c' object='libreadline_am_a-compat.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-compat.obj `if test -f 'compat.c'; then $(CYGPATH_W) 'compat.c'; else $(CYGPATH_W) '$(srcdir)/compat.c'; fi`
+
+libreadline_am_a-realloc.o: realloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-realloc.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-realloc.Tpo -c -o libreadline_am_a-realloc.o `test -f 'realloc.c' || echo '$(srcdir)/'`realloc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-realloc.Tpo $(DEPDIR)/libreadline_am_a-realloc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='realloc.c' object='libreadline_am_a-realloc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-realloc.o `test -f 'realloc.c' || echo '$(srcdir)/'`realloc.c
+
+libreadline_am_a-realloc.obj: realloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-realloc.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-realloc.Tpo -c -o libreadline_am_a-realloc.obj `if test -f 'realloc.c'; then $(CYGPATH_W) 'realloc.c'; else $(CYGPATH_W) '$(srcdir)/realloc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-realloc.Tpo $(DEPDIR)/libreadline_am_a-realloc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='realloc.c' object='libreadline_am_a-realloc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-realloc.obj `if test -f 'realloc.c'; then $(CYGPATH_W) 'realloc.c'; else $(CYGPATH_W) '$(srcdir)/realloc.c'; fi`
+
+libreadline_am_a-mbutil.o: mbutil.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-mbutil.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-mbutil.Tpo -c -o libreadline_am_a-mbutil.o `test -f 'mbutil.c' || echo '$(srcdir)/'`mbutil.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-mbutil.Tpo $(DEPDIR)/libreadline_am_a-mbutil.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mbutil.c' object='libreadline_am_a-mbutil.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-mbutil.o `test -f 'mbutil.c' || echo '$(srcdir)/'`mbutil.c
+
+libreadline_am_a-mbutil.obj: mbutil.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-mbutil.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-mbutil.Tpo -c -o libreadline_am_a-mbutil.obj `if test -f 'mbutil.c'; then $(CYGPATH_W) 'mbutil.c'; else $(CYGPATH_W) '$(srcdir)/mbutil.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-mbutil.Tpo $(DEPDIR)/libreadline_am_a-mbutil.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mbutil.c' object='libreadline_am_a-mbutil.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-mbutil.obj `if test -f 'mbutil.c'; then $(CYGPATH_W) 'mbutil.c'; else $(CYGPATH_W) '$(srcdir)/mbutil.c'; fi`
+
+libreadline_am_a-malloc.o: malloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-malloc.o -MD -MP -MF $(DEPDIR)/libreadline_am_a-malloc.Tpo -c -o libreadline_am_a-malloc.o `test -f 'malloc.c' || echo '$(srcdir)/'`malloc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-malloc.Tpo $(DEPDIR)/libreadline_am_a-malloc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='malloc.c' object='libreadline_am_a-malloc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-malloc.o `test -f 'malloc.c' || echo '$(srcdir)/'`malloc.c
+
+libreadline_am_a-malloc.obj: malloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT libreadline_am_a-malloc.obj -MD -MP -MF $(DEPDIR)/libreadline_am_a-malloc.Tpo -c -o libreadline_am_a-malloc.obj `if test -f 'malloc.c'; then $(CYGPATH_W) 'malloc.c'; else $(CYGPATH_W) '$(srcdir)/malloc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libreadline_am_a-malloc.Tpo $(DEPDIR)/libreadline_am_a-malloc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='malloc.c' object='libreadline_am_a-malloc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o libreadline_am_a-malloc.obj `if test -f 'malloc.c'; then $(CYGPATH_W) 'malloc.c'; else $(CYGPATH_W) '$(srcdir)/malloc.c'; fi`
+
+support/libreadline_am_a-wcwidth.o: support/wcwidth.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT support/libreadline_am_a-wcwidth.o -MD -MP -MF support/$(DEPDIR)/libreadline_am_a-wcwidth.Tpo -c -o support/libreadline_am_a-wcwidth.o `test -f 'support/wcwidth.c' || echo '$(srcdir)/'`support/wcwidth.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) support/$(DEPDIR)/libreadline_am_a-wcwidth.Tpo support/$(DEPDIR)/libreadline_am_a-wcwidth.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='support/wcwidth.c' object='support/libreadline_am_a-wcwidth.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o support/libreadline_am_a-wcwidth.o `test -f 'support/wcwidth.c' || echo '$(srcdir)/'`support/wcwidth.c
+
+support/libreadline_am_a-wcwidth.obj: support/wcwidth.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -MT support/libreadline_am_a-wcwidth.obj -MD -MP -MF support/$(DEPDIR)/libreadline_am_a-wcwidth.Tpo -c -o support/libreadline_am_a-wcwidth.obj `if test -f 'support/wcwidth.c'; then $(CYGPATH_W) 'support/wcwidth.c'; else $(CYGPATH_W) '$(srcdir)/support/wcwidth.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) support/$(DEPDIR)/libreadline_am_a-wcwidth.Tpo support/$(DEPDIR)/libreadline_am_a-wcwidth.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='support/wcwidth.c' object='support/libreadline_am_a-wcwidth.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libreadline_am_a_CPPFLAGS) $(CPPFLAGS) $(libreadline_am_a_CFLAGS) $(CFLAGS) -c -o support/libreadline_am_a-wcwidth.obj `if test -f 'support/wcwidth.c'; then $(CYGPATH_W) 'support/wcwidth.c'; else $(CYGPATH_W) '$(srcdir)/support/wcwidth.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -851,7 +1728,7 @@ distclean-DEJAGNU:
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU
 check: check-recursive
-all-am: Makefile $(DATA) $(HEADERS) config.h
+all-am: Makefile $(LIBRARIES) $(DATA) $(HEADERS) config.h
 installdirs: installdirs-recursive
 installdirs-am: installdirs-local
 	for dir in "$(DESTDIR)$(INSTALLdir)" "$(DESTDIR)$(INSTALLEDdir)"; do \
@@ -884,6 +1761,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f support/$(DEPDIR)/$(am__dirstamp)
+	-rm -f support/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -891,13 +1770,60 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic clean-libtool clean-local mostlyclean-am
+clean-am: clean-generic clean-libtool clean-local \
+	clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
+		-rm -f ./$(DEPDIR)/libhistory_am_a-histexpand.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-histfile.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-history.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-histsearch.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-malloc.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-mbutil.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-realloc.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-shell.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-bind.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-callback.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-compat.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-complete.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-display.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-emacs_keymap.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-funmap.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-histexpand.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-histfile.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-history.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-histsearch.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-input.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-isearch.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-keymaps.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-kill.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-macro.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-malloc.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-mbutil.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-misc.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-nls.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-parens.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-readline.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-realloc.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-rltty.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-savestring.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-search.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-shell.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-signals.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-terminal.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-text.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-tilde.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-undo.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-util.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-vi_keymap.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-vi_mode.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-xmalloc.Po
+	-rm -f support/$(DEPDIR)/libreadline_am_a-wcwidth.Po
 	-rm -f Makefile
-distclean-am: clean-am distclean-DEJAGNU distclean-generic \
-	distclean-hdr distclean-libtool distclean-local distclean-tags
+distclean-am: clean-am distclean-DEJAGNU distclean-compile \
+	distclean-generic distclean-hdr distclean-libtool \
+	distclean-local distclean-tags
 
 dvi: dvi-recursive
 
@@ -942,14 +1868,59 @@ installcheck-am: installcheck-local
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
+		-rm -f ./$(DEPDIR)/libhistory_am_a-histexpand.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-histfile.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-history.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-histsearch.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-malloc.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-mbutil.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-realloc.Po
+	-rm -f ./$(DEPDIR)/libhistory_am_a-shell.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-bind.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-callback.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-compat.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-complete.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-display.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-emacs_keymap.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-funmap.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-histexpand.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-histfile.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-history.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-histsearch.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-input.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-isearch.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-keymaps.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-kill.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-macro.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-malloc.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-mbutil.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-misc.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-nls.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-parens.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-readline.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-realloc.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-rltty.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-savestring.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-search.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-shell.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-signals.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-terminal.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-text.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-tilde.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-undo.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-util.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-vi_keymap.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-vi_mode.Po
+	-rm -f ./$(DEPDIR)/libreadline_am_a-xmalloc.Po
+	-rm -f support/$(DEPDIR)/libreadline_am_a-wcwidth.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic \
 	maintainer-clean-local
 
 mostlyclean: mostlyclean-recursive
 
-mostlyclean-am: mostlyclean-generic mostlyclean-libtool \
-	mostlyclean-local
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool mostlyclean-local
 
 pdf: pdf-recursive
 
@@ -965,19 +1936,21 @@ uninstall-am: uninstall-INSTALLDATA uninstall-INSTALLEDHEADERS \
 .MAKE: $(am__recursive_targets) all check-am install-am install-strip
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
-	am--refresh check check-DEJAGNU check-am clean clean-cscope \
-	clean-generic clean-libtool clean-local cscope cscopelist-am \
-	ctags ctags-am distclean distclean-DEJAGNU distclean-generic \
-	distclean-hdr distclean-libtool distclean-local distclean-tags \
-	dvi dvi-am html html-am info info-am install \
-	install-INSTALLDATA install-INSTALLEDHEADERS install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-info-local install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installcheck-local \
-	installdirs installdirs-am installdirs-local maintainer-clean \
-	maintainer-clean-generic maintainer-clean-local mostlyclean \
+	am--depfiles am--refresh check check-DEJAGNU check-am clean \
+	clean-cscope clean-generic clean-libtool clean-local \
+	clean-noinstLIBRARIES cscope cscopelist-am ctags ctags-am \
+	distclean distclean-DEJAGNU distclean-compile \
+	distclean-generic distclean-hdr distclean-libtool \
+	distclean-local distclean-tags dvi dvi-am html html-am info \
+	info-am install install-INSTALLDATA install-INSTALLEDHEADERS \
+	install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
+	install-info-local install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installcheck-local installdirs installdirs-am \
+	installdirs-local maintainer-clean maintainer-clean-generic \
+	maintainer-clean-local mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool mostlyclean-local pdf \
 	pdf-am ps ps-am tags tags-am uninstall uninstall-INSTALLDATA \
 	uninstall-INSTALLEDHEADERS uninstall-am uninstall-local
@@ -987,9 +1960,11 @@ uninstall-am: uninstall-INSTALLDATA uninstall-INSTALLEDHEADERS \
 
 @SET_MAKE@
 
-.c.o:
-	${RM} $@
-	$(CC) -c $(CCFLAGS) $<
+@ifGNUmake@ifneq (.@OBJEXT@,.o)
+@ifGNUmake@.c.@OBJEXT@:
+@ifGNUmake@	$(AM_V_at)${RM} $@
+@ifGNUmake@	$(AM_V_CC)$(CC) -c $(CCFLAGS) $<
+@ifGNUmake@endif
 
 all: config.status $(TARGETS)
 
@@ -999,11 +1974,12 @@ all: config.status $(TARGETS)
 everything: config.status all @MAINT@ examples
 
 static: $(STATIC_LIBS)
-	$(AM_V_at)for mylib in $(STATIC_LIBS); do \
-	  if test -e $${mylib}; then \
+	$(AM_V_at)for mylib in $(STATIC_LIBS) $(noinst_LIBRARIES); do \
+	  if test -e $${mylib} && test $${mylib} -nt Makefile; then \
 	    stat $${mylib}; \
 	  elif test -e Makefile; then \
-	    $(MAKE) $(AM_V_MFLAG) $${mylib}; \
+	    echo "$@ target: using '$${CCFLAGS}' for CCFLAGS for $${mylib}"; \
+	    $(MAKE) $(AM_V_MFLAG) $(MFLAGS) "CCFLAGS=$${CCFLAGS}" $${mylib}; \
 	  else \
 	    echo "unsure how to make $${mylib}"; \
 	  fi; \
@@ -1021,30 +1997,34 @@ libreadline.a: $(OBJECTS) $(HISTOBJ) $(TILDEOBJ) $(XMALLOCOBJ) ${LIBOBJDIR}compa
 	$(AM_V_at)if test -e $(srcdir)/realloc.o -a ! -e realloc.o; then \
 	  cp $(AM_V_v) $(srcdir)/realloc.o realloc.o; \
 	fi
-	$(AR) $(ARFLAGS) $@ $(OBJECTS)
-	-test -n "$(RANLIB)" && $(RANLIB) $@
+	$(AM_V_AR)$(AR) $(ARFLAGS) $@ $(OBJECTS)
+	$(AM_V_at)-test -n "$(RANLIB)" && $(RANLIB) $@
 
 libhistory.a: $(HISTOBJ) $(XMALLOCOBJ) ${LIBOBJDIR}malloc$U.o ${LIBOBJDIR}realloc$U.o @MAINT@ Makefile
 	$(AM_V_at)$(RM) $@
 	$(AM_V_at)test -e Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./malloc.o ./realloc.o
-	$(AR) $(ARFLAGS) $@ $(HISTOBJ) $(XMALLOCOBJ)
-	-test -n "$(RANLIB)" && $(RANLIB) $@
+	$(AM_V_AR)$(AR) $(ARFLAGS) $@ $(HISTOBJ) $(XMALLOCOBJ)
+	$(AM_V_at)-test -n "$(RANLIB)" && $(RANLIB) $@
 
 wcwidth.o: $(srcdir)/support/wcwidth.c
 	$(AM_V_at)$(RM) $@
-	$(CC) $(CCFLAGS) -c $(srcdir)/support/wcwidth.c
+	$(AM_V_CC)$(CC) $(CCFLAGS) -c $(srcdir)/support/wcwidth.c
 
 # Since tilde.c is shared between readline and bash, make sure we compile
 # it with the right flags when it is built as part of readline
 tilde.o: tilde.c
 	$(AM_V_at)rm -rf $@
-	$(CC) $(CCFLAGS) -DREADLINE_LIBRARY -c $(srcdir)/tilde.c
+	$(AM_V_CC)$(CC) $(CCFLAGS) -DREADLINE_LIBRARY -c $(srcdir)/tilde.c
 
 readline: $(OBJECTS) readline.h rldefs.h chardefs.h examples/rl.c ./libreadline.a
-	$(CC) $(CCFLAGS) -o $@ ./examples/rl.c ./libreadline.a ${TERMCAP_LIB}
+	$(AM_V_CCLD)$(CC) $(CCFLAGS) -o $@ ./examples/rl.c ./libreadline.a \
+	  ${TERMCAP_LIB}
 
 lint lint-local: force
-	$(MAKE) $(AM_V_MFLAG) $(MFLAGS) CCFLAGS='$(GCC_LINT_CFLAGS)' static
+	export CFLAGS='$(GCC_LINT_CFLAGS)'; \
+	export CCFLAGS='$(GCC_LINT_CFLAGS)'; \
+	$(MAKE) $(AM_V_MFLAG) $(MFLAGS) CCFLAGS='$(GCC_LINT_CFLAGS)' \
+	  CFLAGS='$(GCC_LINT_CFLAGS)' static
 .PHONY: lint lint-local
 
 am_Makefile am_makefile: config.status $(srcdir)/Makefile.in

@@ -1,4 +1,4 @@
-/* A front-end using readline to "cook" input lines.
+/* rlfe.dir/rlfe.c: A front-end using readline to "cook" input lines.
  *
  * Copyright (C) 2004, 1999  Per Bothner
  *
@@ -265,29 +265,30 @@ char *end_input_mode = "\033[0m";
 
 int num_keys = 0;
 
-static void maybe_emphasize_input (int on)
+static void maybe_emphasize_input(int on)
 {
   if (on == current_emphasize_input
       || (on && ! do_emphasize_input))
     return;
-  fprintf (rl_outstream, on ? start_input_mode : end_input_mode);
-  fflush (rl_outstream);
+  fprintf(rl_outstream, "%s", (on ? start_input_mode : end_input_mode));
+  fflush(rl_outstream);
   current_emphasize_input = on;
 }
 
 static void
-null_prep_terminal (int meta)
+null_prep_terminal(int meta)
 {
+  (void)meta;
 }
 
 static void
-null_deprep_terminal ()
+null_deprep_terminal(void)
 {
-  maybe_emphasize_input (0);
+  maybe_emphasize_input(0);
 }
 
 static int
-pre_input_change_mode (void)
+pre_input_change_mode(void)
 {
   return 0;
 }

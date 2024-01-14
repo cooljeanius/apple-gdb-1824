@@ -181,6 +181,7 @@ AC_DEFUN([AC_REQUIRE_PROG_SED],[
   AC_REQUIRE([AC_PROG_SED])dnl
 ])dnl
 AC_REQUIRE_PROG_SED
+AX_CHECK_GNU_MAKE
 AC_PATH_PROG([TEX_BINARY],[tex])dnl
 AC_PATH_PROG([DVIPS],[dvips])dnl
 
@@ -363,6 +364,8 @@ ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wno-unused-parameter -Wshadow \
 ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-ansi -Wno-long-long],
                                     [GCC_LINT_FLAGS])dnl
 
+ACX_PROG_CC_WARNING_OPTS([-gtoggle],[GTOGGLE])dnl
+
 # Checks using macros from Bash's configure script
 AC_MSG_NOTICE([running checks stolen from Bash's configure script])
 BASH_SYS_SIGNAL_VINTAGE
@@ -416,7 +419,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 dejagnu foreign std-options -Wall])
+AM_INIT_AUTOMAKE([1.11.6 dejagnu foreign std-options -Wall subdir-objects])
 AM_MAINTAINER_MODE
 m4_ifdef([AC_REQUIRE_AUX_FILE],[
   AC_REQUIRE_AUX_FILE([compile])dnl

@@ -109,7 +109,7 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = doc
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps =  \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_gnu_make.m4 \
 	$(top_srcdir)/m4/ax_check_page_aligned_malloc.m4 \
 	$(top_srcdir)/m4/ax_gcc_malloc_call.m4 \
 	$(top_srcdir)/m4/eealloc.m4 $(top_srcdir)/m4/inline.m4 \
@@ -259,6 +259,7 @@ GNULIB_UNSETENV = @GNULIB_UNSETENV@
 GNULIB_WCTOMB = @GNULIB_WCTOMB@
 GNULIB__EXIT = @GNULIB__EXIT@
 GREP = @GREP@
+GTOGGLE = @GTOGGLE@
 HAVE_ATOLL = @HAVE_ATOLL@
 HAVE_CANONICALIZE_FILE_NAME = @HAVE_CANONICALIZE_FILE_NAME@
 HAVE_DECL_GETLOADAVG = @HAVE_DECL_GETLOADAVG@
@@ -416,6 +417,8 @@ host_vendor = @host_vendor@
 
 # set this to a value to have the HTML documentation installed
 htmldir = 
+ifGNUmake = @ifGNUmake@
+ifnGNUmake = @ifnGNUmake@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
@@ -737,7 +740,7 @@ nodvi: info html text
 
 readline.dvi: $(RLSRC)
 	(TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rlman.texinfo )|| (TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/old/readline.texinfo); \
-	if [ $? -ge 1 ]; then \
+	if [ $$? -ge 1 ]; then \
 	  if test ! -e readline.dvi; then \
 	    if test -e rlman.dvi; then \
 	      mv rlman.dvi readline.dvi; \
@@ -763,7 +766,7 @@ readline.info: $(RLSRC)
 
 rluserman.dvi: $(RLSRC)
 	(TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rluserman.texinfo) || (TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rluser.texinfo); \
-	if [ $? -ge 1 ]; then \
+	if [ $$? -ge 1 ]; then \
 	  if test ! -e rluserman.dvi; then \
 	    if test -e rluser.dvi; then \
 	      mv rluser.dvi rluserman.dvi; \

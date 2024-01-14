@@ -95,7 +95,7 @@ nodvi: info html text
 
 readline.dvi: $(RLSRC)
 	(TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rlman.texinfo )|| (TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/old/readline.texinfo); \
-	if [ $? -ge 1 ]; then \
+	if [ $$? -ge 1 ]; then \
 	  if test ! -e readline.dvi; then \
 	    if test -e rlman.dvi; then \
 	      mv rlman.dvi readline.dvi; \
@@ -121,7 +121,7 @@ readline.info: $(RLSRC)
 
 rluserman.dvi: $(RLSRC)
 	(TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rluserman.texinfo) || (TEXINPUTS=.:$(TEXINPUTDIR):$${TEXINPUTS} $(TEXI2DVI) $(srcdir)/rluser.texinfo); \
-	if [ $? -ge 1 ]; then \
+	if [ $$? -ge 1 ]; then \
 	  if test ! -e rluserman.dvi; then \
 	    if test -e rluser.dvi; then \
 	      mv rluser.dvi rluserman.dvi; \
