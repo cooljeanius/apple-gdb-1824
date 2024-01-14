@@ -1170,7 +1170,7 @@ elf32_h8_relax_section (bfd *abfd, asection *sec,
 	  }
 
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	  /* This is a 24-/32-bit absolute address in one of the
 	     following instructions:
 

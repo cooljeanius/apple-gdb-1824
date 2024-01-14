@@ -481,6 +481,7 @@ elf_m68k_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	      && strcmp (h->root.root.string, "_GLOBAL_OFFSET_TABLE_") == 0)
 	    break;
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case R_68K_GOT8O:
 	case R_68K_GOT16O:
 	case R_68K_GOT32O:
@@ -644,6 +645,7 @@ elf_m68k_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	      break;
 	    }
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case R_68K_8:
 	case R_68K_16:
 	case R_68K_32:
@@ -1405,6 +1407,7 @@ elf_m68k_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      && strcmp (h->root.root.string, "_GLOBAL_OFFSET_TABLE_") == 0)
 	    break;
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case R_68K_GOT8O:
 	case R_68K_GOT16O:
 	case R_68K_GOT32O:
@@ -1572,6 +1575,7 @@ elf_m68k_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  && h->forced_local))
 	    break;
 	  /* Fall through.  */
+   	  ATTRIBUTE_FALLTHROUGH;
 	case R_68K_8:
 	case R_68K_16:
 	case R_68K_32:

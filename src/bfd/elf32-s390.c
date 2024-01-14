@@ -1096,7 +1096,7 @@ elf_s390_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	  if (info->shared)
 	    info->flags |= DF_STATIC_TLS;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_GOT12:
 	case R_390_GOT16:
 	case R_390_GOT20:
@@ -1164,13 +1164,13 @@ elf_s390_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	  if (r_type != R_390_TLS_IE32)
 	    break;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_TLS_LE32:
 	  if (!info->shared)
 	    break;
 	  info->flags |= DF_STATIC_TLS;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_8:
 	case R_390_16:
 	case R_390_32:
@@ -1481,7 +1481,7 @@ elf_s390_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	  if (info->shared)
 	    break;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_PLT16DBL:
 	case R_390_PLT32DBL:
 	case R_390_PLT32:
@@ -2639,7 +2639,7 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      bfd_elf32_swap_reloc_out (output_bfd, &outrel, loc);
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_390_TLS_GD32:
 	case R_390_TLS_GOTIE32:
 	  r_type = elf_s390_tls_transition (info, r_type, h == NULL);

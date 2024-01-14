@@ -5003,12 +5003,12 @@ elf32_arm_check_relocs(bfd *abfd, struct bfd_link_info *info,
 		}
 	    }
 	    /* Fall through */
-
+	    ATTRIBUTE_FALLTHROUGH;
 	  case R_ARM_TLS_LDM32:
 	    if (r_type == R_ARM_TLS_LDM32)
 		htab->tls_ldm_got.refcount++;
 	    /* Fall through */
-
+	    ATTRIBUTE_FALLTHROUGH;
 	  case R_ARM_GOTOFF32:
 	  case R_ARM_GOTPC:
 	    if (htab->sgot == NULL)
@@ -6306,7 +6306,7 @@ elf32_arm_finish_dynamic_sections (bfd * output_bfd, struct bfd_link_info * info
 		  break;
 		}
 	      /* Fall through */
-
+	      ATTRIBUTE_FALLTHROUGH;
 	    case DT_REL:
 	    case DT_RELA:
 	    case DT_RELASZ:

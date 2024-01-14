@@ -783,15 +783,12 @@ m68hc11_elf_ignore_reloc (bfd *abfd ATTRIBUTE_UNUSED,
 }
 
 bfd_reloc_status_type
-m68hc11_elf_special_reloc (bfd *abfd ATTRIBUTE_UNUSED,
-                           arelent *reloc_entry,
-                           asymbol *symbol,
-                           void *data ATTRIBUTE_UNUSED,
-                           asection *input_section,
-                           bfd *output_bfd,
-                           const char **error_message ATTRIBUTE_UNUSED)
+m68hc11_elf_special_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                          void *data ATTRIBUTE_UNUSED,
+                          asection *input_section, bfd *output_bfd,
+                          const char **error_message ATTRIBUTE_UNUSED)
 {
-  if (output_bfd != (bfd *) NULL
+  if ((output_bfd != (bfd *)NULL)
       && (symbol->flags & BSF_SECTION_SYM) == 0
       && (! reloc_entry->howto->partial_inplace
 	  || reloc_entry->addend == 0))
@@ -803,18 +800,19 @@ m68hc11_elf_special_reloc (bfd *abfd ATTRIBUTE_UNUSED,
   if (output_bfd != NULL)
     return bfd_reloc_continue;
 
-  if (reloc_entry->address > bfd_get_section_limit (abfd, input_section))
+  if (reloc_entry->address > bfd_get_section_limit(abfd, input_section))
     return bfd_reloc_outofrange;
 
   abort();
 }
 
+/* */
 asection *
-elf32_m68hc11_gc_mark_hook (asection *sec,
-                            struct bfd_link_info *info ATTRIBUTE_UNUSED,
-                            Elf_Internal_Rela *rel,
-                            struct elf_link_hash_entry *h,
-                            Elf_Internal_Sym *sym)
+elf32_m68hc11_gc_mark_hook(asection *sec,
+                           struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                           Elf_Internal_Rela *rel,
+                           struct elf_link_hash_entry *h,
+                           Elf_Internal_Sym *sym)
 {
   if (h != NULL)
     {

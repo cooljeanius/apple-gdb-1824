@@ -1193,8 +1193,8 @@ i370_elf_relocate_section (bfd *output_bfd,
 	  if (h == NULL
 	      || strcmp (h->root.root.string, "_GLOBAL_OFFSET_TABLE_") == 0)
 	    break;
-	/* Fall through.  */
-
+          /* Fall through.  */
+          ATTRIBUTE_FALLTHROUGH;
 	/* Relocations that always need to be propagated if this is a shared
 	   object.  */
 	case (int) R_I370_ADDR31:
@@ -1207,10 +1207,10 @@ i370_elf_relocate_section (bfd *output_bfd,
 	      int skip;
 
 #ifdef DEBUG
-	      fprintf (stderr,
-		       "i370_elf_relocate_section needs to create relocation for %s\n",
-		       (h && h->root.root.string) ? h->root.root.string : "<unknown>");
-#endif
+	      fprintf(stderr,
+		      "i370_elf_relocate_section needs to create relocation for %s\n",
+		      (h && h->root.root.string) ? h->root.root.string : "<unknown>");
+#endif /* DEBUG */
 
 	      /* When generating a shared object, these relocations
 		 are copied into the output file to be resolved at run

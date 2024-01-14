@@ -969,8 +969,7 @@ mn10300_elf_gc_mark_hook(asection *sec,
 /* Perform a relocation as part of a final link: */
 static bfd_reloc_status_type
 mn10300_elf_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
-                                bfd *output_bfd ATTRIBUTE_UNUSED,
-                                asection *input_section,
+                                bfd *output_bfd, asection *input_section,
                                 bfd_byte *contents, bfd_vma offset,
                                 bfd_vma value, bfd_vma addend,
                                 struct elf_link_hash_entry *h,

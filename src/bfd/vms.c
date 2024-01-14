@@ -1109,13 +1109,15 @@ vms_minisymbol_to_symbol (bfd * abfd,
    If an error occurs, return -1.  */
 
 static long
-vms_get_reloc_upper_bound (bfd * abfd ATTRIBUTE_UNUSED,
-			   asection *section ATTRIBUTE_UNUSED)
+vms_get_reloc_upper_bound(bfd *abfd, asection *section)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_get_reloc_upper_bound (%p, %s)\n", (void *)abfd,
 	    section->name);
-#endif
+#else
+  (void)abfd;
+  (void)section;
+#endif /* VMS_DEBUG */
   return -1L;
 }
 
@@ -1126,15 +1128,17 @@ vms_get_reloc_upper_bound (bfd * abfd ATTRIBUTE_UNUSED,
    Returns the number of relocs, or -1 on error.  */
 
 static long
-vms_canonicalize_reloc (bfd * abfd ATTRIBUTE_UNUSED,
-			asection *section ATTRIBUTE_UNUSED,
-			arelent **location ATTRIBUTE_UNUSED,
-			asymbol **symbols ATTRIBUTE_UNUSED)
+vms_canonicalize_reloc(bfd *abfd, asection *section,
+                       arelent **location ATTRIBUTE_UNUSED,
+                       asymbol **symbols ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_canonicalize_reloc (%p, %s, <ret>, <ret>)\n", (void *)abfd,
 	    section->name);
-#endif
+#else
+  (void)abfd;
+  (void)section;
+#endif /* VMS_DEBUG */
   return FALSE;
 }
 
@@ -1143,26 +1147,29 @@ vms_canonicalize_reloc (bfd * abfd ATTRIBUTE_UNUSED,
 /* How to process the various reloc types.  */
 
 static bfd_reloc_status_type
-reloc_nil (bfd * abfd ATTRIBUTE_UNUSED,
-	   arelent *reloc ATTRIBUTE_UNUSED,
-	   asymbol *sym ATTRIBUTE_UNUSED,
-	   void * data ATTRIBUTE_UNUSED,
-	   asection *sec ATTRIBUTE_UNUSED,
-	   bfd *output_bfd ATTRIBUTE_UNUSED,
-	   const char **error_message ATTRIBUTE_UNUSED)
+reloc_nil(bfd *abfd, arelent *reloc, asymbol *sym, void *data,
+	  asection *sec, bfd *output_bfd,
+	  const char **error_message ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "reloc_nil (abfd %p, output_bfd %p)\n", (void *)abfd,
 	    (void *)output_bfd);
-  vms_debug (2, "In section %s, symbol %s\n",
-	sec->name, sym->name);
-  vms_debug (2, "reloc sym %s, addr %08lx, addend %08lx, reloc is a %s\n",
-		reloc->sym_ptr_ptr[0]->name,
-		(unsigned long)reloc->address,
-		(unsigned long)reloc->addend, reloc->howto->name);
-  vms_debug (2, "data at %p\n", data);
-  /*  _bfd_hexdump (2, data, bfd_get_reloc_size (reloc->howto), 0); */
-#endif
+  vms_debug(2, "In section %s, symbol %s\n", sec->name, sym->name);
+  vms_debug(2, "reloc sym %s, addr %08lx, addend %08lx, reloc is a %s\n",
+            reloc->sym_ptr_ptr[0]->name, (unsigned long)reloc->address,
+            (unsigned long)reloc->addend, reloc->howto->name);
+  vms_debug(2, "data at %p\n", data);
+# if VMS_DEBUG >= 2
+  _bfd_hexdump(2, data, bfd_get_reloc_size(reloc->howto), 0);
+# endif /* VMS_DEBUG >= 2 */
+#else
+  (void)abfd;
+  (void)reloc;
+  (void)sym;
+  (void)data;
+  (void)sec;
+  (void)output_bfd;
+#endif /* VMS_DEBUG */
 
   return bfd_reloc_ok;
 }
@@ -1393,14 +1400,15 @@ static reloc_howto_type alpha_howto_table[] =
    the relocation code on data from the architecture noted.  */
 
 static const struct reloc_howto_struct *
-vms_bfd_reloc_type_lookup (bfd * abfd ATTRIBUTE_UNUSED,
-			   bfd_reloc_code_real_type code)
+vms_bfd_reloc_type_lookup(bfd *abfd, bfd_reloc_code_real_type code)
 {
   int alpha_type;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_reloc_type_lookup (%p, %d)\t", (void *)abfd, code);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
 
   switch (code)
     {
@@ -1420,9 +1428,9 @@ vms_bfd_reloc_type_lookup (bfd * abfd ATTRIBUTE_UNUSED,
 	return NULL;
     }
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  vms_debug (2, "reloc is %s\n", alpha_howto_table[alpha_type].name);
-#endif
-  return & alpha_howto_table[alpha_type];
+  vms_debug(2, "reloc is %s\n", alpha_howto_table[alpha_type].name);
+#endif /* VMS_DEBUG */
+  return &alpha_howto_table[alpha_type];
 }
 
 /* Part 4.7, writing an object file.  */
@@ -1432,14 +1440,16 @@ vms_bfd_reloc_type_lookup (bfd * abfd ATTRIBUTE_UNUSED,
    pointer.  */
 
 static bfd_boolean
-vms_set_arch_mach(bfd *abfd,
-		  enum bfd_architecture arch ATTRIBUTE_UNUSED,
-		  unsigned long mach ATTRIBUTE_UNUSED)
+vms_set_arch_mach(bfd *abfd, enum bfd_architecture arch, unsigned long mach)
 {
   const char *archstr = "alpha";
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_set_arch_mach (%p, %d, %ld)\n", (void *)abfd, arch, mach);
-#endif
+#else
+  (void)abfd;
+  (void)arch;
+  (void)mach;
+#endif /* VMS_DEBUG */
   abfd->arch_info = bfd_scan_arch(archstr);
 
   return TRUE;
@@ -1475,13 +1485,15 @@ vms_set_section_contents (bfd * abfd,
 /* Get the size of the section headers.  */
 
 static int
-vms_sizeof_headers (bfd * abfd ATTRIBUTE_UNUSED,
-		    bfd_boolean reloc ATTRIBUTE_UNUSED)
+vms_sizeof_headers(bfd *abfd, bfd_boolean reloc)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_sizeof_headers (%p, %s)\n", (void *)abfd,
 	    ((reloc) ? "True" : "False"));
-#endif
+#else
+  (void)abfd;
+  (void)reloc;
+#endif /* VMS_DEBUG */
   return 0;
 }
 
@@ -1489,55 +1501,68 @@ vms_sizeof_headers (bfd * abfd ATTRIBUTE_UNUSED,
    which can't be bothered to do it efficiently.  */
 
 static bfd_byte *
-vms_bfd_get_relocated_section_contents (bfd * abfd ATTRIBUTE_UNUSED,
-					struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
-					struct bfd_link_order *link_order ATTRIBUTE_UNUSED,
-					bfd_byte *data ATTRIBUTE_UNUSED,
-					bfd_boolean relocatable ATTRIBUTE_UNUSED,
-					asymbol **symbols ATTRIBUTE_UNUSED)
+vms_bfd_get_relocated_section_contents(bfd *abfd,
+                                       struct bfd_link_info *link_info,
+                                       struct bfd_link_order *link_order,
+                                       bfd_byte *data, bfd_boolean relocatable,
+                                       asymbol **symbols)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_get_relocated_section_contents (%p, %p, %p, %p, %s, %p)\n",
 	    (void *)abfd, (void *)link_info, (void *)link_order, (void *)data,
 	    ((relocatable) ? "True" : "False"), (void *)symbols);
-#endif
+#else
+  (void)abfd;
+  (void)link_info;
+  (void)link_order;
+  (void)data;
+  (void)relocatable;
+  (void)symbols;
+#endif /* VMS_DEBUG */
   return NULL;
 }
 
-/* ???  */
+/* ???: ?  */
 
 static bfd_boolean
-vms_bfd_relax_section (bfd * abfd ATTRIBUTE_UNUSED,
-		       asection *section ATTRIBUTE_UNUSED,
-		       struct bfd_link_info *link_info ATTRIBUTE_UNUSED,
-		       bfd_boolean *again ATTRIBUTE_UNUSED)
+vms_bfd_relax_section(bfd *abfd, asection *section,
+                      struct bfd_link_info *link_info,
+		      bfd_boolean *again ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_relax_section (%p, %s, %p, <ret>)\n",
 	    (void *)abfd, section->name, (void *)link_info);
-#endif
+#else
+  (void)abfd;
+  (void)section;
+  (void)link_info;
+#endif /* VMS_DEBUG */
   return TRUE;
 }
 
 static bfd_boolean
-vms_bfd_gc_sections (bfd * abfd ATTRIBUTE_UNUSED,
-		     struct bfd_link_info *link_info ATTRIBUTE_UNUSED)
+vms_bfd_gc_sections(bfd *abfd, struct bfd_link_info *link_info)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_gc_sections (%p, %p)\n", (void *)abfd,
 	    (void *)link_info);
-#endif
+#else
+  (void)abfd;
+  (void)link_info;
+#endif /* VMS_DEBUG */
   return TRUE;
 }
 
 static bfd_boolean
-vms_bfd_merge_sections (bfd * abfd ATTRIBUTE_UNUSED,
-			struct bfd_link_info *link_info ATTRIBUTE_UNUSED)
+vms_bfd_merge_sections(bfd *abfd, struct bfd_link_info *link_info)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_merge_sections (%p, %p)\n", (void *)abfd,
 	    (void *)link_info);
-#endif
+#else
+  (void)abfd;
+  (void)link_info;
+#endif /* VMS_DEBUG */
   return TRUE;
 }
 
@@ -1545,34 +1570,40 @@ vms_bfd_merge_sections (bfd * abfd ATTRIBUTE_UNUSED,
    different information in this table.  */
 
 static struct bfd_link_hash_table *
-vms_bfd_link_hash_table_create (bfd * abfd ATTRIBUTE_UNUSED)
+vms_bfd_link_hash_table_create(bfd *abfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_link_hash_table_create (%p)\n", (void *)abfd);
-#endif
+#else
+  (void)abfd;
+#endif /* VMS_DEBUG */
   return NULL;
 }
 
 /* Free a linker hash table.  */
 
 static void
-vms_bfd_link_hash_table_free (struct bfd_link_hash_table *hash ATTRIBUTE_UNUSED)
+vms_bfd_link_hash_table_free(struct bfd_link_hash_table *hash)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_link_hash_table_free(%p)\n", (void *)hash);
+#else
+  (void)hash;
 #endif /* VMS_DEBUG */
 }
 
 /* Add symbols from this object file into the hash table.  */
 
 static bfd_boolean
-vms_bfd_link_add_symbols (bfd * abfd ATTRIBUTE_UNUSED,
-			  struct bfd_link_info *link_info ATTRIBUTE_UNUSED)
+vms_bfd_link_add_symbols(bfd *abfd, struct bfd_link_info *link_info)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_link_add_symbols (%p, %p)\n", (void *)abfd,
 	    (void *)link_info);
-#endif
+#else
+  (void)abfd;
+  (void)link_info;
+#endif /* VMS_DEBUG */
   return FALSE;
 }
 
@@ -1580,12 +1611,14 @@ vms_bfd_link_add_symbols (bfd * abfd ATTRIBUTE_UNUSED,
    section of the BFD.  */
 
 static bfd_boolean
-vms_bfd_final_link (bfd * abfd ATTRIBUTE_UNUSED,
-		    struct bfd_link_info *link_info ATTRIBUTE_UNUSED)
+vms_bfd_final_link(bfd *abfd, struct bfd_link_info *link_info)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_final_link (%p, %p)\n", (void *)abfd,
 	    (void *)link_info);
+#else
+  (void)abfd;
+  (void)link_info;
 #endif /* VMS_DEBUG */
   return TRUE;
 }
@@ -1593,12 +1626,14 @@ vms_bfd_final_link (bfd * abfd ATTRIBUTE_UNUSED,
 /* Should this section be split up into smaller pieces during linking.  */
 
 static bfd_boolean
-vms_bfd_link_split_section (bfd * abfd ATTRIBUTE_UNUSED,
-			    asection *section ATTRIBUTE_UNUSED)
+vms_bfd_link_split_section(bfd *abfd, asection *section)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_link_split_section (%p, %s)\n", (void *)abfd,
 	    section->name);
+#else
+  (void)abfd;
+  (void)section;
 #endif /* VMS_DEBUG */
   return FALSE;
 }
@@ -1608,20 +1643,23 @@ vms_bfd_link_split_section (bfd * abfd ATTRIBUTE_UNUSED,
 /* Get the amount of memory required to hold the dynamic symbols.  */
 
 static long
-vms_get_dynamic_symtab_upper_bound (bfd * abfd ATTRIBUTE_UNUSED)
+vms_get_dynamic_symtab_upper_bound(bfd *abfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_get_dynamic_symtab_upper_bound (%p)\n", (void *)abfd);
+#else
+  (void)abfd;
 #endif /* VMS_DEBUG */
   return 0;
 }
 
 static bfd_boolean
-vms_bfd_print_private_bfd_data (bfd * abfd ATTRIBUTE_UNUSED,
-				void *file ATTRIBUTE_UNUSED)
+vms_bfd_print_private_bfd_data(bfd *abfd, void *file ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_bfd_print_private_bfd_data (%p)\n", (void *)abfd);
+#else
+  (void)abfd;
 #endif /* VMS_DEBUG */
   return FALSE;
 }
@@ -1629,21 +1667,24 @@ vms_bfd_print_private_bfd_data (bfd * abfd ATTRIBUTE_UNUSED,
 /* Read in the dynamic symbols.  */
 
 static long
-vms_canonicalize_dynamic_symtab (bfd * abfd ATTRIBUTE_UNUSED,
-				 asymbol **symbols ATTRIBUTE_UNUSED)
+vms_canonicalize_dynamic_symtab(bfd *abfd, asymbol **symbols ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_canonicalize_dynamic_symtab (%p, <ret>)\n", (void *)abfd);
+#else
+  (void)abfd;
 #endif /* VMS_DEBUG */
   return 0L;
 }
 
 /* Get the amount of memory required to hold the dynamic relocs: */
 static long
-vms_get_dynamic_reloc_upper_bound (bfd * abfd ATTRIBUTE_UNUSED)
+vms_get_dynamic_reloc_upper_bound(bfd *abfd)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_get_dynamic_reloc_upper_bound (%p)\n", (void *)abfd);
+#else
+  (void)abfd;
 #endif /* VMS_DEBUG */
   return 0L;
 }
@@ -1651,12 +1692,13 @@ vms_get_dynamic_reloc_upper_bound (bfd * abfd ATTRIBUTE_UNUSED)
 /* Read in the dynamic relocs.  */
 
 static long
-vms_canonicalize_dynamic_reloc (bfd * abfd ATTRIBUTE_UNUSED,
-				arelent **arel ATTRIBUTE_UNUSED,
-				asymbol **symbols ATTRIBUTE_UNUSED)
+vms_canonicalize_dynamic_reloc(bfd *abfd, arelent **arel ATTRIBUTE_UNUSED,
+                               asymbol **symbols ATTRIBUTE_UNUSED)
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(1, "vms_canonicalize_dynamic_reloc (%p)\n", (void *)abfd);
+#else
+  (void)abfd;
 #endif /* VMS_DEBUG */
   return 0L;
 }

@@ -1232,7 +1232,7 @@ elf32_hppa_check_relocs (bfd *abfd,
 	      return FALSE;
 	    }
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_PARISC_DIR17F: /* Used for external branches.  */
 	case R_PARISC_DIR17R:
 	case R_PARISC_DIR14F: /* Used for load/store from absolute locn.  */
@@ -3244,7 +3244,7 @@ final_link_relocate (asection *input_section,
 	    return bfd_reloc_undefined;
 	}
       /* Fall thru.  */
-
+      ATTRIBUTE_FALLTHROUGH;
     case R_PARISC_PCREL21L:
     case R_PARISC_PCREL17C:
     case R_PARISC_PCREL17R:
@@ -3311,7 +3311,7 @@ final_link_relocate (asection *input_section,
 	  break;
 	}
       /* Fall thru.  */
-
+      ATTRIBUTE_FALLTHROUGH;
     case R_PARISC_DLTIND21L:
     case R_PARISC_DLTIND14R:
     case R_PARISC_DLTIND14F:
@@ -3750,7 +3750,7 @@ elf32_hppa_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	      plabel = 1;
 	    }
 	  /* Fall through and possibly emit a dynamic relocation.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_PARISC_DIR17F:
 	case R_PARISC_DIR17R:
 	case R_PARISC_DIR14F:

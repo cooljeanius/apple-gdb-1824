@@ -190,7 +190,7 @@ elf64_x86_64_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
 /* Given an x86_64 ELF reloc type, fill in an arelent structure.  */
 
 static void
-elf64_x86_64_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+elf64_x86_64_info_to_howto(bfd *abfd, arelent *cache_ptr,
                            Elf_Internal_Rela *dst)
 {
   unsigned int r_type, i;

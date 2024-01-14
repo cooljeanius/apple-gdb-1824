@@ -958,7 +958,7 @@ elf_i386_check_relocs (bfd *abfd,
 	  if (info->shared)
 	    info->flags |= DF_STATIC_TLS;
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_386_GOT32:
 	case R_386_TLS_GD:
 	  /* This symbol requires a global offset table entry.  */
@@ -1041,7 +1041,7 @@ elf_i386_check_relocs (bfd *abfd,
 	      }
 	  }
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_386_GOTOFF:
 	case R_386_GOTPC:
 	create_got:
@@ -1055,14 +1055,14 @@ elf_i386_check_relocs (bfd *abfd,
 	  if (r_type != R_386_TLS_IE)
 	    break;
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_386_TLS_LE_32:
 	case R_386_TLS_LE:
 	  if (!info->shared)
 	    break;
 	  info->flags |= DF_STATIC_TLS;
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_386_32:
 	case R_386_PC32:
 	  if (h != NULL && !info->shared)
@@ -1349,7 +1349,7 @@ elf_i386_gc_sweep_hook (bfd *abfd,
 	  if (info->shared)
 	    break;
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_386_PLT32:
 	  if (h != NULL)
 	    {
@@ -2555,7 +2555,7 @@ elf_i386_relocate_section (bfd *output_bfd,
 	      bfd_elf32_swap_reloc_out (output_bfd, &outrel, loc);
 	    }
 	  /* Fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_386_TLS_GD:
 	case R_386_TLS_IE_32:
 	case R_386_TLS_GOTIE:

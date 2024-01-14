@@ -43,6 +43,10 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define elf_hppa_final_link elf32_hppa_final_link
 #endif
 
+#if !defined(_LIBHPPA_H)
+# include "libhppa.h"
+#endif /* !_LIBHPPA_H */
+
 #if ARCH_SIZE == 64
 static bfd_reloc_status_type elf_hppa_final_link_relocate
   (Elf_Internal_Rela *, bfd *, bfd *, asection *, bfd_byte *, bfd_vma,

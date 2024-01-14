@@ -330,8 +330,8 @@ symbol_value (bfd *abfd,
           jmp     $nnnN  */
 
 static int
-ip2k_is_switch_table_128(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
-			 bfd_vma addr, bfd_byte *contents)
+ip2k_is_switch_table_128(bfd *abfd, asection *sec, bfd_vma addr,
+			 bfd_byte *contents)
 {
   bfd_byte code[4];
   int i_index = 0;

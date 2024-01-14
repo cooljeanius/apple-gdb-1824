@@ -3744,7 +3744,7 @@ ppc_elf_gc_sweep_hook (bfd *abfd,
 	case R_PPC_GOT_TLSLD16_HA:
 	  htab->tlsld_got.refcount -= 1;
 	  /* Fall thru */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_PPC_GOT_TLSGD16:
 	case R_PPC_GOT_TLSGD16_LO:
 	case R_PPC_GOT_TLSGD16_HI:
@@ -5732,7 +5732,7 @@ ppc_elf_relocate_section (bfd *output_bfd,
 	case R_PPC_REL14_BRTAKEN:
 	  branch_bit = BRANCH_PREDICT_BIT;
 	  /* Fall thru */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	  /* Branch not taken prediction relocations.  */
 	case R_PPC_ADDR14_BRNTAKEN:
 	case R_PPC_REL14_BRNTAKEN:
@@ -6086,7 +6086,7 @@ ppc_elf_relocate_section (bfd *output_bfd,
 	      || h == htab->elf.hgot)
 	    break;
 	  /* fall through */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	  /* Relocations that always need to be propagated if this is a shared
 	     object.  */
 	case R_PPC_ADDR32:
@@ -6256,13 +6256,13 @@ ppc_elf_relocate_section (bfd *output_bfd,
 	  if (r_type == R_PPC_RELAX32_PLT)
 	    goto relax32;
 	  /* Fall thru */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_PPC_RELAX32PC:
 	  relocation -= (input_section->output_section->vma
 			 + input_section->output_offset
 			 + rel->r_offset - 4);
 	  /* Fall thru */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	case R_PPC_RELAX32:
 	relax32:
 	  {
@@ -7429,15 +7429,15 @@ ppc_elf_finish_dynamic_sections (bfd *output_bfd,
 
 /* VxWorks uses the elf default section flags for .plt.  */
 static const struct bfd_elf_special_section *
-ppc_elf_vxworks_get_sec_type_attr (bfd *abfd ATTRIBUTE_UNUSED, asection *sec)
+ppc_elf_vxworks_get_sec_type_attr(bfd *abfd, asection *sec)
 {
   if (sec->name == NULL)
     return NULL;
 
-  if (strcmp (sec->name, ".plt") == 0)
-    return _bfd_elf_get_sec_type_attr (abfd, sec);
+  if (strcmp(sec->name, ".plt") == 0)
+    return _bfd_elf_get_sec_type_attr(abfd, sec);
 
-  return ppc_elf_get_sec_type_attr (abfd, sec);
+  return ppc_elf_get_sec_type_attr(abfd, sec);
 }
 
 /* Like ppc_elf_link_hash_table_create, but overrides

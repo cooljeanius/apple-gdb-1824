@@ -594,7 +594,7 @@ iq2000_elf_relocate_section (bfd *		     output_bfd ATTRIBUTE_UNUSED,
 	case R_IQ2000_PC16:
 	  rel->r_addend -= 4;
 	  /* Fall through.  */
-
+	  ATTRIBUTE_FALLTHROUGH;
 	default:
 	  r = iq2000_final_link_relocate (howto, input_bfd, input_section,
 					 contents, rel, relocation);

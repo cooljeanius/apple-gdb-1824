@@ -2410,9 +2410,9 @@ elf32_frv_relocate_gprello(struct bfd_link_info *info, bfd *input_bfd,
  return bfd_reloc_ok;
 }
 
+/* */
 static reloc_howto_type *
-frv_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
-		      bfd_reloc_code_real_type code)
+frv_reloc_type_lookup(bfd *abfd, bfd_reloc_code_real_type code)
 {
   switch (code)
     {
@@ -2420,13 +2420,14 @@ frv_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
       break;
 
     case BFD_RELOC_NONE:
-      return &elf32_frv_howto_table[ (int) R_FRV_NONE];
+      return &elf32_frv_howto_table[(int)R_FRV_NONE];
 
     case BFD_RELOC_32:
-      if (elf_elfheader (abfd)->e_type == ET_EXEC
-	  || elf_elfheader (abfd)->e_type == ET_DYN)
+      if ((elf_elfheader(abfd)->e_type == ET_EXEC)
+	  || (elf_elfheader(abfd)->e_type == ET_DYN))
 	return &elf32_frv_rel_32_howto;
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case BFD_RELOC_CTOR:
       return &elf32_frv_howto_table[ (int) R_FRV_32];
 

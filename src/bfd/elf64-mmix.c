@@ -2142,10 +2142,8 @@ mmix_elf_section_from_bfd_section(bfd *abfd ATTRIBUTE_UNUSED,
    them to be "merged", but with the contents serialized.  */
 
 bfd_boolean
-mmix_elf_add_symbol_hook(bfd *abfd,
-                         struct bfd_link_info *info ATTRIBUTE_UNUSED,
-                         Elf_Internal_Sym *sym,
-                         const char **namep ATTRIBUTE_UNUSED,
+mmix_elf_add_symbol_hook(bfd *abfd, struct bfd_link_info *info,
+                         Elf_Internal_Sym *sym, const char **namep,
                          flagword *flagsp ATTRIBUTE_UNUSED,
                          asection **secp, bfd_vma *valp ATTRIBUTE_UNUSED)
 {
@@ -2156,11 +2154,11 @@ mmix_elf_add_symbol_hook(bfd *abfd,
 		      strlen(MMIX_LOC_SECTION_START_SYMBOL_PREFIX)) == 0)
     {
       /* See if we have another one.  */
-      struct bfd_link_hash_entry *h = bfd_link_hash_lookup (info->hash,
-							    *namep,
-							    FALSE,
-							    FALSE,
-							    FALSE);
+      struct bfd_link_hash_entry *h = bfd_link_hash_lookup(info->hash,
+							   *namep,
+							   FALSE,
+							   FALSE,
+							   FALSE);
 
       if (h != NULL && h->type != bfd_link_hash_undefined)
 	{

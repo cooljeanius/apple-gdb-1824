@@ -1273,8 +1273,7 @@ elf_xtensa_allocate_local_got_size (struct bfd_link_info *info,
 
 /* Set the sizes of the dynamic sections: */
 static bfd_boolean
-elf_xtensa_size_dynamic_sections(bfd *output_bfd ATTRIBUTE_UNUSED,
-				 struct bfd_link_info *info)
+elf_xtensa_size_dynamic_sections(bfd *output_bfd, struct bfd_link_info *info)
 {
   bfd *dynobj, *abfd;
   asection *s, *srelplt, *splt, *sgotplt, *srelgot, *spltlittbl, *sgotloc;

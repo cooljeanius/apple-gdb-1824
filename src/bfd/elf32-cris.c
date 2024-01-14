@@ -871,6 +871,7 @@ cris_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
     case R_CRIS_32_PCREL:
       relocation -= 2;
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case R_CRIS_8_PCREL:
     case R_CRIS_16_PCREL:
       relocation -= 2;

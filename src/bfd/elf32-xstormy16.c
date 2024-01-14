@@ -742,45 +742,42 @@ xstormy16_elf_always_size_sections(bfd *output_bfd ATTRIBUTE_UNUSED,
    accordingly.  */
 
 static bfd_boolean
-xstormy16_elf_relocate_section (bfd *                   output_bfd ATTRIBUTE_UNUSED,
-				struct bfd_link_info *  info,
-				bfd *                   input_bfd,
-				asection *              input_section,
-				bfd_byte *              contents,
-				Elf_Internal_Rela *     relocs,
-				Elf_Internal_Sym *      local_syms,
-				asection **             local_sections)
+xstormy16_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                               bfd *input_bfd, asection *input_section,
+                               bfd_byte *contents, Elf_Internal_Rela *relocs,
+                               Elf_Internal_Sym *local_syms,
+                               asection **local_sections)
 {
-  Elf_Internal_Shdr *           symtab_hdr;
-  struct elf_link_hash_entry ** sym_hashes;
-  Elf_Internal_Rela *           rel;
-  Elf_Internal_Rela *           relend;
+  Elf_Internal_Shdr *symtab_hdr;
+  struct elf_link_hash_entry **sym_hashes;
+  Elf_Internal_Rela *rel;
+  Elf_Internal_Rela *relend;
   bfd *dynobj;
   asection *splt;
 
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = & elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
-  relend     = relocs + input_section->reloc_count;
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
+  relend = (relocs + input_section->reloc_count);
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
   splt = NULL;
   if (dynobj != NULL)
-    splt = bfd_get_section_by_name (dynobj, ".plt");
+    splt = bfd_get_section_by_name(dynobj, ".plt");
 
   for (rel = relocs; rel < relend; rel ++)
     {
-      reloc_howto_type *           howto;
-      unsigned long                r_symndx;
-      Elf_Internal_Sym *           sym;
-      asection *                   sec;
-      struct elf_link_hash_entry * h;
-      bfd_vma                      relocation;
-      bfd_reloc_status_type        r;
-      const char *                 name = NULL;
-      int                          r_type;
+      reloc_howto_type *howto;
+      unsigned long r_symndx;
+      Elf_Internal_Sym *sym;
+      asection *sec;
+      struct elf_link_hash_entry *h;
+      bfd_vma relocation;
+      bfd_reloc_status_type r;
+      const char *name = NULL;
+      int r_type;
 
       r_type = ELF32_R_TYPE (rel->r_info);
 

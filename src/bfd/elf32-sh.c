@@ -2951,9 +2951,9 @@ sh_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
    boundaries.  This is like sh_align_loads in coff-sh.c.  */
 
 static bfd_boolean
-sh_elf_align_loads(bfd *abfd, asection *sec,
+sh_elf_align_loads(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
                    Elf_Internal_Rela *internal_relocs,
-		   bfd_byte *contents, bfd_boolean *pswapped)
+		   bfd_byte *contents ATTRIBUTE_UNUSED, bfd_boolean *pswapped)
 {
   Elf_Internal_Rela *irel, *irelend;
   bfd_vma *labels = NULL;
@@ -2966,7 +2966,7 @@ sh_elf_align_loads(bfd *abfd, asection *sec,
 
   /* Get all the addresses with labels on them: */
   amt = sec->reloc_count;
-  amt *= sizeof (bfd_vma);
+  amt *= sizeof(bfd_vma);
   labels = (bfd_vma *)bfd_malloc(amt);
   if (labels == NULL)
     goto error_return;

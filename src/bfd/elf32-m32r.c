@@ -306,9 +306,8 @@ struct m32r_hi16
 static struct m32r_hi16 *m32r_hi16_list;
 
 static bfd_reloc_status_type
-m32r_elf_hi16_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
-		    asymbol *symbol, void *data, asection *input_section,
-		    bfd *output_bfd,
+m32r_elf_hi16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                    void *data, asection *input_section, bfd *output_bfd,
 		    const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_reloc_status_type ret;
@@ -3627,11 +3626,10 @@ m32r_elf_gc_mark_hook (asection *sec,
   return NULL;
 }
 
+/* */
 static bfd_boolean
-m32r_elf_gc_sweep_hook (bfd *abfd ATTRIBUTE_UNUSED,
-			struct bfd_link_info *info ATTRIBUTE_UNUSED,
-			asection *sec ATTRIBUTE_UNUSED,
-			const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED)
+m32r_elf_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                       asection *sec, const Elf_Internal_Rela *relocs)
 {
   /* Update the got entry reference counts for the section being removed.  */
   Elf_Internal_Shdr *symtab_hdr;
@@ -3639,13 +3637,13 @@ m32r_elf_gc_sweep_hook (bfd *abfd ATTRIBUTE_UNUSED,
   bfd_signed_vma *local_got_refcounts;
   const Elf_Internal_Rela *rel, *relend;
 
-  elf_section_data (sec)->local_dynrel = NULL;
+  elf_section_data(sec)->local_dynrel = NULL;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
-  local_got_refcounts = elf_local_got_refcounts (abfd);
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
+  local_got_refcounts = elf_local_got_refcounts(abfd);
 
-  relend = relocs + sec->reloc_count;
+  relend = (relocs + sec->reloc_count);
   for (rel = relocs; rel < relend; rel++)
     {
       unsigned long r_symndx;
