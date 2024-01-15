@@ -186,13 +186,13 @@
 		61D220E6192D617D00FA979E /* elf-eh-frame.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEFF0E82C407008125DE /* elf-eh-frame.c */; };
 		61D220E7192D617D00FA979E /* elf-hppa.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF000E82C407008125DE /* elf-hppa.h */; };
 		61D220E8192D617D00FA979E /* elf-m10200.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF010E82C407008125DE /* elf-m10200.c */; };
-		61D220E9192D617D00FA979E /* elf-m10300.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF020E82C407008125DE /* elf-m10300.c */; };
+		61D220E9192D617D00FA979E /* elf-m10300.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF020E82C407008125DE /* elf-m10300.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D220EA192D617D00FA979E /* elf-strtab.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF030E82C407008125DE /* elf-strtab.c */; };
 		61D220EB192D617D00FA979E /* elf-vxworks.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF040E82C407008125DE /* elf-vxworks.c */; };
 		61D220EC192D617D00FA979E /* elf-vxworks.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF050E82C407008125DE /* elf-vxworks.h */; };
 		61D220ED192D617D00FA979E /* elf.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF060E82C407008125DE /* elf.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
-		61D220EE192D617D00FA979E /* elf32-am33lin.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF070E82C407008125DE /* elf32-am33lin.c */; };
-		61D220EF192D617D00FA979E /* elf32-arc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF080E82C407008125DE /* elf32-arc.c */; };
+		61D220EE192D617D00FA979E /* elf32-am33lin.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF070E82C407008125DE /* elf32-am33lin.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
+		61D220EF192D617D00FA979E /* elf32-arc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF080E82C407008125DE /* elf32-arc.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D220F0192D617D00FA979E /* elf32-arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF090E82C407008125DE /* elf32-arm.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing"; }; };
 		61D220F1192D617D00FA979E /* elf32-arm.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF0A0E82C407008125DE /* elf32-arm.h */; };
 		61D220F2192D617D00FA979E /* elf32-avr.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF0B0E82C407008125DE /* elf32-avr.c */; };
