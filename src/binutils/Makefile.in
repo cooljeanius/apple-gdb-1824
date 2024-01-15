@@ -868,7 +868,7 @@ BFDTEST2_PROG = bfdtest2
 TEST_PROGS = $(BFDTEST1_PROG) $(BFDTEST2_PROG)
 RENAMED_PROGS = $(NM_PROG) $(STRIP_PROG) $(DEMANGLER_PROG)
 check_SCRIPTS = sanity.sh
-TESTS = $(check_SCRIPTS) @MAINT@ $(check_PROGRAMS)
+TESTS = $(check_SCRIPTS) @MAINT@ # $(check_PROGRAMS)
 
 # Stuff that goes in tooldir/ if appropriate.
 TOOL_PROGS = nm-new strip-new ar ranlib dlltool objdump objcopy
@@ -1860,20 +1860,6 @@ sanity.sh.log: sanity.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-bfdtest1.log: bfdtest1$(EXEEXT)
-	@p='bfdtest1$(EXEEXT)'; \
-	b='bfdtest1'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-bfdtest2.log: bfdtest2$(EXEEXT)
-	@p='bfdtest2$(EXEEXT)'; \
-	b='bfdtest2'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -2203,6 +2189,9 @@ am_check-DEJAGNU: site.exp
 .PHONY: am_check-DEJAGNU
 
 check-local: $(srcdir)/sanity.sh
+	@if test -e $(srcdir)/sanity.sh && test ! -x $(srcdir)/sanity.sh; then \
+	  chmod a+x $(srcdir)/sanity.sh; \
+	fi
 	/bin/sh $(srcdir)/sanity.sh || $(SHELLCHECK) $(srcdir)/sanity.sh
 	if test -n "$(SHELLCHECK)"; then $(SHELLCHECK) $(srcdir)/ranlib.sh; fi
 

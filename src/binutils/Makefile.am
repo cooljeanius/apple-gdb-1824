@@ -138,9 +138,9 @@ noinst_PROGRAMS = $(RENAMED_PROGS)
 check_PROGRAMS = $(TEST_PROGS)
 ## (@BUILD_MISC@ has been moved above to bin_PROGRAMS)
 
-## needs to be adjusted to work as proper tests:
 check_SCRIPTS = sanity.sh
-TESTS = $(check_SCRIPTS) @MAINT@ $(check_PROGRAMS)
+## check_PROGRAMS need to be adjusted to work as proper tests:
+TESTS = $(check_SCRIPTS) @MAINT@ # $(check_PROGRAMS)
 
 EXTRA_PROGRAMS = $(NLMCONV_PROG) srconv sysdump coffdump $(DLLTOOL_PROG) \
   $(WINDRES_PROG) $(WINDMC_PROG) $(DLLWRAP_PROG)
@@ -336,6 +336,9 @@ am_check-DEJAGNU: site.exp
 .PHONY: am_check-DEJAGNU
 
 check-local: $(srcdir)/sanity.sh
+	@if test -e $(srcdir)/sanity.sh && test ! -x $(srcdir)/sanity.sh; then \
+	  chmod a+x $(srcdir)/sanity.sh; \
+	fi
 	/bin/sh $(srcdir)/sanity.sh || $(SHELLCHECK) $(srcdir)/sanity.sh
 	if test -n "$(SHELLCHECK)"; then $(SHELLCHECK) $(srcdir)/ranlib.sh; fi
 

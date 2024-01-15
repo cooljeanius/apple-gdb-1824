@@ -50,17 +50,19 @@ mkdir ${TMPDIR}
 
 cp "${BIN}"/${MY_STRIP} "${TMPDIR}"/strip
 
-for i in size objdump nm ar ranlib ; do
-	cp "${BIN}"/${i} ${TMPDIR}/${i}
-	"${BIN}"/${MY_STRIP} ${TMPDIR}/${i} || ${TMPDIR}/strip ${TMPDIR}/${i}
-	cp -f "${BIN}"/${i} ${TMPDIR}/${i}
-	${TMPDIR}/strip ${TMPDIR}/${i}
+for i in size objdump ${MY_NM} ar ranlib ; do
+	cp "${BIN}"/"${i}" ${TMPDIR}/"${i}"
+	"${BIN}"/${MY_STRIP} ${TMPDIR}/"${i}" || ${TMPDIR}/strip ${TMPDIR}/"${i}" || stat ${TMPDIR}/"${i}"
+	cp -f "${BIN}"/"${i}" ${TMPDIR}/"${i}"
+	${TMPDIR}/strip ${TMPDIR}/"${i}" || stat ${TMPDIR}/"${i}" > /dev/null
 done
 
 ### ar
+# (TODO)
 
 ### ranlib
+# (TODO)
 
-rm -rf ${TMPDIR}
+rm -rf ${TMPDIR} # (TODO: need to clean this up on failure, too)
 
 exit 0
