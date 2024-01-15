@@ -2192,8 +2192,14 @@ check-local: $(srcdir)/sanity.sh
 	@if test -e $(srcdir)/sanity.sh && test ! -x $(srcdir)/sanity.sh; then \
 	  chmod a+x $(srcdir)/sanity.sh; \
 	fi
-	/bin/sh $(srcdir)/sanity.sh || $(SHELLCHECK) $(srcdir)/sanity.sh
-	if test -n "$(SHELLCHECK)"; then $(SHELLCHECK) $(srcdir)/ranlib.sh; fi
+	/bin/sh $(srcdir)/sanity.sh || $(SHELLCHECK) $(srcdir)/sanity.sh || stat $(srcdir)/sanity.sh
+	-if test -n "$(SHELLCHECK)" && test -x "`which shellcheck`"; then \
+	  if test -r $(srcdir)/ranlib.sh; then \
+	    $(SHELLCHECK) $(srcdir)/ranlib.sh; \
+	  elif test -r $(srcdir)/embdedspu.sh; then \
+	    $(SHELLCHECK) $(srcdir)/embedspu.sh || stat $(srcdir)/embedspu.sh; \
+	  fi; \
+	fi
 
 installcheck-local: $(srcdir)/sanity.sh
 	/bin/sh $(srcdir)/sanity.sh $(bindir)

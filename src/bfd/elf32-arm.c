@@ -3284,7 +3284,8 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	if ((bfd_signed_vma)relocation >= 0)
 	  signed_check = (bfd_signed_vma)check;
 	else
-	  signed_check = (check | ~((bfd_vma)-1L >> howto->rightshift));
+	  signed_check =
+            (bfd_signed_vma)(check | ~((bfd_vma)-1L >> howto->rightshift));
 
 	/* Assumes two's complement.  */
 	if (signed_check > reloc_signed_max || signed_check < reloc_signed_min)
@@ -3297,7 +3298,7 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	     to a word boundary.  This follows the semantics of the instruction
 	     which specifies that bit 1 of the target address will come from bit
 	     1 of the base address.  */
-	  relocation = ((relocation + 2) & ~3);
+	  relocation = ((relocation + 2UL) & ~3UL);
 
 	/* Put RELOCATION back into the insn.  */
 	upper_insn = ((upper_insn & ~(bfd_vma)0x7ff)
@@ -3306,8 +3307,8 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
                       | ((relocation >> 1) & 0x7ff));
 
 	/* Put the relocated value back in the object file:  */
-	bfd_put_16 (input_bfd, upper_insn, hit_data);
-	bfd_put_16 (input_bfd, lower_insn, hit_data + 2);
+	bfd_put_16(input_bfd, upper_insn, hit_data);
+	bfd_put_16(input_bfd, lower_insn, (hit_data + 2));
 
 	return (overflow ? bfd_reloc_overflow : bfd_reloc_ok);
       }
@@ -3318,10 +3319,11 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
       {
 	bfd_vma relocation;
 	bfd_boolean overflow = FALSE;
-	bfd_vma upper_insn = bfd_get_16 (input_bfd, hit_data);
-	bfd_vma lower_insn = bfd_get_16 (input_bfd, hit_data + 2);
-	bfd_signed_vma reloc_signed_max = ((1 << (howto->bitsize - 1)) - 1) >> howto->rightshift;
-	bfd_signed_vma reloc_signed_min = ~ reloc_signed_max;
+	bfd_vma upper_insn = bfd_get_16(input_bfd, hit_data);
+	bfd_vma lower_insn = bfd_get_16(input_bfd, (hit_data + 2));
+	bfd_signed_vma reloc_signed_max =
+          ((1 << (howto->bitsize - 1)) - 1) >> howto->rightshift;
+	bfd_signed_vma reloc_signed_min = ~reloc_signed_max;
 	bfd_vma check;
 	bfd_signed_vma signed_check;
 
@@ -3329,39 +3331,43 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	   two pieces together.  */
 	if (globals->use_rel)
 	  {
-	    bfd_vma S  = (upper_insn & 0x0400) >> 10;
+	    bfd_vma S = ((upper_insn & 0x0400) >> 10);
 	    bfd_vma hi = (upper_insn & 0x03ff);
-	    bfd_vma I1 = (lower_insn & 0x2000) >> 13;
-	    bfd_vma I2 = (lower_insn & 0x0800) >> 11;
+	    bfd_vma I1 = ((lower_insn & 0x2000) >> 13);
+	    bfd_vma I2 = ((lower_insn & 0x0800) >> 11);
 	    bfd_vma lo = (lower_insn & 0x07ff);
 
 	    I1 = !(I1 ^ S);
 	    I2 = !(I2 ^ S);
-	    S  = !S;
+	    S = !S;
 
-	    signed_addend = (S << 24) | (I1 << 23) | (I2 << 22) | (hi << 12) | (lo << 1);
+	    signed_addend =
+              (bfd_signed_vma)((S << 24L) | (I1 << 23L) | (I2 << 22L)
+                               | (hi << 12L) | (lo << 1L));
 	    signed_addend -= (1 << 24); /* Sign extend.  */
 	  }
 
-	/* ??? Should handle interworking?  GCC might someday try to
+	/* ???: Should handle interworking?  GCC might someday try to
 	   use this for tail calls.  */
 
-      	relocation = value + signed_addend;
+      	relocation = (value + (bfd_vma)signed_addend);
 	relocation -= (input_section->output_section->vma
 		       + input_section->output_offset
 		       + rel->r_offset);
 
-	check = relocation >> howto->rightshift;
+	check = (relocation >> howto->rightshift);
 
 	/* If this is a signed value, the rightshift just dropped
 	   leading 1 bits (assuming twos complement).  */
-	if ((bfd_signed_vma) relocation >= 0)
-	  signed_check = check;
+	if ((bfd_signed_vma)relocation >= 0L)
+	  signed_check = (bfd_signed_vma)check;
 	else
-	  signed_check = check | ~((bfd_vma) -1 >> howto->rightshift);
+	  signed_check =
+            (bfd_signed_vma)(check | ~((bfd_vma)-1L >> howto->rightshift));
 
-	/* Assumes two's complement.  */
-	if (signed_check > reloc_signed_max || signed_check < reloc_signed_min)
+	/* Assumes two's complement: */
+	if ((signed_check > reloc_signed_max)
+            || (signed_check < reloc_signed_min))
 	  overflow = TRUE;
 
 	/* Put RELOCATION back into the insn.  */
@@ -3414,13 +3420,13 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	    upper -= 0x0100; /* Sign extend.  */
 
 	    addend = (upper << 12) | (lower << 1);
-	    signed_addend = addend;
+	    signed_addend = (bfd_signed_vma)addend;
 	  }
 
-	/* ??? Should handle interworking?  GCC might someday try to
+	/* ???: Should handle interworking?  GCC might someday try to
 	   use this for tail calls.  */
 
-      	relocation = value + signed_addend;
+      	relocation = (value + (bfd_vma)signed_addend);
 	relocation -= (input_section->output_section->vma
 		       + input_section->output_offset
 		       + rel->r_offset);
@@ -3429,10 +3435,11 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 
 	/* If this is a signed value, the rightshift just dropped
 	   leading 1 bits (assuming twos complement).  */
-	if ((bfd_signed_vma) relocation >= 0)
-	  signed_check = check;
+	if ((bfd_signed_vma)relocation >= 0L)
+	  signed_check = (bfd_signed_vma)check;
 	else
-	  signed_check = check | ~((bfd_vma) -1 >> howto->rightshift);
+	  signed_check =
+            (bfd_signed_vma)(check | ~((bfd_vma)-1L >> howto->rightshift));
 
 	/* Assumes two's complement.  */
 	if (signed_check > reloc_signed_max || signed_check < reloc_signed_min)
@@ -3464,7 +3471,7 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
       {
 	bfd_signed_vma relocation;
 	bfd_signed_vma reloc_signed_max = (1 << (howto->bitsize - 1)) - 1;
-	bfd_signed_vma reloc_signed_min = ~ reloc_signed_max;
+	bfd_signed_vma reloc_signed_min = ~reloc_signed_max;
 	bfd_signed_vma signed_check;
 
 	/* CZB cannot jump backward.  */
@@ -3478,17 +3485,17 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	    if (addend & ((howto->src_mask + 1) >> 1))
 	      {
 		signed_addend = -1;
-		signed_addend &= ~ howto->src_mask;
+		signed_addend &= ~howto->src_mask;
 		signed_addend |= addend;
 	      }
 	    else
-	      signed_addend = addend;
+	      signed_addend = (bfd_signed_vma)addend;
 	    /* The value in the insn has been right shifted.  We need to
 	       undo this, so that we can perform the address calculation
 	       in terms of bytes.  */
 	    signed_addend <<= howto->rightshift;
 	  }
-	relocation = value + signed_addend;
+	relocation = ((bfd_signed_vma)value + signed_addend);
 
 	relocation -= (input_section->output_section->vma
 		       + input_section->output_offset
@@ -3503,7 +3510,7 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	  relocation &= howto->dst_mask;
 	relocation |= (bfd_get_16 (input_bfd, hit_data) & (~ howto->dst_mask));
 
-	bfd_put_16 (input_bfd, relocation, hit_data);
+	bfd_put_16(input_bfd, (bfd_vma)relocation, hit_data);
 
 	/* Assumes two's complement.  */
 	if (signed_check > reloc_signed_max || signed_check < reloc_signed_min)
@@ -3524,16 +3531,16 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	  {
 	    /* Extract the addend.  */
 	    addend = (insn & 0xff) << ((insn & 0xf00) >> 7);
-	    signed_addend = addend;
+	    signed_addend = (bfd_signed_vma)addend;
 	  }
-	relocation = value + signed_addend;
+	relocation = (value + (bfd_vma)signed_addend);
 
 	relocation -= (input_section->output_section->vma
 		       + input_section->output_offset
 		       + rel->r_offset);
-	insn = (insn & ~0xfff)
-	       | ((howto->bitpos << 7) & 0xf00)
-	       | ((relocation >> howto->bitpos) & 0xff);
+	insn = ((insn & (bfd_vma)~0xfff)
+	        | ((howto->bitpos << 7UL) & 0xf00)
+	        | ((relocation >> howto->bitpos) & 0xff));
 	bfd_put_32(input_bfd, value, hit_data);
 	(void)insn;
       }
@@ -3611,8 +3618,8 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 		 When doing a dynamic link, we create a .rel.got relocation
 		 entry to initialize the value.  This is done in the
 		 finish_dynamic_symbol routine.  */
-	      if ((off & 1) != 0)
-		off &= ~1;
+	      if ((off & 1UL) != 0UL)
+		off &= ~1UL;
 	      else
 		{
 		  /* If we are addressing a Thumb function, we need to
@@ -3643,8 +3650,8 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	  /* The offset must always be a multiple of 4.  We use the
 	     least significant bit to record whether we have already
 	     generated the necessary reloc.  */
-	  if ((off & 1) != 0)
-	    off &= ~1;
+	  if ((off & 1UL) != 0UL)
+	    off &= ~1UL;
 	  else
 	    {
 	      /* If we are addressing a Thumb function, we need to
@@ -3701,8 +3708,8 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 
 	off = globals->tls_ldm_got.offset;
 
-	if ((off & 1) != 0)
-	  off &= ~1;
+	if ((off & 1UL) != 0UL)
+	  off &= ~1UL;
 	else
 	  {
 	    /* If we don't know the module number, create a relocation
@@ -3762,7 +3769,7 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 		indx = h->dynindx;
 	      }
 	    off = h->got.offset;
-	    tls_type = ((struct elf32_arm_link_hash_entry *)h)->tls_type;
+	    tls_type = (char)((struct elf32_arm_link_hash_entry *)h)->tls_type;
 	  }
 	else
 	  {
@@ -3775,8 +3782,8 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	if (tls_type == GOT_UNKNOWN)
 	  abort();
 
-	if ((off & 1) != 0)
-	  off &= ~1;
+	if ((off & 1UL) != 0UL)
+	  off &= ~1UL;
 	else
 	  {
 	    bfd_boolean need_relocs = FALSE;
@@ -3808,7 +3815,8 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 		    outrel.r_offset = (globals->sgot->output_section->vma
 				       + globals->sgot->output_offset
                                        + cur_off);
-		    outrel.r_info = ELF32_R_INFO(indx, R_ARM_TLS_DTPMOD32);
+		    outrel.r_info =
+                      (bfd_vma)ELF32_R_INFO(indx, R_ARM_TLS_DTPMOD32);
 		    bfd_put_32(output_bfd, 0,
                                (globals->sgot->contents + cur_off));
 
@@ -3824,8 +3832,8 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 			bfd_put_32(output_bfd, 0,
 				   (globals->sgot->contents + cur_off + 4));
 
-			outrel.r_info = ELF32_R_INFO(indx,
-						     R_ARM_TLS_DTPOFF32);
+			outrel.r_info =
+                          (bfd_vma)ELF32_R_INFO(indx, R_ARM_TLS_DTPOFF32);
 			outrel.r_offset += 4;
 			bfd_elf32_swap_reloc_out(output_bfd, &outrel, loc);
 			globals->srelgot->reloc_count++;
@@ -3855,7 +3863,8 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 		    outrel.r_offset = (globals->sgot->output_section->vma
 				       + globals->sgot->output_offset
 				       + cur_off);
-		    outrel.r_info = ELF32_R_INFO(indx, R_ARM_TLS_TPOFF32);
+		    outrel.r_info =
+                      (bfd_vma)ELF32_R_INFO(indx, R_ARM_TLS_TPOFF32);
 
 		    if (indx == 0)
 		      bfd_put_32(output_bfd, (value - dtpoff_base(info)),
@@ -3873,7 +3882,7 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 		  }
 		else
 		  bfd_put_32(output_bfd, tpoff(info, value),
-			     globals->sgot->contents + cur_off);
+			     (globals->sgot->contents + cur_off));
 		cur_off += 4UL;
 	      }
 
@@ -3964,13 +3973,13 @@ arm_add_to_rel(bfd *abfd, bfd_byte *address, reloc_howto_type *howto,
       contents = bfd_get_32(abfd, address);
 
       /* Get the (signed) value from the instruction.  */
-      addend = contents & howto->src_mask;
-      if (addend & ((howto->src_mask + 1) >> 1))
+      addend = (bfd_signed_vma)(contents & howto->src_mask);
+      if (addend & (((bfd_signed_vma)howto->src_mask + 1L) >> 1L))
 	{
 	  bfd_signed_vma mask;
 
 	  mask = -1;
-	  mask &= ~ howto->src_mask;
+	  mask &= ~howto->src_mask;
 	  addend |= mask;
 	}
 
@@ -3988,16 +3997,17 @@ arm_add_to_rel(bfd *abfd, bfd_byte *address, reloc_howto_type *howto,
 	  addend <<= howto->size;
 	  addend += increment;
 
-	  /* Should we check for overflow here ?  */
+	  /* Should we check for overflow here?  */
 
 	  /* Drop any undesired bits.  */
 	  addend >>= howto->rightshift;
 	  break;
 	}
 
-      contents = (contents & ~ howto->dst_mask) | (addend & howto->dst_mask);
+      contents = ((contents & ~howto->dst_mask)
+                  | ((bfd_vma)addend & howto->dst_mask));
 
-      bfd_put_32 (abfd, contents, address);
+      bfd_put_32(abfd, contents, address);
     }
 }
 
@@ -4011,56 +4021,53 @@ arm_add_to_rel(bfd *abfd, bfd_byte *address, reloc_howto_type *howto,
    || (R_TYPE) == R_ARM_TLS_LE32	\
    || (R_TYPE) == R_ARM_TLS_IE32)
 
-/* Relocate an ARM ELF section.  */
+/* Relocate an ARM ELF section: */
 static bfd_boolean
-elf32_arm_relocate_section (bfd *                  output_bfd,
-			    struct bfd_link_info * info,
-			    bfd *                  input_bfd,
-			    asection *             input_section,
-			    bfd_byte *             contents,
-			    Elf_Internal_Rela *    relocs,
-			    Elf_Internal_Sym *     local_syms,
-			    asection **            local_sections)
+elf32_arm_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+			   bfd *input_bfd, asection *input_section,
+			   bfd_byte *contents, Elf_Internal_Rela *relocs,
+			   Elf_Internal_Sym *local_syms,
+			   asection **local_sections)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
   Elf_Internal_Rela *rel;
   Elf_Internal_Rela *relend;
   const char *name;
-  struct elf32_arm_link_hash_table * globals;
+  struct elf32_arm_link_hash_table *globals;
 
-  globals = elf32_arm_hash_table (info);
+  globals = elf32_arm_hash_table(info);
   if (info->relocatable && !globals->use_rel)
     return TRUE;
 
-  symtab_hdr = & elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
 
   rel = relocs;
-  relend = relocs + input_section->reloc_count;
+  relend = (relocs + input_section->reloc_count);
   for (; rel < relend; rel++)
     {
-      int                          r_type;
-      reloc_howto_type *           howto;
-      unsigned long                r_symndx;
-      Elf_Internal_Sym *           sym;
-      asection *                   sec;
-      struct elf_link_hash_entry * h;
-      bfd_vma                      relocation;
-      bfd_reloc_status_type        r;
-      arelent                      bfd_reloc;
-      char                         sym_type;
-      bfd_boolean                  unresolved_reloc = FALSE;
+      int r_type;
+      reloc_howto_type *howto;
+      unsigned long r_symndx;
+      Elf_Internal_Sym *sym;
+      asection *sec;
+      struct elf_link_hash_entry *h;
+      bfd_vma relocation;
+      bfd_reloc_status_type r;
+      arelent bfd_reloc;
+      char sym_type;
+      bfd_boolean unresolved_reloc = FALSE;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
-      r_type   = ELF32_R_TYPE (rel->r_info);
-      r_type   = arm_real_reloc_type (globals, r_type);
+      r_symndx = ELF32_R_SYM(rel->r_info);
+      r_type = ELF32_R_TYPE(rel->r_info);
+      r_type = arm_real_reloc_type(globals, r_type);
 
-      if (   r_type == R_ARM_GNU_VTENTRY
-          || r_type == R_ARM_GNU_VTINHERIT)
+      if ((r_type == R_ARM_GNU_VTENTRY)
+          || (r_type == R_ARM_GNU_VTINHERIT))
         continue;
 
-      bfd_reloc.howto = elf32_arm_howto_from_type (r_type);
+      bfd_reloc.howto = elf32_arm_howto_from_type(r_type);
       howto = bfd_reloc.howto;
 
       if (info->relocatable && globals->use_rel)

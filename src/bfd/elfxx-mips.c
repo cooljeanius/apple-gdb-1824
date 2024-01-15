@@ -2262,28 +2262,27 @@ mips_tls_got_index (bfd *abfd, bfd_vma got_index, unsigned char *tls_type,
    If there is not yet a GOT entry for this value, create one.  If
    R_SYMNDX refers to a TLS symbol, create a TLS GOT entry instead.
    Returns -1 if no satisfactory GOT offset can be found.  */
-
 static bfd_vma
-mips_elf_local_got_index (bfd *abfd, bfd *ibfd, struct bfd_link_info *info,
-			  bfd_vma value, unsigned long r_symndx,
-			  struct mips_elf_link_hash_entry *h, int r_type)
+mips_elf_local_got_index(bfd *abfd, bfd *ibfd, struct bfd_link_info *info,
+			 bfd_vma value, unsigned long r_symndx,
+			 struct mips_elf_link_hash_entry *h, int r_type)
 {
   asection *sgot;
   struct mips_got_info *g;
   struct mips_got_entry *entry;
 
-  g = mips_elf_got_info (elf_hash_table (info)->dynobj, &sgot);
+  g = mips_elf_got_info(elf_hash_table(info)->dynobj, &sgot);
 
-  entry = mips_elf_create_local_got_entry (abfd, ibfd, g, sgot, value,
-					   r_symndx, h, r_type);
+  entry = mips_elf_create_local_got_entry(abfd, ibfd, g, sgot, value,
+					  r_symndx, h, r_type);
   if (!entry)
     return MINUS_ONE;
 
-  if (TLS_RELOC_P (r_type))
-    return mips_tls_got_index (abfd, entry->gotidx, &entry->tls_type, r_type,
-			       info, h, value);
+  if (TLS_RELOC_P(r_type))
+    return mips_tls_got_index(abfd, (bfd_vma)entry->gotidx, &entry->tls_type,
+                              r_type, info, h, value);
   else
-    return entry->gotidx;
+    return (bfd_vma)entry->gotidx;
 }
 
 /* Returns the GOT index for the global symbol indicated by H: */
