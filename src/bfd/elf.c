@@ -67,36 +67,32 @@ static bfd_boolean elfcore_read_notes (bfd *, file_ptr, bfd_size_type) ;
    currently size independent. If that ever changes, this code will
    need to move into elfcode.h.  */
 
-/* Swap in a Verdef structure.  */
-
+/* Swap in a Verdef structure: */
 void
-_bfd_elf_swap_verdef_in (bfd *abfd,
-			 const Elf_External_Verdef *src,
-			 Elf_Internal_Verdef *dst)
+_bfd_elf_swap_verdef_in(bfd *abfd, const Elf_External_Verdef *src,
+                        Elf_Internal_Verdef *dst)
 {
-  dst->vd_version = H_GET_16 (abfd, src->vd_version);
-  dst->vd_flags   = H_GET_16 (abfd, src->vd_flags);
-  dst->vd_ndx     = H_GET_16 (abfd, src->vd_ndx);
-  dst->vd_cnt     = H_GET_16 (abfd, src->vd_cnt);
-  dst->vd_hash    = H_GET_32 (abfd, src->vd_hash);
-  dst->vd_aux     = H_GET_32 (abfd, src->vd_aux);
-  dst->vd_next    = H_GET_32 (abfd, src->vd_next);
+  dst->vd_version = (unsigned short)H_GET_16(abfd, src->vd_version);
+  dst->vd_flags = (unsigned short)H_GET_16(abfd, src->vd_flags);
+  dst->vd_ndx = (unsigned short)H_GET_16(abfd, src->vd_ndx);
+  dst->vd_cnt = (unsigned short)H_GET_16(abfd, src->vd_cnt);
+  dst->vd_hash = H_GET_32(abfd, src->vd_hash);
+  dst->vd_aux = H_GET_32(abfd, src->vd_aux);
+  dst->vd_next = H_GET_32(abfd, src->vd_next);
 }
 
-/* Swap out a Verdef structure.  */
-
+/* Swap out a Verdef structure: */
 void
-_bfd_elf_swap_verdef_out (bfd *abfd,
-			  const Elf_Internal_Verdef *src,
-			  Elf_External_Verdef *dst)
+_bfd_elf_swap_verdef_out(bfd *abfd, const Elf_Internal_Verdef *src,
+			 Elf_External_Verdef *dst)
 {
-  H_PUT_16 (abfd, src->vd_version, dst->vd_version);
-  H_PUT_16 (abfd, src->vd_flags, dst->vd_flags);
-  H_PUT_16 (abfd, src->vd_ndx, dst->vd_ndx);
-  H_PUT_16 (abfd, src->vd_cnt, dst->vd_cnt);
-  H_PUT_32 (abfd, src->vd_hash, dst->vd_hash);
-  H_PUT_32 (abfd, src->vd_aux, dst->vd_aux);
-  H_PUT_32 (abfd, src->vd_next, dst->vd_next);
+  H_PUT_16(abfd, src->vd_version, dst->vd_version);
+  H_PUT_16(abfd, src->vd_flags, dst->vd_flags);
+  H_PUT_16(abfd, src->vd_ndx, dst->vd_ndx);
+  H_PUT_16(abfd, src->vd_cnt, dst->vd_cnt);
+  H_PUT_32(abfd, src->vd_hash, dst->vd_hash);
+  H_PUT_32(abfd, src->vd_aux, dst->vd_aux);
+  H_PUT_32(abfd, src->vd_next, dst->vd_next);
 }
 
 /* Swap in a Verdaux structure: */
@@ -119,109 +115,98 @@ _bfd_elf_swap_verdaux_out(bfd *abfd,
   H_PUT_32(abfd, src->vda_next, dst->vda_next);
 }
 
-/* Swap in a Verneed structure.  */
-
+/* Swap in a Verneed structure: */
 void
-_bfd_elf_swap_verneed_in (bfd *abfd,
-			  const Elf_External_Verneed *src,
-			  Elf_Internal_Verneed *dst)
+_bfd_elf_swap_verneed_in(bfd *abfd, const Elf_External_Verneed *src,
+			 Elf_Internal_Verneed *dst)
 {
-  dst->vn_version = H_GET_16 (abfd, src->vn_version);
-  dst->vn_cnt     = H_GET_16 (abfd, src->vn_cnt);
-  dst->vn_file    = H_GET_32 (abfd, src->vn_file);
-  dst->vn_aux     = H_GET_32 (abfd, src->vn_aux);
-  dst->vn_next    = H_GET_32 (abfd, src->vn_next);
+  dst->vn_version = (unsigned short)H_GET_16(abfd, src->vn_version);
+  dst->vn_cnt = (unsigned short)H_GET_16(abfd, src->vn_cnt);
+  dst->vn_file = H_GET_32(abfd, src->vn_file);
+  dst->vn_aux = H_GET_32(abfd, src->vn_aux);
+  dst->vn_next = H_GET_32(abfd, src->vn_next);
 }
 
-/* Swap out a Verneed structure.  */
-
+/* Swap out a Verneed structure: */
 void
-_bfd_elf_swap_verneed_out (bfd *abfd,
-			   const Elf_Internal_Verneed *src,
-			   Elf_External_Verneed *dst)
+_bfd_elf_swap_verneed_out(bfd *abfd, const Elf_Internal_Verneed *src,
+			  Elf_External_Verneed *dst)
 {
-  H_PUT_16 (abfd, src->vn_version, dst->vn_version);
-  H_PUT_16 (abfd, src->vn_cnt, dst->vn_cnt);
-  H_PUT_32 (abfd, src->vn_file, dst->vn_file);
-  H_PUT_32 (abfd, src->vn_aux, dst->vn_aux);
-  H_PUT_32 (abfd, src->vn_next, dst->vn_next);
+  H_PUT_16(abfd, src->vn_version, dst->vn_version);
+  H_PUT_16(abfd, src->vn_cnt, dst->vn_cnt);
+  H_PUT_32(abfd, src->vn_file, dst->vn_file);
+  H_PUT_32(abfd, src->vn_aux, dst->vn_aux);
+  H_PUT_32(abfd, src->vn_next, dst->vn_next);
 }
 
-/* Swap in a Vernaux structure.  */
-
+/* Swap in a Vernaux structure: */
 void
-_bfd_elf_swap_vernaux_in (bfd *abfd,
-			  const Elf_External_Vernaux *src,
-			  Elf_Internal_Vernaux *dst)
+_bfd_elf_swap_vernaux_in(bfd *abfd, const Elf_External_Vernaux *src,
+			 Elf_Internal_Vernaux *dst)
 {
-  dst->vna_hash  = H_GET_32 (abfd, src->vna_hash);
-  dst->vna_flags = H_GET_16 (abfd, src->vna_flags);
-  dst->vna_other = H_GET_16 (abfd, src->vna_other);
-  dst->vna_name  = H_GET_32 (abfd, src->vna_name);
-  dst->vna_next  = H_GET_32 (abfd, src->vna_next);
+  dst->vna_hash = H_GET_32(abfd, src->vna_hash);
+  dst->vna_flags = (unsigned short)H_GET_16(abfd, src->vna_flags);
+  dst->vna_other = (unsigned short)H_GET_16(abfd, src->vna_other);
+  dst->vna_name = H_GET_32(abfd, src->vna_name);
+  dst->vna_next = H_GET_32(abfd, src->vna_next);
 }
 
-/* Swap out a Vernaux structure.  */
-
+/* Swap out a Vernaux structure: */
 void
-_bfd_elf_swap_vernaux_out (bfd *abfd,
-			   const Elf_Internal_Vernaux *src,
-			   Elf_External_Vernaux *dst)
+_bfd_elf_swap_vernaux_out(bfd *abfd, const Elf_Internal_Vernaux *src,
+			  Elf_External_Vernaux *dst)
 {
-  H_PUT_32 (abfd, src->vna_hash, dst->vna_hash);
-  H_PUT_16 (abfd, src->vna_flags, dst->vna_flags);
-  H_PUT_16 (abfd, src->vna_other, dst->vna_other);
-  H_PUT_32 (abfd, src->vna_name, dst->vna_name);
-  H_PUT_32 (abfd, src->vna_next, dst->vna_next);
+  H_PUT_32(abfd, src->vna_hash, dst->vna_hash);
+  H_PUT_16(abfd, src->vna_flags, dst->vna_flags);
+  H_PUT_16(abfd, src->vna_other, dst->vna_other);
+  H_PUT_32(abfd, src->vna_name, dst->vna_name);
+  H_PUT_32(abfd, src->vna_next, dst->vna_next);
 }
 
-/* Swap in a Versym structure.  */
-
+/* Swap in a Versym structure: */
 void
-_bfd_elf_swap_versym_in (bfd *abfd,
-			 const Elf_External_Versym *src,
-			 Elf_Internal_Versym *dst)
+_bfd_elf_swap_versym_in(bfd *abfd, const Elf_External_Versym *src,
+                        Elf_Internal_Versym *dst)
 {
-  dst->vs_vers = H_GET_16 (abfd, src->vs_vers);
+  dst->vs_vers = (unsigned short)H_GET_16(abfd, src->vs_vers);
 }
 
 /* Swap out a Versym structure.  */
 
 void
-_bfd_elf_swap_versym_out (bfd *abfd,
-			  const Elf_Internal_Versym *src,
-			  Elf_External_Versym *dst)
+_bfd_elf_swap_versym_out(bfd *abfd, const Elf_Internal_Versym *src,
+			 Elf_External_Versym *dst)
 {
-  H_PUT_16 (abfd, src->vs_vers, dst->vs_vers);
+  H_PUT_16(abfd, src->vs_vers, dst->vs_vers);
 }
 
 /* Standard ELF hash function.  Do not change this function; you will
    cause invalid hash tables to be generated.  */
-
 unsigned long
-bfd_elf_hash (const char *namearg)
+bfd_elf_hash(const char *namearg)
 {
-  const unsigned char *name = (const unsigned char *) namearg;
-  unsigned long h = 0;
+  const unsigned char *name = (const unsigned char *)namearg;
+  unsigned long h = 0UL;
   unsigned long g;
   int ch;
 
   while ((ch = *name++) != '\0')
     {
-      h = (h << 4) + ch;
+      h = ((h << 4UL) + (unsigned long)ch);
       if ((g = (h & 0xf0000000)) != 0)
 	{
-	  h ^= g >> 24;
+	  h ^= (g >> 24UL);
 	  /* The ELF ABI says `h &= ~g', but this is equivalent in
 	     this case and on some machines one insn instead of two.  */
 	  h ^= g;
 	}
     }
-  return h & 0xffffffff;
+  return (h & 0xffffffff);
 }
 
+/* */
 bfd_boolean
-bfd_elf_mkobject (bfd *abfd)
+bfd_elf_mkobject(bfd *abfd)
 {
   /* This just does initialization.  */
   /* coff_mkobject zalloc's space for tdata.coff_obj_data ...  */
@@ -348,7 +333,7 @@ bfd_elf_get_elf_syms(bfd *ibfd, Elf_Internal_Shdr *symtab_hdr,
   bed = get_elf_backend_data(ibfd);
   extsym_size = bed->s->sizeof_sym;
   amt = (symcount * extsym_size);
-  pos = (symtab_hdr->sh_offset + symoffset * extsym_size);
+  pos = (symtab_hdr->sh_offset + (file_ptr)(symoffset * extsym_size));
   if (extsym_buf == NULL)
     {
       alloc_ext = bfd_malloc2(symcount, extsym_size);
@@ -367,7 +352,8 @@ bfd_elf_get_elf_syms(bfd *ibfd, Elf_Internal_Shdr *symtab_hdr,
   else
     {
       amt = (symcount * sizeof(Elf_External_Sym_Shndx));
-      pos = shndx_hdr->sh_offset + symoffset * sizeof(Elf_External_Sym_Shndx);
+      pos = (shndx_hdr->sh_offset
+             + (file_ptr)(symoffset * sizeof(Elf_External_Sym_Shndx)));
       if (extshndx_buf == NULL)
 	{
 	  alloc_extshndx = ((Elf_External_Sym_Shndx *)
@@ -480,7 +466,7 @@ group_signature(bfd *abfd, Elf_Internal_Shdr *ghdr)
 static bfd_boolean
 setup_group(bfd *abfd, Elf_Internal_Shdr *hdr, asection *newsect)
 {
-  unsigned int num_group = elf_tdata(abfd)->num_group;
+  unsigned int num_group = (unsigned int)elf_tdata(abfd)->num_group;
 
   /* If num_group is zero, read in all SHT_GROUP sections.  The count
      is set to -1 if there are no SHT_GROUP sections.  */
@@ -490,7 +476,7 @@ setup_group(bfd *abfd, Elf_Internal_Shdr *hdr, asection *newsect)
 
       /* First count the number of groups.  If we have a SHT_GROUP
 	 section with just a flag word (ie. sh_size is 4), ignore it.  */
-      shnum = elf_numsections (abfd);
+      shnum = elf_numsections(abfd);
       num_group = 0;
       for (i = 0; i < shnum; i++)
 	{
@@ -502,7 +488,7 @@ setup_group(bfd *abfd, Elf_Internal_Shdr *hdr, asection *newsect)
       if (num_group == 0)
 	{
 	  num_group = (unsigned int)-1;
-	  elf_tdata(abfd)->num_group = num_group;
+	  elf_tdata(abfd)->num_group = (int)num_group;
 	}
       else
 	{
@@ -510,7 +496,7 @@ setup_group(bfd *abfd, Elf_Internal_Shdr *hdr, asection *newsect)
 	     so we can find them quickly.  */
 	  bfd_size_type amt;
 
-	  elf_tdata(abfd)->num_group = num_group;
+	  elf_tdata(abfd)->num_group = (int)num_group;
 	  elf_tdata(abfd)->group_sect_ptr =
 	    (Elf_Internal_Shdr **)bfd_alloc2(abfd, num_group,
 					     sizeof(Elf_Internal_Shdr *));
@@ -648,7 +634,7 @@ bfd_boolean
 _bfd_elf_setup_group_pointers(bfd *abfd)
 {
   unsigned int i;
-  unsigned int num_group = elf_tdata(abfd)->num_group;
+  unsigned int num_group = (unsigned int)elf_tdata(abfd)->num_group;
   bfd_boolean result = TRUE;
 
   if (num_group == (unsigned int)-1)
@@ -793,12 +779,12 @@ _bfd_elf_make_section_from_shdr(bfd *abfd, Elf_Internal_Shdr *hdr,
 
       if (name [0] == '.')
 	{
-	  int i = name [1] - 'd';
-	  if (i >= 0
-	      && i < (int) ARRAY_SIZE (debug_sections)
-	      && debug_sections [i].name != NULL
-	      && strncmp (&name [1], debug_sections [i].name,
-			  debug_sections [i].len) == 0)
+	  int i = (name[1] - 'd');
+	  if ((i >= 0)
+	      && (i < (int)ARRAY_SIZE(debug_sections))
+	      && (debug_sections[i].name != NULL)
+	      && (strncmp(&name[1], debug_sections[i].name,
+			  (size_t)debug_sections[i].len) == 0))
 	    flags |= SEC_DEBUGGING;
 	}
     }
@@ -809,13 +795,13 @@ _bfd_elf_make_section_from_shdr(bfd *abfd, Elf_Internal_Shdr *hdr,
      The symbols will be defined as weak, so that multiple definitions
      are permitted.  The GNU linker extension is to actually discard
      all but one of the sections.  */
-  if (strncmp (name, ".gnu.linkonce", sizeof ".gnu.linkonce" - 1) == 0
-      && elf_next_in_group (newsect) == NULL)
-    flags |= SEC_LINK_ONCE | SEC_LINK_DUPLICATES_DISCARD;
+  if ((strncmp(name, ".gnu.linkonce", (sizeof(".gnu.linkonce") - 1UL)) == 0)
+      && (elf_next_in_group(newsect) == NULL))
+    flags |= (SEC_LINK_ONCE | SEC_LINK_DUPLICATES_DISCARD);
 
-  bed = get_elf_backend_data (abfd);
+  bed = get_elf_backend_data(abfd);
   if (bed->elf_backend_section_flags)
-    if (! bed->elf_backend_section_flags (&flags, hdr))
+    if (! bed->elf_backend_section_flags(&flags, hdr))
       return FALSE;
 
   if (! bfd_set_section_flags (abfd, newsect, flags))
@@ -852,13 +838,13 @@ _bfd_elf_make_section_from_shdr(bfd *abfd, Elf_Internal_Shdr *hdr,
 	       * place special significance on the address 0 and
 	       * executables need to be able to have a segment which
 	       * covers this address.  */
-	      if (phdr->p_type == PT_LOAD
-		  && (bfd_vma) hdr->sh_offset >= phdr->p_offset
-		  && (hdr->sh_offset + hdr->sh_size
-		      <= phdr->p_offset + phdr->p_memsz)
-		  && ((flags & SEC_LOAD) == 0
-		      || (hdr->sh_offset + hdr->sh_size
-			  <= phdr->p_offset + phdr->p_filesz)))
+	      if ((phdr->p_type == PT_LOAD)
+		  && ((bfd_vma)hdr->sh_offset >= phdr->p_offset)
+		  && (((bfd_size_type)hdr->sh_offset + hdr->sh_size)
+		      <= (phdr->p_offset + phdr->p_memsz))
+		  && (((flags & SEC_LOAD) == 0)
+		      || (((bfd_size_type)hdr->sh_offset + hdr->sh_size)
+			  <= (phdr->p_offset + phdr->p_filesz))))
 		{
 		  if ((flags & SEC_LOAD) == 0)
 		    newsect->lma = (phdr->p_paddr
@@ -872,17 +858,17 @@ _bfd_elf_make_section_from_shdr(bfd *abfd, Elf_Internal_Shdr *hdr,
 		       segment will contain sections with contiguous
 		       LMAs, even if the VMAs are not.  */
 		    newsect->lma = (phdr->p_paddr
-				    + hdr->sh_offset - phdr->p_offset);
+				    + (bfd_vma)hdr->sh_offset
+                                    - phdr->p_offset);
 
 		  /* With contiguous segments, we cannot tell from file
 		     offsets whether a section with zero size should
 		     be placed at the end of one segment or the
 		     beginning of the next. Decide based on vaddr.  */
-		  if (hdr->sh_addr >= phdr->p_vaddr
-		      && (hdr->sh_addr + hdr->sh_size
-			  <= phdr->p_vaddr + phdr->p_memsz)) {
-				  break;
-			  }
+		  if ((hdr->sh_addr >= phdr->p_vaddr)
+		      && ((hdr->sh_addr + hdr->sh_size)
+			  <= (phdr->p_vaddr + phdr->p_memsz)))
+                    break;
 		}
 	    }
 	}
@@ -1574,9 +1560,9 @@ _bfd_elf_link_hash_table_create(bfd *abfd)
   if (ret == NULL)
     return NULL;
 
-  if (! _bfd_elf_link_hash_table_init (ret, abfd, _bfd_elf_link_hash_newfunc))
+  if (!_bfd_elf_link_hash_table_init(ret, abfd, _bfd_elf_link_hash_newfunc))
     {
-      free (ret);
+      free(ret);
       return NULL;
     }
 
@@ -1586,33 +1572,34 @@ _bfd_elf_link_hash_table_create(bfd *abfd)
 /* This is a hook for the ELF emulation code in the generic linker to
    tell the backend linker what file name to use for the DT_NEEDED
    entry for a dynamic object.  */
-
 void
-bfd_elf_set_dt_needed_name (bfd *abfd, const char *name)
+bfd_elf_set_dt_needed_name(bfd *abfd, const char *name)
 {
-  if (bfd_get_flavour (abfd) == bfd_target_elf_flavour
-      && bfd_get_format (abfd) == bfd_object)
-    elf_dt_name (abfd) = name;
+  if ((bfd_get_flavour(abfd) == bfd_target_elf_flavour)
+      && (bfd_get_format(abfd) == bfd_object))
+    elf_dt_name(abfd) = name;
 }
 
+/* */
 int
-bfd_elf_get_dyn_lib_class (bfd *abfd)
+bfd_elf_get_dyn_lib_class(bfd *abfd)
 {
   int lib_class;
-  if (bfd_get_flavour (abfd) == bfd_target_elf_flavour
-      && bfd_get_format (abfd) == bfd_object)
-    lib_class = elf_dyn_lib_class (abfd);
+  if ((bfd_get_flavour(abfd) == bfd_target_elf_flavour)
+      && (bfd_get_format(abfd) == bfd_object))
+    lib_class = (int)elf_dyn_lib_class(abfd);
   else
     lib_class = 0;
   return lib_class;
 }
 
+/* */
 void
-bfd_elf_set_dyn_lib_class (bfd *abfd, int lib_class)
+bfd_elf_set_dyn_lib_class(bfd *abfd, int lib_class)
 {
-  if (bfd_get_flavour (abfd) == bfd_target_elf_flavour
-      && bfd_get_format (abfd) == bfd_object)
-    elf_dyn_lib_class (abfd) = lib_class;
+  if ((bfd_get_flavour(abfd) == bfd_target_elf_flavour)
+      && (bfd_get_format(abfd) == bfd_object))
+    elf_dyn_lib_class(abfd) = (enum dynamic_lib_link_class)lib_class;
 }
 
 /* Get the list of DT_NEEDED entries for a link.  This is a hook for
@@ -1791,34 +1778,34 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
     case SHT_FINI_ARRAY:	/* .fini_array section.  */
     case SHT_PREINIT_ARRAY:	/* .preinit_array section.  */
     case SHT_GNU_LIBLIST:	/* .gnu.liblist section.  */
-      return _bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex);
+      return _bfd_elf_make_section_from_shdr(abfd, hdr, name, (int)shindex);
 
     case SHT_DYNAMIC:	/* Dynamic linking information.  */
-      if (! _bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex))
+      if (!_bfd_elf_make_section_from_shdr(abfd, hdr, name, (int)shindex))
 	return FALSE;
-      if (hdr->sh_link > elf_numsections (abfd)
-	  || elf_elfsections (abfd)[hdr->sh_link] == NULL)
+      if ((hdr->sh_link > elf_numsections(abfd))
+	  || (elf_elfsections(abfd)[hdr->sh_link] == NULL))
 	return FALSE;
-      if (elf_elfsections (abfd)[hdr->sh_link]->sh_type != SHT_STRTAB)
+      if (elf_elfsections(abfd)[hdr->sh_link]->sh_type != SHT_STRTAB)
 	{
 	  Elf_Internal_Shdr *dynsymhdr;
 
 	  /* The shared libraries distributed with hpux11 have a bogus
 	     sh_link field for the ".dynamic" section.  Find the
 	     string table for the ".dynsym" section instead.  */
-	  if (elf_dynsymtab (abfd) != 0)
+	  if (elf_dynsymtab(abfd) != 0)
 	    {
-	      dynsymhdr = elf_elfsections (abfd)[elf_dynsymtab (abfd)];
+	      dynsymhdr = elf_elfsections(abfd)[elf_dynsymtab(abfd)];
 	      hdr->sh_link = dynsymhdr->sh_link;
 	    }
 	  else
 	    {
 	      unsigned int i, num_sec;
 
-	      num_sec = elf_numsections (abfd);
+	      num_sec = elf_numsections(abfd);
 	      for (i = 1; i < num_sec; i++)
 		{
-		  dynsymhdr = elf_elfsections (abfd)[i];
+		  dynsymhdr = elf_elfsections(abfd)[i];
 		  if (dynsymhdr->sh_type == SHT_DYNSYM)
 		    {
 		      hdr->sh_link = dynsymhdr->sh_link;
@@ -1830,15 +1817,15 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
       break;
 
     case SHT_SYMTAB:		/* A symbol table */
-      if (elf_onesymtab (abfd) == shindex)
+      if (elf_onesymtab(abfd) == shindex)
 	return TRUE;
 
       if (hdr->sh_entsize != bed->s->sizeof_sym)
 	return FALSE;
-      BFD_ASSERT (elf_onesymtab (abfd) == 0);
-      elf_onesymtab (abfd) = shindex;
-      elf_tdata (abfd)->symtab_hdr = *hdr;
-      elf_elfsections (abfd)[shindex] = hdr = &elf_tdata (abfd)->symtab_hdr;
+      BFD_ASSERT(elf_onesymtab(abfd) == 0);
+      elf_onesymtab(abfd) = shindex;
+      elf_tdata(abfd)->symtab_hdr = *hdr;
+      elf_elfsections(abfd)[shindex] = hdr = &elf_tdata(abfd)->symtab_hdr;
       abfd->flags |= HAS_SYMS;
 
       /* Sometimes a shared object will map in the symbol table.  If
@@ -1847,23 +1834,23 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
          decision purely on SHF_ALLOC, because that flag is sometimes
          set in a relocatable object file, which would confuse the
          linker.  */
-      if ((hdr->sh_flags & SHF_ALLOC) != 0
-	  && (abfd->flags & DYNAMIC) != 0
-	  && ! _bfd_elf_make_section_from_shdr (abfd, hdr, name,
-						shindex))
+      if (((hdr->sh_flags & SHF_ALLOC) != 0)
+	  && ((abfd->flags & DYNAMIC) != 0)
+	  && !_bfd_elf_make_section_from_shdr(abfd, hdr, name,
+                                              (int)shindex))
 	return FALSE;
 
       /* Go looking for SHT_SYMTAB_SHNDX too, since if there is one we
-	   * cannot read symbols without that section loaded as well. It
-	   * is most likely specified by the next section header.  */
-      if (elf_elfsections (abfd)[elf_symtab_shndx (abfd)]->sh_link != shindex)
+       * cannot read symbols without that section loaded as well. It
+       * is most likely specified by the next section header.  */
+      if (elf_elfsections(abfd)[elf_symtab_shndx(abfd)]->sh_link != shindex)
 	{
 	  unsigned int i, num_sec;
 
-	  num_sec = elf_numsections (abfd);
-	  for (i = shindex + 1; i < num_sec; i++)
+	  num_sec = elf_numsections(abfd);
+	  for (i = (shindex + 1); i < num_sec; i++)
 	    {
-	      Elf_Internal_Shdr *hdr2 = elf_elfsections (abfd)[i];
+	      Elf_Internal_Shdr *hdr2 = elf_elfsections(abfd)[i];
 	      if (hdr2->sh_type == SHT_SYMTAB_SHNDX
 		  && hdr2->sh_link == shindex)
 		break;
@@ -1871,40 +1858,40 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
 	  if (i == num_sec)
 	    for (i = 1; i < shindex; i++)
 	      {
-		Elf_Internal_Shdr *hdr2 = elf_elfsections (abfd)[i];
+		Elf_Internal_Shdr *hdr2 = elf_elfsections(abfd)[i];
 		if (hdr2->sh_type == SHT_SYMTAB_SHNDX
 		    && hdr2->sh_link == shindex)
 		  break;
 	      }
 	  if (i != shindex)
-	    return bfd_section_from_shdr (abfd, i);
+	    return bfd_section_from_shdr(abfd, i);
 	}
       return TRUE;
 
     case SHT_DYNSYM:		/* A dynamic symbol table */
-      if (elf_dynsymtab (abfd) == shindex)
+      if (elf_dynsymtab(abfd) == shindex)
 	return TRUE;
 
       if (hdr->sh_entsize != bed->s->sizeof_sym)
 	return FALSE;
-      BFD_ASSERT (elf_dynsymtab (abfd) == 0);
-      elf_dynsymtab (abfd) = shindex;
-      elf_tdata (abfd)->dynsymtab_hdr = *hdr;
-      elf_elfsections (abfd)[shindex] = hdr = &elf_tdata (abfd)->dynsymtab_hdr;
+      BFD_ASSERT(elf_dynsymtab(abfd) == 0);
+      elf_dynsymtab(abfd) = shindex;
+      elf_tdata(abfd)->dynsymtab_hdr = *hdr;
+      elf_elfsections(abfd)[shindex] = hdr = &elf_tdata(abfd)->dynsymtab_hdr;
       abfd->flags |= HAS_SYMS;
 
       /* Besides being a symbol table, we also treat this as a regular
 	 section, so that objcopy can handle it.  */
-      return _bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex);
+      return _bfd_elf_make_section_from_shdr(abfd, hdr, name, (int)shindex);
 
     case SHT_SYMTAB_SHNDX:	/* Symbol section indices when >64k sections */
-      if (elf_symtab_shndx (abfd) == shindex)
+      if (elf_symtab_shndx(abfd) == shindex)
 	return TRUE;
 
-      BFD_ASSERT (elf_symtab_shndx (abfd) == 0);
-      elf_symtab_shndx (abfd) = shindex;
-      elf_tdata (abfd)->symtab_shndx_hdr = *hdr;
-      elf_elfsections (abfd)[shindex] = &elf_tdata (abfd)->symtab_shndx_hdr;
+      BFD_ASSERT(elf_symtab_shndx(abfd) == 0);
+      elf_symtab_shndx(abfd) = shindex;
+      elf_tdata(abfd)->symtab_shndx_hdr = *hdr;
+      elf_elfsections(abfd)[shindex] = &elf_tdata(abfd)->symtab_shndx_hdr;
       return TRUE;
 
     case SHT_STRTAB:		/* A string table */
@@ -1912,59 +1899,59 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
 	return TRUE;
       if (ehdr->e_shstrndx == shindex)
 	{
-	  elf_tdata (abfd)->shstrtab_hdr = *hdr;
-	  elf_elfsections (abfd)[shindex] = &elf_tdata (abfd)->shstrtab_hdr;
+	  elf_tdata(abfd)->shstrtab_hdr = *hdr;
+	  elf_elfsections(abfd)[shindex] = &elf_tdata(abfd)->shstrtab_hdr;
 	  return TRUE;
 	}
-      if (elf_elfsections (abfd)[elf_onesymtab (abfd)]->sh_link == shindex)
+      if (elf_elfsections(abfd)[elf_onesymtab(abfd)]->sh_link == shindex)
 	{
 	symtab_strtab:
-	  elf_tdata (abfd)->strtab_hdr = *hdr;
-	  elf_elfsections (abfd)[shindex] = &elf_tdata (abfd)->strtab_hdr;
+	  elf_tdata(abfd)->strtab_hdr = *hdr;
+	  elf_elfsections(abfd)[shindex] = &elf_tdata(abfd)->strtab_hdr;
 	  return TRUE;
 	}
-      if (elf_elfsections (abfd)[elf_dynsymtab (abfd)]->sh_link == shindex)
+      if (elf_elfsections(abfd)[elf_dynsymtab(abfd)]->sh_link == shindex)
 	{
 	dynsymtab_strtab:
-	  elf_tdata (abfd)->dynstrtab_hdr = *hdr;
-	  hdr = &elf_tdata (abfd)->dynstrtab_hdr;
-	  elf_elfsections (abfd)[shindex] = hdr;
+	  elf_tdata(abfd)->dynstrtab_hdr = *hdr;
+	  hdr = &elf_tdata(abfd)->dynstrtab_hdr;
+	  elf_elfsections(abfd)[shindex] = hdr;
 	  /* We also treat this as a regular section, so that objcopy
 	     can handle it.  */
-	  return _bfd_elf_make_section_from_shdr (abfd, hdr, name,
-						  shindex);
+	  return _bfd_elf_make_section_from_shdr(abfd, hdr, name,
+						 (int)shindex);
 	}
 
       /* If the string table is NOT one of the above, then treat it as a
-	   * regular section.  We need to scan all the headers to be sure,
-	   * just in case this strtab section appeared before the above.  */
-      if (elf_onesymtab (abfd) == 0 || elf_dynsymtab (abfd) == 0)
+       * regular section.  We need to scan all the headers to be sure,
+       * just in case this strtab section appeared before the above.  */
+      if ((elf_onesymtab(abfd) == 0) || (elf_dynsymtab(abfd) == 0))
 	{
 	  unsigned int i, num_sec;
 
-	  num_sec = elf_numsections (abfd);
+	  num_sec = elf_numsections(abfd);
 	  for (i = 1; i < num_sec; i++)
 	    {
-	      Elf_Internal_Shdr *hdr2 = elf_elfsections (abfd)[i];
+	      Elf_Internal_Shdr *hdr2 = elf_elfsections(abfd)[i];
 	      if (hdr2->sh_link == shindex)
 		{
-		  /* Prevent endless recursion on broken objects.  */
-			if (i == shindex) {
-				return FALSE;
-			}
-			if (! bfd_section_from_shdr (abfd, i)) {
-				return FALSE;
-			}
-			if (elf_onesymtab (abfd) == i) {
-				goto symtab_strtab;
-			}
-			if (elf_dynsymtab (abfd) == i) {
-				goto dynsymtab_strtab;
-			}
+		  /* Prevent endless recursion on broken objects: */
+                  if (i == shindex) {
+                    return FALSE;
+                  }
+                  if (!bfd_section_from_shdr(abfd, i)) {
+                    return FALSE;
+                  }
+                  if (elf_onesymtab(abfd) == i) {
+                    goto symtab_strtab;
+                  }
+                  if (elf_dynsymtab(abfd) == i) {
+                    goto dynsymtab_strtab;
+                  }
 		}
 	    }
 	}
-      return _bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex);
+      return _bfd_elf_make_section_from_shdr(abfd, hdr, name, (int)shindex);
 
     case SHT_REL:
     case SHT_RELA:
@@ -1972,22 +1959,22 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
       {
 	asection *target_sect;
 	Elf_Internal_Shdr *hdr2;
-	unsigned int num_sec = elf_numsections (abfd);
+	unsigned int num_sec = elf_numsections(abfd);
 
 	if (hdr->sh_entsize
-	    != (bfd_size_type) (hdr->sh_type == SHT_REL
-				? bed->s->sizeof_rel : bed->s->sizeof_rela))
+	    != (bfd_size_type)((hdr->sh_type == SHT_REL)
+                               ? bed->s->sizeof_rel : bed->s->sizeof_rela))
 	  return FALSE;
 
-	/* Check for a bogus link to avoid crashing.  */
-	if ((hdr->sh_link >= SHN_LORESERVE && hdr->sh_link <= SHN_HIRESERVE)
-	    || hdr->sh_link >= num_sec)
+	/* Check for a bogus link to avoid crashing: */
+	if (((hdr->sh_link >= SHN_LORESERVE) && (hdr->sh_link <= SHN_HIRESERVE))
+	    || (hdr->sh_link >= num_sec))
 	  {
 	    ((*_bfd_error_handler)
 	     (_("%B: invalid link %lu for reloc section %s (index %u)"),
 	      abfd, hdr->sh_link, name, shindex));
-	    return _bfd_elf_make_section_from_shdr (abfd, hdr, name,
-						    shindex);
+	    return _bfd_elf_make_section_from_shdr(abfd, hdr, name,
+                                                   (int)shindex);
 	  }
 
 	/* For some incomprehensible reason Oracle distributes
@@ -1997,8 +1984,8 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
 	   them. We scan through the section headers; if we find only
 	   one suitable symbol table, we clobber the sh_link to point
 	   to it. I hope this does NOT break anything.  */
-	if (elf_elfsections (abfd)[hdr->sh_link]->sh_type != SHT_SYMTAB
-	    && elf_elfsections (abfd)[hdr->sh_link]->sh_type != SHT_DYNSYM)
+	if ((elf_elfsections(abfd)[hdr->sh_link]->sh_type != SHT_SYMTAB)
+	    && (elf_elfsections(abfd)[hdr->sh_link]->sh_type != SHT_DYNSYM))
 	  {
 	    unsigned int scan;
 	    int found;
@@ -2006,19 +1993,19 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
 	    found = 0;
 	    for (scan = 1; scan < num_sec; scan++)
 	      {
-		if (elf_elfsections (abfd)[scan]->sh_type == SHT_SYMTAB
-		    || elf_elfsections (abfd)[scan]->sh_type == SHT_DYNSYM)
+		if ((elf_elfsections(abfd)[scan]->sh_type == SHT_SYMTAB)
+		    || (elf_elfsections(abfd)[scan]->sh_type == SHT_DYNSYM))
 		  {
 		    if (found != 0)
 		      {
 			found = 0;
 			break;
 		      }
-		    found = scan;
+		    found = (int)scan;
 		  }
 	      }
 	    if (found != 0)
-	      hdr->sh_link = found;
+	      hdr->sh_link = (unsigned long)found;
 	  }
 
 	/* Get the symbol table.  */
@@ -2036,7 +2023,7 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
 	if ((hdr->sh_link != elf_onesymtab(abfd))
             || (hdr->sh_info == SHN_UNDEF)) {
 	  return _bfd_elf_make_section_from_shdr(abfd, hdr, name,
-						 shindex);
+						 (int)shindex);
 	}
 
 	/* Prevent endless recursion on broken objects.  */
@@ -2053,8 +2040,8 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
 	  return FALSE;
 	}
 
-	if ((target_sect->flags & SEC_RELOC) == 0
-	    || target_sect->reloc_count == 0) {
+	if (((target_sect->flags & SEC_RELOC) == 0)
+	    || (target_sect->reloc_count == 0)) {
 	    hdr2 = &elf_section_data(target_sect)->rel_hdr;
 	} else {
 	    bfd_size_type amt;
@@ -2079,23 +2066,23 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
       break;
 
     case SHT_GNU_verdef:
-      elf_dynverdef (abfd) = shindex;
-      elf_tdata (abfd)->dynverdef_hdr = *hdr;
-      return _bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex);
+      elf_dynverdef(abfd) = shindex;
+      elf_tdata(abfd)->dynverdef_hdr = *hdr;
+      return _bfd_elf_make_section_from_shdr(abfd, hdr, name, (int)shindex);
       break;
 
     case SHT_GNU_versym:
-      if (hdr->sh_entsize != sizeof (Elf_External_Versym))
+      if (hdr->sh_entsize != sizeof(Elf_External_Versym))
 	return FALSE;
-      elf_dynversym (abfd) = shindex;
-      elf_tdata (abfd)->dynversym_hdr = *hdr;
-      return _bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex);
+      elf_dynversym(abfd) = shindex;
+      elf_tdata(abfd)->dynversym_hdr = *hdr;
+      return _bfd_elf_make_section_from_shdr(abfd, hdr, name, (int)shindex);
       break;
 
     case SHT_GNU_verneed:
-      elf_dynverref (abfd) = shindex;
-      elf_tdata (abfd)->dynverref_hdr = *hdr;
-      return _bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex);
+      elf_dynverref(abfd) = shindex;
+      elf_tdata(abfd)->dynverref_hdr = *hdr;
+      return _bfd_elf_make_section_from_shdr(abfd, hdr, name, (int)shindex);
       break;
 
     case SHT_SHLIB:
@@ -2112,7 +2099,7 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
       if (name == NULL) {
         return FALSE;
       }
-      if (!_bfd_elf_make_section_from_shdr(abfd, hdr, name, shindex)) {
+      if (!_bfd_elf_make_section_from_shdr(abfd, hdr, name, (int)shindex)) {
         return FALSE;
       }
       if (hdr->contents != NULL)
@@ -2139,7 +2126,7 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
 
     default:
       /* Check for any processor-specific section types: */
-      return bed->elf_backend_section_from_shdr(abfd, hdr, name, shindex);
+      return bed->elf_backend_section_from_shdr(abfd, hdr, name, (int)shindex);
     }
 
   return TRUE;
@@ -2147,36 +2134,33 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
 
 /* Return the section for the local symbol specified by ABFD, R_SYMNDX.
    Return SEC for sections that have no elf section, and NULL on error.  */
-
 asection *
-bfd_section_from_r_symndx (bfd *abfd,
-			   struct sym_sec_cache *cache,
-			   asection *sec,
-			   unsigned long r_symndx)
+bfd_section_from_r_symndx(bfd *abfd, struct sym_sec_cache *cache,
+			  asection *sec, unsigned long r_symndx)
 {
   Elf_Internal_Shdr *symtab_hdr;
-  unsigned char esym[sizeof (Elf64_External_Sym)];
+  unsigned char esym[sizeof(Elf64_External_Sym)];
   Elf_External_Sym_Shndx eshndx;
   Elf_Internal_Sym isym;
-  unsigned int ent = r_symndx % LOCAL_SYM_CACHE_SIZE;
+  unsigned int ent = (r_symndx % LOCAL_SYM_CACHE_SIZE);
 
   if (cache->abfd == abfd && cache->indx[ent] == r_symndx)
     return cache->sec[ent];
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  if (bfd_elf_get_elf_syms (abfd, symtab_hdr, 1, r_symndx,
-			    &isym, esym, &eshndx) == NULL)
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  if (bfd_elf_get_elf_syms(abfd, symtab_hdr, 1, r_symndx,
+			   &isym, esym, &eshndx) == NULL)
     return NULL;
 
   if (cache->abfd != abfd)
     {
-      memset (cache->indx, -1, sizeof (cache->indx));
+      memset(cache->indx, -1, sizeof(cache->indx));
       cache->abfd = abfd;
     }
   cache->indx[ent] = r_symndx;
   cache->sec[ent] = sec;
-  if ((isym.st_shndx != SHN_UNDEF && isym.st_shndx < SHN_LORESERVE)
-      || isym.st_shndx > SHN_HIRESERVE)
+  if (((isym.st_shndx != SHN_UNDEF) && (isym.st_shndx < SHN_LORESERVE))
+      || (isym.st_shndx > SHN_HIRESERVE))
     {
       asection *s;
       s = bfd_section_from_elf_index(abfd, isym.st_shndx);
@@ -2338,19 +2322,19 @@ _bfd_elf_get_special_section(const char *name,
   for (i = 0; spec[i].prefix != NULL; i++)
     {
       size_t suffix_len;
-      size_t prefix_len = spec[i].prefix_length;
+      size_t prefix_len = (size_t)spec[i].prefix_length;
 
       if (len < prefix_len)
 	continue;
       if (memcmp(name, spec[i].prefix, prefix_len) != 0)
 	continue;
 
-      suffix_len = spec[i].suffix_length;
-      if (suffix_len <= 0)
+      suffix_len = (size_t)spec[i].suffix_length;
+      if (suffix_len <= 0UL)
 	{
 	  if (name[prefix_len] != 0)
 	    {
-	      if (suffix_len == 0)
+	      if (suffix_len == 0UL)
 		continue;
 	      if ((name[prefix_len] != '.')
 		  && (((int)suffix_len == -2)
@@ -2385,13 +2369,12 @@ _bfd_elf_get_sec_type_attr(bfd *abfd, asection *sec)
   if (sec->name == NULL)
     return NULL;
 
-  bed = get_elf_backend_data (abfd);
+  bed = get_elf_backend_data(abfd);
   spec = bed->special_sections;
   if (spec)
     {
-      spec = _bfd_elf_get_special_section (sec->name,
-					   bed->special_sections,
-					   sec->use_rela_p);
+      spec = _bfd_elf_get_special_section(sec->name, bed->special_sections,
+					  sec->use_rela_p);
       if (spec != NULL)
 	return spec;
     }
@@ -2399,8 +2382,8 @@ _bfd_elf_get_sec_type_attr(bfd *abfd, asection *sec)
   if (sec->name[0] != '.')
     return NULL;
 
-  i = sec->name[1] - 'b';
-  if (i < 0 || i > 't' - 'b')
+  i = (sec->name[1] - 'b');
+  if ((i < 0) || (i > ('t' - 'b')))
     return NULL;
 
   spec = special_sections[i];
@@ -2408,11 +2391,12 @@ _bfd_elf_get_sec_type_attr(bfd *abfd, asection *sec)
   if (spec == NULL)
     return NULL;
 
-  return _bfd_elf_get_special_section (sec->name, spec, sec->use_rela_p);
+  return _bfd_elf_get_special_section(sec->name, spec, sec->use_rela_p);
 }
 
+/* */
 bfd_boolean
-_bfd_elf_new_section_hook (bfd *abfd, asection *sec)
+_bfd_elf_new_section_hook(bfd *abfd, asection *sec)
 {
   struct bfd_elf_section_data *sdata;
   const struct elf_backend_data *bed;
@@ -2427,21 +2411,21 @@ _bfd_elf_new_section_hook (bfd *abfd, asection *sec)
       sec->used_by_bfd = sdata;
     }
 
-  /* Indicate whether or not this section should use RELA relocations.  */
-  bed = get_elf_backend_data (abfd);
+  /* Indicate whether or not this section should use RELA relocations: */
+  bed = get_elf_backend_data(abfd);
   sec->use_rela_p = bed->default_use_rela_p;
 
   /* When we read a file, we do NOT need section type and flags unless
      it is a linker created section. They will be overridden in
      _bfd_elf_make_section_from_shdr anyway.  */
-  if (abfd->direction != read_direction
-      || (sec->flags & SEC_LINKER_CREATED) != 0)
+  if ((abfd->direction != read_direction)
+      || ((sec->flags & SEC_LINKER_CREATED) != 0))
     {
-      ssect = (*bed->get_sec_type_attr) (abfd, sec);
+      ssect = (*bed->get_sec_type_attr)(abfd, sec);
       if (ssect != NULL)
 	{
-	  elf_section_type (sec) = ssect->type;
-	  elf_section_flags (sec) = ssect->attr;
+	  elf_section_type(sec) = (unsigned int)ssect->type;
+	  elf_section_flags(sec) = (unsigned int)ssect->attr;
 	}
     }
 
@@ -2481,7 +2465,8 @@ _bfd_elf_make_section_from_phdr(bfd *abfd, Elf_Internal_Phdr *hdr,
   split = ((hdr->p_memsz > 0)
 	    && (hdr->p_filesz > 0)
 	    && (hdr->p_memsz > hdr->p_filesz));
-  sprintf(namebuf, "%s%d%s", typename, i_index, split ? "a" : "");
+  snprintf(namebuf, sizeof(namebuf), "%s%d%s", typename, i_index,
+  	   (split ? "a" : ""));
   len = (strlen(namebuf) + (size_t)1UL);
   name = (char *)bfd_alloc(abfd, len);
   if (!name)
@@ -2493,7 +2478,7 @@ _bfd_elf_make_section_from_phdr(bfd *abfd, Elf_Internal_Phdr *hdr,
   newsect->vma = hdr->p_vaddr;
   newsect->lma = hdr->p_paddr;
   newsect->size = hdr->p_filesz;
-  newsect->filepos = hdr->p_offset;
+  newsect->filepos = (file_ptr)hdr->p_offset;
   newsect->flags |= SEC_HAS_CONTENTS;
   newsect->alignment_power = bfd_log2(hdr->p_align);
   if (hdr->p_type == PT_LOAD)
@@ -2514,7 +2499,7 @@ _bfd_elf_make_section_from_phdr(bfd *abfd, Elf_Internal_Phdr *hdr,
 
   if (split)
     {
-      sprintf(namebuf, "%s%db", typename, i_index);
+      snprintf(namebuf, sizeof(namebuf), "%s%db", typename, i_index);
       len = (strlen(namebuf) + 1);
       name = (char *)bfd_alloc(abfd, len);
       if (!name)
@@ -2539,6 +2524,7 @@ _bfd_elf_make_section_from_phdr(bfd *abfd, Elf_Internal_Phdr *hdr,
   return TRUE;
 }
 
+/* */
 bfd_boolean
 bfd_section_from_phdr(bfd *abfd, Elf_Internal_Phdr *hdr, int iindex)
 {
@@ -2561,7 +2547,7 @@ bfd_section_from_phdr(bfd *abfd, Elf_Internal_Phdr *hdr, int iindex)
     case PT_NOTE:
       if (! _bfd_elf_make_section_from_phdr(abfd, hdr, iindex, "note"))
 	return FALSE;
-      if (! elfcore_read_notes(abfd, hdr->p_offset, hdr->p_filesz))
+      if (! elfcore_read_notes(abfd, (file_ptr)hdr->p_offset, hdr->p_filesz))
 	return FALSE;
       return TRUE;
 
@@ -2598,12 +2584,12 @@ _bfd_elf_init_reloc_shdr(bfd *abfd, Elf_Internal_Shdr *rel_hdr,
 {
   char *name;
   const struct elf_backend_data *bed = get_elf_backend_data(abfd);
-  bfd_size_type amt = (sizeof(".rela") + strlen (asect->name));
+  bfd_size_type amt = (sizeof(".rela") + strlen(asect->name));
 
   name = (char *)bfd_alloc(abfd, amt);
   if (name == NULL)
     return FALSE;
-  sprintf(name, "%s%s", use_rela_p ? ".rela" : ".rel", asect->name);
+  snprintf(name, amt, "%s%s", (use_rela_p ? ".rela" : ".rel"), asect->name);
   rel_hdr->sh_name =
     (unsigned int)_bfd_elf_strtab_add(elf_shstrtab(abfd), name, FALSE);
   if (rel_hdr->sh_name == (unsigned int)-1)
@@ -2835,17 +2821,17 @@ bfd_elf_set_group_contents(bfd *abfd, asection *sec, void *failedptrarg)
     return;
 
   symindx = 0;
-  if (elf_group_id (sec) != NULL)
-    symindx = elf_group_id (sec)->udata.i;
+  if (elf_group_id(sec) != NULL)
+    symindx = elf_group_id(sec)->udata.i;
 
   if (symindx == 0)
     {
       /* If called from the assembler, swap_out_syms will have set up
 	 elf_section_syms;  If called for "ld -r", use target_index.  */
-      if (elf_section_syms (abfd) != NULL)
-	symindx = elf_section_syms (abfd)[sec->index]->udata.i;
+      if (elf_section_syms(abfd) != NULL)
+	symindx = elf_section_syms(abfd)[sec->index]->udata.i;
       else
-	symindx = sec->target_index;
+	symindx = (unsigned long)sec->target_index;
     }
   elf_section_data(sec)->this_hdr.sh_info = symindx;
 
@@ -2865,12 +2851,12 @@ bfd_elf_set_group_contents(bfd *abfd, asection *sec, void *failedptrarg)
 	}
     }
 
-  loc = sec->contents + sec->size;
+  loc = (sec->contents + sec->size);
 
   /* Get the pointer to the first section in the group that gas
      squirreled away here.  objcopy arranges for this to be set to the
      start of the input section group.  */
-  first = elt = elf_next_in_group (sec);
+  first = elt = elf_next_in_group(sec);
 
   /* First element is a flag word.  Rest of section is elf section
      indices for all the sections of the group.  Write them backwards
@@ -2887,9 +2873,9 @@ bfd_elf_set_group_contents(bfd *abfd, asection *sec, void *failedptrarg)
 	s = s->output_section;
       idx = 0;
       if (s != NULL)
-	idx = elf_section_data (s)->this_idx;
-      H_PUT_32 (abfd, idx, loc);
-      elt = elf_next_in_group (elt);
+	idx = (unsigned int)elf_section_data(s)->this_idx;
+      H_PUT_32(abfd, idx, loc);
+      elt = elf_next_in_group(elt);
       if (elt == first)
 	break;
     }
@@ -2898,22 +2884,21 @@ bfd_elf_set_group_contents(bfd *abfd, asection *sec, void *failedptrarg)
      SEC is the output section.  Look through the input sections
      instead.  */
   for (l = sec->map_head.link_order; l != NULL; l = l->next)
-    if (l->type == bfd_indirect_link_order
-	&& (elt = elf_next_in_group (l->u.indirect.section)) != NULL)
-      do
-	{
-	  loc -= 4;
-	  H_PUT_32 (abfd,
-		    elf_section_data (elt->output_section)->this_idx, loc);
-	  elt = elf_next_in_group (elt);
-	  /* During a relocatable link, the lists are circular.  */
-	}
-      while (elt != elf_next_in_group (l->u.indirect.section));
+    if ((l->type == bfd_indirect_link_order)
+	&& ((elt = elf_next_in_group(l->u.indirect.section)) != NULL))
+      do {
+	loc -= 4;
+	H_PUT_32(abfd,
+                 (bfd_vma)elf_section_data(elt->output_section)->this_idx,
+                 loc);
+	elt = elf_next_in_group(elt);
+	/* During a relocatable link, the lists are circular.  */
+      } while (elt != elf_next_in_group(l->u.indirect.section));
 
   if ((loc -= 4) != sec->contents)
-    abort ();
+    abort();
 
-  H_PUT_32 (abfd, sec->flags & SEC_LINK_ONCE ? GRP_COMDAT : 0, loc);
+  H_PUT_32(abfd, ((sec->flags & SEC_LINK_ONCE) ? GRP_COMDAT : 0), loc);
 }
 
 /* Assign all ELF section numbers. The dummy first section is handled here
@@ -2953,7 +2938,7 @@ assign_section_numbers(bfd *abfd, struct bfd_link_info *link_info)
 		{
 		  if (section_number == SHN_LORESERVE)
 		    section_number += (SHN_HIRESERVE + 1 - SHN_LORESERVE);
-		  ddata->this_idx = section_number++;
+		  ddata->this_idx = (int)section_number++;
 		}
 	    }
 	}
@@ -2967,7 +2952,7 @@ assign_section_numbers(bfd *abfd, struct bfd_link_info *link_info)
 	{
 	  if (section_number == SHN_LORESERVE)
 	    section_number += (SHN_HIRESERVE + 1 - SHN_LORESERVE);
-	  ddata->this_idx = section_number++;
+	  ddata->this_idx = (int)section_number++;
 	}
       _bfd_elf_strtab_addref(elf_shstrtab(abfd), ddata->this_hdr.sh_name);
       if ((sec->flags & SEC_RELOC) == 0)
@@ -2976,7 +2961,7 @@ assign_section_numbers(bfd *abfd, struct bfd_link_info *link_info)
 	{
 	  if (section_number == SHN_LORESERVE)
 	    section_number += (SHN_HIRESERVE + 1 - SHN_LORESERVE);
-	  ddata->rel_idx = section_number++;
+	  ddata->rel_idx = (int)section_number++;
 	  _bfd_elf_strtab_addref(elf_shstrtab(abfd),
                                  ddata->rel_hdr.sh_name);
 	}
@@ -2985,7 +2970,7 @@ assign_section_numbers(bfd *abfd, struct bfd_link_info *link_info)
 	{
 	  if (section_number == SHN_LORESERVE)
 	    section_number += (SHN_HIRESERVE + 1 - SHN_LORESERVE);
-	  ddata->rel_idx2 = section_number++;
+	  ddata->rel_idx2 = (int)section_number++;
 	  _bfd_elf_strtab_addref(elf_shstrtab(abfd),
                                  ddata->rel_hdr2->sh_name);
 	}
@@ -3082,12 +3067,12 @@ assign_section_numbers(bfd *abfd, struct bfd_link_info *link_info)
       if (edata->rel_idx != 0)
 	{
 	  edata->rel_hdr.sh_link = t->symtab_section;
-	  edata->rel_hdr.sh_info = edata->this_idx;
+	  edata->rel_hdr.sh_info = (unsigned long)edata->this_idx;
 	}
       if (edata->rel_idx2 != 0)
 	{
 	  edata->rel_hdr2->sh_link = t->symtab_section;
-	  edata->rel_hdr2->sh_info = edata->this_idx;
+	  edata->rel_hdr2->sh_info = (unsigned long)edata->this_idx;
 	}
 
       /* We need to set up sh_link for SHF_LINK_ORDER: */
@@ -3095,7 +3080,8 @@ assign_section_numbers(bfd *abfd, struct bfd_link_info *link_info)
 	{
 	  s = elf_linked_to_section(sec);
           if (s) {
-            edata->this_hdr.sh_link = elf_section_data(s)->this_idx;
+            edata->this_hdr.sh_link =
+              (unsigned long)elf_section_data(s)->this_idx;
           } else {
             struct bfd_link_order *p;
 
@@ -3104,8 +3090,7 @@ assign_section_numbers(bfd *abfd, struct bfd_link_info *link_info)
               {
                 s = p->u.indirect.section;
                 if ((p->type == bfd_indirect_link_order)
-                    && (bfd_get_flavour(s->owner)
-                        == bfd_target_elf_flavour))
+                    && (bfd_get_flavour(s->owner) == bfd_target_elf_flavour))
                   {
                     Elf_Internal_Shdr ** const elf_shdrp =
                       elf_elfsections(s->owner);
@@ -3148,7 +3133,8 @@ assign_section_numbers(bfd *abfd, struct bfd_link_info *link_info)
                           }
                         s = s->output_section;
                         BFD_ASSERT(s != NULL);
-                        edata->this_hdr.sh_link = elf_section_data(s)->this_idx;
+                        edata->this_hdr.sh_link =
+                          (unsigned long)elf_section_data(s)->this_idx;
                       }
 		      break;
                   }
@@ -3168,7 +3154,8 @@ assign_section_numbers(bfd *abfd, struct bfd_link_info *link_info)
 	     FIXME: How can we be sure?  */
 	  s = bfd_get_section_by_name(abfd, ".dynsym");
 	  if (s != NULL)
-	    edata->this_hdr.sh_link = elf_section_data(s)->this_idx;
+	    edata->this_hdr.sh_link =
+              (unsigned long)elf_section_data(s)->this_idx;
 
 	  /* We look up the section the relocs apply to by name: */
 	  name = sec->name;
@@ -3178,7 +3165,8 @@ assign_section_numbers(bfd *abfd, struct bfd_link_info *link_info)
 	    name += 5;
 	  s = bfd_get_section_by_name(abfd, name);
 	  if (s != NULL)
-	    edata->this_hdr.sh_info = elf_section_data(s)->this_idx;
+	    edata->this_hdr.sh_info =
+              (unsigned long)elf_section_data(s)->this_idx;
 	  break;
 
 	case SHT_STRTAB:
@@ -8127,7 +8115,7 @@ _bfd_elf_fprintf_vma(bfd *abfd, void *stream, bfd_vma value)
 #ifdef BFD64
   Elf_Internal_Ehdr *i_ehdrp;	/* Elf file header, internal form */
 
-  i_ehdrp = elf_elfheader (abfd);
+  i_ehdrp = elf_elfheader(abfd);
   if (i_ehdrp == NULL) {
     fprintf_vma((FILE *)stream, value);
   } else {

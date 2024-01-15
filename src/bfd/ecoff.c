@@ -2003,8 +2003,10 @@ ecoff_compute_section_file_positions(bfd *abfd)
 	  && !streq(current->name, _PDATA)
 	  && !streq(current->name, _RCONST))
 	{
-	  sofar = (file_ptr)((sofar + round - 1L) &~ (round - 1L));
-	  file_sofar = (file_ptr)((file_sofar + round - 1L) &~ (round - 1L));
+	  sofar = (file_ptr)((sofar + (file_ptr)round - 1L)
+                             & ~((file_ptr)round - 1L));
+	  file_sofar = (file_ptr)((file_sofar + (file_ptr)round - 1L)
+                                  & ~((file_ptr)round - 1L));
 	  first_data = FALSE;
 	}
       else if (streq(current->name, _LIB))
@@ -2013,8 +2015,10 @@ ecoff_compute_section_file_positions(bfd *abfd)
 	     from a shared library section is also rounded up to a
 	     page boundary.  */
 
-	  sofar = (file_ptr)((sofar + round - 1L) &~ (round - 1L));
-	  file_sofar = (file_ptr)((file_sofar + round - 1L) &~ (round - 1L));
+	  sofar = (file_ptr)((sofar + (file_ptr)round - 1L)
+                             & (file_ptr)~(round - 1L));
+	  file_sofar = (file_ptr)((file_sofar + (file_ptr)round - 1L)
+                                  & ~((file_ptr)round - 1L));
 	}
       else if (first_nonalloc && ((current->flags & SEC_ALLOC) == 0)
 	       && ((abfd->flags & D_PAGED) != 0))
@@ -2023,8 +2027,10 @@ ecoff_compute_section_file_positions(bfd *abfd)
              as the .comment section on the Alpha.  This leaves room
              for the .bss section.  */
 	  first_nonalloc = FALSE;
-	  sofar = (file_ptr)((sofar + round - 1L) &~ (round - 1L));
-	  file_sofar = (file_ptr)((file_sofar + round - 1L) &~ (round - 1L));
+	  sofar = (file_ptr)((sofar + (file_ptr)round - 1L)
+                             & ~((file_ptr)round - 1L));
+	  file_sofar = (file_ptr)((file_sofar + (file_ptr)round - 1L)
+                                  & ~((file_ptr)round - 1L));
 	}
 
       /* Align the sections in the file to the same boundary on
@@ -2036,9 +2042,11 @@ ecoff_compute_section_file_positions(bfd *abfd)
       if (((abfd->flags & D_PAGED) != 0)
 	  && ((current->flags & SEC_ALLOC) != 0))
 	{
-	  sofar += (file_ptr)(((file_ptr)current->vma - sofar) % (file_ptr)round);
+	  sofar += (file_ptr)(((file_ptr)current->vma - sofar)
+                              % (file_ptr)round);
 	  if ((current->flags & SEC_HAS_CONTENTS) != 0)
-	    file_sofar += (file_ptr)(((file_ptr)current->vma - file_sofar) % (file_ptr)round);
+	    file_sofar += (file_ptr)(((file_ptr)current->vma - file_sofar)
+                                     % (file_ptr)round);
 	}
 
       if ((current->flags & (SEC_HAS_CONTENTS | SEC_LOAD)) != 0)
@@ -2112,8 +2120,8 @@ ecoff_compute_reloc_file_positions(bfd *abfd)
      platforms?  */
   if (((abfd->flags & EXEC_P) != 0)
       && ((abfd->flags & D_PAGED) != 0))
-    sym_base = (file_ptr)((sym_base + ecoff_backend(abfd)->round - 1L)
-                          &~ (ecoff_backend(abfd)->round - 1L));
+    sym_base = (file_ptr)((sym_base + (file_ptr)ecoff_backend(abfd)->round - 1L)
+                          & ~((file_ptr)ecoff_backend(abfd)->round - 1L));
 
   ecoff_data(abfd)->sym_filepos = sym_base;
 

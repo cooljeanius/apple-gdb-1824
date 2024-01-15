@@ -1,4 +1,4 @@
-/* Configurable Xtensa ISA support.
+/* xtensa-isa.c: Configurable Xtensa ISA support.
    Copyright 2003, 2004, 2005 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -28,14 +28,14 @@ char xtisa_error_msg[1024];
 
 
 xtensa_isa_status
-xtensa_isa_errno (xtensa_isa isa __attribute__ ((unused)))
+xtensa_isa_errno(xtensa_isa isa ATTRIBUTE_UNUSED)
 {
   return xtisa_errno;
 }
 
 
 char *
-xtensa_isa_error_msg (xtensa_isa isa __attribute__ ((unused)))
+xtensa_isa_error_msg(xtensa_isa isa ATTRIBUTE_UNUSED)
 {
   return xtisa_error_msg;
 }
@@ -46,7 +46,7 @@ xtensa_isa_error_msg (xtensa_isa isa __attribute__ ((unused)))
     if ((MEM) == 0) \
       { \
 	xtisa_errno = xtensa_isa_out_of_memory; \
-	strcpy (xtisa_error_msg, "out of memory"); \
+	strcpy(xtisa_error_msg, "out of memory"); \
 	return (ERRVAL); \
       } \
   } while (0)
@@ -56,7 +56,7 @@ xtensa_isa_error_msg (xtensa_isa isa __attribute__ ((unused)))
     if ((MEM) == 0) \
       { \
 	xtisa_errno = xtensa_isa_out_of_memory; \
-	strcpy (xtisa_error_msg, "out of memory"); \
+	strcpy(xtisa_error_msg, "out of memory"); \
 	if (ERRNO_P) *(ERRNO_P) = xtisa_errno; \
 	if (ERROR_MSG_P) *(ERROR_MSG_P) = xtisa_error_msg; \
 	return (ERRVAL); \
@@ -74,22 +74,23 @@ xtensa_insnbuf_size(xtensa_isa isa)
   return intisa->insnbuf_size;
 }
 
-
+/* */
 xtensa_insnbuf
-xtensa_insnbuf_alloc (xtensa_isa isa)
+xtensa_insnbuf_alloc(xtensa_isa isa)
 {
-  xtensa_insnbuf result = (xtensa_insnbuf)
-    malloc (xtensa_insnbuf_size (isa) * sizeof (xtensa_insnbuf_word));
+  xtensa_insnbuf result =
+    ((xtensa_insnbuf)
+     malloc((size_t)xtensa_insnbuf_size(isa) * sizeof(xtensa_insnbuf_word)));
   CHECK_ALLOC (result, 0);
   return result;
 }
 
-
+/* */
 void
-xtensa_insnbuf_free (xtensa_isa isa __attribute__ ((unused)),
-		     xtensa_insnbuf buf)
+xtensa_insnbuf_free(xtensa_isa isa ATTRIBUTE_UNUSED,
+		    xtensa_insnbuf buf)
 {
-  free (buf);
+  free(buf);
 }
 
 
@@ -98,16 +99,16 @@ xtensa_insnbuf_free (xtensa_isa isa __attribute__ ((unused)),
    its word and the bit index of its low order byte in the xtensa_insnbuf.  */
 
 static inline int
-byte_to_word_index (int byte_index)
+byte_to_word_index(int byte_index)
 {
-  return byte_index / sizeof (xtensa_insnbuf_word);
+  return (byte_index / (int)sizeof(xtensa_insnbuf_word));
 }
 
-
+/* */
 static inline int
-byte_to_bit_index (int byte_index)
+byte_to_bit_index(int byte_index)
 {
-  return (byte_index & 0x3) * 8;
+  return ((byte_index & 0x3) * 8);
 }
 
 
@@ -121,13 +122,11 @@ byte_to_bit_index (int byte_index)
    both.  */
 
 int
-xtensa_insnbuf_to_chars (xtensa_isa isa,
-			 const xtensa_insnbuf insn,
-			 unsigned char *cp,
-			 int num_chars)
+xtensa_insnbuf_to_chars(xtensa_isa isa, const xtensa_insnbuf insn,
+                        unsigned char *cp, int num_chars)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
-  int insn_size = xtensa_isa_maxlength (isa);
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
+  int insn_size = xtensa_isa_maxlength(isa);
   int fence_post, start, increment, i, byte_count;
   xtensa_format fmt;
 
@@ -136,7 +135,7 @@ xtensa_insnbuf_to_chars (xtensa_isa isa,
 
   if (intisa->is_big_endian)
     {
-      start = insn_size - 1;
+      start = (insn_size - 1);
       increment = -1;
     }
   else
@@ -147,29 +146,29 @@ xtensa_insnbuf_to_chars (xtensa_isa isa,
 
   /* Find the instruction format.  Do nothing if the buffer does not contain
      a valid instruction since we need to know how many bytes to copy.  */
-  fmt = xtensa_format_decode (isa, insn);
+  fmt = xtensa_format_decode(isa, insn);
   if (fmt == XTENSA_UNDEFINED)
     return XTENSA_UNDEFINED;
 
-  byte_count = xtensa_format_length (isa, fmt);
+  byte_count = xtensa_format_length(isa, fmt);
   if (byte_count == XTENSA_UNDEFINED)
     return XTENSA_UNDEFINED;
 
   if (byte_count > num_chars)
     {
       xtisa_errno = xtensa_isa_buffer_overflow;
-      strcpy (xtisa_error_msg, "output buffer too small for instruction");
+      strcpy(xtisa_error_msg, "output buffer too small for instruction");
       return XTENSA_UNDEFINED;
     }
 
-  fence_post = start + (byte_count * increment);
+  fence_post = (start + (byte_count * increment));
 
   for (i = start; i != fence_post; i += increment, ++cp)
     {
-      int word_inx = byte_to_word_index (i);
-      int bit_inx = byte_to_bit_index (i);
+      int word_inx = byte_to_word_index(i);
+      int bit_inx = byte_to_bit_index(i);
 
-      *cp = (insn[word_inx] >> bit_inx) & 0xff;
+      *cp = ((insn[word_inx] >> bit_inx) & 0xff);
     }
 
   return byte_count;
@@ -179,20 +178,17 @@ xtensa_insnbuf_to_chars (xtensa_isa isa,
 /* Inward conversion from byte stream to xtensa_insnbuf.  See
    xtensa_insnbuf_to_chars for a discussion of why this is complicated
    by endianness.  */
-
 void
-xtensa_insnbuf_from_chars (xtensa_isa isa,
-			   xtensa_insnbuf insn,
-			   const unsigned char *cp,
-			   int num_chars)
+xtensa_insnbuf_from_chars(xtensa_isa isa, xtensa_insnbuf insn,
+			  const unsigned char *cp, int num_chars)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
   int max_size, insn_size, fence_post, start, increment, i;
 
-  max_size = xtensa_isa_maxlength (isa);
+  max_size = xtensa_isa_maxlength(isa);
 
   /* Decode the instruction length so we know how many bytes to read.  */
-  insn_size = (intisa->length_decode_fn) (cp);
+  insn_size = (intisa->length_decode_fn)(cp);
   if (insn_size == XTENSA_UNDEFINED)
     {
       /* This should never happen when the byte stream contains a
@@ -1761,7 +1757,7 @@ xtensa_funcUnit_lookup(xtensa_isa isa, const char *fname)
   return result->u.fun;
 }
 
-
+/* */
 const char *
 xtensa_funcUnit_name(xtensa_isa isa, xtensa_funcUnit fun)
 {
@@ -1770,7 +1766,7 @@ xtensa_funcUnit_name(xtensa_isa isa, xtensa_funcUnit fun)
   return intisa->funcUnits[fun].name;
 }
 
-
+/* */
 int
 xtensa_funcUnit_num_copies(xtensa_isa isa, xtensa_funcUnit fun)
 {

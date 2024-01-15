@@ -229,14 +229,15 @@ trad_unix_core_file_p(bfd *abfd)
    * the start of the section to -u_ar0).  GDB uses this info to locate the
    * regs, using minor trickery to get around the offset-or-absolute-addr
    * problem: */
-  core_regsec(abfd)->vma = 0 - (bfd_vma)(unsigned long)u.u_ar0;
+  core_regsec(abfd)->vma = (0UL - (bfd_vma)(unsigned long)u.u_ar0);
 
-  core_datasec(abfd)->filepos = NBPG * UPAGES;
-  core_stacksec(abfd)->filepos = (((NBPG * UPAGES) + (NBPG * u.u_dsize))
+  core_datasec(abfd)->filepos = (NBPG * UPAGES);
+  core_stacksec(abfd)->filepos =
+    (file_ptr)(((NBPG * UPAGES) + (NBPG * u.u_dsize))
 #ifdef TRAD_CORE_DSIZE_INCLUDES_TSIZE
-                                  - (NBPG * u.u_tsize)
+               - (NBPG * u.u_tsize)
 #endif /* TRAD_CORE_DSIZE_INCLUDES_TSIZE */
-                                  + 0);
+               + 0L);
   core_regsec(abfd)->filepos = 0; /* Register segment is the upage */
 
   /* Align to word at least */
@@ -247,12 +248,13 @@ trad_unix_core_file_p(bfd *abfd)
   return abfd->xvec;
 
  fail:
-  bfd_release (abfd, abfd->tdata.any);
+  bfd_release(abfd, abfd->tdata.any);
   abfd->tdata.any = NULL;
-  bfd_section_list_clear (abfd);
+  bfd_section_list_clear(abfd);
   return NULL;
 }
 
+/* */
 char *
 trad_unix_core_file_failing_command(bfd *abfd)
 {
@@ -270,6 +272,7 @@ trad_unix_core_file_failing_command(bfd *abfd)
   return 0;
 }
 
+/* */
 int
 trad_unix_core_file_failing_signal(bfd *ignore_abfd ATTRIBUTE_UNUSED)
 {
@@ -280,6 +283,7 @@ trad_unix_core_file_failing_signal(bfd *ignore_abfd ATTRIBUTE_UNUSED)
 #endif /* TRAD_UNIX_CORE_FILE_FAILING_SIGNAL */
 }
 
+/* */
 bfd_boolean
 trad_unix_core_file_matches_executable_p(bfd *core_bfd ATTRIBUTE_UNUSED,
                                          bfd *exec_bfd ATTRIBUTE_UNUSED)
