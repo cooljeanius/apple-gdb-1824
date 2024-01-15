@@ -230,6 +230,8 @@ AC_PATH_PROGS([ICONV_BIN],[iconv giconv])dnl
 AC_SUBST([ICONV_BIN])dnl
 AC_PATH_PROG([CONFIGURED_POD2MAN],[pod2man])dnl
 
+AC_PATH_PROG([SHELLCHECK],[shellcheck],[shellcheck])dnl
+
 dnl# for ResourceManager-related stuff:
 AC_PATH_PROG([REZ],[Rez],[],[],[${PATH}:/Developer/Tools])dnl
 AC_SUBST([REZ])dnl

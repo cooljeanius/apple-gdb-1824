@@ -22,6 +22,7 @@ dnl# Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.69])
 AC_INIT([spu],[0.5],[/dev/null])
 AC_CONFIG_SRCDIR([spu.c])
+AC_CONFIG_AUX_DIR([../..])
 AC_CONFIG_HEADERS([config.h])dnl
 
 # Use maintainer mode from automake:

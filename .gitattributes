@@ -18,8 +18,9 @@
 *.xcplugindata binary
 
 # Tell GitHub to ignore when calculating language stats:
-aclocal.m4 linguist-vendored
-libcheckpoint/Makefile.in linguist-vendored
+aclocal.m4 linguist-generated
+config.h.in linguist-generated
+libcheckpoint/Makefile.in linguist-generated
 macsbug/MacsBug_testing.i linguist-language=c
 
 # Gnulib's git-merge-changelog driver:

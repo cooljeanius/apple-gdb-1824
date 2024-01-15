@@ -1,2 +1,4 @@
+aclocal.m4 linguist-generated
+config.h.in linguist-generated
 mac/*.r linguist-language=rez
 Apple*[Mm]akefile* linguist-language=Makefile

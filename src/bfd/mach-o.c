@@ -404,6 +404,7 @@ bfd_mach_o_bfd_copy_private_section_data(bfd *ibfd, asection *isection,
       || (obfd->xvec->flavour != bfd_target_mach_o_flavour))
     return TRUE;
 
+  /* FIXME: binutils/sanity.sh makes strip hit this assert: */
   BFD_ASSERT((is != NULL) && (os != NULL));
 
   os->flags = is->flags;

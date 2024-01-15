@@ -1,1 +1,12 @@
+arlex.c linguist-generated
+arparse.[ch] linguist-generated
+config.h.in linguist-generated
+deflex.c linguist-generated
+defparse.[ch] linguist-generated
 mac-binutils.r linguist-language=rez
+mcparse.[ch] linguist-generated
+nlmheader.[ch] linguist-generated
+rclex.c linguist-generated
+rcparse.[ch] linguist-generated
+sysinfo.[ch] linguist-generated
+syslex.c linguist-generated

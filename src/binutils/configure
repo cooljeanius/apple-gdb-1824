@@ -718,6 +718,7 @@ nls_cv_force_use_gnu_gettext
 USE_NLS
 ALLOCA
 REZ
+SHELLCHECK
 CONFIGURED_POD2MAN
 ICONV_BIN
 EXTRA_LFLAGS_SEP
@@ -21649,6 +21650,53 @@ CONFIGURED_POD2MAN=$ac_cv_path_CONFIGURED_POD2MAN
 if test -n "$CONFIGURED_POD2MAN"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $CONFIGURED_POD2MAN" >&5
 printf "%s\n" "$CONFIGURED_POD2MAN" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+# Extract the first word of "shellcheck", so it can be a program name with args.
+set dummy shellcheck; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_path_SHELLCHECK+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) case $SHELLCHECK in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_SHELLCHECK="$SHELLCHECK" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_path_SHELLCHECK="$as_dir$ac_word$ac_exec_ext"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_path_SHELLCHECK" && ac_cv_path_SHELLCHECK="shellcheck"
+  ;;
+esac ;;
+esac
+fi
+SHELLCHECK=$ac_cv_path_SHELLCHECK
+if test -n "$SHELLCHECK"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $SHELLCHECK" >&5
+printf "%s\n" "$SHELLCHECK" >&6; }
 else
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }

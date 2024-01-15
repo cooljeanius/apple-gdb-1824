@@ -1,8 +1,9 @@
 # Tell GitHub to ignore when calculating language stats:
-aclocal.m4 linguist-vendored
+aclocal.m4 linguist-generated
 ar-lib linguist-vendored
 compile linguist-vendored
 config.guess linguist-vendored
+config.h.in linguist-generated
 config.rpath linguist-vendored
 config.sub linguist-vendored
 depcomp linguist-vendored

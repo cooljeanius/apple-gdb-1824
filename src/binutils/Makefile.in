@@ -549,12 +549,8 @@ AM_TESTSUITE_SUMMARY_HEADER = ' for $(PACKAGE_STRING)'
 RECHECK_LOGS = $(TEST_LOGS)
 TEST_SUITE_LOG = test-suite.log
 TEST_EXTENSIONS = @EXEEXT@ .test
-am__test_logs1 = $(TESTS:=.log)
-am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
-TEST_LOGS = $(am__test_logs2:.test.log=.log)
-TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/../test-driver
-TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
-	$(TEST_LOG_FLAGS)
+LOG_DRIVER = $(SHELL) $(top_srcdir)/../test-driver
+LOG_COMPILE = $(LOG_COMPILER) $(AM_LOG_FLAGS) $(LOG_FLAGS)
 am__set_b = \
   case '$@' in \
     */*) \
@@ -565,6 +561,12 @@ am__set_b = \
     *) \
       b='$*';; \
   esac
+am__test_logs1 = $(TESTS:=.log)
+am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
+TEST_LOGS = $(am__test_logs2:.test.log=.log)
+TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/../test-driver
+TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
+	$(TEST_LOG_FLAGS)
 DIST_SUBDIRS = po doc
 ACLOCAL = @ACLOCAL@
 ALLOCA = @ALLOCA@
@@ -702,6 +704,7 @@ REZ = @REZ@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SHELLCHECK = @SHELLCHECK@
 STRIP = @STRIP@
 SYSTEM_FRAMEWORK_LIBS = @SYSTEM_FRAMEWORK_LIBS@
 TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
@@ -864,7 +867,8 @@ BFDTEST1_PROG = bfdtest1
 BFDTEST2_PROG = bfdtest2
 TEST_PROGS = $(BFDTEST1_PROG) $(BFDTEST2_PROG)
 RENAMED_PROGS = $(NM_PROG) $(STRIP_PROG) $(DEMANGLER_PROG)
-TESTS = @MAINT@ # $(check_PROGRAMS)
+check_SCRIPTS = sanity.sh
+TESTS = $(check_SCRIPTS) @MAINT@ $(check_PROGRAMS)
 
 # Stuff that goes in tooldir/ if appropriate.
 TOOL_PROGS = nm-new strip-new ar ranlib dlltool objdump objcopy
@@ -1828,7 +1832,7 @@ $(TEST_SUITE_LOG): $(TEST_LOGS)
 	fi;								\
 	$$success || exit 1
 
-check-TESTS: $(check_PROGRAMS)
+check-TESTS: $(check_PROGRAMS) $(check_SCRIPTS)
 	@list='$(RECHECK_LOGS)';           test -z "$$list" || rm -f $$list
 	@list='$(RECHECK_LOGS:.log=.trs)'; test -z "$$list" || rm -f $$list
 	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
@@ -1838,7 +1842,7 @@ check-TESTS: $(check_PROGRAMS)
 	log_list=`echo $$log_list`; trs_list=`echo $$trs_list`; \
 	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) TEST_LOGS="$$log_list"; \
 	exit $$?;
-recheck: all $(check_PROGRAMS)
+recheck: all $(check_PROGRAMS) $(check_SCRIPTS)
 	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 	@set +e; $(am__set_TESTS_bases); \
 	bases=`for i in $$bases; do echo $$i; done \
@@ -1849,6 +1853,27 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+sanity.sh.log: sanity.sh
+	@p='sanity.sh'; \
+	b='sanity.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bfdtest1.log: bfdtest1$(EXEEXT)
+	@p='bfdtest1$(EXEEXT)'; \
+	b='bfdtest1'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bfdtest2.log: bfdtest2$(EXEEXT)
+	@p='bfdtest2$(EXEEXT)'; \
+	b='bfdtest2'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -1864,8 +1889,8 @@ recheck: all $(check_PROGRAMS)
 @am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
 @am__EXEEXT_TRUE@	"$$tst" $(AM_TESTS_FD_REDIRECT)
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
-	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU check-TESTS
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS) $(check_SCRIPTS)
+	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU check-TESTS check-local
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-recursive
 all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(HEADERS) config.h all-local
@@ -2137,10 +2162,10 @@ uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am all-local \
 	am--depfiles am--refresh check check-DEJAGNU check-TESTS \
-	check-am clean clean-binPROGRAMS clean-checkPROGRAMS \
-	clean-cscope clean-generic clean-libtool clean-local \
-	clean-noinstPROGRAMS cscope cscopelist-am ctags ctags-am \
-	distclean distclean-DEJAGNU distclean-compile \
+	check-am check-local clean clean-binPROGRAMS \
+	clean-checkPROGRAMS clean-cscope clean-generic clean-libtool \
+	clean-local clean-noinstPROGRAMS cscope cscopelist-am ctags \
+	ctags-am distclean distclean-DEJAGNU distclean-compile \
 	distclean-generic distclean-hdr distclean-libtool \
 	distclean-local distclean-tags dvi dvi-am html html-am info \
 	info-am install install-am install-binPROGRAMS \
@@ -2176,6 +2201,10 @@ am_check-DEJAGNU: site.exp
 	else echo "WARNING: could not find \`runtest'" 1>&2; :;\
 	fi
 .PHONY: am_check-DEJAGNU
+
+check-local: $(srcdir)/sanity.sh
+	/bin/sh $(srcdir)/sanity.sh || $(SHELLCHECK) $(srcdir)/sanity.sh
+	if test -n "$(SHELLCHECK)"; then $(SHELLCHECK) $(srcdir)/ranlib.sh; fi
 
 installcheck-local: $(srcdir)/sanity.sh
 	/bin/sh $(srcdir)/sanity.sh $(bindir)
