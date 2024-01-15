@@ -261,7 +261,7 @@
 		61D22133192D617D00FA979E /* elflink.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF4C0E82C407008125DE /* elflink.c */; };
 		61D22134192D617D00FA979E /* elflink.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF4D0E82C407008125DE /* elflink.h */; };
 		61D22135192D617D00FA979E /* elfn32-mips.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF4E0E82C407008125DE /* elfn32-mips.c */; settings = {COMPILER_FLAGS = "-DTEST"; }; };
-		61D22137192D617D00FA979E /* elfxx-mips.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF500E82C408008125DE /* elfxx-mips.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing -Wconversion"; }; };
+		61D22137192D617D00FA979E /* elfxx-mips.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF500E82C408008125DE /* elfxx-mips.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing -Wconversion -Wshorten-64-to-32"; }; };
 		61D22138192D617D00FA979E /* elfxx-mips.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF510E82C408008125DE /* elfxx-mips.h */; };
 		61D22139192D617D00FA979E /* elfxx-sparc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF520E82C408008125DE /* elfxx-sparc.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing"; }; };
 		61D2213A192D617D00FA979E /* elfxx-sparc.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF530E82C408008125DE /* elfxx-sparc.h */; };
@@ -4011,6 +4011,7 @@
 		A51B3F181A493694002170CE /* plugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = plugin.h; sourceTree = "<group>"; };
 		A51DEE721AA273B300DA3F76 /* cf-m68klynx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-m68klynx.c"; sourceTree = "<group>"; };
 		A5262E802B55204E002EC445 /* elfcpp */ = {isa = PBXFileReference; lastKnownFileType = folder; path = elfcpp; sourceTree = "<group>"; };
+		A5262E812B55C205002EC445 /* elf32-bfin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "elf32-bfin.c"; sourceTree = "<group>"; };
 		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; path = "mac-gdb.r"; sourceTree = "<group>"; };
 		A53ABD8C1A38C88F002F20B2 /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = link.h; sourceTree = "<group>"; };
 		A53ABDB71A38E84F002F20B2 /* objdump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objdump.h; sourceTree = "<group>"; };
@@ -6530,6 +6531,7 @@
 				2609CF070E82C407008125DE /* elf32-am33lin.c */,
 				2609CF080E82C407008125DE /* elf32-arc.c */,
 				2609CF090E82C407008125DE /* elf32-arm.c */,
+				A5262E812B55C205002EC445 /* elf32-bfin.c */,
 				2609CF0A0E82C407008125DE /* elf32-arm.h */,
 				2609CF0B0E82C407008125DE /* elf32-avr.c */,
 				2609CF0C0E82C407008125DE /* elf32-cr16c.c */,

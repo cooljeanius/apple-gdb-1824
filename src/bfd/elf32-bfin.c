@@ -1,4 +1,4 @@
-/* ADI Blackfin BFD support for 32-bit ELF.
+/* elf32-bfin.c: ADI Blackfin BFD support for 32-bit ELF.
    Copyright 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012
    Free Software Foundation, Inc.
 
@@ -30,28 +30,23 @@
 /* FUNCTION : bfin_pltpc_reloc
    ABSTRACT : TODO : figure out how to handle pltpc relocs.  */
 static bfd_reloc_status_type
-bfin_pltpc_reloc (
-     bfd *abfd ATTRIBUTE_UNUSED,
-     arelent *reloc_entry ATTRIBUTE_UNUSED,
-     asymbol *symbol ATTRIBUTE_UNUSED,
-     void * data ATTRIBUTE_UNUSED,
-     asection *input_section ATTRIBUTE_UNUSED,
-     bfd *output_bfd ATTRIBUTE_UNUSED,
-     char **error_message ATTRIBUTE_UNUSED)
+bfin_pltpc_reloc(bfd *abfd ATTRIBUTE_UNUSED,
+		 arelent *reloc_entry ATTRIBUTE_UNUSED,
+     		 asymbol *symbol ATTRIBUTE_UNUSED,
+     		 void *data ATTRIBUTE_UNUSED,
+     		 asection *input_section ATTRIBUTE_UNUSED,
+     		 bfd *output_bfd ATTRIBUTE_UNUSED,
+     		 char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_reloc_status_type flag = bfd_reloc_ok;
   return flag;
 }
 
-
+/* */
 static bfd_reloc_status_type
-bfin_pcrel24_reloc (bfd *abfd,
-                    arelent *reloc_entry,
-                    asymbol *symbol,
-                    void * data,
-                    asection *input_section,
-                    bfd *output_bfd,
-                    char **error_message ATTRIBUTE_UNUSED)
+bfin_pcrel24_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, void *data,
+                   asection *input_section, bfd *output_bfd,
+                   char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
   bfd_size_type addr = reloc_entry->address;
@@ -60,10 +55,10 @@ bfin_pcrel24_reloc (bfd *abfd,
   asection *output_section;
   bfd_boolean relocatable = (output_bfd != NULL);
 
-  if (reloc_entry->address > bfd_get_section_limit (abfd, input_section))
+  if (reloc_entry->address > bfd_get_section_limit(abfd, input_section))
     return bfd_reloc_outofrange;
 
-  if (bfd_is_und_section (symbol->section)
+  if (bfd_is_und_section(symbol->section)
       && (symbol->flags & BSF_WEAK) == 0
       && !relocatable)
     return bfd_reloc_undefined;
@@ -80,7 +75,7 @@ bfin_pcrel24_reloc (bfd *abfd,
   else
     output_base = output_section->vma;
 
-  if (!relocatable || !strcmp (symbol->name, symbol->section->name))
+  if (!relocatable || !strcmp(symbol->name, symbol->section->name))
     relocation += output_base + symbol->section->output_offset;
 
   if (!relocatable && !strcmp (symbol->name, symbol->section->name))
@@ -130,25 +125,22 @@ bfin_pcrel24_reloc (bfd *abfd,
        relocation by 1 (effectively 2) and used the addr -2 instead of addr.  */
 
     relocation += 1;
-    x = bfd_get_16 (abfd, (bfd_byte *) data + addr - 2);
-    x = (x & 0xff00) | ((relocation >> 16) & 0xff);
-    bfd_put_16 (abfd, x, (unsigned char *) data + addr - 2);
+    x = (short)bfd_get_16(abfd, ((bfd_byte *)data + addr - 2));
+    x = (short)((x & 0xff00) | ((relocation >> 16) & 0xff));
+    bfd_put_16(abfd, (bfd_vma)x, ((unsigned char *)data + addr - 2));
 
-    x = bfd_get_16 (abfd, (bfd_byte *) data + addr);
-    x = relocation & 0xFFFF;
-    bfd_put_16 (abfd, x, (unsigned char *) data + addr );
+    x = (short)bfd_get_16(abfd, ((bfd_byte *)data + addr));
+    x = (short)(relocation & 0xFFFF);
+    bfd_put_16(abfd, (bfd_vma)x, ((unsigned char *)data + addr));
   }
   return bfd_reloc_ok;
 }
 
+/* */
 static bfd_reloc_status_type
-bfin_imm16_reloc (bfd *abfd,
-     		  arelent *reloc_entry,
-     		  asymbol *symbol,
-     		  void * data,
-     		  asection *input_section,
-     		  bfd *output_bfd,
-     		  char **error_message ATTRIBUTE_UNUSED)
+bfin_imm16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, void *data,
+                 asection *input_section, bfd *output_bfd,
+                 char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation, x;
   bfd_size_type reloc_addr = reloc_entry->address;
@@ -158,10 +150,10 @@ bfin_imm16_reloc (bfd *abfd,
   bfd_boolean relocatable = (output_bfd != NULL);
 
   /* Is the address of the relocation really within the section?  */
-  if (reloc_entry->address > bfd_get_section_limit (abfd, input_section))
+  if (reloc_entry->address > bfd_get_section_limit(abfd, input_section))
     return bfd_reloc_outofrange;
 
-  if (bfd_is_und_section (symbol->section)
+  if (bfd_is_und_section(symbol->section)
       && (symbol->flags & BSF_WEAK) == 0
       && !relocatable)
     return bfd_reloc_undefined;
@@ -371,24 +363,26 @@ bfin_bfd_reloc (bfd *abfd,
   relocation <<= (bfd_vma) howto->bitpos;
 
 #define DOIT(x)								\
-  x = ( (x & ~howto->dst_mask) | (relocation & howto->dst_mask))
+  x = (__typeof__(x))((x & (__typeof__(x))~howto->dst_mask) \
+                      | (__typeof__(x))(relocation & howto->dst_mask))
 
   /* handle 8 and 16 bit relocations here. */
   switch (howto->size)
     {
     case 0:
       {
-        char x = bfd_get_8 (abfd, (char *) data + addr);
-        DOIT (x);
-        bfd_put_8 (abfd, x, (unsigned char *) data + addr);
+        char x = (char)bfd_get_8(abfd, ((char *)data + addr));
+        DOIT(x);
+        bfd_put_8(abfd, x, ((unsigned char *)data + addr));
       }
       break;
 
     case 1:
       {
-        unsigned short x = bfd_get_16 (abfd, (bfd_byte *) data + addr);
-        DOIT (x);
-        bfd_put_16 (abfd, (bfd_vma) x, (unsigned char *) data + addr);
+        unsigned short x =
+          (unsigned short)bfd_get_16(abfd, ((bfd_byte *)data + addr));
+        DOIT(x);
+        bfd_put_16(abfd, (bfd_vma)x, ((unsigned char *)data + addr));
       }
       break;
 
@@ -5794,3 +5788,5 @@ struct bfd_elf_special_section const elf32_bfin_special_sections[] =
 #define elf_backend_omit_section_dynsym _bfinfdpic_link_omit_section_dynsym
 
 #include "elf32-target.h"
+
+/* End of elf32-bfin.c */
