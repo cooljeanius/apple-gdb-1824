@@ -261,7 +261,7 @@
 		61D22133192D617D00FA979E /* elflink.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF4C0E82C407008125DE /* elflink.c */; };
 		61D22134192D617D00FA979E /* elflink.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF4D0E82C407008125DE /* elflink.h */; };
 		61D22135192D617D00FA979E /* elfn32-mips.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF4E0E82C407008125DE /* elfn32-mips.c */; settings = {COMPILER_FLAGS = "-DTEST"; }; };
-		61D22137192D617D00FA979E /* elfxx-mips.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF500E82C408008125DE /* elfxx-mips.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing"; }; };
+		61D22137192D617D00FA979E /* elfxx-mips.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF500E82C408008125DE /* elfxx-mips.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing -Wconversion"; }; };
 		61D22138192D617D00FA979E /* elfxx-mips.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF510E82C408008125DE /* elfxx-mips.h */; };
 		61D22139192D617D00FA979E /* elfxx-sparc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF520E82C408008125DE /* elfxx-sparc.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing"; }; };
 		61D2213A192D617D00FA979E /* elfxx-sparc.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF530E82C408008125DE /* elfxx-sparc.h */; };

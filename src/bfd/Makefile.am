@@ -961,22 +961,22 @@ diststuff: info @MAINT@ config.status
 	find . -name *.info -print
 .PHONY: diststuff
 
-## currently succeeds (as long as you don't use -Werror):
+## currently succeeds, both with and without -Werror:
 all_machines: $(ALL_MACHINES)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: all_machines
 
-## currently breaks on elf32-arm.c:
+## currently breaks on elf32-arm.c with -Werror, elf32-bfin.c without:
 bfd32_backends: $(BFD32_BACKENDS)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: bfd32_backends
 
-## currently breaks on coff-x86_64.c:
+## currently breaks on coff-x86_64.c with -Werror, elf32-aarch64.c without:
 bfd64_backends: $(BFD64_BACKENDS)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: bfd64_backends
 
-## currently breaks on sco5-core.c:
+## currently breaks on sco5-core.c, both with and without -Werror:
 optional_backends: $(OPTIONAL_BACKENDS)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: optional_backends

@@ -787,11 +787,12 @@ _bfd_mips_elf_read_ecoff_info(bfd *abfd, asection *section,
     debug->ptr = NULL;							\
   else									\
     {									\
-      bfd_size_type amt = (bfd_size_type)size * symhdr->count;		\
+      bfd_size_type amt = 						\
+        (bfd_size_type)(size * (__typeof__(size))symhdr->count);	\
       debug->ptr = (type)bfd_malloc(amt);				\
       if (debug->ptr == NULL)						\
 	goto error_return;						\
-      if ((bfd_seek(abfd, symhdr->offset, SEEK_SET) != 0)		\
+      if ((bfd_seek(abfd, (file_ptr)symhdr->offset, SEEK_SET) != 0)	\
 	  || (bfd_bread(debug->ptr, amt, abfd) != amt))			\
 	goto error_return;						\
     }
@@ -847,16 +848,16 @@ static void
 ecoff_swap_rpdr_out(bfd *abfd, const RPDR *in, struct rpdr_ext *ex)
 {
   H_PUT_S32(abfd, in->adr, ex->p_adr);
-  H_PUT_32(abfd, in->regmask, ex->p_regmask);
-  H_PUT_32(abfd, in->regoffset, ex->p_regoffset);
-  H_PUT_32(abfd, in->fregmask, ex->p_fregmask);
-  H_PUT_32(abfd, in->fregoffset, ex->p_fregoffset);
-  H_PUT_32(abfd, in->frameoffset, ex->p_frameoffset);
+  H_PUT_32(abfd, (bfd_vma)in->regmask, ex->p_regmask);
+  H_PUT_32(abfd, (bfd_vma)in->regoffset, ex->p_regoffset);
+  H_PUT_32(abfd, (bfd_vma)in->fregmask, ex->p_fregmask);
+  H_PUT_32(abfd, (bfd_vma)in->fregoffset, ex->p_fregoffset);
+  H_PUT_32(abfd, (bfd_vma)in->frameoffset, ex->p_frameoffset);
 
-  H_PUT_16(abfd, in->framereg, ex->p_framereg);
-  H_PUT_16(abfd, in->pcreg, ex->p_pcreg);
+  H_PUT_16(abfd, (bfd_vma)in->framereg, ex->p_framereg);
+  H_PUT_16(abfd, (bfd_vma)in->pcreg, ex->p_pcreg);
 
-  H_PUT_32(abfd, in->irpss, ex->p_irpss);
+  H_PUT_32(abfd, (bfd_vma)in->irpss, ex->p_irpss);
 }
 
 /* Create a runtime procedure table from the .mdebug section: */
@@ -891,8 +892,8 @@ mips_elf_create_procedure_table(void *handle, bfd *abfd,
   swap = get_elf_backend_data(abfd)->elf_backend_ecoff_debug_swap;
 
   sindex = (strlen(no_name_func) + 1UL);
-  count = hdr->ipdMax;
-  if (count > 0)
+  count = (bfd_size_type)hdr->ipdMax;
+  if (count > 0UL)
     {
       size = swap->external_pdr_size;
 
@@ -913,7 +914,7 @@ mips_elf_create_procedure_table(void *handle, bfd *abfd,
       if (sv == NULL)
 	goto error_return;
 
-      count = hdr->isymMax;
+      count = (bfd_size_type)hdr->isymMax;
       size = swap->external_sym_size;
       esym = (struct sym_ext *)bfd_malloc(size * count);
       if (esym == NULL)
@@ -922,14 +923,14 @@ mips_elf_create_procedure_table(void *handle, bfd *abfd,
       if (! _bfd_ecoff_get_accumulated_sym(handle, (bfd_byte *)esym))
 	goto error_return;
 
-      count = hdr->issMax;
+      count = (bfd_size_type)hdr->issMax;
       ss = (char *)bfd_malloc(count);
       if (ss == NULL)
 	goto error_return;
       if (! _bfd_ecoff_get_accumulated_ss(handle, (bfd_byte *)ss))
 	goto error_return;
 
-      count = hdr->ipdMax;
+      count = (bfd_size_type)hdr->ipdMax;
       for (i = 0; i < (unsigned long)count; i++, rp++)
 	{
 	  (*swap->swap_pdr_in)(abfd, (epdr + i), &pdr);
@@ -942,7 +943,7 @@ mips_elf_create_procedure_table(void *handle, bfd *abfd,
 	  rp->frameoffset = pdr.frameoffset;
 	  rp->framereg = pdr.framereg;
 	  rp->pcreg = pdr.pcreg;
-	  rp->irpss = sindex;
+	  rp->irpss = (long)sindex;
 	  sv[i] = (ss + sym.iss);
 	  sindex += (strlen(sv[i]) + 1UL);
 	}
@@ -962,7 +963,7 @@ mips_elf_create_procedure_table(void *handle, bfd *abfd,
   erp = (struct rpdr_ext *)rtproc;
   memset(erp, 0, sizeof(struct rpdr_ext));
   erp++;
-  str = ((char *)rtproc + sizeof(struct rpdr_ext) * (count + 2));
+  str = ((char *)rtproc + (sizeof(struct rpdr_ext) * (count + 2UL)));
   strcpy(str, no_name_func);
   str += (strlen(no_name_func) + 1UL);
   for (i = 0; i < count; i++)
@@ -971,7 +972,7 @@ mips_elf_create_procedure_table(void *handle, bfd *abfd,
       strcpy(str, sv[i]);
       str += (strlen(sv[i]) + 1UL);
     }
-  H_PUT_S32(abfd, -1, (erp + count)->p_adr);
+  H_PUT_S32(abfd, (bfd_vma)-1, (erp + count)->p_adr);
 
   /* Set the size and contents of .rtproc section: */
   s->size = size;
@@ -1023,7 +1024,7 @@ mips_elf_check_mips16_stubs(struct mips_elf_link_hash_entry *h,
          are 16 bit calls.  Clobber the size to 0 to prevent it from
          being included in the link.  */
       h->fn_stub->size = 0;
-      h->fn_stub->flags &= ~SEC_RELOC;
+      h->fn_stub->flags &= (flagword)~SEC_RELOC;
       h->fn_stub->reloc_count = 0;
       h->fn_stub->flags |= SEC_EXCLUDE;
     }
@@ -1034,7 +1035,7 @@ mips_elf_check_mips16_stubs(struct mips_elf_link_hash_entry *h,
          calls from other 16 bit functions are OK.  Clobber the size
          to 0 to prevent it from being included in the link.  */
       h->call_stub->size = 0;
-      h->call_stub->flags &= ~SEC_RELOC;
+      h->call_stub->flags &= (flagword)~SEC_RELOC;
       h->call_stub->reloc_count = 0;
       h->call_stub->flags |= SEC_EXCLUDE;
     }
@@ -1045,7 +1046,7 @@ mips_elf_check_mips16_stubs(struct mips_elf_link_hash_entry *h,
          calls from other 16 bit functions are OK.  Clobber the size
          to 0 to prevent it from being included in the link.  */
       h->call_fp_stub->size = 0;
-      h->call_fp_stub->flags &= ~SEC_RELOC;
+      h->call_fp_stub->flags &= (flagword)~SEC_RELOC;
       h->call_fp_stub->reloc_count = 0;
       h->call_fp_stub->flags |= SEC_EXCLUDE;
     }
@@ -1199,6 +1200,7 @@ _bfd_mips16_elf_reloc_shuffle(bfd *abfd, int r_type,
   bfd_put_16(abfd, extend, data);
 }
 
+/* */
 bfd_reloc_status_type
 _bfd_mips_elf_gprel16_with_gp(bfd *abfd, asymbol *symbol,
 			      arelent *reloc_entry, asection *input_section,
@@ -1220,9 +1222,9 @@ _bfd_mips_elf_gprel16_with_gp(bfd *abfd, asymbol *symbol,
     return bfd_reloc_outofrange;
 
   /* Set val to the offset into the section or symbol: */
-  val = reloc_entry->addend;
+  val = (bfd_signed_vma)reloc_entry->addend;
 
-  _bfd_mips_elf_sign_extend(val, 16);
+  _bfd_mips_elf_sign_extend((bfd_vma)val, 16);
 
   /* Adjust val for the final section location and GP value.  If we
      are producing relocatable output, we don't want to do this for
@@ -1232,14 +1234,14 @@ _bfd_mips_elf_gprel16_with_gp(bfd *abfd, asymbol *symbol,
 
   if (reloc_entry->howto->partial_inplace)
     {
-      status = _bfd_relocate_contents(reloc_entry->howto, abfd, val,
+      status = _bfd_relocate_contents(reloc_entry->howto, abfd, (bfd_vma)val,
 				      ((bfd_byte *)data
                                        + reloc_entry->address));
       if (status != bfd_reloc_ok)
 	return status;
     }
   else
-    reloc_entry->addend = val;
+    reloc_entry->addend = (bfd_vma)val;
 
   if (relocatable)
     reloc_entry->address += input_section->output_offset;
@@ -1335,10 +1337,10 @@ _bfd_mips_elf_lo16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
   if (reloc_entry->address > bfd_get_section_limit(abfd, input_section))
     return bfd_reloc_outofrange;
 
-  _bfd_mips16_elf_reloc_unshuffle(abfd, reloc_entry->howto->type, FALSE,
+  _bfd_mips16_elf_reloc_unshuffle(abfd, (int)reloc_entry->howto->type, FALSE,
 				  location);
   vallo = bfd_get_32(abfd, location);
-  _bfd_mips16_elf_reloc_shuffle(abfd, reloc_entry->howto->type, FALSE,
+  _bfd_mips16_elf_reloc_shuffle(abfd, (int)reloc_entry->howto->type, FALSE,
                                 location);
 
   while (mips_hi16_list != NULL)
@@ -1367,7 +1369,7 @@ _bfd_mips_elf_lo16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
 	return ret;
 
       mips_hi16_list = hi->next;
-      free (hi);
+      free(hi);
     }
 
   return _bfd_mips_elf_generic_reloc(abfd, reloc_entry, symbol, data,
@@ -1423,7 +1425,7 @@ _bfd_mips_elf_generic_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
      we just need to add VAL to that addend.  Otherwise we need to add
      VAL to the relocation field itself.  */
   if (relocatable && !reloc_entry->howto->partial_inplace)
-    reloc_entry->addend += val;
+    reloc_entry->addend += (bfd_vma)val;
   else
     {
       bfd_byte *location = ((bfd_byte *)data + reloc_entry->address);
@@ -1432,11 +1434,11 @@ _bfd_mips_elf_generic_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
       val += reloc_entry->addend;
 
       /* Add VAL to the relocation field: */
-      _bfd_mips16_elf_reloc_unshuffle(abfd, reloc_entry->howto->type,
+      _bfd_mips16_elf_reloc_unshuffle(abfd, (int)reloc_entry->howto->type,
                                       FALSE, location);
-      status = _bfd_relocate_contents(reloc_entry->howto, abfd, val,
+      status = _bfd_relocate_contents(reloc_entry->howto, abfd, (bfd_vma)val,
 				      location);
-      _bfd_mips16_elf_reloc_shuffle(abfd, reloc_entry->howto->type, FALSE,
+      _bfd_mips16_elf_reloc_shuffle(abfd, (int)reloc_entry->howto->type, FALSE,
 				    location);
 
       if (status != bfd_reloc_ok)
@@ -1485,10 +1487,11 @@ bfd_elf32_swap_crinfo_out(bfd *abfd, const Elf32_crinfo *in,
 {
   unsigned long l;
 
-  l = (((in->ctype & CRINFO_CTYPE) << CRINFO_CTYPE_SH)
-       | ((in->rtype & CRINFO_RTYPE) << CRINFO_RTYPE_SH)
-       | ((in->dist2to & CRINFO_DIST2TO) << CRINFO_DIST2TO_SH)
-       | ((in->relvaddr & CRINFO_RELVADDR) << CRINFO_RELVADDR_SH));
+  l = (unsigned long)(((in->ctype & CRINFO_CTYPE) << CRINFO_CTYPE_SH)
+                      | ((in->rtype & CRINFO_RTYPE) << CRINFO_RTYPE_SH)
+                      | ((in->dist2to & CRINFO_DIST2TO) << CRINFO_DIST2TO_SH)
+                      | ((in->relvaddr & CRINFO_RELVADDR)
+                         << CRINFO_RELVADDR_SH));
   H_PUT_32(abfd, l, ex->info);
   H_PUT_32(abfd, in->konst, ex->konst);
   H_PUT_32(abfd, in->vaddr, ex->vaddr);
@@ -1507,7 +1510,7 @@ bfd_mips_elf32_swap_reginfo_in(bfd *abfd, const Elf32_External_RegInfo *ex,
   in->ri_cprmask[1] = H_GET_32(abfd, ex->ri_cprmask[1]);
   in->ri_cprmask[2] = H_GET_32(abfd, ex->ri_cprmask[2]);
   in->ri_cprmask[3] = H_GET_32(abfd, ex->ri_cprmask[3]);
-  in->ri_gp_value = H_GET_32(abfd, ex->ri_gp_value);
+  in->ri_gp_value = (long)H_GET_32(abfd, ex->ri_gp_value);
 }
 
 void
@@ -1519,7 +1522,7 @@ bfd_mips_elf32_swap_reginfo_out(bfd *abfd, const Elf32_RegInfo *in,
   H_PUT_32(abfd, in->ri_cprmask[1], ex->ri_cprmask[1]);
   H_PUT_32(abfd, in->ri_cprmask[2], ex->ri_cprmask[2]);
   H_PUT_32(abfd, in->ri_cprmask[3], ex->ri_cprmask[3]);
-  H_PUT_32(abfd, in->ri_gp_value, ex->ri_gp_value);
+  H_PUT_32(abfd, (bfd_vma)in->ri_gp_value, ex->ri_gp_value);
 }
 
 /* In the 64 bit ABI, the .MIPS.options section holds register
@@ -1561,7 +1564,7 @@ bfd_mips_elf_swap_options_in(bfd *abfd, const Elf_External_Options *ex,
 {
   in->kind = H_GET_8(abfd, ex->kind);
   in->size = H_GET_8(abfd, ex->size);
-  in->section = H_GET_16(abfd, ex->section);
+  in->section = (unsigned short)H_GET_16(abfd, ex->section);
   in->info = H_GET_32(abfd, ex->info);
 }
 
@@ -1605,8 +1608,8 @@ sort_dynamic_relocs_64(const void *arg1, const void *arg2)
   (*get_elf_backend_data(reldyn_sorting_bfd)->s->swap_reloc_in)
     (reldyn_sorting_bfd, (const bfd_byte *)arg2, int_reloc2);
 
-  return (ELF64_R_SYM(int_reloc1[0].r_info)
-	  - ELF64_R_SYM(int_reloc2[0].r_info));
+  return (int)(ELF64_R_SYM(int_reloc1[0].r_info)
+               - ELF64_R_SYM(int_reloc2[0].r_info));
 #else
   (void)arg1;
   (void)arg2;
@@ -1839,7 +1842,7 @@ mips_elf_got_entry_hash(const void *entry_)
 
   return
     ((hashval_t)entry->symndx
-     + ((entry->tls_type & GOT_TLS_LDM) << 17U)
+     + (hashval_t)((entry->tls_type & GOT_TLS_LDM) << 17U)
      + ((!entry->abfd)
         ? mips_elf_hash_bfd_vma(entry->d.address)
         : (entry->abfd->id
@@ -2021,7 +2024,8 @@ mips_elf_count_local_tls_relocs(void **arg1, void *arg2)
     (struct mips_elf_count_tls_arg *)arg2;
 
   if ((entry->abfd != NULL) && (entry->symndx != -1))
-    arg->needed += mips_tls_got_relocs(arg->info, entry->tls_type, NULL);
+    arg->needed +=
+      (unsigned int)mips_tls_got_relocs(arg->info, entry->tls_type, NULL);
 
   return 1;
 }
@@ -2038,9 +2042,9 @@ mips_elf_count_global_tls_entries(void *arg1, void *arg2)
     (struct mips_elf_count_tls_arg *)arg2;
 
   if (hm->tls_type & GOT_TLS_GD)
-    arg->needed += 2;
+    arg->needed += 2U;
   if (hm->tls_type & GOT_TLS_IE)
-    arg->needed += 1;
+    arg->needed += 1U;
 
   return 1;
 }
@@ -2056,19 +2060,17 @@ mips_elf_count_global_tls_relocs(void *arg1, void *arg2)
   struct mips_elf_count_tls_arg *arg =
     (struct mips_elf_count_tls_arg *)arg2;
 
-  arg->needed += mips_tls_got_relocs(arg->info, hm->tls_type, &hm->root);
+  arg->needed +=
+    (unsigned int)mips_tls_got_relocs(arg->info, hm->tls_type, &hm->root);
 
   return 1;
 }
 
 /* Output a simple dynamic relocation into SRELOC.  */
-
 static void
-mips_elf_output_dynamic_relocation (bfd *output_bfd,
-				    asection *sreloc,
-				    unsigned long indx,
-				    int r_type,
-				    bfd_vma offset)
+mips_elf_output_dynamic_relocation(bfd *output_bfd, asection *sreloc,
+				   unsigned long indx, int r_type,
+				   bfd_vma offset)
 {
   Elf_Internal_Rela rel[3];
 
@@ -10007,4 +10009,4 @@ const struct bfd_elf_special_section _bfd_mips_elf_special_sections[] =
 # undef MIPS_ELF_GET_WORD
 #endif /* MIPS_ELF_GET_WORD */
 
-/* EOF */
+/* End of elfxx-mips.c */
