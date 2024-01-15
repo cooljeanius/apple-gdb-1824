@@ -1,0 +1,11 @@
+aarch64.c linguist-generated
+arm-with-*.c linguist-generated
+i386/amd64*.c linguist-generated
+i386/i386*.c linguist-generated
+i386/x32*.c linguist-generated
+mips*linux.c linguist-generated
+nios2*.c linguist-generated
+rs6000/powerpc*.c linguist-generated
+rs6000/rs6000.c linguist-generated
+s390*linux*.c linguist-generated
+tic6x-c6*.c linguist-generated

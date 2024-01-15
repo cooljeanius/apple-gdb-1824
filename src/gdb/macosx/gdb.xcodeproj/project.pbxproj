@@ -4010,6 +4010,7 @@
 		A51B3F171A493694002170CE /* plugin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = plugin.c; sourceTree = "<group>"; };
 		A51B3F181A493694002170CE /* plugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = plugin.h; sourceTree = "<group>"; };
 		A51DEE721AA273B300DA3F76 /* cf-m68klynx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-m68klynx.c"; sourceTree = "<group>"; };
+		A5262E802B55204E002EC445 /* elfcpp */ = {isa = PBXFileReference; lastKnownFileType = folder; path = elfcpp; sourceTree = "<group>"; };
 		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; path = "mac-gdb.r"; sourceTree = "<group>"; };
 		A53ABD8C1A38C88F002F20B2 /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = link.h; sourceTree = "<group>"; };
 		A53ABDB71A38E84F002F20B2 /* objdump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objdump.h; sourceTree = "<group>"; };
@@ -6345,6 +6346,7 @@
 				2609D00D0E82C408008125DE /* binutils */,
 				A56E58251B210131005E1D43 /* dejagnu */,
 				A53AC1811A3F7EFE002F20B2 /* electric-fence */,
+				A5262E802B55204E002EC445 /* elfcpp */,
 				A50DD7D01B30D2AC00F50318 /* expect */,
 				2609D2AC0E82C409008125DE /* gdb */,
 				61F32D4C1CC3730F00C05007 /* gdb-next */,

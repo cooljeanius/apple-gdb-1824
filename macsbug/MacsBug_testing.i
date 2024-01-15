@@ -1,8 +1,8 @@
-/*--------------------------------------------------------------------------------------*
+/* -*- C -*- ---------------------------------------------------------------------------*
  |                                                                                      |
  |                                  MacsBug_testing.i                                   |
  |                                                                                      |
- |            Separate place to "bread board", test, and expirement with gdb            |
+ |            Separate place to "bread board", test, and experiment with gdb            |
  |                                                                                      |
  |                                     Ira L. Ruben                                     |
  |                       Copyright Apple Computer, Inc. 2000-2006                       |
@@ -10,7 +10,7 @@
  *--------------------------------------------------------------------------------------*
 
  This file is just for "fooling around".  It is included as part of MacsBug_display.c
- and uses its #include setup.  For testing possible gdb.c routines use it's testing.c
+ and uses its #include setup.  For testing possible gdb.c routines use its testing.c
  file.
 */
 

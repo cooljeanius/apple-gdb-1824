@@ -1,1 +1,3 @@
 *.html linguist-documentation
+*.rtf linguist-documentation
+*.tex linguist-documentation
