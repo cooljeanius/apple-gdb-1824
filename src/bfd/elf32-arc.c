@@ -1,7 +1,7 @@
-/* ARC-specific support for 32-bit ELF
+/* elf32-arc.c: ARC-specific support for 32-bit ELF
    Copyright 1994, 1995, 1997, 1999, 2001, 2002, 2005
    Free Software Foundation, Inc.
-   Contributed by Doug Evans (dje@cygnus.com).
+   Contributed by Doug Evans <dje@cygnus.com>.
 
    This file is part of BFD, the Binary File Descriptor library.
 
@@ -130,43 +130,41 @@ static const struct arc_reloc_map arc_reloc_map[] =
   { BFD_RELOC_ARC_B22_PCREL, R_ARC_B22_PCREL },
 };
 
+/* */
 static reloc_howto_type *
-bfd_elf32_bfd_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
-				 bfd_reloc_code_real_type code)
+bfd_elf32_bfd_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                                bfd_reloc_code_real_type code)
 {
   unsigned int i;
 
   for (i = ARRAY_SIZE (arc_reloc_map); i--;)
     if (arc_reloc_map[i].bfd_reloc_val == code)
-      return elf_arc_howto_table + arc_reloc_map[i].elf_reloc_val;
+      return (elf_arc_howto_table + arc_reloc_map[i].elf_reloc_val);
 
   return NULL;
 }
 
-/* Set the howto pointer for an ARC ELF reloc.  */
-
+/* Set the howto pointer for an ARC ELF reloc: */
 static void
-arc_info_to_howto_rel (bfd *abfd ATTRIBUTE_UNUSED,
-		       arelent *cache_ptr,
-		       Elf_Internal_Rela *dst)
+arc_info_to_howto_rel(bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
+		      Elf_Internal_Rela *dst)
 {
   unsigned int r_type;
 
-  r_type = ELF32_R_TYPE (dst->r_info);
-  BFD_ASSERT (r_type < (unsigned int) R_ARC_max);
+  r_type = ELF32_R_TYPE(dst->r_info);
+  BFD_ASSERT(r_type < (unsigned int)R_ARC_max);
   cache_ptr->howto = &elf_arc_howto_table[r_type];
 }
 
-/* Set the right machine number for an ARC ELF file.  */
-
+/* Set the right machine number for an ARC ELF file: */
 static bfd_boolean
-arc_elf_object_p (bfd *abfd)
+arc_elf_object_p(bfd *abfd)
 {
   unsigned int mach = bfd_mach_arc_6;
 
   if (elf_elfheader(abfd)->e_machine == EM_ARC)
     {
-      unsigned long arch = elf_elfheader (abfd)->e_flags & EF_ARC_MACH;
+      unsigned long arch = (elf_elfheader(abfd)->e_flags & EF_ARC_MACH);
 
       switch (arch)
 	{
@@ -185,19 +183,18 @@ arc_elf_object_p (bfd *abfd)
 	  break;
 	}
     }
-  return bfd_default_set_arch_mach (abfd, bfd_arch_arc, mach);
+  return bfd_default_set_arch_mach(abfd, bfd_arch_arc, mach);
 }
 
 /* The final processing done just before writing out an ARC ELF object file.
    This gets the ARC architecture right based on the machine number.  */
-
 static void
-arc_elf_final_write_processing (bfd *abfd,
-				bfd_boolean linker ATTRIBUTE_UNUSED)
+arc_elf_final_write_processing(bfd *abfd,
+                               bfd_boolean linker ATTRIBUTE_UNUSED)
 {
   unsigned long val;
 
-  switch (bfd_get_mach (abfd))
+  switch (bfd_get_mach(abfd))
     {
     case bfd_mach_arc_5:
       val = E_ARC_MACH_ARC5;
@@ -213,8 +210,8 @@ arc_elf_final_write_processing (bfd *abfd,
       val = E_ARC_MACH_ARC8;
       break;
     }
-  elf_elfheader (abfd)->e_flags &=~ EF_ARC_MACH;
-  elf_elfheader (abfd)->e_flags |= val;
+  elf_elfheader(abfd)->e_flags &= ~(unsigned long)EF_ARC_MACH;
+  elf_elfheader(abfd)->e_flags |= val;
 }
 
 #define TARGET_LITTLE_SYM   bfd_elf32_littlearc_vec
@@ -231,3 +228,5 @@ arc_elf_final_write_processing (bfd *abfd,
 #define elf_backend_final_write_processing  arc_elf_final_write_processing
 
 #include "elf32-target.h"
+
+/* End of elf32-arc.c */

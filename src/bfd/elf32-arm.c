@@ -1,4 +1,4 @@
-/* 32-bit ELF support for ARM
+/* elf32-arm.c: 32-bit ELF support for ARM
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -1384,7 +1384,7 @@ elf32_arm_nabi_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 
   /* Make a ".reg/999" section.  */
   return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
-  					 (note->descpos + offset));
+  					 (note->descpos + (bfd_vma)offset));
 }
 
 /* */
@@ -2525,55 +2525,49 @@ insert_thumb_branch (insn32 br_insn, int rel_off)
     br_insn = HI_LOW_ORDER | (high_bits << 16) | low_bits;
   else
     /* FIXME: abort is probably not the right call. krk@cygnus.com  */
-    abort ();	/* Error - not a valid branch instruction form.  */
+    abort();	/* Error - not a valid branch instruction form.  */
 
   return br_insn;
 }
 
-/* Thumb code calling an ARM function.  */
-
+/* Thumb code calling an ARM function: */
 static int
-elf32_thumb_to_arm_stub (struct bfd_link_info * info,
-			 const char *           name,
-			 bfd *                  input_bfd,
-			 bfd *                  output_bfd,
-			 asection *             input_section,
-			 bfd_byte *             hit_data,
-			 asection *             sym_sec,
-			 bfd_vma                offset,
-			 bfd_signed_vma         addend,
-			 bfd_vma                val)
+elf32_thumb_to_arm_stub(struct bfd_link_info *info, const char *name,
+                        bfd *input_bfd, bfd *output_bfd,
+                        asection *input_section, bfd_byte *hit_data,
+                        asection *sym_sec, bfd_vma offset,
+                        bfd_signed_vma addend, bfd_vma val)
 {
-  asection * s = 0;
+  asection *s = (asection *)0;
   bfd_vma my_offset;
   unsigned long int tmp;
   long int ret_offset;
-  struct elf_link_hash_entry * myh;
-  struct elf32_arm_link_hash_table * globals;
+  struct elf_link_hash_entry *myh;
+  struct elf32_arm_link_hash_table *globals;
 
-  myh = find_thumb_glue (info, name, input_bfd);
+  myh = find_thumb_glue(info, name, input_bfd);
   if (myh == NULL)
     return FALSE;
 
-  globals = elf32_arm_hash_table (info);
+  globals = elf32_arm_hash_table(info);
 
-  BFD_ASSERT (globals != NULL);
-  BFD_ASSERT (globals->bfd_of_glue_owner != NULL);
+  BFD_ASSERT(globals != NULL);
+  BFD_ASSERT(globals->bfd_of_glue_owner != NULL);
 
   my_offset = myh->root.u.def.value;
 
-  s = bfd_get_section_by_name (globals->bfd_of_glue_owner,
-			       THUMB2ARM_GLUE_SECTION_NAME);
+  s = bfd_get_section_by_name(globals->bfd_of_glue_owner,
+			      THUMB2ARM_GLUE_SECTION_NAME);
 
-  BFD_ASSERT (s != NULL);
-  BFD_ASSERT (s->contents != NULL);
-  BFD_ASSERT (s->output_section != NULL);
+  BFD_ASSERT(s != NULL);
+  BFD_ASSERT(s->contents != NULL);
+  BFD_ASSERT(s->output_section != NULL);
 
   if ((my_offset & 0x01) == 0x01)
     {
-      if (sym_sec != NULL
-	  && sym_sec->owner != NULL
-	  && !INTERWORK_FLAG (sym_sec->owner))
+      if ((sym_sec != NULL)
+	  && (sym_sec->owner != NULL)
+	  && !INTERWORK_FLAG(sym_sec->owner))
 	{
 	  (*_bfd_error_handler)
 	    (_("%B(%s): warning: interworking not enabled.\n"
@@ -2586,15 +2580,15 @@ elf32_thumb_to_arm_stub (struct bfd_link_info * info,
       --my_offset;
       myh->root.u.def.value = my_offset;
 
-      bfd_put_16 (output_bfd, (bfd_vma) t2a1_bx_pc_insn,
-		  s->contents + my_offset);
+      bfd_put_16(output_bfd, (bfd_vma)t2a1_bx_pc_insn,
+		 (s->contents + my_offset));
 
-      bfd_put_16 (output_bfd, (bfd_vma) t2a2_noop_insn,
-		  s->contents + my_offset + 2);
+      bfd_put_16(output_bfd, (bfd_vma)t2a2_noop_insn,
+		 (s->contents + my_offset + 2));
 
       ret_offset =
 	/* Address of destination of the stub.  */
-	((bfd_signed_vma) val)
+	((bfd_signed_vma)val)
 	- ((bfd_signed_vma)
 	   /* Offset from the start of the current section
 	      to the start of the stubs.  */
@@ -2608,24 +2602,25 @@ elf32_thumb_to_arm_stub (struct bfd_link_info * info,
 	   /* ARM branches work from the pc of the instruction + 8.  */
 	   + 8);
 
-      bfd_put_32 (output_bfd,
-		  (bfd_vma) t2a3_b_insn | ((ret_offset >> 2) & 0x00FFFFFF),
-		  s->contents + my_offset + 4);
+      bfd_put_32(output_bfd,
+		 ((bfd_vma)t2a3_b_insn | ((ret_offset >> 2) & 0x00FFFFFF)),
+		 (s->contents + my_offset + 4));
     }
 
-  BFD_ASSERT (my_offset <= globals->thumb_glue_size);
+  BFD_ASSERT(my_offset <= globals->thumb_glue_size);
 
   /* Now go back and fix up the original BL insn to point to here.  */
   ret_offset =
     /* Address of where the stub is located.  */
-    (s->output_section->vma + s->output_offset + my_offset)
-     /* Address of where the BL is located.  */
-    - (input_section->output_section->vma + input_section->output_offset
-       + offset)
-    /* Addend in the relocation.  */
-    - addend
-    /* Biassing for PC-relative addressing.  */
-    - 8;
+    (bfd_signed_vma)(((s->output_section->vma + s->output_offset + my_offset)
+                      /* Address of where the BL is located.  */
+                      - (input_section->output_section->vma
+                      	 + input_section->output_offset
+                         + offset)
+                      /* Addend in the relocation.  */
+                      - (bfd_vma)addend
+                      /* Biassing for PC-relative addressing.  */
+                      - 8L));
 
   tmp = bfd_get_32(input_bfd, (hit_data - input_section->vma));
 
@@ -2817,9 +2812,9 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 
   /* Some relocation type map to different relocations depending on the
      target.  We pick the right one here.  */
-  r_type = arm_real_reloc_type(globals, (int)r_type);
+  r_type = (unsigned long)arm_real_reloc_type(globals, (int)r_type);
   if (r_type != howto->type)
-    howto = elf32_arm_howto_from_type((int)r_type);
+    howto = elf32_arm_howto_from_type((unsigned int)r_type);
 
   /* If the start address has been set, then set the EF_ARM_HASENTRY
      flag.  Setting this more than once is redundant, but the cost is
@@ -2857,19 +2852,22 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 
   if (globals->use_rel)
     {
-      addend = bfd_get_32 (input_bfd, hit_data) & howto->src_mask;
+      addend = bfd_get_32(input_bfd, hit_data) & howto->src_mask;
 
       if (addend & ((howto->src_mask + 1) >> 1))
 	{
 	  signed_addend = -1;
-	  signed_addend &= ~ howto->src_mask;
+	  signed_addend &= ~howto->src_mask;
 	  signed_addend |= addend;
 	}
       else
-	signed_addend = addend;
+	signed_addend = (bfd_signed_vma)addend;
     }
   else
-    addend = signed_addend = rel->r_addend;
+    {
+      signed_addend = (bfd_signed_vma)rel->r_addend;
+      addend = (bfd_vma)signed_addend;
+    }
 
   switch (r_type)
     {
@@ -3079,12 +3077,12 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 		    + input_section->output_offset);
 	  value -= rel->r_offset;
 	  if (globals->use_rel)
-	    value += (signed_addend << howto->size);
+	    value += (bfd_vma)(signed_addend << howto->size);
 	  else
 	    /* RELA addends do not have to be adjusted by howto->size: */
-	    value += signed_addend;
+	    value += (bfd_vma)signed_addend;
 
-	  signed_addend = value;
+	  signed_addend = (bfd_signed_vma)value;
 	  signed_addend >>= howto->rightshift;
 
 	  /* It is not an error for an undefined weak reference to be
@@ -3124,7 +3122,7 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	case R_ARM_PREL31:
 	  value -= (input_section->output_section->vma
 		    + input_section->output_offset + rel->r_offset);
-	  value += signed_addend;
+	  value += (bfd_vma)signed_addend;
 	  if (! h || (h->root.type != bfd_link_hash_undefweak))
 	    {
 	      /* Check for overflow: */
@@ -3217,7 +3215,7 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	    bfd_vma lower = lower_insn & 0x7ff;
 	    upper = (upper ^ 0x400) - 0x400; /* Sign extend.  */
 	    addend = (upper << 12) | (lower << 1);
-	    signed_addend = addend;
+	    signed_addend = (bfd_signed_vma)addend;
 	  }
 
 	if (r_type == R_ARM_THM_XPC22)
@@ -7176,4 +7174,4 @@ elf32_arm_symbian_modify_segment_map (bfd *abfd,
 # undef elf32_arm_link_hash_traverse
 #endif /* elf32_arm_link_hash_traverse */
 
-/* EOF */
+/* End of elf32-arm.c */

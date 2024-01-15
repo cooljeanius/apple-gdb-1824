@@ -966,7 +966,7 @@ all_machines: $(ALL_MACHINES)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: all_machines
 
-## currently breaks on elf32-arc.c:
+## currently breaks on elf32-arm.c:
 bfd32_backends: $(BFD32_BACKENDS)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: bfd32_backends

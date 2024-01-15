@@ -4830,6 +4830,10 @@ prep_headers(bfd *abfd)
   i_ehdrp = elf_elfheader(abfd);
   i_shdrp = elf_elfsections(abfd);
 
+  if (i_shdrp == NULL) {
+    ; /* ??? */
+  }
+
   shstrtab = _bfd_elf_strtab_init();
   if (shstrtab == NULL)
     return FALSE;

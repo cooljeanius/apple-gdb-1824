@@ -210,15 +210,16 @@ xtensa_insnbuf_from_chars(xtensa_isa isa, xtensa_insnbuf insn,
       increment = 1;
     }
 
-  fence_post = start + (num_chars * increment);
-  memset (insn, 0, xtensa_insnbuf_size (isa) * sizeof (xtensa_insnbuf_word));
+  fence_post = (start + (num_chars * increment));
+  memset(insn, 0,
+  	 ((size_t)xtensa_insnbuf_size(isa) * sizeof(xtensa_insnbuf_word)));
 
   for (i = start; i != fence_post; i += increment, ++cp)
     {
-      int word_inx = byte_to_word_index (i);
-      int bit_inx = byte_to_bit_index (i);
+      int word_inx = byte_to_word_index(i);
+      int bit_inx = byte_to_bit_index(i);
 
-      insn[word_inx] |= (*cp & 0xff) << bit_inx;
+      insn[word_inx] |= (xtensa_insnbuf_word)((*cp & 0xff) << bit_inx);
     }
 }
 
@@ -236,44 +237,47 @@ xtensa_isa_init(xtensa_isa_status *errno_p, char **error_msg_p)
 
   /* Set up the opcode name lookup table: */
   isa->opname_lookup_table =
-    (xtensa_lookup_entry *)bfd_malloc(isa->num_opcodes * sizeof(xtensa_lookup_entry));
-  CHECK_ALLOC_FOR_INIT (isa->opname_lookup_table, NULL, errno_p, error_msg_p);
+    (xtensa_lookup_entry *)bfd_malloc((bfd_size_type)isa->num_opcodes
+                                      * sizeof(xtensa_lookup_entry));
+  CHECK_ALLOC_FOR_INIT(isa->opname_lookup_table, NULL, errno_p, error_msg_p);
   for (n = 0; n < isa->num_opcodes; n++)
     {
       isa->opname_lookup_table[n].key = isa->opcodes[n].name;
       isa->opname_lookup_table[n].u.opcode = n;
     }
-  qsort (isa->opname_lookup_table, isa->num_opcodes,
-	 sizeof (xtensa_lookup_entry), xtensa_isa_name_compare);
+  qsort(isa->opname_lookup_table, (size_t)isa->num_opcodes,
+        sizeof(xtensa_lookup_entry), xtensa_isa_name_compare);
 
   /* Set up the state name lookup table: */
   isa->state_lookup_table =
-    (xtensa_lookup_entry *)bfd_malloc(isa->num_states * sizeof(xtensa_lookup_entry));
+    (xtensa_lookup_entry *)bfd_malloc((bfd_size_type)isa->num_states
+                                      * sizeof(xtensa_lookup_entry));
   CHECK_ALLOC_FOR_INIT (isa->state_lookup_table, NULL, errno_p, error_msg_p);
   for (n = 0; n < isa->num_states; n++)
     {
       isa->state_lookup_table[n].key = isa->states[n].name;
       isa->state_lookup_table[n].u.state = n;
     }
-  qsort (isa->state_lookup_table, isa->num_states,
-	 sizeof (xtensa_lookup_entry), xtensa_isa_name_compare);
+  qsort(isa->state_lookup_table, (size_t)isa->num_states,
+        sizeof(xtensa_lookup_entry), xtensa_isa_name_compare);
 
   /* Set up the sysreg name lookup table.  */
   isa->sysreg_lookup_table =
-    (xtensa_lookup_entry *)bfd_malloc(isa->num_sysregs * sizeof(xtensa_lookup_entry));
-  CHECK_ALLOC_FOR_INIT (isa->sysreg_lookup_table, NULL, errno_p, error_msg_p);
+    (xtensa_lookup_entry *)bfd_malloc((bfd_size_type)isa->num_sysregs
+                                      * sizeof(xtensa_lookup_entry));
+  CHECK_ALLOC_FOR_INIT(isa->sysreg_lookup_table, NULL, errno_p, error_msg_p);
   for (n = 0; n < isa->num_sysregs; n++)
     {
       isa->sysreg_lookup_table[n].key = isa->sysregs[n].name;
       isa->sysreg_lookup_table[n].u.sysreg = n;
     }
-  qsort (isa->sysreg_lookup_table, isa->num_sysregs,
-	 sizeof (xtensa_lookup_entry), xtensa_isa_name_compare);
+  qsort(isa->sysreg_lookup_table, (size_t)isa->num_sysregs,
+        sizeof(xtensa_lookup_entry), xtensa_isa_name_compare);
 
   /* Set up the user & system sysreg number tables: */
   for ((is_user = 0); (is_user < 2); is_user++) {
       isa->sysreg_table[is_user] =
-	(xtensa_sysreg *)bfd_malloc((isa->max_sysreg_num[is_user] + 1)
+	(xtensa_sysreg *)bfd_malloc(((size_t)isa->max_sysreg_num[is_user] + 1UL)
                                     * sizeof(xtensa_sysreg));
       CHECK_ALLOC_FOR_INIT(isa->sysreg_table[is_user], NULL,
 			   errno_p, error_msg_p);
@@ -291,41 +295,44 @@ xtensa_isa_init(xtensa_isa_status *errno_p, char **error_msg_p)
 
   /* Set up the interface lookup table.  */
   isa->interface_lookup_table =
-    (xtensa_lookup_entry *)bfd_malloc(isa->num_interfaces * sizeof(xtensa_lookup_entry));
-  CHECK_ALLOC_FOR_INIT (isa->interface_lookup_table, NULL, errno_p,
-			error_msg_p);
+    (xtensa_lookup_entry *)bfd_malloc((bfd_size_type)isa->num_interfaces
+                                      * sizeof(xtensa_lookup_entry));
+  CHECK_ALLOC_FOR_INIT(isa->interface_lookup_table, NULL, errno_p,
+                       error_msg_p);
   for (n = 0; n < isa->num_interfaces; n++)
     {
       isa->interface_lookup_table[n].key = isa->interfaces[n].name;
       isa->interface_lookup_table[n].u.intf = n;
     }
-  qsort (isa->interface_lookup_table, isa->num_interfaces,
-	 sizeof (xtensa_lookup_entry), xtensa_isa_name_compare);
+  qsort(isa->interface_lookup_table, (size_t)isa->num_interfaces,
+        sizeof(xtensa_lookup_entry), xtensa_isa_name_compare);
 
   /* Set up the funcUnit lookup table.  */
   isa->funcUnit_lookup_table =
-    (xtensa_lookup_entry *)bfd_malloc(isa->num_funcUnits * sizeof(xtensa_lookup_entry));
-  CHECK_ALLOC_FOR_INIT (isa->funcUnit_lookup_table, NULL, errno_p,
-			error_msg_p);
+    (xtensa_lookup_entry *)bfd_malloc((bfd_size_type)isa->num_funcUnits
+                                      * sizeof(xtensa_lookup_entry));
+  CHECK_ALLOC_FOR_INIT(isa->funcUnit_lookup_table, NULL, errno_p,
+                       error_msg_p);
   for (n = 0; n < isa->num_funcUnits; n++)
     {
       isa->funcUnit_lookup_table[n].key = isa->funcUnits[n].name;
       isa->funcUnit_lookup_table[n].u.fun = n;
     }
-  qsort (isa->funcUnit_lookup_table, isa->num_funcUnits,
-	 sizeof (xtensa_lookup_entry), xtensa_isa_name_compare);
+  qsort(isa->funcUnit_lookup_table, (size_t)isa->num_funcUnits,
+        sizeof(xtensa_lookup_entry), xtensa_isa_name_compare);
 
-  isa->insnbuf_size = ((isa->insn_size + sizeof (xtensa_insnbuf_word) - 1) /
-		       sizeof (xtensa_insnbuf_word));
+  isa->insnbuf_size =
+    (int)(((size_t)isa->insn_size + sizeof(xtensa_insnbuf_word) - 1UL)
+          / sizeof(xtensa_insnbuf_word));
 
-  return (xtensa_isa) isa;
+  return (xtensa_isa)isa;
 }
 
-
+/* */
 void
-xtensa_isa_free (xtensa_isa isa)
+xtensa_isa_free(xtensa_isa isa)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
   int n;
 
   /* With this version of the code, the xtensa_isa structure is not
@@ -335,13 +342,13 @@ xtensa_isa_free (xtensa_isa isa)
 
   if (intisa->opname_lookup_table)
     {
-      free (intisa->opname_lookup_table);
+      free(intisa->opname_lookup_table);
       intisa->opname_lookup_table = 0;
     }
 
   if (intisa->state_lookup_table)
     {
-      free (intisa->state_lookup_table);
+      free(intisa->state_lookup_table);
       intisa->state_lookup_table = 0;
     }
 
@@ -644,11 +651,11 @@ xtensa_format_set_slot (xtensa_isa isa, xtensa_format fmt, int slot,
       } \
   } while (0)
 
-
+/* */
 xtensa_opcode
-xtensa_opcode_lookup (xtensa_isa isa, const char *opname)
+xtensa_opcode_lookup(xtensa_isa isa, const char *opname)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
   xtensa_lookup_entry entry, *result = 0;
 
   if (!opname || !*opname)
@@ -663,7 +670,7 @@ xtensa_opcode_lookup (xtensa_isa isa, const char *opname)
       entry.key = opname;
       result =
         (xtensa_lookup_entry *)bsearch(&entry, intisa->opname_lookup_table,
-                                       intisa->num_opcodes,
+                                       (size_t)intisa->num_opcodes,
                                        sizeof(xtensa_lookup_entry),
                                        xtensa_isa_name_compare);
     }
@@ -671,17 +678,18 @@ xtensa_opcode_lookup (xtensa_isa isa, const char *opname)
   if (!result)
     {
       xtisa_errno = xtensa_isa_bad_opcode;
-      sprintf(xtisa_error_msg, "opcode \"%s\" not recognized", opname);
+      snprintf(xtisa_error_msg, sizeof(xtisa_error_msg),
+               "opcode \"%s\" not recognized", opname);
       return XTENSA_UNDEFINED;
     }
 
   return result->u.opcode;
 }
 
-
+/* */
 xtensa_opcode
-xtensa_opcode_decode (xtensa_isa isa, xtensa_format fmt, int slot,
-		      const xtensa_insnbuf slotbuf)
+xtensa_opcode_decode(xtensa_isa isa, xtensa_format fmt, int slot,
+		     const xtensa_insnbuf slotbuf)
 {
   xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
   int slot_id;
@@ -1454,9 +1462,9 @@ xtensa_regfile_num_entries (xtensa_isa isa, xtensa_regfile rf)
       } \
   } while (0)
 
-
+/* */
 xtensa_state
-xtensa_state_lookup (xtensa_isa isa, const char *name)
+xtensa_state_lookup(xtensa_isa isa, const char *name)
 {
   xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
   xtensa_lookup_entry entry, *result = 0;
@@ -1473,7 +1481,7 @@ xtensa_state_lookup (xtensa_isa isa, const char *name)
       entry.key = name;
       result =
         (xtensa_lookup_entry *)bsearch(&entry, intisa->state_lookup_table,
-                                       intisa->num_states,
+                                       (size_t)intisa->num_states,
                                        sizeof(xtensa_lookup_entry),
                                        xtensa_isa_name_compare);
     }
@@ -1481,19 +1489,20 @@ xtensa_state_lookup (xtensa_isa isa, const char *name)
   if (!result)
     {
       xtisa_errno = xtensa_isa_bad_state;
-      sprintf (xtisa_error_msg, "state \"%s\" not recognized", name);
+      snprintf(xtisa_error_msg, sizeof(xtisa_error_msg),
+               "state \"%s\" not recognized", name);
       return XTENSA_UNDEFINED;
     }
 
   return result->u.state;
 }
 
-
+/* */
 const char *
-xtensa_state_name (xtensa_isa isa, xtensa_state st)
+xtensa_state_name(xtensa_isa isa, xtensa_state st)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
-  CHECK_STATE (intisa, st, NULL);
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
+  CHECK_STATE(intisa, st, NULL);
   return intisa->states[st].name;
 }
 
@@ -1552,17 +1561,17 @@ xtensa_sysreg_lookup (xtensa_isa isa, int num, int is_user)
   return intisa->sysreg_table[is_user][num];
 }
 
-
+/* */
 xtensa_sysreg
-xtensa_sysreg_lookup_name (xtensa_isa isa, const char *name)
+xtensa_sysreg_lookup_name(xtensa_isa isa, const char *name)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
   xtensa_lookup_entry entry, *result = 0;
 
   if (!name || !*name)
     {
       xtisa_errno = xtensa_isa_bad_sysreg;
-      strcpy (xtisa_error_msg, "invalid sysreg name");
+      strcpy(xtisa_error_msg, "invalid sysreg name");
       return XTENSA_UNDEFINED;
     }
 
@@ -1571,7 +1580,7 @@ xtensa_sysreg_lookup_name (xtensa_isa isa, const char *name)
       entry.key = name;
       result =
         (xtensa_lookup_entry *)bsearch(&entry, intisa->sysreg_lookup_table,
-                                       intisa->num_sysregs,
+                                       (size_t)intisa->num_sysregs,
                                        sizeof(xtensa_lookup_entry),
                                        xtensa_isa_name_compare);
     }
@@ -1579,19 +1588,20 @@ xtensa_sysreg_lookup_name (xtensa_isa isa, const char *name)
   if (!result)
     {
       xtisa_errno = xtensa_isa_bad_sysreg;
-      sprintf (xtisa_error_msg, "sysreg \"%s\" not recognized", name);
+      snprintf(xtisa_error_msg, sizeof(xtisa_error_msg),
+               "sysreg \"%s\" not recognized", name);
       return XTENSA_UNDEFINED;
     }
 
   return result->u.sysreg;
 }
 
-
+/* */
 const char *
-xtensa_sysreg_name (xtensa_isa isa, xtensa_sysreg sysreg)
+xtensa_sysreg_name(xtensa_isa isa, xtensa_sysreg sysreg)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
-  CHECK_SYSREG (intisa, sysreg, NULL);
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
+  CHECK_SYSREG(intisa, sysreg, NULL);
   return intisa->sysregs[sysreg].name;
 }
 
@@ -1628,7 +1638,7 @@ xtensa_sysreg_is_user (xtensa_isa isa, xtensa_sysreg sysreg)
       } \
   } while (0)
 
-
+/* */
 xtensa_interface
 xtensa_interface_lookup(xtensa_isa isa, const char *ifname)
 {
@@ -1648,7 +1658,7 @@ xtensa_interface_lookup(xtensa_isa isa, const char *ifname)
       result =
         (xtensa_lookup_entry *)bsearch(&entry,
                                        intisa->interface_lookup_table,
-                                       intisa->num_interfaces,
+                                       (size_t)intisa->num_interfaces,
                                        sizeof(xtensa_lookup_entry),
                                        xtensa_isa_name_compare);
     }
@@ -1656,16 +1666,17 @@ xtensa_interface_lookup(xtensa_isa isa, const char *ifname)
   if (!result)
     {
       xtisa_errno = xtensa_isa_bad_interface;
-      sprintf(xtisa_error_msg, "interface \"%s\" not recognized", ifname);
+      snprintf(xtisa_error_msg, sizeof(xtisa_error_msg),
+               "interface \"%s\" not recognized", ifname);
       return XTENSA_UNDEFINED;
     }
 
   return result->u.intf;
 }
 
-
+/* */
 const char *
-xtensa_interface_name (xtensa_isa isa, xtensa_interface intf)
+xtensa_interface_name(xtensa_isa isa, xtensa_interface intf)
 {
   xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
   CHECK_INTERFACE(intisa, intf, NULL);
@@ -1741,7 +1752,7 @@ xtensa_funcUnit_lookup(xtensa_isa isa, const char *fname)
       entry.key = fname;
       result = (xtensa_lookup_entry *)bsearch(&entry,
                                               intisa->funcUnit_lookup_table,
-                                              intisa->num_funcUnits,
+                                              (size_t)intisa->num_funcUnits,
                                               sizeof(xtensa_lookup_entry),
                                               xtensa_isa_name_compare);
     }
@@ -1749,7 +1760,7 @@ xtensa_funcUnit_lookup(xtensa_isa isa, const char *fname)
   if (!result)
     {
       xtisa_errno = xtensa_isa_bad_funcUnit;
-      sprintf(xtisa_error_msg,
+      snprintf(xtisa_error_msg, sizeof(xtisa_error_msg),
               "functional unit \"%s\" not recognized", fname);
       return XTENSA_UNDEFINED;
     }
