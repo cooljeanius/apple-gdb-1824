@@ -4012,6 +4012,7 @@
 		A51DEE721AA273B300DA3F76 /* cf-m68klynx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-m68klynx.c"; sourceTree = "<group>"; };
 		A5262E802B55204E002EC445 /* elfcpp */ = {isa = PBXFileReference; lastKnownFileType = folder; path = elfcpp; sourceTree = "<group>"; };
 		A5262E812B55C205002EC445 /* elf32-bfin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "elf32-bfin.c"; sourceTree = "<group>"; };
+		A5262E822B55CCBC002EC445 /* elf32-score7.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf32-score7.c"; sourceTree = "<group>"; };
 		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; path = "mac-gdb.r"; sourceTree = "<group>"; };
 		A53ABD8C1A38C88F002F20B2 /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = link.h; sourceTree = "<group>"; };
 		A53ABDB71A38E84F002F20B2 /* objdump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objdump.h; sourceTree = "<group>"; };
@@ -6570,6 +6571,7 @@
 				2609CF2D0E82C407008125DE /* elf32-ppc.c */,
 				2609CF2E0E82C407008125DE /* elf32-ppc.h */,
 				2609CF2F0E82C407008125DE /* elf32-s390.c */,
+				A5262E822B55CCBC002EC445 /* elf32-score7.c */,
 				2609CF300E82C407008125DE /* elf32-sh-symbian.c */,
 				2609CF310E82C407008125DE /* elf32-sh.c */,
 				2609CF320E82C407008125DE /* elf32-sh64-com.c */,

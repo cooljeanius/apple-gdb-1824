@@ -1,9 +1,9 @@
-/* 32-bit ELF support for S+core.
+/* elf32-score7.c: 32-bit ELF support for S+core.
    Copyright 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
    Contributed by
-   Brain.lin (brain.lin@sunplusct.com)
-   Mei Ligang (ligang@sunnorth.com.cn)
-   Pei-Lin Tsai (pltsai@sunplus.com)
+   Brain.lin <brain.lin@sunplusct.com>
+   Mei Ligang <ligang@sunnorth.com.cn>
+   Pei-Lin Tsai <pltsai@sunplus.com>
 
    This file is part of BFD, the Binary File Descriptor library.
 
@@ -236,10 +236,14 @@ score_elf_lo16_reloc (bfd *abfd,
     return bfd_reloc_outofrange;
   uvalue = ((hi16_offset << 16) | (offset & 0xffff)) + val;
   hi16_offset = (uvalue >> 16) << 1;
-  hi16_value = (hi16_value & ~0x37fff) | (hi16_offset & 0x7fff) | ((hi16_offset << 1) & 0x30000);
+  hi16_value = ((hi16_value & (unsigned long)~0x37fff)
+  		| (hi16_offset & 0x7fff)
+                | ((hi16_offset << 1) & 0x30000));
   bfd_put_32 (abfd, hi16_value, hi16_rel_addr);
   offset = (uvalue & 0xffff) << 1;
-  addend = (addend & ~0x37fff) | (offset & 0x7fff) | ((offset << 1) & 0x30000);
+  addend = ((addend & (bfd_vma)~0x37fff)
+            | (offset & 0x7fff)
+            | ((offset << 1) & 0x30000));
   bfd_put_32 (abfd, addend, (bfd_byte *) data + reloc_entry->address);
   return bfd_reloc_ok;
 }

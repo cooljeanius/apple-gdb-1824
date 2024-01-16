@@ -2547,15 +2547,15 @@ mips_elf_sort_hash_table(struct bfd_link_info *info, unsigned long max_local)
 
   hsd.low = NULL;
   hsd.max_unref_got_dynindx =
-    hsd.min_got_dynindx = (elf_hash_table(info)->dynsymcount
+    hsd.min_got_dynindx = (long)(elf_hash_table(info)->dynsymcount
     /* In the multi-got case, assigned_gotno of the master got_info
      * indicate the number of entries that are NOT referenced in the
      * primary GOT, but that must have entries because there are dynamic
      * relocations that reference it.  Since they are NOT referenced, we
      * move them to the end of the GOT, so that they do NOT prevent other
      * entries that are referenced from getting too large offsets: */
-                           - (g->next ? g->assigned_gotno : 0));
-  hsd.max_non_got_dynindx = max_local;
+                           	 - (g->next ? g->assigned_gotno : 0L));
+  hsd.max_non_got_dynindx = (long)max_local;
   mips_elf_link_hash_traverse(((struct mips_elf_link_hash_table *)
                                elf_hash_table(info)),
 			      mips_elf_sort_hash_table_f,
@@ -2810,8 +2810,9 @@ mips_elf_make_got_per_bfd (void **entryp, void *p)
     g = bfdgot->g;
   else
     {
-      bfdgot = (struct mips_elf_bfd2got_hash *)bfd_alloc
-	(arg->obfd, sizeof (struct mips_elf_bfd2got_hash));
+      bfdgot =
+        ((struct mips_elf_bfd2got_hash *)
+         bfd_alloc(arg->obfd, sizeof(struct mips_elf_bfd2got_hash)));
 
       if (bfdgot == NULL)
 	{
@@ -2822,8 +2823,8 @@ mips_elf_make_got_per_bfd (void **entryp, void *p)
       *bfdgotp = bfdgot;
 
       bfdgot->bfd = entry->abfd;
-      bfdgot->g = g = (struct mips_got_info *)
-	bfd_alloc (arg->obfd, sizeof (struct mips_got_info));
+      bfdgot->g = g = ((struct mips_got_info *)
+                       bfd_alloc(arg->obfd, sizeof(struct mips_got_info)));
       if (g == NULL)
 	{
 	  arg->obfd = 0;
@@ -2833,12 +2834,12 @@ mips_elf_make_got_per_bfd (void **entryp, void *p)
       g->global_gotsym = NULL;
       g->global_gotno = 0;
       g->local_gotno = 0;
-      g->assigned_gotno = -1;
+      g->assigned_gotno = (unsigned int)-1;
       g->tls_gotno = 0;
       g->tls_assigned_gotno = 0;
       g->tls_ldm_offset = MINUS_ONE;
-      g->got_entries = htab_try_create (1, mips_elf_multi_got_entry_hash,
-					mips_elf_multi_got_entry_eq, NULL);
+      g->got_entries = htab_try_create(1, mips_elf_multi_got_entry_hash,
+                                       mips_elf_multi_got_entry_eq, NULL);
       if (g->got_entries == NULL)
 	{
 	  arg->obfd = 0;
@@ -2850,7 +2851,7 @@ mips_elf_make_got_per_bfd (void **entryp, void *p)
     }
 
   /* Insert the GOT entry in the bfd's got entry hash table.  */
-  entryp = htab_find_slot (g->got_entries, entry, INSERT);
+  entryp = htab_find_slot(g->got_entries, entry, INSERT);
   if (*entryp != NULL)
     return 1;
 
@@ -2863,7 +2864,7 @@ mips_elf_make_got_per_bfd (void **entryp, void *p)
       if (entry->tls_type & GOT_TLS_IE)
 	g->tls_gotno += 1;
     }
-  else if (entry->symndx >= 0 || entry->d.h->forced_local)
+  else if ((entry->symndx >= 0) || entry->d.h->forced_local)
     ++g->local_gotno;
   else
     ++g->global_gotno;
@@ -2927,14 +2928,17 @@ mips_elf_merge_gots (void **bfd2got_, void *p)
       if (arg->obfd == NULL)
 	return 0;
 
-      htab_delete (g->got_entries);
+      htab_delete(g->got_entries);
       /* We don't have to worry about releasing memory of the actual
 	 got entries, since they're all in the master got_entries hash
 	 table anyway.  */
 
-      BFD_ASSERT((old_lcount + lcount) >= arg->primary->local_gotno);
-      BFD_ASSERT((old_gcount + gcount) >= arg->primary->global_gotno);
-      BFD_ASSERT((old_tcount + tcount) >= arg->primary->tls_gotno);
+      BFD_ASSERT(((unsigned int)old_lcount + lcount)
+      		 >= arg->primary->local_gotno);
+      BFD_ASSERT(((unsigned int)old_gcount + gcount)
+      		 >= arg->primary->global_gotno);
+      BFD_ASSERT(((unsigned int)old_tcount + tcount)
+      		 >= arg->primary->tls_gotno);
 
       arg->primary_count = (arg->primary->local_gotno
                             + arg->primary->global_gotno
@@ -2957,9 +2961,12 @@ mips_elf_merge_gots (void **bfd2got_, void *p)
 
       htab_delete(g->got_entries);
 
-      BFD_ASSERT((old_lcount + lcount) >= arg->current->local_gotno);
-      BFD_ASSERT((old_gcount + gcount) >= arg->current->global_gotno);
-      BFD_ASSERT((old_tcount + tcount) >= arg->current->tls_gotno);
+      BFD_ASSERT(((unsigned int)old_lcount + lcount)
+                 >= arg->current->local_gotno);
+      BFD_ASSERT(((unsigned int)old_gcount + gcount)
+                 >= arg->current->global_gotno);
+      BFD_ASSERT(((unsigned int)old_tcount + tcount)
+                 >= arg->current->tls_gotno);
 
       arg->current_count = (arg->current->local_gotno
                             + arg->current->global_gotno
@@ -3006,7 +3013,7 @@ mips_elf_initialize_tls_index(void **entryp, void *p)
       /* Similarly, there may be multiple structs for the LDM entry: */
       if ((g->tls_ldm_offset != MINUS_TWO) && (g->tls_ldm_offset != MINUS_ONE))
 	{
-	  entry->gotidx = g->tls_ldm_offset;
+	  entry->gotidx = (long)g->tls_ldm_offset;
 	  return 1;
 	}
     }
@@ -3015,7 +3022,7 @@ mips_elf_initialize_tls_index(void **entryp, void *p)
   entry->gotidx =
     (MIPS_ELF_GOT_SIZE(entry->abfd) * (long)g->tls_assigned_gotno);
   if (g->next == NULL && entry->symndx == -1)
-    entry->d.h->tls_got_offset = entry->gotidx;
+    entry->d.h->tls_got_offset = (bfd_vma)entry->gotidx;
 
   if (entry->tls_type & (GOT_TLS_GD | GOT_TLS_LDM))
     g->tls_assigned_gotno += 2;
@@ -3023,7 +3030,7 @@ mips_elf_initialize_tls_index(void **entryp, void *p)
     g->tls_assigned_gotno += 1;
 
   if (entry->tls_type & GOT_TLS_LDM)
-    g->tls_ldm_offset = entry->gotidx;
+    g->tls_ldm_offset = (bfd_vma)entry->gotidx;
 
   return 1;
 }
@@ -3049,14 +3056,16 @@ mips_elf_set_global_got_offset(void **entryp, void *p)
     (struct mips_elf_set_global_got_offset_arg *)p;
   struct mips_got_info *g = arg->g;
 
-  if (g && entry->tls_type != GOT_NORMAL)
+  if (g && (entry->tls_type != GOT_NORMAL))
     arg->needed_relocs +=
-      mips_tls_got_relocs(arg->info, (unsigned char)entry->tls_type,
-			  ((entry->symndx == -1) ? &entry->d.h->root : NULL));
+      ((unsigned int)
+       mips_tls_got_relocs(arg->info, (unsigned char)entry->tls_type,
+			   ((entry->symndx == -1)
+      			    ? &entry->d.h->root : NULL)));
 
-  if (entry->abfd != NULL && entry->symndx == -1
-      && entry->d.h->root.dynindx != -1
-      && entry->d.h->tls_type == GOT_NORMAL)
+  if ((entry->abfd != NULL) && (entry->symndx == -1)
+      && (entry->d.h->root.dynindx != -1)
+      && (entry->d.h->tls_type == GOT_NORMAL))
     {
       if (g)
 	{
@@ -3070,7 +3079,7 @@ mips_elf_set_global_got_offset(void **entryp, void *p)
 	    ++arg->needed_relocs;
 	}
       else
-	entry->d.h->root.got.offset = arg->value;
+	entry->d.h->root.got.offset = (bfd_vma)arg->value;
     }
 
   return 1;
@@ -3546,7 +3555,7 @@ mips_elf_create_got_section(bfd *abfd, struct bfd_link_info *info,
   if (s)
     {
       if (! maybe_exclude)
-	s->flags &= ~SEC_EXCLUDE;
+	s->flags &= (flagword)~SEC_EXCLUDE;
       return TRUE;
     }
 
@@ -5572,12 +5581,12 @@ _bfd_mips_elf_link_output_symbol_hook
   /* If we see a common symbol, which implies a relocatable link, then
      if a symbol was small common in an input file, mark it as small
      common in the output file.  */
-  if (sym->st_shndx == SHN_COMMON
-      && strcmp (input_sec->name, ".scommon") == 0)
+  if ((sym->st_shndx == SHN_COMMON)
+      && (strcmp(input_sec->name, ".scommon") == 0))
     sym->st_shndx = SHN_MIPS_SCOMMON;
 
   if (sym->st_other == STO_MIPS16)
-    sym->st_value &= ~1;
+    sym->st_value &= ~1UL;
 
   return TRUE;
 }
@@ -6368,8 +6377,8 @@ _bfd_mips_relax_section(bfd *abfd, asection *sec,
 
       /* Compute branch offset, from delay slot of the jump to the
 	 branch target.  */
-      sym_offset = ((symval + irel->r_addend)
-                    - (sec_start + irel->r_offset + 4));
+      sym_offset = (bfd_signed_vma)((symval + irel->r_addend)
+                                    - (sec_start + irel->r_offset + 4L));
 
       /* Branch offset must be properly aligned.  */
       if ((sym_offset & 3) != 0)
@@ -6593,7 +6602,8 @@ _bfd_mips_elf_always_size_sections(bfd *output_bfd, struct bfd_link_info *info)
     return FALSE;
 
   if (g->global_gotsym != NULL)
-    i = (int)(elf_hash_table(info)->dynsymcount - g->global_gotsym->dynindx);
+    i = (int)(elf_hash_table(info)->dynsymcount
+              - (bfd_size_type)g->global_gotsym->dynindx);
   else
     /* If there are no global symbols, or none requiring
        relocations, then GLOBAL_GOTSYM will be NULL.  */
@@ -7034,9 +7044,10 @@ _bfd_mips_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		     that case, the R_MIPS_LO16 relocation may occur
 		     as one of these.  We permit a similar extension
 		     in general, as that is useful for GCC.  */
-		  lo16_relocation = mips_elf_next_relocation(input_bfd,
-							     lo16_type,
-							     rel, relend);
+		  lo16_relocation =
+                    mips_elf_next_relocation(input_bfd,
+                                             (unsigned int)lo16_type,
+                                             rel, relend);
 		  if (lo16_relocation == NULL)
 		    return FALSE;
 
@@ -7044,7 +7055,8 @@ _bfd_mips_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 		  /* Obtain the addend kept there.  */
 		  lo16_howto = MIPS_ELF_RTYPE_TO_HOWTO(input_bfd,
-                                                       lo16_type, FALSE);
+                                                       (unsigned int)lo16_type,
+                                                       FALSE);
 		  _bfd_mips16_elf_reloc_unshuffle(input_bfd, lo16_type, FALSE,
 						  lo16_location);
 		  l = mips_elf_obtain_contents(lo16_howto, lo16_relocation,
@@ -7302,7 +7314,7 @@ mips_elf_irix6_finish_dynamic_symbol (bfd *abfd ATTRIBUTE_UNUSED,
 {
   /* The linker script takes care of providing names and values for
      these, but we must place them into the right sections.  */
-  static const char* const text_section_symbols[] = {
+  static const char *const text_section_symbols[] = {
     "_ftext",
     "_etext",
     "__dso_displacement",
@@ -7311,7 +7323,7 @@ mips_elf_irix6_finish_dynamic_symbol (bfd *abfd ATTRIBUTE_UNUSED,
     NULL
   };
 
-  static const char* const data_section_symbols[] = {
+  static const char *const data_section_symbols[] = {
     "_fdata",
     "_edata",
     "_end",
@@ -7319,18 +7331,18 @@ mips_elf_irix6_finish_dynamic_symbol (bfd *abfd ATTRIBUTE_UNUSED,
     NULL
   };
 
-  const char* const *p;
+  const char *const *p;
   int i;
 
   for (i = 0; i < 2; ++i)
-    for (p = (i == 0) ? text_section_symbols : data_section_symbols;
+    for (p = ((i == 0) ? text_section_symbols : data_section_symbols);
 	 *p;
 	 ++p)
-      if (strcmp (*p, name) == 0)
+      if (strcmp(*p, name) == 0)
 	{
 	  /* All of these symbols are given type STT_SECTION by the
 	     IRIX6 linker.  */
-	  sym->st_info = ELF_ST_INFO (STB_GLOBAL, STT_SECTION);
+	  sym->st_info = ELF_ST_INFO(STB_GLOBAL, STT_SECTION);
 	  sym->st_other = STO_PROTECTED;
 
 	  /* The IRIX linker puts these symbols in special sections.  */
@@ -7345,19 +7357,18 @@ mips_elf_irix6_finish_dynamic_symbol (bfd *abfd ATTRIBUTE_UNUSED,
 
 /* Finish up dynamic symbol handling.  We set the contents of various
    dynamic sections here.  */
-
 bfd_boolean
-_bfd_mips_elf_finish_dynamic_symbol (bfd *output_bfd,
-				     struct bfd_link_info *info,
-				     struct elf_link_hash_entry *h,
-				     Elf_Internal_Sym *sym)
+_bfd_mips_elf_finish_dynamic_symbol(bfd *output_bfd,
+				    struct bfd_link_info *info,
+				    struct elf_link_hash_entry *h,
+				    Elf_Internal_Sym *sym)
 {
   bfd *dynobj;
   asection *sgot;
   struct mips_got_info *g, *gg;
   const char *name;
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
 
   if (h->plt.offset != MINUS_ONE)
     {
@@ -7377,12 +7388,13 @@ _bfd_mips_elf_finish_dynamic_symbol (bfd *output_bfd,
 
       /* Fill the stub: */
       bfd_put_32(output_bfd, STUB_LW(output_bfd), stub);
-      bfd_put_32(output_bfd, STUB_MOVE(output_bfd), stub + 4);
-      bfd_put_32(output_bfd, STUB_JALR, stub + 8);
-      bfd_put_32(output_bfd, STUB_LI16(output_bfd) + h->dynindx, stub + 12);
+      bfd_put_32(output_bfd, STUB_MOVE(output_bfd), (stub + 4));
+      bfd_put_32(output_bfd, STUB_JALR, (stub + 8));
+      bfd_put_32(output_bfd, (bfd_vma)(STUB_LI16(output_bfd) + h->dynindx),
+      		 (stub + 12));
 
       BFD_ASSERT(h->plt.offset <= s->size);
-      memcpy(s->contents + h->plt.offset, stub, MIPS_FUNCTION_STUB_SIZE);
+      memcpy((s->contents + h->plt.offset), stub, MIPS_FUNCTION_STUB_SIZE);
 
       /* Mark the symbol as undefined.  plt.offset != -1 occurs
 	 only for the referenced symbol.  */
@@ -7395,29 +7407,29 @@ _bfd_mips_elf_finish_dynamic_symbol (bfd *output_bfd,
 		       + h->plt.offset);
     }
 
-  BFD_ASSERT (h->dynindx != -1
-	      || h->forced_local);
+  BFD_ASSERT((h->dynindx != -1) || h->forced_local);
 
-  sgot = mips_elf_got_section (dynobj, FALSE);
-  BFD_ASSERT (sgot != NULL);
-  BFD_ASSERT (mips_elf_section_data (sgot) != NULL);
-  g = mips_elf_section_data (sgot)->u.got_info;
-  BFD_ASSERT (g != NULL);
+  sgot = mips_elf_got_section(dynobj, FALSE);
+  BFD_ASSERT(sgot != NULL);
+  BFD_ASSERT(mips_elf_section_data(sgot) != NULL);
+  g = mips_elf_section_data(sgot)->u.got_info;
+  BFD_ASSERT(g != NULL);
 
   /* Run through the global symbol table, creating GOT entries for all
      the symbols that need them.  */
-  if (g->global_gotsym != NULL
-      && h->dynindx >= g->global_gotsym->dynindx)
+  if ((g->global_gotsym != NULL)
+      && (h->dynindx >= g->global_gotsym->dynindx))
     {
       bfd_vma offset;
       bfd_vma value;
 
       value = sym->st_value;
-      offset = mips_elf_global_got_index (dynobj, output_bfd, h, R_MIPS_GOT16, info);
-      MIPS_ELF_PUT_WORD (output_bfd, value, sgot->contents + offset);
+      offset = mips_elf_global_got_index(dynobj, output_bfd, h, R_MIPS_GOT16,
+      					 info);
+      MIPS_ELF_PUT_WORD(output_bfd, value, (sgot->contents + offset));
     }
 
-  if (g->next && h->dynindx != -1 && h->type != STT_TLS)
+  if (g->next && (h->dynindx != -1) && (h->type != STT_TLS))
     {
       struct mips_got_entry e, *p;
       bfd_vma entry;
@@ -7449,11 +7461,11 @@ _bfd_mips_elf_finish_dynamic_symbol (bfd *output_bfd,
 		     appropriate addend.  */
 		  Elf_Internal_Rela rel[3];
 
-		  memset (rel, 0, sizeof (rel));
-		  if (ABI_64_P (output_bfd))
-		    rel[0].r_info = ELF_R_INFO (output_bfd, 0, R_MIPS_64);
+		  memset(rel, 0, sizeof(rel));
+		  if (ABI_64_P(output_bfd))
+		    rel[0].r_info = ELF_R_INFO(output_bfd, 0, R_MIPS_64);
 		  else
-		    rel[0].r_info = ELF_R_INFO (output_bfd, 0, R_MIPS_32);
+		    rel[0].r_info = ELF_R_INFO(output_bfd, 0, R_MIPS_32);
 		  rel[0].r_offset = rel[1].r_offset = rel[2].r_offset = offset;
 
 		  entry = 0;
@@ -7464,47 +7476,47 @@ _bfd_mips_elf_finish_dynamic_symbol (bfd *output_bfd,
 		}
 	      else
 		entry = sym->st_value;
-	      MIPS_ELF_PUT_WORD (output_bfd, entry, sgot->contents + offset);
+	      MIPS_ELF_PUT_WORD(output_bfd, entry, (sgot->contents + offset));
 	    }
 	}
     }
 
   /* Mark _DYNAMIC and _GLOBAL_OFFSET_TABLE_ as absolute.  */
   name = h->root.root.string;
-  if (strcmp (name, "_DYNAMIC") == 0
-      || strcmp (name, "_GLOBAL_OFFSET_TABLE_") == 0)
+  if ((strcmp(name, "_DYNAMIC") == 0)
+      || (strcmp(name, "_GLOBAL_OFFSET_TABLE_") == 0))
     sym->st_shndx = SHN_ABS;
-  else if (strcmp (name, "_DYNAMIC_LINK") == 0
-	   || strcmp (name, "_DYNAMIC_LINKING") == 0)
+  else if ((strcmp(name, "_DYNAMIC_LINK") == 0)
+	   || (strcmp(name, "_DYNAMIC_LINKING") == 0))
     {
       sym->st_shndx = SHN_ABS;
-      sym->st_info = ELF_ST_INFO (STB_GLOBAL, STT_SECTION);
+      sym->st_info = ELF_ST_INFO(STB_GLOBAL, STT_SECTION);
       sym->st_value = 1;
     }
-  else if (strcmp (name, "_gp_disp") == 0 && ! NEWABI_P (output_bfd))
+  else if ((strcmp(name, "_gp_disp") == 0) && !NEWABI_P(output_bfd))
     {
       sym->st_shndx = SHN_ABS;
-      sym->st_info = ELF_ST_INFO (STB_GLOBAL, STT_SECTION);
-      sym->st_value = elf_gp (output_bfd);
+      sym->st_info = ELF_ST_INFO(STB_GLOBAL, STT_SECTION);
+      sym->st_value = elf_gp(output_bfd);
     }
-  else if (SGI_COMPAT (output_bfd))
+  else if (SGI_COMPAT(output_bfd))
     {
-      if (strcmp (name, mips_elf_dynsym_rtproc_names[0]) == 0
-	  || strcmp (name, mips_elf_dynsym_rtproc_names[1]) == 0)
+      if ((strcmp(name, mips_elf_dynsym_rtproc_names[0]) == 0)
+	  || (strcmp(name, mips_elf_dynsym_rtproc_names[1]) == 0))
 	{
-	  sym->st_info = ELF_ST_INFO (STB_GLOBAL, STT_SECTION);
+	  sym->st_info = ELF_ST_INFO(STB_GLOBAL, STT_SECTION);
 	  sym->st_other = STO_PROTECTED;
 	  sym->st_value = 0;
 	  sym->st_shndx = SHN_MIPS_DATA;
 	}
-      else if (strcmp (name, mips_elf_dynsym_rtproc_names[2]) == 0)
+      else if (strcmp(name, mips_elf_dynsym_rtproc_names[2]) == 0)
 	{
-	  sym->st_info = ELF_ST_INFO (STB_GLOBAL, STT_SECTION);
+	  sym->st_info = ELF_ST_INFO(STB_GLOBAL, STT_SECTION);
 	  sym->st_other = STO_PROTECTED;
-	  sym->st_value = mips_elf_hash_table (info)->procedure_count;
+	  sym->st_value = mips_elf_hash_table(info)->procedure_count;
 	  sym->st_shndx = SHN_ABS;
 	}
-      else if (sym->st_shndx != SHN_UNDEF && sym->st_shndx != SHN_ABS)
+      else if ((sym->st_shndx != SHN_UNDEF) && (sym->st_shndx != SHN_ABS))
 	{
 	  if (h->type == STT_FUNC)
 	    sym->st_shndx = SHN_MIPS_TEXT;
@@ -7514,37 +7526,36 @@ _bfd_mips_elf_finish_dynamic_symbol (bfd *output_bfd,
     }
 
   /* Handle the IRIX6-specific symbols.  */
-  if (IRIX_COMPAT (output_bfd) == ict_irix6)
-    mips_elf_irix6_finish_dynamic_symbol (output_bfd, name, sym);
+  if (IRIX_COMPAT(output_bfd) == ict_irix6)
+    mips_elf_irix6_finish_dynamic_symbol(output_bfd, name, sym);
 
   if (! info->shared)
     {
-      if (! mips_elf_hash_table (info)->use_rld_obj_head
-	  && (strcmp (name, "__rld_map") == 0
-	      || strcmp (name, "__RLD_MAP") == 0))
+      if (!mips_elf_hash_table(info)->use_rld_obj_head
+	  && ((strcmp(name, "__rld_map") == 0)
+	      || (strcmp(name, "__RLD_MAP") == 0)))
 	{
-	  asection *s = bfd_get_section_by_name (dynobj, ".rld_map");
-	  BFD_ASSERT (s != NULL);
-	  sym->st_value = s->output_section->vma + s->output_offset;
-	  bfd_put_32 (output_bfd, 0, s->contents);
-	  if (mips_elf_hash_table (info)->rld_value == 0)
-	    mips_elf_hash_table (info)->rld_value = sym->st_value;
+	  asection *s = bfd_get_section_by_name(dynobj, ".rld_map");
+	  BFD_ASSERT(s != NULL);
+	  sym->st_value = (s->output_section->vma + s->output_offset);
+	  bfd_put_32(output_bfd, 0, s->contents);
+	  if (mips_elf_hash_table(info)->rld_value == 0)
+	    mips_elf_hash_table(info)->rld_value = sym->st_value;
 	}
-      else if (mips_elf_hash_table (info)->use_rld_obj_head
-	       && strcmp (name, "__rld_obj_head") == 0)
+      else if (mips_elf_hash_table(info)->use_rld_obj_head
+	       && (strcmp(name, "__rld_obj_head") == 0))
 	{
 	  /* IRIX6 does not use a .rld_map section.  */
-	  if (IRIX_COMPAT (output_bfd) == ict_irix5
-              || IRIX_COMPAT (output_bfd) == ict_none)
-	    BFD_ASSERT (bfd_get_section_by_name (dynobj, ".rld_map")
-			!= NULL);
-	  mips_elf_hash_table (info)->rld_value = sym->st_value;
+	  if ((IRIX_COMPAT(output_bfd) == ict_irix5)
+              || (IRIX_COMPAT(output_bfd) == ict_none))
+	    BFD_ASSERT(bfd_get_section_by_name(dynobj, ".rld_map") != NULL);
+	  mips_elf_hash_table(info)->rld_value = sym->st_value;
 	}
     }
 
   /* If this is a mips16 symbol, force the value to be even.  */
   if (sym->st_other == STO_MIPS16)
-    sym->st_value &= ~1;
+    sym->st_value &= ~1UL;
 
   return TRUE;
 }
@@ -7661,7 +7672,7 @@ _bfd_mips_elf_finish_dynamic_sections(bfd *output_bfd,
 	    case DT_MIPS_GOTSYM:
 	      if (gg->global_gotsym)
 		{
-		  dyn.d_un.d_val = gg->global_gotsym->dynindx;
+		  dyn.d_un.d_val = (bfd_vma)gg->global_gotsym->dynindx;
 		  break;
 		}
 	      /* In case if we do NOT have global got symbols we default
@@ -7814,7 +7825,7 @@ _bfd_mips_elf_finish_dynamic_sections(bfd *output_bfd,
 	    cpt.id1 = 1;
 	    cpt.num = s->reloc_count;
 	    cpt.id2 = 2;
-	    cpt.offset = (s->output_section->filepos
+	    cpt.offset = ((size_t)s->output_section->filepos
 			  + sizeof(Elf32_External_compact_rel));
 	    cpt.reserved0 = 0;
 	    cpt.reserved1 = 0;
@@ -7830,7 +7841,7 @@ _bfd_mips_elf_finish_dynamic_sections(bfd *output_bfd,
 		file_ptr dummy_offset;
 
 		BFD_ASSERT(s->size >= MIPS_FUNCTION_STUB_SIZE);
-		dummy_offset = (s->size - MIPS_FUNCTION_STUB_SIZE);
+		dummy_offset = (file_ptr)(s->size - MIPS_FUNCTION_STUB_SIZE);
 		memset((s->contents + dummy_offset), 0,
                        MIPS_FUNCTION_STUB_SIZE);
 	      }
@@ -7961,8 +7972,8 @@ mips_set_isa_flags(bfd *abfd)
    number.  This is used by both the 32-bit and the 64-bit ABI.  */
 
 void
-_bfd_mips_elf_final_write_processing (bfd *abfd,
-				      bfd_boolean linker ATTRIBUTE_UNUSED)
+_bfd_mips_elf_final_write_processing(bfd *abfd,
+				     bfd_boolean linker ATTRIBUTE_UNUSED)
 {
   unsigned int i;
   Elf_Internal_Shdr **hdrpp;
@@ -7972,13 +7983,13 @@ _bfd_mips_elf_final_write_processing (bfd *abfd,
   /* Keep the existing EF_MIPS_MACH and EF_MIPS_ARCH flags if the former
      is nonzero.  This is for compatibility with old objects, which used
      a combination of a 32-bit EF_MIPS_ARCH and a 64-bit EF_MIPS_MACH.  */
-  if ((elf_elfheader (abfd)->e_flags & EF_MIPS_MACH) == 0)
-    mips_set_isa_flags (abfd);
+  if ((elf_elfheader(abfd)->e_flags & EF_MIPS_MACH) == 0)
+    mips_set_isa_flags(abfd);
 
   /* Set the sh_info field for .gptab sections and other appropriate
      info for each special section.  */
-  for (i = 1, hdrpp = elf_elfsections (abfd) + 1;
-       i < elf_numsections (abfd);
+  for (i = 1, hdrpp = (elf_elfsections(abfd) + 1);
+       i < elf_numsections(abfd);
        i++, hdrpp++)
     {
       switch ((*hdrpp)->sh_type)
@@ -7987,7 +7998,7 @@ _bfd_mips_elf_final_write_processing (bfd *abfd,
 	case SHT_MIPS_LIBLIST:
 	  sec = bfd_get_section_by_name(abfd, ".dynstr");
 	  if (sec != NULL)
-	    (*hdrpp)->sh_link = elf_section_data(sec)->this_idx;
+	    (*hdrpp)->sh_link = (unsigned long)elf_section_data(sec)->this_idx;
 	  break;
 	case SHT_MIPS_GPTAB:
 	  BFD_ASSERT((*hdrpp)->bfd_section != NULL);
@@ -7996,7 +8007,7 @@ _bfd_mips_elf_final_write_processing (bfd *abfd,
 		     && (strncmp(name, ".gptab.", (sizeof(".gptab.") - 1UL)) == 0));
 	  sec = bfd_get_section_by_name(abfd, name + sizeof(".gptab") - 1);
 	  BFD_ASSERT(sec != NULL);
-	  (*hdrpp)->sh_info = elf_section_data(sec)->this_idx;
+	  (*hdrpp)->sh_info = (unsigned long)elf_section_data(sec)->this_idx;
 	  break;
 	case SHT_MIPS_CONTENT:
 	  BFD_ASSERT((*hdrpp)->bfd_section != NULL);
@@ -8007,15 +8018,15 @@ _bfd_mips_elf_final_write_processing (bfd *abfd,
 	  sec = bfd_get_section_by_name(abfd,
                                         (name + sizeof(".MIPS.content") - 1UL));
 	  BFD_ASSERT(sec != NULL);
-	  (*hdrpp)->sh_link = elf_section_data(sec)->this_idx;
+	  (*hdrpp)->sh_link = (unsigned long)elf_section_data(sec)->this_idx;
 	  break;
 	case SHT_MIPS_SYMBOL_LIB:
 	  sec = bfd_get_section_by_name(abfd, ".dynsym");
 	  if (sec != NULL)
-	    (*hdrpp)->sh_link = elf_section_data(sec)->this_idx;
+	    (*hdrpp)->sh_link = (unsigned long)elf_section_data(sec)->this_idx;
 	  sec = bfd_get_section_by_name(abfd, ".liblist");
 	  if (sec != NULL)
-	    (*hdrpp)->sh_info = elf_section_data(sec)->this_idx;
+	    (*hdrpp)->sh_info = (unsigned long)elf_section_data(sec)->this_idx;
 	  break;
 	case SHT_MIPS_EVENTS:
 	  BFD_ASSERT((*hdrpp)->bfd_section != NULL);
@@ -8033,7 +8044,7 @@ _bfd_mips_elf_final_write_processing (bfd *abfd,
 					     + sizeof(".MIPS.post_rel") - 1UL));
 	    }
 	  BFD_ASSERT(sec != NULL);
-	  (*hdrpp)->sh_link = elf_section_data(sec)->this_idx;
+	  (*hdrpp)->sh_link = (unsigned long)elf_section_data(sec)->this_idx;
 	  break;
         default:
           break;
@@ -8544,23 +8555,23 @@ _bfd_mips_elf_write_section (bfd *output_bfd, asection *sec,
   if (strcmp (sec->name, ".pdr") != 0)
     return FALSE;
 
-  if (mips_elf_section_data (sec)->u.tdata == NULL)
+  if (mips_elf_section_data(sec)->u.tdata == NULL)
     return FALSE;
 
   to = contents;
-  end = contents + sec->size;
+  end = (contents + sec->size);
   for (from = contents, i = 0;
        from < end;
        from += PDR_SIZE, i++)
     {
-      if ((mips_elf_section_data (sec)->u.tdata)[i] == 1)
+      if ((mips_elf_section_data(sec)->u.tdata)[i] == 1)
 	continue;
       if (to != from)
-	memcpy (to, from, PDR_SIZE);
+	memcpy(to, from, PDR_SIZE);
       to += PDR_SIZE;
     }
-  bfd_set_section_contents (output_bfd, sec->output_section, contents,
-			    sec->output_offset, sec->size);
+  bfd_set_section_contents(output_bfd, sec->output_section, contents,
+			   (file_ptr)sec->output_offset, sec->size);
   return TRUE;
 }
 
@@ -8643,7 +8654,8 @@ _bfd_mips_elf_find_nearest_line (bfd *abfd, asection *section,
 	  fdr_ptr = fi->d.fdr;
 	  fraw_src = (char *)fi->d.external_fdr;
 	  fraw_end = (fraw_src
-		      + (fi->d.symbolic_header.ifdMax * external_fdr_size));
+		      + ((bfd_size_type)fi->d.symbolic_header.ifdMax
+                         * external_fdr_size));
 	  for (; fraw_src < fraw_end; fraw_src += external_fdr_size, fdr_ptr++)
 	    (*swap->swap_fdr_in)(abfd, fraw_src, fdr_ptr);
 
@@ -8993,7 +9005,7 @@ _bfd_mips_elf_final_link(bfd *abfd, struct bfd_link_info *info)
 
       if (g->global_gotsym != NULL)
 	BFD_ASSERT((elf_hash_table(info)->dynsymcount
-		    - g->global_gotsym->dynindx)
+		    - (bfd_size_type)g->global_gotsym->dynindx)
 		   <= g->global_gotno);
     }
 
@@ -9080,7 +9092,7 @@ _bfd_mips_elf_final_link(bfd *abfd, struct bfd_link_info *info)
 
 	      /* Hack: reset the SEC_HAS_CONTENTS flag so that
 		 elf_link_input_bfd ignores this section.  */
-	      input_section->flags &= ~SEC_HAS_CONTENTS;
+	      input_section->flags &= (flagword)~SEC_HAS_CONTENTS;
 	    }
 
 	  /* Size has been set in _bfd_mips_elf_always_size_sections.  */
@@ -9101,7 +9113,7 @@ _bfd_mips_elf_final_link(bfd *abfd, struct bfd_link_info *info)
 	  /* We have found the .mdebug section in the output file.
 	     Look through all the link_orders comprising it and merge
 	     the information together.  */
-	  symhdr->magic = swap->sym_magic;
+	  symhdr->magic = (short)swap->sym_magic;
 	  /* FIXME: What should the version stamp be?  */
 	  symhdr->vstamp = 0;
 	  symhdr->ilineMax = 0;
@@ -9147,7 +9159,7 @@ _bfd_mips_elf_final_link(bfd *abfd, struct bfd_link_info *info)
 	  last = 0;
 	  for (i = 0; i < (sizeof(secname) / sizeof(secname[0])); i++)
 	    {
-	      esym.asym.sc = sc[i];
+	      esym.asym.sc = (unsigned int)sc[i];
 	      s = bfd_get_section_by_name(abfd, secname[i]);
 	      if (s != NULL)
 		{
@@ -9261,7 +9273,7 @@ _bfd_mips_elf_final_link(bfd *abfd, struct bfd_link_info *info)
 
 	      /* Hack: reset the SEC_HAS_CONTENTS flag so that
 		 elf_link_input_bfd ignores this section.  */
-	      input_section->flags &= ~SEC_HAS_CONTENTS;
+	      input_section->flags &= (flagword)~SEC_HAS_CONTENTS;
 	    }
 
 	  if (SGI_COMPAT(abfd) && info->shared)
@@ -9338,7 +9350,7 @@ _bfd_mips_elf_final_link(bfd *abfd, struct bfd_link_info *info)
 
 		  /* Hack: reset the SEC_HAS_CONTENTS flag so that
 		     elf_link_input_bfd ignores this section.  */
-		  input_section->flags &= ~SEC_HAS_CONTENTS;
+		  input_section->flags &= (flagword)~SEC_HAS_CONTENTS;
 		}
 
 	      /* Skip this section later on (I do NOT think this
@@ -9429,7 +9441,7 @@ _bfd_mips_elf_final_link(bfd *abfd, struct bfd_link_info *info)
 		  unsigned int look;
 
 		  if (!(bfd_get_section_contents(input_bfd, input_section,
-                                                 &ext_gptab, gpentry,
+                                                 &ext_gptab, (file_ptr)gpentry,
                                                  sizeof(Elf32_External_gptab))))
 		    {
 		      free(tab);
@@ -9493,25 +9505,25 @@ _bfd_mips_elf_final_link(bfd *abfd, struct bfd_link_info *info)
 
 	      /* Hack: reset the SEC_HAS_CONTENTS flag so that
 		 elf_link_input_bfd ignores this section.  */
-	      input_section->flags &= ~SEC_HAS_CONTENTS;
+	      input_section->flags &= (flagword)~SEC_HAS_CONTENTS;
 	    }
 
 	  /* The table must be sorted by -G value: */
 	  if (c > 2)
-	    qsort(tab + 1, c - 1, sizeof(tab[0]), gptab_compare);
+	    qsort((tab + 1), (c - 1), sizeof(tab[0]), gptab_compare);
 
 	  /* Swap out the table: */
 	  amt = ((bfd_size_type)c * sizeof(Elf32_External_gptab));
 	  ext_tab = (Elf32_External_gptab *)bfd_alloc(abfd, amt);
 	  if (ext_tab == NULL)
 	    {
-	      free (tab);
+	      free(tab);
 	      return FALSE;
 	    }
 
 	  for (j = 0; j < c; j++)
-	    bfd_mips_elf32_swap_gptab_out(abfd, tab + j, ext_tab + j);
-	  free (tab);
+	    bfd_mips_elf32_swap_gptab_out(abfd, (tab + j), (ext_tab + j));
+	  free(tab);
 
 	  o->size = (c * sizeof(Elf32_External_gptab));
 	  o->contents = (bfd_byte *)ext_tab;
@@ -9736,18 +9748,18 @@ _bfd_mips_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
     }
 
   /* Check flag compatibility: */
-  new_flags &= ~EF_MIPS_NOREORDER;
-  old_flags &= ~EF_MIPS_NOREORDER;
+  new_flags &= (flagword)~EF_MIPS_NOREORDER;
+  old_flags &= (flagword)~EF_MIPS_NOREORDER;
 
   /* Some IRIX 6 BSD-compatibility objects have this bit set.  It
      doesn't seem to matter.  */
-  new_flags &= ~EF_MIPS_XGOT;
-  old_flags &= ~EF_MIPS_XGOT;
+  new_flags &= (flagword)~EF_MIPS_XGOT;
+  old_flags &= (flagword)~EF_MIPS_XGOT;
 
   /* MIPSpro generates ucode info in n64 objects.  Again, we should
      just be able to ignore this.  */
-  new_flags &= ~EF_MIPS_UCODE;
-  old_flags &= ~EF_MIPS_UCODE;
+  new_flags &= (flagword)~EF_MIPS_UCODE;
+  old_flags &= (flagword)~EF_MIPS_UCODE;
 
   if (new_flags == old_flags)
     return TRUE;
@@ -9784,11 +9796,11 @@ _bfd_mips_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 
   if (new_flags & (EF_MIPS_PIC | EF_MIPS_CPIC))
     elf_elfheader(obfd)->e_flags |= EF_MIPS_CPIC;
-  if (! (new_flags & EF_MIPS_PIC))
-    elf_elfheader(obfd)->e_flags &= ~EF_MIPS_PIC;
+  if (!(new_flags & EF_MIPS_PIC))
+    elf_elfheader(obfd)->e_flags &= (flagword)~EF_MIPS_PIC;
 
-  new_flags &= ~(EF_MIPS_PIC | EF_MIPS_CPIC);
-  old_flags &= ~(EF_MIPS_PIC | EF_MIPS_CPIC);
+  new_flags &= (flagword)~(EF_MIPS_PIC | EF_MIPS_CPIC);
+  old_flags &= (flagword)~(EF_MIPS_PIC | EF_MIPS_CPIC);
 
   /* Compare the ISAs: */
   if (mips_32bit_flags_p(old_flags) != mips_32bit_flags_p(new_flags))
@@ -9815,7 +9827,7 @@ _bfd_mips_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 	     and if that was what caused us to treat IBFD as 32-bit.  */
 	  if (((old_flags & EF_MIPS_ABI) == 0)
 	      && mips_32bit_flags_p(new_flags)
-	      && !mips_32bit_flags_p(new_flags & ~EF_MIPS_ABI))
+	      && !mips_32bit_flags_p(new_flags & (flagword)~EF_MIPS_ABI))
 	    elf_elfheader(obfd)->e_flags |= (new_flags & EF_MIPS_ABI);
 	}
       else
@@ -9847,8 +9859,8 @@ _bfd_mips_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 	     ibfd, elf_mips_abi_name(ibfd), elf_mips_abi_name(obfd));
 	  ok = FALSE;
 	}
-      new_flags &= ~EF_MIPS_ABI;
-      old_flags &= ~EF_MIPS_ABI;
+      new_flags &= (flagword)~EF_MIPS_ABI;
+      old_flags &= (flagword)~EF_MIPS_ABI;
     }
 
   /* For now, allow arbitrary mixing of ASEs (retain the union).  */
@@ -9856,8 +9868,8 @@ _bfd_mips_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
     {
       elf_elfheader(obfd)->e_flags |= (new_flags & EF_MIPS_ARCH_ASE);
 
-      new_flags &= ~EF_MIPS_ARCH_ASE;
-      old_flags &= ~EF_MIPS_ARCH_ASE;
+      new_flags &= (flagword)~EF_MIPS_ARCH_ASE;
+      old_flags &= (flagword)~EF_MIPS_ARCH_ASE;
     }
 
   /* Warn about any other mismatches */

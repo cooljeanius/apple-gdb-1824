@@ -74,11 +74,12 @@ nacl_modify_segment_map(bfd *abfd, struct bfd_link_info *info)
   struct elf_segment_map **first_load = NULL;
   struct elf_segment_map **last_load = NULL;
   bfd_boolean moved_headers = FALSE;
-  int sizeof_headers = ((info == NULL)
-  			? 0 : bfd_sizeof_headers(abfd, info));
+  int sizeof_headers =
+    ((info == NULL)
+     ? 0 : bfd_sizeof_headers(abfd, (bfd_boolean)(intptr_t)info));
   bfd_vma minpagesize = get_elf_backend_data(abfd)->minpagesize;
 
-  if (info != NULL && info->user_phdrs)
+  if ((info != NULL) && info->user_phdrs)
     /* The linker script used PHDRS explicitly, so don't change what the
        user asked for.  */
     return TRUE;
