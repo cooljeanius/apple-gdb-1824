@@ -591,10 +591,6 @@ _bfd_default_error_handler(const char *fmt, ...)
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
 #  pragma GCC diagnostic push
-/* FIXME: gcc bug; it should be fixed the next time I pull from gcc trunk: */
-#  if (__GNUC__ > 6)
-#   pragma GCC diagnostic ignored "-Wmissing-format-attribute"
-#  endif /* gcc >6 */
 #  pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
 # endif /* gcc 4.6+ */
 #endif /* any gcc */
@@ -812,6 +808,15 @@ bfd_assert(const char *file, int line)
 {
   (*_bfd_error_handler)(_("BFD %s assertion fail %s:%d"),
                         BFD_VERSION_STRING, file, line);
+  xexit(EXIT_FAILURE);
+}
+
+/* prototype in libbfd.h: */
+void ATTRIBUTE_NORETURN
+bfd_assert_with_func(const char *file, int line, const char *func)
+{
+  (*_bfd_error_handler)(_("BFD %s assertion fail %s:%d (in %s)"),
+                        BFD_VERSION_STRING, file, line, func);
   xexit(EXIT_FAILURE);
 }
 
@@ -1470,7 +1475,6 @@ DESCRIPTION
 	reinitializes the bfd.
 
 */
-
 bfd_boolean
 bfd_preserve_save(bfd *abfd, struct bfd_preserve *preserve)
 {
@@ -1508,7 +1512,6 @@ DESCRIPTION
 	and all subsequently bfd_alloc'd memory is freed.
 
 */
-
 void
 bfd_preserve_restore(bfd *abfd, struct bfd_preserve *preserve)
 {
@@ -1544,7 +1547,6 @@ DESCRIPTION
 	object_p function returns with success.
 
 */
-
 void
 bfd_preserve_finish(bfd *abfd ATTRIBUTE_UNUSED, struct bfd_preserve *preserve)
 {
@@ -1569,7 +1571,6 @@ DESCRIPTION
 	This function hides a symbol so that it won't be exported.
 
 */
-
 void
 bfd_hide_symbol(bfd *abfd, struct bfd_link_info *link_info,
                 struct bfd_link_hash_entry *h, bfd_boolean force_local)

@@ -40,6 +40,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 # define S_IXOTH 0001    /* Execute by others.  */
 #endif /* !S_IXOTH */
 
+/* */
 file_ptr
 real_ftell(FILE *file)
 {
@@ -52,6 +53,7 @@ real_ftell(FILE *file)
 #endif /* HAVE_FTELLO64 || HAVE_FTELLO || HAVE_FTELL */
 }
 
+/* */
 int
 real_fseek(FILE *file, file_ptr offset, int whence)
 {
@@ -139,6 +141,7 @@ bfd_bread(void *ptr, bfd_size_type size, bfd *abfd)
   return nread;
 }
 
+/* */
 bfd_size_type
 bfd_bwrite(const void *ptr, bfd_size_type size, bfd *abfd)
 {
@@ -192,6 +195,7 @@ bfd_bwrite(const void *ptr, bfd_size_type size, bfd *abfd)
   return nwrote;
 }
 
+/* */
 file_ptr
 bfd_tell(bfd *abfd)
 {
@@ -218,6 +222,7 @@ bfd_tell(bfd *abfd)
   return ptr;
 }
 
+/* */
 int
 bfd_flush(bfd *abfd)
 {
@@ -263,7 +268,6 @@ bfd_stat(bfd *abfd, struct stat *statbuf)
 
 /* Returns 0 for success, nonzero for failure (in which case bfd_get_error
    can retrieve the error code).  */
-
 int
 bfd_seek(bfd *abfd, file_ptr position, int direction)
 {
@@ -393,7 +397,6 @@ DESCRIPTION
 	from the archive header for archive members).
 
 */
-
 long
 bfd_get_mtime(bfd *abfd)
 {
@@ -444,7 +447,6 @@ DESCRIPTION
 	This function at least allows us to answer the question, "is the
 	size reasonable?".
 */
-
 long
 bfd_get_size(bfd *abfd)
 {
@@ -462,6 +464,7 @@ bfd_get_size(bfd *abfd)
   return (long)buf.st_size;
 }
 
+/* */
 bfd_boolean
 _bfd_io_close(bfd *abfd)
 {

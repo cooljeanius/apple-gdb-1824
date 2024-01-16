@@ -1711,6 +1711,8 @@ The 24-bit relocation is used in some Intel 960 configurations.
 
 ENUM
   BFD_RELOC_32_SECREL
+ENUMX
+  BFD_RELOC_16_SECIDX
 ENUMDOC
   Section relative relocations.  Some targets need this for DWARF2.
 
@@ -1760,11 +1762,48 @@ ENUMDOC
   For ELF.
 
 ENUM
+  BFD_RELOC_SIZE32
+ENUMX
+  BFD_RELOC_SIZE64
+ENUMDOC
+  Size relocations.
+
+ENUM
   BFD_RELOC_68K_GLOB_DAT
 ENUMX
   BFD_RELOC_68K_JMP_SLOT
 ENUMX
   BFD_RELOC_68K_RELATIVE
+ENUMX
+  BFD_RELOC_68K_TLS_GD32
+ENUMX
+  BFD_RELOC_68K_TLS_GD16
+ENUMX
+  BFD_RELOC_68K_TLS_GD8
+ENUMX
+  BFD_RELOC_68K_TLS_LDM32
+ENUMX
+  BFD_RELOC_68K_TLS_LDM16
+ENUMX
+  BFD_RELOC_68K_TLS_LDM8
+ENUMX
+  BFD_RELOC_68K_TLS_LDO32
+ENUMX
+  BFD_RELOC_68K_TLS_LDO16
+ENUMX
+  BFD_RELOC_68K_TLS_LDO8
+ENUMX
+  BFD_RELOC_68K_TLS_IE32
+ENUMX
+  BFD_RELOC_68K_TLS_IE16
+ENUMX
+  BFD_RELOC_68K_TLS_IE8
+ENUMX
+  BFD_RELOC_68K_TLS_LE32
+ENUMX
+  BFD_RELOC_68K_TLS_LE16
+ENUMX
+  BFD_RELOC_68K_TLS_LE8
 ENUMDOC
   Relocations used by 68K ELF.
 
@@ -1861,6 +1900,20 @@ ENUMX
   BFD_RELOC_SPARC_UA32
 ENUMX
   BFD_RELOC_SPARC_UA64
+ENUMX
+  BFD_RELOC_SPARC_GOTDATA_HIX22
+ENUMX
+  BFD_RELOC_SPARC_GOTDATA_LOX10
+ENUMX
+  BFD_RELOC_SPARC_GOTDATA_OP_HIX22
+ENUMX
+  BFD_RELOC_SPARC_GOTDATA_OP_LOX10
+ENUMX
+  BFD_RELOC_SPARC_GOTDATA_OP
+ENUMX
+  BFD_RELOC_SPARC_JMP_IREL
+ENUMX
+  BFD_RELOC_SPARC_IRELATIVE
 ENUMDOC
   SPARC ELF relocations.  There is probably some overlap with other
   relocation types already defined.
@@ -1922,8 +1975,16 @@ ENUMX
   BFD_RELOC_SPARC_L44
 ENUMX
   BFD_RELOC_SPARC_REGISTER
+ENUMX
+  BFD_RELOC_SPARC_H34
+ENUMX
+  BFD_RELOC_SPARC_SIZE32
+ENUMX
+  BFD_RELOC_SPARC_SIZE64
+ENUMX
+  BFD_RELOC_SPARC_WDISP10
 ENUMDOC
-  SPARC64 relocations
+  SPARC64 relocations.
 
 ENUM
   BFD_RELOC_SPARC_REV32
@@ -1978,7 +2039,40 @@ ENUMX
 ENUMX
   BFD_RELOC_SPARC_TLS_TPOFF64
 ENUMDOC
-  SPARC TLS relocations
+  SPARC TLS relocations.
+
+ENUM
+  BFD_RELOC_SPU_IMM7
+ENUMX
+  BFD_RELOC_SPU_IMM8
+ENUMX
+  BFD_RELOC_SPU_IMM10
+ENUMX
+  BFD_RELOC_SPU_IMM10W
+ENUMX
+  BFD_RELOC_SPU_IMM16
+ENUMX
+  BFD_RELOC_SPU_IMM16W
+ENUMX
+  BFD_RELOC_SPU_IMM18
+ENUMX
+  BFD_RELOC_SPU_PCREL9a
+ENUMX
+  BFD_RELOC_SPU_PCREL9b
+ENUMX
+  BFD_RELOC_SPU_PCREL16
+ENUMX
+  BFD_RELOC_SPU_LO16
+ENUMX
+  BFD_RELOC_SPU_HI16
+ENUMX
+  BFD_RELOC_SPU_PPU32
+ENUMX
+  BFD_RELOC_SPU_PPU64
+ENUMX
+  BFD_RELOC_SPU_ADD_PIC
+ENUMDOC
+  SPU Relocations.
 
 ENUM
   BFD_RELOC_ALPHA_GPDISP_HI16
@@ -2068,6 +2162,30 @@ ENUMDOC
   Like BFD_RELOC_23_PCREL_S2, except that the source and target must
   share a common GP, and the target address is adjusted for
   STO_ALPHA_STD_GPLOAD.
+
+ENUM
+  BFD_RELOC_ALPHA_NOP
+ENUMDOC
+  The NOP relocation outputs a NOP if the longword displacement
+  between two procedure entry points is < 2^21.
+
+ENUM
+  BFD_RELOC_ALPHA_BSR
+ENUMDOC
+  The BSR relocation outputs a BSR if the longword displacement
+  between two procedure entry points is < 2^21.
+
+ENUM
+  BFD_RELOC_ALPHA_LDA
+ENUMDOC
+  The LDA relocation outputs a LDA if the longword displacement
+  between two procedure entry points is < 2^16.
+
+ENUM
+  BFD_RELOC_ALPHA_BOH
+ENUMDOC
+  The BOH relocation outputs a BSR if the longword displacement
+  between two procedure entry points is < 2^21, or else a hint.
 
 ENUM
   BFD_RELOC_ALPHA_TLSGD
@@ -3882,6 +4000,57 @@ ENUMDOC
   Long displacement extension.
 
 ENUM
+  BFD_RELOC_390_IRELATIVE
+ENUMDOC
+  STT_GNU_IFUNC relocation.
+
+ENUM
+  BFD_RELOC_SCORE_GPREL15
+ENUMDOC
+  Score relocations.
+  Low 16 bit for load/store.
+ENUM
+  BFD_RELOC_SCORE_DUMMY2
+ENUMX
+  BFD_RELOC_SCORE_JMP
+ENUMDOC
+  This is a 24-bit reloc with the right 1 bit assumed to be 0.
+ENUM
+  BFD_RELOC_SCORE_BRANCH
+ENUMDOC
+  This is a 19-bit reloc with the right 1 bit assumed to be 0.
+ENUM
+  BFD_RELOC_SCORE_IMM30
+ENUMDOC
+  This is a 32-bit reloc for 48-bit instructions.
+ENUM
+  BFD_RELOC_SCORE_IMM32
+ENUMDOC
+  This is a 32-bit reloc for 48-bit instructions.
+ENUM
+  BFD_RELOC_SCORE16_JMP
+ENUMDOC
+  This is a 11-bit reloc with the right 1 bit assumed to be 0.
+ENUM
+  BFD_RELOC_SCORE16_BRANCH
+ENUMDOC
+  This is a 8-bit reloc with the right 1 bit assumed to be 0.
+ENUM
+  BFD_RELOC_SCORE_BCMP
+ENUMDOC
+  This is a 9-bit reloc with the right 1 bit assumed to be 0.
+ENUM
+  BFD_RELOC_SCORE_GOT15
+ENUMX
+  BFD_RELOC_SCORE_GOT_LO16
+ENUMX
+  BFD_RELOC_SCORE_CALL15
+ENUMX
+  BFD_RELOC_SCORE_DUMMY_HI16
+ENUMDOC
+  Undocumented Score relocs.
+
+ENUM
   BFD_RELOC_IP2K_FR9
 ENUMDOC
   Scenix IP2K - 9-bit register number / data address
@@ -4745,6 +4914,10 @@ ENUM
   BFD_RELOC_MACH_O_X86_64_PCREL32_4
 ENUMDOC
   Same as BFD_RELOC_32_PCREL but with an implicit -4 addend.
+ENUM
+  BFD_RELOC_MACH_O_X86_64_TLV
+ENUMDOC
+  Used when referencing a TLV entry.
 
 
 ENUM

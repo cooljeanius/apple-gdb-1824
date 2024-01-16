@@ -2,6 +2,7 @@
    generated from "libcoff-in.h" and "coffcode.h".
    Run "make headers" in your build bfd/ to regenerate.  */
 
+/* contents of ./../libcoff-in.h start here: */
 /* libcoff.h -- BFD COFF object file private structure.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
@@ -76,7 +77,7 @@ typedef struct coff_tdata
 
   /* The unswapped external symbols.  May be NULL.  Read by
      _bfd_coff_get_external_symbols.  */
-  void * external_syms;
+  void *external_syms;
   /* If this is TRUE, the external_syms may not be freed.  */
   bfd_boolean keep_syms;
 
@@ -99,10 +100,10 @@ typedef struct coff_tdata
   struct bfd_link_info *link_info;
 
   /* Used by coff_find_nearest_line.  */
-  void * line_info;
+  void *line_info;
 
   /* A place to stash dwarf2 info for this bfd.  */
-  void * dwarf2_find_line_info;
+  void *dwarf2_find_line_info;
 
   /* The timestamp from the COFF file header.  */
   long timestamp;
@@ -120,7 +121,7 @@ typedef struct pe_tdata
   struct internal_extra_pe_aouthdr pe_opthdr;
   int dll;
   int has_reloc_section;
-  bfd_boolean (*in_reloc_p) (bfd *, reloc_howto_type *);
+  bfd_boolean (*in_reloc_p)(bfd *, reloc_howto_type *);
   flagword real_flags;
   int target_subsystem;
   bfd_boolean force_minimum_alignment;
@@ -200,14 +201,14 @@ struct coff_section_tdata
   struct coff_comdat_info *comdat;
   int line_base;
   /* A pointer used for .stab linking optimizations.  */
-  void * stab_info;
+  void *stab_info;
   /* Available for individual backends.  */
-  void * tdata;
+  void *tdata;
 };
 
 /* An accessor macro for the coff_section_tdata structure.  */
 #define coff_section_data(abfd, sec) \
-  ((struct coff_section_tdata *) (sec)->used_by_bfd)
+  ((struct coff_section_tdata *)(sec)->used_by_bfd)
 
 /* Tdata for sections in XCOFF files.  This is used by the linker: */
 struct xcoff_section_tdata
@@ -226,7 +227,7 @@ struct xcoff_section_tdata
 
 /* An accessor macro the xcoff_section_tdata structure: */
 #define xcoff_section_data(abfd, sec) \
-  ((struct xcoff_section_tdata *) coff_section_data ((abfd), (sec))->tdata)
+  ((struct xcoff_section_tdata *)coff_section_data((abfd), (sec))->tdata)
 
 /* Tdata for sections in PE files: */
 struct pei_section_tdata
@@ -239,7 +240,7 @@ struct pei_section_tdata
 
 /* An accessor macro for the pei_section_tdata structure.  */
 #define pei_section_data(abfd, sec) \
-  ((struct pei_section_tdata *) coff_section_data ((abfd), (sec))->tdata)
+  ((struct pei_section_tdata *)coff_section_data((abfd), (sec))->tdata)
 
 /* temporary, until I am ready to deal with all of the fallout that would
  * result from fixing these warnings in this header: */
@@ -291,18 +292,18 @@ struct coff_link_hash_table
 /* Look up an entry in a COFF linker hash table: */
 #define coff_link_hash_lookup(table, string, create, copy, follow)	\
   ((struct coff_link_hash_entry *)					\
-   bfd_link_hash_lookup (&(table)->root, (string), (create),		\
-			 (copy), (follow)))
+   bfd_link_hash_lookup(&(table)->root, (string), (create),		\
+                        (copy), (follow)))
 
 /* Traverse a COFF linker hash table: */
 #define coff_link_hash_traverse(table, func, info)			\
   (bfd_link_hash_traverse						\
    (&(table)->root,							\
-    (bfd_boolean (*) (struct bfd_link_hash_entry *, void *)) (func), \
+    (bfd_boolean (*)(struct bfd_link_hash_entry *, void *))(func), \
     (info)))
 
 /* Get the COFF linker hash table from a link_info structure: */
-#define coff_hash_table(p) ((struct coff_link_hash_table *) ((p)->hash))
+#define coff_hash_table(p) ((struct coff_link_hash_table *)((p)->hash))
 
 /* Functions in coffgen.c: */
 extern const bfd_target *coff_object_p(bfd *);
@@ -428,16 +429,16 @@ struct coff_debug_merge_hash_table
 
 /* Initialize a COFF debug merge hash table: */
 #define coff_debug_merge_hash_table_init(table) \
-  (bfd_hash_table_init (&(table)->root, _bfd_coff_debug_merge_hash_newfunc))
+  (bfd_hash_table_init(&(table)->root, _bfd_coff_debug_merge_hash_newfunc))
 
 /* Free a COFF debug merge hash table: */
 #define coff_debug_merge_hash_table_free(table) \
-  (bfd_hash_table_free (&(table)->root))
+  (bfd_hash_table_free(&(table)->root))
 
 /* Look up an entry in a COFF debug merge hash table: */
 #define coff_debug_merge_hash_lookup(table, string, create, copy) \
   ((struct coff_debug_merge_hash_entry *) \
-   bfd_hash_lookup (&(table)->root, (string), (create), (copy)))
+   bfd_hash_lookup(&(table)->root, (string), (create), (copy)))
 
 /* Information we keep for each section in the output file when doing
    a relocatable link.  */
@@ -515,8 +516,8 @@ struct coff_section_alignment_entry
 
   /* These macros may be used to fill in the first two fields in a
      structure initialization.  */
-#define COFF_SECTION_NAME_EXACT_MATCH(name) (name), ((unsigned int) -1)
-#define COFF_SECTION_NAME_PARTIAL_MATCH(name) (name), (sizeof (name) - 1)
+#define COFF_SECTION_NAME_EXACT_MATCH(name) (name), ((unsigned int)-1)
+#define COFF_SECTION_NAME_PARTIAL_MATCH(name) (name), (sizeof(name) - 1)
 
   /* Only use this entry if the default section alignment for this
      target is at least that much (as a power of two).  If this field
@@ -528,7 +529,7 @@ struct coff_section_alignment_entry
      field is COFF_ALIGNMENT_FIELD_EMPTY, it should be ignored.  */
   unsigned int default_alignment_max;
 
-#define COFF_ALIGNMENT_FIELD_EMPTY ((unsigned int) -1)
+#define COFF_ALIGNMENT_FIELD_EMPTY ((unsigned int)-1)
 
   /* The desired alignment for this section (as a power of two).  */
   unsigned int alignment_power;
@@ -928,3 +929,4 @@ typedef struct
 #define bfd_coff_final_link_postscript(a,p) \
   ((coff_backend_info (a)->_bfd_coff_final_link_postscript) (a, p))
 
+/* libcoff.h: end of part generated by ./chew -i -f ./proto.str < ./../coffcode.h */

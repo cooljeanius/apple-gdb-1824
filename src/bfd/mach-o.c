@@ -405,7 +405,7 @@ bfd_mach_o_bfd_copy_private_section_data(bfd *ibfd, asection *isection,
     return TRUE;
 
   /* FIXME: binutils/sanity.sh makes strip hit this assert: */
-  BFD_ASSERT((is != NULL) && (os != NULL));
+  BFD_ASSERT_WITH_FUNC((is != NULL) && (os != NULL));
 
   os->flags = is->flags;
   os->reserved1 = is->reserved1;

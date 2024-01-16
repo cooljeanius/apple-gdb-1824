@@ -884,7 +884,8 @@ INTERNAL_FUNCTION
 	bfd_elf_find_section
 
 SYNOPSIS
-	struct elf_internal_shdr *bfd_elf_find_section (bfd *abfd, char *name);
+	struct elf_internal_shdr *bfd_elf_find_section(bfd *abfd,
+                                                       const char *name);
 
 DESCRIPTION
 	Helper functions for GDB to locate the string tables.
@@ -893,25 +894,24 @@ DESCRIPTION
 	is NOT even pointed to by the .stab section, so ordinary
 	mechanisms would NOT work to find it, even if we had some.
 */
-
 struct elf_internal_shdr *
-bfd_elf_find_section (bfd *abfd, char *name)
+bfd_elf_find_section(bfd *abfd, const char *name)
 {
   Elf_Internal_Shdr **i_shdrp;
   char *shstrtab;
   unsigned int max;
   unsigned int i;
 
-  i_shdrp = elf_elfsections (abfd);
+  i_shdrp = elf_elfsections(abfd);
   if (i_shdrp != NULL)
     {
-      shstrtab = bfd_elf_get_str_section (abfd,
-					  elf_elfheader (abfd)->e_shstrndx);
+      shstrtab = bfd_elf_get_str_section(abfd,
+					 elf_elfheader(abfd)->e_shstrndx);
       if (shstrtab != NULL)
 	{
-	  max = elf_numsections (abfd);
+	  max = elf_numsections(abfd);
 	  for (i = 1; i < max; i++)
-	    if (!strcmp (&shstrtab[i_shdrp[i]->sh_name], name))
+	    if (!strcmp(&shstrtab[i_shdrp[i]->sh_name], name))
 	      return i_shdrp[i];
 	}
     }

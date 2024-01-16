@@ -374,6 +374,7 @@ coff_swap_sym_out(bfd *abfd, void *inp, void *extp)
   H_PUT_8(abfd, in->n_numaux, ext->e_numaux);
 
 #ifdef COFF_ADJUST_SYM_OUT_POST
+  /* FIXME: -Wconversion (2x) somewhere in here: */
   COFF_ADJUST_SYM_OUT_POST(abfd, inp, extp);
 #endif /* COFF_ADJUST_SYM_OUT_POST */
 
@@ -773,6 +774,7 @@ coff_swap_scnhdr_in(bfd *abfd, void *ext, void *in_ptr)
   scnhdr_int->s_align = (long)GET_SCNHDR_ALIGN(abfd, scnhdr_ext->s_align);
 #endif /* I960 */
 #ifdef COFF_ADJUST_SCNHDR_IN_POST
+  /* FIXME: -Wconversion (4x) somewhere in here: */
   COFF_ADJUST_SCNHDR_IN_POST(abfd, ext, in_ptr);
 #endif /* COFF_ADJUST_SCNHDR_IN_POST */
 }

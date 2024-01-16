@@ -530,6 +530,7 @@ the section containing the relocation.  It depends on the specific target.
 The 24-bit relocation is used in some Intel 960 configurations.
 @end deffn
 @deffn {} BFD_RELOC_32_SECREL
+@deffnx {} BFD_RELOC_16_SECIDX
 Section relative relocations.  Some targets need this for DWARF2.
 @end deffn
 @deffn {} BFD_RELOC_32_GOT_PCREL
@@ -555,9 +556,28 @@ Section relative relocations.  Some targets need this for DWARF2.
 @deffnx {} BFD_RELOC_8_PLTOFF
 For ELF.
 @end deffn
+@deffn {} BFD_RELOC_SIZE32
+@deffnx {} BFD_RELOC_SIZE64
+Size relocations.
+@end deffn
 @deffn {} BFD_RELOC_68K_GLOB_DAT
 @deffnx {} BFD_RELOC_68K_JMP_SLOT
 @deffnx {} BFD_RELOC_68K_RELATIVE
+@deffnx {} BFD_RELOC_68K_TLS_GD32
+@deffnx {} BFD_RELOC_68K_TLS_GD16
+@deffnx {} BFD_RELOC_68K_TLS_GD8
+@deffnx {} BFD_RELOC_68K_TLS_LDM32
+@deffnx {} BFD_RELOC_68K_TLS_LDM16
+@deffnx {} BFD_RELOC_68K_TLS_LDM8
+@deffnx {} BFD_RELOC_68K_TLS_LDO32
+@deffnx {} BFD_RELOC_68K_TLS_LDO16
+@deffnx {} BFD_RELOC_68K_TLS_LDO8
+@deffnx {} BFD_RELOC_68K_TLS_IE32
+@deffnx {} BFD_RELOC_68K_TLS_IE16
+@deffnx {} BFD_RELOC_68K_TLS_IE8
+@deffnx {} BFD_RELOC_68K_TLS_LE32
+@deffnx {} BFD_RELOC_68K_TLS_LE16
+@deffnx {} BFD_RELOC_68K_TLS_LE8
 Relocations used by 68K ELF.
 @end deffn
 @deffn {} BFD_RELOC_32_BASEREL
@@ -614,6 +634,13 @@ Reloc types used for i960/b.out.
 @deffnx {} BFD_RELOC_SPARC_UA16
 @deffnx {} BFD_RELOC_SPARC_UA32
 @deffnx {} BFD_RELOC_SPARC_UA64
+@deffnx {} BFD_RELOC_SPARC_GOTDATA_HIX22
+@deffnx {} BFD_RELOC_SPARC_GOTDATA_LOX10
+@deffnx {} BFD_RELOC_SPARC_GOTDATA_OP_HIX22
+@deffnx {} BFD_RELOC_SPARC_GOTDATA_OP_LOX10
+@deffnx {} BFD_RELOC_SPARC_GOTDATA_OP
+@deffnx {} BFD_RELOC_SPARC_JMP_IREL
+@deffnx {} BFD_RELOC_SPARC_IRELATIVE
 SPARC ELF relocations.  There is probably some overlap with other
 relocation types already defined.
 @end deffn
@@ -645,7 +672,11 @@ I think these are specific to SPARC a.out (e.g., Sun 4).
 @deffnx {} BFD_RELOC_SPARC_M44
 @deffnx {} BFD_RELOC_SPARC_L44
 @deffnx {} BFD_RELOC_SPARC_REGISTER
-SPARC64 relocations
+@deffnx {} BFD_RELOC_SPARC_H34
+@deffnx {} BFD_RELOC_SPARC_SIZE32
+@deffnx {} BFD_RELOC_SPARC_SIZE64
+@deffnx {} BFD_RELOC_SPARC_WDISP10
+SPARC64 relocations.
 @end deffn
 @deffn {} BFD_RELOC_SPARC_REV32
 SPARC little endian relocation
@@ -674,7 +705,24 @@ SPARC little endian relocation
 @deffnx {} BFD_RELOC_SPARC_TLS_DTPOFF64
 @deffnx {} BFD_RELOC_SPARC_TLS_TPOFF32
 @deffnx {} BFD_RELOC_SPARC_TLS_TPOFF64
-SPARC TLS relocations
+SPARC TLS relocations.
+@end deffn
+@deffn {} BFD_RELOC_SPU_IMM7
+@deffnx {} BFD_RELOC_SPU_IMM8
+@deffnx {} BFD_RELOC_SPU_IMM10
+@deffnx {} BFD_RELOC_SPU_IMM10W
+@deffnx {} BFD_RELOC_SPU_IMM16
+@deffnx {} BFD_RELOC_SPU_IMM16W
+@deffnx {} BFD_RELOC_SPU_IMM18
+@deffnx {} BFD_RELOC_SPU_PCREL9a
+@deffnx {} BFD_RELOC_SPU_PCREL9b
+@deffnx {} BFD_RELOC_SPU_PCREL16
+@deffnx {} BFD_RELOC_SPU_LO16
+@deffnx {} BFD_RELOC_SPU_HI16
+@deffnx {} BFD_RELOC_SPU_PPU32
+@deffnx {} BFD_RELOC_SPU_PPU64
+@deffnx {} BFD_RELOC_SPU_ADD_PIC
+SPU Relocations.
 @end deffn
 @deffn {} BFD_RELOC_ALPHA_GPDISP_HI16
 Alpha ECOFF and ELF relocations.  Some of these treat the symbol or
@@ -744,6 +792,22 @@ GP register.
 Like BFD_RELOC_23_PCREL_S2, except that the source and target must
 share a common GP, and the target address is adjusted for
 STO_ALPHA_STD_GPLOAD.
+@end deffn
+@deffn {} BFD_RELOC_ALPHA_NOP
+The NOP relocation outputs a NOP if the longword displacement
+between two procedure entry points is < 2^21.
+@end deffn
+@deffn {} BFD_RELOC_ALPHA_BSR
+The BSR relocation outputs a BSR if the longword displacement
+between two procedure entry points is < 2^21.
+@end deffn
+@deffn {} BFD_RELOC_ALPHA_LDA
+The LDA relocation outputs a LDA if the longword displacement
+between two procedure entry points is < 2^16.
+@end deffn
+@deffn {} BFD_RELOC_ALPHA_BOH
+The BOH relocation outputs a BSR if the longword displacement
+between two procedure entry points is < 2^21, or else a hint.
 @end deffn
 @deffn {} BFD_RELOC_ALPHA_TLSGD
 @deffnx {} BFD_RELOC_ALPHA_TLSLDM
@@ -1884,6 +1948,41 @@ s390 tls relocations.
 @deffnx {} BFD_RELOC_390_TLS_GOTIE20
 Long displacement extension.
 @end deffn
+@deffn {} BFD_RELOC_390_IRELATIVE
+STT_GNU_IFUNC relocation.
+@end deffn
+@deffn {} BFD_RELOC_SCORE_GPREL15
+Score relocations.
+Low 16 bit for load/store.
+@end deffn
+@deffn {} BFD_RELOC_SCORE_DUMMY2
+@deffnx {} BFD_RELOC_SCORE_JMP
+This is a 24-bit reloc with the right 1 bit assumed to be 0.
+@end deffn
+@deffn {} BFD_RELOC_SCORE_BRANCH
+This is a 19-bit reloc with the right 1 bit assumed to be 0.
+@end deffn
+@deffn {} BFD_RELOC_SCORE_IMM30
+This is a 32-bit reloc for 48-bit instructions.
+@end deffn
+@deffn {} BFD_RELOC_SCORE_IMM32
+This is a 32-bit reloc for 48-bit instructions.
+@end deffn
+@deffn {} BFD_RELOC_SCORE16_JMP
+This is a 11-bit reloc with the right 1 bit assumed to be 0.
+@end deffn
+@deffn {} BFD_RELOC_SCORE16_BRANCH
+This is a 8-bit reloc with the right 1 bit assumed to be 0.
+@end deffn
+@deffn {} BFD_RELOC_SCORE_BCMP
+This is a 9-bit reloc with the right 1 bit assumed to be 0.
+@end deffn
+@deffn {} BFD_RELOC_SCORE_GOT15
+@deffnx {} BFD_RELOC_SCORE_GOT_LO16
+@deffnx {} BFD_RELOC_SCORE_CALL15
+@deffnx {} BFD_RELOC_SCORE_DUMMY_HI16
+Undocumented Score relocs.
+@end deffn
 @deffn {} BFD_RELOC_IP2K_FR9
 Scenix IP2K - 9-bit register number / data address
 @end deffn
@@ -2405,6 +2504,9 @@ Same as BFD_RELOC_32_PCREL but with an implicit -2 addend.
 @end deffn
 @deffn {} BFD_RELOC_MACH_O_X86_64_PCREL32_4
 Same as BFD_RELOC_32_PCREL but with an implicit -4 addend.
+@end deffn
+@deffn {} BFD_RELOC_MACH_O_X86_64_TLV
+Used when referencing a TLV entry.
 @end deffn
 @deffn {} BFD_RELOC_MACH_O_ARM64_ADDEND
 Addend for PAGE or PAGEOFF.

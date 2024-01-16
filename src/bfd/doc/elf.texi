@@ -14,7 +14,8 @@ have NOT bothered yet.
 @subsubsection @code{bfd_elf_find_section}
 @strong{Synopsis}
 @example
-struct elf_internal_shdr *bfd_elf_find_section (bfd *abfd, char *name);
+struct elf_internal_shdr *bfd_elf_find_section(bfd *abfd,
+    const char *name);
 @end example
 @strong{Description}@*
 Helper functions for GDB to locate the string tables.

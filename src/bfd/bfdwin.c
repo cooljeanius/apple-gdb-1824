@@ -59,7 +59,7 @@ static bfd_boolean _bfd_get_file_window_malloc
 
 /*
 CODE_FRAGMENT
-. {* *}
+. {* XXX: implement this *}
 */
 
 /* APPLE LOCAL: Add new value for 'mapped', for the case where we have
@@ -78,6 +78,17 @@ INTERNAL_DEFINITION
 .};
 */
 
+/*
+FUNCTION
+	bfd_init_window
+
+SYNOPSIS
+	void bfd_init_window(bfd_window *windowp);
+
+DESCRIPTION
+	Initialization function for a bfd window.
+
+*/
 void
 bfd_init_window(bfd_window *windowp)
 {
@@ -93,6 +104,17 @@ bfd_init_window(bfd_window *windowp)
 
 static int debug_windows;
 
+/*
+FUNCTION
+	bfd_free_window
+
+SYNOPSIS
+	void bfd_free_window(bfd_window *windowp);
+
+DESCRIPTION
+	Cleanup function for bfd windows.
+
+*/
 void
 bfd_free_window(bfd_window *windowp)
 {
@@ -341,6 +363,19 @@ _bfd_get_file_window_malloc(bfd *abfd, ufile_ptr offset,
 }
 #endif /* ! HAVE_MMAP */
 
+/*
+FUNCTION
+	bfd_get_file_window
+
+SYNOPSIS
+	bfd_boolean bfd_get_free_window(bfd *abfd, ufile_ptr offset,
+					bfd_size_type size, bfd_window *windowp,
+	  				bfd_boolean writable);
+
+DESCRIPTION
+	TODO: write description
+
+*/
 bfd_boolean
 bfd_get_file_window(bfd *abfd, ufile_ptr offset, bfd_size_type size,
                     bfd_window *windowp, bfd_boolean writable)

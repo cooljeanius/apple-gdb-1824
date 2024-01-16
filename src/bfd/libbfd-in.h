@@ -642,6 +642,7 @@ extern bfd_boolean _bfd_generic_verify_endian_match
 #define	bfd_write_p(abfd) \
   (((abfd)->direction == write_direction) || ((abfd)->direction == both_direction))
 
+/* Assertions; see bfd.c */
 void
 #if defined(__clang_analyzer__) || (defined(__GNUC__) && (__GNUC__ >= 7)) || \
     __has_attribute(noreturn)
@@ -649,8 +650,26 @@ ATTRIBUTE_NORETURN
 #endif /* __clang_analyzer__ || gcc 7+ || __has_attribute(noreturn) */
 bfd_assert(const char *, int);
 
+void
+#if defined(__clang_analyzer__) || (defined(__GNUC__) && (__GNUC__ >= 7)) || \
+    __has_attribute(noreturn)
+ATTRIBUTE_NORETURN
+#endif /* __clang_analyzer__ || gcc 7+ || __has_attribute(noreturn) */
+bfd_assert_with_func(const char *, int, const char *);
+
 #define BFD_ASSERT(x) \
   do { if (!(x)) bfd_assert(__FILE__,__LINE__); } while (0)
+
+/* use in cases where we might need some additional info: */
+#if defined(__GNUC__) && defined(__PRETTY_FUNCTION__) && !defined(__STRICT_ANSI__)
+# define BFD_ASSERT_WITH_FUNC(x) \
+   do { \
+     if (!(x)) bfd_assert_with_func(__FILE__,__LINE__,__PRETTY_FUNCTION__); \
+   } while (0)
+#else
+# define BFD_ASSERT_WITH_FUNC(x) \
+   do { if (!(x)) bfd_assert_with_func(__FILE__,__LINE__,__FUNCTION__); } while (0)
+#endif /* __GNUC__ && __PRETTY_FUNCTION__ && !__STRICT_ANSI__ */
 
 #define BFD_FAIL() \
   do { bfd_assert(__FILE__,__LINE__); } while (0)

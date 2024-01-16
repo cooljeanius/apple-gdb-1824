@@ -2331,6 +2331,7 @@ coff_pointerize_aux_hook (bfd *abfd ATTRIBUTE_UNUSED,
 	  && (symbol->u.syment.n_sclass == C_LEAFPROC
 	      || symbol->u.syment.n_sclass == C_LEAFSTAT
 	      || symbol->u.syment.n_sclass == C_LEAFEXT));
+  /* FIXME: what if C_LEAFSTAT == C_LEAFEXT? */
 }
 
 # else /* ! I960 */

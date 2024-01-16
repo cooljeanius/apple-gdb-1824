@@ -533,7 +533,7 @@ extern int bfd_flush(bfd *);
 extern int bfd_stat(bfd *, struct stat *);
 
 /* Deprecated old routines: */
-#if __GNUC__
+#if defined(__GNUC__) && __GNUC__
 # define bfd_read(BUF, ELTSIZE, NITEMS, ABFD)				\
    (warn_deprecated("bfd_read", __FILE__, __LINE__, __FUNCTION__),	\
     bfd_bread((BUF), (ELTSIZE) * (NITEMS), (ABFD)))

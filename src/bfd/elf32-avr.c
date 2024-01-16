@@ -1,4 +1,4 @@
-/* AVR-specific support for 32-bit ELF
+/* elf32-avr.c: AVR-specific support for 32-bit ELF
    Copyright 1999, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
    Contributed by Denis Chertykov <denisc@overta.ru>
@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -535,8 +535,8 @@ avr_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
                         Elf_Internal_Rela *rel, bfd_vma relocation)
 {
   bfd_reloc_status_type r = bfd_reloc_ok;
-  bfd_vma               x;
-  bfd_signed_vma	srel;
+  bfd_vma x;
+  bfd_signed_vma srel;
 
   switch (howto->type)
     {
@@ -588,188 +588,193 @@ avr_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	    }
 	}
 
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf000) | (srel & 0xfff);
-      bfd_put_16 (input_bfd, x, contents);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xf000) | (srel & 0xfff));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_LO8_LDI:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00);
-      bfd_put_16 (input_bfd, x, contents);
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_LDI:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
       if ((srel & 0xffff) > 255)
-	/* Remove offset for data/eeprom section.  */
+	/* Remove offset for data/eeprom section: */
 	return bfd_reloc_overflow;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00);
-      bfd_put_16 (input_bfd, x, contents);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_6:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
       if (((srel & 0xffff) > 63) || (srel < 0))
-	/* Remove offset for data/eeprom section.  */
+	/* Remove offset for data/eeprom section: */
 	return bfd_reloc_overflow;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xd3f8) | ((srel & 7) | ((srel & (3 << 3)) << 7) | ((srel & (1 << 5)) << 8));
-      bfd_put_16 (input_bfd, x, contents);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xd3f8)
+           | (bfd_vma)((srel & 7L)
+                       | ((srel & (3L << 3L)) << 7L)
+                       | ((srel & (1L << 5L)) << 8L)));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_6_ADIW:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
       if (((srel & 0xffff) > 63) || (srel < 0))
 	/* Remove offset for data/eeprom section.  */
 	return bfd_reloc_overflow;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xff30) | (srel & 0xf) | ((srel & 0x30) << 2);
-      bfd_put_16 (input_bfd, x, contents);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xff30)
+           | (srel & 0xf)
+           | (bfd_vma)((srel & 0x30) << 2));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_HI8_LDI:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
-      srel = (srel >> 8) & 0xff;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00);
-      bfd_put_16 (input_bfd, x, contents);
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
+      srel = ((srel >> 8) & 0xff);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_HH8_LDI:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
-      srel = (srel >> 16) & 0xff;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00);
-      bfd_put_16 (input_bfd, x, contents);
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
+      srel = ((srel >> 16) & 0xff);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_LO8_LDI_NEG:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
       srel = -srel;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00);
-      bfd_put_16 (input_bfd, x, contents);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_HI8_LDI_NEG:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
       srel = -srel;
-      srel = (srel >> 8) & 0xff;
+      srel = ((srel >> 8) & 0xff);
       x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00);
-      bfd_put_16 (input_bfd, x, contents);
+      x = ((x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_HH8_LDI_NEG:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
       srel = -srel;
-      srel = (srel >> 16) & 0xff;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00);
-      bfd_put_16 (input_bfd, x, contents);
+      srel = ((srel >> 16) & 0xff);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_LO8_LDI_PM:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
       if (srel & 1)
 	return bfd_reloc_outofrange;
-      srel = srel >> 1;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00);
-      bfd_put_16 (input_bfd, x, contents);
+      srel = (srel >> 1);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_HI8_LDI_PM:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
       if (srel & 1)
 	return bfd_reloc_outofrange;
-      srel = srel >> 1;
-      srel = (srel >> 8) & 0xff;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00);
-      bfd_put_16 (input_bfd, x, contents);
+      srel = (srel >> 1);
+      srel = ((srel >> 8) & 0xff);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_HH8_LDI_PM:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
       if (srel & 1)
 	return bfd_reloc_outofrange;
-      srel = srel >> 1;
-      srel = (srel >> 16) & 0xff;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00);
-      bfd_put_16 (input_bfd, x, contents);
+      srel = (srel >> 1);
+      srel = ((srel >> 16) & 0xff);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_LO8_LDI_PM_NEG:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
       srel = -srel;
       if (srel & 1)
 	return bfd_reloc_outofrange;
-      srel = srel >> 1;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00);
-      bfd_put_16 (input_bfd, x, contents);
+      srel = (srel >> 1);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_HI8_LDI_PM_NEG:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
       srel = -srel;
       if (srel & 1)
 	return bfd_reloc_outofrange;
-      srel = srel >> 1;
-      srel = (srel >> 8) & 0xff;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00);
-      bfd_put_16 (input_bfd, x, contents);
+      srel = (srel >> 1);
+      srel = ((srel >> 8) & 0xff);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_HH8_LDI_PM_NEG:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
       srel = -srel;
       if (srel & 1)
 	return bfd_reloc_outofrange;
-      srel = srel >> 1;
-      srel = (srel >> 16) & 0xff;
-      x = bfd_get_16 (input_bfd, contents);
-      x = (x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00);
-      bfd_put_16 (input_bfd, x, contents);
+      srel = (srel >> 1);
+      srel = ((srel >> 16) & 0xff);
+      x = bfd_get_16(input_bfd, contents);
+      x = ((x & 0xf0f0) | (srel & 0xf) | ((srel << 4) & 0xf00));
+      bfd_put_16(input_bfd, x, contents);
       break;
 
     case R_AVR_CALL:
       contents += rel->r_offset;
-      srel = (bfd_signed_vma) relocation + rel->r_addend;
+      srel = (bfd_signed_vma)(relocation + rel->r_addend);
       if (srel & 1)
 	return bfd_reloc_outofrange;
-      srel = srel >> 1;
-      x = bfd_get_16 (input_bfd, contents);
-      x |= ((srel & 0x10000) | ((srel << 3) & 0x1f00000)) >> 16;
-      bfd_put_16 (input_bfd, x, contents);
-      bfd_put_16 (input_bfd, (bfd_vma) srel & 0xffff, contents+2);
+      srel = (srel >> 1);
+      x = bfd_get_16(input_bfd, contents);
+      x |= (((srel & 0x10000) | ((srel << 3) & 0x1f00000)) >> 16);
+      bfd_put_16(input_bfd, x, contents);
+      bfd_put_16(input_bfd, ((bfd_vma)srel & 0xffff), (contents + 2));
       break;
 
     default:
-      r = _bfd_final_link_relocate (howto, input_bfd, input_section,
-				    contents, rel->r_offset,
-				    relocation, rel->r_addend);
+      r = _bfd_final_link_relocate(howto, input_bfd, input_section,
+				   contents, rel->r_offset,
+				   relocation, rel->r_addend);
     }
 
   return r;
@@ -849,15 +854,20 @@ elf32_avr_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  switch (r)
 	    {
 	    case bfd_reloc_overflow:
-	      r = info->callbacks->reloc_overflow
-		(info, (h ? &h->root : NULL),
-		 name, howto->name, (bfd_vma) 0,
-		 input_bfd, input_section, rel->r_offset);
+	      r =
+                ((bfd_reloc_status_type)
+                 info->callbacks->reloc_overflow(info, (h ? &h->root : NULL),
+		 				 name, howto->name,
+                                                 (bfd_vma)0UL, input_bfd,
+                                                 input_section, rel->r_offset));
 	      break;
 
 	    case bfd_reloc_undefined:
-	      r = info->callbacks->undefined_symbol
-		(info, name, input_bfd, input_section, rel->r_offset, TRUE);
+	      r =
+                ((bfd_reloc_status_type)
+                 info->callbacks->undefined_symbol(info, name, input_bfd,
+                                                   input_section,
+                                                   rel->r_offset, TRUE));
 	      break;
 
 	    case bfd_reloc_outofrange:
@@ -878,8 +888,10 @@ elf32_avr_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	    }
 
 	  if (msg)
-	    r = info->callbacks->warning
-	      (info, msg, name, input_bfd, input_section, rel->r_offset);
+	    r =
+              ((bfd_reloc_status_type)
+               info->callbacks->warning(info, msg, name, input_bfd,
+               				input_section, rel->r_offset));
 
 	  if (! r)
 	    return FALSE;
@@ -924,7 +936,7 @@ bfd_elf_avr_final_write_processing(bfd *abfd,
     }
 
   elf_elfheader(abfd)->e_machine = EM_AVR;
-  elf_elfheader(abfd)->e_flags &= ~EF_AVR_MACH;
+  elf_elfheader(abfd)->e_flags &= (flagword)~EF_AVR_MACH;
   elf_elfheader(abfd)->e_flags |= val;
 }
 
@@ -986,3 +998,5 @@ elf32_avr_object_p(bfd *abfd)
 #define elf_backend_object_p		elf32_avr_object_p
 
 #include "elf32-target.h"
+
+/* End of elf32-avr.c */

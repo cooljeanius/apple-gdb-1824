@@ -1692,7 +1692,7 @@ extern bfd_boolean bfd_elf_mkobject
 extern bfd_boolean bfd_elf_mkcorefile
   (bfd *);
 extern Elf_Internal_Shdr *bfd_elf_find_section
-  (bfd *, char *);
+  (bfd *, const char *);
 extern bfd_boolean _bfd_elf_make_section_from_shdr
   (bfd *, Elf_Internal_Shdr *, const char *, int);
 extern bfd_boolean _bfd_elf_make_section_from_phdr
@@ -2266,8 +2266,8 @@ extern bfd_boolean _sh_elf_set_mach_from_flags
 					rel, count, relend,		\
 					howto, index, contents)		\
   {									\
-    _bfd_clear_contents (howto, input_bfd, input_section,		\
-			 contents + rel[index].r_offset);		\
+    _bfd_clear_contents(howto, input_bfd, input_section,		\
+                        (contents + rel[index].r_offset));		\
 									\
     if (info->relocatable						\
 	&& (input_section->flags & SEC_DEBUGGING))			\
@@ -2276,17 +2276,17 @@ extern bfd_boolean _sh_elf_set_mach_from_flags
 	   sections may require relocations.  */			\
 	Elf_Internal_Shdr *rel_hdr;					\
 									\
-	rel_hdr = _bfd_elf_single_rel_hdr (input_section->output_section); \
+	rel_hdr = _bfd_elf_single_rel_hdr(input_section->output_section); \
 									\
 	/* Avoid empty output section.  */				\
-	if (rel_hdr->sh_size > count * rel_hdr->sh_entsize)		\
+	if (rel_hdr->sh_size > (count * rel_hdr->sh_entsize))		\
 	  {								\
-	    rel_hdr->sh_size -= count * rel_hdr->sh_entsize;		\
-	    rel_hdr = _bfd_elf_single_rel_hdr (input_section);		\
-	    rel_hdr->sh_size -= count * rel_hdr->sh_entsize;		\
+	    rel_hdr->sh_size -= (count * rel_hdr->sh_entsize);		\
+	    rel_hdr = _bfd_elf_single_rel_hdr(input_section);		\
+	    rel_hdr->sh_size -= (count * rel_hdr->sh_entsize);		\
 									\
-	    memmove (rel, rel + count,					\
-		     (relend - rel - count) * sizeof (*rel));		\
+	    memmove(rel, (rel + count),					\
+		    ((size_t)(relend - rel - count) * sizeof(*rel)));	\
 									\
 	    input_section->reloc_count -= count;			\
 	    relend -= count;						\
@@ -2300,7 +2300,7 @@ extern bfd_boolean _sh_elf_set_mach_from_flags
 	rel[i].r_info = 0;						\
 	rel[i].r_addend = 0;						\
       }									\
-    rel += count - 1;							\
+    rel += (count - 1);							\
     continue;								\
   }
   

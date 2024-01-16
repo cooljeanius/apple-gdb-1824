@@ -1,6 +1,35 @@
 
 @example
- /* */
+ /* XXX: implement this */
 @end example
 @findex 
 @subsubsection @code{}
+@findex bfd_init_window
+@subsubsection @code{bfd_init_window}
+@strong{Synopsis}
+@example
+void bfd_init_window(bfd_window *windowp);
+@end example
+@strong{Description}@*
+Initialization function for a bfd window.
+
+@findex bfd_free_window
+@subsubsection @code{bfd_free_window}
+@strong{Synopsis}
+@example
+void bfd_free_window(bfd_window *windowp);
+@end example
+@strong{Description}@*
+Cleanup function for bfd windows.
+
+@findex bfd_get_file_window
+@subsubsection @code{bfd_get_file_window}
+@strong{Synopsis}
+@example
+bfd_boolean bfd_get_free_window(bfd *abfd, ufile_ptr offset,
+    bfd_size_type size, bfd_window *windowp,
+    bfd_boolean writable);
+@end example
+@strong{Description}@*
+TODO: write description
+

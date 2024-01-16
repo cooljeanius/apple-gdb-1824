@@ -54,4 +54,9 @@ bfd_init(void)
   return;
 }
 
+/*
+CODE_FRAGMENT
+. {* XXX *}
+*/
+
 /* End of init.c */

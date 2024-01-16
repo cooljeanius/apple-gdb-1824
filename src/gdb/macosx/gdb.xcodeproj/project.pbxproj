@@ -195,7 +195,7 @@
 		61D220EF192D617D00FA979E /* elf32-arc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF080E82C407008125DE /* elf32-arc.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D220F0192D617D00FA979E /* elf32-arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF090E82C407008125DE /* elf32-arm.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing -Wconversion"; }; };
 		61D220F1192D617D00FA979E /* elf32-arm.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF0A0E82C407008125DE /* elf32-arm.h */; };
-		61D220F2192D617D00FA979E /* elf32-avr.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF0B0E82C407008125DE /* elf32-avr.c */; };
+		61D220F2192D617D00FA979E /* elf32-avr.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF0B0E82C407008125DE /* elf32-avr.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wshorten-64-to-32"; }; };
 		61D220F3192D617D00FA979E /* elf32-cr16c.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF0C0E82C407008125DE /* elf32-cr16c.c */; };
 		61D220F4192D617D00FA979E /* elf32-cris.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF0D0E82C407008125DE /* elf32-cris.c */; };
 		61D220F5192D617D00FA979E /* elf32-crx.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF0E0E82C407008125DE /* elf32-crx.c */; };
@@ -396,6 +396,7 @@
 		A51B3F191A493694002170CE /* plugin.c in Sources */ = {isa = PBXBuildFile; fileRef = A51B3F171A493694002170CE /* plugin.c */; };
 		A51B3F1A1A493694002170CE /* plugin.h in Headers */ = {isa = PBXBuildFile; fileRef = A51B3F181A493694002170CE /* plugin.h */; };
 		A51DEE731AA273B300DA3F76 /* cf-m68klynx.c in Sources */ = {isa = PBXBuildFile; fileRef = A51DEE721AA273B300DA3F76 /* cf-m68klynx.c */; };
+		A5262E842B57028A002EC445 /* elf32-score7.c in Sources */ = {isa = PBXBuildFile; fileRef = A5262E822B55CCBC002EC445 /* elf32-score7.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wshorten-64-to-32"; }; };
 		A53ABD8D1A38C88F002F20B2 /* link.h in Headers */ = {isa = PBXBuildFile; fileRef = A53ABD8C1A38C88F002F20B2 /* link.h */; };
 		A53B842B1AE2F2100067328B /* acconfig_obsolete.h in Headers */ = {isa = PBXBuildFile; fileRef = A5558E9E1992B76300A45587 /* acconfig_obsolete.h */; };
 		A53B842C1AE2F2100067328B /* eval-plural.h in Headers */ = {isa = PBXBuildFile; fileRef = A5558E8D1992A9AE00A45587 /* eval-plural.h */; };
@@ -14417,6 +14418,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5262E842B57028A002EC445 /* elf32-score7.c in Sources */,
 				61D2205D192D610A00FA979E /* aix386-core.c in Sources */,
 				61D2205E192D610A00FA979E /* aix5ppc-core.c in Sources */,
 				61190A261CAB240F00AD73D8 /* aout-adobe.c in Sources */,

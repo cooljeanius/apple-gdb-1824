@@ -46,6 +46,7 @@
 # endif /* HAVE_MALLOC_MALLOC_H */
 #endif /* HAVE_MALLOC_H */
 
+/* This seems like kind of a hack, but whatever: */
 #ifndef HAVE_GETPAGESIZE
 # define getpagesize() 2048
 #endif /* !HAVE_GETPAGESIZE */
