@@ -36,7 +36,7 @@ bfin_pltpc_reloc(bfd *abfd ATTRIBUTE_UNUSED,
      		 void *data ATTRIBUTE_UNUSED,
      		 asection *input_section ATTRIBUTE_UNUSED,
      		 bfd *output_bfd ATTRIBUTE_UNUSED,
-     		 char **error_message ATTRIBUTE_UNUSED)
+     		 const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_reloc_status_type flag = bfd_reloc_ok;
   return flag;
@@ -46,7 +46,7 @@ bfin_pltpc_reloc(bfd *abfd ATTRIBUTE_UNUSED,
 static bfd_reloc_status_type
 bfin_pcrel24_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, void *data,
                    asection *input_section, bfd *output_bfd,
-                   char **error_message ATTRIBUTE_UNUSED)
+                   const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
   bfd_size_type addr = reloc_entry->address;
@@ -140,7 +140,7 @@ bfin_pcrel24_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, void *data,
 static bfd_reloc_status_type
 bfin_imm16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, void *data,
                  asection *input_section, bfd *output_bfd,
-                 char **error_message ATTRIBUTE_UNUSED)
+                 const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation, x;
   bfd_size_type reloc_addr = reloc_entry->address;
@@ -186,11 +186,10 @@ bfin_imm16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, void *data,
   if (howto->complain_on_overflow != complain_overflow_dont)
     {
       bfd_reloc_status_type flag;
-      flag = bfd_check_overflow (howto->complain_on_overflow,
-				 howto->bitsize,
-				 howto->rightshift,
-				 bfd_arch_bits_per_address(abfd),
-				 relocation);
+      flag = bfd_check_overflow(howto->complain_on_overflow, howto->bitsize,
+                                howto->rightshift,
+                                bfd_arch_bits_per_address(abfd),
+                                relocation);
       if (flag != bfd_reloc_ok)
 	return flag;
     }
@@ -198,33 +197,29 @@ bfin_imm16_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol, void *data,
   /* Here the variable relocation holds the final address of the
      symbol we are relocating against, plus any addend.  */
 
-  relocation >>= (bfd_vma) howto->rightshift;
+  relocation >>= (bfd_vma)howto->rightshift;
   x = relocation;
-  bfd_put_16 (abfd, x, (unsigned char *) data + reloc_addr);
+  bfd_put_16(abfd, x, ((unsigned char *)data + reloc_addr));
   return bfd_reloc_ok;
 }
 
-
+/* */
 static bfd_reloc_status_type
-bfin_byte4_reloc (bfd *abfd,
-                  arelent *reloc_entry,
-                  asymbol *symbol,
-                  void * data,
-                  asection *input_section,
-                  bfd *output_bfd,
-                  char **error_message ATTRIBUTE_UNUSED)
+bfin_byte4_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+                 void *data, asection *input_section, bfd *output_bfd,
+                 const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation, x;
   bfd_size_type addr = reloc_entry->address;
-  bfd_vma output_base = 0;
+  bfd_vma output_base = 0UL;
   asection *output_section;
   bfd_boolean relocatable = (output_bfd != NULL);
 
   /* Is the address of the relocation really within the section?  */
-  if (reloc_entry->address > bfd_get_section_limit (abfd, input_section))
+  if (reloc_entry->address > bfd_get_section_limit(abfd, input_section))
     return bfd_reloc_outofrange;
 
-  if (bfd_is_und_section (symbol->section)
+  if (bfd_is_und_section(symbol->section)
       && (symbol->flags & BSF_WEAK) == 0
       && !relocatable)
     return bfd_reloc_undefined;
@@ -239,10 +234,10 @@ bfin_byte4_reloc (bfd *abfd,
 
   if ((symbol->name
        && symbol->section->name
-       && !strcmp (symbol->name, symbol->section->name))
+       && !strcmp(symbol->name, symbol->section->name))
       || !relocatable)
     {
-      relocation += output_base + symbol->section->output_offset;
+      relocation += (output_base + symbol->section->output_offset);
     }
 
   relocation += reloc_entry->addend;
@@ -272,13 +267,9 @@ bfin_byte4_reloc (bfd *abfd,
 /* bfin_bfd_reloc handles the blackfin arithmetic relocations.
    Use this instead of bfd_perform_relocation.  */
 static bfd_reloc_status_type
-bfin_bfd_reloc (bfd *abfd,
-		arelent *reloc_entry,
-     		asymbol *symbol,
-     		void * data,
-     		asection *input_section,
-     		bfd *output_bfd,
-     		char **error_message ATTRIBUTE_UNUSED)
+bfin_bfd_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+               void *data, asection *input_section, bfd *output_bfd,
+               const char **error_message ATTRIBUTE_UNUSED)
 {
   bfd_vma relocation;
   bfd_size_type addr = reloc_entry->address;

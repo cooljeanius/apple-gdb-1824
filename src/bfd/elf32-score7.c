@@ -173,7 +173,7 @@ struct _score_elf_section_data
 #define STUB_BRL     0x801dbc09     /* brl r29  */
 
 #define SCORE_ELF_GOT_SIZE(abfd)   \
-  (get_elf_backend_data (abfd)->s->arch_size / 8)
+  (get_elf_backend_data(abfd)->s->arch_size / 8U)
 
 #define SCORE_ELF_ADD_DYNAMIC_ENTRY(info, tag, val) \
   (_bfd_elf_add_dynamic_entry (info, (bfd_vma) tag, (bfd_vma) val))
@@ -1358,15 +1358,13 @@ score_elf_high (bfd_vma value)
 
 /* Create a local GOT entry for VALUE.  Return the index of the entry,
    or -1 if it could not be created.  */
-
 static struct score_got_entry *
-score_elf_create_local_got_entry (bfd *abfd,
-                                  bfd *ibfd ATTRIBUTE_UNUSED,
-                                  struct score_got_info *gg,
-                                  asection *sgot, bfd_vma value,
-                                  unsigned long r_symndx ATTRIBUTE_UNUSED,
-                                  struct score_elf_link_hash_entry *h ATTRIBUTE_UNUSED,
-                                  int r_type ATTRIBUTE_UNUSED)
+score_elf_create_local_got_entry(bfd *abfd, bfd *ibfd ATTRIBUTE_UNUSED,
+                                 struct score_got_info *gg,
+                                 asection *sgot, bfd_vma value,
+                                 unsigned long r_symndx ATTRIBUTE_UNUSED,
+                                 struct score_elf_link_hash_entry *h ATTRIBUTE_UNUSED,
+                                 int r_type ATTRIBUTE_UNUSED)
 {
   struct score_got_entry entry, **loc;
   struct score_got_info *g;
@@ -1376,18 +1374,20 @@ score_elf_create_local_got_entry (bfd *abfd,
   entry.d.address = value;
 
   g = gg;
-  loc = (struct score_got_entry **) htab_find_slot (g->got_entries, &entry, INSERT);
+  loc = ((struct score_got_entry **)
+         htab_find_slot(g->got_entries, &entry, INSERT));
   if (*loc)
     return *loc;
 
-  entry.gotidx = SCORE_ELF_GOT_SIZE (abfd) * g->assigned_gotno++;
+  entry.gotidx = (long)((unsigned int)SCORE_ELF_GOT_SIZE(abfd)
+  			* g->assigned_gotno++);
 
-  *loc = bfd_alloc (abfd, sizeof entry);
+  *loc = bfd_alloc(abfd, sizeof(entry));
 
   if (! *loc)
     return NULL;
 
-  memcpy (*loc, &entry, sizeof entry);
+  memcpy(*loc, &entry, sizeof(entry));
 
   if (g->assigned_gotno >= g->local_gotno)
     {
@@ -1395,11 +1395,11 @@ score_elf_create_local_got_entry (bfd *abfd,
       /* We didn't allocate enough space in the GOT.  */
       (*_bfd_error_handler)
         (_("not enough GOT space for local GOT entries"));
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
       return NULL;
     }
 
-  bfd_put_32 (abfd, value, (sgot->contents + entry.gotidx));
+  bfd_put_32(abfd, value, (sgot->contents + entry.gotidx));
 
   return *loc;
 }
@@ -3076,7 +3076,7 @@ s7_bfd_score_elf_always_size_sections(bfd *output_bfd,
   local_gotno = ((loadable_size >> 16UL) + 5UL);
 
   g->local_gotno += local_gotno;
-  s->size += (g->local_gotno * SCORE_ELF_GOT_SIZE(output_bfd));
+  s->size += (g->local_gotno * (unsigned int)SCORE_ELF_GOT_SIZE(output_bfd));
 
   g->global_gotno = (unsigned int)i;
   s->size += ((bfd_size_type)i * SCORE_ELF_GOT_SIZE(output_bfd));

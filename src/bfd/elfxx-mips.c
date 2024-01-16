@@ -496,7 +496,7 @@ static bfd *reldyn_sorting_bfd;
 
 /* The size of a GOT entry.  */
 #define MIPS_ELF_GOT_SIZE(abfd) \
-  (get_elf_backend_data(abfd)->s->arch_size / 8)
+  (get_elf_backend_data(abfd)->s->arch_size / 8U)
 
 /* The size of a symbol-table entry.  */
 #define MIPS_ELF_SYM_SIZE(abfd) \
@@ -2169,7 +2169,7 @@ mips_elf_initialize_tls_slots (bfd *abfd, bfd_vma got_offset,
 			    (sgot->contents + offset2));
 	}
 
-      got_offset += (2UL * MIPS_ELF_GOT_SIZE(abfd));
+      got_offset += (2UL * (bfd_vma)MIPS_ELF_GOT_SIZE(abfd));
     }
 
   /* Initial Exec model.  */
@@ -2233,7 +2233,7 @@ mips_tls_got_index(bfd *abfd, bfd_vma got_index, unsigned char *tls_type,
     {
       BFD_ASSERT(*tls_type & GOT_TLS_IE);
       if (*tls_type & GOT_TLS_GD)
-	return (got_index + (2UL * MIPS_ELF_GOT_SIZE(abfd)));
+	return (got_index + (2UL * (bfd_vma)MIPS_ELF_GOT_SIZE(abfd)));
       else
 	return got_index;
     }
@@ -2878,9 +2878,8 @@ mips_elf_make_got_per_bfd (void **entryp, void *p)
    symbols out of the addressable range.  Failing the primary got,
    attempt to merge with the current got, or finish the current got
    and then make make the new got current.  */
-
 static int
-mips_elf_merge_gots (void **bfd2got_, void *p)
+mips_elf_merge_gots(void **bfd2got_, void *p)
 {
   struct mips_elf_bfd2got_hash *bfd2got
     = (struct mips_elf_bfd2got_hash *)*bfd2got_;
@@ -2897,19 +2896,19 @@ mips_elf_merge_gots (void **bfd2got_, void *p)
      case.  This doesn't affect non-primary GOTs.  */
   if (tcount > 0)
     {
-      unsigned int primary_total = lcount + tcount + arg->global_count;
-      if (primary_total * MIPS_ELF_GOT_SIZE (bfd2got->bfd)
-	   >= MIPS_ELF_GOT_MAX_SIZE (bfd2got->bfd))
+      unsigned int primary_total = (lcount + tcount + arg->global_count);
+      if ((primary_total * (unsigned int)MIPS_ELF_GOT_SIZE(bfd2got->bfd))
+	   >= MIPS_ELF_GOT_MAX_SIZE(bfd2got->bfd))
 	too_many_for_tls = TRUE;
     }
 
   /* If we don't have a primary GOT and this is not too big, use it as
      a starting point for the primary GOT.  */
-  if (! arg->primary && lcount + gcount + tcount <= maxcnt
+  if (! arg->primary && (lcount + gcount + tcount <= maxcnt)
       && ! too_many_for_tls)
     {
       arg->primary = bfd2got->g;
-      arg->primary_count = lcount + gcount;
+      arg->primary_count = (lcount + gcount);
     }
   /* If it looks like we can merge this bfd's entries with those of
      the primary, merge them.  The heuristics is conservative, but we
@@ -3180,8 +3179,8 @@ mips_elf_adjust_gp (bfd *abfd, struct mips_got_info *g, bfd *ibfd)
 
   g = g->next;
 
-  return (g->local_gotno + g->global_gotno + g->tls_gotno)
-    * MIPS_ELF_GOT_SIZE (abfd);
+  return (bfd_vma)((g->local_gotno + g->global_gotno + g->tls_gotno)
+                   * (unsigned int)MIPS_ELF_GOT_SIZE(abfd));
 }
 
 /* Turn a single GOT that is too big for 16-bit addressing into
@@ -6619,10 +6618,10 @@ _bfd_mips_elf_always_size_sections(bfd *output_bfd, struct bfd_link_info *info)
   local_gotno = ((loadable_size >> 16) + 5);
 
   g->local_gotno += local_gotno;
-  s->size += (g->local_gotno * MIPS_ELF_GOT_SIZE(output_bfd));
+  s->size += (g->local_gotno * (unsigned int)MIPS_ELF_GOT_SIZE(output_bfd));
 
   g->global_gotno = (unsigned int)i;
-  s->size += (bfd_size_type)(i * MIPS_ELF_GOT_SIZE(output_bfd));
+  s->size += (bfd_size_type)(i * (int)MIPS_ELF_GOT_SIZE(output_bfd));
 
   /* We need to calculate tls_gotno for global symbols at this point
      instead of building it up earlier, to avoid doublecounting
@@ -6633,7 +6632,7 @@ _bfd_mips_elf_always_size_sections(bfd *output_bfd, struct bfd_link_info *info)
 			 mips_elf_count_global_tls_entries,
 			 &count_tls_arg);
   g->tls_gotno += count_tls_arg.needed;
-  s->size += (g->tls_gotno * MIPS_ELF_GOT_SIZE(output_bfd));
+  s->size += (g->tls_gotno * (unsigned int)MIPS_ELF_GOT_SIZE(output_bfd));
 
   mips_elf_resolve_final_got_entries(g);
 
@@ -7720,7 +7719,7 @@ _bfd_mips_elf_finish_dynamic_sections(bfd *output_bfd,
     {
       MIPS_ELF_PUT_WORD(output_bfd, 0, sgot->contents);
       MIPS_ELF_PUT_WORD(output_bfd, 0x80000000,
-                        sgot->contents + MIPS_ELF_GOT_SIZE(output_bfd));
+                        (sgot->contents + MIPS_ELF_GOT_SIZE(output_bfd)));
     }
 
   if (sgot != NULL)
@@ -7741,10 +7740,14 @@ _bfd_mips_elf_finish_dynamic_sections(bfd *output_bfd,
 	  bfd_vma iindex = (g->next->local_gotno + g->next->global_gotno
                             + g->next->tls_gotno);
 
-	  MIPS_ELF_PUT_WORD(output_bfd, 0, sgot->contents
-			    + iindex++ * MIPS_ELF_GOT_SIZE(output_bfd));
-	  MIPS_ELF_PUT_WORD(output_bfd, 0x80000000, sgot->contents
-			    + iindex++ * MIPS_ELF_GOT_SIZE(output_bfd));
+	  MIPS_ELF_PUT_WORD(output_bfd, 0,
+   			    (sgot->contents
+			     + (iindex++
+        	   		* (bfd_vma)MIPS_ELF_GOT_SIZE(output_bfd))));
+	  MIPS_ELF_PUT_WORD(output_bfd, 0x80000000,
+                            (sgot->contents
+			     + (iindex++
+        		   	* (bfd_vma)MIPS_ELF_GOT_SIZE(output_bfd))));
 
 	  if (! info->shared)
 	    continue;
@@ -7752,7 +7755,7 @@ _bfd_mips_elf_finish_dynamic_sections(bfd *output_bfd,
 	  while (iindex < g->assigned_gotno)
 	    {
 	      rel[0].r_offset = rel[1].r_offset = rel[2].r_offset
-		= (iindex++ * MIPS_ELF_GOT_SIZE(output_bfd));
+		= (iindex++ * (bfd_vma)MIPS_ELF_GOT_SIZE(output_bfd));
 	      if (!(mips_elf_create_dynamic_relocation(output_bfd, info,
                                                        rel, NULL,
                                                        bfd_abs_section_ptr,

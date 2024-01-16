@@ -242,12 +242,13 @@ elf64_x86_64_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
     }
 
   /* Make a ".reg/999" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  size, note->descpos + offset);
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+  					 (note->descpos + offset));
 }
 
+/* */
 static bfd_boolean
-elf64_x86_64_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
+elf64_x86_64_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
   switch (note->descsz)
     {
@@ -255,10 +256,10 @@ elf64_x86_64_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
 	return FALSE;
 
       case 136:		/* sizeof(struct elf_prpsinfo) on Linux/x86_64 */
-	elf_tdata (abfd)->core_program
-	 = _bfd_elfcore_strndup (abfd, note->descdata + 40, 16);
-	elf_tdata (abfd)->core_command
-	 = _bfd_elfcore_strndup (abfd, note->descdata + 56, 80);
+	elf_tdata(abfd)->core_program =
+          _bfd_elfcore_strndup(abfd, (note->descdata + 40), 16);
+	elf_tdata(abfd)->core_command =
+	  _bfd_elfcore_strndup(abfd, (note->descdata + 56), 80);
     }
 
   /* Note that for some reason, a spurious space is tacked

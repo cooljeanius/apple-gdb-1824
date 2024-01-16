@@ -55,7 +55,7 @@ static reloc_howto_type howto_table[] =
 static bfd_boolean in_reloc_p PARAMS((bfd *, reloc_howto_type *));
 
 static bfd_boolean
-in_reloc_p(bfd * abfd ATTRIBUTE_UNUSED,
+in_reloc_p(bfd *abfd ATTRIBUTE_UNUSED,
            reloc_howto_type *howto ATTRIBUTE_UNUSED)
 {
   return FALSE;			/* We do NOT do relocs for now...  */
@@ -75,12 +75,12 @@ ia64coff_object_p(bfd *abfd)
     struct external_PEI_IMAGE_hdr image_hdr;
     file_ptr offset;
 
-    if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0
-	|| (bfd_bread (&dos_hdr, (bfd_size_type) sizeof (dos_hdr), abfd)
-	    != sizeof (dos_hdr)))
+    if ((bfd_seek(abfd, (file_ptr)0L, SEEK_SET) != 0)
+	|| (bfd_bread(&dos_hdr, (bfd_size_type)sizeof(dos_hdr), abfd)
+	    != sizeof(dos_hdr)))
       {
-	if (bfd_get_error () != bfd_error_system_call)
-	  bfd_set_error (bfd_error_wrong_format);
+	if (bfd_get_error() != bfd_error_system_call)
+	  bfd_set_error(bfd_error_wrong_format);
 	return NULL;
       }
 
@@ -94,42 +94,42 @@ ia64coff_object_p(bfd *abfd)
        this routine can only be called correctly for a PEI file, check
        the e_magic number here, and, if it doesn't match, clobber the
        f_magic number so that we don't get a false match.  */
-    if (H_GET_16 (abfd, dos_hdr.e_magic) != DOSMAGIC)
+    if (H_GET_16(abfd, dos_hdr.e_magic) != DOSMAGIC)
       {
-	bfd_set_error (bfd_error_wrong_format);
+	bfd_set_error(bfd_error_wrong_format);
 	return NULL;
       }
 
-    offset = H_GET_32 (abfd, dos_hdr.e_lfanew);
-    if (bfd_seek (abfd, offset, SEEK_SET) != 0
-	|| (bfd_bread (&image_hdr, (bfd_size_type) sizeof (image_hdr), abfd)
-	    != sizeof (image_hdr)))
+    offset = (file_ptr)H_GET_32(abfd, dos_hdr.e_lfanew);
+    if ((bfd_seek(abfd, offset, SEEK_SET) != 0)
+	|| (bfd_bread(&image_hdr, (bfd_size_type)sizeof(image_hdr), abfd)
+	    != sizeof(image_hdr)))
       {
-	if (bfd_get_error () != bfd_error_system_call)
-	  bfd_set_error (bfd_error_wrong_format);
+	if (bfd_get_error() != bfd_error_system_call)
+	  bfd_set_error(bfd_error_wrong_format);
 	return NULL;
       }
 
-    if (H_GET_32 (abfd, image_hdr.nt_signature)
+    if (H_GET_32(abfd, image_hdr.nt_signature)
 	!= 0x4550)
       {
-	bfd_set_error (bfd_error_wrong_format);
+	bfd_set_error(bfd_error_wrong_format);
 	return NULL;
       }
 
     /* Here is the hack.  coff_object_p wants to read filhsz bytes to
        pick up the COFF header for PE, see "struct external_PEI_filehdr"
        in include/coff/pe.h.  We adjust so that that will work. */
-    if (bfd_seek (abfd, offset - sizeof (dos_hdr), SEEK_SET) != 0)
+    if (bfd_seek(abfd, (offset - (file_ptr)sizeof(dos_hdr)), SEEK_SET) != 0)
       {
-	if (bfd_get_error () != bfd_error_system_call)
-	  bfd_set_error (bfd_error_wrong_format);
+	if (bfd_get_error() != bfd_error_system_call)
+	  bfd_set_error(bfd_error_wrong_format);
 	return NULL;
       }
   }
 #endif
 
-  return coff_object_p (abfd);
+  return coff_object_p(abfd);
 }
 
 const bfd_target

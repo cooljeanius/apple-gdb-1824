@@ -971,7 +971,7 @@ bfd32_backends: $(BFD32_BACKENDS)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: bfd32_backends
 
-## currently breaks on coff-x86_64.c with -Werror, elf32-aarch64.c without:
+## currently breaks on elf64-x86-64.c with -Werror, elf32-aarch64.c without:
 bfd64_backends: $(BFD64_BACKENDS)
 	@echo "this target, '$@', just makes its dependencies, '$^'"
 .PHONY: bfd64_backends
@@ -1526,7 +1526,8 @@ stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 # APPLE LOCAL end framework building.
 
 # Could really use a "copy-if-change"...
-headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+headers: $(sdocdir)/Makefile Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h \
+  $(srcdir)/version.h @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) protos $(FLAGS_TO_PASS))
 	$(AM_V_at)if test ! -e $(sdocdir)/libbfd.h || test $(sdocdir)/libbfd.h -ot $(sdocdir)/Makefile; then \
 	  (cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) libbfd.h $(FLAGS_TO_PASS)); \
@@ -1601,6 +1602,9 @@ headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH
 	  touch stmp-lcoff-h; \
 	elif test -x "`which sync`"; then \
 	  sync; \
+	fi
+	$(AM_V_at)if test ! -e bfdver.h || test bfdver.h -ot $(srcdir)/version.h; then \
+	  $(MAKE) $(AM_V_MFLAG) bfdver.h; \
 	fi
 	$(AM_V_at)-rm -f $(AM_V_v) *.h-new || echo "done with $@ target in `pwd`"
 .PHONY: headers

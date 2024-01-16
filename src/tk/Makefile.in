@@ -30,7 +30,21 @@ maintainer-clean-recursive:
 # Do NOT depend on configure.ac, because we cannot ensure that the user
 # has autoconf, unless they are a maintainer.
 configure: @MAINT@ configure.ac
-	cd $(srcdir) ; autoconf
+	if test -d $(srcdir) && test -w $(srcdir); then \
+	  pushd $(srcdir); \
+	  if test -r configure.ac; then \
+	    if test ! -e configure || test configure -ot configure.ac; then \
+	      autoconf || (if test -e $@~; then mv -v $@~ $@; fi); \
+	    fi; \
+	  elif test -e configure~ && test ! -e configure; then \
+	    mv -v configure~ configure; \
+	  fi; \
+	  popd; \
+	elif test "x$(srcdir)" != "x."; then \
+	  if test ! -e configure || test configure -ot $(srcdir)/configure; then \
+	    cp -v $(srcdir)/configure .; \
+	  fi; \
+	fi
 
 mostlyclean: mostlyclean-recursive
 

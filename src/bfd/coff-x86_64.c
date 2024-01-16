@@ -786,7 +786,8 @@ const bfd_target
   15,				/* Ar_max_namelen.  */
   0,				/* match priority.  */
 
-  bfd_getl64, bfd_getl_signed_64, bfd_putl64,
+  /* not actually needed yet: bfd_getl64 (including it breaks things) */
+  bfd_getl_signed_64, bfd_putl64,
      bfd_getl32, bfd_getl_signed_32, bfd_putl32,
      bfd_getl16, bfd_getl_signed_16, bfd_putl16, /* Data.  */
   bfd_getl64, bfd_getl_signed_64, bfd_putl64,
