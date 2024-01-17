@@ -272,6 +272,7 @@ spu_elf_object_p (bfd *abfd)
 	      {
 		Elf_Internal_Shdr *shdr = elf_elfsections(abfd)[j];
 
+#if defined(ELF_SECTION_SIZE) && defined(ELF_SECTION_IN_SEGMENT)
 		if ((ELF_SECTION_SIZE(shdr, phdr) != 0)
 		    && ELF_SECTION_IN_SEGMENT(shdr, phdr))
 		  {
@@ -279,6 +280,9 @@ spu_elf_object_p (bfd *abfd)
 		    spu_elf_section_data(sec)->u.o.ovl_index = num_ovl;
 		    spu_elf_section_data(sec)->u.o.ovl_buf = num_buf;
 		  }
+#else
+		BFD_ASSERT(shdr != NULL);
+#endif /* ELF_SECTION_SIZE && ELF_SECTION_IN_SEGMENT */
 	      }
 	  }
     }
@@ -429,26 +433,25 @@ struct spu_elf_stack_info
   struct function_info fun[1];
 };
 
-static struct function_info *find_function (asection *, bfd_vma,
-					    struct bfd_link_info *);
+static struct function_info *find_function(asection *, bfd_vma,
+					   struct bfd_link_info *);
 
-/* Create a spu ELF linker hash table.  */
-
+/* Create a spu ELF linker hash table: */
 static struct bfd_link_hash_table *
-spu_elf_link_hash_table_create (bfd *abfd)
+spu_elf_link_hash_table_create(bfd *abfd)
 {
   struct spu_link_hash_table *htab;
 
-  htab = bfd_zmalloc (sizeof (*htab));
+  htab = bfd_zmalloc(sizeof(*htab));
   if (htab == NULL)
     return NULL;
 
-  if (!_bfd_elf_link_hash_table_init (&htab->elf, abfd,
-				      _bfd_elf_link_hash_newfunc,
-				      sizeof (struct elf_link_hash_entry),
-				      SPU_ELF_DATA))
+  if (!_bfd_elf_link_hash_table_init(&htab->elf, abfd,
+				     _bfd_elf_link_hash_newfunc,
+				     sizeof(struct elf_link_hash_entry),
+				     SPU_ELF_DATA))
     {
-      free (htab);
+      free(htab);
       return NULL;
     }
 
@@ -459,15 +462,16 @@ spu_elf_link_hash_table_create (bfd *abfd)
   return &htab->elf.root;
 }
 
+/* Set up spu ELF stuff: */
 void
-spu_elf_setup (struct bfd_link_info *info, struct spu_elf_params *params)
+spu_elf_setup(struct bfd_link_info *info, struct spu_elf_params *params)
 {
   bfd_vma max_branch_log2;
 
-  struct spu_link_hash_table *htab = spu_hash_table (info);
+  struct spu_link_hash_table *htab = spu_hash_table(info);
   htab->params = params;
-  htab->line_size_log2 = bfd_log2 (htab->params->line_size);
-  htab->num_lines_log2 = bfd_log2 (htab->params->num_lines);
+  htab->line_size_log2 = bfd_log2(htab->params->line_size);
+  htab->num_lines_log2 = bfd_log2(htab->params->num_lines);
 
   /* For the software i-cache, we provide a "from" list whose size
      is a power-of-two number of quadwords, big enough to hold one

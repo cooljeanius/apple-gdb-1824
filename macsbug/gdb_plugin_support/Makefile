@@ -178,7 +178,8 @@ $(SYMROOT)/gdb_plugin_support.o	: 	$(OBJS)
 	  du $(SYMROOT)/gdb_plugin_support.o; \
 	  if test -x "`which sync`"; then sync; fi; \
 	  if test -x "`which nm`"; then \
-	    echo "`nm $@ | wc -l` symbols in $@"; \
+	    echo "-----------------------------------"; \
+	    echo "`nm $@ | wc -l | tr -d [:blank:]` symbols in $@"; \
 	  fi; \
 	  if test -x ../../src/binutils/size; then \
 	    ../../src/binutils/size $(SYMROOT)/gdb_plugin_support.o; \
@@ -187,7 +188,7 @@ $(SYMROOT)/gdb_plugin_support.o	: 	$(OBJS)
 	  fi; \
 	  if test -x "`which strings`"; then \
 	    echo "----------------------------------"; \
-	    echo "`strings $@ | wc -l` strings in $@"; \
+	    echo "`strings $@ | wc -l | tr -d [:blank:]` strings in $@"; \
 	  fi; \
 	elif test -n "$(OBJS)"; then \
 	  echo "OBJS are $(OBJS)"; \

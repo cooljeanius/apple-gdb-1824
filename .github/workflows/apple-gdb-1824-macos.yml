@@ -28,7 +28,7 @@ jobs:
           COMPILER_FORMULA=""; \
         fi
         date && sync
-        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar openssl@3 gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk "${COMPILER_FORMULA}"
+        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar openssl@3 gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk idutils "${COMPILER_FORMULA}"
     - run: test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq) && sync && sleep 1
     - run: ./configure --enable-silent-rules CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
@@ -132,7 +132,7 @@ jobs:
           popd; \
           pushd binutils; \
           make am_check-DEJAGNU || make check-DEJAGNU || make check-TESTS; \
-          make check-recursive || make cscope || make ID || make TAGS; \
+          make check-recursive || make cscope || make ID || make TAGS || make CTAGS || make GTAGS || make recheck || stat Makefile; \
           sh ./sanity.sh || stat ./sanity.sh; \
           popd; \
           pushd mmalloc; \
@@ -146,7 +146,7 @@ jobs:
           make clean || make clean-local || make mostlyclean || make mostlyclean-local; \
           make lint || make lint-local || make my_TAGS || make tags-local; \
           if test ! -e TAGS; then \
-            make my_TAGS || make tags-local || touch TAGS; \
+            make my_TAGS || make tags-local || make ID || make TAGS || touch TAGS; \
           fi; \
           popd; \
         else \

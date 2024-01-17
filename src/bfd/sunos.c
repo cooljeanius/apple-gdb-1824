@@ -2190,22 +2190,23 @@ sunos_write_dynamic_symbol (bfd *output_bfd,
 	  break;
 
 	default:
-	  abort ();
+	  abort();
 	}
 
       /* We also need to add a jump table reloc, unless this is the
 	 result of a JMP_TBL reloc from PIC compiled code.  */
       if (info->shared || (h->flags & SUNOS_DEF_REGULAR) == 0)
 	{
-	  BFD_ASSERT (h->dynindx >= 0);
-	  BFD_ASSERT (s->reloc_count * obj_reloc_entry_size (dynobj)
-		      < s->size);
-	  p = s->contents + s->reloc_count * obj_reloc_entry_size (output_bfd);
-	  if (obj_reloc_entry_size (output_bfd) == RELOC_STD_SIZE)
+	  BFD_ASSERT(h->dynindx >= 0);
+	  BFD_ASSERT((s->reloc_count * obj_reloc_entry_size(dynobj))
+		     < s->size);
+	  p = (s->contents + (s->reloc_count
+                              * obj_reloc_entry_size(output_bfd)));
+	  if (obj_reloc_entry_size(output_bfd) == RELOC_STD_SIZE)
 	    {
 	      struct reloc_std_external *srel;
 
-	      srel = (struct reloc_std_external *) p;
+	      srel = (struct reloc_std_external *)p;
 	      PUT_WORD (output_bfd, r_address, srel->r_address);
 	      if (bfd_header_big_endian (output_bfd))
 		{
@@ -2501,24 +2502,24 @@ sunos_check_dynamic_reloc (struct bfd_link_info *info,
 	      /* We need to create a GLOB_DAT or 32 reloc to tell the
 		 dynamic linker to fill in this entry in the table.  */
 
-	      s = bfd_get_section_by_name (dynobj, ".dynrel");
-	      BFD_ASSERT (s != NULL);
-	      BFD_ASSERT (s->reloc_count * obj_reloc_entry_size (dynobj)
-			  < s->size);
+	      s = bfd_get_section_by_name(dynobj, ".dynrel");
+	      BFD_ASSERT(s != NULL);
+	      BFD_ASSERT((s->reloc_count * obj_reloc_entry_size(dynobj))
+			 < s->size);
 
 	      p = (s->contents
-		   + s->reloc_count * obj_reloc_entry_size (dynobj));
+		   + (s->reloc_count * obj_reloc_entry_size(dynobj)));
 
 	      if (h != NULL)
 		indx = h->dynindx;
 	      else
 		indx = 0;
 
-	      if (obj_reloc_entry_size (dynobj) == RELOC_STD_SIZE)
+	      if (obj_reloc_entry_size(dynobj) == RELOC_STD_SIZE)
 		{
 		  struct reloc_std_external *srel;
 
-		  srel = (struct reloc_std_external *) p;
+		  srel = (struct reloc_std_external *)p;
 		  PUT_WORD (dynobj,
 			    (*got_offsetp
 			     + sgot->output_section->vma
@@ -2631,14 +2632,14 @@ sunos_check_dynamic_reloc (struct bfd_link_info *info,
 
   /* It looks like this is a reloc we are supposed to copy.  */
 
-  s = bfd_get_section_by_name (dynobj, ".dynrel");
-  BFD_ASSERT (s != NULL);
-  BFD_ASSERT (s->reloc_count * obj_reloc_entry_size (dynobj) < s->size);
+  s = bfd_get_section_by_name(dynobj, ".dynrel");
+  BFD_ASSERT(s != NULL);
+  BFD_ASSERT((s->reloc_count * obj_reloc_entry_size(dynobj)) < s->size);
 
-  p = s->contents + s->reloc_count * obj_reloc_entry_size (dynobj);
+  p = (s->contents + (s->reloc_count * obj_reloc_entry_size(dynobj)));
 
   /* Copy the reloc over.  */
-  memcpy (p, reloc, obj_reloc_entry_size (dynobj));
+  memcpy(p, reloc, obj_reloc_entry_size(dynobj));
 
   if (h != NULL)
     indx = h->dynindx;
@@ -2646,11 +2647,11 @@ sunos_check_dynamic_reloc (struct bfd_link_info *info,
     indx = 0;
 
   /* Adjust the address and symbol index.  */
-  if (obj_reloc_entry_size (dynobj) == RELOC_STD_SIZE)
+  if (obj_reloc_entry_size(dynobj) == RELOC_STD_SIZE)
     {
       struct reloc_std_external *srel;
 
-      srel = (struct reloc_std_external *) p;
+      srel = (struct reloc_std_external *)p;
       PUT_WORD (dynobj,
 		(GET_WORD (dynobj, srel->r_address)
 		 + input_section->output_section->vma

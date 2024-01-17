@@ -276,7 +276,7 @@ jobs:
       run: |
         cd src
         FINAL_CPPFLAGS="-I."
-        for myincdir in .. include ../include bfd ../bfd gdb ../gdb libiberty ../libiberty ../.. zlib ../zlib; do \
+        for myincdir in .. include ../include bfd ../bfd gdb ../gdb libiberty ../libiberty tcl ../tcl tk ../tk zlib ../zlib; do \
           if test -d "${myincdir}" && test -r "${myincdir}" && test -n "$(ls "${myincdir}"/*.h)"; then \
             FINAL_CPPFLAGS="${FINAL_CPPFLAGS} -I${myincdir} -iquote ${myincdir}"; \
           fi; \
@@ -293,6 +293,7 @@ jobs:
             cp -v "${cobjfile}" "$(dirname "${cfile}")" || cp -v "${cobjfile}" . || cp -v "${cobjfile}" .. || (if test -d /tmp && test -w /tmp; then cp -v "${cobjfile}" /tmp; fi) || stat -t "${cobjfile}"; \
           fi; \
         done
+        echo "done with this step"
 
     - name: Extra coverage build (C++)
       if: matrix.language == 'c-cpp' && success()
@@ -402,8 +403,8 @@ jobs:
                 make "$(echo "${srcfile}" | sed "s/\.c/.plist/g")" || stat -t "${srcfile}"; \
               done; \
               popd; \
-            elif test -d "${subdir}"; \
-              then ls ${subdir}/Makefile*; \
+            elif test -d "${subdir}"; then \
+              echo "Makefiles in ${subdir} are:" && ls ${subdir}/Makefile*; \
             else \
               echo "skipping attempting to do static analysis with clang in ${subdir}"; \
             fi; \
@@ -411,6 +412,7 @@ jobs:
         else \
           echo "clang missing"; \
         fi
+        echo "done with clang static analysis"
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.1.0

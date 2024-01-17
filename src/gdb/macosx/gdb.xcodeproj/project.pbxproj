@@ -398,12 +398,8 @@
 		A51DEE731AA273B300DA3F76 /* cf-m68klynx.c in Sources */ = {isa = PBXBuildFile; fileRef = A51DEE721AA273B300DA3F76 /* cf-m68klynx.c */; };
 		A5262E842B57028A002EC445 /* elf32-score7.c in Sources */ = {isa = PBXBuildFile; fileRef = A5262E822B55CCBC002EC445 /* elf32-score7.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wshorten-64-to-32"; }; };
 		A5262E862B5784A8002EC445 /* verify.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E852B5784A8002EC445 /* verify.h */; };
-		A5262E8A2B57918D002EC445 /* elf32-spu.c in Sources */ = {isa = PBXBuildFile; fileRef = A5262E872B57918D002EC445 /* elf32-spu.c */; };
 		A5262E8B2B57918D002EC445 /* elf32-spu.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E882B57918D002EC445 /* elf32-spu.h */; };
-		A5262E8C2B57918D002EC445 /* elf32-spu.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E882B57918D002EC445 /* elf32-spu.h */; };
-		A5262E902B579403002EC445 /* elf32-score.c in Sources */ = {isa = PBXBuildFile; fileRef = A5262E8D2B579402002EC445 /* elf32-score.c */; };
 		A5262E912B579403002EC445 /* elf32-score.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E8E2B579403002EC445 /* elf32-score.h */; };
-		A5262E922B579403002EC445 /* elf32-score.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E8E2B579403002EC445 /* elf32-score.h */; };
 		A53ABD8D1A38C88F002F20B2 /* link.h in Headers */ = {isa = PBXBuildFile; fileRef = A53ABD8C1A38C88F002F20B2 /* link.h */; };
 		A53B842B1AE2F2100067328B /* acconfig_obsolete.h in Headers */ = {isa = PBXBuildFile; fileRef = A5558E9E1992B76300A45587 /* acconfig_obsolete.h */; };
 		A53B842C1AE2F2100067328B /* eval-plural.h in Headers */ = {isa = PBXBuildFile; fileRef = A5558E8D1992A9AE00A45587 /* eval-plural.h */; };
@@ -13930,10 +13926,8 @@
 				A53B87741AE585E10067328B /* posixdir.h in Headers */,
 				A5262E862B5784A8002EC445 /* verify.h in Headers */,
 				A53B87751AE585E10067328B /* posixjmp.h in Headers */,
-				A5262E922B579403002EC445 /* elf32-score.h in Headers */,
 				A53B87761AE585E10067328B /* posixstat.h in Headers */,
 				A53B87771AE585E10067328B /* readline.h in Headers */,
-				A5262E8C2B57918D002EC445 /* elf32-spu.h in Headers */,
 				A53B87781AE585E10067328B /* rlcompat.h in Headers */,
 				A53B87791AE585E10067328B /* rlconf.h in Headers */,
 				A53B877A1AE585E10067328B /* rldefs.h in Headers */,
@@ -14792,7 +14786,6 @@
 				A53B87891AE586140067328B /* display.c in Sources */,
 				A53B878A1AE586140067328B /* emacs_keymap.c in Sources */,
 				A53B878B1AE586140067328B /* funmap.c in Sources */,
-				A5262E902B579403002EC445 /* elf32-score.c in Sources */,
 				A53B878C1AE586140067328B /* histexpand.c in Sources */,
 				A53B878D1AE586140067328B /* histfile.c in Sources */,
 				A53B878E1AE586140067328B /* history.c in Sources */,
@@ -14819,7 +14812,6 @@
 				A53B87A31AE586140067328B /* util.c in Sources */,
 				A53B87A41AE586140067328B /* vi_keymap.c in Sources */,
 				A53B87A51AE586140067328B /* vi_mode.c in Sources */,
-				A5262E8A2B57918D002EC445 /* elf32-spu.c in Sources */,
 				A53B87A61AE586140067328B /* xmalloc.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
