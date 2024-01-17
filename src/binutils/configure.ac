@@ -142,6 +142,8 @@ gl_COMPILER_OPTION_IF([-Wstrict-overflow=2],
 gl_WARN_ADD([-Wsign-compare])dnl
 gl_WARN_ADD([-Wfloat-conversion])dnl
 gl_WARN_ADD([-Wno-missed-loop-optimizations])dnl
+
+AM_BINUTILS_CLANG_STATIC_ANALYSIS
 		   
 AC_CONFIG_HEADERS([config.h])dnl
 AH_VERBATIM([00_CONFIG_H_CHECK],[

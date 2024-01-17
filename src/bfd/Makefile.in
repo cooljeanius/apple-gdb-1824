@@ -9644,19 +9644,19 @@ diststuff: info @MAINT@ config.status
 .PHONY: diststuff
 
 all_machines: $(ALL_MACHINES)
-	@echo "this target, '$@', just makes its dependencies, '$^'"
+	@echo "this target, '$@' (in `pwd`), just makes its dependencies, '$^'"
 .PHONY: all_machines
 
 bfd32_backends: $(BFD32_BACKENDS)
-	@echo "this target, '$@', just makes its dependencies, '$^'"
+	@echo "this target, '$@' (in `pwd`), just makes its dependencies, '$^'"
 .PHONY: bfd32_backends
 
 bfd64_backends: $(BFD64_BACKENDS)
-	@echo "this target, '$@', just makes its dependencies, '$^'"
+	@echo "this target, '$@' (in `pwd`), just makes its dependencies, '$^'"
 .PHONY: bfd64_backends
 
 optional_backends: $(OPTIONAL_BACKENDS)
-	@echo "this target, '$@', just makes its dependencies, '$^'"
+	@echo "this target, '$@' (in `pwd`), just makes its dependencies, '$^'"
 .PHONY: optional_backends
 
 # dummy target that does nothing, not even an "echo"; for potential future
@@ -9710,11 +9710,11 @@ stamp-plistfiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	fi
 
 lofiles: stamp-lofiles
-	@echo "this target, '$@', just makes its dependency, '$<'"
+	@echo "this target, '$@' (in `pwd`), just makes its dependency, '$<'"
 ofiles: stamp-ofiles
-	@echo "this target, '$@', just makes its dependency, '$<'"
+	@echo "this target, '$@' (in `pwd`), just makes its dependency, '$<'"
 plistfiles: stamp-plistfiles
-	@echo "this target, '$@', just makes its dependency, '$<'"
+	@echo "this target, '$@' (in `pwd`), just makes its dependency, '$<'"
 
 @ifGNUmake@ifneq ($(srcdir),.)
 @ifGNUmake@$(srcdir)/lofiles: stamp-lofiles
@@ -9732,9 +9732,9 @@ stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
 	if test ! -e stamp-staticlib; then $(MAKE) $(AM_V_MFLAG) stamp-staticlib; fi
 	libtooldir=`$(LIBTOOL) --config | $(SED) -n -e 's/^objdir=//p'`; \
 	if test -z "$${libtooldir}"; then \
-	  echo "" && echo "error: libtooldir is unset" >&2 && exit 1; \
+	  echo "" && echo "$@ target: error: libtooldir is unset" >&2 && exit 1; \
 	else \
-	  echo "libtooldir is $${libtooldir}"; \
+	  echo "$@ target: libtooldir is $${libtooldir}"; \
 	fi; \
 	stat $${libtooldir}/libbfd.a; \
 	if [ -f $${libtooldir}/libbfd.a ]; then \
@@ -9742,7 +9742,7 @@ stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
 	  $(RANLIB) libbfd.tmp; \
 	  $(RUN_MOVEIFCHANGE) libbfd.tmp libbfd.a; \
 	else \
-	  echo "$${libtooldir}/libbfd.a does not exist as a file"; \
+	  echo "$@ target: $${libtooldir}/libbfd.a does not exist as a file"; \
 	  if [ -f libbfd.a ]; then \
 	    $(RANLIB) libbfd.a; \
 	  fi; \
@@ -9803,15 +9803,15 @@ check-everything: Makefile stamp-plistfiles @MAINT@ plistfiles
 # to make the 'stamp-lib' target instead to actually make the static
 # library:
 libbfd_static_library: stamp-lib
-	@echo "this target, '$@', just makes its dependency, '$<'"
+	@echo "this target, '$@' (in `pwd`), just makes its dependency, '$<'"
 .PHONY: libbfd_static_library
 
 # hmmm...
 libbfd_la: libbfd.la
-	@echo "this target, '$@', just makes its dependency, '$<'"
+	@echo "this target, '$@' (in `pwd`), just makes its dependency, '$<'"
 .PHONY: libbfd_la
 libbfd_a: libbfd.a
-	@echo "this target, '$@', just makes its dependency, '$<'"
+	@echo "this target, '$@' (in `pwd`), just makes its dependency, '$<'"
 .PHONY: libbfd_a
 
 # This file holds an array associating configuration triplets and
@@ -9937,7 +9937,7 @@ install_libbfd: $(bfdlib_LTLIBRARIES) $(BFD_H) @MAINT@ ltmain.sh
 	  if test -f $${p}; then \
 	    echo "$(LIBTOOL) --mode=install $(INSTALL) $${p} $(DESTDIR)$(bfdlibdir)/$${p}"; \
 	    $(LIBTOOL) --mode=install $(INSTALL) $${p} $(DESTDIR)$(bfdlibdir)/$${p}; \
-	  else echo "$${p} is not an extant file, so not installing"; fi; \
+	  else echo "$@: $${p} is not an extant file, so not installing"; fi; \
 	done
 	$(INSTALL_DATA) $(BFD_H) $(DESTDIR)$(bfdincludedir)/bfd.h
 	$(INSTALL_DATA) $(INCDIR)/ansidecl.h $(DESTDIR)$(bfdincludedir)/ansidecl.h
@@ -10007,8 +10007,8 @@ dep-in: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 
 #FIXME: this target relies on dep.sed, which is broken (see above)
 dep-am: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
-	@echo "this target is broken/dangerous; not letting you use it" >&2
-	@echo "edit Makefile.am manually if you have fixed things"
+	@echo "this target ($@) is broken/dangerous; not letting you use it" >&2
+	@echo "edit Makefile.am manually if you have fixed things (in `pwd`)"
 	exit 1
 	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.am > tmp-Makefile.am
 	cat DEP >> tmp-Makefile.am
@@ -10041,13 +10041,13 @@ gen-aout: $(srcdir)/gen-aout.c @MAINT@ Makefile
 $(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h bfd-in3.h $(srcdir)/libbfd.h \
   $(srcdir)/libcoff.h @MAINT@ $(srcdir)/Makefile
 	$(AM_V_at)if test -e $(srcdir)/Makefile -a -d $(srcdir)/.deps; then \
-	  echo "making headers in srcdir ($(srcdir))..."; \
+	  echo "$@ target: making headers in srcdir ($(srcdir))..."; \
 	  (cd $(srcdir) && $(MAKE) $(AM_V_MFLAG) headers $(FLAGS_TO_PASS)); \
 	elif test -e ./Makefile -a -d ./.deps; then \
-	  echo "making headers in the current directory (`pwd`)..."; \
+	  echo "$@ target: making headers in the current directory (`pwd`)..."; \
 	  (cd . && $(MAKE) $(AM_V_MFLAG) headers $(FLAGS_TO_PASS)); \
 	elif test -e $(builddir)/Makefile -a -d $(builddir)/.deps; then \
-	  echo "making headers in builddir ($(builddir))..."; \
+	  echo "$@ target: making headers in builddir ($(builddir))..."; \
 	  (cd $(builddir) && $(MAKE) $(AM_V_MFLAG) headers $(FLAGS_TO_PASS)); \
 	else \
 	  echo "$@ target: unsure where to make headers..."; \
@@ -10067,12 +10067,12 @@ $(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h bfd-in3.h $(srcdir)/libbfd.h \
 	  elif test -e $(builddir)/Makefile; then \
 	    (cd $(builddir) && $(MAKE) $(AM_V_MFLAG) stmp-bfd-h $(FLAGS_TO_PASS)); \
 	  else \
-	    echo "unsure how to restore BFD_H ($(BFD_H))..."; \
+	    echo "$@ target: unsure how to restore BFD_H ($(BFD_H))..."; \
 	  fi; \
 	else \
 	  echo "checking status of BFD_H ($(BFD_H))..." && stat $(BFD_H); \
-	  echo "also checking its length..." && wc -l $(BFD_H); \
-	  echo "also checking its disk usage..." && du $(BFD_H); \
+	  echo "$@: also checking its length..." && wc -l $(BFD_H); \
+	  echo "$@: also checking its disk usage..." && du $(BFD_H); \
 	fi
 
 stmp-bfd-h: bfd-in3.h @MAINT@ headers @MAINT@ $(PATH_TO_MOVEIFCHANGE)
@@ -10116,7 +10116,7 @@ stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
 	    $(LN_S) $(AM_V_v) $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
 	else \
-	    echo "making un-suffixed framework"; \
+	    echo "$@: making un-suffixed framework"; \
 	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
 	    $(LN_S) $(AM_V_v) Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
 	fi
@@ -10125,7 +10125,7 @@ stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 
 # Could really use a "copy-if-change"...
 headers: $(sdocdir)/Makefile Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h \
-  $(srcdir)/version.h @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+  $(srcdir)/version.h elfxx-target.h @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) protos $(FLAGS_TO_PASS))
 	$(AM_V_at)if test ! -e $(sdocdir)/libbfd.h || test $(sdocdir)/libbfd.h -ot $(sdocdir)/Makefile; then \
 	  (cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) libbfd.h $(FLAGS_TO_PASS)); \
@@ -10203,10 +10203,20 @@ headers: $(sdocdir)/Makefile Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h \
 	fi
 	$(AM_V_at)if test ! -e bfdver.h || test bfdver.h -ot $(srcdir)/version.h; then \
 	  $(MAKE) $(AM_V_MFLAG) bfdver.h; \
+	elif test -r bfdver.h && test "x$(AM_V_P)" != "xfalse"; then \
+	  stat bfdver.h; \
 	fi
+	$(AM_V_at)for nn in 32 64; do \
+	  if test ! -e elf$${nn}-target.h || test elf$${nn}-target.h -ot elfxx-target.h; then \
+	    $(MAKE) $(AM_V_MFLAG) elf$${nn}-target.h; \
+	  elif test -r elf$${nn}-target.h && test "x$(AM_V_P)" != "xfalse"; then \
+	    stat elf$${nn}-target.h; \
+	  fi; \
+	done
 	$(AM_V_at)-rm -f $(AM_V_v) *.h-new || echo "done with $@ target in `pwd`"
 .PHONY: headers
 
+# Target for the Makefile in the documentation subdirectory:
 $(sdocdir)/Makefile: $(sdocdir)/Makefile.in $(top_builddir)/config.status
 	$(AM_V_at)if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
@@ -10247,7 +10257,7 @@ $(sdocdir)/Makefile: $(sdocdir)/Makefile.in $(top_builddir)/config.status
 # configured with --enable-maintainer-mode.
 
 $(srcdir)/bfd-in2.h: @MAINT@ stmp-bin2-h
-	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
+	@echo "this target, '$@' (in `pwd`), just makes its dependency, '$<', when in maintainer mode"
 stmp-bin2-h: $(sdocdir)/Makefile $(BFD_H_FILES) $(BFD64_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) bfd.h)
 	$(AM_V_at)if test $(srcdir) != "."; then \
@@ -10265,7 +10275,7 @@ stmp-bin2-h: $(sdocdir)/Makefile $(BFD_H_FILES) $(BFD64_H_FILES) @MAINT@ $(PATH_
 	fi
 
 $(srcdir)/libbfd.h: @MAINT@ stmp-lbfd-h
-	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
+	@echo "this target, '$@' (in `pwd`), just makes its dependency, '$<', when in maintainer mode"
 stmp-lbfd-h: $(LIBBFD_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) libbfd.h)
 	$(AM_V_at)if test $(srcdir) != "."; then \
@@ -10283,7 +10293,7 @@ stmp-lbfd-h: $(LIBBFD_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	fi
 
 $(srcdir)/libcoff.h: @MAINT@ stmp-lcoff-h
-	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
+	@echo "this target, '$@' (in `pwd`), just makes its dependency, '$<', when in maintainer mode"
 stmp-lcoff-h: $(LIBCOFF_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) libcoff.h)
 	$(AM_V_at)if test $(srcdir) != "."; then \
@@ -10310,7 +10320,7 @@ distclean-local:
 
 bfdver.h: $(srcdir)/version.h @MAINT@ $(srcdir)/development.sh \
   $(srcdir)/Makefile.in
-	@echo "creating $@"
+	@echo "creating $@ (in `pwd`)"
 	@bfd_version=`echo "$(VERSION)" | $(SED) -e 's/\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\).*/\1.00\2.00\3.00\4.00\5/' -e 's/\([^\.]*\)\..*\(..\)\..*\(..\)\..*\(..\)\..*\(..\)$$/\1\2\3\4\5/'`; \
 	bfd_version_string="\"$(VERSION)\""; \
 	bfd_soversion="$(VERSION)"; \

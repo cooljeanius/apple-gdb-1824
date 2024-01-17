@@ -598,6 +598,7 @@ CCDEPMODE = @CCDEPMODE@
 CC_FOR_BUILD = @CC_FOR_BUILD@
 CFLAGS = @CFLAGS@
 CFLAGS_FOR_BUILD = @CFLAGS_FOR_BUILD@
+CLANG_ANALYZER = @CLANG_ANALYZER@
 CONFIGURED_POD2MAN = @CONFIGURED_POD2MAN@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
@@ -815,6 +816,10 @@ AM_V_MFLAG = $(am__v_MFLAG_@AM_V@)
 am__v_MFLAG_ = $(am__v_MFLAG_@AM_DEFAULT_V@)
 am__v_MFLAG_0 = -s
 am__v_MFLAG_1 = -w
+AM_V_CLANG = $(am__v_CLANG_@AM_V@)
+am__v_CLANG_ = $(am__v_CLANG_@AM_DEFAULT_V@)
+am__v_CLANG_0 = @echo "  CLANG      " $@;
+am__v_CLANG_1 = 
 AM_YFLAGS = @MAINT@@EXTRA_YFLAGS_SEP@ -d -t $(AM_V_v) -k @YFLAGS_SEP1@ -Wall -Wyacc
 AM_LFLAGS = @MAINT@ -d
 
@@ -965,6 +970,18 @@ OFILES = \
 	size.o srconv.o stabs.o strings.o sysdump.o version.o \
 	windres.o winduni.o wrstabs.o
 
+PLISTFILES = \
+	addr2line.plist ar.plist arsup.plist binemul.plist bucomm.plist \
+	budemang.plist coffdump.plist coffgrok.plist cxxfilt.plist debug.plist \
+	dlltool.plist dllwrap.plist emul_aix.plist emul_vanilla.plist \
+	filemode.plist ieee.plist is-ranlib.plist is-strip.plist \
+	maybe-ranlib.plist maybe-strip.plist nlmconv.plist nm.plist \
+	not-ranlib.plist not-strip.plist objcopy.plist objdump.plist \
+	prdbg.plist rdcoff.plist rddbg.plist readelf.plist rename.plist \
+	resbin.plist rescoff.plist resrc.plist resres.plist size.plist \
+	srconv.plist stabs.plist strings.plist sysdump.plist version.plist \
+	windres.plist winduni.plist wrstabs.plist
+
 GENERATED_OFILES = \
 	arparse.o arlex.o sysroff.o sysinfo.o syslex.o \
 	defparse.o deflex.o nlmheader.o rcparse.o rclex.o
@@ -1018,6 +1035,11 @@ CC_FOR_TARGET = ` \
     fi; \
   fi`
 
+RUN_CLANG_ANALYZER = $(CLANG_ANALYZER) $(DEFS) $(CPPFLAGS) $(AM_CPPFLAGS) \
+  $(CFLAGS) $(CSEARCH) $(HAVEVECS) $(INCINTL) --analyze @MAINT@ -ferror-limit=1
+
+analysisdir = $(builddir)/clang_static_analysis
+SUFFIXES = .c .o .lo .plist
 global_LDADD_for_everything = $(BFDLIB) $(LIBIBERTY) $(LIBINTL)
 size_SOURCES = size.c $(BULIBS)
 size_LDADD = $(BFD) $(LIBIBERTY) $(INTLLIBS)
@@ -1160,7 +1182,7 @@ all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .c .l .lo .log .o .obj .test .test$(EXEEXT) .trs .y
+.SUFFIXES: .c .o .lo .plist .l .log .obj .test .test$(EXEEXT) .trs .y
 am--refresh: Makefile
 	@:
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
@@ -2175,6 +2197,10 @@ po/POTFILES.in: @MAINT@ Makefile
 	  LC_COLLATE="" sort $(AM_V_redir) tmp && \
 	  mv $(AM_V_v) tmp $(srcdir)/po/POTFILES.in
 
+.c.plist:
+	@if test ! -d $(analysisdir); then $(MKDIR_P) $(analysisdir); fi
+	$(AM_V_CLANG)$(RUN_CLANG_ANALYZER) -o $(analysisdir)/$@ $<
+
 am_check-DEJAGNU: site.exp
 	srcdir=`cd $(srcdir) && pwd`; export srcdir; \
 	r=`pwd`; export r; \
@@ -2200,6 +2226,11 @@ check-local: $(srcdir)/sanity.sh
 	    $(SHELLCHECK) $(srcdir)/embedspu.sh || stat $(srcdir)/embedspu.sh; \
 	  fi; \
 	fi
+	for myplist in $(PLISTFILES); do \
+	  echo "$@: using $(CLANG_ANALYZER) to make $(analysisdir)/$${myplist}"; \
+	  $(MAKE) $(AM_V_MFLAG) $${myplist} || stat $(analysisdir)/$${myplist}; \
+	done
+	@echo "$@ target (in `pwd`): done."
 
 installcheck-local: $(srcdir)/sanity.sh
 	/bin/sh $(srcdir)/sanity.sh $(bindir)

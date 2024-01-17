@@ -1,0 +1,4 @@
+# gitignore file for binutils clang static analysis results
+!.
+# might as well be object files:
+*.plist

@@ -118,12 +118,17 @@ jobs:
         cd src
         if test ${{ matrix.compiler }} == clang; then \
           make check-bfd; \
+          make check-binutils; \
           make check-mmalloc; \
           cd electric-fence; \
           make check-local || make check stamp-framework ls; \
         elif test ${{ matrix.compiler }} == gcc; then \
           pushd bfd; \
           sync && make check-DEJAGNU; \
+          popd; \
+          pushd binutils; \
+          sync && make am_check-DEJAGNU; \
+          sh ./sanity.sh || stat ./sanity.sh; \
           popd; \
           pushd mmalloc; \
           sync && make info dvi stamp-framework-headers ls; \
@@ -133,13 +138,17 @@ jobs:
           popd; \
           pushd readline; \
           if test -e static; then mv -v static static.orig; fi; \
+          make clean || make clean-local || make mostlyclean || make mostlyclean-local; \
           make lint || make lint-local || make my_TAGS || make tags-local; \
+          if test ! -e TAGS; then \
+            make my_TAGS || make tags-local || touch TAGS; \
+          fi; \
           popd; \
         else \
           echo "error, unhandled compiler!" >&2 && exit 1; \
         fi
     - run: cd src && sync && make check-opcodes && sync && make check-intl && sync
-    - run: cd src && make check-binutils
+    # (check-binutils target is now moved into the static analysis step)
     - run: cd src && make check-utils
     - run: time (sync && pwd && sync && ls && sync)
       if: "${{ success() }}"
