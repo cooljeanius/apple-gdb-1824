@@ -1326,6 +1326,10 @@ struct bfd_elf_section_data
 #define get_elf_backend_data(abfd) \
   xvec_get_elf_backend_data((abfd)->xvec)
 
+#ifndef elf_hash_table_id
+# define elf_hash_table_id(table) (table)->hash_table_id
+#endif /* !elf_hash_table_id */
+
 /* This struct is used to pass information to routines called via
    elf_link_hash_traverse which must return failure.  */
 

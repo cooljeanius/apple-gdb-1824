@@ -129,6 +129,15 @@ jobs:
         elif test ${{ matrix.compiler }} == gcc; then \
           echo "getting some additional dependencies..."; \
           brew install idutils || brew install ctags || brew install universal-ctags || brew install emacs || brew install global || brew install cscope; \
+          if test -z "$(which etags)" || test ! -x "$(which etags)"; then \
+            brew install emacs || stat "$(which emacs)" || echo "etags missing"; \
+          fi; \
+          if test -z "$(which gtags)" || test ! -x "$(which gtags)"; then \
+            brew install global || stat "$(which global)" || echo "gtags missing"; \
+          fi; \
+          if test -z "$(which cscope)" || test ! -x "$(which cscope)"; then \
+            brew install cscope || stat "$(which cscope)" || echo "cscope missing"; \
+          fi; \
           pushd bfd; \
           sync && make check-DEJAGNU; \
           popd; \
