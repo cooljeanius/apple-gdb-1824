@@ -262,16 +262,17 @@ bfd_elf_get_str_section (bfd *abfd, unsigned int shindex)
 	shstrtab[shstrtabsize] = '\0';
       i_shdrp[shindex]->contents = shstrtab;
     }
-  return (char *) shstrtab;
+  return (char *)shstrtab;
 }
 
+/* */
 const char *
 bfd_elf_string_from_elf_section(bfd *abfd, unsigned int shindex,
                                 unsigned int strindex)
 {
   Elf_Internal_Shdr *hdr;
 
-  if (strindex == 0)
+  if (strindex == 0U)
     return "";
 
   hdr = elf_elfsections(abfd)[shindex];
@@ -300,7 +301,6 @@ bfd_elf_string_from_elf_section(bfd *abfd, unsigned int shindex,
    symbol SYMOFFSET.  If any of INTSYM_BUF, EXTSYM_BUF or EXTSHNDX_BUF
    are non-NULL, they are used to store the internal symbols, external
    symbols, and symbol section index extensions, respectively.  */
-
 Elf_Internal_Sym *
 bfd_elf_get_elf_syms(bfd *ibfd, Elf_Internal_Shdr *symtab_hdr,
 		     size_t symcount, size_t symoffset,
@@ -5115,26 +5115,24 @@ copy_private_bfd_data(bfd *ibfd, bfd *obfd)
   bfd_boolean phdr_included = FALSE;
   bfd_vma maxpagesize;
   struct elf_segment_map *phdr_adjust_seg = NULL;
-  unsigned int phdr_adjust_num = 0;
+  unsigned int phdr_adjust_num = 0U;
   const struct elf_backend_data *bed;
 
-  if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour) {
-	  return TRUE;
-  }
+  if ((bfd_get_flavour(ibfd) != bfd_target_elf_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_elf_flavour))
+    return TRUE;
 
-	if (elf_tdata (ibfd)->phdr == NULL) {
-		return TRUE;
-	}
+  if (elf_tdata(ibfd)->phdr == NULL)
+    return TRUE;
 
-  bed = get_elf_backend_data (ibfd);
-  iehdr = elf_elfheader (ibfd);
+  bed = get_elf_backend_data(ibfd);
+  iehdr = elf_elfheader(ibfd);
 
   map_first = NULL;
   pointer_to_map = &map_first;
 
-  num_segments = elf_elfheader (ibfd)->e_phnum;
-  maxpagesize = get_elf_backend_data (obfd)->maxpagesize;
+  num_segments = elf_elfheader(ibfd)->e_phnum;
+  maxpagesize = get_elf_backend_data(obfd)->maxpagesize;
 
   /* Returns the end address of the segment + 1.  */
 #define SEGMENT_END(segment, start)					\
@@ -5433,11 +5431,11 @@ copy_private_bfd_data(bfd *ibfd, bfd *obfd)
       }
 
       /* Step One: Scan for segment vs section LMA conflicts.
-	   * Also add the sections to the section array allocated above.
-	   * Also add the sections to the current segment. In the common
-	   * case, where the sections have not been moved, this means that
-	   * we have completely filled the segment, and there is nothing
-	   * more to do.  */
+       * Also add the sections to the section array allocated above.
+       * Also add the sections to the current segment. In the common
+       * case, where the sections have not been moved, this means that
+       * we have completely filled the segment, and there is nothing
+       * more to do.  */
       isec = 0;
       matching_lma = 0;
       suggested_lma = 0;
@@ -5495,7 +5493,7 @@ copy_private_bfd_data(bfd *ibfd, bfd *obfd)
       BFD_ASSERT (j == section_count);
 
       /* Step Two: Adjust the physical address of the current segment,
-	   * if necessary.  */
+       * if necessary.  */
       if (isec == section_count)
 	{
 	  /* All of the sections fitted within the segment as currently
@@ -5514,15 +5512,15 @@ copy_private_bfd_data(bfd *ibfd, bfd *obfd)
 	  if (matching_lma != 0)
 	    {
 	      /* At least one section fits inside the current segment.
-		   * Keep it, but modify its physical address to match the
-		   * LMA of the first section that fitted.  */
+               * Keep it, but modify its physical address to match the
+               * LMA of the first section that fitted.  */
 	      map->p_paddr = matching_lma;
 	    }
 	  else
 	    {
 	      /* None of the sections fitted inside the current segment.
-		   * Change the current segment's physical address to match
-		   * the LMA of the first section.  */
+               * Change the current segment's physical address to match
+               * the LMA of the first section.  */
 	      map->p_paddr = suggested_lma;
 	    }
 
@@ -5533,28 +5531,27 @@ copy_private_bfd_data(bfd *ibfd, bfd *obfd)
 
 	  if (map->includes_phdrs)
 	    {
-	      map->p_paddr -= iehdr->e_phnum * iehdr->e_phentsize;
+	      map->p_paddr -= (iehdr->e_phnum * iehdr->e_phentsize);
 
 	      /* iehdr->e_phnum is just an estimate of the number
-		   * of program headers that we will need. Make a note
-		   * here of the number we used and the segment we chose
-		   * to hold these headers, so that we can adjust the
-		   * offset when we know the correct value.  */
+               * of program headers that we will need. Make a note
+               * here of the number we used and the segment we chose
+               * to hold these headers, so that we can adjust the
+               * offset when we know the correct value.  */
 	      phdr_adjust_num = iehdr->e_phnum;
 	      phdr_adjust_seg = map;
 	    }
 	}
 
       /* Step Three: Loop over the sections again, this time assigning
-	   * those that fit to the current segment and removing them from the
-	   * sections array; but making sure not to leave large gaps. Once all
-	   * possible sections have been assigned to the current segment it is
-	   * added to the list of built segments and if sections still remain
-	   * to be assigned, a new segment is constructed before repeating
-	   * the loop.  */
+       * those that fit to the current segment and removing them from the
+       * sections array; but making sure not to leave large gaps. Once all
+       * possible sections have been assigned to the current segment it is
+       * added to the list of built segments and if sections still remain
+       * to be assigned, a new segment is constructed before repeating
+       * the loop.  */
       isec = 0;
-      do
-	{
+      do {
 	  map->count = 0;
 	  suggested_lma = 0;
 
@@ -5649,8 +5646,7 @@ copy_private_bfd_data(bfd *ibfd, bfd *obfd)
 	      map->includes_filehdr = 0;
 	      map->includes_phdrs   = 0;
 	    }
-	}
-      while (isec < section_count);
+      } while (isec < section_count);
 
       free (sections);
     }
@@ -5666,7 +5662,7 @@ copy_private_bfd_data(bfd *ibfd, bfd *obfd)
     for (map = map_first; map != NULL; map = map->next)
       map->p_paddr_valid = 0;
 
-  elf_tdata (obfd)->segment_map = map_first;
+  elf_tdata(obfd)->segment_map = map_first;
 
   /* If we had to estimate the number of program headers that were
      going to be needed, then check our estimate now and adjust
@@ -5675,12 +5671,12 @@ copy_private_bfd_data(bfd *ibfd, bfd *obfd)
     {
       unsigned int count;
 
-      for (count = 0, map = map_first; map != NULL; map = map->next)
+      for (count = 0U, map = map_first; map != NULL; map = map->next)
 	count++;
 
       if (count > phdr_adjust_num)
 	phdr_adjust_seg->p_paddr
-	  -= (count - phdr_adjust_num) * iehdr->e_phentsize;
+	  -= ((count - phdr_adjust_num) * iehdr->e_phentsize);
     }
 
 #undef SEGMENT_END
