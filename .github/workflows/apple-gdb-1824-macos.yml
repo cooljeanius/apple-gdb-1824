@@ -127,6 +127,8 @@ jobs:
           make check-local || make check stamp-framework ls; \
           echo "done with electric-fence..." ; \
         elif test ${{ matrix.compiler }} == gcc; then \
+          echo "getting some additional dependencies..."; \
+          brew install idutils || brew install ctags || brew install universal-ctags || brew install emacs || brew install global || brew install cscope; \
           pushd bfd; \
           sync && make check-DEJAGNU; \
           popd; \
@@ -135,12 +137,15 @@ jobs:
           make check-recursive || make cscope || make ID || make TAGS || make CTAGS || make GTAGS || make recheck || stat Makefile; \
           sh ./sanity.sh || stat ./sanity.sh; \
           popd; \
+          echo "done with binutils; moving on to mmalloc next..."; \
           pushd mmalloc; \
           sync && make info dvi stamp-framework-headers ls; \
           popd; \
+          echo "done with mmalloc; moving on to electric-fence next..."; \
           pushd electric-fence; \
           sync && make check stamp-framework ls; \
           popd; \
+          echo "done with electric-fence; moving on to readline next..."; \
           pushd readline; \
           if test -e static; then mv -v static static.orig; fi; \
           make clean || make clean-local || make mostlyclean || make mostlyclean-local; \
@@ -149,6 +154,7 @@ jobs:
             make my_TAGS || make tags-local || make ID || make TAGS || touch TAGS; \
           fi; \
           popd; \
+          echo "done with readline..."; \
         else \
           echo "error, unhandled compiler!" >&2 && exit 1; \
         fi

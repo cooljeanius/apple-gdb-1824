@@ -196,7 +196,7 @@ ppc_coff_link_hash_table_init(struct ppc_coff_link_hash_table *table,
 }
 
 /* Create a PE linker hash table: */
-static struct bfd_link_hash_table *
+static ATTRIBUTE_USED struct bfd_link_hash_table *
 ppc_coff_link_hash_table_create(bfd *abfd)
 {
   struct ppc_coff_link_hash_table *ret;
@@ -969,7 +969,7 @@ ppc_mark_symbol_as_glue(bfd *abfd, int sym, struct internal_reloc *rel)
 #endif /* COFF_IMAGE_WITH_PE */
 
 /* Return TRUE if relocation should appear in the output .reloc section: */
-static bfd_boolean
+static ATTRIBUTE_USED bfd_boolean
 in_reloc_p(bfd *abfd ATTRIBUTE_UNUSED, reloc_howto_type *howto)
 {
   return
@@ -1904,7 +1904,7 @@ coff_ppc_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
 static reloc_howto_type *ppc_coff_reloc_type_lookup
   PARAMS((bfd *, bfd_reloc_code_real_type));
 
-static reloc_howto_type *
+static ATTRIBUTE_USED reloc_howto_type *
 ppc_coff_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
                            bfd_reloc_code_real_type code)
 {
@@ -2631,6 +2631,13 @@ const bfd_target TARGET_BIG_SYM =
   COFF_SWAP_TABLE
 };
 #endif /* TARGET_BIG_SYM */
+
+#if 0
+# ifndef NO_COFF_RELOCS
+#  define NO_COFF_RELOCS 1
+# endif /* !NO_COFF_RELOCS */
+# include "peicode.h"
+#endif /* 0 */
 
 #ifdef IS_UNALLOCATED
 # undef IS_UNALLOCATED

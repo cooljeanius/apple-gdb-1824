@@ -3965,4 +3965,8 @@ s7_elf32_score_new_section_hook(bfd *abfd, asection *sec)
 # include "elf32-target.h"
 #endif /* ELF_MAXPAGESIZE */
 
+#ifdef elf_backend_omit_section_dynsym
+# undef elf_backend_omit_section_dynsym
+#endif /* elf_backend_omit_section_dynsym */
+
 /* End of elf32-score7.c */

@@ -246,18 +246,19 @@ coff_swap_scnhdr_in(bfd *abfd, void *ext, void *in)
 #endif /* !COFF_NO_HACK_SCNHDR_SIZE */
 }
 
+/* */
 static bfd_boolean
-pe_mkobject(bfd * abfd)
+pe_mkobject(bfd *abfd)
 {
   pe_data_type *pe;
   bfd_size_type amt = sizeof(pe_data_type);
 
-  abfd->tdata.pe_obj_data = (struct pe_tdata *) bfd_zalloc (abfd, amt);
+  abfd->tdata.pe_obj_data = (struct pe_tdata *)bfd_zalloc(abfd, amt);
 
   if (abfd->tdata.pe_obj_data == 0)
     return FALSE;
 
-  pe = pe_data (abfd);
+  pe = pe_data(abfd);
 
   pe->coff.pe = 1;
 
@@ -266,10 +267,10 @@ pe_mkobject(bfd * abfd)
 
 #ifdef PEI_FORCE_MINIMUM_ALIGNMENT
   pe->force_minimum_alignment = 1;
-#endif
+#endif /* PEI_FORCE_MINIMUM_ALIGNMENT */
 #ifdef PEI_TARGET_SUBSYSTEM
   pe->target_subsystem = PEI_TARGET_SUBSYSTEM;
-#endif
+#endif /* PEI_TARGET_SUBSYSTEM */
 
   return TRUE;
 }

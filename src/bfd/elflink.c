@@ -4515,7 +4515,13 @@ _bfd_elf_archive_symbol_lookup(bfd *abfd, struct bfd_link_info *info,
   len = strlen(name);
   copy = (char *)bfd_alloc(abfd, len);
   if (copy == NULL)
-    return (__extension__ (struct elf_link_hash_entry *)0 - 1);
+    {
+#if (defined(__GNUC__) || defined(__extension__)) && !defined(__clang__) && !defined(__STRICT_ANSI__)
+      return (__extension__ (struct elf_link_hash_entry *)0 - 1);
+#else
+      return NULL;
+#endif /* (__GNUC__ || __extension__) && (!__clang || !__STRICT_ANSI__) */
+    }
 
   first = ((size_t)(p - name) + 1UL);
   memcpy(copy, name, first);
@@ -4573,19 +4579,19 @@ elf_link_add_archive_symbols(bfd *abfd, struct bfd_link_info *info)
   struct elf_link_hash_entry * (*archive_symbol_lookup)
     (bfd *, struct bfd_link_info *, const char *);
 
-  if (! bfd_has_map (abfd))
+  if (! bfd_has_map(abfd))
     {
       /* An empty archive is a special case.  */
-      if (bfd_openr_next_archived_file (abfd, NULL) == NULL)
+      if (bfd_openr_next_archived_file(abfd, NULL) == NULL)
 	return TRUE;
-      bfd_set_error (bfd_error_no_armap);
+      bfd_set_error(bfd_error_no_armap);
       return FALSE;
     }
 
   /* Keep track of all symbols we know to be already defined, and all
      files we know to be already included.  This is to speed up the
      second and subsequent passes.  */
-  c = bfd_ardata (abfd)->symdef_count;
+  c = bfd_ardata(abfd)->symdef_count;
   if (c == 0)
     return TRUE;
   amt = c;
@@ -4596,8 +4602,8 @@ elf_link_add_archive_symbols(bfd *abfd, struct bfd_link_info *info)
       goto error_return;
   }
 
-  symdefs = bfd_ardata (abfd)->symdefs;
-  bed = get_elf_backend_data (abfd);
+  symdefs = bfd_ardata(abfd)->symdefs;
+  bed = get_elf_backend_data(abfd);
   archive_symbol_lookup = bed->elf_backend_archive_symbol_lookup;
 
   do {
@@ -4610,7 +4616,7 @@ elf_link_add_archive_symbols(bfd *abfd, struct bfd_link_info *info)
       last = -1;
 
       symdef = symdefs;
-      symdefend = symdef + c;
+      symdefend = (symdef + c);
       for (i = 0; symdef < symdefend; symdef++, i++)
 	{
 	  struct elf_link_hash_entry *h;
@@ -4626,9 +4632,14 @@ elf_link_add_archive_symbols(bfd *abfd, struct bfd_link_info *info)
 	      continue;
 	    }
 
-	  h = archive_symbol_lookup (abfd, info, symdef->name);
-	  if (h == (struct elf_link_hash_entry *) 0 - 1)
+	  h = archive_symbol_lookup(abfd, info, symdef->name);
+#if (defined(__GNUC__) || defined(__extension__)) && !defined(__clang__) && !defined(__STRICT_ANSI__)
+	  if (h == (__extension__ (struct elf_link_hash_entry *)0 - 1))
 	    goto error_return;
+#else
+	  if (h == NULL)
+	    goto error_return;
+#endif /* (__GNUC__ || __extension__) && (!__clang || !__STRICT_ANSI__) */
 
 	  if (h == NULL)
 	    continue;
@@ -5558,9 +5569,9 @@ bfd_elf_size_dynamic_sections (bfd *output_bfd,
       if (info->flags_1)
 	{
 	  if (info->executable)
-	    info->flags_1 &= ~ (DF_1_INITFIRST
-				| DF_1_NODELETE
-				| DF_1_NOOPEN);
+	    info->flags_1 &= (bfd_vma)~(DF_1_INITFIRST
+                               		| DF_1_NODELETE
+                               		| DF_1_NOOPEN);
 	  if (!_bfd_elf_add_dynamic_entry(info, DT_FLAGS_1, info->flags_1))
 	    return FALSE;
 	}
@@ -6489,8 +6500,9 @@ elf_link_output_extsym (struct elf_link_hash_entry *h, void *data)
 	if (input_sec->output_section != NULL)
 	  {
 	    sym.st_shndx =
-	      _bfd_elf_section_from_bfd_section(finfo->output_bfd,
-                                                input_sec->output_section);
+	      ((unsigned int)
+               _bfd_elf_section_from_bfd_section(finfo->output_bfd,
+                                                 input_sec->output_section));
 	    if (sym.st_shndx == SHN_BAD)
 	      {
 		(*_bfd_error_handler)
@@ -6947,8 +6959,10 @@ elf_link_input_bfd (struct elf_final_link_info *finfo, bfd *input_bfd)
       osym = *isym;
 
       /* Adjust the section index for the output file.  */
-      osym.st_shndx = _bfd_elf_section_from_bfd_section(output_bfd,
-                                                        isec->output_section);
+      osym.st_shndx =
+        ((unsigned int)
+         _bfd_elf_section_from_bfd_section(output_bfd,
+                                           isec->output_section));
       if (osym.st_shndx == SHN_BAD)
 	return FALSE;
 
@@ -6965,20 +6979,20 @@ elf_link_input_bfd (struct elf_final_link_info *finfo, bfd *input_bfd)
       if (! finfo->info->relocatable)
 	{
 	  osym.st_value += isec->output_section->vma;
-	  if (ELF_ST_TYPE (osym.st_info) == STT_TLS)
+	  if (ELF_ST_TYPE(osym.st_info) == STT_TLS)
 	    {
-	      /* STT_TLS symbols are relative to PT_TLS segment base.  */
-	      BFD_ASSERT (elf_hash_table (finfo->info)->tls_sec != NULL);
-	      osym.st_value -= elf_hash_table (finfo->info)->tls_sec->vma;
+	      /* STT_TLS symbols are relative to PT_TLS segment base: */
+	      BFD_ASSERT(elf_hash_table(finfo->info)->tls_sec != NULL);
+	      osym.st_value -= elf_hash_table(finfo->info)->tls_sec->vma;
 	    }
 	}
 
-      if (! elf_link_output_sym (finfo, name, &osym, isec, NULL))
+      if (!elf_link_output_sym(finfo, name, &osym, isec, NULL))
 	return FALSE;
     }
 
-  /* Relocate the contents of each section.  */
-  sym_hashes = elf_sym_hashes (input_bfd);
+  /* Relocate the contents of each section: */
+  sym_hashes = elf_sym_hashes(input_bfd);
   for (o = input_bfd->sections; o != NULL; o = o->next)
     {
       bfd_byte *contents;
@@ -7351,8 +7365,9 @@ elf_link_input_bfd (struct elf_final_link_info *finfo, bfd *input_bfd)
 
 			  osec = sec->output_section;
 			  sym.st_shndx =
-			    _bfd_elf_section_from_bfd_section(output_bfd,
-                                                              osec);
+                            ((unsigned int)
+			     _bfd_elf_section_from_bfd_section(output_bfd,
+                                                               osec));
 			  if (sym.st_shndx == SHN_BAD)
 			    return FALSE;
 
@@ -7977,42 +7992,42 @@ bfd_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 	  /* Explicitly clear the SEC_RELOC flag.  The linker tends to
 	     set it (this is probably a bug) and if it is set
 	     assign_section_numbers will create a reloc section.  */
-	  o->flags &=~ SEC_RELOC;
+	  o->flags &= (flagword)~SEC_RELOC;
 	}
 
       /* If the SEC_ALLOC flag is not set, force the section VMA to
 	 zero.  This is done in elf_fake_sections as well, but forcing
 	 the VMA to 0 here will ensure that relocs against these
 	 sections are handled correctly.  */
-      if ((o->flags & SEC_ALLOC) == 0
-	  && ! o->user_set_vma)
+      if (((o->flags & SEC_ALLOC) == 0)
+	  && !o->user_set_vma)
 	o->vma = 0;
     }
 
   if (! info->relocatable && merged)
-    elf_link_hash_traverse (elf_hash_table (info),
-			    _bfd_elf_link_sec_merge_syms, abfd);
+    elf_link_hash_traverse(elf_hash_table(info),
+			   _bfd_elf_link_sec_merge_syms, abfd);
 
   /* Figure out the file positions for everything but the symbol table
      and the relocs.  We set symcount to force assign_section_numbers
      to create a symbol table.  */
-  bfd_get_symcount (abfd) = info->strip == strip_all ? 0 : 1;
-  BFD_ASSERT (! abfd->output_has_begun);
-  if (! _bfd_elf_compute_section_file_positions (abfd, info))
+  bfd_get_symcount(abfd) = ((info->strip == strip_all) ? 0 : 1);
+  BFD_ASSERT(!abfd->output_has_begun);
+  if (!_bfd_elf_compute_section_file_positions(abfd, info))
     goto error_return;
 
-  /* Set sizes, and assign file positions for reloc sections.  */
+  /* Set sizes, and assign file positions for reloc sections: */
   for (o = abfd->sections; o != NULL; o = o->next)
     {
       if ((o->flags & SEC_RELOC) != 0)
 	{
 	  if (!(_bfd_elf_link_size_reloc_section
-		(abfd, &elf_section_data (o)->rel_hdr, o)))
+		(abfd, &elf_section_data(o)->rel_hdr, o)))
 	    goto error_return;
 
-	  if (elf_section_data (o)->rel_hdr2
+	  if (elf_section_data(o)->rel_hdr2
 	      && !(_bfd_elf_link_size_reloc_section
-		   (abfd, elf_section_data (o)->rel_hdr2, o)))
+		   (abfd, elf_section_data(o)->rel_hdr2, o)))
 	    goto error_return;
 	}
 
@@ -9445,7 +9460,7 @@ bfd_elf_gc_common_finalize_got_offsets(bfd *abfd,
 	      gotoff += got_elt_size;
 	    }
 	  else
-	    local_got[j] = (bfd_vma)-1;
+	    local_got[j] = (bfd_signed_vma)-1L;
 	}
     }
 
@@ -9467,12 +9482,13 @@ bfd_elf_gc_common_final_link(bfd *abfd, struct bfd_link_info *info)
   if (!bfd_elf_gc_common_finalize_got_offsets(abfd, info))
     return FALSE;
 
-  /* Invoke the regular ELF backend linker to do all the work.  */
-  return bfd_elf_final_link (abfd, info);
+  /* Invoke the regular ELF backend linker to do all the work: */
+  return bfd_elf_final_link(abfd, info);
 }
 
+/* */
 bfd_boolean
-bfd_elf_reloc_symbol_deleted_p (bfd_vma offset, void *cookie)
+bfd_elf_reloc_symbol_deleted_p(bfd_vma offset, void *cookie)
 {
   struct elf_reloc_cookie *rcookie = (struct elf_reloc_cookie *)cookie;
 

@@ -299,14 +299,14 @@ coff_mcore_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
     }
   else if (howto->pc_relative)
     {
-      *addendp = (sec->vma - 2); /* XXX guess - is this right ? */
+      *addendp = (sec->vma - 2); /* XXX: guess - is this right? */
 
       /* If the symbol is defined, then the generic code is going to
          add back the symbol value in order to cancel out an
          adjustment it made to the addend.  However, we set the addend
          to 0 at the start of this function.  We need to adjust here,
-         to avoid the adjustment the generic code will make.  FIXME:
-         This is getting a bit hackish.  */
+         to avoid the adjustment the generic code will make.
+         FIXME: This is getting a bit hackish.  */
       if ((sym != NULL) && (sym->n_scnum != 0))
 	*addendp -= sym->n_value;
     }
@@ -318,7 +318,7 @@ coff_mcore_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
 
 /* Return TRUE if relocation should appear in the output .reloc section.
  * This function is referenced in pe_mkobject in peicode.h.  */
-static bfd_boolean
+static ATTRIBUTE_USED bfd_boolean
 in_reloc_p(bfd *abfd ATTRIBUTE_UNUSED, reloc_howto_type *howto)
 {
   return ! howto->pc_relative && (howto->type != IMAGE_REL_MCORE_RVA);
@@ -548,6 +548,13 @@ CREATE_BIG_COFF_TARGET_VEC(TARGET_BIG_SYM, TARGET_BIG_NAME, D_PAGED,
 CREATE_LITTLE_COFF_TARGET_VEC(TARGET_LITTLE_SYM, TARGET_LITTLE_NAME, D_PAGED,
                               (SEC_CODE | SEC_DATA | SEC_DEBUGGING | SEC_READONLY | SEC_LINK_ONCE | SEC_LINK_DUPLICATES),
                               0, & TARGET_BIG_SYM, COFF_SWAP_TABLE)
+
+#if 0
+# ifndef NO_COFF_RELOCS
+#  define NO_COFF_RELOCS 1
+# endif /* !NO_COFF_RELOCS */
+# include "peicode.h"
+#endif /* 0 */
 
 #ifdef TOC_LOAD_ADJUSTMENT
 # undef TOC_LOAD_ADJUSTMENT

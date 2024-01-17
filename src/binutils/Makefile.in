@@ -2232,6 +2232,9 @@ check-local: $(srcdir)/sanity.sh
 	done
 	@echo "$@ target (in `pwd`): done."
 
+recheck-local:
+	@echo "$@: you may actually be looking for the 'recheck' target instead"
+
 installcheck-local: $(srcdir)/sanity.sh
 	/bin/sh $(srcdir)/sanity.sh $(bindir)
 

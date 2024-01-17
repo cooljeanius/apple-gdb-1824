@@ -1560,7 +1560,8 @@ static const unsigned int coff_section_alignment_table_size =
 
 /* Initialize a section structure with information peculiar to this
  * particular implementation of COFF: */
-static bfd_boolean coff_new_section_hook(bfd *abfd, asection *section)
+static ATTRIBUTE_USED bfd_boolean
+coff_new_section_hook(bfd *abfd, asection *section)
 {
   combined_entry_type *native;
   bfd_size_type amt;
@@ -4256,9 +4257,10 @@ coff_write_object_contents(bfd *abfd)
 }
 /* end of coff_write_object_contents() */
 
-static bfd_boolean
-coff_set_section_contents(bfd * abfd, sec_ptr section,
-                          const void * location, file_ptr offset,
+/* */
+static ATTRIBUTE_USED bfd_boolean
+coff_set_section_contents(bfd *abfd, sec_ptr section,
+                          const void *location, file_ptr offset,
                           bfd_size_type count)
 {
   if (! abfd->output_has_begun)	/* (Set by bfd.c handler.) */
@@ -5093,7 +5095,7 @@ coff_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
 #endif /* ! defined (coff_rtype_to_howto) */
 
 /* This is stupid. This function should be a boolean predicate: */
-static long
+static ATTRIBUTE_USED long
 coff_canonicalize_reloc(bfd *abfd, sec_ptr section, arelent **relptr,
 			asymbol **symbols)
 {
