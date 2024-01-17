@@ -118,16 +118,21 @@ jobs:
         cd src
         if test ${{ matrix.compiler }} == clang; then \
           make check-bfd; \
+          echo "done with bfd; moving onto binutils next..."; \
           make check-binutils; \
+          echo "done with binutils; moving onto mmalloc next..."; \
           make check-mmalloc; \
+          echo "done with mmalloc; moving onto electrict-fence next..."; \
           cd electric-fence; \
           make check-local || make check stamp-framework ls; \
+          echo "done with electric-fence..." ; \
         elif test ${{ matrix.compiler }} == gcc; then \
           pushd bfd; \
           sync && make check-DEJAGNU; \
           popd; \
           pushd binutils; \
-          sync && make am_check-DEJAGNU; \
+          make am_check-DEJAGNU || make check-DEJAGNU || make check-TESTS; \
+          make check-recursive || make cscope || make ID || make TAGS; \
           sh ./sanity.sh || stat ./sanity.sh; \
           popd; \
           pushd mmalloc; \

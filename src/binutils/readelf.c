@@ -10786,13 +10786,13 @@ display_debug_frames(Elf_Internal_Shdr *section, unsigned char *start,
 
       while (start < block_end)
 	{
-	  unsigned op, opa;
+	  unsigned int op, opa;
 	  unsigned long ul, reg, roffs;
 	  long l, ofs;
 	  bfd_vma vma;
 
 	  op = *start++;
-	  opa = op & 0x3f;
+	  opa = (op & 0x3f);
 	  if (op & 0xc0)
 	    op &= 0xc0;
 
@@ -10802,12 +10802,12 @@ display_debug_frames(Elf_Internal_Shdr *section, unsigned char *start,
 	    {
 	    case DW_CFA_advance_loc:
 	      if (do_debug_frames_interp)
-		frame_display_row (fc, &need_col_headers, &max_regs);
+		frame_display_row(fc, &need_col_headers, &max_regs);
 	      else
-		printf ("  DW_CFA_advance_loc: %d to %08lx\n",
-			opa * fc->code_factor,
-			fc->pc_begin + opa * fc->code_factor);
-	      fc->pc_begin += opa * fc->code_factor;
+		printf("  DW_CFA_advance_loc: %d to %08lx\n",
+                       (opa * fc->code_factor),
+                       (fc->pc_begin + (opa * fc->code_factor)));
+	      fc->pc_begin += (opa * fc->code_factor);
 	      break;
 
 	    case DW_CFA_offset:

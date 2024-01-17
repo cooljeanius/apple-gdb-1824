@@ -1,4 +1,4 @@
-/* 32-bit ELF support for S+core.
+/* elf32-score.c: 32-bit ELF support for S+core.
    Copyright 2006, 2007, 2008, 2009, 2010, 2011, 2012
    Free Software Foundation, Inc.
    Contributed by
@@ -174,7 +174,7 @@ struct _score_elf_section_data
 #define STUB_BRL     0x801dbc09     /* brl r29  */
 
 #define SCORE_ELF_GOT_SIZE(abfd)   \
-  (get_elf_backend_data (abfd)->s->arch_size / 8)
+  (get_elf_backend_data(abfd)->s->arch_size / 8U)
 
 #define SCORE_ELF_ADD_DYNAMIC_ENTRY(info, tag, val) \
         (_bfd_elf_add_dynamic_entry (info, (bfd_vma) tag, (bfd_vma) val))
@@ -316,16 +316,15 @@ score_elf_hi16_reloc (bfd *abfd ATTRIBUTE_UNUSED,
   return bfd_reloc_ok;
 }
 
+/* */
 static bfd_reloc_status_type
-score_elf_lo16_reloc (bfd *abfd,
-                      arelent *reloc_entry,
-                      asymbol *symbol ATTRIBUTE_UNUSED,
-                      void * data,
-                      asection *input_section,
-                      bfd *output_bfd ATTRIBUTE_UNUSED,
-                      char **error_message ATTRIBUTE_UNUSED)
+score_elf_lo16_reloc(bfd *abfd, arelent *reloc_entry,
+                     asymbol *symbol ATTRIBUTE_UNUSED,
+                     void * data, asection *input_section,
+                     bfd *output_bfd ATTRIBUTE_UNUSED,
+                     char **error_message ATTRIBUTE_UNUSED)
 {
-  bfd_vma addend = 0, offset = 0;
+  bfd_vma addend = 0UL, offset = 0UL;
   unsigned long val;
   unsigned long hi16_offset, hi16_value, uvalue;
 
@@ -338,7 +337,8 @@ score_elf_lo16_reloc (bfd *abfd,
     return bfd_reloc_outofrange;
   uvalue = ((hi16_offset << 16) | (offset & 0xffff)) + val;
   hi16_offset = (uvalue >> 16) << 1;
-  hi16_value = (hi16_value & ~0x37fff) | (hi16_offset & 0x7fff) | ((hi16_offset << 1) & 0x30000);
+  hi16_value = ((hi16_value & (unsigned long)~0x37fff)
+  		| (hi16_offset & 0x7fff) | ((hi16_offset << 1) & 0x30000));
   score_bfd_put_32 (abfd, hi16_value, hi16_rel_addr);
   offset = (uvalue & 0xffff) << 1;
   addend = (addend & ~0x37fff) | (offset & 0x7fff) | ((offset << 1) & 0x30000);
@@ -1503,7 +1503,8 @@ score_elf_create_local_got_entry (bfd *abfd,
   if (*loc)
     return *loc;
 
-  entry.gotidx = SCORE_ELF_GOT_SIZE (abfd) * g->assigned_gotno++;
+  entry.gotidx = ((unsigned int)SCORE_ELF_GOT_SIZE(abfd)
+  		  * g->assigned_gotno++);
 
   *loc = bfd_alloc (abfd, sizeof entry);
 
@@ -1738,16 +1739,15 @@ score_elf_local_got_index (bfd *abfd, bfd *ibfd, struct bfd_link_info *info,
 }
 
 /* Returns the GOT index for the global symbol indicated by H.  */
-
 static bfd_vma
-score_elf_global_got_index (bfd *abfd, struct elf_link_hash_entry *h)
+score_elf_global_got_index(bfd *abfd, struct elf_link_hash_entry *h)
 {
   bfd_vma got_index;
   asection *sgot;
   struct score_got_info *g;
-  long global_got_dynindx = 0;
+  long global_got_dynindx = 0L;
 
-  g = score_elf_got_info (abfd, &sgot);
+  g = score_elf_got_info(abfd, &sgot);
   if (g->global_gotsym != NULL)
     global_got_dynindx = g->global_gotsym->dynindx;
 
@@ -1755,9 +1755,10 @@ score_elf_global_got_index (bfd *abfd, struct elf_link_hash_entry *h)
      symbol table index, we must put all dynamic symbols with greater
      indices into the GOT.  That makes it easy to calculate the GOT
      offset.  */
-  BFD_ASSERT (h->dynindx >= global_got_dynindx);
-  got_index = ((h->dynindx - global_got_dynindx + g->local_gotno) * SCORE_ELF_GOT_SIZE (abfd));
-  BFD_ASSERT (got_index < sgot->size);
+  BFD_ASSERT(h->dynindx >= global_got_dynindx);
+  got_index = ((h->dynindx - global_got_dynindx + g->local_gotno)
+               * SCORE_ELF_GOT_SIZE(abfd));
+  BFD_ASSERT(got_index < sgot->size);
 
   return got_index;
 }
@@ -3179,16 +3180,16 @@ s3_bfd_score_elf_always_size_sections (bfd *output_bfd,
   asection *s;
   struct score_got_info *g;
   int i;
-  bfd_size_type loadable_size = 0;
+  bfd_size_type loadable_size = 0UL;
   bfd_size_type local_gotno;
   bfd *sub;
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
   if (dynobj == NULL)
     /* Relocatable links don't have it.  */
     return TRUE;
 
-  g = score_elf_got_info (dynobj, &s);
+  g = score_elf_got_info(dynobj, &s);
   if (s == NULL)
     return TRUE;
 
@@ -3205,7 +3206,7 @@ s3_bfd_score_elf_always_size_sections (bfd *output_bfd,
           if ((subsection->flags & SEC_ALLOC) == 0)
             continue;
           loadable_size += ((subsection->size + 0xf)
-                            &~ (bfd_size_type) 0xf);
+                            & ~(bfd_size_type)0xf);
         }
     }
 
@@ -3214,34 +3215,34 @@ s3_bfd_score_elf_always_size_sections (bfd *output_bfd,
      higher.  Therefore, it make sense to put those symbols
      that need GOT entries at the end of the symbol table.  We
      do that here.  */
-  if (! score_elf_sort_hash_table (info, 1))
+  if (! score_elf_sort_hash_table(info, 1))
     return FALSE;
 
   if (g->global_gotsym != NULL)
-    i = elf_hash_table (info)->dynsymcount - g->global_gotsym->dynindx;
+    i = (elf_hash_table(info)->dynsymcount - g->global_gotsym->dynindx);
   else
     /* If there are no global symbols, or none requiring
        relocations, then GLOBAL_GOTSYM will be NULL.  */
     i = 0;
 
   /* In the worst case, we'll get one stub per dynamic symbol.  */
-  loadable_size += SCORE_FUNCTION_STUB_SIZE * i;
+  loadable_size += (SCORE_FUNCTION_STUB_SIZE * i);
 
   /* Assume there are two loadable segments consisting of
      contiguous sections.  Is 5 enough?  */
-  local_gotno = (loadable_size >> 16) + 5;
+  local_gotno = ((loadable_size >> 16) + 5);
 
   g->local_gotno += local_gotno;
-  s->size += g->local_gotno * SCORE_ELF_GOT_SIZE (output_bfd);
+  s->size += (g->local_gotno * (unsigned int)SCORE_ELF_GOT_SIZE(output_bfd));
 
   g->global_gotno = i;
-  s->size += i * SCORE_ELF_GOT_SIZE (output_bfd);
+  s->size += (bfd_size_type)(i * (int)SCORE_ELF_GOT_SIZE(output_bfd));
 
   score_elf_resolve_final_got_entries (g);
 
-  if (s->size > SCORE_ELF_GOT_MAX_SIZE (output_bfd))
+  if (s->size > SCORE_ELF_GOT_MAX_SIZE(output_bfd))
     {
-      /* Fixme. Error message or Warning message should be issued here.  */
+      ; /* FIXME: Error message or Warning message should be issued here.  */
     }
 
   return TRUE;
@@ -3249,24 +3250,25 @@ s3_bfd_score_elf_always_size_sections (bfd *output_bfd,
 
 /* Set the sizes of the dynamic sections.  */
 static bfd_boolean
-s3_bfd_score_elf_size_dynamic_sections (bfd *output_bfd, struct bfd_link_info *info)
+s3_bfd_score_elf_size_dynamic_sections(bfd *output_bfd,
+                                       struct bfd_link_info *info)
 {
   bfd *dynobj;
   asection *s;
   bfd_boolean reltext;
 
-  dynobj = elf_hash_table (info)->dynobj;
-  BFD_ASSERT (dynobj != NULL);
+  dynobj = elf_hash_table(info)->dynobj;
+  BFD_ASSERT(dynobj != NULL);
 
-  if (elf_hash_table (info)->dynamic_sections_created)
+  if (elf_hash_table(info)->dynamic_sections_created)
     {
       /* Set the contents of the .interp section to the interpreter.  */
       if (!info->shared)
         {
-          s = bfd_get_linker_section (dynobj, ".interp");
-          BFD_ASSERT (s != NULL);
-          s->size = strlen (ELF_DYNAMIC_INTERPRETER) + 1;
-          s->contents = (bfd_byte *) ELF_DYNAMIC_INTERPRETER;
+          s = bfd_get_linker_section(dynobj, ".interp");
+          BFD_ASSERT(s != NULL);
+          s->size = (strlen(ELF_DYNAMIC_INTERPRETER) + 1UL);
+          s->contents = (bfd_byte *)ELF_DYNAMIC_INTERPRETER;
         }
     }
 
@@ -4508,3 +4510,5 @@ _bfd_score_elf_common_definition (Elf_Internal_Sym *sym)
 #define bfd_elf32_new_section_hook           elf32_score_new_section_hook
 
 #include "elf32-target.h"
+
+/* End of elf32-score.c */

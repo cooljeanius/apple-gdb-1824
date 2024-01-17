@@ -536,7 +536,7 @@ vms_get_section_contents_in_window(bfd *abfd, asection *section, bfd_window *w,
   vms_debug(1, "vms_get_section_contents_in_window (%p, %s, %p, off %ld, count %d)\n",
 	    (void *)abfd, section->name, (void *)w, (long)offset, (int)count);
 #else
-  (void)bfd;
+  (void)abfd;
   (void)w;
   (void)offset;
   (void)count;

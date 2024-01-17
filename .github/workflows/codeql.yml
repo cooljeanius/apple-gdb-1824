@@ -276,7 +276,7 @@ jobs:
       run: |
         cd src
         FINAL_CPPFLAGS="-I."
-        for myincdir in .. include ../include bfd ../bfd gdb ../gdb libiberty ../libiberty; do \
+        for myincdir in .. include ../include bfd ../bfd gdb ../gdb libiberty ../libiberty ../.. zlib ../zlib; do \
           if test -d "${myincdir}" && test -r "${myincdir}" && test -n "$(ls "${myincdir}"/*.h)"; then \
             FINAL_CPPFLAGS="${FINAL_CPPFLAGS} -I${myincdir} -iquote ${myincdir}"; \
           fi; \

@@ -1,4 +1,4 @@
-/* SPU specific support for 32-bit ELF
+/* elf32-spu.c: SPU specific support for 32-bit ELF
 
    Copyright 2006-2013 Free Software Foundation, Inc.
 
@@ -29,9 +29,9 @@
 
 /* We use RELA style relocs.  Don't define USE_REL.  */
 
-static bfd_reloc_status_type spu_elf_rel9 (bfd *, arelent *, asymbol *,
-					   void *, asection *,
-					   bfd *, char **);
+static bfd_reloc_status_type spu_elf_rel9(bfd *, arelent *, asymbol *,
+					  void *, asection *,
+					  bfd *, const char **);
 
 /* Values of type 'enum elf_spu_reloc_type' are used to index this
    array, so it must be declared in the order of that type.  */
@@ -87,7 +87,7 @@ static reloc_howto_type elf_howto_table[] = {
 	 FALSE, 0, 0xffffffff, FALSE),
   HOWTO (R_SPU_PPU64,      0, 4, 64, FALSE,  0, complain_overflow_dont,
 	 bfd_elf_generic_reloc, "SPU_PPU64",
-	 FALSE, 0, -1, FALSE),
+	 FALSE, 0, (bfd_vma)-1, FALSE),
   HOWTO (R_SPU_ADD_PIC,      0, 0, 0, FALSE,  0, complain_overflow_dont,
 	 bfd_elf_generic_reloc, "SPU_ADD_PIC",
 	 FALSE, 0, 0x00000000, FALSE),
@@ -184,9 +184,9 @@ spu_elf_reloc_name_lookup (bfd *abfd ATTRIBUTE_UNUSED,
 /* Apply R_SPU_REL9 and R_SPU_REL9I relocs.  */
 
 static bfd_reloc_status_type
-spu_elf_rel9 (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
-	      void *data, asection *input_section,
-	      bfd *output_bfd, char **error_message)
+spu_elf_rel9(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+	     void *data, asection *input_section,
+	     bfd *output_bfd, const char **error_message)
 {
   bfd_size_type octets;
   bfd_vma val;
@@ -219,14 +219,14 @@ spu_elf_rel9 (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
   if (val + 256 >= 512)
     return bfd_reloc_overflow;
 
-  insn = bfd_get_32 (abfd, (bfd_byte *) data + octets);
+  insn = (long)bfd_get_32(abfd, ((bfd_byte *)data + octets));
 
   /* Move two high bits of value to REL9I and REL9 position.
      The mask will take care of selecting the right field.  */
   val = (val & 0x7f) | ((val & 0x180) << 7) | ((val & 0x180) << 16);
   insn &= ~reloc_entry->howto->dst_mask;
   insn |= val & reloc_entry->howto->dst_mask;
-  bfd_put_32 (abfd, insn, (bfd_byte *) data + octets);
+  bfd_put_32(abfd, (bfd_vma)insn, ((bfd_byte *)data + octets));
   return bfd_reloc_ok;
 }
 
@@ -268,16 +268,16 @@ spu_elf_object_p (bfd *abfd)
 		|| ((last_phdr->p_vaddr ^ phdr->p_vaddr) & 0x3ffff) != 0)
 	      ++num_buf;
 	    last_phdr = phdr;
-	    for (j = 1; j < elf_numsections (abfd); j++)
+	    for (j = 1; j < elf_numsections(abfd); j++)
 	      {
-		Elf_Internal_Shdr *shdr = elf_elfsections (abfd)[j];
+		Elf_Internal_Shdr *shdr = elf_elfsections(abfd)[j];
 
-		if (ELF_SECTION_SIZE (shdr, phdr) != 0
-		    && ELF_SECTION_IN_SEGMENT (shdr, phdr))
+		if ((ELF_SECTION_SIZE(shdr, phdr) != 0)
+		    && ELF_SECTION_IN_SEGMENT(shdr, phdr))
 		  {
 		    asection *sec = shdr->bfd_section;
-		    spu_elf_section_data (sec)->u.o.ovl_index = num_ovl;
-		    spu_elf_section_data (sec)->u.o.ovl_buf = num_buf;
+		    spu_elf_section_data(sec)->u.o.ovl_index = num_ovl;
+		    spu_elf_section_data(sec)->u.o.ovl_buf = num_buf;
 		  }
 	      }
 	  }
@@ -289,7 +289,7 @@ spu_elf_object_p (bfd *abfd)
    strip --strip-unneeded will not remove them.  */
 
 static void
-spu_elf_backend_symbol_processing (bfd *abfd ATTRIBUTE_UNUSED, asymbol *sym)
+spu_elf_backend_symbol_processing(bfd *abfd ATTRIBUTE_UNUSED, asymbol *sym)
 {
   if (sym->name != NULL
       && sym->section != bfd_abs_section_ptr
@@ -5476,3 +5476,5 @@ spu_elf_size_sections (bfd * output_bfd, struct bfd_link_info *info)
 #define bfd_elf32_bfd_final_link		spu_elf_final_link
 
 #include "elf32-target.h"
+
+/* End of elf32-spu.c */

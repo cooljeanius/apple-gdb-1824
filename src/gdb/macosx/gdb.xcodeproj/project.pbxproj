@@ -397,6 +397,13 @@
 		A51B3F1A1A493694002170CE /* plugin.h in Headers */ = {isa = PBXBuildFile; fileRef = A51B3F181A493694002170CE /* plugin.h */; };
 		A51DEE731AA273B300DA3F76 /* cf-m68klynx.c in Sources */ = {isa = PBXBuildFile; fileRef = A51DEE721AA273B300DA3F76 /* cf-m68klynx.c */; };
 		A5262E842B57028A002EC445 /* elf32-score7.c in Sources */ = {isa = PBXBuildFile; fileRef = A5262E822B55CCBC002EC445 /* elf32-score7.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wshorten-64-to-32"; }; };
+		A5262E862B5784A8002EC445 /* verify.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E852B5784A8002EC445 /* verify.h */; };
+		A5262E8A2B57918D002EC445 /* elf32-spu.c in Sources */ = {isa = PBXBuildFile; fileRef = A5262E872B57918D002EC445 /* elf32-spu.c */; };
+		A5262E8B2B57918D002EC445 /* elf32-spu.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E882B57918D002EC445 /* elf32-spu.h */; };
+		A5262E8C2B57918D002EC445 /* elf32-spu.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E882B57918D002EC445 /* elf32-spu.h */; };
+		A5262E902B579403002EC445 /* elf32-score.c in Sources */ = {isa = PBXBuildFile; fileRef = A5262E8D2B579402002EC445 /* elf32-score.c */; };
+		A5262E912B579403002EC445 /* elf32-score.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E8E2B579403002EC445 /* elf32-score.h */; };
+		A5262E922B579403002EC445 /* elf32-score.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E8E2B579403002EC445 /* elf32-score.h */; };
 		A53ABD8D1A38C88F002F20B2 /* link.h in Headers */ = {isa = PBXBuildFile; fileRef = A53ABD8C1A38C88F002F20B2 /* link.h */; };
 		A53B842B1AE2F2100067328B /* acconfig_obsolete.h in Headers */ = {isa = PBXBuildFile; fileRef = A5558E9E1992B76300A45587 /* acconfig_obsolete.h */; };
 		A53B842C1AE2F2100067328B /* eval-plural.h in Headers */ = {isa = PBXBuildFile; fileRef = A5558E8D1992A9AE00A45587 /* eval-plural.h */; };
@@ -4014,6 +4021,11 @@
 		A5262E802B55204E002EC445 /* elfcpp */ = {isa = PBXFileReference; lastKnownFileType = folder; path = elfcpp; sourceTree = "<group>"; };
 		A5262E812B55C205002EC445 /* elf32-bfin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "elf32-bfin.c"; sourceTree = "<group>"; };
 		A5262E822B55CCBC002EC445 /* elf32-score7.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf32-score7.c"; sourceTree = "<group>"; };
+		A5262E852B5784A8002EC445 /* verify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = verify.h; sourceTree = "<group>"; };
+		A5262E872B57918D002EC445 /* elf32-spu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf32-spu.c"; sourceTree = "<group>"; };
+		A5262E882B57918D002EC445 /* elf32-spu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "elf32-spu.h"; sourceTree = "<group>"; };
+		A5262E8D2B579402002EC445 /* elf32-score.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf32-score.c"; sourceTree = "<group>"; };
+		A5262E8E2B579403002EC445 /* elf32-score.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "elf32-score.h"; sourceTree = "<group>"; };
 		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; path = "mac-gdb.r"; sourceTree = "<group>"; };
 		A53ABD8C1A38C88F002F20B2 /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = link.h; sourceTree = "<group>"; };
 		A53ABDB71A38E84F002F20B2 /* objdump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objdump.h; sourceTree = "<group>"; };
@@ -6572,6 +6584,8 @@
 				2609CF2D0E82C407008125DE /* elf32-ppc.c */,
 				2609CF2E0E82C407008125DE /* elf32-ppc.h */,
 				2609CF2F0E82C407008125DE /* elf32-s390.c */,
+				A5262E8D2B579402002EC445 /* elf32-score.c */,
+				A5262E8E2B579403002EC445 /* elf32-score.h */,
 				A5262E822B55CCBC002EC445 /* elf32-score7.c */,
 				2609CF300E82C407008125DE /* elf32-sh-symbian.c */,
 				2609CF310E82C407008125DE /* elf32-sh.c */,
@@ -6579,6 +6593,8 @@
 				2609CF330E82C407008125DE /* elf32-sh64.c */,
 				2609CF340E82C407008125DE /* elf32-sh64.h */,
 				2609CF350E82C407008125DE /* elf32-sparc.c */,
+				A5262E872B57918D002EC445 /* elf32-spu.c */,
+				A5262E882B57918D002EC445 /* elf32-spu.h */,
 				2609CF360E82C407008125DE /* elf32-v850.c */,
 				2609CF370E82C407008125DE /* elf32-vax.c */,
 				2609CF380E82C407008125DE /* elf32-xstormy16.c */,
@@ -9559,6 +9575,7 @@
 				2609DFC60E82C412008125DE /* tilde.h */,
 				2609DFC70E82C412008125DE /* undo.c */,
 				2609DFC90E82C412008125DE /* util.c */,
+				A5262E852B5784A8002EC445 /* verify.h */,
 				2609DFCA0E82C412008125DE /* vi_keymap.c */,
 				2609DFCB0E82C412008125DE /* vi_mode.c */,
 				2609DFCC0E82C412008125DE /* xmalloc.c */,
@@ -13823,6 +13840,7 @@
 				61D2209A192D613F00FA979E /* coffcode.h in Headers */,
 				61D2209D192D613F00FA979E /* coffswap.h in Headers */,
 				61D220E2192D617D00FA979E /* ecoffswap.h in Headers */,
+				A5262E912B579403002EC445 /* elf32-score.h in Headers */,
 				61D220E5192D617D00FA979E /* elf-bfd.h in Headers */,
 				61D220E7192D617D00FA979E /* elf-hppa.h in Headers */,
 				61D220EC192D617D00FA979E /* elf-vxworks.h in Headers */,
@@ -13831,6 +13849,7 @@
 				61D2210A192D617D00FA979E /* elf32-m68hc1x.h in Headers */,
 				61D22115192D617D00FA979E /* elf32-ppc.h in Headers */,
 				61D2211B192D617D00FA979E /* elf32-sh64.h in Headers */,
+				A5262E8B2B57918D002EC445 /* elf32-spu.h in Headers */,
 				61D22125192D617D00FA979E /* elf64-hppa.h in Headers */,
 				61D22129192D617D00FA979E /* elf64-ppc.h in Headers */,
 				61D22131192D617D00FA979E /* elfcode.h in Headers */,
@@ -13909,9 +13928,12 @@
 				A53B87721AE585E10067328B /* history.h in Headers */,
 				A53B87731AE585E10067328B /* keymaps.h in Headers */,
 				A53B87741AE585E10067328B /* posixdir.h in Headers */,
+				A5262E862B5784A8002EC445 /* verify.h in Headers */,
 				A53B87751AE585E10067328B /* posixjmp.h in Headers */,
+				A5262E922B579403002EC445 /* elf32-score.h in Headers */,
 				A53B87761AE585E10067328B /* posixstat.h in Headers */,
 				A53B87771AE585E10067328B /* readline.h in Headers */,
+				A5262E8C2B57918D002EC445 /* elf32-spu.h in Headers */,
 				A53B87781AE585E10067328B /* rlcompat.h in Headers */,
 				A53B87791AE585E10067328B /* rlconf.h in Headers */,
 				A53B877A1AE585E10067328B /* rldefs.h in Headers */,
@@ -14418,7 +14440,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A5262E842B57028A002EC445 /* elf32-score7.c in Sources */,
 				61D2205D192D610A00FA979E /* aix386-core.c in Sources */,
 				61D2205E192D610A00FA979E /* aix5ppc-core.c in Sources */,
 				61190A261CAB240F00AD73D8 /* aout-adobe.c in Sources */,
@@ -14441,6 +14462,7 @@
 				61D22072192D613F00FA979E /* binary.c in Sources */,
 				611909251CAAF33F00AD73D8 /* bout.c in Sources */,
 				61D22074192D613F00FA979E /* cache.c in Sources */,
+				A5262E842B57028A002EC445 /* elf32-score7.c in Sources */,
 				61D22075192D613F00FA979E /* cf-i386lynx.c in Sources */,
 				A51DEE731AA273B300DA3F76 /* cf-m68klynx.c in Sources */,
 				61D22076192D613F00FA979E /* cf-sparclynx.c in Sources */,
@@ -14770,6 +14792,7 @@
 				A53B87891AE586140067328B /* display.c in Sources */,
 				A53B878A1AE586140067328B /* emacs_keymap.c in Sources */,
 				A53B878B1AE586140067328B /* funmap.c in Sources */,
+				A5262E902B579403002EC445 /* elf32-score.c in Sources */,
 				A53B878C1AE586140067328B /* histexpand.c in Sources */,
 				A53B878D1AE586140067328B /* histfile.c in Sources */,
 				A53B878E1AE586140067328B /* history.c in Sources */,
@@ -14796,6 +14819,7 @@
 				A53B87A31AE586140067328B /* util.c in Sources */,
 				A53B87A41AE586140067328B /* vi_keymap.c in Sources */,
 				A53B87A51AE586140067328B /* vi_mode.c in Sources */,
+				A5262E8A2B57918D002EC445 /* elf32-spu.c in Sources */,
 				A53B87A61AE586140067328B /* xmalloc.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
