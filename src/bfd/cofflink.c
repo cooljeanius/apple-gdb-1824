@@ -747,23 +747,23 @@ _bfd_coff_final_link (bfd *abfd,
 	{
 	  o->flags |= SEC_RELOC;
 	  o->rel_filepos = rel_filepos;
-	  rel_filepos += o->reloc_count * relsz;
+	  rel_filepos += (o->reloc_count * relsz);
 	  /* In PE COFF, if there are at least 0xffff relocations an
 	     extra relocation will be written out to encode the count.  */
-	  if (obj_pe (abfd) && o->reloc_count >= 0xffff)
+	  if (obj_pe(abfd) && (o->reloc_count >= 0xffff))
 	    rel_filepos += relsz;
 	}
 
-      if (bfd_coff_long_section_names (abfd)
-	  && strlen (o->name) > SCNNMLEN)
+      if (bfd_coff_long_section_names(abfd)
+	  && (strlen(o->name) > SCNNMLEN))
 	{
 	  /* This section has a long name which must go in the string
              table.  This must correspond to the code in
              coff_write_object_contents which puts the string index
              into the s_name field of the section header.  That is why
              we pass hash as FALSE.  */
-	  if (_bfd_stringtab_add (finfo.strtab, o->name, FALSE, FALSE)
-	      == (bfd_size_type) -1)
+	  if (_bfd_stringtab_add(finfo.strtab, o->name, FALSE, FALSE)
+	      == (bfd_size_type)-1)
 	    goto error_return;
 	  long_section_names = TRUE;
 	}
@@ -792,7 +792,7 @@ _bfd_coff_final_link (bfd *abfd,
   /* We now know the size of the relocs, so we can determine the file
      positions of the line numbers.  */
   line_filepos = rel_filepos;
-  linesz = bfd_coff_linesz (abfd);
+  linesz = bfd_coff_linesz(abfd);
   max_output_reloc_count = 0;
   for (o = abfd->sections; o != NULL; o = o->next)
     {
@@ -801,7 +801,7 @@ _bfd_coff_final_link (bfd *abfd,
       else
 	{
 	  o->line_filepos = line_filepos;
-	  line_filepos += o->lineno_count * linesz;
+	  line_filepos += (o->lineno_count * linesz);
 	}
 
       if (o->reloc_count != 0)

@@ -133,7 +133,7 @@ jobs:
             brew install emacs || stat "$(which emacs)" || echo "etags missing"; \
           fi; \
           if test -z "$(which gtags)" || test ! -x "$(which gtags)"; then \
-            brew install global || stat "$(which global)" || echo "gtags missing"; \
+            brew install global || which global || echo "gtags missing"; \
           fi; \
           if test -z "$(which cscope)" || test ! -x "$(which cscope)"; then \
             brew install cscope || stat "$(which cscope)" || echo "cscope missing"; \

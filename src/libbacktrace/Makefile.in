@@ -1182,7 +1182,7 @@ all-local: Makefile $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la
 	  if test ! -e $${mytarg} || test $${mytarg} -ot Makefile; then \
 	    $(MAKE) $(AM_V_MFLAG) $${mytarg}; \
 	  elif test "x$(AM_V_P)" != "xfalse"; then \
-	    if test -r $${mytarg}; then \
+	    if test -r $${mytarg} && test -w /dev/stdout; then \
 	      stat $${mytarg}; \
 	    else \
 	      echo "dunno about $${mytarg}..."; \
@@ -1194,7 +1194,7 @@ default: all-local @MAINT@ $(builddir)/Makefile $(builddir)/config.h # all
 	  if test ! -e $${mydeftarg} || test $${mydeftarg} -ot Makefile; then \
 	    $(MAKE) $(AM_V_MFLAG) $${mydeftarg}; \
 	  elif test "x$(AM_V_P)" != "xfalse"; then \
-	    if test -r $${mydeftarg}; then \
+	    if test -r $${mydeftarg} && test -w /dev/stdout; then \
 	      stat $${mydeftarg}; \
 	    else \
 	      echo "dunno about $${mydeftarg}..."; \
@@ -1206,7 +1206,7 @@ all-am: default all-multi @MAINT@ Makefile.am
 	  if test ! -e $${tg} || test $${tg} -ot Makefile; then \
 	    $(MAKE) $(AM_V_MFLAG) $${tg}; \
 	  elif test "x$(AM_V_P)" != "xfalse"; then \
-	    if test -r $${tg}; then \
+	    if test -r $${tg} && test -w /dev/stdout; then \
 	      stat $${tg}; \
 	    else \
 	      echo "dunno about $${tg}..."; \

@@ -28,7 +28,7 @@ RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
 
 # Applications depend on stamp-cgen to tell them when .scm files have
 # been changed (so files need to be regenerated).
-# ??? Application specific files are kept with cgen for now, but may
+# ???: Application specific files are kept with cgen for now, but may
 # eventually go with the app. stamp-cgen might still be useful to track
 # app-independent files.
 
@@ -37,10 +37,11 @@ all-local: stamp-cgen
 
 stamp-cgen: $(CGENFILES)
 	rm -f stamp-cgen
-	echo "timestamp" > stamp-cgen
+	(echo "timestamp: `date`" > $@) || (echo "timestamp" > $@) || touch $@
 
 all: @MAINT@ all-local
-	 $(AM_V_at)if test "x$(AM_V_P)" != "xfalse"; then (pwd && ls); fi
+	$(AM_V_at)if test "x${CLICOLOR}" = "x1"; then unset CLICOLOR; fi; \
+	if test -d . && test "x$(AM_V_P)" != "xfalse"; then (pwd && ls -m); fi
 
 # Phony targets to run each of the applications,
 # though most of these are for development purposes only.

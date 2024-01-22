@@ -696,6 +696,11 @@ show_osabi (struct ui_file *file, int from_tty, struct cmd_list_element *c,
 
 extern initialize_file_ftype _initialize_gdb_osabi; /* -Wmissing-prototypes */
 
+#if defined(__clang__) && (__clang__ >= 1)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wtautological-pointer-compare"
+#endif /* __clang__ */
+
 void
 _initialize_gdb_osabi(void)
 {
@@ -733,5 +738,9 @@ Show OS ABI of target."), NULL,
                        &setlist, &showlist);
   user_osabi_state = osabi_auto;
 }
+
+#if defined(__clang__) && (__clang__ >= 1)
+# pragma clang diagnostic pop
+#endif /* __clang__ */
 
 /* EOF */

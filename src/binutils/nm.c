@@ -1351,7 +1351,7 @@ static void
 print_value(bfd *abfd, bfd_vma val)
 {
 #if ! defined(BFD64) || BFD_HOST_64BIT_LONG
-  printf(value_format, val);
+  printf(value_format, val); /* FIXME: uncontrolled format string */
   if (abfd == (bfd *)NULL) {
     ; /* ??? */
   }
@@ -1403,31 +1403,32 @@ print_symbol_info_bsd(struct extended_symbol_info *ext_syminfo, bfd *abfd)
 	 (weird) special case where both flags are defined, in which case we
 	 print both values.  This conforms to documented behaviour.  */
       if (sort_by_size && !print_size)
-	print_value (abfd, SYM_SIZE (ext_syminfo));
+	print_value(abfd, SYM_SIZE(ext_syminfo));
       else
-	print_value (abfd, SYM_VALUE (ext_syminfo));
+	print_value(abfd, SYM_VALUE(ext_syminfo));
 
-      if (print_size && SYM_SIZE (ext_syminfo))
+      if (print_size && SYM_SIZE(ext_syminfo))
 	{
-	  printf (" ");
-	  print_value (abfd, SYM_SIZE (ext_syminfo));
+	  printf(" ");
+	  print_value(abfd, SYM_SIZE(ext_syminfo));
 	}
     }
 
-  printf (" %c", SYM_TYPE (ext_syminfo));
+  printf(" %c", SYM_TYPE(ext_syminfo));
 
-  if (SYM_TYPE (ext_syminfo) == '-')
+  if (SYM_TYPE(ext_syminfo) == '-')
     {
       /* A stab.  */
-      printf (" ");
-      printf (other_format, SYM_STAB_OTHER (ext_syminfo));
-      printf (" ");
-      printf (desc_format, SYM_STAB_DESC (ext_syminfo));
-      printf (" %5s", SYM_STAB_NAME (ext_syminfo));
+      printf(" ");
+      printf(other_format, SYM_STAB_OTHER(ext_syminfo));
+      printf(" ");
+      printf(desc_format, SYM_STAB_DESC(ext_syminfo)); /* FIXME: format */
+      printf(" %5s", SYM_STAB_NAME(ext_syminfo));
     }
-  print_symname (" %s", SYM_NAME (ext_syminfo), abfd);
+  print_symname(" %s", SYM_NAME(ext_syminfo), abfd);
 }
 
+/* */
 static void
 print_symbol_info_sysv(struct extended_symbol_info *ext_syminfo, bfd *abfd)
 {
@@ -1445,24 +1446,24 @@ print_symbol_info_sysv(struct extended_symbol_info *ext_syminfo, bfd *abfd)
 
   printf("|   %c  |", SYM_TYPE(ext_syminfo));
 
-  if (SYM_TYPE (ext_syminfo) == '-')
+  if (SYM_TYPE(ext_syminfo) == '-')
     {
       /* A stab.  */
-      printf ("%18s|  ", SYM_STAB_NAME (ext_syminfo));		/* (C) Type.  */
-      printf (desc_format, SYM_STAB_DESC (ext_syminfo));	/* Size.  */
-      printf ("|     |");				/* Line, Section.  */
+      printf("%18s|  ", SYM_STAB_NAME(ext_syminfo));	/* (C) Type.  */
+      printf(desc_format, SYM_STAB_DESC(ext_syminfo));	/* Size.  */
+      printf("|     |");				/* Line, Section.  */
     }
   else
     {
       /* Type, Size, Line, Section */
       if (ext_syminfo->elfinfo)
-	printf ("%18s|",
-		get_symbol_type (ELF_ST_TYPE (ext_syminfo->elfinfo->internal_elf_sym.st_info)));
+	printf("%18s|",
+               get_symbol_type(ELF_ST_TYPE (ext_syminfo->elfinfo->internal_elf_sym.st_info)));
       else
-	printf ("                  |");
+	printf("                  |");
 
-      if (SYM_SIZE (ext_syminfo))
-	print_value (abfd, SYM_SIZE (ext_syminfo));
+      if (SYM_SIZE(ext_syminfo))
+	print_value(abfd, SYM_SIZE(ext_syminfo));
       else
 	{
 	  if (print_width == 8UL)

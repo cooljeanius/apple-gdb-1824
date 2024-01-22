@@ -5360,13 +5360,13 @@ copy_private_bfd_data(bfd *ibfd, bfd *obfd)
 
       map->includes_phdrs = 0;
 
-      if (! phdr_included || segment->p_type != PT_LOAD)
+      if (! phdr_included || (segment->p_type != PT_LOAD))
 	{
 	  map->includes_phdrs =
-	    (segment->p_offset <= (bfd_vma) iehdr->e_phoff
-	     && (segment->p_offset + segment->p_filesz
-		 >= ((bfd_vma) iehdr->e_phoff
-		     + iehdr->e_phnum * iehdr->e_phentsize)));
+	    ((segment->p_offset <= (bfd_vma)iehdr->e_phoff)
+	     && ((segment->p_offset + segment->p_filesz)
+		 >= ((bfd_vma)iehdr->e_phoff
+		     + (iehdr->e_phnum * iehdr->e_phentsize))));
 
 	  if (segment->p_type == PT_LOAD && map->includes_phdrs)
 	    phdr_included = TRUE;

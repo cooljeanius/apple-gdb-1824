@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-17 11:01-0500\n"
+"POT-Creation-Date: 2024-01-21 22:04-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,7 +61,7 @@ msgstr ""
 msgid "%s: can not get addresses from archive"
 msgstr ""
 
-#: addr2line.c:325 nm.c:1554 objdump.c:2872
+#: addr2line.c:325 nm.c:1555 objdump.c:2872
 #, c-format
 msgid "unknown demangling style `%s'"
 msgstr ""
@@ -3383,19 +3383,19 @@ msgid ""
 "\n"
 msgstr ""
 
-#: nm.c:1615
+#: nm.c:1616
 msgid "Only -X 32_64 is supported"
 msgstr ""
 
-#: nm.c:1635
+#: nm.c:1636
 msgid "Using the --size-sort and --undefined-only options together"
 msgstr ""
 
-#: nm.c:1636
+#: nm.c:1637
 msgid "will produce no output, since undefined symbols have no size."
 msgstr ""
 
-#: nm.c:1665
+#: nm.c:1666
 #, c-format
 msgid "data size %ld"
 msgstr ""

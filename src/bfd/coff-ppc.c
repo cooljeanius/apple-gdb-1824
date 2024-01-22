@@ -2110,7 +2110,7 @@ ppc_bfd_coff_final_link(bfd *abfd, struct bfd_link_info *info)
 	{
 	  o->flags |= SEC_RELOC;
 	  o->rel_filepos = rel_filepos;
-	  rel_filepos += o->reloc_count * relsz;
+	  rel_filepos += (o->reloc_count * relsz);
 	}
     }
 
@@ -2122,9 +2122,9 @@ ppc_bfd_coff_final_link(bfd *abfd, struct bfd_link_info *info)
 
       /* We use section_count + 1, rather than section_count, because
          the target_index fields are 1 based.  */
-      amt = abfd->section_count + 1;
-      amt *= sizeof (struct coff_link_section_info);
-      finfo.section_info = (struct coff_link_section_info *) bfd_malloc (amt);
+      amt = (abfd->section_count + 1UL);
+      amt *= sizeof(struct coff_link_section_info);
+      finfo.section_info = (struct coff_link_section_info *)bfd_malloc(amt);
 
       if (finfo.section_info == NULL)
 	goto error_return;
@@ -2139,7 +2139,7 @@ ppc_bfd_coff_final_link(bfd *abfd, struct bfd_link_info *info)
   /* We now know the size of the relocs, so we can determine the file
      positions of the line numbers.  */
   line_filepos = rel_filepos;
-  linesz = bfd_coff_linesz (abfd);
+  linesz = bfd_coff_linesz(abfd);
   max_output_reloc_count = 0;
 
   for (o = abfd->sections; o != NULL; o = o->next)
@@ -2149,7 +2149,7 @@ ppc_bfd_coff_final_link(bfd *abfd, struct bfd_link_info *info)
       else
 	{
 	  o->line_filepos = line_filepos;
-	  line_filepos += o->lineno_count * linesz;
+	  line_filepos += (o->lineno_count * linesz);
 	}
 
       if (o->reloc_count != 0)
@@ -2167,15 +2167,15 @@ ppc_bfd_coff_final_link(bfd *abfd, struct bfd_link_info *info)
 	     memory until the end of the link.  This wastes memory,
 	     but only when doing a relocatable link, which is not the
 	     common case.  */
-	  BFD_ASSERT (info->relocatable);
+	  BFD_ASSERT(info->relocatable);
 	  amt = o->reloc_count;
-	  amt *= sizeof (struct internal_reloc);
+	  amt *= sizeof(struct internal_reloc);
 	  finfo.section_info[o->target_index].relocs =
-	    (struct internal_reloc *) bfd_malloc (amt);
+	    (struct internal_reloc *)bfd_malloc(amt);
 	  amt = o->reloc_count;
-	  amt *= sizeof (struct coff_link_hash_entry *);
+	  amt *= sizeof(struct coff_link_hash_entry *);
 	  finfo.section_info[o->target_index].rel_hashes =
-	    (struct coff_link_hash_entry **) bfd_malloc (amt);
+	    (struct coff_link_hash_entry **)bfd_malloc(amt);
 	  if (finfo.section_info[o->target_index].relocs == NULL
 	      || finfo.section_info[o->target_index].rel_hashes == NULL)
 	    goto error_return;
@@ -2395,19 +2395,19 @@ ppc_bfd_coff_final_link(bfd *abfd, struct bfd_link_info *info)
 	    {
 	      if (*rel_hash != NULL)
 		{
-		  BFD_ASSERT ((*rel_hash)->indx >= 0);
+		  BFD_ASSERT((*rel_hash)->indx >= 0);
 		  irel->r_symndx = (*rel_hash)->indx;
 		}
-	      bfd_coff_swap_reloc_out (abfd, (PTR) irel, (PTR) erel);
+	      bfd_coff_swap_reloc_out(abfd, (PTR)irel, (PTR)erel);
 	    }
 
-	  amt = relsz * o->reloc_count;
-	  if (bfd_seek (abfd, o->rel_filepos, SEEK_SET) != 0
-	      || bfd_bwrite ((PTR) external_relocs, amt, abfd) != amt)
+	  amt = (relsz * o->reloc_count);
+	  if ((bfd_seek(abfd, o->rel_filepos, SEEK_SET) != 0)
+	      || (bfd_bwrite((PTR)external_relocs, amt, abfd) != amt))
 	    goto error_return;
 	}
 
-      free (external_relocs);
+      free(external_relocs);
       external_relocs = NULL;
     }
 
@@ -2419,11 +2419,11 @@ ppc_bfd_coff_final_link(bfd *abfd, struct bfd_link_info *info)
       for (i = 0; i < abfd->section_count; i++)
 	{
 	  if (finfo.section_info[i].relocs != NULL)
-	    free (finfo.section_info[i].relocs);
+	    free(finfo.section_info[i].relocs);
 	  if (finfo.section_info[i].rel_hashes != NULL)
-	    free (finfo.section_info[i].rel_hashes);
+	    free(finfo.section_info[i].rel_hashes);
 	}
-      free (finfo.section_info);
+      free(finfo.section_info);
       finfo.section_info = NULL;
     }
 

@@ -198,7 +198,11 @@ everything: config.status all @MAINT@ examples
 static: $(STATIC_LIBS)
 	$(AM_V_at)for mylib in $(STATIC_LIBS) $(noinst_LIBRARIES); do \
 	  if test -e $${mylib} && test $${mylib} -nt Makefile; then \
-	    stat $${mylib}; \
+	    if test "x$(AM_V_P)" != "xfalse"; then \
+	      stat $${mylib}; \
+	    else \
+	      test -r $${mylib}; \
+	    fi; \
 	  elif test -e Makefile; then \
 	    echo "$@ target: using '$${CCFLAGS}' for CCFLAGS for $${mylib}"; \
 	    $(MAKE) $(AM_V_MFLAG) $(MFLAGS) "CCFLAGS=$${CCFLAGS}" $${mylib}; \
