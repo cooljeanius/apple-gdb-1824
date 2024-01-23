@@ -27,12 +27,20 @@ m4_ifdef([AM_PROG_AR],[
   if test "x${AR}" = "x" && test "x${ac_cv_prog_AR}" = "x"; then
     test -z "${AR}" || unset AR
     test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
-    AC_PROG_AR
+    m4_ifdef([AC_PROG_AR],[
+      AC_PROG_AR
+    ],[
+      AC_CHECK_TOOL([AR],[ar],[:])
+    ])
   fi
 ],[
   if test "x${AR}" = "x"; then
     test -z "${AR}" || unset AR
-    AC_PROG_AR
+    m4_ifdef([AC_PROG_AR],[
+      AC_PROG_AR
+    ],[
+      AC_CHECK_TOOL([AR],[ar],[:])
+    ])
   else
     test -n "${AR}" && export AR
   fi
@@ -51,6 +59,11 @@ m4_ifdef([AM_MISSING_PROG],[
 # Checks for header files.
 AC_CHECK_HEADERS([libc.h sys/param.h])dnl
 
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}" || unset ac_cv_header_strings_h
+  AC_CHECK_HEADERS([strings.h])
+fi
+
 # Checks for library functions.
 AC_FUNC_LSTAT dnl# also checks whether it "_FOLLOWS_SLASHED_SYMLINK"
 AC_CHECK_FUNCS([exit fopen fprintf getc getc_unlocked getwd getcwd \
@@ -62,31 +75,31 @@ sinclude(../config/autoopts.m4)
 AG_PATH_AUTOOPTS([5.17])dnl
 
 # Choose which subdirs to use:
-if test -d ${srcdir}/spu ; then
+if test -d ${srcdir}/spu; then
   configdirs="spu"
 fi
-if test -d ${srcdir}/misc ; then
+if test -d ${srcdir}/misc; then
   configdirs="${configdirs} misc"
 fi
 
 case "${target}" in
-  sparclite-*-*)
-    if test -d ${srcdir}/sparclite ; then
+  sparclite-*-* | simso-wrs*)
+    if test -d ${srcdir}/sparclite; then
       configdirs="${configdirs} sparclite"
     fi
     ;;
   *mips*-*-pe* | *sh*-*-pe* | *arm*-*-wince | *arm*-wince-pe* )
-    if test -d ${srcdir}/wince ; then
+    if test -d ${srcdir}/wince; then
       configdirs="${configdirs} wince"
     fi
     ;;
-  *-*-msdosdjgpp* | *-moss-msdos)
-    if test -d ${srcdir}/msdos ; then
+  *-*-msdosdjgpp* | *-moss-msdos | i386-pc-msdos)
+    if test -d ${srcdir}/msdos; then
       configdirs="${configdirs} msdos"
     fi
     ;;
   a29k-amd-udi | udi29k | a29k-*-vxworks | a29k-none-*)
-    if test -d ${srcdir}/amd-udi ; then
+    if test -d ${srcdir}/amd-udi; then
       configdirs="${configdirs} amd-udi"
     fi
     ;;

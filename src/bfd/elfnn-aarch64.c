@@ -4069,7 +4069,7 @@ elfNN_aarch64_relocate_section (bfd *output_bfd,
   const char *name;
   struct elf_aarch64_link_hash_table *globals;
   bfd_boolean save_addend = FALSE;
-  bfd_vma addend = 0;
+  bfd_vma addend = 0UL;
 
   globals = elf_aarch64_hash_table (info);
 
@@ -4183,7 +4183,7 @@ elfNN_aarch64_relocate_section (bfd *output_bfd,
 	     anything, unless the reloc is against a section symbol,
 	     in which case we have to adjust according to where the
 	     section symbol winds up in the output section.  */
-	  if (sym != NULL && ELF_ST_TYPE (sym->st_info) == STT_SECTION)
+	  if ((sym != NULL) && (ELF_ST_TYPE(sym->st_info) == STT_SECTION))
 	    rel->r_addend += sec->output_offset;
 	  continue;
 	}
@@ -7335,3 +7335,5 @@ const struct elf_size_info elfNN_aarch64_size_info =
 #define elf_backend_obj_attrs_section		".ARM.attributes"
 
 #include "elfNN-target.h"
+
+/* End of elfnn-aarch64.c */

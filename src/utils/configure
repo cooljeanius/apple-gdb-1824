@@ -5079,7 +5079,8 @@ esac
   if test "x${AR}" = "x" && test "x${ac_cv_prog_AR}" = "x"; then
     test -z "${AR}" || unset AR
     test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
-    if test -n "$ac_tool_prefix"; then
+
+      if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ar", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ar; ac_word=$2
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -5182,6 +5183,7 @@ esac
 else
   AR="$ac_cv_prog_AR"
 fi
+
 
   fi
 
@@ -5450,6 +5452,17 @@ ac_fn_c_check_header_compile "$LINENO" "sys/param.h" "ac_cv_header_sys_param_h" 
 if test "x$ac_cv_header_sys_param_h" = xyes
 then :
   printf "%s\n" "#define HAVE_SYS_PARAM_H 1" >>confdefs.h
+
+fi
+
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}" || unset ac_cv_header_strings_h
+  ac_fn_c_check_header_compile "$LINENO" "strings.h" "ac_cv_header_strings_h" "$ac_includes_default"
+if test "x$ac_cv_header_strings_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_STRINGS_H 1" >>confdefs.h
+
+fi
 
 fi
 
@@ -5969,31 +5982,31 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
   rm -f confopts.def conf.optstest
 
 # Choose which subdirs to use:
-if test -d ${srcdir}/spu ; then
+if test -d ${srcdir}/spu; then
   configdirs="spu"
 fi
-if test -d ${srcdir}/misc ; then
+if test -d ${srcdir}/misc; then
   configdirs="${configdirs} misc"
 fi
 
 case "${target}" in
-  sparclite-*-*)
-    if test -d ${srcdir}/sparclite ; then
+  sparclite-*-* | simso-wrs*)
+    if test -d ${srcdir}/sparclite; then
       configdirs="${configdirs} sparclite"
     fi
     ;;
   *mips*-*-pe* | *sh*-*-pe* | *arm*-*-wince | *arm*-wince-pe* )
-    if test -d ${srcdir}/wince ; then
+    if test -d ${srcdir}/wince; then
       configdirs="${configdirs} wince"
     fi
     ;;
-  *-*-msdosdjgpp* | *-moss-msdos)
-    if test -d ${srcdir}/msdos ; then
+  *-*-msdosdjgpp* | *-moss-msdos | i386-pc-msdos)
+    if test -d ${srcdir}/msdos; then
       configdirs="${configdirs} msdos"
     fi
     ;;
   a29k-amd-udi | udi29k | a29k-*-vxworks | a29k-none-*)
-    if test -d ${srcdir}/amd-udi ; then
+    if test -d ${srcdir}/amd-udi; then
       configdirs="${configdirs} amd-udi"
     fi
     ;;
