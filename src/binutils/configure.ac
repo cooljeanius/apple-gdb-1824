@@ -518,6 +518,24 @@ m4_ifdef([ACX_HEADER_STRING],[
   fi
 ])dnl
 
+dnl# Keep autoscan happy:
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z ${ac_cv_header_inttypes_h} || unset ac_cv_header_inttypes_h
+  AC_CHECK_HEADERS([inttypes.h])
+fi
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z ${ac_cv_header_stdint_h} || unset ac_cv_header_stdint_h
+  AC_CHECK_HEADERS([stdint.h])
+fi
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z ${ac_cv_header_strings_h} || unset ac_cv_header_strings_h
+  AC_CHECK_HEADERS([strings.h])
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z ${ac_cv_header_unistd_h} || unset ac_cv_header_stdint_h
+  AC_CHECK_HEADERS([unistd.h])
+fi
+
 dnl# if we are using internal include paths, see if renaming has occurred:
 AC_CHECK_HEADERS([mach-o/codesign.h],[],[
   AC_CHECK_HEADERS([mach-o-gnu/codesign.h])dnl
@@ -1271,7 +1289,8 @@ dnl# contain the sources necessary to run, so don't listen to autoscan's request
 dnl# to put them in AC\_CONFIG\_SUBDIRS. (I'm thinking the scripts may have only
 dnl# gotten there by mistake in the first place)
 AC_CONFIG_COMMANDS([subdirs],[
-ls bfd binutils etc gas gprof ld opcodes || echo "never mind about subdirs"
+if test "x${CLICOLOR}" = "x1"; then unset CLICOLOR; fi
+ls -m bfd binutils etc gas gprof ld opcodes || echo "never mind about subdirs"
 ],[])dnl
 
 AC_OUTPUT

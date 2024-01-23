@@ -28,7 +28,7 @@ AC_CONFIG_MACRO_DIR([config])
 dnl# need to run under guile18-build under some circumstances
 if test -z "${GUILE}" -a -z "${GUILE_CONFIG}" -a -z "${GUILE_TOOLS}"; then
   AC_PATH_PROG([GUILE_EIGHTTEEN_BUILD],[guile18-build])
-  if test ! -z "${GUILE_EIGHTTEEN_BUILD}"; then
+  if test -n "${GUILE_EIGHTTEEN_BUILD}" && test -x "${GUILE_EIGHTTEEN_BUILD}"; then
     AC_MSG_NOTICE([you might want to run this configure script under ${GUILE_EIGHTTEEN_BUILD}])
     sleep 1
   fi
@@ -94,6 +94,10 @@ AM_WITH_DMALLOC
 # ----------------------------------------------------------------------
 AC_MSG_CHECKING([programs])
 AC_MSG_RESULT([ ])
+if test "x${ac_cv_prog_AR}" = "x"; then
+  test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+  AC_PROG_AR
+fi
 AM_PROG_CC_C_O
 AC_PROG_CC_STDC
 AC_PROG_CXX
@@ -241,7 +245,7 @@ AC_CHECK_FUNCS([atexit dup2 getcwd localtime_r mbrlen memmove \
                 strstr strtol strtoul snprintf sysinfo tzset uname utime])
 # keep autoscan happy with this impossible condition:
 if test "x" = "Y0"; then
-  AC_CHECK_FUNCS([alarm])
+  AC_CHECK_FUNCS([alarm getpagesize])
 fi
 AC_SEARCH_LIBS([copysign],[m],
                [AC_DEFINE([HAVE_COPYSIGN],[1],

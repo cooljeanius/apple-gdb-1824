@@ -235,7 +235,10 @@ jobs:
         cd src
         if test -d autogen && test -r autogen && test -w autogen; then \
           pushd autogen; \
-          if test -x ./configure && test -r ./configure && test -w .; then \
+          if test -x "$(which guile18-build)" && test -e ./configure; then \
+            echo "running autogen's configure script under $(which guile18-build)..."; \
+            guile18-build ./configure --disable-werror --enable-silent-rules --disable-option-checking CFLAGS="-w" || stat -t ./configure; \
+          elif test -x ./configure && test -r ./configure && test -w .; then \
             ./configure --disable-werror --enable-silent-rules --disable-option-checking CFLAGS="-w" || stat -t ./configure; \
           elif test -x ./config.status && test -r ./config.status && test -w .; then \
             ./config.status || stat -t ./config.status; \

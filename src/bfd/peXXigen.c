@@ -1637,6 +1637,9 @@ pe_print_pdata (bfd * abfd, void * vfile)
       fprintf_vma(file, eh_data); fputc(' ', file);
       fprintf_vma(file, prolog_end_addr);
       fprintf(file, "   %x", em_data);
+#else
+      (void)em_data;
+      (void)prolog_end_addr;
 #endif /* COFF_WITH_pep */
 
 #ifdef POWERPC_LE_PE
@@ -1664,6 +1667,8 @@ pe_print_pdata (bfd * abfd, void * vfile)
 	      break;
 	    }
 	}
+#else
+      (void)eh_handler;
 #endif /* POWERPC_LE_PE */
       fprintf(file, "\n");
     }

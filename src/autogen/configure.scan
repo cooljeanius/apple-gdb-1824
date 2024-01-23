@@ -1,13 +1,14 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.72])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
-AC_CONFIG_SRCDIR([add-on/autofsm/callout-looping-fsm.c])
+AC_CONFIG_SRCDIR([compat/strchr.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CXX
+AC_PROG_AR
 AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
@@ -19,7 +20,7 @@ AC_PROG_RANLIB
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h float.h inttypes.h libintl.h limits.h locale.h memory.h netinet/in.h stddef.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/systeminfo.h sys/time.h unistd.h utime.h values.h wchar.h])
+AC_CHECK_HEADERS([fcntl.h inttypes.h libintl.h netinet/in.h stdint.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/systeminfo.h sys/time.h unistd.h utime.h values.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -49,10 +50,6 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([alarm atexit dup2 getcwd getpagesize localtime_r mbrlen memmove memset mkfifo munmap putenv realpath regcomp select socket strcasecmp strchr strcspn strdup strerror strpbrk strrchr strspn strstr strtol strtoul sysinfo tzset uname utime])
 
 AC_CONFIG_FILES([Makefile
-                 add-on/Makefile
-                 add-on/autofsm/Makefile
-                 add-on/char-mapper/Makefile
-                 add-on/cright-update/Makefile
                  agen5/Makefile
                  agen5/test/Makefile
                  autoopts/Makefile
