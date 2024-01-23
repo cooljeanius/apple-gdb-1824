@@ -400,7 +400,7 @@
 		A5262E862B5784A8002EC445 /* verify.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E852B5784A8002EC445 /* verify.h */; };
 		A5262E8B2B57918D002EC445 /* elf32-spu.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E882B57918D002EC445 /* elf32-spu.h */; };
 		A5262E912B579403002EC445 /* elf32-score.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E8E2B579403002EC445 /* elf32-score.h */; };
-		A5262EAA2B5FDEC6002EC445 /* elf64-ia64.c in Sources */ = {isa = PBXBuildFile; fileRef = A5262EA92B5FDEC5002EC445 /* elf64-ia64.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wshorten-64-to-32 -Wunused-variable -Wnull-dereference"; }; };
+		A5262EAB2B5FE311002EC445 /* elfxx-ia64.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF4F0E82C407008125DE /* elfxx-ia64.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wshorten-64-to-32 -Wunused-variable -Wnull-dereference -Wno-error=implicit-function-declaration"; }; };
 		A53ABD8D1A38C88F002F20B2 /* link.h in Headers */ = {isa = PBXBuildFile; fileRef = A53ABD8C1A38C88F002F20B2 /* link.h */; };
 		A53B842B1AE2F2100067328B /* acconfig_obsolete.h in Headers */ = {isa = PBXBuildFile; fileRef = A5558E9E1992B76300A45587 /* acconfig_obsolete.h */; };
 		A53B842C1AE2F2100067328B /* eval-plural.h in Headers */ = {isa = PBXBuildFile; fileRef = A5558E8D1992A9AE00A45587 /* eval-plural.h */; };
@@ -3901,7 +3901,6 @@
 		A5262E882B57918D002EC445 /* elf32-spu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "elf32-spu.h"; sourceTree = "<group>"; };
 		A5262E8D2B579402002EC445 /* elf32-score.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf32-score.c"; sourceTree = "<group>"; };
 		A5262E8E2B579403002EC445 /* elf32-score.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "elf32-score.h"; sourceTree = "<group>"; };
-		A5262EA92B5FDEC5002EC445 /* elf64-ia64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf64-ia64.c"; sourceTree = "<group>"; };
 		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; path = "mac-gdb.r"; sourceTree = "<group>"; };
 		A53ABD8C1A38C88F002F20B2 /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = link.h; sourceTree = "<group>"; };
 		A53ABDB71A38E84F002F20B2 /* objdump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objdump.h; sourceTree = "<group>"; };
@@ -6480,7 +6479,6 @@
 				2609CF3C0E82C407008125DE /* elf64-gen.c */,
 				2609CF3D0E82C407008125DE /* elf64-hppa.c */,
 				2609CF3E0E82C407008125DE /* elf64-hppa.h */,
-				A5262EA92B5FDEC5002EC445 /* elf64-ia64.c */,
 				2609CF3F0E82C407008125DE /* elf64-mips.c */,
 				2609CF400E82C407008125DE /* elf64-mmix.c */,
 				2609CF410E82C407008125DE /* elf64-ppc.c */,
@@ -14193,6 +14191,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5262EAB2B5FE311002EC445 /* elfxx-ia64.c in Sources */,
 				61D2205D192D610A00FA979E /* aix386-core.c in Sources */,
 				61D2205E192D610A00FA979E /* aix5ppc-core.c in Sources */,
 				61190A261CAB240F00AD73D8 /* aout-adobe.c in Sources */,
@@ -14214,7 +14213,6 @@
 				61D22071192D613F00FA979E /* bfdwin.c in Sources */,
 				61D22072192D613F00FA979E /* binary.c in Sources */,
 				611909251CAAF33F00AD73D8 /* bout.c in Sources */,
-				A5262EAA2B5FDEC6002EC445 /* elf64-ia64.c in Sources */,
 				61D22074192D613F00FA979E /* cache.c in Sources */,
 				A5262E842B57028A002EC445 /* elf32-score7.c in Sources */,
 				61D22075192D613F00FA979E /* cf-i386lynx.c in Sources */,

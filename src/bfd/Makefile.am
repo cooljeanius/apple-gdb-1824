@@ -1234,13 +1234,15 @@ libbfd_a-dwarf2.o: dwarf2.c @MAINT@ Makefile
 
 elf32-target.h : elfxx-target.h
 	$(AM_V_at)rm -f $(AM_V_v) $@
-	echo "/* $@ is generated from $< */" > elf32-target.new
+	echo "/* DO NOT EDIT!  -*- buffer-read-only: t -*-  */" > elf32-target.new
+	echo "/* $@ is generated from $< */" >> elf32-target.new
 	$(SED) -e s/NN/32/g < $(srcdir)/elfxx-target.h >> elf32-target.new
 	mv -f $(AM_V_v) elf32-target.new $@
 
 elf64-target.h : elfxx-target.h
 	$(AM_V_at)rm -f $(AM_V_v) $@
-	echo "/* $@ is generated from $< */" > elf64-target.new
+	echo "/* DO NOT EDIT!  -*- buffer-read-only: t -*-  */" > elf64-target.new
+	echo "/* $@ is generated from $< */" >> elf64-target.new
 	$(SED) -e s/NN/64/g < $(srcdir)/elfxx-target.h >> elf64-target.new
 	mv -f $(AM_V_v) elf64-target.new $@
 
@@ -1258,31 +1260,36 @@ elf64-aarch64.c : elfnn-aarch64.c
 
 elf32-ia64.c : elfxx-ia64.c
 	$(AM_V_at)rm -f $(AM_V_v) $@
-	echo "/* $@ is generated from $< */" > elf32-ia64.new
+	echo "/* DO NOT EDIT!  -*- buffer-read-only: t -*-  */" > elf32-ia64.new
+	echo "/* $@ is generated from $< */" >> elf32-ia64.new
 	$(SED) -e s/NN/32/g < $(srcdir)/elfxx-ia64.c >> elf32-ia64.new
 	mv -f $(AM_V_v) elf32-ia64.new $@
 
 elf64-ia64.c : elfxx-ia64.c
 	$(AM_V_at)rm -f $(AM_V_v) $@
-	echo "/* $@ is generated from $< */" > elf64-ia64.new
+	echo "/* DO NOT EDIT!  -*- buffer-read-only: t -*-  */" > elf64-ia64.new
+	echo "/* $@ is generated from $< */" >> elf64-ia64.new
 	$(SED) -e s/NN/64/g < $(srcdir)/elfxx-ia64.c >> elf64-ia64.new
 	mv -f $(AM_V_v) elf64-ia64.new $@
 
 peigen.c : peXXigen.c
 	$(AM_V_at)rm -f $(AM_V_v) $@
-	echo "/* $@ is generated from $< */" > peigen.new
+	echo "/* DO NOT EDIT!  -*- buffer-read-only: t -*-  */" > peigen.new
+	echo "/* $@ is generated from $< */" >> peigen.new
 	$(SED) -e s/XX/pe/g < $(srcdir)/peXXigen.c >> peigen.new
 	mv -f $(AM_V_v) peigen.new $@
 
 pepigen.c : peXXigen.c
 	$(AM_V_at)rm -f $(AM_V_v) $@
-	echo "/* $@ is generated from $< */" > pepigen.new
+	echo "/* DO NOT EDIT!  -*- buffer-read-only: t -*-  */" > pepigen.new
+	echo "/* $@ is generated from $< */" >> pepigen.new
 	$(SED) -e s/XX/pep/g < $(srcdir)/peXXigen.c >> pepigen.new
 	mv -f $(AM_V_v) pepigen.new $@
 
 pex64igen.c : peXXigen.c
 	$(AM_V_at)rm -f $(AM_V_v) $@
-	echo "/* $@ is generated from $< */" > pex64igen.new
+	echo "/* DO NOT EDIT!  -*- buffer-read-only: t -*-  */" > pex64igen.new
+	echo "/* $@ is generated from $< */" >> pex64igen.new
 	$(SED) -e s/XX/pex64/g < $(srcdir)/peXXigen.c >> pex64igen.new
 	mv -f $(AM_V_v) pex64igen.new pex64igen.c
 

@@ -1893,89 +1893,85 @@ _bfd_XX_print_private_bfd_data_common (bfd * abfd, void * vfile)
       fprintf (file, "%s\n", dir_names[j]);
     }
 
-  pe_print_idata (abfd, vfile);
-  pe_print_edata (abfd, vfile);
-  pe_print_pdata (abfd, vfile);
-  pe_print_reloc (abfd, vfile);
+  pe_print_idata(abfd, vfile);
+  pe_print_edata(abfd, vfile);
+  pe_print_pdata(abfd, vfile);
+  pe_print_reloc(abfd, vfile);
 
   return TRUE;
 }
 
 /* Copy any private info we understand from the input bfd
    to the output bfd.  */
-
 bfd_boolean
-_bfd_XX_bfd_copy_private_bfd_data_common (bfd * ibfd, bfd * obfd)
+_bfd_XX_bfd_copy_private_bfd_data_common(bfd *ibfd, bfd *obfd)
 {
   /* One day we may try to grok other private data.  */
-  if (ibfd->xvec->flavour != bfd_target_coff_flavour
-      || obfd->xvec->flavour != bfd_target_coff_flavour)
+  if ((ibfd->xvec->flavour != bfd_target_coff_flavour)
+      || (obfd->xvec->flavour != bfd_target_coff_flavour))
     return TRUE;
 
-  pe_data (obfd)->pe_opthdr = pe_data (ibfd)->pe_opthdr;
-  pe_data (obfd)->dll = pe_data (ibfd)->dll;
+  pe_data(obfd)->pe_opthdr = pe_data(ibfd)->pe_opthdr;
+  pe_data(obfd)->dll = pe_data(ibfd)->dll;
 
   /* For strip: if we removed .reloc, we'll make a real mess of things
      if we don't remove this entry as well.  */
-  if (! pe_data (obfd)->has_reloc_section)
+  if (!pe_data(obfd)->has_reloc_section)
     {
-      pe_data (obfd)->pe_opthdr.DataDirectory[5].VirtualAddress = 0;
-      pe_data (obfd)->pe_opthdr.DataDirectory[5].Size = 0;
+      pe_data(obfd)->pe_opthdr.DataDirectory[5].VirtualAddress = 0;
+      pe_data(obfd)->pe_opthdr.DataDirectory[5].Size = 0;
     }
   return TRUE;
 }
 
 /* Copy private section data.  */
-
 bfd_boolean
-_bfd_XX_bfd_copy_private_section_data (bfd *ibfd,
-				       asection *isec,
-				       bfd *obfd,
-				       asection *osec)
+_bfd_XX_bfd_copy_private_section_data(bfd *ibfd, asection *isec,
+				      bfd *obfd, asection *osec)
 {
-  if (bfd_get_flavour (ibfd) != bfd_target_coff_flavour
-      || bfd_get_flavour (obfd) != bfd_target_coff_flavour)
+  if ((bfd_get_flavour(ibfd) != bfd_target_coff_flavour)
+      || (bfd_get_flavour(obfd) != bfd_target_coff_flavour))
     return TRUE;
 
-  if (coff_section_data (ibfd, isec) != NULL
-      && pei_section_data (ibfd, isec) != NULL)
+  if ((coff_section_data(ibfd, isec) != NULL)
+      && (pei_section_data(ibfd, isec) != NULL))
     {
-      if (coff_section_data (obfd, osec) == NULL)
+      if (coff_section_data(obfd, osec) == NULL)
 	{
-	  bfd_size_type amt = sizeof (struct coff_section_tdata);
-	  osec->used_by_bfd = bfd_zalloc (obfd, amt);
+	  bfd_size_type amt = sizeof(struct coff_section_tdata);
+	  osec->used_by_bfd = bfd_zalloc(obfd, amt);
 	  if (osec->used_by_bfd == NULL)
 	    return FALSE;
 	}
 
-      if (pei_section_data (obfd, osec) == NULL)
+      if (pei_section_data(obfd, osec) == NULL)
 	{
-	  bfd_size_type amt = sizeof (struct pei_section_tdata);
-	  coff_section_data (obfd, osec)->tdata = bfd_zalloc (obfd, amt);
-	  if (coff_section_data (obfd, osec)->tdata == NULL)
+	  bfd_size_type amt = sizeof(struct pei_section_tdata);
+	  coff_section_data(obfd, osec)->tdata = bfd_zalloc(obfd, amt);
+	  if (coff_section_data(obfd, osec)->tdata == NULL)
 	    return FALSE;
 	}
 
-      pei_section_data (obfd, osec)->virt_size =
-	pei_section_data (ibfd, isec)->virt_size;
-      pei_section_data (obfd, osec)->pe_flags =
-	pei_section_data (ibfd, isec)->pe_flags;
+      pei_section_data(obfd, osec)->virt_size =
+	pei_section_data(ibfd, isec)->virt_size;
+      pei_section_data(obfd, osec)->pe_flags =
+	pei_section_data(ibfd, isec)->pe_flags;
     }
 
   return TRUE;
 }
 
+/* */
 void
-_bfd_XX_get_symbol_info (bfd * abfd, asymbol *symbol, symbol_info *ret)
+_bfd_XX_get_symbol_info(bfd *abfd, asymbol *symbol, symbol_info *ret)
 {
-  coff_get_symbol_info (abfd, symbol, ret);
+  coff_get_symbol_info(abfd, symbol, ret);
 }
 
 /* Handle the .idata section and other things that need symbol table
    access.  */
-
 bfd_boolean
-_bfd_XXi_final_link_postscript (bfd * abfd, struct coff_final_link_info *pfinfo)
+_bfd_XXi_final_link_postscript(bfd *abfd, struct coff_final_link_info *pfinfo)
 {
   struct coff_link_hash_entry *h1;
   struct bfd_link_info *info = pfinfo->info;
