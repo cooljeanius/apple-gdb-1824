@@ -368,12 +368,11 @@ parse_coff_base_type (bfd *abfd, struct coff_symbols *symbols,
   return ret;
 }
 
-/* Parse a struct type.  */
-
+/* Parse a struct type: */
 static debug_type
-parse_coff_struct_type (bfd *abfd, struct coff_symbols *symbols,
-			struct coff_types *types, int ntype,
-			union internal_auxent *pauxent, void *dhandle)
+parse_coff_struct_type(bfd *abfd, struct coff_symbols *symbols,
+                       struct coff_types *types, int ntype,
+                       union internal_auxent *pauxent, void *dhandle)
 {
   long symend;
   int alloc;
@@ -384,7 +383,7 @@ parse_coff_struct_type (bfd *abfd, struct coff_symbols *symbols,
   symend = pauxent->x_sym.x_fcnary.x_fcn.x_endndx.l;
 
   alloc = 10;
-  fields = (debug_field *) xmalloc (alloc * sizeof *fields);
+  fields = (debug_field *)xmalloc(alloc * sizeof(*fields));
   count = 0;
 
   done = FALSE;
@@ -395,7 +394,7 @@ parse_coff_struct_type (bfd *abfd, struct coff_symbols *symbols,
       asymbol *sym;
       long this_coff_symno;
       struct internal_syment syment;
-      union internal_auxent auxent;
+      union internal_auxent auxent = *pauxent;
       union internal_auxent *psubaux;
       bfd_vma bitpos = 0, bitsize = 0;
 

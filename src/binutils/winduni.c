@@ -308,14 +308,13 @@ unicode_from_ascii_len(rc_uint_type *length, unichar **unicode,
           continue;
         }
       utmp = NULL;
-      elen = 0;
       elen = wind_MultiByteToWideChar(wind_current_codepage, p, NULL, 0);
       if (elen)
         {
           utmp = ((unichar *)res_alloc(elen + sizeof(unichar) * 2));
           wind_MultiByteToWideChar(wind_current_codepage, p, utmp, elen);
           elen /= sizeof(unichar);
-          elen --;
+          elen--;
         }
       else
         {

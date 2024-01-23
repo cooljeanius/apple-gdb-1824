@@ -1270,10 +1270,10 @@ stab_volatile_type (void *p)
 /* Get the type index to use for a struct/union/class ID.  This should
    return -1 if it fails.  */
 
-static long
-stab_get_struct_index (struct stab_write_handle *info, const char *tag,
-		       unsigned int id, enum debug_type_kind kind,
-		       unsigned int *psize)
+static long ATTRIBUTE_NONNULL(5)
+stab_get_struct_index(struct stab_write_handle *info, const char *tag,
+		      unsigned int id, enum debug_type_kind kind,
+		      unsigned int *psize)
 {
   if (id >= info->type_cache.struct_types_alloc)
     {
@@ -1285,13 +1285,13 @@ stab_get_struct_index (struct stab_write_handle *info, const char *tag,
       while (id >= alloc)
 	alloc *= 2;
       info->type_cache.struct_types =
-	(struct stab_tag *) xrealloc (info->type_cache.struct_types,
-				      alloc * sizeof (struct stab_tag));
-      memset ((info->type_cache.struct_types
-	       + info->type_cache.struct_types_alloc),
-	      0,
-	      ((alloc - info->type_cache.struct_types_alloc)
-	       * sizeof (struct stab_tag)));
+	(struct stab_tag *)xrealloc(info->type_cache.struct_types,
+                                    (alloc * sizeof(struct stab_tag)));
+      memset((info->type_cache.struct_types
+	      + info->type_cache.struct_types_alloc),
+	     0,
+	     ((alloc - info->type_cache.struct_types_alloc)
+	      * sizeof(struct stab_tag)));
       info->type_cache.struct_types_alloc = alloc;
     }
 
@@ -1305,7 +1305,7 @@ stab_get_struct_index (struct stab_write_handle *info, const char *tag,
 
   if (kind == DEBUG_KIND_ILLEGAL)
     {
-      /* This is a definition of the struct.  */
+      /* This is a definition of the struct: */
       info->type_cache.struct_types[id].kind = kind;
       info->type_cache.struct_types[id].size = *psize;
     }
@@ -1317,17 +1317,16 @@ stab_get_struct_index (struct stab_write_handle *info, const char *tag,
 
 /* Start outputting a struct.  We ignore the tag, and handle it in
    stab_tag.  */
-
 static bfd_boolean
-stab_start_struct_type (void *p, const char *tag, unsigned int id,
-			bfd_boolean structp, unsigned int size)
+stab_start_struct_type(void *p, const char *tag, unsigned int id,
+                       bfd_boolean structp, unsigned int size)
 {
-  struct stab_write_handle *info = (struct stab_write_handle *) p;
+  struct stab_write_handle *info = (struct stab_write_handle *)p;
   long lindex;
   bfd_boolean definition;
   char *buf;
 
-  buf = (char *) xmalloc (40);
+  buf = (char *)xmalloc(40UL);
 
   if (id == 0)
     {

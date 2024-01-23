@@ -128,6 +128,10 @@ static size_t only_used = 0;
 static const char **include_paths;
 static int include_path_count;
 
+#if defined(__clang_analyzer__) && !defined(DISASSEMBLER_NEEDS_RELOCS)
+# define DISASSEMBLER_NEEDS_RELOCS __clang_analyzer__
+#endif /* __clang_analyzer__ && !DISASSEMBLER_NEEDS_RELOCS */
+
 /* Extra info to pass to the section disassembler and address printing
    function.  */
 struct objdump_disasm_info
@@ -1325,7 +1329,7 @@ disassemble_bytes(struct disassemble_info *info,
 
       /* Remember the length of the previous instruction.  */
       previous_octets = octets;
-#endif
+#endif /* DISASSEMBLER_NEEDS_RELOCS */
       octets = 0;
 
       /* If we see more than SKIP_ZEROES octets of zeroes, we just
@@ -1627,8 +1631,12 @@ disassemble_bytes(struct disassemble_info *info,
   if (done_dot) {
     return;
   }
+  if (octets == 0) {
+    (void)octets;
+  }
 }
 
+/* */
 static void
 disassemble_section(bfd *abfd, asection *section, void *info)
 {

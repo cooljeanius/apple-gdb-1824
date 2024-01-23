@@ -1429,10 +1429,11 @@ dump_relocations(FILE *file, unsigned long rel_offset,
 	  print_vma (rels[i].r_addend, LONG_HEX);
 	}
 
-      if (elf_header.e_machine == EM_SPARCV9 && streq (rtype, "R_SPARC_OLO10"))
-	printf (" + %lx", (unsigned long) ELF64_R_TYPE_DATA (info));
+      if ((elf_header.e_machine == EM_SPARCV9) && (rtype != NULL)
+      	  && streq(rtype, "R_SPARC_OLO10"))
+	printf(" + %lx", (unsigned long)ELF64_R_TYPE_DATA(info));
 
-      putchar ('\n');
+      putchar('\n');
 
       if (! is_32bit_elf && elf_header.e_machine == EM_MIPS)
 	{
@@ -4710,10 +4711,10 @@ dump_ia64_unwind (struct ia64_unw_aux_info *aux)
     }
 }
 
-static int
-slurp_ia64_unwind_table (FILE *file,
-			 struct ia64_unw_aux_info *aux,
-			 Elf_Internal_Shdr *sec)
+/* */
+static int ATTRIBUTE_NONNULL(2)
+slurp_ia64_unwind_table(FILE *file, struct ia64_unw_aux_info *aux,
+                        Elf_Internal_Shdr *sec)
 {
   unsigned long size, nrelas, i;
   Elf_Internal_Phdr *seg;
@@ -4740,7 +4741,8 @@ slurp_ia64_unwind_table (FILE *file,
           }
 
 	  if ((sec->sh_addr >= seg->p_vaddr)
-	      && ((sec->sh_addr + sec->sh_size) <= (seg->p_vaddr + seg->p_memsz)))
+	      && ((sec->sh_addr + sec->sh_size)
+                  <= (seg->p_vaddr + seg->p_memsz)))
 	    {
 	      aux->seg_base = seg->p_vaddr;
 	      break;
@@ -4756,10 +4758,10 @@ slurp_ia64_unwind_table (FILE *file,
     return 0;
   }
 
-  aux->table = (struct ia64_unw_table_entry *)xcmalloc(size / (3 * eh_addr_size),
-                                                       sizeof(aux->table[0]));
+  aux->table = ((struct ia64_unw_table_entry *)
+  		xcmalloc(size / (3 * eh_addr_size), sizeof(aux->table[0])));
   tep = aux->table;
-  for (tp = table; tp < (table + size); tp += 3 * eh_addr_size, ++tep)
+  for (tp = table; tp < (table + size); tp += (3 * eh_addr_size), ++tep)
     {
       tep->start.section = SHN_UNDEF;
       tep->end.section = SHN_UNDEF;
@@ -4772,86 +4774,90 @@ slurp_ia64_unwind_table (FILE *file,
 	}
       else
 	{
-	  tep->start.offset = BYTE_GET ((unsigned char *) tp +  0);
-	  tep->end.offset   = BYTE_GET ((unsigned char *) tp +  8);
-	  tep->info.offset  = BYTE_GET ((unsigned char *) tp + 16);
+	  tep->start.offset = BYTE_GET((unsigned char *)tp + 0);
+	  tep->end.offset = BYTE_GET((unsigned char *)tp + 8);
+	  tep->info.offset = BYTE_GET((unsigned char *)tp + 16);
 	}
       tep->start.offset += aux->seg_base;
-      tep->end.offset   += aux->seg_base;
-      tep->info.offset  += aux->seg_base;
+      tep->end.offset += aux->seg_base;
+      tep->info.offset += aux->seg_base;
     }
-  free (table);
+  free(table);
 
   /* Third, apply any relocations to the unwind table: */
 
   for (relsec = section_headers;
-       relsec < section_headers + elf_header.e_shnum;
+       relsec < (section_headers + elf_header.e_shnum);
        ++relsec)
     {
-      if (relsec->sh_type != SHT_RELA
-	  || SECTION_HEADER_INDEX (relsec->sh_info) >= elf_header.e_shnum
-	  || SECTION_HEADER (relsec->sh_info) != sec)
+      if ((relsec->sh_type != SHT_RELA)
+	  || (SECTION_HEADER_INDEX(relsec->sh_info) >= elf_header.e_shnum)
+	  || (SECTION_HEADER(relsec->sh_info) != sec))
 	continue;
 
-      if (!slurp_rela_relocs (file, relsec->sh_offset, relsec->sh_size,
-			      & rela, & nrelas))
+      if (!slurp_rela_relocs(file, relsec->sh_offset, relsec->sh_size,
+			     &rela, &nrelas))
 	return 0;
 
-      for (rp = rela; rp < rela + nrelas; ++rp)
+      for (rp = rela; rp < (rela + nrelas); ++rp)
 	{
 	  if (is_32bit_elf)
 	    {
-	      relname = elf_ia64_reloc_type (ELF32_R_TYPE (rp->r_info));
-	      sym = aux->symtab + ELF32_R_SYM (rp->r_info);
+	      relname = elf_ia64_reloc_type(ELF32_R_TYPE(rp->r_info));
+	      sym = (aux->symtab + ELF32_R_SYM(rp->r_info));
 	    }
 	  else
 	    {
-	      relname = elf_ia64_reloc_type (ELF64_R_TYPE (rp->r_info));
-	      sym = aux->symtab + ELF64_R_SYM (rp->r_info);
+	      relname = elf_ia64_reloc_type(ELF64_R_TYPE(rp->r_info));
+	      sym = (aux->symtab + ELF64_R_SYM(rp->r_info));
 	    }
 
-	  if (! strneq (relname, "R_IA64_SEGREL", 13))
+	  if (!strneq(relname, "R_IA64_SEGREL", 13))
 	    {
-	      warn (_("Skipping unexpected relocation type %s\n"), relname);
+	      warn(_("Skipping unexpected relocation type %s\n"), relname);
 	      continue;
 	    }
 
-	  i = rp->r_offset / (3 * eh_addr_size);
+	  i = (rp->r_offset / (3 * eh_addr_size));
 
-	  switch (rp->r_offset/eh_addr_size % 3)
+	  switch ((rp->r_offset / eh_addr_size) % 3)
 	    {
 	    case 0:
-	      aux->table[i].start.section = sym->st_shndx;
-	      aux->table[i].start.offset += rp->r_addend + sym->st_value;
+	      aux->table[i].start.section = ((sym) ? sym->st_shndx : 0U);
+	      aux->table[i].start.offset += (rp->r_addend
+                                             + ((sym) ? sym->st_value : 0U));
 	      break;
 	    case 1:
-	      aux->table[i].end.section   = sym->st_shndx;
-	      aux->table[i].end.offset   += rp->r_addend + sym->st_value;
+	      aux->table[i].end.section = ((sym) ? sym->st_shndx : 0U);
+	      aux->table[i].end.offset += (rp->r_addend
+                                           + ((sym) ? sym->st_value : 0U));
 	      break;
 	    case 2:
-	      aux->table[i].info.section  = sym->st_shndx;
-	      aux->table[i].info.offset  += rp->r_addend + sym->st_value;
+	      aux->table[i].info.section = ((sym) ? sym->st_shndx : 0U);
+	      aux->table[i].info.offset += (rp->r_addend
+                                            + ((sym) ? sym->st_value : 0U));
 	      break;
 	    default:
 	      break;
 	    }
 	}
 
-      free (rela);
+      free(rela);
     }
 
-  aux->table_len = size / (3 * eh_addr_size);
+  aux->table_len = (size / (3 * eh_addr_size));
   return 1;
 }
 
+/* */
 static int
-ia64_process_unwind (FILE *file)
+ia64_process_unwind(FILE *file)
 {
   Elf_Internal_Shdr *sec, *unwsec = NULL, *strsec;
-  unsigned long i, unwcount = 0, unwstart = 0;
+  unsigned long i, unwcount = 0UL, unwstart = 0UL;
   struct ia64_unw_aux_info aux;
 
-  memset (& aux, 0, sizeof (aux));
+  memset(&aux, 0, sizeof(aux));
 
   for (i = 0, sec = section_headers; i < elf_header.e_shnum; ++i, ++sec)
     {
@@ -4872,14 +4878,14 @@ ia64_process_unwind (FILE *file)
     }
 
   if (!unwcount)
-    printf (_("\nThere are no unwind sections in this file.\n"));
+    printf(_("\nThere are no unwind sections in this file.\n"));
 
   while (unwcount-- > 0)
     {
       const char *suffix;
       size_t len, len2;
 
-      for (i = unwstart, sec = section_headers + unwstart;
+      for (i = unwstart, sec = (section_headers + unwstart);
 	   i < elf_header.e_shnum; ++i, ++sec)
 	if (sec->sh_type == SHT_IA_64_UNWIND)
 	  {
@@ -4887,26 +4893,26 @@ ia64_process_unwind (FILE *file)
 	    break;
 	  }
 
-      unwstart = i + 1;
-      len = sizeof (ELF_STRING_ia64_unwind_once) - 1;
+      unwstart = (i + 1);
+      len = (sizeof(ELF_STRING_ia64_unwind_once) - 1UL);
 
-      if ((unwsec->sh_flags & SHF_GROUP) != 0)
+      if ((unwsec != NULL) && ((unwsec->sh_flags & SHF_GROUP) != 0))
 	{
-	  /* We need to find which section group it is in.  */
-	  struct group_list *g = section_headers_groups [i]->root;
+	  /* We need to find which section group it is in: */
+	  struct group_list *g = section_headers_groups[i]->root;
 
 	  for (; g != NULL; g = g->next)
 	    {
-	      sec = SECTION_HEADER (g->section_index);
+	      sec = SECTION_HEADER(g->section_index);
 
-	      if (streq (SECTION_NAME (sec), ELF_STRING_ia64_unwind_info))
+	      if (streq(SECTION_NAME(sec), ELF_STRING_ia64_unwind_info))
 		break;
 	    }
 
 	  if (g == NULL)
 	    i = elf_header.e_shnum;
 	}
-      else if (strneq (SECTION_NAME (unwsec), ELF_STRING_ia64_unwind_once, len))
+      else if (strneq(SECTION_NAME(unwsec), ELF_STRING_ia64_unwind_once, len))
 	{
 	  /* .gnu.linkonce.ia64unw.FOO -> .gnu.linkonce.ia64unwi.FOO.  */
 	  len2 = sizeof (ELF_STRING_ia64_unwind_info_once) - 1;
@@ -5097,7 +5103,8 @@ dump_hppa_unwind (struct hppa_unw_aux_info *aux)
   printf ("\n");
 }
 
-static int
+/* */
+static int ATTRIBUTE_NONNULL(2)
 slurp_hppa_unwind_table(FILE *file, struct hppa_unw_aux_info *aux,
                         Elf_Internal_Shdr *sec)
 {
@@ -5146,15 +5153,19 @@ slurp_hppa_unwind_table(FILE *file, struct hppa_unw_aux_info *aux,
   nentries = (size / unw_ent_size);
   size = (unw_ent_size * nentries);
 
-  tep = aux->table = (struct hppa_unw_table_entry *)xcmalloc(nentries,
-                                                             sizeof(aux->table[0]));
+  tep = aux->table = ((struct hppa_unw_table_entry *)
+                      xcmalloc(nentries, sizeof(aux->table[0])));
+
+  if (tep == NULL) {
+    xmalloc_failed(sizeof(aux->table[0]));
+  }
 
   for (tp = table; tp < (table + size); tp += unw_ent_size, ++tep)
     {
       unsigned int tmp1, tmp2;
 
       tep->start.section = SHN_UNDEF;
-      tep->end.section   = SHN_UNDEF;
+      tep->end.section = SHN_UNDEF;
 
       tep->start.offset = byte_get((unsigned char *)tp + 0, 4);
       tep->end.offset = byte_get((unsigned char *)tp + 4, 4);
@@ -5162,7 +5173,7 @@ slurp_hppa_unwind_table(FILE *file, struct hppa_unw_aux_info *aux,
       tmp2 = byte_get((unsigned char *)tp + 12, 4);
 
       tep->start.offset += aux->seg_base;
-      tep->end.offset   += aux->seg_base;
+      tep->end.offset += aux->seg_base;
 
       tep->Cannot_unwind = ((tmp1 >> 31) & 0x1); /*GCC PR 39170*/
       tep->Millicode = (tmp1 >> 30) & 0x1;
@@ -5196,61 +5207,63 @@ slurp_hppa_unwind_table(FILE *file, struct hppa_unw_aux_info *aux,
       tep->reserved4 = (tmp2 >> 27) & 0x1;
       tep->Total_frame_size = tmp2 & 0x7ffffff;
     }
-  free (table);
+  free(table);
 
   /* Third, apply any relocations to the unwind table.  */
 
   for (relsec = section_headers;
-       relsec < section_headers + elf_header.e_shnum;
+       relsec < (section_headers + elf_header.e_shnum);
        ++relsec)
     {
-      if (relsec->sh_type != SHT_RELA
-	  || SECTION_HEADER_INDEX (relsec->sh_info) >= elf_header.e_shnum
-	  || SECTION_HEADER (relsec->sh_info) != sec)
+      if ((relsec->sh_type != SHT_RELA)
+	  || (SECTION_HEADER_INDEX(relsec->sh_info) >= elf_header.e_shnum)
+	  || (SECTION_HEADER(relsec->sh_info) != sec))
 	continue;
 
-      if (!slurp_rela_relocs (file, relsec->sh_offset, relsec->sh_size,
-			      & rela, & nrelas))
+      if (!slurp_rela_relocs(file, relsec->sh_offset, relsec->sh_size,
+                             &rela, & nrelas))
 	return 0;
 
-      for (rp = rela; rp < rela + nrelas; ++rp)
+      for (rp = rela; rp < (rela + nrelas); ++rp)
 	{
 	  if (is_32bit_elf)
 	    {
-	      relname = elf_hppa_reloc_type (ELF32_R_TYPE (rp->r_info));
-	      sym = aux->symtab + ELF32_R_SYM (rp->r_info);
+	      relname = elf_hppa_reloc_type(ELF32_R_TYPE(rp->r_info));
+	      sym = (aux->symtab + ELF32_R_SYM(rp->r_info));
 	    }
 	  else
 	    {
-	      relname = elf_hppa_reloc_type (ELF64_R_TYPE (rp->r_info));
-	      sym = aux->symtab + ELF64_R_SYM (rp->r_info);
+	      relname = elf_hppa_reloc_type(ELF64_R_TYPE(rp->r_info));
+	      sym = (aux->symtab + ELF64_R_SYM(rp->r_info));
 	    }
 
 	  /* R_PARISC_SEGREL32 or R_PARISC_SEGREL64.  */
-	  if (strncmp (relname, "R_PARISC_SEGREL", 15) != 0)
+	  if (strncmp(relname, "R_PARISC_SEGREL", 15) != 0)
 	    {
-	      warn (_("Skipping unexpected relocation type %s\n"), relname);
+	      warn(_("Skipping unexpected relocation type %s\n"), relname);
 	      continue;
 	    }
 
-	  i = rp->r_offset / unw_ent_size;
+	  i = (rp->r_offset / unw_ent_size);
 
 	  switch ((rp->r_offset % unw_ent_size) / eh_addr_size)
 	    {
 	    case 0:
-	      aux->table[i].start.section = sym->st_shndx;
-	      aux->table[i].start.offset += sym->st_value + rp->r_addend;
+	      aux->table[i].start.section = ((sym) ? sym->st_shndx : 0U);
+	      aux->table[i].start.offset += (((sym) ? sym->st_value : 0U)
+                                             + rp->r_addend);
 	      break;
 	    case 1:
-	      aux->table[i].end.section   = sym->st_shndx;
-	      aux->table[i].end.offset   += sym->st_value + rp->r_addend;
+	      aux->table[i].end.section = ((sym) ? sym->st_shndx : 0U);
+	      aux->table[i].end.offset += (((sym) ? sym->st_value : 0U)
+                                           + rp->r_addend);
 	      break;
 	    default:
 	      break;
 	    }
 	}
 
-      free (rela);
+      free(rela);
     }
 
   aux->table_len = nentries;
@@ -5258,8 +5271,9 @@ slurp_hppa_unwind_table(FILE *file, struct hppa_unw_aux_info *aux,
   return 1;
 }
 
+/* */
 static int
-hppa_process_unwind (FILE *file)
+hppa_process_unwind(FILE *file)
 {
   struct hppa_unw_aux_info aux;
   Elf_Internal_Shdr *unwsec = NULL;
@@ -5267,7 +5281,7 @@ hppa_process_unwind (FILE *file)
   Elf_Internal_Shdr *sec;
   unsigned long i;
 
-  memset (& aux, 0, sizeof (aux));
+  memset(&aux, 0, sizeof(aux));
 
   if (string_table == NULL)
     return 1;
@@ -6821,40 +6835,44 @@ process_symbol_table(FILE *file)
 	  && elf_header.e_ident[EI_CLASS] == ELFCLASS64)
 	hash_ent_size = 8;
 
-      if (fseek (file,
-		 (archive_file_offset
-		  + offset_from_vma (file, dynamic_info[DT_HASH],
-				     sizeof nb + sizeof nc)),
-		 SEEK_SET))
+      if (fseek(file,
+                (archive_file_offset
+                 + offset_from_vma(file, dynamic_info[DT_HASH],
+                                   (sizeof(nb) + sizeof(nc)))),
+                SEEK_SET))
 	{
-	  error (_("Unable to seek to start of dynamic information"));
+	  error(_("Unable to seek to start of dynamic information"));
 	  return 0;
 	}
 
-      if (fread (nb, hash_ent_size, 1, file) != 1)
+      if (fread(nb, hash_ent_size, 1, file) != 1)
 	{
-	  error (_("Failed to read in number of buckets\n"));
+	  error(_("Failed to read in number of buckets\n"));
 	  return 0;
 	}
 
-      if (fread (nc, hash_ent_size, 1, file) != 1)
+      if (fread(nc, hash_ent_size, 1, file) != 1)
 	{
-	  error (_("Failed to read in number of chains\n"));
+	  error(_("Failed to read in number of chains\n"));
 	  return 0;
 	}
 
-      nbuckets = byte_get (nb, hash_ent_size);
-      nchains  = byte_get (nc, hash_ent_size);
+      nbuckets = byte_get(nb, hash_ent_size);
+      nchains = byte_get(nc, hash_ent_size);
 
-      buckets = get_dynamic_data (file, nbuckets, hash_ent_size);
-      chains  = get_dynamic_data (file, nchains, hash_ent_size);
-
-      if (buckets == NULL || chains == NULL)
+      buckets = get_dynamic_data(file, nbuckets, hash_ent_size);
+      if (buckets == NULL)
 	return 0;
+      chains = get_dynamic_data(file, nchains, hash_ent_size);
+      if (chains == NULL)
+        {
+          free(buckets);
+	  return 0;
+        }
     }
 
-  if (do_syms
-      && dynamic_info[DT_HASH] && do_using_dynamic && dynamic_strings != NULL)
+  if (do_syms && dynamic_info[DT_HASH] && do_using_dynamic
+      && (dynamic_strings != NULL))
     {
       unsigned long hn;
       bfd_vma si;
@@ -7115,9 +7133,9 @@ process_symbol_table(FILE *file)
       unsigned long *counts;
       unsigned long hn;
       bfd_vma si;
-      unsigned long maxlength = 0;
-      unsigned long nzero_counts = 0;
-      unsigned long nsyms = 0;
+      unsigned long maxlength = 0UL;
+      unsigned long nzero_counts = 0UL;
+      unsigned long nsyms = 0UL;
 
       printf(_("\nHistogram for bucket list length (total of %lu buckets):\n"),
              (unsigned long)nbuckets);
@@ -7126,6 +7144,8 @@ process_symbol_table(FILE *file)
       lengths = (unsigned long *)calloc(nbuckets, sizeof(*lengths));
       if (lengths == NULL)
 	{
+          free(buckets);
+          free(chains);
 	  error(_("Out of memory"));
 	  return 0;
 	}
@@ -7139,9 +7159,12 @@ process_symbol_table(FILE *file)
 	    }
 	}
 
-      counts = (unsigned long *)calloc(maxlength + 1, sizeof(*counts));
+      counts = (unsigned long *)calloc((maxlength + 1), sizeof(*counts));
       if (counts == NULL)
 	{
+	  free(buckets);
+   	  free(chains);
+          free(lengths);
 	  error(_("Out of memory"));
 	  return 0;
 	}
@@ -11345,7 +11368,7 @@ process_mips_specific(FILE *file)
       Elf_External_Options *eopt;
       Elf_Internal_Shdr *sect = section_headers;
       Elf_Internal_Options *iopt;
-      Elf_Internal_Options *option;
+      Elf_Internal_Options *option = NULL;
       size_t offset;
       int cnt;
 
@@ -11490,11 +11513,11 @@ process_mips_specific(FILE *file)
 		  break;
 		case ODK_FILL:
 		  fputs(" FILL       ", stdout);
-		  /* XXX Print content of info word?  */
+		  /* XXX: Print content of info word?  */
 		  break;
 		case ODK_TAGS:
 		  fputs(" TAGS       ", stdout);
-		  /* XXX Print content of info word?  */
+		  /* XXX: Print content of info word?  */
 		  break;
 		case ODK_HWAND:
 		  fputs(" HWAND     ", stdout);
@@ -11528,7 +11551,7 @@ process_mips_specific(FILE *file)
 		}
 
 	      len = sizeof(*eopt);
-	      while (len < option->size)
+	      while ((len < option->size) && ((char *)option != NULL))
 		if ((((char *)option)[len] >= ' ')
 		    && (((char *)option)[len] < 0x7f))
 		  printf("%c", ((char *)option)[len++]);
@@ -11570,7 +11593,10 @@ process_mips_specific(FILE *file)
                               conflictsno, sizeof(*econf32),
                               _("conflict")));
 	  if (!econf32)
-	    return 0;
+            {
+              free(iconf);
+	      return 0;
+            }
 
 	  for (cnt = 0; cnt < conflictsno; ++cnt)
 	    iconf[cnt] = (Elf32_Conflict)BYTE_GET(econf32[cnt]);
@@ -11586,7 +11612,10 @@ process_mips_specific(FILE *file)
                               conflictsno, sizeof(*econf64),
                               _("conflict")));
 	  if (!econf64)
-	    return 0;
+            {
+              free(iconf);
+	      return 0;
+            }
 
 	  for (cnt = 0; cnt < conflictsno; ++cnt)
 	    iconf[cnt] = (Elf32_Conflict)BYTE_GET(econf64[cnt]);

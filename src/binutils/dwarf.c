@@ -1727,6 +1727,7 @@ read_and_display_attr_value (unsigned long attribute,
 	{
 	case DW_AT_frame_base:
 	  have_frame_base = 1;
+   	  ATTRIBUTE_FALLTHROUGH; /* FIXME: really? */
 	case DW_AT_location:
 	case DW_AT_string_length:
 	case DW_AT_return_addr:
@@ -1988,6 +1989,7 @@ read_and_display_attr_value (unsigned long attribute,
 
     case DW_AT_frame_base:
       have_frame_base = 1;
+      ATTRIBUTE_FALLTHROUGH; /* FIXME: really? */
     case DW_AT_location:
     case DW_AT_string_length:
     case DW_AT_return_addr:
@@ -2005,6 +2007,7 @@ read_and_display_attr_value (unsigned long attribute,
 	  || form == DW_FORM_sec_offset)
 	printf (_("(location list)"));
       /* Fall through.  */
+      ATTRIBUTE_FALLTHROUGH;
     case DW_AT_allocated:
     case DW_AT_associated:
     case DW_AT_data_location:
@@ -3395,12 +3398,12 @@ display_debug_lines_decoded (struct dwarf_section *section,
 	      || (op_code == DW_LNS_copy))
             {
               const unsigned int MAX_FILENAME_LENGTH = 35;
-              char *fileName;
+              const char *fileName;
               char *newFileName = NULL;
               size_t fileNameLength;
 
 	      if (file_table)
-		fileName = (char *) file_table[state_machine_regs.file - 1].name;
+		fileName = (const char *)file_table[state_machine_regs.file - 1].name;
 	      else
 		fileName = "<unknown>";
 
@@ -3510,39 +3513,39 @@ find_debug_info_for_offset (unsigned long offset)
   return NULL;
 }
 
+/* */
 static const char *
-get_gdb_index_symbol_kind_name (gdb_index_symbol_kind kind)
+get_gdb_index_symbol_kind_name(gdb_index_symbol_kind kind)
 {
-  /* See gdb/gdb-index.h.  */
-  static const char * const kinds[] =
+  /* See gdb/gdb-index.h: */
+  static const char *const kinds[] =
   {
-    N_ ("no info"),
-    N_ ("type"),
-    N_ ("variable"),
-    N_ ("function"),
-    N_ ("other"),
-    N_ ("unused5"),
-    N_ ("unused6"),
-    N_ ("unused7")
+    N_("no info"),
+    N_("type"),
+    N_("variable"),
+    N_("function"),
+    N_("other"),
+    N_("unused5"),
+    N_("unused6"),
+    N_("unused7")
   };
 
-  return _ (kinds[kind]);
+  return _(kinds[kind]);
 }
 
+/* */
 static int
-display_debug_pubnames_worker (struct dwarf_section *section,
-			       void *file ATTRIBUTE_UNUSED,
-			       int is_gnu)
+display_debug_pubnames_worker(struct dwarf_section *section, void *file,
+			      int is_gnu)
 {
   DWARF2_Internal_PubNames names;
   unsigned char *start = section->start;
-  unsigned char *end = start + section->size;
+  unsigned char *end = (start + section->size);
 
-  /* It does not matter if this load fails,
-     we test for that later on.  */
-  load_debug_info (file);
+  /* It does not matter if this load fails, we test for that later on: */
+  load_debug_info(file);
 
-  printf (_("Contents of the %s section:\n\n"), section->name);
+  printf(_("Contents of the %s section:\n\n"), section->name);
 
   while (start < end)
     {
@@ -3552,10 +3555,10 @@ display_debug_pubnames_worker (struct dwarf_section *section,
 
       data = start;
 
-      SAFE_BYTE_GET_AND_INC (names.pn_length, data, 4, end);
+      SAFE_BYTE_GET_AND_INC(names.pn_length, data, 4, end);
       if (names.pn_length == 0xffffffff)
 	{
-	  SAFE_BYTE_GET_AND_INC (names.pn_length, data, 8, end);
+	  SAFE_BYTE_GET_AND_INC(names.pn_length, data, 8, end);
 	  offset_size = 8;
 	  initial_length_size = 12;
 	}
@@ -4590,18 +4593,17 @@ display_trace_info (struct dwarf_section *section, void *file)
   return process_debug_info (section, file, section->abbrev_sec, 0, 0);
 }
 
+/* */
 static int
-display_debug_aranges (struct dwarf_section *section,
-		       void *file ATTRIBUTE_UNUSED)
+display_debug_aranges(struct dwarf_section *section, void *file)
 {
   unsigned char *start = section->start;
-  unsigned char *end = start + section->size;
+  unsigned char *end = (start + section->size);
 
-  printf (_("Contents of the %s section:\n\n"), section->name);
+  printf(_("Contents of the %s section:\n\n"), section->name);
 
-  /* It does not matter if this load fails,
-     we test for that later on.  */
-  load_debug_info (file);
+  /* It does not matter if this load fails, we test for that later on: */
+  load_debug_info(file);
 
   while (start < end)
     {
@@ -4823,15 +4825,15 @@ range_entry_compar (const void *ap, const void *bp)
   return (a > b) - (b > a);
 }
 
+/* */
 static int
-display_debug_ranges (struct dwarf_section *section,
-		      void *file ATTRIBUTE_UNUSED)
+display_debug_ranges(struct dwarf_section *section, void *file)
 {
   unsigned char *start = section->start;
   unsigned char *last_start = start;
   unsigned long bytes = section->size;
   unsigned char *section_begin = start;
-  unsigned char *finish = start + bytes;
+  unsigned char *finish = (start + bytes);
   unsigned int num_range_list, i;
   struct range_entry *range_entries, *range_entry_fill;
 
@@ -5402,26 +5404,26 @@ display_debug_frames (struct dwarf_section *section,
 	  static Frame_Chunk fde_fc;
 	  unsigned long segment_selector;
 
-	  fc = & fde_fc;
-	  memset (fc, 0, sizeof (Frame_Chunk));
+	  fc = &fde_fc;
+	  memset(fc, 0, sizeof(Frame_Chunk));
 
-	  look_for = is_eh ? start - 4 - cie_id : section_start + cie_id;
+	  look_for = (is_eh ? (start - 4 - cie_id) : (section_start + cie_id));
 
-	  for (cie = chunks; cie ; cie = cie->next)
+	  for (cie = chunks; cie; cie = cie->next)
 	    if (cie->chunk_start == look_for)
 	      break;
 
 	  if (!cie)
 	    {
-	      warn ("Invalid CIE pointer 0x%s in FDE at %#08lx\n",
-		    dwarf_vmatoa_1 (NULL, cie_id, offset_size),
-		    (unsigned long) (saved_start - section_start));
+	      warn("Invalid CIE pointer 0x%s in FDE at %#08lx\n",
+		   dwarf_vmatoa_1(NULL, cie_id, offset_size),
+		   (unsigned long)(saved_start - section_start));
 	      fc->ncols = 0;
-	      fc->col_type = (short int *) xmalloc (sizeof (short int));
-	      fc->col_offset = (int *) xmalloc (sizeof (int));
-	      frame_need_space (fc, max_regs - 1);
+	      fc->col_type = (short int *)xmalloc(sizeof(short int));
+	      fc->col_offset = (int *)xmalloc(sizeof(int));
+	      frame_need_space(fc, (max_regs - 1));
 	      cie = fc;
-	      fc->augmentation = "";
+	      fc->augmentation = (char *)"";
 	      fc->fde_encoding = 0;
 	      fc->ptr_size = eh_addr_size;
 	      fc->segment_size = 0;
@@ -5429,10 +5431,13 @@ display_debug_frames (struct dwarf_section *section,
 	  else
 	    {
 	      fc->ncols = cie->ncols;
-	      fc->col_type = (short int *) xcmalloc (fc->ncols, sizeof (short int));
-	      fc->col_offset =  (int *) xcmalloc (fc->ncols, sizeof (int));
-	      memcpy (fc->col_type, cie->col_type, fc->ncols * sizeof (short int));
-	      memcpy (fc->col_offset, cie->col_offset, fc->ncols * sizeof (int));
+	      fc->col_type = (short int *)xcmalloc(fc->ncols,
+       						   sizeof(short int));
+	      fc->col_offset = (int *)xcmalloc(fc->ncols, sizeof(int));
+	      memcpy(fc->col_type, cie->col_type,
+                     (fc->ncols * sizeof(short int)));
+	      memcpy(fc->col_offset, cie->col_offset,
+                     (fc->ncols * sizeof(int)));
 	      fc->augmentation = cie->augmentation;
 	      fc->ptr_size = cie->ptr_size;
 	      eh_addr_size = cie->ptr_size;
@@ -5442,30 +5447,31 @@ display_debug_frames (struct dwarf_section *section,
 	      fc->cfa_reg = cie->cfa_reg;
 	      fc->cfa_offset = cie->cfa_offset;
 	      fc->ra = cie->ra;
-	      frame_need_space (fc, max_regs - 1);
+	      frame_need_space(fc, (max_regs - 1));
 	      fc->fde_encoding = cie->fde_encoding;
 	    }
 
 	  if (fc->fde_encoding)
-	    encoded_ptr_size = size_of_encoded_value (fc->fde_encoding);
+	    encoded_ptr_size = size_of_encoded_value(fc->fde_encoding);
 
 	  segment_selector = 0;
 	  if (fc->segment_size)
 	    {
-	      SAFE_BYTE_GET_AND_INC (segment_selector, start, fc->segment_size, end);
+	      SAFE_BYTE_GET_AND_INC(segment_selector, start, fc->segment_size,
+                                    end);
 	    }
-	  fc->pc_begin = get_encoded_value (start, fc->fde_encoding, section);
+	  fc->pc_begin = get_encoded_value(start, fc->fde_encoding, section);
 	  start += encoded_ptr_size;
 
 	  /* FIXME: It appears that sometimes the final pc_range value is
 	     encoded in less than encoded_ptr_size bytes.  See the x86_64
 	     run of the "objcopy on compressed debug sections" test for an
 	     example of this.  */
-	  SAFE_BYTE_GET_AND_INC (fc->pc_range, start, encoded_ptr_size, end);
+	  SAFE_BYTE_GET_AND_INC(fc->pc_range, start, encoded_ptr_size, end);
 
 	  if (cie->augmentation[0] == 'z')
 	    {
-	      augmentation_data_len = LEB ();
+	      augmentation_data_len = LEB();
 	      augmentation_data = start;
 	      start += augmentation_data_len;
 	    }
@@ -6766,6 +6772,7 @@ dwarf_select_sections_by_letters (const char *letters)
 
       case 'F':
 	do_debug_frames_interp = 1;
+	ATTRIBUTE_FALLTHROUGH; /* FIXME: really? */
       case 'f':
 	do_debug_frames = 1;
 	break;

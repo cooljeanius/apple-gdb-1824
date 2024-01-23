@@ -519,7 +519,7 @@ get_char (FILE *stream, file_off *address, int *magiccount, char **magic)
 {
   int c, i;
   long r = EOF;
-  unsigned char buf[4];
+  unsigned char buf[4] = { 0U, 0U, 0U, 0U };
 
   for (i = 0; i < encoding_bytes; i++)
     {

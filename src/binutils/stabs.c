@@ -862,25 +862,25 @@ parse_stab_string (void *dhandle, struct stab_handle *info, int stabtype,
 
 	/* A global symbol.  The value must be extracted from the
 	   symbol table.  */
-	dtype = parse_stab_type (dhandle, info, (const char *) NULL, &p,
-				 (debug_type **) NULL);
+	dtype = parse_stab_type(dhandle, info, (const char *)NULL, &p,
+                                (debug_type **)NULL);
 	if (dtype == DEBUG_TYPE_NULL)
 	  return FALSE;
-	leading = bfd_get_symbol_leading_char (info->abfd);
+	leading = bfd_get_symbol_leading_char(info->abfd);
 	for (c = info->symcount, ps = info->syms; c > 0; --c, ++ps)
 	  {
 	    const char *n;
 
-	    n = bfd_asymbol_name (*ps);
-	    if (leading != '\0' && *n == leading)
+	    n = bfd_asymbol_name(*ps);
+	    if ((leading != '\0') && (*n == leading))
 	      ++n;
-	    if (*n == *name && strcmp (n, name) == 0)
+	    if ((name != NULL) && (*n == *name) && (strcmp(n, name) == 0))
 	      break;
 	  }
 	if (c > 0)
-	  value = bfd_asymbol_value (*ps);
-	if (! stab_record_variable (dhandle, info, name, dtype, DEBUG_GLOBAL,
-				    value))
+	  value = bfd_asymbol_value(*ps);
+	if (!stab_record_variable(dhandle, info, name, dtype, DEBUG_GLOBAL,
+                                  value))
 	  return FALSE;
       }
       break;
@@ -4449,36 +4449,36 @@ stab_demangle_args (struct stab_demangle_info *minfo, const char **pp,
 	    r = 1;
 	  else
 	    {
-	      if (! stab_demangle_get_count (pp, &r))
+	      if (!stab_demangle_get_count(pp, &r))
 		{
-		  stab_bad_demangle (orig);
+		  stab_bad_demangle(orig);
 		  return FALSE;
 		}
 	    }
 
-	  if (! stab_demangle_get_count (pp, &t))
+	  if (!stab_demangle_get_count(pp, &t))
 	    {
-	      stab_bad_demangle (orig);
+	      stab_bad_demangle(orig);
 	      return FALSE;
 	    }
 
-	  if (t >= minfo->typestring_count)
+	  if ((minfo != NULL) && (t >= minfo->typestring_count))
 	    {
-	      stab_bad_demangle (orig);
+	      stab_bad_demangle(orig);
 	      return FALSE;
 	    }
 	  while (r-- > 0)
 	    {
 	      const char *tem;
 
-	      tem = minfo->typestrings[t].typestring;
-	      if (! stab_demangle_arg (minfo, &tem, pargs, &count, &alloc))
+	      tem = ((minfo != NULL) ? minfo->typestrings[t].typestring : NULL);
+	      if (!stab_demangle_arg(minfo, &tem, pargs, &count, &alloc))
 		return FALSE;
 	    }
 	}
       else
 	{
-	  if (! stab_demangle_arg (minfo, pp, pargs, &count, &alloc))
+	  if (!stab_demangle_arg(minfo, pp, pargs, &count, &alloc))
 	    return FALSE;
 	}
     }
@@ -5060,20 +5060,22 @@ stab_demangle_fund_type (struct stab_demangle_info *minfo, const char **pp,
 /* Remember a type string in a demangled string.  */
 
 static bfd_boolean
-stab_demangle_remember_type (struct stab_demangle_info *minfo,
-			     const char *p, int len)
+stab_demangle_remember_type(struct stab_demangle_info *minfo,
+			    const char *p, int len)
 {
+  if (minfo == NULL)
+    return FALSE;
   if (minfo->typestring_count >= minfo->typestring_alloc)
     {
       minfo->typestring_alloc += 10;
       minfo->typestrings = ((struct stab_demangle_typestring *)
-			    xrealloc (minfo->typestrings,
-				      (minfo->typestring_alloc
-				       * sizeof *minfo->typestrings)));
+			    xrealloc(minfo->typestrings,
+				     (minfo->typestring_alloc
+				      * sizeof(*minfo->typestrings))));
     }
 
   minfo->typestrings[minfo->typestring_count].typestring = p;
-  minfo->typestrings[minfo->typestring_count].len = (unsigned int) len;
+  minfo->typestrings[minfo->typestring_count].len = (unsigned int)len;
   ++minfo->typestring_count;
 
   return TRUE;

@@ -24,8 +24,9 @@
 
 #include "sysdep.h"
 
+/* */
 int
-main (int argc, char *argv[])
+main(int argc, char *argv[])
 {
   int c;
   int i;
@@ -35,36 +36,36 @@ main (int argc, char *argv[])
       int ishelp = 0;
       FILE *stream;
 
-      if (argc == 2 && argv[1][0] == '-')
+      if ((argc == 2) && (argv[1][0] == '-'))
 	{
 	  const char *opt = &argv[1][1];
 	  if (*opt == '-')
 	    ++opt;
-	  ishelp = *opt == 'h' || *opt == 'H';
+	  ishelp = ((*opt == 'h') || (*opt == 'H'));
 	}
 
-      stream = ishelp ? stdout : stderr;
+      stream = (ishelp ? stdout : stderr);
       fprintf (stream, "Usage: %s < input_file > output_file\n", argv[0]);
       fprintf (stream, "Prints bytes from stdin in hex format.\n");
-      exit (!ishelp);
+      xexit(!ishelp);
     }
 
-  SET_BINARY (fileno (stdin));
+  SET_BINARY(fileno(stdin));
 
   i = 0;
-  while ((c = getc (stdin)) != EOF)
+  while ((c = getc(stdin)) != EOF)
     {
-      printf ("0x%02x,", c);
+      printf("0x%02x,", c);
       if (++i == 16)
 	{
-	  printf ("\n");
+	  printf("\n");
 	  i = 0;
 	}
     }
   if (i != 0)
-    printf ("\n");
+    printf("\n");
 
-  exit (0);
+  xexit(0);
 }
 
 /* EOF */

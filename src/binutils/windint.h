@@ -36,6 +36,11 @@ typedef bfd_size_type rc_uint_type;
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wpacked"
+# else
+#  if defined(__clang__) && (__clang__ >= 1)
+#   pragma clang diagnostic push
+#   pragma clang diagnostic ignored "-Wpacked"
+#  endif /* __clang__ */
 # endif /* gcc 4.6+ */
 #endif /* any gcc */
 
@@ -1085,6 +1090,10 @@ typedef struct windres_bfd
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
 #  pragma GCC diagnostic pop
+# else
+#  if defined(__clang__) && (__clang__ >= 1)
+#   pragma clang diagnostic pop
+#  endif /* __clang__ */
 # endif /* gcc 4.6+ */
 #endif /* any gcc */
 

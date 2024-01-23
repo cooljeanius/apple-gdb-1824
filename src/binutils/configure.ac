@@ -734,6 +734,7 @@ AC_SEARCH_LIBS([__chk_fail],[ssp gcc iberty c gnu])dnl
 AC_SEARCH_LIBS([__memcpy_chk],[ssp gcc iberty c gnu])dnl
 AC_SEARCH_LIBS([__strcpy_chk],[ssp gcc iberty c gnu])dnl
 
+dnl# possible alternatives to mktemp():
 AC_CHECK_FUNC([mkstemp],
 	      [AC_DEFINE([HAVE_MKSTEMP],[1],
 	                 [Define to 1 if you have the `mkstemp' function.])

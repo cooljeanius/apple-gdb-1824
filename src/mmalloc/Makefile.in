@@ -161,17 +161,21 @@ SUFFIXES = .c .cp .o .plist
 .SUFFIXES: .c .cp .o .plist
 
 .c.o:
-		$(CC) -c $(CFLAGS) $(DEFS) -I. -I$(INCDIR) $<
+	$(CC) -c $(CFLAGS) $(DEFS) -I. -I$(INCDIR) $<
 
 .c.plist:
 	@if test ! -d $(analysisdir); then $(MKDIR_P) $(analysisdir); fi
-	$(RUN_CLANG_ANALYZER) -o $(analysisdir)/$@ $< 
+	$(RUN_CLANG_ANALYZER) -o $(analysisdir)/$@ $<
+
+.cp.plist:
+	@if test ! -d $(analysisdir); then $(MKDIR_P) $(analysisdir); fi
+	$(RUN_CLANG_ANALYZER) -x c++ -o $(analysisdir)/$@ $<
 
 .cp.o:
-		$(CXX) -c $(CXXFLAGS) $(DEFS) -I. -I$(INCDIR) $<
+	$(CXX) -c $(CXXFLAGS) $(DEFS) -I. -I$(INCDIR) $<
 
 mmallocplusplus.o: mmallocplusplus.cp
-		$(CXX) -o $@ -c $(CXXFLAGS) $(DEFS) -I. -I$(INCDIR) $<
+	$(CXX) -o $@ -c $(CXXFLAGS) $(DEFS) -I. -I$(INCDIR) $<
 
 # Do we want/need any config overrides?
 #	 
@@ -179,7 +183,9 @@ mmallocplusplus.o: mmallocplusplus.cp
 STAGESTUFF =	$(TARGETLIB) *.o
 
 all: $(TARGETLIB)
-	if test -n "$(TARGETLIB)"; then stat $(TARGETLIB); fi
+	@if test -n "$(TARGETLIB)" && test -r "$(TARGETLIB)"; then \
+	  stat $(TARGETLIB); \
+	fi
 
 info: $(INFO_DEPS)
 dvi: mmalloc.dvi
@@ -276,7 +282,6 @@ stamp-framework: $(FRAMEWORK_OFILES)
 	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
 	$(LN_S) -v Versions/Current/Resources $(FRAMEWORK).framework/Resources
 	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
-
 	set -ex; \
 	if [ "$(FRAMEWORK_SUFFIX)" != "" ]; then \
 	    test -n "$(FRAMEWORK_SUFFIX)"; \

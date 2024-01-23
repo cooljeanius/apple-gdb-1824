@@ -35,7 +35,18 @@ Boston, MA 02111-1307, USA.  */
 #  warning "pagecheck-sup.c expects <mach/mach.h> to be included."
 # endif /* __GNUC__ && !defined(__STRICT_ANSI__) */
 #endif /* HAVE_MACH_MACH_H || __MACH__ || __APPLE__ */
-#include <mach/mach_error.h>
+#if defined(HAVE_MACH_MACH_ERROR_H) || __has_include(<mach/mach_error.h>) || \
+    defined(__MACH__) || defined(__APPLE__)
+# include <mach/mach_error.h>
+#else
+# if defined(HAVE_MACH_ERROR_H) || __has_include(<mach/error.h>)
+#  include <mach/error.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "pagecheck-sup.c expects a mach error header to be included."
+#  endif /* __GNUC__ && !defined(__STRICT_ANSI__) */
+# endif /* HAVE_MACH_ERROR_H */
+#endif /* HAVE_MACH_MACH_ERROR_H || __MACH__ || __APPLE__ */
 
 #include "mmprivate.h"
 
@@ -51,6 +62,7 @@ Boston, MA 02111-1307, USA.  */
 #define MACH_CHECK_NOERROR(ret) \
   mach_check_noerror(ret, __FILE__, __LINE__, __CHECK_FUNCTION);
 
+/* */
 static void
 mach_check_error(kern_return_t ret, const char *file,
                  unsigned int line, const char *func)
@@ -68,6 +80,7 @@ mach_check_error(kern_return_t ret, const char *file,
   abort();
 }
 
+/* */
 static size_t page_size(void)
 {
   static vm_size_t cached_page_size = 0;
@@ -82,6 +95,7 @@ static size_t page_size(void)
   return cached_page_size;
 }
 
+/* */
 static size_t round_up(size_t size, size_t page_size)
 {
   size_t nsize = size;
@@ -91,6 +105,7 @@ static size_t round_up(size_t size, size_t page_size)
   return nsize;
 }
 
+/* */
 static size_t round_down(size_t size, size_t page_size)
 {
   size_t nsize = size;
@@ -98,6 +113,7 @@ static size_t round_down(size_t size, size_t page_size)
   return nsize;
 }
 
+/* */
 static void fill(void *buf, unsigned long c, size_t n)
 {
   unsigned long *ptr = (unsigned long *)buf;
@@ -106,6 +122,7 @@ static void fill(void *buf, unsigned long c, size_t n)
   }
 }
 
+/* */
 static void check_filled(void *buf, unsigned long c, size_t n)
 {
   unsigned long *ptr = (unsigned long *)buf;
@@ -116,6 +133,7 @@ static void check_filled(void *buf, unsigned long c, size_t n)
   }
 }
 
+/* */
 static ATTRIBUTE_NORETURN PTR
 morecore_pagecheck(struct mdesc *mdp, int size)
 {
@@ -134,6 +152,7 @@ int mmalloc_pagecheck_zero_alloc = 0;
 int mmalloc_pagecheck_zero_free = 0;
 int mmalloc_pagecheck_guard_end = 0;
 
+/* */
 static vm_address_t
 alloc_buffer(size_t size, int at_end)
 {
@@ -191,6 +210,7 @@ alloc_buffer(size_t size, int at_end)
   return ptr;
 }
 
+/* */
 static void
 validate_buffer(vm_address_t address, vm_address_t *pbuffer, size_t *psize)
 {
@@ -223,6 +243,7 @@ validate_buffer(vm_address_t address, vm_address_t *pbuffer, size_t *psize)
   }
 }
 
+/* */
 static PTR
 mmalloc_pagecheck(PTR md, size_t size)
 {
@@ -241,6 +262,7 @@ mmalloc_pagecheck(PTR md, size_t size)
   return (PTR)ret;
 }
 
+/* */
 static void
 mfree_pagecheck(PTR md, PTR ptr)
 {
@@ -264,6 +286,7 @@ mfree_pagecheck(PTR md, PTR ptr)
   MACH_CHECK_ERROR(kret);
 }
 
+/* */
 static PTR
 mrealloc_pagecheck(PTR md, PTR ptr, size_t nsize)
 {
@@ -291,6 +314,7 @@ mrealloc_pagecheck(PTR md, PTR ptr, size_t nsize)
   return new_ptr;
 }
 
+/* */
 struct mdesc *
 mmalloc_pagecheck_create(void)
 {

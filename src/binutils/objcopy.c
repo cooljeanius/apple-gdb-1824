@@ -1550,7 +1550,7 @@ copy_object(bfd *ibfd, bfd *obfd)
       c = (int)bfd_count_sections(obfd);
       for (i = 0; i < c; i++)
 	{
-	  if (gaps[i] != 0)
+	  if ((gaps != NULL) && (gaps[i] != 0))
 	    {
 	      bfd_size_type left;
 	      file_ptr off;

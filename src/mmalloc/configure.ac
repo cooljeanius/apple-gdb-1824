@@ -100,6 +100,11 @@ AC_PATH_PROG([CONFIGURED_TEX],[tex])dnl
 AC_PROG_MKDIR_P
 m4_ifdef([AM_PROG_AR],[
   AM_PROG_AR
+  ## ...
+  if test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    AC_PROG_AR
+  fi
 ],[
   AC_CHECK_TOOL([AR],[ar])dnl
 ])dnl
@@ -124,9 +129,10 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
 ])dnl
 AC_REQUIRE_HEADER_STDC
 AC_CHECK_HEADERS([AvailabilityMacros.h db.h errno.h fcntl.h \
-                  ipc/ipc_types.h limits.h mach/mach.h \
-                  mach/mach_port.h mach/mach_vm.h mach/port.h \
-                  mach/vm_region.h stddef.h stdio.h sys/mman.h])dnl
+                  ipc/ipc_types.h limits.h mach/error.h mach/mach.h \
+                  mach/mach_error.h mach/mach_port.h mach/mach_vm.h \
+                  mach/port.h mach/vm_region.h stddef.h stdio.h \
+                  sys/mman.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN

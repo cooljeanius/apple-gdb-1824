@@ -71,18 +71,22 @@ jobs:
 
     - name: Create builddirs
       run: |
-        if test ! -d build; then (sync && mkdir build); else (sync && stat build); fi
+        if test ! -d build; then \
+          (sync && mkdir build && sync); \
+        else \
+          (sync && stat build && sync); \
+        fi
         if test ! -d /home/runner/work/apple-gdb-1824/build; then \
           if test -w /home/runner/work/apple-gdb-1824; then \
-            (sync && mkdir -v /home/runner/work/apple-gdb-1824/build); \
+            (sync && mkdir -v /home/runner/work/apple-gdb-1824/build && sync); \
           elif test -w /home/runner/work -o -w /home/runner -o -w /home; then \
-            (sync && mkdir -pv /home/runner/work/apple-gdb-1824/build); \
+            (sync && mkdir -pv /home/runner/work/apple-gdb-1824/build && sync); \
           else \
             (sync && (stat /home/runner/work || stat /home/runner || stat /home)); \
             echo "unable to make the necessary builddir due to unwriteable directories"; \
           fi; \
         else \
-          (sync && stat /home/runner/work/apple-gdb-1824/build); \
+          (sync && stat /home/runner/work/apple-gdb-1824/build && sync); \
         fi
         (cd src && sync && echo "now in $(pwd)..." && sync)
         if test ${{ matrix.language }} != 'c-cpp'; then sleep 1; else true; fi

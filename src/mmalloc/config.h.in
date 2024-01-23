@@ -26,16 +26,16 @@
 /* Define to 1 if you have the <AvailabilityMacros.h> header file. */
 #undef HAVE_AVAILABILITYMACROS_H
 
-/* Define to 1 if the system has the type `caddr_t'. */
+/* Define to 1 if the system has the type 'caddr_t'. */
 #undef HAVE_CADDR_T
 
-/* Define to 1 if you have the `close' function. */
+/* Define to 1 if you have the 'close' function. */
 #undef HAVE_CLOSE
 
 /* Define to 1 if you have the <db.h> header file. */
 #undef HAVE_DB_H
 
-/* Define to 1 if you have the declaration of `getenv', and to 0 if you don't.
+/* Define to 1 if you have the declaration of 'getenv', and to 0 if you don't.
    */
 #undef HAVE_DECL_GETENV
 
@@ -45,10 +45,10 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
-/* Define to 1 if you have the `getpagesize' function. */
+/* Define to 1 if you have the 'getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
-/* Define to 1 if the system has the type `intptr_t'. */
+/* Define to 1 if the system has the type 'intptr_t'. */
 #undef HAVE_INTPTR_T
 
 /* Define to 1 if you have the <inttypes.h> header file. */
@@ -57,17 +57,23 @@
 /* Define to 1 if you have the <ipc/ipc_types.h> header file. */
 #undef HAVE_IPC_IPC_TYPES_H
 
-/* Define to 1 if the system has the type `ipc_port_t'. */
+/* Define to 1 if the system has the type 'ipc_port_t'. */
 #undef HAVE_IPC_PORT_T
 
-/* Define to 1 if you have the `c' library (-lc). */
+/* Define to 1 if you have the 'c' library (-lc). */
 #undef HAVE_LIBC
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
-/* Define to 1 if you have the `lseek' function. */
+/* Define to 1 if you have the 'lseek' function. */
 #undef HAVE_LSEEK
+
+/* Define to 1 if you have the <mach/error.h> header file. */
+#undef HAVE_MACH_ERROR_H
+
+/* Define to 1 if you have the <mach/mach_error.h> header file. */
+#undef HAVE_MACH_MACH_ERROR_H
 
 /* Define to 1 if you have the <mach/mach.h> header file. */
 #undef HAVE_MACH_MACH_H
@@ -78,51 +84,51 @@
 /* Define to 1 if you have the <mach/mach_vm.h> header file. */
 #undef HAVE_MACH_MACH_VM_H
 
-/* Define to 1 if the system has the type `mach_port_array_t'. */
+/* Define to 1 if the system has the type 'mach_port_array_t'. */
 #undef HAVE_MACH_PORT_ARRAY_T
 
 /* Define to 1 if you have the <mach/port.h> header file. */
 #undef HAVE_MACH_PORT_H
 
-/* Define to 1 if the system has the type `mach_port_t'. */
+/* Define to 1 if the system has the type 'mach_port_t'. */
 #undef HAVE_MACH_PORT_T
 
-/* Define to 1 if the system has the type `mach_port_type_t'. */
+/* Define to 1 if the system has the type 'mach_port_type_t'. */
 #undef HAVE_MACH_PORT_TYPE_T
 
-/* Define to 1 if you have the `mach_vm_region' function. */
+/* Define to 1 if you have the 'mach_vm_region' function. */
 #undef HAVE_MACH_VM_REGION
 
 /* Define to 1 if you have the <mach/vm_region.h> header file. */
 #undef HAVE_MACH_VM_REGION_H
 
-/* Define to 1 if your system has a GNU libc compatible `malloc' function, and
+/* Define to 1 if your system has a GNU libc compatible 'malloc' function, and
    to 0 otherwise. */
 #undef HAVE_MALLOC
 
-/* Define to 1 if you have the `memmove' function. */
+/* Define to 1 if you have the 'memmove' function. */
 #undef HAVE_MEMMOVE
 
-/* Define to 1 if you have the `memset' function. */
+/* Define to 1 if you have the 'memset' function. */
 #undef HAVE_MEMSET
 
-/* Define to 1 if you have a working `mmap' system call. */
+/* Define to 1 if you have a working 'mmap' system call. */
 #undef HAVE_MMAP
 
-/* Define to 1 if you have the `msync' function. */
+/* Define to 1 if you have the 'msync' function. */
 #undef HAVE_MSYNC
 
-/* Define to 1 if you have the `munmap' function. */
+/* Define to 1 if you have the 'munmap' function. */
 #undef HAVE_MUNMAP
 
-/* Define to 1 if the system has the type `port_t'. */
+/* Define to 1 if the system has the type 'port_t'. */
 #undef HAVE_PORT_T
 
-/* Define to 1 if your system has a GNU libc compatible `realloc' function,
+/* Define to 1 if your system has a GNU libc compatible 'realloc' function,
    and to 0 otherwise. */
 #undef HAVE_REALLOC
 
-/* Define to 1 if you have the `sbrk' function. */
+/* Define to 1 if you have the 'sbrk' function. */
 #undef HAVE_SBRK
 
 /* Define to 1 if you have the <stddef.h> header file. */
@@ -137,7 +143,7 @@
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
 
-/* Define to 1 if you have the `strerror' function. */
+/* Define to 1 if you have the 'strerror' function. */
 #undef HAVE_STRERROR
 
 /* Define to 1 if you have the <strings.h> header file. */
@@ -161,7 +167,7 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define to 1 if you have the `vm_region' function. */
+/* Define to 1 if you have the 'vm_region' function. */
 #undef HAVE_VM_REGION
 
 /* Define if getpagesize is not declared in system header files. */
@@ -191,7 +197,7 @@
 /* Define to 1 if the C compiler supports function prototypes. */
 #undef PROTOTYPES
 
-/* Define to 1 if all of the C90 standard headers exist (not just the ones
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
@@ -216,7 +222,7 @@
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES
 
-/* Define to empty if `const' does not conform to ANSI C. */
+/* Define to empty if 'const' does not conform to ANSI C. */
 #undef const
 
 /* Define to the type of a signed integer type of width exactly 32 bits if
@@ -230,13 +236,13 @@
 /* Define to rpl_malloc if the replacement function should be used. */
 #undef malloc
 
-/* Define to `long int' if <sys/types.h> does not define. */
+/* Define to 'long int' if <sys/types.h> does not define. */
 #undef off_t
 
 /* Define to rpl_realloc if the replacement function should be used. */
 #undef realloc
 
-/* Define to `unsigned int' if <sys/types.h> does not define. */
+/* Define as 'unsigned int' if <stddef.h> doesn't define. */
 #undef size_t
 
 /* Define to the type of an unsigned integer type of width exactly 32 bits if

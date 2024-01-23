@@ -1392,13 +1392,13 @@ get_pos_bfd(bfd **contents, enum pos default_pos,
       realposname = posname;
     }
 
-  if (realpos == pos_end)
+  if ((realpos == pos_end) && (after_bfd != NULL))
     {
       while (*after_bfd) {
 	after_bfd = &((*after_bfd)->next);
       }
     }
-  else
+  else if (after_bfd != NULL)
     {
       for (; *after_bfd; after_bfd = &(*after_bfd)->next) {
 	if (FILENAME_CMP((*after_bfd)->filename, realposname) == 0)
@@ -1413,6 +1413,7 @@ get_pos_bfd(bfd **contents, enum pos default_pos,
   return after_bfd;
 }
 
+/* */
 static void
 delete_members(bfd *arch, char **files_to_delete)
 {
@@ -1481,6 +1482,7 @@ delete_members(bfd *arch, char **files_to_delete)
   } else {
     output_filename = NULL;
   }
+  (void)found;
 }
 
 

@@ -360,7 +360,7 @@ write_res_bin(const struct res_resource *res,
 static unsigned long
 get_id_size(const struct res_id *id)
 {
-  if (id->named)
+  if ((id != NULL) && id->named)
     return (sizeof(unichar) * (id->u.n.length + 1));
   else
     return (sizeof(unichar) * 2);
@@ -410,18 +410,18 @@ read_res_data(void *data, size_t size, int count)
 static void
 write_res_id(const struct res_id *id)
 {
-  if (id->named)
+  if ((id != NULL) && id->named)
     {
       unsigned long len = id->u.n.length;
       unichar null_term = 0;
-      write_res_data(id->u.n.name, len * sizeof(unichar), 1);
+      write_res_data(id->u.n.name, (len * sizeof(unichar)), 1);
       write_res_data(&null_term, sizeof(null_term), 1);
     }
   else
     {
       unsigned short i = 0xFFFF;
       write_res_data(&i, sizeof(i), 1);
-      i = (unsigned short)id->u.id;
+      i = (unsigned short)((id != NULL) ? id->u.id : 0U);
       write_res_data(&i, sizeof(i), 1);
     }
 }

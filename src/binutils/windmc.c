@@ -559,6 +559,7 @@ do_sorts(void)
       qsort(mc_severity_codes, (size_t)mc_severity_codes_count,
             sizeof(mc_keyword *), sort_keyword_by_nval);
     }
+  (void)k;
 }
 
 static int

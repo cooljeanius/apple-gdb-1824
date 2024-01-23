@@ -447,14 +447,14 @@ make_tempname (char *filename)
 #endif /* HAVE_DOS_BASED_FILE_SYSTEM */
       strcat(tmpname, "/");
       strcat(tmpname, template_string);
-      mktemp(tmpname);
+      mkstemp(tmpname);
       *slash = c;
     }
   else
     {
       tmpname = (char *)xmalloc(sizeof(template_string));
       strcpy(tmpname, template_string);
-      mktemp(tmpname);
+      mkstemp(tmpname);
     }
   return tmpname;
 }

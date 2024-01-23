@@ -316,7 +316,7 @@ __mmalloc_mmap_morecore(struct mdesc *mdp, int size)
   if (mdp->fd > 0)
     {
       /* FIXME:  Test results of lseek() and write() here: */
-      lseek(mdp->fd, (off_t)(foffset + mapbytes - 1L), SEEK_SET);
+      lseek(mdp->fd, (foffset + (off_t)mapbytes - 1L), SEEK_SET);
       write(mdp->fd, &buf, (size_t)1UL);
 
 #ifdef MAP_FILE

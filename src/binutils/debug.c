@@ -3303,16 +3303,16 @@ debug_class_type_samep (struct debug_handle *info, struct debug_type *t1,
       struct debug_method **pm1, **pm2;
 
       for (pm1 = c1->methods, pm2 = c2->methods;
-	   *pm1 != NULL && *pm2 != NULL;
+	   (*pm1 != NULL) && (*pm2 != NULL);
 	   ++pm1, ++pm2)
 	{
 	  struct debug_method *m1, *m2;
 
 	  m1 = *pm1;
 	  m2 = *pm2;
-	  if (m1->name[0] != m2->name[0]
-	      || strcmp (m1->name, m2->name) != 0
-	      || (m1->variants == NULL) != (m2->variants == NULL))
+	  if ((m1->name[0] != m2->name[0])
+	      || (strcmp(m1->name, m2->name) != 0)
+	      || ((m1->variants == NULL) != (m2->variants == NULL)))
 	    return FALSE;
 	  if (m1->variants == NULL)
 	    {
@@ -3326,27 +3326,28 @@ debug_class_type_samep (struct debug_handle *info, struct debug_type *t1,
 
 		  v1 = *pv1;
 		  v2 = *pv2;
-		  if (v1->physname[0] != v2->physname[0]
-		      || v1->visibility != v2->visibility
-		      || v1->constp != v2->constp
-		      || v1->volatilep != v2->volatilep
-		      || v1->voffset != v2->voffset
-		      || (v1->context == NULL) != (v2->context == NULL)
-		      || strcmp (v1->physname, v2->physname) != 0
-		      || ! debug_type_samep (info, v1->type, v2->type))
+		  if ((v1->physname[0] != v2->physname[0])
+		      || (v1->visibility != v2->visibility)
+		      || (v1->constp != v2->constp)
+		      || (v1->volatilep != v2->volatilep)
+		      || (v1->voffset != v2->voffset)
+		      || ((v1->context == NULL) != (v2->context == NULL))
+		      || (strcmp(v1->physname, v2->physname) != 0)
+		      || !debug_type_samep(info, v1->type, v2->type))
 		    return FALSE;
 		  if (v1->context != NULL)
 		    {
-		      if (! debug_type_samep (info, v1->context,
-					      v2->context))
+		      if (!debug_type_samep(info, v1->context,
+                                            v2->context))
 			return FALSE;
 		    }
 		}
-	      if (((pv1 != NULL) && (*pv1 != NULL)) || (*pv2 != NULL))
+	      if (((pv1 != NULL) && (*pv1 != NULL))
+        	  || ((pv2 != NULL) && (*pv2 != NULL)))
 		return FALSE;
 	    }
 	}
-      if (*pm1 != NULL || *pm2 != NULL)
+      if ((*pm1 != NULL) || (*pm2 != NULL))
 	return FALSE;
     }
 

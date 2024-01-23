@@ -902,19 +902,19 @@ main(int argc, char **argv)
     {
       void *data;
 
-      data = xmalloc (custom_size);
-      if (fread (data, 1, custom_size, custom_data) != custom_size)
+      data = xmalloc(custom_size);
+      if (fread(data, 1, custom_size, custom_data) != custom_size)
 	non_fatal(_("%s: read: %s"), custom_file, xstrerror(errno));
       else
 	{
-	  if (! bfd_set_section_contents (outbfd, custom_section, data,
-					  (file_ptr) 0, custom_size))
-	    bfd_fatal (_("custom section"));
-	  nlm_fixed_header (outbfd)->customDataOffset =
-	    custom_section->filepos;
-	  nlm_fixed_header (outbfd)->customDataSize = custom_size;
+	  if (! bfd_set_section_contents(outbfd, custom_section, data,
+					 (file_ptr)0L, custom_size))
+	    bfd_fatal(_("custom section"));
+	  nlm_fixed_header(outbfd)->customDataOffset =
+	    ((custom_section != NULL) ? custom_section->filepos : 0L);
+	  nlm_fixed_header(outbfd)->customDataSize = custom_size;
 	}
-      free (data);
+      free(data);
     }
   if (! debug_info)
     {
@@ -923,27 +923,27 @@ main(int argc, char **argv)
 	 information.  This can not be handling by fiddling with the
 	 symbol table because exported symbols appear in both the
 	 export information and the debugging information.  */
-      nlm_fixed_header (outbfd)->debugInfoOffset = (file_ptr) -1;
+      nlm_fixed_header(outbfd)->debugInfoOffset = (file_ptr)-1;
     }
   if (full_map)
-    non_fatal (_("warning: FULLMAP is not supported; try ld -M"));
+    non_fatal(_("warning: FULLMAP is not supported; try ld -M"));
   if (help_file != NULL)
     {
       void *data;
 
-      data = xmalloc (help_size);
-      if (fread (data, 1, help_size, help_data) != help_size)
+      data = xmalloc(help_size);
+      if (fread(data, 1, help_size, help_data) != help_size)
 	non_fatal(_("%s: read: %s"), help_file, xstrerror(errno));
       else
 	{
-	  if (! bfd_set_section_contents (outbfd, help_section, data,
-					  (file_ptr) 0, help_size))
-	    bfd_fatal (_("help section"));
-	  nlm_extended_header (outbfd)->helpFileOffset =
-	    help_section->filepos;
-	  nlm_extended_header (outbfd)->helpFileLength = help_size;
+	  if (!bfd_set_section_contents(outbfd, help_section, data,
+                                        (file_ptr)0L, help_size))
+	    bfd_fatal(_("help section"));
+	  nlm_extended_header(outbfd)->helpFileOffset =
+	    ((help_section != NULL) ? help_section->filepos : 0L);
+	  nlm_extended_header(outbfd)->helpFileLength = help_size;
 	}
-      free (data);
+      free(data);
     }
   if (message_file != NULL)
     {
@@ -958,17 +958,17 @@ main(int argc, char **argv)
 					(file_ptr)0L, message_size))
 	    bfd_fatal(_("message section"));
 	  nlm_extended_header(outbfd)->messageFileOffset =
-	    message_section->filepos;
+	    ((message_section != NULL) ? message_section->filepos : 0L);
 	  nlm_extended_header(outbfd)->messageFileLength = message_size;
 
 	  /* FIXME: Are these offsets correct on all platforms?  Are
 	     they 32 bits on all platforms?  What endianness?  */
-	  nlm_extended_header (outbfd)->languageID =
-	    bfd_h_get_32 (outbfd, (bfd_byte *) data + 106);
+	  nlm_extended_header(outbfd)->languageID =
+	    bfd_h_get_32(outbfd, ((bfd_byte *)data + 106));
 	  nlm_extended_header (outbfd)->messageCount =
-	    bfd_h_get_32 (outbfd, (bfd_byte *) data + 110);
+	    bfd_h_get_32(outbfd, ((bfd_byte *)data + 110));
 	}
-      free (data);
+      free(data);
     }
   if (modules != NULL)
     {
@@ -991,7 +991,7 @@ main(int argc, char **argv)
                                      (file_ptr)0L, module_size))
 	bfd_fatal(_("module section"));
       nlm_fixed_header(outbfd)->moduleDependencyOffset =
-	module_section->filepos;
+	((module_section != NULL) ? module_section->filepos : 0L);
       nlm_fixed_header(outbfd)->numberOfModuleDependencies = c;
     }
   if (rpc_file != NULL)
@@ -1007,58 +1007,60 @@ main(int argc, char **argv)
 					(file_ptr)0L, rpc_size))
 	    bfd_fatal(_("rpc section"));
 	  nlm_extended_header(outbfd)->RPCDataOffset =
-	    rpc_section->filepos;
+	    ((rpc_section != NULL) ? rpc_section->filepos : 0L);
 	  nlm_extended_header(outbfd)->RPCDataLength = rpc_size;
 	}
-      free (data);
+      free(data);
     }
   if (sharelib_file != NULL)
     {
       void *data;
 
-      data = xmalloc (shared_size);
-      if (fseek (shared_data, shared_offset, SEEK_SET) != 0
-	  || fread (data, 1, shared_size, shared_data) != shared_size)
-	non_fatal (_("%s: read: %s"), sharelib_file, xstrerror(errno));
+      data = xmalloc(shared_size);
+      if ((fseek(shared_data, shared_offset, SEEK_SET) != 0)
+	  || (fread(data, 1, shared_size, shared_data) != shared_size))
+	non_fatal(_("%s: read: %s"), sharelib_file, xstrerror(errno));
       else
 	{
 	  if (!bfd_set_section_contents(outbfd, shared_section, data,
 					(file_ptr)0L, shared_size))
 	    bfd_fatal(_("shared section"));
 	}
-      nlm_extended_header (outbfd)->sharedCodeOffset =
-	sharedhdr.codeImageOffset - shared_offset + shared_section->filepos;
-      nlm_extended_header (outbfd)->sharedCodeLength =
+      nlm_extended_header(outbfd)->sharedCodeOffset =
+	(sharedhdr.codeImageOffset - shared_offset
+	 + ((shared_section != NULL) ? shared_section->filepos : 0L));
+      nlm_extended_header(outbfd)->sharedCodeLength =
 	sharedhdr.codeImageSize;
-      nlm_extended_header (outbfd)->sharedDataOffset =
-	sharedhdr.dataImageOffset - shared_offset + shared_section->filepos;
-      nlm_extended_header (outbfd)->sharedDataLength =
+      nlm_extended_header(outbfd)->sharedDataOffset =
+	(sharedhdr.dataImageOffset - shared_offset
+	 + ((shared_section != NULL) ? shared_section->filepos : 0L));
+      nlm_extended_header(outbfd)->sharedDataLength =
 	sharedhdr.dataImageSize;
-      nlm_extended_header (outbfd)->sharedRelocationFixupOffset =
-	(sharedhdr.relocationFixupOffset
-	 - shared_offset
-	 + shared_section->filepos);
-      nlm_extended_header (outbfd)->sharedRelocationFixupCount =
+      nlm_extended_header(outbfd)->sharedRelocationFixupOffset =
+	(sharedhdr.relocationFixupOffset - shared_offset
+	 + ((shared_section != NULL) ? shared_section->filepos : 0L));
+      nlm_extended_header(outbfd)->sharedRelocationFixupCount =
 	sharedhdr.numberOfRelocationFixups;
-      nlm_extended_header (outbfd)->sharedExternalReferenceOffset =
-	(sharedhdr.externalReferencesOffset
-	 - shared_offset
-	 + shared_section->filepos);
-      nlm_extended_header (outbfd)->sharedExternalReferenceCount =
+      nlm_extended_header(outbfd)->sharedExternalReferenceOffset =
+	(sharedhdr.externalReferencesOffset - shared_offset
+	 + ((shared_section != NULL) ? shared_section->filepos : 0L));
+      nlm_extended_header(outbfd)->sharedExternalReferenceCount =
 	sharedhdr.numberOfExternalReferences;
-      nlm_extended_header (outbfd)->sharedPublicsOffset =
-	sharedhdr.publicsOffset - shared_offset + shared_section->filepos;
-      nlm_extended_header (outbfd)->sharedPublicsCount =
+      nlm_extended_header(outbfd)->sharedPublicsOffset =
+	(sharedhdr.publicsOffset - shared_offset
+	 + ((shared_section != NULL) ? shared_section->filepos : 0L));
+      nlm_extended_header(outbfd)->sharedPublicsCount =
 	sharedhdr.numberOfPublics;
-      nlm_extended_header (outbfd)->sharedDebugRecordOffset =
-	sharedhdr.debugInfoOffset - shared_offset + shared_section->filepos;
-      nlm_extended_header (outbfd)->sharedDebugRecordCount =
+      nlm_extended_header(outbfd)->sharedDebugRecordOffset =
+	(sharedhdr.debugInfoOffset - shared_offset
+	 + ((shared_section != NULL) ? shared_section->filepos : 0L));
+      nlm_extended_header(outbfd)->sharedDebugRecordCount =
 	sharedhdr.numberOfDebugRecords;
-      nlm_extended_header (outbfd)->SharedInitializationOffset =
+      nlm_extended_header(outbfd)->SharedInitializationOffset =
 	sharedhdr.codeStartOffset;
-      nlm_extended_header (outbfd)->SharedExitProcedureOffset =
+      nlm_extended_header(outbfd)->SharedExitProcedureOffset =
 	sharedhdr.exitProcedureOffset;
-      free (data);
+      free(data);
     }
 
   {

@@ -195,6 +195,13 @@ typedef struct env387
 #  endif /* HAVE_SIGNAL_H */
 # endif /* HAVE_SYS_SIGNAL_H */
 
+/* just in case the previous check missed this: */
+# if (!defined(HAVE_KSIGMASK_T) || !defined(ksigmask_t)) && !defined(_H_SIGNAL)
+#  if (defined(HAVE_SIGNAL_H) || __has_include(<signal.h>)) && !defined(_SIGNAL_H)
+#   include <signal.h>
+#  endif /* HAVE_SIGNAL_H && !_SIGNAL_H */
+# endif /* (!HAVE_KSIGMASK_T || !ksigmask_t) && !_H_SIGNAL */
+
 /* do this separately from the checks for including the signal header(s); they
  * may or may not define this: */
 # if (!defined(HAVE_KSIGMASK_T) || !defined(ksigmask_t)) && !defined(_H_SIGNAL)

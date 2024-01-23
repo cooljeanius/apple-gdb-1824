@@ -266,10 +266,11 @@ usage(FILE *stream, int status)
 }
 
 /* Set the radix for the symbol value and size according to RADIX.  */
-
 static void
-set_print_radix (char *radix)
+set_print_radix(char *radix)
 {
+  if (radix == NULL)
+    fatal(_("radix: invalid radix"));
   switch (*radix)
     {
     case 'x':
@@ -288,20 +289,23 @@ set_print_radix (char *radix)
 #else
       /* This case requires special handling for octal and decimal
          printing.  */
-#endif
-#endif
+#endif /* BFD_HOST_64BIT_LONG */
+#endif /* !BFD64 */
       other_format[3] = desc_format[3] = *radix;
       break;
     default:
-      fatal (_("%s: invalid radix"), radix);
+      fatal(_("%s: invalid radix"), radix);
     }
 }
 
+/* */
 static void
 set_output_format(const char *f)
 {
   int i;
 
+  if (f == NULL)
+    fatal(_("f: invalid output format"));
   switch (*f)
     {
     case 'b':
@@ -317,15 +321,16 @@ set_output_format(const char *f)
       i = FORMAT_SYSV;
       break;
     default:
-      fatal (_("%s: invalid output format"), f);
+      fatal(_("%s: invalid output format"), f);
     }
   format = &formats[i];
 }
-
+
+/* */
 static const char *
-get_symbol_type (unsigned int type)
+get_symbol_type(unsigned int type)
 {
-  static char buff [32];
+  static char buff[32];
 
   switch (type)
     {
@@ -337,12 +342,12 @@ get_symbol_type (unsigned int type)
     case STT_COMMON:   return "COMMON";
     case STT_TLS:      return "TLS";
     default:
-      if (type >= STT_LOPROC && type <= STT_HIPROC)
-	sprintf (buff, _("<processor specific>: %d"), type);
-      else if (type >= STT_LOOS && type <= STT_HIOS)
-	sprintf (buff, _("<OS specific>: %d"), type);
+      if ((type >= STT_LOPROC) && (type <= STT_HIPROC))
+	snprintf(buff, sizeof(buff), _("<processor specific>: %d"), type);
+      else if ((type >= STT_LOOS) && (type <= STT_HIOS))
+	snprintf(buff, sizeof(buff), _("<OS specific>: %d"), type);
       else
-	sprintf (buff, _("<unknown>: %d"), type);
+	snprintf(buff, sizeof(buff), _("<unknown>: %d"), type);
       return buff;
     }
 }
@@ -1612,8 +1617,8 @@ main (int argc, char **argv)
 	     library archive with both kinds of objects will ignore
 	     the 64-bit ones.  For GNU nm, the default is and always
 	     has been -X 32_64, and other options are not supported.  */
-	  if (strcmp (optarg, "32_64") != 0)
-	    fatal (_("Only -X 32_64 is supported"));
+	  if ((optarg == NULL) || (strcmp(optarg, "32_64") != 0))
+	    fatal(_("Only -X 32_64 is supported"));
 	  break;
 
 	case OPTION_TARGET:	/* --target */

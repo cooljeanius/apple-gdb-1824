@@ -634,6 +634,11 @@ setup_archive(struct archive_info *arch, const char *file_name,
 {
   size_t got;
 
+  if (arch == NULL)
+    {
+      error(_("%s: arch is NULL\n"), file_name);
+      return 1;
+    }
   arch->file_name = xstrdup(file_name);
   arch->file = file;
   arch->index_num = 0;
@@ -715,12 +720,12 @@ setup_nested_archive(struct archive_info *nested_arch,
   FILE *member_file;
 
   /* Have we already setup this archive?  */
-  if ((nested_arch->file_name != NULL)
+  if ((nested_arch != NULL) && (nested_arch->file_name != NULL)
       && streq(nested_arch->file_name, member_file_name))
     return 0;
 
   /* Close previous file and discard cached information: */
-  if (nested_arch->file != NULL)
+  if ((nested_arch != NULL) && (nested_arch->file != NULL))
     fclose(nested_arch->file);
   release_archive(nested_arch);
 
@@ -733,8 +738,10 @@ setup_nested_archive(struct archive_info *nested_arch,
 
 /* Release the memory used for the archive information: */
 void
-release_archive(struct archive_info * arch)
+release_archive(struct archive_info *arch)
 {
+  if (arch == NULL)
+    return;
   if (arch->file_name != NULL)
     free(arch->file_name);
   if (arch->index_array != NULL)
@@ -838,6 +845,11 @@ get_archive_member_name_at(struct archive_info *arch,
 {
   size_t got;
 
+  if (arch == NULL)
+    {
+      error(_("%s: arch is NULL\n"), __FILE__);
+      return NULL;
+    }
   if (fseek(arch->file, (long)offset, SEEK_SET) != 0)
     {
       error(_("%s: failed to seek to next file name\n"), arch->file_name);

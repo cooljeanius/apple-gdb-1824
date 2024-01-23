@@ -2379,18 +2379,21 @@ write_rc_rcdata (FILE *e, const struct rcdata_item *rcdata, int ind)
 	    if (i < ri->u.buffer.length)
 	      {
 		if (! first)
-		  indent (e, ind + 2);
+		  indent(e, (ind + 2));
 		if ((ri->u.buffer.data[i] & 0x7f) == ri->u.buffer.data[i]
-		    && ISPRINT (ri->u.buffer.data[i]))
-		  fprintf (e, "\"%c\"", ri->u.buffer.data[i]);
+		    && ISPRINT(ri->u.buffer.data[i]))
+		  fprintf(e, "\"%c\"", ri->u.buffer.data[i]);
 		else
-		  fprintf (e, "\"\\%03o\"", ri->u.buffer.data[i]);
+		  fprintf(e, "\"\\%03o\"", ri->u.buffer.data[i]);
 		if (ri->next != NULL)
-		  fprintf (e, ",");
-		fprintf (e, "\n");
+		  fprintf(e, ",");
+		fprintf(e, "\n");
 		first = 0;
 	      }
 
+            if (first == 0) {
+              (void)first;
+            }
 	    break;
 	  }
 	}
@@ -2398,13 +2401,13 @@ write_rc_rcdata (FILE *e, const struct rcdata_item *rcdata, int ind)
       if (ri->type != RCDATA_BUFFER)
 	{
 	  if (ri->next != NULL)
-	    fprintf (e, ",");
-	  fprintf (e, "\n");
+	    fprintf(e, ",");
+	  fprintf(e, "\n");
 	}
     }
 
-  indent (e, ind);
-  fprintf (e, "END\n");
+  indent(e, ind);
+  fprintf(e, "END\n");
 }
 
 /* Write out a stringtable resource.  */
