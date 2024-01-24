@@ -2239,7 +2239,7 @@ gdb.cxref.bz2: $(SFILES)
 	  `echo $(SFILES) | $(SED) 's/\.y /\.c /g'` -DS_SPLINT_S -warn-xref \
 	  -U__BLOCKS__ -index -latex -html -rtf -sgml -raw -no-comments \
 	  -DRUNNING_CXREF >gdb.cxref
-	bzip2 gdb.cxref
+	bzip2 -f gdb.cxref
 
 # TODO: add more doc subdir targets here
 

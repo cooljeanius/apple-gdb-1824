@@ -34,6 +34,17 @@ Boston, MA 02111-1307, USA.  */
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #  warning "pagecheck-sup.c expects <mach/mach.h> to be included."
 # endif /* __GNUC__ && !defined(__STRICT_ANSI__) */
+# ifndef KERN_SUCCESS
+#  define KERN_SUCCESS 0
+# endif /* !KERN_SUCCESS */
+# ifndef _MACH_I386_KERN_RETURN_H_
+#  define _MACH_I386_KERN_RETURN_H_ 1
+#  if defined(__i386__) || defined(__x86_64__)
+#   ifndef ASSEMBLER
+typedef int kern_return_t;
+#   endif /* !ASSEMBLER */
+#  endif /* __i386__ || __x86_64__ */
+# endif /* !_MACH_I386_KERN_RETURN_H_ */
 #endif /* HAVE_MACH_MACH_H || __MACH__ || __APPLE__ */
 #if defined(HAVE_MACH_MACH_ERROR_H) || __has_include(<mach/mach_error.h>) || \
     defined(__MACH__) || defined(__APPLE__)

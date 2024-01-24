@@ -4,8 +4,8 @@
 <!-- cxref program (c) Andrew M. Bishop 1995-2014. -->
 
 <!--
-Cxref: cxref -Odoc/cxref -Ngdb.cxref -R. -xref -I. -Imacosx -I. -I. -I./config -I./target -DHAVE_CONFIG_H -DHAVE_SYS_TYPES_H -DLOCALEDIR="/usr/local/share/locale" -I./../include/opcode -I./../readline/.. -I../bfd -I./../bfd -I./../include -I../intl -I./../intl -I/opt/local/include/libxml2 -D__MigTypeCheck=1 -D__DARWIN_UNIX03=1 -DS_SPLINT_S -warn-xref -U__BLOCKS__ -index -latex -html -rtf -sgml -raw -no-comments -DRUNNING_CXREF
-CPP  : cxref-cpp -lang-c -C -dD -dI -I. -Imacosx -I. -I. -Iconfig -Itarget -DHAVE_CONFIG_H -DHAVE_SYS_TYPES_H -DLOCALEDIR="/usr/local/share/locale" -I../include/opcode -I.. -I../bfd -I../bfd -I../include -I../intl -I../intl -I/opt/local/include/libxml2 -D__MigTypeCheck=1 -D__DARWIN_UNIX03=1 -DS_SPLINT_S -U__BLOCKS__ -DRUNNING_CXREF
+Cxref: cxref -Odoc/cxref -Ngdb.cxref -R. -xref -I. -Imacosx -I. -I. -I./config -I./target -DHAVE_CONFIG_H -DHAVE_SYS_TYPES_H -DLOCALEDIR="/usr/local/share/locale" -I./../include/opcode -I./../readline/.. -I../bfd -I./../bfd -I./../include -I../intl -I./../intl -I/opt/local/include/libxml2 -D__MigTypeCheck=1 -D__MAYBE_UNIX03 -DS_SPLINT_S -warn-xref -U__BLOCKS__ -index -latex -html -rtf -sgml -raw -no-comments -DRUNNING_CXREF
+CPP  : cxref-cpp -lang-c -C -dD -dI -I. -Imacosx -I. -I. -Iconfig -Itarget -DHAVE_CONFIG_H -DHAVE_SYS_TYPES_H -DLOCALEDIR="/usr/local/share/locale" -I../include/opcode -I.. -I../bfd -I../bfd -I../include -I../intl -I../intl -I/opt/local/include/libxml2 -D__MigTypeCheck=1 -D__MAYBE_UNIX03 -DS_SPLINT_S -U__BLOCKS__ -DRUNNING_CXREF
 -->
 
 <article>

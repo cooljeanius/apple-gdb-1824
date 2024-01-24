@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-12 19:05-0500\n"
+"POT-Creation-Date: 2024-01-23 20:00-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3925,7 +3925,7 @@ msgstr ""
 msgid "Ambiguous %scommand \"%s\": %s."
 msgstr ""
 
-#: cli/cli-decode.c:1593
+#: cli/cli-decode.c:1595
 msgid "Invalid command"
 msgstr ""
 
@@ -5730,17 +5730,17 @@ msgstr ""
 msgid "Unsupported encoding: DW_EH_PE_indirect"
 msgstr ""
 
-#: dwarf2-frame.c:2004
+#: dwarf2-frame.c:2007
 #, possible-c-format
 msgid "Corrupt data in %s:%s; align 4 workaround apparently succeeded"
 msgstr ""
 
-#: dwarf2-frame.c:2011
+#: dwarf2-frame.c:2014
 #, possible-c-format
 msgid "Corrupt data in %s:%s; align 8 workaround apparently succeeded"
 msgstr ""
 
-#: dwarf2-frame.c:2018
+#: dwarf2-frame.c:2021
 #, possible-c-format
 msgid "Corrupt data in %s:%s"
 msgstr ""
@@ -6572,12 +6572,12 @@ msgstr ""
 msgid "':' operator used in invalid context"
 msgstr ""
 
-#: eval.c:1760 eval.c:1815 jv-lang.c:956
+#: eval.c:1760 eval.c:1815 jv-lang.c:959
 #, possible-c-format
 msgid "cannot subscript something of type `%s'"
 msgstr ""
 
-#: eval.c:1763 jv-lang.c:958
+#: eval.c:1763 jv-lang.c:961
 msgid "cannot subscript requested type"
 msgstr ""
 
@@ -7510,37 +7510,37 @@ msgstr ""
 msgid "Show if GDB should honor the 'stride' parameter of array types."
 msgstr ""
 
-#: gnu-regex.c:995 gnulib/import/regcomp.c:135
+#: gnu-regex.c:995 gnulib/import/regcomp.c:122
 msgid "Success"
 msgstr ""
 
 #. REG_NOERROR
-#: gnu-regex.c:996 gnulib/import/regcomp.c:138
+#: gnu-regex.c:996 gnulib/import/regcomp.c:125
 msgid "No match"
 msgstr ""
 
 #. REG_NOMATCH
-#: gnu-regex.c:997 gnulib/import/regcomp.c:141
+#: gnu-regex.c:997 gnulib/import/regcomp.c:128
 msgid "Invalid regular expression"
 msgstr ""
 
 #. REG_BADPAT
-#: gnu-regex.c:998 gnulib/import/regcomp.c:144
+#: gnu-regex.c:998 gnulib/import/regcomp.c:131
 msgid "Invalid collation character"
 msgstr ""
 
 #. REG_ECOLLATE
-#: gnu-regex.c:999 gnulib/import/regcomp.c:147
+#: gnu-regex.c:999 gnulib/import/regcomp.c:134
 msgid "Invalid character class name"
 msgstr ""
 
 #. REG_ECTYPE
-#: gnu-regex.c:1000 gnulib/import/regcomp.c:150
+#: gnu-regex.c:1000 gnulib/import/regcomp.c:137
 msgid "Trailing backslash"
 msgstr ""
 
 #. REG_EESCAPE
-#: gnu-regex.c:1001 gnulib/import/regcomp.c:153
+#: gnu-regex.c:1001 gnulib/import/regcomp.c:140
 msgid "Invalid back reference"
 msgstr ""
 
@@ -7550,51 +7550,51 @@ msgid "Unmatched [ or [^"
 msgstr ""
 
 #. REG_EBRACK
-#: gnu-regex.c:1003 gnulib/import/regcomp.c:159
+#: gnu-regex.c:1003 gnulib/import/regcomp.c:146
 msgid "Unmatched ( or \\("
 msgstr ""
 
 #. REG_EPAREN
-#: gnu-regex.c:1004 gnulib/import/regcomp.c:162
+#: gnu-regex.c:1004 gnulib/import/regcomp.c:149
 msgid "Unmatched \\{"
 msgstr ""
 
 #. REG_EBRACE
-#: gnu-regex.c:1005 gnulib/import/regcomp.c:165
+#: gnu-regex.c:1005 gnulib/import/regcomp.c:152
 msgid "Invalid content of \\{\\}"
 msgstr ""
 
 #. REG_BADBR
-#: gnu-regex.c:1006 gnulib/import/regcomp.c:168
+#: gnu-regex.c:1006 gnulib/import/regcomp.c:155
 msgid "Invalid range end"
 msgstr ""
 
 #. REG_ERANGE
-#: gnu-regex.c:1007 gnulib/import/regcomp.c:171
+#: gnu-regex.c:1007 gnulib/import/regcomp.c:158
 msgid "Memory exhausted"
 msgstr ""
 
 #. REG_ESPACE
-#: gnu-regex.c:1008 gnulib/import/regcomp.c:174
+#: gnu-regex.c:1008 gnulib/import/regcomp.c:161
 msgid "Invalid preceding regular expression"
 msgstr ""
 
 #. REG_BADRPT
-#: gnu-regex.c:1009 gnulib/import/regcomp.c:177
+#: gnu-regex.c:1009 gnulib/import/regcomp.c:164
 msgid "Premature end of regular expression"
 msgstr ""
 
 #. REG_EEND
-#: gnu-regex.c:1010 gnulib/import/regcomp.c:180
+#: gnu-regex.c:1010 gnulib/import/regcomp.c:167
 msgid "Regular expression too big"
 msgstr ""
 
 #. REG_ESIZE
-#: gnu-regex.c:1011 gnulib/import/regcomp.c:183
+#: gnu-regex.c:1011 gnulib/import/regcomp.c:170
 msgid "Unmatched ) or \\)"
 msgstr ""
 
-#: gnu-regex.c:5494 gnulib/import/regcomp.c:676
+#: gnu-regex.c:5494 gnulib/import/regcomp.c:650
 msgid "No previous regular expression"
 msgstr ""
 
@@ -7634,82 +7634,82 @@ msgstr ""
 msgid "Illegal vptr offset in class %s"
 msgstr ""
 
-#: gnulib/obstack.c:338 gnulib/obstack.c:340 gnulib/import/obstack.c:338
-#: gnulib/import/obstack.c:340 gnulib/import/xalloc-die.c:34
+#: gnulib/obstack.c:337 gnulib/obstack.c:339 gnulib/import/obstack.c:337
+#: gnulib/import/obstack.c:339 gnulib/import/xalloc-die.c:34
 msgid "memory exhausted"
 msgstr ""
 
-#: gnulib/error.c:195 gnulib/import/error.c:195
+#: gnulib/error.c:194 gnulib/import/error.c:194
 msgid "Unknown system error"
-msgstr ""
-
-#: gnulib/import/bitset/stats.c:177
-#, c-format
-msgid "%u bitset_allocs, %u freed (%.2f%%).\n"
-msgstr ""
-
-#: gnulib/import/bitset/stats.c:180
-#, c-format
-msgid "%u bitset_sets, %u cached (%.2f%%)\n"
 msgstr ""
 
 #: gnulib/import/bitset/stats.c:183
 #, c-format
-msgid "%u bitset_resets, %u cached (%.2f%%)\n"
+msgid "%u bitset_allocs, %u freed (%.2f%%).\n"
 msgstr ""
 
 #: gnulib/import/bitset/stats.c:186
 #, c-format
+msgid "%u bitset_sets, %u cached (%.2f%%)\n"
+msgstr ""
+
+#: gnulib/import/bitset/stats.c:189
+#, c-format
+msgid "%u bitset_resets, %u cached (%.2f%%)\n"
+msgstr ""
+
+#: gnulib/import/bitset/stats.c:192
+#, c-format
 msgid "%u bitset_tests, %u cached (%.2f%%)\n"
 msgstr ""
 
-#: gnulib/import/bitset/stats.c:190
+#: gnulib/import/bitset/stats.c:196
 #, c-format
 msgid "%u bitset_lists\n"
 msgstr ""
 
-#: gnulib/import/bitset/stats.c:192
+#: gnulib/import/bitset/stats.c:198
 msgid "count log histogram\n"
 msgstr ""
 
-#: gnulib/import/bitset/stats.c:195
+#: gnulib/import/bitset/stats.c:201
 msgid "size log histogram\n"
 msgstr ""
 
-#: gnulib/import/bitset/stats.c:198
+#: gnulib/import/bitset/stats.c:204
 msgid "density histogram\n"
 msgstr ""
 
-#: gnulib/import/bitset/stats.c:210
+#: gnulib/import/bitset/stats.c:216
 #, c-format
 msgid ""
 "Bitset statistics:\n"
 "\n"
 msgstr ""
 
-#: gnulib/import/bitset/stats.c:213
+#: gnulib/import/bitset/stats.c:219
 #, c-format
 msgid "Accumulated runs = %u\n"
 msgstr ""
 
-#: gnulib/import/bitset/stats.c:255 gnulib/import/bitset/stats.c:260
+#: gnulib/import/bitset/stats.c:261 gnulib/import/bitset/stats.c:266
 msgid "cannot read stats file"
 msgstr ""
 
-#: gnulib/import/bitset/stats.c:257
+#: gnulib/import/bitset/stats.c:263
 #, c-format
 msgid "bad stats file size\n"
 msgstr ""
 
-#: gnulib/import/bitset/stats.c:281 gnulib/import/bitset/stats.c:283
+#: gnulib/import/bitset/stats.c:287 gnulib/import/bitset/stats.c:289
 msgid "cannot write stats file"
 msgstr ""
 
-#: gnulib/import/bitset/stats.c:286
+#: gnulib/import/bitset/stats.c:292
 msgid "cannot open stats file for writing"
 msgstr ""
 
-#: gnulib/import/regcomp.c:156
+#: gnulib/import/regcomp.c:143
 msgid "Unmatched [, [^, [:, [., or [="
 msgstr ""
 
@@ -9860,20 +9860,20 @@ msgstr ""
 msgid "No symbol \"%s\" in current context"
 msgstr ""
 
-#: jv-lang.c:608
+#: jv-lang.c:611
 msgid "cannot find java.lang.Object"
 msgstr ""
 
-#: jv-lang.c:679
+#: jv-lang.c:682
 #, possible-c-format
 msgid "unknown signature '%c' for primitive type"
 msgstr ""
 
-#: jv-lang.c:826
+#: jv-lang.c:829
 msgid "not implemented - java_value_string"
 msgstr ""
 
-#: jv-lang.c:943
+#: jv-lang.c:946
 #, possible-c-format
 msgid "array index (%ld) out of bounds (length: %ld)"
 msgstr ""
@@ -16025,15 +16025,15 @@ msgstr ""
 msgid "The default OS ABI is \"%s\".\n"
 msgstr ""
 
-#: osabi.c:719
+#: osabi.c:724
 msgid "_initialize_gdb_osabi: gdb_osabi_names[] is inconsistent"
 msgstr ""
 
-#: osabi.c:729
+#: osabi.c:734
 msgid "Set OS ABI of target."
 msgstr ""
 
-#: osabi.c:730
+#: osabi.c:735
 msgid "Show OS ABI of target."
 msgstr ""
 

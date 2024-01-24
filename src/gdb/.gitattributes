@@ -1,1 +1,3 @@
+*.bz2 binary
+*.bz2 linguist-generated
 *.r linguist-language=rez
