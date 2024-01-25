@@ -1,14 +1,14 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
-/* Skeleton interface for Bison's Yacc-like parsers in C
+/* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
+   Inc.
 
-   This program is free software; you can redistribute it and/or modify
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,9 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -33,89 +31,83 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* Tokens.  */
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
+
+#ifndef YY_YY_DEFPARSE_H_INCLUDED
+# define YY_YY_DEFPARSE_H_INCLUDED
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 1
+#endif
+#if YYDEBUG
+extern int yydebug;
+#endif
+
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     NAME = 258,
-     LIBRARY = 259,
-     DESCRIPTION = 260,
-     STACKSIZE = 261,
-     HEAPSIZE = 262,
-     CODE = 263,
-     DATA = 264,
-     SECTIONS = 265,
-     EXPORTS = 266,
-     IMPORTS = 267,
-     VERSIONK = 268,
-     BASE = 269,
-     CONSTANT = 270,
-     READ = 271,
-     WRITE = 272,
-     EXECUTE = 273,
-     SHARED = 274,
-     NONSHARED = 275,
-     NONAME = 276,
-     PRIVATE = 277,
-     SINGLE = 278,
-     MULTIPLE = 279,
-     INITINSTANCE = 280,
-     INITGLOBAL = 281,
-     TERMINSTANCE = 282,
-     TERMGLOBAL = 283,
-     ID = 284,
-     NUMBER = 285
-   };
+  enum yytokentype
+  {
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    NAME = 258,                    /* NAME  */
+    LIBRARY = 259,                 /* LIBRARY  */
+    DESCRIPTION = 260,             /* DESCRIPTION  */
+    STACKSIZE = 261,               /* STACKSIZE  */
+    HEAPSIZE = 262,                /* HEAPSIZE  */
+    CODE = 263,                    /* CODE  */
+    DATA = 264,                    /* DATA  */
+    SECTIONS = 265,                /* SECTIONS  */
+    EXPORTS = 266,                 /* EXPORTS  */
+    IMPORTS = 267,                 /* IMPORTS  */
+    VERSIONK = 268,                /* VERSIONK  */
+    BASE = 269,                    /* BASE  */
+    CONSTANT = 270,                /* CONSTANT  */
+    READ = 271,                    /* READ  */
+    WRITE = 272,                   /* WRITE  */
+    EXECUTE = 273,                 /* EXECUTE  */
+    SHARED = 274,                  /* SHARED  */
+    NONSHARED = 275,               /* NONSHARED  */
+    NONAME = 276,                  /* NONAME  */
+    PRIVATE = 277,                 /* PRIVATE  */
+    SINGLE = 278,                  /* SINGLE  */
+    MULTIPLE = 279,                /* MULTIPLE  */
+    INITINSTANCE = 280,            /* INITINSTANCE  */
+    INITGLOBAL = 281,              /* INITGLOBAL  */
+    TERMINSTANCE = 282,            /* TERMINSTANCE  */
+    TERMGLOBAL = 283,              /* TERMGLOBAL  */
+    ID = 284,                      /* ID  */
+    NUMBER = 285                   /* NUMBER  */
+  };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
-/* Tokens.  */
-#define NAME 258
-#define LIBRARY 259
-#define DESCRIPTION 260
-#define STACKSIZE 261
-#define HEAPSIZE 262
-#define CODE 263
-#define DATA 264
-#define SECTIONS 265
-#define EXPORTS 266
-#define IMPORTS 267
-#define VERSIONK 268
-#define BASE 269
-#define CONSTANT 270
-#define READ 271
-#define WRITE 272
-#define EXECUTE 273
-#define SHARED 274
-#define NONSHARED 275
-#define NONAME 276
-#define PRIVATE 277
-#define SINGLE 278
-#define MULTIPLE 279
-#define INITINSTANCE 280
-#define INITGLOBAL 281
-#define TERMINSTANCE 282
-#define TERMGLOBAL 283
-#define ID 284
-#define NUMBER 285
 
-
-
-
+/* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-#line 27 "defparse.y"
+union YYSTYPE
 {
-  char *id;
+#line 27 "defparse.y"
+
+  const char *id;
   int number;
-}
-/* Line 1529 of yacc.c.  */
-#line 114 "defparse.h"
-	YYSTYPE;
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
+
+#line 99 "defparse.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
 #endif
+
 
 extern YYSTYPE yylval;
 
+
+int yyparse (void);
+
+
+#endif /* !YY_YY_DEFPARSE_H_INCLUDED  */

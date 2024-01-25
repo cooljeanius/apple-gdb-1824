@@ -25,7 +25,7 @@
 %}
 
 %union {
-  char *id;
+  const char *id;
   int number;
 };
 
@@ -141,8 +141,9 @@ opt_PRIVATE:
 opt_name: ID		{ $$ =$1; }
 	| ID '.' ID
 	  {
-	    char *name = (char *)xmalloc(strlen($1) + 1 + strlen($3) + 1);
-	    sprintf(name, "%s.%s", $1, $3);
+            size_t namelen = (strlen($1) + 2UL + strlen($3) + 2UL);
+	    char *name = (char *)xmalloc(namelen);
+	    snprintf(name, namelen, "%s.%s", $1, $3);
 	    $$ = name;
 	  }
 	|		{ $$=""; }
@@ -157,8 +158,9 @@ opt_equal_name:
           '=' ID	{ $$ = $2; }
 	| '=' ID '.' ID
 	  {
-	    char *name = (char *)xmalloc(strlen($2) + 1 + strlen($4) + 1);
-	    sprintf(name, "%s.%s", $2, $4);
+            size_t namelen = (strlen($2) + 2UL + strlen($4) + 2UL);
+	    char *name = (char *)xmalloc(namelen);
+	    snprintf(name, namelen, "%s.%s", $2, $4);
 	    $$ = name;
 	  }
         | 		{ $$ =  0; }

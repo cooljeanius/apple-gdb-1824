@@ -24,6 +24,10 @@
 
 #include "sysdep.h"
 
+#ifndef LIBIBERTY_H
+# include "libiberty.h"
+#endif /* !LIBIBERTY_H */
+
 /* */
 int
 main(int argc, char *argv[])

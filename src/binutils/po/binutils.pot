@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-24 21:10-0500\n"
+"POT-Creation-Date: 2024-01-24 23:33-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -7158,17 +7158,17 @@ msgstr ""
 msgid "try to add a ill language."
 msgstr ""
 
-#: windmc.c:1192
+#: windmc.c:1194
 #, c-format
 msgid "unable to open file `%s' for input.\n"
 msgstr ""
 
-#: windmc.c:1200
+#: windmc.c:1202
 #, c-format
 msgid "unable to read contents of %s"
 msgstr ""
 
-#: windmc.c:1212
+#: windmc.c:1214
 msgid "input file does not seems to be UFT16.\n"
 msgstr ""
 
@@ -7279,17 +7279,17 @@ msgstr ""
 msgid "no resources"
 msgstr ""
 
-#: wrstabs.c:357 wrstabs.c:1931
+#: wrstabs.c:356 wrstabs.c:1930
 #, c-format
 msgid "string_hash_lookup failed: %s"
 msgstr ""
 
-#: wrstabs.c:638
+#: wrstabs.c:637
 #, c-format
 msgid "stab_int_type: bad size %u"
 msgstr ""
 
-#: wrstabs.c:1408
+#: wrstabs.c:1407
 #, c-format
 msgid "%s: warning: unknown size for field `%s' in struct"
 msgstr ""

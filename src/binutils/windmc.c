@@ -544,10 +544,12 @@ do_sorts(void)
       qsort(mc_facility_codes, (size_t)mc_facility_codes_count,
             sizeof(mc_keyword *), sort_keyword_by_nval);
     }
+  else
+    (void)k;
 
   /* Sort severity code definitions by there id ascending: */
   i = 0;
-  while ((k = enum_severity (i)) != NULL)
+  while ((k = enum_severity(i)) != NULL)
     ++i;
   mc_severity_codes_count = i;
   if (i != 0)

@@ -1,4 +1,4 @@
-/* NLM (NetWare Loadable Module) support for BFD.
+/* nlm/internal.h: NLM (NetWare Loadable Module) support for BFD.
    Copyright 1993, 1994, 2003 Free Software Foundation, Inc.
 
    Written by Fred Fish @ Cygnus Support.
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 
 /* This file is part of NLM support for BFD, and contains the portions
@@ -203,7 +203,7 @@ typedef struct nlm_internal_variable_header
 typedef struct nlm_internal_version_header
 {
   /* The header is recognized by "VeRsIoN#" in the stamp field. */
-  char stamp[8];
+  char stamp[9];
   long majorVersion;
   long minorVersion;
   long revision;
@@ -220,7 +220,7 @@ typedef struct nlm_internal_version_header
 typedef struct nlm_internal_copyright_header
 {
   /* The header is recognized by "CoPyRiGhT=" in the stamp field. */
-  char stamp[10];
+  char stamp[11];
   unsigned char copyrightMessageLength;
   char copyrightMessage[NLM_MAX_COPYRIGHT_MESSAGE_LENGTH];
 } Nlm_Internal_Copyright_Header;
@@ -233,7 +233,7 @@ typedef struct nlm_internal_copyright_header
 typedef struct nlm_internal_extended_header
 {
   /* The header is recognized by "MeSsAgEs" in the stamp field. */
-  char stamp[8];
+  char stamp[9];
   long languageID;
   file_ptr messageFileOffset;
   bfd_size_type messageFileLength;
@@ -277,11 +277,11 @@ typedef struct nlm_internal_extended_header
 typedef struct nlm_internal_custom_header
 {
   /* The header is recognized by "CuStHeAd" in the stamp field. */
-  char stamp[8];
+  char stamp[9];
   bfd_size_type hdrLength;
   file_ptr dataOffset;
   bfd_size_type dataLength;
-  char dataStamp[8];
+  char dataStamp[9];
   void *hdr;
 } Nlm_Internal_Custom_Header;
 
@@ -296,7 +296,7 @@ typedef struct nlm_internal_custom_header
 typedef struct nlm_internal_cygnus_ext_header
 {
   /* The header is recognized by "CyGnUsEx" in the stamp field. */
-  char stamp[8];
+  char stamp[9];
   /* File location of debugging information.  */
   file_ptr offset;
   /* Length of debugging information.  */

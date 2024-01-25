@@ -300,35 +300,34 @@ static const struct debug_write_fns stab_fns =
   stab_lineno
 };
 
-/* Routine to create an entry in a string hash table.  */
-
+/* Routine to create an entry in a string hash table: */
 static struct bfd_hash_entry *
-string_hash_newfunc (struct bfd_hash_entry *entry,
-		     struct bfd_hash_table *table, const char *string)
+string_hash_newfunc(struct bfd_hash_entry *entry,
+		    struct bfd_hash_table *table, const char *string)
 {
-  struct string_hash_entry *ret = (struct string_hash_entry *) entry;
+  struct string_hash_entry *ret = (struct string_hash_entry *)entry;
 
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
-  if (ret == (struct string_hash_entry *) NULL)
+  if (ret == (struct string_hash_entry *)NULL)
     ret = ((struct string_hash_entry *)
-	   bfd_hash_allocate (table, sizeof (struct string_hash_entry)));
-  if (ret == (struct string_hash_entry *) NULL)
+	   bfd_hash_allocate(table, sizeof(struct string_hash_entry)));
+  if (ret == (struct string_hash_entry *)NULL)
     return NULL;
 
-  /* Call the allocation method of the superclass.  */
+  /* Call the allocation method of the superclass: */
   ret = ((struct string_hash_entry *)
-	 bfd_hash_newfunc ((struct bfd_hash_entry *) ret, table, string));
+	 bfd_hash_newfunc((struct bfd_hash_entry *)ret, table, string));
 
   if (ret)
     {
-      /* Initialize the local fields.  */
+      /* Initialize the local fields: */
       ret->next = NULL;
       ret->index = -1;
       ret->size = 0;
     }
 
-  return (struct bfd_hash_entry *) ret;
+  return (struct bfd_hash_entry *)ret;
 }
 
 /* Look up an entry in a string hash table.  */
@@ -875,7 +874,7 @@ stab_modify_type(struct stab_write_handle *info, int mod,
          new type, so we don't bother to define one.  */
       definition = info->type_stack->definition;
       s = stab_pop_type(info);
-      buflen = (strlen(s) + 2UL);
+      buflen = (strlen(s) + 3UL);
       buf = (char *)xmalloc(buflen);
       snprintf(buf, buflen, "%c%s", mod, s);
       free(s);
@@ -920,7 +919,7 @@ stab_modify_type(struct stab_write_handle *info, int mod,
 	  ++info->type_index;
 
 	  s = stab_pop_type(info);
-   	  buflen = (strlen(s) + 20UL);
+   	  buflen = (strlen(s) + 22UL);
 	  buf = (char *)xmalloc(buflen);
 	  snprintf(buf, buflen, "%ld=%c%s", lindex, mod, s);
 	  free(s);
@@ -970,7 +969,7 @@ stab_function_type(void *p, int argcount,
 
 	  s = stab_pop_type(info);
 
-	  buflen = (strlen(s) + 3UL);
+	  buflen = (strlen(s) + 4UL);
 	  buf = (char *)xmalloc(buflen);
 	  snprintf(buf, buflen, ":t%s", s);
 	  free(s);
@@ -1136,7 +1135,7 @@ stab_offset_type(void *p)
   definition = (definition || info->type_stack->definition);
   base = stab_pop_type(info);
 
-  buflen = (strlen(target) + strlen(base) + 3UL);
+  buflen = (strlen(target) + strlen(base) + 5UL);
   buf = (char *)xmalloc(buflen);
   snprintf(buf, buflen, "@%s,%s", base, target);
   free(base);
@@ -1440,7 +1439,7 @@ stab_end_struct_type(void *p)
   fields = info->type_stack->fields;
   first = stab_pop_type(info);
 
-  buflen = (strlen(first) + strlen(fields) + 2UL);
+  buflen = (strlen(first) + strlen(fields) + 4UL);
   buf = (char *)xmalloc(buflen);
   snprintf(buf, buflen, "%s%s;", first, fields);
   free(first);
@@ -1951,7 +1950,7 @@ stab_tag(void *p, const char *tag)
 
   s = stab_pop_type(info);
 
-  buflen = (strlen(tag) + strlen(s) + 3UL);
+  buflen = (strlen(tag) + strlen(s) + 5UL);
   buf = (char *)xmalloc(buflen);
 
   snprintf(buf, buflen, "%s:T%s", tag, s);
@@ -1971,7 +1970,7 @@ stab_int_constant(void *p, const char *name, bfd_vma val)
 {
   struct stab_write_handle *info = (struct stab_write_handle *)p;
   char *buf;
-  size_t buflen = (strlen(name) + 20UL);
+  size_t buflen = (strlen(name) + 25UL);
 
   buf = (char *)xmalloc(buflen);
   snprintf(buf, buflen, "%s:c=i%ld", name, (long)val);
@@ -2072,7 +2071,7 @@ stab_variable(void *p, const char *name, enum debug_var_kind kind,
 
 	  lindex = info->type_index;
 	  ++info->type_index;
-   	  nlen = (strlen(s) + 20UL);
+   	  nlen = (strlen(s) + 21UL);
 	  n = (char *)xmalloc(nlen);
 	  snprintf(n, nlen, "%ld=%s", lindex, s);
 	  free(s);
@@ -2111,7 +2110,7 @@ stab_start_function(void *p, const char *name, bfd_boolean globalp)
 
   rettype = stab_pop_type(info);
 
-  buflen = (strlen(name) + strlen(rettype) + 3UL);
+  buflen = (strlen(name) + strlen(rettype) + 5UL);
   buf = (char *)xmalloc(buflen);
   snprintf(buf, buflen, "%s:%c%s", name, (globalp ? 'F' : 'f'), rettype);
 
@@ -2165,7 +2164,7 @@ stab_function_parameter(void *p, const char *name, enum debug_parm_kind kind,
       break;
     }
 
-  buflen = (strlen(name) + strlen(s) + 3UL);
+  buflen = (strlen(name) + strlen(s) + 5UL);
   buf = (char *)xmalloc(buflen);
   snprintf(buf, buflen, "%s:%c%s", name, kindc, s);
   free(s);
