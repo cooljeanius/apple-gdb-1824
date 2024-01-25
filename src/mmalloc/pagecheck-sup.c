@@ -45,6 +45,19 @@ typedef int kern_return_t;
 #   endif /* !ASSEMBLER */
 #  endif /* __i386__ || __x86_64__ */
 # endif /* !_MACH_I386_KERN_RETURN_H_ */
+# ifndef _MACH_VM_PROT_H_
+#  define _MACH_VM_PROT_H_ 1
+typedef int vm_prot_t;
+#  ifndef VM_PROT_NONE
+#   define VM_PROT_NONE ((vm_prot_t)0x00)
+#  endif /* !VM_PROT_NONE */
+#  ifndef VM_PROT_READ
+#   define VM_PROT_READ ((vm_prot_t)0x01)
+#  endif /* !VM_PROT_READ */
+#  ifndef VM_PROT_WRITE
+#   define VM_PROT_WRITE ((vm_prot_t)0x02)
+#  endif /* !VM_PROT_WRITE */
+# endif /* !_MACH_VM_PROT_H_ */
 #endif /* HAVE_MACH_MACH_H || __MACH__ || __APPLE__ */
 #if defined(HAVE_MACH_MACH_ERROR_H) || __has_include(<mach/mach_error.h>) || \
     defined(__MACH__) || defined(__APPLE__)

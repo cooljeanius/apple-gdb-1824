@@ -388,7 +388,8 @@ dump_section_header(bfd *abfd, asection *section,
       comma = ", ";
     }
 
-  printf ("\n");
+  printf("\n");
+  (void)comma;
 #undef PF
 }
 
@@ -1329,8 +1330,11 @@ disassemble_bytes(struct disassemble_info *info,
 
       /* Remember the length of the previous instruction.  */
       previous_octets = octets;
+#else
+      if (octets != 0) {
+        (void)octets;
+      }
 #endif /* DISASSEMBLER_NEEDS_RELOCS */
-      octets = 0;
 
       /* If we see more than SKIP_ZEROES octets of zeroes, we just
 	 print `...'.  */

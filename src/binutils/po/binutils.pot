@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-22 19:38-0500\n"
+"POT-Creation-Date: 2024-01-24 21:10-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,7 +61,7 @@ msgstr ""
 msgid "%s: can not get addresses from archive"
 msgstr ""
 
-#: addr2line.c:325 nm.c:1560 objdump.c:2880
+#: addr2line.c:325 nm.c:1560 objdump.c:2884
 #, c-format
 msgid "unknown demangling style `%s'"
 msgstr ""
@@ -3908,131 +3908,131 @@ msgid ""
 "\n"
 msgstr ""
 
-#: objdump.c:398
+#: objdump.c:399
 #, c-format
 msgid "Sections:\n"
 msgstr ""
 
-#: objdump.c:401 objdump.c:405
+#: objdump.c:402 objdump.c:406
 #, c-format
 msgid "Idx Name          Size      VMA       LMA       File off  Algn"
 msgstr ""
 
-#: objdump.c:407
+#: objdump.c:408
 #, c-format
 msgid ""
 "Idx Name          Size      VMA               LMA               File off  "
 "Algn"
 msgstr ""
 
-#: objdump.c:411
+#: objdump.c:412
 #, c-format
 msgid "  Flags"
 msgstr ""
 
-#: objdump.c:413
+#: objdump.c:414
 #, c-format
 msgid "  Pg"
 msgstr ""
 
-#: objdump.c:456
+#: objdump.c:457
 #, c-format
 msgid "%s: not a dynamic object"
 msgstr ""
 
-#: objdump.c:1751
+#: objdump.c:1755
 #, c-format
 msgid "Disassembly of section %s:\n"
 msgstr ""
 
-#: objdump.c:1914
+#: objdump.c:1918
 #, c-format
 msgid "Cannot use supplied machine %s"
 msgstr ""
 
-#: objdump.c:1933
+#: objdump.c:1937
 #, c-format
 msgid "Cannot disassemble for architecture %s\n"
 msgstr ""
 
-#: objdump.c:2003
+#: objdump.c:2007
 #, c-format
 msgid ""
 "No %s section present\n"
 "\n"
 msgstr ""
 
-#: objdump.c:2012
+#: objdump.c:2016
 #, c-format
 msgid "Reading %s section of %s failed: %s"
 msgstr ""
 
-#: objdump.c:2056
+#: objdump.c:2060
 #, c-format
 msgid ""
 "Contents of %s section:\n"
 "\n"
 msgstr ""
 
-#: objdump.c:2185
+#: objdump.c:2189
 #, c-format
 msgid "architecture: %s, "
 msgstr ""
 
-#: objdump.c:2188
+#: objdump.c:2192
 #, c-format
 msgid "flags 0x%08x:\n"
 msgstr ""
 
-#: objdump.c:2202
+#: objdump.c:2206
 #, c-format
 msgid ""
 "\n"
 "start address 0x"
 msgstr ""
 
-#: objdump.c:2242
+#: objdump.c:2246
 #, c-format
 msgid "Contents of section %s:\n"
 msgstr ""
 
-#: objdump.c:2367
+#: objdump.c:2371
 #, c-format
 msgid "no symbols\n"
 msgstr ""
 
-#: objdump.c:2374
+#: objdump.c:2378
 #, c-format
 msgid "no information for symbol number %ld\n"
 msgstr ""
 
-#: objdump.c:2377
+#: objdump.c:2381
 #, c-format
 msgid "could not determine the type of symbol number %ld\n"
 msgstr ""
 
-#: objdump.c:2642
+#: objdump.c:2646
 #, c-format
 msgid ""
 "\n"
 "%s:     file format %s\n"
 msgstr ""
 
-#: objdump.c:2693
+#: objdump.c:2697
 #, c-format
 msgid "%s: printing debugging information failed"
 msgstr ""
 
-#: objdump.c:2785
+#: objdump.c:2789
 #, c-format
 msgid "In archive %s:\n"
 msgstr ""
 
-#: objdump.c:2905
+#: objdump.c:2909
 msgid "unrecognized -E option"
 msgstr ""
 
-#: objdump.c:2916
+#: objdump.c:2920
 #, c-format
 msgid "unrecognized --endian type `%s'"
 msgstr ""
@@ -7279,7 +7279,7 @@ msgstr ""
 msgid "no resources"
 msgstr ""
 
-#: wrstabs.c:357 wrstabs.c:1940
+#: wrstabs.c:357 wrstabs.c:1931
 #, c-format
 msgid "string_hash_lookup failed: %s"
 msgstr ""
@@ -7289,7 +7289,7 @@ msgstr ""
 msgid "stab_int_type: bad size %u"
 msgstr ""
 
-#: wrstabs.c:1407
+#: wrstabs.c:1408
 #, c-format
 msgid "%s: warning: unknown size for field `%s' in struct"
 msgstr ""

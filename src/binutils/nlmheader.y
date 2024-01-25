@@ -58,7 +58,7 @@ struct string_list *export_symbols;
 /* List of files from INPUT.  */
 struct string_list *input_files;
 /* Map file name (MAP, FULLMAP).  */
-char *map_file;
+const char *map_file;
 /* Whether a full map has been requested (FULLMAP).  */
 bfd_boolean full_map;
 /* File named by HELP.  */
@@ -165,9 +165,9 @@ command:
 	  }
 	| COPYRIGHT QUOTED_STRING
 	  {
-	    int len;
+	    size_t len;
 
-	    strncpy (copyright_hdr->stamp, "CoPyRiGhT=", 10);
+	    strncpy(copyright_hdr->stamp, "CoPyRiGhT=", 11UL);
 	    len = strlen ($2);
 	    if (len >= NLM_MAX_COPYRIGHT_MESSAGE_LENGTH)
 	      {
@@ -192,9 +192,13 @@ command:
 	    version_hdr->month = nlmlex_get_number ($2);
 	    version_hdr->day = nlmlex_get_number ($3);
 	    version_hdr->year = nlmlex_get_number ($4);
-	    free ($2);
-	    free ($3);
-	    free ($4);
+	    free($2);
+            if ($2 != $3) {
+	      free($3);
+            }
+            if (($2 != $4) && ($3 != $4)) {
+	      free($4);
+            }
 	    if (version_hdr->month < 1 || version_hdr->month > 12)
 	      nlmheader_warn (_("illegal month"), -1);
 	    if (version_hdr->day < 1 || version_hdr->day > 31)
@@ -208,7 +212,7 @@ command:
 	  }
 	| DESCRIPTION QUOTED_STRING
 	  {
-	    int len;
+	    size_t len;
 
 	    len = strlen ($2);
 	    if (len > NLM_MAX_DESCRIPTION_LENGTH)
@@ -371,7 +375,7 @@ command:
 	  {
 	    long val;
 
-	    strncpy (version_hdr->stamp, "VeRsIoN#", 8);
+	    strncpy(version_hdr->stamp, "VeRsIoN#", 9UL);
 	    version_hdr->majorVersion = nlmlex_get_number ($2);
 	    val = nlmlex_get_number ($3);
 	    if (val < 0 || val > 99)
@@ -387,15 +391,19 @@ command:
 	      version_hdr->revision = 0;
 	    else
 	      version_hdr->revision = val;
-	    free ($2);
-	    free ($3);
-	    free ($4);
+	    free($2);
+            if ($2 != $3) {
+	      free($3);
+            }
+            if (($2 != $4) && ($3 != $4)) {
+	      free($4);
+            }
 	  }
 	| VERSIONK STRING STRING
 	  {
 	    long val;
 
-	    strncpy (version_hdr->stamp, "VeRsIoN#", 8);
+	    strncpy(version_hdr->stamp, "VeRsIoN#", 9UL);
 	    version_hdr->majorVersion = nlmlex_get_number ($2);
 	    val = nlmlex_get_number ($3);
 	    if (val < 0 || val > 99)
@@ -404,8 +412,10 @@ command:
 	    else
 	      version_hdr->minorVersion = val;
 	    version_hdr->revision = 0;
-	    free ($2);
-	    free ($3);
+	    free($2);
+            if ($2 != $3) {
+	      free($3);
+            }
 	  }
 	| XDCDATA STRING
 	  {
