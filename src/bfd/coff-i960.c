@@ -384,12 +384,12 @@ coff_i960_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	}
       else
 	{
-	  h = obj_coff_sym_hashes (input_bfd)[symndx];
-	  sym = syms + symndx;
+	  h = obj_coff_sym_hashes(input_bfd)[symndx];
+	  sym = (syms + symndx);
 	}
 
-      if (sym != NULL && sym->n_scnum != 0)
-	addend = - sym->n_value;
+      if ((sym != NULL) && (sym->n_scnum != 0))
+	addend = -sym->n_value;
       else
 	addend = 0;
 
@@ -399,7 +399,7 @@ coff_i960_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	case 25: howto = &howto_iprmed; break;
 	case 27: howto = &howto_optcall; break;
 	default:
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  return FALSE;
 	}
 
@@ -412,6 +412,9 @@ coff_i960_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	  if (symndx == -1)
 	    {
 	      sec = bfd_abs_section_ptr;
+              if (sec == NULL) {
+                (void)sec;
+              }
 	      val = 0;
 	    }
 	  else

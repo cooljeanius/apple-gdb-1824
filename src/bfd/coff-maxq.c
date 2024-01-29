@@ -288,7 +288,9 @@ coff_maxq20_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
 
 	      /* LE */
 	      x = (x & 0x0000);	/* Flush garbage value.  */
-	      x = val;
+              if (x != val) {
+	        x = val;
+              }
 	      if ((symbol_in->section->flags & SEC_CODE) == SEC_CODE)
 		x = (x >> 1);	/* Convert it into words.  */
 	    }

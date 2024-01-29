@@ -28,22 +28,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #define ELF_MAXPAGESIZE 0x10000
 #define elf_symbol_leading_char 0
 
+#include "config.h"
 #include "bfd.h"
-#include "libbfd.h"
 #include "sysdep.h"
+#include "libbfd.h"
 #include "elf/internal.h"
 #include "elf-bfd.h"
 
-static boolean elf32_shlin_grok_prstatus
-  PARAMS ((bfd *abfd, Elf_Internal_Note *note));
-static boolean elf32_shlin_grok_psinfo
-  PARAMS ((bfd *abfd, Elf_Internal_Note *note));
+static bfd_boolean elf32_shlin_grok_prstatus
+  PARAMS((bfd *abfd, Elf_Internal_Note *note));
+static bfd_boolean elf32_shlin_grok_psinfo
+  PARAMS((bfd *abfd, Elf_Internal_Note *note));
 
 /* Support for core dump NOTE sections */
-static boolean
-elf32_shlin_grok_prstatus (abfd, note)
-     bfd *abfd;
-     Elf_Internal_Note *note;
+static bfd_boolean
+elf32_shlin_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   int offset;
   unsigned int raw_size;
@@ -51,14 +50,14 @@ elf32_shlin_grok_prstatus (abfd, note)
   switch (note->descsz)
     {
       default:
-	return false;
+	return FALSE;
 
       case 168:		/* Linux/SH */
 	/* pr_cursig */
-	elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
+	elf_tdata(abfd)->core_signal = bfd_get_16(abfd, note->descdata + 12);
 
 	/* pr_pid */
-	elf_tdata (abfd)->core_pid = bfd_get_32 (abfd, note->descdata + 24);
+	elf_tdata(abfd)->core_pid = bfd_get_32(abfd, note->descdata + 24);
 
 	/* pr_reg */
 	offset = 72;
@@ -67,26 +66,25 @@ elf32_shlin_grok_prstatus (abfd, note)
 	break;
     }
 
-  /* Make a ".reg/999" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  raw_size, note->descpos + offset);
+  /* Make a ".reg/999" section: */
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", raw_size,
+  					 (note->descpos + offset));
 }
 
-static boolean
-elf32_shlin_grok_psinfo (abfd, note)
-     bfd *abfd;
-     Elf_Internal_Note *note;
+/* */
+static bfd_boolean
+elf32_shlin_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
   switch (note->descsz)
     {
       default:
-	return false;
+	return FALSE;
 
       case 124:		/* Linux/SH elf_prpsinfo */
-	elf_tdata (abfd)->core_program
-	 = _bfd_elfcore_strndup (abfd, note->descdata + 28, 16);
-	elf_tdata (abfd)->core_command
-	 = _bfd_elfcore_strndup (abfd, note->descdata + 44, 80);
+	elf_tdata(abfd)->core_program =
+	  _bfd_elfcore_strndup(abfd, (note->descdata + 28), 16);
+	elf_tdata(abfd)->core_command =
+	  _bfd_elfcore_strndup(abfd, (note->descdata + 44), 80);
     }
 
   /* Note that for some reason, a spurious space is tacked
@@ -95,15 +93,15 @@ elf32_shlin_grok_psinfo (abfd, note)
    */
 
   {
-    char *command = elf_tdata (abfd)->core_command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    size_t n = strlen(command);
 
-	  if (0 < n && command[n - 1] == ' ') {
-		  command[n - 1] = '\0';
-	  }
+    if ((n > 0UL) && (command[n - 1UL] == ' ')) {
+      command[n - 1UL] = '\0';
+    }
   }
 
-  return true;
+  return TRUE;
 }
 
 #define elf_backend_grok_prstatus	elf32_shlin_grok_prstatus
@@ -111,4 +109,4 @@ elf32_shlin_grok_psinfo (abfd, note)
 
 #include "elf32-sh.c"
 
-/* EOF */
+/* End of elf32-sh-lin.c */

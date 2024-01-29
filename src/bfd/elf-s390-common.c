@@ -20,6 +20,27 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
+#ifndef __BFD_H_SEEN__
+# include "bfd.h"
+#endif /* !__BFD_H_SEEN__ */
+#ifndef BFD_SYSDEP_H
+# include "sysdep.h"
+#endif /* !BFD_SYSDEP_H */
+#ifndef BFDLINK_H
+# include "bfdlink.h"
+#endif /* !BFDLINK_H */
+#ifndef __LIBBFD_H__
+# include "libbfd.h"
+#endif /* !__LIBBFD_H__ */
+#ifndef _LIBELF_H_
+# include "elf-bfd.h"
+#endif /* !_LIBELF_H_ */
+#ifndef _ELF_390_H
+# include "elf/s390.h"
+#endif /* !_ELF_390_H */
 
 /* Return TRUE if H is an IFUNC symbol.  Simply checking for the
    symbol type might not be enough since it might get changed to

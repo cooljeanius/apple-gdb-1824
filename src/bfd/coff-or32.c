@@ -100,19 +100,19 @@ or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
 
   if (output_bfd)
     {
-      /* Partial linking - do nothing.  */
+      /* Partial linking - do nothing: */
       reloc_entry->address += input_section->output_offset;
       return bfd_reloc_ok;
     }
 
-  if (symbol_in != NULL
-      && bfd_is_und_section (symbol_in->section))
+  if ((symbol_in != NULL)
+      && bfd_is_und_section(symbol_in->section))
     {
-      /* Keep the state machine happy in case we're called again.  */
+      /* Keep the state machine happy in case we are called again: */
       if (r_type == R_IHIHALF)
         {
           part1_consth_active = TRUE;
-          part1_consth_value  = 0;
+          part1_consth_value = 0;
         }
 
       return bfd_reloc_undefined;
@@ -121,7 +121,7 @@ or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
   if ((part1_consth_active) && (r_type != R_IHCONST))
     {
       part1_consth_active = FALSE;
-      *error_message = (char *) "Missing IHCONST";
+      *error_message = (char *)"Missing IHCONST";
 
       return bfd_reloc_dangerous;
     }
@@ -136,13 +136,13 @@ or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
     case R_IREL:
       insn = (unsigned long)bfd_get_32(abfd, hit_data);
 
-      /* Take the value in the field and sign extend it.  */
-      signed_value = EXTRACT_JUMPTARG (insn);
-      signed_value = SIGN_EXTEND_JUMPTARG (signed_value);
+      /* Take the value in the field and sign extend it: */
+      signed_value = EXTRACT_JUMPTARG(insn);
+      signed_value = SIGN_EXTEND_JUMPTARG(signed_value);
       signed_value <<= 2;
 
-      /* See the note on the R_IREL reloc in coff_or32_relocate_section.  */
-      if (signed_value == - (long) reloc_entry->address)
+      /* See the note on the R_IREL reloc in coff_or32_relocate_section: */
+      if (signed_value == -(long)reloc_entry->address)
         signed_value = 0;
 
       signed_value += (long)(sym_value + reloc_entry->addend);
@@ -226,6 +226,9 @@ or32_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
       return bfd_reloc_dangerous;
     }
 
+  if (insn == 0UL) {
+    (void)insn;
+  }
   return bfd_reloc_ok;
 }
 
@@ -354,7 +357,7 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
   hihalf_val = 0;
 
   rel = relocs;
-  relend = rel + input_section->reloc_count;
+  relend = (rel + input_section->reloc_count);
 
   for (; rel < relend; rel++)
     {
@@ -371,9 +374,9 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
       bfd_reloc_status_type rstat;
 
       symndx = rel->r_symndx;
-      loc = contents + rel->r_vaddr - input_section->vma;
+      loc = (contents + rel->r_vaddr - input_section->vma);
 
-      if (symndx == -1 || rel->r_type == R_IHCONST)
+      if ((symndx == -1) || (rel->r_type == R_IHCONST))
         h = NULL;
       else
         h = obj_coff_sym_hashes(input_bfd)[symndx];
@@ -393,12 +396,10 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
                 sec = bfd_abs_section_ptr;
               else
                 {
-                  sym = syms + symndx;
+                  sym = (syms + symndx);
                   sec = sections[symndx];
-                  val = (sec->output_section->vma
-                         + sec->output_offset
-                         + sym->n_value
-                         - sec->vma);
+                  val = (sec->output_section->vma + sec->output_offset
+                         + sym->n_value - sec->vma);
                 }
             }
           else
@@ -407,8 +408,7 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
                   || h->root.type == bfd_link_hash_defweak)
                 {
                   sec = h->root.u.def.section;
-                  val = (h->root.u.def.value
-                         + sec->output_section->vma
+                  val = (h->root.u.def.value + sec->output_section->vma
                          + sec->output_offset);
                 }
               else
@@ -435,15 +435,15 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
       switch (rel->r_type)
         {
         default:
-          bfd_set_error (bfd_error_bad_value);
+          bfd_set_error(bfd_error_bad_value);
           return FALSE;
 
         case R_IREL:
           insn = (unsigned long)bfd_get_32(input_bfd, loc);
 
           /* Extract the addend.  */
-          signed_value = EXTRACT_JUMPTARG (insn);
-          signed_value = SIGN_EXTEND_JUMPTARG (signed_value);
+          signed_value = EXTRACT_JUMPTARG(insn);
+          signed_value = SIGN_EXTEND_JUMPTARG(signed_value);
           signed_value <<= 2;
 
           /* Determine the destination of the jump.  */
@@ -453,17 +453,17 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 	  signed_value -= (long)(input_section->output_section->vma
 				 + input_section->output_offset
 				 + (rel->r_vaddr - input_section->vma));
-	  if (signed_value > 0x7ffffff || signed_value < - 0x8000000)
+	  if ((signed_value > 0x7ffffff) || (signed_value < -0x8000000))
 	    {
 	      overflow = TRUE;
 	      signed_value = 0;
 	    }
 
-          /* Put the adjusted value back into the instruction.  */
+          /* Put the adjusted value back into the instruction: */
           signed_value >>= 2;
           insn = INSERT_JUMPTARG(insn, signed_value);
 
-          bfd_put_32 (input_bfd, (bfd_vma) insn, loc);
+          bfd_put_32(input_bfd, (bfd_vma)insn, loc);
           break;
 
         case R_ILOHALF:
@@ -538,6 +538,10 @@ coff_or32_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
                  input_section, rel->r_vaddr - input_section->vma)))
             return FALSE;
         }
+
+      if (sec == NULL) {
+        (void)sec;
+      }
     }
 
   return TRUE;

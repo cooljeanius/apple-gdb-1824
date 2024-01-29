@@ -1327,12 +1327,12 @@ h8300_bfd_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
       asymbol **symbols;
       arelent **relocs;
 
-      /* Suck in the relocs, symbols & canonicalize them.  */
-      reloc_size = bfd_get_reloc_upper_bound (abfd, sec);
+      /* Suck in the relocs, symbols & canonicalize them: */
+      reloc_size = bfd_get_reloc_upper_bound(abfd, sec);
       if (reloc_size <= 0)
 	continue;
 
-      relocs = (arelent **) bfd_malloc ((bfd_size_type) reloc_size);
+      relocs = (arelent **)bfd_malloc((bfd_size_type)reloc_size);
       if (!relocs)
 	return FALSE;
 
@@ -1340,10 +1340,10 @@ h8300_bfd_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	 call abovec, so we can cheat and use the pointer to them that was
 	 saved in the above call.  */
       symbols = _bfd_generic_link_get_symbols(abfd);
-      reloc_count = bfd_canonicalize_reloc (abfd, sec, relocs, symbols);
+      reloc_count = bfd_canonicalize_reloc(abfd, sec, relocs, symbols);
       if (reloc_count <= 0)
 	{
-	  free (relocs);
+	  free(relocs);
 	  continue;
 	}
 
@@ -1359,8 +1359,8 @@ h8300_bfd_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	     to add a new entry for each unique symbol referenced
 	     by an R_MEM_INDIRECT relocation except for a reloc
 	     against the absolute section symbol.  */
-	  if (reloc->howto->type == R_MEM_INDIRECT
-	      && symbol != bfd_abs_section_ptr->symbol)
+	  if ((reloc->howto->type == R_MEM_INDIRECT)
+	      && (symbol != bfd_abs_section_ptr->symbol))
 
 	    {
 	      struct funcvec_hash_table *ftab;
@@ -1370,34 +1370,36 @@ h8300_bfd_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 	      if (symbol->flags & BSF_LOCAL)
 		{
 		  char *new_name;
+                  const size_t new_namelen = (strlen(name) + 10UL);
 
-		  new_name = (char *)bfd_malloc((bfd_size_type)strlen(name) + 10);
+		  new_name = (char *)bfd_malloc((bfd_size_type)new_namelen);
 		  if (new_name == NULL) {
 		      abort();
 		  }
 
-		  sprintf(new_name, "%s_%08x", name, symbol->section->id);
+		  snprintf(new_name, new_namelen, "%s_%08x", name,
+    		  	   symbol->section->id);
 		  name = new_name;
 		}
 
-	      /* Look this symbol up in the function vector hash table.  */
-	      ftab = htab->funcvec_hash_table;
-	      h = funcvec_hash_lookup (ftab, name, FALSE, FALSE);
+	      /* Look this symbol up in the function vector hash table: */
+	      ftab = funcvec_hash_table;
+	      h = funcvec_hash_lookup(ftab, name, FALSE, FALSE);
 
 	      /* If this symbol isn't already in the hash table, add
 		 it and bump up the size of the hash table.  */
 	      if (h == NULL)
 		{
-		  h = funcvec_hash_lookup (ftab, name, TRUE, TRUE);
+		  h = funcvec_hash_lookup(ftab, name, TRUE, TRUE);
 		  if (h == NULL)
 		    {
-		      free (relocs);
+		      free(relocs);
 		      return FALSE;
 		    }
 
 		  /* Bump the size of the vectors section.  Each vector
 		     takes 2 bytes on the h8300 and 4 bytes on the h8300h.  */
-		  switch (bfd_get_mach (abfd))
+		  switch (bfd_get_mach(abfd))
 		    {
 		    case bfd_mach_h8300:
 		    case bfd_mach_h8300hn:
@@ -1409,14 +1411,14 @@ h8300_bfd_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 		      htab->vectors_sec->size += 4;
 		      break;
 		    default:
-		      abort ();
+		      abort();
 		    }
 		}
 	    }
 	}
 
       /* We're done with the relocations, release them.  */
-      free (relocs);
+      free(relocs);
     }
 
   /* Now actually allocate some space for the function vector. It is wasteful
