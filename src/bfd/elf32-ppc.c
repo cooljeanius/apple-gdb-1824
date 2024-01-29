@@ -2181,29 +2181,29 @@ ppc_elf_final_write_processing(bfd *abfd, bfd_boolean linker ATTRIBUTE_UNUSED)
       return;
     }
 
-  /* Create the apuinfo header.  */
-  num_entries = apuinfo_list_length ();
-  bfd_put_32 (abfd, sizeof APUINFO_LABEL, buffer);
-  bfd_put_32 (abfd, num_entries * 4, buffer + 4);
-  bfd_put_32 (abfd, 0x2, buffer + 8);
-  strcpy ((char *) buffer + 12, APUINFO_LABEL);
+  /* Create the apuinfo header: */
+  num_entries = apuinfo_list_length();
+  bfd_put_32(abfd, sizeof(APUINFO_LABEL), buffer);
+  bfd_put_32(abfd, (num_entries * 4), (buffer + 4));
+  bfd_put_32(abfd, 0x2, (buffer + 8));
+  strncpy(((char *)buffer + 12), APUINFO_LABEL, (length + 12UL));
 
   length = 20;
   for (i = 0; i < num_entries; i++)
     {
-      bfd_put_32 (abfd, apuinfo_list_element (i), buffer + length);
+      bfd_put_32(abfd, apuinfo_list_element(i), (buffer + length));
       length += 4;
     }
 
   if (length != asec->size)
-    (*_bfd_error_handler) (_("failed to compute new APUinfo section."));
+    (*_bfd_error_handler)(_("failed to compute new APUinfo section."));
 
-  if (! bfd_set_section_contents (abfd, asec, buffer, (file_ptr) 0, length))
-    (*_bfd_error_handler) (_("failed to install new APUinfo section."));
+  if (! bfd_set_section_contents(abfd, asec, buffer, (file_ptr)0L, length))
+    (*_bfd_error_handler)(_("failed to install new APUinfo section."));
 
-  free (buffer);
+  free(buffer);
 
-  apuinfo_list_finish ();
+  apuinfo_list_finish();
 }
 
 /* The following functions are specific to the ELF linker, while
@@ -3793,7 +3793,7 @@ ppc_elf_gc_sweep_hook (bfd *abfd,
 	case R_PPC_UADDR16:
 	  if (info->shared)
 	    break;
-
+	  ATTRIBUTE_FALLTHROUGH; /* FIXME: really fallthrough here as well? */
 	case R_PPC_PLT32:
 	case R_PPC_PLTREL24:
 	case R_PPC_PLTREL32:
@@ -3802,9 +3802,9 @@ ppc_elf_gc_sweep_hook (bfd *abfd,
 	case R_PPC_PLT16_HA:
 	  if (h != NULL)
 	    {
-	      bfd_vma addend = r_type == R_PPC_PLTREL24 ? rel->r_addend : 0;
-	      struct plt_entry *ent = find_plt_ent (h, got2, addend);
-	      if (ent->plt.refcount > 0)
+	      bfd_vma addend = ((r_type == R_PPC_PLTREL24) ? rel->r_addend : 0);
+	      struct plt_entry *ent = find_plt_ent(h, got2, addend);
+	      if ((ent != NULL) && (ent->plt.refcount > 0))
 		ent->plt.refcount -= 1;
 	    }
 	  break;
@@ -3816,33 +3816,28 @@ ppc_elf_gc_sweep_hook (bfd *abfd,
   return TRUE;
 }
 
-/* Set htab->tls_get_addr and call the generic ELF tls_setup function.  */
-
+/* Set htab->tls_get_addr and call the generic ELF tls_setup function: */
 asection *
-ppc_elf_tls_setup (bfd *obfd, struct bfd_link_info *info)
+ppc_elf_tls_setup(bfd *obfd, struct bfd_link_info *info)
 {
   struct ppc_elf_link_hash_table *htab;
 
-  htab = ppc_elf_hash_table (info);
-  if (!htab->old_plt
-      && htab->plt != NULL
-      && htab->plt->output_section != NULL)
+  htab = ppc_elf_hash_table(info);
+  if (!htab->old_plt && (htab->plt != NULL)
+      && (htab->plt->output_section != NULL))
     {
-      elf_section_type (htab->plt->output_section) = SHT_PROGBITS;
-      elf_section_flags (htab->plt->output_section) = SHF_ALLOC + SHF_WRITE;
+      elf_section_type(htab->plt->output_section) = SHT_PROGBITS;
+      elf_section_flags(htab->plt->output_section) = (SHF_ALLOC + SHF_WRITE);
     }
 
-  htab->tls_get_addr = elf_link_hash_lookup (&htab->elf, "__tls_get_addr",
-					     FALSE, FALSE, TRUE);
-  return _bfd_elf_tls_setup (obfd, info);
+  htab->tls_get_addr = elf_link_hash_lookup(&htab->elf, "__tls_get_addr",
+					    FALSE, FALSE, TRUE);
+  return _bfd_elf_tls_setup(obfd, info);
 }
 
-/* Run through all the TLS relocs looking for optimization
-   opportunities.  */
-
+/* Run through all the TLS relocs looking for optimization opportunities: */
 bfd_boolean
-ppc_elf_tls_optimize (bfd *obfd ATTRIBUTE_UNUSED,
-		      struct bfd_link_info *info)
+ppc_elf_tls_optimize(bfd *obfd ATTRIBUTE_UNUSED, struct bfd_link_info *info)
 {
   bfd *ibfd;
   asection *sec;
@@ -4009,6 +4004,9 @@ ppc_elf_tls_optimize (bfd *obfd ATTRIBUTE_UNUSED,
 		      }
 		    lgot_masks = (char *)(lgot_refs + symtab_hdr->sh_info);
 		    tls_mask = &lgot_masks[r_symndx];
+                    if (sym == NULL) {
+                      (void)sym;
+                    }
 		  }
 
 		*tls_mask |= tls_set;
@@ -4959,21 +4957,21 @@ ppc_elf_relax_section(bfd *abfd, asection *isec,
 	case R_PPC_REL24:
 	case R_PPC_LOCAL24PC:
 	case R_PPC_PLTREL24:
-	  max_branch_offset = 1 << 25;
+	  max_branch_offset = (1 << 25);
 	  break;
 
 	case R_PPC_REL14:
 	case R_PPC_REL14_BRTAKEN:
 	case R_PPC_REL14_BRNTAKEN:
-	  max_branch_offset = 1 << 15;
+	  max_branch_offset = (1 << 15);
 	  break;
 
 	default:
 	  continue;
 	}
 
-      /* Get the value of the symbol referred to by the reloc.  */
-      if (ELF32_R_SYM (irel->r_info) < symtab_hdr->sh_info)
+      /* Get the value of the symbol referred to by the reloc: */
+      if (ELF32_R_SYM(irel->r_info) < symtab_hdr->sh_info)
 	{
 	  /* A local symbol.  */
 	  Elf_Internal_Sym *isym;
@@ -5013,7 +5011,7 @@ ppc_elf_relax_section(bfd *abfd, asection *isec,
 
 	  while (h->root.type == bfd_link_hash_indirect
 		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 
 	  tsec = NULL;
 	  toff = 0;
@@ -5061,7 +5059,8 @@ ppc_elf_relax_section(bfd *abfd, asection *isec,
 	 attribute for a code section, and we are only looking at
 	 branches.  However, implement it correctly here as a
 	 reference for other target relax_section functions.  */
-      if (0 && tsec->sec_info_type == ELF_INFO_TYPE_MERGE)
+      if (((tsec->flags & SEC_MERGE) != 0)
+          && (tsec->sec_info_type == ELF_INFO_TYPE_MERGE))
 	{
 	  /* At this stage in linking, no SEC_MERGE symbol has been
 	     adjusted, so all references to such symbols need to be
@@ -6842,7 +6841,7 @@ ppc_elf_finish_dynamic_symbol (bfd *output_bfd,
 	    plt = (ent->plt.offset
 		   + htab->plt->output_section->vma
 		   + htab->plt->output_offset);
-	    p = (unsigned char *) htab->glink->contents + ent->glink_offset;
+	    p = ((unsigned char *)htab->glink->contents + ent->glink_offset);
 
 	    if (info->shared || info->pie)
 	      {
@@ -6892,6 +6891,9 @@ ppc_elf_finish_dynamic_symbol (bfd *output_bfd,
 		p += 4;
 		bfd_put_32(output_bfd, BCTR, p);
 		p += 4;
+  		if (p == NULL) {
+                  (void)p;
+                }
 
 		/* We only need one non-PIC glink stub.  */
 		break;

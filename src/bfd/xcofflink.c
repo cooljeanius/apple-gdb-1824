@@ -3209,7 +3209,7 @@ bfd_xcoff_size_dynamic_sections(bfd *output_bfd,
 
   /* Set up the import file names: */
   out = ((char *)lsec->contents + ldhdr->l_impoff);
-  strcpy(out, libpath);
+  strncpy(out, libpath, sizeof(&out));
   out += (strlen(libpath) + 1UL);
   *out++ = '\0';
   *out++ = '\0';

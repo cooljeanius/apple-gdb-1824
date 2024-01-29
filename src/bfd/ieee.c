@@ -845,6 +845,7 @@ ieee_slurp_external_symbols (bfd *abfd)
 			return FALSE;
 		      }
 		  }
+    		break; /* FIXME: really break? */
               default:
                 break;
 	      }
@@ -1162,6 +1163,7 @@ ieee_slurp_sections (bfd *abfd)
 			  default:
 			    break;
 			  }
+     			break;
                       default:
                         break;
 		      }
@@ -1188,7 +1190,7 @@ ieee_slurp_sections (bfd *abfd)
 		      default:
 			break;
 		      }
-
+                    break;
                   default:
                     break;
 		  }
@@ -1675,7 +1677,7 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 	      loop = FALSE;
 	  }
       }
-
+      break;
     default:
       break;
     }
@@ -2518,7 +2520,7 @@ write_int(int value)
       unsigned int length;
 
       /* How many significant bytes?  */
-      /* FIXME FOR LONGER INTS.  */
+      /* FIXME: FIXME FOR LONGER INTS.  */
       if ((unsigned int)value & 0xff000000)
 	length = 4;
       else if (value & 0x00ff0000)
@@ -2539,6 +2541,7 @@ write_int(int value)
 	  OUT(value >> 8);
 	case 1:
 	  OUT(value);
+   	  break;
         default:
           break;
 	}
@@ -2692,15 +2695,19 @@ drop_int(struct output_buffer_struct *buf)
 	case 0x84:
 	  ch = THIS();
 	  NEXT();
+   	  break;
 	case 0x83:
 	  ch = THIS();
 	  NEXT();
+          break;
 	case 0x82:
 	  ch = THIS();
 	  NEXT();
+   	  break;
 	case 0x81:
 	  ch = THIS();
 	  NEXT();
+   	  break;
 	case 0x80:
 	  break;
         default:
@@ -2745,6 +2752,7 @@ copy_int(void)
 	  ch = THIS();
 	  NEXT();
 	  OUT(ch);
+   	  break;
 	case 0x80:
 	  break;
         default:
@@ -2877,6 +2885,7 @@ f1_record(void)
 	case 0x07:
 	  INTn(line number);
 	  INT;
+   	  break;
 	case 0x08:
 	  break;
 	case 0x0a:
@@ -3286,10 +3295,14 @@ ieee_set_section_contents(bfd *abfd, sec_ptr section, const void *location,
       return TRUE;
     }
 
+  if (ieee_per_section(section) == NULL)
+    return FALSE;
   if (ieee_per_section(section)->data == (bfd_byte *)NULL)
     {
       if (!init_for_output(abfd))
 	return FALSE;
+      if (offset == 0L)
+        return FALSE;
     }
   memcpy((void *)(ieee_per_section(section)->data + offset),
          (void *)location,

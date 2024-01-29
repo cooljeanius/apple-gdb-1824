@@ -2151,6 +2151,7 @@ v850_elf_section_from_shdr (bfd *abfd,
                                                          hdr->bfd_section)
 				   | SEC_IS_COMMON)))
 	return FALSE;
+      ATTRIBUTE_FALLTHROUGH; /* (could just as easily be a break) */
     default:
       break;
     }

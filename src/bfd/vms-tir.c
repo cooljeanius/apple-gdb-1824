@@ -594,6 +594,7 @@ etir_opr(bfd *abfd, int cmd, unsigned char *ptr)
 
     case ETIR_S_C_OPR_INSV:      /* Insert field.   */
       (void)_bfd_vms_pop(abfd, NULL);
+      break; /* FIXME: really break? */
     case ETIR_S_C_OPR_USH:       /* Unsigned shift.   */
     case ETIR_S_C_OPR_ROT:       /* Rotate.  */
     case ETIR_S_C_OPR_REDEF:     /* Redefine symbol to current location.  */

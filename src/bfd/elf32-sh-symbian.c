@@ -114,6 +114,8 @@ sh_symbian_import_as(struct bfd_link_info *info, bfd *abfd,
 {
   struct elf_link_hash_entry *new_hash;
   symbol_rename *node;
+  size_t current_namelen;
+  size_t new_namelen;
 
   if (DEBUG)
     fprintf(stderr, "IMPORT '%s' AS '%s'\n", current_name, new_name);
@@ -138,7 +140,8 @@ sh_symbian_import_as(struct bfd_link_info *info, bfd *abfd,
       return FALSE;
     }
 
-  if ((node->current_name = (char *)bfd_malloc(strlen(current_name) + 1UL)) == NULL)
+  current_namelen = (strlen(current_name) + 1UL);
+  if ((node->current_name = (char *)bfd_malloc(current_namelen)) == NULL)
     {
       if (DEBUG)
 	fprintf(stderr, "IMPORT AS: No mem for current name field in rename node\n");
@@ -146,9 +149,10 @@ sh_symbian_import_as(struct bfd_link_info *info, bfd *abfd,
       return FALSE;
     }
   else
-    strcpy(node->current_name, current_name);
+    strncpy(node->current_name, current_name, current_namelen);
 
-  if ((node->new_name = (char *)bfd_malloc(strlen(new_name) + 1)) == NULL)
+  new_namelen = (strlen(new_name) + 1UL);
+  if ((node->new_name = (char *)bfd_malloc(new_namelen)) == NULL)
     {
       if (DEBUG)
 	fprintf(stderr, "IMPORT AS: No mem for new name field in rename node\n");
@@ -157,7 +161,7 @@ sh_symbian_import_as(struct bfd_link_info *info, bfd *abfd,
       return FALSE;
     }
   else
-    strcpy(node->new_name, new_name);
+    strncpy(node->new_name, new_name, new_namelen);
 
   node->next = rename_list;
   node->current_hash = NULL;

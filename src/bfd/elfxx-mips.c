@@ -964,12 +964,12 @@ mips_elf_create_procedure_table(void *handle, bfd *abfd,
   memset(erp, 0, sizeof(struct rpdr_ext));
   erp++;
   str = ((char *)rtproc + (sizeof(struct rpdr_ext) * (count + 2UL)));
-  strcpy(str, no_name_func);
+  strncpy(str, no_name_func, sizeof(&str));
   str += (strlen(no_name_func) + 1UL);
   for (i = 0; i < count; i++)
     {
       ecoff_swap_rpdr_out(abfd, (rpdr + i), (erp + i));
-      strcpy(str, sv[i]);
+      strncpy(str, sv[i], sizeof(&str));
       str += (strlen(sv[i]) + 1UL);
     }
   H_PUT_S32(abfd, (bfd_vma)-1, (erp + count)->p_adr);

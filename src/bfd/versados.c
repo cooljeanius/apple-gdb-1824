@@ -230,7 +230,7 @@ new_symbol_string(bfd *abfd, const char *name)
 {
   char *n = VDATA(abfd)->strings;
 
-  strcpy(VDATA(abfd)->strings, name);
+  strncpy(VDATA(abfd)->strings, name, sizeof(&VDATA(abfd)->strings));
   VDATA(abfd)->strings += (strlen(VDATA(abfd)->strings) + 1);
   return n;
 }
@@ -296,6 +296,7 @@ process_esd(bfd *abfd, struct ext_esd *esd, int pass)
 	  break;
 	case ESD_XDEF_IN_ABS:
 	  sec = (asection *)&bfd_abs_section;
+   	  ATTRIBUTE_FALLTHROUGH; /* (because 'sec' is used in the next case) */
 	case ESD_XDEF_IN_SEC:
 	  {
 	    int snum = VDATA(abfd)->def_idx++;

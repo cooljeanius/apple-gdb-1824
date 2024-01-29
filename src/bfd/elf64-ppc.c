@@ -6017,7 +6017,9 @@ dec_dynrel_count(bfd_vma r_info, asection *sec, struct bfd_link_info *info,
     case R_PPC64_TPREL16_HIGHESTA:
       if (!info->shared)
 	return TRUE;
-
+      ATTRIBUTE_FALLTHROUGH;
+      /* (doesn't really matter since we're falling through to a break) */
+      /* (could just as easily be a break here, too, instead of the fallthru) */
     case R_PPC64_TPREL64:
     case R_PPC64_DTPMOD64:
     case R_PPC64_DTPREL64:

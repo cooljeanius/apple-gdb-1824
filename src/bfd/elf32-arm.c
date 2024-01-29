@@ -6237,13 +6237,12 @@ elf32_arm_finish_dynamic_sections(bfd *output_bfd, struct bfd_link_info *info)
 	  Elf_Internal_Dyn dyn;
 	  const char *name;
 	  asection *s;
+   	  unsigned int type;
 
 	  bfd_elf32_swap_dyn_in(dynobj, dyncon, &dyn);
 
 	  switch (dyn.d_tag)
 	    {
-	      unsigned int type;
-
 	    default:
 	      break;
 

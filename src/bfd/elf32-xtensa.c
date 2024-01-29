@@ -7399,7 +7399,7 @@ identify_literal_placement (bfd *abfd,
 
   if (!literal_placed)
     {
-      /* Nothing worked, leave the literal alone but update the last loc.  */
+      /* Nothing worked, leave the literal alone but update the last loc: */
       values->has_last_loc = TRUE;
       values->last_loc = rel->r_rel;
       if (!val_map)
@@ -7409,6 +7409,7 @@ identify_literal_placement (bfd *abfd,
       *last_loc_is_prev_p = TRUE;
     }
 
+  (void)val_map;
   return TRUE;
 }
 
@@ -7591,9 +7592,7 @@ move_shared_literal(asection *sec, struct bfd_link_info *link_info,
   if (!target_entry)
     return FALSE;
 
-  /* Make sure that we have not broken any branches.  */
-  relocs_fit = FALSE;
-
+  /* Make sure that we have not broken any branches: */
   init_ebb_constraint(&ebb_table);
   ebb = &ebb_table.ebb;
   init_ebb(ebb, target_sec_cache->sec, target_sec_cache->contents,
@@ -9354,14 +9353,16 @@ xtensa_get_property_section_name(asection *sec, const char *base_name)
       prop_sec_namelen = (strlen(sec->name) + strlen(linkonce_kind) + 1UL);
       prop_sec_name = (char *)bfd_malloc(prop_sec_namelen);
       memcpy(prop_sec_name, ".gnu.linkonce.", linkonce_len);
-      strcpy((prop_sec_name + linkonce_len), linkonce_kind);
+      strncpy((prop_sec_name + linkonce_len), linkonce_kind,
+              (prop_sec_namelen + linkonce_len));
 
       suffix = (sec->name + linkonce_len);
       /* For backward compatibility, replace "t." instead of inserting
          the new linkonce_kind (but not for "prop" sections).  */
       if ((strncmp(suffix, "t.", 2) == 0) && (linkonce_kind[1] == '.'))
         suffix += 2;
-      strcat((prop_sec_name + linkonce_len), suffix);
+      strncat((prop_sec_name + linkonce_len), suffix,
+              (prop_sec_namelen + linkonce_len));
 
       return prop_sec_name;
     }
@@ -9373,14 +9374,14 @@ xtensa_get_property_section_name(asection *sec, const char *base_name)
 flagword
 xtensa_get_property_predef_flags(asection *sec)
 {
-  if (strcmp (sec->name, XTENSA_INSN_SEC_NAME) == 0
-      || strncmp (sec->name, ".gnu.linkonce.x.",
-		  sizeof ".gnu.linkonce.x." - 1) == 0)
+  if ((strcmp(sec->name, XTENSA_INSN_SEC_NAME) == 0)
+      || (strncmp(sec->name, ".gnu.linkonce.x.",
+		  (sizeof(".gnu.linkonce.x.") - 1UL)) == 0))
     return (XTENSA_PROP_INSN
 	    | XTENSA_PROP_INSN_NO_TRANSFORM
 	    | XTENSA_PROP_INSN_NO_REORDER);
 
-  if (xtensa_is_littable_section (sec))
+  if (xtensa_is_littable_section(sec))
     return (XTENSA_PROP_LITERAL
 	    | XTENSA_PROP_INSN_NO_TRANSFORM
 	    | XTENSA_PROP_INSN_NO_REORDER);

@@ -1703,7 +1703,7 @@ elf_vax_relocate_section (bfd *output_bfd,
 		      outrel.r_addend = relocation + rel->r_addend;
 		    }
 		}
-
+              /* FIXME: -Wlogical-not-parentheses: */
 	      if (!strcmp(bfd_get_section_name(input_bfd, input_section),
 			  ".text") != 0 ||
 		  (info->shared

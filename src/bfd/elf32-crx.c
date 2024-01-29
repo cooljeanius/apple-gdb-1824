@@ -466,7 +466,7 @@ crx_elf_final_link_relocate (reloc_howto_type *howto, bfd *input_bfd,
        /* We only care about the addend, where the difference between
 	  expressions is kept.  */
        Rvalue = 0;
-
+       break;
      default:
        break;
     }

@@ -1027,6 +1027,7 @@ elf_s390_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	      if (!create_got_section (htab->elf.dynobj, info))
 		return FALSE;
 	    }
+     	  ATTRIBUTE_FALLTHROUGH; /* FIXME: really fallthrough? */
         default:;
 	}
 

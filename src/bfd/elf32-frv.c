@@ -2817,7 +2817,7 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_FRV_32:
 	  if (!IS_FDPIC(output_bfd))
 	    goto non_fdpic;
-
+	  ATTRIBUTE_FALLTHROUGH; /* FIXME: really fallthrough? */
 	case R_FRV_GOT12:
 	case R_FRV_GOTHI:
 	case R_FRV_GOTLO:
@@ -6544,18 +6544,26 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 	{
 	  switch (new_partial)
 	    {
-	    default: strcat(new_opt, " -mfpr-?"); break;
-	    case EF_FRV_FPR_32: strcat(new_opt, " -mfpr-32"); break;
-	    case EF_FRV_FPR_64: strcat(new_opt, " -mfpr-64"); break;
-	    case EF_FRV_FPR_NONE: strcat(new_opt, " -msoft-float"); break;
+	    default:
+              strncat(new_opt, " -mfpr-?", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_FPR_32:
+              strncat(new_opt, " -mfpr-32", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_FPR_64:
+              strncat(new_opt, " -mfpr-64", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_FPR_NONE:
+              strncat(new_opt, " -msoft-float", (sizeof(new_opt) - 1UL)); break;
 	    }
 
 	  switch (old_partial)
 	    {
-	    default: strcat(old_opt, " -mfpr-?"); break;
-	    case EF_FRV_FPR_32: strcat(old_opt, " -mfpr-32"); break;
-	    case EF_FRV_FPR_64: strcat(old_opt, " -mfpr-64"); break;
-	    case EF_FRV_FPR_NONE: strcat(old_opt, " -msoft-float"); break;
+	    default:
+              strncat(old_opt, " -mfpr-?", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_FPR_32:
+              strncat(old_opt, " -mfpr-32", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_FPR_64:
+              strncat(old_opt, " -mfpr-64", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_FPR_NONE:
+              strncat(old_opt, " -msoft-float", (sizeof(old_opt) - 1UL)); break;
 	    }
 	}
 
@@ -6573,21 +6581,27 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 	{
 	  switch (new_partial)
 	    {
-	    default: strcat(new_opt, " -mdword-?"); break;
-	    case EF_FRV_DWORD_YES: strcat(new_opt, " -mdword"); break;
-	    case EF_FRV_DWORD_NO: strcat(new_opt, " -mno-dword"); break;
+	    default:
+              strncat(new_opt, " -mdword-?", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_DWORD_YES:
+              strncat(new_opt, " -mdword", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_DWORD_NO:
+              strncat(new_opt, " -mno-dword", (sizeof(new_opt) - 1UL)); break;
 	    }
 
 	  switch (old_partial)
 	    {
-	    default: strcat(old_opt, " -mdword-?"); break;
-	    case EF_FRV_DWORD_YES: strcat(old_opt, " -mdword"); break;
-	    case EF_FRV_DWORD_NO: strcat(old_opt, " -mno-dword"); break;
+	    default:
+              strncat(old_opt, " -mdword-?", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_DWORD_YES:
+              strncat(old_opt, " -mdword", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_DWORD_NO:
+              strncat(old_opt, " -mno-dword", (sizeof(old_opt) - 1UL)); break;
 	    }
 	}
 
-      /* Or in flags that accumulate (ie, if one module uses it, mark that the
-	 feature is used.  */
+      /* "Or" in flags that accumulate (i.e., if one module uses it, mark that
+       * the feature is used): */
       old_flags |= new_flags & (EF_FRV_DOUBLE
 				| EF_FRV_MEDIA
 				| EF_FRV_MULADD

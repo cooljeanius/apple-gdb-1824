@@ -1930,6 +1930,7 @@ sh_elf_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
 	sym_value -= 0x1000;
       insn = (unsigned long)((insn & 0xf000) | (sym_value & 0xfff));
       bfd_put_16(abfd, (bfd_vma)insn, hit_data);
+      /* FIXME: -Wtautological-overlap-compare (3x): */
       if ((sym_value < (bfd_vma)-0x1000) || (sym_value >= 0x1000))
 	return bfd_reloc_overflow;
       break;

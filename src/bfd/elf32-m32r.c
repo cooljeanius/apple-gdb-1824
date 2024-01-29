@@ -1679,14 +1679,16 @@ m32r_elf_create_dynamic_sections (bfd *abfd, struct bfd_link_info *info)
 
     for (sec = abfd->sections; sec; sec = sec->next)
       {
+        size_t relnamelen;
         secflags = bfd_get_section_flags(abfd, sec);
         if ((secflags & (SEC_DATA | SEC_LINKER_CREATED))
             || ((secflags & SEC_HAS_CONTENTS) != SEC_HAS_CONTENTS))
           continue;
         secname = bfd_get_section_name(abfd, sec);
-        relname = (char *)bfd_malloc((bfd_size_type)strlen(secname) + 6UL);
-        strcpy(relname, ".rela");
-        strcat(relname, secname);
+        relnamelen = (strlen(secname) + 6UL);
+        relname = (char *)bfd_malloc((bfd_size_type)relnamelen);
+        strncpy(relname, ".rela", relnamelen);
+        strncat(relname, secname, relnamelen);
         if (bfd_get_section_by_name(abfd, secname))
           continue;
         s = bfd_make_section_with_flags(abfd, relname,

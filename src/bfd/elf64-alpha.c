@@ -3492,6 +3492,7 @@ elf64_alpha_relax_tls_get_addr(struct alpha_relax_info *info, bfd_vma symval,
 
   use_gottprel = FALSE;
   new_symndx = (unsigned long)(is_gd ? ELF64_R_SYM(irel->r_info) : 0UL);
+  /* FIXME: -Wswitch-bool: */
   switch (!dynamic && !info->link_info->shared)
     {
     case 1:

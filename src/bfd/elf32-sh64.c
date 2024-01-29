@@ -552,7 +552,7 @@ shmedia_prepare_reloc (struct bfd_link_info *info, bfd *abfd,
 			  contents + rel->r_offset);
 	  }
       }
-
+      ATTRIBUTE_FALLTHROUGH; /* (just goes to a break anyways) */
     case R_SH_SHMEDIA_CODE:
     case R_SH_DIR5U:
     case R_SH_DIR6S:

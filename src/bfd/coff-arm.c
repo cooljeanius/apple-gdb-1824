@@ -2410,12 +2410,13 @@ coff_arm_is_local_label_name(bfd *abfd ATTRIBUTE_UNUSED, const char *name)
     }
 #endif /* USER_LABEL_PREFIX */
 
-#ifdef LOCAL_LABEL_PREFIX
+#if defined(LOCAL_LABEL_PREFIX) && !defined(__clang__)
   /* If there is a prefix for local labels then look for this.
      If the prefix exists, but it is empty, then ignore the test.  */
 
   if (LOCAL_LABEL_PREFIX[0] != 0)
     {
+      /* FIXME: apparently this is unreachable? */
       size_t len = strlen(LOCAL_LABEL_PREFIX);
 
       if (strncmp(name, LOCAL_LABEL_PREFIX, len) != 0)
@@ -2424,9 +2425,9 @@ coff_arm_is_local_label_name(bfd *abfd ATTRIBUTE_UNUSED, const char *name)
       /* Perform the checks below for the rest of the name: */
       name += len;
     }
-#endif /* LOCAL_LABEL_PREFIX */
+#endif /* LOCAL_LABEL_PREFIX && !__clang__ */
 
-  return name[0] == 'L';
+  return (name[0] == 'L');
 }
 
 /* This piece of machinery exists only to guarantee that the bfd that holds

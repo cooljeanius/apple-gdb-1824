@@ -1135,10 +1135,11 @@ allocate_global_data_opd(struct elf64_hppa_dyn_hash_entry *dyn_h, PTR data)
 	    {
 	      char *new_name;
 	      struct elf_link_hash_entry *nh;
+              size_t new_namelen = (strlen(h->root.root.string) + 2UL);
 
-	      new_name = (char *)alloca(strlen(h->root.root.string) + 2UL);
+	      new_name = (char *)alloca(new_namelen);
 	      new_name[0] = '.';
-	      strcpy((new_name + 1), h->root.root.string);
+	      strncpy((new_name + 1), h->root.root.string, new_namelen);
 
 	      nh = elf_link_hash_lookup(elf_hash_table(x->info),
                                         new_name, TRUE, TRUE, TRUE);
@@ -2121,10 +2122,11 @@ elf64_hppa_finalize_opd(struct elf64_hppa_dyn_hash_entry *dyn_h, PTR data)
 	{
 	  char *new_name;
 	  struct elf_link_hash_entry *nh;
+   	  const size_t new_namelen = (strlen(h->root.root.string) + 2UL);
 
-	  new_name = (char *)alloca(strlen(h->root.root.string) + 2UL);
+	  new_name = (char *)alloca(new_namelen);
 	  new_name[0] = '.';
-	  strcpy((new_name + 1), h->root.root.string);
+	  strncpy((new_name + 1UL), h->root.root.string, new_namelen);
 
 	  nh = elf_link_hash_lookup(elf_hash_table(info), new_name, FALSE,
                                     FALSE, FALSE);

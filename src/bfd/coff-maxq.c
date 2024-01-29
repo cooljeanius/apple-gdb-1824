@@ -405,6 +405,7 @@ maxq_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
 {
   unsigned int i;
 
+  /* FIXME: -Wunreachable-code-loop-increment: */
   for (i = 0U; i < ARRAY_SIZE(maxq_reloc_map); i++)
     {
       const reloc_map *entry;

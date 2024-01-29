@@ -1825,6 +1825,7 @@ sunos_scan_dynamic_symbol(struct sunos_link_hash_entry *h, void * data)
       const unsigned char *name;
       unsigned long hash;
       bfd *dynobj;
+      size_t contentslen;
 
       BFD_ASSERT(h->dynindx == -2);
 
@@ -1843,14 +1844,16 @@ sunos_scan_dynamic_symbol(struct sunos_link_hash_entry *h, void * data)
 	 There are no debugging symbols in the dynamic symbols.  */
       s = bfd_get_section_by_name(dynobj, ".dynstr");
       BFD_ASSERT(s != NULL);
-      contents = (bfd_byte *)bfd_realloc(s->contents, (s->size + len + 1));
+      contentslen = (s->size + len + 1UL);
+      contents = (bfd_byte *)bfd_realloc(s->contents, contentslen);
       if (contents == NULL)
 	return FALSE;
       s->contents = contents;
 
       h->dynstr_index = (long)s->size;
-      strcpy(((char *)contents + s->size), h->root.root.root.string);
-      s->size += len + 1;
+      strncpy(((char *)contents + s->size), h->root.root.root.string,
+              (contentslen + s->size));
+      s->size += (len + 1UL);
 
       /* Add it to the dynamic hash table: */
       name = (const unsigned char *)h->root.root.root.string;
