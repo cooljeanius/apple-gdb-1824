@@ -1,4 +1,4 @@
-/* 32-bit ELF support for Nios II.
+/* elf32-nios2.c: 32-bit ELF support for Nios II.
    Copyright (C) 2012, 2013 Free Software Foundation, Inc.
    Contributed by Nigel Gray (ngray@altera.com).
    Contributed by Mentor Graphics, Inc.
@@ -22,6 +22,9 @@
 
 /* This file handles Altera Nios II ELF targets.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"
@@ -868,7 +871,7 @@ static const bfd_vma nios2_so_plt0_entry[] = { /* .PLTresolve */
 /* Implement elf_backend_grok_prstatus:
    Support for core dump NOTE sections.  */
 static bfd_boolean
-nios2_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
+nios2_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   int offset;
   size_t size;
@@ -880,10 +883,10 @@ nios2_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 
     case 212:	      /* Linux/Nios II */
       /* pr_cursig */
-      elf_tdata (abfd)->core->signal = bfd_get_16 (abfd, note->descdata + 12);
+      elf_tdata(abfd)->core_signal = bfd_get_16(abfd, (note->descdata + 12));
 
       /* pr_pid */
-      elf_tdata (abfd)->core->pid = bfd_get_32 (abfd, note->descdata + 24);
+      elf_tdata(abfd)->core_pid = bfd_get_32(abfd, (note->descdata + 24));
 
       /* pr_reg */
       offset = 72;
@@ -892,14 +895,14 @@ nios2_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
       break;
     }
 
-  /* Make a ".reg/999" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  size, note->descpos + offset);
+  /* Make a ".reg/999" section: */
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+  					 (note->descpos + offset));
 }
 
-/* Implement elf_backend_grok_psinfo.  */
+/* Implement elf_backend_grok_psinfo: */
 static bfd_boolean
-nios2_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
+nios2_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
   switch (note->descsz)
     {
@@ -907,10 +910,10 @@ nios2_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
       return FALSE;
 
     case 124:	      /* Linux/Nios II elf_prpsinfo */
-      elf_tdata (abfd)->core->program
-	= _bfd_elfcore_strndup (abfd, note->descdata + 28, 16);
-      elf_tdata (abfd)->core->command
-	= _bfd_elfcore_strndup (abfd, note->descdata + 44, 80);
+      elf_tdata(abfd)->core_program =
+      	_bfd_elfcore_strndup(abfd, (note->descdata + 28), 16);
+      elf_tdata(abfd)->core_command =
+        _bfd_elfcore_strndup(abfd, (note->descdata + 44), 80);
     }
 
   /* Note that for some reason, a spurious space is tacked
@@ -918,8 +921,8 @@ nios2_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
      implementations, so strip it off if it exists.  */
 
   {
-    char *command = elf_tdata (abfd)->core->command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    int n = strlen(command);
 
     if (0 < n && command[n - 1] == ' ')
       command[n - 1] = '\0';

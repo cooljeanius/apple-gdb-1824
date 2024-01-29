@@ -311,7 +311,7 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config-h.in \
 	$(top_srcdir)/config/missing COPYING.LIB INSTALL README argz.c \
 	config/compile config/config.guess config/config.sub \
 	config/depcomp config/install-sh config/ltmain.sh \
-	 config/missing  lt__dirent.c \
+	config/mdate-sh config/missing config/texinfo.tex lt__dirent.c \
 	lt__strl.c
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)

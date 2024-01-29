@@ -1,4 +1,4 @@
-/* IA-64 support for OpenVMS
+/* elf64-ia64-vms.c: IA-64 support for OpenVMS
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
    2008, 2009, 2010, 2012  Free Software Foundation, Inc.
 
@@ -19,6 +19,9 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"
@@ -5608,3 +5611,5 @@ static const struct elf_size_info elf64_ia64_vms_size_info = {
 #define elf_backend_want_got_plt	0
 
 #include "elf64-target.h"
+
+/* End of elf64-ia64-vms.c */

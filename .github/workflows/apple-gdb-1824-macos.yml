@@ -101,7 +101,7 @@ jobs:
             echo "special-casing the 4-job build case..."; \
             (make -j"$(nproc)" || make -j2 || make || remake -dpPw); \
           else
-            (make -j"$(nproc)" || make || remake -dpPw --trace=read); \
+            (make -j"$(nproc)" || make || remake -dpPw || remake --trace=read); \
           fi; \
         elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
           echo "gnproc says we can use $(gnproc) build jobs"; \

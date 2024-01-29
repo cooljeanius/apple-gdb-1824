@@ -1,4 +1,4 @@
-/* NDS32-specific support for 32-bit ELF.
+/* elf32-nds32.c: NDS32-specific support for 32-bit ELF.
    Copyright (C) 2012-2014 Free Software Foundation, Inc.
    Contributed by Andes Technology Corporation.
 
@@ -19,7 +19,9 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.*/
 
-
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "bfd.h"
 #include "bfd_stdint.h"
@@ -2628,9 +2630,8 @@ nds32_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED, arelent *cache_ptr,
 
 /* Support for core dump NOTE sections.
    Reference to include/linux/elfcore.h in Linux.  */
-
 static bfd_boolean
-nds32_elf_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
+nds32_elf_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   int offset;
   size_t size;
@@ -2641,10 +2642,10 @@ nds32_elf_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
       /* Linux/NDS32 32-bit, ABI1 */
 
       /* pr_cursig */
-      elf_tdata (abfd)->core->signal = bfd_get_16 (abfd, note->descdata + 12);
+      elf_tdata(abfd)->core_signal = bfd_get_16(abfd, (note->descdata + 12));
 
       /* pr_pid */
-      elf_tdata (abfd)->core->pid = bfd_get_32 (abfd, note->descdata + 24);
+      elf_tdata(abfd)->core_pid = bfd_get_32(abfd, (note->descdata + 24));
 
       /* pr_reg */
       offset = 72;
@@ -2655,10 +2656,10 @@ nds32_elf_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
       /* Linux/NDS32 32-bit */
 
       /* pr_cursig */
-      elf_tdata (abfd)->core->signal = bfd_get_16 (abfd, note->descdata + 12);
+      elf_tdata(abfd)->core_signal = bfd_get_16(abfd, (note->descdata + 12));
 
       /* pr_pid */
-      elf_tdata (abfd)->core->pid = bfd_get_32 (abfd, note->descdata + 24);
+      elf_tdata(abfd)->core_pid = bfd_get_32(abfd, (note->descdata + 24));
 
       /* pr_reg */
       offset = 72;
@@ -2669,13 +2670,14 @@ nds32_elf_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
       return FALSE;
     }
 
-  /* Make a ".reg" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  size, note->descpos + offset);
+  /* Make a ".reg" section: */
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+  					 (note->descpos + offset));
 }
 
+/* */
 static bfd_boolean
-nds32_elf_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
+nds32_elf_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
   switch (note->descsz)
     {
@@ -2683,10 +2685,10 @@ nds32_elf_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
       /* Linux/NDS32 */
 
       /* __kernel_uid_t, __kernel_gid_t are short on NDS32 platform.  */
-      elf_tdata (abfd)->core->program =
-	_bfd_elfcore_strndup (abfd, note->descdata + 28, 16);
-      elf_tdata (abfd)->core->command =
-	_bfd_elfcore_strndup (abfd, note->descdata + 44, 80);
+      elf_tdata(abfd)->core_program =
+	_bfd_elfcore_strndup(abfd, (note->descdata + 28), 16);
+      elf_tdata(abfd)->core_command =
+	_bfd_elfcore_strndup(abfd, (note->descdata + 44), 80);
 
     default:
       return FALSE;
@@ -2696,8 +2698,8 @@ nds32_elf_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
      onto the end of the args in some (at least one anyway)
      implementations, so strip it off if it exists.  */
   {
-    char *command = elf_tdata (abfd)->core->command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    int n = strlen(command);
 
     if (0 < n && command[n - 1] == ' ')
       command[n - 1] = '\0';
@@ -14269,3 +14271,5 @@ nds32_elf_ex9_itb_base (struct bfd_link_info *link_info)
 #define elf32_bed				elf32_nds32_lin_bed
 
 #include "elf32-target.h"
+
+/* End of elf32-nds32.c */

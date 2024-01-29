@@ -18,14 +18,14 @@
    with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "libiberty.h"
 #include "bfd.h"
 #include "bfdlink.h"
 #include "libbfd.h"
-#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
-# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
-#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "elf-bfd.h"
 #include "elf/spu.h"
 #include "elf32-spu.h"

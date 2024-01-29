@@ -9786,12 +9786,13 @@ check-everything: Makefile stamp-plistfiles @MAINT@ plistfiles
 	    echo "$@: using $(CLANG_ANALYZER) to make $${mysubplist}..."; \
 	    $(MAKE) $(AM_V_MFLAG) $${myplist} || \
 	      (if test -d $(analysisdir); then \
-	         stat $${mysubplist} || (test -x "`which sync`" && sync); \
+	         stat $${mysubplist} >&2 && exit 1; \
 	       else \
-	         stat $${myplist} || (test -x "`which sync`" && sync); \
-	       fi); \
+	         stat $${myplist} >&2 && exit 1; \
+	       fi; \
+	       exit 1); \
 	  elif test "x$(AM_V_P)" != "xfalse"; then \
-	    stat $${mysubplist} || (test -x "`which sync`" && sync); \
+	    stat $${mysubplist} >&2 && exit 1; \
 	  else \
 	    printf "."; \
 	  fi; \

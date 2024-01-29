@@ -1,4 +1,4 @@
-/* TILEPro-specific support for 32-bit ELF.
+/* elf32-tilepro.c: TILEPro-specific support for 32-bit ELF.
    Copyright 2011, 2012 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -18,6 +18,9 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"
@@ -944,44 +947,45 @@ tilepro_elf_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
     return FALSE;
 
   /* pr_cursig */
-  elf_tdata (abfd)->core->signal =
-    bfd_get_16 (abfd, note->descdata + TILEPRO_PRSTATUS_OFFSET_PR_CURSIG);
+  elf_tdata(abfd)->core_signal =
+    bfd_get_16(abfd, (note->descdata + TILEPRO_PRSTATUS_OFFSET_PR_CURSIG));
 
   /* pr_pid */
-  elf_tdata (abfd)->core->pid =
-    bfd_get_32 (abfd, note->descdata + TILEPRO_PRSTATUS_OFFSET_PR_PID);
+  elf_tdata(abfd)->core_pid =
+    bfd_get_32(abfd, (note->descdata + TILEPRO_PRSTATUS_OFFSET_PR_PID));
 
   /* pr_reg */
   offset = TILEPRO_PRSTATUS_OFFSET_PR_REG;
-  size   = TILEPRO_GREGSET_T_SIZE;
+  size = TILEPRO_GREGSET_T_SIZE;
 
-  /* Make a ".reg/999" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  size, note->descpos + offset);
+  /* Make a ".reg/999" section: */
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+  					 (note->descpos + offset));
 }
 
+/* */
 static bfd_boolean
-tilepro_elf_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
+tilepro_elf_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
   if (note->descsz != TILEPRO_PRPSINFO_SIZEOF)
     return FALSE;
 
-  elf_tdata (abfd)->core->program
-    = _bfd_elfcore_strndup (abfd,
-			    note->descdata + TILEPRO_PRPSINFO_OFFSET_PR_FNAME,
-			    16);
-  elf_tdata (abfd)->core->command
-    = _bfd_elfcore_strndup (abfd,
-			    note->descdata + TILEPRO_PRPSINFO_OFFSET_PR_PSARGS,
-			    ELF_PR_PSARGS_SIZE);
+  elf_tdata(abfd)->core_program =
+    _bfd_elfcore_strndup(abfd,
+                         (note->descdata + TILEPRO_PRPSINFO_OFFSET_PR_FNAME),
+                         16);
+  elf_tdata(abfd)->core_command =
+    _bfd_elfcore_strndup(abfd,
+                         (note->descdata + TILEPRO_PRPSINFO_OFFSET_PR_PSARGS),
+                         ELF_PR_PSARGS_SIZE);
 
 
   /* Note that for some reason, a spurious space is tacked
      onto the end of the args in some (at least one anyway)
      implementations, so strip it off if it exists.  */
   {
-    char *command = elf_tdata (abfd)->core->command;
-    int n = strlen (command);
+    char *command = elf_tdata(abfd)->core_command;
+    int n = strlen(command);
 
     if (0 < n && command[n - 1] == ' ')
       command[n - 1] = '\0';
@@ -4064,3 +4068,5 @@ tilepro_additional_program_headers (bfd *abfd,
 #define elf_backend_default_execstack 0
 
 #include "elf32-target.h"
+
+/* End of elf32-tilepro.c */

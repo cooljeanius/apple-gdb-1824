@@ -23,6 +23,9 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#ifndef USE_NEW_ELF_BFD_STRUCT_MEMBERS
+# define USE_NEW_ELF_BFD_STRUCT_MEMBERS 1
+#endif /* !USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"
@@ -2673,9 +2676,12 @@ s3_bfd_score_elf_relocate_section (bfd *output_bfd,
             }
         }
 
-      if (sec != NULL && discarded_section (sec))
-	RELOC_AGAINST_DISCARDED_SECTION (info, input_bfd, input_section,
-					 rel, 1, relend, howto, 0, contents);
+      if ((sec != NULL) && discarded_section(sec))
+        {
+          int i; /* for use in macro */
+	  RELOC_AGAINST_DISCARDED_SECTION(info, input_bfd, input_section,
+                                          rel, 1, relend, howto, 0, contents);
+        }
 
       if (info->relocatable)
         {
@@ -2685,24 +2691,27 @@ s3_bfd_score_elf_relocate_section (bfd *output_bfd,
              section symbol winds up in the output section.  */
           if (r_symndx < symtab_hdr->sh_info)
             {
-              sym = local_syms + r_symndx;
-              if (ELF_ST_TYPE (sym->st_info) == STT_SECTION)
+              sym = (local_syms + r_symndx);
+              if (ELF_ST_TYPE(sym->st_info) == STT_SECTION)
                 {
                   sec = local_sections[r_symndx];
-                  score_elf_add_to_rel (input_bfd, contents + rel->r_offset,
-                                    howto, (bfd_signed_vma) (sec->output_offset + sym->st_value));
+                  score_elf_add_to_rel(input_bfd, (contents + rel->r_offset),
+                                       howto,
+                                       (bfd_signed_vma)(sec->output_offset
+                                       			+ sym->st_value));
                 }
             }
           continue;
         }
 
-      /* This is a final link.  */
-      r = score_elf_final_link_relocate (howto, input_bfd, output_bfd,
-                                         input_section, contents, rel, relocs,
-                                         relocation, info, name,
-                                         (h ? ELF_ST_TYPE ((unsigned int)h->root.root.type) :
-                                         ELF_ST_TYPE ((unsigned int)sym->st_info)), h, local_sections,
-                                         gp_disp_p);
+      /* This is a final link: */
+      r = score_elf_final_link_relocate(howto, input_bfd, output_bfd,
+                                        input_section, contents, rel, relocs,
+                                        relocation, info, name,
+                                        ((h != NULL)
+                                         ? ELF_ST_TYPE((unsigned int)h->root.root.type)
+                                         : ELF_ST_TYPE((unsigned int)sym->st_info)),
+                                        h, local_sections, gp_disp_p);
 
       if (r != bfd_reloc_ok)
         {

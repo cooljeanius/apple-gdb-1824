@@ -400,6 +400,12 @@
 		A5262E862B5784A8002EC445 /* verify.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E852B5784A8002EC445 /* verify.h */; };
 		A5262E8B2B57918D002EC445 /* elf32-spu.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E882B57918D002EC445 /* elf32-spu.h */; };
 		A5262E912B579403002EC445 /* elf32-score.h in Headers */ = {isa = PBXBuildFile; fileRef = A5262E8E2B579403002EC445 /* elf32-score.h */; };
+		A52B840B2B6762FA00F3C9EA /* elfxx-tilegx.h in Headers */ = {isa = PBXBuildFile; fileRef = A52B83F92B6762F900F3C9EA /* elfxx-tilegx.h */; };
+		A52B84102B67634700F3C9EA /* elf64-tilegx.h in Headers */ = {isa = PBXBuildFile; fileRef = A52B840D2B67634600F3C9EA /* elf64-tilegx.h */; };
+		A52B84112B67634700F3C9EA /* elf64-target.h in Headers */ = {isa = PBXBuildFile; fileRef = A52B840E2B67634600F3C9EA /* elf64-target.h */; };
+		A52B84122B67634700F3C9EA /* elf64-tilegx.c in Sources */ = {isa = PBXBuildFile; fileRef = A52B840F2B67634600F3C9EA /* elf64-tilegx.c */; };
+		A52B84152B6765BA00F3C9EA /* elf32-tilegx.c in Sources */ = {isa = PBXBuildFile; fileRef = A52B84132B6765B900F3C9EA /* elf32-tilegx.c */; };
+		A52B84162B6765BA00F3C9EA /* elf32-tilegx.h in Headers */ = {isa = PBXBuildFile; fileRef = A52B84142B6765B900F3C9EA /* elf32-tilegx.h */; };
 		A53ABD8D1A38C88F002F20B2 /* link.h in Headers */ = {isa = PBXBuildFile; fileRef = A53ABD8C1A38C88F002F20B2 /* link.h */; };
 		A53B842B1AE2F2100067328B /* acconfig_obsolete.h in Headers */ = {isa = PBXBuildFile; fileRef = A5558E9E1992B76300A45587 /* acconfig_obsolete.h */; };
 		A53B842C1AE2F2100067328B /* eval-plural.h in Headers */ = {isa = PBXBuildFile; fileRef = A5558E8D1992A9AE00A45587 /* eval-plural.h */; };
@@ -3900,6 +3906,13 @@
 		A5262E882B57918D002EC445 /* elf32-spu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "elf32-spu.h"; sourceTree = "<group>"; };
 		A5262E8D2B579402002EC445 /* elf32-score.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf32-score.c"; sourceTree = "<group>"; };
 		A5262E8E2B579403002EC445 /* elf32-score.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "elf32-score.h"; sourceTree = "<group>"; };
+		A52B83F92B6762F900F3C9EA /* elfxx-tilegx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "elfxx-tilegx.h"; sourceTree = "<group>"; };
+		A52B840A2B6762F900F3C9EA /* elfxx-tilegx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elfxx-tilegx.c"; sourceTree = "<group>"; };
+		A52B840D2B67634600F3C9EA /* elf64-tilegx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "elf64-tilegx.h"; sourceTree = "<group>"; };
+		A52B840E2B67634600F3C9EA /* elf64-target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "elf64-target.h"; sourceTree = "<group>"; };
+		A52B840F2B67634600F3C9EA /* elf64-tilegx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf64-tilegx.c"; sourceTree = "<group>"; };
+		A52B84132B6765B900F3C9EA /* elf32-tilegx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf32-tilegx.c"; sourceTree = "<group>"; };
+		A52B84142B6765B900F3C9EA /* elf32-tilegx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "elf32-tilegx.h"; sourceTree = "<group>"; };
 		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; path = "mac-gdb.r"; sourceTree = "<group>"; };
 		A53ABD8C1A38C88F002F20B2 /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = link.h; sourceTree = "<group>"; };
 		A53ABDB71A38E84F002F20B2 /* objdump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objdump.h; sourceTree = "<group>"; };
@@ -6469,6 +6482,8 @@
 				2609CF350E82C407008125DE /* elf32-sparc.c */,
 				A5262E872B57918D002EC445 /* elf32-spu.c */,
 				A5262E882B57918D002EC445 /* elf32-spu.h */,
+				A52B84132B6765B900F3C9EA /* elf32-tilegx.c */,
+				A52B84142B6765B900F3C9EA /* elf32-tilegx.h */,
 				2609CF360E82C407008125DE /* elf32-v850.c */,
 				2609CF370E82C407008125DE /* elf32-vax.c */,
 				2609CF380E82C407008125DE /* elf32-xstormy16.c */,
@@ -6485,6 +6500,9 @@
 				2609CF430E82C407008125DE /* elf64-s390.c */,
 				2609CF440E82C407008125DE /* elf64-sh64.c */,
 				2609CF450E82C407008125DE /* elf64-sparc.c */,
+				A52B840E2B67634600F3C9EA /* elf64-target.h */,
+				A52B840F2B67634600F3C9EA /* elf64-tilegx.c */,
+				A52B840D2B67634600F3C9EA /* elf64-tilegx.h */,
 				2609CF460E82C407008125DE /* elf64-x86-64.c */,
 				2609CF470E82C407008125DE /* elf64.c */,
 				2609CF480E82C407008125DE /* elfarm-nabi.c */,
@@ -6503,6 +6521,8 @@
 				2609CF520E82C408008125DE /* elfxx-sparc.c */,
 				2609CF530E82C408008125DE /* elfxx-sparc.h */,
 				2609CF540E82C408008125DE /* elfxx-target.h */,
+				A52B840A2B6762F900F3C9EA /* elfxx-tilegx.c */,
+				A52B83F92B6762F900F3C9EA /* elfxx-tilegx.h */,
 				2609CF550E82C408008125DE /* epoc-pe-arm.c */,
 				2609CF560E82C408008125DE /* epoc-pei-arm.c */,
 				2609CF570E82C408008125DE /* format.c */,
@@ -13593,6 +13613,7 @@
 				61D2209D192D613F00FA979E /* coffswap.h in Headers */,
 				61D220E2192D617D00FA979E /* ecoffswap.h in Headers */,
 				A5262E912B579403002EC445 /* elf32-score.h in Headers */,
+				A52B84112B67634700F3C9EA /* elf64-target.h in Headers */,
 				61D220E5192D617D00FA979E /* elf-bfd.h in Headers */,
 				61D220E7192D617D00FA979E /* elf-hppa.h in Headers */,
 				61D220EC192D617D00FA979E /* elf-vxworks.h in Headers */,
@@ -13615,11 +13636,13 @@
 				61D22142192D617D00FA979E /* go32stub.h in Headers */,
 				61D22157192D61C300FA979E /* libaout.h in Headers */,
 				61D22158192D61C300FA979E /* libbfd-in.h in Headers */,
+				A52B84102B67634700F3C9EA /* elf64-tilegx.h in Headers */,
 				61D22159192D61C300FA979E /* libbfd-post.h in Headers */,
 				61D2215B192D61C300FA979E /* libbfd.h in Headers */,
 				61D2215C192D61C300FA979E /* libcoff-in.h in Headers */,
 				61D2215D192D61C300FA979E /* libcoff.h in Headers */,
 				61D2215E192D61C300FA979E /* libecoff.h in Headers */,
+				A52B84162B6765BA00F3C9EA /* elf32-tilegx.h in Headers */,
 				61D2215F192D61C300FA979E /* libhppa.h in Headers */,
 				61D22160192D61C300FA979E /* libieee.h in Headers */,
 				61D22161192D61C300FA979E /* libnlm.h in Headers */,
@@ -13630,6 +13653,7 @@
 				61D22173192D61C300FA979E /* netbsd.h in Headers */,
 				61D22175192D61C300FA979E /* nlm-target.h in Headers */,
 				61D2217D192D61C300FA979E /* nlmcode.h in Headers */,
+				A52B840B2B6762FA00F3C9EA /* elfxx-tilegx.h in Headers */,
 				61D2217E192D61C300FA979E /* nlmswap.h in Headers */,
 				61D2217F192D61C300FA979E /* ns32k.h in Headers */,
 				61D2218C192D61C300FA979E /* pef-traceback.h in Headers */,
@@ -14250,6 +14274,7 @@
 				61D22096192D613F00FA979E /* coff-w65.c in Sources */,
 				61D22097192D613F00FA979E /* coff-we32k.c in Sources */,
 				611906B01CA5D0B800AD73D8 /* coff-x86_64.c in Sources */,
+				A52B84122B67634700F3C9EA /* elf64-tilegx.c in Sources */,
 				61D22098192D613F00FA979E /* coff-z8k.c in Sources */,
 				61190A2C1CAB275E00AD73D8 /* coff-z80.c in Sources */,
 				61D22099192D613F00FA979E /* coff64-rs6000.c in Sources */,
@@ -14273,6 +14298,7 @@
 				61D220AC192D613F00FA979E /* cpu-h8300.c in Sources */,
 				61D220AD192D613F00FA979E /* cpu-h8500.c in Sources */,
 				61D220AE192D613F00FA979E /* cpu-hppa.c in Sources */,
+				A52B84152B6765BA00F3C9EA /* elf32-tilegx.c in Sources */,
 				61D220AF192D613F00FA979E /* cpu-i370.c in Sources */,
 				61D220B0192D613F00FA979E /* cpu-i386.c in Sources */,
 				61D220B1192D613F00FA979E /* cpu-i860.c in Sources */,

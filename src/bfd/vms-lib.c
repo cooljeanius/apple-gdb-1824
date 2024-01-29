@@ -1,4 +1,4 @@
-/* BFD back-end for VMS archive files.
+/* vms-lib.c: BFD back-end for VMS archive files.
 
    Copyright 2010, 2011, 2012 Free Software Foundation, Inc.
    Written by Tristan Gingold <gingold@adacore.com>, AdaCore.
@@ -2348,3 +2348,5 @@ const bfd_target vms_lib_txt_vec =
 
   NULL
 };
+
+/* End of vms-lib.c */
