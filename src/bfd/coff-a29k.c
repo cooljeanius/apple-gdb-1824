@@ -211,6 +211,9 @@ a29k_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
       return bfd_reloc_dangerous;
     }
 
+  if (insn == 0UL) {
+    (void)insn;
+  }
   return(bfd_reloc_ok);
 }
 
