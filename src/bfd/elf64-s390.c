@@ -2945,7 +2945,9 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  /* LD->LE transition.
 		     brasl %r14,__tls_get_addr@plt -> brcl 0,. */
 		  insn0 = 0xc0040000;
-		  insn1 = 0x0000;
+    		  if (insn1 != 0x0000) {
+		    insn1 = 0x0000;
+      		  }
 		  bfd_put_32(output_bfd, insn0, (contents + rel->r_offset));
 		  bfd_put_16(output_bfd, insn1, (contents + rel->r_offset + 4));
 		}

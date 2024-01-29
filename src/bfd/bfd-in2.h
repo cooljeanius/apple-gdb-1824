@@ -4797,6 +4797,41 @@ This is a 15 bit relative address.  If the most significant bits are
 all zero then it may be truncated to 8 bits.  */
   BFD_RELOC_S12Z_15_PCREL,
 
+/* NS CR16 Relocations.  */
+  BFD_RELOC_CR16_NUM8,
+  BFD_RELOC_CR16_NUM16,
+  BFD_RELOC_CR16_NUM32,
+  BFD_RELOC_CR16_NUM32a,
+  BFD_RELOC_CR16_REGREL0,
+  BFD_RELOC_CR16_REGREL4,
+  BFD_RELOC_CR16_REGREL4a,
+  BFD_RELOC_CR16_REGREL14,
+  BFD_RELOC_CR16_REGREL14a,
+  BFD_RELOC_CR16_REGREL16,
+  BFD_RELOC_CR16_REGREL20,
+  BFD_RELOC_CR16_REGREL20a,
+  BFD_RELOC_CR16_ABS20,
+  BFD_RELOC_CR16_ABS24,
+  BFD_RELOC_CR16_IMM4,
+  BFD_RELOC_CR16_IMM8,
+  BFD_RELOC_CR16_IMM16,
+  BFD_RELOC_CR16_IMM20,
+  BFD_RELOC_CR16_IMM24,
+  BFD_RELOC_CR16_IMM32,
+  BFD_RELOC_CR16_IMM32a,
+  BFD_RELOC_CR16_DISP4,
+  BFD_RELOC_CR16_DISP8,
+  BFD_RELOC_CR16_DISP16,
+  BFD_RELOC_CR16_DISP20,
+  BFD_RELOC_CR16_DISP24,
+  BFD_RELOC_CR16_DISP24a,
+  BFD_RELOC_CR16_SWITCH8,
+  BFD_RELOC_CR16_SWITCH16,
+  BFD_RELOC_CR16_SWITCH32,
+  BFD_RELOC_CR16_GOT_REGREL20,
+  BFD_RELOC_CR16_GOTC_REGREL20,
+  BFD_RELOC_CR16_GLOB_DAT,
+
 /* NS CR16C Relocations.  */
   BFD_RELOC_16C_NUM08,
   BFD_RELOC_16C_NUM08_C,
@@ -5292,8 +5327,8 @@ required.  */
 /* Used when referencing a GOT entry.  */
   BFD_RELOC_MACH_O_X86_64_GOT,
 
-/* Used when loading a GOT entry with movq.  It is specially marked so that
-the linker could optimize the movq to a leaq if possible.  */
+/* Used when loading a GOT entry with movq.  It is specially marked so
+that the linker could optimize the movq to a leaq if possible.  */
   BFD_RELOC_MACH_O_X86_64_GOT_LOAD,
 
 /* Same as BFD_RELOC_32_PCREL but with an implicit -1 addend.  */
@@ -5304,6 +5339,12 @@ the linker could optimize the movq to a leaq if possible.  */
 
 /* Same as BFD_RELOC_32_PCREL but with an implicit -4 addend.  */
   BFD_RELOC_MACH_O_X86_64_PCREL32_4,
+
+/* ???  */
+  BFD_RELOC_MACH_O_X86_64_SUBTRACTOR32,
+
+/* ???  */
+  BFD_RELOC_MACH_O_X86_64_SUBTRACTOR64,
 
 /* Used when referencing a TLV entry.  */
   BFD_RELOC_MACH_O_X86_64_TLV,

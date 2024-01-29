@@ -366,7 +366,7 @@ coff_a29k_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 		sec = bfd_abs_section_ptr;
 	      else
 		{
-		  sym = syms + symndx;
+		  sym = (syms + symndx);
 		  sec = sections[symndx];
 		  val = (sec->output_section->vma + sec->output_offset
 			 + sym->n_value - sec->vma);
@@ -538,6 +538,10 @@ coff_a29k_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
 		  input_section, rel->r_vaddr - input_section->vma)))
 	    return FALSE;
 	}
+
+      if (sec == NULL) {
+        (void)sec;
+      }
     }
 
   return TRUE;

@@ -26267,6 +26267,121 @@ printf "%s\n" "#define NO_CORE_COMMAND 1" >>confdefs.h
  ;;
 esac
 fi
+ac_fn_c_check_member "$LINENO" "struct coreoffsets" "u_info" "ac_cv_member_struct_coreoffsets_u_info" "
+#if defined(__USLC__) || defined(HAVE_SYS_USER_H)
+# include <sys/user.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"The conftest for a member of 'struct coreoffsets' wants <sys/user.h>\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __USLC__ || HAVE_SYS_USER_H */
+#if defined(__USLC__) || defined(HAVE_SYS_PACCESS_H)
+# include <sys/paccess.h>
+#endif /* __USLC__ || HAVE_SYS_PACCESS_H */
+#if defined(__USLC__) || defined(HAVE_SYS_REGION_H)
+# include <sys/region.h>
+#endif /* __USLC__ || HAVE_SYS_REGION_H */
+
+"
+if test "x$ac_cv_member_struct_coreoffsets_u_info" = xyes
+then :
+
+printf "%s\n" "#define HAVE_STRUCT_COREOFFSETS_U_INFO 1" >>confdefs.h
+
+
+fi
+ac_fn_c_check_member "$LINENO" "struct coreoffsets" "u_usize" "ac_cv_member_struct_coreoffsets_u_usize" "
+#if defined(__USLC__) || defined(HAVE_SYS_USER_H)
+# include <sys/user.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"The conftest for a member of 'struct coreoffsets' wants <sys/user.h>\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __USLC__ || HAVE_SYS_USER_H */
+#if defined(__USLC__) || defined(HAVE_SYS_PACCESS_H)
+# include <sys/paccess.h>
+#endif /* __USLC__ || HAVE_SYS_PACCESS_H */
+#if defined(__USLC__) || defined(HAVE_SYS_REGION_H)
+# include <sys/region.h>
+#endif /* __USLC__ || HAVE_SYS_REGION_H */
+
+"
+if test "x$ac_cv_member_struct_coreoffsets_u_usize" = xyes
+then :
+
+printf "%s\n" "#define HAVE_STRUCT_COREOFFSETS_U_USIZE 1" >>confdefs.h
+
+
+fi
+ac_fn_c_check_member "$LINENO" "struct coreoffsets" "u_user" "ac_cv_member_struct_coreoffsets_u_user" "
+#if defined(__USLC__) || defined(HAVE_SYS_USER_H)
+# include <sys/user.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"The conftest for a member of 'struct coreoffsets' wants <sys/user.h>\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __USLC__ || HAVE_SYS_USER_H */
+#if defined(__USLC__) || defined(HAVE_SYS_PACCESS_H)
+# include <sys/paccess.h>
+#endif /* __USLC__ || HAVE_SYS_PACCESS_H */
+#if defined(__USLC__) || defined(HAVE_SYS_REGION_H)
+# include <sys/region.h>
+#endif /* __USLC__ || HAVE_SYS_REGION_H */
+
+"
+if test "x$ac_cv_member_struct_coreoffsets_u_user" = xyes
+then :
+
+printf "%s\n" "#define HAVE_STRUCT_COREOFFSETS_U_USER 1" >>confdefs.h
+
+
+fi
+ac_fn_c_check_member "$LINENO" "struct coreoffsets" "u_data" "ac_cv_member_struct_coreoffsets_u_data" "
+#if defined(__USLC__) || defined(HAVE_SYS_USER_H)
+# include <sys/user.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"The conftest for a member of 'struct coreoffsets' wants <sys/user.h>\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __USLC__ || HAVE_SYS_USER_H */
+#if defined(__USLC__) || defined(HAVE_SYS_PACCESS_H)
+# include <sys/paccess.h>
+#endif /* __USLC__ || HAVE_SYS_PACCESS_H */
+#if defined(__USLC__) || defined(HAVE_SYS_REGION_H)
+# include <sys/region.h>
+#endif /* __USLC__ || HAVE_SYS_REGION_H */
+
+"
+if test "x$ac_cv_member_struct_coreoffsets_u_data" = xyes
+then :
+
+printf "%s\n" "#define HAVE_STRUCT_COREOFFSETS_U_DATA 1" >>confdefs.h
+
+
+fi
+ac_fn_c_check_member "$LINENO" "struct coreoffsets" "u_stack" "ac_cv_member_struct_coreoffsets_u_stack" "
+#if defined(__USLC__) || defined(HAVE_SYS_USER_H)
+# include <sys/user.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"The conftest for a member of 'struct coreoffsets' wants <sys/user.h>\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __USLC__ || HAVE_SYS_USER_H */
+#if defined(__USLC__) || defined(HAVE_SYS_PACCESS_H)
+# include <sys/paccess.h>
+#endif /* __USLC__ || HAVE_SYS_PACCESS_H */
+#if defined(__USLC__) || defined(HAVE_SYS_REGION_H)
+# include <sys/region.h>
+#endif /* __USLC__ || HAVE_SYS_REGION_H */
+
+"
+if test "x$ac_cv_member_struct_coreoffsets_u_stack" = xyes
+then :
+
+printf "%s\n" "#define HAVE_STRUCT_COREOFFSETS_U_STACK 1" >>confdefs.h
+
+
+fi
 
 # Checks for library functions.
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking functions" >&5

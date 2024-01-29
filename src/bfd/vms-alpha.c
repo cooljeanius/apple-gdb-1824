@@ -184,7 +184,7 @@ struct vms_symbol_entry
 };
 
 /* Stack value for push/pop commands.  */
-
+/* FIXME: also in "vms.h": */
 struct stack_struct
 {
   bfd_vma value;

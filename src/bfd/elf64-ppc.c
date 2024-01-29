@@ -4276,6 +4276,10 @@ ppc64_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
 		    + (symtab_hdr->sh_size / sizeof(Elf64_External_Sym))
 		    - symtab_hdr->sh_info);
 
+  if (sym_hashes_end == NULL) {
+    (void)sym_hashes_end;
+  }
+
   sreloc = NULL;
   opd_sym_map = NULL;
   if (strcmp(bfd_get_section_name(abfd, sec), ".opd") == 0)

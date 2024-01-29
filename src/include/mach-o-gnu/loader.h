@@ -22,6 +22,8 @@
 #ifndef _MACH_O_LOADER_H
 #define _MACH_O_LOADER_H 1
 
+#ifndef _ENUM_BFD_MACH_O_MACH_HEADER_MAGIC_DEFINED
+# define _ENUM_BFD_MACH_O_MACH_HEADER_MAGIC_DEFINED 1
 /* Constants for header: */
 typedef enum bfd_mach_o_mach_header_magic
 {
@@ -31,6 +33,7 @@ typedef enum bfd_mach_o_mach_header_magic
   BFD_MACH_O_MH_CIGAM_64 = 0xcffaedfe
 }
 bfd_mach_o_mach_header_magic;
+#endif /* !_ENUM_BFD_MACH_O_MACH_HEADER_MAGIC_DEFINED */
 
 /* Capability bits in cpu type: */
 #define BFD_MACH_O_CPU_ARCH_MASK  0xff000000
@@ -281,6 +284,8 @@ bfd_mach_o_section_type;
 /* User attributes.  */
 #define BFD_MACH_O_SECTION_ATTRIBUTES_USR   0xff000000
 
+#ifndef _ENUM_BFD_MACH_O_SECTION_ATTRIBUTE_DEFINED
+# define _ENUM_BFD_MACH_O_SECTION_ATTRIBUTE_DEFINED 1
 typedef enum bfd_mach_o_section_attribute
 {
   /* Section has no specified attibutes.  */
@@ -321,6 +326,7 @@ typedef enum bfd_mach_o_section_attribute
   BFD_MACH_O_S_ATTR_PURE_INSTRUCTIONS = 0x80000000
 }
 bfd_mach_o_section_attribute;
+#endif /* !_ENUM_BFD_MACH_O_SECTION_ATTRIBUTE_DEFINED */
 
 /* Symbol constants.  */
 

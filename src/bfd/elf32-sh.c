@@ -1930,9 +1930,15 @@ sh_elf_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol_in,
 	sym_value -= 0x1000;
       insn = (unsigned long)((insn & 0xf000) | (sym_value & 0xfff));
       bfd_put_16(abfd, (bfd_vma)insn, hit_data);
-      /* FIXME: -Wtautological-overlap-compare (3x): */
+#if defined(__clang__) && (__clang__ >= 1)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wtautological-overlap-compare"
+#endif /* __clang__ */
       if ((sym_value < (bfd_vma)-0x1000) || (sym_value >= 0x1000))
 	return bfd_reloc_overflow;
+#if defined(__clang__) && (__clang__ >= 1)
+# pragma clang diagnostic pop
+#endif /* __clang__ */
       break;
     default:
       abort();

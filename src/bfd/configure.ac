@@ -697,6 +697,23 @@ AC_CHECK_MEMBERS([struct user.u_comm],[],[
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* __USLC__ || HAVE_SYS_USER_H */
 ])dnl
+AC_CHECK_MEMBERS([struct coreoffsets.u_info, struct coreoffsets.u_usize,
+                  struct coreoffsets.u_user, struct coreoffsets.u_data,
+                  struct coreoffsets.u_stack],[],[],[
+#if defined(__USLC__) || defined(HAVE_SYS_USER_H)
+# include <sys/user.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "The conftest for a member of 'struct coreoffsets' wants <sys/user.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __USLC__ || HAVE_SYS_USER_H */
+#if defined(__USLC__) || defined(HAVE_SYS_PACCESS_H)
+# include <sys/paccess.h>
+#endif /* __USLC__ || HAVE_SYS_PACCESS_H */
+#if defined(__USLC__) || defined(HAVE_SYS_REGION_H)
+# include <sys/region.h>
+#endif /* __USLC__ || HAVE_SYS_REGION_H */
+])dnl
 
 # Checks for library functions.
 AC_MSG_CHECKING([functions])

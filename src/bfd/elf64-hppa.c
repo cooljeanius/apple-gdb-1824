@@ -1503,7 +1503,7 @@ static bfd_boolean
 elf64_hppa_adjust_dynamic_symbol(struct bfd_link_info *info ATTRIBUTE_UNUSED,
 				 struct elf_link_hash_entry *h)
 {
-  /* ??? Undefined symbols with PLT entries should be re-defined
+  /* ???: Undefined symbols with PLT entries should be re-defined
      to be the PLT entry.  */
 
   /* If this is a weak symbol, and there is a real definition, the

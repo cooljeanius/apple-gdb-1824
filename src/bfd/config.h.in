@@ -580,6 +580,21 @@
 /* Define to 1 if you have the 'strtoull' function. */
 #undef HAVE_STRTOULL
 
+/* Define to 1 if 'u_data' is a member of 'struct coreoffsets'. */
+#undef HAVE_STRUCT_COREOFFSETS_U_DATA
+
+/* Define to 1 if 'u_info' is a member of 'struct coreoffsets'. */
+#undef HAVE_STRUCT_COREOFFSETS_U_INFO
+
+/* Define to 1 if 'u_stack' is a member of 'struct coreoffsets'. */
+#undef HAVE_STRUCT_COREOFFSETS_U_STACK
+
+/* Define to 1 if 'u_user' is a member of 'struct coreoffsets'. */
+#undef HAVE_STRUCT_COREOFFSETS_U_USER
+
+/* Define to 1 if 'u_usize' is a member of 'struct coreoffsets'. */
+#undef HAVE_STRUCT_COREOFFSETS_U_USIZE
+
 /* Define to 1 if 'tm_zone' is a member of 'struct tm'. */
 #undef HAVE_STRUCT_TM_TM_ZONE
 

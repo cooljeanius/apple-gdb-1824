@@ -1,4 +1,4 @@
-/* Intel i386 Mach-O support for BFD.
+/* mach-o-i386.c: Intel i386 Mach-O support for BFD.
    Copyright 2009
    Free Software Foundation, Inc.
 
@@ -30,6 +30,15 @@
 #include "libbfd.h"
 #include "libiberty.h"
 #include "mach-o/reloc.h"
+
+#ifndef _ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED
+# define _ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED 1
+typedef enum bfd_mach_o_cpu_subtype
+{
+  BFD_MACH_O_CPU_SUBTYPE_X86_ALL = 3
+}
+bfd_mach_o_cpu_subtype;
+#endif /* !_ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED */
 
 #define bfd_mach_o_object_p bfd_mach_o_i386_object_p
 #define bfd_mach_o_core_p bfd_mach_o_i386_core_p
@@ -407,4 +416,4 @@ const mach_o_segment_name_xlat mach_o_i386_segsec_names_xlat[] =
 #define TARGET_PRIORITY		0
 #include "mach-o-target.c"
 
-/* EOF */
+/* End of mach-o-i386.c */

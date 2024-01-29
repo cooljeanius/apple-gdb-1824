@@ -2799,6 +2799,41 @@ Freescale S12Z reloc.
 This is a 15 bit relative address.  If the most significant bits are
 all zero then it may be truncated to 8 bits.
 @end deffn
+@deffn {} BFD_RELOC_CR16_NUM8
+@deffnx {} BFD_RELOC_CR16_NUM16
+@deffnx {} BFD_RELOC_CR16_NUM32
+@deffnx {} BFD_RELOC_CR16_NUM32a
+@deffnx {} BFD_RELOC_CR16_REGREL0
+@deffnx {} BFD_RELOC_CR16_REGREL4
+@deffnx {} BFD_RELOC_CR16_REGREL4a
+@deffnx {} BFD_RELOC_CR16_REGREL14
+@deffnx {} BFD_RELOC_CR16_REGREL14a
+@deffnx {} BFD_RELOC_CR16_REGREL16
+@deffnx {} BFD_RELOC_CR16_REGREL20
+@deffnx {} BFD_RELOC_CR16_REGREL20a
+@deffnx {} BFD_RELOC_CR16_ABS20
+@deffnx {} BFD_RELOC_CR16_ABS24
+@deffnx {} BFD_RELOC_CR16_IMM4
+@deffnx {} BFD_RELOC_CR16_IMM8
+@deffnx {} BFD_RELOC_CR16_IMM16
+@deffnx {} BFD_RELOC_CR16_IMM20
+@deffnx {} BFD_RELOC_CR16_IMM24
+@deffnx {} BFD_RELOC_CR16_IMM32
+@deffnx {} BFD_RELOC_CR16_IMM32a
+@deffnx {} BFD_RELOC_CR16_DISP4
+@deffnx {} BFD_RELOC_CR16_DISP8
+@deffnx {} BFD_RELOC_CR16_DISP16
+@deffnx {} BFD_RELOC_CR16_DISP20
+@deffnx {} BFD_RELOC_CR16_DISP24
+@deffnx {} BFD_RELOC_CR16_DISP24a
+@deffnx {} BFD_RELOC_CR16_SWITCH8
+@deffnx {} BFD_RELOC_CR16_SWITCH16
+@deffnx {} BFD_RELOC_CR16_SWITCH32
+@deffnx {} BFD_RELOC_CR16_GOT_REGREL20
+@deffnx {} BFD_RELOC_CR16_GOTC_REGREL20
+@deffnx {} BFD_RELOC_CR16_GLOB_DAT
+NS CR16 Relocations.
+@end deffn
 @deffn {} BFD_RELOC_16C_NUM08
 @deffnx {} BFD_RELOC_16C_NUM08_C
 @deffnx {} BFD_RELOC_16C_NUM16
@@ -3295,8 +3330,8 @@ required.
 Used when referencing a GOT entry.
 @end deffn
 @deffn {} BFD_RELOC_MACH_O_X86_64_GOT_LOAD
-Used when loading a GOT entry with movq.  It is specially marked so that
-the linker could optimize the movq to a leaq if possible.
+Used when loading a GOT entry with movq.  It is specially marked so
+that the linker could optimize the movq to a leaq if possible.
 @end deffn
 @deffn {} BFD_RELOC_MACH_O_X86_64_PCREL32_1
 Same as BFD_RELOC_32_PCREL but with an implicit -1 addend.
@@ -3306,6 +3341,12 @@ Same as BFD_RELOC_32_PCREL but with an implicit -2 addend.
 @end deffn
 @deffn {} BFD_RELOC_MACH_O_X86_64_PCREL32_4
 Same as BFD_RELOC_32_PCREL but with an implicit -4 addend.
+@end deffn
+@deffn {} BFD_RELOC_MACH_O_X86_64_SUBTRACTOR32
+???
+@end deffn
+@deffn {} BFD_RELOC_MACH_O_X86_64_SUBTRACTOR64
+???
 @end deffn
 @deffn {} BFD_RELOC_MACH_O_X86_64_TLV
 Used when referencing a TLV entry.

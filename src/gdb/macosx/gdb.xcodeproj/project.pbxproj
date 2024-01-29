@@ -3913,6 +3913,8 @@
 		A52B840F2B67634600F3C9EA /* elf64-tilegx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf64-tilegx.c"; sourceTree = "<group>"; };
 		A52B84132B6765B900F3C9EA /* elf32-tilegx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf32-tilegx.c"; sourceTree = "<group>"; };
 		A52B84142B6765B900F3C9EA /* elf32-tilegx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "elf32-tilegx.h"; sourceTree = "<group>"; };
+		A52B84172B677EBD00F3C9EA /* mach-o-i386.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mach-o-i386.c"; sourceTree = "<group>"; };
+		A52B84192B67809100F3C9EA /* mach-o-x86-64.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "mach-o-x86-64.c"; sourceTree = "<group>"; };
 		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; path = "mac-gdb.r"; sourceTree = "<group>"; };
 		A53ABD8C1A38C88F002F20B2 /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = link.h; sourceTree = "<group>"; };
 		A53ABDB71A38E84F002F20B2 /* objdump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objdump.h; sourceTree = "<group>"; };
@@ -6574,7 +6576,9 @@
 				2609CF9C0E82C408008125DE /* m68knetbsd.c */,
 				2609CF9D0E82C408008125DE /* m88kmach3.c */,
 				2609CF9E0E82C408008125DE /* m88kopenbsd.c */,
+				A52B84172B677EBD00F3C9EA /* mach-o-i386.c */,
 				2609CF9F0E82C408008125DE /* mach-o-target.c */,
+				A52B84192B67809100F3C9EA /* mach-o-x86-64.c */,
 				2609CFA00E82C408008125DE /* mach-o.c */,
 				2609CFA10E82C408008125DE /* mach-o.h */,
 				2609CFA60E82C408008125DE /* merge.c */,

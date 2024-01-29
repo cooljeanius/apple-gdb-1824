@@ -24,15 +24,76 @@
 
 #include "ansidecl.h"
 #include "bfd.h"
-#ifdef HAVE_MACH_O_LOADER_H
+#if !defined(__has_include)
+# define __has_include(foo) 0
+#endif /* !__has_include */
+#if defined(HAVE_MACH_O_LOADER_H) || __has_include(<mach-o/loader.h>)
 # include <mach-o/loader.h>
+# ifndef _ENUM_BFD_MACH_O_MACH_HEADER_MAGIC_DEFINED
+#  define _ENUM_BFD_MACH_O_MACH_HEADER_MAGIC_DEFINED 1
+#   if !defined(__STRICT_ANSI__) && !defined(PEDANTIC_WARNINGS)
+/* Constants for header: */
+typedef enum bfd_mach_o_mach_header_magic
+{
+  BFD_MACH_O_MH_MAGIC = __extension__ 0xfeedface,
+  BFD_MACH_O_MH_CIGAM = __extension__ 0xcefaedfe,
+  BFD_MACH_O_MH_MAGIC_64 = __extension__ 0xfeedfacf,
+  BFD_MACH_O_MH_CIGAM_64 = __extension__ 0xcffaedfe
+}
+bfd_mach_o_mach_header_magic;
+#  endif /* !__STRICT_ANSI__ && !PEDANTIC_WARNINGS */
+# endif /* !_ENUM_BFD_MACH_O_MACH_HEADER_MAGIC_DEFINED */
+# ifndef _ENUM_BFD_MACH_O_SECTION_TYPE_DEFINED
+#  define _ENUM_BFD_MACH_O_SECTION_TYPE_DEFINED 1
+typedef enum bfd_mach_o_section_type
+{
+  BFD_MACH_O_S_REGULAR = 0x0,
+  BFD_MACH_O_S_ZEROFILL = 0x1,
+  BFD_MACH_O_S_CSTRING_LITERALS = 0x2,
+  BFD_MACH_O_S_4BYTE_LITERALS = 0x3,
+  BFD_MACH_O_S_8BYTE_LITERALS = 0x4,
+  BFD_MACH_O_S_LITERAL_POINTERS = 0x5,
+  BFD_MACH_O_S_NON_LAZY_SYMBOL_POINTERS = 0x6,
+  BFD_MACH_O_S_LAZY_SYMBOL_POINTERS = 0x7,
+  BFD_MACH_O_S_SYMBOL_STUBS = 0x8,
+  BFD_MACH_O_S_MOD_INIT_FUNC_POINTERS = 0x9,
+  BFD_MACH_O_S_MOD_FINI_FUNC_POINTERS = 0xa,
+  BFD_MACH_O_S_COALESCED = 0xb,
+  BFD_MACH_O_S_GB_ZEROFILL = 0xc,
+  BFD_MACH_O_S_INTERPOSING = 0xd,
+  BFD_MACH_O_S_16BYTE_LITERALS = 0xe,
+  BFD_MACH_O_S_DTRACE_DOF = 0xf,
+  BFD_MACH_O_S_LAZY_DYLIB_SYMBOL_POINTERS = 0x10
+}
+bfd_mach_o_section_type;
+# endif /* !_ENUM_BFD_MACH_O_SECTION_TYPE_DEFINED */
+# ifndef _ENUM_BFD_MACH_O_SECTION_ATTRIBUTE_DEFINED
+#  define _ENUM_BFD_MACH_O_SECTION_ATTRIBUTE_DEFINED 1
+typedef enum bfd_mach_o_section_attribute
+{
+  BFD_MACH_O_S_ATTR_NONE = 0,
+  BFD_MACH_O_S_ATTR_LOC_RELOC = 0x00000100,
+  BFD_MACH_O_S_ATTR_EXT_RELOC = 0x00000200,
+  BFD_MACH_O_S_ATTR_SOME_INSTRUCTIONS = 0x00000400,
+  BFD_MACH_O_S_ATTR_DEBUG = 0x02000000,
+  BFD_MACH_O_S_SELF_MODIFYING_CODE = 0x04000000,
+  BFD_MACH_O_S_ATTR_LIVE_SUPPORT = 0x08000000,
+  BFD_MACH_O_S_ATTR_NO_DEAD_STRIP = 0x10000000,
+  BFD_MACH_O_S_ATTR_STRIP_STATIC_SYMS = 0x20000000,
+  BFD_MACH_O_S_ATTR_NO_TOC = 0x40000000
+#  if !defined(__STRICT_ANSI__) && !defined(PEDANTIC_WARNINGS)
+  , BFD_MACH_O_S_ATTR_PURE_INSTRUCTIONS = __extension__ 0x80000000
+#  endif /* !__STRICT_ANSI__ && !PEDANTIC_WARNINGS */
+}
+bfd_mach_o_section_attribute;
+# endif /* !_ENUM_BFD_MACH_O_SECTION_ATTRIBUTE_DEFINED */
 #else
-# if defined(__APPLE__) && defined(__MACH__)
+# if (defined(__APPLE__) && defined(__MACH__)) || __has_include("mach-o-gnu/loader.h")
 /* this should only be a temporary renaming: */
 #  include "mach-o-gnu/loader.h"
 # else
 #  include "mach-o/loader.h"
-# endif /* __APPLE__ && __MACH__ */
+# endif /* (__APPLE__ && __MACH__) || (renamed) */
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
  #  warning "mach-o.h expects a proper <mach-o/loader.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
@@ -208,6 +269,7 @@ bfd_mach_o_cpu_type;
 typedef enum bfd_mach_o_cpu_subtype
   {
     BFD_MACH_O_CPU_SUBTYPE_POWERPC_ALL = 0,
+    BFD_MACH_O_CPU_SUBTYPE_X86_ALL = 3,
     BFD_MACH_O_CPU_SUBTYPE_ARM_4T = 5,
     BFD_MACH_O_CPU_SUBTYPE_ARM_6 = 6,
     BFD_MACH_O_CPU_SUBTYPE_ARM_7 = 9,
