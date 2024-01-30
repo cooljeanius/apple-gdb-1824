@@ -186,7 +186,7 @@ modulelist:
 
 modulename:
 		modulename optcomma FILENAME
-		{ 	struct list *n  = (struct list *) malloc(sizeof(struct list));
+		{ 	struct list *n = (struct list *)malloc(sizeof(struct list));
 			n->next = $1;
 			n->name = $3;
 			$$ = n;
@@ -211,6 +211,7 @@ verbose_command:
 
 extern int linenumber;
 
+/* */
 static int
 yyerror(const char *x ATTRIBUTE_UNUSED)
 {

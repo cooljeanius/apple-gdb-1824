@@ -223,6 +223,7 @@ _bfd_get_file_window_mmap(bfd *abfd, ufile_ptr offset, bfd_size_type size,
 	  munmap(i->data, (size_t)i->size);
 	  i->data = 0;
 	}
+      /* FIXME: what if MAP_PRIVATE and MAP_SHARED have the same value? */
       i->data = mmap(i->data, real_size,
                      (writable ? (PROT_WRITE | PROT_READ) : PROT_READ),
                      (writable

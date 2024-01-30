@@ -1059,6 +1059,7 @@ abs32code(bfd *abfd, asection *input_section, arelent *r,
      jump we were going to.  */
   gap = (value - (dot - shrink));
 
+  /* FIXME: logical expression is always false: */
   if (((-1U << 23) < gap) && (gap < (1U << 23)))
     {
       /* Change the reloc type from 32bitcode possible 24, to 24bit

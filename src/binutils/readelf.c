@@ -7620,83 +7620,83 @@ debug_apply_rela_addends (FILE *file,
 {
   Elf_Internal_Shdr *relsec;
 
-  if (end - start < reloc_size)
+  if ((end - start) < reloc_size)
     return 1;
 
   for (relsec = section_headers;
-       relsec < section_headers + elf_header.e_shnum;
+       relsec < (section_headers + elf_header.e_shnum);
        ++relsec)
     {
       unsigned long nrelas;
       Elf_Internal_Rela *rela, *rp;
       Elf_Internal_Shdr *symsec;
-      Elf_Internal_Sym *symtab;
-      Elf_Internal_Sym *sym;
+      Elf_Internal_Sym *symtab = NULL;
+      Elf_Internal_Sym *sym = NULL;
 
-      if (relsec->sh_type != SHT_RELA
-	  || SECTION_HEADER_INDEX (relsec->sh_info) >= elf_header.e_shnum
-	  || SECTION_HEADER (relsec->sh_info) != section
-	  || relsec->sh_size == 0
-	  || SECTION_HEADER_INDEX (relsec->sh_link) >= elf_header.e_shnum)
+      if ((relsec->sh_type != SHT_RELA)
+	  || (SECTION_HEADER_INDEX(relsec->sh_info) >= elf_header.e_shnum)
+	  || (SECTION_HEADER(relsec->sh_info) != section)
+	  || (relsec->sh_size == 0)
+	  || (SECTION_HEADER_INDEX(relsec->sh_link) >= elf_header.e_shnum))
 	continue;
 
-      if (!slurp_rela_relocs (file, relsec->sh_offset, relsec->sh_size,
-			      &rela, &nrelas))
+      if (!slurp_rela_relocs(file, relsec->sh_offset, relsec->sh_size,
+			     &rela, &nrelas))
 	return 0;
 
-      symsec = SECTION_HEADER (relsec->sh_link);
-      symtab = GET_ELF_SYMBOLS (file, symsec);
+      symsec = SECTION_HEADER(relsec->sh_link);
+      symtab = GET_ELF_SYMBOLS(file, symsec);
 
-      for (rp = rela; rp < rela + nrelas; ++rp)
+      for (rp = rela; rp < (rela + nrelas); ++rp)
 	{
 	  unsigned char *loc;
 
-	  if (rp->r_offset >= (bfd_vma) (start - sec_data)
-	      && rp->r_offset < (bfd_vma) (end - sec_data) - reloc_size)
-	    loc = sec_data + rp->r_offset;
+	  if ((rp->r_offset >= (bfd_vma)(start - sec_data))
+	      && (rp->r_offset < ((bfd_vma)(end - sec_data) - reloc_size)))
+	    loc = (sec_data + rp->r_offset);
 	  else
 	    continue;
 
 	  if (is_32bit_elf)
 	    {
-	      sym = symtab + ELF32_R_SYM (rp->r_info);
+	      sym = (symtab + ELF32_R_SYM(rp->r_info));
 
-	      if (ELF32_R_SYM (rp->r_info) != 0
-		  && ELF32_ST_TYPE (sym->st_info) != STT_SECTION
+	      if ((ELF32_R_SYM(rp->r_info) != 0)
+		  && (ELF32_ST_TYPE(sym->st_info) != STT_SECTION)
 		  /* Relocations against object symbols can happen,
 		     eg when referencing a global array. For an
 		     example of this see the _clz.o binary in libgcc.a.  */
-		  && ELF32_ST_TYPE (sym->st_info) != STT_OBJECT)
+		  && (ELF32_ST_TYPE(sym->st_info) != STT_OBJECT))
 		{
-		  warn (_("skipping unexpected symbol type %s in relocation in section .rela%s\n"),
-			get_symbol_type (ELF32_ST_TYPE (sym->st_info)),
-			SECTION_NAME (section));
+		  warn(_("skipping unexpected symbol type %s in relocation in section .rela%s\n"),
+                       get_symbol_type(ELF32_ST_TYPE(sym->st_info)),
+                       SECTION_NAME(section));
 		  continue;
 		}
 	    }
 	  else
 	    {
 	      /* In MIPS little-endian objects, r_info is NOT really a
-		   * 64-bit little-endian value: it has a 32-bit little-endian
-		   * symbol index followed by four individual byte fields.
-		   * Reorder INFO accordingly.  */
-	      if (elf_header.e_machine == EM_MIPS
-		  && elf_header.e_ident[EI_DATA] != ELFDATA2MSB)
+               * 64-bit little-endian value: it has a 32-bit little-endian
+               * symbol index followed by four individual byte fields.
+               * Reorder INFO accordingly.  */
+	      if ((elf_header.e_machine == EM_MIPS)
+		  && (elf_header.e_ident[EI_DATA] != ELFDATA2MSB))
 		rp->r_info = (((rp->r_info & 0xffffffff) << 32)
 			      | ((rp->r_info >> 56) & 0xff)
 			      | ((rp->r_info >> 40) & 0xff00)
 			      | ((rp->r_info >> 24) & 0xff0000)
 			      | ((rp->r_info >> 8) & 0xff000000));
 
-	      sym = symtab + ELF64_R_SYM (rp->r_info);
+	      sym = (symtab + ELF64_R_SYM(rp->r_info));
 
-	      if (ELF64_R_SYM (rp->r_info) != 0
-		  && ELF64_ST_TYPE (sym->st_info) != STT_SECTION
-		  && ELF64_ST_TYPE (sym->st_info) != STT_OBJECT)
+	      if ((ELF64_R_SYM(rp->r_info) != 0)
+		  && (ELF64_ST_TYPE(sym->st_info) != STT_SECTION)
+		  && (ELF64_ST_TYPE(sym->st_info) != STT_OBJECT))
 		{
-		  warn (_("skipping unexpected symbol type %s in relocation in section .rela.%s\n"),
-			get_symbol_type (ELF64_ST_TYPE (sym->st_info)),
-			SECTION_NAME (section));
+		  warn(_("skipping unexpected symbol type %s in relocation in section .rela.%s\n"),
+                       get_symbol_type(ELF64_ST_TYPE(sym->st_info)),
+                       SECTION_NAME(section));
 		  continue;
 		}
 	    }

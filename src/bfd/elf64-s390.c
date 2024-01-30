@@ -594,7 +594,7 @@ struct elf_s390_link_hash_entry
 #define GOT_NORMAL	1
 #define GOT_TLS_GD	2
 #define GOT_TLS_IE	3
-#define GOT_TLS_IE_NLT	3
+#define GOT_TLS_IE_NLT	3 /* ...maybe this should actually be 4? */
   unsigned char tls_type;
 };
 
@@ -605,21 +605,21 @@ struct elf_s390_obj_tdata
 {
   struct elf_obj_tdata root;
 
-  /* tls_type for each local got entry.  */
+  /* tls_type for each local got entry: */
   char *local_got_tls_type;
 };
 
 #define elf_s390_tdata(abfd) \
-  ((struct elf_s390_obj_tdata *) (abfd)->tdata.any)
+  ((struct elf_s390_obj_tdata *)(abfd)->tdata.any)
 
 #define elf_s390_local_got_tls_type(abfd) \
-  (elf_s390_tdata (abfd)->local_got_tls_type)
+  (elf_s390_tdata(abfd)->local_got_tls_type)
 
 static bfd_boolean
 elf_s390_mkobject(bfd *abfd)
 {
-  bfd_size_type amt = sizeof (struct elf_s390_obj_tdata);
-  abfd->tdata.any = bfd_zalloc (abfd, amt);
+  bfd_size_type amt = sizeof(struct elf_s390_obj_tdata);
+  abfd->tdata.any = bfd_zalloc(abfd, amt);
   if (abfd->tdata.any == NULL)
     return FALSE;
   return TRUE;
@@ -2916,7 +2916,9 @@ elf_s390_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  /* GD->LE transition.
 		     brasl %r14,__tls_get_addr@plt -> brcl 0,. */
 		  insn0 = 0xc0040000;
-		  insn1 = 0x0000;
+                  if (insn1 != 0x0000) {
+		    insn1 = 0x0000;
+                  }
 		}
 	      else
 		{
@@ -3123,6 +3125,7 @@ elf_s390_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
 	}
     }
 
+  /* FIXME: GOT_TLS_IE and GOT_TLS_IE_NLT are currently equivalent: */
   if ((h->got.offset != (bfd_vma)-1L)
       && (elf_s390_hash_entry(h)->tls_type != GOT_TLS_GD)
       && (elf_s390_hash_entry(h)->tls_type != GOT_TLS_IE)

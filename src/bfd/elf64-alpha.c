@@ -4646,11 +4646,10 @@ elf64_alpha_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 
 /* Finish up dynamic symbol handling.  We set the contents of various
    dynamic sections here.  */
-
 static bfd_boolean
-elf64_alpha_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
-				   struct elf_link_hash_entry *h,
-				   Elf_Internal_Sym *sym)
+elf64_alpha_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
+				  struct elf_link_hash_entry *h,
+				  Elf_Internal_Sym *sym)
 {
   struct alpha_elf_link_hash_entry *ah = (struct alpha_elf_link_hash_entry *)h;
   bfd *dynobj = elf_hash_table(info)->dynobj;
@@ -4665,12 +4664,12 @@ elf64_alpha_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
       bfd_vma plt_index;
       struct alpha_elf_got_entry *gotent;
 
-      BFD_ASSERT (h->dynindx != -1);
+      BFD_ASSERT(h->dynindx != -1);
 
-      splt = bfd_get_section_by_name (dynobj, ".plt");
-      BFD_ASSERT (splt != NULL);
-      srel = bfd_get_section_by_name (dynobj, ".rela.plt");
-      BFD_ASSERT (srel != NULL);
+      splt = bfd_get_section_by_name(dynobj, ".plt");
+      BFD_ASSERT(splt != NULL);
+      srel = bfd_get_section_by_name(dynobj, ".rela.plt");
+      BFD_ASSERT(srel != NULL);
 
       for (gotent = ah->got_entries; gotent; gotent = gotent->next)
 	if ((gotent->reloc_type == R_ALPHA_LITERAL)
@@ -4693,13 +4692,13 @@ elf64_alpha_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
 	    plt_index = ((gotent->plt_offset - PLT_HEADER_SIZE)
                          / PLT_ENTRY_SIZE);
 
-	    /* Fill in the entry in the procedure linkage table.  */
+	    /* Fill in the entry in the procedure linkage table: */
 	    if (elf64_alpha_use_secureplt)
 	      {
-		disp = (PLT_HEADER_SIZE - 4) - (gotent->plt_offset + 4);
-		insn = INSN_AD (INSN_BR, 31, disp);
-		bfd_put_32 (output_bfd, insn,
-			    splt->contents + gotent->plt_offset);
+		disp = ((PLT_HEADER_SIZE - 4) - (gotent->plt_offset + 4));
+		insn = INSN_AD(INSN_BR, 31, disp);
+		bfd_put_32(output_bfd, insn,
+			   (splt->contents + gotent->plt_offset));
 
 		plt_index = ((gotent->plt_offset - NEW_PLT_HEADER_SIZE)
 			     / NEW_PLT_ENTRY_SIZE);
@@ -4707,41 +4706,41 @@ elf64_alpha_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
 	    else
 	      {
 		disp = -(gotent->plt_offset + 4);
-		insn = INSN_AD (INSN_BR, 28, disp);
-		bfd_put_32 (output_bfd, insn,
-			    splt->contents + gotent->plt_offset);
-		bfd_put_32 (output_bfd, INSN_UNOP,
-			    splt->contents + gotent->plt_offset + 4);
-		bfd_put_32 (output_bfd, INSN_UNOP,
-			    splt->contents + gotent->plt_offset + 8);
+		insn = INSN_AD(INSN_BR, 28, disp);
+		bfd_put_32(output_bfd, insn,
+			   (splt->contents + gotent->plt_offset));
+		bfd_put_32(output_bfd, INSN_UNOP,
+			   (splt->contents + gotent->plt_offset + 4));
+		bfd_put_32(output_bfd, INSN_UNOP,
+			   (splt->contents + gotent->plt_offset + 8));
 
 		plt_index = ((gotent->plt_offset - OLD_PLT_HEADER_SIZE)
 			     / OLD_PLT_ENTRY_SIZE);
 	      }
 
-	    /* Fill in the entry in the .rela.plt section.  */
+	    /* Fill in the entry in the .rela.plt section: */
 	    outrel.r_offset = got_addr;
 	    outrel.r_info = ELF64_R_INFO(h->dynindx, R_ALPHA_JMP_SLOT);
 	    outrel.r_addend = 0;
 
-	    loc = srel->contents + plt_index * sizeof (Elf64_External_Rela);
-	    bfd_elf64_swap_reloca_out (output_bfd, &outrel, loc);
+	    loc = (srel->contents + (plt_index * sizeof(Elf64_External_Rela)));
+	    bfd_elf64_swap_reloca_out(output_bfd, &outrel, loc);
 
 	    /* Fill in the entry in the .got.  */
-	    bfd_put_64 (output_bfd, plt_addr,
-			sgot->contents + gotent->got_offset);
+	    bfd_put_64(output_bfd, plt_addr,
+                       (sgot->contents + gotent->got_offset));
 	  }
     }
-  else if (alpha_elf_dynamic_symbol_p (h, info))
+  else if (alpha_elf_dynamic_symbol_p(h, info))
     {
       /* Fill in the dynamic relocations for this symbol's .got entries.  */
       asection *srel;
       struct alpha_elf_got_entry *gotent;
 
-      srel = bfd_get_section_by_name (dynobj, ".rela.got");
-      BFD_ASSERT (srel != NULL);
+      srel = bfd_get_section_by_name(dynobj, ".rela.got");
+      BFD_ASSERT(srel != NULL);
 
-      for (gotent = ((struct alpha_elf_link_hash_entry *) h)->got_entries;
+      for (gotent = ((struct alpha_elf_link_hash_entry *)h)->got_entries;
 	   gotent != NULL;
 	   gotent = gotent->next)
 	{
@@ -4751,7 +4750,7 @@ elf64_alpha_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
 	  if (gotent->use_count == 0)
 	    continue;
 
-	  sgot = alpha_elf_tdata (gotent->gotobj)->got;
+	  sgot = alpha_elf_tdata(gotent->gotobj)->got;
 
 	  r_type = gotent->reloc_type;
 	  switch (r_type)

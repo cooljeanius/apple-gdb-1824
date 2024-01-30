@@ -1524,6 +1524,10 @@ mmix_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  if (! check_ok)
 	    return FALSE;
 	}
+
+      if (undefined_signalled) {
+    	(void)undefined_signalled;
+      }
     }
 
   return TRUE;
@@ -2525,15 +2529,15 @@ mmix_elf_relax_section(bfd *abfd, asection *sec,
   Elf_Internal_Rela *irel, *irelend;
   asection *bpo_gregs_section = NULL;
   struct bpo_greg_section_info *gregdata;
-  struct bpo_reloc_section_info *bpodata
-    = mmix_elf_section_data(sec)->bpo.reloc;
+  struct bpo_reloc_section_info *bpodata =
+    mmix_elf_section_data(sec)->bpo.reloc;
   /* The initialization is to quiet compiler warnings.  The value is to
      spot a missing actual initialization.  */
   size_t bpono = (size_t)-1L;
   size_t pjsno = 0;
   bfd *bpo_greg_owner;
   Elf_Internal_Sym *isymbuf = NULL;
-  bfd_size_type size = sec->rawsize ? sec->rawsize : sec->size;
+  bfd_size_type size = (sec->rawsize ? sec->rawsize : sec->size);
 
   mmix_elf_section_data(sec)->pjs.stubs_size_sum = 0;
 
@@ -2542,19 +2546,22 @@ mmix_elf_relax_section(bfd *abfd, asection *sec,
 
   /* We don't have to do anything if this section does not have relocs, or
      if this is not a code section.  */
-  if ((sec->flags & SEC_RELOC) == 0
-      || sec->reloc_count == 0
-      || (sec->flags & SEC_CODE) == 0
-      || (sec->flags & SEC_LINKER_CREATED) != 0
+  if (((sec->flags & SEC_RELOC) == 0) || (sec->reloc_count == 0)
+      || ((sec->flags & SEC_CODE) == 0)
+      || ((sec->flags & SEC_LINKER_CREATED) != 0)
       /* If no R_MMIX_BASE_PLUS_OFFSET relocs and no PUSHJ-stub relocs,
          then nothing to do.  */
-      || (bpodata == NULL
-	  && mmix_elf_section_data(sec)->pjs.n_pushj_relocs == 0))
+      || ((bpodata == NULL)
+	  && (mmix_elf_section_data(sec)->pjs.n_pushj_relocs == 0)))
     return TRUE;
 
   symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
 
   bpo_greg_owner = (bfd *)link_info->base_file;
+
+  if (bpo_greg_owner == NULL) {
+    (void)bpo_greg_owner;
+  }
 
   if (bpodata != NULL)
     {
@@ -2565,24 +2572,23 @@ mmix_elf_relax_section(bfd *abfd, asection *sec,
   else
     gregdata = NULL;
 
-  /* Get a copy of the native relocations.  */
-  internal_relocs
-    = _bfd_elf_link_read_relocs(abfd, sec, (PTR)NULL,
-                                (Elf_Internal_Rela *)NULL,
-                                link_info->keep_memory);
+  /* Get a copy of the native relocations: */
+  internal_relocs =
+    _bfd_elf_link_read_relocs(abfd, sec, (PTR)NULL, (Elf_Internal_Rela *)NULL,
+                              link_info->keep_memory);
   if (internal_relocs == NULL)
     goto error_return;
 
-  /* Walk through them looking for relaxing opportunities.  */
-  irelend = internal_relocs + sec->reloc_count;
+  /* Walk through them looking for relaxing opportunities: */
+  irelend = (internal_relocs + sec->reloc_count);
   for (irel = internal_relocs; irel < irelend; irel++)
     {
       bfd_vma symval;
       struct elf_link_hash_entry *h = NULL;
 
       /* We only process two relocs.  */
-      if (ELF64_R_TYPE (irel->r_info) != (int) R_MMIX_BASE_PLUS_OFFSET
-	  && ELF64_R_TYPE (irel->r_info) != (int) R_MMIX_PUSHJ_STUBBABLE)
+      if ((ELF64_R_TYPE(irel->r_info) != (int)R_MMIX_BASE_PLUS_OFFSET)
+	  && (ELF64_R_TYPE(irel->r_info) != (int)R_MMIX_PUSHJ_STUBBABLE))
 	continue;
 
       /* We process relocs in a distinctly different way when this is a
@@ -2596,7 +2602,7 @@ mmix_elf_relax_section(bfd *abfd, asection *sec,
 	     output section plus earlier stubs, cannot be reached.  Thus
 	     relocatable linking can only lead to worse code, but it still
 	     works.  */
-	  if (ELF64_R_TYPE (irel->r_info) == R_MMIX_PUSHJ_STUBBABLE)
+	  if (ELF64_R_TYPE(irel->r_info) == R_MMIX_PUSHJ_STUBBABLE)
 	    {
 	      /* If we can reach the end of the output-section and beyond
 		 any current stubs, then we don't need a stub for this
@@ -2606,26 +2612,24 @@ mmix_elf_relax_section(bfd *abfd, asection *sec,
 		 relaxation only on relocations indifferent to the
 		 presence of output stub allocations for other relocations
 		 and thus the order of output stub allocation.  */
-	      if (bfd_check_overflow (complain_overflow_signed,
-				      19,
-				      0,
-				      bfd_arch_bits_per_address (abfd),
-				      /* Output-stub location.  */
-				      sec->output_section->rawsize
-				      + (mmix_elf_section_data (sec
-							       ->output_section)
-					 ->pjs.stubs_size_sum)
-				      /* Location of this PUSHJ reloc.  */
-				      - (sec->output_offset + irel->r_offset)
-				      /* Don't count *this* stub twice.  */
-				      - (mmix_elf_section_data (sec)
-					 ->pjs.stub_size[pjsno]
-					 + MAX_PUSHJ_STUB_SIZE))
+	      if (bfd_check_overflow(complain_overflow_signed, 19, 0,
+				     bfd_arch_bits_per_address(abfd),
+				     /* Output-stub location: */
+				     sec->output_section->rawsize
+				     + (mmix_elf_section_data(sec
+						              ->output_section)
+				 	->pjs.stubs_size_sum)
+				     /* Location of this PUSHJ reloc: */
+				     - (sec->output_offset + irel->r_offset)
+				     /* Don't count *this* stub twice: */
+				     - (mmix_elf_section_data(sec)
+				 	->pjs.stub_size[pjsno]
+                                        + MAX_PUSHJ_STUB_SIZE))
 		  == bfd_reloc_ok)
-		mmix_elf_section_data (sec)->pjs.stub_size[pjsno] = 0;
+		mmix_elf_section_data(sec)->pjs.stub_size[pjsno] = 0;
 
-	      mmix_elf_section_data (sec)->pjs.stubs_size_sum
-		+= mmix_elf_section_data (sec)->pjs.stub_size[pjsno];
+	      mmix_elf_section_data(sec)->pjs.stubs_size_sum +=
+         	mmix_elf_section_data(sec)->pjs.stub_size[pjsno];
 
 	      pjsno++;
 	    }

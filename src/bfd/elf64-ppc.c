@@ -6168,6 +6168,10 @@ ppc64_elf_edit_opd(bfd *obfd, struct bfd_link_info *info,
       symtab_hdr = &elf_tdata(ibfd)->symtab_hdr;
       sym_hashes = elf_sym_hashes(ibfd);
 
+      if (sym_hashes == NULL) {
+        (void)sym_hashes;
+      }
+
       /* Read the relocations.  */
       relstart = _bfd_elf_link_read_relocs (ibfd, sec, NULL, NULL,
 					    info->keep_memory);
@@ -6901,9 +6905,8 @@ adjust_toc_syms (struct elf_link_hash_entry *h, void *inf)
 
 /* Examine all relocs referencing .toc sections in order to remove
    unused .toc entries.  */
-
 bfd_boolean
-ppc64_elf_edit_toc (bfd *obfd ATTRIBUTE_UNUSED, struct bfd_link_info *info)
+ppc64_elf_edit_toc(bfd *obfd ATTRIBUTE_UNUSED, struct bfd_link_info *info)
 {
   bfd *ibfd;
   struct adjust_toc_info toc_inf;
@@ -6921,8 +6924,7 @@ ppc64_elf_edit_toc (bfd *obfd ATTRIBUTE_UNUSED, struct bfd_link_info *info)
       unsigned char *keep, last, some_unused;
 
       toc = bfd_get_section_by_name(ibfd, ".toc");
-      if ((toc == NULL)
-	  || (toc->size == 0)
+      if ((toc == NULL) || (toc->size == 0)
 	  || (toc->sec_info_type == ELF_INFO_TYPE_JUST_SYMS)
 	  || elf_discarded_section(toc))
 	continue;
@@ -6930,6 +6932,10 @@ ppc64_elf_edit_toc (bfd *obfd ATTRIBUTE_UNUSED, struct bfd_link_info *info)
       local_syms = NULL;
       symtab_hdr = &elf_tdata(ibfd)->symtab_hdr;
       sym_hashes = elf_sym_hashes(ibfd);
+
+      if (sym_hashes == NULL) {
+        (void)sym_hashes;
+      }
 
       /* Look at sections dropped from the final link: */
       skip = NULL;
@@ -7978,30 +7984,30 @@ ppc_build_one_stub(struct bfd_hash_entry *gen_entry, void *in_arg)
 
 	  r2off = (htab->stub_group[stub_entry->target_section->id].toc_off
 		   - htab->stub_group[stub_entry->id_sec->id].toc_off);
-	  bfd_put_32 (htab->stub_bfd, STD_R2_40R1, loc);
+	  bfd_put_32(htab->stub_bfd, STD_R2_40R1, loc);
 	  loc += 4;
-	  bfd_put_32 (htab->stub_bfd, ADDIS_R2_R2 | PPC_HA (r2off), loc);
+	  bfd_put_32(htab->stub_bfd, ADDIS_R2_R2 | PPC_HA(r2off), loc);
 	  loc += 4;
-	  bfd_put_32 (htab->stub_bfd, ADDI_R2_R2 | PPC_LO (r2off), loc);
+	  bfd_put_32(htab->stub_bfd, ADDI_R2_R2 | PPC_LO(r2off), loc);
 	  loc += 4;
 	  off -= 12;
 	  size = 16;
 	}
-      bfd_put_32 (htab->stub_bfd, B_DOT | (off & 0x3fffffc), loc);
+      bfd_put_32(htab->stub_bfd, (B_DOT | (off & 0x3fffffc)), loc);
 
-      BFD_ASSERT (off + (1 << 25) < (bfd_vma) (1 << 26));
+      BFD_ASSERT((off + (1 << 25)) < (bfd_vma)(1 << 26));
 
       if (info->emitrelocations)
 	{
 	  Elf_Internal_Rela *relocs, *r;
 	  struct bfd_elf_section_data *elfsec_data;
 
-	  elfsec_data = elf_section_data (stub_entry->stub_sec);
+	  elfsec_data = elf_section_data(stub_entry->stub_sec);
 	  relocs = elfsec_data->relocs;
 	  if (relocs == NULL)
 	    {
 	      bfd_size_type relsize;
-	      relsize = stub_entry->stub_sec->reloc_count * sizeof(*relocs);
+	      relsize = (stub_entry->stub_sec->reloc_count * sizeof(*relocs));
 	      relocs = (Elf_Internal_Rela *)bfd_alloc(htab->stub_bfd,
                                                       relsize);
 	      if (relocs == NULL)
@@ -8022,7 +8028,7 @@ ppc_build_one_stub(struct bfd_hash_entry *gen_entry, void *in_arg)
 	      unsigned long symndx;
 	      struct ppc_link_hash_entry *h;
 
-	      hashes = elf_sym_hashes (htab->stub_bfd);
+	      hashes = elf_sym_hashes(htab->stub_bfd);
 	      if (hashes == NULL)
 		{
 		  bfd_size_type hsize;

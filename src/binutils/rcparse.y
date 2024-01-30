@@ -852,32 +852,35 @@ control:
 control_params:
 	  numexpr cnumexpr cnumexpr cnumexpr cnumexpr opt_control_data
 	  {
-	    $$ = define_control (res_text_field, $1, $2, $3, $4, $5, controlclass,
-				 default_style | WS_CHILD | WS_VISIBLE, 0);
+	    $$ = define_control(res_text_field, $1, $2, $3, $4, $5,
+     	 			controlclass,
+                                (default_style | WS_CHILD | WS_VISIBLE), 0);
 	    if ($6 != NULL)
 	      {
 		if (dialog.ex == NULL)
-		  rcparse_warning (_("control data requires DIALOGEX"));
+		  rcparse_warning(_("control data requires DIALOGEX"));
 		$$->data = $6;
 	      }
 	  }
 	| numexpr cnumexpr cnumexpr cnumexpr cnumexpr
 	    control_params_styleexpr optcnumexpr opt_control_data
 	  {
-	    $$ = define_control (res_text_field, $1, $2, $3, $4, $5, controlclass, style, $7);
+	    $$ = define_control(res_text_field, $1, $2, $3, $4, $5,
+                                controlclass, style, $7);
 	    if ($8 != NULL)
 	      {
 		if (dialog.ex == NULL)
-		  rcparse_warning (_("control data requires DIALOGEX"));
+		  rcparse_warning(_("control data requires DIALOGEX"));
 		$$->data = $8;
 	      }
 	  }
 	| numexpr cnumexpr cnumexpr cnumexpr cnumexpr
 	    control_params_styleexpr cnumexpr cnumexpr opt_control_data
 	  {
-	    $$ = define_control (res_text_field, $1, $2, $3, $4, $5, controlclass, style, $7);
+	    $$ = define_control(res_text_field, $1, $2, $3, $4, $5,
+     	 			controlclass, style, $7);
 	    if (dialog.ex == NULL)
-	      rcparse_warning (_("help ID requires DIALOGEX"));
+	      rcparse_warning(_("help ID requires DIALOGEX"));
 	    $$->help = $8;
 	    $$->data = $9;
 	  }
@@ -886,7 +889,7 @@ control_params:
 optresidc:
 	  /* empty */
 	  {
-	    res_string_to_id (&$$, "");
+	    res_string_to_id(&$$, "");
 	  }
 	| posnumexpr ','
 	  {
@@ -1763,10 +1766,9 @@ sizedposnumexpr:
 
 %%
 
-/* Set the language from the command line.  */
-
+/* Set the language from the command line: */
 void
-rcparse_set_language (int lang)
+rcparse_set_language(int lang)
 {
   language = lang;
 }

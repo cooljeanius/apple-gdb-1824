@@ -2320,18 +2320,17 @@ coff_pointerize_aux_hook(bfd *abfd ATTRIBUTE_UNUSED,
 # ifdef I960
 /* We do NOT want to pointerize bal entries.  */
 static bfd_boolean
-coff_pointerize_aux_hook (bfd *abfd ATTRIBUTE_UNUSED,
-			  combined_entry_type *table_base ATTRIBUTE_UNUSED,
-			  combined_entry_type *symbol,
-			  unsigned int indaux,
-			  combined_entry_type *aux ATTRIBUTE_UNUSED)
+coff_pointerize_aux_hook(bfd *abfd ATTRIBUTE_UNUSED,
+			 combined_entry_type *table_base ATTRIBUTE_UNUSED,
+			 combined_entry_type *symbol, unsigned int indaux,
+			 combined_entry_type *aux ATTRIBUTE_UNUSED)
 {
   /* Return TRUE if we do NOT want to pointerize this aux entry, which
      is the case for the lastfirst aux entry for a C_LEAFPROC symbol.  */
-  return (indaux == 1
-	  && (symbol->u.syment.n_sclass == C_LEAFPROC
-	      || symbol->u.syment.n_sclass == C_LEAFSTAT
-	      || symbol->u.syment.n_sclass == C_LEAFEXT));
+  return ((indaux == 1)
+	  && ((symbol->u.syment.n_sclass == C_LEAFPROC)
+	      || (symbol->u.syment.n_sclass == C_LEAFSTAT)
+	      || (symbol->u.syment.n_sclass == C_LEAFEXT)));
   /* FIXME: what if C_LEAFSTAT == C_LEAFEXT? */
 }
 

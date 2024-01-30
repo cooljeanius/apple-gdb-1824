@@ -2244,7 +2244,7 @@ xcoff_write_archive_contents_old(bfd *abfd)
   /* Write out the archive file header.  */
 
   /* We need spaces, not null bytes, in the header.  */
-  for (p = (char *) &fhdr; p < (char *) &fhdr + SIZEOF_AR_FILE_HDR; p++)
+  for (p = (char *)&fhdr; p < ((char *)&fhdr + SIZEOF_AR_FILE_HDR); p++)
     if (*p == '\0')
       *p = ' ';
 
@@ -2253,6 +2253,7 @@ xcoff_write_archive_contents_old(bfd *abfd)
 	  != SIZEOF_AR_FILE_HDR))
     return FALSE;
 
+  (void)prevoff;
   return TRUE;
 }
 
@@ -2496,16 +2497,16 @@ xcoff_write_archive_contents_big(bfd *abfd)
   /* Write out the armap, if appropriate.  */
 
   if (! makemap || ! hasobjects)
-    PRINT20 (fhdr.symoff, 0);
+    PRINT20(fhdr.symoff, 0);
   else
     {
-      BFD_ASSERT (nextoff == bfd_tell (abfd));
+      BFD_ASSERT(nextoff == bfd_tell(abfd));
 
-      /* Save nextoff in fhdr.symoff so the armap routine can use it.  */
-      PRINT20 (fhdr.symoff, nextoff);
+      /* Save nextoff in fhdr.symoff so the armap routine can use it: */
+      PRINT20(fhdr.symoff, nextoff);
 
-      bfd_ardata (abfd)->tdata = (PTR) &fhdr;
-      if (! _bfd_compute_and_write_armap (abfd, 0))
+      bfd_ardata(abfd)->tdata = (PTR)&fhdr;
+      if (!_bfd_compute_and_write_armap(abfd, 0))
 	return FALSE;
     }
 
@@ -2516,9 +2517,11 @@ xcoff_write_archive_contents_big(bfd *abfd)
 		     abfd) != SIZEOF_AR_FILE_HDR_BIG))
     return FALSE;
 
+  (void)prevoff;
   return TRUE;
 }
 
+/* */
 bfd_boolean
 _bfd_xcoff_write_archive_contents(bfd *abfd)
 {
@@ -3039,7 +3042,8 @@ xcoff_complain_overflow_signed_func(bfd *input_bfd, bfd_vma val,
   if ((b & signmask) != 0)
     {
       /* Set all the bits above the sign bit: */
-      b -= signmask <<= 1;
+      signmask <<= 1;
+      b -= signmask;
     }
 
   b = ((b & addrmask) >> howto->bitpos);

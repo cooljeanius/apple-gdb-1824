@@ -614,6 +614,7 @@ sh_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
 	sym_value -= 0x1000;
       insn = (unsigned long)((insn & 0xf000) | (sym_value & 0xfff));
       bfd_put_16(abfd, (bfd_vma)insn, hit_data);
+      /* FIXME: instead of ignoring this diagnostic, fix it: */
 #if defined(__clang__) && (__clang__ >= 1)
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wtautological-overlap-compare"

@@ -57,12 +57,12 @@ static const bfd_target *MY(callback)(bfd *abfd)
   unsigned long arch_align;
 
   /* Calculate the file positions of the parts of a newly read aout header: */
-  obj_textsec(abfd)->size = N_TXTSIZE(*execp);
+  obj_textsec(abfd)->size = N_TXTSIZE(*execp); /* FIXME: look inside macro */
 
   /* The virtual memory addresses of the sections: */
   obj_textsec(abfd)->vma = N_TXTADDR(*execp);
-  obj_datasec(abfd)->vma = N_DATADDR(*execp);
-  obj_bsssec(abfd)->vma = N_BSSADDR(*execp);
+  obj_datasec(abfd)->vma = N_DATADDR(*execp); /* FIXME: look inside macro */
+  obj_bsssec(abfd)->vma = N_BSSADDR(*execp); /* FIXME: look inside macro */
 
   /* For some targets, if the entry point is not in the same page
      as the start of the text, then adjust the VMA so that it is.
@@ -252,7 +252,7 @@ static bfd_boolean MY(write_object_contents)(bfd *abfd)
 
   obj_reloc_entry_size(abfd) = RELOC_STD_SIZE;
 
-  WRITE_HEADERS(abfd, execp);
+  WRITE_HEADERS(abfd, execp); /* FIXME: something here? */
 
   return TRUE;
 }

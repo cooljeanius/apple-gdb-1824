@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-29 02:35-0500\n"
+"POT-Creation-Date: 2024-01-29 19:30-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -170,12 +170,12 @@ msgstr ""
 msgid "Please report this bug.\n"
 msgstr ""
 
-#: bfdwin.c:255
+#: bfdwin.c:256
 #, c-format
 msgid "not mapping: data=%lx mapped=%d\n"
 msgstr ""
 
-#: bfdwin.c:258
+#: bfdwin.c:259
 #, c-format
 msgid "not mapping: env var not set\n"
 msgstr ""
@@ -197,11 +197,11 @@ msgstr ""
 msgid "Unrecognized reloc"
 msgstr ""
 
-#: coff-a29k.c:396
+#: coff-a29k.c:399
 msgid "missing IHCONST reloc"
 msgstr ""
 
-#: coff-a29k.c:486
+#: coff-a29k.c:489
 msgid "missing IHIHALF reloc"
 msgstr ""
 
@@ -261,7 +261,7 @@ msgid ""
 "  consider relinking with --support-old-code enabled"
 msgstr ""
 
-#: coff-arm.c:1685 coff-tic80.c:678 cofflink.c:3043
+#: coff-arm.c:1685 coff-tic80.c:681 cofflink.c:3043
 msgid "%B: bad reloc address 0x%lx in section `%A'"
 msgstr ""
 
@@ -374,11 +374,11 @@ msgstr ""
 msgid "Relocation `%s' not yet implemented\n"
 msgstr ""
 
-#: coff-i860.c:585 coff-tic54x.c:347 coffcode.h:5017
+#: coff-i860.c:585 coff-tic54x.c:347 coffcode.h:5016
 msgid "%B: warning: illegal symbol index %ld in relocs"
 msgstr ""
 
-#: coff-i960.c:129 coff-i960.c:466
+#: coff-i960.c:129 coff-i960.c:469
 msgid "uncertain calling convention for non-COFF symbol"
 msgstr ""
 
@@ -402,11 +402,11 @@ msgstr ""
 msgid "Absolute address Exceeds 8 bit Range"
 msgstr ""
 
-#: coff-maxq.c:323
+#: coff-maxq.c:325
 msgid "Absolute address Exceeds 32 bit Range"
 msgstr ""
 
-#: coff-maxq.c:338
+#: coff-maxq.c:340
 msgid "Unrecognized Reloc Type"
 msgstr ""
 
@@ -415,17 +415,17 @@ msgstr ""
 msgid "GP relative relocation when _gp not defined"
 msgstr ""
 
-#: coff-rs6000.c:2709
+#: coff-rs6000.c:2712
 #, c-format
 msgid "%s: unsupported relocation type 0x%02x"
 msgstr ""
 
-#: coff-rs6000.c:2786
+#: coff-rs6000.c:2789
 #, c-format
 msgid "%s: TOC reloc at 0x%x to symbol `%s' with no TOC entry"
 msgstr ""
 
-#: coff-rs6000.c:3495 coff64-rs6000.c:2058
+#: coff-rs6000.c:3499 coff64-rs6000.c:2058
 msgid "%B: symbol `%s' has unrecognized smclas %d"
 msgstr ""
 
@@ -465,27 +465,27 @@ msgstr ""
 msgid "Unrecognized TI COFF target id '0x%x'"
 msgstr ""
 
-#: coffcode.h:4378
+#: coffcode.h:4377
 msgid "%B: warning: line number table read failed"
 msgstr ""
 
-#: coffcode.h:4409
+#: coffcode.h:4408
 msgid "%B: warning: illegal symbol index %ld in line numbers"
 msgstr ""
 
-#: coffcode.h:4423
+#: coffcode.h:4422
 msgid "%B: warning: duplicate line number information for `%s'"
 msgstr ""
 
-#: coffcode.h:4782
+#: coffcode.h:4781
 msgid "%B: Unrecognized storage class %d for %s symbol `%s'"
 msgstr ""
 
-#: coffcode.h:4908
+#: coffcode.h:4907
 msgid "warning: %B: local symbol `%s' has no section"
 msgstr ""
 
-#: coffcode.h:5059
+#: coffcode.h:5058
 msgid "%B: illegal relocation type %d at address 0x%lx"
 msgstr ""
 
@@ -859,11 +859,11 @@ msgstr ""
 msgid "%B(%A+0x%lx): %s relocation against SEC_MERGE section"
 msgstr ""
 
-#: elf32-arm.c:4181 elf64-ppc.c:9591 elfnn-aarch64.c:4211
+#: elf32-arm.c:4181 elf64-ppc.c:9597 elfnn-aarch64.c:4211
 msgid "%B(%A+0x%lx): %s used with TLS symbol %s"
 msgstr ""
 
-#: elf32-arm.c:4182 elf64-ppc.c:9592 elfnn-aarch64.c:4212
+#: elf32-arm.c:4182 elf64-ppc.c:9598 elfnn-aarch64.c:4212
 msgid "%B(%A+0x%lx): %s used with non-TLS symbol %s"
 msgstr ""
 
@@ -1048,12 +1048,12 @@ msgid "relocation should be even number"
 msgstr ""
 
 #: elf32-bfin.c:1586 elf32-i386.c:3047 elf32-m68k.c:1701 elf32-s390.c:2961
-#: elf32-xtensa.c:2309 elf64-s390.c:2968 elf64-x86-64.c:2517 elfxx-sparc.c:3154
+#: elf32-xtensa.c:2309 elf64-s390.c:2970 elf64-x86-64.c:2517 elfxx-sparc.c:3154
 msgid "%B(%A+0x%lx): unresolvable relocation against symbol `%s'"
 msgstr ""
 
 #: elf32-bfin.c:1619 elf32-i386.c:3085 elf32-m68k.c:1742 elf32-s390.c:3014
-#: elf64-s390.c:3019 elf64-x86-64.c:2561
+#: elf64-s390.c:3021 elf64-x86-64.c:2561
 msgid "%B(%A+0x%lx): reloc against `%s': error %d"
 msgstr ""
 
@@ -1815,7 +1815,7 @@ msgid ""
 "%B: compiled normally and linked with modules compiled with -mrelocatable"
 msgstr ""
 
-#: elf32-ppc.c:5761 elf64-ppc.c:10110
+#: elf32-ppc.c:5761 elf64-ppc.c:10116
 msgid "%B: unknown relocation type %d for symbol %s"
 msgstr ""
 
@@ -1832,11 +1832,11 @@ msgstr ""
 msgid "%B: relocation %s is not yet supported for symbol %s."
 msgstr ""
 
-#: elf32-ppc.c:6552 elf32-tilepro.c:3573 elf64-ppc.c:10749 elfnn-aarch64.c:4468
+#: elf32-ppc.c:6552 elf32-tilepro.c:3573 elf64-ppc.c:10755 elfnn-aarch64.c:4468
 msgid "%B(%A+0x%lx): unresolvable %s relocation against symbol `%s'"
 msgstr ""
 
-#: elf32-ppc.c:6601 elf64-ppc.c:10790
+#: elf32-ppc.c:6601 elf64-ppc.c:10796
 msgid "%B(%A+0x%lx): %s reloc against `%s': error %d"
 msgstr ""
 
@@ -2102,7 +2102,7 @@ msgstr ""
 msgid "overlay stub relocation overflow"
 msgstr ""
 
-#: elf32-spu.c:1967 elf64-ppc.c:9348
+#: elf32-spu.c:1967 elf64-ppc.c:9354
 msgid "stubs don't match calculated size"
 msgstr ""
 
@@ -2570,51 +2570,51 @@ msgid ""
 "%08lx\n"
 msgstr ""
 
-#: elf64-mmix.c:1580
+#: elf64-mmix.c:1584
 #, c-format
 msgid ""
 "%s: base-plus-offset relocation against register symbol: (unknown) in %s"
 msgstr ""
 
-#: elf64-mmix.c:1585
+#: elf64-mmix.c:1589
 #, c-format
 msgid "%s: base-plus-offset relocation against register symbol: %s in %s"
 msgstr ""
 
-#: elf64-mmix.c:1629
+#: elf64-mmix.c:1633
 #, c-format
 msgid "%s: register relocation against non-register symbol: (unknown) in %s"
 msgstr ""
 
-#: elf64-mmix.c:1634
+#: elf64-mmix.c:1638
 #, c-format
 msgid "%s: register relocation against non-register symbol: %s in %s"
 msgstr ""
 
-#: elf64-mmix.c:1672
+#: elf64-mmix.c:1676
 #, c-format
 msgid "%s: directive LOCAL valid only with a register or absolute value"
 msgstr ""
 
-#: elf64-mmix.c:1701
+#: elf64-mmix.c:1705
 #, c-format
 msgid ""
 "%s: LOCAL directive: Register $%ld is not a local register.  First global "
 "register is $%ld."
 msgstr ""
 
-#: elf64-mmix.c:2168
+#: elf64-mmix.c:2172
 #, c-format
 msgid ""
 "%s: Error: multiple definition of `%s'; start of %s is set in a earlier "
 "linked file\n"
 msgstr ""
 
-#: elf64-mmix.c:2220
+#: elf64-mmix.c:2224
 msgid "Register section has contents\n"
 msgstr ""
 
-#: elf64-mmix.c:2406
+#: elf64-mmix.c:2410
 #, c-format
 msgid ""
 "Internal inconsistency: remaining %u != max %u.\n"
@@ -2640,43 +2640,43 @@ msgstr ""
 msgid "dynreloc miscount for %B, section %A"
 msgstr ""
 
-#: elf64-ppc.c:6204
+#: elf64-ppc.c:6208
 msgid "%B: .opd is not a regular array of opd entries"
 msgstr ""
 
-#: elf64-ppc.c:6217
+#: elf64-ppc.c:6221
 msgid "%B: unexpected reloc type %u in .opd section"
 msgstr ""
 
-#: elf64-ppc.c:6238
+#: elf64-ppc.c:6242
 msgid "%B: undefined sym `%s' in .opd section"
 msgstr ""
 
-#: elf64-ppc.c:6890 elf64-ppc.c:7270
+#: elf64-ppc.c:6894 elf64-ppc.c:7276
 #, c-format
 msgid "%s defined in removed toc entry"
 msgstr ""
 
-#: elf64-ppc.c:8065
+#: elf64-ppc.c:8071
 #, c-format
 msgid "cannot find branch stub `%s'"
 msgstr ""
 
-#: elf64-ppc.c:8104 elf64-ppc.c:8179
+#: elf64-ppc.c:8110 elf64-ppc.c:8185
 #, c-format
 msgid "linkage table error against `%s'"
 msgstr ""
 
-#: elf64-ppc.c:8308
+#: elf64-ppc.c:8314
 #, c-format
 msgid "cannot build branch stub `%s'"
 msgstr ""
 
-#: elf64-ppc.c:9235
+#: elf64-ppc.c:9241
 msgid ".glink and .plt too far apart"
 msgstr ""
 
-#: elf64-ppc.c:9360
+#: elf64-ppc.c:9366
 #, c-format
 msgid ""
 "linker stubs in %u group%s\n"
@@ -2687,24 +2687,24 @@ msgid ""
 "  plt call     %lu"
 msgstr ""
 
-#: elf64-ppc.c:10004
+#: elf64-ppc.c:10010
 msgid ""
 "%B(%A+0x%lx): automatic multiple TOCs not supported using your crt files; "
 "recompile with -mminimal-toc or upgrade gcc"
 msgstr ""
 
-#: elf64-ppc.c:10010
+#: elf64-ppc.c:10016
 msgid ""
 "%B(%A+0x%lx): sibling call optimization to `%s' does not allow automatic "
 "multiple TOCs; recompile with -mminimal-toc or -fno-optimize-sibling-calls, "
 "or make `%s' extern"
 msgstr ""
 
-#: elf64-ppc.c:10651
+#: elf64-ppc.c:10657
 msgid "%B: relocation %s is not supported for symbol %s."
 msgstr ""
 
-#: elf64-ppc.c:10731
+#: elf64-ppc.c:10737
 msgid "%B: error: relocation %s not a multiple of %d"
 msgstr ""
 

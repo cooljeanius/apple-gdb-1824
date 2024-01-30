@@ -543,6 +543,9 @@ coff_tic80_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  if (symndx == -1)
 	    {
 	      sec = bfd_abs_section_ptr;
+              if (sec == NULL) {
+                (void)sec;
+              }
 	      val = 0;
 	    }
 	  else
