@@ -166,7 +166,8 @@ command:
 	  {
 	    size_t len;
 
-	    strncpy(copyright_hdr->stamp, "CoPyRiGhT=", 11UL);
+	    strncpy(copyright_hdr->stamp, "CoPyRiGhT=",
+                    (sizeof(copyright_hdr->stamp) - 1UL));
 	    len = strlen($2);
 	    if (len >= NLM_MAX_COPYRIGHT_MESSAGE_LENGTH)
 	      {
@@ -374,7 +375,8 @@ command:
 	  {
 	    long val;
 
-	    strncpy(version_hdr->stamp, "VeRsIoN#", 9UL);
+	    strncpy(version_hdr->stamp, "VeRsIoN#",
+                    (sizeof(version_hdr->stamp) - 1UL));
 	    version_hdr->majorVersion = nlmlex_get_number($2);
 	    val = nlmlex_get_number($3);
 	    if ((val < 0) || (val > 99))
@@ -402,7 +404,8 @@ command:
 	  {
 	    long val;
 
-	    strncpy(version_hdr->stamp, "VeRsIoN#", 9UL);
+	    strncpy(version_hdr->stamp, "VeRsIoN#",
+     	 	    (sizeof(version_hdr->stamp) - 1UL));
 	    version_hdr->majorVersion = nlmlex_get_number($2);
 	    val = nlmlex_get_number($3);
 	    if ((val < 0) || (val > 99))
@@ -442,7 +445,7 @@ symbol_list_opt:
 symbol_list:
 	  symbol
 	  {
-	    $$ = string_list_cons ($1, NULL);
+	    $$ = string_list_cons($1, NULL);
 	  }
 	| symbol_prefix
 	  {
@@ -450,7 +453,7 @@ symbol_list:
 	  }
 	| symbol_list symbol
 	  {
-	    $$ = string_list_append1 ($1, $2);
+	    $$ = string_list_append1($1, $2);
 	  }
 	| symbol_list symbol_prefix
 	  {

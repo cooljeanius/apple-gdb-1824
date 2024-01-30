@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-29 19:31-0500\n"
+"POT-Creation-Date: 2024-01-30 09:18-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,7 +49,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: addr2line.c:93 ar.c:371 coffdump.c:531 elfedit.c:644 nlmconv.c:1118
+#: addr2line.c:93 ar.c:371 coffdump.c:531 elfedit.c:644 nlmconv.c:1125
 #: objcopy.c:489 objcopy.c:525 readelf.c:2737 size.c:107 srconv.c:1771
 #: strings.c:789 sysdump.c:656 windmc.c:234 windres.c:677
 #, c-format
@@ -3123,60 +3123,60 @@ msgstr ""
 msgid "warning: CHECK procedure %s not defined"
 msgstr ""
 
-#: nlmconv.c:723 nlmconv.c:912
+#: nlmconv.c:723 nlmconv.c:919
 msgid "custom section"
 msgstr ""
 
-#: nlmconv.c:744 nlmconv.c:941
+#: nlmconv.c:744 nlmconv.c:948
 msgid "help section"
 msgstr ""
 
-#: nlmconv.c:766 nlmconv.c:959
+#: nlmconv.c:767 nlmconv.c:966
 msgid "message section"
 msgstr ""
 
-#: nlmconv.c:782 nlmconv.c:992
+#: nlmconv.c:784 nlmconv.c:999
 msgid "module section"
 msgstr ""
 
-#: nlmconv.c:802 nlmconv.c:1008
+#: nlmconv.c:804 nlmconv.c:1015
 msgid "rpc section"
 msgstr ""
 
 #. There is no place to record this information:
-#: nlmconv.c:838
+#: nlmconv.c:841
 #, c-format
 msgid "%s: warning: shared libraries cannot have uninitialized data"
 msgstr ""
 
-#: nlmconv.c:859 nlmconv.c:1027
+#: nlmconv.c:862 nlmconv.c:1034
 msgid "shared section"
 msgstr ""
 
-#: nlmconv.c:867
+#: nlmconv.c:871
 msgid "warning: No version number given"
 msgstr ""
 
-#: nlmconv.c:907 nlmconv.c:936 nlmconv.c:954 nlmconv.c:1003 nlmconv.c:1022
+#: nlmconv.c:914 nlmconv.c:943 nlmconv.c:961 nlmconv.c:1010 nlmconv.c:1029
 #, c-format
 msgid "%s: read: %s"
 msgstr ""
 
-#: nlmconv.c:929
+#: nlmconv.c:936
 msgid "warning: FULLMAP is not supported; try ld -M"
 msgstr ""
 
-#: nlmconv.c:1106
+#: nlmconv.c:1113
 #, c-format
 msgid "Usage: %s [option(s)] [in-file [out-file]]\n"
 msgstr ""
 
-#: nlmconv.c:1107
+#: nlmconv.c:1114
 #, c-format
 msgid " Convert an object file into a NetWare Loadable Module\n"
 msgstr ""
 
-#: nlmconv.c:1108
+#: nlmconv.c:1115
 #, c-format
 msgid ""
 " The options are:\n"
@@ -3189,59 +3189,59 @@ msgid ""
 "  -v --version                  Display the program's version\n"
 msgstr ""
 
-#: nlmconv.c:1148
+#: nlmconv.c:1155
 #, c-format
 msgid "support not compiled in for %s"
 msgstr ""
 
-#: nlmconv.c:1185
+#: nlmconv.c:1192
 msgid "make section"
 msgstr ""
 
-#: nlmconv.c:1199
+#: nlmconv.c:1206
 msgid "set section size"
 msgstr ""
 
-#: nlmconv.c:1205
+#: nlmconv.c:1212
 msgid "set section alignment"
 msgstr ""
 
-#: nlmconv.c:1209
+#: nlmconv.c:1216
 msgid "set section flags"
 msgstr ""
 
-#: nlmconv.c:1220
+#: nlmconv.c:1227
 msgid "set .nlmsections size"
 msgstr ""
 
-#: nlmconv.c:1301 nlmconv.c:1309 nlmconv.c:1318 nlmconv.c:1323
+#: nlmconv.c:1308 nlmconv.c:1316 nlmconv.c:1325 nlmconv.c:1330
 msgid "set .nlmsection contents"
 msgstr ""
 
-#: nlmconv.c:1802
+#: nlmconv.c:1809
 msgid "stub section sizes"
 msgstr ""
 
-#: nlmconv.c:1849
+#: nlmconv.c:1856
 msgid "writing stub"
 msgstr ""
 
-#: nlmconv.c:1933
+#: nlmconv.c:1940
 #, c-format
 msgid "unresolved PC relative reloc against %s"
 msgstr ""
 
-#: nlmconv.c:1997
+#: nlmconv.c:2004
 #, c-format
 msgid "overflow when adjusting relocation against %s"
 msgstr ""
 
-#: nlmconv.c:2134
+#: nlmconv.c:2141
 #, c-format
 msgid "%s: execution of %s failed: "
 msgstr ""
 
-#: nlmconv.c:2149
+#: nlmconv.c:2156
 #, c-format
 msgid "Execution of %s failed"
 msgstr ""

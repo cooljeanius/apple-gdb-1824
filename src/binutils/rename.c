@@ -181,7 +181,7 @@ smart_rename(const char *from, const char *to, int preserve_dates)
 	  && (s.st_nlink == 1))
       )
     {
-      ret = rename (from, to);
+      ret = rename(from, to);
       if (ret == 0)
 	{
 	  if (exists)
@@ -198,9 +198,9 @@ smart_rename(const char *from, const char *to, int preserve_dates)
 		 setuid bit if the chown succeeds, because we don't
 		 want to introduce an unexpected setuid file owned by
 		 the user running objcopy.  */
-	      chmod(to, s.st_mode & 0777);
-	      if (chown(to, s.st_uid, s.st_gid) >= 0)
-		chmod(to, s.st_mode & 07777);
+	      chmod(to, s.st_mode & 0777); /* FIXME: TOCTOU */
+	      if (chown(to, s.st_uid, s.st_gid) >= 0) /* FIXME: TOCTOU */
+		chmod(to, s.st_mode & 07777); /* FIXME: TOCTOU */
 	    }
 	}
       else

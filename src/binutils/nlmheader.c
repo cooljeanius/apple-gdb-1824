@@ -729,12 +729,12 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   143,   143,   148,   150,   156,   160,   165,   182,   186,
-     208,   212,   228,   233,   232,   240,   245,   250,   255,   260,
-     265,   264,   272,   276,   280,   284,   288,   292,   296,   300,
-     307,   311,   315,   331,   335,   340,   344,   348,   364,   369,
-     373,   401,   419,   429,   432,   443,   447,   451,   455,   464,
-     475,   493,   496
+       0,   143,   143,   148,   150,   156,   160,   165,   183,   187,
+     209,   213,   229,   234,   233,   241,   246,   251,   256,   261,
+     266,   265,   273,   277,   281,   285,   289,   293,   297,   301,
+     308,   312,   316,   332,   336,   341,   345,   349,   365,   370,
+     374,   403,   422,   432,   435,   446,   450,   454,   458,   467,
+     478,   496,   499
 };
 #endif
 
@@ -1369,7 +1369,8 @@ yyreduce:
           {
 	    size_t len;
 
-	    strncpy(copyright_hdr->stamp, "CoPyRiGhT=", 11UL);
+	    strncpy(copyright_hdr->stamp, "CoPyRiGhT=",
+                    (sizeof(copyright_hdr->stamp) - 1UL));
 	    len = strlen((yyvsp[0].string));
 	    if (len >= NLM_MAX_COPYRIGHT_MESSAGE_LENGTH)
 	      {
@@ -1382,19 +1383,19 @@ yyreduce:
 	    copyright_hdr->copyrightMessage[len] = '\0';
 	    free((yyvsp[0].string));
 	  }
-#line 1386 "nlmheader.c"
+#line 1387 "nlmheader.c"
     break;
 
   case 8: /* command: CUSTOM STRING  */
-#line 183 "nlmheader.y"
+#line 184 "nlmheader.y"
           {
 	    custom_file = (yyvsp[0].string);
 	  }
-#line 1394 "nlmheader.c"
+#line 1395 "nlmheader.c"
     break;
 
   case 9: /* command: DATE STRING STRING STRING  */
-#line 187 "nlmheader.y"
+#line 188 "nlmheader.y"
           {
 	    /* We don't set the version stamp here, because we use the
 	       version stamp to detect whether the required VERSION
@@ -1416,19 +1417,19 @@ yyreduce:
 	    if ((version_hdr->year < 1900) || (version_hdr->year > 3000))
 	      nlmheader_warn(_("illegal year"), -1);
 	  }
-#line 1420 "nlmheader.c"
+#line 1421 "nlmheader.c"
     break;
 
   case 10: /* command: DEBUG  */
-#line 209 "nlmheader.y"
+#line 210 "nlmheader.y"
           {
 	    debug_info = TRUE;
 	  }
-#line 1428 "nlmheader.c"
+#line 1429 "nlmheader.c"
     break;
 
   case 11: /* command: DESCRIPTION QUOTED_STRING  */
-#line 213 "nlmheader.y"
+#line 214 "nlmheader.y"
           {
 	    size_t len;
 
@@ -1444,178 +1445,178 @@ yyreduce:
 	    var_hdr->descriptionText[len] = '\0';
 	    free((yyvsp[0].string));
 	  }
-#line 1448 "nlmheader.c"
+#line 1449 "nlmheader.c"
     break;
 
   case 12: /* command: EXIT STRING  */
-#line 229 "nlmheader.y"
+#line 230 "nlmheader.y"
           {
 	    exit_procedure = (yyvsp[0].string);
 	  }
-#line 1456 "nlmheader.c"
+#line 1457 "nlmheader.c"
     break;
 
   case 13: /* $@1: %empty  */
-#line 233 "nlmheader.y"
+#line 234 "nlmheader.y"
           {
 	    symbol_prefix = NULL;
 	  }
-#line 1464 "nlmheader.c"
+#line 1465 "nlmheader.c"
     break;
 
   case 14: /* command: EXPORT $@1 symbol_list_opt  */
-#line 237 "nlmheader.y"
+#line 238 "nlmheader.y"
           {
 	    export_symbols = string_list_append(export_symbols, (yyvsp[0].list));
 	  }
-#line 1472 "nlmheader.c"
+#line 1473 "nlmheader.c"
     break;
 
   case 15: /* command: FLAG_ON STRING  */
-#line 241 "nlmheader.y"
+#line 242 "nlmheader.y"
           {
 	    fixed_hdr->flags |= nlmlex_get_number((yyvsp[0].string));
 	    free ((yyvsp[0].string));
 	  }
-#line 1481 "nlmheader.c"
+#line 1482 "nlmheader.c"
     break;
 
   case 16: /* command: FLAG_OFF STRING  */
-#line 246 "nlmheader.y"
+#line 247 "nlmheader.y"
           {
 	    fixed_hdr->flags &=~ nlmlex_get_number((yyvsp[0].string));
 	    free((yyvsp[0].string));
 	  }
-#line 1490 "nlmheader.c"
+#line 1491 "nlmheader.c"
     break;
 
   case 17: /* command: FULLMAP  */
-#line 251 "nlmheader.y"
+#line 252 "nlmheader.y"
           {
 	    map_file = "";
 	    full_map = TRUE;
 	  }
-#line 1499 "nlmheader.c"
+#line 1500 "nlmheader.c"
     break;
 
   case 18: /* command: FULLMAP STRING  */
-#line 256 "nlmheader.y"
+#line 257 "nlmheader.y"
           {
 	    map_file = (yyvsp[0].string);
 	    full_map = TRUE;
 	  }
-#line 1508 "nlmheader.c"
+#line 1509 "nlmheader.c"
     break;
 
   case 19: /* command: HELP STRING  */
-#line 261 "nlmheader.y"
+#line 262 "nlmheader.y"
           {
 	    help_file = (yyvsp[0].string);
 	  }
-#line 1516 "nlmheader.c"
+#line 1517 "nlmheader.c"
     break;
 
   case 20: /* $@2: %empty  */
-#line 265 "nlmheader.y"
+#line 266 "nlmheader.y"
           {
 	    symbol_prefix = NULL;
 	  }
-#line 1524 "nlmheader.c"
+#line 1525 "nlmheader.c"
     break;
 
   case 21: /* command: IMPORT $@2 symbol_list_opt  */
-#line 269 "nlmheader.y"
+#line 270 "nlmheader.y"
           {
 	    import_symbols = string_list_append(import_symbols, (yyvsp[0].list));
 	  }
-#line 1532 "nlmheader.c"
+#line 1533 "nlmheader.c"
     break;
 
   case 22: /* command: INPUT string_list  */
-#line 273 "nlmheader.y"
+#line 274 "nlmheader.y"
           {
 	    input_files = string_list_append(input_files, (yyvsp[0].list));
 	  }
-#line 1540 "nlmheader.c"
+#line 1541 "nlmheader.c"
     break;
 
   case 23: /* command: MAP  */
-#line 277 "nlmheader.y"
+#line 278 "nlmheader.y"
           {
 	    map_file = "";
 	  }
-#line 1548 "nlmheader.c"
+#line 1549 "nlmheader.c"
     break;
 
   case 24: /* command: MAP STRING  */
-#line 281 "nlmheader.y"
+#line 282 "nlmheader.y"
           {
 	    map_file = (yyvsp[0].string);
 	  }
-#line 1556 "nlmheader.c"
+#line 1557 "nlmheader.c"
     break;
 
   case 25: /* command: MESSAGES STRING  */
-#line 285 "nlmheader.y"
+#line 286 "nlmheader.y"
           {
 	    message_file = (yyvsp[0].string);
 	  }
-#line 1564 "nlmheader.c"
+#line 1565 "nlmheader.c"
     break;
 
   case 26: /* command: MODULE string_list  */
-#line 289 "nlmheader.y"
+#line 290 "nlmheader.y"
           {
 	    modules = string_list_append(modules, (yyvsp[0].list));
 	  }
-#line 1572 "nlmheader.c"
+#line 1573 "nlmheader.c"
     break;
 
   case 27: /* command: MULTIPLE  */
-#line 293 "nlmheader.y"
+#line 294 "nlmheader.y"
           {
 	    fixed_hdr->flags |= 0x2;
 	  }
-#line 1580 "nlmheader.c"
+#line 1581 "nlmheader.c"
     break;
 
   case 28: /* command: OS_DOMAIN  */
-#line 297 "nlmheader.y"
+#line 298 "nlmheader.y"
           {
 	    fixed_hdr->flags |= 0x10;
 	  }
-#line 1588 "nlmheader.c"
+#line 1589 "nlmheader.c"
     break;
 
   case 29: /* command: OUTPUT STRING  */
-#line 301 "nlmheader.y"
+#line 302 "nlmheader.y"
           {
 	    if (output_file == NULL)
 	      output_file = (yyvsp[0].string);
 	    else
 	      nlmheader_warn(_("ignoring duplicate OUTPUT statement"), -1);
 	  }
-#line 1599 "nlmheader.c"
+#line 1600 "nlmheader.c"
     break;
 
   case 30: /* command: PSEUDOPREEMPTION  */
-#line 308 "nlmheader.y"
+#line 309 "nlmheader.y"
           {
 	    fixed_hdr->flags |= 0x8;
 	  }
-#line 1607 "nlmheader.c"
+#line 1608 "nlmheader.c"
     break;
 
   case 31: /* command: REENTRANT  */
-#line 312 "nlmheader.y"
+#line 313 "nlmheader.y"
           {
 	    fixed_hdr->flags |= 0x1;
 	  }
-#line 1615 "nlmheader.c"
+#line 1616 "nlmheader.c"
     break;
 
   case 32: /* command: SCREENNAME QUOTED_STRING  */
-#line 316 "nlmheader.y"
+#line 317 "nlmheader.y"
           {
 	    size_t len;
 
@@ -1631,44 +1632,44 @@ yyreduce:
 	    var_hdr->screenName[NLM_MAX_SCREEN_NAME_LENGTH] = '\0';
 	    free((yyvsp[0].string));
 	  }
-#line 1635 "nlmheader.c"
+#line 1636 "nlmheader.c"
     break;
 
   case 33: /* command: SHARELIB STRING  */
-#line 332 "nlmheader.y"
+#line 333 "nlmheader.y"
           {
 	    sharelib_file = (yyvsp[0].string);
 	  }
-#line 1643 "nlmheader.c"
+#line 1644 "nlmheader.c"
     break;
 
   case 34: /* command: STACK STRING  */
-#line 336 "nlmheader.y"
+#line 337 "nlmheader.y"
           {
 	    var_hdr->stackSize = nlmlex_get_number((yyvsp[0].string));
 	    free((yyvsp[0].string));
 	  }
-#line 1652 "nlmheader.c"
+#line 1653 "nlmheader.c"
     break;
 
   case 35: /* command: START STRING  */
-#line 341 "nlmheader.y"
+#line 342 "nlmheader.y"
           {
 	    start_procedure = (yyvsp[0].string);
 	  }
-#line 1660 "nlmheader.c"
+#line 1661 "nlmheader.c"
     break;
 
   case 36: /* command: SYNCHRONIZE  */
-#line 345 "nlmheader.y"
+#line 346 "nlmheader.y"
           {
 	    fixed_hdr->flags |= 0x4;
 	  }
-#line 1668 "nlmheader.c"
+#line 1669 "nlmheader.c"
     break;
 
   case 37: /* command: THREADNAME QUOTED_STRING  */
-#line 349 "nlmheader.y"
+#line 350 "nlmheader.y"
           {
 	    size_t len;
 
@@ -1684,32 +1685,33 @@ yyreduce:
 	    var_hdr->threadName[len] = '\0';
 	    free((yyvsp[0].string));
 	  }
-#line 1688 "nlmheader.c"
+#line 1689 "nlmheader.c"
     break;
 
   case 38: /* command: TYPE STRING  */
-#line 365 "nlmheader.y"
+#line 366 "nlmheader.y"
           {
 	    fixed_hdr->moduleType = nlmlex_get_number((yyvsp[0].string));
 	    free((yyvsp[0].string));
 	  }
-#line 1697 "nlmheader.c"
+#line 1698 "nlmheader.c"
     break;
 
   case 39: /* command: VERBOSE  */
-#line 370 "nlmheader.y"
+#line 371 "nlmheader.y"
           {
 	    verbose = TRUE;
 	  }
-#line 1705 "nlmheader.c"
+#line 1706 "nlmheader.c"
     break;
 
   case 40: /* command: VERSIONK STRING STRING STRING  */
-#line 374 "nlmheader.y"
+#line 375 "nlmheader.y"
           {
 	    long val;
 
-	    strncpy(version_hdr->stamp, "VeRsIoN#", 9UL);
+	    strncpy(version_hdr->stamp, "VeRsIoN#",
+                    (sizeof(version_hdr->stamp) - 1UL));
 	    version_hdr->majorVersion = nlmlex_get_number((yyvsp[-2].string));
 	    val = nlmlex_get_number((yyvsp[-1].string));
 	    if ((val < 0) || (val > 99))
@@ -1733,15 +1735,16 @@ yyreduce:
 	      free((yyvsp[0].string)); /* FIXME: potential double free? */
             }
 	  }
-#line 1737 "nlmheader.c"
+#line 1739 "nlmheader.c"
     break;
 
   case 41: /* command: VERSIONK STRING STRING  */
-#line 402 "nlmheader.y"
+#line 404 "nlmheader.y"
           {
 	    long val;
 
-	    strncpy(version_hdr->stamp, "VeRsIoN#", 9UL);
+	    strncpy(version_hdr->stamp, "VeRsIoN#",
+     	 	    (sizeof(version_hdr->stamp) - 1UL));
 	    version_hdr->majorVersion = nlmlex_get_number((yyvsp[-1].string));
 	    val = nlmlex_get_number((yyvsp[0].string));
 	    if ((val < 0) || (val > 99))
@@ -1755,77 +1758,77 @@ yyreduce:
 	      free((yyvsp[0].string)); /* FIXME: potential double free? */
             }
 	  }
-#line 1759 "nlmheader.c"
+#line 1762 "nlmheader.c"
     break;
 
   case 42: /* command: XDCDATA STRING  */
-#line 420 "nlmheader.y"
+#line 423 "nlmheader.y"
           {
 	    rpc_file = (yyvsp[0].string);
 	  }
-#line 1767 "nlmheader.c"
+#line 1770 "nlmheader.c"
     break;
 
   case 43: /* symbol_list_opt: %empty  */
-#line 429 "nlmheader.y"
+#line 432 "nlmheader.y"
           {
 	    (yyval.list) = NULL;
 	  }
-#line 1775 "nlmheader.c"
+#line 1778 "nlmheader.c"
     break;
 
   case 44: /* symbol_list_opt: symbol_list  */
-#line 433 "nlmheader.y"
+#line 436 "nlmheader.y"
           {
 	    (yyval.list) = (yyvsp[0].list);
 	  }
-#line 1783 "nlmheader.c"
+#line 1786 "nlmheader.c"
     break;
 
   case 45: /* symbol_list: symbol  */
-#line 444 "nlmheader.y"
+#line 447 "nlmheader.y"
           {
-	    (yyval.list) = string_list_cons ((yyvsp[0].string), NULL);
+	    (yyval.list) = string_list_cons((yyvsp[0].string), NULL);
 	  }
-#line 1791 "nlmheader.c"
+#line 1794 "nlmheader.c"
     break;
 
   case 46: /* symbol_list: symbol_prefix  */
-#line 448 "nlmheader.y"
+#line 451 "nlmheader.y"
           {
 	    (yyval.list) = NULL;
 	  }
-#line 1799 "nlmheader.c"
+#line 1802 "nlmheader.c"
     break;
 
   case 47: /* symbol_list: symbol_list symbol  */
-#line 452 "nlmheader.y"
+#line 455 "nlmheader.y"
           {
-	    (yyval.list) = string_list_append1 ((yyvsp[-1].list), (yyvsp[0].string));
+	    (yyval.list) = string_list_append1((yyvsp[-1].list), (yyvsp[0].string));
 	  }
-#line 1807 "nlmheader.c"
+#line 1810 "nlmheader.c"
     break;
 
   case 48: /* symbol_list: symbol_list symbol_prefix  */
-#line 456 "nlmheader.y"
+#line 459 "nlmheader.y"
           {
 	    (yyval.list) = (yyvsp[-1].list);
 	  }
-#line 1815 "nlmheader.c"
+#line 1818 "nlmheader.c"
     break;
 
   case 49: /* symbol_prefix: '(' STRING ')'  */
-#line 465 "nlmheader.y"
+#line 468 "nlmheader.y"
           {
 	    if (symbol_prefix != NULL)
 	      free(symbol_prefix);
 	    symbol_prefix = (yyvsp[-1].string);
 	  }
-#line 1825 "nlmheader.c"
+#line 1828 "nlmheader.c"
     break;
 
   case 50: /* symbol: STRING  */
-#line 476 "nlmheader.y"
+#line 479 "nlmheader.y"
           {
 	    if (symbol_prefix == NULL)
 	      (yyval.string) = (yyvsp[0].string);
@@ -1837,27 +1840,27 @@ yyreduce:
 		free((yyvsp[0].string));
 	      }
 	  }
-#line 1841 "nlmheader.c"
+#line 1844 "nlmheader.c"
     break;
 
   case 51: /* string_list: %empty  */
-#line 493 "nlmheader.y"
+#line 496 "nlmheader.y"
           {
 	    (yyval.list) = NULL;
 	  }
-#line 1849 "nlmheader.c"
+#line 1852 "nlmheader.c"
     break;
 
   case 52: /* string_list: STRING string_list  */
-#line 497 "nlmheader.y"
+#line 500 "nlmheader.y"
           {
 	    (yyval.list) = string_list_cons((yyvsp[-1].string), (yyvsp[0].list));
 	  }
-#line 1857 "nlmheader.c"
+#line 1860 "nlmheader.c"
     break;
 
 
-#line 1861 "nlmheader.c"
+#line 1864 "nlmheader.c"
 
       default: break;
     }
@@ -2050,7 +2053,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 502 "nlmheader.y"
+#line 505 "nlmheader.y"
 
 
 /* Ensure we have declaration for xstrerror(): */

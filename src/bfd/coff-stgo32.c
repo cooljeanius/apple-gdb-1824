@@ -207,12 +207,12 @@ adjust_scnhdr_out_post(bfd *abfd ATTRIBUTE_UNUSED, PTR in,
 
 static void
 adjust_aux_in_post(bfd *abfd ATTRIBUTE_UNUSED, PTR ext1 ATTRIBUTE_UNUSED,
-                   int type, int class, int indx ATTRIBUTE_UNUSED,
+                   int type, int sclass, int indx ATTRIBUTE_UNUSED,
                    int numaux ATTRIBUTE_UNUSED, PTR in1)
 {
   union internal_auxent *in = (union internal_auxent *)in1;
 
-  if ((class == C_BLOCK) || class == C_FCN || ISFCN(type) || ISTAG(class))
+  if ((sclass == C_BLOCK) || sclass == C_FCN || ISFCN(type) || ISTAG(sclass))
     {
       ADJUST_VAL(in->x_sym.x_fcnary.x_fcn.x_lnnoptr, STUBSIZE);
     }
@@ -220,12 +220,12 @@ adjust_aux_in_post(bfd *abfd ATTRIBUTE_UNUSED, PTR ext1 ATTRIBUTE_UNUSED,
 
 static void
 adjust_aux_out_pre(bfd *abfd ATTRIBUTE_UNUSED, PTR inp, int type,
-                   int class, int indx ATTRIBUTE_UNUSED,
+                   int sclass, int indx ATTRIBUTE_UNUSED,
                    int numaux ATTRIBUTE_UNUSED, PTR extp ATTRIBUTE_UNUSED)
 {
   union internal_auxent *in = (union internal_auxent *)inp;
 
-  if ((class == C_BLOCK) || class == C_FCN || ISFCN(type) || ISTAG(class))
+  if ((sclass == C_BLOCK) || sclass == C_FCN || ISFCN(type) || ISTAG(sclass))
     {
       ADJUST_VAL(in->x_sym.x_fcnary.x_fcn.x_lnnoptr, -STUBSIZE);
     }
@@ -233,12 +233,12 @@ adjust_aux_out_pre(bfd *abfd ATTRIBUTE_UNUSED, PTR inp, int type,
 
 static void
 adjust_aux_out_post(bfd *abfd ATTRIBUTE_UNUSED, PTR inp, int type,
-                    int class, int indx ATTRIBUTE_UNUSED,
+                    int sclass, int indx ATTRIBUTE_UNUSED,
                     int numaux ATTRIBUTE_UNUSED, PTR extp ATTRIBUTE_UNUSED)
 {
   union internal_auxent *in = (union internal_auxent *)inp;
 
-  if ((class == C_BLOCK) || class == C_FCN || ISFCN(type) || ISTAG(class))
+  if ((sclass == C_BLOCK) || sclass == C_FCN || ISFCN(type) || ISTAG(sclass))
     {
       ADJUST_VAL(in->x_sym.x_fcnary.x_fcn.x_lnnoptr, STUBSIZE);
     }
@@ -282,7 +282,7 @@ create_go32_stub(bfd *abfd)
 #ifdef O_BINARY
       f = open(stub, (O_RDONLY | O_BINARY));
 #else
-      f = open(stub, O_RDONLY);
+      f = open(stub, O_RDONLY); /* FIXME: TOCTOU */
 #endif /* O_BINARY */
       if (f < 0)
 	goto stub_end;
@@ -375,4 +375,4 @@ go32_stubbed_coff_bfd_copy_private_bfd_data(bfd *ibfd, bfd *obfd)
   return TRUE;
 }
 
-/* EOF */
+/* End of coff-stgo32.c */

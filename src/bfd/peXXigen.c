@@ -195,6 +195,7 @@ _bfd_XXi_swap_sym_in(bfd *abfd, void *ext1, void *in1)
 #endif /* coff_swap_sym_in_hook */
 }
 
+/* */
 unsigned int
 _bfd_XXi_swap_sym_out(bfd *abfd, void *inp, void *extp)
 {
@@ -225,6 +226,7 @@ _bfd_XXi_swap_sym_out(bfd *abfd, void *inp, void *extp)
   return SYMESZ;
 }
 
+/* */
 void
 _bfd_XXi_swap_aux_in(bfd *abfd, void *ext1, int type, int theclass,
 		     int indx ATTRIBUTE_UNUSED,
@@ -240,8 +242,13 @@ _bfd_XXi_swap_aux_in(bfd *abfd, void *ext1, int type, int theclass,
 	  in->x_file.x_n.x_zeroes = 0;
 	  in->x_file.x_n.x_offset = (long)H_GET_32(abfd, ext->x_file.x_n.x_offset);
       } else {
+#if defined(FILNMLEN) && defined(E_FILNMLEN) && (FILNMLEN != E_FILNMLEN)
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "peXXigen.c expects FILNMLEN and E_FILNMLEN to be equivalent."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* (FILNMLEN != E_FILNMLEN) */
 	  memcpy(in->x_file.x_fname, ext->x_file.x_fname,
-                 (size_t)FILNMLEN);
+                 (size_t)E_FILNMLEN);
       }
       return;
 
@@ -310,8 +317,13 @@ _bfd_XXi_swap_aux_out(bfd *abfd, void *inp, int type, int theclass,
 	  H_PUT_32(abfd, (bfd_vma)in->x_file.x_n.x_offset,
                    ext->x_file.x_n.x_offset);
       } else {
+#if defined(FILNMLEN) && defined(E_FILNMLEN) && (FILNMLEN != E_FILNMLEN)
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "peXXigen.c expects FILNMLEN and E_FILNMLEN to be equivalent."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* (FILNMLEN != E_FILNMLEN) */
 	  memcpy(ext->x_file.x_fname, in->x_file.x_fname,
-                 (size_t)FILNMLEN);
+                 (size_t)E_FILNMLEN);
       }
 
       return AUXESZ;
@@ -369,6 +381,7 @@ _bfd_XXi_swap_aux_out(bfd *abfd, void *inp, int type, int theclass,
   return AUXESZ;
 }
 
+/* */
 void
 _bfd_XXi_swap_lineno_in(bfd *abfd, void *ext1, void *in1)
 {
@@ -379,6 +392,7 @@ _bfd_XXi_swap_lineno_in(bfd *abfd, void *ext1, void *in1)
   in->l_lnno = GET_LINENO_LNNO(abfd, ext);
 }
 
+/* */
 unsigned int
 _bfd_XXi_swap_lineno_out(bfd * abfd, void * inp, void * outp)
 {
@@ -390,6 +404,7 @@ _bfd_XXi_swap_lineno_out(bfd * abfd, void * inp, void * outp)
   return LINESZ;
 }
 
+/* */
 void
 _bfd_XXi_swap_aouthdr_in(bfd *abfd, void *aouthdr_ext1, void *aouthdr_int1)
 {
@@ -730,7 +745,7 @@ _bfd_XXi_only_swap_filehdr_out(bfd *abfd, void *in, void *out)
   struct external_PEI_filehdr *filehdr_out = (struct external_PEI_filehdr *)out;
 
   if (pe_data(abfd)->has_reloc_section)
-    filehdr_in->f_flags &= ~F_RELFLG;
+    filehdr_in->f_flags &= (unsigned short)~F_RELFLG;
 
   if (pe_data(abfd)->dll)
     filehdr_in->f_flags |= F_DLL;
@@ -964,7 +979,7 @@ _bfd_XXi_swap_scnhdr_out(bfd *abfd, void *in, void *out)
 	  if (strcmp(scnhdr_int->s_name, ".text")
 	      || (bfd_get_file_flags(abfd) & WP_TEXT))
 	    scnhdr_int->s_flags &= ~IMAGE_SCN_MEM_WRITE;
-	  scnhdr_int->s_flags |= p->must_have;
+	  scnhdr_int->s_flags |= (long)p->must_have;
 	  break;
 	}
 

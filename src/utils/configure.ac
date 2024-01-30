@@ -74,6 +74,7 @@ AC_CHECK_FUNCS([exit fopen fprintf getc getc_unlocked getwd getcwd \
 sinclude(../config/autoopts.m4)
 AG_PATH_AUTOOPTS([5.17])dnl
 
+AC_MSG_CHECKING([if there are any subdirectories we should recurse into])
 # Choose which subdirs to use:
 if test -d ${srcdir}/spu; then
   configdirs="spu"
@@ -82,28 +83,37 @@ if test -d ${srcdir}/misc; then
   configdirs="${configdirs} misc"
 fi
 
+dnl# begin m4-quoting, to allow the use of brackets in case labels:
+[
 case "${target}" in
-  sparclite-*-* | simso-wrs*)
+  sparclite-*-* | simso-wrs* | sparc86x-*-elf*)
     if test -d ${srcdir}/sparclite; then
       configdirs="${configdirs} sparclite"
     fi
     ;;
-  *mips*-*-pe* | *sh*-*-pe* | *arm*-*-wince | *arm*-wince-pe* )
+  *mips*-*-pe* | *sh*-*-pe* | *arm*-*-wince | *arm*-wince-pe* | \
+  *arm*-*-mingw32ce* | *arm*-*-cegcc*)
     if test -d ${srcdir}/wince; then
       configdirs="${configdirs} wince"
     fi
     ;;
-  *-*-msdosdjgpp* | *-moss-msdos | i386-pc-msdos)
+  *-*-msdosdjgpp* | *-moss-msdos | i[3-7]86-*-msdos | i[3-7]86-*-moss* | \
+  *-coff-go32* | x86_64-*-rdos*)
     if test -d ${srcdir}/msdos; then
       configdirs="${configdirs} msdos"
     fi
     ;;
-  a29k-amd-udi | udi29k | a29k-*-vxworks | a29k-none-*)
+  a29k-*-udi* | udi29k | a29k-*-vxworks* | a29k-none-* | a29k-*-ebmon* | \
+  a29k-*-coff* | a29k-*-sym1* | a29k-*-sysv* | a29k-*-aout* | a29k-*-bsd* | \
+  a29k-*-vsta*)
     if test -d ${srcdir}/amd-udi; then
       configdirs="${configdirs} amd-udi"
     fi
     ;;
 esac
+]
+dnl# end m4-quoting
+AC_MSG_RESULT([${configdirs}])
 
 all_subdirs=""
 install_subdirs=""
@@ -113,7 +123,7 @@ distclean_subdirs=""
 maintainer_clean_subdirs=""
 check_subdirs=""
 
-for dir in ${configdirs} ; do
+for dir in ${configdirs}; do
     all_subdirs="${all_subdirs} all-${dir}"
     install_subdirs="${install_subdirs} install-${dir}"
     mostlyclean_subdirs="${mostlyclean_subdirs} mostlyclean-${dir}"

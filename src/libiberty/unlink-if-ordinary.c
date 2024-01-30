@@ -66,7 +66,7 @@ unlink_if_ordinary(const char *name)
 
   if ((lstat(name, &st) == 0)
       && (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)))
-    return unlink(name);
+    return unlink(name); /* FIXME: TOCTOU */
 
   return 1;
 }

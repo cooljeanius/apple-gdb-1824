@@ -408,7 +408,7 @@ coff_swap_aux_in(bfd *abfd, void *ext1, int type, int classnum, int indx,
 	      }
 	  } else {
 	    memcpy(innit->x_file.x_fname, ext->x_file.x_fname,
-                   (size_t)FILNMLEN);
+                   (size_t)E_FILNMLEN);
 	  }
 #endif /* FILNMLEN != E_FILNMLEN */
       }
@@ -500,7 +500,7 @@ coff_swap_aux_out(bfd *abfd, void *inp, int type, int classnum, int indx,
 # error "we need to cope with truncating or extending FILNMLEN"
 #else
 	  memcpy(ext->x_file.x_fname, innit->x_file.x_fname,
-                 (size_t)FILNMLEN);
+                 (size_t)E_FILNMLEN);
 #endif /* FILNMLEN != E_FILNMLEN */
 	}
       goto end;

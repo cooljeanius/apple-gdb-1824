@@ -310,13 +310,14 @@ rl_generic_bind(int type, const char *keyseq, char *data, Keymap map)
 	      ic = ANYOTHERKEY;
 	    }
 
+	  /* FIXME: potential use after free: */
 	  map[ic].function = KEYMAP_TO_FUNCTION(data);
 	  map[ic].type = (char)type;
 	}
 
       rl_binding_keymap = map;
     }
-  free (keys);
+  free(keys);
   return 0;
 }
 
@@ -616,7 +617,9 @@ _rl_read_file(char *filename, size_t *sizep)
   ssize_t i;
   int file;
 
-  if ((stat(filename, &finfo) < 0) || (file = open(filename, O_RDONLY, 0666)) < 0)
+  /* FIXME: TOCTOU: */
+  if ((stat(filename, &finfo) < 0)
+      || ((file = open(filename, O_RDONLY, 0666)) < 0))
     return ((char *)NULL);
 
   file_size = (size_t)finfo.st_size;

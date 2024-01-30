@@ -12471,13 +12471,13 @@ static int process_file(char *file_name)
       return 1;
     }
 
-  if (! S_ISREG (statbuf.st_mode))
+  if (!S_ISREG(statbuf.st_mode))
     {
       error(_("'%s' is not an ordinary file\n"), file_name);
       return 1;
     }
 
-  file = fopen(file_name, "rb");
+  file = fopen(file_name, "rb"); /* FIXME: TOCTOU */
   if (file == NULL)
     {
       error(_("Input file '%s' is not readable.\n"), file_name);
