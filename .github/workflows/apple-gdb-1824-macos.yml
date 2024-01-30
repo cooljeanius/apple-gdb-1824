@@ -28,7 +28,7 @@ jobs:
           COMPILER_FORMULA=""; \
         fi
         date && sync
-        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar openssl@3 gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk "${COMPILER_FORMULA}"
+        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar openssl@3 gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk autoconf autoconf-archive automake scons smake "${COMPILER_FORMULA}"
     - run: test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq) && sync && sleep 1
     - run: ./configure --enable-silent-rules CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
@@ -92,6 +92,13 @@ jobs:
     - run: cd src && for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then (echo "building in ${dir}" && make -C ${dir}); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
     - run: cd src && make configure-gdb
     - run: cd src && make all-gdb
+    - name: bootstrap libtool
+      run: |
+        cd src/libtool_gnu
+        if test -z "$(which autoconf)" || test ! -x "$(which autoconf)"; then \
+          brew install autoconf@2.69 || brew install autoconf@2.13 || brew install m4 || ls "configure*"; \
+        fi
+        ./bootstrap || stat ./bootstrap || test -x ./bootstrap
     - name: Full build to get anything that might have been missed
       run: |
         cd src
@@ -101,14 +108,23 @@ jobs:
             echo "special-casing the 4-job build case..."; \
             (make -j"$(nproc)" || make -j2 || make || remake -dpPw); \
           else
+            if test libtool_gnu/libltdl/configure -ot libtool_gnu/libltdl/configure.ac; then \
+              test -x libtool_gnu/libltdl/configure && test -s libtool_gnu/libltdl/configure && touch libtool_gnu/libltdl/configure; \
+            fi; \
+            if test libtool_gnu/libltdl/Makefile.in -ot libtool_gnu/libltdl/Makefile.am; then \
+              test -s libtool_gnu/libltdl/Makefile.in && touch libtool_gnu/libltdl/Makefile.in; \
+            fi; \
+            if test libtool_gnu/libltdl/Makefile -ot libtool_gnu/libltdl/Makefile.in; then \
+              test -s libtool_gnu/libltdl/Makefile && touch libtool_gnu/libltdl/Makefile; \
+            fi; \
             (make -j"$(nproc)" || make || remake -dpPw || remake --trace=read); \
           fi; \
         elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
           echo "gnproc says we can use $(gnproc) build jobs"; \
-          (make -j"$(gnproc)" || remake); \
+          (make -j"$(gnproc)" || make || remake -dpPw || remake --trace=read); \
         else \
           echo "on the slow path..."; \
-          (make || remake); \
+          (make || remake -dpPw || remake --trace=read); \
         fi
     - run: cd src && make check-libiberty
     - run: cd src && sync && make -C tcl/unix tcltest && sync

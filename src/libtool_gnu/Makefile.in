@@ -2791,7 +2791,7 @@ $(srcdir)/libltdl/stamp-mk: $(srcdir)/libltdl/Makefile.in
 	    -e 's,config/mkinstalldirs,,' \
 	    < Makefile.in > Makefile.inT && \
 	mv -f Makefile.inT Makefile.in
-	echo stamp > $@
+	echo "stamp:" > $@
 
 $(srcdir)/libltdl/aclocal.m4: $(sub_aclocal_m4_deps)
 	cd $(srcdir)/libltdl && $(ACLOCAL) -I m4

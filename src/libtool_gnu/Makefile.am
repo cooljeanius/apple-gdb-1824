@@ -309,7 +309,7 @@ $(srcdir)/libltdl/stamp-mk: $(srcdir)/libltdl/Makefile.in
 	    -e 's,config/mkinstalldirs,,' \
 	    < Makefile.in > Makefile.inT && \
 	mv -f Makefile.inT Makefile.in
-	echo stamp > $@
+	echo "stamp:" > $@
 
 sub_aclocal_m4_deps = \
 	$(srcdir)/libltdl/configure.ac \

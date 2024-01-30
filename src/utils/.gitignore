@@ -5,3 +5,4 @@ core
 *.o
 a.out
 cygwinports.com/*
+conf*/*.awk
