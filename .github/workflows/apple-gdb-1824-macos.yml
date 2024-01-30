@@ -106,7 +106,7 @@ jobs:
           echo "nproc says we can use $(nproc) build jobs"; \
           if test "$(nproc)" -eq 4; then \
             echo "special-casing the 4-job build case..."; \
-            (make -j"$(nproc)" || make -j2 || make || remake -dpPw); \
+            (make -j"$(nproc)" || make -j2 || make || remake -dpPw || remake all-gdb); \
           else
             if test libtool_gnu/libltdl/configure -ot libtool_gnu/libltdl/configure.ac; then \
               test -x libtool_gnu/libltdl/configure && test -s libtool_gnu/libltdl/configure && touch libtool_gnu/libltdl/configure; \
@@ -117,14 +117,17 @@ jobs:
             if test libtool_gnu/libltdl/Makefile -ot libtool_gnu/libltdl/Makefile.in; then \
               test -s libtool_gnu/libltdl/Makefile && touch libtool_gnu/libltdl/Makefile; \
             fi; \
-            (make -j"$(nproc)" || make || remake -dpPw || remake --trace=read); \
+            if test -d libltdl/loaders && test -w libltdl/loaders && test ! -d libltdl/loaders/.deps; then \
+              mkdir -pv libltdl/loaders/.deps; \
+            fi; \
+            (make -j"$(nproc)" || make || remake -dpPw || remake --trace=read || remake all-gdb); \
           fi; \
         elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
           echo "gnproc says we can use $(gnproc) build jobs"; \
-          (make -j"$(gnproc)" || make || remake -dpPw || remake --trace=read); \
+          (make -j"$(gnproc)" || make || remake -dpPw || remake --trace=read || remake all-gdb); \
         else \
           echo "on the slow path..."; \
-          (make || remake -dpPw || remake --trace=read); \
+          (make || remake -dpPw || remake --trace=read || remake all-gdb); \
         fi
     - run: cd src && make check-libiberty
     - run: cd src && sync && make -C tcl/unix tcltest && sync
