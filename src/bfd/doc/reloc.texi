@@ -3051,6 +3051,12 @@ Sony Xstormy16 Relocations.
 @deffn {} BFD_RELOC_RELC
 Self-describing complex relocations.
 @end deffn
+@deffn {} BFD_RELOC_XC16X_PAG
+@deffnx {} BFD_RELOC_XC16X_POF
+@deffnx {} BFD_RELOC_XC16X_SEG
+@deffnx {} BFD_RELOC_XC16X_SOF
+Infineon Relocations.
+@end deffn
 @deffn {} BFD_RELOC_VAX_GLOB_DAT
 @deffnx {} BFD_RELOC_VAX_JMP_SLOT
 @deffnx {} BFD_RELOC_VAX_RELATIVE

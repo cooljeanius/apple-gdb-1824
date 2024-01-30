@@ -33,7 +33,7 @@ const bfd_arch_info_type bfd_pic12_arch =
   "pic12",			/* arch_name  */
   "pic12",			/* printable name */
   1,
-  true,				/* the default machine */
+  TRUE,				/* the default machine */
   bfd_default_compatible,
   bfd_default_scan,
   0,
@@ -49,7 +49,7 @@ const bfd_arch_info_type bfd_pic14_arch =
   "pic14",			/* arch_name  */
   "pic14",			/* printable name */
   1,
-  true,				/* the default machine */
+  TRUE,				/* the default machine */
   bfd_default_compatible,
   bfd_default_scan,
   0,
@@ -65,10 +65,10 @@ const bfd_arch_info_type bfd_pic16_arch =
   "pic16",			/* arch_name  */
   "pic16",			/* printable name */
   1,
-  true,				/* the default machine */
+  TRUE,				/* the default machine */
   bfd_default_compatible,
   bfd_default_scan,
   0,
 };
 
-/* EOF */
+/* End of cpu-pic.c */

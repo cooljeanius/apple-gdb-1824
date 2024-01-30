@@ -1,4 +1,4 @@
-/* ELF attributes support (based on ARM EABI attributes).
+/* elf-attrs.c: ELF attributes support (based on ARM EABI attributes).
    Copyright 2005, 2006, 2007, 2009, 2010, 2012
    Free Software Foundation, Inc.
 
@@ -533,16 +533,17 @@ _bfd_elf_parse_attributes (bfd *abfd, Elf_Internal_Shdr * hdr)
 		case Tag_Symbol:
 		  /* Don't have anywhere convenient to attach these.
 		     Fall through for now.  */
+       		  ATTRIBUTE_FALLTHROUGH;
 		default:
-		  /* Ignore things we don't kow about.  */
+		  /* Ignore things we don't know about: */
 		  p += subsection_len;
-		  subsection_len = 0;
+		  *(volatile bfd_vma *)&subsection_len = 0UL;
 		  break;
 		}
 	    }
 	}
     }
-  free (contents);
+  free(contents);
 }
 
 /* Merge common object attributes from IBFD into OBFD.  Raise an error

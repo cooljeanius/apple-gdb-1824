@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-29 19:30-0500\n"
+"POT-Creation-Date: 2024-01-29 22:39-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -599,69 +599,69 @@ msgstr ""
 msgid "Unknown basic type %d"
 msgstr ""
 
-#: ecoff.c:1482
+#: ecoff.c:1486
 #, c-format
 msgid ""
 "\n"
 "      End+1 symbol: %ld"
 msgstr ""
 
-#: ecoff.c:1489 ecoff.c:1492
+#: ecoff.c:1493 ecoff.c:1496
 #, c-format
 msgid ""
 "\n"
 "      First symbol: %ld"
 msgstr ""
 
-#: ecoff.c:1504
+#: ecoff.c:1508
 #, c-format
 msgid ""
 "\n"
 "      End+1 symbol: %-7ld   Type:  %s"
 msgstr ""
 
-#: ecoff.c:1511
+#: ecoff.c:1515
 #, c-format
 msgid ""
 "\n"
 "      Local symbol: %ld"
 msgstr ""
 
-#: ecoff.c:1519
+#: ecoff.c:1523
 #, c-format
 msgid ""
 "\n"
 "      struct; End+1 symbol: %ld"
 msgstr ""
 
-#: ecoff.c:1524
+#: ecoff.c:1528
 #, c-format
 msgid ""
 "\n"
 "      union; End+1 symbol: %ld"
 msgstr ""
 
-#: ecoff.c:1529
+#: ecoff.c:1533
 #, c-format
 msgid ""
 "\n"
 "      enum; End+1 symbol: %ld"
 msgstr ""
 
-#: ecoff.c:1535
+#: ecoff.c:1539
 #, c-format
 msgid ""
 "\n"
 "      Type: %s"
 msgstr ""
 
-#: elf-attrs.c:578
+#: elf-attrs.c:579
 msgid ""
 "error: %B: Object has vendor-specific contents that must be processed by the "
 "'%s' toolchain"
 msgstr ""
 
-#: elf-attrs.c:587
+#: elf-attrs.c:588
 msgid "error: %B: Object tag '%d, %s' is incompatible with tag '%d, %s'"
 msgstr ""
 

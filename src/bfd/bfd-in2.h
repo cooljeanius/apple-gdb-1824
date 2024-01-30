@@ -5049,6 +5049,12 @@ all zero then it may be truncated to 8 bits.  */
 /* Self-describing complex relocations.  */
   BFD_RELOC_RELC,
 
+/* Infineon Relocations.  */
+  BFD_RELOC_XC16X_PAG,
+  BFD_RELOC_XC16X_POF,
+  BFD_RELOC_XC16X_SEG,
+  BFD_RELOC_XC16X_SOF,
+
 /* Relocations used by VAX ELF.  */
   BFD_RELOC_VAX_GLOB_DAT,
   BFD_RELOC_VAX_JMP_SLOT,

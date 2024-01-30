@@ -567,7 +567,7 @@ _bfd_ecoff_slurp_symbolic_info(bfd *abfd,
     return FALSE;
 
   pos = ecoff_data(abfd)->sym_filepos;
-  pos += backend->debug_swap.external_hdr_size;
+  pos += (file_ptr)backend->debug_swap.external_hdr_size;
   if ((bfd_seek(abfd, pos, SEEK_SET) != 0)
       || (bfd_bread(raw, raw_size, abfd) != raw_size))
     {
@@ -1025,7 +1025,7 @@ ecoff_emit_aggregate(bfd *abfd, FDR *fdr, char *string, RNDXR *rndx, long isym,
 	  fdr = (debug_info->fdr + rfd);
 	}
 
-      indx += fdr->isymBase;
+      indx += (unsigned int)fdr->isymBase;
 
       (*debug_swap->swap_sym_in)(abfd,
 				 ((char *)debug_info->external_sym
@@ -1064,7 +1064,7 @@ ecoff_type_to_string(bfd *abfd, FDR *fdr, unsigned int indx)
   char *p2 = buffer2;
   RNDXR rndx;
 
-  aux_ptr = ecoff_data (abfd)->debug_info.external_aux + fdr->iauxBase;
+  aux_ptr = (ecoff_data(abfd)->debug_info.external_aux + fdr->iauxBase);
   bigendian = fdr->fBigendian;
 
   for (i = 0; i < 7; i++)
@@ -1074,9 +1074,9 @@ ecoff_type_to_string(bfd *abfd, FDR *fdr, unsigned int indx)
       qualifiers[i].stride = 0;
     }
 
-  if (AUX_GET_ISYM (bigendian, &aux_ptr[indx]) == (bfd_vma) -1)
+  if (AUX_GET_ISYM(bigendian, &aux_ptr[indx]) == (bfd_vma)-1)
     return "-1 (no type)";
-  _bfd_ecoff_swap_tir_in (bigendian, &aux_ptr[indx++].a_ti, &u.ti);
+  _bfd_ecoff_swap_tir_in(bigendian, &aux_ptr[indx++].a_ti, &u.ti);
 
   basic_type = u.ti.bt;
   qualifiers[0].type = u.ti.tq0;
@@ -1143,10 +1143,10 @@ ecoff_type_to_string(bfd *abfd, FDR *fdr, unsigned int indx)
 	 2nd word is file index if 1st word rfd is ST_RFDESCAPE.  */
 
     case btStruct:		/* Structure (Record).  */
-      _bfd_ecoff_swap_rndx_in (bigendian, &aux_ptr[indx].a_rndx, &rndx);
-      ecoff_emit_aggregate (abfd, fdr, p1, &rndx,
-			    (long) AUX_GET_ISYM (bigendian, &aux_ptr[indx+1]),
-			    "struct");
+      _bfd_ecoff_swap_rndx_in(bigendian, &aux_ptr[indx].a_rndx, &rndx);
+      ecoff_emit_aggregate(abfd, fdr, p1, &rndx,
+			   (long)AUX_GET_ISYM(bigendian, &aux_ptr[indx + 1]),
+			   "struct");
       indx++;			/* Skip aux words.  */
       break;
 
@@ -1155,10 +1155,10 @@ ecoff_type_to_string(bfd *abfd, FDR *fdr, unsigned int indx)
 	 2nd word is file index if 1st word rfd is ST_RFDESCAPE.  */
 
     case btUnion:		/* Union.  */
-      _bfd_ecoff_swap_rndx_in (bigendian, &aux_ptr[indx].a_rndx, &rndx);
-      ecoff_emit_aggregate (abfd, fdr, p1, &rndx,
-			    (long) AUX_GET_ISYM (bigendian, &aux_ptr[indx+1]),
-			    "union");
+      _bfd_ecoff_swap_rndx_in(bigendian, &aux_ptr[indx].a_rndx, &rndx);
+      ecoff_emit_aggregate(abfd, fdr, p1, &rndx,
+			   (long)AUX_GET_ISYM(bigendian, &aux_ptr[indx + 1]),
+			   "union");
       indx++;			/* Skip aux words.  */
       break;
 
@@ -1168,9 +1168,9 @@ ecoff_type_to_string(bfd *abfd, FDR *fdr, unsigned int indx)
 
     case btEnum:		/* Enumeration.  */
       _bfd_ecoff_swap_rndx_in (bigendian, &aux_ptr[indx].a_rndx, &rndx);
-      ecoff_emit_aggregate (abfd, fdr, p1, &rndx,
-			    (long) AUX_GET_ISYM (bigendian, &aux_ptr[indx+1]),
-			    "enum");
+      ecoff_emit_aggregate(abfd, fdr, p1, &rndx,
+			   (long)AUX_GET_ISYM(bigendian, &aux_ptr[indx + 1]),
+			   "enum");
       indx++;			/* Skip aux words.  */
       break;
 
@@ -1223,13 +1223,13 @@ ecoff_type_to_string(bfd *abfd, FDR *fdr, unsigned int indx)
       break;
 
     default:
-      sprintf (p1, _("Unknown basic type %d"), (int) basic_type);
+      sprintf(p1, _("Unknown basic type %d"), (int)basic_type);
       break;
     }
 
-  p1 += strlen (buffer1);
+  p1 += strlen(buffer1);
 
-  /* If this is a bitfield, get the bitsize.  */
+  /* If this is a bitfield, get the bitsize: */
   if (u.ti.fBitfield)
     {
       int bitsize;
@@ -1239,7 +1239,11 @@ ecoff_type_to_string(bfd *abfd, FDR *fdr, unsigned int indx)
       p1 += strlen(buffer1);
     }
 
-  /* Deal with any qualifiers.  */
+  if (p1 == NULL) {
+    (void)p1;
+  }
+
+  /* Deal with any qualifiers: */
   if (qualifiers[0].type != tqNil)
     {
       /* Snarf up any array bounds in the correct order.  Arrays
@@ -1263,7 +1267,7 @@ ecoff_type_to_string(bfd *abfd, FDR *fdr, unsigned int indx)
 	    }
 	}
 
-      /* Now print out the qualifiers.  */
+      /* Now print out the qualifiers: */
       for (i = 0; i < 6; i++)
 	{
 	  switch (qualifiers[i].type)
@@ -1987,7 +1991,7 @@ ecoff_compute_section_file_positions(bfd *abfd)
 	 really in the section.  Each entry is 8 bytes.  We store this
 	 away in line_filepos before increasing the section size.  */
       if (streq(current->name, _PDATA))
-	current->line_filepos = (current->size / 8);
+	current->line_filepos = (file_ptr)(current->size / 8);
 
       alignment_power = current->alignment_power;
 
@@ -2052,9 +2056,9 @@ ecoff_compute_section_file_positions(bfd *abfd)
       if ((current->flags & (SEC_HAS_CONTENTS | SEC_LOAD)) != 0)
 	current->filepos = file_sofar;
 
-      sofar += current->size;
+      sofar += (file_ptr)current->size;
       if ((current->flags & SEC_HAS_CONTENTS) != 0)
-	file_sofar += current->size;
+	file_sofar += (file_ptr)current->size;
 
       /* Make sure that this section is of the right size too.  */
       old_sofar = sofar;
@@ -2075,7 +2079,6 @@ ecoff_compute_section_file_positions(bfd *abfd)
 /* Determine the location of the relocs for all the sections in the
    output file, as well as the location of the symbolic debugging
    information.  */
-
 static bfd_size_type
 ecoff_compute_reloc_file_positions(bfd *abfd)
 {
@@ -2109,7 +2112,7 @@ ecoff_compute_reloc_file_positions(bfd *abfd)
 	  current->rel_filepos = reloc_base;
 	  relsize = (current->reloc_count * external_reloc_size);
 	  reloc_size += relsize;
-	  reloc_base += relsize;
+	  reloc_base += (file_ptr)relsize;
 	}
     }
 
@@ -2396,7 +2399,7 @@ _bfd_ecoff_write_object_contents(bfd *abfd)
 
       ++internal_f.f_nscns;
 
-      strncpy(section.s_name, current->name, sizeof(section.s_name));
+      strncpy(section.s_name, current->name, (sizeof(section.s_name) - 1UL));
 
       /* This seems to be correct for Irix 4 shared libraries: */
       vma = bfd_get_section_vma(abfd, current);
@@ -3028,46 +3031,47 @@ _bfd_ecoff_write_armap(bfd *abfd, unsigned int elength, struct orl *map,
   memset((void *)&hdr, 0, sizeof(hdr));
 
   /* Work out the ECOFF armap name: */
-  strcpy(hdr.ar_name, ecoff_backend(abfd)->armap_start);
+  strncpy(hdr.ar_name, ecoff_backend(abfd)->armap_start,
+  	  (sizeof(hdr.ar_name) - 1UL));
   hdr.ar_name[ARMAP_HEADER_MARKER_INDEX] = ARMAP_MARKER;
   hdr.ar_name[ARMAP_HEADER_ENDIAN_INDEX] =
-    (bfd_header_big_endian (abfd)
-     ? ARMAP_BIG_ENDIAN
-     : ARMAP_LITTLE_ENDIAN);
+    (bfd_header_big_endian(abfd) ? ARMAP_BIG_ENDIAN : ARMAP_LITTLE_ENDIAN);
   hdr.ar_name[ARMAP_OBJECT_MARKER_INDEX] = ARMAP_MARKER;
   hdr.ar_name[ARMAP_OBJECT_ENDIAN_INDEX] =
-    bfd_big_endian (abfd) ? ARMAP_BIG_ENDIAN : ARMAP_LITTLE_ENDIAN;
-  memcpy (hdr.ar_name + ARMAP_END_INDEX, ARMAP_END, sizeof ARMAP_END - 1);
+    (bfd_big_endian(abfd) ? ARMAP_BIG_ENDIAN : ARMAP_LITTLE_ENDIAN);
+  memcpy((hdr.ar_name + ARMAP_END_INDEX), ARMAP_END, (sizeof(ARMAP_END) - 1UL));
 
   /* Write the timestamp of the archive header to be just a little bit
      later than the timestamp of the file, otherwise the linker will
      complain that the index is out of date.  Actually, the Ultrix
      linker just checks the archive name; the GNU linker may check the
      date.  */
-  stat (abfd->filename, &statbuf);
-  sprintf (hdr.ar_date, "%ld", (long) (statbuf.st_mtime + 60));
+  stat(abfd->filename, &statbuf);
+  snprintf(hdr.ar_date, sizeof(hdr.ar_date), "%d",
+  	   (int)(statbuf.st_mtime + 60));
 
   /* The DECstation uses zeroes for the uid, gid and mode of the
      armap.  */
   hdr.ar_uid[0] = '0';
   hdr.ar_gid[0] = '0';
-  /* Building gcc ends up extracting the armap as a file - twice.  */
+  /* Building gcc ends up extracting the armap as a file - twice: */
   hdr.ar_mode[0] = '6';
   hdr.ar_mode[1] = '4';
   hdr.ar_mode[2] = '4';
 
+  /* FIXME: -Wformat-truncation: */
   snprintf(hdr.ar_size, sizeof(hdr.ar_size), "%-10d", (int)mapsize);
 
   hdr.ar_fmag[0] = '`';
   hdr.ar_fmag[1] = '\012';
 
-  /* Turn all null bytes in the header into spaces.  */
-  for (i = 0; i < sizeof (struct ar_hdr); i++)
-   if (((char *) (&hdr))[i] == '\0')
-     (((char *) (&hdr))[i]) = ' ';
+  /* Turn all null bytes in the header into spaces: */
+  for (i = 0; i < sizeof(struct ar_hdr); i++)
+   if (((char *)(&hdr))[i] == '\0')
+     (((char *)(&hdr))[i]) = ' ';
 
-  if (bfd_bwrite ((void *) &hdr, (bfd_size_type) sizeof (struct ar_hdr), abfd)
-      != sizeof (struct ar_hdr))
+  if (bfd_bwrite((void *)&hdr, (bfd_size_type)sizeof(struct ar_hdr), abfd)
+      != sizeof(struct ar_hdr))
     return FALSE;
 
   H_PUT_32(abfd, (bfd_vma)hashsize, temp);
@@ -3090,7 +3094,8 @@ _bfd_ecoff_write_armap(bfd *abfd, unsigned int elength, struct orl *map,
       if (map[i].u.abfd != last_elt)
 	{
           do {
-            firstreal += (arelt_size(current) + sizeof(struct ar_hdr));
+            firstreal += (file_ptr)(arelt_size(current)
+                                    + sizeof(struct ar_hdr));
             firstreal += (firstreal % 2);
             current = current->next;
           } while (current != map[i].u.abfd);
@@ -3685,15 +3690,15 @@ ecoff_link_check_archive_element (bfd *abfd,
 
  successful_return:
   if (external_ext != NULL)
-    free (external_ext);
+    free(external_ext);
   if (ssext != NULL)
-    free (ssext);
+    free(ssext);
   return TRUE;
  error_return:
   if (external_ext != NULL)
-    free (external_ext);
+    free(external_ext);
   if (ssext != NULL)
-    free (ssext);
+    free(ssext);
   return FALSE;
 }
 
@@ -3703,11 +3708,10 @@ ecoff_link_check_archive_element (bfd *abfd,
    use _bfd_generic_link_add_archive_symbols because ECOFF archives
    already have a hash table, so there is no reason to construct
    another one.  */
-
 static bfd_boolean
-ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
+ecoff_link_add_archive_symbols(bfd *abfd, struct bfd_link_info *info)
 {
-  const struct ecoff_backend_data * const backend = ecoff_backend (abfd);
+  const struct ecoff_backend_data *const backend = ecoff_backend(abfd);
   const bfd_byte *raw_armap;
   struct bfd_link_hash_entry **pundef;
   unsigned long armap_count;
@@ -3716,12 +3720,12 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
   const bfd_byte *hashtable;
   const char *stringbase;
 
-  if (! bfd_has_map (abfd))
+  if (! bfd_has_map(abfd))
     {
-      /* An empty archive is a special case.  */
-      if (bfd_openr_next_archived_file (abfd, NULL) == NULL)
+      /* An empty archive is a special case: */
+      if (bfd_openr_next_archived_file(abfd, NULL) == NULL)
 	return TRUE;
-      bfd_set_error (bfd_error_no_armap);
+      bfd_set_error(bfd_error_no_armap);
       return FALSE;
     }
 
@@ -3729,22 +3733,23 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
      Irix 4.0.5F, we call the generic routine.
      FIXME: We should be more clever about this, since someday tdata
      may get to something for a generic archive.  */
-  raw_armap = (const bfd_byte *) bfd_ardata (abfd)->tdata;
+  raw_armap = (const bfd_byte *)bfd_ardata(abfd)->tdata;
   if (raw_armap == NULL)
-    return (_bfd_generic_link_add_archive_symbols
-	    (abfd, info, ecoff_link_check_archive_element));
+    return
+      _bfd_generic_link_add_archive_symbols(abfd, info,
+                                            ecoff_link_check_archive_element);
 
   armap_count = (unsigned long)H_GET_32(abfd, raw_armap);
 
   armap_log = 0;
   for (i = 1; i < armap_count; i <<= 1)
     armap_log++;
-  BFD_ASSERT (i == armap_count);
+  BFD_ASSERT(i == armap_count);
 
-  hashtable = raw_armap + 4;
-  stringbase = (const char *) raw_armap + armap_count * 8 + 8;
+  hashtable = (raw_armap + 4);
+  stringbase = ((const char *)raw_armap + (armap_count * 8) + 8);
 
-  /* Look through the list of undefined symbols.  */
+  /* Look through the list of undefined symbols: */
   pundef = &info->hash->undefs;
   while (*pundef != NULL)
     {
@@ -3759,8 +3764,8 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
 
       /* When a symbol is defined, it is not necessarily removed from
 	 the list.  */
-      if (h->type != bfd_link_hash_undefined
-	  && h->type != bfd_link_hash_common)
+      if ((h->type != bfd_link_hash_undefined)
+	  && (h->type != bfd_link_hash_common))
 	{
 	  /* Remove this entry from the list, for general cleanliness
 	     and because we are going to look through the list again
@@ -3784,14 +3789,14 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
 	  continue;
 	}
 
-      /* Look for this symbol in the archive hash table.  */
+      /* Look for this symbol in the archive hash table: */
       hash = ecoff_armap_hash(h->root.string, &rehash,
                               (unsigned int)armap_count, armap_log);
 
       file_offset = (unsigned long)H_GET_32(abfd, (hashtable + (hash * 8) + 4));
       if (file_offset == 0)
 	{
-	  /* Nothing in this slot.  */
+	  /* Nothing in this slot: */
 	  pundef = &(*pundef)->u.undef.next;
 	  continue;
 	}
@@ -3805,17 +3810,17 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
 
 	  /* That was the wrong symbol.  Try rehashing.  */
 	  found = FALSE;
-	  for (srch = (hash + rehash) & (armap_count - 1);
+	  for (srch = (unsigned int)((hash + rehash) & (armap_count - 1U));
 	       srch != hash;
-	       srch = (srch + rehash) & (armap_count - 1))
+	       srch = (unsigned int)((srch + rehash) & (armap_count - 1U)))
 	    {
 	      file_offset =
-		(unsigned long)H_GET_32(abfd, hashtable + (srch * 8) + 4);
+		(unsigned long)H_GET_32(abfd, (hashtable + (srch * 8) + 4));
 	      if (file_offset == 0)
 		break;
-	      name = stringbase + H_GET_32 (abfd, hashtable + (srch * 8));
-	      if (name[0] == h->root.string[0]
-		  && streq (name, h->root.string))
+	      name = (stringbase + H_GET_32(abfd, (hashtable + (srch * 8))));
+	      if ((name[0] == h->root.string[0])
+		  && streq(name, h->root.string))
 		{
 		  found = TRUE;
 		  break;
@@ -3831,41 +3836,43 @@ ecoff_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
 	  hash = srch;
 	}
 
-      element = (*backend->get_elt_at_filepos) (abfd, (file_ptr) file_offset);
+      element = (*backend->get_elt_at_filepos)(abfd, (file_ptr)file_offset);
       if (element == NULL)
 	return FALSE;
 
-      if (! bfd_check_format (element, bfd_object))
+      if (! bfd_check_format(element, bfd_object))
 	return FALSE;
 
       /* Unlike the generic linker, we know that this element provides
 	 a definition for an undefined symbol and we know that we want
 	 to include it.  We don't need to check anything.  */
-      if (! (*info->callbacks->add_archive_element) (info, element, name))
+      if (!(*info->callbacks->add_archive_element)(info, element, name))
 	return FALSE;
-      if (! ecoff_link_add_object_symbols (element, info))
+      if (!ecoff_link_add_object_symbols(element, info))
 	return FALSE;
 
       pundef = &(*pundef)->u.undef.next;
-    }
+      if (hash == 0U) {
+        (void)hash;
+      }
+    } /* end "while" */
 
   return TRUE;
 }
 
 /* Given an ECOFF BFD, add symbols to the global hash table as
    appropriate.  */
-
 bfd_boolean
-_bfd_ecoff_bfd_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
+_bfd_ecoff_bfd_link_add_symbols(bfd *abfd, struct bfd_link_info *info)
 {
-  switch (bfd_get_format (abfd))
+  switch (bfd_get_format(abfd))
     {
     case bfd_object:
-      return ecoff_link_add_object_symbols (abfd, info);
+      return ecoff_link_add_object_symbols(abfd, info);
     case bfd_archive:
-      return ecoff_link_add_archive_symbols (abfd, info);
+      return ecoff_link_add_archive_symbols(abfd, info);
     default:
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return FALSE;
     }
 }
@@ -3886,14 +3893,12 @@ struct extsym_info
    input BFD.  */
 
 static bfd_boolean
-ecoff_final_link_debug_accumulate (bfd *output_bfd,
-				   bfd *input_bfd,
-				   struct bfd_link_info *info,
-				   void * handle)
+ecoff_final_link_debug_accumulate(bfd *output_bfd, bfd *input_bfd,
+				  struct bfd_link_info *info, void *handle)
 {
-  struct ecoff_debug_info * const debug = &ecoff_data (input_bfd)->debug_info;
-  const struct ecoff_debug_swap * const swap =
-    &ecoff_backend (input_bfd)->debug_swap;
+  struct ecoff_debug_info *const debug = &ecoff_data(input_bfd)->debug_info;
+  const struct ecoff_debug_swap *const swap =
+    &ecoff_backend(input_bfd)->debug_swap;
   HDRR *symhdr = &debug->symbolic_header;
   bfd_boolean ret;
 

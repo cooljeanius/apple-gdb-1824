@@ -221,7 +221,7 @@ _bfd_ecoff_swap_rndx_out(int bigend, const RNDXR *intern_copy,
 
   /* now the fun stuff...  */
   if (bigend) {
-    ext->r_bits[0] = (intern->rfd >> RNDX_BITS0_RFD_SH_LEFT_BIG);
+    ext->r_bits[0] = (unsigned char)(intern->rfd >> RNDX_BITS0_RFD_SH_LEFT_BIG);
     ext->r_bits[1] = (((unsigned int)(intern->rfd << RNDX_BITS1_RFD_SH_BIG)
                        & RNDX_BITS1_RFD_BIG)
                       | ((intern->index >> RNDX_BITS1_INDEX_SH_LEFT_BIG)
@@ -239,7 +239,8 @@ _bfd_ecoff_swap_rndx_out(int bigend, const RNDXR *intern_copy,
                          & RNDX_BITS1_INDEX_LITTLE));
     ext->r_bits[2] = ((unsigned char)intern->index
                       >> RNDX_BITS2_INDEX_SH_LEFT_LITTLE);
-    ext->r_bits[3] = (intern->index >> RNDX_BITS3_INDEX_SH_LEFT_LITTLE);
+    ext->r_bits[3] =
+      (unsigned char)(intern->index >> RNDX_BITS3_INDEX_SH_LEFT_LITTLE);
   }
 
 #ifdef TEST
@@ -863,7 +864,7 @@ bfd_ecoff_debug_accumulate(PTR handle, bfd *output_bfd,
 		  if (sh->val == -1)
 		    {
 		      sh->val = output_symhdr->issMax;
-		      output_symhdr->issMax += (strlen(name) + 1);
+		      output_symhdr->issMax += (long)(strlen(name) + 1);
 		      if (ainfo->ss_hash == (struct string_hash_entry *)NULL)
 			ainfo->ss_hash = sh;
 		      if (ainfo->ss_hash_end
@@ -1073,7 +1074,7 @@ ecoff_add_string(struct accumulate *ainfo, struct bfd_link_info *info,
                               (bfd_byte *)(PTR)string, (len + 1)))
 	return -1;
       ret = (bfd_size_type)symhdr->issMax;
-      symhdr->issMax += (len + 1);
+      symhdr->issMax += (long)(len + 1);
       fdr->cbSs += (len + 1);
     }
   else
@@ -1086,7 +1087,7 @@ ecoff_add_string(struct accumulate *ainfo, struct bfd_link_info *info,
       if (sh->val == -1)
 	{
 	  sh->val = symhdr->issMax;
-	  symhdr->issMax += (len + 1);
+	  symhdr->issMax += (long)(len + 1);
 	  if (ainfo->ss_hash == (struct string_hash_entry *)NULL)
 	    ainfo->ss_hash = sh;
 	  if (ainfo->ss_hash_end
@@ -1330,7 +1331,7 @@ bfd_ecoff_debug_one_external(bfd *abfd, struct ecoff_debug_info *debug,
   ++symhdr->iextMax;
 
   strcpy((debug->ssext + symhdr->issExtMax), name);
-  symhdr->issExtMax += (namelen + 1);
+  symhdr->issExtMax += (long)(namelen + 1);
 
   return TRUE;
 }
@@ -1355,7 +1356,7 @@ ecoff_align_debug(bfd *abfd ATTRIBUTE_UNUSED,
     {
       if (debug->line != (unsigned char *)NULL)
 	memset((PTR)(debug->line + symhdr->cbLine), 0, add);
-      symhdr->cbLine += add;
+      symhdr->cbLine += (bfd_vma)add;
     }
 
   add = (size_t)(debug_align - ((bfd_size_type)symhdr->issMax
@@ -1364,7 +1365,7 @@ ecoff_align_debug(bfd *abfd ATTRIBUTE_UNUSED,
     {
       if (debug->ss != (char *) NULL)
 	memset((PTR)(debug->ss + symhdr->issMax), 0, add);
-      symhdr->issMax += add;
+      symhdr->issMax += (long)add;
     }
 
   add = (size_t)(debug_align - ((bfd_size_type)symhdr->issExtMax
@@ -1373,7 +1374,7 @@ ecoff_align_debug(bfd *abfd ATTRIBUTE_UNUSED,
     {
       if (debug->ssext != (char *)NULL)
 	memset((PTR)(debug->ssext + symhdr->issExtMax), 0, add);
-      symhdr->issExtMax += add;
+      symhdr->issExtMax += (long)add;
     }
 
   add = (size_t)(aux_align - ((bfd_size_type)symhdr->iauxMax
@@ -1383,7 +1384,7 @@ ecoff_align_debug(bfd *abfd ATTRIBUTE_UNUSED,
       if (debug->external_aux != (union aux_ext *)NULL)
 	memset((PTR)(debug->external_aux + symhdr->iauxMax), 0,
                (add * sizeof(union aux_ext)));
-      symhdr->iauxMax += add;
+      symhdr->iauxMax += (long)add;
     }
 
   add = (size_t)(rfd_align - ((bfd_size_type)symhdr->crfd
@@ -1394,7 +1395,7 @@ ecoff_align_debug(bfd *abfd ATTRIBUTE_UNUSED,
 	memset((PTR)((char *)debug->external_rfd
                      + ((bfd_size_type)symhdr->crfd * swap->external_rfd_size)),
                0, (size_t)(add * swap->external_rfd_size));
-      symhdr->crfd += add;
+      symhdr->crfd += (long)add;
     }
 }
 
@@ -1444,7 +1445,7 @@ ecoff_write_symhdr(bfd *abfd, struct ecoff_debug_info *debug,
   if (bfd_seek(abfd, where, SEEK_SET) != 0)
     return FALSE;
 
-  where += swap->external_hdr_size;
+  where += (file_ptr)swap->external_hdr_size;
 
   symhdr->magic = (short)swap->sym_magic;
 
