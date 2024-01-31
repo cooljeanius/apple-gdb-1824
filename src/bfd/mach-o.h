@@ -24,6 +24,25 @@
 
 #include "ansidecl.h"
 #include "bfd.h"
+
+  /* We use __extension__ here to suppress -pedantic warnings about GCC
+   * extensions.  This feature did NOT work properly before gcc 2.8: */
+#if !defined(__extension__) && defined(GCC_VERSION)
+# if (GCC_VERSION < 2008)
+#  define __extension__
+# endif /* gcc pre-2.8 */
+#endif /* !__extension__ && GCC_VERSION */
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if ((__GNUC__ == 4) && (__GNUC_MINOR__ == 2)) && !defined(__clang__)
+#  pragma GCC diagnostic ignored "-pedantic"
+# else
+#  if defined(__clang__) && (__clang__ >= 1)
+#   pragma clang diagnostic ignored "-Wpedantic"
+#  endif /* __clang__ */
+# endif /* gcc 4.2 (non-clang) */
+#endif /* any gcc */
+
 #if !defined(__has_include)
 # define __has_include(foo) 0
 #endif /* !__has_include */
@@ -160,20 +179,6 @@ bfd_mach_o_arm_thread_flavour;
 #  define BFD_MACH_O_LC_REQ_DYLD 0x80000000
 # endif /* __STRICT_ANSI__ || __clang__ || !gcc || pre-c99 */
 #endif /* !BFD_MACH_O_LC_REQ_DYLD */
-
-  /* We use __extension__ here to suppress -pedantic warnings about GCC
-   * extensions.  This feature did NOT work properly before gcc 2.8: */
-#if !defined(__extension__) && defined(GCC_VERSION)
-# if (GCC_VERSION < 2008)
-#  define __extension__
-# endif /* gcc pre-2.8 */
-#endif /* !__extension__ && GCC_VERSION */
-
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if ((__GNUC__ == 4) && (__GNUC_MINOR__ == 2)) && !defined(__clang__)
-#  pragma GCC diagnostic ignored "-pedantic"
-# endif /* gcc 4.2 (non-clang) */
-#endif /* any gcc */
 
 #ifndef _ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED
 # define _ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED 1

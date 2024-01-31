@@ -1310,6 +1310,9 @@ mn10300_elf_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	    {
 	      bfd_vma off;
 
+              BFD_ASSERT(input_bfd != NULL);
+              BFD_ASSERT(elf_tdata(input_bfd) != NULL);
+              BFD_ASSERT(elf_local_got_offsets(input_bfd) != NULL);
 	      off = elf_local_got_offsets(input_bfd)[symndx];
 
 	      bfd_put_32(output_bfd, value, (s_got->contents + off));
@@ -1659,33 +1662,33 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
   /* Assume nothing changes: */
   *again = FALSE;
 
-  /* We need a pointer to the mn10300 specific hash table.  */
-  hash_table = elf32_mn10300_hash_table (link_info);
+  /* We need a pointer to the mn10300 specific hash table: */
+  hash_table = elf32_mn10300_hash_table(link_info);
 
-  /* Initialize fields in each hash table entry the first time through.  */
+  /* Initialize fields in each hash table entry the first time through: */
   if ((hash_table->flags & MN10300_HASH_ENTRIES_INITIALIZED) == 0)
     {
       bfd *input_bfd;
 
-      /* Iterate over all the input bfds.  */
+      /* Iterate over all the input bfds: */
       for (input_bfd = link_info->input_bfds;
 	   input_bfd != NULL;
 	   input_bfd = input_bfd->link_next)
 	{
-	  /* We're going to need all the symbols for each bfd.  */
-	  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
+	  /* We're going to need all the symbols for each bfd: */
+	  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
 	  if (symtab_hdr->sh_info != 0)
 	    {
 	      isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
 	      if (isymbuf == NULL)
-		isymbuf = bfd_elf_get_elf_syms (input_bfd, symtab_hdr,
-						symtab_hdr->sh_info, 0,
-						NULL, NULL, NULL);
+		isymbuf = bfd_elf_get_elf_syms(input_bfd, symtab_hdr,
+                                               symtab_hdr->sh_info, 0,
+                                               NULL, NULL, NULL);
 	      if (isymbuf == NULL)
 		goto error_return;
 	    }
 
-	  /* Iterate over each section in this bfd.  */
+	  /* Iterate over each section in this bfd: */
 	  for (section = input_bfd->sections;
 	       section != NULL;
 	       section = section->next)
@@ -1696,39 +1699,39 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 	      const char *sym_name;
 	      char *new_name;
 
-	      /* If there's nothing to do in this section, skip it.  */
+	      /* If there's nothing to do in this section, skip it: */
 	      if (! (((section->flags & SEC_RELOC) != 0
 		      && section->reloc_count != 0)
 		     || (section->flags & SEC_CODE) != 0))
 		continue;
 
-	      /* Get cached copy of section contents if it exists.  */
-	      if (elf_section_data (section)->this_hdr.contents != NULL)
-		contents = elf_section_data (section)->this_hdr.contents;
+	      /* Get cached copy of section contents if it exists: */
+	      if (elf_section_data(section)->this_hdr.contents != NULL)
+		contents = elf_section_data(section)->this_hdr.contents;
 	      else if (section->size != 0)
 		{
-		  /* Go get them off disk.  */
-		  if (!bfd_malloc_and_get_section (input_bfd, section,
-						   &contents))
+		  /* Go get them off disk: */
+		  if (!bfd_malloc_and_get_section(input_bfd, section,
+						  &contents))
 		    goto error_return;
 		}
 	      else
 		contents = NULL;
 
-	      /* If there aren't any relocs, then there's nothing to do.  */
+	      /* If there aren't any relocs, then there's nothing to do: */
 	      if ((section->flags & SEC_RELOC) != 0
 		  && section->reloc_count != 0)
 		{
 
-		  /* Get a copy of the native relocations.  */
+		  /* Get a copy of the native relocations: */
 		  internal_relocs = (_bfd_elf_link_read_relocs
-				     (input_bfd, section, (PTR) NULL,
-				      (Elf_Internal_Rela *) NULL,
+				     (input_bfd, section, (PTR)NULL,
+				      (Elf_Internal_Rela *)NULL,
 				      link_info->keep_memory));
 		  if (internal_relocs == NULL)
 		    goto error_return;
 
-		  /* Now examine each relocation.  */
+		  /* Now examine each relocation: */
 		  irel = internal_relocs;
 		  irelend = irel + section->reloc_count;
 		  for (; irel < irelend; irel++)
@@ -1805,9 +1808,13 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 		      /* If this is not a "call" instruction, then we
 			 should convert "call" instructions to "calls"
 			 instructions.  */
-		      code = bfd_get_8(input_bfd,
-                                       (contents
-                                        + ((irel) ? irel->r_offset : 1) - 1));
+                      if (contents != NULL)
+		        code = bfd_get_8(input_bfd,
+                                         (contents
+                                          + ((irel) ? irel->r_offset : 1) - 1));
+                      else
+                        code = bfd_get_8(input_bfd,
+                        		 ((irel) ? irel->r_offset : 1) - 1);
 		      if (code != 0xdd && code != 0xcd)
 			hash->flags |= MN10300_CONVERT_CALL_TO_CALLS;
 

@@ -1576,6 +1576,7 @@ score_elf_record_local_got_symbol(bfd *abfd, long symndx, bfd_vma addend,
   entry.abfd = abfd;
   entry.symndx = symndx;
   entry.d.addend = addend;
+  BFD_ASSERT(g != NULL);
   loc = ((struct score_got_entry **)
   	 htab_find_slot(g->got_entries, &entry, INSERT));
 
@@ -1727,10 +1728,11 @@ score_elf_add_to_rel(bfd *abfd, bfd_byte *address, reloc_howto_type *howto,
   bfd_signed_vma addend;
   bfd_vma contents;
   unsigned long offset;
-  unsigned long r_type = howto->type;
+  unsigned long r_type = ((howto != NULL) ? howto->type : 0U);
   unsigned long hi16_addend, hi16_offset, hi16_value, uvalue;
 
   contents = bfd_get_32(abfd, address);
+  BFD_ASSERT(howto != NULL);
   /* Get the (signed) value from the instruction: */
   addend = (bfd_signed_vma)(contents & howto->src_mask);
   if (addend & ((bfd_signed_vma)(howto->src_mask + 1L) >> 1L))
@@ -2242,17 +2244,14 @@ s7_bfd_score_info_to_howto (bfd *abfd ATTRIBUTE_UNUSED,
     bfd_reloc->howto = &elf32_score_howto_table[r_type];
 }
 
-/* Relocate an score ELF section.  */
-
+/* Relocate an score ELF section: */
 bfd_boolean
-s7_bfd_score_elf_relocate_section (bfd *output_bfd,
-                                   struct bfd_link_info *info,
-                                   bfd *input_bfd,
-                                   asection *input_section,
-                                   bfd_byte *contents,
-                                   Elf_Internal_Rela *relocs,
-                                   Elf_Internal_Sym *local_syms,
-                                   asection **local_sections)
+s7_bfd_score_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                                  bfd *input_bfd, asection *input_section,
+                                  bfd_byte *contents,
+                                  Elf_Internal_Rela *relocs,
+                                  Elf_Internal_Sym *local_syms,
+                                  asection **local_sections)
 {
   Elf_Internal_Shdr *symtab_hdr;
   Elf_Internal_Rela *rel;
@@ -2263,30 +2262,30 @@ s7_bfd_score_elf_relocate_section (bfd *output_bfd,
   size_t extsymoff;
   bfd_boolean gp_disp_p = FALSE;
 
-  /* Sort dynsym.  */
-  if (elf_hash_table (info)->dynamic_sections_created)
+  /* Sort dynsym: */
+  if (elf_hash_table(info)->dynamic_sections_created)
     {
       bfd_size_type dynsecsymcount = 0;
       if (info->shared)
         {
           asection * p;
-          const struct elf_backend_data *bed = get_elf_backend_data (output_bfd);
+          const struct elf_backend_data *bed = get_elf_backend_data(output_bfd);
 
-          for (p = output_bfd->sections; p ; p = p->next)
-            if ((p->flags & SEC_EXCLUDE) == 0
-                && (p->flags & SEC_ALLOC) != 0
-                && !(*bed->elf_backend_omit_section_dynsym) (output_bfd, info, p))
+          for (p = output_bfd->sections; p; p = p->next)
+            if (((p->flags & SEC_EXCLUDE) == 0)
+                && ((p->flags & SEC_ALLOC) != 0)
+                && !(*bed->elf_backend_omit_section_dynsym)(output_bfd, info, p))
               ++ dynsecsymcount;
         }
 
-      if (!score_elf_sort_hash_table (info, dynsecsymcount + 1))
+      if (!score_elf_sort_hash_table(info, (dynsecsymcount + 1)))
         return FALSE;
     }
 
-  symtab_hdr = &elf_tdata (input_bfd)->symtab_hdr;
-  extsymoff = (elf_bad_symtab (input_bfd)) ? 0 : symtab_hdr->sh_info;
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  extsymoff = ((elf_bad_symtab(input_bfd)) ? 0 : symtab_hdr->sh_info);
   rel = relocs;
-  relend = relocs + input_section->reloc_count;
+  relend = (relocs + input_section->reloc_count);
   for (; rel < relend; rel++)
     {
       int r_type;
@@ -2295,14 +2294,15 @@ s7_bfd_score_elf_relocate_section (bfd *output_bfd,
       Elf_Internal_Sym *sym;
       asection *sec;
       struct score_elf_link_hash_entry *h;
-      bfd_vma relocation = 0;
+      bfd_vma relocation = 0UL;
       bfd_reloc_status_type r;
       arelent bfd_reloc;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
-      r_type = ELF32_R_TYPE (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
+      r_type = ELF32_R_TYPE(rel->r_info);
 
-      s7_bfd_score_info_to_howto (input_bfd, &bfd_reloc, (Elf_Internal_Rela *) rel);
+      s7_bfd_score_info_to_howto(input_bfd, &bfd_reloc,
+      				 (Elf_Internal_Rela *)rel);
       howto = bfd_reloc.howto;
 
       h = NULL;
@@ -2311,21 +2311,21 @@ s7_bfd_score_elf_relocate_section (bfd *output_bfd,
 
       if (r_symndx < extsymoff)
         {
-          sym = local_syms + r_symndx;
+          sym = (local_syms + r_symndx);
           sec = local_sections[r_symndx];
-          relocation = sec->output_section->vma + sec->output_offset;
-          name = bfd_elf_sym_name (input_bfd, symtab_hdr, sym, sec);
+          relocation = (sec->output_section->vma + sec->output_offset);
+          name = bfd_elf_sym_name(input_bfd, symtab_hdr, sym, sec);
 
           if (!info->relocatable)
             {
-              if (ELF_ST_TYPE (sym->st_info) != STT_SECTION
-                      || (sec->flags & SEC_MERGE))
+              if ((ELF_ST_TYPE(sym->st_info) != STT_SECTION)
+                  || (sec->flags & SEC_MERGE))
                 {
-                      relocation += sym->st_value;
-                    }
+                  relocation += sym->st_value;
+                }
 
               if ((sec->flags & SEC_MERGE)
-                      && ELF_ST_TYPE (sym->st_info) == STT_SECTION)
+                  && (ELF_ST_TYPE(sym->st_info) == STT_SECTION))
                 {
                   asection *msec;
                   bfd_vma addend, value;
@@ -2335,40 +2335,54 @@ s7_bfd_score_elf_relocate_section (bfd *output_bfd,
                     case R_SCORE_HI16:
                       break;
                     case R_SCORE_LO16:
-                      hi16_addend = bfd_get_32 (input_bfd, contents + rel->r_offset - 4);
-                      hi16_offset = ((((hi16_addend >> 16) & 0x3) << 15) | (hi16_addend & 0x7fff)) >> 1;
-                      value = bfd_get_32 (input_bfd, contents + rel->r_offset);
-                      offset = ((((value >> 16) & 0x3) << 15) | (value & 0x7fff)) >> 1;
-                      addend = (hi16_offset << 16) | (offset & 0xffff);
+                      hi16_addend = bfd_get_32(input_bfd,
+                                               (contents + rel->r_offset - 4));
+                      hi16_offset = (((((hi16_addend >> 16) & 0x3) << 15)
+                                      | (hi16_addend & 0x7fff)) >> 1);
+                      value = bfd_get_32(input_bfd, (contents + rel->r_offset));
+                      offset = (((((value >> 16) & 0x3) << 15)
+                                 | (value & 0x7fff)) >> 1);
+                      addend = ((hi16_offset << 16) | (offset & 0xffff));
                       msec = sec;
-                      addend = _bfd_elf_rel_local_sym (output_bfd, sym, &msec, addend);
+                      addend = _bfd_elf_rel_local_sym(output_bfd, sym, &msec,
+                                                      addend);
                       addend -= relocation;
-                      addend += msec->output_section->vma + msec->output_offset;
+                      addend += (msec->output_section->vma
+                                 + msec->output_offset);
                       uvalue = addend;
-                      hi16_offset = (uvalue >> 16) << 1;
-                      hi16_value = (hi16_addend & (~(howto->dst_mask)))
-                        | (hi16_offset & 0x7fff) | ((hi16_offset << 1) & 0x30000);
-                      bfd_put_32 (input_bfd, hi16_value, contents + rel->r_offset - 4);
-                      offset = (uvalue & 0xffff) << 1;
-                      value = (value & (~(howto->dst_mask)))
-                        | (offset & 0x7fff) | ((offset << 1) & 0x30000);
-                      bfd_put_32 (input_bfd, value, contents + rel->r_offset);
+                      hi16_offset = ((uvalue >> 16) << 1);
+                      hi16_value = ((hi16_addend & (~(howto->dst_mask)))
+                                    | (hi16_offset & 0x7fff)
+                                    | ((hi16_offset << 1) & 0x30000));
+                      bfd_put_32(input_bfd, hi16_value,
+                                 (contents + rel->r_offset - 4));
+                      offset = ((uvalue & 0xffff) << 1);
+                      value = ((value & (~(howto->dst_mask)))
+                               | (offset & 0x7fff)
+                               | ((offset << 1) & 0x30000));
+                      bfd_put_32(input_bfd, value, (contents + rel->r_offset));
                       break;
                     case R_SCORE_GOT_LO16:
-                      value = bfd_get_32 (input_bfd, contents + rel->r_offset);
-                      addend = (((value >> 16) & 0x3) << 14) | ((value & 0x7fff) >> 1);
+                      value = bfd_get_32(input_bfd, (contents + rel->r_offset));
+                      addend = ((((value >> 16) & 0x3) << 14)
+                                | ((value & 0x7fff) >> 1));
                       msec = sec;
-                      addend = _bfd_elf_rel_local_sym (output_bfd, sym, &msec, addend) - relocation;
-                      addend += msec->output_section->vma + msec->output_offset;
-                      value = (value & (~(howto->dst_mask))) | ((addend & 0x3fff) << 1)
-                               | (((addend >> 14) & 0x3) << 16);
+                      addend =
+                        (_bfd_elf_rel_local_sym(output_bfd, sym, &msec, addend)
+                         - relocation);
+                      addend += (msec->output_section->vma
+                      		 + msec->output_offset);
+                      value = ((value & (~(howto->dst_mask)))
+                               | ((addend & 0x3fff) << 1)
+                               | (((addend >> 14) & 0x3) << 16));
 
-                      bfd_put_32 (input_bfd, value, contents + rel->r_offset);
+                      bfd_put_32(input_bfd, value, (contents + rel->r_offset));
                       break;
                     default:
-                      value = bfd_get_32 (input_bfd, contents + rel->r_offset);
-                      /* Get the (signed) value from the instruction.  */
-                      addend = value & howto->src_mask;
+                      value = bfd_get_32(input_bfd, (contents + rel->r_offset));
+                      BFD_ASSERT(howto != NULL);
+                      /* Get the (signed) value from the instruction: */
+                      addend = (value & howto->src_mask);
                       if (addend & ((howto->src_mask + 1) >> 1))
                         {
                           bfd_signed_vma mask;
@@ -2378,10 +2392,14 @@ s7_bfd_score_elf_relocate_section (bfd *output_bfd,
                           addend |= (bfd_vma)mask;
                         }
                       msec = sec;
-                      addend = _bfd_elf_rel_local_sym (output_bfd, sym, &msec, addend) - relocation;
-                      addend += msec->output_section->vma + msec->output_offset;
-                      value = (value & ~howto->dst_mask) | (addend & howto->dst_mask);
-                      bfd_put_32 (input_bfd, value, contents + rel->r_offset);
+                      addend =
+                        (_bfd_elf_rel_local_sym(output_bfd, sym, &msec, addend)
+                         - relocation);
+                      addend += (msec->output_section->vma
+                                 + msec->output_offset);
+                      value = ((value & ~howto->dst_mask)
+                               | (addend & howto->dst_mask));
+                      bfd_put_32(input_bfd, value, (contents + rel->r_offset));
                       break;
                     }
                 }
@@ -2436,24 +2454,24 @@ s7_bfd_score_elf_relocate_section (bfd *output_bfd,
                and check to see if they exist by looking at their addresses.  */
             relocation = 0;
           else if (info->unresolved_syms_in_objects == RM_IGNORE
-                   && ELF_ST_VISIBILITY (h->root.other) == STV_DEFAULT)
+                   && ELF_ST_VISIBILITY(h->root.other) == STV_DEFAULT)
             relocation = 0;
-          else if (strcmp (name, "_DYNAMIC_LINK") == 0)
+          else if (strcmp(name, "_DYNAMIC_LINK") == 0)
             {
               /* If this is a dynamic link, we should have created a _DYNAMIC_LINK symbol
                  in s7_bfd_score_elf_create_dynamic_sections.  Otherwise, we should define
                  the symbol with a value of 0.  */
-              BFD_ASSERT (! info->shared);
-              BFD_ASSERT (bfd_get_section_by_name (output_bfd, ".dynamic") == NULL);
+              BFD_ASSERT(!info->shared);
+              BFD_ASSERT(bfd_get_section_by_name(output_bfd, ".dynamic") == NULL);
               relocation = 0;
             }
           else if (!info->relocatable)
             {
-              if (! ((*info->callbacks->undefined_symbol)
-                     (info, h->root.root.root.string, input_bfd,
-                      input_section, rel->r_offset,
-                      (info->unresolved_syms_in_objects == RM_GENERATE_ERROR)
-                      || ELF_ST_VISIBILITY (h->root.other))))
+              if (!((*info->callbacks->undefined_symbol)
+                    (info, h->root.root.root.string, input_bfd,
+                     input_section, rel->r_offset,
+                     (info->unresolved_syms_in_objects == RM_GENERATE_ERROR)
+                     || ELF_ST_VISIBILITY(h->root.other))))
                 return bfd_reloc_undefined;
               relocation = 0;
             }
@@ -2505,35 +2523,44 @@ s7_bfd_score_elf_relocate_section (bfd *output_bfd,
                   addend <<= 16;
                   addend += lo_addend;
 
-                  if (ELF_ST_TYPE (sym->st_info) == STT_SECTION)
+                  if (ELF_ST_TYPE(sym->st_info) == STT_SECTION)
                     addend += local_sections[r_symndx]->output_offset;
 
-                  lo_addend = addend & 0xffff;
-                  lo_value = (lo_value & (~(howto->dst_mask))) | ((lo_addend & 0x3fff) << 1)
+                  lo_addend = (addend & 0xffff);
+                  lo_value = (lo_value & (~(howto->dst_mask)))
+                              | ((lo_addend & 0x3fff) << 1)
                               | (((lo_addend >> 14) & 0x3) << 16);
-                  bfd_put_32 (input_bfd, lo_value, contents + lo16_rel->r_offset);
+                  bfd_put_32(input_bfd, lo_value,
+                             (contents + ((lo16_rel != NULL)
+                                          ? lo16_rel->r_offset
+                                          : (bfd_vma)0UL)));
 
-                  addend = addend >> 16;
-                  value = (value & ~howto->src_mask) | (addend & howto->src_mask);
-                  bfd_put_32 (input_bfd, value, contents + rel->r_offset);
+                  addend = (addend >> 16);
+                  value = ((value & ~howto->src_mask)
+                           | (addend & howto->src_mask));
+                  bfd_put_32(input_bfd, value, (contents + rel->r_offset));
                 }
-              else if (ELF_ST_TYPE (sym->st_info) == STT_SECTION)
+              else if (ELF_ST_TYPE(sym->st_info) == STT_SECTION)
                 {
                   sec = local_sections[r_symndx];
-                  score_elf_add_to_rel (input_bfd, contents + rel->r_offset,
-                                        howto, (bfd_signed_vma) (sec->output_offset + sym->st_value));
+                  score_elf_add_to_rel(input_bfd, (contents + rel->r_offset),
+                                       howto,
+                                       ((bfd_signed_vma)
+                                        (sec->output_offset + sym->st_value)));
                 }
             }
           continue;
         }
 
-      /* This is a final link.  */
-      r = score_elf_final_link_relocate (howto, input_bfd, output_bfd,
-                                         input_section, contents, rel, relocs,
-                                         relocation, info, name,
-                                         (h ? ELF_ST_TYPE ((unsigned int) h->root.root.type) :
-                                         ELF_ST_TYPE ((unsigned int) sym->st_info)), h, local_syms,
-                                         local_sections, gp_disp_p);
+      /* This is a final link: */
+      r = score_elf_final_link_relocate(howto, input_bfd, output_bfd,
+                                        input_section, contents, rel, relocs,
+                                        relocation, info, name,
+                                        ((h != NULL)
+                                         ? ELF_ST_TYPE((unsigned int)h->root.root.type)
+                                         : ELF_ST_TYPE((unsigned int)sym->st_info)),
+                                        h, local_syms, local_sections,
+                                        gp_disp_p);
 
       if (r != bfd_reloc_ok)
         {
@@ -2547,8 +2574,9 @@ s7_bfd_score_elf_relocate_section (bfd *output_bfd,
                  is no point complaining again.  */
               if (((!h) || (h->root.root.type != bfd_link_hash_undefined))
                   && (!((*info->callbacks->reloc_overflow)
-                        (info, NULL, name, howto->name, (bfd_vma) 0,
-                         input_bfd, input_section, rel->r_offset))))
+                        (info, NULL, name, ((howto != NULL) ? howto->name : ""),
+                         (bfd_vma)0UL, input_bfd, input_section,
+                         rel->r_offset))))
                 return FALSE;
               break;
             case bfd_reloc_undefined:

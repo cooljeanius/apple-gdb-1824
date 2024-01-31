@@ -36,12 +36,9 @@
 /* Look through the relocs for a section during the first phase, and
    allocate space in the global offset table or procedure linkage
    table.  */
-
 static bfd_boolean
-v850_elf_check_relocs (bfd *abfd,
-		       struct bfd_link_info *info,
-		       asection *sec,
-		       const Elf_Internal_Rela *relocs)
+v850_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
+		      const Elf_Internal_Rela *relocs)
 {
   bfd_boolean ret = TRUE;
   bfd *dynobj;
@@ -63,6 +60,9 @@ v850_elf_check_relocs (bfd *abfd,
 #endif /* DEBUG */
 
   dynobj = elf_hash_table(info)->dynobj;
+  if (dynobj == NULL) {
+    (void)dynobj;
+  }
   symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
   sym_hashes = elf_sym_hashes(abfd);
   sreloc = NULL;

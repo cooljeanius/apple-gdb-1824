@@ -4692,6 +4692,10 @@ elf64_alpha_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
 	    plt_index = ((gotent->plt_offset - PLT_HEADER_SIZE)
                          / PLT_ENTRY_SIZE);
 
+            if (plt_index == 0UL) {
+              ; /* ??? */
+            }
+
 	    /* Fill in the entry in the procedure linkage table: */
 	    if (elf64_alpha_use_secureplt)
 	      {

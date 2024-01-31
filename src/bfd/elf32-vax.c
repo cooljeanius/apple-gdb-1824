@@ -507,6 +507,9 @@ elf32_vax_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
       elf_elfheader(obfd)->e_flags = in_flags;
     }
 
+  if (in_flags == out_flags) {
+    (void)out_flags;
+  }
   return TRUE;
 }
 

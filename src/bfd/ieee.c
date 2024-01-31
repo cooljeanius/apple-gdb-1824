@@ -1629,17 +1629,29 @@ do_one(ieee_data_type *ieee, ieee_per_section_type *current_map,
 			  r->relent.addend -= current_map->pc;
 			  r->relent.howto = &rel8_howto;
 #else
-			  bfd_put_8(((ieee) ? ieee->h.abfd : NULL), 0,
-                                    (location_ptr
-                                     + ((current_map) ? current_map->pc : 0)));
+			  if (location_ptr != NULL)
+			    bfd_put_8(((ieee) ? ieee->h.abfd : NULL), 0,
+                                      (location_ptr
+                                       + ((current_map != NULL)
+                                          ? current_map->pc : 0)));
+                          else
+                            bfd_put_8(((ieee) ? ieee->h.abfd : NULL), 0,
+                                      ((current_map != NULL)
+                                       ? current_map->pc : 1));
 			  r->relent.howto = &rel8_howto;
 #endif /* KEEPMINUSPCININST */
 			}
 		      else
 			{
-			  bfd_put_8(((ieee) ? ieee->h.abfd : NULL), 0,
-                                    (location_ptr
-                                     + ((current_map) ? current_map->pc : 0)));
+			  if (location_ptr != NULL)
+			    bfd_put_8(((ieee) ? ieee->h.abfd : NULL), 0,
+                                      (location_ptr
+                                       + ((current_map != NULL)
+                                          ? current_map->pc : 0)));
+                          else
+                            bfd_put_8(((ieee) ? ieee->h.abfd : NULL), 0,
+                                      ((current_map != NULL)
+                                       ? current_map->pc : 1));
 			  r->relent.howto = &abs8_howto;
 			}
                       if (current_map != NULL)
@@ -2573,6 +2585,8 @@ copy_expression(void)
   int *tos = stack;
   int value = 0;
 
+  memset(tos, 0, sizeof(*tos));
+
   while (1)
     {
       switch (THIS())
@@ -3304,6 +3318,8 @@ ieee_set_section_contents(bfd *abfd, sec_ptr section, const void *location,
       if (offset == 0L)
         return FALSE;
     }
+  if ((void *)(ieee_per_section(section)->data + offset) == NULL)
+    return FALSE;
   memcpy((void *)(ieee_per_section(section)->data + offset),
          (void *)location,
          (unsigned int)count);

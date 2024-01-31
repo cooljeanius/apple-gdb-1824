@@ -537,7 +537,7 @@ _bfd_elf_discard_section_eh_frame
 		   && hdr_info->last_cie_sec
 		   && (sec->output_section
 		       == hdr_info->last_cie_sec->output_section)
-		   && cie_compare (&cie, &hdr_info->last_cie) == 0)
+		   && (cie_compare(&cie, &hdr_info->last_cie) == 0))
 		  || cie_usage_count == 0)
 		last_cie_inf->removed = 1;
 	      else
@@ -546,48 +546,48 @@ _bfd_elf_discard_section_eh_frame
 		  hdr_info->last_cie_sec = sec;
 		  last_cie_inf->make_relative = cie.make_relative;
 		  last_cie_inf->make_lsda_relative = cie.make_lsda_relative;
-		  last_cie_inf->per_encoding_relative
-		    = (cie.per_encoding & 0x70) == DW_EH_PE_pcrel;
+		  last_cie_inf->per_encoding_relative =
+                    ((cie.per_encoding & 0x70) == DW_EH_PE_pcrel);
 		}
 	    }
 
-	  if (hdr.id == (unsigned int) -1)
+	  if (hdr.id == (unsigned int)-1)
 	    break;
 
 	  last_cie_inf = this_inf;
 	  this_inf->cie = 1;
 
 	  cie_usage_count = 0;
-	  memset (&cie, 0, sizeof (cie));
+	  memset(&cie, 0, sizeof(cie));
 	  cie.hdr = hdr;
-	  REQUIRE (read_byte (&buf, end, &cie.version));
+	  REQUIRE(read_byte(&buf, end, &cie.version));
 
-	  /* Cannot handle unknown versions.  */
-	  REQUIRE (cie.version == 1 || cie.version == 3);
-	  REQUIRE (strlen ((char *) buf) < sizeof (cie.augmentation));
+	  /* Cannot handle unknown versions: */
+	  REQUIRE((cie.version == 1) || (cie.version == 3));
+	  REQUIRE(strlen((char *)buf) < sizeof(cie.augmentation));
 
-	  strcpy (cie.augmentation, (char *) buf);
-	  buf = (bfd_byte *) strchr ((char *) buf, '\0') + 1;
-	  ENSURE_NO_RELOCS (buf);
+	  strncpy(cie.augmentation, (char *)buf, sizeof(cie.augmentation));
+	  buf = ((bfd_byte *)strchr((char *)buf, '\0') + 1);
+	  ENSURE_NO_RELOCS(buf);
 	  if (buf[0] == 'e' && buf[1] == 'h')
 	    {
 	      /* GCC < 3.0 .eh_frame CIE */
 	      /* We cannot merge "eh" CIEs because __EXCEPTION_TABLE__
 		 is private to each CIE, so we don't need it for anything.
 		 Just skip it.  */
-	      REQUIRE (skip_bytes (&buf, end, ptr_size));
-	      SKIP_RELOCS (buf);
+	      REQUIRE(skip_bytes(&buf, end, ptr_size));
+	      SKIP_RELOCS(buf);
 	    }
-	  REQUIRE (read_uleb128 (&buf, end, &cie.code_align));
-	  REQUIRE (read_sleb128 (&buf, end, &cie.data_align));
+	  REQUIRE(read_uleb128(&buf, end, &cie.code_align));
+	  REQUIRE(read_sleb128(&buf, end, &cie.data_align));
 	  if (cie.version == 1)
 	    {
-	      REQUIRE (buf < end);
+	      REQUIRE(buf < end);
 	      cie.ra_column = *buf++;
 	    }
 	  else
-	    REQUIRE (read_uleb128 (&buf, end, &cie.ra_column));
-	  ENSURE_NO_RELOCS (buf);
+	    REQUIRE(read_uleb128(&buf, end, &cie.ra_column));
+	  ENSURE_NO_RELOCS(buf);
 	  cie.lsda_encoding = DW_EH_PE_omit;
 	  cie.fde_encoding = DW_EH_PE_omit;
 	  cie.per_encoding = DW_EH_PE_omit;

@@ -3119,12 +3119,12 @@ aout_link_reloc_link_order (struct aout_final_link_info *finfo,
       return FALSE;
     }
 
-  if (o == obj_textsec (finfo->output_bfd))
+  if (o == obj_textsec(finfo->output_bfd))
     reloff_ptr = &finfo->treloff;
-  else if (o == obj_datasec (finfo->output_bfd))
+  else if (o == obj_datasec(finfo->output_bfd))
     reloff_ptr = &finfo->dreloff;
   else
-    abort ();
+    abort();
 
 #ifdef MY_put_reloc
   MY_put_reloc(finfo->output_bfd, r_extern, r_index, p->offset, howto,
@@ -3173,8 +3173,8 @@ aout_link_reloc_link_order (struct aout_final_link_info *finfo,
 	   | (bfd_byte)(r_length << RELOC_STD_BITS_LENGTH_SH_LITTLE));
       }
   }
-#endif
-  rel_ptr = (void *) &srel;
+#endif /* MY_put_reloc */
+  rel_ptr = (void *)&srel;
 
   /* We have to write the addend into the object file, since
      standard a.out relocs are in place.  It would be more
@@ -3203,67 +3203,63 @@ aout_link_reloc_link_order (struct aout_final_link_info *finfo,
 	case bfd_reloc_overflow:
 	  if (! ((*finfo->info->callbacks->reloc_overflow)
 		 (finfo->info, NULL,
-		  (p->type == bfd_section_reloc_link_order
-		   ? bfd_section_name (finfo->output_bfd,
-				       pr->u.section)
+		  ((p->type == bfd_section_reloc_link_order)
+		   ? bfd_section_name(finfo->output_bfd,
+				      pr->u.section)
 		   : pr->u.name),
 		  howto->name, pr->addend, NULL,
-		  (asection *) NULL, (bfd_vma) 0)))
+		  (asection *)NULL, (bfd_vma)0UL)))
 	    {
-	      free (buf);
+	      free(buf);
 	      return FALSE;
 	    }
 	  break;
 	}
-      ok = bfd_set_section_contents (finfo->output_bfd, o,
-				     (void *) buf,
-				     (file_ptr) p->offset,
-				     size);
-      free (buf);
+      ok = bfd_set_section_contents(finfo->output_bfd, o, (void *)buf,
+				    (file_ptr)p->offset, size);
+      free(buf);
       if (! ok)
 	return FALSE;
     }
 
-  rel_size = obj_reloc_entry_size (finfo->output_bfd);
-  if (bfd_seek (finfo->output_bfd, *reloff_ptr, SEEK_SET) != 0
-      || bfd_bwrite (rel_ptr, rel_size, finfo->output_bfd) != rel_size)
+  rel_size = obj_reloc_entry_size(finfo->output_bfd);
+  if ((bfd_seek(finfo->output_bfd, *reloff_ptr, SEEK_SET) != 0)
+      || (bfd_bwrite(rel_ptr, rel_size, finfo->output_bfd) != rel_size))
     return FALSE;
 
   *reloff_ptr += rel_size;
 
   /* Assert that the relocs have not run into the symbols, and that n
      the text relocs have not run into the data relocs.  */
-  BFD_ASSERT (*reloff_ptr <= obj_sym_filepos (finfo->output_bfd)
-	      && (reloff_ptr != &finfo->treloff
-		  || (*reloff_ptr
-		      <= obj_datasec (finfo->output_bfd)->rel_filepos)));
+  BFD_ASSERT((*reloff_ptr <= obj_sym_filepos(finfo->output_bfd))
+	     && ((reloff_ptr != &finfo->treloff)
+	  	 || (*reloff_ptr
+                     <= obj_datasec(finfo->output_bfd)->rel_filepos)));
 
   return TRUE;
 }
 
-/* Get the section corresponding to a reloc index.  */
-
+/* Get the section corresponding to a reloc index: */
 static inline asection *
-aout_reloc_type_to_section (bfd *abfd, int type)
+aout_reloc_type_to_section(bfd *abfd, int type)
 {
   switch (type)
     {
-    case RTEXT:	return obj_textsec (abfd);
-    case RDATA: return obj_datasec (abfd);
-    case RBSS:  return obj_bsssec (abfd);
-    case RABS:  return bfd_abs_section_ptr;
-    case REXT:  return bfd_und_section_ptr;
-    default:    abort ();
+    case RTEXT:	return obj_textsec(abfd);
+    case RDATA: return obj_datasec(abfd);
+    case RBSS: return obj_bsssec(abfd);
+    case RABS: return bfd_abs_section_ptr;
+    case REXT: return bfd_und_section_ptr;
+    default: abort();
     }
 }
 
+/* */
 static bfd_boolean
-pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
-			       bfd *input_bfd,
-			       asection *input_section,
-			       bfd_byte *relocs,
-			       bfd_size_type rel_size,
-			       bfd_byte *contents)
+pdp11_aout_link_input_section(struct aout_final_link_info *finfo,
+			      bfd *input_bfd, asection *input_section,
+			      bfd_byte *relocs, bfd_size_type rel_size,
+			      bfd_byte *contents)
 {
   bfd_boolean (*check_dynamic_reloc)
     (struct bfd_link_info *, bfd *, asection *,
@@ -3340,19 +3336,19 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
 		 convert it into a relocation against a section.  This
 		 is what the native linker does.  */
 	      h = sym_hashes[r_index];
-	      if (h != NULL
+	      if ((h != NULL)
 		  && (h->root.type == bfd_link_hash_defined
 		      || h->root.type == bfd_link_hash_defweak))
 		{
 		  asection *output_section;
 
-		  /* Compute a new r_index.  */
+		  /* Compute a new r_index: */
 		  output_section = h->root.u.def.section->output_section;
-		  if (output_section == obj_textsec (output_bfd))
+		  if (output_section == obj_textsec(output_bfd))
 		    r_type = N_TEXT;
-		  else if (output_section == obj_datasec (output_bfd))
+		  else if (output_section == obj_datasec(output_bfd))
 		    r_type = N_DATA;
-		  else if (output_section == obj_bsssec (output_bfd))
+		  else if (output_section == obj_bsssec(output_bfd))
 		    r_type = N_BSS;
 		  else
 		    r_type = N_ABS;
@@ -3365,8 +3361,7 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
 		}
 	      else
 		{
-		  /* We must change r_index according to the symbol
-		     map.  */
+		  /* We must change r_index according to the symbol map: */
 		  r_index = symbol_map[r_index];
 
 		  if (r_index == -1)
@@ -3392,8 +3387,8 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
 			{
 			  const char *name;
 
-			  name = strings + GET_WORD (input_bfd,
-						     syms[r_index].e_strx);
+			  name = (strings + GET_WORD(input_bfd,
+						     syms[r_index].e_strx));
 			  if (! ((*finfo->info->callbacks->unattached_reloc)
 				 (finfo->info, name, input_bfd, input_section,
 				  r_addr)))
@@ -3405,10 +3400,10 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
 		  relocation = 0;
 		}
 
-	      /* Write out the new r_index value.  */
+	      /* Write out the new r_index value: */
 	      reloc_entry = (int)GET_WORD(input_bfd, rel);
 	      reloc_entry &= RIDXMASK;
-	      reloc_entry |= (r_index << 4);
+	      reloc_entry |= (r_index << 4); 
 	      PUT_WORD(input_bfd, (bfd_vma)reloc_entry, rel);
 	    }
 	  else
@@ -3417,14 +3412,14 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
 
 	      /* This is a relocation against a section.  We must
 		 adjust by the amount that the section moved.  */
-	      section = aout_reloc_type_to_section (input_bfd, r_type);
+	      section = aout_reloc_type_to_section(input_bfd, r_type);
 	      relocation = (section->output_section->vma
 			    + section->output_offset
 			    - section->vma);
 	    }
 
-	  /* Change the address of the relocation.  */
-	  fprintf (stderr, "TODO: change the address of the relocation\n");
+	  /* Change the address of the relocation: */
+	  fprintf(stderr, "TODO: change the address of the relocation\n");
 
 	  /* Adjust a PC relative relocation by removing the reference
 	     to the original address in the section and including the
@@ -3435,15 +3430,14 @@ pdp11_aout_link_input_section (struct aout_final_link_info *finfo,
 			   - input_section->vma);
 
 #ifdef MY_relocatable_reloc
-	  MY_relocatable_reloc (howto, output_bfd, rel, relocation, r_addr);
-#endif
+	  MY_relocatable_reloc(howto, output_bfd, rel, relocation, r_addr);
+#endif /* MY_relocatable_reloc */
 
 	  if (relocation == 0)
 	    r = bfd_reloc_ok;
 	  else
-	    r = MY_relocate_contents (howto,
-				      input_bfd, relocation,
-				      contents + r_addr);
+	    r = MY_relocate_contents(howto, input_bfd, relocation,
+				     (contents + r_addr));
 	}
       else
 	{

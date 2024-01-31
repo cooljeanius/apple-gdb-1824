@@ -6646,7 +6646,7 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 		(_("%s: compiled with %s and linked with modules that use non-pic relocations"),
 		 bfd_get_filename (ibfd),
 		 (new_flags & EF_FRV_BIGPIC) ? "-fPIC" : "-fpic");
-#endif
+#endif /* !FRV_NO_PIC_ERROR */
 	    }
 	}
 
@@ -6664,30 +6664,50 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 	{
 	  switch (new_partial)
 	    {
-	    default:		     strcat (new_opt, " -mcpu=?");      break;
-	    case EF_FRV_CPU_GENERIC: strcat (new_opt, " -mcpu=frv");    break;
-	    case EF_FRV_CPU_SIMPLE:  strcat (new_opt, " -mcpu=simple"); break;
-	    case EF_FRV_CPU_FR550:   strcat (new_opt, " -mcpu=fr550");  break;
-	    case EF_FRV_CPU_FR500:   strcat (new_opt, " -mcpu=fr500");  break;
-	    case EF_FRV_CPU_FR450:   strcat (new_opt, " -mcpu=fr450");  break;
-	    case EF_FRV_CPU_FR405:   strcat (new_opt, " -mcpu=fr405");  break;
-	    case EF_FRV_CPU_FR400:   strcat (new_opt, " -mcpu=fr400");  break;
-	    case EF_FRV_CPU_FR300:   strcat (new_opt, " -mcpu=fr300");  break;
-	    case EF_FRV_CPU_TOMCAT:  strcat (new_opt, " -mcpu=tomcat"); break;
+	    default:
+              strncat(new_opt, " -mcpu=?", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_CPU_GENERIC:
+              strncat(new_opt, " -mcpu=frv", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_CPU_SIMPLE:
+              strncat(new_opt, " -mcpu=simple", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_CPU_FR550:
+              strncat(new_opt, " -mcpu=fr550", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_CPU_FR500:
+              strncat(new_opt, " -mcpu=fr500", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_CPU_FR450:
+              strncat(new_opt, " -mcpu=fr450", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_CPU_FR405:
+              strncat(new_opt, " -mcpu=fr405", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_CPU_FR400:
+              strncat(new_opt, " -mcpu=fr400", (sizeof(new_opt) - 1UL)); break;
+	    case EF_FRV_CPU_FR300:
+              strncat(new_opt, " -mcpu=fr300", (sizeof(new_opt) - 1UL));  break;
+	    case EF_FRV_CPU_TOMCAT:
+              strncat(new_opt, " -mcpu=tomcat", (sizeof(new_opt) - 1UL)); break;
 	    }
 
 	  switch (old_partial)
 	    {
-	    default:		     strcat (old_opt, " -mcpu=?");      break;
-	    case EF_FRV_CPU_GENERIC: strcat (old_opt, " -mcpu=frv");    break;
-	    case EF_FRV_CPU_SIMPLE:  strcat (old_opt, " -mcpu=simple"); break;
-	    case EF_FRV_CPU_FR550:   strcat (old_opt, " -mcpu=fr550");  break;
-	    case EF_FRV_CPU_FR500:   strcat (old_opt, " -mcpu=fr500");  break;
-	    case EF_FRV_CPU_FR450:   strcat (old_opt, " -mcpu=fr450");  break;
-	    case EF_FRV_CPU_FR405:   strcat (old_opt, " -mcpu=fr405");  break;
-	    case EF_FRV_CPU_FR400:   strcat (old_opt, " -mcpu=fr400");  break;
-	    case EF_FRV_CPU_FR300:   strcat (old_opt, " -mcpu=fr300");  break;
-	    case EF_FRV_CPU_TOMCAT:  strcat (old_opt, " -mcpu=tomcat"); break;
+	    default:
+              strncat(old_opt, " -mcpu=?", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_CPU_GENERIC:
+              strncat(old_opt, " -mcpu=frv", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_CPU_SIMPLE:
+              strncat(old_opt, " -mcpu=simple", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_CPU_FR550:
+              strncat(old_opt, " -mcpu=fr550", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_CPU_FR500:
+              strncat(old_opt, " -mcpu=fr500", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_CPU_FR450:
+              strncat(old_opt, " -mcpu=fr450", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_CPU_FR405:
+              strncat(old_opt, " -mcpu=fr405", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_CPU_FR400:
+              strncat(old_opt, " -mcpu=fr400", (sizeof(old_opt) - 1UL)); break;
+	    case EF_FRV_CPU_FR300:
+              strncat(old_opt, " -mcpu=fr300", (sizeof(old_opt) - 1UL));  break;
+	    case EF_FRV_CPU_TOMCAT:
+              strncat(old_opt, " -mcpu=tomcat", (sizeof(old_opt) - 1UL)); break;
 	    }
 	}
 

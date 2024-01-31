@@ -837,11 +837,11 @@ add_line_info(struct line_info_table *table, bfd_vma address,
 
   if (filename && filename[0])
     {
+      size_t info_filenamelen = (strlen(filename) + 1UL);
       info->filename =
-        ((char *)bfd_alloc(table->abfd,
-                           (bfd_size_type)(strlen(filename) + 1UL)));
+        ((char *)bfd_alloc(table->abfd, (bfd_size_type)info_filenamelen));
       if (info->filename)
-	strcpy(info->filename, filename);
+	strncpy(info->filename, filename, info_filenamelen);
     }
   else
     info->filename = NULL;

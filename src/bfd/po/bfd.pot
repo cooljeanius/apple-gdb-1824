@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-30 09:02-0500\n"
+"POT-Creation-Date: 2024-01-31 17:52-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -676,7 +676,7 @@ msgid ""
 "pie\n"
 msgstr ""
 
-#: elf-m10200.c:415 elf-m10300.c:1516 elf32-arm.c:4236 elf32-avr.c:874
+#: elf-m10200.c:415 elf-m10300.c:1519 elf32-arm.c:4236 elf32-avr.c:874
 #: elf32-bfin.c:3205 elf32-cr16.c:1484 elf32-cr16c.c:776 elf32-cris.c:1502
 #: elf32-crx.c:915 elf32-d10v.c:539 elf32-epiphany.c:557 elf32-fr30.c:569
 #: elf32-frv.c:4080 elf32-h8300.c:494 elf32-i860.c:1178 elf32-ip2k.c:1465
@@ -684,32 +684,32 @@ msgstr ""
 #: elf32-m68hc1x.c:1208 elf32-mep.c:535 elf32-metag.c:1992
 #: elf32-microblaze.c:1560 elf32-moxie.c:282 elf32-ms1.c:371 elf32-msp430.c:507
 #: elf32-mt.c:395 elf32-nds32.c:4912 elf32-openrisc.c:385 elf32-or1k.c:1263
-#: elf32-score.c:2739 elf32-score7.c:2561 elf32-spu.c:5045 elf32-tilepro.c:3670
+#: elf32-score.c:2739 elf32-score7.c:2589 elf32-spu.c:5045 elf32-tilepro.c:3670
 #: elf32-v850.c:1677 elf32-xstormy16.c:914 elf64-mmix.c:1503
 msgid "internal error: out of range error"
 msgstr ""
 
-#: elf-m10200.c:419 elf-m10300.c:1520 elf32-arm.c:4240 elf32-avr.c:878
+#: elf-m10200.c:419 elf-m10300.c:1523 elf32-arm.c:4240 elf32-avr.c:878
 #: elf32-bfin.c:3209 elf32-cr16.c:1488 elf32-cr16c.c:780 elf32-cris.c:1506
 #: elf32-crx.c:919 elf32-d10v.c:543 elf32-fr30.c:573 elf32-frv.c:4084
 #: elf32-h8300.c:498 elf32-i860.c:1182 elf32-iq2000.c:622 elf32-lm32.c:1164
 #: elf32-m32c.c:477 elf32-m32r.c:3094 elf32-m68hc1x.c:1212 elf32-mep.c:539
 #: elf32-metag.c:1996 elf32-microblaze.c:1564 elf32-moxie.c:286
 #: elf32-msp430.c:511 elf32-nds32.c:4916 elf32-openrisc.c:389 elf32-or1k.c:1267
-#: elf32-score.c:2743 elf32-score7.c:2565 elf32-spu.c:5049 elf32-tilepro.c:3674
+#: elf32-score.c:2743 elf32-score7.c:2593 elf32-spu.c:5049 elf32-tilepro.c:3674
 #: elf32-v850.c:1681 elf32-xstormy16.c:918 elf64-mmix.c:1507 elfxx-mips.c:7216
 msgid "internal error: unsupported relocation error"
 msgstr ""
 
-#: elf-m10200.c:423 elf-m10300.c:1524 elf32-arm.c:4244 elf32-cr16.c:1492
+#: elf-m10200.c:423 elf-m10300.c:1527 elf32-arm.c:4244 elf32-cr16.c:1492
 #: elf32-cr16c.c:784 elf32-crx.c:923 elf32-d10v.c:547 elf32-h8300.c:502
 #: elf32-lm32.c:1168 elf32-m32r.c:3098 elf32-m68hc1x.c:1216
 #: elf32-microblaze.c:1568 elf32-nds32.c:4920 elf32-score.c:2747
-#: elf32-score7.c:2569 elf32-spu.c:5053
+#: elf32-score7.c:2597 elf32-spu.c:5053
 msgid "internal error: dangerous error"
 msgstr ""
 
-#: elf-m10200.c:427 elf-m10300.c:1528 elf32-arm.c:4248 elf32-avr.c:886
+#: elf-m10200.c:427 elf-m10300.c:1531 elf32-arm.c:4248 elf32-avr.c:886
 #: elf32-bfin.c:3217 elf32-cr16.c:1496 elf32-cr16c.c:788 elf32-cris.c:1514
 #: elf32-crx.c:927 elf32-d10v.c:551 elf32-epiphany.c:572 elf32-fr30.c:581
 #: elf32-frv.c:4092 elf32-h8300.c:506 elf32-i860.c:1190 elf32-ip2k.c:1480
@@ -717,12 +717,12 @@ msgstr ""
 #: elf32-m68hc1x.c:1220 elf32-mep.c:547 elf32-metag.c:2004
 #: elf32-microblaze.c:1572 elf32-moxie.c:294 elf32-ms1.c:379 elf32-msp430.c:519
 #: elf32-mt.c:403 elf32-nds32.c:4924 elf32-openrisc.c:397 elf32-or1k.c:1275
-#: elf32-score.c:2756 elf32-score7.c:2573 elf32-spu.c:5057 elf32-tilepro.c:3682
+#: elf32-score.c:2756 elf32-score7.c:2601 elf32-spu.c:5057 elf32-tilepro.c:3682
 #: elf32-v850.c:1701 elf32-xstormy16.c:926 elf64-mmix.c:1515
 msgid "internal error: unknown error"
 msgstr ""
 
-#: elf-m10300.c:1466 elf32-m32r.c:2633 elf64-sh64.c:1629
+#: elf-m10300.c:1469 elf32-m32r.c:2633 elf64-sh64.c:1629
 #, c-format
 msgid ""
 "%s: warning: unresolvable relocation against symbol `%s' from %s section"
@@ -917,7 +917,7 @@ msgstr ""
 #. Ignore init flag - it may not be set, despite the flags field
 #. containing valid data.
 #: elf32-arm.c:4592 elf32-bfin.c:4973 elf32-cris.c:3200 elf32-m68hc1x.c:1351
-#: elf32-m68k.c:415 elf32-score.c:4015 elf32-score7.c:3887 elf32-vax.c:527
+#: elf32-m68k.c:415 elf32-score.c:4015 elf32-score7.c:3915 elf32-vax.c:530
 #: elf32-xgate.c:674 elfxx-mips.c:9920 elfnn-aarch64.c:4688
 #, c-format
 msgid "private flags = %lx:"
@@ -1094,12 +1094,12 @@ msgstr ""
 msgid "%B: unsupported relocation type %i"
 msgstr ""
 
-#: elf32-bfin.c:5019 elf32-frv.c:6732
+#: elf32-bfin.c:5019 elf32-frv.c:6752
 #, c-format
 msgid "%s: cannot link non-fdpic object file into fdpic executable"
 msgstr ""
 
-#: elf32-bfin.c:5023 elf32-frv.c:6736
+#: elf32-bfin.c:5023 elf32-frv.c:6756
 #, c-format
 msgid "%s: cannot link fdpic object file into non-fdpic executable"
 msgstr ""
@@ -1277,19 +1277,19 @@ msgid ""
 "%s: compiled with %s and linked with modules that use non-pic relocations"
 msgstr ""
 
-#: elf32-frv.c:6699 elf32-iq2000.c:802 elf32-m32c.c:799
+#: elf32-frv.c:6719 elf32-iq2000.c:802 elf32-m32c.c:799
 #, c-format
 msgid "%s: compiled with %s and linked with modules compiled with %s"
 msgstr ""
 
-#: elf32-frv.c:6711
+#: elf32-frv.c:6731
 #, c-format
 msgid ""
 "%s: uses different unknown e_flags (0x%lx) fields than previous modules (0x"
 "%lx)"
 msgstr ""
 
-#: elf32-frv.c:6760 elf32-iq2000.c:840 elf32-m32c.c:835 elf32-ms1.c:593
+#: elf32-frv.c:6780 elf32-iq2000.c:840 elf32-m32c.c:835 elf32-ms1.c:593
 #: elf32-mt.c:580 elf32-rl78.c:1069 elf32-rx.c:3040
 #, c-format
 msgid "private flags = 0x%lx:"
@@ -1910,26 +1910,26 @@ msgstr ""
 msgid "address not word align"
 msgstr ""
 
-#: elf32-score.c:2837 elf32-score7.c:2655
+#: elf32-score.c:2837 elf32-score7.c:2683
 #, c-format
 msgid "%s: Malformed reloc detected for section %s"
 msgstr ""
 
-#: elf32-score.c:2892 elf32-score7.c:2713
+#: elf32-score.c:2892 elf32-score7.c:2741
 msgid "%B: CALL15 reloc at 0x%lx not against global symbol"
 msgstr ""
 
-#: elf32-score.c:4018 elf32-score7.c:3890
+#: elf32-score.c:4018 elf32-score7.c:3918
 #, c-format
 msgid " [pic]"
 msgstr ""
 
-#: elf32-score.c:4022 elf32-score7.c:3894
+#: elf32-score.c:4022 elf32-score7.c:3922
 #, c-format
 msgid " [fix dep]"
 msgstr ""
 
-#: elf32-score.c:4064 elf32-score7.c:3938 elfxx-mips.c:9795
+#: elf32-score.c:4064 elf32-score7.c:3966 elfxx-mips.c:9795
 msgid "%B: warning: linking PIC files with non-PIC files"
 msgstr ""
 
@@ -2315,39 +2315,39 @@ msgstr ""
 msgid "v850e1 architecture"
 msgstr ""
 
-#: elf32-vax.c:530
+#: elf32-vax.c:533
 #, c-format
 msgid " [nonpic]"
 msgstr ""
 
-#: elf32-vax.c:533
+#: elf32-vax.c:536
 #, c-format
 msgid " [d-float]"
 msgstr ""
 
-#: elf32-vax.c:536
+#: elf32-vax.c:539
 #, c-format
 msgid " [g-float]"
 msgstr ""
 
-#: elf32-vax.c:646
+#: elf32-vax.c:649
 #, c-format
 msgid ""
 "%s: warning: GOT addend of %ld to `%s' does not match previous GOT addend of "
 "%ld"
 msgstr ""
 
-#: elf32-vax.c:1593
+#: elf32-vax.c:1596
 #, c-format
 msgid "%s: warning: PLT addend of %d to `%s' from %s section ignored"
 msgstr ""
 
-#: elf32-vax.c:1718
+#: elf32-vax.c:1721
 #, c-format
 msgid "%s: warning: %s relocation against symbol `%s' from %s section"
 msgstr ""
 
-#: elf32-vax.c:1724
+#: elf32-vax.c:1727
 #, c-format
 msgid "%s: warning: %s relocation to 0x%x from %s section"
 msgstr ""
