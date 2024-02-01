@@ -1050,13 +1050,13 @@ _bfd_elf_write_section_eh_frame(bfd *abfd, struct bfd_link_info *info,
      not reordered  */
   for (ent = sec_info->entry + sec_info->count; ent-- != sec_info->entry;)
     if (!ent->removed && ent->new_offset > ent->offset)
-      memmove (contents + ent->new_offset - sec->output_offset,
-	       contents + ent->offset - sec->output_offset, ent->size);
+      memmove((contents + ent->new_offset - sec->output_offset),
+	      (contents + ent->offset - sec->output_offset), ent->size);
 
   for (ent = sec_info->entry; ent < sec_info->entry + sec_info->count; ++ent)
     if (!ent->removed && ent->new_offset < ent->offset)
-      memmove (contents + ent->new_offset - sec->output_offset,
-	       contents + ent->offset - sec->output_offset, ent->size);
+      memmove((contents + ent->new_offset - sec->output_offset),
+	      (contents + ent->offset - sec->output_offset), ent->size);
 
   for (ent = sec_info->entry; ent < sec_info->entry + sec_info->count; ++ent)
     {
@@ -1068,20 +1068,20 @@ _bfd_elf_write_section_eh_frame(bfd *abfd, struct bfd_link_info *info,
 
       if (ent->size == 4)
 	{
-	  /* Any terminating FDE must be at the end of the section.  */
-	  BFD_ASSERT (ent == sec_info->entry + sec_info->count - 1);
+	  /* Any terminating FDE must be at the end of the section: */
+	  BFD_ASSERT(ent == (sec_info->entry + sec_info->count - 1));
 	  continue;
 	}
 
-      buf = contents + ent->new_offset - sec->output_offset;
-      end = buf + ent->size;
-      new_size = size_of_output_cie_fde (ent, ptr_size);
+      buf = (contents + ent->new_offset - sec->output_offset);
+      end = (buf + ent->size);
+      new_size = size_of_output_cie_fde(ent, ptr_size);
 
-      /* Install the new size, filling the extra bytes with DW_CFA_nops.  */
+      /* Install the new size, filling the extra bytes with DW_CFA_nops: */
       if (new_size != ent->size)
 	{
-	  memset (end, 0, new_size - ent->size);
-	  bfd_put_32 (abfd, new_size - 4, buf);
+	  memset(end, 0, (new_size - ent->size));
+	  bfd_put_32(abfd, (new_size - 4), buf);
 	}
 
       if (ent->cie)
@@ -1100,16 +1100,16 @@ _bfd_elf_write_section_eh_frame(bfd *abfd, struct bfd_link_info *info,
 	      action = ((ent->make_relative ? 1 : 0)
 			| (ent->need_lsda_relative ? 2 : 0)
 			| (ent->per_encoding_relative ? 4 : 0));
-	      extra_string = extra_augmentation_string_bytes (ent);
-	      extra_data = extra_augmentation_data_bytes (ent);
+	      extra_string = extra_augmentation_string_bytes(ent);
+	      extra_data = extra_augmentation_data_bytes(ent);
 
 	      /* Skip length, id and version.  */
 	      buf += 9;
-	      aug = (char *) buf;
-	      buf += strlen (aug) + 1;
-	      skip_leb128 (&buf, end);
-	      skip_leb128 (&buf, end);
-	      skip_leb128 (&buf, end);
+	      aug = (char *)buf;
+	      buf += (strlen(aug) + 1UL);
+	      skip_leb128(&buf, end);
+	      skip_leb128(&buf, end);
+	      skip_leb128(&buf, end);
 	      if (*aug == 'z')
 		{
 		  /* The uleb128 will always be a single byte for the kind
@@ -1118,20 +1118,24 @@ _bfd_elf_write_section_eh_frame(bfd *abfd, struct bfd_link_info *info,
 		  aug++;
 		}
 
-	      /* Make room for the new augmentation string and data bytes.  */
-	      memmove (buf + extra_string + extra_data, buf, end - buf);
-	      memmove (aug + extra_string, aug, buf - (bfd_byte *) aug);
+	      /* Make room for the new augmentation string and data bytes: */
+	      memmove((buf + extra_string + extra_data), buf, (end - buf));
+	      memmove((aug + extra_string), aug, (buf - (bfd_byte *)aug));
 	      buf += extra_string;
-	      end += extra_string + extra_data;
+	      end += (extra_string + extra_data);
+
+              if (end == NULL) {
+                ; /* ??? */
+              }
 
 	      if (ent->add_augmentation_size)
 		{
 		  *aug++ = 'z';
-		  *buf++ = extra_data - 1;
+		  *buf++ = (extra_data - 1);
 		}
 	      if (ent->add_fde_encoding)
 		{
-		  BFD_ASSERT (action & 1);
+		  BFD_ASSERT(action & 1);
 		  *aug++ = 'R';
 		  *buf++ = DW_EH_PE_pcrel;
 		  action &= ~1;
@@ -1143,7 +1147,7 @@ _bfd_elf_write_section_eh_frame(bfd *abfd, struct bfd_link_info *info,
 		  case 'L':
 		    if (action & 2)
 		      {
-			BFD_ASSERT (*buf == ent->lsda_encoding);
+			BFD_ASSERT(*buf == ent->lsda_encoding);
 			*buf |= DW_EH_PE_pcrel;
 			action &= ~2;
 		      }
@@ -1151,10 +1155,10 @@ _bfd_elf_write_section_eh_frame(bfd *abfd, struct bfd_link_info *info,
 		    break;
 		  case 'P':
 		    per_encoding = *buf++;
-		    per_width = get_DW_EH_PE_width (per_encoding, ptr_size);
-		    BFD_ASSERT (per_width != 0);
-		    BFD_ASSERT (((per_encoding & 0x70) == DW_EH_PE_pcrel)
-				== ent->per_encoding_relative);
+		    per_width = get_DW_EH_PE_width(per_encoding, ptr_size);
+		    BFD_ASSERT(per_width != 0);
+		    BFD_ASSERT(((per_encoding & 0x70) == DW_EH_PE_pcrel)
+                               == ent->per_encoding_relative);
 		    if ((per_encoding & 0xf0) == DW_EH_PE_aligned)
 		      buf = (contents
 			     + ((buf - contents + per_width - 1)
@@ -1375,29 +1379,32 @@ _bfd_elf_write_section_eh_frame_hdr (bfd *abfd, struct bfd_link_info *info)
 
   memset(contents, 0, EH_FRAME_HDR_SIZE);
   contents[0] = 1;				/* Version.  */
-  contents[1] = get_elf_backend_data (abfd)->elf_backend_encode_eh_address
-    (abfd, info, eh_frame_sec, 0, sec, 4,
-     &encoded_eh_frame);			/* .eh_frame offset.  */
+  contents[1] =
+    get_elf_backend_data(abfd)->elf_backend_encode_eh_address(abfd, info,
+                                                              eh_frame_sec, 0,
+                                                              sec, 4,
+                                      /* .eh_frame offset: */ &encoded_eh_frame);
 
   if (hdr_info->array && hdr_info->array_count == hdr_info->fde_count)
     {
       contents[2] = DW_EH_PE_udata4;		/* FDE count encoding.  */
-      contents[3] = DW_EH_PE_datarel | DW_EH_PE_sdata4; /* Search table enc.  */
+      contents[3] = (DW_EH_PE_datarel | DW_EH_PE_sdata4); /* Search table enc.  */
     }
   else
     {
       contents[2] = DW_EH_PE_omit;
       contents[3] = DW_EH_PE_omit;
     }
-  bfd_put_32 (abfd, encoded_eh_frame, contents + 4);
+  bfd_put_32(abfd, encoded_eh_frame, (contents + 4));
 
   if (contents[2] != DW_EH_PE_omit)
     {
       unsigned int i;
 
-      bfd_put_32 (abfd, hdr_info->fde_count, contents + EH_FRAME_HDR_SIZE);
-      qsort (hdr_info->array, hdr_info->fde_count, sizeof (*hdr_info->array),
-	     vma_compare);
+      bfd_put_32(abfd, hdr_info->fde_count, (contents + EH_FRAME_HDR_SIZE));
+      BFD_ASSERT(hdr_info != NULL);
+      qsort(hdr_info->array, hdr_info->fde_count, sizeof(*hdr_info->array),
+	    vma_compare);
       for (i = 0; (hdr_info != NULL) && (i < hdr_info->fde_count); i++)
 	{
 	  BFD_ASSERT(hdr_info != NULL);
@@ -1414,19 +1421,18 @@ _bfd_elf_write_section_eh_frame_hdr (bfd *abfd, struct bfd_link_info *info)
 	}
     }
 
-  retval = bfd_set_section_contents (abfd, sec->output_section,
-				     contents, (file_ptr) sec->output_offset,
-				     sec->size);
-  free (contents);
+  retval = bfd_set_section_contents(abfd, sec->output_section,
+				    contents, (file_ptr)sec->output_offset,
+				    sec->size);
+  free(contents);
   return retval;
 }
 
-/* Return the width of FDE addresses.  This is the default implementation.  */
-
+/* Return the width of FDE addresses.  This is the default implementation: */
 unsigned int
-_bfd_elf_eh_frame_address_size (bfd *abfd, asection *sec ATTRIBUTE_UNUSED)
+_bfd_elf_eh_frame_address_size(bfd *abfd, asection *sec ATTRIBUTE_UNUSED)
 {
-  return elf_elfheader (abfd)->e_ident[EI_CLASS] == ELFCLASS64 ? 8 : 4;
+  return ((elf_elfheader(abfd)->e_ident[EI_CLASS] == ELFCLASS64) ? 8U : 4U);
 }
 
 /* Decide whether we can use a PC-relative encoding within the given

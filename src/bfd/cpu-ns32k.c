@@ -148,6 +148,9 @@ _bfd_ns32k_put_immediate(bfd_vma value, bfd_byte *buffer, int size)
     default:
       ; /* (do nothing) */
     }
+  if (value == 0UL) {
+    (void)value;
+  }
 }
 
 /* This is just like the standard perform_relocation except we

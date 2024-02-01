@@ -111,20 +111,24 @@ jobs:
           else \
             echo "configure-related timestamps might be off?"; \
           fi; \
-        fi; \
+        fi
         if test libltdl/Makefile.in -ot libltdl/Makefile.am; then \
           test -s libltdl/Makefile.in && touch libltdl/Makefile.in; \
-        fi; \
+        fi
         if test libltdl/Makefile -ot libltdl/Makefile.in; then \
           test -s libltdl/Makefile && touch libltdl/Makefile; \
-        fi; \
-        if test -d libltdl/loaders && test -w libltdl/loaders && test ! -d libltdl/loaders/.deps; then \
-          mkdir -pv libltdl/loaders/.deps; \
-        elif test -d libtool_gnu/libltdl/loaders && test -w libtool_gnu/libltdl/loaders && test ! -d libtool_gnu/libltdl/loaders/.deps; then \
-          mkdir -pv libtool_gnu/libltdl/loaders/.deps; \
-        elif test -d loaders && test -w loaders && test ! -d loaders/.deps; then \
-          mkdir -pv loaders/.deps; \
-        fi; \
+        fi
+        for subdir in libltdl libltdl/loaders libtool_gnu/libltdl/loaders loaders; do \
+          if test -d "${subdir}" && test -w "${subdir}" && test ! -d "${subdir}"/.deps; then \
+            mkdir -pv "${subdir}"/.deps; \
+          fi; \
+          if test -r "${subdir}"/Makefile && test -s "${subdir}"/Makefile && test -w "${subdir}"; then \
+            pushd "${subdir}"; \
+            echo "attempting to ensure depfiles are fine in ${subdir}..."; \
+            make am--depfiles || make am--refresh || make distdir-am || stat Makefile; \
+            popd; \
+          fi; \
+        done
         echo "hopefully libtool_gnu timestamps will be fine..."
     - name: Full build to get anything that might have been missed
       run: |

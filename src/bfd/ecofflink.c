@@ -2361,7 +2361,10 @@ lookup_line(bfd *abfd, struct ecoff_debug_info *const debug_info,
 
 	  if (buffer != NULL)
 	    strncpy(buffer, function_name, len);
-	  colon = strchr(buffer, ':');
+          if (buffer != NULL)
+	    colon = strchr(buffer, ':');
+     	  else
+            colon = NULL;
 	  if (colon != NULL)
 	    *colon = '\0';
 	  line_info->cache.functionname = buffer;
@@ -2373,9 +2376,9 @@ lookup_line(bfd *abfd, struct ecoff_debug_info *const debug_info,
 	    line_info->cache.filename = main_file_name;
 	  else
 	    {
-	      sprintf (buffer + funclen, "%s%s", directory_name,
-		       main_file_name);
-	      line_info->cache.filename = buffer + funclen;
+	      sprintf((buffer + funclen), "%s%s", directory_name,
+		      main_file_name);
+	      line_info->cache.filename = (buffer + funclen);
 	    }
 	}
     }
@@ -2386,8 +2389,8 @@ lookup_line(bfd *abfd, struct ecoff_debug_info *const debug_info,
 /* Do the work of find_nearest_line: */
 bfd_boolean
 _bfd_ecoff_locate_line(bfd *abfd, asection *section, bfd_vma offset,
-                       struct ecoff_debug_info * const debug_info,
-                       const struct ecoff_debug_swap * const debug_swap,
+                       struct ecoff_debug_info *const debug_info,
+                       const struct ecoff_debug_swap *const debug_swap,
                        struct ecoff_find_line *line_info,
                        const char **filename_ptr,
                        const char **functionname_ptr,

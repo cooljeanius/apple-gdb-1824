@@ -702,34 +702,38 @@ mn10200_elf_relax_section(bfd *abfd, asection *sec,
 
 	 This happens when the bCC can't reach lab2 at assembly time,
 	 but due to other relaxations it can reach at link time.  */
-      if (ELF32_R_TYPE (irel->r_info) == (int) R_MN10200_PCREL8)
+      if (ELF32_R_TYPE(irel->r_info) == (int)R_MN10200_PCREL8)
 	{
 	  Elf_Internal_Rela *nrel;
 	  bfd_vma value = symval;
 	  unsigned char code;
 
-	  /* Deal with pc-relative gunk.  */
+	  /* Deal with pc-relative gunk: */
 	  value -= (sec->output_section->vma + sec->output_offset);
 	  value -= (irel->r_offset + 1);
 	  value += irel->r_addend;
 
-	  /* Do nothing if this reloc is the last byte in the section.  */
+   	  if (value == 0UL) {
+	    (void)value;
+     	  }
+
+	  /* Do nothing if this reloc is the last byte in the section: */
 	  if (irel->r_offset == sec->size)
 	    continue;
 
 	  /* See if the next instruction is an unconditional pc-relative
 	     branch, more often than not this test will fail, so we
 	     test it first to speed things up.  */
-	  code = bfd_get_8 (abfd, contents + irel->r_offset + 1);
+	  code = bfd_get_8(abfd, (contents + irel->r_offset + 1));
 	  if (code != 0xea)
 	    continue;
 
 	  /* Also make sure the next relocation applies to the next
 	     instruction and that it's a pc-relative 8 bit branch.  */
-	  nrel = irel + 1;
-	  if (nrel == irelend
-	      || irel->r_offset + 2 != nrel->r_offset
-	      || ELF32_R_TYPE (nrel->r_info) != (int) R_MN10200_PCREL8)
+	  nrel = (irel + 1);
+	  if ((nrel == irelend)
+	      || ((irel->r_offset + 2) != nrel->r_offset)
+	      || (ELF32_R_TYPE(nrel->r_info) != (int)R_MN10200_PCREL8))
 	    continue;
 
 	  /* Make sure our destination immediately follows the
@@ -745,7 +749,7 @@ mn10200_elf_relax_section(bfd *abfd, asection *sec,
 	     only occur on bCC and bCCx insns.  If they occured
 	     elsewhere, we'd need to know the start of this insn
 	     for this check to be accurate.  */
-	  code = bfd_get_8 (abfd, contents + irel->r_offset - 1);
+	  code = bfd_get_8(abfd, (contents + irel->r_offset - 1));
 	  if (code != 0xe0 && code != 0xe1 && code != 0xe2
 	      && code != 0xe3 && code != 0xe4 && code != 0xe5
 	      && code != 0xe6 && code != 0xe7 && code != 0xe8
@@ -756,8 +760,8 @@ mn10200_elf_relax_section(bfd *abfd, asection *sec,
 
 	  /* We also have to be sure there is no symbol/label
 	     at the unconditional branch.  */
-	  if (mn10200_elf_symbol_address_p (abfd, sec, isymbuf,
-					    irel->r_offset + 1))
+	  if (mn10200_elf_symbol_address_p(abfd, sec, isymbuf,
+					   (irel->r_offset + 1)))
 	    continue;
 
 	  /* Note that we have changed the relocs, section contents, and
