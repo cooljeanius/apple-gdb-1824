@@ -97,8 +97,35 @@ jobs:
         cd src/libtool_gnu
         if test -z "$(which autoconf)" || test ! -x "$(which autoconf)"; then \
           brew install autoconf@2.69 || brew install autoconf@2.13 || brew install m4 || ls "configure*"; \
+        else \
+          echo "autoconf available at $(which autoconf)"; \
         fi
         ./bootstrap || stat ./bootstrap || test -x ./bootstrap
+        if test libltdl/configure -ot libltdl/configure.ac; then \
+          if test -x libltdl/configure && test -s libltdl/configure; then \
+            touch libltdl/configure; \
+          elif test -x libltdl/configure~ && test -s libltdl/configure~; then \
+            cp -vf libltdl/configure~ libltdl/configure; \
+          elif test -x "$(which sync)"; then \
+            which sync && sync; \
+          else \
+            echo "configure-related timestamps might be off?"; \
+          fi; \
+        fi; \
+        if test libltdl/Makefile.in -ot libltdl/Makefile.am; then \
+          test -s libltdl/Makefile.in && touch libltdl/Makefile.in; \
+        fi; \
+        if test libltdl/Makefile -ot libltdl/Makefile.in; then \
+          test -s libltdl/Makefile && touch libltdl/Makefile; \
+        fi; \
+        if test -d libltdl/loaders && test -w libltdl/loaders && test ! -d libltdl/loaders/.deps; then \
+          mkdir -pv libltdl/loaders/.deps; \
+        elif test -d libtool_gnu/libltdl/loaders && test -w libtool_gnu/libltdl/loaders && test ! -d libtool_gnu/libltdl/loaders/.deps; then \
+          mkdir -pv libtool_gnu/libltdl/loaders/.deps; \
+        elif test -d loaders && test -w loaders && test ! -d loaders/.deps; then \
+          mkdir -pv loaders/.deps; \
+        fi; \
+        echo "hopefully libtool_gnu timestamps will be fine..."
     - name: Full build to get anything that might have been missed
       run: |
         cd src
@@ -106,28 +133,16 @@ jobs:
           echo "nproc says we can use $(nproc) build jobs"; \
           if test "$(nproc)" -eq 4; then \
             echo "special-casing the 4-job build case..."; \
-            (make -j"$(nproc)" || make -j2 || make || remake -dpPw || remake all-gdb); \
+            (make -j"$(nproc)" || make -j2 || make || remake -dpPw --verbosity=terse || remake --trace=noshell --verbosity=terse || remake all-gdb); \
           else
-            if test libtool_gnu/libltdl/configure -ot libtool_gnu/libltdl/configure.ac; then \
-              test -x libtool_gnu/libltdl/configure && test -s libtool_gnu/libltdl/configure && touch libtool_gnu/libltdl/configure; \
-            fi; \
-            if test libtool_gnu/libltdl/Makefile.in -ot libtool_gnu/libltdl/Makefile.am; then \
-              test -s libtool_gnu/libltdl/Makefile.in && touch libtool_gnu/libltdl/Makefile.in; \
-            fi; \
-            if test libtool_gnu/libltdl/Makefile -ot libtool_gnu/libltdl/Makefile.in; then \
-              test -s libtool_gnu/libltdl/Makefile && touch libtool_gnu/libltdl/Makefile; \
-            fi; \
-            if test -d libltdl/loaders && test -w libltdl/loaders && test ! -d libltdl/loaders/.deps; then \
-              mkdir -pv libltdl/loaders/.deps; \
-            fi; \
-            (make -j"$(nproc)" || make || remake -dpPw || remake --trace=read || remake all-gdb); \
+            (make -j"$(nproc)" || make || remake -dpPw --verbosity=terse || remake --trace=noshell --versbosity=terse || remake all-gdb); \
           fi; \
         elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
           echo "gnproc says we can use $(gnproc) build jobs"; \
-          (make -j"$(gnproc)" || make || remake -dpPw || remake --trace=read || remake all-gdb); \
+          (make -j"$(gnproc)" || make || remake -dpPw --verbosity=terse || remake --trace=noshell --verbosity=terse || remake all-gdb); \
         else \
           echo "on the slow path..."; \
-          (make || remake -dpPw || remake --trace=read || remake all-gdb); \
+          (make || remake -dpPw --verbosity=terse || remake --trace=noshell --verbosity=terse || remake all-gdb); \
         fi
     - run: cd src && make check-libiberty
     - run: cd src && sync && make -C tcl/unix tcltest && sync
