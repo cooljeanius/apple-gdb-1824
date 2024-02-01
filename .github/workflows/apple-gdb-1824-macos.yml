@@ -133,20 +133,21 @@ jobs:
     - name: Full build to get anything that might have been missed
       run: |
         cd src
+        touch config.log
         if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
           echo "nproc says we can use $(nproc) build jobs"; \
           if test "$(nproc)" -eq 4; then \
             echo "special-casing the 4-job build case..."; \
-            (make -j"$(nproc)" || make -j2 || make || remake -dpPw --verbosity=terse || remake --trace=noshell --verbosity=terse || remake all-gdb); \
+            (make -j"$(nproc)" || make -j2 || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear); \
           else
-            (make -j"$(nproc)" || make || remake -dpPw --verbosity=terse || remake --trace=noshell --versbosity=terse || remake all-gdb); \
+            (make -j"$(nproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --versbosity=terse >>config.log || remake all-gdb >>config.log || clear); \
           fi; \
         elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
           echo "gnproc says we can use $(gnproc) build jobs"; \
-          (make -j"$(gnproc)" || make || remake -dpPw --verbosity=terse || remake --trace=noshell --verbosity=terse || remake all-gdb); \
+          (make -j"$(gnproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear); \
         else \
           echo "on the slow path..."; \
-          (make || remake -dpPw --verbosity=terse || remake --trace=noshell --verbosity=terse || remake all-gdb); \
+          (make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear); \
         fi
     - run: cd src && make check-libiberty
     - run: cd src && sync && make -C tcl/unix tcltest && sync
