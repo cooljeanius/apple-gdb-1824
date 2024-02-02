@@ -103,7 +103,11 @@ jobs:
         if test -z "$(which gm4)" || test ! -x "$(which gm4)"; then \
           brew install m4 || brew analytics on || find . -name '*.m4' -print; \
         else \
-          echo "gm4 available at $(which gm4)"; \
+          sync && echo "the following gm4 binaries are available"; \
+          which -a gm4 || gwhich -a gm4 || type gm4; \
+          echo "...and the first of them has the following information"; \
+          sync && gm4 --version; \
+          sync && gm4 --help; \
         fi
         ./bootstrap || stat ./bootstrap || test -x ./bootstrap
         if test libltdl/configure -ot libltdl/configure.ac; then \
@@ -131,7 +135,7 @@ jobs:
           elif test -r "${subdir}"; then \
             find "${subdir}" -name '*.Plo' -print; \
           elif test -x "$(which sync)"; then \
-            sync; \
+            sync && pwd; \
           fi; \
           if test -r "${subdir}"/Makefile && test -s "${subdir}"/Makefile && test -w "${subdir}"; then \
             pushd "${subdir}"; \
@@ -139,7 +143,7 @@ jobs:
             make am--depfiles || make am--refresh || make distdir-am || stat Makefile; \
             popd; \
           else \
-            echo "no usable Makefile found in ${subdir}"; \
+            sync && echo "no usable Makefile found in ${subdir}"; \
           fi; \
         done
         sync && echo "hopefully libtool_gnu timestamps will be fine..."
@@ -153,7 +157,7 @@ jobs:
             echo "special-casing the 4-job build case..."; \
             (make -j"$(nproc)" || make -j2 || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
           else
-            (make -j"$(nproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --versbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
+            (make -j"$(nproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
           fi; \
         elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
           echo "gnproc says we can use $(gnproc) build jobs"; \

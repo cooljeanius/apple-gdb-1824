@@ -691,9 +691,15 @@ mn10300_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
 
   symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
   sym_hashes = elf_sym_hashes(abfd);
-  sym_hashes_end = (sym_hashes + (symtab_hdr->sh_size / sizeof(Elf32_External_Sym)));
-  if (!elf_bad_symtab (abfd))
+  sym_hashes_end = (sym_hashes + (symtab_hdr->sh_size
+  				  / sizeof(Elf32_External_Sym)));
+  if (!elf_bad_symtab(abfd)) {
     sym_hashes_end -= symtab_hdr->sh_info;
+  }
+
+  if (sym_hashes_end == NULL) {
+    (void)sym_hashes_end;
+  }
 
   dynobj = elf_hash_table(info)->dynobj;
   local_got_offsets = elf_local_got_offsets(abfd);
@@ -703,7 +709,7 @@ mn10300_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
       struct elf_link_hash_entry *h;
       unsigned long r_symndx;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
       if (r_symndx < symtab_hdr->sh_info)
 	h = NULL;
       else
@@ -711,13 +717,13 @@ mn10300_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
 	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
 	  while (h->root.type == bfd_link_hash_indirect
 		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	}
 
-      /* Some relocs require a global offset table.  */
+      /* Some relocs require a global offset table: */
       if (dynobj == NULL)
 	{
-	  switch (ELF32_R_TYPE (rel->r_info))
+	  switch (ELF32_R_TYPE(rel->r_info))
 	    {
 	    case R_MN10300_GOT32:
 	    case R_MN10300_GOT24:
@@ -727,8 +733,8 @@ mn10300_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
 	    case R_MN10300_GOTOFF16:
 	    case R_MN10300_GOTPC32:
 	    case R_MN10300_GOTPC16:
-	      elf_hash_table (info)->dynobj = dynobj = abfd;
-	      if (! _bfd_mn10300_elf_create_got_section (dynobj, info))
+	      elf_hash_table(info)->dynobj = dynobj = abfd;
+	      if (!_bfd_mn10300_elf_create_got_section(dynobj, info))
 		return FALSE;
 	      break;
 
@@ -737,7 +743,7 @@ mn10300_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
 	    }
 	}
 
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
 	{
 	/* This relocation describes the C++ object vtable hierarchy.
 	   Reconstruct it for later use during GC.  */
@@ -2608,34 +2614,38 @@ mn10300_elf_relax_section(bfd *abfd, asection *sec,
 
 	 This happens when the bCC can't reach lab2 at assembly time,
 	 but due to other relaxations it can reach at link time.  */
-      if (ELF32_R_TYPE (irel->r_info) == (int) R_MN10300_PCREL8)
+      if (ELF32_R_TYPE(irel->r_info) == (int)R_MN10300_PCREL8)
 	{
 	  Elf_Internal_Rela *nrel;
 	  bfd_vma value = symval;
 	  unsigned char code;
 
-	  /* Deal with pc-relative gunk.  */
+	  /* Deal with pc-relative gunk: */
 	  value -= (sec->output_section->vma + sec->output_offset);
 	  value -= irel->r_offset;
 	  value += irel->r_addend;
 
-	  /* Do nothing if this reloc is the last byte in the section.  */
+   	  if (value == 0UL) {
+            (void)value;
+          }
+
+	  /* Do nothing if this reloc is the last byte in the section: */
 	  if (irel->r_offset == sec->size)
 	    continue;
 
 	  /* See if the next instruction is an unconditional pc-relative
 	     branch, more often than not this test will fail, so we
 	     test it first to speed things up.  */
-	  code = bfd_get_8 (abfd, contents + irel->r_offset + 1);
+	  code = bfd_get_8(abfd, (contents + irel->r_offset + 1));
 	  if (code != 0xca)
 	    continue;
 
 	  /* Also make sure the next relocation applies to the next
 	     instruction and that it's a pc-relative 8 bit branch.  */
-	  nrel = irel + 1;
-	  if (nrel == irelend
-	      || irel->r_offset + 2 != nrel->r_offset
-	      || ELF32_R_TYPE (nrel->r_info) != (int) R_MN10300_PCREL8)
+	  nrel = (irel + 1);
+	  if ((nrel == irelend)
+	      || ((irel->r_offset + 2) != nrel->r_offset)
+	      || (ELF32_R_TYPE(nrel->r_info) != (int)R_MN10300_PCREL8))
 	    continue;
 
 	  /* Make sure our destination immediately follows the

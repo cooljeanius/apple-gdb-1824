@@ -3932,7 +3932,7 @@ map_sections_to_segments(bfd *abfd)
 	goto error_return;
       m->next = NULL;
       m->p_type = PT_GNU_STACK;
-      m->p_flags = elf_tdata (abfd)->stack_flags;
+      m->p_flags = elf_tdata(abfd)->stack_flags;
       m->p_flags_valid = 1;
 
       *pm = m;
@@ -3952,6 +3952,9 @@ map_sections_to_segments(bfd *abfd)
 
       *pm = m;
       pm = &m->next;
+      if (pm == NULL) {
+        (void)pm;
+      }
     }
 
   free(sections);
@@ -3966,13 +3969,12 @@ map_sections_to_segments(bfd *abfd)
   return FALSE;
 }
 
-/* Sort sections by address.  */
-
+/* Sort sections by address: */
 static int
-elf_sort_sections (const void *arg1, const void *arg2)
+elf_sort_sections(const void *arg1, const void *arg2)
 {
-  const asection *sec1 = *(const asection **) arg1;
-  const asection *sec2 = *(const asection **) arg2;
+  const asection *sec1 = *(const asection **)arg1;
+  const asection *sec2 = *(const asection **)arg2;
   bfd_size_type size1, size2;
 
   /* Sort by LMA first, since this is the address used to

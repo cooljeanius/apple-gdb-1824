@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-31 17:52-0500\n"
+"POT-Creation-Date: 2024-02-01 20:23-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -676,7 +676,7 @@ msgid ""
 "pie\n"
 msgstr ""
 
-#: elf-m10200.c:415 elf-m10300.c:1519 elf32-arm.c:4236 elf32-avr.c:874
+#: elf-m10200.c:415 elf-m10300.c:1525 elf32-arm.c:4236 elf32-avr.c:874
 #: elf32-bfin.c:3205 elf32-cr16.c:1484 elf32-cr16c.c:776 elf32-cris.c:1502
 #: elf32-crx.c:915 elf32-d10v.c:539 elf32-epiphany.c:557 elf32-fr30.c:569
 #: elf32-frv.c:4080 elf32-h8300.c:494 elf32-i860.c:1178 elf32-ip2k.c:1465
@@ -689,7 +689,7 @@ msgstr ""
 msgid "internal error: out of range error"
 msgstr ""
 
-#: elf-m10200.c:419 elf-m10300.c:1523 elf32-arm.c:4240 elf32-avr.c:878
+#: elf-m10200.c:419 elf-m10300.c:1529 elf32-arm.c:4240 elf32-avr.c:878
 #: elf32-bfin.c:3209 elf32-cr16.c:1488 elf32-cr16c.c:780 elf32-cris.c:1506
 #: elf32-crx.c:919 elf32-d10v.c:543 elf32-fr30.c:573 elf32-frv.c:4084
 #: elf32-h8300.c:498 elf32-i860.c:1182 elf32-iq2000.c:622 elf32-lm32.c:1164
@@ -701,7 +701,7 @@ msgstr ""
 msgid "internal error: unsupported relocation error"
 msgstr ""
 
-#: elf-m10200.c:423 elf-m10300.c:1527 elf32-arm.c:4244 elf32-cr16.c:1492
+#: elf-m10200.c:423 elf-m10300.c:1533 elf32-arm.c:4244 elf32-cr16.c:1492
 #: elf32-cr16c.c:784 elf32-crx.c:923 elf32-d10v.c:547 elf32-h8300.c:502
 #: elf32-lm32.c:1168 elf32-m32r.c:3098 elf32-m68hc1x.c:1216
 #: elf32-microblaze.c:1568 elf32-nds32.c:4920 elf32-score.c:2747
@@ -709,7 +709,7 @@ msgstr ""
 msgid "internal error: dangerous error"
 msgstr ""
 
-#: elf-m10200.c:427 elf-m10300.c:1531 elf32-arm.c:4248 elf32-avr.c:886
+#: elf-m10200.c:427 elf-m10300.c:1537 elf32-arm.c:4248 elf32-avr.c:886
 #: elf32-bfin.c:3217 elf32-cr16.c:1496 elf32-cr16c.c:788 elf32-cris.c:1514
 #: elf32-crx.c:927 elf32-d10v.c:551 elf32-epiphany.c:572 elf32-fr30.c:581
 #: elf32-frv.c:4092 elf32-h8300.c:506 elf32-i860.c:1190 elf32-ip2k.c:1480
@@ -722,7 +722,7 @@ msgstr ""
 msgid "internal error: unknown error"
 msgstr ""
 
-#: elf-m10300.c:1469 elf32-m32r.c:2633 elf64-sh64.c:1629
+#: elf-m10300.c:1475 elf32-m32r.c:2633 elf64-sh64.c:1629
 #, c-format
 msgid ""
 "%s: warning: unresolvable relocation against symbol `%s' from %s section"
@@ -789,42 +789,42 @@ msgstr ""
 msgid "%B: sh_link of section `%A' points to discarded section `%A' of `%B'"
 msgstr ""
 
-#: elf.c:4137
+#: elf.c:4139
 msgid "%B: Not enough room for program headers (allocated %u, need %u)"
 msgstr ""
 
-#: elf.c:4240
+#: elf.c:4242
 msgid ""
 "%B: The 1st section in the PT_DYNAMIC segment is not the .dynamic section"
 msgstr ""
 
-#: elf.c:4288
+#: elf.c:4290
 msgid "%B: Not enough room for program headers, try linking with -N"
 msgstr ""
 
-#: elf.c:4379
+#: elf.c:4381
 msgid "%B: section %A lma 0x%lx overlaps previous sections"
 msgstr ""
 
-#: elf.c:4780
+#: elf.c:4782
 msgid "%B: warning: allocated section `%s' not in segment"
 msgstr ""
 
-#: elf.c:5084
+#: elf.c:5086
 msgid "%B: symbol `%s' required but not present"
 msgstr ""
 
-#: elf.c:5383
+#: elf.c:5385
 msgid "%B: warning: Empty loadable segment detected, is this intentional ?\n"
 msgstr ""
 
-#: elf.c:6006
+#: elf.c:6008
 #, c-format
 msgid ""
 "Unable to find equivalent output section for symbol '%s' from section '%s'"
 msgstr ""
 
-#: elf.c:6977
+#: elf.c:6979
 msgid "%B: unsupported relocation type %s"
 msgstr ""
 
