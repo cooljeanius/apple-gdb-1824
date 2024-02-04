@@ -1,4 +1,4 @@
-/* BFD support for the OpenRISC 1000 architecture.
+/* cpu-or1k.c: BFD support for the OpenRISC 1000 architecture.
    Copyright 2002-2014 Free Software Foundation, Inc.
    Contributed for OR32 by Ivan Guzvinec  <ivang@opencores.org>
 
@@ -24,8 +24,10 @@
 #include "bfd.h"
 #include "libbfd.h"
 
+#if !defined(__cplusplus) || !__cplusplus
 const bfd_arch_info_type bfd_or1k_arch;
 const bfd_arch_info_type bfd_or1knd_arch;
+#endif /* !__cplusplus */
 
 const bfd_arch_info_type bfd_or1k_arch =
   {

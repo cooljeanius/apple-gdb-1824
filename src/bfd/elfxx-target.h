@@ -528,9 +528,22 @@
 #define elf_backend_sign_extend_vma 0
 #endif
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 #ifndef elf_backend_link_order_error_handler
 #define elf_backend_link_order_error_handler _bfd_default_error_handler
 #endif
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
 #ifndef elf_backend_common_definition
 #define elf_backend_common_definition _bfd_elf_common_definition
@@ -551,6 +564,12 @@
 extern const struct elf_size_info _bfd_elfNN_size_info;
 
 #ifndef INCLUDED_TARGET_FILE
+# if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#  if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#   pragma GCC diagnostic push
+#   pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
+#  endif /* gcc 4.6+ */
+# endif /* any gcc */
 static const struct elf_backend_data elfNN_bed =
 {
   ELF_ARCH,			/* arch */
@@ -648,6 +667,11 @@ static const struct elf_backend_data elfNN_bed =
   elf_backend_want_p_paddr_set_to_zero,
   0U /* padding */
 };
+# if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#  if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#   pragma GCC diagnostic pop
+#  endif /* gcc 4.6+ */
+# endif /* any gcc */
 #else
 # ifdef elf_backend_reloc_type_class
 #  undef elf_backend_reloc_type_class

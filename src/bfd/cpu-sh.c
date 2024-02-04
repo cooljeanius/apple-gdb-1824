@@ -454,7 +454,8 @@ sh_get_bfd_mach_from_arch_set (unsigned int arch_set)
 
   while (bfd_to_arch_table[i].bfd_mach != 0)
     {
-      unsigned int attempt = (bfd_to_arch_table[i].arch_up & co_mask);
+      unsigned int attempt =
+        (unsigned int)(bfd_to_arch_table[i].arch_up & co_mask);
 
       /* Conceptually: Find the architecture with the least number
 	 of extra features or, if they have the same number, then

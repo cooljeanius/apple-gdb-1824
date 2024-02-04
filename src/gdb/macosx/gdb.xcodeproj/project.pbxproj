@@ -634,6 +634,8 @@
 		A53F05201B45F8A7005B5360 /* xvasprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC1801A3F4517002F20B2 /* xvasprintf.c */; };
 		A53F07981B4636C9005B5360 /* libiberty.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A53F04941B45F52C005B5360 /* libiberty.a */; };
 		A53F07991B4636E1005B5360 /* test-expandargv.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC3431A410A84002F20B2 /* test-expandargv.c */; };
+		A5560D192B6F262D003AFA76 /* elf32-epiphany.c in Sources */ = {isa = PBXBuildFile; fileRef = A5560D182B6F262D003AFA76 /* elf32-epiphany.c */; };
+		A5560D1B2B6F3111003AFA76 /* cpu-or1k.c in Sources */ = {isa = PBXBuildFile; fileRef = A5560D1A2B6F3111003AFA76 /* cpu-or1k.c */; };
 		A589CB5B1A30F16700E717B9 /* cpcg.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB4F1A30EF6400E717B9 /* cpcg.c */; };
 		A589CB5C1A30F16700E717B9 /* cpfork.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB501A30EF6400E717B9 /* cpfork.c */; };
 		A589CB681A30F23F00E717B9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A589CB671A30F23F00E717B9 /* ApplicationServices.framework */; };
@@ -4713,6 +4715,8 @@
 		A5558E9A1992ADDB00A45587 /* relocatable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = relocatable.c; sourceTree = "<group>"; };
 		A5558E9B1992ADDB00A45587 /* relocatable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = relocatable.h; sourceTree = "<group>"; };
 		A5558E9E1992B76300A45587 /* acconfig_obsolete.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = acconfig_obsolete.h; sourceTree = "<group>"; };
+		A5560D182B6F262D003AFA76 /* elf32-epiphany.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "elf32-epiphany.c"; sourceTree = "<group>"; };
+		A5560D1A2B6F3111003AFA76 /* cpu-or1k.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cpu-or1k.c"; sourceTree = "<group>"; };
 		A56E58EF1B210132005E1D43 /* calc.1 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.man; path = calc.1; sourceTree = "<group>"; };
 		A56E58F01B210132005E1D43 /* calc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = calc.c; sourceTree = "<group>"; };
 		A56E597A1B210132005E1D43 /* dejagnu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dejagnu.h; sourceTree = "<group>"; };
@@ -6388,6 +6392,7 @@
 				2609CED00E82C407008125DE /* cpu-msp430.c */,
 				2609CED10E82C407008125DE /* cpu-ns32k.c */,
 				2609CED20E82C407008125DE /* cpu-openrisc.c */,
+				A5560D1A2B6F3111003AFA76 /* cpu-or1k.c */,
 				2609CED30E82C407008125DE /* cpu-or32.c */,
 				2609CED40E82C407008125DE /* cpu-pdp11.c */,
 				2609CED50E82C407008125DE /* cpu-pj.c */,
@@ -6443,6 +6448,7 @@
 				2609CF0F0E82C407008125DE /* elf32-d10v.c */,
 				2609CF100E82C407008125DE /* elf32-d30v.c */,
 				2609CF110E82C407008125DE /* elf32-dlx.c */,
+				A5560D182B6F262D003AFA76 /* elf32-epiphany.c */,
 				2609CF120E82C407008125DE /* elf32-fr30.c */,
 				2609CF130E82C407008125DE /* elf32-frv.c */,
 				2609CF140E82C407008125DE /* elf32-gen.c */,
@@ -14338,6 +14344,7 @@
 				61D220D0192D613F00FA979E /* cpu-tic4x.c in Sources */,
 				61D220D1192D613F00FA979E /* cpu-tic54x.c in Sources */,
 				61D220D2192D613F00FA979E /* cpu-tic80.c in Sources */,
+				A5560D192B6F262D003AFA76 /* elf32-epiphany.c in Sources */,
 				61D220D3192D613F00FA979E /* cpu-v850.c in Sources */,
 				61D220D4192D613F00FA979E /* cpu-vax.c in Sources */,
 				61D220D5192D613F00FA979E /* cpu-w65.c in Sources */,
@@ -14370,6 +14377,7 @@
 				61D220F6192D617D00FA979E /* elf32-d10v.c in Sources */,
 				61D220F7192D617D00FA979E /* elf32-d30v.c in Sources */,
 				61D220F8192D617D00FA979E /* elf32-dlx.c in Sources */,
+				A5560D1B2B6F3111003AFA76 /* cpu-or1k.c in Sources */,
 				61D220F9192D617D00FA979E /* elf32-fr30.c in Sources */,
 				61D220FA192D617D00FA979E /* elf32-frv.c in Sources */,
 				61D220FB192D617D00FA979E /* elf32-gen.c in Sources */,

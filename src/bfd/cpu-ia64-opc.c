@@ -84,19 +84,19 @@ ext_reg(const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
 static const char*
 ins_immu(const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 {
-  ia64_insn new = 0;
+  ia64_insn new_insn = 0UL;
   int i;
 
   for (i = 0; i < NELEMS (self->field) && self->field[i].bits; ++i)
     {
-      new |= ((value & ((((ia64_insn) 1) << self->field[i].bits) - 1))
-	      << self->field[i].shift);
+      new_insn |= ((value & ((((ia64_insn) 1) << self->field[i].bits) - 1))
+	           << self->field[i].shift);
       value >>= self->field[i].bits;
     }
   if (value)
     return "integer operand out of range";
 
-  *code |= new;
+  *code |= new_insn;
   return 0;
 }
 
@@ -146,22 +146,23 @@ ins_imms_scaled(const struct ia64_operand *self, ia64_insn value,
                 ia64_insn *code, int scale)
 {
   BFD_HOST_64_BIT svalue = (BFD_HOST_64_BIT)value, sign_bit = 0;
-  ia64_insn new = 0;
+  ia64_insn new_insn = 0UL;
   int i;
 
   svalue >>= scale;
 
   for (i = 0; (i < NELEMS(self->field)) && self->field[i].bits; ++i)
     {
-      new |= (((ia64_insn)svalue & ((((ia64_insn)1) << self->field[i].bits) - 1))
-	      << self->field[i].shift);
+      new_insn |=
+        (((ia64_insn)svalue & ((((ia64_insn)1) << self->field[i].bits) - 1))
+         << self->field[i].shift);
       sign_bit = ((svalue >> (self->field[i].bits - 1)) & 1);
       svalue >>= self->field[i].bits;
     }
   if ((!sign_bit && svalue != 0) || (sign_bit && svalue != -1))
     return "integer operand out of range";
 
-  *code |= new;
+  *code |= new_insn;
   return 0;
 }
 
@@ -176,8 +177,9 @@ ext_imms_scaled(const struct ia64_operand *self, ia64_insn code,
   for (i = 0; (i < NELEMS(self->field)) && self->field[i].bits; ++i)
     {
       bits = self->field[i].bits;
-      val |= (((code >> self->field[i].shift)
-               & ((((BFD_HOST_U_64_BIT)1) << bits) - 1)) << total);
+      val |=
+        (BFD_HOST_64_BIT)(((code >> self->field[i].shift)
+               		  & ((((BFD_HOST_U_64_BIT)1) << bits) - 1)) << total);
       total += bits;
     }
   /* sign extend: */

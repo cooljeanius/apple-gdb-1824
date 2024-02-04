@@ -408,6 +408,7 @@ CODE_FRAGMENT
 . {*FIXME: attaching a format attribute to this leads to new warnings:*}
 .typedef void (*bfd_error_handler_type)(const char *, ...)
 .  {*ATTRIBUTE_FPTR_PRINTF_1*};
+. {* see GCC bug 47781: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47781 *}
 .
 */
 

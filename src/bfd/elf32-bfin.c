@@ -364,7 +364,7 @@ bfin_bfd_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol,
       {
         char x = (char)bfd_get_8(abfd, ((char *)data + addr));
         DOIT(x);
-        bfd_put_8(abfd, x, ((unsigned char *)data + addr));
+        bfd_put_8(abfd, (unsigned char)x, ((unsigned char *)data + addr));
       }
       break;
 

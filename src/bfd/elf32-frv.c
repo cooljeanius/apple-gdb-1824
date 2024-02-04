@@ -3516,6 +3516,7 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_FRV_GOT12:
 	case R_FRV_GOTHI:
 	case R_FRV_GOTLO:
+	  BFD_ASSERT(picrel != NULL);
 	  relocation = picrel->got_entry;
 	  check_segment[0] = check_segment[1] = got_segment;
 	  break;
@@ -3523,6 +3524,7 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_FRV_FUNCDESC_GOT12:
 	case R_FRV_FUNCDESC_GOTHI:
 	case R_FRV_FUNCDESC_GOTLO:
+	  BFD_ASSERT(picrel != NULL);
 	  relocation = picrel->fdgot_entry;
 	  check_segment[0] = check_segment[1] = got_segment;
 	  break;
@@ -3542,6 +3544,7 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_FRV_FUNCDESC_GOTOFF12:
 	case R_FRV_FUNCDESC_GOTOFFHI:
 	case R_FRV_FUNCDESC_GOTOFFLO:
+	  BFD_ASSERT(picrel != NULL);
 	  relocation = picrel->fd_entry;
 	  check_segment[0] = check_segment[1] = got_segment;
 	  break;
@@ -3586,7 +3589,8 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  {
 		    /* Otherwise, we know we have a private function
 		       descriptor, so reference it directly.  */
-		    BFD_ASSERT (picrel->privfd);
+                    BFD_ASSERT(picrel != NULL);
+		    BFD_ASSERT(picrel->privfd);
 		    r_type = R_FRV_32;
 		    dynindx = elf_section_data (frvfdpic_got_section (info)
 						->output_section)->dynindx;
@@ -3836,11 +3840,12 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  break;
 
 	case R_FRV_GETTLSOFF:
-	  relocation = frvfdpic_plt_section (info)->output_section->vma
-	    + frvfdpic_plt_section (info)->output_offset
-	    + picrel->tlsplt_entry;
-	  BFD_ASSERT (picrel->tlsplt_entry != (bfd_vma)-1
-		      && picrel->tlsdesc_entry);
+	  BFD_ASSERT(picrel != NULL);
+	  relocation = (frvfdpic_plt_section(info)->output_section->vma
+	    		+ frvfdpic_plt_section(info)->output_offset
+	    		+ picrel->tlsplt_entry);
+	  BFD_ASSERT((picrel->tlsplt_entry != (bfd_vma)-1)
+		     && picrel->tlsdesc_entry);
 	  check_segment[0] = isec_segment;
 	  check_segment[1] = plt_segment;
 	  break;
@@ -3848,7 +3853,8 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_FRV_GOTTLSDESC12:
 	case R_FRV_GOTTLSDESCHI:
 	case R_FRV_GOTTLSDESCLO:
-	  BFD_ASSERT (picrel->tlsdesc_entry);
+	  BFD_ASSERT(picrel != NULL);
+	  BFD_ASSERT(picrel->tlsdesc_entry);
 	  relocation = picrel->tlsdesc_entry;
 	  check_segment[0] = tls_segment;
 	  check_segment[1] = sec
@@ -3884,7 +3890,8 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_FRV_GOTTLSOFF12:
 	case R_FRV_GOTTLSOFFHI:
 	case R_FRV_GOTTLSOFFLO:
-	  BFD_ASSERT (picrel->tlsoff_entry);
+	  BFD_ASSERT(picrel != NULL);
+	  BFD_ASSERT(picrel->tlsoff_entry);
 	  relocation = picrel->tlsoff_entry;
 	  check_segment[0] = tls_segment;
 	  check_segment[1] = sec
@@ -4104,6 +4111,8 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	  if (! r)
 	    return FALSE;
 	}
+      if (! r)
+        (void)r;
     }
 
   return TRUE;
@@ -4926,6 +4935,9 @@ _frvfdpic_compute_got_alloc_data (struct _frvfdpic_dynamic_got_alloc_data *gad,
 	fds = fdplt;
 
       fdplt -= fds;
+      if (fdplt == 0UL) {
+        (void)fdplt;
+      }
       gad->max += fds;
       gad->tmax += fds;
       gad->fdplt += fds;
@@ -4934,12 +4946,12 @@ _frvfdpic_compute_got_alloc_data (struct _frvfdpic_dynamic_got_alloc_data *gad,
   /* If there is space left and we have TLS descriptors referenced in
      PLT entries that could take advantage of shorter offsets, place
      them now.  */
-  if (tlsdplt && gad->tmin > wrapmin)
+  if (tlsdplt && (gad->tmin > wrapmin))
     {
       bfd_vma tlsds;
 
-      if ((bfd_vma) (gad->tmin - wrapmin) < tlsdplt)
-	tlsds = (gad->tmin - wrapmin) & ~ (tdescsz / 2);
+      if ((bfd_vma)(gad->tmin - wrapmin) < tlsdplt)
+	tlsds = ((gad->tmin - wrapmin) & ~(tdescsz / 2));
       else
 	tlsds = tlsdplt;
 
@@ -4958,12 +4970,15 @@ _frvfdpic_compute_got_alloc_data (struct _frvfdpic_dynamic_got_alloc_data *gad,
     {
       bfd_vma tlsds;
 
-      if ((bfd_vma) (wrap - gad->tmax) < tlsdplt)
-	tlsds = (wrap - gad->tmax) & ~ (tdescsz / 2);
+      if ((bfd_vma)(wrap - gad->tmax) < tlsdplt)
+	tlsds = (wrap - gad->tmax) & ~(tdescsz / 2);
       else
 	tlsds = tlsdplt;
 
       tlsdplt -= tlsds;
+      if (tlsdplt == 0UL) {
+        (void)tlsdplt;
+      }
       gad->tmax += tlsds;
       gad->tlsdplt += tlsds;
     }
@@ -6093,20 +6108,26 @@ elf32_frv_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
-  sym_hashes_end = sym_hashes + symtab_hdr->sh_size/sizeof(Elf32_External_Sym);
-  if (!elf_bad_symtab (abfd))
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
+  sym_hashes_end = (sym_hashes + (symtab_hdr->sh_size
+  				  / sizeof(Elf32_External_Sym)));
+  if (!elf_bad_symtab(abfd)) {
     sym_hashes_end -= symtab_hdr->sh_info;
+  }
 
-  dynobj = elf_hash_table (info)->dynobj;
-  rel_end = relocs + sec->reloc_count;
+  if (sym_hashes_end == NULL) {
+    (void)sym_hashes_end;
+  }
+
+  dynobj = elf_hash_table(info)->dynobj;
+  rel_end = (relocs + sec->reloc_count);
   for (rel = relocs; rel < rel_end; rel++)
     {
       struct elf_link_hash_entry *h;
       unsigned long r_symndx;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
       if (r_symndx < symtab_hdr->sh_info)
         h = NULL;
       else
@@ -6114,10 +6135,10 @@ elf32_frv_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
 	  while (h->root.type == bfd_link_hash_indirect
 		 || h->root.type == bfd_link_hash_warning)
-	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 	}
 
-      switch (ELF32_R_TYPE (rel->r_info))
+      switch (ELF32_R_TYPE(rel->r_info))
 	{
 	case R_FRV_GETTLSOFF:
 	case R_FRV_TLSDESC_VALUE:

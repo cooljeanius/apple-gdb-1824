@@ -1112,8 +1112,21 @@ struct elf_backend_data
 			       bfd_boolean *, bfd_boolean *,
 			       bfd *, asection **);
 
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
   /* Used to handle bad SHF_LINK_ORDER input.  */
   bfd_error_handler_type link_order_error_handler;
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
 
   /* Name of the PLT relocation section.  */
   const char *relplt_name;

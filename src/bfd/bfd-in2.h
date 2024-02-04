@@ -6442,6 +6442,7 @@ void bfd_perror (const char *message);
 
 typedef void (*bfd_error_handler_type)(const char *, ...)
   /*ATTRIBUTE_FPTR_PRINTF_1*/;
+ /* see GCC bug 47781: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47781 */
 
 bfd_error_handler_type bfd_set_error_handler (bfd_error_handler_type);
 
