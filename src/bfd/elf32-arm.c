@@ -3890,6 +3890,10 @@ elf32_arm_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
 	      h->got.offset |= 1;
 	    else
 	      local_got_offsets[r_symndx] |= 1;
+
+            if (cur_off == 0UL) {
+              (void)cur_off;
+            }
 	  }
 
 	if ((tls_type & GOT_TLS_GD) && (r_type != R_ARM_TLS_GD32))
@@ -4904,20 +4908,30 @@ elf32_arm_check_relocs(bfd *abfd, struct bfd_link_info *info,
   if (htab->root.is_relocatable_executable
       && ! htab->root.dynamic_sections_created)
     {
-      if (! _bfd_elf_link_create_dynamic_sections(abfd, info))
+      if (!_bfd_elf_link_create_dynamic_sections(abfd, info)) {
 	return FALSE;
+      }
     }
 
   dynobj = elf_hash_table(info)->dynobj;
   local_got_offsets = elf_local_got_offsets(abfd);
+
+  if (local_got_offsets == NULL) {
+    (void)local_got_offsets;
+  }
 
   symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
   sym_hashes = elf_sym_hashes(abfd);
   sym_hashes_end = (sym_hashes
                     + symtab_hdr->sh_size / sizeof(Elf32_External_Sym));
 
-  if (!elf_bad_symtab (abfd))
+  if (!elf_bad_symtab(abfd)) {
     sym_hashes_end -= symtab_hdr->sh_info;
+  }
+
+  if (sym_hashes_end == NULL) {
+    (void)sym_hashes_end;
+  }
 
   rel_end = (relocs + sec->reloc_count);
   for (rel = relocs; rel < rel_end; rel++)
@@ -6029,10 +6043,11 @@ elf32_arm_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
       srel = bfd_get_section_by_name(dynobj, ".rel.plt");
       BFD_ASSERT((splt != NULL) && (srel != NULL));
 
-      /* Fill in the entry in the procedure linkage table.  */
+      /* Fill in the entry in the procedure linkage table: */
       if (htab->symbian_p)
 	{
 	  unsigned int i;
+   	  BFD_ASSERT(output_bfd != NULL);
 	  for (i = 0; i < (htab->plt_entry_size / 4); ++i)
 	    bfd_put_32(output_bfd, elf32_arm_symbian_plt_entry[i],
                        (splt->contents + h->plt.offset + (4 * i)));

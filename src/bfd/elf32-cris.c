@@ -1,4 +1,4 @@
-/* CRIS-specific support for 32-bit ELF.
+/* elf32-cris.c: CRIS-specific support for 32-bit ELF.
    Copyright 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
    Contributed by Axis Communications AB.
@@ -19,13 +19,25 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
 #include "libbfd.h"
 #include "elf-bfd.h"
 #include "elf/cris.h"
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif /* HAVE_SYS_TYPES_H */
+
+#ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif /* HAVE_INTTYPES_H */
+
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif /* HAVE_STDINT_H */
 
 /* Forward declarations.  */
 static reloc_howto_type * cris_reloc_type_lookup
@@ -1573,11 +1585,11 @@ elf_cris_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
       asection *srela;
       bfd_vma got_base;
 
-      bfd_vma gotplt_offset
-	= ((struct elf_cris_link_hash_entry *) h)->gotplt_offset;
+      bfd_vma gotplt_offset =
+        ((struct elf_cris_link_hash_entry *)h)->gotplt_offset;
       Elf_Internal_Rela rela;
       bfd_byte *loc;
-      bfd_boolean has_gotplt = gotplt_offset != 0;
+      bfd_boolean has_gotplt = (gotplt_offset != 0);
 
       /* Get the index in the procedure linkage table which
 	 corresponds to this symbol.  This is the index of this symbol
@@ -1585,31 +1597,34 @@ elf_cris_finish_dynamic_symbol(bfd *output_bfd, struct bfd_link_info *info,
 	 first entry in the procedure linkage table is reserved.  */
       /* We have to count backwards here, and the result is only valid as
 	 an index into .got.plt and its relocations.  FIXME: Constants...  */
-      bfd_vma gotplt_index = gotplt_offset/4 - 3;
+      bfd_vma gotplt_index = ((gotplt_offset / 4UL) - 3UL);
 
       /* Get the offset into the .got table of the entry that corresponds
 	 to this function.  Note that we embed knowledge that "incoming"
 	 .got goes after .got.plt in the output without padding (pointer
 	 aligned).  However, that knowledge is present in several other
 	 places too.  */
-      bfd_vma got_offset
-	= (has_gotplt
-	   ? gotplt_offset
-	   : h->got.offset + elf_cris_hash_table(info)->next_gotplt_entry);
+      bfd_vma got_offset =
+        (has_gotplt
+         ? gotplt_offset
+         : (h->got.offset + elf_cris_hash_table(info)->next_gotplt_entry));
 
       /* This symbol has an entry in the procedure linkage table.  Set it
 	 up.  */
 
-      BFD_ASSERT (h->dynindx != -1);
+      BFD_ASSERT(h->dynindx != -1);
 
-      splt = bfd_get_section_by_name (dynobj, ".plt");
-      sgot = bfd_get_section_by_name (dynobj, ".got");
-      sgotplt = bfd_get_section_by_name (dynobj, ".got.plt");
-      srela = bfd_get_section_by_name (dynobj, ".rela.plt");
-      BFD_ASSERT (splt != NULL && sgotplt != NULL
-		  && (! has_gotplt || srela != NULL));
+      splt = bfd_get_section_by_name(dynobj, ".plt");
+      sgot = bfd_get_section_by_name(dynobj, ".got");
+      if (sgot == NULL) {
+        (void)sgot;
+      }
+      sgotplt = bfd_get_section_by_name(dynobj, ".got.plt");
+      srela = bfd_get_section_by_name(dynobj, ".rela.plt");
+      BFD_ASSERT((splt != NULL) && (sgotplt != NULL)
+		 && (!has_gotplt || (srela != NULL)));
 
-      got_base = sgotplt->output_section->vma + sgotplt->output_offset;
+      got_base = (sgotplt->output_section->vma + sgotplt->output_offset);
 
       /* Fill in the entry in the procedure linkage table.  */
       if (! info->shared)
@@ -2433,27 +2448,33 @@ cris_elf_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
   if (info->relocatable)
     return TRUE;
 
-  dynobj = elf_hash_table (info)->dynobj;
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
-  sym_hashes_end = sym_hashes + symtab_hdr->sh_size/sizeof (Elf32_External_Sym);
-  local_got_refcounts = elf_local_got_refcounts (abfd);
+  dynobj = elf_hash_table(info)->dynobj;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
+  sym_hashes_end = (sym_hashes + (symtab_hdr->sh_size
+  				  / sizeof(Elf32_External_Sym)));
+  local_got_refcounts = elf_local_got_refcounts(abfd);
 
   sgot = NULL;
   srelgot = NULL;
   sreloc = NULL;
 
-  if (!elf_bad_symtab (abfd))
+  if (!elf_bad_symtab(abfd)) {
     sym_hashes_end -= symtab_hdr->sh_info;
+  }
 
-  rel_end = relocs + sec->reloc_count;
+  if (sym_hashes_end == NULL) {
+    (void)sym_hashes_end;
+  }
+
+  rel_end = (relocs + sec->reloc_count);
   for (rel = relocs; rel < rel_end; rel++)
     {
       struct elf_link_hash_entry *h;
       unsigned long r_symndx;
       enum elf_cris_reloc_type r_type;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
       if (r_symndx < symtab_hdr->sh_info)
         h = NULL;
       else
@@ -3397,3 +3418,5 @@ elf_cris_reloc_type_class(const Elf_Internal_Rela *rela)
 #define elf_symbol_leading_char '_'
 
 #include "elf32-target.h"
+
+/* End of elf32-cris.c */

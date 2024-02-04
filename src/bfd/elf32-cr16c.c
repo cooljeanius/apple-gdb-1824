@@ -214,6 +214,10 @@ cr16c_elf_final_link_relocate(reloc_howto_type *howto, bfd *abfd,
   if (sym_sec)
     symbol = sym_sec->symbol;
 
+  if (symbol == NULL) {
+    (void)symbol;
+  }
+
   switch (format)
     {
     case R_NUMBER:

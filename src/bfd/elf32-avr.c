@@ -502,8 +502,13 @@ elf32_avr_check_relocs(bfd *abfd, struct bfd_link_info *info,
   sym_hashes = elf_sym_hashes(abfd);
   sym_hashes_end = (sym_hashes
                     + (symtab_hdr->sh_size / sizeof(Elf32_External_Sym)));
-  if (!elf_bad_symtab (abfd))
+  if (!elf_bad_symtab(abfd)) {
     sym_hashes_end -= symtab_hdr->sh_info;
+  }
+
+  if (sym_hashes_end == NULL) {
+    (void)sym_hashes_end;
+  }
 
   rel_end = (relocs + sec->reloc_count);
   for (rel = relocs; rel < rel_end; rel++)

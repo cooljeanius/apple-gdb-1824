@@ -4887,11 +4887,11 @@ prep_headers(bfd *abfd)
   i_ehdrp->e_phentsize = 0;
   i_ehdrp->e_phnum = 0;
 
-  /* Each bfd section is section header entry.  */
+  /* Each bfd section is section header entry: */
   i_ehdrp->e_entry = bfd_get_start_address(abfd);
   i_ehdrp->e_shentsize = bed->s->sizeof_shdr;
 
-  /* If we are building an executable, we will need a program header table.  */
+  /* If we are building an executable, we will need a program header table: */
   if (abfd->flags & EXEC_P)
     /* It all happens later.  */
     ;
@@ -4902,15 +4902,15 @@ prep_headers(bfd *abfd)
       i_ehdrp->e_phoff = 0;
     }
 
-  elf_tdata (abfd)->symtab_hdr.sh_name =
-    (unsigned int) _bfd_elf_strtab_add (shstrtab, ".symtab", FALSE);
-  elf_tdata (abfd)->strtab_hdr.sh_name =
-    (unsigned int) _bfd_elf_strtab_add (shstrtab, ".strtab", FALSE);
-  elf_tdata (abfd)->shstrtab_hdr.sh_name =
-    (unsigned int) _bfd_elf_strtab_add (shstrtab, ".shstrtab", FALSE);
-  if (elf_tdata (abfd)->symtab_hdr.sh_name == (unsigned int) -1
-      || elf_tdata (abfd)->symtab_hdr.sh_name == (unsigned int) -1
-      || elf_tdata (abfd)->shstrtab_hdr.sh_name == (unsigned int) -1)
+  elf_tdata(abfd)->symtab_hdr.sh_name =
+    (unsigned int)_bfd_elf_strtab_add(shstrtab, ".symtab", FALSE);
+  elf_tdata(abfd)->strtab_hdr.sh_name =
+    (unsigned int)_bfd_elf_strtab_add(shstrtab, ".strtab", FALSE);
+  elf_tdata(abfd)->shstrtab_hdr.sh_name =
+    (unsigned int)_bfd_elf_strtab_add(shstrtab, ".shstrtab", FALSE);
+  if ((elf_tdata(abfd)->symtab_hdr.sh_name == (unsigned int)-1)
+      || (elf_tdata(abfd)->symtab_hdr.sh_name == (unsigned int)-1)
+      || (elf_tdata(abfd)->shstrtab_hdr.sh_name == (unsigned int)-1))
     return FALSE;
 
   return TRUE;
@@ -4918,86 +4918,90 @@ prep_headers(bfd *abfd)
 
 /* Assign file positions for all the reloc sections which are not part
    of the loadable file image.  */
-
 void
-_bfd_elf_assign_file_positions_for_relocs (bfd *abfd)
+_bfd_elf_assign_file_positions_for_relocs(bfd *abfd)
 {
   file_ptr off;
   unsigned int i, num_sec;
   Elf_Internal_Shdr **shdrpp;
 
-  off = elf_tdata (abfd)->next_file_pos;
+  off = elf_tdata(abfd)->next_file_pos;
 
-  num_sec = elf_numsections (abfd);
-  for (i = 1, shdrpp = elf_elfsections (abfd) + 1; i < num_sec; i++, shdrpp++)
+  num_sec = elf_numsections(abfd);
+  for (i = 1, shdrpp = (elf_elfsections(abfd) + 1); i < num_sec; i++, shdrpp++)
     {
       Elf_Internal_Shdr *shdrp;
 
       shdrp = *shdrpp;
       if ((shdrp->sh_type == SHT_REL || shdrp->sh_type == SHT_RELA)
 	  && shdrp->sh_offset == -1)
-	off = _bfd_elf_assign_file_position_for_section (shdrp, off, TRUE);
+	off = _bfd_elf_assign_file_position_for_section(shdrp, off, TRUE);
     }
 
-  elf_tdata (abfd)->next_file_pos = off;
+  elf_tdata(abfd)->next_file_pos = off;
 }
 
+/* */
 bfd_boolean
-_bfd_elf_write_object_contents (bfd *abfd)
+_bfd_elf_write_object_contents(bfd *abfd)
 {
-  const struct elf_backend_data *bed = get_elf_backend_data (abfd);
+  const struct elf_backend_data *bed = get_elf_backend_data(abfd);
   Elf_Internal_Ehdr *i_ehdrp;
   Elf_Internal_Shdr **i_shdrp;
   bfd_boolean failed;
   unsigned int count, num_sec;
 
-  if (! abfd->output_has_begun
-      && ! _bfd_elf_compute_section_file_positions (abfd, NULL))
+  if (!abfd->output_has_begun
+      && !_bfd_elf_compute_section_file_positions(abfd, NULL))
     return FALSE;
 
-  i_shdrp = elf_elfsections (abfd);
-  i_ehdrp = elf_elfheader (abfd);
+  i_shdrp = elf_elfsections(abfd);
+  i_ehdrp = elf_elfheader(abfd);
+
+  if (i_ehdrp == NULL) {
+    (void)i_ehdrp;
+  }
 
   failed = FALSE;
-  bfd_map_over_sections (abfd, bed->s->write_relocs, &failed);
-	if (failed) {
-		return FALSE;
-	}
+  bfd_map_over_sections(abfd, bed->s->write_relocs, &failed);
+  if (failed) {
+    return FALSE;
+  }
 
-  _bfd_elf_assign_file_positions_for_relocs (abfd);
+  _bfd_elf_assign_file_positions_for_relocs(abfd);
 
-  /* After writing the headers, we need to write the sections too...  */
-  num_sec = elf_numsections (abfd);
+  /* After writing the headers, we need to write the sections, too: */
+  num_sec = elf_numsections(abfd);
   for (count = 1; count < num_sec; count++)
     {
       if (bed->elf_backend_section_processing)
-	(*bed->elf_backend_section_processing) (abfd, i_shdrp[count]);
+	(*bed->elf_backend_section_processing)(abfd, i_shdrp[count]);
       if (i_shdrp[count]->contents)
 	{
 	  bfd_size_type amt = i_shdrp[count]->sh_size;
 
-	  if (bfd_seek (abfd, i_shdrp[count]->sh_offset, SEEK_SET) != 0
-	      || bfd_bwrite (i_shdrp[count]->contents, amt, abfd) != amt)
+	  if ((bfd_seek(abfd, i_shdrp[count]->sh_offset, SEEK_SET) != 0)
+	      || (bfd_bwrite(i_shdrp[count]->contents, amt, abfd) != amt))
 	    return FALSE;
 	}
-		if (count == SHN_LORESERVE - 1) {
-			count += SHN_HIRESERVE + 1 - SHN_LORESERVE;
-		}
+      if (count == (SHN_LORESERVE - 1)) {
+        count += (SHN_HIRESERVE + 1 - SHN_LORESERVE);
+      }
     }
 
-  /* Write out the section header names.  */
-  if (elf_shstrtab (abfd) != NULL
-      && (bfd_seek (abfd, elf_tdata (abfd)->shstrtab_hdr.sh_offset, SEEK_SET) != 0
-          || ! _bfd_elf_strtab_emit (abfd, elf_shstrtab (abfd))))
+  /* Write out the section header names: */
+  if ((elf_shstrtab(abfd) != NULL)
+      && ((bfd_seek(abfd, elf_tdata(abfd)->shstrtab_hdr.sh_offset, SEEK_SET) != 0)
+          || !_bfd_elf_strtab_emit(abfd, elf_shstrtab(abfd))))
     return FALSE;
 
   if (bed->elf_backend_final_write_processing)
-    (*bed->elf_backend_final_write_processing) (abfd,
-						elf_tdata (abfd)->linker);
+    (*bed->elf_backend_final_write_processing)(abfd, elf_tdata(abfd)->linker);
 
-  return bed->s->write_shdrs_and_ehdr (abfd);
+  return bed->s->write_shdrs_and_ehdr(abfd);
 }
 
+/* */
 bfd_boolean
 _bfd_elf_write_corefile_contents(bfd *abfd)
 {
