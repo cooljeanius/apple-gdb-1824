@@ -550,8 +550,7 @@ ip2k_test_page_insn(bfd *abfd, asection *sec, Elf_Internal_Rela *irel,
 #define VALOFF     8
 #define STABSIZE   12
 
-/* Adjust all the relocations entries after adding or inserting instructions.  */
-
+/* Adjust all the relocations entries after adding or inserting instructions: */
 static void
 adjust_all_relocations(bfd *abfd, asection *sec, bfd_vma addr, bfd_vma endaddr,
                        int count, int noadj)
@@ -572,6 +571,10 @@ adjust_all_relocations(bfd *abfd, asection *sec, bfd_vma addr, bfd_vma endaddr,
   shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
   contents = elf_section_data(sec)->this_hdr.contents;
+
+  if (contents == NULL) {
+    (void)contents;
+  }
 
   irelbase = elf_section_data(sec)->relocs;
   irelend = (irelbase + sec->reloc_count);
@@ -1089,35 +1092,39 @@ ip2k_elf_relax_section (bfd *abfd,
       || (sec->flags & SEC_CODE) == 0)
     return TRUE;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
 
-  internal_relocs = _bfd_elf_link_read_relocs (abfd, sec, NULL, NULL,
-					       link_info->keep_memory);
+  internal_relocs = _bfd_elf_link_read_relocs(abfd, sec, NULL, NULL,
+					      link_info->keep_memory);
   if (internal_relocs == NULL)
     goto error_return;
 
-  /* Make sure the stac.rela stuff gets read in.  */
-  stab = bfd_get_section_by_name (abfd, ".stab");
+  /* Make sure the stac.rela stuff gets read in: */
+  stab = bfd_get_section_by_name(abfd, ".stab");
 
   if (stab)
     {
-      /* So stab does exits.  */
-      Elf_Internal_Rela * irelbase;
+      /* So stab does exits: */
+      Elf_Internal_Rela *irelbase;
 
-      irelbase = _bfd_elf_link_read_relocs (abfd, stab, NULL, NULL,
-					    link_info->keep_memory);
+      irelbase = _bfd_elf_link_read_relocs(abfd, stab, NULL, NULL,
+					   link_info->keep_memory);
+
+      if (irelbase == NULL) {
+        (void)irelbase;
+      }
     }
 
-  /* Get section contents cached copy if it exists.  */
+  /* Get section contents cached copy if it exists: */
   if (contents == NULL)
     {
-      /* Get cached copy if it exists.  */
-      if (elf_section_data (sec)->this_hdr.contents != NULL)
-	contents = elf_section_data (sec)->this_hdr.contents;
+      /* Get cached copy if it exists: */
+      if (elf_section_data(sec)->this_hdr.contents != NULL)
+	contents = elf_section_data(sec)->this_hdr.contents;
       else
 	{
-	  /* Go get them off disk.  */
-	  if (!bfd_malloc_and_get_section (abfd, sec, &contents))
+	  /* Go get them off disk: */
+	  if (!bfd_malloc_and_get_section(abfd, sec, &contents))
 	    goto error_return;
 	}
     }

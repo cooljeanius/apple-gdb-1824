@@ -2673,7 +2673,6 @@ frv_final_link_relocate(reloc_howto_type *howto, bfd *input_bfd,
    going to be the section symbol corresponding to the output
    section, which means that the addend must be adjusted
    accordingly.  */
-
 static bfd_boolean
 elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
                            bfd *input_bfd, asection *input_section,
@@ -2685,41 +2684,42 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
   struct elf_link_hash_entry **sym_hashes;
   Elf_Internal_Rela *rel;
   Elf_Internal_Rela *relend;
-  unsigned isec_segment, got_segment, plt_segment, gprel_segment, tls_segment,
-    check_segment[2];
+  unsigned int isec_segment, got_segment, plt_segment, gprel_segment;
+  unsigned int tls_segment;
+  unsigned int check_segment[2];
   int silence_segment_error = !(info->shared || info->pie);
   unsigned long insn;
 
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = & elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
-  relend     = relocs + input_section->reloc_count;
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
+  relend = (relocs + input_section->reloc_count);
 
-  isec_segment = _frvfdpic_osec_to_segment (output_bfd,
-					    input_section->output_section);
-  if (IS_FDPIC (output_bfd) && frvfdpic_got_section (info))
-    got_segment = _frvfdpic_osec_to_segment (output_bfd,
-					     frvfdpic_got_section (info)
-					     ->output_section);
+  isec_segment = _frvfdpic_osec_to_segment(output_bfd,
+					   input_section->output_section);
+  if (IS_FDPIC(output_bfd) && frvfdpic_got_section(info))
+    got_segment =
+      _frvfdpic_osec_to_segment(output_bfd,
+				frvfdpic_got_section(info)->output_section);
   else
     got_segment = -1;
-  if (IS_FDPIC (output_bfd) && frvfdpic_gotfixup_section (info))
-    gprel_segment = _frvfdpic_osec_to_segment (output_bfd,
-					       frvfdpic_gotfixup_section (info)
-					       ->output_section);
+  if (IS_FDPIC(output_bfd) && frvfdpic_gotfixup_section(info))
+    gprel_segment =
+      _frvfdpic_osec_to_segment(output_bfd,
+				frvfdpic_gotfixup_section(info)->output_section);
   else
     gprel_segment = -1;
-  if (IS_FDPIC (output_bfd) && frvfdpic_plt_section (info))
-    plt_segment = _frvfdpic_osec_to_segment (output_bfd,
-					     frvfdpic_plt_section (info)
-					     ->output_section);
+  if (IS_FDPIC(output_bfd) && frvfdpic_plt_section(info))
+    plt_segment =
+      _frvfdpic_osec_to_segment(output_bfd,
+				frvfdpic_plt_section(info)->output_section);
   else
     plt_segment = -1;
-  if (elf_hash_table (info)->tls_sec)
-    tls_segment = _frvfdpic_osec_to_segment (output_bfd,
-					     elf_hash_table (info)->tls_sec);
+  if (elf_hash_table(info)->tls_sec)
+    tls_segment = _frvfdpic_osec_to_segment(output_bfd,
+					    elf_hash_table(info)->tls_sec);
   else
     tls_segment = -1;
 
@@ -2849,22 +2849,21 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_FRV_TLSOFF_RELAX:
 	case R_FRV_TLSMOFF:
 	  if (h != NULL)
-	    picrel = frvfdpic_relocs_info_for_global (frvfdpic_relocs_info
-						      (info), input_bfd, h,
-						      orig_addend, INSERT);
+	    picrel = frvfdpic_relocs_info_for_global(frvfdpic_relocs_info(info),
+                                                     input_bfd, h, orig_addend,
+                                                     INSERT);
 	  else
 	    /* In order to find the entry we created before, we must
 	       use the original addend, not the one that may have been
 	       modified by _bfd_elf_rela_local_sym().  */
-	    picrel = frvfdpic_relocs_info_for_local (frvfdpic_relocs_info
-						     (info), input_bfd, r_symndx,
-						     orig_addend, INSERT);
+	    picrel = frvfdpic_relocs_info_for_local(frvfdpic_relocs_info(info),
+                                                    input_bfd, r_symndx,
+						    orig_addend, INSERT);
 	  if (! picrel)
 	    return FALSE;
 
-	  if (!_frvfdpic_emit_got_relocs_plt_entries (picrel, output_bfd, info,
-						      osec, sym,
-						      rel->r_addend))
+	  if (!_frvfdpic_emit_got_relocs_plt_entries(picrel, output_bfd, info,
+						     osec, sym, rel->r_addend))
 	    {
 	      (*_bfd_error_handler)
 		(_("%B(%A+0x%x): relocation to `%s+%x' may have caused the error above"),
@@ -2877,7 +2876,7 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	default:
 	non_fdpic:
 	  picrel = NULL;
-	  if (h && ! FRVFDPIC_SYM_LOCAL (info, h))
+	  if (h && !FRVFDPIC_SYM_LOCAL(info, h))
 	    {
 	      info->callbacks->warning
 		(info, _("relocation references symbol not defined in the module"),
@@ -2905,8 +2904,8 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_FRV_GETTLSOFF_RELAX:
 	case R_FRV_TLSOFF_RELAX:
 	case R_FRV_TLSMOFF:
-	  if (sec && (bfd_is_abs_section (sec) || bfd_is_und_section (sec)))
-	    relocation += tls_biased_base (info);
+	  if (sec && (bfd_is_abs_section(sec) || bfd_is_und_section(sec)))
+	    relocation += tls_biased_base(info);
 	  break;
 
 	default:
@@ -2949,7 +2948,7 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
    && TLSMOFF_IN_RANGE_FOR_SETLOS_P((value), (info)))
 
 	  case R_FRV_GETTLSOFF:
-	    insn = bfd_get_32 (input_bfd, contents + rel->r_offset);
+	    insn = bfd_get_32(input_bfd, (contents + rel->r_offset));
 
 	    /* Is this a call instruction?  */
 	    if ((insn & (unsigned long)0x01fc0000) != 0x003c0000)
@@ -2958,40 +2957,40 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  (info,
 		   _("R_FRV_GETTLSOFF not applied to a call instruction"),
 		   name, input_bfd, input_section, rel->r_offset);
+     		(void)r;
 		return FALSE;
 	      }
 
-	    if (RELAX_GETTLSOFF_LOCAL_EXEC_P (info, picrel,
-					      relocation + rel->r_addend))
+	    if (RELAX_GETTLSOFF_LOCAL_EXEC_P(info, picrel,
+					     (relocation + rel->r_addend)))
 	      {
 		/* Replace the call instruction (except the packing bit)
 		   with setlos #tlsmofflo(symbol+offset), gr9.  */
 		insn &= (unsigned long)0x80000000;
 		insn |= (unsigned long)0x12fc0000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		r_type = R_FRV_TLSMOFFLO;
-		howto  = elf32_frv_howto_table + r_type;
-		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+		howto = (elf32_frv_howto_table + r_type);
+		rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      }
-
-	    else if (RELAX_GETTLSOFF_INITIAL_EXEC_P (info, picrel))
+	    else if (RELAX_GETTLSOFF_INITIAL_EXEC_P(info, picrel))
 	      {
 		/* Replace the call instruction (except the packing bit)
 		   with ldi @(gr15, #gottlsoff12(symbol+addend)), gr9.  */
 		insn &= (unsigned long)0x80000000;
 		insn |= (unsigned long)0x12c8f000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		r_type = R_FRV_GOTTLSOFF12;
-		howto  = elf32_frv_howto_table + r_type;
-		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+		howto = (elf32_frv_howto_table + r_type);
+		rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      }
 
 	    break;
 
 	  case R_FRV_GOTTLSDESC12:
-	    insn = bfd_get_32 (input_bfd, contents + rel->r_offset);
+	    insn = bfd_get_32(input_bfd, (contents + rel->r_offset));
 
 	    /* Is this an lddi instruction?  */
 	    if ((insn & (unsigned long)0x01fc0000) != 0x00cc0000)
@@ -3000,13 +2999,14 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  (info,
 		   _("R_FRV_GOTTLSDESC12 not applied to an lddi instruction"),
 		   name, input_bfd, input_section, rel->r_offset);
+     		(void)r;
 		return FALSE;
 	      }
 
-	    if (RELAX_TLSDESC_LOCAL_EXEC_P (info, picrel,
-					    relocation + rel->r_addend)
-		&& TLSMOFF_IN_RANGE_FOR_SETLOS_P (relocation + rel->r_addend,
-						  info))
+	    if (RELAX_TLSDESC_LOCAL_EXEC_P(info, picrel,
+					   (relocation + rel->r_addend))
+		&& TLSMOFF_IN_RANGE_FOR_SETLOS_P((relocation + rel->r_addend),
+						 info))
 	      {
 		/* Replace lddi @(grB, #gottlsdesc12(symbol+offset), grC
 		   with setlos #tlsmofflo(symbol+offset), gr<C+1>.
@@ -3015,15 +3015,14 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  | ((insn + (unsigned long)0x02000000)
 		     & (unsigned long)0x7e000000);
 		insn |= (unsigned long)0x00fc0000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		r_type = R_FRV_TLSMOFFLO;
-		howto  = elf32_frv_howto_table + r_type;
-		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+		howto = (elf32_frv_howto_table + r_type);
+		rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      }
-
-	    else if (RELAX_TLSDESC_LOCAL_EXEC_P (info, picrel,
-						 relocation + rel->r_addend))
+	    else if (RELAX_TLSDESC_LOCAL_EXEC_P(info, picrel,
+                                                (relocation + rel->r_addend)))
 	      {
 		/* Replace lddi @(grB, #gottlsdesc12(symbol+offset), grC
 		   with sethi #tlsmoffhi(symbol+offset), gr<C+1>.
@@ -3032,14 +3031,13 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  | ((insn + (unsigned long)0x02000000)
 		     & (unsigned long)0x7e000000);
 		insn |= (unsigned long)0x00f80000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		r_type = R_FRV_TLSMOFFHI;
-		howto  = elf32_frv_howto_table + r_type;
-		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+		howto = (elf32_frv_howto_table + r_type);
+		rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      }
-
-	    else if (RELAX_TLSDESC_INITIAL_EXEC_P (info, picrel))
+	    else if (RELAX_TLSDESC_INITIAL_EXEC_P(info, picrel))
 	      {
 		/* Replace lddi @(grB, #gottlsdesc12(symbol+offset), grC
 		   with ldi @(grB, #gottlsoff12(symbol+offset),
@@ -3052,13 +3050,12 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		insn = (insn & (unsigned long)0x80cbf000)
 		  | ((insn + (unsigned long)0x02000000)
 		     & (unsigned long)0x7e000000);
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		r_type = R_FRV_GOTTLSOFF12;
-		howto  = elf32_frv_howto_table + r_type;
-		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+		howto = (elf32_frv_howto_table + r_type);
+		rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      }
-
 	    break;
 
 	  case R_FRV_GOTTLSDESCHI:
@@ -3071,6 +3068,7 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  (info,
 		   _("R_FRV_GOTTLSDESCHI not applied to a sethi instruction"),
 		   name, input_bfd, input_section, rel->r_offset);
+     		(void)r;
 		return FALSE;
 	      }
 
@@ -3082,12 +3080,11 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		/* Replace sethi with a nop.  Preserve the packing bit.  */
 		insn &= (unsigned long)0x80000000;
 		insn |= (unsigned long)0x00880000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		/* Nothing to relocate.  */
 		continue;
 	      }
-
 	    else if (RELAX_TLSDESC_INITIAL_EXEC_P (info, picrel))
 	      {
 		/* Simply decay GOTTLSDESC to GOTTLSOFF.  */
@@ -3095,7 +3092,6 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		howto  = elf32_frv_howto_table + r_type;
 		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
 	      }
-
 	    break;
 
 	  case R_FRV_GOTTLSDESCLO:
@@ -3109,45 +3105,44 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		   _("R_FRV_GOTTLSDESCLO"
 		     " not applied to a setlo or setlos instruction"),
 		   name, input_bfd, input_section, rel->r_offset);
+     		(void)r;
 		return FALSE;
 	      }
 
-	    if (RELAX_TLSDESC_LOCAL_EXEC_P (info, picrel,
-					    relocation + rel->r_addend)
-		|| (RELAX_TLSDESC_INITIAL_EXEC_P (info, picrel)
-		    && IN_RANGE_FOR_OFST12_P (picrel->tlsoff_entry)))
+	    if (RELAX_TLSDESC_LOCAL_EXEC_P(info, picrel,
+					   (relocation + rel->r_addend))
+		|| (RELAX_TLSDESC_INITIAL_EXEC_P(info, picrel)
+		    && IN_RANGE_FOR_OFST12_P(picrel->tlsoff_entry)))
 	      {
 		/* Replace setlo/setlos with a nop.  Preserve the
 		   packing bit.  */
 		insn &= (unsigned long)0x80000000;
 		insn |= (unsigned long)0x00880000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
-		/* Nothing to relocate.  */
+		/* Nothing to relocate: */
 		continue;
 	      }
-
-	    else if (RELAX_TLSDESC_INITIAL_EXEC_P (info, picrel))
+	    else if (RELAX_TLSDESC_INITIAL_EXEC_P(info, picrel))
 	      {
 		/* If the corresponding sethi (if it exists) decayed
 		   to a nop, make sure this becomes (or already is) a
 		   setlos, not setlo.  */
-		if (IN_RANGE_FOR_SETLOS_P (picrel->tlsoff_entry))
+		if (IN_RANGE_FOR_SETLOS_P(picrel->tlsoff_entry))
 		  {
 		    insn |= (unsigned long)0x00080000;
-		    bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		    bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 		  }
 
-		/* Simply decay GOTTLSDESC to GOTTLSOFF.  */
+		/* Simply decay GOTTLSDESC to GOTTLSOFF: */
 		r_type = R_FRV_GOTTLSOFFLO;
-		howto  = elf32_frv_howto_table + r_type;
-		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+		howto = (elf32_frv_howto_table + r_type);
+		rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      }
-
 	    break;
 
 	  case R_FRV_TLSDESC_RELAX:
-	    insn = bfd_get_32 (input_bfd, contents + rel->r_offset);
+	    insn = bfd_get_32(input_bfd, (contents + rel->r_offset));
 
 	    /* Is this an ldd instruction?  */
 	    if ((insn & (unsigned long)0x01fc0fc0) != 0x00080140)
@@ -3156,13 +3151,14 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  (info,
 		   _("R_FRV_TLSDESC_RELAX not applied to an ldd instruction"),
 		   name, input_bfd, input_section, rel->r_offset);
+     		(void)r;
 		return FALSE;
 	      }
 
-	    if (RELAX_TLSDESC_LOCAL_EXEC_P (info, picrel,
-					    relocation + rel->r_addend)
-		&& TLSMOFF_IN_RANGE_FOR_SETLOS_P (relocation + rel->r_addend,
-						  info))
+	    if (RELAX_TLSDESC_LOCAL_EXEC_P(info, picrel,
+					   (relocation + rel->r_addend))
+		&& TLSMOFF_IN_RANGE_FOR_SETLOS_P((relocation + rel->r_addend),
+						 info))
 	      {
 		/* Replace ldd #tlsdesc(symbol+offset)@(grB, grA), grC
 		   with setlos #tlsmofflo(symbol+offset), gr<C+1>.
@@ -3171,15 +3167,14 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  | ((insn + (unsigned long)0x02000000)
 		     & (unsigned long)0x7e000000);
 		insn |= (unsigned long)0x00fc0000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		r_type = R_FRV_TLSMOFFLO;
-		howto  = elf32_frv_howto_table + r_type;
-		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+		howto = (elf32_frv_howto_table + r_type);
+		rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      }
-
-	    else if (RELAX_TLSDESC_LOCAL_EXEC_P (info, picrel,
-						 relocation + rel->r_addend))
+	    else if (RELAX_TLSDESC_LOCAL_EXEC_P(info, picrel,
+                                                (relocation + rel->r_addend)))
 	      {
 		/* Replace ldd #tlsdesc(symbol+offset)@(grB, grA), grC
 		   with sethi #tlsmoffhi(symbol+offset), gr<C+1>.
@@ -3188,15 +3183,14 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  | ((insn + (unsigned long)0x02000000)
 		     & (unsigned long)0x7e000000);
 		insn |= (unsigned long)0x00f80000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		r_type = R_FRV_TLSMOFFHI;
-		howto  = elf32_frv_howto_table + r_type;
-		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+		howto = (elf32_frv_howto_table + r_type);
+		rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      }
-
-	    else if (RELAX_TLSDESC_INITIAL_EXEC_P (info, picrel)
-		     && IN_RANGE_FOR_OFST12_P (picrel->tlsoff_entry))
+	    else if (RELAX_TLSDESC_INITIAL_EXEC_P(info, picrel)
+		     && IN_RANGE_FOR_OFST12_P(picrel->tlsoff_entry))
 	      {
 		/* Replace ldd #tlsdesc(symbol+offset)@(grB, grA), grC
 		   with ldi @(grB, #gottlsoff12(symbol+offset), gr<C+1>.
@@ -3205,14 +3199,13 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  | (unsigned long)0x00c80000
 		  | ((insn + (unsigned long)0x02000000)
 		     & (unsigned long)0x7e000000);
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		r_type = R_FRV_GOTTLSOFF12;
-		howto  = elf32_frv_howto_table + r_type;
-		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+		howto = (elf32_frv_howto_table + r_type);
+		rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      }
-
-	    else if (RELAX_TLSDESC_INITIAL_EXEC_P (info, picrel))
+	    else if (RELAX_TLSDESC_INITIAL_EXEC_P(info, picrel))
 	      {
 		/* Replace ldd #tlsdesc(symbol+offset)@(grB, grA), grC
 		   with ld #tlsoff(symbol+offset)@(grB, grA), gr<C+1>.
@@ -3220,7 +3213,7 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		insn = (insn & (unsigned long)0x81ffffbf)
 		  | ((insn + (unsigned long)0x02000000)
 		     & (unsigned long)0x7e000000);
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		/* #tlsoff(symbol+offset) is just a relaxation
                     annotation, so there's nothing left to
@@ -3241,52 +3234,50 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		   _("R_FRV_GETTLSOFF_RELAX"
 		     " not applied to a calll instruction"),
 		   name, input_bfd, input_section, rel->r_offset);
+     	        (void)r;
 		return FALSE;
 	      }
 
-	    if (RELAX_TLSDESC_LOCAL_EXEC_P (info, picrel,
-					    relocation + rel->r_addend)
-		&& TLSMOFF_IN_RANGE_FOR_SETLOS_P (relocation + rel->r_addend,
-						  info))
+	    if (RELAX_TLSDESC_LOCAL_EXEC_P(info, picrel,
+					   (relocation + rel->r_addend))
+		&& TLSMOFF_IN_RANGE_FOR_SETLOS_P((relocation + rel->r_addend),
+						 info))
 	      {
-		/* Replace calll with a nop.  Preserve the packing bit.  */
+		/* Replace calll with a nop.  Preserve the packing bit: */
 		insn &= (unsigned long)0x80000000;
 		insn |= (unsigned long)0x00880000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
-		/* Nothing to relocate.  */
+		/* Nothing to relocate: */
 		continue;
 	      }
-
-	    else if (RELAX_TLSDESC_LOCAL_EXEC_P (info, picrel,
-						 relocation + rel->r_addend))
+	    else if (RELAX_TLSDESC_LOCAL_EXEC_P(info, picrel,
+                                                (relocation + rel->r_addend)))
 	      {
 		/* Replace calll with setlo #tlsmofflo(symbol+offset), gr9.
 		   Preserve the packing bit.  */
 		insn &= (unsigned long)0x80000000;
 		insn |= (unsigned long)0x12f40000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		r_type = R_FRV_TLSMOFFLO;
-		howto  = elf32_frv_howto_table + r_type;
-		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+		howto = (elf32_frv_howto_table + r_type);
+		rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      }
-
-	    else if (RELAX_TLSDESC_INITIAL_EXEC_P (info, picrel))
+	    else if (RELAX_TLSDESC_INITIAL_EXEC_P(info, picrel))
 	      {
-		/* Replace calll with a nop.  Preserve the packing bit.  */
+		/* Replace calll with a nop.  Preserve the packing bit: */
 		insn &= (unsigned long)0x80000000;
 		insn |= (unsigned long)0x00880000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
-		/* Nothing to relocate.  */
+		/* Nothing to relocate: */
 		continue;
 	      }
-
 	    break;
 
 	  case R_FRV_GOTTLSOFF12:
-	    insn = bfd_get_32 (input_bfd, contents + rel->r_offset);
+	    insn = bfd_get_32(input_bfd, (contents + rel->r_offset));
 
 	    /* Is this an ldi instruction?  */
 	    if ((insn & (unsigned long)0x01fc0000) != 0x00c80000)
@@ -3295,24 +3286,24 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  (info,
 		   _("R_FRV_GOTTLSOFF12 not applied to an ldi instruction"),
 		   name, input_bfd, input_section, rel->r_offset);
+     		(void)r;
 		return FALSE;
 	      }
 
-	    if (RELAX_GOTTLSOFF_LOCAL_EXEC_P (info, picrel,
-					      relocation + rel->r_addend))
+	    if (RELAX_GOTTLSOFF_LOCAL_EXEC_P(info, picrel,
+					     (relocation + rel->r_addend)))
 	      {
 		/* Replace ldi @(grB, #gottlsoff12(symbol+offset), grC
 		   with setlos #tlsmofflo(symbol+offset), grC.
 		   Preserve the packing bit.  */
 		insn &= (unsigned long)0xfe000000;
 		insn |= (unsigned long)0x00fc0000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		r_type = R_FRV_TLSMOFFLO;
-		howto  = elf32_frv_howto_table + r_type;
-		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+		howto = (elf32_frv_howto_table + r_type);
+		rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      }
-
 	    break;
 
 	  case R_FRV_GOTTLSOFFHI:
@@ -3325,27 +3316,27 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  (info,
 		   _("R_FRV_GOTTLSOFFHI not applied to a sethi instruction"),
 		   name, input_bfd, input_section, rel->r_offset);
+     		(void)r;
 		return FALSE;
 	      }
 
-	    if (RELAX_GOTTLSOFF_LOCAL_EXEC_P (info, picrel,
-					      relocation + rel->r_addend)
-		|| (RELAX_TLSDESC_INITIAL_EXEC_P (info, picrel)
-		    && IN_RANGE_FOR_OFST12_P (picrel->tlsoff_entry)))
+	    if (RELAX_GOTTLSOFF_LOCAL_EXEC_P(info, picrel,
+					     (relocation + rel->r_addend))
+		|| (RELAX_TLSDESC_INITIAL_EXEC_P(info, picrel)
+		    && IN_RANGE_FOR_OFST12_P(picrel->tlsoff_entry)))
 	      {
-		/* Replace sethi with a nop.  Preserve the packing bit.  */
+		/* Replace sethi with a nop.  Preserve the packing bit: */
 		insn &= (unsigned long)0x80000000;
 		insn |= (unsigned long)0x00880000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, contents + rel->r_offset);
 
-		/* Nothing to relocate.  */
+		/* Nothing to relocate: */
 		continue;
 	      }
-
 	    break;
 
 	  case R_FRV_GOTTLSOFFLO:
-	    insn = bfd_get_32 (input_bfd, contents + rel->r_offset);
+	    insn = bfd_get_32(input_bfd, (contents + rel->r_offset));
 
 	    /* Is this a setlo or setlos instruction?  */
 	    if ((insn & (unsigned long)0x01f70000) != 0x00f40000)
@@ -3355,28 +3346,28 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		   _("R_FRV_GOTTLSOFFLO"
 		     " not applied to a setlo or setlos instruction"),
 		   name, input_bfd, input_section, rel->r_offset);
+     		(void)r;
 		return FALSE;
 	      }
 
-	    if (RELAX_GOTTLSOFF_LOCAL_EXEC_P (info, picrel,
-					      relocation + rel->r_addend)
-		|| (RELAX_TLSDESC_INITIAL_EXEC_P (info, picrel)
-		    && IN_RANGE_FOR_OFST12_P (picrel->tlsoff_entry)))
+	    if (RELAX_GOTTLSOFF_LOCAL_EXEC_P(info, picrel,
+					     (relocation + rel->r_addend))
+		|| (RELAX_TLSDESC_INITIAL_EXEC_P(info, picrel)
+		    && IN_RANGE_FOR_OFST12_P(picrel->tlsoff_entry)))
 	      {
 		/* Replace setlo/setlos with a nop.  Preserve the
 		   packing bit.  */
 		insn &= (unsigned long)0x80000000;
 		insn |= (unsigned long)0x00880000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, contents + rel->r_offset);
 
-		/* Nothing to relocate.  */
+		/* Nothing to relocate: */
 		continue;
 	      }
-
 	    break;
 
 	  case R_FRV_TLSOFF_RELAX:
-	    insn = bfd_get_32 (input_bfd, contents + rel->r_offset);
+	    insn = bfd_get_32(input_bfd, (contents + rel->r_offset));
 
 	    /* Is this an ld instruction?  */
 	    if ((insn & (unsigned long)0x01fc0fc0) != 0x00080100)
@@ -3385,43 +3376,42 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  (info,
 		   _("R_FRV_TLSOFF_RELAX not applied to an ld instruction"),
 		   name, input_bfd, input_section, rel->r_offset);
+     		(void)r;
 		return FALSE;
 	      }
 
-	    if (RELAX_GOTTLSOFF_LOCAL_EXEC_P (info, picrel,
-					      relocation + rel->r_addend))
+	    if (RELAX_GOTTLSOFF_LOCAL_EXEC_P(info, picrel,
+					     (relocation + rel->r_addend)))
 	      {
 		/* Replace ld #gottlsoff(symbol+offset)@(grB, grA), grC
 		   with setlos #tlsmofflo(symbol+offset), grC.
 		   Preserve the packing bit.  */
 		insn &= (unsigned long)0xfe000000;
 		insn |= (unsigned long)0x00fc0000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		r_type = R_FRV_TLSMOFFLO;
-		howto  = elf32_frv_howto_table + r_type;
-		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+		howto = (elf32_frv_howto_table + r_type);
+		rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      }
-
-	    else if (RELAX_TLSDESC_INITIAL_EXEC_P (info, picrel)
-		     && IN_RANGE_FOR_OFST12_P (picrel->tlsoff_entry))
+	    else if (RELAX_TLSDESC_INITIAL_EXEC_P(info, picrel)
+		     && IN_RANGE_FOR_OFST12_P(picrel->tlsoff_entry))
 	      {
 		/* Replace ld #tlsoff(symbol+offset)@(grB, grA), grC
 		   with ldi @(grB, #gottlsoff12(symbol+offset), grC.
 		   Preserve the packing bit.  */
 		insn = (insn & (unsigned long)0xfe03f000)
 		  | (unsigned long)0x00c80000;;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 
 		r_type = R_FRV_GOTTLSOFF12;
-		howto  = elf32_frv_howto_table + r_type;
-		rel->r_info = ELF32_R_INFO (r_symndx, r_type);
+		howto = (elf32_frv_howto_table + r_type);
+		rel->r_info = ELF32_R_INFO(r_symndx, r_type);
 	      }
-
 	    break;
 
 	  case R_FRV_TLSMOFFHI:
-	    insn = bfd_get_32 (input_bfd, contents + rel->r_offset);
+	    insn = bfd_get_32(input_bfd, (contents + rel->r_offset));
 
 	    /* Is this a sethi instruction?  */
 	    if ((insn & (unsigned long)0x01ff0000) != 0x00f80000)
@@ -3430,11 +3420,12 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		  (info,
 		   _("R_FRV_TLSMOFFHI not applied to a sethi instruction"),
 		   name, input_bfd, input_section, rel->r_offset);
+     		(void)r;
 		return FALSE;
 	      }
 
-	    if (TLSMOFF_IN_RANGE_FOR_SETLOS_P (relocation + rel->r_addend,
-					       info))
+	    if (TLSMOFF_IN_RANGE_FOR_SETLOS_P((relocation + rel->r_addend),
+					      info))
 	      {
 		/* Replace sethi with a nop.  Preserve the packing bit.  */
 		insn &= (unsigned long)0x80000000;
@@ -3448,7 +3439,7 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	    break;
 
 	  case R_FRV_TLSMOFFLO:
-	    insn = bfd_get_32 (input_bfd, contents + rel->r_offset);
+	    insn = bfd_get_32(input_bfd, (contents + rel->r_offset));
 
 	    /* Is this a setlo or setlos instruction?  */
 	    if ((insn & (unsigned long)0x01f70000) != 0x00f40000)
@@ -3458,19 +3449,19 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		   _("R_FRV_TLSMOFFLO"
 		     " not applied to a setlo or setlos instruction"),
 		   name, input_bfd, input_section, rel->r_offset);
+     		(void)r;
 		return FALSE;
 	      }
 
-	    if (TLSMOFF_IN_RANGE_FOR_SETLOS_P (relocation + rel->r_addend,
-					       info))
+	    if (TLSMOFF_IN_RANGE_FOR_SETLOS_P((relocation + rel->r_addend),
+					      info))
 	      /* If the corresponding sethi (if it exists) decayed
 		 to a nop, make sure this becomes (or already is) a
 		 setlos, not setlo.  */
 	      {
 		insn |= (unsigned long)0x00080000;
-		bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
+		bfd_put_32(input_bfd, insn, (contents + rel->r_offset));
 	      }
-
 	    break;
 
 	    /*
@@ -3491,13 +3482,14 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	{
 	case R_FRV_LABEL24:
 	  check_segment[0] = isec_segment;
-	  if (! IS_FDPIC (output_bfd))
+	  if (!IS_FDPIC(output_bfd))
 	    check_segment[1] = isec_segment;
 	  else if ((picrel != NULL) && picrel->plt)
 	    {
-	      relocation = frvfdpic_plt_section (info)->output_section->vma
-		+ frvfdpic_plt_section (info)->output_offset
-		+ picrel->plt_entry;
+	      relocation =
+        	(frvfdpic_plt_section(info)->output_section->vma
+		 + frvfdpic_plt_section(info)->output_offset
+		 + picrel->plt_entry);
 	      check_segment[1] = plt_segment;
 	    }
 	  /* We don't want to warn on calls to undefined weak symbols,
@@ -3508,9 +3500,10 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		   && (picrel->d.h->root.type == bfd_link_hash_undefweak))
 	    check_segment[1] = check_segment[0];
 	  else
-	    check_segment[1] = sec
-	      ? _frvfdpic_osec_to_segment (output_bfd, sec->output_section)
-	      : (unsigned int)-1;
+	    check_segment[1] =
+              ((sec != NULL)
+	       ? _frvfdpic_osec_to_segment(output_bfd, sec->output_section)
+	       : (unsigned int)-1);
 	  break;
 
 	case R_FRV_GOT12:
@@ -3532,13 +3525,14 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	case R_FRV_GOTOFFHI:
 	case R_FRV_GOTOFF12:
 	case R_FRV_GOTOFFLO:
-	  relocation -= frvfdpic_got_section (info)->output_section->vma
-	    + frvfdpic_got_section (info)->output_offset
-	    + frvfdpic_got_initial_offset (info);
+	  relocation -= (frvfdpic_got_section(info)->output_section->vma
+	    		 + frvfdpic_got_section(info)->output_offset
+	    		 + frvfdpic_got_initial_offset(info));
 	  check_segment[0] = got_segment;
-	  check_segment[1] = sec
-	    ? _frvfdpic_osec_to_segment (output_bfd, sec->output_section)
-	    : (unsigned)-1;
+	  check_segment[1] =
+            ((sec != NULL)
+	     ? _frvfdpic_osec_to_segment(output_bfd, sec->output_section)
+	     : (unsigned int)-1);
 	  break;
 
 	case R_FRV_FUNCDESC_GOTOFF12:
@@ -3554,8 +3548,8 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
             long dynindx;
 	    bfd_vma addend = rel->r_addend;
 
-	    if (! (h && h->root.type == bfd_link_hash_undefweak
-		   && FRVFDPIC_SYM_LOCAL (info, h)))
+	    if (!((h != NULL) && (h->root.type == bfd_link_hash_undefweak)
+		  && FRVFDPIC_SYM_LOCAL(info, h)))
 	      {
 		/* If the symbol is dynamic and there may be dynamic
 		   symbol resolution because we are or are linked with a
@@ -3565,16 +3559,16 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		   descriptor but binds locally (e.g., its visibility is
 		   protected, emit a dynamic relocation decayed to
 		   section+offset.  */
-		if (h && ! FRVFDPIC_FUNCDESC_LOCAL (info, h)
-		    && FRVFDPIC_SYM_LOCAL (info, h)
+		if (h && !FRVFDPIC_FUNCDESC_LOCAL(info, h)
+		    && FRVFDPIC_SYM_LOCAL(info, h)
 		    && !(info->executable && !info->pie))
 		  {
-		    dynindx = elf_section_data (h->root.u.def.section
-						->output_section)->dynindx;
-		    addend += h->root.u.def.section->output_offset
-		      + h->root.u.def.value;
+		    dynindx =
+                      elf_section_data(h->root.u.def.section->output_section)->dynindx;
+		    addend += (h->root.u.def.section->output_offset
+                               + h->root.u.def.value);
 		  }
-		else if (h && ! FRVFDPIC_FUNCDESC_LOCAL (info, h))
+		else if (h && !FRVFDPIC_FUNCDESC_LOCAL(info, h))
 		  {
 		    if (addend)
 		      {
@@ -3592,11 +3586,11 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
                     BFD_ASSERT(picrel != NULL);
 		    BFD_ASSERT(picrel->privfd);
 		    r_type = R_FRV_32;
-		    dynindx = elf_section_data (frvfdpic_got_section (info)
-						->output_section)->dynindx;
-		    addend = frvfdpic_got_section (info)->output_offset
-		      + frvfdpic_got_initial_offset (info)
-		      + picrel->fd_entry;
+		    dynindx =
+                      elf_section_data(frvfdpic_got_section(info)->output_section)->dynindx;
+		    addend = (frvfdpic_got_section(info)->output_offset
+                              + frvfdpic_got_initial_offset(info)
+                              + picrel->fd_entry);
 		  }
 
 		/* If there is room for dynamic symbol resolution, emit
@@ -3606,16 +3600,15 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 		   be zero, which means we can and should compute the
 		   address of the private descriptor ourselves.  */
 		if (info->executable && !info->pie
-		    && (!h || FRVFDPIC_FUNCDESC_LOCAL (info, h)))
+		    && (!h || FRVFDPIC_FUNCDESC_LOCAL(info, h)))
 		  {
-		    addend += frvfdpic_got_section (info)->output_section->vma;
-		    if ((bfd_get_section_flags (output_bfd,
-						input_section->output_section)
+		    addend += frvfdpic_got_section(info)->output_section->vma;
+		    if ((bfd_get_section_flags(output_bfd,
+                                               input_section->output_section)
 			 & (SEC_ALLOC | SEC_LOAD)) == (SEC_ALLOC | SEC_LOAD))
 		      {
-			if (_frvfdpic_osec_readonly_p (output_bfd,
-						       input_section
-						       ->output_section))
+			if (_frvfdpic_osec_readonly_p(output_bfd,
+						      input_section->output_section))
 			  {
 			    info->callbacks->warning
 			      (info,
@@ -3623,25 +3616,23 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 			       name, input_bfd, input_section, rel->r_offset);
 			    return FALSE;
 			  }
-			_frvfdpic_add_rofixup (output_bfd,
-					       frvfdpic_gotfixup_section
-					       (info),
-					       _bfd_elf_section_offset
+			_frvfdpic_add_rofixup(output_bfd,
+					      frvfdpic_gotfixup_section(info),
+					      (_bfd_elf_section_offset
 					       (output_bfd, info,
-						input_section, rel->r_offset)
-					       + input_section
-					       ->output_section->vma
-					       + input_section->output_offset,
-					       picrel);
+                                                input_section, rel->r_offset)
+					       + (input_section
+					          ->output_section->vma)
+					       + input_section->output_offset),
+					      picrel);
 		      }
 		  }
-		else if ((bfd_get_section_flags (output_bfd,
-						 input_section->output_section)
+		else if ((bfd_get_section_flags(output_bfd,
+                                                input_section->output_section)
 			  & (SEC_ALLOC | SEC_LOAD)) == (SEC_ALLOC | SEC_LOAD))
 		  {
-		    if (_frvfdpic_osec_readonly_p (output_bfd,
-						   input_section
-						   ->output_section))
+		    if (_frvfdpic_osec_readonly_p(output_bfd,
+						  input_section->output_section))
 		      {
 			info->callbacks->warning
 			  (info,
@@ -3649,30 +3640,29 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 			   name, input_bfd, input_section, rel->r_offset);
 			return FALSE;
 		      }
-		    _frvfdpic_add_dyn_reloc (output_bfd,
-					     frvfdpic_gotrel_section (info),
-					     _bfd_elf_section_offset
+		    _frvfdpic_add_dyn_reloc(output_bfd,
+					    frvfdpic_gotrel_section(info),
+					    (_bfd_elf_section_offset
 					     (output_bfd, info,
 					      input_section, rel->r_offset)
-					     + input_section
-					     ->output_section->vma
-					     + input_section->output_offset,
-					     r_type, dynindx, addend, picrel);
+					     + input_section->output_section->vma
+					     + input_section->output_offset),
+					    r_type, dynindx, addend, picrel);
 		  }
 		else
-		  addend += frvfdpic_got_section (info)->output_section->vma;
+		  addend += frvfdpic_got_section(info)->output_section->vma;
 	      }
 
 	    /* We want the addend in-place because dynamic
 	       relocations are REL.  Setting relocation to it should
 	       arrange for it to be installed.  */
-	    relocation = addend - rel->r_addend;
+	    relocation = (addend - rel->r_addend);
 	  }
 	  check_segment[0] = check_segment[1] = got_segment;
 	  break;
 
 	case R_FRV_32:
-	  if (! IS_FDPIC (output_bfd))
+	  if (!IS_FDPIC(output_bfd))
 	    {
 	      check_segment[0] = check_segment[1] = -1;
 	      break;
@@ -3686,7 +3676,7 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 
 	    /* If the symbol is dynamic but binds locally, use
 	       section+offset.  */
-	    if (h && ! FRVFDPIC_SYM_LOCAL(info, h))
+	    if (h && !FRVFDPIC_SYM_LOCAL(info, h))
 	      {
 		if (addend && r_type == R_FRV_FUNCDESC_VALUE)
 		  {
@@ -3720,8 +3710,12 @@ elf32_frv_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
 	    if (info->executable && !info->pie
 		&& (!h || FRVFDPIC_SYM_LOCAL(info, h)))
 	      {
-		if (osec && osec->output_section)
+		if (osec && osec->output_section) {
 		  addend += osec->output_section->vma;
+    		  if (addend == 0UL) {
+         	    (void)addend;
+                  }
+    		}
 		if (IS_FDPIC(input_bfd)
 		    && (bfd_get_section_flags(output_bfd,
 					      input_section->output_section)
@@ -6485,7 +6479,6 @@ elf32_frvfdpic_copy_private_bfd_data (bfd *ibfd, bfd *obfd)
 
 /* Merge backend specific data from an object file to the output
    object file when linking.  */
-
 static bfd_boolean
 frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
@@ -6513,7 +6506,6 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
       elf_flags_init(obfd) = TRUE;
       old_flags = new_flags;
     }
-
   else if (new_flags == old_flags)		/* Compatible flags are ok.  */
     ;
   else						/* Possibly incompatible flags.  */
@@ -6533,21 +6525,27 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 	  switch (new_partial)
 	    {
 	    default:
-              strncat(new_opt, " -mgpr-??", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mgpr-??", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_GPR_32:
-              strncat(new_opt, " -mgpr-32", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mgpr-32", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_GPR_64:
-              strncat(new_opt, " -mgpr-64", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mgpr-64", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    }
 
 	  switch (old_partial)
 	    {
 	    default:
-              strncat(old_opt, " -mgpr-??", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mgpr-??", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_GPR_32:
-              strncat(old_opt, " -mgpr-32", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mgpr-32", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_GPR_64:
-              strncat(old_opt, " -mgpr-64", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mgpr-64", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    }
 	}
 
@@ -6566,25 +6564,33 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 	  switch (new_partial)
 	    {
 	    default:
-              strncat(new_opt, " -mfpr-?", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mfpr-?", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_FPR_32:
-              strncat(new_opt, " -mfpr-32", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mfpr-32", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_FPR_64:
-              strncat(new_opt, " -mfpr-64", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mfpr-64", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_FPR_NONE:
-              strncat(new_opt, " -msoft-float", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -msoft-float", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    }
 
 	  switch (old_partial)
 	    {
 	    default:
-              strncat(old_opt, " -mfpr-?", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mfpr-?", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_FPR_32:
-              strncat(old_opt, " -mfpr-32", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mfpr-32", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_FPR_64:
-              strncat(old_opt, " -mfpr-64", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mfpr-64", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_FPR_NONE:
-              strncat(old_opt, " -msoft-float", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -msoft-float", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    }
 	}
 
@@ -6603,21 +6609,27 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 	  switch (new_partial)
 	    {
 	    default:
-              strncat(new_opt, " -mdword-?", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mdword-?", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_DWORD_YES:
-              strncat(new_opt, " -mdword", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mdword", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_DWORD_NO:
-              strncat(new_opt, " -mno-dword", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mno-dword", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    }
 
 	  switch (old_partial)
 	    {
 	    default:
-              strncat(old_opt, " -mdword-?", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mdword-?", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_DWORD_YES:
-              strncat(old_opt, " -mdword", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mdword", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_DWORD_NO:
-              strncat(old_opt, " -mno-dword", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mno-dword", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    }
 	}
 
@@ -6642,16 +6654,13 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
       old_partial = (old_flags & EF_FRV_PIC_FLAGS);
       if ((new_partial == old_partial) || ((new_partial & EF_FRV_LIBPIC) != 0))
 	;
-
       /* If the old module(s) were compiled with -mlibrary-pic, copy in the pic
          flags if any from the new module.  */
       else if ((old_partial & EF_FRV_LIBPIC) != 0)
-	old_flags = (old_flags & ~ EF_FRV_PIC_FLAGS) | new_partial;
-
+	old_flags = ((old_flags & ~ EF_FRV_PIC_FLAGS) | new_partial);
       /* If we have mixtures of -fpic and -fPIC, or in both bits.  */
-      else if (new_partial != 0 && old_partial != 0)
+      else if ((new_partial != 0) && (old_partial != 0))
 	old_flags |= new_partial;
-
       /* One module was compiled for pic and the other was not, see if we have
          had any relocations that are not pic-safe.  */
       else
@@ -6677,109 +6686,128 @@ frv_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
       old_partial = (old_flags & EF_FRV_CPU_MASK);
       if (frv_elf_arch_extension_p (new_partial, old_partial))
 	;
-
       else if (frv_elf_arch_extension_p (old_partial, new_partial))
 	old_flags = (old_flags & ~EF_FRV_CPU_MASK) | new_partial;
-
       else
 	{
 	  switch (new_partial)
 	    {
 	    default:
-              strncat(new_opt, " -mcpu=?", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mcpu=?", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_GENERIC:
-              strncat(new_opt, " -mcpu=frv", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mcpu=frv", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_SIMPLE:
-              strncat(new_opt, " -mcpu=simple", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mcpu=simple", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_FR550:
-              strncat(new_opt, " -mcpu=fr550", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mcpu=fr550", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_FR500:
-              strncat(new_opt, " -mcpu=fr500", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mcpu=fr500", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_FR450:
-              strncat(new_opt, " -mcpu=fr450", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mcpu=fr450", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_FR405:
-              strncat(new_opt, " -mcpu=fr405", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mcpu=fr405", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_FR400:
-              strncat(new_opt, " -mcpu=fr400", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mcpu=fr400", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_FR300:
-              strncat(new_opt, " -mcpu=fr300", (sizeof(new_opt) - 1UL));  break;
+              strncat(new_opt, " -mcpu=fr300", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_TOMCAT:
-              strncat(new_opt, " -mcpu=tomcat", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -mcpu=tomcat", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    }
 
 	  switch (old_partial)
 	    {
 	    default:
-              strncat(old_opt, " -mcpu=?", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mcpu=?", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_GENERIC:
-              strncat(old_opt, " -mcpu=frv", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mcpu=frv", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_SIMPLE:
-              strncat(old_opt, " -mcpu=simple", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mcpu=simple", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_FR550:
-              strncat(old_opt, " -mcpu=fr550", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mcpu=fr550", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_FR500:
-              strncat(old_opt, " -mcpu=fr500", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mcpu=fr500", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_FR450:
-              strncat(old_opt, " -mcpu=fr450", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mcpu=fr450", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_FR405:
-              strncat(old_opt, " -mcpu=fr405", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mcpu=fr405", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_FR400:
-              strncat(old_opt, " -mcpu=fr400", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mcpu=fr400", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_FR300:
-              strncat(old_opt, " -mcpu=fr300", (sizeof(old_opt) - 1UL));  break;
+              strncat(old_opt, " -mcpu=fr300", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_FRV_CPU_TOMCAT:
-              strncat(old_opt, " -mcpu=tomcat", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -mcpu=tomcat", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    }
 	}
 
-      /* Print out any mismatches from above.  */
+      /* Print out any mismatches from above: */
       if (new_opt[0])
 	{
 	  error = TRUE;
 	  (*_bfd_error_handler)
 	    (_("%s: compiled with %s and linked with modules compiled with %s"),
-	     bfd_get_filename (ibfd), new_opt, old_opt);
+	     bfd_get_filename(ibfd), new_opt, old_opt);
 	}
 
-      /* Warn about any other mismatches */
-      new_partial = (new_flags & ~ EF_FRV_ALL_FLAGS);
-      old_partial = (old_flags & ~ EF_FRV_ALL_FLAGS);
+      /* Warn about any other mismatches: */
+      new_partial = (new_flags & ~EF_FRV_ALL_FLAGS);
+      old_partial = (old_flags & ~EF_FRV_ALL_FLAGS);
       if (new_partial != old_partial)
 	{
 	  old_flags |= new_partial;
 	  error = TRUE;
 	  (*_bfd_error_handler)
 	    (_("%s: uses different unknown e_flags (0x%lx) fields than previous modules (0x%lx)"),
-	     bfd_get_filename (ibfd), (long)new_partial, (long)old_partial);
+	     bfd_get_filename(ibfd), (long)new_partial, (long)old_partial);
 	}
     }
 
-  /* If the cpu is -mcpu=simple, then set the -mnopack bit.  */
+  /* If the cpu is -mcpu=simple, then set the -mnopack bit: */
   if ((old_flags & EF_FRV_CPU_MASK) == EF_FRV_CPU_SIMPLE)
     old_flags |= EF_FRV_NOPACK;
 
-  /* Update the old flags now with changes made above.  */
-  old_partial = elf_elfheader (obfd)->e_flags & EF_FRV_CPU_MASK;
-  elf_elfheader (obfd)->e_flags = old_flags;
+  /* Update the old flags now with changes made above: */
+  old_partial = (elf_elfheader(obfd)->e_flags & EF_FRV_CPU_MASK);
+  elf_elfheader(obfd)->e_flags = old_flags;
   if (old_partial != (old_flags & EF_FRV_CPU_MASK))
-    bfd_default_set_arch_mach (obfd, bfd_arch_frv, elf32_frv_machine (obfd));
+    bfd_default_set_arch_mach(obfd, bfd_arch_frv,
+                              (unsigned long)elf32_frv_machine(obfd));
 
   if (((new_flags & EF_FRV_FDPIC) == 0)
-      != (! IS_FDPIC (ibfd)))
+      != (!IS_FDPIC(ibfd)))
     {
       error = TRUE;
-      if (IS_FDPIC (obfd))
+      if (IS_FDPIC(obfd))
 	(*_bfd_error_handler)
 	  (_("%s: cannot link non-fdpic object file into fdpic executable"),
-	   bfd_get_filename (ibfd));
+	   bfd_get_filename(ibfd));
       else
 	(*_bfd_error_handler)
 	  (_("%s: cannot link fdpic object file into non-fdpic executable"),
-	   bfd_get_filename (ibfd));
+	   bfd_get_filename(ibfd));
     }
 
   if (error)
-    bfd_set_error (bfd_error_bad_value);
+    bfd_set_error(bfd_error_bad_value);
 
   return !error;
 }

@@ -383,7 +383,7 @@ iq2000_info_to_howto_rela (bfd * abfd ATTRIBUTE_UNUSED,
       break;
 
     default:
-      cache_ptr->howto = & iq2000_elf_howto_table [r_type];
+      cache_ptr->howto = &iq2000_elf_howto_table[r_type];
       break;
     }
 }
@@ -391,12 +391,9 @@ iq2000_info_to_howto_rela (bfd * abfd ATTRIBUTE_UNUSED,
 /* Look through the relocs for a section during the first phase.
    Since we don't do .gots or .plts, we just need to consider the
    virtual table relocs for gc.	 */
-
 static bfd_boolean
-iq2000_elf_check_relocs (bfd *abfd,
-			 struct bfd_link_info *info,
-			 asection *sec,
-			 const Elf_Internal_Rela *relocs)
+iq2000_elf_check_relocs(bfd *abfd, struct bfd_link_info *info,
+                        asection *sec, const Elf_Internal_Rela *relocs)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes, **sym_hashes_end;
@@ -407,19 +404,24 @@ iq2000_elf_check_relocs (bfd *abfd,
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (abfd);
-  sym_hashes_end = sym_hashes + symtab_hdr->sh_size / sizeof (Elf32_External_Sym);
-  if (!elf_bad_symtab (abfd))
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(abfd);
+  sym_hashes_end = (sym_hashes + (symtab_hdr->sh_size
+  				  / sizeof(Elf32_External_Sym)));
+  if (!elf_bad_symtab(abfd))
     sym_hashes_end -= symtab_hdr->sh_info;
 
-  rel_end = relocs + sec->reloc_count;
+  if (sym_hashes_end == NULL) {
+    (void)sym_hashes_end;
+  }
+
+  rel_end = (relocs + sec->reloc_count);
   for (rel = relocs; rel < rel_end; rel++)
     {
       struct elf_link_hash_entry *h;
       unsigned long r_symndx;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
       if (r_symndx < symtab_hdr->sh_info)
 	h = NULL;
       else
