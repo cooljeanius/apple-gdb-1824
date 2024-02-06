@@ -33,6 +33,13 @@ AC_PATH_PROG([CONFIGURED_TEX],[tex])dnl
 AC_PROG_MKDIR_P
 m4_ifdef([AM_PROG_AR],[
   AM_PROG_AR
+  m4_ifdef([AC_PROG_AR],[
+    if test "x${AR}" = "x" && test "x${ac_cv_prog_AR}" = "x"; then
+      test -z "${AR}" || unset AR
+      test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+      AC_PROG_AR
+    fi
+  ])dnl
 ],[
   AC_CHECK_TOOL([AR],[ar])dnl
 ])dnl
@@ -52,12 +59,21 @@ AC_FUNC_MMAP
 
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
-  AC_REQUIRE([AC_HEADER_STDC])dnl
+  m4_ifdef([AC_HEADER_STDC],[
+    AC_REQUIRE([AC_HEADER_STDC])dnl
+  ],[
+    AC_CHECK_HEADERS_ONCE([stdlib.h])dnl
+  ])dnl
 ])dnl
 AC_REQUIRE_HEADER_STDC
 AC_CHECK_HEADERS([errno.h fcntl.h limits.h mach/mach.h malloc.h \
                   malloc/malloc.h math.h pthread.h setjmp.h signal.h \
                   stddef.h stdio.h])dnl
+
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
+  AC_CHECK_HEADERS([unistd.h])
+fi
 
 # Checks for declarations.
 AC_CHECK_DECLS([sys_nerr])dnl
@@ -94,6 +110,7 @@ AC_C_CONST
 AC_C_PROTOTYPES
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
+AC_TYPE_UINTPTR_T
 AC_CHECK_TYPES([caddr_t])dnl
 AC_CHECK_TYPES([kern_return_t])dnl
 AC_CHECK_TYPES([long long, unsigned long long],

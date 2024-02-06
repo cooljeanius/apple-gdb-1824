@@ -6349,7 +6349,8 @@ unknown)
 esac
 
   ## ...
-  if test "x${ac_cv_prog_AR}" = "x"; then
+  if test "x${AR}" = "x" && test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${AR}" || unset AR
     test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
     if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ar", so it can be a program name with args.
@@ -6667,7 +6668,7 @@ else
 fi
 
 else
-  test ! -z "${RANLIB}" && export RANLIB
+  test -n "${RANLIB}" && export RANLIB
     ## (keep from being empty)
 fi
 
@@ -6750,7 +6751,7 @@ return vm_region ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' System c kern mach gnumach
+for ac_lib in '' System c kern mach gnumach arclite arclite_macosx clang xnu
 do
   if test -z "$ac_lib"; then
     ac_res="none required"
@@ -6898,6 +6899,7 @@ printf "%s\n" "$ac_cv_path_EGREP" >&6; }
 
          EGREP_TRADITIONAL=$EGREP
  ac_cv_path_EGREP_TRADITIONAL=$EGREP
+
 
 
 
@@ -7507,6 +7509,44 @@ printf "%s\n" "#define int32_t $ac_cv_c_int32_t" >>confdefs.h
 ;;
 esac
 
+
+  ac_fn_c_check_type "$LINENO" "uintptr_t" "ac_cv_type_uintptr_t" "$ac_includes_default"
+if test "x$ac_cv_type_uintptr_t" = xyes
+then :
+
+printf "%s\n" "#define HAVE_UINTPTR_T 1" >>confdefs.h
+
+else case e in #(
+  e) for ac_type in 'unsigned int' 'unsigned long int' \
+	'unsigned long long int'; do
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main (void)
+{
+static int test_array [1 - 2 * !(sizeof (void *) <= sizeof ($ac_type))];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+
+printf "%s\n" "#define uintptr_t $ac_type" >>confdefs.h
+
+	  ac_type=
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+       test -z "$ac_type" && break
+     done ;;
+esac
+fi
+
+
 ac_fn_c_find_uintX_t "$LINENO" "32" "ac_cv_c_uint32_t"
 case $ac_cv_c_uint32_t in #(
   no|yes) ;; #(
@@ -8105,6 +8145,17 @@ printf "%s\n" "$bfd_cv_decl_needed_getpagesize" >&6; }
 if test $bfd_cv_decl_needed_getpagesize = yes; then
 
 printf "%s\n" "#define NEED_DECLARATION_GETPAGESIZE 1" >>confdefs.h
+
+fi
+
+if test "x${ac_cv_func_getpagesize}" = "x"; then
+  test -z "${ac_cv_func_getpagesize}" || unset ac_cv_func_getpagesize
+  ac_fn_c_check_func "$LINENO" "getpagesize" "ac_cv_func_getpagesize"
+if test "x$ac_cv_func_getpagesize" = xyes
+then :
+  printf "%s\n" "#define HAVE_GETPAGESIZE 1" >>confdefs.h
+
+fi
 
 fi
 

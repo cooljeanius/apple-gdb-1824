@@ -46,6 +46,25 @@ typedef int vm_prot_t;
 #   define VM_PROT_WRITE ((vm_prot_t)0x02)
 #  endif /* !VM_PROT_WRITE */
 # endif /* !_MACH_VM_PROT_H_ */
+# ifndef _MACH_VM_TYPES_H_
+#  define _MACH_VM_TYPES_H_ 1
+#  ifndef _MACH_I386_VM_TYPES_H_
+#   define _MACH_I386_VM_TYPES_H_ 1
+#   if defined(__i386__) || defined(__x86_64__)
+#    ifndef ASSEMBLER
+typedef unsigned int natural_t;
+#     if defined(__LP64__) && (defined(HAVE_UINTPTR_T) || defined(uintptr_t))
+typedef uintptr_t vm_offset_t;
+typedef uintptr_t vm_size_t;
+#     else
+typedef natural_t vm_offset_t;
+typedef natural_t vm_size_t;
+#     endif  /* __LP64__ && (HAVE_UINTPTR_T || uintptr_t) */
+typedef vm_offset_t vm_address_t;
+#    endif /* !ASSEMBLER */
+#   endif /* __i386__ || __x86_64__ */
+#  endif /* !_MACH_I386_VM_TYPES_H_ */
+# endif /* !_MACH_VM_TYPES_H_ */
 #endif /* HAVE_MACH_MACH_H || __MACH__ || __APPLE__ */
 
 #if (!defined(__GNUC__) || (__GNUC__ < 2) || __GNUC_MINOR__ < (defined __cplusplus ? 6 : 4))

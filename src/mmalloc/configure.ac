@@ -101,7 +101,8 @@ AC_PROG_MKDIR_P
 m4_ifdef([AM_PROG_AR],[
   AM_PROG_AR
   ## ...
-  if test "x${ac_cv_prog_AR}" = "x"; then
+  if test "x${AR}" = "x" && test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${AR}" || unset AR
     test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
     AC_PROG_AR
   fi
@@ -114,18 +115,23 @@ if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}"
   AC_PROG_RANLIB
 else
-  test ! -z "${RANLIB}" && export RANLIB
+  test -n "${RANLIB}" && export RANLIB
   AC_SUBST([RANLIB])dnl
   ## (keep from being empty)
 fi
 
 # Checks for libraries.
 AC_CHECK_LIB([c],[printf])dnl
-AC_SEARCH_LIBS([vm_region],[System c kern mach gnumach])dnl
+AC_SEARCH_LIBS([vm_region],
+               [System c kern mach gnumach arclite arclite_macosx clang xnu])dnl
 
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
-  AC_REQUIRE([AC_HEADER_STDC])dnl
+  m4_ifdef([AC_HEADER_STDC],[
+    AC_REQUIRE([AC_HEADER_STDC])dnl
+  ],[
+    AC_CHECK_HEADERS_ONCE([inttypes.h stdint.h strings.h unistd.h])dnl
+  ])dnl
 ])dnl
 AC_REQUIRE_HEADER_STDC
 AC_CHECK_HEADERS([AvailabilityMacros.h db.h errno.h fcntl.h \
@@ -194,6 +200,7 @@ AC_CHECK_TYPES([port_t],[],[
 ])dnl
 AC_TYPE_INTPTR_T
 AC_TYPE_INT32_T
+AC_TYPE_UINTPTR_T
 AC_TYPE_UINT32_T
 
 # APPLE LOCAL: mmap() always works right on Darwin. Take our word for it.
@@ -213,6 +220,11 @@ AC_CHECK_DECLS_ONCE([getenv])dnl
 
 BFD_NEED_DECLARATION([sbrk])dnl
 BFD_NEED_DECLARATION([getpagesize])dnl
+
+if test "x${ac_cv_func_getpagesize}" = "x"; then
+  test -z "${ac_cv_func_getpagesize}" || unset ac_cv_func_getpagesize
+  AC_CHECK_FUNCS([getpagesize])
+fi
 
 AC_MSG_CHECKING([for page-protection malloc support])
 case "${host}" in

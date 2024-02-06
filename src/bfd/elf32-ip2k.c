@@ -732,6 +732,19 @@ adjust_all_relocations(bfd *abfd, asection *sec, bfd_vma addr, bfd_vma endaddr,
 				}
 			    }
 			}
+
+                      if (strx == 0UL) {
+                        (void)strx;
+                      }
+                      if (other == 0U) {
+                        (void)other;
+                      }
+                      if (desc == 0U) {
+                        (void)desc;
+                      }
+                      if (value == 0UL) {
+                        (void)value;
+                      }
 		    }
 		}
 	    }

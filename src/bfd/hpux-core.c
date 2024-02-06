@@ -85,6 +85,13 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 # define CORE_ANON_SHMEM 0x00000200         /* anonymous shared memory */
 #endif /* !CORE_ANON_SHMEM */
 
+#ifndef	_SYS_PARAM_H_
+# define _SYS_PARAM_H_ 1
+# ifndef MAXCOMLEN
+#  define MAXCOMLEN 16
+# endif /* !MAXCOMLEN */
+#endif /* !_SYS_PARAM_H */
+
 /* These are stored in the bfd's tdata */
 
 /* .lwpid and .user_tid are only valid if PROC_INFO_HAS_THREAD_ID, else they

@@ -773,21 +773,27 @@ m32c_elf_merge_private_bfd_data(bfd *ibfd, bfd *obfd)
 	  switch (new_partial)
 	    {
 	    default:
-              strncat(new_opt, " -m16c", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -m16c", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_M32C_CPU_M16C:
-              strncat(new_opt, " -m16c", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -m16c", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    case EF_M32C_CPU_M32C:
-              strncat(new_opt, " -m32c", (sizeof(new_opt) - 1UL)); break;
+              strncat(new_opt, " -m32c", (sizeof(new_opt) - strlen(new_opt) - 1UL));
+              break;
 	    }
 
 	  switch (old_partial)
 	    {
 	    default:
-              strncat(old_opt, " -m16c", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -m16c", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_M32C_CPU_M16C:
-              strncat(old_opt, " -m16c", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -m16c", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    case EF_M32C_CPU_M32C:
-              strncat(old_opt, " -m32c", (sizeof(old_opt) - 1UL)); break;
+              strncat(old_opt, " -m32c", (sizeof(old_opt) - strlen(old_opt) - 1UL));
+              break;
 	    }
 	}
 
