@@ -154,6 +154,7 @@ COMMAND commands[] = {
 };
 
 /* Forward declarations. */
+char *dupstr(char *);
 char *stripwhite(char *);
 COMMAND *find_command(char *);
 int initialize_readline(void);
@@ -167,6 +168,7 @@ char *progname;
 /* When non-zero, this global means the user is done using this program. */
 int done;
 
+/* */
 char *
 dupstr(char *s)
 {
@@ -177,6 +179,7 @@ dupstr(char *s)
   return (r);
 }
 
+/* */
 int main(int argc, char **argv)
 {
   char *line, *s;
@@ -372,7 +375,7 @@ static char syscom[1024];
 int com_list(char *arg)
 {
   if (!arg)
-    arg = "";
+    arg = (char *)"";
 
   sprintf(syscom, "ls -FClg %s", arg);
   return (system(syscom));
@@ -414,7 +417,7 @@ int com_stat(char *arg)
   printf("Statistics for `%s':\n", arg);
 
   printf("%s has %d link%s, and is %d byte%s in length.\n",
-	 arg, finfo.st_nlink,
+	 arg, (int)finfo.st_nlink,
          ((finfo.st_nlink == 1) ? "" : "s"),
          (int)finfo.st_size,
          ((finfo.st_size == 1) ? "" : "s"));
@@ -478,7 +481,7 @@ int com_cd(char *arg)
       return 1;
     }
 
-  com_pwd("");
+  com_pwd((char *)"");
   return (0);
 }
 

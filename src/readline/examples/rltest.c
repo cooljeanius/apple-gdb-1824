@@ -66,7 +66,8 @@ extern HIST_ENTRY **history_list(void);
 
 int main(void)
 {
-  char *temp, *prompt;
+  char *temp;
+  const char *prompt;
   int done;
 
   temp = (char *)NULL;

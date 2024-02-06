@@ -77,32 +77,32 @@ OBJECTS = fileman.o rltest.o rl.o rlcat.o rlversion.o histexamp.o
 check_PROGRAMS = fileman_am rltest_am rl_am rlcat_am rlversion_am histexamp_am
 
 fileman_am_SOURCES = fileman.c
-fileman_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+fileman_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE) $(GCC_LINT_FLAGS)
 fileman_am_LDADD = $(READLINE_LIB) $(HISTORY_LIB) $(TERMCAP_LIB)
 fileman_am_DEPENDENCIES = fileman.o $(READLINE_LIB) $(HISTORY_LIB)
 
 rltest_am_SOURCES = rltest.c
-rltest_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+rltest_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE) $(GCC_LINT_FLAGS)
 rltest_am_LDADD = $(READLINE_LIB) $(HISTORY_LIB) $(TERMCAP_LIB)
 rltest_am_DEPENDENCIES = rltest.o $(READLINE_LIB) $(HISTORY_LIB)
 
 rl_am_SOURCES = rl.c
-rl_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+rl_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE) $(GCC_LINT_FLAGS)
 rl_am_LDADD = $(READLINE_LIB) $(HISTORY_LIB) $(TERMCAP_LIB)
 rl_am_DEPENDENCIES = rl.o $(READLINE_LIB) $(HISTORY_LIB)
 
 rlcat_am_SOURCES = rlcat.c
-rlcat_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+rlcat_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE) $(GCC_LINT_FLAGS)
 rlcat_am_LDADD = $(READLINE_LIB) $(TERMCAP_LIB)
 rlcat_am_DEPENDENCIES = rlcat.o $(READLINE_LIB)
 
 rlversion_am_SOURCES = rlversion.c
-rlversion_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+rlversion_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE) $(GCC_LINT_FLAGS)
 rlversion_am_LDADD = $(READLINE_LIB) $(TERMCAP_LIB)
 rlversion_am_DEPENDENCIES = rlversion.o $(READLINE_LIB)
 
 histexamp_am_SOURCES = histexamp.c
-histexamp_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE)
+histexamp_am_CFLAGS = $(AM_CFLAGS) @MAINT@ $(GTOGGLE) $(GCC_LINT_FLAGS)
 histexamp_am_LDADD = $(HISTORY_LIB) $(TERMCAP_LIB)
 histexamp_am_DEPENDENCIES = histexamp.o $(HISTORY_LIB)
 

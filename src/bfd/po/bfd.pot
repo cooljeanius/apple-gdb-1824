@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-05 21:30-0500\n"
+"POT-Creation-Date: 2024-02-06 01:24-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -679,7 +679,7 @@ msgstr ""
 #: elf-m10200.c:415 elf-m10300.c:1525 elf32-arm.c:4240 elf32-avr.c:879
 #: elf32-bfin.c:3205 elf32-cr16.c:1484 elf32-cr16c.c:780 elf32-cris.c:1514
 #: elf32-crx.c:915 elf32-d10v.c:545 elf32-epiphany.c:572 elf32-fr30.c:569
-#: elf32-frv.c:4081 elf32-h8300.c:494 elf32-i860.c:1178 elf32-ip2k.c:1472
+#: elf32-frv.c:4081 elf32-h8300.c:494 elf32-i860.c:1178 elf32-ip2k.c:1485
 #: elf32-iq2000.c:620 elf32-lm32.c:1160 elf32-m32c.c:473 elf32-m32r.c:3090
 #: elf32-m68hc1x.c:1208 elf32-mep.c:535 elf32-metag.c:1992
 #: elf32-microblaze.c:1560 elf32-moxie.c:282 elf32-ms1.c:371 elf32-msp430.c:507
@@ -712,7 +712,7 @@ msgstr ""
 #: elf-m10200.c:427 elf-m10300.c:1537 elf32-arm.c:4252 elf32-avr.c:891
 #: elf32-bfin.c:3217 elf32-cr16.c:1496 elf32-cr16c.c:792 elf32-cris.c:1526
 #: elf32-crx.c:927 elf32-d10v.c:557 elf32-epiphany.c:587 elf32-fr30.c:581
-#: elf32-frv.c:4093 elf32-h8300.c:506 elf32-i860.c:1190 elf32-ip2k.c:1487
+#: elf32-frv.c:4093 elf32-h8300.c:506 elf32-i860.c:1190 elf32-ip2k.c:1500
 #: elf32-iq2000.c:632 elf32-lm32.c:1172 elf32-m32c.c:485 elf32-m32r.c:3102
 #: elf32-m68hc1x.c:1220 elf32-mep.c:547 elf32-metag.c:2004
 #: elf32-microblaze.c:1572 elf32-moxie.c:294 elf32-ms1.c:379 elf32-msp430.c:519
@@ -1035,7 +1035,7 @@ msgid "%B: bad symbol index: %d"
 msgstr ""
 
 #: elf32-avr.c:887 elf32-bfin.c:3213 elf32-cris.c:1522 elf32-epiphany.c:583
-#: elf32-fr30.c:577 elf32-frv.c:4089 elf32-i860.c:1186 elf32-ip2k.c:1483
+#: elf32-fr30.c:577 elf32-frv.c:4089 elf32-i860.c:1186 elf32-ip2k.c:1496
 #: elf32-iq2000.c:628 elf32-m32c.c:481 elf32-mep.c:543 elf32-metag.c:2000
 #: elf32-moxie.c:290 elf32-ms1.c:375 elf32-msp430.c:515 elf32-mt.c:399
 #: elf32-openrisc.c:393 elf32-or1k.c:1271 elf32-tilepro.c:3678
@@ -1195,7 +1195,7 @@ msgid "%B contains non-CRIS-v32 code, incompatible with previous objects"
 msgstr ""
 
 #. Only if it's not an unresolved symbol.
-#: elf32-epiphany.c:579 elf32-ip2k.c:1479
+#: elf32-epiphany.c:579 elf32-ip2k.c:1492
 msgid "unsupported relocation between data/insn address spaces"
 msgstr ""
 
@@ -1277,7 +1277,7 @@ msgid ""
 "%s: compiled with %s and linked with modules that use non-pic relocations"
 msgstr ""
 
-#: elf32-frv.c:6767 elf32-iq2000.c:804 elf32-m32c.c:799
+#: elf32-frv.c:6767 elf32-iq2000.c:804 elf32-m32c.c:805
 #, c-format
 msgid "%s: compiled with %s and linked with modules compiled with %s"
 msgstr ""
@@ -1289,7 +1289,7 @@ msgid ""
 "%lx)"
 msgstr ""
 
-#: elf32-frv.c:6829 elf32-iq2000.c:842 elf32-m32c.c:835 elf32-ms1.c:593
+#: elf32-frv.c:6829 elf32-iq2000.c:842 elf32-m32c.c:841 elf32-ms1.c:593
 #: elf32-mt.c:580 elf32-rl78.c:1069 elf32-rx.c:3040
 #, c-format
 msgid "private flags = 0x%lx:"
@@ -1361,21 +1361,21 @@ msgid ""
 "when making a shared object"
 msgstr ""
 
-#: elf32-ip2k.c:847 elf32-ip2k.c:853 elf32-ip2k.c:918 elf32-ip2k.c:924
+#: elf32-ip2k.c:860 elf32-ip2k.c:866 elf32-ip2k.c:931 elf32-ip2k.c:937
 msgid ""
 "ip2k relaxer: switch table without complete matching relocation information."
 msgstr ""
 
-#: elf32-ip2k.c:870 elf32-ip2k.c:951
+#: elf32-ip2k.c:883 elf32-ip2k.c:964
 msgid "ip2k relaxer: switch table header corrupt."
 msgstr ""
 
-#: elf32-ip2k.c:1297
+#: elf32-ip2k.c:1310
 #, c-format
 msgid "ip2k linker: missing page instruction at 0x%08lx (dest = 0x%08lx)."
 msgstr ""
 
-#: elf32-ip2k.c:1313
+#: elf32-ip2k.c:1326
 #, c-format
 msgid "ip2k linker: redundant page instruction at 0x%08lx (dest = 0x%08lx)."
 msgstr ""
@@ -1397,7 +1397,7 @@ msgstr ""
 msgid "internal error: addend should be zero for R_LM32_16_GOT"
 msgstr ""
 
-#: elf32-m32c.c:811
+#: elf32-m32c.c:817
 #, c-format
 msgid "%s: uses different e_flags (0x%lx) fields than previous modules (0x%lx)"
 msgstr ""

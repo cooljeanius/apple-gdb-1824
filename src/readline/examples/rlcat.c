@@ -97,6 +97,7 @@ static int stdcat(int, char **);
 static char *progname;
 static int vflag;
 
+/* */
 static void
 usage(void)
 {
@@ -104,6 +105,7 @@ usage(void)
           progname, progname);
 }
 
+/* */
 int
 main(int argc, char **argv)
 {
@@ -156,6 +158,7 @@ main(int argc, char **argv)
   return (ferror(stdout));
 }
 
+/* */
 static int
 fcopy(FILE *fp)
 {
@@ -164,18 +167,19 @@ fcopy(FILE *fp)
 
   while ((c = getc(fp)) != EOF)
     {
-      if (vflag && isascii ((unsigned char)c) && isprint((unsigned char)c) == 0)
+      if (vflag && isascii((unsigned char)c) && isprint((unsigned char)c) == 0)
 	{
-	  x = rl_untranslate_keyseq (c);
-	  if (fputs (x, stdout) != 0)
+	  x = rl_untranslate_keyseq(c);
+	  if (fputs(x, stdout) != 0)
 	    return 1;
 	}
-      else if (putchar (c) == EOF)
+      else if (putchar(c) == EOF)
         return 1;
     }
-  return (ferror (stdout));
+  return (ferror(stdout));
 }
 
+/* */
 int
 stdcat(int argc, char **argv)
 {

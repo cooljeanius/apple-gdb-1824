@@ -112,7 +112,8 @@ usage(void)
 int
 main(int argc, char **argv)
 {
-  char *temp, *prompt;
+  char *temp;
+  const char *prompt;
   struct stat sb;
   int opt, fd, nch;
   FILE *ifp;

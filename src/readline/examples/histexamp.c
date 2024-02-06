@@ -72,7 +72,7 @@ int main(int argc, char **argv)
     {
       printf("history$ ");
       fflush(stdout);
-      t = fgets(line, (sizeof(line) - 1), stdin);
+      t = fgets(line, ((int)sizeof(line) - 1), stdin);
       if (t && *t)
         {
           len = strlen(t);
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
             }
 
           add_history(expansion);
-          strncpy(line, expansion, sizeof(line) - 1);
+          strncpy(line, expansion, (sizeof(line) - 1UL));
           free(expansion);
         }
 
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
             for (i = 0; the_list[i]; i++)
               printf("%d: %s\n", i + history_base, the_list[i]->line);
         }
-      else if (strncmp(line, "delete", 6) == 0)
+      else if (strncmp(line, "delete", 6UL) == 0)
         {
           int which;
           if ((sscanf(line + 6, "%d", &which)) == 1)
@@ -141,6 +141,7 @@ int main(int argc, char **argv)
             }
         }
     }
+  return 0;
 }
 
 /* EOF */
