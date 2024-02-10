@@ -6,7 +6,7 @@ dnl# This is a hack because autoconf finds the AC\_INIT from
 dnl# ../config/override.m4 first if it is present, which is annoying.
 dnl# Feel free to re-define to whichever version of autoconf
 dnl# that you are using:
-m4_define([_GCC_AUTOCONF_VERSION],[2.71])
+m4_define([_GCC_AUTOCONF_VERSION],[2.72])
 AC_INIT([zlib],[1.2.8],[jloup@gzip.org])
 AC_CONFIG_SRCDIR([adler32.c])
 AC_CONFIG_HEADERS([config.h])
@@ -114,6 +114,16 @@ if test -e ./config.cache; then
     sed -i "s|am_cv_ar_interface|bad_ar_interface|g" ./config.cache
 fi
 AM_PROG_AR
+m4_ifdef([AC_PROG_AR],[
+if test "x${AR}" = "x"; then
+  test -z "${AR}" || unset AR
+  ## might want to switch around these checks...
+  if test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    AC_PROG_AR
+  fi
+fi
+])dnl
 AM_PROG_AS
 if test "x${ac_cv_prog_AWK}" = "x"; then
   test -z "${ac_cv_prog_AWK}"
@@ -208,8 +218,12 @@ AC_CHECK_HEADERS([Carbon/Carbon.h CHUD/CHUD.h direct.h fcntl.h io.h \
                   malloc/malloc.h math.h stdarg.h stddef.h stdio.h \
                   sys/sysctl.h sys/time.h utime.h windows.h])dnl
   ## probably unnecessary:
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
+  AC_CHECK_HEADERS([stdint.h])
+fi
 if test "x${ac_cv_header_unistd_h}" = "x"; then
-  test -z "${ac_cv_header_unistd_h}"
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
   AC_CHECK_HEADERS([unistd.h])
 fi
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-10 01:59-0500\n"
+"POT-Creation-Date: 2024-02-10 14:27-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -685,7 +685,7 @@ msgstr ""
 #: elf32-microblaze.c:1560 elf32-moxie.c:282 elf32-ms1.c:371 elf32-msp430.c:507
 #: elf32-mt.c:395 elf32-nds32.c:4912 elf32-openrisc.c:385 elf32-or1k.c:1263
 #: elf32-score.c:2739 elf32-score7.c:2589 elf32-spu.c:5045 elf32-tilepro.c:3670
-#: elf32-v850.c:1677 elf32-xstormy16.c:914 elf64-mmix.c:1503
+#: elf32-v850.c:1681 elf32-xstormy16.c:914 elf64-mmix.c:1503
 msgid "internal error: out of range error"
 msgstr ""
 
@@ -697,7 +697,7 @@ msgstr ""
 #: elf32-metag.c:1996 elf32-microblaze.c:1564 elf32-moxie.c:286
 #: elf32-msp430.c:511 elf32-nds32.c:4916 elf32-openrisc.c:389 elf32-or1k.c:1267
 #: elf32-score.c:2743 elf32-score7.c:2593 elf32-spu.c:5049 elf32-tilepro.c:3674
-#: elf32-v850.c:1681 elf32-xstormy16.c:918 elf64-mmix.c:1507 elfxx-mips.c:7216
+#: elf32-v850.c:1685 elf32-xstormy16.c:918 elf64-mmix.c:1507 elfxx-mips.c:7216
 msgid "internal error: unsupported relocation error"
 msgstr ""
 
@@ -718,7 +718,7 @@ msgstr ""
 #: elf32-microblaze.c:1572 elf32-moxie.c:294 elf32-ms1.c:379 elf32-msp430.c:519
 #: elf32-mt.c:403 elf32-nds32.c:4924 elf32-openrisc.c:397 elf32-or1k.c:1275
 #: elf32-score.c:2756 elf32-score7.c:2601 elf32-spu.c:5057 elf32-tilepro.c:3682
-#: elf32-v850.c:1701 elf32-xstormy16.c:926 elf64-mmix.c:1515
+#: elf32-v850.c:1705 elf32-xstormy16.c:926 elf64-mmix.c:1515
 msgid "internal error: unknown error"
 msgstr ""
 
@@ -1039,7 +1039,7 @@ msgstr ""
 #: elf32-iq2000.c:628 elf32-m32c.c:481 elf32-mep.c:543 elf32-metag.c:2000
 #: elf32-moxie.c:290 elf32-ms1.c:375 elf32-msp430.c:515 elf32-mt.c:399
 #: elf32-openrisc.c:393 elf32-or1k.c:1271 elf32-tilepro.c:3678
-#: elf32-v850.c:1685 elf32-xstormy16.c:922 elf64-mmix.c:1511
+#: elf32-v850.c:1689 elf32-xstormy16.c:922 elf64-mmix.c:1511
 msgid "internal error: dangerous relocation"
 msgstr ""
 
@@ -2274,43 +2274,43 @@ msgid ""
 "Variable `%s' cannot be in both zero and tiny data regions simultaneously"
 msgstr ""
 
-#: elf32-v850.c:482
+#: elf32-v850.c:486
 #, c-format
 msgid "FAILED to find previous HI16 reloc\n"
 msgstr ""
 
-#: elf32-v850.c:1689
+#: elf32-v850.c:1693
 msgid "could not locate special linker symbol __gp"
 msgstr ""
 
-#: elf32-v850.c:1693
+#: elf32-v850.c:1697
 msgid "could not locate special linker symbol __ep"
 msgstr ""
 
-#: elf32-v850.c:1697
+#: elf32-v850.c:1701
 msgid "could not locate special linker symbol __ctbp"
 msgstr ""
 
-#: elf32-v850.c:1875
+#: elf32-v850.c:1879
 msgid "%B: Architecture mismatch with previous modules"
 msgstr ""
 
-#: elf32-v850.c:1894
+#: elf32-v850.c:1898
 #, c-format
 msgid "private flags = %lx: "
 msgstr ""
 
-#: elf32-v850.c:1899
+#: elf32-v850.c:1903
 #, c-format
 msgid "v850 architecture"
 msgstr ""
 
-#: elf32-v850.c:1900
+#: elf32-v850.c:1904
 #, c-format
 msgid "v850e architecture"
 msgstr ""
 
-#: elf32-v850.c:1901
+#: elf32-v850.c:1905
 #, c-format
 msgid "v850e1 architecture"
 msgstr ""

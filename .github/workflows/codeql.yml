@@ -219,10 +219,10 @@ jobs:
         done
         echo "make configure-gdb" && (time make configure-gdb) && echo "done making configure-gdb"
         echo "make all-gdb" && (time make all-gdb) && echo "done making all-gdb"
-        make check-libiberty
+        echo "make check-libiberty" && make check-libiberty && echo "done making check-libiberty"
         for dir in cgen sim expect dejagnu itcl libgui; do \
           if test -e ${dir}/Makefile; then \
-            make check-${dir} V=0 RUNTESTFLAGS="-v"; \
+            echo "make check-${dir}" && (time make check-${dir} V=0 RUNTESTFLAGS="-v") && echo "done making check-${dir}"; \
           elif test -d ${dir}; \
             then ls ${dir}/Makefile*; \
           else \

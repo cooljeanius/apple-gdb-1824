@@ -947,7 +947,7 @@ case "${target}" in
 # fails as a subdirectory for the top-level Makefile...
     mynoconfigdirs="${noconfigdirs} dejagnu"
 # likewise with tcl, expect, and target-libbacktrace:
-    if test ! -z "${build_alias}" -o ! -z "${host_alias}" -o ! -z "${target_alias}"; then
+    if test -n "${build_alias}" -o -n "${host_alias}" -o -n "${target_alias}"; then
       noconfigdirs="${noconfigdirs} tcl expect target-libbacktrace"
     elif test -n "${with_target_subdir}" || test -n "${multi_basedir}"; then
       noconfigdirs="${noconfigdirs} target-libbacktrace"
@@ -1016,14 +1016,14 @@ case "${target}" in
     host_configargs=" ${host_configargs} --enable-obsolete"
     ;;
 # END APPLE LOCAL
-# Travis triplet (technically a quadruplet but whatever):
-  x86_64-unknown-linux-gnu*)
+# Travis/GHA triplets (technically quadruplets but whatever):
+  x86_64-unknown-linux-gnu* | x86_64-pc-linux-gnu*)
 # Same as with Apple case above:
-    if test ! -z "${build_alias}" -o ! -z "${host_alias}" -o ! -z "${target_alias}"; then
+    if test -n "${build_alias}" -o -n "${host_alias}" -o -n "${target_alias}"; then
       noconfigdirs="${noconfigdirs} expect"
     fi
-# Also same as with Apple case above:
-    if test -z "${AR}" -o -z "${ARFLAGS}" -o "${ARFLAGS}" = "-o"; then
+# Also similar to Apple case above:
+    if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o" -o -n "${PIC_FLAG}"; then
       noconfigdirs="${noconfigdirs} zlib"
     fi
 # autogen support in this tree is still tentative, so disable if guile is

@@ -45,6 +45,19 @@ LT_LANG([C])dnl
 LT_LANG([Windows Resource])dnl
 LT_PREREQ([2.4.6])dnl
 
+m4_ifdef([AC_PROG_AR],[
+if test "x${AR}" = "x"; then
+  test -z "${AR}" || unset AR
+  ## might want to switch around these checks...
+  if test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    AC_PROG_AR
+  fi
+else
+  test -n "${AR}" && export AR
+fi
+])dnl
+
 AC_MSG_CHECKING([whether to build example programs])
 AC_ARG_ENABLE([demos],
               [AS_HELP_STRING([--enable-demos],[build example programs])])
