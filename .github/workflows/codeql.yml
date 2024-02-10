@@ -175,9 +175,9 @@ jobs:
         ./configure --enable-silent-rules
         make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi)
         cd src
-        ./configure --disable-werror --enable-silent-rules
-        make configure-bfd
-        make -C bfd headers
+        ./configure --disable-werror --enable-silent-rules --disable-cgen-maint
+        make configure-bfd V=0
+        make -C bfd headers V=0
         if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi
         if test -e autogen/Makefile; then \
           make -C autogen; \
@@ -186,11 +186,11 @@ jobs:
         else \
           echo "skipping autogen"; \
         fi
-        make -C bfd diststuff
+        make -C bfd diststuff V=0
         echo "make all-bfd" && (time make -j"$(nproc)" all-bfd V=0) && echo "done making all-bfd"
         echo "make all-opcodes" && (time make -j"$(nproc)" all-opcodes V=0) && echo "done making all-opcodes"
-        echo "make configure-binutils" && (time make configure-binutils) && echo "done making configure-binutils"
-        echo "make all-binutils" && (time make all-binutils) && echo "done making all-binutils"
+        echo "make configure-binutils" && (time make configure-binutils V=0) && echo "done making configure-binutils"
+        echo "make all-binutils" && (time make all-binutils V=0) && echo "done making all-binutils"
         echo "make all-cgen" && (time make all-cgen) && echo "done making all-cgen"
         echo "make all-libiberty" && (time make -j"$(nproc)" all-libiberty) && echo "done making all-libiberty"
         echo "make all-intl" && (time make all-intl) && echo "done making all-intl"
@@ -229,7 +229,7 @@ jobs:
             echo "skipping testing ${dir}"; \
           fi; \
         done
-        echo "make check-opcodes" && (time make check-opcodes) && echo "done making check-opcodes"
+        echo "make check-opcodes" && (time make -j"$(nproc)" check-opcodes V=0) && echo "done making check-opcodes"
         echo "make check-intl" && (time make check-intl) && echo "done making check-intl"
         echo "make check-utils" && (time make check-utils) && echo "done making check-utils"
 

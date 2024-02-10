@@ -25907,6 +25907,132 @@ fi
 
 
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-int-conversion" >&5
+printf %s "checking whether C compiler handles -Wno-int-conversion... " >&6; }
+if test ${gl_cv_warn_c__Wno_int_conversion+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e)
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wint-conversion"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  gl_cv_warn_c__Wno_int_conversion=yes
+else case e in #(
+  e) gl_cv_warn_c__Wno_int_conversion=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_int_conversion" >&5
+printf "%s\n" "$gl_cv_warn_c__Wno_int_conversion" >&6; }
+if test "x$gl_cv_warn_c__Wno_int_conversion" = xyes
+then :
+  as_fn_append WARN_CFLAGS " -Wno-int-conversion"
+fi
+
+
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-tautological-pointer-compare" >&5
+printf %s "checking whether C compiler handles -Wno-tautological-pointer-compare... " >&6; }
+if test ${gl_cv_warn_c__Wno_tautological_pointer_compare+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e)
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wtautological-pointer-compare"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  gl_cv_warn_c__Wno_tautological_pointer_compare=yes
+else case e in #(
+  e) gl_cv_warn_c__Wno_tautological_pointer_compare=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_tautological_pointer_compare" >&5
+printf "%s\n" "$gl_cv_warn_c__Wno_tautological_pointer_compare" >&6; }
+if test "x$gl_cv_warn_c__Wno_tautological_pointer_compare" = xyes
+then :
+  as_fn_append WARN_CFLAGS " -Wno-tautological-pointer-compare"
+fi
+
+
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-string-plus-int" >&5
+printf %s "checking whether C compiler handles -Wno-string-plus-int... " >&6; }
+if test ${gl_cv_warn_c__Wno_string_plus_int+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e)
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wstring-plus-int"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  gl_cv_warn_c__Wno_string_plus_int=yes
+else case e in #(
+  e) gl_cv_warn_c__Wno_string_plus_int=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_string_plus_int" >&5
+printf "%s\n" "$gl_cv_warn_c__Wno_string_plus_int" >&6; }
+if test "x$gl_cv_warn_c__Wno_string_plus_int" = xyes
+then :
+  as_fn_append WARN_CFLAGS " -Wno-string-plus-int"
+fi
+
+
+
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -fpermissive" >&5
 printf %s "checking whether C compiler handles -fpermissive... " >&6; }
 if test ${gl_cv_warn_c__fpermissive+y}
