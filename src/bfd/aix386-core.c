@@ -25,7 +25,9 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.
  */
 
 #ifndef AIX386_CORE_C
-# define AIX386_CORE_C 1
+# if defined(__APPLE__) || (defined(__GNUC__) && !defined(__linux__))
+#  define AIX386_CORE_C 1
+# endif /* __APPLE__ || (__GNUC__ && !__linux__) */
 #endif /* !AIX386_CORE_C */
 
 #include "bfd.h"

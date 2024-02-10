@@ -187,6 +187,10 @@ jobs:
           echo "skipping autogen"; \
         fi
         make -C bfd diststuff
+        echo "make all-bfd" && (time make all-bfd) && echo "done making all-bfd"
+        echo "make all-opcodes" && (time make all-opcodes) && echo "done making all-opcodes"
+        echo "make configure-binutils" && (time make configure-binutils) && echo "done making configure-binutils"
+        echo "make all-binutils" && (time make all-binutils) && echo "done making all-binutils"
         echo "make all-cgen" && (time make all-cgen) && echo "done making all-cgen"
         echo "make all-libiberty" && (time make -j"$(nproc)" all-libiberty) && echo "done making all-libiberty"
         echo "make all-intl" && (time make all-intl) && echo "done making all-intl"
@@ -213,8 +217,10 @@ jobs:
             echo "skipping ${dir}"; \
           fi; \
         done
+        echo "make configure-gdb" && (time make configure-gdb) && echo "done making configure-gdb"
+        echo "make all-gdb" && (time make all-gdb) && echo "done making all-gdb"
         make check-libiberty
-        for dir in sim itcl; do \
+        for dir in cgen sim expect dejagnu itcl libgui; do \
           if test -e ${dir}/Makefile; then \
             make check-${dir} V=0 RUNTESTFLAGS="-v"; \
           elif test -d ${dir}; \
@@ -223,6 +229,9 @@ jobs:
             echo "skipping testing ${dir}"; \
           fi; \
         done
+        echo "make check-opcodes" && (time make check-opcodes) && echo "done making check-opcodes"
+        echo "make check-intl" && (time make check-intl) && echo "done making check-intl"
+        echo "make check-utils" && (time make check-utils) && echo "done making check-utils"
 
     - run: find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
       if: "${{ failure() }}"
