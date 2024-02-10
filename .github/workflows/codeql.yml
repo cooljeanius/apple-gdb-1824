@@ -187,8 +187,8 @@ jobs:
           echo "skipping autogen"; \
         fi
         make -C bfd diststuff
-        echo "make all-bfd" && (time make all-bfd) && echo "done making all-bfd"
-        echo "make all-opcodes" && (time make all-opcodes) && echo "done making all-opcodes"
+        echo "make all-bfd" && (time make -j"$(nproc)" all-bfd V=0) && echo "done making all-bfd"
+        echo "make all-opcodes" && (time make -j"$(nproc)" all-opcodes V=0) && echo "done making all-opcodes"
         echo "make configure-binutils" && (time make configure-binutils) && echo "done making configure-binutils"
         echo "make all-binutils" && (time make all-binutils) && echo "done making all-binutils"
         echo "make all-cgen" && (time make all-cgen) && echo "done making all-cgen"
