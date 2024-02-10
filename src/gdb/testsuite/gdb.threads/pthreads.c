@@ -40,7 +40,7 @@ static pthread_attr_t null_attr;
 # define PTHREAD_CREATE_NULL_ARG2 NULL
 #endif /* __osf__ || __hpux__ */
 
-static int verbose = 0;
+static int verbose = 1;
 
 /* */
 static void
@@ -77,10 +77,10 @@ thread1(void *arg)
   int i;
   int z = 0;
 
-  if (verbose) printf("thread1 (%0x) ; pid = %d\n", arg, getpid());
+  if (verbose) printf("thread1 (%p); pid = %d\n", arg, getpid());
   for (i = 1; i <= 10000000; i++)
     {
-      if (verbose) printf("thread1 %d\n", pthread_self());
+      if (verbose) printf("thread1 %d (iteration %d)\n", pthread_self(), i);
       z += i;
       common_routine(1);
       sleep(1);
@@ -95,10 +95,10 @@ thread2(void *arg)
   int i;
   int k = 0;
 
-  if (verbose) printf("thread2 (%0x) ; pid = %d\n", arg, getpid());
+  if (verbose) printf("thread2 (%p); pid = %d\n", arg, getpid());
   for (i = 1; i <= 10000000; i++)
     {
-      if (verbose) printf("thread2 %d\n", pthread_self());
+      if (verbose) printf("thread2 %d (iteration %d)\n", pthread_self(), i);
       k += i;
       common_routine(2);
       sleep(1);
@@ -113,7 +113,7 @@ foo(int a, int b, int c)
 {
   int d, e, f;
 
-  if (verbose) printf("a=%d\n", a);
+  if (verbose) printf("foo: a=%d, b=%d, c=%d\n", a, b, c);
 }
 
 /* */
@@ -126,7 +126,8 @@ main(int argc, char **argv)
   void (*xxx)();
   pthread_attr_t attr;
 
-  if (verbose) printf("pid = %d\n", getpid());
+  if (verbose)
+    printf("main: argc = %d, argv = %p, pid = %d\n", argc, argv, getpid());
 
   foo(1, 2, 3);
 
@@ -161,11 +162,11 @@ main(int argc, char **argv)
     }
   if (verbose) printf("Made thread %d\n", tid2);
 
-  sleep (1);
+  sleep(1);
 
   for (j = 1; j <= 10000000; j++)
     {
-      if (verbose) printf("top %d\n", pthread_self());
+      if (verbose) printf("main: top %d, iteration %d\n", pthread_self(), j);
       common_routine(0);
       sleep(1);
       t += j;

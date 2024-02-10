@@ -20,6 +20,7 @@ Makefile: config.status $(srcdir)/Makefile.in
 # 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
 	-rm -fv *~ *.o a.out xgdb *.x *.ci *.tmp core* $(EXECUTABLES)
+	-rm -rfv *.dSYM || rmdir *.dSYM
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log config.h

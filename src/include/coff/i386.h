@@ -121,8 +121,12 @@ struct external_reloc
 
 /* --------------------------------------------------------------------- */
 
-#if (defined(_AIX) && defined(_I386)) || defined(__i386) || \
-    defined(__i386__) || defined(__x86_64) || defined(__x86_64__)
+#if (defined(_AIX) || defined(AIX5) || defined(AIX6) || defined(AIX7) || \
+     defined(ACTUALLY_CAN_USE_AIX_I386_STUFF) || defined(AIX386_CORE_C) || \
+     defined(WITH_AIXAUTHENTICATE) || defined(USE_AIX_KRB_NAME) || \
+     defined(AIX_GETNAMEINFO_HACK) || defined(AIX_5_CORE)) && \
+    (defined(_I386) || defined(__i386) || defined(__i386__) || \
+     defined(_X86_64) || defined(__x86_64) || defined(__x86_64__))
 /* -- from uinfo.h -- */
 # define UINFOSIZ 64 /* size of user info buffer */
 typedef char uinfo_t[UINFOSIZ];

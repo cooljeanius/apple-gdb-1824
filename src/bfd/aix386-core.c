@@ -24,6 +24,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.
  */
 
+#ifndef AIX386_CORE_C
+# define AIX386_CORE_C 1
+#endif /* !AIX386_CORE_C */
+
 #include "bfd.h"
 #include "sysdep.h"
 #include "libbfd.h"

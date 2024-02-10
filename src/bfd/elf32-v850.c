@@ -307,6 +307,10 @@ find_remembered_hi16s_reloc(bfd_vma addend, bfd_boolean *already_found)
   /* Note that this entry has now been used: */
   match->found = TRUE;
 
+  if (previous == NULL) {
+    (void)previous;
+  }
+
   return addr;
 }
 
@@ -2729,46 +2733,49 @@ v850_elf_relax_section(bfd *abfd, asection *sec,
 	         of changes which have to be made, as is done in coff-mips.c;
 	         that would be more work, but would require less memory when
 	         the linker is run.  */
-	      elf_section_data (sec)->relocs = internal_relocs;
-	      elf_section_data (sec)->this_hdr.contents = contents;
-	      symtab_hdr->contents = (bfd_byte *) isymbuf;
+	      elf_section_data(sec)->relocs = internal_relocs;
+	      elf_section_data(sec)->this_hdr.contents = contents;
+	      symtab_hdr->contents = (bfd_byte *)isymbuf;
 
-	      /* Replace the long call with a jarl.  */
-	      irel->r_info = ELF32_R_INFO (ELF32_R_SYM (hi_irelfn->r_info), R_V850_22_PCREL);
+	      /* Replace the long call with a jarl: */
+	      irel->r_info = ELF32_R_INFO(ELF32_R_SYM(hi_irelfn->r_info),
+       					  R_V850_22_PCREL);
 
 	      addend = 0;
 
-	      if (ELF32_R_SYM (hi_irelfn->r_info) < symtab_hdr->sh_info)
+	      if (ELF32_R_SYM(hi_irelfn->r_info) < symtab_hdr->sh_info)
 		/* If this needs to be changed because of future relaxing,
 		   it will be handled here like other internal IND12W
 		   relocs.  */
 		bfd_put_32(abfd,
-			   0x00000780 | (JARL_R2(insn[2])<<11) | ((addend << 16) & 0xffff) | ((addend >> 16) & 0xf),
-			   contents + irel->r_offset);
+			   (0x00000780 | (JARL_R2(insn[2]) << 11)
+                            | ((addend << 16) & 0xffff)
+                            | ((addend >> 16) & 0xf)),
+			   (contents + irel->r_offset));
 	      else
 		/* We cannot fully resolve this yet, because the external
 		   symbol value may be changed by future relaxing.
 		   We let the final link phase handle it.  */
-		bfd_put_32(abfd, 0x00000780 | (JARL_R2(insn[2])<<11),
-			   contents + irel->r_offset);
+		bfd_put_32(abfd, (0x00000780 | (JARL_R2(insn[2]) << 11)),
+			   (contents + irel->r_offset));
 
 	      hi_irelfn->r_info =
-		ELF32_R_INFO (ELF32_R_SYM (hi_irelfn->r_info), R_V850_NONE);
+		ELF32_R_INFO(ELF32_R_SYM(hi_irelfn->r_info), R_V850_NONE);
 	      lo_irelfn->r_info =
-		ELF32_R_INFO (ELF32_R_SYM (lo_irelfn->r_info), R_V850_NONE);
+		ELF32_R_INFO(ELF32_R_SYM(lo_irelfn->r_info), R_V850_NONE);
 	      irelcall->r_info =
-		ELF32_R_INFO (ELF32_R_SYM (irelcall->r_info), R_V850_NONE);
+		ELF32_R_INFO(ELF32_R_SYM(irelcall->r_info), R_V850_NONE);
 
-	      if (! v850_elf_relax_delete_bytes (abfd, sec,
-						 irel->r_offset + 4, toaddr, 12))
+	      if (!v850_elf_relax_delete_bytes(abfd, sec, (irel->r_offset + 4),
+                                               toaddr, 12))
 		goto error_return;
 
 	      align_pad_size += 12;
 	    }
-	  else if (ELF32_R_TYPE (irel->r_info) == (int) R_V850_LONGJUMP)
+	  else if (ELF32_R_TYPE(irel->r_info) == (int)R_V850_LONGJUMP)
 	    {
-	      /* Check code for -mlong-jumps output.  */
-	      if (laddr + 10 <= (bfd_vma) sec->size)
+	      /* Check code for -mlong-jumps output: */
+	      if ((laddr + 10) <= (bfd_vma)sec->size)
 		{
 		  insn[0] = (int)bfd_get_16(abfd, (contents + laddr));
 		  insn[1] = (int)bfd_get_16(abfd, (contents + laddr + 4));
