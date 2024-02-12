@@ -431,6 +431,9 @@ jobs:
         if test -x "$(which purge)"; then \
           purge || sudo purge; \
         fi
+        if test -x "$(which java)"; then \
+          java --version; \
+        fi
         sync && echo "done with clang static analysis"
 
     - name: Upload a Build Artifact

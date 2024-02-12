@@ -60,11 +60,13 @@ installcheck:
 check:	exp_test site.exp ../expect
 	rootme=`cd .. && pwd`; export rootme; \
 	EXPECT=${EXPECT}; export EXPECT; \
+	PATH=${PATH}:..:../../expect:$${rootme}; export PATH; \
 	if [ -f ../expect ]; then  \
 	   TCL_LIBRARY=`echo ${TCLHDIR} | sed -e 's/-I//' -e 's/generic//'`/library; \
 	   export TCL_LIBRARY; \
 	else echo "../expect is missing" >&2; fi; \
-	$(RUNTEST) $(RUNTESTFLAGS) --tool expect EXPECT=$${EXPECT} --srcdir $(srcdir)
+	echo "attempting to use $${EXPECT} from `pwd`"; \
+	$(RUNTEST) $(RUNTESTFLAGS) --tool expect EXPECT=$${EXPECT} --srcdir $(srcdir) || $(RUNTEST) $(RUNTESTFLAGS) --tool expect EXPECT=../expect --srcdir $(srcdir) || $(RUNTEST)
 
 install:
 uninstall: force

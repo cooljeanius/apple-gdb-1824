@@ -629,11 +629,11 @@ AM_CXXFLAGS = -I$(top_srcdir) -ggdb -Wall
 AM_CFLAGS = -Wall -Wc++-compat -std=gnu89 -DHAVE_CONFIG_H
 OFILES = testglue.o stub-loader.o
 ALL_OFILES = $(OFILES) i960glue.o
-CLEANFILES = x.log x.sum site.bak setval.tmp $(ALL_OFILES) *~
+CLEANFILES = x.log x.sum site.bak setval.tmp $(ALL_OFILES) *~ expect
 DISTCLEANFILES = xXx.log xXx.sum testrun.log testrun.sum .DS_Store \
-  contrib/.DS_Store autoscan.log
+  contrib/.DS_Store autoscan.log expect
 
-MAINTAINERCLEANFILES = configure.scan
+MAINTAINERCLEANFILES = configure.scan expect
 CFILES = testglue.c stub-loader.c i960glue.c
 pkgdata_DATA = stub-loader.c testglue.c
 
@@ -1628,7 +1628,7 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU
+	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU check-local
 check: check-recursive
 all-am: Makefile $(INFO_DEPS) $(SCRIPTS) $(MANS) $(DATA) $(HEADERS) \
 		config.h
@@ -1850,14 +1850,15 @@ uninstall-man: uninstall-man1
 .MAKE: $(am__recursive_targets) all check-am install-am install-strip
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
-	am--refresh check check-DEJAGNU check-am clean clean-aminfo \
-	clean-cscope clean-generic clean-local cscope cscopelist-am \
-	ctags ctags-am dist dist-all dist-bzip2 dist-gzip dist-hook \
-	dist-info dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
-	dist-zstd distcheck distclean distclean-DEJAGNU \
-	distclean-generic distclean-hdr distclean-local distclean-tags \
-	distcleancheck distdir distuninstallcheck dvi dvi-am html \
-	html-am info info-am install install-am install-baseboardDATA \
+	am--refresh check check-DEJAGNU check-am check-local clean \
+	clean-aminfo clean-cscope clean-generic clean-local cscope \
+	cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
+	dist-gzip dist-hook dist-info dist-lzip dist-shar dist-tarZ \
+	dist-xz dist-zip dist-zstd distcheck distclean \
+	distclean-DEJAGNU distclean-generic distclean-hdr \
+	distclean-local distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-baseboardDATA \
 	install-baseboardSCRIPTS install-binSCRIPTS install-configDATA \
 	install-configSCRIPTS install-data install-data-am \
 	install-data-local install-djlibexecSCRIPTS install-dvi \
@@ -1887,9 +1888,11 @@ uninstall-man: uninstall-man1
 
 # Now some targets and their dependencies
 
-check-DEJAGNU-local:
-	cd testsuite ; $(MAKE) check
-	cd example ; $(MAKE) check
+check-local: expect
+	if test -e expect; then stat expect; else find . -name '*.exp' -print; fi
+check-DEJAGNU-local: expect
+	cd testsuite; $(MAKE) -w check
+	cd example; $(MAKE) -w check
 	@echo "Do nothing here, because we do NOT want to run the tests twice"
 .PHONY: check-DEJAGNU-local
 
@@ -1916,6 +1919,8 @@ clean-local: Makefile
 	for my_subdir in `echo doc testsuite example contrib/bluegnu2.0.3`; do \
 	  if test -e $${my_subdir}/Makefile; then \
 	    cd $${my_subdir} && $(MAKE) clean-local; \
+	  else \
+	    echo "$${my_subdir}: missing Makefile; skipping"; \
 	  fi; \
 	done;
 .PHONY: clean-local
@@ -1927,6 +1932,10 @@ distclean-local: config.status Makefile
 	-rm -fr autom4te.cache || rmdir autom4te.cache
 	-if test -e doc/Makefile; then \
 	  cd doc && $(MAKE) distclean-local; \
+	elif test -e expect; then \
+	  rm -f expect; \
+	else \
+	  echo "should be fully distclean"; \
 	fi
 .PHONY: distclean-local
 
@@ -1935,6 +1944,10 @@ realclean: config.status Makefile
 	  cd doc && $(MAKE) realclean; \
 	  if test -d doc/autom4te.cache; then \
 	    rm -fr doc/autom4te.cache || rmdir doc/autom4te.cache; \
+	  elif test -e expect; then \
+	    rm -f expect; \
+	  else \
+	    echo "should be fully realclean"; \
 	  fi; \
 	fi
 .PHONY: realclean
@@ -1944,6 +1957,10 @@ maintainer-clean-local: realclean
 	  cd doc && $(MAKE) maintainer-clean-local; \
 	elif test -d doc/autom4te.cache; then \
 	  rm -fr doc/autom4te.cache || rmdir doc/autom4te.cache; \
+	elif test -e expect; then \
+	  rm -f expect; \
+	else \
+	  echo "should be fully maintainer-clean (locally, at least)"; \
 	fi
 .PHONY: maintainer-clean-local
 
@@ -2008,7 +2025,7 @@ overview.html overview.ps overview.pdf install-doc:
 dist-hook: rpmspec overview.html overview.ps overview.pdf
 	-rm -fr $(distdir)
 	cp -fpr $(srcdir) $(distdir)
-	(cd $(distdir) ; $(TCLSH) $(srcdir)/Clean.tcl)
+	(cd $(distdir) && pwd; $(TCLSH) $(srcdir)/Clean.tcl)
 	-cp -fr doc/overview $(distdir)/doc/
 	-cp -fr doc/overview.ps $(distdir)/doc/
 	-cp -fr doc/overview.pdf $(distdir)/doc/
@@ -2057,6 +2074,25 @@ my_site.exp: Makefile
 	@test ! -f site.exp || mv site.exp site.bak
 	@mv $@-t site.exp
 .PHONY: my_site.exp
+
+expect:
+	$(AM_V_at)if test -w .; then \
+	  if test -d ../expect && test -x ../expect/expect; then \
+	    cp -v ../expect/expect .; \
+	  elif test -d $(srcdir)/../expect && test -x $(srcdir)/../expect/expect; then \
+	    cp -v $(srcdir)/../expect/expect .; \
+	  elif test -d $(builddir)/../expect && test -x $(builddir)/../expect/expect; then \
+	    cp -v $(builddir)/../expect/expect .; \
+	  elif test -d $(top_srcdir)/../expect && test -x $(top_srcdir)/../expect/expect; then \
+	    cp -v $(top_srcdir)/../expect/expect .; \
+	  elif test -d $(top_builddir)/../expect && test -x $(top_builddir)/../expect/expect; then \
+	    cp -v $(top_builddir)/../expect/expect .; \
+	  else \
+	    echo "unsure where to get expect from..." >&2; \
+	  fi; \
+	else \
+	  echo "warning: directory is unwritable; cannot copy expect here" >&2; \
+	fi
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

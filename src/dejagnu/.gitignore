@@ -10,6 +10,7 @@ doc/dejagnu.t2p
 doc/.dirstamp
 testsuite/Makefile
 example/Makefile
+expect
 testsuite/libdejagnu/Makefile
 config.h
 unix/tcltest
