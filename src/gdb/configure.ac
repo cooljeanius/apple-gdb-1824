@@ -774,7 +774,7 @@ AC_ARG_ENABLE([gdbtk],
      *)
        AC_MSG_ERROR([bad value ${enableval} for --enable-gdbtk]) ;;
    esac],
-  [if test -d ${srcdir}/gdbtk -a -d ${srcdir}/../itcl; then
+  [if test -d ${srcdir}/gdbtk -a -d ${srcdir}/../itcl -a -d ${srcdir}/../tix; then
      enable_gdbtk=yes
    else
      enable_gdbtk=no
@@ -911,6 +911,19 @@ else
   AC_CHECK_TOOLS([AR],[ar gar],[],[${PATH}:./../binutils])dnl
   ## 2...
 fi
+m4_ifdef([AC_PROG_AR],[
+if test "x${AR}" = "x"; then
+  test -z "${AR}" || unset AR
+  ## might want to switch around these checks...
+  if test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    AC_PROG_AR
+  fi
+else
+  test -n "${AR}" && export AR
+fi
+])dnl
+  ## FIXME: ensure portability of sed commands:
 if test -e ./config.cache; then
   echo "hacking ./config.cache"
   sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
@@ -1687,6 +1700,8 @@ if test "x${enable_gdbtk}" = "xyes"; then
   else
     test -n "${ac_cv_header_X11_Xlib_h}" && test -f /usr/X11/include/X11/Xlib.h && test -r /usr/X11/include/X11/Xlib.h && stat /usr/X11/include/X11/Xlib.h
   fi
+else
+  AC_MSG_NOTICE([skipping header check only relevant for gdbtk])
 fi
 if test "x${ac_cv_header_inttypes_h}" = "x"; then
   test -z "${ac_cv_header_inttypes_h}"
@@ -2169,7 +2184,6 @@ dnl## FIXME: there are many others that we might want to check as well...
 AC_MSG_CHECKING([compiler characteristics])
 AC_MSG_RESULT([ ])dnl
 
-AC_PROG_GCC_TRADITIONAL
 AC_C_BACKSLASH_A dnl# "\a" is used in a few files
 AC_C_BIGENDIAN([
   AC_CHECK_DECLS([__BIG_ENDIAN])dnl
@@ -3916,6 +3930,8 @@ if test "x${gdb_cv_var_elf}" = "xyes"; then
       fi
     fi
   fi
+else
+  AC_MSG_NOTICE([lzma checks are only relevant for elf targets; skipping])
 fi
 
 LIBGUI="../libgui/src/libgui.a"
@@ -3938,6 +3954,7 @@ esac
 
 GDBTKLIBS=""
 if test "x${enable_gdbtk}" = "xyes"; then
+    AC_MSG_NOTICE([doing checks for Tcl/Tk things for gdbtk])
     # Gdbtk must have an absolute path to srcdir in order to run
     # properly when not installed.
     here=`pwd`
@@ -4039,6 +4056,8 @@ else
     AC_MSG_NOTICE([skipping gdbtk tests])
     if test -d gdbtk; then
         export unused_subdirs="${unused_subdirs} gdbtk"
+    else
+        AC_MSG_NOTICE([(and plus they aren't even present)])
     fi
 fi
 
@@ -4077,6 +4096,8 @@ if test x"${enable_tui}" = x"yes"; then
     else
       AC_MSG_WARN([no enhanced curses library found; disabling TUI])
     fi
+  else
+    AC_MSG_NOTICE([tui subdir missing; skipping])
   fi
 fi
 
@@ -4100,7 +4121,7 @@ AC_ARG_ENABLE([sim],
 
 if test ! -d "${srcdir}/../sim" || test ! -d "${srcdir}/../sim/${target_cpu}"; then
   if test "x${ignore_sim}" = "xfalse"; then
-    AC_MSG_WARN([disabling simulator support])
+    AC_MSG_WARN([conditions for simulator support unfulfilled; disabling and skipping])
   fi
   ignore_sim=true
 fi
@@ -4219,6 +4240,8 @@ else
    if test -d multi-ice; then
      AC_MSG_NOTICE([multi-ice subdir present, but we are not using it.])
      export unused_subdirs="${unused_subdirs} multi-ice"
+   else
+     AC_MSG_NOTICE([multi-ice subdir missing; skipping])
    fi
 fi
 
@@ -4249,12 +4272,16 @@ if test "x${target}" = "x${host}"; then
     AC_MSG_RESULT([no])
     if test -d gdbserver; then
       export unused_subdirs="${unused_subdirs} gdbserver"
+    else
+      AC_MSG_NOTICE([(and plus it isn't even present)])
     fi
   fi
 else
   if test -d gdbserver; then
     AC_MSG_NOTICE([gdbserver subdir present, but we are not using it.])
     export unused_subdirs="${unused_subdirs} gdbserver"
+  else
+    AC_MSG_NOTICE([gdbserver subdir missing; skipping])
   fi
 fi
 
@@ -4336,6 +4363,8 @@ else
   if test -d rdi-share; then
     AC_MSG_NOTICE([rdi-share subdir present, but we are not using it])
     export unused_subdirs="${unused_subdirs} rdi-share"
+  else
+    AC_MSG_NOTICE([rdi-share subdir missing; skipping])
   fi
 fi
 
@@ -4350,6 +4379,8 @@ else
   if test -d nlm; then
     AC_MSG_NOTICE([nlm subdir present, but we are not using it])
     export unused_subdirs="${unused_subdirs} nlm"
+  else
+    AC_MSG_NOTICE([nlm subdir missing; skipping])
   fi
 fi
 AC_SUBST([unused_subdirs])dnl

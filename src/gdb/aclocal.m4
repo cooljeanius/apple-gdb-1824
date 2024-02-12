@@ -14,8 +14,8 @@
 m4_ifndef([AC_CONFIG_MACRO_DIRS], [m4_defun([_AM_CONFIG_MACRO_DIRS], [])m4_defun([AC_CONFIG_MACRO_DIRS], [_AM_CONFIG_MACRO_DIRS($@)])])
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
-m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.71],,
-[m4_warning([this file was generated for autoconf 2.71.
+m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.72],,
+[m4_warning([this file was generated for autoconf 2.72.
 You have another version of autoconf.  It may work, but is not guaranteed to.
 If you have problems, you may need to regenerate the build system entirely.
 To do so, use the procedure documented by the package, typically 'autoreconf'.])])
@@ -72,8 +72,8 @@ AC_DEFUN([BISON_I18N],
   fi
 ])
 
-# host-cpu-c-abi.m4 serial 15
-dnl Copyright (C) 2002-2022 Free Software Foundation, Inc.
+# host-cpu-c-abi.m4 serial 16
+dnl Copyright (C) 2002-2023 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -542,10 +542,11 @@ AC_DEFUN([gl_HOST_CPU_C_ABI_32BIT],
   AC_REQUIRE([AC_CANONICAL_HOST])
   AC_CACHE_CHECK([32-bit host C ABI], [gl_cv_host_cpu_c_abi_32bit],
     [if test -n "$gl_cv_host_cpu_c_abi"; then
+       dnl gl_HOST_CPU_C_ABI has already been run. Use its result.
        case "$gl_cv_host_cpu_c_abi" in
          i386 | x86_64-x32 | arm | armhf | arm64-ilp32 | hppa | ia64-ilp32 | mips | mipsn32 | powerpc | riscv*-ilp32* | s390 | sparc)
            gl_cv_host_cpu_c_abi_32bit=yes ;;
-         x86_64 | alpha | arm64 | hppa64 | ia64 | mips64 | powerpc64 | powerpc64-elfv2 | riscv*-lp64* | s390x | sparc64 )
+         x86_64 | alpha | arm64 | aarch64c | hppa64 | ia64 | mips64 | powerpc64 | powerpc64-elfv2 | riscv*-lp64* | s390x | sparc64 )
            gl_cv_host_cpu_c_abi_32bit=no ;;
          *)
            gl_cv_host_cpu_c_abi_32bit=unknown ;;
@@ -609,7 +610,7 @@ changequote([,])dnl
              [gl_cv_host_cpu_c_abi_32bit=yes])
            ;;
 
-         arm* | aarch64 )
+         arm* | aarch64 | aarch64c )
            # Assume arm with EABI.
            # On arm64 systems, the C compiler may be generating code in one of
            # these ABIs:
@@ -751,8 +752,8 @@ changequote([,])dnl
   HOST_CPU_C_ABI_32BIT="$gl_cv_host_cpu_c_abi_32bit"
 ])
 
-# lib-ld.m4 serial 10
-dnl Copyright (C) 1996-2003, 2009-2022 Free Software Foundation, Inc.
+# lib-ld.m4 serial 12
+dnl Copyright (C) 1996-2003, 2009-2023 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -782,7 +783,7 @@ AC_DEFUN([AC_LIB_PROG_LD],
 AC_REQUIRE([AC_CANONICAL_HOST])dnl
 
 AC_ARG_WITH([gnu-ld],
-    [AS_HELP_STRING([--with-gnu-ld],
+    [AS_HELP_STRING([[--with-gnu-ld]],
         [assume the C compiler uses GNU ld [default=no]])],
     [test "$withval" = no || with_gnu_ld=yes],
     [with_gnu_ld=no])dnl
@@ -820,7 +821,7 @@ else
     if test "$GCC" = yes; then
       # Check if gcc -print-prog-name=ld gives a path.
       case $host in
-        *-*-mingw*)
+        *-*-mingw* | windows*)
           # gcc leaves a trailing carriage return which upsets mingw
           acl_output=`($CC -print-prog-name=ld) 2>&5 | tr -d '\015'` ;;
         *)
@@ -921,7 +922,7 @@ AC_LIB_PROG_LD_GNU
 ])
 
 # lib-link.m4 serial 33
-dnl Copyright (C) 2001-2022 Free Software Foundation, Inc.
+dnl Copyright (C) 2001-2023 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -1146,7 +1147,7 @@ AC_DEFUN([AC_LIB_LINKFLAGS_BODY],
     additional_libdir3=
   fi
   dnl Search the library and its dependencies in $additional_libdir and
-  dnl $LDFLAGS. Using breadth-first-seach.
+  dnl $LDFLAGS. Use breadth-first search.
   LIB[]NAME=
   LTLIB[]NAME=
   INC[]NAME=
@@ -1735,7 +1736,7 @@ AC_DEFUN([AC_LIB_LINKFLAGS_FROM_LIBS],
 ])
 
 # lib-prefix.m4 serial 20
-dnl Copyright (C) 2001-2005, 2008-2022 Free Software Foundation, Inc.
+dnl Copyright (C) 2001-2005, 2008-2023 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -3780,7 +3781,6 @@ m4_include([m4/ax_check_gnu_make.m4])
 m4_include([m4/ax_compiler_vendor.m4])
 m4_include([m4/ax_prog_bison.m4])
 m4_include([m4/bakefile-lang.m4])
-m4_include([m4/codeset.m4])
 m4_include([m4/extensions.m4])
 m4_include([m4/extern-inline.m4])
 m4_include([m4/gnulib_stdint.m4])

@@ -164,11 +164,15 @@ TAGS:	${TAGFILES}
 	  ${TAGFILES}
 tags: TAGS
 
+mostlyclean:
+	rm -f configure~
+	(if test -L cpu.h; then unlink cpu.h; fi) || echo "no cpu.h here"
+
 # 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean:
 	rm -fv *.o ${ADD_FILES} *~
 	rm -f gdbserve.O gdbserve.nlm core make.log
-	if test -L cpu.h; then unlink cpu.h; fi || echo "no cpu.h here"
+	(if test -L cpu.h; then unlink cpu.h; fi) || echo "no cpu.h here"
 
 distclean: clean
 	rm -f autoscan.log config.log config.cache config.status

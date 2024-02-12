@@ -37,7 +37,7 @@ AC_CONFIG_AUX_DIR([..])
 AC_REQUIRE_AUX_FILE([depcomp])dnl
 AC_REQUIRE_AUX_FILE([mkinstalldirs])dnl
 AC_REQUIRE_AUX_FILE([move-if-change])dnl
-AC_CONFIG_HEADER([config.h])dnl
+AC_CONFIG_HEADERS([config.h])dnl
 m4_ifdef([ACX_PKGVERSION],[
 ACX_PKGVERSION([GDBSERVER])
 if test "x${PKGVERSION}" != "x"; then
@@ -99,7 +99,18 @@ AC_MSG_RESULT([ ])
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_CXX
-AC_PROG_GCC_TRADITIONAL
+m4_ifdef([AC_PROG_AR],[
+if test "x${AR}" = "x"; then
+  test -z "${AR}" || unset AR
+  ## might want to switch around these checks...
+  if test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    AC_PROG_AR
+  fi
+else
+  test -n "${AR}" && export AR
+fi
+])dnl
 AC_EXEEXT
 #TODO: improve this check for profiling support:
 AC_MSG_CHECKING([if we can do profiling])
@@ -262,9 +273,25 @@ AC_CHECK_HEADERS([AvailabilityMacros.h arpa/inet.h elf.h errno.h fcntl.h \
                   termio.h termios.h thread_db.h])
 dnl# "_ONCE" causes mis-ordering of checks, so just check the cache value
 dnl# first to simulate "_ONCE":
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z "${ac_cv_header_inttypes_h}" || unset ac_cv_header_inttypes_h
+  AC_CHECK_HEADERS([inttypes.h])
+fi
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
+  AC_CHECK_HEADERS([stdint.h])
+fi
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}" || unset ac_cv_header_strings_h
+  AC_CHECK_HEADERS([strings.h])
+fi
 if test "x${ac_cv_header_sys_wait_h}" = "x"; then
-  test -z "${ac_cv_header_sys_wait_h}"
+  test -z "${ac_cv_header_sys_wait_h}" || unset ac_cv_header_sys_wait_h
   AC_CHECK_HEADERS([sys/wait.h])
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
+  AC_CHECK_HEADERS([unistd.h])
 fi
 
 case ${host} in

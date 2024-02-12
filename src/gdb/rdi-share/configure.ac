@@ -16,7 +16,6 @@ dnl# Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_CXX
-AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -40,6 +39,11 @@ AC_CHECK_HEADERS([arpa/inet.h ctype.h errno.h fcntl.h io.h ioctl.h \
                   sys/socket.h sys/time.h sys/ttydev.h \
                   term.h termio.h termios.h varargs.h \
                   windows.h wingdi.h winsock.h])dnl
+
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
+  AC_CHECK_HEADERS([unistd.h])
+fi
 
 dnl# Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN

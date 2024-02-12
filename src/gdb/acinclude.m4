@@ -22,6 +22,9 @@ m4_include(../libiberty/m4/libiberty.m4)
 dnl# For --enable-build-with-cxx and COMPILER.
 m4_include(m4/build-with-cxx.m4)
 
+dnl# For AM_LANGINFO_CODESET.
+m4_include(m4/codeset.m4)
+
 dnl# gettext stuff:
 sinclude(../lcmessage.m4)
 sinclude(../gettext.m4)

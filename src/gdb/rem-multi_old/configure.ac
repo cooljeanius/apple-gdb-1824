@@ -8,7 +8,7 @@ AC_CONFIG_AUX_DIR([..]) dnl# (maybe one level further up?)
 AC_CONFIG_MACRO_DIR([../m4])dnl
 
 dnl# set up header:
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AH_TOP([
 #ifndef HAVE_CONFIG_H
 # define HAVE_CONFIG_H 1
@@ -58,10 +58,22 @@ AM_MAINTAINER_MODE
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_CXX
-AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_RANLIB
+
+m4_ifdef([AC_PROG_AR],[
+if test "x${AR}" = "x"; then
+  test -z "${AR}" || unset AR
+  ## might want to switch around these checks...
+  if test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    AC_PROG_AR
+  fi
+else
+  test -n "${AR}" && export AR
+fi
+])dnl
 
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
@@ -77,6 +89,11 @@ AC_CHECK_HEADERS([a.out.h errno.h fcntl.h limits.h locale.h mach/mach.h \
                   stddef.h stdio.h sys/dir.h sys/file.h sys/ioctl.h \
                   sys/param.h sys/ptrace.h sys/types.h sys/user.h \
                   varargs.h wait.h])dnl
+  ## keep autoscan happy:
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
+  AC_CHECK_HEADERS([unistd.h])
+fi
   ## needs other headers first on some systems:
 AC_CHECK_HEADERS([mach/kmod.h],[],[],[[
 #ifdef HAVE_MACH_VM_TYPES_H
@@ -92,6 +109,7 @@ if test "x${ac_cv_header_sys_types_h}" = "xyes"; then
   export EXTRA_DEFS="-DHAVE_SYS_TYPES_H"
 fi
 AC_SUBST([EXTRA_DEFS])dnl
+
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN([

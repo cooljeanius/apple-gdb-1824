@@ -110,7 +110,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/absolute-header.m4 \
 	$(top_srcdir)/m4/ax_check_gnu_make.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
 	$(top_srcdir)/m4/ax_prog_bison.m4 \
-	$(top_srcdir)/m4/bakefile-lang.m4 $(top_srcdir)/m4/codeset.m4 \
+	$(top_srcdir)/m4/bakefile-lang.m4 \
 	$(top_srcdir)/m4/extensions.m4 \
 	$(top_srcdir)/m4/extern-inline.m4 \
 	$(top_srcdir)/m4/gnulib_stdint.m4 \
@@ -128,7 +128,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/absolute-header.m4 \
 	$(top_srcdir)/../config/acinclude.m4 \
 	$(top_srcdir)/../config/acx.m4 $(top_srcdir)/../config/zlib.m4 \
 	$(top_srcdir)/../libiberty/m4/libiberty.m4 \
-	$(top_srcdir)/m4/build-with-cxx.m4 \
+	$(top_srcdir)/m4/build-with-cxx.m4 $(top_srcdir)/m4/codeset.m4 \
 	$(top_srcdir)/../lcmessage.m4 $(top_srcdir)/../gettext.m4 \
 	$(top_srcdir)/m4/ccstdc.m4 $(top_srcdir)/../config/warnings.m4 \
 	$(top_srcdir)/configure.ac

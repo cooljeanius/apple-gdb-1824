@@ -33,11 +33,10 @@ fi
 
 # Checks for programs.
 if test "x${CC_C_O}" = "x"; then
-  test -z "${CC_C_O}"
+  test -z "${CC_C_O}" || unset CC_C_O
   AM_PROG_CC_C_O
 fi
 AC_PROG_CC
-AC_PROG_GCC_TRADITIONAL
 AC_PROG_CPP
 AC_PROG_SED
 

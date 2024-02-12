@@ -182,7 +182,6 @@ AC_DEFUN([AC_REQUIRE_COMPILER],[
   AC_REQUIRE([AM_PROG_CC_C_O])dnl
   AC_REQUIRE([AC_PROG_CPP])dnl
   AC_REQUIRE([AC_PROG_CXX])dnl
-  AC_REQUIRE([AC_PROG_GCC_TRADITIONAL])dnl
   AC_SUBST([GCC])dnl
 ])dnl
 AC_REQUIRE_COMPILER
@@ -197,6 +196,15 @@ AC_HEADER_TIME
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h stddef.h stdio.h \
                   sys/socket.h sys/time.h wchar.h])dnl
 AC_CHECK_HEADERS([pthread.h])dnl
+
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
+  AC_CHECK_HEADERS([stdint.h])
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
+  AC_CHECK_HEADERS([unistd.h])
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -244,6 +252,11 @@ AC_FUNC_STAT
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([atexit alarm clock_gettime gettimeofday memset munmap \
                 select socket strchr strerror strstr strtol strtoul])dnl
+
+if test "x${ac_cv_func_getpagesize}" = "x"; then
+  test -z "${ac_cv_func_getpagesize}" || unset ac_cv_func_getpagesize
+  AC_CHECK_FUNCS([getpagesize])
+fi
 
 # Other:
 AC_EXEEXT

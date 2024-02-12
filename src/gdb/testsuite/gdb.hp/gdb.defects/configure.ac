@@ -32,19 +32,18 @@ fi
 
 # Programs.
 AS_IF([test "x${CC}" = "x"],[
-  test -z "${CC}"
+  test -z "${CC}" || unset CC
   AC_PROG_CC
 ],[
-  test ! -z "${CC}"
+  test -n "${CC}" && export CC
   if test "x${ac_cv_c_compiler_gnu}" = "x"; then
-    test -z "${ac_cv_c_compiler_gnu}"
+    test -z "${ac_cv_c_compiler_gnu}" || unset ac_cv_c_compiler_gnu
     if test "x${GCC}" = "xyes" || test "x${CC}" = "xgcc"; then
       export ac_cv_c_compiler_gnu=yes
     else
       export ac_cv_c_compiler_gnu=no
     fi
   fi
-  AC_PROG_GCC_TRADITIONAL
 ])
 AC_PROG_CPP
 

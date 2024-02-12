@@ -488,7 +488,7 @@ subdir = import
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gnulib-use-manually.m4 \
 	$(top_srcdir)/m4/localtime-buffer.m4 $(top_srcdir)/m4/lt_ac.m4 \
-	$(top_srcdir)/m4/onceonly_2_57.m4 $(top_srcdir)/m4/stdbool.m4 \
+	$(top_srcdir)/m4/onceonly_2_57.m4 \
 	$(top_srcdir)/import/m4/00gnulib.m4 \
 	$(top_srcdir)/import/m4/__inline.m4 \
 	$(top_srcdir)/import/m4/absolute-header.m4 \

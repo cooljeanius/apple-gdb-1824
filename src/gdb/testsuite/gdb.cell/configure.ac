@@ -35,11 +35,10 @@ fi
 
 # Programs.
 if test "x${CC_C_O}" = "x"; then
-  test -z "${CC_C_O}"
+  test -z "${CC_C_O}" || unset CC_C_O
   AM_PROG_CC_C_O
 fi
 AC_PROG_CC
-AC_PROG_GCC_TRADITIONAL
 AC_PROG_CPP
 
 AC_PROG_INSTALL
@@ -47,6 +46,11 @@ AC_PROG_INSTALL
 # Headers.
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([stdio.h])dnl
+
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
+  AC_CHECK_HEADERS([unistd.h])
+fi
 
 # Function(s).
 AC_FUNC_FORK

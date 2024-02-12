@@ -26,8 +26,7 @@ jobs:
     - run: cd src && make configure-binutils
     - run: cd src && make info-binutils && sync && make dvi-binutils && sync && make TAGS-binutils
     - run: cd src && make all-cgen
-    - run: cd src && make all-libiberty
-    - run: cd src && make all-intl
+    - run: cd src && sync && make all-libiberty && sync && make all-intl && sync
     - run: cd src && make all-electric-fence
     - run: cd src && make all-etc
     - run: cd src && make all-libdecnumber

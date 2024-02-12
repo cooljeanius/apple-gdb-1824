@@ -179,6 +179,7 @@ ACLOCAL = @ACLOCAL@
 ALLOCA = @ALLOCA@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+AR = @AR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -330,7 +331,7 @@ EXTRA_DIST = libtoolconf.a MICE-gdbserver.ico MICE-gdbserver.rc \
 multi_ice_gdb_server_LDFLAGS = $(WIN32LDAPP)
 multi_ice_gdb_server_DEPENDENCIES = $(WIN32RES)
 multi_ice_gdb_server_LDADD = $(WIN32RES)
-MOSTLYCLEANFILES = config.h.in~
+MOSTLYCLEANFILES = config.h.in~ configure~
 DISTCLEANFILES = *~ autoscan.log .DS_Store
 MAINTAINERCLEANFILES = configure.scan missing_symbols.txt
 all: config.h

@@ -123,10 +123,22 @@ CONFIG_SRCS=""
 
 dnl# Checks for programs.
 AC_PROG_CXX
-AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_RANLIB
+
+m4_ifdef([AC_PROG_AR],[
+if test "x${AR}" = "x"; then
+  test -z "${AR}" || unset AR
+  ## might want to switch around these checks...
+  if test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    AC_PROG_AR
+  fi
+else
+  test -n "${AR}" && export AR
+fi
+])dnl
 
 dnl# Checks for libraries.
 if test "x${acl_cv_wl}" = "x"; then

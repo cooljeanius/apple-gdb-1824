@@ -50,8 +50,8 @@
 /* Define to 1 if using 'alloca.c'. */
 #undef C_ALLOCA
 
-/* Define to the type of elements in the array set by `getgroups'. Usually
-   this is either `int' or `gid_t'. */
+/* Define to the type of elements in the array argument to 'getgroups'.
+   Usually this is either 'int' or 'gid_t'. */
 #undef GETGROUPS_T
 
 /* Define to 1 if you have 'alloca', as a function or macro. */
@@ -63,70 +63,70 @@
 /* Define to 1 if you have the <a.out.h> header file. */
 #undef HAVE_A_OUT_H
 
-/* Define to 1 if you have the `bcopy' function. */
+/* Define to 1 if you have the 'bcopy' function. */
 #undef HAVE_BCOPY
 
-/* Define to 1 if you have the `clearerr' function. */
+/* Define to 1 if you have the 'clearerr' function. */
 #undef HAVE_CLEARERR
 
-/* Define to 1 if you have the `close' function. */
+/* Define to 1 if you have the 'close' function. */
 #undef HAVE_CLOSE
 
-/* Define to 1 if you have the declaration of `basename', and to 0 if you
+/* Define to 1 if you have the declaration of 'basename', and to 0 if you
    don't. */
 #undef HAVE_DECL_BASENAME
 
-/* Define to 1 if you have the declaration of `ptrace', and to 0 if you don't.
+/* Define to 1 if you have the declaration of 'ptrace', and to 0 if you don't.
    */
 #undef HAVE_DECL_PTRACE
 
-/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
+/* Define to 1 if you have the <dirent.h> header file, and it defines 'DIR'.
    */
 #undef HAVE_DIRENT_H
 
 /* Define to 1 if you have the <errno.h> header file. */
 #undef HAVE_ERRNO_H
 
-/* Define to 1 if you have the `execle' function. */
+/* Define to 1 if you have the 'execle' function. */
 #undef HAVE_EXECLE
 
-/* Define to 1 if you have the `exit' function. */
+/* Define to 1 if you have the 'exit' function. */
 #undef HAVE_EXIT
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
-/* Define to 1 if you have the `fflush' function. */
+/* Define to 1 if you have the 'fflush' function. */
 #undef HAVE_FFLUSH
 
-/* Define to 1 if you have the `fgetc' function. */
+/* Define to 1 if you have the 'fgetc' function. */
 #undef HAVE_FGETC
 
-/* Define to 1 if you have the `fgets' function. */
+/* Define to 1 if you have the 'fgets' function. */
 #undef HAVE_FGETS
 
-/* Define to 1 if you have the `fileno' function. */
+/* Define to 1 if you have the 'fileno' function. */
 #undef HAVE_FILENO
 
-/* Define to 1 if you have the `fork' function. */
+/* Define to 1 if you have the 'fork' function. */
 #undef HAVE_FORK
 
-/* Define to 1 if you have the `fprintf' function. */
+/* Define to 1 if you have the 'fprintf' function. */
 #undef HAVE_FPRINTF
 
-/* Define to 1 if you have the `fputc' function. */
+/* Define to 1 if you have the 'fputc' function. */
 #undef HAVE_FPUTC
 
-/* Define to 1 if you have the `free' function. */
+/* Define to 1 if you have the 'free' function. */
 #undef HAVE_FREE
 
-/* Define to 1 if you have the `gets' function. */
+/* Define to 1 if you have the 'gets' function. */
 #undef HAVE_GETS
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if you have the `ioctl' function. */
+/* Define to 1 if you have the 'ioctl' function. */
 #undef HAVE_IOCTL
 
 /* Define to 1 if you have the <limits.h> header file. */
@@ -147,33 +147,33 @@
 /* Define to 1 if you have the <mach/vm_types.h> header file. */
 #undef HAVE_MACH_VM_TYPES_H
 
-/* Define to 1 if your system has a GNU libc compatible `malloc' function, and
+/* Define to 1 if your system has a GNU libc compatible 'malloc' function, and
    to 0 otherwise. */
 #undef HAVE_MALLOC
 
-/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
+/* Define to 1 if you have the <ndir.h> header file, and it defines 'DIR'. */
 #undef HAVE_NDIR_H
 
-/* Define to 1 if you have the `perror' function. */
+/* Define to 1 if you have the 'perror' function. */
 #undef HAVE_PERROR
 
-/* Define to 1 if you have the `printf' function. */
+/* Define to 1 if you have the 'printf' function. */
 #undef HAVE_PRINTF
 
-/* Define to 1 if you have the `ptrace' function. */
+/* Define to 1 if you have the 'ptrace' function. */
 #undef HAVE_PTRACE
 
-/* Define to 1 if you have the `read' function. */
+/* Define to 1 if you have the 'read' function. */
 #undef HAVE_READ
 
-/* Define to 1 if your system has a GNU libc compatible `realloc' function,
+/* Define to 1 if your system has a GNU libc compatible 'realloc' function,
    and to 0 otherwise. */
 #undef HAVE_REALLOC
 
 /* Define to 1 if you have the <sgtty.h> header file. */
 #undef HAVE_SGTTY_H
 
-/* Define to 1 if you have the `signal' function. */
+/* Define to 1 if you have the 'signal' function. */
 #undef HAVE_SIGNAL
 
 /* Define to 1 if you have the <signal.h> header file. */
@@ -194,10 +194,10 @@
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
 
-/* Define to 1 if you have the `strcat' function. */
+/* Define to 1 if you have the 'strcat' function. */
 #undef HAVE_STRCAT
 
-/* Define to 1 if you have the `strcpy' function. */
+/* Define to 1 if you have the 'strcpy' function. */
 #undef HAVE_STRCPY
 
 /* Define to 1 if you have the <strings.h> header file. */
@@ -206,7 +206,7 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
-/* Define to 1 if you have the `strlen' function. */
+/* Define to 1 if you have the 'strlen' function. */
 #undef HAVE_STRLEN
 
 /* Define to 1 if you have the <sys/dir.h> header file. */
@@ -218,7 +218,7 @@
 /* Define to 1 if you have the <sys/ioctl.h> header file. */
 #undef HAVE_SYS_IOCTL_H
 
-/* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
+/* Define to 1 if you have the <sys/ndir.h> header file, and it defines 'DIR'.
    */
 #undef HAVE_SYS_NDIR_H
 
@@ -249,28 +249,28 @@
 /* Define to 1 if you have the <varargs.h> header file. */
 #undef HAVE_VARARGS_H
 
-/* Define to 1 if you have the `vfork' function. */
+/* Define to 1 if you have the 'vfork' function. */
 #undef HAVE_VFORK
 
 /* Define to 1 if you have the <vfork.h> header file. */
 #undef HAVE_VFORK_H
 
-/* Define to 1 if you have the `wait' function. */
+/* Define to 1 if you have the 'wait' function. */
 #undef HAVE_WAIT
 
 /* Define to 1 if you have the <wait.h> header file. */
 #undef HAVE_WAIT_H
 
-/* Define to 1 if `fork' works. */
+/* Define to 1 if 'fork' works. */
 #undef HAVE_WORKING_FORK
 
-/* Define to 1 if `vfork' works. */
+/* Define to 1 if 'vfork' works. */
 #undef HAVE_WORKING_VFORK
 
-/* Define to 1 if you have the `write' function. */
+/* Define to 1 if you have the 'write' function. */
 #undef HAVE_WRITE
 
-/* Define to 1 if you have the `_exit' function. */
+/* Define to 1 if you have the '_exit' function. */
 #undef HAVE__EXIT
 
 /* Name of package */
@@ -330,7 +330,7 @@
 	STACK_DIRECTION = 0 => direction of growth unknown */
 #undef STACK_DIRECTION
 
-/* Define to 1 if all of the C90 standard headers exist (not just the ones
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
@@ -357,10 +357,10 @@
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES
 
-/* Define to empty if `const' does not conform to ANSI C. */
+/* Define to empty if 'const' does not conform to ANSI C. */
 #undef const
 
-/* Define to `int' if <sys/types.h> doesn't define. */
+/* Define as 'int' if <sys/types.h> doesn't define. */
 #undef gid_t
 
 /* Define to rpl_malloc if the replacement function should be used. */
@@ -372,13 +372,13 @@
 /* Define to rpl_realloc if the replacement function should be used. */
 #undef realloc
 
-/* Define to `unsigned int' if <sys/types.h> does not define. */
+/* Define as 'unsigned int' if <stddef.h> doesn't define. */
 #undef size_t
 
-/* Define to `int' if <sys/types.h> doesn't define. */
+/* Define as 'int' if <sys/types.h> doesn't define. */
 #undef uid_t
 
-/* Define as `fork' if `vfork' does not work. */
+/* Define as 'fork' if 'vfork' does not work. */
 #undef vfork
 
 

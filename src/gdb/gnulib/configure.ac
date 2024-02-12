@@ -122,7 +122,24 @@ m4_ifdef([AM_PROG_AR],[
   AC_CHECK_TOOLS([AR],[ar gar])dnl
 ])dnl
 
+m4_ifdef([AC_PROG_AR],[
+if test "x${AR}" = "x"; then
+  test -z "${AR}" || unset AR
+  ## might want to switch around these checks...
+  if test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    AC_PROG_AR
+  fi
+else
+  test -n "${AR}" && export AR
+fi
+])dnl
+
 AM_PROG_AS
+if test "x${CXX}" = "x"; then
+  test -z "${CXX}" || unset CXX
+  AC_PROG_CXX
+fi
 AC_PROG_CXXCPP
 AC_REQUIRE_GREPS dnl# (just in case)
 
@@ -204,12 +221,16 @@ if test "x${ac_cv_header_time}" = "x"; then
   AC_HEADER_TIME
 fi
 AC_CHECK_HEADERS([OS.h ctype.h errno.h fcntl.h float.h locale.h \
-                  malloc/malloc.h nl_types.h shlib-compat.h stddef.h stdio.h \
-                  stdio_ext.h time.h _wctype.h])dnl
+                  malloc/malloc.h nl_types.h shlib-compat.h stddef.h time.h \
+                  _wctype.h])dnl
   ## dummies to keep autoscan happy:
 if test "x${ac_cv_header_crtdefs_h}" = "x"; then
   test -z "${ac_cv_header_crtdefs_h}"
   AC_CHECK_HEADERS([crtdefs.h])
+fi
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z "${ac_cv_header_inttypes_h}"
+  AC_CHECK_HEADERS([inttypes.h])
 fi
 if test "x${ac_cv_header_langinfo_h}" = "x"; then
   test -z "${ac_cv_header_langinfo_h}"
@@ -230,6 +251,18 @@ fi
 if test "x${ac_cv_header_netdb_h}" = "x"; then
   test -z "${ac_cv_header_netdb_h}"
   AC_CHECK_HEADERS([netdb.h])
+fi
+if test "x${ac_cv_header_stdio_h}" = "x"; then
+  test -z "${ac_cv_header_stdio_h}"
+  AC_CHECK_HEADERS([stdio.h])
+fi
+if test "x${ac_cv_header_stdio_ext_h}" = "x"; then
+  test -z "${ac_cv_header_stdio_ext_h}"
+  AC_CHECK_HEADERS([stdio_ext.h])
+fi
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}"
+  AC_CHECK_HEADERS([strings.h])
 fi
 if test "x${ac_cv_header_sys_ioctl_h}" = "x"; then
   test -z "${ac_cv_header_sys_ioctl_h}"
@@ -255,6 +288,10 @@ if test "x${ac_cv_header_termios_h}" = "x"; then
   test -z "${ac_cv_header_termios_h}"
   AC_CHECK_HEADERS([termios.h])
 fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  AC_CHECK_HEADERS([unistd.h])
+fi
 if test "x${ac_cv_header_wchar_h}" = "x"; then
   test -z "${ac_cv_header_wchar_h}"
   AC_CHECK_HEADERS([wchar.h])
@@ -278,6 +315,7 @@ AC_SUBST([EXTRA_DEFS])dnl
   ## 1
 AC_MSG_CHECKING([compiler characteristics for gnulib])
 AC_MSG_RESULT([ ])
+AC_C__GENERIC
 if test "x${ac_cv_c_bigendian}" = "x"; then
   test -z "${ac_cv_c_bigendian}"
   AC_C_BIGENDIAN
@@ -295,7 +333,10 @@ AC_C_VOLATILE
   ## 2
 AC_MSG_CHECKING([types for gnulib])
 AC_MSG_RESULT([ ])
+AC_TYPE_INT8_T
+AC_TYPE_INT16_T
 AC_TYPE_INT32_T
+AC_TYPE_INT64_T
 if test "x${ac_cv_type_mbstate_t}" = "x"; then
   test -z "${ac_cv_type_mbstate_t}"
   AC_TYPE_MBSTATE_T
@@ -393,13 +434,14 @@ if test "x${ac_cv_lib_error_at_line}" = "x"; then
   AC_FUNC_ERROR_AT_LINE dnl# (might create libobj)
 fi
 AC_FUNC_FNMATCH dnl# (avoid replacing it here though)
+AC_FUNC_FSEEKO
   ## also checks whether it "_FOLLOWS_SLASHED_SYMLINK":
 if test "x${ac_cv_func_lstat}" = "x"; then
   test -z "${ac_cv_func_lstat}"
   AC_FUNC_LSTAT dnl# (might create libobj)
 fi
 if test "x${ac_cv_func_malloc_0_nonnull}" = "x"; then
-  test -z "${ac_cv_func_malloc_0_nonnull}"
+  test -z "${ac_cv_func_malloc_0_nonnull}" || unset ac_cv_func_malloc_0_nonnull
   AC_FUNC_MALLOC dnl# (might create libobj)
 fi
 if test "x${ac_cv_func_memcmp_working}" = "x"; then
@@ -415,7 +457,7 @@ if test "x${ac_cv_func_obstack}" = "x"; then
   AC_FUNC_OBSTACK dnl# (might create libobj)
 fi
 if test "x${ac_cv_func_realloc_0_nonnull}" = "x"; then
-  test -z "${ac_cv_func_realloc_0_nonnull}"
+  test -z "${ac_cv_func_realloc_0_nonnull}" || unset ac_cv_func_realloc_0_nonnull
   AC_FUNC_REALLOC dnl# (might create libobj)
 fi
 AC_FUNC_STAT dnl# (might create libobj)
@@ -424,7 +466,10 @@ if test "x${ac_cv_func_strerror_r}" = "x" && test "x${ac_cv_func_strerror_r_char
   test -z "${ac_cv_func_strerror_r}" && test -z "${ac_cv_func_strerror_r_char_p}"
   AC_FUNC_STRERROR_R
 fi
-AC_FUNC_STRNLEN dnl# (might create libobj)
+if test "x${ac_cv_func_strnlen}" = "x" && test "x${ac_cv_func_strnlen_working}" = "x"; then
+  test -z "${ac_cv_func_strnlen}" && test -z "${ac_cv_func_strnlen_working}"
+  AC_FUNC_STRNLEN dnl# (might create libobj)
+fi
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([getcwd isascii iswprint localeconv mblen mbrlen memset mkdir \
                 putenv re_comp regcomp rmdir setlocale stpcpy strcasecmp \

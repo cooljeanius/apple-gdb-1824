@@ -44,7 +44,7 @@ multi_ice_gdb_server_LDADD = $(WIN32RES)
 MICE-gdbserverres.o: MICE-gdbserver.rc
 	$(WINDRES) --include $(srcdir) $(srcdir)/MICE-gdbserver.rc $@
 
-MOSTLYCLEANFILES = config.h.in~
+MOSTLYCLEANFILES = config.h.in~ configure~
 
 DISTCLEANFILES = *~ autoscan.log .DS_Store
 

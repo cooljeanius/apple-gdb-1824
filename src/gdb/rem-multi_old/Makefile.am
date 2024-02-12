@@ -85,7 +85,7 @@ DISTCLEANFILES = autoscan.log @MAINT@ .DS_Store *~
 distclean-local: clean-local
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 	-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
-	-rm -f config.h.in~
+	-rm -f config.h.in~ configure~
 	-if test -d .deps; then (rm -rf $(AM_V_v) .deps || rmdir .deps); fi
 .PHONY: distclean-local
 

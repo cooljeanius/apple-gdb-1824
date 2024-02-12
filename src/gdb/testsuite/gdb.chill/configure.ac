@@ -29,7 +29,6 @@ fi
 
 # Programs.
 AC_PROG_CC
-AC_PROG_GCC_TRADITIONAL
 
 # Output:
 AC_CONFIG_FILES([Makefile])dnl

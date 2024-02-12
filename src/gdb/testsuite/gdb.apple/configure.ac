@@ -41,11 +41,10 @@ AC_OBJEXT
 AC_EXEEXT
 
 if test "x${CC_C_O}" = "x"; then
-  test -z "${CC_C_O}"
+  test -z "${CC_C_O}" || unset CC_C_O
   AM_PROG_CC_C_O
 fi
 AC_PROG_CC
-AC_PROG_GCC_TRADITIONAL
 AC_PROG_AWK
 AC_PROG_CPP
 AC_PROG_CXX
@@ -86,6 +85,15 @@ dnl# End what used to be AC\_TYPE\_SIGNAL
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_CHECK_HEADERS([limits.h stdio.h])dnl
+
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
+  AC_CHECK_HEADERS([stdint.h])
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
+  AC_CHECK_HEADERS([unistd.h])
+fi
 
 # Checks for library functions.
 AC_FUNC_MALLOC

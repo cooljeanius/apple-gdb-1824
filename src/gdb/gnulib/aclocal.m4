@@ -14,8 +14,8 @@
 m4_ifndef([AC_CONFIG_MACRO_DIRS], [m4_defun([_AM_CONFIG_MACRO_DIRS], [])m4_defun([AC_CONFIG_MACRO_DIRS], [_AM_CONFIG_MACRO_DIRS($@)])])
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
-m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.71],,
-[m4_warning([this file was generated for autoconf 2.71.
+m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.72],,
+[m4_warning([this file was generated for autoconf 2.72.
 You have another version of autoconf.  It may work, but is not guaranteed to.
 If you have problems, you may need to regenerate the build system entirely.
 To do so, use the procedure documented by the package, typically 'autoreconf'.])])
@@ -1305,7 +1305,6 @@ m4_include([m4/gnulib-use-manually.m4])
 m4_include([m4/localtime-buffer.m4])
 m4_include([m4/lt_ac.m4])
 m4_include([m4/onceonly_2_57.m4])
-m4_include([m4/stdbool.m4])
 m4_include([import/m4/00gnulib.m4])
 m4_include([import/m4/__inline.m4])
 m4_include([import/m4/absolute-header.m4])
