@@ -182,10 +182,12 @@ TLCSH = @TCLSH@
 
 # renamed because the old variable overrode the default Automake one:
 RUNTESTDEFAULTFLAGSLOCAL = --srcdir $(srcdir)/testsuite RUNTEST=$(RUNTESTLOCAL)
+AM_RUNTESTFLAGS = $(RUNTESTDEFAULTFLAGSLOCAL)
 RUNTESTLOCAL = ` \
   if [ -f ${srcdir}/runtest$(EXEEXT) ]; then \
     echo ${srcdir}/runtest$(EXEEXT); \
   else echo "ERROR: runtest not found"; exit 1; fi`
+AM_RUNTEST = $(RUNTESTLOCAL)
 
 AM_CXXFLAGS = -I$(top_srcdir) -ggdb -Wall
 AM_CFLAGS = -Wall -Wc++-compat -std=gnu89 -DHAVE_CONFIG_H

@@ -10,6 +10,14 @@ DOCBOOK = @DOCBOOK@
 TARGETS = overview.html overview.ps overview.pdf overview.rtf
 
 docs: $(TARGETS)
+	$(AM_V_at)for mytarg in $(TARGETS); do
+	  if test -e $${mytarg}; then \
+	    stat $${mytarg} || echo "issue with $${mytarg}"; \
+	  else \
+	    echo "$${mytarg} is missing"; \
+	  fi; \
+	done
+.PHONY: docs
 
 %.ps: %.dvi
 	src=$(srcdir); \
@@ -52,6 +60,7 @@ docs: $(TARGETS)
 # catch:
 
 html rtf overview.pdf overview.ps overview.dvi overview.rtf overview.html: overview.sgml ref.sgml user.sgml
+.PHONY: rtf
 
 clean-local realclean distclean-local maintainer-clean-local: Makefile
 	rm -fr $(TARGETS) DBHTOHTML* overview.junk overview overview.{aux,dvi,log,ps,pdf,tex}
@@ -66,3 +75,4 @@ install-doc: $(TARGETS)
 	$(INSTALL_DATA) overview.ps $(DESTDIR)$(pkgdatadir)/dejagnu.ps
 	$(INSTALL_DATA) overview.pdf $(DESTDIR)$(pkgdatadir)/dejagnu.pdf
 	$(INSTALL_DATA) $(srcdir)/runtest.1 $(mandir)/man1/
+.PHONY: install-doc

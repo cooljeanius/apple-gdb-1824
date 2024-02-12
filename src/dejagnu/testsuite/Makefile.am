@@ -12,7 +12,9 @@ RUNTESTLOCAL = ` \
   if [ -f ${top_srcdir}/runtest$(EXEEXT) ] ; then \
     echo ${top_srcdir}/runtest$(EXEEXT); \
   else echo "ERROR: runtest not found"; exit 1; fi`
+AM_RUNTEST = $(RUNTESTLOCAL)
 RUNTESTDEFAULTFLAGSLOCAL = --srcdir $$srcdir
+AM_RUNTESTFLAGS = $(RUNTESTDEFAULTFLAGSLOCAL)
 
 CLEANFILES = *.log *.sum site.bak setval.tmp .DS_Store
 

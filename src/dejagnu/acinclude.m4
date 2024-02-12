@@ -175,7 +175,7 @@ if test x"${with_docbook}" != x""; then
 fi
 ])
 if test x"${ac_cv_c_docbook}" = x""; then
-    for i in ${ac_default_prefix}/bin ${prefix}/bin /usr/local/bin ${OSKITHDIR}/../bin /usr/bin /bin /opt /opt/local/bin /sw/bin /home; do
+    for i in ${ac_default_prefix}/bin ${prefix}/bin /usr/local/bin ${OSKITHDIR}/../bin /usr/bin /bin /opt /opt/local/bin /sw/bin /opt/sw/bin /home; do
 	dnl# See is we have an SGML tool in that directory.
 	if test -f ${i}/db2html; then
 	    ac_cv_c_docbook=${i}

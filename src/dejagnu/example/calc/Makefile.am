@@ -25,6 +25,7 @@ calc_CFLAGS = $(CFLAGS) $(AM_CFLAGS) -Wall -Wextra -pedantic -Wno-unused
 
 # renamed because the old variable overrode the default Automake one:
 RUNTESTDEFAULTFLAGSLOCAL = --tool calc CALC=`pwd`/calc --srcdir $$srcdir/testsuite
+AM_RUNTESTFLAGS = $(RUNTESTDEFAULTFLAGSLOCAL)
 
 CLEANFILES = *~ *.o .DS_Store testsuite/.DS_Store
 

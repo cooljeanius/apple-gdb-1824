@@ -438,6 +438,7 @@ jobs:
         if test -x "$(which java)"; then \
           sync && java --version; \
           sync && java --help; \
+          sync && java --validate-modules; \
         else \
           sudo apt-get install --fix-missing default-jre-headless; \
         fi

@@ -81,6 +81,10 @@ if ![info exists EXPECT] {
 
 make_defaults_file [pwd]/setval.tmp
 
+if {$subdir == ""} {
+    set subdir .
+}
+
 foreach i [glob $srcdir/$subdir/*.test] {
     process_test $i
 }
