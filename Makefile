@@ -7,7 +7,7 @@ GDB_RC_VERSION = 1824
 BINUTILS_VERSION = 2.13-20021117
 BINUTILS_RC_VERSION = 46
 
-# Uncomment line below for debugging shell commands
+# Keep line below uncommented for debugging shell commands
 SHELL = /bin/sh -ex
 
 .PHONY: all clean configure build install installsrc installhdrs headers \

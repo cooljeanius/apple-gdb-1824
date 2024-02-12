@@ -154,6 +154,7 @@ dvi: electric-fence.dvi
 clean-info:
 installcheck:
 
+## FIXME: where is electric-fence.texi supposed to be from?
 electric-fence.info: electric-fence.texi
 	$(MAKEINFO) -I $(srcdir) -o ./electric-fence.info electric-fence.texi
 

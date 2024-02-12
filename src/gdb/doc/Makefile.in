@@ -641,7 +641,7 @@ gdb.mm: $(GDB_DOC_FILES) links2roff
 # GDB MANUAL: HTML file
 
 gdb_toc.html: ${GDB_DOC_FILES}
-	$(MAKEHTML) $(MAKEHTMLFLAGS) -I ${READLINE_DIR} -I ${GDBMI_DIR} -I $(srcdir) $(srcdir)/gdb.texinfo
+	$(MAKEHTML) $(MAKEHTMLFLAGS) -I ${READLINE_DIR} -I ${GDBMI_DIR} -I $(srcdir) $(srcdir)/gdb.texinfo || touch $@
 
 # Clean these up before each run.  Avoids a catch-22 with not being
 # able to re-generate these files (to fix a corruption) because these

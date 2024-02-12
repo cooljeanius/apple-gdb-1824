@@ -428,7 +428,10 @@ jobs:
         else \
           echo "clang missing"; \
         fi
-        echo "done with clang static analysis"
+        if test -x "$(which purge)"; then \
+          purge || sudo purge; \
+        fi
+        sync && echo "done with clang static analysis"
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.3.0
