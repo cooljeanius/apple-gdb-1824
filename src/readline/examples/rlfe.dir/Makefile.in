@@ -159,7 +159,8 @@ tags TAGS: $(CFILES)
 	-ctags -e *.sh $(CFILES) *.h
 
 dist: .version $(SCREEN).tar.gz
-
+dvi:
+.PHONY: dvi
 
 # Perform self-tests (if any).
 check:

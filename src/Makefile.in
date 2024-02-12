@@ -22931,23 +22931,8 @@ maybe-dvi-tcl:
 @if tcl
 maybe-dvi-tcl: dvi-tcl
 
-dvi-tcl: \
-    configure-tcl 
-	$(AM_V_at)[ -f ./tcl/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing dvi in tcl"; \
-	(cd $(HOST_SUBDIR)/tcl && \
-	  $(MAKE) $(AM_V_MFLAG) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          dvi) \
-	  || exit 1
+# tcl doesn't support dvi.
+dvi-tcl:
 
 @endif tcl
 
@@ -23006,23 +22991,8 @@ maybe-TAGS-tcl:
 @if tcl
 maybe-TAGS-tcl: TAGS-tcl
 
-TAGS-tcl: \
-    configure-tcl 
-	$(AM_V_at)[ -f ./tcl/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing TAGS in tcl"; \
-	(cd $(HOST_SUBDIR)/tcl && \
-	  $(MAKE) $(AM_V_MFLAG) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          TAGS) \
-	  || exit 1
+# tcl doesn't support TAGS.
+TAGS-tcl:
 
 @endif tcl
 
@@ -23317,23 +23287,8 @@ maybe-dvi-itcl:
 @if itcl
 maybe-dvi-itcl: dvi-itcl
 
-dvi-itcl: \
-    configure-itcl 
-	$(AM_V_at)[ -f ./itcl/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing dvi in itcl"; \
-	(cd $(HOST_SUBDIR)/itcl && \
-	  $(MAKE) $(AM_V_MFLAG) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          dvi) \
-	  || exit 1
+# itcl doesn't support dvi.
+dvi-itcl:
 
 @endif itcl
 
@@ -23392,23 +23347,8 @@ maybe-TAGS-itcl:
 @if itcl
 maybe-TAGS-itcl: TAGS-itcl
 
-TAGS-itcl: \
-    configure-itcl 
-	$(AM_V_at)[ -f ./itcl/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing TAGS in itcl"; \
-	(cd $(HOST_SUBDIR)/itcl && \
-	  $(MAKE) $(AM_V_MFLAG) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          TAGS) \
-	  || exit 1
+# itcl doesn't support TAGS.
+TAGS-itcl:
 
 @endif itcl
 
@@ -39873,23 +39813,8 @@ maybe-TAGS-expect:
 @if expect
 maybe-TAGS-expect: TAGS-expect
 
-TAGS-expect: \
-    configure-expect 
-	$(AM_V_at)[ -f ./expect/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) $(X11_FLAGS_TO_PASS); do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing TAGS in expect"; \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(AM_V_MFLAG) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          TAGS) \
-	  || exit 1
+# expect doesn't support TAGS.
+TAGS-expect:
 
 @endif expect
 
@@ -40598,23 +40523,8 @@ maybe-dvi-tk:
 @if tk
 maybe-dvi-tk: dvi-tk
 
-dvi-tk: \
-    configure-tk 
-	$(AM_V_at)[ -f ./tk/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) $(X11_FLAGS_TO_PASS); do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing dvi in tk"; \
-	(cd $(HOST_SUBDIR)/tk && \
-	  $(MAKE) $(AM_V_MFLAG) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          dvi) \
-	  || exit 1
+# tk doesn't support dvi.
+dvi-tk:
 
 @endif tk
 
@@ -40673,23 +40583,8 @@ maybe-TAGS-tk:
 @if tk
 maybe-TAGS-tk: TAGS-tk
 
-TAGS-tk: \
-    configure-tk 
-	$(AM_V_at)[ -f ./tk/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) $(X11_FLAGS_TO_PASS); do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing TAGS in tk"; \
-	(cd $(HOST_SUBDIR)/tk && \
-	  $(MAKE) $(AM_V_MFLAG) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          TAGS) \
-	  || exit 1
+# tk doesn't support TAGS.
+TAGS-tk:
 
 @endif tk
 
@@ -41412,23 +41307,8 @@ maybe-TAGS-utils:
 @if utils
 maybe-TAGS-utils: TAGS-utils
 
-TAGS-utils: \
-    configure-utils 
-	$(AM_V_at)[ -f ./utils/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing TAGS in utils"; \
-	(cd $(HOST_SUBDIR)/utils && \
-	  $(MAKE) $(AM_V_MFLAG) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          TAGS) \
-	  || exit 1
+# utils doesn't support TAGS.
+TAGS-utils:
 
 @endif utils
 

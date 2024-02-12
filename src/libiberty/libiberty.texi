@@ -4,6 +4,10 @@
 @settitle @sc{gnu} libiberty
 @c %**end of header
 
+@tex
+\batchmode
+@end tex
+
 @syncodeindex fn cp
 @syncodeindex vr cp
 @syncodeindex pg cp

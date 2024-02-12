@@ -345,7 +345,7 @@ not recommended.
 
 @end deftypefn
 
-@c make-temp-file.c:88
+@c make-temp-file.c:90
 @deftypefn Replacement const char* choose_tmpdir ()
 
 Returns a pointer to a directory path suitable for creating temporary
@@ -372,8 +372,8 @@ pointer encountered.  Pointers to empty strings are ignored.
 
 @end deftypefn
 
-@c argv.c:503
-@deftypefn Extension int countargv (char **@var{argv})
+@c argv.c:505
+@deftypefn Extension int countargv (char *const *@var{argv})
 
 Return the number of elements in @var{argv}.
 Returns zero if @var{argv} is NULL.
@@ -409,7 +409,7 @@ make it easy to compose the values of multiple blocks.
 @end deftypefn
 
 @c argv.c:56
-@deftypefn Extension char** dupargv (char **@var{vector})
+@deftypefn Extension char** dupargv (char *const *@var{vector})
 
 Duplicate an argument vector.  Simply scans through @var{vector},
 duplicating each argument until the terminating @code{NULL} is found.
@@ -437,7 +437,7 @@ symbolic name or message.
 
 @end deftypefn
 
-@c argv.c:374
+@c argv.c:375
 @deftypefn Extension void expandargv (int *@var{argcp}, char ***@var{argvp})
 
 The @var{argcp} and @code{argvp} arguments are pointers to the usual
@@ -851,7 +851,7 @@ relative prefix can be found, return @code{NULL}.
 
 @end deftypefn
 
-@c make-temp-file.c:138
+@c make-temp-file.c:140
 @deftypefn Replacement char* make_temp_file (const char *@var{suffix})
 
 Return a temporary file name (as a string) or @code{NULL} if unable to
@@ -925,7 +925,7 @@ Sets the first @var{count} bytes of @var{s} to the constant byte
 
 @end deftypefn
 
-@c mkstemps.c:55
+@c mkstemps.c:59
 @deftypefn Replacement int mkstemps (char *@var{pattern}, int @var{suffix_len})
 
 Generate a unique temporary file name from @var{pattern}.
@@ -1690,8 +1690,8 @@ does the return value.  The third argument is unused in @libib{}.
 
 @end deftypefn
 
-@c argv.c:319
-@deftypefn Extension int writeargv (const char **@var{argv}, FILE *@var{file})
+@c argv.c:320
+@deftypefn Extension int writeargv (char *const *@var{argv}, FILE *@var{file})
 
 Write each member of ARGV, handling all necessary quoting, to the file
 named by FILE, separated by whitespace.  Return 0 on success, non-zero
@@ -1759,10 +1759,10 @@ function will be called to print an error message and terminate execution.
 @c xmalloc.c:46
 @deftypefn Replacement void xmalloc_set_malloc_hooks (PTR (*@var{nmalloc}) (size_t), PTR (*@var{ncalloc}) (size_t, size_t), PTR (*nrealloc) (PTR, @var{size_t}), void (*@var{nfree}) (PTR))
 
-Replace the implementations of @var{xmalloc}, @{xcalloc}, @{xrealloc},
-and @{xfree} with the provided functions.  By default, they will call
-the system functions @var{malloc}, @{calloc}, @{realloc}, and @{free},
-respectively
+Replace the implementations of @var{xmalloc}, @var{xcalloc}, @var{xrealloc},
+and @var{xfree} with the provided functions.  By default, they will call
+the system functions @var{malloc}, @var{calloc}, @var{realloc}, and @var{free},
+respectively.
 
 @end deftypefn
 

@@ -45,10 +45,10 @@ cannot be found.
 
 @deftypefn Replacement void xmalloc_set_malloc_hooks (PTR (*@var{nmalloc}) (size_t), PTR (*@var{ncalloc}) (size_t, size_t), PTR (*nrealloc) (PTR, @var{size_t}), void (*@var{nfree}) (PTR))
 
-Replace the implementations of @var{xmalloc}, @{xcalloc}, @{xrealloc},
-and @{xfree} with the provided functions.  By default, they will call
-the system functions @var{malloc}, @{calloc}, @{realloc}, and @{free},
-respectively
+Replace the implementations of @var{xmalloc}, @var{xcalloc}, @var{xrealloc},
+and @var{xfree} with the provided functions.  By default, they will call
+the system functions @var{malloc}, @var{calloc}, @var{realloc}, and @var{free},
+respectively.
 
 @end deftypefn
 

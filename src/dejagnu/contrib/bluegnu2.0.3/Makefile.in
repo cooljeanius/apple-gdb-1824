@@ -203,3 +203,6 @@ config.status:
 distdir: $(BUILT_SOURCES)
 	test -d . || echo "$@: problem in `pwd`"
 .PHONY: distdir
+
+tags:
+.PHONY: tags

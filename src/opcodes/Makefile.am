@@ -409,6 +409,7 @@ libopcodes_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
 # should be removed if everything else starts using libtool. FIXME.
 
 noinst_LIBRARIES = libopcodes.a
+libopcodes_a_SOURCES = cgen-bitset.c
 
 stamp-lib: libopcodes.la @MAINT@ config.status $(PATH_TO_MOVEIFCHANGE)
 	libtooldir=`$(LIBTOOL) --config | $(SED) -n -e 's/^objdir=//p'`; \
