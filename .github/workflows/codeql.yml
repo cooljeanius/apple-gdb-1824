@@ -431,10 +431,16 @@ jobs:
         if test -x "$(which purge)"; then \
           purge || sudo purge; \
         fi
-        if test -x "$(which java)"; then \
-          java --version; \
-        fi
         sync && echo "done with clang static analysis"
+
+    - name: Check Java info
+      run: |
+        if test -x "$(which java)"; then \
+          sync && java --version; \
+          sync && java --help; \
+        else \
+          sudo apt-get install --fix-missing default-jre-headless; \
+        fi
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.3.0

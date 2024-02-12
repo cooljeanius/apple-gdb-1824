@@ -66,7 +66,7 @@ check:	exp_test site.exp ../expect
 	   export TCL_LIBRARY; \
 	else echo "../expect is missing" >&2; fi; \
 	echo "attempting to use $${EXPECT} from `pwd`"; \
-	$(RUNTEST) $(RUNTESTFLAGS) --tool expect EXPECT=$${EXPECT} --srcdir $(srcdir) || $(RUNTEST) $(RUNTESTFLAGS) --tool expect EXPECT=../expect --srcdir $(srcdir) || $(RUNTEST)
+	$(RUNTEST) $(RUNTESTFLAGS) --tool expect EXPECT=$${EXPECT} --srcdir $(srcdir) || $(RUNTEST) $(RUNTESTFLAGS) --tool expect EXPECT=../expect --srcdir $(srcdir) || $(RUNTEST) || stat *.exp
 
 install:
 uninstall: force
