@@ -46,6 +46,7 @@ gnulib/Makefile
 gcore
 gdb-gdb.gdb
 gdb.z
+conf*/out
 conf*/*.awk
 *libs/*
 *.rsrc

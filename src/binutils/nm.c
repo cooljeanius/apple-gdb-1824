@@ -1351,6 +1351,14 @@ print_symbol_filename_posix (bfd *archive_bfd, bfd *abfd)
     }
 }
 
+/* FIXME: the pragmas fail to shut CodeQL up: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wformat-nonliteral"
+# endif /* gcc 4.6+ */
+#endif /* any gcc */
+
 /* Print a symbol value: */
 static void
 print_value(bfd *abfd, bfd_vma val)
@@ -1382,14 +1390,6 @@ print_value(bfd *abfd, bfd_vma val)
     }
 #endif /* !BFD64 || BFD_HOST_64BIT_LONG */
 }
-
-/* FIXME: the pragmas fail to shut CodeQL up: */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wformat-nonliteral"
-# endif /* gcc 4.6+ */
-#endif /* any gcc */
 
 /* Print a line of information about a symbol: */
 static void
