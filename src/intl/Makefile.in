@@ -994,7 +994,7 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU
+	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU check-local
 check: check-recursive
 all-am: Makefile $(DATA) $(HEADERS) config.h all-local
 installdirs: installdirs-recursive
@@ -1109,25 +1109,26 @@ uninstall-am: uninstall-INSTALLDATA uninstall-includeHEADERS \
 .MAKE: $(am__recursive_targets) all check-am install-am install-strip
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am all-local \
-	am--refresh check check-DEJAGNU check-am clean clean-cscope \
-	clean-generic clean-libtool clean-local cscope cscopelist-am \
-	ctags ctags-am dist dist-all dist-bzip2 dist-gzip dist-lzip \
-	dist-shar dist-tarZ dist-xz dist-zip dist-zstd distcheck \
-	distclean distclean-DEJAGNU distclean-generic distclean-hdr \
-	distclean-libtool distclean-local distclean-tags \
-	distcleancheck distdir distuninstallcheck dvi dvi-am html \
-	html-am info info-am install install-INSTALLDATA install-am \
-	install-data install-data-am install-data-local install-dvi \
-	install-dvi-am install-exec install-exec-am install-exec-local \
-	install-html install-html-am install-includeHEADERS \
-	install-info install-info-am install-info-local install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installcheck-local \
-	installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic maintainer-clean-local mostlyclean \
-	mostlyclean-generic mostlyclean-libtool mostlyclean-local pdf \
-	pdf-am ps ps-am tags tags-am uninstall uninstall-INSTALLDATA \
-	uninstall-am uninstall-includeHEADERS uninstall-local
+	am--refresh check check-DEJAGNU check-am check-local clean \
+	clean-cscope clean-generic clean-libtool clean-local cscope \
+	cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
+	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
+	dist-zstd distcheck distclean distclean-DEJAGNU \
+	distclean-generic distclean-hdr distclean-libtool \
+	distclean-local distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-INSTALLDATA install-am install-data \
+	install-data-am install-data-local install-dvi install-dvi-am \
+	install-exec install-exec-am install-exec-local install-html \
+	install-html-am install-includeHEADERS install-info \
+	install-info-am install-info-local install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installcheck-local installdirs \
+	installdirs-am maintainer-clean maintainer-clean-generic \
+	maintainer-clean-local mostlyclean mostlyclean-generic \
+	mostlyclean-libtool mostlyclean-local pdf pdf-am ps ps-am tags \
+	tags-am uninstall uninstall-INSTALLDATA uninstall-am \
+	uninstall-includeHEADERS uninstall-local
 
 .PRECIOUS: Makefile
 
@@ -1180,8 +1181,13 @@ libintl.la: $(LTOBJECTS) $(OBJECTS)
 	$(AM_V_at)cd ../po && $(MAKE) $(AM_V_MFLAG) cat-id-tbl.o
 
 check: all @MAINT@ config.status
-	ls ./*.i || ls ./*.s || ls ./*.bc || ls
+	-(ls ./*.i || ls ./*.s || ls ./*.bc || ls)
 .PHONY: check
+
+check-local:
+	if test -L libintl.h; then readlink libintl.h; \
+	elif test -e libintl.h; then stat libintl.h; \
+	else echo "libintl.h is missing"; fi
 
 # This installation goal is only used in GNU gettext. Packages which
 # only use the library should use install instead.

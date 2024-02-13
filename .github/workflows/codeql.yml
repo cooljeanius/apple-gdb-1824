@@ -298,18 +298,19 @@ jobs:
           fi; \
         done
         echo "FINAL_CPPFLAGS are ${FINAL_CPPFLAGS}"
-        # shellcheck disable=SC2001,SC2044
+        # shellcheck disable=SC2001,SC2044,2086
         for cfile in $(find . -name '*.c' -type f); do \
           cobjfile="$(echo "${cfile}" | sed "s/\.c/.o/g")"; \
+          cfiledir="$(dirname "${cfile}")"; \
           if test ! -e "${cobjfile}"; then \
-            echo "gcc -c -w -Wno-error -Wfatal-errors \"${FINAL_CPPFLAGS}\" \"${cfile}\""; \
-            gcc -c -w -Wno-error -Wfatal-errors "${FINAL_CPPFLAGS}" -I"$(dirname "${cfile}")" -iquote "$(dirname "${cfile}")" "${cfile}" || stat -t "${cfile}" || echo "cfile is ${cfile}"; \
+            echo "gcc -c -w -Wno-error -Wfatal-errors ${FINAL_CPPFLAGS} -I\"${cfiledir}\" -iquote \"${cfiledir}\" -I\"${cfiledir}\"/.. -iquote \"${cfiledir}\"/.. ${cfile}"; \
+            gcc -c -w -Wno-error -Wfatal-errors ${FINAL_CPPFLAGS} -I"${cfiledir}" -iquote "${cfiledir}" -I"${cfiledir}"/.. -iquote "${cfiledir}"/.. ${cfile} || stat -t "${cfile}" || echo "cfile is ${cfile}"; \
           else \
             echo "object file ${cobjfile} already exists for ${cfile}."; \
-            cp -v "${cobjfile}" "$(dirname "${cfile}")" || cp -v "${cobjfile}" . || cp -v "${cobjfile}" .. || (if test -d /tmp && test -w /tmp; then cp -v "${cobjfile}" /tmp; fi) || stat -t "${cobjfile}"; \
+            cp -v "${cobjfile}" "${cfiledir}" || cp -v "${cobjfile}" . || cp -v "${cobjfile}" .. || (if test -d /tmp && test -w /tmp; then cp -v "${cobjfile}" /tmp; fi) || stat -t "${cobjfile}"; \
           fi; \
         done
-        echo "done with this step"
+        echo "done with the \"Extra coverage build (C) part 2\" step"
 
     - name: Extra coverage build (C++)
       if: matrix.language == 'c-cpp' && success()
@@ -443,6 +444,11 @@ jobs:
           sudo apt-get install --fix-missing default-jre-headless; \
         fi
         ps aux
+        if test -x "$(which purge)"; then \
+          purge || sudo purge; \
+        elif test -x "$(which sync)"; then \
+          sync; \
+        fi
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.3.0

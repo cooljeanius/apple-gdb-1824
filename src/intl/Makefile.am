@@ -180,8 +180,13 @@ libintl.la: $(LTOBJECTS) $(OBJECTS)
 EXTRA_DIST += po/Makevars.in
 
 check: all @MAINT@ config.status
-	ls ./*.i || ls ./*.s || ls ./*.bc || ls
+	-(ls ./*.i || ls ./*.s || ls ./*.bc || ls)
 .PHONY: check
+
+check-local:
+	if test -L libintl.h; then readlink libintl.h; \
+	elif test -e libintl.h; then stat libintl.h; \
+	else echo "libintl.h is missing"; fi
 
 # This installation goal is only used in GNU gettext. Packages which
 # only use the library should use install instead.
