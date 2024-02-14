@@ -467,4 +467,4 @@ jobs:
         category: "/language:${{matrix.language}}"
       env:
         CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"finalize": ["-J-Xmx29134m"]}}'
-        CODEQL_RAM: 29134
+        CODEQL_RAM: 15981
