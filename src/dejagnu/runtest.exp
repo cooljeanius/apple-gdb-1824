@@ -1546,6 +1546,7 @@ if ![exp_debug] {
              {SIGSEGV {segmentation violation}}" {
 	 set signal [lindex $sig 0];
 	 set str [lindex $sig 1];
+         # FIXME: need to handle possible failures at trapping signals:
 	 trap "send_error \"got a \[trap -name\] signal, $str \\n\"; log_and_exit;" $signal;
 	 verbose "setting trap for $signal to $str" 1
     }
@@ -1811,7 +1812,7 @@ foreach current_target $target_list {
 		}
 
 		# set subdir to the tail of the dirname after $srcdir,
-		# for the driver files that want it.  XXX this is silly.
+		# for the driver files that want it.  XXX: this is silly.
 		# drivers should get a single var, not "$srcdir/$subdir"
 		set subdir [file dirname $test_name]
 		set p [expr [string length $srcdir]-1]
@@ -1823,7 +1824,7 @@ foreach current_target $target_list {
 		    regsub "^/" $subdir "" subdir
 		}
 
-		# XXX not the right thing to do.
+		# XXX: not the right thing to do.
 		set runtests [list [file tail $test_name] ""]
 
 		runtest $test_name;
