@@ -12,12 +12,9 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - run: brew update
     - name: Install dependencies with Homebrew
       env:
         HOMEBREW_NO_EMOJI: 1
-        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
-        HOMEBREW_VERBOSE: 1
         HOMEBREW_VERBOSE_USING_DOTS: 1
       run: |
         if test ${{ matrix.compiler }} == clang; then \
