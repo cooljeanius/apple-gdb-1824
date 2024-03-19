@@ -25,7 +25,7 @@ jobs:
           COMPILER_FORMULA=""; \
         fi
         date && sync
-        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk autoconf-archive automake scons smake "${COMPILER_FORMULA}"
+        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake "${COMPILER_FORMULA}"
     - run: test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq) && sync && sleep 1
     - run: ./configure --enable-silent-rules CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
@@ -133,6 +133,8 @@ jobs:
             find "${subdir}" -name '*.Plo' -print; \
           elif test -x "$(which sync)"; then \
             sync && pwd; \
+          else \
+            echo "unhandled possibility for ${subdir}"; \
           fi; \
           if test -r "${subdir}"/Makefile && test -s "${subdir}"/Makefile && test -w "${subdir}"; then \
             pushd "${subdir}"; \
@@ -141,6 +143,11 @@ jobs:
             popd; \
           else \
             sync && echo "no usable Makefile found in ${subdir}"; \
+          fi; \
+          if test -r "${subdir}"/.deps; then \
+            (find "${subdir}" -name '*.Tpo' -print) || echo "depfile generation may have failed for ${subdir}"; \
+          else \
+            echo "depdir generation may have failed for ${subdir}"; \
           fi; \
         done
         sync && echo "hopefully libtool_gnu timestamps will be fine..."
