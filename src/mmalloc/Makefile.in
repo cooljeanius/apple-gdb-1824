@@ -238,7 +238,7 @@ uninstall-info:
 	done
 
 # FIXME: where did the source file test1.c go?
-check: check-local @MAINT@# $(srcdir)/test1.c libmmalloc.a
+check: check-local @MAINT@ libmmalloc.a # $(srcdir)/test1.c
 #	$(CC) -g $(srcdir)/test1.c libmmalloc.a
 # This loses for Canadian cross (building mmalloc with a cross-compiler).
 # There is probably some dejagnu-ish solution (such as what we are doing
@@ -274,7 +274,8 @@ stamp-framework-headers:
 	$(LN_S) -v A $(FRAMEWORK).framework/Versions/Current
 	cp -pv $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
 	cp -pv *.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	touch stamp-framework-headers
+	echo "stamp" > stamp-framework-headers || touch stamp-framework-headers
+	cp -pvf stamp-framework-headers $(FRAMEWORK).framework/PrivateHeaders
 
 stamp-framework: $(FRAMEWORK_OFILES)
 	$(RM) -fv stamp-framework-headers
@@ -282,6 +283,7 @@ stamp-framework: $(FRAMEWORK_OFILES)
 	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
 	$(LN_S) -v Versions/Current/Resources $(FRAMEWORK).framework/Resources
 	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
+	cp -pv COPYING.LIB $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
 	set -ex; \
 	if [ "$(FRAMEWORK_SUFFIX)" != "" ]; then \
 	    test -n "$(FRAMEWORK_SUFFIX)"; \
@@ -380,11 +382,12 @@ distclean:	clean
 		rm -f Makefile depend
 		rm -frv autom4te.cache || rmdir autom4te.cache
 		-rm -f .DS_Store
+		rm -fv mmalloc.?? mmalloc.??s mmalloc.log mmalloc.aux mmalloc.toc
 
 maintainer-clean realclean: distclean clean
 		@echo "This command is intended for maintainers to use;"
 		@echo "it deletes files that need special tools to regen"
-		rm -f mmalloc.info
+		rm -f mmalloc.info mmalloc.dvi
 		rm -f autoscan.log
 
 force:
