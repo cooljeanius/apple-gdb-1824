@@ -46,8 +46,9 @@ into another language, under the above conditions for modified versions.
 @page
 
 @tex
+\batchmode
 \def\$#1${{#1}}  % Kluge: collect RCS revision info without $...$
-\xdef\manvers{\1.1.1.1}  % For use in headers, footers too
+\xdef\manvers{1.1.1.1}  % For use in headers, footers too
 {\parskip=0pt
 \hfill Cygnus Support\par
 \hfill fnf\@cygnus.com\par
