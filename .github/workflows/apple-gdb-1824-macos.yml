@@ -27,7 +27,7 @@ jobs:
         date && sync
         brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake "${COMPILER_FORMULA}"
     - run: test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq) && sync && sleep 1
-    - run: ./configure --enable-silent-rules CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
+    - run: ./configure --enable-silent-rules --disable-dependency-tracking CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
     - run: if test ! -e libcheckpoint/libcheckpoint.dylib; then (sync && echo "ensuring libcheckpoint is built" && sync && make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" && sync) || (sync && make -ki -C macsbug && sync) || (sync && make -ki -C macsbug/gdb_plugin_support && sync) || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else (sync && stat libcheckpoint/libcheckpoint.dylib && sync); fi
     - run: if test -d .. && test -w .. && test ! -e ../gdb; then (sync && echo "symlinking source directory" && sync && pushd .. && sync && ln -sv apple-gdb-1824 gdb && sync && readlink gdb && sync && popd && sync && sleep 1); else (sync && stat .. && sync && ls .. && sync && sleep 1); fi
@@ -116,7 +116,7 @@ jobs:
           elif test -x "$(which sync)"; then \
             which sync && sync; \
           else \
-            echo "configure-related timestamps might be off?"; \
+            echo "uh... configure-related timestamps might be off?"; \
           fi; \
         fi
         if test libltdl/Makefile.in -ot libltdl/Makefile.am; then \
@@ -143,9 +143,9 @@ jobs:
           elif test -r "${subdir}"; then \
             (find "${subdir}" -name '*.Plo' -print) || echo "depfiles may be missing for ${subdir}"; \
           elif test -x "$(which sync)"; then \
-            sync && echo "checking ${subdir} from $(pwd)"; \
+            sync && echo "${subdir} seems to be missing (checking from $(pwd))"; \
           else \
-            echo "unhandled possibility for ${subdir}"; \
+            echo "warning, unhandled possibility for ${subdir}"; \
           fi; \
           if test -r "${subdir}"/Makefile && test -s "${subdir}"/Makefile && test -w "${subdir}"; then \
             pushd "${subdir}"; \
@@ -153,16 +153,16 @@ jobs:
             make am--depfiles || make am--refresh || make distdir-am || stat Makefile; \
             popd; \
           else \
-            sync && echo "no usable Makefile found in ${subdir}"; \
+            sync && echo "no usable Makefile found in ${subdir}; skipping attempt at depfile regeneration in it"; \
           fi; \
           if test -r "${subdir}"/.deps; then \
             (find "${subdir}" -name '*.Tpo' -print) || echo "depfile generation may have failed for ${subdir}"; \
           elif test -d "${subdir}" && test ! -d "${subdir}"/.deps; then \
             echo "depdir generation may have failed for ${subdir}"; \
           elif test ! -d "${subdir}"; then \
-            echo "${subdir} is not an extant subdirectory"; \
+            echo "warning, ${subdir} is not an extant subdirectory"; \
           else \
-            echo "something about ${subdir} may require fixing"; \
+            echo "warning, something about ${subdir} may require fixing"; \
           fi; \
         done
         sync && echo "hopefully libtool_gnu timestamps will be fine..."
@@ -194,7 +194,7 @@ jobs:
         if test ${{ matrix.compiler }} == clang; then \
           time make check-bfd; \
           echo "done with bfd; moving onto binutils next..."; \
-          time make check-binutils; \
+          time make check-binutils-local; \
           echo "done with binutils; moving onto mmalloc next..."; \
           time make check-mmalloc; \
           echo "done with mmalloc; moving onto electrict-fence next..."; \

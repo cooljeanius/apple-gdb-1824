@@ -1340,6 +1340,8 @@ check-[+module+]:
 	  (cd $(HOST_SUBDIR)/[+module+] && \
 	    $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) [+extra_make_flags+][+
 	    IF bootstrap +] $(EXTRA_BOOTSTRAP_FLAGS)[+ ENDIF bootstrap +] check); \
+	else \
+	  echo "$@ is only tested in a native toolchain."; \
 	fi
 [+ ELSE check +]
 check-[+module+]:
@@ -1991,6 +1993,11 @@ bfd-headers: configure-bfd
 	  $(MAKE) $(AM_V_MFLAG) -C bfd bfd.h; else stat bfd/bfd.h; fi
 .PHONY: bfd-headers
 all-bfd: bfd-headers
+
+# Another special-cased target; may possibly want to do this for all subdirectories
+# in the future, but for now, just handle this one separately:
+check-binutils-local: all-binutils
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) -C binutils check-local
 
 # Serialization dependencies. Host configures do NOT work well in parallel
 # to each other, due to contention over config.cache. Target configures and 

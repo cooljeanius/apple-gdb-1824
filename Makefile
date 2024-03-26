@@ -146,7 +146,7 @@ export LIBTOOL  = $(shell xcrun -find libtool)
 export MAKE     = $(shell xcrun -find make)
 export NM       = $(shell xcrun -find nm)
 export RANLIB   = $(shell xcrun -find ranlib)
-export TAR      = $(shell xcrun -find gnutar)
+export TAR      = $(shell (xcrun -find gnutar 2>/dev/null || xcrun -find tar))
 ifndef RM
 export RM       = rm
 endif

@@ -8389,6 +8389,8 @@ check-bison:
 	  $(HOST_EXPORTS)  \
 	  (cd $(HOST_SUBDIR)/bison && \
 	    $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS)  check); \
+	else \
+	  echo "$@ is only tested in a native toolchain."; \
 	fi
 
 @endif bison
@@ -8792,6 +8794,8 @@ check-byacc:
 	  $(HOST_EXPORTS)  \
 	  (cd $(HOST_SUBDIR)/byacc && \
 	    $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS)  check); \
+	else \
+	  echo "$@ is only tested in a native toolchain."; \
 	fi
 
 @endif byacc
@@ -11990,6 +11994,8 @@ check-fastjar:
 	  $(HOST_EXPORTS)  \
 	  (cd $(HOST_SUBDIR)/fastjar && \
 	    $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS)  check); \
+	else \
+	  echo "$@ is only tested in a native toolchain."; \
 	fi
 
 @endif fastjar
@@ -13917,6 +13923,8 @@ check-flex:
 	  $(HOST_EXPORTS)  \
 	  (cd $(HOST_SUBDIR)/flex && \
 	    $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS)  check); \
+	else \
+	  echo "$@ is only tested in a native toolchain."; \
 	fi
 
 @endif flex
@@ -38166,6 +38174,8 @@ check-zip:
 	  $(HOST_EXPORTS)  \
 	  (cd $(HOST_SUBDIR)/zip && \
 	    $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS)  check); \
+	else \
+	  echo "$@ is only tested in a native toolchain."; \
 	fi
 
 @endif zip
@@ -62011,6 +62021,11 @@ bfd-headers: configure-bfd
 	  $(MAKE) $(AM_V_MFLAG) -C bfd bfd.h; else stat bfd/bfd.h; fi
 .PHONY: bfd-headers
 all-bfd: bfd-headers
+
+# Another special-cased target; may possibly want to do this for all subdirectories
+# in the future, but for now, just handle this one separately:
+check-binutils-local: all-binutils
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) -C binutils check-local
 
 # Serialization dependencies. Host configures do NOT work well in parallel
 # to each other, due to contention over config.cache. Target configures and 
