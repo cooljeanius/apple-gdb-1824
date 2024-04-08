@@ -19,7 +19,7 @@
     "finalhandler": "^1.0.4",
     "modernizr": "^3.5.0",
     "serve-static": "^1.12.4",
-    "typescript": "^5.4.3",
+    "typescript": "^5.4.4",
     "uglify-js": "^3.0.27"
   }
 }
