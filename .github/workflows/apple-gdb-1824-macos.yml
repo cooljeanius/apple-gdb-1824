@@ -12,12 +12,9 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - run: brew update
     - name: Install dependencies with Homebrew
       env:
         HOMEBREW_NO_EMOJI: 1
-        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
-        HOMEBREW_VERBOSE: 1
         HOMEBREW_VERBOSE_USING_DOTS: 1
       run: |
         if test ${{ matrix.compiler }} == clang; then \
@@ -28,15 +25,15 @@ jobs:
           COMPILER_FORMULA=""; \
         fi
         date && sync
-        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar openssl@3 gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk autoconf autoconf-archive automake scons smake "${COMPILER_FORMULA}"
+        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake "${COMPILER_FORMULA}"
     - run: test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq) && sync && sleep 1
-    - run: ./configure --enable-silent-rules CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
+    - run: ./configure --enable-silent-rules --disable-dependency-tracking CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
     - run: if test ! -e libcheckpoint/libcheckpoint.dylib; then (sync && echo "ensuring libcheckpoint is built" && sync && make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" && sync) || (sync && make -ki -C macsbug && sync) || (sync && make -ki -C macsbug/gdb_plugin_support && sync) || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else (sync && stat libcheckpoint/libcheckpoint.dylib && sync); fi
     - run: if test -d .. && test -w .. && test ! -e ../gdb; then (sync && echo "symlinking source directory" && sync && pushd .. && sync && ln -sv apple-gdb-1824 gdb && sync && readlink gdb && sync && popd && sync && sleep 1); else (sync && stat .. && sync && ls .. && sync && sleep 1); fi
     - run: (if test -n "$(type ant 2>/dev/null)" && test -x "$(which ant)" && test -r build.xml; then if test ! -d build; then mkdir build; elif test ! -d "${HOME}"/work/apple-gdb-1824/build; then mkdir -pv "${HOME}"/work/apple-gdb-1824/build; fi; ant; else (echo "ant missing" && sync); fi) || (if test -x ./gradlew; then (./gradlew build || ./gradlew assemble || ./gradlew); elif test -r ./gradlew; then sh ./gradlew; elif test -e ./gradlew; then stat ./gradlew; else echo "gradlewrapper missing"; fi) || (if test -x "$(which gradle)"; then gradle; else echo "gradle missing"; fi) || (if test -x ~rc/bin/buildit; then sudo ~rc/bin/buildit "$(pwd)" -arch ppc -arch i386 -arch armv5 -target cross -project gdb -release RELEASENAME RC_CROSS_ARCHS=armv6; else echo "buildit missing"; fi) || ls
     - run: (if test -x ./gradlew; then (./gradlew build || ./gradlew assemble || ./gradlew); elif test -r ./gradlew; then sh ./gradlew; elif test -e ./gradlew; then stat ./gradlew; else echo "gradlewrapper missing" >&2; fi) || (if test -x "$(which gradle)"; then gradle; else echo "gradle missing"; fi) || (if test -x ~rc/bin/buildit; then sudo ~rc/bin/buildit "$(pwd)" -arch ppc -arch i386 -arch armv5 -target cross -project gdb -release RELEASENAME RC_CROSS_ARCHS=armv6; else echo "buildit missing"; fi) || ls
-    - run: cd src && ./configure --disable-werror --disable-opts-test --enable-carbon-framework --enable-debug-symbols-framework --enable-64-bit-bfd --enable-silent-rules CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
+    - run: cd src && ./configure --disable-werror --disable-opts-test --enable-carbon-framework --enable-debug-symbols-framework --enable-64-bit-bfd --enable-silent-rules --disable-dependency-tracking CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: cd src && make configure-bfd
     - run: cd src && sync && make -C bfd headers && sync
     - run: cd src && if test ! -e bfd/bfd.h; then (sync && make -C bfd bfd.h); else (sync && stat bfd/bfd.h); fi && sync && find . -name bfd.h -print && sync
@@ -112,30 +109,43 @@ jobs:
         ./bootstrap || stat ./bootstrap || test -x ./bootstrap
         if test libltdl/configure -ot libltdl/configure.ac; then \
           if test -x libltdl/configure && test -s libltdl/configure; then \
+            echo "touch libltdl/configure"; \
             touch libltdl/configure; \
           elif test -x libltdl/configure~ && test -s libltdl/configure~; then \
             cp -vf libltdl/configure~ libltdl/configure; \
           elif test -x "$(which sync)"; then \
             which sync && sync; \
           else \
-            echo "configure-related timestamps might be off?"; \
+            echo "uh... configure-related timestamps might be off?"; \
           fi; \
         fi
         if test libltdl/Makefile.in -ot libltdl/Makefile.am; then \
+          echo "test -s libltdl/Makefile.in && touch libltdl/Makefile.in"; \
           test -s libltdl/Makefile.in && touch libltdl/Makefile.in; \
         fi
         if test libltdl/Makefile -ot libltdl/Makefile.in; then \
+          echo "test -s libltdl/Makefile && touch libltdl/Makefile"; \
           test -s libltdl/Makefile && touch libltdl/Makefile; \
         fi
         for subdir in libltdl libltdl/loaders libtool_gnu/libltdl/loaders loaders; do \
           if test -d "${subdir}" && test -w "${subdir}" && test ! -d "${subdir}"/.deps; then \
             mkdir -pv "${subdir}"/.deps; \
+            if test -w "${subdir}"/.deps && test ! -e "${subdir}"/.deps/.dirstamp; then \
+              echo "touch ${subdir}/.deps/.dirstamp"; \
+              touch "${subdir}"/.deps/.dirstamp; \
+            fi; \
           elif test -e "${subdir}"/.deps; then \
             stat "${subdir}"/.deps; \
+            if test -w "${subdir}"/.deps && test ! -e "${subdir}"/.deps/.dirstamp; then \
+              echo "touch ${subdir}/.deps/.dirstamp"; \
+              touch "${subdir}"/.deps/.dirstamp; \
+            fi; \
           elif test -r "${subdir}"; then \
-            find "${subdir}" -name '*.Plo' -print; \
+            (find "${subdir}" -name '*.Plo' -print) || echo "depfiles may be missing for ${subdir}"; \
           elif test -x "$(which sync)"; then \
-            sync && pwd; \
+            sync && echo "${subdir} seems to be missing (checking from $(pwd))"; \
+          else \
+            echo "warning, unhandled possibility for ${subdir}"; \
           fi; \
           if test -r "${subdir}"/Makefile && test -s "${subdir}"/Makefile && test -w "${subdir}"; then \
             pushd "${subdir}"; \
@@ -143,14 +153,23 @@ jobs:
             make am--depfiles || make am--refresh || make distdir-am || stat Makefile; \
             popd; \
           else \
-            sync && echo "no usable Makefile found in ${subdir}"; \
+            sync && echo "no usable Makefile found in ${subdir}; skipping attempt at depfile regeneration in it"; \
+          fi; \
+          if test -r "${subdir}"/.deps; then \
+            (find "${subdir}" -name '*.Tpo' -print) || echo "depfile generation may have failed for ${subdir}"; \
+          elif test -d "${subdir}" && test ! -d "${subdir}"/.deps; then \
+            echo "depdir generation may have failed for ${subdir}"; \
+          elif test ! -d "${subdir}"; then \
+            echo "warning, ${subdir} is not an extant subdirectory"; \
+          else \
+            echo "warning, something about ${subdir} may require fixing"; \
           fi; \
         done
         sync && echo "hopefully libtool_gnu timestamps will be fine..."
     - name: Full build to get anything that might have been missed
       run: |
         cd src
-        touch config.log
+        touch config.log || ls ./*.log
         if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
           echo "nproc says we can use $(nproc) build jobs"; \
           if test "$(nproc)" -eq 4; then \
@@ -173,11 +192,11 @@ jobs:
       run: |
         cd src
         if test ${{ matrix.compiler }} == clang; then \
-          make check-bfd; \
+          time make check-bfd; \
           echo "done with bfd; moving onto binutils next..."; \
-          make check-binutils; \
+          time make check-binutils-local; \
           echo "done with binutils; moving onto mmalloc next..."; \
-          make check-mmalloc; \
+          time make check-mmalloc; \
           echo "done with mmalloc; moving onto electrict-fence next..."; \
           cd electric-fence; \
           make check-local || make check stamp-framework ls; \
@@ -229,7 +248,7 @@ jobs:
     - run: time (sync && pwd && sync && ls && sync)
       if: "${{ success() }}"
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.3.1
+      uses: actions/upload-artifact@v4.3.2
       if: "${{ success() }}"
       with:
         # Artifact name
