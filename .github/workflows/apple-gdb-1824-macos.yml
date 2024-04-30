@@ -8,7 +8,7 @@ on:
   pull_request:
 jobs:
   test:
-    runs-on: macos-latest
+    runs-on: macos-14 # "latest" now defaults to arm, which will require work to properly support, so just fall back to x86_64 for now
     steps:
     - name: checkout
       uses: actions/checkout@v4

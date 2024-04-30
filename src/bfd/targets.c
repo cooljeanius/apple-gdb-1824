@@ -540,6 +540,7 @@ extern const bfd_target aarch64_elf32_be_vec;
 extern const bfd_target aarch64_elf32_le_vec;
 extern const bfd_target aarch64_elf64_be_vec;
 extern const bfd_target aarch64_elf64_le_vec;
+extern const bfd_target aarch64_mach_o_vec;
 extern const bfd_target alpha_ecoff_le_vec;
 extern const bfd_target alpha_elf64_vec;
 extern const bfd_target alpha_elf64_fbsd_vec;
@@ -579,6 +580,7 @@ extern const bfd_target arm_epoc_pe_big_vec;
 extern const bfd_target arm_epoc_pe_little_vec;
 extern const bfd_target arm_epoc_pei_big_vec;
 extern const bfd_target arm_epoc_pei_little_vec;
+extern const bfd_target arm_mach_o_vec;
 extern const bfd_target arm_pe_be_vec;
 extern const bfd_target arm_pe_le_vec;
 extern const bfd_target arm_pe_epoc_be_vec;
@@ -1139,10 +1141,20 @@ static const bfd_target * const _bfd_target_vector[] = {
 	/* This list is alphabetized to make it easy to compare
 	   with other vector lists -- the decls above and
 	   the case statement in configure.ac.
-	   Vectors that do NOT compile on all systems, or aren't finished,
+    	   Try to keep it in order when adding new targets, and
+	   use a name of the form <cpu>_<format>_<other>_<endian>_vec.
+	   Note that sorting is done as if _<endian>_vec were left out.
+	   Vectors that do NOT compile on all systems, or are unfinished,
 	   should have an entry here with #if 0 around it, to show that
 	   it was NOT omitted by mistake.  */
 	&a29kcoff_big_vec,
+# ifdef BFD64
+	&aarch64_elf32_be_vec,
+	&aarch64_elf32_le_vec,
+	&aarch64_elf64_be_vec,
+	&aarch64_elf64_le_vec,
+	&aarch64_mach_o_vec,
+# endif /* BFD64 */
 	&a_out_adobe_vec,
 # ifdef BFD64
 	&aix5coff64_vec,
@@ -1163,6 +1175,7 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&arm_epoc_pe_little_vec,
 	&arm_epoc_pei_big_vec,
 	&arm_epoc_pei_little_vec,
+        &arm_mach_o_vec,
 # if 0
 	&arm_pe_wince_be_vec,
 	&arm_pe_wince_le_vec,
