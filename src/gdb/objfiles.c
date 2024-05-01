@@ -25,6 +25,11 @@
 /* This file contains support routines for creating, manipulating, and
    destroying objfile structures. */
 
+#ifndef NO_POISON
+/* included files can drag in "free": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "defs.h"
 #include "bfd.h"		/* Binary File Description */
 #include "symtab.h"

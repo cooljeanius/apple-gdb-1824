@@ -5,6 +5,11 @@
 #ifndef __GDB_MACOSX_TDEP_H__
 #define __GDB_MACOSX_TDEP_H__
 
+#ifndef NO_POISON
+/* included files can drag in "free": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "defs.h"
 
 #if defined(TARGET_POWERPC)

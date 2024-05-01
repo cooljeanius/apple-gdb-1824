@@ -20,9 +20,14 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef NO_POISON
+/* included files can drag in "free": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "defs.h"
 #ifdef HAVE_CTYPE_H
-# include <ctype.h>		/* XXX for isupper() */
+# include <ctype.h>		/* XXX: for isupper() */
 #else
 # include "safe-ctype.h"
 #endif /* HAVE_CTYPE_H */

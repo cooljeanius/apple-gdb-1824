@@ -5,6 +5,11 @@
 #ifndef __GDB_MACOSX_NAT_SIGTHREAD_H__
 #define __GDB_MACOSX_NAT_SIGTHREAD_H__
 
+#ifndef NO_POISON
+/* included headers can drag in "free": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "defs.h"
 #include "macosx-nat-mutils.h"
 #include "macosx-nat-threads.h"

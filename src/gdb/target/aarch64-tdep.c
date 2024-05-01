@@ -18,6 +18,11 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#ifndef NO_POISON
+/* false positives in "vec.h": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "defs.h"
 
 #include "frame.h"

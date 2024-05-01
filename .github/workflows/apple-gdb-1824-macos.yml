@@ -28,6 +28,31 @@ jobs:
         fi
         date && sync
         brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake term termbox termcolor cdk cgdb ncurses groff "${COMPILER_FORMULA}"
+        # shellcheck disable=SC2016
+        if test -d /usr/local/opt/ncurses/bin && test -d /Users/runner && test -w /Users/runner; then \
+          echo 'export PATH="/usr/local/opt/ncurses/bin:${PATH}"' >> /Users/runner/.bash_profile; \
+        fi
+        if test -d /usr/local/opt/ncurses/lib; then \
+          if test -n "${LDFLAGS}"; then \
+            export LDFLAGS="${LDFLAGS} -L/usr/local/opt/ncurses/lib"; \
+          elif test -z "${LDFLAGS}"; then \
+            export LDFLAGS="-L/usr/local/opt/ncurses/lib"; \
+          fi; \
+        fi
+        if test -d /usr/local/opt/ncurses/include; then \
+          if test -n "${CPPFLAGS}"; then \
+            export CPPFLAGS="${CPPFLAGS} -I/usr/local/opt/ncurses/include"; \
+          elif test -z "${CPPFLAGS}"; then \
+            export CPPFLAGS="-I/usr/local/opt/ncurses/include"; \
+          fi; \
+        fi
+        if test -d /usr/local/opt/ncurses/lib/pkgconfig; then \
+          if test -n "${PKG_CONFIG_PATH}"; then \
+            export PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:/usr/local/opt/ncurses/lib/pkgconfig"; \
+          elif test -z "${PKG_CONFIG_PATH}"; then \
+            export PKG_CONFIG_PATH="/usr/local/opt/ncurses/lib/pkgconfig"; \
+          fi; \
+        fi
     - run: test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq) && sync && sleep 1
     - run: ./configure --enable-silent-rules --disable-dependency-tracking CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)

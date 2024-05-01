@@ -41,6 +41,11 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # define __STDC_LIMIT_MACROS 1
 #endif /* __cplusplus */
 
+#ifndef NO_POISON
+/* included files can drag in "free": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "defs.h"
 #include "inferior.h"
 #include "target.h"

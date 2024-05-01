@@ -1389,6 +1389,7 @@ case ${host_os} in
 esac
 
 if test -d ../readline; then
+  AC_MSG_NOTICE([readline sister directory found; tgetent check will only look for it in the same libraries checked there (termcap, tinfo, curses, and ncurses)])
   # Keep these the same as the libraries checked by Readline:
   AC_SEARCH_LIBS([tgetent],[termcap tinfo curses ncurses])
 else
@@ -1404,7 +1405,14 @@ else
 fi
 
 if test "x${ac_cv_search_tgetent}" = "xno"; then
-  AC_MSG_ERROR([no termcap library found])
+  AC_MSG_WARN([no termcap library found in the usual places])
+  for locateprog in locate glocate mlocate plocate; do
+    if test -x "`which ${locateprog}`"; then
+      AC_MSG_NOTICE([using `which ${locateprog}` to look harder for libtermcap])
+      ${locateprog} libtermcap && break
+    fi
+  done
+  AC_MSG_ERROR([please ensure your termcap library is in the proper place and try again])
 fi
 
 # Other misc. libraries that autoscan added to configure.scan, and such:
