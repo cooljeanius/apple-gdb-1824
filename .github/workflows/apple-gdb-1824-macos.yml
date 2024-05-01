@@ -27,7 +27,7 @@ jobs:
           COMPILER_FORMULA=""; \
         fi
         date && sync
-        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake "${COMPILER_FORMULA}"
+        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake term termbox termcolor cdk cgdb ncurses groff "${COMPILER_FORMULA}"
     - run: test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq) && sync && sleep 1
     - run: ./configure --enable-silent-rules --disable-dependency-tracking CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
