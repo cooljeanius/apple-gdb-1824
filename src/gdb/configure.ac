@@ -1384,7 +1384,7 @@ case ${host_os} in
         ],[AC_MSG_WARN([no curses library found])])
     ;;
   darwin*)
-    test -d ${srcdir}/libtermcap && stat ../libtermcap
+    (test -d ${srcdir}/libtermcap && stat ../libtermcap) || echo "TODO: maybe try bringing libtermcap in-tree?"
     ;;
 esac
 
@@ -1408,7 +1408,7 @@ if test "x${ac_cv_search_tgetent}" = "xno"; then
   AC_MSG_WARN([no termcap library found in the usual places])
   for locateprog in locate glocate mlocate plocate; do
     if test -x "`which ${locateprog}`"; then
-      AC_MSG_NOTICE([using `which ${locateprog}` to look harder for libtermcap])
+      AC_MSG_NOTICE([using ${locateprog} to look harder for libtermcap...])
       ${locateprog} libtermcap && break
     fi
   done

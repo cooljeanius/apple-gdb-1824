@@ -40382,7 +40382,7 @@ fi
 
     ;;
   darwin*)
-    test -d ${srcdir}/libtermcap && stat ../libtermcap
+    (test -d ${srcdir}/libtermcap && stat ../libtermcap) || echo "TODO: maybe try bringing libtermcap in-tree?"
     ;;
 esac
 
@@ -40605,8 +40605,8 @@ if test "x${ac_cv_search_tgetent}" = "xno"; then
 printf "%s\n" "$as_me: WARNING: no termcap library found in the usual places" >&2;}
   for locateprog in locate glocate mlocate plocate; do
     if test -x "`which ${locateprog}`"; then
-      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: using \`which ${locateprog}\` to look harder for libtermcap" >&5
-printf "%s\n" "$as_me: using \`which ${locateprog}\` to look harder for libtermcap" >&6;}
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: using ${locateprog} to look harder for libtermcap..." >&5
+printf "%s\n" "$as_me: using ${locateprog} to look harder for libtermcap..." >&6;}
       ${locateprog} libtermcap && break
     fi
   done
