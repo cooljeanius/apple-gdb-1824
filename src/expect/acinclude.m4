@@ -589,9 +589,10 @@ unset CFLAGS
 ${CC-cc} -o ac_c_test ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} ac_c_test.c ${LIBS} 1>&5
 ac_cv_exeext=`ls ac_c_test.* | grep -v ac_c_test.c | sed -e s/ac_c_test//`
 CFLAGS=${OLD_CFLAGS}
-rm -rf ac_c_test*])
+rm -rf ac_c_test*
 test x"${ac_cv_exeext}" = x && ac_cv_exeext=no
 fi
+])
 EXEEXT=""
 test x"${ac_cv_exeext}" != xno && EXEEXT=${ac_cv_exeext}
 AC_MSG_RESULT([${ac_cv_exeext}])

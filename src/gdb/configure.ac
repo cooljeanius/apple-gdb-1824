@@ -927,14 +927,24 @@ else
   test -n "${AR}" && export AR
 fi
 ])dnl
-  ## FIXME: ensure portability of sed commands:
-if test -e ./config.cache; then
+  ## WIP: replacing "." with "`pwd`" in an attempt to ensure portability of sed
+  ## commands:
+if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
+  sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" `pwd`/config.cache
+elif test -e ./config.cache; then
   echo "hacking ./config.cache"
-  sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
-  sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ./config.cache
-  sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ./config.cache
-  sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
-  sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
 AN_PROGRAM([as],[AM_PROG_AS])dnl
 AN_MAKEVAR([AS],[AM_PROG_AS])dnl
@@ -1341,6 +1351,32 @@ AC_SEARCH_LIBS([dlgetmodinfo],[dl xpdl dlcompat dyld ltdl zrldsrl])dnl
 
 # For the TUI, we need enhanced curses functionality.
 
+AC_MSG_CHECKING([for linker flag to be more verbose])
+PRE_V_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-v"
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+               [LD_VERBOSEFLAGS="${acl_cv_wl}-v"],[])
+LDFLAGS="${PRE_V_LDFLAGS}"
+AC_SUBST([PRE_V_LDFLAGS])dnl
+  ## ...and also:
+if test "x${LD_VERBOSEFLAGS}" != "x"; then
+  test -n "${LD_VERBOSEFLAGS}"
+  AC_MSG_RESULT([${LD_VERBOSEFLAGS}])
+  if test "x${WARN_LDFLAGS}" != "x"; then
+    test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_VERBOSEFLAGS}"
+  else
+    test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_VERBOSEFLAGS}"
+  fi
+  AC_SUBST([LD_VERBOSEFLAGS])dnl
+  ## that should be all we need to do with them for now...
+else
+  test -z "${LD_VERBOSEFLAGS}"
+  AC_MSG_RESULT([none])
+fi
+
+PRE_TERMCAP_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_VERBOSEFLAGS}"
+
 #
 # FIXME: kettenis/20040905: We prefer ncurses over the vendor-supplied
 # curses library because the latter might not provide all the
@@ -1393,8 +1429,6 @@ case ${host_os} in
     ;;
 esac
 
-PRE_TERMCAP_LDFLAGS="${LDFLAGS}"
-LDFLAGS="${LDFLAGS} ${acl_cv_wl}-v"
 if test -d ../readline; then
   AC_MSG_NOTICE([readline sister directory found; tgetent check will only look for it in the same libraries checked there (termcap, tinfo, curses, and ncurses)])
   # Keep these the same as the libraries checked by Readline:

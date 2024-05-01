@@ -947,6 +947,8 @@ EXTRA_DEFS
 FCNTL_H_CFLAGS
 PRE_ASPRINTF_LDFLAGS
 PRE_TERMCAP_LDFLAGS
+LD_VERBOSEFLAGS
+PRE_V_LDFLAGS
 zlibinc
 zlibdir
 HAVE_ZLIB_SOURCE
@@ -12373,14 +12375,24 @@ fi
 else
   test -n "${AR}" && export AR
 fi
-  ## FIXME: ensure portability of sed commands:
-if test -e ./config.cache; then
+  ## WIP: replacing "." with "`pwd`" in an attempt to ensure portability of sed
+  ## commands:
+if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
+  sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" `pwd`/config.cache
+elif test -e ./config.cache; then
   echo "hacking ./config.cache"
-  sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
-  sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ./config.cache
-  sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ./config.cache
-  sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
-  sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
 # By default we simply use the C compiler to build assembly code.
 
@@ -40137,6 +40149,48 @@ fi
 
 # For the TUI, we need enhanced curses functionality.
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for linker flag to be more verbose" >&5
+printf %s "checking for linker flag to be more verbose... " >&6; }
+PRE_V_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-v"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  LD_VERBOSEFLAGS="${acl_cv_wl}-v"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LDFLAGS="${PRE_V_LDFLAGS}"
+  ## ...and also:
+if test "x${LD_VERBOSEFLAGS}" != "x"; then
+  test -n "${LD_VERBOSEFLAGS}"
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${LD_VERBOSEFLAGS}" >&5
+printf "%s\n" "${LD_VERBOSEFLAGS}" >&6; }
+  if test "x${WARN_LDFLAGS}" != "x"; then
+    test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_VERBOSEFLAGS}"
+  else
+    test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_VERBOSEFLAGS}"
+  fi
+    ## that should be all we need to do with them for now...
+else
+  test -z "${LD_VERBOSEFLAGS}"
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: none" >&5
+printf "%s\n" "none" >&6; }
+fi
+
+PRE_TERMCAP_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_VERBOSEFLAGS}"
+
 #
 # FIXME: kettenis/20040905: We prefer ncurses over the vendor-supplied
 # curses library because the latter might not provide all the
@@ -40393,8 +40447,6 @@ fi
     ;;
 esac
 
-PRE_TERMCAP_LDFLAGS="${LDFLAGS}"
-LDFLAGS="${LDFLAGS} ${acl_cv_wl}-v"
 if test -d ../readline; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: readline sister directory found; tgetent check will only look for it in the same libraries checked there (termcap, tinfo, curses, and ncurses)" >&5
 printf "%s\n" "$as_me: readline sister directory found; tgetent check will only look for it in the same libraries checked there (termcap, tinfo, curses, and ncurses)" >&6;}

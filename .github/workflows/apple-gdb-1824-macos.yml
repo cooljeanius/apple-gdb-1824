@@ -117,7 +117,12 @@ jobs:
             fi; \
           fi; \
         fi
-        sync && find . -name arparse.h -type f -print && sync && sleep 1
+        if test -x "$(which locate)"; then \
+          sync && locate arparse.h; \
+        else \
+          sync && sleep 1; \
+        fi
+        sync && find . -name arparse.h -type f -print && sync
     - run: cd src && make all-binutils
     - run: cd src && make all-cgen && make all-libiberty && make all-intl
     - run: cd src && make all-electric-fence

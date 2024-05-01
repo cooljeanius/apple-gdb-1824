@@ -6252,11 +6252,16 @@ printf "%s\n" "#define HAVE_LONG_FILE_NAMES 1" >>confdefs.h
 fi
 
 
-if test -e ./config.cache; then
+if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" `pwd`/config.cache
+elif test -e ./config.cache; then
   echo "hacking ./config.cache"
-  ## FIXME: filename gets interpreted as a sed command:
-  sed -i "s|ac_cv_env_CPP_set|bad_CPP_status|g" ./config.cache
-  sed -i "s|ac_cv_env_CPP_value|bad_CPP|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
 
 # Checks for programs.

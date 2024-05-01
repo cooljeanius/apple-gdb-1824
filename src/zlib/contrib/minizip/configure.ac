@@ -45,6 +45,10 @@ LT_LANG([C])dnl
 LT_LANG([Windows Resource])dnl
 LT_PREREQ([2.4.6])dnl
 
+if test -e ./config.cache; then
+    sed -i.bak -e "s|ac_cv_prog_AR|bad_AR|g" ./config.cache
+    sed -i.bak -e "s|am_cv_ar_interface|bad_ar_interface|g" ./config.cache
+fi
 m4_ifdef([AC_PROG_AR],[
 if test "x${AR}" = "x"; then
   test -z "${AR}" || unset AR

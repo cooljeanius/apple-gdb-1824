@@ -68,11 +68,18 @@ AC_DEFUN([AC_REQUIRE_SED],[
 ])dnl
 AC_REQUIRE_SED
 
-if test -e ./config.cache; then
+if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
+  sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" `pwd`/config.cache
+elif test -e ./config.cache; then
   echo "hacking ./config.cache"
-  sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
-  sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
-  sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
 
 # Libtool checks:

@@ -40,8 +40,8 @@ fi
 if test -z "${HOST_ARCHITECTURE}"; then
   if test -x /usr/bin/arch; then
     export HOST_ARCHITECTURE=`/usr/bin/arch`
-    if test -z "${ARCH_OUTPUT}"; then
-      export ARCH_OUTPUT=`/usr/bin/arch`
+    if test -z "${ARCH_SAYS}"; then
+      export ARCH_SAYS=`/usr/bin/arch`
     fi
   else
     echo "Unable to determine HOST_ARCHITECTURE"
