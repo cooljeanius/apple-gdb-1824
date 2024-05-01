@@ -1133,6 +1133,7 @@ bfd_boolean bfd_mach_o_get_uuid(bfd *, unsigned char* buf,
                                 unsigned long buf_len);
 unsigned int bfd_mach_o_flavour_from_string(unsigned long cputype,
                                             const char* s);
+/* FIXME: prototype for bfd_mach_o_header_p needs typedef for bfd_cleanup */
 
 #ifndef bfd_mach_o_find_line
 # define bfd_mach_o_find_line _bfd_nosymbols_find_line

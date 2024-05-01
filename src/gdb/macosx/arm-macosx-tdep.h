@@ -4,6 +4,12 @@
 
 #ifndef __GDB_ARM_MACOSX_TDEP_H__
 #define __GDB_ARM_MACOSX_TDEP_H__
+
+#ifndef NO_POISON
+/* included files can drag in "free": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "defs.h"
 #include "arm-macosx-thread-status.h"
 #include "arm-macosx-regnums.h"

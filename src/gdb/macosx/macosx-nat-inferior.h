@@ -5,6 +5,11 @@
 #ifndef __GDB_MACOSX_NAT_INFERIOR_H__
 #define __GDB_MACOSX_NAT_INFERIOR_H__
 
+#ifndef NO_POISON
+/* include chain from <mach/mach.h> can drag in "free": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "macosx-nat-threads.h"
 #include "macosx-nat-sigthread.h"
 #include "macosx-nat-excthread.h"

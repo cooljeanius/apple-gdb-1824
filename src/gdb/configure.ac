@@ -396,11 +396,15 @@ case "${host}" in
     ;;
 esac
 
-if test "x${host_vendor}" = "xapple" || test "x${host_cpu}" = "xppc"; then
+if test "x${host_vendor}" = "xapple" && test "x${host_cpu}" = "xppc"; then
+  ## FIXME: just because the compiler supports this flag doesn't necessarily mean
+  ## that the linker supports it, too:
   AX_CHECK_COMPILE_FLAG([-force_cpusubtype_ALL],
                         [CFLAGS="${CFLAGS} -force_cpusubtype_ALL"],
                         [:])dnl
   ## might not actually be necessary, but whatever...
+else
+  AC_MSG_NOTICE([skipping check for compiler support for -force_cpusubtype_ALL flag])
 fi
 
 if test "x${acl_cv_wl}" = "x"; then
@@ -1336,6 +1340,7 @@ AC_SEARCH_LIBS([kinfo_getvmmap],[util util-freebsd bsd kern kinfo kmod],
 AC_SEARCH_LIBS([dlgetmodinfo],[dl xpdl dlcompat dyld ltdl zrldsrl])dnl
 
 # For the TUI, we need enhanced curses functionality.
+
 #
 # FIXME: kettenis/20040905: We prefer ncurses over the vendor-supplied
 # curses library because the latter might not provide all the
@@ -1384,11 +1389,14 @@ case ${host_os} in
         ],[AC_MSG_WARN([no curses library found])])
     ;;
   darwin*)
-    test -d ${srcdir}/libtermcap && stat ../libtermcap
+    (test -d ${srcdir}/libtermcap && stat ../libtermcap) || echo "TODO: maybe try bringing libtermcap in-tree?"
     ;;
 esac
 
+PRE_TERMCAP_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-v"
 if test -d ../readline; then
+  AC_MSG_NOTICE([readline sister directory found; tgetent check will only look for it in the same libraries checked there (termcap, tinfo, curses, and ncurses)])
   # Keep these the same as the libraries checked by Readline:
   AC_SEARCH_LIBS([tgetent],[termcap tinfo curses ncurses])
 else
@@ -1402,9 +1410,18 @@ else
       ;;
   esac
 fi
+LDFLAGS="${PRE_TERMCAP_LDFLAGS}"
+AC_SUBST([PRE_TERMCAP_LDFLAGS])dnl
 
 if test "x${ac_cv_search_tgetent}" = "xno"; then
-  AC_MSG_ERROR([no termcap library found])
+  AC_MSG_WARN([no termcap library found in the usual places])
+  for locateprog in locate glocate mlocate plocate; do
+    if test -x "`which ${locateprog}`"; then
+      AC_MSG_NOTICE([using ${locateprog} to look harder for libtermcap...])
+      ${locateprog} libtermcap && break
+    fi
+  done
+  AC_MSG_ERROR([please ensure your termcap library is in the proper place and try again])
 fi
 
 # Other misc. libraries that autoscan added to configure.scan, and such:

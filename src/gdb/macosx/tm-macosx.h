@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA.  */
 #ifndef _TM_NEXTSTEP_H_
 #define _TM_NEXTSTEP_H_
 
+#ifndef NO_POISON
+/* included files can drag in "free": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "macosx-tdep.h"
 #include "macosx-nat-dyld.h" /* for macosx_solib_add() */
 
