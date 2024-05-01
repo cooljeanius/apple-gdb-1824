@@ -111,7 +111,10 @@ jobs:
         fi
         if test ! -e /var/db/locate.database; then \
           if test -e /System/Library/LaunchDaemons/com.apple.locate.plist; then \
-            sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist; \
+            if test -z "$(sudo launchctl list | grep locate)"; then \
+              echo "attempting to ensure that locate will work..."; \
+              sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist; \
+            fi; \
           fi; \
         fi
         sync && find . -name arparse.h -type f -print && sync && sleep 1

@@ -946,6 +946,7 @@ INCLUDE_NEXT
 EXTRA_DEFS
 FCNTL_H_CFLAGS
 PRE_ASPRINTF_LDFLAGS
+PRE_TERMCAP_LDFLAGS
 zlibinc
 zlibdir
 HAVE_ZLIB_SOURCE
@@ -9164,7 +9165,9 @@ fi
     ;;
 esac
 
-if test "x${host_vendor}" = "xapple" || test "x${host_cpu}" = "xppc"; then
+if test "x${host_vendor}" = "xapple" && test "x${host_cpu}" = "xppc"; then
+  ## FIXME: just because the compiler supports this flag doesn't necessarily mean
+  ## that the linker supports it, too:
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -force_cpusubtype_ALL" >&5
 printf %s "checking whether C compiler accepts -force_cpusubtype_ALL... " >&6; }
 if test ${ax_cv_check_cflags___force_cpusubtype_ALL+y}
@@ -9206,6 +9209,9 @@ else case e in #(
 esac
 fi
   ## might not actually be necessary, but whatever...
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: skipping check for compiler support for -force_cpusubtype_ALL flag" >&5
+printf "%s\n" "$as_me: skipping check for compiler support for -force_cpusubtype_ALL flag" >&6;}
 fi
 
 if test "x${acl_cv_wl}" = "x"; then
@@ -40130,6 +40136,7 @@ then :
 fi
 
 # For the TUI, we need enhanced curses functionality.
+
 #
 # FIXME: kettenis/20040905: We prefer ncurses over the vendor-supplied
 # curses library because the latter might not provide all the
@@ -40386,6 +40393,8 @@ fi
     ;;
 esac
 
+PRE_TERMCAP_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-v"
 if test -d ../readline; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: readline sister directory found; tgetent check will only look for it in the same libraries checked there (termcap, tinfo, curses, and ncurses)" >&5
 printf "%s\n" "$as_me: readline sister directory found; tgetent check will only look for it in the same libraries checked there (termcap, tinfo, curses, and ncurses)" >&6;}
@@ -40599,6 +40608,7 @@ fi
       ;;
   esac
 fi
+LDFLAGS="${PRE_TERMCAP_LDFLAGS}"
 
 if test "x${ac_cv_search_tgetent}" = "xno"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: no termcap library found in the usual places" >&5
