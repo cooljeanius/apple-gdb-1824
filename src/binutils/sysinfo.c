@@ -140,7 +140,7 @@ extern int yylex(void);
 
 /* Enabling the token table.  */
 #ifndef YYTOKEN_TABLE
-# define YYTOKEN_TABLE 1
+# define YYTOKEN_TABLE 0
 #endif
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -2005,7 +2005,10 @@ main(int ac, char **av)
       printf("\n/* End text from main() in sysinfo.y */");
     }
   yyparse();
+#if (defined(YYDEBUG) && YYDEBUG) || (defined(YYERROR_VERBOSE) && YYERROR_VERBOSE) || \
+    (defined(YYTOKEN_TABLE) && YYTOKEN_TABLE)
   (void)yytname;
+#endif /* YYDEBUG || YYERROR_VERBOSE || YYTOKEN_TABLE */
   return 0;
 }
 

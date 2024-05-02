@@ -403,7 +403,7 @@ if test "x${host_vendor}" = "xapple" && test "x${host_cpu}" = "xppc"; then
                         [CFLAGS="${CFLAGS} -force_cpusubtype_ALL"],
                         [:])dnl
   ## might not actually be necessary, but whatever...
-else
+elif test "x${host_vendor}" = "xapple" || test "x${host_cpu}" = "xppc"; then
   AC_MSG_NOTICE([skipping check for compiler support for -force_cpusubtype_ALL flag])
 fi
 

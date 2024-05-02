@@ -9211,7 +9211,7 @@ else case e in #(
 esac
 fi
   ## might not actually be necessary, but whatever...
-else
+elif test "x${host_vendor}" = "xapple" || test "x${host_cpu}" = "xppc"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: skipping check for compiler support for -force_cpusubtype_ALL flag" >&5
 printf "%s\n" "$as_me: skipping check for compiler support for -force_cpusubtype_ALL flag" >&6;}
 fi

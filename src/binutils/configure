@@ -21243,6 +21243,9 @@ then :
 
     YFLAGS_SEP1=''
 
+printf "%s\n" "#define BISON_IS_V3_OR_LATER 1" >>confdefs.h
+
+
 else case e in #(
   e)
     YFLAGS_SEP1='#'
@@ -21254,6 +21257,9 @@ printf %s "checking full bison version info... " >&6; }
   BISON_VERSION="`${YACC} --version | head -n 1`"
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${BISON_VERSION}" >&5
 printf "%s\n" "${BISON_VERSION}" >&6; }
+
+printf "%s\n" "#define BISON_VERSION \"${BISON_VERSION}\"" >>confdefs.h
+
 
 else case e in #(
   e)
