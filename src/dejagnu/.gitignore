@@ -33,6 +33,7 @@ cscope*.out
 cscope.files
 config*.lineno
 conf*/*.awk
+*.bak
 
 # For some reason gdb's testsuite likes to copy stuff here:
 gdb.ada/*

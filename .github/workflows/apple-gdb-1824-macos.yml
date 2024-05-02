@@ -118,7 +118,7 @@ jobs:
           fi; \
         fi
         if test -x "$(which locate)"; then \
-          sync && locate arparse.h; \
+          sync && (locate arparse.h || sleep 1); \
         else \
           sync && sleep 1; \
         fi
