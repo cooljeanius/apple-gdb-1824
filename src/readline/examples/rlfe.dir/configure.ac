@@ -39,6 +39,8 @@ AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_SEARCH_LIBS([strerror],[cposix])dnl
 
+AC_USE_SYSTEM_EXTENSIONS
+
 AS_MESSAGE([checking if your ${CC} actually works])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdlib.h>

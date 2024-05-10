@@ -1,3 +1,261 @@
+2024-05-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	oops, looks like sometimes yytname might not exist
+
+	Change-Id: If85a839379107ae176ca7195f324493c84003f7d
+
+2024-05-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a bit of cleanup from previous commit
+
+	Change-Id: I9036941b79259b5ad24e8eeb053cad5d0e842bad
+
+2024-05-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	I may have finally fixed something?
+
+	see issue #7
+
+	Change-Id: I9f6910445b62457ba4d47fc00ea0664bbd628d73
+
+2024-05-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #55 from cooljeanius/dependabot/github_actions/actions/upload-artifact-4.3.3
+
+	Bump actions/upload-artifact from 4.3.2 to 4.3.3
+
+2024-05-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #56 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-9.1.1
+
+	Bump eslint from 9.1.0 to 9.1.1 in /src/texinfo/js
+
+2024-05-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' into dependabot/github_actions/actions/upload-artifact-4.3.3
+
+2024-05-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' into dependabot/npm_and_yarn/src/texinfo/js/eslint-9.1.1
+
+2024-05-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	think I may have identified the problem
+
+	(with gdb's libtermcap check, that is)
+
+	Change-Id: I50cb64d91c612df7fb4ca9cf441758d13b25b3bf
+
+2024-05-01  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump actions/upload-artifact from 4.3.2 to 4.3.3
+
+	Bumps [actions/upload-artifact](https://github.com/actions/upload-artifact) from 4.3.2 to 4.3.3.
+	- [Release notes](https://github.com/actions/upload-artifact/releases)
+	- [Commits](https://github.com/actions/upload-artifact/compare/v4.3.2...v4.3.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/upload-artifact
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	...
+
+2024-05-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	still haven't figured out yet why gdb's configure script can't find libtermcap, as readline's can...
+
+	Change-Id: I93d1d7eaf570b20a6ecfa856c90d5b11d6d8139f
+
+2024-04-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	still need to find libtermcap
+
+	Change-Id: Icceff88a10fd4dc9583cd1a0c957277c83c7e57f
+
+2024-04-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	I should probably just stop poisoning "free"...
+
+	Change-Id: I0e6c5f9f7e8ec316001334991fbfb46b56d3ae95
+
+2024-04-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a few extra homebrew dependencies
+
+	Change-Id: I81041d5af218551d9a73bb579875a2c01f5e5858
+
+2024-04-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok so the "macos-14" label defaults to arm now too
+
+	Change-Id: Ie020875071f9612bc94b31b9f8e7007ae1fb56bc
+
+2024-04-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	looks like macOS CI defaults to arm now...
+
+	Change-Id: I9a8409b9bd1d973e3935331acf251437809c9c11
+
+2024-04-29  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.1.0 to 9.1.1 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 9.1.0 to 9.1.1.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.1.0...v9.1.1)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	...
+
+2024-04-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #53 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-9.1.0
+
+	Bump eslint from 9.0.0 to 9.1.0 in /src/texinfo/js
+
+2024-04-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #54 from cooljeanius/dependabot/github_actions/actions/upload-artifact-4.3.2
+
+	Bump actions/upload-artifact from 4.3.1 to 4.3.2
+
+2024-04-22  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump actions/upload-artifact from 4.3.1 to 4.3.2
+
+	Bumps [actions/upload-artifact](https://github.com/actions/upload-artifact) from 4.3.1 to 4.3.2.
+	- [Release notes](https://github.com/actions/upload-artifact/releases)
+	- [Commits](https://github.com/actions/upload-artifact/compare/v4.3.1...v4.3.2)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/upload-artifact
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	...
+
+2024-04-22  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.0.0 to 9.1.0 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 9.0.0 to 9.1.0.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.0.0...v9.1.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-04-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #52 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/typescript-5.4.5
+
+	Bump typescript from 5.4.4 to 5.4.5 in /src/texinfo/js
+
+2024-04-15  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump typescript from 5.4.4 to 5.4.5 in /src/texinfo/js
+
+	Bumps [typescript](https://github.com/Microsoft/TypeScript) from 5.4.4 to 5.4.5.
+	- [Release notes](https://github.com/Microsoft/TypeScript/releases)
+	- [Changelog](https://github.com/microsoft/TypeScript/blob/main/azure-pipelines.release.yml)
+	- [Commits](https://github.com/Microsoft/TypeScript/compare/v5.4.4...v5.4.5)
+
+	---
+	updated-dependencies:
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	...
+
+2024-04-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #51 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/typescript-5.4.4
+
+	Bump typescript from 5.4.3 to 5.4.4 in /src/texinfo/js
+
+2024-04-08  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump typescript from 5.4.3 to 5.4.4 in /src/texinfo/js
+
+	Bumps [typescript](https://github.com/Microsoft/TypeScript) from 5.4.3 to 5.4.4.
+	- [Release notes](https://github.com/Microsoft/TypeScript/releases)
+	- [Changelog](https://github.com/microsoft/TypeScript/blob/main/azure-pipelines.release.yml)
+	- [Commits](https://github.com/Microsoft/TypeScript/compare/v5.4.3...v5.4.4)
+
+	---
+	updated-dependencies:
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	...
+
+2024-04-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #50 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-9.0.0
+
+	Bump eslint from 8.57.0 to 9.0.0 in /src/texinfo/js
+
+2024-04-08  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 8.57.0 to 9.0.0 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 8.57.0 to 9.0.0.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v8.57.0...v9.0.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-major
+	...
+
+2024-03-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	misc. updates
+
+	Change-Id: I717d9c28887a94e13db9261b35ec259b4c94642c
+
+2024-03-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #49 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/typescript-5.4.3
+
+	Bump typescript from 5.4.2 to 5.4.3 in /src/texinfo/js
+
+2024-03-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' into dependabot/npm_and_yarn/src/texinfo/js/typescript-5.4.3
+
+2024-03-25  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump typescript from 5.4.2 to 5.4.3 in /src/texinfo/js
+
+	Bumps [typescript](https://github.com/Microsoft/TypeScript) from 5.4.2 to 5.4.3.
+	- [Release notes](https://github.com/Microsoft/TypeScript/releases)
+	- [Changelog](https://github.com/microsoft/TypeScript/blob/main/azure-pipelines.release.yml)
+	- [Commits](https://github.com/Microsoft/TypeScript/compare/v5.4.2...v5.4.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	...
+
 2024-03-25  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	mmalloc dvi rule was failing
