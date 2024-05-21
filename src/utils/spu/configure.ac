@@ -31,8 +31,10 @@ AM_MAINTAINER_MODE
 # Checks for programs.
 AC_PROG_SED
 if test -e ../config.cache; then
+  echo "hacking ../config.cache"
   sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ../config.cache
 elif test -e .././config.cache; then
+  echo "hacking .././config.cache"
   sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" .././config.cache
 else
   echo "config.cache is missing, which means we can skip attempts to hack it"

@@ -207,7 +207,7 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
 
 dnl# We are starting to use automake with legit Makefile.am files, albeit in
 dnl# subdirs:
-AM_INIT_AUTOMAKE([gnits dejagnu -Wno-obsolete])
+AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu no-dist -Wno-override])
 
 if test "x${V}" = "x"; then
   test -z "${V}" && export V=0
@@ -4198,5 +4198,6 @@ AH_BOTTOM([
 
 AC_CONFIG_FILES([Makefile \
                  Makefile_orig \
+                 src_am/Makefile \
                  texinfo/js/Makefile])dnl
 AC_OUTPUT

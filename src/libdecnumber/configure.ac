@@ -32,10 +32,12 @@ echo "hello from the configure script for the libdecnumber subdirectory"
 # Checks for programs.
 AC_PROG_SED
 if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
   sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" `pwd`/config.cache
   sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
   sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
 elif test -e ./config.cache; then
+  echo "hacking ./config.cache"
   sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ./config.cache
   sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
   sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache

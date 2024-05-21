@@ -19,8 +19,10 @@ AC_SUBST([V])dnl
 # Checks for programs.
 AC_PROG_SED
 if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
   sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
 elif test -e ./config.cache; then
+  echo "hacking ./config.cache"
   sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
 else
   echo "config.cache is missing, which means we can skip attempts to hack it"

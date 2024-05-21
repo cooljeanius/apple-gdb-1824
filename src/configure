@@ -25177,7 +25177,7 @@ esac
 
 # Output.
 
-ac_config_files="$ac_config_files Makefile Makefile_orig texinfo/js/Makefile"
+ac_config_files="$ac_config_files Makefile Makefile_orig src_am/Makefile texinfo/js/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -25953,6 +25953,7 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "Makefile_orig") CONFIG_FILES="$CONFIG_FILES Makefile_orig" ;;
+    "src_am/Makefile") CONFIG_FILES="$CONFIG_FILES src_am/Makefile" ;;
     "texinfo/js/Makefile") CONFIG_FILES="$CONFIG_FILES texinfo/js/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: '$ac_config_target'" "$LINENO" 5;;
