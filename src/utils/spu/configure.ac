@@ -29,6 +29,14 @@ AC_CONFIG_HEADERS([config.h])dnl
 AM_MAINTAINER_MODE
 
 # Checks for programs.
+AC_PROG_SED
+if test -e ../config.cache; then
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ../config.cache
+elif test -e .././config.cache; then
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" .././config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
+fi
 AC_PROG_CC
 AC_PROG_CPP
 AC_ARG_VAR([CLANG_ANALYZER],[Path to the clang static analyzer])dnl

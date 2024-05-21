@@ -21,7 +21,7 @@ dnl# Process this file with autoconf264 to generate a configuration script.
 
 AC_PREREQ([2.64])
 dnl# override.m4 is annoying; feel free to adjust this number as necessary:
-m4_define([_GCC_AUTOCONF_VERSION],[2.71])
+m4_define([_GCC_AUTOCONF_VERSION],[2.72])
 AC_INIT([libdecnumber],[0.0.1],[gcc-bugs@gcc.gnu.org],[libdecnumber])
 AC_CONFIG_AUX_DIR([..])dnl
 AC_CONFIG_SRCDIR([decNumber.h])dnl
@@ -30,6 +30,29 @@ AC_CONFIG_MACRO_DIR([../config])dnl
 echo "hello from the configure script for the libdecnumber subdirectory"
 
 # Checks for programs.
+AC_PROG_SED
+if test -e `pwd`/config.cache; then
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
+elif test -e ./config.cache; then
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
+fi
+if test "x${AR}" = "x"; then
+  test -z "${AR}" || unset AR
+  AC_CHECK_TOOLS([AR],[ar gar])dnl
+  ## might want to switch around these checks...
+  if test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    AC_PROG_AR
+  fi
+else
+  test -n "${AR}" && export AR
+fi
 AC_PROG_MAKE_SET
 AC_PROG_CC
 AC_PROG_INSTALL
@@ -64,6 +87,11 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
 AC_REQUIRE_HEADER_STDC dnl# just in case
 AC_CHECK_HEADERS([ctype.h fenv.h stddef.h string/string.h stdio.h])dnl
 GCC_HEADER_STDINT([gstdint.h])dnl
+
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
+  AC_CHECK_HEADERS([stdint.h])
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 dnl# (endianness check is done near the bottom)

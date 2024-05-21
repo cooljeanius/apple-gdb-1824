@@ -54,11 +54,21 @@ if test -n "${HOST_ARCHITECTURE}"; then
 fi
 
 # Checks for programs.
+AC_PROG_SED
+if test -e `pwd`/config.cache; then
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
+elif test -e ./config.cache; then
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
+fi
 AC_PROG_CC
-AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AC_PROG_SED
 
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[

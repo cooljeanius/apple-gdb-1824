@@ -205,6 +205,10 @@ AC_PROG_MAKE_SET
 # Check Make features:
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
 
+dnl# We are starting to use automake with legit Makefile.am files, albeit in
+dnl# subdirs:
+AM_INIT_AUTOMAKE([gnits dejagnu -Wno-obsolete])
+
 if test "x${V}" = "x"; then
   test -z "${V}" && export V=0
 fi
@@ -1812,6 +1816,10 @@ else
   AC_PROG_OBJCPP
   AC_PROG_OBJCXX
   AC_PROG_OBJCXXCPP
+  if test "x${GOC}" = "x"; then
+    test -z "${GOC}"
+    AC_PROG_GO
+  fi
 
   # We must set the default linker to the linker used by gcc for the
   # correct operation of libtool. If LD is not defined and we are using
@@ -3771,6 +3779,34 @@ changequote(,)
 changequote([,])
 esac
 
+# Texinfo JS Interface
+npm_path="${srcdir}/texinfo/js/node_modules/.bin"
+if test -d "${npm_path}"; then
+  # We need an absolute path to the npm programs because they are run
+  # from inside the texinfo/js/ subdirectory.
+  npm_path="`cd ${npm_path} && pwd`"
+  if test "x${PATH_SEPARATOR}" != "x"; then
+    test -n "${PATH_SEPARATOR}" && npm_path="${npm_path}${PATH_SEPARATOR}${PATH}"
+  else
+    test -z "${PATH_SEPARATOR}" && npm_path="${npm_path}:${PATH}"
+  fi
+else
+  npm_path="${PATH}"
+fi
+
+# Additional tools for Texinfo JS Interface
+AC_PATH_PROG([ESLINT],[eslint],[],[${npm_path}])
+AM_CONDITIONAL([HAVE_ESLINT],[test "x${ac_cv_path_ESLINT}" != "x"])dnl
+
+AC_PATH_PROG([TSC],[tsc],[],[${npm_path}])
+AM_CONDITIONAL([HAVE_TYPESCRIPT],[test "x${ac_cv_path_TSC}" != "x"])dnl
+
+AC_PATH_PROG([UGLIFYJS],[uglifyjs],[],[${npm_path}])
+AM_CONDITIONAL([HAVE_UGLIFYJS],[test "x${ac_cv_path_UGLIFYJS}" != "x"])dnl
+
+AC_PATH_PROG([MODERNIZR],[modernizr],[],[${npm_path}])
+AM_CONDITIONAL([HAVE_MODERNIZR],[test "x${ac_cv_path_MODERNIZR}" != "x"])dnl
+
 # FIXME: expect and dejagnu may become build tools?
 
 AC_CHECK_PROGS([EXPECT],[expect],[expect])
@@ -4161,5 +4197,6 @@ AH_BOTTOM([
 ])dnl
 
 AC_CONFIG_FILES([Makefile \
-                 Makefile_orig])dnl
+                 Makefile_orig \
+                 texinfo/js/Makefile])dnl
 AC_OUTPUT

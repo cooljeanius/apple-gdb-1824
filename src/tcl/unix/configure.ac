@@ -111,12 +111,31 @@ SC_CONFIG_MANPAGES
 # Standard compiler checks
 #------------------------------------------------------------------------
 
+# First hack cache:
+AC_PROG_SED
+if test -e `pwd`/config.cache; then
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
+elif test -e ./config.cache; then
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+elif test -e .././config.cache; then
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" .././config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" .././config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" .././config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
+fi
+
 # If the user did not set CFLAGS, set it now to keep
 # the AC_PROG_CC macro from adding "-g -O2".
 if test "${CFLAGS+set}" != "set" ; then
     CFLAGS=""
 fi
 
+# Actual compiler checks:
 AC_PROG_CC
 AC_PROG_CXX
 AC_CHECK_HEADERS_ONCE([float.h limits.h unistd.h])dnl
@@ -126,7 +145,6 @@ AC_PROG_INSTALL
 AM_PROG_INSTALL_STRIP
 AM_PROG_INSTALL_SH
 AC_PROG_LN_S
-AC_PROG_SED
 AC_PROG_YACC
 AC_PATH_PROG([GDB_BIN],[gdb])dnl
 AC_PATH_PROG([DDD_BIN],[ddd])dnl
@@ -148,7 +166,8 @@ if test -z "${no_pipe}"; then
   AC_MSG_CHECKING([if the compiler understands -pipe])
   OLDCC="${CC}"
   CC="${CC} -pipe"
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[AC_MSG_RESULT([yes])],[CC="${OLDCC}"
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+    [AC_MSG_RESULT([yes])],[CC="${OLDCC}"
     AC_MSG_RESULT([no])])
  fi
 fi
@@ -333,8 +352,9 @@ AC_CHECK_FUNCS([memmove],[],[
 
 AC_MSG_CHECKING([proper strstr implementation])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
-extern int strstr();
-int main()
+#include <stdlib.h>
+#include <string.h>
+int main(void)
 {
     exit(strstr("\0test", "test") ? 1 : 0);
 }
@@ -354,8 +374,9 @@ fi
 
 AC_CHECK_FUNCS([strtoul],[tcl_ok=1],[tcl_ok=0])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
-extern int strtoul();
-int main()
+#include <stdlib.h>
+#include <string.h>
+int main(void)
 {
     char *string = "0";
     char *term;
@@ -378,7 +399,8 @@ fi
 
 AC_CHECK_FUNCS([strtod],[tcl_ok=1],[tcl_ok=0])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
-extern double strtod();
+#include <stdlib.h>
+#include <string.h>
 int main()
 {
     char *string = " +69";
@@ -428,12 +450,15 @@ changequote([,]),[
     # include <stdlib.h>
     # include <stddef.h>
     #else
-    # warning this conftest expects you to have STDC_HEADERS
+    # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+    #  warning "this conftest expects you to have STDC_HEADERS"
+    # endif /* __GNUC__ && !__STRICT_ANSI__ */
     #endif /* STDC_HEADERS */
     ],[ac_cv_type_socklen_t=yes],[ac_cv_type_socklen_t=no])])
 AC_MSG_RESULT([${ac_cv_type_socklen_t}])
 if test ${ac_cv_type_socklen_t} = no; then
-    AC_DEFINE([socklen_t],[unsigned],[Define to unsigned if it needs to be])
+    AC_DEFINE([socklen_t],[unsigned int],
+              [Define to unsigned int if it needs to be])
 fi
 
 AC_TYPE_INTMAX_T

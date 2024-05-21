@@ -3,10 +3,10 @@
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
 
-/* The normal alignment of `int', in bytes. */
+/* The normal alignment of 'int', in bytes. */
 #undef ALIGNOF_INT
 
-/* The normal alignment of `long', in bytes. */
+/* The normal alignment of 'long', in bytes. */
 #undef ALIGNOF_LONG
 
 /* Define to 1 if you have the <ctype.h> header file. */
@@ -18,11 +18,11 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if your system has a GNU libc compatible `malloc' function, and
+/* Define to 1 if your system has a GNU libc compatible 'malloc' function, and
    to 0 otherwise. */
 #undef HAVE_MALLOC
 
-/* Define to 1 if you have the `memset' function. */
+/* Define to 1 if you have the 'memset' function. */
 #undef HAVE_MEMSET
 
 /* Define to 1 if you have the <stddef.h> header file. */
@@ -73,22 +73,22 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* The size of `char', as computed by sizeof. */
+/* The size of 'char', as computed by sizeof. */
 #undef SIZEOF_CHAR
 
-/* The size of `int', as computed by sizeof. */
+/* The size of 'int', as computed by sizeof. */
 #undef SIZEOF_INT
 
-/* The size of `long', as computed by sizeof. */
+/* The size of 'long', as computed by sizeof. */
 #undef SIZEOF_LONG
 
-/* The size of `short', as computed by sizeof. */
+/* The size of 'short', as computed by sizeof. */
 #undef SIZEOF_SHORT
 
-/* The size of `void *', as computed by sizeof. */
+/* The size of 'void *', as computed by sizeof. */
 #undef SIZEOF_VOID_P
 
-/* Define to 1 if all of the C90 standard headers exist (not just the ones
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
@@ -120,7 +120,7 @@
    #define below would cause a syntax error. */
 #undef _UINT8_T
 
-/* Define to empty if `const' does not conform to ANSI C. */
+/* Define to empty if 'const' does not conform to ANSI C. */
 #undef const
 
 /* Define to the type of a signed integer type of width exactly 32 bits if
@@ -130,10 +130,10 @@
 /* Define to rpl_malloc if the replacement function should be used. */
 #undef malloc
 
-/* Define to `long int' if <sys/types.h> does not define. */
+/* Define to 'long int' if <sys/types.h> does not define. */
 #undef off_t
 
-/* Define to `unsigned int' if <sys/types.h> does not define. */
+/* Define as 'unsigned int' if <stddef.h> doesn't define. */
 #undef size_t
 
 /* Define to the type of an unsigned integer type of width exactly 16 bits if
