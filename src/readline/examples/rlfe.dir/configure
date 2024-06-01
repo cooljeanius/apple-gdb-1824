@@ -648,6 +648,7 @@ WRITEPATH
 LIBOBJS
 LD_ARCHFLAGS
 AWK
+SET_MAKE
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
@@ -672,6 +673,7 @@ build_os
 build_vendor
 build_cpu
 build
+INCDIR
 VERSION
 target_alias
 host_alias
@@ -2697,6 +2699,8 @@ VERSION=0.4
 
 
 
+
+
   # Make sure we can run config.sub.
 $SHELL "${ac_aux_dir}config.sub" sun4 >/dev/null 2>&1 ||
   as_fn_error $? "cannot run $SHELL ${ac_aux_dir}config.sub" "$LINENO" 5
@@ -4156,6 +4160,39 @@ test -z "$INSTALL_SCRIPT" && INSTALL_SCRIPT='${INSTALL}'
 
 test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${MAKE-make} sets \$(MAKE)" >&5
+printf %s "checking whether ${MAKE-make} sets \$(MAKE)... " >&6; }
+set x ${MAKE-make}
+ac_make=`printf "%s\n" "$2" | sed 's/+/p/g; s/[^a-zA-Z0-9_]/_/g'`
+if eval test \${ac_cv_prog_make_${ac_make}_set+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) cat >conftest.make <<\_ACEOF
+SHELL = /bin/sh
+all:
+	@echo '@@@%%%=$(MAKE)=@@@%%%'
+_ACEOF
+# GNU make sometimes prints "make[1]: Entering ...", which would confuse us.
+case `${MAKE-make} -f conftest.make 2>/dev/null` in
+  *@@@%%%=?*=@@@%%%*)
+    eval ac_cv_prog_make_${ac_make}_set=yes;;
+  *)
+    eval ac_cv_prog_make_${ac_make}_set=no;;
+esac
+rm -f conftest.make ;;
+esac
+fi
+if eval test \$ac_cv_prog_make_${ac_make}_set = yes; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+  SET_MAKE=
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+  SET_MAKE="MAKE=${MAKE-make}"
+fi
+
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing strerror" >&5
 printf %s "checking for library containing strerror... " >&6; }
@@ -5309,6 +5346,26 @@ printf "%s\n" "#define HAVE_STRUCT_STAT_ST_RDEV 1" >>confdefs.h
 
 fi
 
+
+ac_fn_c_check_func "$LINENO" "seteuid" "ac_cv_func_seteuid"
+if test "x$ac_cv_func_seteuid" = xyes
+then :
+  printf "%s\n" "#define HAVE_SETEUID 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "setreuid" "ac_cv_func_setreuid"
+if test "x$ac_cv_func_setreuid" = xyes
+then :
+  printf "%s\n" "#define HAVE_SETREUID 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "_exit" "ac_cv_func__exit"
+if test "x$ac_cv_func__exit" = xyes
+then :
+  printf "%s\n" "#define HAVE__EXIT 1" >>confdefs.h
+
+fi
+
 # Checks for library functions.
 if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
   export ac_cv_func_chown_works=yes
@@ -5823,6 +5880,12 @@ then :
   printf "%s\n" "#define HAVE_EXIT 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "getcwd" "ac_cv_func_getcwd"
+if test "x$ac_cv_func_getcwd" = xyes
+then :
+  printf "%s\n" "#define HAVE_GETCWD 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "memcpy" "ac_cv_func_memcpy"
 if test "x$ac_cv_func_memcpy" = xyes
 then :
@@ -5871,10 +5934,47 @@ then :
   printf "%s\n" "#define HAVE_STRCMP 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "strerror" "ac_cv_func_strerror"
+if test "x$ac_cv_func_strerror" = xyes
+then :
+  printf "%s\n" "#define HAVE_STRERROR 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "strftime" "ac_cv_func_strftime"
+if test "x$ac_cv_func_strftime" = xyes
+then :
+  printf "%s\n" "#define HAVE_STRFTIME 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "system" "ac_cv_func_system"
 if test "x$ac_cv_func_system" = xyes
 then :
   printf "%s\n" "#define HAVE_SYSTEM 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "utimes" "ac_cv_func_utimes"
+if test "x$ac_cv_func_utimes" = xyes
+then :
+  printf "%s\n" "#define HAVE_UTIMES 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "xsignal" "ac_cv_func_xsignal"
+if test "x$ac_cv_func_xsignal" = xyes
+then :
+  printf "%s\n" "#define HAVE_XSIGNAL 1" >>confdefs.h
+
+fi
+
+ac_fn_c_check_func "$LINENO" "setlocale" "ac_cv_func_setlocale"
+if test "x$ac_cv_func_setlocale" = xyes
+then :
+  printf "%s\n" "#define HAVE_SETLOCALE 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "nl_langinfo" "ac_cv_func_nl_langinfo"
+if test "x$ac_cv_func_nl_langinfo" = xyes
+then :
+  printf "%s\n" "#define HAVE_NL_LANGINFO 1" >>confdefs.h
 
 fi
 
@@ -6072,8 +6172,53 @@ fi
 rm -rf conftest*
 
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for POSIX" >&5
+printf %s "checking for POSIX... " >&6; }
+if test "$cross_compiling" = yes
+then :
+  posix=yes
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <unistd.h>
+#include <stdlib.h>
+
+int
+main()
+{
+#ifdef _POSIX_VERSION
+  return (0);
+#else
+  return (1);
+#endif /* _POSIX_VERSION */
+}
+
+_ACEOF
+if ac_fn_c_try_run "$LINENO"
+then :
+  posix=yes
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
+esac
+fi
+
+if test -n "${posix}" && test "x${posix}" = "xyes"; then
+
+printf "%s\n" "#define POSIX 1" >>confdefs.h
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking select..." >&5
 printf "%s\n" "$as_me: checking select..." >&6;}
+## (relevant header was already checked above)
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -6150,7 +6295,7 @@ else case e in #(
 #include <unistd.h>
 #include <string.h>
 
-#line 225 "configure.ac"
+#line 265 "configure.ac"
 
 char *nam = "/tmp/conftest$$";
 
@@ -7031,12 +7176,24 @@ fi
 
 sleep 1
 
-if test -n "${posix}"; then
+if test -n "${posix}" && test "x${posix}" = "xyes"; then
     echo "assuming posix signal definition" 1>&6
 
 
 printf "%s\n" "#define SIGVOID 1" >>confdefs.h
-  ## nothing else to do here...
+
+printf "%s\n" "#define HAVE_POSIX_SIGNALS 1" >>confdefs.h
+
+  ac_fn_check_decl "$LINENO" "xsignal" "ac_cv_have_decl_xsignal" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_xsignal" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_XSIGNAL $ac_have_decl" >>confdefs.h
+
 else
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking return type of signal handlers..." >&5

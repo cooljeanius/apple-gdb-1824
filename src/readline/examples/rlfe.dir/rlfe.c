@@ -118,8 +118,8 @@ extern int rl_getc PARAMS((FILE *));
 
 static int in_from_inferior_fd;
 static int out_to_inferior_fd;
-static void set_edit_mode ();
-static void usage_exit ();
+static void set_edit_mode(void);
+static void usage_exit(void);
 static char *hist_file = 0;
 static int  hist_size = 0;
 
@@ -753,7 +753,8 @@ main(int argc, char** argv)
     }
 }
 
-static void set_edit_mode ()
+/* */
+static void set_edit_mode(void)
 {
   int vi = 0;
   char *shellopts;
@@ -781,8 +782,8 @@ static void set_edit_mode ()
     rl_variable_bind ("editing-mode", "emacs");
 }
 
-
-static void usage_exit ()
+/* */
+static void usage_exit(void)
 {
   fprintf (stderr, "Usage: rlfe [-h histfile] [-s size] cmd [arg1] [arg2] ...\n\n");
   exit (1);

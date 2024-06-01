@@ -7,6 +7,10 @@ AC_CONFIG_SRCDIR([rlfe.c])
 AC_CONFIG_HEADERS([config.h])
 VERSION=0.4
 AC_SUBST([VERSION])dnl
+
+dnl# nothing to do with this yet:
+AC_SUBST([INCDIR])dnl
+
 AC_CANONICAL_TARGET
 
 dnl#
@@ -37,6 +41,7 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_LN_S
 AC_PROG_INSTALL
+AC_PROG_MAKE_SET
 AC_SEARCH_LIBS([strerror],[cposix])dnl
 
 AC_USE_SYSTEM_EXTENSIONS
@@ -150,6 +155,13 @@ AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_CHECK_MEMBERS([struct stat.st_rdev])dnl
 
+dnl#
+dnl# libc
+dnl#
+
+dnl# system calls
+AC_CHECK_FUNCS([seteuid setreuid _exit])dnl
+
 # Checks for library functions.
 if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
   export ac_cv_func_chown_works=yes
@@ -162,8 +174,11 @@ fi
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_STAT
-AC_CHECK_FUNCS([alarm dup2 exit memcpy memmove mkfifo mknod \
-                printf rl_getc select strcmp system])dnl
+AC_CHECK_FUNCS([alarm dup2 exit getcwd memcpy memmove mkfifo mknod printf rl_getc \
+                select strcmp strerror strftime system utimes xsignal])dnl
+
+dnl# locale
+AC_CHECK_FUNCS([setlocale nl_langinfo])dnl
 
 dnl#
 dnl#   ****  special unix variants  ****
@@ -190,11 +205,35 @@ LIBS="${LIBS} -lsocket -lnsl -lkstat"
 AC_NOTE([- not on Solaris])
 ])dnl
 
+
+AC_MSG_CHECKING([for POSIX])
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <unistd.h>
+#include <stdlib.h>
+
+int
+main()
+{
+#ifdef _POSIX_VERSION
+  return (0);
+#else
+  return (1);
+#endif /* _POSIX_VERSION */
+}
+]])],[posix=yes],[],[posix=yes])
+if test -n "${posix}" && test "x${posix}" = "xyes"; then
+  AC_DEFINE([POSIX],[1],[Define to 1 for POSIX])
+  AC_MSG_RESULT([yes])
+else
+  AC_MSG_RESULT([no])
+fi
+
 dnl#
 dnl#    ****  select()  ****
 dnl#
 
 AS_MESSAGE([checking select...])
+## (relevant header was already checked above)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/select.h>
 ]],[[select(0, 0, 0, 0, 0);]])],[
@@ -223,7 +262,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <unistd.h>
 #include <string.h>
 
-#line 225 "configure.ac"
+#line 265 "configure.ac"
 
 char *nam = "/tmp/conftest$$";
 
@@ -615,12 +654,13 @@ sleep 1
 dnl#
 dnl#   ****  signal handling  ****
 dnl#
-if test -n "${posix}"; then
+if test -n "${posix}" && test "x${posix}" = "xyes"; then
   dnl# POSIX has reliable signals with void return type.
   AC_NOTE([assuming posix signal definition])
   AC_DEFINE([SIGVOID],[1],
             [Define to 1 if signals have a void return type])dnl
-  ## nothing else to do here...
+  AC_DEFINE([HAVE_POSIX_SIGNALS],[1],[Define to 1 if we have POSIX signals])
+  AC_CHECK_DECLS([xsignal])
 else
 
 AS_MESSAGE([checking return type of signal handlers...])

@@ -19,6 +19,10 @@
    don't. */
 #undef HAVE_DECL_PTSNAME
 
+/* Define to 1 if you have the declaration of 'xsignal', and to 0 if you
+   don't. */
+#undef HAVE_DECL_XSIGNAL
+
 /* Define to 1 if you have /dev/ptc */
 #undef HAVE_DEV_PTC
 
@@ -36,6 +40,9 @@
 
 /* Define to 1 if you have the 'fork' function. */
 #undef HAVE_FORK
+
+/* Define to 1 if you have the 'getcwd' function. */
+#undef HAVE_GETCWD
 
 /* Define to 1 if you have the 'getpt' function. */
 #undef HAVE_GETPT
@@ -80,8 +87,14 @@
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
 
+/* Define to 1 if you have the 'nl_langinfo' function. */
+#undef HAVE_NL_LANGINFO
+
 /* Define to 1 if we have the openpty func */
 #undef HAVE_OPENPTY
+
+/* Define to 1 if we have POSIX signals */
+#undef HAVE_POSIX_SIGNALS
 
 /* Define to 1 if you have the 'printf' function. */
 #undef HAVE_PRINTF
@@ -97,6 +110,15 @@
 
 /* Define to 1 if you have the 'select' function. */
 #undef HAVE_SELECT
+
+/* Define to 1 if you have the 'seteuid' function. */
+#undef HAVE_SETEUID
+
+/* Define to 1 if you have the 'setlocale' function. */
+#undef HAVE_SETLOCALE
+
+/* Define to 1 if you have the 'setreuid' function. */
+#undef HAVE_SETREUID
 
 /* Define to 1 if you have the <sgtty.h> header file. */
 #undef HAVE_SGTTY_H
@@ -119,6 +141,12 @@
 
 /* Define to 1 if you have the 'strcmp' function. */
 #undef HAVE_STRCMP
+
+/* Define to 1 if you have the 'strerror' function. */
+#undef HAVE_STRERROR
+
+/* Define to 1 if you have the 'strftime' function. */
+#undef HAVE_STRFTIME
 
 /* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H
@@ -189,6 +217,9 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to 1 if you have the 'utimes' function. */
+#undef HAVE_UTIMES
+
 /* Define to 1 if you have the <utmpx.h> header file. */
 #undef HAVE_UTMPX_H
 
@@ -209,6 +240,12 @@
 
 /* Define to 1 if 'vfork' works. */
 #undef HAVE_WORKING_VFORK
+
+/* Define to 1 if you have the 'xsignal' function. */
+#undef HAVE_XSIGNAL
+
+/* Define to 1 if you have the '_exit' function. */
+#undef HAVE__EXIT
 
 /* Define to 1 if 'lstat' dereferences a symlink specified with a trailing
    slash. */
@@ -242,6 +279,9 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* Define to 1 for POSIX */
+#undef POSIX
 
 /* Define to 1 if the C compiler supports function prototypes. */
 #undef PROTOTYPES
