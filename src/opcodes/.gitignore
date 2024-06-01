@@ -43,6 +43,7 @@ config*.lineno
 *.status
 *.log
 *.cache
+*.bak
 s390-mkopc
 s390-opc.tab
 conf*/*.awk

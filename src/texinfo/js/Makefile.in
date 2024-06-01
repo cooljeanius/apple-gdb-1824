@@ -107,9 +107,13 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 @HAVE_ESLINT_TRUE@am__append_1 = lint
-@HAVE_TYPESCRIPT_TRUE@am__append_2 = check-types
-@HAVE_UGLIFYJS_TRUE@am__append_3 = minify
-@HAVE_MODERNIZR_TRUE@am__append_4 = modernizr
+@HAVE_ESLINT_TRUE@am__append_2 = lint
+@HAVE_TYPESCRIPT_TRUE@am__append_3 = check-types
+@HAVE_TYPESCRIPT_TRUE@am__append_4 = check-types
+@HAVE_UGLIFYJS_TRUE@am__append_5 = minify
+@HAVE_UGLIFYJS_TRUE@am__append_6 = minify
+@HAVE_MODERNIZR_TRUE@am__append_7 = modernizr
+@HAVE_MODERNIZR_TRUE@am__append_8 = modernizr
 subdir = texinfo/js
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/autobuild.m4 \
@@ -497,8 +501,10 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 want64 = @want64@
-phony = $(am__append_1) $(am__append_2) $(am__append_3) \
-	$(am__append_4)
+phony = $(am__append_1) $(am__append_3) $(am__append_5) \
+	$(am__append_7)
+checktargs = $(am__append_2) $(am__append_4) $(am__append_6) \
+	$(am__append_8)
 EXTRA_DIST = HACKING README TODO build-aux/eslint.json \
 	build-aux/modernizr.json modernizr.js package.json \
 	tsconfig.json
@@ -615,7 +621,7 @@ distclean-DEJAGNU:
 	  rm -f $$tool.sum $$tool.log; \
 	done
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU
+	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU check-local
 check: check-am
 all-am: Makefile $(DATA)
 installdirs:
@@ -720,30 +726,33 @@ uninstall-am: uninstall-dist_jsDATA
 
 .MAKE: check-am install-am install-strip
 
-.PHONY: all all-am check check-DEJAGNU check-am clean clean-generic \
-	cscopelist-am ctags-am distclean distclean-DEJAGNU \
-	distclean-generic dvi dvi-am html html-am info info-am install \
-	install-am install-data install-data-am install-dist_jsDATA \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags-am \
-	uninstall uninstall-am uninstall-dist_jsDATA
+.PHONY: all all-am check check-DEJAGNU check-am check-local clean \
+	clean-generic cscopelist-am ctags-am distclean \
+	distclean-DEJAGNU distclean-generic dvi dvi-am html html-am \
+	info info-am install install-am install-data install-data-am \
+	install-dist_jsDATA install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
+	pdf-am ps ps-am tags-am uninstall uninstall-am \
+	uninstall-dist_jsDATA
 
 .PRECIOUS: Makefile
 
-@HAVE_ESLINT_TRUE@lint:
+@HAVE_ESLINT_TRUE@lint: build-aux/eslint.json info.js
 @HAVE_ESLINT_TRUE@	$(ESLINT) -c build-aux/eslint.json info.js -f unix
-@HAVE_TYPESCRIPT_TRUE@check-types:
-@HAVE_TYPESCRIPT_TRUE@	$(TSC) --allowJs --checkJS --noEmit --lib dom,es2017 info.js
-@HAVE_UGLIFYJS_TRUE@minify:
+@HAVE_TYPESCRIPT_TRUE@check-types: info.js
+@HAVE_TYPESCRIPT_TRUE@	$(TSC) --allowJs --checkJS --noEmit --lib dom,es2017 info.js || \
+@HAVE_TYPESCRIPT_TRUE@	  (stat info.js && sync && wc -l info.js && sync && du info.js)
+@HAVE_UGLIFYJS_TRUE@minify: info.js
 @HAVE_UGLIFYJS_TRUE@	$(UGLIFYJS) info.js -o info.min.js --mangle --compress
-@HAVE_MODERNIZR_TRUE@modernizr:
+@HAVE_MODERNIZR_TRUE@modernizr: build-aux/modernizr.json
 @HAVE_MODERNIZR_TRUE@	$(MODERNIZR) -c build-aux/modernizr.json
 
 .PHONY: $(phony)
+check-local: $(checktargs)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

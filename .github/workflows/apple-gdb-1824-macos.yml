@@ -259,13 +259,16 @@ jobs:
           if test -z "$(which cscope)" || test ! -x "$(which cscope)"; then \
             brew install cscope || stat "$(which cscope)" || echo "cscope missing"; \
           fi; \
+          if test -z "$(which shellcheck)" || test ! -x "$(which shellcheck)"; then \
+            brew install shellcheck || stat "$(which shellcheck)" || echo "shellcheck missing"; \
+          fi; \
           pushd bfd; \
           sync && make check-DEJAGNU; \
           popd; \
           pushd binutils; \
           make am_check-DEJAGNU || make check-DEJAGNU || make check-TESTS; \
           make check-recursive || make cscope || make ID || make TAGS || make CTAGS || make GTAGS || make recheck || stat Makefile; \
-          sh ./sanity.sh || stat ./sanity.sh; \
+          sh ./sanity.sh || shellcheck ./sanity.sh || stat ./sanity.sh; \
           popd; \
           echo "done with binutils; moving on to mmalloc next..."; \
           pushd mmalloc; \
@@ -291,7 +294,7 @@ jobs:
     - run: cd src && sync && make check-opcodes && sync && make check-intl && sync
     # (check-binutils target is now moved into the static analysis step)
     - run: cd src && make check-utils
-    - run: time (sync && pwd && sync && ls && sync)
+    - run: time (sync && pwd && sync && ls && sync && du && sync)
       if: "${{ success() }}"
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.3.3
