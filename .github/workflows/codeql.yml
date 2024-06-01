@@ -132,6 +132,9 @@ jobs:
           if test -d vendor && test -r vendor && test -w vendor; then \
             (sync && (find vendor -name '*.rb' -delete || rm -rf vendor || rmdir vendor)); \
           fi; \
+          if test -d vendor && test -r vendor && test -w vendor; then \
+            (sync && (find vendor -name Gemfile -delete || rm -rf vendor || rmdir vendor)); \
+          fi; \
           sync && echo "leaving $(pwd)..."; \
           popd || exit; \
         elif test ${{ matrix.language }} = 'javascript-typescript' && test -x "$(which node)"; then \
@@ -455,7 +458,7 @@ jobs:
       if: matrix.language == 'c-cpp' && success()
       with:
         # Artifact name
-        name: gdb-static-analysis-plists
+        name: gdb-static-analysis-plists-${{ github.sha }}
         # A file, directory or wildcard pattern that describes what to upload
         path: |
             **/clang_static_analysis/*.plist

@@ -26088,7 +26088,28 @@ fi
 
 
 
-        if test "x${GCC}" = "xyes"; then
+
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#if (14) < __GNUC__ || ((14) == __GNUC__ && (0) <= __GNUC_MINOR__)
+/* ok */
+#else
+# error "your version of gcc is older than 14.0"
+#endif /* GCC version check */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+},
+
+_ACEOF
+if ac_fn_c_try_cpp "$LINENO"
+then :
+
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -fpermissive" >&5
 printf %s "checking whether C compiler handles -fpermissive... " >&6; }
@@ -26131,7 +26152,15 @@ then :
 fi
 
 
-        fi
+
+else case e in #(
+  e)
+          { printf "%s\n" "$as_me:${as_lineno-$LINENO}: skipping check for -fpermissive with this compiler" >&5
+printf "%s\n" "$as_me: skipping check for -fpermissive with this compiler" >&6;}
+         ;;
+esac
+fi
+rm -f conftest.err conftest.i conftest.$ac_ext
 
     fi
 

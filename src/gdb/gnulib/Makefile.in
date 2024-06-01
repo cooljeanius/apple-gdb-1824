@@ -1700,7 +1700,7 @@ subdir_do: force
 		if [ -f ./$${i}/Makefile ]; then \
 			if (cd ./$${i}; \
 			    $(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
-			    echo "'$@' succeeded for '$${i}'"; \
+			    echo "'$@' ($(DO)) succeeded for '$${i}'"; \
 			else \
 			    echo "gnulib/Makefile: '$@' failed for '$${i}'" >&2; \
 			    exit 1; \

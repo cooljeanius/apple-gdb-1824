@@ -3,6 +3,7 @@ dnl# Process this file with autoconf to produce a configure script.
 dnl# (this one is for libopcodes)
 
 AC_PREREQ([2.61])
+m4_include([../config/gcc-version.m4])
 m4_include([../config/warnings.m4])
 dnl# keep the version number synced with the one in '../bfd':
 AC_INIT([opcodes],[2.16.91],[jmolenda@apple.com])
@@ -769,6 +770,8 @@ else
       m4_ifdef([gl_GCC_VERSION_IFELSE],[
         gl_GCC_VERSION_IFELSE([14],[0],[
           gl_WARN_ADD([-fpermissive])
+        ],[
+          AC_MSG_NOTICE([skipping check for -fpermissive with this compiler])
         ])
       ],[
         if test "x${GCC}" = "xyes"; then

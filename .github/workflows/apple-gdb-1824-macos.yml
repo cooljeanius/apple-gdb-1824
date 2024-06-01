@@ -248,19 +248,27 @@ jobs:
           make check-local || make check stamp-framework ls; \
           echo "done with electric-fence..." ; \
         elif test ${{ matrix.compiler }} == gcc; then \
-          echo "getting some additional dependencies..."; \
+          sync && echo "getting some additional dependencies..."; \
           brew install idutils || brew install ctags || brew install universal-ctags || brew install emacs || brew install global || brew install cscope; \
           if test -z "$(which etags)" || test ! -x "$(which etags)"; then \
             brew install emacs || stat "$(which emacs)" || echo "etags missing"; \
+          else \
+            sync && echo "etags available as $(which etags)"; \
           fi; \
           if test -z "$(which gtags)" || test ! -x "$(which gtags)"; then \
             brew install global || which global || echo "gtags missing"; \
+          else \
+            sync && echo "gtags available as $(which gtags)"; \
           fi; \
           if test -z "$(which cscope)" || test ! -x "$(which cscope)"; then \
             brew install cscope || stat "$(which cscope)" || echo "cscope missing"; \
+          else \
+            sync && echo "cscope available as $(which cscope)"; \
           fi; \
           if test -z "$(which shellcheck)" || test ! -x "$(which shellcheck)"; then \
             brew install shellcheck || stat "$(which shellcheck)" || echo "shellcheck missing"; \
+          else \
+            echo "shellcheck available as $(which shellcheck)"; \
           fi; \
           pushd bfd; \
           sync && make check-DEJAGNU; \
@@ -268,17 +276,18 @@ jobs:
           pushd binutils; \
           make am_check-DEJAGNU || make check-DEJAGNU || make check-TESTS; \
           make check-recursive || make cscope || make ID || make TAGS || make CTAGS || make GTAGS || make recheck || stat Makefile; \
+          sync && echo "done with make targets for binutils; using script manually next..."; \
           sh ./sanity.sh || shellcheck ./sanity.sh || stat ./sanity.sh; \
           popd; \
-          echo "done with binutils; moving on to mmalloc next..."; \
+          sync && echo "done with binutils; moving on to mmalloc next..."; \
           pushd mmalloc; \
           sync && make info dvi stamp-framework-headers ls; \
           popd; \
-          echo "done with mmalloc; moving on to electric-fence next..."; \
+          sync && echo "done with mmalloc; moving on to electric-fence next..."; \
           pushd electric-fence; \
           sync && make check stamp-framework ls; \
           popd; \
-          echo "done with electric-fence; moving on to readline next..."; \
+          sync && echo "done with electric-fence; moving on to readline next..."; \
           pushd readline; \
           if test -e static; then mv -v static static.orig; fi; \
           make clean || make clean-local || make mostlyclean || make mostlyclean-local; \
@@ -287,7 +296,7 @@ jobs:
             make my_TAGS || make tags-local || make ID || make TAGS || touch TAGS; \
           fi; \
           popd; \
-          echo "done with readline..."; \
+          sync && echo "done with readline..."; \
         else \
           echo "error, unhandled compiler!" >&2 && exit 1; \
         fi
@@ -301,7 +310,7 @@ jobs:
       if: "${{ always() }}"
       with:
         # Artifact name
-        name: apple-gdb-1824-macos-${{ matrix.compiler }}-logfiles
+        name: apple-gdb-1824-macos-${{ matrix.compiler }}-logfiles-${{ github.sha }}
         # A file, directory or wildcard pattern that describes what to upload
         path: |
             **/*.log
