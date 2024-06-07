@@ -121,6 +121,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/gettext-sister.m4 \
 	$(top_srcdir)/../config/zlib.m4 $(top_srcdir)/../libtool.m4 \
 	$(top_srcdir)/../gettext.m4 \
 	$(top_srcdir)/../config/ag_macros.m4 \
+	$(top_srcdir)/../config/gcc-version.m4 \
 	$(top_srcdir)/../config/warnings.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -470,7 +471,7 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = 1.11.6 gnits no-dist dejagnu -Wall -Wno-override
+AUTOMAKE_OPTIONS = 1.11.6 gnits no-dist dejagnu -Wall -Wno-obsolete -Wno-override
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 TEXINFO_TEX = ../texinfo/texinfo.tex
 ACLOCAL_AMFLAGS = -I m4 -I ../bfd --install

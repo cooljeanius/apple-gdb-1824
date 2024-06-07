@@ -68,11 +68,18 @@ AC_DEFUN([AC_REQUIRE_SED],[
 ])dnl
 AC_REQUIRE_SED
 
-if test -e ./config.cache; then
+if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
+  sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" `pwd`/config.cache
+elif test -e ./config.cache; then
   echo "hacking ./config.cache"
-  sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
-  sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
-  sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
 
 # Libtool checks:
@@ -205,6 +212,8 @@ AX_PROG_BISON([
   ## one more separator:
   AS_IF([test "x${ax_cv_prog_gnu_bison}" = "xyes"],[
     YFLAGS_SEP1=''
+    AC_DEFINE([BISON_IS_V3_OR_LATER],[1],
+              [Define to 1 if your bison is a new enough version of GNU bison])
   ],[
     YFLAGS_SEP1='#'
   ])dnl
@@ -212,6 +221,7 @@ AX_PROG_BISON([
   AC_MSG_CHECKING([full bison version info])
   BISON_VERSION="`${YACC} --version | head -n 1`"
   AC_MSG_RESULT([${BISON_VERSION}])
+  AC_DEFINE_UNQUOTED([BISON_VERSION],["${BISON_VERSION}"],[Version of bison])
   AC_SUBST([BISON_VERSION])dnl
 ],[
   EXTRA_YFLAGS_SEP='#'

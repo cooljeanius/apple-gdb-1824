@@ -825,6 +825,12 @@ distclean: clean
 	$(RM) configure config.log config.h.*
 .PHONY: mostlyclean distclean
 
+clean-gdb:
+	if test -r src/Makefile && test -r src/gdb/Makefile; then \
+	  unset CPP && $(MAKE) -i -C src clean-gdb; fi
+	echo "may need to perform further cleaning of gdb..."
+.PHONY: clean-gdb
+
 check-args:
 ifneq (,$(filter-out i386-apple-darwin, $(filter-out powerpc-apple-darwin, $(filter-out x86_64-apple-darwin, $(filter-out arm-apple-darwin, $(CANONICAL_ARCHS))))))
 	echo "Unknown architecture string: \"$(CANONICAL_ARCHS)\""

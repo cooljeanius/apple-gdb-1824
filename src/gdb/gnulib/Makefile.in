@@ -446,6 +446,7 @@ LD = @LD@
 LDFLAGS = @LDFLAGS@
 LD_ARCHFLAGS = @LD_ARCHFLAGS@
 LD_CLASSIC = @LD_CLASSIC@
+LD_VERBOSEFLAGS = @LD_VERBOSEFLAGS@
 LEX = @LEX@
 LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
@@ -527,6 +528,8 @@ PRAGMA_SYSTEM_HEADER = @PRAGMA_SYSTEM_HEADER@
 PRE_ASPRINTF_LDFLAGS = @PRE_ASPRINTF_LDFLAGS@
 PRE_DMALLOC_LIBS = @PRE_DMALLOC_LIBS@
 PRE_LIBINTL_LDFLAGS = @PRE_LIBINTL_LDFLAGS@
+PRE_TERMCAP_LDFLAGS = @PRE_TERMCAP_LDFLAGS@
+PRE_V_LDFLAGS = @PRE_V_LDFLAGS@
 PROFILE_CFLAGS = @PROFILE_CFLAGS@
 PTRDIFF_T_SUFFIX = @PTRDIFF_T_SUFFIX@
 PYTHON = @PYTHON@
@@ -1697,7 +1700,7 @@ subdir_do: force
 		if [ -f ./$${i}/Makefile ]; then \
 			if (cd ./$${i}; \
 			    $(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
-			    echo "'$@' succeeded for '$${i}'"; \
+			    echo "'$@' ($(DO)) succeeded for '$${i}'"; \
 			else \
 			    echo "gnulib/Makefile: '$@' failed for '$${i}'" >&2; \
 			    exit 1; \

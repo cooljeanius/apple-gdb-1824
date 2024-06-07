@@ -1892,7 +1892,9 @@ int main() {
 #--------------------------------------------------------------------
 
 AC_DEFUN([SC_MISSING_POSIX_HEADERS],[
-    AC_REQUIRE([AC_HEADER_STDC])
+    m4_ifdef([AC_HEADER_STDC],[
+      AC_REQUIRE([AC_HEADER_STDC])dnl
+    ])dnl
     AC_MSG_CHECKING([dirent.h])
     AC_LINK_IFELSE([AC_LANG_SOURCE([[#include <sys/types.h>
 #include <dirent.h>]],[[
@@ -2125,15 +2127,17 @@ AC_DEFUN([SC_BLOCKING_STYLE],[
 
 AC_DEFUN([SC_TIME_HANDLER],[
     AC_CHECK_HEADERS([sys/time.h time.h])
-    AC_REQUIRE([AC_HEADER_TIME])
-    AC_REQUIRE([AC_STRUCT_TIMEZONE])
-    AC_REQUIRE([AC_STRUCT_TM])
-    AC_REQUIRE([AC_FUNC_SELECT_ARGTYPES])
-    AC_REQUIRE([AC_FUNC_STRFTIME])
-    AC_REQUIRE([AC_FUNC_UTIME_NULL])
-    AC_CHECK_TYPES([time_t])
+    m4_ifdef([AC_HEADER_TIME],[
+      AC_REQUIRE([AC_HEADER_TIME])dnl
+    ])dnl
+    AC_REQUIRE([AC_STRUCT_TIMEZONE])dnl
+    AC_REQUIRE([AC_STRUCT_TM])dnl
+    AC_REQUIRE([AC_FUNC_SELECT_ARGTYPES])dnl
+    AC_REQUIRE([AC_FUNC_STRFTIME])dnl
+    AC_REQUIRE([AC_FUNC_UTIME_NULL])dnl
+    AC_CHECK_TYPES([time_t])dnl
 
-    AC_CHECK_FUNCS([gmtime_r localtime_r])
+    AC_CHECK_FUNCS([gmtime_r localtime_r])dnl
 
     AC_MSG_CHECKING([tm_tzadj in struct tm])
     AC_CACHE_VAL([tcl_cv_member_tm_tzadj],
@@ -2172,7 +2176,8 @@ AC_DEFUN([SC_TIME_HANDLER],[
     #
     AC_MSG_CHECKING([long timezone variable])
     AC_CACHE_VAL([tcl_cv_var_timezone],
-	[AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include <time.h>]],
+	[AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include <stdlib.h>
+	    #include <time.h>]],
 	    [[extern long timezone;
 	    timezone += 1;
 	    exit (0);]])],
@@ -2186,7 +2191,8 @@ AC_DEFUN([SC_TIME_HANDLER],[
 	#
 	AC_MSG_CHECKING([time_t timezone variable])
 	AC_CACHE_VAL([tcl_cv_timezone_time],
-	    [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include <time.h>]],
+	    [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include <stdlib.h>
+	    #include <time.h>]],
 		[[extern time_t timezone;
 		timezone += 1;
 		exit (0);]])],
@@ -2224,8 +2230,15 @@ AC_DEFUN([SC_BUGGY_STRTOD],[
 	AC_MSG_CHECKING([for Solaris2.4/Tru64 strtod bugs])
 	AC_CACHE_VAL([tcl_cv_strtod_buggy],[
 	    AC_RUN_IFELSE([AC_LANG_SOURCE([[
+	    #if defined(HAVE_STDLIB_H) || defined(STDC_HEADERS) || defined(__STDC__)
+	    # include <stdlib.h>
+	    #else
+	    # if !defined(NO_STDLIB_H) && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+	    #  warning "this conftest for strtod expects <stdlib.h> to be included."
+	    # endif /* !NO_STDLIB_H && __GNUC__ && !__STRICT_ANSI__ */
+	    #endif /* HAVE_STDLIB_H || STDC_HEADERS || __STDC__ */
 		extern double strtod();
-		int main() {
+		int main(void) {
 		    char *infString="Inf", *nanString="NaN", *spaceString=" ";
 		    char *term;
 		    double value;
@@ -2246,7 +2259,7 @@ AC_DEFUN([SC_BUGGY_STRTOD],[
 	if test "$tcl_cv_strtod_buggy" = 1; then
 	    AC_MSG_RESULT([ok])
 	else
-	    AC_MSG_RESULT([buggy])
+	    AC_MSG_RESULT([buggy; redefining as fixstrtod])
 	    LIBOBJS="$LIBOBJS fixstrtod.o"
 	    AC_DEFINE([strtod],[fixstrtod],[Define to fixstrtod if the original strtod is buggy])
 	fi
@@ -2411,8 +2424,9 @@ AC_DEFUN([SC_TCL_64BIT_FLAGS],[
 	# See if we should use long anyway  Note that we substitute in the
 	# type that is our current guess for a 64-bit type inside this check
 	# program, so it should be modified only carefully...
-	AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <unistd.h>
-	    int main() {exit(!(sizeof(]${tcl_type_64bit}[) > sizeof(long)));}
+	AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdlib.h>
+	    #include <unistd.h>
+	    int main(void) {exit(!(sizeof(]${tcl_type_64bit}[) > sizeof(long)));}
 	    ]])],[tcl_cv_type_64bit=${tcl_type_64bit}],[:],[:])])
     if test "${tcl_cv_type_64bit}" = none ; then
 	AC_DEFINE([TCL_WIDE_INT_IS_LONG],[1],[Define to 1 if wide int is long])

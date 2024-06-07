@@ -18516,6 +18516,10 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 CC=$lt_save_CC
 CFLAGS=$lt_save_CFLAGS
 
+if test -e ./config.cache; then
+    sed -i.bak -e "s|ac_cv_prog_AR|bad_AR|g" ./config.cache
+    sed -i.bak -e "s|am_cv_ar_interface|bad_ar_interface|g" ./config.cache
+fi
 
 if test "x${AR}" = "x"; then
   test -z "${AR}" || unset AR

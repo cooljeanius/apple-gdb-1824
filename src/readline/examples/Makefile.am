@@ -161,9 +161,19 @@ clean-local mostlyclean-local:
 	$(RM) $(EXECUTABLES) *.exe
 	$(RM) -r $(AM_V_v) *.dSYM || rmdir *.dSYM
 	$(RM) rlfe.o rlfe
+	-( if test -d rlfe && test -r rlfe/Makefile; then \
+	     cd rlfe && ${MAKE} $(AM_V_MFLAG) $@; \
+	   elif test -d rlfe.dir && test -r rlfe.dir/Makefile; then \
+	     cd rlfe.dir && ${MAKE} $(AM_V_MFLAG) $@; \
+	   fi; )
 
 distclean-local: clean-local
 	if test -e Makefile_orig; then $(RM) Makefile_orig; fi
+	-( if test -d rlfe && test -r rlfe/Makefile; then \
+	     cd rlfe && cp Makefile mkf.bak && ${MAKE} $@ && mv mkf.bak Makefile; \
+	   elif test -d rlfe.dir && test -r rlfe.dir/Makefile; then \
+	     cd rlfe.dir && cp Makefile m.bak && ${MAKE} $@ && mv m.bak Makefile; \
+	   fi; )
 
 maintainer-clean-local: distclean-local
 	if test -e Makefile.in; then $(RM) Makefile.in; \
@@ -194,3 +204,24 @@ rlfe.o: rlfe.c
 
 rlfe.o: $(top_srcdir)/readline.h
 rlfe.o: $(top_srcdir)/history.h
+
+rlfe.dir: force
+	( rlfe_srcdir=${srcdir}/rlfe.dir ; \
+	  if test -d rlfe.dir; then stat rlfe.dir; else mkdir rlfe.dir; fi; \
+	  pushd rlfe.dir; \
+	  if test -x $${rlfe_srcdir}/configure; then \
+	    $(SHELL) $${rlfe_srcdir}/configure -C; \
+	  elif test -n "$${PWD}" && test "x`basename $${PWD}`" = "xrlfe.dir" && test -x ./configure; then \
+	    $(SHELL) ./configure -C; \
+	  elif test -x $${rlfe_srcdir}/config.status; then \
+	    $(SHELL) $${rlfe_srcdir}/config.status; \
+	  elif test -x ./config.status && test -w .; then \
+	    $(SHELL) ./config.status; \
+	  else \
+	    echo "no configuring to be done here"; \
+	  fi; \
+	  if test -r Makefile; then ${MAKE} $(AM_V_MFLAG); fi; \
+	  popd )
+
+force:
+.PHONY: force

@@ -110,8 +110,8 @@ if test "x${ac_cv_path_SED}" = "x"; then
   AC_PROG_SED
 fi
 if test -e ./config.cache; then
-    sed -i "s|ac_cv_prog_AR|bad_AR|g" ./config.cache
-    sed -i "s|am_cv_ar_interface|bad_ar_interface|g" ./config.cache
+    sed -i.bak -e "s|ac_cv_prog_AR|bad_AR|g" ./config.cache
+    sed -i.bak -e "s|am_cv_ar_interface|bad_ar_interface|g" ./config.cache
 fi
 AM_PROG_AR
 m4_ifdef([AC_PROG_AR],[

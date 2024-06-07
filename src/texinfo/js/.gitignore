@@ -1,3 +1,4 @@
 node_modules/*
 info.min.js
 info.js.json
+*.bak

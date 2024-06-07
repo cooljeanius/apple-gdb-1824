@@ -8,6 +8,7 @@ AC_INIT([gdb-utils],[???],[/dev/null])
 AC_CONFIG_SRCDIR([Makefile.in])
 AC_CONFIG_AUX_DIR([..])
 AM_SANITY_CHECK
+m4_ifdef([AM_MAINTAINER_MODE],[AM_MAINTAINER_MODE])dnl
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
 
 if test "x${V}" = "x"; then
@@ -16,6 +17,16 @@ fi
 AC_SUBST([V])dnl
 
 # Checks for programs.
+AC_PROG_SED
+if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
+elif test -e ./config.cache; then
+  echo "hacking ./config.cache"
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
+fi
 AC_PROG_INSTALL
 AC_CANONICAL_TARGET
 AC_PROG_CC

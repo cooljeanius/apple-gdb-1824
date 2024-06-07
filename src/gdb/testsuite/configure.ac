@@ -96,18 +96,24 @@ AC_DEFUN([AC_REQUIRE_PROG_SED],[
 AC_REQUIRE_PROG_SED
 
 # Hack:
-if test -e ./config.cache; then
+if test -e `pwd`/config.cache; then
+  echo "hacking CPPFLAGS out of `pwd`/config.cache"
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" `pwd`/config.cache
+elif test -e ./config.cache; then
   echo "hacking CPPFLAGS out of ./config.cache"
-  sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ./config.cache
-  sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ./config.cache
 elif test -e ../config.cache; then
   echo "hacking CPPFLAGS out of ../config.cache"
-  sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ../config.cache
-  sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ../config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ../config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ../config.cache
 elif test -r .././config.cache -a -w .././config.cache; then
   echo "hacking CPPFLAGS out of .././config.cache"
-  sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" .././config.cache
-  sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" .././config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" .././config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" .././config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
 
 # Check for the 'make' the user wants to use.

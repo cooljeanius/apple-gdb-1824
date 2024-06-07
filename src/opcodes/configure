@@ -6673,6 +6673,19 @@ printf "%s\n" "$ac_cv_path_SED" >&6; }
 
 
 
+if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
+elif test -e ./config.cache; then
+  echo "hacking ./config.cache"
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
+fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
 printf %s "checking for grep that handles long lines and -e... " >&6; }
 if test ${ac_cv_path_GREP+y}
@@ -26033,6 +26046,71 @@ fi
 
 
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-deprecated-non-prototype" >&5
+printf %s "checking whether C compiler handles -Wno-deprecated-non-prototype... " >&6; }
+if test ${gl_cv_warn_c__Wno_deprecated_non_prototype+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e)
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wdeprecated-non-prototype"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  gl_cv_warn_c__Wno_deprecated_non_prototype=yes
+else case e in #(
+  e) gl_cv_warn_c__Wno_deprecated_non_prototype=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_deprecated_non_prototype" >&5
+printf "%s\n" "$gl_cv_warn_c__Wno_deprecated_non_prototype" >&6; }
+if test "x$gl_cv_warn_c__Wno_deprecated_non_prototype" = xyes
+then :
+  as_fn_append WARN_CFLAGS " -Wno-deprecated-non-prototype"
+fi
+
+
+
+
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#if (14) < __GNUC__ || ((14) == __GNUC__ && (0) <= __GNUC_MINOR__)
+/* ok */
+#else
+# error "your version of gcc is older than 14.0"
+#endif /* GCC version check */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+},
+
+_ACEOF
+if ac_fn_c_try_cpp "$LINENO"
+then :
+
+
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -fpermissive" >&5
 printf %s "checking whether C compiler handles -fpermissive... " >&6; }
 if test ${gl_cv_warn_c__fpermissive+y}
@@ -26073,6 +26151,16 @@ then :
   as_fn_append WARN_CFLAGS " -fpermissive"
 fi
 
+
+
+else case e in #(
+  e)
+          { printf "%s\n" "$as_me:${as_lineno-$LINENO}: skipping check for -fpermissive with this compiler" >&5
+printf "%s\n" "$as_me: skipping check for -fpermissive with this compiler" >&6;}
+         ;;
+esac
+fi
+rm -f conftest.err conftest.i conftest.$ac_ext
 
     fi
 

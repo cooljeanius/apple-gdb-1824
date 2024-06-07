@@ -21,6 +21,11 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef NO_POISON
+/* included files can drag in "free": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "macosx-nat-dyld.h"
 /* for some reason reordering this fixed a compile error: */
 #include "macosx-nat-dyld-info.h"

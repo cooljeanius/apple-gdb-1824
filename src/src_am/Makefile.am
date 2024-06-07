@@ -1,5 +1,6 @@
 ## automake Makefile for the "src/" directory that is shared among many
-## projects
+## projects; placed in a non-standard "src_am/" subdirectory, to try to
+## avoid it overriding the autogen-generated one.
 # Makefile.in is generated from Makefile.am by 'automake'.
 #
 # Makefile for directory with subdirs to build.
@@ -24,7 +25,7 @@
 #
 
 ACLOCAL_AMFLAGS = -I m4 -I config --install
-AUTOMAKE_OPTIONS = 1.11.6 gnits no-dependencies no-dist no-installinfo
+AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu no-dependencies no-dist
 ## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 TEXINFO_TEX = texinfo/texinfo.tex
@@ -420,8 +421,8 @@ CONFIGURED_CXX_FOR_TARGET=@CONFIGURED_CXX_FOR_TARGET@
 USUAL_CXX_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/gcc/g++ ] ; then \
     (echo $$r/$(HOST_SUBDIR)/gcc/g++ -B$$r/$(HOST_SUBDIR)/gcc -nostdinc++; \
-    test ! -f $$r/$(TARGET_SUBDIR)/libstdc++-v3/scripts/testsuite_flags || $(SHELL) $$r/$(TARGET_SUBDIR)/libstdc++-v3/scripts/testsuite_flags --build-includes; \
-    echo -L$$r/$(TARGET_SUBDIR)/libstdc++-v3/src -L$$r/$(TARGET_SUBDIR)/libstdc++-v3/src/.libs) | tr '\015\012' '  '; \
+    test ! -f $$r/$(TARGET_SUBDIR)/libstdcxx/scripts/testsuite_flags || $(SHELL) $$r/$(TARGET_SUBDIR)/libstdcxx/scripts/testsuite_flags --build-includes; \
+    echo -L$$r/$(TARGET_SUBDIR)/libstdcxx/src -L$$r/$(TARGET_SUBDIR)/libstdcxx/src/.libs) | tr '\015\012' '  '; \
   else \
     if [ '$(host)' = '$(target)' ] ; then \
       echo $(CXX); \
@@ -433,7 +434,7 @@ USUAL_CXX_FOR_TARGET = ` \
 RAW_CXX_FOR_TARGET=$(STAGE_CC_WRAPPER) @RAW_CXX_FOR_TARGET@ $(FLAGS_FOR_TARGET)
 USUAL_RAW_CXX_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/gcc/xgcc ] ; then \
-    echo $$r/$(HOST_SUBDIR)/gcc/xgcc -shared-libgcc -B$$r/$(HOST_SUBDIR)/gcc -nostdinc++ -L$$r/$(TARGET_SUBDIR)/libstdc++-v3/src -L$$r/$(TARGET_SUBDIR)/libstdc++-v3/src/.libs; \
+    echo $$r/$(HOST_SUBDIR)/gcc/xgcc -shared-libgcc -B$$r/$(HOST_SUBDIR)/gcc -nostdinc++ -L$$r/$(TARGET_SUBDIR)/libstdcxx/src -L$$r/$(TARGET_SUBDIR)/libstdcxx/src/.libs; \
   else \
     if [ '$(host)' = '$(target)' ] ; then \
       echo $(CXX); \
@@ -566,11 +567,11 @@ PICFLAG_FOR_TARGET =
 
 # This is the list of directories that may be needed in RPATH_ENVVAR
 # so that prorgams built for the target machine work.
-TARGET_LIB_PATH = $(TARGET_LIB_PATH_libstdc++-v3)$(TARGET_LIB_PATH_libmudflap)$(TARGET_LIB_PATH_libssp)$(HOST_LIB_PATH_gcc)
+TARGET_LIB_PATH = $(TARGET_LIB_PATH_libstdcxx)$(TARGET_LIB_PATH_libmudflap)$(TARGET_LIB_PATH_libssp)$(HOST_LIB_PATH_gcc)
 
-@if target-libstdc++-v3
-TARGET_LIB_PATH_libstdc++-v3 = $$r/$(TARGET_SUBDIR)/libstdc++-v3/.libs:
-@endif target-libstdc++-v3
+@if target-libstdcxx
+TARGET_LIB_PATH_libstdcxx = $$r/$(TARGET_SUBDIR)/libstdcxx/.libs:
+@endif target-libstdcxx
 
 @if target-libmudflap
 TARGET_LIB_PATH_libmudflap = $$r/$(TARGET_SUBDIR)/libmudflap/.libs:
@@ -813,7 +814,7 @@ configure-host:  \
     maybe-configure-gnattools
 .PHONY: configure-target
 configure-target:  \
-    maybe-configure-target-libstdc++-v3 \
+    maybe-configure-target-libstdcxx \
     maybe-configure-target-libmudflap \
     maybe-configure-target-libssp \
     maybe-configure-target-newlib \
@@ -917,7 +918,7 @@ all-host:  \
     maybe-all-gnattools
 .PHONY: all-target
 all-target:  \
-    maybe-all-target-libstdc++-v3 \
+    maybe-all-target-libstdcxx \
     maybe-all-target-libmudflap \
     maybe-all-target-libssp \
     maybe-all-target-newlib \
@@ -1017,7 +1018,7 @@ info-host:  \
 
 .PHONY: info-target
 info-target:  \
-    maybe-info-target-libstdc++-v3 \
+    maybe-info-target-libstdcxx \
     maybe-info-target-libmudflap \
     maybe-info-target-libssp \
     maybe-info-target-newlib \
@@ -1112,7 +1113,7 @@ dvi-host:  \
 
 .PHONY: dvi-target
 dvi-target:  \
-    maybe-dvi-target-libstdc++-v3 \
+    maybe-dvi-target-libstdcxx \
     maybe-dvi-target-libmudflap \
     maybe-dvi-target-libssp \
     maybe-dvi-target-newlib \
@@ -1207,7 +1208,7 @@ html-host:  \
 
 .PHONY: html-target
 html-target:  \
-    maybe-html-target-libstdc++-v3 \
+    maybe-html-target-libstdcxx \
     maybe-html-target-libmudflap \
     maybe-html-target-libssp \
     maybe-html-target-newlib \
@@ -1302,7 +1303,7 @@ TAGS-host:  \
 
 .PHONY: TAGS-target
 TAGS-target:  \
-    maybe-TAGS-target-libstdc++-v3 \
+    maybe-TAGS-target-libstdcxx \
     maybe-TAGS-target-libmudflap \
     maybe-TAGS-target-libssp \
     maybe-TAGS-target-newlib \
@@ -1397,7 +1398,7 @@ install-info-host:  \
 
 .PHONY: install-info-target
 install-info-target:  \
-    maybe-install-info-target-libstdc++-v3 \
+    maybe-install-info-target-libstdcxx \
     maybe-install-info-target-libmudflap \
     maybe-install-info-target-libssp \
     maybe-install-info-target-newlib \
@@ -1492,7 +1493,7 @@ installcheck-host:  \
 
 .PHONY: installcheck-target
 installcheck-target:  \
-    maybe-installcheck-target-libstdc++-v3 \
+    maybe-installcheck-target-libstdcxx \
     maybe-installcheck-target-libmudflap \
     maybe-installcheck-target-libssp \
     maybe-installcheck-target-newlib \
@@ -1587,7 +1588,7 @@ mostlyclean-host:  \
 
 .PHONY: mostlyclean-target
 mostlyclean-target:  \
-    maybe-mostlyclean-target-libstdc++-v3 \
+    maybe-mostlyclean-target-libstdcxx \
     maybe-mostlyclean-target-libmudflap \
     maybe-mostlyclean-target-libssp \
     maybe-mostlyclean-target-newlib \
@@ -1682,7 +1683,7 @@ clean-host:  \
 
 .PHONY: clean-target
 clean-target:  \
-    maybe-clean-target-libstdc++-v3 \
+    maybe-clean-target-libstdcxx \
     maybe-clean-target-libmudflap \
     maybe-clean-target-libssp \
     maybe-clean-target-newlib \
@@ -1777,7 +1778,7 @@ distclean-host:  \
 
 .PHONY: distclean-target
 distclean-target:  \
-    maybe-distclean-target-libstdc++-v3 \
+    maybe-distclean-target-libstdcxx \
     maybe-distclean-target-libmudflap \
     maybe-distclean-target-libssp \
     maybe-distclean-target-newlib \
@@ -1872,7 +1873,7 @@ maintainer-clean-host:  \
 
 .PHONY: maintainer-clean-target
 maintainer-clean-target:  \
-    maybe-maintainer-clean-target-libstdc++-v3 \
+    maybe-maintainer-clean-target-libstdcxx \
     maybe-maintainer-clean-target-libmudflap \
     maybe-maintainer-clean-target-libssp \
     maybe-maintainer-clean-target-newlib \
@@ -1895,19 +1896,19 @@ maintainer-clean-target:  \
 
 # Here are the targets which correspond to the do-X targets.
 
-.PHONY: info installcheck dvi html install-info
-.PHONY: clean distclean mostlyclean maintainer-clean realclean
+.PHONY: info-local installcheck-local dvi-local html-local install-info-local
+.PHONY: clean-local mostlyclean-local maintainer-clean-local realclean
 .PHONY: local-clean local-distclean local-maintainer-clean
-info: do-info
-installcheck: do-installcheck
-dvi: do-dvi
-html: do-html
+info-local: do-info
+installcheck-local: do-installcheck
+dvi-local: do-dvi
+html-local: do-html
 
 # Make sure makeinfo is built before we do a `make info', if we're
 # in fact building texinfo.
 do-info: maybe-all-texinfo
 
-install-info: do-install-info dir.info
+install-info-local: do-install-info dir.info
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	if [ -f dir.info ] ; then \
 	  $(INSTALL_DATA) dir.info $(DESTDIR)$(infodir)/dir.info ; \
@@ -1954,11 +1955,11 @@ local-maintainer-clean:
 	@echo "it deletes files that may require special tools to rebuild."
 	-rm -f configure.scan
 
-clean: do-clean local-clean
-mostlyclean: do-mostlyclean local-clean
-distclean: do-distclean local-clean local-distclean
-maintainer-clean: local-maintainer-clean do-maintainer-clean local-clean 
-maintainer-clean: local-distclean
+clean-local: do-clean local-clean
+mostlyclean-local: do-mostlyclean local-clean
+distclean-local: do-distclean local-clean local-distclean
+maintainer-clean-local: local-maintainer-clean do-maintainer-clean local-clean 
+maintainer-clean-local: local-distclean
 realclean: maintainer-clean
 
 # Extra dependency for clean-target, owing to the mixed nature of gcc
@@ -2044,7 +2045,7 @@ do-check: unstage  \
     maybe-check-libtermcap \
     maybe-check-utils \
     maybe-check-gnattools \
-    maybe-check-target-libstdc++-v3 \
+    maybe-check-target-libstdcxx \
     maybe-check-target-libmudflap \
     maybe-check-target-libssp \
     maybe-check-target-newlib \
@@ -2075,7 +2076,7 @@ mail-report.log:
 	fi; \
 	$(srcdir)/contrib/test_summary -t >$@
 	chmod +x $@
-	echo If you really want to send e-mail, run ./$@ now
+	echo "If you really want to send e-mail, run ./$@ now"
 
 mail-report-with-warnings.log: warning.log
 	if test x'$(BOOT_CFLAGS)' != x''; then \
@@ -2083,12 +2084,12 @@ mail-report-with-warnings.log: warning.log
 	fi; \
 	$(srcdir)/contrib/test_summary -t -i warning.log >$@
 	chmod +x $@
-	echo If you really want to send e-mail, run ./$@ now
+	echo "If you really want to send e-mail, run ./$@ now"
 
 # Installation targets.
 
-.PHONY: install uninstall
-install: installdirs install-host install-target
+.PHONY: install uninstall-local
+install: installdirs-local install-host install-target
 
 .PHONY: install-host-nogcc
 install-host-nogcc:  \
@@ -2231,7 +2232,7 @@ install-host:  \
 
 .PHONY: install-target
 install-target:  \
-    maybe-install-target-libstdc++-v3 \
+    maybe-install-target-libstdcxx \
     maybe-install-target-libmudflap \
     maybe-install-target-libssp \
     maybe-install-target-newlib \
@@ -2251,8 +2252,8 @@ install-target:  \
     maybe-install-target-rda \
     maybe-install-target-libada
 
-uninstall:
-	@echo "the uninstall target is not supported in this tree"
+uninstall-local:
+	@echo "the uninstall-local target is not supported in this tree"
 
 .PHONY: install.all
 install.all: install-no-fixedincludes
@@ -2276,8 +2277,8 @@ install-no-fixedincludes: installdirs install-host-nogcc \
 MAKEDIRS= \
 	$(DESTDIR)$(prefix) \
 	$(DESTDIR)$(exec_prefix)
-.PHONY: installdirs
-installdirs: mkinstalldirs
+.PHONY: installdirs-local
+installdirs-local: mkinstalldirs
 	$(SHELL) $(srcdir)/mkinstalldirs $(MAKEDIRS)
 
 dir.info: do-install-info
@@ -2292,7 +2293,7 @@ dist_target:
 	@echo "via 'make dist_target'. Check out the etc/ subdirectory." 
 .PHONY: dist_target
 
-etags tags: TAGS
+etags tags: TAGS-local
 
 # Right now this just builds TAGS in each subdirectory.  emacs19 has the
 # ability to use several tags files at once, so there is probably no need
@@ -2300,7 +2301,7 @@ etags tags: TAGS
 # (if we felt like it) have this Makefile write a piece of elisp which
 # the user could load to tell emacs19 where all the TAGS files we just
 # built are.
-TAGS: do-TAGS
+TAGS-local: do-TAGS
 
 # ------------------------------------
 # Macros for configure and all targets
@@ -26969,101 +26970,101 @@ maintainer-clean-gnattools:
 
 
 # There's only one multilib.out.  Cleverer subdirs shouldn't need it copied.
-@if target-libstdc++-v3
-$(TARGET_SUBDIR)/libstdc++-v3/multilib.out: multilib.out
-	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libstdc++-v3 ; \
-	rm -f $(TARGET_SUBDIR)/libstdc++-v3/Makefile || : ; \
-	cp multilib.out $(TARGET_SUBDIR)/libstdc++-v3/multilib.out
-@endif target-libstdc++-v3
+@if target-libstdcxx
+$(TARGET_SUBDIR)/libstdcxx/multilib.out: multilib.out
+	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libstdcxx ; \
+	rm -f $(TARGET_SUBDIR)/libstdcxx/Makefile || : ; \
+	cp multilib.out $(TARGET_SUBDIR)/libstdcxx/multilib.out
+@endif target-libstdcxx
 
 
 
-.PHONY: configure-target-libstdc++-v3 maybe-configure-target-libstdc++-v3
-maybe-configure-target-libstdc++-v3:
-@if target-libstdc++-v3
-maybe-configure-target-libstdc++-v3: configure-target-libstdc++-v3
-configure-target-libstdc++-v3: $(TARGET_SUBDIR)/libstdc++-v3/multilib.out
-	@test ! -f $(TARGET_SUBDIR)/libstdc++-v3/Makefile || exit 0; \
-	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libstdc++-v3 ; \
+.PHONY: configure-target-libstdcxx maybe-configure-target-libstdcxx
+maybe-configure-target-libstdcxx:
+@if target-libstdcxx
+maybe-configure-target-libstdcxx: configure-target-libstdcxx
+configure-target-libstdcxx: $(TARGET_SUBDIR)/libstdcxx/multilib.out
+	@test ! -f $(TARGET_SUBDIR)/libstdcxx/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libstdcxx ; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	echo Configuring in $(TARGET_SUBDIR)/libstdc++-v3; \
-	cd "$(TARGET_SUBDIR)/libstdc++-v3" || exit 1; \
+	echo Configuring in $(TARGET_SUBDIR)/libstdcxx; \
+	cd "$(TARGET_SUBDIR)/libstdcxx" || exit 1; \
 	case $(srcdir) in \
 	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
-	  *) topdir=`echo $(TARGET_SUBDIR)/libstdc++-v3/ | \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libstdcxx/ | \
 		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
 	esac; \
-	srcdiroption="--srcdir=$${topdir}/libstdc++-v3"; \
-	libsrcdir="$$s/libstdc++-v3"; \
+	srcdiroption="--srcdir=$${topdir}/libstdcxx"; \
+	libsrcdir="$$s/libstdcxx"; \
 	rm -f no-such-file || : ; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || exit 1
-@endif target-libstdc++-v3
+@endif target-libstdcxx
 
 
-.PHONY: all-target-libstdc++-v3 maybe-all-target-libstdc++-v3
-maybe-all-target-libstdc++-v3:
-@if target-libstdc++-v3
-TARGET_target_libstdc++-v3=all
-maybe-all-target-libstdc++-v3: all-target-libstdc++-v3
-all-target-libstdc++-v3: configure-target-libstdc++-v3
+.PHONY: all-target-libstdcxx maybe-all-target-libstdcxx
+maybe-all-target-libstdcxx:
+@if target-libstdcxx
+TARGET_target_libstdcxx=all
+maybe-all-target-libstdcxx: all-target-libstdcxx
+all-target-libstdcxx: configure-target-libstdcxx
 	@r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	(cd $(TARGET_SUBDIR)/libstdc++-v3 && \
-	  $(MAKE) $(TARGET_FLAGS_TO_PASS) 'CXX=$$(RAW_CXX_FOR_TARGET)' 'CXX_FOR_TARGET=$$(RAW_CXX_FOR_TARGET)'  $(TARGET_target_libstdc++-v3))
-@endif target-libstdc++-v3
+	(cd $(TARGET_SUBDIR)/libstdcxx && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS) 'CXX=$$(RAW_CXX_FOR_TARGET)' 'CXX_FOR_TARGET=$$(RAW_CXX_FOR_TARGET)'  $(TARGET_target_libstdcxx))
+@endif target-libstdcxx
 
 
-.PHONY: check-target-libstdc++-v3 maybe-check-target-libstdc++-v3
-maybe-check-target-libstdc++-v3:
-@if target-libstdc++-v3
-maybe-check-target-libstdc++-v3: check-target-libstdc++-v3
+.PHONY: check-target-libstdcxx maybe-check-target-libstdcxx
+maybe-check-target-libstdcxx:
+@if target-libstdcxx
+maybe-check-target-libstdcxx: check-target-libstdcxx
 
-check-target-libstdc++-v3:
+check-target-libstdcxx:
 	@r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	(cd $(TARGET_SUBDIR)/libstdc++-v3 && \
+	(cd $(TARGET_SUBDIR)/libstdcxx && \
 	  $(MAKE) $(TARGET_FLAGS_TO_PASS)  'CXX=$$(RAW_CXX_FOR_TARGET)' 'CXX_FOR_TARGET=$$(RAW_CXX_FOR_TARGET)'   check)
 
-@endif target-libstdc++-v3
+@endif target-libstdcxx
 
-.PHONY: install-target-libstdc++-v3 maybe-install-target-libstdc++-v3
-maybe-install-target-libstdc++-v3:
-@if target-libstdc++-v3
-maybe-install-target-libstdc++-v3: install-target-libstdc++-v3
+.PHONY: install-target-libstdcxx maybe-install-target-libstdcxx
+maybe-install-target-libstdcxx:
+@if target-libstdcxx
+maybe-install-target-libstdcxx: install-target-libstdcxx
 
-install-target-libstdc++-v3: installdirs
+install-target-libstdcxx: installdirs
 	@r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	(cd $(TARGET_SUBDIR)/libstdc++-v3 && \
+	(cd $(TARGET_SUBDIR)/libstdcxx && \
 	  $(MAKE) $(TARGET_FLAGS_TO_PASS)  install)
 
-@endif target-libstdc++-v3
+@endif target-libstdcxx
 
 # Other targets (info, dvi, etc.)
 
-.PHONY: maybe-info-target-libstdc++-v3 info-target-libstdc++-v3
-maybe-info-target-libstdc++-v3:
-@if target-libstdc++-v3
-maybe-info-target-libstdc++-v3: info-target-libstdc++-v3
+.PHONY: maybe-info-target-libstdcxx info-target-libstdcxx
+maybe-info-target-libstdcxx:
+@if target-libstdcxx
+maybe-info-target-libstdcxx: info-target-libstdcxx
 
-info-target-libstdc++-v3: \
-    configure-target-libstdc++-v3 
-	@[ -f $(TARGET_SUBDIR)/libstdc++-v3/Makefile ] || exit 0 ; \
+info-target-libstdcxx: \
+    configure-target-libstdcxx 
+	@[ -f $(TARGET_SUBDIR)/libstdcxx/Makefile ] || exit 0 ; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	echo "Doing info in $(TARGET_SUBDIR)/libstdc++-v3" ; \
+	echo "Doing info in $(TARGET_SUBDIR)/libstdcxx" ; \
 	for flag in $(EXTRA_TARGET_FLAGS); do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	(cd $(TARGET_SUBDIR)/libstdc++-v3 && \
+	(cd $(TARGET_SUBDIR)/libstdcxx && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -27071,24 +27072,24 @@ info-target-libstdc++-v3: \
 	           info) \
 	  || exit 1
 
-@endif target-libstdc++-v3
+@endif target-libstdcxx
 
-.PHONY: maybe-dvi-target-libstdc++-v3 dvi-target-libstdc++-v3
-maybe-dvi-target-libstdc++-v3:
-@if target-libstdc++-v3
-maybe-dvi-target-libstdc++-v3: dvi-target-libstdc++-v3
+.PHONY: maybe-dvi-target-libstdcxx dvi-target-libstdcxx
+maybe-dvi-target-libstdcxx:
+@if target-libstdcxx
+maybe-dvi-target-libstdcxx: dvi-target-libstdcxx
 
-dvi-target-libstdc++-v3: \
-    configure-target-libstdc++-v3 
-	@[ -f $(TARGET_SUBDIR)/libstdc++-v3/Makefile ] || exit 0 ; \
+dvi-target-libstdcxx: \
+    configure-target-libstdcxx 
+	@[ -f $(TARGET_SUBDIR)/libstdcxx/Makefile ] || exit 0 ; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	echo "Doing dvi in $(TARGET_SUBDIR)/libstdc++-v3" ; \
+	echo "Doing dvi in $(TARGET_SUBDIR)/libstdcxx" ; \
 	for flag in $(EXTRA_TARGET_FLAGS); do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	(cd $(TARGET_SUBDIR)/libstdc++-v3 && \
+	(cd $(TARGET_SUBDIR)/libstdcxx && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -27096,24 +27097,24 @@ dvi-target-libstdc++-v3: \
 	           dvi) \
 	  || exit 1
 
-@endif target-libstdc++-v3
+@endif target-libstdcxx
 
-.PHONY: maybe-html-target-libstdc++-v3 html-target-libstdc++-v3
-maybe-html-target-libstdc++-v3:
-@if target-libstdc++-v3
-maybe-html-target-libstdc++-v3: html-target-libstdc++-v3
+.PHONY: maybe-html-target-libstdcxx html-target-libstdcxx
+maybe-html-target-libstdcxx:
+@if target-libstdcxx
+maybe-html-target-libstdcxx: html-target-libstdcxx
 
-html-target-libstdc++-v3: \
-    configure-target-libstdc++-v3 
-	@[ -f $(TARGET_SUBDIR)/libstdc++-v3/Makefile ] || exit 0 ; \
+html-target-libstdcxx: \
+    configure-target-libstdcxx 
+	@[ -f $(TARGET_SUBDIR)/libstdcxx/Makefile ] || exit 0 ; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	echo "Doing html in $(TARGET_SUBDIR)/libstdc++-v3" ; \
+	echo "Doing html in $(TARGET_SUBDIR)/libstdcxx" ; \
 	for flag in $(EXTRA_TARGET_FLAGS); do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	(cd $(TARGET_SUBDIR)/libstdc++-v3 && \
+	(cd $(TARGET_SUBDIR)/libstdcxx && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -27121,24 +27122,24 @@ html-target-libstdc++-v3: \
 	           html) \
 	  || exit 1
 
-@endif target-libstdc++-v3
+@endif target-libstdcxx
 
-.PHONY: maybe-TAGS-target-libstdc++-v3 TAGS-target-libstdc++-v3
-maybe-TAGS-target-libstdc++-v3:
-@if target-libstdc++-v3
-maybe-TAGS-target-libstdc++-v3: TAGS-target-libstdc++-v3
+.PHONY: maybe-TAGS-target-libstdcxx TAGS-target-libstdcxx
+maybe-TAGS-target-libstdcxx:
+@if target-libstdcxx
+maybe-TAGS-target-libstdcxx: TAGS-target-libstdcxx
 
-TAGS-target-libstdc++-v3: \
-    configure-target-libstdc++-v3 
-	@[ -f $(TARGET_SUBDIR)/libstdc++-v3/Makefile ] || exit 0 ; \
+TAGS-target-libstdcxx: \
+    configure-target-libstdcxx 
+	@[ -f $(TARGET_SUBDIR)/libstdcxx/Makefile ] || exit 0 ; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	echo "Doing TAGS in $(TARGET_SUBDIR)/libstdc++-v3" ; \
+	echo "Doing TAGS in $(TARGET_SUBDIR)/libstdcxx" ; \
 	for flag in $(EXTRA_TARGET_FLAGS); do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	(cd $(TARGET_SUBDIR)/libstdc++-v3 && \
+	(cd $(TARGET_SUBDIR)/libstdcxx && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -27146,25 +27147,25 @@ TAGS-target-libstdc++-v3: \
 	           TAGS) \
 	  || exit 1
 
-@endif target-libstdc++-v3
+@endif target-libstdcxx
 
-.PHONY: maybe-install-info-target-libstdc++-v3 install-info-target-libstdc++-v3
-maybe-install-info-target-libstdc++-v3:
-@if target-libstdc++-v3
-maybe-install-info-target-libstdc++-v3: install-info-target-libstdc++-v3
+.PHONY: maybe-install-info-target-libstdcxx install-info-target-libstdcxx
+maybe-install-info-target-libstdcxx:
+@if target-libstdcxx
+maybe-install-info-target-libstdcxx: install-info-target-libstdcxx
 
-install-info-target-libstdc++-v3: \
-    configure-target-libstdc++-v3 \
-    info-target-libstdc++-v3 
-	@[ -f $(TARGET_SUBDIR)/libstdc++-v3/Makefile ] || exit 0 ; \
+install-info-target-libstdcxx: \
+    configure-target-libstdcxx \
+    info-target-libstdcxx 
+	@[ -f $(TARGET_SUBDIR)/libstdcxx/Makefile ] || exit 0 ; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	echo "Doing install-info in $(TARGET_SUBDIR)/libstdc++-v3" ; \
+	echo "Doing install-info in $(TARGET_SUBDIR)/libstdcxx" ; \
 	for flag in $(EXTRA_TARGET_FLAGS); do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	(cd $(TARGET_SUBDIR)/libstdc++-v3 && \
+	(cd $(TARGET_SUBDIR)/libstdcxx && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -27172,24 +27173,24 @@ install-info-target-libstdc++-v3: \
 	           install-info) \
 	  || exit 1
 
-@endif target-libstdc++-v3
+@endif target-libstdcxx
 
-.PHONY: maybe-installcheck-target-libstdc++-v3 installcheck-target-libstdc++-v3
-maybe-installcheck-target-libstdc++-v3:
-@if target-libstdc++-v3
-maybe-installcheck-target-libstdc++-v3: installcheck-target-libstdc++-v3
+.PHONY: maybe-installcheck-target-libstdcxx installcheck-target-libstdcxx
+maybe-installcheck-target-libstdcxx:
+@if target-libstdcxx
+maybe-installcheck-target-libstdcxx: installcheck-target-libstdcxx
 
-installcheck-target-libstdc++-v3: \
-    configure-target-libstdc++-v3 
-	@[ -f $(TARGET_SUBDIR)/libstdc++-v3/Makefile ] || exit 0 ; \
+installcheck-target-libstdcxx: \
+    configure-target-libstdcxx 
+	@[ -f $(TARGET_SUBDIR)/libstdcxx/Makefile ] || exit 0 ; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	echo "Doing installcheck in $(TARGET_SUBDIR)/libstdc++-v3" ; \
+	echo "Doing installcheck in $(TARGET_SUBDIR)/libstdcxx" ; \
 	for flag in $(EXTRA_TARGET_FLAGS); do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	(cd $(TARGET_SUBDIR)/libstdc++-v3 && \
+	(cd $(TARGET_SUBDIR)/libstdcxx && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -27197,23 +27198,23 @@ installcheck-target-libstdc++-v3: \
 	           installcheck) \
 	  || exit 1
 
-@endif target-libstdc++-v3
+@endif target-libstdcxx
 
-.PHONY: maybe-mostlyclean-target-libstdc++-v3 mostlyclean-target-libstdc++-v3
-maybe-mostlyclean-target-libstdc++-v3:
-@if target-libstdc++-v3
-maybe-mostlyclean-target-libstdc++-v3: mostlyclean-target-libstdc++-v3
+.PHONY: maybe-mostlyclean-target-libstdcxx mostlyclean-target-libstdcxx
+maybe-mostlyclean-target-libstdcxx:
+@if target-libstdcxx
+maybe-mostlyclean-target-libstdcxx: mostlyclean-target-libstdcxx
 
-mostlyclean-target-libstdc++-v3: 
-	@[ -f $(TARGET_SUBDIR)/libstdc++-v3/Makefile ] || exit 0 ; \
+mostlyclean-target-libstdcxx: 
+	@[ -f $(TARGET_SUBDIR)/libstdcxx/Makefile ] || exit 0 ; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	echo "Doing mostlyclean in $(TARGET_SUBDIR)/libstdc++-v3" ; \
+	echo "Doing mostlyclean in $(TARGET_SUBDIR)/libstdcxx" ; \
 	for flag in $(EXTRA_TARGET_FLAGS); do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	(cd $(TARGET_SUBDIR)/libstdc++-v3 && \
+	(cd $(TARGET_SUBDIR)/libstdcxx && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -27221,23 +27222,23 @@ mostlyclean-target-libstdc++-v3:
 	           mostlyclean) \
 	  || exit 1
 
-@endif target-libstdc++-v3
+@endif target-libstdcxx
 
-.PHONY: maybe-clean-target-libstdc++-v3 clean-target-libstdc++-v3
-maybe-clean-target-libstdc++-v3:
-@if target-libstdc++-v3
-maybe-clean-target-libstdc++-v3: clean-target-libstdc++-v3
+.PHONY: maybe-clean-target-libstdcxx clean-target-libstdcxx
+maybe-clean-target-libstdcxx:
+@if target-libstdcxx
+maybe-clean-target-libstdcxx: clean-target-libstdcxx
 
-clean-target-libstdc++-v3: 
-	@[ -f $(TARGET_SUBDIR)/libstdc++-v3/Makefile ] || exit 0 ; \
+clean-target-libstdcxx: 
+	@[ -f $(TARGET_SUBDIR)/libstdcxx/Makefile ] || exit 0 ; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	echo "Doing clean in $(TARGET_SUBDIR)/libstdc++-v3" ; \
+	echo "Doing clean in $(TARGET_SUBDIR)/libstdcxx" ; \
 	for flag in $(EXTRA_TARGET_FLAGS); do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	(cd $(TARGET_SUBDIR)/libstdc++-v3 && \
+	(cd $(TARGET_SUBDIR)/libstdcxx && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -27245,23 +27246,23 @@ clean-target-libstdc++-v3:
 	           clean) \
 	  || exit 1
 
-@endif target-libstdc++-v3
+@endif target-libstdcxx
 
-.PHONY: maybe-distclean-target-libstdc++-v3 distclean-target-libstdc++-v3
-maybe-distclean-target-libstdc++-v3:
-@if target-libstdc++-v3
-maybe-distclean-target-libstdc++-v3: distclean-target-libstdc++-v3
+.PHONY: maybe-distclean-target-libstdcxx distclean-target-libstdcxx
+maybe-distclean-target-libstdcxx:
+@if target-libstdcxx
+maybe-distclean-target-libstdcxx: distclean-target-libstdcxx
 
-distclean-target-libstdc++-v3: 
-	@[ -f $(TARGET_SUBDIR)/libstdc++-v3/Makefile ] || exit 0 ; \
+distclean-target-libstdcxx: 
+	@[ -f $(TARGET_SUBDIR)/libstdcxx/Makefile ] || exit 0 ; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	echo "Doing distclean in $(TARGET_SUBDIR)/libstdc++-v3" ; \
+	echo "Doing distclean in $(TARGET_SUBDIR)/libstdcxx" ; \
 	for flag in $(EXTRA_TARGET_FLAGS); do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	(cd $(TARGET_SUBDIR)/libstdc++-v3 && \
+	(cd $(TARGET_SUBDIR)/libstdcxx && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -27269,23 +27270,23 @@ distclean-target-libstdc++-v3:
 	           distclean) \
 	  || exit 1
 
-@endif target-libstdc++-v3
+@endif target-libstdcxx
 
-.PHONY: maybe-maintainer-clean-target-libstdc++-v3 maintainer-clean-target-libstdc++-v3
-maybe-maintainer-clean-target-libstdc++-v3:
-@if target-libstdc++-v3
-maybe-maintainer-clean-target-libstdc++-v3: maintainer-clean-target-libstdc++-v3
+.PHONY: maybe-maintainer-clean-target-libstdcxx maintainer-clean-target-libstdcxx
+maybe-maintainer-clean-target-libstdcxx:
+@if target-libstdcxx
+maybe-maintainer-clean-target-libstdcxx: maintainer-clean-target-libstdcxx
 
-maintainer-clean-target-libstdc++-v3: 
-	@[ -f $(TARGET_SUBDIR)/libstdc++-v3/Makefile ] || exit 0 ; \
+maintainer-clean-target-libstdcxx: 
+	@[ -f $(TARGET_SUBDIR)/libstdcxx/Makefile ] || exit 0 ; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(RAW_CXX_TARGET_EXPORTS) \
-	echo "Doing maintainer-clean in $(TARGET_SUBDIR)/libstdc++-v3" ; \
+	echo "Doing maintainer-clean in $(TARGET_SUBDIR)/libstdcxx" ; \
 	for flag in $(EXTRA_TARGET_FLAGS); do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	(cd $(TARGET_SUBDIR)/libstdc++-v3 && \
+	(cd $(TARGET_SUBDIR)/libstdcxx && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -27293,7 +27294,7 @@ maintainer-clean-target-libstdc++-v3:
 	           maintainer-clean) \
 	  || exit 1
 
-@endif target-libstdc++-v3
+@endif target-libstdcxx
 
 
 
@@ -33232,7 +33233,7 @@ check-gcc-c++:
 	fi
 
 .PHONY: check-c++
-check-c++: check-target-libstdc++-v3 check-gcc-c++
+check-c++: check-target-libstdcxx check-gcc-c++
 
 # Install the gcc headers files, but not the fixed include files,
 # which Cygnus is not allowed to distribute.  This rule is very
@@ -34479,7 +34480,7 @@ do-distclean: distclean-stage1
 
 # Generic dependencies for target modules on host stuff, especially gcc
 
-configure-target-libstdc++-v3: maybe-all-gcc
+configure-target-libstdcxx: maybe-all-gcc
 
 configure-target-libmudflap: maybe-all-gcc
 
@@ -34521,7 +34522,7 @@ configure-target-libada: maybe-all-gcc
 configure-target-boehm-gc: maybe-all-target-newlib maybe-all-target-libgloss
 
 configure-target-gperf: maybe-all-target-newlib maybe-all-target-libgloss
-configure-target-gperf: maybe-all-target-libstdc++-v3
+configure-target-gperf: maybe-all-target-libstdcxx
 
 configure-target-libada: maybe-all-target-newlib maybe-all-target-libgloss
 
@@ -34530,11 +34531,11 @@ configure-target-libgfortran: maybe-all-target-newlib maybe-all-target-libgloss
 configure-target-libffi: maybe-all-target-newlib maybe-all-target-libgloss
 
 configure-target-libjava: maybe-all-target-newlib maybe-all-target-libgloss
-configure-target-libjava: maybe-all-target-libstdc++-v3
+configure-target-libjava: maybe-all-target-libstdcxx
 
 configure-target-libobjc: maybe-all-target-newlib maybe-all-target-libgloss
 
-configure-target-libstdc++-v3: maybe-all-target-newlib maybe-all-target-libgloss
+configure-target-libstdcxx: maybe-all-target-newlib maybe-all-target-libgloss
 
 configure-target-zlib: maybe-all-target-newlib maybe-all-target-libgloss
 
@@ -35024,7 +35025,7 @@ all-target-libjava: maybe-all-target-boehm-gc
 all-target-libjava: maybe-all-target-qthreads
 all-target-libjava: maybe-all-target-libffi
 all-target-libobjc: maybe-all-target-libiberty
-all-target-libstdc++-v3: maybe-all-target-libiberty
+all-target-libstdcxx: maybe-all-target-libiberty
 all-target-libgloss: maybe-configure-target-newlib
 all-target-winsup: maybe-all-target-libiberty
 all-target-winsup: maybe-all-target-libtermcap

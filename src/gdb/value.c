@@ -191,7 +191,9 @@ struct cached_value
   unsigned int generation;
 };
 
+#if !defined(BREAKPOINT_H)
 extern unsigned int symbol_generation;
+#endif /* !defined(BREAKPOINT_H) */
 
 struct cached_value *
 create_cached_function (const char *name, struct type *type)

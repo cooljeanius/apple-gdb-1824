@@ -87,6 +87,20 @@ if test -n "${HOST_ARCHITECTURE}"; then
 fi
 
 # Checks for programs.
+AC_PROG_SED
+if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
+elif test -e ./config.cache; then
+  echo "hacking ./config.cache"
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
+fi
 if test "x${CC}" = "x"; then
   test -z "${CC}"
   AC_PROG_CC
@@ -100,7 +114,6 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_MKDIR_P
 AC_PROG_RANLIB
-AC_PROG_SED
 AC_PROG_YACC
 AM_MISSING_PROG([AUTOCONF],[autoconf])dnl
 AC_PATH_PROGS([TIMEOUT],[timeout gtimeout uu-timeout],[timeout])dnl

@@ -2,6 +2,7 @@
 Makefile
 confdefs.h
 *.aux
+*.bak
 *.cache
 *.cp
 *.cps

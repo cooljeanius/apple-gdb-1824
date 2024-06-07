@@ -3,6 +3,7 @@ dnl# Process this file with autoconf to produce a configure script.
 dnl# (this one is for libopcodes)
 
 AC_PREREQ([2.61])
+m4_include([../config/gcc-version.m4])
 m4_include([../config/warnings.m4])
 dnl# keep the version number synced with the one in '../bfd':
 AC_INIT([opcodes],[2.16.91],[jmolenda@apple.com])
@@ -88,6 +89,19 @@ AC_DEFUN([AC_REQUIRE_SED],[
   AC_REQUIRE([AC_PROG_SED])dnl
 ])dnl
 AC_REQUIRE_SED
+if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
+elif test -e ./config.cache; then
+  echo "hacking ./config.cache"
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
+fi
 AC_DEFUN([AC_REQUIRE_GREPS],[
   AC_REQUIRE([AC_PROG_GREP])dnl
   AC_REQUIRE([AC_PROG_EGREP])dnl
@@ -752,7 +766,18 @@ else
       gl_WARN_ADD([-Wno-int-conversion])
       gl_WARN_ADD([-Wno-tautological-pointer-compare])
       gl_WARN_ADD([-Wno-string-plus-int])
-      gl_WARN_ADD([-fpermissive])
+      gl_WARN_ADD([-Wno-deprecated-non-prototype])
+      m4_ifdef([gl_GCC_VERSION_IFELSE],[
+        gl_GCC_VERSION_IFELSE([14],[0],[
+          gl_WARN_ADD([-fpermissive])
+        ],[
+          AC_MSG_NOTICE([skipping check for -fpermissive with this compiler])
+        ])
+      ],[
+        if test "x${GCC}" = "xyes"; then
+          gl_WARN_ADD([-fpermissive])
+        fi
+      ])
     fi
   ])
 fi

@@ -236,8 +236,7 @@ AM_INIT_MY_AUTOMAKE_LITE
 
 if test -e ./config.cache; then
   echo "hacking ./config.cache"
-  ## FIXME: filename gets interpreted as a sed command:
-  sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
 fi
 
 m4_ifdef([AC_REQUIRE_AUX_FILE],[
