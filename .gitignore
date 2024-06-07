@@ -46,3 +46,6 @@ macgdb/*
 
 # Ignore Gradle build output directory
 build
+
+# Ignore backup files
+*.bak
