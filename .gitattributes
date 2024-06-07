@@ -20,8 +20,10 @@
 # Tell GitHub to ignore when calculating language stats:
 aclocal.m4 linguist-generated
 config.h.in linguist-generated
+GNUSource.make linguist-language=makefile
 libcheckpoint/Makefile.in linguist-generated
 macsbug/MacsBug_testing.i linguist-language=c
+Special_Versions linguist-language=text
 
 # Gnulib's git-merge-changelog driver:
 ChangeLog    merge=cl-merge

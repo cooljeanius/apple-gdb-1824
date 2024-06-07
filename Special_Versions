@@ -1,9 +1,10 @@
-This file contains a list of past versions of apple-gdb which were the
-last versions to contain certain files. I have tried to copy files from
-these older versions into this distribution when relevant. Feel free to
-add to this list if you are able to narrow down the last appearances of
-other files. (This would be so much easier if Apple would just open up
-their VCS to us... or maybe it is open but just hidden? idk...)
+This is a plaintext file that contains a list of past versions of
+apple-gdb which were the last versions to contain certain files. I have
+tried to copy files from these older versions into this distribution when
+relevant. Feel free to add to this list if you are able to narrow down
+the last appearances of other files. (This would be so much easier if
+Apple would just open up their VCS to us... or maybe it is open but
+just hidden? idk...)
 
 	- 186.1: first version available
 
@@ -59,3 +60,9 @@ gdb-apple releases, which would all fall between gdb-437 and gdb-477:
 	- gdbforcw-5 = gdb-443
 
 	- gdbforcw-6 = gdb-444
+
+Local Variables:
+mode: text
+left-margin: 8
+fill-column: 76
+End:
