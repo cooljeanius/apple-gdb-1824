@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 ACLOCAL_AMFLAGS = -I m4 --install
 
-AUTOMAKE_OPTIONS = 1.11.6 dejagnu foreign std-options no-dist
+AUTOMAKE_OPTIONS = 1.11.6 dejagnu foreign std-options no-dist -Wno-obsolete
 
 SUBDIRS = . doc shlib examples @MAINT@ examples/rlfe.dir
 
@@ -372,7 +372,7 @@ mostlyclean-local: clean-local config.status
 
 distclean-local: clean-local config.status
 	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(AM_V_FLAG) $(MFLAGS) $@ ; fi )
-	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(AM_V_FLAG) $(MFLAGS) $@ ; fi )
+	-( if test -e doc/Makefile; then cd doc && cp $(AM_V_v) Makefile Makefile.bak && $(MAKE) $(AM_V_FLAG) $(MFLAGS) $@ && mv $(AM_V_v) Makefile.bak Makefile; fi )
 	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(AM_V_FLAG) $(MFLAGS) $@ ; fi )
 	-( if test -e examples/rlfe.dir/Makefile && test -x examples/rlfe.dir/config.status; then cd examples/rlfe.dir && cp $(AM_V_v) Makefile Makefile.bak && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ && mv $(AM_V_v) Makefile.bak Makefile; fi )
 	$(RM) $(CREATED_TAGS)
@@ -389,7 +389,7 @@ maintainer-clean-local: distclean-local
 	elif test -e Makefile.in; then $(RM) Makefile.in; fi
 
 CLEANFILES = *~ m4/*~
-DISTCLEANFILES = .DS_Store stamp-h
+DISTCLEANFILES = .DS_Store stamp-h config.cache
 
 info dvi: doc/Makefile
 	-( cd doc && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ )

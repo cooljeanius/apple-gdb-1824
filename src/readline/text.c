@@ -301,8 +301,7 @@ rl_forward_char(int count, int key)
 }
 #else /* !HANDLE_MULTIBYTE */
 int
-rl_forward_char (count, key)
-     int count, key;
+rl_forward_char(int count, int key)
 {
   return (rl_forward_byte (count, key));
 }
@@ -374,8 +373,7 @@ rl_backward_char(int count, int key)
 }
 #else
 int
-rl_backward_char (count, key)
-     int count, key;
+rl_backward_char(int count, int key)
 {
   return (rl_backward_byte (count, key));
 }
@@ -1434,8 +1432,7 @@ _rl_char_search(int count, int fdir, int bdir)
 }
 #else /* !HANDLE_MULTIBYTE */
 static int
-_rl_char_search (count, fdir, bdir)
-     int count, fdir, bdir;
+_rl_char_search(int count, int fdir, int bdir)
 {
   int c;
 

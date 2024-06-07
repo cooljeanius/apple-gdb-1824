@@ -32,6 +32,12 @@
 /* The normal alignment of 'unsigned long long', in bytes. */
 #undef ALIGNOF_UNSIGNED_LONG_LONG
 
+/* Define to 1 if your bison is a new enough version of GNU bison */
+#undef BISON_IS_V3_OR_LATER
+
+/* Version of bison */
+#undef BISON_VERSION
+
 /* Define to 1 if the 'closedir' function returns void instead of int. */
 #undef CLOSEDIR_VOID
 

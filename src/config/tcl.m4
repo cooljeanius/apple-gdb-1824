@@ -2618,6 +2618,7 @@ AC_DEFUN([SC_BUGGY_STRTOD],[
 	AC_MSG_CHECKING([for Solaris2.4/Tru64 strtod bugs])
 	AC_CACHE_VAL([tcl_cv_strtod_buggy],[
 	    AC_RUN_IFELSE([AC_LANG_SOURCE([[
+		#include <stdlib.h>
 		extern double strtod();
 		int main() {
 		    char *infString="Inf", *nanString="NaN", *spaceString=" ";
@@ -2640,7 +2641,7 @@ AC_DEFUN([SC_BUGGY_STRTOD],[
 	if test "$tcl_cv_strtod_buggy" = 1; then
 	    AC_MSG_RESULT([ok])
 	else
-	    AC_MSG_RESULT([buggy])
+	    AC_MSG_RESULT([buggy; redefining as fixstrtod])
 	    LIBOBJS="$LIBOBJS fixstrtod.o"
 	    AC_DEFINE([strtod],[fixstrtod],[Define to fixstrtod if the original strtod is buggy])
 	fi

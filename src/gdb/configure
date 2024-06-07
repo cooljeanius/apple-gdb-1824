@@ -946,6 +946,9 @@ INCLUDE_NEXT
 EXTRA_DEFS
 FCNTL_H_CFLAGS
 PRE_ASPRINTF_LDFLAGS
+PRE_TERMCAP_LDFLAGS
+LD_VERBOSEFLAGS
+PRE_V_LDFLAGS
 zlibinc
 zlibdir
 HAVE_ZLIB_SOURCE
@@ -9164,7 +9167,9 @@ fi
     ;;
 esac
 
-if test "x${host_vendor}" = "xapple" || test "x${host_cpu}" = "xppc"; then
+if test "x${host_vendor}" = "xapple" && test "x${host_cpu}" = "xppc"; then
+  ## FIXME: just because the compiler supports this flag doesn't necessarily mean
+  ## that the linker supports it, too:
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -force_cpusubtype_ALL" >&5
 printf %s "checking whether C compiler accepts -force_cpusubtype_ALL... " >&6; }
 if test ${ax_cv_check_cflags___force_cpusubtype_ALL+y}
@@ -9206,6 +9211,9 @@ else case e in #(
 esac
 fi
   ## might not actually be necessary, but whatever...
+elif test "x${host_vendor}" = "xapple" || test "x${host_cpu}" = "xppc"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: skipping check for compiler support for -force_cpusubtype_ALL flag" >&5
+printf "%s\n" "$as_me: skipping check for compiler support for -force_cpusubtype_ALL flag" >&6;}
 fi
 
 if test "x${acl_cv_wl}" = "x"; then
@@ -12367,14 +12375,30 @@ fi
 else
   test -n "${AR}" && export AR
 fi
-  ## FIXME: ensure portability of sed commands:
-if test -e ./config.cache; then
+  ## WIP: replacing "." with "`pwd`" in an attempt to ensure portability of sed
+  ## commands:
+if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
+  sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" `pwd`/config.cache
+elif test -e ./config.cache; then
   echo "hacking ./config.cache"
-  sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
-  sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ./config.cache
-  sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ./config.cache
-  sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
-  sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
 # By default we simply use the C compiler to build assembly code.
 
@@ -13380,7 +13404,7 @@ else case e in #(
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
   fi
-  rm -rf conftest* ;;
+  rm -f conftest* ;;
 esac
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_nm_interface" >&5
@@ -14957,7 +14981,7 @@ for ac_symprfx in "" "_"; do
   # Check to see that the pipe works correctly.
   pipe_works=no
 
-  rm -rf conftest*
+  rm -f conftest*
   cat > conftest.$ac_ext <<_LT_EOF
 #ifdef __cplusplus
 extern "C" {
@@ -15650,7 +15674,7 @@ else case e in #(
   if $GREP 'Manifest Tool' conftest.out > /dev/null; then
     lt_cv_path_mainfest_tool=yes
   fi
-  rm -rf conftest* ;;
+  rm -f conftest* ;;
 esac
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $lt_cv_path_mainfest_tool" >&5
@@ -16340,6 +16364,21 @@ printf "%s\n" "$lt_cv_ld_force_load" >&6; }
     if test yes = "$lt_cv_apple_cc_single_mod"; then
       _lt_dar_single_mod='$single_module'
     fi
+    _lt_dar_needs_single_mod=no
+    case $host_os in
+    rhapsody* | darwin1.*)
+      _lt_dar_needs_single_mod=yes ;;
+    darwin*)
+      # When targeting Mac OS X 10.4 (darwin 8) or later,
+      # -single_module is the default and -multi_module is unsupported.
+      # The toolchain on macOS 10.14 (darwin 18) and later cannot
+      # target any OS version that needs -single_module.
+      case ${MACOSX_DEPLOYMENT_TARGET-10.0},$host in
+      10.0,*-darwin[567].*|10.[0-3],*-darwin[5-9].*|10.[0-3],*-darwin1[0-7].*)
+        _lt_dar_needs_single_mod=yes ;;
+      esac
+    ;;
+    esac
     if test yes = "$lt_cv_ld_exported_symbols_list"; then
       _lt_dar_export_syms=' $wl-exported_symbols_list,$output_objdir/$libname-symbols.expsym'
     else
@@ -16920,7 +16959,7 @@ ac_outfile=conftest.$ac_objext
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM -r conftest*
+$RM conftest*
 
 ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -16978,7 +17017,7 @@ else case e in #(
        lt_cv_prog_compiler_rtti_exceptions=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -17390,7 +17429,7 @@ else case e in #(
        lt_cv_prog_compiler_pic_works=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -17506,14 +17545,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -17563,14 +17602,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -17586,7 +17625,7 @@ if test no = "$lt_cv_prog_compiler_c_o" && test no != "$need_locks"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 printf %s "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM -r conftest*
+  $RM conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -18923,7 +18962,7 @@ if test ${lt_cv_archive_cmds_need_lc+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
-  e) $RM -r conftest*
+  e) $RM conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -18958,7 +18997,7 @@ else case e in #(
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM -r conftest*
+	$RM conftest*
 	 ;;
 esac
 fi
@@ -21005,7 +21044,7 @@ compiler=$CC
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM -r conftest*
+$RM conftest*
 
   ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -21602,7 +21641,7 @@ fi
     module_cmds_CXX="\$CC \$allow_undefined_flag -o \$lib -bundle \$libobjs \$deplibs \$compiler_flags$_lt_dsymutil"
     archive_expsym_cmds_CXX="$SED 's|^|_|' < \$export_symbols > \$output_objdir/\$libname-symbols.expsym~\$CC -dynamiclib \$allow_undefined_flag -o \$lib \$libobjs \$deplibs \$compiler_flags -install_name \$rpath/\$soname \$verstring $_lt_dar_single_mod$_lt_dar_export_syms$_lt_dsymutil"
     module_expsym_cmds_CXX="$SED -e 's|^|_|' < \$export_symbols > \$output_objdir/\$libname-symbols.expsym~\$CC \$allow_undefined_flag -o \$lib -bundle \$libobjs \$deplibs \$compiler_flags$_lt_dar_export_syms$_lt_dsymutil"
-       if test yes != "$lt_cv_apple_cc_single_mod"; then
+       if test yes = "$_lt_dar_needs_single_mod" -a yes != "$lt_cv_apple_cc_single_mod"; then
       archive_cmds_CXX="\$CC -r -keep_private_externs -nostdlib -o \$lib-master.o \$libobjs~\$CC -dynamiclib \$allow_undefined_flag -o \$lib \$lib-master.o \$deplibs \$compiler_flags -install_name \$rpath/\$soname \$verstring$_lt_dsymutil"
       archive_expsym_cmds_CXX="$SED 's|^|_|' < \$export_symbols > \$output_objdir/\$libname-symbols.expsym~\$CC -r -keep_private_externs -nostdlib -o \$lib-master.o \$libobjs~\$CC -dynamiclib \$allow_undefined_flag -o \$lib \$lib-master.o \$deplibs \$compiler_flags -install_name \$rpath/\$soname \$verstring$_lt_dar_export_syms$_lt_dsymutil"
     fi
@@ -22865,7 +22904,7 @@ else case e in #(
        lt_cv_prog_compiler_pic_works_CXX=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -22972,14 +23011,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -23026,14 +23065,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -23049,7 +23088,7 @@ if test no = "$lt_cv_prog_compiler_c_o_CXX" && test no != "$need_locks"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 printf %s "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM -r conftest*
+  $RM conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -23141,7 +23180,7 @@ if test ${lt_cv_archive_cmds_need_lc_CXX+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
-  e) $RM -r conftest*
+  e) $RM conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -23176,7 +23215,7 @@ else case e in #(
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM -r conftest*
+	$RM conftest*
 	 ;;
 esac
 fi
@@ -24291,7 +24330,7 @@ ac_outfile=conftest.$ac_objext
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM -r conftest*
+$RM conftest*
 
 ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -24370,7 +24409,7 @@ else case e in #(
        lt_cv_prog_compiler_rtti_exceptions=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -24779,7 +24818,7 @@ else case e in #(
        lt_cv_prog_compiler_pic_works_GO=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -24886,14 +24925,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -24940,14 +24979,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -24963,7 +25002,7 @@ if test no = "$lt_cv_prog_compiler_c_o_GO" && test no != "$need_locks"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 printf %s "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM -r conftest*
+  $RM conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -26247,7 +26286,7 @@ if test ${lt_cv_archive_cmds_need_lc_GO+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
-  e) $RM -r conftest*
+  e) $RM conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -26282,7 +26321,7 @@ else case e in #(
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM -r conftest*
+	$RM conftest*
 	 ;;
 esac
 fi
@@ -26558,7 +26597,7 @@ ac_outfile=conftest.$ac_objext
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM -r conftest*
+$RM conftest*
 
 ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -26637,7 +26676,7 @@ else case e in #(
        lt_cv_prog_compiler_rtti_exceptions=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -27046,7 +27085,7 @@ else case e in #(
        lt_cv_prog_compiler_pic_works_GCJ=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -27153,14 +27192,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -27207,14 +27246,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -27230,7 +27269,7 @@ if test no = "$lt_cv_prog_compiler_c_o_GCJ" && test no != "$need_locks"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 printf %s "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM -r conftest*
+  $RM conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -28514,7 +28553,7 @@ if test ${lt_cv_archive_cmds_need_lc_GCJ+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
-  e) $RM -r conftest*
+  e) $RM conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -28549,7 +28588,7 @@ else case e in #(
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM -r conftest*
+	$RM conftest*
 	 ;;
 esac
 fi
@@ -28992,7 +29031,7 @@ compiler=$CC
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM -r conftest*
+$RM conftest*
 
   ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -29452,7 +29491,7 @@ else case e in #(
        lt_cv_prog_compiler_pic_works_F77=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -29559,14 +29598,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -29613,14 +29652,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -29636,7 +29675,7 @@ if test no = "$lt_cv_prog_compiler_c_o_F77" && test no != "$need_locks"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 printf %s "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM -r conftest*
+  $RM conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -30909,7 +30948,7 @@ if test ${lt_cv_archive_cmds_need_lc_F77+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
-  e) $RM -r conftest*
+  e) $RM conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -30944,7 +30983,7 @@ else case e in #(
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM -r conftest*
+	$RM conftest*
 	 ;;
 esac
 fi
@@ -32195,7 +32234,7 @@ compiler=$CC
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM -r conftest*
+$RM conftest*
 
   ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -32802,7 +32841,7 @@ else case e in #(
        lt_cv_prog_compiler_pic_works_FC=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -32909,14 +32948,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -32963,14 +33002,14 @@ else case e in #(
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
  ;;
 esac
 fi
@@ -32986,7 +33025,7 @@ if test no = "$lt_cv_prog_compiler_c_o_FC" && test no != "$need_locks"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 printf %s "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM -r conftest*
+  $RM conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -34259,7 +34298,7 @@ if test ${lt_cv_archive_cmds_need_lc_FC+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
-  e) $RM -r conftest*
+  e) $RM conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -34294,7 +34333,7 @@ else case e in #(
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM -r conftest*
+	$RM conftest*
 	 ;;
 esac
 fi
@@ -35375,7 +35414,7 @@ ac_outfile=conftest.$ac_objext
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM -r conftest*
+$RM conftest*
 
 ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -40130,6 +40169,49 @@ then :
 fi
 
 # For the TUI, we need enhanced curses functionality.
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for linker flag to be more verbose" >&5
+printf %s "checking for linker flag to be more verbose... " >&6; }
+PRE_V_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-v"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  LD_VERBOSEFLAGS="${acl_cv_wl}-v"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LDFLAGS="${PRE_V_LDFLAGS}"
+  ## ...and also:
+if test "x${LD_VERBOSEFLAGS}" != "x"; then
+  test -n "${LD_VERBOSEFLAGS}"
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${LD_VERBOSEFLAGS}" >&5
+printf "%s\n" "${LD_VERBOSEFLAGS}" >&6; }
+  if test "x${WARN_LDFLAGS}" != "x"; then
+    test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_VERBOSEFLAGS}"
+  else
+    test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_VERBOSEFLAGS}"
+  fi
+    ## that should be all we need to do with them for now...
+else
+  test -z "${LD_VERBOSEFLAGS}"
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: none" >&5
+printf "%s\n" "none" >&6; }
+fi
+
+PRE_TERMCAP_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_VERBOSEFLAGS}"
+
 #
 # FIXME: kettenis/20040905: We prefer ncurses over the vendor-supplied
 # curses library because the latter might not provide all the
@@ -40382,11 +40464,13 @@ fi
 
     ;;
   darwin*)
-    test -d ${srcdir}/libtermcap && stat ../libtermcap
+    (test -d ${srcdir}/libtermcap && stat ../libtermcap) || echo "TODO: maybe try bringing libtermcap in-tree?"
     ;;
 esac
 
 if test -d ../readline; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: readline sister directory found; tgetent check will only look for it in the same libraries checked there (termcap, tinfo, curses, and ncurses)" >&5
+printf "%s\n" "$as_me: readline sister directory found; tgetent check will only look for it in the same libraries checked there (termcap, tinfo, curses, and ncurses)" >&6;}
   # Keep these the same as the libraries checked by Readline:
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing tgetent" >&5
 printf %s "checking for library containing tgetent... " >&6; }
@@ -40597,9 +40681,19 @@ fi
       ;;
   esac
 fi
+LDFLAGS="${PRE_TERMCAP_LDFLAGS}"
 
 if test "x${ac_cv_search_tgetent}" = "xno"; then
-  as_fn_error $? "no termcap library found" "$LINENO" 5
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: no termcap library found in the usual places" >&5
+printf "%s\n" "$as_me: WARNING: no termcap library found in the usual places" >&2;}
+  for locateprog in locate glocate mlocate plocate; do
+    if test -x "`which ${locateprog}`"; then
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: using ${locateprog} to look harder for libtermcap..." >&5
+printf "%s\n" "$as_me: using ${locateprog} to look harder for libtermcap..." >&6;}
+      ${locateprog} libtermcap && break
+    fi
+  done
+  as_fn_error $? "please ensure your termcap library is in the proper place and try again" "$LINENO" 5
 fi
 
 # Other misc. libraries that autoscan added to configure.scan, and such:
@@ -53164,10 +53258,10 @@ printf "%s\n" "${with_lzma}" >&6; }
   else
     acl_final_exec_prefix="$exec_prefix"
   fi
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
   eval acl_final_exec_prefix=\"$acl_final_exec_prefix\"
-  prefix="$acl_save_prefix"
+  prefix="$acl_saved_prefix"
 
 
 
@@ -53250,9 +53344,9 @@ else case e in #(
     fi
     if test -n "$ac_prog"; then
       # Search for $ac_prog in $PATH.
-      acl_save_ifs="$IFS"; IFS=$PATH_SEPARATOR
+      acl_saved_IFS="$IFS"; IFS=$PATH_SEPARATOR
       for ac_dir in $PATH; do
-        IFS="$acl_save_ifs"
+        IFS="$acl_saved_IFS"
         test -z "$ac_dir" && ac_dir=.
         if test -f "$ac_dir/$ac_prog" || test -f "$ac_dir/$ac_prog$ac_exeext"; then
           acl_cv_path_LD="$ac_dir/$ac_prog"
@@ -53269,7 +53363,7 @@ else case e in #(
           esac
         fi
       done
-      IFS="$acl_save_ifs"
+      IFS="$acl_saved_IFS"
     fi
     case $host in
       *-*-aix*)
@@ -53403,270 +53497,64 @@ if test ${gl_cv_host_cpu_c_abi_32bit+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
-  e) if test -n "$gl_cv_host_cpu_c_abi"; then
-              case "$gl_cv_host_cpu_c_abi" in
-         i386 | x86_64-x32 | arm | armhf | arm64-ilp32 | hppa | ia64-ilp32 | mips | mipsn32 | powerpc | riscv*-ilp32* | s390 | sparc)
-           gl_cv_host_cpu_c_abi_32bit=yes ;;
-         x86_64 | alpha | arm64 | aarch64c | hppa64 | ia64 | mips64 | powerpc64 | powerpc64-elfv2 | riscv*-lp64* | s390x | sparc64 )
-           gl_cv_host_cpu_c_abi_32bit=no ;;
-         *)
-           gl_cv_host_cpu_c_abi_32bit=unknown ;;
-       esac
-     else
-       case "$host_cpu" in
+  e) case "$host_cpu" in
 
-         # CPUs that only support a 32-bit ABI.
-         arc \
-         | bfin \
-         | cris* \
-         | csky \
-         | epiphany \
-         | ft32 \
-         | h8300 \
-         | m68k \
-         | microblaze | microblazeel \
-         | nds32 | nds32le | nds32be \
-         | nios2 | nios2eb | nios2el \
-         | or1k* \
-         | or32 \
-         | sh | sh1234 | sh1234elb \
-         | tic6x \
-         | xtensa* )
-           gl_cv_host_cpu_c_abi_32bit=yes
-           ;;
+       # CPUs that only support a 32-bit ABI.
+       arc \
+       | bfin \
+       | cris* \
+       | csky \
+       | epiphany \
+       | ft32 \
+       | h8300 \
+       | m68k \
+       | microblaze | microblazeel \
+       | nds32 | nds32le | nds32be \
+       | nios2 | nios2eb | nios2el \
+       | or1k* \
+       | or32 \
+       | sh | sh1234 | sh1234elb \
+       | tic6x \
+       | xtensa* )
+         gl_cv_host_cpu_c_abi_32bit=yes
+         ;;
 
-         # CPUs that only support a 64-bit ABI.
-         alpha | alphaev[4-8] | alphaev56 | alphapca5[67] | alphaev6[78] \
-         | mmix )
-           gl_cv_host_cpu_c_abi_32bit=no
-           ;;
+       # CPUs that only support a 64-bit ABI.
+       alpha | alphaev[4-8] | alphaev56 | alphapca5[67] | alphaev6[78] \
+       | mmix )
+         gl_cv_host_cpu_c_abi_32bit=no
+         ;;
 
-         i[34567]86 )
-           gl_cv_host_cpu_c_abi_32bit=yes
-           ;;
-
-         x86_64 )
-           # On x86_64 systems, the C compiler may be generating code in one of
-           # these ABIs:
-           # - 64-bit instruction set, 64-bit pointers, 64-bit 'long': x86_64.
-           # - 64-bit instruction set, 64-bit pointers, 32-bit 'long': x86_64
-           #   with native Windows (mingw, MSVC).
-           # - 64-bit instruction set, 32-bit pointers, 32-bit 'long': x86_64-x32.
-           # - 32-bit instruction set, 32-bit pointers, 32-bit 'long': i386.
-           cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if (defined __x86_64__ || defined __amd64__ \
-                       || defined _M_X64 || defined _M_AMD64) \
-                      && !(defined __ILP32__ || defined _ILP32)
-                   int ok;
-                  #else
-                   error fail
-                  #endif
-
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"
-then :
-  gl_cv_host_cpu_c_abi_32bit=no
-else case e in #(
-  e) gl_cv_host_cpu_c_abi_32bit=yes ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-           ;;
-
-         arm* | aarch64 | aarch64c )
-           # Assume arm with EABI.
-           # On arm64 systems, the C compiler may be generating code in one of
-           # these ABIs:
-           # - aarch64 instruction set, 64-bit pointers, 64-bit 'long': arm64.
-           # - aarch64 instruction set, 32-bit pointers, 32-bit 'long': arm64-ilp32.
-           # - 32-bit instruction set, 32-bit pointers, 32-bit 'long': arm or armhf.
-           cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined __aarch64__ && !(defined __ILP32__ || defined _ILP32)
-                   int ok;
-                  #else
-                   error fail
-                  #endif
-
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"
-then :
-  gl_cv_host_cpu_c_abi_32bit=no
-else case e in #(
-  e) gl_cv_host_cpu_c_abi_32bit=yes ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-           ;;
-
-         hppa1.0 | hppa1.1 | hppa2.0* | hppa64 )
-           # On hppa, the C compiler may be generating 32-bit code or 64-bit
-           # code. In the latter case, it defines _LP64 and __LP64__.
-           cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#ifdef __LP64__
-                   int ok;
-                  #else
-                   error fail
-                  #endif
-
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"
-then :
-  gl_cv_host_cpu_c_abi_32bit=no
-else case e in #(
-  e) gl_cv_host_cpu_c_abi_32bit=yes ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-           ;;
-
-         ia64* )
-           # On ia64 on HP-UX, the C compiler may be generating 64-bit code or
-           # 32-bit code. In the latter case, it defines _ILP32.
-           cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#ifdef _ILP32
-                   int ok;
-                  #else
-                   error fail
-                  #endif
-
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"
-then :
-  gl_cv_host_cpu_c_abi_32bit=yes
-else case e in #(
-  e) gl_cv_host_cpu_c_abi_32bit=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-           ;;
-
-         mips* )
-           # We should also check for (_MIPS_SZPTR == 64), but gcc keeps this
-           # at 32.
-           cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined _MIPS_SZLONG && (_MIPS_SZLONG == 64)
-                   int ok;
-                  #else
-                   error fail
-                  #endif
-
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"
-then :
-  gl_cv_host_cpu_c_abi_32bit=no
-else case e in #(
-  e) gl_cv_host_cpu_c_abi_32bit=yes ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-           ;;
-
-         powerpc* )
-           # Different ABIs are in use on AIX vs. Mac OS X vs. Linux,*BSD.
-           # No need to distinguish them here; the caller may distinguish
-           # them based on the OS.
-           # On powerpc64 systems, the C compiler may still be generating
-           # 32-bit code. And on powerpc-ibm-aix systems, the C compiler may
-           # be generating 64-bit code.
-           cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined __powerpc64__ || defined __LP64__
-                   int ok;
-                  #else
-                   error fail
-                  #endif
-
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"
-then :
-  gl_cv_host_cpu_c_abi_32bit=no
-else case e in #(
-  e) gl_cv_host_cpu_c_abi_32bit=yes ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-           ;;
-
-         rs6000 )
-           gl_cv_host_cpu_c_abi_32bit=yes
-           ;;
-
-         riscv32 | riscv64 )
-           # There are 6 ABIs: ilp32, ilp32f, ilp32d, lp64, lp64f, lp64d.
-           # Size of 'long' and 'void *':
-           cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined __LP64__
-                    int ok;
-                  #else
-                    error fail
-                  #endif
-
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"
-then :
-  gl_cv_host_cpu_c_abi_32bit=no
-else case e in #(
-  e) gl_cv_host_cpu_c_abi_32bit=yes ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-           ;;
-
-         s390* )
-           # On s390x, the C compiler may be generating 64-bit (= s390x) code
-           # or 31-bit (= s390) code.
-           cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined __LP64__ || defined __s390x__
-                    int ok;
-                  #else
-                    error fail
-                  #endif
-
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"
-then :
-  gl_cv_host_cpu_c_abi_32bit=no
-else case e in #(
-  e) gl_cv_host_cpu_c_abi_32bit=yes ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-           ;;
-
-         sparc | sparc64 )
-           # UltraSPARCs running Linux have `uname -m` = "sparc64", but the
-           # C compiler still generates 32-bit code.
-           cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined __sparcv9 || defined __arch64__
-                   int ok;
-                  #else
-                   error fail
-                  #endif
-
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"
-then :
-  gl_cv_host_cpu_c_abi_32bit=no
-else case e in #(
-  e) gl_cv_host_cpu_c_abi_32bit=yes ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-           ;;
-
-         *)
+       *)
+         if test -n "$gl_cv_host_cpu_c_abi"; then
+                      case "$gl_cv_host_cpu_c_abi" in
+             i386 | x86_64-x32 | arm | armhf | arm64-ilp32 | hppa | ia64-ilp32 | mips | mipsn32 | powerpc | riscv*-ilp32* | s390 | sparc)
+               gl_cv_host_cpu_c_abi_32bit=yes ;;
+             x86_64 | alpha | arm64 | aarch64c | hppa64 | ia64 | mips64 | powerpc64 | powerpc64-elfv2 | riscv*-lp64* | s390x | sparc64 )
+               gl_cv_host_cpu_c_abi_32bit=no ;;
+             *)
+               gl_cv_host_cpu_c_abi_32bit=unknown ;;
+           esac
+         else
            gl_cv_host_cpu_c_abi_32bit=unknown
-           ;;
-       esac
-     fi
+         fi
+         if test $gl_cv_host_cpu_c_abi_32bit = unknown; then
+           cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+int test_pointer_size[sizeof (void *) - 5];
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  gl_cv_host_cpu_c_abi_32bit=no
+else case e in #(
+  e) gl_cv_host_cpu_c_abi_32bit=yes ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+         fi
+         ;;
+     esac
      ;;
 esac
 fi
@@ -53776,6 +53664,13 @@ else case e in #(
            esac
          fi
          ;;
+       netbsd*)
+                           if test $HOST_CPU_C_ABI_32BIT != no; then
+           case "$host_cpu" in
+             sparc*) acl_libdirstem2=lib/sparc ;;
+           esac
+         fi
+         ;;
        *)
                                                                                  searchpath=`(LC_ALL=C $CC $CPPFLAGS $CFLAGS -print-search-dirs) 2>/dev/null \
                      | sed -n -e 's,^libraries: ,,p' | sed -e 's,^=,,'`
@@ -53792,7 +53687,7 @@ else case e in #(
            fi
          fi
          if test -n "$searchpath"; then
-           acl_save_IFS="${IFS= 	}"; IFS=":"
+           acl_saved_IFS="${IFS= 	}"; IFS=":"
            for searchdir in $searchpath; do
              if test -d "$searchdir"; then
                case "$searchdir" in
@@ -53809,7 +53704,7 @@ else case e in #(
                esac
              fi
            done
-           IFS="$acl_save_IFS"
+           IFS="$acl_saved_IFS"
            if test $HOST_CPU_C_ABI_32BIT = yes; then
              # 32-bit ABI.
              acl_libdirstem3=
@@ -53847,9 +53742,9 @@ printf "%s\n" "$acl_cv_libdirstems" >&6; }
 
     use_additional=yes
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
 
     eval additional_includedir=\"$includedir\"
@@ -53857,8 +53752,8 @@ printf "%s\n" "$acl_cv_libdirstems" >&6; }
     eval additional_libdir2=\"$exec_prefix/$acl_libdirstem2\"
     eval additional_libdir3=\"$exec_prefix/$acl_libdirstem3\"
 
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
 
 # Check whether --with-liblzma-prefix was given.
@@ -53870,9 +53765,9 @@ then :
     else
       if test "X$withval" = "X"; then
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
 
           eval additional_includedir=\"$includedir\"
@@ -53880,8 +53775,8 @@ then :
           eval additional_libdir2=\"$exec_prefix/$acl_libdirstem2\"
           eval additional_libdir3=\"$exec_prefix/$acl_libdirstem3\"
 
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
       else
         additional_includedir="$withval/include"
@@ -53993,13 +53888,13 @@ fi
           if test "X$found_dir" = "X"; then
             for x in $LDFLAGS $LTLIBLZMA; do
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
   eval x=\"$x\"
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
               case "$x" in
                 -L*)
@@ -54087,13 +53982,13 @@ fi
                                                                                 haveit=
                     for x in $LDFLAGS $LIBLZMA; do
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
   eval x=\"$x\"
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
                       if test "X$x" = "X-L$found_dir"; then
                         haveit=yes
@@ -54155,13 +54050,13 @@ fi
                 if test -z "$haveit"; then
                   for x in $CPPFLAGS $INCLZMA; do
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
   eval x=\"$x\"
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
                     if test "X$x" = "X-I$additional_includedir"; then
                       haveit=yes
@@ -54177,12 +54072,12 @@ fi
               fi
             fi
                         if test -n "$found_la"; then
-                                                        save_libdir="$libdir"
+                                                        saved_libdir="$libdir"
               case "$found_la" in
                 */* | *\\*) . "$found_la" ;;
                 *) . "./$found_la" ;;
               esac
-              libdir="$save_libdir"
+              libdir="$saved_libdir"
                             for dep in $dependency_libs; do
                 case "$dep" in
                   -L*)
@@ -54204,13 +54099,13 @@ fi
                         haveit=
                         for x in $LDFLAGS $LIBLZMA; do
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
   eval x=\"$x\"
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
                           if test "X$x" = "X-L$dependency_libdir"; then
                             haveit=yes
@@ -54225,13 +54120,13 @@ fi
                         haveit=
                         for x in $LDFLAGS $LTLIBLZMA; do
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
   eval x=\"$x\"
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
                           if test "X$x" = "X-L$dependency_libdir"; then
                             haveit=yes
@@ -54305,17 +54200,17 @@ fi
       for found_dir in $rpathdirs; do
         alldirs="${alldirs}${alldirs:+$acl_hardcode_libdir_separator}$found_dir"
       done
-            acl_save_libdir="$libdir"
+            acl_saved_libdir="$libdir"
       libdir="$alldirs"
       eval flag=\"$acl_hardcode_libdir_flag_spec\"
-      libdir="$acl_save_libdir"
+      libdir="$acl_saved_libdir"
       LIBLZMA="${LIBLZMA}${LIBLZMA:+ }$flag"
     else
             for found_dir in $rpathdirs; do
-        acl_save_libdir="$libdir"
+        acl_saved_libdir="$libdir"
         libdir="$found_dir"
         eval flag=\"$acl_hardcode_libdir_flag_spec\"
-        libdir="$acl_save_libdir"
+        libdir="$acl_saved_libdir"
         LIBLZMA="${LIBLZMA}${LIBLZMA:+ }$flag"
       done
     fi
@@ -54331,19 +54226,19 @@ fi
 
 
 
-        ac_save_CPPFLAGS="$CPPFLAGS"
+        acl_saved_CPPFLAGS="$CPPFLAGS"
 
   for element in $INCLZMA; do
     haveit=
     for x in $CPPFLAGS; do
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
   eval x=\"$x\"
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
       if test "X$x" = "X$element"; then
         haveit=yes
@@ -54363,7 +54258,7 @@ then :
   printf %s "(cached) " >&6
 else case e in #(
   e)
-    ac_save_LIBS="$LIBS"
+    acl_saved_LIBS="$LIBS"
                                 case " $LIBLZMA" in
       *" -l"*) LIBS="$LIBS $LIBLZMA" ;;
       *)       LIBS="$LIBLZMA $LIBS" ;;
@@ -54390,7 +54285,7 @@ esac
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam \
     conftest$ac_exeext conftest.$ac_ext
-    LIBS="$ac_save_LIBS"
+    LIBS="$acl_saved_LIBS"
    ;;
 esac
 fi
@@ -54407,7 +54302,7 @@ printf %s "checking how to link with liblzma... " >&6; }
 printf "%s\n" "$LIBLZMA" >&6; }
   else
     HAVE_LIBLZMA=no
-            CPPFLAGS="$ac_save_CPPFLAGS"
+            CPPFLAGS="$acl_saved_CPPFLAGS"
     LIBLZMA=
     LTLIBLZMA=
     LIBLZMA_PREFIX=
@@ -56376,9 +56271,9 @@ else
 
     use_additional=yes
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
 
     eval additional_includedir=\"$includedir\"
@@ -56386,8 +56281,8 @@ else
     eval additional_libdir2=\"$exec_prefix/$acl_libdirstem2\"
     eval additional_libdir3=\"$exec_prefix/$acl_libdirstem3\"
 
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
 
 # Check whether --with-libbabeltrace-prefix was given.
@@ -56399,9 +56294,9 @@ then :
     else
       if test "X$withval" = "X"; then
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
 
           eval additional_includedir=\"$includedir\"
@@ -56409,8 +56304,8 @@ then :
           eval additional_libdir2=\"$exec_prefix/$acl_libdirstem2\"
           eval additional_libdir3=\"$exec_prefix/$acl_libdirstem3\"
 
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
       else
         additional_includedir="$withval/include"
@@ -56522,13 +56417,13 @@ fi
           if test "X$found_dir" = "X"; then
             for x in $LDFLAGS $LTLIBBABELTRACE; do
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
   eval x=\"$x\"
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
               case "$x" in
                 -L*)
@@ -56616,13 +56511,13 @@ fi
                                                                                 haveit=
                     for x in $LDFLAGS $LIBBABELTRACE; do
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
   eval x=\"$x\"
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
                       if test "X$x" = "X-L$found_dir"; then
                         haveit=yes
@@ -56684,13 +56579,13 @@ fi
                 if test -z "$haveit"; then
                   for x in $CPPFLAGS $INCBABELTRACE; do
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
   eval x=\"$x\"
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
                     if test "X$x" = "X-I$additional_includedir"; then
                       haveit=yes
@@ -56706,12 +56601,12 @@ fi
               fi
             fi
                         if test -n "$found_la"; then
-                                                        save_libdir="$libdir"
+                                                        saved_libdir="$libdir"
               case "$found_la" in
                 */* | *\\*) . "$found_la" ;;
                 *) . "./$found_la" ;;
               esac
-              libdir="$save_libdir"
+              libdir="$saved_libdir"
                             for dep in $dependency_libs; do
                 case "$dep" in
                   -L*)
@@ -56733,13 +56628,13 @@ fi
                         haveit=
                         for x in $LDFLAGS $LIBBABELTRACE; do
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
   eval x=\"$x\"
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
                           if test "X$x" = "X-L$dependency_libdir"; then
                             haveit=yes
@@ -56754,13 +56649,13 @@ fi
                         haveit=
                         for x in $LDFLAGS $LTLIBBABELTRACE; do
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
   eval x=\"$x\"
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
                           if test "X$x" = "X-L$dependency_libdir"; then
                             haveit=yes
@@ -56834,17 +56729,17 @@ fi
       for found_dir in $rpathdirs; do
         alldirs="${alldirs}${alldirs:+$acl_hardcode_libdir_separator}$found_dir"
       done
-            acl_save_libdir="$libdir"
+            acl_saved_libdir="$libdir"
       libdir="$alldirs"
       eval flag=\"$acl_hardcode_libdir_flag_spec\"
-      libdir="$acl_save_libdir"
+      libdir="$acl_saved_libdir"
       LIBBABELTRACE="${LIBBABELTRACE}${LIBBABELTRACE:+ }$flag"
     else
             for found_dir in $rpathdirs; do
-        acl_save_libdir="$libdir"
+        acl_saved_libdir="$libdir"
         libdir="$found_dir"
         eval flag=\"$acl_hardcode_libdir_flag_spec\"
-        libdir="$acl_save_libdir"
+        libdir="$acl_saved_libdir"
         LIBBABELTRACE="${LIBBABELTRACE}${LIBBABELTRACE:+ }$flag"
       done
     fi
@@ -56860,19 +56755,19 @@ fi
 
 
 
-        ac_save_CPPFLAGS="$CPPFLAGS"
+        acl_saved_CPPFLAGS="$CPPFLAGS"
 
   for element in $INCBABELTRACE; do
     haveit=
     for x in $CPPFLAGS; do
 
-  acl_save_prefix="$prefix"
+  acl_saved_prefix="$prefix"
   prefix="$acl_final_prefix"
-  acl_save_exec_prefix="$exec_prefix"
+  acl_saved_exec_prefix="$exec_prefix"
   exec_prefix="$acl_final_exec_prefix"
   eval x=\"$x\"
-  exec_prefix="$acl_save_exec_prefix"
-  prefix="$acl_save_prefix"
+  exec_prefix="$acl_saved_exec_prefix"
+  prefix="$acl_saved_prefix"
 
       if test "X$x" = "X$element"; then
         haveit=yes
@@ -56892,7 +56787,7 @@ then :
   printf %s "(cached) " >&6
 else case e in #(
   e)
-    ac_save_LIBS="$LIBS"
+    acl_saved_LIBS="$LIBS"
                                 case " $LIBBABELTRACE" in
       *" -l"*) LIBS="$LIBS $LIBBABELTRACE" ;;
       *)       LIBS="$LIBBABELTRACE $LIBS" ;;
@@ -56930,7 +56825,7 @@ esac
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam \
     conftest$ac_exeext conftest.$ac_ext
-    LIBS="$ac_save_LIBS"
+    LIBS="$acl_saved_LIBS"
    ;;
 esac
 fi
@@ -56947,7 +56842,7 @@ printf %s "checking how to link with libbabeltrace... " >&6; }
 printf "%s\n" "$LIBBABELTRACE" >&6; }
   else
     HAVE_LIBBABELTRACE=no
-            CPPFLAGS="$ac_save_CPPFLAGS"
+            CPPFLAGS="$acl_saved_CPPFLAGS"
     LIBBABELTRACE=
     LTLIBBABELTRACE=
     LIBBABELTRACE_PREFIX=

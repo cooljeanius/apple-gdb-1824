@@ -648,6 +648,7 @@ WRITEPATH
 LIBOBJS
 LD_ARCHFLAGS
 AWK
+SET_MAKE
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
@@ -672,6 +673,7 @@ build_os
 build_vendor
 build_cpu
 build
+INCDIR
 VERSION
 target_alias
 host_alias
@@ -1570,6 +1572,41 @@ fi
 
 } # ac_fn_c_try_link
 
+# ac_fn_c_check_header_compile LINENO HEADER VAR INCLUDES
+# -------------------------------------------------------
+# Tests whether HEADER exists and can be compiled using the include files in
+# INCLUDES, setting the cache variable VAR accordingly.
+ac_fn_c_check_header_compile ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $2" >&5
+printf %s "checking for $2... " >&6; }
+if eval test \${$3+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+#include <$2>
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  eval "$3=yes"
+else case e in #(
+  e) eval "$3=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
+esac
+fi
+eval ac_res=\$$3
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_check_header_compile
+
 # ac_fn_c_try_run LINENO
 # ----------------------
 # Try to run conftest.$ac_ext, and return whether this succeeded. Assumes that
@@ -1613,41 +1650,6 @@ fi
   as_fn_set_status $ac_retval
 
 } # ac_fn_c_try_run
-
-# ac_fn_c_check_header_compile LINENO HEADER VAR INCLUDES
-# -------------------------------------------------------
-# Tests whether HEADER exists and can be compiled using the include files in
-# INCLUDES, setting the cache variable VAR accordingly.
-ac_fn_c_check_header_compile ()
-{
-  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $2" >&5
-printf %s "checking for $2... " >&6; }
-if eval test \${$3+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-$4
-#include <$2>
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"
-then :
-  eval "$3=yes"
-else case e in #(
-  e) eval "$3=no" ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
-esac
-fi
-eval ac_res=\$$3
-	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-printf "%s\n" "$ac_res" >&6; }
-  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
-
-} # ac_fn_c_check_header_compile
 
 # ac_fn_c_check_type LINENO TYPE VAR INCLUDES
 # -------------------------------------------
@@ -2517,6 +2519,8 @@ as_fn_append ac_header_c_list " strings.h strings_h HAVE_STRINGS_H"
 as_fn_append ac_header_c_list " sys/stat.h sys_stat_h HAVE_SYS_STAT_H"
 as_fn_append ac_header_c_list " sys/types.h sys_types_h HAVE_SYS_TYPES_H"
 as_fn_append ac_header_c_list " unistd.h unistd_h HAVE_UNISTD_H"
+as_fn_append ac_header_c_list " wchar.h wchar_h HAVE_WCHAR_H"
+as_fn_append ac_header_c_list " minix/config.h minix_config_h HAVE_MINIX_CONFIG_H"
 as_fn_append ac_header_c_list " vfork.h vfork_h HAVE_VFORK_H"
 as_fn_append ac_func_c_list " fork HAVE_FORK"
 as_fn_append ac_func_c_list " vfork HAVE_VFORK"
@@ -2692,6 +2696,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 ac_config_headers="$ac_config_headers config.h"
 
 VERSION=0.4
+
+
 
 
 
@@ -4154,6 +4160,39 @@ test -z "$INSTALL_SCRIPT" && INSTALL_SCRIPT='${INSTALL}'
 
 test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${MAKE-make} sets \$(MAKE)" >&5
+printf %s "checking whether ${MAKE-make} sets \$(MAKE)... " >&6; }
+set x ${MAKE-make}
+ac_make=`printf "%s\n" "$2" | sed 's/+/p/g; s/[^a-zA-Z0-9_]/_/g'`
+if eval test \${ac_cv_prog_make_${ac_make}_set+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) cat >conftest.make <<\_ACEOF
+SHELL = /bin/sh
+all:
+	@echo '@@@%%%=$(MAKE)=@@@%%%'
+_ACEOF
+# GNU make sometimes prints "make[1]: Entering ...", which would confuse us.
+case `${MAKE-make} -f conftest.make 2>/dev/null` in
+  *@@@%%%=?*=@@@%%%*)
+    eval ac_cv_prog_make_${ac_make}_set=yes;;
+  *)
+    eval ac_cv_prog_make_${ac_make}_set=no;;
+esac
+rm -f conftest.make ;;
+esac
+fi
+if eval test \$ac_cv_prog_make_${ac_make}_set = yes; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+  SET_MAKE=
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+  SET_MAKE="MAKE=${MAKE-make}"
+fi
+
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing strerror" >&5
 printf %s "checking for library containing strerror... " >&6; }
@@ -4221,6 +4260,184 @@ then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
+
+ac_header= ac_cache=
+for ac_item in $ac_header_c_list
+do
+  if test $ac_cache; then
+    ac_fn_c_check_header_compile "$LINENO" $ac_header ac_cv_header_$ac_cache "$ac_includes_default"
+    if eval test \"x\$ac_cv_header_$ac_cache\" = xyes; then
+      printf "%s\n" "#define $ac_item 1" >> confdefs.h
+    fi
+    ac_header= ac_cache=
+  elif test $ac_header; then
+    ac_cache=$ac_item
+  else
+    ac_header=$ac_item
+  fi
+done
+
+
+
+
+
+
+
+
+if test $ac_cv_header_stdlib_h = yes && test $ac_cv_header_string_h = yes
+then :
+
+printf "%s\n" "#define STDC_HEADERS 1" >>confdefs.h
+
+fi
+
+
+
+
+
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether it is safe to define __EXTENSIONS__" >&5
+printf %s "checking whether it is safe to define __EXTENSIONS__... " >&6; }
+if test ${ac_cv_safe_to_define___extensions__+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#         define __EXTENSIONS__ 1
+          $ac_includes_default
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  ac_cv_safe_to_define___extensions__=yes
+else case e in #(
+  e) ac_cv_safe_to_define___extensions__=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_safe_to_define___extensions__" >&5
+printf "%s\n" "$ac_cv_safe_to_define___extensions__" >&6; }
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether _XOPEN_SOURCE should be defined" >&5
+printf %s "checking whether _XOPEN_SOURCE should be defined... " >&6; }
+if test ${ac_cv_should_define__xopen_source+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_cv_should_define__xopen_source=no
+    if test $ac_cv_header_wchar_h = yes
+then :
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+          #include <wchar.h>
+          mbstate_t x;
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+            #define _XOPEN_SOURCE 500
+            #include <wchar.h>
+            mbstate_t x;
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  ac_cv_should_define__xopen_source=yes
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_should_define__xopen_source" >&5
+printf "%s\n" "$ac_cv_should_define__xopen_source" >&6; }
+
+  printf "%s\n" "#define _ALL_SOURCE 1" >>confdefs.h
+
+  printf "%s\n" "#define _DARWIN_C_SOURCE 1" >>confdefs.h
+
+  printf "%s\n" "#define _GNU_SOURCE 1" >>confdefs.h
+
+  printf "%s\n" "#define _HPUX_ALT_XOPEN_SOCKET_API 1" >>confdefs.h
+
+  printf "%s\n" "#define _NETBSD_SOURCE 1" >>confdefs.h
+
+  printf "%s\n" "#define _OPENBSD_SOURCE 1" >>confdefs.h
+
+  printf "%s\n" "#define _POSIX_PTHREAD_SEMANTICS 1" >>confdefs.h
+
+  printf "%s\n" "#define __STDC_WANT_IEC_60559_ATTRIBS_EXT__ 1" >>confdefs.h
+
+  printf "%s\n" "#define __STDC_WANT_IEC_60559_BFP_EXT__ 1" >>confdefs.h
+
+  printf "%s\n" "#define __STDC_WANT_IEC_60559_DFP_EXT__ 1" >>confdefs.h
+
+  printf "%s\n" "#define __STDC_WANT_IEC_60559_EXT__ 1" >>confdefs.h
+
+  printf "%s\n" "#define __STDC_WANT_IEC_60559_FUNCS_EXT__ 1" >>confdefs.h
+
+  printf "%s\n" "#define __STDC_WANT_IEC_60559_TYPES_EXT__ 1" >>confdefs.h
+
+  printf "%s\n" "#define __STDC_WANT_LIB_EXT2__ 1" >>confdefs.h
+
+  printf "%s\n" "#define __STDC_WANT_MATH_SPEC_FUNCS__ 1" >>confdefs.h
+
+  printf "%s\n" "#define _TANDEM_SOURCE 1" >>confdefs.h
+
+  if test $ac_cv_header_minix_config_h = yes
+then :
+  MINIX=yes
+    printf "%s\n" "#define _MINIX 1" >>confdefs.h
+
+    printf "%s\n" "#define _POSIX_SOURCE 1" >>confdefs.h
+
+    printf "%s\n" "#define _POSIX_1_SOURCE 2" >>confdefs.h
+
+else case e in #(
+  e) MINIX= ;;
+esac
+fi
+  if test $ac_cv_safe_to_define___extensions__ = yes
+then :
+  printf "%s\n" "#define __EXTENSIONS__ 1" >>confdefs.h
+
+fi
+  if test $ac_cv_should_define__xopen_source = yes
+then :
+  printf "%s\n" "#define _XOPEN_SOURCE 500" >>confdefs.h
+
+fi
+
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if your ${CC} actually works" >&5
 printf "%s\n" "$as_me: checking if your ${CC} actually works" >&6;}
@@ -4562,35 +4779,6 @@ fi
 LDFLAGS="${ARCHLESS_LDFLAGS}"
 
 # Checks for header files.
-ac_header= ac_cache=
-for ac_item in $ac_header_c_list
-do
-  if test $ac_cache; then
-    ac_fn_c_check_header_compile "$LINENO" $ac_header ac_cv_header_$ac_cache "$ac_includes_default"
-    if eval test \"x\$ac_cv_header_$ac_cache\" = xyes; then
-      printf "%s\n" "#define $ac_item 1" >> confdefs.h
-    fi
-    ac_header= ac_cache=
-  elif test $ac_header; then
-    ac_cache=$ac_item
-  else
-    ac_header=$ac_item
-  fi
-done
-
-
-
-
-
-
-
-
-if test $ac_cv_header_stdlib_h = yes && test $ac_cv_header_string_h = yes
-then :
-
-printf "%s\n" "#define STDC_HEADERS 1" >>confdefs.h
-
-fi
 
 ac_fn_c_check_header_compile "$LINENO" "sys/mkdev.h" "ac_cv_header_sys_mkdev_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_mkdev_h" = xyes
@@ -5158,6 +5346,26 @@ printf "%s\n" "#define HAVE_STRUCT_STAT_ST_RDEV 1" >>confdefs.h
 
 fi
 
+
+ac_fn_c_check_func "$LINENO" "seteuid" "ac_cv_func_seteuid"
+if test "x$ac_cv_func_seteuid" = xyes
+then :
+  printf "%s\n" "#define HAVE_SETEUID 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "setreuid" "ac_cv_func_setreuid"
+if test "x$ac_cv_func_setreuid" = xyes
+then :
+  printf "%s\n" "#define HAVE_SETREUID 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "_exit" "ac_cv_func__exit"
+if test "x$ac_cv_func__exit" = xyes
+then :
+  printf "%s\n" "#define HAVE__EXIT 1" >>confdefs.h
+
+fi
+
 # Checks for library functions.
 if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
   export ac_cv_func_chown_works=yes
@@ -5672,6 +5880,12 @@ then :
   printf "%s\n" "#define HAVE_EXIT 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "getcwd" "ac_cv_func_getcwd"
+if test "x$ac_cv_func_getcwd" = xyes
+then :
+  printf "%s\n" "#define HAVE_GETCWD 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "memcpy" "ac_cv_func_memcpy"
 if test "x$ac_cv_func_memcpy" = xyes
 then :
@@ -5720,10 +5934,47 @@ then :
   printf "%s\n" "#define HAVE_STRCMP 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "strerror" "ac_cv_func_strerror"
+if test "x$ac_cv_func_strerror" = xyes
+then :
+  printf "%s\n" "#define HAVE_STRERROR 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "strftime" "ac_cv_func_strftime"
+if test "x$ac_cv_func_strftime" = xyes
+then :
+  printf "%s\n" "#define HAVE_STRFTIME 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "system" "ac_cv_func_system"
 if test "x$ac_cv_func_system" = xyes
 then :
   printf "%s\n" "#define HAVE_SYSTEM 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "utimes" "ac_cv_func_utimes"
+if test "x$ac_cv_func_utimes" = xyes
+then :
+  printf "%s\n" "#define HAVE_UTIMES 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "xsignal" "ac_cv_func_xsignal"
+if test "x$ac_cv_func_xsignal" = xyes
+then :
+  printf "%s\n" "#define HAVE_XSIGNAL 1" >>confdefs.h
+
+fi
+
+ac_fn_c_check_func "$LINENO" "setlocale" "ac_cv_func_setlocale"
+if test "x$ac_cv_func_setlocale" = xyes
+then :
+  printf "%s\n" "#define HAVE_SETLOCALE 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "nl_langinfo" "ac_cv_func_nl_langinfo"
+if test "x$ac_cv_func_nl_langinfo" = xyes
+then :
+  printf "%s\n" "#define HAVE_NL_LANGINFO 1" >>confdefs.h
 
 fi
 
@@ -5921,8 +6172,53 @@ fi
 rm -rf conftest*
 
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for POSIX" >&5
+printf %s "checking for POSIX... " >&6; }
+if test "$cross_compiling" = yes
+then :
+  posix=yes
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <unistd.h>
+#include <stdlib.h>
+
+int
+main()
+{
+#ifdef _POSIX_VERSION
+  return (0);
+#else
+  return (1);
+#endif /* _POSIX_VERSION */
+}
+
+_ACEOF
+if ac_fn_c_try_run "$LINENO"
+then :
+  posix=yes
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
+esac
+fi
+
+if test -n "${posix}" && test "x${posix}" = "xyes"; then
+
+printf "%s\n" "#define POSIX 1" >>confdefs.h
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking select..." >&5
 printf "%s\n" "$as_me: checking select..." >&6;}
+## (relevant header was already checked above)
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -5999,7 +6295,7 @@ else case e in #(
 #include <unistd.h>
 #include <string.h>
 
-#line 225 "configure.ac"
+#line 265 "configure.ac"
 
 char *nam = "/tmp/conftest$$";
 
@@ -6880,12 +7176,24 @@ fi
 
 sleep 1
 
-if test -n "${posix}"; then
+if test -n "${posix}" && test "x${posix}" = "xyes"; then
     echo "assuming posix signal definition" 1>&6
 
 
 printf "%s\n" "#define SIGVOID 1" >>confdefs.h
-  ## nothing else to do here...
+
+printf "%s\n" "#define HAVE_POSIX_SIGNALS 1" >>confdefs.h
+
+  ac_fn_check_decl "$LINENO" "xsignal" "ac_cv_have_decl_xsignal" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_xsignal" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_XSIGNAL $ac_have_decl" >>confdefs.h
+
 else
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking return type of signal handlers..." >&5

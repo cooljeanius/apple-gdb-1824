@@ -1,6 +1,6 @@
 tmp-*
 site.exp
-site.bak
+*.bak
 *.sum
 *.log
 TAGS

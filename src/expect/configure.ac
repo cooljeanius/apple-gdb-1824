@@ -63,13 +63,22 @@ AC_CONFIG_HEADERS([expect_cf.h])dnl
 
 AC_PROG_SED
 
-if test -e ./config.cache; then
-	sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
-	sed -i "s|ac_cv_prog_CC|bad_CC|g" ./config.cache
-	sed -i "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
-	sed -i "s|ac_cv_env_build_alias|bad_build_alias|g" ./config.cache
-	sed -i "s|ac_cv_env_host_alias|bad_host_alias|g" ./config.cache
-	sed -i "s|ac_cv_env_target_alias|bad_target_alias|g" ./config.cache
+if test -e `pwd`/config.cache; then
+  sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CC|bad_CC|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_build_alias|bad_build_alias|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_host_alias|bad_host_alias|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_target_alias|bad_target_alias|g" `pwd`/config.cache
+elif test -e ./config.cache; then
+  sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CC|bad_CC|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_build_alias|bad_build_alias|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_host_alias|bad_host_alias|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_target_alias|bad_target_alias|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
 
 # /bin/sh on some systems is too deficient (in particular, Ultrix 4.3

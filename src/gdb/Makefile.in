@@ -2032,16 +2032,19 @@ subdir_do: force
 	   if [ -f ./$${i}/Makefile -a -f ./$${i}/import/Makefile ]; then \
 	     if (cd ./$${i}; \
 	       $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) $(DO)); then \
-	       echo "'$@' succeeded for '$${i}'"; \
-	     else echo "gdb/Makefile: '$@' failed for '$${i}'" >&2; exit 1; fi; \
+	       echo "'$@' ($(DO)) succeeded for '$${i}'"; \
+	     else \
+	       echo "gdb/Makefile: '$@' ($(DO)) failed for '$${i}'" >&2; \
+	       exit 1; \
+	     fi; \
 	   else echo "at least one Makefile missing for '$${i}'"; fi; \
 	  else \
 	    if [ -f ./$${i}/Makefile ]; then \
 	      if (cd ./$${i}; \
 	        $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) $(DO)); then \
-	        echo "'$@' succeeded for '$${i}'"; \
+	        echo "'$@' ($(DO)) succeeded for '$${i}'"; \
 	      else \
-	        echo "gdb/Makefile: '$@' failed for '$${i}'" >&2; \
+	        echo "gdb/Makefile: '$@' ($(DO)) failed for '$${i}'" >&2; \
 	        exit 1; \
 	      fi; \
 	    else echo "no Makefile for '$${i}'"; fi; \

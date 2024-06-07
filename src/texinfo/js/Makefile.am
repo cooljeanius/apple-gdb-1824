@@ -18,34 +18,41 @@
 
 
 phony =
+checktargs =
 
 if HAVE_ESLINT
 phony += lint
-lint:
+checktargs += lint
+lint: build-aux/eslint.json info.js
 	$(ESLINT) -c build-aux/eslint.json info.js -f unix
 endif
 
 if HAVE_TYPESCRIPT
 phony += check-types
-check-types:
-	$(TSC) --allowJs --checkJS --noEmit --lib dom,es2017 info.js
+checktargs += @MAINT@ check-types
+check-types: info.js
+	$(TSC) --allowJs --checkJS --noEmit --lib dom,es2017 info.js || \
+	  (stat info.js && sync && wc -l info.js && sync && du info.js)
 endif
 
 if HAVE_UGLIFYJS
 phony += minify
-minify:
+checktargs += minify
+minify: info.js
 	$(UGLIFYJS) info.js -o info.min.js --mangle --compress
 endif
 
 if HAVE_MODERNIZR
 phony += modernizr
-modernizr:
+checktargs += modernizr
+modernizr: build-aux/modernizr.json
 	$(MODERNIZR) -c build-aux/modernizr.json
 endif
 
 .PHONY: $(phony)
-EXTRA_DIST =
+check-local: $(checktargs)
 
+EXTRA_DIST =
 
 jsdir=$(pkgdatadir)/js
 

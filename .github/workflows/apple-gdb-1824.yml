@@ -43,11 +43,11 @@ jobs:
     - run: (time (pwd && sync && ls && sync && stat . && sync)) && sleep 1 && echo "done"
       if: "${{ success() }}"
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.3.2
+      uses: actions/upload-artifact@v4.3.3
       if: "${{ success() }}"
       with:
         # Artifact name
-        name: apple-gdb-1824-${{ matrix.compiler }}-logfiles
+        name: apple-gdb-1824-${{ matrix.compiler }}-logfiles-${{ github.sha }}
         # A file, directory or wildcard pattern that describes what to upload
         path: |
             **/*.log

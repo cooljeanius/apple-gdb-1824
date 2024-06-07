@@ -43,6 +43,7 @@ libiberty.info*
 libiberty.html
 *.framework
 libtoolT
+*.bak
 
 # Besides being built as objects, certain files can also be built as
 # standalone programs, so gitignore the built programs as well:

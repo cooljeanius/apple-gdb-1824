@@ -7,6 +7,8 @@
 srcdir = @srcdir@
 VPATH = @srcdir@
 
+INCDIR = @INCDIR@
+
 DESTDIR = 
 
 # Where to install screen.
@@ -124,19 +126,23 @@ clean clean-local: mostlyclean
 # we keep config.h, as this file knows where 'make dist' finds the
 # ETCSCREENRC.
 distclean-local: mostlyclean
-	rm -f $(AM_V_v) $(SCREEN).tar $(SCREEN).tar.gz
+	rm -f $(AM_V_v) $(SCREEN).tar $(SCREEN).tar.gz *~
 	rm -f Makefile
 	rm -f osdef.h doc/Makefile
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 .PHONY: distclean-local
 
 distclean: clean distclean-local
-	-if test -e config.status; then rm -f config.status; fi
+	-for mydistcleanfile in config.status config.cache config.log config.h stamp-h1; do \
+	  if test -e $${mydistcleanfile}; then rm -f $(AM_V_v) $${mydistcleanfile}; \
+	  else echo "$${mydistcleanfile} is missing"; fi; \
+	done
 .PHONY: distclean
 
 maintainer-clean:
 	@echo "This command is not even intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
+	if test -e tags; then rm -f $(AM_V_v) tags *~; fi
 .PHONY: maintainer-clean
 
 maintainer-clean-local: distclean-local
@@ -146,10 +152,10 @@ maintainer-clean-local: distclean-local
 # Delete everything from the current directory that can be
 # reconstructed with this Makefile.
 realclean: maintainer-clean .version mostlyclean
-	rm -f $(AM_V_v) $(SCREEN).tar $(SCREEN).tar.gz
+	rm -f $(AM_V_v) $(SCREEN).tar $(SCREEN).tar.gz *~
 	rm -f config.status Makefile doc/Makefile
 	rm -f tty.c term.h comm.h osdef.h kmapdef.c
-	rm -f config.h
+	rm -f config.h tags
 	echo "install all Makefiles and config:" > Makefile
 	echo "  sh ./configure" >> Makefile
 .PHONY: realclean
@@ -212,7 +218,8 @@ depend.in: $(CFILES) term.h
 ###########################################################################
 
 ### Dependencies:
-pty.o: pty.c config.h
+pty.o: pty.c config.h extern.h os.h screen.h
+rlfe.o: rlfe.c config.h
 
 config.log: configure
 	./configure || sh ./configure

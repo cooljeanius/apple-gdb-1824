@@ -127,7 +127,7 @@ extern int yylex(void);
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 1
+# define YYDEBUG 0
 #endif
 
 /* Enabling verbose error messages.  */
@@ -140,7 +140,7 @@ extern int yylex(void);
 
 /* Enabling the token table.  */
 #ifndef YYTOKEN_TABLE
-# define YYTOKEN_TABLE 1
+# define YYTOKEN_TABLE 0
 #endif
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -1952,23 +1952,51 @@ yyreturn:
 
 #line 421 "sysinfo.y"
 
-/* four modes
+/* five(?) modes
 
    -d write structure definitions for sysroff in host format
    -i write functions to swap into sysroff format in
    -o write functions to swap into sysroff format out
-   -c write code to print info in human form */
+   -c write code to print info in human form
+   -h print help and return */
 
 /* FIXME: depends on whether or not we pass -t flag to bison when yaccing: */
 int yydebug;
+/* ...actually maybe it's actually this that I'm having the issue with? */
+extern int yy_flex_debug;
 
 int
 main(int ac, char **av)
 {
+#ifdef YYDEBUG
+  yydebug = YYDEBUG;
+#else
   yydebug = 0;
+#endif /* YYDEBUG */
+  if (yy_flex_debug != yydebug) {
+    yy_flex_debug = yydebug;
+  }
   if (ac > 1) {
     writecode = av[1][1];
   }
+  if (writecode == 'h')
+    {
+      /* FIXME: this documentation might need to be updated to match the code?
+       * Looking above, it looks like `-o` is no longer recognized, but `-p`
+       * and `-g` now are... */
+      printf("Usage: sysinfo <option>\n");
+      printf("Options are:\n");
+      printf("-d write structure definitions for sysroff in host format\n");
+      printf("-i write functions to swap into sysroff format in\n");
+      printf("-o write functions to swap into sysroff format out\n");
+      printf("-c write code to print info in human form\n");
+      printf("-h print this help and return\n");
+      if (yy_flex_debug != 0) {
+        printf("\n");
+        printf("(Note: yy_flex_debug is '%d'.)\n", yy_flex_debug);
+      }
+      return 0;
+    }
   if (writecode == 'd')
     {
       printf("typedef struct { unsigned char *data; int len; } barray; \n");
@@ -1977,6 +2005,10 @@ main(int ac, char **av)
       printf("\n/* End text from main() in sysinfo.y */");
     }
   yyparse();
+#if (defined(YYDEBUG) && YYDEBUG) || (defined(YYERROR_VERBOSE) && YYERROR_VERBOSE) || \
+    (defined(YYTOKEN_TABLE) && YYTOKEN_TABLE)
+  (void)yytname;
+#endif /* YYDEBUG || YYERROR_VERBOSE || YYTOKEN_TABLE */
   return 0;
 }
 

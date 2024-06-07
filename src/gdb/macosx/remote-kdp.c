@@ -40,6 +40,11 @@
 # undef KDP_TARGET_ARM
 #endif /* TARGET_ARM */
 
+#ifndef NO_POISON
+/* included files can drag in "free": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "defs.h"
 #include "value.h"
 #include "infcall.h"  /* For inferior_function_calls_disabled_p.  */

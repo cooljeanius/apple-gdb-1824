@@ -644,7 +644,9 @@ ac_includes_default="\
 
 ac_header_c_list=
 ac_func_c_list=
-ac_subst_vars='LTLIBOBJS
+ac_subst_vars='am__EXEEXT_FALSE
+am__EXEEXT_TRUE
+LTLIBOBJS
 compare_exclusions
 host_shared
 stage2_werror_flag
@@ -700,17 +702,9 @@ CC_FOR_TARGET
 GAS_FOR_TARGET
 AS_FOR_TARGET
 AR_FOR_TARGET
-MKDIR_P
 am__fastdepCCAS_FALSE
 am__fastdepCCAS_TRUE
 CCASDEPMODE
-am__nodep
-AMDEPBACKSLASH
-AMDEP_FALSE
-AMDEP_TRUE
-am__include
-DEPDIR
-am__leading_dot
 CCASFLAGS
 CCAS
 ac_ct_AR
@@ -728,7 +722,18 @@ AS
 AR
 RUNTEST
 EXPECT
-MAKEINFO
+HAVE_MODERNIZR_FALSE
+HAVE_MODERNIZR_TRUE
+MODERNIZR
+HAVE_UGLIFYJS_FALSE
+HAVE_UGLIFYJS_TRUE
+UGLIFYJS
+HAVE_TYPESCRIPT_FALSE
+HAVE_TYPESCRIPT_TRUE
+TSC
+HAVE_ESLINT_FALSE
+HAVE_ESLINT_TRUE
+ESLINT
 FLEX
 M4
 BISON
@@ -816,15 +821,26 @@ gmplibs
 do_compare
 GNATMAKE
 GNATBIND
+GOFLAGS
+GOC
 OBJCXXCPP
+am__fastdepOBJCXX_FALSE
+am__fastdepOBJCXX_TRUE
+OBJCXXDEPMODE
 ac_ct_OBJCXX
 OBJCXXFLAGS
 OBJCXX
 OBJCPP
+am__fastdepOBJC_FALSE
+am__fastdepOBJC_TRUE
+OBJCDEPMODE
 ac_ct_OBJC
 OBJCFLAGS
 OBJC
 CXXCPP
+am__fastdepCXX_FALSE
+am__fastdepCXX_TRUE
+CXXDEPMODE
 ac_ct_CXX
 CXXFLAGS
 CXX
@@ -840,9 +856,35 @@ XMKMF
 target_subdir
 host_subdir
 build_subdir
-AWK
-AUTOCONF
 V
+CSCOPE
+ETAGS
+CTAGS
+am__fastdepCC_FALSE
+am__fastdepCC_TRUE
+CCDEPMODE
+am__nodep
+AMDEPBACKSLASH
+AMDEP_FALSE
+AMDEP_TRUE
+am__include
+DEPDIR
+am__untar
+am__tar
+AMTAR
+am__leading_dot
+AWK
+mkdir_p
+MKDIR_P
+MAKEINFO
+AUTOHEADER
+AUTOMAKE
+AUTOCONF
+ACLOCAL
+VERSION
+PACKAGE
+CYGPATH_W
+am__isrc
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -949,6 +991,7 @@ with_opts_prefix
 with_opts_exec_prefix
 enable_opts_test
 enable_silent_rules
+enable_dependency_tracking
 with_x
 enable_as_accelerator_for
 enable_offload_targets
@@ -991,7 +1034,6 @@ with_build_sysroot
 with_debug_prefix_map
 enable_bootstrap
 enable_serial_configure
-enable_dependency_tracking
 with_build_time_tools
 enable_maintainer_mode
 enable_stage1_checking
@@ -1018,6 +1060,8 @@ OBJCPP
 OBJCXX
 OBJCXXFLAGS
 OBJCXXCPP
+GOC
+GOFLAGS
 YACC
 YFLAGS
 build_configargs
@@ -1668,6 +1712,10 @@ Optional Features:
   --disable-opts-test     Do not try to run a test AutoOpts program
   --enable-silent-rules   less verbose build output (undo: "make V=1")
   --disable-silent-rules  verbose build output (undo: "make V=0")
+  --enable-dependency-tracking
+                          do not reject slow dependency extractors
+  --disable-dependency-tracking
+                          speeds up one-time build
   --enable-as-accelerator-for=ARG
                           build as offload target compiler. Specify offload
                           host triple by ARG
@@ -1711,10 +1759,6 @@ Optional Features:
                           Force sequential configuration of sub-packages for
                           the host, target or build machine, or all
                           sub-packages
-  --enable-dependency-tracking
-                          do not reject slow dependency extractors
-  --disable-dependency-tracking
-                          speeds up one-time build
   --enable-maintainer-mode
                           enable make rules and dependencies not useful (and
                           sometimes confusing) to the casual installer
@@ -1785,6 +1829,8 @@ Some influential environment variables:
   OBJCXX      Objective C++ compiler command
   OBJCXXFLAGS Objective C++ compiler flags
   OBJCXXCPP   Objective C++ preprocessor
+  GOC         Go compiler command
+  GOFLAGS     Go compiler flags
   YACC        The 'Yet Another Compiler Compiler' implementation to use.
               Defaults to the first program found out of: 'bison -y', 'byacc',
               'yacc'.
@@ -3571,7 +3617,7 @@ as_fn_append ac_header_c_list " grp.h grp_h HAVE_GRP_H"
 as_fn_append ac_header_c_list " dlfcn.h dlfcn_h HAVE_DLFCN_H"
 
 # Auxiliary files required by this configure script.
-ac_aux_files="ar-lib missing install-sh config.guess config.sub depcomp"
+ac_aux_files="ar-lib missing install-sh compile config.guess config.sub depcomp"
 
 # Locations in which to look for auxiliary files.
 ac_aux_dir_candidates="${srcdir}/config"
@@ -3962,6 +4008,10 @@ program_transform_name=`printf "%s\n" "$program_transform_name" | sed "$ac_scrip
 
 
 
+
+
+# Expand $ac_aux_dir to an absolute path.
+am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -4980,6 +5030,68 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+  ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $CC understands -c and -o together" >&5
+printf %s "checking whether $CC understands -c and -o together... " >&6; }
+if test ${am_cv_prog_cc_c_o+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+  # Make sure it works both with $CC and with simple cc.
+  # Following AC_PROG_CC_C_O, we do the test twice because some
+  # compilers refuse to overwrite an existing .o file with -o,
+  # though they will create one.
+  am_cv_prog_cc_c_o=yes
+  for am_i in 1 2; do
+    if { echo "$as_me:$LINENO: $CC -c conftest.$ac_ext -o conftest2.$ac_objext" >&5
+   ($CC -c conftest.$ac_ext -o conftest2.$ac_objext) >&5 2>&5
+   ac_status=$?
+   echo "$as_me:$LINENO: \$? = $ac_status" >&5
+   (exit $ac_status); } \
+         && test -f conftest2.$ac_objext; then
+      : OK
+    else
+      am_cv_prog_cc_c_o=no
+      break
+    fi
+  done
+  rm -f core conftest*
+  unset am_i ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_prog_cc_c_o" >&5
+printf "%s\n" "$am_cv_prog_cc_c_o" >&6; }
+if test "$am_cv_prog_cc_c_o" != yes; then
+   # Losing compiler, so override with the script.
+   # FIXME: It is wrong to rewrite CC.
+   # But if we don't then we get into trouble of one sort or another.
+   # A longer-term fix would be to have automake use am__CC in this case,
+   # and then we could set am__CC="\$(top_srcdir)/compile \$(CC)"
+   CC="$am_aux_dir/compile $CC"
+fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+
 ac_header= ac_cache=
 for ac_item in $ac_header_c_list
 do
@@ -5986,10 +6098,6 @@ test -z "$INSTALL_SCRIPT" && INSTALL_SCRIPT='${INSTALL}'
 
 test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 
-
-# Expand $ac_aux_dir to an absolute path.
-am_aux_dir=`cd "$ac_aux_dir" && pwd`
-
 if test x"${install_sh+set}" != xset; then
   case $am_aux_dir in
   *\ * | *\	*)
@@ -6472,14 +6580,7 @@ else
 fi
 AM_BACKSLASH='\'
 
-if test "x${V}" = "x"; then
-  test -z "${V}" && export V=0
-fi
-
-: ${AM_DEFAULT_VERBOSITY=1}
-: ${AM_V=${AM_DEFAULT_VERBOSITY}}
-: ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
-
+am__api_version='1.16'
 
 
   if test x"${MISSING+set}" != xset; then
@@ -6493,6 +6594,439 @@ else
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: 'missing' script is too old or missing" >&5
 printf "%s\n" "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
 fi
+
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a race-free mkdir -p" >&5
+printf %s "checking for a race-free mkdir -p... " >&6; }
+if test -z "$MKDIR_P"; then
+  if test ${ac_cv_path_mkdir+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH$PATH_SEPARATOR/opt/sfw/bin
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_prog in mkdir gmkdir; do
+	 for ac_exec_ext in '' $ac_executable_extensions; do
+	   as_fn_executable_p "$as_dir$ac_prog$ac_exec_ext" || continue
+	   case `"$as_dir$ac_prog$ac_exec_ext" --version 2>&1` in #(
+	     'mkdir ('*'coreutils) '* | \
+	     *'BusyBox '* | \
+	     'mkdir (fileutils) '4.1*)
+	       ac_cv_path_mkdir=$as_dir$ac_prog$ac_exec_ext
+	       break 3;;
+	   esac
+	 done
+       done
+  done
+IFS=$as_save_IFS
+ ;;
+esac
+fi
+
+  test -d ./--version && rmdir ./--version
+  if test ${ac_cv_path_mkdir+y}; then
+    MKDIR_P="$ac_cv_path_mkdir -p"
+  else
+    # As a last resort, use plain mkdir -p,
+    # in the hope it doesn't have the bugs of ancient mkdir.
+    MKDIR_P='mkdir -p'
+  fi
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $MKDIR_P" >&5
+printf "%s\n" "$MKDIR_P" >&6; }
+
+for ac_prog in gawk mawk nawk awk
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_AWK+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test -n "$AWK"; then
+  ac_cv_prog_AWK="$AWK" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_AWK="$ac_prog"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi ;;
+esac
+fi
+AWK=$ac_cv_prog_AWK
+if test -n "$AWK"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $AWK" >&5
+printf "%s\n" "$AWK" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+  test -n "$AWK" && break
+done
+
+rm -rf .tst 2>/dev/null
+mkdir .tst 2>/dev/null
+if test -d .tst; then
+  am__leading_dot=.
+else
+  am__leading_dot=_
+fi
+rmdir .tst 2>/dev/null
+
+DEPDIR="${am__leading_dot}deps"
+
+ac_config_commands="$ac_config_commands depfiles"
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${MAKE-make} supports the include directive" >&5
+printf %s "checking whether ${MAKE-make} supports the include directive... " >&6; }
+cat > confinc.mk << 'END'
+am__doit:
+	@echo this is the am__doit target >confinc.out
+.PHONY: am__doit
+END
+am__include="#"
+am__quote=
+# BSD make does it like this.
+echo '.include "confinc.mk" # ignored' > confmf.BSD
+# Other make implementations (GNU, Solaris 10, AIX) do it like this.
+echo 'include confinc.mk # ignored' > confmf.GNU
+_am_result=no
+for s in GNU BSD; do
+  { echo "$as_me:$LINENO: ${MAKE-make} -f confmf.$s && cat confinc.out" >&5
+   (${MAKE-make} -f confmf.$s && cat confinc.out) >&5 2>&5
+   ac_status=$?
+   echo "$as_me:$LINENO: \$? = $ac_status" >&5
+   (exit $ac_status); }
+  case $?:`cat confinc.out 2>/dev/null` in #(
+  '0:this is the am__doit target') :
+    case $s in #(
+  BSD) :
+    am__include='.include' am__quote='"' ;; #(
+  *) :
+    am__include='include' am__quote='' ;;
+esac ;; #(
+  *) :
+     ;;
+esac
+  if test "$am__include" != "#"; then
+    _am_result="yes ($s style)"
+    break
+  fi
+done
+rm -f confinc.* confmf.*
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${_am_result}" >&5
+printf "%s\n" "${_am_result}" >&6; }
+
+# Check whether --enable-dependency-tracking was given.
+if test ${enable_dependency_tracking+y}
+then :
+  enableval=$enable_dependency_tracking;
+fi
+
+if test "x$enable_dependency_tracking" != xno; then
+  am_depcomp="$ac_aux_dir/depcomp"
+  AMDEPBACKSLASH='\'
+  am__nodep='_no'
+fi
+ if test "x$enable_dependency_tracking" != xno; then
+  AMDEP_TRUE=
+  AMDEP_FALSE='#'
+else
+  AMDEP_TRUE='#'
+  AMDEP_FALSE=
+fi
+
+
+if test "`cd $srcdir && pwd`" != "`pwd`"; then
+  # Use -I$(srcdir) only when $(srcdir) != ., so that make's output
+  # is not polluted with repeated "-I."
+  am__isrc=' -I$(srcdir)'
+  # test to see if srcdir already configured
+  if test -f $srcdir/config.status; then
+    as_fn_error $? "source directory already configured; run \"make distclean\" there first" "$LINENO" 5
+  fi
+fi
+
+# test whether we have cygpath
+if test -z "$CYGPATH_W"; then
+  if (cygpath --version) >/dev/null 2>/dev/null; then
+    CYGPATH_W='cygpath -w'
+  else
+    CYGPATH_W=echo
+  fi
+fi
+
+
+# Define the identity of the package.
+ PACKAGE='apple-gdb-src'
+ VERSION='1824'
+
+
+printf "%s\n" "#define PACKAGE \"$PACKAGE\"" >>confdefs.h
+
+
+printf "%s\n" "#define VERSION \"$VERSION\"" >>confdefs.h
+
+# Some tools Automake needs.
+
+ACLOCAL=${ACLOCAL-"${am_missing_run}aclocal-${am__api_version}"}
+
+
+AUTOCONF=${AUTOCONF-"${am_missing_run}autoconf"}
+
+
+AUTOMAKE=${AUTOMAKE-"${am_missing_run}automake-${am__api_version}"}
+
+
+AUTOHEADER=${AUTOHEADER-"${am_missing_run}autoheader"}
+
+
+MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
+
+# For better backward compatibility.  To be removed once Automake 1.9.x
+# dies out for good.  For more background, see:
+# <https://lists.gnu.org/archive/html/automake/2012-07/msg00001.html>
+# <https://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
+mkdir_p='$(MKDIR_P)'
+
+# We need awk for the "check" target (and possibly the TAP driver).  The
+# system "awk" is bad on some platforms.
+# Always define AMTAR for backward compatibility.  Yes, it's still used
+# in the wild :-(  We should find a proper way to deprecate it ...
+AMTAR='$${TAR-tar}'
+
+
+# We'll loop over all known methods to create a tar archive until one works.
+_am_tools='gnutar  pax cpio none'
+
+am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
+
+
+
+
+
+depcc="$CC"   am_compiler_list=
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking dependency style of $depcc" >&5
+printf %s "checking dependency style of $depcc... " >&6; }
+if test ${am_cv_CC_dependencies_compiler_type+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test -z "$AMDEP_TRUE" && test -f "$am_depcomp"; then
+  # We make a subdir and do the tests there.  Otherwise we can end up
+  # making bogus files that we don't know about and never remove.  For
+  # instance it was reported that on HP-UX the gcc test will end up
+  # making a dummy file named 'D' -- because '-MD' means "put the output
+  # in D".
+  rm -rf conftest.dir
+  mkdir conftest.dir
+  # Copy depcomp to subdir because otherwise we won't find it if we're
+  # using a relative directory.
+  cp "$am_depcomp" conftest.dir
+  cd conftest.dir
+  # We will build objects and dependencies in a subdirectory because
+  # it helps to detect inapplicable dependency modes.  For instance
+  # both Tru64's cc and ICC support -MD to output dependencies as a
+  # side effect of compilation, but ICC will put the dependencies in
+  # the current directory while Tru64 will put them in the object
+  # directory.
+  mkdir sub
+
+  am_cv_CC_dependencies_compiler_type=none
+  if test "$am_compiler_list" = ""; then
+     am_compiler_list=`sed -n 's/^#*\([a-zA-Z0-9]*\))$/\1/p' < ./depcomp`
+  fi
+  am__universal=false
+  case " $depcc " in #(
+     *\ -arch\ *\ -arch\ *) am__universal=true ;;
+     esac
+
+  for depmode in $am_compiler_list; do
+    # Setup a source with many dependencies, because some compilers
+    # like to wrap large dependency lists on column 80 (with \), and
+    # we should not choose a depcomp mode which is confused by this.
+    #
+    # We need to recreate these files for each test, as the compiler may
+    # overwrite some of them when testing with obscure command lines.
+    # This happens at least with the AIX C compiler.
+    : > sub/conftest.c
+    for i in 1 2 3 4 5 6; do
+      echo '#include "conftst'$i'.h"' >> sub/conftest.c
+      # Using ": > sub/conftst$i.h" creates only sub/conftst1.h with
+      # Solaris 10 /bin/sh.
+      echo '/* dummy */' > sub/conftst$i.h
+    done
+    echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
+
+    # We check with '-c' and '-o' for the sake of the "dashmstdout"
+    # mode.  It turns out that the SunPro C++ compiler does not properly
+    # handle '-M -o', and we need to detect this.  Also, some Intel
+    # versions had trouble with output in subdirs.
+    am__obj=sub/conftest.${OBJEXT-o}
+    am__minus_obj="-o $am__obj"
+    case $depmode in
+    gcc)
+      # This depmode causes a compiler race in universal mode.
+      test "$am__universal" = false || continue
+      ;;
+    nosideeffect)
+      # After this tag, mechanisms are not by side-effect, so they'll
+      # only be used when explicitly requested.
+      if test "x$enable_dependency_tracking" = xyes; then
+	continue
+      else
+	break
+      fi
+      ;;
+    msvc7 | msvc7msys | msvisualcpp | msvcmsys)
+      # This compiler won't grok '-c -o', but also, the minuso test has
+      # not run yet.  These depmodes are late enough in the game, and
+      # so weak that their functioning should not be impacted.
+      am__obj=conftest.${OBJEXT-o}
+      am__minus_obj=
+      ;;
+    none) break ;;
+    esac
+    if depmode=$depmode \
+       source=sub/conftest.c object=$am__obj \
+       depfile=sub/conftest.Po tmpdepfile=sub/conftest.TPo \
+       $SHELL ./depcomp $depcc -c $am__minus_obj sub/conftest.c \
+         >/dev/null 2>conftest.err &&
+       grep sub/conftst1.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep sub/conftst6.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep $am__obj sub/conftest.Po > /dev/null 2>&1 &&
+       ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
+      # icc doesn't choke on unknown options, it will just issue warnings
+      # or remarks (even with -Werror).  So we grep stderr for any message
+      # that says an option was ignored or not supported.
+      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      #   icc: Command line warning: ignoring option '-M'; no argument required
+      # The diagnosis changed in icc 8.0:
+      #   icc: Command line remark: option '-MP' not supported
+      if (grep 'ignoring option' conftest.err ||
+          grep 'not supported' conftest.err) >/dev/null 2>&1; then :; else
+        am_cv_CC_dependencies_compiler_type=$depmode
+        break
+      fi
+    fi
+  done
+
+  cd ..
+  rm -rf conftest.dir
+else
+  am_cv_CC_dependencies_compiler_type=none
+fi
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_CC_dependencies_compiler_type" >&5
+printf "%s\n" "$am_cv_CC_dependencies_compiler_type" >&6; }
+CCDEPMODE=depmode=$am_cv_CC_dependencies_compiler_type
+
+ if
+  test "x$enable_dependency_tracking" != xno \
+  && test "$am_cv_CC_dependencies_compiler_type" = gcc3; then
+  am__fastdepCC_TRUE=
+  am__fastdepCC_FALSE='#'
+else
+  am__fastdepCC_TRUE='#'
+  am__fastdepCC_FALSE=
+fi
+
+
+# Variables for tags utilities; see am/tags.am
+if test -z "$CTAGS"; then
+  CTAGS=ctags
+fi
+
+if test -z "$ETAGS"; then
+  ETAGS=etags
+fi
+
+if test -z "$CSCOPE"; then
+  CSCOPE=cscope
+fi
+
+
+
+# POSIX will say in a future version that running "rm -f" with no argument
+# is OK; and we want to be able to make that assumption in our Makefile
+# recipes.  So use an aggressive probe to check that the usage we want is
+# actually supported "in the wild" to an acceptable degree.
+# See automake bug#10828.
+# To make any issue more visible, cause the running configure to be aborted
+# by default if the 'rm' program in use doesn't match our expectations; the
+# user can still override this though.
+if rm -f && rm -fr && rm -rf; then : OK; else
+  cat >&2 <<'END'
+Oops!
+
+Your 'rm' program seems unable to run without file operands specified
+on the command line, even when the '-f' option is present.  This is contrary
+to the behaviour of most rm programs out there, and not conforming with
+the upcoming POSIX standard: <http://austingroupbugs.net/view.php?id=542>
+
+Please tell bug-automake@gnu.org about your system, including the value
+of your $PATH and any error possibly output before this message.  This
+can help us improve future automake versions.
+
+END
+  if test x"$ACCEPT_INFERIOR_RM_PROGRAM" = x"yes"; then
+    echo 'Configuration will proceed anyway, since you have set the' >&2
+    echo 'ACCEPT_INFERIOR_RM_PROGRAM variable to "yes"' >&2
+    echo >&2
+  else
+    cat >&2 <<'END'
+Aborting the configuration process, to ensure you take notice of the issue.
+
+You can download and install GNU coreutils to get an 'rm' implementation
+that behaves properly: <https://www.gnu.org/software/coreutils/>.
+
+If you want to complete the configuration process using your problematic
+'rm' anyway, export the environment variable ACCEPT_INFERIOR_RM_PROGRAM
+to "yes", and re-run configure.
+
+END
+    as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
+  fi
+fi
+
+
+if test "x${V}" = "x"; then
+  test -z "${V}" && export V=0
+fi
+
+: ${AM_DEFAULT_VERBOSITY=1}
+: ${AM_V=${AM_DEFAULT_VERBOSITY}}
+: ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
+
 
 
 AUTOCONF=${AUTOCONF-"${am_missing_run}autoconf"}
@@ -10030,6 +10564,68 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+
+  ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $CC understands -c and -o together" >&5
+printf %s "checking whether $CC understands -c and -o together... " >&6; }
+if test ${am_cv_prog_cc_c_o+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+  # Make sure it works both with $CC and with simple cc.
+  # Following AC_PROG_CC_C_O, we do the test twice because some
+  # compilers refuse to overwrite an existing .o file with -o,
+  # though they will create one.
+  am_cv_prog_cc_c_o=yes
+  for am_i in 1 2; do
+    if { echo "$as_me:$LINENO: $CC -c conftest.$ac_ext -o conftest2.$ac_objext" >&5
+   ($CC -c conftest.$ac_ext -o conftest2.$ac_objext) >&5 2>&5
+   ac_status=$?
+   echo "$as_me:$LINENO: \$? = $ac_status" >&5
+   (exit $ac_status); } \
+         && test -f conftest2.$ac_objext; then
+      : OK
+    else
+      am_cv_prog_cc_c_o=no
+      break
+    fi
+  done
+  rm -f core conftest*
+  unset am_i ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_prog_cc_c_o" >&5
+printf "%s\n" "$am_cv_prog_cc_c_o" >&6; }
+if test "$am_cv_prog_cc_c_o" != yes; then
+   # Losing compiler, so override with the script.
+   # FIXME: It is wrong to rewrite CC.
+   # But if we don't then we get into trouble of one sort or another.
+   # A longer-term fix would be to have automake use am__CC in this case,
+   # and then we could set am__CC="\$(top_srcdir)/compile \$(CC)"
+   CC="$am_aux_dir/compile $CC"
+fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
   else
     test -n "${CC}" && export CC
   fi
@@ -10559,6 +11155,136 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+depcc="$CXX"  am_compiler_list=
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking dependency style of $depcc" >&5
+printf %s "checking dependency style of $depcc... " >&6; }
+if test ${am_cv_CXX_dependencies_compiler_type+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test -z "$AMDEP_TRUE" && test -f "$am_depcomp"; then
+  # We make a subdir and do the tests there.  Otherwise we can end up
+  # making bogus files that we don't know about and never remove.  For
+  # instance it was reported that on HP-UX the gcc test will end up
+  # making a dummy file named 'D' -- because '-MD' means "put the output
+  # in D".
+  rm -rf conftest.dir
+  mkdir conftest.dir
+  # Copy depcomp to subdir because otherwise we won't find it if we're
+  # using a relative directory.
+  cp "$am_depcomp" conftest.dir
+  cd conftest.dir
+  # We will build objects and dependencies in a subdirectory because
+  # it helps to detect inapplicable dependency modes.  For instance
+  # both Tru64's cc and ICC support -MD to output dependencies as a
+  # side effect of compilation, but ICC will put the dependencies in
+  # the current directory while Tru64 will put them in the object
+  # directory.
+  mkdir sub
+
+  am_cv_CXX_dependencies_compiler_type=none
+  if test "$am_compiler_list" = ""; then
+     am_compiler_list=`sed -n 's/^#*\([a-zA-Z0-9]*\))$/\1/p' < ./depcomp`
+  fi
+  am__universal=false
+  case " $depcc " in #(
+     *\ -arch\ *\ -arch\ *) am__universal=true ;;
+     esac
+
+  for depmode in $am_compiler_list; do
+    # Setup a source with many dependencies, because some compilers
+    # like to wrap large dependency lists on column 80 (with \), and
+    # we should not choose a depcomp mode which is confused by this.
+    #
+    # We need to recreate these files for each test, as the compiler may
+    # overwrite some of them when testing with obscure command lines.
+    # This happens at least with the AIX C compiler.
+    : > sub/conftest.c
+    for i in 1 2 3 4 5 6; do
+      echo '#include "conftst'$i'.h"' >> sub/conftest.c
+      # Using ": > sub/conftst$i.h" creates only sub/conftst1.h with
+      # Solaris 10 /bin/sh.
+      echo '/* dummy */' > sub/conftst$i.h
+    done
+    echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
+
+    # We check with '-c' and '-o' for the sake of the "dashmstdout"
+    # mode.  It turns out that the SunPro C++ compiler does not properly
+    # handle '-M -o', and we need to detect this.  Also, some Intel
+    # versions had trouble with output in subdirs.
+    am__obj=sub/conftest.${OBJEXT-o}
+    am__minus_obj="-o $am__obj"
+    case $depmode in
+    gcc)
+      # This depmode causes a compiler race in universal mode.
+      test "$am__universal" = false || continue
+      ;;
+    nosideeffect)
+      # After this tag, mechanisms are not by side-effect, so they'll
+      # only be used when explicitly requested.
+      if test "x$enable_dependency_tracking" = xyes; then
+	continue
+      else
+	break
+      fi
+      ;;
+    msvc7 | msvc7msys | msvisualcpp | msvcmsys)
+      # This compiler won't grok '-c -o', but also, the minuso test has
+      # not run yet.  These depmodes are late enough in the game, and
+      # so weak that their functioning should not be impacted.
+      am__obj=conftest.${OBJEXT-o}
+      am__minus_obj=
+      ;;
+    none) break ;;
+    esac
+    if depmode=$depmode \
+       source=sub/conftest.c object=$am__obj \
+       depfile=sub/conftest.Po tmpdepfile=sub/conftest.TPo \
+       $SHELL ./depcomp $depcc -c $am__minus_obj sub/conftest.c \
+         >/dev/null 2>conftest.err &&
+       grep sub/conftst1.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep sub/conftst6.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep $am__obj sub/conftest.Po > /dev/null 2>&1 &&
+       ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
+      # icc doesn't choke on unknown options, it will just issue warnings
+      # or remarks (even with -Werror).  So we grep stderr for any message
+      # that says an option was ignored or not supported.
+      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      #   icc: Command line warning: ignoring option '-M'; no argument required
+      # The diagnosis changed in icc 8.0:
+      #   icc: Command line remark: option '-MP' not supported
+      if (grep 'ignoring option' conftest.err ||
+          grep 'not supported' conftest.err) >/dev/null 2>&1; then :; else
+        am_cv_CXX_dependencies_compiler_type=$depmode
+        break
+      fi
+    fi
+  done
+
+  cd ..
+  rm -rf conftest.dir
+else
+  am_cv_CXX_dependencies_compiler_type=none
+fi
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_CXX_dependencies_compiler_type" >&5
+printf "%s\n" "$am_cv_CXX_dependencies_compiler_type" >&6; }
+CXXDEPMODE=depmode=$am_cv_CXX_dependencies_compiler_type
+
+ if
+  test "x$enable_dependency_tracking" != xno \
+  && test "$am_cv_CXX_dependencies_compiler_type" = gcc3; then
+  am__fastdepCXX_TRUE=
+  am__fastdepCXX_FALSE='#'
+else
+  am__fastdepCXX_TRUE='#'
+  am__fastdepCXX_FALSE=
+fi
+
+
   ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -10968,6 +11694,134 @@ ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+depcc="$OBJC" am_compiler_list='gcc3 gcc'
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking dependency style of $depcc" >&5
+printf %s "checking dependency style of $depcc... " >&6; }
+if test ${am_cv_OBJC_dependencies_compiler_type+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test -z "$AMDEP_TRUE" && test -f "$am_depcomp"; then
+  # We make a subdir and do the tests there.  Otherwise we can end up
+  # making bogus files that we don't know about and never remove.  For
+  # instance it was reported that on HP-UX the gcc test will end up
+  # making a dummy file named 'D' -- because '-MD' means "put the output
+  # in D".
+  rm -rf conftest.dir
+  mkdir conftest.dir
+  # Copy depcomp to subdir because otherwise we won't find it if we're
+  # using a relative directory.
+  cp "$am_depcomp" conftest.dir
+  cd conftest.dir
+  # We will build objects and dependencies in a subdirectory because
+  # it helps to detect inapplicable dependency modes.  For instance
+  # both Tru64's cc and ICC support -MD to output dependencies as a
+  # side effect of compilation, but ICC will put the dependencies in
+  # the current directory while Tru64 will put them in the object
+  # directory.
+  mkdir sub
+
+  am_cv_OBJC_dependencies_compiler_type=none
+  if test "$am_compiler_list" = ""; then
+     am_compiler_list=`sed -n 's/^#*\([a-zA-Z0-9]*\))$/\1/p' < ./depcomp`
+  fi
+  am__universal=false
+
+
+  for depmode in $am_compiler_list; do
+    # Setup a source with many dependencies, because some compilers
+    # like to wrap large dependency lists on column 80 (with \), and
+    # we should not choose a depcomp mode which is confused by this.
+    #
+    # We need to recreate these files for each test, as the compiler may
+    # overwrite some of them when testing with obscure command lines.
+    # This happens at least with the AIX C compiler.
+    : > sub/conftest.c
+    for i in 1 2 3 4 5 6; do
+      echo '#include "conftst'$i'.h"' >> sub/conftest.c
+      # Using ": > sub/conftst$i.h" creates only sub/conftst1.h with
+      # Solaris 10 /bin/sh.
+      echo '/* dummy */' > sub/conftst$i.h
+    done
+    echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
+
+    # We check with '-c' and '-o' for the sake of the "dashmstdout"
+    # mode.  It turns out that the SunPro C++ compiler does not properly
+    # handle '-M -o', and we need to detect this.  Also, some Intel
+    # versions had trouble with output in subdirs.
+    am__obj=sub/conftest.${OBJEXT-o}
+    am__minus_obj="-o $am__obj"
+    case $depmode in
+    gcc)
+      # This depmode causes a compiler race in universal mode.
+      test "$am__universal" = false || continue
+      ;;
+    nosideeffect)
+      # After this tag, mechanisms are not by side-effect, so they'll
+      # only be used when explicitly requested.
+      if test "x$enable_dependency_tracking" = xyes; then
+	continue
+      else
+	break
+      fi
+      ;;
+    msvc7 | msvc7msys | msvisualcpp | msvcmsys)
+      # This compiler won't grok '-c -o', but also, the minuso test has
+      # not run yet.  These depmodes are late enough in the game, and
+      # so weak that their functioning should not be impacted.
+      am__obj=conftest.${OBJEXT-o}
+      am__minus_obj=
+      ;;
+    none) break ;;
+    esac
+    if depmode=$depmode \
+       source=sub/conftest.c object=$am__obj \
+       depfile=sub/conftest.Po tmpdepfile=sub/conftest.TPo \
+       $SHELL ./depcomp $depcc -c $am__minus_obj sub/conftest.c \
+         >/dev/null 2>conftest.err &&
+       grep sub/conftst1.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep sub/conftst6.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep $am__obj sub/conftest.Po > /dev/null 2>&1 &&
+       ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
+      # icc doesn't choke on unknown options, it will just issue warnings
+      # or remarks (even with -Werror).  So we grep stderr for any message
+      # that says an option was ignored or not supported.
+      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      #   icc: Command line warning: ignoring option '-M'; no argument required
+      # The diagnosis changed in icc 8.0:
+      #   icc: Command line remark: option '-MP' not supported
+      if (grep 'ignoring option' conftest.err ||
+          grep 'not supported' conftest.err) >/dev/null 2>&1; then :; else
+        am_cv_OBJC_dependencies_compiler_type=$depmode
+        break
+      fi
+    fi
+  done
+
+  cd ..
+  rm -rf conftest.dir
+else
+  am_cv_OBJC_dependencies_compiler_type=none
+fi
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_OBJC_dependencies_compiler_type" >&5
+printf "%s\n" "$am_cv_OBJC_dependencies_compiler_type" >&6; }
+OBJCDEPMODE=depmode=$am_cv_OBJC_dependencies_compiler_type
+
+ if
+  test "x$enable_dependency_tracking" != xno \
+  && test "$am_cv_OBJC_dependencies_compiler_type" = gcc3; then
+  am__fastdepOBJC_TRUE=
+  am__fastdepOBJC_FALSE='#'
+else
+  am__fastdepOBJC_TRUE='#'
+  am__fastdepOBJC_FALSE=
+fi
+
 
   ac_ext=m
 ac_cpp='$OBJCPP $CPPFLAGS'
@@ -11379,6 +12233,134 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+depcc="$OBJCXX" am_compiler_list='gcc3 gcc'
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking dependency style of $depcc" >&5
+printf %s "checking dependency style of $depcc... " >&6; }
+if test ${am_cv_OBJCXX_dependencies_compiler_type+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test -z "$AMDEP_TRUE" && test -f "$am_depcomp"; then
+  # We make a subdir and do the tests there.  Otherwise we can end up
+  # making bogus files that we don't know about and never remove.  For
+  # instance it was reported that on HP-UX the gcc test will end up
+  # making a dummy file named 'D' -- because '-MD' means "put the output
+  # in D".
+  rm -rf conftest.dir
+  mkdir conftest.dir
+  # Copy depcomp to subdir because otherwise we won't find it if we're
+  # using a relative directory.
+  cp "$am_depcomp" conftest.dir
+  cd conftest.dir
+  # We will build objects and dependencies in a subdirectory because
+  # it helps to detect inapplicable dependency modes.  For instance
+  # both Tru64's cc and ICC support -MD to output dependencies as a
+  # side effect of compilation, but ICC will put the dependencies in
+  # the current directory while Tru64 will put them in the object
+  # directory.
+  mkdir sub
+
+  am_cv_OBJCXX_dependencies_compiler_type=none
+  if test "$am_compiler_list" = ""; then
+     am_compiler_list=`sed -n 's/^#*\([a-zA-Z0-9]*\))$/\1/p' < ./depcomp`
+  fi
+  am__universal=false
+
+
+  for depmode in $am_compiler_list; do
+    # Setup a source with many dependencies, because some compilers
+    # like to wrap large dependency lists on column 80 (with \), and
+    # we should not choose a depcomp mode which is confused by this.
+    #
+    # We need to recreate these files for each test, as the compiler may
+    # overwrite some of them when testing with obscure command lines.
+    # This happens at least with the AIX C compiler.
+    : > sub/conftest.c
+    for i in 1 2 3 4 5 6; do
+      echo '#include "conftst'$i'.h"' >> sub/conftest.c
+      # Using ": > sub/conftst$i.h" creates only sub/conftst1.h with
+      # Solaris 10 /bin/sh.
+      echo '/* dummy */' > sub/conftst$i.h
+    done
+    echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
+
+    # We check with '-c' and '-o' for the sake of the "dashmstdout"
+    # mode.  It turns out that the SunPro C++ compiler does not properly
+    # handle '-M -o', and we need to detect this.  Also, some Intel
+    # versions had trouble with output in subdirs.
+    am__obj=sub/conftest.${OBJEXT-o}
+    am__minus_obj="-o $am__obj"
+    case $depmode in
+    gcc)
+      # This depmode causes a compiler race in universal mode.
+      test "$am__universal" = false || continue
+      ;;
+    nosideeffect)
+      # After this tag, mechanisms are not by side-effect, so they'll
+      # only be used when explicitly requested.
+      if test "x$enable_dependency_tracking" = xyes; then
+	continue
+      else
+	break
+      fi
+      ;;
+    msvc7 | msvc7msys | msvisualcpp | msvcmsys)
+      # This compiler won't grok '-c -o', but also, the minuso test has
+      # not run yet.  These depmodes are late enough in the game, and
+      # so weak that their functioning should not be impacted.
+      am__obj=conftest.${OBJEXT-o}
+      am__minus_obj=
+      ;;
+    none) break ;;
+    esac
+    if depmode=$depmode \
+       source=sub/conftest.c object=$am__obj \
+       depfile=sub/conftest.Po tmpdepfile=sub/conftest.TPo \
+       $SHELL ./depcomp $depcc -c $am__minus_obj sub/conftest.c \
+         >/dev/null 2>conftest.err &&
+       grep sub/conftst1.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep sub/conftst6.h sub/conftest.Po > /dev/null 2>&1 &&
+       grep $am__obj sub/conftest.Po > /dev/null 2>&1 &&
+       ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
+      # icc doesn't choke on unknown options, it will just issue warnings
+      # or remarks (even with -Werror).  So we grep stderr for any message
+      # that says an option was ignored or not supported.
+      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      #   icc: Command line warning: ignoring option '-M'; no argument required
+      # The diagnosis changed in icc 8.0:
+      #   icc: Command line remark: option '-MP' not supported
+      if (grep 'ignoring option' conftest.err ||
+          grep 'not supported' conftest.err) >/dev/null 2>&1; then :; else
+        am_cv_OBJCXX_dependencies_compiler_type=$depmode
+        break
+      fi
+    fi
+  done
+
+  cd ..
+  rm -rf conftest.dir
+else
+  am_cv_OBJCXX_dependencies_compiler_type=none
+fi
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_OBJCXX_dependencies_compiler_type" >&5
+printf "%s\n" "$am_cv_OBJCXX_dependencies_compiler_type" >&6; }
+OBJCXXDEPMODE=depmode=$am_cv_OBJCXX_dependencies_compiler_type
+
+ if
+  test "x$enable_dependency_tracking" != xno \
+  && test "$am_cv_OBJCXX_dependencies_compiler_type" = gcc3; then
+  am__fastdepOBJCXX_TRUE=
+  am__fastdepOBJCXX_FALSE='#'
+else
+  am__fastdepOBJCXX_TRUE='#'
+  am__fastdepOBJCXX_FALSE=
+fi
+
+
   ac_ext=mm
 ac_cpp='$OBJCXXCPP $CPPFLAGS'
 ac_compile='$OBJCXX -c $OBJCXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -11513,6 +12495,257 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+  if test "x${GOC}" = "x"; then
+    test -z "${GOC}"
+    ac_ext=go
+ac_compile='$GOC -c $GOFLAGS conftest.$ac_ext >&5'
+ac_link='$GOC -o conftest$ac_exeext $GOFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=yes
+if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}gccgo", so it can be a program name with args.
+set dummy ${ac_tool_prefix}gccgo; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_GOC+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test -n "$GOC"; then
+  ac_cv_prog_GOC="$GOC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_GOC="${ac_tool_prefix}gccgo"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi ;;
+esac
+fi
+GOC=$ac_cv_prog_GOC
+if test -n "$GOC"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $GOC" >&5
+printf "%s\n" "$GOC" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_prog_GOC"; then
+  ac_ct_GOC=$GOC
+  # Extract the first word of "gccgo", so it can be a program name with args.
+set dummy gccgo; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_ac_ct_GOC+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test -n "$ac_ct_GOC"; then
+  ac_cv_prog_ac_ct_GOC="$ac_ct_GOC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_GOC="gccgo"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi ;;
+esac
+fi
+ac_ct_GOC=$ac_cv_prog_ac_ct_GOC
+if test -n "$ac_ct_GOC"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_ct_GOC" >&5
+printf "%s\n" "$ac_ct_GOC" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+  if test "x$ac_ct_GOC" = x; then
+    GOC=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+printf "%s\n" "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    GOC=$ac_ct_GOC
+  fi
+else
+  GOC="$ac_cv_prog_GOC"
+fi
+
+if test -z "$GOC"; then
+  if test -n "$ac_tool_prefix"; then
+    # Extract the first word of "${ac_tool_prefix}gccgo", so it can be a program name with args.
+set dummy ${ac_tool_prefix}gccgo; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_GOC+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test -n "$GOC"; then
+  ac_cv_prog_GOC="$GOC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_GOC="$ac_tool_prefix}gccgo"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi ;;
+esac
+fi
+GOC=$ac_cv_prog_GOC
+if test -n "$GOC"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $GOC" >&5
+printf "%s\n" "$GOC" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+  fi
+fi
+if test -z "$GOC"; then
+  # Extract the first word of "gccgo", so it can be a program name with args.
+set dummy gccgo; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_GOC+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test -n "$GOC"; then
+  ac_cv_prog_GOC="$GOC" # Let the user override the test.
+else
+  ac_prog_rejected=no
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    if test "$as_dir$ac_word$ac_exec_ext" = "false"; then
+       ac_prog_rejected=yes
+       continue
+     fi
+    ac_cv_prog_GOC="gccgo"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+if test $ac_prog_rejected = yes; then
+  # We found a bogon in the path, so make sure we never use it.
+  set dummy $ac_cv_prog_GOC
+  shift
+  if test $# != 0; then
+    # We chose a different compiler from the bogus one.
+    # However, it has the same basename, so the bogon will be chosen
+    # first if we set GOC to just the basename; use the full file name.
+    shift
+    ac_cv_prog_GOC="$as_dir$ac_word${1+' '}$@"
+  fi
+fi
+fi ;;
+esac
+fi
+GOC=$ac_cv_prog_GOC
+if test -n "$GOC"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $GOC" >&5
+printf "%s\n" "$GOC" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+fi
+
+
+# Provide some information about the compiler.
+printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for Go compiler version" >&5
+set X $ac_compile
+ac_compiler=$2
+{ { ac_try="$ac_compiler --version >&5"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
+printf "%s\n" "$ac_try_echo"; } >&5
+  (eval "$ac_compiler --version >&5") 2>conftest.err
+  ac_status=$?
+  if test -s conftest.err; then
+    sed '10a\
+... rest of stderr output deleted ...
+         10q' conftest.err >conftest.er1
+    cat conftest.er1 >&5
+  fi
+  rm -f conftest.er1 conftest.err
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }
+GOFLAGS="-g -O2"
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+  fi
 
   # We must set the default linker to the linker used by gcc for the
   # correct operation of libtool. If LD is not defined and we are using
@@ -18781,6 +20014,238 @@ case " ${build_configdirs} " in
 
 esac
 
+# Texinfo JS Interface
+npm_path="${srcdir}/texinfo/js/node_modules/.bin"
+if test -d "${npm_path}"; then
+  # We need an absolute path to the npm programs because they are run
+  # from inside the texinfo/js/ subdirectory.
+  npm_path="`cd ${npm_path} && pwd`"
+  if test "x${PATH_SEPARATOR}" != "x"; then
+    test -n "${PATH_SEPARATOR}" && npm_path="${npm_path}${PATH_SEPARATOR}${PATH}"
+  else
+    test -z "${PATH_SEPARATOR}" && npm_path="${npm_path}:${PATH}"
+  fi
+else
+  npm_path="${PATH}"
+fi
+
+# Additional tools for Texinfo JS Interface
+# Extract the first word of "eslint", so it can be a program name with args.
+set dummy eslint; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_path_ESLINT+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) case $ESLINT in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_ESLINT="$ESLINT" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in ${npm_path}
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_path_ESLINT="$as_dir$ac_word$ac_exec_ext"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac ;;
+esac
+fi
+ESLINT=$ac_cv_path_ESLINT
+if test -n "$ESLINT"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ESLINT" >&5
+printf "%s\n" "$ESLINT" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+ if test "x${ac_cv_path_ESLINT}" != "x"; then
+  HAVE_ESLINT_TRUE=
+  HAVE_ESLINT_FALSE='#'
+else
+  HAVE_ESLINT_TRUE='#'
+  HAVE_ESLINT_FALSE=
+fi
+
+# Extract the first word of "tsc", so it can be a program name with args.
+set dummy tsc; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_path_TSC+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) case $TSC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_TSC="$TSC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in ${npm_path}
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_path_TSC="$as_dir$ac_word$ac_exec_ext"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac ;;
+esac
+fi
+TSC=$ac_cv_path_TSC
+if test -n "$TSC"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $TSC" >&5
+printf "%s\n" "$TSC" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+ if test "x${ac_cv_path_TSC}" != "x"; then
+  HAVE_TYPESCRIPT_TRUE=
+  HAVE_TYPESCRIPT_FALSE='#'
+else
+  HAVE_TYPESCRIPT_TRUE='#'
+  HAVE_TYPESCRIPT_FALSE=
+fi
+
+# Extract the first word of "uglifyjs", so it can be a program name with args.
+set dummy uglifyjs; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_path_UGLIFYJS+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) case $UGLIFYJS in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_UGLIFYJS="$UGLIFYJS" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in ${npm_path}
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_path_UGLIFYJS="$as_dir$ac_word$ac_exec_ext"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac ;;
+esac
+fi
+UGLIFYJS=$ac_cv_path_UGLIFYJS
+if test -n "$UGLIFYJS"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $UGLIFYJS" >&5
+printf "%s\n" "$UGLIFYJS" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+ if test "x${ac_cv_path_UGLIFYJS}" != "x"; then
+  HAVE_UGLIFYJS_TRUE=
+  HAVE_UGLIFYJS_FALSE='#'
+else
+  HAVE_UGLIFYJS_TRUE='#'
+  HAVE_UGLIFYJS_FALSE=
+fi
+
+# Extract the first word of "modernizr", so it can be a program name with args.
+set dummy modernizr; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_path_MODERNIZR+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) case $MODERNIZR in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_MODERNIZR="$MODERNIZR" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in ${npm_path}
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_path_MODERNIZR="$as_dir$ac_word$ac_exec_ext"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac ;;
+esac
+fi
+MODERNIZR=$ac_cv_path_MODERNIZR
+if test -n "$MODERNIZR"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $MODERNIZR" >&5
+printf "%s\n" "$MODERNIZR" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+ if test "x${ac_cv_path_MODERNIZR}" != "x"; then
+  HAVE_MODERNIZR_TRUE=
+  HAVE_MODERNIZR_FALSE='#'
+else
+  HAVE_MODERNIZR_TRUE='#'
+  HAVE_MODERNIZR_FALSE=
+fi
+
 # FIXME: expect and dejagnu may become build tools?
 
 for ac_prog in expect
@@ -20510,79 +21975,6 @@ unknown)
   ;;
 esac
 
-rm -rf .tst 2>/dev/null
-mkdir .tst 2>/dev/null
-if test -d .tst; then
-  am__leading_dot=.
-else
-  am__leading_dot=_
-fi
-rmdir .tst 2>/dev/null
-
-DEPDIR="${am__leading_dot}deps"
-
-ac_config_commands="$ac_config_commands depfiles"
-
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${MAKE-make} supports the include directive" >&5
-printf %s "checking whether ${MAKE-make} supports the include directive... " >&6; }
-cat > confinc.mk << 'END'
-am__doit:
-	@echo this is the am__doit target >confinc.out
-.PHONY: am__doit
-END
-am__include="#"
-am__quote=
-# BSD make does it like this.
-echo '.include "confinc.mk" # ignored' > confmf.BSD
-# Other make implementations (GNU, Solaris 10, AIX) do it like this.
-echo 'include confinc.mk # ignored' > confmf.GNU
-_am_result=no
-for s in GNU BSD; do
-  { echo "$as_me:$LINENO: ${MAKE-make} -f confmf.$s && cat confinc.out" >&5
-   (${MAKE-make} -f confmf.$s && cat confinc.out) >&5 2>&5
-   ac_status=$?
-   echo "$as_me:$LINENO: \$? = $ac_status" >&5
-   (exit $ac_status); }
-  case $?:`cat confinc.out 2>/dev/null` in #(
-  '0:this is the am__doit target') :
-    case $s in #(
-  BSD) :
-    am__include='.include' am__quote='"' ;; #(
-  *) :
-    am__include='include' am__quote='' ;;
-esac ;; #(
-  *) :
-     ;;
-esac
-  if test "$am__include" != "#"; then
-    _am_result="yes ($s style)"
-    break
-  fi
-done
-rm -f confinc.* confmf.*
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${_am_result}" >&5
-printf "%s\n" "${_am_result}" >&6; }
-
-# Check whether --enable-dependency-tracking was given.
-if test ${enable_dependency_tracking+y}
-then :
-  enableval=$enable_dependency_tracking;
-fi
-
-if test "x$enable_dependency_tracking" != xno; then
-  am_depcomp="$ac_aux_dir/depcomp"
-  AMDEPBACKSLASH='\'
-  am__nodep='_no'
-fi
- if test "x$enable_dependency_tracking" != xno; then
-  AMDEP_TRUE=
-  AMDEP_FALSE='#'
-else
-  AMDEP_TRUE='#'
-  AMDEP_FALSE=
-fi
-
-
 # By default we simply use the C compiler to build assembly code.
 
 test "${CCAS+set}" = set || CCAS=$CC
@@ -20827,52 +22219,6 @@ fi
 else
   test ! -z "${RANLIB}"
 fi
-
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a race-free mkdir -p" >&5
-printf %s "checking for a race-free mkdir -p... " >&6; }
-if test -z "$MKDIR_P"; then
-  if test ${ac_cv_path_mkdir+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH$PATH_SEPARATOR/opt/sfw/bin
-do
-  IFS=$as_save_IFS
-  case $as_dir in #(((
-    '') as_dir=./ ;;
-    */) ;;
-    *) as_dir=$as_dir/ ;;
-  esac
-    for ac_prog in mkdir gmkdir; do
-	 for ac_exec_ext in '' $ac_executable_extensions; do
-	   as_fn_executable_p "$as_dir$ac_prog$ac_exec_ext" || continue
-	   case `"$as_dir$ac_prog$ac_exec_ext" --version 2>&1` in #(
-	     'mkdir ('*'coreutils) '* | \
-	     *'BusyBox '* | \
-	     'mkdir (fileutils) '4.1*)
-	       ac_cv_path_mkdir=$as_dir$ac_prog$ac_exec_ext
-	       break 3;;
-	   esac
-	 done
-       done
-  done
-IFS=$as_save_IFS
- ;;
-esac
-fi
-
-  test -d ./--version && rmdir ./--version
-  if test ${ac_cv_path_mkdir+y}; then
-    MKDIR_P="$ac_cv_path_mkdir -p"
-  else
-    # As a last resort, use plain mkdir -p,
-    # in the hope it doesn't have the bugs of ancient mkdir.
-    MKDIR_P='mkdir -p'
-  fi
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $MKDIR_P" >&5
-printf "%s\n" "$MKDIR_P" >&6; }
 
 if test -x ${srcdir}/libtool -a ! -d ${srcdir}/libtool; then
   test -r libtool
@@ -23831,7 +25177,7 @@ esac
 
 # Output.
 
-ac_config_files="$ac_config_files Makefile Makefile_orig"
+ac_config_files="$ac_config_files Makefile Makefile_orig src_am/Makefile texinfo/js/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -23949,9 +25295,49 @@ printf %s "checking that generated files are newer than configure... " >&6; }
    fi
    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: done" >&5
 printf "%s\n" "done" >&6; }
-
 if test -z "${AMDEP_TRUE}" && test -z "${AMDEP_FALSE}"; then
   as_fn_error $? "conditional \"AMDEP\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
+  as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+ if test -n "$EXEEXT"; then
+  am__EXEEXT_TRUE=
+  am__EXEEXT_FALSE='#'
+else
+  am__EXEEXT_TRUE='#'
+  am__EXEEXT_FALSE=
+fi
+
+if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
+  as_fn_error $? "conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${am__fastdepOBJC_TRUE}" && test -z "${am__fastdepOBJC_FALSE}"; then
+  as_fn_error $? "conditional \"am__fastdepOBJC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${am__fastdepOBJCXX_TRUE}" && test -z "${am__fastdepOBJCXX_FALSE}"; then
+  as_fn_error $? "conditional \"am__fastdepOBJCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+
+if test -z "${HAVE_ESLINT_TRUE}" && test -z "${HAVE_ESLINT_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_ESLINT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_TYPESCRIPT_TRUE}" && test -z "${HAVE_TYPESCRIPT_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_TYPESCRIPT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_UGLIFYJS_TRUE}" && test -z "${HAVE_UGLIFYJS_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_UGLIFYJS\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_MODERNIZR_TRUE}" && test -z "${HAVE_MODERNIZR_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_MODERNIZR\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCCAS_TRUE}" && test -z "${am__fastdepCCAS_FALSE}"; then
@@ -24567,6 +25953,8 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "Makefile_orig") CONFIG_FILES="$CONFIG_FILES Makefile_orig" ;;
+    "src_am/Makefile") CONFIG_FILES="$CONFIG_FILES src_am/Makefile" ;;
+    "texinfo/js/Makefile") CONFIG_FILES="$CONFIG_FILES texinfo/js/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: '$ac_config_target'" "$LINENO" 5;;
   esac
@@ -25158,6 +26546,40 @@ printf "%s\n" "$as_me: $ac_file is unchanged" >&6;}
       && eval '$AWK -f "$ac_tmp/defines.awk"' "$ac_file_inputs" \
       || as_fn_error $? "could not create -" "$LINENO" 5
   fi
+# Compute "$ac_file"'s index in $config_headers.
+_am_arg="$ac_file"
+_am_stamp_count=1
+for _am_header in $config_headers :; do
+  case $_am_header in
+    $_am_arg | $_am_arg:* )
+      break ;;
+    * )
+      _am_stamp_count=`expr $_am_stamp_count + 1` ;;
+  esac
+done
+echo "timestamp for $_am_arg" >`$as_dirname -- "$_am_arg" ||
+$as_expr X"$_am_arg" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
+	 X"$_am_arg" : 'X\(//\)[^/]' \| \
+	 X"$_am_arg" : 'X\(//\)$' \| \
+	 X"$_am_arg" : 'X\(/\)' \| . 2>/dev/null ||
+printf "%s\n" X"$_am_arg" |
+    sed '/^X\(.*[^/]\)\/\/*[^/][^/]*\/*$/{
+	    s//\1/
+	    q
+	  }
+	  /^X\(\/\/\)[^/].*/{
+	    s//\1/
+	    q
+	  }
+	  /^X\(\/\/\)$/{
+	    s//\1/
+	    q
+	  }
+	  /^X\(\/\).*/{
+	    s//\1/
+	    q
+	  }
+	  s/.*/./; q'`/stamp-h$_am_stamp_count
  ;;
 
   :C)  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: executing $ac_file commands" >&5

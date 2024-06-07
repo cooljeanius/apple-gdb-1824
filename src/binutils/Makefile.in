@@ -820,8 +820,16 @@ AM_V_CLANG = $(am__v_CLANG_@AM_V@)
 am__v_CLANG_ = $(am__v_CLANG_@AM_DEFAULT_V@)
 am__v_CLANG_0 = @echo "  CLANG      " $@;
 am__v_CLANG_1 = 
-AM_YFLAGS = @MAINT@@EXTRA_YFLAGS_SEP@ -d -t $(AM_V_v) -k @YFLAGS_SEP1@ -Wall -Wyacc
-AM_LFLAGS = @MAINT@ -d
+AM_V_YFLAG = $(am__v_YFLAG_@AM_V@)
+am__v_YFLAG_ = $(am__v_YFLAG_@AM_DEFAULT_V@)
+am__v_YFLAG_0 = 
+am__v_YFLAG_1 = -t
+AM_V_LFLAG = $(am__v_YFLAG_@AM_V@)
+am__v_LFLAG_ = $(am__v_YFLAG_@AM_DEFAULT_V@)
+am__v_LFLAG_0 = -w # (or maybe "-n" for POSIX)
+am__v_LFLAG_1 = -d
+AM_YFLAGS = @MAINT@@EXTRA_YFLAGS_SEP@ -d $(AM_V_YFLAG) $(AM_V_v) -k @YFLAGS_SEP1@ -Wall -Wyacc
+AM_LFLAGS = @MAINT@ $(AM_V_LFLAG)
 
 # Automake 1.10+ disables lex and yacc output file regeneration if
 # maintainer mode is disabled.  Avoid this.

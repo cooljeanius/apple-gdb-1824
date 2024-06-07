@@ -21,6 +21,11 @@
 #if !defined(GDB_VEC_H)
 #define GDB_VEC_H
 
+#ifndef NO_POISON
+/* false positives on this header's weird way of using "free": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include <stddef.h>
 #include "gdb_string.h"
 #include "gdb_assert.h"

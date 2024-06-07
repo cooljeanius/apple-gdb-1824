@@ -18,6 +18,7 @@ gdbtui
 *.o
 *.a
 *~
+*.bak
 init.c-tmp
 init.l-tmp
 version.c-tmp
