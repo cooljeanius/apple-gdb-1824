@@ -812,7 +812,7 @@ DISTCLEANFILES = sysinfo sysroff.c sysroff.h lex.backup \
 	$(ALL_BISON_OUTPUT_FILES) *.cache.bak
 
 distclean-local:
-	-rm -rf $(AM_V_v) .deps/*.*o || rmdir .deps
+	-rm -rf $(AM_V_v) .deps || rmdir .deps
 	rm -rf autom4te.cache || rmdir autom4te.cache
 .PHONY: distclean-local
 

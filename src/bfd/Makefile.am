@@ -1743,7 +1743,7 @@ distclean-local: @MAINT@ $(sdocdir)/Makefile apple-clean
 	if test -r Makefile && test -d $(sdocdir) && test ! -e $(sdocdir)/Makefile; then \
 	  $(MAKE) $(AM_V_MFLAG) $(sdocdir)/Makefile; \
 	fi
-	-rm -rf $(AM_V_v) .deps/*.*o || rmdir .deps
+	-rm -rf $(AM_V_v) .deps || rmdir .deps
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 
 bfdver.h: $(srcdir)/version.h @MAINT@ $(srcdir)/development.sh \

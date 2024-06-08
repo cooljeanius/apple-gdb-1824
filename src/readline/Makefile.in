@@ -2714,7 +2714,7 @@ distclean-local: clean-local config.status
 	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(AM_V_FLAG) $(MFLAGS) $@ ; fi )
 	-( if test -e examples/rlfe.dir/Makefile && test -x examples/rlfe.dir/config.status; then cd examples/rlfe.dir && cp $(AM_V_v) Makefile Makefile.bak && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ && mv $(AM_V_v) Makefile.bak Makefile; fi )
 	$(RM) $(CREATED_TAGS)
-	$(RM) -r $(AM_V_v) .deps/*.*o || rmdir .deps
+	$(RM) -r $(AM_V_v) .deps || rmdir .deps
 	$(RM) -r autom4te.cache || rmdir autom4te.cache
 
 maintainer-clean-local: distclean-local

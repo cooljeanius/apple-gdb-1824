@@ -978,7 +978,7 @@ endif
 
 installsrc: check
 	$(SUBMAKE) check
-	$(TAR) --dereference --exclude=CVS --exclude=.git --exclude=.svn --exclude=src/contrib --exclude=src/dejagnu --exclude=src/etc --exclude=src/expect --exclude=src/sim --exclude=src/tcl --exclude=src/texinfo --exclude=src/utils -cf - . | $(TAR) -C $(SRCROOT) -xfp -
+	$(TAR) --dereference --exclude=CVS --exclude=.git --exclude=.svn --exclude=build --exclude=src/contrib --exclude=src/dejagnu --exclude=src/dist --exclude=src/etc --exclude=src/expect --exclude=src/sim --exclude=src/tcl --exclude=src/texinfo --exclude=src/tk --exclude=src/utils --exclude-backups --exclude-vcs --exclude-vcs-ignores --preserve-permission -cf - . | $(TAR) --preserve-permission --check-links -C $(SRCROOT) -xf -
 
 
 check:
