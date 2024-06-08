@@ -19,6 +19,7 @@ dummy
 needed-list
 config.h
 conf*/*.awk
+conf*.file
 stamp-*
 libiberty.aux
 libiberty.cp

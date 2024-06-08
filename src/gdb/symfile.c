@@ -413,18 +413,19 @@ find_lowest_section (bfd *abfd, asection *sect, void *obj)
     *lowest = sect;
 }
 
-/* Create a new section_addr_info, with room for NUM_SECTIONS.  */
-
+/* Create a new section_addr_info, with room for NUM_SECTIONS: */
 struct section_addr_info *
-alloc_section_addr_info (size_t num_sections)
+alloc_section_addr_info(size_t num_sections)
 {
   struct section_addr_info *sap;
   size_t size;
 
-  size = (sizeof (struct section_addr_info)
-	  +  sizeof (struct other_sections) * (num_sections - 1));
-  sap = (struct section_addr_info *) xmalloc (size);
-  memset (sap, 0, size);
+  size = (sizeof(struct section_addr_info)
+	  + (sizeof(struct other_sections) * (num_sections - 1UL)));
+  if (size >= PTRDIFF_MAX)
+    size = (PTRDIFF_MAX - 1UL);
+  sap = (struct section_addr_info *)xmalloc(size);
+  memset(sap, 0, size);
   sap->num_sections = num_sections;
 
   return sap;
@@ -1488,9 +1489,9 @@ replace_psymbols_with_correct_psymbols(struct objfile *exe_obj)
         PSYMTAB_OSO_NAME (dsym_pst) = xstrdup (PSYMTAB_OSO_NAME (exe_pst));
       PSYMTAB_OSO_MTIME (dsym_pst) = PSYMTAB_OSO_MTIME (exe_pst);
 
-      /* TODO deal with dependencies */
+      /* TODO: deal with dependencies */
 
-      /* TODO includes? */
+      /* TODO: includes? */
     }
 
   /* At this point we have copied all of the relevant psymbols from the
