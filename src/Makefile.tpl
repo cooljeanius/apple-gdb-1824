@@ -1008,7 +1008,8 @@ distclean-local: local-distclean
 .PHONY: distclean-local
 local-distclean:
 	-rm -f Makefile Makefile*orig
-	-rm -f config.status config.cache ./*/config.cache
+	-rm -f config.status config.cache ./*/config.cache ./*/config.cache.bak
+	-rm -fv *~ config/*~
 	-rm -f mh-frag mt-frag
 	-rm -f multilib.out multilib.tmp maybedep.tmp serdep.tmp
 	-if [ "$(TARGET_SUBDIR)" != "." ]; then \
@@ -1208,8 +1209,9 @@ configure-[+prefix+][+module+]: [+deps+]
 		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
 	esac; \
 	srcdiroption="--srcdir=$${topdir}/[+module+]"; \
-	libsrcdir="$$s/[+module+]"; \
+	libsrcdir="$${s}/[+module+]"; \
 	[+ IF no-config-site +]rm -f no-such-file || echo "ok"; \
+	if test -n "${CPP}"; then unset CPP; fi; \
 	CONFIG_SITE=no-such-file [+ ENDIF +]$(SHELL) $${libsrcdir}/configure \
 	  [+args+] $${srcdiroption} [+extra_configure_flags+] \
 	  || exit 1
@@ -1236,8 +1238,8 @@ configure-stage[+id+]-[+prefix+][+module+]: [+deps+]
 		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
 	esac; \
 	srcdiroption="--srcdir=$${topdir}/[+module+]"; \
-	libsrcdir="$$s/[+module+]"; \
-	$(SHELL) $${libsrcdir}/configure \
+	libsrcdir="$${s}/[+module+]"; \
+	unset CPP && $(SHELL) $${libsrcdir}/configure \
 	  [+args+] $${srcdiroption} \
 	  [+stage_configure_flags+] [+extra_configure_flags+]
 @endif [+module+]-bootstrap
@@ -1257,7 +1259,7 @@ all-[+prefix+][+module+]: configure-[+prefix+][+module+]
 	[+ ENDIF bootstrap +]r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	[+exports+] \
-	(cd [+subdir+]/[+module+] && \
+	(cd [+subdir+]/[+module+] && unset CPP && \
 	  $(MAKE) $(AM_V_MFLAG) [+args+] [+extra_make_flags+] $(TARGET-[+prefix+][+module+]))
 @endif [+prefix+][+module+]
 
@@ -1276,7 +1278,7 @@ all-stage[+id+]-[+prefix+][+module+]: configure-stage[+id+]-[+prefix+][+module+]
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	[+exports+][+ IF prev +] \
 	[+poststage1_exports+][+ ENDIF prev +] \
-	cd [+subdir+]/[+module+] && \
+	cd [+subdir+]/[+module+] && unset CPP && \
 	$(MAKE) $(AM_V_MFLAG) [+args+] [+ IF prev
 		+][+poststage1_args+][+ ENDIF prev
 		+] [+stage_make_flags+] [+extra_make_flags+]

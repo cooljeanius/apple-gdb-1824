@@ -63,6 +63,7 @@ html rtf overview.pdf overview.ps overview.dvi overview.rtf overview.html: overv
 .PHONY: rtf
 
 clean-local realclean distclean-local maintainer-clean-local: Makefile
+	rm -fv *~
 	rm -fr $(TARGETS) DBHTOHTML* overview.junk overview overview.{aux,dvi,log,ps,pdf,tex}
 	rm -fr autom4te.cache || rmdir autom4te.cache
 .PHONY: clean-local realclean distclean-local maintainer-clean-local

@@ -140,29 +140,29 @@ sanity:
 clean mostlyclean:
 	-rm -f *~ core *.o a.out *.x *.grt *.run tmp-* diff-*
 	rm -f $(TESTS)
-#	if [ x"${SUBDIRS}" != x ] ; then \
-#	    for dir in ${SUBDIRS}; \
-#	    do \
-#		    echo "$$dir:"; \
-#		    if [ -d $$dir ]; then \
-#			    (cd $$dir; $(MAKE) clean); \
-#		    fi; \
-#	    done ; \
-#	else "nothing to be done for $@"; fi
+	if [ x"${SUBDIRS}" != x"" ]; then \
+	    for dir in ${SUBDIRS}; \
+	    do \
+		    echo "$${dir}:"; \
+		    if [ -d $${dir} ]; then \
+			    (cd $${dir}; $(MAKE) clean); \
+		    fi; \
+	    done; \
+	else "nothing to be done for $@"; fi
 
 distclean maintainer-clean realclean: clean
 	-rm -f *~ core
 	-rm -f Makefile config.status *-init.exp
 	-rm -fr *.log summary detail *.plog *.sum *.psum site.*
-#	if [ x"${SUBDIRS}" != x ] ; then \
-#	    for dir in ${SUBDIRS}; \
-#	    do \
-#		    echo "$$dir:"; \
-#		    if [ -d $$dir ]; then \
-#			    (cd $$dir; $(MAKE) distclean); \
-#		    fi; \
-#	    done ; \
-#	else "nothing to be done for $@"; fi
+	if [ x"${SUBDIRS}" != x"" ]; then \
+	    for dir in ${SUBDIRS}; \
+	    do \
+		    echo "$${dir}:"; \
+		    if [ -d $${dir} ]; then \
+			    (cd $${dir}; $(MAKE) distclean); \
+		    fi; \
+	    done; \
+	else "nothing to be done for $@"; fi
 
 Makefile : Makefile.in config.status
 	$(SHELL) config.status

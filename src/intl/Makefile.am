@@ -17,7 +17,7 @@
 
 ACLOCAL_AMFLAGS = -I m4 --install
 
-AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu
+AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu -Wno-obsolete
 
 SUBDIRS = . @MAINT@ po
 
@@ -117,6 +117,8 @@ CATOBJS = cat-compat.o ../po/cat-id-tbl.o
 LTCATOBJS = cat-compat.lo ../po/cat-id-tbl.lo
 GETTOBJS = intl-compat.o
 GETTLTOBJS = intl-compat.lo
+
+DISTCLEANFILES = *.cache.bak
 
 DISTFILES.common = ChangeLog Makefile.in linux-msg.sed po2tbl.sed.in \
 xopen-msg.sed $(HEADERS) $(SOURCES)

@@ -36,7 +36,7 @@ m4_ifdef([AM_INIT_AUTOMAKE],[
     AC_MSG_NOTICE([config.status is already present, removing it.])
     rm -f ${srcdir}/config.status
   fi
-  AM_INIT_AUTOMAKE([gnits dejagnu no-dist info-in-builddir])
+  AM_INIT_AUTOMAKE([gnits dejagnu no-dist info-in-builddir -Wno-obsolete])
   AC_CONFIG_COMMANDS([automake_post_configure],[
   if test "${srcdir}" != "."; then
     if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then

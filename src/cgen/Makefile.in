@@ -276,7 +276,7 @@ srcroot = $(srcdir)/..
 PATH_TO_MOVEIFCHANGE = $(srcroot)/move-if-change
 RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
 CLEANFILES = tmp-*
-DISTCLEANFILES = stamp-cgen
+DISTCLEANFILES = stamp-cgen *~
 all: all-recursive
 
 .SUFFIXES:

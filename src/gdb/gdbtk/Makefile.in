@@ -297,7 +297,7 @@ am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
 am__v_v_0 = 
 am__v_v_1 = -v
 EXTRA_DIST = generic/gdbtk.h
-DISTCLEANFILES = autoscan.log .DS_Store
+DISTCLEANFILES = autoscan.log .DS_Store *~
 all: all-recursive
 
 .SUFFIXES:

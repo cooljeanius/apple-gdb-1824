@@ -97,6 +97,23 @@ AC_ARG_ENABLE([opts-test],
 AC_MSG_CHECKING([programs])
 AC_MSG_RESULT([ ])
 AM_PROG_AR
+AS_IF([test "x${AR}" = "x"],[
+  test -z "${AR}" || unset AR
+  AC_CHECK_TOOLS([AR],[ar gar])dnl
+  ## might want to switch around these checks...
+  AS_IF([test "x${ac_cv_prog_AR}" = "x"],[
+    test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+    m4_ifdef([AC_PROG_AR],[
+      AC_PROG_AR
+    ],[
+      test -x "`which ar`"
+    ])
+  ],[
+    test -x "`which ar`"
+  ])
+],[
+  test -n "${AR}" && export AR
+])
 AS_IF([test "x${AWK}" = "x" && test "x${ac_cv_prog_AWK}" = "x"],[
   test -z "${AWK}" && test -z "${ac_cv_prog_AWK}"
   AC_PROG_AWK
@@ -229,13 +246,23 @@ AC_CHECK_HEADERS([ApplicationServices/ApplicationServices.h argz.h \
                   sgtty.h stddef.h stdio.h stdio_ext.h sys/file.h \
                   sys/ioctl.h sys/socket.h sys/time.h \
                   termio.h termios.h wchar.h wctype.h])
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z "${ac_cv_header_inttypes_h}" || unset ac_cv_header_inttypes_h
+  AC_CHECK_HEADERS([inttypes.h])dnl
+  ## should have been checked anyways, but whatever...
+fi
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
+  AC_CHECK_HEADERS([stdint.h])dnl
+  ## should have been checked anyways, but whatever...
+fi
 if test "x${ac_cv_header_sys_param_h}" = "x"; then
-  test -z "${ac_cv_header_sys_param_h}"
+  test -z "${ac_cv_header_sys_param_h}" || unset ac_cv_header_sys_param_h
   AC_CHECK_HEADERS([sys/param.h])dnl
   ## should have been checked anyways, but whatever...
 fi
 if test "x${ac_cv_header_unistd_h}" = "x"; then
-  test -z "${ac_cv_header_unistd_h}"
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
   AC_CHECK_HEADERS([unistd.h])dnl
   ## should have been checked anyways, but whatever...
 fi

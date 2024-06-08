@@ -38,7 +38,7 @@ AC_SUBST([mkinstalldirs])dnl
 AC_REQUIRE_AUX_FILE([mkinstalldirs])dnl
 AC_REQUIRE_AUX_FILE([depcomp])dnl
 
-AM_INIT_AUTOMAKE([1.11.6 foreign dejagnu no-dist no-installinfo])dnl
+AM_INIT_AUTOMAKE([1.11.6 foreign dejagnu no-dist no-installinfo -Wno-obsolete])dnl
 
 AM_MAINTAINER_MODE
 
@@ -110,8 +110,12 @@ if test "x${ac_cv_path_SED}" = "x"; then
   AC_PROG_SED
 fi
 if test -e ./config.cache; then
+    echo "hacking ./config.cache"
     sed -i.bak -e "s|ac_cv_prog_AR|bad_AR|g" ./config.cache
     sed -i.bak -e "s|am_cv_ar_interface|bad_ar_interface|g" ./config.cache
+    sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" ./config.cache
+    sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" ./config.cache
+    sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
 fi
 AM_PROG_AR
 m4_ifdef([AC_PROG_AR],[
@@ -344,6 +348,7 @@ if test ! -e Makefile.am || test -e Makefile_orig.in; then
 fi
 ],[])
 AC_CONFIG_COMMANDS([cleanup],[
+rm -f ztest*.exe || echo "No ztest executables to clean"
 rm -rf ztest*.dSYM || rmdir ztest*.dSYM || echo "No ztest junk to clean"
 ],[])
 AC_CONFIG_SUBDIRS([contrib/minizip])

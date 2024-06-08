@@ -1,4 +1,4 @@
-/* aoutf1.h: A.out "format 1" file handling code for BFD.
+/* aoutf1.h: A.out "format 1" file handling code for BFD. -*- C -*-
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 2000,
    2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.

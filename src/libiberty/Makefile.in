@@ -684,8 +684,8 @@ clean: clean-subdir
 distclean: distclean-subdir
 	$(MAKE) SUBDIRS="" clean
 	@$(MULTICLEAN) multi-clean DO=distclean
-	-rm -f $(AM_V_v) *~ Makefile config.cache config.status xhost-mkfrag TAGS multilib.out
-	-rm -f config.log
+	-rm -f $(AM_V_v) *~ config/*~ Makefile config.cache config.status
+	-rm -f xhost-mkfrag TAGS multilib.out config.log
 	-rmdir testsuite 2>/dev/null || echo "refusing to remove testsuite"
 	-rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 	-rm -f .DS_Store

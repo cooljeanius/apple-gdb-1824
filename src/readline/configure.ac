@@ -419,7 +419,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 dejagnu foreign std-options -Wall subdir-objects])
+AM_INIT_AUTOMAKE([1.11.6 dejagnu foreign std-options subdir-objects -Wno-obsolete])
 AM_MAINTAINER_MODE
 m4_ifdef([AC_REQUIRE_AUX_FILE],[
   AC_REQUIRE_AUX_FILE([compile])dnl

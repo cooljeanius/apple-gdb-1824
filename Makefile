@@ -815,7 +815,7 @@ clean: mostlyclean
 	if test -e src/Makefile; then \
 	  unset CPP && $(MAKE) -i -C src clean; fi
 	$(RM) -r $(OBJROOT)
-	$(RM) -v *~ stamp-*
+	$(RM) -v *~ stamp-* build-aux/*~
 	$(RM) .DS_Store autoscan.log
 	$(RM) -r autom4te.cache || rmdir autom4te.cache
 
@@ -823,6 +823,7 @@ distclean: clean
 	if test -e src/Makefile; then \
 	  unset CPP && $(MAKE) -i -C src distclean; fi
 	$(RM) configure config.log config.h.*
+	-if test -d .git && test -w .git; then $(RM) .git/COMMIT_EDITMSG~; fi
 .PHONY: mostlyclean distclean
 
 clean-gdb:
@@ -977,18 +978,18 @@ endif
 
 installsrc: check
 	$(SUBMAKE) check
-	$(TAR) --dereference --exclude=CVS --exclude=.svn --exclude=src/contrib --exclude=src/dejagnu --exclude=src/etc --exclude=src/expect --exclude=src/sim --exclude=src/tcl --exclude=src/texinfo --exclude=src/utils -cf - . | $(TAR) -C $(SRCROOT) -xf -
+	$(TAR) --dereference --exclude=CVS --exclude=.git --exclude=.svn --exclude=src/contrib --exclude=src/dejagnu --exclude=src/etc --exclude=src/expect --exclude=src/sim --exclude=src/tcl --exclude=src/texinfo --exclude=src/utils -cf - . | $(TAR) -C $(SRCROOT) -xf -
 
 
 check:
 	@[ -z "`find . -name \*~ -o -name .\#\*`" ] || \
 	   (echo; echo 'Emacs or CVS backup files present; not copying:'; \
            find . \( -name \*~ -o -name .#\* \) -print | sed 's,^[.]/,  ,'; \
-           echo Suggest: ; \
+           echo "Suggest running: "; \
            echo '    ' find . \\\( -name \\\*~ -o -name .#\\\* \\\) -exec rm -f \{\} \\\; -print ; \
            echo; \
            exit 1)
-	$(MAKE) -C src check
+	if test -r src/Makefile && test -w src; then $(MAKE) -C src check; fi
 
 test: # (unsure if it is okay to make this equivalent to check?)
 .PHONY: test

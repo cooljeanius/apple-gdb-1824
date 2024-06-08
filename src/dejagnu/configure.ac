@@ -11,7 +11,7 @@ AC_EXEEXT
 
 dnl# These are required by automake
 AC_ARG_PROGRAM
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu -Wno-portability subdir-objects])
+AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu subdir-objects -Wno-portability -Wno-obsolete])
 AM_MAINTAINER_MODE
 AM_MAKE_INCLUDE
 AM_SET_DEPDIR
@@ -20,13 +20,21 @@ AM_DEP_TRACK
 AC_PROG_SED
 
 if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
   sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" `pwd`/config.cache
   sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" `pwd`/config.cache
   sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
 elif test -e ./config.cache; then
+  echo "hacking ./config.cache"
   sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
   sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
   sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
 else
   echo "config.cache is missing, which means we can skip attempts to hack it"
 fi

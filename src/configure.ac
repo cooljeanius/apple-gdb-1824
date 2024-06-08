@@ -207,7 +207,7 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
 
 dnl# We are starting to use automake with legit Makefile.am files, albeit in
 dnl# subdirs:
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu no-dist -Wno-override])
+AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu no-dist -Wno-override -Wno-obsolete])
 
 if test "x${V}" = "x"; then
   test -z "${V}" && export V=0
@@ -966,8 +966,12 @@ case "${target}" in
     fi
 # building zlib from this level can mess it up; build it manually instead:
     if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o"; then
-      ## FIXME: come up with a proper fix instead?
-      noconfigdirs="${noconfigdirs} zlib"
+      if test "x${enable_static}" = "xyes" || test "x${build_old_libs}" = "xyes"; then
+        ## FIXME: come up with a proper fix instead?
+        noconfigdirs="${noconfigdirs} zlib"
+      else
+        echo "zlib should probably fine so long as we avoid building its minizip subdir statically"
+      fi
     fi
 # autogen support in this tree is still tentative, so disable if guile is
 # not also present:
@@ -1028,7 +1032,11 @@ case "${target}" in
     fi
 # Also similar to Apple case above:
     if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o" -o -n "${PIC_FLAG}"; then
-      noconfigdirs="${noconfigdirs} zlib"
+      if test "x${enable_static}" = "xyes" || test "x${build_old_libs}" = "xyes"; then
+        noconfigdirs="${noconfigdirs} zlib"
+      else
+        echo "zlib should probably fine so long as we avoid building its minizip subdir statically"
+      fi
     fi
 # autogen support in this tree is still tentative, so disable if guile is
 # not also present:
@@ -3076,7 +3084,13 @@ AC_CHECK_PROGS([CONFIGURED_YACC],['bison -y' byacc yacc],
 AC_CHECK_PROGS([CONFIGURED_M4],[gm4 gnum4 m4],[${MISSING} m4])
 AC_CHECK_PROGS([CONFIGURED_FLEX],[flex],[${MISSING} flex])
 AC_CHECK_PROGS([CONFIGURED_LEX],[flex lex],[${MISSING} flex])
-AC_CHECK_PROGS([CONFIGURED_MAKEINFO],[makeinfo],[${MISSING} makeinfo])dnl
+if test "x${MISSING}" != "x"; then
+  test -n "${MISSING}"
+  AC_CHECK_PROGS([CONFIGURED_MAKEINFO],[makeinfo gmakeinfo],[${MISSING} makeinfo])
+else
+  test -z "${MISSING}"
+  AC_CHECK_PROGS([CONFIGURED_MAKEINFO],[makeinfo gmakeinfo],[makeinfo])
+fi
 
 AC_PROG_LEX([yywrap])
 AM_PROG_LEX
@@ -3762,18 +3776,34 @@ case " ${build_configdirs} " in
   *" flex "*) FLEX='$$r/$(BUILD_SUBDIR)/flex/flex' ;;
 esac
 
-AC_CHECK_PROGS([MAKEINFO],[makeinfo],[${MISSING} makeinfo])
+if test "x${MISSING}" != "x" && test "x${SHELL}" != "x"; then
+  test -n "${MISSING}" && test -n "${SHELL}" && echo "${MISSING} ought to use ${SHELL} for makeinfo" && export SHELL
+  AC_CHECK_PROGS([MAKEINFO],[makeinfo gmakeinfo],[${MISSING} makeinfo])
+else
+  test -z "${MISSING}" && test -z "${SHELL}" && echo "skipping use of missing script for makeinfo when it might fail"
+  AC_CHECK_PROGS([MAKEINFO],[makeinfo gmakeinfo],[makeinfo])
+fi
 case " ${build_configdirs} " in
-  *" texinfo "*) MAKEINFO='$$r/$(BUILD_SUBDIR)/texinfo/makeinfo/makeinfo' ;;
+  *" texinfo "*)
+    echo "texinfo is in build_configdirs; will attempt to use the built makeinfo"
+    MAKEINFO='$$r/$(BUILD_SUBDIR)/texinfo/makeinfo/makeinfo' ;;
   *)
+    AC_MSG_CHECKING([version of ${MAKEINFO}])
+    MAKEINFO_VERSION=""
+    if test -n "${MAKEINFO}" && test -x "${MAKEINFO}"; then
+      export MAKEINFO_VERSION="`${MAKEINFO} --version`"
+    fi
+    AC_MSG_RESULT([${MAKEINFO_VERSION}])
 changequote(,)
     # For an installed makeinfo, we require it to be from texinfo 4.7 or
     # higher, else we use the "missing" dummy.
-    if ${MAKEINFO} --version \
+    if test -n "${MAKEINFO}" && test -x "${MAKEINFO}" && ${MAKEINFO} --version \
        | egrep 'texinfo[^0-9]*(4\.([7-9]|[1-9][0-9])|[5-9]|[1-9][0-9])' >/dev/null 2>&1; then
-      :
+      echo "version of makeinfo is fine"
+    elif test "x${MISSING}" != "x"; then
+      test -n "${MISSING}" && echo "falling back to use ${MISSING} script" && export MAKEINFO="${MISSING} makeinfo"
     else
-      MAKEINFO="${MISSING} makeinfo"
+      test -z "${MISSING}" && echo "need to fall back to use the missing script, but the variable for it is unset!" >&2 && export MAKEINFO="false"
     fi
     ;;
 changequote([,])
