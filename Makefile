@@ -1,10 +1,12 @@
 # Top-level makefile for Apple's fork of gdb
 # If this Makefile does not work, try the one in ./src
 
-GDB_VERSION = 6.3.50-20050815
+OLD_GDB_VERSION = 6.3.50-20050815
+export GDB_VERSION = 6.3.50-$(shell date "+%Y%m%d")
 GDB_RC_VERSION = 1824
 
-BINUTILS_VERSION = 2.13-20021117
+OLD_BINUTILS_VERSION = 2.13-20021117
+export BINUTILS_VERSION = 2.13-$(shell date "+%Y%m%d")
 BINUTILS_RC_VERSION = 46
 
 # Keep line below uncommented for debugging shell commands
@@ -135,6 +137,10 @@ INTL_HEADERS = $(BINUTILS_BUILD_ROOT)/usr/include
 
 ifndef SDKROOT_FOR_BUILD
 export SDKROOT_FOR_BUILD = $(shell xcodebuild -version -sdk macosx Path 2>/dev/null | head -1)
+endif
+
+ifndef SDKROOT
+export SDKROOT = $(SDKROOT_FOR_BUILD)
 endif
 
 export AR       = $(shell xcrun -find ar)
@@ -316,7 +322,7 @@ crossarm: CDEBUGFLAGS ?= -gdwarf-2 -D__DARWIN_UNIX03=0
 
 crossarm:;
         
-	echo BUILDING CROSSARM; \
+	echo "BUILDING CROSSARM"; \
 	$(RM) -v $(SYMROOT)/$(LIBEXEC_GDB_DIR)/gdb-arm-apple-darwin
 	for i in $(RC_ARCHS); do \
 		$(RM) -r $(OBJROOT)/$${i}-apple-darwin--arm-apple-darwin; \
@@ -376,7 +382,7 @@ crossarm:;
 cross: 	LIBEXEC_GDB_DIR=usr/libexec/gdb
 cross:;
 	$(SUBMAKE) $(MACOSX_FLAGS) install-gdb-macosx-common
-	echo BUILDING CROSS $(RC_CROSS_ARCHS) for HOST $(RC_ARCHS); \
+	echo "BUILDING CROSS $(RC_CROSS_ARCHS) for HOST $(RC_ARCHS)"; \
 	set -e; for cross_arch in $(RC_CROSS_ARCHS); do \
 		cross_arch_full=$${cross_arch}; \
 		if [[ "$${cross_arch}" =~ arm.* ]] ; then \
@@ -434,6 +440,7 @@ cross:;
 	sed -e 's/version=.*/version=$(GDB_VERSION)-$(GDB_RC_VERSION)/' \
                 < $(SRCROOT)/gdb.sh > ${DSTROOT}/usr/bin/gdb; \
 	chmod 755 ${DSTROOT}/usr/bin/gdb; \
+	stat ${DSTROOT}/usr/bin/gdb
 .PHONY: cross
 
 cross-installhdrs:
@@ -695,7 +702,9 @@ install-gdb-common:
 	done;
 
 install-gdb-macosx-common: install-gdb-common
-
+	if test ! -e $(SRCROOT)/texi2html && test -e texi2html; then \
+	  cp -v texi2html $(SRCROOT); \
+	fi
 	set -e; for dstroot in $(SYMROOT) $(DSTROOT); do \
 		\
 		$(INSTALL) -c -d $${dstroot}/$(LIBEXEC_GDB_DIR); \
@@ -704,6 +713,9 @@ install-gdb-macosx-common: install-gdb-common
 		\
 		for i in gdb gdbint stabs; do \
 			$(INSTALL) -c -d "$${docroot}/$${i}"; \
+			if test ! -e $${docroot}/$${i}/texithtml; then \
+			  cp -v $(SRCROOT)/texi2html $${docroot}/$${i}; \
+			fi; \
 			(cd "$${docroot}/$${i}" && \
 				$(SRCROOT)/texi2html \
 					-split_chapter \

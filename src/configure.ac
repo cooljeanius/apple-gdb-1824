@@ -1797,7 +1797,30 @@ if test "x${build}" != "x${host}"; then
   CC_FOR_BUILD=${CC_FOR_BUILD-gcc}
   BUILD_PREFIX="${build_alias}-"
   BUILD_PREFIX_1="${build_alias}-"
-
+  if test "x${enable_dependency_tracking}" != "xno" \
+    && test "x${am_cv_CXX_dependencies_compiler_type}" = "xgcc3"; then
+    test -z "${am__fastdepCXX_TRUE}" && export am__fastdepCXX_TRUE=""
+    test -z "${am__fastdepCXX_FALSE}" && export am__fastdepCXX_FALSE='#'
+  else
+    test -z "${am__fastdepCXX_TRUE}" && export am__fastdepCXX_TRUE='#'
+    test -z "${am__fastdepCXX_FALSE}" && export am__fastdepCXX_FALSE=""
+  fi
+  if test "x${enable_dependency_tracking}" != "xno" \
+    && test "x${am_cv_OBJC_dependencies_compiler_type}" = "xgcc3"; then
+    test -z "${am__fastdepOBJC_TRUE}" && export am__fastdepOBJC_TRUE=""
+    test -z "${am__fastdepOBJC_FALSE}" && export am__fastdepOBJC_FALSE='#'
+  else
+    test -z "${am__fastdepOBJC_TRUE}" && export am__fastdepOBJC_TRUE='#'
+    test -z "${am__fastdepOBJC_FALSE}" && export am__fastdepOBJC_FALSE=""
+  fi
+  if test "x${enable_dependency_tracking}" != "xno" \
+    && test "x${am_cv_OBJCXX_dependencies_compiler_type}" = "xgcc3"; then
+    test -z "${am__fastdepOBJCXX_TRUE}" && export am__fastdepOBJCXX_TRUE=""
+    test -z "${am__fastdepOBJCXX_FALSE}" && export am__fastdepOBJCXX_FALSE='#'
+  else
+    test -z "${am__fastdepOBJCXX_TRUE}" && export am__fastdepOBJCXX_TRUE='#'
+    test -z "${am__fastdepOBJCXX_FALSE}" && export am__fastdepOBJCXX_FALSE=""
+  fi
 else
   # Set reasonable default values for some tools even if not Canadian.
   # Of course, these are different reasonable default values, originally
@@ -1812,7 +1835,7 @@ else
   BUILD_PREFIX_1="loser-"
 
   if test "x${CC}" = "x"; then
-    test -z "${CC}"
+    test -z "${CC}" || unset CC
     AC_PROG_CC
   else
     test -n "${CC}" && export CC
@@ -1825,7 +1848,7 @@ else
   AC_PROG_OBJCXX
   AC_PROG_OBJCXXCPP
   if test "x${GOC}" = "x"; then
-    test -z "${GOC}"
+    test -z "${GOC}" || unset GOC
     AC_PROG_GO
   fi
 
