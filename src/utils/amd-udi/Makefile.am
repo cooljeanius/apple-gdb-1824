@@ -29,7 +29,7 @@ DISTCLEANFILES = Makefile config.status stamp-h1 config.h *.log
 
 SUBDIRS = udi mondfe montip
 
-AUTOMAKE_OPTIONS = gnits dejagnu no-dist
+AUTOMAKE_OPTIONS = gnits dejagnu no-dist -Wno-obsolete
 
 #### Start of system configuration section. ####
 
@@ -144,8 +144,10 @@ clean-local mostlyclean-local:
 	    echo "doing $@ in $${dir}:"; \
 	    if [ -d $${dir} ]; then \
 		(cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); \
-		fi; \
-	    done
+	    elif [ -d $${dir}/autom4te.cache ]; then \
+		rm -fr $(AM_V_v) $${dir}/autom4te.cache || rmdir $${dir}/autom4te.cache; \
+	    fi; \
+	done
 .PHONY: clean-local mostlyclean-local
 
 distclean-local maintainer-clean-local realclean-local: clean-local
@@ -173,7 +175,8 @@ rebuild_Makefile: Makefile.in configure.ac
 .PHONY: rebuild_Makefile
 
 rebuild_configure: configure.ac
-	autoconf --force --warnings=all
+	autoconf --force --warnings=all,no-obsolete
+	-rm -fr $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 .PHONY: rebuild_configure
 
 TAGS_e: $(SRCS)

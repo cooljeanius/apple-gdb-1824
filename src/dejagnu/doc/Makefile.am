@@ -1,6 +1,6 @@
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = 1.11.6 dejagnu foreign
+AUTOMAKE_OPTIONS = 1.11.6 dejagnu foreign -Wno-obsolete
 
 man_MANS = runtest.1
 # FIXME: We need to generate an info doc from SGML somehow, but for
@@ -8,6 +8,8 @@ man_MANS = runtest.1
 # info_TEXINFOS = dejagnu.texi
 DOCBOOK = @DOCBOOK@
 TARGETS = overview.html overview.ps overview.pdf overview.rtf
+
+DISTCLEANFILES = *~
 
 docs: $(TARGETS)
 	$(AM_V_at)for mytarg in $(TARGETS); do

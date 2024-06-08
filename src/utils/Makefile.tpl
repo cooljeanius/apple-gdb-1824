@@ -94,6 +94,7 @@ maintainer-clean: [+ FOR subdirs +]maintainer-clean-[+subdir+] [+ ENDFOR subdirs
 clean mostlyclean:
 	-rm -f *~ core *.o a.out 
 maintainer-clean distclean:
+	-rm -rfv autom4te.cache || rmdir autom4te.cache
 	-rm -f Makefile config.status *.log config.cache *~ core *.o a.out
 	-find . -name .DS_Store -delete 
 

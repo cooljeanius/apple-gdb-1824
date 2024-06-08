@@ -10135,7 +10135,7 @@ CONFIG='$(config)'
 subdirs="$subdirs doc example/calc"
 
 if test -d contrib/bluegnu2.0.3; then
-  test -e contrib/bluegnu2.0.3/configure
+  test -e contrib/bluegnu2.0.3/configure && test -x contrib/bluegnu2.0.3/configure
   subdirs="$subdirs contrib/bluegnu2.0.3"
 
 fi

@@ -92,7 +92,7 @@ distclean maintainer-clean realclean: clean
 	    echo "$${dir}:"; \
 	    (cd $${dir}; $(MAKE) $@); \
 	done
-	-rm -f *~ core
+	-rm -f *~ core config.log
 	-rm -f Makefile config.status
 
 check:

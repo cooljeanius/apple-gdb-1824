@@ -125,6 +125,7 @@ distclean maintainer-clean realclean: clean
 	    (cd $$dir; $(MAKE) $@); \
 	done
 	-rm -f *~ core
+	-rm -fr autom4te.cache || rmdir autom4te.cache
 	-rm -f Makefile config.status 
 
 .c.o:

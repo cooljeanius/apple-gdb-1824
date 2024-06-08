@@ -635,7 +635,7 @@ OFILES = testglue.o stub-loader.o
 ALL_OFILES = $(OFILES) i960glue.o
 CLEANFILES = x.log x.sum site.bak setval.tmp $(ALL_OFILES) *~ expect
 DISTCLEANFILES = xXx.log xXx.sum testrun.log testrun.sum .DS_Store \
-  contrib/.DS_Store autoscan.log expect *.cache.bak
+  contrib/.DS_Store autoscan.log expect *.cache.bak doc/*~
 
 MAINTAINERCLEANFILES = configure.scan expect
 CFILES = testglue.c stub-loader.c i960glue.c

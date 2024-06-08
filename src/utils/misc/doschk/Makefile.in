@@ -105,10 +105,10 @@ clean:
 mostlyclean: clean
 
 distclean: clean
-	rm -f Makefile config.status config.log
+	rm -f Makefile config.status config.log config.h
 
 maintainer-clean realclean: distclean
-	rm -f TAGS autoscan.log
+	rm -f TAGS autoscan.log configure configure.scan
 
 dist: $(DISTFILES)
 	rm -rf $(DISTNAME)

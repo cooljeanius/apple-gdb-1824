@@ -162,7 +162,7 @@ AC_SUBST([CONFIG])dnl
 AC_CONFIG_SUBDIRS([doc example/calc])dnl
 
 if test -d contrib/bluegnu2.0.3; then
-  test -e contrib/bluegnu2.0.3/configure
+  test -e contrib/bluegnu2.0.3/configure && test -x contrib/bluegnu2.0.3/configure
   AC_CONFIG_SUBDIRS([contrib/bluegnu2.0.3])
 fi
 

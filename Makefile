@@ -803,7 +803,7 @@ install-chmod-macosx-noprocmod:
 
 install-source:
 	$(INSTALL) -c -d $(DSTROOT)/$(SOURCE_DIR)
-	$(TAR) --exclude=CVS --exclude=.svn -C $(SRCROOT) -cf - . | $(TAR) -C $(DSTROOT)/$(SOURCE_DIR) -xf -
+	$(TAR) --exclude=CVS --exclude=.git --exclude=.svn -C $(SRCROOT) -cf - . | $(TAR) -C $(DSTROOT)/$(SOURCE_DIR) -xf -
 
 all: build
 	if test -e src/Makefile; then unset CPP && $(MAKE) -C src; fi
@@ -978,7 +978,7 @@ endif
 
 installsrc: check
 	$(SUBMAKE) check
-	$(TAR) --dereference --exclude=CVS --exclude=.git --exclude=.svn --exclude=src/contrib --exclude=src/dejagnu --exclude=src/etc --exclude=src/expect --exclude=src/sim --exclude=src/tcl --exclude=src/texinfo --exclude=src/utils -cf - . | $(TAR) -C $(SRCROOT) -xf -
+	$(TAR) --dereference --exclude=CVS --exclude=.git --exclude=.svn --exclude=src/contrib --exclude=src/dejagnu --exclude=src/etc --exclude=src/expect --exclude=src/sim --exclude=src/tcl --exclude=src/texinfo --exclude=src/utils -cf - . | $(TAR) -C $(SRCROOT) -xfp -
 
 
 check:

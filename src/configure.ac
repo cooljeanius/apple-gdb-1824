@@ -970,7 +970,7 @@ case "${target}" in
         ## FIXME: come up with a proper fix instead?
         noconfigdirs="${noconfigdirs} zlib"
       else
-        echo "zlib should probably fine so long as we avoid building its minizip subdir statically"
+        echo "zlib should probably be fine so long as we avoid building its minizip subdir statically"
       fi
     fi
 # autogen support in this tree is still tentative, so disable if guile is
@@ -1035,7 +1035,7 @@ case "${target}" in
       if test "x${enable_static}" = "xyes" || test "x${build_old_libs}" = "xyes"; then
         noconfigdirs="${noconfigdirs} zlib"
       else
-        echo "zlib should probably fine so long as we avoid building its minizip subdir statically"
+        echo "zlib should probably be fine so long as we avoid building its minizip subdir statically"
       fi
     fi
 # autogen support in this tree is still tentative, so disable if guile is
