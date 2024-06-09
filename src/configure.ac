@@ -397,6 +397,7 @@ fi
 use_included_zlib="yes"
 # Make sure we do NOT let ZLIB be added if we did NOT want it.
 if test "x${with_system_zlib}" = "xyes"; then
+  echo "use of the system zlib means skipping using the one bundled here"
   use_included_zlib=no
   noconfigdirs="${noconfigdirs} zlib"
 fi
@@ -1078,6 +1079,7 @@ case "${target}" in
     esac
     ;;
   *-*-kaos*)
+    echo "A lot of stuff is unsupported on kaOS configurations..."
     # Remove unsupported stuff on all kaOS configurations.
     skipdirs="target-libiberty ${libgcj} target-libstdc++-v3 target-librx"
     skipdirs="${skipdirs} target-libobjc target-examples target-groff target-gperf"
@@ -1242,9 +1244,9 @@ case "${target}" in
   hppa*64*-*-linux* | parisc*64*-*-linux*)
     enable_64_bit_bfd=yes
     host_configargs=" ${host_configargs} --enable-64-bit-bfd "
-    # In this case, it is because the hppa64-linux target is for
-    # the kernel only at this point and has no libc, and thus no
-    # headers, crt*.o, etc., all of which are needed by these.
+    echo "In this case, it is because the hppa64-linux target is for"
+    echo "the kernel only at this point and has no libc, and thus no"
+    echo "headers, crt*.o, etc., all of which are needed by these."
     noconfigdirs="${noconfigdirs} target-zlib"
     ;;
   parisc*-*-linux* | hppa*-*-linux*)
