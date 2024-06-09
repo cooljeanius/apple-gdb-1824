@@ -83,20 +83,20 @@ jobs:
         cd src/binutils
         sync && make arparse.h
         if test ! -e arparse.h; then \
-          echo "make my_arparse.h"; \
+          sync && echo "make my_arparse.h"; \
           make my_arparse.h; \
         else \
           sync && echo "arparse.h exists" && sync && stat arparse.h; \
         fi
         if test ! -f arparse.h; then \
-          echo "remake arparse.c"; \
+          sync && echo "remake arparse.c"; \
           remake arparse.c; \
         else \
           sync && echo "checking arparse.h length" && sync && wc -l arparse.h; \
         fi
         # shellcheck disable=SC2046
         if test ! -e arparse.h; then \
-          echo "trying the relevant Makefile rule as copied into this CI workflow"; \
+          sync && echo "trying the relevant Makefile rule as copied into this CI workflow"; \
           /bin/sh ./../ylwrap arparse.y y.tab.c arparse.c y.tab.h "$(echo arparse.c | sed -e s/cc$/hh/ -e s/cpp$/hpp/ -e s/cxx$/hxx/ -e s/c++$/h++/ -e s/c$/h/)" y.output arparse.output -- $(if [ -f ../bison/bison ]; then echo ../bison/bison -y -L./../bison/; else echo bison -o y.tab.c; fi) -d -t -v -k; \
         else \
           sync && echo "checking arparse.h disk usage" && sync && du arparse.h; \
@@ -115,7 +115,7 @@ jobs:
         if test ! -e /var/db/locate.database; then \
           if test -e /System/Library/LaunchDaemons/com.apple.locate.plist; then \
             if test -z "$(sudo launchctl list | grep locate)"; then \
-              echo "attempting to ensure that locate will work..."; \
+              sync && echo "attempting to ensure that locate will work..."; \
               sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist; \
             fi; \
           fi; \
@@ -143,49 +143,49 @@ jobs:
         if test -z "$(which autoconf)" || test ! -x "$(which autoconf)"; then \
           brew install autoconf@2.69 || brew install autoconf@2.13 || brew install m4 || ls "configure*"; \
         else \
-          echo "autoconf available at $(which autoconf)"; \
+          sync && echo "autoconf available at $(which autoconf)"; \
         fi
         if test -z "$(which gm4)" || test ! -x "$(which gm4)"; then \
           brew install m4 || brew analytics on || find . -name '*.m4' -print; \
         else \
           sync && echo "the following gm4 binaries are available"; \
           which -a gm4 || gwhich -a gm4 || type gm4; \
-          echo "...and the first of them has the following information"; \
+          sync && echo "...and the first of them has the following information"; \
           sync && gm4 --version; \
           sync && gm4 --help; \
         fi
         ./bootstrap || stat ./bootstrap || test -x ./bootstrap
         if test libltdl/configure -ot libltdl/configure.ac; then \
           if test -x libltdl/configure && test -s libltdl/configure; then \
-            echo "touch libltdl/configure"; \
+            sync && echo "touch libltdl/configure"; \
             touch libltdl/configure; \
           elif test -x libltdl/configure~ && test -s libltdl/configure~; then \
             cp -vf libltdl/configure~ libltdl/configure; \
           elif test -x "$(which sync)"; then \
             which sync && sync; \
           else \
-            echo "uh... configure-related timestamps might be off?"; \
+            echo "no sync... configure-related timestamps might be off?"; \
           fi; \
         fi
         if test libltdl/Makefile.in -ot libltdl/Makefile.am; then \
-          echo "test -s libltdl/Makefile.in && touch libltdl/Makefile.in"; \
+          sync && echo "test -s libltdl/Makefile.in && touch libltdl/Makefile.in"; \
           test -s libltdl/Makefile.in && touch libltdl/Makefile.in; \
         fi
         if test libltdl/Makefile -ot libltdl/Makefile.in; then \
-          echo "test -s libltdl/Makefile && touch libltdl/Makefile"; \
+          sync && echo "test -s libltdl/Makefile && touch libltdl/Makefile"; \
           test -s libltdl/Makefile && touch libltdl/Makefile; \
         fi
         for subdir in libltdl libltdl/loaders libtool_gnu/libltdl/loaders loaders; do \
           if test -d "${subdir}" && test -w "${subdir}" && test ! -d "${subdir}"/.deps; then \
             mkdir -pv "${subdir}"/.deps; \
             if test -w "${subdir}"/.deps && test ! -e "${subdir}"/.deps/.dirstamp; then \
-              echo "touch ${subdir}/.deps/.dirstamp"; \
+              sync && echo "touch ${subdir}/.deps/.dirstamp"; \
               touch "${subdir}"/.deps/.dirstamp; \
             fi; \
           elif test -e "${subdir}"/.deps; then \
             stat "${subdir}"/.deps; \
             if test -w "${subdir}"/.deps && test ! -e "${subdir}"/.deps/.dirstamp; then \
-              echo "touch ${subdir}/.deps/.dirstamp"; \
+              sync && echo "touch ${subdir}/.deps/.dirstamp"; \
               touch "${subdir}"/.deps/.dirstamp; \
             fi; \
           elif test -r "${subdir}"; then \
@@ -193,11 +193,11 @@ jobs:
           elif test -x "$(which sync)"; then \
             sync && echo "${subdir} seems to be missing (checking from $(pwd))"; \
           else \
-            echo "warning, unhandled possibility for ${subdir}"; \
+            sync && echo "warning, unhandled possibility for ${subdir}"; \
           fi; \
           if test -r "${subdir}"/Makefile && test -s "${subdir}"/Makefile && test -w "${subdir}"; then \
             pushd "${subdir}"; \
-            echo "attempting to ensure depfiles are fine in ${subdir}..."; \
+            sync && echo "attempting to ensure depfiles are fine in ${subdir}..."; \
             make am--depfiles || make am--refresh || make distdir-am || stat Makefile; \
             popd; \
           else \
@@ -206,11 +206,11 @@ jobs:
           if test -r "${subdir}"/.deps; then \
             (find "${subdir}" -name '*.Tpo' -print) || echo "depfile generation may have failed for ${subdir}"; \
           elif test -d "${subdir}" && test ! -d "${subdir}"/.deps; then \
-            echo "depdir generation may have failed for ${subdir}"; \
+            sync && echo "depdir generation may have failed for ${subdir}"; \
           elif test ! -d "${subdir}"; then \
-            echo "warning, ${subdir} is not an extant subdirectory"; \
+            sync && echo "warning, ${subdir} is not an extant subdirectory"; \
           else \
-            echo "warning, something about ${subdir} may require fixing"; \
+            sync && echo "warning, something about ${subdir} may require fixing"; \
           fi; \
         done
         sync && echo "hopefully libtool_gnu timestamps will be fine..."
@@ -219,22 +219,21 @@ jobs:
         cd src
         touch config.log || ls ./*.log
         if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
-          echo "nproc says we can use $(nproc) build jobs"; \
+          sync && echo "nproc says we can use $(nproc) build jobs"; \
           if test "$(nproc)" -eq 4; then \
-            echo "special-casing the 4-job build case..."; \
+            sync && echo "special-casing the 4-job build case..."; \
             (make -j"$(nproc)" || make -j2 || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
           else
             (make -j"$(nproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
           fi; \
         elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
-          echo "gnproc says we can use $(gnproc) build jobs"; \
+          sync && echo "gnproc says we can use $(gnproc) build jobs"; \
           (make -j"$(gnproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
         else \
-          echo "on the slow path..."; \
+          sync && echo "on the slow path..."; \
           (make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
         fi
-    - run: cd src && make check-zlib
-    - run: cd src && make check-libiberty
+    - run: cd src && make check-zlib && sync && make check-libiberty
     - run: cd src && sync && make -C tcl/unix tcltest && sync
     - run: cd src && for dir in cgen sim expect dejagnu itcl libgui; do if test -r ${dir}/Makefile; then (sync && echo "running testsuite for ${dir}" && sync && make check-${dir} V=0 RUNTESTFLAGS="-v" && sync); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
     - name: Possibly do static analysis
@@ -242,14 +241,14 @@ jobs:
         cd src
         if test ${{ matrix.compiler }} == clang; then \
           time make check-bfd; \
-          echo "done with bfd; moving onto binutils next..."; \
+          sync && echo "done with bfd; moving onto binutils next..."; \
           time make check-binutils-local; \
-          echo "done with binutils; moving onto mmalloc next..."; \
+          sync && echo "done with binutils; moving onto mmalloc next..."; \
           time make check-mmalloc; \
-          echo "done with mmalloc; moving onto electrict-fence next..."; \
+          sync && echo "done with mmalloc; moving onto electrict-fence next..."; \
           cd electric-fence; \
           make check-local || make check stamp-framework ls; \
-          echo "done with electric-fence..." && sync; \
+          sync && echo "done with electric-fence..." && sync; \
         elif test ${{ matrix.compiler }} == gcc; then \
           sync && echo "getting some additional dependencies..."; \
           brew install idutils || brew install ctags || brew install universal-ctags || brew install emacs || brew install global || brew install cscope; \
@@ -275,6 +274,7 @@ jobs:
           fi; \
           pushd bfd; \
           sync && make check-DEJAGNU; \
+          shellcheck ./development.sh || shellcheck ./ltmain.sh || ls ./*.sh; \
           popd; \
           pushd binutils; \
           make am_check-DEJAGNU || make check-DEJAGNU || make check-TESTS; \
@@ -302,7 +302,7 @@ jobs:
           popd; \
           sync && echo "done with readline..." && sync; \
         else \
-          echo "error, unhandled compiler!" >&2 && exit 1; \
+          sync && echo "error, unhandled compiler!" >&2 && exit 1; \
         fi
     - run: cd src && sync && make check-opcodes && sync && make check-intl && sync
     # (check-binutils target is now moved into the static analysis step)
