@@ -67,10 +67,12 @@ jobs:
     - run: (if test -n "$(type ant 2>/dev/null)" && test -x "$(which ant)" && test -r build.xml; then if test ! -d build; then mkdir build; elif test ! -d "${HOME}"/work/apple-gdb-1824/build; then mkdir -pv "${HOME}"/work/apple-gdb-1824/build; fi; ant; else (echo "ant missing" && sync); fi) || (if test -x ./gradlew; then (./gradlew build || ./gradlew assemble || ./gradlew); elif test -r ./gradlew; then sh ./gradlew; elif test -e ./gradlew; then stat ./gradlew; else echo "gradlewrapper missing"; fi) || (if test -x "$(which gradle)"; then gradle; else echo "gradle missing"; fi) || (if test -x ~rc/bin/buildit; then sudo ~rc/bin/buildit "$(pwd)" -arch ppc -arch i386 -arch armv5 -target cross -project gdb -release RELEASENAME RC_CROSS_ARCHS=armv6; else echo "buildit missing"; fi) || ls
     - run: (if test -x ./gradlew; then (./gradlew build || ./gradlew assemble || ./gradlew); elif test -r ./gradlew; then sh ./gradlew; elif test -e ./gradlew; then stat ./gradlew; else echo "gradlewrapper missing" >&2; fi) || (if test -x "$(which gradle)"; then gradle; else echo "gradle missing"; fi) || (if test -x ~rc/bin/buildit; then sudo ~rc/bin/buildit "$(pwd)" -arch ppc -arch i386 -arch armv5 -target cross -project gdb -release RELEASENAME RC_CROSS_ARCHS=armv6; else echo "buildit missing"; fi) || ls
     - run: cd src && ./configure --disable-werror --disable-opts-test --enable-carbon-framework --enable-debug-symbols-framework --enable-64-bit-bfd --enable-silent-rules --disable-dependency-tracking CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
+    - run: cd src && make configure-zlib
     - run: cd src && make configure-bfd
     - run: cd src && sync && make -C bfd headers && sync
     - run: cd src && if test ! -e bfd/bfd.h; then (sync && make -C bfd bfd.h); else (sync && stat bfd/bfd.h); fi && sync && find . -name bfd.h -print && sync
     - run: cd src && make -C bfd diststuff
+    - run: cd src && make all-zlib
     - run: cd src && make all-bfd
     - run: if test ! -e macsbug/MacsBug_plugin; then make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else stat macsbug/MacsBug_plugin; fi
     - run: if test ! -e macsbug/gdb_plugin_support/gdb_plugin_support.o; then (sync && make -ki -C macsbug/gdb_plugin_support TARGET_ARCHITECTURE="x86_64" && sync) || (if test -x "$(which ant)"; then ant; fi) || (for cfile in macsbug/gdb_plugin_support/*.c; do ${{ matrix.compiler }} -c "${cfile}" || stat "${cfile}"; done); else stat macsbug/gdb_plugin_support/gdb_plugin_support.o; fi
@@ -231,6 +233,7 @@ jobs:
           echo "on the slow path..."; \
           (make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
         fi
+    - run: cd src && make check-zlib
     - run: cd src && make check-libiberty
     - run: cd src && sync && make -C tcl/unix tcltest && sync
     - run: cd src && for dir in cgen sim expect dejagnu itcl libgui; do if test -r ${dir}/Makefile; then (sync && echo "running testsuite for ${dir}" && sync && make check-${dir} V=0 RUNTESTFLAGS="-v" && sync); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
@@ -246,12 +249,12 @@ jobs:
           echo "done with mmalloc; moving onto electrict-fence next..."; \
           cd electric-fence; \
           make check-local || make check stamp-framework ls; \
-          echo "done with electric-fence..." ; \
+          echo "done with electric-fence..." && sync; \
         elif test ${{ matrix.compiler }} == gcc; then \
           sync && echo "getting some additional dependencies..."; \
           brew install idutils || brew install ctags || brew install universal-ctags || brew install emacs || brew install global || brew install cscope; \
           if test -z "$(which etags)" || test ! -x "$(which etags)"; then \
-            brew install emacs || stat "$(which emacs)" || echo "etags missing"; \
+            brew install emacs || brew install --cask emacs || stat "$(which emacs)" || echo "etags missing"; \
           else \
             sync && echo "etags available as $(which etags)"; \
           fi; \
@@ -268,7 +271,7 @@ jobs:
           if test -z "$(which shellcheck)" || test ! -x "$(which shellcheck)"; then \
             brew install shellcheck || stat "$(which shellcheck)" || echo "shellcheck missing"; \
           else \
-            echo "shellcheck available as $(which shellcheck)"; \
+            sync && echo "shellcheck available as $(which shellcheck)"; \
           fi; \
           pushd bfd; \
           sync && make check-DEJAGNU; \
@@ -278,6 +281,7 @@ jobs:
           make check-recursive || make cscope || make ID || make TAGS || make CTAGS || make GTAGS || make recheck || stat Makefile; \
           sync && echo "done with make targets for binutils; using script manually next..."; \
           sh ./sanity.sh || shellcheck ./sanity.sh || stat ./sanity.sh; \
+          shellcheck ./embedspu.sh || shellcheck ./ranlib.sh || ls ./*.sh; \
           popd; \
           sync && echo "done with binutils; moving on to mmalloc next..."; \
           pushd mmalloc; \
@@ -296,7 +300,7 @@ jobs:
             make my_TAGS || make tags-local || make ID || make TAGS || touch TAGS; \
           fi; \
           popd; \
-          sync && echo "done with readline..."; \
+          sync && echo "done with readline..." && sync; \
         else \
           echo "error, unhandled compiler!" >&2 && exit 1; \
         fi
