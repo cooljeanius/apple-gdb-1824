@@ -289,7 +289,7 @@ jobs:
           popd; \
           sync && echo "done with mmalloc; moving on to electric-fence next..."; \
           pushd electric-fence; \
-          sync && make check stamp-framework ls; \
+          sync && make check info stamp-framework ls; \
           popd; \
           sync && echo "done with electric-fence; moving on to readline next..."; \
           pushd readline; \
