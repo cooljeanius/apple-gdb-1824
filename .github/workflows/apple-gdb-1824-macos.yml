@@ -279,6 +279,7 @@ jobs:
           pushd binutils; \
           make am_check-DEJAGNU || make check-DEJAGNU || make check-TESTS; \
           make check-recursive || make cscope || make ID || make TAGS || make CTAGS || make GTAGS || make recheck || stat Makefile; \
+          make info || make dvi || make embedspu || make stamp-framework-binutils; \
           sync && echo "done with make targets for binutils; using script manually next..."; \
           sh ./sanity.sh || shellcheck ./sanity.sh || stat ./sanity.sh; \
           shellcheck ./embedspu.sh || shellcheck ./ranlib.sh || ls ./*.sh; \
@@ -299,6 +300,7 @@ jobs:
           if test ! -e TAGS; then \
             make my_TAGS || make tags-local || make ID || make TAGS || touch TAGS; \
           fi; \
+          make info || make dvi || make stamp-framework-headers; \
           popd; \
           sync && echo "done with readline..." && sync; \
         else \

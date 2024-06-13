@@ -1163,7 +1163,7 @@ installdirs: mkinstalldirs
 	$(SHELL) $(srcdir)/mkinstalldirs $(MAKEDIRS)
 
 dir.info: do-install-info
-	if [ -f $(srcdir)/texinfo/gen-info-dir ]; then \
+	if [ -x $(srcdir)/texinfo/gen-info-dir ]; then \
 	  $(srcdir)/texinfo/gen-info-dir $(DESTDIR)$(infodir) $(srcdir)/texinfo/dir.info-template > dir.info.new; \
 	  mv -f dir.info.new dir.info; \
 	else echo "missing script to generate texinfo info dir"; \
