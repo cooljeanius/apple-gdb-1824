@@ -319,7 +319,7 @@ ID-uppercase: $(HEADERS) $(SOURCES)
 .PHONY: ID-uppercase
 
 mostlyclean-local: @MAINT@ config.status
-	rm -f $(AM_V_v) *.a *.la *.o *.obj *.lo core.* @MAINT@ libintl.h
+	rm -f $(AM_V_v) *.a *.la *.o *.obj *.lo core.*
 	-rm -f core
 .PHONY: mostlyclean-local
 
@@ -333,7 +333,22 @@ distclean-local: clean-local @MAINT@ config.status
 	if test -e config.status && test -x config.status; then \
 	  if test -e po; then ./config.status po/Makevars; fi \
 	fi
-	rm -f config.log config.intl config.h @MAINT@ libintl.h
+	rm -f config.log config.intl config.h
+	-if test -L libintl.h && test "x${IN_MAINT_MODE}" = "xyes"; then \
+	  if test -n "$(FILECMD)" && test -n "$(GREP)"; then \
+	    if test -n "`$(FILECMD) libintl.h | $(GREP) broken`"; then \
+	      (unlink libintl.h || readlink libintl.h || stat libintl.h); \
+	    elif test -x "${GIT_BIN}" && test -n "`${GIT_BIN} status -s libintl.h`"; then \
+	      echo "remember you can use ${GIT_BIN} to restore libintl.h if it gets deleted"; \
+	    else \
+	      echo "$@ in `pwd`: leaving libintl.h alone"; \
+	    fi; \
+	  elif test -x "`which sync`"; then \
+	    sync && echo "take care of libintl.h yourself"; \
+	  fi; \
+	elif test -e libintl.h; then \
+	  echo "$@: leaving libintl.h alone in `pwd`"; \
+	fi
 	rm -f Makefile ID TAGS @MAINT@ stamp-h1
 	if test ! -d po && (test -z $(SUBDIRS) || (test "x$(SUBDIRS)" != "xpo" && test "x$(SUBDIRS)" != "x. po")); then \
 	  test "x${IN_MAINT_MODE}" != "xyes" && rm -f $(AM_V_v) *.status; \
