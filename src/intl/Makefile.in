@@ -1353,6 +1353,8 @@ distclean-local: clean-local @MAINT@ config.status
 	rm -f Makefile ID TAGS @MAINT@ stamp-h1
 	if test ! -d po && (test -z $(SUBDIRS) || (test "x$(SUBDIRS)" != "xpo" && test "x$(SUBDIRS)" != "x. po")); then \
 	  test "x${IN_MAINT_MODE}" != "xyes" && rm -f $(AM_V_v) *.status; \
+	else \
+	  echo "SUBDIRS of `pwd` are $(SUBDIRS); leaving status files alone"; \
 	fi
 	rm -f $(AM_V_v) *.output Makefile*orig *~ m4/*~ po/*~
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache

@@ -308,7 +308,7 @@ jobs:
         fi
     - run: cd src && sync && make check-opcodes && sync && make check-intl && sync
     # (check-binutils target is now moved into the static analysis step)
-    - run: cd src && make check-utils
+    - run: cd src && make check-utils && sync && make check-texinfo_js
     - run: time (sync && pwd && sync && ls && sync && du && sync && df && sync)
       if: "${{ success() }}"
     - name: Upload a Build Artifact

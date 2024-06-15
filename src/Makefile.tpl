@@ -978,6 +978,7 @@ do-[+make_target+]: unstage [+make_target+]-host [+make_target+]-target stage
 .PHONY: install-info install-pdf install-html
 .PHONY: clean distclean mostlyclean maintainer-clean realclean
 .PHONY: local-clean local-distclean local-maintainer-clean
+.PHONY: texinfo_js all-texinfo_js check-texinfo_js
 info: do-info
 installcheck: do-installcheck
 dvi: do-dvi
@@ -990,6 +991,23 @@ doc docs: info dvi pdf html
 # Make sure makeinfo is built before we do a `make info', if we're
 # in fact building texinfo.
 do-info: maybe-all-texinfo
+
+texinfo/js/Makefile: texinfo/js/Makefile.in config.status
+	./config.status texinfo/js/Makefile
+texinfo_js: texinfo/js/Makefile
+	$(MAKE) -C texinfo/js $(AM_V_MFLAG) $(FLAGS_TO_PASS)
+
+all-texinfo_js: texinfo/js/Makefile
+	$(MAKE) -C texinfo/js $(AM_V_MFLAG) $(FLAGS_TO_PASS) all
+check-texinfo_js: texinfo/js/Makefile
+	pushd texinfo/js; \
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) check || \
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) lint || \
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) check-types || \
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) uglify || \
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) modernizr || \
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) check-local; \
+	popd
 
 install-info: do-install-info dir.info
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \

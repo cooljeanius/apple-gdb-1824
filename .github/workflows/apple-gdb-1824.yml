@@ -38,6 +38,7 @@ jobs:
     - run: cd src && make info-gdb && sync && make pdf-gdb && sync && make html-gdb && sync && make TAGS-gdb
     - run: cd src && make info
     - run: cd src && make check-zlib && sync && make check-libiberty
+    - run: cd src && make check-texinfo_js
     - run: cd src && sync && make -C tcl/unix tcltest && sync
     - run: cd src && for dir in sim itcl; do if test -e ${dir}/Makefile; then (echo "running testsuite for ${dir}" && make check-${dir} V=0 RUNTESTFLAGS="-v" && sleep 1); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
     - run: cd src/utils && for dir in misc msdos spu sparclite wince; do if test -e ${dir}/Makefile; then (echo "in $(pwd), and running testsuite for ${dir}" && make check-${dir} V=0 RUNTESTFLAGS="-v" && sleep 1); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "in $(pwd), skipping testing ${dir}"; fi; done
