@@ -27,7 +27,10 @@ jobs:
           COMPILER_FORMULA=""; \
         fi
         date && sync
-        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake term termbox termcolor cdk cgdb ncurses groff "${COMPILER_FORMULA}"
+        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake term termbox termcolor cdk cgdb ncurses groff "${COMPILER_FORMULA}"
+        if test -z "$(which ant)" || test ! -x "$(which ant)"; then \
+          brew install ant-contrib || brew install ant || brew install ant@1.9; \
+        fi
         # shellcheck disable=SC2016
         if test -d /usr/local/opt/ncurses/bin && test -d /Users/runner && test -w /Users/runner; then \
           echo 'export PATH="/usr/local/opt/ncurses/bin:${PATH}"' >> /Users/runner/.bash_profile; \
