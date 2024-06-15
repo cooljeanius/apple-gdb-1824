@@ -37,6 +37,7 @@
 /* FIXME: We should not have to rely on these details, but there are NOT
    interfaces for all the cmd_list_element bits we need here yet. */
 #include "cli/cli-decode.h"
+#include "cli/cli-script.h" /* for execute_user_command */
 #include "expression.h" /* parse_expression */
 #include "inferior.h"   /* stop_bpstat, read_sp */
 #include "symtab.h" /* struct symtab_and_line, find_pc_line, find_pc_sect_function */
@@ -51,6 +52,7 @@
 #include "block.h"      /* BLOCK_START */
 #include "exceptions.h" /* catch_errors */
 #include "demangle.h"	/* for cplus_demangle */
+#include "objc-lang.h"  /* for objc_demangle */
 #include "target.h"
 #include "defs.h"
 

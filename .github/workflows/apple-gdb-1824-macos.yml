@@ -27,10 +27,12 @@ jobs:
           COMPILER_FORMULA=""; \
         fi
         brew install python@3.12 || brew link --overwrite python@3.12 || (if test -L /usr/local/bin/2to3; then (readlink /usr/local/bin/2to3 && unlink /usr/local/bin/2to3); else rm '/usr/local/bin/2to3'; fi) || which -a 2to3
-        date && sync
+        sync && date && sync
         brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake term termbox termcolor cdk cgdb ncurses groff "${COMPILER_FORMULA}"
         if test -z "$(which ant)" || test ! -x "$(which ant)"; then \
-          brew install ant-contrib || brew install ant || brew install ant@1.9; \
+          brew install ant || brew install ant@1.9; \
+        else \
+          brew install ant-contrib || stat "$(which ant)"; \
         fi
         # shellcheck disable=SC2016
         if test -d /usr/local/opt/ncurses/bin && test -d /Users/runner && test -w /Users/runner; then \
@@ -275,6 +277,11 @@ jobs:
             brew install shellcheck || stat "$(which shellcheck)" || echo "shellcheck missing"; \
           else \
             sync && echo "shellcheck available as $(which shellcheck)"; \
+          fi; \
+          if test -z "$(which lcov)" || test ! -x "$(which lcov)"; then \
+            brew install lcov || stat "$(which lcov)" || echo "lcov missing"; \
+          else \
+            sync && echo "lcov available as $(which lcov)"; \
           fi; \
           pushd bfd; \
           sync && make check-DEJAGNU; \

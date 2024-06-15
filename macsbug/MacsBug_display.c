@@ -148,12 +148,12 @@ static char side_bar_blanks[21];		/* blank entry for a side bar line	*/
 static char output_buffer[BUFSIZE+1];		/* buffered screen's buffer		*/
 static char *bp = output_buffer;		/* ptr to next free byte in buffer	*/
 static int  buf_row = 0;			/* nbr of lines buffer represents	*/
-#define END_OF_LINE ++buf_row			/* counts those lines			*/
-#define FLUSH_BUFFER flush_buffer()		/* flush the buffer			*/
+# define END_OF_LINE ++buf_row			/* counts those lines			*/
+# define FLUSH_BUFFER flush_buffer()		/* flush the buffer			*/
 #else
-#define END_OF_LINE				/* nop if not buffering			*/
-#define FLUSH_BUFFER screen_fflush(stdout, HISTORY_AREA)
-#endif
+# define END_OF_LINE				/* nop if not buffering			*/
+# define FLUSH_BUFFER screen_fflush(stdout, HISTORY_AREA)
+#endif /* BUFFER_OUTPUT */
 
 static void sd(char *arg, int from_tty);	/* sd and su reference each other	*/
 
@@ -228,8 +228,7 @@ static void word_completion_query(GDB_FILE *stream, char *query, ...)
     vfprintf(stderr, query, ap);
     va_end(ap);
     fprintf(stderr, COLOR_OFF);
-
-    #endif
+    #endif /* 0 */
 }
 
 /*--------------------------------------------------------------------------------------*/
@@ -282,7 +281,7 @@ static void flush_buffer(void)
 	    if (nl)
 		bp += sprintf(bp, "еее nl еее");
 	}
-    	#endif
+    	#endif /* 0 */
 
 	screen_fputs(output_buffer, stdout, HISTORY_AREA);
     	screen_fflush(stdout, HISTORY_AREA);
@@ -291,7 +290,7 @@ static void flush_buffer(void)
     bp = output_buffer;
     buf_row = 0;
 }
-#endif
+#endif /* BUFFER_OUTPUT */
 
 
 /*--------------------------------------------------------------------*
@@ -389,7 +388,7 @@ static int write_line(char *fmt, ...)
 
     screen_fputs(line, stdout, HISTORY_AREA);
 
-    #endif
+    #endif /* BUFFER_OUTPUT */
 
     return (len);				/* return nbr of bytes written		*/
 }
@@ -967,7 +966,9 @@ static char *write_to_history_area(FILE *f, char *line, void *data)
 	    SCREEN_CLEAR_LINE();
     }
     END_OF_LINE;
-    //FLUSH_BUFFER;
+#if 0
+    FLUSH_BUFFER;
+#endif /* 0 */
 
     /* If immediate_flush is not NORMAL_REFRESH then set we do an immediate flush and 	*/
     /* screen refresh.  This immediate_flush state switch used for queries to get the	*/
@@ -986,8 +987,10 @@ static char *write_to_history_area(FILE *f, char *line, void *data)
     if (1||immediate_flush != NORMAL_REFRESH) {
 	FLUSH_BUFFER;
 	screen_refresh(0);
-    	//if (immediate_flush == QUERY_REFRESH1 || immediate_flush == QUERY_REFRESH2)
-	//    immediate_flush = NORMAL_REFRESH;
+#if 0
+    	if (immediate_flush == QUERY_REFRESH1 || immediate_flush == QUERY_REFRESH2)
+	    immediate_flush = NORMAL_REFRESH;
+#endif /* 0 */
     }
 
     return (NULL);
@@ -1080,7 +1083,9 @@ static char *disasm_pc_area_output(FILE *f, char *line, void *data)
 void display_pc_area(void)
 {
     int  	    row;
-    //unsigned long limit;
+#if 0
+    unsigned long limit;
+#endif /* 0 */
     DisasmData	   disasm_info;
     Disasm_pc_data pc_data;
     GDB_FILE	   *redirect_stdout;
@@ -1151,7 +1156,9 @@ void display_pc_area(void)
     gdb_redirect_output(redirect_stdout);	/* x/i will go thru format_disasm_line()*/
 
     addr  = disasm_info.pc;			/* always disassemble starting from $pc	*/
-    //limit = addr + 4 * pc_lines;		/* disassemble pc_lines lines		*/
+#if 0
+    limit = addr + 4 * pc_lines;		/* disassemble pc_lines lines		*/
+#endif /* 0 */
 
     disasm_info.addr = addr;
     gdb_execute_command("x/%di 0x%llx", pc_lines, (long long)addr);
@@ -1221,7 +1228,7 @@ static char *check_for_NSArgv(FILE *f, char *line, void *data)
 
     return (NULL);
 }
-#endif
+#endif /* NSArgv_Use_Redirect */
 
 
 /*-------------------------------------------------------------------*
@@ -1293,7 +1300,7 @@ static char *get_CurApName(char *curApName)
 	}
     }
 
-    #endif
+    #endif /* NSArgv_Use_Redirect */
 
     return (curApName);
 }
@@ -1354,7 +1361,9 @@ static void save_all_regs(void)
     gdb_get_register("$ctr", &prev_ctr);
     gdb_get_register("$xer", &prev_xer);
     gdb_get_register("$cr",  &prev_cr.cr);
-    //gdb_get_register("$mq",  &prev_mq);
+#if 0
+    gdb_get_register("$mq",  &prev_mq);
+#endif /* 0 */
     gdb_get_register("$ps",  &prev_msr);
 
     for (i = 0; i < 32; ++i) {
@@ -1456,10 +1465,10 @@ void __display_side_bar(char *arg, int from_tty)
     static char prev_curApName[MAXPATHLEN+1] = {0};	/* previous CurApName		*/
 
     #if 0
-    #define BAR COLOR_BOLD "|" COLOR_OFF
+    # define BAR COLOR_BOLD "|" COLOR_OFF
     #else
-    #define BAR COLOR_OFF "|"
-    #endif
+    # define BAR COLOR_OFF "|"
+    #endif /* 0 */
 
     if (!isatty(STDOUT_FILENO))			/* if we aren't writting to a terminal	*/
     	return;					/* ...what else can we do?		*/
@@ -1531,7 +1540,9 @@ void __display_side_bar(char *arg, int from_tty)
     gdb_get_register("$ctr", &ctr);
     gdb_get_register("$xer", &xer);
     gdb_get_register("$cr",  &cr.cr);	/* note, cr is always a 32-bit value		*/
-    //gdb_get_register("$mq",  &mq);
+#if 0
+    gdb_get_register("$mq",  &mq);
+#endif /* 0 */
     gdb_get_register("$ps",  &msr);
 
     for (i = 0; i < 32; ++i) {
@@ -1616,10 +1627,10 @@ void __display_side_bar(char *arg, int from_tty)
 
     if (first_sidebar)
     	screen_fprintf(stdout, SIDE_BAR, GOTO "%s" "%s" "%s", row, left_col,
-    				bar_left, blanks, bar_right);
+                       bar_left, blanks, bar_right);
     ++row;
 
-    /* Print the CurApName if we have it...						*/
+    /* Print the CurApName if we have it...				*/
 
     if (first_sidebar || (*curApName && strcmp(curApName, prev_curApName) != 0)) {
     	strcpy(prev_curApName, curApName);
@@ -1629,7 +1640,8 @@ void __display_side_bar(char *arg, int from_tty)
 	    if ((i = strlen(curApName)) > side_bar_right) {
 		char c1 = curApName[side_bar_right - 1];
 		char c2 = curApName[side_bar_right];
-		curApName[side_bar_right - 1] = '╔';
+  		/* This is supposed to be a single-character ellipsis: */
+		curApName[side_bar_right - 1] = '╔'; /* FIXME: -Winvalid-source-encoding */
 		curApName[side_bar_right] = '\0';
 		screen_fprintf(stdout, SIDE_BAR, GOTO "%s" "%s" "%s", row++, left_col,
 					bar_left, curApName, bar_right);
@@ -1718,7 +1730,7 @@ void __display_side_bar(char *arg, int from_tty)
     	screen_fprintf(stdout, SIDE_BAR, GOTO "%s" "MQ  " "%s" "%.8X" "%s", row, left_col, bar_left,
     			COLOR_CHANGE(prev_mq_color = changed), mq , bar_right);
     ++row;
-    #endif
+    #endif /* 0 */
 
     changed = (prev_xer != xer);
     if (first_sidebar || changed || changed != prev_xer_color) {
@@ -1955,7 +1967,7 @@ void define_macsbug_screen_positions(short pc_area_lines, short cmd_area_lines)
     gdb_printf("cmd_lines         = %d\n", cmd_lines);
     gdb_printf("history_lines     = %d\n", history_lines);
     gdb_printf("history_wrap      = %d\n", history_wrap);
-    #endif
+    #endif /* 0 */
 }
 
 
@@ -1972,7 +1984,7 @@ void refresh(char *arg, int from_tty)
 {
     int     argc, pc_lines, cmd_lines, i, old_prompt_start;
     History *h;
-    char    *argv[5], set_prompt_cmd[1024], old_prompt[1024], tmpCmdLine[1024];;
+    char    *argv[5], set_prompt_cmd[1024], old_prompt[1024], tmpCmdLine[1024];
 
     if (!macsbug_screen)
     	return;
@@ -2009,7 +2021,7 @@ void refresh(char *arg, int from_tty)
     #if BUFFER_OUTPUT
     bp = output_buffer;
     buf_row = 0;
-    #endif
+    #endif /* BUFFER_OUTPUT */
 
     need_CurApName = 1;
 
@@ -2044,7 +2056,9 @@ void refresh(char *arg, int from_tty)
     /* lines.										*/
 
     old_prompt_start = prompt_start;
-    //prompt_start = sprintf(prompt, GOTO CLEAR_LINE, cmd_top, cmd_left);
+#if 0
+    prompt_start = sprintf(prompt, GOTO CLEAR_LINE, cmd_top, cmd_left);
+#endif /* 0 */
     prompt_start = sprintf(prompt, GOTO, cmd_top, cmd_left);
 
     /* NOTE: The CLEAR_LINE at the need of the prompt has been removed because, for some*/
@@ -2073,12 +2087,17 @@ void refresh(char *arg, int from_tty)
 	/* prompt with the GOTO prefix we just use actual prompt that follows it.	*/
 
 	char *p1 = prompt + prompt_start;
-	//char *p2 = strstr(gdb_get_prompt(p1), CLEAR_LINE);
+#if 0
+	char *p2 = strstr(gdb_get_prompt(p1), CLEAR_LINE);
+#else
 	char *p2 = strstr(gdb_get_prompt(p1), GOTO);
+#endif /* 0 */
 
 	if (p2)
 	    strcpy(p1, p2 + strlen(GOTO));
-	    //strcpy(p1, p2 + strlen(CLEAR_LINE));
+#if 0
+	    strcpy(p1, p2 + strlen(CLEAR_LINE));
+#endif /* 0 */
     }
 
     sprintf(set_prompt_cmd, "set prompt %s", prompt);
@@ -2125,7 +2144,9 @@ void restore_current_prompt(void)
 void force_pc_area_update(void)
 {
     previous_pc = 0;
-    //display_pc_area();
+#if 0
+    display_pc_area();
+#endif /* 0 */
 }
 
 
@@ -2306,12 +2327,12 @@ static int filter_keyboard_characters(int c)
 	    	c = 0;
 	}
     }
-    #endif
+    #endif /* 0 */
     xseen = 1;
 
     return (c);
 }
-#endif
+#endif /* 0 */
 
 
 /*-----------------------------------------------------------*
@@ -2402,8 +2423,11 @@ void my_raw_input_prompt_setter(char *prompt)
 
     if (strstr(prompt, GOTO CLEAR_LINE) == NULL) {
 	strcpy(orig_prompt, prompt);
-	//sprintf(prompt, GOTO CLEAR_LINE "%s", cmd_top, cmd_left, orig_prompt);
+#if 0
+	sprintf(prompt, GOTO CLEAR_LINE "%s", cmd_top, cmd_left, orig_prompt);
+#else
 	sprintf(prompt, GOTO "%s", cmd_top, cmd_left, orig_prompt);
+#endif /* 0 */
     }
 }
 
@@ -2547,7 +2571,9 @@ void macsbug_on(int resume)
     prompt_start = 0;
     refresh(NULL, 0);
 
-    //hook_stop = gdb_replace_command_hook("stop", stop_hook, "For internal use only -- do not use.");
+#if 0
+    hook_stop = gdb_replace_command_hook("stop", stop_hook, "For internal use only -- do not use.");
+#endif /* 0 */
 
     screen_fprintf(stderr, CMD_AREA, GOTO CLEAR_LINE, cmd_top, cmd_left);
 }
@@ -2596,7 +2622,9 @@ void macsbug_off(int suspend)
 
     gdb_set_int("$macsbug_screen", macsbug_screen = 0);
 
-    //gdb_remove_command_hook(hook_stop);
+#if 0
+    gdb_remove_command_hook(hook_stop);
+#endif /* 0 */
 
     gdb_get_prompt(prompt);
     sprintf(set_prompt_cmd, "set prompt %s", prompt + prompt_start);

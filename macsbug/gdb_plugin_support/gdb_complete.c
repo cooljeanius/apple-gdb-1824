@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#include <ctype.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/file.h>
