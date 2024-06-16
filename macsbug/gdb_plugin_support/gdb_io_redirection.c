@@ -134,8 +134,8 @@ static void my_rl_startup_hook(void);
 static char *my_command_line_input_hook(char *, int , char *);
 
 #if DEBUG
-#define DEBUG1(func) fprintf(stdout, "\n--- " #func " ---\n");
-#define DEBUG2(func, s, len)						\
+# define DEBUG1(func) fprintf(stdout, "\n--- " #func " ---\n");
+# define DEBUG2(func, s, len)						\
     {									\
     	int  _i, _l = len;						\
     	fprintf(stdout, "\n--- " #func " --- (");			\
@@ -151,9 +151,9 @@ static char *my_command_line_input_hook(char *, int , char *);
     	fprintf(stdout, ")\n");						\
     }
 #else
-#define DEBUG1(func)
-#define DEBUG2(func, s, len)
-#endif
+# define DEBUG1(func)
+# define DEBUG2(func, s, len)
+#endif /* DEBUG */
 
 /*--------------------------------------------------------------------------------------*/
 
@@ -661,8 +661,10 @@ GDB_FILE *gdb_redirect_output(GDB_FILE *stream)
 	    if (u == unknown_redirections_tail)
 		unknown_redirections_tail = unknown_redirections_tail->prev;
 	    xfree(u);
-	    //fprintf(stderr, "  gdb_redirect_output2: ui_file = %X, data = %X, magic_nbr = %X, &magic = %X\n",
-	    //			    stream, output, output->magic_nbr, &magic);
+            #if 0
+	    fprintf(stderr, "  gdb_redirect_output2: ui_file = %X, data = %X, magic_nbr = %X, &magic = %X\n",
+	    			    stream, output, output->magic_nbr, &magic);
+            #endif /* 0 */
 	} else {
 	    if (!is_known_redirection(stream))
 	    	internal_error(__FILE__, __LINE__, "attempt to redirect to a undefined stream");
@@ -675,7 +677,7 @@ GDB_FILE *gdb_redirect_output(GDB_FILE *stream)
 		fprintf(stderr, "    gdb_default_stderr\n");
 	    fprintf(stderr, "  gdb_redirect_output1: ui_file = %X, data = %X, magic_nbr = %X, &magic = %X\n",
 				    stream, output, output->magic_nbr, &magic);
-	    #endif
+	    #endif /* 0 */
 	    
 	    if (output->magic_nbr != &magic)
 		internal_error(__FILE__, __LINE__, "attempt to redirect to a stream with a bad magic number");
@@ -711,7 +713,7 @@ GDB_FILE *gdb_redirect_output(GDB_FILE *stream)
     	fprintf(stderr, "    gdb_default_stdout\n");
     else if (prev_file == gdb_default_stderr)
     	fprintf(stderr, "    gdb_default_stderr\n");
-    #endif
+    #endif /* 0 */
     
     return (prev_file);
 }
@@ -784,7 +786,7 @@ void gdb_close_output(GDB_FILE *stream)
     	fprintf(stderr, "    gdb_default_stdout\n");
     else if (prev_stream == gdb_default_stderr)
     	fprintf(stderr, "    gdb_default_stderr\n");
-    #endif
+    #endif /* 0 */
     
     (void)gdb_redirect_output(prev_stream);
 }
@@ -948,7 +950,7 @@ static int my_disasm_fprintf(struct ui_file *stream, const char *fmt, ...)
     
     return (i);
 }
-#endif
+#endif /* 0 */
 
 
 /*----------------------------------------------------------------*
@@ -966,6 +968,7 @@ static int call_default_query_hook(char *format, ...)
     va_start(ap, format);
     __default_gdb_query_hook(format, ap);
     va_end(ap);
+    return 0;
 }
 
 
@@ -1352,14 +1355,14 @@ void __initialize_io(void)
     	gdb_input_handler		= INITIAL_GDB_VALUE(input_handler, input_handler);
     	default_command_line_input_hook = INITIAL_GDB_VALUE(command_line_input_hook, command_line_input_hook);
 	input_handler = output_recovery_stdin_hook;
-	#endif
+	#endif /* 0 */
 	
 	#if 0
 	fprintf(stdout, "#### gdb_input_handler = ");
 	print_address((CORE_ADDR)gdb_input_handler, gdb_stdout);
 	fprintf(stdout, " ####\n");
 	fflush(stdout);
-	#endif
+	#endif /* 0 */
     }
 }
 

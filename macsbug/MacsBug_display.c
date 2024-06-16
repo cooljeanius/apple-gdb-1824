@@ -966,9 +966,9 @@ static char *write_to_history_area(FILE *f, char *line, void *data)
 	    SCREEN_CLEAR_LINE();
     }
     END_OF_LINE;
-#if 0
+#if defined(FLUSH_BUFFER)
     FLUSH_BUFFER;
-#endif /* 0 */
+#endif /* FLUSH_BUFFER */
 
     /* If immediate_flush is not NORMAL_REFRESH then set we do an immediate flush and 	*/
     /* screen refresh.  This immediate_flush state switch used for queries to get the	*/
@@ -987,10 +987,10 @@ static char *write_to_history_area(FILE *f, char *line, void *data)
     if (1||immediate_flush != NORMAL_REFRESH) {
 	FLUSH_BUFFER;
 	screen_refresh(0);
-#if 0
+#if defined(QUERY_REFRESH1) && defined(QUERY_REFRESH2) && defined(NORMAL_REFRESH)
     	if (immediate_flush == QUERY_REFRESH1 || immediate_flush == QUERY_REFRESH2)
 	    immediate_flush = NORMAL_REFRESH;
-#endif /* 0 */
+#endif /* QUERY_REFRESH1 && QUERY_REFRESH2 && defined(NORMAL_REFRESH) */
     }
 
     return (NULL);
@@ -1083,9 +1083,9 @@ static char *disasm_pc_area_output(FILE *f, char *line, void *data)
 void display_pc_area(void)
 {
     int  	    row;
-#if 0
+#if defined(ALLOW_UNUSED_BUT_SET_VARIABLES)
     unsigned long limit;
-#endif /* 0 */
+#endif /* ALLOW_UNUSED_BUT_SET_VARIABLES */
     DisasmData	   disasm_info;
     Disasm_pc_data pc_data;
     GDB_FILE	   *redirect_stdout;
@@ -1156,9 +1156,10 @@ void display_pc_area(void)
     gdb_redirect_output(redirect_stdout);	/* x/i will go thru format_disasm_line()*/
 
     addr  = disasm_info.pc;			/* always disassemble starting from $pc	*/
-#if 0
-    limit = addr + 4 * pc_lines;		/* disassemble pc_lines lines		*/
-#endif /* 0 */
+    /* Keep this condition the same as where limit is declared: */
+#if defined(ALLOW_UNUSED_BUT_SET_VARIABLES)
+    limit = addr + (4 * pc_lines);		/* disassemble pc_lines lines		*/
+#endif /* ALLOW_UNUSED_BUT_SET_VARIABLES */
 
     disasm_info.addr = addr;
     gdb_execute_command("x/%di 0x%llx", pc_lines, (long long)addr);
@@ -1464,11 +1465,11 @@ void __display_side_bar(char *arg, int from_tty)
     static char curApName[MAXPATHLEN+1]      = {0};	/* CurApName (for the side bar)	*/
     static char prev_curApName[MAXPATHLEN+1] = {0};	/* previous CurApName		*/
 
-    #if 0
+    #if defined(COLOR_BOLD)
     # define BAR COLOR_BOLD "|" COLOR_OFF
     #else
     # define BAR COLOR_OFF "|"
-    #endif /* 0 */
+    #endif /* COLOR_BOLD */
 
     if (!isatty(STDOUT_FILENO))			/* if we aren't writting to a terminal	*/
     	return;					/* ...what else can we do?		*/
@@ -2056,9 +2057,9 @@ void refresh(char *arg, int from_tty)
     /* lines.										*/
 
     old_prompt_start = prompt_start;
-#if 0
+#if defined(CLEAR_LINE)
     prompt_start = sprintf(prompt, GOTO CLEAR_LINE, cmd_top, cmd_left);
-#endif /* 0 */
+#endif /* CLEAR_LINE */
     prompt_start = sprintf(prompt, GOTO, cmd_top, cmd_left);
 
     /* NOTE: The CLEAR_LINE at the need of the prompt has been removed because, for some*/
@@ -2087,17 +2088,17 @@ void refresh(char *arg, int from_tty)
 	/* prompt with the GOTO prefix we just use actual prompt that follows it.	*/
 
 	char *p1 = prompt + prompt_start;
-#if 0
+#if defined(CLEAR_LINE)
 	char *p2 = strstr(gdb_get_prompt(p1), CLEAR_LINE);
 #else
 	char *p2 = strstr(gdb_get_prompt(p1), GOTO);
-#endif /* 0 */
+#endif /* CLEAR_LINE */
 
 	if (p2)
 	    strcpy(p1, p2 + strlen(GOTO));
-#if 0
+#if defined(CLEAR_LINE)
 	    strcpy(p1, p2 + strlen(CLEAR_LINE));
-#endif /* 0 */
+#endif /* CLEAR_LINE */
     }
 
     sprintf(set_prompt_cmd, "set prompt %s", prompt);
@@ -2195,9 +2196,9 @@ void update_macsbug_prompt(void)
     char *p, set_prompt_cmd[1024], prompt[1024];
 
     if (!doing_set_prompt && macsbug_screen) {
-#if 0
+#if defined(CLEAR_LINE)
 	prompt_start = sprintf(prompt, GOTO CLEAR_LINE, cmd_top, cmd_left);
-#endif /* 0 */
+#endif /* CLEAR_LINE */
 	prompt_start = snprintf(prompt, sizeof(prompt), GOTO, cmd_top,
 				cmd_left);
 	gdb_get_prompt(prompt + prompt_start);
@@ -2423,11 +2424,11 @@ void my_raw_input_prompt_setter(char *prompt)
 
     if (strstr(prompt, GOTO CLEAR_LINE) == NULL) {
 	strcpy(orig_prompt, prompt);
-#if 0
+#if defined(CLEAR_LINE)
 	sprintf(prompt, GOTO CLEAR_LINE "%s", cmd_top, cmd_left, orig_prompt);
 #else
 	sprintf(prompt, GOTO "%s", cmd_top, cmd_left, orig_prompt);
-#endif /* 0 */
+#endif /* CLEAR_LINE */
     }
 }
 
@@ -2572,7 +2573,9 @@ void macsbug_on(int resume)
     refresh(NULL, 0);
 
 #if 0
-    hook_stop = gdb_replace_command_hook("stop", stop_hook, "For internal use only -- do not use.");
+    hook_stop =
+      gdb_replace_command_hook("stop", stop_hook,
+                               "For internal use only -- do not use.");
 #endif /* 0 */
 
     screen_fprintf(stderr, CMD_AREA, GOTO CLEAR_LINE, cmd_top, cmd_left);

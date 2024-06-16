@@ -107,10 +107,11 @@ INCLUDES 			= 	\
 					-I$(GDB_FRAMEWORKS)/gdb.framework/Headers 	 \
 					-I$(GDB_FRAMEWORKS)/gdb.framework/Headers/config \
 					-I$(GDB_FRAMEWORKS)/gdb.framework/Headers/machine \
-					-I. -I.. -I../../src/include \
+					-I. -I.. -I../../src -I../../src/include \
 					-I$(IDIR_H) -I$(DSTDIR_H) \
 					-I../../src/gdb -I../../src/bfd \
 					-I../../src/gdb/target \
+					-I../../src/readline/ \
 					-I$(SRCROOT)/include
 
 OPT				=	-Os
@@ -124,6 +125,8 @@ CFLAGS 				= 	-gdwarf-2		\
 					-Wimplicit		\
 					-Wformat		\
 					-Wno-error		\
+					-Wno-unused		\
+					-Wno-deprecated-declarations \
 					$(INCLUDES)
 
 TARGET_ARCHITECTURE		=	ppc
@@ -195,10 +198,10 @@ $(SYMROOT)/gdb_plugin_support.o	: 	$(OBJS)
 	fi
 
 $(OFILE_DIR)/%.o		:	%.c $(HFILES)
-	$(CC) $(CFLAGS) $(RC_CFLAGS) -o $(OFILE_DIR)/$(notdir $*).o $<
+	sync && $(CC) $(CFLAGS) $(RC_CFLAGS) -o $(OFILE_DIR)/$(notdir $*).o $<
 
 $(OFILE_DIR)/gdb.o		:	gdb.c gdb_testing.i $(HFILES)
-	$(CC) $(CFLAGS) $(RC_CFLAGS) -o $(OFILE_DIR)/gdb.o gdb.c
+	sync && $(CC) $(CFLAGS) $(RC_CFLAGS) -o $(OFILE_DIR)/gdb.o gdb.c
 
 $(OFILE_DIR) $(SYMROOT) $(DSTDIR):
 	mkdir -p $@
