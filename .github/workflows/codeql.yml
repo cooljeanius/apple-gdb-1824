@@ -257,6 +257,11 @@ jobs:
     - name: Extra coverage build (C)
       if: matrix.language == 'c-cpp' && success()
       run: |
+        if test -x "$(which sccache)"; then \
+          if test -z "${CC}"; then \
+            export CC="sccache gcc"; \
+          fi; \
+        fi
         make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" || stat -t libcheckpoint
         make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || stat -t macsbug
         cd src
@@ -309,6 +314,11 @@ jobs:
       if: matrix.language == 'c-cpp' && success()
       run: |
         cd src
+        if test -x "$(which sccache)"; then \
+          if test -z "${CC}"; then \
+            export CC="sccache gcc"; \
+          fi; \
+        fi
         FINAL_CPPFLAGS="-I."
         for myincdir in .. include ../include bfd ../bfd gdb ../gdb libiberty ../libiberty tcl ../tcl tk ../tk zlib ../zlib; do \
           if test -d "${myincdir}" && test -r "${myincdir}" && test -n "$(ls "${myincdir}"/*.h)"; then \
@@ -334,6 +344,11 @@ jobs:
       if: matrix.language == 'c-cpp' && success()
       run: |
         cd src
+        if test -x "$(which sccache)"; then \
+          if test -z "${CXX}"; then \
+            export CXX="sccache g++"; \
+          fi; \
+        fi
         if test -d gdb/testsuite; then \
           pushd gdb/testsuite; \
           if test -x ./configure; then \
@@ -483,3 +498,5 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
+      env:
+        SCCACHE_GHA_ENABLED: "true"
