@@ -13,7 +13,9 @@
     "Mathieu Lirzin <mthl@gnu.org>"
   ],
   "license": "GPL-3.0",
-  "dependencies": {},
+  "dependencies": {
+    "optionator": "^0.9.4"
+  },
   "devDependencies": {
     "eslint": "^9.5.0",
     "finalhandler": "^1.0.4",

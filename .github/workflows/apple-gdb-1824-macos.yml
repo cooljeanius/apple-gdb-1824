@@ -69,6 +69,12 @@ jobs:
             sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist; \
           fi; \
         fi
+        if test -x "$(which sccache)"; then \
+          if test -z "${CC}"; then \
+            export CC="sccache ${{ matrix.compiler }}"; \
+          fi; \
+        fi
+        sync
     - run: test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq) && sync && sleep 1
     - run: ./configure --enable-silent-rules --disable-dependency-tracking CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
