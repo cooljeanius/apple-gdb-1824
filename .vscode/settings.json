@@ -1,5 +1,6 @@
 {
     "dotnet.preferCSharpExtension": true,
     "dotnet.defaultSolution": "disable",
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.compile.nullAnalysis.mode": "automatic",
+    "codeQL.createQuery.qlPackLocation": "/Users/ericgallager/apple-gdb-1824"
 }

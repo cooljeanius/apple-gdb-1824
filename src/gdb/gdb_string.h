@@ -61,9 +61,9 @@ extern int memcmp();
 #endif /* STDC_HEADERS */
 
 #if !HAVE_DECL_STRERROR
-# ifndef strerror
+# if !defined(DEFS_H_DOING_POISONING) && !defined(strerror)
 extern char *strerror(int);	/* X3.159-1989  4.11.6.2 */
-# endif /* !strerror */
+# endif /* !DEFS_H_DOING_POISONING && !strerror */
 #endif /* !HAVE_DECL_STRERROR */
 
 #if !HAVE_DECL_STRSTR
