@@ -1894,6 +1894,9 @@ extern struct cleanup *start_timer(int *timer_var, const char *timer_name,
 /* poison some unwanted functions: */
 #if (defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ >= 3)) && \
     !defined(NO_POISON) && !defined(FLEX_SCANNER)
+# ifndef DEFS_H_DOING_POISONING
+#  define DEFS_H_DOING_POISONING 1
+# endif /* !DEFS_H_DOING_POISONING */
 # ifdef sprintf
 #  undef sprintf
 # endif /* sprintf */
