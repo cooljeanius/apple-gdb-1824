@@ -294,6 +294,8 @@ if test "x${ac_cv_header_unistd_h}" = "x"; then
   AC_CHECK_HEADERS([unistd.h])
 fi
 
+AC_CHECK_HEADERS([mach/thread_act.h])dnl
+  ## ...or maybe an arch-specific one?
 case ${host} in
   *arm*-apple-darwin*)
     AC_CHECK_HEADERS([mach/arm/thread_act.h])

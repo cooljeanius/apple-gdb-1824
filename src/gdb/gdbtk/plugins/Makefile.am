@@ -13,7 +13,7 @@ am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
 am__v_v_0 =
 am__v_v_1 = -v
 
-DISTCLEANFILES = autoscan.log .DS_Store
+DISTCLEANFILES = autoscan.log .DS_Store *~
 
 distclean-local:
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache

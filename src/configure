@@ -7246,6 +7246,7 @@ fi
 use_included_zlib="yes"
 # Make sure we do NOT let ZLIB be added if we did NOT want it.
 if test "x${with_system_zlib}" = "xyes"; then
+  echo "use of the system zlib means skipping using the one bundled here"
   use_included_zlib=no
   noconfigdirs="${noconfigdirs} zlib"
 fi
@@ -8865,8 +8866,12 @@ printf "%s\n" "$as_me: Unset the APPLE_INTERNAL_DIR environment variable to avoi
     fi
 # building zlib from this level can mess it up; build it manually instead:
     if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o"; then
-      ## FIXME: come up with a proper fix instead?
-      noconfigdirs="${noconfigdirs} zlib"
+      if test "x${enable_static}" = "xyes" || test "x${build_old_libs}" = "xyes"; then
+        ## FIXME: come up with a proper fix instead?
+        noconfigdirs="${noconfigdirs} zlib"
+      else
+        echo "zlib should probably be fine so long as we avoid building its minizip subdir statically"
+      fi
     fi
 # autogen support in this tree is still tentative, so disable if guile is
 # not also present:
@@ -8931,7 +8936,11 @@ fi
     fi
 # Also similar to Apple case above:
     if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o" -o -n "${PIC_FLAG}"; then
-      noconfigdirs="${noconfigdirs} zlib"
+      if test "x${enable_static}" = "xyes" || test "x${build_old_libs}" = "xyes"; then
+        noconfigdirs="${noconfigdirs} zlib"
+      else
+        echo "zlib should probably be fine so long as we avoid building its minizip subdir statically"
+      fi
     fi
 # autogen support in this tree is still tentative, so disable if guile is
 # not also present:
@@ -8973,6 +8982,7 @@ fi
     esac
     ;;
   *-*-kaos*)
+    echo "A lot of stuff is unsupported on kaOS configurations..."
     # Remove unsupported stuff on all kaOS configurations.
     skipdirs="target-libiberty ${libgcj} target-libstdc++-v3 target-librx"
     skipdirs="${skipdirs} target-libobjc target-examples target-groff target-gperf"
@@ -9137,9 +9147,9 @@ fi
   hppa*64*-*-linux* | parisc*64*-*-linux*)
     enable_64_bit_bfd=yes
     host_configargs=" ${host_configargs} --enable-64-bit-bfd "
-    # In this case, it is because the hppa64-linux target is for
-    # the kernel only at this point and has no libc, and thus no
-    # headers, crt*.o, etc., all of which are needed by these.
+    echo "In this case, it is because the hppa64-linux target is for"
+    echo "the kernel only at this point and has no libc, and thus no"
+    echo "headers, crt*.o, etc., all of which are needed by these."
     noconfigdirs="${noconfigdirs} target-zlib"
     ;;
   parisc*-*-linux* | hppa*-*-linux*)
@@ -9795,7 +9805,30 @@ if test "x${build}" != "x${host}"; then
   CC_FOR_BUILD=${CC_FOR_BUILD-gcc}
   BUILD_PREFIX="${build_alias}-"
   BUILD_PREFIX_1="${build_alias}-"
-
+  if test "x${enable_dependency_tracking}" != "xno" \
+    && test "x${am_cv_CXX_dependencies_compiler_type}" = "xgcc3"; then
+    test -z "${am__fastdepCXX_TRUE}" && export am__fastdepCXX_TRUE=""
+    test -z "${am__fastdepCXX_FALSE}" && export am__fastdepCXX_FALSE='#'
+  else
+    test -z "${am__fastdepCXX_TRUE}" && export am__fastdepCXX_TRUE='#'
+    test -z "${am__fastdepCXX_FALSE}" && export am__fastdepCXX_FALSE=""
+  fi
+  if test "x${enable_dependency_tracking}" != "xno" \
+    && test "x${am_cv_OBJC_dependencies_compiler_type}" = "xgcc3"; then
+    test -z "${am__fastdepOBJC_TRUE}" && export am__fastdepOBJC_TRUE=""
+    test -z "${am__fastdepOBJC_FALSE}" && export am__fastdepOBJC_FALSE='#'
+  else
+    test -z "${am__fastdepOBJC_TRUE}" && export am__fastdepOBJC_TRUE='#'
+    test -z "${am__fastdepOBJC_FALSE}" && export am__fastdepOBJC_FALSE=""
+  fi
+  if test "x${enable_dependency_tracking}" != "xno" \
+    && test "x${am_cv_OBJCXX_dependencies_compiler_type}" = "xgcc3"; then
+    test -z "${am__fastdepOBJCXX_TRUE}" && export am__fastdepOBJCXX_TRUE=""
+    test -z "${am__fastdepOBJCXX_FALSE}" && export am__fastdepOBJCXX_FALSE='#'
+  else
+    test -z "${am__fastdepOBJCXX_TRUE}" && export am__fastdepOBJCXX_TRUE='#'
+    test -z "${am__fastdepOBJCXX_FALSE}" && export am__fastdepOBJCXX_FALSE=""
+  fi
 else
   # Set reasonable default values for some tools even if not Canadian.
   # Of course, these are different reasonable default values, originally
@@ -9810,7 +9843,7 @@ else
   BUILD_PREFIX_1="loser-"
 
   if test "x${CC}" = "x"; then
-    test -z "${CC}"
+    test -z "${CC}" || unset CC
     ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -12496,7 +12529,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
   if test "x${GOC}" = "x"; then
-    test -z "${GOC}"
+    test -z "${GOC}" || unset GOC
     ac_ext=go
 ac_compile='$GOC -c $GOFLAGS conftest.$ac_ext >&5'
 ac_link='$GOC -o conftest$ac_exeext $GOFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -18658,7 +18691,9 @@ fi
 done
 test -n "$CONFIGURED_LEX" || CONFIGURED_LEX="${MISSING} flex"
 
-for ac_prog in makeinfo
+if test "x${MISSING}" != "x"; then
+  test -n "${MISSING}"
+  for ac_prog in makeinfo gmakeinfo
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -18706,6 +18741,59 @@ fi
   test -n "$CONFIGURED_MAKEINFO" && break
 done
 test -n "$CONFIGURED_MAKEINFO" || CONFIGURED_MAKEINFO="${MISSING} makeinfo"
+
+else
+  test -z "${MISSING}"
+  for ac_prog in makeinfo gmakeinfo
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_CONFIGURED_MAKEINFO+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test -n "$CONFIGURED_MAKEINFO"; then
+  ac_cv_prog_CONFIGURED_MAKEINFO="$CONFIGURED_MAKEINFO" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CONFIGURED_MAKEINFO="$ac_prog"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi ;;
+esac
+fi
+CONFIGURED_MAKEINFO=$ac_cv_prog_CONFIGURED_MAKEINFO
+if test -n "$CONFIGURED_MAKEINFO"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $CONFIGURED_MAKEINFO" >&5
+printf "%s\n" "$CONFIGURED_MAKEINFO" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+  test -n "$CONFIGURED_MAKEINFO" && break
+done
+test -n "$CONFIGURED_MAKEINFO" || CONFIGURED_MAKEINFO="makeinfo"
+
+fi
 
 for ac_prog in flex lex
 do
@@ -19949,7 +20037,9 @@ case " ${build_configdirs} " in
   *" flex "*) FLEX='$$r/$(BUILD_SUBDIR)/flex/flex' ;;
 esac
 
-for ac_prog in makeinfo
+if test "x${MISSING}" != "x" && test "x${SHELL}" != "x"; then
+  test -n "${MISSING}" && test -n "${SHELL}" && echo "${MISSING} ought to use ${SHELL} for makeinfo" && export SHELL
+  for ac_prog in makeinfo gmakeinfo
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -19998,17 +20088,81 @@ fi
 done
 test -n "$MAKEINFO" || MAKEINFO="${MISSING} makeinfo"
 
+else
+  test -z "${MISSING}" && test -z "${SHELL}" && echo "skipping use of missing script for makeinfo when it might fail"
+  for ac_prog in makeinfo gmakeinfo
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_MAKEINFO+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test -n "$MAKEINFO"; then
+  ac_cv_prog_MAKEINFO="$MAKEINFO" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_MAKEINFO="$ac_prog"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi ;;
+esac
+fi
+MAKEINFO=$ac_cv_prog_MAKEINFO
+if test -n "$MAKEINFO"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $MAKEINFO" >&5
+printf "%s\n" "$MAKEINFO" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+  test -n "$MAKEINFO" && break
+done
+test -n "$MAKEINFO" || MAKEINFO="makeinfo"
+
+fi
 case " ${build_configdirs} " in
-  *" texinfo "*) MAKEINFO='$$r/$(BUILD_SUBDIR)/texinfo/makeinfo/makeinfo' ;;
+  *" texinfo "*)
+    echo "texinfo is in build_configdirs; will attempt to use the built makeinfo"
+    MAKEINFO='$$r/$(BUILD_SUBDIR)/texinfo/makeinfo/makeinfo' ;;
   *)
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking version of ${MAKEINFO}" >&5
+printf %s "checking version of ${MAKEINFO}... " >&6; }
+    MAKEINFO_VERSION=""
+    if test -n "${MAKEINFO}" && test -x "${MAKEINFO}"; then
+      export MAKEINFO_VERSION="`${MAKEINFO} --version`"
+    fi
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${MAKEINFO_VERSION}" >&5
+printf "%s\n" "${MAKEINFO_VERSION}" >&6; }
 
     # For an installed makeinfo, we require it to be from texinfo 4.7 or
     # higher, else we use the "missing" dummy.
-    if ${MAKEINFO} --version \
+    if test -n "${MAKEINFO}" && test -x "${MAKEINFO}" && ${MAKEINFO} --version \
        | egrep 'texinfo[^0-9]*(4\.([7-9]|[1-9][0-9])|[5-9]|[1-9][0-9])' >/dev/null 2>&1; then
-      :
+      echo "version of makeinfo is fine"
+    elif test "x${MISSING}" != "x"; then
+      test -n "${MISSING}" && echo "falling back to use ${MISSING} script" && export MAKEINFO="${MISSING} makeinfo"
     else
-      MAKEINFO="${MISSING} makeinfo"
+      test -z "${MISSING}" && echo "need to fall back to use the missing script, but the variable for it is unset!" >&2 && export MAKEINFO="false"
     fi
     ;;
 

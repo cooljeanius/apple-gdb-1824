@@ -580,7 +580,7 @@ clean:
 distclean: clean
 	@$(MAKE) subdir_do DO=$@  $(FLAGS_TO_PASS)
 	-rm -f Makefile *config.status config.cache config.log expect_cf.h
-	-rm -f Dbg_cf.h DbgMkfl pkgIndex .DS_Store
+	-rm -f Dbg_cf.h DbgMkfl pkgIndex .DS_Store *~
 	-rm -rf autom4te.cache || rmdir autom4te.cache
 	-rm -rf *.dSYM || rmdir *.dSYM
 

@@ -531,6 +531,12 @@ clean-local: Makefile @MAINT@ apple-clean
 	fi
 .PHONY: clean-local
 
+distclean-local: Makefile clean-local @MAINT@ apple-clean
+	if test -r .dirstamp; then rm -f .dirstamp; fi
+	if test ! -e Makefile && test -r ../Makefile && test -w .; then \
+	  $(MAKE) -C .. doc/Makefile; \
+	fi
+
 all-local: Makefile $(build_MKDOC) protos @MAINT@ clean-local
 	$(AM_V_at)-if test -d chew_am.dSYM && test -r Makefile && test -w .; then \
 	  $(MAKE) $(AM_V_MFLAG) apple-clean; \

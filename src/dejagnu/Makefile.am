@@ -3,7 +3,8 @@
 
 ACLOCAL_AMFLAGS = -I./m4 --install
 
-AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu -Wno-portability subdir-objects
+AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu subdir-objects -Wno-portability \
+  -Wno-obsolete
 
 # Install all the associated data files
 EXTRA_DIST = MAINTAINERS runtest site.tmpl
@@ -198,7 +199,7 @@ ALL_OFILES = $(OFILES) i960glue.o
 
 CLEANFILES = x.log x.sum site.bak setval.tmp $(ALL_OFILES) *~ expect
 DISTCLEANFILES = xXx.log xXx.sum testrun.log testrun.sum .DS_Store \
-  contrib/.DS_Store autoscan.log expect
+  contrib/.DS_Store autoscan.log expect *.cache.bak doc/*~
 MAINTAINERCLEANFILES = configure.scan expect
 
 CFILES = testglue.c stub-loader.c i960glue.c
@@ -247,20 +248,25 @@ clean-local: Makefile
 	  else \
 	    echo "$${my_subdir}: missing Makefile; skipping"; \
 	  fi; \
-	done;
+	done
+	-if test -e config.cache; then rm -f config.cache; \
+	elif test -e config.cache.bak; then mv -f config.cache.bak config.cache; \
+	fi
 .PHONY: clean-local
 
 # Hack:
 .PHONY: -c
 
 distclean-local: config.status Makefile
-	-rm -fr autom4te.cache || rmdir autom4te.cache
+	-rm -rfv *.cache || (test -d autom4te.cache && rmdir autom4te.cache) || (test -L config.cache && unlink config.cache)
 	-if test -e doc/Makefile; then \
 	  cd doc && $(MAKE) distclean-local; \
-	elif test -e expect; then \
+	elif test -e expect && test -w expect; then \
 	  rm -f expect; \
+	elif test -d doc/autom4te.cache; then \
+	  rm -rfv doc/autom4te.cache || rmdir doc/autom4te.cache; \
 	else \
-	  echo "should be fully distclean"; \
+	  echo "`pwd`: should be fully distclean"; \
 	fi
 .PHONY: distclean-local
 
@@ -272,7 +278,7 @@ realclean: config.status Makefile
 	  elif test -e expect; then \
 	    rm -f expect; \
 	  else \
-	    echo "should be fully realclean"; \
+	    echo "`pwd`: should be fully realclean"; \
 	  fi; \
 	fi
 .PHONY: realclean

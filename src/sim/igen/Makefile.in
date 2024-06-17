@@ -173,6 +173,7 @@ clean mostlyclean:
 
 distclean realclean: clean
 	rm -f TAGS Makefile config.cache config.status config.h defines.h stamp-h config.log
+	-rm -fv *~
 	-rm -rf autom4te.cache || rmdir autom4te.cache
 
 maintainer-clean: distclean

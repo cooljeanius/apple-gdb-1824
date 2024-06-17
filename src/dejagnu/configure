@@ -4010,13 +4010,21 @@ printf "%s\n" "$ac_cv_path_SED" >&6; }
 
 
 if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
   sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" `pwd`/config.cache
   sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" `pwd`/config.cache
   sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
 elif test -e ./config.cache; then
+  echo "hacking ./config.cache"
   sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
   sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
   sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
 else
   echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
@@ -10127,7 +10135,7 @@ CONFIG='$(config)'
 subdirs="$subdirs doc example/calc"
 
 if test -d contrib/bluegnu2.0.3; then
-  test -e contrib/bluegnu2.0.3/configure
+  test -e contrib/bluegnu2.0.3/configure && test -x contrib/bluegnu2.0.3/configure
   subdirs="$subdirs contrib/bluegnu2.0.3"
 
 fi

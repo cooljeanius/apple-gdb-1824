@@ -3,7 +3,7 @@ dist: xenial
 
 os:
   - linux
-  # (maybe also osx, but that will require convering all of the apt packages...)
+  # (maybe also osx, but that will require converting all of the apt packages...)
 
 before_install:
   - "sudo apt-get update"

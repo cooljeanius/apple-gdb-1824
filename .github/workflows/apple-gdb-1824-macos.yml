@@ -14,6 +14,11 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
+    - name: Run sccache-cache only on non-release runs
+      if: github.event_name != 'release' && github.event_name != 'workflow_dispatch'
+      uses: mozilla-actions/sccache-action@v0.0.5
+      env:
+        SCCACHE_GHA_ENABLED: "true"
     - name: Install dependencies with Homebrew
       env:
         HOMEBREW_NO_EMOJI: 1
@@ -26,8 +31,14 @@ jobs:
         else \
           COMPILER_FORMULA=""; \
         fi
-        date && sync
-        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man ant-contrib findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake term termbox termcolor cdk cgdb ncurses groff "${COMPILER_FORMULA}"
+        brew install python@3.12 || brew link --overwrite python@3.12 || (if test -L /usr/local/bin/2to3; then (readlink /usr/local/bin/2to3 && unlink /usr/local/bin/2to3); else rm '/usr/local/bin/2to3'; fi) || which -a 2to3
+        sync && date && sync
+        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake term termbox termcolor cdk cgdb ncurses groff "${COMPILER_FORMULA}"
+        if test -z "$(which ant)" || test ! -x "$(which ant)"; then \
+          brew install ant || brew install ant@1.9; \
+        else \
+          brew install ant-contrib || stat "$(which ant)"; \
+        fi
         # shellcheck disable=SC2016
         if test -d /usr/local/opt/ncurses/bin && test -d /Users/runner && test -w /Users/runner; then \
           echo 'export PATH="/usr/local/opt/ncurses/bin:${PATH}"' >> /Users/runner/.bash_profile; \
@@ -67,10 +78,12 @@ jobs:
     - run: (if test -n "$(type ant 2>/dev/null)" && test -x "$(which ant)" && test -r build.xml; then if test ! -d build; then mkdir build; elif test ! -d "${HOME}"/work/apple-gdb-1824/build; then mkdir -pv "${HOME}"/work/apple-gdb-1824/build; fi; ant; else (echo "ant missing" && sync); fi) || (if test -x ./gradlew; then (./gradlew build || ./gradlew assemble || ./gradlew); elif test -r ./gradlew; then sh ./gradlew; elif test -e ./gradlew; then stat ./gradlew; else echo "gradlewrapper missing"; fi) || (if test -x "$(which gradle)"; then gradle; else echo "gradle missing"; fi) || (if test -x ~rc/bin/buildit; then sudo ~rc/bin/buildit "$(pwd)" -arch ppc -arch i386 -arch armv5 -target cross -project gdb -release RELEASENAME RC_CROSS_ARCHS=armv6; else echo "buildit missing"; fi) || ls
     - run: (if test -x ./gradlew; then (./gradlew build || ./gradlew assemble || ./gradlew); elif test -r ./gradlew; then sh ./gradlew; elif test -e ./gradlew; then stat ./gradlew; else echo "gradlewrapper missing" >&2; fi) || (if test -x "$(which gradle)"; then gradle; else echo "gradle missing"; fi) || (if test -x ~rc/bin/buildit; then sudo ~rc/bin/buildit "$(pwd)" -arch ppc -arch i386 -arch armv5 -target cross -project gdb -release RELEASENAME RC_CROSS_ARCHS=armv6; else echo "buildit missing"; fi) || ls
     - run: cd src && ./configure --disable-werror --disable-opts-test --enable-carbon-framework --enable-debug-symbols-framework --enable-64-bit-bfd --enable-silent-rules --disable-dependency-tracking CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
+    - run: cd src && make configure-zlib
     - run: cd src && make configure-bfd
     - run: cd src && sync && make -C bfd headers && sync
     - run: cd src && if test ! -e bfd/bfd.h; then (sync && make -C bfd bfd.h); else (sync && stat bfd/bfd.h); fi && sync && find . -name bfd.h -print && sync
     - run: cd src && make -C bfd diststuff
+    - run: cd src && make all-zlib
     - run: cd src && make all-bfd
     - run: if test ! -e macsbug/MacsBug_plugin; then make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else stat macsbug/MacsBug_plugin; fi
     - run: if test ! -e macsbug/gdb_plugin_support/gdb_plugin_support.o; then (sync && make -ki -C macsbug/gdb_plugin_support TARGET_ARCHITECTURE="x86_64" && sync) || (if test -x "$(which ant)"; then ant; fi) || (for cfile in macsbug/gdb_plugin_support/*.c; do ${{ matrix.compiler }} -c "${cfile}" || stat "${cfile}"; done); else stat macsbug/gdb_plugin_support/gdb_plugin_support.o; fi
@@ -81,20 +94,20 @@ jobs:
         cd src/binutils
         sync && make arparse.h
         if test ! -e arparse.h; then \
-          echo "make my_arparse.h"; \
+          sync && echo "make my_arparse.h"; \
           make my_arparse.h; \
         else \
           sync && echo "arparse.h exists" && sync && stat arparse.h; \
         fi
         if test ! -f arparse.h; then \
-          echo "remake arparse.c"; \
+          sync && echo "remake arparse.c"; \
           remake arparse.c; \
         else \
           sync && echo "checking arparse.h length" && sync && wc -l arparse.h; \
         fi
         # shellcheck disable=SC2046
         if test ! -e arparse.h; then \
-          echo "trying the relevant Makefile rule as copied into this CI workflow"; \
+          sync && echo "trying the relevant Makefile rule as copied into this CI workflow"; \
           /bin/sh ./../ylwrap arparse.y y.tab.c arparse.c y.tab.h "$(echo arparse.c | sed -e s/cc$/hh/ -e s/cpp$/hpp/ -e s/cxx$/hxx/ -e s/c++$/h++/ -e s/c$/h/)" y.output arparse.output -- $(if [ -f ../bison/bison ]; then echo ../bison/bison -y -L./../bison/; else echo bison -o y.tab.c; fi) -d -t -v -k; \
         else \
           sync && echo "checking arparse.h disk usage" && sync && du arparse.h; \
@@ -113,7 +126,7 @@ jobs:
         if test ! -e /var/db/locate.database; then \
           if test -e /System/Library/LaunchDaemons/com.apple.locate.plist; then \
             if test -z "$(sudo launchctl list | grep locate)"; then \
-              echo "attempting to ensure that locate will work..."; \
+              sync && echo "attempting to ensure that locate will work..."; \
               sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist; \
             fi; \
           fi; \
@@ -141,49 +154,49 @@ jobs:
         if test -z "$(which autoconf)" || test ! -x "$(which autoconf)"; then \
           brew install autoconf@2.69 || brew install autoconf@2.13 || brew install m4 || ls "configure*"; \
         else \
-          echo "autoconf available at $(which autoconf)"; \
+          sync && echo "autoconf available at $(which autoconf)"; \
         fi
         if test -z "$(which gm4)" || test ! -x "$(which gm4)"; then \
           brew install m4 || brew analytics on || find . -name '*.m4' -print; \
         else \
           sync && echo "the following gm4 binaries are available"; \
           which -a gm4 || gwhich -a gm4 || type gm4; \
-          echo "...and the first of them has the following information"; \
+          sync && echo "...and the first of them has the following information"; \
           sync && gm4 --version; \
           sync && gm4 --help; \
         fi
         ./bootstrap || stat ./bootstrap || test -x ./bootstrap
         if test libltdl/configure -ot libltdl/configure.ac; then \
           if test -x libltdl/configure && test -s libltdl/configure; then \
-            echo "touch libltdl/configure"; \
+            sync && echo "touch libltdl/configure"; \
             touch libltdl/configure; \
           elif test -x libltdl/configure~ && test -s libltdl/configure~; then \
             cp -vf libltdl/configure~ libltdl/configure; \
           elif test -x "$(which sync)"; then \
             which sync && sync; \
           else \
-            echo "uh... configure-related timestamps might be off?"; \
+            echo "no sync... configure-related timestamps might be off?"; \
           fi; \
         fi
         if test libltdl/Makefile.in -ot libltdl/Makefile.am; then \
-          echo "test -s libltdl/Makefile.in && touch libltdl/Makefile.in"; \
+          sync && echo "test -s libltdl/Makefile.in && touch libltdl/Makefile.in"; \
           test -s libltdl/Makefile.in && touch libltdl/Makefile.in; \
         fi
         if test libltdl/Makefile -ot libltdl/Makefile.in; then \
-          echo "test -s libltdl/Makefile && touch libltdl/Makefile"; \
+          sync && echo "test -s libltdl/Makefile && touch libltdl/Makefile"; \
           test -s libltdl/Makefile && touch libltdl/Makefile; \
         fi
         for subdir in libltdl libltdl/loaders libtool_gnu/libltdl/loaders loaders; do \
           if test -d "${subdir}" && test -w "${subdir}" && test ! -d "${subdir}"/.deps; then \
             mkdir -pv "${subdir}"/.deps; \
             if test -w "${subdir}"/.deps && test ! -e "${subdir}"/.deps/.dirstamp; then \
-              echo "touch ${subdir}/.deps/.dirstamp"; \
+              sync && echo "touch ${subdir}/.deps/.dirstamp"; \
               touch "${subdir}"/.deps/.dirstamp; \
             fi; \
           elif test -e "${subdir}"/.deps; then \
             stat "${subdir}"/.deps; \
             if test -w "${subdir}"/.deps && test ! -e "${subdir}"/.deps/.dirstamp; then \
-              echo "touch ${subdir}/.deps/.dirstamp"; \
+              sync && echo "touch ${subdir}/.deps/.dirstamp"; \
               touch "${subdir}"/.deps/.dirstamp; \
             fi; \
           elif test -r "${subdir}"; then \
@@ -191,11 +204,11 @@ jobs:
           elif test -x "$(which sync)"; then \
             sync && echo "${subdir} seems to be missing (checking from $(pwd))"; \
           else \
-            echo "warning, unhandled possibility for ${subdir}"; \
+            echo "warning, unhandled possibility for ${subdir} (missing sync?)"; \
           fi; \
           if test -r "${subdir}"/Makefile && test -s "${subdir}"/Makefile && test -w "${subdir}"; then \
             pushd "${subdir}"; \
-            echo "attempting to ensure depfiles are fine in ${subdir}..."; \
+            sync && echo "attempting to ensure depfiles are fine in ${subdir}..."; \
             make am--depfiles || make am--refresh || make distdir-am || stat Makefile; \
             popd; \
           else \
@@ -204,34 +217,34 @@ jobs:
           if test -r "${subdir}"/.deps; then \
             (find "${subdir}" -name '*.Tpo' -print) || echo "depfile generation may have failed for ${subdir}"; \
           elif test -d "${subdir}" && test ! -d "${subdir}"/.deps; then \
-            echo "depdir generation may have failed for ${subdir}"; \
+            sync && echo "depdir generation may have failed for ${subdir}"; \
           elif test ! -d "${subdir}"; then \
-            echo "warning, ${subdir} is not an extant subdirectory"; \
+            sync && echo "warning, ${subdir} is not an extant subdirectory"; \
           else \
-            echo "warning, something about ${subdir} may require fixing"; \
+            sync && echo "warning, something about ${subdir} may require fixing"; \
           fi; \
         done
         sync && echo "hopefully libtool_gnu timestamps will be fine..."
     - name: Full build to get anything that might have been missed
       run: |
         cd src
-        touch config.log || ls ./*.log
+        touch config.log || chmod +w config.log || ls ./*.log
         if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
-          echo "nproc says we can use $(nproc) build jobs"; \
+          sync && echo "nproc says we can use $(nproc) build jobs"; \
           if test "$(nproc)" -eq 4; then \
-            echo "special-casing the 4-job build case..."; \
+            sync && echo "special-casing the 4-job build case..."; \
             (make -j"$(nproc)" || make -j2 || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
           else
             (make -j"$(nproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
           fi; \
         elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
-          echo "gnproc says we can use $(gnproc) build jobs"; \
+          sync && echo "gnproc says we can use $(gnproc) build jobs"; \
           (make -j"$(gnproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
         else \
-          echo "on the slow path..."; \
+          sync && echo "on the slow path..."; \
           (make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
         fi
-    - run: cd src && make check-libiberty
+    - run: cd src && make check-zlib && sync && make check-libiberty
     - run: cd src && sync && make -C tcl/unix tcltest && sync
     - run: cd src && for dir in cgen sim expect dejagnu itcl libgui; do if test -r ${dir}/Makefile; then (sync && echo "running testsuite for ${dir}" && sync && make check-${dir} V=0 RUNTESTFLAGS="-v" && sync); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
     - name: Possibly do static analysis
@@ -239,19 +252,19 @@ jobs:
         cd src
         if test ${{ matrix.compiler }} == clang; then \
           time make check-bfd; \
-          echo "done with bfd; moving onto binutils next..."; \
+          sync && echo "done with bfd; moving onto binutils next..."; \
           time make check-binutils-local; \
-          echo "done with binutils; moving onto mmalloc next..."; \
+          sync && echo "done with binutils; moving onto mmalloc next..."; \
           time make check-mmalloc; \
-          echo "done with mmalloc; moving onto electrict-fence next..."; \
+          sync && echo "done with mmalloc; moving onto electrict-fence next..."; \
           cd electric-fence; \
           make check-local || make check stamp-framework ls; \
-          echo "done with electric-fence..." ; \
+          sync && echo "done with electric-fence..." && sync; \
         elif test ${{ matrix.compiler }} == gcc; then \
           sync && echo "getting some additional dependencies..."; \
           brew install idutils || brew install ctags || brew install universal-ctags || brew install emacs || brew install global || brew install cscope; \
           if test -z "$(which etags)" || test ! -x "$(which etags)"; then \
-            brew install emacs || stat "$(which emacs)" || echo "etags missing"; \
+            brew install emacs || brew install --cask emacs || stat "$(which emacs)" || echo "etags missing"; \
           else \
             sync && echo "etags available as $(which etags)"; \
           fi; \
@@ -268,16 +281,24 @@ jobs:
           if test -z "$(which shellcheck)" || test ! -x "$(which shellcheck)"; then \
             brew install shellcheck || stat "$(which shellcheck)" || echo "shellcheck missing"; \
           else \
-            echo "shellcheck available as $(which shellcheck)"; \
+            sync && echo "shellcheck available as $(which shellcheck)"; \
+          fi; \
+          if test -z "$(which lcov)" || test ! -x "$(which lcov)"; then \
+            brew install lcov || stat "$(which lcov)" || echo "lcov missing"; \
+          else \
+            sync && echo "lcov available as $(which lcov)"; \
           fi; \
           pushd bfd; \
           sync && make check-DEJAGNU; \
+          shellcheck ./development.sh || shellcheck ./ltmain.sh || ls ./*.sh; \
           popd; \
           pushd binutils; \
           make am_check-DEJAGNU || make check-DEJAGNU || make check-TESTS; \
           make check-recursive || make cscope || make ID || make TAGS || make CTAGS || make GTAGS || make recheck || stat Makefile; \
+          make info || make dvi || make embedspu || make stamp-framework-binutils; \
           sync && echo "done with make targets for binutils; using script manually next..."; \
           sh ./sanity.sh || shellcheck ./sanity.sh || stat ./sanity.sh; \
+          shellcheck ./embedspu.sh || shellcheck ./ranlib.sh || ls ./*.sh; \
           popd; \
           sync && echo "done with binutils; moving on to mmalloc next..."; \
           pushd mmalloc; \
@@ -285,7 +306,7 @@ jobs:
           popd; \
           sync && echo "done with mmalloc; moving on to electric-fence next..."; \
           pushd electric-fence; \
-          sync && make check stamp-framework ls; \
+          sync && make check info stamp-framework ls; \
           popd; \
           sync && echo "done with electric-fence; moving on to readline next..."; \
           pushd readline; \
@@ -295,14 +316,15 @@ jobs:
           if test ! -e TAGS; then \
             make my_TAGS || make tags-local || make ID || make TAGS || touch TAGS; \
           fi; \
+          make info || make dvi || make stamp-framework-headers; \
           popd; \
-          sync && echo "done with readline..."; \
+          sync && echo "done with readline..." && sync; \
         else \
-          echo "error, unhandled compiler!" >&2 && exit 1; \
+          sync && echo "error, unhandled compiler!" >&2 && exit 1; \
         fi
     - run: cd src && sync && make check-opcodes && sync && make check-intl && sync
     # (check-binutils target is now moved into the static analysis step)
-    - run: cd src && make check-utils
+    - run: cd src && make check-utils && sync && make check-texinfo_js
     - run: time (sync && pwd && sync && ls && sync && du && sync && df && sync)
       if: "${{ success() }}"
     - name: Upload a Build Artifact

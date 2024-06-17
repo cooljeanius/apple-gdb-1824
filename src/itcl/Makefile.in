@@ -146,6 +146,7 @@ clean:
 	done;
 
 distclean:
+	rm -fv *~ config/*~
 	rm -f Makefile config.log config.status config.cache
 	rm -rf autom4te.cache || rmdir autom4te.cache
 	$(AM_V_at)for dir in $(subdirs); do \

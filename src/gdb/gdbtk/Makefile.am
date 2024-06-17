@@ -15,7 +15,7 @@ am__v_v_1 = -v
 
 EXTRA_DIST = generic/gdbtk.h
 
-DISTCLEANFILES = autoscan.log .DS_Store
+DISTCLEANFILES = autoscan.log .DS_Store *~
 
 distclean-local:
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache

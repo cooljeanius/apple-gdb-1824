@@ -103,14 +103,19 @@ clean: mostlyclean
 		fi; \
 	    done
 
-distclean maintainer-clean realclean: clean
+distclean: clean
 	$(AM_V_at)for dir in ${SUBDIRS}; do \
 	    echo "doing $@ for $${dir}:"; \
 	    (cd $${dir}; $(MAKE) $(AM_V_MFLAG) distclean); \
 	done
-	-rm -f *~ core
+	-rm -f *~ core autoscan.log
 	-rm -f Makefile config.status config.log
 	-rm -rf autom4te.cache || rmdir autom4te.cache
+
+maintainer-clean realclean: distclean
+	rm -f configure configure.scan
+	if test -r doschk/Makefile && test -w doschk; then $(MAKE) -C doschk $@; \
+	else rm -f doschk/configure doschk/config.h doschk/configure.scan; fi
 
 check:
 	$(AM_V_at)for dir in ${SUBDIRS}; do \

@@ -19,7 +19,7 @@
 #
 
 ## might have to add back -Wno-portability, if I screwed up:
-AUTOMAKE_OPTIONS = 1.11.6 no-dist gnits dejagnu -Wall -Wno-override
+AUTOMAKE_OPTIONS = 1.11.6 no-dist gnits dejagnu -Wall -Wno-override -Wno-obsolete
 ## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 TEXINFO_TEX = ../texinfo/texinfo.tex
@@ -69,7 +69,7 @@ TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 ## use the host one, because that is the one that matters:
 C_ARCHFLAGS = @C_ARCHFLAGS@
 
-WARN_CFLAGS = @WARN_CFLAGS@
+WARN_CFLAGS = @WARN_CFLAGS@ $(FLEXMEMBER_STRICTNESS_FLAG)
 NO_WERROR = @NO_WERROR@
 AM_CFLAGS = $(WARN_CFLAGS) $(WARN_WRITE_STRINGS) $(C_ARCHFLAGS)
 AM_DEFS = $(WARN_DEFS)
@@ -1509,7 +1509,7 @@ stamp-framework-headers: bfd.h headers
 	cp -p $(AM_V_v) $(BFD_H_DEPS) $(FRAMEWORK).framework/Versions/Current/Headers/
 	$(AM_V_at)if test $@ -ot bfd.h; then touch stamp-framework-headers; fi
 
-stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
+stamp-framework: Makefile $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 	$(MAKE) $(AM_V_MFLAG) $(FRAMEWORK_OFILES)
 	$(AM_V_at)rm -f stamp-framework-headers
 	$(MAKE) $(AM_V_MFLAG) stamp-framework-headers
@@ -1685,7 +1685,7 @@ stmp-bin2-h: $(sdocdir)/Makefile $(BFD_H_FILES) $(BFD64_H_FILES) @MAINT@ $(PATH_
 
 $(srcdir)/libbfd.h: @MAINT@ stmp-lbfd-h
 	@echo "this target, '$@' (in `pwd`), just makes its dependency, '$<', when in maintainer mode"
-stmp-lbfd-h: $(LIBBFD_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+stmp-lbfd-h: $(sdocdir)/Makefile $(LIBBFD_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) libbfd.h)
 	$(AM_V_at)if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
@@ -1703,7 +1703,7 @@ stmp-lbfd-h: $(LIBBFD_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 
 $(srcdir)/libcoff.h: @MAINT@ stmp-lcoff-h
 	@echo "this target, '$@' (in `pwd`), just makes its dependency, '$<', when in maintainer mode"
-stmp-lcoff-h: $(LIBCOFF_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+stmp-lcoff-h: $(sdocdir)/Makefile $(LIBCOFF_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	(cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) libcoff.h)
 	$(AM_V_at)if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
@@ -1726,17 +1726,25 @@ MOSTLYCLEANFILES += tplistfiles plistfiles stamp-plistfiles
 CLEANFILES = dep.sed stmp-bfd-h DEP DEPA DEP1 DEP2 libbfd.a stamp-lib \
   stamp-staticlib stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ bfd.h
 
-DISTCLEANFILES = $(BUILD_CFILES) $(BUILD_HFILES) libtool-soversion *~
+DISTCLEANFILES = $(BUILD_CFILES) $(BUILD_HFILES) libtool-soversion *~ *.cache.bak
 
 MAINTAINERCLEANFILES = bfd.h @MAINT@ bfd-in2.h
 
-apple-clean: @MAINT@ mostlyclean
-	(cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) apple-clean $(FLAGS_TO_PASS))
+apple-clean: @MAINT@ $(sdocdir)/Makefile @ifnGNUmake@ mostlyclean
+	if test -r $(sdocdir)/Makefile; then \
+	  (cd $(sdocdir) && $(MAKE) $(AM_V_MFLAG) apple-clean $(FLAGS_TO_PASS)); \
+	elif test -r Makefile && test -d $(sdocdir) && test ! -e $(sdocdir)/Makefile; then \
+	  $(MAKE) $(AM_V_MFLAG) $(sdocdir)/Makefile; \
+	fi
 	rm -rfv $(FRAMEWORK).framework || rmdir $(FRAMEWORK).framework
 .PHONY: apple-clean
 
-distclean-local:
-	rm -rfv autom4te.cache || rmdir autom4te.cache
+distclean-local: @MAINT@ $(sdocdir)/Makefile apple-clean
+	if test -r Makefile && test -d $(sdocdir) && test ! -e $(sdocdir)/Makefile; then \
+	  $(MAKE) $(AM_V_MFLAG) $(sdocdir)/Makefile; \
+	fi
+	-rm -rf $(AM_V_v) .deps || rmdir .deps
+	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 
 bfdver.h: $(srcdir)/version.h @MAINT@ $(srcdir)/development.sh \
   $(srcdir)/Makefile.in

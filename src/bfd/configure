@@ -740,6 +740,7 @@ target_noncanonical
 host_noncanonical
 INSTALL_LIBBFD_FALSE
 INSTALL_LIBBFD_TRUE
+FLEXMEMBER_STRICTNESS_FLAG
 CLANG_ANALYZER
 WARN_WRITE_STRINGS
 NO_WERROR
@@ -21745,6 +21746,47 @@ fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_CLANG_ANALYZER" >&5
 printf "%s\n" "$ac_cv_path_CLANG_ANALYZER" >&6; }  ## (need this extra line here)
 CLANG_ANALYZER=${ac_cv_path_CLANG_ANALYZER}
+
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -fstrict-flex-arrays=1" >&5
+printf %s "checking whether C compiler handles -fstrict-flex-arrays=1... " >&6; }
+if test ${gl_cv_warn_c__fstrict_flex_arrays_1+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e)
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -fstrict-flex-arrays=1"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  gl_cv_warn_c__fstrict_flex_arrays_1=yes
+else case e in #(
+  e) gl_cv_warn_c__fstrict_flex_arrays_1=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__fstrict_flex_arrays_1" >&5
+printf "%s\n" "$gl_cv_warn_c__fstrict_flex_arrays_1" >&6; }
+if test "x$gl_cv_warn_c__fstrict_flex_arrays_1" = xyes
+then :
+  as_fn_append FLEXMEMBER_STRICTNESS_FLAG " -fstrict-flex-arrays=1"
+fi
 
 
 

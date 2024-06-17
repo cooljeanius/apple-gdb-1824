@@ -54,7 +54,8 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([${srcdir}/config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 no-dist gnits dejagnu -Wall -Wno-portability])dnl
+AM_INIT_AUTOMAKE([1.11.6 no-dist gnits dejagnu -Wall -Wno-portability \
+  -Wno-obsolete -Wno-override])dnl
   ## maintainer mode is used kind of hackishly in the Makefiles here:
 AM_MAINTAINER_MODE
 AM_PROG_INSTALL_STRIP
@@ -346,6 +347,7 @@ if test "x${WANT_CONVERSION_WARNS}" = "x"; then
 fi
 AM_BINUTILS_WARNINGS
 AM_BINUTILS_CLANG_STATIC_ANALYSIS
+gl_WARN_ADD([-fstrict-flex-arrays=1],[FLEXMEMBER_STRICTNESS_FLAG])dnl
 
 dnl# add some insurance to our "config.h" header:
 AH_TOP([

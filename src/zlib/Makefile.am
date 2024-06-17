@@ -1,7 +1,7 @@
 ## automake Makefile for zlib
 ## Process this file with automake to create Makefile.in.
 
-AUTOMAKE_OPTIONS = 1.11.6 foreign dejagnu no-dist no-installinfo
+AUTOMAKE_OPTIONS = 1.11.6 foreign dejagnu no-dist no-installinfo -Wno-obsolete
 ## "cygnus" == "foreign no-dist"
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 TEXINFO_TEX = ../texinfo/texinfo.tex
@@ -106,7 +106,12 @@ THE_OBJS = $(OBJ_ALL) $(OBJA)
 
 PIC_OBJS = $(PIC_OBJ_ALL) $(PIC_OBJA)
 
+CLEANFILES = *.exe
+
+DISTCLEANFILES = *~ *.cache.bak
+
 mostlyclean-local: clean-local
+	-if test -r config.cache && test -w .; then rm -f config.cache; fi
 clean-local:
 	rm -f *.o *.lo *~ \
 	   example minigzip examplesh minigzipsh \
@@ -121,11 +126,15 @@ clean-local:
 	-rm -f CMakeCache.txt
 	-if test -d test/Apple_test; then (cd test/Apple_test && rm -f *.o tmpfile* *.gz compress decompress); fi
 	-if test -e contrib/perl/Compress-Raw-Zlib-2.063/Makefile; then (cd contrib/perl/Compress-Raw-Zlib-2.063 && make clean); fi
+	-if test -e config.cache; then rm -f config.cache; \
+	elif test -e config.cache.bak; then mv -f config.cache.bak config.cache; \
+	fi
 
 maintainer-clean-local: distclean-local
 distclean-local: clean-local
 	rm -f Makefile Makefile_orig zlib.pc configure.log autoscan.log
-	rm -rf autom4te.cache || rmdir autom4te.cache
+	-rm -rfv .deps/*.*o || rmdir .deps
+	-rm -rfv *.cache || (test -d autom4te.cache && rmdir autom4te.cache) || (test -L config.cache && unlink config.cache)
 	rm -rf ztest*.dSYM || rmdir ztest*.dSYM
 	-if test -e zlib.xcodeproj; then (rm -rf build || rmdir build); fi
 	-if test -e contrib/perl/Compress-Raw-Zlib-2.063/Makefile; then (cd contrib/perl/Compress-Raw-Zlib-2.063 && make distclean); fi

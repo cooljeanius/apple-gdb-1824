@@ -8145,6 +8145,13 @@ fi
 
 fi
 
+ac_fn_c_check_header_compile "$LINENO" "mach/thread_act.h" "ac_cv_header_mach_thread_act_h" "$ac_includes_default"
+if test "x$ac_cv_header_mach_thread_act_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_MACH_THREAD_ACT_H 1" >>confdefs.h
+
+fi
+  ## ...or maybe an arch-specific one?
 case ${host} in
   *arm*-apple-darwin*)
     ac_fn_c_check_header_compile "$LINENO" "mach/arm/thread_act.h" "ac_cv_header_mach_arm_thread_act_h" "$ac_includes_default"

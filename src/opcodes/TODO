@@ -1,2 +1,6 @@
-FIXME: I broke this directory in the same way I broke ../bfd; will need
-to fix this one similarly...
+FIXME: I may have broken this directory in the same way I broke ../bfd;
+may possibly still need to fix this one similarly... see bug #6 on GitHub:
+https://github.com/cooljeanius/apple-gdb-1824/issues/6
+Also, I'll need to figure out how to regenerate files with cgen properly
+if I'm ever going to silence warnings from cgen-created files for bug #9:
+https://github.com/cooljeanius/apple-gdb-1824/issues/9

@@ -1,3 +1,4 @@
+#!/bin/sh
 # Copyright (C) 2012-2014 Free Software Foundation, Inc.
 #
 # This file is part of GDB.
@@ -17,3 +18,4 @@
 
 # Controls whether to enable development-mode features by default.
 development=true
+export development

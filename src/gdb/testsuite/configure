@@ -3306,6 +3306,10 @@ case ${target} in
 
 subdirs="$subdirs gdb.hp"
  ;;
+  *)
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: gdb.hp subdir is only relevant on hppa/hpux targets; skipping" >&5
+printf "%s\n" "$as_me: gdb.hp subdir is only relevant on hppa/hpux targets; skipping" >&6;}
+    ;;
 esac
 
 # With stabs.
@@ -3339,6 +3343,9 @@ fi
 if test "x${with_stabs}" = "xyes"; then
    subdirs="$subdirs gdb.stabs"
    ## 3...
+else
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: gdb.stabs subdir is only relevant with stabs support; skipping" >&5
+printf "%s\n" "$as_me: gdb.stabs subdir is only relevant with stabs support; skipping" >&6;}
 fi
 
 # Check for 'sed' before doing the rest of this script:
@@ -4810,6 +4817,9 @@ fi
 if test "x${enable_gdbtk}" = "xyes"; then
    subdirs="$subdirs gdb.gdbtk"
 
+else
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: gdb.gdbtk subdir is only relevant when gdbtk is enabled; skipping" >&5
+printf "%s\n" "$as_me: gdb.gdbtk subdir is only relevant when gdbtk is enabled; skipping" >&6;}
 fi
 
 # Enable shared libraries.

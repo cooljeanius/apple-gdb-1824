@@ -1948,7 +1948,7 @@ clean-tui:
 # functionality described is if the distributed files are unmodified.
 # NB: While GDBSERVER might be configured on native systems, it is NOT
 # always included in SUBDIRS. Remove the gdbserver files explictly.
-distclean: clean clean-tui clean-gdbtk @MAINT@ clean-po
+distclean:: clean clean-tui clean-gdbtk @MAINT@ clean-po
 	$(AM_V_at)$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) DO=distclean "DODIRS=$(SUBDIRS)" \
 	  subdir_do
 	-for dir in $(UNUSED_SUBDIRS); do \
@@ -2000,7 +2000,9 @@ distclean: clean clean-tui clean-gdbtk @MAINT@ clean-po
 	-rm -rf gdbserver/build-gnulib || rmdir gdbserver/build-gnulib
 	-find . -name .DS_Store -delete
 
-maintainer-clean: local-maintainer-clean do-maintainer-clean distclean
+# As with the 'clean' target, give the 'maintainer-clean' target an extra ':',
+# so people can add additional maintainer-clean rules to their Makefile frags:
+maintainer-clean:: local-maintainer-clean do-maintainer-clean distclean
 realclean: maintainer-clean
 
 local-maintainer-clean: mostlyclean @MAINT@ clean-tui clean-gdbtk
@@ -2087,6 +2089,7 @@ stamp-h: config.in config.status
 	fi
 
 config.status: configure configure.tgt configure.host
+	if test -n "$(CPP)"; then unset CPP; fi; \
 	if test -r config.status && test -x config.status; then \
 	  $(SHELL) config.status --recheck; \
 	else \

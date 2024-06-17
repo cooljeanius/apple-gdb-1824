@@ -8,6 +8,13 @@ AC_PROG_CC
 AC_PROG_INSTALL
 m4_ifdef([AM_PROG_AR],[
   AM_PROG_AR
+  m4_ifdef([AC_PROG_AR],[
+    if test "x${ac_cv_prog_AR}" = "x" && test "x${ac_cv_prog_ac_ct_AR}" = "x"; then
+      test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+      test -z "${ac_cv_prog_ac_ct_AR}" || unset ac_cv_prog_ac_ct_AR
+      AC_PROG_AR
+    fi
+  ])
 ],[
   AC_CHECK_TOOL([AR],[ar])dnl
 ])dnl
@@ -180,6 +187,8 @@ esac
 testdir=`echo ${target} | sed -e 's/-.*-/-/'`
 if test -r ${srcdir}/testsuite/${testdir}/configure ; then
   extra_subdirs="${extra_subdirs} testsuite"
+else
+  echo "missing configure script in ${testdir}; skipping testsuite"
 fi
 
 

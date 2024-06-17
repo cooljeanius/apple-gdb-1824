@@ -197,7 +197,7 @@ clean mostlyclean:
 	  else \
 	    echo "$${pyscript} is protected; keeping..." && stat "$${pyscript}"; \
 	  fi; \
-	fi 
+	done
 	-rm -fv *.dwo *.dwp
 	-rm -rfv outputs temp cache
 	-rm -f read1.so expect-read1

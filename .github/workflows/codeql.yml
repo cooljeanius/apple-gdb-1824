@@ -89,7 +89,13 @@ jobs:
           (sync && stat /home/runner/work/apple-gdb-1824/build && sync); \
         fi
         (cd src && sync && echo "now in $(pwd)..." && sync)
-        if test ${{ matrix.language }} != 'c-cpp'; then sleep 1; else true; fi
+        if test ${{ matrix.language }} != 'c-cpp'; then sleep 1; else echo "c-cpp"; fi
+
+    - name: Run sccache-cache only on non-release runs
+      if: github.event_name != 'release' && github.event_name != 'workflow_dispatch' && matrix.language == 'c-cpp'
+      uses: mozilla-actions/sccache-action@v0.0.5
+      env:
+        SCCACHE_GHA_ENABLED: "true"
 
     - name: Dependencies
       if: matrix.language == 'c-cpp'
@@ -122,10 +128,10 @@ jobs:
             elif test -x "$(which trufflegem)"; then \
               "${SUDO}" trufflegem install bundler; \
             else \
-              echo "warning: unsure how to install bundler"; \
+              sync && echo "warning: unsure how to install bundler"; \
             fi; \
           else \
-            echo "found $(which bundle)..."; \
+            sync && echo "found $(which bundle)..."; \
           fi; \
           (bundle install && bundle check) || ruby -cwv Gemfile || ruby -c Gemfile; \
           (bundle clean && ls) || stat Gemfile || wc -l Gemfile || du Gemfile; \
@@ -175,11 +181,20 @@ jobs:
       if: matrix.language == 'c-cpp'
       run: |
         test -e ./.profile_generic && source ./.profile_generic && (env | uniq | sort | uniq)
-        ./configure --enable-silent-rules
+        if test -x "$(which sccache)"; then \
+          ./configure --enable-silent-rules CC="sccache gcc" CXX="sccache g++"; \
+        else \
+          ./configure --enable-silent-rules; \
+        fi
         make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi)
         cd src
-        ./configure --disable-werror --enable-silent-rules --disable-cgen-maint
-        make configure-bfd V=0
+        if test -x "$(which sccache)"; then \
+          ./configure --disable-werror --enable-silent-rules --disable-cgen-maint CC="sccache gcc" CXX="sccache g++"; \
+          make configure-bfd V=0 CC="sccache gcc" CXX="sccache g++"; \
+        else \
+          ./configure --disable-werror --enable-silent-rules --disable-cgen-maint; \
+          make configure-bfd V=0; \
+        fi
         make -C bfd headers V=0
         if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi
         if test -e autogen/Makefile; then \
@@ -187,7 +202,7 @@ jobs:
         elif test -d autogen; then \
           ls autogen/Makefile*; \
         else \
-          echo "skipping autogen"; \
+          sync && echo "skipping autogen"; \
         fi
         make -C bfd diststuff V=0
         echo "make all-bfd" && (time make -j"$(nproc)" all-bfd V=0) && echo "done making all-bfd"
@@ -208,7 +223,7 @@ jobs:
           elif test -d ${dir}; then \
             ls ${dir}/configure*; \
           else \
-            echo "skipping configuring in ${dir}"; \
+            sync && echo "skipping configuring in ${dir}"; \
           fi; \
         done
         for dir in sim utils tcl expect dejagnu itcl tk libgui; do \
@@ -217,7 +232,7 @@ jobs:
           elif test -d ${dir}; then \
             ls ${dir}/Makefile*; \
           else \
-            echo "skipping ${dir}"; \
+            sync && echo "skipping ${dir}"; \
           fi; \
         done
         echo "make configure-gdb" && (time make configure-gdb) && echo "done making configure-gdb"
@@ -229,7 +244,7 @@ jobs:
           elif test -d ${dir}; \
             then ls ${dir}/Makefile*; \
           else \
-            echo "skipping testing ${dir}"; \
+            sync && echo "skipping testing ${dir}"; \
           fi; \
         done
         echo "make check-opcodes" && (time make -j"$(nproc)" check-opcodes V=0) && echo "done making check-opcodes"
@@ -248,7 +263,7 @@ jobs:
         if test -d autogen && test -r autogen && test -w autogen; then \
           pushd autogen; \
           if test -x "$(which guile18-build)" && test -e ./configure; then \
-            echo "running autogen's configure script under $(which guile18-build)..."; \
+            sync && echo "running autogen's configure script under $(which guile18-build)..."; \
             guile18-build ./configure --disable-werror --enable-silent-rules --disable-option-checking CFLAGS="-w" || stat -t ./configure; \
           elif test -x ./configure && test -r ./configure && test -w .; then \
             ./configure --disable-werror --enable-silent-rules --disable-option-checking CFLAGS="-w" || stat -t ./configure; \
@@ -261,31 +276,31 @@ jobs:
           fi; \
           popd; \
         else \
-          echo "warning: autogen appears to be missing (or inaccessible)?"; \
+          sync && echo "warning: autogen appears to be missing (or inaccessible)?"; \
         fi
         # shellcheck disable=SC2001,SC2235
         for subdir in autogen/agen5 autogen/autoopts autogen/columns autogen/compat autogen/getdefs autogen/snprintfv autogen/xml2ag bfd bfd/doc binutils dejagnu dejagnu/contrib/bluegnu2.0.3/example/calc dejagnu/example/calc electric-fence expect expect/example expect/testsuite gdb gdb/gdbserver gdb/gnulib gdb/gnulib/import gdb/multi-ice gdb/nlm gdb/rdi-share gdb/rem-multi_old gdb/testsuite gdb/testsuite/gdb.apple gdb/testsuite/gdb.apple/debug-in-ofile gdb/testsuite/gdb.apple/gused gdb/testsuite/gdb.apple/xcode gdb/testsuite/gdb.arch gdb/testsuite/gdb.base gdb/testsuite/gdb.btrace gdb/testsuite/gdb.cell gdb/testsuite/gdb.dwarf2 gdb/testsuite/gdb.gdbtk gdb/testsuite/gdb.guile gdb/testsuite/gdb.hp gdb/testsuite/gdb.hp/gdb.aCC gdb/testsuite/gdb.hp/gdb.base-hp gdb/testsuite/gdb.hp/gdb.compat gdb/testsuite/gdb.hp/gdb.defects gdb/testsuite/gdb.linespec gdb/testsuite/gdb.mi gdb/testsuite/gdb.modula2 gdb/testsuite/gdb.multi gdb/testsuite/gdb.opt gdb/testsuite/gdb.perf gdb/testsuite/gdb.python gdb/testsuite/gdb.reverse gdb/testsuite/gdb.server gdb/testsuite/gdb.stabs gdb/testsuite/gdb.threads gdb/testsuite/gdb.trace gdb/tui intl itcl/itcl/win itcl/itk/win libbacktrace libdecnumber libgui/src libiberty libiberty/testsuite libtool_gnu/libltdl libtool_gnu/tests/cdemo libtool_gnu/tests/demo libtool_gnu/tests/depdemo libtool_gnu/tests/depdemo/l1 libtool_gnu/tests/depdemo/l2 libtool_gnu/tests/depdemo/l3 libtool_gnu/tests/depdemo/l4 libtool_gnu/tests/f77demo libtool_gnu/tests/fcdemo libtool_gnu/tests/mdemo libtool_gnu/tests/mdemo2 libtool_gnu/tests/pdemo mmalloc opcodes readline readline/examples readline/examples/rlfe.dir sim/common sim/igen sim/testsuite/common tcl/unix tcl/unix/dltest tcl/win tk/unix tk/win utils/amd-udi/mondfe utils/amd-udi/montip utils/amd-udi/udi utils/decomment.tproj utils/misc/doschk utils/relpath.tproj utils/sparclite utils/spu utils/wince zlib zlib/contrib/minizip; do \
           if test -e "${subdir}/Makefile" || test -x "${subdir}/configure"; then \
             pushd "${subdir}"; \
             if test ! -r Makefile && test -x ./configure; then \
-              echo "configuring in ${subdir}"; \
+              sync && echo "configuring in ${subdir}"; \
               ./configure --disable-werror --enable-silent-rules --disable-option-checking CFLAGS="-w" || stat -t ./configure; \
             elif test ! -e Makefile && test -x ./config.status; then \
-              echo "checking with ./config.status in ${subdir}"; \
+              sync && echo "checking with ./config.status in ${subdir}"; \
               ./config.status CFLAGS="-w" || stat -t ./config.status; \
             else \
               echo "assuming we are fully configured in ${subdir}"; \
             fi
             for srcfile in *.c; do \
-              echo "attempting to use $(which make) to compile ${srcfile} in ${subdir}"; \
+              sync && echo "attempting to use $(which make) to compile ${srcfile} in ${subdir}"; \
               make "$(echo "${srcfile}" | sed "s/\.c/.o/g")" V=0 CFLAGS="-w" || stat -t "${srcfile}"; \
             done; \
             popd; \
           elif test -d "${subdir}" && (test -r "${subdir}/Makefile.in" || test -r "${subdir}/Makefile.am" || test -r "${subdir}/Makefile.def" || test -r "${subdir}/Makefile.tpl"); then \
-            echo "no unsuffixed Makefile in ${subdir}, but there are these ones with suffixes:"; \
+            sync && echo "no unsuffixed Makefile in ${subdir}, but there are these ones with suffixes:"; \
             ls ${subdir}/Makefile* || echo "... $(ls ${subdir}/Makefile*)"; \
           else \
-            echo "skipping attempting to build additional objfiles in ${subdir}"; \
+            sync && echo "skipping attempting to build additional objfiles in ${subdir}"; \
           fi; \
         done
         (time (find . -name '*.o' -exec cp -v {} . ";")) || echo "failed copying an object file"
@@ -300,7 +315,7 @@ jobs:
             FINAL_CPPFLAGS="${FINAL_CPPFLAGS} -I${myincdir} -iquote ${myincdir}"; \
           fi; \
         done
-        echo "FINAL_CPPFLAGS are ${FINAL_CPPFLAGS}"
+        sync && echo "FINAL_CPPFLAGS are ${FINAL_CPPFLAGS}"
         # shellcheck disable=SC2001,SC2044,2086
         for cfile in $(find . -name '*.c' -type f); do \
           cobjfile="$(echo "${cfile}" | sed "s/\.c/.o/g")"; \
@@ -309,11 +324,11 @@ jobs:
             echo "gcc -c -w -Wno-error -Wfatal-errors ${FINAL_CPPFLAGS} -I\"${cfiledir}\" -iquote \"${cfiledir}\" -I\"${cfiledir}\"/.. -iquote \"${cfiledir}\"/.. ${cfile}"; \
             gcc -c -w -Wno-error -Wfatal-errors ${FINAL_CPPFLAGS} -I"${cfiledir}" -iquote "${cfiledir}" -I"${cfiledir}"/.. -iquote "${cfiledir}"/.. ${cfile} || stat -t "${cfile}" || echo "cfile is ${cfile}"; \
           else \
-            echo "object file ${cobjfile} already exists for ${cfile}."; \
+            sync && echo "object file ${cobjfile} already exists for ${cfile}."; \
             cp -v "${cobjfile}" "${cfiledir}" || cp -v "${cobjfile}" . || cp -v "${cobjfile}" .. || (if test -d /tmp && test -w /tmp; then cp -v "${cobjfile}" /tmp; fi) || stat -t "${cobjfile}"; \
           fi; \
         done
-        echo "done with the \"Extra coverage build (C) part 2\" step"
+        sync && echo "done with the \"Extra coverage build (C) part 2\" step"
 
     - name: Extra coverage build (C++)
       if: matrix.language == 'c-cpp' && success()
@@ -332,7 +347,7 @@ jobs:
           fi; \
           popd; \
         else \
-          echo "warning: gdb testsuite appears to be missing?"; \
+          sync && echo "warning: gdb testsuite appears to be missing?"; \
         fi
         # shellcheck disable=SC2001
         for subdir in dejagnu/testsuite/libdejagnu gdb/testsuite/gdb.apple gdb/testsuite/gdb.apple/gused gdb/testsuite/gdb.apple/ld-r gdb/testsuite/gdb.btrace gdb/testsuite/gdb.c++ gdb/testsuite/gdb.cp gdb/testsuite/gdb.gdbtk gdb/testsuite/gdb.hp  gdb/testsuite/gdb.linespec gdb/testsuite/gdb.mi gdb/testsuite/gdb.python gdb/testsuite/gdb.trace; do \
@@ -355,7 +370,7 @@ jobs:
         done
         # shellcheck disable=SC2044
         for ccfile in $(find . -name '*.cc' -type f); do \
-          echo "One last attempt at compiling ${ccfile}..."; \
+          sync && echo "One last attempt at compiling ${ccfile}..."; \
           g++ -c -Wfatal-errors "${ccfile}" || g++ -c -w -Wfatal-errors -I. "${ccfile}" || g++ -c -w -Wno-error -Wfatal-errors -fpermissive -I. -I.. "${ccfile}" || stat -t "${ccfile}"; \
         done
         if test -e gdb/testsuite/gdb.apple/Makefile; then \
@@ -367,7 +382,7 @@ jobs:
         fi
         # shellcheck disable=SC2044
         for cppfile in $(find . -name '*.cpp' -type f); do \
-          echo "One last attempt at compiling ${cppfile}..."; \
+          sync && echo "One last attempt at compiling ${cppfile}..."; \
           g++ -c -Wfatal-errors "${cppfile}" || g++ -c -w -Wfatal-errors -I. "${cppfile}" || g++ -c -w -Wno-error -Wfatal-errors -fpermissive -I. -I.. "${cppfile}" || stat -t "${cppfile}"; \
         done
         if test -e gdb/testsuite/gdb.base/Makefile && test -e gdb/testsuite/gdb.base/langs2.cxx; then \
@@ -378,7 +393,7 @@ jobs:
         fi
         # shellcheck disable=SC2044
         for cxxfile in $(find . -name '*.cxx' -type f); do \
-          echo "One last attempt at compiling ${cxxfile}..."; \
+          sync && echo "One last attempt at compiling ${cxxfile}..."; \
           g++ -c -Wfatal-errors "${cxxfile}" || g++ -c -w -Wfatal-errors -I. "${cxxfile}" || g++ -c -w -Wno-error -Wfatal-errors -fpermissive -I. -I.. "${cxxfile}" || stat -t "${cxxfile}"; \
         done
         if test -e mmalloc/Makefile; then \
@@ -396,18 +411,18 @@ jobs:
         popd
         # shellcheck disable=SC2044
         for javafile in $(find . -name '*.java' -type f); do \
-          echo "One last attempt at compiling ${javafile}..."; \
+          sync && echo "One last attempt at compiling ${javafile}..."; \
           javac "${javafile}" || stat "${javafile}"; \
         done
         if test -n "${javafile}"; then unset javafile; fi
         # shellcheck disable=SC2044
         if test -x "$(which kotlin)"; then \
           for kotlinfile in $(find . -name '*.kts' -type f); do \
-            echo "One last attempt at compiling ${kotlinfile}..."; \
+            sync && echo "One last attempt at compiling ${kotlinfile}..."; \
             kotlin "${kotlinfile}" || stat "${kotlinfile}"; \
           done; \
         else \
-          echo "kotlin missing; skipping extra kotlin compilation attempts"; \
+          sync && echo "kotlin missing; skipping extra kotlin compilation attempts"; \
         fi
 
     - name: Clang static analysis
@@ -424,13 +439,13 @@ jobs:
               done; \
               popd; \
             elif test -d "${subdir}"; then \
-              echo "Makefiles in ${subdir} are:" && ls ${subdir}/Makefile*; \
+              sync && echo "Makefiles in ${subdir} are:" && ls ${subdir}/Makefile*; \
             else \
               echo "skipping attempting to do static analysis with clang in ${subdir}"; \
             fi; \
           done; \
         else \
-          echo "clang missing"; \
+          sync && echo "clang missing"; \
         fi
         if test -x "$(which purge)"; then \
           purge || sudo purge; \
@@ -450,7 +465,7 @@ jobs:
         if test -x "$(which purge)"; then \
           purge || sudo purge; \
         elif test -x "$(which sync)"; then \
-          sync; \
+          which sync && sync; \
         fi
 
     - name: Upload a Build Artifact

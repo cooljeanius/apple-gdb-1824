@@ -789,7 +789,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 zlibdir = @zlibdir@
 zlibinc = @zlibinc@
-AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu no-dist info-in-builddir
+AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu no-dist info-in-builddir -Wno-obsolete
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 TEXINFO_TEX = ../texinfo/texinfo.tex
 ACLOCAL_AMFLAGS = -I m4 --install
@@ -1158,7 +1158,7 @@ ALL_BISON_OUTPUT_FILES = \
 
 DISTCLEANFILES = sysinfo sysroff.c sysroff.h lex.backup site.exp \
 	site.bak embedspu *~ .DS_Store *.log *.trs \
-	$(ALL_BISON_OUTPUT_FILES) $(PREPROC_CFILES) \
+	$(ALL_BISON_OUTPUT_FILES) *.cache.bak $(PREPROC_CFILES) \
 	stamp-framework-binutils stamp-framework-headers-binutils \
 	$(ASM_OF_CFILES) @MAINT@ artest.a
 NSLIBTOOL = cc -dynamiclib
@@ -2456,6 +2456,7 @@ all-local: $(PROGS)
 	done
 
 distclean-local:
+	-rm -rf $(AM_V_v) .deps || rmdir .deps
 	rm -rf autom4te.cache || rmdir autom4te.cache
 .PHONY: distclean-local
 

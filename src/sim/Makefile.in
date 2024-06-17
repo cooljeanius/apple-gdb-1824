@@ -124,50 +124,50 @@ TARGET_FLAGS_TO_PASS = \
 
 
 all:
-	@rootme=`pwd` ; export rootme ; \
-	for dir in . `echo ${SUBDIRS} | sed 's/testsuite//'` ; do \
-		if [ "$$dir" = "." ]; then \
-			true; \
-		elif [ -d $$dir ]; then \
-			(cd $$dir; $(MAKE) $(FLAGS_TO_PASS)); \
+	@rootme=`pwd`; export rootme; \
+	for dir in . `echo ${SUBDIRS} | sed 's/testsuite//'`; do \
+		if [ "$${dir}" = "." ]; then \
+			echo "already in dir ($${dir})"; \
+		elif [ -d $${dir} ]; then \
+			(cd $${dir}; $(MAKE) $(FLAGS_TO_PASS)); \
 		else echo "nothing to be done for $@"; fi; \
 	done
 
 clean mostlyclean: Makefile
-	@rootme=`pwd` ; export rootme ; \
+	@rootme=`pwd`; export rootme; \
 	for dir in . ${SUBDIRS}; do \
-		if [ "$$dir" = "." ]; then \
-			true; \
-		elif [ -d $$dir ]; then \
-			(cd $$dir; $(MAKE) $(FLAGS_TO_PASS) $@); \
+		if [ "$${dir}" = "." ]; then \
+			echo "already in dir ($${dir})"; \
+		elif [ -d $${dir} ]; then \
+			(cd $${dir}; $(MAKE) $(FLAGS_TO_PASS) $@); \
 		else "nothing to be done for $@"; fi; \
 	done
 	rm -f *~
 
-distclean maintainer-clean realclean:
-	@rootme=`pwd` ; export rootme ; \
+distclean maintainer-clean realclean: clean
+	@rootme=`pwd`; export rootme; \
 	for dir in . ${SUBDIRS}; do \
-		if [ "$$dir" = "." ]; then \
-			true; \
-		elif [ -d $$dir ]; then \
-			(cd $$dir; $(MAKE) $(FLAGS_TO_PASS) $@); \
+		if [ "$${dir}" = "." ]; then \
+			echo "already in dir ($${dir})"; \
+		elif [ -d $${dir} ]; then \
+			(cd $${dir}; $(MAKE) $(FLAGS_TO_PASS) $@); \
 		else "nothing to be done for $@"; fi; \
 	done
 	rm -f Makefile config.cache config.log config.status
 	-rm -rf autom4te.cache || rmdir autom4te.cache
 
 install:
-	@rootme=`pwd` ; export rootme ; \
+	@rootme=`pwd`; export rootme; \
 	for dir in . ${SUBDIRS}; do \
-		if [ "$$dir" = "." ]; then \
-			true; \
-		elif [ -d $$dir ]; then \
-			(cd $$dir; $(MAKE) $(FLAGS_TO_PASS) install); \
+		if [ "$${dir}" = "." ]; then \
+			echo "already in dir ($${dir})"; \
+		elif [ -d $${dir} ]; then \
+			(cd $${dir}; $(MAKE) $(FLAGS_TO_PASS) install); \
 		else "nothing to be done for $@"; fi; \
 	done
 
 installcheck:
-	@echo No installcheck target is available yet for the GNU simulators.
+	@echo "No installcheck target is available yet for the GNU simulators."
 
 installcheck:
 

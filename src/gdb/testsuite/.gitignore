@@ -25,6 +25,7 @@ detail
 args
 vforked-prog.c
 conf*/*.awk
+conf*/out
 cell*.c
 cell*-spu.c
 !README

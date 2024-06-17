@@ -265,9 +265,10 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = 1.11.6 dejagnu foreign
+AUTOMAKE_OPTIONS = 1.11.6 dejagnu foreign -Wno-obsolete
 man_MANS = runtest.1
 TARGETS = overview.html overview.ps overview.pdf overview.rtf
+DISTCLEANFILES = *~
 all: all-am
 
 .SUFFIXES:
@@ -597,6 +598,7 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -746,6 +748,7 @@ html rtf overview.pdf overview.ps overview.dvi overview.rtf overview.html: overv
 .PHONY: rtf
 
 clean-local realclean distclean-local maintainer-clean-local: Makefile
+	rm -fv *~
 	rm -fr $(TARGETS) DBHTOHTML* overview.junk overview overview.{aux,dvi,log,ps,pdf,tex}
 	rm -fr autom4te.cache || rmdir autom4te.cache
 .PHONY: clean-local realclean distclean-local maintainer-clean-local

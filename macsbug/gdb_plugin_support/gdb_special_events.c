@@ -151,7 +151,7 @@ static int __word__completion_read_hook_defined = 0;
 static int (*saved_rl_getc_function)(FILE *);
 static int (*users_rl_getc_function)(int);
 static int rl_getc_function_defined = 0;
-#endif
+#endif /* 0 */
 
 static void (*saved_rl_redisplay_function)(void);
 static char *(*users_rl_redisplay_function)(char *);
@@ -495,6 +495,7 @@ static int my__word__completion_read_hook(void)
     users__word__completion_read_hook();
     if (saved__word__completion_read_hook)
     	saved__word__completion_read_hook();
+    return 0;
 }
 
 
@@ -508,7 +509,7 @@ static int my_rl_getc_function(FILE *stream)
     int c = ((int (*)(FILE*))saved_rl_getc_function)(stream);
     return (users_rl_getc_function(c));
 }
-#endif
+#endif /* 0 */
 
 
 /*--------------------------*
@@ -785,7 +786,9 @@ void gdb_special_events(GdbEvent theEvent, void (*callback)())
 	    break;
 	    
 	case Gdb_Context_Is_Changed:
-	    /* void callback(int pid);
+	#if 0
+	    void callback(int pid);
+     	#endif /* 0 */
 	   
 	    /* Called when gdb switches to a new process (i.e., when it prints 		*/
 	    /* "Switching to thread N", where N is the process id which is also passed	*/
@@ -803,7 +806,9 @@ void gdb_special_events(GdbEvent theEvent, void (*callback)())
 	    break;
 	    
 	case Gdb_Before_Error:
-	    /* void callback(void);							*/
+	#if 0
+	    void callback(void);
+     	#endif /* 0 */
        
 	    /* Called just before an error message is about to be displayed.		*/
 	    
@@ -1053,7 +1058,7 @@ void gdb_special_events(GdbEvent theEvent, void (*callback)())
 		rl_getc_function_defined = 0;
 	    }
 	    break;
-	#endif
+	#endif /* 0 */
 	
 	case Gdb_History_Prompt:
 	    /* char *callback(char *display_prompt);					*/

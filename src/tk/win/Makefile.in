@@ -601,7 +601,7 @@ clean: cleanhelp
 	$(RM) *.pch *.ilk *.pdb
 
 distclean: clean
-	$(RM) Makefile config.status config.cache config.log tkConfig.sh
+	$(RM) Makefile config.status config.cache config.log tkConfig.sh *~
 	-$(RM) -rf autom4te.cache || rmdir autom4te.cache
 
 Makefile: $(SRC_DIR)/Makefile.in
