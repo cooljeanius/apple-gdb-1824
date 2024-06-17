@@ -14,6 +14,11 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
+    - name: Run sccache-cache only on non-release runs
+      if: github.event_name != 'release' && github.event_name != 'workflow_dispatch'
+      uses: mozilla-actions/sccache-action@v0.0.5
+      env:
+        SCCACHE_GHA_ENABLED: "true"
     - name: Install dependencies with Homebrew
       env:
         HOMEBREW_NO_EMOJI: 1
@@ -199,7 +204,7 @@ jobs:
           elif test -x "$(which sync)"; then \
             sync && echo "${subdir} seems to be missing (checking from $(pwd))"; \
           else \
-            sync && echo "warning, unhandled possibility for ${subdir}"; \
+            echo "warning, unhandled possibility for ${subdir} (missing sync?)"; \
           fi; \
           if test -r "${subdir}"/Makefile && test -s "${subdir}"/Makefile && test -w "${subdir}"; then \
             pushd "${subdir}"; \
@@ -223,7 +228,7 @@ jobs:
     - name: Full build to get anything that might have been missed
       run: |
         cd src
-        touch config.log || ls ./*.log
+        touch config.log || chmod +w config.log || ls ./*.log
         if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
           sync && echo "nproc says we can use $(nproc) build jobs"; \
           if test "$(nproc)" -eq 4; then \

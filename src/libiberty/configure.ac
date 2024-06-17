@@ -237,6 +237,9 @@ AM_INIT_MY_AUTOMAKE_LITE
 if test -e ./config.cache; then
   echo "hacking ./config.cache"
   sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CXX_set|bad_CXX_status|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CXX_value|bad_CXX_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CXX|bad_CXX|g" ./config.cache
 fi
 
 m4_ifdef([AC_REQUIRE_AUX_FILE],[

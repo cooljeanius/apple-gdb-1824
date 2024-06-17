@@ -707,7 +707,7 @@ stamp-h: $(srcdir)/config.h.in config.status Makefile
 AUTOHEADER = autoheader
 CONFIGURED_AUTOHEADER = @AUTOHEADER@
 $(srcdir)/config.h.in: @MAINT@ $(srcdir)/configure.ac $(configure_deps)
-	cd $(srcdir) && $(AUTOHEADER) @MAINT@ --force
+	cd $(srcdir) && $(AUTOHEADER) -Wno-obsolete @MAINT@ --force
 
 config.status: $(srcdir)/configure
 	$(SHELL) ./config.status --recheck
@@ -728,7 +728,7 @@ aclocal_deps = $(srcdir)/acinclude.m4 \
 	$(srcdir)/../config/warnings.m4 \
 
 $(srcdir)/configure: @MAINT@ $(srcdir)/configure.ac $(configure_deps)
-	cd $(srcdir) && $(AUTOCONF) @MAINT@ --force
+	cd $(srcdir) && $(AUTOCONF) -Wno-obsolete @MAINT@ --force
 
 ACLOCAL = aclocal
 CONFIGURED_ACLOCAL = @ACLOCAL@

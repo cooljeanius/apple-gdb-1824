@@ -1006,7 +1006,8 @@ check-texinfo_js: texinfo/js/Makefile
 	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) check-types || \
 	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) uglify || \
 	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) modernizr || \
-	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) check-local; \
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) check-local || \
+	stat Makefile; \
 	popd
 
 install-info: do-install-info dir.info
@@ -2054,19 +2055,24 @@ Makefile_target: $(srcdir)/Makefile.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 .PHONY: Makefile_target
 
-config.status_target: configure
+config_dot_status_target: configure
 	CONFIG_SHELL="$(SHELL)" $(SHELL) ./config.status --recheck
-.PHONY: config.status_target
+.PHONY: config_dot_status_target
 
 # Rebuilding configure.
 AUTOCONF = autoconf
+AUTOCONF_FLAGS = -Wno-obsolete
 CONFIGURED_AUTOCONF = @AUTOCONF@
 M4CONFDIR = $(srcdir)/config
 MACRO_DEPS = $(M4CONFDIR)/acx.m4 $(M4CONFDIR)/override.m4 \
   $(M4CONFDIR)/proginstall.m4
 $(srcdir)/configure: @MAINT@ $(srcdir)/configure.ac $(MACRO_DEPS)
-	cd $(srcdir) && $(AUTOCONF)
+	cd $(srcdir) && $(AUTOCONF) $(AUTOCONF_FLAGS)
 .PHONY: $(srcdir)/configure
+
+## so subdirs can use automake:
+am--refresh:
+	@:
 
 # ------------------------------
 # Special directives to GNU Make
