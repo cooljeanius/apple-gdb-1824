@@ -12,6 +12,9 @@ amd64/      by Mikhail Teterin <mi@ALDAN.algebra.com>
         asm code for AMD64
         See patch at http://www.freebsd.org/cgi/query-pr.cgi?pr=bin/96393
 
+asm386/     by Gilles Vollant <info@winimage.com>
+        asm code for i386
+
 asm686/     by Brian Raiter <breadbox@muppetlabs.com>
         asm code for Pentium and PPro/PII, using the AT&T (GNU as) syntax
         See http://www.muppetlabs.com/~breadbox/software/assembly.html
@@ -22,12 +25,18 @@ blast/      by Mark Adler <madler@alumni.caltech.edu>
 delphi/     by Cosmin Truta <cosmint@cs.ubbcluj.ro>
         Support for Delphi and C++ Builder
 
+delphi2/    by Davide Moretti <dave@rimini.com>
+        More support for Delphi and C++ Builder (from Borland) 
+
 dotzlib/    by Henrik Ravn <henrik@ravn.com>
         Support for Microsoft .Net and Visual C++ .Net
 
 gcc_gvmat64/by Gilles Vollant <info@winimage.com>
         GCC Version of x86 64-bit (AMD64 and Intel EM64t) code for x64
         assembler to replace longest_match() and inflate_fast()
+
+haskell/    by Duncan Coutts <duncan@community.haskell.org>
+        Haskell's zlib package from cabal
 
 infback9/   by Mark Adler <madler@alumni.caltech.edu>
         Unsupported diffs to infback to decode the deflate64 format
@@ -38,12 +47,15 @@ inflate86/  by Chris Anderson <christop@charm.net>
 iostream/   by Kevin Ruland <kevin@rodin.wustl.edu>
         A C++ I/O streams interface to the zlib gz* functions
 
-iostream2/  by Tyge Løvset <Tyge.Lovset@cmr.no>
+iostream2/  by Tyge Lï¿½vset <Tyge.Lovset@cmr.no>
         Another C++ I/O streams interface
 
 iostream3/  by Ludwig Schwardt <schwardt@sun.ac.za>
             and Kevin Ruland <kevin@rodin.wustl.edu>
         Yet another C++ I/O streams interface
+
+java/       by JCraft, Inc. <ymnk@jcraft.com>
+        Java's jzlib implementation
 
 masmx64/    by Gilles Vollant <info@winimage.com>
         x86 64-bit (AMD64 and Intel EM64t) code for x64 assembler to
@@ -62,6 +74,9 @@ minizip/    by Gilles Vollant <info@winimage.com>
 
 pascal/     by Bob Dellaca <bobdl@xtra.co.nz> et al.
         Support for Pascal
+
+perl/       by Paul Marquess <pmqs@cpan.org>
+        Perl's Compress::Raw::Zlib module, taken from CPAN
 
 puff/       by Mark Adler <madler@alumni.caltech.edu>
         Small, low memory usage inflate.  Also serves to provide an

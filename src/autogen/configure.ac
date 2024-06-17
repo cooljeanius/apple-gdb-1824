@@ -39,7 +39,7 @@ AC_MSG_NOTICE([sourcing ${srcdir}/VERSION])
 d=`dirname ${0}`
 ag_top_srcdir=`cd ${d} && pwd`
 ag_top_builddir=`pwd`]
-AM_INIT_AUTOMAKE([gnits dejagnu check-news 1.9 dist-xz])dnl
+AM_INIT_AUTOMAKE([gnits dejagnu check-news 1.9 dist-xz -Wno-obsolete])dnl
 AM_MAINTAINER_MODE
 gl_USE_SYSTEM_EXTENSIONS
 LT_INIT([dlopen win32-dll])dnl

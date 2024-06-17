@@ -1,7 +1,7 @@
 ## automake Makefile for the cygwin version of Tcl
 ## Process this file with automake to produce Makefile.in.
 
-AUTOMAKE_OPTIONS = 1.4 foreign no-dist
+AUTOMAKE_OPTIONS = 1.4 foreign no-dist -Wno-obsolete
 ## "cygnus" == "foreign no-dist"
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 DISTCLEANFILES = *~

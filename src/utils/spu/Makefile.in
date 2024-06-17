@@ -111,10 +111,11 @@ clean: mostlyclean
 	rm -rf *.dSYM || rmdir *.dSYM
 
 distclean: clean
-	rm -f Makefile config.status config.log config.cache
+	rm -f Makefile config.status config.log config.cache config.h
 	rm -fr autom4te.cache || rmdir autom4te.cache
 
 maintainer-clean realclean: distclean
+	rm -f configure
 
 check: check-local
 ## using dependencies for the plist could go wrong, so call it as part

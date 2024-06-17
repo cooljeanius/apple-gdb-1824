@@ -19,6 +19,11 @@
 
 #include "dis-asm.h"
 
+/* Actually including this breaks stuff, due to duplication, so ifdef it out for now: */
+#if 0
+# include "readline.h"
+#endif /* 0 */
+
 /*--------------------------------------------------------------------------------------*/
 
 /* The development of this API spans versions of GDB 4.x and beyond.  There are, of  	*/
@@ -33,10 +38,10 @@
 /* gdb doesn't have some version macro in some header to make this cleaner.		*/
 
 #ifdef GDB_MULTI_ARCH_PARTIAL
-#define GDB_VERSION 5
+# define GDB_VERSION 5
 #else
-#define GDB_VERSION 6
-#endif
+# define GDB_VERSION 6
+#endif /* GDB_MULTI_ARCH_PARTIAL */
 
 #define GDB4 0				/* kept for historical reasons for gdb 4.x	*/
 					/* we no longer support that older version	*/
@@ -133,9 +138,13 @@ typedef struct {				/* initialized by or initial value...	*/
 /* use that first set value for additional instances:					*/
 
 #define INITIAL_GDB_VALUE(x, y) \
-    (gdb_global_data_p->x##_defined) ? gdb_global_data_p->x : (gdb_global_data_p->x##_defined = 1, \
-    				              	     	       gdb_global_data_p->x = (y))
-//#define INITIAL_GDB_VALUE(x, y) (y)
+    ((gdb_global_data_p->x##_defined) \
+     ? gdb_global_data_p->x \
+     : (gdb_global_data_p->x##_defined = 1, \
+        gdb_global_data_p->x = (y)))
+#if !defined(INITIAL_GDB_VALUE)
+# define INITIAL_GDB_VALUE(x, y) (y)
+#endif /* !INITIAL_GDB_VALUE */
 
 /* Because the Gdb_Global_Data struct is common to all plugin library instances it	*/
 /* provides a convenient place to hang some data on to to allow multiple instances to	*/
@@ -179,6 +188,9 @@ extern void __cmd_completion_display_hook(char **matches, int num_matches, int m
 extern void (*__word__completion_hook)(int save_input_cursor); /* hooks for the above	*/
 extern void (*__word__completion_query_hook)(GDB_FILE *stream, char *format, ...);
 extern int  (*__word__completion_read_hook)(void);
+#if !defined(_READLINE_H_)
+extern void rl_get_screen_size(int *, int *);
+#endif /* !_READLINE_H_ */
 
 
 /*-----------*
@@ -225,9 +237,9 @@ extern FILE *rl_outstream;			/* the output stream			*/
  | Hooks left here as reminders - maybe they could be useful someday |
  *-------------------------------------------------------------------*/
 
-extern void _rl_abort_internal();
-extern int _rl_qsort_string_compare();
-extern char *tilde_expand();
+extern void _rl_abort_internal(void);
+extern int _rl_qsort_string_compare(void);
+extern int rl_ding(void);
 
 extern int _rl_print_completions_horizontally;	/* If !0, completions are printed	*/
 						/* horizontally in alphabetical order, 	*/
@@ -255,4 +267,4 @@ extern int rl_filename_completion_desired;	/* Non-zero means that the results of
 						/* entry, and can only be changed within*/
 						/* a completion entry finder function.	*/
 
-#endif
+#endif /* !__GDB_PRIVATE_INTERFACES_H__ */

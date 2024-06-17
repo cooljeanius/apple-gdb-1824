@@ -9,7 +9,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_TARGET
 AC_EXEEXT
 AC_OBJEXT
-AM_INIT_AUTOMAKE([gnits dejagnu])
+AM_INIT_AUTOMAKE([gnits dejagnu -Wno-obsolete])
 AM_MAINTAINER_MODE
 AC_MSG_NOTICE([host is "${host}"])
 dnl# TODO: fix this test:

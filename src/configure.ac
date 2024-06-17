@@ -207,7 +207,7 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
 
 dnl# We are starting to use automake with legit Makefile.am files, albeit in
 dnl# subdirs:
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu no-dist -Wno-override])
+AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu no-dist -Wno-override -Wno-obsolete])
 
 if test "x${V}" = "x"; then
   test -z "${V}" && export V=0
@@ -397,6 +397,7 @@ fi
 use_included_zlib="yes"
 # Make sure we do NOT let ZLIB be added if we did NOT want it.
 if test "x${with_system_zlib}" = "xyes"; then
+  echo "use of the system zlib means skipping using the one bundled here"
   use_included_zlib=no
   noconfigdirs="${noconfigdirs} zlib"
 fi
@@ -966,8 +967,12 @@ case "${target}" in
     fi
 # building zlib from this level can mess it up; build it manually instead:
     if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o"; then
-      ## FIXME: come up with a proper fix instead?
-      noconfigdirs="${noconfigdirs} zlib"
+      if test "x${enable_static}" = "xyes" || test "x${build_old_libs}" = "xyes"; then
+        ## FIXME: come up with a proper fix instead?
+        noconfigdirs="${noconfigdirs} zlib"
+      else
+        echo "zlib should probably be fine so long as we avoid building its minizip subdir statically"
+      fi
     fi
 # autogen support in this tree is still tentative, so disable if guile is
 # not also present:
@@ -1028,7 +1033,11 @@ case "${target}" in
     fi
 # Also similar to Apple case above:
     if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o" -o -n "${PIC_FLAG}"; then
-      noconfigdirs="${noconfigdirs} zlib"
+      if test "x${enable_static}" = "xyes" || test "x${build_old_libs}" = "xyes"; then
+        noconfigdirs="${noconfigdirs} zlib"
+      else
+        echo "zlib should probably be fine so long as we avoid building its minizip subdir statically"
+      fi
     fi
 # autogen support in this tree is still tentative, so disable if guile is
 # not also present:
@@ -1070,6 +1079,7 @@ case "${target}" in
     esac
     ;;
   *-*-kaos*)
+    echo "A lot of stuff is unsupported on kaOS configurations..."
     # Remove unsupported stuff on all kaOS configurations.
     skipdirs="target-libiberty ${libgcj} target-libstdc++-v3 target-librx"
     skipdirs="${skipdirs} target-libobjc target-examples target-groff target-gperf"
@@ -1234,9 +1244,9 @@ case "${target}" in
   hppa*64*-*-linux* | parisc*64*-*-linux*)
     enable_64_bit_bfd=yes
     host_configargs=" ${host_configargs} --enable-64-bit-bfd "
-    # In this case, it is because the hppa64-linux target is for
-    # the kernel only at this point and has no libc, and thus no
-    # headers, crt*.o, etc., all of which are needed by these.
+    echo "In this case, it is because the hppa64-linux target is for"
+    echo "the kernel only at this point and has no libc, and thus no"
+    echo "headers, crt*.o, etc., all of which are needed by these."
     noconfigdirs="${noconfigdirs} target-zlib"
     ;;
   parisc*-*-linux* | hppa*-*-linux*)
@@ -1789,7 +1799,30 @@ if test "x${build}" != "x${host}"; then
   CC_FOR_BUILD=${CC_FOR_BUILD-gcc}
   BUILD_PREFIX="${build_alias}-"
   BUILD_PREFIX_1="${build_alias}-"
-
+  if test "x${enable_dependency_tracking}" != "xno" \
+    && test "x${am_cv_CXX_dependencies_compiler_type}" = "xgcc3"; then
+    test -z "${am__fastdepCXX_TRUE}" && export am__fastdepCXX_TRUE=""
+    test -z "${am__fastdepCXX_FALSE}" && export am__fastdepCXX_FALSE='#'
+  else
+    test -z "${am__fastdepCXX_TRUE}" && export am__fastdepCXX_TRUE='#'
+    test -z "${am__fastdepCXX_FALSE}" && export am__fastdepCXX_FALSE=""
+  fi
+  if test "x${enable_dependency_tracking}" != "xno" \
+    && test "x${am_cv_OBJC_dependencies_compiler_type}" = "xgcc3"; then
+    test -z "${am__fastdepOBJC_TRUE}" && export am__fastdepOBJC_TRUE=""
+    test -z "${am__fastdepOBJC_FALSE}" && export am__fastdepOBJC_FALSE='#'
+  else
+    test -z "${am__fastdepOBJC_TRUE}" && export am__fastdepOBJC_TRUE='#'
+    test -z "${am__fastdepOBJC_FALSE}" && export am__fastdepOBJC_FALSE=""
+  fi
+  if test "x${enable_dependency_tracking}" != "xno" \
+    && test "x${am_cv_OBJCXX_dependencies_compiler_type}" = "xgcc3"; then
+    test -z "${am__fastdepOBJCXX_TRUE}" && export am__fastdepOBJCXX_TRUE=""
+    test -z "${am__fastdepOBJCXX_FALSE}" && export am__fastdepOBJCXX_FALSE='#'
+  else
+    test -z "${am__fastdepOBJCXX_TRUE}" && export am__fastdepOBJCXX_TRUE='#'
+    test -z "${am__fastdepOBJCXX_FALSE}" && export am__fastdepOBJCXX_FALSE=""
+  fi
 else
   # Set reasonable default values for some tools even if not Canadian.
   # Of course, these are different reasonable default values, originally
@@ -1804,7 +1837,7 @@ else
   BUILD_PREFIX_1="loser-"
 
   if test "x${CC}" = "x"; then
-    test -z "${CC}"
+    test -z "${CC}" || unset CC
     AC_PROG_CC
   else
     test -n "${CC}" && export CC
@@ -1817,7 +1850,7 @@ else
   AC_PROG_OBJCXX
   AC_PROG_OBJCXXCPP
   if test "x${GOC}" = "x"; then
-    test -z "${GOC}"
+    test -z "${GOC}" || unset GOC
     AC_PROG_GO
   fi
 
@@ -3076,7 +3109,13 @@ AC_CHECK_PROGS([CONFIGURED_YACC],['bison -y' byacc yacc],
 AC_CHECK_PROGS([CONFIGURED_M4],[gm4 gnum4 m4],[${MISSING} m4])
 AC_CHECK_PROGS([CONFIGURED_FLEX],[flex],[${MISSING} flex])
 AC_CHECK_PROGS([CONFIGURED_LEX],[flex lex],[${MISSING} flex])
-AC_CHECK_PROGS([CONFIGURED_MAKEINFO],[makeinfo],[${MISSING} makeinfo])dnl
+if test "x${MISSING}" != "x"; then
+  test -n "${MISSING}"
+  AC_CHECK_PROGS([CONFIGURED_MAKEINFO],[makeinfo gmakeinfo],[${MISSING} makeinfo])
+else
+  test -z "${MISSING}"
+  AC_CHECK_PROGS([CONFIGURED_MAKEINFO],[makeinfo gmakeinfo],[makeinfo])
+fi
 
 AC_PROG_LEX([yywrap])
 AM_PROG_LEX
@@ -3762,18 +3801,34 @@ case " ${build_configdirs} " in
   *" flex "*) FLEX='$$r/$(BUILD_SUBDIR)/flex/flex' ;;
 esac
 
-AC_CHECK_PROGS([MAKEINFO],[makeinfo],[${MISSING} makeinfo])
+if test "x${MISSING}" != "x" && test "x${SHELL}" != "x"; then
+  test -n "${MISSING}" && test -n "${SHELL}" && echo "${MISSING} ought to use ${SHELL} for makeinfo" && export SHELL
+  AC_CHECK_PROGS([MAKEINFO],[makeinfo gmakeinfo],[${MISSING} makeinfo])
+else
+  test -z "${MISSING}" && test -z "${SHELL}" && echo "skipping use of missing script for makeinfo when it might fail"
+  AC_CHECK_PROGS([MAKEINFO],[makeinfo gmakeinfo],[makeinfo])
+fi
 case " ${build_configdirs} " in
-  *" texinfo "*) MAKEINFO='$$r/$(BUILD_SUBDIR)/texinfo/makeinfo/makeinfo' ;;
+  *" texinfo "*)
+    echo "texinfo is in build_configdirs; will attempt to use the built makeinfo"
+    MAKEINFO='$$r/$(BUILD_SUBDIR)/texinfo/makeinfo/makeinfo' ;;
   *)
+    AC_MSG_CHECKING([version of ${MAKEINFO}])
+    MAKEINFO_VERSION=""
+    if test -n "${MAKEINFO}" && test -x "${MAKEINFO}"; then
+      export MAKEINFO_VERSION="`${MAKEINFO} --version`"
+    fi
+    AC_MSG_RESULT([${MAKEINFO_VERSION}])
 changequote(,)
     # For an installed makeinfo, we require it to be from texinfo 4.7 or
     # higher, else we use the "missing" dummy.
-    if ${MAKEINFO} --version \
+    if test -n "${MAKEINFO}" && test -x "${MAKEINFO}" && ${MAKEINFO} --version \
        | egrep 'texinfo[^0-9]*(4\.([7-9]|[1-9][0-9])|[5-9]|[1-9][0-9])' >/dev/null 2>&1; then
-      :
+      echo "version of makeinfo is fine"
+    elif test "x${MISSING}" != "x"; then
+      test -n "${MISSING}" && echo "falling back to use ${MISSING} script" && export MAKEINFO="${MISSING} makeinfo"
     else
-      MAKEINFO="${MISSING} makeinfo"
+      test -z "${MISSING}" && echo "need to fall back to use the missing script, but the variable for it is unset!" >&2 && export MAKEINFO="false"
     fi
     ;;
 changequote([,])

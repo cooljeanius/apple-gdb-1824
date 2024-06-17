@@ -1,3 +1,177 @@
+2024-06-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	tar commands are hard to get right
+
+	https://xkcd.com/1168/
+
+	Change-Id: I72107484fc6c351e632657f3ca9209dceb89834e
+
+2024-06-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more housekeeping; I may have screwed something up...
+
+	Change-Id: I88f44dbfd6611c5c830fcaceaf44fd1a7fc9f9a0
+
+2024-06-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	housekeeping
+
+	Change-Id: Ic63c06deecb38295998ca0c59c1311397a61ef90
+
+2024-06-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	messing with language detection
+
+	Change-Id: I023adc03ab83690c1b8ea8607a474612bd1a3548
+
+2024-06-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #61 from cooljeanius/dependabot/gradle/com.google.guava-guava-33.2.1-jre
+
+	Bump com.google.guava:guava from 33.2.0-jre to 33.2.1-jre
+
+2024-06-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #60 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-9.4.0
+
+	Bump eslint from 9.3.0 to 9.4.0 in /src/texinfo/js
+
+2024-06-03  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump com.google.guava:guava from 33.2.0-jre to 33.2.1-jre
+
+	Bumps [com.google.guava:guava](https://github.com/google/guava) from 33.2.0-jre to 33.2.1-jre.
+	- [Release notes](https://github.com/google/guava/releases)
+	- [Commits](https://github.com/google/guava/commits)
+
+	---
+	updated-dependencies:
+	- dependency-name: com.google.guava:guava
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	...
+
+2024-06-03  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.3.0 to 9.4.0 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 9.3.0 to 9.4.0.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.3.0...v9.4.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-06-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more stuff inspired by output of CI runs
+
+	Change-Id: I414362930b2909ee1142f6d01b0e8cec736cca7a
+
+2024-06-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	misc. minor things
+
+	Change-Id: I0822150201d83cb078dce48f99ac1436c576dc70
+
+2024-06-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	updates for rlfe based on upstream readline
+
+	Change-Id: I934c59e2ec4b63d7cd5590da70635f5e0f1352af
+
+2024-05-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #59 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-9.3.0
+
+	Bump eslint from 9.2.0 to 9.3.0 in /src/texinfo/js
+
+2024-05-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' into dependabot/npm_and_yarn/src/texinfo/js/eslint-9.3.0
+
+2024-05-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	stuff I was holding off on in prev. commit
+
+	Change-Id: Iab08ea4ba966fa6cb7c446ef830521846589b1f9
+
+2024-05-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	updating stuff
+
+	Change-Id: I706dbf35df9d05c767f9dd55c9b9edede58fb1f6
+
+2024-05-20  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.2.0 to 9.3.0 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 9.2.0 to 9.3.0.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.2.0...v9.3.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-05-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	misc. things I noticed, May 10, 2024
+
+	Change-Id: Ib9d8d9b9650c1fd1862002d5755c383896b0ce1c
+
+2024-05-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #58 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-9.2.0
+
+	Bump eslint from 9.1.1 to 9.2.0 in /src/texinfo/js
+
+2024-05-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #57 from cooljeanius/dependabot/gradle/com.google.guava-guava-33.2.0-jre
+
+	Bump com.google.guava:guava from 33.1.0-jre to 33.2.0-jre
+
+2024-05-06  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.1.1 to 9.2.0 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 9.1.1 to 9.2.0.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.1.1...v9.2.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-05-06  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump com.google.guava:guava from 33.1.0-jre to 33.2.0-jre
+
+	Bumps [com.google.guava:guava](https://github.com/google/guava) from 33.1.0-jre to 33.2.0-jre.
+	- [Release notes](https://github.com/google/guava/releases)
+	- [Commits](https://github.com/google/guava/commits)
+
+	---
+	updated-dependencies:
+	- dependency-name: com.google.guava:guava
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	...
+
 2024-05-02  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	oops, looks like sometimes yytname might not exist

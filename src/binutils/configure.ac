@@ -59,7 +59,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, moving it aside])
   mv -vf ${srcdir}/config.status ${srcdir}/config.status~
 fi
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu no-dist info-in-builddir])dnl
+AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu no-dist info-in-builddir -Wno-obsolete])dnl
 AM_SANITY_CHECK
 
 # Make sure that sed is checked early:

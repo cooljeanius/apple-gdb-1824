@@ -331,6 +331,7 @@ EXEEXT = @EXEEXT@
 EXEEXT_FOR_BUILD = @EXEEXT_FOR_BUILD@
 FGREP = @FGREP@
 FILECMD = @FILECMD@
+FLEXMEMBER_STRICTNESS_FLAG = @FLEXMEMBER_STRICTNESS_FLAG@
 GENCAT = @GENCAT@
 GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GMOFILES = @GMOFILES@
@@ -1009,7 +1010,7 @@ clean-am: clean-aminfo clean-generic clean-libtool clean-local \
 distclean: distclean-am
 	-rm -f Makefile
 distclean-am: clean-am distclean-DEJAGNU distclean-compile \
-	distclean-generic distclean-tags
+	distclean-generic distclean-local distclean-tags
 
 dvi: dvi-am
 
@@ -1170,18 +1171,19 @@ uninstall-am: uninstall-dvi-am uninstall-html-am uninstall-info-am \
 	check-am clean clean-aminfo clean-generic clean-libtool \
 	clean-local clean-noinstPROGRAMS cscopelist-am ctags ctags-am \
 	dist-info distclean distclean-DEJAGNU distclean-compile \
-	distclean-generic distclean-libtool distclean-tags dvi dvi-am \
-	html html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-aminfo maintainer-clean-generic mostlyclean \
-	mostlyclean-aminfo mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-dvi-am uninstall-html-am \
-	uninstall-info-am uninstall-pdf-am uninstall-ps-am
+	distclean-generic distclean-libtool distclean-local \
+	distclean-tags dvi dvi-am html html-am info info-am install \
+	install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-aminfo \
+	maintainer-clean-generic mostlyclean mostlyclean-aminfo \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-dvi-am uninstall-html-am uninstall-info-am \
+	uninstall-pdf-am uninstall-ps-am
 
 .PRECIOUS: Makefile
 
@@ -1532,6 +1534,12 @@ clean-local: Makefile @MAINT@ apple-clean
 	  rm -f $(AM_V_v) $(srcdir)/*.o; \
 	fi
 .PHONY: clean-local
+
+distclean-local: Makefile clean-local @MAINT@ apple-clean
+	if test -r .dirstamp; then rm -f .dirstamp; fi
+	if test ! -e Makefile && test -r ../Makefile && test -w .; then \
+	  $(MAKE) -C .. doc/Makefile; \
+	fi
 
 all-local: Makefile $(build_MKDOC) protos @MAINT@ clean-local
 	$(AM_V_at)-if test -d chew_am.dSYM && test -r Makefile && test -w .; then \

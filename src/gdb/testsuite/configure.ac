@@ -59,6 +59,9 @@ fi
 case ${target} in
   hppa*-*-hpux*)
     AC_CONFIG_SUBDIRS([gdb.hp]) ;;
+  *)
+    AC_MSG_NOTICE([gdb.hp subdir is only relevant on hppa/hpux targets; skipping])
+    ;;
 esac
 
 # With stabs.
@@ -87,6 +90,8 @@ esac])dnl
 if test "x${with_stabs}" = "xyes"; then
    AC_CONFIG_SUBDIRS([gdb.stabs])dnl
    ## 3...
+else
+   AC_MSG_NOTICE([gdb.stabs subdir is only relevant with stabs support; skipping])
 fi
 
 # Check for 'sed' before doing the rest of this script:
@@ -150,6 +155,8 @@ AC_SYS_LONG_FILE_NAMES
 # Add gdbtk tests when appropriate.
 if test "x${enable_gdbtk}" = "xyes"; then
    AC_CONFIG_SUBDIRS([gdb.gdbtk])
+else
+   AC_MSG_NOTICE([gdb.gdbtk subdir is only relevant when gdbtk is enabled; skipping])
 fi
 
 # Enable shared libraries.

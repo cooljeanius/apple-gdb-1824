@@ -978,6 +978,7 @@ do-[+make_target+]: unstage [+make_target+]-host [+make_target+]-target stage
 .PHONY: install-info install-pdf install-html
 .PHONY: clean distclean mostlyclean maintainer-clean realclean
 .PHONY: local-clean local-distclean local-maintainer-clean
+.PHONY: texinfo_js all-texinfo_js check-texinfo_js
 info: do-info
 installcheck: do-installcheck
 dvi: do-dvi
@@ -990,6 +991,24 @@ doc docs: info dvi pdf html
 # Make sure makeinfo is built before we do a `make info', if we're
 # in fact building texinfo.
 do-info: maybe-all-texinfo
+
+texinfo/js/Makefile: texinfo/js/Makefile.in config.status
+	./config.status texinfo/js/Makefile
+texinfo_js: texinfo/js/Makefile
+	$(MAKE) -C texinfo/js $(AM_V_MFLAG) $(FLAGS_TO_PASS)
+
+all-texinfo_js: texinfo/js/Makefile
+	$(MAKE) -C texinfo/js $(AM_V_MFLAG) $(FLAGS_TO_PASS) all
+check-texinfo_js: texinfo/js/Makefile
+	pushd texinfo/js; \
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) check || \
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) lint || \
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) check-types || \
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) uglify || \
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) modernizr || \
+	$(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) check-local || \
+	stat Makefile; \
+	popd
 
 install-info: do-install-info dir.info
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
@@ -1008,7 +1027,8 @@ distclean-local: local-distclean
 .PHONY: distclean-local
 local-distclean:
 	-rm -f Makefile Makefile*orig
-	-rm -f config.status config.cache ./*/config.cache
+	-rm -f config.status config.cache ./*/config.cache ./*/config.cache.bak
+	-rm -fv *~ config/*~
 	-rm -f mh-frag mt-frag
 	-rm -f multilib.out multilib.tmp maybedep.tmp serdep.tmp
 	-if [ "$(TARGET_SUBDIR)" != "." ]; then \
@@ -1162,7 +1182,7 @@ installdirs: mkinstalldirs
 	$(SHELL) $(srcdir)/mkinstalldirs $(MAKEDIRS)
 
 dir.info: do-install-info
-	if [ -f $(srcdir)/texinfo/gen-info-dir ]; then \
+	if [ -x $(srcdir)/texinfo/gen-info-dir ]; then \
 	  $(srcdir)/texinfo/gen-info-dir $(DESTDIR)$(infodir) $(srcdir)/texinfo/dir.info-template > dir.info.new; \
 	  mv -f dir.info.new dir.info; \
 	else echo "missing script to generate texinfo info dir"; \
@@ -1208,8 +1228,9 @@ configure-[+prefix+][+module+]: [+deps+]
 		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
 	esac; \
 	srcdiroption="--srcdir=$${topdir}/[+module+]"; \
-	libsrcdir="$$s/[+module+]"; \
+	libsrcdir="$${s}/[+module+]"; \
 	[+ IF no-config-site +]rm -f no-such-file || echo "ok"; \
+	if test -n "${CPP}"; then unset CPP; fi; \
 	CONFIG_SITE=no-such-file [+ ENDIF +]$(SHELL) $${libsrcdir}/configure \
 	  [+args+] $${srcdiroption} [+extra_configure_flags+] \
 	  || exit 1
@@ -1236,8 +1257,8 @@ configure-stage[+id+]-[+prefix+][+module+]: [+deps+]
 		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
 	esac; \
 	srcdiroption="--srcdir=$${topdir}/[+module+]"; \
-	libsrcdir="$$s/[+module+]"; \
-	$(SHELL) $${libsrcdir}/configure \
+	libsrcdir="$${s}/[+module+]"; \
+	unset CPP && $(SHELL) $${libsrcdir}/configure \
 	  [+args+] $${srcdiroption} \
 	  [+stage_configure_flags+] [+extra_configure_flags+]
 @endif [+module+]-bootstrap
@@ -1257,7 +1278,7 @@ all-[+prefix+][+module+]: configure-[+prefix+][+module+]
 	[+ ENDIF bootstrap +]r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	[+exports+] \
-	(cd [+subdir+]/[+module+] && \
+	(cd [+subdir+]/[+module+] && unset CPP && \
 	  $(MAKE) $(AM_V_MFLAG) [+args+] [+extra_make_flags+] $(TARGET-[+prefix+][+module+]))
 @endif [+prefix+][+module+]
 
@@ -1276,7 +1297,7 @@ all-stage[+id+]-[+prefix+][+module+]: configure-stage[+id+]-[+prefix+][+module+]
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	[+exports+][+ IF prev +] \
 	[+poststage1_exports+][+ ENDIF prev +] \
-	cd [+subdir+]/[+module+] && \
+	cd [+subdir+]/[+module+] && unset CPP && \
 	$(MAKE) $(AM_V_MFLAG) [+args+] [+ IF prev
 		+][+poststage1_args+][+ ENDIF prev
 		+] [+stage_make_flags+] [+extra_make_flags+]
@@ -2034,19 +2055,24 @@ Makefile_target: $(srcdir)/Makefile.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 .PHONY: Makefile_target
 
-config.status_target: configure
+config_dot_status_target: configure
 	CONFIG_SHELL="$(SHELL)" $(SHELL) ./config.status --recheck
-.PHONY: config.status_target
+.PHONY: config_dot_status_target
 
 # Rebuilding configure.
 AUTOCONF = autoconf
+AUTOCONF_FLAGS = -Wno-obsolete
 CONFIGURED_AUTOCONF = @AUTOCONF@
 M4CONFDIR = $(srcdir)/config
 MACRO_DEPS = $(M4CONFDIR)/acx.m4 $(M4CONFDIR)/override.m4 \
   $(M4CONFDIR)/proginstall.m4
 $(srcdir)/configure: @MAINT@ $(srcdir)/configure.ac $(MACRO_DEPS)
-	cd $(srcdir) && $(AUTOCONF)
+	cd $(srcdir) && $(AUTOCONF) $(AUTOCONF_FLAGS)
 .PHONY: $(srcdir)/configure
+
+## so subdirs can use automake:
+am--refresh:
+	@:
 
 # ------------------------------
 # Special directives to GNU Make

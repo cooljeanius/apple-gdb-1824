@@ -165,6 +165,8 @@ tags TAGS: $(CFILES)
 	-ctags -e *.sh $(CFILES) *.h
 
 dist: .version $(SCREEN).tar.gz
+info:
+.PHONY: info
 dvi:
 .PHONY: dvi
 

@@ -1,0 +1,11 @@
+\input texinfo.tex @c -*-texinfo-*-
+@c %**start of header
+@setfilename electric-fence.info
+@settitle The electric-fence package
+@c This date is automagically updated when you save this file:
+@set lastupdate June 13, 2024
+@c %**end of header
+@node Top
+@top electric-fence
+@node electric-fence
+@bye

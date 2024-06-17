@@ -48,7 +48,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu])
+AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu -Wno-obsolete])
 m4_ifdef([AM_MAINTAINER_MODE],[
   test -e "."
   if test -e "Makefile"; then
@@ -93,11 +93,19 @@ AC_SYS_LONG_FILE_NAMES
 if test -e `pwd`/config.cache; then
   echo "hacking `pwd`/config.cache"
   sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" `pwd`/config.cache
-  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CXX_set|bad_CXX_status|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CXX_value|bad_CXX_value|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CXX|bad_CXX|g" `pwd`/config.cache
 elif test -e ./config.cache; then
   echo "hacking ./config.cache"
   sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" ./config.cache
-  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CXX_set|bad_CXX_status|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CXX_value|bad_CXX_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CXX|bad_CXX|g" ./config.cache
 else
   echo "config.cache is missing, which means we can skip attempts to hack it"
 fi

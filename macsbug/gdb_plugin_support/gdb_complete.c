@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#include <ctype.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/file.h>
@@ -46,16 +47,20 @@ int (*__word__completion_read_hook)(void) = NULL;
 /*--------------------------------------------------------------------------------------*/
 
 #define rl_outstream NULL
-//extern FILE *rl_outstream;
-//#define crlf() putc('\n', rl_outstream)
+#if 0
+extern FILE *rl_outstream;
+#endif /* 0 */
+#if 0 && !defined(crlf)
+# define crlf() putc('\n', rl_outstream)
+#endif /* 0 && !crlf */
 
-static int _putc(int c, void *stream)
+static void _putc(int c, void *stream)
 {
     char ch = c;
     gdb_fprintf(stream == stderr ? gdb_stderr : gdb_stdout, "%c", ch);
 }
 
-static int _printf(void *stream, const char *format, ...)
+static void _printf(void *stream, const char *format, ...)
 {
     char line[1024];
     
@@ -67,12 +72,12 @@ static int _printf(void *stream, const char *format, ...)
     gdb_fprintf(stream == stderr ? gdb_stderr : gdb_stdout, "%s", line);
 }
 
-static int _fflush(void *stream)
+static void _fflush(void *stream)
 {
     gdb_fflush(stream == stderr ? gdb_stderr : gdb_stdout);
 }
 
-static crlf(void)
+static void crlf(void)
 {
     _putc('\n', gdb_stdout);
 }
@@ -134,7 +139,7 @@ static int stat_char(char *filename)
     r = lstat(filename, &finfo);
     #else
     r = stat(filename, &finfo);
-    #endif
+    #endif /* HAVE_LSTAT && S_ISLNK */
     
     if (r == -1)
 	return (0);
@@ -162,7 +167,7 @@ static int stat_char(char *filename)
     #if defined(S_ISFIFO)
     else if (S_ISFIFO(finfo.st_mode))
 	character = '|';
-    #endif
+    #endif /* S_ISFIFO */
     else if (S_ISREG(finfo.st_mode)) {
 	if (access(filename, 1) == 0)
 	  character = '*';

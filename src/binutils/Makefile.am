@@ -1,7 +1,7 @@
 ## automake Makefile for binutils source
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu no-dist info-in-builddir
+AUTOMAKE_OPTIONS = 1.11.6 gnits dejagnu no-dist info-in-builddir -Wno-obsolete
 ## "cygnus" == "foreign no-dist" (we hardened from foreign to gnits though)
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 TEXINFO_TEX = ../texinfo/texinfo.tex
@@ -809,9 +809,10 @@ ALL_BISON_OUTPUT_FILES = \
 
 DISTCLEANFILES = sysinfo sysroff.c sysroff.h lex.backup \
 	site.exp site.bak embedspu *~ .DS_Store *.log *.trs \
-	$(ALL_BISON_OUTPUT_FILES)
+	$(ALL_BISON_OUTPUT_FILES) *.cache.bak
 
 distclean-local:
+	-rm -rf $(AM_V_v) .deps || rmdir .deps
 	rm -rf autom4te.cache || rmdir autom4te.cache
 .PHONY: distclean-local
 

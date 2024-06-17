@@ -10,4 +10,6 @@ autoreconf -fvi -Wall -Wno-obsolete
 automake --gnits --add-missing --copy --force-missing --verbose -Wall 2>/dev/null || ls config/*
 # (ignore its messages to stderr, because they are irrelevant for us here)
 
+if test -d config; then rm -fv config/*~; fi
+
 exit 0

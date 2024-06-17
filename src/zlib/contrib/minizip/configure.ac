@@ -40,14 +40,25 @@ AC_DEFUN([AC_REQUIRE_RANLIB],[
   AC_REQUIRE([AC_PROG_RANLIB])dnl
 ])dnl
 AC_REQUIRE_RANLIB
-LT_INIT([win32-dll])dnl
+LT_INIT([win32-dll disable-static])dnl
 LT_LANG([C])dnl
 LT_LANG([Windows Resource])dnl
 LT_PREREQ([2.4.6])dnl
 
 if test -e ./config.cache; then
+    echo "hacking ./config.cache"
     sed -i.bak -e "s|ac_cv_prog_AR|bad_AR|g" ./config.cache
     sed -i.bak -e "s|am_cv_ar_interface|bad_ar_interface|g" ./config.cache
+    sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" ./config.cache
+    sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" ./config.cache
+    sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+elif test -e ../.././config.cache; then
+    echo "hacking ../.././config.cache"
+    sed -i.bak -e "s|ac_cv_prog_AR|bad_AR|g" ../.././config.cache
+    sed -i.bak -e "s|am_cv_ar_interface|bad_ar_interface|g" ../.././config.cache
+    sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" ../.././config.cache
+    sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" ../.././config.cache
+    sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ../.././config.cache
 fi
 m4_ifdef([AC_PROG_AR],[
 if test "x${AR}" = "x"; then
@@ -56,6 +67,9 @@ if test "x${AR}" = "x"; then
   if test "x${ac_cv_prog_AR}" = "x"; then
     test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
     AC_PROG_AR
+    if test "x${ARFLAGS}" = "x"; then
+      test -z "${ARFLAGS}" && export ARFLAGS="cru"
+    fi
   fi
 else
   test -n "${AR}" && export AR
@@ -123,6 +137,7 @@ if test ! -e ../../Makefile.am || test -e ../../Makefile_orig.in; then
 fi
 ],[])
 AC_CONFIG_COMMANDS([top_cleanup],[
-rm -rf ../../ztest*.dSYM || rmdir ../../ztest*.dSYM || echo "OK"
+rm -f ../../ztest*.exe || echo "OK_1"
+rm -rf ../../ztest*.dSYM || rmdir ../../ztest*.dSYM || echo "OK_2"
 ],[])
 AC_OUTPUT

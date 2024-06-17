@@ -1010,6 +1010,11 @@ lookup_cmd_1(const char **text, struct cmd_list_element *clist,
     return 0;
 
   len = (p - *text);
+  if (len == 0UL) {
+    len++;
+  } else if (len >= PTRDIFF_MAX) {
+    len = (PTRDIFF_MAX - 1UL);
+  }
 
   /* *text and p now bracket the first command word to lookup (and its length
      is len).  We copy this into a local temporary: */
@@ -1019,12 +1024,12 @@ lookup_cmd_1(const char **text, struct cmd_list_element *clist,
       char x = (*text)[tmp];
       command[tmp] = x;
     }
-  command[len] = '\0';
+  command[max(len, 1L)] = '\0';
 
-  /* Look it up.  */
+  /* Look it up: */
   found = 0;
   nfound = 0;
-  found = find_cmd (command, len, clist, ignore_help_classes, &nfound);
+  found = find_cmd(command, len, clist, ignore_help_classes, &nfound);
 
   /*
   ** We failed to find the command in the entered case, so lowercase it

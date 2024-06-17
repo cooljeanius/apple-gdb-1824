@@ -8,7 +8,7 @@ AC_INIT([libtcl_cygwin],[8.4],[tromey@cygnus.com])
 AC_CONFIG_SRCDIR([Makefile.in])
 AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.4 foreign])
+AM_INIT_AUTOMAKE([1.4 foreign -Wno-obsolete])
 AM_MAINTAINER_MODE
 AC_EXEEXT
 

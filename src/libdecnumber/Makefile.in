@@ -90,7 +90,7 @@ Makefile: $(srcdir)/Makefile.in config.status
 	$(SHELL) ./config.status Makefile
 
 config.status: $(srcdir)/configure
-	$(SHELL) ./config.status --recheck
+	unset CPP && $(SHELL) ./config.status --recheck
 
 $(srcdir)/configure: @MAINT@ $(srcdir)/aclocal.m4
 	cd $(srcdir) && $(AUTOCONF)
@@ -157,7 +157,7 @@ distclean: clean
 	-rm -f config.h stamp-h1 config.status config.cache config.log \
 	  configure.lineno configure.status.lineno Makefile localedir.h \
 	  localedir.hs gstdint.h
-	-rm -fv *~
+	-rm -fv *~ *.cache.bak
 
 maintainer-clean: distclean
 	@echo "This command is intended for maintainers to use"

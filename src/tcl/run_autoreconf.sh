@@ -2,7 +2,7 @@
 
 set -ex
 
-autoreconf -fvi -Wall
+autoreconf -fvi -Wall -Wno-obsolete
 
 # need to do this separately for the files it installs, because autoreconf
 # fails to do this for us, because we do not actually use automake yet:
@@ -23,5 +23,11 @@ elif test -e ./config.cache; then
 else
   echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
+
+(test -e config.h.in~ && rm -f config.h.in~) || (test -e config-h.in~ && rm -f config-h.in~)
+(test -e configure~ && rm -f configure~) || (test -w . && rm -f config*~)
+if test -d cygwin; then rm -fv cygwin/*~; fi
+if test -d unix; then rm -fv unix/*~; fi
+if test -d win; then rm -fv win/*~; fi
 
 exit 0

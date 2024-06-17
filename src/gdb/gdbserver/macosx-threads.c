@@ -26,6 +26,10 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#ifndef __has_include
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
 #include <stdio.h>
 #include <sys/param.h>
 #include <sys/dir.h>
@@ -36,25 +40,30 @@
 
 #include <mach/machine/thread_status.h>
 /* This is for thread_suspend.  */
-#if defined(TARGET_ARM) || defined(HOST_ARM) || defined(__arm__)
-# include <mach/arm/thread_act.h>
-#elif defined(TARGET_I386) || defined(HOST_I386) || defined(__i386__)
-# include <mach/i386/thread_act.h>
-#elif defined(TARGET_X86_64) || defined(HOST_X86_64) || defined(__x86_64__)
-# include <mach/x86_64/thread_act.h>
-#elif defined(TARGET_POWERPC) || defined(HOST_POWERPC) || defined(__ppc__)
-# include <mach/ppc/thread_act.h>
-#elif defined(TARGET_POWERPC64) || defined(HOST_POWERPC64) || defined(__ppc64__)
-# include <mach/ppc64/thread_act.h>
+#if defined(HAVE_MACH_THREAD_ACT_H) || __has_include(<mach/thread_act.h>)
+# include <mach/thread_act.h>
 #else
-# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "unknown architecture, check the ifdefs..."
-# endif /* __GNUC__ && !__STRICT_ANSI__ */
-#endif /* architecture checks */
+# if defined(TARGET_ARM) || defined(HOST_ARM) || defined(__arm__)
+#  include <mach/arm/thread_act.h>
+# elif defined(TARGET_I386) || defined(HOST_I386) || defined(__i386__)
+#  include <mach/i386/thread_act.h>
+# elif defined(TARGET_X86_64) || defined(HOST_X86_64) || defined(__x86_64__)
+#  include <mach/x86_64/thread_act.h>
+# elif defined(TARGET_POWERPC) || defined(HOST_POWERPC) || defined(__ppc__)
+#  include <mach/ppc/thread_act.h>
+# elif defined(TARGET_POWERPC64) || defined(HOST_POWERPC64) || defined(__ppc64__)
+#  include <mach/ppc64/thread_act.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "unknown architecture, check the ifdefs..."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* architecture checks */
+#endif /* HAVE_MACH_THREAD_ACT_H */
 
 #include "macosx-threads.h"
 #include "macosx-low.h"
 
+/* */
 void
 gdb_pthread_kill(pthread_t pthread)
 {
@@ -76,52 +85,53 @@ gdb_pthread_kill(pthread_t pthread)
       thread_terminate(mthread);
     }
 
-  kret = thread_abort (mthread);
-  MACH_CHECK_ERROR (kret);
+  kret = thread_abort(mthread);
+  MACH_CHECK_ERROR(kret);
 
-  kret = thread_resume (mthread);
-  MACH_CHECK_ERROR (kret);
+  kret = thread_resume(mthread);
+  MACH_CHECK_ERROR(kret);
 
-  ret = pthread_join (pthread, NULL);
+  ret = pthread_join(pthread, NULL);
   if (ret != 0)
     {
-      warning ("Unable to join to canceled thread: %s (%d)", strerror (errno),
-               errno);
+      warning("Unable to join to canceled thread: %s (%d)", strerror(errno),
+              errno);
     }
 }
 
+/* */
 pthread_t
-gdb_pthread_fork (pthread_fn_t function, void *arg)
+gdb_pthread_fork(pthread_fn_t function, void *arg)
 {
   int result;
   pthread_t pthread = NULL;
   pthread_attr_t attr;
 
-  result = pthread_attr_init (&attr);
+  result = pthread_attr_init(&attr);
   if (result != 0)
     {
-      error ("Unable to initialize thread attributes: %s (%d)",
-             strerror (errno), errno);
+      error("Unable to initialize thread attributes: %s (%d)",
+            strerror(errno), errno);
     }
 
-  result = pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_JOINABLE);
+  result = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
   if (result != 0)
     {
-      error ("Unable to initialize thread attributes: %s (%d)",
-             strerror (errno), errno);
+      error("Unable to initialize thread attributes: %s (%d)",
+            strerror(errno), errno);
     }
 
-  result = pthread_create (&pthread, &attr, function, arg);
+  result = pthread_create(&pthread, &attr, function, arg);
   if (result != 0)
     {
-      error ("Unable to create thread: %s (%d)", strerror (errno), errno);
+      error("Unable to create thread: %s (%d)", strerror(errno), errno);
     }
 
-  result = pthread_attr_destroy (&attr);
+  result = pthread_attr_destroy(&attr);
   if (result != 0)
     {
-      warning ("Unable to deallocate thread attributes: %s (%d)",
-               strerror (errno), errno);
+      warning("Unable to deallocate thread attributes: %s (%d)",
+              strerror(errno), errno);
     }
 
   return pthread;

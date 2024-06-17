@@ -29,6 +29,7 @@ bfd.info-*
 site.bak
 site.exp
 bfd.sum
+bfd.t2[dp]/*
 
 # A floating file extension without a name before it means a script failed:
 .texi

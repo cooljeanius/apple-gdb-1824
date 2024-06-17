@@ -1,4 +1,4 @@
-##
+## -*- Makefile -*-
 # Makefile for Apple Release Control (GNU source projects)
 #
 # Wilfredo Sanchez | wsanchez@apple.com

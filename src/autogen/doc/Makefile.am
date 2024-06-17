@@ -27,6 +27,7 @@
 ##
 INFO_DEPS       = autogen.info
 ##(ignore the warning, it says above we are overriding the rule on purpose)
+AUTOMAKE_OPTIONS = gnits 1.9 no-dist -Wno-override -Wno-obsolete
 MIexe           = $(MAKEINFO) --no-split
 MAKEINFOFLAGS   = -I$(top_srcdir)/autoopts -I../autoopts
 passenv         = MAKE=$(MAKE) srcdir="$(srcdir)" SHELL="$(POSIX_SHELL)" \
