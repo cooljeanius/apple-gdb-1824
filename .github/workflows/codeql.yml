@@ -191,6 +191,13 @@ jobs:
         if test -x "$(which sccache)"; then \
           ./configure --disable-werror --enable-silent-rules --disable-cgen-maint CC="sccache gcc" CXX="sccache g++"; \
           make configure-bfd V=0 CC="sccache gcc" CXX="sccache g++"; \
+          sync && stat -t bfd && sync; \
+          if test -z "${CC}"; then \
+            export CC="sccache gcc"; \
+          fi; \
+          if test -z "${CXX}"; then \
+            export CXX="sccache g++"; \
+          fi; \
         else \
           ./configure --disable-werror --enable-silent-rules --disable-cgen-maint; \
           make configure-bfd V=0; \
@@ -257,9 +264,13 @@ jobs:
     - name: Extra coverage build (C)
       if: matrix.language == 'c-cpp' && success()
       run: |
+        stat -t Makefile || wc -l Makefile || du Makefile
         if test -x "$(which sccache)"; then \
           if test -z "${CC}"; then \
             export CC="sccache gcc"; \
+          fi; \
+          if test -z "${CXX}"; then \
+            export CXX="sccache g++"; \
           fi; \
         fi
         make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" || stat -t libcheckpoint
@@ -318,6 +329,9 @@ jobs:
           if test -z "${CC}"; then \
             export CC="sccache gcc"; \
           fi; \
+          if test -z "${CXX}"; then \
+            export CXX="sccache g++"; \
+          fi; \
         fi
         FINAL_CPPFLAGS="-I."
         for myincdir in .. include ../include bfd ../bfd gdb ../gdb libiberty ../libiberty tcl ../tcl tk ../tk zlib ../zlib; do \
@@ -345,6 +359,9 @@ jobs:
       run: |
         cd src
         if test -x "$(which sccache)"; then \
+          if test -z "${CC}"; then \
+            export CC="sccache gcc"; \
+          fi; \
           if test -z "${CXX}"; then \
             export CXX="sccache g++"; \
           fi; \
@@ -386,7 +403,7 @@ jobs:
         # shellcheck disable=SC2044
         for ccfile in $(find . -name '*.cc' -type f); do \
           sync && echo "One last attempt at compiling ${ccfile}..."; \
-          g++ -c -Wfatal-errors "${ccfile}" || g++ -c -w -Wfatal-errors -I. "${ccfile}" || g++ -c -w -Wno-error -Wfatal-errors -fpermissive -I. -I.. "${ccfile}" || stat -t "${ccfile}"; \
+          (test -x "$(which sccache)" && sccache g++ -c "${ccfile}") || g++ -c -Wfatal-errors "${ccfile}" || g++ -c -w -Wfatal-errors -I. "${ccfile}" || g++ -c -w -Wno-error -Wfatal-errors -fpermissive -I. -I.. "${ccfile}" || stat -t "${ccfile}"; \
         done
         if test -e gdb/testsuite/gdb.apple/Makefile; then \
           pushd gdb/testsuite/gdb.apple; \
@@ -398,7 +415,7 @@ jobs:
         # shellcheck disable=SC2044
         for cppfile in $(find . -name '*.cpp' -type f); do \
           sync && echo "One last attempt at compiling ${cppfile}..."; \
-          g++ -c -Wfatal-errors "${cppfile}" || g++ -c -w -Wfatal-errors -I. "${cppfile}" || g++ -c -w -Wno-error -Wfatal-errors -fpermissive -I. -I.. "${cppfile}" || stat -t "${cppfile}"; \
+          (test -x "$(which sccache)" && sccache g++ -c "${cppfile}") || g++ -c -Wfatal-errors "${cppfile}" || g++ -c -w -Wfatal-errors -I. "${cppfile}" || g++ -c -w -Wno-error -Wfatal-errors -fpermissive -I. -I.. "${cppfile}" || stat -t "${cppfile}"; \
         done
         if test -e gdb/testsuite/gdb.base/Makefile && test -e gdb/testsuite/gdb.base/langs2.cxx; then \
           pushd gdb/testsuite/gdb.base; \
@@ -409,7 +426,7 @@ jobs:
         # shellcheck disable=SC2044
         for cxxfile in $(find . -name '*.cxx' -type f); do \
           sync && echo "One last attempt at compiling ${cxxfile}..."; \
-          g++ -c -Wfatal-errors "${cxxfile}" || g++ -c -w -Wfatal-errors -I. "${cxxfile}" || g++ -c -w -Wno-error -Wfatal-errors -fpermissive -I. -I.. "${cxxfile}" || stat -t "${cxxfile}"; \
+          (test -x "$(which sccache)" && sccache g++ -c "${cxxfile}") || g++ -c -Wfatal-errors "${cxxfile}" || g++ -c -w -Wfatal-errors -I. "${cxxfile}" || g++ -c -w -Wno-error -Wfatal-errors -fpermissive -I. -I.. "${cxxfile}" || stat -t "${cxxfile}"; \
         done
         if test -e mmalloc/Makefile; then \
           pushd mmalloc; \
@@ -481,6 +498,8 @@ jobs:
           purge || sudo purge; \
         elif test -x "$(which sync)"; then \
           which sync && sync; \
+        else \
+          sleep 1; \
         fi
 
     - name: Upload a Build Artifact
