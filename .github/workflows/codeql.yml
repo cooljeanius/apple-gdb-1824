@@ -91,6 +91,12 @@ jobs:
         (cd src && sync && echo "now in $(pwd)..." && sync)
         if test ${{ matrix.language }} != 'c-cpp'; then sleep 1; else true; fi
 
+    - name: Run sccache-cache only on non-release runs
+      if: github.event_name != 'release' && github.event_name != 'workflow_dispatch' && matrix.language == 'c-cpp'
+      uses: mozilla-actions/sccache-action@v0.0.5
+      env:
+        SCCACHE_GHA_ENABLED: "true"
+
     - name: Dependencies
       if: matrix.language == 'c-cpp'
       run: sudo apt-get -y install autopoint gobjc clang autogen guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev guile-3.0-libs libguile-ssh13 libiconv-hook1 libiconv-hook-dev win-iconv-mingw-w64-dev
@@ -175,11 +181,20 @@ jobs:
       if: matrix.language == 'c-cpp'
       run: |
         test -e ./.profile_generic && source ./.profile_generic && (env | uniq | sort | uniq)
-        ./configure --enable-silent-rules
+        if test -x "$(which sccache)"; then \
+          ./configure --enable-silent-rules CC="sccache gcc" CXX="sccache g++"; \
+        else \
+          ./configure --enable-silent-rules; \
+        fi
         make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; fi)
         cd src
-        ./configure --disable-werror --enable-silent-rules --disable-cgen-maint
-        make configure-bfd V=0
+        if test -x "$(which sccache)"; then \
+          ./configure --disable-werror --enable-silent-rules --disable-cgen-maint CC="sccache gcc" CXX="sccache g++"; \
+          make configure-bfd V=0 CC="sccache gcc" CXX="sccache g++"; \
+        else \
+          ./configure --disable-werror --enable-silent-rules --disable-cgen-maint; \
+          make configure-bfd V=0; \
+        fi
         make -C bfd headers V=0
         if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi
         if test -e autogen/Makefile; then \
