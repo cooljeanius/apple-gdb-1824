@@ -1533,6 +1533,9 @@
 /* Define to 1 if you have the 'syscall' function. */
 #undef HAVE_SYSCALL
 
+/* Define to 1 if the system has the type 'sysset_t'. */
+#undef HAVE_SYSSET_T
+
 /* Define to 1 if you have the <sys/bitypes.h> header file. */
 #undef HAVE_SYS_BITYPES_H
 

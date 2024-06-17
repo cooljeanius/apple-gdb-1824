@@ -292,6 +292,9 @@
 /* Define to 1 if you have the <mach/ppc/thread_act.h> header file. */
 #undef HAVE_MACH_PPC_THREAD_ACT_H
 
+/* Define to 1 if you have the <mach/thread_act.h> header file. */
+#undef HAVE_MACH_THREAD_ACT_H
+
 /* Define to 1 if the system has the type 'mach_vm_size_t'. */
 #undef HAVE_MACH_VM_SIZE_T
 

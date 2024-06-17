@@ -40,6 +40,8 @@
 #include "gdbcore.h"
 #include "regcache.h"
 
+#include "cli/cli-decode.h"
+
 /* This processor is getting rusty but I am trying to keep it
    up to date at least with data structure changes.
    Activate this block to compile just this file.
@@ -60,7 +62,7 @@
 # define INTE_REGNUM 0
 # define EXO_REGNUM 0
 # define GR96_REGNUM 0
-# define NPC_REGNUM
+# define NPC_REGNUM 0
 # define FPE_REGNUM 0
 # define PC2_REGNUM 0
 # define FPS_REGNUM 0
@@ -69,10 +71,71 @@
 # define TERMINAL int
 # define RAW 1
 # define ANYP 1
+#else
+# ifndef Q_REGNUM
+#  define Q_REGNUM 0
+# endif /* !Q_REGNUM */
+# ifndef VAB_REGNUM
+#  define VAB_REGNUM 1
+# endif /* !VAB_REGNUM */
+# ifndef CPS_REGNUM
+#  define CPS_REGNUM 2
+# endif /* !CPS_REGNUM */
+# ifndef IPA_REGNUM
+#  define IPA_REGNUM 3
+# endif /* !IPA_REGNUM */
+# ifndef IPB_REGNUM
+#  define IPB_REGNUM 4
+# endif /* !IPB_REGNUM */
+# ifndef GR1_REGNUM
+#  define GR1_REGNUM 5
+# endif /* !GR1_REGNUM */
+# ifndef LR0_REGNUM
+#  define LR0_REGNUM 6
+# endif /* !LR0_REGNUM */
+# ifndef IPC_REGNUM
+#  define IPC_REGNUM 7
+# endif /* !IPC_REGNUM */
+# ifndef CR_REGNUM
+#  define CR_REGNUM 8
+# endif /* !CR_REGNUM */
+# ifndef BP_REGNUM
+#  define BP_REGNUM 9
+# endif /* !BP_REGNUM */
+# ifndef FC_REGNUM
+#  define FC_REGNUM 10
+# endif /* !FC_REGNUM */
+# ifndef INTE_REGNUM
+#  define INTE_REGNUM 11
+# endif /* !INTE_REGNUM */
+# ifndef EXO_REGNUM
+#  define EXO_REGNUM 12
+# endif /* !EXO_REGNUM */
+# ifndef GR96_REGNUM
+#  define GR96_REGNUM 13
+# endif /* !GR96_REGNUM */
+# ifndef NPC_REGNUM
+#  define NPC_REGNUM 14
+# endif /* !NPC_REGNUM */
+# ifndef FPE_REGNUM
+#  define FPE_REGNUM 15
+# endif /* !FPE_REGNUM */
+# ifndef PC2_REGNUM
+#  define PC2_REGNUM 16
+# endif /* !PC2_REGNUM */
+# ifndef FPS_REGNUM
+#  define FPS_REGNUM 17
+# endif /* !FPS_REGNUM */
+# ifndef ALU_REGNUM
+#  define ALU_REGNUM 18
+# endif /* !ALU_REGNUM */
+# ifndef LRU_REGNUM
+#  define LRU_REGNUM 19
+# endif /* !LRU_REGNUM */
+#endif /* COMPILE_CHECK */
 extern int a29k_freeze_mode;
 extern int processor_type;
 extern char *processor_name;
-#endif /* COMPILE_CHECK */
 
 /* External data declarations */
 extern int stop_soon_quietly;	/* for wait_for_inferior */
@@ -81,10 +144,11 @@ extern int stop_soon_quietly;	/* for wait_for_inferior */
 extern struct target_ops adapt_ops;	/* Forward declaration */
 
 /* Forward function declarations */
-static void adapt_fetch_registers ();
-static void adapt_store_registers ();
-static void adapt_close ();
-static int adapt_clear_breakpoints ();
+extern int damn_b(int);
+static void adapt_fetch_registers(void);
+static void adapt_store_registers(void);
+static void adapt_close(int);
+static int adapt_clear_breakpoints(void);
 #define FREEZE_MODE 	(read_register(CPS_REGNUM) && 0x400)
 #define USE_SHADOW_PC	((processor_type == a29k_freeze_mode) && FREEZE_MODE)
 
@@ -136,6 +200,7 @@ rawmode (int desc, int turnon)
 }
 
 /* Suck up all the input from the adapt */
+static void
 slurp_input (void)
 {
   char buf[8];
@@ -181,9 +246,9 @@ readchar (void)
 /* Keep discarding input from the remote system, until STRING is found.
    Let the user break out immediately.  */
 static void
-expect (char *string)
+expect(const char *string)
 {
-  char *p = string;
+  const char *p = string;
   fflush (adapt_stream);
   immediate_quit++;
   while (1)
@@ -276,6 +341,9 @@ get_hex_word (void)
   return val;
 }
 
+/* Dunno where this is actually supposed to be declared: */
+extern void supply_register(int, char *);
+
 /* Get N 32-bit hex words from remote, each preceded by a space
    and put them in registers starting at REGNO.  */
 static void
@@ -288,18 +356,16 @@ get_hex_regs (int n, int regno)
       supply_register (regno++, (char *) &val);
     }
 }
+
 /* Called when SIGALRM signal sent due to alarm() timeout.  */
 #ifndef HAVE_TERMIO
-
 volatile int n_alarms;
 
-void
-adapt_timer (void)
+static void
+adapt_timer(int kiodebug)
 {
-# if 0
   if (kiodebug)
-    printf ("adapt_timer called\n");
-# endif /* 0 */
+    printf("adapt_timer called\n");
   n_alarms++;
 }
 #endif /* !HAVE_TERMIO */
@@ -313,8 +379,8 @@ static char *prog_name = NULL;
 
 static int need_artificial_trap = 0;
 
-void
-adapt_kill (char *arg, int from_tty)
+static void
+adapt_kill(char *arg, int from_tty)
 {
   fprintf (adapt_stream, "K");
   fprintf (adapt_stream, "\r");
@@ -326,7 +392,7 @@ adapt_kill (char *arg, int from_tty)
  * FIXME: Assumes the file to download is a binary coff file.
  */
 static void
-adapt_load (char *args, int fromtty)
+adapt_load(const char *args, int fromtty)
 {
   FILE *fp;
   int n;
@@ -349,13 +415,11 @@ adapt_load (char *args, int fromtty)
   system (buffer);
   fp = fopen ("/tmp/#adapt-btoa", "r");
   rawmode (adapt_desc, OFF);
-  while (n = fread (buffer, 1, 1024, fp))
+  while ((n = fread(buffer, 1, 1024, fp)) != 0)
     {
-      do
-	{
-	  n -= write (adapt_desc, buffer, n);
-	}
-      while (n > 0);
+      do {
+        n -= write(adapt_desc, buffer, n);
+      } while (n > 0);
       if (n < 0)
 	{
 	  perror ("writing ascii coff");
@@ -395,8 +459,8 @@ adapt_load (char *args, int fromtty)
 
 /* This is called not only when we first attach, but also when the
    user types "run" after having attached.  */
-void
-adapt_create_inferior (char *execfile, char *args, char **env)
+static void
+adapt_create_inferior(char *execfile, char *args, char **env)
 {
   int entry_pt;
 
@@ -410,7 +474,7 @@ adapt_create_inferior (char *execfile, char *args, char **env)
 
   if (adapt_stream)
     {
-      adapt_kill (NULL, NULL);
+      adapt_kill(NULL, 0);
       adapt_clear_breakpoints ();
       init_wait_for_inferior ();
       /* Clear the input because what the adapt sends back is different
@@ -422,7 +486,7 @@ adapt_create_inferior (char *execfile, char *args, char **env)
       printf_filtered ("Do you want to download '%s' (y/n)? [y] : ", prog_name);
       {
 	char buffer[10];
-	gets (buffer);
+	fgets(buffer, sizeof(buffer), stdin);
 	if (*buffer != 'n')
 	  {
 	    adapt_load (prog_name, 0);
@@ -532,8 +596,9 @@ baudtab[] =
   ,
 };
 
-static int
-damn_b (int rate)
+/* */
+int
+damn_b(int rate)
 {
   int i;
 
@@ -551,11 +616,10 @@ damn_b (int rate)
 
 static int baudrate = 9600;
 static void
-adapt_open (char *name, int from_tty)
+adapt_open(const char *name, int from_tty)
 {
   TERMINAL sg;
-  unsigned int prl;
-  char *p;
+  const char *p;
 
   /* Find the first whitespace character, it separates dev_name from
      prog_name.  */
@@ -624,8 +688,8 @@ the baud rate, and the name of the program to run on the remote system.");
 # endif /* !NO_SIGINTERRUPT */
 
   /* Set up read timeout timer.  */
-  if ((void (*)) signal (SIGALRM, adapt_timer) == (void (*)) -1)
-    perror ("adapt_open: error in signal");
+  if ((void (*))signal(SIGALRM, adapt_timer) == (void (*))-1)
+    perror("adapt_open: error in signal");
 #endif /* !HAVE_TERMIO */
 
 #if defined(LOG_FILE)
@@ -664,7 +728,6 @@ the baud rate, and the name of the program to run on the remote system.");
 static void
 adapt_close (int quitting)
 {
-
   /* Clear any break points */
   adapt_clear_breakpoints ();
 
@@ -702,9 +765,8 @@ adapt_close (int quitting)
 
 /* Attach to the target that is already loaded and possibly running */
 static void
-adapt_attach (char *args, int from_tty)
+adapt_attach(const char *args, int from_tty)
 {
-
   if (from_tty)
     printf_filtered ("Attaching to remote program %s.\n", prog_name);
 
@@ -718,10 +780,9 @@ adapt_attach (char *args, int from_tty)
 /* Terminate the open connection to the remote debugger.
    Use this when you want to detach and do something else
    with your gdb.  */
-void
-adapt_detach (char *args, int from_tty)
+static void
+adapt_detach(const char *args, int from_tty)
 {
-
   if (adapt_stream)
     {				/* Send it on its way (tell it to continue)  */
       adapt_clear_breakpoints ();
@@ -733,10 +794,9 @@ adapt_detach (char *args, int from_tty)
     printf_filtered ("Ending remote %s debugging\n", target_shortname);
 }
 
-/* Tell the remote machine to resume.  */
-
-void
-adapt_resume (ptid_t ptid, int step, enum target_signal sig)
+/* Tell the remote machine to resume: */
+static void
+adapt_resume(ptid_t ptid, int step, enum target_signal sig)
 {
   if (step)
     {
@@ -763,9 +823,8 @@ adapt_resume (ptid_t ptid, int step, enum target_signal sig)
 
 /* Wait until the remote machine stops, then return,
    storing status in STATUS just as `wait' would.  */
-
-ptid_t
-adapt_wait (ptid_t ptid, struct target_waitstatus *status)
+static ptid_t
+adapt_wait(ptid_t ptid, struct target_waitstatus *status)
 {
   /* Strings to look for. '?' means match any single character.
      Note that with the algorithm we use, the initial character
@@ -1087,8 +1146,8 @@ adapt_store_registers (void)
 
 /* Store register REGNO, or all if REGNO == -1.
    Return errno value.  */
-void
-adapt_store_register (int regno)
+static void
+adapt_store_register(int regno)
 {
 #if 0
   printf("adapt_store_register() called.\n"); fflush(stdout); /* */
@@ -1116,11 +1175,10 @@ adapt_store_register (int regno)
    which store all the registers in one fell swoop, this makes sure
    that registers contains all the registers from the program being
    debugged.  */
-
-void
-adapt_prepare_to_store (void)
+static void
+adapt_prepare_to_store(void)
 {
-  /* Do nothing, since we can store individual regs */
+  return; /* Do nothing, since we can store individual regs */
 }
 
 static CORE_ADDR
@@ -1144,28 +1202,30 @@ translate_addr (CORE_ADDR addr)
 #endif /* KERNEL_DEBUGGING */
 }
 
+extern int adapt_write_inferior_memory(CORE_ADDR, char *, int);
+extern int adapt_read_inferior_memory(CORE_ADDR, char *, int);
 
 /* FIXME!  Merge these two.  */
-int
-adapt_xfer_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
-			    struct mem_attrib *attrib ATTRIBUTE_UNUSED,
-			    struct target_ops *target ATTRIBUTE_UNUSED)
+static int
+adapt_xfer_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len, int write,
+			   struct mem_attrib *attrib ATTRIBUTE_UNUSED,
+			   struct target_ops *target ATTRIBUTE_UNUSED)
 {
-
-  memaddr = translate_addr (memaddr);
+  memaddr = translate_addr(memaddr);
 
   if (write)
-    return adapt_write_inferior_memory (memaddr, myaddr, len);
+    return adapt_write_inferior_memory(memaddr, myaddr, len);
   else
-    return adapt_read_inferior_memory (memaddr, myaddr, len);
+    return adapt_read_inferior_memory(memaddr, myaddr, len);
 }
 
-void
-adapt_files_info (void)
+/* */
+static void
+adapt_files_info(void)
 {
-  printf_filtered ("\tAttached to %s at %d baud and running program %s\n",
-		   dev_name, baudrate, prog_name);
-  printf_filtered ("\ton an %s processor.\n", processor_name[processor_type]);
+  printf_filtered("\tAttached to %s at %d baud and running program %s\n",
+		  dev_name, baudrate, prog_name);
+  printf_filtered("\ton an %s processor.\n", processor_name[processor_type]);
 }
 
 /* Copy LEN bytes of data from debugger memory at MYADDR
@@ -1173,7 +1233,7 @@ adapt_files_info (void)
    * sb/sh instructions don't work on unaligned addresses, when TU=1.
  */
 int
-adapt_write_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
+adapt_write_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len)
 {
   int i;
   unsigned int cps;
@@ -1204,7 +1264,7 @@ adapt_write_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
 /* Read LEN bytes from inferior memory at MEMADDR. Put the result
    at debugger address MYADDR. Returns errno value.  */
 int
-adapt_read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
+adapt_read_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len)
 {
   int i;
 
@@ -1304,70 +1364,72 @@ adapt_insert_breakpoint (CORE_ADDR addr, char *save)
 /* Remove a breakpoint at ADDR. SAVE is normally the previously
    saved pattern, but is unused here as the Adapt Monitor is
    responsible for saving/restoring instructions. */
-
 static int
-adapt_remove_breakpoint (CORE_ADDR addr, char *save)
+adapt_remove_breakpoint(CORE_ADDR addr, char *save)
 {
   if (num_brkpts > 0)
     {
       num_brkpts--;
-      fprintf (adapt_stream, "BR %x", addr);
-      fprintf (adapt_stream, "\r");
-      fflush (adapt_stream);
-      expect_prompt ();
+      fprintf(adapt_stream, "BR %x", addr);
+      fprintf(adapt_stream, "\r");
+      fflush(adapt_stream);
+      expect_prompt();
     }
-  return (0);
+  return 0;
 }
 
-/* Clear the adapts notion of what the break points are */
+/* Clear the adapts notion of what the break points are: */
 static int
-adapt_clear_breakpoints (void)
+adapt_clear_breakpoints(void)
 {
   if (adapt_stream)
     {
-      fprintf (adapt_stream, "BR");	/* Clear all break points */
-      fprintf (adapt_stream, "\r");
-      fflush (adapt_stream);
-      expect_prompt ();
+      fprintf(adapt_stream, "BR");	/* Clear all break points */
+      fprintf(adapt_stream, "\r");
+      fflush(adapt_stream);
+      expect_prompt();
     }
   num_brkpts = 0;
+  return 0;
 }
+
+/* */
 static void
-adapt_mourn (void)
+adapt_mourn(void)
 {
-  adapt_clear_breakpoints ();
-  pop_target ();		/* Pop back to no-child state */
-  generic_mourn_inferior ();
+  adapt_clear_breakpoints();
+  pop_target();		/* Pop back to no-child state */
+  generic_mourn_inferior();
 }
 
 /* Display everthing we read in from the adapt until we match/see the
  * specified string
  */
 static int
-display_until (char *str)
+display_until(const char *str)
 {
   int i = 0, j, c;
 
-  while (c = readchar ())
+  while ((c = readchar()) != 0)
     {
       if (c == str[i])
 	{
 	  i++;
-	  if (i == strlen (str))
-	    return;
+	  if (i == (int)strlen(str))
+	    return i;
 	}
       else
 	{
 	  if (i)
 	    {
 	      for (j = 0; j < i; j++)	/* Put everthing we matched */
-		putchar (str[j]);
+		putchar(str[j]);
 	      i = 0;
 	    }
-	  putchar (c);
+	  putchar(c);
 	}
     }
-
+  return 0;
 }
 
 
@@ -1376,9 +1438,8 @@ display_until (char *str)
    Ouput from the adapt is placed on the users terminal until the
    prompt from the adapt is seen.
    FIXME: Cannot handle commands that take input.  */
-
-void
-adapt_com (char *args, int fromtty)
+static void
+adapt_com(const char *args, int fromtty)
 {
   if (!adapt_stream)
     {
@@ -1442,16 +1503,24 @@ init_adapt_ops (void)
   adapt_ops.to_close = adapt_close;
   adapt_ops.to_attach = adapt_attach;
   adapt_ops.to_post_attach = NULL;
+#if 0
   adapt_ops.to_require_attach = NULL;
+#endif /* 0 */
   adapt_ops.to_detach = adapt_detach;
+#if 0
   adapt_ops.to_require_detach = NULL;
+#endif /* 0 */
   adapt_ops.to_resume = adapt_resume;
   adapt_ops.to_wait = adapt_wait;
   adapt_ops.to_post_wait = NULL;
   adapt_ops.to_fetch_registers = adapt_fetch_register;
   adapt_ops.to_store_registers = adapt_store_register;
   adapt_ops.to_prepare_to_store = adapt_prepare_to_store;
+#if 0
   adapt_ops.to_xfer_memory = adapt_xfer_inferior_memory;
+#else
+  (void)adapt_xfer_inferior_memory;
+#endif /* 0 */
   adapt_ops.to_files_info = adapt_files_info;
   adapt_ops.to_insert_breakpoint = adapt_insert_breakpoint;
   adapt_ops.to_remove_breakpoint = adapt_remove_breakpoint;
@@ -1466,19 +1535,25 @@ init_adapt_ops (void)
   adapt_ops.to_create_inferior = adapt_create_inferior;
   adapt_ops.to_post_startup_inferior = NULL;
   adapt_ops.to_acknowledge_created_inferior = NULL;
+#if 0
   adapt_ops.to_clone_and_follow_inferior = NULL;
   adapt_ops.to_post_follow_inferior_by_clone = NULL;
+#endif /* 0 */
   adapt_ops.to_insert_fork_catchpoint = NULL;
   adapt_ops.to_remove_fork_catchpoint = NULL;
   adapt_ops.to_insert_vfork_catchpoint = NULL;
   adapt_ops.to_remove_vfork_catchpoint = NULL;
+#if 0
   adapt_ops.to_has_forked = NULL;
   adapt_ops.to_has_vforked = NULL;
   adapt_ops.to_can_follow_vfork_prior_to_exec = NULL;
   adapt_ops.to_post_follow_vfork = NULL;
+#endif /* 0 */
   adapt_ops.to_insert_exec_catchpoint = NULL;
   adapt_ops.to_remove_exec_catchpoint = NULL;
+#if 0
   adapt_ops.to_has_execd = NULL;
+#endif /* 0 */
   adapt_ops.to_reported_exec_events_per_exec_call = NULL;
   adapt_ops.to_has_exited = NULL;
   adapt_ops.to_mourn_inferior = adapt_mourn;
@@ -1487,8 +1562,7 @@ init_adapt_ops (void)
   adapt_ops.to_thread_alive = 0;
   adapt_ops.to_stop = 0;	/* process_stratum; */
   adapt_ops.to_pid_to_exec_file = NULL;
-  adapt_ops.to_stratum = 0;
-  adapt_ops.DONT_USE = 0;
+  adapt_ops.to_stratum = dummy_stratum;
   adapt_ops.to_has_all_memory = 1;
   adapt_ops.to_has_memory = 1;
   adapt_ops.to_has_stack = 1;
@@ -1499,13 +1573,17 @@ init_adapt_ops (void)
   adapt_ops.to_magic = OPS_MAGIC;
 }				/* init_adapt_ops */
 
+/*
+ * _initialize_remote_adapt -- do any special init stuff for the target.
+ */
+extern void _initialize_remote_adapt(void); /* -Wmissing-prototypes */
 void
-_initialize_remote_adapt (void)
+_initialize_remote_adapt(void)
 {
-  init_adapt_ops ();
-  add_target (&adapt_ops);
-  add_com ("adapt <command>", class_obscure, adapt_com,
-	   "Send a command to the AMD Adapt remote monitor.");
+  init_adapt_ops();
+  add_target(&adapt_ops);
+  add_com("adapt <command>", class_obscure, adapt_com,
+	  "Send a command to the AMD Adapt remote monitor.");
 }
 
 /* EOF */

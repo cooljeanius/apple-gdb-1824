@@ -46529,6 +46529,24 @@ printf "%s\n" "#define HAVE_TASK_BASIC_INFO_DATA_T 1" >>confdefs.h
 
 fi
 
+ac_fn_c_check_type "$LINENO" "sysset_t" "ac_cv_type_sysset_t" "
+#ifdef HAVE_SYS_PROCFS_H
+# include <sys/procfs.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning \"procfs.c expects <sys/procfs.h> to be included\"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_PROCFS_H */
+
+"
+if test "x$ac_cv_type_sysset_t" = xyes
+then :
+
+printf "%s\n" "#define HAVE_SYSSET_T 1" >>confdefs.h
+
+
+fi
+
 ac_fn_c_check_type "$LINENO" "CFStringRef" "ac_cv_type_CFStringRef" "
 #ifdef HAVE_CORE_FOUNDATION_CORE_FOUNDATION_H
 # include <CoreFoundation/CoreFoundation.h>

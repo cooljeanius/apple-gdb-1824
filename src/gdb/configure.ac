@@ -2222,6 +2222,16 @@ dnl# The "x86_debug_state32_t" type is checked for in an APPLE_LOCAL
 dnl# section below.
 dnl# "long long" support is also checked farther below.
 
+AC_CHECK_TYPES([sysset_t],[],[],[
+#ifdef HAVE_SYS_PROCFS_H
+# include <sys/procfs.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "procfs.c expects <sys/procfs.h> to be included"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_PROCFS_H */
+])dnl
+
 dnl### A common CoreFoundation type that we use:
 AC_CHECK_TYPES([CFStringRef],[],[],[
 #ifdef HAVE_CORE_FOUNDATION_CORE_FOUNDATION_H

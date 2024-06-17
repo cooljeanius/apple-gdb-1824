@@ -23,8 +23,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "value.h"
 #include <ctype.h>
 #include <string.h>
-
+#if defined(HAVE_STDLIB_H) || defined(STDC_HEADERS) || defined(__STDC__)
+# include <stdlib.h>
+#else
 extern char *getenv ();
+#endif /* HAVE_STDLIB_H || STDC_HEADERS || __STDC__ */
+
+#include "cli/cli-decode.h"
 
 /* Add element named NAME to command list *LIST.
    FUN should be the function to execute the command;
@@ -37,20 +42,17 @@ extern char *getenv ();
    or with * for a command that most users don't need to know about.  */
 
 struct cmd_list_element *
-add_cmd (name, class, fun, doc, list)
-     char *name;
-     enum command_class class;
-     void (*fun) ();
-     char *doc;
-     struct cmd_list_element **list;
+add_cmd(const char *name, enum command_class cmdclass,
+	void (*fun)(const char *, int), const char *doc,
+	struct cmd_list_element **list)
 {
-  register struct cmd_list_element *c
-    = (struct cmd_list_element *) xmalloc (sizeof (struct cmd_list_element));
+  register struct cmd_list_element *c =
+    (struct cmd_list_element *)xmalloc(sizeof(struct cmd_list_element));
 
   delete_cmd (name, list);
   c->next = *list;
   c->name = name;
-  c->class = class;
+  c->cmdclass = cmdclass;
   c->function = fun;
   c->doc = doc;
   c->prefixlist = 0;

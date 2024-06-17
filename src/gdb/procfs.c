@@ -34,7 +34,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 # define _STRUCTURED_PROC 1	/* Should be done by configure script. */
 #endif /* NEW_PROC_API */
 
-#include <sys/procfs.h>
+#if defined(HAVE_SYS_PROCFS_H) || __has_include(<sys/procfs.h>)
+# include <sys/procfs.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "procfs.c expects <sys/procfs.h> to be included"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_PROCFS_H */
 #ifdef HAVE_SYS_FAULT_H
 # include <sys/fault.h>
 #endif /* HAVE_SYS_FAULT_H */
