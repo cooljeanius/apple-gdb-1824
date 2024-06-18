@@ -143,26 +143,26 @@ ifndef SDKROOT
 export SDKROOT = $(SDKROOT_FOR_BUILD)
 endif
 
-export AR       = $(shell xcrun -find ar)
-export CC       = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc))
-export CPP      = $(shell xcrun -find cpp) -I$(SDKROOT_FOR_BUILD)/usr/include
-export CXX      = $(shell (xcrun -find clang++ 2>/dev/null || xcrun -find g++))
-export LD       = $(shell xcrun -find ld)
-export LIBTOOL  = $(shell xcrun -find libtool)
-export MAKE     = $(shell xcrun -find make)
-export NM       = $(shell xcrun -find nm)
-export RANLIB   = $(shell xcrun -find ranlib)
-export TAR      = $(shell (xcrun -find gnutar 2>/dev/null || xcrun -find tar))
+export AR = $(shell xcrun -find ar 2>/dev/null)
+export CC = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc 2>/dev/null))
+export CPP = $(shell xcrun -find cpp 2>/dev/null) -I$(SDKROOT_FOR_BUILD)/usr/include
+export CXX = $(shell (xcrun -find clang++ 2>/dev/null || xcrun -find g++ 2>/dev/null))
+export LD = $(shell xcrun -find ld 2>/dev/null)
+export LIBTOOL = $(shell xcrun -find libtool 2>/dev/null)
+export MAKE = $(shell xcrun -find make 2>/dev/null)
+export NM = $(shell xcrun -find nm 2>/dev/null)
+export RANLIB = $(shell xcrun -find ranlib 2>/dev/null)
+export TAR = $(shell (xcrun -find gnutar 2>/dev/null || xcrun -find tar 2>/dev/null))
 ifndef RM
-export RM       = rm
+export RM = rm
 endif
 
-export CC_FOR_BUILD      = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc))
+export CC_FOR_BUILD = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc 2>/dev/null))
 export CCFLAGS_FOR_BUILD = -I$(SDKROOT_FOR_BUILD)/usr/include
 export LDFLAGS_FOR_BUILD = -isysroot $(SDKROOT_FOR_BUILD)
 
 ifndef CDEBUGFLAGS
-CDEBUGFLAGS = -ggdb -Os -funwind-tables -fasynchronous-unwind-tables -D_DARWIN_UNLIMITED_STREAMS -Wno-format-security -Wno-format-nonliteral 
+CDEBUGFLAGS = -ggdb -Os -funwind-tables -fasynchronous-unwind-tables -D_DARWIN_UNLIMITED_STREAMS
 endif
 
 CFLAGS = $(CDEBUGFLAGS) $(RC_CFLAGS)

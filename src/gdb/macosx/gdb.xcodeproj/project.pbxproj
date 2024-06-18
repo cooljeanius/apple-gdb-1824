@@ -3917,6 +3917,11 @@
 		A52B84142B6765B900F3C9EA /* elf32-tilegx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "elf32-tilegx.h"; sourceTree = "<group>"; };
 		A52B84172B677EBD00F3C9EA /* mach-o-i386.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mach-o-i386.c"; sourceTree = "<group>"; };
 		A52B84192B67809100F3C9EA /* mach-o-x86-64.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "mach-o-x86-64.c"; sourceTree = "<group>"; };
+		A530AE822C211B0300F48BE3 /* ch-valprint.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ch-valprint.c"; sourceTree = "<group>"; };
+		A530AE932C211B0400F48BE3 /* ch-lang.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ch-lang.h"; sourceTree = "<group>"; };
+		A530AE942C211B0500F48BE3 /* ch-lang.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ch-lang.c"; sourceTree = "<group>"; };
+		A530AE952C211B0700F48BE3 /* ch-typeprint.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ch-typeprint.c"; sourceTree = "<group>"; };
+		A530AE962C211B0700F48BE3 /* ch-exp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ch-exp.c"; sourceTree = "<group>"; };
 		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; path = "mac-gdb.r"; sourceTree = "<group>"; };
 		A53ABD8C1A38C88F002F20B2 /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = link.h; sourceTree = "<group>"; };
 		A53ABDB71A38E84F002F20B2 /* objdump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objdump.h; sourceTree = "<group>"; };
@@ -6927,6 +6932,11 @@
 				2609D2F50E82C40A008125DE /* c-valprint.c */,
 				A50DDC371B33275D00F50318 /* c-varobj.c */,
 				2609D2F60E82C40A008125DE /* call-cmds.h */,
+				A530AE962C211B0700F48BE3 /* ch-exp.c */,
+				A530AE942C211B0500F48BE3 /* ch-lang.c */,
+				A530AE932C211B0400F48BE3 /* ch-lang.h */,
+				A530AE952C211B0700F48BE3 /* ch-typeprint.c */,
+				A530AE822C211B0300F48BE3 /* ch-valprint.c */,
 				A50DDC381B33276600F50318 /* charset-list.h */,
 				2609D3090E82C40A008125DE /* charset.c */,
 				2609D30A0E82C40A008125DE /* charset.h */,

@@ -40,6 +40,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #  warning "procfs.c expects <sys/procfs.h> to be included"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
+struct prmap;
 #endif /* HAVE_SYS_PROCFS_H */
 #ifdef HAVE_SYS_FAULT_H
 # include <sys/fault.h>
@@ -1087,22 +1088,28 @@ gdb_sigset_t *proc_get_held_signals (procinfo * pi, gdb_sigset_t * save);
 gdb_sigset_t *proc_get_pending_signals (procinfo * pi, gdb_sigset_t * save);
 gdb_sigaction_t *proc_get_signal_actions (procinfo * pi, gdb_sigaction_t *save);
 
-void proc_warn (procinfo * pi, char *func, int line);
-void proc_error (procinfo * pi, char *func, int line);
+void proc_warn(procinfo *pi, const char *func, int line);
+void proc_error(procinfo *pi, const char *func, int line);
 
+/* */
 void
-proc_warn (procinfo *pi, char *func, int line)
+proc_warn(procinfo *pi, const char *func, int line)
 {
-  sprintf (errmsg, "procfs: %s line %d, %s", func, line, pi->pathname);
-  print_sys_errmsg (errmsg, errno);
+  sprintf(errmsg, "procfs: %s line %d, %s", func, line, pi->pathname);
+  print_sys_errmsg(errmsg, errno);
 }
 
+/* */
 void
-proc_error (procinfo *pi, char *func, int line)
+proc_error(procinfo *pi, const char *func, int line)
 {
-  sprintf (errmsg, "procfs: %s line %d, %s", func, line, pi->pathname);
-  perror_with_name (errmsg);
+  sprintf(errmsg, "procfs: %s line %d, %s", func, line, pi->pathname);
+  perror_with_name(errmsg);
 }
+
+#ifndef PR_ISTOP
+# define PR_ISTOP 0x00000002 /* lwp is stopped on an event of interest */
+#endif /* !PR_ISTOP */
 
 /*
  * Function: proc_get_status
@@ -1115,7 +1122,6 @@ proc_error (procinfo *pi, char *func, int line)
  *
  * Return: non-zero for success, zero for failure.
  */
-
 int
 proc_get_status (procinfo *pi)
 {
@@ -1208,14 +1214,17 @@ proc_get_status (procinfo *pi)
   return pi->status_valid;	/* True if success, false if failure. */
 }
 
+#ifndef PR_STOPPED
+# define PR_STOPPED 0x00000001 /* lwp is stopped */
+#endif /* !PR_STOPPED */
+
 /*
  * Function: proc_flags
  *
  * returns the process flags (pr_flags field).
  */
-
 long
-proc_flags (procinfo *pi)
+proc_flags(procinfo *pi)
 {
   if (!pi->status_valid)
     if (!proc_get_status (pi))
@@ -3868,6 +3877,16 @@ syscall_is_lwp_create (procinfo *pi, int scall)
   return 0;
 }
 
+#ifndef PR_SYSENTRY
+# define PR_SYSENTRY 3
+#endif /* !PR_SYSENTRY */
+#ifndef PR_SYSEXIT
+# define PR_SYSEXIT 4
+#endif /* !PR_SYSEXIT */
+#ifndef PR_FAULTED
+# define PR_FAULTED 6
+#endif /* !PR_FAULTED */
+
 /*
  * Function: target_wait
  *
@@ -3879,7 +3898,6 @@ syscall_is_lwp_create (procinfo *pi, int scall)
  * Return: id of process (and possibly thread) that incurred the event.
  *         event codes are returned thru a pointer parameter.
  */
-
 static ptid_t
 procfs_wait (ptid_t ptid, struct target_waitstatus *status)
 {
@@ -5023,14 +5041,13 @@ procfs_set_exec_trap (void)
  */
 
 static void
-procfs_create_inferior (char *exec_file, char *allargs, char **env,
-			int from_tty)
+procfs_create_inferior(char *exec_file, char *allargs, char **env,
+                       int from_tty)
 {
-  char *shell_file = getenv ("SHELL");
+  const char *shell_file = getenv("SHELL");
   char *tryname;
   if (shell_file != NULL && strchr (shell_file, '/') == NULL)
     {
-
       /* We will be looking down the PATH to find shell_file.  If we
 	 just do this the normal way (via execlp, which operates by
 	 attempting an exec for each element of the PATH until it
@@ -5052,18 +5069,18 @@ procfs_create_inferior (char *exec_file, char *allargs, char **env,
 	 if the caller is the superuser; failing to use it loses if
 	 there are ACLs or some such.  */
 
-      char *p;
+      const char *p;
       char *p1;
       /* FIXME-maybe: might want "set path" command so user can change what
 	 path is used from within GDB.  */
-      char *path = getenv ("PATH");
+      const char *path = getenv("PATH");
       int len;
       struct stat statbuf;
 
       if (path == NULL)
 	path = "/bin:/usr/bin";
 
-      tryname = alloca (strlen (path) + strlen (shell_file) + 2);
+      tryname = (char *)alloca(strlen(path) + strlen(shell_file) + 2UL);
       for (p = path; p != NULL; p = p1 ? p1 + 1: NULL)
 	{
 	  p1 = strchr (p, ':');
@@ -5090,14 +5107,14 @@ procfs_create_inferior (char *exec_file, char *allargs, char **env,
 	/* Not found.  This must be an error rather than merely passing
 	   the file to execlp(), because execlp() would try all the
 	   exec()s, causing GDB to get confused.  */
-	error (_("procfs:%d -- Can't find shell %s in PATH"),
-	       __LINE__, shell_file);
+	error(_("procfs:%d -- Cannot find shell %s in PATH"),
+	      __LINE__, ((shell_file != NULL) ? shell_file : ""));
 
       shell_file = tryname;
     }
 
-  fork_inferior (exec_file, allargs, env, procfs_set_exec_trap,
-		 procfs_init_inferior, NULL, shell_file);
+  fork_inferior(exec_file, allargs, env, procfs_set_exec_trap,
+                procfs_init_inferior, NULL, (char *)shell_file);
 
 #ifdef SYS_syssgi
   /* Make sure to cancel the syssgi() syscall-exit notifications.
@@ -5383,16 +5400,20 @@ procfs_find_LDT_entry (ptid_t ptid)
  */
 
 static int
-iterate_over_mappings (procinfo *pi, int (*child_func) (), void *data,
-		       int (*func) (struct prmap *map,
-				    int (*child_func) (),
-				    void *data))
+iterate_over_mappings(procinfo *pi, int (*child_func)(void), void *data,
+		      int (*func)(struct prmap *map,
+                                  int (*child_func)(void),
+                                  void *data))
 {
+#ifdef NEW_PROC_API
   char pathname[MAX_PROC_NAME_SIZE];
+#endif /* NEW_PROC_API */
   struct prmap *prmaps;
   struct prmap *prmap;
   int funcstat;
+#ifdef NEW_PROC_API
   int map_fd;
+#endif /* NEW_PROC_API */
   int nmap;
 #ifdef NEW_PROC_API
   struct stat sbuf;
@@ -5449,12 +5470,11 @@ iterate_over_mappings (procinfo *pi, int (*child_func) (), void *data,
  * Returns: the first non-zero return value of the callback function,
  * or zero.
  */
-
-int solib_mappings_callback (struct prmap *map,
-			     int (*func) (int, CORE_ADDR),
-			     void *data)
+static int
+solib_mappings_callback(struct prmap *map, int (*func)(int, CORE_ADDR),
+                        void *data)
 {
-  procinfo *pi = data;
+  procinfo *pi = (procinfo *)data;
   int fd;
 
 #ifdef NEW_PROC_API
@@ -5630,7 +5650,6 @@ static int
 insert_dbx_link_bpt_in_file (int fd, CORE_ADDR ignored)
 {
   bfd *abfd;
-  long storage_needed;
   CORE_ADDR sym_addr;
 
   abfd = bfd_fdopenr ("unamed", 0, fd);
@@ -5670,11 +5689,10 @@ insert_dbx_link_bpt_in_file (int fd, CORE_ADDR ignored)
 /* If the given memory region MAP contains a symbol named __dbx_link,
    insert a breakpoint at this location and return nonzero.  Return
    zero otherwise.  */
-
 static int
-insert_dbx_link_bpt_in_region (struct prmap *map,
-                               int (*child_func) (),
-                               void *data)
+insert_dbx_link_bpt_in_region(struct prmap *map,
+                              int (*child_func)(void),
+                              void *data)
 {
   procinfo *pi = (procinfo *) data;
 
@@ -5689,21 +5707,29 @@ insert_dbx_link_bpt_in_region (struct prmap *map,
 /* Search all memory regions for a symbol named __dbx_link.  If found,
    insert a breakpoint at its location, and return nonzero.  Return zero
    otherwise.  */
-
 static int
 insert_dbx_link_breakpoint (procinfo *pi)
 {
   return iterate_over_mappings (pi, NULL, pi, insert_dbx_link_bpt_in_region);
 }
 
+#ifndef MA_SHARED
+# define MA_SHARED 0x08 /* changes are shared by mapped object */
+#endif /* !MA_SHARED */
+#ifndef MA_BREAK
+# define MA_BREAK 0x10 /* grown by brk(2) */
+#endif /* !MA_BREAK */
+#ifndef MA_STACK
+# define MA_STACK 0x20 /* grown automatically on stack faults */
+#endif /* !MA_STACK */
+
 /*
  * Function: mappingflags
  *
  * Returns an ascii representation of a memory mapping's flags.
  */
-
 static char *
-mappingflags (long flags)
+mappingflags(long flags)
 {
   static char asciiflags[8];
 
@@ -5732,11 +5758,10 @@ mappingflags (long flags)
  *
  * Callback function, does the actual work for 'info proc mappings'.
  */
-
 static int
-info_mappings_callback (struct prmap *map, int (*ignore) (), void *unused)
+info_mappings_callback(struct prmap *map, int (*ignore)(void), void *unused)
 {
-  char *data_fmt_string;
+  const char *data_fmt_string;
 
   if (TARGET_ADDR_BIT == 32)
     data_fmt_string   = "\t%#10lx %#10lx %#10x %#10x %7s\n";
@@ -5762,11 +5787,10 @@ info_mappings_callback (struct prmap *map, int (*ignore) (), void *unused)
  *
  * Implement the "info proc mappings" subcommand.
  */
-
 static void
 info_proc_mappings (procinfo *pi, int summary)
 {
-  char *header_fmt_string;
+  const char *header_fmt_string;
 
   if (TARGET_PTR_BIT == 32)
     header_fmt_string = "\t%10s %10s %10s %10s %7s\n";
@@ -5793,9 +5817,8 @@ info_proc_mappings (procinfo *pi, int summary)
  *
  * Implement the "info proc" command.
  */
-
 static void
-info_proc_cmd (char *args, int from_tty)
+info_proc_cmd(const char *args, int from_tty)
 {
   struct cleanup *old_chain;
   procinfo *process  = NULL;
@@ -5924,8 +5947,9 @@ proc_trace_syscalls_1 (procinfo *pi, int syscallnum, int entry_or_exit,
     }
 }
 
+/* */
 static void
-proc_trace_syscalls (char *args, int from_tty, int entry_or_exit, int mode)
+proc_trace_syscalls(const char *args, int from_tty, int entry_or_exit, int mode)
 {
   procinfo *pi;
 
@@ -5944,33 +5968,38 @@ proc_trace_syscalls (char *args, int from_tty, int entry_or_exit, int mode)
     }
 }
 
+/* */
 static void
-proc_trace_sysentry_cmd (char *args, int from_tty)
+proc_trace_sysentry_cmd(const char *args, int from_tty)
 {
   proc_trace_syscalls (args, from_tty, PR_SYSENTRY, FLAG_SET);
 }
 
+/* */
 static void
-proc_trace_sysexit_cmd (char *args, int from_tty)
+proc_trace_sysexit_cmd(const char *args, int from_tty)
 {
   proc_trace_syscalls (args, from_tty, PR_SYSEXIT, FLAG_SET);
 }
 
+/* */
 static void
-proc_untrace_sysentry_cmd (char *args, int from_tty)
+proc_untrace_sysentry_cmd(const char *args, int from_tty)
 {
   proc_trace_syscalls (args, from_tty, PR_SYSENTRY, FLAG_RESET);
 }
 
+/* */
 static void
-proc_untrace_sysexit_cmd (char *args, int from_tty)
+proc_untrace_sysexit_cmd(const char *args, int from_tty)
 {
   proc_trace_syscalls (args, from_tty, PR_SYSEXIT, FLAG_RESET);
 }
 
-
+/* */
+extern void _initialize_procfs(void); /* -Wmissing-prototypes */
 void
-_initialize_procfs (void)
+_initialize_procfs(void)
 {
   init_procfs_ops ();
   add_target (&procfs_ops);

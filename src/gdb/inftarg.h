@@ -12,4 +12,9 @@
 
 extern int child_suppress_run;
 
+#if !defined(PROTOTYPES) || !PROTOTYPES
+extern void inftarg_set_find_memory_regions();
+extern void inftarg_set_make_corefile_notes();
+#endif /* !PROTOTYPES */
+
 #endif /* !INFTARG_H */

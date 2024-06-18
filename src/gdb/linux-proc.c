@@ -1,4 +1,4 @@
-/* Linux-specific methods for using the /proc file system.
+/* linux-proc.c: Linux-specific methods for using the /proc file system.
    Copyright 2001, 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -21,7 +21,13 @@
 #include "defs.h"
 #include "inferior.h"
 #include <sys/param.h>	/* for MAXPATHLEN */
-#include <sys/procfs.h>	/* for elf_gregset etc. */
+#if defined(HAVE_SYS_PROCFS_H) || __has_include(<sys/procfs.h>)
+# include <sys/procfs.h> /* for elf_gregset etc. */
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "procfs.c expects <sys/procfs.h> to be included"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_PROCFS_H */
 #include <sys/stat.h>	/* for struct stat */
 #include <ctype.h>	/* for isdigit */
 #include "gregset.h"	/* for gregset */
@@ -36,20 +42,19 @@
  * Returns a string representing a file that can be opened
  * to get the symbols for the child process.
  */
-
 char *
-child_pid_to_exec_file (int pid)
+child_pid_to_exec_file(int pid)
 {
   char *name1, *name2;
 
-  name1 = xmalloc (MAXPATHLEN);
-  name2 = xmalloc (MAXPATHLEN);
-  make_cleanup (xfree, name1);
-  make_cleanup (xfree, name2);
-  memset (name2, 0, MAXPATHLEN);
+  name1 = (char *)xmalloc(MAXPATHLEN);
+  name2 = (char *)xmalloc(MAXPATHLEN);
+  make_cleanup(xfree, name1);
+  make_cleanup(xfree, name2);
+  memset(name2, 0, MAXPATHLEN);
 
-  sprintf (name1, "/proc/%d/exe", pid);
-  if (readlink (name1, name2, MAXPATHLEN) > 0)
+  sprintf(name1, "/proc/%d/exe", pid);
+  if (readlink(name1, name2, MAXPATHLEN) > 0)
     return name2;
   else
     return name1;
@@ -59,16 +64,10 @@ child_pid_to_exec_file (int pid)
  *
  * Service function for corefiles and info proc.
  */
-
 static int
-read_mapping (FILE *mapfile,
-	      long long *addr,
-	      long long *endaddr,
-	      char *permissions,
-	      long long *offset,
-	      char *device,
-	      long long *inode,
-	      char *filename)
+read_mapping(FILE *mapfile, long long *addr, long long *endaddr,
+	     char *permissions, long long *offset, char *device,
+	     long long *inode, char *filename)
 {
   int ret = fscanf (mapfile,  "%llx-%llx %s %llx %s %llx",
 		    addr, endaddr, permissions, offset, device, inode);
@@ -90,13 +89,12 @@ read_mapping (FILE *mapfile,
  * Fills the "to_find_memory_regions" target vector.
  * Lists the memory regions in the inferior for a corefile.
  */
-
 static int
-linux_find_memory_regions (int (*func) (CORE_ADDR,
-					unsigned long,
-					int, int, int,
-					void *),
-			   void *obfd)
+linux_find_memory_regions(int (*func)(CORE_ADDR,
+                                      unsigned long,
+                                      int, int, int,
+                                      void *),
+			  void *obfd)
 {
   long long pid = PIDGET (inferior_ptid);
   char mapsfilename[MAXPATHLEN];
@@ -104,7 +102,6 @@ linux_find_memory_regions (int (*func) (CORE_ADDR,
   long long addr, endaddr, size, offset, inode;
   char permissions[8], device[8], filename[MAXPATHLEN];
   int read, write, exec;
-  int ret;
 
   /* Compose the filename for the /proc memory map, and open it. */
   sprintf (mapsfilename, "/proc/%lld/maps", pid);
@@ -151,7 +148,6 @@ linux_find_memory_regions (int (*func) (CORE_ADDR,
  *
  * Records the thread's register state for the corefile note section.
  */
-
 static char *
 linux_do_thread_registers (bfd *obfd, ptid_t ptid,
 			   char *note_data, int *note_size)
@@ -183,21 +179,23 @@ struct linux_corefile_thread_data {
   int  *note_size;
 };
 
+#include "regcache.h" /* for registers_changed */
+
 /* Function: linux_corefile_thread_callback
  *
  * Called by gdbthread.c once per thread.
  * Records the thread's register state for the corefile note section.
  */
-
 static int
-linux_corefile_thread_callback (struct thread_info *ti, void *data)
+linux_corefile_thread_callback(struct thread_info *ti, void *data)
 {
-  struct linux_corefile_thread_data *args = data;
+  struct linux_corefile_thread_data *args =
+    (struct linux_corefile_thread_data *)data;
   ptid_t saved_ptid = inferior_ptid;
 
   inferior_ptid = ti->ptid;
   registers_changed ();
-  target_fetch_registers (-1);	/* FIXME should not be necessary;
+  target_fetch_registers (-1);	/* FIXME: should not be necessary;
 				   fill_gregset should do it automatically. */
   args->note_data = linux_do_thread_registers (args->obfd,
 					       ti->ptid,
@@ -205,7 +203,7 @@ linux_corefile_thread_callback (struct thread_info *ti, void *data)
 					       args->note_size);
   inferior_ptid = saved_ptid;
   registers_changed ();
-  target_fetch_registers (-1);	/* FIXME should not be necessary;
+  target_fetch_registers (-1);	/* FIXME: should not be necessary;
 				   fill_gregset should do it automatically. */
   return 0;
 }
@@ -216,16 +214,13 @@ linux_corefile_thread_callback (struct thread_info *ti, void *data)
  * Builds the note section for a corefile, and returns it
  * in a malloc buffer.
  */
-
 static char *
 linux_make_note_section (bfd *obfd, int *note_size)
 {
   struct linux_corefile_thread_data thread_args;
-  struct cleanup *old_chain;
   char fname[16] = {'\0'};
   char psargs[80] = {'\0'};
   char *note_data = NULL;
-  ptid_t current_ptid = inferior_ptid;
 
   if (get_exec_file (0))
     {
@@ -272,9 +267,8 @@ linux_make_note_section (bfd *obfd, int *note_size)
  *
  * Implement the "info proc" command.
  */
-
 static void
-linux_info_proc_cmd (char *args, int from_tty)
+linux_info_proc_cmd(const char *args, int from_tty)
 {
   long long pid = PIDGET (inferior_ptid);
   FILE *procfile;
@@ -285,7 +279,6 @@ linux_info_proc_cmd (char *args, int from_tty)
   int cwd_f = 1;
   int exe_f = 1;
   int mappings_f = 0;
-  int environ_f = 0;
   int status_f = 0;
   int stat_f = 0;
   int all = 0;
@@ -384,7 +377,7 @@ linux_info_proc_cmd (char *args, int from_tty)
 	{
 	  long long addr, endaddr, size, offset, inode;
 	  char permissions[8], device[8], filename[MAXPATHLEN];
-	  char *header_fmt_string, *data_fmt_string;
+	  const char *header_fmt_string, *data_fmt_string;
 
 	  if (TARGET_ADDR_BIT == 32)
 	    {
@@ -429,7 +422,7 @@ linux_info_proc_cmd (char *args, int from_tty)
       if ((procfile = fopen (fname1, "r")) > 0)
 	{
 	  while (fgets (buffer, sizeof (buffer), procfile) != NULL)
-	    printf_filtered (buffer);
+	    printf_filtered("%s", buffer);
 	  fclose (procfile);
 	}
       else
@@ -511,10 +504,10 @@ linux_info_proc_cmd (char *args, int from_tty)
 	  if (fscanf (procfile, "%u ", &itmp) > 0)
 	    printf_filtered ("Start of stack: 0x%x\n", itmp);
 #if 0	/* Do NOT know how architecture-dependent the rest is...
-	     * Anyway the signal bitmap info is available from "status".  */
-	  if (fscanf (procfile, "%u ", &itmp) > 0)	/* FIXME arch? */
+         * Anyway the signal bitmap info is available from "status".  */
+	  if (fscanf (procfile, "%u ", &itmp) > 0)	/* FIXME: arch? */
 	    printf_filtered ("Kernel stack pointer: 0x%x\n", itmp);
-	  if (fscanf (procfile, "%u ", &itmp) > 0)	/* FIXME arch? */
+	  if (fscanf (procfile, "%u ", &itmp) > 0)	/* FIXME: arch? */
 	    printf_filtered ("Kernel instr pointer: 0x%x\n", itmp);
 	  if (fscanf (procfile, "%d ", &itmp) > 0)
 	    printf_filtered ("Pending signals bitmap: 0x%x\n", itmp);
@@ -524,7 +517,7 @@ linux_info_proc_cmd (char *args, int from_tty)
 	    printf_filtered ("Ignored signals bitmap: 0x%x\n", itmp);
 	  if (fscanf (procfile, "%d ", &itmp) > 0)
 	    printf_filtered ("Catched signals bitmap: 0x%x\n", itmp);
-	  if (fscanf (procfile, "%u ", &itmp) > 0)	/* FIXME arch? */
+	  if (fscanf (procfile, "%u ", &itmp) > 0)	/* FIXME: arch? */
 	    printf_filtered ("wchan (system call): 0x%x\n", itmp);
 #endif /* 0 */
 	  fclose (procfile);
@@ -534,17 +527,18 @@ linux_info_proc_cmd (char *args, int from_tty)
     }
 }
 
+#include "inftarg.h"
+
+/* */
+void _initialize_linux_proc(void); /* -Wmissing-prototypes */
 void
-_initialize_linux_proc (void)
+_initialize_linux_proc(void)
 {
-  extern void inftarg_set_find_memory_regions ();
-  extern void inftarg_set_make_corefile_notes ();
+  inftarg_set_find_memory_regions(linux_find_memory_regions);
+  inftarg_set_make_corefile_notes(linux_make_note_section);
 
-  inftarg_set_find_memory_regions (linux_find_memory_regions);
-  inftarg_set_make_corefile_notes (linux_make_note_section);
-
-  add_info ("proc", linux_info_proc_cmd,
-	    "Show /proc process information about any running process.\n\
+  add_info("proc", linux_info_proc_cmd,
+	   "Show /proc process information about any running process.\n\
 Specify any process id, or use the program being debugged by default.\n\
 Specify any of the following keywords for detailed info:\n\
   mappings -- list of mapped memory regions.\n\
