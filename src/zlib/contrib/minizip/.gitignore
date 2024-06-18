@@ -22,5 +22,6 @@ cscope.files
 *.cache
 *.log
 config*.lineno
+conf*/*.awk
 *deps/*.*o
 Makefile

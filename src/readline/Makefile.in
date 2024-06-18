@@ -2550,6 +2550,16 @@ static: $(STATIC_LIBS)
 	      test -r $${mylib}; \
 	    fi; \
 	  elif test -e Makefile; then \
+	    if test ! -e .deps; then \
+	      mkdir -p $(AM_V_v) .deps; \
+	    elif test -d .deps && test -r .deps; then \
+	      if test "x$(AM_V_P)" != "xfalse"; then \
+	        stat .deps && ls -aR .deps && du .deps; \
+	      fi; \
+	      if test ! -w .deps; then \
+	        chmod +w .deps || chown "`whoami`" .deps || touch .deps || sync; \
+	      fi; \
+	    fi; \
 	    echo "$@ target: using '$${CCFLAGS}' for CCFLAGS for $${mylib}"; \
 	    $(MAKE) $(AM_V_MFLAG) $(MFLAGS) "CCFLAGS=$${CCFLAGS}" $${mylib}; \
 	  else \

@@ -285,7 +285,7 @@ expect(enum ch_terminal token, const char *message)
     {
       if (message)
 	error("%s", message);
-      else if (token < 256)
+      else if ((token < 256) && (lexptr != NULL))
 	error("syntax error - expected a '%c' here \"%s\"", token, lexptr);
       else
 	error("syntax error");

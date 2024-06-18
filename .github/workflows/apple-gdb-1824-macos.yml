@@ -155,6 +155,7 @@ jobs:
     - run: cd src && make configure-readline
     - run: cd src && for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/configure; then (echo "configuring in ${dir}" && make configure-${dir} && ls ${dir}/config*); elif test -d ${dir}; then ls ${dir}/configure*; else echo "skipping configuring in ${dir}"; fi; done
     - run: cd src && for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then (echo "building in ${dir}" && make -C ${dir}); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
+    - run: cd src && (make all-readline || (cd readline && make stamp-framework))
     - run: cd src && make configure-gdb
     - run: cd src && make all-gdb
     - name: bootstrap libtool
