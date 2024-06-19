@@ -98,8 +98,24 @@ jobs:
         SCCACHE_GHA_ENABLED: "true"
 
     - name: Dependencies
-      if: matrix.language == 'c-cpp'
-      run: sudo apt-get -y install autopoint gobjc clang autogen guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev guile-3.0-libs libguile-ssh13 libiconv-hook1 libiconv-hook-dev win-iconv-mingw-w64-dev
+      run: |
+        if test ${{ matrix.language }} == 'c-cpp'; then \
+          sudo apt-get -y install autopoint gobjc clang autogen guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev guile-3.0-libs libguile-ssh13 libiconv-hook1 libiconv-hook-dev win-iconv-mingw-w64-dev; \
+        elif test ${{ matrix.language }} == 'java-kotlin'; then \
+          sudo apt-get -y install kotlin libgradle-plugins-java libintellij-java-compatibility-java; \
+        elif test ${{ matrix.language }} == 'javascript-typescript'; then \
+          sudo apt-get -y install node-optionator eslint uglifyjs libjs-modernizr; \
+        elif test ${{ matrix.language }} == 'go'; then \
+          sudo apt-get -y install gccgo gccgo-multilib; \
+        elif test ${{ matrix.language }} == 'csharp'; then \
+          sudo apt-get -y install mono-csharp-shell; \
+        elif test ${{ matrix.language }} == 'python'; then \
+          sudo apt-get -y install jython pylint; \
+        elif test ${{ matrix.language }} == 'ruby'; then \
+          sudo apt-get -y install ruby ruby-dev libruby rake ruby-full ruby-ffi ruby-build jruby-openssl mruby libmruby-dev; \
+        else \
+          sync && echo "unhandled language ${{ matrix.language }}" && sleep 1; \
+        fi
 
     - name: Syntax check (and similar stuff)
       if: matrix.language == 'ruby' || matrix.language == 'javascript-typescript'
@@ -438,7 +454,8 @@ jobs:
         done
         if test -e mmalloc/Makefile; then \
           pushd mmalloc; \
-          make mmallocplusplus.o || stat -t mmallocplusplus.cp; \
+          sync && echo "One last attempt at compiling mmallocplusplus.cp..."; \
+          make mmallocplusplus.o || (test -x "$(which sccache)" && sccache g++ -c mmallocplusplus.cp) || g++ -c mmallocplusplus.cp || stat -t mmallocplusplus.cp; \
           cp -v ./*.o .. || ls ./*.o || pwd; \
           popd; \
         fi
