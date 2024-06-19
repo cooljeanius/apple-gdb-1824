@@ -33,7 +33,7 @@ jobs:
         fi
         brew install python@3.12 || brew link --overwrite python@3.12 || (if test -L /usr/local/bin/2to3; then (readlink /usr/local/bin/2to3 && unlink /usr/local/bin/2to3); else rm '/usr/local/bin/2to3'; fi) || which -a 2to3
         sync && date && sync
-        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake term termbox termcolor cdk cgdb ncurses groff splint "${COMPILER_FORMULA}"
+        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake term termbox termcolor cdk cgdb ncurses groff splint makedepend "${COMPILER_FORMULA}"
         if test -z "$(which ant)" || test ! -x "$(which ant)"; then \
           brew install ant || brew install ant@1.9; \
         else \
@@ -155,7 +155,7 @@ jobs:
     - run: cd src && make configure-readline
     - run: cd src && for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/configure; then (echo "configuring in ${dir}" && make configure-${dir} && ls ${dir}/config*); elif test -d ${dir}; then ls ${dir}/configure*; else echo "skipping configuring in ${dir}"; fi; done
     - run: cd src && for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then (echo "building in ${dir}" && make -C ${dir}); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
-    - run: cd src && (make all-readline || (cd readline && make stamp-framework))
+    - run: cd src && (make all-readline || (pushd readline && (make depend || make stamp-framework-headers) && popd) || make am--refresh)
     - run: cd src && make configure-gdb
     - run: cd src && make all-gdb
     - name: bootstrap libtool

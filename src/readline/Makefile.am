@@ -208,7 +208,7 @@ static: $(STATIC_LIBS)
 	      mkdir -p $(AM_V_v) .deps; \
 	    elif test -d .deps && test -r .deps; then \
 	      if test "x$(AM_V_P)" != "xfalse"; then \
-	        stat .deps && ls -aR .deps && du .deps; \
+	        stat .deps && ls -aRm .deps && du .deps; \
 	      fi; \
 	      if test ! -w .deps; then \
 	        chmod +w .deps || chown "`whoami`" .deps || touch .deps || sync; \
@@ -462,6 +462,10 @@ stamp-framework: $(FRAMEWORK_OFILES)
 	fi
 	$(AM_V_at)touch stamp-framework
 
+depend:
+	$(MAKEDEPEND) -- $(CCFLAGS) -- $(CSOURCES)
+.PHONY: depend
+
 # Dependencies:
 bind.o: ansi_stdlib.h posixstat.h
 bind.o: rldefs.h ${BUILD_DIR}/config.h rlconf.h
@@ -701,3 +705,5 @@ histexpand.o: histexpand.c
 histfile.o: histfile.c
 history.o: history.c
 histsearch.o: histsearch.c
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.

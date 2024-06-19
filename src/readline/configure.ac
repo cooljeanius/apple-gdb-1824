@@ -182,6 +182,7 @@ AC_DEFUN([AC_REQUIRE_PROG_SED],[
 ])dnl
 AC_REQUIRE_PROG_SED
 AX_CHECK_GNU_MAKE
+AC_PATH_PROG([MAKEDEPEND],[makedepend],[makedepend])dnl
 AC_PATH_PROG([TEX_BINARY],[tex])dnl
 AC_PATH_PROG([DVIPS],[dvips])dnl
 
