@@ -8,7 +8,16 @@
 plugins {
     // Apply the foojay-resolver plugin to allow automatic download of JDKs
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+    // for build scans:
+    id("com.gradle.develocity") version("3.17.5")
 }
+
+develocity {
+    buildScan {
+        termsOfUseUrl.set("https://gradle.com/help/legal-terms-of-use")
+        termsOfUseAgree.set("yes")
+    }
+} // (hopefully this works...)
 
 rootProject.name = "apple-gdb-1824"
 include("lib")

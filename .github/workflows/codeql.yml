@@ -300,12 +300,12 @@ jobs:
         make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || stat -t macsbug
         cd src
         if test -z "$(which dejagnu)" || test ! -x "$(which dejagnu)"; then \
-          sudo apt-get -y install dejagnu; \
+          sudo apt-get -qq install dejagnu; \
         elif test -r "$(which dejagnu)"; then \
           sync && echo "dejagnu available as $(which dejagnu)"; \
         fi
         if test -x "$(which python)"; then \
-          sudo apt-get -y install python3-macholib; \
+          sudo apt-get -qq install python3-macholib; \
         elif test -x "$(which pip)"; then \
           pip install macholib machobot ak-macholibre || pip install --upgrade pip; \
         fi
