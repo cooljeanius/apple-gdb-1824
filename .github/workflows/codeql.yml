@@ -102,7 +102,7 @@ jobs:
         if test ${{ matrix.language }} == 'c-cpp'; then \
           sudo apt-get -y install autopoint gobjc clang autogen guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev guile-3.0-libs libguile-ssh13 libiconv-hook1 libiconv-hook-dev win-iconv-mingw-w64-dev mingw-w64 mingw-w64-i686-dev wine libwine libwine-dev; \
         elif test ${{ matrix.language }} == 'java-kotlin'; then \
-          sudo apt-get -y install kotlin libgradle-plugins-java libintellij-java-compatibility-java; \
+          sudo apt-get -y install kotlin gradle libgradle-core-java libgradle-plugins-java libintellij-java-compatibility-java libjzlib-java gradle-propdeps-plugin; \
         elif test ${{ matrix.language }} == 'javascript-typescript'; then \
           sudo apt-get -y install node-optionator eslint uglifyjs libjs-modernizr node-babel-eslint npm; \
         elif test ${{ matrix.language }} == 'go'; then \
@@ -173,7 +173,7 @@ jobs:
 
     - name: Setup Gradle
       if: matrix.language == 'java-kotlin'
-      uses: gradle/gradle-build-action@v3
+      uses: gradle/actions/setup-gradle@v3
     - name: Run build with Gradle Wrapper
       if: matrix.language == 'java-kotlin' && success()
       run: |
@@ -267,9 +267,6 @@ jobs:
         done
         echo "make configure-gdb" && (time make configure-gdb) && echo "done making configure-gdb"
         echo "make all-gdb" && (time make all-gdb) && echo "done making all-gdb"
-        if test -z "$(which dejagnu)" || test ! -x "$(which dejagnu)"; then \
-          sudo apt-get -y install dejagnu; \
-        fi
         echo "make check-libiberty" && make check-libiberty && echo "done making check-libiberty"
         for dir in cgen sim expect dejagnu itcl libgui; do \
           if test -e ${dir}/Makefile; then \
@@ -302,6 +299,11 @@ jobs:
         make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" || stat -t libcheckpoint
         make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || stat -t macsbug
         cd src
+        if test -z "$(which dejagnu)" || test ! -x "$(which dejagnu)"; then \
+          sudo apt-get -y install dejagnu; \
+        else \
+          sync && echo "dejagnu available as $(which dejagnu)"; \
+        fi
         if test -d autogen && test -r autogen && test -w autogen; then \
           pushd autogen; \
           if test -x "$(which guile18-build)" && test -e ./configure; then \
