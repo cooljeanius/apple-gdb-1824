@@ -177,14 +177,14 @@ jobs:
     - name: Run build with Gradle Wrapper
       if: matrix.language == 'java-kotlin' && success()
       run: |
-        ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
+        (yes | ./gradlew build --scan) || ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
         sync && echo "done with top-level; next is jzlib..."
         pushd src/zlib/contrib/java/jzlib-1.1.2 || exit
-        ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
+        (yes | ./gradlew build --scan) || ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
         popd || exit
         sync && echo "done with jzlib; next is testsuite..."
         pushd src/gdb/testsuite/gdb.java || exit
-        ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
+        (yes | ./gradlew build --scan) || ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
         popd || exit
         sync && echo "done with attempts at using the gradle wrapper..."
 

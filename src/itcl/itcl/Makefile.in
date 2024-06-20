@@ -403,8 +403,11 @@ itcl_util.$(OBJEXT): $(GENERIC_DIR)/itcl_util.c $(itclInt_h)
 
 #========================================================================
 # Don't modify the file to clean here.  Instead, set the "CLEANFILES"
-# variable in configure.in
+# variable in configure.ac
 #========================================================================
+
+mostlyclean:
+	@echo "$@: just clean normally instead (in `pwd`)"
 
 clean:  
 	-test -z "$(BINARIES)" || rm -f $(BINARIES)

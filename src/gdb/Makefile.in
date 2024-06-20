@@ -2032,6 +2032,9 @@ subdir_do: force
 	$(AM_V_at)for i in $(DODIRS); do \
 	  if [ "x$${i}" = "xgnulib" -o "x$${i}" = "xbuild-gnulib" ]; then \
 	   if [ -f ./$${i}/Makefile -a -f ./$${i}/import/Makefile ]; then \
+	     if [ -n "$${CPP}" -a -x ./$${i}/configure ]; then \
+	       unset CPP; \
+	     fi; \
 	     if (cd ./$${i}; \
 	       $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) $(DO)); then \
 	       echo "'$@' ($(DO)) succeeded for '$${i}'"; \
@@ -2042,6 +2045,9 @@ subdir_do: force
 	   else echo "at least one Makefile missing for '$${i}'"; fi; \
 	  else \
 	    if [ -f ./$${i}/Makefile ]; then \
+	      if [ -n "$${CPP}" -a -x ./$${i}/configure ]; then \
+	        unset CPP; \
+	      fi; \
 	      if (cd ./$${i}; \
 	        $(MAKE) $(AM_V_MFLAG) $(FLAGS_TO_PASS) $(DO)); then \
 	        echo "'$@' ($(DO)) succeeded for '$${i}'"; \

@@ -194,6 +194,9 @@ install-doc:
 Makefile: $(srcdir)/Makefile.in
 	$(SHELL) config.status
 
+mostlyclean:
+	@echo "$@: just clean normally instead (in `pwd`)"
+
 clean:
 	rm -f core errs *~ \#* TAGS *.E a.out errors
 

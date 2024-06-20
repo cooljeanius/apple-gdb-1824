@@ -37,111 +37,111 @@ am__v_MFLAG_1 = -w
 
 all:
 	$(AM_V_at)for dir in $(subdirs); do \
-		if test -d $${dir}; then \
+		if test -d $${dir} && test -r $${dir}/Makefile; then \
 		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
 		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
 		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
-		    else exit 1; fi; \
+		    else echo "`pwd`: $@ failed in $${dir}" && exit 1; fi; \
 		else \
-		    exit 1; \
+		    echo "`pwd`: skipping $@ for $${dir}" && exit 1; \
 		fi \
 	done;
 
 test check:
 	$(AM_V_at)for dir in itcl itk iwidgets; do \
-		if test -d $${dir}; then \
+		if test -d $${dir} && test -r $${dir}/Makefile; then \
 		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
 		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
 		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
-		    else exit 1; fi; \
+		    else echo "`pwd`: $@ failed in $${dir}" && exit 1; fi; \
 		else \
-		    exit 1; \
+		    echo "`pwd`: skipping $@ for $${dir}" && exit 1; \
 		fi \
 	done;
 
 static:
 	$(AM_V_at)for dir in $(subdirs); do \
-		if test -d $${dir}; then \
+		if test -d $${dir} && test -r $${dir}/Makefile; then \
 		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
 		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
 		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
-		    else exit 1; fi; \
+		    else echo "`pwd`: $@ failed in $${dir}" && exit 1; fi; \
 		else \
-		    exit 1; \
+		    echo "`pwd`: skipping $@ for $${dir}" && exit 1; \
 		fi \
 	done;
 
 standalone:
 	$(AM_V_at)for dir in $(subdirs); do \
-		if test -d $${dir}; then \
+		if test -d $${dir} && test -r $${dir}/Makefile; then \
 		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
 		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
 		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
-		    else exit 1; fi; \
+		    else echo "`pwd`: $@ failed in $${dir}" && exit 1; fi; \
 		else \
-		    exit 1; \
+		    echo "`pwd`: skipping $@ for $${dir}" && exit 1; \
 		fi \
 	done;
 
 plusplus:
 	$(AM_V_at)for dir in $(subdirs); do \
-		if test -d $${dir}; then \
+		if test -d $${dir} && test -r $${dir}/Makefile; then \
 		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
 		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
 		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
-		    else exit 1; fi; \
+		    else echo "`pwd`: $@ failed in $${dir}" && exit 1; fi; \
 		else \
-		    exit 1; \
+		    echo "`pwd`: skipping $@ for $${dir}" && exit 1; \
 		fi \
 	done;
 
 install:
 	$(AM_V_at)for dir in $(subdirs); do \
-		if test -d $${dir}; then \
+		if test -d $${dir} && test -r $${dir}/Makefile; then \
 		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
 		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
 		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
-		    else exit 1; fi; \
+		    else echo "`pwd`: $@ failed in $${dir}" && exit 1; fi; \
 		else \
-		    exit 1; \
+		    echo "`pwd`: skipping $@ for $${dir}" && exit 1; \
 		fi \
 	done;
 
 install-binaries:
 	$(AM_V_at)for dir in $(subdirs); do \
-		if test -d $${dir}; then \
+		if test -d $${dir} && test -r $${dir}/Makefile; then \
 		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
 		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
 		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
-		    else exit 1; fi; \
+		    else echo "`pwd`: $@ failed in $${dir}" && exit 1; fi; \
 		else \
-		    exit 1; \
+		    echo "`pwd`: skipping $@ for $${dir}" && exit 1; \
 		fi \
 	done;
 
 install-libraries:
 	$(AM_V_at)for dir in $(subdirs); do \
-		if test -d $${dir}; then \
+		if test -d $${dir} && test -r $${dir}/Makefile; then \
 		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
 		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
 		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
-		    else exit 1; fi; \
+		    else echo "`pwd`: $@ failed in $${dir}" && exit 1; fi; \
 		else \
-		    exit 1; \
+		    echo "`pwd`: skipping $@ for $${dir}" && exit 1; \
 		fi \
 	done;
 
 install-info info install-check:
 
-clean:
+mostlyclean clean:
 	$(AM_V_at)for dir in $(subdirs); do \
-		if test -d $${dir}; then \
+		if test -d $${dir} && test -r $${dir}/Makefile; then \
 		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
 		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
 		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
-		    else exit 1; fi; \
+		    else echo "`pwd`: $@ failed in $${dir}" && exit 1; fi; \
 		else \
-		    exit 1; \
+		    echo "`pwd`: skipping $@ for $${dir}" && exit 1; \
 		fi \
 	done;
 
@@ -150,13 +150,13 @@ distclean:
 	rm -f Makefile config.log config.status config.cache
 	rm -rf autom4te.cache || rmdir autom4te.cache
 	$(AM_V_at)for dir in $(subdirs); do \
-		if test -d $${dir}; then \
+		if test -d $${dir} && test -r $${dir}/Makefile; then \
 		    echo "$${dir}: $(MAKE) $(AM_V_MFLAG) $@"; \
 		    if (cd $${dir}; $(MAKE) $(AM_V_MFLAG) $@); then \
 		      echo "$(MAKE) $(AM_V_MFLAG) $@ succeeded for $${dir}"; \
-		    else exit 1; fi; \
+		    else echo "`pwd`: $@ failed in $${dir}" && exit 1; fi; \
 		else \
-		    exit 1; \
+		    echo "`pwd`: skipping $@ for $${dir}" && exit 1; \
 		fi \
 	done;
 
@@ -173,9 +173,15 @@ cygnus_local_configure: configure.ac
 	$(AM_V_at)for dir in $(subdirs); do \
 		if (cd $${dir}; $(AUTOCONF)); then \
 		  echo "$(AUTOCONF) succeeded for $${dir}"; \
-		else exit 1; fi; \
+		else echo "`pwd`: $@ failed in $${dir}" && exit 1; fi; \
 	done;
 .PHONY: cygnus_local_configure
+
+Makefile: config.status
+	CONFIG_FILES=Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
+
+config.status: configure
+	$(SHELL) config.status --recheck
 # END CYGNUS LOCAL
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

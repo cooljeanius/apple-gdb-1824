@@ -25,7 +25,7 @@ clean mostlyclean:
 	    echo "target $@ in `pwd`: trying to recurse into $${dir}:"; \
 	    if [ -d $${dir} -a -r $${dir}/Makefile -a "$${dir}" != "." -a -e $${dir}/configure ]; then \
 	      (cd $${dir}; $(MAKE) clean); \
-	    else echo "$@: skipping subdir $${dir} here..."; \
+	    else echo "$@: skipping subdir $${dir} here (in `pwd`)..."; \
 	    fi; \
 	  done; \
 	else echo "`pwd`: no subdirs to recurse into for target '$@'"; fi
@@ -41,7 +41,7 @@ distclean maintainer-clean realclean: clean
 	      (cd $${dir}; $(MAKE) distclean); \
 	    elif [ -d $${dir} -a -w $${dir} -a "$${dir}" != "." -a -w . ]; then \
 	      rm -rfv $${dir} || rmdir $${dir}; \
-	    else echo "$@: skipping subdir $${dir} here..."; \
+	    else echo "$@: skipping subdir $${dir} here (in `pwd`)..."; \
 	    fi; \
 	  done; \
 	else echo "`pwd`: no subdirs to recurse into for target '$@'"; fi

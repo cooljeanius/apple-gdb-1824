@@ -828,13 +828,13 @@ clean: mostlyclean
 	  unset CPP && $(MAKE) -i -C src clean; fi
 	$(RM) -r $(OBJROOT)
 	$(RM) -v *~ stamp-* build-aux/*~
-	$(RM) .DS_Store autoscan.log
+	$(RM) -v .DS_Store autoscan.log hs_err_pid*.log
 	$(RM) -r autom4te.cache || rmdir autom4te.cache
 
 distclean: clean
 	if test -e src/Makefile; then \
 	  unset CPP && $(MAKE) -i -C src distclean; fi
-	$(RM) configure config.log config.h.*
+	$(RM) -v configure config.log config.h.* hs_err*.log
 	-if test -d .git && test -w .git; then $(RM) .git/COMMIT_EDITMSG~; fi
 .PHONY: mostlyclean distclean
 

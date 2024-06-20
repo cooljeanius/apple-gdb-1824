@@ -680,6 +680,9 @@ install-doc:
 Makefile: $(UNIX_DIR)/Makefile.in
 	$(SHELL) config.status
 
+mostlyclean:
+	@echo "$@: just clean normally instead (in `pwd`)"
+
 clean:
 	rm -f *.a *.o libtk* core errs *~ \#* TAGS *.E a.out errors \
 		tktest wish config.info lib.exp

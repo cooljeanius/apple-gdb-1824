@@ -158,7 +158,7 @@ just-check:
 
 subdir_do: force
 	for i in $(DODIRS); do \
-		if [ -d ./$${i} ]; then \
+		if [ -d ./$${i} -a -r ./$${i}/Makefile ]; then \
 			if (rootme=`pwd`/; export rootme; \
 			    rootsrc=`cd $(srcdir); pwd`/; export rootsrc; \
 			    cd ./$${i}; \
@@ -179,7 +179,7 @@ subdirs:
 	for dir in ${ALL_SUBDIRS}; \
 	do \
 		echo "$${dir}:"; \
-		if [ -d $${dir} ]; then \
+		if [ -d $${dir} -a -r $${dir}/Makefile ]; then \
 			(rootme=`pwd`/; export rootme; \
 			 rootsrc=`cd $(srcdir); pwd`/; export rootsrc; \
 			 cd $${dir}; $(MAKE) $(TARGET_FLAGS_TO_PASS)); \
@@ -206,7 +206,7 @@ clean mostlyclean:
 	    for dir in ${ALL_SUBDIRS}; \
 	    do \
 		    echo "$${dir}:"; \
-		    if [ -d $${dir} ]; then \
+		    if [ -d $${dir} -a -r $${dir}/Makefile ]; then \
 			    (cd $${dir}; $(MAKE) clean); \
 		    fi; \
 	    done ; \
