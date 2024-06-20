@@ -100,7 +100,7 @@ jobs:
     - name: Dependencies
       run: |
         if test ${{ matrix.language }} == 'c-cpp'; then \
-          sudo apt-get -y install autopoint gobjc clang autogen guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev guile-3.0-libs libguile-ssh13 libiconv-hook1 libiconv-hook-dev win-iconv-mingw-w64-dev mingw-w64 mingw-w64-i686-dev wine libwine libwine-dev wine-development libwine-development libwine-development-dev; \
+          sudo apt-get -y install autopoint gobjc clang autogen guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev guile-3.0-libs libguile-ssh13 libiconv-hook1 libiconv-hook-dev win-iconv-mingw-w64-dev mingw-w64 mingw-w64-i686-dev wine libwine libwine-dev; \
         elif test ${{ matrix.language }} == 'java-kotlin'; then \
           sudo apt-get -y install kotlin libgradle-plugins-java libintellij-java-compatibility-java; \
         elif test ${{ matrix.language }} == 'javascript-typescript'; then \
@@ -108,9 +108,9 @@ jobs:
         elif test ${{ matrix.language }} == 'go'; then \
           sudo apt-get -y install gccgo gccgo-multilib golang golang-go; \
         elif test ${{ matrix.language }} == 'csharp'; then \
-          sudo apt-get -y install mono-csharp-shell dotnet-host; \
+          sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs nant nunit mono-xbuild; \
         elif test ${{ matrix.language }} == 'python'; then \
-          sudo apt-get -y install jython pylint pymacs python-tk tix; \
+          sudo apt-get -y install jython pylint pymacs python-tk tix flake8; \
         elif test ${{ matrix.language }} == 'ruby'; then \
           sudo apt-get -y install ruby ruby-dev libruby rake ruby-full ruby-ffi ruby-build jruby-openssl mruby libmruby-dev; \
         else \
