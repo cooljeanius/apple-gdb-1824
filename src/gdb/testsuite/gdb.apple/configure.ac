@@ -13,6 +13,12 @@ AC_CONFIG_HEADERS([config.h])dnl
 
 if test "x${subdirs}" = "x"; then
   test -z "${subdirs}" && subdirs=""
+  for mysubdir in debug-in-ofile gused ld-r xcode; do
+    if test -d "${mysubdir}" && test -e "${mysubdir}/Makefile.in"; then
+      subdirs="${subdirs} ${mysubdir}"
+    fi
+  done
+  test -n "${subdirs}" && echo "subdirs are now '${subdirs}'"
   AC_SUBST([subdirs])
 fi
 

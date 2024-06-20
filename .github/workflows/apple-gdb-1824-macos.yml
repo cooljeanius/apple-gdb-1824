@@ -95,7 +95,7 @@ jobs:
     - run: cd src && make all-zlib
     - run: cd src && make all-bfd
     - run: if test ! -e macsbug/MacsBug_plugin; then make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else stat macsbug/MacsBug_plugin; fi
-    - run: if test ! -e macsbug/gdb_plugin_support/gdb_plugin_support.o; then (sync && make -ki -C macsbug/gdb_plugin_support TARGET_ARCHITECTURE="x86_64" && sync) || (if test -x "$(which ant)"; then ant; fi) || (for cfile in macsbug/gdb_plugin_support/*.c; do sccache ${{ matrix.compiler }} -c "${cfile}" || ${{ matrix.compiler }} -c -w -Wno-error "${cfile}" || stat "${cfile}"; done); else stat macsbug/gdb_plugin_support/gdb_plugin_support.o; fi
+    - run: if test ! -e macsbug/gdb_plugin_support/gdb_plugin_support.o; then (sync && make -ki -C macsbug/gdb_plugin_support TARGET_ARCHITECTURE="x86_64" && sync) || (if test -x "$(which ant)"; then ant; else echo "ant missing" >&2; fi) || (for cfile in macsbug/gdb_plugin_support/*.c; do (sccache ${{ matrix.compiler }} -c "${cfile}" || ${{ matrix.compiler }} -c -w -Wno-error "${cfile}" || stat "${cfile}"); done); else stat macsbug/gdb_plugin_support/gdb_plugin_support.o; fi
     - run: cd src && make all-opcodes
     - run: cd src && make configure-binutils
     - name: Backup that annoying arparse.h header

@@ -2,13 +2,14 @@
 
 VPATH = @srcdir@
 srcdir = @srcdir@
+top_srcdir = @top_srcdir@
 
 SUBDIRS = @subdirs@
 
 EXECUTABLES = shantonu split-pi type-qualifications
 
 all:
-	@echo "Nothing to be done for all..."
+	@echo "Nothing to be done for all in `pwd`..."
 
 info:
 install-info:
@@ -22,29 +23,51 @@ check:
 clean mostlyclean:
 	-rm -fv *~ core *.o
 	-rm -fv $(EXECUTABLES)
-	if [ x"${SUBDIRS}" != x"" ]; then \
-	    for dir in ${SUBDIRS}; \
-	    do \
-		    echo "$${dir}:"; \
-		    if [ -d $${dir} ]; then \
-			    (cd $${dir}; $(MAKE) clean); \
-		    fi; \
-	    done; \
-	else echo "no subdirs to recurse into for target '$@'"; fi
+	if [ x"${SUBDIRS}" != x"" -a x"${SUBDIRS}" != x"." ]; then \
+	  for dir in ${SUBDIRS}; do \
+	    echo "target $@ in `pwd`: trying to recurse into $${dir}:"; \
+	    if [ -d $${dir} -a -r $${dir}/Makefile -a "$${dir}" != "." -a -e $${dir}/configure ]; then \
+	      (cd $${dir}; $(MAKE) clean); \
+	    else echo "$@: skipping subdir $${dir} here..."; \
+	    fi; \
+	  done; \
+	else echo "`pwd`: no subdirs to recurse into for target '$@'"; fi
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log
 	-rm -fv *-init.exp
 	-rm -frv *.log summary detail *.plog *.sum *.psum site.*
-	if [ x"${SUBDIRS}" != x"" ]; then \
-	    for dir in ${SUBDIRS}; \
-	    do \
-		    echo "$${dir}:"; \
-		    if [ -d $${dir} ]; then \
-			    (cd $${dir}; $(MAKE) distclean); \
-		    fi; \
-	    done; \
-	else echo "no subdirs to recurse into for target '$@'"; fi
+	if [ x"${SUBDIRS}" != x"" -a x"${SUBDIRS}" != x"." ]; then \
+	  for dir in ${SUBDIRS}; do \
+	    echo "target $@ in `pwd`: trying to recurse into $${dir}:"; \
+	    if [ -d $${dir} -a -r $${dir}/Makefile -a "$${dir}" != "." -a -e $${dir}/configure ]; then \
+	      (cd $${dir}; $(MAKE) distclean); \
+	    elif [ -d $${dir} -a -w $${dir} -a "$${dir}" != "." -a -w . ]; then \
+	      rm -rfv $${dir} || rmdir $${dir}; \
+	    else echo "$@: skipping subdir $${dir} here..."; \
+	    fi; \
+	  done; \
+	else echo "`pwd`: no subdirs to recurse into for target '$@'"; fi
+	if test -w . && test -e `pwd`/Makefile; then rm -f `pwd`/Makefile; fi
 
-Makefile: $(srcdir)/Makefile.in $(srcdir)/configure.ac
-	$(SHELL) ./config.status --recheck
+$(top_srcdir)/config.status: $(top_srcdir)/configure
+	if test -d "$(top_srcdir)"; then cd $(top_srcdir); \
+	elif test "x$(top_srcdir)" != "x.." && test -d..; then cd ..; \
+	else echo "target for $@: staying in `pwd` for now..."; fi
+	if test ! -e config.status || test config.status -ot configure; then \
+	  if test -x ./configure; then \
+	    ./configure; \
+	  elif test -x $(top_srcdir)/configure; then \
+	    $(top_srcdir)/configure; \
+	  fi; \
+	fi
+
+Makefile: $(srcdir)/Makefile.in $(top_srcdir)/config.status
+	echo "$@ target: now in `pwd`"
+	if test -r $(top_srcdir)/config.status && test -r ./configure && test -d . && test -r $(top_srcdir)/configure; then \
+	  $(SHELL) $(top_srcdir)/config.status --recheck; \
+	elif test -x ./config.status && test -x ./configure; then \
+	  ./config.status --recheck; \
+	else \
+	  touch Makefile; \
+	fi

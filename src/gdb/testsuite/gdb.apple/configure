@@ -2977,6 +2977,12 @@ ac_config_headers="$ac_config_headers config.h"
 
 if test "x${subdirs}" = "x"; then
   test -z "${subdirs}" && subdirs=""
+  for mysubdir in debug-in-ofile gused ld-r xcode; do
+    if test -d "${mysubdir}" && test -e "${mysubdir}/Makefile.in"; then
+      subdirs="${subdirs} ${mysubdir}"
+    fi
+  done
+  test -n "${subdirs}" && echo "subdirs are now '${subdirs}'"
 
 fi
 

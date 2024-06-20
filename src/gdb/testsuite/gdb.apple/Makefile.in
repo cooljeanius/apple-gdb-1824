@@ -31,7 +31,15 @@ RUBY = @RUBY@
 TIMEOUT = @TIMEOUT@
 
 all:
-	@echo "Nothing to be done for all..."
+	if [ x"${SUBDIRS}" != x"" -a x"${SUBDIRS}" != x"." ]; then \
+	  for dir in ${SUBDIRS}; do \
+	    echo "target $@ in `pwd`: trying to recurse into $${dir}:"; \
+	    if [ -d $${dir} -a -r $${dir}/Makefile -a "$${dir}" != "." ]; then \
+	      (cd $${dir}; $(MAKE) all); \
+	    else echo "skipping subdir $${dir} here..."; \
+	    fi; \
+	  done; \
+	else echo "no subdirs to recurse into for target '$@'"; fi
 
 info:
 install-info:
@@ -122,14 +130,14 @@ clean mostlyclean:
 	-rm -fv *~ core *.o *.dylib
 	-rm -fv $(EXECUTABLES)
 	-rm -rfv *.dSYM *_unstripped
-	if [ x"${SUBDIRS}" != x"" ]; then \
-	    for dir in ${SUBDIRS}; \
-	    do \
-		    echo "$${dir}:"; \
-		    if [ -d $${dir} ]; then \
-			    (cd $${dir}; $(MAKE) clean); \
-		    fi; \
-	    done; \
+	if [ x"${SUBDIRS}" != x"" -a x"${SUBDIRS}" != x"." ]; then \
+	  for dir in ${SUBDIRS}; do \
+	    echo "target $@ in `pwd`: trying to recurse into $${dir}:"; \
+	    if [ -d $${dir} -a -r $${dir}/Makefile -a "$${dir}" != "." ]; then \
+	      (cd $${dir}; $(MAKE) clean); \
+	    else echo "skipping subdir $${dir} here..."; \
+	    fi; \
+	  done; \
 	else echo "no subdirs to recurse into for target '$@'"; fi
 
 distclean maintainer-clean realclean: clean
@@ -138,15 +146,37 @@ distclean maintainer-clean realclean: clean
 	-rm -fv *-init.exp *~
 	-rm -frv *.log summary detail *.plog *.sum *.psum site.*
 	-rm -frv autom4te.cache || rmdir autom4te.cache
-	if [ x"${SUBDIRS}" != x"" ]; then \
-	    for dir in ${SUBDIRS}; \
-	    do \
-		    echo "$${dir}:"; \
-		    if [ -d $${dir} ]; then \
-			    (cd $${dir}; $(MAKE) distclean); \
-		    fi; \
-	    done ; \
+	if [ x"${SUBDIRS}" != x"" -a x"${SUBDIRS}" != x"." ]; then \
+	  for dir in ${SUBDIRS}; do \
+	    echo "target $@ in `pwd`: trying to recurse into $${dir}:"; \
+	    if [ -d $${dir} -a -r $${dir}/Makefile -a "$${dir}" != "." ]; then \
+	      (cd $${dir}; $(MAKE) distclean); \
+	    elif [ -d $${dir} -a -w $${dir} -a -w $${dir}/Makefile ]; then \
+	      rm -fv $${dir}/Makefile; \
+	    else echo "skipping subdir $${dir} here..."; \
+	    fi; \
+	  done; \
 	else echo "no subdirs to recurse into for target '$@'"; fi
+	if test -e `pwd`/Makefile; then rm -f `pwd`/Makefile; fi
+	if test -e config.h.in~; then rm -f config.h.in~; fi
+	if test -e configure~; then rm -f configure~; fi
 
-Makefile: $(srcdir)/Makefile.in $(srcdir)/configure.ac
+configure: $(srcdir)/configure.ac
+	if test -d "$(srcdir)"; then cd $(srcdir); fi
+	if test -x "`which autoconf`"; then autoconf; \
+	elif test -e configure~ && test -w .; then \
+	  if test -e configure && test configure -ot configure~; then \
+	    mv -fv configure~ configure; \
+	  elif test ! -e configure; then \
+	    mv -v configure~ configure; \
+	  fi; \
+	fi
+
+$(srcdir)/config.status: $(srcdir)/configure
+	if test -d "$(srcdir)"; then cd $(srcdir); fi
+	if test ! -e config.status || test config.status -ot configure; then \
+	  $(srcdir)/configure; \
+	fi
+
+Makefile: $(srcdir)/Makefile.in $(srcdir)/config.status
 	$(SHELL) ./config.status Makefile

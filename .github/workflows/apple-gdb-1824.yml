@@ -18,7 +18,7 @@ jobs:
       env:
         SCCACHE_GHA_ENABLED: "true"
     - run: sudo apt-get update
-    - run: sudo apt-get install --fix-missing autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libopts25 libopts25-dev texinfo flex flex-doc binutils binutils-dev binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl guile-2.0 guile-2.0-libs guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev guile-3.0-libs libguile-ssh11 tclreadline m4 xutils-dev gfortran gfortran-multilib gfortran-7 gfortran-7-multilib gfortran-mingw-w64 gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar gdb gdbserver autopoint gperf help2man libextutils-f77-perl emacs sharutils texlive latex2html ddd xterm x11-utils ${{ matrix.compiler }} gnat ratfor libmpfr-dev libmpfi-dev libmpc-dev libgmp-dev libmath-mpfr-perl libmpfrc++-dev f2c libbsd0 libbsd-dev freebsd-glue libieee1284-3 libieee1284-3-dev fort77 libiconv-hook1 libiconv-hook-dev win-iconv-mingw-w64-dev libltdl7 libltdl-dev libasprintf-dev libgettextpo-dev tix tix-dev splint comprez cxref cxref-emacs exuberant-ctags universal-ctags texi2html eslint uglifyjs libjs-modernizr node-optionator
+    - run: sudo apt-get install --fix-missing autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libopts25 libopts25-dev texinfo flex flex-doc binutils binutils-dev binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl guile-2.0 guile-2.0-libs guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev guile-3.0-libs libguile-ssh11 tclreadline m4 xutils-dev gfortran gfortran-multilib gfortran-7 gfortran-7-multilib gfortran-mingw-w64 gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar gdb gdbserver autopoint gperf help2man libextutils-f77-perl emacs sharutils texlive latex2html ddd xterm x11-utils ${{ matrix.compiler }} gnat ratfor libmpfr-dev libmpfi-dev libmpc-dev libgmp-dev libmath-mpfr-perl libmpfrc++-dev f2c libbsd0 libbsd-dev freebsd-glue libieee1284-3 libieee1284-3-dev fort77 libiconv-hook1 libiconv-hook-dev win-iconv-mingw-w64-dev libltdl7 libltdl-dev libasprintf-dev libgettextpo-dev tix tix-dev splint comprez cxref cxref-emacs exuberant-ctags universal-ctags texi2html eslint uglifyjs libjs-modernizr node-optionator node-babel-eslint npm
     - run: test -e ./.profile_generic && test -r ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq) && sync && sleep 1 && sync
     - run: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
     - run: cd src && make configure-zlib && sync && make configure-bfd
@@ -30,7 +30,7 @@ jobs:
     - run: cd src && make all-opcodes
     - run: cd src && make configure-binutils
     - run: cd src && make info-binutils && sync && make dvi-binutils && sync && make TAGS-binutils
-    - run: cd src && make all-cgen
+    - run: cd src && make all-cgen && sync && (make check-cgen || sleep 1)
     - run: cd src && sync && make all-libiberty && sync && make all-intl && sync && sleep 1
     - run: cd src && make all-electric-fence
     - run: cd src && make all-etc && sync && make check-etc
