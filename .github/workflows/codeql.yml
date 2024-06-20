@@ -100,9 +100,9 @@ jobs:
     - name: Dependencies
       run: |
         if test ${{ matrix.language }} == 'c-cpp'; then \
-          sudo apt-get -y install autopoint gobjc clang autogen guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev guile-3.0-libs libguile-ssh13 libiconv-hook1 libiconv-hook-dev win-iconv-mingw-w64-dev mingw-w64 mingw-w64-i686-dev wine libwine libwine-dev; \
+          sudo apt-get -y install autopoint gobjc clang autogen guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev guile-3.0-libs libguile-ssh13 libiconv-hook1 libiconv-hook-dev win-iconv-mingw-w64-dev mingw-w64 mingw-w64-i686-dev wine libwine libwine-dev crosshurd libdispatch0 libdispatch-dev libblocksruntime0 libblocksruntime-dev libpvec1 libpvec-dev libvecpf1 libvecpf-dev systemtap-sdt-dev; \
         elif test ${{ matrix.language }} == 'java-kotlin'; then \
-          sudo apt-get -y install kotlin gradle libgradle-core-java libgradle-plugins-java libintellij-java-compatibility-java libjzlib-java gradle-propdeps-plugin; \
+          sudo apt-get -y install kotlin gradle libgradle-core-java libgradle-plugins-java libintellij-java-compatibility-java libjzlib-java gradle-propdeps-plugin junit libgradle-jflex-plugin-java gradle-apt-plugin; \
         elif test ${{ matrix.language }} == 'javascript-typescript'; then \
           sudo apt-get -y install node-optionator eslint uglifyjs libjs-modernizr node-babel-eslint npm; \
         elif test ${{ matrix.language }} == 'go'; then \
@@ -110,7 +110,7 @@ jobs:
         elif test ${{ matrix.language }} == 'csharp'; then \
           sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs nant nunit mono-xbuild; \
         elif test ${{ matrix.language }} == 'python'; then \
-          sudo apt-get -y install jython pylint pymacs python-tk tix flake8; \
+          sudo apt-get -y install jython pylint pymacs python-tk tix flake8 python3-macholib; \
         elif test ${{ matrix.language }} == 'ruby'; then \
           sudo apt-get -y install ruby ruby-dev libruby rake ruby-full ruby-ffi ruby-build jruby-openssl mruby libmruby-dev; \
         else \
@@ -301,8 +301,18 @@ jobs:
         cd src
         if test -z "$(which dejagnu)" || test ! -x "$(which dejagnu)"; then \
           sudo apt-get -y install dejagnu; \
-        else \
+        elif test -r "$(which dejagnu)"; then \
           sync && echo "dejagnu available as $(which dejagnu)"; \
+        fi
+        if test -x "$(which python)"; then \
+          sudo apt-get -y install python3-macholib; \
+        elif test -x "$(which pip)"; then \
+          pip install macholib machobot ak-macholibre || pip install --upgrade pip; \
+        fi
+        if test -x "$(which rustc)" && test -x "$(which mig)"; then \
+          sudo apt-get -y install librust-mach-o-sys-dev; \
+        else \
+          sync && echo "skipping rust stuff..."; \
         fi
         if test -d autogen && test -r autogen && test -w autogen; then \
           pushd autogen; \
@@ -359,7 +369,7 @@ jobs:
           elif test -x "$(which ccache)"; then\
             export CC="ccache gcc"; \
           else \
-            export CC="cc"; \
+            export CC="gcc"; \
           fi; \
         fi
         FINAL_CPPFLAGS="-I."
@@ -375,7 +385,7 @@ jobs:
           cfiledir="$(dirname "${cfile}")"; \
           if test ! -e "${cobjfile}"; then \
             echo "${CC} -c -w -Wno-error -Wfatal-errors ${FINAL_CPPFLAGS} -I\"${cfiledir}\" -iquote \"${cfiledir}\" -I\"${cfiledir}\"/.. -iquote \"${cfiledir}\"/.. ${cfile}"; \
-            "${CC}" -c -w -Wno-error -Wfatal-errors ${FINAL_CPPFLAGS} -I"${cfiledir}" -iquote "${cfiledir}" -I"${cfiledir}"/.. -iquote "${cfiledir}"/.. ${cfile} || stat -t "${cfile}" || echo "cfile is ${cfile}"; \
+            ${CC} -c -w -Wno-error -Wfatal-errors ${FINAL_CPPFLAGS} -I"${cfiledir}" -iquote "${cfiledir}" -I"${cfiledir}"/.. -iquote "${cfiledir}"/.. ${cfile} || stat -t "${cfile}" || echo "cfile is ${cfile}"; \
           else \
             sync && echo "object file ${cobjfile} already exists for ${cfile}."; \
             cp -v "${cobjfile}" "${cfiledir}" || cp -v "${cobjfile}" . || cp -v "${cobjfile}" .. || (if test -d /tmp && test -w /tmp; then cp -v "${cobjfile}" /tmp; fi) || stat -t "${cobjfile}"; \
