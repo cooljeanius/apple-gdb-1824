@@ -338,7 +338,7 @@ jobs:
     - run: time (sync && pwd && sync && ls && sync && du && sync && df && sync)
       if: "${{ success() }}"
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.3.3
+      uses: actions/upload-artifact@v4.3.4
       if: "${{ always() }}"
       with:
         # Artifact name
