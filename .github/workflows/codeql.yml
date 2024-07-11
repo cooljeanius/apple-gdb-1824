@@ -106,7 +106,7 @@ jobs:
         elif test ${{ matrix.language }} == 'javascript-typescript'; then \
           sudo apt-get -y install node-optionator eslint uglifyjs libjs-modernizr node-babel-eslint npm; \
         elif test ${{ matrix.language }} == 'go'; then \
-          sudo apt-get -y install gccgo gccgo-multilib golang golang-go; \
+          sudo apt-get -y install gccgo gccgo-multilib golang golang-go golang-src golang-ar-dev; \
         elif test ${{ matrix.language }} == 'csharp'; then \
           sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs nant nunit mono-xbuild; \
         elif test ${{ matrix.language }} == 'python'; then \
@@ -495,7 +495,7 @@ jobs:
           javac "${javafile}" || stat "${javafile}"; \
         done
         if test -n "${javafile}"; then unset javafile; fi
-        which -a ktlint || (test -x "$(which locate)" && locate ktlint) || (test -x "$(which find)" && find / -name ktlint) || echo "ktlint missing"
+        which -a ktlint || (test -x "$(which locate)" && locate ktlint) || (test -x "$(which find)" && find / -name ktlint -perm +r -user "$(whoami)") || echo "ktlint missing"
         # shellcheck disable=SC2044
         if test -x "$(which kotlin)"; then \
           for kotlinfile in $(find . -name '*.kts' -type f); do \
