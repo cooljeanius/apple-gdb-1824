@@ -1230,10 +1230,19 @@ configure-[+prefix+][+module+]: [+deps+]
 	srcdiroption="--srcdir=$${topdir}/[+module+]"; \
 	libsrcdir="$${s}/[+module+]"; \
 	[+ IF no-config-site +]rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file [+ ENDIF +]$(SHELL) $${libsrcdir}/configure \
 	  [+args+] $${srcdiroption} [+extra_configure_flags+] \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are [+args+]"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '[+extra_configure_flags+]'"; \
+	         exit 1); \
+	      fi)
 @endif [+prefix+][+module+]
 
 [+ IF bootstrap +]

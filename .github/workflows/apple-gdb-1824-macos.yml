@@ -137,6 +137,8 @@ jobs:
             if test -z "$(sudo launchctl list | grep locate)"; then \
               sync && echo "attempting to ensure that locate will work..."; \
               sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist; \
+            else \
+              sudo launchctl list | grep locate; \
             fi; \
           fi; \
         fi
@@ -325,6 +327,8 @@ jobs:
           make lint || make lint-local || make my_TAGS || make tags-local; \
           if test ! -e TAGS; then \
             make my_TAGS || make tags-local || make ID || make TAGS || touch TAGS; \
+          elif test -r TAGS; then \
+            stat TAGS && wc -l TAGS && du TAGS; \
           fi; \
           make info || make dvi || make stamp-framework-headers; \
           popd; \

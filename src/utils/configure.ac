@@ -20,9 +20,13 @@ AC_SUBST([V])dnl
 AC_PROG_SED
 if test -e `pwd`/config.cache; then
   echo "hacking `pwd`/config.cache"
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
   sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
 elif test -e ./config.cache; then
   echo "hacking ./config.cache"
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
   sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
 else
   echo "config.cache is missing, which means we can skip attempts to hack it"
@@ -86,6 +90,9 @@ sinclude(../config/autoopts.m4)
 AG_PATH_AUTOOPTS([5.17])dnl
 
 AC_MSG_CHECKING([if there are any subdirectories we should recurse into])
+if test -z "${configdirs}"; then
+  configdirs=""
+fi
 # Choose which subdirs to use:
 if test -d ${srcdir}/spu; then
   configdirs="spu"
@@ -120,6 +127,9 @@ case "${target}" in
     if test -d ${srcdir}/amd-udi; then
       configdirs="${configdirs} amd-udi"
     fi
+    ;;
+  *)
+    # (nothing)
     ;;
 esac
 ]

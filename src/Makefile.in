@@ -3491,10 +3491,19 @@ configure-build-libiberty:
 	srcdiroption="--srcdir=$${topdir}/libiberty"; \
 	libsrcdir="$${s}/libiberty"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(BUILD_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif build-libiberty
 
 
@@ -3538,10 +3547,19 @@ configure-build-bison:
 	srcdiroption="--srcdir=$${topdir}/bison"; \
 	libsrcdir="$${s}/bison"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(BUILD_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif build-bison
 
 
@@ -3585,10 +3603,19 @@ configure-build-byacc:
 	srcdiroption="--srcdir=$${topdir}/byacc"; \
 	libsrcdir="$${s}/byacc"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(BUILD_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif build-byacc
 
 
@@ -3632,10 +3659,19 @@ configure-build-flex:
 	srcdiroption="--srcdir=$${topdir}/flex"; \
 	libsrcdir="$${s}/flex"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(BUILD_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif build-flex
 
 
@@ -3679,10 +3715,19 @@ configure-build-m4:
 	srcdiroption="--srcdir=$${topdir}/m4"; \
 	libsrcdir="$${s}/m4"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(BUILD_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif build-m4
 
 
@@ -3726,10 +3771,19 @@ configure-build-texinfo:
 	srcdiroption="--srcdir=$${topdir}/texinfo"; \
 	libsrcdir="$${s}/texinfo"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(BUILD_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif build-texinfo
 
 
@@ -3773,10 +3827,19 @@ configure-build-fixincludes:
 	srcdiroption="--srcdir=$${topdir}/fixincludes"; \
 	libsrcdir="$${s}/fixincludes"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(BUILD_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif build-fixincludes
 
 
@@ -3820,10 +3883,19 @@ configure-build-libcpp:
 	srcdiroption="--srcdir=$${topdir}/libcpp"; \
 	libsrcdir="$${s}/libcpp"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(BUILD_CONFIGARGS) $${srcdiroption} --disable-nls am_cv_func_iconv=no \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(BUILD_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '--disable-nls am_cv_func_iconv=no'"; \
+	         exit 1); \
+	      fi)
 @endif build-libcpp
 
 
@@ -3873,7 +3945,16 @@ configure-ash:
 	libsrcdir="$${s}/ash"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif ash
 
 
@@ -4273,7 +4354,16 @@ configure-autoconf:
 	libsrcdir="$${s}/autoconf"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif autoconf
 
 
@@ -4674,7 +4764,16 @@ configure-autogen:
 	libsrcdir="$${s}/autogen"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif autogen
 
 
@@ -5400,7 +5499,16 @@ configure-automake:
 	libsrcdir="$${s}/automake"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif automake
 
 
@@ -5800,7 +5908,16 @@ configure-bash:
 	libsrcdir="$${s}/bash"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif bash
 
 
@@ -6201,7 +6318,16 @@ configure-bfd:
 	libsrcdir="$${s}/bfd"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif bfd
 
 
@@ -6928,7 +7054,16 @@ configure-opcodes:
 	libsrcdir="$${s}/opcodes"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif opcodes
 
 
@@ -7655,7 +7790,16 @@ configure-binutils:
 	libsrcdir="$${s}/binutils"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif binutils
 
 
@@ -8381,7 +8525,16 @@ configure-bison:
 	libsrcdir="$${s}/bison"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif bison
 
 
@@ -8786,7 +8939,16 @@ configure-byacc:
 	libsrcdir="$${s}/byacc"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif byacc
 
 
@@ -9191,7 +9353,16 @@ configure-bzip2:
 	libsrcdir="$${s}/bzip2"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif bzip2
 
 
@@ -9591,7 +9762,16 @@ configure-cgen:
 	libsrcdir="$${s}/cgen"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif cgen
 
 
@@ -9991,7 +10171,16 @@ configure-dejagnu:
 	libsrcdir="$${s}/dejagnu"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif dejagnu
 
 
@@ -10391,7 +10580,16 @@ configure-diff:
 	libsrcdir="$${s}/diff"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif diff
 
 
@@ -10791,7 +10989,16 @@ configure-dosutils:
 	libsrcdir="$${s}/dosutils"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif dosutils
 
 
@@ -11186,7 +11393,16 @@ configure-electric-fence:
 	libsrcdir="$${s}/electric-fence"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif electric-fence
 
 
@@ -11586,7 +11802,16 @@ configure-etc:
 	libsrcdir="$${s}/etc"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif etc
 
 
@@ -11986,7 +12211,16 @@ configure-fastjar:
 	libsrcdir="$${s}/fastjar"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif fastjar
 
 
@@ -12391,7 +12625,16 @@ configure-fileutils:
 	libsrcdir="$${s}/fileutils"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif fileutils
 
 
@@ -12791,7 +13034,16 @@ configure-findutils:
 	libsrcdir="$${s}/findutils"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif findutils
 
 
@@ -13191,7 +13443,16 @@ configure-find:
 	libsrcdir="$${s}/find"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif find
 
 
@@ -13591,7 +13852,16 @@ configure-fixincludes:
 	libsrcdir="$${s}/fixincludes"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif fixincludes
 
 
@@ -13915,7 +14185,16 @@ configure-flex:
 	libsrcdir="$${s}/flex"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif flex
 
 
@@ -14321,7 +14600,16 @@ configure-gas:
 	libsrcdir="$${s}/gas"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif gas
 
 
@@ -15048,7 +15336,16 @@ configure-gcc:
 	libsrcdir="$${s}/gcc"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif gcc
 
 
@@ -15775,7 +16072,16 @@ configure-gmp:
 	libsrcdir="$${s}/gmp"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-shared LEX="touch lex.yy.c" \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '--disable-shared LEX="touch lex.yy.c"'"; \
+	         exit 1); \
+	      fi)
 @endif gmp
 
 
@@ -16465,7 +16771,16 @@ configure-mpfr:
 	libsrcdir="$${s}/mpfr"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-shared @extra_mpfr_configure_flags@ \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '--disable-shared @extra_mpfr_configure_flags@'"; \
+	         exit 1); \
+	      fi)
 @endif mpfr
 
 
@@ -17187,7 +17502,16 @@ configure-mpc:
 	libsrcdir="$${s}/mpc"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-shared @extra_mpc_gmp_configure_flags@ @extra_mpc_mpfr_configure_flags@ \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '--disable-shared @extra_mpc_gmp_configure_flags@ @extra_mpc_mpfr_configure_flags@'"; \
+	         exit 1); \
+	      fi)
 @endif mpc
 
 
@@ -17909,7 +18233,16 @@ configure-isl:
 	libsrcdir="$${s}/isl"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-shared @extra_isl_gmp_configure_flags@ \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '--disable-shared @extra_isl_gmp_configure_flags@'"; \
+	         exit 1); \
+	      fi)
 @endif isl
 
 
@@ -18630,7 +18963,16 @@ configure-gawk:
 	libsrcdir="$${s}/gawk"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif gawk
 
 
@@ -19030,7 +19372,16 @@ configure-gettext:
 	libsrcdir="$${s}/gettext"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif gettext
 
 
@@ -19430,7 +19781,16 @@ configure-gnuserv:
 	libsrcdir="$${s}/gnuserv"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif gnuserv
 
 
@@ -19831,7 +20191,16 @@ configure-gold:
 	libsrcdir="$${s}/gold"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif gold
 
 
@@ -20557,7 +20926,16 @@ configure-gprof:
 	libsrcdir="$${s}/gprof"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif gprof
 
 
@@ -20957,7 +21335,16 @@ configure-gzip:
 	libsrcdir="$${s}/gzip"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif gzip
 
 
@@ -21357,7 +21744,16 @@ configure-hello:
 	libsrcdir="$${s}/hello"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif hello
 
 
@@ -21757,7 +22153,16 @@ configure-indent:
 	libsrcdir="$${s}/indent"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif indent
 
 
@@ -22158,7 +22563,16 @@ configure-intl:
 	libsrcdir="$${s}/intl"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif intl
 
 
@@ -22884,7 +23298,16 @@ configure-tcl:
 	libsrcdir="$${s}/tcl"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif tcl
 
 
@@ -23240,7 +23663,16 @@ configure-itcl:
 	libsrcdir="$${s}/itcl"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif itcl
 
 
@@ -23611,7 +24043,16 @@ configure-ld:
 	libsrcdir="$${s}/ld"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif ld
 
 
@@ -24338,7 +24779,16 @@ configure-libbacktrace:
 	libsrcdir="$${s}/libbacktrace"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif libbacktrace
 
 
@@ -25065,7 +25515,16 @@ configure-libcpp:
 	libsrcdir="$${s}/libcpp"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif libcpp
 
 
@@ -25792,7 +26251,16 @@ configure-libdecnumber:
 	libsrcdir="$${s}/libdecnumber"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif libdecnumber
 
 
@@ -26504,7 +26972,16 @@ configure-libelf:
 	libsrcdir="$${s}/libelf"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-shared \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '--disable-shared'"; \
+	         exit 1); \
+	      fi)
 @endif libelf
 
 
@@ -27225,7 +27702,16 @@ configure-libgui:
 	libsrcdir="$${s}/libgui"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif libgui
 
 
@@ -27626,7 +28112,16 @@ configure-libiberty:
 	libsrcdir="$${s}/libiberty"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption} @extra_host_libiberty_configure_flags@ \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '@extra_host_libiberty_configure_flags@'"; \
+	         exit 1); \
+	      fi)
 @endif libiberty
 
 
@@ -28353,7 +28848,16 @@ configure-libiberty-linker-plugin:
 	libsrcdir="$${s}/libiberty-linker-plugin"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption} @extra_host_libiberty_configure_flags@ --disable-install-libiberty @extra_linker_plugin_flags@ @extra_linker_plugin_configure_flags@ \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '@extra_host_libiberty_configure_flags@ --disable-install-libiberty @extra_linker_plugin_flags@ @extra_linker_plugin_configure_flags@'"; \
+	         exit 1); \
+	      fi)
 @endif libiberty-linker-plugin
 
 
@@ -29079,7 +29583,16 @@ configure-libiconv:
 	libsrcdir="$${s}/libiconv"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-shared \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '--disable-shared'"; \
+	         exit 1); \
+	      fi)
 @endif libiconv
 
 
@@ -29381,7 +29894,16 @@ configure-libtool_gnu:
 	libsrcdir="$${s}/libtool_gnu"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif libtool_gnu
 
 
@@ -29781,7 +30303,16 @@ configure-m4:
 	libsrcdir="$${s}/m4"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif m4
 
 
@@ -30181,7 +30712,16 @@ configure-make:
 	libsrcdir="$${s}/make"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif make
 
 
@@ -30581,7 +31121,16 @@ configure-mmalloc:
 	libsrcdir="$${s}/mmalloc"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif mmalloc
 
 
@@ -30981,7 +31530,16 @@ configure-patch:
 	libsrcdir="$${s}/patch"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif patch
 
 
@@ -31381,7 +31939,16 @@ configure-perl:
 	libsrcdir="$${s}/perl"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif perl
 
 
@@ -31781,7 +32348,16 @@ configure-prms:
 	libsrcdir="$${s}/prms"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif prms
 
 
@@ -32181,7 +32757,16 @@ configure-rcs:
 	libsrcdir="$${s}/rcs"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif rcs
 
 
@@ -32581,7 +33166,16 @@ configure-readline:
 	libsrcdir="$${s}/readline"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif readline
 
 
@@ -32981,7 +33575,16 @@ configure-release:
 	libsrcdir="$${s}/release"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif release
 
 
@@ -33371,7 +33974,16 @@ configure-recode:
 	libsrcdir="$${s}/recode"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif recode
 
 
@@ -33771,7 +34383,16 @@ configure-sed:
 	libsrcdir="$${s}/sed"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif sed
 
 
@@ -34171,7 +34792,16 @@ configure-send-pr:
 	libsrcdir="$${s}/send-pr"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif send-pr
 
 
@@ -34571,7 +35201,16 @@ configure-shellutils:
 	libsrcdir="$${s}/shellutils"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif shellutils
 
 
@@ -34971,7 +35610,16 @@ configure-sid:
 	libsrcdir="$${s}/sid"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif sid
 
 
@@ -35371,7 +36019,16 @@ configure-sim:
 	libsrcdir="$${s}/sim"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif sim
 
 
@@ -35771,7 +36428,16 @@ configure-tar:
 	libsrcdir="$${s}/tar"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif tar
 
 
@@ -36171,7 +36837,16 @@ configure-texinfo:
 	libsrcdir="$${s}/texinfo"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif texinfo
 
 
@@ -36566,7 +37241,16 @@ configure-textutils:
 	libsrcdir="$${s}/textutils"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif textutils
 
 
@@ -36966,7 +37650,16 @@ configure-time:
 	libsrcdir="$${s}/time"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif time
 
 
@@ -37366,7 +38059,16 @@ configure-uudecode:
 	libsrcdir="$${s}/uudecode"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif uudecode
 
 
@@ -37766,7 +38468,16 @@ configure-wdiff:
 	libsrcdir="$${s}/wdiff"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif wdiff
 
 
@@ -38166,7 +38877,16 @@ configure-zip:
 	libsrcdir="$${s}/zip"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif zip
 
 
@@ -38572,7 +39292,16 @@ configure-zlib:
 	libsrcdir="$${s}/zlib"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif zlib
 
 
@@ -39293,7 +40022,16 @@ configure-gdb:
 	libsrcdir="$${s}/gdb"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif gdb
 
 
@@ -39693,7 +40431,16 @@ configure-expect:
 	libsrcdir="$${s}/expect"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif expect
 
 
@@ -40078,7 +40825,16 @@ configure-guile:
 	libsrcdir="$${s}/guile"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif guile
 
 
@@ -40478,7 +41234,16 @@ configure-tk:
 	libsrcdir="$${s}/tk"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif tk
 
 
@@ -40848,7 +41613,16 @@ configure-libtermcap:
 	libsrcdir="$${s}/libtermcap"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif libtermcap
 
 
@@ -41187,7 +41961,16 @@ configure-utils:
 	libsrcdir="$${s}/utils"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif utils
 
 
@@ -41572,7 +42355,16 @@ configure-gnattools:
 	libsrcdir="$${s}/gnattools"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif gnattools
 
 
@@ -41973,7 +42765,16 @@ configure-lto-plugin:
 	libsrcdir="$${s}/lto-plugin"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption} --enable-shared @extra_linker_plugin_flags@ @extra_linker_plugin_configure_flags@ \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '--enable-shared @extra_linker_plugin_flags@ @extra_linker_plugin_configure_flags@'"; \
+	         exit 1); \
+	      fi)
 @endif lto-plugin
 
 
@@ -42699,7 +43500,16 @@ configure-libcc1:
 	libsrcdir="$${s}/libcc1"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption} --enable-shared \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '--enable-shared'"; \
+	         exit 1); \
+	      fi)
 @endif libcc1
 
 
@@ -43099,7 +43909,16 @@ configure-gotools:
 	libsrcdir="$${s}/gotools"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(HOST_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif gotools
 
 
@@ -43514,10 +44333,19 @@ configure-target-libstdc++-v3: $(TARGET_SUBDIR)/libstdc++-v3/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libstdc++-v3"; \
 	libsrcdir="$${s}/libstdc++-v3"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libstdc++-v3
 
 
@@ -44253,10 +45081,19 @@ configure-target-libmudflap: $(TARGET_SUBDIR)/libmudflap/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libmudflap"; \
 	libsrcdir="$${s}/libmudflap"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libmudflap
 
 
@@ -44667,10 +45504,19 @@ configure-target-libsanitizer: $(TARGET_SUBDIR)/libsanitizer/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libsanitizer"; \
 	libsrcdir="$${s}/libsanitizer"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libsanitizer
 
 
@@ -45407,10 +46253,19 @@ configure-target-libmpx: $(TARGET_SUBDIR)/libmpx/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libmpx"; \
 	libsrcdir="$${s}/libmpx"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libmpx
 
 
@@ -46147,10 +47002,19 @@ configure-target-libvtv: $(TARGET_SUBDIR)/libvtv/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libvtv"; \
 	libsrcdir="$${s}/libvtv"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libvtv
 
 
@@ -46886,10 +47750,19 @@ configure-target-libcilkrts: $(TARGET_SUBDIR)/libcilkrts/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libcilkrts"; \
 	libsrcdir="$${s}/libcilkrts"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libcilkrts
 
 
@@ -47299,10 +48172,19 @@ configure-target-liboffloadmic: $(TARGET_SUBDIR)/liboffloadmic/multilib.out
 	srcdiroption="--srcdir=$${topdir}/liboffloadmic"; \
 	libsrcdir="$${s}/liboffloadmic"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption} @extra_liboffloadmic_configure_flags@ \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '@extra_liboffloadmic_configure_flags@'"; \
+	         exit 1); \
+	      fi)
 @endif target-liboffloadmic
 
 
@@ -47712,10 +48594,19 @@ configure-target-libssp: $(TARGET_SUBDIR)/libssp/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libssp"; \
 	libsrcdir="$${s}/libssp"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libssp
 
 
@@ -48125,10 +49016,19 @@ configure-target-newlib: $(TARGET_SUBDIR)/newlib/multilib.out
 	srcdiroption="--srcdir=$${topdir}/newlib"; \
 	libsrcdir="$${s}/newlib"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-newlib
 
 
@@ -48539,10 +49439,19 @@ configure-target-libgcc: $(TARGET_SUBDIR)/libgcc/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libgcc"; \
 	libsrcdir="$${s}/libgcc"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libgcc
 
 
@@ -49274,10 +50183,19 @@ configure-target-libbacktrace: $(TARGET_SUBDIR)/libbacktrace/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libbacktrace"; \
 	libsrcdir="$${s}/libbacktrace"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libbacktrace
 
 
@@ -49687,10 +50605,19 @@ configure-target-libquadmath: $(TARGET_SUBDIR)/libquadmath/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libquadmath"; \
 	libsrcdir="$${s}/libquadmath"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libquadmath
 
 
@@ -50100,10 +51027,19 @@ configure-target-libgfortran: $(TARGET_SUBDIR)/libgfortran/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libgfortran"; \
 	libsrcdir="$${s}/libgfortran"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libgfortran
 
 
@@ -50513,10 +51449,19 @@ configure-target-libobjc: $(TARGET_SUBDIR)/libobjc/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libobjc"; \
 	libsrcdir="$${s}/libobjc"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libobjc
 
 
@@ -50926,10 +51871,19 @@ configure-target-libgo: $(TARGET_SUBDIR)/libgo/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libgo"; \
 	libsrcdir="$${s}/libgo"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libgo
 
 
@@ -51339,10 +52293,19 @@ configure-target-libtermcap: $(TARGET_SUBDIR)/libtermcap/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libtermcap"; \
 	libsrcdir="$${s}/libtermcap"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libtermcap
 
 
@@ -51692,10 +52655,19 @@ configure-target-winsup: $(TARGET_SUBDIR)/winsup/multilib.out
 	srcdiroption="--srcdir=$${topdir}/winsup"; \
 	libsrcdir="$${s}/winsup"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-winsup
 
 
@@ -52105,10 +53077,19 @@ configure-target-libgloss: $(TARGET_SUBDIR)/libgloss/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libgloss"; \
 	libsrcdir="$${s}/libgloss"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libgloss
 
 
@@ -52514,10 +53495,19 @@ configure-target-libiberty: $(TARGET_SUBDIR)/libiberty/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libiberty"; \
 	libsrcdir="$${s}/libiberty"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libiberty
 
 
@@ -52927,10 +53917,19 @@ configure-target-gperf: $(TARGET_SUBDIR)/gperf/multilib.out
 	srcdiroption="--srcdir=$${topdir}/gperf"; \
 	libsrcdir="$${s}/gperf"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-gperf
 
 
@@ -53340,10 +54339,19 @@ configure-target-examples: $(TARGET_SUBDIR)/examples/multilib.out
 	srcdiroption="--srcdir=$${topdir}/examples"; \
 	libsrcdir="$${s}/examples"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-examples
 
 
@@ -53745,10 +54753,19 @@ configure-target-libffi: $(TARGET_SUBDIR)/libffi/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libffi"; \
 	libsrcdir="$${s}/libffi"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libffi
 
 
@@ -54154,10 +55171,19 @@ configure-target-libjava: $(TARGET_SUBDIR)/libjava/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libjava"; \
 	libsrcdir="$${s}/libjava"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption} $(EXTRA_CONFIGARGS_LIBJAVA) \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are '$(EXTRA_CONFIGARGS_LIBJAVA)'"; \
+	         exit 1); \
+	      fi)
 @endif target-libjava
 
 
@@ -54567,10 +55593,19 @@ configure-target-zlib: $(TARGET_SUBDIR)/zlib/multilib.out
 	srcdiroption="--srcdir=$${topdir}/zlib"; \
 	libsrcdir="$${s}/zlib"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-zlib
 
 
@@ -54980,10 +56015,19 @@ configure-target-boehm-gc: $(TARGET_SUBDIR)/boehm-gc/multilib.out
 	srcdiroption="--srcdir=$${topdir}/boehm-gc"; \
 	libsrcdir="$${s}/boehm-gc"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-boehm-gc
 
 
@@ -55393,10 +56437,19 @@ configure-target-qthreads: $(TARGET_SUBDIR)/qthreads/multilib.out
 	srcdiroption="--srcdir=$${topdir}/qthreads"; \
 	libsrcdir="$${s}/qthreads"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-qthreads
 
 
@@ -55806,10 +56859,19 @@ configure-target-rda: $(TARGET_SUBDIR)/rda/multilib.out
 	srcdiroption="--srcdir=$${topdir}/rda"; \
 	libsrcdir="$${s}/rda"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-rda
 
 
@@ -56219,10 +57281,19 @@ configure-target-libada: $(TARGET_SUBDIR)/libada/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libada"; \
 	libsrcdir="$${s}/libada"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libada
 
 
@@ -56633,10 +57704,19 @@ configure-target-libgomp: $(TARGET_SUBDIR)/libgomp/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libgomp"; \
 	libsrcdir="$${s}/libgomp"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libgomp
 
 
@@ -57372,10 +58452,19 @@ configure-target-libitm: $(TARGET_SUBDIR)/libitm/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libitm"; \
 	libsrcdir="$${s}/libitm"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libitm
 
 
@@ -57785,10 +58874,19 @@ configure-target-libatomic: $(TARGET_SUBDIR)/libatomic/multilib.out
 	srcdiroption="--srcdir=$${topdir}/libatomic"; \
 	libsrcdir="$${s}/libatomic"; \
 	rm -f no-such-file || echo "ok"; \
-	if test -n "${CPP}"; then unset CPP; fi; \
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
+	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
+	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	      else \
+	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
+	         echo "SHELL is $(SHELL)"; \
+	         echo "args are $(TARGET_CONFIGARGS)"; \
+	         echo "srcdiroption is $${srcdiroption}"; \
+	         echo "extra_configure_flags are ''"; \
+	         exit 1); \
+	      fi)
 @endif target-libatomic
 
 
