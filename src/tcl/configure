@@ -2514,6 +2514,7 @@ as_fn_append ac_header_c_list " sys/types.h sys_types_h HAVE_SYS_TYPES_H"
 as_fn_append ac_header_c_list " unistd.h unistd_h HAVE_UNISTD_H"
 as_fn_append ac_header_c_list " wchar.h wchar_h HAVE_WCHAR_H"
 as_fn_append ac_header_c_list " minix/config.h minix_config_h HAVE_MINIX_CONFIG_H"
+as_fn_append ac_header_c_list " CoreFoundation/CoreFoundation.h CoreFoundation_CoreFoundation_h HAVE_COREFOUNDATION_COREFOUNDATION_H"
 as_fn_append ac_header_c_list " vfork.h vfork_h HAVE_VFORK_H"
 as_fn_append ac_func_c_list " fork HAVE_FORK"
 as_fn_append ac_func_c_list " vfork HAVE_VFORK"
@@ -6245,7 +6246,8 @@ if test $ac_cv_header_stdbool_h = yes; then
 printf "%s\n" "#define HAVE_STDBOOL_H 1" >>confdefs.h
 
 fi
- ac_fn_c_check_header_compile "$LINENO" "fcntl.h" "ac_cv_header_fcntl_h" "$ac_includes_default"
+
+  ac_fn_c_check_header_compile "$LINENO" "fcntl.h" "ac_cv_header_fcntl_h" "$ac_includes_default"
 if test "x$ac_cv_header_fcntl_h" = xyes
 then :
   printf "%s\n" "#define HAVE_FCNTL_H 1" >>confdefs.h

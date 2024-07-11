@@ -10,9 +10,14 @@
  * RCS: @(#) tclUnixInit.c,v 1.5 2003/01/21 19:40:20 hunt Exp
  */
 
-#if defined(HAVE_CFBUNDLE)
+#ifndef __has_include
+# define __has_include(foo) 0
+#endif /* !__has_include */
+#if defined(HAVE_CFBUNDLE) && \
+    (defined(HAVE_COREFOUNDATION_COREFOUNDATION_H) || \
+     __has_include(<CoreFoundation/CoreFoundation.h>))
 # include <CoreFoundation/CoreFoundation.h>
-#endif /* HAVE_CFBUNDLE */
+#endif /* HAVE_CFBUNDLE || HAVE_COREFOUNDATION_COREFOUNDATION_H */
 #include "tclInt.h"
 #include "tclPort.h"
 #include <locale.h>

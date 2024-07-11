@@ -1,8 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
 set -ex
 
 autoreconf -fvi -Wall -Wno-obsolete
+
+if test macosx/configure -ot macosx/configure.ac && test -n "$(grep AC_INIT macosx/configure.ac)"; then
+  pushd macosx
+  autoreconf -fvi -Wall -Wno-obsolete || touch configure
+  popd
+fi
 
 # need to do this separately for the files it installs, because autoreconf
 # fails to do this for us, because we do not actually use automake yet:
@@ -26,8 +32,17 @@ fi
 
 (test -e config.h.in~ && rm -f config.h.in~) || (test -e config-h.in~ && rm -f config-h.in~)
 (test -e configure~ && rm -f configure~) || (test -w . && rm -f config*~)
-if test -d cygwin; then rm -fv cygwin/*~; fi
-if test -d unix; then rm -fv unix/*~; fi
-if test -d win; then rm -fv win/*~; fi
+for mysubdir in cygwin macosx unix win; do
+  if test -d ${mysubdir} && test -r ${mysubdir} && test -w ${mysubdir}; then
+    rm -fv ${mysubdir}/*~
+    mysubcache="${mysubdir}/autom4te.cache"
+    if test -d ${mysubcache} && test -s ${mysubcache}; then
+      rm -rf ${mysubcache} || rmdir ${mysubcache} || stat ${mysubcache}
+    elif test -e ${mysubcache}; then
+	  stat ${mysubcache} || du ${mysubcache}
+    fi
+    unset mysubcache
+  fi
+done
 
 exit 0

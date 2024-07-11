@@ -12,6 +12,11 @@ m4_include(../unix/aclocal.m4)
 m4_define(SC_USE_CONFIG_HEADERS)
 m4_include(../unix/configure.ac)
 
+AS_IF([test "x${ac_cv_header_CoreFoundation_CoreFoundation_h}" = "x"],[
+  test -z "${ac_cv_header_CoreFoundation_CoreFoundation_h}" || echo "CF?!"
+  AC_CHECK_HEADERS_ONCE([CoreFoundation/CoreFoundation.h])
+])dnl
+
 if test "${srcdir}" = "." -a -d "${srcdir}/build" -a ! -d "${srcdir}/build/Development.build/Tcl.build/Configure_Copied.build/.."; then
   mkdir -pv "${srcdir}/build/Development.build/Tcl.build/Configure_Copied.build/.."
 fi

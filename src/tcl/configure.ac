@@ -125,6 +125,7 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
 ])dnl
 AC_REQUIRE_HEADER_STDC
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
+AC_CHECK_HEADERS_ONCE([CoreFoundation/CoreFoundation.h])dnl
 AC_CHECK_HEADERS([fcntl.h float.h limits.h locale.h math.h \
                   stddef.h stdio.h sys/file.h sys/param.h \
                   sys/timeb.h utime.h values.h])dnl

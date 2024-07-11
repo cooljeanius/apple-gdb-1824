@@ -80,6 +80,18 @@ enum ch_terminal {
   END_TOKEN = 0,
   /* '\001' ... '\xff' come first. */
   OPEN_PAREN = '(',
+  CLOSE_PAREN = ')',
+  COMMA = ',',
+  COLON = ':',
+  OPEN_BRACKET = '[',
+  CLOSE_BRACKET = ']',
+  ASTERISK = '*',
+  MINUS_SIGN = '-',
+  PLUS_SIGN = '+',
+  FORWARD_SLASH = '/',
+  LESS_THAN = '<',
+  EQUAL_TO = '=',
+  GREATER_THAN = '>',
   TOKEN_NOT_READ = 999,
   INTEGER_LITERAL,
   BOOLEAN_LITERAL,
@@ -168,7 +180,7 @@ static void parse_call PARAMS ((void));
 static struct type *parse_mode_or_normal_call PARAMS ((void));
 #if 0
 static struct type *parse_mode_call PARAMS ((void));
-#endif
+#endif /* 0 */
 static void parse_unary_call PARAMS ((void));
 static int parse_opt_untyped_expr PARAMS ((void));
 static void parse_case_label PARAMS ((void));
@@ -285,7 +297,7 @@ expect(enum ch_terminal token, const char *message)
     {
       if (message)
 	error("%s", message);
-      else if ((token < 256) && (lexptr != NULL))
+      else if ((token < 256) && (lexptr != NULL) && (strlen(lexptr) < 470UL))
 	error("syntax error - expected a '%c' here \"%s\"", token, lexptr);
       else
 	error("syntax error");
@@ -389,7 +401,7 @@ parse_name(void)
 	return decl;
     } 
 }
-#endif
+#endif /* 0 */
 
 #if 0
 static void
@@ -407,9 +419,9 @@ parse_case_label(void)
 {
   if (check_token (ELSE))
     error ("ELSE in tuples labels not implemented");
-  /* Does not handle the case of a mode name.  FIXME */
+  /* Does not handle the case of a mode name.  FIXME: handle it! */
   parse_expr ();
-  if (check_token (':'))
+  if (check_token(COLON))
     {
       parse_expr ();
       write_exp_elt_opcode (BINOP_RANGE);
@@ -435,9 +447,9 @@ static void
 parse_unary_call(void)
 {
   FORWARD_TOKEN ();
-  expect ('(', NULL);
+  expect(OPEN_PAREN, NULL);
   parse_expr ();
-  expect (')', NULL);
+  expect(CLOSE_PAREN, NULL);
 }
 
 /* Parse NAME '(' MODENAME ')'. */
@@ -447,22 +459,22 @@ parse_mode_call(void)
 {
   struct type *type;
   FORWARD_TOKEN ();
-  expect ('(', NULL);
+  expect(OPEN_PAREN, NULL);
   if (PEEK_TOKEN () != TYPENAME)
     error ("expect MODENAME here `%s'", lexptr);
   type = PEEK_LVAL().tsym.type;
   FORWARD_TOKEN ();
-  expect (')', NULL);
+  expect(CLOSE_PAREN, NULL);
   return type;
 }
-#endif
+#endif /* 0 */
 
 static struct type *
 parse_mode_or_normal_call(void)
 {
   struct type *type;
   FORWARD_TOKEN ();
-  expect ('(', NULL);
+  expect(OPEN_PAREN, NULL);
   if (PEEK_TOKEN () == TYPENAME)
     {
       type = PEEK_LVAL().tsym.type;
@@ -473,7 +485,7 @@ parse_mode_or_normal_call(void)
       parse_expr ();
       type = NULL;
     }
-  expect (')', NULL);
+  expect(CLOSE_PAREN, NULL);
   return type;
 }
 
@@ -483,7 +495,7 @@ static void
 parse_call(void)
 {
   int arg_count;
-  require ('(');
+  require(OPEN_PAREN);
   /* This is to save the value of arglist_len
      being accumulated for each dimension. */
   start_arglist ();
@@ -495,13 +507,13 @@ parse_call(void)
 	{
 	  FORWARD_TOKEN ();
 	  parse_expr ();
-	  expect (')', "expected ')' to terminate slice");
+	  expect(CLOSE_PAREN, "expected ')' to terminate slice");
 	  end_arglist ();
 	  write_exp_elt_opcode (tok == UP ? TERNOP_SLICE_COUNT
 				: TERNOP_SLICE);
 	  return;
 	}
-      while (check_token (','))
+      while (check_token(COMMA))
 	{
 	  parse_untyped_expr ();
 	  arglist_len++;
@@ -509,7 +521,7 @@ parse_call(void)
     }
   else
     arglist_len = 0;
-  expect (')', NULL);
+  expect(CLOSE_PAREN, NULL);
   arg_count = end_arglist ();
   write_exp_elt_opcode (MULTI_SUBSCRIPT);
   write_exp_elt_longcst (arg_count);
@@ -523,11 +535,11 @@ parse_named_record_element(void)
   char buf[256];
 
   label = PEEK_LVAL ().sval;
-  sprintf (buf, "expected a field name here `%s'", lexptr);
+  snprintf(buf, sizeof(buf), "expected a field name here `%s'", lexptr);
   expect (DOT_FIELD_NAME, buf);
-  if (check_token (','))
+  if (check_token(COMMA))
     parse_named_record_element ();
-  else if (check_token (':'))
+  else if (check_token(COLON))
     parse_expr ();
   else
     error ("syntax error near `%s' in named record tuple element", lexptr);
@@ -547,11 +559,11 @@ parse_tuple_element(struct type *type)
       return;
     }
 
-  if (check_token ('('))
+  if (check_token(OPEN_PAREN))
     {
-      if (check_token ('*'))
+      if (check_token(ASTERISK))
 	{
-	  expect (')', "missing ')' after '*' case label list");
+	  expect(CLOSE_PAREN, "missing ')' after '*' case label list");
 	  if (type)
 	    {
 	      if (TYPE_CODE (type) == TYPE_CODE_ARRAY)
@@ -582,17 +594,17 @@ parse_tuple_element(struct type *type)
       else
 	{
 	  parse_case_label ();
-	  while (check_token (','))
+	  while (check_token(COMMA))
 	    {
 	      parse_case_label ();
 	      write_exp_elt_opcode (BINOP_COMMA);
 	    }
-	  expect (')', NULL);
+	  expect(CLOSE_PAREN, NULL);
 	}
     }
   else
     parse_untyped_expr ();
-  if (check_token (':'))
+  if (check_token(COLON))
     {
       /* A powerset range or a labeled Array. */
       parse_untyped_expr ();
@@ -614,7 +626,7 @@ parse_opt_element_list(struct type *type)
       arglist_len++;
       if (PEEK_TOKEN () == ']')
 	break;
-      if (!check_token (','))
+      if (!check_token(COMMA))
 	error ("bad syntax in tuple");
     }
 }
@@ -630,10 +642,10 @@ parse_tuple(struct type *mode)
     type = check_typedef (mode);
   else
     type = 0;
-  require ('[');
+  require(OPEN_BRACKET);
   start_arglist ();
   parse_opt_element_list (type);
-  expect (']', "missing ']' after tuple");
+  expect(CLOSE_BRACKET, "missing ']' after tuple");
   write_exp_elt_opcode (OP_ARRAY);
   write_exp_elt_longcst ((LONGEST) 0);
   write_exp_elt_longcst ((LONGEST) end_arglist () - 1);
@@ -703,15 +715,15 @@ parse_primval(void)
       FORWARD_TOKEN ();
       /* This is pseudo-Chill, similar to C's '(TYPE[])EXPR'
 	 which casts to an artificial array. */
-      expect ('(', NULL);
-      expect (')', NULL);
+      expect(OPEN_PAREN, NULL);
+      expect(CLOSE_PAREN, NULL);
       if (PEEK_TOKEN () != TYPENAME)
 	error ("missing MODENAME after ARRAY()");
       type = PEEK_LVAL().tsym.type;
       FORWARD_TOKEN ();
-      expect ('(', NULL);
+      expect(OPEN_PAREN, NULL);
       parse_expr ();
-      expect (')', "missing right parenthesis");
+      expect(CLOSE_PAREN, "missing right parenthesis");
       type = create_array_type ((struct type *) NULL, type,
 				create_range_type ((struct type *) NULL,
 						   builtin_type_int, 0, 0));
@@ -730,7 +742,7 @@ parse_primval(void)
     case '(':
       FORWARD_TOKEN ();
       parse_expr ();
-      expect (')', "missing right parenthesis");
+      expect(CLOSE_PAREN, "missing right parenthesis");
       break;
     case '[':
       parse_tuple (NULL);
@@ -812,7 +824,7 @@ parse_primval(void)
 	case '(':
 	  FORWARD_TOKEN ();
 	  parse_expr ();
-	  expect (')', "missing right parenthesis");
+	  expect(CLOSE_PAREN, "missing right parenthesis");
 	  write_exp_elt_opcode (UNOP_CAST);
 	  write_exp_elt_type (type);
 	  write_exp_elt_opcode (UNOP_CAST);
@@ -1150,7 +1162,7 @@ parse_untyped_expr(void)
 	skip_lprn:
 	  FORWARD_TOKEN ();
 	  parse_untyped_expr ();
-	  expect (')', "missing ')'");
+	  expect(CLOSE_PAREN, "missing ')'");
 	  return;
 	default: ;
 	  /* fall through */
@@ -1715,7 +1727,7 @@ match_integer_literal(void)
       if (ival > (LONGEST)2147483647U || ival < -(LONGEST)2147483648U)
 	yylval.typed_val.type = builtin_type_long_long;
       else
-#endif
+#endif /* CC_HAS_LONG_LONG && __STDC__ */
 	yylval.typed_val.type = builtin_type_int;
       lexptr = tokptr;
       return (INTEGER_LITERAL);
@@ -1890,6 +1902,11 @@ static const struct token tokentab2[] =
 #  define STREQN(str1, str2, n) DEPRECATED_STREQN(str1, str2, n)
 # endif /* DEPRECATED_STREQN */
 #endif /* !STREQN */
+#ifndef VAR_NAMESPACE
+# ifdef VAR_DOMAIN
+#  define VAR_NAMESPACE VAR_DOMAIN
+# endif /* VAR_DOMAIN */
+#endif /* !VAR_NAMESPACE */
 
 /* Read one token, getting characters through lexptr.  */
 /* This is where we will check to make sure that the language and the

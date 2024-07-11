@@ -1,6 +1,6 @@
-/* Chill language support definitions for GDB, the GNU debugger.
-   Copyright 1992 Free Software Foundation, Inc.
-
+/* ch-lang.h: Chill language support definitions for GDB, the GNU debugger.
+ * Copyright 1992 Free Software Foundation, Inc. */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -17,26 +17,34 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
+#ifndef GDB_CH_LANG_H
+#define GDB_CH_LANG_H 1
+
 #ifdef __STDC__		/* Forward decls for prototypes */
 struct value;
-#endif
+struct gdb_file;
+#endif /* __STDC__ */
 
 extern int
-chill_parse PARAMS ((void));	/* Defined in ch-exp.y */
+chill_parse PARAMS((void));	/* Defined in ch-exp.y */
 
 extern void
-chill_error PARAMS ((char *));	/* Defined in ch-exp.y */
+chill_error PARAMS((char *));	/* Defined in ch-exp.y */
 
 extern void			/* Defined in ch-typeprint.c */
-chill_print_type PARAMS ((struct type *, char *, GDB_FILE *, int, int));
+chill_print_type PARAMS((struct type *, const char *, struct gdb_file *, int,
+			 int));
 
 extern int
-chill_val_print PARAMS ((struct type *, char *, int, CORE_ADDR, GDB_FILE *, int, int,
-			 int, enum val_prettyprint));
+chill_val_print PARAMS((struct type *, char *, int, CORE_ADDR,
+			struct gdb_file *, int, int, int,
+                        enum val_prettyprint));
 
 extern int
-chill_value_print PARAMS ((struct value *, GDB_FILE *,
-			   int, enum val_prettyprint));
+chill_value_print PARAMS((struct value *, struct gdb_file *,
+			  int, enum val_prettyprint));
 
 extern LONGEST
-type_lower_upper PARAMS ((enum exp_opcode, struct type *, struct type **));
+type_lower_upper PARAMS((enum exp_opcode, struct type *, struct type **));
+
+#endif /* !GDB_CH_LANG_H */
