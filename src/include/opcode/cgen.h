@@ -1,4 +1,4 @@
-/* Header file for targets using CGEN: Cpu tools GENerator.
+/* opcode/cgen.h: Header file for targets using CGEN: Cpu tools GENerator.
 
 Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
 Free Software Foundation, Inc.
@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CGEN_H
 #define CGEN_H
 
-/* ??? This file requires bfd.h but only to get bfd_vma.
+/* ???: This file requires bfd.h but only to get bfd_vma.
    Seems like an awful lot to require just to get such a fundamental type.
    Perhaps the definition of bfd_vma can be moved outside of bfd.h.
    Or perhaps one could duplicate its definition in another file.
@@ -63,13 +63,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
    when an array of characters the value is in target byte order.  */
 
 typedef unsigned int CGEN_INSN_INT;
-#if CGEN_INT_INSN_P
+#if defined(CGEN_INT_INSN_P) && CGEN_INT_INSN_P
 typedef CGEN_INSN_INT CGEN_INSN_BYTES;
 typedef CGEN_INSN_INT *CGEN_INSN_BYTES_PTR;
 #else
 typedef unsigned char *CGEN_INSN_BYTES;
 typedef unsigned char *CGEN_INSN_BYTES_PTR;
-#endif
+#endif /* CGEN_INT_INSN_P */
 
 #ifdef __GNUC__
 #define CGEN_INLINE __inline__
@@ -146,7 +146,7 @@ struct { unsigned int boolattrs; \
 
 /* Return value of attribute ATTR in ATTR_TABLE for OBJ.
    OBJ is a pointer to the entity that has the attributes
-   (??? not used at present but is reserved for future purposes - eventually
+   (???: not used at present but is reserved for future purposes - eventually
    the goal is to allow recording attributes in source form and computing
    them lazily at runtime, not sure of the details yet).  */
 
@@ -223,7 +223,7 @@ typedef struct {
 typedef struct cgen_fields CGEN_FIELDS;
 
 /* Total length of the insn, as recorded in the `fields' struct.  */
-/* ??? The field insert handler has lots of opportunities for optimization
+/* ???: The field insert handler has lots of opportunities for optimization
    if it ever gets inlined.  On architectures where insns all have the same
    size, may wish to detect that and make this macro a constant - to allow
    further optimizations.  */
@@ -346,7 +346,7 @@ struct cgen_opcode_handler
    Not that one would necessarily want to do that but rather that it helps
    keep a clean interface.  The interface will obviously be slanted towards
    GAS, but at least it's a start.
-   ??? Note that one possible user of the assembler besides GAS is GDB.
+   ???: Note that one possible user of the assembler besides GAS is GDB.
 
    Parsing is controlled by the assembler which calls
    CGEN_SYM (assemble_insn).  If it can parse and build the entire insn
@@ -448,7 +448,7 @@ typedef struct {
   /* Number of elements in `entries'.  */
   unsigned int num_entries;
   /* For now, xrealloc is called each time a new entry is added at runtime.
-     ??? May wish to keep track of some slop to reduce the number of calls to
+     ???: May wish to keep track of some slop to reduce the number of calls to
      xrealloc, except that there's unlikely to be many and not expected to be
      in speed critical code.  */
 } CGEN_HW_TABLE;
@@ -477,7 +477,7 @@ typedef struct cgen_keyword_entry
      needn't care.  The goal is to eventually record
      attributes in their raw form, evaluate them at run-time, and cache the
      values, so this worry will go away anyway.  */
-  /* ??? Moving this last should be done by treating keywords like insn lists
+  /* ???: Moving this last should be done by treating keywords like insn lists
      and moving the `next' fields into a CGEN_KEYWORD_LIST struct.  */
   /* FIXME: Not used yet.  */
 #ifndef CGEN_KEYWORD_NBOOL_ATTRS
@@ -485,7 +485,7 @@ typedef struct cgen_keyword_entry
 #endif
   CGEN_ATTR_TYPE (CGEN_KEYWORD_NBOOL_ATTRS) attrs;
 
-  /* ??? Putting these here means compiled in entries can't be const.
+  /* ???: Putting these here means compiled in entries can't be const.
      Not a really big deal, but something to consider.  */
   /* Next name hash table entry.  */
   struct cgen_keyword_entry *next_name;
@@ -583,13 +583,13 @@ extern const char *cgen_validate_unsigned_integer
 
 /* Operand modes.  */
 
-/* ??? This duplicates the values in arch.h.  Revisit.
+/* ???: This duplicates the values in arch.h.  Revisit.
    These however need the CGEN_ prefix [as does everything in this file].  */
-/* ??? Targets may need to add their own modes so we may wish to move this
+/* ???: Targets may need to add their own modes so we may wish to move this
    to <arch>-opc.h, or add a hook.  */
 
 enum cgen_mode {
-  CGEN_MODE_VOID, /* ??? rename simulator's VM to VOID? */
+  CGEN_MODE_VOID, /* ???: rename simulator's VM to VOID? */
   CGEN_MODE_BI, CGEN_MODE_QI, CGEN_MODE_HI, CGEN_MODE_SI, CGEN_MODE_DI,
   CGEN_MODE_UBI, CGEN_MODE_UQI, CGEN_MODE_UHI, CGEN_MODE_USI, CGEN_MODE_UDI,
   CGEN_MODE_SF, CGEN_MODE_DF, CGEN_MODE_XF, CGEN_MODE_TF,
@@ -662,7 +662,7 @@ typedef struct
      length fields above, but unsure at this time whether they are used
      anywhere.  */
   CGEN_MAYBE_MULTI_IFLD index_fields;
-#if 0 /* ??? Interesting idea but relocs tend to get too complicated,
+#if 0 /* ???: Interesting idea but relocs tend to get too complicated,
 	 and ABI dependent, for simple table lookups to work.  */
   /* Ideally this would be the internal (external?) reloc type.  */
   int reloc_type;
@@ -700,7 +700,7 @@ typedef struct {
   /* Number of elements in `entries'.  */
   unsigned int num_entries;
   /* For now, xrealloc is called each time a new entry is added at runtime.
-     ??? May wish to keep track of some slop to reduce the number of calls to
+     ???: May wish to keep track of some slop to reduce the number of calls to
      xrealloc, except that there's unlikely to be many and not expected to be
      in speed critical code.  */
 } CGEN_OPERAND_TABLE;
@@ -745,7 +745,7 @@ typedef struct
   int index;
 
   /* Attributes.
-     ??? This perhaps should be a real attribute struct but there's
+     ???: This perhaps should be a real attribute struct but there's
      no current need, so we save a bit of space and just have a set of
      flags.  The interface is such that this can easily be made attributes
      should it prove useful.  */
@@ -791,7 +791,7 @@ typedef struct
 #define CGEN_SYNTAX_FIELD(c) ((c) - 128)
 #define CGEN_SYNTAX_MAKE_FIELD(c) ((c) + 128)
 
-/* ??? I can't currently think of any case where the mnemonic doesn't come
+/* ???: I can't currently think of any case where the mnemonic doesn't come
    first [and if one ever doesn't building the hash tables will be tricky].
    However, we treat mnemonics as just another operand of the instruction.
    A value of 1 means "this is where the mnemonic appears".  1 isn't
@@ -802,7 +802,7 @@ typedef struct
 
 /* Instruction fields.
 
-   ??? We currently don't allow adding fields at run-time.
+   ???: We currently don't allow adding fields at run-time.
    Easy to fix when needed.  */
 
 typedef struct cgen_ifld {
@@ -849,14 +849,14 @@ CGEN_ATTR_VALUE ((ifld), CGEN_IFLD_ATTRS (ifld), (attr))
 
    Instructions are grouped by format.  Associated with an instruction is its
    format.  Each insn's opcode table entry contains a format table entry.
-   ??? There is usually very few formats compared with the number of insns,
+   ???: There is usually very few formats compared with the number of insns,
    so one can reduce the size of the opcode table by recording the format table
    as a separate entity.  Given that we currently don't, format table entries
    are also distinguished by their operands.  This increases the size of the
    table, but reduces the number of tables.  It's all minutiae anyway so it
    doesn't really matter [at this point in time].
 
-   ??? Support for variable length ISA's is wip.  */
+   ???: Support for variable length ISA's is wip.  */
 
 /* Accompanying each iformat description is a list of its fields.  */
 
@@ -920,7 +920,7 @@ typedef struct
 /* Instruction opcode table.
    This contains the syntax and format data of an instruction.  */
 
-/* ??? Some ports already have an opcode table yet still need to use the rest
+/* ???: Some ports already have an opcode table yet still need to use the rest
    of what cgen_insn has.  Plus keeping the opcode data with the operand
    instance data can create a pretty big file.  So we keep them separately.
    Not sure this is a good idea in the long run.  */
@@ -961,7 +961,7 @@ typedef CGEN_ATTR_TYPE (CGEN_INSN_NBOOL_ATTRS) CGEN_INSN_ATTR_TYPE;
 /* Enum of architecture independent attributes.  */
 
 #ifndef CGEN_ARCH
-/* ??? Numbers here are recorded in two places.  */
+/* ???: Numbers here are recorded in two places.  */
 typedef enum cgen_insn_attr {
   CGEN_INSN_ALIAS = 0
 } CGEN_INSN_ATTR;
@@ -972,12 +972,12 @@ typedef enum cgen_insn_attr {
 typedef struct
 {
   /* Each real instruction is enumerated.  */
-  /* ??? This may go away in time.  */
+  /* ???: This may go away in time.  */
   int num;
 #define CGEN_INSN_NUM(insn) ((insn)->base->num)
 
   /* Name of entry (that distinguishes it from all other entries).  */
-  /* ??? If mnemonics have operands, try to print full mnemonic.  */
+  /* ???: If mnemonics have operands, try to print full mnemonic.  */
   const char *name;
 #define CGEN_INSN_NAME(insn) ((insn)->base->name)
 
@@ -993,12 +993,12 @@ typedef struct
   int bitsize;
 #define CGEN_INSN_BITSIZE(insn) ((insn)->base->bitsize)
 
-#if 0 /* ??? Disabled for now as there is a problem with embedded newlines
+#if 0 /* ???: Disabled for now as there is a problem with embedded newlines
 	 and the table is already pretty big.  Should perhaps be moved
 	 to a file of its own.  */
   /* Semantics, as RTL.  */
-  /* ??? Plain text or bytecodes?  */
-  /* ??? Note that the operand instance table could be computed at run-time
+  /* ???: Plain text or bytecodes?  */
+  /* ???: Note that the operand instance table could be computed at run-time
      if we parse this and cache the results.  Something to eventually do.  */
   const char *rtx;
 #define CGEN_INSN_RTX(insn) ((insn)->base->rtx)
@@ -1027,9 +1027,9 @@ CGEN_ATTR_VALUE ((insn), CGEN_INSN_ATTRS (insn), (attr))
 
 struct cgen_insn
 {
-  /* ??? May be of use to put a type indicator here.
+  /* ???: May be of use to put a type indicator here.
      Then this struct could different info for different classes of insns.  */
-  /* ??? A speedup can be had by moving `base' into this struct.
+  /* ???: A speedup can be had by moving `base' into this struct.
      Maybe later.  */
   const CGEN_IBASE *base;
   const CGEN_OPCODE *opcode;
@@ -1068,7 +1068,7 @@ extern int cgen_macro_insn_count (CGEN_CPU_DESC);
 /* Macros to access the other insn elements not recorded in CGEN_IBASE.  */
 
 /* Fetch INSN's operand instance table.  */
-/* ??? Doesn't handle insns added at runtime.  */
+/* ???: Doesn't handle insns added at runtime.  */
 #define CGEN_INSN_OPERANDS(insn) ((insn)->opinst)
 
 /* Return INSN's opcode table entry.  */
@@ -1180,7 +1180,7 @@ typedef struct cgen_cpu_desc
   int machs;
 
   /* Bitmap of selected isa(s).
-     ??? Simultaneous multiple isas might not make sense, but it's not (yet)
+     ???: Simultaneous multiple isas might not make sense, but it's not (yet)
      precluded.  */
   int isas;
 
@@ -1193,9 +1193,9 @@ typedef struct cgen_cpu_desc
 #define CGEN_CPU_INSN_ENDIAN(cd) ((cd)->insn_endian)
 
   /* Word size (in bits).  */
-  /* ??? Or maybe maximum word size - might we ever need to allow a cpu table
+  /* ???: Or maybe maximum word size - might we ever need to allow a cpu table
      to be opened for both sparc32/sparc64?
-     ??? Another alternative is to create a table of selected machs and
+     ???: Another alternative is to create a table of selected machs and
      lazily fetch the data from there.  */
   unsigned int word_bitsize;
 
@@ -1374,7 +1374,7 @@ enum cgen_cpu_open_arg {
 };
 
 /* Open a cpu descriptor table for use.
-   ??? We only support ISO C stdargs here, not K&R.
+   ???: We only support ISO C stdargs here, not K&R.
    Laziness, plus experiment to see if anything requires K&R - eventually
    K&R will no longer be supported - e.g. GDB is currently trying this.  */
 
@@ -1444,7 +1444,7 @@ extern void cgen_put_insn_value
   (CGEN_CPU_DESC, unsigned char *, int, CGEN_INSN_INT);
 
 /* Read in a cpu description file.
-   ??? For future concerns, including adding instructions to the assembler/
+   ???: For future concerns, including adding instructions to the assembler/
    disassembler at run-time.  */
 
 extern const char * cgen_read_cpu_file (CGEN_CPU_DESC, const char * filename_);

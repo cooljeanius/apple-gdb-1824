@@ -49,7 +49,7 @@ static void
 print_special(unsigned int num, struct disassemble_info *info)
 {
   /* Register names of registers 0-SPEC0_NUM-1: */
-  static char *spec0_names[] =
+  static const char *spec0_names[] =
     {
       "vab", "ops", "cps", "cfg", "cha", "chd", "chc", "rbp", "tmc", "tmr",
       "pc0", "pc1", "pc2", "mmu", "lru", "rsn", "rma0", "rmc0", "rma1", "rmc1",
@@ -59,25 +59,25 @@ print_special(unsigned int num, struct disassemble_info *info)
 #define SPEC0_NUM ((sizeof(spec0_names)) / (sizeof(spec0_names[0])))
 
   /* Register names of registers 128-128+SPEC128_NUM-1.  */
-  static char *spec128_names[] =
+  static const char *spec128_names[] =
     {
       "ipc", "ipa", "ipb", "q", "alu", "bp", "fc", "cr"
     };
 #define SPEC128_NUM ((sizeof(spec128_names)) / (sizeof(spec128_names[0])))
 
   /* Register names of registers 160-160+SPEC160_NUM-1.  */
-  static char *spec160_names[] =
+  static const char *spec160_names[] =
     {
       "fpe", "inte", "fps", "sr163", "exop"
     };
 #define SPEC160_NUM ((sizeof(spec160_names)) / (sizeof(spec160_names[0])))
 
   if (num < SPEC0_NUM)
-    (*info->fprintf_func)(info->stream, spec0_names[num]);
+    (*info->fprintf_func)(info->stream, "%s", spec0_names[num]);
   else if ((num >= 128) && (num < (128 + SPEC128_NUM)))
-    (*info->fprintf_func)(info->stream, spec128_names[num - 128]);
+    (*info->fprintf_func)(info->stream, "%s", spec128_names[num - 128]);
   else if ((num >= 160) && (num < (160 + SPEC160_NUM)))
-    (*info->fprintf_func)(info->stream, spec160_names[num - 160]);
+    (*info->fprintf_func)(info->stream, "%s", spec160_names[num - 160]);
   else
     (*info->fprintf_func)(info->stream, "sr%d", num);
 }
@@ -129,9 +129,11 @@ print_insn(bfd_vma memaddr, struct disassemble_info *info)
   /* The four bytes of the instruction: */
   unsigned char insn24, insn16, insn8, insn0;
 
-  find_byte_func_type find_byte_func = (find_byte_func_type)info->private_data;
+  find_byte_func_type find_byte_func;
 
-  struct a29k_opcode const * opcode;
+  const struct a29k_opcode *opcode;
+
+  find_byte_func = __extension__ (find_byte_func_type)info->private_data;
 
   {
     int status =
@@ -162,7 +164,7 @@ print_insn(bfd_vma memaddr, struct disassemble_info *info)
     {
       if (((unsigned long)insn24 << 24) == opcode->opcode)
 	{
-	  char *s;
+	  const char *s;
 
 	  (*info->fprintf_func)(info->stream, "%s ", opcode->name);
 	  for (s = opcode->args; *s != '\0'; ++s)
@@ -315,7 +317,7 @@ print_insn(bfd_vma memaddr, struct disassemble_info *info)
 int
 print_insn_big_a29k(bfd_vma memaddr, struct disassemble_info *info)
 {
-  info->private_data = (PTR)find_bytes_big;
+  info->private_data = __extension__ (void *)find_bytes_big;
   return print_insn(memaddr, info);
 }
 
@@ -323,7 +325,7 @@ print_insn_big_a29k(bfd_vma memaddr, struct disassemble_info *info)
 int
 print_insn_little_a29k(bfd_vma memaddr, struct disassemble_info *info)
 {
-  info->private_data = (PTR)find_bytes_little;
+  info->private_data = __extension__ (void *)find_bytes_little;
   return print_insn(memaddr, info);
 }
 

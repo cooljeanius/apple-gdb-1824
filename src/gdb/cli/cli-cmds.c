@@ -1073,12 +1073,20 @@ void
 apropos_command(const char *searchstr, int from_tty)
 {
   regex_t pattern;
+  char *pattern_fastmap;
   char errorbuffer[512UL];
+  pattern_fastmap = (char *)xcalloc(256, sizeof(char));
   if (searchstr == NULL)
     error(_("REGEXP string is empty"));
 
   if (regcomp(&pattern, searchstr, REG_ICASE) == 0)
     {
+#if defined(USE_INCLUDED_REGEX) && USE_INCLUDED_REGEX
+      pattern.fastmap = pattern_fastmap;
+      re_compile_fastmap(&pattern);
+#else
+      (void)pattern_fastmap;
+#endif /* USE_INCLUDED_REGEX */
       apropos_cmd(gdb_stdout, cmdlist, &pattern, "");
     }
   else
@@ -1087,6 +1095,7 @@ apropos_command(const char *searchstr, int from_tty)
                (size_t)512UL);
       error(_("Error in regular expression:%s"), errorbuffer);
     }
+  xfree(pattern_fastmap);
 }
 
 /* Print a list of files and line numbers which a user may choose from

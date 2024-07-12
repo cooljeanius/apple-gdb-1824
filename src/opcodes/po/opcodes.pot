@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-24 23:05-0400\n"
+"POT-Creation-Date: 2024-07-12 13:46-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,84 +50,84 @@ msgstr ""
 msgid "invalid register number `%d'"
 msgstr ""
 
-#: arc-opc.c:592 arc-opc.c:643 arc-opc.c:671
+#: arc-opc.c:594 arc-opc.c:645 arc-opc.c:673
 msgid "too many long constants"
 msgstr ""
 
-#: arc-opc.c:666
+#: arc-opc.c:668
 msgid "to many shimms in load"
 msgstr ""
 
 #. Do we have a limm already?
-#: arc-opc.c:779
+#: arc-opc.c:781
 msgid "impossible store"
 msgstr ""
 
-#: arc-opc.c:812
+#: arc-opc.c:814
 msgid "st operand error"
 msgstr ""
 
-#: arc-opc.c:816 arc-opc.c:858
+#: arc-opc.c:818 arc-opc.c:860
 msgid "address writeback not allowed"
 msgstr ""
 
-#: arc-opc.c:820
+#: arc-opc.c:822
 msgid "store value must be zero"
 msgstr ""
 
-#: arc-opc.c:845
+#: arc-opc.c:847
 msgid "invalid load/shimm insn"
 msgstr ""
 
-#: arc-opc.c:854
+#: arc-opc.c:856
 msgid "ld operand error"
 msgstr ""
 
-#: arc-opc.c:941
+#: arc-opc.c:943
 msgid "jump flags, but no .f seen"
 msgstr ""
 
-#: arc-opc.c:944
+#: arc-opc.c:946
 msgid "jump flags, but no limm addr"
 msgstr ""
 
-#: arc-opc.c:947
+#: arc-opc.c:949
 msgid "flag bits of jump address limm lost"
 msgstr ""
 
-#: arc-opc.c:950
+#: arc-opc.c:952
 msgid "attempt to set HR bits"
 msgstr ""
 
-#: arc-opc.c:953
+#: arc-opc.c:955
 msgid "bad jump flags value"
 msgstr ""
 
-#: arc-opc.c:986
+#: arc-opc.c:988
 msgid "branch address not on 4 byte boundary"
 msgstr ""
 
-#: arc-opc.c:1022
+#: arc-opc.c:1024
 msgid "must specify .jd or no nullify suffix"
 msgstr ""
 
-#: arm-dis.c:1824
+#: arm-dis.c:1828
 msgid "<illegal precision>"
 msgstr ""
 
 #. XXX - should break 'option' at following delimiter.
-#: arm-dis.c:3846
+#: arm-dis.c:3856
 #, c-format
 msgid "Unrecognised register name set: %s\n"
 msgstr ""
 
 #. XXX - should break 'option' at following delimiter.
-#: arm-dis.c:3858
+#: arm-dis.c:3868
 #, c-format
 msgid "Unrecognised disassembler option: %s\n"
 msgstr ""
 
-#: arm-dis.c:4258
+#: arm-dis.c:4268
 #, c-format
 msgid ""
 "\n"
@@ -135,17 +135,17 @@ msgid ""
 "the -M switch:\n"
 msgstr ""
 
-#: avr-dis.c:111 avr-dis.c:121
+#: avr-dis.c:121 avr-dis.c:131
 #, c-format
 msgid "undefined"
 msgstr ""
 
-#: avr-dis.c:178
+#: avr-dis.c:188
 #, c-format
 msgid "Internal disassembler error"
 msgstr ""
 
-#: avr-dis.c:227
+#: avr-dis.c:237
 #, c-format
 msgid "unknown constraint `%c'"
 msgstr ""

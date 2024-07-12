@@ -96,6 +96,8 @@ print_insn_alpha(bfd_vma memaddr, struct disassemble_info *info)
     case bfd_mach_alpha_ev6:
       isa_mask |= AXP_OPCODE_EV6;
       break;
+    default:
+      break;
     }
 
   /* Read the insn into a host word */

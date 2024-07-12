@@ -1077,7 +1077,7 @@ gdb_locale_h = gdb_locale.h $(config_h)
 gdb_obstack_h = gdb_obstack.h $(obstack_h)
 gdb_proc_service_h = gdb_proc_service.h $(gregset_h)
 gdb_ptrace_h = gdb_ptrace.h
-gdb_regex_h = gdb_regex.h
+gdb_regex_h = gdb_regex.h $(xregex_h)
 gdb_stabs_h = gdb-stabs.h
 gdb_stat_h = gdb_stat.h
 gdb_string_h = gdb_string.h
@@ -3306,9 +3306,9 @@ objc-lang.o: objc-lang.c $(defs_h) $(symtab_h) $(gdbtypes_h) \
   $(expression_h) $(parser_defs_h) $(language_h) $(c_lang_h) \
   $(objc_lang_h) $(exceptions_h) $(complaints_h) $(value_h) $(symfile_h) \
   $(objfiles_h) $(gdb_string_h) $(target_h) $(gdbcore_h) $(gdbcmd_h) \
-  $(frame_h)  $(regcache_h) $(block_h) $(infcall_h) $(valprint_h) \
-  $(gdb_assert_h) $(inferior_h) $(demangle_h) $(osabi_h) $(inlining_h) \
-  $(ui_out_h) $(cli_out_h) $(breakpoint_h)
+  $(frame_h) $(gdb_regex_h) $(regcache_h) $(block_h) $(infcall_h) \
+  $(valprint_h) $(gdb_assert_h) $(inferior_h) $(demangle_h) $(osabi_h) \
+  $(inlining_h) $(ui_out_h) $(cli_out_h) $(breakpoint_h)
 objfiles.o: objfiles.c $(defs_h) $(bfd_h) $(symtab_h) $(symfile_h) \
   $(objfiles_h) $(gdb_stabs_h) $(target_h) $(gdbcmd_h) $(bcache_h) \
   $(mdebugread_h) $(gdb_assert_h) $(gdb_stat_h) $(gdb_obstack_h) \
@@ -3759,7 +3759,7 @@ xcoffread.o: xcoffread.c $(defs_h) $(bfd_h) $(gdb_string_h) $(gdb_stat_h) \
   $(buildsym_h) $(stabsread_h) $(expression_h) $(complaints_h) \
   $(gdb_stabs_h) $(aout_stab_gnu_h)
 xcoffsolib.o: xcoffsolib.c $(defs_h) $(bfd_h) $(xcoffsolib_h) \
-  $(inferior_h) $(gdbcmd_h) $(symfile_h) $(frame_h) 
+  $(inferior_h) $(gdbcmd_h) $(symfile_h) $(frame_h) $(gdb_regex_h)
 xstormy16-tdep.o: xstormy16-tdep.c $(defs_h) $(frame_h) $(frame_base_h) \
   $(frame_unwind_h) $(dwarf2_frame_h) $(symtab_h) $(gdbtypes_h) \
   $(gdbcmd_h) $(gdbcore_h) $(value_h) $(dis_asm_h) $(inferior_h) \

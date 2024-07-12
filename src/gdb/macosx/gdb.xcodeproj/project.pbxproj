@@ -4103,6 +4103,7 @@
 		A53B84271AE2F16B0067328B /* libintl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libintl.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A53B854B1AE418270067328B /* pei-arm-wince.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "pei-arm-wince.c"; sourceTree = "<group>"; };
 		A53B876A1AE585030067328B /* libreadline.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libreadline.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A53D6C992C40E17700A3E712 /* cgen-asm.in */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = "cgen-asm.in"; sourceTree = "<group>"; };
 		A53F04941B45F52C005B5360 /* libiberty.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libiberty.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A53F05711B46029C005B5360 /* dwarf2.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; path = dwarf2.def; sourceTree = "<group>"; };
 		A53F07921B4636AE005B5360 /* test_expandargv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_expandargv; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -9264,6 +9265,7 @@
 				2609DE920E82C411008125DE /* avr-dis.c */,
 				619BECD61CF5F4C400FFE19D /* bfin-dis.c */,
 				2609DE930E82C411008125DE /* cgen-asm.c */,
+				A53D6C992C40E17700A3E712 /* cgen-asm.in */,
 				2609DE950E82C411008125DE /* cgen-dis.c */,
 				2609DE980E82C411008125DE /* cgen-opc.c */,
 				2609DE990E82C411008125DE /* cgen-ops.h */,

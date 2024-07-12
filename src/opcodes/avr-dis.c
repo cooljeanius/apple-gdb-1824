@@ -26,9 +26,9 @@
 
 struct avr_opcodes_s
 {
-  char *name;
-  char *constraints;
-  char *opcode;
+  const char *name;
+  const char *constraints;
+  const char *opcode;
   int insn_size;		/* In words.  */
   int isa;
   unsigned int bin_opcode;
@@ -37,11 +37,21 @@ struct avr_opcodes_s
 #define AVR_INSN(NAME, CONSTR, OPCODE, SIZE, ISA, BIN) \
 {#NAME, CONSTR, OPCODE, SIZE, ISA, BIN},
 
+#if defined(__GNUC__) && (__GNUC__ >= 5)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wc++-compat"
+#endif /* GCC 5+ */
+
 const struct avr_opcodes_s avr_opcodes[] =
 {
   #include "opcode/avr.h"
   {NULL, NULL, NULL, 0, 0, 0}
 };
+
+/* keep condition same as where we push: */
+#if defined(__GNUC__) && (__GNUC__ >= 5)
+# pragma GCC diagnostic pop
+#endif /* GCC 5+ */
 
 static int
 avr_operand(unsigned int insn, unsigned int insn2, unsigned int pc,
@@ -90,7 +100,7 @@ avr_operand(unsigned int insn, unsigned int insn2, unsigned int pc,
 
     case 'e':
       {
-	char *xyz;
+	const char *xyz;
 
 	switch (insn & 0x100f)
 	  {
@@ -275,7 +285,7 @@ print_insn_avr (bfd_vma addr, disassemble_info *info)
 	   opcode->name;
 	   opcode++, maskptr++)
 	{
-	  char * s;
+	  const char *s;
 	  unsigned int bin = 0;
 	  unsigned int mask = 0;
 
@@ -315,7 +325,7 @@ print_insn_avr (bfd_vma addr, disassemble_info *info)
 
   if (opcode->name)
     {
-      char *op = opcode->constraints;
+      const char *op = opcode->constraints;
 
       insn2 = 0;
       ok = 1;

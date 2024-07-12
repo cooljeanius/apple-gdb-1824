@@ -1,4 +1,4 @@
-/* Opcode table for the ARC.
+/* opcode/arc.h: Opcode table for the ARC.
    Copyright 1994, 1995, 1997, 2001, 2002, 2003
    Free Software Foundation, Inc.
    Contributed by Doug Evans (dje@cygnus.com).
@@ -49,7 +49,7 @@
 typedef unsigned int arc_insn;
 
 struct arc_opcode {
-  char *syntax;              /* syntax of insn  */
+  const char *syntax;        /* syntax of insn  */
   unsigned long mask, value; /* recognize insn if (op&mask) == value  */
   int flags;                 /* various flag bits  */
 
@@ -103,7 +103,7 @@ struct arc_opcode {
 extern struct arc_opcode *arc_ext_opcodes;
 
 struct arc_operand_value {
-  char *name;          /* eg: "eq"  */
+  const char *name;    /* eg: "eq"  */
   short value;         /* eg: 1  */
   unsigned char type;  /* index into `arc_operands'  */
   unsigned char flags; /* various flag bits  */

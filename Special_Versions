@@ -3,8 +3,9 @@ apple-gdb which were the last versions to contain certain files. I have
 tried to copy files from these older versions into this distribution when
 relevant. Feel free to add to this list if you are able to narrow down
 the last appearances of other files. (This would be so much easier if
-Apple would just open up their VCS to us... or maybe it is open but
-just hidden? idk...)
+Apple would just open up their VCS to us... their *real* VCS, that is;
+the apple-oss-distributions organization on GitHub is just based on
+the tarballs that they have released publicly...)
 
 	- 186.1: first version available
 
@@ -28,7 +29,13 @@ just hidden? idk...)
 
 	- 967: last version with libcheckpoint
 
+	- 1705: last version where option to use included regex works
+
 	- 1824: most recent version available as of November 2013
+
+	- 2831: technically a more recent version, but it was released
+	after I had already started, and mostly just removes stuff, so
+	I am mostly just ignoring it...
 
 # Versioning scheme and stuff comes from:
 http://www.opensource.apple.com/tarballs/gdb/

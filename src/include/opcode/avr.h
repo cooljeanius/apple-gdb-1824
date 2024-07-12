@@ -1,4 +1,4 @@
-/* Opcode table for the Atmel AVR micro controllers.
+/* opcode/avr.h: Opcode table for the Atmel AVR micro controllers.
 
    Copyright 2000, 2001, 2004 Free Software Foundation, Inc.
    Contributed by Denis Chertykov <denisc@overta.ru>
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #define AVR_ISA_1200  0x0001 /* in the beginning there was ... */
 #define AVR_ISA_LPM   0x0002 /* device has LPM */
@@ -171,7 +171,7 @@ AVR_INSN (rol,  "r=r", "000111rdddddrrrr", 1, AVR_ISA_1200, 0x1c00)
 AVR_INSN (tst,  "r=r", "001000rdddddrrrr", 1, AVR_ISA_1200, 0x2000)
 
 AVR_INSN (andi, "d,M", "0111KKKKddddKKKK", 1, AVR_ISA_1200, 0x7000)
-  /*XXX special case*/
+  /* XXX: special case */
 AVR_INSN (cbr,  "d,n", "0111KKKKddddKKKK", 1, AVR_ISA_1200, 0x7000)
 
 AVR_INSN (ldi,  "d,M", "1110KKKKddddKKKK", 1, AVR_ISA_1200, 0xe000)

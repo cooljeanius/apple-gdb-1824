@@ -16,6 +16,10 @@ host_arch=""
 requested_arch="UNSET"
 architecture_to_use=""
 
+# classic-inferior-support
+translate_mode=0
+translate_binary=""
+
 PATH=$PATH:/sbin:/bin:/usr/sbin:/usr/bin
 
 # gdb is setgid procmod and dyld will truncate any DYLD_FRAMEWORK_PATH etc
@@ -95,6 +99,7 @@ fi
 
 case "$1" in
  --help)
+    echo "  --translate        Debug applications running under translation." >&2
     echo "  -arch x86_64|arm|armv6|armv7||armv7f|armv7s|i386         Specify a gdb targetting a specific architecture" >&2
     ;;
   -arch=* | -a=* | --arch=*)
@@ -103,6 +108,9 @@ case "$1" in
   -arch | -a | --arch)
     shift
     requested_arch="$1"
+    shift;;
+  -translate | --translate | -oah* | --oah*)
+    translate_mode=1
     shift;;
 esac
 
@@ -113,10 +121,33 @@ then
 fi
 [ "$requested_arch" = "UNSET" ] && requested_arch=""
 
+if [ $translate_mode -eq 1 ]
+then
+  translate=""
+  if [ "$host_arch" = i386 -o "$host_arch" = x86_64 ]
+  then
+    translate=`sysctl -n kern.exec.archhandler.powerpc`
+  fi
+  [ -z "$translate" -o ! -x "$translate" ] && translate=/usr/libexec/oah/translate
+  if [ "$host_arch" = i386 -a -x $translate ]
+  then
+    requested_arch="ppc"
+    translate_binary="$translate -execOAH"
+  else
+    if [ "$host_arch" = x86_64 -a -x $translate ]
+    then
+      requested_arch="ppc"
+      translate_binary="$translate -execOAH"
+    else
+      echo ERROR: translate not available.  Running in normal debugger mode. >&2
+    fi
+  fi
+fi
+
 if [ -n "$requested_arch" ]
 then
   case $requested_arch in
-    i386 | x86_64 | arm*)
+    ppc* | i386 | x86_64 | arm*)
      ;;
     *)
       printf "Unrecognized architecture \'%s\', using host arch.\n" "${requested_arch}" >&2
@@ -281,7 +312,7 @@ else
   done
 
   case "$best_arch" in
-    i386 | x86_64 | arm*)
+    ppc* | i386 | x86_64 | arm*)
       # We found a plausible architecture and we will use it
       architecture_to_use="$best_arch"
       ;;
@@ -315,6 +346,9 @@ fi
 osabiopts=""
 
 case "$architecture_to_use" in
+  ppc*)
+    gdb="${GDB_ROOT}/usr/libexec/gdb/gdb-powerpc-apple-darwin"
+    ;;
   i386 | x86_64)
     gdb="${GDB_ROOT}/usr/libexec/gdb/gdb-i386-apple-darwin"
     ;;
@@ -371,9 +405,12 @@ then
   exec $translate_binary "$gdb" "$osabiopts" "$@"
 fi
 
-if [ -n "$requested_arch" ]
+if [ -n "$requested_arch" -a $translate_mode -eq 0 ]
 then
   exec $translate_binary "$gdb" --arch "$requested_arch" "$@"
+elif [ -n "$osabiopts" ]; then
+  echo "osabiopts case should have already been handled above, but just in case..."
+  exec $translate_binary "$gdb" "$osabiopts" "$@"
 fi
 
 exec $translate_binary "$gdb" "$@"

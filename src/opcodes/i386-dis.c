@@ -4090,7 +4090,7 @@ static const struct dis386 float_reg[][8] = {
   },
 };
 
-static char *fgrps[][8] = {
+static const char *fgrps[][8] = {
   /* d9_2  0 */
   {
     "fnop","(bad)","(bad)","(bad)","(bad)","(bad)","(bad)","(bad)",
@@ -4661,6 +4661,8 @@ print_displacement (char *buf, bfd_vma disp)
 	    case mode_16bit:
 	      strcpy (buf + j, "0x8000");
 	      break;
+            default:
+              break;
 	    }
 	  return;
 	}
@@ -4877,6 +4879,8 @@ OP_E (int bytemode, int sizeflag)
 	case 2:
 	  disp = get32s ();
 	  break;
+   	default:
+          break;
 	}
 
       havedisp = havebase || (havesib && (index != 4 || scale != 0));
@@ -4990,6 +4994,8 @@ OP_E (int bytemode, int sizeflag)
 	  if ((disp & 0x8000) != 0)
 	    disp -= 0x10000;
 	  break;
+   	default:
+    	  break;
 	}
 
       if (!intel_syntax)
@@ -6208,6 +6214,8 @@ SVME_Fixup (int bytemode, int sizeflag)
       *obufp++ = close_char;
       *obufp = '\0';
       break;
+    default:
+      break;
     }
 }
 
@@ -6270,6 +6278,8 @@ VMX_Fixup (int extrachar ATTRIBUTE_UNUSED, int sizeflag)
 	case 4:
 	  strcpy (p, "vmxoff");
 	  break;
+   	default:
+    	  break;
 	}
 
       codep++;

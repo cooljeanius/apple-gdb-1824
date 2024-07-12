@@ -21,10 +21,10 @@
 
 #include "opcode/i386.h"
 
-typedef struct template
+typedef struct i386_opc_template
 {
   /* instruction name sans width suffix ("mov" for movl insns) */
-  char *name;
+  const char *name;
 
   /* how many operands */
   unsigned int operands;
@@ -200,14 +200,14 @@ typedef struct template
 #define WordMem AnyMem		/* 16, 32 or 64 bit memory ref */
 #define ByteMem AnyMem		/* 8 bit memory ref */
 }
-template;
+i386_opc_template;
 
-extern const template i386_optab[];
+extern const i386_opc_template i386_optab[];
 
 /* these are for register name --> number & type hash lookup */
 typedef struct
 {
-  char *reg_name;
+  const char *reg_name;
   unsigned int reg_type;
   unsigned int reg_flags;
 #define RegRex	    0x1  /* Extended register.  */
@@ -226,7 +226,7 @@ extern const unsigned int i386_regtab_size;
 
 typedef struct
 {
-  char *seg_name;
+  const char *seg_name;
   unsigned int seg_prefix;
 }
 seg_entry;

@@ -1,6 +1,6 @@
-/* Table of opcodes for the AMD 29000 family.
-   Copyright 1990, 1991, 1993, 1994, 2002 Free Software Foundation, Inc.
-
+/* opcode/a29k.h: Table of opcodes for the AMD 29000 family.
+ * Copyright 1990, 1991, 1993, 1994, 2002 Free Software Foundation, Inc. */
+/*
 This file is part of GDB and GAS.
 
 This program is free software; you can redistribute it and/or modify
@@ -15,11 +15,11 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 struct a29k_opcode {
   /* Name of the instruction.  */
-  char *name;
+  const char *name;
 
   /* Opcode word */
   unsigned long opcode;
@@ -59,7 +59,7 @@ struct a29k_opcode {
      f	      ACN--bits 0-1 of the instruction (not really new).
      F	      FUNC--Special function in bits 18-21 of the instruction.
      C	      ACN--bits 16-17 specifying the accumlator register.  */
-  char *args;
+  const char *args;
 };
 
 static const struct a29k_opcode a29k_opcodes[] =

@@ -1,8 +1,8 @@
 /* ppc-dis.c -- Disassemble PowerPC instructions
  * Copyright 1994, 1995, 2000, 2001, 2002, 2003, 2004, 2005
  * Free Software Foundation, Inc.
- * Written by Ian Lance Taylor, Cygnus Support
-
+ * Written by Ian Lance Taylor, Cygnus Support */
+/*
 This file is part of GDB, GAS, and the GNU binutils.
 
 GDB, GAS, and the GNU binutils are free software; you can redistribute

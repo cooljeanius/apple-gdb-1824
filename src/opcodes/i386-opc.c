@@ -22,7 +22,7 @@
 #include "libiberty.h"
 #include "i386-opc.h"
 
-const template i386_optab[] =
+const i386_opc_template i386_optab[] =
 {
 
 #define X None

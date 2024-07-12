@@ -1,4 +1,4 @@
-/* CGEN generic opcode support.
+/* cgen-opc.c: CGEN generic opcode support.
 
    Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2003, 2005
    Free Software Foundation, Inc.
@@ -49,7 +49,7 @@ const CGEN_KEYWORD_ENTRY *
 cgen_keyword_lookup_name (CGEN_KEYWORD *kt, const char *name)
 {
   const CGEN_KEYWORD_ENTRY *ke;
-  const char *p,*n;
+  const char *p, *n;
 
   if (kt->name_hash_table == NULL)
     build_keyword_hash_tables (kt);
@@ -288,7 +288,7 @@ cgen_hw_lookup_by_num (CGEN_CPU_DESC cd, unsigned int hwnum)
   unsigned int i;
   const CGEN_HW_ENTRY **hw = cd->hw_table.entries;
 
-  /* ??? This can be speeded up.  */
+  /* ???: This can be sped up: */
   for (i = 0; i < cd->hw_table.num_entries; ++i)
     if (hw[i] && hwnum == hw[i]->type)
       return hw[i];
@@ -442,28 +442,32 @@ cgen_put_insn_value (CGEN_CPU_DESC cd,
    The result is a pointer to the insn table entry, or NULL if the instruction
    wasn't recognized.  */
 
-/* ??? Will need to be revisited for VLIW architectures.  */
+/* ???: Will need to be revisited for VLIW architectures.  */
 
 const CGEN_INSN *
-cgen_lookup_insn (CGEN_CPU_DESC cd,
-		  const CGEN_INSN *insn,
-		  CGEN_INSN_INT insn_int_value,
-		  /* ??? CGEN_INSN_BYTES would be a nice type name to use here.  */
-		  unsigned char *insn_bytes_value,
-		  int length,
-		  CGEN_FIELDS *fields,
-		  int alias_p)
+cgen_lookup_insn(CGEN_CPU_DESC cd,
+		 const CGEN_INSN *insn,
+		 CGEN_INSN_INT insn_int_value,
+		 /* ???: CGEN_INSN_BYTES would be a nice type name to use here: */
+		 unsigned char *insn_bytes_value,
+		 int length,
+		 CGEN_FIELDS *fields,
+		 int alias_p)
 {
   unsigned char *buf;
   CGEN_INSN_INT base_insn;
   CGEN_EXTRACT_INFO ex_info;
   CGEN_EXTRACT_INFO *info;
+  size_t bufamt = (cd->max_insn_bitsize / 8);
 
   if (cd->int_insn_p)
     {
       info = NULL;
-      buf = (unsigned char *) alloca (cd->max_insn_bitsize / 8);
-      cgen_put_insn_value (cd, buf, length, insn_int_value);
+      if (bufamt < MAX_ALLOCA_SIZE)
+        buf = (unsigned char *)alloca(bufamt);
+      else
+        buf = (unsigned char *)alloca(MAX_ALLOCA_SIZE);
+      cgen_put_insn_value(cd, buf, length, insn_int_value);
       base_insn = insn_int_value;
     }
   else
@@ -473,7 +477,7 @@ cgen_lookup_insn (CGEN_CPU_DESC cd,
       ex_info.insn_bytes = insn_bytes_value;
       ex_info.valid = -1;
       buf = insn_bytes_value;
-      base_insn = cgen_get_insn_value (cd, buf, length);
+      base_insn = cgen_get_insn_value(cd, buf, length);
     }
 
   if (!insn)
@@ -493,12 +497,12 @@ cgen_lookup_insn (CGEN_CPU_DESC cd,
 	      || ! CGEN_INSN_ATTR_VALUE (insn, CGEN_INSN_ALIAS))
 	    {
 	      /* Basic bit mask must be correct.  */
-	      /* ??? May wish to allow target to defer this check until the
+	      /* ???: May wish to allow target to defer this check until the
 		 extract handler.  */
 	      if ((base_insn & CGEN_INSN_BASE_MASK (insn))
 		  == CGEN_INSN_BASE_VALUE (insn))
 		{
-		  /* ??? 0 is passed for `pc' */
+		  /* ???: 0 is passed for `pc' */
 		  int elength = CGEN_EXTRACT_FN (cd, insn)
 		    (cd, insn, info, base_insn, fields, (bfd_vma) 0);
 		  if (elength > 0)
@@ -524,7 +528,7 @@ cgen_lookup_insn (CGEN_CPU_DESC cd,
       if (length != CGEN_INSN_BITSIZE (insn))
 	abort ();
 
-      /* ??? 0 is passed for `pc' */
+      /* ???: 0 is passed for `pc' */
       length = CGEN_EXTRACT_FN (cd, insn)
 	(cd, insn, info, base_insn, fields, (bfd_vma) 0);
       /* Sanity check: must succeed.
@@ -573,14 +577,14 @@ cgen_get_insn_operands (CGEN_CPU_DESC cd,
    recognized.  */
 
 const CGEN_INSN *
-cgen_lookup_get_insn_operands (CGEN_CPU_DESC cd,
-			       const CGEN_INSN *insn,
-			       CGEN_INSN_INT insn_int_value,
-			       /* ??? CGEN_INSN_BYTES would be a nice type name to use here.  */
-			       unsigned char *insn_bytes_value,
-			       int length,
-			       int *indices,
-			       CGEN_FIELDS *fields)
+cgen_lookup_get_insn_operands(CGEN_CPU_DESC cd,
+			      const CGEN_INSN *insn,
+			      CGEN_INSN_INT insn_int_value,
+			      /* ???: CGEN_INSN_BYTES would be a nice type name to use here: */
+			      unsigned char *insn_bytes_value,
+			      int length,
+			      int *indices,
+			      CGEN_FIELDS *fields)
 {
   /* Pass non-zero for ALIAS_P only if INSN != NULL.
      If INSN == NULL, we want a real insn.  */

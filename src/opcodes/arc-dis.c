@@ -502,6 +502,8 @@ write_instr_name_(struct arcDisState * state,
     case BR_exec_when_jump:
       strcat (state->instrBuffer, ".jd");
       break;
+    default:
+      break;
     }
 
   if (signExtend)
@@ -792,6 +794,8 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState * state)
 	case op_AND:
 	  instrName = (repeatsOp ? "mov" : "and");
 	  break;
+   	default:
+    	  break;
 	}
       break;
 

@@ -448,6 +448,8 @@ insert_reg (arc_insn insn,
     case 'o': case 'O':
       ls_operand[LS_OFFSET] = op_type;
       break;
+    default:
+      break;
     }
 
   return insn;
@@ -1159,7 +1161,7 @@ extract_reg (arc_insn *insn,
 	*opval = reg;
     }
 
-  switch(operand->fmt)
+  switch (operand->fmt)
     {
     case 'a':
       ls_operand[LS_DEST] = op_type;
@@ -1175,6 +1177,8 @@ extract_reg (arc_insn *insn,
       break;
     case 'o': case 'O':
       ls_operand[LS_OFFSET] = op_type;
+      break;
+    default:
       break;
     }
 
@@ -1728,12 +1732,11 @@ arc_operand_type (int opertype)
     {
     case 0:
       return COND;
-      break;
     case 1:
       return REG;
-      break;
     case 2:
       return AUXREG;
+    default:
       break;
     }
   return -1;

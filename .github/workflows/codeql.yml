@@ -543,7 +543,7 @@ jobs:
         else \
           sudo apt-get install --fix-missing default-jre-headless; \
         fi
-        ps aux
+        sync && echo "ps aux" && sync && ps aux
         if test -x "$(which purge)"; then \
           purge || sudo purge; \
         elif test -x "$(which sync)"; then \

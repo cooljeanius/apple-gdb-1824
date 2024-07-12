@@ -18,7 +18,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "sysdep.h"
 
@@ -865,10 +865,14 @@ static const struct opcode32 arm_opcodes[] =
   {ARM_EXT_V6, 0x06500f70, 0x0ff00ff0, "usub16%c\t%12-15r, %16-19r, %0-3r"},
   {ARM_EXT_V6, 0x06500ff0, 0x0ff00ff0, "usub8%c\t%12-15r, %16-19r, %0-3r"},
   {ARM_EXT_V6, 0x06500f50, 0x0ff00ff0, "usubaddx%c\t%12-15r, %16-19r, %0-3r"},
-  {ARM_EXT_V6, 0x06bf0f30, 0x0fff0ff0, "rev%c\t\%12-15r, %0-3r"},
-  {ARM_EXT_V6, 0x06bf0fb0, 0x0fff0ff0, "rev16%c\t\%12-15r, %0-3r"},
-  {ARM_EXT_V6, 0x06ff0fb0, 0x0fff0ff0, "revsh%c\t\%12-15r, %0-3r"},
-  {ARM_EXT_V6, 0xf8100a00, 0xfe50ffff, "rfe%23?id%24?ba\t\%16-19r%21'!"},
+  /* FIXME: unsure of proper solution to "unknown escape sequence" errors
+   * throughout here; both removing the offending backslash, and adding another,
+   * seem to work, but I am not sure which is correct... going with the latter
+   * for now... */
+  {ARM_EXT_V6, 0x06bf0f30, 0x0fff0ff0, "rev%c\t\\%12-15r, %0-3r"},
+  {ARM_EXT_V6, 0x06bf0fb0, 0x0fff0ff0, "rev16%c\t\\%12-15r, %0-3r"},
+  {ARM_EXT_V6, 0x06ff0fb0, 0x0fff0ff0, "revsh%c\t\\%12-15r, %0-3r"},
+  {ARM_EXT_V6, 0xf8100a00, 0xfe50ffff, "rfe%23?id%24?ba\t\\%16-19r%21'!"},
   {ARM_EXT_V6, 0x06bf0070, 0x0fff0ff0, "sxth%c\t%12-15r, %0-3r"},
   {ARM_EXT_V6, 0x06bf0470, 0x0fff0ff0, "sxth%c\t%12-15r, %0-3r, ror #8"},
   {ARM_EXT_V6, 0x06bf0870, 0x0fff0ff0, "sxth%c\t%12-15r, %0-3r, ror #16"},
@@ -1640,7 +1644,7 @@ print_insn_coprocessor (bfd_vma pc, struct disassemble_info *info, long given,
   void *stream = info->stream;
   fprintf_ftype func = info->fprintf_func;
   unsigned long mask;
-  unsigned long value;
+  unsigned long value0;
   int cond;
 
   for (insn = coprocessor_opcodes; insn->assembler; insn++)
@@ -1652,14 +1656,14 @@ print_insn_coprocessor (bfd_vma pc, struct disassemble_info *info, long given,
 	insn = insn + IWMMXT_INSN_COUNT;
 
       mask = insn->mask;
-      value = insn->value;
+      value0 = insn->value;
       if (thumb)
 	{
 	  /* The high 4 bits are 0xe for Arm conditional instructions, and
 	     0xe for arm unconditional instructions.  The rest of the
 	     encoding is the same.  */
 	  mask |= 0xf0000000;
-	  value |= 0xe0000000;
+	  value0 |= 0xe0000000;
 	  if (ifthen_state)
 	    cond = IFTHEN_COND;
 	  else
@@ -1681,7 +1685,7 @@ print_insn_coprocessor (bfd_vma pc, struct disassemble_info *info, long given,
 		cond = 16;
 	    }
 	}
-      if ((given & mask) == value)
+      if ((given & mask) == value0)
 	{
 	  const char *c;
 
@@ -1863,75 +1867,76 @@ print_insn_coprocessor (bfd_vma pc, struct disassemble_info *info, long given,
 		    case '5': case '6': case '7': case '8': case '9':
 		      {
 			int width;
-			unsigned long value;
+			unsigned long value1;
 
-			c = arm_decode_bitfield (c, given, &value, &width);
+			c = arm_decode_bitfield(c, given, &value1, &width);
 
 			switch (*c)
 			  {
 			  case 'r':
-			    func (stream, "%s", arm_regnames[value]);
+			    func(stream, "%s", arm_regnames[value1]);
 			    break;
 			  case 'D':
-			    func (stream, "d%ld", value);
+			    func(stream, "d%ld", value1);
 			    break;
 			  case 'Q':
-			    if (value & 1)
-			      func (stream, "<illegal reg q%ld.5>", value >> 1);
+			    if (value1 & 1)
+			      func(stream, "<illegal reg q%ld.5>",
+         		   	   (value1 >> 1));
 			    else
-			      func (stream, "q%ld", value >> 1);
+			      func(stream, "q%ld", (value1 >> 1));
 			    break;
 			  case 'd':
-			    func (stream, "%ld", value);
+			    func(stream, "%ld", value1);
 			    break;
                           case 'k':
                             {
-                              int from = (given & (1 << 7)) ? 32 : 16;
-                              func (stream, "%ld", from - value);
+                              int from = ((given & (1 << 7)) ? 32 : 16);
+                              func(stream, "%ld", (from - value1));
                             }
                             break;
                             
 			  case 'f':
-			    if (value > 7)
-			      func (stream, "#%s", arm_fp_const[value & 7]);
+			    if (value1 > 7)
+			      func(stream, "#%s", arm_fp_const[value1 & 7]);
 			    else
-			      func (stream, "f%ld", value);
+			      func(stream, "f%ld", value1);
 			    break;
 
 			  case 'w':
 			    if (width == 2)
-			      func (stream, "%s", iwmmxt_wwnames[value]);
+			      func(stream, "%s", iwmmxt_wwnames[value1]);
 			    else
-			      func (stream, "%s", iwmmxt_wwssnames[value]);
+			      func(stream, "%s", iwmmxt_wwssnames[value1]);
 			    break;
 
 			  case 'g':
-			    func (stream, "%s", iwmmxt_regnames[value]);
+			    func(stream, "%s", iwmmxt_regnames[value1]);
 			    break;
 			  case 'G':
-			    func (stream, "%s", iwmmxt_cregnames[value]);
+			    func(stream, "%s", iwmmxt_cregnames[value1]);
 			    break;
 
 			  case 'x':
-			    func (stream, "0x%lx", value);
+			    func(stream, "0x%lx", value1);
 			    break;
 
 			  case '`':
 			    c++;
-			    if (value == 0)
-			      func (stream, "%c", *c);
+			    if (value1 == 0)
+			      func(stream, "%c", *c);
 			    break;
 			  case '\'':
 			    c++;
-			    if (value == ((1ul << width) - 1))
-			      func (stream, "%c", *c);
+			    if (value1 == ((1ul << width) - 1))
+			      func(stream, "%c", *c);
 			    break;
 			  case '?':
-			    func (stream, "%c", c[(1 << width) - (int)value]);
-			    c += 1 << width;
+			    func(stream, "%c", c[(1 << width) - (int)value1]);
+			    c += (1 << width);
 			    break;
 			  default:
-			    abort ();
+			    abort();
 			  }
 			break;
 
@@ -2033,10 +2038,10 @@ print_insn_coprocessor (bfd_vma pc, struct disassemble_info *info, long given,
 
 		      case 'Z':
 			{
-			  int value;
+			  int value2;
 			  /* given (20, 23) | given (0, 3) */
-			  value = ((given >> 16) & 0xf0) | (given & 0xf);
-			  func (stream, "%d", value);
+			  value2 = (((given >> 16) & 0xf0) | (given & 0xf));
+			  func(stream, "%d", value2);
 			}
 			break;
 
@@ -2393,7 +2398,7 @@ print_insn_neon (struct disassemble_info *info, long given, bfd_boolean thumb)
 			int rd = ((given >> 12) & 0xf) | (((given >> 22) & 1) << 4);
 			int rn = ((given >> 16) & 0xf);
 			int rm = ((given >> 0) & 0xf);
-			int align = ((given >> 4) & 0x1);
+			int align0 = ((given >> 4) & 0x1);
 			int size = ((given >> 6) & 0x3);
 			int type = ((given >> 8) & 0x3);
 			int n = type + 1;
@@ -2414,15 +2419,15 @@ print_insn_neon (struct disassemble_info *info, long given, bfd_boolean thumb)
 			else
 			  func (stream, "d%d[]-d%d[]", rd, rd + n - 1);
 			func (stream, "}, [%s", arm_regnames[rn]);
-			if (align)
+			if (align0)
 			  {
-                            int align = (8 * (type + 1)) << size;
+                            int align1 = (8 * (type + 1)) << size;
                             if (type == 3)
-                              align = (size > 1) ? align >> 1 : align;
+                              align1 = ((size > 1) ? (align1 >> 1) : align1);
 			    if (type == 2 || (type == 0 && !size))
-			      func (stream, ", :<bad align %d>", align);
+			      func(stream, ", :<bad align %d>", align1);
 			    else
-			      func (stream, ", :%d", align);
+			      func(stream, ", :%d", align1);
 			  }
 			func (stream, "]");
 			if (rm == 0xd)
@@ -2939,10 +2944,10 @@ print_insn_arm (bfd_vma pc, struct disassemble_info *info, long given)
 		    case '0': case '1': case '2': case '3': case '4':
 		    case '5': case '6': case '7': case '8': case '9':
 		      {
-			int width;
+			int width0;
 			unsigned long value;
 
-			c = arm_decode_bitfield (c, given, &value, &width);
+			c = arm_decode_bitfield(c, given, &value, &width0);
 			
 			switch (*c)
 			  {
@@ -2978,15 +2983,15 @@ print_insn_arm (bfd_vma pc, struct disassemble_info *info, long given)
 			    break;
 			  case '\'':
 			    c++;
-			    if (value == ((1ul << width) - 1))
-			      func (stream, "%c", *c);
+			    if (value == ((1ul << width0) - 1))
+			      func(stream, "%c", *c);
 			    break;
 			  case '?':
-			    func (stream, "%c", c[(1 << width) - (int)value]);
-			    c += 1 << width;
+			    func(stream, "%c", c[(1 << width0) - (int)value]);
+			    c += (1 << width0);
 			    break;
 			  default:
-			    abort ();
+			    abort();
 			  }
 			break;
 
@@ -3006,11 +3011,11 @@ print_insn_arm (bfd_vma pc, struct disassemble_info *info, long given)
 			  long msb = (given & 0x001f0000) >> 16;
 			  long lsb = (given & 0x00000f80) >> 7;
 
-			  long width = msb - lsb + 1;
-			  if (width > 0)
-			    func (stream, "#%lu, #%lu", lsb, width);
+			  long width1 = (msb - lsb + 1);
+			  if (width1 > 0)
+			    func(stream, "#%lu, #%lu", lsb, width1);
 			  else
-			    func (stream, "(invalid: %lu:%lu)", lsb, msb);
+			    func(stream, "(invalid: %lu:%lu)", lsb, msb);
 			}
 			break;
 
@@ -3158,19 +3163,19 @@ print_insn_thumb16 (bfd_vma pc, struct disassemble_info *info, long given)
 		  if (domasklr)
 		    {
 		      if (started)
-			func (stream, ", ");
+			func(stream, ", ");
 		      started = 1;
-		      func (stream, arm_regnames[14] /* "lr" */);
+		      func(stream, "%s", arm_regnames[14] /* "lr" */);
 		    }
 
 		  if (domaskpc)
 		    {
 		      if (started)
-			func (stream, ", ");
-		      func (stream, arm_regnames[15] /* "pc" */);
+			func(stream, ", ");
+		      func(stream, "%s", arm_regnames[15] /* "pc" */);
 		    }
 
-		  func (stream, "}");
+		  func(stream, "}");
 		}
 		break;
 
@@ -3462,6 +3467,9 @@ print_insn_thumb32 (bfd_vma pc, struct disassemble_info *info, long given)
 			func (stream, ", rrx");
 		      else
 			func (stream, ", ror #%u", imm);
+
+                    default:
+                      break;
 		    }
 		}
 		break;
@@ -3587,6 +3595,8 @@ print_insn_thumb32 (bfd_vma pc, struct disassemble_info *info, long given)
 		    case 3:
 		      func (stream, "??");
 		      break;
+                    default:
+                      break;
 		    }
 		}
 		break;
@@ -3719,15 +3729,15 @@ print_insn_thumb32 (bfd_vma pc, struct disassemble_info *info, long given)
 		  }
 		else
 		  {
-		    func (stream, psr_name (given & 0xff));
+		    func(stream, "%s", psr_name(given & 0xff));
 		  }
 		break;
 
 	      case 'D':
 		if ((given & 0xff) == 0)
-		  func (stream, "%cPSR", (given & 0x100000) ? 'S' : 'C');
+		  func(stream, "%cPSR", ((given & 0x100000) ? 'S' : 'C'));
 		else
-		  func (stream, psr_name (given & 0xff));
+		  func(stream, "%s", psr_name(given & 0xff));
 		break;
 
 	      case '0': case '1': case '2': case '3': case '4':
