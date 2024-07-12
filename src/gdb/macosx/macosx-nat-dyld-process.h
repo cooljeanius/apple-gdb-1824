@@ -154,6 +154,8 @@ struct pre_run_memory_map *create_pre_run_memory_map(struct bfd *abfd)
 
 void free_pre_run_memory_map(struct pre_run_memory_map *map);
 
+void dyld_slide_objfile(struct objfile *, CORE_ADDR, struct section_offsets *); 
+
 #ifndef DYLD_TRACE_NUM_EXTERNALLY_DECLARED
 # define DYLD_TRACE_NUM_EXTERNALLY_DECLARED 1
 extern int dyld_trace_num;

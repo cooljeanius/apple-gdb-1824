@@ -356,10 +356,12 @@ jobs:
     - name: Cleanup and summary
       if: "${{ success() }}"
       run: |
-        find . -name '*.dSYM' -delete
-        find . -name 'autom4te.cache' -delete
-        find . -name '.deps' -delete
-        find . -name '.libs' -delete
+        sync && echo "Cleaning up..."
+        find . -name '*.dSYM' -delete || echo "dSYM-cleaning step ineffective"
+        find . -name 'autom4te.cache' -delete || echo "am4c-cleaning step ineffective"
+        find . -name '.deps' -delete || echo "deps-cleaning step ineffective"
+        find . -name '.libs' -delete || echo "libs-cleaning step ineffective"
+        sync && echo "...done cleaning up."
         time (sync && pwd && sync && ls && sync && du && sync && df && sync)
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.3.4

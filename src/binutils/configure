@@ -31262,7 +31262,7 @@ printf "%s\n" "no" >&6; }
 
 # Assume based on system.
 case "${host}" in
-*-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows*)
+*-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows* | *-*pdo-winnt*)
 
 printf "%s\n" "#define USE_BINARY_FOPEN 1" >>confdefs.h
  ;;

@@ -28,7 +28,7 @@ AC_DEFUN([BFD_BINARY_FOPEN],
 # Assume based on system.
 case "${host}" in
 changequote(,)dnl
-*-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows*)
+*-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows* | *-*pdo-winnt*)
 changequote([,])dnl
   AC_DEFINE([USE_BINARY_FOPEN],[1],
             [Use b modifier when opening binary files?]) ;;

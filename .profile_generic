@@ -49,5 +49,20 @@ if test -z "${HOST_ARCHITECTURE}"; then
 else
   echo "HOST_ARCHITECTURE is already set to ${HOST_ARCHITECTURE}"
 fi
+if test -z "${RC_ARCHS}"; then
+  if test -n "${HOST_ARCHITECTURE}"; then
+    export RC_ARCHS="${HOST_ARCHITECTURE}"
+  elif test -n "${ARCH_SAYS}"; then
+    export RC_ARCHS="${ARCH_SAYS}"
+  elif test -n "${TARGET_ARCHITECTURE}"; then
+    export RC_ARCHS="${TARGET_ARCHITECTURE}"
+  elif test -n "${BUILD_ARCHITECTURE}"; then
+    export RC_ARCHS="${BUILD_ARCHITECTURE}"
+  else
+    echo "unsure what to set RC_ARCHS to"
+  fi
+else
+  echo "RC_ARCHS is already set to ${RC_ARCHS}"
+fi
 
 echo "We should be done setting environment variables now."

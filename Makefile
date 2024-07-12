@@ -132,6 +132,12 @@ OPCODES_HEADERS = $(OPCODES_FRAMEWORK)/Headers
 BINUTILS_FRAMEWORK = $(BINUTILS_FRAMEWORK_PATH)/binutils.framework
 BINUTILS_HEADERS = $(BINUTILS_FRAMEWORK)/Headers
 
+READLINE_FRAMEWORK = $(BINUTILS_FRAMEWORKS)/readline.framework
+READLINE_HEADERS = $(READLINE_FRAMEWORK)/Headers
+
+EFENCE_FRAMEWORK = $(BINUTILS_FRAMEWORKS)/electric-fence.framework
+EFENCE_HEADERS = $(EFENCE_FRAMEWORK)/Headers
+
 INTL_FRAMEWORK = $(BINUTILS_BUILD_ROOT)/usr/lib/libintl.dylib
 INTL_HEADERS = $(BINUTILS_BUILD_ROOT)/usr/include
 
@@ -176,6 +182,8 @@ FRAMEWORK_SUFFIX =
 FRAMEWORK_VERSION = A
 FRAMEWORK_VERSION_SUFFIX =
 
+CONFIG_DIR=UNKNOWN
+CONF_DIR=UNKNOWN
 DEVEXEC_DIR=UNKNOWN
 LIBEXEC_BINUTILS_DIR=UNKNOWN
 LIBEXEC_GDB_DIR=UNKNOWN
@@ -252,6 +260,8 @@ endif
 
 
 MACOSX_FLAGS = \
+	CONFIG_DIR=private/etc \
+	CONF_DIR=usr/share/gdb \
 	DEVEXEC_DIR=usr/bin \
 	LIBEXEC_BINUTILS_DIR=usr/libexec/binutils \
 	LIBEXEC_GDB_DIR=usr/libexec/gdb \
@@ -691,6 +701,8 @@ install-gdb-common:
 	set -e; for dstroot in $(SYMROOT) $(DSTROOT); do \
 		\
 		$(INSTALL) -c -d $${dstroot}/$(DEVEXEC_DIR); \
+		$(INSTALL) -c -d $${dstroot}/$(CONFIG_DIR); \
+		$(INSTALL) -c -d $${dstroot}/$(CONF_DIR); \
 		$(INSTALL) -c -d $${dstroot}/$(MAN_DIR); \
 		\
 		docroot="$${dstroot}/$(SYSTEM_DEVELOPER_TOOLS_DOC_DIR)/gdb"; \
@@ -733,6 +745,14 @@ install-gdb-macosx-common: install-gdb-common
 		$(INSTALL) -c -d $${dstroot}/usr/local/OpenSourceVersions; \
 		$(INSTALL) -c -m 644 $(SRCROOT)/gdb.plist $${dstroot}/usr/local/OpenSourceVersions; \
 		$(INSTALL) -c -m 644 $(SRCROOT)/gdb.txt $${dstroot}/usr/local/OpenSourceLicenses; \
+		\
+		$(INSTALL) -c -d $${dstroot}/$(CONFIG_DIR); \
+		$(INSTALL) -c -m 644 $(SRCROOT)/gdb.conf $${dstroot}/$(CONFIG_DIR)/gdb.conf; \
+		\
+		$(INSTALL) -c -d $${dstroot}/$(CONF_DIR); \
+		for j in $(SRCROOT)/conf/*.gdb; do \
+			$(INSTALL) -c -m 644 $$j $${dstroot}/$(CONF_DIR)/; \
+		done; \
 		\
 		sed -e 's/version=.*/version=$(GDB_VERSION)-$(GDB_RC_VERSION)/' \
 			< $(SRCROOT)/gdb.sh > $${dstroot}/usr/bin/gdb; \

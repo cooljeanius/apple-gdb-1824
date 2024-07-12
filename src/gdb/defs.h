@@ -377,6 +377,10 @@ typedef bfd_vma CORE_ADDR;
 #define DEPRECATED_STREQ(a,b) (strcmp((a), (b)) == 0)
 #define DEPRECATED_STREQN(a,b,c) (strncmp((a), (b), (c)) == 0)
 
+#ifndef CPLUS_MARKER
+# define CPLUS_MARKER '$' /* May be overridden to '.' for SysV */
+#endif /* !CPLUS_MARKER */
+
 /* Check if a character is one of the commonly used C++ marker characters: */
 extern int is_cplus_marker(int);
 
@@ -437,6 +441,7 @@ enum language
     /* APPLE LOCAL objcplus */
     language_objcplus,		/* Objective-C++ */
     language_java,		/* Java */
+    language_chill,		/* Chill */
     language_fortran,		/* Fortran */
     language_m2,		/* Modula-2 */
     language_asm,		/* Assembly language */

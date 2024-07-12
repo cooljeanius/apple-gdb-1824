@@ -298,7 +298,12 @@ expect(enum ch_terminal token, const char *message)
       if (message)
 	error("%s", message);
       else if ((token < 256) && (lexptr != NULL) && (strlen(lexptr) < 470UL))
-	error("syntax error - expected a '%c' here \"%s\"", token, lexptr);
+        {
+          char tmplexarr[470];
+          snprintf(tmplexarr, sizeof(tmplexarr), "%s", lexptr);
+	  error("syntax error - expected a '%c' here \"%s\"", token,
+   	 	tmplexarr);
+        }
       else
 	error("syntax error");
       return 0;
@@ -1903,9 +1908,9 @@ static const struct token tokentab2[] =
 # endif /* DEPRECATED_STREQN */
 #endif /* !STREQN */
 #ifndef VAR_NAMESPACE
-# ifdef VAR_DOMAIN
+# if defined(VAR_DOMAIN) || defined(SYMTAB_H)
 #  define VAR_NAMESPACE VAR_DOMAIN
-# endif /* VAR_DOMAIN */
+# endif /* VAR_DOMAIN || SYMTAB_H */
 #endif /* !VAR_NAMESPACE */
 
 /* Read one token, getting characters through lexptr.  */

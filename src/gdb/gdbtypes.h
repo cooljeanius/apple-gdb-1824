@@ -1250,6 +1250,14 @@ extern struct type *builtin_type_m2_card;
 extern struct type *builtin_type_m2_real;
 extern struct type *builtin_type_m2_bool;
 
+/* OBSOLETE Chill types */
+
+extern struct type *builtin_type_chill_bool;
+extern struct type *builtin_type_chill_char;
+extern struct type *builtin_type_chill_long;
+extern struct type *builtin_type_chill_ulong;
+extern struct type *builtin_type_chill_real;
+
 /* Fortran (F77) types */
 
 extern struct type *builtin_type_f_character;
@@ -1267,7 +1275,9 @@ extern struct type *builtin_type_f_complex_s32;
 extern struct type *builtin_type_f_void;
 
 /* RTTI for C++ */
-/* extern struct type *builtin_type_cxx_typeinfo; */
+#if defined(_CPPRTTI) || defined(__GXX_RTTI)
+extern struct type *builtin_type_cxx_typeinfo;
+#endif /* _CPPRTTI || __GXX_RTTI */
 
 /* Maximum and minimum values of built-in types */
 
@@ -1370,6 +1380,8 @@ extern struct type *create_array_type(struct type *, struct type *,
 extern struct type *create_string_type(struct type *, struct type *);
 
 extern struct type *create_set_type(struct type *, struct type *);
+
+extern int chill_varying_type(struct type *);
 
 extern struct type *lookup_unsigned_typename(const char *);
 

@@ -1643,6 +1643,66 @@ dyld_symfile_loaded_hook(struct objfile *o)
     }
 }
 
+/* dyld_slide_objfile applies the slide in NEW_OFFSETS, or in
+   DYLD_SLIDE if NEW_OFFSETS is NULL, to OBJFILE, and to the
+   separate_debug_objfile, if it exists.  */
+void
+dyld_slide_objfile(struct objfile *objfile, CORE_ADDR dyld_slide,
+		   struct section_offsets *new_offsets)
+{
+  int i;
+  if (objfile)
+    {
+      struct cleanup *offset_cleanup;
+      if (new_offsets == NULL)
+	{
+	  new_offsets =
+	    ((struct section_offsets *)
+	     xmalloc(SIZEOF_N_SECTION_OFFSETS(objfile->num_sections)));
+	  for (i = 0; i < objfile->num_sections; i++)
+	    {
+	      new_offsets->offsets[i] = dyld_slide;
+	    }
+	  offset_cleanup = make_cleanup(xfree, new_offsets);
+	}
+      else
+	offset_cleanup = make_cleanup(null_cleanup, NULL);
+
+      /* Note, I am not calling tell_breakpoints_objfile_changed here, but
+	 instead relying on objfile_relocate to relocate the breakpoints
+	 in this objfile.  */
+      objfile_relocate(objfile, new_offsets);
+
+      tell_objc_msgsend_cacher_objfile_changed(objfile);
+      if (info_verbose)
+        printf_filtered("Relocating symbols from %s...", objfile->name);
+      gdb_flush(gdb_stdout);
+      if (objfile->separate_debug_objfile != NULL)
+	{
+	  struct section_offsets *dsym_offsets;
+	  int num_dsym_offsets;
+
+	  /* The offsets we apply are supposed to be the TOTAL offset,
+	     so we have to add the dsym offset to the one passed in
+	     for the objfile.  */
+	  macho_calculate_offsets_for_dsym(objfile,
+					   objfile->separate_debug_objfile->obfd,
+					   NULL,
+					   new_offsets,
+					   objfile->num_sections,
+					   &dsym_offsets,
+					   &num_dsym_offsets);
+	  make_cleanup(xfree, dsym_offsets);
+	  objfile_relocate(objfile->separate_debug_objfile, dsym_offsets);
+	}
+
+
+      do_cleanups(offset_cleanup);
+      if (info_verbose)
+        printf_filtered("done\n");
+    }
+}
+
 /* */
 static void
 dyld_load_symfile_internal(struct dyld_objfile_entry *e,
