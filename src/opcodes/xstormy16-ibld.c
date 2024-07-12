@@ -828,6 +828,7 @@ cgen_extract_fn * const xstormy16_cgen_extract_handlers[] =
   extract_insn_normal,
 };
 
+#line 12 "opc-ibld.scm"
 int xstormy16_cgen_get_int_operand     (CGEN_CPU_DESC, int, const CGEN_FIELDS *);
 bfd_vma xstormy16_cgen_get_vma_operand (CGEN_CPU_DESC, int, const CGEN_FIELDS *);
 

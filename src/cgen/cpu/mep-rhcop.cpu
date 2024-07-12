@@ -1,3 +1,4 @@
+; mep-rhcop.cpu  -*- Scheme -*-
 ;; This coprocessor definition is being used to verify vliw mode behaviour.
 ;; This is a mock-up done by Red Hat and is in no way supposed to represent
 ;; a real coprocessor.  The hardware is defined in mep-core.cpu.

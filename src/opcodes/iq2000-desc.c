@@ -22,6 +22,7 @@ This file is part of the GNU Binutils and/or GDB, the GNU debugger.
 
 */
 
+#line 1040 "desc-cpu.scm"
 #include "sysdep.h"
 #include <stdio.h>
 #include <stdarg.h>
@@ -34,6 +35,7 @@ This file is part of the GNU Binutils and/or GDB, the GNU debugger.
 #include "libiberty.h"
 #include "xregex.h"
 
+#line 47 "desc.scm"
 /* Attributes.  */
 
 static const CGEN_ATTR_ENTRY bool_attr[] =
@@ -119,6 +121,7 @@ const CGEN_ATTR_TABLE iq2000_cgen_insn_attr_table[] =
   { 0, 0, 0 }
 };
 
+#line 13 "desc-cpu.scm"
 /* Instruction set variants.  */
 
 static const CGEN_ISA iq2000_cgen_isa_table[] = {
@@ -126,6 +129,7 @@ static const CGEN_ISA iq2000_cgen_isa_table[] = {
   { 0, 0, 0, 0, 0 }
 };
 
+#line 65 "desc-cpu.scm"
 /* Machine variants.  */
 
 static const CGEN_MACH iq2000_cgen_mach_table[] = {
@@ -210,6 +214,7 @@ CGEN_KEYWORD iq2000_cgen_opval_gr_names =
 };
 
 
+#line 164 "desc-cpu.scm"
 /* The hardware table.  */
 
 #if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
@@ -218,6 +223,7 @@ CGEN_KEYWORD iq2000_cgen_opval_gr_names =
 #define A(a) (1 << CGEN_HW_/**/a)
 #endif
 
+#line 270 "desc-cpu.scm"
 const CGEN_HW_ENTRY iq2000_cgen_hw_table[] =
 {
   { "h-memory", HW_H_MEMORY, CGEN_ASM_NONE, 0, { 0, { { { (1<<MACH_BASE), 0 } } } } },
@@ -233,6 +239,7 @@ const CGEN_HW_ENTRY iq2000_cgen_hw_table[] =
 #undef A
 
 
+#line 139 "desc-cpu.scm"
 /* The instruction field table.  */
 
 #if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
@@ -241,6 +248,7 @@ const CGEN_HW_ENTRY iq2000_cgen_hw_table[] =
 #define A(a) (1 << CGEN_IFLD_/**/a)
 #endif
 
+#line 145 "desc-cpu.scm"
 const CGEN_IFLD iq2000_cgen_ifld_table[] =
 {
   { IQ2000_F_NIL, "f-nil", 0, 0, 0, 0, { 0, { { { (1<<MACH_BASE), 0 } } } }  },
@@ -315,6 +323,7 @@ const CGEN_MAYBE_MULTI_IFLD IQ2000_F_RT_RS_MULTI_IFIELD [] =
     { 0, { (const PTR) 0 } }
 };
 
+#line 457 "desc-cpu.scm"
 /* The operand table.  */
 
 #if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
@@ -328,6 +337,7 @@ const CGEN_MAYBE_MULTI_IFLD IQ2000_F_RT_RS_MULTI_IFIELD [] =
 #define OPERAND(op) IQ2000_OPERAND_/**/op
 #endif
 
+#line 464 "desc-cpu.scm"
 const CGEN_OPERAND iq2000_cgen_operand_table[] =
 {
 /* pc: program counter */
@@ -467,6 +477,7 @@ const CGEN_OPERAND iq2000_cgen_operand_table[] =
 #undef A
 
 
+#line 559 "desc-cpu.scm"
 /* The instruction table.  */
 
 #define OP(field) CGEN_SYNTAX_MAKE_FIELD (OPERAND (field))
@@ -476,6 +487,7 @@ const CGEN_OPERAND iq2000_cgen_operand_table[] =
 #define A(a) (1 << CGEN_INSN_/**/a)
 #endif
 
+#line 566 "desc-cpu.scm"
 static const CGEN_IBASE iq2000_cgen_insn_table[MAX_INSNS] =
 {
   /* Special null first entry.
@@ -1862,6 +1874,7 @@ static const CGEN_IBASE iq2000_cgen_insn_table[MAX_INSNS] =
 #undef OP
 #undef A
 
+#line 964 "desc-cpu.scm"
 /* Initialize anything needed to be done once, before any cpu_open call.  */
 
 static void
@@ -1869,6 +1882,7 @@ init_tables (void)
 {
 }
 
+#line 606 "desc-cpu.scm"
 static const CGEN_MACH * lookup_mach_via_bfd_name (const CGEN_MACH *, const char *);
 static void build_hw_table      (CGEN_CPU_TABLE *);
 static void build_ifield_table  (CGEN_CPU_TABLE *);
@@ -1933,9 +1947,10 @@ build_operand_table (CGEN_CPU_TABLE *cd)
   int machs = cd->machs;
   const CGEN_OPERAND *init = & iq2000_cgen_operand_table[0];
   /* MAX_OPERANDS is only an upper bound on the number of selected entries.
-     However each entry is indexed by it's enum so there can be holes in
+     However, each entry is indexed by its enum, so there can be holes in
      the table.  */
-  const CGEN_OPERAND **selected = xmalloc (MAX_OPERANDS * sizeof (* selected));
+  const CGEN_OPERAND **selected =
+    (const CGEN_OPERAND **)xmalloc(MAX_OPERANDS * sizeof(* selected));
 
   cd->operand_table.init_entries = init;
   cd->operand_table.entry_size = sizeof (CGEN_OPERAND);
@@ -1962,7 +1977,7 @@ build_insn_table (CGEN_CPU_TABLE *cd)
 {
   int i;
   const CGEN_IBASE *ib = & iq2000_cgen_insn_table[0];
-  CGEN_INSN *insns = xmalloc (MAX_INSNS * sizeof (CGEN_INSN));
+  CGEN_INSN *insns = (CGEN_INSN *)xmalloc(MAX_INSNS * sizeof(CGEN_INSN));
 
   memset (insns, 0, MAX_INSNS * sizeof (CGEN_INSN));
   for (i = 0; i < MAX_INSNS; ++i)
@@ -1978,7 +1993,7 @@ static void
 iq2000_cgen_rebuild_tables (CGEN_CPU_TABLE *cd)
 {
   int i;
-  CGEN_BITSET *isas = cd->isas;
+  CGEN_BITSET *isas = (CGEN_BITSET *)(intptr_t)cd->isas;
   unsigned int machs = cd->machs;
 
   cd->int_insn_p = CGEN_INT_INSN_P;
@@ -2132,7 +2147,7 @@ iq2000_cgen_cpu_open (enum cgen_cpu_open_arg arg_type, ...)
       abort ();
     }
 
-  cd->isas = cgen_bitset_copy (isas);
+  cd->isas = (int)(intptr_t)cgen_bitset_copy(isas);
   cd->machs = machs;
   cd->endian = endian;
   /* FIXME: for the sparc case we can determine insn-endianness statically.

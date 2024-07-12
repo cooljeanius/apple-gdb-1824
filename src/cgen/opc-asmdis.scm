@@ -8,6 +8,7 @@
   (logit 2 "Generating parse switch ...\n")
   (string-list
    "\
+#line 12 \"opc-asmdis.scm\"
 const char * @arch@_cgen_parse_operand
   (CGEN_CPU_DESC, int, const char **, CGEN_FIELDS *);
 

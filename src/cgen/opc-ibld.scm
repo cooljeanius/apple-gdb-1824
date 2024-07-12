@@ -8,6 +8,7 @@
   (logit 2 "Generating field get switch ...\n")
   (string-list
    "\
+#line 12 \"opc-ibld.scm\"
 int @arch@_cgen_get_int_operand     (CGEN_CPU_DESC, int, const CGEN_FIELDS *);
 bfd_vma @arch@_cgen_get_vma_operand (CGEN_CPU_DESC, int, const CGEN_FIELDS *);
 

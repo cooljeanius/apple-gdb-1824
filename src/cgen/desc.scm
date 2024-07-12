@@ -43,6 +43,7 @@
   (logit 2 "Generating attribute table defns ...\n")
   (string-append
    "\
+#line 47 \"desc.scm\"
 /* Attributes.  */
 
 static const CGEN_ATTR_ENTRY bool_attr[] =

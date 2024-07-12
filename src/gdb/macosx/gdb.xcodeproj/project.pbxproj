@@ -4104,6 +4104,205 @@
 		A53B854B1AE418270067328B /* pei-arm-wince.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "pei-arm-wince.c"; sourceTree = "<group>"; };
 		A53B876A1AE585030067328B /* libreadline.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libreadline.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A53D6C992C40E17700A3E712 /* cgen-asm.in */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = "cgen-asm.in"; sourceTree = "<group>"; };
+		A53D6CF52C41AF7400A3E712 /* xstormy16.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = xstormy16.cpu; sourceTree = "<group>"; };
+		A53D6CF62C41AF7400A3E712 /* m32r.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = m32r.cpu; sourceTree = "<group>"; };
+		A53D6CF72C41AF7400A3E712 /* xstormy16.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = xstormy16.opc; sourceTree = "<group>"; };
+		A53D6CF82C41AF7400A3E712 /* sh64-compact.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "sh64-compact.cpu"; sourceTree = "<group>"; };
+		A53D6CF92C41AF7400A3E712 /* m32r.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = m32r.opc; sourceTree = "<group>"; };
+		A53D6CFA2C41AF7400A3E712 /* mep-avc2.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-avc2.cpu"; sourceTree = "<group>"; };
+		A53D6CFB2C41AF7400A3E712 /* iq2000.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = iq2000.cpu; sourceTree = "<group>"; };
+		A53D6CFC2C41AF7400A3E712 /* mep-default.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-default.cpu"; sourceTree = "<group>"; };
+		A53D6CFD2C41AF7400A3E712 /* mep-c5.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-c5.cpu"; sourceTree = "<group>"; };
+		A53D6CFE2C41AF7400A3E712 /* m32c.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = m32c.cpu; sourceTree = "<group>"; };
+		A53D6CFF2C41AF7400A3E712 /* sh64-media.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "sh64-media.cpu"; sourceTree = "<group>"; };
+		A53D6D002C41AF7400A3E712 /* i960.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = i960.opc; sourceTree = "<group>"; };
+		A53D6D012C41AF7400A3E712 /* iq2000.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = iq2000.opc; sourceTree = "<group>"; };
+		A53D6D022C41AF7400A3E712 /* m32c.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = m32c.opc; sourceTree = "<group>"; };
+		A53D6D042C41AF7400A3E712 /* iq2000m.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = iq2000m.cpu; sourceTree = "<group>"; };
+		A53D6D052C41AF7400A3E712 /* i960.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = i960.cpu; sourceTree = "<group>"; };
+		A53D6D062C41AF7400A3E712 /* epiphany.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = epiphany.cpu; sourceTree = "<group>"; };
+		A53D6D072C41AF7400A3E712 /* or1k.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = or1k.cpu; sourceTree = "<group>"; };
+		A53D6D082C41AF7400A3E712 /* sparc32.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = sparc32.cpu; sourceTree = "<group>"; };
+		A53D6D092C41AF7400A3E712 /* sh-sid.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "sh-sid.cpu"; sourceTree = "<group>"; };
+		A53D6D0A2C41AF7400A3E712 /* cris.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = cris.cpu; sourceTree = "<group>"; };
+		A53D6D0B2C41AF7400A3E712 /* mep-avc.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-avc.cpu"; sourceTree = "<group>"; };
+		A53D6D0C2C41AF7400A3E712 /* mep-rhcop.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-rhcop.cpu"; sourceTree = "<group>"; };
+		A53D6D0D2C41AF7400A3E712 /* epiphany.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = epiphany.opc; sourceTree = "<group>"; };
+		A53D6D0E2C41AF7400A3E712 /* or1k.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = or1k.opc; sourceTree = "<group>"; };
+		A53D6D0F2C41AF7400A3E712 /* mep-ext-cop.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-ext-cop.cpu"; sourceTree = "<group>"; };
+		A53D6D102C41AF7400A3E712 /* sparccom.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = sparccom.cpu; sourceTree = "<group>"; };
+		A53D6D112C41AF7400A3E712 /* or1korfpx.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = or1korfpx.cpu; sourceTree = "<group>"; };
+		A53D6D122C41AF7400A3E712 /* mep-h1.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-h1.cpu"; sourceTree = "<group>"; };
+		A53D6D132C41AF7400A3E712 /* mt.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = mt.cpu; sourceTree = "<group>"; };
+		A53D6D142C41AF7400A3E712 /* xc16x.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = xc16x.cpu; sourceTree = "<group>"; };
+		A53D6D152C41AF7400A3E712 /* ms1.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = ms1.cpu; sourceTree = "<group>"; };
+		A53D6D162C41AF7400A3E712 /* mep-sample-ucidsp.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-sample-ucidsp.cpu"; sourceTree = "<group>"; };
+		A53D6D172C41AF7400A3E712 /* mt.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = mt.opc; sourceTree = "<group>"; };
+		A53D6D182C41AF7400A3E712 /* ia64.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = ia64.cpu; sourceTree = "<group>"; };
+		A53D6D192C41AF7400A3E712 /* xc16x.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = xc16x.opc; sourceTree = "<group>"; };
+		A53D6D1A2C41AF7400A3E712 /* mep-ivc2.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-ivc2.cpu"; sourceTree = "<group>"; };
+		A53D6D1B2C41AF7400A3E712 /* ms1.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = ms1.opc; sourceTree = "<group>"; };
+		A53D6D1C2C41AF7400A3E712 /* arm.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = arm.cpu; sourceTree = "<group>"; };
+		A53D6D1D2C41AF7400A3E712 /* mep.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = mep.opc; sourceTree = "<group>"; };
+		A53D6D1E2C41AF7400A3E712 /* fr30.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = fr30.cpu; sourceTree = "<group>"; };
+		A53D6D1F2C41AF7400A3E712 /* sh-sim.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "sh-sim.cpu"; sourceTree = "<group>"; };
+		A53D6D202C41AF7400A3E712 /* mep.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = mep.cpu; sourceTree = "<group>"; };
+		A53D6D212C41AF7400A3E712 /* powerpc.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = powerpc.cpu; sourceTree = "<group>"; };
+		A53D6D222C41AF7400A3E712 /* fr30.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = fr30.opc; sourceTree = "<group>"; };
+		A53D6D232C41AF7400A3E712 /* sparcfpu.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = sparcfpu.cpu; sourceTree = "<group>"; };
+		A53D6D242C41AF7400A3E712 /* arm.sim */ = {isa = PBXFileReference; lastKnownFileType = text; path = arm.sim; sourceTree = "<group>"; };
+		A53D6D252C41AF7400A3E712 /* mep-core.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-core.cpu"; sourceTree = "<group>"; };
+		A53D6D262C41AF7400A3E712 /* or1korbis.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = or1korbis.cpu; sourceTree = "<group>"; };
+		A53D6D272C41AF7400A3E712 /* iq10.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = iq10.cpu; sourceTree = "<group>"; };
+		A53D6D282C41AF7400A3E712 /* play.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = play.cpu; sourceTree = "<group>"; };
+		A53D6D292C41AF7400A3E712 /* openrisc.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = openrisc.cpu; sourceTree = "<group>"; };
+		A53D6D2A2C41AF7400A3E712 /* thumb.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = thumb.cpu; sourceTree = "<group>"; };
+		A53D6D2B2C41AF7400A3E712 /* or1kcommon.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = or1kcommon.cpu; sourceTree = "<group>"; };
+		A53D6D2C2C41AF7400A3E712 /* openrisc.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = openrisc.opc; sourceTree = "<group>"; };
+		A53D6D2D2C41AF7400A3E712 /* mep-fmax.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-fmax.cpu"; sourceTree = "<group>"; };
+		A53D6D2E2C41AF7400A3E712 /* m68k.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = m68k.cpu; sourceTree = "<group>"; };
+		A53D6D2F2C41AF7400A3E712 /* sparc64.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = sparc64.cpu; sourceTree = "<group>"; };
+		A53D6D302C41AF7400A3E712 /* arm7.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = arm7.cpu; sourceTree = "<group>"; };
+		A53D6D312C41AF7400A3E712 /* sh.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = sh.cpu; sourceTree = "<group>"; };
+		A53D6D322C41AF7400A3E712 /* sparc.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = sparc.opc; sourceTree = "<group>"; };
+		A53D6D332C41AF7400A3E712 /* sparc.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = sparc.cpu; sourceTree = "<group>"; };
+		A53D6D342C41AF7400A3E712 /* sh.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = sh.opc; sourceTree = "<group>"; };
+		A53D6D352C41AF7400A3E712 /* simplify.inc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.pascal; path = simplify.inc; sourceTree = "<group>"; };
+		A53D6D362C41AF7400A3E712 /* ip2k.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = ip2k.opc; sourceTree = "<group>"; };
+		A53D6D372C41AF7400A3E712 /* lm32.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = lm32.opc; sourceTree = "<group>"; };
+		A53D6D382C41AF7400A3E712 /* frv.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = frv.opc; sourceTree = "<group>"; };
+		A53D6D392C41AF7400A3E712 /* ip2k.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = ip2k.cpu; sourceTree = "<group>"; };
+		A53D6D3A2C41AF7400A3E712 /* ia32.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = ia32.cpu; sourceTree = "<group>"; };
+		A53D6D3B2C41AF7400A3E712 /* lm32.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = lm32.cpu; sourceTree = "<group>"; };
+		A53D6D3C2C41AF7400A3E712 /* frv.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = frv.cpu; sourceTree = "<group>"; };
+		A53D6D3E2C41B0F700A3E712 /* gen-all-opcodes */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "gen-all-opcodes"; sourceTree = "<group>"; };
+		A53D6D402C41B0F700A3E712 /* rtl.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = rtl.scm; sourceTree = "<group>"; };
+		A53D6D412C41B0F700A3E712 /* semantics.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = semantics.scm; sourceTree = "<group>"; };
+		A53D6D422C41B0F700A3E712 /* html.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = html.scm; sourceTree = "<group>"; };
+		A53D6D432C41B0F700A3E712 /* cgen-stest.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "cgen-stest.scm"; sourceTree = "<group>"; };
+		A53D6D442C41B0F700A3E712 /* opc-asmdis.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "opc-asmdis.scm"; sourceTree = "<group>"; };
+		A53D6D452C41B0F700A3E712 /* sid.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = sid.scm; sourceTree = "<group>"; };
+		A53D6D462C41B0F700A3E712 /* profile.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = profile.scm; sourceTree = "<group>"; };
+		A53D6D492C41B0F700A3E712 /* cgen-opc.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "cgen-opc.scm"; sourceTree = "<group>"; };
+		A53D6D4B2C41B0F700A3E712 /* attr.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = attr.scm; sourceTree = "<group>"; };
+		A53D6D4C2C41B0F700A3E712 /* sim-model.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "sim-model.scm"; sourceTree = "<group>"; };
+		A53D6D4D2C41B0F700A3E712 /* cgen-intrinsics.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "cgen-intrinsics.scm"; sourceTree = "<group>"; };
+		A53D6D4E2C41B0F700A3E712 /* cos-pprint.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "cos-pprint.scm"; sourceTree = "<group>"; };
+		A53D6D4F2C41B0F700A3E712 /* read.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = read.scm; sourceTree = "<group>"; };
+		A53D6D502C41B0F700A3E712 /* gen-all-doc */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "gen-all-doc"; sourceTree = "<group>"; };
+		A53D6D552C41B0F700A3E712 /* xstormy16.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = xstormy16.cpu; sourceTree = "<group>"; };
+		A53D6D562C41B0F700A3E712 /* xstormy16.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = xstormy16.opc; sourceTree = "<group>"; };
+		A53D6D572C41B0F700A3E712 /* sh64-compact.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "sh64-compact.cpu"; sourceTree = "<group>"; };
+		A53D6D582C41B0F700A3E712 /* mep-avc2.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-avc2.cpu"; sourceTree = "<group>"; };
+		A53D6D592C41B0F700A3E712 /* mep-default.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-default.cpu"; sourceTree = "<group>"; };
+		A53D6D5A2C41B0F700A3E712 /* mep-c5.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-c5.cpu"; sourceTree = "<group>"; };
+		A53D6D5B2C41B0F700A3E712 /* sh64-media.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "sh64-media.cpu"; sourceTree = "<group>"; };
+		A53D6D5C2C41B0F700A3E712 /* i960.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = i960.opc; sourceTree = "<group>"; };
+		A53D6D5D2C41B0F700A3E712 /* i960.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = i960.cpu; sourceTree = "<group>"; };
+		A53D6D5E2C41B0F700A3E712 /* sparc32.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = sparc32.cpu; sourceTree = "<group>"; };
+		A53D6D5F2C41B0F700A3E712 /* sh-sid.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "sh-sid.cpu"; sourceTree = "<group>"; };
+		A53D6D602C41B0F700A3E712 /* mep-avc.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-avc.cpu"; sourceTree = "<group>"; };
+		A53D6D612C41B0F700A3E712 /* mep-rhcop.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-rhcop.cpu"; sourceTree = "<group>"; };
+		A53D6D622C41B0F700A3E712 /* mep-ext-cop.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-ext-cop.cpu"; sourceTree = "<group>"; };
+		A53D6D632C41B0F700A3E712 /* sparccom.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = sparccom.cpu; sourceTree = "<group>"; };
+		A53D6D642C41B0F700A3E712 /* mep-h1.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-h1.cpu"; sourceTree = "<group>"; };
+		A53D6D652C41B0F700A3E712 /* xc16x.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = xc16x.cpu; sourceTree = "<group>"; };
+		A53D6D662C41B0F700A3E712 /* mep-sample-ucidsp.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-sample-ucidsp.cpu"; sourceTree = "<group>"; };
+		A53D6D672C41B0F700A3E712 /* ia64.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = ia64.cpu; sourceTree = "<group>"; };
+		A53D6D682C41B0F700A3E712 /* xc16x.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = xc16x.opc; sourceTree = "<group>"; };
+		A53D6D692C41B0F700A3E712 /* mep-ivc2.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-ivc2.cpu"; sourceTree = "<group>"; };
+		A53D6D6A2C41B0F700A3E712 /* arm.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = arm.cpu; sourceTree = "<group>"; };
+		A53D6D6B2C41B0F700A3E712 /* mep.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = mep.opc; sourceTree = "<group>"; };
+		A53D6D6C2C41B0F700A3E712 /* fr30.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = fr30.cpu; sourceTree = "<group>"; };
+		A53D6D6D2C41B0F700A3E712 /* sh-sim.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "sh-sim.cpu"; sourceTree = "<group>"; };
+		A53D6D6E2C41B0F700A3E712 /* mep.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = mep.cpu; sourceTree = "<group>"; };
+		A53D6D6F2C41B0F700A3E712 /* powerpc.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = powerpc.cpu; sourceTree = "<group>"; };
+		A53D6D702C41B0F700A3E712 /* fr30.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = fr30.opc; sourceTree = "<group>"; };
+		A53D6D712C41B0F700A3E712 /* sparcfpu.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = sparcfpu.cpu; sourceTree = "<group>"; };
+		A53D6D722C41B0F700A3E712 /* arm.sim */ = {isa = PBXFileReference; lastKnownFileType = text; path = arm.sim; sourceTree = "<group>"; };
+		A53D6D732C41B0F700A3E712 /* mep-core.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-core.cpu"; sourceTree = "<group>"; };
+		A53D6D742C41B0F700A3E712 /* play.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = play.cpu; sourceTree = "<group>"; };
+		A53D6D752C41B0F700A3E712 /* openrisc.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = openrisc.cpu; sourceTree = "<group>"; };
+		A53D6D762C41B0F700A3E712 /* thumb.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = thumb.cpu; sourceTree = "<group>"; };
+		A53D6D772C41B0F700A3E712 /* openrisc.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = openrisc.opc; sourceTree = "<group>"; };
+		A53D6D782C41B0F700A3E712 /* mep-fmax.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mep-fmax.cpu"; sourceTree = "<group>"; };
+		A53D6D792C41B0F700A3E712 /* m68k.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = m68k.cpu; sourceTree = "<group>"; };
+		A53D6D7A2C41B0F700A3E712 /* sparc64.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = sparc64.cpu; sourceTree = "<group>"; };
+		A53D6D7B2C41B0F700A3E712 /* arm7.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = arm7.cpu; sourceTree = "<group>"; };
+		A53D6D7C2C41B0F700A3E712 /* sh.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = sh.cpu; sourceTree = "<group>"; };
+		A53D6D7D2C41B0F700A3E712 /* sparc.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = sparc.opc; sourceTree = "<group>"; };
+		A53D6D7E2C41B0F700A3E712 /* sparc.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = sparc.cpu; sourceTree = "<group>"; };
+		A53D6D7F2C41B0F700A3E712 /* sh.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = sh.opc; sourceTree = "<group>"; };
+		A53D6D802C41B0F700A3E712 /* simplify.inc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.pascal; path = simplify.inc; sourceTree = "<group>"; };
+		A53D6D812C41B0F700A3E712 /* ip2k.opc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = ip2k.opc; sourceTree = "<group>"; };
+		A53D6D822C41B0F700A3E712 /* ip2k.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = ip2k.cpu; sourceTree = "<group>"; };
+		A53D6D832C41B0F700A3E712 /* ia32.cpu */ = {isa = PBXFileReference; lastKnownFileType = text; path = ia32.cpu; sourceTree = "<group>"; };
+		A53D6D852C41B0F700A3E712 /* desc.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = desc.scm; sourceTree = "<group>"; };
+		A53D6D872C41B0F700A3E712 /* gen-all-sid */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "gen-all-sid"; sourceTree = "<group>"; };
+		A53D6D892C41B0F700A3E712 /* iformat.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = iformat.scm; sourceTree = "<group>"; };
+		A53D6D8A2C41B0F700A3E712 /* pgmr-tools.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "pgmr-tools.scm"; sourceTree = "<group>"; };
+		A53D6D8B2C41B0F700A3E712 /* gas-test.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "gas-test.scm"; sourceTree = "<group>"; };
+		A53D6D8C2C41B0F700A3E712 /* gen-all-sim */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "gen-all-sim"; sourceTree = "<group>"; };
+		A53D6D8D2C41B0F700A3E712 /* utils-gen.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "utils-gen.scm"; sourceTree = "<group>"; };
+		A53D6D8E2C41B0F700A3E712 /* cgen-gas.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "cgen-gas.scm"; sourceTree = "<group>"; };
+		A53D6D8F2C41B0F700A3E712 /* rtl-c.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "rtl-c.scm"; sourceTree = "<group>"; };
+		A53D6D902C41B0F700A3E712 /* pprint.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = pprint.scm; sourceTree = "<group>"; };
+		A53D6D912C41B0F700A3E712 /* cgen-sid.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "cgen-sid.scm"; sourceTree = "<group>"; };
+		A53D6D922C41B0F700A3E712 /* guile.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = guile.scm; sourceTree = "<group>"; };
+		A53D6D932C41B0F700A3E712 /* hardware.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = hardware.scm; sourceTree = "<group>"; };
+		A53D6D942C41B0F700A3E712 /* desc-cpu.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "desc-cpu.scm"; sourceTree = "<group>"; };
+		A53D6D952C41B0F700A3E712 /* types.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = types.scm; sourceTree = "<group>"; };
+		A53D6D962C41B0F700A3E712 /* utils.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = utils.scm; sourceTree = "<group>"; };
+		A53D6D972C41B0F700A3E712 /* opc-itab.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "opc-itab.scm"; sourceTree = "<group>"; };
+		A53D6D982C41B0F700A3E712 /* sim-decode.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "sim-decode.scm"; sourceTree = "<group>"; };
+		A53D6D992C41B0F700A3E712 /* rtx-funcs.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "rtx-funcs.scm"; sourceTree = "<group>"; };
+		A53D6D9A2C41B0F700A3E712 /* sem-frags.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "sem-frags.scm"; sourceTree = "<group>"; };
+		A53D6D9E2C41B0F700A3E712 /* mode.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = mode.scm; sourceTree = "<group>"; };
+		A53D6D9F2C41B0F700A3E712 /* sid-cpu.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "sid-cpu.scm"; sourceTree = "<group>"; };
+		A53D6DA12C41B0F700A3E712 /* rtl-traverse.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "rtl-traverse.scm"; sourceTree = "<group>"; };
+		A53D6DA32C41B0F700A3E712 /* operand.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = operand.scm; sourceTree = "<group>"; };
+		A53D6DA42C41B0F700A3E712 /* utils-cgen.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "utils-cgen.scm"; sourceTree = "<group>"; };
+		A53D6DA52C41B0F700A3E712 /* sim-cpu.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "sim-cpu.scm"; sourceTree = "<group>"; };
+		A53D6DA62C41B0F700A3E712 /* sid-model.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "sid-model.scm"; sourceTree = "<group>"; };
+		A53D6DA92C41B0F700A3E712 /* cgen-sim.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "cgen-sim.scm"; sourceTree = "<group>"; };
+		A53D6DAA2C41B0F700A3E712 /* minsn.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = minsn.scm; sourceTree = "<group>"; };
+		A53D6DAB2C41B0F700A3E712 /* pmacros.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = pmacros.scm; sourceTree = "<group>"; };
+		A53D6DAD2C41B0F700A3E712 /* insn.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = insn.scm; sourceTree = "<group>"; };
+		A53D6DB02C41B0F700A3E712 /* opcodes.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = opcodes.texi; sourceTree = "<group>"; };
+		A53D6DB12C41B0F700A3E712 /* cgenint.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = cgenint.texi; sourceTree = "<group>"; };
+		A53D6DB32C41B0F700A3E712 /* glossary.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = glossary.texi; sourceTree = "<group>"; };
+		A53D6DB42C41B0F700A3E712 /* cgen.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = cgen.texi; sourceTree = "<group>"; };
+		A53D6DB52C41B0F700A3E712 /* rtl.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = rtl.texi; sourceTree = "<group>"; };
+		A53D6DBA2C41B0F700A3E712 /* running.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = running.texi; sourceTree = "<group>"; };
+		A53D6DBB2C41B0F700A3E712 /* credits.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = credits.texi; sourceTree = "<group>"; };
+		A53D6DBC2C41B0F700A3E712 /* app.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = app.texi; sourceTree = "<group>"; };
+		A53D6DBE2C41B0F700A3E712 /* porting.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = porting.texi; sourceTree = "<group>"; };
+		A53D6DC02C41B0F700A3E712 /* sim.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = sim.texi; sourceTree = "<group>"; };
+		A53D6DC12C41B0F700A3E712 /* intro.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = intro.texi; sourceTree = "<group>"; };
+		A53D6DC32C41B0F700A3E712 /* notes.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = notes.texi; sourceTree = "<group>"; };
+		A53D6DC52C41B0F700A3E712 /* pmacros.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = pmacros.texi; sourceTree = "<group>"; };
+		A53D6DC92C41B0F700A3E712 /* model.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = model.scm; sourceTree = "<group>"; };
+		A53D6DCA2C41B0F700A3E712 /* opc-ibld.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "opc-ibld.scm"; sourceTree = "<group>"; };
+		A53D6DCB2C41B0F700A3E712 /* decode.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = decode.scm; sourceTree = "<group>"; };
+		A53D6DCC2C41B0F700A3E712 /* dev.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = dev.scm; sourceTree = "<group>"; };
+		A53D6DCD2C41B0F700A3E712 /* cos.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = cos.scm; sourceTree = "<group>"; };
+		A53D6DCE2C41B0F700A3E712 /* opcodes.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = opcodes.scm; sourceTree = "<group>"; };
+		A53D6DCF2C41B0F700A3E712 /* sim.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = sim.scm; sourceTree = "<group>"; };
+		A53D6DD12C41B0F700A3E712 /* sort.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = sort.scm; sourceTree = "<group>"; };
+		A53D6DD22C41B0F700A3E712 /* pp.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = pp.scm; sourceTree = "<group>"; };
+		A53D6DD32C41B0F700A3E712 /* random.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = random.scm; sourceTree = "<group>"; };
+		A53D6DD42C41B0F700A3E712 /* logical.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = logical.scm; sourceTree = "<group>"; };
+		A53D6DD52C41B0F700A3E712 /* genwrite.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = genwrite.scm; sourceTree = "<group>"; };
+		A53D6DD62C41B0F700A3E712 /* cgen-doc.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "cgen-doc.scm"; sourceTree = "<group>"; };
+		A53D6DD72C41B0F700A3E712 /* sim-arch.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "sim-arch.scm"; sourceTree = "<group>"; };
+		A53D6DD92C41B0F700A3E712 /* intrinsics.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = intrinsics.scm; sourceTree = "<group>"; };
+		A53D6DDB2C41B0F700A3E712 /* ifield.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = ifield.scm; sourceTree = "<group>"; };
+		A53D6DDC2C41B0F700A3E712 /* opc-opinst.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "opc-opinst.scm"; sourceTree = "<group>"; };
+		A53D6DDD2C41B0F700A3E712 /* enum.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = enum.scm; sourceTree = "<group>"; };
+		A53D6DDF2C41B0F700A3E712 /* utils-sim.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "utils-sim.scm"; sourceTree = "<group>"; };
+		A53D6DE02C41B0F700A3E712 /* sid-decode.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "sid-decode.scm"; sourceTree = "<group>"; };
+		A53D6DE12C41B0F700A3E712 /* mach.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = mach.scm; sourceTree = "<group>"; };
+		A53D6DE22C41B0F700A3E712 /* sim-test.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "sim-test.scm"; sourceTree = "<group>"; };
 		A53F04941B45F52C005B5360 /* libiberty.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libiberty.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A53F05711B46029C005B5360 /* dwarf2.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; path = dwarf2.def; sourceTree = "<group>"; };
 		A53F07921B4636AE005B5360 /* test_expandargv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_expandargv; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6266,6 +6465,8 @@
 			children = (
 				2609CE530E82C407008125DE /* bfd */,
 				2609D00D0E82C408008125DE /* binutils */,
+				A53D6D3D2C41B0F700A3E712 /* cgen */,
+				A53D6CF42C41AF7400A3E712 /* cpu */,
 				A56E58251B210131005E1D43 /* dejagnu */,
 				A53AC1811A3F7EFE002F20B2 /* electric-fence */,
 				A5262E802B55204E002EC445 /* elfcpp */,
@@ -11471,6 +11672,243 @@
 				A53AC5E31A4724BC002F20B2 /* unknown.c */,
 			);
 			path = libbacktrace;
+			sourceTree = "<group>";
+		};
+		A53D6CF42C41AF7400A3E712 /* cpu */ = {
+			isa = PBXGroup;
+			children = (
+				A53D6D1C2C41AF7400A3E712 /* arm.cpu */,
+				A53D6D242C41AF7400A3E712 /* arm.sim */,
+				A53D6D302C41AF7400A3E712 /* arm7.cpu */,
+				A53D6D0A2C41AF7400A3E712 /* cris.cpu */,
+				A53D6D062C41AF7400A3E712 /* epiphany.cpu */,
+				A53D6D0D2C41AF7400A3E712 /* epiphany.opc */,
+				A53D6D1E2C41AF7400A3E712 /* fr30.cpu */,
+				A53D6D222C41AF7400A3E712 /* fr30.opc */,
+				A53D6D3C2C41AF7400A3E712 /* frv.cpu */,
+				A53D6D382C41AF7400A3E712 /* frv.opc */,
+				A53D6D052C41AF7400A3E712 /* i960.cpu */,
+				A53D6D002C41AF7400A3E712 /* i960.opc */,
+				A53D6D3A2C41AF7400A3E712 /* ia32.cpu */,
+				A53D6D182C41AF7400A3E712 /* ia64.cpu */,
+				A53D6D392C41AF7400A3E712 /* ip2k.cpu */,
+				A53D6D362C41AF7400A3E712 /* ip2k.opc */,
+				A53D6D272C41AF7400A3E712 /* iq10.cpu */,
+				A53D6CFB2C41AF7400A3E712 /* iq2000.cpu */,
+				A53D6D012C41AF7400A3E712 /* iq2000.opc */,
+				A53D6D042C41AF7400A3E712 /* iq2000m.cpu */,
+				A53D6D3B2C41AF7400A3E712 /* lm32.cpu */,
+				A53D6D372C41AF7400A3E712 /* lm32.opc */,
+				A53D6CFE2C41AF7400A3E712 /* m32c.cpu */,
+				A53D6D022C41AF7400A3E712 /* m32c.opc */,
+				A53D6CF62C41AF7400A3E712 /* m32r.cpu */,
+				A53D6CF92C41AF7400A3E712 /* m32r.opc */,
+				A53D6D2E2C41AF7400A3E712 /* m68k.cpu */,
+				A53D6D0B2C41AF7400A3E712 /* mep-avc.cpu */,
+				A53D6CFA2C41AF7400A3E712 /* mep-avc2.cpu */,
+				A53D6CFD2C41AF7400A3E712 /* mep-c5.cpu */,
+				A53D6D252C41AF7400A3E712 /* mep-core.cpu */,
+				A53D6CFC2C41AF7400A3E712 /* mep-default.cpu */,
+				A53D6D0F2C41AF7400A3E712 /* mep-ext-cop.cpu */,
+				A53D6D2D2C41AF7400A3E712 /* mep-fmax.cpu */,
+				A53D6D122C41AF7400A3E712 /* mep-h1.cpu */,
+				A53D6D1A2C41AF7400A3E712 /* mep-ivc2.cpu */,
+				A53D6D0C2C41AF7400A3E712 /* mep-rhcop.cpu */,
+				A53D6D162C41AF7400A3E712 /* mep-sample-ucidsp.cpu */,
+				A53D6D202C41AF7400A3E712 /* mep.cpu */,
+				A53D6D1D2C41AF7400A3E712 /* mep.opc */,
+				A53D6D152C41AF7400A3E712 /* ms1.cpu */,
+				A53D6D1B2C41AF7400A3E712 /* ms1.opc */,
+				A53D6D132C41AF7400A3E712 /* mt.cpu */,
+				A53D6D172C41AF7400A3E712 /* mt.opc */,
+				A53D6D292C41AF7400A3E712 /* openrisc.cpu */,
+				A53D6D2C2C41AF7400A3E712 /* openrisc.opc */,
+				A53D6D072C41AF7400A3E712 /* or1k.cpu */,
+				A53D6D0E2C41AF7400A3E712 /* or1k.opc */,
+				A53D6D2B2C41AF7400A3E712 /* or1kcommon.cpu */,
+				A53D6D262C41AF7400A3E712 /* or1korbis.cpu */,
+				A53D6D112C41AF7400A3E712 /* or1korfpx.cpu */,
+				A53D6D282C41AF7400A3E712 /* play.cpu */,
+				A53D6D212C41AF7400A3E712 /* powerpc.cpu */,
+				A53D6D092C41AF7400A3E712 /* sh-sid.cpu */,
+				A53D6D1F2C41AF7400A3E712 /* sh-sim.cpu */,
+				A53D6D312C41AF7400A3E712 /* sh.cpu */,
+				A53D6D342C41AF7400A3E712 /* sh.opc */,
+				A53D6CF82C41AF7400A3E712 /* sh64-compact.cpu */,
+				A53D6CFF2C41AF7400A3E712 /* sh64-media.cpu */,
+				A53D6D352C41AF7400A3E712 /* simplify.inc */,
+				A53D6D332C41AF7400A3E712 /* sparc.cpu */,
+				A53D6D322C41AF7400A3E712 /* sparc.opc */,
+				A53D6D082C41AF7400A3E712 /* sparc32.cpu */,
+				A53D6D2F2C41AF7400A3E712 /* sparc64.cpu */,
+				A53D6D102C41AF7400A3E712 /* sparccom.cpu */,
+				A53D6D232C41AF7400A3E712 /* sparcfpu.cpu */,
+				A53D6D2A2C41AF7400A3E712 /* thumb.cpu */,
+				A53D6D142C41AF7400A3E712 /* xc16x.cpu */,
+				A53D6D192C41AF7400A3E712 /* xc16x.opc */,
+				A53D6CF52C41AF7400A3E712 /* xstormy16.cpu */,
+				A53D6CF72C41AF7400A3E712 /* xstormy16.opc */,
+			);
+			path = cpu;
+			sourceTree = "<group>";
+		};
+		A53D6D3D2C41B0F700A3E712 /* cgen */ = {
+			isa = PBXGroup;
+			children = (
+				A53D6D4B2C41B0F700A3E712 /* attr.scm */,
+				A53D6DD62C41B0F700A3E712 /* cgen-doc.scm */,
+				A53D6D8E2C41B0F700A3E712 /* cgen-gas.scm */,
+				A53D6D4D2C41B0F700A3E712 /* cgen-intrinsics.scm */,
+				A53D6D492C41B0F700A3E712 /* cgen-opc.scm */,
+				A53D6D912C41B0F700A3E712 /* cgen-sid.scm */,
+				A53D6DA92C41B0F700A3E712 /* cgen-sim.scm */,
+				A53D6D432C41B0F700A3E712 /* cgen-stest.scm */,
+				A53D6D4E2C41B0F700A3E712 /* cos-pprint.scm */,
+				A53D6DCD2C41B0F700A3E712 /* cos.scm */,
+				A53D6D542C41B0F700A3E712 /* cpu */,
+				A53D6DCB2C41B0F700A3E712 /* decode.scm */,
+				A53D6D942C41B0F700A3E712 /* desc-cpu.scm */,
+				A53D6D852C41B0F700A3E712 /* desc.scm */,
+				A53D6DCC2C41B0F700A3E712 /* dev.scm */,
+				A53D6DAF2C41B0F700A3E712 /* doc */,
+				A53D6DDD2C41B0F700A3E712 /* enum.scm */,
+				A53D6D8B2C41B0F700A3E712 /* gas-test.scm */,
+				A53D6D502C41B0F700A3E712 /* gen-all-doc */,
+				A53D6D3E2C41B0F700A3E712 /* gen-all-opcodes */,
+				A53D6D872C41B0F700A3E712 /* gen-all-sid */,
+				A53D6D8C2C41B0F700A3E712 /* gen-all-sim */,
+				A53D6D922C41B0F700A3E712 /* guile.scm */,
+				A53D6D932C41B0F700A3E712 /* hardware.scm */,
+				A53D6D422C41B0F700A3E712 /* html.scm */,
+				A53D6DDB2C41B0F700A3E712 /* ifield.scm */,
+				A53D6D892C41B0F700A3E712 /* iformat.scm */,
+				A53D6DAD2C41B0F700A3E712 /* insn.scm */,
+				A53D6DD92C41B0F700A3E712 /* intrinsics.scm */,
+				A53D6DE12C41B0F700A3E712 /* mach.scm */,
+				A53D6DAA2C41B0F700A3E712 /* minsn.scm */,
+				A53D6D9E2C41B0F700A3E712 /* mode.scm */,
+				A53D6DC92C41B0F700A3E712 /* model.scm */,
+				A53D6D442C41B0F700A3E712 /* opc-asmdis.scm */,
+				A53D6DCA2C41B0F700A3E712 /* opc-ibld.scm */,
+				A53D6D972C41B0F700A3E712 /* opc-itab.scm */,
+				A53D6DDC2C41B0F700A3E712 /* opc-opinst.scm */,
+				A53D6DCE2C41B0F700A3E712 /* opcodes.scm */,
+				A53D6DA32C41B0F700A3E712 /* operand.scm */,
+				A53D6D8A2C41B0F700A3E712 /* pgmr-tools.scm */,
+				A53D6DAB2C41B0F700A3E712 /* pmacros.scm */,
+				A53D6D902C41B0F700A3E712 /* pprint.scm */,
+				A53D6D462C41B0F700A3E712 /* profile.scm */,
+				A53D6D4F2C41B0F700A3E712 /* read.scm */,
+				A53D6D8F2C41B0F700A3E712 /* rtl-c.scm */,
+				A53D6DA12C41B0F700A3E712 /* rtl-traverse.scm */,
+				A53D6D402C41B0F700A3E712 /* rtl.scm */,
+				A53D6D992C41B0F700A3E712 /* rtx-funcs.scm */,
+				A53D6D9A2C41B0F700A3E712 /* sem-frags.scm */,
+				A53D6D412C41B0F700A3E712 /* semantics.scm */,
+				A53D6D9F2C41B0F700A3E712 /* sid-cpu.scm */,
+				A53D6DE02C41B0F700A3E712 /* sid-decode.scm */,
+				A53D6DA62C41B0F700A3E712 /* sid-model.scm */,
+				A53D6D452C41B0F700A3E712 /* sid.scm */,
+				A53D6DD72C41B0F700A3E712 /* sim-arch.scm */,
+				A53D6DA52C41B0F700A3E712 /* sim-cpu.scm */,
+				A53D6D982C41B0F700A3E712 /* sim-decode.scm */,
+				A53D6D4C2C41B0F700A3E712 /* sim-model.scm */,
+				A53D6DE22C41B0F700A3E712 /* sim-test.scm */,
+				A53D6DCF2C41B0F700A3E712 /* sim.scm */,
+				A53D6DD02C41B0F700A3E712 /* slib */,
+				A53D6D952C41B0F700A3E712 /* types.scm */,
+				A53D6DA42C41B0F700A3E712 /* utils-cgen.scm */,
+				A53D6D8D2C41B0F700A3E712 /* utils-gen.scm */,
+				A53D6DDF2C41B0F700A3E712 /* utils-sim.scm */,
+				A53D6D962C41B0F700A3E712 /* utils.scm */,
+			);
+			path = cgen;
+			sourceTree = "<group>";
+		};
+		A53D6D542C41B0F700A3E712 /* cpu */ = {
+			isa = PBXGroup;
+			children = (
+				A53D6D6A2C41B0F700A3E712 /* arm.cpu */,
+				A53D6D722C41B0F700A3E712 /* arm.sim */,
+				A53D6D7B2C41B0F700A3E712 /* arm7.cpu */,
+				A53D6D6C2C41B0F700A3E712 /* fr30.cpu */,
+				A53D6D702C41B0F700A3E712 /* fr30.opc */,
+				A53D6D5D2C41B0F700A3E712 /* i960.cpu */,
+				A53D6D5C2C41B0F700A3E712 /* i960.opc */,
+				A53D6D832C41B0F700A3E712 /* ia32.cpu */,
+				A53D6D672C41B0F700A3E712 /* ia64.cpu */,
+				A53D6D822C41B0F700A3E712 /* ip2k.cpu */,
+				A53D6D812C41B0F700A3E712 /* ip2k.opc */,
+				A53D6D792C41B0F700A3E712 /* m68k.cpu */,
+				A53D6D602C41B0F700A3E712 /* mep-avc.cpu */,
+				A53D6D582C41B0F700A3E712 /* mep-avc2.cpu */,
+				A53D6D5A2C41B0F700A3E712 /* mep-c5.cpu */,
+				A53D6D732C41B0F700A3E712 /* mep-core.cpu */,
+				A53D6D592C41B0F700A3E712 /* mep-default.cpu */,
+				A53D6D622C41B0F700A3E712 /* mep-ext-cop.cpu */,
+				A53D6D782C41B0F700A3E712 /* mep-fmax.cpu */,
+				A53D6D642C41B0F700A3E712 /* mep-h1.cpu */,
+				A53D6D692C41B0F700A3E712 /* mep-ivc2.cpu */,
+				A53D6D612C41B0F700A3E712 /* mep-rhcop.cpu */,
+				A53D6D662C41B0F700A3E712 /* mep-sample-ucidsp.cpu */,
+				A53D6D6E2C41B0F700A3E712 /* mep.cpu */,
+				A53D6D6B2C41B0F700A3E712 /* mep.opc */,
+				A53D6D752C41B0F700A3E712 /* openrisc.cpu */,
+				A53D6D772C41B0F700A3E712 /* openrisc.opc */,
+				A53D6D742C41B0F700A3E712 /* play.cpu */,
+				A53D6D6F2C41B0F700A3E712 /* powerpc.cpu */,
+				A53D6D5F2C41B0F700A3E712 /* sh-sid.cpu */,
+				A53D6D6D2C41B0F700A3E712 /* sh-sim.cpu */,
+				A53D6D7C2C41B0F700A3E712 /* sh.cpu */,
+				A53D6D7F2C41B0F700A3E712 /* sh.opc */,
+				A53D6D572C41B0F700A3E712 /* sh64-compact.cpu */,
+				A53D6D5B2C41B0F700A3E712 /* sh64-media.cpu */,
+				A53D6D802C41B0F700A3E712 /* simplify.inc */,
+				A53D6D7E2C41B0F700A3E712 /* sparc.cpu */,
+				A53D6D7D2C41B0F700A3E712 /* sparc.opc */,
+				A53D6D5E2C41B0F700A3E712 /* sparc32.cpu */,
+				A53D6D7A2C41B0F700A3E712 /* sparc64.cpu */,
+				A53D6D632C41B0F700A3E712 /* sparccom.cpu */,
+				A53D6D712C41B0F700A3E712 /* sparcfpu.cpu */,
+				A53D6D762C41B0F700A3E712 /* thumb.cpu */,
+				A53D6D652C41B0F700A3E712 /* xc16x.cpu */,
+				A53D6D682C41B0F700A3E712 /* xc16x.opc */,
+				A53D6D552C41B0F700A3E712 /* xstormy16.cpu */,
+				A53D6D562C41B0F700A3E712 /* xstormy16.opc */,
+			);
+			path = cpu;
+			sourceTree = "<group>";
+		};
+		A53D6DAF2C41B0F700A3E712 /* doc */ = {
+			isa = PBXGroup;
+			children = (
+				A53D6DBC2C41B0F700A3E712 /* app.texi */,
+				A53D6DB42C41B0F700A3E712 /* cgen.texi */,
+				A53D6DB12C41B0F700A3E712 /* cgenint.texi */,
+				A53D6DBB2C41B0F700A3E712 /* credits.texi */,
+				A53D6DB32C41B0F700A3E712 /* glossary.texi */,
+				A53D6DC12C41B0F700A3E712 /* intro.texi */,
+				A53D6DC32C41B0F700A3E712 /* notes.texi */,
+				A53D6DB02C41B0F700A3E712 /* opcodes.texi */,
+				A53D6DC52C41B0F700A3E712 /* pmacros.texi */,
+				A53D6DBE2C41B0F700A3E712 /* porting.texi */,
+				A53D6DB52C41B0F700A3E712 /* rtl.texi */,
+				A53D6DBA2C41B0F700A3E712 /* running.texi */,
+				A53D6DC02C41B0F700A3E712 /* sim.texi */,
+			);
+			path = doc;
+			sourceTree = "<group>";
+		};
+		A53D6DD02C41B0F700A3E712 /* slib */ = {
+			isa = PBXGroup;
+			children = (
+				A53D6DD52C41B0F700A3E712 /* genwrite.scm */,
+				A53D6DD42C41B0F700A3E712 /* logical.scm */,
+				A53D6DD22C41B0F700A3E712 /* pp.scm */,
+				A53D6DD32C41B0F700A3E712 /* random.scm */,
+				A53D6DD12C41B0F700A3E712 /* sort.scm */,
+			);
+			path = slib;
 			sourceTree = "<group>";
 		};
 		A548D4981836C60900FD4E8A /* XcodePlugins */ = {

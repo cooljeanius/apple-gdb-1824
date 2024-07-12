@@ -176,7 +176,8 @@ sim-test: sim-test.scm cgen-stest.scm @MAINT@ $(ARCHFILE)
 		-E sim-allinsn.exp
 
 CLEANFILES = tmp-*
-DISTCLEANFILES = stamp-cgen *~
+DISTCLEANFILES = stamp-cgen *~ config.cache.bak
+MAINTAINERCLEANFILES = configure.scan autoscan.log
 
 distclean-local:
 	-rm -rf autom4te.cache || rmdir autom4te.cache

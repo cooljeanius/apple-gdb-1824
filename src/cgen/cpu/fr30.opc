@@ -16,18 +16,23 @@
    <arch>-asm.c additions use: "-- asm.c"
    <arch>-dis.c additions use: "-- dis.c"
    <arch>-ibd.h additions use: "-- ibd.h".  */
-
+
+#line 21 "cpu/fr30.opc"
+
 /* -- opc.h */
 
-/* ??? This can be improved upon.  */
+#line 25 "cpu/fr30.opc"
+
+/* ???: This can be improved upon.  */
 #undef  CGEN_DIS_HASH_SIZE
 #define CGEN_DIS_HASH_SIZE 16
 #undef  CGEN_DIS_HASH
 #define CGEN_DIS_HASH(buffer, value) (((unsigned char *) (buffer))[0] >> 4)
 
 /* -- */
-
+#line 34 "cpu/fr30.opc"
 /* -- asm.c */
+#line 36 "cpu/fr30.opc"
 /* Handle register lists for LDMx and STMx.  */
 
 static int
@@ -137,8 +142,9 @@ parse_hi_register_list_st (CGEN_CPU_DESC cd,
 }
 
 /* -- */
-
+#line 146 "cpu/fr30.opc"
 /* -- dis.c */
+#line 148 "cpu/fr30.opc"
 static void
 print_register_list (void * dis_info,
 		     long value,

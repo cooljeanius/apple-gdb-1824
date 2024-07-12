@@ -59,6 +59,7 @@ static int read_insn
 /* -- disassembler routines inserted here.  */
 
 /* -- dis.c */
+#line 148 "cpu/fr30.opc"
 static void
 print_register_list (void * dis_info,
 		     long value,

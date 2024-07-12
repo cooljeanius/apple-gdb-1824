@@ -9,6 +9,7 @@
 
   (string-list
    "\
+#line 13 \"desc-cpu.scm\"
 /* Instruction set variants.  */
 
 static const CGEN_ISA @arch@_cgen_isa_table[] = {
@@ -60,6 +61,7 @@ static const CGEN_ISA @arch@_cgen_isa_table[] = {
 
   (string-list
    "\
+#line 65 \"desc-cpu.scm\"
 /* Machine variants.  */
 
 static const CGEN_MACH @arch@_cgen_mach_table[] = {
@@ -133,11 +135,13 @@ static const CGEN_MACH @arch@_cgen_mach_table[] = {
 	 (num-non-bools (attr-count-non-bools all-attrs)))
     (string-list
      "
+#line 139 \"desc-cpu.scm\"
 /* The instruction field table.  */
 
 "
      (gen-define-with-symcat "A(a) (1 << CGEN_IFLD_" "a)")
      "
+#line 145 \"desc-cpu.scm\"
 const CGEN_IFLD @arch@_cgen_ifld_table[] =
 {
 "
@@ -256,11 +260,13 @@ const CGEN_IFLD @arch@_cgen_ifld_table[] =
      (string-list-map gen-defn (current-kw-list))
      (string-list-map -gen-hw-defn (current-hw-list))
      "
+#line 164 \"desc-cpu.scm\"
 /* The hardware table.  */
 
 "
      (gen-define-with-symcat "A(a) (1 << CGEN_HW_" "a)")
      "
+#line 270 \"desc-cpu.scm\"
 const CGEN_HW_ENTRY @arch@_cgen_hw_table[] =
 {
 "
@@ -447,12 +453,14 @@ const CGEN_HW_ENTRY @arch@_cgen_hw_table[] =
 	 (num-non-bools (attr-count-non-bools all-attrs)))
     (string-list
      "
+#line 457 \"desc-cpu.scm\"
 /* The operand table.  */
 
 "
      (gen-define-with-symcat "A(a) (1 << CGEN_OPERAND_" "a)")
      (gen-define-with-symcat "OPERAND(op) @ARCH@_OPERAND_" "op")
 "
+#line 464 \"desc-cpu.scm\"
 const CGEN_OPERAND @arch@_cgen_operand_table[] =
 {
 "
@@ -547,12 +555,14 @@ const CGEN_OPERAND @arch@_cgen_operand_table[] =
 	 (num-non-bools (attr-count-non-bools all-attrs)))
     (string-write
      "
+#line 559 \"desc-cpu.scm\"
 /* The instruction table.  */
 
 #define OP(field) CGEN_SYNTAX_MAKE_FIELD (OPERAND (field))
 "
      (gen-define-with-symcat "A(a) (1 << CGEN_INSN_" "a)")
 "
+#line 566 \"desc-cpu.scm\"
 static const CGEN_IBASE @arch@_cgen_insn_table[MAX_INSNS] =
 {
   /* Special null first entry.
@@ -593,6 +603,7 @@ static const CGEN_IBASE @arch@_cgen_insn_table[MAX_INSNS] =
 (define (-gen-cpu-open)
   (string-append
    "\
+#line 606 \"desc-cpu.scm\"
 static const CGEN_MACH * lookup_mach_via_bfd_name (const CGEN_MACH *, const char *);
 static void build_hw_table      (CGEN_CPU_TABLE *);
 static void build_ifield_table  (CGEN_CPU_TABLE *);
@@ -657,9 +668,10 @@ build_operand_table (CGEN_CPU_TABLE *cd)
   int machs = cd->machs;
   const CGEN_OPERAND *init = & @arch@_cgen_operand_table[0];
   /* MAX_OPERANDS is only an upper bound on the number of selected entries.
-     However each entry is indexed by it's enum so there can be holes in
+     However, each entry is indexed by its enum, so there can be holes in
      the table.  */
-  const CGEN_OPERAND **selected = xmalloc (MAX_OPERANDS * sizeof (* selected));
+  const CGEN_OPERAND **selected =
+    (const CGEN_OPERAND **)xmalloc(MAX_OPERANDS * sizeof(* selected));
 
   cd->operand_table.init_entries = init;
   cd->operand_table.entry_size = sizeof (CGEN_OPERAND);
@@ -686,7 +698,7 @@ build_insn_table (CGEN_CPU_TABLE *cd)
 {
   int i;
   const CGEN_IBASE *ib = & @arch@_cgen_insn_table[0];
-  CGEN_INSN *insns = xmalloc (MAX_INSNS * sizeof (CGEN_INSN));
+  CGEN_INSN *insns = (CGEN_INSN *)xmalloc(MAX_INSNS * sizeof(CGEN_INSN));
 
   memset (insns, 0, MAX_INSNS * sizeof (CGEN_INSN));
   for (i = 0; i < MAX_INSNS; ++i)
@@ -702,7 +714,7 @@ static void
 @arch@_cgen_rebuild_tables (CGEN_CPU_TABLE *cd)
 {
   int i;
-  CGEN_BITSET *isas = cd->isas;
+  CGEN_BITSET *isas = (CGEN_BITSET *)(intptr_t)cd->isas;
   unsigned int machs = cd->machs;
 
   cd->int_insn_p = CGEN_INT_INSN_P;
@@ -856,7 +868,7 @@ CGEN_CPU_DESC
       abort ();
     }
 
-  cd->isas = cgen_bitset_copy (isas);
+  cd->isas = (int)(intptr_t)cgen_bitset_copy(isas);
   cd->machs = machs;
   cd->endian = endian;
   /* FIXME: for the sparc case we can determine insn-endianness statically.
@@ -949,6 +961,7 @@ void
   (logit 2 "Generating init fns ...\n")
   (string-append
    "\
+#line 964 \"desc-cpu.scm\"
 /* Initialize anything needed to be done once, before any cpu_open call.  */
 
 static void
@@ -970,6 +983,7 @@ init_tables (void)
    (gen-c-copyright "CPU data header for @arch@."
 		  CURRENT-COPYRIGHT CURRENT-PACKAGE)
    "\
+#line 986 \"desc-cpu.scm\"
 #ifndef @ARCH@_CPU_H
 #define @ARCH@_CPU_H
 
@@ -1023,6 +1037,7 @@ init_tables (void)
    (gen-c-copyright "CPU data for @arch@."
 		  CURRENT-COPYRIGHT CURRENT-PACKAGE)
    "\
+#line 1040 \"desc-cpu.scm\"
 #include \"sysdep.h\"
 #include <stdio.h>
 #include <stdarg.h>

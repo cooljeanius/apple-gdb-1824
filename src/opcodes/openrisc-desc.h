@@ -22,6 +22,7 @@ This file is part of the GNU Binutils and/or GDB, the GNU debugger.
 
 */
 
+#line 986 "desc-cpu.scm"
 #ifndef OPENRISC_CPU_H
 #define OPENRISC_CPU_H
 

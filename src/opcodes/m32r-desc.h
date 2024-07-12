@@ -22,6 +22,7 @@ This file is part of the GNU Binutils and/or GDB, the GNU debugger.
 
 */
 
+#line 986 "desc-cpu.scm"
 #ifndef M32R_CPU_H
 #define M32R_CPU_H
 

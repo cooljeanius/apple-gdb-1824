@@ -1,4 +1,4 @@
-; Toshiba MeP IVC2 Coprocessor description.  -*- scheme -*-
+; Toshiba MeP IVC2 Coprocessor description.  -*- Scheme -*-
 ; Copyright (C) 2009 Red Hat, Inc.
 ; This file is part of CGEN.
 ; See file COPYING.CGEN for details.

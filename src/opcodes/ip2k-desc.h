@@ -22,6 +22,7 @@ This file is part of the GNU Binutils and/or GDB, the GNU debugger.
 
 */
 
+#line 986 "desc-cpu.scm"
 #ifndef IP2K_CPU_H
 #define IP2K_CPU_H
 

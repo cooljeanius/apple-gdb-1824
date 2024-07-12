@@ -792,7 +792,8 @@ OFILES = @BFD_MACHINES@
 # that is where the version number in Makefile comes from.
 CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac
 AM_CPPFLAGS = -D_GNU_SOURCE -Wp,-I. -Wp,-I$(srcdir) -Wp,-I../bfd \
--Wp,-I$(INCDIR) -Wp,-I$(BFDDIR) @HDEFINES@ -Wp,-I$(INTLDIR) -Wp,-I../intl
+-Wp,-I$(INCDIR) -Wp,-I$(BFDDIR) @HDEFINES@ -Wp,-I$(INTLDIR) -Wp,-I../intl \
+-Wp,-iquote,$(CGENDIR) -Wp,-iquote,$(CPUDIR)
 
 AM_V_redir = $(am__v_redir_@AM_V@)
 am__v_redir_ = $(am__v_redir_@AM_DEFAULT_V@)
@@ -1416,13 +1417,13 @@ run-cgen-all: config.status
 
 # For now, require developers to configure with --enable-cgen-maint.
 $(srcdir)/ip2k-desc.h $(srcdir)/ip2k-desc.c $(srcdir)/ip2k-opc.h $(srcdir)/ip2k-opc.c $(srcdir)/ip2k-ibld.c $(srcdir)/ip2k-asm.c $(srcdir)/ip2k-dis.c: $(IP2K_DEPS)
-	@echo "ensuring $@ is up-to-date"
+	@echo "ensuring $@ is newer than its deps: '$^'"
 stamp-ip2k: $(CGENDEPS) $(CPUDIR)/ip2k.cpu $(CPUDIR)/ip2k.opc
 	$(MAKE) $(AM_V_MFLAG) run-cgen arch=ip2k prefix=ip2k options="" \
 		archfile=$(CPUDIR)/ip2k.cpu opcfile=$(CPUDIR)/ip2k.opc extrafiles=""
 
 $(srcdir)/m32c-desc.h $(srcdir)/m32c-desc.c $(srcdir)/m32c-opc.h $(srcdir)/m32c-opc.c $(srcdir)/m32c-ibld.c $(srcdir)/m32c-asm.c $(srcdir)/m32c-dis.c: $(M32C_DEPS)
-	@echo "ensuring $@ is up-to-date" || true
+	@echo "ensuring $@ is newer than its deps: '$^'" || stat $@ || sync
 stamp-m32c: $(CGENDEPS) $(srcdir)/../cpu/m32c.cpu $(srcdir)/../cpu/m32c.opc
 	$(MAKE) $(AM_V_MFLAG) run-cgen arch=m32c prefix=m32c options="" \
 		archfile=$(srcdir)/../cpu/m32c.cpu \
@@ -1451,39 +1452,39 @@ m32c-opc.lo: m32c-opc.c sysdep.h config.h $(BFD_H) \
 m32c-opc.o: m32c-opc.lo
 
 $(srcdir)/m32r-desc.h $(srcdir)/m32r-desc.c $(srcdir)/m32r-opc.h $(srcdir)/m32r-opc.c $(srcdir)/m32r-ibld.c $(srcdir)/m32r-opinst.c $(srcdir)/m32r-asm.c $(srcdir)/m32r-dis.c: $(M32R_DEPS)
-	@echo "ensuring $@ is up-to-date"
+	@echo "ensuring $@ is newer than its deps: '$^'"
 stamp-m32r: $(CGENDEPS) $(srcdir)/../cpu/m32r.cpu $(srcdir)/../cpu/m32r.opc
 	$(MAKE) $(AM_V_MFLAG) run-cgen arch=m32r prefix=m32r options=opinst \
 		archfile=$(srcdir)/../cpu/m32r.cpu \
 		opcfile=$(srcdir)/../cpu/m32r.opc extrafiles=opinst
 
 $(srcdir)/fr30-desc.h $(srcdir)/fr30-desc.c $(srcdir)/fr30-opc.h $(srcdir)/fr30-opc.c $(srcdir)/fr30-ibld.c $(srcdir)/fr30-asm.c $(srcdir)/fr30-dis.c: $(FR30_DEPS)
-	@echo "ensuring $@ is up-to-date"
+	@echo "ensuring $@ is newer than its deps: '$^'"
 stamp-fr30: $(CGENDEPS) $(CPUDIR)/fr30.cpu $(CPUDIR)/fr30.opc
 	$(MAKE) $(AM_V_MFLAG) run-cgen arch=fr30 prefix=fr30 options="" \
 		archfile=$(CPUDIR)/fr30.cpu opcfile=$(CPUDIR)/fr30.opc extrafiles=""
 
 $(srcdir)/frv-desc.h $(srcdir)/frv-desc.c $(srcdir)/frv-opc.h $(srcdir)/frv-opc.c $(srcdir)/frv-ibld.c $(srcdir)/frv-asm.c $(srcdir)/frv-dis.c: $(FRV_DEPS)
-	@echo "ensuring $@ is up-to-date"
+	@echo "ensuring $@ is newer than its deps: '$^'"
 stamp-frv: $(CGENDEPS) $(srcdir)/../cpu/frv.cpu $(srcdir)/../cpu/frv.opc
 	$(MAKE) $(AM_V_MFLAG) run-cgen arch=frv prefix=frv options="" \
 		archfile=$(srcdir)/../cpu/frv.cpu opcfile=$(srcdir)/../cpu/frv.opc extrafiles=""
 
 $(srcdir)/ms1-desc.h $(srcdir)/ms1-desc.c $(srcdir)/ms1-opc.h $(srcdir)/ms1-opc.c $(srcdir)/ms1-ibld.c $(srcdir)/ms1-asm.c $(srcdir)/ms1-dis.c: $(MS1_DEPS)
-	@echo "ensuring $@ is up-to-date"
+	@echo "ensuring $@ is newer than its deps: '$^'"
 stamp-ms1: $(CGENDEPS) $(srcdir)/../cpu/ms1.cpu $(srcdir)/../cpu/ms1.opc
 	$(MAKE) $(AM_V_MFLAG) run-cgen arch=ms1 prefix=ms1 options="" \
 		archfile=$(srcdir)/../cpu/ms1.cpu \
 		opcfile=$(srcdir)/../cpu/ms1.opc extrafiles=""
 
 $(srcdir)/openrisc-desc.h $(srcdir)/openrisc-desc.c $(srcdir)/openrisc-opc.h $(srcdir)/openrisc-opc.c $(srcdir)/openrisc-ibld.c $(srcdir)/openrisc-asm.c $(srcdir)/openrisc-dis.c: $(OPENRISC_DEPS)
-	@echo "ensuring $@ is up-to-date"
+	@echo "ensuring $@ is newer than its deps: '$^'"
 stamp-openrisc: $(CGENDEPS) $(CPUDIR)/openrisc.cpu $(CPUDIR)/openrisc.opc
 	$(MAKE) $(AM_V_MFLAG) run-cgen arch=openrisc prefix=openrisc options="" \
 		archfile=$(CPUDIR)/openrisc.cpu opcfile=$(CPUDIR)/openrisc.opc extrafiles=""
 
 $(srcdir)/iq2000-desc.h $(srcdir)/iq2000-desc.c $(srcdir)/iq2000-opc.h $(srcdir)/iq2000-opc.c $(srcdir)/iq2000-ibld.c $(srcdir)/iq2000-asm.c $(srcdir)/iq2000-dis.c: $(IQ2000_DEPS)
-	@echo "ensuring $@ is up-to-date"
+	@echo "ensuring $@ is newer than its deps: '$^'"
 stamp-iq2000: $(CGENDEPS) $(srcdir)/../cpu/iq2000.cpu \
 		$(srcdir)/../cpu/iq2000.opc $(srcdir)/../cpu/iq2000m.cpu \
 		$(srcdir)/../cpu/iq10.cpu
@@ -1492,7 +1493,7 @@ stamp-iq2000: $(CGENDEPS) $(srcdir)/../cpu/iq2000.cpu \
 		opcfile=$(srcdir)/../cpu/iq2000.opc extrafiles=""
 
 $(srcdir)/xstormy16-desc.h $(srcdir)/xstormy16-desc.c $(srcdir)/xstormy16-opc.h $(srcdir)/xstormy16-opc.c $(srcdir)/xstormy16-ibld.c $(srcdir)/xstormy16-asm.c $(srcdir)/xstormy16-dis.c: $(XSTORMY16_DEPS)
-	@echo "ensuring $@ is up-to-date"
+	@echo "ensuring $@ is newer than its deps: '$^'"
 stamp-xstormy16: $(CGENDEPS) $(CPUDIR)/xstormy16.cpu $(CPUDIR)/xstormy16.opc
 	$(MAKE) $(AM_V_MFLAG) run-cgen arch=xstormy16 prefix=xstormy16 options="" \
 		archfile=$(CPUDIR)/xstormy16.cpu opcfile=$(CPUDIR)/xstormy16.opc extrafiles=""

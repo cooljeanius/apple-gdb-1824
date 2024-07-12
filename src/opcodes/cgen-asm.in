@@ -64,7 +64,7 @@ static const char * parse_insn_normal
 
 /* -- end assembler routines. */
 
-#line 67 "cgen-asm.in"
+#line 68 "cgen-asm.in"
 
 /* Regex construction routine.
 
@@ -77,7 +77,7 @@ static const char * parse_insn_normal
 
    Returns NULL for success, an error message for failure.  */
 
-char * 
+char *
 @arch@_cgen_build_insn_regex (CGEN_INSN *insn)
 {  
   CGEN_OPCODE *opc = (CGEN_OPCODE *) CGEN_INSN_OPCODE (insn);
@@ -91,7 +91,7 @@ char *
 
   /* Mnemonics come first in the syntax string.  */
   if (! CGEN_SYNTAX_MNEMONIC_P (* syn))
-    return _("missing mnemonic in syntax string");
+    return (char *)(_("missing mnemonic in syntax string"));
   ++syn;
 
   /* Generate a case sensitive regular expression that emulates case
@@ -320,6 +320,9 @@ parse_insn_normal (CGEN_CPU_DESC cd,
       return NULL;
     }
 
+#ifdef CGEN_MNEMONIC_OPERANDS
+  (void)past_opcode_p;
+#endif /* CGEN_MNEMONIC_OPERANDS */
   /* We failed to parse it.  */
   return _("unrecognized instruction");
 }
@@ -436,6 +439,7 @@ const CGEN_INSN *
       /* xgettext:c-format */
       sprintf (errbuf, "%s `%.50s'", tmp_errmsg, start);
 #else
+    (void)recognized_mnemonic;
     if (strlen (start) > 50)
       /* xgettext:c-format */
       sprintf (errbuf, _("bad instruction `%.50s...'"), start);

@@ -1,4 +1,4 @@
-/* Opcode table for the H8/300
+/* opcode/h8300.h: Opcode table for the H8/300
    Copyright 1991, 1992, 1993, 1994, 1996, 1997, 1998, 2000, 2001, 2002,
    2003, 2004
    Free Software Foundation, Inc.
@@ -263,7 +263,7 @@ struct h8_opcode
   int how;
   enum h8_model available;
   int time;
-  char *name;
+  const char *name;
   struct arg args;
   struct code data;
 };

@@ -806,6 +806,7 @@ cgen_extract_fn * const m32r_cgen_extract_handlers[] =
   extract_insn_normal,
 };
 
+#line 12 "opc-ibld.scm"
 int m32r_cgen_get_int_operand     (CGEN_CPU_DESC, int, const CGEN_FIELDS *);
 bfd_vma m32r_cgen_get_vma_operand (CGEN_CPU_DESC, int, const CGEN_FIELDS *);
 

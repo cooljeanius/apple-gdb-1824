@@ -1,4 +1,4 @@
-; Insns introduced for the MeP-h1 core
+; Insns introduced for the MeP-h1 core  -*- Scheme -*-
 ;
 (dnci stcb_r "store in control bus space" (VOLATILE (MACH h1))
      "stcb $rn,($rma)"

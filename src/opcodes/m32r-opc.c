@@ -53,6 +53,7 @@ m32r_cgen_dis_hash (const char * buf ATTRIBUTE_UNUSED, CGEN_INSN_INT value)
 }
 
 /* -- */
+#line 475 "opc-itab.scm"
 /* The hash functions are recorded here to help keep assembler code out of
    the disassembler and vice versa.  */
 
@@ -220,6 +221,7 @@ static const CGEN_IFMT ifmt_btst ATTRIBUTE_UNUSED = {
 #else
 #define OPERAND(op) M32R_OPERAND_/**/op
 #endif
+#line 363 "opc-itab.scm"
 #define MNEM CGEN_SYNTAX_MNEMONIC /* syntax value for mnemonic */
 #define OP(field) CGEN_SYNTAX_MAKE_FIELD (OPERAND (field))
 
@@ -1291,6 +1293,7 @@ static const CGEN_IFMT ifmt_push ATTRIBUTE_UNUSED = {
 #else
 #define OPERAND(op) M32R_OPERAND_/**/op
 #endif
+#line 580 "opc-itab.scm"
 #define MNEM CGEN_SYNTAX_MNEMONIC /* syntax value for mnemonic */
 #define OP(field) CGEN_SYNTAX_MAKE_FIELD (OPERAND (field))
 
@@ -1479,7 +1482,7 @@ static const CGEN_IBASE m32r_cgen_macro_insn_table[] =
     { 0|A(ALIAS), { { { (1<<MACH_BASE), 0 } }, { { PIPE_O, 0 } } } }
   },
 };
-
+#line 599 "opc-itab.scm"
 /* The macro instruction opcode table.  */
 
 static const CGEN_OPCODE m32r_cgen_macro_insn_opcode_table[] =
@@ -1701,12 +1704,13 @@ static const CGEN_OPCODE m32r_cgen_macro_insn_opcode_table[] =
     & ifmt_push, { 0x207f }
   },
 };
-
+#line 614 "opc-itab.scm"
 #undef A
 #undef OPERAND
 #undef MNEM
 #undef OP
 
+#line 401 "opc-itab.scm"
 #ifndef CGEN_ASM_HASH_P
 #define CGEN_ASM_HASH_P(insn) 1
 #endif
@@ -1719,15 +1723,13 @@ static const CGEN_OPCODE m32r_cgen_macro_insn_opcode_table[] =
    Targets are free to override CGEN_{ASM,DIS}_HASH_P in the .opc file.  */
 
 static int
-asm_hash_insn_p (insn)
-     const CGEN_INSN *insn ATTRIBUTE_UNUSED;
+asm_hash_insn_p(const CGEN_INSN *insn ATTRIBUTE_UNUSED)
 {
   return CGEN_ASM_HASH_P (insn);
 }
 
 static int
-dis_hash_insn_p (insn)
-     const CGEN_INSN *insn;
+dis_hash_insn_p(const CGEN_INSN *insn)
 {
   /* If building the hash table and the NO-DIS attribute is present,
      ignore.  */
@@ -1759,8 +1761,7 @@ dis_hash_insn_p (insn)
    Targets are free to override CGEN_{ASM,DIS}_HASH in the .opc file.  */
 
 static unsigned int
-asm_hash_insn (mnem)
-     const char * mnem;
+asm_hash_insn(const char *mnem)
 {
   return CGEN_ASM_HASH (mnem);
 }
@@ -1769,13 +1770,13 @@ asm_hash_insn (mnem)
    VALUE is the first base_insn_bitsize bits as an int in host order.  */
 
 static unsigned int
-dis_hash_insn (buf, value)
-     const char * buf ATTRIBUTE_UNUSED;
-     CGEN_INSN_INT value ATTRIBUTE_UNUSED;
+dis_hash_insn(const char *buf ATTRIBUTE_UNUSED,
+              CGEN_INSN_INT value ATTRIBUTE_UNUSED)
 {
   return CGEN_DIS_HASH (buf, value);
 }
 
+#line 628 "opc-itab.scm"
 /* Set the recorded length of the insn in the CGEN_FIELDS struct.  */
 
 static void
@@ -1795,7 +1796,7 @@ m32r_cgen_init_opcode_table (CGEN_CPU_DESC cd)
 		    sizeof (m32r_cgen_macro_insn_table[0]));
   const CGEN_IBASE *ib = & m32r_cgen_macro_insn_table[0];
   const CGEN_OPCODE *oc = & m32r_cgen_macro_insn_opcode_table[0];
-  CGEN_INSN *insns = xmalloc (num_macros * sizeof (CGEN_INSN));
+  CGEN_INSN *insns = (CGEN_INSN *)xmalloc(num_macros * sizeof(CGEN_INSN));
 
   /* This test has been added to avoid a warning generated
      if memset is called with a third argument of value zero.  */

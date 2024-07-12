@@ -752,6 +752,7 @@ static const CGEN_OPINST *m32r_cgen_opinst_table[MAX_INSNS] = {
   & sfmt_btst_ops[0],
 };
 
+#line 113 "opc-opinst.scm"
 /* Function to call before using the operand instance table.  */
 
 void

@@ -686,6 +686,7 @@ cgen_extract_fn * const ip2k_cgen_extract_handlers[] =
   extract_insn_normal,
 };
 
+#line 12 "opc-ibld.scm"
 int ip2k_cgen_get_int_operand     (CGEN_CPU_DESC, int, const CGEN_FIELDS *);
 bfd_vma ip2k_cgen_get_vma_operand (CGEN_CPU_DESC, int, const CGEN_FIELDS *);
 

@@ -418,7 +418,7 @@ enum cgen_hw_type { CGEN_HW_MAX };
 
 typedef struct
 {
-  char *name;
+  const char *name;
   enum cgen_hw_type type;
   /* There is currently no example where both index specs and value specs
      are required, so for now both are clumped under "asm_data".  */
@@ -463,7 +463,7 @@ extern const CGEN_HW_ENTRY * cgen_hw_lookup_by_num
 typedef struct cgen_keyword_entry
 {
   /* Name (as in register name).  */
-  char * name;
+  const char * name;
 
   /* Value (as in register number).
      The value cannot be -1 as that is used to indicate "not found".
@@ -634,7 +634,7 @@ CGEN_MAYBE_MULTI_IFLD;
 typedef struct
 {
   /* Name as it appears in the syntax string.  */
-  char *name;
+  const char *name;
 
   /* Operand type.  */
   enum cgen_operand_type type;

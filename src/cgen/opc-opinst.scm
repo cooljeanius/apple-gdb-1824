@@ -109,6 +109,7 @@
     (current-insn-list))
    "};\n\n"
    "\
+#line 113 \"opc-opinst.scm\"
 /* Function to call before using the operand instance table.  */
 
 void

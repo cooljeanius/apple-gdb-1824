@@ -47,7 +47,8 @@ bfd_h8_disassemble_init (void)
 
   nopcodes = sizeof (h8_opcodes) / sizeof (struct h8_opcode);
 
-  h8_instructions = xmalloc (nopcodes * sizeof (struct h8_instruction));
+  h8_instructions =
+    (struct h8_instruction *)xmalloc(nopcodes * sizeof(struct h8_instruction));
 
   for (p = h8_opcodes, pi = h8_instructions; p->name; p++, pi++)
     {
@@ -228,6 +229,8 @@ print_one_arg (disassemble_info *info,
 	case L_32:
 	  outfn (stream, "%s", lregnames[rn]);
 	  break;
+   	default:
+    	  break;
 	}
     }
   else if ((x & MODE) == LOWREG)
@@ -247,6 +250,8 @@ print_one_arg (disassemble_info *info,
 	case L_32:
 	  outfn (stream, "%s.l", lregnames[rn]);
 	  break;
+   	default:
+    	  break;
 	}
     }
   else if ((x & MODE) == POSTINC)
@@ -272,7 +277,7 @@ print_one_arg (disassemble_info *info,
 
   else if ((x & MODE) == VECIND)
     {
-      /* FIXME Multiplier should be 2 or 4, depending on processor mode,
+      /* FIXME: Multiplier should be 2 or 4, depending on processor mode,
 	 by which is meant "normal" vs. "middle", "advanced", "maximum".  */
 
       int offset = (cst + 0x80) * 4;
@@ -297,36 +302,32 @@ print_one_arg (disassemble_info *info,
 	}
     }
   else if ((x & MODE) == DISP)
-    outfn (stream, "@(0x%x:%d,%s)", cst, cstlen, pregnames[rdisp_n]);
-
+    outfn(stream, "@(0x%x:%d,%s)", cst, cstlen, pregnames[rdisp_n]);
   else if ((x & MODE) == INDEXB)
-    /* Always take low half of reg.  */
-    outfn (stream, "@(0x%x:%d,%s.b)", cst, cstlen,
-	   regnames[rdisp_n < 8 ? rdisp_n + 8 : rdisp_n]);
-
+    {
+      /* Always take low half of reg: */
+      outfn(stream, "@(0x%x:%d,%s.b)", cst, cstlen,
+            regnames[(rdisp_n < 8) ? (rdisp_n + 8) : rdisp_n]);
+    }
   else if ((x & MODE) == INDEXW)
-    /* Always take low half of reg.  */
-    outfn (stream, "@(0x%x:%d,%s.w)", cst, cstlen,
-	   wregnames[rdisp_n < 8 ? rdisp_n : rdisp_n - 8]);
-
+    {
+      /* Always take low half of reg: */
+      outfn(stream, "@(0x%x:%d,%s.w)", cst, cstlen,
+	    wregnames[(rdisp_n < 8) ? rdisp_n : (rdisp_n - 8)]);
+    }
   else if ((x & MODE) == INDEXL)
-    outfn (stream, "@(0x%x:%d,%s.l)", cst, cstlen, lregnames[rdisp_n]);
-
+    outfn(stream, "@(0x%x:%d,%s.l)", cst, cstlen, lregnames[rdisp_n]);
   else if (x & CTRL)
-    outfn (stream, cregnames[rn]);
-
+    outfn(stream, "%s", cregnames[rn]);
   else if ((x & MODE) == CCR)
-    outfn (stream, "ccr");
-
+    outfn(stream, "ccr");
   else if ((x & MODE) == EXR)
-    outfn (stream, "exr");
-
+    outfn(stream, "exr");
   else if ((x & MODE) == MACREG)
-    outfn (stream, "mac%c", cst ? 'l' : 'h');
-
+    outfn(stream, "mac%c", cst ? 'l' : 'h');
   else
     /* xgettext:c-format */
-    outfn (stream, _("Hmmmm 0x%x"), x);
+    outfn(stream, _("Hmmmm 0x%x"), x);
 }
 
 static unsigned int
@@ -476,9 +477,9 @@ bfd_h8_disassemble (bfd_vma addr, disassemble_info *info, int mach)
 		       || (looking_for & MODE) == INDEXW
 		       || (looking_for & MODE) == INDEXL)
 		{
-		  extract_immediate (stream, looking_for, thisnib,
-				     data + len / 2, cst + opnr,
-				     cstlen + opnr, q);
+		  extract_immediate((FILE *)stream, looking_for, thisnib,
+				    (data + (len / 2)), (cst + opnr),
+				    (cstlen + opnr), q);
 		  /* Even address == bra, odd == bra/s.  */
 		  if (q->how == O (O_BRAS, SB))
 		    cst[opnr] -= 1;

@@ -27,7 +27,9 @@ This file is part of the GNU Binutils and/or GDB, the GNU debugger.
 
 /* -- opc.h */
 
-/* ??? This can be improved upon.  */
+#line 25 "cpu/fr30.opc"
+
+/* ???: This can be improved upon.  */
 #undef  CGEN_DIS_HASH_SIZE
 #define CGEN_DIS_HASH_SIZE 16
 #undef  CGEN_DIS_HASH

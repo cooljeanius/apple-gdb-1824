@@ -23,7 +23,7 @@
    along w/this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-/* ??? Eventually more and more of this stuff can go to cpu-independent files.
+/* ???: Eventually more and more of this stuff can go to cpu-independent files.
    Keep that in mind.  */
 
 #include "sysdep.h"
@@ -53,6 +53,8 @@
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #undef  max
 #define max(a,b) ((a) > (b) ? (a) : (b))
+
+#line 57 "cgen-asm.in"
 
 static const char * parse_insn_normal
   (CGEN_CPU_DESC, const CGEN_INSN *, const char **, CGEN_FIELDS *);
@@ -411,6 +413,7 @@ parse_type (CGEN_CPU_DESC cd,
 
 /* -- dis.c */
 
+#line 12 "opc-asmdis.scm"
 const char * ms1_cgen_parse_operand
   (CGEN_CPU_DESC, int, const char **, CGEN_FIELDS *);
 
@@ -632,6 +635,8 @@ CGEN_ASM_INIT_HOOK
 
 /* -- end assembler routines. */
 
+#line 68 "cgen-asm.in"
+
 /* Regex construction routine.
 
    This translates an opcode syntax string into a regex string,
@@ -643,7 +648,7 @@ CGEN_ASM_INIT_HOOK
 
    Returns NULL for success, an error message for failure.  */
 
-char * 
+char *
 ms1_cgen_build_insn_regex (CGEN_INSN *insn)
 {  
   CGEN_OPCODE *opc = (CGEN_OPCODE *) CGEN_INSN_OPCODE (insn);
@@ -657,7 +662,7 @@ ms1_cgen_build_insn_regex (CGEN_INSN *insn)
 
   /* Mnemonics come first in the syntax string.  */
   if (! CGEN_SYNTAX_MNEMONIC_P (* syn))
-    return _("missing mnemonic in syntax string");
+    return (char *)(_("missing mnemonic in syntax string"));
   ++syn;
 
   /* Generate a case sensitive regular expression that emulates case
@@ -762,7 +767,7 @@ ms1_cgen_build_insn_regex (CGEN_INSN *insn)
    The syntax string is scanned and operands are parsed and stored in FIELDS.
    Relocs are queued as we go via other callbacks.
 
-   ??? Note that this is currently an all-or-nothing parser.  If we fail to
+   ???: Note that this is currently an all-or-nothing parser.  If we fail to
    parse the instruction, we return 0 and the caller will start over from
    the beginning.  Backtracking will be necessary in parsing subexpressions,
    but that can be handled there.  Not handling backtracking here may get
@@ -776,7 +781,7 @@ parse_insn_normal (CGEN_CPU_DESC cd,
 		   const char **strp,
 		   CGEN_FIELDS *fields)
 {
-  /* ??? Runtime added insns not handled yet.  */
+  /* ???: Runtime added insns not handled yet.  */
   const CGEN_SYNTAX *syntax = CGEN_INSN_SYNTAX (insn);
   const char *str = *strp;
   const char *errmsg;
@@ -886,6 +891,9 @@ parse_insn_normal (CGEN_CPU_DESC cd,
       return NULL;
     }
 
+#ifdef CGEN_MNEMONIC_OPERANDS
+  (void)past_opcode_p;
+#endif /* CGEN_MNEMONIC_OPERANDS */
   /* We failed to parse it.  */
   return _("unrecognized instruction");
 }
@@ -905,7 +913,7 @@ parse_insn_normal (CGEN_CPU_DESC cd,
    Note that when processing (non-alias) macro-insns,
    this function recurses.
 
-   ??? It might be possible to make this cpu-independent.
+   ???: It might be possible to make this cpu-independent.
    One would have to deal with a few minor things.
    At this point in time doing so would be more of a curiosity than useful
    [for example this file isn't _that_ big], but keeping the possibility in
@@ -971,7 +979,7 @@ ms1_cgen_assemble_insn (CGEN_CPU_DESC cd,
       if (parse_errmsg != NULL)
 	continue;
 
-      /* ??? 0 is passed for `pc'.  */
+      /* ???: 0 is passed for `pc'.  */
       insert_errmsg = CGEN_INSERT_FN (cd, insn) (cd, insn, fields, buf,
 						 (bfd_vma) 0);
       if (insert_errmsg != NULL)
@@ -1002,6 +1010,7 @@ ms1_cgen_assemble_insn (CGEN_CPU_DESC cd,
       /* xgettext:c-format */
       sprintf (errbuf, "%s `%.50s'", tmp_errmsg, start);
 #else
+    (void)recognized_mnemonic;
     if (strlen (start) > 50)
       /* xgettext:c-format */
       sprintf (errbuf, _("bad instruction `%.50s...'"), start);

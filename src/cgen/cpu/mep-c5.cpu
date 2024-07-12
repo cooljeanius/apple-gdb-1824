@@ -1,4 +1,4 @@
-; Insns introduced for the MeP-c5 core
+; Insns introduced for the MeP-c5 core  -*- Scheme -*-
 ;
 
 (dnf f-c5n4     "extended field"     (all-mep-core-isas)   16  4)
