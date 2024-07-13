@@ -31,8 +31,8 @@ extern "C" {
  * and update the version numbers:
  *
  * library/tk.tcl	(only if Major.minor changes, not patchlevel)
- * unix/configure.in	(2 LOC Major, 2 LOC minor, 1 LOC patch)
- * win/configure.in	(as above)
+ * unix/configure.ac	(2 LOC Major, 2 LOC minor, 1 LOC patch)
+ * win/configure.ac	(as above)
  * win/makefile.vc	(not patchlevel)
  * README		(sections 0 and 1)
  * mac/README		(not patchlevel)
@@ -68,9 +68,13 @@ extern "C" {
 
 #ifndef _TCL
 #   include <tcl.h>
-#   if (TCL_MAJOR_VERSION != 8) || (TCL_MINOR_VERSION != 4)
-#	error Tk 8.4 must be compiled with tcl.h from Tcl 8.4
-#   endif
+#   if (TCL_MAJOR_VERSION != 8)
+#     error "major version mismatch: Tk 8 must be compiled with tcl.h from Tcl 8"
+#   else
+#     if (TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION != 4)
+#	error "minor version mismatch: Tk 8.4 must be compiled with tcl.h from Tcl 8.4"
+#     endif /* Tcl 8.4 */
+#   endif /* Tcl 8 */
 #endif
 
 /* 

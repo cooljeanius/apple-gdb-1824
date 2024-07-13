@@ -29,6 +29,8 @@ the tarballs that they have released publicly...)
 
 	- 967: last version with libcheckpoint
 
+	- 1515: last version with ppc_fast_show_stack in ppc-macosx-tdep.c
+
 	- 1705: last version where option to use included regex works
 
 	- 1824: most recent version available as of November 2013

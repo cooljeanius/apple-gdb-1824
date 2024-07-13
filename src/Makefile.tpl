@@ -1235,6 +1235,12 @@ configure-[+prefix+][+module+]: [+deps+]
 	  [+args+] $${srcdiroption} [+extra_configure_flags+] \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -1805,7 +1811,7 @@ stage[+id+]-bubble:: [+ IF prev +]stage[+prev+]-bubble[+ ENDIF +][+IF lean +]
 	@bootstrap_lean@-rm -rf stage[+lean+]-*; $(STAMP) stage[+lean+]-lean[+ ENDIF lean +]
 	$(AM_V_at)if test -f stage[+id+]-lean [+
 	  IF prev +]|| test -f stage[+prev+]-lean [+ ENDIF prev +]; then \
-	  echo Skipping rebuild of stage[+id+]; \
+	  echo "Skipping rebuild of stage[+id+]"; \
 	else \
 	  $(MAKE) $(AM_V_MFLAG) $(RECURSE_FLAGS_TO_PASS) NOTPARALLEL= all-stage[+id+]; \
 	fi
@@ -2061,10 +2067,13 @@ $(srcdir)/Makefile.in: @MAINT@ $(srcdir)/Makefile.tpl $(srcdir)/Makefile.def
 
 # Rebuilding Makefile.
 Makefile_target: $(srcdir)/Makefile.in config.status
-	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+	CONFIG_FILES=Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
 .PHONY: Makefile_target
 
-config_dot_status_target: configure
+# Normally it would be a mistake to have config.status depend upon itself,
+# but since we have renamed the target here, that avoids infinite recursion:
+config_dot_status_target: configure config.status
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SHELL="$(SHELL)" $(SHELL) ./config.status --recheck
 .PHONY: config_dot_status_target
 

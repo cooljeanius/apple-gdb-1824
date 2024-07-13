@@ -670,6 +670,7 @@ TK_PATCH_LEVEL
 TK_MINOR_VERSION
 TK_MAJOR_VERSION
 TK_VERSION
+PROTO_FLAGS
 X_EXTRA_LIBS
 X_LIBS
 X_PRE_LIBS
@@ -2826,7 +2827,7 @@ fi
 eval libdir="${libdir}"
 # Make sure srcdir is fully qualified!
 srcdir=`cd ${srcdir}; pwd`
-TK_SRC_DIR=`cd $srcdir/..; pwd`
+TK_SRC_DIR=`cd ${srcdir}/..; pwd`
 
 #------------------------------------------------------------------------
 # Compress and/or soft link the manpages?
@@ -2968,7 +2969,7 @@ fi
 
 # If the user did not set CFLAGS, set it now to keep
 # the AC_PROG_CC macro from adding "-g -O2".
-if test "${CFLAGS+set}" != "set" ; then
+if test "${CFLAGS+set}" != "set"; then
     CFLAGS=""
 fi
 
@@ -4260,7 +4261,7 @@ test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 
 
 #------------------------------------------------------------------------
-# I'm not sure why these need to come before all of the other tests
+# I am not sure why these need to come before all of the other tests
 #------------------------------------------------------------------------
 
 ac_header= ac_cache=
@@ -4697,7 +4698,7 @@ then :
 printf "%s\n" "yes" >&6; }
 else case e in #(
   e) CC="${OLDCC}"
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+                     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; } ;;
 esac
 fi
@@ -4995,7 +4996,7 @@ printf "%s\n" "${tcl_cv_type_off64_t}" >&6; }
     # the alternative search directory is invoked by --with-tcl
     #
 
-    if test x"${no_tcl}" = x ; then
+    if test x"${no_tcl}" = x""; then
 	# we reset no_tcl in case something fails here
 	no_tcl=true
 
@@ -5014,8 +5015,8 @@ else case e in #(
   e)
 
 	    # First check to see if --with-tcl was specified.
-	    if test x"${with_tclconfig}" != x ; then
-		if test -f "${with_tclconfig}/tclConfig.sh" ; then
+	    if test x"${with_tclconfig}" != x""; then
+		if test -f "${with_tclconfig}/tclConfig.sh"; then
 		    ac_cv_c_tclconfig=`(cd ${with_tclconfig}; pwd)`
 		else
 		    as_fn_error $? "${with_tclconfig} directory does NOT contain tclConfig.sh" "$LINENO" 5
@@ -5023,17 +5024,23 @@ else case e in #(
 	    fi
 
 	    # then check for a private Tcl installation
-	    if test x"${ac_cv_c_tclconfig}" = x ; then
+	    if test x"${ac_cv_c_tclconfig}" = x""; then
 		for i in \
 			../tcl \
 			`ls -dr ../tcl[8-9].[0-9]* 2>/dev/null` \
 			../../tcl \
 			`ls -dr ../../tcl[8-9].[0-9]* 2>/dev/null` \
 			../../../tcl \
-			`ls -dr ../../../tcl[8-9].[0-9]* 2>/dev/null` ; do
-		    if test -f "$i/unix/tclConfig.sh" ; then
-			ac_cv_c_tclconfig=`(cd $i/unix; pwd)`
+			`ls -dr ../../../tcl[8-9].[0-9]* 2>/dev/null` \
+			../../dist/tcl; do
+		    if test -f "${i}/unix/tclConfig.sh"; then
+			ac_cv_c_tclconfig=`(cd ${i}/unix; pwd)`
 			break
+			elif test -f "${i}/unix/tclConfig.sh.in"; then
+			{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: file from which tclConfig.sh is generated was found in ${i}, but not the actual script itself" >&5
+printf "%s\n" "$as_me: file from which tclConfig.sh is generated was found in ${i}, but not the actual script itself" >&6;}
+			{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: perhaps you still need to configure and/or build there?" >&5
+printf "%s\n" "$as_me: perhaps you still need to configure and/or build there?" >&6;}
 		    fi
 		done
 	    fi
@@ -5044,21 +5051,23 @@ else case e in #(
 			`ls -d /usr/local/lib 2>/dev/null` \
 			`ls -d /usr/contrib/lib 2>/dev/null` \
 			`ls -d /usr/lib 2>/dev/null` \
-			; do
-		    if test -f "$i/tclConfig.sh" ; then
-			ac_cv_c_tclconfig=`(cd $i; pwd)`
+			`ls -d /opt/local/lib 2>/dev/null` \
+			`ls -d /opt/sw/lib 2>/dev/null`; do
+		    if test -f "${i}/tclConfig.sh"; then
+			ac_cv_c_tclconfig=`(cd ${i}; pwd)`
 			break
 		    fi
 		done
 	    fi
 
 	    # check in a few other private locations
-	    if test x"${ac_cv_c_tclconfig}" = x ; then
+	    if test x"${ac_cv_c_tclconfig}" = x""; then
 		for i in \
 			${srcdir}/../tcl \
-			`ls -dr ${srcdir}/../tcl[8-9].[0-9]* 2>/dev/null` ; do
-		    if test -f "$i/unix/tclConfig.sh" ; then
-		    ac_cv_c_tclconfig=`(cd $i/unix; pwd)`
+			`ls -dr ${srcdir}/../tcl[8-9].[0-9]* 2>/dev/null` \
+			${srcdir}/../../tcl; do
+		    if test -f "${i}/unix/tclConfig.sh" ; then
+		    ac_cv_c_tclconfig=`(cd ${i}/unix; pwd)`
 		    break
 		fi
 		done
@@ -5068,16 +5077,16 @@ esac
 fi
 
 
-	if test x"${ac_cv_c_tclconfig}" = x ; then
+	if test x"${ac_cv_c_tclconfig}" = x""; then
 	    TCL_BIN_DIR="# no Tcl configs found"
 	    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Cannot find Tcl configuration definitions" >&5
 printf "%s\n" "$as_me: WARNING: Cannot find Tcl configuration definitions" >&2;}
 	    exit 0
 	else
-	    no_tcl=
+	    no_tcl=""
 	    TCL_BIN_DIR=${ac_cv_c_tclconfig}
-	    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: found $TCL_BIN_DIR/tclConfig.sh" >&5
-printf "%s\n" "found $TCL_BIN_DIR/tclConfig.sh" >&6; }
+	    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: found ${TCL_BIN_DIR}/tclConfig.sh" >&5
+printf "%s\n" "found ${TCL_BIN_DIR}/tclConfig.sh" >&6; }
 	fi
     fi
 
@@ -7043,7 +7052,7 @@ fi
 # This library also supplies gettimeofday.
 #--------------------------------------------------------------------
 libbsd=no
-if test "`uname -s`" = "AIX" ; then
+if test "`uname -s`" = "AIX"; then
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gettimeofday in -lbsd" >&5
 printf %s "checking for gettimeofday in -lbsd... " >&6; }
 if test ${ac_cv_lib_bsd_gettimeofday+y}
@@ -7092,18 +7101,18 @@ then :
   libbsd=yes
 fi
 
-    if test $libbsd = yes; then
-	MATH_LIBS="$MATH_LIBS -lbsd"
+    if test "x${libbsd}" = "xyes"; then
+	MATH_LIBS="${MATH_LIBS} -lbsd"
     fi
 fi
 
 #--------------------------------------------------------------------
-# Supply a substitute for stdlib.h if it doesn't define strtol,
-# strtoul, or strtod (which it doesn't in some versions of SunOS).
+# Supply a substitute for stdlib.h if it fails to define strtol,
+# strtoul, or strtod (which happens on some versions of SunOS).
 #--------------------------------------------------------------------
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking stdlib.h" >&5
-printf %s "checking stdlib.h... " >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a usable stdlib.h" >&5
+printf %s "checking for a usable stdlib.h... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <stdlib.h>
@@ -7149,12 +7158,12 @@ esac
 fi
 rm -rf conftest*
 
-if test $tk_ok = no; then
+if test "x${tk_ok}" = "xno"; then
     printf "%s\n" "#define NO_STDLIB_H 1" >>confdefs.h
 
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $tk_ok" >&5
-printf "%s\n" "$tk_ok" >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${tk_ok}" >&5
+printf "%s\n" "${tk_ok}" >&6; }
 
 ac_fn_c_check_func "$LINENO" "strtol" "ac_cv_func_strtol"
 if test "x$ac_cv_func_strtol" = xyes
@@ -7172,11 +7181,11 @@ fi
 
 #--------------------------------------------------------------------
 # Include sys/select.h if it exists and if it supplies things
-# that appear to be useful and aren't already in sys/types.h.
+# that appear to be useful and are NOT already in sys/types.h.
 # This appears to be true only on the RS/6000 under AIX.  Some
-# systems like OSF/1 have a sys/select.h that's of no use, and
-# other systems like SCO UNIX have a sys/select.h that's
-# pernicious.  If "fd_set" isn't defined anywhere then set a
+# systems like OSF/1 have a sys/select.h that is of no use, and
+# other systems like SCO UNIX have a sys/select.h that is
+# pernicious.  If "fd_set" is NOT defined anywhere then set a
 # special flag.
 #--------------------------------------------------------------------
 
@@ -7201,7 +7210,7 @@ else case e in #(
 esac
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-if test $tk_ok = no; then
+if test "x${tk_ok}" = "xno"; then
     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <sys/select.h>
@@ -7214,21 +7223,21 @@ then :
 fi
 rm -rf conftest*
 
-    if test $tk_ok = yes; then
+    if test "x${tk_ok}" = "xyes"; then
 	printf "%s\n" "#define HAVE_SYS_SELECT_H 1" >>confdefs.h
 
     fi
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $tk_ok" >&5
-printf "%s\n" "$tk_ok" >&6; }
-if test $tk_ok = no; then
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${tk_ok}" >&5
+printf "%s\n" "${tk_ok}" >&6; }
+if test "x${tk_ok}" = "xno"; then
     printf "%s\n" "#define NO_FD_SET 1" >>confdefs.h
 
 fi
 
 #--------------------------------------------------------------------
 # Check for various typedefs and provide substitutes if
-# they don't exist.
+# they are missing.
 #--------------------------------------------------------------------
 
 ac_fn_c_check_type "$LINENO" "mode_t" "ac_cv_type_mode_t" "$ac_includes_default"
@@ -7396,17 +7405,17 @@ else case e in #(
 esac
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $tk_ok" >&5
-printf "%s\n" "$tk_ok" >&6; }
-if test $tk_ok = yes; then
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${tk_ok}" >&5
+printf "%s\n" "${tk_ok}" >&6; }
+if test "x${tk_ok}" = "xyes"; then
     printf "%s\n" "#define HAVE_PW_GECOS 1" >>confdefs.h
 
 fi
 
 #--------------------------------------------------------------------
 #	Locate the X11 header files and the X11 library archive.  Try
-#	the ac_path_x macro first, but if it doesn't find the X stuff
-#	(e.g. because there's no xmkmf program) then check through
+#	the ac_path_x macro first, but if it fails to find the X stuff
+#	(e.g. because there is no xmkmf program) then check through
 #	a list of possible directories.  Under some conditions the
 #	autoconf macro will return an include directory that contains
 #	no include files, so double-check its result just to be safe.
@@ -8386,15 +8395,15 @@ eval "LD_SEARCH_FLAGS=\"$TCL_LD_SEARCH_FLAGS\""
 #	require a couple of special tricks:
 #	1. Use "connect" and "accept" to check for -lsocket, and
 #	   "gethostbyname" to check for -lnsl.
-#	2. Use each function name only once:  can't redo a check because
-#	   autoconf caches the results of the last check and won't redo it.
+#	2. Use each function name only once:  cannot redo a check because
+#	   autoconf caches the results of the last check and will NOT redo it.
 #	3. Use -lnsl and -lsocket only if they supply procedures that
-#	   aren't already present in the normal libraries.  This is because
-#	   IRIX 5.2 has libraries, but they aren't needed and they're
-#	   bogus:  they goof up name resolution if used.
-#	4. On some SVR4 systems, can't use -lsocket without -lnsl too.
+#	   are NOT already present in the normal libraries.  This is because
+#	   IRIX 5.2 has libraries, but they are NOT needed and they are
+#	   bogus: they goof up name resolution if used.
+#	4. On some SVR4 systems, cannot use -lsocket without -lnsl too.
 #	   To get around this problem, check for both libraries together
-#	   if -lsocket doesn't work by itself.
+#	   if -lsocket fails to work by itself.
 #--------------------------------------------------------------------
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lXbsd" >&5
@@ -8433,7 +8442,7 @@ fi
 printf "%s\n" "$ac_cv_lib_Xbsd_main" >&6; }
 if test "x$ac_cv_lib_Xbsd_main" = xyes
 then :
-  LIBS="$LIBS -lXbsd"
+  LIBS="${LIBS} -lXbsd"
 fi
 
 
@@ -8447,7 +8456,7 @@ else case e in #(
 esac
 fi
 
-if test "$tk_checkSocket" = 1; then
+if test "${tk_checkSocket}" = 1; then
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lsocket" >&5
 printf %s "checking for main in -lsocket... " >&6; }
 if test ${ac_cv_lib_socket_main+y}
@@ -8484,22 +8493,22 @@ fi
 printf "%s\n" "$ac_cv_lib_socket_main" >&6; }
 if test "x$ac_cv_lib_socket_main" = xyes
 then :
-  LIBS="$LIBS -lsocket"
+  LIBS="${LIBS} -lsocket"
 else case e in #(
   e) tk_checkBoth=1 ;;
 esac
 fi
 
 fi
-if test "$tk_checkBoth" = 1; then
-    tk_oldLibs=$LIBS
-    LIBS="$LIBS -lsocket -lnsl"
+if test "${tk_checkBoth}" = 1; then
+    tk_oldLibs="${LIBS}"
+    LIBS="${LIBS} -lsocket -lnsl"
     ac_fn_c_check_func "$LINENO" "accept" "ac_cv_func_accept"
 if test "x$ac_cv_func_accept" = xyes
 then :
   tk_checkNsl=0
 else case e in #(
-  e) LIBS=$tk_oldLibs ;;
+  e) LIBS=${tk_oldLibs} ;;
 esac
 fi
 
@@ -8545,7 +8554,7 @@ fi
 printf "%s\n" "$ac_cv_lib_nsl_main" >&6; }
 if test "x$ac_cv_lib_nsl_main" = xyes
 then :
-  LIBS="$LIBS -lnsl"
+  LIBS="${LIBS} -lnsl"
 fi
  ;;
 esac
@@ -8554,20 +8563,20 @@ fi
 
 # Add the threads support libraries
 
-LIBS="$LIBS$THREADS_LIBS"
+LIBS="${LIBS} ${THREADS_LIBS}"
 
 #--------------------------------------------------------------------
 # One more check related to the X libraries.  The standard releases
-# of Ultrix don't support the "xauth" mechanism, so send won't work
+# of Ultrix fail to support the "xauth" mechanism, so send will fail
 # unless TK_NO_SECURITY is defined.  However, there are usually copies
 # of the MIT X server available as well, which do support xauth.
 # Check for the MIT stuff and use it if it exists.
 #
-# Note: can't use ac_check_lib macro (at least, not in Autoconf 2.1)
-# because it can't deal with the "-" in the library name.
+# Note: cannot use ac_check_lib macro (at least, not in Autoconf 2.1)
+# because it cannot deal with the "-" in the library name.
 #--------------------------------------------------------------------
 
-if test -d /usr/include/mit ; then
+if test -d /usr/include/mit; then
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking MIT X libraries" >&5
 printf %s "checking MIT X libraries... " >&6; }
     tk_oldCFlags=$CFLAGS
@@ -8604,8 +8613,11 @@ esac
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam \
     conftest$ac_exeext conftest.$ac_ext
-    CFLAGS=$tk_oldCFlags
-    LIBS=$tk_oldLibs
+    CFLAGS="${tk_oldCFlags}"
+    LIBS="${tk_oldLibs}"
+else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: skipping MIT X checks" >&5
+printf "%s\n" "$as_me: skipping MIT X checks" >&6;}
 fi
 
 #--------------------------------------------------------------------
@@ -8817,13 +8829,14 @@ else
 fi
 TK_LIB_FILE=libtk${LIB_SUFFIX}
 eval "TK_LIB_FILE=${TK_LIB_FILE}"
-
-# Note:  in the following variable, it's important to use the absolute
-# path name of the Tcl directory rather than "..":  this is because
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: TK_LIB_FILE is now ${TK_LIB_FILE}" >&5
+printf "%s\n" "$as_me: TK_LIB_FILE is now ${TK_LIB_FILE}" >&6;}
+# Note:  in the following variable, it is important to use the absolute
+# path name of the Tcl directory rather than "..": this is because
 # AIX remembers this path and will attempt to use it at run-time to look
 # up the Tcl library.
 
-if test "$SHARED_BUILD" = 0 -o $TCL_NEEDS_EXP_FILE = 0; then
+if test "${SHARED_BUILD}" = 0 -o ${TCL_NEEDS_EXP_FILE} = 0; then
     if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then
 	eval TK_LIB_FLAG="-ltk${VERSION}\${TK_DBGX}"
     else
@@ -8837,7 +8850,7 @@ else
     TK_BUILD_EXP_FILE="lib.exp"
     eval "TK_EXP_FILE=libtk${TCL_EXPORT_FILE_SUFFIX}"
 
-    if test "$GCC" = "yes" ; then
+    if test "${GCC}" = "yes"; then
 	TK_BUILD_LIB_SPEC="-Wl,-bI:`pwd`/${TK_BUILD_EXP_FILE} -L`pwd`"
 	TK_LIB_SPEC="-Wl,-bI:${libdir}/${TK_EXP_FILE} -L`pwd`"
     else
@@ -8849,7 +8862,7 @@ TK_SHARED_BUILD=${SHARED_BUILD}
 
 #--------------------------------------------------------------------
 # The statements below define various symbols relating to creating
-# the stub'd version of the Tk library
+# the stubbed version of the Tk library
 #
 # For now, linking to Tcl stubs is not supported with Tk. It causes
 # too many problems with linking.  When Tk is a fully loadable
@@ -8871,6 +8884,21 @@ TK_BUILD_STUB_LIB_PATH="`pwd`/${TK_STUB_LIB_FILE}"
 TK_STUB_LIB_PATH="${libdir}/${TK_STUB_LIB_FILE}"
 
 eval "TK_LIB_FILE=${TK_LIB_FILE}"
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: ...and finally, TK_LIB_FILE is now ${TK_LIB_FILE}" >&5
+printf "%s\n" "$as_me: ...and finally, TK_LIB_FILE is now ${TK_LIB_FILE}" >&6;}
+# A few more things.
+if test "$ac_prog_cc_stdc" != no; then
+
+printf "%s\n" "#define PROTOTYPES 1" >>confdefs.h
+
+
+printf "%s\n" "#define __PROTOTYPES 1" >>confdefs.h
+
+fi
+
+if test "x${ac_prog_cc_stdc}" = "xno"; then
+  PROTO_FLAGS="-DNO_PROTOTYPE"
+fi
 
 
 

@@ -589,12 +589,14 @@ dependencies = { module=all-expect; on=all-tk; };
 // program on installation which uses the Tcl libraries.
 dependencies = { module=configure-itcl; on=configure-tcl; };
 dependencies = { module=configure-itcl; on=configure-tk; };
+dependencies = { module=all-itcl; on=configure-tcl; };
 dependencies = { module=all-itcl; on=all-tcl; };
 dependencies = { module=all-itcl; on=all-tk; };
 dependencies = { module=install-itcl; on=install-tcl; };
 dependencies = { module=install-strip-itcl; on=install-strip-tcl; };
 
 dependencies = { module=configure-tk; on=configure-tcl; };
+dependencies = { module=all-tk; on=configure-tcl; };
 dependencies = { module=all-tk; on=all-tcl; };
 
 dependencies = { module=all-sid; on=all-libiberty; };
@@ -631,6 +633,7 @@ dependencies = { module=all-automake; on=all-build-texinfo; };
 dependencies = { module=all-automake; on=all-autoconf; };
 dependencies = { module=all-bison; on=all-intl; };
 dependencies = { module=all-bison; on=all-build-texinfo; };
+dependencies = { module=configure-cgen; on=configure-tcl; };
 dependencies = { module=configure-cgen; on=all-guile; };
 dependencies = { module=all-cgen; on=all-guile; };
 dependencies = { module=all-diff; on=all-intl; };

@@ -3496,6 +3496,12 @@ configure-build-libiberty:
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -3552,6 +3558,12 @@ configure-build-bison:
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -3608,6 +3620,12 @@ configure-build-byacc:
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -3664,6 +3682,12 @@ configure-build-flex:
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -3720,6 +3744,12 @@ configure-build-m4:
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -3776,6 +3806,12 @@ configure-build-texinfo:
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -3832,6 +3868,12 @@ configure-build-fixincludes:
 	  $(BUILD_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -3888,6 +3930,12 @@ configure-build-libcpp:
 	  $(BUILD_CONFIGARGS) $${srcdiroption} --disable-nls am_cv_func_iconv=no \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -3947,6 +3995,12 @@ configure-ash:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -4356,6 +4410,12 @@ configure-autoconf:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -4766,6 +4826,12 @@ configure-autogen:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -5501,6 +5567,12 @@ configure-automake:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -5910,6 +5982,12 @@ configure-bash:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -6320,6 +6398,12 @@ configure-bfd:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -7056,6 +7140,12 @@ configure-opcodes:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -7792,6 +7882,12 @@ configure-binutils:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -8527,6 +8623,12 @@ configure-bison:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -8941,6 +9043,12 @@ configure-byacc:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -9355,6 +9463,12 @@ configure-bzip2:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -9764,6 +9878,12 @@ configure-cgen:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -10173,6 +10293,12 @@ configure-dejagnu:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -10582,6 +10708,12 @@ configure-diff:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -10991,6 +11123,12 @@ configure-dosutils:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -11395,6 +11533,12 @@ configure-electric-fence:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -11804,6 +11948,12 @@ configure-etc:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -12213,6 +12363,12 @@ configure-fastjar:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -12627,6 +12783,12 @@ configure-fileutils:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -13036,6 +13198,12 @@ configure-findutils:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -13445,6 +13613,12 @@ configure-find:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -13854,6 +14028,12 @@ configure-fixincludes:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -14187,6 +14367,12 @@ configure-flex:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -14602,6 +14788,12 @@ configure-gas:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -15338,6 +15530,12 @@ configure-gcc:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -16074,6 +16272,12 @@ configure-gmp:
 	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-shared LEX="touch lex.yy.c" \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -16773,6 +16977,12 @@ configure-mpfr:
 	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-shared @extra_mpfr_configure_flags@ \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -17504,6 +17714,12 @@ configure-mpc:
 	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-shared @extra_mpc_gmp_configure_flags@ @extra_mpc_mpfr_configure_flags@ \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -18235,6 +18451,12 @@ configure-isl:
 	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-shared @extra_isl_gmp_configure_flags@ \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -18965,6 +19187,12 @@ configure-gawk:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -19374,6 +19602,12 @@ configure-gettext:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -19783,6 +20017,12 @@ configure-gnuserv:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -20193,6 +20433,12 @@ configure-gold:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -20928,6 +21174,12 @@ configure-gprof:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -21337,6 +21589,12 @@ configure-gzip:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -21746,6 +22004,12 @@ configure-hello:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -22155,6 +22419,12 @@ configure-indent:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -22565,6 +22835,12 @@ configure-intl:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -23300,6 +23576,12 @@ configure-tcl:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -23665,6 +23947,12 @@ configure-itcl:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -24045,6 +24333,12 @@ configure-ld:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -24781,6 +25075,12 @@ configure-libbacktrace:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -25517,6 +25817,12 @@ configure-libcpp:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -26253,6 +26559,12 @@ configure-libdecnumber:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -26974,6 +27286,12 @@ configure-libelf:
 	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-shared \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -27704,6 +28022,12 @@ configure-libgui:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -28114,6 +28438,12 @@ configure-libiberty:
 	  $(HOST_CONFIGARGS) $${srcdiroption} @extra_host_libiberty_configure_flags@ \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -28850,6 +29180,12 @@ configure-libiberty-linker-plugin:
 	  $(HOST_CONFIGARGS) $${srcdiroption} @extra_host_libiberty_configure_flags@ --disable-install-libiberty @extra_linker_plugin_flags@ @extra_linker_plugin_configure_flags@ \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -29585,6 +29921,12 @@ configure-libiconv:
 	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-shared \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -29896,6 +30238,12 @@ configure-libtool_gnu:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -30305,6 +30653,12 @@ configure-m4:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -30714,6 +31068,12 @@ configure-make:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -31123,6 +31483,12 @@ configure-mmalloc:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -31532,6 +31898,12 @@ configure-patch:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -31941,6 +32313,12 @@ configure-perl:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -32350,6 +32728,12 @@ configure-prms:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -32759,6 +33143,12 @@ configure-rcs:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -33168,6 +33558,12 @@ configure-readline:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -33577,6 +33973,12 @@ configure-release:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -33976,6 +34378,12 @@ configure-recode:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -34385,6 +34793,12 @@ configure-sed:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -34794,6 +35208,12 @@ configure-send-pr:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -35203,6 +35623,12 @@ configure-shellutils:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -35612,6 +36038,12 @@ configure-sid:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -36021,6 +36453,12 @@ configure-sim:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -36430,6 +36868,12 @@ configure-tar:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -36839,6 +37283,12 @@ configure-texinfo:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -37243,6 +37693,12 @@ configure-textutils:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -37652,6 +38108,12 @@ configure-time:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -38061,6 +38523,12 @@ configure-uudecode:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -38470,6 +38938,12 @@ configure-wdiff:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -38879,6 +39353,12 @@ configure-zip:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -39294,6 +39774,12 @@ configure-zlib:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -40024,6 +40510,12 @@ configure-gdb:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -40433,6 +40925,12 @@ configure-expect:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -40827,6 +41325,12 @@ configure-guile:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -41236,6 +41740,12 @@ configure-tk:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -41615,6 +42125,12 @@ configure-libtermcap:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -41963,6 +42479,12 @@ configure-utils:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -42357,6 +42879,12 @@ configure-gnattools:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -42767,6 +43295,12 @@ configure-lto-plugin:
 	  $(HOST_CONFIGARGS) $${srcdiroption} --enable-shared @extra_linker_plugin_flags@ @extra_linker_plugin_configure_flags@ \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -43502,6 +44036,12 @@ configure-libcc1:
 	  $(HOST_CONFIGARGS) $${srcdiroption} --enable-shared \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -43911,6 +44451,12 @@ configure-gotools:
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -44338,6 +44884,12 @@ configure-target-libstdc++-v3: $(TARGET_SUBDIR)/libstdc++-v3/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -45086,6 +45638,12 @@ configure-target-libmudflap: $(TARGET_SUBDIR)/libmudflap/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -45509,6 +46067,12 @@ configure-target-libsanitizer: $(TARGET_SUBDIR)/libsanitizer/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -46258,6 +46822,12 @@ configure-target-libmpx: $(TARGET_SUBDIR)/libmpx/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -47007,6 +47577,12 @@ configure-target-libvtv: $(TARGET_SUBDIR)/libvtv/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -47755,6 +48331,12 @@ configure-target-libcilkrts: $(TARGET_SUBDIR)/libcilkrts/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -48177,6 +48759,12 @@ configure-target-liboffloadmic: $(TARGET_SUBDIR)/liboffloadmic/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption} @extra_liboffloadmic_configure_flags@ \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -48599,6 +49187,12 @@ configure-target-libssp: $(TARGET_SUBDIR)/libssp/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -49021,6 +49615,12 @@ configure-target-newlib: $(TARGET_SUBDIR)/newlib/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -49444,6 +50044,12 @@ configure-target-libgcc: $(TARGET_SUBDIR)/libgcc/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -50188,6 +50794,12 @@ configure-target-libbacktrace: $(TARGET_SUBDIR)/libbacktrace/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -50610,6 +51222,12 @@ configure-target-libquadmath: $(TARGET_SUBDIR)/libquadmath/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -51032,6 +51650,12 @@ configure-target-libgfortran: $(TARGET_SUBDIR)/libgfortran/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -51454,6 +52078,12 @@ configure-target-libobjc: $(TARGET_SUBDIR)/libobjc/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -51876,6 +52506,12 @@ configure-target-libgo: $(TARGET_SUBDIR)/libgo/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -52298,6 +52934,12 @@ configure-target-libtermcap: $(TARGET_SUBDIR)/libtermcap/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -52660,6 +53302,12 @@ configure-target-winsup: $(TARGET_SUBDIR)/winsup/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -53082,6 +53730,12 @@ configure-target-libgloss: $(TARGET_SUBDIR)/libgloss/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -53500,6 +54154,12 @@ configure-target-libiberty: $(TARGET_SUBDIR)/libiberty/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -53922,6 +54582,12 @@ configure-target-gperf: $(TARGET_SUBDIR)/gperf/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -54344,6 +55010,12 @@ configure-target-examples: $(TARGET_SUBDIR)/examples/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -54758,6 +55430,12 @@ configure-target-libffi: $(TARGET_SUBDIR)/libffi/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -55176,6 +55854,12 @@ configure-target-libjava: $(TARGET_SUBDIR)/libjava/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption} $(EXTRA_CONFIGARGS_LIBJAVA) \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -55598,6 +56282,12 @@ configure-target-zlib: $(TARGET_SUBDIR)/zlib/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -56020,6 +56710,12 @@ configure-target-boehm-gc: $(TARGET_SUBDIR)/boehm-gc/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -56442,6 +57138,12 @@ configure-target-qthreads: $(TARGET_SUBDIR)/qthreads/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -56864,6 +57566,12 @@ configure-target-rda: $(TARGET_SUBDIR)/rda/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -57286,6 +57994,12 @@ configure-target-libada: $(TARGET_SUBDIR)/libada/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -57709,6 +58423,12 @@ configure-target-libgomp: $(TARGET_SUBDIR)/libgomp/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -58457,6 +59177,12 @@ configure-target-libitm: $(TARGET_SUBDIR)/libitm/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -58879,6 +59605,12 @@ configure-target-libatomic: $(TARGET_SUBDIR)/libatomic/multilib.out
 	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
 	  || (if test -x $${libsrcdir}/configure && test -s $${libsrcdir}/configure && test -r $${libsrcdir}/configure; then \
 	        (stat $${libsrcdir}/configure && wc -l $${libsrcdir}/configure); \
+	        if test -r $${libsrcdir}/Makefile; then \
+	          (stat $${libsrcdir}/Makefile && wc -l $${libsrcdir}/Makefile); \
+	        else \
+	          echo "$@: no readable Makefile available in $${libsrcdir}; cannot continue!" >&2; \
+	          exit 1; \
+	        fi;\
 	      else \
 	        (echo "$${libsrcdir}/configure missing/unusable!" >&2; \
 	         echo "SHELL is $(SHELL)"; \
@@ -59758,7 +60490,7 @@ stage1-end::
 .PHONY: stage1-bubble
 stage1-bubble:: 
 	$(AM_V_at)if test -f stage1-lean ; then \
-	  echo Skipping rebuild of stage1; \
+	  echo "Skipping rebuild of stage1"; \
 	else \
 	  $(MAKE) $(AM_V_MFLAG) $(RECURSE_FLAGS_TO_PASS) NOTPARALLEL= all-stage1; \
 	fi
@@ -60179,7 +60911,7 @@ stage2-end::
 .PHONY: stage2-bubble
 stage2-bubble:: stage1-bubble
 	$(AM_V_at)if test -f stage2-lean || test -f stage1-lean ; then \
-	  echo Skipping rebuild of stage2; \
+	  echo "Skipping rebuild of stage2"; \
 	else \
 	  $(MAKE) $(AM_V_MFLAG) $(RECURSE_FLAGS_TO_PASS) NOTPARALLEL= all-stage2; \
 	fi
@@ -60604,7 +61336,7 @@ stage3-end::
 stage3-bubble:: stage2-bubble
 	@bootstrap_lean@-rm -rf stage1-*; $(STAMP) stage1-lean
 	$(AM_V_at)if test -f stage3-lean || test -f stage2-lean ; then \
-	  echo Skipping rebuild of stage3; \
+	  echo "Skipping rebuild of stage3"; \
 	else \
 	  $(MAKE) $(AM_V_MFLAG) $(RECURSE_FLAGS_TO_PASS) NOTPARALLEL= all-stage3; \
 	fi
@@ -61059,7 +61791,7 @@ stage4-end::
 stage4-bubble:: stage3-bubble
 	@bootstrap_lean@-rm -rf stage2-*; $(STAMP) stage2-lean
 	$(AM_V_at)if test -f stage4-lean || test -f stage3-lean ; then \
-	  echo Skipping rebuild of stage4; \
+	  echo "Skipping rebuild of stage4"; \
 	else \
 	  $(MAKE) $(AM_V_MFLAG) $(RECURSE_FLAGS_TO_PASS) NOTPARALLEL= all-stage4; \
 	fi
@@ -61510,7 +62242,7 @@ stageprofile-end::
 .PHONY: stageprofile-bubble
 stageprofile-bubble:: stage1-bubble
 	$(AM_V_at)if test -f stageprofile-lean || test -f stage1-lean ; then \
-	  echo Skipping rebuild of stageprofile; \
+	  echo "Skipping rebuild of stageprofile"; \
 	else \
 	  $(MAKE) $(AM_V_MFLAG) $(RECURSE_FLAGS_TO_PASS) NOTPARALLEL= all-stageprofile; \
 	fi
@@ -61931,7 +62663,7 @@ stagefeedback-end::
 .PHONY: stagefeedback-bubble
 stagefeedback-bubble:: stageprofile-bubble
 	$(AM_V_at)if test -f stagefeedback-lean || test -f stageprofile-lean ; then \
-	  echo Skipping rebuild of stagefeedback; \
+	  echo "Skipping rebuild of stagefeedback"; \
 	else \
 	  $(MAKE) $(AM_V_MFLAG) $(RECURSE_FLAGS_TO_PASS) NOTPARALLEL= all-stagefeedback; \
 	fi
@@ -62990,11 +63722,13 @@ all-expect: maybe-all-itcl
 all-expect: maybe-all-tk
 configure-itcl: maybe-configure-tcl
 configure-itcl: maybe-configure-tk
+all-itcl: maybe-configure-tcl
 all-itcl: maybe-all-tcl
 all-itcl: maybe-all-tk
 install-itcl: maybe-install-tcl
 install-strip-itcl: maybe-install-strip-tcl
 configure-tk: maybe-configure-tcl
+all-tk: maybe-configure-tcl
 all-tk: maybe-all-tcl
 all-sid: maybe-all-libiberty
 all-sid: maybe-all-bfd
@@ -63025,6 +63759,7 @@ all-automake: maybe-all-build-texinfo
 all-automake: maybe-all-autoconf
 all-bison: maybe-all-intl
 all-bison: maybe-all-build-texinfo
+configure-cgen: maybe-configure-tcl
 configure-cgen: maybe-all-guile
 all-cgen: maybe-all-guile
 all-diff: maybe-all-intl
@@ -63216,10 +63951,13 @@ $(srcdir)/Makefile.in: @MAINT@ $(srcdir)/Makefile.tpl $(srcdir)/Makefile.def
 
 # Rebuilding Makefile.
 Makefile_target: $(srcdir)/Makefile.in config.status
-	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+	CONFIG_FILES=Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
 .PHONY: Makefile_target
 
-config_dot_status_target: configure
+# Normally it would be a mistake to have config.status depend upon itself,
+# but since we have renamed the target here, that avoids infinite recursion:
+config_dot_status_target: configure config.status
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SHELL="$(SHELL)" $(SHELL) ./config.status --recheck
 .PHONY: config_dot_status_target
 

@@ -721,6 +721,9 @@ Makefile: $(UNIX_DIR)/Makefile.in $(DLTEST_DIR)/Makefile.in config.status
 	@echo "rebuilding the Makefile for Tcl's unix subdirectory"
 	$(SHELL) config.status
 
+tclConfig.sh: $(UNIX_DIR)/tclConfig.sh.in config.status
+	CONFIG_FILES=$@ CONFIG_HEADERS="" $(SHELL) config.status
+
 am--refresh:
 	@true
 .PHONY: am--refresh

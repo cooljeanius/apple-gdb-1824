@@ -176,6 +176,7 @@ static void free_actions_list_cleanup_wrapper(void *);
 
 extern void _initialize_tracepoint(void);
 
+#ifndef __GDB_MACOSX_NAT_DYLD_H__
 /* Utility: returns true if "target remote" */
 static int
 target_is_remote(void)
@@ -187,6 +188,7 @@ target_is_remote(void)
   else
     return 0;
 }
+#endif /* !__GDB_MACOSX_NAT_DYLD_H__ */
 
 /* Utility: generate error from an incoming stub packet.  */
 static void

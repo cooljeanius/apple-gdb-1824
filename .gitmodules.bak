@@ -1,9 +1,0 @@
-[submodule "macgdb"]
-	path = macgdb
-	url = https://github.com/cooljeanius/macgdb.git
-[submodule "binutils-gdb"]
-	path = binutils-gdb
-	url = git://sourceware.org/git/binutils-gdb.git
-[submodule "src/gdb/XcodePlugins/CustomDataViews/xcode-unicode-formatter"]
-	path = src/gdb/XcodePlugins/CustomDataViews/xcode-unicode-formatter
-	url = https://github.com/cooljeanius/xcode-unicode-formatter.git

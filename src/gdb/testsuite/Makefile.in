@@ -183,6 +183,8 @@ subdirs:
 			(rootme=`pwd`/; export rootme; \
 			 rootsrc=`cd $(srcdir); pwd`/; export rootsrc; \
 			 cd $${dir}; $(MAKE) $(TARGET_FLAGS_TO_PASS)); \
+		else \
+			echo "$@: nothing to be done for $${dir}."; \
 		fi; \
 	done
 
@@ -208,23 +210,31 @@ clean mostlyclean:
 		    echo "$${dir}:"; \
 		    if [ -d $${dir} -a -r $${dir}/Makefile ]; then \
 			    (cd $${dir}; $(MAKE) clean); \
+		    else \
+			    echo "$@: nothing to be done for $${dir}."; \
 		    fi; \
 	    done ; \
 	else echo "no subdirs to recurse into for target '$@'"; fi
 
 distclean maintainer-clean realclean: clean
+	echo "`pwd`: '$@' target depends on '$<'"
 	-rm -fv *~ core .DS_Store gdb_cmd
 	-rm -fv Makefile config.status *-init.exp
 	-rm -frv *.log summary detail *.plog *.sum *.psum site.*
 	-rm -frv autom4te.cache || rmdir autom4te.cache
 	-rm -fv lib/pdtrace cell*.c cell*-spu.c conf*/*.awk
-	-(unlink vforked-prog.c || rm vforked-prog.c)
+	-(if test -L vforked-prog.c; then unlink vforked-prog.c; \
+	  elif test -w vforked-prog.c && test -w .; then rm vforked-prog.c;\
+	  elif test -e vforked-prog.c; then stat vforked-prog.c; \
+	  else ls ./*vfork* 2>/dev/null; fi) || find . -name vforked-prog.c -print
 	if [ x"${ALL_SUBDIRS}" != x"" ]; then \
 	    for dir in ${ALL_SUBDIRS}; \
 	    do \
 		    echo "$${dir}:"; \
 		    if [ -d $${dir} -a -r $${dir}/Makefile ]; then \
 			    (cd $${dir}; $(MAKE) distclean); \
+		    else \
+			    echo "$@: nothing to be done for $${dir}."; \
 		    fi; \
 	    done; \
 	else echo "no subdirs to recurse into for target '$@'"; fi

@@ -1,7 +1,7 @@
 #! /bin/bash -norc
-dnl	This file is an input file used by the GNU "autoconf" program to
-dnl	generate the file "configure", which is run during Tk installation
-dnl	to configure the system for the local environment.
+dnl#	This file is an input file used by the GNU "autoconf" program to
+dnl#	generate the file "configure", which is run during Tk installation
+dnl#	to configure the system for the local environment.
 #
 # RCS: @(#) $Id: configure.ac,v 1.82 2002/09/27 18:09:53 dgp Exp $
 
@@ -46,7 +46,7 @@ fi
 eval libdir="${libdir}"
 # Make sure srcdir is fully qualified!
 srcdir=`cd ${srcdir}; pwd`
-TK_SRC_DIR=`cd $srcdir/..; pwd`
+TK_SRC_DIR=`cd ${srcdir}/..; pwd`
 
 #------------------------------------------------------------------------
 # Compress and/or soft link the manpages?
@@ -80,7 +80,7 @@ fi
 
 # If the user did not set CFLAGS, set it now to keep
 # the AC_PROG_CC macro from adding "-g -O2".
-if test "${CFLAGS+set}" != "set" ; then
+if test "${CFLAGS+set}" != "set"; then
     CFLAGS=""
 fi
 
@@ -99,7 +99,7 @@ AC_PROG_AWK
 AC_PROG_INSTALL
 
 #------------------------------------------------------------------------
-# I'm not sure why these need to come before all of the other tests
+# I am not sure why these need to come before all of the other tests
 #------------------------------------------------------------------------
 
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h netinet/in.h sys/file.h])
@@ -121,8 +121,10 @@ if test -n "${GCC}"; then
   AC_MSG_CHECKING([if the compiler understands -pipe])
   OLDCC="${CC}"  
   CC="${CC} -pipe"
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[AC_MSG_RESULT(yes)],[CC="${OLDCC}"
-    AC_MSG_RESULT(no)])
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+                    [AC_MSG_RESULT([yes])],
+                    [CC="${OLDCC}"
+                     AC_MSG_RESULT([no])])
 fi  
 fi
 
@@ -182,55 +184,57 @@ AC_CHECK_LIB([ieee],[main],[MATH_LIBS="-lieee ${MATH_LIBS}"])
 # This library also supplies gettimeofday.
 #--------------------------------------------------------------------
 libbsd=no
-if test "`uname -s`" = "AIX" ; then
-    AC_CHECK_LIB(bsd, gettimeofday, libbsd=yes)
-    if test $libbsd = yes; then
-	MATH_LIBS="$MATH_LIBS -lbsd"
+if test "`uname -s`" = "AIX"; then
+    AC_CHECK_LIB([bsd],[gettimeofday],[libbsd=yes])
+    if test "x${libbsd}" = "xyes"; then
+	MATH_LIBS="${MATH_LIBS} -lbsd"
     fi
 fi
 
 #--------------------------------------------------------------------
-# Supply a substitute for stdlib.h if it doesn't define strtol,
-# strtoul, or strtod (which it doesn't in some versions of SunOS).
+# Supply a substitute for stdlib.h if it fails to define strtol,
+# strtoul, or strtod (which happens on some versions of SunOS).
 #--------------------------------------------------------------------
 
-AC_MSG_CHECKING(stdlib.h)
+AC_MSG_CHECKING([for a usable stdlib.h])
 AC_EGREP_HEADER([strtol],[stdlib.h],[tk_ok=yes],[tk_ok=no])
 AC_EGREP_HEADER([strtoul],[stdlib.h],[],[tk_ok=no])
 AC_EGREP_HEADER([strtod],[stdlib.h],[],[tk_ok=no])
-if test $tk_ok = no; then
-    AC_DEFINE(NO_STDLIB_H)
+if test "x${tk_ok}" = "xno"; then
+    AC_DEFINE([NO_STDLIB_H])
 fi
-AC_MSG_RESULT($tk_ok)
+AC_MSG_RESULT([${tk_ok}])
 
 AC_CHECK_FUNCS([strtol strtoul])
 
 #--------------------------------------------------------------------
 # Include sys/select.h if it exists and if it supplies things
-# that appear to be useful and aren't already in sys/types.h.
+# that appear to be useful and are NOT already in sys/types.h.
 # This appears to be true only on the RS/6000 under AIX.  Some
-# systems like OSF/1 have a sys/select.h that's of no use, and
-# other systems like SCO UNIX have a sys/select.h that's
-# pernicious.  If "fd_set" isn't defined anywhere then set a
+# systems like OSF/1 have a sys/select.h that is of no use, and
+# other systems like SCO UNIX have a sys/select.h that is
+# pernicious.  If "fd_set" is NOT defined anywhere then set a
 # special flag.
 #--------------------------------------------------------------------
 
 AC_MSG_CHECKING([fd_set and sys/select])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>]], [[fd_set readMask, writeMask;]])],[tk_ok=yes],[tk_ok=no])
-if test $tk_ok = no; then
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>]],
+                                   [[fd_set readMask, writeMask;]])],
+                  [tk_ok=yes],[tk_ok=no])
+if test "x${tk_ok}" = "xno"; then
     AC_EGREP_HEADER([fd_mask],[sys/select.h],[tk_ok=yes])
-    if test $tk_ok = yes; then
-	AC_DEFINE(HAVE_SYS_SELECT_H)
+    if test "x${tk_ok}" = "xyes"; then
+	AC_DEFINE([HAVE_SYS_SELECT_H])
     fi
 fi
-AC_MSG_RESULT($tk_ok)
-if test $tk_ok = no; then
-    AC_DEFINE(NO_FD_SET)
+AC_MSG_RESULT([${tk_ok}])
+if test "x${tk_ok}" = "xno"; then
+    AC_DEFINE([NO_FD_SET])
 fi
 
 #--------------------------------------------------------------------
 # Check for various typedefs and provide substitutes if
-# they don't exist.
+# they are missing.
 #--------------------------------------------------------------------
 
 AC_TYPE_MODE_T
@@ -255,16 +259,18 @@ AC_HEADER_TIME
 #-------------------------------------------
 
 AC_MSG_CHECKING([pw_gecos in struct pwd])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <pwd.h>]], [[struct passwd pwd; pwd.pw_gecos;]])],[tk_ok=yes],[tk_ok=no])
-AC_MSG_RESULT($tk_ok)
-if test $tk_ok = yes; then
-    AC_DEFINE(HAVE_PW_GECOS)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <pwd.h>]],
+                                   [[struct passwd pwd; pwd.pw_gecos;]])],
+                  [tk_ok=yes],[tk_ok=no])
+AC_MSG_RESULT([${tk_ok}])
+if test "x${tk_ok}" = "xyes"; then
+    AC_DEFINE([HAVE_PW_GECOS])
 fi
 
 #--------------------------------------------------------------------
 #	Locate the X11 header files and the X11 library archive.  Try
-#	the ac_path_x macro first, but if it doesn't find the X stuff
-#	(e.g. because there's no xmkmf program) then check through
+#	the ac_path_x macro first, but if it fails to find the X stuff
+#	(e.g. because there is no xmkmf program) then check through
 #	a list of possible directories.  Under some conditions the
 #	autoconf macro will return an include directory that contains
 #	no include files, so double-check its result just to be safe.
@@ -307,47 +313,48 @@ eval "LD_SEARCH_FLAGS=\"$TCL_LD_SEARCH_FLAGS\""
 #	require a couple of special tricks:
 #	1. Use "connect" and "accept" to check for -lsocket, and
 #	   "gethostbyname" to check for -lnsl.
-#	2. Use each function name only once:  can't redo a check because
-#	   autoconf caches the results of the last check and won't redo it.
+#	2. Use each function name only once:  cannot redo a check because
+#	   autoconf caches the results of the last check and will NOT redo it.
 #	3. Use -lnsl and -lsocket only if they supply procedures that
-#	   aren't already present in the normal libraries.  This is because
-#	   IRIX 5.2 has libraries, but they aren't needed and they're
-#	   bogus:  they goof up name resolution if used.
-#	4. On some SVR4 systems, can't use -lsocket without -lnsl too.
+#	   are NOT already present in the normal libraries.  This is because
+#	   IRIX 5.2 has libraries, but they are NOT needed and they are
+#	   bogus: they goof up name resolution if used.
+#	4. On some SVR4 systems, cannot use -lsocket without -lnsl too.
 #	   To get around this problem, check for both libraries together
-#	   if -lsocket doesn't work by itself.
+#	   if -lsocket fails to work by itself.
 #--------------------------------------------------------------------
 
-AC_CHECK_LIB(Xbsd, main, [LIBS="$LIBS -lXbsd"])
+AC_CHECK_LIB([Xbsd],[main],[LIBS="${LIBS} -lXbsd"])
 
 tk_checkBoth=0
-AC_CHECK_FUNC(connect, tk_checkSocket=0, tk_checkSocket=1)
-if test "$tk_checkSocket" = 1; then
-    AC_CHECK_LIB(socket, main, LIBS="$LIBS -lsocket", tk_checkBoth=1)
+AC_CHECK_FUNC([connect],[tk_checkSocket=0],[tk_checkSocket=1])
+if test "${tk_checkSocket}" = 1; then
+    AC_CHECK_LIB([socket],[main],[LIBS="${LIBS} -lsocket"],[tk_checkBoth=1])
 fi
-if test "$tk_checkBoth" = 1; then
-    tk_oldLibs=$LIBS
-    LIBS="$LIBS -lsocket -lnsl"
-    AC_CHECK_FUNC(accept, tk_checkNsl=0, [LIBS=$tk_oldLibs])
+if test "${tk_checkBoth}" = 1; then
+    tk_oldLibs="${LIBS}"
+    LIBS="${LIBS} -lsocket -lnsl"
+    AC_CHECK_FUNC([accept],[tk_checkNsl=0],[LIBS=${tk_oldLibs}])
 fi
-AC_CHECK_FUNC(gethostbyname, , [AC_CHECK_LIB(nsl, main, [LIBS="$LIBS -lnsl"])])
+AC_CHECK_FUNC([gethostbyname],[],
+              [AC_CHECK_LIB([nsl],[main],[LIBS="${LIBS} -lnsl"])])
 
 # Add the threads support libraries
 
-LIBS="$LIBS$THREADS_LIBS"
+LIBS="${LIBS} ${THREADS_LIBS}"
 
 #--------------------------------------------------------------------
 # One more check related to the X libraries.  The standard releases
-# of Ultrix don't support the "xauth" mechanism, so send won't work
+# of Ultrix fail to support the "xauth" mechanism, so send will fail
 # unless TK_NO_SECURITY is defined.  However, there are usually copies
 # of the MIT X server available as well, which do support xauth.
 # Check for the MIT stuff and use it if it exists.
 #
-# Note: can't use ac_check_lib macro (at least, not in Autoconf 2.1)
-# because it can't deal with the "-" in the library name.
+# Note: cannot use ac_check_lib macro (at least, not in Autoconf 2.1)
+# because it cannot deal with the "-" in the library name.
 #--------------------------------------------------------------------
 
-if test -d /usr/include/mit ; then
+if test -d /usr/include/mit; then
     AC_MSG_CHECKING([MIT X libraries])
     tk_oldCFlags=$CFLAGS
     CFLAGS="$CFLAGS -I/usr/include/mit"
@@ -358,12 +365,14 @@ if test -d /usr/include/mit ; then
     ]], [[
 	XOpenDisplay(0);
     ]])],[
-	AC_MSG_RESULT(yes)
+	AC_MSG_RESULT([yes])
 	XLIBSW="-lX11-mit"
 	XINCLUDES="-I/usr/include/mit"
-    ],[AC_MSG_RESULT(no)])
-    CFLAGS=$tk_oldCFlags
-    LIBS=$tk_oldLibs
+    ],[AC_MSG_RESULT([no])])
+    CFLAGS="${tk_oldCFlags}"
+    LIBS="${tk_oldLibs}"
+else
+    AC_MSG_NOTICE([skipping MIT X checks])
 fi
 
 #--------------------------------------------------------------------
@@ -409,13 +418,14 @@ else
 fi
 TK_LIB_FILE=libtk${LIB_SUFFIX}
 eval "TK_LIB_FILE=${TK_LIB_FILE}"
+AC_MSG_NOTICE([TK_LIB_FILE is now ${TK_LIB_FILE}])dnl
 
-# Note:  in the following variable, it's important to use the absolute
-# path name of the Tcl directory rather than "..":  this is because
+# Note:  in the following variable, it is important to use the absolute
+# path name of the Tcl directory rather than "..": this is because
 # AIX remembers this path and will attempt to use it at run-time to look
 # up the Tcl library.
 
-if test "$SHARED_BUILD" = 0 -o $TCL_NEEDS_EXP_FILE = 0; then
+if test "${SHARED_BUILD}" = 0 -o ${TCL_NEEDS_EXP_FILE} = 0; then
     if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then
 	eval TK_LIB_FLAG="-ltk${VERSION}\${TK_DBGX}"
     else
@@ -429,7 +439,7 @@ else
     TK_BUILD_EXP_FILE="lib.exp"
     eval "TK_EXP_FILE=libtk${TCL_EXPORT_FILE_SUFFIX}"
 
-    if test "$GCC" = "yes" ; then
+    if test "${GCC}" = "yes"; then
 	TK_BUILD_LIB_SPEC="-Wl,-bI:`pwd`/${TK_BUILD_EXP_FILE} -L`pwd`"
 	TK_LIB_SPEC="-Wl,-bI:${libdir}/${TK_EXP_FILE} -L`pwd`"    
     else
@@ -441,7 +451,7 @@ TK_SHARED_BUILD=${SHARED_BUILD}
 
 #--------------------------------------------------------------------
 # The statements below define various symbols relating to creating
-# the stub'd version of the Tk library
+# the stubbed version of the Tk library
 #
 # For now, linking to Tcl stubs is not supported with Tk. It causes
 # too many problems with linking.  When Tk is a fully loadable 
@@ -463,6 +473,14 @@ TK_BUILD_STUB_LIB_PATH="`pwd`/${TK_STUB_LIB_FILE}"
 TK_STUB_LIB_PATH="${libdir}/${TK_STUB_LIB_FILE}"
 
 eval "TK_LIB_FILE=${TK_LIB_FILE}"
+AC_MSG_NOTICE([...and finally, TK_LIB_FILE is now ${TK_LIB_FILE}])dnl
+
+# A few more things.
+AC_C_PROTOTYPES
+if test "x${ac_prog_cc_stdc}" = "xno"; then
+  PROTO_FLAGS="-DNO_PROTOTYPE"
+fi
+AC_SUBST([PROTO_FLAGS])dnl
 
 AC_SUBST([TK_VERSION])dnl
 AC_SUBST([TK_MAJOR_VERSION])dnl
