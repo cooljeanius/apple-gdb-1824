@@ -1281,7 +1281,7 @@ ppc_fast_show_stack(unsigned int count_limit, unsigned int print_start,
       pc_set_load_state (pc, OBJF_SYM_ALL, 0);
 
       if (print_fun && (i < print_end))
-        print_fun(uiout, (unsigned int *)&i, pc, fp);
+        print_fun(uiout, (int *)&i, pc, fp);
       i++;
 
       if (!backtrace_past_main && addr_inside_main_func (pc))

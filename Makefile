@@ -195,7 +195,18 @@ NATIVE_TARGETS = $(foreach arch1,$(CANONICAL_ARCHS),$(arch1)--$(arch1))
 
 CROSS_TARGETS = $(strip $(foreach hostarch, $(CANONICAL_ARCHS), $(foreach targarch, $(filter-out $(hostarch), $(CANONICAL_ARCHS)), $(hostarch)--$(targarch))))
 
+# Old comment:
+# If the special TARGET_ONLY_EXTRA_ARCHS variable is set to arm, like
+# someone had done
+#
+#  sudo ~rc/bin/buildit -arch i386 -arch x86_64 `pwd` TARGET_ONLY_EXTRA_ARCHS=arm
+#
+# then build an arm cross-debugger for every native debugger that we 
+# build.  This cross debugger does not require an arm compiler, arm libraries
+# or an arm SDK -- the gdb binary runs exclusively on the native host.
+# New comment:
 # Unconditionally add a cross-arm debugger to every native host.
+# (i.e. setting TARGET_ONLY_EXTRA_ARCHS no longer does anything)
 
 CROSS_TARGETS := $(strip $(CROSS_TARGETS) $(foreach hostarch, $(CANONICAL_ARCHS), $(hostarch)--arm-apple-darwin))
 

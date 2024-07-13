@@ -740,6 +740,14 @@ Set if GDB should use shell to invoke inferior (performs argument expansion in s
 Show if GDB should use shell to invoke inferior (performs argument expansion in shell)."), NULL,
 			  NULL, NULL,
 			  &setlist, &showlist);
+#if defined(TM_NEXTSTEP)
+  add_setshow_boolean_cmd ("disable-aslr", class_obscure,
+			   &disable_aslr_flag, _("\
+Set if GDB should disable shared library address randomization."), _("\
+Show if GDB should disable shared library address randomization."), NULL,
+			   NULL, NULL,
+			   &setlist, &showlist);
+#endif /* TM_NEXTSTEP */
 }
 /* APPLE LOCAL end start with shell */
 

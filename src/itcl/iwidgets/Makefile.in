@@ -191,7 +191,7 @@ install-doc:
 	    done;
 	$(INSTALL_DATA) $(srcdir)/license.terms $(SCRIPT_INSTALL_DIR)
 
-Makefile: $(srcdir)/Makefile.in
+Makefile: $(srcdir)/Makefile.in config.status
 	$(SHELL) config.status
 
 mostlyclean:
@@ -207,7 +207,7 @@ distclean: clean
 depend:
 	makedepend -- $(CC_SWITCHES) -- $(SRCS)
 
-configure: configure.ac
+configure: configure.ac tcl.m4
 	autoconf
 
 .PHONY: check test

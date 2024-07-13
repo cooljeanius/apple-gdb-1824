@@ -2700,6 +2700,11 @@ case "${host}" in
      [Define if DebugSymbols framework is available and we should use it.])
         DEBUG_SYMBOLS_LIBS="-F/System/Library/PrivateFrameworks -framework DebugSymbols"
         AC_MSG_RESULT([yes])
+      elif test -n "${SDKROOT}" && test -d "${SDKROOT}/System/Library/PrivateFrameworks/DebugSymbols.framework"; then
+        AC_DEFINE([USE_DEBUG_SYMBOLS_FRAMEWORK],[1],
+     [Define if DebugSymbols framework is available and we should use it.])
+        DEBUG_SYMBOLS_LIBS="-F${SDKROOT}/System/Library/PrivateFrameworks -framework DebugSymbols"
+        AC_MSG_RESULT([yes (in SDKROOT)])
       else
         AC_MSG_RESULT([no])
       fi

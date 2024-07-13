@@ -59,7 +59,7 @@ AC_DEFUN([SC_PATH_TCLCONFIG],[
 		    if test -f "${i}/unix/tclConfig.sh"; then
 			ac_cv_c_tclconfig=`(cd ${i}/unix; pwd)`
 			break
-			elif test -f "${i}/unix/tclConfig.sh.in"; then
+		    elif test -f "${i}/unix/tclConfig.sh.in"; then
 			AC_MSG_NOTICE([file from which tclConfig.sh is generated was found in ${i}, but not the actual script itself])
 			AC_MSG_NOTICE([perhaps you still need to configure and/or build there?])
 		    fi
@@ -67,7 +67,7 @@ AC_DEFUN([SC_PATH_TCLCONFIG],[
 	    fi
 
 	    # check in a few common install locations
-	    if test x"${ac_cv_c_tclconfig}" = x ; then
+	    if test x"${ac_cv_c_tclconfig}" = x""; then
 		for i in `ls -d ${libdir} 2>/dev/null` \
 			`ls -d /usr/local/lib 2>/dev/null` \
 			`ls -d /usr/contrib/lib 2>/dev/null` \
@@ -87,7 +87,7 @@ AC_DEFUN([SC_PATH_TCLCONFIG],[
 			${srcdir}/../tcl \
 			`ls -dr ${srcdir}/../tcl[[8-9]].[[0-9]]* 2>/dev/null` \
 			${srcdir}/../../tcl; do
-		    if test -f "${i}/unix/tclConfig.sh" ; then
+		    if test -f "${i}/unix/tclConfig.sh"; then
 		    ac_cv_c_tclconfig=`(cd ${i}/unix; pwd)`
 		    break
 		fi
@@ -141,7 +141,7 @@ AC_DEFUN([SC_PATH_TKCONFIG],[
 
 	    # First check to see if --with-tkconfig was specified.
 	    if test x"${with_tkconfig}" != x""; then
-		if test -f "${with_tkconfig}/tkConfig.sh" ; then
+		if test -f "${with_tkconfig}/tkConfig.sh"; then
 		    ac_cv_c_tkconfig=`(cd ${with_tkconfig}; pwd)`
 		else
 		    AC_MSG_ERROR([${with_tkconfig} directory does NOT contain tkConfig.sh])
