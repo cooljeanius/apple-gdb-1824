@@ -246,10 +246,29 @@ CONFIG_DEP_TRACK=--disable-dependency-tracking
 CONFIG_BUILD=--build=$(BUILD_ARCH)
 CONFIG_OTHER_OPTIONS?=--disable-serial-configure --with-x --enable-carbon-framework --enable-debug-symbols-framework
 
+# The code below looks like it is intended for building the ARM native debugger.
+# When this is done in B&I we get passed in these settings,
+#    RC_CFLAGS:                      -arch armv6 -pipe
+#    RC_ARCHS:                       armv6
+#    RC_OS:                          macos
+#    RC_RELEASE                       "BigBear"
+#    RC_PRODUCT                       "P2"
+#    RC_PURPLE                        "YES"
+#    RC_armv6                         "YES"
+#    RC_arm                           ""
+#    TRAIN                            "BigBear"
+#    HOST_ARCHITECTURE=armv6
+#    SDKROOT='/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.0.Internal.sdk'
+#
 ifneq ($(findstring macosx,$(CANONICAL_ARCHS))$(findstring darwin,$(CANONICAL_ARCHS)),)
 CC = clang -arch $(HOST_ARCHITECTURE)
 CC_FOR_BUILD = clang
 
+# Unset this when building Canadian Cross.  (e.g. an arm native gdb built on an
+# i386 system)  This will have a setting like "10.5" which is not valid on the
+# iPhone OS platform and our compiler will get linker errors when running
+# autoconf tests.
+MACOSX_DEPLOYMENT_TARGET=
 CDEBUGFLAGS = -ggdb -Os
 
 # The -Wno-error=deprecated-declarations flag is not recognized by some 
@@ -390,6 +409,11 @@ crossarm:;
 #
 # SDKROOT can be used to specify a system root for cross builds, and
 # the current macos is used will be used for others.
+#
+# The command below used to build a cross i386 gdb to be hosted on ppc:
+#
+# sudo ~rc/bin/buildit -noinstallhdrs -arch ppc -target cross /path/to/gdb \
+#	RC_CROSS_ARCHS=i386
 #
 # The command below will build a cross armv6 gdb to be hosted on i386, ppc,
 # and natively on armv6:

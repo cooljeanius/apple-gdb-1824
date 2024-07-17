@@ -1332,6 +1332,8 @@ init_execution_control_state (struct execution_control_state *ecs)
   /* APPLE LOCAL: Set code to -1 - means nothing interesting here.  */
   ecs->ws.code = -1;
   ecs->wp = &(ecs->ws);
+  /* APPLE LOCAL: Start off with 0  */
+  ecs->stepping_through_switch_glue = 0;
 }
 
 /* Return the cached copy of the last pid/waitstatus returned by
@@ -2651,9 +2653,27 @@ process_event_stop_test:
      test for stepping.  But, if not stepping,
      do not stop.  */
 
+#ifdef IN_SWITCH_GLUE
+  /* If we are currently stepping through the glue that implements
+   * switch, then keep going until we get out: */
+  if (ecs->stepping_through_switch_glue)
+    {
+      if (IN_SWITCH_GLUE(stop_pc))
+	{
+	  if (debug_infrun)
+	    fprintf_unfiltered(gdb_stdlog,
+                               "infrun: stepping through switch glue at %s.\n",
+                               paddr_nz(stop_pc));
+	  ecs->another_trap = 1;
+	  keep_going(ecs);
+	  return;
+	}
+      else
+	ecs->stepping_through_switch_glue = 0;
+    }
+#else
   /* APPLE LOCAL: complex step support. Check if the target to see if it
      needs to keep going.  */
-
   if (target_keep_going(stop_pc))
     {
       if (debug_infrun)
@@ -2664,6 +2684,7 @@ process_event_stop_test:
       keep_going(ecs);
       return;
     }
+#endif /* IN_SWITCH_GLUE */
 
   /* Are we stepping to get the inferior out of the dynamic linker's
      hook (and possibly the dld itself) after catching a shlib
@@ -2884,6 +2905,20 @@ process_event_stop_test:
 
       if (debug_infrun)
 	 fprintf_unfiltered(gdb_stdlog, "infrun: stepped into subroutine\n");
+
+#ifdef IN_SWITCH_GLUE
+      if (IN_SWITCH_GLUE(stop_pc))
+	{
+	  ecs->stepping_through_switch_glue = 1;
+	  if (debug_infrun)
+	    fprintf_unfiltered(gdb_stdlog,
+                               "infrun: stepped into switch glue at %s.\n",
+                               paddr_nz(stop_pc));
+	  ecs->another_trap = 1;
+	  keep_going(ecs);
+	  return;
+	}
+#endif /* IN_SWITCH_GLUE */
 
       if ((step_over_calls == STEP_OVER_NONE)
 	  || ((step_range_end == 1)

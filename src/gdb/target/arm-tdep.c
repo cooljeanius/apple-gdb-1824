@@ -162,6 +162,80 @@ static const char *arm_abi_string = "auto";
 /* Number of different reg name sets (options).  */
 static int num_disassembly_options;
 
+/* We have more registers than the disassembler as gdb can print the value
+   of special registers as well.
+   The general register names are overwritten by whatever is being used by
+   the disassembler at the moment. We also adjust the case of cpsr and fps.  */
+
+/* Initial value: Register names used in ARM's ISA documentation.  */
+static const char *arm_register_name_strings[] ATTRIBUTE_USED =
+{"r0",  "r1",  "r2",  "r3",	/*  0  1  2  3 */
+ "r4",  "r5",  "r6",  "r7",	/*  4  5  6  7 */
+ "r8",  "r9",  "r10", "r11",	/*  8  9 10 11 */
+ "r12", "sp",  "lr",  "pc",	/* 12 13 14 15 */
+#ifdef TM_NEXTSTEP
+/* APPLE LOCAL START: Set f0-f7 and fps reg names blank so they
+   don't show up in "info all-registers" or "info float" commands.
+   We reserve the register numbers and register cache space for them
+   so we can maintian FSF gdbserver compatability. If these register
+   do need to be displayed, we can re-set the names to valid values
+   using a new command.  */
+  "",    "",    "",    "",	/* 16 17 18 19 */
+  "",    "",    "",    "",	/* 20 21 22 23 */
+  "", "cpsr",                   /* 24 25       */
+/* APPLE LOCAL START: VFP Register Support.  */
+ "s0",  "s1",  "s2",  "s3",     /* 26 27 28 29 */
+ "s4",  "s5",  "s6",  "s7",     /* 30 31 32 33 */
+ "s8",  "s9",  "s10", "s11",    /* 34 35 36 37 */
+ "s12", "s13", "s14", "s15",    /* 38 39 40 41 */
+ "s16", "s17", "s18", "s19",    /* 42 43 44 45 */
+ "s20", "s21", "s22", "s23",    /* 46 47 48 49 */
+ "s24", "s25", "s26", "s27",    /* 50 51 52 53 */
+ "s28", "s29", "s30", "s31",	/* 54 55 56 57 */
+ "fpscr",                       /* 58          */
+ "d0",  "d1",  "d2",  "d3",	/* 59 60 61 62 */
+ "d4",  "d5",  "d6",  "d7",	/* 63 64 65 66 */
+ "d8",  "d9",  "d10", "d11",	/* 67 68 69 70 */
+ "d12", "d13", "d14", "d15",	/* 71 72 73 64 */
+/* APPLE LOCAL END.  */
+#else
+ "f0",  "f1",  "f2",  "f3",	/* 16 17 18 19 */
+ "f4",  "f5",  "f6",  "f7",	/* 20 21 22 23 */
+ "fps", "cpsr" };		/* 24 25       */
+#endif /* TM_NEXTSTEP */
+};
+
+static const char **arm_register_names = arm_register_name_strings;
+
+/* APPLE LOCAL START: Register byte offset table.  */
+static int arm_register_offsets[] ATTRIBUTE_USED =
+{   0,   4,   8,  12,	/*  0  1  2  3 (r0  - r3 ) */
+   16,  20,  24,  28,	/*  4  5  6  7 (r4  - r7 ) */
+   32,  36,  40,  44,   /*  8  9 10 11 (r8  - r11) */
+   48,  52,  56,  60,	/* 12 13 14 15 (r12 - pc ) */
+   64,  76,  88, 100,	/* 16 17 18 19 (f0  - f3 ) */
+  112, 124, 136, 148,	/* 20 21 22 23 (f4  - f7 ) */
+  160, 164,             /* 24 25       (fps, cpsr) */
+  168, 172, 176, 180,	/* 26 27 28 29 (s0  - s3 ) */
+  184, 188, 192, 196,   /* 30 31 32 33 (s4  - s7 ) */
+  200, 204, 208, 212,   /* 34 35 36 37 (s8  - s11) */
+  216, 220, 224, 228,   /* 38 39 40 41 (s12 - s15) */
+  232, 236, 240, 244,   /* 42 43 44 45 (s16 - s19) */
+  248, 252, 256, 260,   /* 46 47 48 49 (s20 - s23) */
+  264, 268, 272, 276,   /* 50 51 52 53 (s24 - s27) */
+  280, 284, 288, 292,	/* 54 55 56 57 (s28 - s31) */
+  296,                  /* 58          (fpscr)     */
+  /* d0-d31 pseudo register offsets overlay s0-s31 offsets.  */
+  168, 176, 184, 192,	/* 59 60 61 62 (d0  - d3 ) */
+  200, 208, 216, 224,	/* 63 64 65 66 (d4  - d7 ) */
+  232, 240, 248, 256,   /* 67 68 69 70 (d8  - d11) */
+  264, 272, 280, 288	/* 71 72 73 64 (d12 - d15) */
+};
+/* APPLE LOCAL END.  */
+
+/* builtin_type_arm_psr and builtin_type_arm_fpscr have moved to
+ * macosx/arm-macosx-tdep.c */
+
 /* The offsets in all REGISTER_INFO structs in g_register_info get initialized
    in _initialize_arm_tdep() using the "struct type" information from the
    previous register.  */
@@ -328,6 +402,12 @@ typedef int (arm_scan_prolog_ftype)(const uint32_t insn,
 		  MAX_THUMB_PROLOGUE_SIZE for Thumb) so that we can deal
 		  with assembly functions that do some sanity checking on
 		  args and bail before creating a proper stack frame.
+
+  prolog_tail   - Set this for instructions that are considered part of
+		  a prologue only if they follow other valid prologue
+		  instructions (prolog_yes), yet not after any that
+		  aren't (prolog_no) such as "str Rd, [sp, #-n]!"
+		  where Rd is r0, r1, r2, or r3.
  */
 
 enum
@@ -335,6 +415,7 @@ enum
   prolog_no = 0,
   prolog_ignore,
   prolog_yes,
+  prolog_tail
 };
 
 enum
@@ -358,6 +439,9 @@ struct arm_opcode_info_tag
 {
   uint32_t mask;	/* Mask to apply to the instruction.  */
   uint32_t value;	/* Value to compare to the masked instruction.  */
+#if defined(GDB_RC_VERSION) && (GDB_RC_VERSION <= 1461)
+  unsigned char type;	/* prolog instruction type (prolog_xxx enums).  */
+#endif /* GDB_RC_VERSION <= 1461 */
   arm_scan_prolog_ftype *scan_prolog;
   uint32_t variant_mask; /* Mask of bits that indicate which variants support this opcode.  */
   const char *description;
@@ -910,6 +994,18 @@ thumb_macosx_skip_prologue(CORE_ADDR pc, CORE_ADDR func_end)
 		     was a valid prologue opcode. */
 		  state.pc = max_prologue_addr;
 		}
+	      else if (opcode_type == prolog_tail)
+		{
+		  if (arm_debug > 3)
+		    fprintf_unfiltered(gdb_stdlog, "prolog_tail");
+		  if (last_prologue_inst_addr != pc)
+		    {
+		      /* Only increment the last prologue address if
+		         we have already found valid prolog instructions
+			 already.  */
+		      last_prologue_inst_addr = (state.pc + opcode_size);
+		    }
+      		}
 	      else
 		{
 		  if (arm_debug > 3)
@@ -1164,6 +1260,13 @@ arm_macosx_skip_prologue_addr_ctx(struct address_context *pc_addr_ctx)
 		     proglogue, so return the last instruction that
 		     was a valid prologue opcode. */
 		  state.pc = prologue_end;
+    		}
+	      else if (opcode_type == prolog_tail)
+		{
+		  if (arm_debug > 3)
+		    fprintf_unfiltered(gdb_stdlog, "prolog_tail");
+		  if (last_prologue_inst_addr != pc)
+		    last_prologue_inst_addr = pc;
 		}
 	      else
 		{
@@ -1590,6 +1693,11 @@ of function, aborting at 0x%s after consecutive zero opcodes\n",
 		  /* We have an instruction that cannot appear in a
 		     proglogue, so we should stop parsing.  */
 		  state.pc = prologue_end;
+    		}
+	      else if (opcode_type == prolog_tail)
+		{
+		  if (arm_debug > 3)
+		    fprintf_unfiltered (gdb_stdlog, "prolog_tail");
 		}
 	      else
 		{
@@ -2241,6 +2349,11 @@ arm_macosx_scan_prologue(struct frame_info *next_frame,
 		  /* We have an instruction that cannot appear in a
 		     proglogue, so we should stop parsing.  */
 		  state.pc = prologue_end;
+    		}
+	      else if (opcode_type == prolog_tail)
+		{
+		  if (arm_debug > 3)
+		    fprintf_unfiltered (gdb_stdlog, "prolog_tail");
 		}
 	      else
 		{
@@ -2582,6 +2695,13 @@ struct frame_base arm_normal_base = {
 [FP+316] mcontext.fs.FPSCR
 
 */
+#ifndef __GDB_ARM_MACOSX_REGNUMS_H__
+# include "macosx/arm-macosx-regnums.h"
+#else
+# ifndef ARM_MACOSX_NUM_GP_REGS
+#  define ARM_MACOSX_NUM_GP_REGS 16 /* R0-R15   */
+# endif /* !ARM_MACOSX_NUM_GP_REGS */
+#endif /* !__GDB_ARM_MACOSX_REGNUMS_H__ */
 /* Define register sizes and register group sizes for the general purpose,
    FP and VFP registers.  */
 enum
@@ -2599,7 +2719,6 @@ enum
 static arm_prologue_cache_t *
 arm_macosx_sigtramp_frame_cache(struct frame_info *next_frame, void **this_cache)
 {
-
   arm_prologue_cache_t *cache = NULL;
   CORE_ADDR mcontext_addr = 0UL;
   CORE_ADDR gpr_addr = 0UL;
@@ -3147,22 +3266,157 @@ arm_print_float_info(struct gdbarch *gdbarch ATTRIBUTE_UNUSED,
 		     struct frame_info *frame ATTRIBUTE_UNUSED,
                      const char *args ATTRIBUTE_UNUSED)
 {
-  unsigned long status = read_register(ARM_FPS_REGNUM);
-  int type;
+  static const char* enabled_strings[2] = {"disabled", "enabled"};
+  static const char* Rmode_strings[4] = {
+    "Round to nearest (RN) mode",
+    "Round towards plus infinity (RP) mode",
+    "Round towards minus infinity (RM) mode",
+    "Round towards zero (RZ) mode"
+  };
+  uint32_t fpscr = read_register(ARM_VFP_REGNUM_FPSCR);
+  uint32_t b;
+  printf(_("VFP fpscr = 0x%8.8x\n"), fpscr);
+  printf(_("     N = %u  Set if comparison produces a less than result\n"),
+	 bit(fpscr, 31));
+  printf(_("     Z = %u  Set if comparison produces an equal result\n"),
+	 bit(fpscr, 30));
+  printf(_("     C = %u  Set if comparison produces an equal, greater "
+	 "than, or unordered result\n"),
+	 bit(fpscr, 29));
+  printf(_("     V = %u  Set if comparison produces an unordered result\n"),
+	 bit(fpscr, 28));
+  b = bit(fpscr, 25);
+  printf(_("    DN = %u  default NaN mode %s\n"), b, enabled_strings[b]);
+  b = bit(fpscr, 24);
+  printf(_("    Fz = %u  flush-to-zero mode %s\n"), b, enabled_strings[b]);
+  b = bits(fpscr, 22, 23);
+  printf(_(" Rmode = %u  %s\n"), b, Rmode_strings[b]);
+  printf(_("Stride = %u\n"), (unsigned int)bits(fpscr, 20, 21));
+  printf(_("   LEN = %u\n"), (unsigned int)bits(fpscr, 16, 18));
+  printf(_("   IDE = %u  Input Subnormal exception\n"), bit(fpscr, 15));
+  printf(_("   IXE = %u  Inexact exception\n"), bit(fpscr, 12));
+  printf(_("   UFE = %u  Underflow exception\n"), bit(fpscr, 11));
+  printf(_("   OFE = %u  Overflow exception\n"), bit(fpscr, 10));
+  printf(_("   DZE = %u  Division by Zero exception\n"), bit(fpscr, 9));
+  printf(_("   IOE = %u  Invalid Operation exception\n"), bit(fpscr, 8));
+  printf(_("   IDC = %u  Input Subnormal cumulative\n"), bit(fpscr, 7));
+  printf(_("   IXC = %u  Inexact cumulative\n"), bit(fpscr, 4));
+  printf(_("   UFC = %u  Underflow cumulative\n"), bit(fpscr, 3));
+  printf(_("   OFC = %u  Overflow cumulative\n"), bit(fpscr, 2));
+  printf(_("   DZC = %u  Division by Zero cumulative\n"), bit(fpscr, 1));
+  printf(_("   IOC = %u  Invalid Operation cumulative\n"), bit(fpscr, 0));
 
-  type = ((status >> 24) & 127);
-  if (status & (1UL << 31))
-    printf(_("Hardware FPU type %d\n"), type);
-  else
-    printf(_("Software FPU type %d\n"), type);
-  /* i18n: [floating point unit] mask */
-  fputs(_("mask: "), stdout);
-  print_fpu_flags(status >> 16);
-  /* i18n: [floating point unit] flags */
-  fputs(_("flags: "), stdout);
-  print_fpu_flags(status);
+  /* If the FPS register has a valid name, them print out its value: */
+  if ((arm_register_names[ARM_FPS_REGNUM] == NULL)
+      || (*arm_register_names[ARM_FPS_REGNUM] != '\0'))
+    {
+      unsigned long status = read_register(ARM_FPS_REGNUM);
+      int type;
+
+      type = ((status >> 24) & 127);
+      if (status & (1UL << 31))
+        printf(_("Hardware FPU type %d\n"), type);
+      else
+        printf(_("Software FPU type %d\n"), type);
+      /* i18n: [floating point unit] mask */
+      fputs(_("mask: "), stdout);
+      print_fpu_flags(status >> 16);
+      /* i18n: [floating point unit] flags */
+      fputs(_("flags: "), stdout);
+      print_fpu_flags(status);
+    }
 }
 
+/* APPLE LOCAL BEGIN: Add PSR and FPSCR built in types for displaying
+   register contents as bitfields.  */
+static struct type *
+build_builtin_type_arm_psr_mode_enum(void)
+{
+  static struct gdbtypes_enum_info mode_enums[] = {
+    {"usr",	0x10 },
+    {"fiq",	0x11 },
+    {"irq",	0x12 },
+    {"svc",	0x13 },
+    {"dbg",	0x15 },	/* XScale debug mode.  */
+    {"abt",	0x17 },
+    {"und",	0x1d },
+    {"sys",	0x1f }
+  };
+  uint32_t num_mode_enums = (sizeof(mode_enums) / sizeof(mode_enums[0]));
+  return build_builtin_enum("__gdb_builtin_type_arm_psr_mode_enum", 4,
+			    TYPE_FLAG_UNSIGNED, mode_enums, num_mode_enums);
+}
+
+static ATTRIBUTE_USED struct type *
+build_builtin_type_arm_psr(void)
+{
+  struct gdbtypes_bitfield_info psr_bitfields[] = {
+    /* Print entire value first and use the void data pointer
+       so that the value gets displayed as hex by default. By giving
+       the value an empty name, the register value can be assigned
+       in expressions using "p $cpsr = 0x00000000, yet the bitfield
+       values can still be accessed and modified individually.*/
+    {"",	builtin_type_void_data_ptr,  31,  0 },
+    {"n",	builtin_type_uint32,  31, 31 },
+    {"z",	builtin_type_uint32,  30, 30 },
+    {"c",	builtin_type_uint32,  29, 29 },
+    {"v",	builtin_type_uint32,  28, 28 },
+    {"q",	builtin_type_uint32,  27, 27 },
+    {"j",	builtin_type_uint32,  24, 24 },
+    {"ge",      builtin_type_uint32,  19, 16 },
+    {"e",	builtin_type_uint32,   9,  9 },
+    {"a",	builtin_type_uint32,   8,  8 },
+    {"i",	builtin_type_uint32,   7,  7 },
+    {"f",	builtin_type_uint32,   6,  6 },
+    {"t",	builtin_type_uint32,   5,  5 },
+    {"mode",    build_builtin_type_arm_psr_mode_enum(),   4,  0 },
+  };
+
+  uint32_t num_psr_bitfields = (sizeof(psr_bitfields)
+  				/ sizeof(psr_bitfields[0]));
+  return build_builtin_bitfield("__gdb_builtin_type_arm_psr", 4,
+				psr_bitfields, num_psr_bitfields);
+}
+
+static ATTRIBUTE_USED struct type *
+build_builtin_type_arm_fpscr(void)
+{
+  struct gdbtypes_bitfield_info fpscr_bitfields[] = {
+    /* Print entire value first and use the void data pointer
+       so that the value gets displayed as hex by default. By giving
+       the value an empty name, the register value can be assigned
+       in expressions using "p $fpscr = 0x00000000, yet the bitfield
+       values can still be accessed and modified individually.*/
+    {"",	builtin_type_void_data_ptr,  31,  0 },
+    {"n",	builtin_type_uint32,  31, 31 },
+    {"z",	builtin_type_uint32,  30, 30 },
+    {"c",	builtin_type_uint32,  29, 29 },
+    {"v",	builtin_type_uint32,  28, 28 },
+    {"dn",      builtin_type_uint32,  25, 25 },
+    {"fz",      builtin_type_uint32,  24, 24 },
+    {"rmode",   builtin_type_uint32,  23, 22 },
+    {"stride",  builtin_type_uint32,  21, 20 },
+    {"len",     builtin_type_uint32,  18, 16 },
+    {"ide",     builtin_type_uint32,  15, 15 },
+    {"ixe",     builtin_type_uint32,  12, 12 },
+    {"ufe",     builtin_type_uint32,  11, 11 },
+    {"ofe",     builtin_type_uint32,  10, 10 },
+    {"dze",     builtin_type_uint32,   9,  9 },
+    {"ioe",     builtin_type_uint32,   8,  8 },
+    {"idc",     builtin_type_uint32,   7,  7 },
+    {"ixc",     builtin_type_uint32,   4,  4 },
+    {"ufc",     builtin_type_uint32,   3,  3 },
+    {"ofc",     builtin_type_uint32,   2,  2 },
+    {"dzc",     builtin_type_uint32,   1,  1 },
+    {"ioc",     builtin_type_uint32,   0,  0 }
+  };
+  uint32_t num_fpscr_bitfields = (sizeof(fpscr_bitfields)
+                                  / sizeof(fpscr_bitfields[0]));
+  return build_builtin_bitfield("__gdb_builtin_type_arm_fpscr", 4,
+				fpscr_bitfields, num_fpscr_bitfields);
+}
+
+/* APPLE LOCAL END */
 
 /* Return the GDB type object for the "standard" data type of data in
    register N.  */
@@ -4645,11 +4899,15 @@ arm_get_next_pc (CORE_ADDR pc)
 
 	case 0xa:
 	case 0xb:	/* BL, BLX (immediate).  */
-	  nextpc = BranchDest (pc, this_instr);
-	  nextpc |= bit (this_instr, 24) << 1;
+	  nextpc = BranchDest(pc, this_instr);
+          /* BLX */
+          if (bits(this_instr, 28, 31) == INST_NV)
+            nextpc |= (bit(this_instr, 24) << 1);
+
+	  nextpc |= (bit(this_instr, 24) << 1);
 	  nextpc = ADDR_BITS_REMOVE (nextpc);
 	  if (nextpc == pc)
-	    error (_("Infinite loop detected"));
+	    error(_("Infinite loop detected"));
 	  break;
 
 	default:
@@ -4898,24 +5156,26 @@ arm_software_single_step (enum target_signal sig, int insert_bpt)
 
   if (insert_bpt)
     {
-      curr_pc = read_register (ARM_PC_REGNUM);
-      next_pc = arm_get_next_pc (curr_pc);
-      target_insert_breakpoint (next_pc, break_mem);
+      curr_pc = read_register(ARM_PC_REGNUM);
+      next_pc = arm_get_next_pc(curr_pc);
+      if (arm_debug)
+	fprintf_unfiltered(gdb_stdlog, "==> next_pc = %s\n", paddr(next_pc));
+      target_insert_breakpoint(next_pc, break_mem);
       if (current_target.to_has_thread_control & tc_schedlock)
-	old_mode = set_scheduler_locking_mode (scheduler_locking_on);
+	old_mode = set_scheduler_locking_mode(scheduler_locking_on);
     }
   else
     {
-      target_remove_breakpoint (next_pc, break_mem);
+      target_remove_breakpoint(next_pc, break_mem);
       if (current_target.to_has_thread_control & tc_schedlock)
-	set_scheduler_locking_mode (old_mode);
+	set_scheduler_locking_mode(old_mode);
     }
 
   if (arm_debug)
-    fprintf_unfiltered (gdb_stdlog, "arm_software_single_step (%i, %i):"
+    fprintf_unfiltered(gdb_stdlog, "arm_software_single_step (%i, %i):"
 		   "curr_pc 0x%s ==> next_pc = 0x%s, old_scheduler_mode = %i\n",
-			sig, insert_bpt, paddr (curr_pc), paddr (next_pc),
-			old_mode);
+                       sig, insert_bpt, paddr(curr_pc), paddr(next_pc),
+                       old_mode);
 }
 
 #include "bfd-in2.h"

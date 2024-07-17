@@ -315,6 +315,8 @@ struct execution_control_state
   enum infwait_states infwait_state;
   ptid_t waiton_ptid;
   int wait_some_more;
+  /* APPLE LOCAL: Arm switch jumptable hackery.  */
+  int stepping_through_switch_glue;
 };
 
 extern struct execution_control_state async_ecss;

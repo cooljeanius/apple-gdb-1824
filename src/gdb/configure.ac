@@ -270,6 +270,11 @@ dnl# present, since Tiger has an "arch" program, but it only echoes the
 dnl# current system architecture.
 case "${host}" in
   *-apple-darwin* | *-apple-macosx*)
+    case "${host}" in
+      arm-apple-*)
+        AC_MSG_WARN([May need to turn off arch for exec on arm, as in certain releases it failed to support launching a specified architecture in a universal mach file.])
+        ;;
+    esac
     dnl# we are inside a conditional; no "_ONCE" allowed:
     AC_CHECK_HEADERS([spawn.h])dnl
     AC_CHECK_DECLS([POSIX_SPAWN_SETEXEC])

@@ -452,6 +452,8 @@ frag=""
 case "${host}" in
   rs6000-ibm-aix3.1 | rs6000-ibm-aix)
                         frag=mh-aix ;;
+  i[[34567]]86-*-beos* | powerpc-*-beos*)
+                        frag=mh-beos ;;
   *-*-cxux7*)		frag=mh-cxux7 ;;
   *-*-freebsd2.1.*)	frag=mh-fbsd21 ;;
   *-*-freebsd2.2.[[012]])	frag=mh-fbsd21 ;;
@@ -460,6 +462,7 @@ case "${host}" in
   # APPLE LOCAL - Allow more than 256 streams to be open at a time.
   arm-apple-darwin*) frag=mh-arm-macosx;;
   *-apple-darwin* | *-macos*) frag=mh-macosx;;
+  *-*pdo-winnt*) frag=mh-winpdo;;
 esac
 
 if [[ -n "${frag}" ]]; then

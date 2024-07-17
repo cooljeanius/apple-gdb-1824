@@ -2775,6 +2775,14 @@ print_it_typical (bpstat bs)
 static void
 print_catch_info (struct breakpoint *b)
 {
+  const char *event_type;
+
+  if (CURRENT_EXCEPTION_KIND == EX_EVENT_THROW)
+    event_type = "throw";
+  else
+    event_type = "catch";
+
+  (void)event_type;
 
   ui_out_text (uiout, "\nCatchpoint ");
   ui_out_field_int (uiout, "breakpoint",

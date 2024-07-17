@@ -61,6 +61,7 @@ XM_CLIBS = -framework Security
 
 _all: all
 
+# Old rule: $(NEXT_ROOT)/usr/bin/mig -I. $<
 excServer.c excUser.c: macosx.defs
 	xcrun -sdk "$(SDKROOT)" mig -arch armv6 -isysroot "$(SDKROOT)" -I. $<
 

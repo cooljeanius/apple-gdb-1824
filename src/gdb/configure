@@ -8824,6 +8824,12 @@ esac
 
 case "${host}" in
   *-apple-darwin* | *-apple-macosx*)
+    case "${host}" in
+      arm-apple-*)
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: May need to turn off arch for exec on arm, as in certain releases it failed to support launching a specified architecture in a universal mach file." >&5
+printf "%s\n" "$as_me: WARNING: May need to turn off arch for exec on arm, as in certain releases it failed to support launching a specified architecture in a universal mach file." >&2;}
+        ;;
+    esac
         ac_fn_c_check_header_compile "$LINENO" "spawn.h" "ac_cv_header_spawn_h" "$ac_includes_default"
 if test "x$ac_cv_header_spawn_h" = xyes
 then :

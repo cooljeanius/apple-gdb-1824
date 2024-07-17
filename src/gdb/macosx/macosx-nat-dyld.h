@@ -100,6 +100,15 @@ struct macosx_dyld_thread_status
   struct dyld_objfile_info current_info;
   struct dyld_path_info path_info;
 
+  /* This supports the Leopard "shared cache".  If a dylib is
+     in any of the "shared cache ranges" then it will have been
+     prebound into a cache.  */
+  CORE_ADDR dyld_shared_cache_ranges;
+  /* The number of cache ranges.  -1 means the cache
+     data hasn't been read yet.  */
+  int dyld_num_shared_cache_ranges;
+  struct dyld_cache_range *dyld_shared_cache_array;
+
   struct pre_run_memory_map *pre_run_memory_map;
 };
 typedef struct macosx_dyld_thread_status macosx_dyld_thread_status;

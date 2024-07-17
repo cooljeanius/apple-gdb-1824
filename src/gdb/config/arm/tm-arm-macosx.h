@@ -49,6 +49,15 @@ char *arm_throw_catch_find_typeinfo(struct frame_info *curr_frame,
 #define THROW_CATCH_FIND_TYPEINFO(curr_frame, exception_type) \
   (arm_throw_catch_find_typeinfo(curr_frame, exception_type))
 
+#ifndef __GDB_ARM_MACOSX_TDEP_H__
+extern int arm_macosx_in_switch_glue(CORE_ADDR pc);
+#endif /* !__GDB_ARM_MACOSX_TDEP_H__ */
+
+#ifndef IN_SWITCH_GLUE
+# define IN_SWITCH_GLUE(pc) \
+  (arm_macosx_in_switch_glue(pc))
+#endif /* !IN_SWITCH_GLUE */
+
 #endif /* _TM_ARM_MACOSX_H_ */
 
 /* EOF */

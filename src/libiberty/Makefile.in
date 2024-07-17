@@ -695,6 +695,7 @@ maintainer-clean realclean: maintainer-clean-subdir
 force:
 
 Makefile: $(srcdir)/Makefile.in config.status
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_FILES=Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
 
 # Depending on Makefile makes sure that config.status has been re-run
@@ -702,6 +703,7 @@ Makefile: $(srcdir)/Makefile.in config.status
 config.h: stamp-h
 	@echo "this target, '$@', just makes its dep, '$<'"
 stamp-h: $(srcdir)/config.h.in config.status Makefile
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_FILES="" CONFIG_HEADERS=config.h $(SHELL) ./config.status
 
 AUTOHEADER = autoheader
@@ -710,6 +712,7 @@ $(srcdir)/config.h.in: @MAINT@ $(srcdir)/configure.ac $(configure_deps)
 	cd $(srcdir) && $(AUTOHEADER) -Wno-obsolete @MAINT@ --force
 
 config.status: $(srcdir)/configure
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	$(SHELL) ./config.status --recheck
 
 AUTOCONF = autoconf

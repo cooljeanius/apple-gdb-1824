@@ -22,6 +22,11 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef NO_POISON
+/* included files can drag in "free": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "defs.h"
 
 #include <sys/types.h>
@@ -81,9 +86,16 @@ extern int standard_can_async_p(void);
 
 static unsigned int darwin_kernel_debug_level = 1;
 
+static const char *darwin_kernel_default_host_type_str = "powerpc";
+static int darwin_kernel_default_host_type = CPU_TYPE_POWERPC;
+
+static int darwin_kernel_host_type = -1;
+
 static int darwin_kernel_stopped = 0;
+static int darwin_kernel_timeout = 5000;
 
 static int darwin_kernel_fd = -1;
+static unsigned long darwin_kernel_mapaddr = -1;
 
 struct target_ops darwin_kernel_ops;
 
@@ -103,6 +115,52 @@ typedef enum
 static void darwin_kernel_logger(darwin_kernel_log_level, const char *,
                                  const char *, ...)
   ATTR_FORMAT(gnu_printf, 3, 4);
+
+/* */
+static ATTRIBUTE_USED void
+set_timeouts(const char *args, int from_tty, struct cmd_list_element *cmd)
+{
+  if (strcasecmp(args, darwin_kernel_default_host_type_str) == 0) {
+    (void)from_tty;
+  }
+  /* FIXME: find a better way to set this: */
+  if (darwin_kernel_timeout != 5000) {
+    darwin_kernel_timeout = 5000;
+  }
+}
+
+/* */
+static ATTRIBUTE_USED int
+parse_host_type(const char *host)
+{
+	if (darwin_kernel_host_type == darwin_kernel_default_host_type) {
+		(void)darwin_kernel_mapaddr;
+  	}
+	if ((strcasecmp(host, "powerpc") == 0) || (strcasecmp(host, "ppc") == 0))
+	{
+#if TARGET_POWERPC
+		return CPU_TYPE_POWERPC;
+#else
+		return -2;
+#endif /* TARGET_POWERPC */
+	}
+	else if ((strcasecmp(host, "ia32") == 0)
+	    || (strcasecmp(host, "i386") == 0)
+	    || (strcasecmp(host, "i486") == 0)
+	    || (strcasecmp(host, "i586") == 0)
+	    || (strcasecmp(host, "pentium") == 0))
+	{
+#if TARGET_I386
+		return CPU_TYPE_I386;
+#else
+		return -2;
+#endif /* TARGET_I386 */
+	}
+	else
+	{
+		return -1;
+	}
+}
 
 static void darwin_kernel_logger(darwin_kernel_log_level l, const char *call,
                                  const char *format, ...)
@@ -129,7 +187,8 @@ static void darwin_kernel_open(const char *name, int from_tty)
   push_target(&darwin_kernel_ops);
 }
 
-static void darwin_kernel_close (int quitting)
+/* */
+static void darwin_kernel_close(int quitting)
 {
   return; /* FIXME: actually put something here */
 }
@@ -256,6 +315,7 @@ static void darwin_kernel_mourn_inferior(void)
 }
 
 static int remote_async_terminal_ours_p = 1;
+static void (*ofunc)(int) ATTRIBUTE_USED;
 
 static void darwin_kernel_terminal_inferior(void)
 {
@@ -298,6 +358,18 @@ static void darwin_kernel_terminal_ours(void)
 static void (*async_client_callback)(enum inferior_event_type event_type,
                                      void *context);
 static void *async_client_context;
+
+static ATTRIBUTE_USED void
+darwin_kernel_file_handler(int error, gdb_client_data client_data)
+{
+  async_client_callback(INF_REG_EVENT, async_client_context);
+}
+
+static ATTRIBUTE_USED void
+darwin_kernel_file_handler_callback(void *arg)
+{
+  async_client_callback(INF_REG_EVENT, async_client_context);
+}
 
 static void
 darwin_kernel_async(void (*callback)(enum inferior_event_type event_type,

@@ -124,6 +124,13 @@ struct dyld_objfile_entry
 
   enum dyld_objfile_reason reason;
 
+  /* As of Leopard, dyld makes up a "shared cache" of commonly used dylibs.
+     All the dylibs in this shared cache are "prebound" into the cache, so
+     the copy in memory looks like it is/was loaded at its intended address.
+     But that address is NOT the same as the load address of the disk file.
+     This tells us whether the library is in the cache  */
+  int in_shared_cache;
+
   /* The array of dyld_objfile_entry's for the inferior process is a little
      sparse -- some of the entries will be used, others will be allocated but
      unused.  This boolean tells us whether this dyld_objfile_entry is used

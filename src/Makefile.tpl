@@ -2067,6 +2067,7 @@ $(srcdir)/Makefile.in: @MAINT@ $(srcdir)/Makefile.tpl $(srcdir)/Makefile.def
 
 # Rebuilding Makefile.
 Makefile_target: $(srcdir)/Makefile.in config.status
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_FILES=Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
 .PHONY: Makefile_target
 

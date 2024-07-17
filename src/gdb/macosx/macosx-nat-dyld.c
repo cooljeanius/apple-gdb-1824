@@ -320,6 +320,17 @@ dyld_print_status_info(struct macosx_dyld_thread_status *s,
 void
 macosx_clear_start_breakpoint(void)
 {
+  struct macosx_dyld_thread_status *status = &macosx_dyld_status;
+  if (status && status->dyld_breakpoint)
+    {
+      delete_breakpoint(status->dyld_breakpoint);
+      status->dyld_breakpoint = NULL;
+    }
+  if (status && status->malloc_inited_breakpoint)
+    {
+      delete_breakpoint(status->malloc_inited_breakpoint);
+      status->malloc_inited_breakpoint = NULL;
+    }
   remove_solib_event_breakpoints();
 }
 
@@ -432,6 +443,61 @@ macosx_init_addresses(macosx_dyld_thread_status *s)
   s->dyld_notify = infos.dyld_notify;
   s->dyld_slide = (infos.dyld_actual_load_address
                    - infos.dyld_intended_load_address);
+}
+
+static void
+macosx_init_dyld_cache_ranges(macosx_dyld_thread_status *s)
+{
+  /* If we are looking at an uninitialized dyld, do NOT try to read
+     anything yet.  We'll apply an invalid slide to the location
+     of the dyld_shared_cache_ranges and read random memory.  */
+  if (s->dyld_addr == INVALID_ADDRESS)
+    return;
+
+  s->dyld_shared_cache_ranges =
+    lookup_dyld_address(s, "dyld_shared_cache_ranges");
+  if (s->dyld_shared_cache_ranges != INVALID_ADDRESS)
+    {
+      int i;
+      int wordsize = new_gdbarch_tdep(current_gdbarch)->wordsize;
+      gdb_byte *buf = (gdb_byte *)alloca(2UL * wordsize);
+      CORE_ADDR addr = s->dyld_shared_cache_ranges;
+
+      if (target_read_memory(addr, buf, wordsize) == 0)
+        s->dyld_num_shared_cache_ranges =
+          extract_unsigned_integer(buf, wordsize);
+      else
+        s->dyld_num_shared_cache_ranges = -1;
+
+      if (s->dyld_num_shared_cache_ranges > 0)
+	{
+	  addr += wordsize;
+
+	  s->dyld_shared_cache_array =
+            ((struct dyld_cache_range *)
+             xmalloc(s->dyld_num_shared_cache_ranges
+                     * sizeof(struct dyld_cache_range)));
+
+	  for (i = 0; i < s->dyld_num_shared_cache_ranges; i++)
+	    {
+	      if (target_read_memory(addr, buf, (2 * wordsize)) != 0)
+                {
+                  warning("Error while reading dyld shared cache region "
+                          "%d of %d\n", i, s->dyld_num_shared_cache_ranges);
+                  s->dyld_num_shared_cache_ranges = 0;
+                  xfree(s->dyld_shared_cache_array);
+                  s->dyld_shared_cache_array = NULL;
+                  return;
+                }
+	      addr += (2 * wordsize);
+
+	      s->dyld_shared_cache_array[i].start =
+                extract_unsigned_integer(buf, wordsize);
+	      s->dyld_shared_cache_array[i].length =
+                extract_unsigned_integer((buf + wordsize), wordsize);
+	    }
+	}
+    }
 }
 
 
@@ -1340,6 +1406,16 @@ macosx_dyld_init(macosx_dyld_thread_status *s, bfd *exec_bfd)
         s->dyld_minsyms_have_been_relocated = 0;
     }
 
+  /* We only need to initialize the shared cache ranges in the case of a core
+   * file.  We actually do NOT want to initialize them in macosx_dyld_init
+   * when we are running a child process because this gets called BEFORE dyld
+   * has a chance to run and fill in the correct values.  So we defer calling
+   * macosx_init_dyld_cache_ranges to macosx_solib_add.  Note that when we do an
+   * attach, macosx_child_attach calls macosx_solib_add to set up the shared
+   * library state, so we are okay in that case as well: */
+  if (core_bfd)
+    macosx_init_dyld_cache_ranges(s);
+
   macosx_init_addresses(s);
   macosx_set_start_breakpoint(s, exec_bfd);
 
@@ -1659,6 +1735,13 @@ macosx_solib_add(const char *filename, int from_tty,
   if (dyld_status->dyld_addr == INVALID_ADDRESS)
     return 0;
 
+  /* We need to initialize the shared ranges here.  We cannot do it in
+     macosx_init_dyld, since that also gets called when we first stop
+     the target, before the dyld code has had a chance to run and populate
+     the num_shared_cache_ranges with the correct value.  */
+  if (dyld_status->dyld_num_shared_cache_ranges == -1)
+    macosx_init_dyld_cache_ranges(dyld_status);
+
   /* If we have version 2 of the dyld_all_image_infos structure,
      and we have NOT seen the libsystem_initialized set yet, check
      again here.  */
@@ -1823,9 +1906,12 @@ macosx_dyld_thread_init(macosx_dyld_thread_status *s)
   s->dyld_slide = INVALID_ADDRESS;
   s->dyld_minsyms_have_been_relocated = 0;
   s->dyld_image_infos = INVALID_ADDRESS;
+  s->dyld_shared_cache_ranges = INVALID_ADDRESS;
+  s->dyld_num_shared_cache_ranges = -1;
   s->dyld_version = 0;
   s->dyld_breakpoint = NULL;
   s->malloc_inited_breakpoint = NULL;
+  s->dyld_shared_cache_array = NULL;
   dyld_zero_path_info(&s->path_info);
 }
 
@@ -1848,6 +1934,8 @@ macosx_dyld_thread_clear(macosx_dyld_thread_status *s)
     xfree(s->path_info.image_suffix);
   if (s->path_info.insert_libraries != NULL)
     xfree(s->path_info.insert_libraries);
+  if (s->dyld_shared_cache_array)
+    xfree(s->dyld_shared_cache_array);
   macosx_clear_start_breakpoint();
   macosx_dyld_thread_init(s);
 }
@@ -2174,6 +2262,22 @@ dyld_info_process_raw(struct macosx_dyld_thread_status *s,
   bfd *this_bfd = NULL;
   struct cleanup *override_trust_readonly;
   int old_trust_readonly;
+
+  /* Determine whether the image is in the new "shared cache" region: */
+  if (s->dyld_num_shared_cache_ranges != -1)
+    {
+      int j;
+      for (j = 0; j < s->dyld_num_shared_cache_ranges; j++)
+	{
+	  if ((header_addr >= s->dyld_shared_cache_array[j].start)
+              && (header_addr < (s->dyld_shared_cache_array[j].start
+              			 + s->dyld_shared_cache_array[j].length)))
+	    {
+	      entry->in_shared_cache = 1;
+	      break;
+	    }
+	}
+    }
 
   /* Even if the library is loading in the same place as a directly linked
      shared library that we have read in already, we still want to read the raw
