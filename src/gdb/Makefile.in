@@ -2540,7 +2540,7 @@ po/$(PACKAGE).pot: force
 #
 
 .SUFFIXES: .y .l
-.y.c: Makefile.in
+.y.c:
 	$(AM_V_at)touch $<
 	@if [ "x$(AM_V_P)" != "xfalse" ]; then \
 	  echo YACC command is "$(YACC)"; \
