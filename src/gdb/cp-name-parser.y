@@ -2111,6 +2111,8 @@ main(int argc, char **argv)
   void *memory;
   struct demangle_component *result;
 
+  extra_chars = NULL;
+
   if (argc < 1)
     {
       fprintf(stderr, "Error: no arguments supplied.\n");

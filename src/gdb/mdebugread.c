@@ -2262,7 +2262,7 @@ parse_partial_symbols (struct objfile *objfile)
   EXTR *ext_in;
   EXTR *ext_in_end;
   SYMR sh;
-  struct partial_symtab *pst;
+  struct partial_symtab *pst = NULL;
   int textlow_not_set = 1;
   int past_first_source_file = 0;
 
@@ -3744,6 +3744,12 @@ parse_partial_symbols (struct objfile *objfile)
 	  pst->dependencies[pst->number_of_dependencies++] = fdr_to_pst[rh].pst;
 	}
     }
+
+#if defined(PSYMTAB_OBSOLETED) && defined(__APPLE__)
+  /* APPLE LOCAL fix-and-continue */
+  if (pst != NULL)
+    PSYMTAB_OBSOLETED(pst) = 50;
+#endif /* PSYMTAB_OBSOLETED && __APPLE__ */
 
   /* Remove the dummy psymtab created for -O3 images above, if it is
      still empty, to enable the detection of stripped executables.  */

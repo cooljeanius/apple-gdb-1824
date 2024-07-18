@@ -1829,7 +1829,7 @@ libgdb.a: $(LIBGDB_OBS)
 	$(RANLIB) $(RANLIB_FLAGS) libgdb.a
 
 libgdb_a: libgdb.a
-	stat libgdb.a
+	stat libgdb.a && du libgdb.a
 .PHONY: libgdb_a
 
 # A Mach 3.0 program to force gdb back to command level:
@@ -1924,7 +1924,7 @@ clean mostlyclean:: $(CONFIG_CLEAN)
 	else \
 	  echo "CLEANDIRS and UNUSED_SUBDIRS are the same"; \
 	fi
-	rm -f $(AM_V_v) *.o *.a $(ADD_FILES) *~ *.gcda
+	rm -f $(AM_V_v) *.o *.a $(ADD_FILES) *~ *.gcda *.sarif
 	rm -f init.c-tmp init.l-tmp version.c-tmp init.c version.c
 	rm -f $(AM_V_v) gdb$(EXEEXT) core make.log
 	rm -f $(AM_V_v) gdb[0-9]$(EXEEXT)
@@ -2239,9 +2239,18 @@ stamp-clang: $(LINTFILES) $(DEPFILES)
 	$(MAKE) $(AM_V_MFLAG) `echo "$(DEPFILES) init.o" | uniq | $(SED) 's/\.o /\.plist /g'`
 	$(AM_V_at)if test ! -e $@ || test $@ -ot Makefile; then touch $@; fi
 .PHONY: lint-local
+
+# GCC analysis output (TODO: check that GCC is capable of doing this in configure)
+.SUFFIXES: .c .sarif
+.c.sarif:
+	$(AM_V_COMPILER)$(COMPILE.pre) $(INTERNAL_CFLAGS) -fanalyzer \
+	  -Wanalyzer-too-complex -fdiagnostics-format=sarif-file \
+	  -c -o /dev/null $<
+
 stamp-gcc-analysis: $(LINTFILES) $(DEPFILES)
-	echo "TODO: set up static analysis with gcc"
-	touch $@
+	$(MAKE) $(AM_V_MFLAG) `echo "$(LINTFILES) init.c" | uniq | $(SED) 's/\.c /\.sarif /g' | $(SED) 's/\.y /\.sarif /g'`
+	$(MAKE) $(AM_V_MFLAG) `echo "$(DEPFILES) init.o" | uniq | $(SED) 's/\.o /\.sarif /g'`
+	$(AM_V_at)if test ! -e $@ || test $@ -ot Makefile; then touch $@; fi
 
 # cxref has many of the same limitations as splint, so reuse the same
 # preprocessor define that splint uses:
@@ -2252,6 +2261,9 @@ gdb.cxref.bz2: $(SFILES)
 	  -U__BLOCKS__ -index -latex -html -rtf -sgml -raw -no-comments \
 	  -DRUNNING_CXREF >gdb.cxref
 	bzip2 -f gdb.cxref
+
+cxref: gdb.cxref.bz2
+.PHONY: cxref
 
 # TODO: add more doc subdir targets here
 
