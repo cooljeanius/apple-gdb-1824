@@ -3111,7 +3111,8 @@ macosx_async(void (*callback)(enum inferior_event_type event_type,
     }
 }
 
-/* This flag tells us whether we've determined that malloc
+#if defined(GDB_RC_VERSION) && (GDB_RC_VERSION < 1461)
+/* This flag tells us whether we have determined that malloc
    is unsafe since the last time we stopped (excepting hand_call_functions.)
    -1 means we haven't checked yet.
    0 means it is safe
@@ -3393,6 +3394,7 @@ macosx_print_extra_stop_info(int code, CORE_ADDR address)
   ui_out_field_core_addr(uiout, "address", address);
   ui_out_text(uiout, "\n");
 }
+#endif /* (GDB_RC_VERSION < 1461) */
 
 /* Info for a random fork (actually a random process). If/when fork-based
  * checkpoints are ever fully functional, this can go away.  */
@@ -3687,6 +3689,7 @@ find_executable_name_in_xml_tree(xmlNode * a_node)
 }
 #endif /* LIBXML2_IS_USABLE */
 
+#if defined(GDB_RC_VERSION) && (GDB_RC_VERSION < 1461)
 static struct cached_value *dlerror_function;
 
 /* */
@@ -3840,6 +3843,7 @@ macosx_load_dylib(char *name, char *flags)
 
   return ret_val;
 }
+#endif /* (GDB_RC_VERSION < 1461) */
 
 /* */
 void
