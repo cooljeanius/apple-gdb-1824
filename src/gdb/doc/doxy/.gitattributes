@@ -1,0 +1,5 @@
+*.css linguist-documentation
+*.html linguist-documentation
+*.js linguist-documentation
+*.png linguist-documentation
+*.svg linguist-documentation

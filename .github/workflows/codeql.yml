@@ -498,6 +498,7 @@ jobs:
         which -a ktlint || (test -x "$(which locate)" && locate ktlint) || (test -x "$(which find)" && find / -name ktlint -perm +r -user "$(whoami)" 2>/dev/null) || echo "ktlint missing"
         # shellcheck disable=SC2044
         if test -x "$(which kotlin)"; then \
+          sync && echo "Time for kotlin..."; \
           for kotlinfile in $(find . -name '*.kts' -type f); do \
             sync && echo "One last attempt at compiling ${kotlinfile}..."; \
             kotlin "${kotlinfile}" || stat "${kotlinfile}"; \

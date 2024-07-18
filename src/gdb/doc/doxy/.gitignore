@@ -1,0 +1,4 @@
+!*.html
+gdb-xref/*
+gdbserver/*
+xml/*

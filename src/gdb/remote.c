@@ -2873,7 +2873,8 @@ remote_open_1(const char *name, int from_tty, struct target_ops *target,
      case.  */
   if (exec_bfd && !ptid_equal(inferior_ptid, null_ptid)) /* No use without an exec file.  */
     {
-#if defined(MACOSX_DYLD) && defined(__GDB_MACOSX_NAT_DYLD_H__) && defined(INVALID_ADDRESS)
+#if defined(MACOSX_DYLD) && MACOSX_DYLD && defined(__GDB_MACOSX_NAT_DYLD_H__) \
+    && defined(INVALID_ADDRESS)
       /* APPLE LOCAL: for Mac OS X remote targets, init our
          dyld information instead of currently using the solib
 	 interface that parallels our dyld implementation.  */
@@ -2917,7 +2918,7 @@ remote_open_1(const char *name, int from_tty, struct target_ops *target,
 static void
 complete_create_or_attach(int from_tty)
 {
-  struct remote_state *rs = get_remote_state ();
+  struct remote_state *rs = get_remote_state();
 
   /* Now send the restart packet.  Then we will wait for the remote to
      start up.  */
@@ -2932,10 +2933,11 @@ complete_create_or_attach(int from_tty)
   /* Now indicate we have a remote target:  */
   rs->has_target = 1;
 
-#if defined(MACOSX_DYLD) && MACOSX_DYLD
+#if defined(MACOSX_DYLD) && MACOSX_DYLD && defined(__GDB_MACOSX_NAT_DYLD_H__) \
+    && defined(INVALID_ADDRESS)
   /* And not that we have a target, redo the dyld information: */
-  macosx_dyld_create_inferior_hook();
-#endif /* MACOSX_DYLD */
+  macosx_dyld_create_inferior_hook(INVALID_ADDRESS);
+#endif /* MACOSX_DYLD && __GDB_MACOSX_NAT_DYLD_H__ && INVALID_ADDRESS */
   if (exec_bfd)
     remote_check_symbols(symfile_objfile);
 
@@ -6721,35 +6723,35 @@ remote_macosx_get_all_image_infos_addr(void)
 static void
 remote_macosx_complete_create_or_attach(int from_tty)
 {
-  struct remote_state *rs = get_remote_state ();
+  struct remote_state *rs = get_remote_state();
 
   /* Now send the restart packet.  Then we will wait for the remote to
      start up.  */
   struct gdb_exception ex;
-  ex = catch_exception (uiout, remote_start_remote, NULL, RETURN_MASK_ALL);
+  ex = catch_exception(uiout, remote_start_remote, NULL, RETURN_MASK_ALL);
   if (ex.reason < 0)
     {
-      pop_target ();
-      throw_exception (ex);
+      pop_target();
+      throw_exception(ex);
     }
 
   /* Now indicate we have a remote target:  */
   rs->has_target = 1;
 
-  /* And now that we have a target, redo the dyld information.  */
-  macosx_dyld_create_inferior_hook (remote_macosx_get_all_image_infos_addr ());
+  /* And now that we have a target, redo the dyld information: */
+  macosx_dyld_create_inferior_hook(remote_macosx_get_all_image_infos_addr());
   if (exec_bfd)
     {
-      remote_check_symbols (symfile_objfile);
+      remote_check_symbols(symfile_objfile);
 
 #ifdef SOLIB_ADD
-      SOLIB_ADD (NULL, 0, &current_target, auto_solib_add);
+      SOLIB_ADD(NULL, 0, &current_target, auto_solib_add);
 #else
-      solib_add (NULL, 0, &current_target, auto_solib_add);
-#endif
+      solib_add(NULL, 0, &current_target, auto_solib_add);
+#endif /* SOLIB_ADD */
     }
 
-  observer_notify_inferior_created (&current_target, from_tty);
+  observer_notify_inferior_created(&current_target, from_tty);
 }
 
 /* We printf lengths & index's.  We need to know what size to allocate for them.
@@ -7151,32 +7153,33 @@ remote_macosx_open(const char *name, int from_tty)
   remote_open_1(name, from_tty, &remote_macosx_ops, 0, 0);
 
   /* Tell the remote that we are using the extended protocol.  */
-#if defined (TARGET_ARM)
+#if defined(TARGET_ARM)
   /* ARM remote nubs typically do not support single stepping, but recent
      debugserver binaries do and know how to respond to a query packet
      that indicates if it does or not.  */
-  if (remote_macosx_query_step_packet_supported ())
-    set_arm_single_step_mode (current_gdbarch, arm_single_step_mode_hardware);
+  if (remote_macosx_query_step_packet_supported())
+    set_arm_single_step_mode(current_gdbarch, arm_single_step_mode_hardware);
   else
-    set_arm_single_step_mode (current_gdbarch, arm_single_step_mode_software);
+    set_arm_single_step_mode(current_gdbarch, arm_single_step_mode_software);
 #endif /* TARGET_ARM */
 
-  /* No use without an exec file.  */
-  if (exec_bfd && !ptid_equal (inferior_ptid, null_ptid))
+  /* No use without an exec file: */
+  if (exec_bfd && !ptid_equal(inferior_ptid, null_ptid))
     {
-      macosx_dyld_create_inferior_hook (remote_macosx_get_all_image_infos_addr());
-      remote_check_symbols (symfile_objfile);
+      macosx_dyld_create_inferior_hook(remote_macosx_get_all_image_infos_addr());
+      remote_check_symbols(symfile_objfile);
 
 #ifdef SOLIB_ADD
-      SOLIB_ADD (NULL, 0, &current_target, auto_solib_add);
+      SOLIB_ADD(NULL, 0, &current_target, auto_solib_add);
 #else
-      solib_add (NULL, 0, &current_target, auto_solib_add);
+      solib_add(NULL, 0, &current_target, auto_solib_add);
 #endif /* SOLIB_ADD */
     }
 }
 
+/* */
 static void
-init_remote_macosx_ops (void)
+init_remote_macosx_ops(void)
 {
   remote_macosx_ops = remote_ops;
 
@@ -7200,7 +7203,7 @@ init_remote_macosx_ops (void)
   remote_macosx_ops.to_check_safe_call = macosx_check_safe_call;
   remote_macosx_ops.to_setup_safe_print = objc_setup_safe_print;
 
-#if defined (TARGET_ARM)
+#if defined(TARGET_ARM)
   remote_macosx_ops.to_keep_going = arm_macosx_keep_going;
   remote_macosx_ops.to_save_thread_inferior_status = arm_macosx_save_thread_inferior_status;
   remote_macosx_ops.to_restore_thread_inferior_status = arm_macosx_restore_thread_inferior_status;
@@ -7222,10 +7225,10 @@ init_remote_macosx_ops (void)
    already..." message.  Usually a call to pop_target() suffices.  */
 
 void
-push_remote_macosx_target (char *name, int from_tty)
+push_remote_macosx_target(char *name, int from_tty)
 {
-  printf_filtered (_("Switching to remote-macosx protocol\n"));
-  remote_macosx_open (name, from_tty);
+  printf_filtered(_("Switching to remote-macosx protocol\n"));
+  remote_macosx_open(name, from_tty);
 }
 
 
@@ -7234,7 +7237,7 @@ push_remote_macosx_target (char *name, int from_tty)
 /* APPLE LOCAL END: target remote-macosx.  */
 
 void
-_initialize_remote (void)
+_initialize_remote(void)
 {
   static struct cmd_list_element *remote_set_cmdlist;
   static struct cmd_list_element *remote_show_cmdlist;

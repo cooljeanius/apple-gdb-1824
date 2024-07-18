@@ -52,7 +52,6 @@ GDBvn.texi
 *.html
 *.pdf
 annotate/*
-doxy/*
 gdb/*
 gdbint/*
 stabs/*
