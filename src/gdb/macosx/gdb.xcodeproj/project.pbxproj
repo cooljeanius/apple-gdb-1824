@@ -4303,6 +4303,34 @@
 		A53D6DE02C41B0F700A3E712 /* sid-decode.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "sid-decode.scm"; sourceTree = "<group>"; };
 		A53D6DE12C41B0F700A3E712 /* mach.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = mach.scm; sourceTree = "<group>"; };
 		A53D6DE22C41B0F700A3E712 /* sim-test.scm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.scheme; path = "sim-test.scm"; sourceTree = "<group>"; };
+		A53D6DFF2C4996B300A3E712 /* gould-tdep.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "gould-tdep.c"; sourceTree = "<group>"; };
+		A53D6E102C49A99A00A3E712 /* tuiGeneralWin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuiGeneralWin.h; sourceTree = "<group>"; };
+		A53D6E112C49A99A00A3E712 /* tuiSource.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tuiSource.c; sourceTree = "<group>"; };
+		A53D6E122C49A99A00A3E712 /* tuiSourceWin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuiSourceWin.h; sourceTree = "<group>"; };
+		A53D6E132C49A99A00A3E712 /* tuiStack.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tuiStack.c; sourceTree = "<group>"; };
+		A53D6E142C49A99B00A3E712 /* tuiIO.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tuiIO.c; sourceTree = "<group>"; };
+		A53D6E152C49A99B00A3E712 /* tuiData.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tuiData.c; sourceTree = "<group>"; };
+		A53D6E162C49A99B00A3E712 /* tuiLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuiLayout.h; sourceTree = "<group>"; };
+		A53D6E172C49A99B00A3E712 /* tuiGeneralWin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tuiGeneralWin.c; sourceTree = "<group>"; };
+		A53D6E182C49A99C00A3E712 /* tuiLayout.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tuiLayout.c; sourceTree = "<group>"; };
+		A53D6E192C49A99C00A3E712 /* tuiWin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tuiWin.c; sourceTree = "<group>"; };
+		A53D6E1A2C49A99C00A3E712 /* tuiWin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuiWin.h; sourceTree = "<group>"; };
+		A53D6E1B2C49A99C00A3E712 /* tuiCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuiCommand.h; sourceTree = "<group>"; };
+		A53D6E1C2C49A99C00A3E712 /* tuiIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuiIO.h; sourceTree = "<group>"; };
+		A53D6E1D2C49A99D00A3E712 /* tuiStack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuiStack.h; sourceTree = "<group>"; };
+		A53D6E1E2C49A99D00A3E712 /* tuiData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuiData.h; sourceTree = "<group>"; };
+		A53D6E1F2C49A99D00A3E712 /* tuiRegs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuiRegs.h; sourceTree = "<group>"; };
+		A53D6E202C49A99D00A3E712 /* tuiSourceWin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tuiSourceWin.c; sourceTree = "<group>"; };
+		A53D6E212C49A99E00A3E712 /* tuiDataWin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuiDataWin.h; sourceTree = "<group>"; };
+		A53D6E222C49A99E00A3E712 /* tuiCommand.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tuiCommand.c; sourceTree = "<group>"; };
+		A53D6E232C49A99E00A3E712 /* tuiRegs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tuiRegs.c; sourceTree = "<group>"; };
+		A53D6E242C49A99E00A3E712 /* tuiDisassem.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tuiDisassem.c; sourceTree = "<group>"; };
+		A53D6E252C49A99F00A3E712 /* tuiDisassem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuiDisassem.h; sourceTree = "<group>"; };
+		A53D6E262C49A99F00A3E712 /* tuiDataWin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tuiDataWin.c; sourceTree = "<group>"; };
+		A53D6E272C49A99F00A3E712 /* tuiSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuiSource.h; sourceTree = "<group>"; };
+		A53D6E282C49AA7F00A3E712 /* m88k-opcode_old.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "m88k-opcode_old.h"; sourceTree = "<group>"; };
+		A53D6E292C49AAB600A3E712 /* stab_old.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = stab_old.def; sourceTree = "<group>"; };
+		A53D6E2A2C49AAB600A3E712 /* stab.gnu_old.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stab.gnu_old.h; sourceTree = "<group>"; };
 		A53F04941B45F52C005B5360 /* libiberty.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libiberty.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A53F05711B46029C005B5360 /* dwarf2.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; path = dwarf2.def; sourceTree = "<group>"; };
 		A53F07921B4636AE005B5360 /* test_expandargv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_expandargv; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -8963,6 +8991,7 @@
 				A5CA6A8D1AC081B100716574 /* libiberty_deprecated.h */,
 				A5924B181ABB34C100050903 /* longlong.h */,
 				A5924B191ABB34C100050903 /* lto-symtab.h */,
+				A53D6E282C49AA7F00A3E712 /* m88k-opcode_old.h */,
 				2609DD810E82C410008125DE /* md5.h */,
 				2609DD820E82C410008125DE /* nlm */,
 				2609DD8B0E82C410008125DE /* oasys.h */,
@@ -8981,6 +9010,8 @@
 				A5924B411ABB359800050903 /* som */,
 				2609DDC30E82C410008125DE /* sort.h */,
 				2609DDC40E82C410008125DE /* splay-tree.h */,
+				A53D6E292C49AAB600A3E712 /* stab_old.def */,
+				A53D6E2A2C49AAB600A3E712 /* stab.gnu_old.h */,
 				2609DDC50E82C410008125DE /* symcat.h */,
 				2609DDC60E82C410008125DE /* ternary.h */,
 				A5924B1F1ABB355A00050903 /* timeval-utils.h */,
@@ -11327,6 +11358,7 @@
 				2609D4A90E82C40A008125DE /* frv-tdep.h */,
 				2609D6200E82C40B008125DE /* glibc-tdep.c */,
 				2609D6210E82C40B008125DE /* glibc-tdep.h */,
+				A53D6DFF2C4996B300A3E712 /* gould-tdep.c */,
 				2609D6290E82C40B008125DE /* h8300-tdep.c */,
 				61F330811CC7524300C05007 /* h8300-tdep.h */,
 				A50DDC4D1B332CC300F50318 /* h8500-tdep.c */,
@@ -11508,6 +11540,30 @@
 		A5159C63198718890079DD4F /* tui */ = {
 			isa = PBXGroup;
 			children = (
+				A53D6E222C49A99E00A3E712 /* tuiCommand.c */,
+				A53D6E1B2C49A99C00A3E712 /* tuiCommand.h */,
+				A53D6E152C49A99B00A3E712 /* tuiData.c */,
+				A53D6E1E2C49A99D00A3E712 /* tuiData.h */,
+				A53D6E262C49A99F00A3E712 /* tuiDataWin.c */,
+				A53D6E212C49A99E00A3E712 /* tuiDataWin.h */,
+				A53D6E242C49A99E00A3E712 /* tuiDisassem.c */,
+				A53D6E252C49A99F00A3E712 /* tuiDisassem.h */,
+				A53D6E172C49A99B00A3E712 /* tuiGeneralWin.c */,
+				A53D6E102C49A99A00A3E712 /* tuiGeneralWin.h */,
+				A53D6E142C49A99B00A3E712 /* tuiIO.c */,
+				A53D6E1C2C49A99C00A3E712 /* tuiIO.h */,
+				A53D6E182C49A99C00A3E712 /* tuiLayout.c */,
+				A53D6E162C49A99B00A3E712 /* tuiLayout.h */,
+				A53D6E232C49A99E00A3E712 /* tuiRegs.c */,
+				A53D6E1F2C49A99D00A3E712 /* tuiRegs.h */,
+				A53D6E112C49A99A00A3E712 /* tuiSource.c */,
+				A53D6E272C49A99F00A3E712 /* tuiSource.h */,
+				A53D6E202C49A99D00A3E712 /* tuiSourceWin.c */,
+				A53D6E122C49A99A00A3E712 /* tuiSourceWin.h */,
+				A53D6E132C49A99A00A3E712 /* tuiStack.c */,
+				A53D6E1D2C49A99D00A3E712 /* tuiStack.h */,
+				A53D6E192C49A99C00A3E712 /* tuiWin.c */,
+				A53D6E1A2C49A99C00A3E712 /* tuiWin.h */,
 				A5159C66198718890079DD4F /* tui-command.c */,
 				A5159C67198718890079DD4F /* tui-command.h */,
 				A5159C68198718890079DD4F /* tui-data.c */,

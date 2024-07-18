@@ -2873,11 +2873,11 @@ remote_open_1(const char *name, int from_tty, struct target_ops *target,
      case.  */
   if (exec_bfd && !ptid_equal(inferior_ptid, null_ptid)) /* No use without an exec file.  */
     {
-#if defined(MACOSX_DYLD) && defined(__GDB_MACOSX_NAT_DYLD_H__)
+#if defined(MACOSX_DYLD) && defined(__GDB_MACOSX_NAT_DYLD_H__) && defined(INVALID_ADDRESS)
       /* APPLE LOCAL: for Mac OS X remote targets, init our
          dyld information instead of currently using the solib
 	 interface that parallels our dyld implementation.  */
-      macosx_dyld_create_inferior_hook();
+      macosx_dyld_create_inferior_hook(INVALID_ADDRESS);
 
 #else /* !MACOSX_DYLD: */
 # ifdef SOLIB_CREATE_INFERIOR_HOOK
@@ -2885,7 +2885,7 @@ remote_open_1(const char *name, int from_tty, struct target_ops *target,
 # else
       solib_create_inferior_hook();
 # endif /* SOLIB_CREATE_INFERIOR_HOOK */
-#endif /* MACOSX_DYLD && __GDB_MACOSX_NAT_DYLD_H__ */
+#endif /* MACOSX_DYLD && __GDB_MACOSX_NAT_DYLD_H__ && INVALID_ADDRESS */
 
       remote_check_symbols(symfile_objfile);
 

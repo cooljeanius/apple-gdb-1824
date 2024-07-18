@@ -495,7 +495,7 @@ jobs:
           javac "${javafile}" || stat "${javafile}"; \
         done
         if test -n "${javafile}"; then unset javafile; fi
-        which -a ktlint || (test -x "$(which locate)" && locate ktlint) || (test -x "$(which find)" && find / -name ktlint -perm +r -user "$(whoami)") || echo "ktlint missing"
+        which -a ktlint || (test -x "$(which locate)" && locate ktlint) || (test -x "$(which find)" && find / -name ktlint -perm +r -user "$(whoami)" 2>/dev/null) || echo "ktlint missing"
         # shellcheck disable=SC2044
         if test -x "$(which kotlin)"; then \
           for kotlinfile in $(find . -name '*.kts' -type f); do \

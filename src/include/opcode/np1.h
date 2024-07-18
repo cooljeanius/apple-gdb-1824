@@ -1,6 +1,6 @@
-/* Print GOULD NPL instructions for GDB, the GNU debugger.
-   Copyright 1986, 1987, 1989, 1991 Free Software Foundation, Inc.
-
+/* opcode/np1.h: Print GOULD NPL instructions for GDB, the GNU debugger.
+   Copyright 1986, 1987, 1989, 1991 Free Software Foundation, Inc. */
+/*
 This file is part of GDB.
 
 GDB is free software; you can redistribute it and/or modify
@@ -15,14 +15,15 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GDB; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+the Free Software Foundation, 51 Franklin St., 5th Floor, Boston, MA 02110-1301,
+USA.  */
 
 struct gld_opcode
 {
-  char *name;
+  const char *name;
   unsigned long opcode;
   unsigned long mask;
-  char *args;
+  const char *args;
   int length;
 };
 

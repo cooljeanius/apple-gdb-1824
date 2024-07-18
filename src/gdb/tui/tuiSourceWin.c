@@ -927,7 +927,7 @@ tuiUpdateExecInfo (winInfo)
 {
   tuiSetExecInfoContent (winInfo);
   tuiShowExecInfoContent (winInfo);
-}				/* tuiUpdateExecInfo
+}				/* tuiUpdateExecInfo */
 
 
 /*

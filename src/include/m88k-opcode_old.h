@@ -60,7 +60,9 @@
  * of ordering shall be used.
 */
 
-/* # define     BOFLAG   1                       /* BYTE ORDERING FLAG */
+#ifndef BOFLAG
+# define     BOFLAG   1                       /* BYTE ORDERING FLAG */
+#endif /* !BOFLAG */
 
 /* define the number of bits in the primary opcode field of the instruction,
  * the destination field, the source 1 and source 2 fields.

@@ -816,7 +816,7 @@ install: install-info install-man
 uninstall: uninstall-info uninstall-man
 
 pdf-local:
-	@echo "FIXME: pdfs are broken"
+	@echo "FIXME: pdfs are broken (in `pwd`)"
 .PHONY: pdf-local
 
 check:

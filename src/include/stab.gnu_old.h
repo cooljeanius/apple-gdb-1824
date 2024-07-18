@@ -12,7 +12,7 @@
 
 enum __stab_debug_code
 {
-#include "stab.def"
+#include "stab_old.def"
 };
 
 #undef __define_stab

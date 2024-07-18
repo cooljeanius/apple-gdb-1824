@@ -60,7 +60,9 @@
  * of ordering shall be used.
 */
 
-/* # define     BOFLAG   1                       /* BYTE ORDERING FLAG */
+#ifndef BOFLAG
+# define     BOFLAG   1                       /* BYTE ORDERING FLAG */
+#endif /* !BOFLAG */
 
 /* define the number of bits in the primary opcode field of the instruction,
  * the destination field, the source 1 and source 2 fields.
@@ -190,7 +192,9 @@ struct  PROCESSOR   {
 # define    i10bit      3
 
 /* Definitions for fields in psr */
-
+# ifdef mode
+#  undef mode
+# endif /* mode */
 # define mode  31
 # define rbo   30
 # define ser   29
@@ -230,6 +234,9 @@ struct  PROCESSOR   {
 # define    SUBUB   ADD+3
 # define    SUB     ADD+4
 
+# ifdef AND
+#  undef AND
+# endif /* AND */
 # define    AND     ADD+5
 # define    OR      ADD+6
 # define    XOR     ADD+7
@@ -393,11 +400,11 @@ typedef struct {
 };
 
 typedef struct INSTRUCTAB {
-   unsigned int  opcode;
-   char          *mnemonic;
-   OPSPEC        op1,op2,op3;
+   unsigned int opcode;
+   const char *mnemonic;
+   OPSPEC op1, op2, op3;
    struct SIM_FLAGS flgs;
-   struct INSTRUCTAB    *next;
+   struct INSTRUCTAB *next;
 } INSTAB;
 
 
