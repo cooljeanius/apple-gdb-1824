@@ -2714,6 +2714,11 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic push
  #  pragma GCC diagnostic ignored "-Wdeclaration-after-statement"
+# else
+#  if defined(__clang__) && (__clang__ >= 1)
+ #   pragma clang diagnostic push
+ #   pragma clang diagnostic ignored "-Wdeclaration-after-statement"
+#  endif /* clang */
 # endif /* gcc 4.6+ */
 #endif /* any gcc, but not g++ */
 #ifndef S_SPLINT_S
@@ -2748,6 +2753,10 @@ dyld_read_raw_infos(CORE_ADDR addr, struct dyld_raw_infos *info)
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__cplusplus)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
  #  pragma GCC diagnostic pop
+# else
+#  if defined(__clang__) && (__clang__ >= 1)
+ #   pragma clang diagnostic pop
+#  endif /* clang */
 # endif /* gcc 4.6+ */
 #endif /* any gcc, but not g++ */
 

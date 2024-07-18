@@ -21,6 +21,11 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef NO_POISON
+/* included files can drag in "free": */
+# define NO_POISON 1
+#endif /* !NO_POISON */
+
 #include "defs.h"
 
 #include <sys/types.h>
@@ -341,40 +346,41 @@ _initialize_macosx_nat(void)
   struct rlimit limit;
   rlim_t reserve;
   int ret;
+  struct serial_ops *ops;
 
-  getrlimit (RLIMIT_NOFILE, &limit);
+  getrlimit(RLIMIT_NOFILE, &limit);
   orig_rlimit = limit.rlim_cur;
   limit.rlim_cur = limit.rlim_max;
-  ret = setrlimit (RLIMIT_NOFILE, &limit);
+  ret = setrlimit(RLIMIT_NOFILE, &limit);
   if (ret != 0)
     {
-      /* Okay, that didn't work, let's try something that's at least
+      /* Okay, that failed, so let us try something that ought to be at least
 	 reasonably big: */
       limit.rlim_cur = 10000;
-      ret = setrlimit (RLIMIT_NOFILE, &limit);
+      ret = setrlimit(RLIMIT_NOFILE, &limit);
     }
   /* rlim_max is set to RLIM_INFINITY on X, at least on Leopard &
-     SnowLeopard.  so it's better to see what we really got and use
+     SnowLeopard.  So it is better to see what we really got and use
      cur, not max below...  */
-  getrlimit (RLIMIT_NOFILE, &limit);
+  getrlimit(RLIMIT_NOFILE, &limit);
 
   /* Reserve 10% of file descriptors for non-BFD uses, or 5, whichever
      is greater.  Allocate at least one file descriptor for use by
      BFD. */
 
-  reserve = limit.rlim_cur * 0.1;
-  reserve = (reserve > 5) ? reserve : 5;
+  reserve = (limit.rlim_cur * 0.1f);
+  reserve = ((reserve > 5) ? reserve : 5);
   if (reserve >= limit.rlim_cur)
     {
-      bfd_set_cache_max_open (1);
+      bfd_set_cache_max_open(1);
     }
   else
     {
-      bfd_set_cache_max_open (limit.rlim_cur - reserve);
+      bfd_set_cache_max_open(limit.rlim_cur - reserve);
     }
 
   /* classic-inferior-support */
-  struct serial_ops *ops = XMALLOC(struct serial_ops);
+  ops = XMALLOC(struct serial_ops);
   memset(ops, 0, sizeof(struct serial_ops));
   ops->name = "unix";
   ops->next = 0;

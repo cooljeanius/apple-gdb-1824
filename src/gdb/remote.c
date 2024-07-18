@@ -37,9 +37,9 @@
 #include "symfile.h"
 #include "exceptions.h"
 #include "target.h"
-#if 0
+#if !defined(TERMINAL_H) && !defined(TERMINAL)
 # include "terminal.h"
-#endif /* 0 */
+#endif /* !TERMINAL_H && !TERMINAL */
 #include "gdbcmd.h"
 #include "objfiles.h"
 #include "gdb-stabs.h"
@@ -71,7 +71,7 @@
 # include "macosx-nat-dyld.h"
 # include "macosx-nat-dyld-process.h"
 #endif /* MACOSX_DYLD */
-#ifdef HAVE_EXECINFO_H
+#if defined(HAVE_EXECINFO_H) || __has_include(<execinfo.h>)
 # include <execinfo.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -221,6 +221,16 @@ static void show_packet_config_cmd(struct packet_config *config);
 static void update_packet_config(struct packet_config *config);
 
 void _initialize_remote(void);
+
+/* APPLE LOCAL: Remote Nub might not have started the target, and we
+   want to either run or attach.  These functions do that job.  */
+static void remote_create_inferior(char *, char*, char **, int);
+static void remote_attach(const char *, int);
+
+/* The executable might not have the same location on the remote
+   system as it does here, provide the correct path here.  */
+char *remote_exec_dir;
+/* END APPLE LOCAL */
 
 /* same condition as where it is defined: */
 #ifdef MACOSX_DYLD
@@ -691,7 +701,7 @@ set_memory_packet_size(const char *args, struct memory_packet_config *config)
       size = strtoul(args, &end, 0);
       if (args == end)
 	error(_("Invalid %s (bad syntax)."), config->name);
-#if !defined(S_SPLINT_S)
+#if !defined(S_SPLINT_S) || !S_SPLINT_S
 # if defined(MAX_REMOTE_PACKET_SIZE) && defined(LONG_MAX) && \
      (MAX_REMOTE_PACKET_SIZE > LONG_MAX)
       /* Instead of explicitly capping the size of a packet to
@@ -2863,13 +2873,21 @@ remote_open_1(const char *name, int from_tty, struct target_ops *target,
      case.  */
   if (exec_bfd && !ptid_equal(inferior_ptid, null_ptid)) /* No use without an exec file.  */
     {
-#ifdef SOLIB_CREATE_INFERIOR_HOOK
-      SOLIB_CREATE_INFERIOR_HOOK(PIDGET(inferior_ptid));
-#else
-      solib_create_inferior_hook();
-#endif /* SOLIB_CREATE_INFERIOR_HOOK */
+#if defined(MACOSX_DYLD) && defined(__GDB_MACOSX_NAT_DYLD_H__)
+      /* APPLE LOCAL: for Mac OS X remote targets, init our
+         dyld information instead of currently using the solib
+	 interface that parallels our dyld implementation.  */
+      macosx_dyld_create_inferior_hook();
 
-      remote_check_symbols (symfile_objfile);
+#else /* !MACOSX_DYLD: */
+# ifdef SOLIB_CREATE_INFERIOR_HOOK
+      SOLIB_CREATE_INFERIOR_HOOK(PIDGET(inferior_ptid));
+# else
+      solib_create_inferior_hook();
+# endif /* SOLIB_CREATE_INFERIOR_HOOK */
+#endif /* MACOSX_DYLD && __GDB_MACOSX_NAT_DYLD_H__ */
+
+      remote_check_symbols(symfile_objfile);
 
       /* APPLE LOCAL: make sure any breakpoints that had their ENABLE_STATE set
          to BP_SHLIB_DISABLED in disable_breakpoints_in_shlibs from our
@@ -2894,6 +2912,232 @@ remote_open_1(const char *name, int from_tty, struct target_ops *target,
 #endif /* TM_NEXTSTEP */
   }
 }
+
+/* APPLE LOCAL Implementation of remote_create_inferior and remote_attach.  */
+static void
+complete_create_or_attach(int from_tty)
+{
+  struct remote_state *rs = get_remote_state ();
+
+  /* Now send the restart packet.  Then we will wait for the remote to
+     start up.  */
+  struct gdb_exception ex;
+  ex = catch_exception(uiout, remote_start_remote, NULL, RETURN_MASK_ALL);
+  if (ex.reason < 0)
+    {
+      pop_target();
+      throw_exception(ex);
+    }
+
+  /* Now indicate we have a remote target:  */
+  rs->has_target = 1;
+
+#if defined(MACOSX_DYLD) && MACOSX_DYLD
+  /* And not that we have a target, redo the dyld information: */
+  macosx_dyld_create_inferior_hook();
+#endif /* MACOSX_DYLD */
+  if (exec_bfd)
+    remote_check_symbols(symfile_objfile);
+
+  observer_notify_inferior_created(&current_target, from_tty);
+}
+
+/* We printf lengths & index's.  We need to know what size to allocate for them.
+   20 is the length of 0xffffffffffffffff as an int.  Probably big enough.  */
+#define INT_PRINT_MAX 20
+void
+remote_create_inferior(char *exec_file, char *allargs, char **env, int from_tty)
+{
+  struct remote_state *rs = get_remote_state();
+  char *buf = (char *)alloca(rs->remote_packet_size);
+  char *pkt_buffer = NULL;
+  int exec_len;
+  int args_len;
+  int argnum;
+  int print_len;
+  int i;
+  char *ptr;
+  char hexval[3];
+  char **argv;
+  int argc;
+  struct cleanup *pkt_cleanup;
+  char *remote_exec_file;
+  static const char *env_pkt_hdr = "QEnvironment:";
+  int envnum;
+  size_t packet_len;
+  size_t max_size;
+  int timed_out;
+  size_t pkt_buffer_len;
+  int old_remote_timeout;
+
+  /* First send down the environment array.
+   * We are using a packet of the form:
+   *     QEnvironment[,<LEN>,<ENV_ELEM>]...
+   * where the ENV_ELEM is a hex-encoded form of the FOO=BAR entry that gdb
+   * passes in, and LEN is the length of the hex-encoded form.  */
+
+  envnum = 0;
+  max_size = 0;
+  pkt_cleanup = NULL;
+
+  while (env[envnum] != NULL)
+    {
+        packet_len = (strlen(env_pkt_hdr) +  strlen(env[envnum]) + 2UL);
+
+	if (packet_len > rs->remote_packet_size)
+	  {
+	    warning("Environment variable too long, skipping: %s", env[envnum]);
+	    continue;
+	  }
+
+	if (packet_len > max_size)
+	  {
+	    if (pkt_cleanup != NULL)
+	      do_cleanups(pkt_cleanup);
+	    pkt_buffer = (char *)xmalloc(packet_len);
+	    max_size = packet_len;
+	    pkt_cleanup = make_cleanup(xfree, pkt_buffer);
+	  }
+
+	snprintf(pkt_buffer, packet_len, "%s%s", env_pkt_hdr, env[envnum]);
+	putpkt(pkt_buffer);
+
+	getpkt(buf, rs->remote_packet_size, 0);
+	if (buf[0] == 'E')
+	  error("Got an error \"%s\" sending environment to remote.", buf);
+	else if ((buf[0] != '\0') && ((buf[0] != 'O') && (buf[1] != 'K')))
+	  error("Unknown packet reply: \"%s\" to environment packet.", buf);
+
+	envnum++;
+    }
+
+  if (pkt_cleanup != NULL)
+    do_cleanups(pkt_cleanup);
+
+  /* Next send down the arguments.  */
+
+  /* The largest possible array - every character is a separate argument: */
+  argv = (char **)xmalloc(((strlen(allargs) + 1UL) / 2UL + 2UL) * sizeof(*argv));
+  pkt_cleanup = make_cleanup(xfree, argv);
+  breakup_args(allargs, &argc, argv);
+
+  if (remote_exec_dir == NULL || remote_exec_dir[0] == '\0')
+    {
+      remote_exec_file = exec_file;
+    }
+  else
+    {
+      char *file_name = basename(exec_file);
+      size_t r_e_f_len = (strlen(remote_exec_dir) + strlen(file_name) + 4UL);
+      remote_exec_file = (char *)xmalloc(r_e_f_len);
+      snprintf(remote_exec_file, r_e_f_len, "%s/%s", remote_exec_dir,
+               file_name);
+      make_cleanup(xfree, remote_exec_file);
+    }
+
+  exec_len = strlen(remote_exec_file);
+  /* This is likely an overestimate, since if there is more than one argument,
+   * we won't include the spaces...  */
+  args_len = strlen(allargs);
+  pkt_buffer_len = (1UL + INT_PRINT_MAX + 1UL + INT_PRINT_MAX + 1UL
+                    + (2UL * exec_len)
+                    + (argc * (1UL + INT_PRINT_MAX + 1UL + INT_PRINT_MAX + 1UL))
+                    + (2UL * args_len) + 1UL);
+
+  pkt_buffer = (char *)xmalloc(pkt_buffer_len);
+  make_cleanup(xfree, pkt_buffer);
+  print_len = snprintf(pkt_buffer, (INT_PRINT_MAX + 5), "A%d,0,",
+                       (2 * exec_len));
+  ptr = (pkt_buffer + print_len);
+
+  for (i = 0; i < exec_len; i++)
+    {
+      snprintf(hexval, sizeof(hexval), "%02hhx", remote_exec_file[i]);
+      *ptr++ = hexval[0];
+      *ptr++ = hexval[1];
+    }
+  for (argnum = 0; argnum < argc; argnum++)
+    {
+      char *arg = argv[argnum];
+      int arglen = strlen (arg);
+      *ptr++ = ',';
+      *ptr = '\0';
+      print_len = snprintf(ptr, 2 * INT_PRINT_MAX + 3, "%d,%d,", 2 * arglen, argnum + 1);
+      ptr += print_len;
+      for (i = 0; i < arglen; i++)
+	{
+	  snprintf(hexval, sizeof(hexval), "%02hhx", arg[i]);
+	  *ptr++ = hexval[0];
+	  *ptr++ = hexval[1];
+	}
+    }
+  *ptr = '\0';
+  putpkt(pkt_buffer);
+  do_cleanups(pkt_cleanup);
+
+  getpkt(buf, rs->remote_packet_size, 0);
+  if (buf[0] == 'E')
+    error("Got an error \"%s\" sending arguments to remote.", buf);
+  else if ((buf[0] != 'O') && (buf[1] != 'K'))
+    error("Unknown packet reply: \"%s\" to remote arguments packet.", buf);
+
+  /* debugserver actually replies to the A packet before starting up the app,
+     so then if it fails to start up, we don't get a useful error code.
+     So I'm sending a "how about that startup" packet to retrieve that if
+     there is an error code.  */
+
+  putpkt("qLaunchSuccess");
+  /* Increase the timeout for qLaunchSuccess to 30 seconds to match how long
+     the debugserver will wait for the inferior to give us its process ID.  */
+  old_remote_timeout = remote_timeout;
+  remote_timeout = 30;
+  timed_out = getpkt_sane(buf, rs->remote_packet_size, 0);
+  remote_timeout = old_remote_timeout;
+
+  if (timed_out)
+    {
+      pop_target();
+      error("Error launching timed out.");
+    }
+  else if (buf[0] == 'E')
+    {
+      pop_target();
+      error("Error launching remote program: %s.", (buf + 1));
+    }
+
+  complete_create_or_attach(from_tty);
+}
+
+/* */
+void
+remote_attach(const char *args, int from_tty)
+{
+  struct remote_state *rs = get_remote_state();
+  char *buf = (char *)alloca(rs->remote_packet_size);
+  char *endptr;
+  pid_t remote_pid;
+  int timed_out;
+
+  if (args == NULL || *args == '\0')
+    error("No pid supplied to attach.");
+
+  remote_pid = strtol(args, &endptr, 0);
+  if (*endptr != '\0')
+    error("Junk at the end of pid string: \"%s\".", endptr);
+
+  snprintf(buf, rs->remote_packet_size, "vAttach;%x", remote_pid);
+  putpkt(buf);
+  timed_out = getpkt_sane(buf, rs->remote_packet_size, 0);
+
+  if (timed_out)
+    error("Attach attempt timed out.");
+  else if (*buf == '\0' || *buf == 'E')
+    error("Attach failed: '%s'", buf);
+
+  complete_create_or_attach(from_tty);
+}
+
+/* END APPLE LOCAL */
 
 /* This takes a program previously attached to and detaches it.  After
    this is done, GDB can be used to debug some other program.  We
@@ -5113,10 +5357,13 @@ extended_remote_mourn(void)
 
 /* Worker function for remote_mourn.  */
 static void
-remote_mourn_1 (struct target_ops *target)
+remote_mourn_1(struct target_ops *target)
 {
-  unpush_target (target);
-  generic_mourn_inferior ();
+  unpush_target(target);
+  generic_mourn_inferior();
+#if defined(MACOSX_DYLD) && defined(__GDB_MACOSX_NAT_DYLD_H__)
+  macosx_dyld_mourn_inferior();
+#endif /* MACOSX_DYLD && __GDB_MACOSX_NAT_DYLD_H__ */
 }
 
 /* In the extended protocol we want to be able to do things like
@@ -6142,6 +6389,8 @@ Specify the serial device it is connected to\n\
 (e.g. /dev/ttyS0, /dev/ttya, COM1, etc.).";
   remote_ops.to_open = remote_open;
   remote_ops.to_close = remote_close;
+  remote_ops.to_create_inferior = remote_create_inferior;
+  remote_ops.to_attach = remote_attach;
   remote_ops.to_detach = remote_detach;
   remote_ops.to_disconnect = remote_disconnect;
   remote_ops.to_resume = remote_resume;
@@ -6181,6 +6430,15 @@ Specify the serial device it is connected to\n\
   /* APPLE LOCAL classic-inferior-support */
   remote_ops.to_async_mask_value = 0;
   remote_ops.to_magic = OPS_MAGIC;
+#if defined(MACOSX_DYLD) && defined(__GDB_MACOSX_NAT_DYLD_H__) && \
+    defined(__GDB_MACOSX_NAT_DYLD_PROCESS_H__)
+  remote_ops.to_enable_exception_callback = macosx_enable_exception_callback;
+  remote_ops.to_find_exception_catchpoints = macosx_find_exception_catchpoints;
+  remote_ops.to_get_current_exception_event = macosx_get_current_exception_event;
+
+  remote_ops.to_bind_function = dyld_lookup_and_bind_function;
+  remote_ops.to_check_is_objfile_loaded = dyld_is_objfile_loaded;
+#endif /* MACOSX_DYLD && __GDB_MACOSX_NAT_DYLD_H__ && __GDB_MACOSX_NAT_DYLD_PROCESS_H__ */
 }
 
 /* Set up the extended remote vector by making a copy of the standard

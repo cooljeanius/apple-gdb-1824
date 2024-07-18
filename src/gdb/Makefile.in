@@ -3412,7 +3412,7 @@ remote.o: remote.c $(defs_h) $(gdb_string_h) $(inferior_h) $(bfd_h) \
   $(gdb_stabs_h) $(gdbthread_h) $(remote_h) $(regcache_h) $(value_h) \
   $(gdb_assert_h) $(observer_h) $(solib_h) $(event_loop_h) $(event_top_h) \
   $(inf_loop_h) $(serial_h) $(gdbcore_h) $(remote_fileio_h) \
-  $(objc_lang_h) $(macosx_tdep_h) $(macosx_nat_dyld_h) \
+  $(objc_lang_h) $(macosx_tdep_h) $(macosx_nat_dyld_h) $(terminal_h) \
   $(macosx_nat_dyld_process_h) $(arm_macosx_tdep_h) $(arm_tdep_h)
 # APPLE LOCAL begin subroutine inlining:
 remote-e7000.o: remote-e7000.c $(defs_h) $(gdbcore_h) $(gdbarch_h) \

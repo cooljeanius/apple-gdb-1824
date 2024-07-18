@@ -1,4 +1,4 @@
-/* Terminal interface definitions for GDB, the GNU Debugger.
+/* terminal.h: Terminal interface definitions for GDB, the GNU Debugger.
    Copyright 1986, 1989, 1990, 1991, 1992, 1993, 1995, 1996, 1999, 2000
    Free Software Foundation, Inc.
 
@@ -19,7 +19,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (TERMINAL_H)
+#if !defined(TERMINAL_H)
 #define TERMINAL_H 1
 
 
@@ -31,7 +31,7 @@
    nothing has already defined the one of the names, and do the right
    thing. */
 
-#if !defined (HAVE_TERMIOS) && !defined(HAVE_TERMIO) && !defined(HAVE_SGTTY)
+#if !defined(HAVE_TERMIOS) && !defined(HAVE_TERMIO) && !defined(HAVE_SGTTY)
 # if defined(HAVE_TERMIOS_H)
 #  define HAVE_TERMIOS
 # else /* ! defined (HAVE_TERMIOS_H) */
@@ -49,12 +49,12 @@
 # include <termios.h>
 #endif /* HAVE_TERMIOS */
 
-#if !defined(_WIN32) && !defined (HAVE_TERMIOS)
+#if !defined(_WIN32) && !defined(HAVE_TERMIOS)
 
-/* Define a common set of macros -- BSD based -- and redefine whatever
-   the system offers to make it look like that.  FIXME: serial.h and
-   ser-*.c deal with this in a much cleaner fashion; as soon as stuff
-   is converted to use them, can get rid of this crap.  */
+/* Define a common set of macros -- BSD based -- and redefine whatever the
+ * system offers to make it look like that.  */
+/* FIXME: serial.h and ser-*.c deal with this in a much cleaner fashion;
+ * as soon as stuff is converted to use them, we can get rid of this crap: */
 
 #ifdef HAVE_TERMIO
 
@@ -76,9 +76,9 @@
 #define TERMINAL struct sgttyb
 
 #endif /* sgtty */
-#endif
+#endif /* !_WIN32 && !HAVE_TERMIOS */
 
-extern void new_tty (void);
+extern void new_tty(void);
 
 /* Do we have job control?  Can be assumed to always be the same within
    a given run of GDB.  In inflow.c.  */
@@ -86,6 +86,6 @@ extern int job_control;
 
 /* Set the process group of the caller to its own pid, or do nothing if
    we lack job control.  */
-extern int gdb_setpgid (void);
+extern int gdb_setpgid(void);
 
-#endif /* !defined (TERMINAL_H) */
+#endif /* !defined(TERMINAL_H) */

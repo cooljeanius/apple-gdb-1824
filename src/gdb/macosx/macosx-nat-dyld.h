@@ -3,7 +3,7 @@
  */
 
 #ifndef __GDB_MACOSX_NAT_DYLD_H__
-#define __GDB_MACOSX_NAT_DYLD_H__
+#define __GDB_MACOSX_NAT_DYLD_H__ 1
 
 #include "defs.h"
 #include "macosx-nat-mutils.h"

@@ -1112,6 +1112,10 @@ macosx_process_events(struct macosx_inferior_status *inferior,
       timeout = 0;
     }
 
+  if (other_count == 0) {
+    ; /* ??? */
+  }
+
   macosx_exception_release_write_lock(&inferior->exception_status);
 
   if (event_count == 0)

@@ -1427,6 +1427,10 @@ backtrace_command_1(const char *count_exp, int show_locals, int from_tty)
   else
     count = -1;
 
+  if (trailing_level == 0) {
+    ; /* ??? */
+  }
+
   if (info_verbose)
     {
       struct partial_symtab *ps;

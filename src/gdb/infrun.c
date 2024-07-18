@@ -1493,9 +1493,7 @@ handle_inferior_event(struct execution_control_state *ecs)
   int sw_single_step_trap_p = 0;
   int stopped_by_watchpoint = -1;	/* Mark as unknown.  */
 
-  /* APPLE LOCAL - Some convenience variables we'll need
-     below.  */
-
+  /* APPLE LOCAL - Some convenience variables we might need below: */
   struct frame_id prev_frame_id;
   struct gdb_exception e;
   /* END APPLE LOCAL */
