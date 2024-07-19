@@ -473,7 +473,7 @@ misc_extra = \
     doc/gendocs_template
 
 EXTRA_DIST = $(misc_extra) $(pkgdata_DATA)
-DISTCLEANFILES = stamp-h *~ config/*~ po/*~ autoscan.log .DS_Store
+DISTCLEANFILES = stamp-h *~ config/*~ po/*~ autoscan.log config.log .DS_Store
 my_distcleancheck_listfiles_local = \
      find -type f -exec 'test -f $(srcdir)/{} || echo {} ;'
 
@@ -1049,6 +1049,7 @@ uninstall-am: uninstall-pkgdataDATA
 
 
 distclean-local:
+	rm -fv *.log
 	rm -rfv autom4te.cache || rmdir autom4te.cache
 
 configure   : VERSION

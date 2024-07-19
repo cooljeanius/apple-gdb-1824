@@ -33,4 +33,5 @@ clean-local:
 	-rm -rf *.dSYM || rmdir *.dSYM
 
 distclean-local:
+	-rm -rf .deps || rmdir .deps
 	-rm -rf autom4te.cache || rmdir autom4te.cache

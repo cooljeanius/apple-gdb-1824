@@ -793,7 +793,7 @@ mostlyclean:
 clean: mostlyclean
 	rm -f $(AM_V_v) gdb-cfg.texi GDBvn.texi
 	rm -rf annotate || rmdir annotate
-	rm -rf doxy || rmdir doxy
+	rm -rf doxy/*/* || rmdir doxy/*
 	rm -rf gdb || rmdir gdb
 	rm -rf gdbint || rmdir gdbint
 	rm -rf stabs || rmdir stabs

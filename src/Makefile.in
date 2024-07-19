@@ -2985,7 +2985,7 @@ local-clean:
 distclean-local: local-distclean
 .PHONY: distclean-local
 local-distclean:
-	-rm -f Makefile Makefile*orig
+	-rm -f Makefile Makefile*orig src_am/Makefile config.h
 	-rm -f config.status config.cache ./*/config.cache ./*/config.cache.bak
 	-rm -fv *~ config/*~
 	-rm -f mh-frag mt-frag

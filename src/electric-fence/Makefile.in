@@ -236,7 +236,6 @@ stamp-framework: $(FRAMEWORK_OFILES)
 	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
 	$(LN_S) -v Versions/Current/Resources $(FRAMEWORK).framework/Resources
 	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
-
 	set -ex; \
 	if [ "$(FRAMEWORK_SUFFIX)" != "" ]; then \
 	    test -n "$(FRAMEWORK_SUFFIX)"; \
@@ -312,11 +311,13 @@ ls:
 mostlyclean clean:
 		rm -f *.a *.o core errs *~ \#* TAGS *.E a.out errors
 		rm -f tstheap eftest libefence.cat
-		rm -rf *.dSYM
+		rm -f stamp-framework stamp-framework-headers
+		rm -rf *.dSYM || rmdir *.dSYM
+		rm -rf electric-fence.framework || rmdir electric-fence.framework
 
 distclean:	clean 
 		rm -f config.cache config.log config.status
-		rm -f Makefile depend
+		rm -f Makefile depend config.h autoscan.log
 		rm -fr autom4te.cache || rmdir autom4te.cache
 
 maintainer-clean realclean: distclean clean

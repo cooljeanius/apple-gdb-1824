@@ -213,7 +213,7 @@ installsrc			:
 	chmod 444 $(SRCROOT)/*
 	$(MAKE) -C gdb_plugin_support SRCROOT=$(SRCROOT)/gdb_plugin_support installsrc
 
-clean				:
+distclean clean			:
 	rm -rf $(OFILE_DIR) $(PLUGIN) $(gdb_plugin_support.o)
 	cd $(PLUGIN_SUPPORT) && make clean SRCROOT=$(PLUGIN_SUPPORT)
 
@@ -260,7 +260,7 @@ gdb_plugin_support.o 		: 	force
 
 force				:
 
-cleanmb				:
+mostlyclean cleanmb		:
 	rm -rf $(OFILE_DIR) $(PLUGIN)
 
 #----------------------------------------------------------------#

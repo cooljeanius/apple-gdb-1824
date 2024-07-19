@@ -902,9 +902,17 @@ all: build
 mostlyclean:
 	if test -e src/Makefile; then \
 	  unset CPP && $(MAKE) -i -C src mostlyclean; fi
+	if test -e libcheckpoint/Makefile; then \
+	  $(MAKE) -C libcheckpoint mostlyclean; fi
+	if test -e macsbug/Makefile; then \
+	  $(MAKE) -C macsbug mostlyclean; fi
 clean: mostlyclean
 	if test -e src/Makefile; then \
 	  unset CPP && $(MAKE) -i -C src clean; fi
+	if test -e libcheckpoint/Makefile; then \
+	  $(MAKE) -C libcheckpoint clean; fi
+	if test -e macsbug/Makefile; then \
+	  $(MAKE) -C macsbug clean; fi
 	$(RM) -r $(OBJROOT)
 	$(RM) -v *~ stamp-* build-aux/*~
 	$(RM) -v .DS_Store autoscan.log hs_err_pid*.log
@@ -913,9 +921,20 @@ clean: mostlyclean
 distclean: clean
 	if test -e src/Makefile; then \
 	  unset CPP && $(MAKE) -i -C src distclean; fi
-	$(RM) -v configure config.log config.h.* hs_err*.log
+	if test -e libcheckpoint/Makefile; then \
+	  $(MAKE) -C libcheckpoint distclean; fi
+	if test -e macsbug/Makefile; then \
+	  $(MAKE) -C macsbug distclean; fi
+	$(RM) -v config.status config.log config.h hs_err*.log
 	-if test -d .git && test -w .git; then $(RM) .git/COMMIT_EDITMSG~; fi
-.PHONY: mostlyclean distclean
+
+maintainer-clean: distclean
+	if test -e src/Makefile && test -r src/Makefile; then \
+	  unset CPP && $(MAKE) -i -C src maintainer-clean; fi
+	if test -e libcheckpoint/Makefile; then \
+	  $(MAKE) -i -C libcheckpoint maintainer-clean; fi
+	$(RM) -v configure config.h.* hs*.log aclocal.m4
+.PHONY: mostlyclean distclean maintainer-clean
 
 clean-gdb:
 	if test -r src/Makefile && test -r src/gdb/Makefile; then \

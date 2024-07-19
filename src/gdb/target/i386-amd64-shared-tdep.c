@@ -202,6 +202,7 @@ i386_sub_esp_pattern_p (CORE_ADDR memaddr)
   return 0;
 }
 
+#if defined(GDB_RC_VERSION) && (GDB_RC_VERSION < 1344)
 /* extern because proto in "gdbtypes.h" is extern: */
 struct type *
 init_vector_type (struct type *elt_type, int n)
@@ -264,5 +265,6 @@ build_builtin_type_vec128i_big (void)
   TYPE_NAME (t) = "builtin_type_vec128i_big";
   return t;
 }
+#endif /* GDB_RC_VERSION < 1344 */
 
 /* EOF */

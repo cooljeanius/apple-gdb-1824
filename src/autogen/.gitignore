@@ -31,4 +31,6 @@ site.bak
 *-ori
 /*.cpx
 /patches
+config/mk-shdefs
+po/Makefile.in
 

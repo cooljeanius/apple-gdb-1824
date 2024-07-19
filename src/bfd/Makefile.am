@@ -1724,9 +1724,11 @@ MOSTLYCLEANFILES += tlofiles lofiles stamp-lofiles
 MOSTLYCLEANFILES += tplistfiles plistfiles stamp-plistfiles
 
 CLEANFILES = dep.sed stmp-bfd-h DEP DEPA DEP1 DEP2 libbfd.a stamp-lib \
-  stamp-staticlib stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ bfd.h
+  stamp-staticlib stmp-bin2-h stmp-lbfd-h stmp-lcoff-h stamp-h1 \
+  stamp-framework-headers @MAINT@ bfd.h
 
-DISTCLEANFILES = $(BUILD_CFILES) $(BUILD_HFILES) libtool-soversion *~ *.cache.bak
+DISTCLEANFILES = $(BUILD_CFILES) $(BUILD_HFILES) libtool-soversion *~ *.cache.bak \
+  config.h autoscan.log stamp-h1
 
 MAINTAINERCLEANFILES = bfd.h @MAINT@ bfd-in2.h
 

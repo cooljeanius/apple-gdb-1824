@@ -52,9 +52,10 @@ misc_extra     = \
     autoopts/parse-duration.h doc/gendocs.sh \
     doc/gendocs_template
 EXTRA_DIST     = $(misc_extra) $(pkgdata_DATA)
-DISTCLEANFILES = stamp-h *~ config/*~ po/*~ autoscan.log .DS_Store
+DISTCLEANFILES = stamp-h *~ config/*~ po/*~ autoscan.log config.log .DS_Store
 
 distclean-local:
+	rm -fv *.log
 	rm -rfv autom4te.cache || rmdir autom4te.cache
 
 my_distcleancheck_listfiles_local = \

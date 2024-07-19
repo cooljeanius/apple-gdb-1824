@@ -265,9 +265,9 @@ AC_DEFUN([AG_WITHLIB_GUILE],[
   AC_LINK_IFELSE(
     [AC_LANG_SOURCE([[@%:@include <libguile.h>
 @%:@if ((SCM_MAJOR_VERSION * 100) + SCM_MINOR_VERSION) > 200
-This has not been tested with Guile 2.1.  Remove this line to proceed.
+@%:@ warning "This has not been tested with Guile 2.1 or later, proceed with caution."
 @%:@endif
-int main () {
+int main(void) {
   SCM fumble = SCM_UNDEFINED;
   SCM bumble = SCM_UNDEFINED;
   SCM stumble= SCM_UNDEFINED;
