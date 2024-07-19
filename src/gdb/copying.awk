@@ -15,7 +15,7 @@ BEGIN	{
 	  print ""
 	  print "extern int immediate_quit;";
 	  print "static void";
-	  print "show_copying_command(const char *ignore, int from_tty)";
+	  print "show_copying_command(const char *ignore ATTRIBUTE_UNUSED, int from_tty)";
 	  print "{";
 	  print "  immediate_quit++;";
 	}
@@ -38,7 +38,7 @@ NR == 1,/^[ 	]*NO WARRANTY[ 	]*$/	{
 	  print "";
 	  print "/* */";
 	  print "static void";
-	  print "show_warranty_command(const char *ignore, int from_tty)";
+	  print "show_warranty_command(const char *ignore ATTRIBUTE_UNUSED, int from_tty)";
 	  print "{";
 	  print "  immediate_quit++;";
 	}
@@ -66,7 +66,7 @@ END	{
 	  print "	  \"Various kinds of warranty you do not have.\",";
 	  print "	  &showlist);";
 	  print "";
-	  print "  /* For old-timers, allow \"info copying\", etc.  */";
+	  print "  /* For old-timers, allow \"info copying\", and so on: */";
 	  print "  add_info(\"copying\", show_copying_command,";
 	  print "	   \"Conditions for redistributing copies of GDB.\");";
 	  print "  add_info(\"warranty\", show_warranty_command,";

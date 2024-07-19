@@ -3384,6 +3384,7 @@ ac_config_headers="$ac_config_headers config.h"
 
 
 
+pushd .profile.d || (echo "cannot enter subdir for profiles!" >&2 && exit 1)
 # The change in versioning in Big Sur has required some updating here:
 if test -x "`which sw_vers 2>&5`"; then
   mac_vers_major="$(sw_vers -productVersion | cut -d\. -f1 2>&5)"
@@ -3464,6 +3465,7 @@ printf "%s\n" "$as_me: sourcing ./.profile_generic" >&6;}
 printf "%s\n" "$as_me: WARNING: you will have to find out what to do for this platform yourself." >&2;}
   fi
 fi
+popd || (echo "cannot restore working directory!" >&2 && exit 1)
 
 
 

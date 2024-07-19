@@ -24,6 +24,7 @@
 #include "arch-utils.h"
 #include "block.h"
 #include "dummy-frame.h"
+#include "exceptions.h"
 #include "frame.h"
 #include "frame-base.h"
 #include "frame-unwind.h"
@@ -40,6 +41,7 @@
 
 #include "amd64-tdep.h"
 #include "i387-tdep.h"
+#include "i386-amd64-shared-tdep.h"
 #include "x86-shared-tdep.h"
 
 /* Note that the AMD64 architecture was previously known as x86-64.
@@ -813,6 +815,142 @@ amd64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 /* The maximum number of saved registers.  This should include %rip.  */
 #define AMD64_NUM_SAVED_REGS	AMD64_NUM_GREGS
 
+struct amd64_frame_cache
+{
+  /* Base address.  */
+  CORE_ADDR base;
+  CORE_ADDR sp_offset;
+  CORE_ADDR pc;
+
+  /* Saved registers.  */
+  CORE_ADDR saved_regs[AMD64_NUM_SAVED_REGS];
+  CORE_ADDR saved_sp;
+
+  /* Do we have a frame?  */
+  int frameless_p;
+};
+
+/* Allocate and initialize a frame cache.  */
+
+static struct amd64_frame_cache *
+amd64_alloc_frame_cache (void)
+{
+  struct amd64_frame_cache *cache;
+  int i;
+
+  cache = FRAME_OBSTACK_ZALLOC (struct amd64_frame_cache);
+
+  /* Base address.  */
+  cache->base = 0;
+  cache->sp_offset = -8;
+  cache->pc = 0;
+
+  /* Saved registers.  We initialize these to -1 since zero is a valid
+     offset (that's where %rbp is supposed to be stored).  */
+  for (i = 0; i < AMD64_NUM_SAVED_REGS; i++)
+    cache->saved_regs[i] = -1;
+  cache->saved_sp = 0;
+
+  /* Frameless until proven otherwise.  */
+  cache->frameless_p = 1;
+
+  return cache;
+}
+
+/* Do a limited analysis of the prologue at PC and update CACHE
+   accordingly.  Bail out early if CURRENT_PC is reached.  Return the
+   address where the analysis stopped.
+
+   We will handle only functions beginning with:
+
+      pushq %rbp        0x55
+      movq %rsp, %rbp   0x48 0x89 0xe5
+
+   Any function that doesn't start with this sequence will be assumed
+   to have no prologue and thus no valid frame pointer in %rbp.  */
+
+/* APPLE LOCAL: Optionally pass in a NEXT_FRAME if it is available
+   which is used to determine the context of this frame, i.e. is it
+   possible for it to be frameless at all, so we can make a more
+   educated guess.  */
+
+static CORE_ADDR
+amd64_analyze_prologue (CORE_ADDR pc, CORE_ADDR current_pc,
+			struct frame_info *next_frame,
+                        struct amd64_frame_cache *cache)
+{
+  int non_prologue_insn_limit = 64; /* Stop looking after 64 unknown insn */
+  int insn_seen;
+  int must_have_stack_frame = 0;
+
+  /* APPLE LOCAL: Could this be a frameless function?
+     If this is the 0th frame, or it was interrupted by a signal
+     or gdb did an inferior function call, it could be frameless.
+     If none of those are true then it must have a stack frame.  */
+  if (next_frame
+      && frame_relative_level (next_frame) > -1
+      && get_frame_type (next_frame) != SIGTRAMP_FRAME
+      && get_frame_type (next_frame) != DUMMY_FRAME)
+    must_have_stack_frame = 1;
+
+  /* If we must have a stack frame, assume this function follows
+     the convention of pushing rbp in the prologue even though it's
+     not necessarily required.  short of the EH frames/CFI info
+     we can't handle the case where the rbp isn't saved/used so
+     we assume it is.  */
+  if (must_have_stack_frame)
+    {
+      cache->saved_regs[AMD64_RBP_REGNUM] = 0;
+      cache->sp_offset += 8;
+      cache->frameless_p = 0;
+      /* Don't return here because this function could be expected
+         to return the CORE_ADDR following the last prologue frame
+         setup insn.  */
+    }
+
+  /* Haven't executed any prologue instructions yet - no stack frame
+     has been set up.  */
+  if (current_pc <= pc)
+    return current_pc;
+
+  /* Skip over non-prologue instructions looking for a pushq %rbp */
+  insn_seen = 0;
+  while (!i386_push_ebp_pattern_p (pc)
+         && !i386_ret_pattern_p (pc)
+         && pc < current_pc
+         && insn_seen++ < non_prologue_insn_limit)
+    pc += i386_length_of_this_instruction (pc);
+
+  if (i386_push_ebp_pattern_p (pc))		/* pushq %rbp */
+    {
+      /* Take into account that we've executed the `pushq %rbp' that
+         starts this instruction sequence.  */
+      cache->saved_regs[AMD64_RBP_REGNUM] = 0;
+      cache->sp_offset += 8;
+
+      /* If that's all, return now.  */
+      if (current_pc <= pc + 1)
+        return current_pc;
+
+      /* Check for `movq %rsp, %rbp'.  */
+      insn_seen = 0;
+      while (!i386_mov_esp_ebp_pattern_p (pc)
+             && !i386_ret_pattern_p (pc)
+             && pc < current_pc
+             && insn_seen++ < non_prologue_insn_limit)
+        pc += i386_length_of_this_instruction (pc);
+
+      if (!i386_mov_esp_ebp_pattern_p (pc))
+	return pc;
+
+      /* OK, we actually have a frame.  */
+      cache->frameless_p = 0;
+      return pc + 3;
+    }
+
+  return pc;
+}
+
 /* Return PC of first real instruction.  */
 
 static CORE_ADDR
@@ -829,6 +967,161 @@ amd64_skip_prologue (CORE_ADDR start_pc)
   pc = x86_analyze_prologue (start_pc, endaddr, &cache);
 
   return pc;
+}
+
+/* Normal frames.  */
+
+static struct amd64_frame_cache *
+amd64_frame_cache(struct frame_info *next_frame, void **this_cache)
+{
+  struct amd64_frame_cache *cache;
+  gdb_byte buf[8];
+  int i;
+
+  if (*this_cache)
+    return (struct amd64_frame_cache *)*this_cache;
+
+  cache = amd64_alloc_frame_cache ();
+  *this_cache = cache;
+
+  cache->pc = frame_func_unwind (next_frame);
+  if (cache->pc != 0)
+    amd64_analyze_prologue (cache->pc, frame_pc_unwind (next_frame),
+                            next_frame, cache);
+
+  if (cache->frameless_p)
+    {
+      /* We didn't find a valid frame.  If we're at the start of a
+	 function, or somewhere half-way its prologue, the function's
+	 frame probably hasn't been fully setup yet.  Try to
+	 reconstruct the base address for the stack frame by looking
+	 at the stack pointer.  For truly "frameless" functions this
+	 might work too.  */
+
+      frame_unwind_register (next_frame, AMD64_RSP_REGNUM, buf);
+      cache->base = extract_unsigned_integer (buf, 8) + cache->sp_offset;
+    }
+  else
+    {
+      frame_unwind_register (next_frame, AMD64_RBP_REGNUM, buf);
+      cache->base = extract_unsigned_integer (buf, 8);
+    }
+
+  /* Now that we have the base address for the stack frame we can
+     calculate the value of %rsp in the calling frame.  */
+  cache->saved_sp = cache->base + 16;
+
+  /* For normal frames, %rip is stored at 8(%rbp).  If we don't have a
+     frame we find it at the same offset from the reconstructed base
+     address.  */
+  cache->saved_regs[AMD64_RIP_REGNUM] = 8;
+
+  /* Adjust all the saved registers such that they contain addresses
+     instead of offsets.  */
+  for (i = 0; i < AMD64_NUM_SAVED_REGS; i++)
+    if (cache->saved_regs[i] != INVALID_ADDRESS)
+      cache->saved_regs[i] += cache->base;
+
+  return cache;
+}
+
+extern int frame_debug;
+
+/* */
+static ATTRIBUTE_USED void
+amd64_frame_this_id(struct frame_info *next_frame, void **this_cache,
+		    struct frame_id *this_id)
+{
+  struct amd64_frame_cache *cache =
+    amd64_frame_cache (next_frame, this_cache);
+
+  /* This marks the outermost frame.  */
+  if (cache->base == 0)
+    return;
+
+  /* If this is the sentinel frame, make sure the frame base we get
+     from it is readable, otherwise we aren't going to get anywhere,
+     and we should just stop now... */
+  if (get_frame_type (next_frame) == SENTINEL_FRAME)
+    {
+      struct gdb_exception e;
+      TRY_CATCH (e, RETURN_MASK_ERROR)
+	{
+	  gdb_byte buf[8];
+	  read_memory (cache->base, buf, 8);
+	}
+      /* FIXME: -Wenum-compare: */
+      if (e.reason != NO_ERROR)
+	{
+	  if (frame_debug)
+	    printf ("Terminating backtrace of thread: 0x%lx with unreadible "
+		    "initial stack address at 0x%s.\n",
+		    inferior_ptid.tid, paddr_nz (cache->base));
+	  *this_id = null_frame_id;
+	  return;
+	}
+    }
+
+  if (get_frame_type (next_frame) != SENTINEL_FRAME
+      && get_prev_frame (next_frame) != NULL
+      && frame_pc_unwind (get_prev_frame (next_frame)) == 0)
+    return;
+
+  (*this_id) = frame_id_build (cache->base + 16, cache->pc);
+}
+
+/* */
+static ATTRIBUTE_USED void
+amd64_frame_prev_register (struct frame_info *next_frame, void **this_cache,
+			   /* APPLE LOCAL variable opt states.  */
+			   int regnum, enum opt_state *optimizedp,
+			   enum lval_type *lvalp, CORE_ADDR *addrp,
+			   int *realnump, gdb_byte *valuep)
+{
+  struct amd64_frame_cache *cache =
+    amd64_frame_cache (next_frame, this_cache);
+
+  gdb_assert (regnum >= 0);
+
+  if (regnum == SP_REGNUM && cache->saved_sp)
+    {
+      /* APPLE LOCAL variable opt states.  */
+      *optimizedp = opt_okay;
+      *lvalp = not_lval;
+      *addrp = 0;
+      *realnump = -1;
+      if (valuep)
+	{
+	  /* Store the value.  */
+	  store_unsigned_integer (valuep, 8, cache->saved_sp);
+	}
+      return;
+    }
+
+  if ((regnum < AMD64_NUM_SAVED_REGS)
+      && (cache->saved_regs[regnum] != INVALID_ADDRESS))
+    {
+      /* APPLE LOCAL variable opt states.  */
+      *optimizedp = opt_okay;
+      *lvalp = lval_memory;
+      *addrp = cache->saved_regs[regnum];
+      *realnump = -1;
+      if (valuep)
+	{
+	  /* Read the value in from memory.  */
+	  read_memory (*addrp, valuep,
+		       register_size (current_gdbarch, regnum));
+	}
+      return;
+    }
+
+  /* APPLE LOCAL variable opt states.  */
+  *optimizedp = opt_okay;
+  *lvalp = lval_register;
+  *addrp = 0;
+  *realnump = regnum;
+  if (valuep)
+    frame_unwind_register (next_frame, (*realnump), valuep);
 }
 
 static const struct frame_unwind amd64_frame_unwind =

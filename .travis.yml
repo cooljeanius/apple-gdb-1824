@@ -13,7 +13,7 @@ install:
   - "sudo apt-get install autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libopts25 libopts25-dev texinfo flex flex-doc pax libcurses-perl dejagnu expect libexpect-perl guile-1.8 guile-1.8-dev guile-1.8-libs tcl-tclreadline m4 xutils-dev libgcj-common ecj-gcj gfortran gfortran-multilib gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar gcj-jre gcj-jdk autopoint gperf help2man libextutils-f77-perl texlive-base texlive-latex-base texlive-generic-recommended"
 
 # set up env
-before_script: test -e ./.profile_generic && source ./.profile_generic
+before_script: test -e ./.profile.d/.profile_generic && source ./.profile.d/.profile_generic
 
 # try to build
 script:

@@ -3212,8 +3212,6 @@
 		61F331671CCDDE9D00C05007 /* cris-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cris-tdep.h"; sourceTree = "<group>"; };
 		61F331CB1CCF226400C05007 /* fr30-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "fr30-tdep.h"; sourceTree = "<group>"; };
 		61F333921CD3B44100C05007 /* remote-m32r-sdi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "remote-m32r-sdi.h"; sourceTree = "<group>"; };
-		A50558E62AEB129E00DFAB6C /* .profile_big_sur */ = {isa = PBXFileReference; explicitFileType = text.script; name = .profile_big_sur; path = ../../../.profile_big_sur; sourceTree = "<group>"; };
-		A50558F72AEB12A800DFAB6C /* .profile_catalina */ = {isa = PBXFileReference; explicitFileType = text.script; name = .profile_catalina; path = ../../../.profile_catalina; sourceTree = "<group>"; };
 		A50558F82AEB12BD00DFAB6C /* .github */ = {isa = PBXFileReference; lastKnownFileType = folder; name = .github; path = ../../../.github; sourceTree = "<group>"; };
 		A50C0F7D29701B0600E82F7F /* m68klynx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m68klynx.c; sourceTree = "<group>"; };
 		A50DD7D41B30D2AC00F50318 /* AppleMakefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = AppleMakefile; sourceTree = "<group>"; };
@@ -4331,6 +4329,12 @@
 		A53D6E282C49AA7F00A3E712 /* m88k-opcode_old.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "m88k-opcode_old.h"; sourceTree = "<group>"; };
 		A53D6E292C49AAB600A3E712 /* stab_old.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = stab_old.def; sourceTree = "<group>"; };
 		A53D6E2A2C49AAB600A3E712 /* stab.gnu_old.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stab.gnu_old.h; sourceTree = "<group>"; };
+		A53D6E2D2C49F40500A3E712 /* .profile_snowleopard */ = {isa = PBXFileReference; lastKnownFileType = text; path = .profile_snowleopard; sourceTree = "<group>"; };
+		A53D6E2E2C49F40500A3E712 /* .profile_catalina */ = {isa = PBXFileReference; lastKnownFileType = text; path = .profile_catalina; sourceTree = "<group>"; };
+		A53D6E2F2C49F40500A3E712 /* .profile_leopard_universal */ = {isa = PBXFileReference; lastKnownFileType = text; path = .profile_leopard_universal; sourceTree = "<group>"; };
+		A53D6E302C49F40500A3E712 /* .profile_leopard */ = {isa = PBXFileReference; lastKnownFileType = text; path = .profile_leopard; sourceTree = "<group>"; };
+		A53D6E312C49F40500A3E712 /* .profile_generic */ = {isa = PBXFileReference; lastKnownFileType = text; path = .profile_generic; sourceTree = "<group>"; };
+		A53D6E322C49F40500A3E712 /* .profile_big_sur */ = {isa = PBXFileReference; lastKnownFileType = text; path = .profile_big_sur; sourceTree = "<group>"; };
 		A53F04941B45F52C005B5360 /* libiberty.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libiberty.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A53F05711B46029C005B5360 /* dwarf2.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; path = dwarf2.def; sourceTree = "<group>"; };
 		A53F07921B4636AE005B5360 /* test_expandargv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_expandargv; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -4979,10 +4983,6 @@
 		A57C98172043C97400D09754 /* nextstep-nat-watchpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-watchpoint.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb-next/nextstep-nat-watchpoint.h"; sourceTree = "<absolute>"; };
 		A57C9A3820445B8400D09754 /* nextstep-nat-dyld-section.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nextstep-nat-dyld-section.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb-next/nextstep-nat-dyld-section.h"; sourceTree = "<absolute>"; };
 		A57C9B132045437F00D09754 /* nextstep-nat-inferior-stubs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "nextstep-nat-inferior-stubs.h"; sourceTree = "<group>"; };
-		A589C8DC1A30EC3100E717B9 /* .profile_generic */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_generic; path = ../../../.profile_generic; sourceTree = "<group>"; };
-		A589C8DD1A30EC3100E717B9 /* .profile_leopard */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_leopard; path = ../../../.profile_leopard; sourceTree = "<group>"; };
-		A589C8DE1A30EC3100E717B9 /* .profile_leopard_universal */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_leopard_universal; path = ../../../.profile_leopard_universal; sourceTree = "<group>"; };
-		A589C8DF1A30EC3100E717B9 /* .profile_snowleopard */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_snowleopard; path = ../../../.profile_snowleopard; sourceTree = "<group>"; };
 		A589C8E21A30EC7500E717B9 /* build.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = build.xml; path = ../../../build.xml; sourceTree = "<group>"; };
 		A589C8E31A30EC8600E717B9 /* cache-symfiles.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "cache-symfiles.sh"; path = "../../../cache-symfiles.sh"; sourceTree = "<group>"; };
 		A589C8E41A30ED2200E717B9 /* ChangeLog_just_me.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog_just_me.txt; path = ../../../ChangeLog_just_me.txt; sourceTree = "<group>"; };
@@ -11967,6 +11967,20 @@
 			path = slib;
 			sourceTree = "<group>";
 		};
+		A53D6E2C2C49F40500A3E712 /* .profile.d */ = {
+			isa = PBXGroup;
+			children = (
+				A53D6E2D2C49F40500A3E712 /* .profile_snowleopard */,
+				A53D6E2E2C49F40500A3E712 /* .profile_catalina */,
+				A53D6E2F2C49F40500A3E712 /* .profile_leopard_universal */,
+				A53D6E302C49F40500A3E712 /* .profile_leopard */,
+				A53D6E312C49F40500A3E712 /* .profile_generic */,
+				A53D6E322C49F40500A3E712 /* .profile_big_sur */,
+			);
+			name = .profile.d;
+			path = ../../../.profile.d;
+			sourceTree = "<group>";
+		};
 		A548D4981836C60900FD4E8A /* XcodePlugins */ = {
 			isa = PBXGroup;
 			children = (
@@ -12743,12 +12757,7 @@
 			isa = PBXGroup;
 			children = (
 				A50558F82AEB12BD00DFAB6C /* .github */,
-				A50558F72AEB12A800DFAB6C /* .profile_catalina */,
-				A50558E62AEB129E00DFAB6C /* .profile_big_sur */,
-				A589C8DC1A30EC3100E717B9 /* .profile_generic */,
-				A589C8DD1A30EC3100E717B9 /* .profile_leopard */,
-				A589C8DE1A30EC3100E717B9 /* .profile_leopard_universal */,
-				A589C8DF1A30EC3100E717B9 /* .profile_snowleopard */,
+				A53D6E2C2C49F40500A3E712 /* .profile.d */,
 				A589C8E21A30EC7500E717B9 /* build.xml */,
 				A589C8E31A30EC8600E717B9 /* cache-symfiles.sh */,
 				A589C8E41A30ED2200E717B9 /* ChangeLog_just_me.txt */,

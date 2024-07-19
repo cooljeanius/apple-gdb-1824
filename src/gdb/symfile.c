@@ -3861,13 +3861,13 @@ reread_symbols(void)
 	    }
 	  else if (new_modtime != objfile->mtime)
 	    {
-	      /* APPLE LOCAL: put the re-reading of an objfile into a separate
-	       * function so it can be called elsewhere to force re-reading of
-	       * symbols without having to change modiciation times in some
-	       * way.  */
-	      num_reread += reread_symbols_for_objfile (objfile, new_modtime,
-							GDB_OSABI_UNKNOWN,
-                                                        &next);
+	      /* APPLE LOCAL: put the code for the re-reading of an objfile
+               * that was here previously (pre-1461.2) into a separate function
+               * so it can be called elsewhere to force re-reading of symbols
+               * without having to change modification times in some way: */
+	      num_reread += reread_symbols_for_objfile(objfile, new_modtime,
+                                                       GDB_OSABI_UNKNOWN,
+                                                       &next);
 	    }
 	}
     }

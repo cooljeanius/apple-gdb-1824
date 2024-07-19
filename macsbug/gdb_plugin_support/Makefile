@@ -129,6 +129,8 @@ CFLAGS 				= 	-gdwarf-2		\
 					-Wno-deprecated-declarations \
 					$(INCLUDES)
 
+UNIX03_UGH_CFLAGS		=	-D__DARWIN_UNIX03=0
+
 TARGET_ARCHITECTURE		=	ppc
 
 OBJS				=	$(CFILES:%.c=$(OFILE_DIR)/%.o)

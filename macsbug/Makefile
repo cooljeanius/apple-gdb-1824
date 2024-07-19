@@ -138,6 +138,8 @@ CFLAGS 				= 	-gdwarf-2			\
 					-DVERSION=\""$(VERSION)"\"	\
 					$(INCLUDES)
 
+UNIX03_UGH_CFLAGS		=	-D__DARWIN_UNIX03=0
+
 TARGET_ARCHITECTURE		=	ppc
 
 ifneq ($(BUILD_VERSION),10.0)
@@ -175,14 +177,15 @@ INSTALL_FILES_COMMENTED		=	$(INSTALL_FILES_PARTIAL_LIST:%=$(SRCROOT)/%)
 
 PRIVATE_BUILD			=	
 ifneq ($(PRIVATE_BUILD),,)
-FIXUP 				=	
+FIXUP 				=	sudo chgrp procmod $(SYMROOT)/$(PLUGIN) && sudo chmod g+s $(SYMROOT)/$(PLUGIN)
 else
 FIXUP				=	
 endif
 
 # Note: Alternative FIXUP:
 FIXUP_ALTERNATE 		=	dsymutil -o $(SYMROOT)/$(PLUGIN).dSYM $(SYMROOT)/$(PLUGIN); \
-					strip -x $(SYMROOT)/$(PLUGIN)
+					strip -x $(SYMROOT)/$(PLUGIN); \
+					sudo chgrp procmod $(SYMROOT)/$(PLUGIN) && sudo chmod g+s $(SYMROOT)/$(PLUGIN)
 					
 
 # While this mimics the full gdb build, for my private builds, I do not see
@@ -225,6 +228,10 @@ install				:	all $(DSTDIR)
 	strip -x $(SYMROOT)/$(PLUGIN) -o $(DSTDIR)/$(PLUGIN)
 	install -m 755 $(DSTDIR)/$(PLUGIN) $(SYMROOT)/$(PLUGIN)
 	chmod 755 $(DSTDIR)/$(PLUGIN)
+	if test "x`whoami`" = "xroot"; then \
+	  chgrp procmod $(SYMROOT)/$(PLUGIN) && chmod g+s $(SYMROOT)/$(PLUGIN); \
+	  chgrp procmod $(DSTDIR)/$(PLUGIN) && chmod g+s $(DSTDIR)/$(PLUGIN); \
+	fi
 
 #----------------------------------------------------------------#
 #             *-------------*

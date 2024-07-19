@@ -14,7 +14,7 @@ SHELL = /bin/sh -ex
 
 .PHONY: all clean configure build install installsrc installhdrs headers \
 	build-core build-binutils build-gdb \
-	install-frameworks-headers\
+	install-frameworks-headers \
 	install-frameworks-macosx \
 	install-binutils-macosx \
 	install-gdb-fat \
@@ -191,9 +191,14 @@ LIBEXEC_LIB_DIR=UNKNOWN
 MAN_DIR=UNKNOWN
 PRIVATE_FRAMEWORKS_DIR=UNKNOWN
 
+NATIVE_TARGET = unknown--unknown
+
 NATIVE_TARGETS = $(foreach arch1,$(CANONICAL_ARCHS),$(arch1)--$(arch1))
 
 CROSS_TARGETS = $(strip $(foreach hostarch, $(CANONICAL_ARCHS), $(foreach targarch, $(filter-out $(hostarch), $(CANONICAL_ARCHS)), $(hostarch)--$(targarch))))
+
+PPC_TARGET=UNKNOWN
+I386_TARGET=UNKNOWN
 
 # Old comment:
 # If the special TARGET_ONLY_EXTRA_ARCHS variable is set to arm, like
@@ -269,7 +274,9 @@ CC_FOR_BUILD = clang
 # iPhone OS platform and our compiler will get linker errors when running
 # autoconf tests.
 MACOSX_DEPLOYMENT_TARGET=
+ifndef CDEBUGFLAGS
 CDEBUGFLAGS = -ggdb -Os
+endif
 
 # The -Wno-error=deprecated-declarations flag is not recognized by some 
 # compilers; disable it on a per-release basis.
@@ -591,6 +598,10 @@ $(OBJROOT)/%/stamp-build-binutils:
 $(OBJROOT)/%/stamp-build-gdb:
 	$(SUBMAKE) -C $(OBJROOT)/$* configure-gdb
 	$(SUBMAKE) -C $(OBJROOT)/$*/gdb -W version.in $(MFLAGS) $(FSFLAGS) VERSION='$(GDB_VERSION_STRING)' GDB_RC_VERSION='$(GDB_RC_VERSION)' gdb
+ifeq "$(CANONICAL_ARCHS)" "arm-apple-darwin"
+	$(SUBMAKE) -C $(OBJROOT)/$* configure-gdbserver
+	$(SUBMAKE) -C $(OBJROOT)/$*/gdb/gdbserver $(MFLAGS) $(FSFLAGS) VERSION='$(GDB_VERSION_STRING)' gdbserver
+endif
 
 $(OBJROOT)/%/stamp-build-gdb-framework:
 	$(SUBMAKE) -C $(OBJROOT)/$* $(FFLAGS) stamp-framework-headers-gdb
@@ -829,7 +840,20 @@ dsym-and-strip-fat-gdbs:
 			$(SYMROOT)/$(LIBEXEC_GDB_DIR)/gdb-$${target}; \
 		cp $(DSTROOT)/$(LIBEXEC_GDB_DIR)/gdb-$${target} \
                    $(SYMROOT)/$(LIBEXEC_GDB_DIR)/gdb-$${target}; \
+		if echo $${target} | egrep '^[^-]*-apple-darwin' > /dev/null; then \
+			echo "stripping __objcInit"; \
+			echo "__objcInit" > /tmp/macosx-syms-to-remove; \
+			strip -R /tmp/macosx-syms-to-remove -X $(DSTROOT)/$(LIBEXEC_GDB_DIR)/gdb-$${target} || true; \
+			rm -f /tmp/macosx-syms-to-remove; \
+		fi; \
 	done
+
+# At some point this should be some lipo & fat kind of thing.  Only ARM for now...
+install-gdbserver:
+	set -e; for dstroot in $(SYMROOT) $(DSTROOT); do \
+		$(INSTALL) -c -m 755 $(OBJROOT)/$(ARM_TARGET)--$(ARM_TARGET)/gdb/gdbserver/gdbserver $${dstroot}/usr/bin/gdbserver; \
+	done # FIXME: where is ARM_TARGET supposed to be set?
+	strip -S $(DSTROOT)/usr/bin/gdbserver
 
 install-binutils-macosx:
 

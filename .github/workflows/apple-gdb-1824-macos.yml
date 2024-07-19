@@ -81,7 +81,7 @@ jobs:
           export PPC_CONFIG_PATH=/opt/sw/etc/;
         fi
         sync && date && sync
-    - run: test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq | grep -v "\*\*\*" | grep -v "PWD\=") && sync && sleep 1
+    - run: cd .profile.d && test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq | grep -v "\*\*\*" | grep -v "PWD\=") && sync && sleep 1
     - run: ./configure --enable-silent-rules --disable-dependency-tracking CC="sccache ${{ matrix.compiler }}" OBJC="sccache ${{ matrix.compiler }}"
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
     - run: if test ! -e libcheckpoint/libcheckpoint.dylib; then (sync && echo "ensuring libcheckpoint is built" && sync && make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" && sync) || (sync && make -ki -C macsbug && sync) || (sync && make -ki -C macsbug/gdb_plugin_support && sync) || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else (sync && stat libcheckpoint/libcheckpoint.dylib && sync); fi
