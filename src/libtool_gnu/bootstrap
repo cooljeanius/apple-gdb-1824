@@ -88,6 +88,7 @@ WARNING: them with all m4 file as shipped with this distribution (except
 WARNING: 'lt~obsolete.m4').  After that, retry this bootstrap.
 EOF
 
+if test -x "`which sync`"; then sync; fi
 find . -depth \( -name autom4te.cache -o -name libtool \) -print \
   | grep -v '{arch}' \
   | xargs rm -rf

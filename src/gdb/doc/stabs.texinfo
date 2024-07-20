@@ -10,6 +10,10 @@
 * Stabs: (stabs).                 The "stabs" debugging information format.   
 @end direntry
 
+@tex
+\batchmode
+@end tex
+
 @ifinfo
 This document describes the stabs debugging symbol tables.
 

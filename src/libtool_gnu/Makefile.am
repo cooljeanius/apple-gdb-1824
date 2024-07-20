@@ -38,7 +38,7 @@ EXTRA_DIST		=
 BUILT_SOURCES		= libtool libtoolize config.h
 
 CLEANFILES		=
-MOSTLYCLEANFILES	=
+MOSTLYCLEANFILES	= libltdl/*~
 DISTCLEANFILES		= *~ .DS_Store autoscan.log config.log config.cache
 MAINTAINERCLEANFILES	=
 
@@ -971,6 +971,7 @@ distclean-local:
 	-rm -rf autom4te.cache || rmdir autom4te.cache
 	-if test -d ./libltdl && test -r ./libltdl && test -w ./libltdl; then \
 	  rm -rf ./libltdl/autom4te.cache || rmdir ./libltdl/autom4te.cache; \
+	  rm -fv ./libltdl/*~ || find libltdl -name '*~' -delete; \
 	fi
 	-if test -d ./tests; then \
 	  rm -rf ./tests/*/autom4te.cache || rmdir ./*/*/autom4te.cache; \
@@ -981,5 +982,10 @@ distclean-local:
 	    $(mkinstalldirs) $${dir}; \
 	    echo 'distclean: ; rm -f Makefile' > $${dir}/Makefile; \
 	  else echo "distclean is not applicable for $${dir}"; fi; \
+	done
+	-for d in libltdl/.deps libltdl/loaders/.deps; do \
+	  if test -d "$${d}" && test -r "$${d}" && test -w "$${d}" && test -s "$${d}"; then \
+	    rm -rf "$${d}" || rmdir "$${d}" || ls "$${d}" || stat "$${d}"; \
+	  fi; \
 	done
 .PHONY: distclean-local

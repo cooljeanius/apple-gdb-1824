@@ -704,7 +704,10 @@ STABS_TEX_TMPS = stabs.aux stabs.cp* stabs.fn* stabs.ky* \
 stabs.dvi : $(STABS_DOC_FILES)
 	rm -f $(AM_V_v) $(STABS_TEX_TMPS)
 	if [ ! -f ./stabs.dvi ]; then \
-	  $(SET_TEXINPUTS) $(TEXI2DVI) $(srcdir)/stabs.texinfo; \
+	  $(SET_TEXINPUTS) $(TEXI2DVI) $(srcdir)/stabs.texinfo || touch $@; \
+	  if [ $$? -ge 1 ]; then \
+	    test -n "$(TEXI2DVI)" && $(TEXI2DVI) --version; \
+	  fi; \
 	fi
 
 stabs.ps: stabs.dvi

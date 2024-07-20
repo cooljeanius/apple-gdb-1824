@@ -39,6 +39,8 @@ INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
 
+ACLOCAL_AMFLAGS = -I../../m4
+
 CC = @CC@
 CFLAGS = -ggdb -O1 -Wall -Wextra -pedantic -Wno-unused
 
@@ -130,14 +132,14 @@ install:
 
 subdir_do: force
 	@for i in $(SUBDIRS); do \
-	   echo "Making $(DO) in $${i}..."; \
+	   echo "$@ in `pwd`: Making $(DO) in $${i}..."; \
 	   if [ -d ./$${i} ]; then \
 	     if (rootme=`pwd`/; export rootme; \
 	       rootsrc=`cd $(srcdir); pwd`/; export rootsrc; \
 	       cd ./$${i}; \
 	       $(MAKE) $(FLAGS_TO_PASS) $(DO)); \
 	     then echo "Making $(DO) succeeded for subdir $${i}."; \
-	     else exit 1; fi; \
+	     else echo "Making $(DO) failed for $${i}!" >&2 && exit 1; fi; \
 	   else echo "$${i} is not an existing directory."; fi; \
 	done
 force:

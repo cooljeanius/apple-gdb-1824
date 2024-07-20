@@ -49,8 +49,7 @@ AC_CONFIG_LIBOBJ_DIR([libltdl])dnl
 
 AC_CONFIG_TESTDIR([tests])dnl
 AC_PATH_PROGS([AUTOM4TE],[autom4te gautom4te],[autom4te])dnl
-AC_PATH_PROGS([M4],[m4 gm4 gnum4],[m4])dnl
-export M4=${M4-m4}
+AC_PROG_GNU_M4
 AC_SUBST([AUTOM4TE],[${AUTOM4TE=autom4te}])dnl
 AC_SUBST([AUTOTEST],['$(AUTOM4TE) --language=autotest'])dnl
 

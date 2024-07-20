@@ -807,6 +807,8 @@ package_revision
 TIMESTAMP
 LASTRELEASE
 AUTOTEST
+M4_DEBUGFILE
+M4_GNU
 M4
 AUTOM4TE
 target_alias
@@ -868,6 +870,7 @@ enable_libtool_lock
       ac_precious_vars='build_alias
 host_alias
 target_alias
+M4
 CC
 CFLAGS
 LDFLAGS
@@ -1540,6 +1543,8 @@ Optional Packages:
                         (or the compiler's sysroot if not specified).
 
 Some influential environment variables:
+  M4          Location of GNU M4 1.4.8 or later. Defaults to the first program
+              of 'm4', 'gm4', or 'gnum4' on PATH that meets Autoconf needs.
   CC          C compiler command
   CFLAGS      C compiler flags
   LDFLAGS     linker flags, e.g. -L<lib dir> if you have libraries in a
@@ -3364,21 +3369,19 @@ fi
   test -n "$AUTOM4TE" && break
 done
 test -n "$AUTOM4TE" || AUTOM4TE="autom4te"
-for ac_prog in m4 gm4 gnum4
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-printf %s "checking for $ac_word... " >&6; }
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for GNU M4 that supports accurate traces" >&5
+printf %s "checking for GNU M4 that supports accurate traces... " >&6; }
 if test ${ac_cv_path_M4+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
-  e) case $M4 in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_M4="$M4" # Let the user override the test with a path.
-  ;;
-  *)
+  e) rm -f conftest.m4f
+ac_had_posixly_correct=${POSIXLY_CORRECT:+yes}
+{ POSIXLY_CORRECT=; unset POSIXLY_CORRECT;}
+if test -z "$M4"; then
+  ac_path_M4_found=false
+  # Loop through the user's path and test for each of PROGNAME-LIST
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
 do
@@ -3388,34 +3391,100 @@ do
     */) ;;
     *) as_dir=$as_dir/ ;;
   esac
+    for ac_prog in m4 gm4 gnum4
+   do
     for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
-    ac_cv_path_M4="$as_dir$ac_word$ac_exec_ext"
-    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
+      ac_path_M4="$as_dir$ac_prog$ac_exec_ext"
+      as_fn_executable_p "$ac_path_M4" || continue
+      # Root out GNU M4 1.4.5, as well as non-GNU m4 that ignore -t, -F.
+      # Root out GNU M4 1.4.15 with buggy false negative replacement strstr.
+      # Root out Glibc 2.9 - 2.12 and GNU M4 1.4.11 - 1.4.15 with buggy
+      # false positive strstr.
+      ac_snippet=change'quote(<,>)in''dir(<if''def>,mac,bug)'
+      ac_snippet=${ac_snippet}pat'subst(a,\(b\)\|\(a\),\1)d'nl
+      ac_snippet=${ac_snippet}${as_nl}if'else(in''dex(..wi.d.,.d.),-1,bug)'
+      ac_snippet=${ac_snippet}${as_nl}if'else(in''dex(;:11-:12-:12-:12-:12-:12-:12-:12-:12.:12.:12.:12.:12.:12.:12.:12.:12-,:12-:12-:12-:12-:12-:12-:12-:12-),-1,,strstr-bug2)'
+      # Root out M4 1.4.6 and 1.4.7, which do not implement --debug=aflq
+      # correctly for macros invoked from m4wrap.
+      ac_snip2=change'quote(<,>)def''ine(<T>,<>)d'nl
+      ac_snip2=${ac_snip2}${as_nl}def'ine(<F>,<T(<traced>)>)d'nl
+      ac_snip2=${ac_snip2}${as_nl}m4'wrap(<F>)d'nl
+      printf "%s\n" "$as_me:${as_lineno-$LINENO}: trying $ac_path_M4" \
+          >&5
+      test -z "`$ac_path_M4 -F conftest.m4f </dev/null 2>&1`" \
+      && test -z "`printf "%s\n" "$ac_snippet" | $ac_path_M4 --trace=mac 2>&1`" \
+      && test -f conftest.m4f \
+      && test x"`printf "%s\n" "$ac_snip2" | \
+                $ac_path_M4 --trace=T --debug=aflq 2>&1`" = \
+              x'm4trace:stdin:3: -1- T(<traced>)' \
+      && ac_cv_path_M4=$ac_path_M4 ac_path_M4_found=:
+      rm -f conftest.m4f
+      $ac_path_M4_found && break 3
+    done
+  done
   done
 IFS=$as_save_IFS
-
-  ;;
-esac ;;
+  if test -z "$ac_cv_path_M4"; then
+    as_fn_error $? "no acceptable m4 could be found in \$PATH.
+GNU M4 1.4.8 or later is required; 1.4.16 or newer is recommended.
+GNU M4 1.4.15 uses a buggy replacement strstr on some systems.
+Glibc 2.9 - 2.12 and GNU M4 1.4.11 - 1.4.15 have another strstr bug." "$LINENO" 5
+  fi
+else
+  ac_cv_path_M4=$M4
+fi
+ ;;
 esac
 fi
-M4=$ac_cv_path_M4
-if test -n "$M4"; then
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $M4" >&5
-printf "%s\n" "$M4" >&6; }
-else
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_M4" >&5
+printf "%s\n" "$ac_cv_path_M4" >&6; }
+  M4=$ac_cv_path_M4
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $ac_cv_path_M4 accepts --gnu" >&5
+printf %s "checking whether $ac_cv_path_M4 accepts --gnu... " >&6; }
+if test ${ac_cv_prog_gnu_m4_gnu+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) case `$M4 --help < /dev/null 2>&1` in
+      *--gnu*) ac_cv_prog_gnu_m4_gnu=yes ;;
+      *) ac_cv_prog_gnu_m4_gnu=no ;;
+    esac ;;
+esac
 fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_gnu_m4_gnu" >&5
+printf "%s\n" "$ac_cv_prog_gnu_m4_gnu" >&6; }
+  if test "$ac_cv_prog_gnu_m4_gnu" = yes; then
+    M4_GNU=--gnu
+  else
+    M4_GNU=
+  fi
+
+  if test x$ac_had_posixly_correct = xyes; then
+    POSIXLY_CORRECT=:
+    if test $ac_cv_prog_gnu_m4_gnu = no; then
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: the version of M4 that was found does not support -g" >&5
+printf "%s\n" "$as_me: WARNING: the version of M4 that was found does not support -g" >&2;}
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: using it with POSIXLY_CORRECT set may cause problems" >&5
+printf "%s\n" "$as_me: WARNING: using it with POSIXLY_CORRECT set may cause problems" >&2;}
+    fi
+  fi
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking how m4 supports trace files" >&5
+printf %s "checking how m4 supports trace files... " >&6; }
+if test ${ac_cv_prog_gnu_m4_debugfile+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) case `$M4 --help < /dev/null 2>&1` in
+      *debugfile*) ac_cv_prog_gnu_m4_debugfile=--debugfile ;;
+      *) ac_cv_prog_gnu_m4_debugfile=--error-output ;;
+    esac ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_gnu_m4_debugfile" >&5
+printf "%s\n" "$ac_cv_prog_gnu_m4_debugfile" >&6; }
+  M4_DEBUGFILE=$ac_cv_prog_gnu_m4_debugfile
 
 
-  test -n "$M4" && break
-done
-test -n "$M4" || M4="m4"
-export M4=${M4-m4}
 AUTOM4TE=${AUTOM4TE=autom4te}
 AUTOTEST='$(AUTOM4TE) --language=autotest'
 

@@ -65,14 +65,14 @@ check:	force
 
 subdir_do: force
 	@for i in $(SUBDIRS); do \
-	   echo "Making $(DO) in $${i}..."; \
+	   echo "$@ in `pwd`: Making $(DO) in $${i}..."; \
 	   if [ -d ./$${i} ]; then \
 	     if (rootme=`pwd`/; export rootme; \
 	       rootsrc=`cd $(srcdir); pwd`/; export rootsrc; \
 	       cd ./$${i}; \
 	       $(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
-	       echo "$@ target in `pwd` for $${i}: It worked."; \
-	     else exit 1; fi; \
+	       echo "$@ target in `pwd` for $${i}: Making $(DO) worked."; \
+	     else echo "Making $(DO) failed for $${i}!" >&2 && exit 1; fi; \
 	   else echo "$${i} is not an existing directory."; fi; \
 	done
 force:
