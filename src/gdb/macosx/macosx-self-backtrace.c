@@ -71,6 +71,7 @@ int grope_around_incore_macho_file(void *incoreptr_macho_header,
           (saved_fp > (void *)0xc0000000) || /* stack starts here */ \
           (saved_fp < (void *)0xb0000000) /* ends somewhere around here */
 
+/* */
 int
 gdb_self_backtrace(void **buffer, int bufsize)
 {
@@ -130,7 +131,6 @@ gdb_self_backtrace(void **buffer, int bufsize)
 
 /* Find the address range of the sigtramp() function so we can backtrace
    through asynchronous signal handlers.  */
-
 static int
 look_up_sigtramp_addr_range(void **sigtramp_start, void **sigtramp_end)
 {
@@ -170,7 +170,7 @@ look_up_sigtramp_addr_range(void **sigtramp_start, void **sigtramp_end)
     {
       struct nlist *nlist = (struct nlist *)p;
       void *possibly_better_address;
-      possibly_better_address = ((void *)nlist->n_value + slide);
+      possibly_better_address = (void *)((uintptr_t)nlist->n_value + slide);
       if (((nlist->n_type & N_STAB) == 0)
           && ((nlist->n_type & N_TYPE) == N_SECT)
           && (nlist->n_sect != 0))
@@ -193,11 +193,11 @@ look_up_sigtramp_addr_range(void **sigtramp_start, void **sigtramp_end)
   return 1;
 }
 
+/* a random guess, the max length of a symbol is not as obvious as you would
+ * think - ObjC symnames can be quite long: */
+#define SYMBOL_MAXCHARS 128
 
-#define SYMBOL_MAXCHARS 128  /* a random guess, the max length of a symbol
-                                not as obvious as you would think - ObjC symnames
-                                can be quite long.  */
-
+/* */
 char **
 gdb_self_backtrace_symbols(void **addrbuf, int num_of_addrs)
 {
@@ -256,6 +256,7 @@ gdb_self_backtrace_symbols(void **addrbuf, int num_of_addrs)
   return (char **)buf;
 }
 
+/* */
 void
 gdb_self_backtrace_symbols_fd(void **addrbuf, int num_of_addrs, int fd,
                               int skip, int maxdepth)
@@ -269,7 +270,7 @@ gdb_self_backtrace_symbols_fd(void **addrbuf, int num_of_addrs, int fd,
 
   while ((count < num_of_addrs) && (count <= (maxdepth + skip)))
     {
-      sprintf(tmpbuf, "[ %d ] ", count - skip);
+      snprintf(tmpbuf, sizeof(tmpbuf), "[ %d ] ", count - skip);
       fill_in_stack_frame_string_buffer(addrbuf[count],
                                         (tmpbuf + strlen(tmpbuf)),
                                         sizeof(tmpbuf));
@@ -280,6 +281,7 @@ gdb_self_backtrace_symbols_fd(void **addrbuf, int num_of_addrs, int fd,
     }
 }
 
+/* */
 static void
 fill_in_stack_frame_string_buffer(void *addr, char *buf, int buflen)
 {
@@ -300,7 +302,8 @@ fill_in_stack_frame_string_buffer(void *addr, char *buf, int buflen)
           strlcat(buf, "(", buflen);
           strlcat(buf, dlinfo.dli_sname, buflen);
           strlcat(buf, "+0x", buflen);
-          snprintf(addressbuf, 16, "%tx", (addr - dlinfo.dli_saddr));
+          snprintf(addressbuf, sizeof(addressbuf), "%tx",
+          	   ((uintptr_t)addr - (uintptr_t)dlinfo.dli_saddr));
           strlcat(buf, addressbuf, buflen);
           strlcat(buf, ") ", buflen);
           addressbuf[0] = '\0';
@@ -318,7 +321,6 @@ fill_in_stack_frame_string_buffer(void *addr, char *buf, int buflen)
    Sets number_of_local_nlists to the number of local nlist entries.
    Sets incoreptr_linkedit_external_nlists to the start of the external nlists.
    Sets number_of_external_nlists to the number of external nlist entries.  */
-
 static int
 grope_around_incore_macho_file(void *incoreptr_macho_header,
                                MACHO_SLIDE_TYPE *slide,
@@ -360,7 +362,7 @@ grope_around_incore_macho_file(void *incoreptr_macho_header,
   wordsize = 4;
 
   mach_header = (struct mach_header *)incoreptr_macho_header;
-  p = (char *)(incoreptr_macho_header + sizeof(struct mach_header));
+  p = (char *)((uintptr_t)incoreptr_macho_header + sizeof(struct mach_header));
   i = 0U;
   while (i < mach_header->ncmds)
     {
@@ -373,12 +375,14 @@ grope_around_incore_macho_file(void *incoreptr_macho_header,
       if (((cmd == LC_SEGMENT) || (cmd == LC_SEGMENT_64))
           && strcmp((const char *)segment_command->segname, SEG_TEXT) == 0)
         {
-          *slide = (incoreptr_macho_header - (void *)segment_command->vmaddr);
+          *slide = (int32_t)(intptr_t)((uintptr_t)incoreptr_macho_header
+                                       - (uintptr_t)segment_command->vmaddr);
         }
       if (((cmd == LC_SEGMENT) || (cmd == LC_SEGMENT_64))
           && (strcmp(segment_command->segname, SEG_LINKEDIT) == 0))
         {
-          incoreptr_linkedit_start = (char *)((void *)segment_command->vmaddr + *slide);
+          incoreptr_linkedit_start =
+            (char *)((uintptr_t)segment_command->vmaddr + *slide);
           macho_linkedit_fileoff = segment_command->fileoff;
         }
       if (cmd == LC_SYMTAB)
@@ -404,9 +408,11 @@ grope_around_incore_macho_file(void *incoreptr_macho_header,
       i++;
     }
 
+  (void)wordsize;
   return 1;
 }
 
+/* */
 static int
 slower_better_dladdr(void *address_to_find, Dl_info *dlinfo)
 {
@@ -437,7 +443,7 @@ slower_better_dladdr(void *address_to_find, Dl_info *dlinfo)
     {
       struct nlist *nlist = (struct nlist *)p;
       void *possibly_better_address;
-      possibly_better_address = ((void *)nlist->n_value + slide);
+      possibly_better_address = (void *)((uintptr_t)nlist->n_value + slide);
       if (((nlist->n_type & N_STAB) == 0)
           && ((nlist->n_type & N_TYPE) == N_SECT)
           && (nlist->n_sect != 0))
@@ -450,8 +456,9 @@ slower_better_dladdr(void *address_to_find, Dl_info *dlinfo)
               && (possibly_better_address <= address_to_find))
             {
               dlinfo->dli_saddr = possibly_better_address;
-              dlinfo->dli_sname = (const char *)(incoreptr_linkedit_strings
-                                                 + nlist->n_un.n_strx);
+              dlinfo->dli_sname =
+                (const char *)((uintptr_t)incoreptr_linkedit_strings
+                               + nlist->n_un.n_strx);
               if (*dlinfo->dli_sname == '_')
                 dlinfo->dli_sname++;
             }

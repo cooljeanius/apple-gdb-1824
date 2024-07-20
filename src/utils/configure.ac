@@ -71,6 +71,9 @@ m4_ifdef([AM_MISSING_PROG],[
   AM_MISSING_PROG([AUTOCONF],[autoconf])dnl
 ])dnl
 
+sinclude(../config/m4.m4)
+AC_PROG_GNU_M4
+
 # Checks for header files.
 AC_CHECK_HEADERS([libc.h sys/param.h])dnl
 

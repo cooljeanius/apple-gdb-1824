@@ -747,6 +747,20 @@ dwarf2_frame_signal_frame_p(struct gdbarch *gdbarch,
   return ops->signal_frame_p(gdbarch, next_frame);
 }
 
+/* Set the architecture-specific adjustment of .eh_frame and .debug_frame
+   register numbers.  */
+
+void
+dwarf2_frame_set_adjust_regnum(struct gdbarch *gdbarch,
+                               int (*adjust_regnum)(struct gdbarch *,
+                                                    int, int))
+{
+  struct dwarf2_frame_ops *ops =
+    (struct dwarf2_frame_ops *)new_gdbarch_data(gdbarch, dwarf2_frame_data);
+
+  ops->adjust_regnum = adjust_regnum;
+}
+
 /* Translate a .eh_frame register to DWARF register, or adjust a .debug_frame
    register.  */
 

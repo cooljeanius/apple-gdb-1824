@@ -77,6 +77,14 @@ struct dwarf2_frame_state_reg
   enum dwarf2_frame_reg_rule how;
 };
 
+/* Set the architecture-specific adjustment of .eh_frame and .debug_frame
+   register numbers.  */
+
+extern void
+dwarf2_frame_set_adjust_regnum(struct gdbarch *gdbarch,
+                               int (*adjust_regnum)(struct gdbarch *,
+                                                    int, int));
+
 int
 dwarf2_frame_adjust_regnum(struct gdbarch *gdbarch, int regnum, int eh_frame_p);
 

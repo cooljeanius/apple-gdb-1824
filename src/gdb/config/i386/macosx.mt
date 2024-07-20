@@ -25,6 +25,7 @@ TDEPFILES = \
 	macosx-nat-dyld-process.o \
 	macosx-nat-dyld-io.o \
 	macosx-nat-utils.o \
+	macosx-self-backtrace.o \
 	symread.o \
 	pefread.o
 

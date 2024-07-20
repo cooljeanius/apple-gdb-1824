@@ -327,7 +327,14 @@ $(srcdir)/libltdl/aclocal.m4: $(sub_aclocal_m4_deps)
 	cd $(srcdir)/libltdl && $(ACLOCAL) -I m4
 
 $(srcdir)/libltdl/configure: $(sub_configure_deps)
-	cd $(srcdir)/libltdl && $(AUTOCONF)
+	if test -x "$(M4)"; then \
+	  export M4="$(M4)"; \
+	elif test -n "$(M4)"; then \
+	  echo "cannot set M4=$(M4), because something is wrong with it"; \
+	else \
+	  echo "something is wrong with M4; check on it"; \
+	fi; \
+	cd $(srcdir)/libltdl && ($(AUTOCONF) || touch configure)
 
 $(srcdir)/libltdl/config-h.in: $(sub_configure_deps)
 	cd $(srcdir)/libltdl && $(AUTOHEADER)

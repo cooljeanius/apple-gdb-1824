@@ -212,16 +212,20 @@ jobs:
         fi
         for subdir in libltdl libltdl/loaders libtool_gnu/libltdl/loaders loaders; do \
           if test -d "${subdir}" && test -w "${subdir}" && test ! -d "${subdir}"/.deps; then \
-            mkdir -pv "${subdir}"/.deps; \
+            sync && mkdir -pv "${subdir}"/.deps; \
             if test -w "${subdir}"/.deps && test ! -e "${subdir}"/.deps/.dirstamp; then \
               sync && echo "touch ${subdir}/.deps/.dirstamp"; \
               touch "${subdir}"/.deps/.dirstamp; \
+            else \
+              sync && echo "skipping touching .dirstamp for just-created ${subdir}/.deps"; \
             fi; \
           elif test -e "${subdir}"/.deps; then \
             stat "${subdir}"/.deps; \
             if test -w "${subdir}"/.deps && test ! -e "${subdir}"/.deps/.dirstamp; then \
               sync && echo "touch ${subdir}/.deps/.dirstamp"; \
               touch "${subdir}"/.deps/.dirstamp; \
+            else \
+              sync && echo "skipping touching .dirstamp for already-existing ${subdir}/.deps"; \
             fi; \
           elif test -r "${subdir}"; then \
             (find "${subdir}" -name '*.Plo' -print) || echo "depfiles may be missing for ${subdir}"; \
