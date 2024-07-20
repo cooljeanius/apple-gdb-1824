@@ -199,3 +199,8 @@ MOSTLYCLEANFILES += argz.h \
 distclean-local:
 	if test -e config.h.in~; then rm -f config.h.in~; fi
 	-rm -rf autom4te.cache || rmdir autom4te.cache
+	-for d in .deps loaders/.deps; do \
+	  if test -d "$${d}" && test -r "$${d}" && test -w "$${d}" && test -s "$${d}"; then \
+	    rm -rf "$${d}" || rmdir "$${d}" || ls "$${d}" || stat "$${d}"; \
+	  fi; \
+	done

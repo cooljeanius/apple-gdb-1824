@@ -1,4 +1,5 @@
 dnl# Process this file with autoconf to create configure. -*- autoconf -*-
+dnl# (only try that via the boostrap script though; avoid doing so directly)
 
 #   Copyright (C) 2001, 2004, 2005, 2008, 2010 Free Software Foundation,
 #   Inc.

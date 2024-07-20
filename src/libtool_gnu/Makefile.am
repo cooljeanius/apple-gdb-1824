@@ -969,6 +969,9 @@ DISTCLEANFILES += tests/defs
 
 distclean-local:
 	-rm -rf autom4te.cache || rmdir autom4te.cache
+	-if test -d ./libltdl && test -r ./libltdl && test -w ./libltdl; then \
+	  rm -rf ./libltdl/autom4te.cache || rmdir ./libltdl/autom4te.cache; \
+	fi
 	-if test -d ./tests; then \
 	  rm -rf ./tests/*/autom4te.cache || rmdir ./*/*/autom4te.cache; \
 	  rm -rf ./tests/*/*.dSYM || rmdir ./tests/*/*.dSYM; \

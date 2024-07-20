@@ -6,6 +6,10 @@
 * Gdb-Internals: (gdbint).	The GNU debugger's internals.
 @end direntry
 
+@tex
+\batchmode
+@end tex
+
 @ifinfo
 This file documents the internals of the GNU debugger @value{GDBN}.
 Copyright 1990, 1991, 1992, 1993, 1994, 1996, 1998, 1999, 2000, 2001,

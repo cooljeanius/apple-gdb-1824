@@ -74,12 +74,14 @@ if test -z "${CVS_RSH}"; then
     export CVS_RSH=/bin/ssh
   elif test -x /usr/bin/ssh; then
     export CVS_RSH=/usr/bin/ssh
-  elif test ! -z "`which ssh`"; then
+  elif test -n "`which ssh`" && test -x "`which ssh`"; then
     export CVS_RSH="`which ssh`"
   fi
 fi
 AC_SUBST([CVS_RSH])dnl
 AC_PATH_PROG([TELNET_PROG],[telnet])dnl
+
+AC_PROG_GNU_M4
 
 # xorg-util-macros checks:
 XORG_PROG_RAWCPP

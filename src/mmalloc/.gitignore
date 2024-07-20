@@ -15,7 +15,6 @@ a.out
 errors
 stamp-*
 *deps/*.*o
-clang_static_analysis/*
 mmalloc.aux
 mmalloc.fn
 mmalloc.ky

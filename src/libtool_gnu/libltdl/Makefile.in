@@ -106,7 +106,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/argz.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltdl.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/../../config/warnings.m4 \
+	$(top_srcdir)/m4/m4.m4 $(top_srcdir)/../../config/warnings.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -393,6 +393,9 @@ LTLIBOBJS = @LTLIBOBJS@
 LT_CONFIG_H = @LT_CONFIG_H@
 LT_DLLOADERS = @LT_DLLOADERS@
 LT_DLPREOPEN = @LT_DLPREOPEN@
+M4 = @M4@
+M4_DEBUGFILE = @M4_DEBUGFILE@
+M4_GNU = @M4_GNU@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -1323,6 +1326,11 @@ argz.h: argz_.h
 distclean-local:
 	if test -e config.h.in~; then rm -f config.h.in~; fi
 	-rm -rf autom4te.cache || rmdir autom4te.cache
+	-for d in .deps loaders/.deps; do \
+	  if test -d "$${d}" && test -r "$${d}" && test -w "$${d}" && test -s "$${d}"; then \
+	    rm -rf "$${d}" || rmdir "$${d}" || ls "$${d}" || stat "$${d}"; \
+	  fi; \
+	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

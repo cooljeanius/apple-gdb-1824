@@ -14,6 +14,10 @@
 @setchapternewpage odd
 @c %**end of header
 
+@tex
+\batchmode
+@end tex
+
 @iftex
 @c @smallbook
 @c @cropmarks

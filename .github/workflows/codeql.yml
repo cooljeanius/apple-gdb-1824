@@ -495,10 +495,10 @@ jobs:
           javac "${javafile}" || stat "${javafile}"; \
         done
         if test -n "${javafile}"; then unset javafile; fi
-        which -a ktlint || (test -x "$(which locate)" && locate ktlint) || (test -x "$(which find)" && find / -name ktlint -perm +r -user "$(whoami)" 2>/dev/null) || echo "ktlint missing"
+        which -a ktlint || (test -x "$(which locate)" && locate ktlint) || (test -x "$(which find)" && find / -name ktlint -perm +r -user "$(whoami)" 2>/dev/null) || (sync && echo "ktlint missing")
         # shellcheck disable=SC2044
         if test -x "$(which kotlin)"; then \
-          sync && echo "Time for kotlin..."; \
+          sync && echo "Time for kotlin (that is, $(which kotlin))..."; \
           for kotlinfile in $(find . -name '*.kts' -type f); do \
             sync && echo "One last attempt at compiling ${kotlinfile}..."; \
             kotlin "${kotlinfile}" || stat "${kotlinfile}"; \
@@ -517,7 +517,7 @@ jobs:
             if test -e ${subdir}/Makefile; then \
               pushd "${subdir}"; \
               for srcfile in *.c; do \
-                make "$(echo "${srcfile}" | sed "s/\.c/.plist/g")" || stat -t "${srcfile}"; \
+                make "$(echo "${srcfile}" | sed "s/\.c/.plist/g")" || clang --analyze -w -Wno-error -Wfatal-errors -I. -I.. "${srcfile}" || stat -t "${srcfile}" || wc -l "${srcfile}"; \
               done; \
               popd; \
             elif test -d "${subdir}"; then \

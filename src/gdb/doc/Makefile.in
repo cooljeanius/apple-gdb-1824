@@ -653,7 +653,10 @@ GDBINT_TEX_TMPS = gdbint.aux gdbint.cp* gdbint.fn* gdbint.ky* \
 gdbint.dvi: $(GDBINT_DOC_FILES)
 	rm -f $(AM_V_v) $(GDBINT_TEX_TMPS)
 	if [ ! -f ./gdbint.dvi ]; then \
-	  $(SET_TEXINPUTS) $(TEXI2DVI) $(srcdir)/gdbint.texinfo; \
+	  $(SET_TEXINPUTS) $(TEXI2DVI) $(srcdir)/gdbint.texinfo || touch $@; \
+	  if [ $$? -ge 1 ]; then \
+	    test -n "$(TEXI2DVI)" && $(TEXI2DVI) --version; \
+	  fi; \
 	fi
 
 gdbint.ps : gdbint.dvi
