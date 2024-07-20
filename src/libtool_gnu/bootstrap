@@ -184,10 +184,10 @@ touch ${auxdir}/ltmain.m4sh
 
 for macro in LT_INIT AC_PROG_LIBTOOL AM_PROG_LIBTOOL; do
   if grep ${macro} aclocal.m4 libltdl/aclocal.m4; then
-    echo "Bogus ${macro} macro contents in an aclocal.m4 file." >&2
+    sync && echo "Bogus ${macro} macro contents in an aclocal.m4 file." >&2
     exit 1
   else
-    echo "Check for ${macro} in aclocal.m4 files turned out okay."
+    sync && echo "Check for ${macro} in aclocal.m4 files turned out okay."
   fi
 done
 

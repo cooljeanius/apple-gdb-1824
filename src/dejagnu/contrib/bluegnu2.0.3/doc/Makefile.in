@@ -20,6 +20,10 @@ DVIPS = dvips
 LATEX = latex
 LATEX2HTML = latex2html
 
+M4 = @M4@
+M4_GNU = @M4_GNU@
+M4_DEBUGFILE = @M4_DEBUGFILE@
+
 INSTALL	= @INSTALL@
 INSTALL_PROGRAM = $(INSTALL)
 INSTALL_DATA = $(INSTALL)
@@ -188,13 +192,13 @@ install: info
 	done
 
 Makefile: $(srcdir)/Makefile.in $(host_makefile_frag) config.status
-	@echo "In `pwd`: Rebuilding the Makefile..."
+	@echo "In `pwd`: Rebuilding the Makefile with $(SHELL)..."
 	$(SHELL) ./config.status
 
 configure: configure.ac
-	@echo "In `pwd`: Rebuilding configure..."
-	@cd ${srcdir}; $(AUTOCONF) --force
+	@echo "In `pwd`: Rebuilding configure with $(AUTOCONF)..."
+	@cd ${srcdir}; ($(AUTOCONF) --force || touch $@)
      
 config.status: $(srcdir)/configure
-	@echo "In `pwd`: Rebuilding config.status..."
+	@echo "In `pwd`: Rebuilding config.status with $(SHELL)..."
 	$(SHELL) ./config.status --recheck

@@ -505,7 +505,7 @@ jobs:
           sync && echo "Time for kotlin (that is, $(which kotlin))..."; \
           for kotlinfile in $(find . -name '*.kts' -type f); do \
             sync && echo "One last attempt at compiling ${kotlinfile}..."; \
-            kotlin "${kotlinfile}" || stat "${kotlinfile}"; \
+            kotlin "${kotlinfile}" || ktlint "${kotlinfile}" || stat "${kotlinfile}"; \
           done; \
         else \
           sync && echo "kotlin missing; skipping extra kotlin compilation attempts"; \

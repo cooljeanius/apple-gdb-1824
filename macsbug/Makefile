@@ -177,7 +177,7 @@ INSTALL_FILES_COMMENTED		=	$(INSTALL_FILES_PARTIAL_LIST:%=$(SRCROOT)/%)
 
 PRIVATE_BUILD			=	
 ifneq ($(PRIVATE_BUILD),,)
-FIXUP 				=	sudo chgrp procmod $(SYMROOT)/$(PLUGIN) && sudo chmod g+s $(SYMROOT)/$(PLUGIN)
+FIXUP = if test -e $(SYMROOT)/$(PLUGIN); then sudo chgrp procmod $(SYMROOT)/$(PLUGIN) && sudo chmod g+s $(SYMROOT)/$(PLUGIN); else echo "nothing to fixup"; fi
 else
 FIXUP				=	
 endif
