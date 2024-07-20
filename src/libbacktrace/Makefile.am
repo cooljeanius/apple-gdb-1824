@@ -134,7 +134,7 @@ all-local: Makefile $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la
 	    fi; \
 	  else true; fi; \
 	done
-	sync && echo "$@ in `pwd`: done."
+	$(AM_V_at)sync && echo "$@ in `pwd`: done."
 default: all-local @MAINT@ $(builddir)/Makefile $(builddir)/config.h # all
 	$(AM_V_at)for mydeftarg in $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la; do \
 	  if test ! -e $${mydeftarg} || test $${mydeftarg} -ot Makefile; then \
@@ -147,7 +147,7 @@ default: all-local @MAINT@ $(builddir)/Makefile $(builddir)/config.h # all
 	    fi; \
 	  else true; fi; \
 	done
-	sync && echo "$@ in `pwd`: done."
+	$(AM_V_at)sync && echo "$@ in `pwd`: done."
 all-am: default all-multi @MAINT@ Makefile.am
 	$(AM_V_at)for tg in $(libbacktrace_la_DEPENDENCIES) $(EXTRA_builddir_LTOBJECTS); do \
 	  if test ! -e $${tg} || test $${tg} -ot Makefile; then \
@@ -160,7 +160,7 @@ all-am: default all-multi @MAINT@ Makefile.am
 	    fi; \
 	  else true; fi; \
 	done
-	sync && echo "$@ in `pwd`: done."
+	$(AM_V_at)sync && echo "$@ in `pwd`: done."
 install-exec-local: install-multi
 
 # Testsuite.

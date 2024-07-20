@@ -105,13 +105,29 @@ check: check-amd-udi check-misc check-msdos check-spu check-sparclite check-winc
 
 # Rules for regenerating this Makefile
 Makefile: $(srcdir)/Makefile.in config.status
-	./config.status
+	if test -x "$(M4)"; then \
+	  export M4="$(M4)"; \
+	elif test -n "$(M4)"; then \
+	  echo "cannot set M4=$(M4), because something is wrong with it"; \
+	else \
+	  echo "something is wrong with M4; check on it"; \
+	fi; \
+	if test -n "$${CPP}" && test "x$${CPP}" != "x$${ac_cv_env_CPP_value}"; then unset CPP; fi; \
+	./config.status || (test -x $@ && test -s $@ && touch $@)
 
 $(srcdir)/Makefile.in: $(srcdir)/Makefile.tpl $(srcdir)/Makefile.def
 	cd $(srcdir) && $(AUTOGEN) Makefile.def
 
 config.status: $(srcdir)/configure
-	./config.status --recheck
+	if test -x "$(M4)"; then \
+	  export M4="$(M4)"; \
+	elif test -n "$(M4)"; then \
+	  echo "cannot set M4=$(M4), because something is wrong with it"; \
+	else \
+	  echo "something is wrong with M4; check on it"; \
+	fi; \
+	if test -n "$${CPP}" && test "x$${CPP}" != "x$${ac_cv_env_CPP_value}"; then unset CPP; fi; \
+	./config.status --recheck || (test -x $@ && test -s $@ && touch $@)
 
 $(srcdir)/configure: $(srcdir)/configure.ac
 	if test -x "$(M4)"; then \
