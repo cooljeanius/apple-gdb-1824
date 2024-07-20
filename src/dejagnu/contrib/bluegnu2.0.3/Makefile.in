@@ -44,6 +44,10 @@ ACLOCAL_AMFLAGS = -I../../m4
 CC = @CC@
 CFLAGS = -ggdb -O1 -Wall -Wextra -pedantic -Wno-unused
 
+M4 = @M4@
+M4_GNU = @M4_GNU@
+M4_DEBUGFILE = @M4_DEBUGFILE@
+
 SUBDIRS = @subdirs@
 
 # These let the BlueGnu test suite run when BlueGnu is NOT
@@ -138,8 +142,11 @@ subdir_do: force
 	       rootsrc=`cd $(srcdir); pwd`/; export rootsrc; \
 	       cd ./$${i}; \
 	       $(MAKE) $(FLAGS_TO_PASS) $(DO)); \
-	     then echo "Making $(DO) succeeded for subdir $${i}."; \
-	     else echo "Making $(DO) failed for $${i}!" >&2 && exit 1; fi; \
+	     then echo "$@ in `pwd`: Making $(DO) succeeded for subdir $${i}."; \
+	     else \
+	       echo "$@ in `pwd`: Making $(DO) failed for subdir $${i}!" >&2; \
+	       exit 1; \
+	     fi; \
 	   else echo "$${i} is not an existing directory."; fi; \
 	done
 force:
@@ -192,7 +199,7 @@ Makefile: $(srcdir)/Makefile.in config.status
 	$(SHELL) ./config.status
 
 configure: $(srcdir)/configure.ac $(srcdir)/Makefile.in $(srcdir)/aclocal.m4
-	@echo "Rebuilding configure..."
+	@echo "In `pwd`: Rebuilding configure..."
 	@if [ x"${srcdir}" = x"@srcdir@" ]; then \
 	  srcdir=.; export srcdir; \
 	else echo "srcdir is ${srcdir}"; fi ; \

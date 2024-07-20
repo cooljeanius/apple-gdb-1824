@@ -117,6 +117,10 @@ jobs:
           sync && echo "unhandled language ${{ matrix.language }}" && sleep 1; \
         fi
 
+    - name: "Install ktlint"
+      if: matrix.language == 'java-kotlin'
+      uses: nbadal/action-ktlint-setup@v1
+
     - name: Syntax check (and similar stuff)
       if: matrix.language == 'ruby' || matrix.language == 'javascript-typescript'
       run: |

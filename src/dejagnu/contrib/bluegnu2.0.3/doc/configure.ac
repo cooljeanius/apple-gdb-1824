@@ -9,6 +9,7 @@ AC_CONFIG_SRCDIR([dejagnu.texi])
 # Checks for programs.
 AC_PROG_LN_S
 AC_PROG_INSTALL
+AC_PROG_SED
 
 # Output
 AC_CONFIG_FILES([Makefile])

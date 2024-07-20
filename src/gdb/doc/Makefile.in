@@ -274,6 +274,8 @@ Doxyfile-gdbserver:	$(srcdir)/Doxyfile-gdbserver.in
 	$(doxyedit) $(srcdir)/Doxyfile-gdbserver.in > Doxyfile-gdbserver
 
 all-doc: info dvi ps @MAINT@ pdf
+	@echo "$@ target (in `pwd`) just makes its dependencies, '$^'"
+
 diststuff: info man
 	rm -f $(AM_V_v) gdb-cfg.texi GDBvn.texi
 

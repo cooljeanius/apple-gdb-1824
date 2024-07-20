@@ -8,12 +8,23 @@ mandir = $(prefix)/man
 man1dir = $(mandir)/man1
 infodir = $(prefix)/info
 
+AUTOCONF = autoconf
+
 MAKEINFO = makeinfo
-TEXI2DVI = TEXINPUTS=$(TEXIDIR):$(srcdir):$$TEXINPUTS texi2dvi
+TEXI2DVI = TEXINPUTS=$(TEXIDIR):$(srcdir):$${TEXINPUTS} texi2dvi
+
+DVIDOC = dvidoc
+DVIPDFM = dvipdfm
+DVIPS = dvips
+
+LATEX = latex
+LATEX2HTML = latex2html
 
 INSTALL	= @INSTALL@
 INSTALL_PROGRAM = $(INSTALL)
 INSTALL_DATA = $(INSTALL)
+
+SED = @SED@
 
 # Where to find texinfo.tex to format docn with TeX
 TEXIDIR = $(srcdir)/../../texinfo
@@ -23,13 +34,13 @@ DEJAGNU = dejagnu.dvi dejagnu.info dejagnu.ps dejagnu.pdf
 README = ../README.bluegnu notice.ps notice.pdf notice.html
 
 %.dvi: %.tex
-	latex $<
+	$(LATEX) $<
 %.pdf: %.dvi
-	dvipdfm -o $@ $<
+	$(DVIPDFM) -o $@ $<
 %.html: %.dvi
 	rm -fr $(basename $@)
 	rm -f $@
-	latex2html -t "`cat $(basename $<).title`" -split 0 $(basename $<).tex
+	$(LATEX2HTML) -t "`cat $(basename $<).title`" -split 0 $(basename $<).tex
 	ln -s $(basename $@)/$@
 
 all:
@@ -44,20 +55,20 @@ READMEtxt.dvi: READMEtxt.tex README.tex
 READMEdvi.dvi: READMEdvi.tex README.tex
 
 ../README.bluegnu: READMEtxt.dvi
-	dvidoc $< >$@
+	$(DVIDOC) $< >$@
 
 notice.ps: READMEdvi.dvi
-	dvips $< -o $@
+	$(DVIPS) $< -o $@
 
 notice.pdf: READMEdvi.dvi
-	dvipdfm -o $@ $<
+	$(DVIPDFM) -o $@ $<
 
 html: notice.html
 .PHONY: html
 notice.html: READMEdvi.dvi
 	rm -fr $(basename $<)
 	rm -f $@
-	latex2html -t "`cat $(basename $<).title`" -split 0 $(basename $<).tex
+	$(LATEX2HTML) -t "`cat $(basename $<).title`" -split 0 $(basename $<).tex
 	cp $(basename $<)/$(basename $<).html notice.html
 
 ######################################################################
@@ -76,7 +87,7 @@ dejagnu.info: $(srcdir)/dejagnu.texi
 
 ps: dejagnu.ps notice.ps
 dejagnu.ps: dejagnu.dvi
-	dvips -f dejagnu.dvi > dejagnu.ps
+	$(DVIPS) -f dejagnu.dvi > dejagnu.ps
 
 #   different targets for -ms, -mm, -me
 # Try to use a recent texi2roff.  v2 was put on prep in jan91.
@@ -91,7 +102,7 @@ dejagnu.ps: dejagnu.dvi
 
 # roff output (-ms)
 dejagnu.ms: $(srcdir)/dejagnu.texi
-	sed -e '/\\input texinfo/d' \
+	$(SED) -e '/\\input texinfo/d' \
 		-e '/@c TEXI2ROFF-KILL/,/@c END TEXI2ROFF-KILL/d' \
 		-e '/^@ifinfo/,/^@end ifinfo/d' \
 		-e '/^@c/d' \
@@ -101,13 +112,13 @@ dejagnu.ms: $(srcdir)/dejagnu.texi
 		-e 's/^@end alphaenumerate/@end enumerate/g' \
 		$(srcdir)/dejagnu.texi | \
 		$(TEXI2ROFF) -ms | \
-		sed -e 's/---/\\(em/g' >dejagnu.ms 
+		$(SED) -e 's/---/\\(em/g' >dejagnu.ms 
 
 # roff output (-mm)
 # '@noindent's removed due to texi2roff-2 mm bug; if yours is newer, 
 #   try leaving them in
 dejagnu.mm: $(srcdir)/dejagnu.texi
-	sed -e '/\\input texinfo/d' \
+	$(SED) -e '/\\input texinfo/d' \
 		-e '/@c TEXI2ROFF-KILL/,/@c END TEXI2ROFF-KILL/d' \
 		-e '/^@ifinfo/,/^@end ifinfo/d' \
 		-e '/^@c/d' \
@@ -118,11 +129,11 @@ dejagnu.mm: $(srcdir)/dejagnu.texi
 		-e 's/^@end alphaenumerate/@end enumerate/g' \
 		$(srcdir)/dejagnu.texi | \
 		$(TEXI2ROFF) -mm | \
-		sed -e 's/---/\\(em/g' >dejagnu.mm
+		$(SED) -e 's/---/\\(em/g' >dejagnu.mm
 
 # roff output (-me)
 dejagnu.me: $(srcdir)/dejagnu.texi
-	sed -e '/\\input texinfo/d' \
+	$(SED) -e '/\\input texinfo/d' \
 		-e '/@c TEXI2ROFF-KILL/,/@c END TEXI2ROFF-KILL/d' \
 		-e '/^@ifinfo/,/^@end ifinfo/d' \
 		-e '/^@c/d' \
@@ -132,7 +143,7 @@ dejagnu.me: $(srcdir)/dejagnu.texi
 		-e 's/^@end alphaenumerate/@end enumerate/g' \
 		$(srcdir)/dejagnu.texi | \
 		$(TEXI2ROFF) -me | \
-		sed -e 's/---/\\(em/g' >dejagnu.me 
+		$(SED) -e 's/---/\\(em/g' >dejagnu.me 
 
 ######################################################################
 
@@ -166,24 +177,24 @@ maintainer-clean realclean: clean clean-info
 
 install: info
 	$(srcdir)/../mkinstalldirs $(man1dir)
-	for i in $(MANPAGES) ; do \
-		$(INSTALL_DATA) $$i \
-			$(man1dir)/$(program_prefix)`echo $$i |sed -e \
-			's@^.*doc/@@'` ; \
+	for i in $(MANPAGES); do \
+		$(INSTALL_DATA) $${i} \
+			$(man1dir)/$(program_prefix)`echo $${i} | $(SED) -e \
+			's@^.*doc/@@'`; \
 	done
 	$(srcdir)/../mkinstalldirs $(bindir) $(infodir)
-	for i in *.info* ; do \
-		$(INSTALL_DATA) $$i $(infodir)/$$i ; \
+	for i in *.info*; do \
+		$(INSTALL_DATA) $${i} $(infodir)/$${i}; \
 	done
 
 Makefile: $(srcdir)/Makefile.in $(host_makefile_frag) config.status
-	@echo "Rebuilding the Makefile..."
+	@echo "In `pwd`: Rebuilding the Makefile..."
 	$(SHELL) ./config.status
 
 configure: configure.ac
-	@echo "Rebuilding configure..."
-	@cd ${srcdir}; autoconf --force
+	@echo "In `pwd`: Rebuilding configure..."
+	@cd ${srcdir}; $(AUTOCONF) --force
      
 config.status: $(srcdir)/configure
-	@echo "Rebuilding config.status..."
+	@echo "In `pwd`: Rebuilding config.status..."
 	$(SHELL) ./config.status --recheck
