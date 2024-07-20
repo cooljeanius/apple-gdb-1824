@@ -766,6 +766,7 @@ ac_ct_RANLIB
 RANLIB
 ac_ct_AR
 AR
+am_aux_dir
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -829,6 +830,7 @@ build_os
 build_vendor
 build_cpu
 build
+ac_aux_dir
 target_alias
 host_alias
 build_alias
@@ -5818,7 +5820,6 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
-  ## whitespace...
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking programs" >&5
 printf %s "checking programs... " >&6; }

@@ -3016,6 +3016,17 @@ local-distclean:
 	    echo "Skipping making $${dir} be distclean for unknown reason"; \
 	  fi; \
 	done
+	-if test -d texinfo/js && test -w texinfo/js && test -r texinfo/js/Makefile && test -s texinfo/js/Makefile; then \
+	  if test -r Makefile && test -s Makefile && test -x config.status; then \
+	    $(MAKE) -C texinfo/js $(AM_V_MFLAG) $(FLAGS_TO_PASS) distclean; \
+	  elif test -f texinfo/js/Makefile; then \
+	    $(MAKE) -C texinfo/js -ki $(AM_V_MFLAG) $(FLAGS_TO_PASS) distclean; \
+	  else \
+	    echo "It looks like we cannot make texinfo/js be distclean"; \
+	  fi; \
+	elif test -e texinfo/js; then \
+	  echo "Skipping making texinfo/js be distclean"; \
+	fi
 
 local-maintainer-clean:
 	@echo "This command is intended for maintainers to use;"
@@ -3165,10 +3176,10 @@ do-check: unstage  \
 
 # Automated reporting of test results.
 
-warning.log: build.log
+warning.log: $(srcdir)/contrib/warn_summary build.log
 	$(srcdir)/contrib/warn_summary build.log > $@
 
-mail-report.log:
+mail-report.log: $(srcdir)/contrib/test_summary
 	if test x'$(BOOT_CFLAGS)' != x''; then \
 	    BOOT_CFLAGS='$(BOOT_CFLAGS)'; export BOOT_CFLAGS; \
 	fi; \
@@ -3176,7 +3187,7 @@ mail-report.log:
 	chmod +x $@
 	echo If you really want to send e-mail, run ./$@ now
 
-mail-report-with-warnings.log: warning.log
+mail-report-with-warnings.log: $(srcdir)/contrib/test_summary warning.log
 	if test x'$(BOOT_CFLAGS)' != x''; then \
 	    BOOT_CFLAGS='$(BOOT_CFLAGS)'; export BOOT_CFLAGS; \
 	fi; \

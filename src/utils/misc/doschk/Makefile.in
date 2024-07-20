@@ -109,6 +109,9 @@ distclean: clean
 
 maintainer-clean realclean: distclean
 	rm -f TAGS autoscan.log configure configure.scan
+	if test -d CFE_S_A && test -w CFE_S_A && test -r CFE_S_A; then \
+	  rm -f CFE_S_A/*.plist; \
+	fi
 
 dist: $(DISTFILES)
 	rm -rf $(DISTNAME)

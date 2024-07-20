@@ -2007,6 +2007,9 @@ distclean:: clean clean-tui clean-gdbtk @MAINT@ clean-po
 	-rm -rf $(GNULIB_BUILDDIR) || rmdir $(GNULIB_BUILDDIR)
 	-rm -rf gdbserver/build-gnulib || rmdir gdbserver/build-gnulib
 	-find . -name .DS_Store -delete
+	if test -d clang_static_analysis && test -w clang_static_analysis; then \
+	  find clang_static_analysis -name '*.plist' -delete; \
+	fi
 
 # As with the 'clean' target, give the 'maintainer-clean' target an extra ':',
 # so people can add additional maintainer-clean rules to their Makefile frags:

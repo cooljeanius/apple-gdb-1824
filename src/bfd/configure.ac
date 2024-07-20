@@ -11,6 +11,7 @@ dnl# directory, according to the Changelog-Apple in this directory.
 AC_CONFIG_SRCDIR([libbfd.c])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([..])
+AC_SUBST([ac_aux_dir])dnl
 AC_CONFIG_HEADERS([config.h])dnl
 
 echo "hello from bfd's configure script"
@@ -60,6 +61,7 @@ AM_INIT_AUTOMAKE([1.11.6 no-dist gnits dejagnu -Wall -Wno-portability \
 AM_MAINTAINER_MODE
 AM_PROG_INSTALL_STRIP
 AM_SANITY_CHECK
+AC_SUBST([am_aux_dir])dnl
 
 dnl# These must be called before LT_INIT, because it may want
 dnl# to call AC_CHECK_PROG.

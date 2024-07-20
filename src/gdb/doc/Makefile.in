@@ -531,7 +531,7 @@ gdb.dvi: ${GDB_DOC_FILES}
 	  if [ -n "${GDBMI_DIR}" -a -d ../../readline/doc ]; then \
 	    echo "using new rules to make $@"; \
 	    $(TEXI2DVI) $(READLINE_TEXI_INCFLAG) -I ${GDBMI_DIR} \
-		  -I $(srcdir) $(srcdir)/gdb.texinfo; \
+		  -I $(srcdir) $(srcdir)/gdb.texinfo || touch $@; \
 	  else \
 	    echo "using old rules to make $@"; \
 	    $(SET_TEXINPUTS) $(TEXI2DVI) $(srcdir)/gdb.texinfo; \
@@ -793,7 +793,9 @@ mostlyclean:
 clean: mostlyclean
 	rm -f $(AM_V_v) gdb-cfg.texi GDBvn.texi
 	rm -rf annotate || rmdir annotate
-	rm -rf doxy/*/* || rmdir doxy/*
+	rm -rf doxy/gdb-xref || rmdir doxy/gdb-xref
+	rm -rf doxy/gdbserver || rmdir doxy/gdbserver
+	rm -rf doxy/xml || rmdir doxy/xml
 	rm -rf gdb || rmdir gdb
 	rm -rf gdbint || rmdir gdbint
 	rm -rf stabs || rmdir stabs
@@ -810,6 +812,8 @@ distclean: clean
 
 maintainer-clean realclean: distclean
 	rm -f $(AM_V_v) GDBvn.texi *.info* *.dvi *.ps *.html *.pdf $(MANS)
+	rm -rf doxy/gdb-api || rmdir doxy/gdb-api
+	rm -f doxy/index.html
 
 install: install-info install-man
 

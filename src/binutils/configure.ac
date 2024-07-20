@@ -14,6 +14,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([..])
 AC_REQUIRE_AUX_FILE([depcomp])dnl
 AC_REQUIRE_AUX_FILE([mkinstalldirs])dnl
+AC_SUBST([ac_aux_dir])dnl
 
 # target stuff:
 AC_MSG_CHECKING([system])
@@ -61,6 +62,7 @@ if test -f ${srcdir}/config.status; then
 fi
 AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu no-dist info-in-builddir -Wno-obsolete])dnl
 AM_SANITY_CHECK
+AC_SUBST([am_aux_dir])dnl
 
 # Make sure that sed is checked early:
 AC_DEFUN([AC_REQUIRE_SED],[

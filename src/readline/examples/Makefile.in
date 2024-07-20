@@ -1055,6 +1055,10 @@ distclean-local: clean-local
 	   elif test -d rlfe.dir && test -r rlfe.dir/Makefile; then \
 	     cd rlfe.dir && cp Makefile m.bak && ${MAKE} $@ && mv m.bak Makefile; \
 	   fi; )
+	-if test -d .deps && test -w .deps; then \
+	  echo "In `pwd`: removing .deps subdir at this step of $@ target"; \
+	  $(RM) -r $(AM_V_v) .deps || rmdir .deps || ls .deps; \
+	fi
 
 maintainer-clean-local: distclean-local
 	if test -e Makefile.in; then $(RM) Makefile.in; \

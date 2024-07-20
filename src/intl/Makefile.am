@@ -118,7 +118,7 @@ LTCATOBJS = cat-compat.lo ../po/cat-id-tbl.lo
 GETTOBJS = intl-compat.o
 GETTLTOBJS = intl-compat.lo
 
-DISTCLEANFILES = *.cache.bak
+DISTCLEANFILES = *.cache.bak autoscan.log
 
 DISTFILES.common = ChangeLog Makefile.in linux-msg.sed po2tbl.sed.in \
 xopen-msg.sed $(HEADERS) $(SOURCES)

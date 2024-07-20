@@ -324,6 +324,9 @@ maintainer-clean realclean: distclean clean
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 	rm -f electric-fence.info
+	if test -d clang_static_analysis; then \
+	  rm -f $(AM_V_v) clang_static_analysis/*.plist; \
+	fi
 
 force:
 

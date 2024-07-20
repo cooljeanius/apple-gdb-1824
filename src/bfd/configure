@@ -804,6 +804,7 @@ am__fastdepCCAS_TRUE
 CCASDEPMODE
 CCASFLAGS
 CCAS
+am_aux_dir
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
@@ -870,6 +871,7 @@ build_os
 build_vendor
 build_cpu
 build
+ac_aux_dir
 target_alias
 host_alias
 build_alias

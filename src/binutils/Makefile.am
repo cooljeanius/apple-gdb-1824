@@ -814,6 +814,16 @@ DISTCLEANFILES = sysinfo sysroff.c sysroff.h lex.backup \
 distclean-local:
 	-rm -rf $(AM_V_v) .deps || rmdir .deps
 	rm -rf autom4te.cache || rmdir autom4te.cache
+	if test -d clang_static_analysis; then \
+	  rm -f $(AM_V_v) clang_static_analysis/*.plist; \
+	fi
+	if test -n "$(ac_aux_dir)" && test -d "$(ac_aux_dir)" && test -w "$(ac_aux_dir)"; then \
+	  rm -f $(AM_V_v) "$(ac_aux_dir)"/*~; \
+	elif test -n "$(am_aux_dir)" && test -d "$(am_aux_dir)" && test -w "$(am_aux_dir)"; then \
+	  rm -f $(AM_V_v) "$(am_aux_dir)"/*~; \
+	elif test -d .. && test -w .. && test -r .. && test -s ..; then \
+	  rm -f $(AM_V_v) ../*~; \
+	fi
 .PHONY: distclean-local
 
 Makefile_depends: $(BFDDIR)/configure.ac config.status

@@ -777,6 +777,7 @@ ac_ct_CXX
 CXXFLAGS
 CXX
 SED
+am_aux_dir
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -843,6 +844,7 @@ build_os
 build_vendor
 build_cpu
 build
+ac_aux_dir
 target_alias
 host_alias
 build_alias

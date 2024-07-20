@@ -376,12 +376,14 @@ ls:
 # 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 mostlyclean clean:
 		rm -fv *.a *.o core errs *~ \#* TAGS *.E a.out errors 
+		rm -f stamp-framework stamp-framework-headers
+		rm -rf mmalloc.framework || rmdir mmalloc.framework
 
 distclean:	clean 
 		rm -f config.cache config.log config.status
 		rm -f Makefile depend
 		rm -frv autom4te.cache || rmdir autom4te.cache
-		-rm -f .DS_Store
+		-rm -f .DS_Store config.h
 		rm -fv mmalloc.?? mmalloc.??s mmalloc.log mmalloc.aux mmalloc.toc
 
 maintainer-clean realclean: distclean clean

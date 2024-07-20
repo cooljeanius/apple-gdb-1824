@@ -948,6 +948,7 @@ abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
+ac_aux_dir = @ac_aux_dir@
 ac_config_sub = @ac_config_sub@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
@@ -964,6 +965,7 @@ am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
+am_aux_dir = @am_aux_dir@
 bfd64_libs = @bfd64_libs@
 bfd_backends = @bfd_backends@
 bfd_default_target_size = @bfd_default_target_size@
@@ -10336,6 +10338,16 @@ distclean-local: @MAINT@ $(sdocdir)/Makefile apple-clean
 	fi
 	-rm -rf $(AM_V_v) .deps || rmdir .deps
 	rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
+	if test -d clang_static_analysis; then \
+	  rm -f $(AM_V_v) clang_static_analysis/*.plist; \
+	fi
+	if test -n "$(ac_aux_dir)" && test -d "$(ac_aux_dir)" && test -w "$(ac_aux_dir)"; then \
+	  rm -f $(AM_V_v) "$(ac_aux_dir)"/*~; \
+	elif test -n "$(am_aux_dir)" && test -d "$(am_aux_dir)" && test -w "$(am_aux_dir)"; then \
+	  rm -f $(AM_V_v) "$(am_aux_dir)"/*~; \
+	elif test -d .. && test -w .. && test -r .. && test -s ..; then \
+	  rm -f $(AM_V_v) ../*~; \
+	fi
 
 bfdver.h: $(srcdir)/version.h @MAINT@ $(srcdir)/development.sh \
   $(srcdir)/Makefile.in

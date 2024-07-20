@@ -20,6 +20,8 @@
 phony =
 checktargs =
 
+CLEANFILES =
+
 if HAVE_ESLINT
 phony += lint
 checktargs += lint
@@ -38,6 +40,7 @@ endif
 if HAVE_UGLIFYJS
 phony += minify
 checktargs += minify
+CLEANFILES += info.min.js
 minify: info.js
 	$(UGLIFYJS) info.js -o info.min.js --mangle --compress
 endif
@@ -70,3 +73,5 @@ EXTRA_DIST += HACKING README TODO \
               modernizr.js \
               package.json \
               tsconfig.json
+
+DISTCLEANFILES = autoscan.log

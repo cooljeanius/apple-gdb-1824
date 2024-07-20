@@ -1,6 +1,7 @@
 *.status
 Makefile
 conf*/*.awk
+confcache
 
 # I have failed to get these directories to work, so gitignore them:
 arm/*

@@ -147,7 +147,7 @@ mostlyclean clean:
 
 distclean:
 	rm -fv *~ config/*~
-	rm -f Makefile config.log config.status config.cache
+	rm -f Makefile config.log config.status config.cache autoscan.log
 	rm -rf autom4te.cache || rmdir autom4te.cache
 	$(AM_V_at)for dir in $(subdirs); do \
 		if test -d $${dir} && test -r $${dir}/Makefile; then \

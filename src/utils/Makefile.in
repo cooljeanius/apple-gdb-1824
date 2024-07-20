@@ -83,6 +83,9 @@ maintainer-clean distclean:
 	-rm -rfv autom4te.cache || rmdir autom4te.cache
 	-rm -f Makefile config.status *.log config.cache *~ core *.o a.out
 	-find . -name .DS_Store -delete 
+	-if test -n "$(srcdir)" && test -d "$(srcdir)" && test -w "$(srcdir)" && test -r "$(srcdir)"; then \
+	  rm -rfv $(srcdir)/*/autom4te.cache || rmdir $(srcdir)/*/autom4te.cache; \
+	fi
 
 info:
 install-info:

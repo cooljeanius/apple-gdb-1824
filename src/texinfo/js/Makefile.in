@@ -112,8 +112,9 @@ target_triplet = @target@
 @HAVE_TYPESCRIPT_TRUE@am__append_4 = check-types
 @HAVE_UGLIFYJS_TRUE@am__append_5 = minify
 @HAVE_UGLIFYJS_TRUE@am__append_6 = minify
-@HAVE_MODERNIZR_TRUE@am__append_7 = modernizr
+@HAVE_UGLIFYJS_TRUE@am__append_7 = info.min.js
 @HAVE_MODERNIZR_TRUE@am__append_8 = modernizr
+@HAVE_MODERNIZR_TRUE@am__append_9 = modernizr
 subdir = texinfo/js
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/autobuild.m4 \
@@ -502,9 +503,10 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 want64 = @want64@
 phony = $(am__append_1) $(am__append_3) $(am__append_5) \
-	$(am__append_7)
-checktargs = $(am__append_2) $(am__append_4) $(am__append_6) \
 	$(am__append_8)
+checktargs = $(am__append_2) $(am__append_4) $(am__append_6) \
+	$(am__append_9)
+CLEANFILES = $(am__append_7)
 EXTRA_DIST = HACKING README TODO build-aux/eslint.json \
 	build-aux/modernizr.json modernizr.js package.json \
 	tsconfig.json
@@ -517,6 +519,7 @@ js_scripts = \
   info.js
 
 dist_js_DATA = $(js_scripts) info.css
+DISTCLEANFILES = autoscan.log
 all: all-am
 
 .SUFFIXES:
@@ -650,10 +653,12 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"

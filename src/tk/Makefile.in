@@ -67,10 +67,14 @@ clean: clean-recursive
 
 distclean-local:
 	rm -f Makefile config.status config.cache
-	rm -fv *~ *.cache.bak *.o *.exe *.log *.sum
+	rm -fv *~ */*~ *.cache.bak *.o *.exe *.log */*.log *.sum
 	rm -rfv autom4te.cache || rmdir autom4te.cache
+	if test -n "$(srcdir)" && test -d "$(srcdir)" && test -w "$(srcdir)" && test -r "$(srcdir)"; then \
+	  rm -rfv $(srcdir)/*/autom4te.cache || rmdir $(srcdir)/*/autom4te.cache; \
+	fi
 
 distclean: distclean-recursive distclean-local
+	rm -f config.h
 
 maintainer-clean: distclean-local maintainer-clean-recursive
 

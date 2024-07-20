@@ -1,0 +1,4 @@
+# gitignore file for gdb clang static analysis results
+!.
+# might as well be object files:
+*.plist

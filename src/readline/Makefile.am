@@ -387,6 +387,7 @@ distclean-local: clean-local config.status
 	-( if test -e examples/rlfe.dir/Makefile && test -x examples/rlfe.dir/config.status; then cd examples/rlfe.dir && cp $(AM_V_v) Makefile Makefile.bak && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ && mv $(AM_V_v) Makefile.bak Makefile; fi )
 	$(RM) $(CREATED_TAGS)
 	$(RM) -r $(AM_V_v) .deps || rmdir .deps
+	$(RM) -r $(AM_V_v) support/.deps || rmdir support/.deps
 	$(RM) -r autom4te.cache || rmdir autom4te.cache
 
 maintainer-clean-local: distclean-local
@@ -400,7 +401,7 @@ maintainer-clean-local: distclean-local
 	elif test -e Makefile.in; then $(RM) Makefile.in; fi
 
 CLEANFILES = *~ config/*~ m4/*~ support/*~
-DISTCLEANFILES = .DS_Store stamp-h* config.cache
+DISTCLEANFILES = .DS_Store stamp-h* config.cache autoscan.log
 
 info dvi: doc/Makefile
 	-( cd doc && $(MAKE) $(AM_V_MFLAG) $(MFLAGS) $@ )

@@ -520,12 +520,19 @@ CLEANFILES = \
 	stamp-openrisc stamp-iq2000 stamp-ms1 stamp-xstormy16 \
 	libopcodes.a stamp-lib dep.sed DEP DEPA DEP1 DEP2
 
-DISTCLEANFILES = stamp-lib .DS_Store *~
+DISTCLEANFILES = stamp-lib .DS_Store *~ autoscan.log
 
 distclean-local:
 	-rm -rf $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 	-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
 	-if test -d .deps; then (rm -rf $(AM_V_v) .deps || rmdir .deps); fi
+	if test -n "$(ac_aux_dir)" && test -d "$(ac_aux_dir)" && test -w "$(ac_aux_dir)"; then \
+	  rm -f $(AM_V_v) "$(ac_aux_dir)"/*~; \
+	elif test -n "$(am_aux_dir)" && test -d "$(am_aux_dir)" && test -w "$(am_aux_dir)"; then \
+	  rm -f $(AM_V_v) "$(am_aux_dir)"/*~; \
+	elif test -d .. && test -w .. && test -r .. && test -s ..; then \
+	  rm -f $(AM_V_v) ../*~; \
+	fi
 
 CGENDIR = @cgendir@
 CPUDIR = $(CGENDIR)/cpu

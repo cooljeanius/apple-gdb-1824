@@ -116,6 +116,9 @@ distclean: clean
 
 maintainer-clean realclean: distclean
 	rm -f configure
+	if test -d clang_static_analysis && test -w clang_static_analysis; then \
+	  rm -f clang_static_analysis/*.plist; \
+	fi
 
 check: check-local
 ## using dependencies for the plist could go wrong, so call it as part
