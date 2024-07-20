@@ -39,6 +39,7 @@ m4_define([_GCC_AUTOCONF_VERSION],[2.72])
 AC_INIT([libbacktrace],[version-unused],[],[libbacktrace])
 AC_CONFIG_SRCDIR([backtrace.h])dnl
 AC_CONFIG_AUX_DIR([..])dnl
+AC_SUBST([ac_aux_dir])dnl
 AC_CONFIG_MACRO_DIR([..])dnl
 AC_CONFIG_HEADERS([config.h])dnl
 
@@ -98,6 +99,7 @@ fi
 AM_INIT_AUTOMAKE([1.11.6 foreign no-dist no-define no-dependencies -Wall])
 
 AM_MAINTAINER_MODE([disable])dnl
+AC_SUBST([am_aux_dir])dnl
 
 AC_ARG_WITH([target-subdir],
 [AS_HELP_STRING([--with-target-subdir=SUBDIR],
@@ -158,6 +160,9 @@ AC_PROG_CXX
 LT_INIT([disable-shared dlopen win32-dll])dnl
 LT_LANG([C])dnl
 LT_PREREQ([2.4.6])dnl
+
+AM_CONDITIONAL([ENABLE_DARWIN_AT_RPATH],
+               [test "x${enable_darwin_at_rpath}" = "xyes"])dnl
 
 AC_C_INLINE
 

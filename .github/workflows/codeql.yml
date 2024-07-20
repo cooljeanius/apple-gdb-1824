@@ -158,6 +158,9 @@ jobs:
           if test -d vendor && test -r vendor && test -w vendor; then \
             (sync && (find vendor -name '*.rb' -delete || rm -rf vendor || rmdir vendor)); \
           fi; \
+          if test -d vendor && test -r vendor && test -w vendor && test -s vendor; then \
+            (sync && (find vendor -name '*.gemspec' -delete || rm -rf vendor || rmdir vendor)); \
+          fi; \
           if test -d vendor && test -r vendor && test -w vendor; then \
             (sync && (find vendor -name Gemfile -delete || rm -rf vendor || rmdir vendor)); \
           fi; \

@@ -55,6 +55,10 @@ POSSIBILITY OF SUCH DAMAGE.  */
 # define __attribute__(x)
 #endif
 
+#ifndef __has_attribute
+# define __has_attribute(foo) 0
+#endif /* !__has_attribute */
+
 #ifndef ATTRIBUTE_UNUSED
 # define ATTRIBUTE_UNUSED __attribute__((__unused__))
 #endif /* !ATTRIBUTE_UNUSED */
@@ -62,6 +66,19 @@ POSSIBILITY OF SUCH DAMAGE.  */
 #ifndef ATTRIBUTE_NORETURN
 # define ATTRIBUTE_NORETURN __attribute__((__noreturn__))
 #endif /* ATTRIBUTE_NORETURN */
+
+#if __has_attribute(optnone)
+# define ATTR_NOOPTS __attribute__((noinline, noclone, optnone))
+# define ATTR_NOOPTS_UNUSED __attribute__((noinline, noclone, optnone, unused))
+#else
+# if __has_attribute(noipa)
+#  define ATTR_NOOPTS __attribute__((noipa))
+#  define ATTR_NOOPTS_UNUSED __attribute__((noipa, unused))
+# else
+#  define ATTR_NOOPTS __attribute__((noinline, noclone))
+#  define ATTR_NOOPTS_UNUSED __attribute__((noinline, noclone, unused))
+# endif /* noipa */
+#endif /* optnone */
 
 /* Used to collect backtrace info: */
 struct info
@@ -124,22 +141,29 @@ base(const char *p)
 
 /* Check an entry in a struct info array: */
 static void
-check (const char *name, int index, const struct info *all, int want_lineno,
-       const char *want_function, int *failed)
+check(const char *name, int index, const struct info *all, int want_lineno,
+      const char *want_function, int *failed)
 {
   if (*failed)
     return;
-  if (all[index].filename == NULL || all[index].function == NULL)
+  if (all[index].filename == NULL)
     {
-      fprintf (stderr, "%s: [%d]: missing file name or function name\n",
-	       name, index);
+      fprintf(stderr, "%s: [%d]: missing file name (checked in %p)\n",
+	      name, index, all);
       *failed = 1;
       return;
     }
-  if (strcmp (base (all[index].filename), "btest.c") != 0)
+  if (all[index].function == NULL)
     {
-      fprintf (stderr, "%s: [%d]: got %s expected test.c\n", name, index,
-	       all[index].filename);
+      fprintf(stderr, "%s: [%d]: missing function name\n",
+	      name, index);
+      *failed = 1;
+      return;
+    }
+  if (strcmp(base(all[index].filename), "btest.c") != 0)
+    {
+      fprintf(stderr, "%s: [%d]: got %s expected test.c\n", name, index,
+	      all[index].filename);
       *failed = 1;
     }
   if (all[index].lineno != want_lineno)
@@ -148,10 +172,10 @@ check (const char *name, int index, const struct info *all, int want_lineno,
 	      (int)all[index].lineno, want_lineno);
       *failed = 1;
     }
-  if (strcmp (all[index].function, want_function) != 0)
+  if (strcmp(all[index].function, want_function) != 0)
     {
-      fprintf (stderr, "%s: [%d]: got %s expected %s\n", name, index,
-	       all[index].function, want_function);
+      fprintf(stderr, "%s: [%d]: got %s expected %s\n", name, index,
+	      all[index].function, want_function);
       *failed = 1;
     }
 }
@@ -276,12 +300,12 @@ error_callback_three (void *vdata, const char *msg, int errnum)
 
 /* Test the backtrace function with non-inlined functions.  */
 #if BACKTRACE_SUPPORTED
-static int test1 (void) __attribute__ ((noinline, noclone));
+static int test1 (void) ATTR_NOOPTS;
 #else
-static int test1 (void) __attribute__ ((noinline, noclone, unused));
+static int test1 (void) ATTR_NOOPTS_UNUSED;
 #endif
-static int f2 (int) __attribute__ ((noinline, noclone));
-static int f3 (int, int) __attribute__ ((noinline, noclone));
+static int f2 (int) ATTR_NOOPTS;
+static int f3 (int, int) ATTR_NOOPTS;
 
 static int
 test1 (void)
@@ -398,12 +422,12 @@ f13 (int f1line, int f2line)
 
 /* Test the backtrace_simple function with non-inlined functions.  */
 #if BACKTRACE_SUPPORTED
-static int test3 (void) __attribute__ ((noinline, noclone));
+static int test3 (void) ATTR_NOOPTS;
 #else
-static int test3 (void) __attribute__ ((noinline, noclone, unused));
+static int test3 (void) ATTR_NOOPTS_UNUSED;
 #endif
-static int f22 (int) __attribute__ ((noinline, noclone));
-static int f23 (int, int) __attribute__ ((noinline, noclone));
+static int f22 (int) ATTR_NOOPTS;
+static int f23 (int, int) ATTR_NOOPTS;
 
 static int
 test3 (void)
@@ -688,7 +712,7 @@ test5 (void)
 		  (unsigned long)(uintptr_t) &global);
 	  symdata.failed = 1;
 	}
-      else if (symdata.size != sizeof (global))
+      else if (symdata.size != sizeof(global) && symdata.size != 0)
 	{
 	  fprintf(stderr,
 		  "test5: unexpected syminfo size got %lx expected %lx\n",

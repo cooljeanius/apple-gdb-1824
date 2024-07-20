@@ -130,10 +130,11 @@ all-local: Makefile $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la
 	    if test -r $${mytarg} && test -w /dev/stdout; then \
 	      stat $${mytarg}; \
 	    else \
-	      echo "dunno about $${mytarg}..."; \
+	      echo "$@: dunno about $${mytarg}..."; \
 	    fi; \
 	  else true; fi; \
-	done 
+	done
+	sync && echo "$@ in `pwd`: done."
 default: all-local @MAINT@ $(builddir)/Makefile $(builddir)/config.h # all
 	$(AM_V_at)for mydeftarg in $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la; do \
 	  if test ! -e $${mydeftarg} || test $${mydeftarg} -ot Makefile; then \
@@ -142,10 +143,11 @@ default: all-local @MAINT@ $(builddir)/Makefile $(builddir)/config.h # all
 	    if test -r $${mydeftarg} && test -w /dev/stdout; then \
 	      stat $${mydeftarg}; \
 	    else \
-	      echo "dunno about $${mydeftarg}..."; \
+	      echo "$@: dunno about $${mydeftarg}..."; \
 	    fi; \
 	  else true; fi; \
 	done
+	sync && echo "$@ in `pwd`: done."
 all-am: default all-multi @MAINT@ Makefile.am
 	$(AM_V_at)for tg in $(libbacktrace_la_DEPENDENCIES) $(EXTRA_builddir_LTOBJECTS); do \
 	  if test ! -e $${tg} || test $${tg} -ot Makefile; then \
@@ -154,10 +156,11 @@ all-am: default all-multi @MAINT@ Makefile.am
 	    if test -r $${tg} && test -w /dev/stdout; then \
 	      stat $${tg}; \
 	    else \
-	      echo "dunno about $${tg}..."; \
+	      echo "$@: dunno about $${tg}..."; \
 	    fi; \
 	  else true; fi; \
 	done
+	sync && echo "$@ in `pwd`: done."
 install-exec-local: install-multi
 
 # Testsuite.
@@ -238,6 +241,13 @@ clean-local: clean-multi
 distclean-local: distclean-multi
 	rm -rf autom4te.cache || rmdir autom4te.cache
 	rm -rf *.dSYM || rmdir *.dSYM
+	if test -n "$(ac_aux_dir)" && test -d "$(ac_aux_dir)" && test -w "$(ac_aux_dir)"; then \
+	  rm -f $(AM_V_v) "$(ac_aux_dir)"/*~; \
+	elif test -n "$(am_aux_dir)" && test -d "$(am_aux_dir)" && test -w "$(am_aux_dir)"; then \
+	  rm -f $(AM_V_v) "$(am_aux_dir)"/*~; \
+	elif test -d .. && test -w .. && test -r .. && test -s ..; then \
+	  rm -f $(AM_V_v) ../*~; \
+	fi
 maintainer-clean-local: maintainer-clean-multi
 .PHONY: mostlyclean-local clean-local distclean-local
 .PHONY: maintainer-clean-local

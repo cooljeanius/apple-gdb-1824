@@ -275,12 +275,13 @@ struct macho_nlist_64
 
 /* Value found in nlist n_type field.  */
 
-#define MACH_O_N_EXT	0x01	/* Extern symbol */
-#define MACH_O_N_ABS	0x02	/* Absolute symbol */
-#define MACH_O_N_SECT	0x0e	/* Defined in section */
-
-#define MACH_O_N_TYPE	0x0e	/* Mask for type bits */
 #define MACH_O_N_STAB	0xe0	/* Stabs debugging symbol */
+#define MACH_O_N_TYPE	0x0e	/* Mask for type bits */
+
+/* Values found after masking with MACH_O_N_TYPE.  */
+#define MACH_O_N_UNDF	0x00	/* Undefined symbol */
+#define MACH_O_N_ABS	0x02	/* Absolute symbol */
+#define MACH_O_N_SECT	0x0e	/* Defined in section from n_sect field */
 
 /* Information we keep for a Mach-O symbol.  */
 
@@ -320,15 +321,14 @@ static int macho_add (struct backtrace_state *, const char *, int, off_t,
 		      const unsigned char *, uintptr_t, int,
 		      backtrace_error_callback, void *, fileline *, int *);
 
-/* A dummy callback function used when we can't find any debug info.  */
-
+/* A dummy callback function used when we cannot find any debug info: */
 static int
-macho_nodebug (struct backtrace_state *state ATTRIBUTE_UNUSED,
-	       uintptr_t pc ATTRIBUTE_UNUSED,
-	       backtrace_full_callback callback ATTRIBUTE_UNUSED,
-	       backtrace_error_callback error_callback, void *data)
+macho_nodebug(struct backtrace_state *state ATTRIBUTE_UNUSED,
+	      uintptr_t pc ATTRIBUTE_UNUSED,
+	      backtrace_full_callback callback ATTRIBUTE_UNUSED,
+	      backtrace_error_callback error_callback, void *data)
 {
-  error_callback (data, "no debug info in Mach-O executable", -1);
+  error_callback(data, "no debug info in Mach-O executable (make sure to compile with -g; may need to run dsymutil)", -1);
   return 0;
 }
 
@@ -496,10 +496,10 @@ macho_defined_symbol (uint8_t type)
 {
   if ((type & MACH_O_N_STAB) != 0)
     return 0;
-  if ((type & MACH_O_N_EXT) != 0)
-    return 0;
   switch (type & MACH_O_N_TYPE)
     {
+    case MACH_O_N_UNDF:
+      return 0;
     case MACH_O_N_ABS:
       return 1;
     case MACH_O_N_SECT:
