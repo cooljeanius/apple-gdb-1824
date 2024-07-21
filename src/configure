@@ -649,6 +649,7 @@ am__EXEEXT_TRUE
 LTLIBOBJS
 compare_exclusions
 host_shared
+enable_werror
 stage2_werror_flag
 UNDO_LINK_TO_DIR
 CREATE_LINK_TO_DIR

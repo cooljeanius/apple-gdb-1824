@@ -4198,6 +4198,7 @@ case ${enable_werror} in
      host_configargs=" ${host_configargs} --disable-werror" ;;
 esac
 AC_SUBST([stage2_werror_flag])dnl
+AC_SUBST([enable_werror])dnl
 
 # Enable --enable-host-shared:
 AC_ARG_ENABLE([host-shared],

@@ -60,6 +60,9 @@ AC_SUBST([CLANG_ANALYZER],[${ac_cv_path_CLANG_ANALYZER}])dnl
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
 
+sinclude(../../config/m4.m4)
+AC_PROG_GNU_M4
+
 dnl# Checks for header files.
 dnl# The program does NOT actually handle failure.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[

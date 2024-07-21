@@ -432,6 +432,7 @@ default_target = @default_target@
 do_compare = @do_compare@
 docdir = @docdir@
 dvidir = @dvidir@
+enable_werror = @enable_werror@
 exec_prefix = @exec_prefix@
 extra_host_libiberty_configure_flags = @extra_host_libiberty_configure_flags@
 extra_isl_gmp_configure_flags = @extra_isl_gmp_configure_flags@

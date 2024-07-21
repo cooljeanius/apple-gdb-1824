@@ -119,6 +119,8 @@ am__v_MFLAG_1 = -w
 # Miscellaneous non-standard autoconf-set variables
 # -------------------------------------------------
 
+enable_werror = @enable_werror@
+
 # The gcc driver likes to know the arguments it was configured with.
 TOPLEVEL_CONFIGURE_ARGUMENTS=@TOPLEVEL_CONFIGURE_ARGUMENTS@
 
@@ -3019,14 +3021,17 @@ local-distclean:
 	-if test -d texinfo/js && test -w texinfo/js && test -r texinfo/js/Makefile && test -s texinfo/js/Makefile; then \
 	  if test -r Makefile && test -s Makefile && test -x config.status; then \
 	    $(MAKE) -C texinfo/js $(AM_V_MFLAG) $(FLAGS_TO_PASS) distclean; \
-	  elif test -f texinfo/js/Makefile; then \
+	  elif test -f texinfo/js/Makefile && test "x${enable_werror}" != "xyes"; then \
+	    touch am--refresh && touch texinfo/js/Makefile; \
 	    $(MAKE) -C texinfo/js -ki $(AM_V_MFLAG) $(FLAGS_TO_PASS) distclean; \
+	    rm -f am--refresh && rm -f texinfo/js/Makefile; \
 	  else \
 	    echo "It looks like we cannot make texinfo/js be distclean"; \
 	  fi; \
 	elif test -e texinfo/js; then \
 	  echo "Skipping making texinfo/js be distclean"; \
 	fi
+	find . -name 'am--refresh' -delete
 
 local-maintainer-clean:
 	@echo "This command is intended for maintainers to use;"

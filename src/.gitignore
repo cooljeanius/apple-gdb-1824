@@ -45,6 +45,7 @@ TEMP
 *#
 stamp-*
 *.stamp
+am--refresh
 bfd/bfd-in3.h
 bfd/doc/chew
 bfd/po/*POTFILES

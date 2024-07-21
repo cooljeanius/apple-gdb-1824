@@ -127,7 +127,7 @@ Makefile: $(srcdir)/Makefile.in config.status
 	  echo "something is wrong with M4; check on it"; \
 	fi; \
 	if test -n "$${CPP}" && test "x$${CPP}" != "x$${ac_cv_env_CPP_value}"; then unset CPP; fi; \
-	./config.status || (test -x $@ && test -s $@ && touch $@)
+	./config.status || (test -s $@ && touch $@)
 
 $(srcdir)/Makefile.in: $(srcdir)/Makefile.tpl $(srcdir)/Makefile.def
 	cd $(srcdir) && $(AUTOGEN) Makefile.def
@@ -151,7 +151,7 @@ $(srcdir)/configure: $(srcdir)/configure.ac
 	else \
 	  echo "something is wrong with M4; check on it"; \
 	fi; \
-	cd $(srcdir) && ($(AUTOCONF) || touch configure)
+	cd $(srcdir) && ($(AUTOCONF) || (test -x configure && touch configure))
 
 ## so subdirs can use automake if they want:
 am--refresh:
