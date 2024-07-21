@@ -35615,10 +35615,15 @@ $(srcdir)/Makefile.in: @MAINT@ $(srcdir)/Makefile.tpl $(srcdir)/Makefile.def
 
 # Rebuilding Makefile.
 Makefile: $(srcdir)/Makefile.in config.status
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 config.status: configure
+	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SHELL="$(SHELL)" $(SHELL) ./config.status --recheck
+	if test ! -x config.status && test -w config.status && test -w .; then \
+	  chmod +x config.status || stat config.status; \
+	fi
 
 # Rebuilding configure.
 AUTOCONF = autoconf
@@ -35722,7 +35727,7 @@ stamp-framework-gdb: $(GDB_OFILES)
 	mkdir -p $(GDB).framework/Versions/$(GDB_VERSION)/Resources
 	ln -s Versions/Current/Resources $(GDB).framework/Resources
 	mkdir -p $(GDB).framework/Versions/Current/Resources/English.lproj
-
+	echo "$@ target in `pwd`: proceeding..."
 	set -e; if [ "$(GDB_SUFFIX)" != "" ]; then \
 		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(GDB_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(GDB).framework/Versions/$(GDB_VERSION)/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) -o $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB_OFILES) $(GDB_LIB); \
 		ln -s $(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX); \

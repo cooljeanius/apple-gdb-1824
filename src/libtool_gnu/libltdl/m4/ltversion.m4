@@ -9,7 +9,8 @@
 
 # @configure_input@
 
-# serial 3337 ltversion.m4
+# ltversion.m4
+# serial 3337
 # This file is part of GNU Libtool
 
 m4_define([LT_PACKAGE_VERSION], [2.4.2])

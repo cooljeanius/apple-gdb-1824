@@ -182,7 +182,7 @@ int create_inferior(char ** allargs, char ** env)
   /* exec is said to fail if the executable is open. */
   /****************close_exec_file ();*****************/
 
-  pid = vfork();
+  pid = vfork(); /* FIXME: deprecated */
   if (pid < 0) {
       perror_with_name("vfork");
   }
@@ -204,7 +204,7 @@ int create_inferior(char ** allargs, char ** env)
 
       errno = 0;
 #if 0
-      /*FIXME ptrace() never takes only one argument: */
+      /* FIXME: ptrace() never takes only one argument: */
       ptrace(0);
 #endif /* 0 */
 

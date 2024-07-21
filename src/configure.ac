@@ -168,13 +168,15 @@ AC_PROG_SED
 if test "x${SED}" = "x"; then
   test -z "${SED}" && echo "SED environment variable is empty" >&2
   AC_MSG_ERROR([no usable sed found])
+else
+  test -n "${SED}" && test -x "${SED}" && test -s "${SED}" && echo "SED is ${SED}"
 fi
 # ...and for grep:
 if test "x${GREP}" = "x"; then
-  test -z "${GREP}"
+  test -z "${GREP}" || unset GREP
   AC_PROG_GREP
 else
-  test ! -z "${GREP}"
+  test -n "${GREP}" && test -x "${GREP}" && echo "GREP is ${GREP}"
 fi
 
 # Export original configure arguments for use by sub-configures. These
@@ -205,6 +207,12 @@ AC_PROG_MAKE_SET
 
 # Check Make features:
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
+
+dnl# Before initializing automake...
+if test -d ${srcdir} && test -f ${srcdir}/config.status && test -w ${srcdir}; then
+  AC_MSG_NOTICE([config.status is already present in ${srcdir}, removing it.])
+  rm -f ${srcdir}/config.status || (test -d src_am && test -w src_am && mv -f ${srcdir}/config.status src_am/config.status)
+fi
 
 dnl# We are starting to use automake with legit Makefile.am files, albeit in
 dnl# subdirs:
@@ -3117,7 +3125,7 @@ AC_CHECK_PROGS([CONFIGURED_M4],[gm4 gnum4 m4],[${MISSING} m4])
 AC_CHECK_PROGS([CONFIGURED_FLEX],[flex],[${MISSING} flex])
 AC_CHECK_PROGS([CONFIGURED_LEX],[flex lex],[${MISSING} flex])
 if test "x${MISSING}" != "x"; then
-  test -n "${MISSING}"
+  test -n "${MISSING}" && test -x "${MISSING}" && echo "MISSING set to ${MISSING}"
   AC_CHECK_PROGS([CONFIGURED_MAKEINFO],[makeinfo gmakeinfo],[${MISSING} makeinfo])
 else
   test -z "${MISSING}"
@@ -3833,7 +3841,7 @@ changequote(,)
        | egrep 'texinfo[^0-9]*(4\.([7-9]|[1-9][0-9])|[5-9]|[1-9][0-9])' >/dev/null 2>&1; then
       echo "version of makeinfo is fine"
     elif test "x${MISSING}" != "x"; then
-      test -n "${MISSING}" && echo "falling back to use ${MISSING} script" && export MAKEINFO="${MISSING} makeinfo"
+      test -n "${MISSING}" && echo "falling back to use ${MISSING} script for makeinfo" && export MAKEINFO="${MISSING} makeinfo"
     else
       test -z "${MISSING}" && echo "need to fall back to use the missing script, but the variable for it is unset!" >&2 && export MAKEINFO="false"
     fi
@@ -3904,10 +3912,10 @@ AC_PROG_AR
 AM_PROG_AR
 AM_PROG_AS
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   AC_PROG_RANLIB
 else
-  test ! -z "${RANLIB}"
+  test -n "${RANLIB}" && test -x "${RANLIB}" && echo "RANLIB is ${RANLIB}"
 fi
 AC_PROG_MKDIR_P
 if test -x ${srcdir}/libtool -a ! -d ${srcdir}/libtool; then
@@ -3916,7 +3924,7 @@ if test -x ${srcdir}/libtool -a ! -d ${srcdir}/libtool; then
     test -z "${LIBTOOLFLAGS}"
     export LIBTOOLFLAGS="--verbose --debug --no-silent"
   else
-    test ! -z "${LIBTOOLFLAGS}"
+    test -n "${LIBTOOLFLAGS}"
     AC_MSG_NOTICE([LIBTOOLFLAGS are set to "${LIBTOOLFLAGS}"])
   fi
   dnl# temporarily set this to 2.4.6 while I update everything:
@@ -4259,6 +4267,11 @@ AH_BOTTOM([
 #endif /* !_APPLE_GDB_TOP_SRC_CONFIG_H */
 ])dnl
 
+AC_CONFIG_COMMANDS([config_status_permissions],[[
+if test ! -x config.status && test -w config.status && test -w .; then \
+  test -f config.status && (chmod +x config.status || stat config.status); \
+fi
+]])dnl
 AC_CONFIG_FILES([Makefile \
                  Makefile_orig \
                  src_am/Makefile \

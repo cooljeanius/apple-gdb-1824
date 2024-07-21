@@ -63977,6 +63977,9 @@ Makefile_target: $(srcdir)/Makefile.in config.status
 config_dot_status_target: configure config.status
 	if test -n "$${CPP}"; then unset CPP; else echo "CPP is empty"; fi; \
 	CONFIG_SHELL="$(SHELL)" $(SHELL) ./config.status --recheck
+	if test ! -x config.status && test -w config.status; then \
+	  chmod +x config.status || stat config.status; \
+	fi
 .PHONY: config_dot_status_target
 
 # Rebuilding configure.
@@ -63985,7 +63988,7 @@ AUTOCONF_FLAGS = -Wno-obsolete
 CONFIGURED_AUTOCONF = @AUTOCONF@
 M4CONFDIR = $(srcdir)/config
 MACRO_DEPS = $(M4CONFDIR)/acx.m4 $(M4CONFDIR)/override.m4 \
-  $(M4CONFDIR)/proginstall.m4
+  $(M4CONFDIR)/proginstall.m4 $(M4CONFDIR)/multi.m4
 $(srcdir)/configure: @MAINT@ $(srcdir)/configure.ac $(MACRO_DEPS)
 	cd $(srcdir) && $(AUTOCONF) $(AUTOCONF_FLAGS)
 .PHONY: $(srcdir)/configure

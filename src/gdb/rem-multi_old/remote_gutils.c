@@ -84,14 +84,14 @@ int immediate_quit;
  * Args are FUNCTION to clean up with, and ARG to pass to it. */
 struct cleanup *make_cleanup(void (*function)(char **), int arg)
 {
-    /*FIXME: move this function to use a variadic argument list */
+    /* FIXME: move this function to use a variadic argument list */
     register struct cleanup *newcleanup;
     register struct cleanup *old_chain;
 
     newcleanup = (struct cleanup *)xmalloc(sizeof(struct cleanup));
     old_chain = cleanup_chain;
     newcleanup->next = cleanup_chain;
-    newcleanup->function = (void (*)(int))function;
+    newcleanup->function = (void (*)(int))function; /* FIXME: bad cast */
     newcleanup->arg = arg;
     cleanup_chain = newcleanup;
 

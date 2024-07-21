@@ -131,7 +131,7 @@
 	because we need it for quoting substitutions.  For most of the
 	script, though, use the default echo, just like Autoconf does.
 	Without this patch, character \001 ends up in global_symbol_pipe.
-	Reported by Lars Hecking and Jürgen Fluk.
+	Reported by Lars Hecking and Jurgen Fluk.
 
 	* ltmain.in (echo): Set default to `echo=echo'.  Ooops.  That's
 	what you get for testing obscure code paths and forgetting to
