@@ -6932,14 +6932,15 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env,
       char *oldptr = ptr;
       char *arg = argv[argnum];
       size_t arglen = strlen(arg);
+      ptrdiff_t space;
       *ptr++ = ',';
       if (ptr >= exe_and_args_buffer_end)
         {
           ptr = oldptr;
           break;
         }
-      /* FIXME: -Wformat-truncation: */
-      print_len = snprintf(ptr, (exe_and_args_buffer_end - ptr), "%d,%d,",
+      space = (exe_and_args_buffer_end - ptr);
+      print_len = snprintf(ptr, max(space, 24), "%d,%d,",
                            (2 * (int)arglen), (argnum + 1));
       ptr += print_len;
       if (ptr >= exe_and_args_buffer_end)

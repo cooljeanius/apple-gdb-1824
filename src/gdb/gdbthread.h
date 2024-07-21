@@ -81,6 +81,12 @@ struct thread_info
      when we finally do stop stepping.  */
   bpstat stepping_through_solib_catchpoints;
 
+#if defined(GDB_RC_VERSION) && (GDB_RC_VERSION < 1344)
+  /* APPLE LOCAL How much have WE suspended (for gdb_suspend_count > 0)
+     or resumed (gdb_suspend_count < 0) the current thread.  */
+  int gdb_suspend_count;
+#endif /* (GDB_RC_VERSION < 1344) */
+
   /* Private data used by the target vector implementation.  */
   struct private_thread_info *privatedata;
 

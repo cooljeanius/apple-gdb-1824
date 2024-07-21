@@ -119,15 +119,15 @@ subdir = texinfo/js
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/autobuild.m4 \
 	$(top_srcdir)/m4/autoopts.m4 $(top_srcdir)/m4/depstand.m4 \
-	$(top_srcdir)/m4/lead-dot.m4 $(top_srcdir)/m4/multi.m4 \
-	$(top_srcdir)/m4/override.m4 $(top_srcdir)/m4/setvbuf.m4 \
-	$(top_srcdir)/m4/tcl.m4 $(top_srcdir)/config/acx.m4 \
+	$(top_srcdir)/m4/lead-dot.m4 $(top_srcdir)/m4/override.m4 \
+	$(top_srcdir)/m4/setvbuf.m4 $(top_srcdir)/m4/tcl.m4 \
+	$(top_srcdir)/config/acx.m4 \
 	$(top_srcdir)/config/proginstall.m4 \
 	$(top_srcdir)/config/elf.m4 $(top_srcdir)/libtool.m4 \
 	$(top_srcdir)/ltoptions.m4 $(top_srcdir)/ltsugar.m4 \
 	$(top_srcdir)/ltversion.m4 $(top_srcdir)/lt~obsolete.m4 \
 	$(top_srcdir)/config/isl.m4 $(top_srcdir)/config/warnings.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/config/multi.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(dist_js_DATA)

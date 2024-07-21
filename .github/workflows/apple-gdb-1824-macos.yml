@@ -175,6 +175,8 @@ jobs:
     - name: bootstrap libtool
       run: |
         cd src/libtool_gnu
+        # TODO: autoconf@2.69 and autoconf@2.13 formulae are deprecated;
+        # replace with just autoconf when they move to disabled:
         if test -z "$(which autoconf)" || test ! -x "$(which autoconf)"; then \
           brew install autoconf@2.69 || brew install autoconf@2.13 || brew install m4 || ls "configure*"; \
         else \

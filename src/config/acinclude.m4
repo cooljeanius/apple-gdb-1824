@@ -1,6 +1,8 @@
 dnl This file is included into all any other acinclude file that needs
 dnl to use these macros.
 
+sinclude(multi.m4)
+
 dnl This is copied from autoconf 2.12, but does calls our own AC_PROG_CC_WORKS,
 dnl and doesn't call AC_PROG_CXX_GNU, cause we test for that in  AC_PROG_CC_WORKS.
 dnl We are probably using a cross compiler, which will not be able to fully

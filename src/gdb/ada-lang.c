@@ -2347,7 +2347,8 @@ ada_index_type(struct type *type, int n)
 
       for (i = 1; i < n; i += 1)
         type = TYPE_TARGET_TYPE(type);
-      result_type = TYPE_TARGET_TYPE(TYPE_FIELD_TYPE(type, 0)); /* FIXME: hi */
+      gdb_assert(type != NULL); /* avoid a null pointer dereference */
+      result_type = TYPE_TARGET_TYPE(TYPE_FIELD_TYPE(type, 0));
       /* FIXME: The stabs type r(0,0);bound;bound in an array type
          has a target type of TYPE_CODE_UNDEF.  We compensate here, but
          perhaps stabsread.c would make more sense.  */

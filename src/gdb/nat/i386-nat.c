@@ -60,6 +60,11 @@
 
 #ifdef I386_USE_GENERIC_WATCHPOINTS
 
+/* Support for 8-byte wide hw watchpoints.  */
+#ifndef TARGET_HAS_DR_LEN_8
+# define TARGET_HAS_DR_LEN_8	0
+#endif /* !TARGET_HAS_DR_LEN_8 */
+
 /* Debug registers' indices.  */
 #define DR_NADDR	4	/* The number of debug address registers.  */
 #define DR_STATUS	6	/* Index of debug status register (DR6).  */

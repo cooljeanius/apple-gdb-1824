@@ -53,6 +53,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])dnl
 
 dnl# Put multilib stuff up top:
+sinclude(config/multi.m4)
 m4_ifdef([AM_ENABLE_MULTILIB],[
   AM_ENABLE_MULTILIB([],[.])dnl
 ],[
@@ -953,14 +954,20 @@ case "${target}" in
     mynoconfigdirs="${noconfigdirs} dejagnu"
 # likewise with tcl, expect, and target-libbacktrace:
     if test -n "${build_alias}" -o -n "${host_alias}" -o -n "${target_alias}"; then
-      noconfigdirs="${noconfigdirs} tcl expect target-libbacktrace"
+      if test "x${is_cross_compiler}" = "xyes"; then
+        AC_MSG_NOTICE([this appears to be a cross-build; be prepared for some possible weirdness related to tcl, expect, and that family of subdirectories])
+      else
+        AC_MSG_NOTICE([something weird going on with aliases of triplet parts; this may possibly affect tcl, expect, and that family of subdirectories])
+      fi
+      mynoconfigdirs="${mynoconfigdirs} tcl"
+      noconfigdirs="${noconfigdirs} expect target-libbacktrace"
     elif test -n "${with_target_subdir}" || test -n "${multi_basedir}"; then
       noconfigdirs="${noconfigdirs} target-libbacktrace"
     fi
 # I do not know why Apple had these put under noconfigdirs:
     applespecifiednoconfigdirs="${noconfigdirs} mmalloc sim"
     if test "x${APPLE_INTERNAL_DIR}" = "x/AppleInternal"; then
-      test -d "${APPLE_INTERNAL_DIR}"
+      test -d "${APPLE_INTERNAL_DIR}" && stat "${APPLE_INTERNAL_DIR}"
       AC_MSG_WARN([You appear to be at Apple, in that case disabling subdirectories that Apple says to disable.])
       AC_MSG_NOTICE([Unset the APPLE_INTERNAL_DIR environment variable to avoid this warning.])
       noconfigdirs="${applespecifiednoconfigdirs}"

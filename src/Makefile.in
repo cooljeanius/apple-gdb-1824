@@ -2982,14 +2982,15 @@ install-pdf: do-install-pdf
 install-html: do-install-html
 
 local-clean:
-	-rm -f *.a TEMP errs core *.o *~ \#* TAGS *.E *.log
+	-rm -f $(AM_V_v) *.a TEMP errs core *.o *~ \#* TAGS *.E *.log
 
 distclean-local: local-distclean
 .PHONY: distclean-local
 local-distclean:
-	-rm -f Makefile Makefile*orig src_am/Makefile config.h
-	-rm -f config.status config.cache ./*/config.cache ./*/config.cache.bak
-	-rm -fv *~ config/*~
+	-rm -f $(AM_V_v) Makefile Makefile*orig src_am/Makefile config.h stamp-h1
+	-rm -f config.status config.cache config.log.orig conftest.err
+	-rm -f $(AM_V_v) ./*/config.cache ./*/config.cache.bak
+	-rm -f $(AM_V_v) *~ config/*~ *.sum
 	-rm -f mh-frag mt-frag
 	-rm -f multilib.out multilib.tmp maybedep.tmp serdep.tmp
 	-if [ "$(TARGET_SUBDIR)" != "." ]; then \
@@ -3021,9 +3022,9 @@ local-distclean:
 	-if test -d texinfo/js && test -w texinfo/js && test -r texinfo/js/Makefile && test -s texinfo/js/Makefile; then \
 	  if test -r Makefile && test -s Makefile && test -x config.status; then \
 	    $(MAKE) -C texinfo/js $(AM_V_MFLAG) $(FLAGS_TO_PASS) distclean; \
-	  elif test -f texinfo/js/Makefile && test "x${enable_werror}" != "xyes"; then \
+	  elif test -f texinfo/js/Makefile && test "x${enable_werror}" != "xyes" && test -w /dev/null && test -w . && test -w texinfo/js/Makefile; then \
 	    touch am--refresh && touch texinfo/js/Makefile; \
-	    $(MAKE) -C texinfo/js -ki $(AM_V_MFLAG) $(FLAGS_TO_PASS) distclean; \
+	    $(MAKE) -C texinfo/js -ki $(AM_V_MFLAG) $(FLAGS_TO_PASS) distclean 2>/dev/null; \
 	    rm -f am--refresh && rm -f texinfo/js/Makefile; \
 	  else \
 	    echo "It looks like we cannot make texinfo/js be distclean"; \
@@ -3046,7 +3047,7 @@ maintainer-clean: local-distclean
 realclean: maintainer-clean
 
 reconfigure_with_new_args_clean: clean
-	-rm -fv ./*/config.cache
+	-rm -f $(AM_V_v) ./*/config.cache
 
 # Extra dependency for clean-target, owing to the mixed nature of gcc
 clean-target: clean-target-libgcc
@@ -3203,10 +3204,10 @@ mail-report-with-warnings.log: $(srcdir)/contrib/test_summary warning.log
 # Local Vim config
 
 $(srcdir)/.local.vimrc: $(srcdir)/contrib/vimrc
-	$(LN_S) -fv $(srcdir)/contrib/vimrc $@
+	$(LN_S) -f $(AM_V_v) $(srcdir)/contrib/vimrc $@
 
 $(srcdir)/.lvimrc: $(srcdir)/contrib/vimrc
-	$(LN_S) -fv $(srcdir)/contrib/vimrc $@
+	$(LN_S) -f $(AM_V_v) $(srcdir)/contrib/vimrc $@
 
 vimrc: $(srcdir)/.local.vimrc $(srcdir)/.lvimrc
 

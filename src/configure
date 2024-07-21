@@ -3797,6 +3797,20 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 ac_config_headers="$ac_config_headers config.h"
 
+##                                                         -*- Autoconf -*-
+# Copyright (C) 1998, 1999, 2000, 2001, 2003, 2004, 2005, 2006, 2008
+# Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# serial 8
+
+# AM_ENABLE_MULTILIB([MAKEFILE],[REL-TO-TOP-SRCDIR])
+# ---------------------------------------------------
+# Add --enable-multilib to configure.
+
 
 
 
@@ -8851,14 +8865,22 @@ case "${target}" in
     mynoconfigdirs="${noconfigdirs} dejagnu"
 # likewise with tcl, expect, and target-libbacktrace:
     if test -n "${build_alias}" -o -n "${host_alias}" -o -n "${target_alias}"; then
-      noconfigdirs="${noconfigdirs} tcl expect target-libbacktrace"
+      if test "x${is_cross_compiler}" = "xyes"; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: this appears to be a cross-build; be prepared for some possible weirdness related to tcl, expect, and that family of subdirectories" >&5
+printf "%s\n" "$as_me: this appears to be a cross-build; be prepared for some possible weirdness related to tcl, expect, and that family of subdirectories" >&6;}
+      else
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: something weird going on with aliases of triplet parts; this may possibly affect tcl, expect, and that family of subdirectories" >&5
+printf "%s\n" "$as_me: something weird going on with aliases of triplet parts; this may possibly affect tcl, expect, and that family of subdirectories" >&6;}
+      fi
+      mynoconfigdirs="${mynoconfigdirs} tcl"
+      noconfigdirs="${noconfigdirs} expect target-libbacktrace"
     elif test -n "${with_target_subdir}" || test -n "${multi_basedir}"; then
       noconfigdirs="${noconfigdirs} target-libbacktrace"
     fi
 # I do not know why Apple had these put under noconfigdirs:
     applespecifiednoconfigdirs="${noconfigdirs} mmalloc sim"
     if test "x${APPLE_INTERNAL_DIR}" = "x/AppleInternal"; then
-      test -d "${APPLE_INTERNAL_DIR}"
+      test -d "${APPLE_INTERNAL_DIR}" && stat "${APPLE_INTERNAL_DIR}"
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: You appear to be at Apple, in that case disabling subdirectories that Apple says to disable." >&5
 printf "%s\n" "$as_me: WARNING: You appear to be at Apple, in that case disabling subdirectories that Apple says to disable." >&2;}
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Unset the APPLE_INTERNAL_DIR environment variable to avoid this warning." >&5

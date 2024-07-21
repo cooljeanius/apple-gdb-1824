@@ -3065,13 +3065,13 @@ i386-sol2-tdep.o: i386-sol2-tdep.c $(defs_h) $(value_h) $(osabi_h) \
   $(gdb_string_h) $(i386_tdep_h) $(solib_svr4_h)
 i386-stub.o: i386-stub.c
 i386-tdep.o: i386-tdep.c $(defs_h) $(arch_utils_h) $(command_h) \
-  $(dummy_frame_h) $(dwarf2_frame_h) $(doublest_h) $(floatformat_h) \
-  $(frame_h) $(frame_base_h) $(frame_unwind_h) $(inferior_h) $(gdbcmd_h) \
-  $(gdbcore_h) $(objfiles_h) $(osabi_h) $(regcache_h) $(reggroups_h) \
-  $(regset_h) $(symfile_h) $(symtab_h) $(target_h) $(value_h) \
-  $(gdb_assert_h) $(reggroups_h) $(bfd_h) $(elf_bfd_h) $(dis_asm_h) \
-  $(gdb_string_h) $(i386_tdep_h) $(i387_tdep_h) $(x86_shared_tdep_h) \
-  $(macosx_tdep_h) $(i386_amd64_shared_tdep_h)
+  $(dummy_frame_h) $(dwarf2_frame_h) $(doublest_h) $(exceptions_h) \
+  $(floatformat_h) $(frame_h) $(frame_base_h) $(frame_unwind_h) \
+  $(inferior_h) $(gdbcmd_h) $(gdbcore_h) $(objfiles_h) $(osabi_h) \
+  $(regcache_h) $(reggroups_h) $(regset_h) $(symfile_h) $(symtab_h) \
+  $(target_h) $(value_h) $(gdb_assert_h) $(reggroups_h) $(bfd_h) \
+  $(elf_bfd_h) $(dis_asm_h) $(gdb_string_h) $(i386_tdep_h) $(i387_tdep_h) \
+  $(x86_shared_tdep_h) $(macosx_tdep_h) $(i386_amd64_shared_tdep_h)
 i386v4-nat.o: i386v4-nat.c $(defs_h) $(value_h) $(inferior_h) \
   $(regcache_h) $(i386_tdep_h) $(i387_tdep_h) $(gregset_h)
 i386v-nat.o: i386v-nat.c $(defs_h) $(frame_h) $(inferior_h) $(language_h) \
