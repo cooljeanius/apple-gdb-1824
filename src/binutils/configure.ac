@@ -718,6 +718,9 @@ AS_IF([test "x${host_os}" = "xmingw32" || test "x${target_os}" = "xmingw32"],[
   ## AC\_FUNC\_CHOWN calls checks for uid_t/gid_t, which can mess up config.h:
 AS_IF([test "x${host_os}" != "xmingw32" \
        && test "x${target_os}" != "xmingw32"],[
+  if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
+    export ac_cv_func_chown_works=yes
+  fi
   AC_FUNC_CHOWN
 ],[
   AC_CHECK_FUNCS([chown])dnl
@@ -726,6 +729,10 @@ AS_IF([test "x${host_os}" != "xmingw32" \
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FNMATCH dnl# avoid the "REPLACE" version of it though
+if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
+  export ac_cv_func_fork_works=yes
+  export ac_cv_func_vfork_works=yes
+fi
 AC_FUNC_FORK
 AC_FUNC_LSTAT dnl# calls the _FOLLOWS_SLASHED_SYMLINK version of it
 AC_FUNC_MALLOC

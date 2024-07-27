@@ -203,7 +203,9 @@ jobs:
     - name: Manual build
       if: matrix.language == 'c-cpp'
       run: |
+        pushd .profile.d
         test -e ./.profile_generic && source ./.profile_generic && (env | uniq | sort | uniq)
+        popd
         if test -x "$(which sccache)"; then \
           ./configure --enable-silent-rules CC="sccache gcc" CXX="sccache g++" OBJC="sccache gcc" OBJCXX="sccache g++"; \
           sync && stat -t src && sync; \

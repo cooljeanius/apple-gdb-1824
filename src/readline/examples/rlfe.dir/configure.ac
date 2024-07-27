@@ -1,4 +1,4 @@
-dnl#                                               -*- Autoconf -*-
+dnl# readline/examples/rlfe.dir/configure.ac       -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.64])
@@ -11,10 +11,10 @@ AC_SUBST([VERSION])dnl
 dnl# nothing to do with this yet:
 AC_SUBST([INCDIR])dnl
 
-AC_CANONICAL_TARGET
+AC_CANONICAL_TARGET dnl# (also checks HOST version of the macro)
 
 dnl#
-dnl# Define some useful macros
+dnl# Define some useful macros up top here for use later
 dnl#
 AC_DEFUN([AC_PROGRAM_SOURCE],
 [AC_REQUIRE([AC_PROG_CPP])dnl
@@ -42,9 +42,9 @@ AC_PROG_CPP
 AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AC_SEARCH_LIBS([strerror],[cposix])dnl
-
 AC_USE_SYSTEM_EXTENSIONS
+
+AC_SEARCH_LIBS([strerror],[cposix])dnl
 
 AS_MESSAGE([checking if your ${CC} actually works])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
@@ -212,7 +212,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdlib.h>
 
 int
-main()
+main(void)
 {
 #ifdef _POSIX_VERSION
   return (0);
@@ -261,10 +261,10 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
-
+/* remember to update these line markers whenever the numbers change: */
 #line 265 "configure.ac"
 
-char *nam = "/tmp/conftest$$";
+const char *nam = "/tmp/conftest$$";
 
 #ifdef NAMEDPIPE
 
@@ -521,7 +521,7 @@ AC_CHECK_FUNCS([openpty],[],
 fi
 
 AS_MESSAGE([checking for ptyranges...])
-if test -d /dev/ptym ; then
+if test -d /dev/ptym; then
   pdir='/dev/ptym'
 else
   pdir='/dev'

@@ -28151,6 +28151,9 @@ if test "x${host_os}" != "xmingw32" \
        && test "x${target_os}" != "xmingw32"
 then :
 
+  if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
+    export ac_cv_func_chown_works=yes
+  fi
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for working chown" >&5
 printf %s "checking for working chown... " >&6; }
 if test ${ac_cv_func_chown_works+y}
@@ -28548,6 +28551,10 @@ printf "%s\n" "#define HAVE_FNMATCH 1" >>confdefs.h
 
 fi
 
+ if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
+  export ac_cv_func_fork_works=yes
+  export ac_cv_func_vfork_works=yes
+fi
 
   ac_fn_c_check_type "$LINENO" "pid_t" "ac_cv_type_pid_t" "$ac_includes_default
 "

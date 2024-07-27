@@ -198,6 +198,7 @@ histexamp.o: $(top_srcdir)/history.h
 # Stuff for Per Bothner's `rlfe' program
  
 rlfe: rlfe.o $(READLINE_LIB) $(HISTORY_LIB)
+	@echo "$@ builds the $@ executable. For the directory, you may be looking for the rlfe.dir target."
 	$(AM_V_at)test -e ./Makefile && test -w . && $(MAKE) $(AM_V_MFLAG) ./rlfe.o
 	$(AM_V_at)if test -e $(srcdir)/rlfe.o -a ! -e rlfe.o; then \
 	  cp $(AM_V_v) $(srcdir)/rlfe.o rlfe.o; \
@@ -224,7 +225,9 @@ rlfe.dir: force
 	  else \
 	    echo "no configuring to be done here"; \
 	  fi; \
-	  if test -r Makefile; then ${MAKE} $(AM_V_MFLAG); fi; \
+	  if test -r Makefile; then ${MAKE} $(AM_V_MFLAG); \
+	  elif test -e Makefile; then stat Makefile; \
+	  else echo "Makefile missing, so we cannot continue here"; fi; \
 	  popd )
 
 force:

@@ -67,6 +67,7 @@ am__v_MFLAG_0 = -s
 am__v_MFLAG_1 = -w
 
 all:	rlfe
+	stat $< || du $<
 
 rlfe: $(OFILES)
 	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ $(OFILES) $(LIBS)
@@ -181,7 +182,13 @@ config: configure
 .PHONY: config
 
 Makefile: Makefile.in config.status
-	./config.status || $(SHELL) config.status
+	if test -x ./config.status; then \
+	  ./config.status; \
+	elif test -r config.status; then \
+	  $(SHELL) config.status; \
+	elif test -e `pwd`/config.status; then \
+	  stat `pwd`/config.status; \
+	fi
 	$(AM_V_at)if test Makefile -ot Makefile.in; then touch Makefile; fi
 
 ###########################################################################
@@ -224,9 +231,20 @@ pty.o: pty.c config.h extern.h os.h screen.h
 rlfe.o: rlfe.c config.h
 
 config.log: configure
-	./configure || sh ./configure
+	if test -x ./configure; then \
+	  ./configure; \
+	elif test -r ./configure; then \
+	  sh ./configure; \
+	elif test -e ./configure; then \
+	  stat ./configure; \
+	elif test $@ -ot $<; then \
+	  touch $@; \
+	fi
 
-configure: configure.ac
+config.status: configure
+	$(SHELL) ./config.status --recheck
+
+configure: configure.ac aclocal.m4
 	if test -x "`which autoconf`"; then \
 	  echo "running autoconf" && autoconf; \
 	elif test -e configure~; then \
@@ -236,3 +254,27 @@ configure: configure.ac
 	else \
 	  echo "unsure what to do, so just touching $@" && touch $@; \
 	fi
+
+aclocal.m4: configure.ac
+	if test $@ -ot $< && test "x$(ACLOCAL_AMFLAGS)" = "x"; then \
+	  test -z "$(ACLOCAL_AMFLAGS)" && export ACLOCAL_AMFLAGS="--force"; \
+	elif test -n "$(ACLOCAL_AMFLAGS)"; then \
+	  echo "ACLOCAL_AMFLAGS already set to '$(ACLOCAL_AMFLAGS)'"; \
+	else \
+	  echo "conditions wrong for '--force' flag"; \
+	fi; \
+	echo "running aclocal $${ACLOCAL_AMFLAGS}" && aclocal $${ACLOCAL_AMFLAGS}
+
+config.h: stamp-h1
+	$(AM_V_at)test -f $@ || rm -f $(AM_V_v) stamp-h1
+	$(AM_V_at)test -f $@ || $(MAKE) $(AM_MAKEFLAGS) stamp-h1
+
+stamp-h1: aclocal.m4 config.h.in config.status
+	$(AM_V_at)rm -f $(AM_V_v) stamp-h1
+	$(SHELL) ./config.status config.h
+	$(AM_V_at)echo "stamp: `date`" >> $@
+
+config.h.in: configure.ac
+	echo "running autoheader" && autoheader $(AUTOHEADER_AMFLAGS)
+	$(AM_V_at)rm -f $(AM_V_v) stamp-h1
+	$(AM_V_at)if test $@ -ot $<; then touch $@; fi
