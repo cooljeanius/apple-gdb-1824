@@ -335,7 +335,7 @@ jobs:
             sync && echo "running autogen's configure script under $(which guile18-build)..."; \
             guile18-build ./configure --disable-werror --enable-silent-rules --disable-option-checking CFLAGS="-w" || stat -t ./configure; \
           elif test -x ./configure && test -r ./configure && test -w .; then \
-            ./configure --disable-werror --enable-silent-rules --disable-option-checking CFLAGS="-w" || stat -t ./configure; \
+            ./configure --disable-werror --enable-silent-rules --disable-option-checking --disable-dependency-tracking CFLAGS="-w" || stat -t ./configure; \
           elif test -x ./config.status && test -r ./config.status && test -w .; then \
             ./config.status || stat -t ./config.status; \
           elif test -f Makefile && test -r Makefile && test -w .; then \

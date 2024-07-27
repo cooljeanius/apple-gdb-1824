@@ -197,7 +197,7 @@ darwin_current_sos (void)
 {
   struct type *ptr_type = get_builtin_type(target_gdbarch)->builtin_data_ptr;
   int ptr_len = TYPE_LENGTH (ptr_type);
-  unsigned int image_info_size;
+  size_t image_info_size;
   CORE_ADDR lm;
   struct so_list *head = NULL;
   struct so_list *tail = NULL;
@@ -215,7 +215,7 @@ darwin_current_sos (void)
      This first entry is ignored as this is the executable itself.  */
   for (i = 1; i < dyld_all_image.count; i++)
     {
-      CORE_ADDR info = dyld_all_image.info + i * image_info_size;
+      CORE_ADDR info = (dyld_all_image.info + (i * image_info_size));
       gdb_byte buf[image_info_size];
       CORE_ADDR load_addr;
       CORE_ADDR path_addr;

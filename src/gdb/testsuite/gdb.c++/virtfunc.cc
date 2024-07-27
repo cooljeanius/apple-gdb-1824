@@ -170,6 +170,7 @@ extern "C" {
 };
 #endif
 
+int
 main()
 {
 #ifdef usestubs

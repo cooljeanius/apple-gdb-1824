@@ -63,6 +63,7 @@ extern "C" {
 };
 #endif
 
+int
 main () {
 #ifdef usestubs
    set_debug_traps();

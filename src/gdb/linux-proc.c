@@ -53,7 +53,7 @@ child_pid_to_exec_file(int pid)
   make_cleanup(xfree, name2);
   memset(name2, 0, MAXPATHLEN);
 
-  sprintf(name1, "/proc/%d/exe", pid);
+  snprintf(name1, MAXPATHLEN, "/proc/%d/exe", pid);
   if (readlink(name1, name2, MAXPATHLEN) > 0)
     return name2;
   else
@@ -104,7 +104,7 @@ linux_find_memory_regions(int (*func)(CORE_ADDR,
   int read, write, exec;
 
   /* Compose the filename for the /proc memory map, and open it. */
-  sprintf (mapsfilename, "/proc/%lld/maps", pid);
+  snprintf(mapsfilename, sizeof(mapsfilename), "/proc/%lld/maps", pid);
   if ((mapsfile = fopen (mapsfilename, "r")) == NULL)
     error ("Could not open %s\n", mapsfilename);
 
@@ -215,33 +215,28 @@ linux_corefile_thread_callback(struct thread_info *ti, void *data)
  * in a malloc buffer.
  */
 static char *
-linux_make_note_section (bfd *obfd, int *note_size)
+linux_make_note_section(bfd *obfd, int *note_size)
 {
   struct linux_corefile_thread_data thread_args;
   char fname[16] = {'\0'};
   char psargs[80] = {'\0'};
   char *note_data = NULL;
 
-  if (get_exec_file (0))
+  if (get_exec_file(0))
     {
-      strncpy (fname, strrchr (get_exec_file (0), '/') + 1, sizeof (fname));
-      strncpy (psargs, get_exec_file (0),
-	       sizeof (psargs));
-      if (get_inferior_args ())
+      strncpy(fname, (strrchr(get_exec_file(0), '/') + 1), sizeof(fname));
+      strncpy(psargs, get_exec_file(0), sizeof(psargs));
+      if (get_inferior_args())
 	{
-	  strncat (psargs, " ",
-		   sizeof (psargs) - strlen (psargs));
-	  strncat (psargs, get_inferior_args (),
-		   sizeof (psargs) - strlen (psargs));
+	  strncat(psargs, " ", (sizeof(psargs) - strlen(psargs) - 1UL));
+	  strncat(psargs, get_inferior_args(),
+		  (sizeof(psargs) - strlen(psargs) - 1UL));
 	}
-      note_data = (char *) elfcore_write_prpsinfo (obfd,
-						   note_data,
-						   note_size,
-						   fname,
-						   psargs);
+      note_data = (char *)elfcore_write_prpsinfo(obfd, note_data, note_size,
+                                                 fname, psargs);
     }
 
-  /* Dump information for threads.  */
+  /* Dump information for threads: */
   thread_args.obfd = obfd;
   thread_args.note_data = note_data;
   thread_args.note_size = note_size;
@@ -335,14 +330,14 @@ linux_info_proc_cmd(const char *args, int from_tty)
   if (pid == 0)
     error ("No current process: you must name one.");
 
-  sprintf (fname1, "/proc/%lld", pid);
+  snprintf(fname1, sizeof(fname1), "/proc/%lld", pid);
   if (stat (fname1, &dummy) != 0)
     error ("No /proc directory: '%s'", fname1);
 
   printf_filtered ("process %lld\n", pid);
   if (cmdline_f || all)
     {
-      sprintf (fname1, "/proc/%lld/cmdline", pid);
+      snprintf(fname1, sizeof(fname1), "/proc/%lld/cmdline", pid);
       if ((procfile = fopen (fname1, "r")) > 0)
 	{
 	  fgets (buffer, sizeof (buffer), procfile);
@@ -354,7 +349,7 @@ linux_info_proc_cmd(const char *args, int from_tty)
     }
   if (cwd_f || all)
     {
-      sprintf (fname1, "/proc/%lld/cwd", pid);
+      snprintf(fname1, sizeof(fname1), "/proc/%lld/cwd", pid);
       memset (fname2, 0, sizeof (fname2));
       if (readlink (fname1, fname2, sizeof (fname2)) > 0)
 	printf_filtered ("cwd = '%s'\n", fname2);
@@ -363,7 +358,7 @@ linux_info_proc_cmd(const char *args, int from_tty)
     }
   if (exe_f || all)
     {
-      sprintf (fname1, "/proc/%lld/exe", pid);
+      snprintf(fname1, sizeof(fname1), "/proc/%lld/exe", pid);
       memset (fname2, 0, sizeof (fname2));
       if (readlink (fname1, fname2, sizeof (fname2)) > 0)
 	printf_filtered ("exe = '%s'\n", fname2);
@@ -372,7 +367,7 @@ linux_info_proc_cmd(const char *args, int from_tty)
     }
   if (mappings_f || all)
     {
-      sprintf (fname1, "/proc/%lld/maps", pid);
+      snprintf(fname1, sizeof(fname1), "/proc/%lld/maps", pid);
       if ((procfile = fopen (fname1, "r")) > 0)
 	{
 	  long long addr, endaddr, size, offset, inode;
@@ -418,7 +413,7 @@ linux_info_proc_cmd(const char *args, int from_tty)
     }
   if (status_f || all)
     {
-      sprintf (fname1, "/proc/%lld/status", pid);
+      snprintf(fname1, sizeof(fname1), "/proc/%lld/status", pid);
       if ((procfile = fopen (fname1, "r")) > 0)
 	{
 	  while (fgets (buffer, sizeof (buffer), procfile) != NULL)
@@ -430,7 +425,7 @@ linux_info_proc_cmd(const char *args, int from_tty)
     }
   if (stat_f || all)
     {
-      sprintf (fname1, "/proc/%lld/stat", pid);
+      snprintf(fname1, sizeof(fname1), "/proc/%lld/stat", pid);
       if ((procfile = fopen (fname1, "r")) > 0)
 	{
 	  int itmp;

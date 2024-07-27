@@ -464,7 +464,7 @@
 
 	* libltdl/ltdl.c (foreach_dirinpath): Ensure that filename is '\0'
 	terminated by all code paths.
-	Reported by Lutz Müller <lutz@users.sourceforge.net>
+	Reported by Lutz Muller <lutz@users.sourceforge.net>
 
 2002-06-20  Gary V. Vaughan  <gary@gnu.org>
 
