@@ -41,7 +41,11 @@ jobs:
         fi
         # shellcheck disable=SC2016
         if test -d /usr/local/opt/ncurses/bin && test -d /Users/runner && test -w /Users/runner; then \
-          echo 'export PATH="/usr/local/opt/ncurses/bin:${PATH}"' >> /Users/runner/.bash_profile; \
+          echo 'export PATH="/usr/local/opt/ncurses/bin:${PATH}"' | tee -a /Users/runner/.bash_profile; \
+          if test -r /Users/runner/.bash_profile; then \
+            sync && echo "/Users/runner/.bash_profile contents are:"; \
+            sync && cat /Users/runner/.bash_profile; \
+          fi; \
         fi
         if test -d /usr/local/opt/ncurses/lib; then \
           if test -n "${LDFLAGS}"; then \
@@ -68,6 +72,8 @@ jobs:
           if test -e /System/Library/LaunchDaemons/com.apple.locate.plist; then \
             sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist; \
           fi; \
+        elif test -r /var/db/locate.database; then \
+          stat /var/db/locate.database && du /var/db/locate.database; \
         fi
         if test -x "$(which sccache)"; then \
           if test -z "${CC}"; then \

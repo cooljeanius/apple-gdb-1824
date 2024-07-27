@@ -465,6 +465,8 @@ jobs:
           make var-path-expr.o || stat -t var-path-expr.cpp; \
           cp -v ./*.o .. || ls ./*.o || pwd; \
           popd; \
+        elif test -d gdb/testsuite/gdb.apple; then \
+          sync && echo "skipping gdb/testsuite/gdb.apple; missing Makefile?"; \
         fi
         # shellcheck disable=SC2044
         for cppfile in $(find . -name '*.cpp' -type f); do \
@@ -476,6 +478,8 @@ jobs:
           make langs2.o || stat -t langs2.cxx; \
           cp -v ./*.o .. || ls ./*.o || pwd; \
           popd; \
+        elif test -d gdb/testsuite/gdb.base; then \
+          sync && echo "skipping gdb/testsuite/gdb.base"; \
         fi
         # shellcheck disable=SC2044
         for cxxfile in $(find . -name '*.cxx' -type f); do \
@@ -488,6 +492,8 @@ jobs:
           make mmallocplusplus.o || (test -x "$(which sccache)" && sccache g++ -c mmallocplusplus.cp) || g++ -c mmallocplusplus.cp || stat -t mmallocplusplus.cp; \
           cp -v ./*.o .. || ls ./*.o || pwd; \
           popd; \
+        elif test -d mmalloc; then \
+          sync && echo "skipping mmalloc; missing Makefile?"; \
         fi
 
     - name: Extra coverage build (Java)

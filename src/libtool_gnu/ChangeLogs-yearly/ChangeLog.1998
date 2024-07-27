@@ -1329,7 +1329,7 @@ Thu May 28 18:59:08 1998  Ian Lance Taylor  <ian@cygnus.com>
 	ld's.  From Eiichi Takamori.
 
 	* ltmain.in (install): Don't print silly `library stripping'
-	warnings.  Reported by François Pinard.
+	warnings.  Reported by Francois Pinard.
 
 Continued in ChangeLog.1997
 --
