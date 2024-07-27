@@ -1,6 +1,12 @@
 // Pls try the following program on virtual functions and try to do print on
 //  most of the code in main().  Almost none of them works !
 
+#ifdef __cplusplus
+# include <cstdio> /* for printf() */
+#else
+# include <stdio.h>
+#endif /* __cplusplus */
+
 //
 // The inheritance structure is:
 //
@@ -126,8 +132,6 @@ void init()
 	d.d	= 1;
 	e.d	=  2;
 }
-
-extern "C" printf(const char *, ...);
 
 int all_count = 0;
 int failed_count = 0;

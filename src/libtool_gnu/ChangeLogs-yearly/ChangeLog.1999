@@ -750,7 +750,7 @@
 
 	* ltconfig.in: Support new GNU ld --help output format.
 	* NEWS:  Likewise.
-	Reported by Gaël Quéri <gael@baoule.dyndns.org> and
+	Reported by Gael Queri <gael@baoule.dyndns.org> and
 	H.J. Lu <hjl@varesearch.com>.
 
 1999-06-05  Mark Kettenis  <kettenis@gnu.org>

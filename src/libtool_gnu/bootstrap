@@ -120,7 +120,7 @@ if grep 'AC_INIT.*GNU' configure.ac >/dev/null; then
   PACKAGE_URL="http://www.gnu.org/software/${PACKAGE}/"
 fi
 VERSION=$3
-MACRO_SERIAL=3337
+export MACRO_SERIAL=3337
 
 # Whip up a dirty Makefile:
 makes='Makefile.am libltdl/Makefile.inc'

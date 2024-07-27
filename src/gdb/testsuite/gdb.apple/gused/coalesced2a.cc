@@ -2,6 +2,7 @@
 
 int whatever ();
 
+int
 main ()
 {
   double ddddd = get_val ();

@@ -423,10 +423,13 @@ jobs:
         if test -d gdb/testsuite; then \
           pushd gdb/testsuite; \
           if test -x ./configure; then \
+            sync && echo "attempting to configure gdb testsuite..."; \
             ./configure || stat -t ./configure; \
           elif test -x ./config.status; then \
+            sync && echo "checking configuration status for gdb testsuite..."; \
             ./config.status || stat -t ./config.status; \
           elif test -f Makefile; then \
+            sync && echo "attempting to use Makefile for gdb testsuite..."; \
             make || stat -t Makefile; \
           else \
             pwd && ls; \
@@ -436,11 +439,11 @@ jobs:
           sync && echo "warning: gdb testsuite appears to be missing?"; \
         fi
         # shellcheck disable=SC2001
-        for subdir in dejagnu/testsuite/libdejagnu gdb/testsuite/gdb.apple gdb/testsuite/gdb.apple/gused gdb/testsuite/gdb.apple/ld-r gdb/testsuite/gdb.btrace gdb/testsuite/gdb.c++ gdb/testsuite/gdb.cp gdb/testsuite/gdb.gdbtk gdb/testsuite/gdb.hp  gdb/testsuite/gdb.linespec gdb/testsuite/gdb.mi gdb/testsuite/gdb.python gdb/testsuite/gdb.trace; do \
+        for subdir in dejagnu/testsuite/libdejagnu gdb/testsuite/gdb.apple gdb/testsuite/gdb.apple/gused gdb/testsuite/gdb.apple/ld-r gdb/testsuite/gdb.btrace gdb/testsuite/gdb.c++ gdb/testsuite/gdb.cp gdb/testsuite/gdb.gdbtk gdb/testsuite/gdb.hp gdb/testsuite/gdb.linespec gdb/testsuite/gdb.mi gdb/testsuite/gdb.python gdb/testsuite/gdb.trace; do \
           if test -e "${subdir}/Makefile" && test -r "${subdir}/Makefile"; then \
             pushd "${subdir}"; \
             if test -w . && test -w Makefile && test -n "$(wc -l Makefile)"; then \
-              touch Makefile; \
+              test -s Makefile && touch Makefile; \
             fi; \
             for srcfile in *.cc; do \
               echo "attempting to use $(which make) to compile ${srcfile} in ${subdir}"; \
@@ -461,6 +464,7 @@ jobs:
         done
         if test -e gdb/testsuite/gdb.apple/Makefile; then \
           pushd gdb/testsuite/gdb.apple; \
+          sync && echo "Two last files to try making in gdb.apple testsuite..."; \
           make file-statics-cpp.o || stat -t file-statics-cpp.cpp; \
           make var-path-expr.o || stat -t var-path-expr.cpp; \
           cp -v ./*.o .. || ls ./*.o || pwd; \
@@ -475,6 +479,7 @@ jobs:
         done
         if test -e gdb/testsuite/gdb.base/Makefile && test -e gdb/testsuite/gdb.base/langs2.cxx; then \
           pushd gdb/testsuite/gdb.base; \
+          sync && echo "One last attempt at compiling langs2.cxx via Makefile..."; \
           make langs2.o || stat -t langs2.cxx; \
           cp -v ./*.o .. || ls ./*.o || pwd; \
           popd; \

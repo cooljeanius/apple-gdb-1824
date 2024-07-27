@@ -20,6 +20,7 @@ VC::fvc () {return 300 + vc_pub_int;}
 int
 VC::vfvc () {return 100 + vc_pub_int;}
 
+int
 main ()
 {
   do_simple_class_tests ();
