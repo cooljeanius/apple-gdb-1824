@@ -180,7 +180,7 @@ jobs:
 
     - name: Setup Gradle
       if: matrix.language == 'java-kotlin'
-      uses: gradle/actions/setup-gradle@v3
+      uses: gradle/actions/setup-gradle@v4
     - name: Run build with Gradle Wrapper
       if: matrix.language == 'java-kotlin' && success()
       run: |
