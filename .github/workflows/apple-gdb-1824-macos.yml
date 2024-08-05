@@ -378,7 +378,7 @@ jobs:
         sync && echo "...done cleaning up."
         time (sync && pwd && sync && ls && sync && du && sync && df && sync)
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v4.3.5
       if: "${{ always() }}"
       with:
         # Artifact name
