@@ -392,5 +392,5 @@ jobs:
       fail-fast: false
       matrix:
         compiler:
-        - clang
-        - gcc
+          - clang
+          - gcc

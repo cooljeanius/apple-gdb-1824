@@ -1,3 +1,5 @@
+---
+
 language: c
 dist: xenial
 
@@ -19,7 +21,7 @@ before_script: test -e ./.profile.d/.profile_generic && source ./.profile.d/.pro
 script:
   - cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib
   - make configure-bfd
-  # FIXME: these next steps are hacks. The dependency handling in the Makefiles should be fixed to do this properly instead. 
+  # FIXME: these next steps are hacks. The dependency handling in the Makefiles should be fixed to do this properly instead.
   - make -C bfd headers
   - if test ! -e bfd/bfd.h; then make -C bfd bfd.h; else stat bfd/bfd.h; fi
   # Just skip the directories that are broken:

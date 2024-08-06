@@ -1,3 +1,5 @@
+---
+
 name: cooljeanius/apple-gdb-1824
 on:
   push:
@@ -8,66 +10,68 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     steps:
-    - name: checkout
-      uses: actions/checkout@v4
-#     # 'Transformers::TravisCI::Scripts::Dependencies' dependencies are currently unsupported
-#     # 'compiler' was not transformed because there is no suitable equivalent in GitHub Actions
-    - name: Run sccache-cache only on non-release runs
-      if: github.event_name != 'release' && github.event_name != 'workflow_dispatch'
-      uses: mozilla-actions/sccache-action@v0.0.5
-      env:
-        SCCACHE_GHA_ENABLED: "true"
-    - run: sudo apt-get update
-    - run: sudo apt-get install --fix-missing autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libopts25 libopts25-dev texinfo flex flex-doc binutils binutils-dev binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl guile-2.0 guile-2.0-libs guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev guile-3.0-libs libguile-ssh11 tclreadline m4 xutils-dev gfortran gfortran-multilib gfortran-7 gfortran-7-multilib gfortran-mingw-w64 gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar gdb gdbserver autopoint gperf help2man libextutils-f77-perl emacs sharutils texlive latex2html ddd xterm x11-utils ${{ matrix.compiler }} gnat ratfor libmpfr-dev libmpfi-dev libmpc-dev libgmp-dev libmath-mpfr-perl libmpfrc++-dev f2c libbsd0 libbsd-dev freebsd-glue libieee1284-3 libieee1284-3-dev fort77 libiconv-hook1 libiconv-hook-dev win-iconv-mingw-w64-dev libltdl7 libltdl-dev libasprintf-dev libgettextpo-dev tix tix-dev splint comprez cxref cxref-emacs exuberant-ctags universal-ctags texi2html eslint uglifyjs libjs-modernizr node-optionator node-babel-eslint npm doxygen doxygen-latex graphviz dot2tex
-    - run: cd .profile.d && test -e ./.profile_generic && test -r ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq) && sync && sleep 1 && sync
-    - run: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
-    - run: cd src && make configure-zlib && sync && make configure-bfd
-    - run: cd src && sync && make -C bfd headers && sync && make -C bfd stamp-framework-headers && sync && (ls bfd/bfd*.h || stat bfd) && sync && sleep 1 && sync
-    - run: cd src && if test ! -e bfd/bfd.h; then (sync && make -C bfd bfd.h && sync && sleep 1); else (sync && stat bfd/bfd.h && sync && sleep 1); fi && sync && find . -name bfd.h -print && sleep 1 && sync
-    - run: cd src && if test -e autogen/Makefile; then (sync && make -C autogen && sync && sleep 1); elif test -d autogen; then (sync && echo "listing autogen Makefiles present" && sync && ls autogen/Makefile* && sync && sleep 1); else (sync && echo "skipping autogen" && sync && sleep 1); fi
-    - run: cd src && make -C bfd diststuff
-    - run: cd src && make all-zlib && sync && make all-bfd
-    - run: cd src && make all-opcodes
-    - run: cd src && make configure-binutils
-    - run: cd src && make info-binutils && sync && make dvi-binutils && sync && make TAGS-binutils
-    - run: cd src && sync && make all-cgen && sync
-    - run: cd src && sync && make all-libiberty && sync && make all-intl && sync && sleep 1
-    - run: cd src && make all-electric-fence
-    - run: cd src && make all-etc && sync && make check-etc
-    - run: cd src && make all-libdecnumber
-    - run: cd src && make all-mmalloc
-    - run: cd src && make configure-readline
-    - run: cd src && for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/configure; then (echo "configuring in ${dir}" && make configure-${dir} && echo "done configuring in ${dir}"); elif test -d ${dir}; then ls ${dir}/configure*; else echo "skipping configuring in ${dir}"; fi; done
-    - run: cd src && for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then (echo "building in ${dir}" && make -C ${dir}); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
-    - run: cd src && make configure-gdb && find gdb -name Makefile -print
-    - run: cd src && make info-gdb && sync && make pdf-gdb && sync && make html-gdb && sync && make TAGS-gdb
-    - run: cd src/gdb/doc && make doxy && make all-doc && make diststuff && make links2roff
-    - run: cd src && make info && sync && find . -name '*.info' -print
-    - run: cd src && make check-zlib && sync && make check-libiberty
-    - run: cd src/texinfo/js && (npm install || npm audit || npm ci || npm install-ci-test || npm install-test || stat package.json)
-    - run: cd src && make check-texinfo_js && find . -name '*.js' -print
-    - run: cd src && sync && make -C tcl/unix tcltest && sync
-    - run: cd src && for dir in sim itcl; do if test -e ${dir}/Makefile; then (echo "running testsuite for ${dir}" && make check-${dir} V=0 RUNTESTFLAGS="-v" && sleep 1); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
-    - run: cd src/utils && for dir in misc msdos spu sparclite wince; do if test -e ${dir}/Makefile; then (echo "in $(pwd), and running testsuite for ${dir}" && make check-${dir} V=0 RUNTESTFLAGS="-v" && sleep 1); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "in $(pwd), skipping testing ${dir}"; fi; done
-    - run: (time (pwd && sync && ls && sync && stat . && sync)) && sleep 1 && echo "done"
-      if: "${{ success() }}"
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.3.5
-      if: "${{ success() }}"
-      with:
-        # Artifact name
-        name: apple-gdb-1824-${{ matrix.compiler }}-logfiles-${{ github.sha }}
-        # A file, directory or wildcard pattern that describes what to upload
-        path: |
+      - name: checkout
+        uses: actions/checkout@v4
+        # 'Transformers::TravisCI::Scripts::Dependencies' dependencies are
+        # currently unsupported
+        # 'compiler' was not transformed because there is no suitable equivalent
+        # in GitHub Actions
+      - name: Run sccache-cache only on non-release runs
+        if: github.event_name != 'release' && github.event_name != 'workflow_dispatch'
+        uses: mozilla-actions/sccache-action@v0.0.5
+        env:
+          SCCACHE_GHA_ENABLED: "true"
+      - run: sudo apt-get update
+      - run: sudo apt-get install --fix-missing autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libopts25 libopts25-dev texinfo flex flex-doc binutils binutils-dev binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl guile-2.0 guile-2.0-libs guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev guile-3.0-libs libguile-ssh11 tclreadline m4 xutils-dev gfortran gfortran-multilib gfortran-7 gfortran-7-multilib gfortran-mingw-w64 gccgo gccgo-multilib libdmalloc-dev libdmalloc5 gnulib fastjar gdb gdbserver autopoint gperf help2man libextutils-f77-perl emacs sharutils texlive latex2html ddd xterm x11-utils ${{ matrix.compiler }} gnat ratfor libmpfr-dev libmpfi-dev libmpc-dev libgmp-dev libmath-mpfr-perl libmpfrc++-dev f2c libbsd0 libbsd-dev freebsd-glue libieee1284-3 libieee1284-3-dev fort77 libiconv-hook1 libiconv-hook-dev win-iconv-mingw-w64-dev libltdl7 libltdl-dev libasprintf-dev libgettextpo-dev tix tix-dev splint comprez cxref cxref-emacs exuberant-ctags universal-ctags texi2html eslint uglifyjs libjs-modernizr node-optionator node-babel-eslint npm doxygen doxygen-latex graphviz dot2tex
+      - run: cd .profile.d && test -e ./.profile_generic && test -r ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq) && sync && sleep 1 && sync
+      - run: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
+      - run: cd src && make configure-zlib && sync && make configure-bfd
+      - run: cd src && sync && make -C bfd headers && sync && make -C bfd stamp-framework-headers && sync && (ls bfd/bfd*.h || stat bfd) && sync && sleep 1 && sync
+      - run: cd src && if test ! -e bfd/bfd.h; then (sync && make -C bfd bfd.h && sync && sleep 1); else (sync && stat bfd/bfd.h && sync && sleep 1); fi && sync && find . -name bfd.h -print && sleep 1 && sync
+      - run: cd src && if test -e autogen/Makefile; then (sync && make -C autogen && sync && sleep 1); elif test -d autogen; then (sync && echo "listing autogen Makefiles present" && sync && ls autogen/Makefile* && sync && sleep 1); else (sync && echo "skipping autogen" && sync && sleep 1); fi
+      - run: cd src && make -C bfd diststuff
+      - run: cd src && make all-zlib && sync && make all-bfd
+      - run: cd src && make all-opcodes
+      - run: cd src && make configure-binutils
+      - run: cd src && make info-binutils && sync && make dvi-binutils && sync && make TAGS-binutils
+      - run: cd src && sync && make all-cgen && sync
+      - run: cd src && sync && make all-libiberty && sync && make all-intl && sync && sleep 1
+      - run: cd src && make all-electric-fence
+      - run: cd src && make all-etc && sync && make check-etc
+      - run: cd src && make all-libdecnumber
+      - run: cd src && make all-mmalloc
+      - run: cd src && make configure-readline
+      - run: cd src && for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/configure; then (echo "configuring in ${dir}" && make configure-${dir} && echo "done configuring in ${dir}"); elif test -d ${dir}; then ls ${dir}/configure*; else echo "skipping configuring in ${dir}"; fi; done
+      - run: cd src && for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then (echo "building in ${dir}" && make -C ${dir}); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
+      - run: cd src && make configure-gdb && find gdb -name Makefile -print
+      - run: cd src && make info-gdb && sync && make pdf-gdb && sync && make html-gdb && sync && make TAGS-gdb
+      - run: cd src/gdb/doc && make doxy && make all-doc && make diststuff && make links2roff
+      - run: cd src && make info && sync && find . -name '*.info' -print
+      - run: cd src && make check-zlib && sync && make check-libiberty
+      - run: cd src/texinfo/js && (npm install || npm audit || npm ci || npm install-ci-test || npm install-test || stat package.json)
+      - run: cd src && make check-texinfo_js && find . -name '*.js' -print
+      - run: cd src && sync && make -C tcl/unix tcltest && sync
+      - run: cd src && for dir in sim itcl; do if test -e ${dir}/Makefile; then (echo "running testsuite for ${dir}" && make check-${dir} V=0 RUNTESTFLAGS="-v" && sleep 1); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
+      - run: cd src/utils && for dir in misc msdos spu sparclite wince; do if test -e ${dir}/Makefile; then (echo "in $(pwd), and running testsuite for ${dir}" && make check-${dir} V=0 RUNTESTFLAGS="-v" && sleep 1); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "in $(pwd), skipping testing ${dir}"; fi; done
+      - run: (time (pwd && sync && ls && sync && stat . && sync)) && sleep 1 && echo "done"
+        if: "${{ success() }}"
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.3.5
+        if: "${{ success() }}"
+        with:
+          # Artifact name
+          name: apple-gdb-1824-${{ matrix.compiler }}-logfiles-${{ github.sha }}
+          # A file, directory or wildcard pattern that describes what to upload
+          path: |
             **/*.log
-    - name: Explain failure
-      if: "${{ failure() }}"
-      run: |
-        find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
-        if test -x /usr/bin/texi2dvi; then /usr/bin/texi2dvi --version; fi
+      - name: Explain failure
+        if: "${{ failure() }}"
+        run: |
+          find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
+          if test -x /usr/bin/texi2dvi; then /usr/bin/texi2dvi --version; fi
     strategy:
       fail-fast: false
       matrix:
         compiler:
-        - clang
-        - gcc
+          - clang
+          - gcc
