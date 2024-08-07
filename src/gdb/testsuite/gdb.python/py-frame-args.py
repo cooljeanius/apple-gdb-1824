@@ -17,7 +17,7 @@ import re
 import gdb
 
 
-class pp_s(object):
+class pp_s:
     def __init__(self, val):
         self.val = val
 
@@ -26,7 +26,7 @@ class pp_s(object):
         return "m=<" + str(self.val["m"]) + ">"
 
 
-class pp_ss(object):
+class pp_ss:
     def __init__(self, val):
         self.val = val
 

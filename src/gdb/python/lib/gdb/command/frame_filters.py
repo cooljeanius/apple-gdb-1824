@@ -26,7 +26,7 @@ class SetFilterPrefixCmd(gdb.Command):
     """Prefix command for 'set' frame-filter related operations."""
 
     def __init__(self):
-        super(SetFilterPrefixCmd, self).__init__(
+        super().__init__(
             "set frame-filter", gdb.COMMAND_OBSCURE, gdb.COMPLETE_NONE, True
         )
 
@@ -35,7 +35,7 @@ class ShowFilterPrefixCmd(gdb.Command):
     """Prefix command for 'show' frame-filter related operations."""
 
     def __init__(self):
-        super(ShowFilterPrefixCmd, self).__init__(
+        super().__init__(
             "show frame-filter", gdb.COMMAND_OBSCURE, gdb.COMPLETE_NONE, True
         )
 
@@ -47,7 +47,7 @@ class InfoFrameFilter(gdb.Command):
     """
 
     def __init__(self):
-        super(InfoFrameFilter, self).__init__("info frame-filter", gdb.COMMAND_DATA)
+        super().__init__("info frame-filter", gdb.COMMAND_DATA)
 
     @staticmethod
     def enabled_string(state):
@@ -89,7 +89,7 @@ class InfoFrameFilter(gdb.Command):
                     e = sys.exc_info()[1]
                     print("  Error printing filter '" + name + "': " + str(e))
                 else:
-                    print("  %s  %s  %s" % (priority, enabled, name))
+                    print("  {}  {}  {}".format(priority, enabled, name))
 
     def print_list(self, title, filter_list, blank_line):
         print(title)
@@ -246,7 +246,7 @@ class EnableFrameFilter(gdb.Command):
     """
 
     def __init__(self):
-        super(EnableFrameFilter, self).__init__("enable frame-filter", gdb.COMMAND_DATA)
+        super().__init__("enable frame-filter", gdb.COMMAND_DATA)
 
     def complete(self, text, word):
         """Completion function for both frame filter dictionary, and
@@ -280,7 +280,7 @@ class DisableFrameFilter(gdb.Command):
     """
 
     def __init__(self):
-        super(DisableFrameFilter, self).__init__(
+        super().__init__(
             "disable frame-filter", gdb.COMMAND_DATA
         )
 
@@ -316,7 +316,7 @@ class SetFrameFilterPriority(gdb.Command):
     """
 
     def __init__(self):
-        super(SetFrameFilterPriority, self).__init__(
+        super().__init__(
             "set frame-filter " "priority", gdb.COMMAND_DATA
         )
 
@@ -399,7 +399,7 @@ class ShowFrameFilterPriority(gdb.Command):
     """
 
     def __init__(self):
-        super(ShowFrameFilterPriority, self).__init__(
+        super().__init__(
             "show frame-filter " "priority", gdb.COMMAND_DATA
         )
 

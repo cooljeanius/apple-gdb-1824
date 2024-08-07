@@ -128,7 +128,7 @@ def exec_and_log(cmd):
         log_stack()
 
 
-class Invoker(object):
+class Invoker:
     """A simple class that can invoke a gdb command."""
 
     def __init__(self, cmd):

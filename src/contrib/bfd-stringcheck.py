@@ -1,4 +1,3 @@
-from __future__ import print_function
 import re
 from optparse import OptionParser
 from pyg3t.gtparse import iparse

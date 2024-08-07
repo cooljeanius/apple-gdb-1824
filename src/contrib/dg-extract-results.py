@@ -26,14 +26,12 @@ sort_logs = True
 # A version of open() that is safe against whatever binary output
 # might be added to the log.
 def safe_open(filename):
-    if sys.version_info >= (3, 0):
-        return open(filename, "r", errors="surrogateescape")
-    return open(filename, "r")
+    return open(filename, errors="surrogateescape")
+    return open(filename)
 
 
 # Force stdout to handle escape sequences from a safe_open file.
-if sys.version_info >= (3, 0):
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, errors="surrogateescape")
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, errors="surrogateescape")
 
 
 class Named:
@@ -613,7 +611,7 @@ class Prog:
             sys.stdout.write(self.version_output)
             if self.end_line:
                 sys.stdout.write(self.end_line[1])
-        except IOError as e:
+        except OSError as e:
             self.fatal(e.filename, e.strerror)
 
 

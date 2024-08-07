@@ -99,7 +99,7 @@ class NotesUpdate(AbstractUpdate):
             None if notes.contents is None else indent(notes.contents, " " * 4)
         )
 
-        subject = "[%s] notes update for %s" % (
+        subject = "[{}] notes update for {}".format(
             self.email_info.project_name,
             notes.annotated_rev,
         )
@@ -144,7 +144,7 @@ class NotesUpdate(AbstractUpdate):
         # there is at least one commit that is accessible from the old
         # revision which would no longer be accessible from the new
         # revision.
-        if git.rev_list("%s..%s" % (self.new_rev, self.old_rev)) == "":
+        if git.rev_list("{}..{}".format(self.new_rev, self.old_rev)) == "":
             return
 
         raise InvalidUpdate(

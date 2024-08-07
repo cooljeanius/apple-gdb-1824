@@ -22,7 +22,7 @@ from gdb.FrameDecorator import FrameDecorator
 
 class Reverse_Function(FrameDecorator):
     def __init__(self, fobj):
-        super(Reverse_Function, self).__init__(fobj)
+        super().__init__(fobj)
         self.fobj = fobj
 
     def function(self):
@@ -36,7 +36,7 @@ class Reverse_Function(FrameDecorator):
 
 class Dummy(FrameDecorator):
     def __init__(self, fobj):
-        super(Dummy, self).__init__(fobj)
+        super().__init__(fobj)
         self.fobj = fobj
 
     def function(self):
@@ -81,7 +81,7 @@ class FrameFilter:
 
 class ElidingFrameDecorator(FrameDecorator):
     def __init__(self, frame, elided_frames):
-        super(ElidingFrameDecorator, self).__init__(frame)
+        super().__init__(frame)
         self.elided_frames = elided_frames
 
     def elided(self):

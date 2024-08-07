@@ -18,7 +18,7 @@ from perftest import perftest
 
 class SingleStep(perftest.TestCaseWithBasicMeasurements):
     def __init__(self, step):
-        super(SingleStep, self).__init__("single-step")
+        super().__init__("single-step")
         self.step = step
 
     def warm_up(self):

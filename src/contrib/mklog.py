@@ -51,7 +51,7 @@ bugzilla_url = (
     "https://gcc.gnu.org/bugzilla/rest.cgi/bug?id=%s&" "include_fields=summary"
 )
 
-function_extensions = set([".c", ".cpp", ".C", ".cc", ".h", ".inc", ".def"])
+function_extensions = {".c", ".cpp", ".C", ".cc", ".h", ".inc", ".def"}
 
 help_message = """\
 Generate ChangeLog template for PATCH.
@@ -116,7 +116,7 @@ def get_pr_titles(prs):
         r = requests.get(bugzilla_url % id)
         bugs = r.json()["bugs"]
         if len(bugs) == 1:
-            output += "%s - %s\n" % (pr, bugs[0]["summary"])
+            output += "{} - {}\n".format(pr, bugs[0]["summary"])
             print(output)
     if output:
         output += "\n"
@@ -172,7 +172,7 @@ def generate_changelog(data, no_functions=False, fill_pr_titles=False):
             functions = []
             if file.is_added_file:
                 msg = "New test" if in_tests else "New file"
-                out += "\t* %s: %s.\n" % (relative_path, msg)
+                out += "\t* {}: {}.\n".format(relative_path, msg)
             elif file.is_removed_file:
                 out += "\t* %s: Removed.\n" % (relative_path)
             elif hasattr(file, "is_rename") and file.is_rename:
@@ -213,7 +213,7 @@ def generate_changelog(data, no_functions=False, fill_pr_titles=False):
                             if not success:
                                 try_add_function(functions, hunk.section_header)
                 if functions:
-                    out += "\t* %s (%s):\n" % (relative_path, functions[0])
+                    out += "\t* {} ({}):\n".format(relative_path, functions[0])
                     for fn in functions[1:]:
                         out += "\t(%s):\n" % fn
                 else:

@@ -37,7 +37,7 @@ class AnnotatedTagCreation(AnnotatedTagUpdate):
 
     def get_update_email_contents(self):
         """See AbstractUpdate.get_update_email_contents."""
-        subject = "[%s] Created tag %s" % (
+        subject = "[{}] Created tag {}".format(
             self.email_info.project_name,
             self.short_ref_name,
         )

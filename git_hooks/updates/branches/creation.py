@@ -28,7 +28,7 @@ class BranchCreation(BranchUpdate):
         else:
             in_namespace = " in namespace '%s'" % self.ref_namespace
 
-        subject = "[%s] Created branch '%s'%s" % (
+        subject = "[{}] Created branch '{}'{}".format(
             self.email_info.project_name,
             self.short_ref_name,
             in_namespace,

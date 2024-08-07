@@ -106,7 +106,7 @@ class Entry:
 def scan_target_h():
     found_trigger = False
     all_the_text = ""
-    with open("target.h", "r") as target_h:
+    with open("target.h") as target_h:
         for line in target_h:
             line = line.strip()
             if not found_trigger:

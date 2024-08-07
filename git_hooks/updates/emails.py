@@ -207,9 +207,9 @@ class Email(object):
         # That's because this is an AdaCore-specific feature which is
         # otherwise on by default, and we do not want to non-AdaCore
         # projects to send emails to AdaCore by accident.
-        if (('GIT_HOOKS_TESTSUITE_MODE' in os.environ
+        if ('GIT_HOOKS_TESTSUITE_MODE' in os.environ
              and self.send_to_filer
-             and git_config('hooks.bcc-file-ci'))):
+             and git_config('hooks.bcc-file-ci')):
             e_msg['Bcc'] = FILER_EMAIL
         e_msg['Subject'] = self.email_subject
         e_msg['X-Act-Checkin'] = self.email_info.project_name

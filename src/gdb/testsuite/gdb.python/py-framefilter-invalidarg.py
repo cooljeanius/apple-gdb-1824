@@ -22,7 +22,7 @@ from gdb.FrameDecorator import FrameDecorator
 
 class Reverse_Function(FrameDecorator):
     def __init__(self, fobj):
-        super(Reverse_Function, self).__init__(fobj)
+        super().__init__(fobj)
         self.fobj = fobj
 
     def function(self):

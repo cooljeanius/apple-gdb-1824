@@ -247,7 +247,7 @@ class SignalFrame:
         instance = self.or_join_array(instances)
         signal = self.or_join_array(signals)
 
-        stream.write(" <emit signal %s on instance %s>\n" % (signal, instance))
+        stream.write(" <emit signal {} on instance {}>\n".format(signal, instance))
 
     def __getattr__(self, name):
         return getattr(self.frame, name)

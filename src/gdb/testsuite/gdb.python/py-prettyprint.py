@@ -64,7 +64,7 @@ class pp_s:
         a = self.val["a"]
         b = self.val["b"]
         if a.address != b:
-            raise Exception("&a(%s) != b(%s)" % (str(a.address), str(b)))
+            raise Exception("&a({}) != b({})".format(str(a.address), str(b)))
         return " a=<" + str(self.val["a"]) + "> b=<" + str(self.val["b"]) + ">"
 
 

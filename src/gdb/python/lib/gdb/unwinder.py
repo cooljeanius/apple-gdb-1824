@@ -18,7 +18,7 @@
 import gdb
 
 
-class Unwinder(object):
+class Unwinder:
     """Base class (or a template) for frame unwinders written in Python.
 
     An unwinder has a single method __call__ and the attributes
@@ -69,7 +69,7 @@ class Unwinder(object):
         raise NotImplementedError("Unwinder __call__.")
 
 
-class FrameId(object):
+class FrameId:
     """A Frame-ID class for use when creating gdb.UnwindInfo objects.
 
     Attributes (all read-only):
@@ -123,7 +123,7 @@ def register_unwinder(locus, unwinder, replace=False):
     elif isinstance(locus, gdb.Objfile) or isinstance(locus, gdb.Progspace):
         if gdb.parameter("verbose"):
             gdb.write(
-                "Registering %s unwinder for %s ...\n" % (unwinder.name, locus.filename)
+                "Registering {} unwinder for {} ...\n".format(unwinder.name, locus.filename)
             )
     else:
         raise TypeError("locus should be gdb.Objfile or gdb.Progspace or None")

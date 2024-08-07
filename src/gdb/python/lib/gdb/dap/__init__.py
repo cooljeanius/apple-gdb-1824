@@ -69,5 +69,5 @@ def run():
     os.close(wfd)
 
     # Note the inferior output is opened in text mode.
-    server = Server(open(saved_in, "rb"), open(saved_out, "wb"), open(rfd, "r"))
+    server = Server(open(saved_in, "rb"), open(saved_out, "wb"), open(rfd))
     startup.start_dap(server.main_loop)

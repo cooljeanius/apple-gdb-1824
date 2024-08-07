@@ -219,7 +219,7 @@ def commit_oneline(rev):
     """
     info = git.rev_list(rev, max_count="1", oneline=True)
     (short_rev, subject) = info.split(None, 1)
-    return "%s... %s" % (short_rev, subject[0:59])
+    return "{}... {}".format(short_rev, subject[0:59])
 
 
 def get_module_name():
@@ -250,7 +250,7 @@ def file_exists(commit_rev, filename):
         A boolean.
     """
     try:
-        git.cat_file("-e", "%s:%s" % (commit_rev, filename))
+        git.cat_file("-e", "{}:{}".format(commit_rev, filename))
     except CalledProcessError:
         # cat-file -e returned non-zero; the file does not exist.
         return False

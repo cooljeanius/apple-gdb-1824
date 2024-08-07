@@ -25,7 +25,7 @@ except NameError:
     basestring = str
 
 
-class FrameDecorator(object):
+class FrameDecorator:
     """Basic implementation of a Frame Decorator"""
 
     """ This base frame decorator decorates a frame or another frame
@@ -207,7 +207,7 @@ class FrameDecorator(object):
         return self._base
 
 
-class SymValueWrapper(object):
+class SymValueWrapper:
     """A container class conforming to the Symbol/Value interface
     which holds frame locals or frame arguments."""
 
@@ -225,7 +225,7 @@ class SymValueWrapper(object):
         return self.sym
 
 
-class FrameVars(object):
+class FrameVars:
 
     """Utility class to fetch and store frame local variables, or
     frame arguments."""

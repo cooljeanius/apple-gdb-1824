@@ -25,7 +25,7 @@ if sys.version_info[0] > 2:
 from _gdb import *
 
 
-class _GdbFile(object):
+class _GdbFile:
     # These two are needed in Python 3
     encoding = "UTF-8"
     errors = "strict"
@@ -99,7 +99,7 @@ def auto_load_packages():
 
             for py_file in py_files:
                 # Construct from foo.py, gdb.module.foo
-                modname = "%s.%s.%s" % (__name__, package, py_file[:-3])
+                modname = "{}.{}.{}".format(__name__, package, py_file[:-3])
                 try:
                     if modname in sys.modules:
                         # reload modules with duplicate names

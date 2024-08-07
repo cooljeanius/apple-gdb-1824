@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""copyright.py
+r"""copyright.py
 
 This script updates the list of years in the copyright notices in
 most files maintained by the GDB project.

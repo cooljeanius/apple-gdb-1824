@@ -5,7 +5,7 @@ from updates.mailinglists import expanded_mailing_list
 from utils import debug
 
 
-class CommitInfo(object):
+class CommitInfo:
     """A git commit.
 
     ATTRIBUTES
@@ -45,7 +45,7 @@ class CommitInfo(object):
 
     def oneline_str(self):
         """A one-line string description of the commit."""
-        return "%s... %s" % (self.rev[:7], self.subject[:59])
+        return "{}... {}".format(self.rev[:7], self.subject[:59])
 
     @property
     def email_to(self):

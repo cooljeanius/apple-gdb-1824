@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class TestResult(object):
+class TestResult:
     """Base class to record and report test results.
 
     Method record is to record the results of test case, and report
@@ -33,7 +33,7 @@ class SingleStatisticTestResult(TestResult):
     """Test results for the test case with a single statistic."""
 
     def __init__(self):
-        super(SingleStatisticTestResult, self).__init__()
+        super().__init__()
         self.results = dict()
 
     def record(self, parameter, result):
@@ -46,7 +46,7 @@ class SingleStatisticTestResult(TestResult):
         reporter.end()
 
 
-class ResultFactory(object):
+class ResultFactory:
     """A factory to create an instance of TestResult."""
 
     def create_result(self):

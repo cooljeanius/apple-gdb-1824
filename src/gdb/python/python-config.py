@@ -11,7 +11,7 @@ valid_opts = ["prefix", "exec-prefix", "includes", "libs", "cflags", "ldflags", 
 
 def exit_with_usage(code=1):
     sys.stderr.write(
-        "Usage: %s [%s]\n" % (sys.argv[0], "|".join("--" + opt for opt in valid_opts))
+        "Usage: {} [{}]\n".format(sys.argv[0], "|".join("--" + opt for opt in valid_opts))
     )
     sys.exit(code)
 

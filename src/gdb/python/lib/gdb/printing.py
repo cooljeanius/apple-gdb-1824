@@ -27,7 +27,7 @@ if sys.version_info[0] > 2:
     long = int
 
 
-class PrettyPrinter(object):
+class PrettyPrinter:
     """A basic pretty-printer.
 
     Attributes:
@@ -59,7 +59,7 @@ class PrettyPrinter(object):
         raise NotImplementedError("PrettyPrinter __call__")
 
 
-class SubPrettyPrinter(object):
+class SubPrettyPrinter:
     """Baseclass for sub-pretty-printers.
 
     Sub-pretty-printers needn't use this, but it formalizes what's needed.
@@ -167,13 +167,13 @@ class RegexpCollectionPrettyPrinter(PrettyPrinter):
 
     class RegexpSubprinter(SubPrettyPrinter):
         def __init__(self, name, regexp, gen_printer):
-            super(RegexpCollectionPrettyPrinter.RegexpSubprinter, self).__init__(name)
+            super().__init__(name)
             self.regexp = regexp
             self.gen_printer = gen_printer
             self.compiled_re = re.compile(regexp)
 
     def __init__(self, name):
-        super(RegexpCollectionPrettyPrinter, self).__init__(name, [])
+        super().__init__(name, [])
 
     def add_printer(self, name, regexp, gen_printer):
         """Add a printer to the list.
@@ -235,7 +235,7 @@ class _EnumInstance:
         if not any_found or v != 0:
             # Leftover value.
             flag_list.append("<unknown: 0x%x>" % v)
-        return "0x%x [%s]" % (self.val, " | ".join(flag_list))
+        return "0x{:x} [{}]".format(self.val, " | ".join(flag_list))
 
 
 class FlagEnumerationPrinter(PrettyPrinter):
@@ -248,7 +248,7 @@ class FlagEnumerationPrinter(PrettyPrinter):
     this case, but this printer will attempt to."""
 
     def __init__(self, enum_type):
-        super(FlagEnumerationPrinter, self).__init__(enum_type)
+        super().__init__(enum_type)
         self.initialized = False
 
     def __call__(self, val):

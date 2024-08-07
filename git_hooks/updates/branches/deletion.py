@@ -25,7 +25,7 @@ class BranchDeletion(AbstractUpdate):
 
     def get_update_email_contents(self):
         """See AbstractUpdate.get_update_email_contents."""
-        subject = "[%s] Deleted branch %s" % (
+        subject = "[{}] Deleted branch {}".format(
             self.email_info.project_name,
             self.short_ref_name,
         )

@@ -71,7 +71,7 @@ def parse_sum_line(line, dic):
         test_name = m.group(3)
         # Remove tail parentheses.  These are likely to be '(timeout)'
         # and other extra information that will only confuse us.
-        test_name = re.sub("(\s+)?\(.*$", "", test_name)
+        test_name = re.sub(r"(\s+)?\(.*$", "", test_name)
         if result not in dic.keys():
             dic[result] = set()
         if test_name in dic[result]:
@@ -99,7 +99,7 @@ def read_sum_files(files):
     global files_and_tests
 
     for x in files:
-        with open(x, "r") as f:
+        with open(x) as f:
             files_and_tests[x] = dict()
             for line in f.readlines():
                 parse_sum_line(line, files_and_tests[x])

@@ -26,7 +26,7 @@ class SolibLoadUnload1(perftest.TestCaseWithBasicMeasurements):
         else:
             name = "solib_unload"
         # We want to measure time in this test.
-        super(SolibLoadUnload1, self).__init__(name)
+        super().__init__(name)
         self.solib_count = solib_count
         self.measure_load = measure_load
 
@@ -65,7 +65,7 @@ class SolibLoadUnload1(perftest.TestCaseWithBasicMeasurements):
             iteration -= 1
 
 
-class SolibLoadUnload(object):
+class SolibLoadUnload:
     def __init__(self, solib_count):
         self.solib_count = solib_count
 

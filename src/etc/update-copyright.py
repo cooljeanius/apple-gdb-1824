@@ -62,17 +62,14 @@ class GenericFilter:
     def __init__(self):
         self.skip_files = set()
         self.skip_dirs = set()
-        self.skip_extensions = set(
-            [
+        self.skip_extensions = {
                 ".png",
                 ".pyc",
-            ]
-        )
+        }
         self.fossilised_files = set()
         self.own_files = set()
 
-        self.skip_files |= set(
-            [
+        self.skip_files |= {
                 # Skip licence files.
                 "COPYING",
                 "COPYING.LIB",
@@ -111,23 +108,18 @@ class GenericFilter:
                 "appendix_free.xml",
                 # Skip imported texinfo files.
                 "texinfo.tex",
-            ]
-        )
+        }
 
-        self.skip_extensions |= set(
-            [
+        self.skip_extensions |= {
                 # Maintained by the translation project.
                 ".po",
                 # Automatically-generated.
                 ".pot",
-            ]
-        )
+        }
 
-        self.skip_dirs |= set(
-            [
+        self.skip_dirs |= {
                 "autom4te.cache",
-            ]
-        )
+        }
 
     def get_line_filter(self, dir, filename):
         if filename.startswith("ChangeLog"):
@@ -182,10 +174,10 @@ class Copyright:
         self.errors = errors
 
         # Characters in a range of years.  Include '.' for typos.
-        ranges = "[0-9](?:[-0-9.,\s]|\s+and\s+)*[0-9]"
+        ranges = r"[0-9](?:[-0-9.,\s]|\s+and\s+)*[0-9]"
 
         # Non-whitespace characters in a copyright holder's name.
-        name = "[\w.,-]"
+        name = r"[\w.,-]"
 
         # Matches one year.
         self.year_re = re.compile("[0-9]+")
@@ -197,28 +189,28 @@ class Copyright:
         self.copyright_re = re.compile(
             # 1: 'Copyright (C)', etc.
             "([Cc]opyright"
-            "|[Cc]opyright\s+\([Cc]\)"
-            "|[Cc]opyright\s+%s"
-            "|[Cc]opyright\s+&copy;"
-            "|[Cc]opyright\s+@copyright{}"
-            "|@set\s+copyright[\w-]+)"
+            r"|[Cc]opyright\s+\([Cc]\)"
+            r"|[Cc]opyright\s+%s"
+            r"|[Cc]opyright\s+&copy;"
+            r"|[Cc]opyright\s+@copyright{}"
+            r"|@set\s+copyright[\w-]+)"
             # 2: the years.  Include the whitespace in the year, so that
             # we can remove any excess.
-            "(\s*(?:" + ranges + ",?"
-            "|@value\{[^{}]*\})\s*)"
+            r"(\s*(?:" + ranges + ",?"
+            r"|@value\{[^{}]*\})\s*)"
             # 3: 'by ', if used
-            "(by\s+)?"
+            r"(by\s+)?"
             # 4: the copyright holder.  Don't allow multiple consecutive
             # spaces, so that right-margin gloss doesn't get caught
             # (e.g. gnat_ugn.texi).
-            "(" + name + "(?:\s?" + name + ")*)?"
+            "(" + name + r"(?:\s?" + name + ")*)?"
         )
 
         # A regexp for notices that might have slipped by.  Just matching
         # 'copyright' is too noisy, and 'copyright.*[0-9]' falls foul of
         # HTML header markers, so check for 'copyright' and two digits.
         self.other_copyright_re = re.compile(
-            "(^|[^\._])copyright[^=]*[0-9][0-9]", re.IGNORECASE
+            r"(^|[^\._])copyright[^=]*[0-9][0-9]", re.IGNORECASE
         )
         self.comment_re = re.compile("#+|[*]+|;+|%+|//+|@c |dnl ")
         self.holders = {"@copying": "@copying"}
@@ -405,7 +397,7 @@ class Copyright:
     def guess_encoding(self, pathname):
         for encoding in ("utf8", "iso8859"):
             try:
-                open(pathname, "r", encoding=encoding).read()
+                open(pathname, encoding=encoding).read()
                 return encoding
             except UnicodeDecodeError:
                 pass
@@ -426,7 +418,7 @@ class Copyright:
         line_filter = filter.get_line_filter(dir, filename)
         mode = None
         encoding = self.guess_encoding(pathname)
-        with open(pathname, "r", encoding=encoding) as file:
+        with open(pathname, encoding=encoding) as file:
             prev = None
             mode = os.fstat(file.fileno()).st_mode
             for line in file:
@@ -580,12 +572,10 @@ class LdFilter(GenericFilter):
     def __init__(self):
         GenericFilter.__init__(self)
 
-        self.skip_extensions |= set(
-            [
+        self.skip_extensions |= {
                 # ld testsuite output match files.
                 ".ro",
-            ]
-        )
+        }
 
 
 class BinutilsCopyright(Copyright):

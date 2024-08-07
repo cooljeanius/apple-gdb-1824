@@ -39,7 +39,7 @@ class _ExtendedPrompt(gdb.Parameter):
     show_doc = "Show the extended prompt."
 
     def __init__(self):
-        super(_ExtendedPrompt, self).__init__(
+        super().__init__(
             "extended-prompt", gdb.COMMAND_SUPPORT, gdb.PARAM_STRING_NOESCAPE
         )
         self.value = ""

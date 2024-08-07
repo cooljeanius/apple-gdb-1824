@@ -21,7 +21,7 @@ import gdb.printing
 
 
 def lookup_function_lookup_test(val):
-    class PrintFunctionLookup(object):
+    class PrintFunctionLookup:
         def __init__(self, val):
             self.val = val
 
@@ -35,7 +35,7 @@ def lookup_function_lookup_test(val):
     return None
 
 
-class pp_s(object):
+class pp_s:
     def __init__(self, val):
         self.val = val
 
@@ -43,11 +43,11 @@ class pp_s(object):
         a = self.val["a"]
         b = self.val["b"]
         if a.address != b:
-            raise Exception("&a(%s) != b(%s)" % (str(a.address), str(b)))
+            raise Exception("&a({}) != b({})".format(str(a.address), str(b)))
         return "a=<" + str(self.val["a"]) + "> b=<" + str(self.val["b"]) + ">"
 
 
-class pp_ss(object):
+class pp_ss:
     def __init__(self, val):
         self.val = val
 

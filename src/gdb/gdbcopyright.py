@@ -20,7 +20,7 @@
 
 def copyright(tool: str, description: str):
     # Search the tool source itself for the correct copyright years.
-    with open(tool, "r") as f:
+    with open(tool) as f:
         for line in f:
             if line.startswith("# Copyright (C) "):
                 dateline = line[1:].strip()

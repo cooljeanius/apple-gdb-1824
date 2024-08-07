@@ -24,7 +24,7 @@ if sys.version_info[0] > 2:
     raw_input = input
 
 
-class Explorer(object):
+class Explorer:
     """Internal class which invokes other explorers."""
 
     # This map is filled by the Explorer.init_env() function
@@ -189,7 +189,7 @@ class Explorer(object):
         raw_input("\nPress enter to return to enclosing type: ")
 
 
-class ScalarExplorer(object):
+class ScalarExplorer:
     """Internal class used to explore scalar values."""
 
     @staticmethod
@@ -198,8 +198,8 @@ class ScalarExplorer(object):
         See Explorer.explore_expr and Explorer.is_scalar_type for more
         information.
         """
-        print("'%s' is a scalar value of type '%s'." % (expr, value.type))
-        print("%s = %s" % (expr, str(value)))
+        print("'{}' is a scalar value of type '{}'.".format(expr, value.type))
+        print("{} = {}".format(expr, str(value)))
 
         if is_child:
             Explorer.return_to_parent_value_prompt()
@@ -215,12 +215,12 @@ class ScalarExplorer(object):
         """
         if datatype.code == gdb.TYPE_CODE_ENUM:
             if is_child:
-                print("%s is of an enumerated type '%s'." % (name, str(datatype)))
+                print("{} is of an enumerated type '{}'.".format(name, str(datatype)))
             else:
                 print("'%s' is an enumerated type." % name)
         else:
             if is_child:
-                print("%s is of a scalar type '%s'." % (name, str(datatype)))
+                print("{} is of a scalar type '{}'.".format(name, str(datatype)))
             else:
                 print("'%s' is a scalar type." % name)
 
@@ -231,7 +231,7 @@ class ScalarExplorer(object):
         return False
 
 
-class PointerExplorer(object):
+class PointerExplorer:
     """Internal class used to explore pointer values."""
 
     @staticmethod
@@ -296,13 +296,13 @@ class PointerExplorer(object):
         See Explorer.explore_type for more information.
         """
         target_type = datatype.target()
-        print("\n%s is a pointer to a value of type '%s'." % (name, str(target_type)))
+        print("\n{} is a pointer to a value of type '{}'.".format(name, str(target_type)))
 
         Explorer.explore_type("the pointee type of %s" % name, target_type, is_child)
         return False
 
 
-class ReferenceExplorer(object):
+class ReferenceExplorer:
     """Internal class used to explore reference (TYPE_CODE_REF) values."""
 
     @staticmethod
@@ -324,7 +324,7 @@ class ReferenceExplorer(object):
         return False
 
 
-class ArrayExplorer(object):
+class ArrayExplorer:
     """Internal class used to explore arrays."""
 
     @staticmethod
@@ -333,7 +333,7 @@ class ArrayExplorer(object):
         See Explorer.explore_expr for more information.
         """
         target_type = value.type.target()
-        print("'%s' is an array of '%s'." % (expr, str(target_type)))
+        print("'{}' is an array of '{}'.".format(expr, str(target_type)))
         index = 0
         try:
             index = int(
@@ -367,13 +367,13 @@ class ArrayExplorer(object):
         See Explorer.explore_type for more information.
         """
         target_type = datatype.target()
-        print("%s is an array of '%s'." % (name, str(target_type)))
+        print("{} is an array of '{}'.".format(name, str(target_type)))
 
         Explorer.explore_type("the array element of %s" % name, target_type, is_child)
         return False
 
 
-class CompoundExplorer(object):
+class CompoundExplorer:
     """Internal class used to explore struct, classes and unions."""
 
     @staticmethod
@@ -445,7 +445,7 @@ class CompoundExplorer(object):
                 has_explorable_fields = True
             else:
                 if Explorer.is_scalar_type(field.type):
-                    literal_value = "%s .. (Value of type '%s')" % (
+                    literal_value = "{} .. (Value of type '{}')".format(
                         str(field_value),
                         str(field.type),
                     )
@@ -511,7 +511,7 @@ class CompoundExplorer(object):
                 )
                 Explorer.return_to_enclosing_type_prompt()
             else:
-                print("'%s' is a %s with no fields." % (name, type_desc))
+                print("'{}' is a {} with no fields.".format(name, type_desc))
             return False
 
         if is_child:
@@ -553,13 +553,13 @@ class CompoundExplorer(object):
             choice = raw_input("Enter the field number of choice: ")
             if choice in choice_to_compound_field_map:
                 if is_child:
-                    new_name = "%s '%s' of %s" % (
+                    new_name = "{} '{}' of {}".format(
                         choice_to_compound_field_map[choice][2],
                         choice_to_compound_field_map[choice][0],
                         name,
                     )
                 else:
-                    new_name = "%s '%s' of '%s'" % (
+                    new_name = "{} '{}' of '{}'".format(
                         choice_to_compound_field_map[choice][2],
                         choice_to_compound_field_map[choice][0],
                         name,
@@ -578,7 +578,7 @@ class CompoundExplorer(object):
         return False
 
 
-class TypedefExplorer(object):
+class TypedefExplorer:
     """Internal class used to explore values whose type is a typedef."""
 
     @staticmethod
@@ -604,16 +604,16 @@ class TypedefExplorer(object):
         actual_type = datatype.strip_typedefs()
         if is_child:
             print(
-                "The type of %s is a typedef of type '%s'." % (name, str(actual_type))
+                "The type of {} is a typedef of type '{}'.".format(name, str(actual_type))
             )
         else:
-            print("The type '%s' is a typedef of type '%s'." % (name, str(actual_type)))
+            print("The type '{}' is a typedef of type '{}'.".format(name, str(actual_type)))
 
         Explorer.explore_type(name, actual_type, is_child)
         return False
 
 
-class ExploreUtils(object):
+class ExploreUtils:
     """Internal class which provides utilities for the main command classes."""
 
     @staticmethod
@@ -691,7 +691,7 @@ class ExploreCommand(gdb.Command):
     """
 
     def __init__(self):
-        super(ExploreCommand, self).__init__(
+        super().__init__(
             name="explore", command_class=gdb.COMMAND_DATA, prefix=True
         )
 
@@ -713,10 +713,8 @@ class ExploreCommand(gdb.Command):
 
         # If it is neither a value nor a type, raise an error.
         raise gdb.GdbError(
-            (
                 "'%s' neither evaluates to a value nor is a type "
                 "in the current context." % arg_str
-            )
         )
 
 
@@ -733,7 +731,7 @@ class ExploreValueCommand(gdb.Command):
     """
 
     def __init__(self):
-        super(ExploreValueCommand, self).__init__(
+        super().__init__(
             name="explore value", command_class=gdb.COMMAND_DATA
         )
 
@@ -744,10 +742,8 @@ class ExploreValueCommand(gdb.Command):
         value = ExploreUtils.get_value_from_str(arg_str)
         if value is None:
             raise gdb.GdbError(
-                (
                     " '%s' does not evaluate to a value in the current "
                     "context." % arg_str
-                )
             )
             return
 
@@ -768,7 +764,7 @@ class ExploreTypeCommand(gdb.Command):
     """
 
     def __init__(self):
-        super(ExploreTypeCommand, self).__init__(
+        super().__init__(
             name="explore type", command_class=gdb.COMMAND_DATA
         )
 
@@ -783,12 +779,12 @@ class ExploreTypeCommand(gdb.Command):
 
         value = ExploreUtils.get_value_from_str(arg_str)
         if value is not None:
-            print("'%s' is of type '%s'." % (arg_str, str(value.type)))
+            print("'{}' is of type '{}'.".format(arg_str, str(value.type)))
             Explorer.explore_type(str(value.type), value.type, False)
             return
 
         raise gdb.GdbError(
-            ("'%s' is not a type or value in the current " "context." % arg_str)
+            "'%s' is not a type or value in the current " "context." % arg_str
         )
 
 

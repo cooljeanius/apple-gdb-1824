@@ -3,7 +3,7 @@
 from git import git, CalledProcessError
 
 
-class GitNotes(object):
+class GitNotes:
     """An object representing a Git Notes change.
 
     ATTRIBUTES
@@ -96,7 +96,7 @@ class GitNotes(object):
             notes_filename: The filename containing the notes.
         """
         try:
-            return git.show("%s:%s" % (notes_rev, notes_filename))
+            return git.show("{}:{}".format(notes_rev, notes_filename))
         except CalledProcessError:
             # The note was probably deleted, so no more notes.
             return None

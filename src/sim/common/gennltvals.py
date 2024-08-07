@@ -78,7 +78,7 @@ def extract_syms(
     define_pattern = re.compile(r"^#\s*define\s+(" + pattern + ")")
     filter_pattern = re.compile(filter)
     for header in headers:
-        with open(srcdir / header, "r", encoding="utf-8") as fp:
+        with open(srcdir / header, encoding="utf-8") as fp:
             data = fp.read()
         for line in data.splitlines():
             m = define_pattern.match(line)

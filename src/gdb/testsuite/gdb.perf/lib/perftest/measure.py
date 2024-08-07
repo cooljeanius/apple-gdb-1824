@@ -18,7 +18,7 @@ import os
 import gc
 
 
-class Measure(object):
+class Measure:
     """A class that measure and collect the interesting data for a given testcase.
 
     An instance of Measure has a collection of measurements, and each
@@ -57,7 +57,7 @@ class Measure(object):
             m.report(reporter, name)
 
 
-class Measurement(object):
+class Measurement:
     """A measurement for a certain aspect."""
 
     def __init__(self, name, result):
@@ -95,7 +95,7 @@ class MeasurementCpuTime(Measurement):
     # time on Windows.
 
     def __init__(self, result):
-        super(MeasurementCpuTime, self).__init__("cpu_time", result)
+        super().__init__("cpu_time", result)
         self.start_time = 0
 
     def start(self, id):
@@ -113,7 +113,7 @@ class MeasurementWallTime(Measurement):
     """Measurement on Wall time."""
 
     def __init__(self, result):
-        super(MeasurementWallTime, self).__init__("wall_time", result)
+        super().__init__("wall_time", result)
         self.start_time = 0
 
     def start(self, id):
@@ -128,7 +128,7 @@ class MeasurementVmSize(Measurement):
     """Measurement on memory usage represented by VmSize."""
 
     def __init__(self, result):
-        super(MeasurementVmSize, self).__init__("vmsize", result)
+        super().__init__("vmsize", result)
 
     def _compute_process_memory_usage(self, key):
         file_path = "/proc/%d/status" % os.getpid()

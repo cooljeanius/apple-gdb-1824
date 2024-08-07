@@ -98,7 +98,7 @@ def git_config(option_name):
             }
             type_name = TYPE_NAME_MAP[GIT_CONFIG_OPTS[option_name]["type"]]
             raise InvalidUpdate(
-                "Invalid %s value: %s (must be %s)" % (option_name, val, type_name)
+                "Invalid {} value: {} (must be {})".format(option_name, val, type_name)
             )
         # Save the converted value to avoid having to do it again
         # the next time we query the same config option.

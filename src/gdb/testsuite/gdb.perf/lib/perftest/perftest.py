@@ -21,7 +21,7 @@ from measure import MeasurementWallTime
 from measure import MeasurementVmSize
 
 
-class TestCase(object):
+class TestCase:
     """Base class of all performance testing cases.
 
     Each sub-class should override methods execute_test, in which
@@ -74,4 +74,4 @@ class TestCaseWithBasicMeasurements(TestCase):
             MeasurementWallTime(result_factory.create_result()),
             MeasurementVmSize(result_factory.create_result()),
         ]
-        super(TestCaseWithBasicMeasurements, self).__init__(name, Measure(measurements))
+        super().__init__(name, Measure(measurements))

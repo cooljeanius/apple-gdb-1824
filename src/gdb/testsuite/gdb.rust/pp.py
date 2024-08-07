@@ -20,7 +20,7 @@ import gdb
 
 
 # Printer for Inner.
-class inner_print(object):
+class inner_print:
     def __init__(self, val):
         self.val = val
 

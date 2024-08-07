@@ -18,7 +18,7 @@ from perftest import perftest
 
 class BackTrace(perftest.TestCaseWithBasicMeasurements):
     def __init__(self, depth):
-        super(BackTrace, self).__init__("backtrace")
+        super().__init__("backtrace")
         self.depth = depth
 
     def warm_up(self):

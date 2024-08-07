@@ -20,7 +20,7 @@ from updates.mailinglists import expanded_mailing_list
 from utils import debug, warn, get_user_name
 
 
-class AbstractUpdate(object):
+class AbstractUpdate:
     """An abstract class representing a reference update.
 
     ATTRIBUTES
@@ -327,11 +327,11 @@ class AbstractUpdate(object):
             # name in full to label the branch name.
             branch = "(%s)" % self.ref_name
 
-        subject = "[%(repo)s%(branch)s] %(subject)s" % {
-            "repo": self.email_info.project_name,
-            "branch": branch,
-            "subject": commit.subject[:SUBJECT_MAX_SUBJECT_CHARS],
-        }
+        subject = "[{repo}{branch}] {subject}".format(
+            repo=self.email_info.project_name,
+            branch=branch,
+            subject=commit.subject[:SUBJECT_MAX_SUBJECT_CHARS],
+        )
 
         # Generate the body of the email in two pieces:
         #   1. The commit description without the patch;

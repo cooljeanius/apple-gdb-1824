@@ -18,7 +18,7 @@ from perftest import perftest
 
 class Disassemble(perftest.TestCaseWithBasicMeasurements):
     def __init__(self):
-        super(Disassemble, self).__init__("disassemble")
+        super().__init__("disassemble")
 
     def warm_up(self):
         do_test_command = "disassemble ada_evaluate_subexp"

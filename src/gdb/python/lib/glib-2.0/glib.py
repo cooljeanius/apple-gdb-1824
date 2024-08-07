@@ -34,7 +34,7 @@ class GListNodePrinter:
         self.val = val
 
     def to_string(self):
-        return "{data=%s, next=0x%x, prev=0x%x}" % (
+        return "{{data={}, next=0x{:x}, prev=0x{:x}}}".format(
             str(self.val["data"]),
             long(self.val["next"]),
             long(self.val["prev"]),
@@ -48,7 +48,7 @@ class GSListNodePrinter:
         self.val = val
 
     def to_string(self):
-        return "{data=%s, next=0x%x}" % (str(self.val["data"]), long(self.val["next"]))
+        return "{{data={}, next=0x{:x}}}".format(str(self.val["data"]), long(self.val["next"]))
 
 
 class GListPrinter:
@@ -189,7 +189,7 @@ class ForeachCommand(gdb.Command):
     """Foreach on list"""
 
     def __init__(self):
-        super(ForeachCommand, self).__init__(
+        super().__init__(
             "gforeach", gdb.COMMAND_DATA, gdb.COMPLETE_SYMBOL
         )
 
@@ -234,7 +234,7 @@ class ForeachCommand(gdb.Command):
     def do_iter(self, arg, item, command):
         item = item.cast(gdb.lookup_type("void").pointer())
         item = long(item)
-        to_eval = "set $%s = (void *)0x%x\n" % (arg, item)
+        to_eval = "set ${} = (void *)0x{:x}\n".format(arg, item)
         gdb.execute(to_eval)
         gdb.execute(command)
 

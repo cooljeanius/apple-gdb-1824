@@ -16,7 +16,7 @@
 import gdb
 
 
-class Recognizer(object):
+class Recognizer:
     def __init__(self):
         self.enabled = True
 
@@ -26,7 +26,7 @@ class Recognizer(object):
         return None
 
 
-class StringTypePrinter(object):
+class StringTypePrinter:
     def __init__(self):
         self.name = "string"
         self.enabled = True

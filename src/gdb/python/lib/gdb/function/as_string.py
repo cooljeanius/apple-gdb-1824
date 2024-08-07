@@ -29,7 +29,7 @@ class _AsString(gdb.Function):
       The string representation of the value."""
 
     def __init__(self):
-        super(_AsString, self).__init__("_as_string")
+        super().__init__("_as_string")
 
     def invoke(self, val):
         return str(val)

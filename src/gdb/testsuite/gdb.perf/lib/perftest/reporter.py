@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class Reporter(object):
+class Reporter:
     """Base class of reporter to report test results in a certain format.
 
     Subclass, which is specific to a report format, should overwrite
@@ -49,7 +49,7 @@ class TextReporter(Reporter):
     """Report results in a plain text file 'perftest.log'."""
 
     def __init__(self, append):
-        super(TextReporter, self).__init__(Reporter(append))
+        super().__init__(Reporter(append))
         self.txt_log = None
 
     def report(self, *args):

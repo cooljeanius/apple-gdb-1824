@@ -27,7 +27,7 @@ if sys.version_info[0] > 2:
     long = int
 
 
-class XMethod(object):
+class XMethod:
     """Base class (or a template) for an xmethod description.
 
     Currently, the description requires only the 'name' and 'enabled'
@@ -48,7 +48,7 @@ class XMethod(object):
         self.enabled = True
 
 
-class XMethodMatcher(object):
+class XMethodMatcher:
     """Abstract base class for matching an xmethod.
 
     When looking for xmethods, GDB invokes the `match' method of a
@@ -94,7 +94,7 @@ class XMethodMatcher(object):
         raise NotImplementedError("XMethodMatcher match")
 
 
-class XMethodWorker(object):
+class XMethodWorker:
     """Base class for all xmethod workers defined in Python.
 
     An xmethod worker is an object which matches the method arguments, and

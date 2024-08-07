@@ -27,7 +27,7 @@ class InfoTypePrinter(gdb.Command):
     """
 
     def __init__(self):
-        super(InfoTypePrinter, self).__init__("info type-printers", gdb.COMMAND_DATA)
+        super().__init__("info type-printers", gdb.COMMAND_DATA)
 
     def list_type_printers(self, type_printers):
         """Print a list of type printers."""
@@ -39,14 +39,14 @@ class InfoTypePrinter(gdb.Command):
                 enabled = ""
             else:
                 enabled = " [disabled]"
-            print("  %s%s" % (printer.name, enabled))
+            print("  {}{}".format(printer.name, enabled))
 
     def invoke(self, arg, from_tty):
         """GDB calls this to perform the command."""
         sep = ""
         for objfile in gdb.objfiles():
             if objfile.type_printers:
-                print("%sType printers for %s:" % (sep, objfile.name))
+                print("{}Type printers for {}:".format(sep, objfile.name))
                 self.list_type_printers(objfile.type_printers)
                 sep = "\n"
         if gdb.current_progspace().type_printers:
@@ -60,7 +60,7 @@ class InfoTypePrinter(gdb.Command):
 
 class _EnableOrDisableCommand(gdb.Command):
     def __init__(self, setting, name):
-        super(_EnableOrDisableCommand, self).__init__(name, gdb.COMMAND_DATA)
+        super().__init__(name, gdb.COMMAND_DATA)
         self.setting = setting
 
     def set_some(self, name, printers):
@@ -108,7 +108,7 @@ class EnableTypePrinter(_EnableOrDisableCommand):
     """
 
     def __init__(self):
-        super(EnableTypePrinter, self).__init__(True, "enable type-printer")
+        super().__init__(True, "enable type-printer")
 
 
 class DisableTypePrinter(_EnableOrDisableCommand):
@@ -120,7 +120,7 @@ class DisableTypePrinter(_EnableOrDisableCommand):
     """
 
     def __init__(self):
-        super(DisableTypePrinter, self).__init__(False, "disable type-printer")
+        super().__init__(False, "disable type-printer")
 
 
 InfoTypePrinter()

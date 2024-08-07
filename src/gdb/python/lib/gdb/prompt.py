@@ -39,7 +39,7 @@ def _prompt_object_attr(func, what, attr, nattr):
             result = result()
         return result
     else:
-        return "<no attribute %s on current %s>" % (attr, what)
+        return "<no attribute {} on current {}>".format(attr, what)
 
 
 def _prompt_frame(attr):
@@ -114,7 +114,7 @@ def prompt_help():
     result = ""
     keys = sorted(prompt_substitutions.keys())
     for key in keys:
-        result += "  \\%s\t%s\n" % (key, prompt_substitutions[key].__doc__)
+        result += "  \\{}\t{}\n".format(key, prompt_substitutions[key].__doc__)
     result += """
 A substitution can be used in a simple form, like "\\f".
 An argument can also be passed to it, like "\\f{name}".

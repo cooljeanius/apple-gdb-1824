@@ -29,7 +29,7 @@ class BoundPrinter:
         size = (long)((upper) - (lower))
         if size > -1:
             size = size + 1
-        result = "{lbound = %s, ubound = %s} : size %s" % (lower, upper, size)
+        result = "{{lbound = {}, ubound = {}}} : size {}".format(lower, upper, size)
         return result
 
 

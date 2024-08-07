@@ -29,7 +29,7 @@ show_cfg = False
 def log(msg, indent=0):
     global logging
     if logging:
-        sys.stderr.write("%s%s\n" % ("  " * indent, msg))
+        sys.stderr.write("{}{}\n".format("  " * indent, msg))
         sys.stderr.flush()
 
 
@@ -50,7 +50,7 @@ def is_constructor(decl):
     )
 
 
-destructor_names = set(["do_cleanups", "discard_cleanups"])
+destructor_names = {"do_cleanups", "discard_cleanups"}
 
 
 def is_destructor(decl):
@@ -59,8 +59,7 @@ def is_destructor(decl):
 
 # This list is just much too long... we should probably have an
 # attribute instead.
-special_names = set(
-    [
+special_names = {
         "do_final_cleanups",
         "discard_final_cleanups",
         "save_cleanups",
@@ -73,8 +72,7 @@ special_names = set(
         "all_cleanups",
         "save_my_cleanups",
         "quit_target",
-    ]
-)
+}
 
 
 def needs_special_treatment(decl):
@@ -83,14 +81,14 @@ def needs_special_treatment(decl):
 
 # Sometimes we need a new placeholder object that isn't the same as
 # anything else.
-class Dummy(object):
+class Dummy:
     def __init__(self, location):
         self.location = location
 
 
 # A wrapper for a cleanup which has been assigned to a variable.
 # This holds the variable and the location.
-class Cleanup(object):
+class Cleanup:
     def __init__(self, var, location):
         self.var = var
         self.location = location
@@ -98,7 +96,7 @@ class Cleanup(object):
 
 # A class representing a master cleanup.  This holds a stack of
 # cleanup objects and supports a merging operation.
-class MasterCleanup(object):
+class MasterCleanup:
     # Create a new MasterCleanup object.  OTHER, if given, is a
     # MasterCleanup object to copy.
     def __init__(self, other=None):
@@ -122,7 +120,7 @@ class MasterCleanup(object):
         return definition == argument
 
     def note_assignment(self, lhs, rhs):
-        log("noting assignment %s = %s" % (lhs, rhs), 4)
+        log("noting assignment {} = {}".format(lhs, rhs), 4)
         self.aliases[lhs] = rhs
 
     # Merge with another MasterCleanup.
