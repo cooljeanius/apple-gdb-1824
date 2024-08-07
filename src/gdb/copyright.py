@@ -30,7 +30,6 @@ A useful command to review the output is:
 This removes the bulk of the changes which are most likely to be correct.
 """
 
-import datetime
 import os
 import os.path
 import subprocess
