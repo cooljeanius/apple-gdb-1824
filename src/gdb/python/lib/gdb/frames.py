@@ -115,11 +115,11 @@ def return_list(name):
     # filters to enable/disable them all, just return the combined
     # items() as a chained iterator of dictionary values.
     if name == "all":
-        glob = gdb.frame_filters.values()
-        prog = gdb.current_progspace().frame_filters.values()
+        glob = list(gdb.frame_filters.values())
+        prog = list(gdb.current_progspace().frame_filters.values())
         return_iter = itertools.chain(glob, prog)
         for objfile in gdb.objfiles():
-            return_iter = itertools.chain(return_iter, objfile.frame_filters.values())
+            return_iter = itertools.chain(return_iter, list(objfile.frame_filters.values()))
 
         return return_iter
 
@@ -151,7 +151,7 @@ def _sort_list():
     all_filters = return_list("all")
     sorted_frame_filters = sorted(all_filters, key=get_priority, reverse=True)
 
-    sorted_frame_filters = filter(get_enabled, sorted_frame_filters)
+    sorted_frame_filters = list(filter(get_enabled, sorted_frame_filters))
 
     return sorted_frame_filters
 
@@ -193,9 +193,9 @@ def execute_frame_filters(frame, frame_low, frame_high):
     # the interface.  Python 3.x moved the itertools.imap
     # functionality to map(), so check if it is available.
     if hasattr(itertools, "imap"):
-        frame_iterator = itertools.imap(FrameDecorator, frame_iterator)
-    else:
         frame_iterator = map(FrameDecorator, frame_iterator)
+    else:
+        frame_iterator = list(map(FrameDecorator, frame_iterator))
 
     for ff in sorted_list:
         frame_iterator = ff.filter(frame_iterator)

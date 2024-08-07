@@ -48,9 +48,9 @@ class FrameFilter:
         # Python 3.x moved the itertools.imap functionality to map(),
         # so check if it is available.
         if hasattr(itertools, "imap"):
-            frame_iter = itertools.imap(Reverse_Function, frame_iter)
-        else:
             frame_iter = map(Reverse_Function, frame_iter)
+        else:
+            frame_iter = list(map(Reverse_Function, frame_iter))
 
         return frame_iter
 

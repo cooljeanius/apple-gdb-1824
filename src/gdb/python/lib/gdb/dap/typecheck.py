@@ -34,7 +34,7 @@ def _check_instance(value, typevar):
         (keytype, valuetype) = arg_types
         return all(
             _check_instance(k, keytype) and _check_instance(v, valuetype)
-            for k, v in value.items()
+            for k, v in list(value.items())
         )
     elif base == collections.abc.Sequence or base == typing.Sequence:
         # In some places we simply use 'Sequence' without arguments.

@@ -114,7 +114,7 @@ def git_attribute(commit_rev, filename, attr_name):
         # umask, the group-write bit might not be set.  Just force
         # the permissions to be read-write-execute for both owner
         # and group.
-        os.chmod(attributes_dir, 0775)
+        os.chmod(attributes_dir, 0o775)
 
     (path_to_rel, rel_file_path) = os.path.split(filename)
     attr_value = UNSPECIFIED_ATTR

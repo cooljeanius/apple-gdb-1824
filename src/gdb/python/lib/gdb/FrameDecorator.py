@@ -20,9 +20,9 @@ import gdb
 # sub-classes of basestring.  In Python 3.x all strings are encoded
 # and basestring has been removed.
 try:
-    basestring
+    str
 except NameError:
-    basestring = str
+    str = str
 
 
 class FrameDecorator:
@@ -251,7 +251,7 @@ class FrameVars:
         # SYM may be a string instead of a symbol in the case of
         # synthetic local arguments or locals.  If that is the case,
         # always fetch.
-        if isinstance(sym, basestring):
+        if isinstance(sym, str):
             return True
 
         sym_type = sym.addr_class

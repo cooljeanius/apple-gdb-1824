@@ -33,4 +33,4 @@ def syslog(message, tag='cvs_check', priority='local0.warn'):
         warn(*info)
 
     elif out.rstrip():
-        print out.rstrip()
+        print(out.rstrip())

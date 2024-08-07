@@ -63,7 +63,7 @@ def git_run(command, *args, **kwargs):
     input = None
     outfile = None
     do_split_lines = False
-    for k, v in kwargs.iteritems():
+    for k, v in kwargs.items():
         if k == "_input":
             input = v
         elif k == "_outfile":
@@ -115,7 +115,7 @@ class Git:
                 # If a string _outfile parameter was given, turn it
                 # into a file descriptor.
                 tmp_fd = None
-                if "_outfile" in kwargs and isinstance(kwargs["_outfile"], basestring):
+                if "_outfile" in kwargs and isinstance(kwargs["_outfile"], str):
                     tmp_fd = open(kwargs["_outfile"], "w")
                     kwargs["_outfile"] = tmp_fd
                 return git_run(command, *args, **kwargs)

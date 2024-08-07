@@ -150,7 +150,7 @@ def _set_breakpoints_callback(kind, specs, creator):
         # or ignore count differs, so remove these entries from the
         # spec first.
         (condition, hit_condition) = _remove_entries(spec, "condition", "hitCondition")
-        keyspec = frozenset(spec.items())
+        keyspec = frozenset(list(spec.items()))
 
         # Create or reuse a breakpoint.  If asked, set the condition
         # or the ignore count.  Catch errors coming from gdb and
@@ -190,7 +190,7 @@ def _set_breakpoints_callback(kind, specs, creator):
             )
 
     # Delete any breakpoints that were not reused.
-    for entry in saved_map.values():
+    for entry in list(saved_map.values()):
         entry.delete()
     return result
 

@@ -139,7 +139,7 @@ def initialize_git_config_map():
             # of this event, we'll just accept it, instead of fancying
             # things up.
             for l in NO_REFS_META_CONFIG_WARNING.splitlines():
-                print >> sys.stderr, "*** %s" % l
+                print("*** %s" % l, file=sys.stderr)
             cfg_file = "config"
         os.close(tmp_fd)
         # Get the currently defined config values, all in one go.
@@ -154,7 +154,7 @@ def initialize_git_config_map():
 
     # Populate the __git_config_map dictionary...
     __git_config_map = {}
-    for config_name in GIT_CONFIG_OPTS.keys():
+    for config_name in list(GIT_CONFIG_OPTS.keys()):
         # Get the config value from either the all_configs_map
         # if defined, or else from the default value.
         if config_name in all_configs_map:

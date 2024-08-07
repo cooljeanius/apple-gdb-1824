@@ -26,7 +26,7 @@ def sendmail(from_email, to_emails, mail_as_string, smtp_server):
                       stdin=PIPE, stdout=PIPE, stderr=STDOUT)
             out, _ = p.communicate(mail_as_string)
             if p.returncode != 0:
-                print out
+                print(out)
             return p.returncode == 0
 
     # Else try using smtplib

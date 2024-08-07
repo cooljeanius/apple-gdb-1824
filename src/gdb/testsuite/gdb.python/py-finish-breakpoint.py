@@ -24,8 +24,8 @@ class MyFinishBreakpoint(gdb.FinishBreakpoint):
         self.val = val
 
     def stop(self):
-        print("MyFinishBreakpoint stop with %d" % int(self.val.dereference()))
-        print("return_value is: %d" % int(self.return_value))
+        print(("MyFinishBreakpoint stop with %d" % int(self.val.dereference())))
+        print(("return_value is: %d" % int(self.return_value)))
         gdb.execute("where 1")
         return True
 
@@ -55,16 +55,16 @@ class TestFinishBreakpoint(gdb.FinishBreakpoint):
         gdb.FinishBreakpoint.__init__(self, frame, internal=1)
 
     def stop(self):
-        print("-->", self.number)
+        print(("-->", self.number))
         if self.count == 3:
-            print("test stop: %d" % self.count)
+            print(("test stop: %d" % self.count))
             return True
         else:
-            print("test don't stop: %d" % self.count)
+            print(("test don't stop: %d" % self.count))
             return False
 
     def out_of_scope(self):
-        print("test didn't finish: %d" % self.count)
+        print(("test didn't finish: %d" % self.count))
 
 
 class TestExplicitBreakpoint(gdb.Breakpoint):

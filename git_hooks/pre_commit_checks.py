@@ -99,7 +99,7 @@ def check_file(filename, sha1, commit_rev, project_name):
         if out:
             warn(*out.splitlines())
 
-    except subprocess.CalledProcessError, E:
+    except subprocess.CalledProcessError as E:
         debug(str(E), level=4)
         info = (
             ["pre-commit check failed for file `%s' at commit: %s"
@@ -324,7 +324,7 @@ def check_filename_collisions(rev):
             filename_map[key] = [filename]
         else:
             filename_map[key].append(filename)
-    collisions = [filename_map[k] for k in filename_map.keys()
+    collisions = [filename_map[k] for k in list(filename_map.keys())
                   if len(filename_map[k]) > 1]
     if collisions:
         raw_body = git.log(rev, max_count='1', pretty='format:%B',

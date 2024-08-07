@@ -33,7 +33,7 @@ class Function:
         self.reason = None
 
     def log(self, message):
-        print "%s: note: %s" % (self.location, message)
+        print("%s: note: %s" % (self.location, message))
 
     def set_location(self, location):
         self.location = location
@@ -46,8 +46,8 @@ class Function:
 
     def consistency_check(self):
         if self.marked_nothrow and self.can_throw:
-            print ("%s: error: %s marked as both 'throw' and 'nothrow'"
-                   % (self.location, self.name))
+            print(("%s: error: %s marked as both 'throw' and 'nothrow'"
+                   % (self.location, self.name)))
 
     def declare_nothrow(self):
         self.marked_nothrow = True
@@ -61,16 +61,16 @@ class Function:
 
     def print_stack(self, is_indirect):
         if is_indirect:
-            print ("%s: error: function %s is marked nothrow but is assumed to throw due to indirect call"
-                   % (self.location, self.name))
+            print(("%s: error: function %s is marked nothrow but is assumed to throw due to indirect call"
+                   % (self.location, self.name)))
         else:
-            print ("%s: error: function %s is marked nothrow but can throw"
-                   % (self.location, self.name))
+            print(("%s: error: function %s is marked nothrow but can throw"
+                   % (self.location, self.name)))
 
         edge = self.reason
         while edge is not None:
-            print ("%s: info: via call to %s"
-                   % (edge.location, edge.to_fn.name))
+            print(("%s: info: via call to %s"
+                   % (edge.location, edge.to_fn.name)))
             edge = edge.to_fn.reason
 
     def mark_throw(self, edge, work_list, is_indirect):
@@ -146,13 +146,13 @@ def mark_functions(worklist, is_indirect):
             edge.from_fn.mark_throw(edge, worklist, is_indirect)
 
 def help_and_exit():
-    print "Usage: exsummary [OPTION]..."
-    print ""
-    print "Read the .py files from the exception checker plugin and"
-    print "generate an error summary."
-    print ""
-    print "  --cleanups     Include invalid behavior in cleanups"
-    print "  --indirect     Include assumed errors due to indirect function calls"
+    print("Usage: exsummary [OPTION]...")
+    print("")
+    print("Read the .py files from the exception checker plugin and")
+    print("generate an error summary.")
+    print("")
+    print("  --cleanups     Include invalid behavior in cleanups")
+    print("  --indirect     Include assumed errors due to indirect function calls")
     sys.exit(0)
 
 def main():
@@ -170,15 +170,15 @@ def main():
             help_and_exit()
 
     for fname in sorted(glob.glob('*.c.gdb_exc.py')):
-        execfile(fname)
-    print "================"
-    print "= Ordinary marking"
-    print "================"
+        exec(compile(open(fname, "rb").read(), fname, 'exec'))
+    print("================")
+    print("= Ordinary marking")
+    print("================")
     mark_functions(work_list, False)
     if process_indirect:
-        print "================"
-        print "= Indirect marking"
-        print "================"
+        print("================")
+        print("= Indirect marking")
+        print("================")
         mark_functions(indirect_functions, True)
     return 0
 

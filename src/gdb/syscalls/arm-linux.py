@@ -12,7 +12,7 @@ import time
 infname = sys.argv[1]
 inf = file(infname)
 
-print(
+print((
     """\
 <?xml version="1.0"?>
 <!-- Copyright (C) 2009-%s Free Software Foundation, Inc.
@@ -33,7 +33,7 @@ print(
 
 <syscalls_info>"""
     % (time.strftime("%Y"), infname)
-)
+))
 
 
 def record(name, number, comment=None):

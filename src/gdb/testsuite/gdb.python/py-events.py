@@ -23,9 +23,9 @@ def signal_stop_handler(event):
         print("event type: stop")
     if isinstance(event, gdb.SignalEvent):
         print("stop reason: signal")
-        print("stop signal: %s" % (event.stop_signal))
+        print(("stop signal: %s" % (event.stop_signal)))
         if event.inferior_thread is not None:
-            print("thread num: %s" % (event.inferior_thread.num))
+            print(("thread num: %s" % (event.inferior_thread.num)))
 
 
 def breakpoint_stop_handler(event):
@@ -33,11 +33,11 @@ def breakpoint_stop_handler(event):
         print("event type: stop")
     if isinstance(event, gdb.BreakpointEvent):
         print("stop reason: breakpoint")
-        print("first breakpoint number: %s" % (event.breakpoint.number))
+        print(("first breakpoint number: %s" % (event.breakpoint.number)))
         for bp in event.breakpoints:
-            print("breakpoint number: %s" % (bp.number))
+            print(("breakpoint number: %s" % (bp.number)))
         if event.inferior_thread is not None:
-            print("thread num: %s" % (event.inferior_thread.num))
+            print(("thread num: %s" % (event.inferior_thread.num)))
         else:
             print("all threads stopped")
 
@@ -45,22 +45,22 @@ def breakpoint_stop_handler(event):
 def exit_handler(event):
     assert isinstance(event, gdb.ExitedEvent)
     print("event type: exit")
-    print("exit code: %d" % (event.exit_code))
-    print("exit inf: %d" % (event.inferior.num))
-    print("dir ok: %s" % str("exit_code" in dir(event)))
+    print(("exit code: %d" % (event.exit_code)))
+    print(("exit inf: %d" % (event.inferior.num)))
+    print(("dir ok: %s" % str("exit_code" in dir(event))))
 
 
 def continue_handler(event):
     assert isinstance(event, gdb.ContinueEvent)
     print("event type: continue")
     if event.inferior_thread is not None:
-        print("thread num: %s" % (event.inferior_thread.num))
+        print(("thread num: %s" % (event.inferior_thread.num)))
 
 
 def new_objfile_handler(event):
     assert isinstance(event, gdb.NewObjFileEvent)
     print("event type: new_objfile")
-    print("new objfile name: %s" % (event.new_objfile.filename))
+    print(("new objfile name: %s" % (event.new_objfile.filename)))
 
 
 class test_events(gdb.Command):

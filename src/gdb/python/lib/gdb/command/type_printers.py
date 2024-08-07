@@ -39,22 +39,22 @@ class InfoTypePrinter(gdb.Command):
                 enabled = ""
             else:
                 enabled = " [disabled]"
-            print("  {}{}".format(printer.name, enabled))
+            print(("  {}{}".format(printer.name, enabled)))
 
     def invoke(self, arg, from_tty):
         """GDB calls this to perform the command."""
         sep = ""
         for objfile in gdb.objfiles():
             if objfile.type_printers:
-                print("{}Type printers for {}:".format(sep, objfile.name))
+                print(("{}Type printers for {}:".format(sep, objfile.name)))
                 self.list_type_printers(objfile.type_printers)
                 sep = "\n"
         if gdb.current_progspace().type_printers:
-            print("%sType printers for program space:" % sep)
+            print(("%sType printers for program space:" % sep))
             self.list_type_printers(gdb.current_progspace().type_printers)
             sep = "\n"
         if gdb.type_printers:
-            print("%sGlobal type printers:" % sep)
+            print(("%sGlobal type printers:" % sep))
             self.list_type_printers(gdb.type_printers)
 
 
@@ -83,7 +83,7 @@ class _EnableOrDisableCommand(gdb.Command):
             if self.set_some(name, gdb.type_printers):
                 ok = True
             if not ok:
-                print("No type printer named '%s'" % name)
+                print(("No type printer named '%s'" % name))
 
     def add_some(self, result, word, printers):
         for p in printers:

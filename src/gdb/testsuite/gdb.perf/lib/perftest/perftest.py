@@ -13,12 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import testresult
-import reporter
-from measure import Measure
-from measure import MeasurementCpuTime
-from measure import MeasurementWallTime
-from measure import MeasurementVmSize
+from . import testresult
+from . import reporter
+from .measure import Measure
+from .measure import MeasurementCpuTime
+from .measure import MeasurementWallTime
+from .measure import MeasurementVmSize
 
 
 class TestCase:

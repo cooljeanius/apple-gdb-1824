@@ -18,7 +18,7 @@ def g_type_to_name(gtype):
             return None
         return val[typenode >> 2].address()
 
-    gtype = long(gtype)
+    gtype = int(gtype)
     typenode = gtype - gtype % 4
     if typenode > (255 << 2):
         typenode = gdb.Value(typenode).cast(gdb.lookup_type("TypeNode").pointer())
@@ -55,7 +55,7 @@ def is_g_type_instance(val):
 
 
 def g_type_name_from_instance(instance):
-    if long(instance) != 0:
+    if int(instance) != 0:
         try:
             inst = instance.cast(gdb.lookup_type("GTypeInstance").pointer())
             klass = inst["g_class"]
@@ -76,8 +76,8 @@ class GTypePrettyPrinter:
     def to_string(self):
         name = g_type_name_from_instance(self.val)
         if name:
-            return ("0x%x [%s]") % (long(self.val), name)
-        return ("0x%x") % (long(self.val))
+            return ("0x%x [%s]") % (int(self.val), name)
+        return ("0x%x") % (int(self.val))
 
 
 def pretty_printer_lookup(val):
@@ -90,12 +90,12 @@ def pretty_printer_lookup(val):
 def get_signal_name(id):
     if id == None:
         return None
-    id = long(id)
+    id = int(id)
     if id == 0:
         return None
     val = read_global_var("g_signal_nodes")
     max_s = read_global_var("g_n_signal_nodes")
-    max_s = long(max_s)
+    max_s = int(max_s)
     if id < max_s:
         return val[id]["name"].string()
     return None
@@ -188,7 +188,7 @@ class SignalFrame:
         v = {}
         for i in range(len(array)):
             v[str(array[i])] = 1
-        array = v.keys()
+        array = list(v.keys())
         s = array[0]
         for i in range(1, len(array)):
             s = s + " or %s" % array[i]
@@ -264,7 +264,7 @@ class GFrameFilter:
     def fill(self):
         while len(self.queue) <= 6:
             try:
-                f = self.iter.next()
+                f = next(self.iter)
                 self.queue.append(f)
             except StopIteration:
                 return
@@ -275,7 +275,7 @@ class GFrameFilter:
                 return i
         return -1
 
-    def next(self):
+    def __next__(self):
         # Ensure we have enough frames for a full signal emission
         self.fill()
 

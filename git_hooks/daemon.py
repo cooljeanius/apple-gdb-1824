@@ -23,7 +23,7 @@ def daemonize(output_fd=None):
         if pid > 0:
             # In the parent.  We can now return.
             return False
-    except OSError, e:
+    except OSError as e:
         sys.stderr.write("fork #1 failed: (%d) %s\n" % (e.errno, e.strerror))
         return False
 
@@ -38,7 +38,7 @@ def daemonize(output_fd=None):
         if pid > 0:
             # In the second parent. Exit.
             sys.exit(0)
-    except OSError, e:
+    except OSError as e:
         syslog("git-hooks: fork #2 failed: (%d) %s" % (e.errno, e.strerror))
         sys.exit(1)
 
@@ -85,5 +85,5 @@ def run_in_daemon(fun):
         if daemon_pipe[0] is not None:
             os.close(daemon_pipe[1])
             daemon_stdout = os.fdopen(daemon_pipe[0])
-            print >> sys.stderr, daemon_stdout.read(),
+            print(daemon_stdout.read(), end=' ', file=sys.stderr)
             daemon_stdout.close()

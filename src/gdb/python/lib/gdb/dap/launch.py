@@ -42,7 +42,7 @@ def _launch_setup(program, cwd, args, env, stopAtBeginningOfMainSubprogram):
     inf.arguments = args
     if env is not None:
         inf.clear_env()
-        for name, value in env.items():
+        for name, value in list(env.items()):
             inf.set_env(name, value)
 
 

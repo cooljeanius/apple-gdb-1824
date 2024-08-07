@@ -20,7 +20,7 @@ from updates.tags.ltag_deletion import LightweightTagDeletion
 #    - UPDATE: The reference already existed before and its value
 #              has just been udpated.
 # These constants act as poor-man's enumerations.
-(CREATE, DELETE, UPDATE) = range(3)
+(CREATE, DELETE, UPDATE) = list(range(3))
 
 REF_CHANGE_MAP = {
     ("refs/heads/", CREATE, "commit"): BranchCreation,

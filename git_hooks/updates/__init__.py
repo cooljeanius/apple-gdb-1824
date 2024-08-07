@@ -407,7 +407,7 @@ class AbstractUpdate:
     def get_refs_matching_config(self, config_name):
         """Return the list of references matching the given config option."""
         result = []
-        for ref_name in self.all_refs.keys():
+        for ref_name in list(self.all_refs.keys()):
             if self.search_config_option_list(config_name, ref_name) is not None:
                 result.append(ref_name)
         return result
@@ -556,7 +556,7 @@ class AbstractUpdate:
 
         exclude = [
             "^%s" % self.all_refs[ref_name]
-            for ref_name in self.all_refs.keys()
+            for ref_name in list(self.all_refs.keys())
             if ref_name != self.ref_name
         ]
         if not is_null_rev(self.old_rev):
@@ -622,7 +622,7 @@ class AbstractUpdate:
         # The list of lost commits is computed by listing all commits
         # accessible from the old_rev, but not from any of the references.
 
-        exclude = ["^%s" % self.all_refs[rev] for rev in self.all_refs.keys()]
+        exclude = ["^%s" % self.all_refs[rev] for rev in list(self.all_refs.keys())]
         commit_list = commit_info_list(self.old_rev, *exclude)
 
         return commit_list

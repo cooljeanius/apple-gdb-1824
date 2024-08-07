@@ -129,19 +129,19 @@ def print_xm_info(xm_dict, name_re):
     for locus_str in xm_dict:
         if not xm_dict[locus_str]:
             continue
-        print("Xmethods in %s:" % locus_str)
+        print(("Xmethods in %s:" % locus_str))
         for matcher in xm_dict[locus_str]:
-            print("  %s" % matcher.name)
+            print(("  %s" % matcher.name))
             if not matcher.methods:
                 continue
             for m in matcher.methods:
                 if name_re is None or name_re.match(m.name):
-                    print("    {}{}".format(m.name, get_status_string(m)))
+                    print(("    {}{}".format(m.name, get_status_string(m))))
 
 
 def set_xm_status1(xm_dict, name_re, status):
     """Set the status (enabled/disabled) of a dictionary of xmethods."""
-    for locus_str, matchers in xm_dict.items():
+    for locus_str, matchers in list(xm_dict.items()):
         for matcher in matchers:
             if not name_re:
                 # If the name regex is missing, then set the status of the

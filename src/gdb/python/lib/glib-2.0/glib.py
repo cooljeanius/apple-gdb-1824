@@ -9,16 +9,16 @@ def read_global_var(symname):
 def g_quark_to_string(quark):
     if quark == None:
         return None
-    quark = long(quark)
+    quark = int(quark)
     if quark == 0:
         return None
     try:
         val = read_global_var("quarks")
-        max_q = long(read_global_var("quark_seq_id"))
+        max_q = int(read_global_var("quark_seq_id"))
     except:
         try:
             val = read_global_var("g_quarks")
-            max_q = long(read_global_var("g_quark_seq_id"))
+            max_q = int(read_global_var("g_quark_seq_id"))
         except:
             return None
     if quark < max_q:
@@ -36,8 +36,8 @@ class GListNodePrinter:
     def to_string(self):
         return "{{data={}, next=0x{:x}, prev=0x{:x}}}".format(
             str(self.val["data"]),
-            long(self.val["next"]),
-            long(self.val["prev"]),
+            int(self.val["next"]),
+            int(self.val["prev"]),
         )
 
 
@@ -49,7 +49,7 @@ class GSListNodePrinter:
 
     def to_string(self):
         return "{{data={}, next=0x{:x}}}".format(
-            str(self.val["data"]), long(self.val["next"])
+            str(self.val["data"]), int(self.val["next"])
         )
 
 
@@ -65,7 +65,7 @@ class GListPrinter:
         def __iter__(self):
             return self
 
-        def next(self):
+        def __next__(self):
             if self.link == 0:
                 raise StopIteration
             data = self.link["data"]
@@ -82,7 +82,7 @@ class GListPrinter:
         return self._iterator(self.val, self.listtype)
 
     def to_string(self):
-        return "0x%x" % (long(self.val))
+        return "0x%x" % (int(self.val))
 
     def display_hint(self):
         return "array"
@@ -106,16 +106,16 @@ class GHashPrinter:
         def __iter__(self):
             return self
 
-        def next(self):
+        def __next__(self):
             if self.ht == 0:
                 raise StopIteration
             if self.value != None:
                 v = self.value
                 self.value = None
                 return v
-            while long(self.pos) < long(self.size):
+            while int(self.pos) < int(self.size):
                 self.pos = self.pos + 1
-                if long(self.hashes[self.pos]) >= 2:
+                if int(self.hashes[self.pos]) >= 2:
                     key = self.keys[self.pos]
                     val = self.values[self.pos]
 
@@ -147,7 +147,7 @@ class GHashPrinter:
         return self._iterator(self.val, self.keys_are_strings)
 
     def to_string(self):
-        return "0x%x" % (long(self.val))
+        return "0x%x" % (int(self.val))
 
     def display_hint(self):
         return "map"
@@ -233,20 +233,20 @@ class ForeachCommand(gdb.Command):
 
     def do_iter(self, arg, item, command):
         item = item.cast(gdb.lookup_type("void").pointer())
-        item = long(item)
+        item = int(item)
         to_eval = "set ${} = (void *)0x{:x}\n".format(arg, item)
         gdb.execute(to_eval)
         gdb.execute(command)
 
     def slist_iterator(self, arg, container, command):
         l = container.cast(gdb.lookup_type("GSList").pointer())
-        while long(l) != 0:
+        while int(l) != 0:
             self.do_iter(arg, l["data"], command)
             l = l["next"]
 
     def list_iterator(self, arg, container, command):
         l = container.cast(gdb.lookup_type("GList").pointer())
-        while long(l) != 0:
+        while int(l) != 0:
             self.do_iter(arg, l["data"], command)
             l = l["next"]
 

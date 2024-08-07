@@ -130,7 +130,7 @@ def warn(*args, **kwargs):
     """
     prefix = kwargs['prefix'] if 'prefix' in kwargs else '*** '
     for arg in args:
-        print >> sys.stderr, "%s%s" % (prefix, arg)
+        print("%s%s" % (prefix, arg), file=sys.stderr)
 
 
 ############################################################################
@@ -176,7 +176,7 @@ class FileLock(object):
             # Use mode 'a' instead of 'w' to avoid truncating the file
             # if someone opens the same file at the same time.
             open(self.filename, 'a').close()
-            os.chmod(self.filename, 0664)
+            os.chmod(self.filename, 0o664)
 
     def __enter__(self):
         try:

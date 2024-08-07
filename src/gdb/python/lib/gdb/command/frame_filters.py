@@ -67,7 +67,7 @@ class InfoFrameFilter(gdb.Command):
         """
 
         sorted_frame_filters = sorted(
-            frame_filters.items(),
+            list(frame_filters.items()),
             key=lambda i: gdb.frames.get_priority(i[1]),
             reverse=True,
         )
@@ -87,9 +87,9 @@ class InfoFrameFilter(gdb.Command):
                     )
                 except Exception:
                     e = sys.exc_info()[1]
-                    print("  Error printing filter '" + name + "': " + str(e))
+                    print(("  Error printing filter '" + name + "': " + str(e)))
                 else:
-                    print("  {}  {}  {}".format(priority, enabled, name))
+                    print(("  {}  {}  {}".format(priority, enabled, name)))
 
     def print_list(self, title, filter_list, blank_line):
         print(title)
@@ -194,7 +194,7 @@ def _complete_frame_filter_list(text, word, all_flag):
         return filter_locations
 
     # Otherwise filter on what we know.
-    flist = filter(lambda x, y=text: x.startswith(y), filter_locations)
+    flist = list(filter(lambda x, y=text: x.startswith(y), filter_locations))
 
     # If we only have one completion, complete it and return it.
     if len(flist) == 1:
@@ -220,11 +220,11 @@ def _complete_frame_filter_name(word, printer_dict):
         can be empty when there are no suggestions for completion.
     """
 
-    printer_keys = printer_dict.keys()
+    printer_keys = list(printer_dict.keys())
     if word == "":
         return printer_keys
 
-    flist = filter(lambda x, y=word: x.startswith(y), printer_keys)
+    flist = list(filter(lambda x, y=word: x.startswith(y), printer_keys))
     return flist
 
 
@@ -463,16 +463,16 @@ class ShowFrameFilterPriority(gdb.Command):
             priority = self.get_filter_priority(list_name, filter_name)
         except Exception:
             e = sys.exc_info()[1]
-            print("Error printing filter priority for '" + name + "':" + str(e))
+            print(("Error printing filter priority for '" + name + "':" + str(e)))
         else:
-            print(
+            print((
                 "Priority of filter '"
                 + filter_name
                 + "' in list '"
                 + list_name
                 + "' is: "
                 + str(priority)
-            )
+            ))
 
 
 # Register commands

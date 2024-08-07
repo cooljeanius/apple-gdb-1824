@@ -30,7 +30,7 @@ class FrameIterator:
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         """next implementation.
 
         Returns:
@@ -46,4 +46,4 @@ class FrameIterator:
     # next(self).  Define next(self), and for Python 3.x create this
     # wrapper.
     def __next__(self):
-        return self.next()
+        return next(self)

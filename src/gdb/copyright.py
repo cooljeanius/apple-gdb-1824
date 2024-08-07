@@ -104,10 +104,10 @@ def update_files(update_list):
         if line.endswith(warning_string):
             filename = line[:-warning_len]
             if may_have_copyright_notice(filename):
-                print line
+                print(line)
         else:
             # Unrecognized file format. !?!
-            print "*** " + line
+            print("*** " + line)
 
 
 def may_have_copyright_notice(filename):
@@ -142,7 +142,7 @@ def may_have_copyright_notice(filename):
 def main ():
     """The main subprogram."""
     if not os.path.isfile("gnulib/import/extra/update-copyright"):
-        print "Error: This script must be called from the gdb directory."
+        print("Error: This script must be called from the gdb directory.")
     root_dir = os.path.dirname(os.getcwd())
     os.chdir(root_dir)
 
@@ -151,11 +151,11 @@ def main ():
 
     # Remind the user that some files need to be updated by HAND...
     if BY_HAND:
-        print
-        print "\033[31mREMINDER: The following files must be updated by hand." \
-              "\033[0m"
+        print()
+        print("\033[31mREMINDER: The following files must be updated by hand." \
+              "\033[0m")
         for filename in BY_HAND + MULTIPLE_COPYRIGHT_HEADERS:
-            print "  ", filename
+            print("  ", filename)
 
 ############################################################################
 #

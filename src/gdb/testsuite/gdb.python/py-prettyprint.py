@@ -39,7 +39,7 @@ class ContainerPrinter:
         def __iter__(self):
             return self
 
-        def next(self):
+        def __next__(self):
             if self.pointer == self.end:
                 raise StopIteration
             result = self.pointer

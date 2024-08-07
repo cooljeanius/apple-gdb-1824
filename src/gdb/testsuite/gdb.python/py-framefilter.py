@@ -72,9 +72,9 @@ class FrameFilter:
         # Python 3.x moved the itertools.imap functionality to map(),
         # so check if it is available.
         if hasattr(itertools, "imap"):
-            frame_iter = itertools.imap(Reverse_Function, frame_iter)
-        else:
             frame_iter = map(Reverse_Function, frame_iter)
+        else:
+            frame_iter = list(map(Reverse_Function, frame_iter))
 
         return frame_iter
 
@@ -95,7 +95,7 @@ class ElidingIterator:
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         frame = next(self.input_iterator)
         if str(frame.function()) != "func1":
             return frame
@@ -111,7 +111,7 @@ class ElidingIterator:
     # next(self).  Define next(self), and for Python 3.x create this
     # wrapper.
     def __next__(self):
-        return self.next()
+        return next(self)
 
 
 class FrameElider:

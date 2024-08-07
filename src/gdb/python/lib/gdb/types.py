@@ -101,7 +101,7 @@ def deep_items(type_):
         pairs of key, value, but for any anonymous struct or union
         field that field is traversed recursively, depth-first.
     """
-    for k, v in type_.iteritems():
+    for k, v in type_.items():
         if k:
             yield k, v
         else:

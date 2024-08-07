@@ -72,7 +72,7 @@ def parse_sum_line(line, dic):
         # Remove tail parentheses.  These are likely to be '(timeout)'
         # and other extra information that will only confuse us.
         test_name = re.sub(r"(\s+)?\(.*$", "", test_name)
-        if result not in dic.keys():
+        if result not in list(dic.keys()):
             dic[result] = set()
         if test_name in dic[result]:
             # If the line is already present in the dictionary, then
@@ -144,7 +144,7 @@ def identify_racy_tests():
     # to be ignored.  For example, tests both in the PASS and KFAIL
     # states should not be considered racy.
     ignored_tests = set()
-    for s1, s2 in ignore_relations.items():
+    for s1, s2 in list(ignore_relations.items()):
         try:
             ignored_tests |= all_tests[s1] & all_tests[s2]
         except:
@@ -167,7 +167,7 @@ def identify_racy_tests():
     # Print the summary.
     print("\n")
     print("\t\t=== gdb Summary ===\n")
-    print("# of racy tests:\t\t%d" % len(racy_tests))
+    print(("# of racy tests:\t\t%d" % len(racy_tests)))
 
 
 if __name__ == "__main__":

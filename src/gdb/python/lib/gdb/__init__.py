@@ -17,6 +17,7 @@ import traceback
 import os
 import sys
 import _gdb
+import importlib
 
 if sys.version_info[0] > 2:
     # Python 3 moved "reload"
@@ -93,9 +94,7 @@ def auto_load_packages():
     for package in packages:
         location = os.path.join(os.path.dirname(__file__), package)
         if os.path.exists(location):
-            py_files = filter(
-                lambda x: x.endswith(".py") and x != "__init__.py", os.listdir(location)
-            )
+            py_files = [x for x in os.listdir(location) if x.endswith(".py") and x != "__init__.py"]
 
             for py_file in py_files:
                 # Construct from foo.py, gdb.module.foo
@@ -103,7 +102,7 @@ def auto_load_packages():
                 try:
                     if modname in sys.modules:
                         # reload modules with duplicate names
-                        reload(__import__(modname))
+                        importlib.reload(__import__(modname))
                     else:
                         __import__(modname)
                 except:
@@ -127,5 +126,5 @@ def GdbSetPythonDirectory(dir):
 
     # note that reload overwrites the gdb module without deleting existing
     # attributes
-    reload(__import__(__name__))
+    importlib.reload(__import__(__name__))
     auto_load_packages()

@@ -61,7 +61,7 @@ def post_receive(updated_refs, submitter_email):
     """
     refs = git_show_ref()
 
-    for ref_name in updated_refs.keys():
+    for ref_name in list(updated_refs.keys()):
         (old_rev, new_rev) = updated_refs[ref_name]
         post_receive_one(ref_name, old_rev, new_rev, refs, submitter_email)
 

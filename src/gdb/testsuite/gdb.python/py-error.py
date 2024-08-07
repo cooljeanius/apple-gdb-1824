@@ -23,7 +23,7 @@ class ClassName(gdb.Command):
         gdb.Command.__init__(self, "ClassName", gdb.COMMAND_DATA, prefix=True)
 
     def invoke(self, args, from_tty):
-        print
+        print()
 
 
 ClassName()
