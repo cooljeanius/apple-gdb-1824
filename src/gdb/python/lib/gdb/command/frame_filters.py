@@ -466,12 +466,12 @@ class ShowFrameFilterPriority(gdb.Command):
             print("Error printing filter priority for '" + name + "':" + str(e))
         else:
             print(
-                    "Priority of filter '"
-                    + filter_name
-                    + "' in list '"
-                    + list_name
-                    + "' is: "
-                    + str(priority)
+                "Priority of filter '"
+                + filter_name
+                + "' in list '"
+                + list_name
+                + "' is: "
+                + str(priority)
             )
 
 

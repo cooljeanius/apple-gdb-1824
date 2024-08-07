@@ -48,8 +48,8 @@ class Function:
     def consistency_check(self):
         if self.marked_nothrow and self.can_throw:
             print(
-                    "%s: error: %s marked as both 'throw' and 'nothrow'"
-                    % (self.location, self.name)
+                "%s: error: %s marked as both 'throw' and 'nothrow'"
+                % (self.location, self.name)
             )
 
     def declare_nothrow(self):
@@ -65,13 +65,13 @@ class Function:
     def print_stack(self, is_indirect):
         if is_indirect:
             print(
-                    "%s: error: function %s is marked nothrow but is assumed to throw due to indirect call"
-                    % (self.location, self.name)
+                "%s: error: function %s is marked nothrow but is assumed to throw due to indirect call"
+                % (self.location, self.name)
             )
         else:
             print(
-                    "%s: error: function %s is marked nothrow but can throw"
-                    % (self.location, self.name)
+                "%s: error: function %s is marked nothrow but can throw"
+                % (self.location, self.name)
             )
 
         edge = self.reason

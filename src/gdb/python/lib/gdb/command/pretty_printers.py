@@ -138,8 +138,8 @@ class InfoPrettyPrinter(gdb.Command):
                     for subprinter in sorted_subprinters:
                         if not subname_re or subname_re.match(subprinter.name):
                             print(
-                                    "    %s%s"
-                                    % (subprinter.name, self.enabled_string(subprinter))
+                                "    %s%s"
+                                % (subprinter.name, self.enabled_string(subprinter))
                             )
 
     def invoke1(
