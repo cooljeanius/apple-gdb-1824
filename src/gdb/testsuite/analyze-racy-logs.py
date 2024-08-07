@@ -30,7 +30,6 @@
 # specifies the RACY_ITER environment variable.
 
 import sys
-import os
 import re
 
 # The (global) dictionary that stores the associations between a *.sum

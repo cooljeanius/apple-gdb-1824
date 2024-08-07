@@ -17,7 +17,6 @@
 # shared libraries of inferior are loaded and unloaded.
 
 from perftest import perftest
-from perftest import measure
 
 
 class SolibLoadUnload1(perftest.TestCaseWithBasicMeasurements):

@@ -134,6 +134,7 @@ jobs:
             python3-pylsp-flake8 python3-flake8-class-newline \
             python3-flake8-quotes python3-flake8-import-order \
             python3-flake8-comprehensions python3-flake8-deprecated; \
+          pip install pylint flake8 ruff black pyupgrade; \
         elif test ${{ matrix.language }} == 'ruby'; then \
           sudo apt-get -y install ruby ruby-dev libruby rake ruby-full \
             ruby-ffi ruby-build jruby-openssl mruby libmruby-dev; \
@@ -150,6 +151,9 @@ jobs:
       run: |
         if test ${{ matrix.language }} == 'ruby' && test -x "$(which ruby)"; then \
           ruby -cwv src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb || ruby -c src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb; \
+          if test -x "$(which nitpick)"; then \
+            nitpick src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb || which -a nitpick; \
+          fi; \
           pushd src/gdb/ruby || exit; \
           if test -z "$(which bundle)" || test ! -x "$(which bundle)"; then \
             if test ! -w /var/lib/gems; then \
@@ -178,6 +182,9 @@ jobs:
             sync && echo "found $(which bundle)..."; \
           fi; \
           (bundle install && bundle check) || ruby -cwv Gemfile || ruby -c Gemfile; \
+          if test -x "$(which nitpick)"; then \
+            nitpick Gemfile || stat "$(which nitpick)"; \
+          fi; \
           (bundle clean && ls) || stat Gemfile || wc -l Gemfile || du Gemfile; \
           if test -d vendor && test -r vendor && test -w vendor; then \
             (sync && (find vendor -name '*.rb' -delete || rm -rf vendor || rmdir vendor)); \
@@ -200,11 +207,15 @@ jobs:
           fi; \
         elif test ${{ matrix.language }} == 'go' && test -x "$(which go)"; then \
           if test -x "$(which staticcheck)"; then \
-            find . -name '*.go' -print0 | xargs -0 staticcheck; \
+            (find . -name '*.go' -print0 | xargs -0 staticcheck) || statticcheck; \
           elif test -x "$(which revive)"; then \
-            find . -name '*.go' -print0 | xargs -0 revive; \
+            (find . -name '*.go' -print0 | xargs -0 revive) || revive; \
           elif test -x "$(which gocritic)"; then \
-            find . -name '*.go' -print0 | xargs -0 gocritic; \
+            (find . -name '*.go' -print0 | xargs -0 gocritic) || gocritic; \
+          elif test -x "$(which golangci-lint)"; then \
+            golangci-lint run src/gdb/testsuite/gdb.go || golangci-lint config verify; \
+          elif test -x "$(which gofmt)"; then \
+            find . -name '*.go' -print0 | xargs -0 gofmt; \
           elif test -x "$(which actionlint)"; then \
             actionlint; \
           else \
@@ -212,6 +223,8 @@ jobs:
           fi; \
         elif test ${{ matrix.language }} == 'python' && test -x "$(which python)"; then \
           sync && echo "TODO: python linting"; \
+          which -a pylint && which -a flake8 && which -a black; \
+          which -a ruff || which -a pyupgrade; \
         else \
           echo "unhandled case for syntax check step (matrix.language is ${{ matrix.language }})"; \
         fi

@@ -32,7 +32,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
-from typing import Iterable, List, TextIO
+from typing import Iterable, List
 
 
 PROG = Path(__file__).name
@@ -232,7 +232,7 @@ def gen_target_syscall(output_dir: Path, newlib: Path, cpp: str):
 
     # Then output the common syscall targets.
     syms = extract_syms(cpp, newlib / "libgloss", headers, pattern)
-    new_lines_c.append(f"CB_TARGET_DEFS_MAP cb_init_syscall_map[] = {{")
+    new_lines_c.append("CB_TARGET_DEFS_MAP cb_init_syscall_map[] = {")
     new_lines_c.extend(
         f"#ifdef CB_{sym}\n"
         f'  {{ "{sym[4:]}", CB_{sym}, TARGET_NEWLIB_{sym} }},\n'

@@ -46,7 +46,7 @@ class _ExtendedPrompt(gdb.Parameter):
         self.hook_set = False
 
     def get_show_string(self, pvalue):
-        if self.value is not "":
+        if self.value != "":
             return "The extended prompt is: " + self.value
         else:
             return "The extended prompt is not set."
@@ -58,7 +58,7 @@ class _ExtendedPrompt(gdb.Parameter):
         return ""
 
     def before_prompt_hook(self, current):
-        if self.value is not "":
+        if self.value != "":
             newprompt = gdb.prompt.substitute_prompt(self.value)
             return newprompt.replace("\\", "\\\\")
         else:

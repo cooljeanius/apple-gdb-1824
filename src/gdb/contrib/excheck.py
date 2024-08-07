@@ -33,7 +33,6 @@
 
 import gcc
 import gccutils
-import sys
 
 # Where our output goes.
 output_file = None

@@ -18,7 +18,6 @@
 import gdb
 import itertools
 from gdb.FrameDecorator import FrameDecorator
-import copy
 
 
 class Reverse_Function(FrameDecorator):

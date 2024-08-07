@@ -2,7 +2,9 @@
 # Copyright 2008 Marcus D. Hanwell <marcus@cryos.org>
 # Distributed under the terms of the GNU General Public License v2 or later
 
-import string, re, os
+import string
+import re
+import os
 
 # Execute git log with the desired command line options.
 fin = os.popen("git log --summary --stat --no-merges --date=short", "r")

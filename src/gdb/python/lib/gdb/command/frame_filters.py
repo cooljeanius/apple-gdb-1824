@@ -18,11 +18,7 @@
 
 import sys
 import gdb
-import copy
-from gdb.FrameIterator import FrameIterator
-from gdb.FrameDecorator import FrameDecorator
 import gdb.frames
-import itertools
 
 
 # GDB Commands.
