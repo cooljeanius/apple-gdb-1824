@@ -86,10 +86,12 @@ class InfoUnwinder(gdb.Command):
         print(title)
         for unwinder in unwinders:
             if name_re.match(unwinder.name):
-                print((
-                    "  %s%s"
-                    % (unwinder.name, "" if unwinder.enabled else " [disabled]")
-                ))
+                print(
+                    (
+                        "  %s%s"
+                        % (unwinder.name, "" if unwinder.enabled else " [disabled]")
+                    )
+                )
 
     def invoke(self, arg, from_tty):
         locus_re, name_re = parse_unwinder_command_args(arg)
@@ -141,10 +143,12 @@ def do_enable_unwinder(arg, flag):
             total += do_enable_unwinder1(objfile.frame_unwinders, name_re, flag)
     if total > 0:
         gdb.invalidate_cached_frames()
-    print((
-        "%d unwinder%s %s"
-        % (total, "" if total == 1 else "s", "enabled" if flag else "disabled")
-    ))
+    print(
+        (
+            "%d unwinder%s %s"
+            % (total, "" if total == 1 else "s", "enabled" if flag else "disabled")
+        )
+    )
 
 
 class EnableUnwinder(gdb.Command):

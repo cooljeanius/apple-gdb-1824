@@ -94,7 +94,11 @@ def auto_load_packages():
     for package in packages:
         location = os.path.join(os.path.dirname(__file__), package)
         if os.path.exists(location):
-            py_files = [x for x in os.listdir(location) if x.endswith(".py") and x != "__init__.py"]
+            py_files = [
+                x
+                for x in os.listdir(location)
+                if x.endswith(".py") and x != "__init__.py"
+            ]
 
             for py_file in py_files:
                 # Construct from foo.py, gdb.module.foo

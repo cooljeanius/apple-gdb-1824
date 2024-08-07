@@ -119,7 +119,9 @@ def return_list(name):
         prog = list(gdb.current_progspace().frame_filters.values())
         return_iter = itertools.chain(glob, prog)
         for objfile in gdb.objfiles():
-            return_iter = itertools.chain(return_iter, list(objfile.frame_filters.values()))
+            return_iter = itertools.chain(
+                return_iter, list(objfile.frame_filters.values())
+            )
 
         return return_iter
 

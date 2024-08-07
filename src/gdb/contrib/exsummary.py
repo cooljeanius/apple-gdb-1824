@@ -23,6 +23,7 @@ import glob
 # excheck.py.  Run in the build directory where you used the
 # excheck.py plugin.
 
+
 class Function:
     def __init__(self, name):
         self.name = name
@@ -46,31 +47,42 @@ class Function:
 
     def consistency_check(self):
         if self.marked_nothrow and self.can_throw:
-            print(("%s: error: %s marked as both 'throw' and 'nothrow'"
-                   % (self.location, self.name)))
+            print(
+                (
+                    "%s: error: %s marked as both 'throw' and 'nothrow'"
+                    % (self.location, self.name)
+                )
+            )
 
     def declare_nothrow(self):
         self.marked_nothrow = True
         self.consistency_check()
 
     def declare_throw(self):
-        result = not self.can_throw # Return True the first time
+        result = not self.can_throw  # Return True the first time
         self.can_throw = True
         self.consistency_check()
         return result
 
     def print_stack(self, is_indirect):
         if is_indirect:
-            print(("%s: error: function %s is marked nothrow but is assumed to throw due to indirect call"
-                   % (self.location, self.name)))
+            print(
+                (
+                    "%s: error: function %s is marked nothrow but is assumed to throw due to indirect call"
+                    % (self.location, self.name)
+                )
+            )
         else:
-            print(("%s: error: function %s is marked nothrow but can throw"
-                   % (self.location, self.name)))
+            print(
+                (
+                    "%s: error: function %s is marked nothrow but can throw"
+                    % (self.location, self.name)
+                )
+            )
 
         edge = self.reason
         while edge is not None:
-            print(("%s: info: via call to %s"
-                   % (edge.location, edge.to_fn.name)))
+            print(("%s: info: via call to %s" % (edge.location, edge.to_fn.name)))
             edge = edge.to_fn.reason
 
     def mark_throw(self, edge, work_list, is_indirect):
@@ -85,11 +97,13 @@ class Function:
                 # propagation.
                 work_list.append(self)
 
+
 class Edge:
     def __init__(self, from_fn, to_fn, location):
         self.from_fn = from_fn
         self.to_fn = to_fn
         self.location = location
+
 
 # Work list of known-throwing functions.
 work_list = []
@@ -102,15 +116,18 @@ process_cleanups = False
 # Whether we should process indirect function calls.
 process_indirect = False
 
+
 def declare(fn_name):
     global function_map
     if fn_name not in function_map:
         function_map[fn_name] = Function(fn_name)
     return function_map[fn_name]
 
+
 def define_function(fn_name, location):
     fn = declare(fn_name)
     fn.set_location(location)
+
 
 def declare_throw(fn_name):
     global work_list
@@ -118,9 +135,11 @@ def declare_throw(fn_name):
     if fn.declare_throw():
         work_list.append(fn)
 
+
 def declare_nothrow(fn_name):
     fn = declare(fn_name)
     fn.declare_nothrow()
+
 
 def declare_cleanup(fn_name):
     global process_cleanups
@@ -128,10 +147,12 @@ def declare_cleanup(fn_name):
     if process_cleanups:
         fn.declare_nothrow()
 
+
 def function_call(to, frm, location):
     to_fn = declare(to)
     frm_fn = declare(frm)
     to_fn.add_caller(Edge(frm_fn, to_fn, location))
+
 
 def has_indirect_call(fn_name, location):
     global indirect_functions
@@ -140,10 +161,12 @@ def has_indirect_call(fn_name, location):
     phony.add_caller(Edge(fn, phony, location))
     indirect_functions.append(phony)
 
+
 def mark_functions(worklist, is_indirect):
     for callee in worklist:
         for edge in callee.callers:
             edge.from_fn.mark_throw(edge, worklist, is_indirect)
+
 
 def help_and_exit():
     print("Usage: exsummary [OPTION]...")
@@ -155,6 +178,7 @@ def help_and_exit():
     print("  --indirect     Include assumed errors due to indirect function calls")
     sys.exit(0)
 
+
 def main():
     global work_list
     global indirect_functions
@@ -162,15 +186,15 @@ def main():
     global process_indirect
 
     for arg in sys.argv:
-        if arg == '--cleanups':
+        if arg == "--cleanups":
             process_cleanups = True
-        elif arg == '--indirect':
+        elif arg == "--indirect":
             process_indirect = True
-        elif arg == '--help':
+        elif arg == "--help":
             help_and_exit()
 
-    for fname in sorted(glob.glob('*.c.gdb_exc.py')):
-        exec(compile(open(fname, "rb").read(), fname, 'exec'))
+    for fname in sorted(glob.glob("*.c.gdb_exc.py")):
+        exec(compile(open(fname, "rb").read(), fname, "exec"))
     print("================")
     print("= Ordinary marking")
     print("================")
@@ -182,6 +206,7 @@ def main():
         mark_functions(indirect_functions, True)
     return 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     status = main()
     sys.exit(status)

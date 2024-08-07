@@ -522,7 +522,9 @@ class Prog:
     # with a summary at the end.
     def output_variation(self, tool, variation):
         self.output_segment(variation.header)
-        for harness in sorted(list(variation.harnesses.values()), key=attrgetter("name")):
+        for harness in sorted(
+            list(variation.harnesses.values()), key=attrgetter("name")
+        ):
             sys.stdout.write("Running " + harness.name + " ...\n")
             if self.do_sum:
                 harness.results.sort()

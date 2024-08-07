@@ -46,10 +46,12 @@ def check_fast_forward(ref_name, old_rev, new_rev):
 
     # Non-fast-forward update.  See if this is one of the branches where
     # such an update is allowed.
-    ok_branches = git_config('hooks.allow-non-fast-forward')
+    ok_branches = git_config("hooks.allow-non-fast-forward")
 
-    for branch in ["refs/heads/" + branch.strip()
-                   for branch in ok_branches + FORCED_UPDATE_OK_BRANCHES]:
+    for branch in [
+        "refs/heads/" + branch.strip()
+        for branch in ok_branches + FORCED_UPDATE_OK_BRANCHES
+    ]:
         if re.match(branch, ref_name) is not None:
             # This is one of the branches where a non-fast-forward update
             # is allowed.  Allow the update, but print a warning for
@@ -61,16 +63,19 @@ def check_fast_forward(ref_name, old_rev, new_rev):
 
     # This non-fast-forward update is not allowed.
     raise InvalidUpdate(
-        'Non-fast-forward updates are not allowed on this branch;',
-        'Please rebase your changes on top of the latest HEAD,',
-        'and then try pushing again.')
+        "Non-fast-forward updates are not allowed on this branch;",
+        "Please rebase your changes on top of the latest HEAD,",
+        "and then try pushing again.",
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # First, retrieve the command-line arguments.
     if len(sys.argv) != 4:
-        warn("Error(%s): Invalid usage, wrong number of arguments (%d)"
-             % (sys.argv[0], len(sys.argv)))
+        warn(
+            "Error(%s): Invalid usage, wrong number of arguments (%d)"
+            % (sys.argv[0], len(sys.argv))
+        )
         sys.exit(1)
     try:
         check_fast_forward(sys.argv[1], sys.argv[2], sys.argv[3])

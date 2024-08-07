@@ -5,6 +5,7 @@ import sys
 from errors import InvalidUpdate
 from git import get_object_type, git_show_ref
 from utils import debug, warn, create_scratch_dir, FileLock
+
 # We have to import utils, because we cannot import scratch_dir
 # directly into this module.  Otherwise, our scratch_dir seems
 # to not see the update when create_scratch_dir is called.
@@ -14,8 +15,7 @@ from updates.factory import new_update
 
 
 def parse_command_line():
-    """Return a namespace built after parsing the command line.
-    """
+    """Return a namespace built after parsing the command line."""
     # The command-line interface is very simple, so we could possibly
     # handle it by hand.  But it's nice to have features such as
     # -h/--help switches which come for free if we use argparse.
@@ -24,12 +24,9 @@ def parse_command_line():
     # Python version 2.7 or later, because it handles mandatory
     # command-line arguments for us as well.
     ap = ArgumentParser(description='Git "update" hook.')
-    ap.add_argument('ref_name',
-                    help='the name of the reference being updated')
-    ap.add_argument('old_rev',
-                    help='the SHA1 before update')
-    ap.add_argument('new_rev',
-                    help='the new SHA1, if the update is accepted')
+    ap.add_argument("ref_name", help="the name of the reference being updated")
+    ap.add_argument("old_rev", help="the SHA1 before update")
+    ap.add_argument("new_rev", help="the new SHA1, if the update is accepted")
     return ap.parse_args()
 
 
@@ -49,16 +46,20 @@ def check_update(ref_name, old_rev, new_rev):
     REMARKS
         This function assumes that scratch_dir has been initialized.
     """
-    debug('check_update(ref_name=%s, old_rev=%s, new_rev=%s)'
-          % (ref_name, old_rev, new_rev),
-          level=2)
-    update_cls = new_update(ref_name, old_rev, new_rev, git_show_ref(),
-                            submitter_email=None)
+    debug(
+        "check_update(ref_name=%s, old_rev=%s, new_rev=%s)"
+        % (ref_name, old_rev, new_rev),
+        level=2,
+    )
+    update_cls = new_update(
+        ref_name, old_rev, new_rev, git_show_ref(), submitter_email=None
+    )
     if update_cls is None:
         raise InvalidUpdate(
             "This type of update (%s,%s) is currently unsupported."
-            % (ref_name, get_object_type(new_rev)))
-    with FileLock('git-hooks::update.token'):
+            % (ref_name, get_object_type(new_rev))
+        )
+    with FileLock("git-hooks::update.token"):
         update_cls.validate()
 
 

@@ -137,10 +137,12 @@ class InfoPrettyPrinter(gdb.Command):
                     )
                     for subprinter in sorted_subprinters:
                         if not subname_re or subname_re.match(subprinter.name):
-                            print((
-                                "    %s%s"
-                                % (subprinter.name, self.enabled_string(subprinter))
-                            ))
+                            print(
+                                (
+                                    "    %s%s"
+                                    % (subprinter.name, self.enabled_string(subprinter))
+                                )
+                            )
 
     def invoke1(
         self, title, printer_list, obj_name_to_match, object_re, name_re, subname_re

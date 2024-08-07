@@ -13,15 +13,15 @@ from git import git, file_exists
 
 # The string printed by git when querying the value of attribute
 # when it is actually unspecified (which is different from unset).
-UNSPECIFIED_ATTR = 'unspecified'
+UNSPECIFIED_ATTR = "unspecified"
 
 # The name of the file searched by 'git attributes' when inside
 # a bare repository.
-BARE_REPO_ATTRIBUTES_FILE = 'info/attributes'
+BARE_REPO_ATTRIBUTES_FILE = "info/attributes"
 
 # The name of the default attributes file in the bare repository.
 # This file expected to be relative to the root of the bare repository.
-DEFAULT_ATTRIBUTES_FILE = 'info/default_attributes'
+DEFAULT_ATTRIBUTES_FILE = "info/default_attributes"
 
 
 def get_attribute(filename, attr_name):
@@ -34,15 +34,15 @@ def get_attribute(filename, attr_name):
     RETURN VALUE
         A string containing the attribute value.
     """
-    attr_info = git.check_attr(attr_name, '--', filename)
+    attr_info = git.check_attr(attr_name, "--", filename)
 
     # Sanity check: attr_info should have the following format:
     # <FILENAME>: <ATTR_NAME>: <VALUE>.
-    attr_info_prefix = '%s: %s: ' % (filename, attr_name)
+    attr_info_prefix = "%s: %s: " % (filename, attr_name)
     assert attr_info.startswith(attr_info_prefix)
 
     # Return the portion of the output that contains the attribute value.
-    return attr_info[len(attr_info_prefix):]
+    return attr_info[len(attr_info_prefix) :]
 
 
 def cached_file_exists(commit_rev, filename):
@@ -57,7 +57,7 @@ def cached_file_exists(commit_rev, filename):
     # Implement the cache as an attribute of this function,
     # where the key is a tuple (commit_rev, filename), and
     # the value the result of the query.
-    if 'cache' not in cached_file_exists.__dict__:
+    if "cache" not in cached_file_exists.__dict__:
         # First time call, initialize the attribute.
         cached_file_exists.cache = {}
 
@@ -120,14 +120,16 @@ def git_attribute(commit_rev, filename, attr_name):
     attr_value = UNSPECIFIED_ATTR
 
     while True:
-        gitattributes_file = os.path.join(path_to_rel, '.gitattributes')
+        gitattributes_file = os.path.join(path_to_rel, ".gitattributes")
 
         if cached_file_exists(commit_rev, gitattributes_file):
             # Get the .gitattributes files in that directory, and save it
             # as GIT_DIR/info/attributes, and then get `git check-attr'
             # to read it for us.
-            git.show('%s:%s' % (commit_rev, gitattributes_file),
-                     _outfile=BARE_REPO_ATTRIBUTES_FILE)
+            git.show(
+                "%s:%s" % (commit_rev, gitattributes_file),
+                _outfile=BARE_REPO_ATTRIBUTES_FILE,
+            )
             attr_value = get_attribute(rel_file_path, attr_name)
 
             # If this .gitattribute file provided us with an attribute
@@ -135,7 +137,7 @@ def git_attribute(commit_rev, filename, attr_name):
             if attr_value != UNSPECIFIED_ATTR:
                 break
 
-        if not path_to_rel or path_to_rel == '.':
+        if not path_to_rel or path_to_rel == ".":
             # No more parent directories.  We're done.
             break
         (path_to_rel, parent_dir) = os.path.split(path_to_rel)

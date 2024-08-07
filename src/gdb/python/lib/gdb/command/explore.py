@@ -239,10 +239,12 @@ class PointerExplorer:
         """Function to explore pointer values.
         See Explorer.explore_expr for more information.
         """
-        print((
-            "'%s' is a pointer to a value of type '%s'"
-            % (expr, str(value.type.target()))
-        ))
+        print(
+            (
+                "'%s' is a pointer to a value of type '%s'"
+                % (expr, str(value.type.target()))
+            )
+        )
         option = input(
             "Continue exploring it as a pointer to a single " "value [y/n]: "
         )
@@ -252,9 +254,9 @@ class PointerExplorer:
                 deref_value = value.dereference()
                 str(deref_value)
             except gdb.MemoryError:
-                print((
-                    "'%s' a pointer pointing to an invalid memory " "location." % expr
-                ))
+                print(
+                    ("'%s' a pointer pointing to an invalid memory " "location." % expr)
+                )
                 if is_child:
                     Explorer.return_to_parent_value_prompt()
                 return False
@@ -296,9 +298,13 @@ class PointerExplorer:
         See Explorer.explore_type for more information.
         """
         target_type = datatype.target()
-        print((
-            "\n{} is a pointer to a value of type '{}'.".format(name, str(target_type))
-        ))
+        print(
+            (
+                "\n{} is a pointer to a value of type '{}'.".format(
+                    name, str(target_type)
+                )
+            )
+        )
 
         Explorer.explore_type("the pointee type of %s" % name, target_type, is_child)
         return False
@@ -413,18 +419,22 @@ class CompoundExplorer:
             type_desc = "union"
 
         if CompoundExplorer._get_real_field_count(fields) == 0:
-            print((
-                "The value of '%s' is a %s of type '%s' with no fields."
-                % (expr, type_desc, str(value.type))
-            ))
+            print(
+                (
+                    "The value of '%s' is a %s of type '%s' with no fields."
+                    % (expr, type_desc, str(value.type))
+                )
+            )
             if is_child:
                 Explorer.return_to_parent_value_prompt()
             return False
 
-        print((
-            "The value of '%s' is a %s of type '%s' with the following "
-            "fields:\n" % (expr, type_desc, str(value.type))
-        ))
+        print(
+            (
+                "The value of '%s' is a %s of type '%s' with the following "
+                "fields:\n" % (expr, type_desc, str(value.type))
+            )
+        )
 
         has_explorable_fields = False
         choice_to_compound_field_map = {}
@@ -507,20 +517,24 @@ class CompoundExplorer:
         fields = datatype.fields()
         if CompoundExplorer._get_real_field_count(fields) == 0:
             if is_child:
-                print((
-                    "%s is a %s of type '%s' with no fields."
-                    % (name, type_desc, str(datatype))
-                ))
+                print(
+                    (
+                        "%s is a %s of type '%s' with no fields."
+                        % (name, type_desc, str(datatype))
+                    )
+                )
                 Explorer.return_to_enclosing_type_prompt()
             else:
                 print(("'{}' is a {} with no fields.".format(name, type_desc)))
             return False
 
         if is_child:
-            print((
-                "%s is a %s of type '%s' "
-                "with the following fields:\n" % (name, type_desc, str(datatype))
-            ))
+            print(
+                (
+                    "%s is a %s of type '%s' "
+                    "with the following fields:\n" % (name, type_desc, str(datatype))
+                )
+            )
         else:
             print(("'%s' is a %s with the following " "fields:\n" % (name, type_desc)))
 
@@ -589,11 +603,13 @@ class TypedefExplorer:
         See Explorer.explore_expr for more information.
         """
         actual_type = value.type.strip_typedefs()
-        print((
-            "The value of '%s' is of type '%s' "
-            "which is a typedef of type '%s'"
-            % (expr, str(value.type), str(actual_type))
-        ))
+        print(
+            (
+                "The value of '%s' is of type '%s' "
+                "which is a typedef of type '%s'"
+                % (expr, str(value.type), str(actual_type))
+            )
+        )
 
         Explorer.explore_expr(expr, value.cast(actual_type), is_child)
         return False
@@ -605,17 +621,21 @@ class TypedefExplorer:
         """
         actual_type = datatype.strip_typedefs()
         if is_child:
-            print((
-                "The type of {} is a typedef of type '{}'.".format(
-                    name, str(actual_type)
+            print(
+                (
+                    "The type of {} is a typedef of type '{}'.".format(
+                        name, str(actual_type)
+                    )
                 )
-            ))
+            )
         else:
-            print((
-                "The type '{}' is a typedef of type '{}'.".format(
-                    name, str(actual_type)
+            print(
+                (
+                    "The type '{}' is a typedef of type '{}'.".format(
+                        name, str(actual_type)
+                    )
                 )
-            ))
+            )
 
         Explorer.explore_type(name, actual_type, is_child)
         return False

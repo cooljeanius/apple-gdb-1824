@@ -49,10 +49,10 @@ def daemonize(output_fd=None):
     # Perform the input/output redirection.
 
     os.close(0)
-    os.dup2(os.open('/dev/null', os.O_RDONLY), 0)
+    os.dup2(os.open("/dev/null", os.O_RDONLY), 0)
 
     if output_fd is None:  # pragma: no cover (never true in testsuite mode)
-        output_fd = os.open('/dev/null', os.O_WRONLY)
+        output_fd = os.open("/dev/null", os.O_WRONLY)
     os.close(1)
     os.dup2(output_fd, 1)
     os.close(2)
@@ -74,7 +74,7 @@ def run_in_daemon(fun):
         fun: A callable.
     """
     daemon_pipe = (None, None)
-    if 'GIT_HOOKS_TESTSUITE_MODE' in os.environ:
+    if "GIT_HOOKS_TESTSUITE_MODE" in os.environ:
         daemon_pipe = os.pipe()
 
     in_daemon = daemonize(daemon_pipe[1])
@@ -85,5 +85,5 @@ def run_in_daemon(fun):
         if daemon_pipe[0] is not None:
             os.close(daemon_pipe[1])
             daemon_stdout = os.fdopen(daemon_pipe[0])
-            print(daemon_stdout.read(), end=' ', file=sys.stderr)
+            print(daemon_stdout.read(), end=" ", file=sys.stderr)
             daemon_stdout.close()
