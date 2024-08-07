@@ -26,6 +26,7 @@ class CommitInfo(object):
         email_to: A list of email addresses, in RFC 822 format, of
             the recipients of the email notification for this commit.
     """
+
     def __init__(self, rev, author, subject, parent_revs):
         self.rev = rev
         self.author = author
@@ -43,9 +44,8 @@ class CommitInfo(object):
         self.__files_changed = None
 
     def oneline_str(self):
-        """A one-line string description of the commit.
-        """
-        return '%s... %s' % (self.rev[:7], self.subject[:59])
+        """A one-line string description of the commit."""
+        return "%s... %s" % (self.rev[:7], self.subject[:59])
 
     @property
     def email_to(self):
@@ -66,15 +66,18 @@ class CommitInfo(object):
         """
         if self.__files_changed is None:
             self.__files_changed = []
-            all_changes = git.diff_tree('-r', self.base_rev_for_git(),
-                                        self.rev, _split_lines=True)
+            all_changes = git.diff_tree(
+                "-r", self.base_rev_for_git(), self.rev, _split_lines=True
+            )
             for item in all_changes:
-                (old_mode, new_mode, old_sha1, new_sha1, status, filename) \
-                    = item.split(None, 5)
-                debug('diff-tree entry: %s %s %s %s %s %s'
-                      % (old_mode, new_mode, old_sha1, new_sha1, status,
-                         filename),
-                      level=5)
+                (old_mode, new_mode, old_sha1, new_sha1, status, filename) = item.split(
+                    None, 5
+                )
+                debug(
+                    "diff-tree entry: %s %s %s %s %s %s"
+                    % (old_mode, new_mode, old_sha1, new_sha1, status, filename),
+                    level=5,
+                )
                 self.__files_changed.append(filename)
         return self.__files_changed
 
@@ -142,8 +145,9 @@ def commit_info_list(*args):
     PARAMETERS
         Same as in the "git rev-list" command.
     """
-    rev_info = git.rev_list(*args, pretty='format:%P%n%an <%ae>%n%s',
-                            _split_lines=True, reverse=True)
+    rev_info = git.rev_list(
+        *args, pretty="format:%P%n%an <%ae>%n%s", _split_lines=True, reverse=True
+    )
     # Each commit should generate 4 lines of output.
     assert len(rev_info) % 4 == 0
 
@@ -153,7 +157,7 @@ def commit_info_list(*args):
         parents = rev_info.pop(0).split()
         author = rev_info.pop(0)
         subject = rev_info.pop(0)
-        assert commit_keyword == 'commit'
+        assert commit_keyword == "commit"
         result.append(CommitInfo(rev, author, subject, parents))
 
     return result

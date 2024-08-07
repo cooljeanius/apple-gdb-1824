@@ -18,18 +18,20 @@
 
 import re
 
+
 # Test returning a Value from a printer.
 class string_print:
     def __init__(self, val):
         self.val = val
 
     def to_string(self):
-        return self.val['whybother']['contents']
+        return self.val["whybother"]["contents"]
+
 
 # Test a class-based printer.
 class ContainerPrinter:
     class _iterator:
-        def __init__ (self, pointer, len):
+        def __init__(self, pointer, len):
             self.start = pointer
             self.pointer = pointer
             self.end = pointer + len
@@ -42,16 +44,17 @@ class ContainerPrinter:
                 raise StopIteration
             result = self.pointer
             self.pointer = self.pointer + 1
-            return ('[%d]' % int (result - self.start), result.dereference())
+            return ("[%d]" % int(result - self.start), result.dereference())
 
     def __init__(self, val):
         self.val = val
 
     def to_string(self):
-        return 'container %s with %d elements' % (self.val['name'], self.val['len'])
+        return "container %s with %d elements" % (self.val["name"], self.val["len"])
 
     def children(self):
-        return self._iterator(self.val['elements'], self.val['len'])
+        return self._iterator(self.val["elements"], self.val["len"])
+
 
 class pp_s:
     def __init__(self, val):
@@ -64,6 +67,7 @@ class pp_s:
             raise Exception("&a(%s) != b(%s)" % (str(a.address), str(b)))
         return " a=<" + str(self.val["a"]) + "> b=<" + str(self.val["b"]) + ">"
 
+
 class pp_ss:
     def __init__(self, val):
         self.val = val
@@ -71,33 +75,38 @@ class pp_ss:
     def to_string(self):
         return "a=<" + str(self.val["a"]) + "> b=<" + str(self.val["b"]) + ">"
 
+
 class pp_sss:
     def __init__(self, val):
         self.val = val
 
     def to_string(self):
-        return "a=<" + str(self.val['a']) + "> b=<" + str(self.val["b"]) + ">"
+        return "a=<" + str(self.val["a"]) + "> b=<" + str(self.val["b"]) + ">"
+
 
 class pp_multiple_virtual:
-    def __init__ (self, val):
+    def __init__(self, val):
         self.val = val
 
-    def to_string (self):
-        return "pp value variable is: " + str (self.val['value'])
+    def to_string(self):
+        return "pp value variable is: " + str(self.val["value"])
+
 
 class pp_vbase1:
-    def __init__ (self, val):
+    def __init__(self, val):
         self.val = val
 
-    def to_string (self):
+    def to_string(self):
         return "pp class name: " + self.val.type.tag
+
 
 class pp_nullstr:
     def __init__(self, val):
         self.val = val
 
     def to_string(self):
-        return self.val['s'].string(gdb.parameter('target-charset'))
+        return self.val["s"].string(gdb.parameter("target-charset"))
+
 
 class pp_ns:
     "Print a std::basic_string of some kind"
@@ -106,26 +115,28 @@ class pp_ns:
         self.val = val
 
     def to_string(self):
-        len = self.val['length']
-        return self.val['null_str'].string (gdb.parameter ('target-charset'), length = len)
+        len = self.val["length"]
+        return self.val["null_str"].string(gdb.parameter("target-charset"), length=len)
 
-    def display_hint (self):
-        return 'string'
+    def display_hint(self):
+        return "string"
+
 
 class pp_outer:
     "Print struct outer"
 
-    def __init__ (self, val):
+    def __init__(self, val):
         self.val = val
 
-    def to_string (self):
-        return "x = %s" % self.val['x']
+    def to_string(self):
+        return "x = %s" % self.val["x"]
 
-    def children (self):
-        yield 's', self.val['s']
-        yield 'x', self.val['x']
+    def children(self):
+        yield "s", self.val["s"]
+        yield "x", self.val["x"]
 
-def lookup_function (val):
+
+def lookup_function(val):
     "Look-up and return a pretty-printer that can print val."
 
     # Get the type.
@@ -133,12 +144,12 @@ def lookup_function (val):
 
     # If it points to a reference, get the reference.
     if type.code == gdb.TYPE_CODE_REF:
-        type = type.target ()
+        type = type.target()
 
     # Get the unqualified type, stripped of typedefs.
-    type = type.unqualified ().strip_typedefs ()
+    type = type.unqualified().strip_typedefs()
 
-    # Get the type name.    
+    # Get the type name.
     typename = type.tag
 
     if typename == None:
@@ -148,46 +159,47 @@ def lookup_function (val):
     # if a printer is registered for that type.  Return an
     # instantiation of the printer if found.
     for function in pretty_printers_dict:
-        if function.match (typename):
-            return pretty_printers_dict[function] (val)
-        
+        if function.match(typename):
+            return pretty_printers_dict[function](val)
+
     # Cannot find a pretty printer.  Return None.
 
     return None
 
 
-def register_pretty_printers ():
-    pretty_printers_dict[re.compile ('^struct s$')]   = pp_s
-    pretty_printers_dict[re.compile ('^s$')]   = pp_s
-    pretty_printers_dict[re.compile ('^S$')]   = pp_s
+def register_pretty_printers():
+    pretty_printers_dict[re.compile("^struct s$")] = pp_s
+    pretty_printers_dict[re.compile("^s$")] = pp_s
+    pretty_printers_dict[re.compile("^S$")] = pp_s
 
-    pretty_printers_dict[re.compile ('^struct ss$')]  = pp_ss
-    pretty_printers_dict[re.compile ('^ss$')]  = pp_ss
-    pretty_printers_dict[re.compile ('^const S &$')]   = pp_s
-    pretty_printers_dict[re.compile ('^SSS$')]  = pp_sss
-    
-    pretty_printers_dict[re.compile ('^VirtualTest$')] =  pp_multiple_virtual
-    pretty_printers_dict[re.compile ('^Vbase1$')] =  pp_vbase1
+    pretty_printers_dict[re.compile("^struct ss$")] = pp_ss
+    pretty_printers_dict[re.compile("^ss$")] = pp_ss
+    pretty_printers_dict[re.compile("^const S &$")] = pp_s
+    pretty_printers_dict[re.compile("^SSS$")] = pp_sss
 
-    pretty_printers_dict[re.compile ('^struct nullstr$')] = pp_nullstr
-    pretty_printers_dict[re.compile ('^nullstr$')] = pp_nullstr
-    
+    pretty_printers_dict[re.compile("^VirtualTest$")] = pp_multiple_virtual
+    pretty_printers_dict[re.compile("^Vbase1$")] = pp_vbase1
+
+    pretty_printers_dict[re.compile("^struct nullstr$")] = pp_nullstr
+    pretty_printers_dict[re.compile("^nullstr$")] = pp_nullstr
+
     # Note that we purposely omit the typedef names here.
     # Printer lookup is based on canonical name.
     # However, we do need both tagged and untagged variants, to handle
     # both the C and C++ cases.
-    pretty_printers_dict[re.compile ('^struct string_repr$')] = string_print
-    pretty_printers_dict[re.compile ('^struct container$')] = ContainerPrinter
-    pretty_printers_dict[re.compile ('^string_repr$')] = string_print
-    pretty_printers_dict[re.compile ('^container$')] = ContainerPrinter
-    
-    pretty_printers_dict[re.compile ('^struct ns$')]  = pp_ns
-    pretty_printers_dict[re.compile ('^ns$')]  = pp_ns
+    pretty_printers_dict[re.compile("^struct string_repr$")] = string_print
+    pretty_printers_dict[re.compile("^struct container$")] = ContainerPrinter
+    pretty_printers_dict[re.compile("^string_repr$")] = string_print
+    pretty_printers_dict[re.compile("^container$")] = ContainerPrinter
 
-    pretty_printers_dict[re.compile ('^struct outerstruct$')]  = pp_outer
-    pretty_printers_dict[re.compile ('^outerstruct$')]  = pp_outer
+    pretty_printers_dict[re.compile("^struct ns$")] = pp_ns
+    pretty_printers_dict[re.compile("^ns$")] = pp_ns
+
+    pretty_printers_dict[re.compile("^struct outerstruct$")] = pp_outer
+    pretty_printers_dict[re.compile("^outerstruct$")] = pp_outer
+
 
 pretty_printers_dict = {}
 
-register_pretty_printers ()
-gdb.pretty_printers.append (lookup_function)
+register_pretty_printers()
+gdb.pretty_printers.append(lookup_function)

@@ -41,33 +41,31 @@ output_file = None
 # Cleanup functions require special treatment, because they take a
 # function argument, but in theory the function must be nothrow.
 cleanup_functions = {
-    'make_cleanup': 1,
-    'make_cleanup_dtor': 1,
-    'make_final_cleanup': 1,
-    'make_my_cleanup2': 1,
-    'make_my_cleanup': 1
+    "make_cleanup": 1,
+    "make_cleanup_dtor": 1,
+    "make_final_cleanup": 1,
+    "make_my_cleanup2": 1,
+    "make_my_cleanup": 1,
 }
 
 # Functions which may throw but which we want to ignore.
 ignore_functions = {
     # This one is super special.
-    'exceptions_state_mc': 1,
+    "exceptions_state_mc": 1,
     # gdb generally pretends that internal_error cannot throw, even
     # though it can.
-    'internal_error': 1,
+    "internal_error": 1,
     # do_cleanups and friends are supposedly nothrow but we don't want
     # to run afoul of the indirect function call logic.
-    'do_cleanups': 1,
-    'do_final_cleanups': 1
+    "do_cleanups": 1,
+    "do_final_cleanups": 1,
 }
 
 # Functions which take a function argument, but which are not
 # interesting, usually because the argument is not called in the
 # current context.
-non_passthrough_functions = {
-    'signal': 1,
-    'add_internal_function': 1
-}
+non_passthrough_functions = {"signal": 1, "add_internal_function": 1}
+
 
 # Return True if the type is from Python.
 def type_is_pythonic(t):
@@ -76,7 +74,8 @@ def type_is_pythonic(t):
     if not isinstance(t, gcc.RecordType):
         return False
     # Hack.
-    return str(t).find('struct Py') == 0
+    return str(t).find("struct Py") == 0
+
 
 # Examine all the fields of a struct.  We don't currently need any
 # sort of recursion, so this is simple for now.
@@ -87,8 +86,8 @@ def examine_struct_fields(initializer):
             if isinstance(value2, gcc.AddrExpr):
                 value2 = value2.operand
                 if isinstance(value2, gcc.FunctionDecl):
-                    output_file.write("declare_nothrow(%s)\n"
-                                      % repr(str(value2.name)))
+                    output_file.write("declare_nothrow(%s)\n" % repr(str(value2.name)))
+
 
 # Examine all global variables looking for pointers to functions in
 # structures whose types were defined by Python.
@@ -112,12 +111,14 @@ def examine_globals():
             gccutils.check_isinstance(var.decl.type, gcc.RecordType)
             examine_struct_fields(var.decl.initial)
 
+
 # Called at the end of compilation to write out some data derived from
 # globals and to close the output.
 def close_output(*args):
     global output_file
     examine_globals()
     output_file.close()
+
 
 # The pass which derives some exception-checking information.  We take
 # a two-step approach: first we get a call graph from the compiler.
@@ -126,7 +127,7 @@ def close_output(*args):
 # global view of exception routes in gdb.
 class GdbExceptionChecker(gcc.GimplePass):
     def __init__(self, output_file):
-        gcc.GimplePass.__init__(self, 'gdb_exception_checker')
+        gcc.GimplePass.__init__(self, "gdb_exception_checker")
         self.output_file = output_file
 
     def log(self, obj):
@@ -147,7 +148,7 @@ class GdbExceptionChecker(gcc.GimplePass):
             return False
         if not isinstance(rhs.field, gcc.FieldDecl):
             return False
-        return rhs.field.name == 'tp_dealloc' or rhs.field.name == 'tp_free'
+        return rhs.field.name == "tp_dealloc" or rhs.field.name == "tp_free"
 
     # Decode a function call and write something to the output.
     # THIS_FUN is the enclosing function that we are processing.
@@ -155,30 +156,30 @@ class GdbExceptionChecker(gcc.GimplePass):
     # node.
     # LOC is the location of the call.
     def handle_one_fndecl(self, this_fun, fndecl, loc):
-        callee_name = ''
+        callee_name = ""
         if isinstance(fndecl, gcc.AddrExpr):
             fndecl = fndecl.operand
         if isinstance(fndecl, gcc.FunctionDecl):
             # Ordinary call to a named function.
             callee_name = str(fndecl.name)
-            self.output_file.write("function_call(%s, %s, %s)\n"
-                                   % (repr(callee_name),
-                                      repr(this_fun.decl.name),
-                                      repr(str(loc))))
+            self.output_file.write(
+                "function_call(%s, %s, %s)\n"
+                % (repr(callee_name), repr(this_fun.decl.name), repr(str(loc)))
+            )
         elif self.fn_is_python_ignorable(fndecl):
             # Call to tp_dealloc.
             pass
-        elif (isinstance(fndecl, gcc.SsaName)
-              and isinstance(fndecl.var, gcc.ParmDecl)):
+        elif isinstance(fndecl, gcc.SsaName) and isinstance(fndecl.var, gcc.ParmDecl):
             # We can ignore an indirect call via a parameter to the
             # current function, because this is handled via the rule
             # for passthrough functions.
             pass
         else:
             # Any other indirect call.
-            self.output_file.write("has_indirect_call(%s, %s)\n"
-                                   % (repr(this_fun.decl.name),
-                                      repr(str(loc))))
+            self.output_file.write(
+                "has_indirect_call(%s, %s)\n"
+                % (repr(this_fun.decl.name), repr(str(loc)))
+            )
         return callee_name
 
     # This does most of the work for examine_one_bb.
@@ -198,7 +199,7 @@ class GdbExceptionChecker(gcc.GimplePass):
                 continue
             callee_name = self.handle_one_fndecl(this_fun, stmt.fn, loc)
 
-            if callee_name == 'exceptions_state_mc_action_iter':
+            if callee_name == "exceptions_state_mc_action_iter":
                 try_catch = True
 
             global non_passthrough_functions
@@ -224,11 +225,12 @@ class GdbExceptionChecker(gcc.GimplePass):
                 global cleanup_functions
                 if callee_name in cleanup_functions:
                     if not isinstance(arg, gcc.FunctionDecl):
-                        gcc.inform(loc, 'cleanup argument not a DECL: %s' % repr(arg))
+                        gcc.inform(loc, "cleanup argument not a DECL: %s" % repr(arg))
                     else:
                         # Cleanups must be nothrow.
-                        self.output_file.write("declare_cleanup(%s)\n"
-                                               % repr(str(arg.name)))
+                        self.output_file.write(
+                            "declare_cleanup(%s)\n" % repr(str(arg.name))
+                        )
                 else:
                     # Assume we have a passthrough function, like
                     # qsort or an iterator.  We model this by
@@ -274,17 +276,19 @@ class GdbExceptionChecker(gcc.GimplePass):
         if fun and fun.cfg and fun.decl:
             self.output_file.write("################\n")
             self.output_file.write("# Analysis for %s\n" % fun.decl.name)
-            self.output_file.write("define_function(%s, %s)\n"
-                                   % (repr(fun.decl.name),
-                                      repr(str(fun.decl.location))))
+            self.output_file.write(
+                "define_function(%s, %s)\n"
+                % (repr(fun.decl.name), repr(str(fun.decl.location)))
+            )
 
             global ignore_functions
             if fun.decl.name not in ignore_functions:
                 self.iterate_bbs(fun)
 
+
 def main(**kwargs):
     global output_file
-    output_file = open(gcc.get_dump_base_name() + '.gdb_exc.py', 'w')
+    output_file = open(gcc.get_dump_base_name() + ".gdb_exc.py", "w")
     # We used to use attributes here, but there didn't seem to be a
     # big benefit over hard-coding.
     output_file.write('declare_throw("throw_exception")\n')
@@ -293,6 +297,7 @@ def main(**kwargs):
     output_file.write('declare_throw("throw_error")\n')
     gcc.register_callback(gcc.PLUGIN_FINISH_UNIT, close_output)
     ps = GdbExceptionChecker(output_file)
-    ps.register_after('ssa')
+    ps.register_after("ssa")
+
 
 main()

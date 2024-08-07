@@ -56,9 +56,11 @@ def parse_xm_command_args(arg):
         name_re = validate_xm_regexp("xmethod name", xm_name_regexp)
     else:
         name_re = None
-    return (validate_xm_regexp("locus", locus_regexp),
-            validate_xm_regexp("matcher name", matcher_name_regexp),
-            name_re)
+    return (
+        validate_xm_regexp("locus", locus_regexp),
+        validate_xm_regexp("matcher name", matcher_name_regexp),
+        name_re,
+    )
 
 
 def get_global_method_matchers(locus_re, matcher_re):
@@ -75,10 +77,9 @@ def get_global_method_matchers(locus_re, matcher_re):
         key in the dict will be 'global'.
     """
     locus_str = "global"
-    xm_dict = { locus_str: [] }
+    xm_dict = {locus_str: []}
     if locus_re.match("global"):
-        xm_dict[locus_str].extend(
-            [m for m in gdb.xmethods if matcher_re.match(m.name)])
+        xm_dict[locus_str].extend([m for m in gdb.xmethods if matcher_re.match(m.name)])
     return xm_dict
 
 
@@ -102,7 +103,7 @@ def get_method_matchers_in_loci(loci, locus_re, matcher_re):
     xm_dict = {}
     for locus in loci:
         if isinstance(locus, gdb.Progspace):
-            if not locus_re.match('progspace'):
+            if not locus_re.match("progspace"):
                 continue
             locus_type = "progspace"
         else:
@@ -110,32 +111,32 @@ def get_method_matchers_in_loci(loci, locus_re, matcher_re):
                 continue
             locus_type = "objfile"
         locus_str = "%s %s" % (locus_type, locus.filename)
-        xm_dict[locus_str] = [
-            m for m in locus.xmethods if matcher_re.match(m.name)]
+        xm_dict[locus_str] = [m for m in locus.xmethods if matcher_re.match(m.name)]
     return xm_dict
 
 
 def print_xm_info(xm_dict, name_re):
     """Print a dictionary of xmethods."""
+
     def get_status_string(method):
         if not m.enabled:
             return " [disabled]"
         else:
-          return ""
+            return ""
 
     if not xm_dict:
         return
     for locus_str in xm_dict:
         if not xm_dict[locus_str]:
             continue
-        print ("Xmethods in %s:" % locus_str)
+        print("Xmethods in %s:" % locus_str)
         for matcher in xm_dict[locus_str]:
-            print ("  %s" % matcher.name)
+            print("  %s" % matcher.name)
             if not matcher.methods:
                 continue
             for m in matcher.methods:
                 if name_re is None or name_re.match(m.name):
-                    print ("    %s%s" % (m.name, get_status_string(m)))
+                    print("    %s%s" % (m.name, get_status_string(m)))
 
 
 def set_xm_status1(xm_dict, name_re, status):
@@ -161,17 +162,17 @@ def set_xm_status(arg, status):
     argument string passed to the commands.
     """
     locus_re, matcher_re, name_re = parse_xm_command_args(arg)
-    set_xm_status1(get_global_method_matchers(locus_re, matcher_re), name_re,
-                   status)
+    set_xm_status1(get_global_method_matchers(locus_re, matcher_re), name_re, status)
     set_xm_status1(
-        get_method_matchers_in_loci(
-            [gdb.current_progspace()], locus_re, matcher_re),
+        get_method_matchers_in_loci([gdb.current_progspace()], locus_re, matcher_re),
         name_re,
-        status)
+        status,
+    )
     set_xm_status1(
         get_method_matchers_in_loci(gdb.objfiles(), locus_re, matcher_re),
         name_re,
-        status)
+        status,
+    )
 
 
 class InfoXMethod(gdb.Command):
@@ -194,20 +195,20 @@ class InfoXMethod(gdb.Command):
     """
 
     def __init__(self):
-        super(InfoXMethod, self).__init__("info xmethod",
-                                          gdb.COMMAND_DATA)
+        super(InfoXMethod, self).__init__("info xmethod", gdb.COMMAND_DATA)
 
     def invoke(self, arg, from_tty):
         locus_re, matcher_re, name_re = parse_xm_command_args(arg)
-        print_xm_info(get_global_method_matchers(locus_re, matcher_re),
-                      name_re)
+        print_xm_info(get_global_method_matchers(locus_re, matcher_re), name_re)
         print_xm_info(
             get_method_matchers_in_loci(
-                [gdb.current_progspace()], locus_re, matcher_re),
-            name_re)
+                [gdb.current_progspace()], locus_re, matcher_re
+            ),
+            name_re,
+        )
         print_xm_info(
-            get_method_matchers_in_loci(gdb.objfiles(), locus_re, matcher_re),
-            name_re)
+            get_method_matchers_in_loci(gdb.objfiles(), locus_re, matcher_re), name_re
+        )
 
 
 class EnableXMethod(gdb.Command):
@@ -230,8 +231,7 @@ class EnableXMethod(gdb.Command):
     """
 
     def __init__(self):
-        super(EnableXMethod, self).__init__("enable xmethod",
-                                            gdb.COMMAND_DATA)
+        super(EnableXMethod, self).__init__("enable xmethod", gdb.COMMAND_DATA)
 
     def invoke(self, arg, from_tty):
         set_xm_status(arg, True)
@@ -257,8 +257,7 @@ class DisableXMethod(gdb.Command):
     """
 
     def __init__(self):
-        super(DisableXMethod, self).__init__("disable xmethod",
-                                             gdb.COMMAND_DATA)
+        super(DisableXMethod, self).__init__("disable xmethod", gdb.COMMAND_DATA)
 
     def invoke(self, arg, from_tty):
         set_xm_status(arg, False)

@@ -24,11 +24,12 @@ if sys.version_info[0] > 2:
 
 from _gdb import *
 
-class _GdbFile (object):
+
+class _GdbFile(object):
     # These two are needed in Python 3
     encoding = "UTF-8"
     errors = "strict"
-    
+
     def close(self):
         # Do nothing.
         return None
@@ -43,15 +44,19 @@ class _GdbFile (object):
     def flush(self):
         flush()
 
-class GdbOutputFile (_GdbFile):
+
+class GdbOutputFile(_GdbFile):
     def write(self, s):
         write(s, stream=STDOUT)
 
+
 sys.stdout = GdbOutputFile()
 
-class GdbOutputErrorFile (_GdbFile):
+
+class GdbOutputErrorFile(_GdbFile):
     def write(self, s):
         write(s, stream=STDERR)
+
 
 sys.stderr = GdbOutputErrorFile()
 
@@ -60,7 +65,7 @@ prompt_hook = None
 
 # Ensure that sys.argv is set to something.
 # We do not use PySys_SetArgvEx because it did not appear until 2.6.6.
-sys.argv = ['']
+sys.argv = [""]
 
 # Initial pretty printers.
 pretty_printers = []
@@ -77,26 +82,24 @@ PYTHONDIR = os.path.dirname(os.path.dirname(__file__))
 
 # Packages to auto-load.
 
-packages = [
-    'function',
-    'command'
-]
+packages = ["function", "command"]
 
 # pkgutil.iter_modules is not available prior to Python 2.6.  Instead,
 # manually iterate the list, collating the Python files in each module
 # path.  Construct the module name, and import.
 
+
 def auto_load_packages():
     for package in packages:
         location = os.path.join(os.path.dirname(__file__), package)
         if os.path.exists(location):
-            py_files = filter(lambda x: x.endswith('.py')
-                                        and x != '__init__.py',
-                              os.listdir(location))
+            py_files = filter(
+                lambda x: x.endswith(".py") and x != "__init__.py", os.listdir(location)
+            )
 
             for py_file in py_files:
                 # Construct from foo.py, gdb.module.foo
-                modname = "%s.%s.%s" % ( __name__, package, py_file[:-3] )
+                modname = "%s.%s.%s" % (__name__, package, py_file[:-3])
                 try:
                     if modname in sys.modules:
                         # reload modules with duplicate names
@@ -104,9 +107,11 @@ def auto_load_packages():
                     else:
                         __import__(modname)
                 except:
-                    sys.stderr.write (traceback.format_exc() + "\n")
+                    sys.stderr.write(traceback.format_exc() + "\n")
+
 
 auto_load_packages()
+
 
 def GdbSetPythonDirectory(dir):
     """Update sys.path, reload gdb and auto-load packages."""

@@ -16,30 +16,33 @@
 
 import gdb.printing
 
+
 class BoundPrinter:
     """Adds size field to a _rawbound128 type."""
 
-    def __init__ (self, val):
+    def __init__(self, val):
         self.val = val
 
-    def to_string (self):
+    def to_string(self):
         upper = self.val["ubound"]
         lower = self.val["lbound"]
-        size  = (long) ((upper) - (lower))
+        size = (long)((upper) - (lower))
         if size > -1:
             size = size + 1
-        result = '{lbound = %s, ubound = %s} : size %s' % (lower, upper, size)
+        result = "{lbound = %s, ubound = %s} : size %s" % (lower, upper, size)
         return result
+
 
 # There are two pattern matching used: first one is related to a library
 # second is related to the type. Since we are displaying a register all
 # libraries are accepted. Type to be processed is the same present
 # in the xml file.
 
-def build_pretty_printer ():
-    pp = gdb.printing.RegexpCollectionPrettyPrinter (".*")
-    pp.add_printer ('bound', '^__gdb_builtin_type_bound128', BoundPrinter)
+
+def build_pretty_printer():
+    pp = gdb.printing.RegexpCollectionPrettyPrinter(".*")
+    pp.add_printer("bound", "^__gdb_builtin_type_bound128", BoundPrinter)
     return pp
 
-gdb.printing.register_pretty_printer (gdb.current_objfile (),
-                                      build_pretty_printer ())
+
+gdb.printing.register_pretty_printer(gdb.current_objfile(), build_pretty_printer())

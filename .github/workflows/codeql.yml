@@ -119,16 +119,24 @@ jobs:
             libjs-modernizr node-babel-eslint npm; \
         elif test ${{ matrix.language }} == 'go'; then \
           sudo apt-get -y install gccgo gccgo-multilib golang golang-go \
-            golang-src golang-ar-dev; \
+            golang-src golang-ar-dev golang-honnef-go-tools-dev; \
         elif test ${{ matrix.language }} == 'csharp'; then \
           sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs nant \
             nunit mono-xbuild; \
         elif test ${{ matrix.language }} == 'python'; then \
           sudo apt-get -y install jython pylint pymacs python-tk tix flake8 \
-            python3-macholib yamllint; \
+            python3-macholib yamllint black python3-pyls-black \
+            python3-pylsp-black python3-pyflakes python3-pylint-plugin-utils \
+            python3-pylint-common pyflakes3 python3-pytest-pylint \
+            python3-flake8 python3-pytest-flake8 python3-pep8-naming \
+            python3-mccabe python3-flake8-docstrings \
+            python3-flake8-blind-except python3-flake8-builtins \
+            python3-pylsp-flake8 python3-flake8-class-newline \
+            python3-flake8-quotes python3-flake8-import-order \
+            python3-flake8-comprehensions python3-flake8-deprecated; \
         elif test ${{ matrix.language }} == 'ruby'; then \
-          sudo apt-get -y install ruby ruby-dev libruby rake ruby-full ruby-ffi \
-            ruby-build jruby-openssl mruby libmruby-dev; \
+          sudo apt-get -y install ruby ruby-dev libruby rake ruby-full \
+            ruby-ffi ruby-build jruby-openssl mruby libmruby-dev; \
         else \
           sync && echo "unhandled language ${{ matrix.language }}" && sleep 1; \
         fi
@@ -138,7 +146,7 @@ jobs:
       uses: nbadal/action-ktlint-setup@v1
 
     - name: Syntax check (and similar stuff)
-      if: matrix.language == 'ruby' || matrix.language == 'javascript-typescript'
+      if: matrix.language != 'c-cpp' && matrix.language != 'java-kotlin'
       run: |
         if test ${{ matrix.language }} == 'ruby' && test -x "$(which ruby)"; then \
           ruby -cwv src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb || ruby -c src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb; \
@@ -182,7 +190,7 @@ jobs:
           fi; \
           sync && echo "leaving $(pwd)..."; \
           popd || exit; \
-        elif test ${{ matrix.language }} = 'javascript-typescript' && test -x "$(which node)"; then \
+        elif test ${{ matrix.language }} == 'javascript-typescript' && test -x "$(which node)"; then \
           (find . -name '*.js' -print0 | xargs -0 node -c) || find . -name '*.js' -print -exec node -c '{}' ';'; \
           if test -x "$(which npx)"; then \
             pushd src/texinfo/js || exit; \
@@ -190,6 +198,20 @@ jobs:
             sync && echo "Done with texinfo javascript."; \
             popd || exit; \
           fi; \
+        elif test ${{ matrix.language }} == 'go' && test -x "$(which go)"; then \
+          if test -x "$(which staticcheck)"; then \
+            find . -name '*.go' -print0 | xargs -0 staticcheck; \
+          elif test -x "$(which revive)"; then \
+            find . -name '*.go' -print0 | xargs -0 revive; \
+          elif test -x "$(which gocritic)"; then \
+            find . -name '*.go' -print0 | xargs -0 gocritic; \
+          elif test -x "$(which actionlint)"; then \
+            actionlint; \
+          else \
+            sync && echo "no linters found for go."; \
+          fi; \
+        elif test ${{ matrix.language }} == 'python' && test -x "$(which python)"; then \
+          sync && echo "TODO: python linting"; \
         else \
           echo "unhandled case for syntax check step (matrix.language is ${{ matrix.language }})"; \
         fi

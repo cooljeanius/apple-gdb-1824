@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 class Reporter(object):
     """Base class of reporter to report test results in a certain format.
 
@@ -43,22 +44,23 @@ class Reporter(object):
         """
         raise NotImplementedError("Abstract Method:end.")
 
+
 class TextReporter(Reporter):
     """Report results in a plain text file 'perftest.log'."""
 
     def __init__(self, append):
-        super (TextReporter, self).__init__(Reporter(append))
+        super(TextReporter, self).__init__(Reporter(append))
         self.txt_log = None
 
     def report(self, *args):
-        self.txt_log.write(' '.join(str(arg) for arg in args))
-        self.txt_log.write('\n')
+        self.txt_log.write(" ".join(str(arg) for arg in args))
+        self.txt_log.write("\n")
 
     def start(self):
         if self.append:
-            self.txt_log = open ("perftest.log", 'a+');
+            self.txt_log = open("perftest.log", "a+")
         else:
-            self.txt_log = open ("perftest.log", 'w');
+            self.txt_log = open("perftest.log", "w")
 
     def end(self):
-        self.txt_log.close ()
+        self.txt_log.close()

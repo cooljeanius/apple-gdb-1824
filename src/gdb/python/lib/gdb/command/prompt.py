@@ -19,17 +19,18 @@
 import gdb
 import gdb.prompt
 
+
 class _ExtendedPrompt(gdb.Parameter):
 
     """Set the extended prompt.
 
-Usage: set extended-prompt VALUE
+    Usage: set extended-prompt VALUE
 
-Substitutions are applied to VALUE to compute the real prompt.
+    Substitutions are applied to VALUE to compute the real prompt.
 
-The currently defined substitutions are:
+    The currently defined substitutions are:
+    """
 
-"""
     # Add the prompt library's dynamically generated help to the
     # __doc__ string.
     __doc__ = __doc__ + gdb.prompt.prompt_help()
@@ -38,29 +39,30 @@ The currently defined substitutions are:
     show_doc = "Show the extended prompt."
 
     def __init__(self):
-        super(_ExtendedPrompt, self).__init__("extended-prompt",
-                                              gdb.COMMAND_SUPPORT,
-                                              gdb.PARAM_STRING_NOESCAPE)
-        self.value = ''
+        super(_ExtendedPrompt, self).__init__(
+            "extended-prompt", gdb.COMMAND_SUPPORT, gdb.PARAM_STRING_NOESCAPE
+        )
+        self.value = ""
         self.hook_set = False
 
-    def get_show_string (self, pvalue):
-        if self.value is not '':
-           return "The extended prompt is: " + self.value
+    def get_show_string(self, pvalue):
+        if self.value is not "":
+            return "The extended prompt is: " + self.value
         else:
-           return "The extended prompt is not set."
+            return "The extended prompt is not set."
 
-    def get_set_string (self):
+    def get_set_string(self):
         if self.hook_set == False:
-           gdb.prompt_hook = self.before_prompt_hook
-           self.hook_set = True
+            gdb.prompt_hook = self.before_prompt_hook
+            self.hook_set = True
         return ""
 
     def before_prompt_hook(self, current):
-        if self.value is not '':
+        if self.value is not "":
             newprompt = gdb.prompt.substitute_prompt(self.value)
-            return newprompt.replace('\\', '\\\\')
+            return newprompt.replace("\\", "\\\\")
         else:
             return None
+
 
 _ExtendedPrompt()

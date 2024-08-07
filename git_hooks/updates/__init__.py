@@ -2,12 +2,14 @@
 
 from config import git_config, SUBJECT_MAX_SUBJECT_CHARS
 from errors import InvalidUpdate
-from git import (git, get_object_type, is_null_rev, commit_parents,
-                 commit_rev)
+from git import git, get_object_type, is_null_rev, commit_parents, commit_rev
 from os.path import expanduser, isfile, getmtime
-from pre_commit_checks import (check_revision_history, check_commit,
-                               check_filename_collisions,
-                               reject_commit_if_merge)
+from pre_commit_checks import (
+    check_revision_history,
+    check_commit,
+    check_filename_collisions,
+    reject_commit_if_merge,
+)
 import re
 import shlex
 from syslog import syslog
@@ -59,8 +61,8 @@ class AbstractUpdate(object):
                this required information, rather than recomputing it
                repeatedly.
     """
-    def __init__(self, ref_name, old_rev, new_rev, all_refs,
-                 submitter_email):
+
+    def __init__(self, ref_name, old_rev, new_rev, all_refs, submitter_email):
         """The constructor.
 
         Also calls self.auto_sanity_check() at the end.
@@ -79,10 +81,11 @@ class AbstractUpdate(object):
         # If the repository's configuration does not provide
         # the minimum required to email update notifications,
         # refuse the update.
-        if not git_config('hooks.mailinglist'):
+        if not git_config("hooks.mailinglist"):
             raise InvalidUpdate(
-                'Error: hooks.mailinglist config option not set.',
-                'Please contact your repository\'s administrator.')
+                "Error: hooks.mailinglist config option not set.",
+                "Please contact your repository's administrator.",
+            )
 
         m = re.match(r"([^/]+/[^/]+)/(.+)", ref_name)
 
@@ -116,32 +119,35 @@ class AbstractUpdate(object):
         that all the new commits introduced by this update passes
         style-checking.  Otherwise, raise InvalidUpdate.
         """
-        debug('validate_ref_update (%s, %s, %s)'
-              % (self.ref_name, self.old_rev, self.new_rev))
+        debug(
+            "validate_ref_update (%s, %s, %s)"
+            % (self.ref_name, self.old_rev, self.new_rev)
+        )
         self.validate_ref_update()
         self.__check_max_commit_emails()
         self.pre_commit_checks()
 
     def send_email_notifications(self):
-        """Send all email notifications associated to this update.
-        """
-        no_email_re = self.search_config_option_list('hooks.no-emails')
+        """Send all email notifications associated to this update."""
+        no_email_re = self.search_config_option_list("hooks.no-emails")
         if no_email_re is not None:
-            warn(*['-' * 70,
-                   "--  The hooks.no-emails config option contains `%s',"
-                   % no_email_re,
-                   '--  which matches the name of the reference being'
-                   ' updated ',
-                   '--  (%s).' % self.ref_name,
-                   '--',
-                   '--  Commit emails will therefore not be sent.',
-                   '-' * 70,
-                   ], prefix='')
+            warn(
+                *[
+                    "-" * 70,
+                    "--  The hooks.no-emails config option contains `%s',"
+                    % no_email_re,
+                    "--  which matches the name of the reference being" " updated ",
+                    "--  (%s)." % self.ref_name,
+                    "--",
+                    "--  Commit emails will therefore not be sent.",
+                    "-" * 70,
+                ],
+                prefix=""
+            )
             return
         # This phase needs all added commits to have certain attributes
         # to be computed.  Do it now.
-        self.__set_commits_attr(self.added_commits, 'send_email_p',
-                                'hooks.no-emails')
+        self.__set_commits_attr(self.added_commits, "send_email_p", "hooks.no-emails")
         self.__email_ref_update()
         self.__email_new_commits()
 
@@ -219,17 +225,20 @@ class AbstractUpdate(object):
 
         # Check to see if any of the entries in hooks.no-precommit-check
         # might be matching our reference name...
-        for exp in git_config('hooks.no-precommit-check'):
+        for exp in git_config("hooks.no-precommit-check"):
             exp = exp.strip()
             if re.match(exp, self.ref_name):
                 # Pre-commit checks are explicitly disabled on this branch.
                 debug("(hooks.no-precommit-check match: `%s')" % exp)
-                syslog('Pre-commit checks disabled for %(rev)s on %(repo)s'
-                       ' by hooks.no-precommit-check config (%(ref_name)s)'
-                       % {'rev': self.new_rev,
-                          'repo': self.email_info.project_name,
-                          'ref_name': self.ref_name,
-                          })
+                syslog(
+                    "Pre-commit checks disabled for %(rev)s on %(repo)s"
+                    " by hooks.no-precommit-check config (%(ref_name)s)"
+                    % {
+                        "rev": self.new_rev,
+                        "repo": self.email_info.project_name,
+                        "ref_name": self.ref_name,
+                    }
+                )
                 return
 
         if self.__no_cvs_check_user_override():
@@ -244,8 +253,8 @@ class AbstractUpdate(object):
 
         # Determine whether we should be doing RH style checking...
         do_rh_style_checks = (
-            self.search_config_option_list('hooks.no-rh-style-checks')
-            is None)
+            self.search_config_option_list("hooks.no-rh-style-checks") is None
+        )
 
         # Perform the revision-history of all new commits, unless
         # specifically disabled by configuration.
@@ -261,8 +270,8 @@ class AbstractUpdate(object):
                     check_revision_history(commit.rev)
 
         reject_merge_commits = (
-            self.search_config_option_list('hooks.reject-merge-commits')
-            is not None)
+            self.search_config_option_list("hooks.reject-merge-commits") is not None
+        )
         if reject_merge_commits:
             for commit in added:
                 reject_commit_if_merge(commit, self.ref_name)
@@ -276,27 +285,31 @@ class AbstractUpdate(object):
             if not commit.pre_existing_p:
                 check_filename_collisions(commit.rev)
 
-        if git_config('hooks.combined-style-checking'):
+        if git_config("hooks.combined-style-checking"):
             # This project prefers to perform the style check on
             # the cumulated diff, rather than commit-per-commit.
             # Behave as if the update only added one commit (new_rev),
             # with a single parent being old_rev.  If old_rev is nul
             # (branch creation), then use the first parent of the oldest
             # added commit.
-            debug('(combined style checking)')
+            debug("(combined style checking)")
             if not added[-1].pre_existing_p:
                 base_rev = (
-                    added[0].base_rev_for_git() if is_null_rev(self.old_rev)
-                    else self.old_rev)
-                check_commit(base_rev, self.new_rev,
-                             self.email_info.project_name)
+                    added[0].base_rev_for_git()
+                    if is_null_rev(self.old_rev)
+                    else self.old_rev
+                )
+                check_commit(base_rev, self.new_rev, self.email_info.project_name)
         else:
-            debug('(commit-per-commit style checking)')
+            debug("(commit-per-commit style checking)")
             # Perform the pre-commit checks, as needed...
             for commit in added:
                 if not commit.pre_existing_p:
-                    check_commit(commit.base_rev_for_git(), commit.rev,
-                                 self.email_info.project_name)
+                    check_commit(
+                        commit.base_rev_for_git(),
+                        commit.rev,
+                        self.email_info.project_name,
+                    )
 
     def email_commit(self, commit):
         """Send an email describing the given commit.
@@ -304,21 +317,21 @@ class AbstractUpdate(object):
         PARAMETERS
             commit: A CommitInfo object.
         """
-        if self.ref_namespace in ('refs/heads', 'refs/tags'):
-            if self.short_ref_name == 'master':
-                branch = ''
+        if self.ref_namespace in ("refs/heads", "refs/tags"):
+            if self.short_ref_name == "master":
+                branch = ""
             else:
-                branch = '/%s' % self.short_ref_name
+                branch = "/%s" % self.short_ref_name
         else:
             # Unusual namespace for our reference. Use the reference
             # name in full to label the branch name.
-            branch = '(%s)' % self.ref_name
+            branch = "(%s)" % self.ref_name
 
-        subject = '[%(repo)s%(branch)s] %(subject)s' % {
-            'repo': self.email_info.project_name,
-            'branch': branch,
-            'subject': commit.subject[:SUBJECT_MAX_SUBJECT_CHARS],
-            }
+        subject = "[%(repo)s%(branch)s] %(subject)s" % {
+            "repo": self.email_info.project_name,
+            "branch": branch,
+            "subject": commit.subject[:SUBJECT_MAX_SUBJECT_CHARS],
+        }
 
         # Generate the body of the email in two pieces:
         #   1. The commit description without the patch;
@@ -336,25 +349,29 @@ class AbstractUpdate(object):
         # character at the start of the format string, and then
         # by stripping it from the output.
 
-        body = git.log(commit.rev, max_count="1") + '\n'
-        if git_config('hooks.commit-url') is not None:
-            url_info = {'rev': commit.rev,
-                        'ref_name': self.ref_name}
-            body = (git_config('hooks.commit-url') % url_info
-                    + '\n\n'
-                    + body)
+        body = git.log(commit.rev, max_count="1") + "\n"
+        if git_config("hooks.commit-url") is not None:
+            url_info = {"rev": commit.rev, "ref_name": self.ref_name}
+            body = git_config("hooks.commit-url") % url_info + "\n\n" + body
 
-        diff = git.show(commit.rev, p=True, M=True, stat=True,
-                        pretty="format:|")[1:]
+        diff = git.show(commit.rev, p=True, M=True, stat=True, pretty="format:|")[1:]
 
-        filer_cmd = git_config('hooks.file-commit-cmd')
+        filer_cmd = git_config("hooks.file-commit-cmd")
         if filer_cmd is not None:
             filer_cmd = shlex.split(filer_cmd)
 
-        email = Email(self.email_info,
-                      commit.email_to, subject, body, commit.author,
-                      self.ref_name, commit.base_rev_for_display(),
-                      commit.rev, diff, filer_cmd=filer_cmd)
+        email = Email(
+            self.email_info,
+            commit.email_to,
+            subject,
+            body,
+            commit.author,
+            self.ref_name,
+            commit.base_rev_for_display(),
+            commit.rev,
+            diff,
+            filer_cmd=filer_cmd,
+        )
         email.enqueue()
 
     # -----------------------
@@ -391,8 +408,7 @@ class AbstractUpdate(object):
         """Return the list of references matching the given config option."""
         result = []
         for ref_name in self.all_refs.keys():
-            if self.search_config_option_list(config_name,
-                                              ref_name) is not None:
+            if self.search_config_option_list(config_name, ref_name) is not None:
                 result.append(ref_name)
         return result
 
@@ -409,45 +425,50 @@ class AbstractUpdate(object):
         # Display the lost commits (if any) first, to increase
         # our chances of attracting the reader's attention.
         if self.lost_commits:
-            summary.append('')
-            summary.append('')
-            summary.append('!!! WARNING: THE FOLLOWING COMMITS ARE'
-                           ' NO LONGER ACCESSIBLE (LOST):')
-            summary.append('--------------------------------------'
-                           '-----------------------------')
-            summary.append('')
+            summary.append("")
+            summary.append("")
+            summary.append(
+                "!!! WARNING: THE FOLLOWING COMMITS ARE" " NO LONGER ACCESSIBLE (LOST):"
+            )
+            summary.append(
+                "--------------------------------------" "-----------------------------"
+            )
+            summary.append("")
             for commit in reversed(self.lost_commits):
-                summary.append('  ' + commit.oneline_str())
+                summary.append("  " + commit.oneline_str())
             for commit in reversed(self.lost_commits):
-                summary.append('')
-                summary.append(git.log('-n1', commit.rev, pretty='medium'))
+                summary.append("")
+                summary.append(git.log("-n1", commit.rev, pretty="medium"))
 
         if self.added_commits:
             has_silent = False
-            summary.append('')
-            summary.append('')
-            summary.append('Summary of changes (added commits):')
-            summary.append('-----------------------------------')
-            summary.append('')
+            summary.append("")
+            summary.append("")
+            summary.append("Summary of changes (added commits):")
+            summary.append("-----------------------------------")
+            summary.append("")
             # Note that we want the summary to include all commits
             # now accessible from this reference, not just the new
             # ones.
             for commit in reversed(self.added_commits):
                 if commit.send_email_p:
-                    marker = ''
+                    marker = ""
                 else:
-                    marker = ' (*)'
+                    marker = " (*)"
                     has_silent = True
-                summary.append('  ' + commit.oneline_str() + marker)
+                summary.append("  " + commit.oneline_str() + marker)
 
             # If we added a ' (*)' marker to at least one commit,
             # add a footnote explaining what it means.
             if has_silent:
-                summary.extend([
-                    '',
-                    '(*) This commit exists in a branch whose name matches',
-                    '    the hooks.noemail config option. No separate email',
-                    '    sent.'])
+                summary.extend(
+                    [
+                        "",
+                        "(*) This commit exists in a branch whose name matches",
+                        "    the hooks.noemail config option. No separate email",
+                        "    sent.",
+                    ]
+                )
 
             # Print a more verbose description of the added commits.
             #
@@ -467,8 +488,8 @@ class AbstractUpdate(object):
             # the merge's other parents.
 
             for commit in reversed(self.added_commits):
-                summary.append('')
-                summary.append(git.log('-n1', '--pretty=medium', commit.rev))
+                summary.append("")
+                summary.append(git.log("-n1", "--pretty=medium", commit.rev))
 
         # We do not want that summary to be used for filing purposes.
         # So add a "Diff:" marker.
@@ -478,13 +499,12 @@ class AbstractUpdate(object):
             # the "Diff:" marker and the rest of the summary,
             # replace the first empty line with our diff marker
             # (instead of pre-pending it, for instance).
-            summary[0] = '\n\nDiff:'
+            summary[0] = "\n\nDiff:"
 
-        return '\n'.join(summary)
+        return "\n".join(summary)
 
     def everyone_emails(self):
-        """Return the list of email addresses listing everyone possible.
-        """
+        """Return the list of email addresses listing everyone possible."""
         return expanded_mailing_list(None)
 
     # ------------------------
@@ -534,14 +554,17 @@ class AbstractUpdate(object):
         # of commit hashes is more convenient for what we want to do
         # than a list of CommitInfo objects.
 
-        exclude = ['^%s' % self.all_refs[ref_name]
-                   for ref_name in self.all_refs.keys()
-                   if ref_name != self.ref_name]
+        exclude = [
+            "^%s" % self.all_refs[ref_name]
+            for ref_name in self.all_refs.keys()
+            if ref_name != self.ref_name
+        ]
         if not is_null_rev(self.old_rev):
-            exclude.append('^%s' % self.old_rev)
+            exclude.append("^%s" % self.old_rev)
 
-        new_repo_revs = git.rev_list(self.new_rev, *exclude, reverse=True,
-                                     _split_lines=True)
+        new_repo_revs = git.rev_list(
+            self.new_rev, *exclude, reverse=True, _split_lines=True
+        )
 
         # If this is a reference creation (base_rev is null), try to
         # find a commit which can serve as base_rev.  We try to find
@@ -570,7 +593,7 @@ class AbstractUpdate(object):
         # (Eg. a headless branch), then expand to all commits accessible
         # from that reference.
         if not is_null_rev(base_rev):
-            commit_list = commit_info_list(self.new_rev, '^%s' % base_rev)
+            commit_list = commit_info_list(self.new_rev, "^%s" % base_rev)
             base_rev = commit_rev(base_rev)
         else:
             commit_list = commit_info_list(self.new_rev)
@@ -580,7 +603,7 @@ class AbstractUpdate(object):
         for commit in commit_list:
             commit.pre_existing_p = commit.rev not in new_repo_revs
 
-        debug('update base: %s' % base_rev)
+        debug("update base: %s" % base_rev)
 
         return commit_list
 
@@ -599,8 +622,7 @@ class AbstractUpdate(object):
         # The list of lost commits is computed by listing all commits
         # accessible from the old_rev, but not from any of the references.
 
-        exclude = ['^%s' % self.all_refs[rev]
-                   for rev in self.all_refs.keys()]
+        exclude = ["^%s" % self.all_refs[rev] for rev in self.all_refs.keys()]
         commit_list = commit_info_list(self.old_rev, *exclude)
 
         return commit_list
@@ -613,11 +635,11 @@ class AbstractUpdate(object):
         This function also performs all necessary debug traces, warnings,
         etc.
         """
-        no_cvs_check_fullpath = expanduser('~/.no_cvs_check')
+        no_cvs_check_fullpath = expanduser("~/.no_cvs_check")
         # Make sure the tilde expansion worked.  Since we are only using
         # "~" rather than "~username", the expansion should really never
         # fail...
-        assert (not no_cvs_check_fullpath.startswith('~'))
+        assert not no_cvs_check_fullpath.startswith("~")
 
         if not isfile(no_cvs_check_fullpath):
             return False
@@ -626,26 +648,28 @@ class AbstractUpdate(object):
         age = time.time() - getmtime(no_cvs_check_fullpath)
         one_day_in_seconds = 24 * 60 * 60
 
-        if (age > one_day_in_seconds):
-            warn('%s is too old and will be ignored.' % no_cvs_check_fullpath)
+        if age > one_day_in_seconds:
+            warn("%s is too old and will be ignored." % no_cvs_check_fullpath)
             return False
 
-        debug('%s found - pre-commit checks disabled' % no_cvs_check_fullpath)
-        syslog('Pre-commit checks disabled for %(rev)s on %(repo)s by user'
-               ' %(user)s using %(no_cvs_check_fullpath)s'
-               % {'rev': self.new_rev,
-                  'repo': self.email_info.project_name,
-                  'user': get_user_name(),
-                  'no_cvs_check_fullpath': no_cvs_check_fullpath,
-                  })
+        debug("%s found - pre-commit checks disabled" % no_cvs_check_fullpath)
+        syslog(
+            "Pre-commit checks disabled for %(rev)s on %(repo)s by user"
+            " %(user)s using %(no_cvs_check_fullpath)s"
+            % {
+                "rev": self.new_rev,
+                "repo": self.email_info.project_name,
+                "user": get_user_name(),
+                "no_cvs_check_fullpath": no_cvs_check_fullpath,
+            }
+        )
         return True
 
     def __check_max_commit_emails(self):
-        """Raise InvalidUpdate is this update will generate too many emails.
-        """
+        """Raise InvalidUpdate is this update will generate too many emails."""
         # Check that the update wouldn't generate too many commit emails.
 
-        if self.search_config_option_list('hooks.no-emails') is not None:
+        if self.search_config_option_list("hooks.no-emails") is not None:
             # This repository was configured to skip emails on this branch.
             # Nothing to do.
             return
@@ -653,11 +677,11 @@ class AbstractUpdate(object):
         # We know that commit emails would only be sent for commits which
         # are new for the repository, so we count those.
 
-        self.__set_commits_attr(self.added_commits, 'send_email_p',
-                                'hooks.no-emails')
-        nb_emails = len([commit for commit in self.added_commits
-                         if commit.send_email_p])
-        max_emails = git_config('hooks.max-commit-emails')
+        self.__set_commits_attr(self.added_commits, "send_email_p", "hooks.no-emails")
+        nb_emails = len(
+            [commit for commit in self.added_commits if commit.send_email_p]
+        )
+        max_emails = git_config("hooks.max-commit-emails")
         if nb_emails > max_emails:
             raise InvalidUpdate(
                 "This update introduces too many new commits (%d),"
@@ -665,7 +689,8 @@ class AbstractUpdate(object):
                 "trigger as many emails, exceeding the"
                 " current limit (%d)." % max_emails,
                 "Contact your repository adminstrator if you really meant",
-                "to generate this many commit emails.")
+                "to generate this many commit emails.",
+            )
 
     def __email_ref_update(self):
         """Send the email describing to the reference update.
@@ -682,21 +707,26 @@ class AbstractUpdate(object):
 
         if update_email_contents is not None:
             (email_to, subject, body) = update_email_contents
-            update_email = Email(self.email_info,
-                                 email_to, subject, body, None,
-                                 self.ref_name, self.old_rev, self.new_rev,
-                                 send_to_filer=self.send_cover_email_to_filer)
+            update_email = Email(
+                self.email_info,
+                email_to,
+                subject,
+                body,
+                None,
+                self.ref_name,
+                self.old_rev,
+                self.new_rev,
+                send_to_filer=self.send_cover_email_to_filer,
+            )
             update_email.enqueue()
 
     def __email_new_commits(self):
-        """Send one email per new (non-pre-existing) commit.
-        """
+        """Send one email per new (non-pre-existing) commit."""
         for commit in self.added_commits:
             if commit.send_email_p:
                 self.email_commit(commit)
 
-    def __set_commits_attr(self, commit_list, attr_name,
-                           exclude_config_name):
+    def __set_commits_attr(self, commit_list, attr_name, exclude_config_name):
         # Make sure we have at least one commit in the list.  Otherwise,
         # nothing to do.
         if not commit_list:
@@ -707,15 +737,16 @@ class AbstractUpdate(object):
         # matching the exclude_config_name option.  These are the
         # non-excluded commits, ie the comments whose attribute
         # should be set to True.
-        exclude = ['^%s' % ref_name for ref_name
-                   in self.get_refs_matching_config(exclude_config_name)]
+        exclude = [
+            "^%s" % ref_name
+            for ref_name in self.get_refs_matching_config(exclude_config_name)
+        ]
         base_rev = commit_list[0].base_rev_for_display()
         if base_rev is not None:
             # Also reduce the list already present in this branch
             # prior to the update.
-            exclude.append('^%s' % base_rev)
-        included_refs = git.rev_list(self.new_rev, *exclude,
-                                     _split_lines=True)
+            exclude.append("^%s" % base_rev)
+        included_refs = git.rev_list(self.new_rev, *exclude, _split_lines=True)
 
         for commit in commit_list:
             setattr(commit, attr_name, commit.rev in included_refs)

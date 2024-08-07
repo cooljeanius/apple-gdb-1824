@@ -26,6 +26,7 @@ if sys.version_info[0] > 2:
     basestring = str
     long = int
 
+
 class PrettyPrinter(object):
     """A basic pretty-printer.
 
@@ -110,7 +111,7 @@ def register_pretty_printer(obj, printer, replace=False):
     if not hasattr(printer, "__name__") and not hasattr(printer, "name"):
         raise TypeError("printer missing attribute: name")
     if hasattr(printer, "name") and not hasattr(printer, "enabled"):
-        raise TypeError("printer missing attribute: enabled") 
+        raise TypeError("printer missing attribute: enabled")
     if not hasattr(printer, "__call__"):
         raise TypeError("printer missing attribute: __call__")
 
@@ -120,8 +121,10 @@ def register_pretty_printer(obj, printer, replace=False):
         obj = gdb
     else:
         if gdb.parameter("verbose"):
-            gdb.write("Registering %s pretty-printer for %s ...\n" %
-                      (printer.name, obj.filename))
+            gdb.write(
+                "Registering %s pretty-printer for %s ...\n"
+                % (printer.name, obj.filename)
+            )
 
     if hasattr(printer, "name"):
         if not isinstance(printer.name, basestring):
@@ -142,8 +145,9 @@ def register_pretty_printer(obj, printer, replace=False):
                     del obj.pretty_printers[i]
                     break
                 else:
-                  raise RuntimeError("pretty-printer already registered: %s" %
-                                     printer.name)
+                    raise RuntimeError(
+                        "pretty-printer already registered: %s" % printer.name
+                    )
             i = i + 1
 
     obj.pretty_printers.insert(0, printer)
@@ -191,8 +195,7 @@ class RegexpCollectionPrettyPrinter(PrettyPrinter):
         # cumbersome to make a regexp of a regexp).  So now the name is a
         # separate parameter.
 
-        self.subprinters.append(self.RegexpSubprinter(name, regexp,
-                                                      gen_printer))
+        self.subprinters.append(self.RegexpSubprinter(name, regexp, gen_printer))
 
     def __call__(self, val):
         """Lookup the pretty-printer for the provided value."""
@@ -212,6 +215,7 @@ class RegexpCollectionPrettyPrinter(PrettyPrinter):
         # Cannot find a pretty printer.  Return None.
         return None
 
+
 # A helper class for printing enum types.  This class is instantiated
 # with a list of enumerators to print a particular Value.
 class _EnumInstance:
@@ -223,15 +227,16 @@ class _EnumInstance:
         flag_list = []
         v = long(self.val)
         any_found = False
-        for (e_name, e_value) in self.enumerators:
+        for e_name, e_value in self.enumerators:
             if v & e_value != 0:
                 flag_list.append(e_name)
                 v = v & ~e_value
                 any_found = True
         if not any_found or v != 0:
             # Leftover value.
-            flag_list.append('<unknown: 0x%x>' % v)
+            flag_list.append("<unknown: 0x%x>" % v)
         return "0x%x [%s]" % (self.val, " | ".join(flag_list))
+
 
 class FlagEnumerationPrinter(PrettyPrinter):
     """A pretty-printer which can be used to print a flag-style enumeration.
@@ -255,7 +260,7 @@ class FlagEnumerationPrinter(PrettyPrinter):
                 self.enumerators.append((field.name, field.enumval))
             # Sorting the enumerators by value usually does the right
             # thing.
-            self.enumerators.sort(key = lambda x: x.enumval)
+            self.enumerators.sort(key=lambda x: x.enumval)
 
         if self.enabled:
             return _EnumInstance(self.enumerators, val)

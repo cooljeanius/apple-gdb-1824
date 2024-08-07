@@ -36,20 +36,22 @@ import requests
 
 from unidiff import PatchSet
 
-pr_regex = re.compile(r'(\/(\/|\*)|[Cc*!])\s+(?P<pr>PR [a-z+-]+\/[0-9]+)')
-dr_regex = re.compile(r'(\/(\/|\*)|[Cc*!])\s+(?P<dr>DR [0-9]+)')
-identifier_regex = re.compile(r'^([a-zA-Z0-9_#].*)')
-comment_regex = re.compile(r'^\/\*')
-struct_regex = re.compile(r'^(class|struct|union|enum)\s+'
-                          r'(GTY\(.*\)\s+)?([a-zA-Z0-9_]+)')
-macro_regex = re.compile(r'#\s*(define|undef)\s+([a-zA-Z0-9_]+)')
-super_macro_regex = re.compile(r'^DEF[A-Z0-9_]+\s*\(([a-zA-Z0-9_]+)')
-fn_regex = re.compile(r'([a-zA-Z_][^()\s]*)\s*\([^*]')
-template_and_param_regex = re.compile(r'<[^<>]*>')
-bugzilla_url = 'https://gcc.gnu.org/bugzilla/rest.cgi/bug?id=%s&' \
-               'include_fields=summary'
+pr_regex = re.compile(r"(\/(\/|\*)|[Cc*!])\s+(?P<pr>PR [a-z+-]+\/[0-9]+)")
+dr_regex = re.compile(r"(\/(\/|\*)|[Cc*!])\s+(?P<dr>DR [0-9]+)")
+identifier_regex = re.compile(r"^([a-zA-Z0-9_#].*)")
+comment_regex = re.compile(r"^\/\*")
+struct_regex = re.compile(
+    r"^(class|struct|union|enum)\s+" r"(GTY\(.*\)\s+)?([a-zA-Z0-9_]+)"
+)
+macro_regex = re.compile(r"#\s*(define|undef)\s+([a-zA-Z0-9_]+)")
+super_macro_regex = re.compile(r"^DEF[A-Z0-9_]+\s*\(([a-zA-Z0-9_]+)")
+fn_regex = re.compile(r"([a-zA-Z_][^()\s]*)\s*\([^*]")
+template_and_param_regex = re.compile(r"<[^<>]*>")
+bugzilla_url = (
+    "https://gcc.gnu.org/bugzilla/rest.cgi/bug?id=%s&" "include_fields=summary"
+)
 
-function_extensions = set(['.c', '.cpp', '.C', '.cc', '.h', '.inc', '.def'])
+function_extensions = set([".c", ".cpp", ".C", ".cc", ".h", ".inc", ".def"])
 
 help_message = """\
 Generate ChangeLog template for PATCH.
@@ -64,10 +66,10 @@ gcc_root = os.path.dirname(os.path.dirname(script_folder))
 def find_changelog(path):
     folder = os.path.split(path)[0]
     while True:
-        if os.path.exists(os.path.join(gcc_root, folder, 'ChangeLog')):
+        if os.path.exists(os.path.join(gcc_root, folder, "ChangeLog")):
             return folder
         folder = os.path.dirname(folder)
-        if folder == '':
+        if folder == "":
             return folder
     raise AssertionError()
 
@@ -78,7 +80,7 @@ def extract_function_name(line):
     m = struct_regex.search(line)
     if m:
         # Struct declaration
-        return m.group(1) + ' ' + m.group(3)
+        return m.group(1) + " " + m.group(3)
     m = macro_regex.search(line)
     if m:
         # Macro definition
@@ -91,7 +93,7 @@ def extract_function_name(line):
     if m:
         # Discard template and function parameters.
         fn = m.group(1)
-        fn = re.sub(template_and_param_regex, '', fn)
+        fn = re.sub(template_and_param_regex, "", fn)
         return fn.rstrip()
     return None
 
@@ -108,16 +110,16 @@ def sort_changelog_files(changed_file):
 
 
 def get_pr_titles(prs):
-    output = ''
+    output = ""
     for pr in prs:
-        id = pr.split('/')[-1]
+        id = pr.split("/")[-1]
         r = requests.get(bugzilla_url % id)
-        bugs = r.json()['bugs']
+        bugs = r.json()["bugs"]
         if len(bugs) == 1:
-            output += '%s - %s\n' % (pr, bugs[0]['summary'])
+            output += "%s - %s\n" % (pr, bugs[0]["summary"])
             print(output)
     if output:
-        output += '\n'
+        output += "\n"
     return output
 
 
@@ -125,7 +127,7 @@ def generate_changelog(data, no_functions=False, fill_pr_titles=False):
     changelogs = {}
     changelog_list = []
     prs = []
-    out = ''
+    out = ""
     diff = PatchSet(data)
 
     for file in diff:
@@ -136,17 +138,17 @@ def generate_changelog(data, no_functions=False, fill_pr_titles=False):
         changelogs[changelog].append(file)
 
         # Extract PR entries from newly added tests
-        if 'testsuite' in file.path and file.is_added_file:
+        if "testsuite" in file.path and file.is_added_file:
             for line in list(file)[0]:
                 m = pr_regex.search(line.value)
                 if m:
-                    pr = m.group('pr')
+                    pr = m.group("pr")
                     if pr not in prs:
                         prs.append(pr)
                 else:
                     m = dr_regex.search(line.value)
                     if m:
-                        dr = m.group('dr')
+                        dr = m.group("dr")
                         if dr not in prs:
                             prs.append(dr)
                     else:
@@ -156,31 +158,31 @@ def generate_changelog(data, no_functions=False, fill_pr_titles=False):
         out += get_pr_titles(prs)
 
     # sort ChangeLog so that 'testsuite' is at the end
-    for changelog in sorted(changelog_list, key=lambda x: 'testsuite' in x):
+    for changelog in sorted(changelog_list, key=lambda x: "testsuite" in x):
         files = changelogs[changelog]
-        out += '%s:\n' % os.path.join(changelog, 'ChangeLog')
-        out += '\n'
+        out += "%s:\n" % os.path.join(changelog, "ChangeLog")
+        out += "\n"
         for pr in prs:
-            out += '\t%s\n' % pr
+            out += "\t%s\n" % pr
         # new and deleted files should be at the end
         for file in sorted(files, key=sort_changelog_files):
             assert file.path.startswith(changelog)
-            in_tests = 'testsuite' in changelog or 'testsuite' in file.path
-            relative_path = file.path[len(changelog):].lstrip('/')
+            in_tests = "testsuite" in changelog or "testsuite" in file.path
+            relative_path = file.path[len(changelog) :].lstrip("/")
             functions = []
             if file.is_added_file:
-                msg = 'New test' if in_tests else 'New file'
-                out += '\t* %s: %s.\n' % (relative_path, msg)
+                msg = "New test" if in_tests else "New file"
+                out += "\t* %s: %s.\n" % (relative_path, msg)
             elif file.is_removed_file:
-                out += '\t* %s: Removed.\n' % (relative_path)
-            elif hasattr(file, 'is_rename') and file.is_rename:
-                out += '\t* %s: Moved to...\n' % (relative_path)
+                out += "\t* %s: Removed.\n" % (relative_path)
+            elif hasattr(file, "is_rename") and file.is_rename:
+                out += "\t* %s: Moved to...\n" % (relative_path)
                 new_path = file.target_file[2:]
                 # A file can be theoretically moved to a location that
                 # belongs to a different ChangeLog.  Let user fix it.
                 if new_path.startswith(changelog):
-                    new_path = new_path[len(changelog):].lstrip('/')
-                out += '\t* %s: ...here.\n' % (new_path)
+                    new_path = new_path[len(changelog) :].lstrip("/")
+                out += "\t* %s: ...here.\n" % (new_path)
             else:
                 if not no_functions:
                     for hunk in file:
@@ -196,8 +198,7 @@ def generate_changelog(data, no_functions=False, fill_pr_titles=False):
                                     if not line.value.strip():
                                         continue
                                     modified_visited = True
-                                    if m and try_add_function(functions,
-                                                              m.group(1)):
+                                    if m and try_add_function(functions, m.group(1)):
                                         last_fn = None
                                         success = True
                                 elif line.is_context:
@@ -210,52 +211,59 @@ def generate_changelog(data, no_functions=False, fill_pr_titles=False):
                                         last_fn = m.group(1)
                                         modified_visited = False
                             if not success:
-                                try_add_function(functions,
-                                                 hunk.section_header)
+                                try_add_function(functions, hunk.section_header)
                 if functions:
-                    out += '\t* %s (%s):\n' % (relative_path, functions[0])
+                    out += "\t* %s (%s):\n" % (relative_path, functions[0])
                     for fn in functions[1:]:
-                        out += '\t(%s):\n' % fn
+                        out += "\t(%s):\n" % fn
                 else:
-                    out += '\t* %s:\n' % relative_path
-        out += '\n'
+                    out += "\t* %s:\n" % relative_path
+        out += "\n"
     return out
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=help_message)
-    parser.add_argument('input', nargs='?',
-                        help='Patch file (or missing, read standard input)')
-    parser.add_argument('-s', '--no-functions', action='store_true',
-                        help='Do not generate function names in ChangeLogs')
-    parser.add_argument('-p', '--fill-up-bug-titles', action='store_true',
-                        help='Download title of mentioned PRs')
-    parser.add_argument('-c', '--changelog',
-                        help='Append the ChangeLog to a git commit message '
-                             'file')
+    parser.add_argument(
+        "input", nargs="?", help="Patch file (or missing, read standard input)"
+    )
+    parser.add_argument(
+        "-s",
+        "--no-functions",
+        action="store_true",
+        help="Do not generate function names in ChangeLogs",
+    )
+    parser.add_argument(
+        "-p",
+        "--fill-up-bug-titles",
+        action="store_true",
+        help="Download title of mentioned PRs",
+    )
+    parser.add_argument(
+        "-c", "--changelog", help="Append the ChangeLog to a git commit message " "file"
+    )
     args = parser.parse_args()
-    if args.input == '-':
+    if args.input == "-":
         args.input = None
 
     input = open(args.input) if args.input else sys.stdin
     data = input.read()
-    output = generate_changelog(data, args.no_functions,
-                                args.fill_up_bug_titles)
+    output = generate_changelog(data, args.no_functions, args.fill_up_bug_titles)
     if args.changelog:
-        lines = open(args.changelog).read().split('\n')
-        start = list(takewhile(lambda l: not l.startswith('#'), lines))
-        end = lines[len(start):]
-        with open(args.changelog, 'w') as f:
+        lines = open(args.changelog).read().split("\n")
+        start = list(takewhile(lambda l: not l.startswith("#"), lines))
+        end = lines[len(start) :]
+        with open(args.changelog, "w") as f:
             if start:
                 # appent empty line
-                if start[-1] != '':
-                    start.append('')
+                if start[-1] != "":
+                    start.append("")
             else:
                 # append 2 empty lines
-                start = 2 * ['']
-            f.write('\n'.join(start))
-            f.write('\n')
+                start = 2 * [""]
+            f.write("\n".join(start))
+            f.write("\n")
             f.write(output)
-            f.write('\n'.join(end))
+            f.write("\n".join(end))
     else:
-        print(output, end='')
+        print(output, end="")

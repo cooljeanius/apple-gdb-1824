@@ -26,14 +26,15 @@ class LightweightTagDeletion(AbstractUpdate):
         inherited, are clearly documented as such in their REMARKS
         section.
     """
+
     def self_sanity_check(self):
         """See AbstractUpdate.self_sanity_check.
 
         REMARKS
             This method handles both lightweight and annotated tags.
         """
-        assert self.ref_name.startswith('refs/tags/')
-        assert self.new_rev_type == 'delete'
+        assert self.ref_name.startswith("refs/tags/")
+        assert self.new_rev_type == "delete"
 
     def validate_ref_update(self):
         """See AbstractUpdate.validate_ref_update.
@@ -41,21 +42,21 @@ class LightweightTagDeletion(AbstractUpdate):
         REMARKS
             This method handles both lightweight and annotated tags.
         """
-        if not git_config('hooks.allow-delete-tag'):
-            raise InvalidUpdate(
-                "Deleting a tag is not allowed in this repository")
+        if not git_config("hooks.allow-delete-tag"):
+            raise InvalidUpdate("Deleting a tag is not allowed in this repository")
 
     def get_update_email_contents(self):
         """See AbstractUpdate.get_update_email_contents."""
-        subject = '[%s] Deleted tag %s' % (self.email_info.project_name,
-                                           self.short_ref_name)
+        subject = "[%s] Deleted tag %s" % (
+            self.email_info.project_name,
+            self.short_ref_name,
+        )
 
-        body = (LTAG_DELETION_EMAIL_BODY_TEMPLATE
-                % {'short_ref_name': self.short_ref_name,
-                   'commit_oneline': commit_oneline(self.old_rev),
-                   })
-        if tag_summary_of_changes_needed(self.added_commits,
-                                         self.lost_commits):
+        body = LTAG_DELETION_EMAIL_BODY_TEMPLATE % {
+            "short_ref_name": self.short_ref_name,
+            "commit_oneline": commit_oneline(self.old_rev),
+        }
+        if tag_summary_of_changes_needed(self.added_commits, self.lost_commits):
             body += self.summary_of_changes()
 
         return (self.everyone_emails(), subject, body)

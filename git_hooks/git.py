@@ -31,8 +31,8 @@ import subprocess
 
 
 class CalledProcessError(subprocess.CalledProcessError):
-    """An exception raised in case of failure in this module.
-    """
+    """An exception raised in case of failure in this module."""
+
     # Initially, defining this exception here was a way to shield
     # the script from the fact that subprocess.CalledProcessError
     # is not defined in Python 2.4.  So the exception was simply
@@ -58,17 +58,17 @@ def git_run(command, *args, **kwargs):
            _outfile=<file): Use <file> as the output file descriptor
            _split_lines: Return an array with one string per returned line
     """
-    to_run = ['git', command.replace("_", "-")]
+    to_run = ["git", command.replace("_", "-")]
 
     input = None
     outfile = None
     do_split_lines = False
-    for (k, v) in kwargs.iteritems():
-        if k == '_input':
+    for k, v in kwargs.iteritems():
+        if k == "_input":
             input = v
-        elif k == '_outfile':
+        elif k == "_outfile":
             outfile = v
-        elif k == '_split_lines':
+        elif k == "_split_lines":
             do_split_lines = True
         elif v is True:
             if len(k) == 1:
@@ -90,9 +90,7 @@ def git_run(command, *args, **kwargs):
     assert not error
 
     if process.returncode != 0:
-        raise CalledProcessError(process.returncode,
-                                 " ".join(to_run),
-                                 output)
+        raise CalledProcessError(process.returncode, " ".join(to_run), output)
 
     if outfile:
         return None
@@ -110,20 +108,21 @@ class Git:
     case the output is redirected to that file (if the file is already
     present, it is overwritten).
     """
+
     def __getattr__(self, command):
         def f(*args, **kwargs):
             try:
                 # If a string _outfile parameter was given, turn it
                 # into a file descriptor.
                 tmp_fd = None
-                if (('_outfile' in kwargs
-                     and isinstance(kwargs['_outfile'], basestring))):
-                    tmp_fd = open(kwargs['_outfile'], 'w')
-                    kwargs['_outfile'] = tmp_fd
+                if "_outfile" in kwargs and isinstance(kwargs["_outfile"], basestring):
+                    tmp_fd = open(kwargs["_outfile"], "w")
+                    kwargs["_outfile"] = tmp_fd
                 return git_run(command, *args, **kwargs)
             finally:
                 if tmp_fd is not None:
                     tmp_fd.close()
+
         return f
 
 
@@ -152,8 +151,7 @@ def get_git_dir():
 
 
 def is_null_rev(rev):
-    """Return True iff rev is the a NULL commit SHA1.
-    """
+    """Return True iff rev is the a NULL commit SHA1."""
     return re.match("0+$", rev) is not None
 
 
@@ -165,8 +163,8 @@ def empty_tree_rev():
     """
     # To compute this SHA1 requires a call to git, so cache
     # the result in an attribute called 'cached_rev'.
-    if not hasattr(empty_tree_rev, 'cached_rev'):
-        empty_tree_rev.cached_rev = git.mktree(_input='')
+    if not hasattr(empty_tree_rev, "cached_rev"):
+        empty_tree_rev.cached_rev = git.mktree(_input="")
     return empty_tree_rev.cached_rev
 
 
@@ -177,7 +175,7 @@ def is_valid_commit(rev):
         rev: The commit SHA1 we want to test.
     """
     try:
-        git.cat_file('-e', rev)
+        git.cat_file("-e", rev)
         return True
     except CalledProcessError:
         return False
@@ -210,7 +208,7 @@ def commit_rev(rev):
     PARAMETERS
         rev: A revision.
     """
-    return git.rev_list('-n1', rev)
+    return git.rev_list("-n1", rev)
 
 
 def commit_oneline(rev):
@@ -219,7 +217,7 @@ def commit_oneline(rev):
     PARAMETERS
         rev: A commit revision (SHA1).
     """
-    info = git.rev_list(rev, max_count='1', oneline=True)
+    info = git.rev_list(rev, max_count="1", oneline=True)
     (short_rev, subject) = info.split(None, 1)
     return "%s... %s" % (short_rev, subject[0:59])
 
@@ -231,7 +229,7 @@ def get_module_name():
     the git repository is stored, with the .git suffix stripped.
     """
     absdir = get_git_dir()
-    if absdir.endswith(os.sep + '.git'):
+    if absdir.endswith(os.sep + ".git"):
         absdir = os.path.dirname(absdir)
     projectshort = os.path.basename(absdir)
     if projectshort.endswith(".git"):
@@ -252,7 +250,7 @@ def file_exists(commit_rev, filename):
         A boolean.
     """
     try:
-        git.cat_file('-e', '%s:%s' % (commit_rev, filename))
+        git.cat_file("-e", "%s:%s" % (commit_rev, filename))
     except CalledProcessError:
         # cat-file -e returned non-zero; the file does not exist.
         return False
@@ -278,9 +276,11 @@ def parse_tag_object(tag_name):
             'signed_p': True if the tag was signed, False otherwise.
     """
     # Provide default values for certain fields.
-    result = {'tagger':   '*** Failed to determine tagger ***',
-              'date':     '*** Failed to determine tag creation date ***',
-              'signed_p': False}
+    result = {
+        "tagger": "*** Failed to determine tagger ***",
+        "date": "*** Failed to determine tag creation date ***",
+        "signed_p": False,
+    }
 
     # We used to be able to extract everything we need about the tag
     # from the output of "git cat-file -p". Unfortunately, at least
@@ -317,12 +317,12 @@ def parse_tag_object(tag_name):
     # (as we used to do before).
 
     for line in git.show(tag_name, _split_lines=True):
-        if line.strip() == '':
+        if line.strip() == "":
             break
-        elif line.startswith('Tagger:'):
-            result['tagger'] = line.partition(':')[2].strip()
-        elif line.startswith('Date:'):
-            result['date'] = line.partition(':')[2].strip()
+        elif line.startswith("Tagger:"):
+            result["tagger"] = line.partition(":")[2].strip()
+        elif line.startswith("Date:"):
+            result["date"] = line.partition(":")[2].strip()
 
     # Now, get the revision log using "git cat-file -p".
     #
@@ -345,14 +345,14 @@ def parse_tag_object(tag_name):
                 section_no += 1
                 continue
         else:
-            if line.startswith('-----BEGIN PGP SIGNATURE-----'):
-                result['signed_p'] = True
+            if line.startswith("-----BEGIN PGP SIGNATURE-----"):
+                result["signed_p"] = True
                 # We don't want to include the PGP signature in
                 # the message, and we know there isn't anything else
                 # after the PGP signature, so we're done.
                 break
             revision_log.append(line)
-    result['message'] = "\n".join(["    " + line for line in revision_log])
+    result["message"] = "\n".join(["    " + line for line in revision_log])
 
     return result
 
@@ -392,7 +392,7 @@ def commit_parents(rev):
         (ie: the first parent is first on the list, etc). If this is
         a headeless commit, return an empty list.
     """
-    return git.log('-n1', '--pretty=format:%P', rev).strip().split()
+    return git.log("-n1", "--pretty=format:%P", rev).strip().split()
 
 
 def commit_subject(rev):
@@ -401,6 +401,6 @@ def commit_subject(rev):
     PARAMETERS
         rev: A commit revision.
     """
-    info = git.rev_list(rev, max_count='1', oneline=True)
+    info = git.rev_list(rev, max_count="1", oneline=True)
     _, subject = info.split(None, 1)
     return subject
