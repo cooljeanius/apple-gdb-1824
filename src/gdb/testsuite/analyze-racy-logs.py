@@ -167,7 +167,7 @@ def identify_racy_tests():
     # Print the summary.
     print("\n")
     print("\t\t=== gdb Summary ===\n")
-    print(("# of racy tests:\t\t%d" % len(racy_tests)))
+    print("# of racy tests:\t\t%d" % len(racy_tests))
 
 
 if __name__ == "__main__":

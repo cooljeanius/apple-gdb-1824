@@ -132,7 +132,7 @@ def warn(*args, **kwargs):
     """
     prefix = kwargs["prefix"] if "prefix" in kwargs else "*** "
     for arg in args:
-        print("%s%s" % (prefix, arg), file=sys.stderr)
+        print("{}{}".format(prefix, arg), file=sys.stderr)
 
 
 ############################################################################
@@ -158,7 +158,7 @@ def indent(text, indentation):
     return "".join(indented)
 
 
-class FileLock(object):
+class FileLock:
     """An object implementing file locking (work in "with" statement only).
 
     The locking is relying on os.link being atomic, and thus only

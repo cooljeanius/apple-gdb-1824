@@ -70,8 +70,8 @@ def elinos_init():
     if None in (elinos_env[key] for key in ("cdk", "target")):
         warn("ELinOS system libraries will not be loaded")
     else:
-        solib_prefix = "%s/%s" % (elinos_env["cdk"], elinos_env["target"])
-        solib_dirs += ["%s/%s" % (solib_prefix, "lib")]
+        solib_prefix = "{}/{}".format(elinos_env["cdk"], elinos_env["target"])
+        solib_dirs += ["{}/{}".format(solib_prefix, "lib")]
         gdb.execute("set solib-absolute-prefix %s" % solib_prefix)
 
     # Xenomai libraries. Those are optional, so have a lighter warning
@@ -80,7 +80,7 @@ def elinos_init():
         warn("Xenomai libraries may not be loaded")
     else:
         for dir in elinos_env["xenomai"]:
-            solib_dirs += ["%s/%s" % (dir, "xenomai-build/usr/realtime/lib")]
+            solib_dirs += ["{}/{}".format(dir, "xenomai-build/usr/realtime/lib")]
 
     if len(solib_dirs) != 0:
         gdb.execute("set solib-search-path %s" % ":".join(solib_dirs))

@@ -34,7 +34,7 @@ class Function:
         self.reason = None
 
     def log(self, message):
-        print("%s: note: %s" % (self.location, message))
+        print("{}: note: {}".format(self.location, message))
 
     def set_location(self, location):
         self.location = location
@@ -48,10 +48,8 @@ class Function:
     def consistency_check(self):
         if self.marked_nothrow and self.can_throw:
             print(
-                (
                     "%s: error: %s marked as both 'throw' and 'nothrow'"
                     % (self.location, self.name)
-                )
             )
 
     def declare_nothrow(self):
@@ -67,22 +65,18 @@ class Function:
     def print_stack(self, is_indirect):
         if is_indirect:
             print(
-                (
                     "%s: error: function %s is marked nothrow but is assumed to throw due to indirect call"
                     % (self.location, self.name)
-                )
             )
         else:
             print(
-                (
                     "%s: error: function %s is marked nothrow but can throw"
                     % (self.location, self.name)
-                )
             )
 
         edge = self.reason
         while edge is not None:
-            print(("%s: info: via call to %s" % (edge.location, edge.to_fn.name)))
+            print("{}: info: via call to {}".format(edge.location, edge.to_fn.name))
             edge = edge.to_fn.reason
 
     def mark_throw(self, edge, work_list, is_indirect):

@@ -81,7 +81,7 @@ class TypeFlagsPrinter:
             ]
         else:
             flag_list = ["???"]
-        return "0x%x [%s]" % (self.val, "|".join(flag_list))
+        return "0x{:x} [{}]".format(self.val, "|".join(flag_list))
 
     def init_TYPE_FLAGS(self):
         """Initialize the TYPE_FLAGS global as a list of TypeFlag objects.
@@ -207,7 +207,7 @@ class StructMainTypePrettyPrinter:
         high = str(b["high"])
         if b["high_undefined"] != 0:
             high += " (undefined)"
-        return "flds_bnds.bounds = {%s, %s}" % (low, high)
+        return "flds_bnds.bounds = {{{}, {}}}".format(low, high)
 
     def type_specific_img(self):
         """Return a string image of the main_type type_specific union.

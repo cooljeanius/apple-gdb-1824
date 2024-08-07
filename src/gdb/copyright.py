@@ -46,7 +46,7 @@ def get_update_list():
     for gdb_dir in ("gdb", "sim", "include/gdb"):
         for root, dirs, files in os.walk(gdb_dir, topdown=True):
             for dirname in dirs:
-                reldirname = "%s/%s" % (root, dirname)
+                reldirname = "{}/{}".format(root, dirname)
                 if (
                     dirname in EXCLUDE_ALL_LIST
                     or reldirname in EXCLUDE_LIST
@@ -56,7 +56,7 @@ def get_update_list():
                     # Prune this directory from our search list.
                     dirs.remove(dirname)
             for filename in files:
-                relpath = "%s/%s" % (root, filename)
+                relpath = "{}/{}".format(root, filename)
                 if (
                     filename in EXCLUDE_ALL_LIST
                     or relpath in EXCLUDE_LIST

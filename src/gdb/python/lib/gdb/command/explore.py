@@ -90,7 +90,7 @@ class Explorer:
             while explorer_class.explore_expr(expr, value, is_child):
                 pass
         else:
-            print(("Explorer for type '%s' not yet available.\n" % str(value.type)))
+            print("Explorer for type '%s' not yet available.\n" % str(value.type))
 
     @staticmethod
     def explore_type(name, datatype, is_child):
@@ -115,7 +115,7 @@ class Explorer:
             while explorer_class.explore_type(name, datatype, is_child):
                 pass
         else:
-            print(("Explorer for type '%s' not yet available.\n" % str(datatype)))
+            print("Explorer for type '%s' not yet available.\n" % str(datatype))
 
     @staticmethod
     def init_env():
@@ -198,8 +198,8 @@ class ScalarExplorer:
         See Explorer.explore_expr and Explorer.is_scalar_type for more
         information.
         """
-        print(("'{}' is a scalar value of type '{}'.".format(expr, value.type)))
-        print(("{} = {}".format(expr, str(value))))
+        print("'{}' is a scalar value of type '{}'.".format(expr, value.type))
+        print("{} = {}".format(expr, str(value)))
 
         if is_child:
             Explorer.return_to_parent_value_prompt()
@@ -215,14 +215,14 @@ class ScalarExplorer:
         """
         if datatype.code == gdb.TYPE_CODE_ENUM:
             if is_child:
-                print(("{} is of an enumerated type '{}'.".format(name, str(datatype))))
+                print("{} is of an enumerated type '{}'.".format(name, str(datatype)))
             else:
-                print(("'%s' is an enumerated type." % name))
+                print("'%s' is an enumerated type." % name)
         else:
             if is_child:
-                print(("{} is of a scalar type '{}'.".format(name, str(datatype))))
+                print("{} is of a scalar type '{}'.".format(name, str(datatype)))
             else:
-                print(("'%s' is a scalar type." % name))
+                print("'%s' is a scalar type." % name)
 
         if is_child:
             Explorer.return_to_enclosing_type_prompt()
@@ -240,10 +240,8 @@ class PointerExplorer:
         See Explorer.explore_expr for more information.
         """
         print(
-            (
                 "'%s' is a pointer to a value of type '%s'"
                 % (expr, str(value.type.target()))
-            )
         )
         option = input(
             "Continue exploring it as a pointer to a single " "value [y/n]: "
@@ -255,7 +253,7 @@ class PointerExplorer:
                 str(deref_value)
             except gdb.MemoryError:
                 print(
-                    ("'%s' a pointer pointing to an invalid memory " "location." % expr)
+                    "'%s' a pointer pointing to an invalid memory " "location." % expr
                 )
                 if is_child:
                     Explorer.return_to_parent_value_prompt()
@@ -283,7 +281,7 @@ class PointerExplorer:
                 try:
                     str(element)
                 except gdb.MemoryError:
-                    print(("Cannot read value at index %d." % index))
+                    print("Cannot read value at index %d." % index)
                     continue
                 Explorer.explore_expr(element_expr, element, True)
             return False
@@ -299,11 +297,9 @@ class PointerExplorer:
         """
         target_type = datatype.target()
         print(
-            (
                 "\n{} is a pointer to a value of type '{}'.".format(
                     name, str(target_type)
                 )
-            )
         )
 
         Explorer.explore_type("the pointee type of %s" % name, target_type, is_child)
@@ -341,7 +337,7 @@ class ArrayExplorer:
         See Explorer.explore_expr for more information.
         """
         target_type = value.type.target()
-        print(("'{}' is an array of '{}'.".format(expr, str(target_type))))
+        print("'{}' is an array of '{}'.".format(expr, str(target_type)))
         index = 0
         try:
             index = int(
@@ -360,7 +356,7 @@ class ArrayExplorer:
             element = value[index]
             str(element)
         except gdb.MemoryError:
-            print(("Cannot read value at index %d." % index))
+            print("Cannot read value at index %d." % index)
             input("Press enter to continue... ")
             return True
 
@@ -375,7 +371,7 @@ class ArrayExplorer:
         See Explorer.explore_type for more information.
         """
         target_type = datatype.target()
-        print(("{} is an array of '{}'.".format(name, str(target_type))))
+        print("{} is an array of '{}'.".format(name, str(target_type)))
 
         Explorer.explore_type("the array element of %s" % name, target_type, is_child)
         return False
@@ -393,7 +389,7 @@ class CompoundExplorer:
                 max_field_name_length = len(pair[0])
 
         for pair in print_list:
-            print(("  %*s = %s" % (max_field_name_length, pair[0], pair[1])))
+            print("  %*s = %s" % (max_field_name_length, pair[0], pair[1]))
 
     @staticmethod
     def _get_real_field_count(fields):
@@ -420,20 +416,16 @@ class CompoundExplorer:
 
         if CompoundExplorer._get_real_field_count(fields) == 0:
             print(
-                (
                     "The value of '%s' is a %s of type '%s' with no fields."
                     % (expr, type_desc, str(value.type))
-                )
             )
             if is_child:
                 Explorer.return_to_parent_value_prompt()
             return False
 
         print(
-            (
                 "The value of '%s' is a %s of type '%s' with the following "
                 "fields:\n" % (expr, type_desc, str(value.type))
-            )
         )
 
         has_explorable_fields = False
@@ -518,25 +510,21 @@ class CompoundExplorer:
         if CompoundExplorer._get_real_field_count(fields) == 0:
             if is_child:
                 print(
-                    (
                         "%s is a %s of type '%s' with no fields."
                         % (name, type_desc, str(datatype))
-                    )
                 )
                 Explorer.return_to_enclosing_type_prompt()
             else:
-                print(("'{}' is a {} with no fields.".format(name, type_desc)))
+                print("'{}' is a {} with no fields.".format(name, type_desc))
             return False
 
         if is_child:
             print(
-                (
                     "%s is a %s of type '%s' "
                     "with the following fields:\n" % (name, type_desc, str(datatype))
-                )
             )
         else:
-            print(("'%s' is a %s with the following " "fields:\n" % (name, type_desc)))
+            print("'%s' is a %s with the following " "fields:\n" % (name, type_desc))
 
         has_explorable_fields = False
         current_choice = 0
@@ -604,11 +592,9 @@ class TypedefExplorer:
         """
         actual_type = value.type.strip_typedefs()
         print(
-            (
                 "The value of '%s' is of type '%s' "
                 "which is a typedef of type '%s'"
                 % (expr, str(value.type), str(actual_type))
-            )
         )
 
         Explorer.explore_expr(expr, value.cast(actual_type), is_child)
@@ -622,19 +608,15 @@ class TypedefExplorer:
         actual_type = datatype.strip_typedefs()
         if is_child:
             print(
-                (
                     "The type of {} is a typedef of type '{}'.".format(
                         name, str(actual_type)
                     )
-                )
             )
         else:
             print(
-                (
                     "The type '{}' is a typedef of type '{}'.".format(
                         name, str(actual_type)
                     )
-                )
             )
 
         Explorer.explore_type(name, actual_type, is_child)
@@ -801,7 +783,7 @@ class ExploreTypeCommand(gdb.Command):
 
         value = ExploreUtils.get_value_from_str(arg_str)
         if value is not None:
-            print(("'{}' is of type '{}'.".format(arg_str, str(value.type))))
+            print("'{}' is of type '{}'.".format(arg_str, str(value.type)))
             Explorer.explore_type(str(value.type), value.type, False)
             return
 

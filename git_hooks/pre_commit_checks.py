@@ -1,5 +1,5 @@
 import os
-from pipes import quote
+from shlex import quote
 import re
 import subprocess
 from subprocess import check_output, STDOUT
@@ -28,12 +28,12 @@ def check_file(filename, sha1, commit_rev, project_name):
         project_name: The name of the project (same as the attribute
             in updates.emails.EmailInfo).
     """
-    debug("check_file (filename=`%s', sha1=%s)" % (filename, sha1), level=3)
+    debug("check_file (filename=`{}', sha1={})".format(filename, sha1), level=3)
 
     # Determine whether this file has the no-precommit-check attribute
     # set, in which case style-checks should not be performed.
     if git_attribute(commit_rev, filename, "no-precommit-check") == "set":
-        debug("no-precommit-check: %s commit_rev=%s" % (filename, commit_rev))
+        debug("no-precommit-check: {} commit_rev={}".format(filename, commit_rev))
         syslog(
             "Pre-commit checks disabled for %(rev)s on %(repo)s"
             " (%(file)s) by repo attribute"
@@ -58,10 +58,10 @@ def check_file(filename, sha1, commit_rev, project_name):
     # it can also be useful to quickly locate a file in the project
     # when trying to make the needed corrections outlined by the
     # style-checker.
-    path_to_filename = "%s/%s" % (utils.scratch_dir, os.path.dirname(filename))
+    path_to_filename = "{}/{}".format(utils.scratch_dir, os.path.dirname(filename))
     if not os.path.exists(path_to_filename):
         os.makedirs(path_to_filename)
-    git.show(sha1, _outfile="%s/%s" % (utils.scratch_dir, filename))
+    git.show(sha1, _outfile="{}/{}".format(utils.scratch_dir, filename))
 
     # Call the style-checker.
 
@@ -81,7 +81,7 @@ def check_file(filename, sha1, commit_rev, project_name):
     # argument. Not sure why, but that does not really apply in
     # our context. Use `trunk/<module>/<path>' to work around
     # the issue.
-    style_checker_args = ["trunk/%s/%s" % (project_name, filename), filename]
+    style_checker_args = ["trunk/{}/{}".format(project_name, filename), filename]
 
     try:
         # In order to allow the style-checker to be a script, we need to
@@ -91,7 +91,7 @@ def check_file(filename, sha1, commit_rev, project_name):
         # arguments as needed.
         quoted_args = [quote(arg) for arg in style_checker_args]
         out = check_output(
-            "%s %s" % (style_checker, " ".join(quoted_args)),
+            "{} {}".format(style_checker, " ".join(quoted_args)),
             shell=True,
             cwd=utils.scratch_dir,
             stderr=STDOUT,
@@ -397,7 +397,7 @@ def check_commit(old_rev, new_rev, project_name):
         project_name: The name of the project (same as the attribute
             in updates.emails.EmailInfo).
     """
-    debug("check_commit(old_rev=%s, new_rev=%s)" % (old_rev, new_rev))
+    debug("check_commit(old_rev={}, new_rev={})".format(old_rev, new_rev))
 
     all_changes = git.diff_tree("-r", old_rev, new_rev, _split_lines=True)
     for item in all_changes:

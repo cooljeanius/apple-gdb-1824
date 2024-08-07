@@ -38,7 +38,7 @@ def get_attribute(filename, attr_name):
 
     # Sanity check: attr_info should have the following format:
     # <FILENAME>: <ATTR_NAME>: <VALUE>.
-    attr_info_prefix = "%s: %s: " % (filename, attr_name)
+    attr_info_prefix = "{}: {}: ".format(filename, attr_name)
     assert attr_info.startswith(attr_info_prefix)
 
     # Return the portion of the output that contains the attribute value.
@@ -127,7 +127,7 @@ def git_attribute(commit_rev, filename, attr_name):
             # as GIT_DIR/info/attributes, and then get `git check-attr'
             # to read it for us.
             git.show(
-                "%s:%s" % (commit_rev, gitattributes_file),
+                "{}:{}".format(commit_rev, gitattributes_file),
                 _outfile=BARE_REPO_ATTRIBUTES_FILE,
             )
             attr_value = get_attribute(rel_file_path, attr_name)

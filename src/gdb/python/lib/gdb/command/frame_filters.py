@@ -87,9 +87,9 @@ class InfoFrameFilter(gdb.Command):
                     )
                 except Exception:
                     e = sys.exc_info()[1]
-                    print(("  Error printing filter '" + name + "': " + str(e)))
+                    print("  Error printing filter '" + name + "': " + str(e))
                 else:
-                    print(("  {}  {}  {}".format(priority, enabled, name)))
+                    print("  {}  {}  {}".format(priority, enabled, name))
 
     def print_list(self, title, filter_list, blank_line):
         print(title)
@@ -463,17 +463,15 @@ class ShowFrameFilterPriority(gdb.Command):
             priority = self.get_filter_priority(list_name, filter_name)
         except Exception:
             e = sys.exc_info()[1]
-            print(("Error printing filter priority for '" + name + "':" + str(e)))
+            print("Error printing filter priority for '" + name + "':" + str(e))
         else:
             print(
-                (
                     "Priority of filter '"
                     + filter_name
                     + "' in list '"
                     + list_name
                     + "' is: "
                     + str(priority)
-                )
             )
 
 

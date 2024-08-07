@@ -23,7 +23,7 @@ FILER_EMAIL = "file-ci@gnat.com"
 EMAIL_DELAY_IN_SECONDS = 5
 
 
-class EmailInfo(object):
+class EmailInfo:
     """Aggregates various pieces of info needed to send emails.
 
     ATTRIBUTES
@@ -55,7 +55,7 @@ class EmailInfo(object):
                 "Please contact your repository's administrator.",
             )
         if email_from is None:
-            self.email_from = "%s <%s@%s>" % (
+            self.email_from = "{} <{}@{}>".format(
                 get_user_full_name(),
                 get_user_name(),
                 from_domain,
@@ -64,7 +64,7 @@ class EmailInfo(object):
             self.email_from = email_from
 
 
-class EmailQueue(object):
+class EmailQueue:
     """An email queue (a singleton).
 
     ATTRIBUTES
@@ -74,7 +74,7 @@ class EmailQueue(object):
     def __new__(cls, *args, **kw):
         """The allocator."""
         if not hasattr(cls, "_instance"):
-            orig = super(EmailQueue, cls)
+            orig = super()
             cls._instance = orig.__new__(cls, *args, **kw)
         return cls._instance
 
@@ -124,7 +124,7 @@ class EmailQueue(object):
         self.queue = []
 
 
-class Email(object):
+class Email:
     """An email object.
 
     All emails to be sent by the git-hooks should be sent via
@@ -304,7 +304,7 @@ class Email(object):
             # intelligible for normal users.
             ref_name = "The %s branch" % ref_name[11:]
         to_be_filed = (
-            "%s has been updated by %s:" % (ref_name, self.email_info.email_from)
+            "{} has been updated by {}:".format(ref_name, self.email_info.email_from)
             + "\n\n"
             + self.email_body
         )

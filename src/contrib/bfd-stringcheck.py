@@ -21,17 +21,17 @@ for arg in args:
         msgstrtokens = pattern.findall(msg.msgstrs[0])
         nmsg += 1
         if msgidtokens != msgstrtokens:
-            print(("%s L%d" % (arg, msg.meta["lineno"])))
-            print(("  %s" % " ".join(msgidtokens)))
-            print(("  %s" % " ".join(msgstrtokens)))
-            print((msg.tostring().encode("utf8")))
+            print("%s L%d" % (arg, msg.meta["lineno"]))
+            print("  %s" % " ".join(msgidtokens))
+            print("  %s" % " ".join(msgstrtokens))
+            print(msg.tostring().encode("utf8"))
             nwarn += 1
     warnings[arg] = nwarn
     nmsgs[arg] = nmsg
-    print(("%s:%d warnings" % (arg, nwarn)))
+    print("%s:%d warnings" % (arg, nwarn))
 
 print()
 print("Summary")
 print("=======")
 for arg in args:
-    print(("%s: %d warnings / %d messages" % (arg, warnings[arg], nmsgs[arg])))
+    print("%s: %d warnings / %d messages" % (arg, warnings[arg], nmsgs[arg]))
