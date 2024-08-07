@@ -63,62 +63,62 @@ class GenericFilter:
         self.skip_files = set()
         self.skip_dirs = set()
         self.skip_extensions = {
-                ".png",
-                ".pyc",
+            ".png",
+            ".pyc",
         }
         self.fossilised_files = set()
         self.own_files = set()
 
         self.skip_files |= {
-                # Skip licence files.
-                "COPYING",
-                "COPYING.LIB",
-                "COPYING3",
-                "COPYING3.LIB",
-                "COPYING.LIBGLOSS",
-                "COPYING.NEWLIB",
-                "LICENSE",
-                "fdl.texi",
-                "gpl_v3.texi",
-                "fdl-1.3.xml",
-                "gpl-3.0.xml",
-                # Skip auto- and libtool-related files
-                "aclocal.m4",
-                "compile",
-                "config.guess",
-                "config.sub",
-                "depcomp",
-                "install-sh",
-                "libtool.m4",
-                "ltmain.sh",
-                "ltoptions.m4",
-                "ltsugar.m4",
-                "ltversion.m4",
-                "lt~obsolete.m4",
-                "missing",
-                "mkdep",
-                "mkinstalldirs",
-                "move-if-change",
-                "shlibpath.m4",
-                "symlink-tree",
-                "ylwrap",
-                # Skip FSF mission statement, etc.
-                "gnu.texi",
-                "funding.texi",
-                "appendix_free.xml",
-                # Skip imported texinfo files.
-                "texinfo.tex",
+            # Skip licence files.
+            "COPYING",
+            "COPYING.LIB",
+            "COPYING3",
+            "COPYING3.LIB",
+            "COPYING.LIBGLOSS",
+            "COPYING.NEWLIB",
+            "LICENSE",
+            "fdl.texi",
+            "gpl_v3.texi",
+            "fdl-1.3.xml",
+            "gpl-3.0.xml",
+            # Skip auto- and libtool-related files
+            "aclocal.m4",
+            "compile",
+            "config.guess",
+            "config.sub",
+            "depcomp",
+            "install-sh",
+            "libtool.m4",
+            "ltmain.sh",
+            "ltoptions.m4",
+            "ltsugar.m4",
+            "ltversion.m4",
+            "lt~obsolete.m4",
+            "missing",
+            "mkdep",
+            "mkinstalldirs",
+            "move-if-change",
+            "shlibpath.m4",
+            "symlink-tree",
+            "ylwrap",
+            # Skip FSF mission statement, etc.
+            "gnu.texi",
+            "funding.texi",
+            "appendix_free.xml",
+            # Skip imported texinfo files.
+            "texinfo.tex",
         }
 
         self.skip_extensions |= {
-                # Maintained by the translation project.
-                ".po",
-                # Automatically-generated.
-                ".pot",
+            # Maintained by the translation project.
+            ".po",
+            # Automatically-generated.
+            ".pot",
         }
 
         self.skip_dirs |= {
-                "autom4te.cache",
+            "autom4te.cache",
         }
 
     def get_line_filter(self, dir, filename):
@@ -573,8 +573,8 @@ class LdFilter(GenericFilter):
         GenericFilter.__init__(self)
 
         self.skip_extensions |= {
-                # ld testsuite output match files.
-                ".ro",
+            # ld testsuite output match files.
+            ".ro",
         }
 
 

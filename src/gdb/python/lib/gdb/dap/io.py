@@ -33,7 +33,7 @@ def read_json(stream):
             content_length = int(line)
             continue
         log("IGNORED: <<<%s>>>" % line)
-    data = b''
+    data = b""
     while len(data) < content_length:
         new_data = stream.read(content_length - len(data))
         data += new_data

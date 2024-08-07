@@ -224,8 +224,8 @@ ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wnested-externs \
 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-parameter-type -Wodr \
 -Wold-style-definition -Wold-style-declaration -Wc++-compat -Wswitch \
 -Wmissing-format-attribute -Wcast-qual -Wmisleading-indentation -Wabi \
--Wnull-dereference -Wdangling-else -Wduplicate-decl-specifier \
--Wmemset-elt-size -Wswitch-unreachable -Wexpansion-to-defined \
+-Wnull-dereference -Wdangling-else -Wduplicate-decl-specifier -Wpointer-arith \
+-Wmemset-elt-size -Wswitch-unreachable -Wexpansion-to-defined -Wpointer-sign \
 -Wshadow-local -Wc99-c11-compat -Wzero-length-bounds -Wfatal-errors \
 -Walloc-size -Wcalloc-transposed-args -fanalyzer],[WARN_FLAGS])dnl
 

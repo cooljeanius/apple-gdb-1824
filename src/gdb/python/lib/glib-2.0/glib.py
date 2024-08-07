@@ -48,7 +48,9 @@ class GSListNodePrinter:
         self.val = val
 
     def to_string(self):
-        return "{{data={}, next=0x{:x}}}".format(str(self.val["data"]), long(self.val["next"]))
+        return "{{data={}, next=0x{:x}}}".format(
+            str(self.val["data"]), long(self.val["next"])
+        )
 
 
 class GListPrinter:
@@ -189,9 +191,7 @@ class ForeachCommand(gdb.Command):
     """Foreach on list"""
 
     def __init__(self):
-        super().__init__(
-            "gforeach", gdb.COMMAND_DATA, gdb.COMPLETE_SYMBOL
-        )
+        super().__init__("gforeach", gdb.COMMAND_DATA, gdb.COMPLETE_SYMBOL)
 
     def valid_name(self, name):
         if not name[0].isalpha():

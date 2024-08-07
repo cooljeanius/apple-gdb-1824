@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
 class FrameIterator:
     """A gdb.Frame iterator.  Iterates over gdb.Frames or objects that
     conform to that interface."""

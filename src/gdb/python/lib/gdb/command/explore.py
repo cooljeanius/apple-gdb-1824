@@ -296,7 +296,9 @@ class PointerExplorer:
         See Explorer.explore_type for more information.
         """
         target_type = datatype.target()
-        print("\n{} is a pointer to a value of type '{}'.".format(name, str(target_type)))
+        print(
+            "\n{} is a pointer to a value of type '{}'.".format(name, str(target_type))
+        )
 
         Explorer.explore_type("the pointee type of %s" % name, target_type, is_child)
         return False
@@ -604,10 +606,16 @@ class TypedefExplorer:
         actual_type = datatype.strip_typedefs()
         if is_child:
             print(
-                "The type of {} is a typedef of type '{}'.".format(name, str(actual_type))
+                "The type of {} is a typedef of type '{}'.".format(
+                    name, str(actual_type)
+                )
             )
         else:
-            print("The type '{}' is a typedef of type '{}'.".format(name, str(actual_type)))
+            print(
+                "The type '{}' is a typedef of type '{}'.".format(
+                    name, str(actual_type)
+                )
+            )
 
         Explorer.explore_type(name, actual_type, is_child)
         return False
@@ -691,9 +699,7 @@ class ExploreCommand(gdb.Command):
     """
 
     def __init__(self):
-        super().__init__(
-            name="explore", command_class=gdb.COMMAND_DATA, prefix=True
-        )
+        super().__init__(name="explore", command_class=gdb.COMMAND_DATA, prefix=True)
 
     def invoke(self, arg_str, from_tty):
         if ExploreUtils.check_args("explore", arg_str) == False:
@@ -713,8 +719,8 @@ class ExploreCommand(gdb.Command):
 
         # If it is neither a value nor a type, raise an error.
         raise gdb.GdbError(
-                "'%s' neither evaluates to a value nor is a type "
-                "in the current context." % arg_str
+            "'%s' neither evaluates to a value nor is a type "
+            "in the current context." % arg_str
         )
 
 
@@ -731,9 +737,7 @@ class ExploreValueCommand(gdb.Command):
     """
 
     def __init__(self):
-        super().__init__(
-            name="explore value", command_class=gdb.COMMAND_DATA
-        )
+        super().__init__(name="explore value", command_class=gdb.COMMAND_DATA)
 
     def invoke(self, arg_str, from_tty):
         if ExploreUtils.check_args("explore value", arg_str) == False:
@@ -742,8 +746,8 @@ class ExploreValueCommand(gdb.Command):
         value = ExploreUtils.get_value_from_str(arg_str)
         if value is None:
             raise gdb.GdbError(
-                    " '%s' does not evaluate to a value in the current "
-                    "context." % arg_str
+                " '%s' does not evaluate to a value in the current "
+                "context." % arg_str
             )
             return
 
@@ -764,9 +768,7 @@ class ExploreTypeCommand(gdb.Command):
     """
 
     def __init__(self):
-        super().__init__(
-            name="explore type", command_class=gdb.COMMAND_DATA
-        )
+        super().__init__(name="explore type", command_class=gdb.COMMAND_DATA)
 
     def invoke(self, arg_str, from_tty):
         if ExploreUtils.check_args("explore type", arg_str) == False:

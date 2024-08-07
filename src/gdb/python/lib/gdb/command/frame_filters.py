@@ -280,9 +280,7 @@ class DisableFrameFilter(gdb.Command):
     """
 
     def __init__(self):
-        super().__init__(
-            "disable frame-filter", gdb.COMMAND_DATA
-        )
+        super().__init__("disable frame-filter", gdb.COMMAND_DATA)
 
     def complete(self, text, word):
         """Completion function for both frame filter dictionary, and
@@ -316,9 +314,7 @@ class SetFrameFilterPriority(gdb.Command):
     """
 
     def __init__(self):
-        super().__init__(
-            "set frame-filter " "priority", gdb.COMMAND_DATA
-        )
+        super().__init__("set frame-filter " "priority", gdb.COMMAND_DATA)
 
     def _parse_pri_arg(self, arg):
         """Internal worker to parse a priority from a tuple.
@@ -399,9 +395,7 @@ class ShowFrameFilterPriority(gdb.Command):
     """
 
     def __init__(self):
-        super().__init__(
-            "show frame-filter " "priority", gdb.COMMAND_DATA
-        )
+        super().__init__("show frame-filter " "priority", gdb.COMMAND_DATA)
 
     def _parse_pri_arg(self, arg):
         """Internal worker to parse a dictionary and name from a

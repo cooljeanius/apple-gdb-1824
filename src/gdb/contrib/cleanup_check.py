@@ -60,18 +60,18 @@ def is_destructor(decl):
 # This list is just much too long... we should probably have an
 # attribute instead.
 special_names = {
-        "do_final_cleanups",
-        "discard_final_cleanups",
-        "save_cleanups",
-        "save_final_cleanups",
-        "restore_cleanups",
-        "restore_final_cleanups",
-        "exceptions_state_mc_init",
-        "make_my_cleanup2",
-        "make_final_cleanup",
-        "all_cleanups",
-        "save_my_cleanups",
-        "quit_target",
+    "do_final_cleanups",
+    "discard_final_cleanups",
+    "save_cleanups",
+    "save_final_cleanups",
+    "restore_cleanups",
+    "restore_final_cleanups",
+    "exceptions_state_mc_init",
+    "make_my_cleanup2",
+    "make_final_cleanup",
+    "all_cleanups",
+    "save_my_cleanups",
+    "quit_target",
 }
 
 

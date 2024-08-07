@@ -248,15 +248,18 @@ jobs:
             sync && echo "no linters found for go."; \
           fi; \
         elif test ${{ matrix.language }} == 'python' && test -x "$(which python)"; then \
-          sync && echo "TODO: python linting"; \
-          which -a pylint && which -a flake8 && which -a black; \
+          sync && which -a pylint && which -a flake8 && which -a black; \
           which -a ruff || which -a pyupgrade; \
-          sync && (pylint || flake8 || ruff check || sleep 1); \
+          (find . -name '*.py' -print0 | xargs -0 pylint) || stat "$(which pylint)"; \
+          sync && (flake8 || ruff check || (stat "$(which ruff)" && sleep 1)); \
           if test -x "$(which yamllint)"; then \
             yamllint .github/FUNDING.yml .github/dependabot.yml; \
+          else \
+            sync && echo "skipping yamllint..."; \
           fi; \
         else \
           echo "unhandled case for syntax check step (matrix.language is ${{ matrix.language }})"; \
+          sync && sleep 1; \
         fi
 
     - name: Setup Gradle

@@ -355,9 +355,7 @@ class EnablePrettyPrinter(gdb.Command):
     """
 
     def __init__(self):
-        super().__init__(
-            "enable pretty-printer", gdb.COMMAND_DATA
-        )
+        super().__init__("enable pretty-printer", gdb.COMMAND_DATA)
 
     def invoke(self, arg, from_tty):
         """GDB calls this to perform the command."""
@@ -379,9 +377,7 @@ class DisablePrettyPrinter(gdb.Command):
     """
 
     def __init__(self):
-        super().__init__(
-            "disable pretty-printer", gdb.COMMAND_DATA
-        )
+        super().__init__("disable pretty-printer", gdb.COMMAND_DATA)
 
     def invoke(self, arg, from_tty):
         """GDB calls this to perform the command."""

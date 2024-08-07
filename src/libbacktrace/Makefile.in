@@ -1189,7 +1189,7 @@ all-local: Makefile $(builddir_LTOBJECTS) $(builddir)/libbacktrace.la
 	    else \
 	      echo "$@: dunno about $${mytarg}..."; \
 	    fi; \
-	  else true; fi; \
+	  elif test -x "$(which sync)"; then sync; else true; fi; \
 	done
 	$(AM_V_at)sync && echo "$@ in `pwd`: done."
 default: all-local @MAINT@ $(builddir)/Makefile $(builddir)/config.h # all
@@ -1202,7 +1202,7 @@ default: all-local @MAINT@ $(builddir)/Makefile $(builddir)/config.h # all
 	    else \
 	      echo "$@: dunno about $${mydeftarg}..."; \
 	    fi; \
-	  else true; fi; \
+	  elif test -x "$(which sync)"; then sync; else true; fi; \
 	done
 	$(AM_V_at)sync && echo "$@ in `pwd`: done."
 all-am: default all-multi @MAINT@ Makefile.am
@@ -1215,7 +1215,7 @@ all-am: default all-multi @MAINT@ Makefile.am
 	    else \
 	      echo "$@: dunno about $${tg}..."; \
 	    fi; \
-	  else true; fi; \
+	  elif test -x "$(which sync)"; then sync; else true; fi; \
 	done
 	$(AM_V_at)sync && echo "$@ in `pwd`: done."
 install-exec-local: install-multi

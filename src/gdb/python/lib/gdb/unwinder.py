@@ -123,7 +123,9 @@ def register_unwinder(locus, unwinder, replace=False):
     elif isinstance(locus, gdb.Objfile) or isinstance(locus, gdb.Progspace):
         if gdb.parameter("verbose"):
             gdb.write(
-                "Registering {} unwinder for {} ...\n".format(unwinder.name, locus.filename)
+                "Registering {} unwinder for {} ...\n".format(
+                    unwinder.name, locus.filename
+                )
             )
     else:
         raise TypeError("locus should be gdb.Objfile or gdb.Progspace or None")
