@@ -27,7 +27,7 @@ class Reverse_Function(FrameDecorator):
 
     def function(self):
         fname = str(self.fobj.function())
-        if fname == None or fname == "":
+        if fname is None or fname == "":
             return None
         else:
             fname = fname[::-1]

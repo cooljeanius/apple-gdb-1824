@@ -22,7 +22,7 @@ class pp_s:
         self.val = val
 
     def to_string(self):
-        m = self.val["m"]
+        self.val["m"]
         return "m=<" + str(self.val["m"]) + ">"
 
 
@@ -53,7 +53,7 @@ def lookup_function(val):
 
     # Get the type name.
     typename = type.tag
-    if typename == None:
+    if typename is None:
         return None
 
     # Iterate over local dictionary of types to determine

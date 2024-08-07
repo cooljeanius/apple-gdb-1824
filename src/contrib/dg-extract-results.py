@@ -247,7 +247,6 @@ class Prog:
     # Parse from the first line after 'Running target ...' to the end
     # of the run's summary.
     def parse_run(self, filename, file, tool, variation, num_variations):
-        header = None
         harness = None
         segment = None
         final_using = 0
@@ -413,7 +412,6 @@ class Prog:
     # Parse a .log or .sum file.
     def parse_file(self, filename, file):
         tool = None
-        target = None
         num_variations = 1
         while True:
             line = file.readline()
