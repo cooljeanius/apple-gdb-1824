@@ -1,5 +1,4 @@
 ---
-
 # .github/workflows/codeql.yml: codeql workflow for apple-gdb-1824
 # For most projects, this workflow file will not need changing; you simply need
 # to commit it to your repository.
@@ -37,7 +36,7 @@ jobs:
     #   - https://gh.io/supported-runners-and-hardware-resources
     #   - https://gh.io/using-larger-runners
     # Consider using larger runners for possible analysis time improvements.
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    runs-on: 'ubuntu-latest'
     timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
     permissions:
       actions: read
@@ -104,19 +103,32 @@ jobs:
     - name: Dependencies
       run: |
         if test ${{ matrix.language }} == 'c-cpp'; then \
-          sudo apt-get -y install autopoint gobjc clang autogen guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev guile-3.0-libs libguile-ssh13 libiconv-hook1 libiconv-hook-dev win-iconv-mingw-w64-dev mingw-w64 mingw-w64-i686-dev wine libwine libwine-dev crosshurd libdispatch0 libdispatch-dev libblocksruntime0 libblocksruntime-dev systemtap-sdt-dev; \
+          sudo apt-get -y install autopoint gobjc clang autogen guile-2.2 \
+            guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev \
+            guile-3.0-libs libguile-ssh13 libiconv-hook1 libiconv-hook-dev \
+            win-iconv-mingw-w64-dev mingw-w64 mingw-w64-i686-dev wine libwine \
+            libwine-dev crosshurd libdispatch0 libdispatch-dev \
+            libblocksruntime0 libblocksruntime-dev systemtap-sdt-dev; \
         elif test ${{ matrix.language }} == 'java-kotlin'; then \
-          sudo apt-get -y install kotlin gradle libgradle-core-java libgradle-plugins-java libintellij-java-compatibility-java libjzlib-java gradle-propdeps-plugin junit junit5 libgradle-jflex-plugin-java gradle-apt-plugin; \
+          sudo apt-get -y install kotlin gradle libgradle-core-java \
+            libgradle-plugins-java libintellij-java-compatibility-java \
+            libjzlib-java gradle-propdeps-plugin junit junit5 \
+            libgradle-jflex-plugin-java gradle-apt-plugin; \
         elif test ${{ matrix.language }} == 'javascript-typescript'; then \
-          sudo apt-get -y install node-optionator eslint uglifyjs libjs-modernizr node-babel-eslint npm; \
+          sudo apt-get -y install node-optionator eslint uglifyjs \
+            libjs-modernizr node-babel-eslint npm; \
         elif test ${{ matrix.language }} == 'go'; then \
-          sudo apt-get -y install gccgo gccgo-multilib golang golang-go golang-src golang-ar-dev; \
+          sudo apt-get -y install gccgo gccgo-multilib golang golang-go \
+            golang-src golang-ar-dev; \
         elif test ${{ matrix.language }} == 'csharp'; then \
-          sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs nant nunit mono-xbuild; \
+          sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs nant \
+            nunit mono-xbuild; \
         elif test ${{ matrix.language }} == 'python'; then \
-          sudo apt-get -y install jython pylint pymacs python-tk tix flake8 python3-macholib; \
+          sudo apt-get -y install jython pylint pymacs python-tk tix flake8 \
+            python3-macholib yamllint; \
         elif test ${{ matrix.language }} == 'ruby'; then \
-          sudo apt-get -y install ruby ruby-dev libruby rake ruby-full ruby-ffi ruby-build jruby-openssl mruby libmruby-dev; \
+          sudo apt-get -y install ruby ruby-dev libruby rake ruby-full ruby-ffi \
+            ruby-build jruby-openssl mruby libmruby-dev; \
         else \
           sync && echo "unhandled language ${{ matrix.language }}" && sleep 1; \
         fi

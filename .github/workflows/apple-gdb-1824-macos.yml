@@ -1,5 +1,6 @@
-# -*- coding: utf-8; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- vim:fenc=utf-8:et:sw=2:ts=2:sts=2
-
+# -*- coding: utf-8; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+# vim:fenc=utf-8:et:sw=2:ts=2:sts=2
+---
 name: cooljeanius/apple-gdb-1824-macos
 on:
   push:
@@ -8,8 +9,8 @@ on:
   pull_request:
 jobs:
   test:
-    # "latest" and "14" now both default to arm, which will require work to properly support,
-    # so see if we can fall back to an x86_64 image instead:
+    # "latest" and "14" now both default to arm, which will require work to
+    # properly support, so see if we can fall back to an x86_64 image instead:
     runs-on: macos-13
     steps:
     - name: checkout
@@ -33,7 +34,11 @@ jobs:
         fi
         brew install python@3.12 || brew link --overwrite python@3.12 || (if test -L /usr/local/bin/2to3; then (readlink /usr/local/bin/2to3 && unlink /usr/local/bin/2to3); else rm '/usr/local/bin/2to3'; fi) || which -a 2to3
         sync && date && sync
-        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar osslsigncode gperf help2man findutils grep coreutils remake byacc texlive gawk util-macros autoconf-archive automake scons smake term termbox termcolor cdk cgdb ncurses groff splint makedepend "${COMPILER_FORMULA}"
+        brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar \
+          osslsigncode gperf help2man findutils grep coreutils remake byacc \
+          texlive gawk util-macros autoconf-archive automake scons smake \
+          term termbox termcolor cdk cgdb ncurses groff splint makedepend \
+          "${COMPILER_FORMULA}"
         if test -z "$(which ant)" || test ! -x "$(which ant)"; then \
           brew install ant || brew install ant@1.9; \
         else \
