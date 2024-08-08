@@ -33,7 +33,8 @@ class GitNotes:
     def contents(self):
         """The contents "attribute", lazily initialized."""
         if self.__contents is None:
-            self.__contents = self.__get_notes_contents(self.rev, self.filename)
+            self.__contents = self.__get_notes_contents(
+                self.rev, self.filename)
         return self.__contents
 
     @classmethod

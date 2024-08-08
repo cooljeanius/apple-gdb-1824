@@ -83,7 +83,8 @@ class InfoFrameFilter(gdb.Command):
                         str(gdb.frames.get_priority(frame_filter[1]))
                     )
                     enabled = "{:<7}".format(
-                        self.enabled_string(gdb.frames.get_enabled(frame_filter[1]))
+                        self.enabled_string(
+                            gdb.frames.get_enabled(frame_filter[1]))
                     )
                 except Exception:
                     e = sys.exc_info()[1]
@@ -132,7 +133,8 @@ def _enable_parse_arg(cmd_name, arg):
     argv = gdb.string_to_argv(arg)
     argc = len(argv)
     if argv[0] == "all" and argc > 1:
-        raise gdb.GdbError(cmd_name + ": with 'all' " "you may not specify a filter.")
+        raise gdb.GdbError(
+            cmd_name + ": with 'all' " "you may not specify a filter.")
     else:
         if argv[0] != "all" and argc != 2:
             raise gdb.GdbError(cmd_name + " takes exactly two arguments.")
@@ -198,7 +200,7 @@ def _complete_frame_filter_list(text, word, all_flag):
 
     # If we only have one completion, complete it and return it.
     if len(flist) == 1:
-        flist[0] = flist[0][len(text) - len(word) :]
+        flist[0] = flist[0][len(text) - len(word):]
 
     # Otherwise, return an empty list, or a list of frame filter
     # dictionaries that the previous filter operation returned.

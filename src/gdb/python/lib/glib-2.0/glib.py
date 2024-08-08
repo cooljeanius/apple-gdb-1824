@@ -209,7 +209,7 @@ class ForeachCommand(gdb.Command):
         while i < len(arg) and arg[i].isspace():
             i = i + 1
 
-        if arg[i : i + 2] != "in":
+        if arg[i: i + 2] != "in":
             raise Exception("Invalid syntax, missing in")
 
         i = i + 2

@@ -62,7 +62,8 @@ def launch(
     global _program
     _program = program
     send_gdb(
-        lambda: _launch_setup(program, cwd, args, env, stopAtBeginningOfMainSubprogram)
+        lambda: _launch_setup(program, cwd, args, env,
+                              stopAtBeginningOfMainSubprogram)
     )
 
 

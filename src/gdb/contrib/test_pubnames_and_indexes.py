@@ -88,7 +88,7 @@ def get_gdb_index(filename):
             # Readelf prints gdb-index lines formatted like so:
             # [  4] two::c2<double>::c2: 0
             # So take the string between the first close bracket and the last colon.
-            index_symbols.append(line[line.find("]") + 2 : line.rfind(":")])
+            index_symbols.append(line[line.find("]") + 2: line.rfind(":")])
 
     readelf.wait()
     return index_symbols

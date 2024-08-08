@@ -49,7 +49,8 @@ CP_SYMBOL = r"[a-zA-Z_][a-zA-Z0-9_<>:]*"
 SIMPLE_RETURN_PART = r"((struct|class|enum|union)\s+)?" + CP_SYMBOL
 
 # Match a return type.
-RETURN_PART = r"((const|volatile)\s+)?(" + SIMPLE_RETURN_PART + ")" + POINTER_PART
+RETURN_PART = r"((const|volatile)\s+)?(" + \
+    SIMPLE_RETURN_PART + ")" + POINTER_PART
 
 # Match "virtual".
 VIRTUAL_PART = r"virtual\s"

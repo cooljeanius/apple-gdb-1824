@@ -38,7 +38,8 @@ def get_emails_from_script(script_filename, changed_files):
     p = Popen([script_filename], stdin=PIPE, stdout=PIPE)
     (output, _) = p.communicate(input=input_str)
     if p.returncode != 0:
-        warn("!!! %s failed with error code: %d." % (script_filename, p.returncode))
+        warn("!!! %s failed with error code: %d." %
+             (script_filename, p.returncode))
     return output.splitlines()
 
 

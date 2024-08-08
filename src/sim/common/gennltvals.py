@@ -50,7 +50,7 @@ TARGET_DIRS = {
     "cr16": "libgloss/cr16/sys",
     "d10v": "newlib/libc/sys/d10v/sys",
     # Port removed from the tree years ago.
-    #'i960': 'libgloss/i960',
+    # 'i960': 'libgloss/i960',
     "mcore": "libgloss/mcore",
     "riscv": "libgloss/riscv/machine",
     "sh": "newlib/libc/sys/sh/sys",
@@ -136,7 +136,7 @@ def gentvals(
         if END_MARKER in line:
             end_i = i
     assert start_i and end_i
-    new_lines = old_lines[0 : start_i + 1]
+    new_lines = old_lines[0: start_i + 1]
     new_lines.extend(
         f"#ifdef {sym}\n" f'  {{ "{sym}", {sym}, {val} }},\n' f"#endif"
         for sym, val in sorted(syms.items())
@@ -190,7 +190,7 @@ def gen_target_syscall(output_dir: Path, newlib: Path, cpp: str):
         if END_MARKER in line:
             end_i = i
     assert start_i and end_i, f"{target_map_c}: Unable to find markers"
-    new_lines_c = old_lines_c[0 : start_i + 1]
+    new_lines_c = old_lines_c[0: start_i + 1]
     new_lines_c_end = old_lines_c[end_i:]
 
     target_map_h = output_dir / "target-newlib-syscall.h"
@@ -202,7 +202,7 @@ def gen_target_syscall(output_dir: Path, newlib: Path, cpp: str):
         if END_MARKER in line:
             end_i = i
     assert start_i and end_i, f"{target_map_h}: Unable to find markers"
-    new_lines_h = old_lines_h[0 : start_i + 1]
+    new_lines_h = old_lines_h[0: start_i + 1]
     new_lines_h_end = old_lines_h[end_i:]
 
     headers = ("syscall.h",)
@@ -211,7 +211,8 @@ def gen_target_syscall(output_dir: Path, newlib: Path, cpp: str):
     # Output the target-specific syscalls.
     for target, subdir in sorted(TARGET_DIRS.items()):
         syms = extract_syms(cpp, newlib / subdir, headers, pattern)
-        new_lines_c.append(f"CB_TARGET_DEFS_MAP cb_{target}_syscall_map[] = {{")
+        new_lines_c.append(
+            f"CB_TARGET_DEFS_MAP cb_{target}_syscall_map[] = {{")
         new_lines_c.extend(
             f"#ifdef CB_{sym}\n"
             "  { "
@@ -223,7 +224,8 @@ def gen_target_syscall(output_dir: Path, newlib: Path, cpp: str):
         new_lines_c.append("  {NULL, -1, -1},")
         new_lines_c.append("};\n")
 
-        new_lines_h.append(f"extern CB_TARGET_DEFS_MAP cb_{target}_syscall_map[];")
+        new_lines_h.append(
+            f"extern CB_TARGET_DEFS_MAP cb_{target}_syscall_map[];")
         new_lines_h.extend(
             f"#define TARGET_NEWLIB_{target.upper()}_{sym} {val}"
             for sym, val in sorted(syms.items())
@@ -276,7 +278,8 @@ def get_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--cpp", type=str, default="cpp", help="the preprocessor to use"
     )
-    parser.add_argument("--srcroot", type=Path, help="the root of this source tree")
+    parser.add_argument("--srcroot", type=Path,
+                        help="the root of this source tree")
     parser.add_argument(
         "newlib", nargs="?", type=Path, help="path to the newlib+libgloss source tree"
     )

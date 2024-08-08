@@ -29,7 +29,8 @@ class BoundPrinter:
         size = (int)((upper) - (lower))
         if size > -1:
             size = size + 1
-        result = "{{lbound = {}, ubound = {}}} : size {}".format(lower, upper, size)
+        result = "{{lbound = {}, ubound = {}}} : size {}".format(
+            lower, upper, size)
         return result
 
 
@@ -45,4 +46,5 @@ def build_pretty_printer():
     return pp
 
 
-gdb.printing.register_pretty_printer(gdb.current_objfile(), build_pretty_printer())
+gdb.printing.register_pretty_printer(
+    gdb.current_objfile(), build_pretty_printer())

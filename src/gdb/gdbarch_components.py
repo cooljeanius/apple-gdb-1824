@@ -813,7 +813,8 @@ Method(
 Method(
     type="void",
     name="address_to_pointer",
-    params=[("struct type *", "type"), ("gdb_byte *", "buf"), ("CORE_ADDR", "addr")],
+    params=[("struct type *", "type"),
+            ("gdb_byte *", "buf"), ("CORE_ADDR", "addr")],
     predefault="unsigned_address_to_pointer",
     invalid=False,
 )
@@ -1117,7 +1118,8 @@ be zero for statically linked multithreaded inferiors.
 """,
     type="CORE_ADDR",
     name="get_thread_local_address",
-    params=[("ptid_t", "ptid"), ("CORE_ADDR", "lm_addr"), ("CORE_ADDR", "offset")],
+    params=[("ptid_t", "ptid"), ("CORE_ADDR", "lm_addr"),
+            ("CORE_ADDR", "offset")],
     predicate=True,
 )
 
@@ -1547,7 +1549,8 @@ type_flags was set, false otherwise.
 """,
     type="bool",
     name="address_class_name_to_type_flags",
-    params=[("const char *", "name"), ("type_instance_flags *", "type_flags_ptr")],
+    params=[("const char *", "name"),
+            ("type_instance_flags *", "type_flags_ptr")],
     predicate=True,
 )
 
@@ -1661,7 +1664,8 @@ failed, otherwise, return the red length of READBUF.
 """,
     type="ULONGEST",
     name="core_xfer_shared_libraries",
-    params=[("gdb_byte *", "readbuf"), ("ULONGEST", "offset"), ("ULONGEST", "len")],
+    params=[("gdb_byte *", "readbuf"),
+            ("ULONGEST", "offset"), ("ULONGEST", "len")],
     predicate=True,
 )
 
@@ -1673,7 +1677,8 @@ Return the number of bytes read (zero indicates failure).
 """,
     type="ULONGEST",
     name="core_xfer_shared_libraries_aix",
-    params=[("gdb_byte *", "readbuf"), ("ULONGEST", "offset"), ("ULONGEST", "len")],
+    params=[("gdb_byte *", "readbuf"),
+            ("ULONGEST", "offset"), ("ULONGEST", "len")],
     predicate=True,
 )
 
@@ -1705,7 +1710,8 @@ of bytes read (zero indicates EOF, a negative value indicates failure).
 """,
     type="LONGEST",
     name="core_xfer_siginfo",
-    params=[("gdb_byte *", "readbuf"), ("ULONGEST", "offset"), ("ULONGEST", "len")],
+    params=[("gdb_byte *", "readbuf"),
+            ("ULONGEST", "offset"), ("ULONGEST", "len")],
     predicate=True,
 )
 
@@ -1801,7 +1807,8 @@ that case.
 """,
     type="displaced_step_copy_insn_closure_up",
     name="displaced_step_copy_insn",
-    params=[("CORE_ADDR", "from"), ("CORE_ADDR", "to"), ("struct regcache *", "regs")],
+    params=[("CORE_ADDR", "from"), ("CORE_ADDR", "to"),
+            ("struct regcache *", "regs")],
     predicate=True,
 )
 
@@ -2583,7 +2590,8 @@ to FILE.
 """,
     type="void",
     name="print_auxv_entry",
-    params=[("struct ui_file *", "file"), ("CORE_ADDR", "type"), ("CORE_ADDR", "val")],
+    params=[("struct ui_file *", "file"),
+            ("CORE_ADDR", "type"), ("CORE_ADDR", "val")],
     predefault="default_print_auxv_entry",
     invalid=False,
 )

@@ -39,7 +39,8 @@ def _handle_thread_step(thread_id, single_thread, select=False):
         # This can fail, depending on the target, so catch the error
         # and report to our caller.  We can't use exec_and_log because
         # that does not propagate exceptions.
-        gdb.execute("set scheduler-locking " + arg, from_tty=True, to_string=True)
+        gdb.execute("set scheduler-locking " + arg,
+                    from_tty=True, to_string=True)
     except gdb.error:
         result = False
     # Other DAP code may select a frame, and the "finish" command uses
@@ -81,6 +82,7 @@ def step_out(*, threadId: int, singleThread: bool = False, **args):
 
 @request("continue")
 def continue_request(*, threadId: int, singleThread: bool = False, **args):
-    locked = send_gdb_with_response(lambda: _handle_thread_step(threadId, singleThread))
+    locked = send_gdb_with_response(
+        lambda: _handle_thread_step(threadId, singleThread))
     send_gdb(ExecutionInvoker("continue", None))
     return {"allThreadsContinued": not locked}

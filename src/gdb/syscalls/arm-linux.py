@@ -46,7 +46,8 @@ def record(name, number, comment=None):
 
 
 for line in inf:
-    m = re.match(r"^#define __NR_(\w+)\s+\(__NR_SYSCALL_BASE\+\s*(\d+)\)", line)
+    m = re.match(
+        r"^#define __NR_(\w+)\s+\(__NR_SYSCALL_BASE\+\s*(\d+)\)", line)
     if m:
         record(m.group(1), int(m.group(2)))
         continue
@@ -55,7 +56,8 @@ for line in inf:
     if m:
         record(m.group(2), int(m.group(1)), "removed")
 
-    m = re.match(r"^#define __ARM_NR_(\w+)\s+\(__ARM_NR_BASE\+\s*(\d+)\)", line)
+    m = re.match(
+        r"^#define __ARM_NR_(\w+)\s+\(__ARM_NR_BASE\+\s*(\d+)\)", line)
     if m:
         record("ARM_" + m.group(1), 0x0F0000 + int(m.group(2)))
         continue

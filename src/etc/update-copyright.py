@@ -254,7 +254,8 @@ class Copyright:
         raise self.BadYear(string)
 
     def year_range(self, years):
-        year_list = [self.parse_year(year) for year in self.year_re.findall(years)]
+        year_list = [self.parse_year(year)
+                     for year in self.year_re.findall(years)]
         assert len(year_list) > 0
         return (min(year_list), max(year_list))
 
@@ -286,7 +287,7 @@ class Copyright:
         line = line.lstrip()
         match = self.comment_re.match(line)
         if match:
-            line = line[match.end() :].lstrip()
+            line = line[match.end():].lstrip()
         return line
 
     def is_complete(self, match):
@@ -301,7 +302,7 @@ class Copyright:
         intro = match.group(1)
         if intro.startswith("@set"):
             # Texinfo year variables should always be on one line
-            after_years = line[match.end(2) :].strip()
+            after_years = line[match.end(2):].strip()
             if after_years != "":
                 self.errors.report(
                     pathname, "trailing characters in @set: " + after_years
@@ -341,7 +342,8 @@ class Copyright:
                 return (False, orig_line, next_line)
 
             elif holder not in self.holders:
-                self.errors.report(pathname, "unrecognised copyright holder: " + holder)
+                self.errors.report(
+                    pathname, "unrecognised copyright holder: " + holder)
                 return (False, orig_line, next_line)
 
             else:
@@ -352,10 +354,11 @@ class Copyright:
                     return (False, orig_line, next_line)
 
                 # Make sure the author is given in a consistent way.
-                line = line[: match.start(4)] + canon_form + line[match.end(4) :]
+                line = line[: match.start(4)] + \
+                    canon_form + line[match.end(4):]
 
                 # Remove any 'by'
-                line = line[: match.start(3)] + line[match.end(3) :]
+                line = line[: match.start(3)] + line[match.end(3):]
 
         # Update the copyright years.
         years = match.group(2).strip()
@@ -369,7 +372,8 @@ class Copyright:
             canon_form = "%d" % self.max_year
         else:
             try:
-                canon_form = self.canonicalise_years(dir, filename, filter, years)
+                canon_form = self.canonicalise_years(
+                    dir, filename, filter, years)
             except self.BadYear as e:
                 self.errors.report(pathname, str(e))
                 return (False, orig_line, next_line)
@@ -379,7 +383,7 @@ class Copyright:
             + " "
             + canon_form
             + self.separator
-            + line[match.end(2) :]
+            + line[match.end(2):]
         )
 
         # Use the standard (C) form.
@@ -387,7 +391,7 @@ class Copyright:
             intro += " (C)"
         elif intro.endswith("(c)"):
             intro = intro[:-3] + "(C)"
-        line = line[: match.start(1)] + intro + line[match.end(1) :]
+        line = line[: match.start(1)] + intro + line[match.end(1):]
 
         # Strip trailing whitespace
         line = line.rstrip() + "\n"
@@ -463,7 +467,8 @@ class Copyright:
             # Handle the files in this directory.
             for filename in filenames:
                 if filter.skip_file(dir, filename):
-                    sys.stdout.write("Skipping %s\n" % os.path.join(dir, filename))
+                    sys.stdout.write("Skipping %s\n" %
+                                     os.path.join(dir, filename))
                 else:
                     self.process_file(dir, filename, filter)
 
@@ -589,7 +594,8 @@ class BinutilsCopyright(Copyright):
         self.add_package_author("Free Software Foundation, Inc", canon_fsf)
         self.add_package_author("Free Software Foundation, Inc.", canon_fsf)
         self.add_package_author("The Free Software Foundation", canon_fsf)
-        self.add_package_author("The Free Software Foundation, Inc.", canon_fsf)
+        self.add_package_author(
+            "The Free Software Foundation, Inc.", canon_fsf)
         self.add_package_author("Software Foundation, Inc.", canon_fsf)
 
         self.add_external_author("Carnegie Mellon University")
@@ -599,7 +605,8 @@ class BinutilsCopyright(Copyright):
         self.add_external_author("MIPS Computer Systems, Inc.")
         self.add_external_author("Red Hat Inc.")
         self.add_external_author("Regents of the University of California.")
-        self.add_external_author("The Regents of the University of California.")
+        self.add_external_author(
+            "The Regents of the University of California.")
         self.add_external_author("Third Eye Software, Inc.")
         self.add_external_author("Ulrich Drepper")
         self.add_external_author("Synopsys Inc.")

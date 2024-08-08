@@ -53,7 +53,8 @@ class Unwinder:
     @enabled.setter
     def enabled(self, value):
         if not isinstance(value, bool):
-            raise TypeError("incorrect type for enabled attribute: %s" % type(value))
+            raise TypeError(
+                "incorrect type for enabled attribute: %s" % type(value))
         self._enabled = value
         gdb.invalidate_cached_frames()
 
@@ -136,7 +137,8 @@ def register_unwinder(locus, unwinder, replace=False):
             if replace:
                 del locus.frame_unwinders[i]
             else:
-                raise RuntimeError("Unwinder %s already exists." % unwinder.name)
+                raise RuntimeError(
+                    "Unwinder %s already exists." % unwinder.name)
         i += 1
     locus.frame_unwinders.insert(0, unwinder)
     gdb.invalidate_cached_frames()

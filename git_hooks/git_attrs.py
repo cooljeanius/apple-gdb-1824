@@ -42,7 +42,7 @@ def get_attribute(filename, attr_name):
     assert attr_info.startswith(attr_info_prefix)
 
     # Return the portion of the output that contains the attribute value.
-    return attr_info[len(attr_info_prefix) :]
+    return attr_info[len(attr_info_prefix):]
 
 
 def cached_file_exists(commit_rev, filename):

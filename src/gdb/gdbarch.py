@@ -91,7 +91,8 @@ with open("gdbarch-gen.h", "w") as f:
 
         if c.predicate:
             print(file=f)
-            print(f"extern bool gdbarch_{c.name}_p (struct gdbarch *gdbarch);", file=f)
+            print(
+                f"extern bool gdbarch_{c.name}_p (struct gdbarch *gdbarch);", file=f)
 
         print(file=f)
         if isinstance(c, Value):
@@ -359,9 +360,11 @@ with open("gdbarch.c", "w") as f:
             elif c.invalid or c.postdefault is not None:
                 init_value = c.predefault or "0"
                 print("  /* Check variable changed from its initial value.  */", file=f)
-                print(f"  gdb_assert (gdbarch->{c.name} != {init_value});", file=f)
+                print(
+                    f"  gdb_assert (gdbarch->{c.name} != {init_value});", file=f)
             else:
-                print(f"  /* Skip verify of {c.name}, invalid_p == 0 */", file=f)
+                print(
+                    f"  /* Skip verify of {c.name}, invalid_p == 0 */", file=f)
             print("  if (gdbarch_debug >= 2)", file=f)
             print(
                 f"""    gdb_printf (gdb_stdlog, "gdbarch_{c.name} called\\n");""",

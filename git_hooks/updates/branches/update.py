@@ -103,7 +103,8 @@ class BranchUpdate(AbstractUpdate):
         if self.short_ref_name == "master":
             update_info["branch"] = ""
         if len(self.added_commits) > 1:
-            update_info["n_commits"] = " (%d commits)" % len(self.added_commits)
+            update_info["n_commits"] = " (%d commits)" % len(
+                self.added_commits)
 
         subject = "[%(repo)s%(branch)s]%(n_commits)s %(subject)s" % update_info
 

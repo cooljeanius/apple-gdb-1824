@@ -6,7 +6,8 @@ import os
 import getopt
 from distutils import sysconfig
 
-valid_opts = ["prefix", "exec-prefix", "includes", "libs", "cflags", "ldflags", "help"]
+valid_opts = ["prefix", "exec-prefix", "includes",
+              "libs", "cflags", "ldflags", "help"]
 
 
 def exit_with_usage(code=1):

@@ -106,7 +106,8 @@ def _get_scope(id):
         scopes = []
         args = frame.frame_args()
         if args:
-            scopes.append(_ScopeReference("Arguments", "arguments", frame, args))
+            scopes.append(_ScopeReference(
+                "Arguments", "arguments", frame, args))
         locs = frame.frame_locals()
         if locs:
             scopes.append(_ScopeReference("Locals", "locals", frame, locs))

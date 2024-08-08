@@ -85,7 +85,8 @@ def examine_struct_fields(initializer):
             if isinstance(value2, gcc.AddrExpr):
                 value2 = value2.operand
                 if isinstance(value2, gcc.FunctionDecl):
-                    output_file.write("declare_nothrow(%s)\n" % repr(str(value2.name)))
+                    output_file.write("declare_nothrow(%s)\n" %
+                                      repr(str(value2.name)))
 
 
 # Examine all global variables looking for pointers to functions in
@@ -224,7 +225,8 @@ class GdbExceptionChecker(gcc.GimplePass):
                 global cleanup_functions
                 if callee_name in cleanup_functions:
                     if not isinstance(arg, gcc.FunctionDecl):
-                        gcc.inform(loc, "cleanup argument not a DECL: %s" % repr(arg))
+                        gcc.inform(
+                            loc, "cleanup argument not a DECL: %s" % repr(arg))
                     else:
                         # Cleanups must be nothrow.
                         self.output_file.write(

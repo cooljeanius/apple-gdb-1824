@@ -33,7 +33,8 @@ class InfoTypePrinter(gdb.Command):
         """Print a list of type printers."""
         # A potential enhancement is to provide an option to list printers in
         # "lookup order" (i.e. unsorted).
-        sorted_type_printers = sorted(copy.copy(type_printers), key=lambda x: x.name)
+        sorted_type_printers = sorted(
+            copy.copy(type_printers), key=lambda x: x.name)
         for printer in sorted_type_printers:
             if printer.enabled:
                 enabled = ""

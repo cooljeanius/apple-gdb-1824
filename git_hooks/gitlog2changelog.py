@@ -38,13 +38,13 @@ for line in fin:
     elif re.match("Author:", line) >= 0:
         authorList = re.split(": ", line, 1)
         author = authorList[1]
-        author = author[0 : len(author) - 1]
+        author = author[0: len(author) - 1]
         authorFound = True
     # Match the date line
     elif re.match("Date:", line) >= 0:
         dateList = re.split(":   ", line, 1)
         date = dateList[1]
-        date = date[0 : len(date) - 1]
+        date = date[0: len(date) - 1]
         dateFound = True
     # The svn-id lines are ignored
     elif re.match("    git-svn-id:", line) >= 0:
@@ -98,7 +98,7 @@ for line in fin:
         commit = ""
         while i < len(commitLine):
             if len(commitLine) < i + 78:
-                commit = commit + "\n  " + commitLine[i : len(commitLine)]
+                commit = commit + "\n  " + commitLine[i: len(commitLine)]
                 break
             index = commitLine.rfind(" ", i, i + 78)
             if index > i:

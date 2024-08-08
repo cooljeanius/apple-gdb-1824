@@ -68,7 +68,8 @@ def decode_source(source):
     if "path" in source:
         return source["path"]
     if "sourceReference" not in source:
-        raise Exception("either 'path' or 'sourceReference' must appear in Source")
+        raise Exception(
+            "either 'path' or 'sourceReference' must appear in Source")
     ref = source["sourceReference"]
     global _id_map
     if ref not in _id_map:

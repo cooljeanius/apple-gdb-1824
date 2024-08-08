@@ -168,7 +168,7 @@ def generate_changelog(data, no_functions=False, fill_pr_titles=False):
         for file in sorted(files, key=sort_changelog_files):
             assert file.path.startswith(changelog)
             in_tests = "testsuite" in changelog or "testsuite" in file.path
-            relative_path = file.path[len(changelog) :].lstrip("/")
+            relative_path = file.path[len(changelog):].lstrip("/")
             functions = []
             if file.is_added_file:
                 msg = "New test" if in_tests else "New file"
@@ -181,7 +181,7 @@ def generate_changelog(data, no_functions=False, fill_pr_titles=False):
                 # A file can be theoretically moved to a location that
                 # belongs to a different ChangeLog.  Let user fix it.
                 if new_path.startswith(changelog):
-                    new_path = new_path[len(changelog) :].lstrip("/")
+                    new_path = new_path[len(changelog):].lstrip("/")
                 out += "\t* %s: ...here.\n" % (new_path)
             else:
                 if not no_functions:
@@ -211,7 +211,8 @@ def generate_changelog(data, no_functions=False, fill_pr_titles=False):
                                         last_fn = m.group(1)
                                         modified_visited = False
                             if not success:
-                                try_add_function(functions, hunk.section_header)
+                                try_add_function(
+                                    functions, hunk.section_header)
                 if functions:
                     out += "\t* {} ({}):\n".format(relative_path, functions[0])
                     for fn in functions[1:]:
@@ -248,11 +249,12 @@ if __name__ == "__main__":
 
     input = open(args.input) if args.input else sys.stdin
     data = input.read()
-    output = generate_changelog(data, args.no_functions, args.fill_up_bug_titles)
+    output = generate_changelog(
+        data, args.no_functions, args.fill_up_bug_titles)
     if args.changelog:
         lines = open(args.changelog).read().split("\n")
         start = list(takewhile(lambda l: not l.startswith("#"), lines))
-        end = lines[len(start) :]
+        end = lines[len(start):]
         with open(args.changelog, "w") as f:
             if start:
                 # appent empty line
