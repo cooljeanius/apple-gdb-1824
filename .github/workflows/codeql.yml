@@ -232,12 +232,16 @@ jobs:
           fi; \
         elif test ${{ matrix.language }} == 'go' && test -x "$(which go)"; then \
           if test -x "$(which staticcheck)"; then \
+            sleep && which -a staticcheck && sleep 1; \
             (find . -name '*.go' -print0 | xargs -0 staticcheck) || statticcheck; \
           elif test -x "$(which revive)"; then \
+            sleep && which -a revive && sleep 1; \
             (find . -name '*.go' -print0 | xargs -0 revive) || revive; \
           elif test -x "$(which gocritic)"; then \
+            sleep && which -a gocritic && sleep 1; \
             (find . -name '*.go' -print0 | xargs -0 gocritic) || gocritic; \
           elif test -x "$(which golangci-lint)"; then \
+            sync && which -a golangci-lint && sleep 1; \
             golangci-lint run src/gdb/testsuite/gdb.go || golangci-lint config verify; \
           elif test -x "$(which gofmt)"; then \
             sync && which -a gofmt && sleep 1; \
@@ -245,7 +249,7 @@ jobs:
           elif test -x "$(which actionlint)"; then \
             sync && actionlint && sleep 1; \
           else \
-            sync && echo "no linters found for go."; \
+            sync && echo "no linters found for go." && sleep 1; \
           fi; \
         elif test ${{ matrix.language }} == 'python' && test -x "$(which python)"; then \
           sync && which -a pylint && which -a flake8 && which -a black; \
@@ -650,9 +654,10 @@ jobs:
         fi
         sync && echo "ps aux" && sync && ps aux
         if test -x "$(which purge)"; then \
+          which -a purge; \
           purge || sudo purge; \
         elif test -x "$(which sync)"; then \
-          which sync && sync; \
+          which sync && sync && stat "$(which sync)"; \
         else \
           sleep 1; \
         fi
