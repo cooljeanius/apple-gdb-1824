@@ -149,7 +149,8 @@ def _set_breakpoints_callback(kind, specs, creator):
         # It makes sense to reuse a breakpoint even if the condition
         # or ignore count differs, so remove these entries from the
         # spec first.
-        (condition, hit_condition) = _remove_entries(spec, "condition", "hitCondition")
+        (condition, hit_condition) = _remove_entries(
+            spec, "condition", "hitCondition")
         keyspec = frozenset(list(spec.items()))
 
         # Create or reuse a breakpoint.  If asked, set the condition
@@ -315,7 +316,8 @@ def _rewrite_fn_breakpoint(
 @capability("supportsFunctionBreakpoints")
 def set_fn_breakpoint(*, breakpoints: Sequence, **args):
     specs = [_rewrite_fn_breakpoint(**bp) for bp in breakpoints]
-    result = send_gdb_with_response(lambda: _set_breakpoints("function", specs))
+    result = send_gdb_with_response(
+        lambda: _set_breakpoints("function", specs))
     return {
         "breakpoints": result,
     }
@@ -351,7 +353,8 @@ def set_insn_breakpoints(
     *, breakpoints: Sequence, offset: Optional[int] = None, **args
 ):
     specs = [_rewrite_insn_breakpoint(**bp) for bp in breakpoints]
-    result = send_gdb_with_response(lambda: _set_breakpoints("instruction", specs))
+    result = send_gdb_with_response(
+        lambda: _set_breakpoints("instruction", specs))
     return {
         "breakpoints": result,
     }
@@ -432,7 +435,8 @@ def set_exception_breakpoints(
     options = [{"filterId": filter} for filter in filters]
     options.extend(filterOptions)
     options = [_rewrite_exception_breakpoint(**bp) for bp in options]
-    result = send_gdb_with_response(lambda: _set_exception_catchpoints(options))
+    result = send_gdb_with_response(
+        lambda: _set_exception_catchpoints(options))
     return {
         "breakpoints": result,
     }

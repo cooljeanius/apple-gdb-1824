@@ -43,7 +43,8 @@ class LightweightTagDeletion(AbstractUpdate):
             This method handles both lightweight and annotated tags.
         """
         if not git_config("hooks.allow-delete-tag"):
-            raise InvalidUpdate("Deleting a tag is not allowed in this repository")
+            raise InvalidUpdate(
+                "Deleting a tag is not allowed in this repository")
 
     def get_update_email_contents(self):
         """See AbstractUpdate.get_update_email_contents."""

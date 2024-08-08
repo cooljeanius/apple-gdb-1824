@@ -85,7 +85,8 @@ def update_files(update_list):
     update_cmd = ["bash", "gdb/gnulib/import/extra/update-copyright"]
     update_cmd += update_list
 
-    p = subprocess.Popen(update_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p = subprocess.Popen(update_cmd, stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
     update_out = p.communicate()[0]
 
     # Process the output.  Typically, a lot of files do not have
@@ -174,7 +175,8 @@ def main():
 # or test cases which must be sensitive to line numbering).
 #
 # Filenames are relative to the root directory.
-EXCLUDE_LIST = ("gdb/common/glibc_thread_db.h", "gdb/CONTRIBUTE", "gdb/gnulib/import")
+EXCLUDE_LIST = ("gdb/common/glibc_thread_db.h",
+                "gdb/CONTRIBUTE", "gdb/gnulib/import")
 
 # Files which should not be modified, either because they are
 # generated, non-FSF, or otherwise special (e.g. license text,

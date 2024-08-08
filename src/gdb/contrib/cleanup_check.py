@@ -170,7 +170,8 @@ class MasterCleanup:
         idx = self._find_var(lhs)
         if idx >= 0:
             gcc.permerror(location, "reassigning to known cleanup")
-            gcc.inform(self.cleanups[idx].location, "previous assignment is here")
+            gcc.inform(self.cleanups[idx].location,
+                       "previous assignment is here")
         self.cleanups.append(obj)
 
     # A helper for merge and pop that finds BACK_TO in self.cleanups,
@@ -243,7 +244,8 @@ class CleanupChecker:
                 curloc = stmt.loc
             if isinstance(stmt, gcc.GimpleCall) and stmt.fndecl:
                 if is_constructor(stmt.fndecl):
-                    log("saw constructor %s in bb=%d" % (str(stmt.fndecl), bb.index), 2)
+                    log("saw constructor %s in bb=%d" %
+                        (str(stmt.fndecl), bb.index), 2)
                     self.cleanup_aware = True
                     master_cleanup.push(curloc, stmt.lhs)
                 elif is_destructor(stmt.fndecl):
@@ -351,7 +353,8 @@ class CleanupChecker:
         if want_raii_info and self.only_do_cleanups_seen and self.cleanup_aware:
             gcc.inform(
                 self.fun.decl.location,
-                "function %s could be converted to RAII" % (self.fun.decl.name),
+                "function %s could be converted to RAII" % (
+                    self.fun.decl.name),
             )
         if self.is_constructor:
             return "constructor"

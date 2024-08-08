@@ -50,7 +50,8 @@ class LightweightTagUpdate(AbstractUpdate):
         # If this is a pre-existing tag being updated, there are pitfalls
         # that the user should be warned about.
         if not is_null_rev(self.old_rev) and not is_null_rev(self.new_rev):
-            warn_about_tag_update(self.short_ref_name, self.old_rev, self.new_rev)
+            warn_about_tag_update(self.short_ref_name,
+                                  self.old_rev, self.new_rev)
 
     def get_update_email_contents(self):
         """See AbstractUpdate.get_update_email_contents."""

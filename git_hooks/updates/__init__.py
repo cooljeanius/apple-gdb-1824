@@ -147,7 +147,8 @@ class AbstractUpdate:
             return
         # This phase needs all added commits to have certain attributes
         # to be computed.  Do it now.
-        self.__set_commits_attr(self.added_commits, "send_email_p", "hooks.no-emails")
+        self.__set_commits_attr(
+            self.added_commits, "send_email_p", "hooks.no-emails")
         self.__email_ref_update()
         self.__email_new_commits()
 
@@ -270,7 +271,8 @@ class AbstractUpdate:
                     check_revision_history(commit.rev)
 
         reject_merge_commits = (
-            self.search_config_option_list("hooks.reject-merge-commits") is not None
+            self.search_config_option_list(
+                "hooks.reject-merge-commits") is not None
         )
         if reject_merge_commits:
             for commit in added:
@@ -299,7 +301,8 @@ class AbstractUpdate:
                     if is_null_rev(self.old_rev)
                     else self.old_rev
                 )
-                check_commit(base_rev, self.new_rev, self.email_info.project_name)
+                check_commit(base_rev, self.new_rev,
+                             self.email_info.project_name)
         else:
             debug("(commit-per-commit style checking)")
             # Perform the pre-commit checks, as needed...
@@ -354,7 +357,8 @@ class AbstractUpdate:
             url_info = {"rev": commit.rev, "ref_name": self.ref_name}
             body = git_config("hooks.commit-url") % url_info + "\n\n" + body
 
-        diff = git.show(commit.rev, p=True, M=True, stat=True, pretty="format:|")[1:]
+        diff = git.show(commit.rev, p=True, M=True,
+                        stat=True, pretty="format:|")[1:]
 
         filer_cmd = git_config("hooks.file-commit-cmd")
         if filer_cmd is not None:
@@ -622,7 +626,8 @@ class AbstractUpdate:
         # The list of lost commits is computed by listing all commits
         # accessible from the old_rev, but not from any of the references.
 
-        exclude = ["^%s" % self.all_refs[rev] for rev in list(self.all_refs.keys())]
+        exclude = ["^%s" % self.all_refs[rev]
+                   for rev in list(self.all_refs.keys())]
         commit_list = commit_info_list(self.old_rev, *exclude)
 
         return commit_list
@@ -677,7 +682,8 @@ class AbstractUpdate:
         # We know that commit emails would only be sent for commits which
         # are new for the repository, so we count those.
 
-        self.__set_commits_attr(self.added_commits, "send_email_p", "hooks.no-emails")
+        self.__set_commits_attr(
+            self.added_commits, "send_email_p", "hooks.no-emails")
         nb_emails = len(
             [commit for commit in self.added_commits if commit.send_email_p]
         )

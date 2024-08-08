@@ -47,7 +47,8 @@ class AnnotatedTagUpdate(AbstractUpdate):
         # But, if this is a pre-existing tag being updated, there are
         # pitfalls that the user should be warned about.
         if not is_null_rev(self.old_rev) and not is_null_rev(self.new_rev):
-            warn_about_tag_update(self.short_ref_name, self.old_rev, self.new_rev)
+            warn_about_tag_update(self.short_ref_name,
+                                  self.old_rev, self.new_rev)
 
     @property
     def send_cover_email_to_filer(self):
