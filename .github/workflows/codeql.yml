@@ -129,7 +129,7 @@ jobs:
             python3-pylsp-black python3-pyflakes python3-pylint-plugin-utils \
             python3-pylint-common pyflakes3 python3-pytest-pylint \
             python3-flake8 python3-pytest-flake8 python3-pep8-naming \
-            python3-mccabe python3-flake8-docstrings \
+            python3-mccabe python3-autopep8 python3-flake8-docstrings \
             python3-flake8-blind-except python3-flake8-builtins \
             python3-pylsp-flake8 python3-flake8-class-newline \
             python3-flake8-quotes python3-flake8-import-order \
@@ -253,13 +253,18 @@ jobs:
           fi; \
         elif test ${{ matrix.language }} == 'python' && test -x "$(which python)"; then \
           sync && which -a pylint && which -a flake8 && which -a black; \
-          which -a ruff || which -a pyupgrade; \
+          which -a ruff || which -a pyupgrade || which -a autopep8; \
           (find . -name '*.py' -print0 | xargs -0 pylint) || stat "$(which pylint)"; \
           sync && (flake8 || ruff check || (stat "$(which ruff)" && sleep 1)); \
           if test -x "$(which yamllint)"; then \
             yamllint .github/FUNDING.yml .github/dependabot.yml; \
           else \
             sync && echo "skipping yamllint..."; \
+          fi; \
+          if test -x "$(which autopep8)"; then \
+            sync && stat "$(which autopep8)" && sleep 1; \
+          else \
+            sync && echo "skipping autopep8..."; \
           fi; \
         else \
           echo "unhandled case for syntax check step (matrix.language is ${{ matrix.language }})"; \
@@ -658,6 +663,9 @@ jobs:
           purge || sudo purge; \
         elif test -x "$(which sync)"; then \
           which sync && sync && stat "$(which sync)"; \
+          if test ${{ matrix.language }} != 'c-cpp'; then \
+            sync && echo "...and synced." && sleep 1; \
+          fi; \
         else \
           sleep 1; \
         fi
