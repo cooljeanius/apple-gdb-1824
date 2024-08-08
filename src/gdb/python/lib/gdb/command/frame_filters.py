@@ -180,7 +180,7 @@ def _complete_frame_filter_list(text, word, all_flag):
         from text/word analysis.  This list can be empty when there
         are no suggestions for completion.
     """
-    if all_flag == True:
+    if all_flag is True:
         filter_locations = ["all", "global", "progspace"]
     else:
         filter_locations = ["global", "progspace"]
@@ -376,7 +376,7 @@ class SetFrameFilterPriority(gdb.Command):
 
     def invoke(self, arg, from_tty):
         command_tuple = self._parse_pri_arg(arg)
-        if command_tuple != None:
+        if command_tuple is not None:
             self._set_filter_priority(command_tuple)
 
 
@@ -455,7 +455,7 @@ class ShowFrameFilterPriority(gdb.Command):
 
     def invoke(self, arg, from_tty):
         command_tuple = self._parse_pri_arg(arg)
-        if command_tuple == None:
+        if command_tuple is None:
             return
         filter_name = command_tuple[1]
         list_name = command_tuple[0]
