@@ -25,30 +25,34 @@ ac_cpp_for_build="${CC_FOR_BUILD} -E ${CPPFLAGS_FOR_BUILD}"
 # "-W" and "-Wextra" are redundant.
 WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat \
--Wgcc-compat -Wasm -Wdangling-else -Wused-but-marked-unused \
--Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
--Wmissing-parameter-type -Wabi=11 -Wmissing-include-dirs \
+-Wdangling-else -Wundef -Wold-style-declaration -Wold-style-definition \
+-Wnested-externs -Wmissing-parameter-type -Wabi=11 -Wmissing-include-dirs \
 -Wmisleading-indentation -Wformat -Wformat-security -Wformat-y2k \
--Wformat-non-iso -Wformat-pedantic -Wformat-type-confusion \
--Wcstring-format-directive -Wmissing-format-attribute \
--Wswitch -Wswitch-default -Wpacked -Wnull-dereference -Whsa \
--Wduplicate-decl-specifier -Wmemset-elt-size -Wswitch-unreachable \
--Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough -Wstring-compare \
--Walloca-larger-than=4032 -Wvla-larger-than=4032 -Wformat-overflow=2 \
--Wformat-truncation=2 -Wstringop-overflow=2 -Wzero-length-bounds \
--Wno-cast-function-type -Wfatal-errors -ferror-limit=1 -Qunused-arguments"
+-Wmissing-format-attribute -Wswitch -Wswitch-default -Wpacked \
+-Wnull-dereference -Whsa -Wduplicate-decl-specifier -Wmemset-elt-size \
+-Wswitch-unreachable -Wscalar-storage-order -Wrestrict -Wimplicit-fallthrough \
+-Wstring-compare -Walloca-larger-than=4032 -Wvla-larger-than=4032 \
+-Wformat-overflow=2 -Wformat-truncation=2 -Wstringop-overflow=2 \
+-Wzero-length-bounds -Wno-cast-function-type -Wfatal-errors -ferror-limit=1"
 # (4032 is MAX_ALLOCA_SIZE in "libiberty.h")
+AS_CASE(["${CC}"],
+        [*clang*],[WARN_CFLAGS="${WARN_CFLAGS} -Wgcc-compat -Wasm \
+-Wused-but-marked-unused -Wformat-non-iso -Wformat-pedantic \
+-Wformat-type-confusion -Wcstring-format-directive -Qunused-arguments"],
+        [*gcc*],[AC_MSG_NOTICE([TODO: move some gcc-specific warning flags into this condition.])])
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
-  test -n "${WANT_CONVERSION_WARNS}"
+  test -n "${WANT_CONVERSION_WARNS}" && echo "WANT_CONVERSION_WARNS is '${WANT_CONVERSION_WARNS}'"
   # "-Wconversion" and friends are because of a comment in libbfd.c
-  WARN_CFLAGS="${WARN_CFLAGS} -Wnon-gcc -Wconversion -Wfloat-conversion \
+  WARN_CFLAGS="${WARN_CFLAGS} -Wconversion -Wfloat-conversion \
   -Wsign-conversion -Wsign-compare -Wshorten-64-to-32 -Wdouble-promotion"
+  AS_CASE(["${CC}"],
+          [*clang*],[WARN_CFLAGS="${WARN_CFLAGS} -Wnon-gcc"])
 elif test "x${WANT_CONVERSION_WARNS}" = "xmaybe"; then
-  test -n "${WANT_CONVERSION_WARNS}"
+  test -n "${WANT_CONVERSION_WARNS}" && echo "WANT_CONVERSION_WARNS is '${WANT_CONVERSION_WARNS}'"
   gl_COMPILER_OPTION_IF([-Warith-conversion],
                         [gl_WARN_ADD([-Wconversion])],[:])
 elif test "x${WANT_CONVERSION_WARNS}" = "xweird"; then
-  test -n "${WANT_CONVERSION_WARNS}"
+  test -n "${WANT_CONVERSION_WARNS}" && echo "WANT_CONVERSION_WARNS is '${WANT_CONVERSION_WARNS}'"
   WARN_CFLAGS="${WARN_CFLAGS} -Warith-conversion -Wtraditional-conversion \
   -Wenum-conversion -Wanon-enum-enum-conversion -Wbitfield-enum-conversion \
   -Wimplicit-int-conversion -Wnullable-to-nonnull-conversion \
