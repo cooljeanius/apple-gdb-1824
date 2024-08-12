@@ -279,6 +279,8 @@ jobs:
     # May need to wait until darling has xcrun for this to work for 'c-cpp':
     - name: Autobuild
       uses: github/codeql-action/autobuild@v3
+      env:
+        ERROR_ON_WARNING: "no"
 
     - run: find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
       if: "${{ failure() }}"
