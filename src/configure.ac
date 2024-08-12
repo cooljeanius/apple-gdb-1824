@@ -1048,7 +1048,7 @@ case "${target}" in
     fi
 # Also similar to Apple case above:
     if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o" -o -n "${PIC_FLAG}"; then
-      if test "x${enable_static}" = "xyes" || test "x${build_old_libs}" = "xyes"; then
+      if test "x${enable_static}" = "xyes" || test "x${build_old_libs}" = "xyes" || test "x${GITHUB_ACTIONS}" = "xtrue"; then
         noconfigdirs="${noconfigdirs} zlib"
       else
         echo "zlib should probably be fine so long as we avoid building its minizip subdir statically"

@@ -112,7 +112,8 @@ jobs:
             libwine-dev libtbb-dev crosshurd libdispatch0 libdispatch-dev \
             libblocksruntime0 libblocksruntime-dev systemtap-sdt-dev \
             libfl-dev libiberty-dev libmpfr-dev gettext libisl-dev \
-            expect dejagnu; \
+            expect dejagnu gdb ddd texlive-binaries sharutils xutils-dev \
+            llvm libacl1-dev xterm; \
         elif test ${{ matrix.language }} == 'java-kotlin'; then \
           sudo apt-get -y install kotlin gradle libgradle-core-java \
             libgradle-plugins-java libintellij-java-compatibility-java \
@@ -317,7 +318,8 @@ jobs:
             sudo apt-get -y install libpvec1 libpvec-dev libvecpf1 libvecpf-dev
             ;;
           i*86|x86_64)
-            sudo apt-get -y install libc6-dev-amd64-cross libgcc-s1-amd64-cross
+            sudo apt-get install libc6-dev-amd64-cross libgcc-s1-amd64-cross \
+              libc6-dev-i386
             ;;
           *)
             echo "no special dependencies for $(uname -m)..."
