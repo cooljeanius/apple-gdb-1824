@@ -105,12 +105,14 @@ jobs:
     - name: Dependencies
       run: |
         if test ${{ matrix.language }} == 'c-cpp'; then \
-          sudo apt-get -y install autopoint gobjc clang autogen guile-2.2 \
-            guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev \
+          sudo apt-get -y install autopoint gobjc clang autogen curl \
+            guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev \
             guile-3.0-libs libguile-ssh13 libiconv-hook1 libiconv-hook-dev \
             win-iconv-mingw-w64-dev mingw-w64 mingw-w64-i686-dev wine libwine \
-            libwine-dev crosshurd libdispatch0 libdispatch-dev \
-            libblocksruntime0 libblocksruntime-dev systemtap-sdt-dev; \
+            libwine-dev libtbb-dev crosshurd libdispatch0 libdispatch-dev \
+            libblocksruntime0 libblocksruntime-dev systemtap-sdt-dev \
+            libfl-dev libiberty-dev libmpfr-dev gettext libisl-dev \
+            expect dejagnu; \
         elif test ${{ matrix.language }} == 'java-kotlin'; then \
           sudo apt-get -y install kotlin gradle libgradle-core-java \
             libgradle-plugins-java libintellij-java-compatibility-java \
@@ -313,6 +315,9 @@ jobs:
         case "$(uname -m)" in
           ppc*|powerpc*|rs6000)
             sudo apt-get -y install libpvec1 libpvec-dev libvecpf1 libvecpf-dev
+            ;;
+          i*86|x86_64)
+            sudo apt-get -y install libc6-dev-amd64-cross libgcc-s1-amd64-cross
             ;;
           *)
             echo "no special dependencies for $(uname -m)..."
