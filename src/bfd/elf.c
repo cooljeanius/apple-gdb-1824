@@ -7879,7 +7879,7 @@ elfcore_write_prpsinfo(bfd  *abfd, char *buf, int *bufsiz,
                        const char *fname, const char *psargs)
 {
   int note_type;
-  char *note_name = "CORE";
+  const char *note_name = "CORE";
 
 # if defined(HAVE_PSINFO_T) && defined psinfo_t
   psinfo_t data;
@@ -7897,13 +7897,13 @@ elfcore_write_prpsinfo(bfd  *abfd, char *buf, int *bufsiz,
 }
 #endif	/* PSINFO_T or PRPSINFO_T */
 
-#if defined (HAVE_PRSTATUS_T) && defined prstatus_t
+#if defined(HAVE_PRSTATUS_T) && defined(prstatus_t)
 char *
 elfcore_write_prstatus(bfd *abfd, char *buf, int *bufsiz, long pid,
                        int cursig, const void *gregs)
 {
   prstatus_t prstat;
-  char *note_name = "CORE";
+  const char *note_name = "CORE";
 
   memset(&prstat, 0, sizeof(prstat));
   prstat.pr_pid = pid;
@@ -7914,13 +7914,13 @@ elfcore_write_prstatus(bfd *abfd, char *buf, int *bufsiz, long pid,
 }
 #endif /* HAVE_PRSTATUS_T && prstatus_t */
 
-#if defined (HAVE_LWPSTATUS_T) && defined lwpstatus_t
+#if defined(HAVE_LWPSTATUS_T) && defined(lwpstatus_t)
 char *
 elfcore_write_lwpstatus(bfd *abfd, char *buf, int *bufsiz, long pid,
                         int cursig, const void *gregs)
 {
   lwpstatus_t lwpstat;
-  char *note_name = "CORE";
+  const char *note_name = "CORE";
 
   memset(&lwpstat, 0, sizeof(lwpstat));
   lwpstat.pr_lwpid = (pid >> 16);
@@ -7941,13 +7941,13 @@ elfcore_write_lwpstatus(bfd *abfd, char *buf, int *bufsiz, long pid,
 }
 #endif /* HAVE_LWPSTATUS_T && lwpstatus_t */
 
-#if defined (HAVE_PSTATUS_T) && defined pstatus_t
+#if defined(HAVE_PSTATUS_T) && defined(pstatus_t)
 char *
 elfcore_write_pstatus(bfd *abfd, char *buf, int *bufsiz, long pid,
                       int cursig, const void *gregs)
 {
   pstatus_t pstat;
-  char *note_name = "CORE";
+  const char *note_name = "CORE";
 
   memset(&pstat, 0, sizeof(pstat));
   pstat.pr_pid = pid & 0xffff;

@@ -21452,8 +21452,11 @@ esac
 fi
 rm -rf conftest*
 
-# Add -Wstack-usage if the compiler is a sufficiently recent version of GCC
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+if test -n "${GCC}" && test "x${enable_build_warnings}" = "xyes"; then
+  if test "x${ERROR_ON_WARNING}" != "xyes" && test "x${enable_werror}" != "xyes" && test "x${WERROR_CFLAGS}" != "x-Werror"; then
+    if test "x${PEDANTIC_WARNINGS}" != "xyes" && test "x${enable_pedantic}" != "xyes"; then
+      # Add -Wstack-usage if the compiler is a sufficiently recent version of GCC
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 __GNUC__
 _ACEOF
@@ -21466,6 +21469,16 @@ else case e in #(
 esac
 fi
 rm -rf conftest*
+
+    else
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: other warning flags are too strict to include -Wstack-usage; skipping" >&5
+printf "%s\n" "$as_me: other warning flags are too strict to include -Wstack-usage; skipping" >&6;}
+    fi
+  else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: skipping -Wstack-usage because -Werror might be enabled" >&5
+printf "%s\n" "$as_me: skipping -Wstack-usage because -Werror might be enabled" >&6;}
+  fi
+fi
 
 # Verify CC_FOR_BUILD to be compatible with warning flags
 

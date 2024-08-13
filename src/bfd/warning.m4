@@ -72,9 +72,19 @@ GCC_WARN_CFLAGS_FOR_BUILD="-Wall -Wextra -Wstrict-prototypes \
 AC_EGREP_CPP([^[0-3]$],[__GNUC__],[],
              [WARN_CFLAGS="${WARN_CFLAGS} -Wshadow"])dnl
 
-# Add -Wstack-usage if the compiler is a sufficiently recent version of GCC
-AC_EGREP_CPP([^[0-4]$],[__GNUC__],[],
-             [WARN_CFLAGS="${WARN_CFLAGS} -Wstack-usage=262144"])dnl
+if test -n "${GCC}" && test "x${enable_build_warnings}" = "xyes"; then
+  if test "x${ERROR_ON_WARNING}" != "xyes" && test "x${enable_werror}" != "xyes" && test "x${WERROR_CFLAGS}" != "x-Werror"; then
+    if test "x${PEDANTIC_WARNINGS}" != "xyes" && test "x${enable_pedantic}" != "xyes"; then
+      # Add -Wstack-usage if the compiler is a sufficiently recent version of GCC
+      AC_EGREP_CPP([^[0-4]$],[__GNUC__],[],
+                   [WARN_CFLAGS="${WARN_CFLAGS} -Wstack-usage=262144"])
+    else
+      AC_MSG_NOTICE([other warning flags are too strict to include -Wstack-usage; skipping])
+    fi
+  else
+    AC_MSG_NOTICE([skipping -Wstack-usage because -Werror might be enabled])
+  fi
+fi
 
 # Verify CC_FOR_BUILD to be compatible with warning flags
 
