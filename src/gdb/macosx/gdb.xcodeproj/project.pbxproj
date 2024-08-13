@@ -48,7 +48,7 @@
 		619631791C55A155001EA510 /* mcalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0621A3A8CBE002F20B2 /* mcalloc.c */; };
 		6196317A1C55A155001EA510 /* mfree.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0631A3A8CBE002F20B2 /* mfree.c */; };
 		6196317C1C55A155001EA510 /* mmalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC0661A3A8CBE002F20B2 /* mmalloc.c */; };
-		61A8DEB11F23E243007493C8 /* elf-attrs.c in Sources */ = {isa = PBXBuildFile; fileRef = 611907221CA6311F00AD73D8 /* elf-attrs.c */; };
+		61A8DEB11F23E243007493C8 /* elf-attrs.c in Sources */ = {isa = PBXBuildFile; fileRef = 611907221CA6311F00AD73D8 /* elf-attrs.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D08A9E1CB7171B00998571 /* cpu-z80.c in Sources */ = {isa = PBXBuildFile; fileRef = 61D08A9D1CB7171B00998571 /* cpu-z80.c */; };
 		61D2205D192D610A00FA979E /* aix386-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE560E82C407008125DE /* aix386-core.c */; settings = {COMPILER_FLAGS = "-Wunused-parameter -Wconversion -Wcast-qual"; }; };
 		61D2205E192D610A00FA979E /* aix5ppc-core.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE570E82C407008125DE /* aix5ppc-core.c */; settings = {COMPILER_FLAGS = " -Wcast-qual"; }; };
@@ -183,14 +183,14 @@
 		61D220E3192D617D00FA979E /* efi-app-ia32.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEFC0E82C407008125DE /* efi-app-ia32.c */; };
 		61D220E4192D617D00FA979E /* efi-app-ia64.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEFD0E82C407008125DE /* efi-app-ia64.c */; settings = {COMPILER_FLAGS = "-Wshorten-64-to-32"; }; };
 		61D220E5192D617D00FA979E /* elf-bfd.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CEFE0E82C407008125DE /* elf-bfd.h */; };
-		61D220E6192D617D00FA979E /* elf-eh-frame.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEFF0E82C407008125DE /* elf-eh-frame.c */; };
+		61D220E6192D617D00FA979E /* elf-eh-frame.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEFF0E82C407008125DE /* elf-eh-frame.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D220E7192D617D00FA979E /* elf-hppa.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF000E82C407008125DE /* elf-hppa.h */; };
 		61D220E8192D617D00FA979E /* elf-m10200.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF010E82C407008125DE /* elf-m10200.c */; };
 		61D220E9192D617D00FA979E /* elf-m10300.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF020E82C407008125DE /* elf-m10300.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
-		61D220EA192D617D00FA979E /* elf-strtab.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF030E82C407008125DE /* elf-strtab.c */; };
+		61D220EA192D617D00FA979E /* elf-strtab.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF030E82C407008125DE /* elf-strtab.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D220EB192D617D00FA979E /* elf-vxworks.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF040E82C407008125DE /* elf-vxworks.c */; };
 		61D220EC192D617D00FA979E /* elf-vxworks.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF050E82C407008125DE /* elf-vxworks.h */; };
-		61D220ED192D617D00FA979E /* elf.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF060E82C407008125DE /* elf.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wshorten-64-to-32"; }; };
+		61D220ED192D617D00FA979E /* elf.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF060E82C407008125DE /* elf.c */; settings = {COMPILER_FLAGS = "-Wc++-compat -Wconversion -Wshorten-64-to-32 -Werror=unused"; }; };
 		61D220EE192D617D00FA979E /* elf32-am33lin.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF070E82C407008125DE /* elf32-am33lin.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D220EF192D617D00FA979E /* elf32-arc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF080E82C407008125DE /* elf32-arc.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D220F0192D617D00FA979E /* elf32-arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF090E82C407008125DE /* elf32-arm.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing -Wconversion"; }; };
@@ -254,11 +254,11 @@
 		61D2212A192D617D00FA979E /* elf64-s390.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF430E82C407008125DE /* elf64-s390.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing -Wshorten-64-to-32"; }; };
 		61D2212B192D617D00FA979E /* elf64-sh64.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF440E82C407008125DE /* elf64-sh64.c */; settings = {COMPILER_FLAGS = "-Wshorten-64-to-32"; }; };
 		61D2212C192D617D00FA979E /* elf64-sparc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF450E82C407008125DE /* elf64-sparc.c */; settings = {COMPILER_FLAGS = "-Wshorten-64-to-32"; }; };
-		61D2212D192D617D00FA979E /* elf64-x86-64.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF460E82C407008125DE /* elf64-x86-64.c */; settings = {COMPILER_FLAGS = "-Wshorten-64-to-32 -fno-tree-vectorize -fno-strict-aliasing"; }; };
+		61D2212D192D617D00FA979E /* elf64-x86-64.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF460E82C407008125DE /* elf64-x86-64.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wshorten-64-to-32 -Werror=unused -fno-tree-vectorize -fno-strict-aliasing"; }; };
 		61D2212E192D617D00FA979E /* elf64.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF470E82C407008125DE /* elf64.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wshorten-64-to-32"; }; };
 		61D22131192D617D00FA979E /* elfcode.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF4A0E82C407008125DE /* elfcode.h */; };
 		61D22132192D617D00FA979E /* elfcore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF4B0E82C407008125DE /* elfcore.h */; };
-		61D22133192D617D00FA979E /* elflink.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF4C0E82C407008125DE /* elflink.c */; settings = {COMPILER_FLAGS = "-Wconversion -Wshorten-64-to-32"; }; };
+		61D22133192D617D00FA979E /* elflink.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF4C0E82C407008125DE /* elflink.c */; settings = {COMPILER_FLAGS = "-Wc++-compat -Wconversion -Wshorten-64-to-32"; }; };
 		61D22134192D617D00FA979E /* elflink.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF4D0E82C407008125DE /* elflink.h */; };
 		61D22135192D617D00FA979E /* elfn32-mips.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF4E0E82C407008125DE /* elfn32-mips.c */; settings = {COMPILER_FLAGS = "-DTEST"; }; };
 		61D22137192D617D00FA979E /* elfxx-mips.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF500E82C408008125DE /* elfxx-mips.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing -Wconversion -Wshorten-64-to-32"; }; };
@@ -14922,6 +14922,7 @@
 				61D220C5192D613F00FA979E /* cpu-ns32k.c in Sources */,
 				61D220C6192D613F00FA979E /* cpu-openrisc.c in Sources */,
 				61D220C7192D613F00FA979E /* cpu-or32.c in Sources */,
+				A5560D1B2B6F3111003AFA76 /* cpu-or1k.c in Sources */,
 				61D220C8192D613F00FA979E /* cpu-pdp11.c in Sources */,
 				61D220C9192D613F00FA979E /* cpu-pj.c in Sources */,
 				61D220CA192D613F00FA979E /* cpu-powerpc.c in Sources */,
@@ -14966,7 +14967,6 @@
 				61D220F6192D617D00FA979E /* elf32-d10v.c in Sources */,
 				61D220F7192D617D00FA979E /* elf32-d30v.c in Sources */,
 				61D220F8192D617D00FA979E /* elf32-dlx.c in Sources */,
-				A5560D1B2B6F3111003AFA76 /* cpu-or1k.c in Sources */,
 				61D220F9192D617D00FA979E /* elf32-fr30.c in Sources */,
 				61D220FA192D617D00FA979E /* elf32-frv.c in Sources */,
 				61D220FB192D617D00FA979E /* elf32-gen.c in Sources */,

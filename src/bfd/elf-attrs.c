@@ -702,7 +702,7 @@ _bfd_elf_merge_unknown_attribute_list (bfd *ibfd, bfd *obfd)
       if (err_bfd)
 	result = result
 	  && get_elf_backend_data(err_bfd)->obj_attrs_handle_unknown(err_bfd,
-								     err_tag);
+								     (int)err_tag);
     }
 
   return result;

@@ -20960,9 +20960,17 @@ fi
     ;;
   esac;
 
-if test "x${WANT_CONVERSION_WARNS}" = "x"; then
+if test "x${WANT_CONVERSION_WARNS}" = "x" && test "x${ERROR_ON_WARNING}" != "xyes"; then
   if test -n "${GCC}" && test "x${bad_64bit_gcc}" != "xyes"; then
-    test -z "${WANT_CONVERSION_WARNS}" && export WANT_CONVERSION_WARNS=1
+    if test "x${PEDANTIC_WARNINGS}" != "xyes"; then
+      test -z "${WANT_CONVERSION_WARNS}" && export WANT_CONVERSION_WARNS=1
+    else
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: other warning flags are too strict to include conversion warnings; skipping" >&5
+printf "%s\n" "$as_me: other warning flags are too strict to include conversion warnings; skipping" >&6;}
+    fi
+  else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: conversion warnings require a good gcc; skipping" >&5
+printf "%s\n" "$as_me: conversion warnings require a good gcc; skipping" >&6;}
   fi
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Werror -Wunknown-warning-option" >&5
