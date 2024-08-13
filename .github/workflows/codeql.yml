@@ -122,7 +122,7 @@ jobs:
             golang-src golang-ar-dev golang-honnef-go-tools-dev; \
         elif test ${{ matrix.language }} == 'csharp'; then \
           sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs nant \
-            nunit mono-xbuild; \
+            nunit mono-xbuild yamllint; \
         elif test ${{ matrix.language }} == 'python'; then \
           sudo apt-get -y install jython pylint pymacs python-tk tix flake8 \
             python3-macholib yamllint black python3-pyls-black \
@@ -156,21 +156,16 @@ jobs:
           else \
             SUDO="time"; \
           fi; \
+          GEMCMD=""; \
+          for possiblegem in gem macgem jgem mgem chgem picogem trufflegem; do \
+            if test -x "$(which ${possiblegem})"; then
+              GEMCMD=${possiblegem}; break; \
+            fi; \
+          done; \
           if test -z "$(which nitpick)" || test ! -x "$(which nitpick)"; then \
-            if test -x "$(which gem)"; then \
-              "${SUDO}" gem install nitpick; \
-            elif test -x "$(which macgem)"; then \
-              "${SUDO}" macgem install nitpick; \
-            elif test -x "$(which jgem)"; then \
-              "${SUDO}" jgem install nitpick; \
-            elif test -x "$(which mgem)"; then \
-              "${SUDO}" mgem install nitpick; \
-            elif test -x "$(which chgem)"; then \
-              "${SUDO}" chgem install nitpick; \
-            elif test -x "$(which picogem)"; then \
-              "${SUDO}" picogem install nitpick; \
-            elif test -x "$(which trufflegem)"; then \
-              "${SUDO}" trufflegem install nitpick; \
+            if test -n "${GEMCMD}"; then \
+              sync && echo "using ${GEMCMD} to attempt to install nitpick"; \
+              "${SUDO}" ${GEMCMD} install nitpick; \
             else \
               sync && echo "warning: unsure how to install nitpick"; \
             fi; \
@@ -184,20 +179,9 @@ jobs:
           fi; \
           pushd src/gdb/ruby || exit; \
           if test -z "$(which bundle)" || test ! -x "$(which bundle)"; then \
-            if test -x "$(which gem)"; then \
-              "${SUDO}" gem install bundler; \
-            elif test -x "$(which macgem)"; then \
-              "${SUDO}" macgem install bundler; \
-            elif test -x "$(which jgem)"; then \
-              "${SUDO}" jgem install bundler; \
-            elif test -x "$(which mgem)"; then \
-              "${SUDO}" mgem install bundler; \
-            elif test -x "$(which chgem)"; then \
-              "${SUDO}" chgem install bundler; \
-            elif test -x "$(which picogem)"; then \
-              "${SUDO}" picogem install bundler; \
-            elif test -x "$(which trufflegem)"; then \
-              "${SUDO}" trufflegem install bundler; \
+            if test -n "${GEMCMD}"; then \
+              sync && echo "using ${GEMCMD} to attempt to install bundler"; \
+              "${SUDO}" ${GEMCMD} install bundler; \
             else \
               sync && echo "warning: unsure how to install bundler"; \
             fi; \
@@ -266,6 +250,10 @@ jobs:
           else \
             sync && echo "skipping autopep8..."; \
           fi; \
+        elif test ${{ matrix.language }} == 'csharp' && test -x "$(which yamllint)"; then \
+          sync && which -a yamllint && sleep 1; \
+          yamllint .github/codeql/extensions/apple-gdb-1824-csharp/codeql-pack.yml; \
+          sync && echo "TODO: find a proper linter for csharp..." && sleep 1; \
         else \
           echo "unhandled case for syntax check step (matrix.language is ${{ matrix.language }})"; \
           sync && sleep 1; \
@@ -671,7 +659,7 @@ jobs:
         fi
 
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.3.5
+      uses: actions/upload-artifact@v4.3.6
       if: matrix.language == 'c-cpp' && success()
       with:
         # Artifact name

@@ -37,7 +37,7 @@ jobs:
         brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar \
           osslsigncode gperf help2man findutils grep coreutils remake byacc \
           texlive gawk util-macros autoconf-archive automake scons smake \
-          term termbox termcolor cdk cgdb ncurses groff splint makedepend \
+          termbox termcolor cdk cgdb ncurses groff splint makedepend \
           "${COMPILER_FORMULA}"
         if test -z "$(which ant)" || test ! -x "$(which ant)"; then \
           brew install ant || brew install ant@1.9; \
@@ -383,7 +383,7 @@ jobs:
         sync && echo "...done cleaning up."
         time (sync && pwd && sync && ls && sync && du && sync && df && sync)
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.3.5
+      uses: actions/upload-artifact@v4.3.6
       if: "${{ always() }}"
       with:
         # Artifact name
