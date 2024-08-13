@@ -66,7 +66,7 @@ WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint -DDEBUG_GEN_RELOC -DDEBUG_HASH \
 -DBFD_AOUT_DEBUG -DBFD_TRACK_OPEN_CLOSE"
 WARN_LDFLAGS=""
 GCC_WARN_CFLAGS_FOR_BUILD="-Wall -Wextra -Wstrict-prototypes \
--Wmissing-prototypes"
+-Wmissing-prototypes -Wmissing-declarations -Wmissing-variable-declarations"
 
 # Add -Wshadow if the compiler is a sufficiently recent version of GCC.
 AC_EGREP_CPP([^[0-3]$],[__GNUC__],[],

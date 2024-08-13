@@ -7104,7 +7104,8 @@ _bfd_elfcore_make_pseudosection(bfd *abfd, const char *name, size_t size,
      linux 2.[01] + glibc
      unixware 4.2
 */
-#if defined(HAVE_PRSTATUS_T)
+/* Keep this preprocessor condition the same as where the function is used: */
+#if defined(HAVE_PRSTATUS_T) && defined(prstatus_t)
 static bfd_boolean
 elfcore_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
@@ -7530,18 +7531,18 @@ elfcore_grok_note(bfd *abfd, Elf_Internal_Note *note)
       if (bed->elf_backend_grok_prstatus)
 	if ((*bed->elf_backend_grok_prstatus)(abfd, note))
 	  return TRUE;
-#if defined(HAVE_PRSTATUS_T) && defined prstatus_t
+#if defined(HAVE_PRSTATUS_T) && defined(prstatus_t)
       return elfcore_grok_prstatus(abfd, note);
 #else
       return TRUE;
 #endif /* HAVE_PRSTATUS_T && prstatus_t */
 
-#if defined(HAVE_PSTATUS_T) && defined pstatus_t
+#if defined(HAVE_PSTATUS_T) && defined(pstatus_t)
     case NT_PSTATUS:
-      return elfcore_grok_pstatus (abfd, note);
+      return elfcore_grok_pstatus(abfd, note);
 #endif /* HAVE_PSTATUS_T && pstatus_t */
 
-#if defined(HAVE_LWPSTATUS_T) && defined lwpstatus_t
+#if defined(HAVE_LWPSTATUS_T) && defined(lwpstatus_t)
     case NT_LWPSTATUS:
       return elfcore_grok_lwpstatus(abfd, note);
 #endif /* HAVE_LWPSTATUS_T */
@@ -7549,7 +7550,7 @@ elfcore_grok_note(bfd *abfd, Elf_Internal_Note *note)
     case NT_FPREGSET:		/* FIXME: rename to NT_PRFPREG */
       return elfcore_grok_prfpreg(abfd, note);
 
-#if defined(HAVE_WIN32_PSTATUS_T) && defined win32_pstatus_t
+#if defined(HAVE_WIN32_PSTATUS_T) && defined(win32_pstatus_t)
     case NT_WIN32PSTATUS:
       return elfcore_grok_win32pstatus(abfd, note);
 #endif /* HAVE_WIN32_PSTATUS_T && win32_pstatus_t */

@@ -190,7 +190,7 @@
 		61D220EA192D617D00FA979E /* elf-strtab.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF030E82C407008125DE /* elf-strtab.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D220EB192D617D00FA979E /* elf-vxworks.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF040E82C407008125DE /* elf-vxworks.c */; };
 		61D220EC192D617D00FA979E /* elf-vxworks.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609CF050E82C407008125DE /* elf-vxworks.h */; };
-		61D220ED192D617D00FA979E /* elf.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF060E82C407008125DE /* elf.c */; settings = {COMPILER_FLAGS = "-Wc++-compat -Wconversion -Wshorten-64-to-32 -Werror=unused -Werror=discarded-qualifiers"; }; };
+		61D220ED192D617D00FA979E /* elf.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF060E82C407008125DE /* elf.c */; settings = {COMPILER_FLAGS = "-Wc++-compat -Wconversion -Wshorten-64-to-32 -Werror=unused -Werror=incompatible-pointer-types-discards-qualifiers"; }; };
 		61D220EE192D617D00FA979E /* elf32-am33lin.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF070E82C407008125DE /* elf32-am33lin.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D220EF192D617D00FA979E /* elf32-arc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF080E82C407008125DE /* elf32-arc.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D220F0192D617D00FA979E /* elf32-arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF090E82C407008125DE /* elf32-arm.c */; settings = {COMPILER_FLAGS = "-fno-tree-vectorize -fno-strict-aliasing -Wconversion"; }; };
@@ -281,7 +281,7 @@
 		61D2214A192D61C300FA979E /* i386bsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF7D0E82C408008125DE /* i386bsd.c */; };
 		61D2214B192D61C300FA979E /* i386dynix.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF7E0E82C408008125DE /* i386dynix.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D2214C192D61C300FA979E /* i386freebsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF7F0E82C408008125DE /* i386freebsd.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
-		61D2214D192D61C300FA979E /* i386linux.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF800E82C408008125DE /* i386linux.c */; };
+		61D2214D192D61C300FA979E /* i386linux.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF800E82C408008125DE /* i386linux.c */; settings = {COMPILER_FLAGS = "-Wmissing-variable-declarations -Werror=implicit -DLINUX_LINK_DEBUG"; }; };
 		61D2214E192D61C300FA979E /* i386lynx.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF810E82C408008125DE /* i386lynx.c */; };
 		61D2214F192D61C300FA979E /* i386mach3.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF820E82C408008125DE /* i386mach3.c */; settings = {COMPILER_FLAGS = "-Wconversion"; }; };
 		61D22151192D61C300FA979E /* i386netbsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CF840E82C408008125DE /* i386netbsd.c */; };
