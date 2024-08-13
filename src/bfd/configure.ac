@@ -342,15 +342,19 @@ m4_ifdef([ACX_BUGURL],[
   echo "Bug report URL: http://www.sourceware.org/bugzilla/"
 ])dnl
 
-if test "x${WANT_CONVERSION_WARNS}" = "x" && test "x${ERROR_ON_WARNING}" != "xyes"; then
-  if test -n "${GCC}" && test "x${bad_64bit_gcc}" != "xyes"; then
-    if test "x${PEDANTIC_WARNINGS}" != "xyes"; then
-      test -z "${WANT_CONVERSION_WARNS}" && export WANT_CONVERSION_WARNS=1
+if test "x${WANT_CONVERSION_WARNS}" = "x" && test "x${enable_build_warnings}" = "xyes"; then
+  if test "x${ERROR_ON_WARNING}" != "xyes" && test "x${enable_werror}" != "xyes" && test "x${WERROR_CFLAGS}" != "x-Werror"; then
+    if test -n "${GCC}" && test "x${bad_64bit_gcc}" != "xyes"; then
+      if test "x${PEDANTIC_WARNINGS}" != "xyes" && test "x${enable_pedantic}" != "xyes"; then
+        test -z "${WANT_CONVERSION_WARNS}" && export WANT_CONVERSION_WARNS=1
+      else
+        AC_MSG_NOTICE([other warning flags are too strict to include conversion warnings; skipping])
+      fi
     else
-      AC_MSG_NOTICE([other warning flags are too strict to include conversion warnings; skipping])
+      AC_MSG_NOTICE([conversion warnings require a good gcc; skipping])
     fi
   else
-    AC_MSG_NOTICE([conversion warnings require a good gcc; skipping])
+    AC_MSG_NOTICE([skipping conversion warnings because -Werror might be enabled])
   fi
 fi
 AM_BINUTILS_WARNINGS

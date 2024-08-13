@@ -7104,80 +7104,78 @@ _bfd_elfcore_make_pseudosection(bfd *abfd, const char *name, size_t size,
      linux 2.[01] + glibc
      unixware 4.2
 */
-
-#if defined (HAVE_PRSTATUS_T)
-
+#if defined(HAVE_PRSTATUS_T)
 static bfd_boolean
-elfcore_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
+elfcore_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   size_t size;
   int offset;
 
-  if (note->descsz == sizeof (prstatus_t))
+  if (note->descsz == sizeof(prstatus_t))
     {
       prstatus_t prstat;
 
-      size = sizeof (prstat.pr_reg);
-      offset   = offsetof (prstatus_t, pr_reg);
-      memcpy (&prstat, note->descdata, sizeof (prstat));
+      size = sizeof(prstat.pr_reg);
+      offset = offsetof(prstatus_t, pr_reg);
+      memcpy(&prstat, note->descdata, sizeof(prstat));
 
       /* Do not overwrite the core signal if it
-	   * has already been set by another thread. */
-		if (elf_tdata (abfd)->core_signal == 0) {
-			elf_tdata (abfd)->core_signal = prstat.pr_cursig;
-		}
-      elf_tdata (abfd)->core_pid = prstat.pr_pid;
+       * has already been set by another thread. */
+      if (elf_tdata(abfd)->core_signal == 0) {
+        elf_tdata(abfd)->core_signal = prstat.pr_cursig;
+      }
+      elf_tdata(abfd)->core_pid = prstat.pr_pid;
 
       /* pr_who exists on:
-	   * - solaris 2.5+
-	   * - unixware 4.2
-	   * pr_who does NOT exist on:
-	   * - linux 2.[01]
-	   */
-# if defined (HAVE_PRSTATUS_T_PR_WHO) && defined prstat && defined prstatus_t
-      elf_tdata (abfd)->core_lwpid = prstat.pr_who;
+       * - solaris 2.5+
+       * - unixware 4.2
+       * pr_who does NOT exist on:
+       * - linux 2.[01]
+       */
+# if defined(HAVE_PRSTATUS_T_PR_WHO) && defined prstat && defined prstatus_t
+      elf_tdata(abfd)->core_lwpid = prstat.pr_who;
 # endif /* HAVE_PRSTATUS_T_PR_WHO && prstat && prstatus_t */
     }
-# if defined (HAVE_PRSTATUS32_T) && defined prstatus32_t
-  else if (note->descsz == sizeof (prstatus32_t))
+# if defined(HAVE_PRSTATUS32_T) && defined prstatus32_t
+  else if (note->descsz == sizeof(prstatus32_t))
     {
       /* 64-bit host, 32-bit corefile */
       prstatus32_t prstat;
 
-      size = sizeof (prstat.pr_reg);
-      offset   = offsetof (prstatus32_t, pr_reg);
-      memcpy (&prstat, note->descdata, sizeof (prstat));
+      size = sizeof(prstat.pr_reg);
+      offset = offsetof(prstatus32_t, pr_reg);
+      memcpy(&prstat, note->descdata, sizeof(prstat));
 
       /* Do not overwrite the core signal if it
-	   * has already been set by another thread.  */
-		if (elf_tdata (abfd)->core_signal == 0) {
-			elf_tdata (abfd)->core_signal = prstat.pr_cursig;
-		}
-      elf_tdata (abfd)->core_pid = prstat.pr_pid;
+       * has already been set by another thread.  */
+      if (elf_tdata(abfd)->core_signal == 0) {
+        elf_tdata(abfd)->core_signal = prstat.pr_cursig;
+      }
+      elf_tdata(abfd)->core_pid = prstat.pr_pid;
 
       /* pr_who exists on:
-	   * - solaris 2.5+
-	   * - unixware 4.2
-	   * pr_who does NOT exist on:
-	   * - linux 2.[01]
-	   */
-#  if defined (HAVE_PRSTATUS32_T_PR_WHO) && defined prstat
-      elf_tdata (abfd)->core_lwpid = prstat.pr_who;
+       * - solaris 2.5+
+       * - unixware 4.2
+       * pr_who does NOT exist on:
+       * - linux 2.[01]
+       */
+#  if defined(HAVE_PRSTATUS32_T_PR_WHO) && defined prstat
+      elf_tdata(abfd)->core_lwpid = prstat.pr_who;
 #  endif /* HAVE_PRSTATUS32_T_PR_WHO && prstat */
     }
 # endif /* HAVE_PRSTATUS32_T && prstatus32_t */
   else
     {
       /* Fail - we do NOT know how to handle any other
-	   * note size (ie. data object type).  */
+       * note size (ie. data object type).  */
       return TRUE;
     }
 
-  /* Make a ".reg/999" section and a ".reg" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  size, note->descpos + offset);
+  /* Make a ".reg/999" section and a ".reg" section: */
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+  					 (ufile_ptr)(note->descpos + offset));
 }
-#endif /* defined (HAVE_PRSTATUS_T) */
+#endif /* defined(HAVE_PRSTATUS_T) */
 
 /* Create a pseudosection containing the exact contents of NOTE.  */
 static bfd_boolean
