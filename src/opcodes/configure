@@ -26208,7 +26208,51 @@ esac
 fi
 rm -f conftest.err conftest.i conftest.$ac_ext
 
+    elif test "x${cgen_maint}" != "x"; then
+      test -n "${cgen_maint}" && echo "cgen_maint is '${cgen_maint}'; fix stuff"
     fi
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wformat-security" >&5
+printf %s "checking whether C compiler handles -Wformat-security... " >&6; }
+if test ${gl_cv_warn_c__Wformat_security+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e)
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wformat-security"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  gl_cv_warn_c__Wformat_security=yes
+else case e in #(
+  e) gl_cv_warn_c__Wformat_security=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wformat_security" >&5
+printf "%s\n" "$gl_cv_warn_c__Wformat_security" >&6; }
+if test "x$gl_cv_warn_c__Wformat_security" = xyes
+then :
+  as_fn_append WARN_CFLAGS " -Wformat-security"
+fi
+
+
 
 fi
 

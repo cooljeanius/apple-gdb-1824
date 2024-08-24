@@ -779,7 +779,10 @@ else
           gl_WARN_ADD([-fpermissive])
         fi
       ])
+    elif test "x${cgen_maint}" != "x"; then
+      test -n "${cgen_maint}" && echo "cgen_maint is '${cgen_maint}'; fix stuff"
     fi
+    gl_WARN_ADD([-Wformat-security])
   ])
 fi
 dnl# (I uncommented it to add it back in anyways, but conditionally)

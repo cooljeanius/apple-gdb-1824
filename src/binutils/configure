@@ -27165,7 +27165,11 @@ printf "%s\n" "#define HAVE_LONG_LONG_INT 1" >>confdefs.h
 
 
 
-       if test "x${ac_cv_type_long_long}" = "xyes"; then
+         ## just in case:
+if test "x${ac_cv_type_long_long}" = "x"; then
+  test -z "${ac_cv_type_long_long}" && ac_cv_type_long_long="${ac_cv_type_long_long_int}"
+fi
+if test "x${ac_cv_type_long_long}" = "xyes"; then
   # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
 # declarations like 'int a3[[(sizeof (unsigned char)) >= 0]];'.
@@ -27234,6 +27238,9 @@ printf "%s\n" "$ac_cv_alignof_long_long" >&6; }
 printf "%s\n" "#define ALIGNOF_LONG_LONG $ac_cv_alignof_long_long" >>confdefs.h
 
   ## ok
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: skipping checks for size and alignment of long long" >&5
+printf "%s\n" "$as_me: WARNING: skipping checks for size and alignment of long long" >&2;}
 fi
 if test "x${ac_cv_type_unsigned_long_long}" = "x"; then
   test -z "${ac_cv_type_unsigned_long_long}" && ac_cv_type_unsigned_long_long="${ac_cv_type_unsigned_long_long_int}"
@@ -27307,6 +27314,9 @@ printf "%s\n" "$ac_cv_alignof_unsigned_long_long" >&6; }
 printf "%s\n" "#define ALIGNOF_UNSIGNED_LONG_LONG $ac_cv_alignof_unsigned_long_long" >>confdefs.h
 
   ## ok
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: skipping checks for size and alignment of unsigned long long" >&5
+printf "%s\n" "$as_me: WARNING: skipping checks for size and alignment of unsigned long long" >&2;}
 fi
 ac_fn_c_check_type "$LINENO" "mode_t" "ac_cv_type_mode_t" "$ac_includes_default"
 if test "x$ac_cv_type_mode_t" = xyes
@@ -27320,7 +27330,7 @@ esac
 fi
 
 if test "x${ac_cv_type_off_t}" = "x"; then
-  test -z "${ac_cv_type_off_t}"
+  test -z "${ac_cv_type_off_t}" || unset ac_cv_type_off_t
   ac_fn_c_check_type "$LINENO" "off_t" "ac_cv_type_off_t" "$ac_includes_default"
 if test "x$ac_cv_type_off_t" = xyes
 then :
@@ -27407,6 +27417,9 @@ printf "%s\n" "$ac_cv_alignof_off_t" >&6; }
 printf "%s\n" "#define ALIGNOF_OFF_T $ac_cv_alignof_off_t" >>confdefs.h
 
   ## ok
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: skipping checks for size and alignment of off_t" >&5
+printf "%s\n" "$as_me: WARNING: skipping checks for size and alignment of off_t" >&2;}
 fi
 if test "x${ac_cv_sizeof_off_t}" != "x${ac_cv_sizeof_unsigned_long_long}"; then
   ac_fn_c_check_type "$LINENO" "off64_t" "ac_cv_type_off64_t" "$ac_includes_default"
@@ -27416,8 +27429,7 @@ then :
 printf "%s\n" "#define HAVE_OFF64_T 1" >>confdefs.h
 
 
-    test -z "${ac_cv_sizeof_off64_t}"
-    test -z "${ac_cv_alignof_off64_t}"
+    test -z "${ac_cv_sizeof_off64_t}" && test -z "${ac_cv_alignof_off64_t}"
     # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
 # declarations like 'int a3[[(sizeof (unsigned char)) >= 0]];'.
@@ -27532,8 +27544,7 @@ elif test "x${ac_cv_sizeof_off_t}" = "x${ac_cv_sizeof_unsigned_long_long}";  the
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: it seems that your off_t is already 64-bit; in that case, there is no need to check for an off64_t type..." >&5
 printf "%s\n" "$as_me: it seems that your off_t is already 64-bit; in that case, there is no need to check for an off64_t type..." >&6;}
 else
-  test -z "${ac_cv_sizeof_off_t}"
-  test -z "${ac_cv_sizeof_unsigned_long_long}"
+  test -z "${ac_cv_sizeof_off_t}" && test -z "${ac_cv_sizeof_unsigned_long_long}"
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: unsure if off_t is 64-bit or not..." >&5
 printf "%s\n" "$as_me: WARNING: unsure if off_t is 64-bit or not..." >&2;}
 fi
@@ -27583,7 +27594,7 @@ printf "%s\n" "$ac_cv_type_signal" >&6; }
 printf "%s\n" "#define RETSIGTYPE ${ac_cv_type_signal}" >>confdefs.h
 
  if test "x${ac_cv_type_size_t}" = "x"; then
-  test -z "${ac_cv_type_size_t}"
+  test -z "${ac_cv_type_size_t}" || unset ac_cv_type_size_t
   ac_fn_c_check_type "$LINENO" "size_t" "ac_cv_type_size_t" "$ac_includes_default"
 if test "x$ac_cv_type_size_t" = xyes
 then :
@@ -27670,6 +27681,9 @@ printf "%s\n" "$ac_cv_alignof_size_t" >&6; }
 printf "%s\n" "#define ALIGNOF_SIZE_T $ac_cv_alignof_size_t" >>confdefs.h
 
   ## ok
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: skipping checks for size and alignment of size_t" >&5
+printf "%s\n" "$as_me: WARNING: skipping checks for size and alignment of size_t" >&2;}
 fi
 ac_fn_c_check_type "$LINENO" "ssize_t" "ac_cv_type_ssize_t" "$ac_includes_default"
 if test "x$ac_cv_type_ssize_t" = xyes
