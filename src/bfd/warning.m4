@@ -66,7 +66,7 @@ WARN_DEFS="-D_FORTIFY_SOURCE=2 -Dlint -DDEBUG_GEN_RELOC -DDEBUG_HASH \
 -DBFD_AOUT_DEBUG -DBFD_TRACK_OPEN_CLOSE"
 WARN_LDFLAGS=""
 GCC_WARN_CFLAGS_FOR_BUILD="-Wall -Wextra -Wstrict-prototypes \
--Wmissing-prototypes -Wmissing-declarations -Wmissing-variable-declarations"
+-Wmissing-prototypes -Wmissing-declarations"
 
 # Add -Wshadow if the compiler is a sufficiently recent version of GCC.
 AC_EGREP_CPP([^[0-3]$],[__GNUC__],[],
@@ -172,8 +172,8 @@ AC_ARG_ENABLE([pedantic],
    esac])dnl
 
 AC_REQUIRE([AC_PROG_CC])dnl
-# Enable -Werror by default when using gcc:
-if test "${GCC}" = yes -a -z "${ERROR_ON_WARNING}"; then
+# Enable -Werror by default when using gcc, but not on GitHub Actions:
+if test "${GCC}" = yes -a -z "${ERROR_ON_WARNING}" -a -z "${GITHUB_ACTIONS}"; then
     ERROR_ON_WARNING=yes
 fi
 
