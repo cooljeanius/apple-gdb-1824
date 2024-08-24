@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-12 00:09-0500\n"
+"POT-Creation-Date: 2024-08-24 04:26-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -444,22 +444,22 @@ msgstr ""
 msgid "BFD header file version %s\n"
 msgstr ""
 
-#: bucomm.c:474
+#: bucomm.c:484
 #, c-format
 msgid "%s: bad number: %s"
 msgstr ""
 
-#: bucomm.c:490 strings.c:471
+#: bucomm.c:500 strings.c:471
 #, c-format
 msgid "'%s': No such file"
 msgstr ""
 
-#: bucomm.c:492
+#: bucomm.c:502
 #, c-format
 msgid "Warning: could not locate '%s'.  reason: %s"
 msgstr ""
 
-#: bucomm.c:496
+#: bucomm.c:506
 #, c-format
 msgid "Warning: '%s' is not an ordinary file"
 msgstr ""

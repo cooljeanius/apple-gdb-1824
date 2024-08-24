@@ -127,6 +127,10 @@
 /* Define to 1 if prototype for getopt in <unistd.h> is in expected format */
 #undef HAVE_DECL_GETOPT
 
+/* Define to 1 if you have the declaration of 'mkstemp', and to 0 if you
+   don't. */
+#undef HAVE_DECL_MKSTEMP
+
 /* Define to 1 if you have the declaration of 'sbrk', and to 0 if you don't.
    */
 #undef HAVE_DECL_SBRK

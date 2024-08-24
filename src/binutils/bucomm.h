@@ -246,7 +246,7 @@ void *alloca ();
 /* bucomm.c */
 
 /* Return the filename in a static buffer: */
-const char *bfd_get_archive_filename(bfd *);
+const char *bfd_get_archive_filename(bfd *) ATTRIBUTE_W_U_R;
 
 void bfd_nonfatal(const char *);
 
@@ -270,7 +270,7 @@ int display_info(void);
 
 void print_arelt_descr(FILE *, bfd *, bfd_boolean);
 
-char *make_tempname(char *);
+char *make_tempname(char *) ATTRIBUTE_W_U_R;
 
 bfd_vma parse_vma(const char *, const char *);
 
@@ -290,9 +290,14 @@ extern void set_times(const char *, const struct stat *);
 extern int smart_rename(const char *, const char *, int);
 
 /* libiberty prototypes: */
-void *xmalloc(size_t);
+void *xmalloc(size_t) ATTRIBUTE_MALLOC ATTRIBUTE_W_U_R;
 
-void *xrealloc(void *, size_t);
+void *xrealloc(void *, size_t) ATTRIBUTE_W_U_R;
+
+/* just in case: */
+#if defined(HAVE_MKSTEMP) && (!defined(HAVE_DECL_MKSTEMP) || !HAVE_DECL_MKSTEMP)
+int mkstemp(char *) ATTRIBUTE_W_U_R;
+#endif /* HAVE_MKSTEMP && !HAVE_DECL_MKSTEMP */
 
 #endif /* _BUCOMM_H */
 

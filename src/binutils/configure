@@ -31135,6 +31135,15 @@ else case e in #(
 esac
 fi
 printf "%s\n" "#define HAVE_DECL_GETENV $ac_have_decl" >>confdefs.h
+ac_fn_check_decl "$LINENO" "mkstemp" "ac_cv_have_decl_mkstemp" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_mkstemp" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_MKSTEMP $ac_have_decl" >>confdefs.h
 ac_fn_check_decl "$LINENO" "sbrk" "ac_cv_have_decl_sbrk" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
 if test "x$ac_cv_have_decl_sbrk" = xyes
 then :

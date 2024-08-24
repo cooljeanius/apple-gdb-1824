@@ -1603,7 +1603,7 @@ do
     i386_aout_bsd_vec) tb="${tb} i386bsd.lo aout32.lo" ;;
     i386_aout_dynix_vec) tb="${tb} i386dynix.lo aout32.lo" ;;
     i386_aout_fbsd_vec) tb="${tb} i386freebsd.lo aout32.lo" ;;
-    i386_aout_linux_vec) tb="${tb} i386linux.lo aout32.lo" ;;
+    i386_aout_linux_vec) tb="${tb} i386linux.lo aout32.lo aout64.lo" ;;
     i386_aout_lynx_vec) tb="${tb} i386lynx.lo lynx-core.lo aout32.lo" ;;
     i386_aout_mach3_vec) tb="${tb} i386mach3.lo aout32.lo" ;;
     i386_aout_nbsd_vec) tb="${tb} i386netbsd.lo aout32.lo" ;;
@@ -1627,7 +1627,7 @@ do
     i386coff_vec) tb="${tb} coff-i386.lo cofflink.lo" ;;
     i386dynix_vec) tb="${tb} i386dynix.lo aout32.lo" ;;
     i386freebsd_vec) tb="${tb} i386freebsd.lo aout32.lo" ;;
-    i386linux_vec) tb="${tb} i386linux.lo aout32.lo" ;;
+    i386linux_vec) tb="${tb} i386linux.lo aout32.lo aout64.lo" ;;
     i386lynx_aout_vec) tb="${tb} i386lynx.lo lynx-core.lo aout32.lo" ;;
     i386lynx_coff_vec) tb="${tb} cf-i386lynx.lo cofflink.lo lynx-core.lo" ;;
     i386mach3_vec) tb="${tb} i386mach3.lo aout32.lo" ;;

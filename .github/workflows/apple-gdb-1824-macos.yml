@@ -32,7 +32,7 @@ jobs:
         else \
           COMPILER_FORMULA=""; \
         fi
-        brew install python@3.12 || brew link --overwrite python@3.12 || (if test -L /usr/local/bin/2to3; then (readlink /usr/local/bin/2to3 && unlink /usr/local/bin/2to3); else rm '/usr/local/bin/2to3'; fi) || which -a 2to3
+        brew install python@3.12 2>/dev/null || brew link --overwrite python@3.12 || (if test -L /usr/local/bin/2to3; then (readlink /usr/local/bin/2to3 && unlink /usr/local/bin/2to3); else rm '/usr/local/bin/2to3'; fi) || which -a 2to3
         sync && date && sync
         brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar \
           osslsigncode gperf help2man findutils grep coreutils remake byacc \
@@ -40,7 +40,7 @@ jobs:
           termbox termcolor cdk cgdb ncurses groff splint makedepend \
           "${COMPILER_FORMULA}"
         if test -z "$(which term)" || test ! -x "$(which term)"; then \
-          brew install term || brew install termrec || brew install libvterm; \
+          brew install term 2>/dev/null || brew install termrec || sync; \
         else \
           sync && which -a term && stat "$(which term)"; \
         fi
@@ -95,9 +95,9 @@ jobs:
           fi; \
         fi
         if test -d /opt/sw/etc/ && test -z "${PPC_CONFIG_PATH}"; then \
-          export PPC_CONFIG_PATH=/opt/sw/etc/;
+          export PPC_CONFIG_PATH=/opt/sw/etc/; \
         fi
-        sync && date && sync
+        sync && printf '\n' && sync && date && sync
     - run: cd .profile.d && test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq | grep -v "\*\*\*" | grep -v "PWD\=") && sync && sleep 1
     - run: ./configure --enable-silent-rules --disable-dependency-tracking CC="sccache ${{ matrix.compiler }}" OBJC="sccache ${{ matrix.compiler }}"
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
@@ -310,14 +310,14 @@ jobs:
           sync && echo "done with electric-fence..." && sync; \
         elif test ${{ matrix.compiler }} == gcc; then \
           sync && echo "getting some additional dependencies..."; \
-          brew install idutils || brew install ctags || brew install universal-ctags || brew install emacs || brew install global || brew install cscope; \
+          brew install idutils 2>/dev/null || brew install ctags || brew install universal-ctags || brew install emacs || brew install global || brew install cscope; \
           if test -z "$(which etags)" || test ! -x "$(which etags)"; then \
-            brew install emacs || brew install --cask emacs || stat "$(which emacs)" || echo "etags missing"; \
+            brew install emacs 2>/dev/null || brew install --cask emacs || stat "$(which emacs)" || echo "etags missing"; \
           else \
             sync && echo "etags available as $(which etags)"; \
           fi; \
           if test -z "$(which gtags)" || test ! -x "$(which gtags)"; then \
-            brew install global || which global || echo "gtags missing"; \
+            brew install global 2>/dev/null || which global || echo "gtags missing"; \
           else \
             sync && echo "gtags available as $(which gtags)"; \
           fi; \

@@ -928,7 +928,7 @@ AC_MSG_CHECKING([declarations])
 AC_MSG_RESULT([ ])
 unset ac_cv_have_decl_getenv
 AC_CHECK_DECLS([basename, dirname, environ, fprintf, getc_unlocked, getenv,
-		sbrk, snprintf, stpcpy, strnlen, strstr, vsnprintf])dnl
+                mkstemp, sbrk, snprintf, stpcpy, strnlen, strstr, vsnprintf])dnl
 
 # Link in zlib if we can. This allows us to read compressed debug
 # sections. This is used only by readelf.c (objdump uses bfd for
