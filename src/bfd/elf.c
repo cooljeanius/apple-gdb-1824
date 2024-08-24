@@ -7891,8 +7891,8 @@ elfcore_write_prpsinfo(bfd  *abfd, char *buf, int *bufsiz,
 # endif /* HAVE_PSINFO_T && psinfo_t */
 
   memset(&data, 0, sizeof(data));
-  strncpy(data.pr_fname, fname, sizeof(data.pr_fname));
-  strncpy(data.pr_psargs, psargs, sizeof(data.pr_psargs));
+  strncpy(data.pr_fname, fname, (sizeof(data.pr_fname) - 1UL));
+  strncpy(data.pr_psargs, psargs, (sizeof(data.pr_psargs) - 1UL));
   return elfcore_write_note(abfd, buf, bufsiz,
 			    note_name, note_type, &data, sizeof(data));
 }
