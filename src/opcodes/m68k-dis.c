@@ -52,10 +52,10 @@ static char *const reg_half_names[] =
 
 /* Sign-extend an (unsigned char).  */
 #if __STDC__ == 1
-#define COERCE_SIGNED_CHAR(ch) ((signed char) (ch))
+# define COERCE_SIGNED_CHAR(ch) ((signed char) (ch))
 #else
-#define COERCE_SIGNED_CHAR(ch) ((int) (((ch) ^ 0x80) & 0xFF) - 128)
-#endif
+# define COERCE_SIGNED_CHAR(ch) ((int) (((ch) ^ 0x80) & 0xFF) - 128)
+#endif /* __STDC__ == 1 */
 
 /* Get a 1 byte signed integer.  */
 #define NEXTBYTE(p)  (p += 2, FETCH_DATA (info, p), COERCE_SIGNED_CHAR(p[-1]))
@@ -588,9 +588,9 @@ print_insn_arg (const char *d,
     {
     case 'c':		/* Cache identifier.  */
       {
-        static char *const cacheFieldName[] = { "nc", "dc", "ic", "bc" };
+        static const char *const cacheFieldName[] = { "nc", "dc", "ic", "bc" };
         val = fetch_arg (buffer, place, 2, info);
-        (*info->fprintf_func) (info->stream, cacheFieldName[val]);
+        (*info->fprintf_func)(info->stream, "%s", cacheFieldName[val]);
         break;
       }
 
@@ -639,7 +639,7 @@ print_insn_arg (const char *d,
 	/* FIXME: There's a problem here, different m68k processors call the
 	   same address different names. This table can't get it right
 	   because it doesn't know which processor it's disassembling for.  */
-	static const struct { char *name; int value; } names[]
+	static const struct { const char *name; int value; } names[]
 	  = {{"%sfc", 0x000}, {"%dfc", 0x001}, {"%cacr", 0x002},
 	     {"%tc",  0x003}, {"%itt0",0x004}, {"%itt1", 0x005},
              {"%dtt0",0x006}, {"%dtt1",0x007}, {"%buscr",0x008},
@@ -683,9 +683,9 @@ print_insn_arg (const char *d,
     case 'M':
       if (place == 'h')
 	{
-	  static char *const scalefactor_name[] = { "<<", ">>" };
+	  static const char *const scalefactor_name[] = { "<<", ">>" };
 	  val = fetch_arg (buffer, place, 1, info);
-	  (*info->fprintf_func) (info->stream, scalefactor_name[val]);
+	  (*info->fprintf_func)(info->stream, "%s", scalefactor_name[val]);
 	}
       else
 	{

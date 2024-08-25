@@ -753,8 +753,10 @@ else
     gl_WARN_ADD([-Wall])
     gl_WARN_ADD([-fno-strict-aliasing])
     if test "x${cgen_maint}" != "xyes"; then
+      gl_WARN_ADD([-Wno-address])
       gl_WARN_ADD([-Wno-unused-but-set-variable])
       gl_WARN_ADD([-Wno-enum-compare])
+      gl_WARN_ADD([-Wno-tautological-compare])
     fi
     gl_WARN_ADD([-Wextra])
     if test "x${cgen_maint}" != "xyes"; then

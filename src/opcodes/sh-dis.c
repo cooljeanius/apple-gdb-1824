@@ -27,8 +27,8 @@
 #include "dis-asm.h"
 
 #ifdef ARCH_all
-#define INCLUDE_SHMEDIA
-#endif
+# define INCLUDE_SHMEDIA
+#endif /* ARCH_all */
 
 static void
 print_movxy (const sh_opcode_info *op,
@@ -351,22 +351,22 @@ print_insn_ppi (int field_b, struct disassemble_info *info)
 	      switch (op->arg[n])
 		{
 		case DSP_REG_N:
-		  print_dsp_reg (field_b & 0xf, fprintf_fn, stream);
+		  print_dsp_reg((field_b & 0xf), fprintf_fn, stream);
 		  break;
 		case DSP_REG_X:
-		  fprintf_fn (stream, sx_tab[(field_b >> 6) & 3]);
+		  fprintf_fn(stream, "%s", sx_tab[(field_b >> 6) & 3]);
 		  break;
 		case DSP_REG_Y:
-		  fprintf_fn (stream, sy_tab[(field_b >> 4) & 3]);
+		  fprintf_fn(stream, "%s", sy_tab[(field_b >> 4) & 3]);
 		  break;
 		case A_MACH:
-		  fprintf_fn (stream, "mach");
+		  fprintf_fn(stream, "mach");
 		  break;
 		case A_MACL:
-		  fprintf_fn (stream, "macl");
+		  fprintf_fn(stream, "macl");
 		  break;
 		default:
-		  abort ();
+		  abort();
 		}
 	    }
 	  return;
@@ -408,7 +408,7 @@ print_insn_sh (bfd_vma memaddr, struct disassemble_info *info)
       status = print_insn_sh64 (memaddr, info);
       if (status != -2)
 	return status;
-#endif
+#endif /* INCLUDE_SHMEDIA */
       /* When we get here for sh64, it's because we want to disassemble
 	 SHcompact, i.e. arch_sh4.  */
       target_arch = arch_sh4;
@@ -880,7 +880,7 @@ print_insn_sh (bfd_vma memaddr, struct disassemble_info *info)
 	    }
 	}
 
-#if 0
+#if defined(CONFUSE_ME) && defined(BE_DIFFERENT)
       /* This code prints instructions in delay slots on the same line
          as the instruction which needs the delay slots.  This can be
          confusing, since other disassembler don't work this way, and
@@ -901,7 +901,7 @@ print_insn_sh (bfd_vma memaddr, struct disassemble_info *info)
 	  fprintf_fn (stream, ")");
 	  return 4;
 	}
-#endif
+#endif /* CONFUSE_ME && BE_DIFFERENT */
 
       if (disp_pc && strcmp (op->name, "mova") != 0)
 	{
