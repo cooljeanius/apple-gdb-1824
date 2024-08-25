@@ -158,9 +158,10 @@ AC_CONFIG_HEADERS([config.h])dnl
 AH_VERBATIM([00_CONFIG_H_CHECK],[
 /* Check that config.h is #included before system headers
  * (this works only for glibc, but that should be enough).  */
-#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
+#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__) \
+    && !defined(FLEX_SCANNER)
 #  error "config.h must be #included before system headers"
-#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
+#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ && !FLEX_SCANNER */
 #define __CONFIG_H__ 1])dnl
 AH_TOP([
 #ifndef HAVE_CONFIG_H
@@ -768,7 +769,7 @@ AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 unset ac_cv_func_setlocale
 AC_CHECK_FUNCS([atexit bindtextdomain ctime dcgettext dirname dup2 expandargv \
-                fclose fcntl fctrl floor fopen fprintf fputs fread free \
+                fclose fcntl fctrl floor fopen fprintf fputs fread free fscanf \
                 getc_unlocked gettimeofday isascii ioctlsocket localeconv \
                 mblen memchr memcmp memcpy memmove memset modf pow re_comp \
                 regcomp rint rmdir sbrk setlocale setmode sqrt strcspn \
@@ -937,8 +938,9 @@ fi
 AC_MSG_CHECKING([declarations])
 AC_MSG_RESULT([ ])
 unset ac_cv_have_decl_getenv
-AC_CHECK_DECLS([basename, dirname, environ, fprintf, getc_unlocked, getenv,
-                mkstemp, sbrk, snprintf, stpcpy, strnlen, strstr, vsnprintf])dnl
+AC_CHECK_DECLS([basename, dirname, environ, fprintf, fread, fscanf, getc_unlocked,
+                getenv, mkstemp, sbrk, snprintf, stpcpy, strnlen, strstr,
+                vsnprintf])dnl
 
 # Link in zlib if we can. This allows us to read compressed debug
 # sections. This is used only by readelf.c (objdump uses bfd for

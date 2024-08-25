@@ -30090,6 +30090,12 @@ then :
   printf "%s\n" "#define HAVE_FREE 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "fscanf" "ac_cv_func_fscanf"
+if test "x$ac_cv_func_fscanf" = xyes
+then :
+  printf "%s\n" "#define HAVE_FSCANF 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "getc_unlocked" "ac_cv_func_getc_unlocked"
 if test "x$ac_cv_func_getc_unlocked" = xyes
 then :
@@ -31151,6 +31157,24 @@ else case e in #(
 esac
 fi
 printf "%s\n" "#define HAVE_DECL_FPRINTF $ac_have_decl" >>confdefs.h
+ac_fn_check_decl "$LINENO" "fread" "ac_cv_have_decl_fread" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_fread" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_FREAD $ac_have_decl" >>confdefs.h
+ac_fn_check_decl "$LINENO" "fscanf" "ac_cv_have_decl_fscanf" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_fscanf" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_FSCANF $ac_have_decl" >>confdefs.h
 ac_fn_check_decl "$LINENO" "getc_unlocked" "ac_cv_have_decl_getc_unlocked" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
 if test "x$ac_cv_have_decl_getc_unlocked" = xyes
 then :

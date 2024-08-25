@@ -299,21 +299,27 @@ jobs:
       run: |
         cd src
         if test ${{ matrix.compiler }} == clang; then \
-          time make check-bfd; \
-          sync && echo "done with bfd; moving onto binutils next..."; \
           if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
             sync && echo "check: nproc says we can use $(nproc) build jobs"; \
             if test "$(nproc)" -eq 4; then \
-              sync && echo "binutils: special-casing the 4-job build case…"; \
+              sync && echo "bfd/binutils: special-casing the -j4 build case…"; \
+              time (make -j"$(nproc)" check-bfd || make -j2 check-bfd || make check-bfd)
+              sync && echo "done w/bfd (at -j4); moving onto binutils next…"; \
               time (make -j"$(nproc)" check-binutils-local || make -j2 check-binutils-local || make check-binutils-local); \
             else \
+              time (make -j"$(nproc)" check-bfd || make check-bfd); \
+              sync && echo "done w/bfd (at -j$(nproc)); moving onto binutils next…"; \
               time (make -j"$(nproc)" check-binutils-local || make check-binutils-local); \
             fi; \
           elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
             sync && echo "check: gnproc says we can use $(gnproc) build jobs"; \
+            time (make -j"$(gnproc)" check-bfd || make check-bfd); \
+            sync && echo "done w/bfd (at -j$(gnproc)); moving onto binutils next…"; \
             time (make -j"$(gnproc)" check-binutils-local || make check-binutils-local); \
           else \
-            sync && echo "binutils static analysis: on the slow path..."; \
+            sync && echo "bfd & binutils static analysis: on the slow path…"; \
+            time make check-bfd; \
+            sync && echo "done with bfd; moving onto binutils next..."; \
             time make check-binutils-local; \
           fi; \
           sync && echo "done with binutils; moving onto mmalloc next..."; \

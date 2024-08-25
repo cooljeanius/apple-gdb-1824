@@ -299,6 +299,14 @@ void *xrealloc(void *, size_t) ATTRIBUTE_W_U_R;
 int mkstemp(char *) ATTRIBUTE_W_U_R;
 #endif /* HAVE_MKSTEMP && !HAVE_DECL_MKSTEMP */
 
+#if defined(HAVE_FREAD) && (!defined(HAVE_DECL_FREAD) || !HAVE_DECL_FREAD)
+size_t fread(void *restrict, size_t, size_t, FILE *restrict) ATTRIBUTE_W_U_R;
+#endif /* HAVE_FREAD && !HAVE_DECL_FREAD */
+
+#if defined(HAVE_FSCANF) && (!defined(HAVE_DECL_FSCANF) || !HAVE_DECL_FSCANF)
+int fscanf(FILE *restrict, const char *restrict, ...) ATTRIBUTE_W_U_R;
+#endif /* HAVE_FSCANF && !HAVE_DECL_FSCANF */
+
 #endif /* _BUCOMM_H */
 
 /* EOF */
