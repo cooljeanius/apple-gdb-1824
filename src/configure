@@ -25306,16 +25306,42 @@ esac
 if test ${enable_werror+y}
 then :
   enableval=$enable_werror;
+case "${enableval}" in
+  yes | ye | y)
+    test -n "${enableval}" && echo "enableval is '${enableval}' 4 --enable-werror"
+    ERROR_ON_WARNING="yes"
+  ;;
+  nope | nop | no | n)
+    test -n "${enableval}" && echo "enableval is '${enableval}' 4 --enable-werror"
+    ERROR_ON_WARNING="no"
+  ;;
+  *) as_fn_error $? "bad value ${enableval} for --enable-werror" "$LINENO" 5 ;;
+esac
+
 else case e in #(
-  e) enable_werror=yes ;;
+  e)
+if test "${GCC}" = yes && test -z "${GITHUB_ACTIONS}" && test "x${development}" = "xtrue"; then
+  enable_werror=yes
+else
+  enable_werror=no
+fi
+ ;;
 esac
 fi
 
 case ${enable_werror} in
-  yes) stage2_werror_flag="--enable-werror-always"
-       host_configargs=" ${host_configargs} --enable-werror" ;;
-  *) stage2_werror_flag=""
-     host_configargs=" ${host_configargs} --disable-werror" ;;
+  yes)
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: --enable-werror enabled" >&5
+printf "%s\n" "$as_me: --enable-werror enabled" >&6;}
+    stage2_werror_flag="--enable-werror-always"
+    host_configargs=" ${host_configargs} --enable-werror"
+  ;;
+  *)
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: --enable-werror disabled" >&5
+printf "%s\n" "$as_me: --enable-werror disabled" >&6;}
+    stage2_werror_flag=""
+    host_configargs=" ${host_configargs} --disable-werror"
+  ;;
 esac
 
 # Enable --enable-host-shared:

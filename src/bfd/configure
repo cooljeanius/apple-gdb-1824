@@ -21571,8 +21571,14 @@ fi
 if test ${enable_werror+y}
 then :
   enableval=$enable_werror; case "${enableval}" in
-     yes | y) ERROR_ON_WARNING="yes" ;;
-     no | n)  ERROR_ON_WARNING="no" ;;
+     yes | ye | y)
+       test -n "${enableval}" && echo "enableval is '${enableval}' for --enable-werror"
+       ERROR_ON_WARNING="yes"
+     ;;
+     nope | nop | no | n)
+       test -n "${enableval}" && echo "enableval is '${enableval}' for --enable-werror"
+       ERROR_ON_WARNING="no"
+     ;;
      *) as_fn_error $? "bad value ${enableval} for --enable-werror" "$LINENO" 5 ;;
    esac
 fi

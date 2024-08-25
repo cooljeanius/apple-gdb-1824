@@ -158,8 +158,14 @@ fi
 AC_ARG_ENABLE([werror],
   [AS_HELP_STRING([--enable-werror],[treat compile warnings as errors])],
   [case "${enableval}" in
-     yes | y) ERROR_ON_WARNING="yes" ;;
-     no | n)  ERROR_ON_WARNING="no" ;;
+     yes | ye | y) 
+       test -n "${enableval}" && echo "enableval is '${enableval}' for --enable-werror"
+       ERROR_ON_WARNING="yes"
+     ;;
+     nope | nop | no | n)
+       test -n "${enableval}" && echo "enableval is '${enableval}' for --enable-werror"
+       ERROR_ON_WARNING="no"
+     ;;
      *) AC_MSG_ERROR([bad value ${enableval} for --enable-werror]) ;;
    esac])dnl
 

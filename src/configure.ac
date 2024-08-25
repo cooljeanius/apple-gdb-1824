@@ -4204,13 +4204,36 @@ AC_SUBST([UNDO_LINK_TO_DIR])dnl
 # Change the default to "no" on release branches.
 AC_ARG_ENABLE([werror],
 [AS_HELP_STRING([--enable-werror],
-                [enable -Werror in bootstrap stage2 and later])],
-[],[enable_werror=yes])
+                [enable -Werror in bootstrap stage2 and later])],[
+case "${enableval}" in
+  yes | ye | y) 
+    test -n "${enableval}" && echo "enableval is '${enableval}' 4 --enable-werror"
+    ERROR_ON_WARNING="yes"
+  ;;
+  nope | nop | no | n)
+    test -n "${enableval}" && echo "enableval is '${enableval}' 4 --enable-werror"
+    ERROR_ON_WARNING="no"
+  ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-werror]) ;;
+esac
+],[
+if test "${GCC}" = yes && test -z "${GITHUB_ACTIONS}" && test "x${development}" = "xtrue"; then
+  enable_werror=yes
+else
+  enable_werror=no
+fi
+])
 case ${enable_werror} in
-  yes) stage2_werror_flag="--enable-werror-always" 
-       host_configargs=" ${host_configargs} --enable-werror" ;;
-  *) stage2_werror_flag=""
-     host_configargs=" ${host_configargs} --disable-werror" ;;
+  yes)
+    AC_MSG_NOTICE([--enable-werror enabled])
+    stage2_werror_flag="--enable-werror-always" 
+    host_configargs=" ${host_configargs} --enable-werror"
+  ;;
+  *)
+    AC_MSG_NOTICE([--enable-werror disabled])
+    stage2_werror_flag=""
+    host_configargs=" ${host_configargs} --disable-werror"
+  ;;
 esac
 AC_SUBST([stage2_werror_flag])dnl
 AC_SUBST([enable_werror])dnl

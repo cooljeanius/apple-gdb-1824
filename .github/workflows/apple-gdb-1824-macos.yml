@@ -204,7 +204,7 @@ jobs:
         else \
           sync && echo "the following gm4 binaries are available"; \
           which -a gm4 || gwhich -a gm4 || type gm4; \
-          sync && echo "...and the first of them has the following information"; \
+          sync && echo "…and the first of them has the following information"; \
           sync && gm4 --version; \
           sync && gm4 --help; \
         fi
@@ -255,7 +255,7 @@ jobs:
           fi; \
           if test -r "${subdir}"/Makefile && test -s "${subdir}"/Makefile && test -w "${subdir}"; then \
             pushd "${subdir}"; \
-            sync && echo "attempting to ensure depfiles are fine in ${subdir}..."; \
+            sync && echo "attempting to ensure depfiles are fine in ${subdir}…"; \
             make am--depfiles || make am--refresh || make distdir-am || stat Makefile; \
             popd; \
           else \
@@ -279,7 +279,7 @@ jobs:
         if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
           sync && echo "nproc says we can use $(nproc) build jobs"; \
           if test "$(nproc)" -eq 4; then \
-            sync && echo "special-casing the 4-job build case..."; \
+            sync && echo "Full build step: special-casing the 4-job build case…"; \
             (make -j"$(nproc)" || make -j2 || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
           else
             (make -j"$(nproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
@@ -288,7 +288,7 @@ jobs:
           sync && echo "gnproc says we can use $(gnproc) build jobs"; \
           (make -j"$(gnproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
         else \
-          sync && echo "on the slow path..."; \
+          sync && echo "Full build step: on the slow path..."; \
           (make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
         fi
         sync && echo "Reached end of full build phase..."
@@ -301,12 +301,26 @@ jobs:
         if test ${{ matrix.compiler }} == clang; then \
           time make check-bfd; \
           sync && echo "done with bfd; moving onto binutils next..."; \
-          time make check-binutils-local; \
+          if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
+            sync && echo "check: nproc says we can use $(nproc) build jobs"; \
+            if test "$(nproc)" -eq 4; then \
+              sync && echo "binutils: special-casing the 4-job build case…"; \
+              time (make -j"$(nproc)" check-binutils-local || make -j2 check-binutils-local || make check-binutils-local); \
+            else \
+              time (make -j"$(nproc)" check-binutils-local || make check-binutils-local); \
+            fi; \
+          elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
+            sync && echo "check: gnproc says we can use $(gnproc) build jobs"; \
+            time (make -j"$(gnproc)" check-binutils-local || make check-binutils-local); \
+          else \
+            sync && echo "binutils static analysis: on the slow path..."; \
+            time make check-binutils-local; \
+          fi; \
           sync && echo "done with binutils; moving onto mmalloc next..."; \
           time make check-mmalloc; \
-          sync && echo "done with mmalloc; moving onto electrict-fence next..."; \
+          sync && echo "done with mmalloc; moving onto electrict-fence next…"; \
           cd electric-fence; \
-          make check-local || make check stamp-framework ls; \
+          make check stamp-framework ls; \
           sync && echo "done with electric-fence..." && sync; \
         elif test ${{ matrix.compiler }} == gcc; then \
           sync && echo "getting some additional dependencies..."; \
@@ -344,7 +358,7 @@ jobs:
           make am_check-DEJAGNU || make check-DEJAGNU || make check-TESTS; \
           make check-recursive || make cscope || make ID || make TAGS || make CTAGS || make GTAGS || make recheck || stat Makefile; \
           make info || make dvi || make embedspu || make stamp-framework-binutils; \
-          sync && echo "done with make targets for binutils; using script manually next..."; \
+          sync && echo "done with make targets for binutils; using script manually next…"; \
           sh ./sanity.sh || shellcheck ./sanity.sh || stat ./sanity.sh; \
           shellcheck ./embedspu.sh || shellcheck ./ranlib.sh || ls ./*.sh; \
           popd; \
@@ -352,11 +366,11 @@ jobs:
           pushd mmalloc; \
           sync && make info dvi stamp-framework-headers ls; \
           popd; \
-          sync && echo "done with mmalloc; moving on to electric-fence next..."; \
+          sync && echo "done with mmalloc; moving on to electric-fence next…"; \
           pushd electric-fence; \
           sync && make check info stamp-framework ls; \
           popd; \
-          sync && echo "done with electric-fence; moving on to readline next..."; \
+          sync && echo "done with electric-fence; moving on to readline next…"; \
           pushd readline; \
           if test -e static; then mv -v static static.orig; fi; \
           make clean || make clean-local || make mostlyclean || make mostlyclean-local; \
@@ -382,7 +396,7 @@ jobs:
       run: |
         sync && echo "Cleaning up..."
         find . -name '*.dSYM' -delete || echo "dSYM-cleaning step ineffective"
-        find . -name 'autom4te.cache' -delete || echo "am4c-cleaning step ineffective"
+        find . -name 'autom4te.cache' -delete || echo "acclean step ineffective"
         find . -name '.deps' -delete || echo "deps-cleaning step ineffective"
         find . -name '.libs' -delete || echo "libs-cleaning step ineffective"
         sync && echo "...done cleaning up."
