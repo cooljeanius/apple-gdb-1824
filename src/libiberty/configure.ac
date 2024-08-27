@@ -1184,6 +1184,14 @@ double x = _system_configuration.physmem;
   AC_CHECK_DECLS([calloc, getenv, getopt, malloc, realloc, sbrk])dnl
   AC_CHECK_DECLS([memmem, mempcpy, stpncpy, strndup, strnlen])dnl
   AC_CHECK_DECLS([strverscmp, btowc, bzero, mkstemps])dnl
+  AC_CHECK_DECLS([psignal, strsignal],[],[],[
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif /* HAVE_SIGNAL_H */
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif /* HAVE_STRING_H */
+  ])dnl
   libiberty_NEED_DECLARATION([canonicalize_file_name])
 fi
 

@@ -6247,7 +6247,25 @@ printf "%s\n" "#define HAVE_STDBOOL_H 1" >>confdefs.h
 
 fi
 
-  ac_fn_c_check_header_compile "$LINENO" "fcntl.h" "ac_cv_header_fcntl_h" "$ac_includes_default"
+  ac_fn_c_check_header_compile "$LINENO" "dispatch/dispatch.h" "ac_cv_header_dispatch_dispatch_h" "$ac_includes_default"
+if test "x$ac_cv_header_dispatch_dispatch_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_DISPATCH_DISPATCH_H 1" >>confdefs.h
+
+fi
+ac_fn_c_check_header_compile "$LINENO" "dispatch/queue.h" "ac_cv_header_dispatch_queue_h" "$ac_includes_default"
+if test "x$ac_cv_header_dispatch_queue_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_DISPATCH_QUEUE_H 1" >>confdefs.h
+
+fi
+ac_fn_c_check_header_compile "$LINENO" "dispatch/workloop.h" "ac_cv_header_dispatch_workloop_h" "$ac_includes_default"
+if test "x$ac_cv_header_dispatch_workloop_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_DISPATCH_WORKLOOP_H 1" >>confdefs.h
+
+fi
+ac_fn_c_check_header_compile "$LINENO" "fcntl.h" "ac_cv_header_fcntl_h" "$ac_includes_default"
 if test "x$ac_cv_header_fcntl_h" = xyes
 then :
   printf "%s\n" "#define HAVE_FCNTL_H 1" >>confdefs.h
@@ -6698,6 +6716,38 @@ printf "%s\n" "#define size_t unsigned int" >>confdefs.h
 esac
 fi
 
+ac_fn_c_check_type "$LINENO" "dispatch_queue_main_t" "ac_cv_type_dispatch_queue_main_t" "$ac_includes_default"
+if test "x$ac_cv_type_dispatch_queue_main_t" = xyes
+then :
+
+printf "%s\n" "#define HAVE_DISPATCH_QUEUE_MAIN_T 1" >>confdefs.h
+
+
+fi
+ac_fn_c_check_type "$LINENO" "dispatch_queue_global_t" "ac_cv_type_dispatch_queue_global_t" "$ac_includes_default"
+if test "x$ac_cv_type_dispatch_queue_global_t" = xyes
+then :
+
+printf "%s\n" "#define HAVE_DISPATCH_QUEUE_GLOBAL_T 1" >>confdefs.h
+
+
+fi
+ac_fn_c_check_type "$LINENO" "dispatch_qos_class_t" "ac_cv_type_dispatch_qos_class_t" "$ac_includes_default"
+if test "x$ac_cv_type_dispatch_qos_class_t" = xyes
+then :
+
+printf "%s\n" "#define HAVE_DISPATCH_QOS_CLASS_T 1" >>confdefs.h
+
+
+fi
+ac_fn_c_check_type "$LINENO" "dispatch_workloop_t" "ac_cv_type_dispatch_workloop_t" "$ac_includes_default"
+if test "x$ac_cv_type_dispatch_workloop_t" = xyes
+then :
+
+printf "%s\n" "#define HAVE_DISPATCH_WORKLOOP_T 1" >>confdefs.h
+
+
+fi
 ac_fn_c_check_member "$LINENO" "struct stat" "st_blksize" "ac_cv_member_struct_stat_st_blksize" "$ac_includes_default"
 if test "x$ac_cv_member_struct_stat_st_blksize" = xyes
 then :

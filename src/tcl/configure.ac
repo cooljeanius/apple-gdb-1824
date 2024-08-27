@@ -126,9 +126,9 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
 AC_REQUIRE_HEADER_STDC
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_CHECK_HEADERS_ONCE([CoreFoundation/CoreFoundation.h])dnl
-AC_CHECK_HEADERS([fcntl.h float.h limits.h locale.h math.h \
-                  stddef.h stdio.h sys/file.h sys/param.h \
-                  sys/timeb.h utime.h values.h])dnl
+AC_CHECK_HEADERS([dispatch/dispatch.h dispatch/queue.h dispatch/workloop.h \
+                  fcntl.h float.h limits.h locale.h math.h stddef.h stdio.h \
+                  sys/file.h sys/param.h sys/timeb.h utime.h values.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
@@ -138,6 +138,8 @@ AC_TYPE_UID_T
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
+AC_CHECK_TYPES([dispatch_queue_main_t, dispatch_queue_global_t])dnl
+AC_CHECK_TYPES([dispatch_qos_class_t, dispatch_workloop_t])dnl
 AC_CHECK_MEMBERS([struct stat.st_blksize])dnl
 AC_STRUCT_ST_BLOCKS
 AC_CHECK_MEMBERS([struct stat.st_rdev])dnl

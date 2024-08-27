@@ -25137,6 +25137,40 @@ else case e in #(
 esac
 fi
 printf "%s\n" "#define HAVE_DECL_MKSTEMPS $ac_have_decl" >>confdefs.h
+  ac_fn_check_decl "$LINENO" "psignal" "ac_cv_have_decl_psignal" "
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif /* HAVE_SIGNAL_H */
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif /* HAVE_STRING_H */
+
+" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_psignal" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_PSIGNAL $ac_have_decl" >>confdefs.h
+ac_fn_check_decl "$LINENO" "strsignal" "ac_cv_have_decl_strsignal" "
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif /* HAVE_SIGNAL_H */
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif /* HAVE_STRING_H */
+
+" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_strsignal" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_STRSIGNAL $ac_have_decl" >>confdefs.h
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether canonicalize_file_name must be declared" >&5
 printf %s "checking whether canonicalize_file_name must be declared... " >&6; }
 if test ${libiberty_cv_decl_needed_canonicalize_file_name+y}

@@ -114,7 +114,7 @@ jobs:
             libfl-dev libiberty-dev libmpfr-dev gettext libisl-dev \
             expect dejagnu gdb ddd texlive-binaries sharutils xutils-dev \
             llvm libacl1-dev xterm binutils-dev bash gobjc-multilib \
-            libasprintf-dev libgettextpo-dev; \
+            libasprintf-dev libgettextpo-dev docbook-utils; \
         elif test ${{ matrix.language }} == 'java-kotlin'; then \
           sudo apt-get -y install kotlin gradle libgradle-core-java \
             libgradle-plugins-java libintellij-java-compatibility-java \

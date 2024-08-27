@@ -26,6 +26,27 @@
    */
 #undef HAVE_COREFOUNDATION_COREFOUNDATION_H
 
+/* Define to 1 if you have the <dispatch/dispatch.h> header file. */
+#undef HAVE_DISPATCH_DISPATCH_H
+
+/* Define to 1 if the system has the type 'dispatch_qos_class_t'. */
+#undef HAVE_DISPATCH_QOS_CLASS_T
+
+/* Define to 1 if the system has the type 'dispatch_queue_global_t'. */
+#undef HAVE_DISPATCH_QUEUE_GLOBAL_T
+
+/* Define to 1 if you have the <dispatch/queue.h> header file. */
+#undef HAVE_DISPATCH_QUEUE_H
+
+/* Define to 1 if the system has the type 'dispatch_queue_main_t'. */
+#undef HAVE_DISPATCH_QUEUE_MAIN_T
+
+/* Define to 1 if you have the <dispatch/workloop.h> header file. */
+#undef HAVE_DISPATCH_WORKLOOP_H
+
+/* Define to 1 if the system has the type 'dispatch_workloop_t'. */
+#undef HAVE_DISPATCH_WORKLOOP_T
+
 /* Define to 1 if you have the 'dup2' function. */
 #undef HAVE_DUP2
 
