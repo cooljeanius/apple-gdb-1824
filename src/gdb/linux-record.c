@@ -113,7 +113,9 @@ record_linux_sockaddr (struct regcache *regcache,
                             tdep->size_int);
         return -1;
     }
-  addrlen = (int) extract_unsigned_integer (a, tdep->size_int, byte_order);
+  addrlen =
+    (int)extract_unsigned_integer_with_byte_order(a, tdep->size_int,
+                                                  byte_order);
   if (addrlen <= 0 || addrlen > tdep->size_sockaddr)
     addrlen = tdep->size_sockaddr;
 
@@ -153,23 +155,26 @@ record_linux_msghdr (struct regcache *regcache,
     }
 
   /* msg_name msg_namelen */
-  addr = extract_unsigned_integer (a, tdep->size_pointer, byte_order);
+  addr =
+    extract_unsigned_integer_with_byte_order(a, tdep->size_pointer, byte_order);
   a += tdep->size_pointer;
-  if (record_arch_list_add_mem ((CORE_ADDR) addr,
-                                (int) extract_unsigned_integer (a,
+  if (record_arch_list_add_mem((CORE_ADDR)addr,
+                               (int)extract_unsigned_integer_with_byte_order(a,
 				                                tdep->size_int,
 				                                byte_order)))
     return -1;
   a += tdep->size_int;
 
   /* msg_iov msg_iovlen */
-  addr = extract_unsigned_integer (a, tdep->size_pointer, byte_order);
+  addr = extract_unsigned_integer_with_byte_order(a, tdep->size_pointer,
+                                                  byte_order);
   a += tdep->size_pointer;
   if (addr)
     {
       ULONGEST i;
-      ULONGEST len = extract_unsigned_integer (a, tdep->size_size_t,
-                                               byte_order);
+      ULONGEST len =
+        extract_unsigned_integer_with_byte_order(a, tdep->size_size_t,
+                                                 byte_order);
       gdb_byte *iov = (gdb_byte *)alloca(tdep->size_iovec);
 
       for (i = 0; i < len; i++)
@@ -186,10 +191,11 @@ record_linux_msghdr (struct regcache *regcache,
                                     tdep->size_iovec);
                 return -1;
             }
-          tmpaddr = (CORE_ADDR)extract_unsigned_integer(iov,
+          tmpaddr = (CORE_ADDR)extract_unsigned_integer_with_byte_order(iov,
                                                         tdep->size_pointer,
                                                         byte_order);
-          tmpint = (int)extract_unsigned_integer((iov + tdep->size_pointer),
+          tmpint =
+            (int)extract_unsigned_integer_with_byte_order((iov + tdep->size_pointer),
                                                  tdep->size_size_t,
                                                  byte_order);
           if (record_arch_list_add_mem(tmpaddr, tmpint))
@@ -200,9 +206,11 @@ record_linux_msghdr (struct regcache *regcache,
   a += tdep->size_size_t;
 
   /* msg_control msg_controllen */
-  addr = extract_unsigned_integer(a, tdep->size_pointer, byte_order);
+  addr = extract_unsigned_integer_with_byte_order(a, tdep->size_pointer,
+                                                  byte_order);
   a += tdep->size_pointer;
-  tmpint = (int)extract_unsigned_integer(a, tdep->size_size_t, byte_order);
+  tmpint = (int)extract_unsigned_integer_with_byte_order(a, tdep->size_size_t,
+  							 byte_order);
   if (record_arch_list_add_mem((CORE_ADDR)addr, tmpint))
     return -1;
 
@@ -801,19 +809,20 @@ record_linux_system_call (enum gdb_syscall syscall,
                                     tdep->size_int);
               return -1;
             }
-          regcache_raw_read_unsigned (regcache, tdep->arg4, &optvalp);
-          tmpint = (int) extract_signed_integer (optlenp, tdep->size_int,
-                                                 byte_order);
-          if (record_arch_list_add_mem ((CORE_ADDR) optvalp, tmpint))
+          regcache_raw_read_unsigned(regcache, tdep->arg4, &optvalp);
+          tmpint =
+            (int)extract_signed_integer_with_byte_order(optlenp, tdep->size_int,
+                                                        byte_order);
+          if (record_arch_list_add_mem((CORE_ADDR)optvalp, tmpint))
             return -1;
-          if (record_arch_list_add_mem ((CORE_ADDR) tmpulongest,
-                                        tdep->size_int))
+          if (record_arch_list_add_mem((CORE_ADDR)tmpulongest,
+                                       tdep->size_int))
             return -1;
         }
       break;
 
     case gdb_sys_socketcall:
-      regcache_raw_read_unsigned (regcache, tdep->arg1, &tmpulongest);
+      regcache_raw_read_unsigned(regcache, tdep->arg1, &tmpulongest);
       switch (tmpulongest)
         {
         case RECORD_SYS_SOCKET:
@@ -844,12 +853,13 @@ record_linux_system_call (enum gdb_syscall syscall,
                                           tdep->size_ulong * 2);
                     return -1;
                   }
-                tmpulongest = extract_unsigned_integer (a,
+                tmpulongest = extract_unsigned_integer_with_byte_order(a,
                                                         tdep->size_ulong,
                                                         byte_order);
-                len = extract_unsigned_integer (a + tdep->size_ulong,
+                len =
+                  extract_unsigned_integer_with_byte_order((a + tdep->size_ulong),
                                                 tdep->size_ulong, byte_order);
-                if (record_linux_sockaddr (regcache, tdep, tmpulongest, len))
+                if (record_linux_sockaddr(regcache, tdep, tmpulongest, len))
                   return -1;
               }
           }
@@ -874,10 +884,11 @@ record_linux_system_call (enum gdb_syscall syscall,
                                           tdep->size_ulong);
                     return -1;
                   }
-                tmpaddr
-                  = (CORE_ADDR) extract_unsigned_integer (a, tdep->size_ulong,
+                tmpaddr =
+                  (CORE_ADDR)extract_unsigned_integer_with_byte_order(a,
+                  					  tdep->size_ulong,
                                                           byte_order);
-                if (record_arch_list_add_mem (tmpaddr, tdep->size_int))
+                if (record_arch_list_add_mem(tmpaddr, tdep->size_int))
                   return -1;
               }
           }
@@ -905,11 +916,14 @@ record_linux_system_call (enum gdb_syscall syscall,
                                         tdep->size_ulong * 2);
                   return -1;
                 }
-              tmpulongest = extract_unsigned_integer (a, tdep->size_ulong,
-                                                      byte_order);
-              len = extract_unsigned_integer (a + tdep->size_ulong,
-                                              tdep->size_ulong, byte_order);
-              if (record_linux_sockaddr (regcache, tdep, tmpulongest, len))
+              tmpulongest =
+                extract_unsigned_integer_with_byte_order(a, tdep->size_ulong,
+                                                         byte_order);
+              len =
+                extract_unsigned_integer_with_byte_order((a + tdep->size_ulong),
+                                              		 tdep->size_ulong,
+                                                         byte_order);
+              if (record_linux_sockaddr(regcache, tdep, tmpulongest, len))
                 return -1;
             }
 	  ATTRIBUTE_FALLTHROUGH; /* XXX: really? */
@@ -932,15 +946,18 @@ record_linux_system_call (enum gdb_syscall syscall,
                                         tdep->size_ulong);
                     return -1;
                 }
-              tmpulongest = extract_unsigned_integer (a, tdep->size_ulong,
-                                                      byte_order);
+              tmpulongest =
+                extract_unsigned_integer_with_byte_order(a, tdep->size_ulong,
+                                                         byte_order);
               if (tmpulongest)
                 {
                   a += tdep->size_ulong;
-                  tmpint = (int) extract_unsigned_integer (a, tdep->size_ulong,
+                  tmpint =
+                    (int)extract_unsigned_integer_with_byte_order(a,
+                    					   tdep->size_ulong,
                                                            byte_order);
-                  if (record_arch_list_add_mem ((CORE_ADDR) tmpulongest,
-                                                tmpint))
+                  if (record_arch_list_add_mem((CORE_ADDR)tmpulongest,
+                                               tmpint))
                     return -1;
                 }
             }
@@ -969,13 +986,14 @@ record_linux_system_call (enum gdb_syscall syscall,
                                           tdep->size_ulong * 2);
                     return -1;
                   }
-                tmpulongest = extract_unsigned_integer (a + tdep->size_ulong,
+                tmpulongest =
+                  extract_unsigned_integer_with_byte_order((a + tdep->size_ulong),
                                                         tdep->size_ulong,
                                                         byte_order);
                 if (tmpulongest)
                   {
-                    if (target_read_memory ((CORE_ADDR) tmpulongest, av,
-                                            tdep->size_int))
+                    if (target_read_memory((CORE_ADDR)tmpulongest, av,
+                                           tdep->size_int))
                       {
                         if (record_debug)
                           fprintf_unfiltered (gdb_stdlog,
@@ -987,21 +1005,22 @@ record_linux_system_call (enum gdb_syscall syscall,
                                               tdep->size_int);
                         return -1;
                       }
-                    tmpaddr
-                      = (CORE_ADDR) extract_unsigned_integer (a,
+                    tmpaddr =
+                      (CORE_ADDR)extract_unsigned_integer_with_byte_order(a,
                                                               tdep->size_ulong,
                                                               byte_order);
-                    tmpint = (int) extract_unsigned_integer (av,
+                    tmpint =
+                      (int)extract_unsigned_integer_with_byte_order(av,
                                                              tdep->size_int,
                                                              byte_order);
-                    if (record_arch_list_add_mem (tmpaddr, tmpint))
+                    if (record_arch_list_add_mem(tmpaddr, tmpint))
                       return -1;
                     a += tdep->size_ulong;
-                    tmpaddr
-                      = (CORE_ADDR) extract_unsigned_integer (a,
+                    tmpaddr =
+                      (CORE_ADDR)extract_unsigned_integer_with_byte_order(a,
                                                               tdep->size_ulong,
                                                               byte_order);
-                    if (record_arch_list_add_mem (tmpaddr, tdep->size_int))
+                    if (record_arch_list_add_mem(tmpaddr, tdep->size_int))
                       return -1;
                   }
               }
@@ -1029,9 +1048,10 @@ record_linux_system_call (enum gdb_syscall syscall,
                                           tdep->size_ulong);
                     return -1;
                   }
-                tmpulongest = extract_unsigned_integer (a, tdep->size_ulong,
-                                                        byte_order);
-                if (record_linux_msghdr (regcache, tdep, tmpulongest))
+                tmpulongest =
+                  extract_unsigned_integer_with_byte_order(a, tdep->size_ulong,
+                                                           byte_order);
+                if (record_linux_msghdr(regcache, tdep, tmpulongest))
                   return -1;
               }
           }
@@ -1378,15 +1398,15 @@ record_linux_system_call (enum gdb_syscall syscall,
                                           tdep->size_iovec);
                     return -1;
                   }
-                tmpaddr
-                  = (CORE_ADDR) extract_unsigned_integer (iov,
+                tmpaddr =
+                  (CORE_ADDR)extract_unsigned_integer_with_byte_order(iov,
                                                           tdep->size_pointer,
                                                           byte_order);
-                tmpint
-                  = (int) extract_unsigned_integer (iov + tdep->size_pointer,
+                tmpint =
+                  (int)extract_unsigned_integer_with_byte_order((iov + tdep->size_pointer),
                                                     tdep->size_size_t,
                                                     byte_order);
-                if (record_arch_list_add_mem (tmpaddr, tmpint))
+                if (record_arch_list_add_mem(tmpaddr, tmpint))
                   return -1;
                 vec += tdep->size_iovec;
               }
@@ -1856,11 +1876,11 @@ record_linux_system_call (enum gdb_syscall syscall,
             }
           for (i = 0; i < nr; i++)
             {
-              tmpaddr
-                = (CORE_ADDR) extract_unsigned_integer (iocbp,
+              tmpaddr =
+                (CORE_ADDR)extract_unsigned_integer_with_byte_order(iocbp,
                                                         tdep->size_pointer,
                                                         byte_order);
-              if (record_arch_list_add_mem (tmpaddr, tdep->size_iocb))
+              if (record_arch_list_add_mem(tmpaddr, tdep->size_iocb))
                 return -1;
               iocbp += tdep->size_pointer;
             }
@@ -1868,9 +1888,9 @@ record_linux_system_call (enum gdb_syscall syscall,
       break;
 
     case gdb_sys_io_cancel:
-      regcache_raw_read_unsigned (regcache, tdep->arg3, &tmpulongest);
-      if (record_arch_list_add_mem ((CORE_ADDR) tmpulongest,
-                                    tdep->size_io_event))
+      regcache_raw_read_unsigned(regcache, tdep->arg3, &tmpulongest);
+      if (record_arch_list_add_mem((CORE_ADDR)tmpulongest,
+                                   tdep->size_io_event))
         return -1;
       break;
 
