@@ -401,8 +401,10 @@ call to @code{strsignal}.
 */
 
 #ifndef HAVE_STRSIGNAL
-
-const char *
+# if !defined(HAVE_DECL_STRSIGNAL) || !HAVE_DECL_STRSIGNAL
+const
+# endif /* !HAVE_DECL_STRSIGNAL */
+char *
 strsignal (int signo)
 {
   const char *msg;
@@ -434,7 +436,11 @@ strsignal (int signo)
       msg = (const char *) sys_siglist[signo];
     }
 
+# if !defined(HAVE_DECL_STRSIGNAL) || !HAVE_DECL_STRSIGNAL
   return (msg);
+#else
+  return (char *)(msg);
+#endif /* !HAVE_DECL_STRSIGNAL */
 }
 
 #endif /* ! HAVE_STRSIGNAL */
@@ -546,7 +552,7 @@ followed by a newline.
 
 #ifndef HAVE_PSIGNAL
 void
-psignal(unsigned signo, char *message)
+psignal(unsigned int signo, const char *message)
 {
   if (signal_names == NULL)
     {

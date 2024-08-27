@@ -1270,8 +1270,12 @@ dnl# is fixed.
 	    LD_LIBRARY_PATH_VAR="DYLD_LIBRARY_PATH"
 	    # for compatibility with autoconf vers 2.13 :
 	    HACK=""
-	    EXTRA_CFLAGS="-DMA${HACK}C_OSX_TCL -DHAVE_CFBUNDLE -DTCL_DEFAULT_ENCODING=\\\"utf-8\\\""
-	    LIBS="$LIBS -framework CoreFoundation"
+	    if test "x${tcl_corefoundation}" = "xyes"; then
+	        EXTRA_CFLAGS="-DMA${HACK}C_OSX_TCL -DHAVE_CFBUNDLE -DTCL_DEFAULT_ENCODING=\\\"utf-8\\\""
+	        LIBS="${LIBS} -framework CoreFoundation"
+	    else
+	        EXTRA_CFLAGS="-DMA${HACK}C_OSX_TCL -DTCL_DEFAULT_ENCODING=\\\"utf-8\\\""
+	    fi
 	    ;;
 	NEXTSTEP-*)
 	    SHLIB_CFLAGS=""
