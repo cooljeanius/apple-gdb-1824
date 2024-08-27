@@ -227,7 +227,7 @@ ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wnested-externs \
 -Wnull-dereference -Wdangling-else -Wduplicate-decl-specifier -Wpointer-arith \
 -Wmemset-elt-size -Wswitch-unreachable -Wexpansion-to-defined -Wpointer-sign \
 -Wshadow-local -Wc99-c11-compat -Wzero-length-bounds -Wfatal-errors \
--Walloc-size -Wcalloc-transposed-args -fanalyzer],[WARN_FLAGS])dnl
+-fanalyzer],[WARN_FLAGS])dnl
 
 # deal with potential name mismatch:
 if test "x${WARN_FLAGS}" = "x" && test "x${WARN_CFLAGS}" != "x"; then

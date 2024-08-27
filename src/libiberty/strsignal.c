@@ -551,6 +551,8 @@ followed by a newline.
 */
 
 #ifndef HAVE_PSIGNAL
+/* FIXME: on some systems, psignal's first arg is int, and on others it's
+ * unsigned int... how to differentiate? */
 void
 psignal(unsigned int signo, const char *message)
 {
