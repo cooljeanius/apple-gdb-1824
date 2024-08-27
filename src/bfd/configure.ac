@@ -756,8 +756,10 @@ AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu mingwex msvcrt ucrt ucrtbase])dnl
 AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu mingwex msvcrt ucrt ucrtbase])dnl
 
 if test "x${ac_cv_func_getpagesize}" = "x"; then
-  test -z "${ac_cv_func_getpagesize}"
+  test -z "${ac_cv_func_getpagesize}" || unset ac_cv_func_getpagesize
   AC_CHECK_FUNCS([getpagesize]) # (keep autoscan happy)
+else
+  test -n "${ac_cv_func_getpagesize}" && echo "did getpagesize check succeed? ${ac_cv_func_getpagesize}"
 fi
 
 # other misc. stuff:
@@ -826,6 +828,11 @@ AC_CHECK_DECLS([ffsl])dnl
 AC_CHECK_DECLS([free])dnl
 AC_CHECK_DECLS([getenv])dnl
 AC_CHECK_DECLS_ONCE([getopt])dnl
+AC_CHECK_DECLS([getpagesize],[],[],[
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+])dnl
 AC_CHECK_DECLS([malloc])dnl
 AC_CHECK_DECLS([open])dnl
 AC_CHECK_DECLS([pread])dnl

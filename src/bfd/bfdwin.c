@@ -26,7 +26,9 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA
 
 #undef HAVE_MPROTECT
 
-#if HAVE_MMAP || HAVE_MPROTECT || HAVE_MADVISE
+#if (defined(HAVE_MMAP) && HAVE_MMAP) || \
+    (defined(HAVE_MPROTECT) && HAVE_MPROTECT) || \
+    (defined(HAVE_MADVISE) && HAVE_MADVISE)
 # include <sys/types.h>
 # include <sys/mman.h>
 #endif /* HAVE_MMAP || HAVE_MPROTECT || HAVE_MADVISE */
@@ -38,19 +40,19 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA
 # define MAP_FILE 0
 #endif /* !MAP_FILE */
 
-#ifndef HAVE_GETPAGESIZE
+#if !defined(HAVE_GETPAGESIZE) || !defined(HAVE_DECL_GETPAGESIZE) || !HAVE_DECL_GETPAGESIZE
 # define getpagesize() 2048
-#endif /* !HAVE_GETPAGESIZE */
+#endif /* !HAVE_GETPAGESIZE || !HAVE_DECL_GETPAGESIZE */
 
 static bfd_boolean _bfd_get_file_window_mmap
   PARAMS((bfd *abfd, ufile_ptr offset, bfd_size_type size,
           bfd_window *windowp, bfd_window_internal *i, bfd_boolean writable));
 
-#if ! HAVE_MMAP
+#if !defined(HAVE_MMAP) || !HAVE_MMAP
 static bfd_boolean _bfd_get_file_window_malloc
   PARAMS((bfd *abfd, ufile_ptr offset, bfd_size_type size,
           bfd_window *windowp, bfd_window_internal *i, bfd_boolean writable));
-#endif /* ! HAVE_MMAP */
+#endif /* !HAVE_MMAP */
 
 /* The idea behind the next and refcount fields is that one mapped
    region can suffice for multiple read-only windows or multiple
@@ -141,7 +143,7 @@ bfd_free_window(bfd_window *windowp)
     break;
 
   case 1:
-#if HAVE_MMAP
+#if defined(HAVE_MMAP) && HAVE_MMAP
     munmap(i->data, (size_t)i->size);
     i->data = NULL;
     break; /* -Wimplicit-fallthrough */
@@ -167,7 +169,7 @@ bfd_free_window(bfd_window *windowp)
 
 static int ok_to_map = 1;
 
-#if HAVE_MMAP
+#if defined(HAVE_MMAP) && HAVE_MMAP
 static bfd_boolean
 _bfd_get_file_window_mmap(bfd *abfd, ufile_ptr offset, bfd_size_type size,
                           bfd_window *windowp, bfd_window_internal *i,
@@ -184,8 +186,13 @@ _bfd_get_file_window_mmap(bfd *abfd, ufile_ptr offset, bfd_size_type size,
             (void *)windowp->i, writable);
 
   /* Make sure we know the page size, so we can be friendly to mmap: */
-  if (pagesize == 0)
+  if (pagesize == 0) {
+#if defined(HAVE_GETPAGESIZE) || defined(getpagesize)
     pagesize = (size_t)getpagesize();
+#else
+    pagesize = 2048;
+#endif /* HAVE_GETPAGESIZE || getpagesize */
+  }
   if (pagesize == 0)
     abort();
 
@@ -303,7 +310,7 @@ _bfd_get_file_window_mmap(bfd *abfd, ufile_ptr offset, bfd_size_type size,
 }
 #endif /* HAVE_MMAP */
 
-#if ! HAVE_MMAP
+#if !defined(HAVE_MMAP) || !HAVE_MMAP
 static bfd_boolean
 _bfd_get_file_window_malloc(bfd *abfd, ufile_ptr offset,
                             bfd_size_type size, bfd_window *windowp,
@@ -314,12 +321,17 @@ _bfd_get_file_window_malloc(bfd *abfd, ufile_ptr offset,
   size_t size_to_alloc = size;
 
   /* Make sure we know the page size, so we can be friendly to mmap: */
-  if (pagesize == 0)
-    pagesize = getpagesize();
+  if (pagesize == 0) {
+#if defined(HAVE_GETPAGESIZE) || defined(getpagesize)
+    pagesize = (size_t)getpagesize();
+#else
+    pagesize = 2048;
+#endif /* HAVE_GETPAGESIZE || getpagesize */
+  }
   if (pagesize == 0)
     abort();
 
-# if HAVE_MPROTECT
+# if defined(HAVE_MPROTECT) && HAVE_MPROTECT
   if (!writable)
     {
       size_to_alloc += (pagesize - 1);
@@ -341,14 +353,14 @@ _bfd_get_file_window_malloc(bfd *abfd, ufile_ptr offset,
       bfd_set_error(bfd_error_no_memory);
       return FALSE;
     }
-  if (bfd_seek(abfd, offset, SEEK_SET) != 0)
+  if (bfd_seek(abfd, (file_ptr)offset, SEEK_SET) != 0)
     return FALSE;
   i->size = bfd_bread(i->data, size, abfd);
   if (i->size != size)
     return FALSE;
   i->mapped = 0;
 
-# if HAVE_MPROTECT
+# if defined(HAVE_MPROTECT) && HAVE_MPROTECT
   if (!writable)
     {
       if (debug_windows)
@@ -423,13 +435,13 @@ bfd_get_file_window(bfd *abfd, ufile_ptr offset, bfd_size_type size,
 
       return TRUE;
   } else {
-#if HAVE_MMAP
-    if (! _bfd_get_file_window_mmap(abfd, offset, size, windowp, i, writable)) {
-	return FALSE;
+#if defined(HAVE_MMAP) && HAVE_MMAP
+    if (!_bfd_get_file_window_mmap(abfd, offset, size, windowp, i, writable)) {
+      return FALSE;
     }
 #else
-    if (! _bfd_get_file_window_malloc(abfd, offset, size, windowp, i, writable)) {
-	return FALSE;
+    if (!_bfd_get_file_window_malloc(abfd, offset, size, windowp, i, writable)) {
+      return FALSE;
     }
 #endif /* HAVE_MMAP */
   }

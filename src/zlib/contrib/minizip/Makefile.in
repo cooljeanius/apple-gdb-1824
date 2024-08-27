@@ -93,6 +93,7 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 @COND_DEMOS_TRUE@bin_PROGRAMS = miniunzip$(EXEEXT) minizip$(EXEEXT)
+@WIN32_TRUE@am__append_1 = -no-undefined
 EXTRA_PROGRAMS = miniunzip$(EXEEXT) minizip$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -387,7 +388,8 @@ libminizip_la_SOURCES = \
 	zip.c \
 	${iowin32_src}
 
-libminizip_la_LDFLAGS = $(AM_LDFLAGS) -version-info 1:0:0 -lz
+libminizip_la_LDFLAGS = $(AM_LDFLAGS) -version-info 1:0:0 -lz \
+	$(am__append_1)
 minizip_includedir = $(includedir)/minizip
 minizip_include_HEADERS = \
 	crypt.h \

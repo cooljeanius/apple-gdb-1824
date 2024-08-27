@@ -39,6 +39,7 @@
 
 static caddr_t	startAddr = (caddr_t) 0;
 
+/* FIXME: improve this preprocessor condition: */
 #if (!defined(sgi) && !defined(_AIX) && (!defined(linux) || !defined(_BSD_SOURCE)) \
      && !defined(FIXINC_WRAP_STDIO_H_STDIO_STDARG_H) && !defined(_STDIO_H_) \
      && (!defined(_STDIO_H) || defined(__clang_analyzer__)))
@@ -54,6 +55,7 @@ stringErrorReport(void)
 #elif ( defined(_AIX) )
 	return strerror(errno);
 #else
+	/* FIXME: what if sys_nerr and sys_errlist still aren't declared yet? */
 	if ( errno > 0 && errno < sys_nerr )
 		return sys_errlist[errno];
 	else

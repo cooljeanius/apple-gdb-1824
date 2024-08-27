@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-25 01:58-0400\n"
+"POT-Creation-Date: 2024-08-26 23:41-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -170,12 +170,12 @@ msgstr ""
 msgid "Please report this bug.\n"
 msgstr ""
 
-#: bfdwin.c:256
+#: bfdwin.c:263
 #, c-format
 msgid "not mapping: data=%lx mapped=%d\n"
 msgstr ""
 
-#: bfdwin.c:259
+#: bfdwin.c:266
 #, c-format
 msgid "not mapping: env var not set\n"
 msgstr ""

@@ -16,6 +16,15 @@
 #if defined(HAVE_CFBUNDLE) && \
     (defined(HAVE_COREFOUNDATION_COREFOUNDATION_H) || \
      __has_include(<CoreFoundation/CoreFoundation.h>))
+# ifndef CF_INLINE
+#  define CF_INLINE /* (nothing) */
+# endif /* !CF_INLINE */
+# ifndef API_AVAILABLE
+#  define API_AVAILABLE(foo) /* (nothing) */
+# endif /* !API_AVAILABLE */
+# ifndef API_UNAVAILABLE
+#  define API_UNAVAILABLE(foo, bar, baz) /* (nothing) */
+# endif /* !API_UNAVAILABLE */
 # include <CoreFoundation/CoreFoundation.h>
 #endif /* HAVE_CFBUNDLE || HAVE_COREFOUNDATION_COREFOUNDATION_H */
 #include "tclInt.h"
@@ -27,12 +36,12 @@
 #if defined(__FreeBSD__) || defined(HAVE_FLOATINGPOINT_H)
 #   include <floatingpoint.h>
 #endif /* __FreeBSD__ || HAVE_FLOATINGPOINT_H */
-#if defined(__bsdi__)
+#if defined(__bsdi__) || defined(HAVE_SYS_PARAM_H) || __has_include(<sys/param.h>)
 #   include <sys/param.h>
-#   if _BSDI_VERSION > 199501
+#   if defined(_BSDI_VERSION) && (_BSDI_VERSION > 199501) || defined(HAVE_DLFCN_H)
 #	include <dlfcn.h>
-#   endif /* _BSDI_VERSION > 199501 */
-#endif /* __bsdi__ */
+#   endif /* (_BSDI_VERSION > 199501) || HAVE_DLFCN_H */
+#endif /* __bsdi__ || HAVE_SYS_PARAM_H */
 
 /*
  * The Init script (common to Windows and Unix platforms) is
