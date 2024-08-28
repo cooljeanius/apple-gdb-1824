@@ -652,16 +652,20 @@ ACX_HEADER_STRING
 unset ac_cv_header_malloc_h
 AC_CHECK_HEADERS([malloc.h])dnl
 
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z "${ac_cv_header_inttypes_h}" || unset ac_cv_header_inttypes_h
+  AC_CHECK_HEADERS([inttypes.h]) # (keep autoscan happy)
+fi
 if test "x${ac_cv_header_stdint_h}" = "x"; then
-  test -z "${ac_cv_header_stdint_h}"
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
   AC_CHECK_HEADERS([stdint.h]) # (keep autoscan happy)
 fi
 if test "x${ac_cv_header_strings_h}" = "x"; then
-  test -z "${ac_cv_header_strings_h}"
+  test -z "${ac_cv_header_strings_h}" || unset ac_cv_header_strings_h
   AC_CHECK_HEADERS([strings.h]) # (keep autoscan happy)
 fi
 if test "x${ac_cv_header_unistd_h}" = "x"; then
-  test -z "${ac_cv_header_unistd_h}"
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
   AC_CHECK_HEADERS([unistd.h]) # (keep autoscan happy)
 fi
 

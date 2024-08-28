@@ -10874,6 +10874,12 @@ then :
   printf "%s\n" "#define HAVE_MINUS_ONE_PTID 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "munmap" "ac_cv_func_munmap"
+if test "x$ac_cv_func_munmap" = xyes
+then :
+  printf "%s\n" "#define HAVE_MUNMAP 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "pread" "ac_cv_func_pread"
 if test "x$ac_cv_func_pread" = xyes
 then :

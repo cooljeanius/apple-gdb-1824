@@ -62,7 +62,9 @@
 #include "exceptions.h"
 #include "exec.h"
 #include "macosx/macosx-nat-inferior.h"
-#include "macosx/macosx-nat-utils.h" /* For macosx_filename_in_bundle.  */
+#ifdef TM_NEXTSTEP
+# include "macosx/macosx-nat-utils.h" /* For macosx_filename_in_bundle.  */
+#endif /* TM_NEXTSTEP */
 #include "mach-o.h"
 #include "osabi.h" /* For gdbarch_lookup_osabi.  */
 

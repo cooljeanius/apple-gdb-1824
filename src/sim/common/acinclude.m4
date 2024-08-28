@@ -52,6 +52,10 @@ AC_SUBST([CC_FOR_BUILD])dnl
 
 AC_SUBST([CFLAGS])dnl
 AC_SUBST([HDEFINES])dnl
+m4_ifdef([AC_PROG_AR],[
+  AC_REQUIRE([AC_PROG_AR])dnl
+])dnl
+  ## just in case:
 AR=${AR-ar}
 AC_SUBST([AR])dnl
 AC_REQUIRE([AC_PROG_RANLIB])dnl

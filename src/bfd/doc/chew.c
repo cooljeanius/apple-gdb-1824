@@ -384,7 +384,7 @@ static void push_number(void)
   isp++;
   icheck_range();
   pc++;
-  *isp = (long)(*pc);
+  *isp = (long)(intptr_t)(*pc);
   pc++;
 }
 
@@ -1209,7 +1209,8 @@ static void compile(char *string)
 		case '9':
 		  /* Got a number, embed the magic push number function: */
 		  add_to_definition(local_ptr, push_number);
-		  add_to_definition(local_ptr, (stinst_type)atol(word));
+		  add_to_definition(local_ptr,
+                                    (stinst_type)(intptr_t)atol(word));
 		  break;
 		default:
 		  add_to_definition(local_ptr, call);
@@ -1228,7 +1229,7 @@ static void compile(char *string)
 
 static void bang(void)
 {
-  *(long *)((isp[0])) = isp[-1];
+  *(long *)(intptr_t)((isp[0])) = isp[-1];
   isp -= 2;
   icheck_range();
   pc++;
@@ -1236,7 +1237,7 @@ static void bang(void)
 
 static void atsign(void)
 {
-  isp[0] = *(long *)(isp[0]);
+  isp[0] = *(long *)(intptr_t)(isp[0]);
   pc++;
 }
 

@@ -1941,7 +1941,7 @@ clean mostlyclean:: $(CONFIG_CLEAN)
 	if test -e insight$(EXEEXT); then $(MAKE) $(AM_V_MFLAG) clean-gdbtk; fi
 	rm -f $(AM_V_v) test-cp-name-parser$(EXEEXT)
 	rm -f $(AM_V_v) *.rsrc
-	-rm -f $(AM_V_v) gnulib/*.o gdbserver/*.o
+	-rm -f $(AM_V_v) gnulib/*.o gdbserver/*.o mi/*.o
 	-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
 	rm -f $(AM_V_v) stamp-clang stamp-splint
 

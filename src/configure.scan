@@ -26,7 +26,6 @@ AC_PROG_OBJCXX
 # Checks for libraries.
 
 # Checks for header files.
-AC_PATH_X
 AC_FUNC_ALLOCA
 AC_CHECK_HEADERS([fcntl.h inttypes.h langinfo.h libintl.h mach/mach.h malloc.h netdb.h netinet/in.h stdint.h sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h])
 
@@ -55,7 +54,6 @@ AC_TYPE_UINT8_T
 AC_CHECK_TYPES([ptrdiff_t])
 
 # Checks for library functions.
-AM_GNU_GETTEXT
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_MALLOC
 AC_FUNC_MKTIME
@@ -63,20 +61,18 @@ AC_FUNC_REALLOC
 AC_FUNC_STRCOLL
 AC_FUNC_STRNLEN
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([atexit bzero floor getcwd gethostbyaddr gethostbyname gettimeofday isascii localeconv mblen memchr memmove mempcpy memset modf pow putenv re_comp regcomp rint select setlocale socket sqrt strcasecmp strchr strcspn strerror strncasecmp strndup strpbrk strrchr strspn strstr strtol strtoul strverscmp utime])
+AC_CHECK_FUNCS([atexit bzero floor getcwd gethostbyaddr gethostbyname gettimeofday isascii localeconv mblen memchr memmove mempcpy memset modf pow putenv re_comp regcomp rint select setlocale socket sqrt strcasecmp strchr strcspn strerror strndup strpbrk strrchr strspn strstr strtol strtoul strverscmp utime])
 
 AC_CONFIG_FILES([Makefile
                  src_am/Makefile
                  texinfo/js/Makefile
-                 texinfo/js/node_modules/debug/Makefile
-                 texinfo/js/node_modules/isarray/Makefile
-                 texinfo/js/node_modules/progress/Makefile])
+                 texinfo/js/node_modules/finalhandler/node_modules/debug/Makefile
+                 texinfo/js/node_modules/send/node_modules/debug/Makefile])
 AC_CONFIG_SUBDIRS([autogen
                    bfd
                    binutils
                    cgen
                    dejagnu
-                   dist/share/libtool/libltdl
                    electric-fence
                    etc
                    expect

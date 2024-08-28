@@ -62,6 +62,8 @@
 #include "i386-amd64-shared-tdep.h"
 #include "x86-shared-tdep.h"
 
+/* Keep this preprocessor condition the same as the one guarding where
+ * macosx_skip_trampoline_code is used: */
 #ifdef MACOSX_DYLD
 /* APPLE LOCAL get the prototype for macosx_skip_trampoline_code */
 # include "macosx-tdep.h"
@@ -407,20 +409,21 @@ i386_follow_jump (CORE_ADDR pc)
   gdb_byte op;
   long delta = 0;
   int data16 = 0;
-  /* APPLE LOCAL: We use 64 bit CORE_ADDR's,
-     so when we add the offset, we need to make sure
-     that it wraps properly.  FIXME: We'll have to do
-     this more cleverly for 64 bit Intel.  */
-  unsigned long pc_32 = (unsigned long) pc;
+  /* APPLE LOCAL: We use 64 bit CORE_ADDR's, so when we add the offset, we need
+   * to make sure that it wraps properly.
+   * FIXME: We need to do this more cleverly for 64 bit Intel: */
+  unsigned long pc_32 = (unsigned long)pc;
 
-  /* APPLE LOCAL: If we're in a solib call trampoline
-     this function can follow the trampoline to its
-     destination and result in the prologue parsers
-     parsing the prologue of the actual function instead
-     of the trampoline.  That's not good.  */
-
-  if (macosx_skip_trampoline_code (pc) != 0)
+  /* Keep this preprocessor condition the same as the one guarding the
+   * inclusion of "macosx-tdep.h" at the top of this file: */
+#ifdef MACOSX_DYLD
+  /* APPLE LOCAL: If we are/were in a solib call trampoline, then this function
+   * can follow the trampoline to its destination and result in the prologue
+   * parsers parsing the prologue of the actual function instead of the
+   * trampoline.  That is not good.  */
+  if (macosx_skip_trampoline_code(pc) != 0)
     return pc;
+#endif /* MACOSX_DYLD */
 
   op = read_memory_unsigned_integer (pc, 1);
   if (op == 0x66)

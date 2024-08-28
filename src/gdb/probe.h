@@ -20,9 +20,10 @@
 #if !defined(PROBE_H)
 #define PROBE_H 1
 
-/* FIXME: in current gdb, this header is C++-only; see if we can find a pre-C++
- * version of it: */
-#include "gdb_vecs.h"
+#ifndef NO_POISON
+# define NO_POISON 1 /* (use of free) */
+#endif /* !NO_POISON */
+#include "common/gdb_vecs.h"
 
 /* Definition of a vector of probes.  */
 
