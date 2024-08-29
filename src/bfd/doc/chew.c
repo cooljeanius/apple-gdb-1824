@@ -103,6 +103,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 #endif /* !__STDC__ */
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 /* defines: */
 #ifndef DEF_SIZE

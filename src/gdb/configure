@@ -47223,7 +47223,7 @@ printf %s "checking functions... " >&6; }
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result:  " >&5
 printf "%s\n" " " >&6; }
 if test -f Makefile.in; then
-  if test ! -z "`grep -i alloca Makefile.in`"; then
+  if test -n "`grep -i alloca Makefile.in`"; then
     if test "x${ac_cv_working_alloca_h}" = "x"; then
       stat Makefile.in >/dev/null
       test -z "${ac_cv_working_alloca_h}"
@@ -49341,6 +49341,12 @@ ac_fn_c_check_func "$LINENO" "send" "ac_cv_func_send"
 if test "x$ac_cv_func_send" = xyes
 then :
   printf "%s\n" "#define HAVE_SEND 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "set_type_code" "ac_cv_func_set_type_code"
+if test "x$ac_cv_func_set_type_code" = xyes
+then :
+  printf "%s\n" "#define HAVE_SET_TYPE_CODE 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "setitimer" "ac_cv_func_setitimer"
@@ -53055,13 +53061,44 @@ printf "%s\n" "$gdb_cv_var_elf" >&6; }
   LIBS="${OLD_LIBS}"
 
   if test "x${gdb_cv_var_elf}" = "xyes"; then
-    CONFIG_OBS="${CONFIG_OBS} elfread.o stap-probe.o"
+    CONFIG_OBS="${CONFIG_OBS} elfread.o"
 
 printf "%s\n" "#define HAVE_ELF 1" >>confdefs.h
 
+    OLD_CFLAGS="${CFLAGS}"
+    OLD_LDFLAGS="${LDFLAGS}"
+    OLD_LIBS="${LIBS}"
+    # Put the old CFLAGS/LDFLAGS last, in case the user's (C|LD)FLAGS
+    # points somewhere with bfd, with -I/foo/lib and -L/foo/lib.  We
+    # always want our bfd.
+    CFLAGS="-I${srcdir}/../include -I../bfd -I${srcdir}/../bfd ${CFLAGS}"
+    LDFLAGS="-L../bfd -L../libiberty ${zlibdir} ${LDFLAGS}"
+    intl=`echo ${LIBINTL} | sed 's,${top_builddir}/,,g'`
+    if test -f ../zlib/Makefile; then
+      LIBS="-lbfd -L../zlib -lz -liberty ${intl} ${LIBS}"
+    else
+      LIBS="-lbfd -lz -liberty ${intl} ${LIBS}"
+    fi
+    ac_fn_c_check_member "$LINENO" "struct elf_obj_tdata" "sdt_note_head" "ac_cv_member_struct_elf_obj_tdata_sdt_note_head" "
+#include <stdlib.h>
+#include \"bfd.h\"
+#include \"elf-bfd.h\"
+
+"
+if test "x$ac_cv_member_struct_elf_obj_tdata_sdt_note_head" = xyes
+then :
+
+printf "%s\n" "#define HAVE_STRUCT_ELF_OBJ_TDATA_SDT_NOTE_HEAD 1" >>confdefs.h
+
+CONFIG_OBS="${CONFIG_OBS} stap-probe.o"
+fi
+    ## reset:
+    CFLAGS="${OLD_CFLAGS}"
+    LDFLAGS="${OLD_LDFLAGS}"
+    LIBS="${OLD_LIBS}"
     # -ldl is provided by bfd/Makfile.am (LIBDL) <PLUGINS>.
     if test "x${plugins}" = "xyes" && test "x${ac_cv_search_dlopen}" = "x"; then
-      test -z "${ac_cv_search_dlopen}"
+      test -z "${ac_cv_search_dlopen}" || unset ac_cv_search_dlopen
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing dlopen" >&5
 printf %s "checking for library containing dlopen... " >&6; }
 if test ${ac_cv_search_dlopen+y}
@@ -53090,7 +53127,7 @@ return dlopen ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' dl zrldsrl
+for ac_lib in '' dl zrldsrl dlcompat ltdl
 do
   if test -z "$ac_lib"; then
     ac_res="none required"

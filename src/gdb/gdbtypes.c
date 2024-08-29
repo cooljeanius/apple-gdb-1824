@@ -2112,8 +2112,8 @@ init_composite_type(const char *name, enum type_code code)
   return t;
 }
 
-/* FIXME: FIXME */
-#if 0
+/* FIXME: some of these functions are required for linking from linux-tdep.c */
+#if defined(TYPE_CODE_INT) && defined(TARGET_CHAR_BIT) && defined(TYPE_CODE_FLT)
 /* Helper functions to initialize architecture-specific types.  */
 
 /* Allocate a type structure associated with GDBARCH and set its
@@ -2126,7 +2126,11 @@ arch_type (struct gdbarch *gdbarch,
   struct type *type;
 
   type = alloc_type_arch (gdbarch);
+#ifdef HAVE_SET_TYPE_CODE
   set_type_code (type, code);
+#else
+  (void)code;
+#endif /* HAVE_SET_TYPE_CODE */
   TYPE_LENGTH_ASSIGN(type) = length;
 
   if (name)
@@ -2341,7 +2345,9 @@ append_composite_type_field_raw (struct type *t, const char *name,
   FIELD_NAME (f[0]) = name;
   return f;
 }
+#endif /* TYPE_CODE_INT && TARGET_CHAR_BIT && TYPE_CODE_FLT */
 
+#if defined(TYPE_CODE_UNION) && defined(SET_FIELD_BITPOS)
 /* Add new field with name NAME and type FIELD to composite type T.
  ALIGNMENT (if non-zero) specifies the minimum field alignment.  */
 
@@ -2382,7 +2388,7 @@ append_composite_type_field_aligned (struct type *t, const char *name,
     }
   }
 }
-#endif /* 0 */
+#endif /* TYPE_CODE_UNION && SET_FIELD_BITPOS */
 
 /* Helper function.  Append a field to a composite type: */
 void

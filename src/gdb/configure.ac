@@ -2300,7 +2300,7 @@ AC_MSG_CHECKING([functions])
 AC_MSG_RESULT([ ])dnl
 
 if test -f Makefile.in; then
-  if test ! -z "`grep -i alloca Makefile.in`"; then
+  if test -n "`grep -i alloca Makefile.in`"; then
     if test "x${ac_cv_working_alloca_h}" = "x"; then
       stat Makefile.in >/dev/null
       test -z "${ac_cv_working_alloca_h}"
@@ -2405,8 +2405,8 @@ AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero \
                 mach_error_string memchr memcmp memcpy memmove mempcpy \
                 memset mkdir netname_look_up nl_langinfo pathconf pclose \
                 popen pow powl qsort qsort_r readdir recv re_comp regcomp \
-                select send setitimer socket strcasecmp strcat strchr \
-                strcpy strcspn strdup strerror strlcat strlcpy strlen \
+                select send set_type_code setitimer socket strcasecmp strcat \
+                strchr strcpy strcspn strdup strerror strlcat strlcpy strlen \
                 strncasecmp strncat strncmp strncpy strndup strpbrk \
                 strrchr strspn strstr strtok strtok_r strtol strtoul \
                 timeradd timerclear timersub uname vasprintf wcwidth])dnl
@@ -3942,13 +3942,37 @@ m4_ifdef([GDB_AC_CHECK_BFD],[
   GDB_AC_CHECK_BFD([for ELF support in BFD],[gdb_cv_var_elf],
                    [bfd_get_elf_phdr_upper_bound(NULL)],[elf-bfd.h])
   if test "x${gdb_cv_var_elf}" = "xyes"; then
-    CONFIG_OBS="${CONFIG_OBS} elfread.o stap-probe.o"
+    CONFIG_OBS="${CONFIG_OBS} elfread.o"
     AC_DEFINE([HAVE_ELF],[1],
   	      [Define if ELF support should be included.])
+    OLD_CFLAGS="${CFLAGS}"
+    OLD_LDFLAGS="${LDFLAGS}"
+    OLD_LIBS="${LIBS}"
+    # Put the old CFLAGS/LDFLAGS last, in case the user's (C|LD)FLAGS
+    # points somewhere with bfd, with -I/foo/lib and -L/foo/lib.  We
+    # always want our bfd.
+    CFLAGS="-I${srcdir}/../include -I../bfd -I${srcdir}/../bfd ${CFLAGS}"
+    LDFLAGS="-L../bfd -L../libiberty ${zlibdir} ${LDFLAGS}"
+    intl=`echo ${LIBINTL} | sed 's,${top_builddir}/,,g'`
+    if test -f ../zlib/Makefile; then
+      LIBS="-lbfd -L../zlib -lz -liberty ${intl} ${LIBS}"
+    else
+      LIBS="-lbfd -lz -liberty ${intl} ${LIBS}"
+    fi
+    AC_CHECK_MEMBERS([struct elf_obj_tdata.sdt_note_head],
+                     [CONFIG_OBS="${CONFIG_OBS} stap-probe.o"],[],[
+#include <stdlib.h>
+#include "bfd.h"
+#include "elf-bfd.h"
+    ])dnl
+    ## reset:
+    CFLAGS="${OLD_CFLAGS}"
+    LDFLAGS="${OLD_LDFLAGS}"
+    LIBS="${OLD_LIBS}"
     # -ldl is provided by bfd/Makfile.am (LIBDL) <PLUGINS>.
     if test "x${plugins}" = "xyes" && test "x${ac_cv_search_dlopen}" = "x"; then
-      test -z "${ac_cv_search_dlopen}"
-      AC_SEARCH_LIBS([dlopen],[dl zrldsrl])
+      test -z "${ac_cv_search_dlopen}" || unset ac_cv_search_dlopen
+      AC_SEARCH_LIBS([dlopen],[dl zrldsrl dlcompat ltdl])
     fi
   fi
 
