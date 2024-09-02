@@ -3908,8 +3908,8 @@ NCN_STRICT_CHECK_TOOLS([OBJCOPY],[objcopy gobjcopy])dnl
 NCN_STRICT_CHECK_TOOLS([OBJDUMP],[objdump gobjdump])dnl
 NCN_STRICT_CHECK_TOOLS([READELF],[readelf greadelf])dnl
 
-AC_PROG_AR
 AM_PROG_AR
+AC_PROG_AR
 AM_PROG_AS
 if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}" || unset RANLIB
@@ -3919,7 +3919,7 @@ else
 fi
 AC_PROG_MKDIR_P
 if test -x ${srcdir}/libtool -a ! -d ${srcdir}/libtool; then
-  test -r libtool
+  test -r libtool || echo "libtool is unreadable!"
   if test "x${LIBTOOLFLAGS}" = "x"; then
     test -z "${LIBTOOLFLAGS}"
     export LIBTOOLFLAGS="--verbose --debug --no-silent"
@@ -3931,7 +3931,7 @@ if test -x ${srcdir}/libtool -a ! -d ${srcdir}/libtool; then
   LT_PREREQ([2.4.6])dnl
   dnl#TODO: finish updating the libtool_gnu subdir as well... (?)
 else
-  test -e libtool
+  test -e libtool && stat libtool
   AC_CHECK_HEADERS_ONCE([dlfcn.h])dnl
   ## (libtool should be okay now)
 fi
