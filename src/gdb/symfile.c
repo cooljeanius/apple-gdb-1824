@@ -67,9 +67,10 @@
 #ifdef TM_NEXTSTEP
 # include "macosx/macosx-nat-utils.h" /* For macosx_filename_in_bundle.  */
 #endif /* TM_NEXTSTEP */
-#if defined(HAVE_MACH_O_IN_BFD) && !defined(_BFD_MACH_O_H_)
-# include "mach-o.h"
-#endif /* HAVE_MACH_O_IN_BFD && !_BFD_MACH_O_H_ */
+/* Keep this preprocessor conditional the same as where it is used: */
+#if defined(TM_NEXTSTEP) || defined(HAVE_MACH_O_IN_BFD)
+# include "mach-o.h" /* For bfd_mach_o_get_uuid.  */
+#endif /* TM_NEXTSTEP || HAVE_MACH_O_IN_BFD */
 #include "osabi.h" /* For gdbarch_lookup_osabi.  */
 
 #include <sys/types.h>

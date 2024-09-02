@@ -1,4 +1,4 @@
 @set VERSION 2.16.91
 @set VERSION_PACKAGE (GNU Binutils) 
-@set UPDATED August 2024
+@set UPDATED September 2024
 @set BUGURL @uref{http://www.sourceware.org/bugzilla/}

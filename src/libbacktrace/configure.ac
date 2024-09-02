@@ -134,13 +134,13 @@ m4_ifdef([AC_REQUIRE_AUX_FILE],[
 
 AC_PROG_CPP
 
-if test "x${ac_cv_prog_AR}" = "x"; then
-  test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
-  AC_PROG_AR
-fi
 if test "x${AR}" = "x" && test "x${am_cv_ar_interface}" = "x"; then
   test -z "${AR}" && test -z "${am_cv_ar_interface}" && echo "doing automake-style check for AR"
   AM_PROG_AR
+fi
+if test "x${ac_cv_prog_AR}" = "x"; then
+  test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+  AC_PROG_AR
 fi
 AC_PROG_INSTALL
 AC_PROG_LN_S
