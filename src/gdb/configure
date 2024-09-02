@@ -49014,7 +49014,7 @@ printf "%s\n" "#define HAVE_LANGINFO_CODESET 1" >>confdefs.h
   fi
 
 
-# Other functions (that autoscan might complain about missing):
+# Other functions (that autoscan might complain about missing, or otherwise):
 unset ac_cv_func_getcwd
 unset ac_cv_func_gethostbyname
 unset ac_cv_func_strcasecmp
@@ -49101,6 +49101,18 @@ ac_fn_c_check_func "$LINENO" "fwrite" "ac_cv_func_fwrite"
 if test "x$ac_cv_func_fwrite" = xyes
 then :
   printf "%s\n" "#define HAVE_FWRITE 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "gdbarch_obstack_strdup" "ac_cv_func_gdbarch_obstack_strdup"
+if test "x$ac_cv_func_gdbarch_obstack_strdup" = xyes
+then :
+  printf "%s\n" "#define HAVE_GDBARCH_OBSTACK_STRDUP 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "get_type_arch" "ac_cv_func_get_type_arch"
+if test "x$ac_cv_func_get_type_arch" = xyes
+then :
+  printf "%s\n" "#define HAVE_GET_TYPE_ARCH 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "getcwd" "ac_cv_func_getcwd"
@@ -49527,6 +49539,12 @@ ac_fn_c_check_func "$LINENO" "vasprintf" "ac_cv_func_vasprintf"
 if test "x$ac_cv_func_vasprintf" = xyes
 then :
   printf "%s\n" "#define HAVE_VASPRINTF 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "verify_floatformat" "ac_cv_func_verify_floatformat"
+if test "x$ac_cv_func_verify_floatformat" = xyes
+then :
+  printf "%s\n" "#define HAVE_VERIFY_FLOATFORMAT 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "wcwidth" "ac_cv_func_wcwidth"

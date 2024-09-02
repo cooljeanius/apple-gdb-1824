@@ -61,7 +61,9 @@
 /* APPLE LOCAL exceptions */
 #include "exceptions.h"
 #include "exec.h"
-#include "macosx/macosx-nat-inferior.h"
+#if defined(MACOSX_DYLD) || defined(TM_NEXTSTEP) || defined(TARGET_NATIVE)
+# include "macosx/macosx-nat-inferior.h" /* FIXME: what do we need this for? */
+#endif /* MACOSX_DYLD || TM_NEXTSTEP || TARGET_NATIVE */
 #ifdef TM_NEXTSTEP
 # include "macosx/macosx-nat-utils.h" /* For macosx_filename_in_bundle.  */
 #endif /* TM_NEXTSTEP */

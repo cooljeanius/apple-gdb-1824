@@ -2392,15 +2392,15 @@ m4_ifdef([AM_LANGINFO_CODESET],[
   AC_CHECK_FUNCS([langinfo codeset])dnl
 ])dnl
 
-# Other functions (that autoscan might complain about missing):
+# Other functions (that autoscan might complain about missing, or otherwise):
 unset ac_cv_func_getcwd
 unset ac_cv_func_gethostbyname
 unset ac_cv_func_strcasecmp
 unset ac_cv_func_strchr
-AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero \
-                clnt_pcreateerror dup2 exit fflush fgets fprintf fwrite \
-                getcwd gethostbyaddr gethostbyname gethostname getpass \
-                gets gettimeofday gmtime inet_addr inet_ntoa isascii \
+AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero clnt_pcreateerror \
+                dup2 exit fflush fgets fprintf fwrite gdbarch_obstack_strdup \
+                get_type_arch getcwd gethostbyaddr gethostbyname gethostname \
+                getpass gets gettimeofday gmtime inet_addr inet_ntoa isascii \
                 ishexnumber isnumber isspace ldexpl localtime localtime_r \
                 mach_error_string memchr memcmp memcpy memmove mempcpy \
                 memset mkdir netname_look_up nl_langinfo pathconf pclose \
@@ -2409,7 +2409,8 @@ AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero \
                 strchr strcpy strcspn strdup strerror strlcat strlcpy strlen \
                 strncasecmp strncat strncmp strncpy strndup strpbrk \
                 strrchr strspn strstr strtok strtok_r strtol strtoul \
-                timeradd timerclear timersub uname vasprintf wcwidth])dnl
+                timeradd timerclear timersub uname vasprintf \
+                verify_floatformat wcwidth])dnl
 
 dnl# Use as a replacement for just-plain sprintf:
 if test "x${ac_cv_func_snprintf}" = "x"; then
