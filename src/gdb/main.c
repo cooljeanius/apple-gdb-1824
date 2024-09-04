@@ -236,7 +236,13 @@ captured_main(void *data)
 
   /* APPLE LOCAL: set our main thread's name */
 #ifdef HAVE_PTHREAD_SETNAME_NP
+# if defined(__APPLE__) && (defined(MACOSX_DYLD) || defined(TM_NEXTSTEP))
   pthread_setname_np("gdb main thread");
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__APPLE_CC__)
+#   warning "use of pthread_setname_np() here is only implemented for macOS so far"
+#  endif /* __GNUC__ && !__STRICT_ANSI__ && !__APPLE_CC__ */
+# endif /* __APPLE__ && (MACOSX_DYLD || TM_NEXTSTEP) */
 #endif /* HAVE_PTHREAD_SETNAME_NP */
 
   /* APPLE LOCAL: raise our file descriptor limit a lot: */
