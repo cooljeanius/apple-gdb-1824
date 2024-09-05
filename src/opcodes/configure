@@ -26384,6 +26384,48 @@ fi
 
 
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -Wno-enum-conversion" >&5
+printf %s "checking whether C compiler handles -Wno-enum-conversion... " >&6; }
+if test ${gl_cv_warn_c__Wno_enum_conversion+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e)
+  gl_save_compiler_FLAGS="$CFLAGS"
+  as_fn_append CFLAGS " $gl_unknown_warnings_are_errors -Wenum-conversion"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  gl_cv_warn_c__Wno_enum_conversion=yes
+else case e in #(
+  e) gl_cv_warn_c__Wno_enum_conversion=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+  CFLAGS="$gl_save_compiler_FLAGS"
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $gl_cv_warn_c__Wno_enum_conversion" >&5
+printf "%s\n" "$gl_cv_warn_c__Wno_enum_conversion" >&6; }
+if test "x$gl_cv_warn_c__Wno_enum_conversion" = xyes
+then :
+  as_fn_append WARN_CFLAGS " -Wno-enum-conversion"
+fi
+
+
+
 
       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */

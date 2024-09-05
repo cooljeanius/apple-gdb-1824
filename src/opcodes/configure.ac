@@ -770,6 +770,7 @@ else
       gl_WARN_ADD([-Wno-tautological-pointer-compare])
       gl_WARN_ADD([-Wno-string-plus-int])
       gl_WARN_ADD([-Wno-deprecated-non-prototype])
+      gl_WARN_ADD([-Wno-enum-conversion])
       m4_ifdef([gl_GCC_VERSION_IFELSE],[
         gl_GCC_VERSION_IFELSE([14],[0],[
           gl_WARN_ADD([-fpermissive])

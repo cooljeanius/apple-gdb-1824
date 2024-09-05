@@ -21,6 +21,9 @@
 
 #include "defs.h"
 #include "inferior.h"
+#ifndef CHILD_POST_ATTACH
+# define CHILD_POST_ATTACH 1
+#endif /* !CHILD_POST_ATTACH */
 #include "target.h"
 #include "gdb_string.h"
 #include "gdb_wait.h"
@@ -35,7 +38,13 @@
 #include "gdbcmd.h"
 #include "regcache.h"
 #include <sys/param.h>		/* for MAXPATHLEN */
-#include <sys/procfs.h>		/* for elf_gregset etc. */
+#if defined(HAVE_SYS_PROCFS_H) || __has_include(<sys/procfs.h>)
+# include <sys/procfs.h>	/* for elf_gregset etc. */
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "linux-nat.c expects <sys/procfs.h> to be included for elf_gregset"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_PROCFS_H */
 #include "elf-bfd.h"		/* for elfcore_write_* */
 #include "gregset.h"		/* for gregset */
 #include "gdbcore.h"		/* for get_exec_file */
@@ -43,6 +52,10 @@
 #include "gdbthread.h"		/* for struct thread_info etc. */
 #include "gdb_stat.h"		/* for struct stat */
 #include <fcntl.h>		/* for O_RDONLY */
+#if defined(HAVE_SIGNAL_H) || __has_include(<signal.h>)
+# include <signal.h>
+#endif /* HAVE_SIGNAL_H */
+#include "auxv.h"		/* for target_auxv_read */
 
 #ifndef O_LARGEFILE
 # define O_LARGEFILE 0
@@ -78,8 +91,8 @@
    with the ptrace event handlers also have __WALL, so it's safe to use
    here.  */
 #ifndef __WALL
-#define __WALL          0x40000000 /* Wait for any child.  */
-#endif
+# define __WALL          0x40000000 /* Wait for any child.  */
+#endif /* !__WALL */
 
 static int debug_linux_nat;
 static void
@@ -115,7 +128,8 @@ static int linux_supports_tracevforkdone_flag = -1;
 static void
 add_to_pid_list (struct simple_pid_list **listp, int pid)
 {
-  struct simple_pid_list *new_pid = xmalloc (sizeof (struct simple_pid_list));
+  struct simple_pid_list *new_pid =
+    (struct simple_pid_list *)xmalloc(sizeof(struct simple_pid_list));
   new_pid->pid = pid;
   new_pid->next = *listp;
   *listp = new_pid;
@@ -144,30 +158,24 @@ linux_record_stopped_pid (int pid)
 }
 
 
-/* A helper function for linux_test_for_tracefork, called after fork ().  */
-
+/* A helper function for linux_test_for_tracefork, called after fork().  */
 static void
-linux_tracefork_child (void)
+linux_tracefork_child(void)
 {
-  int ret;
-
-  ptrace (PTRACE_TRACEME, 0, 0, 0);
-  kill (getpid (), SIGSTOP);
-  fork ();
-  _exit (0);
+  ptrace(PTRACE_TRACEME, 0, 0, 0);
+  kill(getpid(), SIGSTOP);
+  fork();
+  _exit(0);
 }
 
 /* Wrapper function for waitpid which handles EINTR.  */
-
 static int
-my_waitpid (int pid, int *status, int flags)
+my_waitpid(int pid, int *status, int flags)
 {
   int ret;
-  do
-    {
-      ret = waitpid (pid, status, flags);
-    }
-  while (ret == -1 && errno == EINTR);
+  do {
+    ret = waitpid(pid, status, flags);
+  } while (ret == -1 && errno == EINTR);
 
   return ret;
 }
@@ -331,7 +339,7 @@ child_post_startup_inferior (ptid_t ptid)
 {
   linux_child_post_startup_inferior (ptid);
 }
-#endif
+#endif /* !LINUX_CHILD_POST_STARTUP_INFERIOR */
 
 int
 child_follow_fork (int follow_child)
@@ -425,8 +433,6 @@ child_follow_fork (int follow_child)
     }
   else
     {
-      char child_pid_spelling[40];
-
       /* Needed to keep the breakpoint lists in sync.  */
       if (! has_vforked)
 	detach_breakpoints (child_pid);
@@ -901,8 +907,9 @@ lin_lwp_attach_lwp (ptid_t ptid, int verbose)
     }
 }
 
+/* */
 static void
-linux_nat_attach (char *args, int from_tty)
+linux_nat_attach(const char *args, int from_tty)
 {
   struct lwp_info *lp;
   pid_t pid;
@@ -1002,8 +1009,9 @@ detach_callback (struct lwp_info *lp, void *data)
   return 0;
 }
 
+/* */
 static void
-linux_nat_detach (char *args, int from_tty)
+linux_nat_detach(const char *args, int from_tty)
 {
   iterate_over_lwps (detach_callback, NULL);
 
@@ -1030,8 +1038,6 @@ resume_callback (struct lwp_info *lp, void *data)
 {
   if (lp->stopped && lp->status == 0)
     {
-      struct thread_info *tp;
-
       child_resume (pid_to_ptid (GET_LWP (lp->ptid)), 0, TARGET_SIGNAL_0);
       if (debug_linux_nat)
 	fprintf_unfiltered (gdb_stdlog,
@@ -1116,8 +1122,9 @@ linux_nat_resume (ptid_t ptid, int step, enum target_signal signo)
 }
 
 /* Issue kill to specified lwp.  */
-
+#ifdef HAVE_TKILL_SYSCALL
 static int tkill_failed;
+#endif /* HAVE_TKILL_SYSCALL */
 
 static int
 kill_lwp (int lwpid, int signo)
@@ -1136,7 +1143,7 @@ kill_lwp (int lwpid, int signo)
       errno = 0;
       tkill_failed = 1;
     }
-#endif
+#endif /* HAVE_TKILL_SYSCALL */
 
   return kill (lwpid, signo);
 }
@@ -1298,7 +1305,7 @@ stop_callback (struct lwp_info *lp, void *data)
 static int
 stop_wait_callback (struct lwp_info *lp, void *data)
 {
-  sigset_t *flush_mask = data;
+  sigset_t *flush_mask = (sigset_t *)data;
 
   if (!lp->stopped)
     {
@@ -1467,9 +1474,8 @@ linux_nat_has_pending (int pid, sigset_t *pending, sigset_t *flush_mask)
 static int
 flush_callback (struct lwp_info *lp, void *data)
 {
-  sigset_t *flush_mask = data;
-  sigset_t pending, intersection, blocked, ignored;
-  int pid, status;
+  sigset_t *flush_mask = (sigset_t *)data;
+  sigset_t pending;
 
   /* Normally, when an LWP exits, it is removed from the LWP list.  The
      last LWP isn't removed till later, however.  So if there is only
@@ -1537,7 +1543,7 @@ running_callback (struct lwp_info *lp, void *data)
 static int
 count_events_callback (struct lwp_info *lp, void *data)
 {
-  int *count = data;
+  int *count = (int *)data;
 
   gdb_assert (count != NULL);
 
@@ -1565,7 +1571,7 @@ select_singlestep_lwp_callback (struct lwp_info *lp, void *data)
 static int
 select_event_lwp_callback (struct lwp_info *lp, void *data)
 {
-  int *selector = data;
+  int *selector = (int *)data;
 
   gdb_assert (selector != NULL);
 
@@ -1578,10 +1584,11 @@ select_event_lwp_callback (struct lwp_info *lp, void *data)
   return 0;
 }
 
+/* */
 static int
-cancel_breakpoints_callback (struct lwp_info *lp, void *data)
+cancel_breakpoints_callback(struct lwp_info *lp, void *data)
 {
-  struct lwp_info *event_lp = data;
+  struct lwp_info *event_lp = (struct lwp_info *)data;
 
   /* Leave the LWP that has been elected to receive a SIGTRAP alone.  */
   if (lp == event_lp)
@@ -1650,7 +1657,7 @@ select_event_lwp (struct lwp_info **orig_lp, int *status)
 
       /* Now randomly pick a LWP out of those that have had a SIGTRAP.  */
       random_selector = (int)
-	((num_events * (double) rand ()) / (RAND_MAX + 1.0));
+	((num_events * (double)rand()) / (RAND_MAX + 1.0f));
 
       if (debug_linux_nat && num_events > 1)
 	fprintf_unfiltered (gdb_stdlog,
@@ -1681,7 +1688,6 @@ resumed_callback (struct lwp_info *lp, void *data)
 }
 
 #ifdef CHILD_WAIT
-
 /* We need to override child_wait to support attaching to cloned
    processes, since a normal wait (as done by the default version)
    ignores those processes.  */
@@ -1698,8 +1704,7 @@ child_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
 
   ourstatus->kind = TARGET_WAITKIND_IGNORE;
 
-  do
-    {
+  do {
       set_sigint_trap ();	/* Causes SIGINT to be passed on to the
 				   attached process.  */
       set_sigio_trap ();
@@ -1766,8 +1771,7 @@ child_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
 
       clear_sigio_trap ();
       clear_sigint_trap ();
-    }
-  while (pid == -1 && save_errno == EINTR);
+  } while (pid == -1 && save_errno == EINTR);
 
   if (pid == -1)
     {
@@ -1785,8 +1789,7 @@ child_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
 
   return pid_to_ptid (pid);
 }
-
-#endif
+#endif /* CHILD_WAIT */
 
 /* Stop an active thread, verify it still exists, then resume it.  */
 
@@ -1810,8 +1813,9 @@ stop_and_resume_callback (struct lwp_info *lp, void *data)
   return 0;
 }
 
+/* */
 static ptid_t
-linux_nat_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
+linux_nat_wait(ptid_t ptid, struct target_waitstatus *ourstatus, void *unused)
 {
   struct lwp_info *lp = NULL;
   int options = 0;
@@ -2325,12 +2329,13 @@ linux_nat_mourn_inferior (void)
   deprecated_child_ops.to_mourn_inferior ();
 }
 
+/* */
 static int
 linux_nat_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len,
 		       int write, struct mem_attrib *attrib,
 		       struct target_ops *target)
 {
-  struct cleanup *old_chain = save_inferior_ptid ();
+  struct cleanup *old_chain = save_inferior_ptid();
   int xfer;
 
   if (is_lwp (inferior_ptid))
@@ -2381,7 +2386,7 @@ init_linux_nat_ops (void)
 {
 #if 0
   linux_nat_ops.to_open = linux_nat_open;
-#endif
+#endif /* 0 */
   linux_nat_ops.to_shortname = "lwp-layer";
   linux_nat_ops.to_longname = "lwp-layer";
   linux_nat_ops.to_doc = "Low level threads support (LWP layer)";
@@ -2426,13 +2431,13 @@ child_pid_to_exec_file (int pid)
 {
   char *name1, *name2;
 
-  name1 = xmalloc (MAXPATHLEN);
-  name2 = xmalloc (MAXPATHLEN);
+  name1 = (char *)xmalloc(MAXPATHLEN);
+  name2 = (char *)xmalloc(MAXPATHLEN);
   make_cleanup (xfree, name1);
   make_cleanup (xfree, name2);
   memset (name2, 0, MAXPATHLEN);
 
-  sprintf (name1, "/proc/%d/exe", pid);
+  snprintf(name1, MAXPATHLEN, "/proc/%d/exe", pid);
   if (readlink (name1, name2, MAXPATHLEN) > 0)
     return name2;
   else
@@ -2440,14 +2445,10 @@ child_pid_to_exec_file (int pid)
 }
 
 /* Service function for corefiles and info proc.  */
-
 static int
-read_mapping (FILE *mapfile,
-	      long long *addr,
-	      long long *endaddr,
-	      char *permissions,
-	      long long *offset,
-	      char *device, long long *inode, char *filename)
+read_mapping(FILE *mapfile, long long *addr, long long *endaddr,
+             char *permissions, long long *offset, char *device,
+             long long *inode, char *filename)
 {
   int ret = fscanf (mapfile, "%llx-%llx %s %llx %s %llx",
 		    addr, endaddr, permissions, offset, device, inode);
@@ -2482,10 +2483,9 @@ linux_nat_find_memory_regions (int (*func) (CORE_ADDR,
   long long addr, endaddr, size, offset, inode;
   char permissions[8], device[8], filename[MAXPATHLEN];
   int read, write, exec;
-  int ret;
 
   /* Compose the filename for the /proc memory map, and open it.  */
-  sprintf (mapsfilename, "/proc/%lld/maps", pid);
+  snprintf(mapsfilename, sizeof(mapsfilename), "/proc/%lld/maps", pid);
   if ((mapsfile = fopen (mapsfilename, "r")) == NULL)
     error (_("Could not open %s."), mapsfilename);
 
@@ -2535,7 +2535,7 @@ linux_nat_do_thread_registers (bfd *obfd, ptid_t ptid,
   gdb_fpregset_t fpregs;
 #ifdef FILL_FPXREGSET
   gdb_fpxregset_t fpxregs;
-#endif
+#endif /* FILL_FPXREGSET */
   unsigned long lwp = ptid_get_lwp (ptid);
 
   fill_gregset (&gregs, -1);
@@ -2556,7 +2556,7 @@ linux_nat_do_thread_registers (bfd *obfd, ptid_t ptid,
 					       note_data,
 					       note_size,
 					       &fpxregs, sizeof (fpxregs));
-#endif
+#endif /* FILL_FPXREGSET */
   return note_data;
 }
 
@@ -2574,12 +2574,13 @@ struct linux_nat_corefile_thread_data
 static int
 linux_nat_corefile_thread_callback (struct lwp_info *ti, void *data)
 {
-  struct linux_nat_corefile_thread_data *args = data;
+  struct linux_nat_corefile_thread_data *args =
+    (struct linux_nat_corefile_thread_data *)data;
   ptid_t saved_ptid = inferior_ptid;
 
   inferior_ptid = ti->ptid;
   registers_changed ();
-  target_fetch_registers (-1);	/* FIXME should not be necessary;
+  target_fetch_registers (-1);	/* FIXME: should not be necessary;
 				   fill_gregset should do it automatically. */
   args->note_data = linux_nat_do_thread_registers (args->obfd,
 						   ti->ptid,
@@ -2617,11 +2618,9 @@ static char *
 linux_nat_make_corefile_notes (bfd *obfd, int *note_size)
 {
   struct linux_nat_corefile_thread_data thread_args;
-  struct cleanup *old_chain;
   char fname[16] = { '\0' };
   char psargs[80] = { '\0' };
   char *note_data = NULL;
-  ptid_t current_ptid = inferior_ptid;
   gdb_byte *auxv;
   int auxv_len;
 
@@ -2673,7 +2672,7 @@ linux_nat_make_corefile_notes (bfd *obfd, int *note_size)
 /* Implement the "info proc" command.  */
 
 static void
-linux_nat_info_proc_cmd (char *args, int from_tty)
+linux_nat_info_proc_cmd(const char *args, int from_tty)
 {
   long long pid = PIDGET (inferior_ptid);
   FILE *procfile;
@@ -2684,7 +2683,6 @@ linux_nat_info_proc_cmd (char *args, int from_tty)
   int cwd_f = 1;
   int exe_f = 1;
   int mappings_f = 0;
-  int environ_f = 0;
   int status_f = 0;
   int stat_f = 0;
   int all = 0;
@@ -2741,14 +2739,14 @@ linux_nat_info_proc_cmd (char *args, int from_tty)
   if (pid == 0)
     error (_("No current process: you must name one."));
 
-  sprintf (fname1, "/proc/%lld", pid);
+  snprintf(fname1, sizeof(fname1), "/proc/%lld", pid);
   if (stat (fname1, &dummy) != 0)
     error (_("No /proc directory: '%s'"), fname1);
 
   printf_filtered (_("process %lld\n"), pid);
   if (cmdline_f || all)
     {
-      sprintf (fname1, "/proc/%lld/cmdline", pid);
+      snprintf(fname1, sizeof(fname1), "/proc/%lld/cmdline", pid);
       if ((procfile = fopen (fname1, "r")) > 0)
 	{
 	  fgets (buffer, sizeof (buffer), procfile);
@@ -2760,7 +2758,7 @@ linux_nat_info_proc_cmd (char *args, int from_tty)
     }
   if (cwd_f || all)
     {
-      sprintf (fname1, "/proc/%lld/cwd", pid);
+      snprintf(fname1, sizeof(fname1), "/proc/%lld/cwd", pid);
       memset (fname2, 0, sizeof (fname2));
       if (readlink (fname1, fname2, sizeof (fname2)) > 0)
 	printf_filtered ("cwd = '%s'\n", fname2);
@@ -2769,7 +2767,7 @@ linux_nat_info_proc_cmd (char *args, int from_tty)
     }
   if (exe_f || all)
     {
-      sprintf (fname1, "/proc/%lld/exe", pid);
+      snprintf(fname1, sizeof(fname1), "/proc/%lld/exe", pid);
       memset (fname2, 0, sizeof (fname2));
       if (readlink (fname1, fname2, sizeof (fname2)) > 0)
 	printf_filtered ("exe = '%s'\n", fname2);
@@ -2778,7 +2776,7 @@ linux_nat_info_proc_cmd (char *args, int from_tty)
     }
   if (mappings_f || all)
     {
-      sprintf (fname1, "/proc/%lld/maps", pid);
+      snprintf(fname1, sizeof(fname1), "/proc/%lld/maps", pid);
       if ((procfile = fopen (fname1, "r")) > 0)
 	{
 	  long long addr, endaddr, size, offset, inode;
@@ -2838,7 +2836,7 @@ linux_nat_info_proc_cmd (char *args, int from_tty)
     }
   if (status_f || all)
     {
-      sprintf (fname1, "/proc/%lld/status", pid);
+      snprintf(fname1, sizeof(fname1), "/proc/%lld/status", pid);
       if ((procfile = fopen (fname1, "r")) > 0)
 	{
 	  while (fgets (buffer, sizeof (buffer), procfile) != NULL)
@@ -2850,7 +2848,7 @@ linux_nat_info_proc_cmd (char *args, int from_tty)
     }
   if (stat_f || all)
     {
-      sprintf (fname1, "/proc/%lld/stat", pid);
+      snprintf(fname1, sizeof(fname1), "/proc/%lld/stat", pid);
       if ((procfile = fopen (fname1, "r")) > 0)
 	{
 	  int itmp;
@@ -2937,7 +2935,7 @@ linux_nat_info_proc_cmd (char *args, int from_tty)
 	    printf_filtered (_("Catched signals bitmap: 0x%x\n"), itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)	/* FIXME arch? */
 	    printf_filtered (_("wchan (system call): 0x%x\n"), itmp);
-#endif
+#endif /* 0 */
 	  fclose (procfile);
 	}
       else
@@ -2945,6 +2943,7 @@ linux_nat_info_proc_cmd (char *args, int from_tty)
     }
 }
 
+/* */
 int
 linux_proc_xfer_memory (CORE_ADDR addr, gdb_byte *myaddr, int len, int write,
 			struct mem_attrib *attrib, struct target_ops *target)
@@ -2956,12 +2955,12 @@ linux_proc_xfer_memory (CORE_ADDR addr, gdb_byte *myaddr, int len, int write,
     return 0;
 
   /* Don't bother for one word.  */
-  if (len < 3 * sizeof (long))
+  if (len < (3 * sizeof(long)))
     return 0;
 
   /* We could keep this file open and cache it - possibly one per
      thread.  That requires some juggling, but is even faster.  */
-  sprintf (filename, "/proc/%d/mem", PIDGET (inferior_ptid));
+  snprintf(filename, sizeof(filename), "/proc/%d/mem", PIDGET(inferior_ptid));
   fd = open (filename, O_RDONLY | O_LARGEFILE);
   if (fd == -1)
     return 0;
@@ -2974,7 +2973,7 @@ linux_proc_xfer_memory (CORE_ADDR addr, gdb_byte *myaddr, int len, int write,
   if (pread64 (fd, myaddr, len, addr) != len)
 #else
   if (lseek (fd, addr, SEEK_SET) == -1 || read (fd, myaddr, len) != len)
-#endif
+#endif /* HAVE_PREAD64 */
     ret = 0;
   else
     ret = len;
@@ -3031,12 +3030,11 @@ linux_proc_pending_signals (int pid, sigset_t *pending, sigset_t *blocked, sigse
 {
   FILE *procfile;
   char buffer[MAXPATHLEN], fname[MAXPATHLEN];
-  int signum;
 
   sigemptyset (pending);
   sigemptyset (blocked);
   sigemptyset (ignored);
-  sprintf (fname, "/proc/%d/status", pid);
+  snprintf(fname, sizeof(fname), "/proc/%d/status", pid);
   procfile = fopen (fname, "r");
   if (procfile == NULL)
     error (_("Could not open %s"), fname);
@@ -3064,11 +3062,14 @@ linux_proc_pending_signals (int pid, sigset_t *pending, sigset_t *blocked, sigse
   fclose (procfile);
 }
 
+extern void thread_db_init(struct target_ops *);
+
+extern void _initialize_linux_nat(void); /* -Wmissing-prototypes */
+/* */
 void
-_initialize_linux_nat (void)
+_initialize_linux_nat(void)
 {
   struct sigaction action;
-  extern void thread_db_init (struct target_ops *);
 
   deprecated_child_ops.to_find_memory_regions = linux_nat_find_memory_regions;
   deprecated_child_ops.to_make_corefile_notes = linux_nat_make_corefile_notes;
