@@ -1758,7 +1758,7 @@ if test "x${NEXT_STRING_H}" = "x"; then
 fi
 if test "x${enable_gdbtk}" = "xyes"; then
   if test "x${ac_cv_header_X11_Xlib_h}" = "x"; then
-    test -z "${ac_cv_header_X11_Xlib_h}"
+    test -z "${ac_cv_header_X11_Xlib_h}" || unset ac_cv_header_X11_Xlib_h
     AC_CHECK_HEADERS([X11/Xlib.h])
   else
     test -n "${ac_cv_header_X11_Xlib_h}" && test -f /usr/X11/include/X11/Xlib.h && test -r /usr/X11/include/X11/Xlib.h && stat /usr/X11/include/X11/Xlib.h
@@ -1767,19 +1767,19 @@ else
   AC_MSG_NOTICE([skipping header check only relevant for gdbtk])
 fi
 if test "x${ac_cv_header_inttypes_h}" = "x"; then
-  test -z "${ac_cv_header_inttypes_h}"
+  test -z "${ac_cv_header_inttypes_h}" || unset ac_cv_header_inttypes_h
   AC_CHECK_HEADERS([inttypes.h])
 fi
 if test "x${ac_cv_header_stdint_h}" = "x"; then
-  test -z "${ac_cv_header_stdint_h}"
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
   AC_CHECK_HEADERS([stdint.h])
 fi
 if test "x${ac_cv_header_strings_h}" = "x"; then
-  test -z "${ac_cv_header_strings_h}"
+  test -z "${ac_cv_header_strings_h}" || unset ac_cv_header_strings_h
   AC_CHECK_HEADERS([strings.h])
 fi
 if test "x${ac_cv_header_unistd_h}" = "x"; then
-  test -z "${ac_cv_header_unistd_h}"
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
   AC_CHECK_HEADERS([unistd.h])
 fi
 
@@ -1841,6 +1841,16 @@ fi
 if test "x${ac_cv_have_decl_getcwd}" = "x"; then
   test -z "${ac_cv_have_decl_getcwd}" || unset ac_cv_have_decl_getcwd
   AC_CHECK_DECLS([getcwd],[],[],[
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+  ])dnl
+  ## OK
+fi
+
+if test "x${ac_cv_have_decl_setgid}" = "x"; then
+  test -z "${ac_cv_have_decl_setgid}" || unset ac_cv_have_decl_setgid
+  AC_CHECK_DECLS([setgid],[],[],[
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif /* HAVE_UNISTD_H */
@@ -2375,7 +2385,7 @@ m4_ifdef([AC_FUNC_WAIT3],[
 dnl# (why is 'realpath' up here, instead of in its alphabetical location?)
 AC_CHECK_FUNCS([canonicalize_file_name realpath])dnl
 AC_CHECK_FUNCS([getrusage])dnl
-AC_CHECK_FUNCS([getuid getgid])dnl
+AC_CHECK_FUNCS([getuid getgid setgid])dnl
 AC_CHECK_FUNCS([pipe poll])dnl
 AC_CHECK_FUNCS([pread pread64])dnl
 AC_CHECK_FUNCS([pwrite pwrite64])dnl
@@ -3379,8 +3389,8 @@ AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
 diag_formatting_opts="-fdiagnostics-show-option -fdiagnostics-color=auto \
--fdiagnostics-show-caret -fdiagnostics-show-labels -fshow-column -ferror-limit=1 \
--fdiagnostics-show-line-numbers -fcolor-diagnostics -Wfatal-errors"
+-fdiagnostics-show-caret -fdiagnostics-show-labels -fshow-column -ferror-limit=9 \
+-fdiagnostics-show-line-numbers -fcolor-diagnostics"
 build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wpointer-arith -Wchar-subscripts \
 -Wunused-value -Wunused-label -Wunused-result \

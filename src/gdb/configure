@@ -44303,7 +44303,7 @@ if test "x${NEXT_STRING_H}" = "x"; then
 fi
 if test "x${enable_gdbtk}" = "xyes"; then
   if test "x${ac_cv_header_X11_Xlib_h}" = "x"; then
-    test -z "${ac_cv_header_X11_Xlib_h}"
+    test -z "${ac_cv_header_X11_Xlib_h}" || unset ac_cv_header_X11_Xlib_h
     ac_fn_c_check_header_compile "$LINENO" "X11/Xlib.h" "ac_cv_header_X11_Xlib_h" "$ac_includes_default"
 if test "x$ac_cv_header_X11_Xlib_h" = xyes
 then :
@@ -44319,7 +44319,7 @@ else
 printf "%s\n" "$as_me: skipping header check only relevant for gdbtk" >&6;}
 fi
 if test "x${ac_cv_header_inttypes_h}" = "x"; then
-  test -z "${ac_cv_header_inttypes_h}"
+  test -z "${ac_cv_header_inttypes_h}" || unset ac_cv_header_inttypes_h
   ac_fn_c_check_header_compile "$LINENO" "inttypes.h" "ac_cv_header_inttypes_h" "$ac_includes_default"
 if test "x$ac_cv_header_inttypes_h" = xyes
 then :
@@ -44329,7 +44329,7 @@ fi
 
 fi
 if test "x${ac_cv_header_stdint_h}" = "x"; then
-  test -z "${ac_cv_header_stdint_h}"
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
   ac_fn_c_check_header_compile "$LINENO" "stdint.h" "ac_cv_header_stdint_h" "$ac_includes_default"
 if test "x$ac_cv_header_stdint_h" = xyes
 then :
@@ -44339,7 +44339,7 @@ fi
 
 fi
 if test "x${ac_cv_header_strings_h}" = "x"; then
-  test -z "${ac_cv_header_strings_h}"
+  test -z "${ac_cv_header_strings_h}" || unset ac_cv_header_strings_h
   ac_fn_c_check_header_compile "$LINENO" "strings.h" "ac_cv_header_strings_h" "$ac_includes_default"
 if test "x$ac_cv_header_strings_h" = xyes
 then :
@@ -44349,7 +44349,7 @@ fi
 
 fi
 if test "x${ac_cv_header_unistd_h}" = "x"; then
-  test -z "${ac_cv_header_unistd_h}"
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
   ac_fn_c_check_header_compile "$LINENO" "unistd.h" "ac_cv_header_unistd_h" "$ac_includes_default"
 if test "x$ac_cv_header_unistd_h" = xyes
 then :
@@ -44923,6 +44923,25 @@ else case e in #(
 esac
 fi
 printf "%s\n" "#define HAVE_DECL_GETCWD $ac_have_decl" >>confdefs.h
+  ## OK
+fi
+
+if test "x${ac_cv_have_decl_setgid}" = "x"; then
+  test -z "${ac_cv_have_decl_setgid}" || unset ac_cv_have_decl_setgid
+  ac_fn_check_decl "$LINENO" "setgid" "ac_cv_have_decl_setgid" "
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+
+" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_setgid" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_SETGID $ac_have_decl" >>confdefs.h
   ## OK
 fi
 
@@ -49006,6 +49025,12 @@ then :
   printf "%s\n" "#define HAVE_GETGID 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "setgid" "ac_cv_func_setgid"
+if test "x$ac_cv_func_setgid" = xyes
+then :
+  printf "%s\n" "#define HAVE_SETGID 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "pipe" "ac_cv_func_pipe"
 if test "x$ac_cv_func_pipe" = xyes
 then :
@@ -52554,8 +52579,8 @@ fi
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
 diag_formatting_opts="-fdiagnostics-show-option -fdiagnostics-color=auto \
--fdiagnostics-show-caret -fdiagnostics-show-labels -fshow-column -ferror-limit=1 \
--fdiagnostics-show-line-numbers -fcolor-diagnostics -Wfatal-errors"
+-fdiagnostics-show-caret -fdiagnostics-show-labels -fshow-column -ferror-limit=9 \
+-fdiagnostics-show-line-numbers -fcolor-diagnostics"
 build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wpointer-arith -Wchar-subscripts \
 -Wunused-value -Wunused-label -Wunused-result \

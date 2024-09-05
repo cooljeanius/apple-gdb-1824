@@ -2109,7 +2109,7 @@ AUTOTOOLS_FORCE_FLAG = @MAINT@ --force
 ## TODO: add more dependencies here:
 config.h.in: @MAINT@ configure.ac
 	if test -x "`which autoheader`"; then \
-	  echo "running autoheader && autoheader $(AUTOTOOLS_FORCE_FLAG); \
+	  echo "running autoheader" && autoheader $(AUTOTOOLS_FORCE_FLAG); \
 	elif test -r config.in && test ! -e config.h.in && test -w .; then \
 	  mv $(AM_V_v) config.in config.h.in; \
 	else \

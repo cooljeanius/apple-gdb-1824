@@ -1,4 +1,4 @@
-/* Native-dependent code for GNU/Linux x86-64.
+/* amd64-linux-nat.c: Native-dependent code for GNU/Linux x86-64.
 
    Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
    Contributed by Jiri Smid, SuSE Labs.
@@ -29,7 +29,13 @@
 #include "gdb_assert.h"
 #include "gdb_string.h"
 #include <sys/ptrace.h>
-#include <sys/debugreg.h>
+#if defined(HAVE_SYS_DEBUGREG_H) || __has_include(<sys/debugreg.h>)
+# include <sys/debugreg.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "amd64-linux-nat.c expects <sys/debugreg.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_DEBUGREG_H */
 #include <sys/syscall.h>
 #include <sys/procfs.h>
 #include <asm/prctl.h>

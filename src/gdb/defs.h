@@ -1530,6 +1530,10 @@ extern struct tm *localtime_r(const time_t *restrict, struct tm *restrict);
 extern char *getcwd(char *, size_t) ATTRIBUTE_W_U_R;
 #endif /* HAVE_GETCWD && !HAVE_DECL_GETCWD */
 
+#if defined(HAVE_SETGID) && (!defined(HAVE_DECL_SETGID) || !HAVE_DECL_SETGID)
+int setgid(gid_t) ATTRIBUTE_W_U_R;
+#endif /* HAVE_SETGID && !HAVE_DECL_SETGID */
+
 /* Various possibilities for alloca: */
 #ifndef alloca
 # ifdef __GNUC__

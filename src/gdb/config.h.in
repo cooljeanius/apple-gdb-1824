@@ -443,6 +443,10 @@
    don't. */
 #undef HAVE_DECL_REALPATH
 
+/* Define to 1 if you have the declaration of 'setgid', and to 0 if you don't.
+   */
+#undef HAVE_DECL_SETGID
+
 /* Define to 1 if you have the declaration of 'setitimer', and to 0 if you
    don't. */
 #undef HAVE_DECL_SETITIMER
@@ -1314,6 +1318,9 @@
 
 /* Define to 1 if you have the 'setenv' function. */
 #undef HAVE_SETENV
+
+/* Define to 1 if you have the 'setgid' function. */
+#undef HAVE_SETGID
 
 /* Define to 1 if you have the 'setitimer' function. */
 #undef HAVE_SETITIMER
