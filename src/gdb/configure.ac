@@ -66,7 +66,7 @@ AH_BOTTOM([
 #endif /* __CONFIG_H__ */
 ])dnl
 
-if test -e ${srcdir}/development.sh; then
+if test -e ${srcdir}/development.sh && test -r ${srcdir}/development.sh; then
   # Set the 'development' global.
   AC_MSG_NOTICE([sourcing ${srcdir}/development.sh for gdb])
   . ${srcdir}/development.sh
@@ -158,7 +158,7 @@ AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu \
                   dist-bzip2 dist-xz dist-zip dist-tarZ])dnl
   ## make sure this is in the right place:
 if test -x ${srcdir}/missing; then
-  test -e missing
+  test -e missing && test -r missing && test -s missing && stat missing
   AM_SANITY_CHECK dnl# might as well put these here, too:
   m4_ifdef([AC_REQUIRE_AUX_FILE],[
     AC_REQUIRE_AUX_FILE([compile])dnl
@@ -424,7 +424,7 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
                [LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"],[])
 LDFLAGS="${pre_saved_LDFLAGS}"
 if test "x${LD_ARCHFLAGS}" != "x"; then
-  test -n "${LD_ARCHFLAGS}"
+  test -n "${LD_ARCHFLAGS}" && sync
   AC_MSG_RESULT([${LD_ARCHFLAGS}])
   if test "x${ERROR_ON_WARNING}" = "xyes"; then
     if test "x${WARN_LDFLAGS}" != "x"; then
@@ -436,7 +436,7 @@ if test "x${LD_ARCHFLAGS}" != "x"; then
   AC_SUBST([LD_ARCHFLAGS])dnl
   ## that should be all we need to do with them for now...
 else
-  test -z "${LD_ARCHFLAGS}"
+  test -z "${LD_ARCHFLAGS}" || unset LD_ARCHFLAGS
   AC_MSG_RESULT([none])
 fi
 
@@ -467,7 +467,7 @@ AC_CHECK_LIB([intl],[gettext],[:],[
   AC_CHECK_LIB([intl],[libintl_gettext],[:],[
     if test -x "`which ld`" && test "x${LD}" != "xld-136"; then
       if test "x${ac_cv_lib_intl_main}" = "x" && test "x${LD}" = "Y0"; then
-        test -z "${ac_cv_lib_intl_main}"
+        test -z "${ac_cv_lib_intl_main}" || unset ac_cv_lib_intl_main
         ## neither worked:
         PRE_INTL_LDFLAGS="${LDFLAGS}"
         LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
@@ -482,7 +482,7 @@ AC_CHECK_LIB([intl],[gettext],[:],[
   ## just in case:
 if test -x "`which ld`" && test "x${LD}" != "xld-136"; then
   if test "x${ac_cv_lib_intl_libintl_dgettext}" = "x"; then
-    test -z "${ac_cv_lib_intl_libintl_dgettext}"
+    test -z "${ac_cv_lib_intl_libintl_dgettext}" && sync
     ## like above:
     PRE_LIBINTL_LDFLAGS="${LDFLAGS}"
     LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
@@ -577,7 +577,7 @@ AC_ARG_VAR([MAKEINFOFLAGS],
 
 MAKEINFO_EXTRA_FLAGS=""
 if test "x${MAKEINFO}" != "x"; then
-  test -n "${MAKEINFO}"
+  test -n "${MAKEINFO}" && echo "MAKEINFO is: '${MAKEINFO}'"
   AC_CACHE_CHECK([whether ${MAKEINFO} supports @click],
                  [gdb_cv_have_makeinfo_click],
     [echo '@clicksequence{a @click{} b}' >conftest.texinfo
@@ -604,8 +604,8 @@ AC_ARG_WITH([separate-debug-dir],
 AC_DEFINE_DIR([DEBUGDIR],[debugdir],
               [Global directory for separate debug files. ])dnl
   ## in case the above failed:
-if test -z "${DEBUGDIR}" -a ! -z "${debugdir}" -a "x${GCC}" = "xno"; then
-  test -d "${debugdir}"
+if test -z "${DEBUGDIR}" -a -n "${debugdir}" -a "x${GCC}" = "xno"; then
+  test -d "${debugdir}" && echo "debugdir is: '${debugdir}'"
   AC_DEFINE_UNQUOTED([DEBUGDIR],["${debugdir}"],
                      [Global directory for separate debug files. ])dnl
   ## 2...
@@ -630,7 +630,7 @@ AC_ARG_WITH([gnulib],
             [recurse_into_gnulib=no])dnl
   ## now use that flag:
 if test -d ${srcdir}/gnulib && test "x${recurse_into_gnulib}" = "xyes"; then
-  test -n "${recurse_into_gnulib}"
+  test -n "${recurse_into_gnulib}" && test -d gnulib && sync
   if test -f ${GNULIB_IMPORT_DIR}/m4/posixcheck.m4; then
     export POSIXCHECK_CPPFLAGS="-DGNULIB_POSIXCHECK"
     AC_SUBST([POSIXCHECK_CPPFLAGS])dnl
@@ -883,25 +883,25 @@ m4_ifdef([ACX_PKGVERSION],[
 ACX_PKGVERSION([GDB])dnl
   ## corresponding define:
 if test "x${PKGVERSION}" != "x"; then
-  test -n "${PKGVERSION}"
+  test -n "${PKGVERSION}" && echo "PKGVERSION is: '${PKGVERSION}'"
   AC_DEFINE_UNQUOTED([PKGVERSION],["${PKGVERSION}"],
                      [Additional package description])dnl
   ## end definition
 fi
 ],[
-  test -z "${PKGVERSION}"
+  test -z "${PKGVERSION}" && sync
 ])dnl
 m4_ifdef([ACX_BUGURL],[
 ACX_BUGURL([http://www.gnu.org/software/gdb/bugs/])dnl
   ## corresponding define:
 if test "x${REPORT_BUGS_TO}" != "x"; then
-  test -n "${REPORT_BUGS_TO}"
+  test -n "${REPORT_BUGS_TO}" && echo "REPORT_BUGS_TO: '${REPORT_BUGS_TO}'"
   AC_DEFINE_UNQUOTED([REPORT_BUGS_TO],["${REPORT_BUGS_TO}"],
                      [Bug reporting address])dnl
   ## end definition
 fi
 ],[
-  test -z "${REPORT_BUGS_TO}"
+  test -z "${REPORT_BUGS_TO}" && sync
 ])dnl
 
 # --------------------- #
@@ -914,10 +914,10 @@ AN_PROGRAM([ar],[AM_PROG_AR])dnl
 AN_MAKEVAR([AR],[AM_PROG_AR])dnl
   ## automake has a better check for the proper archiver:
 if test -x "`which automake`"; then
-  test -z "${AR}"
+  test -z "${AR}" || unset AR
   AM_PROG_AR
 else
-  test -z "${AR}"
+  test -z "${AR}" || unset AR
   AC_CHECK_TOOLS([AR],[ar gar],[],[${PATH}:./../binutils])dnl
   ## 2...
 fi
@@ -991,10 +991,10 @@ AC_OPENMP
 AC_MSG_CHECKING([other programs])
 AC_MSG_RESULT([ ])
 if test "x${AWK}" = "x"; then
-  test -z "${AWK}"
+  test -z "${AWK}" || unset AWK
   AC_PROG_AWK
 else
-  test ! -z "${AWK}" && export AWK
+  test -n "${AWK}" && export AWK
   AC_SUBST([AWK])dnl
   ## gotta do something here...
 fi
@@ -1002,7 +1002,7 @@ if test -d ./../fixincludes; then
   ## not really sure which of the programs it has to actually check for:
   AC_PATH_PROG([FIXINCL],[fixincl],[],[],[${PATH}:./../fixincludes])dnl
   ## this one is just a shell script, so nvm:
-  test -x ./../fixincludes/fixinc.sh
+  test -x ./../fixincludes/fixinc.sh || echo "fixinc.sh missing from fixincludes"
 fi
 AC_PROG_INSTALL
 AM_PROG_INSTALL_STRIP
@@ -1013,7 +1013,7 @@ AC_PROG_MKDIR_P dnl# might have already been called
 AM_PATH_PYTHON dnl# for python integration
 AC_PROG_OBJC
 if test "x${OBJCPP}" = "x" && test -e /lib/cpp; then
-  test -z "${OBJCPP}" && test -x /lib/cpp
+  test -z "${OBJCPP}" && test -x /lib/cpp && test -r /lib/cpp && stat /lib/cpp
   AC_PROG_OBJCPP
 else
   test -n "${OBJCPP}" && test -x "${OBJCPP}" && stat "${OBJCPP}"
@@ -1023,10 +1023,10 @@ fi
 AC_PROG_OBJCXX
 AC_PROG_OBJCXXCPP
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   AC_PROG_RANLIB
 else
-  test ! -z "${RANLIB}" && export RANLIB
+  test -n "${RANLIB}" && export RANLIB
   AC_SUBST([RANLIB])dnl
   ## gotta do something here...
 fi
@@ -1372,7 +1372,7 @@ LDFLAGS="${PRE_V_LDFLAGS}"
 AC_SUBST([PRE_V_LDFLAGS])dnl
   ## ...and also:
 if test "x${LD_VERBOSEFLAGS}" != "x"; then
-  test -n "${LD_VERBOSEFLAGS}"
+  test -n "${LD_VERBOSEFLAGS}" && sync
   AC_MSG_RESULT([${LD_VERBOSEFLAGS}])
   if test "x${WARN_LDFLAGS}" != "x"; then
     test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_VERBOSEFLAGS}"
@@ -1382,7 +1382,7 @@ if test "x${LD_VERBOSEFLAGS}" != "x"; then
   AC_SUBST([LD_VERBOSEFLAGS])dnl
   ## that should be all we need to do with them for now...
 else
-  test -z "${LD_VERBOSEFLAGS}"
+  test -z "${LD_VERBOSEFLAGS}" || unset LD_VERBOSEFLAGS
   AC_MSG_RESULT([none])
 fi
 
@@ -1571,7 +1571,7 @@ AC_CHECK_HEADERS([sys/file.h])dnl
 AC_CHECK_HEADERS([sys/filio.h])dnl
 AC_CHECK_HEADERS([sys/ioctl.h])dnl
 if test "x${ac_cv_header_sys_procfs_h}" = "x"; then
-  test -z "${ac_cv_header_sys_procfs_h}"
+  test -z "${ac_cv_header_sys_procfs_h}" || unset ac_cv_header_sys_procfs_h
   AC_CHECK_HEADERS([sys/procfs.h])
 fi
 AC_CHECK_HEADERS([sys/proc.h],[],[],[
@@ -1587,7 +1587,7 @@ AC_CHECK_HEADERS([sys/ptrace.h ptrace.h])dnl
 AC_CHECK_HEADERS([sys/resource.h])dnl
 AC_CHECK_HEADERS([sys/reg.h sys/debugreg.h])dnl
 if test "x${ac_cv_header_sys_select_h}" = "x"; then
-  test -z "${ac_cv_header_sys_select_h}"
+  test -z "${ac_cv_header_sys_select_h}" || unset ac_cv_header_sys_select_h
   AC_CHECK_HEADERS([sys/select.h])
 fi
 AC_CHECK_HEADERS([sys/syscall.h])dnl
@@ -1602,7 +1602,7 @@ AC_CHECK_HEADERS([sys/user.h],[],[],[
 ])dnl
   ## in case this failed to be checked:
 if test "x${ac_cv_header_sys_wait_h}" = "x"; then
-  test -z "${ac_cv_header_sys_wait_h}"
+  test -z "${ac_cv_header_sys_wait_h}" || unset ac_cv_header_sys_wait_h
   AC_CHECK_HEADERS([sys/wait.h])
 fi
 AC_CHECK_HEADERS([wait.h])dnl
@@ -1639,7 +1639,7 @@ AC_CHECK_HEADERS([term.h],[],[],[
 # ^How about "why not?"?
 AC_CHECK_HEADERS([ctype.h time.h])dnl
 
-# Other headers that autoscan complains about:
+# Other headers that autoscan complains about, or that might just be nice to check:
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_TIME
 if test -d ../intl; then
@@ -1663,11 +1663,10 @@ unset ac_cv_header_nl_types_h
 unset ac_cv_header_sys_param_h
 unset ac_cv_header_sys_socket_h
 unset ac_cv_header_wchar_h
-AC_CHECK_HEADERS([arpa/inet.h langinfo.h libintl.h limits.h locale.h \
-                  mach/mach.h malloc.h malloc/malloc.h netdb.h \
-                  netinet/in.h nl_types.h paths.h sys/param.h \
-                  sys/socket.h sys/sysctl.h sys/time.h utmp.h \
-                  wchar.h wctype.h])dnl
+AC_CHECK_HEADERS([arpa/inet.h asm/prctl.h langinfo.h libintl.h limits.h \
+                  locale.h mach/mach.h malloc.h malloc/malloc.h netdb.h \
+                  netinet/in.h nl_types.h paths.h sys/param.h sys/socket.h \
+                  sys/sysctl.h sys/time.h utmp.h wchar.h wctype.h])dnl
 
 # The Makefile says this could be in /usr/include/sys if the OS violates
 # POSIX, so check both places:
@@ -1861,7 +1860,7 @@ fi
 dnl# just skip the first one; getting different results from the two
 dnl# conftests can lead to warnings:
 if test "x${ac_cv_have_decl_sys_siglist}" = "x" && test "x" = "Y0"; then
-  test -z "${ac_cv_have_decl_sys_siglist}"
+  test -z "${ac_cv_have_decl_sys_siglist}" || unset ac_cv_have_decl_sys_siglist
   AC_CHECK_DECLS([sys_siglist])dnl
   ## end bad check for sys_siglist
 fi
@@ -1940,7 +1939,7 @@ m4_ifdef([AM_LC_MESSAGES],[
   AM_LC_MESSAGES
 ],[
   if test "x${am_cv_val_LC_MESSAGES}" = "x"; then
-    test -z "${am_cv_val_LC_MESSAGES}"
+    test -z "${am_cv_val_LC_MESSAGES}" && sync
     AC_MSG_WARN([might have skipped check for LC_MESSAGES])
   elif test "x${am_cv_val_LC_MESSAGES}" != "xyes"; then
     AC_MSG_WARN([we might be missing support for LC_MESSAGES])
@@ -2053,7 +2052,7 @@ AC_TYPE_INT32_T
 AC_TYPE_INT64_T
 AC_TYPE_INTMAX_T
 if test "x${ac_cv_type_mbstate_t}" = "x"; then
-  test -z "${ac_cv_type_mbstate_t}"
+  test -z "${ac_cv_type_mbstate_t}" || unset ac_cv_type_mbstate_t
   AC_TYPE_MBSTATE_T
 fi
 AC_TYPE_MODE_T
@@ -2219,7 +2218,7 @@ AC_CHECK_TYPES([mach_port_t],[],[],[
 ])dnl
   ## if we have that type, then check for this function, as well:
 if test "x${ac_cv_type_mach_port_t}" = "xyes"; then
-  test -n "${ac_cv_type_mach_port_t}"
+  test -n "${ac_cv_type_mach_port_t}" && sync
   AC_CHECK_FUNCS([mach_port_get_receive_status])dnl
   ## (for macosx-nat-inferior-debug.c)
 fi
@@ -2324,7 +2323,7 @@ if test -f Makefile.in; then
   if test -n "`grep -i alloca Makefile.in`"; then
     if test "x${ac_cv_working_alloca_h}" = "x"; then
       stat Makefile.in >/dev/null
-      test -z "${ac_cv_working_alloca_h}"
+      test -z "${ac_cv_working_alloca_h}" || unset ac_cv_working_alloca_h
       test -n "${ac_cv_func_alloca_works}" && unset ac_cv_func_alloca_works
       AC_FUNC_ALLOCA
       if test "x${ac_cv_func_alloca_works}" = "xno"; then
@@ -2348,7 +2347,7 @@ AC_FUNC_GETPGRP
 AC_FUNC_LSTAT
 AC_FUNC_MALLOC
 if test "x${ac_cv_func_mbrtowc}" = "x"; then
-  test -z "${ac_cv_func_mbrtowc}"
+  test -z "${ac_cv_func_mbrtowc}" || unset ac_cv_func_mbrtowc
   AC_FUNC_MBRTOWC
 fi
 AC_FUNC_MEMCMP
@@ -2377,7 +2376,7 @@ m4_ifdef([AC_FUNC_WAIT3],[
     AC_FUNC_WAIT3
   else
     if test "x${ac_cv_func_wait3}" = "x"; then
-      test -z "${ac_cv_func_wait3}"
+      test -z "${ac_cv_func_wait3}" || unset ac_cv_func_wait3
       AC_CHECK_FUNCS([wait3])
     fi
   fi
@@ -2398,7 +2397,7 @@ AC_CHECK_FUNCS([ttrace])dnl
 AC_CHECK_FUNCS([wborder wresize])dnl
   ## might have already been checked:
 if test "x${ac_cv_func_setlocale}" = "x"; then
-  test -z "${ac_cv_func_setlocale}"
+  test -z "${ac_cv_func_setlocale}" || unset ac_cv_func_setlocale
   AC_CHECK_FUNCS([setlocale])dnl
   ## ok
 fi
@@ -2435,17 +2434,17 @@ AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero clnt_pcreateerror \
 
 dnl# Use as a replacement for just-plain sprintf:
 if test "x${ac_cv_func_snprintf}" = "x"; then
-  test -z "${ac_cv_func_snprintf}"
+  test -z "${ac_cv_func_snprintf}" || unset ac_cv_func_snprintf
   AC_CHECK_FUNCS([snprintf])
 fi
 dnl# might be checked elsewhere?
 if test "x${ac_cv_func_connect}" = "x"; then
-  test -z "${ac_cv_func_connect}"
+  test -z "${ac_cv_func_connect}" || unset ac_cv_func_connect
   AC_CHECK_FUNCS([connect])
 fi
 dnl# checked by the check for mmap:
 if test "x${ac_cv_func_getpagesize}" = "x"; then
-  test -z "${ac_cv_func_getpagesize}"
+  test -z "${ac_cv_func_getpagesize}" || unset ac_cv_func_getpagesize
   AC_CHECK_FUNCS([getpagesize])
 fi
 
@@ -2826,6 +2825,12 @@ int main(void)
     AC_DEFINE([HAVE_PROCFS_PIOCSET],[1],
               [Define if ioctl argument PIOCSET is available.])
   fi
+
+  ## Something that might already exist:
+  if test "x${ac_cv_header_proc_service_h}" = "xyes"; then
+    AC_CHECK_FUNCS([ps_get_thread_area])
+    AC_CHECK_DECLS([ps_get_thread_area],[],[],[#include <proc_service.h>])
+  fi
 else
   AC_MSG_NOTICE([skipping checks that require a working procfs])
 fi
@@ -2950,12 +2955,12 @@ AC_DEFUN([AC_REQUIRE_LONG_LONG_TYPES],[
   m4_ifdef([AC_TYPE_LONG_LONG_INT],[
     AC_REQUIRE([AC_TYPE_LONG_LONG_INT])dnl
   ],[
-    test -z "${ac_cv_type_long_long_int}"
+    test -z "${ac_cv_type_long_long_int}" && sync
   ])dnl
   m4_ifdef([AC_TYPE_UNSIGNED_LONG_LONG_INT],[
     AC_REQUIRE([AC_TYPE_UNSIGNED_LONG_LONG_INT])dnl
   ],[
-    test -z "${ac_cv_type_unsigned_long_long_int}"
+    test -z "${ac_cv_type_unsigned_long_long_int}" && sync
   ])dnl
 ])dnl
 AC_REQUIRE_LONG_LONG_TYPES dnl# might actually get done earlier...
@@ -3588,7 +3593,7 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
   ## mig typechecks cause parameters that would otherwise be unused to be
   ## used, triggering this:
   if test "x${MIG_CHECKING}" = "x"; then
-    test -z "${MIG_CHECKING}"
+    test -z "${MIG_CHECKING}" && sync
     build_warnings="${build_warnings} -Wused-but-marked-unused"
   fi
   ## the clang version of this warning is un-pluralized, unlike in GCC:
@@ -3842,7 +3847,7 @@ then
     done
     AC_MSG_RESULT([using: ${WARN_CFLAGS}${WERROR_CFLAGS}])
     if test "x${BAD_WARN_CFLAGS}" != "x"; then
-      test -n "${BAD_WARN_CFLAGS}"
+      test -n "${BAD_WARN_CFLAGS}" && sync
       AC_MSG_WARN([compiler failed to accept: ${BAD_WARN_CFLAGS}])
     fi
 fi
@@ -3869,9 +3874,9 @@ then
 	esac
     done
     if test "x${WERROR_CFLAGS}" != "x"; then
-      test -n "${WERROR_CFLAGS}"
+      test -n "${WERROR_CFLAGS}" && sync
       if test "x${LD_ARCHFLAGS}" != "x"; then
-        test -n "${LD_ARCHFLAGS}"
+        test -n "${LD_ARCHFLAGS}" && sync
         if test "x${WARN_LDFLAGS}" != "x"; then
           test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_ARCHFLAGS}"
         else
@@ -4018,9 +4023,9 @@ m4_ifdef([GDB_AC_CHECK_BFD],[
     CONFIG_OBS="${CONFIG_OBS} somread.o"
   fi
 ],[
-  test -z "${gdb_cv_var_elf}"
-  test -z "${gdb_cv_var_macho}"
-  test -z "${gdb_cv_var_som}"
+  test -z "${gdb_cv_var_elf}" && sync
+  test -z "${gdb_cv_var_macho}" && sync
+  test -z "${gdb_cv_var_som}" && sync
   AC_MSG_WARN([skipping checks for what formats bfd supports.])dnl
 ])dnl##end ifdef
 
@@ -4516,7 +4521,7 @@ links=""
 rm -f xm.h
 xm_h=""
 if test "x${hostfile}" != "x"; then
-    test -n "${hostfile}"
+    test -n "${hostfile}" && echo "hostfile is: '${hostfile}'"
     xm_h=xm.h
     case "${hostfile}" in
       xm-*.h ) GDB_XM_FILE="config/${gdb_host_cpu}/${hostfile}" ;;
@@ -4526,7 +4531,7 @@ if test "x${hostfile}" != "x"; then
     links="${links} xm.h"
     AC_DEFINE_UNQUOTED([GDB_XM_FILE],["${GDB_XM_FILE}"],[hostfile])
 else
-    test -z "${hostfile}"
+    test -z "${hostfile}" && sync
     AC_MSG_WARN([unsure what to use for hostfile])
 fi
 AC_SUBST([xm_h])dnl
@@ -4534,7 +4539,7 @@ AC_SUBST([xm_h])dnl
 rm -f tm.h
 tm_h=""
 if test "x${targetfile}" != "x"; then
-    test -n "${targetfile}"
+    test -n "${targetfile}" && echo "targetfile is: '${targetfile}'"
     tm_h=tm.h
     case "${targetfile}" in
       tm-*.h ) GDB_TM_FILE="config/${gdb_target_cpu}/${targetfile}" ;;
@@ -4544,7 +4549,7 @@ if test "x${targetfile}" != "x"; then
     links="${links} tm.h"
     AC_DEFINE_UNQUOTED([GDB_TM_FILE],["${GDB_TM_FILE}"],[targetfile])
 else
-    test -z "${targetfile}"
+    test -z "${targetfile}" && sync
     AC_MSG_WARN([unsure what to use for targetfile])
 fi
 AC_SUBST([tm_h])dnl
@@ -4552,7 +4557,7 @@ AC_SUBST([tm_h])dnl
 rm -f nm.h
 nm_h=""
 if test "x${nativefile}" != "x"; then
-    test -n "${nativefile}"
+    test -n "${nativefile}" && echo "nativefile is: '${nativefile}'"
     nm_h=nm.h
     case "${nativefile}" in
       nm-*.h ) GDB_NM_FILE="config/${gdb_host_cpu}/${nativefile}" ;;
@@ -4562,24 +4567,24 @@ if test "x${nativefile}" != "x"; then
     links="${links} nm.h"
     AC_DEFINE_UNQUOTED([GDB_NM_FILE],["${GDB_NM_FILE}"],[nativefile])
 else
-    test -z "${nativefile}"
+    test -z "${nativefile}" && sync
     AC_MSG_WARN([unsure what to use for nativefile])
 fi
 AC_SUBST([nm_h])dnl
 
 if test "x${files}" = "x"; then
-  test -z "${files}"
+  test -z "${files}" && sync
   AC_MSG_WARN([the files variable is empty; not making symlinks.])
 else
-  test ! -z "${files}"
+  test -n "${files}" && sync
   AC_MSG_NOTICE([files should be "${files}"])
 fi
 
 if test "x${links}" = "x"; then
-  test -z "${links}"
+  test -z "${links}" && sync
   AC_MSG_WARN([the links variable is empty; not making symlinks.])
 else
-  test ! -z "${links}"
+  test -n "${links}" && sync
   AC_MSG_NOTICE([links should be "${links}"])
 fi
 

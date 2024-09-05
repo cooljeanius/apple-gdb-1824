@@ -4564,7 +4564,7 @@ if test "x${APPLE_INTERNAL_DIR}" = "x/AppleInternal"; then
 fi
 
 
-if test -e ${srcdir}/development.sh; then
+if test -e ${srcdir}/development.sh && test -r ${srcdir}/development.sh; then
   # Set the 'development' global.
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: sourcing ${srcdir}/development.sh for gdb" >&5
 printf "%s\n" "$as_me: sourcing ${srcdir}/development.sh for gdb" >&6;}
@@ -8624,7 +8624,7 @@ fi
 
   ## make sure this is in the right place:
 if test -x ${srcdir}/missing; then
-  test -e missing
+  test -e missing && test -r missing && test -s missing && stat missing
 
 # This check should not be cached, as it may vary across builds of
 # different projects.
@@ -9393,7 +9393,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
     conftest$ac_exeext conftest.$ac_ext
 LDFLAGS="${pre_saved_LDFLAGS}"
 if test "x${LD_ARCHFLAGS}" != "x"; then
-  test -n "${LD_ARCHFLAGS}"
+  test -n "${LD_ARCHFLAGS}" && sync
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${LD_ARCHFLAGS}" >&5
 printf "%s\n" "${LD_ARCHFLAGS}" >&6; }
   if test "x${ERROR_ON_WARNING}" = "xyes"; then
@@ -9405,7 +9405,7 @@ printf "%s\n" "${LD_ARCHFLAGS}" >&6; }
   fi
     ## that should be all we need to do with them for now...
 else
-  test -z "${LD_ARCHFLAGS}"
+  test -z "${LD_ARCHFLAGS}" || unset LD_ARCHFLAGS
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: none" >&5
 printf "%s\n" "none" >&6; }
 fi
@@ -11101,7 +11101,7 @@ else case e in #(
   e)
     if test -x "`which ld`" && test "x${LD}" != "xld-136"; then
       if test "x${ac_cv_lib_intl_main}" = "x" && test "x${LD}" = "Y0"; then
-        test -z "${ac_cv_lib_intl_main}"
+        test -z "${ac_cv_lib_intl_main}" || unset ac_cv_lib_intl_main
         ## neither worked:
         PRE_INTL_LDFLAGS="${LDFLAGS}"
         LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
@@ -11160,7 +11160,7 @@ fi
   ## just in case:
 if test -x "`which ld`" && test "x${LD}" != "xld-136"; then
   if test "x${ac_cv_lib_intl_libintl_dgettext}" = "x"; then
-    test -z "${ac_cv_lib_intl_libintl_dgettext}"
+    test -z "${ac_cv_lib_intl_libintl_dgettext}" && sync
     ## like above:
     PRE_LIBINTL_LDFLAGS="${LDFLAGS}"
     LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
@@ -11313,7 +11313,7 @@ printf "%s\n" "$as_me: done with Cygnus gettext checks" >&6;}
 
 MAKEINFO_EXTRA_FLAGS=""
 if test "x${MAKEINFO}" != "x"; then
-  test -n "${MAKEINFO}"
+  test -n "${MAKEINFO}" && echo "MAKEINFO is: '${MAKEINFO}'"
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${MAKEINFO} supports @click" >&5
 printf %s "checking whether ${MAKEINFO} supports @click... " >&6; }
 if test ${gdb_cv_have_makeinfo_click+y}
@@ -11356,8 +11356,8 @@ fi
 printf "%s\n" "#define DEBUGDIR \"${ac_define_dir}\"" >>confdefs.h
 
     ## in case the above failed:
-if test -z "${DEBUGDIR}" -a ! -z "${debugdir}" -a "x${GCC}" = "xno"; then
-  test -d "${debugdir}"
+if test -z "${DEBUGDIR}" -a -n "${debugdir}" -a "x${GCC}" = "xno"; then
+  test -d "${debugdir}" && echo "debugdir is: '${debugdir}'"
 
 printf "%s\n" "#define DEBUGDIR \"${debugdir}\"" >>confdefs.h
   ## 2...
@@ -11388,7 +11388,7 @@ esac
 fi
   ## now use that flag:
 if test -d ${srcdir}/gnulib && test "x${recurse_into_gnulib}" = "xyes"; then
-  test -n "${recurse_into_gnulib}"
+  test -n "${recurse_into_gnulib}" && test -d gnulib && sync
   if test -f ${GNULIB_IMPORT_DIR}/m4/posixcheck.m4; then
     export POSIXCHECK_CPPFLAGS="-DGNULIB_POSIXCHECK"
         ## just to see...
@@ -12073,7 +12073,7 @@ esac
 fi
     ## corresponding define:
 if test "x${PKGVERSION}" != "x"; then
-  test -n "${PKGVERSION}"
+  test -n "${PKGVERSION}" && echo "PKGVERSION is: '${PKGVERSION}'"
 
 printf "%s\n" "#define PKGVERSION \"${PKGVERSION}\"" >>confdefs.h
   ## end definition
@@ -12109,7 +12109,7 @@ fi
   esac;
       ## corresponding define:
 if test "x${REPORT_BUGS_TO}" != "x"; then
-  test -n "${REPORT_BUGS_TO}"
+  test -n "${REPORT_BUGS_TO}" && echo "REPORT_BUGS_TO: '${REPORT_BUGS_TO}'"
 
 printf "%s\n" "#define REPORT_BUGS_TO \"${REPORT_BUGS_TO}\"" >>confdefs.h
   ## end definition
@@ -12125,7 +12125,7 @@ printf %s "checking programs... " >&6; }
 printf "%s\n" " " >&6; }
   ## automake has a better check for the proper archiver:
 if test -x "`which automake`"; then
-  test -z "${AR}"
+  test -z "${AR}" || unset AR
 
   if test -n "$ac_tool_prefix"; then
   for ac_prog in ar lib "link -lib"
@@ -12315,7 +12315,7 @@ unknown)
 esac
 
 else
-  test -z "${AR}"
+  test -z "${AR}" || unset AR
   if test -n "$ac_tool_prefix"; then
   for ac_prog in ar gar
   do
@@ -35708,7 +35708,7 @@ printf %s "checking other programs... " >&6; }
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result:  " >&5
 printf "%s\n" " " >&6; }
 if test "x${AWK}" = "x"; then
-  test -z "${AWK}"
+  test -z "${AWK}" || unset AWK
   for ac_prog in gawk mawk nawk awk
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -35758,7 +35758,7 @@ fi
 done
 
 else
-  test ! -z "${AWK}" && export AWK
+  test -n "${AWK}" && export AWK
     ## gotta do something here...
 fi
 if test -d ./../fixincludes; then
@@ -35809,7 +35809,7 @@ printf "%s\n" "no" >&6; }
 fi
 
   ## this one is just a shell script, so nvm:
-  test -x ./../fixincludes/fixinc.sh
+  test -x ./../fixincludes/fixinc.sh || echo "fixinc.sh missing from fixincludes"
 fi
 
 # Installed binaries are usually stripped using 'strip' when the user
@@ -37110,7 +37110,7 @@ fi
 
 
 if test "x${OBJCPP}" = "x" && test -e /lib/cpp; then
-  test -z "${OBJCPP}" && test -x /lib/cpp
+  test -z "${OBJCPP}" && test -x /lib/cpp && test -r /lib/cpp && stat /lib/cpp
   ac_ext=m
 ac_cpp='$OBJCPP $CPPFLAGS'
 ac_compile='$OBJC -c $OBJCFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -37788,7 +37788,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -37894,7 +37894,7 @@ else
 fi
 
 else
-  test ! -z "${RANLIB}" && export RANLIB
+  test -n "${RANLIB}" && export RANLIB
     ## gotta do something here...
 fi
 # Extract the first word of "runtest", so it can be a program name with args.
@@ -40388,7 +40388,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 LDFLAGS="${PRE_V_LDFLAGS}"
   ## ...and also:
 if test "x${LD_VERBOSEFLAGS}" != "x"; then
-  test -n "${LD_VERBOSEFLAGS}"
+  test -n "${LD_VERBOSEFLAGS}" && sync
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${LD_VERBOSEFLAGS}" >&5
 printf "%s\n" "${LD_VERBOSEFLAGS}" >&6; }
   if test "x${WARN_LDFLAGS}" != "x"; then
@@ -40398,7 +40398,7 @@ printf "%s\n" "${LD_VERBOSEFLAGS}" >&6; }
   fi
     ## that should be all we need to do with them for now...
 else
-  test -z "${LD_VERBOSEFLAGS}"
+  test -z "${LD_VERBOSEFLAGS}" || unset LD_VERBOSEFLAGS
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: none" >&5
 printf "%s\n" "none" >&6; }
 fi
@@ -42052,7 +42052,7 @@ then :
 
 fi
 if test "x${ac_cv_header_sys_procfs_h}" = "x"; then
-  test -z "${ac_cv_header_sys_procfs_h}"
+  test -z "${ac_cv_header_sys_procfs_h}" || unset ac_cv_header_sys_procfs_h
   ac_fn_c_check_header_compile "$LINENO" "sys/procfs.h" "ac_cv_header_sys_procfs_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_procfs_h" = xyes
 then :
@@ -42107,7 +42107,7 @@ then :
 
 fi
 if test "x${ac_cv_header_sys_select_h}" = "x"; then
-  test -z "${ac_cv_header_sys_select_h}"
+  test -z "${ac_cv_header_sys_select_h}" || unset ac_cv_header_sys_select_h
   ac_fn_c_check_header_compile "$LINENO" "sys/select.h" "ac_cv_header_sys_select_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_select_h" = xyes
 then :
@@ -42139,7 +42139,7 @@ then :
 fi
   ## in case this failed to be checked:
 if test "x${ac_cv_header_sys_wait_h}" = "x"; then
-  test -z "${ac_cv_header_sys_wait_h}"
+  test -z "${ac_cv_header_sys_wait_h}" || unset ac_cv_header_sys_wait_h
   ac_fn_c_check_header_compile "$LINENO" "sys/wait.h" "ac_cv_header_sys_wait_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_wait_h" = xyes
 then :
@@ -42365,7 +42365,7 @@ then :
 
 fi
 
-# Other headers that autoscan complains about:
+# Other headers that autoscan complains about, or that might just be nice to check:
 ac_fn_c_check_type "$LINENO" "_Bool" "ac_cv_type__Bool" "$ac_includes_default"
 if test "x$ac_cv_type__Bool" = xyes
 then :
@@ -42503,6 +42503,12 @@ ac_fn_c_check_header_compile "$LINENO" "arpa/inet.h" "ac_cv_header_arpa_inet_h" 
 if test "x$ac_cv_header_arpa_inet_h" = xyes
 then :
   printf "%s\n" "#define HAVE_ARPA_INET_H 1" >>confdefs.h
+
+fi
+ac_fn_c_check_header_compile "$LINENO" "asm/prctl.h" "ac_cv_header_asm_prctl_h" "$ac_includes_default"
+if test "x$ac_cv_header_asm_prctl_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_ASM_PRCTL_H 1" >>confdefs.h
 
 fi
 ac_fn_c_check_header_compile "$LINENO" "langinfo.h" "ac_cv_header_langinfo_h" "$ac_includes_default"
@@ -44946,7 +44952,7 @@ printf "%s\n" "#define HAVE_DECL_SETGID $ac_have_decl" >>confdefs.h
 fi
 
 if test "x${ac_cv_have_decl_sys_siglist}" = "x" && test "x" = "Y0"; then
-  test -z "${ac_cv_have_decl_sys_siglist}"
+  test -z "${ac_cv_have_decl_sys_siglist}" || unset ac_cv_have_decl_sys_siglist
   ac_fn_check_decl "$LINENO" "sys_siglist" "ac_cv_have_decl_sys_siglist" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
 if test "x$ac_cv_have_decl_sys_siglist" = xyes
 then :
@@ -45783,7 +45789,7 @@ fi
 
 
 if test "x${ac_cv_type_mbstate_t}" = "x"; then
-  test -z "${ac_cv_type_mbstate_t}"
+  test -z "${ac_cv_type_mbstate_t}" || unset ac_cv_type_mbstate_t
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for mbstate_t" >&5
 printf %s "checking for mbstate_t... " >&6; }
 if test ${ac_cv_type_mbstate_t+y}
@@ -46706,7 +46712,7 @@ printf "%s\n" "#define HAVE_MACH_PORT_T 1" >>confdefs.h
 fi
   ## if we have that type, then check for this function, as well:
 if test "x${ac_cv_type_mach_port_t}" = "xyes"; then
-  test -n "${ac_cv_type_mach_port_t}"
+  test -n "${ac_cv_type_mach_port_t}" && sync
   ac_fn_c_check_func "$LINENO" "mach_port_get_receive_status" "ac_cv_func_mach_port_get_receive_status"
 if test "x$ac_cv_func_mach_port_get_receive_status" = xyes
 then :
@@ -47452,7 +47458,7 @@ if test -f Makefile.in; then
   if test -n "`grep -i alloca Makefile.in`"; then
     if test "x${ac_cv_working_alloca_h}" = "x"; then
       stat Makefile.in >/dev/null
-      test -z "${ac_cv_working_alloca_h}"
+      test -z "${ac_cv_working_alloca_h}" || unset ac_cv_working_alloca_h
       test -n "${ac_cv_func_alloca_works}" && unset ac_cv_func_alloca_works
       # The Ultrix 4.2 mips builtin alloca declared by alloca.h only works
 # for constant arguments.  Useless!
@@ -48217,7 +48223,7 @@ fi
 
 
 if test "x${ac_cv_func_mbrtowc}" = "x"; then
-  test -z "${ac_cv_func_mbrtowc}"
+  test -z "${ac_cv_func_mbrtowc}" || unset ac_cv_func_mbrtowc
 
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether mbrtowc and mbstate_t are properly declared" >&5
 printf %s "checking whether mbrtowc and mbstate_t are properly declared... " >&6; }
@@ -48985,7 +48991,7 @@ fi
 
   else
     if test "x${ac_cv_func_wait3}" = "x"; then
-      test -z "${ac_cv_func_wait3}"
+      test -z "${ac_cv_func_wait3}" || unset ac_cv_func_wait3
       ac_fn_c_check_func "$LINENO" "wait3" "ac_cv_func_wait3"
 if test "x$ac_cv_func_wait3" = xyes
 then :
@@ -49141,7 +49147,7 @@ then :
 fi
   ## might have already been checked:
 if test "x${ac_cv_func_setlocale}" = "x"; then
-  test -z "${ac_cv_func_setlocale}"
+  test -z "${ac_cv_func_setlocale}" || unset ac_cv_func_setlocale
   ac_fn_c_check_func "$LINENO" "setlocale" "ac_cv_func_setlocale"
 if test "x$ac_cv_func_setlocale" = xyes
 then :
@@ -49787,7 +49793,7 @@ then :
 fi
 
 if test "x${ac_cv_func_snprintf}" = "x"; then
-  test -z "${ac_cv_func_snprintf}"
+  test -z "${ac_cv_func_snprintf}" || unset ac_cv_func_snprintf
   ac_fn_c_check_func "$LINENO" "snprintf" "ac_cv_func_snprintf"
 if test "x$ac_cv_func_snprintf" = xyes
 then :
@@ -49797,7 +49803,7 @@ fi
 
 fi
 if test "x${ac_cv_func_connect}" = "x"; then
-  test -z "${ac_cv_func_connect}"
+  test -z "${ac_cv_func_connect}" || unset ac_cv_func_connect
   ac_fn_c_check_func "$LINENO" "connect" "ac_cv_func_connect"
 if test "x$ac_cv_func_connect" = xyes
 then :
@@ -49807,7 +49813,7 @@ fi
 
 fi
 if test "x${ac_cv_func_getpagesize}" = "x"; then
-  test -z "${ac_cv_func_getpagesize}"
+  test -z "${ac_cv_func_getpagesize}" || unset ac_cv_func_getpagesize
   ac_fn_c_check_func "$LINENO" "getpagesize" "ac_cv_func_getpagesize"
 if test "x$ac_cv_func_getpagesize" = xyes
 then :
@@ -51327,6 +51333,28 @@ printf "%s\n" "${gdb_cv_have_procfs_piocset}" >&6; }
 printf "%s\n" "#define HAVE_PROCFS_PIOCSET 1" >>confdefs.h
 
   fi
+
+  ## Something that might already exist:
+  if test "x${ac_cv_header_proc_service_h}" = "xyes"; then
+    ac_fn_c_check_func "$LINENO" "ps_get_thread_area" "ac_cv_func_ps_get_thread_area"
+if test "x$ac_cv_func_ps_get_thread_area" = xyes
+then :
+  printf "%s\n" "#define HAVE_PS_GET_THREAD_AREA 1" >>confdefs.h
+
+fi
+
+    ac_fn_check_decl "$LINENO" "ps_get_thread_area" "ac_cv_have_decl_ps_get_thread_area" "#include <proc_service.h>
+" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_ps_get_thread_area" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_PS_GET_THREAD_AREA $ac_have_decl" >>confdefs.h
+
+  fi
 else
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: skipping checks that require a working procfs" >&5
 printf "%s\n" "$as_me: skipping checks that require a working procfs" >&6;}
@@ -52778,7 +52806,7 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
   ## mig typechecks cause parameters that would otherwise be unused to be
   ## used, triggering this:
   if test "x${MIG_CHECKING}" = "x"; then
-    test -z "${MIG_CHECKING}"
+    test -z "${MIG_CHECKING}" && sync
     build_warnings="${build_warnings} -Wused-but-marked-unused"
   fi
   ## the clang version of this warning is un-pluralized, unlike in GCC:
@@ -53095,7 +53123,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: using: ${WARN_CFLAGS}${WERROR_CFLAGS}" >&5
 printf "%s\n" "using: ${WARN_CFLAGS}${WERROR_CFLAGS}" >&6; }
     if test "x${BAD_WARN_CFLAGS}" != "x"; then
-      test -n "${BAD_WARN_CFLAGS}"
+      test -n "${BAD_WARN_CFLAGS}" && sync
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: compiler failed to accept: ${BAD_WARN_CFLAGS}" >&5
 printf "%s\n" "$as_me: WARNING: compiler failed to accept: ${BAD_WARN_CFLAGS}" >&2;}
     fi
@@ -53142,9 +53170,9 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 	esac
     done
     if test "x${WERROR_CFLAGS}" != "x"; then
-      test -n "${WERROR_CFLAGS}"
+      test -n "${WERROR_CFLAGS}" && sync
       if test "x${LD_ARCHFLAGS}" != "x"; then
-        test -n "${LD_ARCHFLAGS}"
+        test -n "${LD_ARCHFLAGS}" && sync
         if test "x${WARN_LDFLAGS}" != "x"; then
           test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_ARCHFLAGS}"
         else
@@ -57233,7 +57261,7 @@ links=""
 rm -f xm.h
 xm_h=""
 if test "x${hostfile}" != "x"; then
-    test -n "${hostfile}"
+    test -n "${hostfile}" && echo "hostfile is: '${hostfile}'"
     xm_h=xm.h
     case "${hostfile}" in
       xm-*.h ) GDB_XM_FILE="config/${gdb_host_cpu}/${hostfile}" ;;
@@ -57245,7 +57273,7 @@ if test "x${hostfile}" != "x"; then
 printf "%s\n" "#define GDB_XM_FILE \"${GDB_XM_FILE}\"" >>confdefs.h
 
 else
-    test -z "${hostfile}"
+    test -z "${hostfile}" && sync
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: unsure what to use for hostfile" >&5
 printf "%s\n" "$as_me: WARNING: unsure what to use for hostfile" >&2;}
 fi
@@ -57253,7 +57281,7 @@ fi
 rm -f tm.h
 tm_h=""
 if test "x${targetfile}" != "x"; then
-    test -n "${targetfile}"
+    test -n "${targetfile}" && echo "targetfile is: '${targetfile}'"
     tm_h=tm.h
     case "${targetfile}" in
       tm-*.h ) GDB_TM_FILE="config/${gdb_target_cpu}/${targetfile}" ;;
@@ -57265,7 +57293,7 @@ if test "x${targetfile}" != "x"; then
 printf "%s\n" "#define GDB_TM_FILE \"${GDB_TM_FILE}\"" >>confdefs.h
 
 else
-    test -z "${targetfile}"
+    test -z "${targetfile}" && sync
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: unsure what to use for targetfile" >&5
 printf "%s\n" "$as_me: WARNING: unsure what to use for targetfile" >&2;}
 fi
@@ -57273,7 +57301,7 @@ fi
 rm -f nm.h
 nm_h=""
 if test "x${nativefile}" != "x"; then
-    test -n "${nativefile}"
+    test -n "${nativefile}" && echo "nativefile is: '${nativefile}'"
     nm_h=nm.h
     case "${nativefile}" in
       nm-*.h ) GDB_NM_FILE="config/${gdb_host_cpu}/${nativefile}" ;;
@@ -57285,27 +57313,27 @@ if test "x${nativefile}" != "x"; then
 printf "%s\n" "#define GDB_NM_FILE \"${GDB_NM_FILE}\"" >>confdefs.h
 
 else
-    test -z "${nativefile}"
+    test -z "${nativefile}" && sync
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: unsure what to use for nativefile" >&5
 printf "%s\n" "$as_me: WARNING: unsure what to use for nativefile" >&2;}
 fi
 
 if test "x${files}" = "x"; then
-  test -z "${files}"
+  test -z "${files}" && sync
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: the files variable is empty; not making symlinks." >&5
 printf "%s\n" "$as_me: WARNING: the files variable is empty; not making symlinks." >&2;}
 else
-  test ! -z "${files}"
+  test -n "${files}" && sync
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: files should be \"${files}\"" >&5
 printf "%s\n" "$as_me: files should be \"${files}\"" >&6;}
 fi
 
 if test "x${links}" = "x"; then
-  test -z "${links}"
+  test -z "${links}" && sync
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: the links variable is empty; not making symlinks." >&5
 printf "%s\n" "$as_me: WARNING: the links variable is empty; not making symlinks." >&2;}
 else
-  test ! -z "${links}"
+  test -n "${links}" && sync
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: links should be \"${links}\"" >&5
 printf "%s\n" "$as_me: links should be \"${links}\"" >&6;}
 fi

@@ -238,6 +238,9 @@
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
 
+/* Define to 1 if you have the <asm/prctl.h> header file. */
+#undef HAVE_ASM_PRCTL_H
+
 /* Define to 1 if you have the 'assert' function. */
 #undef HAVE_ASSERT
 
@@ -426,6 +429,10 @@
 /* Define to 1 if you have the declaration of 'POSIX_SPAWN_SETEXEC', and to 0
    if you don't. */
 #undef HAVE_DECL_POSIX_SPAWN_SETEXEC
+
+/* Define to 1 if you have the declaration of 'ps_get_thread_area', and to 0
+   if you don't. */
+#undef HAVE_DECL_PS_GET_THREAD_AREA
 
 /* Define to 1 if you have the declaration of 'ptrace', and to 0 if you don't.
    */
@@ -1140,6 +1147,9 @@
 
 /* Define if <sys/procfs.h> has pstatus_t. */
 #undef HAVE_PSTATUS_T
+
+/* Define to 1 if you have the 'ps_get_thread_area' function. */
+#undef HAVE_PS_GET_THREAD_AREA
 
 /* Define to 1 if you have the 'pthread_detach' function. */
 #undef HAVE_PTHREAD_DETACH
