@@ -1829,8 +1829,18 @@ m4_ifdef([libiberty_INIT],[
 ])dnl
 
 if test "x${ac_cv_have_decl_close}" = "x"; then
-  test -z "${ac_cv_have_decl_close}"
+  test -z "${ac_cv_have_decl_close}" || unset ac_cv_have_decl_close
   AC_CHECK_DECLS([close],[],[],[
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+  ])dnl
+  ## OK
+fi
+
+if test "x${ac_cv_have_decl_getcwd}" = "x"; then
+  test -z "${ac_cv_have_decl_getcwd}" || unset ac_cv_have_decl_getcwd
+  AC_CHECK_DECLS([getcwd],[],[],[
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif /* HAVE_UNISTD_H */

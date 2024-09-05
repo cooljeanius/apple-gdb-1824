@@ -1615,7 +1615,7 @@ handle_inferior_event(struct execution_control_state *ecs)
 	}
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__) && defined(__DYNAMIC__)
-#  warning "gdb will be unable to handle adding solib events on the inferior."
+#  warning "SOLIB_ADD is not defined; gdb will be unable to handle adding solib events on the inferior."
 # endif /* __GNUC__ && !__STRICT_ANSI__ && __DYNAMIC__ */
 #endif /* SOLIB_ADD */
       resume(0, TARGET_SIGNAL_0);

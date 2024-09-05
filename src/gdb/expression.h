@@ -364,7 +364,7 @@ struct expression
   {
     const struct language_defn *language_defn;	/* language it was entered in */
     int nelts;
-    union exp_element elts[3];
+    union exp_element elts[4];
   };
 
 /* Macros for converting between number of expression elements and bytes

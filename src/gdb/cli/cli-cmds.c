@@ -325,12 +325,17 @@ char **argv;
 struct cleanup *old_cleanups;
 /* APPLE LOCAL end hack hack */
 
+/* */
 static void
 pwd_command(const char *args, int from_tty)
 {
+  char *ourcwd;
   if (args)
     error(_("The \"pwd\" command does not take an argument: %s"), args);
-  getcwd(gdb_dirbuf, sizeof(gdb_dirbuf));
+  ourcwd = getcwd(gdb_dirbuf, sizeof(gdb_dirbuf));
+  if (ourcwd == NULL) {
+    ; /* ??? */
+  }
 
   if (strcmp(gdb_dirbuf, current_directory) != 0)
     printf_unfiltered(_("Working directory %s\n (canonically %s).\n"),

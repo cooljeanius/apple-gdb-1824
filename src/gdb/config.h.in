@@ -383,6 +383,10 @@
    */
 #undef HAVE_DECL_FREE
 
+/* Define to 1 if you have the declaration of 'getcwd', and to 0 if you don't.
+   */
+#undef HAVE_DECL_GETCWD
+
 /* Define to 1 if you have the declaration of 'getopt', and to 0 if you don't.
    */
 #undef HAVE_DECL_GETOPT
@@ -406,6 +410,10 @@
 /* Define to 1 if you have the declaration of 'malloc', and to 0 if you don't.
    */
 #undef HAVE_DECL_MALLOC
+
+/* Define to 1 if you have the declaration of 'monstartup', and to 0 if you
+   don't. */
+#undef HAVE_DECL_MONSTARTUP
 
 /* Define to 1 if you have the declaration of 'name_server_port', and to 0 if
    you don't. */
@@ -551,6 +559,10 @@
    don't. */
 #undef HAVE_DECL_VSNPRINTF
 
+/* Define to 1 if you have the declaration of '_mcleanup', and to 0 if you
+   don't. */
+#undef HAVE_DECL__MCLEANUP
+
 /* Define to 1 if you have the declaration of '__BIG_ENDIAN', and to 0 if you
    don't. */
 #undef HAVE_DECL___BIG_ENDIAN
@@ -608,6 +620,9 @@
 /* Define to 1 if you have the 'fwrite' function. */
 #undef HAVE_FWRITE
 
+/* Define to 1 if you have the 'gdbarch_obstack_strdup' function. */
+#undef HAVE_GDBARCH_OBSTACK_STRDUP
+
 /* Define to 1 if you have the 'getcwd' function. */
 #undef HAVE_GETCWD
 
@@ -649,6 +664,9 @@
 
 /* Define to 1 if you have the 'getuid' function. */
 #undef HAVE_GETUID
+
+/* Define to 1 if you have the 'get_type_arch' function. */
+#undef HAVE_GET_TYPE_ARCH
 
 /* Define to 1 if you have the 'gmtime' function. */
 #undef HAVE_GMTIME
@@ -1318,6 +1336,9 @@
 /* Define to 1 if you have the 'setsid' function. */
 #undef HAVE_SETSID
 
+/* Define to 1 if you have the 'set_type_code' function. */
+#undef HAVE_SET_TYPE_CODE
+
 /* Define to 1 if you have the <sgtty.h> header file. */
 #undef HAVE_SGTTY_H
 
@@ -1471,6 +1492,9 @@
 
 /* Define to 1 if you have the 'strtoul' function. */
 #undef HAVE_STRTOUL
+
+/* Define to 1 if 'sdt_note_head' is a member of 'struct elf_obj_tdata'. */
+#undef HAVE_STRUCT_ELF_OBJ_TDATA_SDT_NOTE_HEAD
 
 /* Define if <sys/link.h> has struct link_map32 */
 #undef HAVE_STRUCT_LINK_MAP32
@@ -1749,6 +1773,9 @@
 
 /* Define to 1 if you have the 'vasprintf' function. */
 #undef HAVE_VASPRINTF
+
+/* Define to 1 if you have the 'verify_floatformat' function. */
+#undef HAVE_VERIFY_FLOATFORMAT
 
 /* Define to 1 if you have the 'vfork' function. */
 #undef HAVE_VFORK

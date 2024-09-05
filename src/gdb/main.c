@@ -169,6 +169,7 @@ captured_main(void *data)
   /* APPLE LOCAL globalbuf */
   struct stat homebuf, cwdbuf, globalbuf;
   char *homedir;
+  char *ourcwd;
   /* APPLE LOCAL attach -waitfor */
   char *attach_waitfor = NULL;
   /* APPLE LOCAL: set the architecture.  */
@@ -221,7 +222,10 @@ captured_main(void *data)
   line[0] = '\0';		/* Terminate saved (now empty) cmd line */
   instream = stdin;
 
-  getcwd(gdb_dirbuf, sizeof(gdb_dirbuf));
+  ourcwd = getcwd(gdb_dirbuf, sizeof(gdb_dirbuf));
+  if (ourcwd == NULL) {
+    ; /* ??? */
+  }
   current_directory = gdb_dirbuf;
 
   /* APPLE LOCAL gdb_null */
