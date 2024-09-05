@@ -7,6 +7,10 @@ AC_INIT([expect-testsuite],[5.26],[libes@nist.gov])
 AC_CONFIG_AUX_DIR([../..])
 AC_CONFIG_SRCDIR([exp_test.c])dnl
 
+m4_ifdef([AM_SILENT_RULES],[
+AM_SILENT_RULES
+])dnl
+
 AC_PROG_SED
 
 if test -e ./../config.cache; then
@@ -49,17 +53,16 @@ if test "x${CC}" = "x"; then
   test -z "${CC}"
   AC_PROG_CC
 else
-  test ! -z "${CC}"
+  test -n "${CC}"
   # The conditional is to try to avoid breakage:
   if test "x${ac_cv_c_compiler_gnu}" != "x:"; then
-    test ! -z "${GCC}"
-    AC_PROG_GCC_TRADITIONAL
+    test -n "${GCC}" && echo "GCC? '${GCC}'"
   fi
   # Check preprocessor:
   AC_PROG_CPP
   # This is in a conditional because otherwise it might not work
   if test "x${CYGNUS}" != "x"; then
-    test ! -z "${CYGNUS}"
+    test -n "${CYGNUS}" && echo "CYGNUS? '${CYGNUS}'"
     # Check to make sure compiler actually works:
     CY_AC_C_WORKS
   fi

@@ -358,7 +358,7 @@ record_linux_system_call (enum gdb_syscall syscall,
       break;
 
     case gdb_sys_ioctl:
-      /* XXX Need to add a lot of support of other ioctl requests.  */
+      /* XXX: Need to add a lot of support of other ioctl requests.  */
       regcache_raw_read_unsigned (regcache, tdep->arg2, &tmpulongest);
       if (tmpulongest == tdep->ioctl_FIOCLEX
           || tmpulongest == tdep->ioctl_FIONCLEX
@@ -405,7 +405,7 @@ record_linux_system_call (enum gdb_syscall syscall,
           || tmpulongest == tdep->ioctl_TIOCMIWAIT
           || tmpulongest == tdep->ioctl_TIOCSHAYESESP)
         {
-          /* Nothing to do.  */
+          ; /* Nothing to do.  */
         }
       else if (tmpulongest == tdep->ioctl_TCGETS
                || tmpulongest == tdep->ioctl_TCGETA
@@ -513,7 +513,7 @@ record_linux_system_call (enum gdb_syscall syscall,
       break;
 
     case gdb_sys_fcntl:
-      /* XXX */
+      /* XXX: ??? */
       regcache_raw_read_unsigned (regcache, tdep->arg2, &tmpulongest);
     sys_fcntl:
       if (tmpulongest == tdep->fcntl_F_GETLK)
@@ -1133,7 +1133,7 @@ record_linux_system_call (enum gdb_syscall syscall,
     case gdb_sys_semget:
     case gdb_sys_semop:
     case gdb_sys_msgget:
-      /* XXX maybe need do some record works with sys_shmdt.  */
+      /* XXX: maybe need do some record works with sys_shmdt.  */
     case gdb_sys_shmdt:
     case gdb_sys_msgsnd:
     case gdb_sys_semtimedop:
@@ -1153,14 +1153,14 @@ record_linux_system_call (enum gdb_syscall syscall,
         return -1;
       break;
 
-      /* XXX sys_semctl 525 still not supported.  */
+      /* XXX: sys_semctl 525 still not supported.  */
       /* sys_semctl */
 
     case gdb_sys_msgrcv:
       {
         ULONGEST msgp;
-        regcache_raw_read_signed (regcache, tdep->arg3, &tmpulongest);
-        regcache_raw_read_unsigned (regcache, tdep->arg2, &msgp);
+        regcache_raw_read_signed(regcache, tdep->arg3, (long *)&tmpulongest);
+        regcache_raw_read_unsigned(regcache, tdep->arg2, &msgp);
         tmpint = (int) tmpulongest + tdep->size_long;
         if (record_arch_list_add_mem ((CORE_ADDR) msgp, tmpint))
           return -1;
@@ -1184,7 +1184,7 @@ record_linux_system_call (enum gdb_syscall syscall,
         case RECORD_SEMTIMEDOP:
         case RECORD_MSGSND:
         case RECORD_MSGGET:
-	  /* XXX maybe need do some record works with RECORD_SHMDT.  */
+	  /* XXX: maybe need do some record works with RECORD_SHMDT.  */
         case RECORD_SHMDT:
         case RECORD_SHMGET:
           break;
@@ -1192,8 +1192,8 @@ record_linux_system_call (enum gdb_syscall syscall,
           {
             ULONGEST second;
             ULONGEST ptr;
-            regcache_raw_read_signed (regcache, tdep->arg3, &second);
-            regcache_raw_read_unsigned (regcache, tdep->arg5, &ptr);
+            regcache_raw_read_signed(regcache, tdep->arg3, (long *)&second);
+            regcache_raw_read_unsigned(regcache, tdep->arg5, &ptr);
             tmpint = (int) second + tdep->size_long;
             if (record_arch_list_add_mem ((CORE_ADDR) ptr, tmpint))
               return -1;
@@ -1221,7 +1221,7 @@ record_linux_system_call (enum gdb_syscall syscall,
             return -1;
           break;
         default:
-	  /* XXX RECORD_SEMCTL still not supported.  */
+	  /* XXX: RECORD_SEMCTL still not supported.  */
           printf_unfiltered (_("Process record and replay target doesn't "
                                "support ipc number %s\n"), 
 			     pulongest (tmpulongest));
@@ -1325,7 +1325,7 @@ record_linux_system_call (enum gdb_syscall syscall,
         {
           regcache_raw_read_unsigned (regcache, tdep->arg3,
                                       &tmpulongest);
-	  /*XXX the size of memory is not very clear.  */
+	  /* XXX: the size of memory is not very clear.  */
           if (record_arch_list_add_mem ((CORE_ADDR) tmpulongest, 10))
             return -1;
         }
