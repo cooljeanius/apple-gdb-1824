@@ -182,6 +182,7 @@ config: configure
 .PHONY: config
 
 Makefile: Makefile.in config.status
+	if test -n "${CPP}"; then unset CPP; fi; \
 	if test -x ./config.status; then \
 	  ./config.status; \
 	elif test -r config.status; then \
@@ -216,7 +217,8 @@ mdepend: $(CFILES) term.h
 	done
 
 depend: depend.in config.status configure
-	./config.status || ./configure
+	if test -n "${CPP}"; then unset CPP; fi; \
+	(./config.status || ./configure)
 
 depend.in: $(CFILES) term.h
 	cp Makefile.in Makefile.in~
@@ -242,7 +244,7 @@ config.log: configure
 	fi
 
 config.status: configure
-	$(SHELL) ./config.status --recheck
+	if test -n "${CPP}"; then unset CPP; fi; $(SHELL) ./config.status --recheck
 
 configure: configure.ac aclocal.m4
 	if test -x "`which autoconf`"; then \
@@ -271,7 +273,7 @@ config.h: stamp-h1
 
 stamp-h1: aclocal.m4 config.h.in config.status
 	$(AM_V_at)rm -f $(AM_V_v) stamp-h1
-	$(SHELL) ./config.status config.h
+	if test -n "${CPP}"; then unset CPP; fi; $(SHELL) ./config.status config.h
 	$(AM_V_at)echo "stamp: `date`" >> $@
 
 config.h.in: configure.ac

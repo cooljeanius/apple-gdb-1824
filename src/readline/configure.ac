@@ -181,6 +181,21 @@ AC_DEFUN([AC_REQUIRE_PROG_SED],[
   AC_REQUIRE([AC_PROG_SED])dnl
 ])dnl
 AC_REQUIRE_PROG_SED
+
+if test -e `pwd`/config.cache; then
+  echo "hacking `pwd`/config.cache"
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
+elif test -e ./config.cache; then
+  echo "hacking ./config.cache"
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
+fi
+
 AX_CHECK_GNU_MAKE
 AC_PATH_PROG([MAKEDEPEND],[makedepend],[makedepend])dnl
 AC_PATH_PROG([TEX_BINARY],[tex])dnl

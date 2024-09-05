@@ -11809,6 +11809,25 @@ then :
 
 fi
 
+ac_fn_check_decl "$LINENO" "monstartup" "ac_cv_have_decl_monstartup" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_monstartup" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_MONSTARTUP $ac_have_decl" >>confdefs.h
+ac_fn_check_decl "$LINENO" "_mcleanup" "ac_cv_have_decl__mcleanup" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl__mcleanup" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL__MCLEANUP $ac_have_decl" >>confdefs.h
+
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for _etext" >&5
 printf %s "checking for _etext... " >&6; }
 if test ${ac_cv_var__etext+y}

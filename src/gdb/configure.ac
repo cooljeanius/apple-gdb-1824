@@ -845,6 +845,7 @@ AC_ARG_ENABLE([profiling],
  [enable_profiling=no])dnl
 
 AC_CHECK_FUNCS([monstartup _mcleanup])
+AC_CHECK_DECLS([monstartup, _mcleanup])
 AC_CACHE_CHECK([for _etext],[ac_cv_var__etext],
 [AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <stdlib.h>

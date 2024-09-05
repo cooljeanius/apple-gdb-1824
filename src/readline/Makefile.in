@@ -2615,28 +2615,33 @@ lint lint-local: force
 .PHONY: lint lint-local
 
 am_Makefile am_makefile: config.status $(srcdir)/Makefile.in
+	if test -n "${CPP}"; then unset CPP; fi; \
 	CONFIG_FILES=Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
 .PHONY: am_Makefile am_makefile
 
 doc/Makefile: config.status $(srcdir)/Makefile.in
+	if test -n "${CPP}"; then unset CPP; fi; \
 	CONFIG_FILES=doc/Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
 
 examples/Makefile: config.status $(srcdir)/Makefile.in
+	if test -n "${CPP}"; then unset CPP; fi; \
 	CONFIG_FILES=examples/Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
 
 Makefiles makefiles: config.status $(srcdir)/Makefile.in
-	$(AM_V_at)for mf in $(CREATED_MAKEFILES); do \
+	$(AM_V_at)if test -n "${CPP}"; then unset CPP; fi; \
+	for mf in $(CREATED_MAKEFILES); do \
 	  CONFIG_FILES=$${mf} CONFIG_HEADERS="" $(SHELL) ./config.status; \
 	done
 
 am_config.status: configure config.status
-	$(SHELL) ./config.status --recheck
+	if test -n "${CPP}"; then unset CPP; fi; $(SHELL) ./config.status --recheck
 .PHONY: am_config.status
 
 am_config.h: config.status stamp-h
 .PHONY: am_config.h
 
 stamp-h: config.status $(srcdir)/config.h.in
+	if test -n "${CPP}"; then unset CPP; fi; \
 	CONFIG_FILES="" CONFIG_HEADERS=config.h ./config.status
 	echo "" > $@
 
