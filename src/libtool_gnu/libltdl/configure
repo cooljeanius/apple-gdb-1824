@@ -2918,7 +2918,7 @@ main (int argc, char **argv)
 
 
 # Auxiliary files required by this configure script.
-ac_aux_files="ltmain.sh missing install-sh compile config.guess config.sub"
+ac_aux_files="ltmain.sh missing install-sh compile config.guess config.sub texinfo.tex mdate-sh"
 
 # Locations in which to look for auxiliary files.
 ac_aux_dir_candidates="${srcdir}/config"
@@ -3098,7 +3098,6 @@ ac_config_headers="$ac_config_headers config.h:config-h.in"
 ## -------------------- ##
 ## architecture checks. ##
 ## -------------------- ##
-
 
 
 

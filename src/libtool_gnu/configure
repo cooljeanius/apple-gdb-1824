@@ -3498,7 +3498,7 @@ AUTOTEST='$(AUTOM4TE) --language=autotest'
 # Calculating the previous version is somewhat involved, so do it once
 # here, and SUBST the result for the maintainer release rules. The
 # versioning scheme we use is described here:
-#	http://www.gnu.org/software/libtool/contribute.html
+#	https://www.gnu.org/software/libtool/contribute.html
 
 # First we break the version number up into its constituent parts.
 lt_major=`echo "2.4.2" | sed 's,\..*$,,g'`

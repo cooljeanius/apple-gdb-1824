@@ -23,7 +23,7 @@ dnl# Process this file with autoconf to create configure. -*- autoconf -*-
 #
 # You should have received a copy of the GNU LesserGeneral Public
 # License along with GNU Libltdl; see the file COPYING.LIB.  If not, a
-# copy can be downloaded from http://www.gnu.org/licenses/lgpl.html,
+# copy can be downloaded from <http://www.gnu.org/licenses/lgpl.html>,
 # or obtained by writing to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 ####
@@ -42,9 +42,11 @@ m4_include([../../config/warnings.m4])dnl
 ## ------------------------ ##
 AC_INIT([libltdl],[2.4.2],[bug-libtool@gnu.org])
 AC_CONFIG_HEADERS([config.h:config-h.in])
-AC_CONFIG_SRCDIR([ltdl.c])
-AC_CONFIG_AUX_DIR([config])
-AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_SRCDIR([ltdl.c])dnl
+AC_CONFIG_AUX_DIR([config])dnl
+AC_REQUIRE_AUX_FILE([mdate-sh])dnl
+AC_REQUIRE_AUX_FILE([texinfo.tex])dnl
+AC_CONFIG_MACRO_DIR([m4])dnl
 LT_CONFIG_LTDL_DIR([.])dnl# I am me!
 
 ## -------------------- ##

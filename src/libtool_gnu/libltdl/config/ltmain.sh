@@ -24,7 +24,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with GNU Libtool; see the file COPYING.  If not, a copy
-# can be downloaded from http://www.gnu.org/licenses/gpl.html,
+# can be downloaded from <http://www.gnu.org/licenses/gpl.html>,
 # or obtained by writing to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
@@ -76,7 +76,7 @@
 #
 # Report bugs to <bug-libtool@gnu.org>.
 # GNU libtool home page: <https://www.gnu.org/software/libtool/>.
-# General help using GNU software: <http://www.gnu.org/gethelp/>.
+# General help using GNU software: <https://www.gnu.org/gethelp/>.
 
 PROGRAM=libtool
 PACKAGE=libtool

@@ -18,7 +18,7 @@
 ##
 ## You should have received a copy of the GNU General Public License
 ## along with GNU Libtool; see the file COPYING.  If not, a copy
-## can be downloaded from  http://www.gnu.org/licenses/gpl.html,
+## can be downloaded from <http://www.gnu.org/licenses/gpl.html>,
 ## or obtained by writing to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #####
@@ -38,7 +38,7 @@ EXTRA_DIST		=
 BUILT_SOURCES		= libtool libtoolize config.h
 
 CLEANFILES		=
-MOSTLYCLEANFILES	= libltdl/*~
+MOSTLYCLEANFILES	= libltdl/*~ libltdl/config/*~
 DISTCLEANFILES		= *~ .DS_Store autoscan.log config.log config.cache
 MAINTAINERCLEANFILES	=
 
@@ -301,7 +301,7 @@ EXTRA_DIST += $(srcdir)/libltdl/stamp-mk $(m4dir)/lt~obsolete.m4
 
 $(srcdir)/libltdl/Makefile.in: $(srcdir)/libltdl/Makefile.am \
 	    $(srcdir)/libltdl/aclocal.m4 
-	cd $(srcdir)/libltdl && $(AUTOMAKE) Makefile
+	cd $(srcdir)/libltdl && ($(AUTOMAKE) Makefile || touch Makefile.in)
 
 $(srcdir)/libltdl/stamp-mk: $(srcdir)/libltdl/Makefile.in
 	cd $(srcdir)/libltdl && \

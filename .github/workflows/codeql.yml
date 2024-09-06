@@ -49,8 +49,9 @@ jobs:
       fail-fast: false
       matrix:
         language: ['c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby']
-        # CodeQL supports:
-        # ['c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift']
+        # CodeQL supports the following languages:
+        # 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript',
+        # 'python', 'ruby', 'swift'
         # Use only 'java-kotlin' to analyze code written in Java, Kotlin or both
         # Use 'javascript-typescript' to analyze code written in JavaScript,
         # TypeScript or both
@@ -66,9 +67,12 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
+        # If you wish to specify custom queries, you can do so here or in a
+        # config file.
+        # By default, queries listed here will override any specified in a
+        # config file.
+        # Prefix the list here with "+" to use these queries and those in the
+        # config file.
 
         # For more details on CodeQL's query packs, refer to:
         # https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
@@ -104,6 +108,7 @@ jobs:
 
     - name: Dependencies
       run: |
+        sudo apt-get -qq update
         if test ${{ matrix.language }} == 'c-cpp'; then \
           sudo apt-get -y install autopoint gobjc clang autogen curl \
             guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev \
@@ -132,8 +137,8 @@ jobs:
           sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs nant \
             nunit mono-xbuild yamllint; \
         elif test ${{ matrix.language }} == 'python'; then \
-          sudo apt-get -y install jython pylint pymacs python-tk tix flake8 \
-            python3-macholib yamllint black python3-pyls-black \
+          sudo apt-get -y install --fix-missing jython pylint pymacs python-tk \
+            tix flake8 python3-macholib yamllint black python3-pyls-black \
             python3-pylsp-black python3-pyflakes python3-pylint-plugin-utils \
             python3-pylint-common pyflakes3 python3-pytest-pylint \
             python3-flake8 python3-pytest-flake8 python3-pep8-naming \
