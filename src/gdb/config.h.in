@@ -1061,6 +1061,9 @@
 /* Define to 1 if you have the 'obstack_xfree' function. */
 #undef HAVE_OBSTACK_XFREE
 
+/* Define if <sys/procfs.h> has paddr_t. */
+#undef HAVE_PADDR_T
+
 /* Define to 1 if you have the 'pathconf' function. */
 #undef HAVE_PATHCONF
 

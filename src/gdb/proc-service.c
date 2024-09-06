@@ -1,4 +1,4 @@
-/* <proc_service.h> implementation.
+/* proc-service.c: <proc_service.h> implementation.
 
    Copyright 1999, 2000, 2002 Free Software Foundation, Inc.
 
@@ -22,7 +22,13 @@
 #include "defs.h"
 
 #include "gdb_proc_service.h"
-#include <sys/procfs.h>
+#if defined(HAVE_SYS_PROCFS_H) || __has_include(<sys/procfs.h>)
+# include <sys/procfs.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "proc-service.c expects <sys/procfs.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_PROCFS_H */
 
 #include "inferior.h"
 #include "symtab.h"

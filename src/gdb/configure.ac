@@ -2771,6 +2771,7 @@ if test "x${ac_cv_header_sys_procfs_h}" = "xyes"; then
   BFD_HAVE_SYS_PROCFS_TYPE([prgregset32_t])dnl
   BFD_HAVE_SYS_PROCFS_TYPE([prfpregset32_t])dnl
   BFD_HAVE_SYS_PROCFS_TYPE([lwpid_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([paddr_t])dnl
   BFD_HAVE_SYS_PROCFS_TYPE([psaddr_t])dnl
   BFD_HAVE_SYS_PROCFS_TYPE([prsysent_t])dnl
   BFD_HAVE_SYS_PROCFS_TYPE([pr_sigset_t])dnl

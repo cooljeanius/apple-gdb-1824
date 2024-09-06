@@ -116,9 +116,9 @@ case ${lt_alpha} in
     TIMESTAMP=""
     ;;
 esac
-timestamp_string="${TIMESTAMP:+ (Build:$TIMESTAMP)}"
+sync && timestamp_string="${TIMESTAMP:+ (Build:$TIMESTAMP)}" && sync
 AS_BOX([Configuring AC_PACKAGE_TARNAME${timestamp_string} AC_PACKAGE_VERSION])
-echo ""
+sync && echo ""
 AC_SUBST([TIMESTAMP])dnl
 AC_SUBST([package_revision])dnl
 

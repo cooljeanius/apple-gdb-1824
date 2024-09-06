@@ -285,8 +285,11 @@ jobs:
       env:
         ERROR_ON_WARNING: "no"
 
-    - run: find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
+    - name: Debug failure
       if: "${{ failure() }}"
+      run: |
+        find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
+        find / -name proc_service.h -print -perm +r -user "$(whoami)" 2>/dev/null
 
     - name: Extra coverage build (C)
       if: matrix.language == 'c-cpp' && success()
@@ -323,8 +326,8 @@ jobs:
             sudo apt-get -y install libpvec1 libpvec-dev libvecpf1 libvecpf-dev
             ;;
           i*86|x86_64)
-            sudo apt-get install libc6-dev-amd64-cross libgcc-s1-amd64-cross \
-              libc6-dev-i386
+            sudo apt-get -y install libc6-dev-amd64-cross libc6-dev-i386 \
+              libgcc-s1-amd64-cross
             ;;
           *)
             echo "no special dependencies for $(uname -m)..."
