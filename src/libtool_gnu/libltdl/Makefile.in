@@ -312,7 +312,7 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config-h.in \
 	$(top_srcdir)/config/missing COPYING.LIB INSTALL README argz.c \
 	config/compile config/config.guess config/config.sub \
 	config/depcomp config/install-sh config/ltmain.sh \
-	config/mdate-sh config/missing config/texinfo.tex lt__dirent.c \
+	 config/missing  lt__dirent.c \
 	lt__strl.c
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
@@ -509,7 +509,7 @@ EXTRA_DIST = lt__dirent.c lt__strl.c COPYING.LIB configure.ac \
 	README argz_.h argz.c
 CLEANFILES = *.o .DS_Store libltdl.la libltdlc.la libdlloader.la \
 	$(LIBOBJS) $(LTLIBOBJS)
-MOSTLYCLEANFILES = *~ argz.h argz.h-t
+MOSTLYCLEANFILES = *~ config/*~ argz.h argz.h-t
 symtab_cflags = $(AM_CFLAGS)
 LTCFLAGS = $(AM_CFLAGS)
 LTDL_VERSION_INFO = -version-info 10:0:3

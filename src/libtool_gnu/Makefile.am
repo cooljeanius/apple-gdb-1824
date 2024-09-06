@@ -324,7 +324,7 @@ sub_aclocal_m4_deps = \
 sub_configure_deps = $(sub_aclocal_m4_deps) $(srcdir)/libltdl/aclocal.m4
 
 $(srcdir)/libltdl/aclocal.m4: $(sub_aclocal_m4_deps)
-	cd $(srcdir)/libltdl && $(ACLOCAL) -I m4
+	cd $(srcdir)/libltdl && ($(ACLOCAL) -I m4 || touch aclocal.m4)
 
 $(srcdir)/libltdl/configure: $(sub_configure_deps)
 	if test -x "$(M4)"; then \
