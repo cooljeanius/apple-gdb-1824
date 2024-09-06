@@ -295,6 +295,9 @@ jobs:
       run: |
         find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
         find / -name proc_service.h -print -perm +r -user "$(whoami)" 2>/dev/null
+        if test -r /usr/include/proc_service.h; then \
+          cat /usr/include/proc_service.h; \
+        fi
 
     - name: Extra coverage build (C)
       if: matrix.language == 'c-cpp' && success()
