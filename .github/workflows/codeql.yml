@@ -294,9 +294,11 @@ jobs:
       if: "${{ failure() }}"
       run: |
         find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
-        find / -name proc_service.h -print -perm +r -user "$(whoami)" 2>/dev/null
-        if test -r /usr/include/proc_service.h; then \
-          cat /usr/include/proc_service.h; \
+        (find / -name proc_service.h -print -perm +r -user "$(whoami)" 2>/dev/null) || sync
+        if test -d /usr/include && test -r /usr/include/proc_service.h; then \
+          cat /usr/include/proc_service.h || stat /usr/include/proc_service.h; \
+        elif test -r /usr/x86_64-linux-gnu/include/proc_service.h; then \
+          cat /usr/x86_64-linux-gnu/include/proc_service.h; \
         fi
 
     - name: Extra coverage build (C)
