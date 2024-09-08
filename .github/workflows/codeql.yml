@@ -118,7 +118,7 @@ jobs:
             libblocksruntime0 libblocksruntime-dev systemtap-sdt-dev \
             libfl-dev libiberty-dev libmpfr-dev gettext libisl-dev \
             gdb ddd texlive-binaries sharutils xutils-dev llvm libacl1-dev \
-            xterm binutils-dev bash gobjc-multilib ibasprintf-dev \
+            xterm binutils-dev bash gobjc-multilib libasprintf-dev \
             libgettextpo-dev help2man docbook-utils splint valac-bin cxref \
             libbsd-dev libkmod-dev libelf-dev libdmalloc-dev \
             libbabeltrace-dev libkmer-dev; \
@@ -163,7 +163,8 @@ jobs:
       if: matrix.language != 'c-cpp' && matrix.language != 'java-kotlin'
       run: |
         if test ${{ matrix.language }} == 'ruby' && test -x "$(which ruby)"; then \
-          ruby -cwv src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb || ruby -c src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb; \
+          ruby -cwv src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb || \
+            ruby -c src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb; \
           if test ! -w /var/lib/gems; then \
             SUDO="sudo"; \
           else \
@@ -177,7 +178,7 @@ jobs:
           done; \
           if test -z "$(which nitpick)" || test ! -x "$(which nitpick)"; then \
             if test -n "${GEMCMD}"; then \
-              sync && echo "using ${GEMCMD} to attempt to install nitpick and dependencies"; \
+              sync && echo "using ${GEMCMD} to try to install nitpick & dependencies"; \
               "${SUDO}" ${GEMCMD} install ruby2ruby nitpick; \
             else \
               sync && echo "warning: unsure how to install nitpick"; \
@@ -186,7 +187,8 @@ jobs:
             sync && echo "found $(which nitpick)..."; \
           fi; \
           if test -x "$(which nitpick)"; then \
-            nitpick src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb || which -a nitpick; \
+            nitpick src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb || \
+              which -a nitpick; \
           else \
             sync && echo "skipping nitpicking of ruby in testsuite"; \
           fi; \
@@ -201,7 +203,8 @@ jobs:
           else \
             sync && echo "found $(which bundle)..."; \
           fi; \
-          (bundle install && bundle check) || ruby -cwv Gemfile || ruby -c Gemfile; \
+          (bundle install && bundle check) || ruby -cwv Gemfile || \
+            ruby -c Gemfile; \
           if test -x "$(which nitpick)"; then \
             nitpick Gemfile || stat "$(which nitpick)"; \
           else \
@@ -230,7 +233,8 @@ jobs:
         elif test ${{ matrix.language }} == 'go' && test -x "$(which go)"; then \
           if test -x "$(which staticcheck)"; then \
             sleep && which -a staticcheck && sleep 1; \
-            (find . -name '*.go' -print0 | xargs -0 staticcheck) || statticcheck; \
+            (find . -name '*.go' -print0 | xargs -0 staticcheck) || \
+              statticcheck; \
           elif test -x "$(which revive)"; then \
             sleep && which -a revive && sleep 1; \
             (find . -name '*.go' -print0 | xargs -0 revive) || revive; \
@@ -239,19 +243,21 @@ jobs:
             (find . -name '*.go' -print0 | xargs -0 gocritic) || gocritic; \
           elif test -x "$(which golangci-lint)"; then \
             sync && which -a golangci-lint && sleep 1; \
-            golangci-lint run src/gdb/testsuite/gdb.go || golangci-lint config verify; \
+            golangci-lint run src/gdb/testsuite/gdb.go || \
+              golangci-lint config verify; \
           elif test -x "$(which gofmt)"; then \
             sync && which -a gofmt && sleep 1; \
             find . -name '*.go' -print0 | xargs -0 gofmt; \
           elif test -x "$(which actionlint)"; then \
-            sync && actionlint && sleep 1; \
+            sync && actionlint -verbose && sleep 1; \
           else \
             sync && echo "no linters found for go." && sleep 1; \
           fi; \
         elif test ${{ matrix.language }} == 'python' && test -x "$(which python)"; then \
           sync && which -a pylint && which -a flake8 && which -a black; \
           which -a ruff || which -a pyupgrade; \
-          (find . -name '*.py' -print0 | xargs -0 pylint) || stat "$(which pylint)"; \
+          (find . -name '*.py' -print0 | xargs -0 pylint) || \
+            stat "$(which pylint)"; \
           sync && (flake8 || ruff check || (stat "$(which ruff)" && sleep 1)); \
           if test -x "$(which yamllint)"; then \
             yamllint .github/FUNDING.yml .github/dependabot.yml; \
@@ -273,14 +279,17 @@ jobs:
     - name: Run build with Gradle Wrapper
       if: matrix.language == 'java-kotlin' && success()
       run: |
-        (yes 2>/dev/null | ./gradlew build --scan) || ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
+        (yes 2>/dev/null | ./gradlew build --scan) || ./gradlew build || \
+          ./gradlew assemble || (pwd && stat ./gradlew)
         sync && echo "done with top-level; next is jzlib..."
         pushd src/zlib/contrib/java/jzlib-1.1.2 || exit
-        (yes 2>/dev/null | ./gradlew build --scan) || ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
+        (yes 2>/dev/null | ./gradlew build --scan) || ./gradlew build || \
+          ./gradlew assemble || (pwd && stat ./gradlew)
         popd || exit
         sync && echo "done with jzlib; next is testsuite..."
         pushd src/gdb/testsuite/gdb.java || exit
-        (yes 2>/dev/null | ./gradlew build --scan) || ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
+        (yes 2>/dev/null | ./gradlew build --scan) || ./gradlew build || \
+          ./gradlew assemble || (pwd && stat ./gradlew)
         popd || exit
         sync && echo "done with attempts at using the gradle wrapper..."
 
@@ -294,10 +303,12 @@ jobs:
       if: matrix.language == 'c-cpp'
       run: |
         pushd .profile.d
-        test -e ./.profile_generic && source ./.profile_generic && (env | uniq | sort | uniq)
+        test -e ./.profile_generic && source ./.profile_generic && \
+          (env | uniq | sort | uniq)
         popd
         if test -x "$(which sccache)"; then \
-          ./configure --enable-silent-rules CC="sccache gcc" CXX="sccache g++" OBJC="sccache gcc" OBJCXX="sccache g++"; \
+          ./configure --enable-silent-rules CC="sccache gcc" CXX="sccache g++" \
+            OBJC="sccache gcc" OBJCXX="sccache g++"; \
           sync && stat -t src && sync; \
           if test -z "${CC}"; then \
             export CC="sccache gcc"; \
@@ -404,7 +415,8 @@ jobs:
           fi; \
         fi
         make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" || stat -t libcheckpoint
-        make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || stat -t macsbug
+        make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || \
+          stat -t macsbug
         cd src
         if test -z "$(which dejagnu)" || test ! -x "$(which dejagnu)"; then \
           sudo apt-get -qq install dejagnu; \
@@ -414,7 +426,8 @@ jobs:
         if test -x "$(which python)"; then \
           sudo apt-get -qq install python3-macholib; \
         elif test -x "$(which pip)"; then \
-          pip install macholib machobot ak-macholibre || pip install --upgrade pip; \
+          pip install macholib machobot ak-macholibre || \
+            pip install --upgrade pip; \
         fi
         if test -x "$(which rustc)" && test -x "$(which mig)"; then \
           sudo apt-get -y install librust-mach-o-sys-dev; \
