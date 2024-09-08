@@ -7743,8 +7743,10 @@ fi
 done
 test -n "$YACC" || YACC="yacc"
 
-# Extract the first word of "gdb", so it can be a program name with args.
-set dummy gdb; ac_word=$2
+for ac_prog in gdb ggdb
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 printf %s "checking for $ac_word... " >&6; }
 if test ${ac_cv_path_GDB_BIN+y}
@@ -7757,7 +7759,8 @@ else case e in #(
   ;;
   *)
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
+as_dummy="${PATH}:../../gdb"
+for as_dir in $as_dummy
 do
   IFS=$as_save_IFS
   case $as_dir in #(((
@@ -7788,6 +7791,10 @@ else
 printf "%s\n" "no" >&6; }
 fi
 
+
+  test -n "$GDB_BIN" && break
+done
+test -n "$GDB_BIN" || GDB_BIN="gdb"
 # Extract the first word of "ddd", so it can be a program name with args.
 set dummy ddd; ac_word=$2
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5

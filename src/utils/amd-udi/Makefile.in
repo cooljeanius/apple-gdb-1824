@@ -749,14 +749,15 @@ install-info-local: info
 installcheck-local:
 
 check: @MAINT@ all-local
+	if test -x "`which runtest`"; then echo "runtest is `which runtest`"; fi
 .PHONY: check
 
 rebuild_Makefile: Makefile.in configure.ac
-	$(SHELL) ./config.status
+	if test -n "$${CPP}"; then unset CPP; fi; $(SHELL) ./config.status
 .PHONY: rebuild_Makefile
 
 rebuild_configure: configure.ac
-	autoconf --force --warnings=all,no-obsolete
+	$(AUTOCONF) --force --warnings=all,no-obsolete
 	-rm -fr $(AM_V_v) autom4te.cache || rmdir autom4te.cache
 .PHONY: rebuild_configure
 

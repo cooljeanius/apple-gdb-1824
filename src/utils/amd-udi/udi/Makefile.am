@@ -103,7 +103,7 @@ libtip.a: $(SHARED_OBJS) $(LIBTIP_OBJS)
 	$(CC) $(INCLUDE) $(DEFS) $(CFLAGS) $(AM_CFLAGS) -c $<
 
 install_udi: all
-	@true
+	@ls ./*.a || ls lib*.a || sync || true
 .PHONY: install_udi
 
 mostlyclean-local clean-local:
@@ -115,7 +115,7 @@ distclean-local maintainer-clean-local realclean-local: clean-local
 .PHONY: distclean-local maintainer-clean-local realclean-local
 
 check installcheck:
-	@true
+	@if test -x "`which runtest`"; then echo "runtest is `which runtest`"; fi
 .PHONY: check installcheck
 
 info install-info clean-info dvi:

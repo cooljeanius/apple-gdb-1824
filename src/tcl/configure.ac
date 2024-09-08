@@ -130,11 +130,17 @@ AC_CHECK_HEADERS([dispatch/dispatch.h dispatch/queue.h dispatch/workloop.h \
                   fcntl.h float.h limits.h locale.h math.h stddef.h stdio.h \
                   sys/file.h sys/param.h sys/timeb.h utime.h values.h])dnl
 
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
+  AC_CHECK_HEADERS([unistd.h])
+fi
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
 AC_C_INLINE
 AC_C_PROTOTYPES
 AC_TYPE_UID_T
+AC_TYPE_MODE_T
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T

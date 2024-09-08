@@ -33,7 +33,7 @@ case "${target}" in
     export TARGET_IS_29K=yes_this_is_true
     ;;
   *-*-*)
-    true
+    sync || true
     ;;
 esac
 

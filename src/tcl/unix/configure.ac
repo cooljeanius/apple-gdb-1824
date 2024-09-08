@@ -149,7 +149,7 @@ AM_PROG_INSTALL_STRIP
 AM_PROG_INSTALL_SH
 AC_PROG_LN_S
 AC_PROG_YACC
-AC_PATH_PROG([GDB_BIN],[gdb])dnl
+AC_PATH_PROGS([GDB_BIN],[gdb ggdb],[gdb],[${PATH}:../../gdb])dnl
 AC_PATH_PROG([DDD_BIN],[ddd])dnl
 
 #------------------------------------------------------------------------

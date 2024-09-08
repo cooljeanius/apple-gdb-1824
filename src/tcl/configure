@@ -6484,6 +6484,17 @@ then :
 
 fi
 
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
+  ac_fn_c_check_header_compile "$LINENO" "unistd.h" "ac_cv_header_unistd_h" "$ac_includes_default"
+if test "x$ac_cv_header_unistd_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_UNISTD_H 1" >>confdefs.h
+
+fi
+
+fi
+
 # Checks for typedefs, structures, and compiler characteristics.
  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
 printf %s "checking whether byte ordering is bigendian... " >&6; }
@@ -6797,6 +6808,17 @@ then :
 else case e in #(
   e)
 printf "%s\n" "#define gid_t int" >>confdefs.h
+ ;;
+esac
+fi
+
+ac_fn_c_check_type "$LINENO" "mode_t" "ac_cv_type_mode_t" "$ac_includes_default"
+if test "x$ac_cv_type_mode_t" = xyes
+then :
+
+else case e in #(
+  e)
+printf "%s\n" "#define mode_t int" >>confdefs.h
  ;;
 esac
 fi
