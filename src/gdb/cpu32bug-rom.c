@@ -30,10 +30,10 @@
 
 #include "m68k-tdep.h"
 
-static void cpu32bug_open (char *args, int from_tty);
+static void cpu32bug_open(const char *args, int from_tty);
 
 static void
-cpu32bug_supply_register (char *regname, int regnamelen, char *val, int vallen)
+cpu32bug_supply_register(char *regname, int regnamelen, char *val, int vallen)
 {
   int regno;
 
@@ -77,9 +77,9 @@ cpu32bug_supply_register (char *regname, int regnamelen, char *val, int vallen)
  */
 
 static const char *
-cpu32bug_regname (int index)
+cpu32bug_regname(int index)
 {
-  static char *regnames[] =
+  static const char *regnames[] =
   {
     "D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7",
     "A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7",
@@ -101,13 +101,13 @@ cpu32bug_regname (int index)
 
 static struct target_ops cpu32bug_ops;
 
-static char *cpu32bug_inits[] =
+static const char *cpu32bug_inits[] =
 {"\r", NULL};
 
 static struct monitor_ops cpu32bug_cmds;
 
 static void
-init_cpu32bug_cmds (void)
+init_cpu32bug_cmds(void)
 {
   cpu32bug_cmds.flags = MO_CLR_BREAK_USES_ADDR;
   cpu32bug_cmds.init = cpu32bug_inits;	/* Init strings */
@@ -156,19 +156,20 @@ init_cpu32bug_cmds (void)
   cpu32bug_cmds.magic = MONITOR_OPS_MAGIC;	/* magic */
 };				/* init_cpu32bug_cmds */
 
+/* */
 static void
-cpu32bug_open (char *args, int from_tty)
+cpu32bug_open(const char *args, int from_tty)
 {
-  monitor_open (args, &cpu32bug_cmds, from_tty);
+  monitor_open(args, &cpu32bug_cmds, from_tty);
 }
 
 extern initialize_file_ftype _initialize_cpu32bug_rom; /* -Wmissing-prototypes */
 
 void
-_initialize_cpu32bug_rom (void)
+_initialize_cpu32bug_rom(void)
 {
-  init_cpu32bug_cmds ();
-  init_monitor_ops (&cpu32bug_ops);
+  init_cpu32bug_cmds();
+  init_monitor_ops(&cpu32bug_ops);
 
   cpu32bug_ops.to_shortname = "cpu32bug";
   cpu32bug_ops.to_longname = "CPU32Bug monitor";
@@ -176,5 +177,5 @@ _initialize_cpu32bug_rom (void)
 Specify the serial device it is connected to (e.g. /dev/ttya).";
   cpu32bug_ops.to_open = cpu32bug_open;
 
-  add_target (&cpu32bug_ops);
+  add_target(&cpu32bug_ops);
 }

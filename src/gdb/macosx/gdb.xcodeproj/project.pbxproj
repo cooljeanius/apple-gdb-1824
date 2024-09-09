@@ -3921,6 +3921,10 @@
 		A530AE952C211B0700F48BE3 /* ch-typeprint.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ch-typeprint.c"; sourceTree = "<group>"; };
 		A530AE962C211B0700F48BE3 /* ch-exp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ch-exp.c"; sourceTree = "<group>"; };
 		A531D98C2C8EB0B300C1FAF8 /* mach-o-arm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mach-o-arm.c"; sourceTree = "<group>"; };
+		A531D99E2C8F311200C1FAF8 /* yy-remap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "yy-remap.h"; sourceTree = "<group>"; };
+		A531D99F2C8F35D100C1FAF8 /* command.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = command.c; sourceTree = "<group>"; };
+		A531D9A02C8F4A0600C1FAF8 /* darwin-nat-info.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "darwin-nat-info.c"; sourceTree = "<group>"; };
+		A531D9A12C8F4B0F00C1FAF8 /* debug.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = debug.c; sourceTree = "<group>"; };
 		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; path = "mac-gdb.r"; sourceTree = "<group>"; };
 		A53ABD8C1A38C88F002F20B2 /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = link.h; sourceTree = "<group>"; };
 		A53ABDB71A38E84F002F20B2 /* objdump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objdump.h; sourceTree = "<group>"; };
@@ -7209,6 +7213,7 @@
 				2609D3200E82C40A008125DE /* coff-solib.c */,
 				2609D3210E82C40A008125DE /* coff-solib.h */,
 				2609D3220E82C40A008125DE /* coffread.c */,
+				A531D99F2C8F35D100C1FAF8 /* command.c */,
 				2609D3230E82C40A008125DE /* command.h */,
 				2609D3240E82C40A008125DE /* complaints.c */,
 				2609D3250E82C40A008125DE /* complaints.h */,
@@ -7239,11 +7244,13 @@
 				A50DDC411B3327F800F50318 /* d-lang.h */,
 				A50DDC421B3327F800F50318 /* d-support.c */,
 				A50DDC431B3327F800F50318 /* d-valprint.c */,
+				A531D9A02C8F4A0600C1FAF8 /* darwin-nat-info.c */,
 				2609D4590E82C40A008125DE /* db-access-functions.h */,
 				2609D45A0E82C40A008125DE /* dbug-rom.c */,
 				2609D45B0E82C40A008125DE /* dbxread.c */,
 				2609D45C0E82C40A008125DE /* dcache.c */,
 				2609D45D0E82C40A008125DE /* dcache.h */,
+				A531D9A12C8F4B0F00C1FAF8 /* debug.c */,
 				A50DDC441B33280D00F50318 /* dec-thread.c */,
 				2609D45E0E82C40A008125DE /* defs.h */,
 				2609D45F0E82C40A008125DE /* demangle.c */,
@@ -7727,6 +7734,7 @@
 				A5A673E01A589ECF00EDD221 /* xmodem.h */,
 				A5A673D31A589EC500EDD221 /* xtensa-config.c */,
 				A5A673D81A589EC500EDD221 /* xtensa-xtregs.c */,
+				A531D99E2C8F311200C1FAF8 /* yy-remap.h */,
 			);
 			path = gdb;
 			sourceTree = "<group>";
