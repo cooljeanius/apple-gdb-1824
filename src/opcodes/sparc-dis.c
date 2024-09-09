@@ -409,7 +409,7 @@ build_hash_table (const sparc_opcode **opcode_table,
       ++hash_count[hash];
     }
 
-#if 0 /* for debugging */
+#if defined(DEBUG) && defined(HASH_SIZE)
   {
     int min_count = num_opcodes, max_count = 0;
     int total;
@@ -426,7 +426,7 @@ build_hash_table (const sparc_opcode **opcode_table,
     printf ("Opcode hash table stats: min %d, max %d, ave %f\n",
 	    min_count, max_count, (double) total / HASH_SIZE);
   }
-#endif
+#endif /* DEBUG && HASH_SIZE */
 }
 
 /* Print one instruction from MEMADDR on INFO->STREAM.
@@ -528,14 +528,14 @@ print_insn_sparc (bfd_vma memaddr, disassemble_info *info)
 
 	  if (X_RS1 (insn) != X_RD (insn)
 	      && strchr (opcode->args, 'r') != 0)
-	      /* Can't do simple format if source and dest are different.  */
+	      /* Cannot do simple format if source and dest are different.  */
 	      continue;
 	  if (X_RS2 (insn) != X_RD (insn)
 	      && strchr (opcode->args, 'O') != 0)
-	      /* Can't do simple format if source and dest are different.  */
+	      /* Cannot do simple format if source and dest are different.  */
 	      continue;
 
-	  (*info->fprintf_func) (stream, opcode->name);
+	  (*info->fprintf_func)(stream, "%s", opcode->name);
 
 	  {
 	    const char *s;

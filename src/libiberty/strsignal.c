@@ -9,7 +9,7 @@
 /* We need to declare sys_siglist, because even if the system provides
    it we can't assume that it is declared in <signal.h> (for example,
    SunOS provides sys_siglist, but it does not declare it in any
-   header file).  fHowever, we can't declare sys_siglist portably,
+   header file).  However, we can't declare sys_siglist portably,
    because on some systems it is declared with const and on some
    systems it is declared without const.  If we were using autoconf,
    we could work out the right declaration.  Until, then we just
@@ -401,8 +401,10 @@ call to @code{strsignal}.
 */
 
 #ifndef HAVE_STRSIGNAL
-
-const char *
+# if !defined(HAVE_DECL_STRSIGNAL) || !HAVE_DECL_STRSIGNAL
+const
+# endif /* !HAVE_DECL_STRSIGNAL */
+char *
 strsignal (int signo)
 {
   const char *msg;
@@ -434,7 +436,11 @@ strsignal (int signo)
       msg = (const char *) sys_siglist[signo];
     }
 
+# if !defined(HAVE_DECL_STRSIGNAL) || !HAVE_DECL_STRSIGNAL
   return (msg);
+#else
+  return (char *)(msg);
+#endif /* !HAVE_DECL_STRSIGNAL */
 }
 
 #endif /* ! HAVE_STRSIGNAL */
@@ -534,7 +540,7 @@ strtosigno (const char *name)
 
 /*
 
-@deftypefn Supplemental void psignal (unsigned @var{signo}, char *@var{message})
+@deftypefn Supplemental void psignal (int @var{signo}, char *@var{message})
 
 Print @var{message} to the standard error, followed by a colon,
 followed by the description of the signal specified by @var{signo},
@@ -545,8 +551,10 @@ followed by a newline.
 */
 
 #ifndef HAVE_PSIGNAL
+/* FIXME: on some systems, psignal's first arg is int, and on others it's
+ * unsigned int... how to differentiate? */
 void
-psignal(unsigned signo, char *message)
+psignal(int signo, const char *message)
 {
   if (signal_names == NULL)
     {

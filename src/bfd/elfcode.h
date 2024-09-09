@@ -644,10 +644,12 @@ elf_object_p(bfd *abfd)
 	{
 	  /* Check that we don't have a totally silly number of sections: */
 	  if ((i_ehdrp->e_shnum > ((unsigned int)-1U / sizeof(x_shdr)))
-	      || (i_ehdrp->e_shnum > (unsigned int)((size_t)-1L / sizeof(i_shdr))))
+	      || ((sizeof(x_shdr) != sizeof(i_shdr))
+        	  && (i_ehdrp->e_shnum > (unsigned int)((size_t)-1L
+                                                        / sizeof(i_shdr)))))
 	    goto got_wrong_format_error;
 
-	  where += ((i_ehdrp->e_shnum - 1) * sizeof(x_shdr));
+	  where += (bfd_signed_vma)((i_ehdrp->e_shnum - 1) * sizeof(x_shdr));
 	  if (where != (file_ptr)where)
 	    goto got_wrong_format_error;
 	  if ((bfd_size_type)where <= i_ehdrp->e_shoff)

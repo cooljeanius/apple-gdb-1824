@@ -279,6 +279,9 @@
 /* Define to empty if 'const' does not conform to ANSI C. */
 #undef const
 
+/* Define as 'int' if <sys/types.h> doesn't define. */
+#undef gid_t
+
 /* Define to '__inline__' or '__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */
 #ifndef __cplusplus
@@ -333,6 +336,9 @@
 
 /* Define as 'int' if <sys/types.h> doesn't define. */
 #undef ssize_t
+
+/* Define as 'int' if <sys/types.h> doesn't define. */
+#undef uid_t
 
 /* Define to the type of an unsigned integer type of width exactly 16 bits if
    such a type exists and the standard includes do not define it. */

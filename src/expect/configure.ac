@@ -158,8 +158,7 @@ if test "x${CC}" = "x"; then
 	test -z "${CC}"
 	AC_PROG_CC
 else
-	test ! -z "${CC}"
-	AC_PROG_GCC_TRADITIONAL
+	test -n "${CC}"
 	AC_PROG_CPP
 	CY_AC_C_WORKS
 fi

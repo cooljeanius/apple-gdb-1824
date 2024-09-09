@@ -243,7 +243,7 @@ elf64_x86_64_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 
   /* Make a ".reg/999" section.  */
   return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
-  					 (note->descpos + offset));
+  					 (note->descpos + (bfd_vma)offset));
 }
 
 /* */
@@ -683,7 +683,8 @@ elf64_x86_64_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
 	}
 
-      r_type = elf64_x86_64_tls_transition (info, r_type, h == NULL);
+      r_type = (unsigned int)elf64_x86_64_tls_transition(info, (int)r_type,
+      							 (h == NULL));
       switch (r_type)
 	{
 	case R_X86_64_TLSLD:
@@ -771,9 +772,9 @@ elf64_x86_64_check_relocs(bfd *abfd, struct bfd_link_info *info, asection *sec,
 	    if (old_tls_type != tls_type)
 	      {
 		if (h != NULL)
-		  elf64_x86_64_hash_entry(h)->tls_type = tls_type;
+		  elf64_x86_64_hash_entry(h)->tls_type = (unsigned char)tls_type;
 		else
-		  elf64_x86_64_local_got_tls_type(abfd)[r_symndx] = tls_type;
+		  elf64_x86_64_local_got_tls_type(abfd)[r_symndx] = (char)tls_type;
 	      }
 	  }
 	  /* Fall through */
@@ -1093,7 +1094,8 @@ elf64_x86_64_gc_sweep_hook(bfd *abfd, struct bfd_link_info *info,
 	}
 
       r_type = (unsigned int)ELF64_R_TYPE(rel->r_info);
-      r_type = elf64_x86_64_tls_transition(info, r_type, h != NULL);
+      r_type = (unsigned int)elf64_x86_64_tls_transition(info, (int)r_type,
+      							 (h != NULL));
       switch (r_type)
 	{
 	case R_X86_64_TLSLD:
@@ -1618,7 +1620,7 @@ elf64_x86_64_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	{
 	  if (*local_got > 0)
 	    {
-	      *local_got = s->size;
+	      *local_got = (bfd_signed_vma)s->size;
 	      s->size += GOT_ENTRY_SIZE;
 	      if (*local_tls_type == GOT_TLS_GD)
 		s->size += GOT_ENTRY_SIZE;
@@ -1628,7 +1630,7 @@ elf64_x86_64_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 		srel->size += sizeof (Elf64_External_Rela);
 	    }
 	  else
-	    *local_got = (bfd_vma) -1;
+	    *local_got = (bfd_signed_vma)-1;
 	}
     }
 
@@ -1641,7 +1643,7 @@ elf64_x86_64_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
       htab->srelgot->size += sizeof (Elf64_External_Rela);
     }
   else
-    htab->tls_ld_got.offset = -1;
+    htab->tls_ld_got.offset = (bfd_vma)-1;
 
   /* Allocate global sym .plt and .got entries, and space for global
      sym dynamic relocs.  */
@@ -1874,6 +1876,9 @@ elf64_x86_64_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 				   r_symndx, symtab_hdr, sym_hashes,
 				   h, sec, relocation,
 				   unresolved_reloc, warned);
+          if (warned) {
+            ; /* ??? */
+          }
 	}
       /* When generating a shared object, the relocations handled here are
 	 copied into the output file to be resolved at run time.  */
@@ -1912,7 +1917,7 @@ elf64_x86_64_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 		     relocation entry to initialize the value.	This is
 		     done in the finish_dynamic_symbol routine.	 */
 		  if ((off & 1) != 0)
-		    off &= ~1;
+		    off &= (bfd_vma)~1;
 		  else
 		    {
 		      bfd_put_64 (output_bfd, relocation,
@@ -1934,7 +1939,7 @@ elf64_x86_64_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 		 the least significant bit to record whether we have
 		 already generated the necessary reloc.	 */
 	      if ((off & 1) != 0)
-		off &= ~1;
+		off &= (bfd_vma)~1;
 	      else
 		{
 		  bfd_put_64 (output_bfd, relocation,
@@ -2197,7 +2202,8 @@ elf64_x86_64_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 
 	case R_X86_64_TLSGD:
 	case R_X86_64_GOTTPOFF:
-	  r_type = elf64_x86_64_tls_transition (info, r_type, h == NULL);
+	  r_type = (unsigned int)elf64_x86_64_tls_transition(info, (int)r_type,
+                                                             (h == NULL));
 	  tls_type = GOT_UNKNOWN;
 	  if (h == NULL && local_got_offsets)
 	    tls_type = elf64_x86_64_local_got_tls_type (input_bfd) [r_symndx];
@@ -2324,7 +2330,7 @@ elf64_x86_64_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	    }
 
 	  if ((off & 1) != 0)
-	    off &= ~1;
+	    off &= (bfd_vma)~1;
 	  else
 	    {
 	      Elf_Internal_Rela outrel;
@@ -2463,7 +2469,7 @@ elf64_x86_64_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 
 	  off = htab->tls_ld_got.offset;
 	  if (off & 1)
-	    off &= ~1;
+	    off &= (bfd_vma)~1;
 	  else
 	    {
 	      Elf_Internal_Rela outrel;
@@ -2984,7 +2990,7 @@ elf64_x86_64_symbol_processing(bfd *abfd ATTRIBUTE_UNUSED,
       asym->section = &_bfd_elf_large_com_section;
       asym->value = elfsym->internal_elf_sym.st_size;
       /* Common symbol does NOT set BSF_GLOBAL.  */
-      asym->flags &= ~BSF_GLOBAL;
+      asym->flags &= (flagword)~BSF_GLOBAL;
       break;
 
     default:

@@ -35100,7 +35100,6 @@ $(srcdir)/configure: @MAINT@ $(srcdir)/configure.in $(srcdir)/config/acx.m4
 # have been treated as targets in the first place...
 
 # Do NOT pass command-line variables to submakes.
-.NOEXPORT:
 MAKEOVERRIDES=
 
 # end of Makefile.in

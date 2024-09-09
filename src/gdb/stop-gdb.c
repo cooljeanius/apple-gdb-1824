@@ -30,10 +30,10 @@
  * GDB_MESSAGE_ID_STOP to that port.
  */
 
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 /* included files can drag in "free": */
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 
 #include <stdio.h>
 

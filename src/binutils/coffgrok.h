@@ -274,6 +274,18 @@ struct coff_symbol
 
 struct coff_ofile *coff_grok PARAMS ((bfd *));
 
+#if defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)
+# if defined(__STDC_VERSION__) && !defined(__STRICT_ANSI__) && \
+    defined(SIZEOF_OFF_T) && defined(SIZEOF_LONG_LONG) && \
+    (SIZEOF_OFF_T == SIZEOF_LONG_LONG)
+#  define OFFSET_FMT "ll"
+# else
+#  define OFFSET_FMT "l"
+# endif /* __STDC_VERSION__ && !__STRICT_ANSI__ && (SIZEOF_OFF_T == SIZEOF_LONG_LONG) */
+#else
+# define OFFSET_FMT /* (nothing) */
+#endif /* HAVE_OFF_T || off_t || __STDC__ */
+
 #endif /* !BINUTILS_COFFGROK_H */
 
 /* EOF */

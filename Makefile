@@ -149,21 +149,21 @@ ifndef SDKROOT
 export SDKROOT = $(SDKROOT_FOR_BUILD)
 endif
 
-export AR = $(shell xcrun -find ar 2>/dev/null)
-export CC = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc 2>/dev/null))
-export CPP = $(shell xcrun -find cpp 2>/dev/null) -I$(SDKROOT_FOR_BUILD)/usr/include
-export CXX = $(shell (xcrun -find clang++ 2>/dev/null || xcrun -find g++ 2>/dev/null))
-export LD = $(shell xcrun -find ld 2>/dev/null)
-export LIBTOOL = $(shell xcrun -find libtool 2>/dev/null)
-export MAKE = $(shell xcrun -find make 2>/dev/null)
-export NM = $(shell xcrun -find nm 2>/dev/null)
-export RANLIB = $(shell xcrun -find ranlib 2>/dev/null)
-export TAR = $(shell (xcrun -find gnutar 2>/dev/null || xcrun -find tar 2>/dev/null))
+export AR = $(shell (xcrun -find ar 2>/dev/null || echo "ar"))
+export CC = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc 2>/dev/null || echo "cc"))
+export CPP = $(shell (xcrun -find cpp 2>/dev/null || echo "cpp")) -I$(SDKROOT_FOR_BUILD)/usr/include
+export CXX = $(shell (xcrun -find clang++ 2>/dev/null || xcrun -find g++ 2>/dev/null || echo "c++"))
+export LD = $(shell (xcrun -find ld 2>/dev/null || echo "ld"))
+export LIBTOOL = $(shell (xcrun -find libtool 2>/dev/null || echo "libtool"))
+export MAKE = $(shell (xcrun -find make 2>/dev/null || echo "make"))
+export NM = $(shell (xcrun -find nm 2>/dev/null || echo "nm"))
+export RANLIB = $(shell (xcrun -find ranlib 2>/dev/null || echo "ranlib"))
+export TAR = $(shell (xcrun -find gnutar 2>/dev/null || xcrun -find tar 2>/dev/null || echo "tar"))
 ifndef RM
 export RM = rm
 endif
 
-export CC_FOR_BUILD = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc 2>/dev/null))
+export CC_FOR_BUILD = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc 2>/dev/null || echo "cc"))
 export CCFLAGS_FOR_BUILD = -I$(SDKROOT_FOR_BUILD)/usr/include
 export LDFLAGS_FOR_BUILD = -isysroot $(SDKROOT_FOR_BUILD)
 
@@ -358,6 +358,9 @@ FSFLAGS = $(SFLAGS)
 CONFIGURE_ENV = $(EFLAGS)
 MAKE_ENV = $(EFLAGS)
 
+ifndef MAKE
+MAKE = make
+endif
 SUBMAKE = $(MAKE_ENV) $(MAKE)
 
 _all: all
@@ -736,14 +739,13 @@ install-frameworks-resources:
 	done
 
 install-frameworks-macosx:
-
+	find . -name '*.framework' -print
 	$(SUBMAKE) CURRENT_ROOT=$(SYMROOT) install-frameworks-headers
 	$(SUBMAKE) CURRENT_ROOT=$(DSTROOT) install-frameworks-headers
 	$(SUBMAKE) CURRENT_ROOT=$(SYMROOT) install-frameworks-resources
 	$(SUBMAKE) CURRENT_ROOT=$(DSTROOT) install-frameworks-resources
 
 install-gdb-common:
-
 	set -e; for dstroot in $(SYMROOT) $(DSTROOT); do \
 		\
 		$(INSTALL) -c -d $${dstroot}/$(DEVEXEC_DIR); \
@@ -807,7 +809,6 @@ install-gdb-macosx-common: install-gdb-common
 	done;
 
 install-gdb-macosx: install-gdb-macosx-common
-
 	set -e; for target in $(filter-out x86_64-apple-darwin, $(CANONICAL_ARCHS)); do \
 		lipo -create $(OBJROOT)/$${target}--$${target}/gdb/gdb \
 			-output $(SYMROOT)/$(LIBEXEC_GDB_DIR)/gdb-$${target}; \
@@ -856,7 +857,6 @@ install-gdbserver:
 	strip -S $(DSTROOT)/usr/bin/gdbserver
 
 install-binutils-macosx:
-
 	set -e; for i in $(BINUTILS_BINARIES); do \
 		instname=`echo $${i} | sed -e 's/\\-new//'`; \
 		lipo -create $(patsubst %,$(OBJROOT)/%/binutils/$${i},$(NATIVE_TARGETS)) \
@@ -969,19 +969,24 @@ endif
 	      echo "configure appears to have been deleted; attempting to restore it..."; \
 	      git restore configure; \
 	    fi; \
-	  elif test -e $(SRCROOT)/configure; then \
-	    cp -v $(SRCROOT)/configure configure; \
-	  elif test -e $(OBJROOT)/configure; then \
-	    cp -v $(OBJROOT)/configure configure; \
-	  elif test -e $(SYMROOT)/configure; then \
-	    cp -v $(SYMROOT)/configure configure; \
-	  elif test -e $(DSTROOT)/configure; then \
-	    cp -v $(DSTROOT)/configure configure; \
 	  else \
-	    touch configure; \
+	    for mysubdir in $(SRCROOT) $(OBJROOT) $(SYMROOT) $(DSTROOT) $(SRCTOP) $(OBJTOP) $(SYMTOP) $(DSTTOP); do \
+	      if test -d $${mysubdir} && test -e $${mysubdir}/configure; then \
+	        echo "attempting to restore configure by copying from $${mysubdir}..."; \
+	        cp -v $${mysubdir}/configure configure; break; \
+	      fi; \
+	    done; \
+	    if test ! -e configure; then \
+	      echo "unsure how to restore configure, so just touching it"; \
+	      touch configure; \
+	    fi; \
+	    if test ! -x configure; then \
+	      echo "...and making sure it is executable"; \
+	      chmod +x configure; \
+	    fi; \
 	  fi; \
 	else \
-	  stat configure; \
+	  which stat && stat configure; \
 	fi
 
 build-headers: configure
@@ -996,13 +1001,18 @@ endif
 
 build-core: configure
 	if test "x$(SUBMAKE)" != "x"; then \
-	  test -n "$(SUBMAKE)" && $(SUBMAKE) configure; \
+	  if test -n "`echo $(SUBMAKE) | grep make`"; then \
+	    echo "$@: using SUBMAKE to make configure"; \
+	    test -n "$(SUBMAKE)" && $(SUBMAKE) configure; \
+	  else \
+	    echo "warning: SUBMAKE variable does not contain any references to make!" >&2; \
+	  fi; \
 	elif test "x$(MAKE)" != "x"; then \
-	  test -n "$(MAKE)" && $(MAKE) configure; \
+	  test -n "$(MAKE)" && echo "MAKE is '$(MAKE)'" && $(MAKE) configure; \
 	elif test -x "`which make`"; then \
-	  make configure; \
+	  echo "$@: using `which make` to make configure" && make configure; \
 	else \
-	  echo "unsure how to ensure that we have configure present..."; \
+	  echo "$@: unsure how to ensure that we have configure present..."; \
 	fi
 ifneq ($(NATIVE_TARGETS),)
 	$(SUBMAKE) $(patsubst %,$(OBJROOT)/%/stamp-build-core, $(NATIVE_TARGETS)) 

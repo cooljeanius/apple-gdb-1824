@@ -60,6 +60,10 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "ansidecl.h"
 
+#ifndef __has_include
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
 #ifdef HAVE_STDDEF_H
 # include <stddef.h>
 #else
@@ -154,7 +158,7 @@ extern char *strrchr();
 # endif /* HAVE_SYS_TIME_H */
 #endif /* TIME_WITH_SYS_TIME */
 
-#ifdef HAVE_UNISTD_H
+#if defined(HAVE_UNISTD_H) || __has_include(<unistd.h>)
 # include <unistd.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -162,7 +166,7 @@ extern char *strrchr();
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
-#ifdef HAVE_SYS_RESOURCE_H
+#if defined(HAVE_SYS_RESOURCE_H) || __has_include(<sys/resource.h>)
 # include <sys/resource.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)

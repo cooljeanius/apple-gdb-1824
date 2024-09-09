@@ -78,7 +78,7 @@ elf_strtab_hash_newfunc(struct bfd_hash_entry *entry,
       struct elf_strtab_hash_entry *ret;
 
       ret = (struct elf_strtab_hash_entry *)entry;
-      ret->u.index = -1;
+      ret->u.index = (bfd_size_type)-1;
       ret->refcount = 0;
       ret->len = 0;
     }
@@ -237,7 +237,7 @@ _bfd_elf_strtab_emit(register bfd *abfd, struct elf_strtab_hash *tab)
       register unsigned int len;
 
       BFD_ASSERT(tab->array[i]->refcount == 0);
-      len = tab->array[i]->len;
+      len = (unsigned int)tab->array[i]->len;
       if ((int)len < 0)
 	continue;
 
@@ -258,11 +258,11 @@ strrevcmp(const void *a, const void *b)
 {
   struct elf_strtab_hash_entry *A = *(struct elf_strtab_hash_entry **)a;
   struct elf_strtab_hash_entry *B = *(struct elf_strtab_hash_entry **)b;
-  unsigned int lenA = A->len;
-  unsigned int lenB = B->len;
+  unsigned int lenA = (unsigned int)A->len;
+  unsigned int lenB = (unsigned int)B->len;
   const unsigned char *s = ((const unsigned char *)A->root.string + lenA - 1U);
   const unsigned char *t = ((const unsigned char *)B->root.string + lenB - 1U);
-  int l = ((lenA < lenB) ? lenA : lenB);
+  int l = (int)((lenA < lenB) ? lenA : lenB);
 
   while (l)
     {
@@ -272,9 +272,10 @@ strrevcmp(const void *a, const void *b)
       t--;
       l--;
     }
-  return lenA - lenB;
+  return (int)(lenA - lenB);
 }
 
+/* */
 static inline int
 is_suffix(const struct elf_strtab_hash_entry *A,
 	  const struct elf_strtab_hash_entry *B)
@@ -285,7 +286,7 @@ is_suffix(const struct elf_strtab_hash_entry *A,
     return 0;
 
   return (memcmp((A->root.string + (A->len - B->len)),
-                 B->root.string, (B->len - 1)) == 0);
+                 B->root.string, (size_t)(B->len - 1)) == 0);
 }
 
 /* This function assigns final string table offsets for used strings,
@@ -322,7 +323,7 @@ _bfd_elf_strtab_finalize(struct elf_strtab_hash *tab)
 	e->len = 0;
     }
 
-  size = (a - array);
+  size = (bfd_size_type)(a - array);
   if (size != 0)
     {
       qsort(array, size, sizeof(struct elf_strtab_hash_entry *),
@@ -371,7 +372,7 @@ alloc_failure:
       if (e->refcount && (e->len > 0))
 	{
 	  e->u.index = size;
-	  size += e->len;
+	  size += (bfd_size_type)e->len;
 	}
     }
 
@@ -382,7 +383,8 @@ alloc_failure:
     {
       e = tab->array[i];
       if (e->refcount && e->len < 0)
-	e->u.index = (e->u.suffix->u.index + (e->u.suffix->len + e->len));
+	e->u.index = (e->u.suffix->u.index
+                      + (bfd_size_type)(e->u.suffix->len + e->len));
     }
 }
 

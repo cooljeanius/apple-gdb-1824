@@ -753,8 +753,10 @@ else
     gl_WARN_ADD([-Wall])
     gl_WARN_ADD([-fno-strict-aliasing])
     if test "x${cgen_maint}" != "xyes"; then
+      gl_WARN_ADD([-Wno-address])
       gl_WARN_ADD([-Wno-unused-but-set-variable])
       gl_WARN_ADD([-Wno-enum-compare])
+      gl_WARN_ADD([-Wno-tautological-compare])
     fi
     gl_WARN_ADD([-Wextra])
     if test "x${cgen_maint}" != "xyes"; then
@@ -768,6 +770,7 @@ else
       gl_WARN_ADD([-Wno-tautological-pointer-compare])
       gl_WARN_ADD([-Wno-string-plus-int])
       gl_WARN_ADD([-Wno-deprecated-non-prototype])
+      gl_WARN_ADD([-Wno-enum-conversion])
       m4_ifdef([gl_GCC_VERSION_IFELSE],[
         gl_GCC_VERSION_IFELSE([14],[0],[
           gl_WARN_ADD([-fpermissive])
@@ -779,7 +782,10 @@ else
           gl_WARN_ADD([-fpermissive])
         fi
       ])
+    elif test "x${cgen_maint}" != "x"; then
+      test -n "${cgen_maint}" && echo "cgen_maint is '${cgen_maint}'; fix stuff"
     fi
+    gl_WARN_ADD([-Wformat-security])
   ])
 fi
 dnl# (I uncommented it to add it back in anyways, but conditionally)

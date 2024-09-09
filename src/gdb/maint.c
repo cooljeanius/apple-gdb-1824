@@ -665,29 +665,39 @@ show_maintenance_profile_p (struct ui_file *file, int from_tty,
   fprintf_filtered (file, _("Internal profiling is %s.\n"), value);
 }
 
-#if defined (HAVE_MONSTARTUP) && defined (HAVE__MCLEANUP)
+#if (defined(HAVE_MONSTARTUP) && defined(HAVE__MCLEANUP))
 
-#ifdef HAVE__ETEXT
+# ifdef HAVE__ETEXT
 extern char _etext;
-#define TEXTEND &_etext
-#else
+#  define TEXTEND &_etext
+# else
 extern char etext;
-#define TEXTEND &etext
-#endif
+#  define TEXTEND &etext
+# endif /* HAVE__ETEXT */
 
 static int profiling_state;
 
-static void
-mcleanup_wrapper (void)
-{
-  extern void _mcleanup (void);
+#if !defined(HAVE_DECL__MCLEANUP) || !HAVE_DECL__MCLEANUP
+extern void _mcleanup(void);
+#endif /* !HAVE_DECL__MCLEANUP */
 
+/* */
+static void
+mcleanup_wrapper(void)
+{
   if (profiling_state)
-    _mcleanup ();
+    _mcleanup();
 }
 
+#if !defined(HAVE_DECL_MONSTARTUP) || !HAVE_DECL_MONSTARTUP
+extern void monstartup(unsigned long, unsigned long);
+#endif /* !HAVE_DECL_MONSTARTUP */
+extern int main();
+
+/* */
 static void
-maintenance_set_profile_cmd (char *args, int from_tty, struct cmd_list_element *c)
+maintenance_set_profile_cmd(const char *args, int from_tty,
+                            struct cmd_list_element *c)
 {
   if (maintenance_profile_p == profiling_state)
     return;
@@ -698,23 +708,19 @@ maintenance_set_profile_cmd (char *args, int from_tty, struct cmd_list_element *
     {
       static int profiling_initialized;
 
-      extern void monstartup (unsigned long, unsigned long);
-      extern int main();
-
       if (!profiling_initialized)
 	{
-	  atexit (mcleanup_wrapper);
+	  atexit(mcleanup_wrapper);
 	  profiling_initialized = 1;
 	}
 
       /* "main" is now always the first function in the text segment, so use
 	 its address for monstartup.  */
-      monstartup ((unsigned long) &main, (unsigned long) TEXTEND);
+      monstartup((unsigned long)&main, (unsigned long)TEXTEND);
     }
   else
     {
-      extern void _mcleanup (void);
-      _mcleanup ();
+      _mcleanup();
     }
 }
 #else

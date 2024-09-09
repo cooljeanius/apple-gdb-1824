@@ -39,7 +39,13 @@ typedef unsigned int gdb_uint32_t;
    the goal to share the same code in the debugger.  */
 #include <pthread.h>
 #include <sys/types.h>
-#include <sys/procfs.h>
+#if defined(HAVE_SYS_PROCFS_H) || __has_include(<sys/procfs.h>)
+# include <sys/procfs.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "gdb_thread_db.h expects <sys/procfs.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_PROCFS_H */
 
 
 /* Error codes of the library.  */

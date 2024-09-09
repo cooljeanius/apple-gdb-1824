@@ -169,46 +169,46 @@ static const char *const add_compl_names[] = { 0, "", ",l", ",tsv" };
 /* Utility function to print registers.  Put these first, so gcc's function
    inlining can do its stuff.  */
 
-#define fputs_filtered(STR,F)	(*info->fprintf_func) (info->stream, "%s", STR)
+#define fputs_filtered(STR,F)	(*info->fprintf_func)(info->stream, "%s", STR)
 
 static void
-fput_reg (unsigned reg, disassemble_info *info)
+fput_reg(unsigned int reg, disassemble_info *info)
 {
-  (*info->fprintf_func) (info->stream, reg ? reg_names[reg] : "r0");
+  (*info->fprintf_func)(info->stream, "%s", (reg ? reg_names[reg] : "r0"));
 }
 
 static void
-fput_fp_reg (unsigned reg, disassemble_info *info)
+fput_fp_reg(unsigned int reg, disassemble_info *info)
 {
-  (*info->fprintf_func) (info->stream, reg ? fp_reg_names[reg] : "fr0");
+  (*info->fprintf_func)(info->stream, "%s", (reg ? fp_reg_names[reg] : "fr0"));
 }
 
 static void
-fput_fp_reg_r (unsigned reg, disassemble_info *info)
+fput_fp_reg_r(unsigned int reg, disassemble_info *info)
 {
   /* Special case floating point exception registers.  */
   if (reg < 4)
-    (*info->fprintf_func) (info->stream, "fpe%d", reg * 2 + 1);
+    (*info->fprintf_func)(info->stream, "fpe%d", ((reg * 2) + 1));
   else
-    (*info->fprintf_func) (info->stream, "%sR",
-			   reg ? fp_reg_names[reg] : "fr0");
+    (*info->fprintf_func)(info->stream, "%sR",
+			  (reg ? fp_reg_names[reg] : "fr0"));
 }
 
 static void
-fput_creg (unsigned reg, disassemble_info *info)
+fput_creg(unsigned int reg, disassemble_info *info)
 {
-  (*info->fprintf_func) (info->stream, control_reg[reg]);
+  (*info->fprintf_func)(info->stream, "%s", control_reg[reg]);
 }
 
 /* Print constants with sign.  */
 
 static void
-fput_const (unsigned num, disassemble_info *info)
+fput_const(unsigned int num, disassemble_info *info)
 {
-  if ((int) num < 0)
-    (*info->fprintf_func) (info->stream, "-%x", - (int) num);
+  if ((int)num < 0)
+    (*info->fprintf_func)(info->stream, "-%x", - (int) num);
   else
-    (*info->fprintf_func) (info->stream, "%x", num);
+    (*info->fprintf_func)(info->stream, "%x", num);
 }
 
 /* Routines to extract various sized constants out of hppa
@@ -381,7 +381,7 @@ print_insn_hppa (bfd_vma memaddr, disassemble_info *info)
 #ifndef BFD64
 	  if (opcode->arch == pa20w)
 	    continue;
-#endif
+#endif /* !BFD64 */
 	  (*info->fprintf_func) (info->stream, "%s", opcode->name);
 
 	  if (!strchr ("cfCY?-+nHNZFIuv{", opcode->args[0]))

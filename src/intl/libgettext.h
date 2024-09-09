@@ -80,7 +80,7 @@ extern "C" {
 # define HAVE_LC_MESSAGES (1) /* hack to silence some warnings */
 #endif /* LC_MESSAGES */
 
-#if !HAVE_LC_MESSAGES
+#if !defined(HAVE_LC_MESSAGES) || !HAVE_LC_MESSAGES
 /* This value determines the behaviour of the gettext() and dgettext()
    function. But some systems do not have this defined. Define it
    to a default value.  */

@@ -20,9 +20,9 @@
 #include "dis-asm.h"
 
 /* Actually including this breaks stuff, due to duplication, so ifdef it out for now: */
-#if 0
+#if defined(BREAK_STUFF_WITH_DUPLICATION) && defined(USE_READLINE)
 # include "readline.h"
-#endif /* 0 */
+#endif /* BREAK_STUFF_WITH_DUPLICATION && USE_READLINE */
 
 /*--------------------------------------------------------------------------------------*/
 

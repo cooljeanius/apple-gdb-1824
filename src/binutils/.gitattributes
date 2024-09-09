@@ -1,3 +1,4 @@
+Makefile.in linguist-generated
 arlex.c linguist-generated
 arparse.[ch] linguist-generated
 config.h.in linguist-generated

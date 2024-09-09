@@ -1,4 +1,4 @@
-/* Utility to pick a temporary filename prefix.
+/* choose-temp.c: Utility to pick a temporary filename prefix.
    Copyright (C) 1996, 1997, 1998 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.
@@ -18,16 +18,19 @@ write to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>	/* May get P_tmpdir.  */
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#endif /* HAVE_STRING_H */
+#ifdef HAVE_UNISTD_H
+# include <unistd.h> /* for mktemp() */
+#endif /* HAVE_UNISTD_H */
 
 #include "libiberty.h"
 extern char *choose_tmpdir(void);

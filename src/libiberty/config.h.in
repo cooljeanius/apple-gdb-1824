@@ -120,6 +120,10 @@
    don't. */
 #undef HAVE_DECL_MKSTEMPS
 
+/* Define to 1 if you have the declaration of 'psignal', and to 0 if you
+   don't. */
+#undef HAVE_DECL_PSIGNAL
+
 /* Define to 1 if you have the declaration of 'realloc', and to 0 if you
    don't. */
 #undef HAVE_DECL_REALLOC
@@ -147,6 +151,10 @@
 /* Define to 1 if you have the declaration of 'strnlen', and to 0 if you
    don't. */
 #undef HAVE_DECL_STRNLEN
+
+/* Define to 1 if you have the declaration of 'strsignal', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRSIGNAL
 
 /* Define to 1 if you have the declaration of 'strtol', and to 0 if you don't.
    */

@@ -20,6 +20,9 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef _NM_LINUX_H_
+#define _NM_LINUX_H_
+
 struct target_ops;
 
 /* GNU/Linux is SVR4-ish but its /proc file system isn't.  */
@@ -73,3 +76,5 @@ extern void lin_thread_get_thread_signals (sigset_t *mask);
 
 #define NATIVE_XFER_AUXV	procfs_xfer_auxv
 #include "auxv.h"		/* Declares it. */
+
+#endif /* !_NM_LINUX_H_ */

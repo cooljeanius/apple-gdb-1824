@@ -20,3 +20,4 @@ detail
 *.sum
 *.psum
 site.*
+!*.bz2

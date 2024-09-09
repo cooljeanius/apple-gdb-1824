@@ -154,7 +154,7 @@ struct extra
   {
     char str[128];
     int len;
-  };				/* maximum extension is 128! FIXME */
+  };				/* maximum extension is 128! FIXME: FIXME! */
 
 static void print_bit_vector (B_TYPE *, int);
 static void print_arg_types (struct field *, int, int);
@@ -247,7 +247,7 @@ smash_type (struct type *type)
 #if 0
   /* For now, delete the rings.  */
   TYPE_CHAIN (type) = type;
-#endif
+#endif /* 0 */
 
   /* For now, leave the pointer/reference types alone.  */
 }
@@ -512,7 +512,7 @@ make_qualified_type (struct type *type, int new_flags,
 	 necessary here.  */
 #if 0
       TYPE_MAIN_TYPE (ntype) = TYPE_MAIN_TYPE (type);
-#endif
+#endif /* 0 */
       /* APPLE LOCAL: Don't do this, if NTYPE already
 	 has been linked to another type in this chain,
 	 then you won't set the type in the chained type
@@ -520,7 +520,7 @@ make_qualified_type (struct type *type, int new_flags,
 	 unnecessarily.  */
 #if 0
       TYPE_CHAIN (ntype) = ntype;
-#endif
+#endif /* 0 */
     }
 
   /* APPLE LOCAL: I don't think this is right either.  If you
@@ -544,7 +544,7 @@ make_qualified_type (struct type *type, int new_flags,
      the new type.  */
   TYPE_POINTER_TYPE (ntype) = (struct type *) 0;
   TYPE_REFERENCE_TYPE (ntype) = (struct type *) 0;
-#endif
+#endif /* 0 */
 
   /* Chain the new qualified type to the old type.  */
   /* APPLE LOCAL: Be careful to splice any of the types that
@@ -1153,7 +1153,7 @@ build_builtin_type_vec64 (void)
     int16_t v4_int16[4];
     int8_t v8_int8[8];
   };
-#endif
+#endif /* 0 */
 
   struct type *t;
 
@@ -1183,7 +1183,7 @@ build_builtin_type_vec128 (void)
     int16_t v8_int16[8];
     int8_t v16_int8[16];
   };
-#endif
+#endif /* 0 */
 
   struct type *t;
 
@@ -2112,8 +2112,6 @@ init_composite_type(const char *name, enum type_code code)
   return t;
 }
 
-/* FIXME: FIXME */
-#if 0
 /* Helper functions to initialize architecture-specific types.  */
 
 /* Allocate a type structure associated with GDBARCH and set its
@@ -2125,12 +2123,22 @@ arch_type (struct gdbarch *gdbarch,
 {
   struct type *type;
 
+#if defined(HAVE_ALLOC_TYPE_ARCH) || defined(alloc_type_arch)
   type = alloc_type_arch (gdbarch);
+#else
+  type = (struct type *)xmalloc(sizeof(type));
+#endif /* HAVE_ALLOC_TYPE_ARCH || alloc_type_arch */
+#if defined(HAVE_SET_TYPE_CODE) || defined(set_type_code)
   set_type_code (type, code);
+#else
+  (void)code;
+#endif /* HAVE_SET_TYPE_CODE || set_type_code */
   TYPE_LENGTH_ASSIGN(type) = length;
 
+#if defined(HAVE_GDBARCH_OBSTACK_STRDUP) || defined(gdbarch_obstack_strdup)
   if (name)
     TYPE_NAME (type) = gdbarch_obstack_strdup (gdbarch, name);
+#endif /* HAVE_GDBARCH_OBSTACK_STRDUP || gdbarch_obstack_strdup */
 
   return type;
 }
@@ -2146,8 +2154,10 @@ arch_integer_type (struct gdbarch *gdbarch,
   struct type *t;
 
   t = arch_type (gdbarch, TYPE_CODE_INT, bit / TARGET_CHAR_BIT, name);
+#if 0
   if (unsigned_p)
     TYPE_UNSIGNED (t) = 1;
+#endif /* 0 */
 
   return t;
 }
@@ -2163,8 +2173,10 @@ arch_character_type (struct gdbarch *gdbarch,
   struct type *t;
 
   t = arch_type (gdbarch, TYPE_CODE_CHAR, bit / TARGET_CHAR_BIT, name);
+#if 0
   if (unsigned_p)
     TYPE_UNSIGNED (t) = 1;
+#endif /* 0 */
 
   return t;
 }
@@ -2180,8 +2192,10 @@ arch_boolean_type (struct gdbarch *gdbarch,
   struct type *t;
 
   t = arch_type (gdbarch, TYPE_CODE_BOOL, bit / TARGET_CHAR_BIT, name);
+#if 0
   if (unsigned_p)
     TYPE_UNSIGNED (t) = 1;
+#endif /* 0 */
 
   return t;
 }
@@ -2198,13 +2212,20 @@ arch_float_type (struct gdbarch *gdbarch,
 {
   struct type *t;
 
+#if defined(HAVE_VERIFY_FLOATFORMAT) || defined(verify_floatformat)
   bit = verify_floatformat (bit, floatformats);
+#else
+  bit = 0;
+#endif /* HAVE_VERIFY_FLOATFORMAT || verify_floatformat */
   t = arch_type (gdbarch, TYPE_CODE_FLT, bit / TARGET_CHAR_BIT, name);
+#if 0
   TYPE_FLOATFORMAT (t) = floatformats;
+#endif /* 0 */
 
   return t;
 }
 
+#ifdef TYPE_CODE_DECFLOAT
 /* Allocate a TYPE_CODE_DECFLOAT type structure associated with GDBARCH.
  BIT is the type size in bits.  NAME is the type name.  */
 
@@ -2216,6 +2237,7 @@ arch_decfloat_type (struct gdbarch *gdbarch, int bit, const char *name)
   t = arch_type (gdbarch, TYPE_CODE_DECFLOAT, bit / TARGET_CHAR_BIT, name);
   return t;
 }
+#endif /* TYPE_CODE_DECFLOAT */
 
 /* Allocate a TYPE_CODE_COMPLEX type structure associated with GDBARCH.
  NAME is the type name.  TARGET_TYPE is the component float type.  */
@@ -2245,7 +2267,9 @@ arch_pointer_type (struct gdbarch *gdbarch,
 
   t = arch_type (gdbarch, TYPE_CODE_PTR, bit / TARGET_CHAR_BIT, name);
   TYPE_TARGET_TYPE (t) = target_type;
+#if 0
   TYPE_UNSIGNED (t) = 1;
+#endif /* 0 */
   return t;
 }
 
@@ -2259,11 +2283,17 @@ arch_flags_type (struct gdbarch *gdbarch, const char *name, int length)
   struct type *type;
 
   type = arch_type (gdbarch, TYPE_CODE_FLAGS, length, name);
+#if 0
   TYPE_UNSIGNED (type) = 1;
+#endif /* 0 */
   TYPE_NFIELDS (type) = 0;
+#if defined(TYPE_OBJFILE_OWNED) && defined(TYPE_ZALLOC)
   /* Pre-allocate enough space assuming every field is one bit.  */
   TYPE_FIELDS (type)
   = (struct field *) TYPE_ZALLOC (type, max_nfields * sizeof (struct field));
+#else
+  (void)max_nfields;
+#endif /* TYPE_OBJFILE_OWNED && TYPE_ZALLOC */
 
   return type;
 }
@@ -2287,7 +2317,9 @@ append_flags_type_field (struct type *type, int start_bitpos, int nr_bits,
 
   TYPE_FIELD_NAME (type, field_nr) = xstrdup (name);
   TYPE_FIELD_TYPE (type, field_nr) = field_type;
+#if defined(SET_FIELD_BITPOS) && defined(TYPE_FIELD)
   SET_FIELD_BITPOS (TYPE_FIELD (type, field_nr), start_bitpos);
+#endif /* SET_FIELD_BITPOS && TYPE_FIELD */
   TYPE_FIELD_BITSIZE (type, field_nr) = nr_bits;
   ++TYPE_NFIELDS (type);
 }
@@ -2299,7 +2331,12 @@ append_flags_type_field (struct type *type, int start_bitpos, int nr_bits,
 void
 append_flags_type_flag(struct type *type, int bitpos, const char *name)
 {
-  struct gdbarch *gdbarch = get_type_arch(type);
+  struct gdbarch *gdbarch;
+#if defined(HAVE_GET_TYPE_ARCH) || defined(get_type_arch)
+  gdbarch = get_type_arch(type);
+#else
+  gdbarch = NULL;
+#endif /* HAVE_GET_TYPE_ARCH || get_type_arch */
 
   append_flags_type_field(type, bitpos, 1,
 			  get_builtin_type(gdbarch)->builtin_bool,
@@ -2361,10 +2398,15 @@ append_composite_type_field_aligned (struct type *t, const char *name,
     TYPE_LENGTH_ASSIGN(t) = TYPE_LENGTH (t) + TYPE_LENGTH (field);
     if (TYPE_NFIELDS (t) > 1)
     {
+#if defined(SET_FIELD_BITPOS)
       SET_FIELD_BITPOS (f[0],
 			(FIELD_BITPOS (f[-1])
 			 + (TYPE_LENGTH (FIELD_TYPE (f[-1]))
 			    * TARGET_CHAR_BIT)));
+#else
+      FIELD_BITPOS(f[0]) = (FIELD_BITPOS(f[-1])
+                            + (TYPE_LENGTH(field) * TARGET_CHAR_BIT));
+#endif /* SET_FIELD_BITPOS */
 
       if (alignment)
       {
@@ -2375,14 +2417,18 @@ append_composite_type_field_aligned (struct type *t, const char *name,
 
 	if (left)
 	{
+#if defined(SET_FIELD_BITPOS)
 	  SET_FIELD_BITPOS (f[0], FIELD_BITPOS (f[0]) + (alignment - left));
+#else
+	  FIELD_BITPOS(f[0]) = (FIELD_BITPOS(f[-1])
+                                + (TYPE_LENGTH(field) * TARGET_CHAR_BIT));
+#endif /* SET_FIELD_BITPOS */
 	  TYPE_LENGTH_ASSIGN(t) += (alignment - left) / TARGET_CHAR_BIT;
 	}
       }
     }
   }
 }
-#endif /* 0 */
 
 /* Helper function.  Append a field to a composite type: */
 void
@@ -3835,7 +3881,7 @@ build_gdbtypes (void)
    little-endian).  */
 #if 0
   TYPE_FLOATFORMAT (builtin_type_float) = TARGET_FLOAT_FORMAT;
-#endif
+#endif /* 0 */
   builtin_type_double =
     init_type (TYPE_CODE_FLT, TARGET_DOUBLE_BIT / TARGET_CHAR_BIT,
 	       0,

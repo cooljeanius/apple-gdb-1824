@@ -1,8 +1,8 @@
---  Copyright 2005 Free Software Foundation, Inc.
+--  Copyright 2005-2016 Free Software Foundation, Inc.
 --
 --  This program is free software; you can redistribute it and/or modify
 --  it under the terms of the GNU General Public License as published by
---  the Free Software Foundation; either version 2 of the License, or
+--  the Free Software Foundation; either version 3 of the License, or
 --  (at your option) any later version.
 --
 --  This program is distributed in the hope that it will be useful,
@@ -11,8 +11,9 @@
 --  GNU General Public License for more details.
 --
 --  You should have received a copy of the GNU General Public License
---  along with this program; if not, write to the Free Software
---  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+with Pck; use Pck;
 
 procedure PA is
 
@@ -21,9 +22,17 @@ procedure PA is
 
    Var : Packed_Array;
 
+   --  Unconstrained packed array (bounds are dynamic).
+   type Unconstrained_Packed_Array is array (Integer range <>) of Boolean;
+
+   U_Var : Unconstrained_Packed_Array (1 .. Ident (6));
+
 begin
 
    Var := (True, False, True, False, True);
+   U_Var := (True, False, False, True, True, False);
+
    Var (8) := False;  -- STOP
+   U_Var (U_Var'Last) := True;
 
 end PA;

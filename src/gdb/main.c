@@ -169,6 +169,7 @@ captured_main(void *data)
   /* APPLE LOCAL globalbuf */
   struct stat homebuf, cwdbuf, globalbuf;
   char *homedir;
+  char *ourcwd;
   /* APPLE LOCAL attach -waitfor */
   char *attach_waitfor = NULL;
   /* APPLE LOCAL: set the architecture.  */
@@ -221,7 +222,10 @@ captured_main(void *data)
   line[0] = '\0';		/* Terminate saved (now empty) cmd line */
   instream = stdin;
 
-  getcwd(gdb_dirbuf, sizeof(gdb_dirbuf));
+  ourcwd = getcwd(gdb_dirbuf, sizeof(gdb_dirbuf));
+  if (ourcwd == NULL) {
+    ; /* ??? */
+  }
   current_directory = gdb_dirbuf;
 
   /* APPLE LOCAL gdb_null */
@@ -236,7 +240,13 @@ captured_main(void *data)
 
   /* APPLE LOCAL: set our main thread's name */
 #ifdef HAVE_PTHREAD_SETNAME_NP
+# if defined(__APPLE__) && (defined(MACOSX_DYLD) || defined(TM_NEXTSTEP))
   pthread_setname_np("gdb main thread");
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__APPLE_CC__)
+#   warning "use of pthread_setname_np() here is only implemented for macOS so far"
+#  endif /* __GNUC__ && !__STRICT_ANSI__ && !__APPLE_CC__ */
+# endif /* __APPLE__ && (MACOSX_DYLD || TM_NEXTSTEP) */
 #endif /* HAVE_PTHREAD_SETNAME_NP */
 
   /* APPLE LOCAL: raise our file descriptor limit a lot: */

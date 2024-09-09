@@ -504,8 +504,7 @@ sh64_get_contents_type_disasm (bfd_vma memaddr, struct disassemble_info *info)
 static bfd_boolean
 init_sh64_disasm_info (struct disassemble_info *info)
 {
-  struct sh64_disassemble_info *sh64_infop
-    = calloc (sizeof (*sh64_infop), 1);
+  struct sh64_disassemble_info *sh64_infop = calloc(1, sizeof(*sh64_infop));
 
   if (sh64_infop == NULL)
     return FALSE;

@@ -33,7 +33,13 @@
 #ifdef HAVE_LIMITS_H
 # include <limits.h>
 #endif /* HAVE_LIMITS_H */
-#include <mach-o/dyld.h>
+#if defined(HAVE_MACH_O_DYLD_H) || __has_include(<mach-o/dyld.h>)
+# include <mach-o/dyld.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "fix-and-continue.c expects <mach-o/dyld.h> to be included"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_MACH_O_DYLD_H */
 #ifdef HAVE_MATH_H
 # include <math.h>
 #endif /* HAVE_MATH_H */

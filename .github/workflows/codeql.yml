@@ -19,12 +19,14 @@ on:
       - master
       - main
       - dependabot/*
+      - codeql-*
   pull_request:
     # The branches below must be a subset of the branches above
     branches:
       - master
       - main
       - dependabot/*
+      - codeql-*
   schedule:
     - cron: '38 5 * * 2'
 
@@ -47,8 +49,9 @@ jobs:
       fail-fast: false
       matrix:
         language: ['c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby']
-        # CodeQL supports:
-        # ['c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift']
+        # CodeQL supports the following languages:
+        # 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript',
+        # 'python', 'ruby', 'swift'
         # Use only 'java-kotlin' to analyze code written in Java, Kotlin or both
         # Use 'javascript-typescript' to analyze code written in JavaScript,
         # TypeScript or both
@@ -64,9 +67,12 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
+        # If you wish to specify custom queries, you can do so here or in a
+        # config file.
+        # By default, queries listed here will override any specified in a
+        # config file.
+        # Prefix the list here with "+" to use these queries and those in the
+        # config file.
 
         # For more details on CodeQL's query packs, refer to:
         # https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
@@ -102,13 +108,20 @@ jobs:
 
     - name: Dependencies
       run: |
+        sudo apt-get -qq update
         if test ${{ matrix.language }} == 'c-cpp'; then \
-          sudo apt-get -y install autopoint gobjc clang autogen guile-2.2 \
-            guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev \
+          sudo apt-get -y install autopoint gobjc clang autogen curl \
+            guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev \
             guile-3.0-libs libguile-ssh13 libiconv-hook1 libiconv-hook-dev \
             win-iconv-mingw-w64-dev mingw-w64 mingw-w64-i686-dev wine libwine \
-            libwine-dev crosshurd libdispatch0 libdispatch-dev \
-            libblocksruntime0 libblocksruntime-dev systemtap-sdt-dev; \
+            libwine-dev libtbb-dev crosshurd libdispatch0 libdispatch-dev \
+            libblocksruntime0 libblocksruntime-dev systemtap-sdt-dev \
+            libfl-dev libiberty-dev libmpfr-dev gettext libisl-dev \
+            gdb ddd texlive-binaries sharutils xutils-dev llvm libacl1-dev \
+            xterm binutils-dev bash gobjc-multilib libasprintf-dev \
+            libgettextpo-dev help2man docbook-utils splint valac-bin cxref \
+            libbsd-dev libkmod-dev libelf-dev libdmalloc-dev \
+            libbabeltrace-dev libkmer-dev; \
         elif test ${{ matrix.language }} == 'java-kotlin'; then \
           sudo apt-get -y install kotlin gradle libgradle-core-java \
             libgradle-plugins-java libintellij-java-compatibility-java \
@@ -124,8 +137,8 @@ jobs:
           sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs nant \
             nunit mono-xbuild yamllint; \
         elif test ${{ matrix.language }} == 'python'; then \
-          sudo apt-get -y install jython pylint pymacs python-tk tix flake8 \
-            python3-macholib yamllint black python3-pyls-black \
+          sudo apt-get -y install --fix-missing jython pylint pymacs python-tk \
+            tix flake8 python3-macholib yamllint black python3-pyls-black \
             python3-pylsp-black python3-pyflakes python3-pylint-plugin-utils \
             python3-pylint-common pyflakes3 python3-pytest-pylint \
             python3-flake8 python3-pytest-flake8 python3-pep8-naming \
@@ -150,7 +163,8 @@ jobs:
       if: matrix.language != 'c-cpp' && matrix.language != 'java-kotlin'
       run: |
         if test ${{ matrix.language }} == 'ruby' && test -x "$(which ruby)"; then \
-          ruby -cwv src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb || ruby -c src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb; \
+          ruby -cwv src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb || \
+            ruby -c src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb; \
           if test ! -w /var/lib/gems; then \
             SUDO="sudo"; \
           else \
@@ -164,8 +178,8 @@ jobs:
           done; \
           if test -z "$(which nitpick)" || test ! -x "$(which nitpick)"; then \
             if test -n "${GEMCMD}"; then \
-              sync && echo "using ${GEMCMD} to attempt to install nitpick"; \
-              "${SUDO}" ${GEMCMD} install nitpick; \
+              sync && echo "using ${GEMCMD} to try to install nitpick & dependencies"; \
+              "${SUDO}" ${GEMCMD} install ruby2ruby nitpick; \
             else \
               sync && echo "warning: unsure how to install nitpick"; \
             fi; \
@@ -173,7 +187,8 @@ jobs:
             sync && echo "found $(which nitpick)..."; \
           fi; \
           if test -x "$(which nitpick)"; then \
-            nitpick src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb || which -a nitpick; \
+            nitpick src/gdb/testsuite/gdb.apple/gen-x86-prologues.rb || \
+              which -a nitpick; \
           else \
             sync && echo "skipping nitpicking of ruby in testsuite"; \
           fi; \
@@ -188,7 +203,8 @@ jobs:
           else \
             sync && echo "found $(which bundle)..."; \
           fi; \
-          (bundle install && bundle check) || ruby -cwv Gemfile || ruby -c Gemfile; \
+          (bundle install && bundle check) || ruby -cwv Gemfile || \
+            ruby -c Gemfile; \
           if test -x "$(which nitpick)"; then \
             nitpick Gemfile || stat "$(which nitpick)"; \
           else \
@@ -217,7 +233,8 @@ jobs:
         elif test ${{ matrix.language }} == 'go' && test -x "$(which go)"; then \
           if test -x "$(which staticcheck)"; then \
             sleep && which -a staticcheck && sleep 1; \
-            (find . -name '*.go' -print0 | xargs -0 staticcheck) || statticcheck; \
+            (find . -name '*.go' -print0 | xargs -0 staticcheck) || \
+              statticcheck; \
           elif test -x "$(which revive)"; then \
             sleep && which -a revive && sleep 1; \
             (find . -name '*.go' -print0 | xargs -0 revive) || revive; \
@@ -226,19 +243,21 @@ jobs:
             (find . -name '*.go' -print0 | xargs -0 gocritic) || gocritic; \
           elif test -x "$(which golangci-lint)"; then \
             sync && which -a golangci-lint && sleep 1; \
-            golangci-lint run src/gdb/testsuite/gdb.go || golangci-lint config verify; \
+            golangci-lint run src/gdb/testsuite/gdb.go || \
+              golangci-lint config verify; \
           elif test -x "$(which gofmt)"; then \
             sync && which -a gofmt && sleep 1; \
             find . -name '*.go' -print0 | xargs -0 gofmt; \
           elif test -x "$(which actionlint)"; then \
-            sync && actionlint && sleep 1; \
+            sync && actionlint -verbose && sleep 1; \
           else \
             sync && echo "no linters found for go." && sleep 1; \
           fi; \
         elif test ${{ matrix.language }} == 'python' && test -x "$(which python)"; then \
           sync && which -a pylint && which -a flake8 && which -a black; \
           which -a ruff || which -a pyupgrade || which -a autopep8; \
-          (find . -name '*.py' -print0 | xargs -0 pylint) || stat "$(which pylint)"; \
+          (find . -name '*.py' -print0 | xargs -0 pylint) || \
+            stat "$(which pylint)"; \
           sync && (flake8 || ruff check || (stat "$(which ruff)" && sleep 1)); \
           if test -x "$(which yamllint)"; then \
             yamllint .github/FUNDING.yml .github/dependabot.yml; \
@@ -265,18 +284,22 @@ jobs:
     - name: Run build with Gradle Wrapper
       if: matrix.language == 'java-kotlin' && success()
       run: |
-        (yes 2>/dev/null | ./gradlew build --scan) || ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
+        (yes 2>/dev/null | ./gradlew build --scan) || ./gradlew build || \
+          ./gradlew assemble || (pwd && stat ./gradlew)
         sync && echo "done with top-level; next is jzlib..."
         pushd src/zlib/contrib/java/jzlib-1.1.2 || exit
-        (yes 2>/dev/null | ./gradlew build --scan) || ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
+        (yes 2>/dev/null | ./gradlew build --scan) || ./gradlew build || \
+          ./gradlew assemble || (pwd && stat ./gradlew)
         popd || exit
         sync && echo "done with jzlib; next is testsuite..."
         pushd src/gdb/testsuite/gdb.java || exit
-        (yes 2>/dev/null | ./gradlew build --scan) || ./gradlew build || ./gradlew assemble || (pwd && stat ./gradlew)
+        (yes 2>/dev/null | ./gradlew build --scan) || ./gradlew build || \
+          ./gradlew assemble || (pwd && stat ./gradlew)
         popd || exit
         sync && echo "done with attempts at using the gradle wrapper..."
 
-    # Can try bringing back autobuild for 'c-cpp' once darling has xcrun:
+    # Getting autobuild to work for 'c-cpp' has been too difficult, so I am
+    # putting it back to "Disabled" again for now:
     - name: Autobuild
       if: matrix.language != 'c-cpp'
       uses: github/codeql-action/autobuild@v3
@@ -285,10 +308,12 @@ jobs:
       if: matrix.language == 'c-cpp'
       run: |
         pushd .profile.d
-        test -e ./.profile_generic && source ./.profile_generic && (env | uniq | sort | uniq)
+        test -e ./.profile_generic && source ./.profile_generic && \
+          (env | uniq | sort | uniq)
         popd
         if test -x "$(which sccache)"; then \
-          ./configure --enable-silent-rules CC="sccache gcc" CXX="sccache g++" OBJC="sccache gcc" OBJCXX="sccache g++"; \
+          ./configure --enable-silent-rules CC="sccache gcc" CXX="sccache g++" \
+            OBJC="sccache gcc" OBJCXX="sccache g++"; \
           sync && stat -t src && sync; \
           if test -z "${CC}"; then \
             export CC="sccache gcc"; \
@@ -371,8 +396,16 @@ jobs:
         echo "make check-intl" && (time make check-intl) && echo "done making check-intl"
         echo "make check-utils" && (time make check-utils) && echo "done making check-utils"
 
-    - run: find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
+    - name: Debug failure
       if: "${{ failure() }}"
+      run: |
+        find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
+        (find / -name proc_service.h -print -perm +r -user "$(whoami)" 2>/dev/null) || sync
+        if test -d /usr/include && test -r /usr/include/proc_service.h; then \
+          cat /usr/include/proc_service.h || stat /usr/include/proc_service.h; \
+        elif test -r /usr/x86_64-linux-gnu/include/proc_service.h; then \
+          cat /usr/x86_64-linux-gnu/include/proc_service.h; \
+        fi
 
     - name: Extra coverage build (C)
       if: matrix.language == 'c-cpp' && success()
@@ -387,7 +420,8 @@ jobs:
           fi; \
         fi
         make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" || stat -t libcheckpoint
-        make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || stat -t macsbug
+        make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || \
+          stat -t macsbug
         cd src
         if test -z "$(which dejagnu)" || test ! -x "$(which dejagnu)"; then \
           sudo apt-get -qq install dejagnu; \
@@ -397,7 +431,8 @@ jobs:
         if test -x "$(which python)"; then \
           sudo apt-get -qq install python3-macholib; \
         elif test -x "$(which pip)"; then \
-          pip install macholib machobot ak-macholibre || pip install --upgrade pip; \
+          pip install macholib machobot ak-macholibre || \
+            pip install --upgrade pip; \
         fi
         if test -x "$(which rustc)" && test -x "$(which mig)"; then \
           sudo apt-get -y install librust-mach-o-sys-dev; \
@@ -408,6 +443,10 @@ jobs:
           ppc*|powerpc*|rs6000)
             sudo apt-get -y install libpvec1 libpvec-dev libvecpf1 libvecpf-dev
             ;;
+          i*86|x86_64)
+            sudo apt-get -y install libc6-dev-amd64-cross libc6-dev-i386 \
+              libgcc-s1-amd64-cross
+            ;;
           *)
             echo "no special dependencies for $(uname -m)..."
             ;;
@@ -415,7 +454,7 @@ jobs:
         if test -d autogen && test -r autogen && test -w autogen; then \
           pushd autogen; \
           if test -x "$(which guile18-build)" && test -e ./configure; then \
-            sync && echo "running autogen's configure script under $(which guile18-build)..."; \
+            sync && echo "running autogen configure script under $(which guile18-build)…"; \
             guile18-build ./configure --disable-werror --enable-silent-rules --disable-option-checking CFLAGS="-w" || stat -t ./configure; \
           elif test -x ./configure && test -r ./configure && test -w .; then \
             ./configure --disable-werror --enable-silent-rules --disable-option-checking --disable-dependency-tracking CFLAGS="-w" || stat -t ./configure; \
@@ -509,7 +548,7 @@ jobs:
             sync && echo "attempting to configure gdb testsuite..."; \
             ./configure || stat -t ./configure; \
           elif test -x ./config.status; then \
-            sync && echo "checking configuration status for gdb testsuite..."; \
+            sync && echo "checking configuration status for gdb testsuite…"; \
             ./config.status || stat -t ./config.status; \
           elif test -f Makefile; then \
             sync && echo "attempting to use Makefile for gdb testsuite..."; \
@@ -547,7 +586,7 @@ jobs:
         done
         if test -e gdb/testsuite/gdb.apple/Makefile; then \
           pushd gdb/testsuite/gdb.apple; \
-          sync && echo "Two last files to try making in gdb.apple testsuite..."; \
+          sync && echo "Two last files to try making in gdb.apple testsuite…"; \
           make file-statics-cpp.o || stat -t file-statics-cpp.cpp; \
           make var-path-expr.o || stat -t var-path-expr.cpp; \
           cp -v ./*.o .. || ls ./*.o || pwd; \
@@ -562,7 +601,7 @@ jobs:
         done
         if test -e gdb/testsuite/gdb.base/Makefile && test -e gdb/testsuite/gdb.base/langs2.cxx; then \
           pushd gdb/testsuite/gdb.base; \
-          sync && echo "One last attempt at compiling langs2.cxx via Makefile..."; \
+          sync && echo "1 last attempt at compiling langs2.cxx via Makefile…"; \
           make langs2.o || stat -t langs2.cxx; \
           cp -v ./*.o .. || ls ./*.o || pwd; \
           popd; \
@@ -659,7 +698,7 @@ jobs:
         fi
 
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.3.6
+      uses: actions/upload-artifact@v4.4.0
       if: matrix.language == 'c-cpp' && success()
       with:
         # Artifact name

@@ -15,9 +15,9 @@
  capture the output.  Gdb's internal way is just to write to stdout.
 */
 
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 
 #include <stdio.h>
 #include <stddef.h>
@@ -66,7 +66,7 @@ static void _printf(void *stream, const char *format, ...)
     
     va_list ap;
     va_start(ap, format);
-    vsprintf(line, format, ap);
+    vsnprintf(line, sizeof(line), format, ap);
     va_end(ap);
     
     gdb_fprintf(stream == stderr ? gdb_stderr : gdb_stdout, "%s", line);

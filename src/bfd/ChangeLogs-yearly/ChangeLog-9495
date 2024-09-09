@@ -1161,7 +1161,7 @@ Fri Oct 13 17:48:43 1995  Ken Raeburn  <raeburn@cygnus.com>
 	Mon Sep 25 22:49:32 1995  Andreas Schwab  <schwab@issan.informatik.uni-dortmund.de>
 
 	* trad-core.c (rawptr): Make it a local variable of
-	ptrace_unix_core_file_p.
+ 	ptrace_unix_core_file_p.
 
 Fri Oct 13 11:22:01 1995  steve chamberlain  <sac@slash.cygnus.com>
 
@@ -1296,7 +1296,7 @@ Fri Oct  6 16:18:35 1995  Ken Raeburn  <raeburn@cygnus.com>
 	(elf_m68k_adjust_dynindx): Removed.
 
 	* ptrace-core.c (rawptr): Make it a local variable of
-	ptrace_unix_core_file_p.
+ 	ptrace_unix_core_file_p.
 
 Fri Oct  6 12:24:47 1995  Michael Meissner  <meissner@tiktok.cygnus.com>
 
@@ -2760,11 +2760,11 @@ Thu Jul  6 14:37:43 1995  Ian Lance Taylor  <ian@cygnus.com>
 Wed Jul  5 20:17:14 1995  Ken Raeburn  <raeburn@cygnus.com>
 
 	* elfcore.h, elflink.h, elfcode.h, elf.c, elflink.c: Moved some
-	primarily size-independent code from elfcode.h to elf.c and new
-	file elflink.c; moved out other core- or linker-related routines
-	into other new .h files for clarity.  Renamed many routines to
-	start with bfd_elf or _bfd_elf.  Added a structure of
-	size-dependent but target-independent info to elfcode.h.
+ 	primarily size-independent code from elfcode.h to elf.c and new
+ 	file elflink.c; moved out other core- or linker-related routines
+ 	into other new .h files for clarity.  Renamed many routines to
+ 	start with bfd_elf or _bfd_elf.  Added a structure of
+ 	size-dependent but target-independent info to elfcode.h.
 	* Makefile.in: Build elflink.o.  Update dependencies.
 	* libelf.h: Updated some declarations.  Added a definition for the
 	new structure in elfcode.h.  Added more fields to elf backend data
@@ -9856,7 +9856,7 @@ Fri Jan  7 15:40:16 1994  Ian Lance Taylor  (ian@tweedledumb.cygnus.com)
 
 Fri Jan  7 10:29:27 1994  Stan Shebs  (shebs@andros.cygnus.com)
 
-	* bfd-in.h: (bfd_boolean): Add workaround for systems that also
+    	* bfd-in.h: (bfd_boolean): Add workaround for systems that also
 	define true and false as enums.
 	(ALMOST_STDC): Add as alternative to __STDC__.
 	* bfd-in2.h: Rebuilt.
@@ -10035,6 +10035,12 @@ Sat Jan  1 10:18:54 1994  David J. Mackenzie  (djm@thepub.cygnus.com)
 
 For older changes see ChangeLog-9193
 
+Copyright (C) 1994-1995 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
 Local Variables:
 mode: change-log
 left-margin: 8

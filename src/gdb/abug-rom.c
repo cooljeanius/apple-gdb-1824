@@ -32,7 +32,7 @@
 
 /* Prototypes for local functions. */
 
-static void abug_open(char *args, int from_tty);
+static void abug_open(const char *args, int from_tty);
 
 static void
 abug_supply_register(char *regname, int regnamelen, char *val, int vallen)
@@ -81,7 +81,7 @@ abug_supply_register(char *regname, int regnamelen, char *val, int vallen)
 static const char *
 abug_regname(int index)
 {
-  static char *regnames[] = {
+  static const char *regnames[] = {
     "D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7",
     "A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7",
     "PC",
@@ -102,7 +102,7 @@ abug_regname(int index)
 
 static struct target_ops abug_ops;
 
-static char *abug_inits[] = { "\r", NULL };
+static const char *abug_inits[] = { "\r", NULL };
 
 static struct monitor_ops abug_cmds;
 
@@ -157,7 +157,7 @@ init_abug_cmds(void)
 };
 
 static void
-abug_open(char *args, int from_tty)
+abug_open(const char *args, int from_tty)
 {
   monitor_open(args, &abug_cmds, from_tty);
 }
