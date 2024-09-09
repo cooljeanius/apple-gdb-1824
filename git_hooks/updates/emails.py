@@ -304,7 +304,8 @@ class Email:
             # intelligible for normal users.
             ref_name = "The %s branch" % ref_name[11:]
         to_be_filed = (
-            "{} has been updated by {}:".format(ref_name, self.email_info.email_from)
+            "{} has been updated by {}:".format(
+                ref_name, self.email_info.email_from)
             + "\n\n"
             + self.email_body
         )

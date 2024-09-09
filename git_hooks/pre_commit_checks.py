@@ -58,7 +58,8 @@ def check_file(filename, sha1, commit_rev, project_name):
     # it can also be useful to quickly locate a file in the project
     # when trying to make the needed corrections outlined by the
     # style-checker.
-    path_to_filename = "{}/{}".format(utils.scratch_dir, os.path.dirname(filename))
+    path_to_filename = "{}/{}".format(utils.scratch_dir,
+                                      os.path.dirname(filename))
     if not os.path.exists(path_to_filename):
         os.makedirs(path_to_filename)
     git.show(sha1, _outfile="{}/{}".format(utils.scratch_dir, filename))
@@ -81,7 +82,8 @@ def check_file(filename, sha1, commit_rev, project_name):
     # argument. Not sure why, but that does not really apply in
     # our context. Use `trunk/<module>/<path>' to work around
     # the issue.
-    style_checker_args = ["trunk/{}/{}".format(project_name, filename), filename]
+    style_checker_args = [
+        "trunk/{}/{}".format(project_name, filename), filename]
 
     try:
         # In order to allow the style-checker to be a script, we need to
@@ -302,7 +304,8 @@ def check_revision_history(rev):
     PARAMETERS
         rev: The commit to be checked.
     """
-    raw_body = git.log(rev, max_count="1", pretty="format:%B", _split_lines=True)
+    raw_body = git.log(rev, max_count="1",
+                       pretty="format:%B", _split_lines=True)
 
     for line in raw_body:
         if "(no-rh-check)" in line:
@@ -322,7 +325,8 @@ def check_filename_collisions(rev):
     PARAMETERS
         rev: The commit to be checked.
     """
-    all_files = git.ls_tree("--full-tree", "--name-only", "-r", rev, _split_lines=True)
+    all_files = git.ls_tree("--full-tree", "--name-only",
+                            "-r", rev, _split_lines=True)
     filename_map = {}
     for filename in all_files:
         key = filename.lower()
@@ -334,7 +338,8 @@ def check_filename_collisions(rev):
         filename_map[k] for k in list(filename_map.keys()) if len(filename_map[k]) > 1
     ]
     if collisions:
-        raw_body = git.log(rev, max_count="1", pretty="format:%B", _split_lines=True)
+        raw_body = git.log(rev, max_count="1",
+                           pretty="format:%B", _split_lines=True)
         info = [
             "The following filename collisions have been detected.",
             "These collisions happen when the name of two or more files",
@@ -401,7 +406,8 @@ def check_commit(old_rev, new_rev, project_name):
 
     all_changes = git.diff_tree("-r", old_rev, new_rev, _split_lines=True)
     for item in all_changes:
-        (old_mode, new_mode, old_sha1, new_sha1, status, filename) = item.split(None, 5)
+        (old_mode, new_mode, old_sha1, new_sha1,
+         status, filename) = item.split(None, 5)
         debug(
             "diff-tree entry: %s %s %s %s %s %s"
             % (old_mode, new_mode, old_sha1, new_sha1, status, filename),

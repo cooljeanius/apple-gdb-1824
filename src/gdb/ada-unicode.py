@@ -88,7 +88,8 @@ for c in range(0, 0x10FFFF):
 
 with open("ada-casefold.h", "w") as f:
     print(
-        gdbcopyright.copyright("ada-unicode.py", "UTF-32 case-folding for GDB"),
+        gdbcopyright.copyright(
+            "ada-unicode.py", "UTF-32 case-folding for GDB"),
         file=f,
     )
     print("", file=f)

@@ -79,7 +79,8 @@ def get_global_method_matchers(locus_re, matcher_re):
     locus_str = "global"
     xm_dict = {locus_str: []}
     if locus_re.match("global"):
-        xm_dict[locus_str].extend([m for m in gdb.xmethods if matcher_re.match(m.name)])
+        xm_dict[locus_str].extend(
+            [m for m in gdb.xmethods if matcher_re.match(m.name)])
     return xm_dict
 
 
@@ -111,7 +112,8 @@ def get_method_matchers_in_loci(loci, locus_re, matcher_re):
                 continue
             locus_type = "objfile"
         locus_str = "{} {}".format(locus_type, locus.filename)
-        xm_dict[locus_str] = [m for m in locus.xmethods if matcher_re.match(m.name)]
+        xm_dict[locus_str] = [
+            m for m in locus.xmethods if matcher_re.match(m.name)]
     return xm_dict
 
 
@@ -162,9 +164,11 @@ def set_xm_status(arg, status):
     argument string passed to the commands.
     """
     locus_re, matcher_re, name_re = parse_xm_command_args(arg)
-    set_xm_status1(get_global_method_matchers(locus_re, matcher_re), name_re, status)
+    set_xm_status1(get_global_method_matchers(
+        locus_re, matcher_re), name_re, status)
     set_xm_status1(
-        get_method_matchers_in_loci([gdb.current_progspace()], locus_re, matcher_re),
+        get_method_matchers_in_loci(
+            [gdb.current_progspace()], locus_re, matcher_re),
         name_re,
         status,
     )
@@ -199,7 +203,8 @@ class InfoXMethod(gdb.Command):
 
     def invoke(self, arg, from_tty):
         locus_re, matcher_re, name_re = parse_xm_command_args(arg)
-        print_xm_info(get_global_method_matchers(locus_re, matcher_re), name_re)
+        print_xm_info(get_global_method_matchers(
+            locus_re, matcher_re), name_re)
         print_xm_info(
             get_method_matchers_in_loci(
                 [gdb.current_progspace()], locus_re, matcher_re
@@ -207,7 +212,8 @@ class InfoXMethod(gdb.Command):
             name_re,
         )
         print_xm_info(
-            get_method_matchers_in_loci(gdb.objfiles(), locus_re, matcher_re), name_re
+            get_method_matchers_in_loci(
+                gdb.objfiles(), locus_re, matcher_re), name_re
         )
 
 

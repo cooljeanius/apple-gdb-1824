@@ -76,7 +76,8 @@ class Function:
 
         edge = self.reason
         while edge is not None:
-            print("{}: info: via call to {}".format(edge.location, edge.to_fn.name))
+            print("{}: info: via call to {}".format(
+                edge.location, edge.to_fn.name))
             edge = edge.to_fn.reason
 
     def mark_throw(self, edge, work_list, is_indirect):

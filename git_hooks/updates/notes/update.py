@@ -94,7 +94,8 @@ class NotesUpdate(AbstractUpdate):
         # whereas what we needs is the contents at the commit.rev.
         # This makes a difference when a single push updates the notes
         # of the same commit multiple times.
-        annotated_rev_info = git.log(annotated_commit.rev, no_notes=True, max_count="1")
+        annotated_rev_info = git.log(
+            annotated_commit.rev, no_notes=True, max_count="1")
         notes_contents = (
             None if notes.contents is None else indent(notes.contents, " " * 4)
         )

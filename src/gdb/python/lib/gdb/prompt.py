@@ -146,7 +146,7 @@ def substitute_prompt(prompt):
                     if j >= plen or prompt[j] != "}":
                         arg = None
                     else:
-                        arg = prompt[i + 2 : j]
+                        arg = prompt[i + 2: j]
                         i = j
                 else:
                     arg = None

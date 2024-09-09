@@ -195,7 +195,8 @@ class RegexpCollectionPrettyPrinter(PrettyPrinter):
         # cumbersome to make a regexp of a regexp).  So now the name is a
         # separate parameter.
 
-        self.subprinters.append(self.RegexpSubprinter(name, regexp, gen_printer))
+        self.subprinters.append(
+            self.RegexpSubprinter(name, regexp, gen_printer))
 
     def __call__(self, val):
         """Lookup the pretty-printer for the provided value."""
