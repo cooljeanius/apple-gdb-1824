@@ -29,10 +29,10 @@
  * a fat file. In the case of cross-debugging, none of this happens
  * and this global remains untouched.  */
 
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 /* included files can drag in "free": */
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 
 #ifndef GDB_TM_FILE
 # define GDB_TM_FILE "config/arm/tm-arm-macosx.h"

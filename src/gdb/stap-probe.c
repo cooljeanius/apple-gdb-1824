@@ -17,9 +17,9 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 # define NO_POISON 1 /* (use of free) */
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 
 #include "defs.h"
 #include "stap-probe.h"

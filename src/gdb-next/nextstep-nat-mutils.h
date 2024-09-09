@@ -37,8 +37,16 @@ unsigned int child_get_pagesize PARAMS((void));
 extern int mach_xfer_memory(CORE_ADDR, unsigned char *, int, int,
 			    struct mem_attrib *, struct target_ops *);
 
+#ifdef HAVE_MACH_MACH_H
+# include <mach/mach.h>
+#endif /* HAVE_MACH_MACH_H */
+
 void mach_check_error (kern_return_t ret, const char *file, unsigned int line, const char *func);
 void mach_warn_error (kern_return_t ret, const char *file, unsigned int line, const char *func);
+
+#ifdef HAVE_MACH_PORT_H
+# include <mach/port.h>
+#endif /* HAVE_MACH_PORT_H */
 
 int next_port_valid PARAMS ((port_t port));
 int next_task_valid PARAMS ((task_t task));

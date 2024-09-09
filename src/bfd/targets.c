@@ -1175,7 +1175,9 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&arm_epoc_pe_little_vec,
 	&arm_epoc_pei_big_vec,
 	&arm_epoc_pei_little_vec,
+# ifdef __arm__
         &arm_mach_o_vec,
+# endif /* __arm__ */
 # if 0
 	&arm_pe_wince_be_vec,
 	&arm_pe_wince_le_vec,

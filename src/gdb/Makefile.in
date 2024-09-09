@@ -632,6 +632,11 @@ INTERNAL_CPPFLAGS = @CPPFLAGS@ ${acl_cv_wp}-Iattic ${acl_cv_wp}-I. \
   ${acl_cv_wp}-Itarget ${acl_cv_wp}-I$(srcdir)/target \
   ${acl_cv_wp}-Inat ${acl_cv_wp}-Icommon @MAINT@ @POSIXCHECK_CPPFLAGS@
 
+OBJCPPFLAGS = @CPPFLAGS@
+INTERNAL_OBJCPPFLAGS = @CPPFLAGS@ ${acl_cv_wp}-Iattic ${acl_cv_wp}-I. \
+  ${acl_cv_wp}-Itarget ${acl_cv_wp}-I$(srcdir)/target \
+  ${acl_cv_wp}-Inat ${acl_cv_wp}-Icommon @MAINT@ @POSIXCHECK_CPPFLAGS@
+
 # Need to pass this to testsuite for "make check". Probably should be
 # consistent with top-level Makefile.in and gdb/testsuite/Makefile.in
 # so "make check" has the same result no matter where it is run.

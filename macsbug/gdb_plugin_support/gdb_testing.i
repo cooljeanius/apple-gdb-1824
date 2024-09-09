@@ -32,8 +32,10 @@ static int my_getc(FILE *stream)
 {
     int i, c = ((int (*)(FILE*))saved_rl_getc_function)(stream);
     rawline[cp++] = c;
-    
-    //fprintf(stderr, "%.2x\n", c);
+
+    #ifdef stderr
+    fprintf(stderr, "%.2x\n", c);
+    #endif /* stderr */
     
     if (c == '\n' || c == '\r') {
     	rawline[cp] = 0;
@@ -95,7 +97,9 @@ void gdb_testa(char *arg, int from_tty)
 
 /*--------------------------------------------------------------------------------------*/
 
-//#include "ui-file.h"
+#if 0
+# include "ui-file.h"
+#endif /* 0 */
 void gdb_testw(char *addr)
 {
   struct objfile *objfile;
@@ -124,9 +128,9 @@ void gdb_testw(char *addr)
       	    break;
       	}
       }
-      #endif
+      #endif /* 1 || 0 || 0 */
   }
-  #endif
+  #endif /* 0 */
 }
 
 /*--------------------------------------------------------------------------------------*/
@@ -135,7 +139,9 @@ void gdb_testz(char *arg, int from_tty)
 {
     #if 0
     int regnum;
-    //int numregs = ARCH_NUM_REGS;
+    #ifdef ARCH_NUM_REGS
+    int numregs = ARCH_NUM_REGS;
+    #endif /* ARCH_NUM_REGS */
     char virtual_buffer[MAX_REGISTER_VIRTUAL_SIZE];
     char raw_buffer[MAX_REGISTER_RAW_SIZE];
     
@@ -157,7 +163,7 @@ void gdb_testz(char *arg, int from_tty)
 					raw_buffer, virtual_buffer);
     } else
 	memcpy(virtual_buffer, raw_buffer, REGISTER_VIRTUAL_SIZE(regnum));
-    #endif
+    #endif /* 0 */
 }
 
 /*--------------------------------------------------------------------------------------*/
@@ -338,7 +344,7 @@ void save_breakpoints_commandX (char *arg, int from_tty)
         {
           if (!skip && current_radix != -1)
             fputc_unfiltered ('\n', stream);
-          // ------- determine initial radix here -------
+          /* ------- determine initial radix here ------- */
           prev_radix = (current_radix == -1) ? input_radix : current_radix;
           if (prev_radix > 36)
             {
@@ -371,8 +377,10 @@ void save_breakpoints_commandX (char *arg, int from_tty)
     printf_filtered ("No breakpoints or watchpoints to save.\n");
   else
     {
-      // ------- restore original input radix here -------
-      //fprintf_unfiltered (stream, "\nset input-radix %d\n", ???????);
+      /* ------- restore original input radix here ------- */
+      #ifdef KNOW_WHAT_TO_USE_FOR_INPUT_RADIX
+      fprintf_unfiltered (stream, "\nset input-radix %d\n", ???????);
+      #endif /* KNOW_WHAT_TO_USE_FOR_INPUT_RADIX */
       ui_file_delete (stream);
       fclose (fp);
       xfree (pathname);
@@ -380,7 +388,7 @@ void save_breakpoints_commandX (char *arg, int from_tty)
         printf_filtered ("Breakpoints saved to file '%s'.\n", arg);
     }
 }
-#endif
+#endif /* 0 */
 
 /*--------------------------------------------------------------------------------------*/
 
@@ -398,14 +406,14 @@ char *gdb_teste(GDB_ADDRESS addr)
     struct objfile *objfile;
     bfd *abfd;
 
-    // references are bfd/bdd-in2.h, objfiles.h
+    /* references are bfd/bdd-in2.h, objfiles.h */
     
     static char result[2048];
     
     #if 0
     if (!build_address_symbolic(addr, 0, &name, &offset, &filename, &line, &unmapped))
     	return (name);
-    #endif
+    #endif /* 0 */
     
     msymbol = lookup_solib_trampoline_symbol_by_pc(addr);
     *result = '\0';
@@ -418,13 +426,13 @@ char *gdb_teste(GDB_ADDRESS addr)
     	if (*result)
     	    strcat(result, " ");
     	sprintf(result + strlen(result), "(%s)",  SYMBOL_BFD_SECTION(msymbol)->name);
-    #endif
+    #endif /* 0 */
     
-    // LC_SEGMENT.segname.sectname
-    // LC_SEGMENT.__TEXT.__cstring
-    // LC_SEGMENT.__DATA.__cfstring
-    // LC_SEGMENT.__OBJC.__cstring_object
-    
+    /* LC_SEGMENT.segname.sectname
+     * LC_SEGMENT.__TEXT.__cstring
+     * LC_SEGMENT.__DATA.__cfstring
+     * LC_SEGMENT.__OBJC.__cstring_object
+     */
     addr_section = find_pc_section(addr);
     if (addr_section) {
     	objfile = addr_section->objfile;

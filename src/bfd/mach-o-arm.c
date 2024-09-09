@@ -38,17 +38,33 @@
 #define bfd_mach_o_tgt_seg_table NULL
 #define bfd_mach_o_section_type_valid_for_tgt NULL
 
+#if !defined(__STDC_VERSION__) || (__STDC_VERSION__ < 199101L)
+# ifndef ALLOW_IMPLICIT_FUNCDECLS
+#  define ALLOW_IMPLICIT_FUNCDECLS 1
+# endif /* !ALLOW_IMPLICIT_FUNCDECLS */
+#endif /* old versions of C */
+
 static const bfd_target *
 bfd_mach_o_arm_object_p (bfd *abfd)
 {
+#ifdef ALLOW_IMPLICIT_FUNCDECLS
   return bfd_mach_o_header_p (abfd, 0, 0, BFD_MACH_O_CPU_TYPE_ARM);
+#else
+  (void)abfd;
+  return NULL;
+#endif /* ALLOW_IMPLICIT_FUNCDECLS */
 }
 
 static const bfd_target *
 bfd_mach_o_arm_core_p (bfd *abfd)
 {
+#ifdef ALLOW_IMPLICIT_FUNCDECLS
   return bfd_mach_o_header_p (abfd, 0,
                               BFD_MACH_O_MH_CORE, BFD_MACH_O_CPU_TYPE_ARM);
+#else
+  (void)abfd;
+  return NULL;
+#endif /* ALLOW_IMPLICIT_FUNCDECLS */
 }
 
 static bfd_boolean

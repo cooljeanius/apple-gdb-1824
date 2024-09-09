@@ -3920,6 +3920,7 @@
 		A530AE942C211B0500F48BE3 /* ch-lang.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ch-lang.c"; sourceTree = "<group>"; };
 		A530AE952C211B0700F48BE3 /* ch-typeprint.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ch-typeprint.c"; sourceTree = "<group>"; };
 		A530AE962C211B0700F48BE3 /* ch-exp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ch-exp.c"; sourceTree = "<group>"; };
+		A531D98C2C8EB0B300C1FAF8 /* mach-o-arm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "mach-o-arm.c"; sourceTree = "<group>"; };
 		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; path = "mac-gdb.r"; sourceTree = "<group>"; };
 		A53ABD8C1A38C88F002F20B2 /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = link.h; sourceTree = "<group>"; };
 		A53ABDB71A38E84F002F20B2 /* objdump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objdump.h; sourceTree = "<group>"; };
@@ -6850,6 +6851,7 @@
 				2609CF9C0E82C408008125DE /* m68knetbsd.c */,
 				2609CF9D0E82C408008125DE /* m88kmach3.c */,
 				2609CF9E0E82C408008125DE /* m88kopenbsd.c */,
+				A531D98C2C8EB0B300C1FAF8 /* mach-o-arm.c */,
 				A52B84172B677EBD00F3C9EA /* mach-o-i386.c */,
 				2609CF9F0E82C408008125DE /* mach-o-target.c */,
 				A52B84192B67809100F3C9EA /* mach-o-x86-64.c */,

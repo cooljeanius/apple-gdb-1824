@@ -3,9 +3,9 @@
  */
 
 /* headers out of our control: */
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 #include "defs.h"
 #include "frame.h"
 #include "symtab.h"

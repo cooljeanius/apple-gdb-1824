@@ -15,7 +15,8 @@
  from plugin callers.
 */
 
-#ifndef NO_POISON
+#if !defined(NO_POISON)
+/* Unsure how to replace some of the uses of sprintf: */
 # define NO_POISON 1
 #endif /* !NO_POISON */
 
@@ -671,7 +672,7 @@ GDB_HOOK *gdb_replace_command_hook(char *theCommand, Gdb_Plugin new_hook, char *
     #if GDB4
     if (hookpost)				/* not supported in gdb 4.x		*/
     	return (NULL);
-    #endif
+    #endif /* GDB4 */
 
     /* See if theCommand exists.  We can't create a hook to a nonexistant command.	*/
 
@@ -705,7 +706,7 @@ GDB_HOOK *gdb_replace_command_hook(char *theCommand, Gdb_Plugin new_hook, char *
     	s = strcpy(tmpstr1, strcat(strcpy(tmpstr2, "hookpost-"), theCommand));
     else
     	s = strcpy(tmpstr1, strcat(strcpy(tmpstr2, "hook-"), theCommand));
-    #endif
+    #endif /* GDB4 */
     old_hookc = lookup_cmd(&s, cmdlist, "", 1, 1);
 
     old_hook_data = (Old_hook_info *)xmalloc(sizeof(Old_hook_info));
@@ -743,27 +744,29 @@ GDB_HOOK *gdb_replace_command_hook(char *theCommand, Gdb_Plugin new_hook, char *
     	c->hook_pre            = new_hookc;	/* target gets hooked  			*/
     	new_hookc->hookee_pre  = c;		/* we are marked as hooking target cmd	*/
     }
-    #endif
+    #endif /* GDB4 */
 
     /* Create the hook-<theCommand> command...						*/
-
-    new_hookc->user_commands = cmd = (struct command_line *)xmalloc(sizeof(struct command_line));
-    cmd->next         = NULL;
+    cmd = (struct command_line *)xmalloc(sizeof(struct command_line));
+    new_hookc->user_commands = cmd;
+    cmd->next = NULL;
     cmd->control_type = simple_control;
-    cmd->body_count   = 0;
-    cmd->body_list    = (struct command_line **)xmalloc(sizeof(struct command_line *));
+    cmd->body_count = 0;
+    cmd->body_list = (struct command_line **)xmalloc(sizeof(struct command_line *));
     memset(cmd->body_list, 0, sizeof(struct command_line *));
 
-    i = sprintf(tmpstr1, "__%s-hook-%d", theCommand, unique_name_cnt++) + 1;
+    i = snprintf(tmpstr1, sizeof(tmpstr1), "__%s-hook-%d", theCommand,
+    		 unique_name_cnt++) + 1;
     cmd->line = (char *)xmalloc(i);
     strcpy(cmd->line, tmpstr1);
 
     /* Define the command that hook-<theCommand> will call.  This is the user's routine	*/
     /* to be called.									*/
 
-    sprintf(tmpstr2, "%s - internal hook.", tmpstr1);
-    old_hook_data->__cmd_hook_N = add_cmd(strcpy((char *)xmalloc(i), cmd->line), no_class,
-     					   new_hook, tmpstr2, &cmdlist);
+    snprintf(tmpstr2, sizeof(tmpstr2), "%s - internal hook.", tmpstr1);
+    old_hook_data->__cmd_hook_N = add_cmd(strcpy((char *)xmalloc(i), cmd->line),
+    					  no_class, new_hook, tmpstr2,
+                                          &cmdlist);
 
     return ((GDB_HOOK *)old_hook_data);
 }
@@ -875,7 +878,7 @@ void gdb_remove_command_hook(GDB_HOOK *hook)
     	    	c->hook_pre            = old_hookc;
     	    	old_hookc->hookee_pre  = c;
     	    }
-	    #endif
+	    #endif /* GDB4 */
 
     	    old_hookc->user_commands = old_hook_data->user_commands;
     	    old_hookc->doc	     = old_hook_data->doc;
@@ -986,8 +989,8 @@ static int my_target_can_async_p(void)
 /* versions of gdb we control which scheme we use with the NEW_ASYNC_SCHEME macro.	*/
 
 #ifndef NEW_ASYNC_SCHEME
-#define NEW_ASYNC_SCHEME 1			/* 1 ==> use gdb_set_async_override()	*/
-#endif
+# define NEW_ASYNC_SCHEME 1	/* 1 ==> use gdb_set_async_override()	*/
+#endif /* !NEW_ASYNC_SCHEME */
 
 
 #if !NEW_ASYNC_SCHEME
@@ -1005,7 +1008,7 @@ static void restore_async_state(void *async_p)
 {
     current_target.to_can_async_p = (int (*)(void))async_p;
 }
-#endif
+#endif /* !NEW_ASYNC_SCHEME */
 
 
 /*------------------------------------*
@@ -1034,10 +1037,10 @@ void gdb_eval(char *expression, ...)
 	#else
 	gdb_set_async_override(1);
 	old_chain = make_cleanup(gdb_set_async_override, 0);
-	#endif
+	#endif /* !NEW_ASYNC_SCHEME */
 
 	va_start(ap, expression);
-	vsprintf(line, expression, ap);
+	vsnprintf(line, sizeof(line), expression, ap);
 	va_end(ap);
 
 	parse_and_eval(line);
@@ -1076,10 +1079,10 @@ void gdb_execute_command(char *commandLine, ...)
 	#else
 	gdb_set_async_override(1);
 	old_chain = make_cleanup(gdb_set_async_override, 0);
-	#endif
+	#endif /* !NEW_ASYNC_SCHEME */
 
 	va_start(ap, commandLine);
-	vsprintf(line, commandLine, ap);
+	vsnprintf(line, sizeof(line), commandLine, ap);
 	va_end(ap);
 
 	execute_command(line, 0);
@@ -1145,7 +1148,7 @@ int gdb_eval_silent(char *expression, ...)
     char     line[1024];
     #if !NEW_ASYNC_SCHEME
     int      (*saved_target_can_async_p)(void);
-    #endif
+    #endif /* !NEW_ASYNC_SCHEME */
 
     if (expression) {
     	#if !NEW_ASYNC_SCHEME
@@ -1153,14 +1156,14 @@ int gdb_eval_silent(char *expression, ...)
 	current_target.to_can_async_p = my_target_can_async_p;
 	#else
 	gdb_set_async_override(1);
-	#endif
+	#endif /* !NEW_ASYNC_SCHEME */
 
 	redirect_stdout = gdb_open_output(stdout, suppress_errors, &had_error);
 	redirect_stderr = gdb_open_output(stderr, suppress_errors, &had_error);
 	gdb_redirect_output(redirect_stderr);
 
 	va_start(ap, expression);
-	vsprintf(line, expression, ap);
+	vsnprintf(line, sizeof(line), expression, ap);
 	va_end(ap);
 
 	catch_errors(wrap_parse_and_eval, line, NULL, RETURN_MASK_ALL);
@@ -1172,7 +1175,7 @@ int gdb_eval_silent(char *expression, ...)
 	current_target.to_can_async_p = saved_target_can_async_p;
 	#else
 	gdb_set_async_override(0);
-	#endif
+	#endif /* !NEW_ASYNC_SCHEME */
     }
 
     return (had_error);
@@ -1214,7 +1217,7 @@ int gdb_execute_command_silent(char *commandLine, ...)
     char     line[1024];
     #if !NEW_ASYNC_SCHEME
     int      (*saved_target_can_async_p)(void);
-    #endif
+    #endif /* !NEW_ASYNC_SCHEME */
 
     if (commandLine) {
     	#if !NEW_ASYNC_SCHEME
@@ -1222,14 +1225,14 @@ int gdb_execute_command_silent(char *commandLine, ...)
 	current_target.to_can_async_p = my_target_can_async_p;
 	#else
 	gdb_set_async_override(1);
-	#endif
+	#endif /* !NEW_ASYNC_SCHEME */
 
 	redirect_stdout = gdb_open_output(stdout, suppress_errors, &had_error);
 	redirect_stderr = gdb_open_output(stderr, suppress_errors, &had_error);
 	gdb_redirect_output(redirect_stderr);
 
 	va_start(ap, commandLine);
-	vsprintf(line, commandLine, ap);
+	vsnprintf(line, sizeof(line), commandLine, ap);
 	va_end(ap);
 
 	catch_errors((catch_errors_ftype *)wrap_execute_command, line, NULL, RETURN_MASK_ALL);
@@ -1241,7 +1244,7 @@ int gdb_execute_command_silent(char *commandLine, ...)
 	current_target.to_can_async_p = saved_target_can_async_p;
 	#else
 	gdb_set_async_override(0);
-	#endif
+	#endif /* !NEW_ASYNC_SCHEME */
     }
 
     return (had_error);
@@ -1455,7 +1458,7 @@ char *gdb_address_symbol(GDB_ADDRESS addr, int onlyAddr, char *symbol, int maxLe
     gdb_free(name);
 
     if (offset && len < maxLen1) {		/* append offset if we have it...	*/
-    	sprintf(tmpstr, "+%u", (unsigned int)offset);
+    	snprintf(tmpstr, sizeof(tmpstr), "+%u", (unsigned int)offset);
 	for (p = tmpstr; *p; ++len)
 	    *symbol++ = *p++;
     }
@@ -1467,7 +1470,7 @@ char *gdb_address_symbol(GDB_ADDRESS addr, int onlyAddr, char *symbol, int maxLe
 		    len += sprintf(symbol, "in %s", filename);
 		    symbol += len;
 		}
-	    } else if (len + 4 + strlen(filename) + sprintf(tmpstr, ":%d", line) < maxLen1) {
+	    } else if (len + 4 + strlen(filename) + snprintf(tmpstr, sizeof(tmpstr), ":%d", line) < maxLen1) {
 		len += sprintf(symbol, "at %s%s", filename, tmpstr);
 		symbol += len;
 	    }
@@ -1564,12 +1567,12 @@ void gdb_set_string(char *theVariable, char *theString)
 {
     #if 0
     char line[2048];
-    sprintf(line, "%s=\"%s\"", theVariable, theString);
+    snprintf(line, sizeof(line), "%s=\"%s\"", theVariable, theString);
     parse_and_eval(line);
     #else
     set_internalvar(lookup_internalvar(theVariable+1),
     		    value_coerce_array(value_string(theString, strlen(theString) + 1)));
-    #endif
+    #endif /* 0 */
 }
 
 
@@ -2293,7 +2296,7 @@ int gdb_query(char *fmt, ...)
     char    msg[1024];
 
     va_start(ap, fmt);
-    vsprintf(msg, fmt, ap);
+    vsnprintf(msg, sizeof(msg), fmt, ap);
     va_end(ap);
 
     return (query("%s", msg));

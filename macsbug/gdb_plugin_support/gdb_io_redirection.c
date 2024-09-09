@@ -16,9 +16,9 @@
  the displays through user specified routines.
 */
 
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 
 #include <stdio.h>
 #include <stddef.h>
@@ -924,7 +924,7 @@ void gdb_control_prompt_position(Gdb_Prompt_Positioning positioningFunction)
 }
 
 
-#if 0 // obsolete since binutils asm now uses gdb output conventions
+#if 0 /* obsolete since binutils asm now uses gdb output conventions */
 /*--------------------------------------------------*
  | my_disasm_fprintf - intercept disassembly output |
  *--------------------------------------------------*
@@ -941,12 +941,12 @@ static int my_disasm_fprintf(struct ui_file *stream, const char *fmt, ...)
     char    line[BUFSIZE+1];
     
     va_start(ap, fmt);
-    i = vsprintf(line, fmt, ap);			/* length might be usefull (?)	*/
+    i = vsnprintf(line, sizeof(line), fmt, ap); /* length might be useful(?) */
     va_end(ap);
     
     DEBUG2(my_disasm_fprintf, line, i);
     
-    save_line_segment(stream, line, strlen(line));	/* give opportunity to filter	*/
+    save_line_segment(stream, line, strlen(line)); /* give opportunity to filter */
     
     return (i);
 }
@@ -991,7 +991,7 @@ static int my_query_hook(char *format, va_list ap)
     gdb_fflush(gdb_current_stdout);
     gdb_fflush(gdb_current_stderr);
     
-    vsprintf(msg, format, ap);
+    vsnprintf(msg, sizeof(msg), format, ap);
     deprecated_query_hook = NULL;		/* avoid recursion			*/
     
     if (__default_gdb_query_hook)

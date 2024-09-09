@@ -21,10 +21,10 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 /* included files can drag in "free": */
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 
 #include "defs.h"
 #include <signal.h>

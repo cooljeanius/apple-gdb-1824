@@ -362,9 +362,9 @@ xor		{ return XOR; }
 
 #include <ctype.h>
 /* define this because of flex: */
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 #include "defs.h"
 #if defined(S_SPLINT_S)
 # if !defined(_DARWIN_C_SOURCE)

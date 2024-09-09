@@ -5,10 +5,10 @@
 #ifndef __GDB_MACOSX_NAT_UTILS_H__
 #define __GDB_MACOSX_NAT_UTILS_H__
 
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 /* include chain from <mach/mach.h> can drag in "free": */
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 
 #ifndef __has_include
 # define __has_include(foo) 0

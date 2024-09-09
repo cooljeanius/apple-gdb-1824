@@ -14,7 +14,8 @@
  like it does its own.  User handlers can be specified to filter the operations as well.
 */
 
-#ifndef NO_POISON
+#if !defined(NO_POISON)
+/* Unsure how to replace some of the uses of sprintf: */
 # define NO_POISON 1
 #endif /* !NO_POISON */
 

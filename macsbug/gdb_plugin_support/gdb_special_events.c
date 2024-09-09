@@ -15,9 +15,9 @@
  routines which are independent of gdb's data definitions.
 */
 
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 
 #include "gdb_private_interfaces.h"
 
@@ -203,7 +203,7 @@ static int my_query_hook(const char *format, va_list ap)
     int  result = 0;
     char msg[1024];
     
-    vsprintf(msg, format, ap);
+    vsnprintf(msg, sizeof(msg), format, ap);
     
     if (users_query_hook(msg, &result)) {
         deprecated_query_hook = NULL;
@@ -226,7 +226,7 @@ static void my_warning_hook(const char *format, va_list ap)
     char msg[1024];
     int result = 0;
     
-    vsprintf(msg, format, ap);
+    vsnprintf(msg, sizeof(msg), format, ap);
     
     if (users_warning_hook(msg)) {
     	deprecated_warning_hook = NULL;
@@ -390,7 +390,7 @@ static void my_readline_begin_hook(char *format, ...)
     char    prompt[1024];
     
     va_start(ap, format);
-    vsprintf(prompt, format, ap);
+    vsnprintf(prompt, sizeof(prompt), format, ap);
     va_end(ap);
     
     users_readline_begin_hook(prompt);
@@ -477,7 +477,7 @@ static void my__word__completion_query_hook(GDB_FILE *stream, char *format, ...)
     char    prompt[1024];
     
     va_start(ap, format);
-    vsprintf(prompt, format, ap);
+    vsnprintf(prompt, sizeof(prompt), format, ap);
     va_end(ap);
     
     users__word__completion_query_hook(stream, prompt);

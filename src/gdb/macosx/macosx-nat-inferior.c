@@ -22,9 +22,9 @@
    Boston, MA 02111-1307, USA.  */
 
 /* define this because of a libxml header out of our control: */
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(HAVE_LIBXML2)
 # define NO_POISON 1
-#endif /* NO_POISON */
+#endif /* !NO_POISON && HAVE_LIBXML2 */
 #include "defs.h"
 #include "top.h"
 #include "inferior.h"
@@ -2783,7 +2783,7 @@ macosx_get_task_for_pid_rights(void)
       stat = AuthorizationCopyRights(author, &rights, &env, auth_flags,
 				     &out_rights);
 
-      bzero(pass, strlen(pass));
+      memset(pass, 0, strlen(pass));
       if (stat == errAuthorizationSuccess)
 	retval = 1;
       else

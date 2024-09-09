@@ -20,9 +20,9 @@
 #if !defined(PROBE_H)
 #define PROBE_H 1
 
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 # define NO_POISON 1 /* (use of free) */
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 #include "common/gdb_vecs.h"
 
 /* Definition of a vector of probes.  */

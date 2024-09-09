@@ -1434,7 +1434,7 @@ do
     armpe_little_vec) tb="${tb} pe-arm.lo peigen.lo cofflink.lo " ;;
     armpei_big_vec) tb="${tb} pei-arm.lo peigen.lo cofflink.lo " ;;
     armpei_little_vec) tb="${tb} pei-arm.lo peigen.lo cofflink.lo " ;;
-    arm_mach_o_vec) tb="${tb} mach-o-arm.lo" ;;
+    arm_mach_o_vec) if test -n "${BREAK_MY_BUILD}"; then tb="${tb} mach-o-arm.lo"; fi ;;
     avr_elf32_vec) tb="${tb} elf32-avr.lo elf32.lo ${elf}" ;;
     b_out_vec_big_host) tb="${tb} bout.lo aout32.lo" ;;
     b_out_vec_little_host) tb="${tb} bout.lo aout32.lo" ;;

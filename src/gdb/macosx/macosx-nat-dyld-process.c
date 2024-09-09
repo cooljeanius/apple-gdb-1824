@@ -22,9 +22,9 @@
    Boston, MA 02111-1307, USA.  */
 
 /* define this because of a header for mmalloc that needs fixing: */
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(USE_MMALLOC)
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && USE_MMALLOC */
 #include "defs.h"
 #include "inferior.h"
 #include "symtab.h"

@@ -1929,7 +1929,11 @@ extern struct cleanup *start_timer(int *timer_var, const char *timer_name,
 #  undef realloc
 # endif /* realloc */
 /* gdbint.texinfo says to avoid these ones: */
-# pragma GCC poison malloc realloc calloc free strdup sprintf
+# pragma GCC poison malloc realloc calloc strdup sprintf
+/* poisoning this can break too many headers: */
+# ifdef POISON_FREE_TOO
+#  pragma GCC poison free
+# endif /* POISON_FREE_TOO */
 /* for similar reasons, such as libiberty also providing replacements: */
 # pragma GCC poison strndup memdup vsprintf vasprintf
 # ifndef strerror
