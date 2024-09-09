@@ -72,7 +72,7 @@ class TestUnwinder(Unwinder):
             try:
                 val = gdb.parse_and_eval("undefined_symbol")
 
-            except Exception as arg:
+            except Exception:
                 pass
 
         self.recurse_level -= 1

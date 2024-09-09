@@ -18,7 +18,6 @@
 # Sometimes the debug info for the needed object isn't present.
 
 from perftest import perftest
-from perftest import measure
 from perftest import utils
 
 class NullLookup(perftest.TestCaseWithBasicMeasurements):

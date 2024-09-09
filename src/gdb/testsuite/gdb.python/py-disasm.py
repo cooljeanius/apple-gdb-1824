@@ -277,7 +277,7 @@ class RethrowMemoryErrorDisassembler(TestDisassembler):
     def disassemble(self, info):
         try:
             info.read_memory(1, -info.address - 1)
-        except gdb.MemoryError as e:
+        except gdb.MemoryError:
             raise gdb.MemoryError("cannot read code at address -1")
         return DisassemblerResult(1, "BAD")
 

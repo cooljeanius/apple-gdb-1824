@@ -18,7 +18,6 @@
 # the original patch to pr 16253.
 
 from perftest import perftest
-from perftest import measure
 from perftest import utils
 
 class PervasiveTypedef(perftest.TestCaseWithBasicMeasurements):

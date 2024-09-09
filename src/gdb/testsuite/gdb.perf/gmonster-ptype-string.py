@@ -20,7 +20,6 @@
 # this test helps measure the issue.
 
 from perftest import perftest
-from perftest import measure
 from perftest import utils
 
 class GmonsterPtypeString(perftest.TestCaseWithBasicMeasurements):

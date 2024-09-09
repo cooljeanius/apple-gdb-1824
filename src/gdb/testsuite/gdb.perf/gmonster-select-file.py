@@ -16,7 +16,6 @@
 # Measure performance of selecting a file to debug.
 
 from perftest import perftest
-from perftest import measure
 from perftest import utils
 
 class GmonsterSelectFile(perftest.TestCaseWithBasicMeasurements):

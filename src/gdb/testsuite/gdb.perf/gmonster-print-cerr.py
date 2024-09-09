@@ -26,7 +26,6 @@
 # GDB's slowness in searching expanded symtabs first to color these results.
 
 from perftest import perftest
-from perftest import measure
 from perftest import utils
 
 class PrintCerr(perftest.TestCaseWithBasicMeasurements):
