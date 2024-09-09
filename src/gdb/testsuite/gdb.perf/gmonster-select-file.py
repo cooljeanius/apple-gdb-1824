@@ -18,6 +18,7 @@
 from perftest import perftest
 from perftest import utils
 
+
 class GmonsterSelectFile(perftest.TestCaseWithBasicMeasurements):
     def __init__(self, name, run_names, binfile):
         super(GmonsterSelectFile, self).__init__(name)
@@ -33,8 +34,7 @@ class GmonsterSelectFile(perftest.TestCaseWithBasicMeasurements):
 
     def execute_test(self):
         for run in self.run_names:
-            this_run_binfile = "%s-%s" % (self.binfile,
-                                          utils.convert_spaces(run))
+            this_run_binfile = "%s-%s" % (self.binfile, utils.convert_spaces(run))
             iteration = 5
             while iteration > 0:
                 func = lambda: self._doit(this_run_binfile)
