@@ -104,7 +104,9 @@
 # include "mmalloc.h"
 #endif /* USE_MMALLOC */
 
-#include "mach-o.h"
+#if defined(TM_NEXTSTEP) || defined(HAVE_MACH_O_IN_BFD)
+# include "mach-o.h"
+#endif /* TM_NEXTSTEP || HAVE_MACH_O_IN_BFD */
 
 #if 0
 /* FIXME: the header for this file is kind of broken: */
@@ -176,7 +178,7 @@ static struct cleanup *run_cleanup_chain;	/* cleaned up on each 'run' */
    the cleanup, so while potentially incorrect (because out of order)
    this is benign.  */
 
-static struct cleanup *exec_cleanup_chain;	/* cleaned up on each execution command */
+static struct cleanup *exec_cleanup_chain; /* cleaned up on each execution command */
 /* cleaned up on each error from within an execution command */
 static struct cleanup *exec_error_cleanup_chain;
 

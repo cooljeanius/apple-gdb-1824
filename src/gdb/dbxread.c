@@ -73,8 +73,11 @@ static int end_fun_absolute_p = 0;
 #include "complaints.h"
 #include "cp-abi.h"
 
+/* Keep this condition the same as where it is used: */
+#if defined(TM_NEXTSTEP) || defined(HAVE_MACH_O_IN_BFD)
 /* APPLE LOCAL: prototype for bfd_mach_o_version */
-#include "mach-o.h"
+# include "mach-o.h"
+#endif /* TM_NEXTSTEP || HAVE_MACH_O_IN_BFD */
 
 /* APPLE LOCAL */
 #include "block.h"

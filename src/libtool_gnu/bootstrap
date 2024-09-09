@@ -19,7 +19,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with GNU Libtool; see the file COPYING.  If not, a copy
-# can be downloaded from  http://www.gnu.org/licenses/gpl.html,
+# can be downloaded from <http://www.gnu.org/licenses/gpl.html>,
 # or obtained by writing to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 ####
@@ -117,7 +117,7 @@ PACKAGE_NAME=$2
 PACKAGE_URL=
 if grep 'AC_INIT.*GNU' configure.ac >/dev/null; then
   PACKAGE_NAME="GNU ${PACKAGE_NAME}"
-  PACKAGE_URL="http://www.gnu.org/software/${PACKAGE}/"
+  PACKAGE_URL="https://www.gnu.org/software/${PACKAGE}/"
 fi
 VERSION=$3
 export MACRO_SERIAL=3337

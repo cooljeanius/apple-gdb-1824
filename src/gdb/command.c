@@ -22,43 +22,57 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include <ctype.h>
 #include "gdb_string.h"
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 
 #ifdef HAVE_WAIT_H
 # include <wait.h>
 #else
 # ifdef HAVE_SYS_WAIT_H
 #  include <sys/wait.h>
-# endif
-#endif
+# endif /* HAVE_SYS_WAIT_H */
+#endif /* HAVE_WAIT_H */
 
 #include "wait.h"
 #include "top.h"
 
+#include "cli/cli-decode.h"
+#include "cli/cli-setshow.h"
+#include "readline/tilde.h"
+#include "tui/tui.h"
+
+#ifndef GDB_FILE
+# define GDB_FILE struct ui_file
+#endif /* !GDB_FILE */
+
 /* Prototypes for local functions */
 
-static void undef_cmd_error PARAMS ((char *, char *));
+static void undef_cmd_error PARAMS((const char *, const char *));
 
-static void show_user PARAMS ((char *, int));
+static void show_user PARAMS((const char *, int));
 
-static void show_user_1 PARAMS ((struct cmd_list_element *, GDB_FILE *));
+static void show_user_1 PARAMS((struct cmd_list_element *, GDB_FILE *));
 
-static void make_command PARAMS ((char *, int));
+static void make_command PARAMS((const char *, int));
 
-static void shell_escape PARAMS ((char *, int));
+static void shell_escape PARAMS((const char *, int));
 
-static int parse_binary_operation PARAMS ((char *));
+static int parse_binary_operation PARAMS((const char *));
 
-static void print_doc_line PARAMS ((GDB_FILE *, char *));
+#if !defined(CLI_DECODE_H)
+static void print_doc_line PARAMS((GDB_FILE *, const char *));
+#endif /* !CLI_DECODE_H */
 
-static struct cmd_list_element *find_cmd PARAMS ((char *command,
-						  int len,
-						  struct cmd_list_element *clist,
-						  int ignore_help_classes,
-						  int *nfound));
+static struct cmd_list_element *find_cmd PARAMS((char *command, int len,
+                                                 struct cmd_list_element *clist,
+                                                 int ignore_help_classes,
+                                                 int *nfound));
 
-void _initialize_command PARAMS ((void));
+void _initialize_command PARAMS((void));
+
+#ifndef STRCMP
+# define STRCMP(foo, bar) strcmp(foo, bar)
+#endif /* !STRCMP */
 
 /* Add element named NAME.
    CLASS is the top level category into which commands are broken down
@@ -76,22 +90,18 @@ void _initialize_command PARAMS ((void));
 
    Returns a pointer to the added command (not necessarily the head 
    of *LIST). */
-
 struct cmd_list_element *
-add_cmd (name, class, fun, doc, list)
-     char *name;
-     enum command_class class;
-     void (*fun) PARAMS ((char *, int));
-     char *doc;
-     struct cmd_list_element **list;
+add_cmd(const char *name, enum command_class cmdclass,
+        void (*fun) PARAMS((const char *, int)), const char *doc,
+        struct cmd_list_element **list)
 {
-  register struct cmd_list_element *c
-    = (struct cmd_list_element *) xmalloc (sizeof (struct cmd_list_element));
+  register struct cmd_list_element *c =
+    (struct cmd_list_element *)xmalloc(sizeof(struct cmd_list_element));
   struct cmd_list_element *p;
 
-  delete_cmd (name, list);
+  delete_cmd(name, list);
 
-  if (*list == NULL || STRCMP ((*list)->name, name) >= 0)
+  if (*list == NULL || (STRCMP((*list)->name, name) >= 0))
     {
       c->next = *list;
       *list = c;
@@ -99,7 +109,7 @@ add_cmd (name, class, fun, doc, list)
   else
     {
       p = *list;
-      while (p->next && STRCMP (p->next->name, name) <= 0)
+      while (p->next && (STRCMP(p->next->name, name) <= 0))
         {
           p = p->next;
         }
@@ -108,17 +118,21 @@ add_cmd (name, class, fun, doc, list)
     }
 
   c->name = name;
-  c->class = class;
+  c->cmdclass = cmdclass;
   c->function.cfunc = fun;
   c->doc = doc;
+#if 0
   c->hook = NULL;
+#endif /* 0 */
   c->prefixlist = NULL;
   c->prefixname = NULL;
   c->allow_unknown = 0;
   c->abbrev_flag = 0;
   c->completer = make_symbol_completion_list;
+#if 0
   c->completer_quote_characters = gdb_completer_quote_characters;
   c->completer_word_break_characters = gdb_completer_word_break_characters;
+#endif /* 0 */
   c->type = not_set_cmd;
   c->var = NULL;
   c->var_type = var_boolean;
@@ -131,49 +145,39 @@ add_cmd (name, class, fun, doc, list)
 }
 
 /* Same as above, except that the abbrev_flag is set. */
-
-#if 0	/* Currently unused */
-
+#ifdef ALLOW_UNUSED_FUNCTIONS
 struct cmd_list_element *
-add_abbrev_cmd (name, class, fun, doc, list)
-     char *name;
-     enum command_class class;
-     void (*fun) PARAMS ((char *, int));
-     char *doc;
-     struct cmd_list_element **list;
+add_abbrev_cmd(char *name, enum command_class cmdclass,
+               void (*fun) PARAMS((const char *, int)), char *doc,
+               struct cmd_list_element **list)
 {
-  register struct cmd_list_element *c
-    = add_cmd (name, class, fun, doc, list);
+  register struct cmd_list_element *c = add_cmd(name, cmdclass, fun, doc, list);
 
   c->abbrev_flag = 1;
   return c;
 }
-
-#endif
+#endif /* ALLOW_UNUSED_FUNCTIONS */
 
 struct cmd_list_element *
-add_alias_cmd (name, oldname, class, abbrev_flag, list)
-     char *name;
-     char *oldname;
-     enum command_class class;
-     int abbrev_flag;
-     struct cmd_list_element **list;
+add_alias_cmd(const char *name, const char *oldname,
+              enum command_class cmdclass, int abbrev_flag,
+              struct cmd_list_element **list)
 {
   /* Must do this since lookup_cmd tries to side-effect its first arg */
-  char *copied_name;
+  const char *copied_name;
   register struct cmd_list_element *old;
   register struct cmd_list_element *c;
-  copied_name = (char *) alloca (strlen (oldname) + 1);
-  strcpy (copied_name, oldname);
-  old  = lookup_cmd (&copied_name, *list, "", 1, 1);
+  copied_name = (const char *)alloca(strlen(oldname) + 1UL);
+  strcpy((char *)copied_name, oldname);
+  old = lookup_cmd(&copied_name, *list, "", 1, 1);
 
   if (old == 0)
     {
-      delete_cmd (name, list);
+      delete_cmd(name, list);
       return 0;
     }
 
-  c = add_cmd (name, class, old->function.cfunc, old->doc, list);
+  c = add_cmd(name, cmdclass, old->function.cfunc, old->doc, list);
   c->prefixlist = old->prefixlist;
   c->prefixname = old->prefixname;
   c->allow_unknown = old->allow_unknown;
@@ -186,20 +190,13 @@ add_alias_cmd (name, oldname, class, abbrev_flag, list)
    a name that should be followed by a subcommand to be looked up
    in another command list.  PREFIXLIST should be the address
    of the variable containing that list.  */
-
 struct cmd_list_element *
-add_prefix_cmd (name, class, fun, doc, prefixlist, prefixname,
-		allow_unknown, list)
-     char *name;
-     enum command_class class;
-     void (*fun) PARAMS ((char *, int));
-     char *doc;
-     struct cmd_list_element **prefixlist;
-     char *prefixname;
-     int allow_unknown;
-     struct cmd_list_element **list;
+add_prefix_cmd(const char *name, enum command_class cmdclass,
+               void (*fun) PARAMS((const char *, int)), const char *doc,
+               struct cmd_list_element **prefixlist, const char *prefixname,
+               int allow_unknown, struct cmd_list_element **list)
 {
-  register struct cmd_list_element *c = add_cmd (name, class, fun, doc, list);
+  register struct cmd_list_element *c = add_cmd(name, cmdclass, fun, doc, list);
   c->prefixlist = prefixlist;
   c->prefixname = prefixname;
   c->allow_unknown = allow_unknown;
@@ -209,18 +206,13 @@ add_prefix_cmd (name, class, fun, doc, prefixlist, prefixname,
 /* Like add_prefix_cmd but sets the abbrev_flag on the new command. */
    
 struct cmd_list_element *
-add_abbrev_prefix_cmd (name, class, fun, doc, prefixlist, prefixname,
-		       allow_unknown, list)
-     char *name;
-     enum command_class class;
-     void (*fun) PARAMS ((char *, int));
-     char *doc;
-     struct cmd_list_element **prefixlist;
-     char *prefixname;
-     int allow_unknown;
-     struct cmd_list_element **list;
+add_abbrev_prefix_cmd(const char *name, enum command_class cmdclass,
+                      void (*fun) PARAMS((const char *, int)), const char *doc,
+                      struct cmd_list_element **prefixlist,
+                      const char *prefixname, int allow_unknown,
+                      struct cmd_list_element **list)
 {
-  register struct cmd_list_element *c = add_cmd (name, class, fun, doc, list);
+  register struct cmd_list_element *c = add_cmd(name, cmdclass, fun, doc, list);
   c->prefixlist = prefixlist;
   c->prefixname = prefixname;
   c->allow_unknown = allow_unknown;
@@ -230,21 +222,21 @@ add_abbrev_prefix_cmd (name, class, fun, doc, prefixlist, prefixname,
 
 /* This is an empty "cfunc".  */
 void
-not_just_help_class_command (args, from_tty)
-     char *args;
-     int from_tty;
+not_just_help_class_command(const char *args, int from_tty)
 {
+  (void)args;
+  (void)from_tty;
 }
 
 /* This is an empty "sfunc".  */
-static void empty_sfunc PARAMS ((char *, int, struct cmd_list_element *));
+static void empty_sfunc PARAMS((const char *, int, struct cmd_list_element *));
 
 static void
-empty_sfunc (args, from_tty, c)
-     char *args;
-     int from_tty;
-     struct cmd_list_element *c;
+empty_sfunc(const char *args, int from_tty, struct cmd_list_element *c)
 {
+  (void)args;
+  (void)from_tty;
+  (void)c;
 }
 
 /* Add element named NAME to command list LIST (the list for set
@@ -253,18 +245,11 @@ empty_sfunc (args, from_tty, c)
    VAR_TYPE is the kind of thing we are setting.
    VAR is address of the variable being controlled by this command.
    DOC is the documentation string.  */
-
 struct cmd_list_element *
-add_set_cmd (name, class, var_type, var, doc, list)
-     char *name;
-     enum command_class class;
-     var_types var_type;
-     char *var;
-     char *doc;
-     struct cmd_list_element **list;
+add_set_cmd(const char *name, enum command_class cmdclass, var_types var_type,
+	    char *var, const char *doc, struct cmd_list_element **list)
 {
-  struct cmd_list_element *c
-    = add_cmd (name, class, NO_FUNCTION, doc, list);
+  struct cmd_list_element *c = add_cmd(name, cmdclass, NULL, doc, list);
 
   c->type = set_cmd;
   c->var_type = var_type;
@@ -282,18 +267,13 @@ add_set_cmd (name, class, var_type, var, doc, list)
    VAR is address of the variable which will contain the matching string
      (from ENUMLIST).
    DOC is the documentation string.  */
-
 struct cmd_list_element *
-add_set_enum_cmd (name, class, enumlist, var, doc, list)
-     char *name;
-     enum command_class class;
-     char *enumlist[];
-     char *var;
-     char *doc;
-     struct cmd_list_element **list;
+add_set_enum_cmd(char *name, enum command_class cmdclass,
+		 const char *enumlist[], char *var, char *doc,
+   	  	 struct cmd_list_element **list)
 {
   struct cmd_list_element *c
-    = add_set_cmd (name, class, var_enum, var, doc, list);
+    = add_set_cmd(name, cmdclass, var_enum, var, doc, list);
   c->enums = enumlist;
 
   return c;
@@ -303,9 +283,8 @@ add_set_enum_cmd (name, class, enumlist, var, doc, list)
    command to LIST and return a pointer to the added command (not 
    necessarily the head of LIST).  */
 struct cmd_list_element *
-add_show_from_set (setcmd, list)
-     struct cmd_list_element *setcmd;
-     struct cmd_list_element **list;
+add_show_from_set(struct cmd_list_element *setcmd,
+                  struct cmd_list_element **list)
 {
   struct cmd_list_element *showcmd =
     (struct cmd_list_element *) xmalloc (sizeof (struct cmd_list_element));
@@ -341,12 +320,15 @@ add_show_from_set (setcmd, list)
   return showcmd;
 }
 
-/* Remove the command named NAME from the command list.  */
+#ifndef STREQ
+# ifdef DEPRECATED_STREQ
+#  define STREQ(str1, str2) DEPRECATED_STREQ(str1, str2)
+# endif /* DEPRECATED_STREQ */
+#endif /* !STREQ */
 
+/* Remove the command named NAME from the command list.  */
 void
-delete_cmd (name, list)
-     char *name;
-     struct cmd_list_element **list;
+delete_cmd(const char *name, struct cmd_list_element **list)
 {
   register struct cmd_list_element *c;
   struct cmd_list_element *p;
@@ -376,6 +358,8 @@ delete_cmd (name, list)
       }
 }
 
+extern struct cmd_list_element *cmdlist;
+
 /* This command really has to deal with two things:
  *     1) I want documentation on *this string* (usually called by
  * "help commandname").
@@ -386,14 +370,10 @@ delete_cmd (name, list)
  *   I am going to split this into two seperate comamnds, help_cmd and
  * help_list. 
  */
-
 void
-help_cmd (command, stream)
-     char *command;
-     GDB_FILE *stream;
+help_cmd(const char *command, GDB_FILE *stream)
 {
   struct cmd_list_element *c;
-  extern struct cmd_list_element *cmdlist;
 
   if (!command)
     {
@@ -431,7 +411,7 @@ help_cmd (command, stream)
 
   /* If this is a class name, print all of the commands in the class */
   if (c->function.cfunc == NULL)
-    help_list (cmdlist, "", c->class, stream);
+    help_list (cmdlist, "", c->cmdclass, stream);
 
   if (c->hook)
     fprintf_filtered (stream, "\nThis command has a hook defined: %s\n",
@@ -451,11 +431,8 @@ help_cmd (command, stream)
  * If you call this routine with a class >= 0, it recurses.
  */
 void
-help_list (list, cmdtype, class, stream)
-     struct cmd_list_element *list;
-     char *cmdtype;
-     enum command_class class;
-     GDB_FILE *stream;
+help_list(struct cmd_list_element *list, const char *cmdtype,
+	  enum command_class cmdclass, GDB_FILE *stream)
 {
   int len;
   char *cmdtype1, *cmdtype2;
@@ -475,14 +452,14 @@ help_list (list, cmdtype, class, stream)
       strcpy (cmdtype2 + len - 1, " sub");
     }
 
-  if (class == all_classes)
+  if (cmdclass == all_classes)
     fprintf_filtered (stream, "List of classes of %scommands:\n\n", cmdtype2);
   else
     fprintf_filtered (stream, "List of %scommands:\n\n", cmdtype2);
 
-  help_cmd_list (list, class, cmdtype, (int)class >= 0, stream);
+  help_cmd_list(list, cmdclass, cmdtype, (int)cmdclass >= 0, stream);
 
-  if (class == all_classes)
+  if (cmdclass == all_classes)
     fprintf_filtered (stream, "\n\
 Type \"help%s\" followed by a class name for a list of commands in that class.",
 	     cmdtype1);
@@ -494,14 +471,15 @@ Command name abbreviations are allowed if unambiguous.\n",
 }
      
 /* Print only the first line of STR on STREAM.  */
-static void
-print_doc_line (stream, str)
-     GDB_FILE *stream;
-     char *str;
+#ifndef CLI_DECODE_H
+static
+#endif /* !CLI_DECODE_H */
+void
+print_doc_line(GDB_FILE *stream, const char *str)
 {
   static char *line_buffer = 0;
   static int line_size;
-  register char *p;
+  register const char *p;
 
   if (!line_buffer)
     {
@@ -542,21 +520,17 @@ print_doc_line (stream, str)
  * is at the low level, not the high-level).
  */
 void
-help_cmd_list (list, class, prefix, recurse, stream)
-     struct cmd_list_element *list;
-     enum command_class class;
-     char *prefix;
-     int recurse;
-     GDB_FILE *stream;
+help_cmd_list(struct cmd_list_element *list, enum command_class cmdclass,
+              const char *prefix, int recurse, GDB_FILE *stream)
 {
   register struct cmd_list_element *c;
 
   for (c = list; c; c = c->next)
     {
       if (c->abbrev_flag == 0 &&
-	  (class == all_commands
-	  || (class == all_classes && c->function.cfunc == NULL)
-	  || (class == c->class && c->function.cfunc != NULL)))
+	  (cmdclass == all_commands
+	  || (cmdclass == all_classes && c->function.cfunc == NULL)
+	  || (cmdclass == c->cmdclass && c->function.cfunc != NULL)))
 	{
 	  fprintf_filtered (stream, "%s%s -- ", prefix, c->name);
 	  print_doc_line (stream, c->doc);
@@ -565,7 +539,7 @@ help_cmd_list (list, class, prefix, recurse, stream)
       if (recurse
 	  && c->prefixlist != 0
 	  && c->abbrev_flag == 0)
-	help_cmd_list (*c->prefixlist, class, c->prefixname, 1, stream);
+	help_cmd_list(*c->prefixlist, cmdclass, c->prefixname, 1, stream);
     }
 }
 
@@ -575,12 +549,8 @@ help_cmd_list (list, class, prefix, recurse, stream)
    found in nfound */
 
 static struct cmd_list_element *
-find_cmd(command, len, clist, ignore_help_classes, nfound)
-     char *command;
-     int len;
-     struct cmd_list_element *clist;
-     int ignore_help_classes;
-     int *nfound;
+find_cmd(char *command, int len, struct cmd_list_element *clist,
+	 int ignore_help_classes, int *nfound)
 {
   struct cmd_list_element *found, *c;
 
@@ -600,6 +570,10 @@ find_cmd(command, len, clist, ignore_help_classes, nfound)
       }
   return found;
 }
+
+#ifndef TUI_DATA_H
+extern int tui_version;
+#endif /* !TUI_DATA_H */
 
 /* This routine takes a line of TEXT and a CLIST in which to start the
    lookup.  When it returns it will have incremented the text pointer past
@@ -636,14 +610,12 @@ find_cmd(command, len, clist, ignore_help_classes, nfound)
    If IGNORE_HELP_CLASSES is nonzero, ignore any command list elements which
    are actually help classes rather than commands (i.e. the function field of
    the struct cmd_list_element is NULL).  */
-
 struct cmd_list_element *
-lookup_cmd_1 (text, clist, result_list, ignore_help_classes)
-     char **text;
-     struct cmd_list_element *clist, **result_list;
-     int ignore_help_classes;
+lookup_cmd_1(const char **text, struct cmd_list_element *clist,
+             struct cmd_list_element **result_list, int ignore_help_classes)
 {
-  char *p, *command;
+  const char *p;
+  char *command;
   int len, tmp, nfound;
   struct cmd_list_element *found, *c;
 
@@ -759,20 +731,15 @@ lookup_cmd_1 (text, clist, result_list, ignore_help_classes)
 	*result_list = clist;
       return found;
     }
+  return NULL;
 }
 
 /* All this hair to move the space to the front of cmdtype */
-
 static void
-undef_cmd_error (cmdtype, q)
-     char *cmdtype, *q;
+undef_cmd_error(const char *cmdtype, const char *q)
 {
-  error ("Undefined %scommand: \"%s\".  Try \"help%s%.*s\".",
-    cmdtype,
-    q,
-    *cmdtype? " ": "",
-    strlen(cmdtype)-1,
-    cmdtype);
+  error("Undefined %scommand: \"%s\".  Try \"help%s%.*s\".", cmdtype, q,
+  	(*cmdtype? " ": ""), ((int)strlen(cmdtype) - 1), cmdtype);
 }
 
 /* Look up the contents of *LINE as a command in the command list LIST.
@@ -790,12 +757,8 @@ undef_cmd_error (cmdtype, q)
    the function field of the struct cmd_list_element is 0).  */
 
 struct cmd_list_element *
-lookup_cmd (line, list, cmdtype, allow_unknown, ignore_help_classes)
-     char **line;
-     struct cmd_list_element *list;
-     char *cmdtype;
-     int allow_unknown;
-     int ignore_help_classes;
+lookup_cmd(const char **line, struct cmd_list_element *list,
+	   const char *cmdtype, int allow_unknown, int ignore_help_classes)
 {
   struct cmd_list_element *last_list = 0;
   struct cmd_list_element *c =
@@ -808,7 +771,7 @@ lookup_cmd (line, list, cmdtype, allow_unknown, ignore_help_classes)
   while (ptr >= *line && (*ptr == ' ' || *ptr == '\t'))
     ptr--;
   *(ptr + 1) = '\0';
-#endif
+#endif /* 0 */
   
   if (!c)
     {
@@ -818,7 +781,8 @@ lookup_cmd (line, list, cmdtype, allow_unknown, ignore_help_classes)
 	    error ("Lack of needed %scommand", cmdtype);
 	  else
 	    {
-	      char *p = *line, *q;
+	      const char *p = *line;
+              char *q;
 
 	      while (isalnum(*p) || *p == '-')
 		p++;
@@ -838,7 +802,7 @@ lookup_cmd (line, list, cmdtype, allow_unknown, ignore_help_classes)
 	 values.  */
       int local_allow_unknown = (last_list ? last_list->allow_unknown :
 				 allow_unknown);
-      char *local_cmdtype = last_list ? last_list->prefixname : cmdtype;
+      const char *local_cmdtype = (last_list ? last_list->prefixname : cmdtype);
       struct cmd_list_element *local_list =
 	(last_list ? *(last_list->prefixlist) : list);
       
@@ -1032,7 +996,7 @@ lookup_cmd (line, list, cmdtype, allow_unknown)
 
   return found;
 }
-#endif
+#endif /* 0 */
 
 /* Helper function for SYMBOL_COMPLETION_FUNCTION.  */
 
@@ -1045,10 +1009,7 @@ lookup_cmd (line, list, cmdtype, allow_unknown)
    "oobar"; if WORD is "baz/foo", return "baz/foobar".  */
 
 char **
-complete_on_cmdlist (list, text, word)
-     struct cmd_list_element *list;
-     char *text;
-     char *word;
+complete_on_cmdlist(struct cmd_list_element *list, const char *text, char *word)
 {
   struct cmd_list_element *ptr;
   char **matchlist;
@@ -1117,19 +1078,15 @@ complete_on_cmdlist (list, text, word)
    returned relative to this position.  For example, suppose TEXT is "foo"
    and we want to complete to "foobar".  If WORD is "oo", return
    "oobar"; if WORD is "baz/foo", return "baz/foobar".  */
-
 char **
-complete_on_enum (enumlist, text, word)
-     char **enumlist;
-     char *text;
-     char *word;
+complete_on_enum(const char *enumlist[], const char *text, char *word)
 {
   char **matchlist;
   int sizeof_matchlist;
   int matches;
   int textlen = strlen (text);
   int i;
-  char *name;
+  const char *name;
 
   sizeof_matchlist = 10;
   matchlist = (char **) xmalloc (sizeof_matchlist * sizeof (char *));
@@ -1180,9 +1137,9 @@ complete_on_enum (enumlist, text, word)
   return matchlist;
 }
 
+/* */
 static int
-parse_binary_operation (arg)
-     char *arg;
+parse_binary_operation(const char *arg)
 {
   int length;
 
@@ -1215,10 +1172,7 @@ parse_binary_operation (arg)
    directly by the user (i.e. these are just like any other
    command).  C is the command list element for the command.  */
 void
-do_setshow_command (arg, from_tty, c)
-     char *arg;
-     int from_tty;
-     struct cmd_list_element *c;
+do_setshow_command(const char *arg, int from_tty, struct cmd_list_element *c)
 {
   if (c->type == set_cmd)
     {
@@ -1226,15 +1180,16 @@ do_setshow_command (arg, from_tty, c)
 	{
 	case var_string:
 	  {
-	    char *new;
-	    char *p;
+	    char *newstr;
+	    const char *p;
 	    char *q;
 	    int ch;
 	    
 	    if (arg == NULL)
 	      arg = "";
-	    new = (char *) xmalloc (strlen (arg) + 2);
-	    p = arg; q = new;
+	    newstr = (char *)xmalloc(strlen(arg) + 2UL);
+	    p = arg;
+            q = newstr;
 	    while ((ch = *p++) != '\000')
 	      {
 		if (ch == '\\')
@@ -1260,12 +1215,12 @@ do_setshow_command (arg, from_tty, c)
 #if 0
 	    if (*(p - 1) != '\\')
 	      *q++ = ' ';
-#endif
+#endif /* 0 */
 	    *q++ = '\0';
-	    new = (char *) xrealloc (new, q - new);
+	    newstr = (char *)xrealloc(newstr, (q - newstr));
 	    if (*(char **)c->var != NULL)
-	      free (*(char **)c->var);
-	    *(char **) c->var = new;
+	      free(*(char **)c->var);
+	    *(char **)c->var = newstr;
 	  }
 	  break;
 	case var_string_noescape:
@@ -1316,22 +1271,22 @@ do_setshow_command (arg, from_tty, c)
 	    int i;
 	    int len;
 	    int nmatches;
-	    char *match = NULL;
+	    const char *match = NULL;
 	    char *p;
 
 	    /* if no argument was supplied, print an informative error message */
 	    if (arg == NULL)
 	      {
 		char msg[1024];
-		strcpy (msg, "Requires an argument. Valid arguments are ");
+		strcpy(msg, "Requires an argument. Valid arguments are ");
 		for (i = 0; c->enums[i]; i++)
 		  {
 		    if (i != 0)
-		      strcat (msg, ", ");
-		    strcat (msg, c->enums[i]);
+		      strcat(msg, ", ");
+		    strcat(msg, c->enums[i]);
 		  }
-		strcat (msg, ".");
-		error (msg);
+		strcat(msg, ".");
+		error("%s", msg);
 	      }
 
 	    p = strchr (arg, ' ');
@@ -1355,7 +1310,7 @@ do_setshow_command (arg, from_tty, c)
 	    if (nmatches > 1)
 	      error ("Ambiguous item \"%s\".", arg);
 
-	    *(char **)c->var = match;
+	    *(char **)c->var = (char *)match;
 	  }
 	  break;
 	default:
@@ -1377,9 +1332,9 @@ do_setshow_command (arg, from_tty, c)
 
 	  fputs_filtered ("\"", gdb_stdout);
 	  if (*(unsigned char **)c->var)
-	    for (p = *(unsigned char **) c->var; *p != '\0'; p++)
-	      gdb_printchar (*p, gdb_stdout, '"');
-	  fputs_filtered ("\"", gdb_stdout);
+	    for (p = *(unsigned char **)c->var; *p != '\0'; p++)
+	      gdb_printchar(*p, gdb_stdout, '"');
+	  fputs_filtered("\"", gdb_stdout);
 	}
 	break;
       case var_string_noescape:
@@ -1422,12 +1377,8 @@ do_setshow_command (arg, from_tty, c)
 }
 
 /* Show all the settings in a list of show commands.  */
-
 void
-cmd_show_list (list, from_tty, prefix)
-     struct cmd_list_element *list;
-     int from_tty;
-     char *prefix;
+cmd_show_list(struct cmd_list_element *list, int from_tty, const char *prefix)
 {
   for (; list != NULL; list = list->next) {
     /* If we find a prefix, run its list, prefixing our output by its
@@ -1439,26 +1390,23 @@ cmd_show_list (list, from_tty, prefix)
 	fputs_filtered (prefix, gdb_stdout);
 	fputs_filtered (list->name, gdb_stdout);
 	fputs_filtered (":  ", gdb_stdout);
-	do_setshow_command ((char *)NULL, from_tty, list);
+	do_setshow_command((const char *)NULL, from_tty, list);
       }
   }
 }
 
 /* ARGSUSED */
 static void
-shell_escape (arg, from_tty)
-     char *arg;
-     int from_tty;
+shell_escape(const char *arg, int from_tty)
 {
 #ifdef CANT_FORK
-  /* FIXME: what about errors (I don't know how GO32 system() handles
-     them)?  */
+  /* FIXME: what about errors (I dunno how GO32 system() handles them)?  */
   system (arg);
 #else /* Can fork.  */
   int rc, status, pid;
-  char *p, *user_shell;
+  const char *p, *user_shell;
 
-  if ((user_shell = (char *) getenv ("SHELL")) == NULL)
+  if ((user_shell = (const char *)getenv("SHELL")) == NULL)
     user_shell = "/bin/sh";
 
   /* Get the name of the shell for arg0 */
@@ -1470,9 +1418,9 @@ shell_escape (arg, from_tty)
   if ((pid = fork()) == 0)
     {
       if (!arg)
-	execl (user_shell, p, 0);
+	execl(user_shell, p, (char *)0);
       else
-	execl (user_shell, p, "-c", arg, 0);
+	execl(user_shell, p, "-c", arg, (char *)0);
 
       fprintf_unfiltered (gdb_stderr, "Cannot execute %s: %s\n", user_shell,
 			  safe_strerror (errno));
@@ -1489,28 +1437,25 @@ shell_escape (arg, from_tty)
 }
 
 static void
-make_command (arg, from_tty)
-     char *arg;
-     int from_tty;
+make_command(const char *arg, int from_tty)
 {
-  char *p;
+  const char *p;
 
   if (arg == 0)
     p = "make";
   else
     {
-      p = xmalloc (sizeof("make ") + strlen(arg));
-      strcpy (p, "make ");
-      strcpy (p + sizeof("make ")-1, arg);
+      p = (const char *)xmalloc(sizeof("make ") + strlen(arg));
+      strcpy((char *)p, "make ");
+      strcpy((char *)p + (sizeof("make ") - 1UL), arg);
     }
   
   shell_escape (p, from_tty);
 }
 
+/* */
 static void
-show_user_1 (c, stream)
-     struct cmd_list_element *c;
-     GDB_FILE *stream;
+show_user_1(struct cmd_list_element *c, GDB_FILE *stream)
 {
   register struct command_line *cmdlines;
 
@@ -1531,32 +1476,30 @@ show_user_1 (c, stream)
 
 /* ARGSUSED */
 static void
-show_user (args, from_tty)
-     char *args;
-     int from_tty;
+show_user(const char *args, int from_tty)
 {
   struct cmd_list_element *c;
-  extern struct cmd_list_element *cmdlist;
 
   if (args)
     {
-      c = lookup_cmd (&args, cmdlist, "", 0, 1);
-      if (c->class != class_user)
-	error ("Not a user command.");
-      show_user_1 (c, gdb_stdout);
+      c = lookup_cmd(&args, cmdlist, "", 0, 1);
+      if (c->cmdclass != class_user)
+	error("Not a user command.");
+      show_user_1(c, gdb_stdout);
     }
   else
     {
       for (c = cmdlist; c; c = c->next)
 	{
-	  if (c->class == class_user)
-	    show_user_1 (c, gdb_stdout);
+	  if (c->cmdclass == class_user)
+	    show_user_1(c, gdb_stdout);
 	}
     }
 }
 
+/* */
 void
-_initialize_command ()
+_initialize_command(void)
 {
   add_com ("shell", class_support, shell_escape,
 	   "Execute the rest of the line as a shell command.  \n\

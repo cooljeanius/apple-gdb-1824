@@ -9,9 +9,10 @@
 
 /* Check that config.h is #included before system headers
  * (this works only for glibc, but that should be enough).  */
-#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
+#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__) \
+    && !defined(FLEX_SCANNER)
 #  error "config.h must be #included before system headers"
-#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
+#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ && !FLEX_SCANNER */
 #define __CONFIG_H__ 1
 
 /* Define if building universal (internal helper macro) */
@@ -116,6 +117,14 @@
    don't. */
 #undef HAVE_DECL_FPRINTF
 
+/* Define to 1 if you have the declaration of 'fread', and to 0 if you don't.
+   */
+#undef HAVE_DECL_FREAD
+
+/* Define to 1 if you have the declaration of 'fscanf', and to 0 if you don't.
+   */
+#undef HAVE_DECL_FSCANF
+
 /* Define to 1 if you have the declaration of 'getc_unlocked', and to 0 if you
    don't. */
 #undef HAVE_DECL_GETC_UNLOCKED
@@ -126,6 +135,10 @@
 
 /* Define to 1 if prototype for getopt in <unistd.h> is in expected format */
 #undef HAVE_DECL_GETOPT
+
+/* Define to 1 if you have the declaration of 'mkstemp', and to 0 if you
+   don't. */
+#undef HAVE_DECL_MKSTEMP
 
 /* Define to 1 if you have the declaration of 'sbrk', and to 0 if you don't.
    */
@@ -221,6 +234,9 @@
 
 /* Define to 1 if you have the 'free' function. */
 #undef HAVE_FREE
+
+/* Define to 1 if you have the 'fscanf' function. */
+#undef HAVE_FSCANF
 
 /* Define to 1 if you have the 'getcwd' function. */
 #undef HAVE_GETCWD

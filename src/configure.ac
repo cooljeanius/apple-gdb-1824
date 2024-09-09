@@ -1048,7 +1048,7 @@ case "${target}" in
     fi
 # Also similar to Apple case above:
     if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o" -o -n "${PIC_FLAG}"; then
-      if test "x${enable_static}" = "xyes" || test "x${build_old_libs}" = "xyes"; then
+      if test "x${enable_static}" = "xyes" || test "x${build_old_libs}" = "xyes" || test "x${GITHUB_ACTIONS}" = "xtrue"; then
         noconfigdirs="${noconfigdirs} zlib"
       else
         echo "zlib should probably be fine so long as we avoid building its minizip subdir statically"
@@ -3908,8 +3908,8 @@ NCN_STRICT_CHECK_TOOLS([OBJCOPY],[objcopy gobjcopy])dnl
 NCN_STRICT_CHECK_TOOLS([OBJDUMP],[objdump gobjdump])dnl
 NCN_STRICT_CHECK_TOOLS([READELF],[readelf greadelf])dnl
 
-AC_PROG_AR
 AM_PROG_AR
+AC_PROG_AR
 AM_PROG_AS
 if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}" || unset RANLIB
@@ -3919,7 +3919,7 @@ else
 fi
 AC_PROG_MKDIR_P
 if test -x ${srcdir}/libtool -a ! -d ${srcdir}/libtool; then
-  test -r libtool
+  test -r libtool || echo "libtool is unreadable!"
   if test "x${LIBTOOLFLAGS}" = "x"; then
     test -z "${LIBTOOLFLAGS}"
     export LIBTOOLFLAGS="--verbose --debug --no-silent"
@@ -3931,7 +3931,7 @@ if test -x ${srcdir}/libtool -a ! -d ${srcdir}/libtool; then
   LT_PREREQ([2.4.6])dnl
   dnl#TODO: finish updating the libtool_gnu subdir as well... (?)
 else
-  test -e libtool
+  test -e libtool && stat libtool
   AC_CHECK_HEADERS_ONCE([dlfcn.h])dnl
   ## (libtool should be okay now)
 fi
@@ -4204,13 +4204,36 @@ AC_SUBST([UNDO_LINK_TO_DIR])dnl
 # Change the default to "no" on release branches.
 AC_ARG_ENABLE([werror],
 [AS_HELP_STRING([--enable-werror],
-                [enable -Werror in bootstrap stage2 and later])],
-[],[enable_werror=yes])
+                [enable -Werror in bootstrap stage2 and later])],[
+case "${enableval}" in
+  yes | ye | y) 
+    test -n "${enableval}" && echo "enableval is '${enableval}' 4 --enable-werror"
+    ERROR_ON_WARNING="yes"
+  ;;
+  nope | nop | no | n)
+    test -n "${enableval}" && echo "enableval is '${enableval}' 4 --enable-werror"
+    ERROR_ON_WARNING="no"
+  ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-werror]) ;;
+esac
+],[
+if test "${GCC}" = yes && test -z "${GITHUB_ACTIONS}" && test "x${development}" = "xtrue"; then
+  enable_werror=yes
+else
+  enable_werror=no
+fi
+])
 case ${enable_werror} in
-  yes) stage2_werror_flag="--enable-werror-always" 
-       host_configargs=" ${host_configargs} --enable-werror" ;;
-  *) stage2_werror_flag=""
-     host_configargs=" ${host_configargs} --disable-werror" ;;
+  yes)
+    AC_MSG_NOTICE([--enable-werror enabled])
+    stage2_werror_flag="--enable-werror-always" 
+    host_configargs=" ${host_configargs} --enable-werror"
+  ;;
+  *)
+    AC_MSG_NOTICE([--enable-werror disabled])
+    stage2_werror_flag=""
+    host_configargs=" ${host_configargs} --disable-werror"
+  ;;
 esac
 AC_SUBST([stage2_werror_flag])dnl
 AC_SUBST([enable_werror])dnl

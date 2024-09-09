@@ -22,7 +22,7 @@ AC_PROG_INSTALL
 
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h sys/socket.h sys/time.h])dnl
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h sys/socket.h sys/time.h termios.h])dnl
 
 if test "x${ac_cv_header_inttypes_h}" = "x"; then
   test -z "${ac_cv_header_inttypes_h}"

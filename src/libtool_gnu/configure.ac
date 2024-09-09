@@ -19,7 +19,7 @@ dnl# (only try that via the boostrap script though; avoid doing so directly)
 #
 # You should have received a copy of the GNU General Public License
 # along with GNU Libtool; see the file COPYING. If not, a copy
-# can be downloaded from  http://www.gnu.org/licenses/gpl.html,
+# can be downloaded from <http://www.gnu.org/licenses/gpl.html>,
 # or obtained by writing to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 ####
@@ -34,7 +34,7 @@ dnl# Oldest automake required for bootstrap is below in AM_INIT_AUTOMAKE.
 ## ------------------------ ##
 AC_INIT([GNU Libtool],[2.4.2],[bug-libtool@gnu.org])
 m4_ifndef([AC_PACKAGE_URL],
-	  [AC_SUBST([PACKAGE_URL],[http://www.gnu.org/software/libtool/])])
+	  [AC_SUBST([PACKAGE_URL],[https://www.gnu.org/software/libtool/])])
 AC_CONFIG_HEADERS([config.h:config-h.in])
 AC_CONFIG_SRCDIR([libtoolize.in])
 LT_CONFIG_LTDL_DIR([libltdl],[nonrecursive])
@@ -61,7 +61,7 @@ AC_SUBST([AUTOTEST],['$(AUTOM4TE) --language=autotest'])dnl
 # Calculating the previous version is somewhat involved, so do it once
 # here, and SUBST the result for the maintainer release rules. The
 # versioning scheme we use is described here:
-#	http://www.gnu.org/software/libtool/contribute.html
+#	https://www.gnu.org/software/libtool/contribute.html
 
 # First we break the version number up into its constituent parts.
 lt_major=`echo "AC_PACKAGE_VERSION" | sed ['s,\..*$,,g']`
@@ -116,9 +116,9 @@ case ${lt_alpha} in
     TIMESTAMP=""
     ;;
 esac
-timestamp_string="${TIMESTAMP:+ (Build:$TIMESTAMP)}"
+sync && timestamp_string="${TIMESTAMP:+ (Build:$TIMESTAMP)}" && sync
 AS_BOX([Configuring AC_PACKAGE_TARNAME${timestamp_string} AC_PACKAGE_VERSION])
-echo ""
+sync && echo ""
 AC_SUBST([TIMESTAMP])dnl
 AC_SUBST([package_revision])dnl
 

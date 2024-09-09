@@ -20,8 +20,11 @@
 # Tell GitHub to ignore when calculating language stats:
 aclocal.m4 linguist-generated
 config.h.in linguist-generated
+gdb.conf linguist-language=gdb
 GNUSource.make linguist-language=makefile
 libcheckpoint/Makefile.in linguist-generated
+macsbug/gdbinit-MacsBug linguist-language=gdb
+macsbug/gdbinit-MacsBug-without-plugin linguist-language=gdb
 macsbug/MacsBug_testing.i linguist-language=c
 Special_Versions linguist-language=text
 

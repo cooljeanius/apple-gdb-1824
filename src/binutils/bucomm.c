@@ -433,6 +433,7 @@ make_tempname (char *filename)
   if (slash != (char *)NULL)
     {
       char c;
+      int tmpret;
 
       c = *slash;
       *slash = 0;
@@ -447,14 +448,23 @@ make_tempname (char *filename)
 #endif /* HAVE_DOS_BASED_FILE_SYSTEM */
       strcat(tmpname, "/");
       strcat(tmpname, template_string);
-      mkstemp(tmpname);
+      tmpret = mkstemp(tmpname);
+      if (tmpret == -1) {
+        fatal("error: call to mkstemp failed with %s (i.e. errno %d, or %s)",
+              xstrerror(errno), errno, strerrno(errno));
+      }
       *slash = c;
     }
   else
     {
+      int tmpret;
       tmpname = (char *)xmalloc(sizeof(template_string));
       strcpy(tmpname, template_string);
-      mkstemp(tmpname);
+      tmpret = mkstemp(tmpname);
+      if (tmpret == -1) {
+        fatal("error: call to mkstemp failed with %s (i.e. errno %d, or %s)",
+              xstrerror(errno), errno, strerrno(errno));
+      }
     }
   return tmpname;
 }

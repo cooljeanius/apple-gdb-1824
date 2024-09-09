@@ -134,13 +134,13 @@ m4_ifdef([AC_REQUIRE_AUX_FILE],[
 
 AC_PROG_CPP
 
-if test "x${ac_cv_prog_AR}" = "x"; then
-  test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
-  AC_PROG_AR
-fi
 if test "x${AR}" = "x" && test "x${am_cv_ar_interface}" = "x"; then
   test -z "${AR}" && test -z "${am_cv_ar_interface}" && echo "doing automake-style check for AR"
   AM_PROG_AR
+fi
+if test "x${ac_cv_prog_AR}" = "x"; then
+  test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
+  AC_PROG_AR
 fi
 AC_PROG_INSTALL
 AC_PROG_LN_S
@@ -227,7 +227,7 @@ ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wnested-externs \
 -Wnull-dereference -Wdangling-else -Wduplicate-decl-specifier -Wpointer-arith \
 -Wmemset-elt-size -Wswitch-unreachable -Wexpansion-to-defined -Wpointer-sign \
 -Wshadow-local -Wc99-c11-compat -Wzero-length-bounds -Wfatal-errors \
--Walloc-size -Wcalloc-transposed-args -fanalyzer],[WARN_FLAGS])dnl
+-fanalyzer],[WARN_FLAGS])dnl
 
 # deal with potential name mismatch:
 if test "x${WARN_FLAGS}" = "x" && test "x${WARN_CFLAGS}" != "x"; then

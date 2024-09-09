@@ -636,7 +636,7 @@ inf_ptrace_fetch_register (int regnum)
   size = register_size (current_gdbarch, regnum);
 
   gdb_assert ((size % sizeof (PTRACE_TYPE_RET)) == 0);
-  buf = alloca (size);
+  buf = (PTRACE_TYPE_RET *)alloca(size);
 
   /* Read the register contents from the inferior a chuck at the time.  */
   for (i = 0UL; i < (size / sizeof(PTRACE_TYPE_RET)); i++)
@@ -687,7 +687,7 @@ inf_ptrace_store_register (int regnum)
   size = register_size (current_gdbarch, regnum);
 
   gdb_assert ((size % sizeof (PTRACE_TYPE_RET)) == 0);
-  buf = alloca (size);
+  buf = (PTRACE_TYPE_RET *)alloca(size);
 
   /* Write the register contents into the inferior a chunk at the time.  */
   regcache_raw_collect (current_regcache, regnum, buf);

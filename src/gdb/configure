@@ -1099,6 +1099,8 @@ acl_cv_wl
 MACH_EXC_SERVER_PREFACE
 want64
 SED
+am__xargs_n
+am__rm_f_notfound
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -4562,7 +4564,7 @@ if test "x${APPLE_INTERNAL_DIR}" = "x/AppleInternal"; then
 fi
 
 
-if test -e ${srcdir}/development.sh; then
+if test -e ${srcdir}/development.sh && test -r ${srcdir}/development.sh; then
   # Set the 'development' global.
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: sourcing ${srcdir}/development.sh for gdb" >&5
 printf "%s\n" "$as_me: sourcing ${srcdir}/development.sh for gdb" >&6;}
@@ -7537,7 +7539,7 @@ if test -f ${srcdir}/config.status; then
 printf "%s\n" "$as_me: config.status is already present, removing it." >&6;}
   rm -f ${srcdir}/config.status
 fi
-am__api_version='1.16'
+am__api_version='1.17'
 
 
   # Find a good install program.  We prefer a C program (faster),
@@ -7639,6 +7641,165 @@ test -z "$INSTALL_SCRIPT" && INSTALL_SCRIPT='${INSTALL}'
 
 test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether sleep supports fractional seconds" >&5
+printf %s "checking whether sleep supports fractional seconds... " >&6; }
+if test ${am_cv_sleep_fractional_seconds+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if sleep 0.001 2>/dev/null
+then :
+  am_cv_sleep_fractional_seconds=yes
+else case e in #(
+  e) am_cv_sleep_fractional_seconds=no ;;
+esac
+fi
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_sleep_fractional_seconds" >&5
+printf "%s\n" "$am_cv_sleep_fractional_seconds" >&6; }
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking filesystem timestamp resolution" >&5
+printf %s "checking filesystem timestamp resolution... " >&6; }
+if test ${am_cv_filesystem_timestamp_resolution+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) # Default to the worst case.
+am_cv_filesystem_timestamp_resolution=2
+
+# Only try to go finer than 1 sec if sleep can do it.
+# Don't try 1 sec, because if 0.01 sec and 0.1 sec don't work,
+# - 1 sec is not much of a win compared to 2 sec, and
+# - it takes 2 seconds to perform the test whether 1 sec works.
+#
+# Instead, just use the default 2s on platforms that have 1s resolution,
+# accept the extra 1s delay when using $sleep in the Automake tests, in
+# exchange for not incurring the 2s delay for running the test for all
+# packages.
+#
+am_try_resolutions=
+if test "$am_cv_sleep_fractional_seconds" = yes; then
+  # Even a millisecond often causes a bunch of false positives,
+  # so just try a hundredth of a second. The time saved between .001 and
+  # .01 is not terribly consequential.
+  am_try_resolutions="0.01 0.1 $am_try_resolutions"
+fi
+
+# In order to catch current-generation FAT out, we must *modify* files
+# that already exist; the *creation* timestamp is finer.  Use names
+# that make ls -t sort them differently when they have equal
+# timestamps than when they have distinct timestamps, keeping
+# in mind that ls -t prints the *newest* file first.
+rm -f conftest.ts?
+: > conftest.ts1
+: > conftest.ts2
+: > conftest.ts3
+
+# Make sure ls -t actually works.  Do 'set' in a subshell so we don't
+# clobber the current shell's arguments. (Outer-level square brackets
+# are removed by m4; they're present so that m4 does not expand
+# <dollar><star>; be careful, easy to get confused.)
+if (
+     set X `ls -t conftest.ts[12]` &&
+     {
+       test "$*" != "X conftest.ts1 conftest.ts2" ||
+       test "$*" != "X conftest.ts2 conftest.ts1";
+     }
+); then :; else
+  # If neither matched, then we have a broken ls.  This can happen
+  # if, for instance, CONFIG_SHELL is bash and it inherits a
+  # broken ls alias from the environment.  This has actually
+  # happened.  Such a system could not be considered "sane".
+  printf "%s\n" ""Bad output from ls -t: \"`ls -t conftest.ts[12]`\""" >&5
+  { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in '$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in '$ac_pwd':" >&2;}
+as_fn_error $? "ls -t produces unexpected output.
+Make sure there is not a broken ls alias in your environment.
+See 'config.log' for more details" "$LINENO" 5; }
+fi
+
+for am_try_res in $am_try_resolutions; do
+  # Any one fine-grained sleep might happen to cross the boundary
+  # between two values of a coarser actual resolution, but if we do
+  # two fine-grained sleeps in a row, at least one of them will fall
+  # entirely within a coarse interval.
+  echo alpha > conftest.ts1
+  sleep $am_try_res
+  echo beta > conftest.ts2
+  sleep $am_try_res
+  echo gamma > conftest.ts3
+
+  # We assume that 'ls -t' will make use of high-resolution
+  # timestamps if the operating system supports them at all.
+  if (set X `ls -t conftest.ts?` &&
+      test "$2" = conftest.ts3 &&
+      test "$3" = conftest.ts2 &&
+      test "$4" = conftest.ts1); then
+    #
+    # Ok, ls -t worked. If we're at a resolution of 1 second, we're done,
+    # because we don't need to test make.
+    make_ok=true
+    if test $am_try_res != 1; then
+      # But if we've succeeded so far with a subsecond resolution, we
+      # have one more thing to check: make. It can happen that
+      # everything else supports the subsecond mtimes, but make doesn't;
+      # notably on macOS, which ships make 3.81 from 2006 (the last one
+      # released under GPLv2). https://bugs.gnu.org/68808
+      #
+      # We test $MAKE if it is defined in the environment, else "make".
+      # It might get overridden later, but our hope is that in practice
+      # it does not matter: it is the system "make" which is (by far)
+      # the most likely to be broken, whereas if the user overrides it,
+      # probably they did so with a better, or at least not worse, make.
+      # https://lists.gnu.org/archive/html/automake/2024-06/msg00051.html
+      #
+      # Create a Makefile (real tab character here):
+      rm -f conftest.mk
+      echo 'conftest.ts1: conftest.ts2' >conftest.mk
+      echo '	touch conftest.ts2' >>conftest.mk
+      #
+      # Now, running
+      #   touch conftest.ts1; touch conftest.ts2; make
+      # should touch ts1 because ts2 is newer. This could happen by luck,
+      # but most often, it will fail if make's support is insufficient. So
+      # test for several consecutive successes.
+      #
+      # (We reuse conftest.ts[12] because we still want to modify existing
+      # files, not create new ones, per above.)
+      n=0
+      make=${MAKE-make}
+      until test $n -eq 3; do
+        echo one > conftest.ts1
+        sleep $am_try_res
+        echo two > conftest.ts2 # ts2 should now be newer than ts1
+        if $make -f conftest.mk | grep 'up to date' >/dev/null; then
+          make_ok=false
+          break # out of $n loop
+        fi
+        n=`expr $n + 1`
+      done
+    fi
+    #
+    if $make_ok; then
+      # Everything we know to check worked out, so call this resolution good.
+      am_cv_filesystem_timestamp_resolution=$am_try_res
+      break # out of $am_try_res loop
+    fi
+    # Otherwise, we'll go on to check the next resolution.
+  fi
+done
+rm -f conftest.ts?
+# (end _am_filesystem_timestamp_resolution)
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_filesystem_timestamp_resolution" >&5
+printf "%s\n" "$am_cv_filesystem_timestamp_resolution" >&6; }
+
+# This check should not be cached, as it may vary across builds of
+# different projects.
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether build environment is sane" >&5
 printf %s "checking whether build environment is sane... " >&6; }
 # Reject unsafe characters in $srcdir or the absolute working directory
@@ -7659,49 +7820,45 @@ esac
 # symlink; some systems play weird games with the mod time of symlinks
 # (eg FreeBSD returns the mod time of the symlink's containing
 # directory).
-if (
-   am_has_slept=no
-   for am_try in 1 2; do
-     echo "timestamp, slept: $am_has_slept" > conftest.file
-     set X `ls -Lt "$srcdir/configure" conftest.file 2> /dev/null`
-     if test "$*" = "X"; then
-	# -L didn't work.
-	set X `ls -t "$srcdir/configure" conftest.file`
-     fi
-     if test "$*" != "X $srcdir/configure conftest.file" \
-	&& test "$*" != "X conftest.file $srcdir/configure"; then
+am_build_env_is_sane=no
+am_has_slept=no
+rm -f conftest.file
+for am_try in 1 2; do
+  echo "timestamp, slept: $am_has_slept" > conftest.file
+  if (
+    set X `ls -Lt "$srcdir/configure" conftest.file 2> /dev/null`
+    if test "$*" = "X"; then
+      # -L didn't work.
+      set X `ls -t "$srcdir/configure" conftest.file`
+    fi
+    test "$2" = conftest.file
+  ); then
+    am_build_env_is_sane=yes
+    break
+  fi
+  # Just in case.
+  sleep "$am_cv_filesystem_timestamp_resolution"
+  am_has_slept=yes
+done
 
-	# If neither matched, then we have a broken ls.  This can happen
-	# if, for instance, CONFIG_SHELL is bash and it inherits a
-	# broken ls alias from the environment.  This has actually
-	# happened.  Such a system could not be considered "sane".
-	as_fn_error $? "ls -t appears to fail.  Make sure there is not a broken
-  alias in your environment" "$LINENO" 5
-     fi
-     if test "$2" = conftest.file || test $am_try -eq 2; then
-       break
-     fi
-     # Just in case.
-     sleep 1
-     am_has_slept=yes
-   done
-   test "$2" = conftest.file
-   )
-then
-   # Ok.
-   :
-else
-   as_fn_error $? "newly created file is older than distributed files!
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_build_env_is_sane" >&5
+printf "%s\n" "$am_build_env_is_sane" >&6; }
+if test "$am_build_env_is_sane" = no; then
+  as_fn_error $? "newly created file is older than distributed files!
 Check your system clock" "$LINENO" 5
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }
+
 # If we didn't sleep, we still need to ensure time stamps of config.status and
 # generated files are strictly newer.
 am_sleep_pid=
-if grep 'slept: no' conftest.file >/dev/null 2>&1; then
-  ( sleep 1 ) &
+if test -e conftest.file || grep 'slept: no' conftest.file >/dev/null 2>&1
+then :
+
+else case e in #(
+  e)   ( sleep "$am_cv_filesystem_timestamp_resolution" ) &
   am_sleep_pid=$!
+ ;;
+esac
 fi
 
 rm -f conftest.file
@@ -8051,17 +8208,13 @@ else
 fi
 
 
+AM_DEFAULT_VERBOSITY=1
 # Check whether --enable-silent-rules was given.
 if test ${enable_silent_rules+y}
 then :
   enableval=$enable_silent_rules;
 fi
 
-case $enable_silent_rules in # (((
-  yes) AM_DEFAULT_VERBOSITY=0;;
-   no) AM_DEFAULT_VERBOSITY=1;;
-    *) AM_DEFAULT_VERBOSITY=1;;
-esac
 am_make=${MAKE-make}
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $am_make supports nested variables" >&5
 printf %s "checking whether $am_make supports nested variables... " >&6; }
@@ -8084,14 +8237,44 @@ esac
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_make_support_nested_variables" >&5
 printf "%s\n" "$am_cv_make_support_nested_variables" >&6; }
-if test $am_cv_make_support_nested_variables = yes; then
-    AM_V='$(V)'
-  AM_DEFAULT_V='$(AM_DEFAULT_VERBOSITY)'
-else
-  AM_V=$AM_DEFAULT_VERBOSITY
-  AM_DEFAULT_V=$AM_DEFAULT_VERBOSITY
-fi
 AM_BACKSLASH='\'
+
+am__rm_f_notfound=
+if (rm -f && rm -fr && rm -rf) 2>/dev/null
+then :
+
+else case e in #(
+  e) am__rm_f_notfound='""' ;;
+esac
+fi
+
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking xargs -n works" >&5
+printf %s "checking xargs -n works... " >&6; }
+if test ${am_cv_xargs_n_works+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test "`echo 1 2 3 | xargs -n2 echo`" = "1 2
+3"
+then :
+  am_cv_xargs_n_works=yes
+else case e in #(
+  e) am_cv_xargs_n_works=no ;;
+esac
+fi ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_cv_xargs_n_works" >&5
+printf "%s\n" "$am_cv_xargs_n_works" >&6; }
+if test "$am_cv_xargs_n_works" = yes
+then :
+  am__xargs_n='xargs -n'
+else case e in #(
+  e)   am__xargs_n='am__xargs_n () { shift; sed "s/ /\\n/g" | while read am__xargs_n_arg; do "" "$am__xargs_n_arg"; done; }'
+ ;;
+esac
+fi
 
 if test "`cd $srcdir && pwd`" != "`pwd`"; then
   # Use -I$(srcdir) only when $(srcdir) != ., so that make's output
@@ -8256,7 +8439,7 @@ else case e in #(
       # icc doesn't choke on unknown options, it will just issue warnings
       # or remarks (even with -Werror).  So we grep stderr for any message
       # that says an option was ignored or not supported.
-      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      # When given -MP, icc 7.0 and 7.1 complain thus:
       #   icc: Command line warning: ignoring option '-M'; no argument required
       # The diagnosis changed in icc 8.0:
       #   icc: Command line remark: option '-MP' not supported
@@ -8386,7 +8569,7 @@ else case e in #(
       # icc doesn't choke on unknown options, it will just issue warnings
       # or remarks (even with -Werror).  So we grep stderr for any message
       # that says an option was ignored or not supported.
-      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      # When given -MP, icc 7.0 and 7.1 complain thus:
       #   icc: Command line warning: ignoring option '-M'; no argument required
       # The diagnosis changed in icc 8.0:
       #   icc: Command line remark: option '-MP' not supported
@@ -8436,51 +8619,16 @@ fi
 
 
 
-# POSIX will say in a future version that running "rm -f" with no argument
-# is OK; and we want to be able to make that assumption in our Makefile
-# recipes.  So use an aggressive probe to check that the usage we want is
-# actually supported "in the wild" to an acceptable degree.
-# See automake bug#10828.
-# To make any issue more visible, cause the running configure to be aborted
-# by default if the 'rm' program in use doesn't match our expectations; the
-# user can still override this though.
-if rm -f && rm -fr && rm -rf; then : OK; else
-  cat >&2 <<'END'
-Oops!
 
-Your 'rm' program seems unable to run without file operands specified
-on the command line, even when the '-f' option is present.  This is contrary
-to the behaviour of most rm programs out there, and not conforming with
-the upcoming POSIX standard: <http://austingroupbugs.net/view.php?id=542>
 
-Please tell bug-automake@gnu.org about your system, including the value
-of your $PATH and any error possibly output before this message.  This
-can help us improve future automake versions.
 
-END
-  if test x"$ACCEPT_INFERIOR_RM_PROGRAM" = x"yes"; then
-    echo 'Configuration will proceed anyway, since you have set the' >&2
-    echo 'ACCEPT_INFERIOR_RM_PROGRAM variable to "yes"' >&2
-    echo >&2
-  else
-    cat >&2 <<'END'
-Aborting the configuration process, to ensure you take notice of the issue.
-
-You can download and install GNU coreutils to get an 'rm' implementation
-that behaves properly: <https://www.gnu.org/software/coreutils/>.
-
-If you want to complete the configuration process using your problematic
-'rm' anyway, export the environment variable ACCEPT_INFERIOR_RM_PROGRAM
-to "yes", and re-run configure.
-
-END
-    as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
-  fi
-fi
   ## make sure this is in the right place:
 if test -x ${srcdir}/missing; then
-  test -e missing
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether build environment is sane" >&5
+  test -e missing && test -r missing && test -s missing && stat missing
+
+# This check should not be cached, as it may vary across builds of
+# different projects.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether build environment is sane" >&5
 printf %s "checking whether build environment is sane... " >&6; }
 # Reject unsafe characters in $srcdir or the absolute working directory
 # name.  Accept space and tab only in the latter.
@@ -8500,49 +8648,45 @@ esac
 # symlink; some systems play weird games with the mod time of symlinks
 # (eg FreeBSD returns the mod time of the symlink's containing
 # directory).
-if (
-   am_has_slept=no
-   for am_try in 1 2; do
-     echo "timestamp, slept: $am_has_slept" > conftest.file
-     set X `ls -Lt "$srcdir/configure" conftest.file 2> /dev/null`
-     if test "$*" = "X"; then
-	# -L didn't work.
-	set X `ls -t "$srcdir/configure" conftest.file`
-     fi
-     if test "$*" != "X $srcdir/configure conftest.file" \
-	&& test "$*" != "X conftest.file $srcdir/configure"; then
+am_build_env_is_sane=no
+am_has_slept=no
+rm -f conftest.file
+for am_try in 1 2; do
+  echo "timestamp, slept: $am_has_slept" > conftest.file
+  if (
+    set X `ls -Lt "$srcdir/configure" conftest.file 2> /dev/null`
+    if test "$*" = "X"; then
+      # -L didn't work.
+      set X `ls -t "$srcdir/configure" conftest.file`
+    fi
+    test "$2" = conftest.file
+  ); then
+    am_build_env_is_sane=yes
+    break
+  fi
+  # Just in case.
+  sleep "$am_cv_filesystem_timestamp_resolution"
+  am_has_slept=yes
+done
 
-	# If neither matched, then we have a broken ls.  This can happen
-	# if, for instance, CONFIG_SHELL is bash and it inherits a
-	# broken ls alias from the environment.  This has actually
-	# happened.  Such a system could not be considered "sane".
-	as_fn_error $? "ls -t appears to fail.  Make sure there is not a broken
-  alias in your environment" "$LINENO" 5
-     fi
-     if test "$2" = conftest.file || test $am_try -eq 2; then
-       break
-     fi
-     # Just in case.
-     sleep 1
-     am_has_slept=yes
-   done
-   test "$2" = conftest.file
-   )
-then
-   # Ok.
-   :
-else
-   as_fn_error $? "newly created file is older than distributed files!
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $am_build_env_is_sane" >&5
+printf "%s\n" "$am_build_env_is_sane" >&6; }
+if test "$am_build_env_is_sane" = no; then
+  as_fn_error $? "newly created file is older than distributed files!
 Check your system clock" "$LINENO" 5
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }
+
 # If we didn't sleep, we still need to ensure time stamps of config.status and
 # generated files are strictly newer.
 am_sleep_pid=
-if grep 'slept: no' conftest.file >/dev/null 2>&1; then
-  ( sleep 1 ) &
+if test -e conftest.file || grep 'slept: no' conftest.file >/dev/null 2>&1
+then :
+
+else case e in #(
+  e)   ( sleep "$am_cv_filesystem_timestamp_resolution" ) &
   am_sleep_pid=$!
+ ;;
+esac
 fi
 
 rm -f conftest.file
@@ -9249,7 +9393,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
     conftest$ac_exeext conftest.$ac_ext
 LDFLAGS="${pre_saved_LDFLAGS}"
 if test "x${LD_ARCHFLAGS}" != "x"; then
-  test -n "${LD_ARCHFLAGS}"
+  test -n "${LD_ARCHFLAGS}" && sync
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${LD_ARCHFLAGS}" >&5
 printf "%s\n" "${LD_ARCHFLAGS}" >&6; }
   if test "x${ERROR_ON_WARNING}" = "xyes"; then
@@ -9261,7 +9405,7 @@ printf "%s\n" "${LD_ARCHFLAGS}" >&6; }
   fi
     ## that should be all we need to do with them for now...
 else
-  test -z "${LD_ARCHFLAGS}"
+  test -z "${LD_ARCHFLAGS}" || unset LD_ARCHFLAGS
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: none" >&5
 printf "%s\n" "none" >&6; }
 fi
@@ -10957,7 +11101,7 @@ else case e in #(
   e)
     if test -x "`which ld`" && test "x${LD}" != "xld-136"; then
       if test "x${ac_cv_lib_intl_main}" = "x" && test "x${LD}" = "Y0"; then
-        test -z "${ac_cv_lib_intl_main}"
+        test -z "${ac_cv_lib_intl_main}" || unset ac_cv_lib_intl_main
         ## neither worked:
         PRE_INTL_LDFLAGS="${LDFLAGS}"
         LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
@@ -11016,7 +11160,7 @@ fi
   ## just in case:
 if test -x "`which ld`" && test "x${LD}" != "xld-136"; then
   if test "x${ac_cv_lib_intl_libintl_dgettext}" = "x"; then
-    test -z "${ac_cv_lib_intl_libintl_dgettext}"
+    test -z "${ac_cv_lib_intl_libintl_dgettext}" && sync
     ## like above:
     PRE_LIBINTL_LDFLAGS="${LDFLAGS}"
     LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
@@ -11169,7 +11313,7 @@ printf "%s\n" "$as_me: done with Cygnus gettext checks" >&6;}
 
 MAKEINFO_EXTRA_FLAGS=""
 if test "x${MAKEINFO}" != "x"; then
-  test -n "${MAKEINFO}"
+  test -n "${MAKEINFO}" && echo "MAKEINFO is: '${MAKEINFO}'"
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${MAKEINFO} supports @click" >&5
 printf %s "checking whether ${MAKEINFO} supports @click... " >&6; }
 if test ${gdb_cv_have_makeinfo_click+y}
@@ -11212,8 +11356,8 @@ fi
 printf "%s\n" "#define DEBUGDIR \"${ac_define_dir}\"" >>confdefs.h
 
     ## in case the above failed:
-if test -z "${DEBUGDIR}" -a ! -z "${debugdir}" -a "x${GCC}" = "xno"; then
-  test -d "${debugdir}"
+if test -z "${DEBUGDIR}" -a -n "${debugdir}" -a "x${GCC}" = "xno"; then
+  test -d "${debugdir}" && echo "debugdir is: '${debugdir}'"
 
 printf "%s\n" "#define DEBUGDIR \"${debugdir}\"" >>confdefs.h
   ## 2...
@@ -11244,7 +11388,7 @@ esac
 fi
   ## now use that flag:
 if test -d ${srcdir}/gnulib && test "x${recurse_into_gnulib}" = "xyes"; then
-  test -n "${recurse_into_gnulib}"
+  test -n "${recurse_into_gnulib}" && test -d gnulib && sync
   if test -f ${GNULIB_IMPORT_DIR}/m4/posixcheck.m4; then
     export POSIXCHECK_CPPFLAGS="-DGNULIB_POSIXCHECK"
         ## just to see...
@@ -11809,6 +11953,25 @@ then :
 
 fi
 
+ac_fn_check_decl "$LINENO" "monstartup" "ac_cv_have_decl_monstartup" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_monstartup" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_MONSTARTUP $ac_have_decl" >>confdefs.h
+ac_fn_check_decl "$LINENO" "_mcleanup" "ac_cv_have_decl__mcleanup" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl__mcleanup" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL__MCLEANUP $ac_have_decl" >>confdefs.h
+
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for _etext" >&5
 printf %s "checking for _etext... " >&6; }
 if test ${ac_cv_var__etext+y}
@@ -11910,7 +12073,7 @@ esac
 fi
     ## corresponding define:
 if test "x${PKGVERSION}" != "x"; then
-  test -n "${PKGVERSION}"
+  test -n "${PKGVERSION}" && echo "PKGVERSION is: '${PKGVERSION}'"
 
 printf "%s\n" "#define PKGVERSION \"${PKGVERSION}\"" >>confdefs.h
   ## end definition
@@ -11946,7 +12109,7 @@ fi
   esac;
       ## corresponding define:
 if test "x${REPORT_BUGS_TO}" != "x"; then
-  test -n "${REPORT_BUGS_TO}"
+  test -n "${REPORT_BUGS_TO}" && echo "REPORT_BUGS_TO: '${REPORT_BUGS_TO}'"
 
 printf "%s\n" "#define REPORT_BUGS_TO \"${REPORT_BUGS_TO}\"" >>confdefs.h
   ## end definition
@@ -11962,7 +12125,7 @@ printf %s "checking programs... " >&6; }
 printf "%s\n" " " >&6; }
   ## automake has a better check for the proper archiver:
 if test -x "`which automake`"; then
-  test -z "${AR}"
+  test -z "${AR}" || unset AR
 
   if test -n "$ac_tool_prefix"; then
   for ac_prog in ar lib "link -lib"
@@ -12077,6 +12240,7 @@ esac
 fi
 
 : ${AR=ar}
+: ${ARFLAGS=cr}
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking the archiver ($AR) interface" >&5
 printf %s "checking the archiver ($AR) interface... " >&6; }
@@ -12097,7 +12261,7 @@ int some_variable = 0;
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"
 then :
-  am_ar_try='$AR cru libconftest.a conftest.$ac_objext >&5'
+  am_ar_try='$AR $ARFLAGS libconftest.a conftest.$ac_objext >&5'
       { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$am_ar_try\""; } >&5
   (eval $am_ar_try) 2>&5
   ac_status=$?
@@ -12151,7 +12315,7 @@ unknown)
 esac
 
 else
-  test -z "${AR}"
+  test -z "${AR}" || unset AR
   if test -n "$ac_tool_prefix"; then
   for ac_prog in ar gar
   do
@@ -12506,7 +12670,7 @@ else case e in #(
       # icc doesn't choke on unknown options, it will just issue warnings
       # or remarks (even with -Werror).  So we grep stderr for any message
       # that says an option was ignored or not supported.
-      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      # When given -MP, icc 7.0 and 7.1 complain thus:
       #   icc: Command line warning: ignoring option '-M'; no argument required
       # The diagnosis changed in icc 8.0:
       #   icc: Command line remark: option '-MP' not supported
@@ -35544,7 +35708,7 @@ printf %s "checking other programs... " >&6; }
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result:  " >&5
 printf "%s\n" " " >&6; }
 if test "x${AWK}" = "x"; then
-  test -z "${AWK}"
+  test -z "${AWK}" || unset AWK
   for ac_prog in gawk mawk nawk awk
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -35594,7 +35758,7 @@ fi
 done
 
 else
-  test ! -z "${AWK}" && export AWK
+  test -n "${AWK}" && export AWK
     ## gotta do something here...
 fi
 if test -d ./../fixincludes; then
@@ -35645,7 +35809,7 @@ printf "%s\n" "no" >&6; }
 fi
 
   ## this one is just a shell script, so nvm:
-  test -x ./../fixincludes/fixinc.sh
+  test -x ./../fixincludes/fixinc.sh || echo "fixinc.sh missing from fixincludes"
 fi
 
 # Installed binaries are usually stripped using 'strip' when the user
@@ -36135,8 +36299,8 @@ else case e in #(
   #  which is non-obvious for non-emacs users.
   # Redirecting /dev/null should help a bit; pity we can't detect "broken"
   #  emacsen earlier and avoid running this altogether.
-  { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$EMACS -batch -Q -eval '(while load-path (princ (concat (car load-path) \"\\n\")) (setq load-path (cdr load-path)))' </dev/null >conftest.out"; } >&5
-  ($EMACS -batch -Q -eval '(while load-path (princ (concat (car load-path) "\n")) (setq load-path (cdr load-path)))' </dev/null >conftest.out) 2>&5
+  { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$EMACS -batch -no-site-file -eval '(while load-path (princ (concat (car load-path) \"\\n\")) (setq load-path (cdr load-path)))' </dev/null >conftest.out"; } >&5
+  ($EMACS -batch -no-site-file -eval '(while load-path (princ (concat (car load-path) "\n")) (setq load-path (cdr load-path)))' </dev/null >conftest.out) 2>&5
   ac_status=$?
   printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }
@@ -36178,7 +36342,7 @@ fi
 
         # Find any Python interpreter.
     if test -z "$PYTHON"; then
-      for ac_prog in python python2 python3  python3.9 python3.8 python3.7 python3.6 python3.5 python3.4 python3.3  python3.2 python3.1 python3.0  python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1  python2.0
+      for ac_prog in python python3  python3.20 python3.19 python3.18 python3.17 python3.16  python3.15 python3.14 python3.13 python3.12 python3.11 python3.10  python3.9 python3.8 python3.7 python3.6 python3.5 python3.4 python3.3  python3.2 python3.1 python3.0  python2  python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1  python2.0
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -36426,7 +36590,21 @@ try:
     if python_implementation() == 'CPython' and sys.version[:3] == '2.7':
         can_use_sysconfig = 0
 except ImportError:
-    pass"
+    pass" # end of am_python_setup_sysconfig
+
+  # More repeated code, for figuring out the installation scheme to use.
+  am_python_setup_scheme="if hasattr(sysconfig, 'get_default_scheme'):
+      scheme = sysconfig.get_default_scheme()
+    else:
+      scheme = sysconfig._get_default_scheme()
+    if scheme == 'posix_local':
+      if '$am_py_prefix' == '/usr':
+        scheme = 'deb_system' # should only happen during Debian package builds
+      else:
+        # Debian's default scheme installs to /usr/local/ but we want to
+        # follow the prefix, as we always have.
+        # See bugs#54412, #64837, et al.
+        scheme = 'posix_prefix'" # end of am_python_setup_scheme
 
 
               { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON script directory (pythondir)" >&5
@@ -36443,7 +36621,11 @@ else case e in #(
    am_cv_python_pythondir=`$PYTHON -c "
 $am_python_setup_sysconfig
 if can_use_sysconfig:
-  sitedir = sysconfig.get_path('purelib', vars={'base':'$am_py_prefix'})
+  try:
+    $am_python_setup_scheme
+    sitedir = sysconfig.get_path('purelib', scheme, vars={'base':'$am_py_prefix'})
+  except:
+    sitedir = sysconfig.get_path('purelib', vars={'base':'$am_py_prefix'})
 else:
   from distutils import sysconfig
   sitedir = sysconfig.get_python_lib(0, 0, prefix='$am_py_prefix')
@@ -36473,7 +36655,7 @@ printf "%s\n" "$am_cv_python_pythondir" >&6; }
           pkgpythondir=\${pythondir}/$PACKAGE
 
 
-          { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON extension module directory (pyexecdir)" >&5
+            { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON extension module directory (pyexecdir)" >&5
 printf %s "checking for $am_display_PYTHON extension module directory (pyexecdir)... " >&6; }
 if test ${am_cv_python_pyexecdir+y}
 then :
@@ -36487,7 +36669,11 @@ else case e in #(
    am_cv_python_pyexecdir=`$PYTHON -c "
 $am_python_setup_sysconfig
 if can_use_sysconfig:
-  sitedir = sysconfig.get_path('platlib', vars={'platbase':'$am_py_exec_prefix'})
+  try:
+    $am_python_setup_scheme
+    sitedir = sysconfig.get_path('platlib', scheme, vars={'platbase':'$am_py_exec_prefix'})
+  except:
+    sitedir = sysconfig.get_path('platlib', vars={'platbase':'$am_py_exec_prefix'})
 else:
   from distutils import sysconfig
   sitedir = sysconfig.get_python_lib(1, 0, prefix='$am_py_exec_prefix')
@@ -36888,7 +37074,7 @@ else case e in #(
       # icc doesn't choke on unknown options, it will just issue warnings
       # or remarks (even with -Werror).  So we grep stderr for any message
       # that says an option was ignored or not supported.
-      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      # When given -MP, icc 7.0 and 7.1 complain thus:
       #   icc: Command line warning: ignoring option '-M'; no argument required
       # The diagnosis changed in icc 8.0:
       #   icc: Command line remark: option '-MP' not supported
@@ -36924,7 +37110,7 @@ fi
 
 
 if test "x${OBJCPP}" = "x" && test -e /lib/cpp; then
-  test -z "${OBJCPP}" && test -x /lib/cpp
+  test -z "${OBJCPP}" && test -x /lib/cpp && test -r /lib/cpp && stat /lib/cpp
   ac_ext=m
 ac_cpp='$OBJCPP $CPPFLAGS'
 ac_compile='$OBJC -c $OBJCFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -37432,7 +37618,7 @@ else case e in #(
       # icc doesn't choke on unknown options, it will just issue warnings
       # or remarks (even with -Werror).  So we grep stderr for any message
       # that says an option was ignored or not supported.
-      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      # When given -MP, icc 7.0 and 7.1 complain thus:
       #   icc: Command line warning: ignoring option '-M'; no argument required
       # The diagnosis changed in icc 8.0:
       #   icc: Command line remark: option '-MP' not supported
@@ -37602,7 +37788,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -37708,7 +37894,7 @@ else
 fi
 
 else
-  test ! -z "${RANLIB}" && export RANLIB
+  test -n "${RANLIB}" && export RANLIB
     ## gotta do something here...
 fi
 # Extract the first word of "runtest", so it can be a program name with args.
@@ -39240,6 +39426,8 @@ fi
 
 
 
+AM_DEFAULT_VERBOSITY=1
+
 
   # test whether we have cygpath:
   if test -z "${CYGPATH_W}"; then
@@ -40200,7 +40388,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 LDFLAGS="${PRE_V_LDFLAGS}"
   ## ...and also:
 if test "x${LD_VERBOSEFLAGS}" != "x"; then
-  test -n "${LD_VERBOSEFLAGS}"
+  test -n "${LD_VERBOSEFLAGS}" && sync
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${LD_VERBOSEFLAGS}" >&5
 printf "%s\n" "${LD_VERBOSEFLAGS}" >&6; }
   if test "x${WARN_LDFLAGS}" != "x"; then
@@ -40210,7 +40398,7 @@ printf "%s\n" "${LD_VERBOSEFLAGS}" >&6; }
   fi
     ## that should be all we need to do with them for now...
 else
-  test -z "${LD_VERBOSEFLAGS}"
+  test -z "${LD_VERBOSEFLAGS}" || unset LD_VERBOSEFLAGS
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: none" >&5
 printf "%s\n" "none" >&6; }
 fi
@@ -41864,7 +42052,7 @@ then :
 
 fi
 if test "x${ac_cv_header_sys_procfs_h}" = "x"; then
-  test -z "${ac_cv_header_sys_procfs_h}"
+  test -z "${ac_cv_header_sys_procfs_h}" || unset ac_cv_header_sys_procfs_h
   ac_fn_c_check_header_compile "$LINENO" "sys/procfs.h" "ac_cv_header_sys_procfs_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_procfs_h" = xyes
 then :
@@ -41919,7 +42107,7 @@ then :
 
 fi
 if test "x${ac_cv_header_sys_select_h}" = "x"; then
-  test -z "${ac_cv_header_sys_select_h}"
+  test -z "${ac_cv_header_sys_select_h}" || unset ac_cv_header_sys_select_h
   ac_fn_c_check_header_compile "$LINENO" "sys/select.h" "ac_cv_header_sys_select_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_select_h" = xyes
 then :
@@ -41951,7 +42139,7 @@ then :
 fi
   ## in case this failed to be checked:
 if test "x${ac_cv_header_sys_wait_h}" = "x"; then
-  test -z "${ac_cv_header_sys_wait_h}"
+  test -z "${ac_cv_header_sys_wait_h}" || unset ac_cv_header_sys_wait_h
   ac_fn_c_check_header_compile "$LINENO" "sys/wait.h" "ac_cv_header_sys_wait_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_wait_h" = xyes
 then :
@@ -42177,7 +42365,7 @@ then :
 
 fi
 
-# Other headers that autoscan complains about:
+# Other headers that autoscan complains about, or that might just be nice to check:
 ac_fn_c_check_type "$LINENO" "_Bool" "ac_cv_type__Bool" "$ac_includes_default"
 if test "x$ac_cv_type__Bool" = xyes
 then :
@@ -42315,6 +42503,12 @@ ac_fn_c_check_header_compile "$LINENO" "arpa/inet.h" "ac_cv_header_arpa_inet_h" 
 if test "x$ac_cv_header_arpa_inet_h" = xyes
 then :
   printf "%s\n" "#define HAVE_ARPA_INET_H 1" >>confdefs.h
+
+fi
+ac_fn_c_check_header_compile "$LINENO" "asm/prctl.h" "ac_cv_header_asm_prctl_h" "$ac_includes_default"
+if test "x$ac_cv_header_asm_prctl_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_ASM_PRCTL_H 1" >>confdefs.h
 
 fi
 ac_fn_c_check_header_compile "$LINENO" "langinfo.h" "ac_cv_header_langinfo_h" "$ac_includes_default"
@@ -44115,7 +44309,7 @@ if test "x${NEXT_STRING_H}" = "x"; then
 fi
 if test "x${enable_gdbtk}" = "xyes"; then
   if test "x${ac_cv_header_X11_Xlib_h}" = "x"; then
-    test -z "${ac_cv_header_X11_Xlib_h}"
+    test -z "${ac_cv_header_X11_Xlib_h}" || unset ac_cv_header_X11_Xlib_h
     ac_fn_c_check_header_compile "$LINENO" "X11/Xlib.h" "ac_cv_header_X11_Xlib_h" "$ac_includes_default"
 if test "x$ac_cv_header_X11_Xlib_h" = xyes
 then :
@@ -44131,7 +44325,7 @@ else
 printf "%s\n" "$as_me: skipping header check only relevant for gdbtk" >&6;}
 fi
 if test "x${ac_cv_header_inttypes_h}" = "x"; then
-  test -z "${ac_cv_header_inttypes_h}"
+  test -z "${ac_cv_header_inttypes_h}" || unset ac_cv_header_inttypes_h
   ac_fn_c_check_header_compile "$LINENO" "inttypes.h" "ac_cv_header_inttypes_h" "$ac_includes_default"
 if test "x$ac_cv_header_inttypes_h" = xyes
 then :
@@ -44141,7 +44335,7 @@ fi
 
 fi
 if test "x${ac_cv_header_stdint_h}" = "x"; then
-  test -z "${ac_cv_header_stdint_h}"
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
   ac_fn_c_check_header_compile "$LINENO" "stdint.h" "ac_cv_header_stdint_h" "$ac_includes_default"
 if test "x$ac_cv_header_stdint_h" = xyes
 then :
@@ -44151,7 +44345,7 @@ fi
 
 fi
 if test "x${ac_cv_header_strings_h}" = "x"; then
-  test -z "${ac_cv_header_strings_h}"
+  test -z "${ac_cv_header_strings_h}" || unset ac_cv_header_strings_h
   ac_fn_c_check_header_compile "$LINENO" "strings.h" "ac_cv_header_strings_h" "$ac_includes_default"
 if test "x$ac_cv_header_strings_h" = xyes
 then :
@@ -44161,7 +44355,7 @@ fi
 
 fi
 if test "x${ac_cv_header_unistd_h}" = "x"; then
-  test -z "${ac_cv_header_unistd_h}"
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
   ac_fn_c_check_header_compile "$LINENO" "unistd.h" "ac_cv_header_unistd_h" "$ac_includes_default"
 if test "x$ac_cv_header_unistd_h" = xyes
 then :
@@ -44701,7 +44895,7 @@ printf "%s\n" "#define HAVE_DECL_BASENAME $ac_have_decl" >>confdefs.h
   fi
 
 if test "x${ac_cv_have_decl_close}" = "x"; then
-  test -z "${ac_cv_have_decl_close}"
+  test -z "${ac_cv_have_decl_close}" || unset ac_cv_have_decl_close
   ac_fn_check_decl "$LINENO" "close" "ac_cv_have_decl_close" "
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
@@ -44719,8 +44913,46 @@ printf "%s\n" "#define HAVE_DECL_CLOSE $ac_have_decl" >>confdefs.h
   ## OK
 fi
 
+if test "x${ac_cv_have_decl_getcwd}" = "x"; then
+  test -z "${ac_cv_have_decl_getcwd}" || unset ac_cv_have_decl_getcwd
+  ac_fn_check_decl "$LINENO" "getcwd" "ac_cv_have_decl_getcwd" "
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+
+" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_getcwd" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_GETCWD $ac_have_decl" >>confdefs.h
+  ## OK
+fi
+
+if test "x${ac_cv_have_decl_setgid}" = "x"; then
+  test -z "${ac_cv_have_decl_setgid}" || unset ac_cv_have_decl_setgid
+  ac_fn_check_decl "$LINENO" "setgid" "ac_cv_have_decl_setgid" "
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+
+" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_setgid" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_SETGID $ac_have_decl" >>confdefs.h
+  ## OK
+fi
+
 if test "x${ac_cv_have_decl_sys_siglist}" = "x" && test "x" = "Y0"; then
-  test -z "${ac_cv_have_decl_sys_siglist}"
+  test -z "${ac_cv_have_decl_sys_siglist}" || unset ac_cv_have_decl_sys_siglist
   ac_fn_check_decl "$LINENO" "sys_siglist" "ac_cv_have_decl_sys_siglist" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
 if test "x$ac_cv_have_decl_sys_siglist" = xyes
 then :
@@ -45557,7 +45789,7 @@ fi
 
 
 if test "x${ac_cv_type_mbstate_t}" = "x"; then
-  test -z "${ac_cv_type_mbstate_t}"
+  test -z "${ac_cv_type_mbstate_t}" || unset ac_cv_type_mbstate_t
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for mbstate_t" >&5
 printf %s "checking for mbstate_t... " >&6; }
 if test ${ac_cv_type_mbstate_t+y}
@@ -46480,7 +46712,7 @@ printf "%s\n" "#define HAVE_MACH_PORT_T 1" >>confdefs.h
 fi
   ## if we have that type, then check for this function, as well:
 if test "x${ac_cv_type_mach_port_t}" = "xyes"; then
-  test -n "${ac_cv_type_mach_port_t}"
+  test -n "${ac_cv_type_mach_port_t}" && sync
   ac_fn_c_check_func "$LINENO" "mach_port_get_receive_status" "ac_cv_func_mach_port_get_receive_status"
 if test "x$ac_cv_func_mach_port_get_receive_status" = xyes
 then :
@@ -47223,10 +47455,10 @@ printf %s "checking functions... " >&6; }
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result:  " >&5
 printf "%s\n" " " >&6; }
 if test -f Makefile.in; then
-  if test ! -z "`grep -i alloca Makefile.in`"; then
+  if test -n "`grep -i alloca Makefile.in`"; then
     if test "x${ac_cv_working_alloca_h}" = "x"; then
       stat Makefile.in >/dev/null
-      test -z "${ac_cv_working_alloca_h}"
+      test -z "${ac_cv_working_alloca_h}" || unset ac_cv_working_alloca_h
       test -n "${ac_cv_func_alloca_works}" && unset ac_cv_func_alloca_works
       # The Ultrix 4.2 mips builtin alloca declared by alloca.h only works
 # for constant arguments.  Useless!
@@ -47991,7 +48223,7 @@ fi
 
 
 if test "x${ac_cv_func_mbrtowc}" = "x"; then
-  test -z "${ac_cv_func_mbrtowc}"
+  test -z "${ac_cv_func_mbrtowc}" || unset ac_cv_func_mbrtowc
 
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether mbrtowc and mbstate_t are properly declared" >&5
 printf %s "checking whether mbrtowc and mbstate_t are properly declared... " >&6; }
@@ -48759,7 +48991,7 @@ fi
 
   else
     if test "x${ac_cv_func_wait3}" = "x"; then
-      test -z "${ac_cv_func_wait3}"
+      test -z "${ac_cv_func_wait3}" || unset ac_cv_func_wait3
       ac_fn_c_check_func "$LINENO" "wait3" "ac_cv_func_wait3"
 if test "x$ac_cv_func_wait3" = xyes
 then :
@@ -48797,6 +49029,12 @@ ac_fn_c_check_func "$LINENO" "getgid" "ac_cv_func_getgid"
 if test "x$ac_cv_func_getgid" = xyes
 then :
   printf "%s\n" "#define HAVE_GETGID 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "setgid" "ac_cv_func_setgid"
+if test "x$ac_cv_func_setgid" = xyes
+then :
+  printf "%s\n" "#define HAVE_SETGID 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "pipe" "ac_cv_func_pipe"
@@ -48909,7 +49147,7 @@ then :
 fi
   ## might have already been checked:
 if test "x${ac_cv_func_setlocale}" = "x"; then
-  test -z "${ac_cv_func_setlocale}"
+  test -z "${ac_cv_func_setlocale}" || unset ac_cv_func_setlocale
   ac_fn_c_check_func "$LINENO" "setlocale" "ac_cv_func_setlocale"
 if test "x$ac_cv_func_setlocale" = xyes
 then :
@@ -49014,7 +49252,7 @@ printf "%s\n" "#define HAVE_LANGINFO_CODESET 1" >>confdefs.h
   fi
 
 
-# Other functions (that autoscan might complain about missing):
+# Other functions (that autoscan might complain about missing, or otherwise):
 unset ac_cv_func_getcwd
 unset ac_cv_func_gethostbyname
 unset ac_cv_func_strcasecmp
@@ -49101,6 +49339,18 @@ ac_fn_c_check_func "$LINENO" "fwrite" "ac_cv_func_fwrite"
 if test "x$ac_cv_func_fwrite" = xyes
 then :
   printf "%s\n" "#define HAVE_FWRITE 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "gdbarch_obstack_strdup" "ac_cv_func_gdbarch_obstack_strdup"
+if test "x$ac_cv_func_gdbarch_obstack_strdup" = xyes
+then :
+  printf "%s\n" "#define HAVE_GDBARCH_OBSTACK_STRDUP 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "get_type_arch" "ac_cv_func_get_type_arch"
+if test "x$ac_cv_func_get_type_arch" = xyes
+then :
+  printf "%s\n" "#define HAVE_GET_TYPE_ARCH 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "getcwd" "ac_cv_func_getcwd"
@@ -49343,6 +49593,12 @@ then :
   printf "%s\n" "#define HAVE_SEND 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "set_type_code" "ac_cv_func_set_type_code"
+if test "x$ac_cv_func_set_type_code" = xyes
+then :
+  printf "%s\n" "#define HAVE_SET_TYPE_CODE 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "setitimer" "ac_cv_func_setitimer"
 if test "x$ac_cv_func_setitimer" = xyes
 then :
@@ -49523,6 +49779,12 @@ then :
   printf "%s\n" "#define HAVE_VASPRINTF 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "verify_floatformat" "ac_cv_func_verify_floatformat"
+if test "x$ac_cv_func_verify_floatformat" = xyes
+then :
+  printf "%s\n" "#define HAVE_VERIFY_FLOATFORMAT 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "wcwidth" "ac_cv_func_wcwidth"
 if test "x$ac_cv_func_wcwidth" = xyes
 then :
@@ -49531,7 +49793,7 @@ then :
 fi
 
 if test "x${ac_cv_func_snprintf}" = "x"; then
-  test -z "${ac_cv_func_snprintf}"
+  test -z "${ac_cv_func_snprintf}" || unset ac_cv_func_snprintf
   ac_fn_c_check_func "$LINENO" "snprintf" "ac_cv_func_snprintf"
 if test "x$ac_cv_func_snprintf" = xyes
 then :
@@ -49541,7 +49803,7 @@ fi
 
 fi
 if test "x${ac_cv_func_connect}" = "x"; then
-  test -z "${ac_cv_func_connect}"
+  test -z "${ac_cv_func_connect}" || unset ac_cv_func_connect
   ac_fn_c_check_func "$LINENO" "connect" "ac_cv_func_connect"
 if test "x$ac_cv_func_connect" = xyes
 then :
@@ -49551,7 +49813,7 @@ fi
 
 fi
 if test "x${ac_cv_func_getpagesize}" = "x"; then
-  test -z "${ac_cv_func_getpagesize}"
+  test -z "${ac_cv_func_getpagesize}" || unset ac_cv_func_getpagesize
   ac_fn_c_check_func "$LINENO" "getpagesize" "ac_cv_func_getpagesize"
 if test "x$ac_cv_func_getpagesize" = xyes
 then :
@@ -50746,6 +51008,38 @@ printf "%s\n" "#define HAVE_LWPID_T 1" >>confdefs.h
  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_have_sys_procfs_type_lwpid_t" >&5
 printf "%s\n" "$bfd_cv_have_sys_procfs_type_lwpid_t" >&6; }
 
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for paddr_t in sys/procfs.h" >&5
+printf %s "checking for paddr_t in sys/procfs.h... " >&6; }
+ if test ${bfd_cv_have_sys_procfs_type_paddr_t+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#define _SYSCALL32
+#include <sys/procfs.h>
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  bfd_cv_have_sys_procfs_type_paddr_t=yes
+else case e in #(
+  e) bfd_cv_have_sys_procfs_type_paddr_t=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+    ;;
+esac
+fi
+
+ if test $bfd_cv_have_sys_procfs_type_paddr_t = yes; then
+
+printf "%s\n" "#define HAVE_PADDR_T 1" >>confdefs.h
+
+ fi
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_have_sys_procfs_type_paddr_t" >&5
+printf "%s\n" "$bfd_cv_have_sys_procfs_type_paddr_t" >&6; }
+
  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for psaddr_t in sys/procfs.h" >&5
 printf %s "checking for psaddr_t in sys/procfs.h... " >&6; }
  if test ${bfd_cv_have_sys_procfs_type_psaddr_t+y}
@@ -51069,6 +51363,28 @@ printf "%s\n" "${gdb_cv_have_procfs_piocset}" >&6; }
   if test "x${gdb_cv_have_procfs_piocset}" = "xyes"; then
 
 printf "%s\n" "#define HAVE_PROCFS_PIOCSET 1" >>confdefs.h
+
+  fi
+
+  ## Something that might already exist:
+  if test "x${ac_cv_header_proc_service_h}" = "xyes"; then
+    ac_fn_c_check_func "$LINENO" "ps_get_thread_area" "ac_cv_func_ps_get_thread_area"
+if test "x$ac_cv_func_ps_get_thread_area" = xyes
+then :
+  printf "%s\n" "#define HAVE_PS_GET_THREAD_AREA 1" >>confdefs.h
+
+fi
+
+    ac_fn_check_decl "$LINENO" "ps_get_thread_area" "ac_cv_have_decl_ps_get_thread_area" "#include <proc_service.h>
+" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_ps_get_thread_area" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_PS_GET_THREAD_AREA $ac_have_decl" >>confdefs.h
 
   fi
 else
@@ -52323,8 +52639,8 @@ fi
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
 diag_formatting_opts="-fdiagnostics-show-option -fdiagnostics-color=auto \
--fdiagnostics-show-caret -fdiagnostics-show-labels -fshow-column -ferror-limit=1 \
--fdiagnostics-show-line-numbers -fcolor-diagnostics -Wfatal-errors"
+-fdiagnostics-show-caret -fdiagnostics-show-labels -fshow-column -ferror-limit=9 \
+-fdiagnostics-show-line-numbers -fcolor-diagnostics"
 build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wpointer-arith -Wchar-subscripts \
 -Wunused-value -Wunused-label -Wunused-result \
@@ -52347,7 +52663,7 @@ build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wscalar-storage-order -Wimplicit-fallthrough=3 \
 -Wformat-overflow=2 -Wformat-truncation=2 \
 -Wint-in-bool-context -Wbool-operation -Wduplicated-branches \
--Wstringop-overflow=2 -Wstringop-truncation=2 -Wstringop-overread \
+-Wstringop-overflow=2 -Wstringop-truncation -Wstringop-overread \
 -Wenum-conversion -Wbuiltin-declaration-mismatch \
 -Walloc-zero -Walloc-size-larger-than=2147483647 \
 -Wmultistatement-macros -Wif-not-aligned -Wattribute-alias \
@@ -52522,7 +52838,7 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
   ## mig typechecks cause parameters that would otherwise be unused to be
   ## used, triggering this:
   if test "x${MIG_CHECKING}" = "x"; then
-    test -z "${MIG_CHECKING}"
+    test -z "${MIG_CHECKING}" && sync
     build_warnings="${build_warnings} -Wused-but-marked-unused"
   fi
   ## the clang version of this warning is un-pluralized, unlike in GCC:
@@ -52552,8 +52868,7 @@ opt_warnings="-Wuninitialized -Winit-self -Wmissing-noreturn \
 -Wmaybe-uninitialized -Wstrict-overflow=1 -fno-strict-aliasing \
 -Wnull-dereference -Wframe-address -Wframe-larger-than=262144"
 if test "x${ax_cv_c_compiler_vendor}" != "xclang"; then
-  opt_warnings="${opt_warnings} -Wsuggest-attribute=const \
--Wsuggest-attribute=cold -Wsuggest-attribute=hot"
+  opt_warnings="${opt_warnings} -Wsuggest-attribute=const -Wsuggest-attribute=cold"
 fi
 # -Warray-bounds is only for -O2 and up, or when -ftree-vrp is active, so
 # use a separate variable for it:
@@ -52840,7 +53155,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: using: ${WARN_CFLAGS}${WERROR_CFLAGS}" >&5
 printf "%s\n" "using: ${WARN_CFLAGS}${WERROR_CFLAGS}" >&6; }
     if test "x${BAD_WARN_CFLAGS}" != "x"; then
-      test -n "${BAD_WARN_CFLAGS}"
+      test -n "${BAD_WARN_CFLAGS}" && sync
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: compiler failed to accept: ${BAD_WARN_CFLAGS}" >&5
 printf "%s\n" "$as_me: WARNING: compiler failed to accept: ${BAD_WARN_CFLAGS}" >&2;}
     fi
@@ -52887,9 +53202,9 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 	esac
     done
     if test "x${WERROR_CFLAGS}" != "x"; then
-      test -n "${WERROR_CFLAGS}"
+      test -n "${WERROR_CFLAGS}" && sync
       if test "x${LD_ARCHFLAGS}" != "x"; then
-        test -n "${LD_ARCHFLAGS}"
+        test -n "${LD_ARCHFLAGS}" && sync
         if test "x${WARN_LDFLAGS}" != "x"; then
           test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_ARCHFLAGS}"
         else
@@ -53056,13 +53371,44 @@ printf "%s\n" "$gdb_cv_var_elf" >&6; }
   LIBS="${OLD_LIBS}"
 
   if test "x${gdb_cv_var_elf}" = "xyes"; then
-    CONFIG_OBS="${CONFIG_OBS} elfread.o stap-probe.o"
+    CONFIG_OBS="${CONFIG_OBS} elfread.o"
 
 printf "%s\n" "#define HAVE_ELF 1" >>confdefs.h
 
+    OLD_CFLAGS="${CFLAGS}"
+    OLD_LDFLAGS="${LDFLAGS}"
+    OLD_LIBS="${LIBS}"
+    # Put the old CFLAGS/LDFLAGS last, in case the user's (C|LD)FLAGS
+    # points somewhere with bfd, with -I/foo/lib and -L/foo/lib.  We
+    # always want our bfd.
+    CFLAGS="-I${srcdir}/../include -I../bfd -I${srcdir}/../bfd ${CFLAGS}"
+    LDFLAGS="-L../bfd -L../libiberty ${zlibdir} ${LDFLAGS}"
+    intl=`echo ${LIBINTL} | sed 's,${top_builddir}/,,g'`
+    if test -f ../zlib/Makefile; then
+      LIBS="-lbfd -L../zlib -lz -liberty ${intl} ${LIBS}"
+    else
+      LIBS="-lbfd -lz -liberty ${intl} ${LIBS}"
+    fi
+    ac_fn_c_check_member "$LINENO" "struct elf_obj_tdata" "sdt_note_head" "ac_cv_member_struct_elf_obj_tdata_sdt_note_head" "
+#include <stdlib.h>
+#include \"bfd.h\"
+#include \"elf-bfd.h\"
+
+"
+if test "x$ac_cv_member_struct_elf_obj_tdata_sdt_note_head" = xyes
+then :
+
+printf "%s\n" "#define HAVE_STRUCT_ELF_OBJ_TDATA_SDT_NOTE_HEAD 1" >>confdefs.h
+
+CONFIG_OBS="${CONFIG_OBS} stap-probe.o"
+fi
+    ## reset:
+    CFLAGS="${OLD_CFLAGS}"
+    LDFLAGS="${OLD_LDFLAGS}"
+    LIBS="${OLD_LIBS}"
     # -ldl is provided by bfd/Makfile.am (LIBDL) <PLUGINS>.
     if test "x${plugins}" = "xyes" && test "x${ac_cv_search_dlopen}" = "x"; then
-      test -z "${ac_cv_search_dlopen}"
+      test -z "${ac_cv_search_dlopen}" || unset ac_cv_search_dlopen
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing dlopen" >&5
 printf %s "checking for library containing dlopen... " >&6; }
 if test ${ac_cv_search_dlopen+y}
@@ -53091,7 +53437,7 @@ return dlopen ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' dl zrldsrl
+for ac_lib in '' dl zrldsrl dlcompat ltdl
 do
   if test -z "$ac_lib"; then
     ac_res="none required"
@@ -56947,7 +57293,7 @@ links=""
 rm -f xm.h
 xm_h=""
 if test "x${hostfile}" != "x"; then
-    test -n "${hostfile}"
+    test -n "${hostfile}" && echo "hostfile is: '${hostfile}'"
     xm_h=xm.h
     case "${hostfile}" in
       xm-*.h ) GDB_XM_FILE="config/${gdb_host_cpu}/${hostfile}" ;;
@@ -56959,7 +57305,7 @@ if test "x${hostfile}" != "x"; then
 printf "%s\n" "#define GDB_XM_FILE \"${GDB_XM_FILE}\"" >>confdefs.h
 
 else
-    test -z "${hostfile}"
+    test -z "${hostfile}" && sync
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: unsure what to use for hostfile" >&5
 printf "%s\n" "$as_me: WARNING: unsure what to use for hostfile" >&2;}
 fi
@@ -56967,7 +57313,7 @@ fi
 rm -f tm.h
 tm_h=""
 if test "x${targetfile}" != "x"; then
-    test -n "${targetfile}"
+    test -n "${targetfile}" && echo "targetfile is: '${targetfile}'"
     tm_h=tm.h
     case "${targetfile}" in
       tm-*.h ) GDB_TM_FILE="config/${gdb_target_cpu}/${targetfile}" ;;
@@ -56979,7 +57325,7 @@ if test "x${targetfile}" != "x"; then
 printf "%s\n" "#define GDB_TM_FILE \"${GDB_TM_FILE}\"" >>confdefs.h
 
 else
-    test -z "${targetfile}"
+    test -z "${targetfile}" && sync
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: unsure what to use for targetfile" >&5
 printf "%s\n" "$as_me: WARNING: unsure what to use for targetfile" >&2;}
 fi
@@ -56987,7 +57333,7 @@ fi
 rm -f nm.h
 nm_h=""
 if test "x${nativefile}" != "x"; then
-    test -n "${nativefile}"
+    test -n "${nativefile}" && echo "nativefile is: '${nativefile}'"
     nm_h=nm.h
     case "${nativefile}" in
       nm-*.h ) GDB_NM_FILE="config/${gdb_host_cpu}/${nativefile}" ;;
@@ -56999,27 +57345,27 @@ if test "x${nativefile}" != "x"; then
 printf "%s\n" "#define GDB_NM_FILE \"${GDB_NM_FILE}\"" >>confdefs.h
 
 else
-    test -z "${nativefile}"
+    test -z "${nativefile}" && sync
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: unsure what to use for nativefile" >&5
 printf "%s\n" "$as_me: WARNING: unsure what to use for nativefile" >&2;}
 fi
 
 if test "x${files}" = "x"; then
-  test -z "${files}"
+  test -z "${files}" && sync
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: the files variable is empty; not making symlinks." >&5
 printf "%s\n" "$as_me: WARNING: the files variable is empty; not making symlinks." >&2;}
 else
-  test ! -z "${files}"
+  test -n "${files}" && sync
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: files should be \"${files}\"" >&5
 printf "%s\n" "$as_me: files should be \"${files}\"" >&6;}
 fi
 
 if test "x${links}" = "x"; then
-  test -z "${links}"
+  test -z "${links}" && sync
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: the links variable is empty; not making symlinks." >&5
 printf "%s\n" "$as_me: WARNING: the links variable is empty; not making symlinks." >&2;}
 else
-  test ! -z "${links}"
+  test -n "${links}" && sync
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: links should be \"${links}\"" >&5
 printf "%s\n" "$as_me: links should be \"${links}\"" >&6;}
 fi
@@ -57330,6 +57676,18 @@ if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCXX\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
+case $enable_silent_rules in # (((
+  yes) AM_DEFAULT_VERBOSITY=0;;
+   no) AM_DEFAULT_VERBOSITY=1;;
+esac
+if test $am_cv_make_support_nested_variables = yes; then
+    AM_V='$(V)'
+  AM_DEFAULT_V='$(AM_DEFAULT_VERBOSITY)'
+else
+  AM_V=$AM_DEFAULT_VERBOSITY
+  AM_DEFAULT_V=$AM_DEFAULT_VERBOSITY
+fi
+
  if test -n "$EXEEXT"; then
   am__EXEEXT_TRUE=
   am__EXEEXT_FALSE='#'

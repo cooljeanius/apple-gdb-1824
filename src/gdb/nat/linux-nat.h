@@ -25,4 +25,10 @@
    instead SIGTRAP with bit 7 set.  */
 #define SYSCALL_SIGTRAP (SIGTRAP | 0x80)
 
+#include_next "linux-nat.h"
+
+#ifndef _NM_LINUX_H_
+#include "nm-linux.h"
+#endif /* !_NM_LINUX_H_ */
+
 #endif /* LINUX_NAT_H */

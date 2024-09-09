@@ -276,8 +276,8 @@ disassemble (bfd_vma memaddr,
 				  else
 				    shown_one = 1;
 
-				  info->fprintf_func (info->stream,
-						      v850_reg_names[first]);
+				  info->fprintf_func(info->stream, "%s",
+						     v850_reg_names[first]);
 
 				  for (bit++; bit < 32; bit++)
 				    if ((mask & (1 << bit)) == 0)

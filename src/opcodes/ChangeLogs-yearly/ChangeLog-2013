@@ -937,7 +937,7 @@
 	* micromips-opc.c (IVIRT): New define.
 	(IVIRT64): New define.
 	(micromips_opcodes): Add dmfgc0, dmtgc0, hypcall, mfgc0, mtgc0,
-	tlbginv, tlbginvf, tlbgp, tlbgr, tlbgwi, tlbgwr VIRT instructions.
+ 	tlbginv, tlbginvf, tlbgp, tlbgr, tlbgwi, tlbgwr VIRT instructions.
 
 	* mips-dis.c (print_insn_micromips): Handle mfgc0, mtgc0, dmfgc0,
 	dmtgc0 to print cp0 names.
@@ -951,7 +951,7 @@
 	    Richard Sandiford  <rdsandiford@googlemail.com>
 
 	* micromips-opc.c (D32, D33, MC): Update definitions.
-	(micromips_opcodes):  Initialize ase field.
+ 	(micromips_opcodes):  Initialize ase field.
 	* mips-dis.c (mips_arch_choice): Add ase field.
 	(mips_arch_choices): Initialize ase field.
 	(set_default_mips_dis_options): Declare and setup mips_ase.

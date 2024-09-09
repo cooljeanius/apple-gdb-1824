@@ -32,13 +32,18 @@ jobs:
         else \
           COMPILER_FORMULA=""; \
         fi
-        brew install python@3.12 || brew link --overwrite python@3.12 || (if test -L /usr/local/bin/2to3; then (readlink /usr/local/bin/2to3 && unlink /usr/local/bin/2to3); else rm '/usr/local/bin/2to3'; fi) || which -a 2to3
+        brew install python@3.12 2>/dev/null || brew link --overwrite python@3.12 || (if test -L /usr/local/bin/2to3; then (readlink /usr/local/bin/2to3 && unlink /usr/local/bin/2to3); else rm '/usr/local/bin/2to3'; fi) || which -a 2to3
         sync && date && sync
         brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar \
           osslsigncode gperf help2man findutils grep coreutils remake byacc \
           texlive gawk util-macros autoconf-archive automake scons smake \
-          term termbox termcolor cdk cgdb ncurses groff splint makedepend \
+          termbox termcolor cdk cgdb ncurses groff splint makedepend \
           "${COMPILER_FORMULA}"
+        if test -z "$(which term)" || test ! -x "$(which term)"; then \
+          brew install term 2>/dev/null || brew install termrec || sync; \
+        else \
+          sync && which -a term && stat "$(which term)"; \
+        fi
         if test -z "$(which ant)" || test ! -x "$(which ant)"; then \
           brew install ant || brew install ant@1.9; \
         else \
@@ -90,9 +95,9 @@ jobs:
           fi; \
         fi
         if test -d /opt/sw/etc/ && test -z "${PPC_CONFIG_PATH}"; then \
-          export PPC_CONFIG_PATH=/opt/sw/etc/;
+          export PPC_CONFIG_PATH=/opt/sw/etc/; \
         fi
-        sync && date && sync
+        sync && printf '\n' && sync && date && sync
     - run: cd .profile.d && test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq | grep -v "\*\*\*" | grep -v "PWD\=") && sync && sleep 1
     - run: ./configure --enable-silent-rules --disable-dependency-tracking CC="sccache ${{ matrix.compiler }}" OBJC="sccache ${{ matrix.compiler }}"
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
@@ -199,7 +204,7 @@ jobs:
         else \
           sync && echo "the following gm4 binaries are available"; \
           which -a gm4 || gwhich -a gm4 || type gm4; \
-          sync && echo "...and the first of them has the following information"; \
+          sync && echo "…and the first of them has the following information"; \
           sync && gm4 --version; \
           sync && gm4 --help; \
         fi
@@ -250,7 +255,7 @@ jobs:
           fi; \
           if test -r "${subdir}"/Makefile && test -s "${subdir}"/Makefile && test -w "${subdir}"; then \
             pushd "${subdir}"; \
-            sync && echo "attempting to ensure depfiles are fine in ${subdir}..."; \
+            sync && echo "attempting to ensure depfiles are fine in ${subdir}…"; \
             make am--depfiles || make am--refresh || make distdir-am || stat Makefile; \
             popd; \
           else \
@@ -274,7 +279,7 @@ jobs:
         if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
           sync && echo "nproc says we can use $(nproc) build jobs"; \
           if test "$(nproc)" -eq 4; then \
-            sync && echo "special-casing the 4-job build case..."; \
+            sync && echo "Full build step: special-casing the 4-job build case…"; \
             (make -j"$(nproc)" || make -j2 || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
           else
             (make -j"$(nproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
@@ -283,7 +288,7 @@ jobs:
           sync && echo "gnproc says we can use $(gnproc) build jobs"; \
           (make -j"$(gnproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
         else \
-          sync && echo "on the slow path..."; \
+          sync && echo "Full build step: on the slow path..."; \
           (make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
         fi
         sync && echo "Reached end of full build phase..."
@@ -294,25 +299,45 @@ jobs:
       run: |
         cd src
         if test ${{ matrix.compiler }} == clang; then \
-          time make check-bfd; \
-          sync && echo "done with bfd; moving onto binutils next..."; \
-          time make check-binutils-local; \
+          if test -x "$(which nproc)" && test "$(nproc)" -ge 2; then \
+            sync && echo "check: nproc says we can use $(nproc) build jobs"; \
+            if test "$(nproc)" -eq 4; then \
+              sync && echo "bfd/binutils: special-casing the -j4 build case…"; \
+              time (make -j"$(nproc)" check-bfd || make -j2 check-bfd || make check-bfd)
+              sync && echo "done w/bfd (at -j4); moving onto binutils next…"; \
+              time (make -j"$(nproc)" check-binutils-local || make -j2 check-binutils-local || make check-binutils-local); \
+            else \
+              time (make -j"$(nproc)" check-bfd || make check-bfd); \
+              sync && echo "done w/bfd (at -j$(nproc)); moving onto binutils next…"; \
+              time (make -j"$(nproc)" check-binutils-local || make check-binutils-local); \
+            fi; \
+          elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
+            sync && echo "check: gnproc says we can use $(gnproc) build jobs"; \
+            time (make -j"$(gnproc)" check-bfd || make check-bfd); \
+            sync && echo "done w/bfd (at -j$(gnproc)); moving onto binutils next…"; \
+            time (make -j"$(gnproc)" check-binutils-local || make check-binutils-local); \
+          else \
+            sync && echo "bfd & binutils static analysis: on the slow path…"; \
+            time make check-bfd; \
+            sync && echo "done with bfd; moving onto binutils next..."; \
+            time make check-binutils-local; \
+          fi; \
           sync && echo "done with binutils; moving onto mmalloc next..."; \
           time make check-mmalloc; \
-          sync && echo "done with mmalloc; moving onto electrict-fence next..."; \
+          sync && echo "done with mmalloc; moving onto electrict-fence next…"; \
           cd electric-fence; \
-          make check-local || make check stamp-framework ls; \
+          make check stamp-framework ls; \
           sync && echo "done with electric-fence..." && sync; \
         elif test ${{ matrix.compiler }} == gcc; then \
           sync && echo "getting some additional dependencies..."; \
-          brew install idutils || brew install ctags || brew install universal-ctags || brew install emacs || brew install global || brew install cscope; \
+          brew install idutils 2>/dev/null || brew install ctags || brew install universal-ctags || brew install emacs || brew install global || brew install cscope; \
           if test -z "$(which etags)" || test ! -x "$(which etags)"; then \
-            brew install emacs || brew install --cask emacs || stat "$(which emacs)" || echo "etags missing"; \
+            brew install emacs 2>/dev/null || brew install --cask emacs || stat "$(which emacs)" || echo "etags missing"; \
           else \
             sync && echo "etags available as $(which etags)"; \
           fi; \
           if test -z "$(which gtags)" || test ! -x "$(which gtags)"; then \
-            brew install global || which global || echo "gtags missing"; \
+            brew install global 2>/dev/null || which global || echo "gtags missing"; \
           else \
             sync && echo "gtags available as $(which gtags)"; \
           fi; \
@@ -339,7 +364,7 @@ jobs:
           make am_check-DEJAGNU || make check-DEJAGNU || make check-TESTS; \
           make check-recursive || make cscope || make ID || make TAGS || make CTAGS || make GTAGS || make recheck || stat Makefile; \
           make info || make dvi || make embedspu || make stamp-framework-binutils; \
-          sync && echo "done with make targets for binutils; using script manually next..."; \
+          sync && echo "done with make targets for binutils; using script manually next…"; \
           sh ./sanity.sh || shellcheck ./sanity.sh || stat ./sanity.sh; \
           shellcheck ./embedspu.sh || shellcheck ./ranlib.sh || ls ./*.sh; \
           popd; \
@@ -347,11 +372,11 @@ jobs:
           pushd mmalloc; \
           sync && make info dvi stamp-framework-headers ls; \
           popd; \
-          sync && echo "done with mmalloc; moving on to electric-fence next..."; \
+          sync && echo "done with mmalloc; moving on to electric-fence next…"; \
           pushd electric-fence; \
           sync && make check info stamp-framework ls; \
           popd; \
-          sync && echo "done with electric-fence; moving on to readline next..."; \
+          sync && echo "done with electric-fence; moving on to readline next…"; \
           pushd readline; \
           if test -e static; then mv -v static static.orig; fi; \
           make clean || make clean-local || make mostlyclean || make mostlyclean-local; \
@@ -377,13 +402,13 @@ jobs:
       run: |
         sync && echo "Cleaning up..."
         find . -name '*.dSYM' -delete || echo "dSYM-cleaning step ineffective"
-        find . -name 'autom4te.cache' -delete || echo "am4c-cleaning step ineffective"
+        find . -name 'autom4te.cache' -delete || echo "acclean step ineffective"
         find . -name '.deps' -delete || echo "deps-cleaning step ineffective"
         find . -name '.libs' -delete || echo "libs-cleaning step ineffective"
         sync && echo "...done cleaning up."
         time (sync && pwd && sync && ls && sync && du && sync && df && sync)
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.3.5
+      uses: actions/upload-artifact@v4.4.0
       if: "${{ always() }}"
       with:
         # Artifact name

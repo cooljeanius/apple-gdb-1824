@@ -5960,6 +5960,16 @@ then :
 
 fi
 
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z "${ac_cv_header_inttypes_h}" || unset ac_cv_header_inttypes_h
+  ac_fn_c_check_header_compile "$LINENO" "inttypes.h" "ac_cv_header_inttypes_h" "$ac_includes_default"
+if test "x$ac_cv_header_inttypes_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_INTTYPES_H 1" >>confdefs.h
+
+fi
+
+fi
 if test "x${ac_cv_header_stdint_h}" = "x"; then
   test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
   ac_fn_c_check_header_compile "$LINENO" "stdint.h" "ac_cv_header_stdint_h" "$ac_includes_default"
@@ -6275,6 +6285,28 @@ then :
 else case e in #(
   e)
 printf "%s\n" "#define ssize_t int" >>confdefs.h
+ ;;
+esac
+fi
+
+ac_fn_c_check_type "$LINENO" "uid_t" "ac_cv_type_uid_t" "$ac_includes_default"
+if test "x$ac_cv_type_uid_t" = xyes
+then :
+
+else case e in #(
+  e)
+printf "%s\n" "#define uid_t int" >>confdefs.h
+ ;;
+esac
+fi
+
+ac_fn_c_check_type "$LINENO" "gid_t" "ac_cv_type_gid_t" "$ac_includes_default"
+if test "x$ac_cv_type_gid_t" = xyes
+then :
+
+else case e in #(
+  e)
+printf "%s\n" "#define gid_t int" >>confdefs.h
  ;;
 esac
 fi

@@ -149,7 +149,7 @@ AM_PROG_INSTALL_STRIP
 AM_PROG_INSTALL_SH
 AC_PROG_LN_S
 AC_PROG_YACC
-AC_PATH_PROG([GDB_BIN],[gdb])dnl
+AC_PATH_PROGS([GDB_BIN],[gdb ggdb],[gdb],[${PATH}:../../gdb])dnl
 AC_PATH_PROG([DDD_BIN],[ddd])dnl
 
 #------------------------------------------------------------------------
@@ -650,7 +650,7 @@ if test "`uname -s`" = "Darwin" ; then
 	AC_CHECK_FUNCS([OSSpinLockLock])
 	AC_CHECK_FUNCS([pthread_atfork])
     else
-        test -z "${tcl_corefoundation}"
+        test -z "${tcl_corefoundation}" || echo "tcl_cf: ${tcl_corefoundation}"
         AC_MSG_NOTICE([CoreFoundation support is disabled])
     fi
     AC_DEFINE([USE_VFORK],[1],[Should we use vfork() instead of fork()?])

@@ -2208,7 +2208,7 @@ _bfd_elf_link_output_relocs (bfd *output_bfd,
 
   /* Bump the counter, so that we know where to add the next set of
      relocations.  */
-  *rel_countp += NUM_SHDR_ENTRIES (input_rel_hdr);
+  *rel_countp += (unsigned int)NUM_SHDR_ENTRIES(input_rel_hdr);
 
   return TRUE;
 }
@@ -3620,8 +3620,9 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 		 default visibility.  */
 	      sec = bfd_und_section_ptr;
 	      isym->st_shndx = SHN_UNDEF;
-	      isym->st_other = STV_DEFAULT
-			       | (isym->st_other & ~ ELF_ST_VISIBILITY(-1));
+	      isym->st_other =
+                (unsigned char)(STV_DEFAULT
+			        | (isym->st_other & ~ELF_ST_VISIBILITY(-1)));
 	    }
 	  else if ((abfd->flags & (EXEC_P | DYNAMIC)) != 0)
 	    value -= sec->vma;
@@ -4013,7 +4014,9 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 	      && (abfd->no_export
 		  || (abfd->my_archive && abfd->my_archive->no_export))
 	      && ELF_ST_VISIBILITY (isym->st_other) != STV_INTERNAL)
-	    isym->st_other = STV_HIDDEN | (isym->st_other & ~ ELF_ST_VISIBILITY (-1));
+	    isym->st_other =
+              (unsigned char)(STV_HIDDEN
+                              | (isym->st_other & ~ELF_ST_VISIBILITY(-1)));
 
 	  if (isym->st_other != 0 && !dynamic)
 	    {
@@ -4021,7 +4024,7 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 
 	      /* Take the balance of OTHER from the definition.  */
 	      other = (definition ? isym->st_other : h->other);
-	      other &= ~ ELF_ST_VISIBILITY(-1);
+	      other &= (unsigned char)~ELF_ST_VISIBILITY(-1);
 
 	      /* Combine visibilities, using the most constraining one: */
 	      hvis = ELF_ST_VISIBILITY(h->other);
@@ -4143,7 +4146,9 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 		  goto error_free_vers;
 		}
 
-	      elf_dyn_lib_class(abfd) &= (unsigned int)~DYN_AS_NEEDED;
+	      elf_dyn_lib_class(abfd) =
+                (enum dynamic_lib_link_class)(elf_dyn_lib_class(abfd)
+                                              & (enum dynamic_lib_link_class)~DYN_AS_NEEDED);
 
 	      add_needed = TRUE;
 	      ret = elf_add_dt_needed_tag(abfd, info, soname, add_needed);
@@ -4773,7 +4778,7 @@ elf_collect_hash_codes(struct elf_link_hash_entry *h, void *data)
   if (p != NULL)
     {
       alc = (char *)bfd_malloc((bfd_size_type)(p - name) + 1UL);
-      memcpy(alc, name, (p - name));
+      memcpy(alc, name, (size_t)(p - name));
       alc[p - name] = '\0';
       name = alc;
     }
@@ -8395,7 +8400,7 @@ bfd_elf_final_link (bfd *abfd, struct bfd_link_info *info)
     return FALSE;
 
   /* Now we know the size of the symtab section.  */
-  off += symtab_hdr->sh_size;
+  off += (file_ptr)symtab_hdr->sh_size;
 
   symtab_shndx_hdr = &elf_tdata (abfd)->symtab_shndx_hdr;
   if (symtab_shndx_hdr->sh_name != 0)

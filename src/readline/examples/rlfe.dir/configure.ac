@@ -35,6 +35,19 @@ define([AC_NOTE],
 [echo "$1" 1>&AS_MESSAGE_FD
 ])dnl#
 
+m4_ifdef([AM_SILENT_RULES],[
+AM_SILENT_RULES
+])dnl
+
+if test -e ../.././config.cache; then
+  echo "hacking ./config.cache"
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ../.././config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ../.././config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ../.././config.cache
+else
+  echo "config.cache is missing, which means we can skip attempts to hack it"
+fi
+
 # Checks for programs.
 old_CFLAGS="${CFLAGS}"
 AC_PROG_CC

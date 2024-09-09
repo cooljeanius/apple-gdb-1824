@@ -5,10 +5,10 @@
 #ifndef __GDB_MACOSX_NAT_SIGTHREAD_H__
 #define __GDB_MACOSX_NAT_SIGTHREAD_H__
 
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 /* included headers can drag in "free": */
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 
 #include "defs.h"
 #include "macosx-nat-mutils.h"

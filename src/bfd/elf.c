@@ -2052,7 +2052,7 @@ bfd_section_from_shdr (bfd *abfd, unsigned int shindex)
         }
 	*hdr2 = *hdr;
 	elf_elfsections(abfd)[shindex] = hdr2;
-	target_sect->reloc_count += NUM_SHDR_ENTRIES(hdr);
+	target_sect->reloc_count += (unsigned int)NUM_SHDR_ENTRIES(hdr);
 	target_sect->flags |= SEC_RELOC;
 	target_sect->relocation = NULL;
 	target_sect->rel_filepos = hdr->sh_offset;
@@ -2454,7 +2454,7 @@ _bfd_elf_new_section_hook(bfd *abfd, asection *sec)
  */
 bfd_boolean
 _bfd_elf_make_section_from_phdr(bfd *abfd, Elf_Internal_Phdr *hdr,
-                                int i_index, const char *typename)
+                                int i_index, const char *thetypename)
 {
   asection *newsect;
   char *name;
@@ -2465,7 +2465,7 @@ _bfd_elf_make_section_from_phdr(bfd *abfd, Elf_Internal_Phdr *hdr,
   split = ((hdr->p_memsz > 0)
 	    && (hdr->p_filesz > 0)
 	    && (hdr->p_memsz > hdr->p_filesz));
-  snprintf(namebuf, sizeof(namebuf), "%s%d%s", typename, i_index,
+  snprintf(namebuf, sizeof(namebuf), "%s%d%s", thetypename, i_index,
   	   (split ? "a" : ""));
   len = (strlen(namebuf) + (size_t)1UL);
   name = (char *)bfd_alloc(abfd, len);
@@ -2499,7 +2499,7 @@ _bfd_elf_make_section_from_phdr(bfd *abfd, Elf_Internal_Phdr *hdr,
 
   if (split)
     {
-      snprintf(namebuf, sizeof(namebuf), "%s%db", typename, i_index);
+      snprintf(namebuf, sizeof(namebuf), "%s%db", thetypename, i_index);
       len = (strlen(namebuf) + 1);
       name = (char *)bfd_alloc(abfd, len);
       if (!name)
@@ -2584,7 +2584,7 @@ _bfd_elf_init_reloc_shdr(bfd *abfd, Elf_Internal_Shdr *rel_hdr,
 {
   char *name;
   const struct elf_backend_data *bed = get_elf_backend_data(abfd);
-  bfd_size_type amt = (sizeof(".rela") + strlen(asect->name));
+  bfd_size_type amt = (sizeof(".rela") + strlen(asect->name) + 1UL);
 
   name = (char *)bfd_alloc(abfd, amt);
   if (name == NULL)
@@ -3442,7 +3442,7 @@ _bfd_elf_assign_file_position_for_section(Elf_Internal_Shdr *i_shdrp,
   if (i_shdrp->bfd_section != NULL)
     i_shdrp->bfd_section->filepos = offset;
   if (i_shdrp->sh_type != SHT_NOBITS)
-    offset += i_shdrp->sh_size;
+    offset += (file_ptr)i_shdrp->sh_size;
   return offset;
 }
 
@@ -4151,7 +4151,7 @@ assign_file_positions_for_segments(bfd *abfd, struct bfd_link_info *link_info)
     return FALSE;
 
   off = bed->s->sizeof_ehdr;
-  off += (alloc * bed->s->sizeof_phdr);
+  off += (file_ptr)(alloc * bed->s->sizeof_phdr);
 
   filehdr_vaddr = 0;
   filehdr_paddr = 0;
@@ -4210,7 +4210,7 @@ assign_file_positions_for_segments(bfd *abfd, struct bfd_link_info *link_info)
 	  adjust =
             (bfd_vma)vma_page_aligned_bias(m->sections[0]->vma,
                                            (ufile_ptr)off, align);
-	  off += adjust;
+	  off += (file_ptr)adjust;
 	  if ((adjust != 0) && !m->includes_filehdr && !m->includes_phdrs
 	      && ((ufile_ptr)off >= align))
 	    {
@@ -4226,7 +4226,7 @@ assign_file_positions_for_segments(bfd *abfd, struct bfd_link_info *link_info)
 		  if (((m->sections[i]->flags & SEC_THREAD_LOCAL) == 0)
 		      || (++i >= m->count))
 		    {
-		      off -= adjust;
+		      off -= (file_ptr)adjust;
 		      voff = (file_ptr)(adjust - align);
 		      break;
 		    }
@@ -4411,7 +4411,7 @@ assign_file_positions_for_segments(bfd *abfd, struct bfd_link_info *link_info)
 	      if (i == 0)
 		{
 		  sec->filepos = off;
-		  off += sec->size;
+		  off += (file_ptr)sec->size;
 		  p->p_filesz = sec->size;
 		  p->p_memsz = 0;
 		  p->p_align = 1;
@@ -4446,7 +4446,7 @@ assign_file_positions_for_segments(bfd *abfd, struct bfd_link_info *link_info)
 		     not trashed.  */
 		  if (((flags & SEC_LOAD) != 0)
 		      || ((flags & SEC_HAS_CONTENTS) != 0))
-		    off += sec->size;
+		    off += (file_ptr)sec->size;
 		}
 
 	      if ((flags & SEC_LOAD) != 0)
@@ -4909,10 +4909,11 @@ prep_headers(bfd *abfd)
   elf_tdata(abfd)->shstrtab_hdr.sh_name =
     (unsigned int)_bfd_elf_strtab_add(shstrtab, ".shstrtab", FALSE);
   if ((elf_tdata(abfd)->symtab_hdr.sh_name == (unsigned int)-1)
-      || (elf_tdata(abfd)->symtab_hdr.sh_name == (unsigned int)-1)
+      || (elf_tdata(abfd)->strtab_hdr.sh_name == (unsigned int)-1)
       || (elf_tdata(abfd)->shstrtab_hdr.sh_name == (unsigned int)-1))
     return FALSE;
 
+  (void)i_phdrp;
   return TRUE;
 }
 
@@ -6111,16 +6112,16 @@ long
 _bfd_elf_get_symtab_upper_bound(bfd *abfd)
 {
   long symcount;
-  long symtab_size;
+  size_t symtab_size;
   Elf_Internal_Shdr *hdr = &elf_tdata(abfd)->symtab_hdr;
 
   symcount = (long)(hdr->sh_size
                     / get_elf_backend_data(abfd)->s->sizeof_sym);
-  symtab_size = ((symcount + 1L) * (long)sizeof(asymbol *));
+  symtab_size = (((size_t)symcount + 1UL) * sizeof(asymbol *));
   if (symcount > 0L)
     symtab_size -= sizeof(asymbol *);
 
-  return symtab_size;
+  return (long)symtab_size;
 }
 
 /* */
@@ -6128,7 +6129,7 @@ long
 _bfd_elf_get_dynamic_symtab_upper_bound(bfd *abfd)
 {
   long symcount;
-  long symtab_size;
+  size_t symtab_size;
   Elf_Internal_Shdr *hdr = &elf_tdata(abfd)->dynsymtab_hdr;
 
   if (elf_dynsymtab(abfd) == 0)
@@ -6138,18 +6139,18 @@ _bfd_elf_get_dynamic_symtab_upper_bound(bfd *abfd)
     }
 
   symcount = (long)(hdr->sh_size / get_elf_backend_data(abfd)->s->sizeof_sym);
-  symtab_size = ((symcount + 1L) * (long)sizeof(asymbol *));
+  symtab_size = (((size_t)symcount + 1UL) * sizeof(asymbol *));
   if (symcount > 0)
     symtab_size -= sizeof(asymbol *);
 
-  return symtab_size;
+  return (long)symtab_size;
 }
 
 /* */
 long
 _bfd_elf_get_reloc_upper_bound(bfd *abfd ATTRIBUTE_UNUSED, sec_ptr asect)
 {
-  return ((asect->reloc_count + 1L) * sizeof(arelent *));
+  return (long)((asect->reloc_count + 1L) * sizeof(arelent *));
 }
 
 /* Canonicalize the relocs: */
@@ -6219,8 +6220,8 @@ _bfd_elf_get_dynamic_reloc_upper_bound(bfd *abfd)
 	&& elf_section_data(s)->this_hdr.sh_link == elf_dynsymtab(abfd)
 	&& (elf_section_data(s)->this_hdr.sh_type == SHT_REL
 	    || elf_section_data(s)->this_hdr.sh_type == SHT_RELA))
-      ret += ((s->size / elf_section_data(s)->this_hdr.sh_entsize)
-	      * sizeof(arelent *));
+      ret += (long)((s->size / elf_section_data(s)->this_hdr.sh_entsize)
+                    * sizeof(arelent *));
 
   return ret;
 }
@@ -6820,14 +6821,12 @@ _bfd_elf_find_nearest_line (bfd *abfd,
 }
 
 /* Find the line for a symbol.  */
-
 bfd_boolean
-_bfd_elf_find_line (bfd *abfd, asymbol **symbols, asymbol *symbol,
-		    const char **filename_ptr, unsigned int *line_ptr)
+_bfd_elf_find_line(bfd *abfd, asymbol **symbols, asymbol *symbol,
+		   const char **filename_ptr, unsigned int *line_ptr)
 {
-  return _bfd_dwarf2_find_line (abfd, symbols, symbol,
-				filename_ptr, line_ptr, 0,
-				&elf_tdata (abfd)->dwarf2_find_line_info);
+  return _bfd_dwarf2_find_line(abfd, symbols, symbol, filename_ptr, line_ptr,
+                               0, &elf_tdata(abfd)->dwarf2_find_line_info);
 }
 
 /* After a call to bfd_find_nearest_line, successive calls to
@@ -6835,54 +6834,52 @@ _bfd_elf_find_line (bfd *abfd, asymbol **symbols, asymbol *symbol,
    each level of function inlining that terminated at the address
    passed to bfd_find_nearest_line.  Currently this is only supported
    for DWARF2 with appropriate DWARF3 extensions. */
-
 bfd_boolean
-_bfd_elf_find_inliner_info (bfd *abfd,
-			    const char **filename_ptr,
-			    const char **functionname_ptr,
-			    unsigned int *line_ptr)
+_bfd_elf_find_inliner_info(bfd *abfd, const char **filename_ptr,
+			   const char **functionname_ptr,
+			   unsigned int *line_ptr)
 {
   bfd_boolean found;
-  found = _bfd_dwarf2_find_inliner_info (abfd, filename_ptr,
-					 functionname_ptr, line_ptr,
-					 & elf_tdata (abfd)->dwarf2_find_line_info);
+  found = _bfd_dwarf2_find_inliner_info(abfd, filename_ptr,
+  					functionname_ptr, line_ptr,
+                                        &elf_tdata(abfd)->dwarf2_find_line_info);
   return found;
 }
 
+/* */
 int
-_bfd_elf_sizeof_headers (bfd *abfd, bfd_boolean reloc)
+_bfd_elf_sizeof_headers(bfd *abfd, bfd_boolean reloc)
 {
   int ret;
 
-  ret = get_elf_backend_data (abfd)->s->sizeof_ehdr;
+  ret = get_elf_backend_data(abfd)->s->sizeof_ehdr;
   if (! reloc)
-    ret += get_program_header_size (abfd);
+    ret += (int)get_program_header_size(abfd);
   return ret;
 }
 
+/* */
 bfd_boolean
-_bfd_elf_set_section_contents (bfd *abfd,
-			       sec_ptr section,
-			       const void *location,
-			       file_ptr offset,
-			       bfd_size_type count)
+_bfd_elf_set_section_contents(bfd *abfd, sec_ptr section, const void *location,
+			      file_ptr offset, bfd_size_type count)
 {
   Elf_Internal_Shdr *hdr;
   bfd_signed_vma pos;
 
   if (! abfd->output_has_begun
-      && ! _bfd_elf_compute_section_file_positions (abfd, NULL))
+      && ! _bfd_elf_compute_section_file_positions(abfd, NULL))
     return FALSE;
 
-  hdr = &elf_section_data (section)->this_hdr;
-  pos = hdr->sh_offset + offset;
-  if (bfd_seek (abfd, pos, SEEK_SET) != 0
-      || bfd_bwrite (location, count, abfd) != count)
+  hdr = &elf_section_data(section)->this_hdr;
+  pos = (hdr->sh_offset + offset);
+  if ((bfd_seek(abfd, pos, SEEK_SET) != 0)
+      || (bfd_bwrite(location, count, abfd) != count))
     return FALSE;
 
   return TRUE;
 }
 
+/* */
 void ATTRIBUTE_NORETURN
 _bfd_elf_no_info_to_howto(bfd *abfd ATTRIBUTE_UNUSED,
 			  arelent *cache_ptr ATTRIBUTE_UNUSED,
@@ -7107,80 +7104,79 @@ _bfd_elfcore_make_pseudosection(bfd *abfd, const char *name, size_t size,
      linux 2.[01] + glibc
      unixware 4.2
 */
-
-#if defined (HAVE_PRSTATUS_T)
-
+/* Keep this preprocessor condition the same as where the function is used: */
+#if defined(HAVE_PRSTATUS_T) && defined(prstatus_t)
 static bfd_boolean
-elfcore_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
+elfcore_grok_prstatus(bfd *abfd, Elf_Internal_Note *note)
 {
   size_t size;
   int offset;
 
-  if (note->descsz == sizeof (prstatus_t))
+  if (note->descsz == sizeof(prstatus_t))
     {
       prstatus_t prstat;
 
-      size = sizeof (prstat.pr_reg);
-      offset   = offsetof (prstatus_t, pr_reg);
-      memcpy (&prstat, note->descdata, sizeof (prstat));
+      size = sizeof(prstat.pr_reg);
+      offset = offsetof(prstatus_t, pr_reg);
+      memcpy(&prstat, note->descdata, sizeof(prstat));
 
       /* Do not overwrite the core signal if it
-	   * has already been set by another thread. */
-		if (elf_tdata (abfd)->core_signal == 0) {
-			elf_tdata (abfd)->core_signal = prstat.pr_cursig;
-		}
-      elf_tdata (abfd)->core_pid = prstat.pr_pid;
+       * has already been set by another thread. */
+      if (elf_tdata(abfd)->core_signal == 0) {
+        elf_tdata(abfd)->core_signal = prstat.pr_cursig;
+      }
+      elf_tdata(abfd)->core_pid = prstat.pr_pid;
 
       /* pr_who exists on:
-	   * - solaris 2.5+
-	   * - unixware 4.2
-	   * pr_who does NOT exist on:
-	   * - linux 2.[01]
-	   */
-# if defined (HAVE_PRSTATUS_T_PR_WHO) && defined prstat && defined prstatus_t
-      elf_tdata (abfd)->core_lwpid = prstat.pr_who;
+       * - solaris 2.5+
+       * - unixware 4.2
+       * pr_who does NOT exist on:
+       * - linux 2.[01]
+       */
+# if defined(HAVE_PRSTATUS_T_PR_WHO) && defined prstat && defined prstatus_t
+      elf_tdata(abfd)->core_lwpid = prstat.pr_who;
 # endif /* HAVE_PRSTATUS_T_PR_WHO && prstat && prstatus_t */
     }
-# if defined (HAVE_PRSTATUS32_T) && defined prstatus32_t
-  else if (note->descsz == sizeof (prstatus32_t))
+# if defined(HAVE_PRSTATUS32_T) && defined prstatus32_t
+  else if (note->descsz == sizeof(prstatus32_t))
     {
       /* 64-bit host, 32-bit corefile */
       prstatus32_t prstat;
 
-      size = sizeof (prstat.pr_reg);
-      offset   = offsetof (prstatus32_t, pr_reg);
-      memcpy (&prstat, note->descdata, sizeof (prstat));
+      size = sizeof(prstat.pr_reg);
+      offset = offsetof(prstatus32_t, pr_reg);
+      memcpy(&prstat, note->descdata, sizeof(prstat));
 
       /* Do not overwrite the core signal if it
-	   * has already been set by another thread.  */
-		if (elf_tdata (abfd)->core_signal == 0) {
-			elf_tdata (abfd)->core_signal = prstat.pr_cursig;
-		}
-      elf_tdata (abfd)->core_pid = prstat.pr_pid;
+       * has already been set by another thread.  */
+      if (elf_tdata(abfd)->core_signal == 0) {
+        elf_tdata(abfd)->core_signal = prstat.pr_cursig;
+      }
+      elf_tdata(abfd)->core_pid = prstat.pr_pid;
 
       /* pr_who exists on:
-	   * - solaris 2.5+
-	   * - unixware 4.2
-	   * pr_who does NOT exist on:
-	   * - linux 2.[01]
-	   */
-#  if defined (HAVE_PRSTATUS32_T_PR_WHO) && defined prstat
-      elf_tdata (abfd)->core_lwpid = prstat.pr_who;
+       * - solaris 2.5+
+       * - unixware 4.2
+       * pr_who does NOT exist on:
+       * - linux 2.[01]
+       */
+#  if defined(HAVE_PRSTATUS32_T_PR_WHO) && defined prstat
+      elf_tdata(abfd)->core_lwpid = prstat.pr_who;
 #  endif /* HAVE_PRSTATUS32_T_PR_WHO && prstat */
     }
 # endif /* HAVE_PRSTATUS32_T && prstatus32_t */
   else
     {
       /* Fail - we do NOT know how to handle any other
-	   * note size (ie. data object type).  */
+       * note size (ie. data object type).  */
       return TRUE;
     }
 
-  /* Make a ".reg/999" section and a ".reg" section.  */
-  return _bfd_elfcore_make_pseudosection (abfd, ".reg",
-					  size, note->descpos + offset);
+  /* Make a ".reg/999" section and a ".reg" section: */
+  return _bfd_elfcore_make_pseudosection(abfd, ".reg", size,
+  					 (ufile_ptr)(note->descpos + offset));
 }
-#endif /* defined (HAVE_PRSTATUS_T) */
+#endif /* defined(HAVE_PRSTATUS_T) */
 
 /* Create a pseudosection containing the exact contents of NOTE.  */
 static bfd_boolean
@@ -7535,18 +7531,18 @@ elfcore_grok_note(bfd *abfd, Elf_Internal_Note *note)
       if (bed->elf_backend_grok_prstatus)
 	if ((*bed->elf_backend_grok_prstatus)(abfd, note))
 	  return TRUE;
-#if defined(HAVE_PRSTATUS_T) && defined prstatus_t
+#if defined(HAVE_PRSTATUS_T) && defined(prstatus_t)
       return elfcore_grok_prstatus(abfd, note);
 #else
       return TRUE;
 #endif /* HAVE_PRSTATUS_T && prstatus_t */
 
-#if defined(HAVE_PSTATUS_T) && defined pstatus_t
+#if defined(HAVE_PSTATUS_T) && defined(pstatus_t)
     case NT_PSTATUS:
-      return elfcore_grok_pstatus (abfd, note);
+      return elfcore_grok_pstatus(abfd, note);
 #endif /* HAVE_PSTATUS_T && pstatus_t */
 
-#if defined(HAVE_LWPSTATUS_T) && defined lwpstatus_t
+#if defined(HAVE_LWPSTATUS_T) && defined(lwpstatus_t)
     case NT_LWPSTATUS:
       return elfcore_grok_lwpstatus(abfd, note);
 #endif /* HAVE_LWPSTATUS_T */
@@ -7554,7 +7550,7 @@ elfcore_grok_note(bfd *abfd, Elf_Internal_Note *note)
     case NT_FPREGSET:		/* FIXME: rename to NT_PRFPREG */
       return elfcore_grok_prfpreg(abfd, note);
 
-#if defined(HAVE_WIN32_PSTATUS_T) && defined win32_pstatus_t
+#if defined(HAVE_WIN32_PSTATUS_T) && defined(win32_pstatus_t)
     case NT_WIN32PSTATUS:
       return elfcore_grok_win32pstatus(abfd, note);
 #endif /* HAVE_WIN32_PSTATUS_T && win32_pstatus_t */
@@ -7858,7 +7854,7 @@ elfcore_write_note(bfd *abfd, char *buf, int *bufsiz, const char *name,
 
   p = (char *)realloc(buf, (*(size_t *)bufsiz + newspace));
   dest = (p + *bufsiz);
-  *bufsiz += newspace;
+  *bufsiz += (int)newspace;
   xnp = (Elf_External_Note *)dest;
   H_PUT_32(abfd, namesz, xnp->namesz);
   H_PUT_32(abfd, (bfd_vma)size, xnp->descsz);
@@ -7874,7 +7870,7 @@ elfcore_write_note(bfd *abfd, char *buf, int *bufsiz, const char *name,
 	  --pad;
 	}
     }
-  memcpy(dest, input, size);
+  memcpy(dest, input, (size_t)size);
   return p;
 }
 
@@ -7884,7 +7880,7 @@ elfcore_write_prpsinfo(bfd  *abfd, char *buf, int *bufsiz,
                        const char *fname, const char *psargs)
 {
   int note_type;
-  char *note_name = "CORE";
+  const char *note_name = "CORE";
 
 # if defined(HAVE_PSINFO_T) && defined psinfo_t
   psinfo_t data;
@@ -7895,20 +7891,20 @@ elfcore_write_prpsinfo(bfd  *abfd, char *buf, int *bufsiz,
 # endif /* HAVE_PSINFO_T && psinfo_t */
 
   memset(&data, 0, sizeof(data));
-  strncpy(data.pr_fname, fname, sizeof(data.pr_fname));
-  strncpy(data.pr_psargs, psargs, sizeof(data.pr_psargs));
+  strncpy(data.pr_fname, fname, (sizeof(data.pr_fname) - 1UL));
+  strncpy(data.pr_psargs, psargs, (sizeof(data.pr_psargs) - 1UL));
   return elfcore_write_note(abfd, buf, bufsiz,
 			    note_name, note_type, &data, sizeof(data));
 }
 #endif	/* PSINFO_T or PRPSINFO_T */
 
-#if defined (HAVE_PRSTATUS_T) && defined prstatus_t
+#if defined(HAVE_PRSTATUS_T) && defined(prstatus_t)
 char *
 elfcore_write_prstatus(bfd *abfd, char *buf, int *bufsiz, long pid,
                        int cursig, const void *gregs)
 {
   prstatus_t prstat;
-  char *note_name = "CORE";
+  const char *note_name = "CORE";
 
   memset(&prstat, 0, sizeof(prstat));
   prstat.pr_pid = pid;
@@ -7919,13 +7915,13 @@ elfcore_write_prstatus(bfd *abfd, char *buf, int *bufsiz, long pid,
 }
 #endif /* HAVE_PRSTATUS_T && prstatus_t */
 
-#if defined (HAVE_LWPSTATUS_T) && defined lwpstatus_t
+#if defined(HAVE_LWPSTATUS_T) && defined(lwpstatus_t)
 char *
 elfcore_write_lwpstatus(bfd *abfd, char *buf, int *bufsiz, long pid,
                         int cursig, const void *gregs)
 {
   lwpstatus_t lwpstat;
-  char *note_name = "CORE";
+  const char *note_name = "CORE";
 
   memset(&lwpstat, 0, sizeof(lwpstat));
   lwpstat.pr_lwpid = (pid >> 16);
@@ -7946,13 +7942,13 @@ elfcore_write_lwpstatus(bfd *abfd, char *buf, int *bufsiz, long pid,
 }
 #endif /* HAVE_LWPSTATUS_T && lwpstatus_t */
 
-#if defined (HAVE_PSTATUS_T) && defined pstatus_t
+#if defined(HAVE_PSTATUS_T) && defined(pstatus_t)
 char *
 elfcore_write_pstatus(bfd *abfd, char *buf, int *bufsiz, long pid,
                       int cursig, const void *gregs)
 {
   pstatus_t pstat;
-  char *note_name = "CORE";
+  const char *note_name = "CORE";
 
   memset(&pstat, 0, sizeof(pstat));
   pstat.pr_pid = pid & 0xffff;

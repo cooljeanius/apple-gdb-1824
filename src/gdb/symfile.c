@@ -22,10 +22,10 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 /* included files can drag in "free": */
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 
 #include "defs.h"
 #include "ansidecl.h"
@@ -61,9 +61,16 @@
 /* APPLE LOCAL exceptions */
 #include "exceptions.h"
 #include "exec.h"
-#include "macosx/macosx-nat-inferior.h"
-#include "macosx/macosx-nat-utils.h" /* For macosx_filename_in_bundle.  */
-#include "mach-o.h"
+#if defined(MACOSX_DYLD) || defined(TM_NEXTSTEP) || defined(TARGET_NATIVE)
+# include "macosx/macosx-nat-inferior.h" /* FIXME: what do we need this for? */
+#endif /* MACOSX_DYLD || TM_NEXTSTEP || TARGET_NATIVE */
+#ifdef TM_NEXTSTEP
+# include "macosx/macosx-nat-utils.h" /* For macosx_filename_in_bundle.  */
+#endif /* TM_NEXTSTEP */
+/* Keep this preprocessor conditional the same as where it is used: */
+#if defined(TM_NEXTSTEP) || defined(HAVE_MACH_O_IN_BFD)
+# include "mach-o.h" /* For bfd_mach_o_get_uuid.  */
+#endif /* TM_NEXTSTEP || HAVE_MACH_O_IN_BFD */
 #include "osabi.h" /* For gdbarch_lookup_osabi.  */
 
 #include <sys/types.h>

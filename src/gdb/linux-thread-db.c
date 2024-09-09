@@ -135,6 +135,9 @@ static void thread_db_find_new_threads (void);
 static void attach_thread (ptid_t ptid, const td_thrhandle_t *th_p,
 			   const td_thrinfo_t *ti_p, int verbose);
 static void detach_thread (ptid_t ptid, int verbose);
+
+/* TODO: this should probably go in a header somewhere: */
+extern void thread_db_init(struct target_ops *);
 
 
 /* Building process ids.  */
@@ -165,9 +168,9 @@ struct private_thread_info
   td_thrinfo_t ti;
 };
 
-
-static char *
-thread_db_err_str (td_err_e err)
+/* */
+static const char *
+thread_db_err_str(td_err_e err)
 {
   static char buf[64];
 
@@ -221,8 +224,9 @@ thread_db_err_str (td_err_e err)
     }
 }
 
-static char *
-thread_db_state_str (td_thr_state_e state)
+/* */
+static const char *
+thread_db_state_str(td_thr_state_e state)
 {
   static char buf[64];
 
@@ -270,8 +274,8 @@ thread_get_info_callback (const td_thrhandle_t *thp, void *infop)
 	   thread_db_err_str (err));
 
   /* Fill the cache.  */
-  thread_ptid = ptid_build (GET_PID (inferior_ptid), ti.ti_lid, ti.ti_tid);
-  thread_info = find_thread_pid (thread_ptid);
+  thread_ptid = ptid_build(GET_PID(inferior_ptid), ti.ti_lid, (long)ti.ti_tid);
+  thread_info = find_thread_pid(thread_ptid);
 
   /* In the case of a zombie thread, don't continue.  We don't want to
      attach to it thinking it is a new thread.  */
@@ -281,10 +285,10 @@ thread_get_info_callback (const td_thrhandle_t *thp, void *infop)
         *(struct thread_info **) infop = thread_info;
       if (thread_info != NULL)
 	{
-	  memcpy (&thread_info->private->th, thp, sizeof (*thp));
-	  thread_info->private->th_valid = 1;
-	  memcpy (&thread_info->private->ti, &ti, sizeof (ti));
-	  thread_info->private->ti_valid = 1;
+	  memcpy(&thread_info->privatedata->th, thp, sizeof(*thp));
+	  thread_info->privatedata->th_valid = 1;
+	  memcpy(&thread_info->privatedata->ti, &ti, sizeof(ti));
+	  thread_info->privatedata->ti_valid = 1;
 	}
       return TD_THR_ZOMBIE;
     }
@@ -297,13 +301,13 @@ thread_get_info_callback (const td_thrhandle_t *thp, void *infop)
       gdb_assert (thread_info != NULL);
     }
 
-  memcpy (&thread_info->private->th, thp, sizeof (*thp));
-  thread_info->private->th_valid = 1;
-  memcpy (&thread_info->private->ti, &ti, sizeof (ti));
-  thread_info->private->ti_valid = 1;
+  memcpy(&thread_info->privatedata->th, thp, sizeof(*thp));
+  thread_info->privatedata->th_valid = 1;
+  memcpy(&thread_info->privatedata->ti, &ti, sizeof(ti));
+  thread_info->privatedata->ti_valid = 1;
 
   if (infop != NULL)
-    *(struct thread_info **) infop = thread_info;
+    *(struct thread_info **)infop = thread_info;
 
   return 0;
 }
@@ -315,11 +319,11 @@ thread_db_map_id2thr (struct thread_info *thread_info, int fatal)
 {
   td_err_e err;
 
-  if (thread_info->private->th_valid)
+  if (thread_info->privatedata->th_valid)
     return;
 
-  err = td_ta_map_id2thr_p (thread_agent, GET_THREAD (thread_info->ptid),
-			    &thread_info->private->th);
+  err = td_ta_map_id2thr_p(thread_agent, GET_THREAD(thread_info->ptid),
+			   &thread_info->privatedata->th);
   if (err != TD_OK)
     {
       if (fatal)
@@ -328,7 +332,7 @@ thread_db_map_id2thr (struct thread_info *thread_info, int fatal)
 	       thread_db_err_str (err));
     }
   else
-    thread_info->private->th_valid = 1;
+    thread_info->privatedata->th_valid = 1;
 }
 
 static td_thrinfo_t *
@@ -336,31 +340,30 @@ thread_db_get_info (struct thread_info *thread_info)
 {
   td_err_e err;
 
-  if (thread_info->private->ti_valid)
-    return &thread_info->private->ti;
+  if (thread_info->privatedata->ti_valid)
+    return &thread_info->privatedata->ti;
 
-  if (!thread_info->private->th_valid)
+  if (!thread_info->privatedata->th_valid)
     thread_db_map_id2thr (thread_info, 1);
 
   err =
-    td_thr_get_info_p (&thread_info->private->th, &thread_info->private->ti);
+    td_thr_get_info_p(&thread_info->privatedata->th,
+                      &thread_info->privatedata->ti);
   if (err != TD_OK)
     error (_("thread_db_get_info: cannot get thread info: %s"),
 	   thread_db_err_str (err));
 
-  thread_info->private->ti_valid = 1;
-  return &thread_info->private->ti;
+  thread_info->privatedata->ti_valid = 1;
+  return &thread_info->privatedata->ti;
 }
 
 /* Convert between user-level thread ids and LWP ids.  */
-
 static ptid_t
-thread_from_lwp (ptid_t ptid)
+thread_from_lwp(ptid_t ptid)
 {
   td_thrhandle_t th;
   td_err_e err;
   struct thread_info *thread_info;
-  ptid_t thread_ptid;
 
   if (GET_LWP (ptid) == 0)
     ptid = BUILD_LWP (GET_PID (ptid), GET_PID (ptid));
@@ -386,10 +389,10 @@ thread_from_lwp (ptid_t ptid)
       && thread_info == NULL)
     return pid_to_ptid (-1);
 
-  gdb_assert (thread_info && thread_info->private->ti_valid);
+  gdb_assert(thread_info && thread_info->privatedata->ti_valid);
 
-  return ptid_build (GET_PID (ptid), GET_LWP (ptid),
-		     thread_info->private->ti.ti_tid);
+  return ptid_build(GET_PID(ptid), GET_LWP(ptid),
+		    (long)thread_info->privatedata->ti.ti_tid);
 }
 
 static ptid_t
@@ -495,14 +498,15 @@ thread_db_load (void)
   return 1;
 }
 
+/* */
 static td_err_e
-enable_thread_event (td_thragent_t *thread_agent, int event, CORE_ADDR *bp)
+enable_thread_event(td_thragent_t *thread_agent, int event, CORE_ADDR *bp)
 {
   td_notify_t notify;
   td_err_e err;
 
   /* Get the breakpoint address for thread EVENT.  */
-  err = td_ta_event_addr_p (thread_agent, event, &notify);
+  err = td_ta_event_addr_p(thread_agent, (td_event_e)event, &notify);
   if (err != TD_OK)
     return err;
 
@@ -515,16 +519,16 @@ enable_thread_event (td_thragent_t *thread_agent, int event, CORE_ADDR *bp)
   return TD_OK;
 }
 
+/* */
 static void
-enable_thread_event_reporting (void)
+enable_thread_event_reporting(void)
 {
   td_thr_events_t events;
-  td_notify_t notify;
   td_err_e err;
 #ifdef HAVE_GNU_LIBC_VERSION_H
   const char *libc_version;
   int libc_major, libc_minor;
-#endif
+#endif /* HAVE_GNU_LIBC_VERSION_H */
 
   /* We cannot use the thread event reporting facility if these
      functions aren't available.  */
@@ -543,7 +547,7 @@ enable_thread_event_reporting (void)
   libc_version = gnu_get_libc_version ();
   if (sscanf (libc_version, "%d.%d", &libc_major, &libc_minor) == 2
       && (libc_major > 2 || (libc_major == 2 && libc_minor > 1)))
-#endif
+#endif /* HAVE_GNU_LIBC_VERSION_H */
     td_event_addset (&events, TD_DEATH);
 
   err = td_ta_set_event_p (thread_agent, &events);
@@ -619,7 +623,11 @@ check_thread_signals (void)
 	    }
 	}
     }
-#endif
+#else
+  (void)thread_signals;
+  (void)thread_stop_set;
+  (void)thread_print_set;
+#endif /* GET_THREAD_SIGNALS */
 }
 
 static void
@@ -733,18 +741,19 @@ attach_thread (ptid_t ptid, const td_thrhandle_t *th_p,
       tp = find_thread_pid (ptid);
       gdb_assert (tp != NULL);
 
-      if (!tp->private->dying)
+      if (!tp->privatedata->dying)
         return;
 
       delete_thread (ptid);
     }
 
-  check_thread_signals ();
+  check_thread_signals();
 
-  /* Add the thread to GDB's thread list.  */
-  tp = add_thread (ptid);
-  tp->private = xmalloc (sizeof (struct private_thread_info));
-  memset (tp->private, 0, sizeof (struct private_thread_info));
+  /* Add the thread to GDB's thread list: */
+  tp = add_thread(ptid);
+  tp->privatedata =
+    (struct private_thread_info *)xmalloc(sizeof(struct private_thread_info));
+  memset(tp->privatedata, 0, sizeof(struct private_thread_info));
 
   if (verbose)
     printf_unfiltered (_("[New %s]\n"), target_pid_to_str (ptid));
@@ -754,8 +763,8 @@ attach_thread (ptid_t ptid, const td_thrhandle_t *th_p,
 
   /* Under GNU/Linux, we have to attach to each and every thread.  */
 #ifdef ATTACH_LWP
-  ATTACH_LWP (BUILD_LWP (ti_p->ti_lid, GET_PID (ptid)), 0);
-#endif
+  ATTACH_LWP(BUILD_LWP(ti_p->ti_lid, GET_PID(ptid)), 0);
+#endif /* ATTACH_LWP */
 
   /* Enable thread event reporting for this thread.  */
   err = td_thr_event_enable_p (th_p, 1);
@@ -764,8 +773,9 @@ attach_thread (ptid_t ptid, const td_thrhandle_t *th_p,
 	   target_pid_to_str (ptid), thread_db_err_str (err));
 }
 
+/* */
 static void
-thread_db_attach (char *args, int from_tty)
+thread_db_attach(const char *args, int from_tty)
 {
   target_beneath->to_attach (args, from_tty);
 
@@ -798,11 +808,12 @@ detach_thread (ptid_t ptid, int verbose)
      something re-uses its thread ID.  */
   thread_info = find_thread_pid (ptid);
   gdb_assert (thread_info != NULL);
-  thread_info->private->dying = 1;
+  thread_info->privatedata->dying = 1;
 }
 
+/* */
 static void
-thread_db_detach (char *args, int from_tty)
+thread_db_detach(const char *args, int from_tty)
 {
   disable_thread_event_reporting ();
 
@@ -824,8 +835,8 @@ clear_lwpid_callback (struct thread_info *thread, void *dummy)
      a certain amount of information; it's not clear how much, so we
      are always conservative.  */
 
-  thread->private->th_valid = 0;
-  thread->private->ti_valid = 0;
+  thread->privatedata->th_valid = 0;
+  thread->privatedata->ti_valid = 0;
 
   return 0;
 }
@@ -890,8 +901,7 @@ check_event (ptid_t ptid)
 
   loop = 1;
 
-  do
-    {
+  do {
       err = td_ta_event_getmsg_p (thread_agent, &msg);
       if (err != TD_OK)
 	{
@@ -906,7 +916,7 @@ check_event (ptid_t ptid)
       if (err != TD_OK)
 	error (_("Cannot get thread info: %s"), thread_db_err_str (err));
 
-      ptid = ptid_build (GET_PID (ptid), ti.ti_lid, ti.ti_tid);
+      ptid = ptid_build(GET_PID(ptid), ti.ti_lid, (long)ti.ti_tid);
 
       switch (msg.event)
 	{
@@ -929,19 +939,19 @@ check_event (ptid_t ptid)
 	default:
 	  error (_("Spurious thread event."));
 	}
-    }
-  while (loop);
+  } while (loop);
 }
 
-static ptid_t
-thread_db_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
-{
-  extern ptid_t trap_ptid;
+extern ptid_t trap_ptid;
 
+/* */
+static ptid_t
+thread_db_wait(ptid_t ptid, struct target_waitstatus *ourstatus, void *unused)
+{
   if (GET_PID (ptid) != -1 && is_thread (ptid))
     ptid = lwp_from_thread (ptid);
 
-  ptid = target_beneath->to_wait (ptid, ourstatus);
+  ptid = target_beneath->to_wait(ptid, ourstatus, unused);
 
   if (proc_handle.pid == 0)
     /* The current child process isn't the actual multi-threaded
@@ -1015,12 +1025,12 @@ thread_db_fetch_registers (int regno)
   thread_info = find_thread_pid (inferior_ptid);
   thread_db_map_id2thr (thread_info, 1);
 
-  err = td_thr_getgregs_p (&thread_info->private->th, gregset);
+  err = td_thr_getgregs_p(&thread_info->privatedata->th, gregset);
   if (err != TD_OK)
     error (_("Cannot fetch general-purpose registers for thread %ld: %s"),
 	   (long) GET_THREAD (inferior_ptid), thread_db_err_str (err));
 
-  err = td_thr_getfpregs_p (&thread_info->private->th, &fpregset);
+  err = td_thr_getfpregs_p(&thread_info->privatedata->th, &fpregset);
   if (err != TD_OK)
     error (_("Cannot get floating-point registers for thread %ld: %s"),
 	   (long) GET_THREAD (inferior_ptid), thread_db_err_str (err));
@@ -1028,12 +1038,13 @@ thread_db_fetch_registers (int regno)
   /* Note that we must call supply_gregset after calling the thread_db
      routines because the thread_db routines call ps_lgetgregs and
      friends which clobber GDB's register cache.  */
-  supply_gregset ((gdb_gregset_t *) gregset);
-  supply_fpregset (&fpregset);
+  supply_gregset((gdb_gregset_t *)gregset);
+  supply_fpregset(&fpregset);
 }
 
+/* */
 static void
-thread_db_store_registers (int regno)
+thread_db_store_registers(int regno)
 {
   prgregset_t gregset;
   gdb_prfpregset_t fpregset;
@@ -1054,19 +1065,19 @@ thread_db_store_registers (int regno)
     {
       char raw[MAX_REGISTER_SIZE];
 
-      deprecated_read_register_gen (regno, raw);
-      thread_db_fetch_registers (-1);
-      regcache_raw_supply (current_regcache, regno, raw);
+      deprecated_read_register_gen(regno, (gdb_byte *)raw);
+      thread_db_fetch_registers(-1);
+      regcache_raw_supply(current_regcache, regno, raw);
     }
 
-  fill_gregset ((gdb_gregset_t *) gregset, -1);
-  fill_fpregset (&fpregset, -1);
+  fill_gregset((gdb_gregset_t *)gregset, -1);
+  fill_fpregset(&fpregset, -1);
 
-  err = td_thr_setgregs_p (&thread_info->private->th, gregset);
+  err = td_thr_setgregs_p(&thread_info->privatedata->th, gregset);
   if (err != TD_OK)
     error (_("Cannot store general-purpose registers for thread %ld: %s"),
 	   (long) GET_THREAD (inferior_ptid), thread_db_err_str (err));
-  err = td_thr_setfpregs_p (&thread_info->private->th, &fpregset);
+  err = td_thr_setfpregs_p(&thread_info->privatedata->th, &fpregset);
   if (err != TD_OK)
     error (_("Cannot store floating-point registers  for thread %ld: %s"),
 	   (long) GET_THREAD (inferior_ptid), thread_db_err_str (err));
@@ -1121,10 +1132,10 @@ thread_db_mourn_inferior (void)
   using_thread_db = 0;
 }
 
+/* */
 static int
-thread_db_thread_alive (ptid_t ptid)
+thread_db_thread_alive(ptid_t ptid)
 {
-  td_thrhandle_t th;
   td_err_e err;
 
   if (is_thread (ptid))
@@ -1133,25 +1144,25 @@ thread_db_thread_alive (ptid_t ptid)
       thread_info = find_thread_pid (ptid);
 
       thread_db_map_id2thr (thread_info, 0);
-      if (!thread_info->private->th_valid)
+      if (!thread_info->privatedata->th_valid)
 	return 0;
 
-      err = td_thr_validate_p (&thread_info->private->th);
+      err = td_thr_validate_p(&thread_info->privatedata->th);
       if (err != TD_OK)
 	return 0;
 
-      if (!thread_info->private->ti_valid)
+      if (!thread_info->privatedata->ti_valid)
 	{
 	  err =
-	    td_thr_get_info_p (&thread_info->private->th,
-			       &thread_info->private->ti);
+	    td_thr_get_info_p(&thread_info->privatedata->th,
+			      &thread_info->privatedata->ti);
 	  if (err != TD_OK)
 	    return 0;
-	  thread_info->private->ti_valid = 1;
+	  thread_info->privatedata->ti_valid = 1;
 	}
 
-      if (thread_info->private->ti.ti_state == TD_THR_UNKNOWN
-	  || thread_info->private->ti.ti_state == TD_THR_ZOMBIE)
+      if (thread_info->privatedata->ti.ti_state == TD_THR_UNKNOWN
+	  || thread_info->privatedata->ti.ti_state == TD_THR_ZOMBIE)
 	return 0;		/* A zombie thread.  */
 
       return 1;
@@ -1178,7 +1189,7 @@ find_new_threads_callback (const td_thrhandle_t *th_p, void *data)
   if (ti.ti_state == TD_THR_UNKNOWN || ti.ti_state == TD_THR_ZOMBIE)
     return 0;			/* A zombie -- ignore.  */
 
-  ptid = ptid_build (GET_PID (inferior_ptid), ti.ti_lid, ti.ti_tid);
+  ptid = ptid_build(GET_PID(inferior_ptid), ti.ti_lid, (long)ti.ti_tid);
 
   if (!in_thread_list (ptid))
     attach_thread (ptid, th_p, &ti, 1);
@@ -1206,12 +1217,11 @@ thread_db_pid_to_str (ptid_t ptid)
     {
       static char buf[64];
       td_thrinfo_t *ti_p;
-      td_err_e err;
       struct thread_info *thread_info;
 
       thread_info = find_thread_pid (ptid);
       thread_db_map_id2thr (thread_info, 0);
-      if (!thread_info->private->th_valid)
+      if (!thread_info->privatedata->th_valid)
 	{
 	  snprintf (buf, sizeof (buf), "Thread %ld (Missing)",
 		    GET_THREAD (ptid));
@@ -1268,8 +1278,8 @@ thread_db_get_thread_local_address (ptid_t ptid,
       thread_db_map_id2thr (thread_info, 1);
 
       /* Finally, get the address of the variable.  */
-      err = td_thr_tls_get_addr_p (&thread_info->private->th, (void *) lm,
-				   offset, &address);
+      err = td_thr_tls_get_addr_p(&thread_info->privatedata->th, (void *)lm,
+				  offset, &address);
 
 #ifdef THREAD_DB_HAS_TD_NOTALLOC
       /* The memory hasn't been allocated, yet.  */
@@ -1279,7 +1289,7 @@ thread_db_get_thread_local_address (ptid_t ptid,
 	     the initialization image.  */
         throw_error (TLS_NOT_ALLOCATED_YET_ERROR,
                      _("TLS not allocated yet"));
-#endif
+#endif /* THREAD_DB_HAS_TD_NOTALLOC */
 
       /* Something else went wrong.  */
       if (err != TD_OK)
@@ -1324,8 +1334,9 @@ init_thread_db_ops (void)
   thread_db_ops.to_magic = OPS_MAGIC;
 }
 
+extern void _initialize_thread_db(void);
 void
-_initialize_thread_db (void)
+_initialize_thread_db(void)
 {
   /* Only initialize the module if we can load libthread_db.  */
   if (thread_db_load ())

@@ -67,21 +67,25 @@ env_execute_cli_command (const char *cmd, const char *args)
 
 /* Print working directory.  */
 enum mi_cmd_result
-mi_cmd_env_pwd (char *command, char **argv, int argc)
+mi_cmd_env_pwd(char *command, char **argv, int argc)
 {
+  char *ourcwd;
   if (argc > 0)
-    error (_("mi_cmd_env_pwd: No arguments required"));
+    error(_("mi_cmd_env_pwd: No arguments required"));
 
-  if (mi_version (uiout) < 2)
+  if (mi_version(uiout) < 2)
     {
-      env_execute_cli_command ("pwd", NULL);
+      env_execute_cli_command("pwd", NULL);
       return MI_CMD_DONE;
     }
 
   /* Otherwise the mi level is 2 or higher.  */
 
-  getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
-  ui_out_field_string (uiout, "cwd", gdb_dirbuf);
+  ourcwd = getcwd(gdb_dirbuf, sizeof(gdb_dirbuf));
+  if (ourcwd == NULL) {
+    ; /* ??? */
+  }
+  ui_out_field_string(uiout, "cwd", gdb_dirbuf);
 
   return MI_CMD_DONE;
 }

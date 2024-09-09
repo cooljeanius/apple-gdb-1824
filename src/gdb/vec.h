@@ -21,10 +21,10 @@
 #if !defined(GDB_VEC_H)
 #define GDB_VEC_H
 
-#ifndef NO_POISON
+#if !defined(NO_POISON) && defined(POISON_FREE_TOO)
 /* false positives on this header's weird way of using "free": */
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && POISON_FREE_TOO */
 
 #include <stddef.h>
 #include "gdb_string.h"

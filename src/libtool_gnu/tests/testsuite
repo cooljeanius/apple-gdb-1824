@@ -1040,7 +1040,7 @@ _ATEOF
 cat <<_ATEOF || at_write_fail=1
 
 Report bugs to <bug-libtool@gnu.org>.
-GNU Libtool home page: <http://www.gnu.org/software/libtool/>.
+GNU Libtool home page: <https://www.gnu.org/software/libtool/>.
 General help using GNU software: <https://www.gnu.org/gethelp/>.
 _ATEOF
   exit $at_write_fail

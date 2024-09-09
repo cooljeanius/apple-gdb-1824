@@ -34,7 +34,7 @@
 
 #include "m68k-tdep.h"
 
-static void dbug_open (char *args, int from_tty);
+static void dbug_open(const char *args, int from_tty);
 
 static void
 dbug_supply_register (char *regname, int regnamelen, char *val, int vallen)
@@ -81,7 +81,7 @@ dbug_supply_register (char *regname, int regnamelen, char *val, int vallen)
 static const char *
 dbug_regname (int index)
 {
-  static char *regnames[] =
+  static const char *regnames[] =
   {
     "D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7",
     "A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7",
@@ -100,7 +100,7 @@ dbug_regname (int index)
 static struct target_ops dbug_ops;
 static struct monitor_ops dbug_cmds;
 
-static char *dbug_inits[] =
+static const char *dbug_inits[] =
 {"\r", NULL};
 
 
@@ -139,7 +139,7 @@ init_dbug_cmds (void)
   dbug_cmds.getreg.term = NULL;	/* getreg.term */
   dbug_cmds.getreg.term_cmd = NULL;	/* getreg.term_cmd */
   dbug_cmds.dump_registers = "rd\r";	/* dump_registers */
-  dbug_cmds.register_pattern = "\\(\\w+\\) +:\\([0-9a-fA-F]+\\b\\)";	/* register_pattern */
+  dbug_cmds.register_pattern = "\\(\\w+\\) +:\\([0-9a-fA-F]+\\b\\)"; /* register_pattern */
   dbug_cmds.supply_register = dbug_supply_register;
   dbug_cmds.load_routine = NULL;	/* load_routine (defaults to SRECs) */
   dbug_cmds.load = "dl\r";	/* download command */
@@ -155,7 +155,7 @@ init_dbug_cmds (void)
 }				/* init_debug_ops */
 
 static void
-dbug_open (char *args, int from_tty)
+dbug_open(const char *args, int from_tty)
 {
   monitor_open (args, &dbug_cmds, from_tty);
 }

@@ -106,7 +106,7 @@ mondfe: $(LIBDFE) $(LIBTIP) $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBDFE) $(LIBIBERTY) $(LIBTIP)
 
 install_mondfe: all
-	@true
+	@if test -e mondfe; then stat mondfe; fi
 .PHONY: install_mondfe
 
 mostlyclean-local clean-local:
@@ -118,7 +118,7 @@ distclean-local maintainer-clean-local realclean-local: clean-local
 .PHONY: distclean-local maintainer-clean-local realclean-local
 
 check installcheck:
-	@true
+	@if test -x "`which runtest`"; then echo "runtest is `which runtest`"; fi
 .PHONY: check installcheck
 
 info install-info clean-info dvi:

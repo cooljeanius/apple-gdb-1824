@@ -22,9 +22,9 @@
    Boston, MA 02111-1307, USA.  */
 
 /* define this because of <malloc/malloc.h>: */
-#ifndef NO_POISON
+#if !defined(NO_POISON) && (defined(HAVE_MALLOC_MALLOC_H) || defined(__APPLE__))
 # define NO_POISON 1
-#endif /* !NO_POISON */
+#endif /* !NO_POISON && (HAVE_MALLOC_MALLOC_H || __APPLE__) */
 #include "defs.h"
 #include "inferior.h"
 #include "symtab.h"
