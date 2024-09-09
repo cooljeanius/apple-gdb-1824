@@ -3364,12 +3364,16 @@ process_program_headers(FILE *file)
 	    error (_("Unable to find program interpreter name\n"));
 	  else
 	    {
+              int ret;
 	      program_interpreter[0] = 0;
-	      fscanf (file, "%63s", program_interpreter);
+	      ret = fscanf(file, "%63s", program_interpreter);
+              if ((ret == 0) || (ret == EOF)) {
+                ; /* ??? */
+              }
 
 	      if (do_segments)
-		printf (_("\n      [Requesting program interpreter: %s]"),
-		    program_interpreter);
+		printf(_("\n      [Requesting program interpreter: %s]"),
+		       program_interpreter);
 	    }
 	  break;
 

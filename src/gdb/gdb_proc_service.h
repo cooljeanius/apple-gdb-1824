@@ -25,6 +25,9 @@
 
 #ifdef HAVE_PROC_SERVICE_H
 #include <proc_service.h>
+#if (!defined(HAVE_PADDR_T) || !HAVE_PADDR_T) && !defined(paddr_t)
+typedef unsigned long paddr_t;
+#endif /* !HAVE_PADDR_T && !paddr_t */
 #else
 
 #ifdef HAVE_SYS_PROCFS_H

@@ -1,4 +1,4 @@
-/* Native-dependent code for GNU/Linux x86-64.
+/* amd64-linux-nat.c: Native-dependent code for GNU/Linux x86-64.
 
    Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
    Contributed by Jiri Smid, SuSE Labs.
@@ -29,9 +29,21 @@
 #include "gdb_assert.h"
 #include "gdb_string.h"
 #include <sys/ptrace.h>
-#include <sys/debugreg.h>
+#if defined(HAVE_SYS_DEBUGREG_H) || __has_include(<sys/debugreg.h>)
+# include <sys/debugreg.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "amd64-linux-nat.c expects <sys/debugreg.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_DEBUGREG_H */
 #include <sys/syscall.h>
-#include <sys/procfs.h>
+#if defined(HAVE_SYS_PROCFS_H) || __has_include(<sys/procfs.h>)
+# include <sys/procfs.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "amd64-linux-nat.c expects <sys/procfs.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_PROCFS_H */
 #include <asm/prctl.h>
 /* FIXME ezannoni-2003-07-09: we need <sys/reg.h> to be included after
    <asm/ptrace.h> because the latter redefines FS and GS for no apparent
@@ -300,10 +312,10 @@ amd64_linux_dr_get_status (void)
   return amd64_linux_dr_get (DR_STATUS);
 }
 
-
+#if !defined(HAVE_PS_GET_THREAD_AREA) && \
+    (!defined(HAVE_DECL_PS_GET_THREAD_AREA) || !HAVE_DECL_PS_GET_THREAD_AREA)
 /* This function is called by libthread_db as part of its handling of
    a request for a thread's local storage address.  */
-
 ps_err_e
 ps_get_thread_area (const struct ps_prochandle *ph,
                     lwpid_t lwpid, int idx, void **base)
@@ -320,8 +332,8 @@ ps_get_thread_area (const struct ps_prochandle *ph,
 	 GET_THREAD_AREA returns no more than 4 int values.  */
       gdb_assert (sizeof (int) == 4);	
 #ifndef PTRACE_GET_THREAD_AREA
-#define PTRACE_GET_THREAD_AREA 25
-#endif
+# define PTRACE_GET_THREAD_AREA 25
+#endif /* !PTRACE_GET_THREAD_AREA */
       if  (ptrace (PTRACE_GET_THREAD_AREA, 
 		   lwpid, (void *) (long) idx, (unsigned long) &desc) < 0)
 	return PS_ERR;
@@ -336,8 +348,8 @@ ps_get_thread_area (const struct ps_prochandle *ph,
       /* This definition comes from prctl.h, but some kernels may not
          have it.  */
 #ifndef PTRACE_ARCH_PRCTL
-#define PTRACE_ARCH_PRCTL      30
-#endif
+# define PTRACE_ARCH_PRCTL 30
+#endif /* !PTRACE_ARCH_PRCTL */
       /* FIXME: ezannoni-2003-07-09 see comment above about include
 	 file order.  We could be getting bogus values for these two.  */
       gdb_assert (FS < ELF_NGREG);
@@ -358,6 +370,7 @@ ps_get_thread_area (const struct ps_prochandle *ph,
     }
   return PS_ERR;               /* ptrace failed.  */
 }
+#endif /* !HAVE_PS_GET_THREAD_AREA && !HAVE_DECL_PS_GET_THREAD_AREA */
 
 
 void

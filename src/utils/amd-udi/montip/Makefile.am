@@ -109,7 +109,7 @@ montip_big: $(LIBTIP) $(OBJS) $(OTHER_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(OTHER_OBJS) $(LIBTIP) $(LIBIBERTY)
 
 install_montip: all
-	@true
+	@ls montip* || sync || true
 .PHONY: install_montip
 
 mostlyclean-local clean-local:
@@ -121,7 +121,7 @@ distclean-local maintainer-clean-local realclean-local: clean-local
 .PHONY: distclean-local maintainer-clean-local realclean-local
 
 check installcheck:
-	@true
+	@if test -x "`which runtest`"; then echo "runtest is `which runtest`"; fi
 .PHONY: check installcheck
 
 info install-info clean-info dvi:

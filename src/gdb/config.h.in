@@ -238,6 +238,9 @@
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
 
+/* Define to 1 if you have the <asm/prctl.h> header file. */
+#undef HAVE_ASM_PRCTL_H
+
 /* Define to 1 if you have the 'assert' function. */
 #undef HAVE_ASSERT
 
@@ -383,6 +386,10 @@
    */
 #undef HAVE_DECL_FREE
 
+/* Define to 1 if you have the declaration of 'getcwd', and to 0 if you don't.
+   */
+#undef HAVE_DECL_GETCWD
+
 /* Define to 1 if you have the declaration of 'getopt', and to 0 if you don't.
    */
 #undef HAVE_DECL_GETOPT
@@ -407,6 +414,10 @@
    */
 #undef HAVE_DECL_MALLOC
 
+/* Define to 1 if you have the declaration of 'monstartup', and to 0 if you
+   don't. */
+#undef HAVE_DECL_MONSTARTUP
+
 /* Define to 1 if you have the declaration of 'name_server_port', and to 0 if
    you don't. */
 #undef HAVE_DECL_NAME_SERVER_PORT
@@ -418,6 +429,10 @@
 /* Define to 1 if you have the declaration of 'POSIX_SPAWN_SETEXEC', and to 0
    if you don't. */
 #undef HAVE_DECL_POSIX_SPAWN_SETEXEC
+
+/* Define to 1 if you have the declaration of 'ps_get_thread_area', and to 0
+   if you don't. */
+#undef HAVE_DECL_PS_GET_THREAD_AREA
 
 /* Define to 1 if you have the declaration of 'ptrace', and to 0 if you don't.
    */
@@ -434,6 +449,10 @@
 /* Define to 1 if you have the declaration of 'realpath', and to 0 if you
    don't. */
 #undef HAVE_DECL_REALPATH
+
+/* Define to 1 if you have the declaration of 'setgid', and to 0 if you don't.
+   */
+#undef HAVE_DECL_SETGID
 
 /* Define to 1 if you have the declaration of 'setitimer', and to 0 if you
    don't. */
@@ -551,6 +570,10 @@
    don't. */
 #undef HAVE_DECL_VSNPRINTF
 
+/* Define to 1 if you have the declaration of '_mcleanup', and to 0 if you
+   don't. */
+#undef HAVE_DECL__MCLEANUP
+
 /* Define to 1 if you have the declaration of '__BIG_ENDIAN', and to 0 if you
    don't. */
 #undef HAVE_DECL___BIG_ENDIAN
@@ -608,6 +631,9 @@
 /* Define to 1 if you have the 'fwrite' function. */
 #undef HAVE_FWRITE
 
+/* Define to 1 if you have the 'gdbarch_obstack_strdup' function. */
+#undef HAVE_GDBARCH_OBSTACK_STRDUP
+
 /* Define to 1 if you have the 'getcwd' function. */
 #undef HAVE_GETCWD
 
@@ -649,6 +675,9 @@
 
 /* Define to 1 if you have the 'getuid' function. */
 #undef HAVE_GETUID
+
+/* Define to 1 if you have the 'get_type_arch' function. */
+#undef HAVE_GET_TYPE_ARCH
 
 /* Define to 1 if you have the 'gmtime' function. */
 #undef HAVE_GMTIME
@@ -1032,6 +1061,9 @@
 /* Define to 1 if you have the 'obstack_xfree' function. */
 #undef HAVE_OBSTACK_XFREE
 
+/* Define if <sys/procfs.h> has paddr_t. */
+#undef HAVE_PADDR_T
+
 /* Define to 1 if you have the 'pathconf' function. */
 #undef HAVE_PATHCONF
 
@@ -1118,6 +1150,9 @@
 
 /* Define if <sys/procfs.h> has pstatus_t. */
 #undef HAVE_PSTATUS_T
+
+/* Define to 1 if you have the 'ps_get_thread_area' function. */
+#undef HAVE_PS_GET_THREAD_AREA
 
 /* Define to 1 if you have the 'pthread_detach' function. */
 #undef HAVE_PTHREAD_DETACH
@@ -1297,6 +1332,9 @@
 /* Define to 1 if you have the 'setenv' function. */
 #undef HAVE_SETENV
 
+/* Define to 1 if you have the 'setgid' function. */
+#undef HAVE_SETGID
+
 /* Define to 1 if you have the 'setitimer' function. */
 #undef HAVE_SETITIMER
 
@@ -1317,6 +1355,9 @@
 
 /* Define to 1 if you have the 'setsid' function. */
 #undef HAVE_SETSID
+
+/* Define to 1 if you have the 'set_type_code' function. */
+#undef HAVE_SET_TYPE_CODE
 
 /* Define to 1 if you have the <sgtty.h> header file. */
 #undef HAVE_SGTTY_H
@@ -1471,6 +1512,9 @@
 
 /* Define to 1 if you have the 'strtoul' function. */
 #undef HAVE_STRTOUL
+
+/* Define to 1 if 'sdt_note_head' is a member of 'struct elf_obj_tdata'. */
+#undef HAVE_STRUCT_ELF_OBJ_TDATA_SDT_NOTE_HEAD
 
 /* Define if <sys/link.h> has struct link_map32 */
 #undef HAVE_STRUCT_LINK_MAP32
@@ -1749,6 +1793,9 @@
 
 /* Define to 1 if you have the 'vasprintf' function. */
 #undef HAVE_VASPRINTF
+
+/* Define to 1 if you have the 'verify_floatformat' function. */
+#undef HAVE_VERIFY_FLOATFORMAT
 
 /* Define to 1 if you have the 'vfork' function. */
 #undef HAVE_VFORK

@@ -262,44 +262,19 @@ dump_coff_where(struct coff_where *p)
   switch (p->where)
     {
     case coff_where_stack:
-#if (defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)) && \
-    defined(__STDC_VERSION__) && !defined(__STRICT_ANSI__)
-      printf("Stack offset %llx", p->offset);
-#else
-      printf("Stack offset %x", p->offset);
-#endif /* (HAVE_OFF_T || off_t || __STDC__) && __STDC_VERSION__ && !__STRICT_ANSI__ */
+      printf("Stack offset %"OFFSET_FMT"x", p->offset);
       break;
     case coff_where_memory:
-#if (defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)) && \
-    defined(__STDC_VERSION__) && !defined(__STRICT_ANSI__)
-      printf("Memory section %s+%llx", p->section->name, p->offset);
-#else
-      printf("Memory section %s+%x", p->section->name, p->offset);
-#endif /* (HAVE_OFF_T || off_t || __STDC__) && __STDC_VERSION__ && !__STRICT_ANSI__ */
+      printf("Memory section %s+%"OFFSET_FMT"x", p->section->name, p->offset);
       break;
     case coff_where_register:
-#if (defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)) && \
-    defined(__STDC_VERSION__) && !defined(__STRICT_ANSI__)
-      printf("Register %lld", p->offset);
-#else
-      printf("Register %d", p->offset);
-#endif /* (HAVE_OFF_T || off_t || __STDC__) && __STDC_VERSION__ && !__STRICT_ANSI__ */
+      printf("Register %"OFFSET_FMT"d", p->offset);
       break;
     case coff_where_member_of_struct:
-#if (defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)) && \
-    defined(__STDC_VERSION__) && !defined(__STRICT_ANSI__)
-      printf("Struct Member offset %llx", p->offset);
-#else
-      printf("Struct Member offset %x", p->offset);
-#endif /* (HAVE_OFF_T || off_t || __STDC__) && __STDC_VERSION__ && !__STRICT_ANSI__ */
+      printf("Struct Member offset %"OFFSET_FMT"x", p->offset);
       break;
     case coff_where_member_of_enum:
-#if (defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)) && \
-    defined(__STDC_VERSION__) && !defined(__STRICT_ANSI__)
-      printf("Enum Member offset %llx", p->offset);
-#else
-      printf("Enum Member offset %x", p->offset);
-#endif /* (HAVE_OFF_T || off_t || __STDC__) && __STDC_VERSION__ && !__STRICT_ANSI__ */
+      printf("Enum Member offset %"OFFSET_FMT"x", p->offset);
       break;
     case coff_where_unknown:
       printf("Undefined symbol");
@@ -410,13 +385,8 @@ dump_coff_scope(struct coff_scope *p)
       printf("List of blocks %lx ", (unsigned long)p);
 
       if (p->sec) {
-        /* this ifdef should be similar to the one in "coffgrok.h": */
-#if (defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)) && \
-    defined(__STDC_VERSION__) && !defined(__STRICT_ANSI__)
-	printf("  %s %llx..%llx", p->sec->name, p->offset, ((size_t)p->offset + p->size - 1ULL));
-#else
-        printf("  %s %x..%x", p->sec->name, p->offset, (p->offset + p->size - 1));
-#endif /* (HAVE_OFF_T || off_t || __STDC__) && __STDC_VERSION__ && !__STRICT_ANSI__ */
+	printf("  %s %"OFFSET_FMT"x..%"OFFSET_FMT"x", p->sec->name, p->offset,
+	       ((size_t)p->offset + p->size - 1ULL));
       }
 
       nl();
@@ -483,15 +453,8 @@ dump_coff_section(struct coff_section *ptr)
   for (i = 0; i < ptr->nrelocs; i++)
     {
       tab(0);
-      /* this ifdef should be similar to the one in "coffgrok.h": */
-#if (defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)) && \
-    defined(__STDC_VERSION__) && !defined(__STRICT_ANSI__)
-      printf("(%llx %s %"BFD_VMA_FMT"x)", ptr->relocs[i].offset,
+      printf("(%"OFFSET_FMT"x %s %"BFD_VMA_FMT"x)", ptr->relocs[i].offset,
              ptr->relocs[i].symbol->name, ptr->relocs[i].addend);
-#else
-      printf("(%x %s %x)", ptr->relocs[i].offset,
-             ptr->relocs[i].symbol->name, ptr->relocs[i].addend);
-#endif /* (HAVE_OFF_T || off_t || __STDC__) && __STDC_VERSION__ && !__STRICT_ANSI__ */
       nl();
     }
 

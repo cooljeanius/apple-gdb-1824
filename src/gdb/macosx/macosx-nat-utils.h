@@ -10,7 +10,17 @@
 # define NO_POISON 1
 #endif /* !NO_POISON */
 
-#include <mach/mach.h>
+#ifndef __has_include
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
+#if defined(HAVE_MACH_MACH_H) || __has_include(<mach/mach.h>)
+# include <mach/mach.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx/macosx-nat-utils.h expects <mach/mach.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_MACH_MACH_H */
 
 #if (defined __GNUC__)
 # define __MACH_CHECK_FUNCTION __extension__ __PRETTY_FUNCTION__

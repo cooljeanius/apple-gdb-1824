@@ -3515,7 +3515,8 @@ coff_write_object_contents(bfd *abfd)
 
       strncpy(section.s_name, current->name, ((size_t)SCNNMLEN - 1UL));
 
-#ifdef COFF_LONG_SECTION_NAMES
+#if defined(COFF_LONG_SECTION_NAMES)
+# if defined(SCNNMLEN) && (SCNNMLEN > 8)
       /* Handle long section names as in PE. This must be compatible
        * with the code in coff_write_symbols and _bfd_coff_final_link. */
       {
@@ -3531,6 +3532,9 @@ coff_write_object_contents(bfd *abfd)
 	    long_section_names = TRUE;
 	  }
       }
+# else
+      (void)string_size;
+# endif /* (SCNNMLEN > 8) */
 #endif /* COFF_LONG_SECTION_NAMES */
 
 #ifdef _LIB

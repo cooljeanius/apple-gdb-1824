@@ -158,9 +158,10 @@ AC_CONFIG_HEADERS([config.h])dnl
 AH_VERBATIM([00_CONFIG_H_CHECK],[
 /* Check that config.h is #included before system headers
  * (this works only for glibc, but that should be enough).  */
-#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
+#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__) \
+    && !defined(FLEX_SCANNER)
 #  error "config.h must be #included before system headers"
-#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
+#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ && !FLEX_SCANNER */
 #define __CONFIG_H__ 1])dnl
 AH_TOP([
 #ifndef HAVE_CONFIG_H
@@ -589,10 +590,16 @@ AC_DEFUN([AC_REQUIRE_LONG_LONG_TYPES],[
   ])dnl
 ])dnl
 AC_REQUIRE_LONG_LONG_TYPES dnl# used to compare against later
+  ## just in case:
+if test "x${ac_cv_type_long_long}" = "x"; then
+  test -z "${ac_cv_type_long_long}" && ac_cv_type_long_long="${ac_cv_type_long_long_int}"
+fi
 if test "x${ac_cv_type_long_long}" = "xyes"; then
   AC_CHECK_SIZEOF([long long])dnl
   AC_CHECK_ALIGNOF([long long])dnl
   ## ok
+else
+  AC_MSG_WARN([skipping checks for size and alignment of long long])
 fi
 if test "x${ac_cv_type_unsigned_long_long}" = "x"; then
   test -z "${ac_cv_type_unsigned_long_long}" && ac_cv_type_unsigned_long_long="${ac_cv_type_unsigned_long_long_int}"
@@ -601,10 +608,12 @@ if test "x${ac_cv_type_unsigned_long_long}" = "xyes"; then
   AC_CHECK_SIZEOF([unsigned long long])dnl
   AC_CHECK_ALIGNOF([unsigned long long])dnl
   ## ok
+else
+  AC_MSG_WARN([skipping checks for size and alignment of unsigned long long])
 fi
 AC_TYPE_MODE_T
 if test "x${ac_cv_type_off_t}" = "x"; then
-  test -z "${ac_cv_type_off_t}"
+  test -z "${ac_cv_type_off_t}" || unset ac_cv_type_off_t
   AC_TYPE_OFF_T
 elif test "x${ac_cv_type_off_t}" = "xyes"; then
   AC_DEFINE([HAVE_OFF_T],[1],
@@ -615,11 +624,12 @@ if test "x${ac_cv_type_off_t}" = "xyes"; then
   AC_CHECK_SIZEOF([off_t])dnl
   AC_CHECK_ALIGNOF([off_t])dnl
   ## ok
+else
+  AC_MSG_WARN([skipping checks for size and alignment of off_t])
 fi
 if test "x${ac_cv_sizeof_off_t}" != "x${ac_cv_sizeof_unsigned_long_long}"; then
   AC_CHECK_TYPES([off64_t],[
-    test -z "${ac_cv_sizeof_off64_t}"
-    test -z "${ac_cv_alignof_off64_t}"
+    test -z "${ac_cv_sizeof_off64_t}" && test -z "${ac_cv_alignof_off64_t}"
     AC_CHECK_SIZEOF([off64_t])dnl
     AC_CHECK_ALIGNOF([off64_t])dnl
   ],[
@@ -637,14 +647,13 @@ if test "x${ac_cv_sizeof_off_t}" != "x${ac_cv_sizeof_unsigned_long_long}"; then
 elif test "x${ac_cv_sizeof_off_t}" = "x${ac_cv_sizeof_unsigned_long_long}";  then
   AC_MSG_NOTICE([it seems that your off_t is already 64-bit; in that case, there is no need to check for an off64_t type...])
 else
-  test -z "${ac_cv_sizeof_off_t}"
-  test -z "${ac_cv_sizeof_unsigned_long_long}"
+  test -z "${ac_cv_sizeof_off_t}" && test -z "${ac_cv_sizeof_unsigned_long_long}"
   AC_MSG_WARN([unsure if off_t is 64-bit or not...])
 fi
 AC_CHECK_TYPES([ptrdiff_t])dnl
 AC_TYPE_SIGNAL dnl# (the copy in ./m4/signal.4 overrides the obsoleteness)
 if test "x${ac_cv_type_size_t}" = "x"; then
-  test -z "${ac_cv_type_size_t}"
+  test -z "${ac_cv_type_size_t}" || unset ac_cv_type_size_t
   AC_TYPE_SIZE_T
 elif test "x${ac_cv_type_size_t}" = "xyes"; then
   AC_DEFINE([HAVE_SIZE_T],[1],
@@ -655,6 +664,8 @@ if test "x${ac_cv_type_size_t}" = "xyes"; then
   AC_CHECK_SIZEOF([size_t])dnl
   AC_CHECK_ALIGNOF([size_t])dnl
   ## ok
+else
+  AC_MSG_WARN([skipping checks for size and alignment of size_t])
 fi
 AC_TYPE_SSIZE_T
 AC_CHECK_MEMBERS([struct stat.st_blksize])dnl
@@ -758,7 +769,7 @@ AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 unset ac_cv_func_setlocale
 AC_CHECK_FUNCS([atexit bindtextdomain ctime dcgettext dirname dup2 expandargv \
-                fclose fcntl fctrl floor fopen fprintf fputs fread free \
+                fclose fcntl fctrl floor fopen fprintf fputs fread free fscanf \
                 getc_unlocked gettimeofday isascii ioctlsocket localeconv \
                 mblen memchr memcmp memcpy memmove memset modf pow re_comp \
                 regcomp rint rmdir sbrk setlocale setmode sqrt strcspn \
@@ -927,8 +938,9 @@ fi
 AC_MSG_CHECKING([declarations])
 AC_MSG_RESULT([ ])
 unset ac_cv_have_decl_getenv
-AC_CHECK_DECLS([basename, dirname, environ, fprintf, getc_unlocked, getenv,
-		sbrk, snprintf, stpcpy, strnlen, strstr, vsnprintf])dnl
+AC_CHECK_DECLS([basename, dirname, environ, fprintf, fread, fscanf, getc_unlocked,
+                getenv, mkstemp, sbrk, snprintf, stpcpy, strnlen, strstr,
+                vsnprintf])dnl
 
 # Link in zlib if we can. This allows us to read compressed debug
 # sections. This is used only by readelf.c (objdump uses bfd for

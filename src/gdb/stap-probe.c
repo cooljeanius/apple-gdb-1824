@@ -1,4 +1,4 @@
-/* SystemTap probe support for GDB.
+/* stap-probe.c: SystemTap probe support for GDB.
 
    Copyright (C) 2012-2013 Free Software Foundation, Inc.
 
@@ -16,6 +16,10 @@
 
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+
+#ifndef NO_POISON
+# define NO_POISON 1 /* (use of free) */
+#endif /* !NO_POISON */
 
 #include "defs.h"
 #include "stap-probe.h"
@@ -322,7 +326,7 @@ stap_get_expected_argument_type (struct gdbarch *gdbarch,
   switch (b)
     {
     case STAP_ARG_BITNESS_UNDEFINED:
-      if (gdbarch_addr_bit (gdbarch) == 32)
+      if (gdbarch_addr_bit(gdbarch) == 32)
 	return get_builtin_type(gdbarch)->builtin_uint32;
       else
 	return get_builtin_type(gdbarch)->builtin_uint64;
@@ -340,8 +344,8 @@ stap_get_expected_argument_type (struct gdbarch *gdbarch,
       return get_builtin_type(gdbarch)->builtin_uint64;
 
     default:
-      internal_error (__FILE__, __LINE__,
-		      _("Undefined bitness for probe."));
+      internal_error(__FILE__, __LINE__,
+                     _("Undefined bitness for probe."));
       break;
     }
 }

@@ -16,11 +16,11 @@
  * ef_number is the largest unsigned integer we will need. On systems that
  * support 64-bit pointers, this may be "unsigned long long".
  */
-#if defined(USE_LONG_LONG)
-typedef unsigned long long	ef_number;
+#if defined(USE_LONG_LONG) && !defined(__STRICT_ANSI__)
+typedef unsigned long long ef_number;
 #else
-typedef unsigned long		ef_number;
-#endif /* USE_LONG_LONG */
+typedef unsigned long ef_number;
+#endif /* USE_LONG_LONG && !__STRICT_ANSI__ */
 
 /*
  * NBBY is the number of bits per byte. Some systems define it in

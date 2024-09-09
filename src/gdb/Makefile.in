@@ -1941,7 +1941,7 @@ clean mostlyclean:: $(CONFIG_CLEAN)
 	if test -e insight$(EXEEXT); then $(MAKE) $(AM_V_MFLAG) clean-gdbtk; fi
 	rm -f $(AM_V_v) test-cp-name-parser$(EXEEXT)
 	rm -f $(AM_V_v) *.rsrc
-	-rm -f $(AM_V_v) gnulib/*.o gdbserver/*.o
+	-rm -f $(AM_V_v) gnulib/*.o gdbserver/*.o mi/*.o
 	-rm -rf $(AM_V_v) *.dSYM || rmdir *.dSYM
 	rm -f $(AM_V_v) stamp-clang stamp-splint
 
@@ -2094,15 +2094,26 @@ $(GNULIB_BUILDDIR)/Makefile: gnulib/Makefile.in config.status @frags@
 	else echo "skipping missing $(GNULIB_BUILDDIR)"; fi
 
 am--refresh:
-	@echo "making '$@'"
+	@echo "in `pwd`: making '$@'"
 .PHONY: am--refresh
 
 config.h: stamp-h
 	@echo "this target, '$@' just makes its dep, '$<'"
-stamp-h: config.in config.status
+stamp-h: config.h.in config.status
 	$(SHELL) config.status
-	$(AM_V_at)if test ! -e stamp-h || test stamp-h -ot config.in; then \
+	$(AM_V_at)if test ! -e stamp-h || test stamp-h -ot config.h.in; then \
 	  touch stamp-h; \
+	fi
+
+AUTOTOOLS_FORCE_FLAG = @MAINT@ --force
+## TODO: add more dependencies here:
+config.h.in: @MAINT@ configure.ac
+	if test -x "`which autoheader`"; then \
+	  echo "running autoheader" && autoheader $(AUTOTOOLS_FORCE_FLAG); \
+	elif test -r config.in && test ! -e config.h.in && test -w .; then \
+	  mv $(AM_V_v) config.in config.h.in; \
+	else \
+	  echo "unsure what to do, so just touching $@" && touch $@; \
 	fi
 
 config.status: configure configure.tgt configure.host
@@ -2119,7 +2130,7 @@ config.status: configure configure.tgt configure.host
 # a compromise between the built-in rule and the automake rule:
 configure: @MAINT@ configure.ac configure.sh
 	if test -x "`which autoconf`"; then \
-	  echo "running autoconf" && autoconf; \
+	  echo "running autoconf" && autoconf $(AUTOTOOLS_FORCE_FLAG); \
 	elif test -e configure.sh; then \
 	  echo "using backup $@ script"; \
 	  cat configure.sh >$@; \

@@ -76,6 +76,7 @@ configure.tps
 configure.vr
 configure.vrs
 conftest*
+conf.optstest
 core
 dir.info
 dist/*

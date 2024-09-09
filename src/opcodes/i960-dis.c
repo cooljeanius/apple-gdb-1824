@@ -94,7 +94,9 @@ print_insn_i960(bfd_vma memaddr, struct disassemble_info *info_arg)
   return pinsn( memaddr, word1, word2 );
 }
 
-#define IN_GDB
+#ifndef IN_GDB
+# define IN_GDB
+#endif /* !IN_GDB */
 
 /*****************************************************************************
  *	All code below this point should be identical with that of
@@ -105,13 +107,13 @@ print_insn_i960(bfd_vma memaddr, struct disassemble_info *info_arg)
  *****************************************************************************/
 
 struct tabent {
-  char *name;
+  const char *name;
   short numops;
 };
 
 struct sparse_tabent {
   int opcode;
-  char *name;
+  const char *name;
   short numops;
 };
 
@@ -202,10 +204,10 @@ ctrl (bfd_vma memaddr, unsigned long word1, unsigned long word2 ATTRIBUTE_UNUSED
       return;
     }
 
-  (*info->fprintf_func) (stream, ctrl_tab[i].name);
+  (*info->fprintf_func)(stream, "%s", ctrl_tab[i].name);
   if (word1 & 2)
-    /* Predicts branch not taken.  */
-    (*info->fprintf_func) (stream, ".f");
+    /* Predicts branch not taken: */
+    (*info->fprintf_func)(stream, ".f");
 
   if (ctrl_tab[i].numops == 1)
     {
@@ -218,7 +220,7 @@ ctrl (bfd_vma memaddr, unsigned long word1, unsigned long word2 ATTRIBUTE_UNUSED
 	  word1 |= (-1 & ~0xffffff);	/* Sign extend.  */
 	}
 
-      (*info->fprintf_func) (stream, "\t");
+      (*info->fprintf_func)(stream, "\t");
       print_addr (word1 + memaddr);
     }
 }
@@ -274,31 +276,31 @@ cobr (bfd_vma memaddr, unsigned long word1, unsigned long word2 ATTRIBUTE_UNUSED
       return;
     }
 
-  (*info->fprintf_func) (stream, cobr_tab[i].name);
+  (*info->fprintf_func)(stream, "%s", cobr_tab[i].name);
 
-  /* Predicts branch not taken.  */
+  /* Predicts branch not taken: */
   if (word1 & 2)
-    (*info->fprintf_func) (stream, ".f");
+    (*info->fprintf_func)(stream, ".f");
 
-  (*info->fprintf_func) (stream, "\t");
+  (*info->fprintf_func)(stream, "\t");
 
   src1 = (word1 >> 19) & 0x1f;
   src2 = (word1 >> 14) & 0x1f;
 
   if (word1 & 0x02000)
     /* M1 is 1 */
-    (*info->fprintf_func) (stream, "%d", src1);
+    (*info->fprintf_func)(stream, "%d", src1);
   else
-    (*info->fprintf_func) (stream, reg_names[src1]);
+    (*info->fprintf_func)(stream, "%s", reg_names[src1]);
 
   if (cobr_tab[i].numops > 1)
     {
       if (word1 & 1)
 	/* S2 is 1.  */
-	(*info->fprintf_func) (stream, ",sf%d,", src2);
+	(*info->fprintf_func)(stream, ",sf%d,", src2);
       else
 	/* S1 is 0.  */
-	(*info->fprintf_func) (stream, ",%s,", reg_names[src2]);
+	(*info->fprintf_func)(stream, ",%s,", reg_names[src2]);
 
       /* Extract displacement and convert to address.  */
       word1 &= 0x00001ffc;
@@ -466,7 +468,7 @@ reg (unsigned long word1)
   int m1, m2, m3;
   int s1, s2;
   int src, src2, dst;
-  char *mnemp;
+  const char *mnemp;
 
   /* This lookup table is too sparse to make it worth typing in, but not
      so large as to make a sparse array necessary.  We create the table
@@ -715,7 +717,7 @@ reg (unsigned long word1)
       fp = 0;
     }
 
-  (*info->fprintf_func) (stream, mnemp);
+  (*info->fprintf_func)(stream, "%s", mnemp);
 
   s1   = (word1 >> 5)  & 1;
   s2   = (word1 >> 6)  & 1;
@@ -832,26 +834,26 @@ regop (int mode, int spec, int reg, int fp)
 	  /* FP operand.  */
 	  switch (reg)
 	    {
-	    case 0:  (*info->fprintf_func) (stream, "fp0");
+	    case 0:  (*info->fprintf_func)(stream, "fp0");
 	      break;
-	    case 1:  (*info->fprintf_func) (stream, "fp1");
+	    case 1:  (*info->fprintf_func)(stream, "fp1");
 	      break;
-	    case 2:  (*info->fprintf_func) (stream, "fp2");
+	    case 2:  (*info->fprintf_func)(stream, "fp2");
 	      break;
-	    case 3:  (*info->fprintf_func) (stream, "fp3");
+	    case 3:  (*info->fprintf_func)(stream, "fp3");
 	      break;
-	    case 16: (*info->fprintf_func) (stream, "0f0.0");
+	    case 16: (*info->fprintf_func)(stream, "0f0.0");
 	      break;
-	    case 22: (*info->fprintf_func) (stream, "0f1.0");
+	    case 22: (*info->fprintf_func)(stream, "0f1.0");
 	      break;
-	    default: (*info->fprintf_func) (stream, "?");
+	    default: (*info->fprintf_func)(stream, "?");
 	      break;
 	    }
 	}
       else
 	{
 	  /* Non-FP register.  */
-	  (*info->fprintf_func) (stream, reg_names[reg]);
+	  (*info->fprintf_func)(stream, "%s", reg_names[reg]);
 	}
     }
   else
@@ -860,15 +862,15 @@ regop (int mode, int spec, int reg, int fp)
       if (mode == 1)
 	{
 	  /* Literal.  */
-	  (*info->fprintf_func) (stream, "%d", reg);
+	  (*info->fprintf_func)(stream, "%d", reg);
 	}
       else
 	{
 	  /* Register.  */
 	  if (spec == 0)
-	    (*info->fprintf_func) (stream, reg_names[reg]);
+	    (*info->fprintf_func)(stream, "%s", reg_names[reg]);
 	  else
-	    (*info->fprintf_func) (stream, "sf%d", reg);
+	    (*info->fprintf_func)(stream, "sf%d", reg);
 	}
     }
 }
@@ -927,5 +929,5 @@ put_abs (unsigned long word1 ATTRIBUTE_UNUSED,
     (*info->fprintf_func) (stream, "%08x %08x\t", word1, word2);
   else
     (*info->fprintf_func) (stream, "%08x         \t", word1);
-#endif
+#endif /* IN_GDB */
 }

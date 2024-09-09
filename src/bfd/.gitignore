@@ -40,6 +40,7 @@ doc/Makefile
 config.h
 *deps/*.*o
 conf*/*.awk
+conf*/out
 bfd_stdint.h
 bfdver.h
 *bfd.sum

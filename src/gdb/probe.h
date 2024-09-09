@@ -1,4 +1,4 @@
-/* Generic SDT probe support for GDB.
+/* probe.h: Generic SDT probe support for GDB.
 
    Copyright (C) 2012-2013 Free Software Foundation, Inc.
 
@@ -17,10 +17,13 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#if !defined (PROBE_H)
+#if !defined(PROBE_H)
 #define PROBE_H 1
 
-#include "gdb_vecs.h"
+#ifndef NO_POISON
+# define NO_POISON 1 /* (use of free) */
+#endif /* !NO_POISON */
+#include "common/gdb_vecs.h"
 
 /* Definition of a vector of probes.  */
 

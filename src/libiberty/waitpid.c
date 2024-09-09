@@ -23,6 +23,15 @@ does the return value.  The third argument is unused in @libib{}.
 
 #ifdef HAVE_SYS_WAIT_H
 # include <sys/wait.h>
+#else
+# ifdef __MINGW32__
+#  include <process.h>
+#  define wait(s)  _cwait(s,pid,_WAIT_CHILD)
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__PEDANTIC__)
+#   warning "waitpid.c expects <sys/wait.h> to be included for wait()."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ && !__PEDANTIC__ */
+# endif /* __MINGW32__ */
 #endif /* HAVE_SYS_WAIT_H */
 
 pid_t

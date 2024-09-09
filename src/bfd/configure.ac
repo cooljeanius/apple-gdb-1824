@@ -342,9 +342,19 @@ m4_ifdef([ACX_BUGURL],[
   echo "Bug report URL: http://www.sourceware.org/bugzilla/"
 ])dnl
 
-if test "x${WANT_CONVERSION_WARNS}" = "x"; then
-  if test -n "${GCC}" && test "x${bad_64bit_gcc}" != "xyes"; then
-    test -z "${WANT_CONVERSION_WARNS}" && export WANT_CONVERSION_WARNS=1
+if test "x${WANT_CONVERSION_WARNS}" = "x" && test "x${enable_build_warnings}" = "xyes"; then
+  if test "x${ERROR_ON_WARNING}" != "xyes" && test "x${enable_werror}" != "xyes" && test "x${WERROR_CFLAGS}" != "x-Werror"; then
+    if test -n "${GCC}" && test "x${bad_64bit_gcc}" != "xyes"; then
+      if test "x${PEDANTIC_WARNINGS}" != "xyes" && test "x${enable_pedantic}" != "xyes"; then
+        test -z "${WANT_CONVERSION_WARNS}" && export WANT_CONVERSION_WARNS=1
+      else
+        AC_MSG_NOTICE([other warning flags are too strict to include conversion warnings; skipping])
+      fi
+    else
+      AC_MSG_NOTICE([conversion warnings require a good gcc; skipping])
+    fi
+  else
+    AC_MSG_NOTICE([skipping conversion warnings because -Werror might be enabled])
   fi
 fi
 AM_BINUTILS_WARNINGS
@@ -642,16 +652,20 @@ ACX_HEADER_STRING
 unset ac_cv_header_malloc_h
 AC_CHECK_HEADERS([malloc.h])dnl
 
+if test "x${ac_cv_header_inttypes_h}" = "x"; then
+  test -z "${ac_cv_header_inttypes_h}" || unset ac_cv_header_inttypes_h
+  AC_CHECK_HEADERS([inttypes.h]) # (keep autoscan happy)
+fi
 if test "x${ac_cv_header_stdint_h}" = "x"; then
-  test -z "${ac_cv_header_stdint_h}"
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
   AC_CHECK_HEADERS([stdint.h]) # (keep autoscan happy)
 fi
 if test "x${ac_cv_header_strings_h}" = "x"; then
-  test -z "${ac_cv_header_strings_h}"
+  test -z "${ac_cv_header_strings_h}" || unset ac_cv_header_strings_h
   AC_CHECK_HEADERS([strings.h]) # (keep autoscan happy)
 fi
 if test "x${ac_cv_header_unistd_h}" = "x"; then
-  test -z "${ac_cv_header_unistd_h}"
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
   AC_CHECK_HEADERS([unistd.h]) # (keep autoscan happy)
 fi
 
@@ -746,8 +760,10 @@ AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu mingwex msvcrt ucrt ucrtbase])dnl
 AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu mingwex msvcrt ucrt ucrtbase])dnl
 
 if test "x${ac_cv_func_getpagesize}" = "x"; then
-  test -z "${ac_cv_func_getpagesize}"
+  test -z "${ac_cv_func_getpagesize}" || unset ac_cv_func_getpagesize
   AC_CHECK_FUNCS([getpagesize]) # (keep autoscan happy)
+else
+  test -n "${ac_cv_func_getpagesize}" && echo "did getpagesize check succeed? ${ac_cv_func_getpagesize}"
 fi
 
 # other misc. stuff:
@@ -816,6 +832,11 @@ AC_CHECK_DECLS([ffsl])dnl
 AC_CHECK_DECLS([free])dnl
 AC_CHECK_DECLS([getenv])dnl
 AC_CHECK_DECLS_ONCE([getopt])dnl
+AC_CHECK_DECLS([getpagesize],[],[],[
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+])dnl
 AC_CHECK_DECLS([malloc])dnl
 AC_CHECK_DECLS([open])dnl
 AC_CHECK_DECLS([pread])dnl
@@ -1593,7 +1614,7 @@ do
     i386_aout_bsd_vec) tb="${tb} i386bsd.lo aout32.lo" ;;
     i386_aout_dynix_vec) tb="${tb} i386dynix.lo aout32.lo" ;;
     i386_aout_fbsd_vec) tb="${tb} i386freebsd.lo aout32.lo" ;;
-    i386_aout_linux_vec) tb="${tb} i386linux.lo aout32.lo" ;;
+    i386_aout_linux_vec) tb="${tb} i386linux.lo aout32.lo aout64.lo" ;;
     i386_aout_lynx_vec) tb="${tb} i386lynx.lo lynx-core.lo aout32.lo" ;;
     i386_aout_mach3_vec) tb="${tb} i386mach3.lo aout32.lo" ;;
     i386_aout_nbsd_vec) tb="${tb} i386netbsd.lo aout32.lo" ;;
@@ -1617,7 +1638,7 @@ do
     i386coff_vec) tb="${tb} coff-i386.lo cofflink.lo" ;;
     i386dynix_vec) tb="${tb} i386dynix.lo aout32.lo" ;;
     i386freebsd_vec) tb="${tb} i386freebsd.lo aout32.lo" ;;
-    i386linux_vec) tb="${tb} i386linux.lo aout32.lo" ;;
+    i386linux_vec) tb="${tb} i386linux.lo aout32.lo aout64.lo" ;;
     i386lynx_aout_vec) tb="${tb} i386lynx.lo lynx-core.lo aout32.lo" ;;
     i386lynx_coff_vec) tb="${tb} cf-i386lynx.lo cofflink.lo lynx-core.lo" ;;
     i386mach3_vec) tb="${tb} i386mach3.lo aout32.lo" ;;

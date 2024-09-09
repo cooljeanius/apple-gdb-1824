@@ -1998,6 +1998,7 @@ gen_exp_file(void)
       long *copy;
       int j;
       int on_page;
+      size_t ret;
       fprintf(f, "\t.section\t.init\n");
       fprintf(f, "lab:\n");
 
@@ -2005,7 +2006,10 @@ gen_exp_file(void)
       numbytes = ftell(base_file);
       fseek(base_file, 0, SEEK_SET);
       copy = (long *)xmalloc(numbytes);
-      fread(copy, 1, numbytes, base_file);
+      ret = fread(copy, 1, numbytes, base_file);
+      if (ret == 0UL) {
+        ; /* ??? */
+      }
       num_entries = (numbytes / sizeof(long));
 
 

@@ -106,10 +106,9 @@ read_sleb128 (bfd_byte **iter, bfd_byte *end, bfd_signed_vma *value)
   return TRUE;
 }
 
-/* Return 0 if either encoding is variable width, or not yet known to bfd.  */
-
-static
-int get_DW_EH_PE_width (int encoding, int ptr_size)
+/* Return 0 if either encoding is variable width, or not yet known to bfd: */
+static int
+get_DW_EH_PE_width(int encoding, int ptr_size)
 {
   /* DW_EH_PE_ values of 0x60 and 0x70 weren't defined at the time .eh_frame
      was added to bfd.  */
@@ -132,9 +131,8 @@ int get_DW_EH_PE_width (int encoding, int ptr_size)
 #define get_DW_EH_PE_signed(encoding) (((encoding) & DW_EH_PE_signed) != 0)
 
 /* Read a width sized value from memory.  */
-
 static bfd_vma
-read_value (bfd *abfd, bfd_byte *buf, int width, int is_signed)
+read_value(bfd *abfd, bfd_byte *buf, int width, int is_signed)
 {
   bfd_vma value;
 
@@ -142,24 +140,24 @@ read_value (bfd *abfd, bfd_byte *buf, int width, int is_signed)
     {
     case 2:
       if (is_signed)
-	value = bfd_get_signed_16 (abfd, buf);
+	value = (bfd_vma)bfd_get_signed_16(abfd, buf);
       else
-	value = bfd_get_16 (abfd, buf);
+	value = bfd_get_16(abfd, buf);
       break;
     case 4:
       if (is_signed)
-	value = bfd_get_signed_32 (abfd, buf);
+	value = (bfd_vma)bfd_get_signed_32(abfd, buf);
       else
-	value = bfd_get_32 (abfd, buf);
+	value = bfd_get_32(abfd, buf);
       break;
     case 8:
       if (is_signed)
-	value = bfd_get_signed_64 (abfd, buf);
+	value = (bfd_vma)bfd_get_signed_64(abfd, buf);
       else
-	value = bfd_get_64 (abfd, buf);
+	value = bfd_get_64(abfd, buf);
       break;
     default:
-      BFD_FAIL ();
+      BFD_FAIL();
       return 0;
     }
 
@@ -169,14 +167,14 @@ read_value (bfd *abfd, bfd_byte *buf, int width, int is_signed)
 /* Store a width sized value to memory.  */
 
 static void
-write_value (bfd *abfd, bfd_byte *buf, bfd_vma value, int width)
+write_value(bfd *abfd, bfd_byte *buf, bfd_vma value, int width)
 {
   switch (width)
     {
-    case 2: bfd_put_16 (abfd, value, buf); break;
-    case 4: bfd_put_32 (abfd, value, buf); break;
-    case 8: bfd_put_64 (abfd, value, buf); break;
-    default: BFD_FAIL ();
+    case 2: bfd_put_16(abfd, value, buf); break;
+    case 4: bfd_put_32(abfd, value, buf); break;
+    case 8: bfd_put_64(abfd, value, buf); break;
+    default: BFD_FAIL();
     }
 }
 
@@ -544,7 +542,8 @@ _bfd_elf_discard_section_eh_frame
 		{
 		  hdr_info->last_cie = cie;
 		  hdr_info->last_cie_sec = sec;
-		  last_cie_inf->make_relative = cie.make_relative;
+                  /* FIXME: GCC PR 39170: */
+		  last_cie_inf->make_relative = cie.make_relative; /* bf */
 		  last_cie_inf->make_lsda_relative = cie.make_lsda_relative;
 		  last_cie_inf->per_encoding_relative =
                     ((cie.per_encoding & 0x70) == DW_EH_PE_pcrel);
@@ -605,27 +604,30 @@ _bfd_elf_discard_section_eh_frame
 		switch (*aug++)
 		  {
 		  case 'L':
-		    REQUIRE (read_byte (&buf, end, &cie.lsda_encoding));
-		    ENSURE_NO_RELOCS (buf);
-		    REQUIRE (get_DW_EH_PE_width (cie.lsda_encoding, ptr_size));
+		    REQUIRE(read_byte(&buf, end, &cie.lsda_encoding));
+		    ENSURE_NO_RELOCS(buf);
+		    REQUIRE(get_DW_EH_PE_width(cie.lsda_encoding,
+                                               (int)ptr_size));
 		    break;
 		  case 'R':
-		    REQUIRE (read_byte (&buf, end, &cie.fde_encoding));
-		    ENSURE_NO_RELOCS (buf);
-		    REQUIRE (get_DW_EH_PE_width (cie.fde_encoding, ptr_size));
+		    REQUIRE(read_byte(&buf, end, &cie.fde_encoding));
+		    ENSURE_NO_RELOCS(buf);
+		    REQUIRE(get_DW_EH_PE_width(cie.fde_encoding,
+                                               (int)ptr_size));
 		    break;
 		  case 'P':
 		    {
 		      int per_width;
 
-		      REQUIRE (read_byte (&buf, end, &cie.per_encoding));
-		      per_width = get_DW_EH_PE_width (cie.per_encoding,
-						      ptr_size);
-		      REQUIRE (per_width);
+		      REQUIRE(read_byte(&buf, end, &cie.per_encoding));
+		      per_width = get_DW_EH_PE_width(cie.per_encoding,
+						     (int)ptr_size);
+		      REQUIRE(per_width);
 		      if ((cie.per_encoding & 0xf0) == DW_EH_PE_aligned)
 			{
-			  length = -(buf - ehbuf) & (per_width - 1);
-			  REQUIRE (skip_bytes (&buf, end, length));
+			  length = (bfd_size_type)(-(buf - ehbuf)
+                                                   & (per_width - 1));
+			  REQUIRE(skip_bytes(&buf, end, length));
 			}
 		      ENSURE_NO_RELOCS (buf);
 		      /* Ensure we have a reloc here, against
@@ -638,7 +640,7 @@ _bfd_elf_discard_section_eh_frame
 			  if (ptr_size == 8)
 			    r_symndx = ELF64_R_SYM (cookie->rel->r_info);
 			  else
-#endif
+#endif /* BFD64 */
 			    r_symndx = ELF32_R_SYM (cookie->rel->r_info);
 			  if (r_symndx >= cookie->locsymcount)
 			    {
@@ -655,11 +657,11 @@ _bfd_elf_discard_section_eh_frame
 			      cie.personality = h;
 			    }
 			  /* Cope with MIPS-style composite relocations.  */
-			  do
+			  do {
 			    cookie->rel++;
-			  while (GET_RELOC (buf) != NULL);
+			  } while (GET_RELOC(buf) != NULL);
 			}
-		      REQUIRE (skip_bytes (&buf, end, per_width));
+		      REQUIRE(skip_bytes(&buf, end, (bfd_size_type)per_width));
 		    }
 		    break;
 		  default:
@@ -705,7 +707,7 @@ _bfd_elf_discard_section_eh_frame
 	  initial_insn_length = (unsigned int)(end - buf);
 	  if (initial_insn_length <= 50)
 	    {
-	      cie.initial_insn_length = initial_insn_length;
+	      cie.initial_insn_length = (unsigned char)initial_insn_length;
 	      memcpy(cie.initial_instructions, buf, initial_insn_length);
 	    }
 	  insns = buf;
@@ -722,7 +724,7 @@ _bfd_elf_discard_section_eh_frame
 	  ENSURE_NO_RELOCS(buf);
 	  REQUIRE(GET_RELOC(buf));
 
-	  if ((*reloc_symbol_deleted_p)((buf - ehbuf), cookie))
+	  if ((*reloc_symbol_deleted_p)((bfd_vma)(buf - ehbuf), cookie))
 	    /* This is a FDE against a discarded section.  It should
 	       be deleted.  */
 	    this_inf->removed = 1;
@@ -744,12 +746,13 @@ _bfd_elf_discard_section_eh_frame
 	    }
 	  /* Skip the initial location and address range.  */
 	  start = buf;
-	  length = get_DW_EH_PE_width (cie.fde_encoding, ptr_size);
-	  REQUIRE (skip_bytes (&buf, end, 2 * length));
+	  length = (bfd_size_type)get_DW_EH_PE_width(cie.fde_encoding,
+                                                     (int)ptr_size);
+	  REQUIRE(skip_bytes(&buf, end, (2 * length)));
 
 	  /* Skip the augmentation size, if present.  */
 	  if (cie.augmentation[0] == 'z')
-	    REQUIRE (read_uleb128 (&buf, end, &length));
+	    REQUIRE(read_uleb128(&buf, end, &length));
 	  else
 	    length = 0;
 
@@ -758,11 +761,11 @@ _bfd_elf_discard_section_eh_frame
 	     be adjusted if any future augmentations do the same thing.  */
 	  if (cie.lsda_encoding != DW_EH_PE_omit)
 	    {
-	      this_inf->lsda_offset = (buf - start);
+	      this_inf->lsda_offset = (unsigned char)(buf - start);
 	      /* If there's no 'z' augmentation, we don't know where the
 		 CFA insns begin.  Assume no padding.  */
 	      if (cie.augmentation[0] != 'z')
-		length = (end - buf);
+		length = (bfd_size_type)(end - buf);
 	    }
 
 	  /* Skip over the augmentation data.  */
@@ -776,7 +779,8 @@ _bfd_elf_discard_section_eh_frame
       /* Try to interpret the CFA instructions and find the first
 	 padding nop.  Shrink this_inf's size so that it doesn't
 	 including the padding.  */
-      length = get_DW_EH_PE_width(cie.fde_encoding, ptr_size);
+      length = (bfd_size_type)get_DW_EH_PE_width(cie.fde_encoding,
+      						 (int)ptr_size);
       insns = skip_non_nops(insns, end, (unsigned int)length);
       if (insns != 0)
 	this_inf->size -= (end - insns);
@@ -991,7 +995,7 @@ _bfd_elf_write_section_eh_frame(bfd *abfd, struct bfd_link_info *info,
 
   if (sec->sec_info_type != ELF_INFO_TYPE_EH_FRAME)
     return bfd_set_section_contents(abfd, sec->output_section, contents,
-				    sec->output_offset, sec->size);
+				    (file_ptr)sec->output_offset, sec->size);
 
   ptr_size =
     (get_elf_backend_data(abfd)->elf_backend_eh_frame_address_size(abfd,
@@ -1131,14 +1135,14 @@ _bfd_elf_write_section_eh_frame(bfd *abfd, struct bfd_link_info *info,
 	      if (ent->add_augmentation_size)
 		{
 		  *aug++ = 'z';
-		  *buf++ = (extra_data - 1);
+		  *buf++ = (unsigned char)(extra_data - 1U);
 		}
 	      if (ent->add_fde_encoding)
 		{
 		  BFD_ASSERT(action & 1);
 		  *aug++ = 'R';
 		  *buf++ = DW_EH_PE_pcrel;
-		  action &= ~1;
+		  action &= (unsigned int)~1;
 		}
 
 	      while (action)
@@ -1149,44 +1153,47 @@ _bfd_elf_write_section_eh_frame(bfd *abfd, struct bfd_link_info *info,
 		      {
 			BFD_ASSERT(*buf == ent->lsda_encoding);
 			*buf |= DW_EH_PE_pcrel;
-			action &= ~2;
+			action &= (unsigned int)~2;
 		      }
 		    buf++;
 		    break;
 		  case 'P':
 		    per_encoding = *buf++;
-		    per_width = get_DW_EH_PE_width(per_encoding, ptr_size);
+		    per_width =
+                      (unsigned int)get_DW_EH_PE_width((int)per_encoding,
+                                                       (int)ptr_size);
 		    BFD_ASSERT(per_width != 0);
 		    BFD_ASSERT(((per_encoding & 0x70) == DW_EH_PE_pcrel)
                                == ent->per_encoding_relative);
 		    if ((per_encoding & 0xf0) == DW_EH_PE_aligned)
 		      buf = (contents
-			     + ((buf - contents + per_width - 1)
-				& ~((bfd_size_type) per_width - 1)));
+			     + (((unsigned int)(buf - contents)
+                                 + per_width - 1U)
+				& ~((bfd_size_type)per_width - 1U)));
 		    if (action & 4)
 		      {
 			bfd_vma val;
 
-			val = read_value (abfd, buf, per_width,
-					  get_DW_EH_PE_signed (per_encoding));
+			val = read_value(abfd, buf, (int)per_width,
+					 get_DW_EH_PE_signed(per_encoding));
 			val += ent->offset - ent->new_offset;
 			val -= extra_string + extra_data;
-			write_value (abfd, buf, val, per_width);
-			action &= ~4;
+			write_value(abfd, buf, val, (int)per_width);
+			action &= (unsigned int)~4;
 		      }
 		    buf += per_width;
 		    break;
 		  case 'R':
 		    if (action & 1)
 		      {
-			BFD_ASSERT (*buf == ent->fde_encoding);
+			BFD_ASSERT(*buf == ent->fde_encoding);
 			*buf |= DW_EH_PE_pcrel;
-			action &= ~1;
+			action &= (unsigned int)~1;
 		      }
 		    buf++;
 		    break;
 		  default:
-		    BFD_FAIL ();
+		    BFD_FAIL();
 		  }
 	    }
 	}
@@ -1201,9 +1208,10 @@ _bfd_elf_write_section_eh_frame(bfd *abfd, struct bfd_link_info *info,
 	  value = ent->new_offset + 4 - ent->cie_inf->new_offset;
 	  bfd_put_32 (abfd, value, buf);
 	  buf += 4;
-	  width = get_DW_EH_PE_width (ent->fde_encoding, ptr_size);
-	  value = read_value (abfd, buf, width,
-			      get_DW_EH_PE_signed (ent->fde_encoding));
+	  width = (unsigned int)get_DW_EH_PE_width(ent->fde_encoding,
+                                                   (int)ptr_size);
+	  value = read_value(abfd, buf, (int)width,
+			     get_DW_EH_PE_signed(ent->fde_encoding));
 	  address = value;
 	  if (value)
 	    {
@@ -1230,7 +1238,7 @@ _bfd_elf_write_section_eh_frame(bfd *abfd, struct bfd_link_info *info,
 		}
 	      if (ent->cie_inf->make_relative)
 		value -= (sec->output_section->vma + ent->new_offset + 8);
-	      write_value(abfd, buf, value, width);
+	      write_value(abfd, buf, value, (int)width);
 	    }
 
 	  if (hdr_info)
@@ -1244,9 +1252,10 @@ _bfd_elf_write_section_eh_frame(bfd *abfd, struct bfd_link_info *info,
 	      || ent->cie_inf->need_lsda_relative)
 	    {
 	      buf += ent->lsda_offset;
-	      width = get_DW_EH_PE_width (ent->lsda_encoding, ptr_size);
-	      value = read_value (abfd, buf, width,
-				  get_DW_EH_PE_signed (ent->lsda_encoding));
+	      width = (unsigned int)get_DW_EH_PE_width(ent->lsda_encoding,
+                                                       (int)ptr_size);
+	      value = read_value(abfd, buf, (int)width,
+				 get_DW_EH_PE_signed(ent->lsda_encoding));
 	      if (value)
 		{
 		  if ((ent->lsda_encoding & 0xf0) == DW_EH_PE_pcrel)
@@ -1254,7 +1263,7 @@ _bfd_elf_write_section_eh_frame(bfd *abfd, struct bfd_link_info *info,
 		  else if (ent->cie_inf->need_lsda_relative)
 		    value -= (sec->output_section->vma + ent->new_offset + 8
 			      + ent->lsda_offset);
-		  write_value (abfd, buf, value, width);
+		  write_value(abfd, buf, value, (int)width);
 		}
 	    }
 	  else if (ent->cie_inf->add_augmentation_size)

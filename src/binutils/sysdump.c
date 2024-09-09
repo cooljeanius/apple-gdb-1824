@@ -121,9 +121,13 @@ fillup(unsigned char *ptr)
   int size;
   int sum;
   int i;
+  size_t ret;
 
   size = (getc(g_file) - 2);
-  fread(ptr, 1, size, g_file);
+  ret = fread(ptr, 1, size, g_file);
+  if (ret == 0UL) {
+    ; /* ??? */
+  }
   sum = (g_code + size + 2);
 
   for (i = 0; i < size; i++)

@@ -640,10 +640,10 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
       section_offset = (int)(is->output_section->vma + is->output_offset);
       new_addr = (unsigned int)(f->h->root.root.u.def.value + section_offset);
 
-#if defined(LINUX_LINK_DEBUG) && 0
+#if defined(LINUX_LINK_DEBUG) && defined(USE_NEW_ELF_BFD_STRUCT_MEMBERS)
       printf("Fixup(%d) %s: %x %lx\n",f->jump, f->h->root.root.string,
 	     new_addr, f->value);
-#endif /* LINUX_LINK_DEBUG && 0 */
+#endif /* LINUX_LINK_DEBUG && USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 
       if (f->jump)
 	{
@@ -690,10 +690,10 @@ linux_finish_dynamic_link(bfd *output_bfd, struct bfd_link_info *info)
 	  section_offset = (int)(is->output_section->vma + is->output_offset);
 	  new_addr = (unsigned int)(f->h->root.root.u.def.value + section_offset);
 
-#if defined(LINUX_LINK_DEBUG) && 0
+#if defined(LINUX_LINK_DEBUG) && defined(USE_NEW_ELF_BFD_STRUCT_MEMBERS)
 	  printf("Fixup(B) %s: %x %lx\n", f->h->root.root.string,
 		 new_addr, f->value);
-#endif /* LINUX_LINK_DEBUG && 0 */
+#endif /* LINUX_LINK_DEBUG && USE_NEW_ELF_BFD_STRUCT_MEMBERS */
 
 	  bfd_put_32(output_bfd, (bfd_vma)new_addr, fixup_table);
 	  fixup_table += 4;

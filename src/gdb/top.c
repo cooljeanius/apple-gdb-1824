@@ -600,7 +600,7 @@ command_loop(void)
 #ifdef HAVE_SBRK
 	  char *lim = (char *) sbrk (0);
 	  space_at_cmd_start = lim - lim_at_start;
-#endif
+#endif /* HAVE_SBRK */
 	}
 
       execute_command (command, instream == stdin);
@@ -627,7 +627,7 @@ command_loop(void)
 			     space_now,
 			     (space_diff >= 0 ? '+' : '-'),
 			     space_diff);
-#endif
+#endif /* HAVE_SBRK */
 	}
     }
 }
@@ -1680,14 +1680,18 @@ Use \"on\" to enable the notification, and \"off\" to disable it."),
 
 /* FIXME: needs comment: */
 void
-gdb_init (char *argv0)
+gdb_init(char *argv0)
 {
+  char *ourcwd;
   if (pre_init_ui_hook)
     pre_init_ui_hook();
 
   /* Run the init function of each source file. */
 
-  getcwd(gdb_dirbuf, sizeof(gdb_dirbuf));
+  ourcwd = getcwd(gdb_dirbuf, sizeof(gdb_dirbuf));
+  if (ourcwd == NULL) {
+    ; /* ??? */
+  }
   current_directory = gdb_dirbuf;
 
 #ifdef __MSDOS__

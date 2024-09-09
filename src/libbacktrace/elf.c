@@ -226,14 +226,14 @@ typedef struct
 
 /* An index of ELF sections we care about.  */
 
-enum debug_section
+enum elf_debug_section
 {
-  DEBUG_INFO,
-  DEBUG_LINE,
-  DEBUG_ABBREV,
-  DEBUG_RANGES,
-  DEBUG_STR,
-  DEBUG_MAX
+  ELF_DEBUG_INFO,
+  ELF_DEBUG_LINE,
+  ELF_DEBUG_ABBREV,
+  ELF_DEBUG_RANGES,
+  ELF_DEBUG_STR,
+  ELF_DEBUG_MAX
 };
 
 /* Names of sections, indexed by enum elf_section.  */

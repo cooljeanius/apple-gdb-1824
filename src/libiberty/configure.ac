@@ -771,12 +771,12 @@ checkfuncs="${checkfuncs} getrlimit getrusage getsysinfo gettimeofday"
 checkfuncs="${checkfuncs} on_exit psignal pstat_getdynamic pstat_getstatic"
 checkfuncs="${checkfuncs} realpath setrlimit sbrk spawnve spawnvpe"
 checkfuncs="${checkfuncs} strerror strsignal sysconf sysctl sysmp table"
-checkfuncs="${checkfuncs} times wait3 wait4"
+checkfuncs="${checkfuncs} times wait wait3 wait4"
 
 # These are neither executed nor required, but they help keep
 # autoheader happy without adding a bunch of text to acconfig.h.
 # They also keep autoscan happy as well.
-if test "x" = "Y0"; then
+if test "x" = "Y0" && false; then
   AC_MSG_WARN([this condition should not actually be reached])
   AC_FUNC_ALLOCA
   AC_FUNC_CHOWN
@@ -1184,6 +1184,14 @@ double x = _system_configuration.physmem;
   AC_CHECK_DECLS([calloc, getenv, getopt, malloc, realloc, sbrk])dnl
   AC_CHECK_DECLS([memmem, mempcpy, stpncpy, strndup, strnlen])dnl
   AC_CHECK_DECLS([strverscmp, btowc, bzero, mkstemps])dnl
+  AC_CHECK_DECLS([psignal, strsignal],[],[],[
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif /* HAVE_SIGNAL_H */
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif /* HAVE_STRING_H */
+  ])dnl
   libiberty_NEED_DECLARATION([canonicalize_file_name])
 fi
 

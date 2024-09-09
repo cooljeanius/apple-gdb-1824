@@ -53,7 +53,10 @@
 #include "block.h"
 #include "dictionary.h"
 #include "objc-lang.h"
-#include "macosx/macosx-nat-inferior.h" /* need to pick up macho_calculate_offsets_for_dsym() in machoread.c */
+/* Keep this condition the same as where it is used: */
+#if defined(TM_NEXTSTEP) || defined(HAVE_MACH_O_IN_BFD)
+# include "macosx/macosx-nat-inferior.h" /* need to pick up macho_calculate_offsets_for_dsym() in machoread.c */
+#endif /* TM_NEXTSTEP || HAVE_MACH_O_IN_BFD */
 
 #include "db-access-functions.h"
 

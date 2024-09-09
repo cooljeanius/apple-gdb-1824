@@ -5326,7 +5326,7 @@ Thu Aug 20 19:05:48 1992  Ken Raeburn  (raeburn@cygnus.com)
 
 Tue Aug 18 12:57:45 1992  Ian Lance Taylor  (ian@cygnus.com)
 
-	* Makefile.in: added FLAGS_TO_PASS, and used it for all recursive
+ 	* Makefile.in: added FLAGS_TO_PASS, and used it for all recursive
 	invocations of make.  Also, always create installation
 	directories.
 
@@ -5448,7 +5448,7 @@ Mon Jul 13 05:06:51 1992  John Gilmore  (gnu at cygnus.com)
 	symbol pointers.  Punt expensive & useless bfd_realloc.  Use
 	malloc for raw symbols, and free it before returning.
 	(bfd_section_from_shdr):  Do not slurp symbol table until politely
-	asked.	Do not even slurp string tables.
+	asked. 	Do not even slurp string tables.
 	(elf_get_symtab_upper_bound):  Count 'em without reading them.
 	(elf_get_symtab):  This is how to politely ask.  Schlurp!
 	This should probably just *become* elf_slurp_symbol_table, FIXME.
@@ -6495,7 +6495,7 @@ Thu Nov 14 19:49:10 1991  Per Bothner  (bothner at cygnus.com)
 
 Thu Nov 14 19:11:13 1991  Fred Fish  (fnf at cygnus.com)
 
-	* elf.c:  Add minimal support for ELF symbol tables.  Generates
+    	* elf.c:  Add minimal support for ELF symbol tables.  Generates
 	canonical bfd symbol tables from ELF symbol tables.  Change the
 	name of some functions from bfd_<name> to elf_<name>.
 
@@ -7290,8 +7290,8 @@ Fri Jun 14 13:19:40 1991  Steve Chamberlain  (steve at cygint.cygnus.com)
 
 Fri Jun  7 12:35:46 1991  Sean Fagan  (sef at cygint.cygnus.com)
 
-	* coffcode.h (coff_swap_aux_in): added else case to deal with
-	filenames less than 9 characters.
+ 	* coffcode.h (coff_swap_aux_in): added else case to deal with
+ 	filenames less than 9 characters.
 
 
 Thu Jun  6 18:27:38 1991  Steve Chamberlain  (steve at cygint.cygnus.com)
@@ -7367,7 +7367,7 @@ Fri May 17 19:35:26 1991  Steve Chamberlain  (steve at cygint.cygnus.com)
 	Renamed some files to work on DOS.
 
 	* archive.c: lint * bfd.c: prototypes and lint. * ecoff.c: added
-	64bit transfer	* icoff.c: added 64bit transfer * ieee.c: name
+	64bit transfer 	* icoff.c: added 64bit transfer * ieee.c: name
 	chage, 64 bit transfer. * liba.out.h: Split out common code from
 	sunos and newsos into liba.out. Name changes and prototype mods. *
 	libbfd.c: lint and prototypes, extra 64bit swaps. * libbfd.h:
@@ -7382,7 +7382,7 @@ Fri May 17 19:35:26 1991  Steve Chamberlain  (steve at cygint.cygnus.com)
 
 Thu May 16 16:02:07 1991  Steve Chamberlain  (steve at cygint.cygnus.com)
 	from bothner
-	* libieee.h: Make ieee_data and ieee_ar_data macros usable
+ 	* libieee.h: Make ieee_data and ieee_ar_data macros usable
 	on LHS of assignment, even when using old compilers.
 	* liboasys.h: Ditto for oasys_data and oasys_ar_data.
 	* m68kcoff.c: Add enum-to-int casts to accomodate old compilers.
@@ -7840,6 +7840,12 @@ Wed Jan 16 01:55:53 1991  John Gilmore  (gnu at rtl)
 	(_write_symbol_table):  Initialize <idx> counter.
 	(foop):  Eliminate debugging code.
 
+Copyright (C) 1991-1993 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
 Local Variables:
 mode: change-log
 left-margin: 8
