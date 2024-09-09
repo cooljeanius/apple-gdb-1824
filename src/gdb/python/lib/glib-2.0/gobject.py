@@ -21,7 +21,8 @@ def g_type_to_name(gtype):
     gtype = int(gtype)
     typenode = gtype - gtype % 4
     if typenode > (255 << 2):
-        typenode = gdb.Value(typenode).cast(gdb.lookup_type("TypeNode").pointer())
+        typenode = gdb.Value(typenode).cast(
+            gdb.lookup_type("TypeNode").pointer())
     else:
         typenode = lookup_fundamental_type(typenode)
     if typenode is not None:
@@ -213,7 +214,8 @@ class SignalFrame:
                     self.append(signals, signal)
 
             if name == "g_signal_emitv":
-                instance_and_params = self.read_var(frame, "instance_and_params")
+                instance_and_params = self.read_var(
+                    frame, "instance_and_params")
                 if instance_and_params:
                     instance = instance_and_params[0]["v_pointer"].cast(
                         gdb.Type("GObject").pointer()
@@ -247,7 +249,8 @@ class SignalFrame:
         instance = self.or_join_array(instances)
         signal = self.or_join_array(signals)
 
-        stream.write(" <emit signal {} on instance {}>\n".format(signal, instance))
+        stream.write(
+            " <emit signal {} on instance {}>\n".format(signal, instance))
 
     def __getattr__(self, name):
         return getattr(self.frame, name)

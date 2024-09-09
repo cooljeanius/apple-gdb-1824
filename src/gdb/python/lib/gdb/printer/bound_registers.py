@@ -29,7 +29,8 @@ class MpxBound128Printer:
         size = (int)((upper) - (lower))
         if size > -1:
             size = size + 1
-        result = "{{lbound = {}, ubound = {}}} : size {}".format(lower, upper, size)
+        result = "{{lbound = {}, ubound = {}}} : size {}".format(
+            lower, upper, size)
         return result
 
 

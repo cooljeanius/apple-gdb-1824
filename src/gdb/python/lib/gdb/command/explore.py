@@ -90,7 +90,8 @@ class Explorer:
             while explorer_class.explore_expr(expr, value, is_child):
                 pass
         else:
-            print("Explorer for type '%s' not yet available.\n" % str(value.type))
+            print("Explorer for type '%s' not yet available.\n" %
+                  str(value.type))
 
     @staticmethod
     def explore_type(name, datatype, is_child):
@@ -215,7 +216,8 @@ class ScalarExplorer:
         """
         if datatype.code == gdb.TYPE_CODE_ENUM:
             if is_child:
-                print("{} is of an enumerated type '{}'.".format(name, str(datatype)))
+                print("{} is of an enumerated type '{}'.".format(
+                    name, str(datatype)))
             else:
                 print("'%s' is an enumerated type." % name)
         else:
@@ -263,7 +265,8 @@ class PointerExplorer:
             )
             return False
 
-        option = input("Continue exploring it as a pointer to an " "array [y/n]: ")
+        option = input(
+            "Continue exploring it as a pointer to an " "array [y/n]: ")
         if option == "y":
             while True:
                 index = 0
@@ -297,10 +300,12 @@ class PointerExplorer:
         """
         target_type = datatype.target()
         print(
-            "\n{} is a pointer to a value of type '{}'.".format(name, str(target_type))
+            "\n{} is a pointer to a value of type '{}'.".format(
+                name, str(target_type))
         )
 
-        Explorer.explore_type("the pointee type of %s" % name, target_type, is_child)
+        Explorer.explore_type("the pointee type of %s" %
+                              name, target_type, is_child)
         return False
 
 
@@ -371,7 +376,8 @@ class ArrayExplorer:
         target_type = datatype.target()
         print("{} is an array of '{}'.".format(name, str(target_type)))
 
-        Explorer.explore_type("the array element of %s" % name, target_type, is_child)
+        Explorer.explore_type("the array element of %s" %
+                              name, target_type, is_child)
         return False
 
 
@@ -519,10 +525,12 @@ class CompoundExplorer:
         if is_child:
             print(
                 "%s is a %s of type '%s' "
-                "with the following fields:\n" % (name, type_desc, str(datatype))
+                "with the following fields:\n" % (
+                    name, type_desc, str(datatype))
             )
         else:
-            print("'%s' is a %s with the following " "fields:\n" % (name, type_desc))
+            print("'%s' is a %s with the following " "fields:\n" %
+                  (name, type_desc))
 
         current_choice = 0
         choice_to_compound_field_map = {}

@@ -113,7 +113,8 @@ class TypeFlagsPrinter:
             for field in flags.fields()
             if field.name != "TYPE_FLAG_MIN"
         ]
-        TYPE_FLAGS += [TypeFlag(field.name, field.enumval) for field in iflags.fields()]
+        TYPE_FLAGS += [TypeFlag(field.name, field.enumval)
+                       for field in iflags.fields()]
         TYPE_FLAGS.sort()
 
 
@@ -129,7 +130,8 @@ class StructTypePrettyPrinter:
         fields.append("reference_type = %s" % self.val["reference_type"])
         fields.append("chain = %s" % self.val["reference_type"])
         fields.append(
-            "instance_flags = %s" % TypeFlagsPrinter(self.val["instance_flags"])
+            "instance_flags = %s" % TypeFlagsPrinter(
+                self.val["instance_flags"])
         )
         fields.append("length = %d" % self.val["length"])
         fields.append("main_type = %s" % self.val["main_type"])

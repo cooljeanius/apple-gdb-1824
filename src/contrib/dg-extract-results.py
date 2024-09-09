@@ -280,7 +280,7 @@ class Prog:
                 if harness:
                     segment.lines -= final_using
                     harness.add_segment(first_key, segment)
-                name = line[len("Running ") : -len(" ...\n")]
+                name = line[len("Running "): -len(" ...\n")]
                 harness = variation.get_harness(name)
                 segment = Segment(filename, file.tell())
                 first_key = None
@@ -355,7 +355,7 @@ class Prog:
             found = False
             for i in range(len(self.count_names)):
                 if line.startswith(self.count_names[i]):
-                    count = line[len(self.count_names[i]) : -1].strip()
+                    count = line[len(self.count_names[i]): -1].strip()
                     variation.counts[i] += self.parse_int(filename, count)
                     found = True
                     break
@@ -389,7 +389,7 @@ class Prog:
             before = file.tell()
             line = file.readline()
             if line.startswith("*** FAILURES: "):
-                self.acats_failures.append(line[len("*** FAILURES: ") : -1])
+                self.acats_failures.append(line[len("*** FAILURES: "): -1])
                 continue
             file.seek(before)
             break
@@ -426,13 +426,14 @@ class Prog:
 
             # Parse a testsuite run for one tool/variation combination.
             if line.startswith("Running target "):
-                name = line[len("Running target ") : -1]
+                name = line[len("Running target "): -1]
                 if not tool:
                     self.fatal(filename, "could not parse tool name")
                 if name not in self.known_variations:
                     self.fatal(filename, "unknown target: " + name)
                 self.parse_run(
-                    filename, file, tool, tool.get_variation(name), num_variations
+                    filename, file, tool, tool.get_variation(
+                        name), num_variations
                 )
                 # If there is only one variation then there is no separate
                 # summary for it.  Record any following version output.
@@ -512,7 +513,8 @@ class Prog:
             # dejagnu only prints result types that were seen at least once,
             # but acats always prints a number of unexpected failures.
             if counts[i] > 0 or (
-                tool.name == "acats" and name.startswith("# of unexpected failures")
+                tool.name == "acats" and name.startswith(
+                    "# of unexpected failures")
             ):
                 sys.stdout.write("%s%d\n" % (name, counts[i]))
 
