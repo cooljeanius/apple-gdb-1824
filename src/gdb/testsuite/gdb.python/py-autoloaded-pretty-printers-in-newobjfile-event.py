@@ -42,7 +42,8 @@ def new_objfile_handler(event):
             gdb.parse_and_eval("all_good = 1")
         else:
             print("Oops, not all good:")
-            print("pretty printer count: {}".format(len(objfile.pretty_printers)))
+            print("pretty printer count: {}".format(
+                len(objfile.pretty_printers)))
 
             for pp in objfile.pretty_printers:
                 print("  - {}".format(pp.name))

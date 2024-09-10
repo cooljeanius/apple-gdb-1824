@@ -45,6 +45,7 @@ class SolibLoadUnload1(perftest.TestCaseWithBasicMeasurements):
             # but measure differently.
             if self.measure_load:
                 do_test_load = "call do_test_load (%d)" % num
+
                 def func():
                     return gdb.execute(do_test_load)
 
@@ -58,6 +59,7 @@ class SolibLoadUnload1(perftest.TestCaseWithBasicMeasurements):
                 gdb.execute(do_test_load)
 
                 do_test_unload = "call do_test_unload (%d)" % num
+
                 def func():
                     return gdb.execute(do_test_unload)
 
