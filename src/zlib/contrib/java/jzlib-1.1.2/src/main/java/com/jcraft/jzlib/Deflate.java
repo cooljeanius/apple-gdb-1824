@@ -253,9 +253,9 @@ final class Deflate implements Cloneable {
   // Stop searching when current match exceeds this
   int nice_match;
 
-  short[] dyn_ltree;       // literal and length tree
-  short[] dyn_dtree;       // distance tree
-  short[] bl_tree;         // Huffman tree for bit lengths
+  int[] dyn_ltree;       // literal and length tree
+  int[] dyn_dtree;       // distance tree
+  int[] bl_tree;         // Huffman tree for bit lengths
 
   Tree l_desc=new Tree();  // desc for literal tree
   Tree d_desc=new Tree();  // desc for distance tree
