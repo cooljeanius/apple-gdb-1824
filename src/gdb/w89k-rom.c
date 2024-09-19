@@ -187,7 +187,7 @@ w89k_load (struct serial *desc, char *file, int hashmark)
       {
 	bfd_size_type section_size;
 
-	printf_filtered ("%s\t: 0x%4x .. 0x%4x  ", s->name, s->vma,
+	printf_filtered ("%s\t: 0x%4lx .. 0x%4lx  ", s->name, s->vma,
 			 s->vma + s->_raw_size);
 	gdb_flush (gdb_stdout);
 
