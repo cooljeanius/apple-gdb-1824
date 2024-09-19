@@ -1299,7 +1299,7 @@ collect_symbol(struct collection_list *collect,
       offset = SYMBOL_VALUE (sym);
       if (info_verbose)
 	{
-	  printf_filtered ("LOC_BASEREG %s: collect %ld bytes at offset ",
+	  printf_filtered ("LOC_BASEREG %s: collect %lu bytes at offset ",
 			   DEPRECATED_SYMBOL_NAME (sym), len);
 	  printf_vma (offset);
 	  printf_filtered (" from basereg %d\n", reg);
