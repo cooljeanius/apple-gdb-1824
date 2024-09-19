@@ -20,6 +20,8 @@ on:
       - main
       - dependabot/*
       - codeql-*
+      - autofix/alert-*
+      - ruff_unsafe
   pull_request:
     # The branches below must be a subset of the branches above
     branches:
@@ -27,6 +29,8 @@ on:
       - main
       - dependabot/*
       - codeql-*
+      - autofix/alert-*
+      - ruff_unsafe
   schedule:
     - cron: '38 5 * * 2'
 
@@ -98,7 +102,8 @@ jobs:
           (sync && stat /home/runner/work/apple-gdb-1824/build && sync); \
         fi
         (cd src && sync && echo "now in $(pwd)..." && sync)
-        if test ${{ matrix.language }} != 'c-cpp'; then sleep 1; else echo "c-cpp"; fi
+        if test ${{ matrix.language }} != 'c-cpp'; then \
+          sleep 1; else echo "c-cpp"; fi
 
     - name: Run sccache-cache only on non-release runs
       if: github.event_name != 'release' && github.event_name != 'workflow_dispatch' && matrix.language == 'c-cpp'
@@ -178,7 +183,7 @@ jobs:
           done; \
           if test -z "$(which nitpick)" || test ! -x "$(which nitpick)"; then \
             if test -n "${GEMCMD}"; then \
-              sync && echo "using ${GEMCMD} to try to install nitpick & dependencies"; \
+              sync && echo "using ${GEMCMD} to try to install nitpick & deps"; \
               "${SUDO}" ${GEMCMD} install ruby2ruby nitpick; \
             else \
               sync && echo "warning: unsure how to install nitpick"; \
