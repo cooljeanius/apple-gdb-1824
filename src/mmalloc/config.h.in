@@ -39,6 +39,10 @@
    */
 #undef HAVE_DECL_GETENV
 
+/* Define to 1 if you have the declaration of 'mach_error_string', and to 0 if
+   you don't. */
+#undef HAVE_DECL_MACH_ERROR_STRING
+
 /* Define to 1 if you have the <errno.h> header file. */
 #undef HAVE_ERRNO_H
 
@@ -71,6 +75,12 @@
 
 /* Define to 1 if you have the <mach/error.h> header file. */
 #undef HAVE_MACH_ERROR_H
+
+/* Define to 1 if you have the 'mach_error_string' function. */
+#undef HAVE_MACH_ERROR_STRING
+
+/* Define to 1 if the system has the type 'mach_error_t'. */
+#undef HAVE_MACH_ERROR_T
 
 /* Define to 1 if you have the <mach/mach_error.h> header file. */
 #undef HAVE_MACH_MACH_ERROR_H

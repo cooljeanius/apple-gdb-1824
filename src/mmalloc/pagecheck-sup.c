@@ -88,6 +88,13 @@ typedef vm_offset_t vm_address_t;
 #  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #   warning "pagecheck-sup.c expects a mach error header to be included."
 #  endif /* __GNUC__ && !defined(__STRICT_ANSI__) */
+#  if !defined(_MACH_ERROR_) && \
+      (!defined(HAVE_DECL_MACH_ERROR_STRING) || !HAVE_DECL_MACH_ERROR_STRING)
+#   if !defined(HAVE_MACH_ERROR_T) && !defined(mach_error_t)
+typedef kern_return_t mach_error_t;
+#   endif /* !HAVE_MACH_ERROR_T && !mach_error_t */
+char *mach_error_string(mach_error_t error_value);
+#  endif /* !_MACH_ERROR_ && !HAVE_DECL_MACH_ERROR_STRING */
 # endif /* HAVE_MACH_ERROR_H */
 #endif /* HAVE_MACH_MACH_ERROR_H || __MACH__ || __APPLE__ */
 

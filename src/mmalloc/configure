@@ -7144,12 +7144,6 @@ then :
   printf "%s\n" "#define HAVE_STDDEF_H 1" >>confdefs.h
 
 fi
-ac_fn_c_check_header_compile "$LINENO" "stdio.h" "ac_cv_header_stdio_h" "$ac_includes_default"
-if test "x$ac_cv_header_stdio_h" = xyes
-then :
-  printf "%s\n" "#define HAVE_STDIO_H 1" >>confdefs.h
-
-fi
 ac_fn_c_check_header_compile "$LINENO" "sys/mman.h" "ac_cv_header_sys_mman_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_mman_h" = xyes
 then :
@@ -7619,6 +7613,28 @@ fi
  ;;
 esac
 fi
+  ## One other mach one:
+ac_fn_c_check_type "$LINENO" "mach_error_t" "ac_cv_type_mach_error_t" "
+#if defined(HAVE_MACH_MACH_ERROR_H) || defined(__MACH__) || defined(__APPLE__)
+# include <mach/mach_error.h>
+#else
+# if defined(HAVE_MACH_ERROR_H) || defined(__NeXT__)
+#  include <mach/error.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning \"conftest for mach_error_t wants a mach error header.\"
+#  endif /* __GNUC__ && !defined(__STRICT_ANSI__) */
+# endif /* HAVE_MACH_ERROR_H */
+#endif /* HAVE_MACH_MACH_ERROR_H || __MACH__ || __APPLE__ */
+
+"
+if test "x$ac_cv_type_mach_error_t" = xyes
+then :
+
+printf "%s\n" "#define HAVE_MACH_ERROR_T 1" >>confdefs.h
+
+
+fi
 
   ac_fn_c_check_type "$LINENO" "intptr_t" "ac_cv_type_intptr_t" "$ac_includes_default"
 if test "x$ac_cv_type_intptr_t" = xyes
@@ -8063,6 +8079,12 @@ then :
   printf "%s\n" "#define HAVE_LSEEK 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "mach_error_string" "ac_cv_func_mach_error_string"
+if test "x$ac_cv_func_mach_error_string" = xyes
+then :
+  printf "%s\n" "#define HAVE_MACH_ERROR_STRING 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "mach_vm_region" "ac_cv_func_mach_vm_region"
 if test "x$ac_cv_func_mach_vm_region" = xyes
 then :
@@ -8204,6 +8226,29 @@ esac
 fi
 printf "%s\n" "#define HAVE_DECL_GETENV $ac_have_decl" >>confdefs.h
 
+
+ac_fn_check_decl "$LINENO" "mach_error_string" "ac_cv_have_decl_mach_error_string" "
+#if defined(HAVE_MACH_MACH_ERROR_H) || defined(__MACH__) || defined(__APPLE__)
+# include <mach/mach_error.h>
+#else
+# if defined(HAVE_MACH_ERROR_H) || defined(__NeXT__)
+#  include <mach/error.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning \"conftest for mach_error_string wants a mach error header.\"
+#  endif /* __GNUC__ && !defined(__STRICT_ANSI__) */
+# endif /* HAVE_MACH_ERROR_H */
+#endif /* HAVE_MACH_MACH_ERROR_H || __MACH__ || __APPLE__ */
+
+" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_mach_error_string" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_MACH_ERROR_STRING $ac_have_decl" >>confdefs.h
 
 
 
