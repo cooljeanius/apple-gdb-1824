@@ -1273,7 +1273,7 @@ collect_symbol(struct collection_list *collect,
       offset = 0;
       if (info_verbose)
 	{
-	  printf_filtered("LOC_REGPARM_ADDR %s: Collect %ld bytes at offset ",
+	  printf_filtered("LOC_REGPARM_ADDR %s: Collect %lu bytes at offset ",
 			  DEPRECATED_SYMBOL_NAME(sym), len);
 	  printf_vma(offset);
 	  printf_filtered(" from reg %d\n", reg);
