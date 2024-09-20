@@ -1789,6 +1789,11 @@ import DOMPurify from 'dompurify';
   function
   with_sidebar_query (href)
   {
+    const allowedUrls = [
+      config.INDEX_NAME,
+      // Add other allowed URLs here
+    ];
+
     if (basename (href) === config.INDEX_NAME)
       return config.INDEX_NAME;
     else
@@ -1803,7 +1808,13 @@ import DOMPurify from 'dompurify';
            instead of directly to the page. */
         if (url.hash && new_hash !== url.hash)
           new_hash += ("." + url.hash.slice (1));
-        return config.INDEX_NAME + new_hash;
+        const finalUrl = config.INDEX_NAME + new_hash;
+        if (allowedUrls.includes(finalUrl)) {
+          return finalUrl;
+        } else {
+          console.error("Unauthorized URL redirection attempt blocked:", finalUrl);
+          return null; // or handle the error as needed
+        }
       }
   }
 
