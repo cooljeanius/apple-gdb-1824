@@ -31,6 +31,10 @@ import DOMPurify from 'dompurify';
     EXT: ".html",
     INDEX_NAME: "index.html",
     INDEX_ID: "index",
+    ALLOWED_URLS: [
+      "index.html",
+      // Add other allowed URLs here
+    ],
     CONTENTS_ID: "SEC_Contents",
     MAIN_ANCHORS: ["Top"],
     WARNING_TIMEOUT: 3000,
@@ -1789,11 +1793,6 @@ import DOMPurify from 'dompurify';
   function
   with_sidebar_query (href)
   {
-    const allowedUrls = [
-      config.INDEX_NAME,
-      // Add other allowed URLs here
-    ];
-
     if (basename (href) === config.INDEX_NAME)
       return config.INDEX_NAME;
     else
@@ -1809,7 +1808,7 @@ import DOMPurify from 'dompurify';
         if (url.hash && new_hash !== url.hash)
           new_hash += ("." + url.hash.slice (1));
         const finalUrl = config.INDEX_NAME + new_hash;
-        if (allowedUrls.includes(finalUrl)) {
+        if (config.ALLOWED_URLS.includes(finalUrl)) {
           return finalUrl;
         } else {
           console.error("Unauthorized URL redirection attempt blocked:", finalUrl);
