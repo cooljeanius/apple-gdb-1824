@@ -16,6 +16,8 @@
    You should have received a copy of the GNU General Public License
    along with GNU Texinfo.  If not, see <http://www.gnu.org/licenses/>.  */
 
+import DOMPurify from 'dompurify';
+
 (function (features, user_config) {
   "use strict";
 
@@ -1793,7 +1795,8 @@
       {
         /* XXX: Do not use the URL API for IE portability.  */
         var url = with_sidebar_query.url;
-        url.setAttribute ("href", href);
+        var sanitizedHref = DOMPurify.sanitize(href);
+        url.setAttribute ("href", sanitizedHref);
         var new_hash = "#" + basename (url.pathname, /[.]x?html/);
         /* XXX: 'new_hash !== url.hash' is a workaround to work with links
            produced by makeinfo which link to an anchor element in a page
