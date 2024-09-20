@@ -112,7 +112,7 @@ m4_ifdef([AM_PROG_AR],[
 AC_CHECK_TOOL([RANLIB],[ranlib],[:])dnl
   ## keep autoscan happy:
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   AC_PROG_RANLIB
 else
   test -n "${RANLIB}" && export RANLIB
@@ -137,8 +137,7 @@ AC_REQUIRE_HEADER_STDC
 AC_CHECK_HEADERS([AvailabilityMacros.h db.h errno.h fcntl.h \
                   ipc/ipc_types.h limits.h mach/error.h mach/mach.h \
                   mach/mach_error.h mach/mach_port.h mach/mach_vm.h \
-                  mach/port.h mach/vm_region.h stddef.h stdio.h \
-                  sys/mman.h])dnl
+                  mach/port.h mach/vm_region.h stddef.h sys/mman.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
@@ -198,6 +197,20 @@ AC_CHECK_TYPES([port_t],[],[
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_PORT_H */
 ])dnl
+  ## One other mach one:
+AC_CHECK_TYPES([mach_error_t],[],[],[
+#if defined(HAVE_MACH_MACH_ERROR_H) || defined(__MACH__) || defined(__APPLE__)
+# include <mach/mach_error.h>
+#else
+# if defined(HAVE_MACH_ERROR_H) || defined(__NeXT__)
+#  include <mach/error.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "conftest for mach_error_t wants a mach error header."
+#  endif /* __GNUC__ && !defined(__STRICT_ANSI__) */
+# endif /* HAVE_MACH_ERROR_H */
+#endif /* HAVE_MACH_MACH_ERROR_H || __MACH__ || __APPLE__ */
+])dnl
 AC_TYPE_INTPTR_T
 AC_TYPE_INT32_T
 AC_TYPE_UINTPTR_T
@@ -214,9 +227,23 @@ AC_FUNC_MMAP
 # Checks for other functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([close lseek mach_vm_region memmove memset msync munmap \
-                sbrk strerror vm_region])dnl
+AC_CHECK_FUNCS([close lseek mach_error_string mach_vm_region memmove memset \
+                msync munmap sbrk strerror vm_region])dnl
 AC_CHECK_DECLS_ONCE([getenv])dnl
+
+AC_CHECK_DECLS([mach_error_string],[],[],[
+#if defined(HAVE_MACH_MACH_ERROR_H) || defined(__MACH__) || defined(__APPLE__)
+# include <mach/mach_error.h>
+#else
+# if defined(HAVE_MACH_ERROR_H) || defined(__NeXT__)
+#  include <mach/error.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "conftest for mach_error_string wants a mach error header."
+#  endif /* __GNUC__ && !defined(__STRICT_ANSI__) */
+# endif /* HAVE_MACH_ERROR_H */
+#endif /* HAVE_MACH_MACH_ERROR_H || __MACH__ || __APPLE__ */
+])dnl
 
 BFD_NEED_DECLARATION([sbrk])dnl
 BFD_NEED_DECLARATION([getpagesize])dnl

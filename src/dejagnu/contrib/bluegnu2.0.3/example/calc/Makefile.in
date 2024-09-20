@@ -72,7 +72,7 @@ check:	site.exp all
 	${RUNTEST} ${RUNTESTFLAGS} --tool ${PROG} CALC=${PROG} --srcdir ${srcdir}/testsuite
 
 site.exp: ./config.status Makefile
-	@echo "Making a new config file..."
+	@echo "In `pwd`: Making a new config file..."
 	-@rm -f ./tmp?
 	@touch site.exp
 

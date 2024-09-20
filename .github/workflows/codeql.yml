@@ -20,6 +20,8 @@ on:
       - main
       - dependabot/*
       - codeql-*
+      - autofix/alert-*
+      - ruff_unsafe
   pull_request:
     # The branches below must be a subset of the branches above
     branches:
@@ -27,6 +29,8 @@ on:
       - main
       - dependabot/*
       - codeql-*
+      - autofix/alert-*
+      - ruff_unsafe
   schedule:
     - cron: '38 5 * * 2'
 
@@ -98,7 +102,8 @@ jobs:
           (sync && stat /home/runner/work/apple-gdb-1824/build && sync); \
         fi
         (cd src && sync && echo "now in $(pwd)..." && sync)
-        if test ${{ matrix.language }} != 'c-cpp'; then sleep 1; else echo "c-cpp"; fi
+        if test ${{ matrix.language }} != 'c-cpp'; then \
+          sleep 1; else echo "c-cpp"; fi
 
     - name: Run sccache-cache only on non-release runs
       if: github.event_name != 'release' && github.event_name != 'workflow_dispatch' && matrix.language == 'c-cpp'
@@ -178,7 +183,7 @@ jobs:
           done; \
           if test -z "$(which nitpick)" || test ! -x "$(which nitpick)"; then \
             if test -n "${GEMCMD}"; then \
-              sync && echo "using ${GEMCMD} to try to install nitpick & dependencies"; \
+              sync && echo "using ${GEMCMD} to try to install nitpick & deps"; \
               "${SUDO}" ${GEMCMD} install ruby2ruby nitpick; \
             else \
               sync && echo "warning: unsure how to install nitpick"; \
@@ -212,13 +217,16 @@ jobs:
           fi; \
           (bundle clean && ls) || stat Gemfile || wc -l Gemfile || du Gemfile; \
           if test -d vendor && test -r vendor && test -w vendor; then \
-            (sync && (find vendor -name '*.rb' -delete || rm -rf vendor || rmdir vendor)); \
+            sync && stat vendor; \
+            (find vendor -name '*.rb' -delete || rm -rf vendor || rmdir vendor); \
           fi; \
           if test -d vendor && test -r vendor && test -w vendor && test -s vendor; then \
-            (sync && (find vendor -name '*.gemspec' -delete || rm -rf vendor || rmdir vendor)); \
+            sync && ls vendor; \
+            (find vendor -name '*.gemspec' -delete || rm -rf vendor || rmdir vendor); \
           fi; \
           if test -d vendor && test -r vendor && test -w vendor; then \
-            (sync && (find vendor -name Gemfile -delete || rm -rf vendor || rmdir vendor)); \
+            sync && du vendor; \
+            (find vendor -name Gemfile -delete || rm -rf vendor || rmdir vendor); \
           fi; \
           sync && echo "leaving $(pwd)..."; \
           popd || exit; \
@@ -272,7 +280,7 @@ jobs:
         elif test ${{ matrix.language }} == 'csharp' && test -x "$(which yamllint)"; then \
           sync && which -a yamllint && sleep 1; \
           yamllint .github/codeql/extensions/apple-gdb-1824-csharp/codeql-pack.yml; \
-          sync && echo "TODO: find a proper linter for csharp..." && sleep 1; \
+          sync && echo "TODO: find a proper linter for csharp…" && sleep 1; \
         else \
           echo "unhandled case for syntax check step (matrix.language is ${{ matrix.language }})"; \
           sync && sleep 1; \
