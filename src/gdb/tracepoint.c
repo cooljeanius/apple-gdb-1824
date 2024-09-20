@@ -1286,7 +1286,7 @@ collect_symbol(struct collection_list *collect,
       offset = (frame_offset + SYMBOL_VALUE(sym));
       if (info_verbose)
 	{
-	  printf_filtered("LOC_LOCAL %s: Collect %lu bytes at offset ",
+	  printf_filtered("LOC_LOCAL %s: Collect %zu bytes at offset ",
 			  DEPRECATED_SYMBOL_NAME(sym), len);
 	  printf_vma(offset);
 	  printf_filtered(" from frame ptr reg %d\n", reg);
