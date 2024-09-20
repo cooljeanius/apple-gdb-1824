@@ -112,7 +112,7 @@ m4_ifdef([AM_PROG_AR],[
 AC_CHECK_TOOL([RANLIB],[ranlib],[:])dnl
   ## keep autoscan happy:
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   AC_PROG_RANLIB
 else
   test -n "${RANLIB}" && export RANLIB

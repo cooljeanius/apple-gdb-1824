@@ -217,13 +217,16 @@ jobs:
           fi; \
           (bundle clean && ls) || stat Gemfile || wc -l Gemfile || du Gemfile; \
           if test -d vendor && test -r vendor && test -w vendor; then \
-            (sync && (find vendor -name '*.rb' -delete || rm -rf vendor || rmdir vendor)); \
+            sync && stat vendor; \
+            (find vendor -name '*.rb' -delete || rm -rf vendor || rmdir vendor); \
           fi; \
           if test -d vendor && test -r vendor && test -w vendor && test -s vendor; then \
-            (sync && (find vendor -name '*.gemspec' -delete || rm -rf vendor || rmdir vendor)); \
+            sync && ls vendor; \
+            (find vendor -name '*.gemspec' -delete || rm -rf vendor || rmdir vendor); \
           fi; \
           if test -d vendor && test -r vendor && test -w vendor; then \
-            (sync && (find vendor -name Gemfile -delete || rm -rf vendor || rmdir vendor)); \
+            sync && du vendor; \
+            (find vendor -name Gemfile -delete || rm -rf vendor || rmdir vendor); \
           fi; \
           sync && echo "leaving $(pwd)..."; \
           popd || exit; \
@@ -277,7 +280,7 @@ jobs:
         elif test ${{ matrix.language }} == 'csharp' && test -x "$(which yamllint)"; then \
           sync && which -a yamllint && sleep 1; \
           yamllint .github/codeql/extensions/apple-gdb-1824-csharp/codeql-pack.yml; \
-          sync && echo "TODO: find a proper linter for csharp..." && sleep 1; \
+          sync && echo "TODO: find a proper linter for csharp…" && sleep 1; \
         else \
           echo "unhandled case for syntax check step (matrix.language is ${{ matrix.language }})"; \
           sync && sleep 1; \
