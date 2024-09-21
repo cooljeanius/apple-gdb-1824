@@ -1543,8 +1543,13 @@ import DOMPurify from 'dompurify';
                         store.dispatch({ type: "section", hash: data.hash, section_hash: id } );
                       }
                 }
+                const allowedHashes = ['#section1', '#section2', '#section3']; // Example whitelist
                 let sanitizedHash = DOMPurify.sanitize(data.hash);
-                window.location.replace(sanitizedHash);
+                if (allowedHashes.includes(sanitizedHash)) {
+                    window.location.replace(sanitizedHash);
+                } else {
+                    console.warn('Attempted redirection to an untrusted URL fragment:', sanitizedHash);
+                }
             }
           else
             window.scroll (0, 0);
