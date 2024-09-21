@@ -61,7 +61,7 @@ static unsigned short *crctab;
 /* Call this to init the fast CRC-16 calculation table.  */
 
 static void
-crcinit (void)
+crcinit(void)
 {
   static int crctab_inited = 0;
   int val;
@@ -69,7 +69,7 @@ crcinit (void)
   if (crctab_inited == 1)
     return;
 
-  crctab = xmalloc (256 * sizeof (short));
+  crctab = (unsigned short *)xmalloc(256 * sizeof(unsigned short));
 
   for (val = 0; val <= 255; val++)
     {
@@ -126,6 +126,7 @@ xmodem_init_xfer (struct serial *desc)
 	{
 	case 'C':
 	  crcflag = 1;
+	  /*FALLTHROUGH*/
 	case NAK:
 	  return 0;
 	default:
@@ -270,7 +271,7 @@ xmodem_finish_xfer (struct serial *desc)
 	}
     }
 
-  error ("xmodem_finish_xfer:  Excessive retries.");
+  error("xmodem_finish_xfer:  Excessive retries.");
 }
 
 /* EOF */

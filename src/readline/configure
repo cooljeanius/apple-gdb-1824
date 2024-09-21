@@ -5158,7 +5158,7 @@ printf "%s\n" "no" >&6; }
 fi
 
 if test "x${CC}" = "x"; then
-  test -z "${CC}"
+  test -z "${CC}" || unset CC
   ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -5975,7 +5975,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 else
-  test ! -z "${CC}" && export CC
+  test -n "${CC}" && export CC
     ## dummy
 fi
 ac_ext=c
@@ -6932,7 +6932,7 @@ fi
 
 test -n "${ARFLAGS}" || ARFLAGS="cr"
 if test "x${AR}" = "x"; then
-  test -z "${AR}"
+  test -z "${AR}" || unset AR
 
   if test -n "$ac_tool_prefix"; then
   for ac_prog in ar lib "link -lib"
@@ -7233,7 +7233,7 @@ else
   test -n "${AR}" && export AR
 fi
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -7339,7 +7339,7 @@ else
 fi
 
 else
-  test ! -z "${RANLIB}"
+  test -n "${RANLIB}" && export RANLIB
 fi
 
 
@@ -7685,7 +7685,7 @@ fi
 # check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-# FIXME: Replace `main' with a function in `-lcurses':
+# FIXME: Replace 'main' with a function in '-lcurses':
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lcurses" >&5
 printf %s "checking for main in -lcurses... " >&6; }
 if test ${ac_cv_lib_curses_main+y}
@@ -7727,7 +7727,7 @@ then :
   LIBS="-lcurses $LIBS"
 
 fi
-# FIXME: Replace `main' with a function in `-lhistory':
+# FIXME: Replace 'main' with a function in '-lhistory':
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lhistory" >&5
 printf %s "checking for main in -lhistory... " >&6; }
 if test ${ac_cv_lib_history_main+y}
@@ -7769,7 +7769,7 @@ then :
   LIBS="-lhistory $LIBS"
 
 fi
-# FIXME: Replace `main' with a function in `-lreadline':
+# FIXME: Replace 'main' with a function in '-lreadline':
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lreadline" >&5
 printf %s "checking for main in -lreadline... " >&6; }
 if test ${ac_cv_lib_readline_main+y}
@@ -11867,7 +11867,7 @@ then :
 fi
 
 if test "x${ac_cv_header_stdint_h}" = "x"; then
-  test -z "${ac_cv_header_stdint_h}"
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
   ac_fn_c_check_header_compile "$LINENO" "stdint.h" "ac_cv_header_stdint_h" "$ac_includes_default"
 if test "x$ac_cv_header_stdint_h" = xyes
 then :
@@ -11877,7 +11877,7 @@ fi
 
 fi
 if test "x${ac_cv_header_strings_h}" = "x"; then
-  test -z "${ac_cv_header_strings_h}"
+  test -z "${ac_cv_header_strings_h}" || unset ac_cv_header_strings_h
   ac_fn_c_check_header_compile "$LINENO" "strings.h" "ac_cv_header_strings_h" "$ac_includes_default"
 if test "x$ac_cv_header_strings_h" = xyes
 then :
@@ -11887,7 +11887,7 @@ fi
 
 fi
 if test "x${ac_cv_header_unistd_h}" = "x"; then
-  test -z "${ac_cv_header_unistd_h}"
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
   ac_fn_c_check_header_compile "$LINENO" "unistd.h" "ac_cv_header_unistd_h" "$ac_includes_default"
 if test "x$ac_cv_header_unistd_h" = xyes
 then :
@@ -13698,7 +13698,7 @@ fi
 
 
 case "${host_os}" in
-aix*)   prefer_curses=yes ;;
+aix*) prefer_curses=yes ;;
 esac
 
 if test "X$bash_cv_termcap_lib" = "X"; then
@@ -13941,11 +13941,11 @@ TERMCAP_DEP=
 fi
 
 if test "${TERMCAP_LIB}" = "./lib/termcap/libtermcap.a"; then
-	if test "${prefer_curses}" = yes; then
-		TERMCAP_LIB=-lcurses
-	else
-		TERMCAP_LIB=-ltermcap	# default
-	fi
+  if test "${prefer_curses}" = yes; then
+    TERMCAP_LIB=-lcurses
+  else
+    ERMCAP_LIB=-ltermcap # default
+  fi
 fi
 
 
@@ -14066,12 +14066,12 @@ fi
 
 
 case "${host_cpu}" in
-*cray*)	LOCAL_CFLAGS=-DCRAY ;;
+*cray*) LOCAL_CFLAGS=-DCRAY ;;
 *s390*) LOCAL_CFLAGS=-fsigned-char ;;
 esac
 
 case "${host_os}" in
-isc*)	 LOCAL_CFLAGS=-Disc386 ;;
+isc*) LOCAL_CFLAGS=-Disc386 ;;
 darwin*) LOCAL_CFLAGS="-mmacosx-version-min=10.6" ;;
 esac
 
@@ -14634,22 +14634,22 @@ fi
 # ${srcdir}/support/shobj-conf
 #
 if test -f ${srcdir}/support/shobj-conf; then
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking configuration for building shared libraries" >&5
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking configuration for building shared libraries" >&5
 printf %s "checking configuration for building shared libraries... " >&6; }
-        eval `${CONFIG_SHELL-/bin/sh} ${srcdir}/support/shobj-conf -C "${CC}" -c ${host_cpu} -o ${host_os} -v ${host_vendor}`
-                                	                					        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${SHLIB_STATUS}" >&5
+  eval `${CONFIG_SHELL-/bin/sh} ${srcdir}/support/shobj-conf -C "${CC}" -c ${host_cpu} -o ${host_os} -v ${host_vendor}`
+                          { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${SHLIB_STATUS}" >&5
 printf "%s\n" "${SHLIB_STATUS}" >&6; }
-	# SHLIB_STATUS is either `supported' or `unsupported'. If it is
-	# `unsupported', turn off any default shared library building
-	if test "${SHLIB_STATUS}" = 'unsupported'; then
-		opt_shared_libs=no
-	fi
+  # SHLIB_STATUS is either 'supported' or 'unsupported'. If it is
+  # 'unsupported', then turn off any default shared library building:
+  if test "${SHLIB_STATUS}" = 'unsupported'; then
+    opt_shared_libs=no
+  fi
 
-	# shared library versioning
-	# quoted for m4 so I can use character classes
-	SHLIB_MAJOR=`expr "${LIBVERSION}" : '\([0-9]\)\..*'`
-	SHLIB_MINOR=`expr "${LIBVERSION}" : '[0-9]\.\([0-9]\).*'`
-			## done with shobj-conf
+  # shared library versioning
+  # quoted for m4 so I can use character classes
+  SHLIB_MAJOR=`expr "${LIBVERSION}" : '\([0-9]\)\..*'`
+  SHLIB_MINOR=`expr "${LIBVERSION}" : '[0-9]\.\([0-9]\).*'`
+      ## done with shobj-conf
 fi
 
 if test "x${opt_static_libs}" = "xyes"; then
@@ -25992,8 +25992,8 @@ echo 'git directory not found: installing possibly empty changelog.' >&2)"
 
 
 case "${host_os}" in
-msdosdjgpp*)	BUILD_DIR=`pwd.exe` ;;	# to prevent //d/path/file
-*)		BUILD_DIR=`pwd` ;;
+msdosdjgpp*) BUILD_DIR=`pwd.exe` ;; # to prevent //d/path/file
+*) BUILD_DIR=`pwd` ;;
 esac
 
 

@@ -858,7 +858,7 @@ TARGET_FLAGS_TO_PASS = \
 # SFILES is used in building the distribution archive.
 
 # APPLE LOCAL begin subroutine inlining:
-SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c  \
+SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c \
   ax-general.c ax-gdb.c \
   bcache.c \
   bfd-target.c \
@@ -906,7 +906,8 @@ SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c  \
   ui-out.c utils.c ui-file.h ui-file.c \
   user-regs.c \
   valarith.c valops.c valprint.c value.c varobj.c \
-  wrapper.c target/i386-amd64-shared-tdep.c target/x86-shared-tdep.c
+  wrapper.c target/i386-amd64-shared-tdep.c target/x86-shared-tdep.c \
+  xmodem.c @MAINT@@APPLE_MAINT@@EXTRA_YFLAGS_SEP@ go-exp.y
 # APPLE LOCAL end subroutine inlining
 
 LINTFILES = $(SFILES) $(YYFILES) $(CONFIG_SRCS) init.c
@@ -1094,6 +1095,7 @@ gdb_wait_h = gdb_wait.h
 glibc_tdep_h = glibc-tdep.h
 gnu_nat_h = gnu-nat.h
 gnu_v2_abi_h = gnu-v2-abi.h $(gdbtypes_h) $(cp_abi_h)
+go_lang_h = go-lang.h $(gdbtypes_h) $(symtab_h) $(value_h)
 gregset_h = gregset.h
 hpacc_abi_h = hpacc-abi.h $(cp_abi_h)
 hppa_tdep_h = hppa-tdep.h
@@ -1213,6 +1215,7 @@ wrapper_h = wrapper.h $(gdb_h) $(varobj_h)
 x86_shared_tdep_h = x86-shared-tdep.h
 # END APPLE LOCAL header
 xcoffsolib_h = xcoffsolib.h
+xmodem_h = xmodem.h
 
 #
 # gdb/cli/ headers
@@ -1499,13 +1502,17 @@ YYFILES = c-exp.c \
 	objc-exp.c \
 	ada-exp.c \
 	jv-exp.c \
-	f-exp.c m2-exp.c p-exp.c
+	f-exp.c \
+	m2-exp.c \
+	p-exp.c @MAINT@@APPLE_MAINT@@EXTRA_YFLAGS_SEP@ go-exp.c
 YYOBJ = c-exp.o \
 	cp-name-parser.o \
 	objc-exp.o \
 	ada-exp.o \
 	jv-exp.o \
-	f-exp.o m2-exp.o p-exp.o
+	f-exp.o \
+	m2-exp.o \
+	p-exp.o @MAINT@@APPLE_MAINT@@EXTRA_YFLAGS_SEP@ go-exp.o
 
 # Things which need to be built when making a distribution.
 
@@ -2024,12 +2031,9 @@ realclean: maintainer-clean
 local-maintainer-clean: mostlyclean @MAINT@ clean-tui clean-gdbtk
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
-	rm -f c-exp.c \
-		cp-name-parser.c \
-		ada-lex.c ada-exp.c \
-	        objc-exp.c \
-		jv-exp.tab \
-		f-exp.c m2-exp.c p-exp.c
+	rm -f c-exp.c cp-name-parser.c ada-lex.c ada-exp.c \
+	  objc-exp.c jv-exp.tab f-exp.c m2-exp.c \
+	  p-exp.c @MAINT@@APPLE_MAINT@@EXTRA_YFLAGS_SEP@ go-exp.c
 	rm -f $(AM_V_v) TAGS $(INFOFILES)
 	rm -f $(AM_V_v) $(YYFILES)
 	rm -f nm.h tm.h xm.h
@@ -2471,11 +2475,19 @@ v850ice.o: $(srcdir)/v850ice.c @MAINT@ $(defs_h)
 # development builds.
 ADA_EXP_C = `if test -f ada-exp.c; then echo ada-exp.c; else echo $(srcdir)/ada-exp.c; fi`
 
+# likewise with go-exp.c:
+GO_EXP_C = `if test -f go-exp.c; then echo go-exp.c; else echo $(srcdir)/go-exp.c; fi`
+
 # Some versions of flex give output that triggers
 # -Wold-style-definition.
 ada-exp.o: ada-exp.c
 	$(AM_V_COMPILER)$(COMPILE.pre) $(INTERNAL_CFLAGS) \
 	  $(GDB_WARN_CFLAGS_NO_DEFS) $(COMPILE.post) $(ADA_EXP_C)
+	$(POSTCOMPILE)
+
+go-exp.o: go-exp.c
+	$(AM_V_COMPILER)$(COMPILE.pre) $(INTERNAL_CFLAGS) \
+	  $(GDB_WARN_CFLAGS_NO_DEFS) $(COMPILE.post) $(GO_EXP_C)
 	$(POSTCOMPILE)
 
 # Message files.  Based on code in gcc/Makefile.in.
@@ -2614,6 +2626,7 @@ po/$(PACKAGE).pot: force
 .PRECIOUS: m2-exp.c
 .PRECIOUS: objc-exp.c
 .PRECIOUS: p-exp.c
+.PRECIOUS: go-exp.c
 
 #
 # gdb/ dependencies
@@ -2995,6 +3008,9 @@ gnu-v2-abi.o: gnu-v2-abi.c $(defs_h) $(gdb_string_h) $(symtab_h) \
   $(gnu_v2_abi_h)
 gnu-v3-abi.o: gnu-v3-abi.c $(defs_h) $(value_h) $(cp_abi_h) \
   $(cp_support_h) $(demangle_h) $(gdb_assert_h) $(gdb_string_h)
+go-exp.o: go-exp.c $(defs_h) $(gdb_assert_h) $(gdb_string_h) \
+  $(expression_h) $(value_h) $(parser_defs_h) $(language_h) $(c_lang_h) \
+  $(go_lang_h) $(bfd_h) $(symfile_h) $(objfiles_h) $(charset_h) $(block_h) 
 go32-nat.o: go32-nat.c $(defs_h) $(inferior_h) $(gdb_wait_h) $(gdbcore_h) \
   $(command_h) $(gdbcmd_h) $(floatformat_h) $(buildsym_h) $(i387_tdep_h) \
   $(i386_tdep_h) $(value_h) $(regcache_h) $(gdb_string_h) $(top_h)
@@ -3802,6 +3818,7 @@ xcoffread.o: xcoffread.c $(defs_h) $(bfd_h) $(gdb_string_h) $(gdb_stat_h) \
   $(gdb_stabs_h) $(aout_stab_gnu_h)
 xcoffsolib.o: xcoffsolib.c $(defs_h) $(bfd_h) $(xcoffsolib_h) \
   $(inferior_h) $(gdbcmd_h) $(symfile_h) $(frame_h) $(gdb_regex_h)
+xmodem.o: xmodem.c $(defs_h) $(serial_h) $(target_h) $(xmodem_h)
 xstormy16-tdep.o: xstormy16-tdep.c $(defs_h) $(frame_h) $(frame_base_h) \
   $(frame_unwind_h) $(dwarf2_frame_h) $(symtab_h) $(gdbtypes_h) \
   $(gdbcmd_h) $(gdbcore_h) $(value_h) $(dis_asm_h) $(inferior_h) \
