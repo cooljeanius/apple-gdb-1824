@@ -1232,7 +1232,7 @@ collect_symbol(struct collection_list *collect,
 	  char tmp[40];
 
 	  snprintf_vma(tmp, sizeof(tmp), offset);
-	  printf_filtered("LOC_STATIC %s: collect %ld bytes at %s.\n",
+	  printf_filtered("LOC_STATIC %s: collect %zu bytes at %s.\n",
 			  DEPRECATED_SYMBOL_NAME(sym), len,
 			  tmp /* address */);
 	}
