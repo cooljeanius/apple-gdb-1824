@@ -96,41 +96,44 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   ## 2...
 fi
 
-m4_ifdef([ACX_NONCANONICAL_BUILD],[
+m4_ifdef([ACX_NONCANONICAL_BUILD],[dnl
   ACX_NONCANONICAL_BUILD
 ])dnl
-m4_ifdef([ACX_NONCANONICAL_HOST],[
+m4_ifdef([ACX_NONCANONICAL_HOST],[dnl
   ACX_NONCANONICAL_HOST
 ])dnl
-m4_ifdef([ACX_NONCANONICAL_TARGET],[
+m4_ifdef([ACX_NONCANONICAL_TARGET],[dnl
   ACX_NONCANONICAL_TARGET
 ])dnl
 
-m4_ifdef([gl_HOST_OS],[
+m4_ifdef([gl_HOST_OS],[dnl
   gl_HOST_OS
 ])dnl
-m4_ifdef([gl_HOST_CPU_C_ABI],[
+m4_ifdef([gl_HOST_CPU_C_ABI],[dnl
   gl_HOST_CPU_C_ABI
 ])dnl
 
-if test -n "${BUILD_ARCHITECTURE}"; then
+  ## build:
+AS_IF([test -n "${BUILD_ARCHITECTURE}"],[dnl
   ACX_PROG_CC_WARNING_OPTS(["-arch ${BUILD_ARCHITECTURE}"],
                            [C_BUILDARCHFLAGS])dnl
   AC_SUBST([C_BUILDARCHFLAGS])dnl
   ## 2...
-fi
-if test -n "${HOST_ARCHITECTURE}"; then
+])dnl
+  ## host:
+AS_IF([test -n "${HOST_ARCHITECTURE}"],[dnl
   ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],
                            [C_ARCHFLAGS])dnl
   AC_SUBST([C_ARCHFLAGS])dnl
   ## 2...
-fi
-if test -n "${TARGET_ARCHITECTURE}"; then
+])dnl
+  ## target:
+AS_IF([test -n "${TARGET_ARCHITECTURE}"],[dnl
   ACX_PROG_CC_WARNING_OPTS(["-arch ${TARGET_ARCHITECTURE}"],
                            [C_TARGARCHFLAGS])dnl
   AC_SUBST([C_TARGARCHFLAGS])dnl
   ## 2...
-fi
+])dnl
 
 # Check for the 'make' the user wants to use:
 AC_CHECK_PROGS([MAKE],[make gmake gnumake remake])dnl
@@ -3691,12 +3694,12 @@ fi
 #  * -Wcast-qual (casting can silence other warnings, so this can conflict)
 #  * -Wbad-function-cast (likewise) (C-only, not C++)
 #  * -Wconversion (would require a lot of casting)
-#  * -Wsign-conversion (likewise)
+#  * -Wsign-conversion (likewise, but could help with CodeQL warnings)
 #  * -Wtraditional-conversion (likewise) (C-only, not C++)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Wunsafe-loop-optimizations (lex/yacc generate code that triggers it)
 #  * -Waggregate-return (too noisy and hard to avoid)
-#  * -Wformat-signedness (too noisy)
+#  * -Wformat-signedness (too noisy, but could help with CodeQL warnings)
 #  * -Wpadded (warnings in headers out of our control)
 #  * -Wsuggest-attribute=pure (less obvious than its const counterpart)
 #  * -Wstack-usage=262144 (as in bfd/binutils)

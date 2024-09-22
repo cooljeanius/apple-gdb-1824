@@ -21,6 +21,7 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "defs.h"
+#include "bfd.h"
 #include "gdbcore.h"
 #include "target.h"
 #include "monitor.h"
@@ -29,7 +30,7 @@
 #include "regcache.h"
 
 
-static void w89k_open (char *args, int from_tty);
+static void w89k_open(const char *args, int from_tty);
 
 /*
  * this array of registers need to match the indexes used by GDB. The
@@ -37,8 +38,11 @@ static void w89k_open (char *args, int from_tty);
  * different strings than GDB does, and doesn't support all the
  * registers either. So, typing "info reg sp" becomes a "r30".
  */
-
-static char *w89k_regnames[NUM_REGS] =
+#ifdef NUM_REGS
+# undef NUM_REGS
+#endif /* NUM_REGS */
+#define NUM_REGS 60
+static const char *w89k_regnames[NUM_REGS] =
 {
   "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
   "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
@@ -47,11 +51,12 @@ static char *w89k_regnames[NUM_REGS] =
   "SAR", "PC", NULL, NULL, NULL, "EIEM", "IIR", "IVA",
   "IOR", "IPSW", NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-  "CCR", NULL, NULL, "TR0", "TR1",
+  "CCR", NULL, NULL, "TR0", "TR1", NULL
 };
 
+/* */
 static void
-w89k_supply_register (char *regname, int regnamelen, char *val, int vallen)
+w89k_supply_register(char *regname, int regnamelen, char *val, int vallen)
 {
   int numregs;
   int regno;
@@ -70,17 +75,21 @@ w89k_supply_register (char *regname, int regnamelen, char *val, int vallen)
 	    regno = R0_REGNUM;
 	    break;
 	  case '4':
-	    regno = R0_REGNUM + 4;
+	    regno = (R0_REGNUM + 4);
 	    break;
 	  case '8':
-	    regno = R0_REGNUM + 8;
+	    regno = (R0_REGNUM + 8);
 	    break;
+          default:
+            break;
 	  }
 	break;
       case 'P':
 	if (regname[1] == 'C')
 	  regno = PC_REGNUM;
 	break;
+      default:
+        break;
       }
   else if (regnamelen == 3)
     switch (regname[0])
@@ -88,15 +97,15 @@ w89k_supply_register (char *regname, int regnamelen, char *val, int vallen)
       case 'r':
 	numregs = 4;
 	if (regname[1] == '1' && regname[2] == '2')
-	  regno = R0_REGNUM + 12;
+	  regno = (R0_REGNUM + 12);
 	else if (regname[1] == '1' && regname[2] == '6')
-	  regno = R0_REGNUM + 16;
+	  regno = (R0_REGNUM + 16);
 	else if (regname[1] == '2' && regname[2] == '0')
-	  regno = R0_REGNUM + 20;
+	  regno = (R0_REGNUM + 20);
 	else if (regname[1] == '2' && regname[2] == '4')
-	  regno = R0_REGNUM + 24;
+	  regno = (R0_REGNUM + 24);
 	else if (regname[1] == '2' && regname[2] == '8')
-	  regno = R0_REGNUM + 28;
+	  regno = (R0_REGNUM + 28);
 	break;
       case 'R':
 	if (regname[1] == 'C' && regname[2] == 'R')
@@ -119,11 +128,15 @@ w89k_supply_register (char *regname, int regnamelen, char *val, int vallen)
       case 'T':
 	numregs = 4;
 	if (regname[1] == 'R')
-	  if (regname[2] == '0')
-	    regno = TR0_REGNUM;
-	  else if (regname[2] == '4')
-	    regno = TR0_REGNUM + 4;
+	  {
+	    if (regname[2] == '0')
+	      regno = TR0_REGNUM;
+	    else if (regname[2] == '4')
+	      regno = (TR0_REGNUM + 4);
+          }
 	break;
+      default:
+        break;
       }
   else if (regnamelen == 4)
     switch (regname[0])
@@ -137,6 +150,8 @@ w89k_supply_register (char *regname, int regnamelen, char *val, int vallen)
 	if (regname[1] == 'P' && regname[2] == 'S' && regname[3] == 'W')
 	  regno = IPSW_REGNUM;
 	break;
+      default:
+        break;
       }
   else if (regnamelen == 5)
     switch (regname[0])
@@ -148,6 +163,8 @@ w89k_supply_register (char *regname, int regnamelen, char *val, int vallen)
 	    && regname[4] == 'B')
 	  regno = PCOQ_TAIL_REGNUM;
 	break;
+      default:
+        break;
       }
 
   if (regno >= 0)
@@ -160,14 +177,14 @@ static int hashmark = 1;	/* flag set by "set hash" */
 extern struct monitor_ops w89k_cmds;	/* fwd decl */
 
 static void
-w89k_load (struct serial *desc, char *file, int hashmark)
+w89k_load(struct serial *desc, const char *file, int hashmark)
 {
   bfd *abfd;
   asection *s;
-  char *buffer;
-  int i;
+  unsigned char *buffer;
+  bfd_size_type i;
 
-  buffer = alloca (XMODEM_PACKETSIZE);
+  buffer = (unsigned char *)alloca(XMODEM_PACKETSIZE);
 
   abfd = bfd_openr (file, 0);
   if (!abfd)
@@ -187,8 +204,8 @@ w89k_load (struct serial *desc, char *file, int hashmark)
       {
 	bfd_size_type section_size;
 
-	printf_filtered ("%s\t: 0x%4x .. 0x%4x  ", s->name, s->vma,
-			 s->vma + s->_raw_size);
+	printf_filtered("%s\t: 0x%4"BFD_VMA_FMT"x .. 0x%4"BFD_VMA_FMT"x  ",
+			s->name, s->vma, (s->vma + s->rawsize));
 	gdb_flush (gdb_stdout);
 
 	monitor_printf (w89k_cmds.load, s->vma);
@@ -199,7 +216,7 @@ w89k_load (struct serial *desc, char *file, int hashmark)
 
 	section_size = bfd_section_size (abfd, s);
 
-	for (i = 0; i < section_size; i += XMODEM_DATASIZE)
+	for (i = 0UL; i < section_size; i += XMODEM_DATASIZE)
 	  {
 	    int numbytes;
 
@@ -236,12 +253,11 @@ w89k_load (struct serial *desc, char *file, int hashmark)
 
 static struct target_ops w89k_ops;
 
-static char *w89k_inits[] =
+static const char *w89k_inits[] =
 {"\n", NULL};
 
-static struct monitor_ops w89k_cmds;
 static void
-init_w89k_cmds (void)
+init_w89k_cmds(void)
 {
   w89k_cmds.flags = MO_GETMEM_NEEDS_RANGE | MO_FILL_USES_ADDR;	/* flags */
   w89k_cmds.init = w89k_inits;	/* Init strings */
@@ -290,16 +306,17 @@ init_w89k_cmds (void)
 }				/* init_w89k_cmds */
 
 static void
-w89k_open (char *args, int from_tty)
+w89k_open(const char *args, int from_tty)
 {
-  monitor_open (args, &w89k_cmds, from_tty);
+  monitor_open(args, &w89k_cmds, from_tty);
 }
 
+extern void _initialize_w89k(void); /* -Wmissing-prototypes */
 void
-_initialize_w89k (void)
+_initialize_w89k(void)
 {
-  init_w89k_cmds ();
-  init_monitor_ops (&w89k_ops);
+  init_w89k_cmds();
+  init_monitor_ops(&w89k_ops);
 
   w89k_ops.to_shortname = "w89k";
   w89k_ops.to_longname = "WinBond's debug monitor for the W89k Eval board";
@@ -307,7 +324,7 @@ _initialize_w89k (void)
 Specify the serial device it is connected to (e.g. /dev/ttya).";
   w89k_ops.to_open = w89k_open;
 
-  add_target (&w89k_ops);
+  add_target(&w89k_ops);
 }
 
 /* EOF */
