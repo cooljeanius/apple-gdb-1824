@@ -317,7 +317,7 @@ jobs:
       run: |
         pushd .profile.d
         test -e ./.profile_generic && source ./.profile_generic && \
-          (env | uniq | sort | uniq)
+          (env | uniq | sort | uniq | grep -v "\*\*\*" | grep -v "PWD\=")
         popd
         if test -x "$(which sccache)"; then \
           ./configure --enable-silent-rules CC="sccache gcc" CXX="sccache g++" \

@@ -869,7 +869,7 @@ error_stream(struct ui_file *stream)
   long len;
   char *message = ui_file_xstrdup(stream, &len);
   make_cleanup(xfree, message);
-  error(("%s"), message);
+  error(_("%s"), message);
 }
 
 /* Print a message reporting an internal error/warning. Ask the user
@@ -1617,7 +1617,7 @@ query(const char *ctlstr, ...)
       gdb_flush(gdb_stdout);
 
       if (annotation_level > 1)
-	printf_filtered(("\n\032\032pre-query\n"));
+	printf_filtered(_("\n\032\032pre-query\n"));
 
       va_start(args, ctlstr);
       vfprintf_filtered(gdb_stdout, ctlstr, args);
@@ -1625,7 +1625,7 @@ query(const char *ctlstr, ...)
       printf_filtered(_("(y or n) "));
 
       if (annotation_level > 1)
-	printf_filtered(("\n\032\032query\n"));
+	printf_filtered(_("\n\032\032query\n"));
 
       wrap_here("");
       gdb_flush(gdb_stdout);
@@ -1669,7 +1669,7 @@ query(const char *ctlstr, ...)
      continue and gdb will crash.  */
   quit_flag = 0;
   if (annotation_level > 1)
-    printf_filtered(("\n\032\032post-query\n"));
+    printf_filtered(_("\n\032\032post-query\n"));
   return retval;
 }
 
@@ -1713,32 +1713,32 @@ defaulted_query(const char *ctlstr, const char defchar, va_list args)
 
   if (deprecated_query_hook)
     {
-      return deprecated_query_hook (ctlstr, args);
+      return deprecated_query_hook(ctlstr, args);
     }
 
-  /* Automatically answer default value if input is not from a terminal.  */
-  if (!input_from_terminal_p ())
+  /* Automatically answer default value if input is not from a terminal: */
+  if (!input_from_terminal_p())
     return def_value;
 
   while (1)
     {
-      wrap_here ("");		/* Flush any buffered output */
-      gdb_flush (gdb_stdout);
+      wrap_here("");		/* Flush any buffered output */
+      gdb_flush(gdb_stdout);
 
       if (annotation_level > 1)
-	printf_filtered (("\n\032\032pre-query\n"));
+	printf_filtered(_("\n\032\032pre-query\n"));
 
-      vfprintf_filtered (gdb_stdout, ctlstr, args);
-      printf_filtered (_("(%s or %s) "), y_string, n_string);
+      vfprintf_filtered(gdb_stdout, ctlstr, args);
+      printf_filtered(_("(%s or %s) "), y_string, n_string);
 
       if (annotation_level > 1)
-	printf_filtered (("\n\032\032query\n"));
+	printf_filtered(_("\n\032\032query\n"));
 
-      wrap_here ("");
-      gdb_flush (gdb_stdout);
+      wrap_here("");
+      gdb_flush(gdb_stdout);
 
-      answer = fgetc (stdin);
-      clearerr (stdin);		/* in case of C-d */
+      answer = fgetc(stdin);
+      clearerr(stdin);		/* in case of C-d */
       if (answer == EOF)	/* C-d */
 	{
 	  retval = def_value;
@@ -1746,12 +1746,10 @@ defaulted_query(const char *ctlstr, const char defchar, va_list args)
 	}
       /* Eat rest of input line, to EOF or newline */
       if (answer != '\n')
-	do
-	  {
-	    ans2 = fgetc (stdin);
-	    clearerr (stdin);
-	  }
-	while (ans2 != EOF && ans2 != '\n' && ans2 != '\r');
+	do {
+          ans2 = fgetc(stdin);
+          clearerr(stdin);
+        } while ((ans2 != EOF) && (ans2 != '\n') && (ans2 != '\r'));
 
       if (answer >= 'a')
 	answer -= 040;
@@ -1776,7 +1774,7 @@ defaulted_query(const char *ctlstr, const char defchar, va_list args)
     }
 
   if (annotation_level > 1)
-    printf_filtered (("\n\032\032post-query\n"));
+    printf_filtered(_("\n\032\032post-query\n"));
   return retval;
 }
 
@@ -2201,7 +2199,7 @@ prompt_for_continue(void)
   char cont_prompt[120];
 
   if (annotation_level > 1)
-    printf_unfiltered(("\n\032\032pre-prompt-for-continue\n"));
+    printf_unfiltered(_("\n\032\032pre-prompt-for-continue\n"));
 
   strcpy(cont_prompt,
 	 "---Type <return> to continue, or q <return> to quit---");
@@ -2227,7 +2225,7 @@ prompt_for_continue(void)
   ignore = gdb_readline_wrapper(cont_prompt);
 
   if (annotation_level > 1)
-    printf_unfiltered(("\n\032\032post-prompt-for-continue\n"));
+    printf_unfiltered(_("\n\032\032post-prompt-for-continue\n"));
 
   if (ignore)
     {
