@@ -1198,11 +1198,11 @@ val_print_string(CORE_ADDR addr, int len, int width, struct ui_file *stream)
 
   if (len > 0)
     {
-      buffer = (char *)xmalloc(len * width);
+      buffer = (char *)xmalloc((size_t)len * width);
       bufptr = buffer;
       old_chain = make_cleanup(xfree, buffer);
 
-      nfetch = (partial_memory_read(addr, bufptr, (len * width), &errcode)
+      nfetch = (partial_memory_read(addr, bufptr, ((size_t)len * width), &errcode)
                 / width);
       addr += (nfetch * width);
       bufptr += (nfetch * width);
