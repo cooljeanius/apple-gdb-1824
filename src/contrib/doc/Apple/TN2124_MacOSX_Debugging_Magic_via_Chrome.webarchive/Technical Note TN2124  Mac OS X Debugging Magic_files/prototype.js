@@ -3533,7 +3533,7 @@ Object.extend(Selector, {
     },
     pseudo: function (a) {
       if (a[6]) {
-        a[6] = a[6].replace(/"/g, '\\"');
+        a[6] = a[6].replace(/\\/g, '\\\\').replace(/"/g, '\\"');
       }
       return new Template(
         'n = h.pseudo(n, "#{1}", "#{6}", r, c); c = false;',
