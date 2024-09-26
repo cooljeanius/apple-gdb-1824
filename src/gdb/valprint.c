@@ -1215,11 +1215,11 @@ val_print_string(CORE_ADDR addr, int len, int width, struct ui_file *stream)
         nfetch = (unsigned int)min(chunksize, (fetchlimit - bufsize));
 
         if (buffer == NULL)
-          buffer = (char *)xmalloc(nfetch * width);
+          buffer = (char *)xmalloc((size_t)nfetch * width);
         else
           {
             discard_cleanups(old_chain);
-            buffer = (char *)xrealloc(buffer, (nfetch + bufsize) * width);
+            buffer = (char *)xrealloc(buffer, ((size_t)nfetch + bufsize) * width);
           }
 
         old_chain = make_cleanup(xfree, buffer);
