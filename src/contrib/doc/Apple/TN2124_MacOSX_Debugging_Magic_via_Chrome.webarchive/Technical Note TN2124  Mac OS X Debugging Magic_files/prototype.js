@@ -558,7 +558,7 @@ Object.extend(
           return String.specialChar[character];
         }
         return "\\u00" + character.charCodeAt().toPaddedString(2, 16);
-      });
+      }).replace(/\\/g, "\\\\");
       if (useDoubleQuotes) {
         return '"' + escapedString.replace(/"/g, '\\"') + '"';
       }
