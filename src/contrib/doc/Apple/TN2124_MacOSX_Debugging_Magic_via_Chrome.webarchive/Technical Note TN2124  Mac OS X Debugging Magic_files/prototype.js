@@ -3311,7 +3311,7 @@ var Selector = Class.create({
         if (a !== document) {
           var d = a.id,
             f = $(a).identify();
-          f = f.replace(/([\.:])/g, "\\$1");
+          f = f.replace(/([\\\.:])/g, "\\$1");
           c = "#" + f + " " + c;
         }
         b = $A(a.querySelectorAll(c)).map(Element.extend);
