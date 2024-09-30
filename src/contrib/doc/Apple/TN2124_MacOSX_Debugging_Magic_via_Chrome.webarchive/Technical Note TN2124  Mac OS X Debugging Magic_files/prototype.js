@@ -460,7 +460,7 @@ Object.extend(
       return this.replace(/^\s+/, "").replace(/\s+$/, "");
     }
     function stripTags() {
-      return this.replace(/<\w+(\s+("[^"]*"|'[^']*'|[^<>"'\s]+)+)?>|<\/\w+>/gi, "");
+      return this.replace(/<\w+(?:\s+(?:"[^"]*"|'[^']*'|[^<>"'\s]+))*\s*>|<\/\w+>/gi, "");
     }
     function stripScripts() {
       return this.replace(new RegExp(Prototype.ScriptFragment, "img"), "");
