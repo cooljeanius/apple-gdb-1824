@@ -1229,9 +1229,9 @@ yyerror(const char *msg)
     lexptr = prev_lexptr;
 
   if (msg)
-    error(_("%s: near `%s'"), msg, lexptr);
+    error(_("%s: near '%s'"), msg, (lexptr ? lexptr : "lexptr"));
   else
-    error(_("error in expression, near `%s'"), lexptr);
+    error(_("error in expression, near '%s'"), (lexptr ? lexptr : "lexptr"));
 }
 
 static struct type *
@@ -1240,7 +1240,7 @@ java_type_from_name(struct stoken name)
   char *tmp = copy_name(name);
   struct type *typ = java_lookup_class(tmp);
   if ((typ == NULL) || (TYPE_CODE(typ) != TYPE_CODE_STRUCT))
-    error(_("No class named `%s'"), tmp);
+    error(_("No class named '%s'"), (tmp ? tmp : "tmp"));
   return typ;
 }
 
@@ -1424,9 +1424,9 @@ push_expression_name(struct stoken name)
 			     builtin_type_int);
 	}
       else if (!have_full_symbols () && !have_partial_symbols ())
-	error (_("No symbol table is loaded.  Use the \"file\" command"));
+	error(_("No symbol table is loaded.  Use the \"file\" command"));
       else
-	error (_("No symbol \"%s\" in current context"), tmp);
+	error(_("No symbol \"%s\" in current context"), (tmp ? tmp : "tmp"));
     }
 
 }

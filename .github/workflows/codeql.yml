@@ -239,7 +239,8 @@ jobs:
             if test -e info.js && test ! -e info.js.json; then \
               (npx esparse info.js info.js.json) || (npx esvalidate info.js) \
                 || (if test -x "$(which jsc)"; then jsc info.js; \
-                    else echo "warning: jsc is missing"; fi); \
+                    else echo "warning: jsc is missing!" >&2 && exit 1; fi); \
+                || (node -c info.js) || (stat info.js && wc -l info.js); \
             elif test -r info.js.json && test -w /dev/stdout; then \
               stat info.js.json || echo "info.js.json"; \
             elif test -r info.min.js && test -x "$(which du)"; then \
