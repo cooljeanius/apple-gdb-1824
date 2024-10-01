@@ -236,7 +236,9 @@ jobs:
             pushd src/texinfo/js || exit; \
             (npx eslint -c build-aux/eslint.json info.js -f unix) || (npx tsc --allowJs --checkJS --noEmit --lib dom,es2017 info.js) || (npx uglifyjs info.js -o info.min.js --mangle --compress) || (npx modernizr -c build-aux/modernizr.json) || (npx esparse info.js info.js.json) || (npx esvalidate info.js); \
             if test -e info.js && test ! -e info.js.json; then \
-              (npx esparse info.js info.js.json) || (npx esvalidate info.js); \
+              (npx esparse info.js info.js.json) || (npx esvalidate info.js) \
+                || (if test -x "$(which jsc)"; then jsc info.js; \
+                    else echo "warning: jsc is missing"; fi); \
             elif test -r info.js.json && test -w /dev/stdout; then \
               stat info.js.json || echo "info.js.json"; \
             elif test -r info.min.js && test -x "$(which du)"; then \
