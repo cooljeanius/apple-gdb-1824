@@ -1,4 +1,5 @@
 ---
+# .github/workflows/bandit.yml: bandit workflow for apple-gdb-1824
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
@@ -23,7 +24,7 @@ on:
       - autofix/alert-*
       - ruff_unsafe
   pull_request:
-    # The branches below must be a subset of the branches above
+    # The branches below must be a subset of the branches above:
     branches:
       - master
       - main
@@ -37,7 +38,7 @@ jobs:
   bandit:
     permissions:
       contents: read  # for actions/checkout to fetch code
-      security-events: write  # to upload SARIF results
+      security-events: write  # for workflow to upload SARIF results
       actions: read  # only required for private repos to get Action run status
 
     runs-on: ubuntu-latest

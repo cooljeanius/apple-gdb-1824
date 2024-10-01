@@ -235,19 +235,26 @@ jobs:
           if test -x "$(which npx)"; then \
             pushd src/texinfo/js || exit; \
             (npx eslint -c build-aux/eslint.json info.js -f unix) || (npx tsc --allowJs --checkJS --noEmit --lib dom,es2017 info.js) || (npx uglifyjs info.js -o info.min.js --mangle --compress) || (npx modernizr -c build-aux/modernizr.json) || (npx esparse info.js info.js.json) || (npx esvalidate info.js); \
+            if test -e info.js && test ! -e info.js.json; then \
+              (npx esparse info.js info.js.json) || (npx esvalidate info.js); \
+            elif test -r info.js.json && test -w /dev/stdout; then \
+              stat info.js.json || echo "info.js.json"; \
+            elif test -r info.min.js && test -x "$(which du)"; then \
+              stat info.min.js && du info.min.js; \
+            fi; \
             sync && echo "Done with texinfo javascript."; \
             popd || exit; \
           fi; \
         elif test ${{ matrix.language }} == 'go' && test -x "$(which go)"; then \
           if test -x "$(which staticcheck)"; then \
-            sleep && which -a staticcheck && sleep 1; \
+            sync && which -a staticcheck && sleep 1; \
             (find . -name '*.go' -print0 | xargs -0 staticcheck) || \
               statticcheck; \
           elif test -x "$(which revive)"; then \
-            sleep && which -a revive && sleep 1; \
+            sync && which -a revive && sleep 1; \
             (find . -name '*.go' -print0 | xargs -0 revive) || revive; \
           elif test -x "$(which gocritic)"; then \
-            sleep && which -a gocritic && sleep 1; \
+            sync && which -a gocritic && sleep 1; \
             (find . -name '*.go' -print0 | xargs -0 gocritic) || gocritic; \
           elif test -x "$(which golangci-lint)"; then \
             sync && which -a golangci-lint && sleep 1; \
@@ -259,7 +266,7 @@ jobs:
           elif test -x "$(which actionlint)"; then \
             sync && actionlint -verbose && sleep 1; \
           else \
-            sync && echo "no linters found for go." && sleep 1; \
+            sync && echo "no linters found for go ($(which go))." && sleep 1; \
           fi; \
         elif test ${{ matrix.language }} == 'python' && test -x "$(which python)"; then \
           sync && which -a pylint && which -a flake8 && which -a black; \
@@ -273,13 +280,14 @@ jobs:
             sync && echo "skipping yamllint..."; \
           fi; \
           if test -x "$(which autopep8)"; then \
-            sync && stat "$(which autopep8)" && sleep 1; \
+            sync && stat "$(which autopep8)" && autopep8 --version && sleep 1; \
           else \
             sync && echo "skipping autopep8..."; \
           fi; \
         elif test ${{ matrix.language }} == 'csharp' && test -x "$(which yamllint)"; then \
           sync && which -a yamllint && sleep 1; \
           yamllint .github/codeql/extensions/apple-gdb-1824-csharp/codeql-pack.yml; \
+          stat "$(which csc)" || stat "$(which mcs)" || which -a dotnet; \
           sync && echo "TODO: find a proper linter for csharp…" && sleep 1; \
         else \
           echo "unhandled case for syntax check step (matrix.language is ${{ matrix.language }})"; \

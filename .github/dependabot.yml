@@ -20,18 +20,42 @@ updates:
     directory: "/src/zlib/contrib/java/jzlib-1.1.2"
     schedule:
       interval: "weekly"
+    labels:
+      - enhancement
+    groups:
+      maven:
+        patterns:
+          - "*"
   - package-ecosystem: "nuget"
     directory: "/src/zlib/contrib/dotzlib/DotZLib"
     schedule:
       interval: "weekly"
+    labels:
+      - enhancement
+    groups:
+      nuget:
+        patterns:
+          - "*"
   - package-ecosystem: "gomod"
     directory: "/src/gdb/testsuite/gdb.go"
     schedule:
       interval: "weekly"
+    labels:
+      - enhancement
+    groups:
+      gomod:
+        patterns:
+          - "*"
   - package-ecosystem: "pip"
     directory: "/src/gdb"
     schedule:
       interval: "weekly"
+    labels:
+      - enhancement
+    groups:
+      pip:
+        patterns:
+          - "*"
   - package-ecosystem: "bundler"
     directory: "/src/gdb/ruby"
     schedule:
@@ -46,6 +70,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - enhancement
+    groups:
+      gradle:
+        patterns:
+          - "*"
   - package-ecosystem: "npm"
     directory: "/src/texinfo/js"
     schedule:
