@@ -134,13 +134,14 @@ jobs:
             libgradle-jflex-plugin-java gradle-apt-plugin; \
         elif test ${{ matrix.language }} == 'javascript-typescript'; then \
           sudo apt-get -y install node-optionator eslint uglifyjs \
-            libjs-modernizr node-babel-eslint npm; \
+            libjs-modernizr node-babel-eslint npm wkhtmltopdf node-dompurify \
+            libjavascriptcoregtk-4.0-bin webkit2gtk-driver; \
         elif test ${{ matrix.language }} == 'go'; then \
           sudo apt-get -y install gccgo gccgo-multilib golang golang-go \
             golang-src golang-ar-dev golang-honnef-go-tools-dev; \
         elif test ${{ matrix.language }} == 'csharp'; then \
           sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs nant \
-            nunit mono-xbuild yamllint; \
+            nunit mono-xbuild yamllint monodoc-nunit-manual; \
         elif test ${{ matrix.language }} == 'python'; then \
           sudo apt-get -y install --fix-missing jython pylint pymacs python-tk \
             tix flake8 python3-macholib yamllint black python3-pyls-black \
