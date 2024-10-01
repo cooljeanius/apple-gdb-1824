@@ -4037,7 +4037,7 @@ Object.extend(Selector, {
   },
   split: function (b) {
     var a = [];
-    b.scan(/(([\w:.~>+()\-]+|#|\s+|\*|\[.*?\])+)\s*(,|$)/, function (c) {
+    b.scan(/((?:[\w:.~>+()\-]+|#|\s+|\*|\[[^\]]*?\])+)\s*(,|$)/, function (c) {
       a.push(c[1].strip());
     });
     return a;
