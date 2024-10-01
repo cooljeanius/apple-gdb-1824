@@ -239,7 +239,7 @@ jobs:
             if test -e info.js && test ! -e info.js.json; then \
               (npx esparse info.js info.js.json) || (npx esvalidate info.js) \
                 || (if test -x "$(which jsc)"; then jsc info.js; \
-                    else echo "warning: jsc is missing!" >&2 && exit 1; fi); \
+                    else echo "warning: jsc is missing!" >&2 && exit 1; fi) \
                 || (node -c info.js) || (stat info.js && wc -l info.js); \
             elif test -r info.js.json && test -w /dev/stdout; then \
               stat info.js.json || echo "info.js.json"; \
@@ -265,10 +265,11 @@ jobs:
             golangci-lint run src/gdb/testsuite/gdb.go || \
               golangci-lint config verify; \
           elif test -x "$(which gofmt)"; then \
+            sync && echo "Found the following gofmt binaries:"; \
             sync && which -a gofmt && sleep 1; \
             find . -name '*.go' -print0 | xargs -0 gofmt; \
           elif test -x "$(which actionlint)"; then \
-            sync && actionlint -verbose && sleep 1; \
+            sync && which actionlint && actionlint -verbose && sleep 1; \
           else \
             sync && echo "no linters found for go ($(which go))." && sleep 1; \
           fi; \
@@ -286,7 +287,7 @@ jobs:
           if test -x "$(which autopep8)"; then \
             sync && stat "$(which autopep8)" && autopep8 --version && sleep 1; \
           else \
-            sync && echo "skipping autopep8..."; \
+            sync && echo "autopep8 missing or unusable; skipping..."; \
           fi; \
         elif test ${{ matrix.language }} == 'csharp' && test -x "$(which yamllint)"; then \
           sync && which -a yamllint && sleep 1; \
@@ -508,10 +509,10 @@ jobs:
             done; \
             popd; \
           elif test -d "${subdir}" && (test -r "${subdir}/Makefile.in" || test -r "${subdir}/Makefile.am" || test -r "${subdir}/Makefile.def" || test -r "${subdir}/Makefile.tpl"); then \
-            sync && echo "no unsuffixed Makefile in ${subdir}, but there are these ones with suffixes:"; \
+            sync && echo "no unsuffixed Makefile in ${subdir}, but there are these w/suffixes:"; \
             ls ${subdir}/Makefile* || echo "... $(ls ${subdir}/Makefile*)"; \
           else \
-            sync && echo "skipping attempting to build additional objfiles in ${subdir}"; \
+            sync && echo "skipping attempt to build more objfiles in ${subdir}"; \
           fi; \
         done
         (time (find . -name '*.o' -exec cp -v {} . ";")) || echo "failed copying an object file"
@@ -521,9 +522,9 @@ jobs:
       run: |
         cd src
         if test -z "${CC}"; then \
-          if test -x "$(which sccache)"; then\
+          if test -x "$(which sccache)"; then \
             export CC="sccache gcc"; \
-          elif test -x "$(which ccache)"; then\
+          elif test -x "$(which ccache)"; then \
             export CC="ccache gcc"; \
           else \
             export CC="gcc"; \
@@ -544,7 +545,7 @@ jobs:
             echo "${CC} -c -w -Wno-error -Wfatal-errors ${FINAL_CPPFLAGS} -I\"${cfiledir}\" -iquote \"${cfiledir}\" -I\"${cfiledir}\"/.. -iquote \"${cfiledir}\"/.. ${cfile}"; \
             ${CC} -c -w -Wno-error -Wfatal-errors ${FINAL_CPPFLAGS} -I"${cfiledir}" -iquote "${cfiledir}" -I"${cfiledir}"/.. -iquote "${cfiledir}"/.. ${cfile} || stat -t "${cfile}" || echo "cfile is ${cfile}"; \
           else \
-            sync && echo "object file ${cobjfile} already exists for ${cfile}."; \
+            sync && echo "objfile ${cobjfile} already exists for ${cfile}."; \
             cp -v "${cobjfile}" "${cfiledir}" || cp -v "${cobjfile}" . || cp -v "${cobjfile}" .. || (if test -d /tmp && test -w /tmp; then cp -v "${cobjfile}" /tmp; fi) || stat -t "${cobjfile}"; \
           fi; \
         done
@@ -596,7 +597,7 @@ jobs:
           elif test -d "${subdir}"; \
             then ls ${subdir}/Makefile*; \
           else \
-            echo "skipping attempting to build additional objfiles in ${subdir}"; \
+            echo "skipping attempt to build more objfiles in ${subdir}"; \
           fi; \
         done
         # shellcheck disable=SC2044
@@ -683,7 +684,7 @@ jobs:
             elif test -d "${subdir}"; then \
               sync && echo "Makefiles in ${subdir} are:" && ls ${subdir}/Makefile*; \
             else \
-              echo "skipping attempting to do static analysis with clang in ${subdir}"; \
+              echo "skipping attempt to do static analysis w/clang in ${subdir}"; \
             fi; \
           done; \
         else \
@@ -721,9 +722,9 @@ jobs:
       uses: actions/upload-artifact@v4.4.0
       if: matrix.language == 'c-cpp' && success()
       with:
-        # Artifact name
+        # Artifact name:
         name: gdb-static-analysis-plists-${{ github.sha }}
-        # A file, directory or wildcard pattern that describes what to upload
+        # A file, directory or wildcard pattern that describes what to upload:
         path: |
             **/clang_static_analysis/*.plist
             **/CFE_S_A/*.plist
