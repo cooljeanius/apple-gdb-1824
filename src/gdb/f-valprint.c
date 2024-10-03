@@ -290,8 +290,8 @@ f77_print_array_1(int nss, int ndimensions, struct type *type,
 	{
 	  fprintf_filtered(stream, "( ");
 	  f77_print_array_1((nss + 1), ndimensions, TYPE_TARGET_TYPE(type),
-			    (valaddr + (i * F77_DIM_OFFSET(nss))),
-			    (address + (i * F77_DIM_OFFSET(nss))),
+			    (valaddr + ((CORE_ADDR)i * F77_DIM_OFFSET(nss))),
+			    (address + ((CORE_ADDR)i * F77_DIM_OFFSET(nss))),
 			    stream, format, deref_ref, recurse, pretty, elts);
 	  fprintf_filtered(stream, ") ");
 	}
@@ -305,8 +305,8 @@ f77_print_array_1(int nss, int ndimensions, struct type *type,
 	   i++, (*elts)++)
 	{
 	  val_print(TYPE_TARGET_TYPE(type),
-		    (valaddr + i * F77_DIM_OFFSET(ndimensions)),
-                    0, (address + i * F77_DIM_OFFSET(ndimensions)),
+		    (valaddr + (CORE_ADDR)i * F77_DIM_OFFSET(ndimensions)),
+                    0, (address + (CORE_ADDR)i * F77_DIM_OFFSET(ndimensions)),
 		    stream, format, deref_ref, recurse, pretty);
 
 	  if (i != (F77_DIM_SIZE(nss) - 1))
