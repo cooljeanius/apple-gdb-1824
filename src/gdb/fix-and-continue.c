@@ -1242,7 +1242,7 @@ find_and_parse_nonlazy_ptr_sect(struct fixinfo *cur,
         continue;
 
       (*indirect_entries)[actual_entry_count].addr =
-                         indirect_ptr_section_start + i * TARGET_ADDRESS_BYTES;
+                         indirect_ptr_section_start + (CORE_ADDR)i * TARGET_ADDRESS_BYTES;
       (*indirect_entries)[actual_entry_count].value = destination_address;
       (*indirect_entries)[actual_entry_count].new_sym = NULL;
       (*indirect_entries)[actual_entry_count].new_msym = NULL;
