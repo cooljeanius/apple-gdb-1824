@@ -1215,7 +1215,7 @@ find_and_parse_nonlazy_ptr_sect(struct fixinfo *cur,
                        xmalloc(sizeof(struct file_static_fixups)
                                * nl_symbol_ptr_count));
 
-  buf = (gdb_byte *)xmalloc(nl_symbol_ptr_count * TARGET_ADDRESS_BYTES);
+  buf = (gdb_byte *)xmalloc((size_t)nl_symbol_ptr_count * TARGET_ADDRESS_BYTES);
   wipe = make_cleanup(xfree, buf);
 
   /* The following code to read an array of ints from the target and convert
