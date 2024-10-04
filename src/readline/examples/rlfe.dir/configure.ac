@@ -62,7 +62,7 @@ AC_SEARCH_LIBS([strerror],[cposix])dnl
 AS_MESSAGE([checking if your ${CC} actually works])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdlib.h>
-int main(){exit(0);}
+int main(void){exit(0);}
 ]])],[
 AC_NOTE([- Your ${CC} works])
 ],[
@@ -80,7 +80,7 @@ AC_NOTE([- cross-compiling, not checking])
 AS_MESSAGE([checking if the compiler actually works (i.e. runs)])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdlib.h>
-int main(){exit(0);}
+int main(void){exit(0);}
 ]])],[
 AC_NOTE([- Your compiler works])
 ],[
@@ -95,6 +95,7 @@ AC_NOTE([- cross-compiling, not checking])
 
 AS_MESSAGE([checking if your compiler sets the exit status])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#line ${as_lineno-${LINENO}} "configure"
 int main(void)
 {
   int __something_strange_();
@@ -110,8 +111,10 @@ AC_NOTE([- cross-compiling, not checking])
 AC_PROG_AWK
 
 if test -f etc/toolcheck; then
-AS_MESSAGE([checking for buggy tools...])
+AS_MESSAGE([checking for buggy tools with etc/toolcheck...])
 sh etc/toolcheck 1>&AS_MESSAGE_FD
+else
+AS_MESSAGE([etc/toolcheck is missing; skipping...])
 fi
 
 # Checks for libraries.
@@ -137,12 +140,9 @@ fi
 # check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-# FIXME: Replace `main' with a function in `-lhistory':
-AC_CHECK_LIB([history],[main])dnl
-# FIXME: Replace `main' with a function in `-lncurses':
-AC_CHECK_LIB([ncurses],[main])dnl
-# FIXME: Replace `main' with a function in `-lreadline':
-AC_CHECK_LIB([readline],[main])dnl
+AC_CHECK_LIB([history],[history_truncate_file])dnl
+AC_CHECK_LIB([ncurses],[tcsetattr])dnl
+AC_CHECK_LIB([readline],[rl_callback_handler_remove])dnl
   ## reset these:
 LDFLAGS="${ARCHLESS_LDFLAGS}"
 
@@ -186,6 +186,9 @@ if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UP
 fi
 AC_FUNC_FORK
 AC_FUNC_MALLOC
+if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
+  export ac_cv_func_stat_empty_string_bug=no
+fi
 AC_FUNC_STAT
 AC_CHECK_FUNCS([alarm dup2 exit getcwd memcpy memmove mkfifo mknod printf rl_getc \
                 select strcmp strerror strftime system utimes xsignal])dnl
@@ -268,14 +271,14 @@ dnl#
 AS_MESSAGE([checking select return value...])
 sleep 1
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <stdlib.h>
+#include <stdlib.h> /* for exit() */
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include <fcntl.h> /* for open() */
+#include <unistd.h> /* for alarm(), close(), and write() */
 #include <string.h>
 /* remember to update these line markers whenever the numbers change: */
-#line 265 "configure.ac"
+#line 281 "configure.ac"
 
 const char *nam = "/tmp/conftest$$";
 
@@ -470,7 +473,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #ifdef HAVE_TERM_H
 # include <term.h>
 #endif /* HAVE_TERM_H */
-#line 420 "configure.ac"
+#line 476 "configure.ac"
 int main(void)
 {
  exit(strcmp(tgoto("%p1%d", 0, 1), "1") ? 0 : 1);
@@ -587,7 +590,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#line 537 "configure.ac"
+#line 593 "configure.ac"
 int main(void)
 {
   struct stat sb;
@@ -677,12 +680,13 @@ if test -n "${posix}" && test "x${posix}" = "xyes"; then
 else
 
 AS_MESSAGE([checking return type of signal handlers...])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/types.h>
 #include <signal.h>
 #ifdef signal
 # undef signal
 #endif /* signal */
-#line 631 "configure.ac"
+#line 689 "configure.ac"
 extern void (*signal ()) ();]],[[int i;]])],[
 AC_NOTE([- signals return void])
 AC_DEFINE([SIGVOID],[1],[Define to 1 if signals have a void return type])
@@ -694,7 +698,7 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
 #include <signal.h>
 ]],[[
-#line 643 "configure.ac"
+#line 701 "configure.ac"
 #ifdef SIGVOID
 sigset(0, (void (*)())0);
 #else
@@ -712,7 +716,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <signal.h>
 #include <stdlib.h>
 
-#line 661 "configure.ac"
+#line 719 "configure.ac"
 
 #ifndef SIGCLD
 # define SIGCLD SIGCHLD

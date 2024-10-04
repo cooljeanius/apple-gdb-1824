@@ -1674,7 +1674,7 @@ extern void (*deprecated_show_load_progress)(const char *section,
 					     unsigned long total_sent,
 					     unsigned long total_size)
   ATTRIBUTE_DEPRECATED;
-extern void (*deprecated_print_frame_info_listing_hook)(struct symtab * s,
+extern void (*deprecated_print_frame_info_listing_hook)(struct symtab *s,
                                                         int line, int stopline,
                                                         int noerror)
   ATTRIBUTE_DEPRECATED;

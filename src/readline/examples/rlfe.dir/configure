@@ -4442,7 +4442,7 @@ else case e in #(
 /* end confdefs.h.  */
 
 #include <stdlib.h>
-int main(){exit(0);}
+int main(void){exit(0);}
 
 _ACEOF
 if ac_fn_c_try_run "$LINENO"
@@ -4483,7 +4483,7 @@ else case e in #(
 /* end confdefs.h.  */
 
 #include <stdlib.h>
-int main(){exit(0);}
+int main(void){exit(0);}
 
 _ACEOF
 if ac_fn_c_try_run "$LINENO"
@@ -4521,6 +4521,7 @@ else case e in #(
   e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
+#line ${as_lineno-${LINENO}} "configure"
 int main(void)
 {
   int __something_strange_();
@@ -4594,9 +4595,12 @@ done
 
 
 if test -f etc/toolcheck; then
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for buggy tools..." >&5
-printf "%s\n" "$as_me: checking for buggy tools..." >&6;}
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for buggy tools with etc/toolcheck..." >&5
+printf "%s\n" "$as_me: checking for buggy tools with etc/toolcheck..." >&6;}
 sh etc/toolcheck 1>&6
+else
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: etc/toolcheck is missing; skipping..." >&5
+printf "%s\n" "$as_me: etc/toolcheck is missing; skipping..." >&6;}
 fi
 
 # Checks for libraries.
@@ -4639,10 +4643,9 @@ fi
 # check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-# FIXME: Replace `main' with a function in `-lhistory':
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lhistory" >&5
-printf %s "checking for main in -lhistory... " >&6; }
-if test ${ac_cv_lib_history_main+y}
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for history_truncate_file in -lhistory" >&5
+printf %s "checking for history_truncate_file in -lhistory... " >&6; }
+if test ${ac_cv_lib_history_history_truncate_file+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
@@ -4651,20 +4654,29 @@ LIBS="-lhistory  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char history_truncate_file (void);
 int
 main (void)
 {
-return main ();
+return history_truncate_file ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"
 then :
-  ac_cv_lib_history_main=yes
+  ac_cv_lib_history_history_truncate_file=yes
 else case e in #(
-  e) ac_cv_lib_history_main=no ;;
+  e) ac_cv_lib_history_history_truncate_file=no ;;
 esac
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam \
@@ -4672,19 +4684,18 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 LIBS=$ac_check_lib_save_LIBS ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_history_main" >&5
-printf "%s\n" "$ac_cv_lib_history_main" >&6; }
-if test "x$ac_cv_lib_history_main" = xyes
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_history_history_truncate_file" >&5
+printf "%s\n" "$ac_cv_lib_history_history_truncate_file" >&6; }
+if test "x$ac_cv_lib_history_history_truncate_file" = xyes
 then :
   printf "%s\n" "#define HAVE_LIBHISTORY 1" >>confdefs.h
 
   LIBS="-lhistory $LIBS"
 
 fi
-# FIXME: Replace `main' with a function in `-lncurses':
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lncurses" >&5
-printf %s "checking for main in -lncurses... " >&6; }
-if test ${ac_cv_lib_ncurses_main+y}
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for tcsetattr in -lncurses" >&5
+printf %s "checking for tcsetattr in -lncurses... " >&6; }
+if test ${ac_cv_lib_ncurses_tcsetattr+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
@@ -4693,20 +4704,29 @@ LIBS="-lncurses  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char tcsetattr (void);
 int
 main (void)
 {
-return main ();
+return tcsetattr ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"
 then :
-  ac_cv_lib_ncurses_main=yes
+  ac_cv_lib_ncurses_tcsetattr=yes
 else case e in #(
-  e) ac_cv_lib_ncurses_main=no ;;
+  e) ac_cv_lib_ncurses_tcsetattr=no ;;
 esac
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam \
@@ -4714,19 +4734,18 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 LIBS=$ac_check_lib_save_LIBS ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ncurses_main" >&5
-printf "%s\n" "$ac_cv_lib_ncurses_main" >&6; }
-if test "x$ac_cv_lib_ncurses_main" = xyes
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ncurses_tcsetattr" >&5
+printf "%s\n" "$ac_cv_lib_ncurses_tcsetattr" >&6; }
+if test "x$ac_cv_lib_ncurses_tcsetattr" = xyes
 then :
   printf "%s\n" "#define HAVE_LIBNCURSES 1" >>confdefs.h
 
   LIBS="-lncurses $LIBS"
 
 fi
-# FIXME: Replace `main' with a function in `-lreadline':
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lreadline" >&5
-printf %s "checking for main in -lreadline... " >&6; }
-if test ${ac_cv_lib_readline_main+y}
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for rl_callback_handler_remove in -lreadline" >&5
+printf %s "checking for rl_callback_handler_remove in -lreadline... " >&6; }
+if test ${ac_cv_lib_readline_rl_callback_handler_remove+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
@@ -4735,20 +4754,29 @@ LIBS="-lreadline  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char rl_callback_handler_remove (void);
 int
 main (void)
 {
-return main ();
+return rl_callback_handler_remove ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"
 then :
-  ac_cv_lib_readline_main=yes
+  ac_cv_lib_readline_rl_callback_handler_remove=yes
 else case e in #(
-  e) ac_cv_lib_readline_main=no ;;
+  e) ac_cv_lib_readline_rl_callback_handler_remove=no ;;
 esac
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam \
@@ -4756,9 +4784,9 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 LIBS=$ac_check_lib_save_LIBS ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_readline_main" >&5
-printf "%s\n" "$ac_cv_lib_readline_main" >&6; }
-if test "x$ac_cv_lib_readline_main" = xyes
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_readline_rl_callback_handler_remove" >&5
+printf "%s\n" "$ac_cv_lib_readline_rl_callback_handler_remove" >&6; }
+if test "x$ac_cv_lib_readline_rl_callback_handler_remove" = xyes
 then :
   printf "%s\n" "#define HAVE_LIBREADLINE 1" >>confdefs.h
 
@@ -5731,6 +5759,9 @@ esac
 fi
 
 
+if test "x${GITHUB_ACTIONS}" = "xtrue" && test "x${CODEQL_ACTION_FEATURE_WILL_UPLOAD}" = "xtrue"; then
+  export ac_cv_func_stat_empty_string_bug=no
+fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether lstat correctly handles trailing slash" >&5
 printf %s "checking whether lstat correctly handles trailing slash... " >&6; }
 if test ${ac_cv_func_lstat_dereferences_slashed_symlink+y}
@@ -6278,14 +6309,14 @@ else case e in #(
   e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-#include <stdlib.h>
+#include <stdlib.h> /* for exit() */
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include <fcntl.h> /* for open() */
+#include <unistd.h> /* for alarm(), close(), and write() */
 #include <string.h>
 /* remember to update these line markers whenever the numbers change: */
-#line 265 "configure.ac"
+#line 281 "configure.ac"
 
 const char *nam = "/tmp/conftest$$";
 
@@ -6602,7 +6633,7 @@ else case e in #(
 #ifdef HAVE_TERM_H
 # include <term.h>
 #endif /* HAVE_TERM_H */
-#line 420 "configure.ac"
+#line 476 "configure.ac"
 int main(void)
 {
  exit(strcmp(tgoto("%p1%d", 0, 1), "1") ? 0 : 1);
@@ -6974,7 +7005,7 @@ else case e in #(
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#line 537 "configure.ac"
+#line 593 "configure.ac"
 int main(void)
 {
   struct stat sb;
@@ -7190,12 +7221,13 @@ else
 printf "%s\n" "$as_me: checking return type of signal handlers..." >&6;}
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
 #include <sys/types.h>
 #include <signal.h>
 #ifdef signal
 # undef signal
 #endif /* signal */
-#line 631 "configure.ac"
+#line 689 "configure.ac"
 extern void (*signal ()) ();
 int
 main (void)
@@ -7234,7 +7266,7 @@ int
 main (void)
 {
 
-#line 643 "configure.ac"
+#line 701 "configure.ac"
 #ifdef SIGVOID
 sigset(0, (void (*)())0);
 #else
@@ -7279,7 +7311,7 @@ else case e in #(
 #include <signal.h>
 #include <stdlib.h>
 
-#line 661 "configure.ac"
+#line 719 "configure.ac"
 
 #ifndef SIGCLD
 # define SIGCLD SIGCHLD

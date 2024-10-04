@@ -1117,6 +1117,7 @@ inf_ttrace_h = inf-ttrace.h
 # APPLE LOCAL begin subroutine inlining:
 inlining_h = inlining.h $(frame_h) $(bfd_h)
 # APPLE LOCAL end subroutine inlining
+interpreter_h = interpreter.h
 interps_h = interps.h $(exceptions_h)
 jv_lang_h = jv-lang.h $(parser_defs_h) $(language_h)
 kod_h = kod.h
@@ -3171,6 +3172,9 @@ inlining.o: inlining.c $(defs_h) $(symtab_h) $(frame_h) $(breakpoint_h) \
   $(frame_unwind_h) $(annotate_h) $(ui_out_h) $(inlining_h) $(objfiles_h) \
   $(gdbthread_h) $(complaints_h) $(buildsym_h)
 # APPLE LOCAL end subroutine inlining
+interpreter.o: interpreter.c $(defs_h) $(gdbcmd_h) $(ui_out_h) \
+  $(event_loop_h) $(event_top_h) $(interpreter_h) $(wrapper_h) \
+  $(cli_cmds_h) $(cli_decode_h) $(exceptions_h) $(ui_out_h)
 interps.o: interps.c $(defs_h) $(gdbcmd_h) $(ui_out_h) $(event_loop_h) \
   $(event_top_h) $(interps_h) $(completer_h) $(gdb_string_h) \
   $(gdb_events_h) $(gdb_assert_h) $(top_h) $(exceptions_h)

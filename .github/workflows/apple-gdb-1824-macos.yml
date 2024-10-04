@@ -51,6 +51,7 @@ jobs:
         fi
         # shellcheck disable=SC2016
         if test -d /usr/local/opt/ncurses/bin && test -d /Users/runner && test -w /Users/runner; then \
+          echo "/usr/local/opt/ncurses/bin" >> "${GITHUB_PATH}"; \
           sync && echo "" >> /Users/runner/.bash_profile; \
           sync && echo 'export PATH="/usr/local/opt/ncurses/bin:${PATH}"' | tee -a /Users/runner/.bash_profile; \
           if test -r /Users/runner/.bash_profile; then \

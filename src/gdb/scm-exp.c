@@ -491,7 +491,7 @@ handle_immediate:
 int
 scm_parse(void)
 {
-  const char *start;
+  const char *start = NULL;
   while (*lexptr == ' ')
     lexptr++;
   start = lexptr;
@@ -504,7 +504,7 @@ scm_parse(void)
   write_exp_elt_opcode(OP_EXPRSTRING);
 #else
   if (start == NULL) {
-    ; /* ??? */
+    (void)start; /* ??? */
   }
 #endif /* USE_EXPRSTRING */
   return 0;
