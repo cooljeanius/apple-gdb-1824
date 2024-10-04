@@ -139,8 +139,8 @@ fetch_loadmap (CORE_ADDR ldmaddr)
   memcpy (ext_ldmbuf, &ext_ldmbuf_partial, sizeof ext_ldmbuf_partial);
 
   /* Read the rest of the loadmap from the target: */
-  if (target_read_memory((ldmaddr + sizeof(ext_ldmbuf_partial)),
-                         (gdb_byte *)(ext_ldmbuf + sizeof(ext_ldmbuf_partial)),
+  if (target_read_memory(((gdb_byte *)ldmaddr + sizeof(ext_ldmbuf_partial)),
+                         ((gdb_byte *)ext_ldmbuf + sizeof(ext_ldmbuf_partial)),
                          (ext_ldmbuf_size - sizeof(ext_ldmbuf_partial))))
     {
       /* Failed to read rest of the loadmap: */
