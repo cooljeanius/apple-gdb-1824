@@ -503,9 +503,7 @@ scm_parse(void)
   write_exp_string(str);
   write_exp_elt_opcode(OP_EXPRSTRING);
 #else
-  if (start == NULL) {
-    ; /* ??? */
-  }
+  /* Removed redundant null check for start */
 #endif /* USE_EXPRSTRING */
   return 0;
 }
