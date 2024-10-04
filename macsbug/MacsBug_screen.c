@@ -173,17 +173,17 @@ void screen_init(int top, int left, int bottom, int right)
     max_y = max_rows;				/* this many rows			*/
     max_x = max_cols + (10 * max_cols);		/* worse possible case for width	*/
 
-    screen       = gdb_malloc(max_y * max_x);	/* allocate the screen buffers...	*/
-    prev_screen  = gdb_malloc(max_y * max_x);
+    screen       = gdb_malloc((size_t)max_y * max_x);	/* allocate the screen buffers...	*/
+    prev_screen  = gdb_malloc((size_t)max_y * max_x);
 
     row_len	 = gdb_malloc(max_y * sizeof(int)); /* allocate the row size arrays...	*/
     prev_row_len = gdb_malloc(max_y * sizeof(int));
 
-    memset(screen,      ' ', max_y * max_x);	/* init the screens to all blanks...	*/
-    memset(prev_screen, ' ', max_y * max_x);
+    memset(screen,      ' ', (size_t)max_y * max_x);	/* init the screens to all blanks...	*/
+    memset(prev_screen, ' ', (size_t)max_y * max_x);
 
-    memset(row_len,     0, max_y * sizeof(int));/* init the row sizes to all 0's	*/
-    memset(prev_row_len,0, max_y * sizeof(int));
+    memset(row_len,     0, (size_t)max_y * sizeof(int));/* init the row sizes to all 0's	*/
+    memset(prev_row_len,0, (size_t)max_y * sizeof(int));
 
     cursor_y = bottom;				/* position the cursor just in case	*/
     cursor_x = left;
