@@ -719,7 +719,7 @@ jobs:
         fi
 
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.4.0
+      uses: actions/upload-artifact@v4.4.3
       if: matrix.language == 'c-cpp' && success()
       with:
         # Artifact name:
