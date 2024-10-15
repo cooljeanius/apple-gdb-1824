@@ -19623,7 +19623,7 @@ if test ${enable_pedantic+y}
 then :
   enableval=$enable_pedantic; case "${enableval}" in
      yes | y) PEDANTIC_WARNINGS="yes" ;;
-     no | n)  PEDANTIC_WARNINGS="no" ;;
+     no | n) PEDANTIC_WARNINGS="no" ;;
      *) as_fn_error $? "bad value ${enableval} for --enable-pedantic" "$LINENO" 5 ;;
    esac
 fi
@@ -19661,8 +19661,8 @@ if test "x${PEDANTIC_WARNINGS}" = "xyes"; then
       WARN_CFLAGS="${WARN_CFLAGS} -Wexpansion-to-defined"
     fi
     ## fake the '-ansi' flag; actually using it has additional effects:
-    WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__"
-    WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__"
+    WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__ -D__PEDANTIC__"
+    WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__ -DPEDANTIC_WARNINGS"
 else
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: skipping enablement of pedantic warnings" >&5
 printf "%s\n" "$as_me: skipping enablement of pedantic warnings" >&6;}
@@ -25828,7 +25828,7 @@ fi
 # check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-# FIXME: Replace `main' with a function in `-lcc_dynamic':
+# OK to use 'main' here:
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lcc_dynamic" >&5
 printf %s "checking for main in -lcc_dynamic... " >&6; }
 if test ${ac_cv_lib_cc_dynamic_main+y}
@@ -25871,7 +25871,7 @@ then :
 
 fi
 
-# FIXME: Replace `main' with a function in `-lgcc':
+# OK to use 'main' here:
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lgcc" >&5
 printf %s "checking for main in -lgcc... " >&6; }
 if test ${ac_cv_lib_gcc_main+y}
@@ -25914,7 +25914,7 @@ then :
 
 fi
 
-# FIXME: Replace `main' with a function in `-lcurses':
+# OK to use 'main' here:
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lcurses" >&5
 printf %s "checking for main in -lcurses... " >&6; }
 if test ${ac_cv_lib_curses_main+y}

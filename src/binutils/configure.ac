@@ -428,11 +428,11 @@ AC_CHECK_LIB([ssp],[__chk_fail],[],[
 # check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-# FIXME: Replace `main' with a function in `-lcc_dynamic':
+# OK to use 'main' here:
 AC_CHECK_LIB([cc_dynamic],[main])
-# FIXME: Replace `main' with a function in `-lgcc':
+# OK to use 'main' here:
 AC_CHECK_LIB([gcc],[main])
-# FIXME: Replace `main' with a function in `-lcurses':
+# OK to use 'main' here:
 AC_CHECK_LIB([curses],[main])
   ## reset these:
 LDFLAGS="${ARCHLESS_LDFLAGS}"

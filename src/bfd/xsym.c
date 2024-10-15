@@ -66,11 +66,18 @@
 
 extern const bfd_target sym_vec;
 
+/* Just so we can have something with a flexible array member at the end: */
+struct flexmemberholder {
+  int i; /* (dummy field) */
+  unsigned char buf[1] ATTRIBUTE_STRICT_FLEX_ARRAY(1);
+};
+
+/* */
 static int
-pstrcmp (const char *as, const char *bs)
+pstrcmp(const char *as, const char *bs)
 {
-  const unsigned char *a = (const unsigned char *) as;
-  const unsigned char *b = (const unsigned char *) bs;
+  const unsigned char *a = (const unsigned char *)as;
+  const unsigned char *b = (const unsigned char *)bs;
   unsigned char clen;
   int ret;
 
@@ -87,6 +94,7 @@ pstrcmp (const char *as, const char *bs)
     return 1;
 }
 
+/* */
 static unsigned long
 compute_offset(unsigned long first_page, unsigned long page_size,
 	       unsigned long entry_size, unsigned long local_index)
@@ -1153,6 +1161,7 @@ bfd_sym_fetch_contained_labels_table_entry(bfd *abfd,
   return 0;
 }
 
+/* */
 int
 bfd_sym_fetch_contained_types_table_entry(bfd *abfd,
                                           bfd_sym_contained_types_table_entry *entry,
@@ -1161,13 +1170,7 @@ bfd_sym_fetch_contained_types_table_entry(bfd *abfd,
   void (*parser)(unsigned char *, size_t, bfd_sym_contained_types_table_entry *);
   unsigned long offset;
   unsigned long entry_size = 0UL;
-#if defined(__GNUC__) && defined(__GNUC_MINOR__) && \
-    !defined(__STRICT_ANSI__) && !defined(__clang__) && \
-    defined(__extension__)
-  unsigned char __extension__ buf[0];
-#else
-  unsigned char buf[1];
-#endif /* __GNUC__ && __GNUC_MINOR__ && !__STRICT_ANSI__ && !__clang__ && __extension__ */
+  struct flexmemberholder s;
   bfd_sym_data_struct *sdata = NULL;
 
   parser = NULL;
@@ -1202,14 +1205,15 @@ bfd_sym_fetch_contained_types_table_entry(bfd *abfd,
 
   if (bfd_seek(abfd, (file_ptr)offset, SEEK_SET) < 0)
     return -1;
-  if (bfd_bread(buf, (bfd_size_type)entry_size, abfd) != entry_size)
+  if (bfd_bread(s.buf, (bfd_size_type)entry_size, abfd) != entry_size)
     return -1;
 
-  (*parser)(buf, entry_size, entry);
+  (*parser)(s.buf, entry_size, entry);
 
   return 0;
 }
 
+/* */
 void
 bfd_sym_parse_file_references_index_table_entry_v33r0(unsigned char *buf,
                                                       size_t len,
@@ -1235,6 +1239,7 @@ bfd_sym_parse_file_references_index_table_entry_v33r0(unsigned char *buf,
     }
 }
 
+/* */
 int
 bfd_sym_fetch_file_references_index_table_entry(bfd *abfd,
                                                 bfd_sym_file_references_index_table_entry *entry,
@@ -1243,13 +1248,7 @@ bfd_sym_fetch_file_references_index_table_entry(bfd *abfd,
   void (*parser)(unsigned char *, size_t, bfd_sym_file_references_index_table_entry *);
   unsigned long offset;
   unsigned long entry_size = 0UL;
-#if defined(__GNUC__) && defined(__GNUC_MINOR__) && \
-    !defined(__STRICT_ANSI__) && !defined(__clang__) && \
-    defined(__extension__)
-  unsigned char __extension__ buf[0];
-#else
-  unsigned char buf[1];
-#endif /* __GNUC__ && __GNUC_MINOR__ && !__STRICT_ANSI__ && !__clang__ && __extension__ */
+  struct flexmemberholder s;
   bfd_sym_data_struct *sdata = (bfd_sym_data_struct *)NULL;
 
   parser = NULL;
@@ -1288,14 +1287,15 @@ bfd_sym_fetch_file_references_index_table_entry(bfd *abfd,
 
   if (bfd_seek(abfd, (file_ptr)offset, SEEK_SET) < 0)
     return -1;
-  if (bfd_bread(buf, (bfd_size_type)entry_size, abfd) != entry_size)
+  if (bfd_bread(s.buf, (bfd_size_type)entry_size, abfd) != entry_size)
     return -1;
 
-  (*parser)(buf, entry_size, entry);
+  (*parser)(s.buf, entry_size, entry);
 
   return 0;
 }
 
+/* */
 int
 bfd_sym_fetch_constant_pool_entry(bfd *abfd,
                                   bfd_sym_constant_pool_entry *entry,
@@ -1304,13 +1304,7 @@ bfd_sym_fetch_constant_pool_entry(bfd *abfd,
   void (*parser)(unsigned char *, size_t, bfd_sym_constant_pool_entry *);
   unsigned long offset;
   unsigned long entry_size = 0UL;
-#if defined(__GNUC__) && defined(__GNUC_MINOR__) && \
-    !defined(__STRICT_ANSI__) && !defined(__clang__) && \
-    defined(__extension__)
-  unsigned char __extension__ buf[0];
-#else
-  unsigned char buf[1];
-#endif /* __GNUC__ && __GNUC_MINOR__ && !__STRICT_ANSI__ && !__clang__ && __extension__ */
+  struct flexmemberholder s;
   bfd_sym_data_struct *sdata = NULL;
 
   parser = NULL;
@@ -1345,14 +1339,15 @@ bfd_sym_fetch_constant_pool_entry(bfd *abfd,
 
   if (bfd_seek(abfd, (file_ptr)offset, SEEK_SET) < 0)
     return -1;
-  if (bfd_bread(buf, (bfd_size_type)entry_size, abfd) != entry_size)
+  if (bfd_bread(s.buf, (bfd_size_type)entry_size, abfd) != entry_size)
     return -1;
 
-  (*parser)(buf, entry_size, entry);
+  (*parser)(s.buf, entry_size, entry);
 
   return 0;
 }
 
+/* */
 int
 bfd_sym_fetch_type_table_entry(bfd *abfd,
                                bfd_sym_type_table_entry *entry,

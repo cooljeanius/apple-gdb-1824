@@ -6380,7 +6380,7 @@ fi
 
   fi
 else
-  test ! -z "${AR}" && export AR
+  test -n "${AR}" && export AR
     ## dummy
 fi
 if test -n "$ac_tool_prefix"; then
@@ -6602,7 +6602,7 @@ else
 fi
 
 else
-  test ! -z "${RANLIB}" && export RANLIB
+  test -n "${RANLIB}" && export RANLIB
     ## dummy
 fi
 # By default we simply use the C compiler to build assembly code.
@@ -19320,9 +19320,9 @@ printf "%s\n" "$as_me: trying to set lt_sysroot to prefix" >&6;}
   lt_sysroot="${prefix}"
 fi
 if test -x ${srcdir}/libtool; then
-  test -r libtool
+  test -r libtool && test -s libtool && stat libtool
   if test "x${USE_MAINTAINER_MODE}" = "xyes"; then
-    test ! -z "${USE_MAINTAINER_MODE}"
+    test -n "${USE_MAINTAINER_MODE}" && echo "TODO: check up on libtool for maintainer mode"
     ## (bfd puts fixes here, but leave them out in this version for now)
   fi
 fi
@@ -19454,7 +19454,7 @@ fi
 
 # host-specific stuff:
 if test "x${CC}" = "x"; then
-  test -z "${CC}"
+  test -z "${CC}" || unset CC
   ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -22266,7 +22266,7 @@ fi
 # check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-# FIXME: Replace `main' with a function in `-lcc_dynamic':
+# OK to use 'main' here:
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lcc_dynamic" >&5
 printf %s "checking for main in -lcc_dynamic... " >&6; }
 if test ${ac_cv_lib_cc_dynamic_main+y}
@@ -22306,7 +22306,7 @@ then :
   SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lcc_dynamic"
 fi
 
-# FIXME: Replace `main' with a function in `-lgcc':
+# OK to use 'main' here:
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lgcc" >&5
 printf %s "checking for main in -lgcc... " >&6; }
 if test ${ac_cv_lib_gcc_main+y}
@@ -22345,7 +22345,7 @@ if test "x$ac_cv_lib_gcc_main" = xyes
 then :
   SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lgcc"
 fi
-# FIXME: Replace `main' with a function in `-lSystem':
+# OK to use 'main' here:
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lSystem" >&5
 printf %s "checking for main in -lSystem... " >&6; }
 if test ${ac_cv_lib_System_main+y}
@@ -22383,6 +22383,90 @@ printf "%s\n" "$ac_cv_lib_System_main" >&6; }
 if test "x$ac_cv_lib_System_main" = xyes
 then :
   SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lSystem"
+fi
+  ## In case those all failed:
+if test "x${SYSTEM_FRAMEWORK_LIBS}" = "x"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lcompiler_rt" >&5
+printf %s "checking for main in -lcompiler_rt... " >&6; }
+if test ${ac_cv_lib_compiler_rt_main+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-lcompiler_rt  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main (void)
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_compiler_rt_main=yes
+else case e in #(
+  e) ac_cv_lib_compiler_rt_main=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_compiler_rt_main" >&5
+printf "%s\n" "$ac_cv_lib_compiler_rt_main" >&6; }
+if test "x$ac_cv_lib_compiler_rt_main" = xyes
+then :
+  test -z "${SYSTEM_FRAMEWORK_LIBS}" && SYSTEM_FRAMEWORK_LIBS="-lcompiler_rt"
+fi
+
+fi
+  ## 1 more:
+if test "x${SYSTEM_FRAMEWORK_LIBS}" = "x"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lclang_rt" >&5
+printf %s "checking for main in -lclang_rt... " >&6; }
+if test ${ac_cv_lib_clang_rt_main+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-lclang_rt  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main (void)
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_clang_rt_main=yes
+else case e in #(
+  e) ac_cv_lib_clang_rt_main=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_clang_rt_main" >&5
+printf "%s\n" "$ac_cv_lib_clang_rt_main" >&6; }
+if test "x$ac_cv_lib_clang_rt_main" = xyes
+then :
+  test -z "${SYSTEM_FRAMEWORK_LIBS}" && SYSTEM_FRAMEWORK_LIBS="-lclang_rt"
+fi
+
 fi
   ## reset these:
 LDFLAGS="${ARCHLESS_LDFLAGS}"
@@ -25425,7 +25509,7 @@ if test ${enable_pedantic+y}
 then :
   enableval=$enable_pedantic; case "${enableval}" in
      yes | y) PEDANTIC_WARNINGS="yes" ;;
-     no | n)  PEDANTIC_WARNINGS="no" ;;
+     no | n) PEDANTIC_WARNINGS="no" ;;
      *) as_fn_error $? "bad value ${enableval} for --enable-pedantic" "$LINENO" 5 ;;
    esac
 fi
@@ -25463,8 +25547,8 @@ if test "x${PEDANTIC_WARNINGS}" = "xyes"; then
       WARN_CFLAGS="${WARN_CFLAGS} -Wexpansion-to-defined"
     fi
     ## fake the '-ansi' flag; actually using it has additional effects:
-    WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__"
-    WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__"
+    WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__ -D__PEDANTIC__"
+    WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__ -DPEDANTIC_WARNINGS"
 else
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: skipping enablement of pedantic warnings" >&5
 printf "%s\n" "$as_me: skipping enablement of pedantic warnings" >&6;}

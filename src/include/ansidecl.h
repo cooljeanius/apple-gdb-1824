@@ -507,9 +507,12 @@ So instead we use the macro below and test it against specific values.  */
 # endif /* GNUC >= 4.9 */
 #endif /* ATTRIBUTE_NO_SANITIZE_UNDEFINED */
 
-/* FIXME: check version of gcc: */
 #ifndef ATTRIBUTE_W_U_R
-# define ATTRIBUTE_W_U_R __attribute__((warn_unused_result))
+# if (GCC_VERSION >= 3004) || __has_attribute(warn_unused_result)
+#  define ATTRIBUTE_W_U_R __attribute__((warn_unused_result))
+# else
+#  define ATTRIBUTE_W_U_R
+# endif /* gcc 3.4+ */
 #endif /* ATTRIBUTE_W_U_R */
 
 /* Added in gcc 7: */
@@ -520,6 +523,15 @@ So instead we use the macro below and test it against specific values.  */
 #  define ATTRIBUTE_FALLTHROUGH /* FALLTHRU */
 # endif /* gcc 7+ */
 #endif /* !ATTRIBUTE_FALLTHROUGH */
+
+/* Added in gcc 13: */
+#ifndef ATTRIBUTE_STRICT_FLEX_ARRAY
+# if (GCC_VERSION >= 13000) || __has_attribute(strict_flex_array)
+#  define ATTRIBUTE_STRICT_FLEX_ARRAY(n) __attribute__((strict_flex_array(n)))
+# else
+#  define ATTRIBUTE_STRICT_FLEX_ARRAY(n)
+# endif /* gcc 13+ */
+#endif /* !ATTRIBUTE_STRICT_FLEX_ARRAY */
 
 /* We use __extension__ in some places to suppress -pedantic warnings about
  * GCC extensions. This feature did NOT work properly before gcc 2.8. */

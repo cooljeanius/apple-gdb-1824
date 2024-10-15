@@ -20749,9 +20749,9 @@ printf "%s\n" "$as_me: trying to set lt_sysroot to prefix" >&6;}
 fi
   ## this libtool hack is probably unnecessary now:
 if test -x ${srcdir}/libtool; then
-  test -r libtool
+  test -r libtool && test -s libtool && stat libtool
   if test "x${USE_MAINTAINER_MODE}" = "xyes"; then
-    test ! -z "${USE_MAINTAINER_MODE}"
+    test -n "${USE_MAINTAINER_MODE}" && echo "fixing libtool for maintainer mode"
     # patch libtool to change $_cmds IFS from ~ to ? character
 if grep "^[_$as_cr_letters]_cmds=.*[?]" libtool >/dev/null; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING:   patching libtool skipped - _cmds already contain question marks" >&5
@@ -21733,7 +21733,7 @@ if test ${enable_pedantic+y}
 then :
   enableval=$enable_pedantic; case "${enableval}" in
      yes | y) PEDANTIC_WARNINGS="yes" ;;
-     no | n)  PEDANTIC_WARNINGS="no" ;;
+     no | n) PEDANTIC_WARNINGS="no" ;;
      *) as_fn_error $? "bad value ${enableval} for --enable-pedantic" "$LINENO" 5 ;;
    esac
 fi
@@ -21771,8 +21771,8 @@ if test "x${PEDANTIC_WARNINGS}" = "xyes"; then
       WARN_CFLAGS="${WARN_CFLAGS} -Wexpansion-to-defined"
     fi
     ## fake the '-ansi' flag; actually using it has additional effects:
-    WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__"
-    WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__"
+    WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__ -D__PEDANTIC__"
+    WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__ -DPEDANTIC_WARNINGS"
 else
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: skipping enablement of pedantic warnings" >&5
 printf "%s\n" "$as_me: skipping enablement of pedantic warnings" >&6;}
@@ -21972,6 +21972,7 @@ fi
 printf "%s\n" "$ac_cv_path_CLANG_ANALYZER" >&6; }  ## (need this extra line here)
 CLANG_ANALYZER=${ac_cv_path_CLANG_ANALYZER}
 
+  ## FIXME: recheck documentation on this one; I might be using the wrong value...
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler handles -fstrict-flex-arrays=1" >&5
 printf %s "checking whether C compiler handles -fstrict-flex-arrays=1... " >&6; }
@@ -23943,7 +23944,7 @@ fi
 # check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-# FIXME: Replace `main' with a function in `-lcc_dynamic':
+# OK to use 'main' here:
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lcc_dynamic" >&5
 printf %s "checking for main in -lcc_dynamic... " >&6; }
 if test ${ac_cv_lib_cc_dynamic_main+y}
@@ -23983,7 +23984,7 @@ then :
   SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lcc_dynamic"
 fi
 
-# FIXME: Replace `main' with a function in `-lgcc':
+# OK to use 'main' here:
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lgcc" >&5
 printf %s "checking for main in -lgcc... " >&6; }
 if test ${ac_cv_lib_gcc_main+y}
@@ -24022,7 +24023,7 @@ if test "x$ac_cv_lib_gcc_main" = xyes
 then :
   SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lgcc"
 fi
-# FIXME: Replace `main' with a function in `-lSystem':
+# OK to use 'main' here:
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lSystem" >&5
 printf %s "checking for main in -lSystem... " >&6; }
 if test ${ac_cv_lib_System_main+y}
@@ -24060,6 +24061,90 @@ printf "%s\n" "$ac_cv_lib_System_main" >&6; }
 if test "x$ac_cv_lib_System_main" = xyes
 then :
   SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lSystem"
+fi
+  ## In case those all failed:
+if test "x${SYSTEM_FRAMEWORK_LIBS}" = "x"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lcompiler_rt" >&5
+printf %s "checking for main in -lcompiler_rt... " >&6; }
+if test ${ac_cv_lib_compiler_rt_main+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-lcompiler_rt  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main (void)
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_compiler_rt_main=yes
+else case e in #(
+  e) ac_cv_lib_compiler_rt_main=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_compiler_rt_main" >&5
+printf "%s\n" "$ac_cv_lib_compiler_rt_main" >&6; }
+if test "x$ac_cv_lib_compiler_rt_main" = xyes
+then :
+  test -z "${SYSTEM_FRAMEWORK_LIBS}" && SYSTEM_FRAMEWORK_LIBS="-lcompiler_rt"
+fi
+
+fi
+  ## 1 more:
+if test "x${SYSTEM_FRAMEWORK_LIBS}" = "x"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lclang_rt" >&5
+printf %s "checking for main in -lclang_rt... " >&6; }
+if test ${ac_cv_lib_clang_rt_main+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-lclang_rt  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main (void)
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_clang_rt_main=yes
+else case e in #(
+  e) ac_cv_lib_clang_rt_main=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_clang_rt_main" >&5
+printf "%s\n" "$ac_cv_lib_clang_rt_main" >&6; }
+if test "x$ac_cv_lib_clang_rt_main" = xyes
+then :
+  test -z "${SYSTEM_FRAMEWORK_LIBS}" && SYSTEM_FRAMEWORK_LIBS="-lclang_rt"
+fi
+
 fi
   ## reset these:
 LDFLAGS="${ARCHLESS_LDFLAGS}"
@@ -24816,6 +24901,12 @@ ac_fn_c_check_header_compile "$LINENO" "limits.h" "ac_cv_header_limits_h" "$ac_i
 if test "x$ac_cv_header_limits_h" = xyes
 then :
   printf "%s\n" "#define HAVE_LIMITS_H 1" >>confdefs.h
+
+fi
+ac_fn_c_check_header_compile "$LINENO" "mach.h" "ac_cv_header_mach_h" "$ac_includes_default"
+if test "x$ac_cv_header_mach_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_MACH_H 1" >>confdefs.h
 
 fi
 ac_fn_c_check_header_compile "$LINENO" "mach/mach.h" "ac_cv_header_mach_mach_h" "$ac_includes_default"

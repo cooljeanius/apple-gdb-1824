@@ -200,9 +200,9 @@ AC_DEFUN([AX_LIBTOOL_FIXES],[
 ])dnl
   ## this libtool hack is probably unnecessary now:
 if test -x ${srcdir}/libtool; then
-  test -r libtool
+  test -r libtool && test -s libtool && stat libtool
   if test "x${USE_MAINTAINER_MODE}" = "xyes"; then
-    test ! -z "${USE_MAINTAINER_MODE}"
+    test -n "${USE_MAINTAINER_MODE}" && echo "fixing libtool for maintainer mode"
     AX_LIBTOOL_FIXES
   fi
 fi
@@ -359,6 +359,7 @@ if test "x${WANT_CONVERSION_WARNS}" = "x" && test "x${enable_build_warnings}" = 
 fi
 AM_BINUTILS_WARNINGS
 AM_BINUTILS_CLANG_STATIC_ANALYSIS
+  ## FIXME: recheck documentation on this one; I might be using the wrong value...
 gl_WARN_ADD([-fstrict-flex-arrays=1],[FLEXMEMBER_STRICTNESS_FLAG])dnl
 
 dnl# add some insurance to our "config.h" header:
@@ -549,15 +550,25 @@ fi
 # check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-# FIXME: Replace `main' with a function in `-lcc_dynamic':
+# OK to use 'main' here:
 AC_CHECK_LIB([cc_dynamic],[main],
            [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lcc_dynamic"])
-# FIXME: Replace `main' with a function in `-lgcc':
+# OK to use 'main' here:
 AC_CHECK_LIB([gcc],[main],
              [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lgcc"])dnl
-# FIXME: Replace `main' with a function in `-lSystem':
+# OK to use 'main' here:
 AC_CHECK_LIB([System],[main],
             [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lSystem"])dnl
+  ## In case those all failed:
+if test "x${SYSTEM_FRAMEWORK_LIBS}" = "x"; then
+  AC_CHECK_LIB([compiler_rt],[main],
+               [test -z "${SYSTEM_FRAMEWORK_LIBS}" && SYSTEM_FRAMEWORK_LIBS="-lcompiler_rt"])
+fi
+  ## 1 more:
+if test "x${SYSTEM_FRAMEWORK_LIBS}" = "x"; then
+  AC_CHECK_LIB([clang_rt],[main],
+               [test -z "${SYSTEM_FRAMEWORK_LIBS}" && SYSTEM_FRAMEWORK_LIBS="-lclang_rt"])
+fi
   ## reset these:
 LDFLAGS="${ARCHLESS_LDFLAGS}"
   ## TODO: might only want to make this an error depending on platform:
@@ -635,7 +646,7 @@ unset ac_cv_header_limits_h
 unset ac_cv_header_stdlib_h
 unset ac_cv_header_sys_param_h
 AC_CHECK_HEADERS([ctype.h errno.h fcntl.h gettext.h iconv.h libgen.h \
-                  libgettext.h libintl.h limits.h mach/mach.h \
+                  libgettext.h libintl.h limits.h mach.h mach/mach.h \
                   mach-o/loader.h malloca.h malloc/malloc.h math.h \
                   mingw/fcntl.h mingw/malloc.h mingw/sys/types.h \
                   realloc.h signal.h stdarg.h stddef.h stdio.h sys/acl.h \
