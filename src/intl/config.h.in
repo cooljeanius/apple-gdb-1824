@@ -244,6 +244,9 @@
 /* Define to 1 if you have the <nl_types.h> header file. */
 #undef HAVE_NL_TYPES_H
 
+/* Define to 1 if you have the <php_iconv.h> header file. */
+#undef HAVE_PHP_ICONV_H
+
 /* Define if your printf() function supports format strings with positions. */
 #undef HAVE_POSIX_PRINTF
 

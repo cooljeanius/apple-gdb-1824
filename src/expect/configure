@@ -5157,8 +5157,8 @@ esac
 
 OLD_CFLAGS=${CFLAGS}
 if test "x${CC}" = "x"; then
-	test -z "${CC}"
-	ac_ext=c
+  test -z "${CC}" || unset CC
+  ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -5912,8 +5912,8 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 else
-	test -n "${CC}"
-	ac_ext=c
+  test -n "${CC}" && export CC="${CC}"
+  ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -6051,7 +6051,7 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-	# If we cannot compile and link a trivial program, then we cannot expect
+  # If we cannot compile and link a trivial program, then we cannot expect
 # anything to work:
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether the compiler (${CC}) actually works" >&5
 printf %s "checking whether the compiler (${CC}) actually works... " >&6; }
@@ -6325,8 +6325,8 @@ UNSHARED_RANLIB=${RANLIB}
 
 # Other programs
 if test "x${CPP}" = "x"; then
-	test -z "${CPP}"
-	ac_ext=c
+  test -z "${CPP}" || unset CPP
+  ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -6465,8 +6465,8 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 else
-	test ! -z "${CPP}" && export CPP
-
+  test -n "${CPP}" && export CPP
+    ## (just needed to put something here)
 fi
 
 
@@ -7382,11 +7382,11 @@ mach=0
 case "${host}" in
   # Both Next and pure Mach behave identically with respect
   # to a few things, so just lump them together as "mach"
-  *-*-mach*)		mach=1 ;;
-  *-*-next*)		mach=1 ; next=1 ;;
+  *-*-mach*) mach=1 ;;
+  *-*-next*) mach=1; next=1 ;;
 esac
 
-if test $mach -eq 1 ; then
+if test $mach -eq 1; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
 else
@@ -7397,7 +7397,7 @@ fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if running MachTen" >&5
 printf %s "checking if running MachTen... " >&6; }
 # yet another Mach clone (for Classic MacOS)
-if test -r /MachTen -a "${cross_compiling}" != "yes" ; then
+if test -r /MachTen -a "${cross_compiling}" != "yes"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
   mach=1
@@ -7408,7 +7408,7 @@ fi
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if on Pyramid" >&5
 printf %s "checking if on Pyramid... " >&6; }
-if test -r /bin/pyr -a "${cross_compiling}" != "yes" ; then
+if test -r /bin/pyr -a "${cross_compiling}" != "yes"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
   pyr=1
@@ -7420,7 +7420,7 @@ fi
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if on Apollo" >&5
 printf %s "checking if on Apollo... " >&6; }
-if test -r /usr/apollo/bin -a "${cross_compiling}" != "yes" ; then
+if test -r /usr/apollo/bin -a "${cross_compiling}" != "yes"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
   apollo=1
@@ -7451,44 +7451,44 @@ printf %s "checking if stty reads stdout... " >&6; }
 
 stty_reads_stdout=""
 case "${host}" in
-  *-*-solaris*)		stty_reads_stdout=0 ;;
-  *-*-irix*)		stty_reads_stdout=0 ;;
-  *-*-sco3.2v[45]*)	stty_reads_stdout=1 ;;
-  i[3456]86-*-sysv4.2MP)	stty_reads_stdout=0 ;;
-  i[3456]86-*-linux*)	stty_reads_stdout=0 ;;
+  *-*-solaris*) stty_reads_stdout=0 ;;
+  *-*-irix*) stty_reads_stdout=0 ;;
+  *-*-sco3.2v[45]*) stty_reads_stdout=1 ;;
+  i[3456]86-*-sysv4.2MP) stty_reads_stdout=0 ;;
+  i[3456]86-*-linux*) stty_reads_stdout=0 ;;
   # Not sure about old convex but 5.2 definitely reads from stdout
-  c[12]-*-*)		stty_reads_stdout=1 ;;
-  *-*-aix[34]*)	stty_reads_stdout=0 ;;
-  *-*-hpux9*)		stty_reads_stdout=0 ;;
-  *-*-hpux10*)		stty_reads_stdout=0 ;;
-  *-*-hpux11*)		stty_reads_stdout=0 ;;
-  *-*-osf[234]*)	stty_reads_stdout=0 ;;
-  *-*-ultrix4.4)	stty_reads_stdout=0 ;;
-  *-*-dgux*)		stty_reads_stdout=0 ;;
-  *-*-cygwin*)		stty_reads_stdout=0 ;;
+  c[12]-*-*) stty_reads_stdout=1 ;;
+  *-*-aix[34]*) stty_reads_stdout=0 ;;
+  *-*-hpux9*) stty_reads_stdout=0 ;;
+  *-*-hpux10*) stty_reads_stdout=0 ;;
+  *-*-hpux11*) stty_reads_stdout=0 ;;
+  *-*-osf[234]*) stty_reads_stdout=0 ;;
+  *-*-ultrix4.4) stty_reads_stdout=0 ;;
+  *-*-dgux*) stty_reads_stdout=0 ;;
+  *-*-cygwin*) stty_reads_stdout=0 ;;
 esac
 
-if test ${mach} -eq 1 ; then
+if test ${mach} -eq 1; then
   stty_reads_stdout=1
 fi
-if test ${apollo} -eq 1 ; then
+if test ${apollo} -eq 1; then
   stty_reads_stdout=1
 fi
-if test ${pyr} -eq 1 ; then
+if test ${pyr} -eq 1; then
   stty_reads_stdout=1
 fi
 
-# if we still do NOT know, test
-if test x"${stty_reads_stdout}" = x"" ; then
+# if we still do NOT know, then test:
+if test x"${stty_reads_stdout}" = x""; then
   /bin/stty > /dev/null 2> /dev/null
-  if test $? -ne 0 ; then
+  if test $? -ne 0; then
     stty_reads_stdout=1
   else
     stty_reads_stdout=0
   fi
 fi
 
-if test ${stty_reads_stdout} -eq 1 ; then
+if test ${stty_reads_stdout} -eq 1; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
 
@@ -7506,10 +7506,10 @@ fi
 printf %s "checking if running Solaris... " >&6; }
 solaris=0
 case "${host}" in
-  *-*-solaris*)		solaris=1;;
+  *-*-solaris*) solaris=1 ;;
 esac
 
-if test ${solaris} -eq 1 ; then
+if test ${solaris} -eq 1; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
 
@@ -7718,13 +7718,12 @@ else case e in #(
 esac
 fi
 
-
 # On Interactive UNIX, -Xp must be added to LIBS in order to find strftime.
 # This test should really be done by Tcl. So just check Tcl's definition.
 # If defective, add to all three LIBS. (It is not actually necessary for
 # EXP_LIBS since -Xp will just be ignored the way that EXP_LIBS is used in
 # the Makefile, but we include it for consistency.)
-if test ${iunix} -eq 1 ; then
+if test ${iunix} -eq 1; then
   EXP_LIBS=${LIBS}
   LIBS=${EXP_AND_TCL_LIBS}
   ac_fn_c_check_func "$LINENO" "strftime" "ac_cv_func_strftime"
@@ -7744,7 +7743,7 @@ fi
 fi
 
 #
-# Ok, let us find the tcl source trees so we can use the headers
+# OK, let us find the tcl source trees so we can use the headers
 #
 
 #
@@ -7870,7 +7869,7 @@ printf "%s\n" "found in ${ac_cv_c_tclh}" >&6; }
 fi
 
 
-if test x"${no_tcl}" = x"true" ; then
+if test x"${no_tcl}" = x"true"; then
     echo "	ERROR: Cannot find Tcl headers or library."
     echo "	See README for information on how to obtain Tcl."
     echo "	If Tcl is installed, see INSTALL on how to tell"
@@ -7936,8 +7935,8 @@ fi
 
 export verbose=1
 
-test -n "${verbose}" && echo "configuring Tcl debugger"
 tmpdir=./Dbg$$
+test -n "${verbose}" && echo "configuring Tcl debugger in '${tmpdir}'."
 mkdir ${tmpdir}
 
 if test "${enable_shared}" = "yes"; then
@@ -7982,8 +7981,8 @@ CPP="${OLD_CPP}"
 test -e ${tmpdir}/config.status && cp -v ${tmpdir}/config.status ./Dbgconfig.status
 test -e ${tmpdir}/Dbg_cf.h && cp -v ${tmpdir}/Dbg_cf.h .
 test -e ${tmpdir}/DbgMkfl && cp -v ${tmpdir}/DbgMkfl .
-rm -rf ${tmpdir}
-test -n "${verbose}" && echo "configured Tcl debugger"
+rm -rf ${tmpdir} || rmdir ${tmpdir}
+test -n "${verbose}" && echo "configured Tcl debugger; cleaned up '${tmpdir}' after it."
 
 # some people would complain if this explanation had not been provided...
 
@@ -8003,7 +8002,7 @@ else case e in #(
 esac
 fi
 
-if test ${gethostname} -eq 0 ; then
+if test ${gethostname} -eq 0; then
   unset ac_cv_lib_inet_gethostname
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gethostname in -linet" >&5
 printf %s "checking for gethostname in -linet... " >&6; }
@@ -8050,7 +8049,7 @@ fi
 printf "%s\n" "$ac_cv_lib_inet_gethostname" >&6; }
 if test "x$ac_cv_lib_inet_gethostname" = xyes
 then :
-  LIBS="$LIBS -linet"
+  LIBS="${LIBS} -linet"
 else case e in #(
   e)
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -linet" >&5
@@ -8113,7 +8112,7 @@ else case e in #(
 esac
 fi
 
-if test ${gethostname} -eq 0 ; then
+if test ${gethostname} -eq 0; then
   unset ac_cv_lib_inet_gethostname
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gethostname in -linet" >&5
 printf %s "checking for gethostname in -linet... " >&6; }
@@ -8160,7 +8159,7 @@ fi
 printf "%s\n" "$ac_cv_lib_inet_gethostname" >&6; }
 if test "x$ac_cv_lib_inet_gethostname" = xyes
 then :
-  LIBS="$LIBS -linet"
+  LIBS="${LIBS} -linet"
 else case e in #(
   e)
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -linet" >&5
@@ -8223,7 +8222,7 @@ else case e in #(
 esac
 fi
 
-if test $gethostname -eq 0 ; then
+if test $gethostname -eq 0; then
   unset ac_cv_lib_inet_gethostname
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gethostname in -linet" >&5
 printf %s "checking for gethostname in -linet... " >&6; }
@@ -8270,7 +8269,7 @@ fi
 printf "%s\n" "$ac_cv_lib_inet_gethostname" >&6; }
 if test "x$ac_cv_lib_inet_gethostname" = xyes
 then :
-  LIBS="$LIBS -linet"
+  LIBS="${LIBS} -linet"
 else case e in #(
   e)
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -linet" >&5
@@ -8336,7 +8335,7 @@ else case e in #(
 esac
 fi
 
-if test ${socket} -eq 0 ; then
+if test ${socket} -eq 0; then
   unset ac_cv_lib_inet_socket
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for socket in -linet" >&5
 printf %s "checking for socket in -linet... " >&6; }
@@ -8383,7 +8382,7 @@ fi
 printf "%s\n" "$ac_cv_lib_inet_socket" >&6; }
 if test "x$ac_cv_lib_inet_socket" = xyes
 then :
-  LIBS="$LIBS -linet"
+  LIBS="${LIBS} -linet"
 else case e in #(
   e)
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for socket in -lsocket" >&5
@@ -8431,7 +8430,7 @@ fi
 printf "%s\n" "$ac_cv_lib_socket_socket" >&6; }
 if test "x$ac_cv_lib_socket_socket" = xyes
 then :
-  LIBS="$LIBS -lsocket"
+  LIBS="${LIBS} -lsocket"
 else case e in #(
   e)
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lsocket" >&5
@@ -8540,7 +8539,7 @@ else case e in #(
 esac
 fi
 
-if test ${socket} -eq 0 ; then
+if test ${socket} -eq 0; then
   unset ac_cv_lib_inet_socket
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for socket in -linet" >&5
 printf %s "checking for socket in -linet... " >&6; }
@@ -8587,7 +8586,7 @@ fi
 printf "%s\n" "$ac_cv_lib_inet_socket" >&6; }
 if test "x$ac_cv_lib_inet_socket" = xyes
 then :
-  LIBS="$LIBS -linet"
+  LIBS="${LIBS} -linet"
 else case e in #(
   e)
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for socket in -lsocket" >&5
@@ -8635,7 +8634,7 @@ fi
 printf "%s\n" "$ac_cv_lib_socket_socket" >&6; }
 if test "x$ac_cv_lib_socket_socket" = xyes
 then :
-  LIBS="$LIBS -lsocket"
+  LIBS="${LIBS} -lsocket"
 else case e in #(
   e)
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lsocket" >&5
@@ -8744,7 +8743,7 @@ else case e in #(
 esac
 fi
 
-if test ${socket} -eq 0 ; then
+if test ${socket} -eq 0; then
   unset ac_cv_lib_inet_socket
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for socket in -linet" >&5
 printf %s "checking for socket in -linet... " >&6; }
@@ -8791,7 +8790,7 @@ fi
 printf "%s\n" "$ac_cv_lib_inet_socket" >&6; }
 if test "x$ac_cv_lib_inet_socket" = xyes
 then :
-  LIBS="$LIBS -linet"
+  LIBS="${LIBS} -linet"
 else case e in #(
   e)
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for socket in -lsocket" >&5
@@ -8839,7 +8838,7 @@ fi
 printf "%s\n" "$ac_cv_lib_socket_socket" >&6; }
 if test "x$ac_cv_lib_socket_socket" = xyes
 then :
-  LIBS="$LIBS -lsocket"
+  LIBS="${LIBS} -lsocket"
 else case e in #(
   e)
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lsocket" >&5
@@ -8950,7 +8949,7 @@ else case e in #(
 esac
 fi
 
-if test ${select} -eq 0 ; then
+if test ${select} -eq 0; then
   unset ac_cv_lib_inet_select
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for select in -linet" >&5
 printf %s "checking for select in -linet... " >&6; }
@@ -8997,7 +8996,7 @@ fi
 printf "%s\n" "$ac_cv_lib_inet_select" >&6; }
 if test "x$ac_cv_lib_inet_select" = xyes
 then :
-  LIBS="$LIBS -linet"
+  LIBS="${LIBS} -linet"
 else case e in #(
   e)
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -linet" >&5
@@ -9107,7 +9106,7 @@ fi
 printf "%s\n" "$ac_cv_lib_inet_select" >&6; }
 if test "x$ac_cv_lib_inet_select" = xyes
 then :
-  LIBS="$LIBS -linet"
+  LIBS="${LIBS} -linet"
 else case e in #(
   e)
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -linet" >&5
@@ -9170,7 +9169,7 @@ else case e in #(
 esac
 fi
 
-if test ${select} -eq 0 ; then
+if test ${select} -eq 0; then
   unset ac_cv_lib_inet_select
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for select in -linet" >&5
 printf %s "checking for select in -linet... " >&6; }
@@ -9217,7 +9216,7 @@ fi
 printf "%s\n" "$ac_cv_lib_inet_select" >&6; }
 if test "x$ac_cv_lib_inet_select" = xyes
 then :
-  LIBS="$LIBS -linet"
+  LIBS="${LIBS} -linet"
 else case e in #(
   e)
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -linet" >&5
@@ -9282,7 +9281,7 @@ else case e in #(
 esac
 fi
 
-if test ${getpseudotty} -eq 0 ; then
+if test ${getpseudotty} -eq 0; then
   unset ac_cv_lib_seq_getpseudotty
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for getpseudotty in -lseq" >&5
 printf %s "checking for getpseudotty in -lseq... " >&6; }
@@ -9396,7 +9395,7 @@ else case e in #(
 esac
 fi
 
-if test ${getpseudotty} -eq 0 ; then
+if test ${getpseudotty} -eq 0; then
   unset ac_cv_lib_seq_getpseudotty
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for getpseudotty in -lseq" >&5
 printf %s "checking for getpseudotty in -lseq... " >&6; }
@@ -9510,7 +9509,7 @@ else case e in #(
 esac
 fi
 
-if test ${getpseudotty} -eq 0 ; then
+if test ${getpseudotty} -eq 0; then
   unset ac_cv_lib_seq_getpseudotty
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for getpseudotty in -lseq" >&5
 printf %s "checking for getpseudotty in -lseq... " >&6; }
@@ -9634,7 +9633,7 @@ else case e in #(
 esac
 fi
 
-  if test $openpty -eq 0 ; then
+  if test ${openpty} -eq 0; then
     unset ac_cv_lib_util_openpty
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for openpty in -lutil" >&5
 printf %s "checking for openpty in -lutil... " >&6; }
@@ -9752,7 +9751,7 @@ else case e in #(
 esac
 fi
 
-  if test $openpty -eq 0 ; then
+  if test ${openpty} -eq 0; then
     unset ac_cv_lib_util_openpty
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for openpty in -lutil" >&5
 printf %s "checking for openpty in -lutil... " >&6; }
@@ -9807,7 +9806,7 @@ printf "%s\n" "#define HAVE_OPENPTY 1" >>confdefs.h
 
 else case e in #(
   e)
-	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lutil" >&5
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lutil" >&5
 printf %s "checking for main in -lutil... " >&6; }
 if test ${ac_cv_lib_util_main+y}
 then :
@@ -9867,7 +9866,7 @@ else case e in #(
 esac
 fi
 
-  if test $openpty -eq 0 ; then
+  if test ${openpty} -eq 0; then
     unset ac_cv_lib_util_openpty
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for openpty in -lutil" >&5
 printf %s "checking for openpty in -lutil... " >&6; }
@@ -9917,11 +9916,11 @@ then :
 
         printf "%s\n" "#define HAVE_OPENPTY 1" >>confdefs.h
 
-        LIBS="$LIBS -lutil"
+        LIBS="${LIBS} -lutil"
 
 else case e in #(
   e)
-	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lutil" >&5
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lutil" >&5
 printf %s "checking for main in -lutil... " >&6; }
 if test ${ac_cv_lib_util_main+y}
 then :
@@ -11489,7 +11488,7 @@ else case e in #(
 #include <unistd.h>
 #ifdef RETSIGTYPE
 # undef RETSIGTYPE
-#endif
+#endif /* RETSIGTYPE */
 #define RETSIGTYPE $retsigtype
 
 int signal_rearms = 0;
@@ -11559,10 +11558,10 @@ cat >> conftest.sed <<CONFEOF
 printf %s "checking if on Convex... " >&6; }
 convex=0
 case "${host}" in
-  c[12]-*-*)		convex=1;;
+  c[12]-*-*) convex=1;;
 esac
 
-if test ${convex} -eq 1 ; then
+if test ${convex} -eq 1; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
 
@@ -11573,7 +11572,7 @@ else
 printf "%s\n" "no" >&6; }
 fi
 
-EXP_LDFLAGS=
+EXP_LDFLAGS=""
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if on NeXT" >&5
 printf %s "checking if on NeXT... " >&6; }
@@ -11604,17 +11603,16 @@ fi
 printf %s "checking sane default stty arguments... " >&6; }
 DEFAULT_STTY_ARGS="sane"
 
-if test ${mach} -eq 1 ; then
+if test ${mach} -eq 1; then
 	DEFAULT_STTY_ARGS="cooked"
 fi
 
-if test ${hp} -eq 1 ; then
+if test ${hp} -eq 1; then
 	DEFAULT_STTY_ARGS="sane kill "
 fi
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${DEFAULT_STTY_ARG}" >&5
 printf "%s\n" "${DEFAULT_STTY_ARG}" >&6; }
-
 # Look for various features to determine what kind of pty
 # we have. For some weird reason, ac_compile_check would not
 # work, but ac_test_program does.
@@ -11694,7 +11692,7 @@ fi
 printf %s "checking for SCO style pty allocation... " >&6; }
 sco_ptys=""
 case "${host}" in
-  *-sco3.2v[45]*)	sco_clist_ptys=1 svr4_ptys_broken=1;;
+  *-sco3.2v[45]*) sco_clist_ptys=1 svr4_ptys_broken=1;;
 esac
 
 if test x"${sco_clist_ptys}" != x""; then
@@ -11748,7 +11746,7 @@ esac
 fi
 
   if test "x${ac_cv_header_features_h}" = "x"; then
-    test -z "${ac_cv_header_features_h}"
+    test -z "${ac_cv_header_features_h}" || unset ac_cv_header_features_h
     ac_fn_c_check_header_compile "$LINENO" "features.h" "ac_cv_header_features_h" "$ac_includes_default"
 if test "x$ac_cv_header_features_h" = xyes
 then :
@@ -11810,7 +11808,7 @@ fi
 # Gregory Depp <depp@osf.org> 17Aug93
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for OSF/1 style pty allocation" >&5
 printf %s "checking for OSF/1 style pty allocation... " >&6; }
-if test -r /dev/ptmx_bsd -a "$cross_compiling" != "yes" ; then
+if test -r /dev/ptmx_bsd -a "${cross_compiling}" != "yes"; then
 
 printf "%s\n" "#define HAVE_PTMX_BSD 1" >>confdefs.h
 
@@ -11843,7 +11841,7 @@ then :
   tcsetattr=1
 fi
 
-if test ${tcgetattr} -eq 1 -a ${tcsetattr} -eq 1 ; then
+if test ${tcgetattr} -eq 1 -a ${tcsetattr} -eq 1; then
 
 printf "%s\n" "#define HAVE_TCSETATTR 1" >>confdefs.h
 
@@ -11933,7 +11931,7 @@ printf "%s\n" "$ac_cv_sys_posix_termios" >&6; }
 
 # mach systems have include files for unimplemented features
 # so avoid doing following test on those systems
-if test ${mach} -eq 0 ; then
+if test ${mach} -eq 0; then
 
   # next check for the older style ttys
   # note that if we detect termio.h (only), we still set PTY_TYPE=termios
@@ -11989,8 +11987,8 @@ then :
 	 *-*-cygwin*)
 printf "%s\n" "#define HAVE_TERMIOS 1" >>confdefs.h
 
-			PTY_TYPE=termios
-			{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+	              PTY_TYPE=termios
+	              { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; } ;;
 	 *) as_fn_error $? "Expect cannot be cross compiled" "$LINENO" 5 ;;
 	 esac
@@ -12044,7 +12042,7 @@ then :
 	 *-*-cygwin*)
 printf "%s\n" "#define HAVE_TCGETS_OR_TCGETA_IN_TERMIOS_H 1" >>confdefs.h
 
-			{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+	              { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; } ;;
 	 *) as_fn_error $? "Expect cannot be cross compiled" "$LINENO" 5 ;;
 	 esac
@@ -12158,7 +12156,7 @@ then :
 	 *-*-cygwin*)
 printf "%s\n" "#define HAVE_TIOCGWINSZ_IN_TERMIOS_H 1" >>confdefs.h
 
-			{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+	              { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; } ;;
 	 *) as_fn_error $? "Expect cannot be cross compiled" "$LINENO" 5 ;;
 	 esac
@@ -12272,12 +12270,12 @@ fi
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking event handling" >&5
 printf %s "checking event handling... " >&6; }
-if test ${select} -eq 1 ; then
+if test ${select} -eq 1; then
   EVENT_TYPE=select
   EVENT_ABLE=event
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: via select" >&5
 printf "%s\n" "via select" >&6; }
-elif test ${poll} -eq 1 ; then
+elif test ${poll} -eq 1; then
   EVENT_TYPE=poll
   EVENT_ABLE=event
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: via poll" >&5
@@ -12773,7 +12771,7 @@ if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then
 else
     EXP_LIB_VERSION=${EXP_VERSION_NODOTS}
 fi
-if test ${iunix} -eq 1 ; then
+if test ${iunix} -eq 1; then
     EXP_LIB_VERSION=${EXP_VERSION_NODOTS}
 fi
 

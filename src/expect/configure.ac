@@ -1,5 +1,5 @@
-#                                               -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
+dnl#                                               -*- Autoconf -*-
+dnl# Process this file with autoconf to produce a configure script.
 
 # while Expect is in alpha/beta, disable caching so as not to confuse
 # people trying to fix configure bugs
@@ -155,12 +155,12 @@ dnl# end alas, because the user might have defined CFLAGS.
 dnl# CYGNUS LOCAL: just use AC_PROG_CC; we do NOT care.
 OLD_CFLAGS=${CFLAGS}
 if test "x${CC}" = "x"; then
-	test -z "${CC}"
-	AC_PROG_CC
+  test -z "${CC}" || unset CC
+  AC_PROG_CC
 else
-	test -n "${CC}"
-	AC_PROG_CPP
-	CY_AC_C_WORKS
+  test -n "${CC}" && export CC="${CC}"
+  AC_PROG_CPP
+  CY_AC_C_WORKS
 fi
 CFLAGS=${OLD_CFLAGS}
 dnl# END CYGNUS LOCAL
@@ -174,11 +174,12 @@ UNSHARED_RANLIB=${RANLIB}
 
 # Other programs
 if test "x${CPP}" = "x"; then
-	test -z "${CPP}"
-	AC_PROG_CPP
+  test -z "${CPP}" || unset CPP
+  AC_PROG_CPP
 else
-	test ! -z "${CPP}" && export CPP
-	AC_SUBST([CPP])
+  test -n "${CPP}" && export CPP
+  AC_SUBST([CPP])dnl
+  ## (just needed to put something here)
 fi
 AC_PROG_CXX
 AC_PROG_LN_S
@@ -223,11 +224,11 @@ mach=0
 case "${host}" in
   # Both Next and pure Mach behave identically with respect
   # to a few things, so just lump them together as "mach"
-  *-*-mach*)		mach=1 ;;
-  *-*-next*)		mach=1 ; next=1 ;;
+  *-*-mach*) mach=1 ;;
+  *-*-next*) mach=1; next=1 ;;
 esac
 
-if test $mach -eq 1 ; then
+if test $mach -eq 1; then
   AC_MSG_RESULT([yes])
 else
   AC_MSG_RESULT([no])
@@ -235,7 +236,7 @@ fi
 
 AC_MSG_CHECKING([if running MachTen])
 # yet another Mach clone (for Classic MacOS)
-if test -r /MachTen -a "${cross_compiling}" != "yes" ; then
+if test -r /MachTen -a "${cross_compiling}" != "yes"; then
   AC_MSG_RESULT([yes])
   mach=1
 else
@@ -243,7 +244,7 @@ else
 fi
 
 AC_MSG_CHECKING([if on Pyramid])
-if test -r /bin/pyr -a "${cross_compiling}" != "yes" ; then
+if test -r /bin/pyr -a "${cross_compiling}" != "yes"; then
   AC_MSG_RESULT([yes])
   pyr=1
 else
@@ -252,7 +253,7 @@ else
 fi
 
 AC_MSG_CHECKING([if on Apollo])
-if test -r /usr/apollo/bin -a "${cross_compiling}" != "yes" ; then
+if test -r /usr/apollo/bin -a "${cross_compiling}" != "yes"; then
   AC_MSG_RESULT([yes])
   apollo=1
 else
@@ -277,44 +278,44 @@ AC_MSG_CHECKING([if stty reads stdout])
 
 stty_reads_stdout=""
 case "${host}" in
-  *-*-solaris*)		stty_reads_stdout=0 ;;
-  *-*-irix*)		stty_reads_stdout=0 ;;
-  *-*-sco3.2v[[45]]*)	stty_reads_stdout=1 ;;
-  i[[3456]]86-*-sysv4.2MP)	stty_reads_stdout=0 ;;
-  i[[3456]]86-*-linux*)	stty_reads_stdout=0 ;;
+  *-*-solaris*) stty_reads_stdout=0 ;;
+  *-*-irix*) stty_reads_stdout=0 ;;
+  *-*-sco3.2v[[45]]*) stty_reads_stdout=1 ;;
+  i[[3456]]86-*-sysv4.2MP) stty_reads_stdout=0 ;;
+  i[[3456]]86-*-linux*) stty_reads_stdout=0 ;;
   # Not sure about old convex but 5.2 definitely reads from stdout
-  c[[12]]-*-*)		stty_reads_stdout=1 ;;
-  *-*-aix[[34]]*)	stty_reads_stdout=0 ;;
-  *-*-hpux9*)		stty_reads_stdout=0 ;;
-  *-*-hpux10*)		stty_reads_stdout=0 ;;
-  *-*-hpux11*)		stty_reads_stdout=0 ;;
-  *-*-osf[[234]]*)	stty_reads_stdout=0 ;;
-  *-*-ultrix4.4)	stty_reads_stdout=0 ;;
-  *-*-dgux*)		stty_reads_stdout=0 ;;
-  *-*-cygwin*)		stty_reads_stdout=0 ;;
+  c[[12]]-*-*) stty_reads_stdout=1 ;;
+  *-*-aix[[34]]*) stty_reads_stdout=0 ;;
+  *-*-hpux9*) stty_reads_stdout=0 ;;
+  *-*-hpux10*) stty_reads_stdout=0 ;;
+  *-*-hpux11*) stty_reads_stdout=0 ;;
+  *-*-osf[[234]]*) stty_reads_stdout=0 ;;
+  *-*-ultrix4.4) stty_reads_stdout=0 ;;
+  *-*-dgux*) stty_reads_stdout=0 ;;
+  *-*-cygwin*) stty_reads_stdout=0 ;;
 esac
 
-if test ${mach} -eq 1 ; then
+if test ${mach} -eq 1; then
   stty_reads_stdout=1
 fi
-if test ${apollo} -eq 1 ; then
+if test ${apollo} -eq 1; then
   stty_reads_stdout=1
 fi
-if test ${pyr} -eq 1 ; then
+if test ${pyr} -eq 1; then
   stty_reads_stdout=1
 fi
 
-# if we still do NOT know, test
-if test x"${stty_reads_stdout}" = x"" ; then
+# if we still do NOT know, then test:
+if test x"${stty_reads_stdout}" = x""; then
   /bin/stty > /dev/null 2> /dev/null
-  if test $? -ne 0 ; then
+  if test $? -ne 0; then
     stty_reads_stdout=1
   else
     stty_reads_stdout=0
   fi
 fi
 
-if test ${stty_reads_stdout} -eq 1 ; then
+if test ${stty_reads_stdout} -eq 1; then
   AC_MSG_RESULT([yes])
   AC_DEFINE([STTY_READS_STDOUT],[1],[Define to 1 if stty reads stdout])
 else
@@ -327,10 +328,10 @@ fi
 AC_MSG_CHECKING([if running Solaris])
 solaris=0
 case "${host}" in
-  *-*-solaris*)		solaris=1;;
+  *-*-solaris*) solaris=1 ;;
 esac
 
-if test ${solaris} -eq 1 ; then
+if test ${solaris} -eq 1; then
   AC_MSG_RESULT([yes])
   AC_DEFINE([SOLARIS],[1],[Define to 1 for Solaris])
 else
@@ -344,14 +345,14 @@ AC_SEARCH_LIBS([regexec],[iberty regex gregex gnuregex rx grx gnurx gnu c])
 # On a few systems, libm.a is the same as libc.a
 # Do NOT bother to test against Tcl and Tk libs, they always include -lm
 AC_CHECK_LIB([m],[sqrt])
-AC_CHECK_FUNC([sin],[],[LIBS="${LIBS} -lm"])
+AC_CHECK_FUNC([sin],[],[LIBS="${LIBS} -lm"])dnl
 
 # On Interactive UNIX, -Xp must be added to LIBS in order to find strftime.
 # This test should really be done by Tcl. So just check Tcl's definition.
 # If defective, add to all three LIBS. (It is not actually necessary for
 # EXP_LIBS since -Xp will just be ignored the way that EXP_LIBS is used in
 # the Makefile, but we include it for consistency.)
-if test ${iunix} -eq 1 ; then
+if test ${iunix} -eq 1; then
   EXP_LIBS=${LIBS}
   LIBS=${EXP_AND_TCL_LIBS}
   AC_CHECK_FUNC([strftime],[],[
@@ -363,10 +364,10 @@ if test ${iunix} -eq 1 ; then
 fi
 
 #
-# Ok, let us find the tcl source trees so we can use the headers
+# OK, let us find the tcl source trees so we can use the headers
 #
 CY_AC_PATH_TCLH
-if test x"${no_tcl}" = x"true" ; then
+if test x"${no_tcl}" = x"true"; then
     echo "	ERROR: Cannot find Tcl headers or library."
     echo "	See README for information on how to obtain Tcl."
     echo "	If Tcl is installed, see INSTALL on how to tell"
@@ -399,8 +400,8 @@ fi
 
 export verbose=1
 
-test -n "${verbose}" && echo "configuring Tcl debugger"
 tmpdir=./Dbg$$
+test -n "${verbose}" && echo "configuring Tcl debugger in '${tmpdir}'."
 mkdir ${tmpdir}
 
 if test "${enable_shared}" = "yes"; then
@@ -445,8 +446,8 @@ CPP="${OLD_CPP}"
 test -e ${tmpdir}/config.status && cp -v ${tmpdir}/config.status ./Dbgconfig.status
 test -e ${tmpdir}/Dbg_cf.h && cp -v ${tmpdir}/Dbg_cf.h .
 test -e ${tmpdir}/DbgMkfl && cp -v ${tmpdir}/DbgMkfl .
-rm -rf ${tmpdir}
-test -n "${verbose}" && echo "configured Tcl debugger"
+rm -rf ${tmpdir} || rmdir ${tmpdir}
+test -n "${verbose}" && echo "configured Tcl debugger; cleaned up '${tmpdir}' after it."
 
 # some people would complain if this explanation had not been provided...
 
@@ -458,9 +459,9 @@ echo "2nd set is for building with Tcl. 3rd is for building with Tk."
 # required by Sequent ptx2
 unset ac_cv_func_gethostname
 AC_CHECK_FUNC([gethostname],[gethostname=1],[gethostname=0])
-if test ${gethostname} -eq 0 ; then
+if test ${gethostname} -eq 0; then
   unset ac_cv_lib_inet_gethostname
-  AC_CHECK_LIB([inet],[gethostname],[LIBS="$LIBS -linet"],[
+  AC_CHECK_LIB([inet],[gethostname],[LIBS="${LIBS} -linet"],[
     AC_CHECK_LIB([inet],[main])
   ])
 fi
@@ -469,9 +470,9 @@ EXP_LIBS=${LIBS}
 LIBS=${EXP_AND_TCL_LIBS}
 unset ac_cv_func_gethostname
 AC_CHECK_FUNC([gethostname],[gethostname=1],[gethostname=0])
-if test ${gethostname} -eq 0 ; then
+if test ${gethostname} -eq 0; then
   unset ac_cv_lib_inet_gethostname
-  AC_CHECK_LIB([inet],[gethostname],[LIBS="$LIBS -linet"],[
+  AC_CHECK_LIB([inet],[gethostname],[LIBS="${LIBS} -linet"],[
     AC_CHECK_LIB([inet],[main])
   ])
 fi
@@ -480,9 +481,9 @@ EXP_AND_TCL_LIBS=${LIBS}
 LIBS=${EXP_AND_TK_LIBS}
 unset ac_cv_func_gethostname
 AC_CHECK_FUNC([gethostname],[gethostname=1],[gethostname=0])
-if test $gethostname -eq 0 ; then
+if test $gethostname -eq 0; then
   unset ac_cv_lib_inet_gethostname
-  AC_CHECK_LIB([inet],[gethostname],[LIBS="$LIBS -linet"],[
+  AC_CHECK_LIB([inet],[gethostname],[LIBS="${LIBS} -linet"],[
     AC_CHECK_LIB([inet],[main])
   ])
 fi
@@ -494,10 +495,10 @@ LIBS=${EXP_LIBS}
 # required by Fischman's ISC 4.0
 unset ac_cv_func_socket
 AC_CHECK_FUNC([socket],[socket=1],[socket=0])
-if test ${socket} -eq 0 ; then
+if test ${socket} -eq 0; then
   unset ac_cv_lib_inet_socket
-  AC_CHECK_LIB([inet],[socket],[LIBS="$LIBS -linet"],[
-    AC_CHECK_LIB([socket],[socket],[LIBS="$LIBS -lsocket"],[
+  AC_CHECK_LIB([inet],[socket],[LIBS="${LIBS} -linet"],[
+    AC_CHECK_LIB([socket],[socket],[LIBS="${LIBS} -lsocket"],[
       AC_CHECK_LIB([socket],[main])
       AC_CHECK_LIB([inet],[main])
     ])
@@ -508,10 +509,10 @@ EXP_LIBS=${LIBS}
 LIBS=${EXP_AND_TCL_LIBS}
 unset ac_cv_func_socket
 AC_CHECK_FUNC([socket],[socket=1],[socket=0])
-if test ${socket} -eq 0 ; then
+if test ${socket} -eq 0; then
   unset ac_cv_lib_inet_socket
-  AC_CHECK_LIB([inet],[socket],[LIBS="$LIBS -linet"],[
-    AC_CHECK_LIB([socket],[socket],[LIBS="$LIBS -lsocket"],[
+  AC_CHECK_LIB([inet],[socket],[LIBS="${LIBS} -linet"],[
+    AC_CHECK_LIB([socket],[socket],[LIBS="${LIBS} -lsocket"],[
       AC_CHECK_LIB([socket],[main])
       AC_CHECK_LIB([inet],[main])
     ])
@@ -522,10 +523,10 @@ EXP_AND_TCL_LIBS=${LIBS}
 LIBS=${EXP_AND_TK_LIBS}
 unset ac_cv_func_socket
 AC_CHECK_FUNC([socket],[socket=1],[socket=0])
-if test ${socket} -eq 0 ; then
+if test ${socket} -eq 0; then
   unset ac_cv_lib_inet_socket
-  AC_CHECK_LIB([inet],[socket],[LIBS="$LIBS -linet"],[
-    AC_CHECK_LIB([socket],[socket],[LIBS="$LIBS -lsocket"],[
+  AC_CHECK_LIB([inet],[socket],[LIBS="${LIBS} -linet"],[
+    AC_CHECK_LIB([socket],[socket],[LIBS="${LIBS} -lsocket"],[
       AC_CHECK_LIB([socket],[main])
       AC_CHECK_LIB([inet],[main])
     ])
@@ -538,9 +539,9 @@ LIBS=${EXP_LIBS}
 ######################################################################
 unset ac_cv_func_select
 AC_CHECK_FUNC([select],[select=1],[select=0])
-if test ${select} -eq 0 ; then
+if test ${select} -eq 0; then
   unset ac_cv_lib_inet_select
-  AC_CHECK_LIB([inet],[select],[LIBS="$LIBS -linet"],[
+  AC_CHECK_LIB([inet],[select],[LIBS="${LIBS} -linet"],[
     AC_CHECK_LIB([inet],[main])
   ])
 fi
@@ -551,7 +552,7 @@ unset ac_cv_func_select
 AC_CHECK_FUNC([select],[select=1],[select=0])
 if test ${select} -eq 0 ; then
   unset ac_cv_lib_inet_select
-  AC_CHECK_LIB([inet],[select],[LIBS="$LIBS -linet"],[
+  AC_CHECK_LIB([inet],[select],[LIBS="${LIBS} -linet"],[
     AC_CHECK_LIB([inet],[main])
   ])
 fi
@@ -560,9 +561,9 @@ EXP_AND_TCL_LIBS=${LIBS}
 LIBS=${EXP_AND_TK_LIBS}
 unset ac_cv_func_select
 AC_CHECK_FUNC([select],[select=1],[select=0])
-if test ${select} -eq 0 ; then
+if test ${select} -eq 0; then
   unset ac_cv_lib_inet_select
-  AC_CHECK_LIB([inet],[select],[LIBS="$LIBS -linet"],[
+  AC_CHECK_LIB([inet],[select],[LIBS="${LIBS} -linet"],[
     AC_CHECK_LIB([inet],[main])
   ])
 fi
@@ -573,7 +574,7 @@ LIBS=${EXP_LIBS}
 ######################################################################
 unset ac_cv_func_getpseudotty
 AC_CHECK_FUNC([getpseudotty],[getpseudotty=1],[getpseudotty=0])
-if test ${getpseudotty} -eq 0 ; then
+if test ${getpseudotty} -eq 0; then
   unset ac_cv_lib_seq_getpseudotty
   AC_CHECK_LIB([seq],[getpseudotty],[],[
     unset ac_cv_lib_seq_main
@@ -585,7 +586,7 @@ EXP_LIBS=${LIBS}
 LIBS=${EXP_AND_TCL_LIBS}
 unset ac_cv_func_getpseudotty
 AC_CHECK_FUNC([getpseudotty],[getpseudotty=1],[getpseudotty=0])
-if test ${getpseudotty} -eq 0 ; then
+if test ${getpseudotty} -eq 0; then
   unset ac_cv_lib_seq_getpseudotty
   AC_CHECK_LIB([seq],[getpseudotty],[],[
     unset ac_cv_lib_seq_main
@@ -597,7 +598,7 @@ EXP_AND_TCL_LIBS=${LIBS}
 LIBS=${EXP_AND_TK_LIBS}
 unset ac_cv_func_getpseudotty
 AC_CHECK_FUNC([getpseudotty],[getpseudotty=1],[getpseudotty=0])
-if test ${getpseudotty} -eq 0 ; then
+if test ${getpseudotty} -eq 0; then
   unset ac_cv_lib_seq_getpseudotty
   AC_CHECK_LIB([seq],[getpseudotty],[],[
     unset ac_cv_lib_seq_main
@@ -619,7 +620,7 @@ case "${host}" in
 *)
   unset ac_cv_func_openpty
   AC_CHECK_FUNC([openpty],[openpty=1],[openpty=0])
-  if test $openpty -eq 0 ; then
+  if test ${openpty} -eq 0; then
     unset ac_cv_lib_util_openpty
     AC_CHECK_LIB([util],[openpty],[
 	  # we only need to define OPENPTY once, but since we override
@@ -637,14 +638,14 @@ case "${host}" in
   LIBS=${EXP_AND_TCL_LIBS}
   unset ac_cv_func_openpty
   AC_CHECK_FUNC([openpty],[openpty=1],[openpty=0])
-  if test $openpty -eq 0 ; then
+  if test ${openpty} -eq 0; then
     unset ac_cv_lib_util_openpty
     AC_CHECK_LIB([util],[openpty],[
         AC_DEFINE([HAVE_OPENPTY],[1],
                   [Define to 1 if you have the openpty function.])
         LIBS="${LIBS} -lutil"
     ],[
-	  AC_CHECK_LIB([util],[main])
+        AC_CHECK_LIB([util],[main])
     ])
   fi
   # save Tcl results and retry for Tk
@@ -652,13 +653,13 @@ case "${host}" in
   LIBS=${EXP_AND_TK_LIBS}
   unset ac_cv_func_openpty
   AC_CHECK_FUNC([openpty],[openpty=1],[openpty=0])
-  if test $openpty -eq 0 ; then
+  if test ${openpty} -eq 0; then
     unset ac_cv_lib_util_openpty
     AC_CHECK_LIB([util],[openpty],[
         AC_DEFINE([HAVE_OPENPTY])
-        LIBS="$LIBS -lutil"
+        LIBS="${LIBS} -lutil"
     ],[
-	  AC_CHECK_LIB([util],[main])
+        AC_CHECK_LIB([util],[main])
     ])
   fi
   # save Tk results and reset for Expect
@@ -838,7 +839,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <unistd.h>
 #ifdef RETSIGTYPE
 # undef RETSIGTYPE
-#endif
+#endif /* RETSIGTYPE */
 #define RETSIGTYPE $retsigtype
 
 int signal_rearms = 0;
@@ -896,17 +897,17 @@ cat >> conftest.sed <<CONFEOF
 AC_MSG_CHECKING([if on Convex])
 convex=0
 case "${host}" in
-  c[[12]]-*-*)		convex=1;;
+  c[[12]]-*-*) convex=1;;
 esac
 
-if test ${convex} -eq 1 ; then
+if test ${convex} -eq 1; then
   AC_MSG_RESULT([yes])
   AC_DEFINE([CONVEX],[1],[Define to 1 if we are on Convex])
 else
   AC_MSG_RESULT([no])
 fi
 
-EXP_LDFLAGS=
+EXP_LDFLAGS=""
 
 AC_MSG_CHECKING([if on NeXT])
 if test -r /NextApps -a "x${cross_compiling}" != "xyes"; then
@@ -930,15 +931,15 @@ fi
 AC_MSG_CHECKING([sane default stty arguments])
 DEFAULT_STTY_ARGS="sane"
 
-if test ${mach} -eq 1 ; then
+if test ${mach} -eq 1; then
 	DEFAULT_STTY_ARGS="cooked"
 fi
 
-if test ${hp} -eq 1 ; then
+if test ${hp} -eq 1; then
 	DEFAULT_STTY_ARGS="sane kill "
 fi
 
-AC_MSG_RESULT([${DEFAULT_STTY_ARG}])
+AC_MSG_RESULT([${DEFAULT_STTY_ARG}])dnl
 
 # Look for various features to determine what kind of pty
 # we have. For some weird reason, ac_compile_check would not
@@ -988,7 +989,7 @@ fi
 AC_MSG_CHECKING([for SCO style pty allocation])
 sco_ptys=""
 case "${host}" in
-  *-sco3.2v[[45]]*)	sco_clist_ptys=1 svr4_ptys_broken=1;;
+  *-sco3.2v[[45]]*) sco_clist_ptys=1 svr4_ptys_broken=1;;
 esac
 
 if test x"${sco_clist_ptys}" != x""; then
@@ -1011,7 +1012,7 @@ if test -r /dev/ptmx -a "x${svr4_ptys_broken}" = "x" -a "x${cross_compiling}" !=
   unset ac_cv_func_ptsname
   AC_CHECK_FUNC([ptsname],[],[EXP_AND_TK_LIBS="${EXP_AND_TK_LIBS} -lpt"])
   if test "x${ac_cv_header_features_h}" = "x"; then
-    test -z "${ac_cv_header_features_h}"
+    test -z "${ac_cv_header_features_h}" || unset ac_cv_header_features_h
     AC_CHECK_HEADERS([features.h])
   fi
   case "${host}" in
@@ -1043,7 +1044,7 @@ fi
 # In OSF/1 case, SVR4 are somewhat different.
 # Gregory Depp <depp@osf.org> 17Aug93
 AC_MSG_CHECKING([for OSF/1 style pty allocation])
-if test -r /dev/ptmx_bsd -a "$cross_compiling" != "yes" ; then
+if test -r /dev/ptmx_bsd -a "${cross_compiling}" != "yes"; then
     AC_DEFINE([HAVE_PTMX_BSD],[1],[Define to 1 for BSD-style ptmx])
     AC_MSG_RESULT([yes])
 else
@@ -1060,7 +1061,7 @@ tcgetattr=0
 tcsetattr=0
 AC_CHECK_FUNC([tcgetattr],[tcgetattr=1])
 AC_CHECK_FUNC([tcsetattr],[tcsetattr=1])
-if test ${tcgetattr} -eq 1 -a ${tcsetattr} -eq 1 ; then
+if test ${tcgetattr} -eq 1 -a ${tcsetattr} -eq 1; then
     AC_DEFINE([HAVE_TCSETATTR],[1],[Define to 1 if we have tcsetattr])
     AC_DEFINE([POSIX],[1],[Define to 1 for POSIX])
 fi
@@ -1089,7 +1090,7 @@ AC_SYS_POSIX_TERMIOS
 
 # mach systems have include files for unimplemented features
 # so avoid doing following test on those systems
-if test ${mach} -eq 0 ; then
+if test ${mach} -eq 0; then
 
   # next check for the older style ttys
   # note that if we detect termio.h (only), we still set PTY_TYPE=termios
@@ -1135,8 +1136,8 @@ if test ${mach} -eq 0 ; then
   ],[AC_MSG_RESULT([no])
   ],[case "${host}" in
 	 *-*-cygwin*) AC_DEFINE([HAVE_TERMIOS],[1],[Define to 1 if you have the struct termios])
-			PTY_TYPE=termios
-			AC_MSG_RESULT([yes]) ;;
+	              PTY_TYPE=termios
+	              AC_MSG_RESULT([yes]) ;;
 	 *) AC_MSG_ERROR([Expect cannot be cross compiled]) ;;
 	 esac
   ])
@@ -1164,7 +1165,7 @@ int main(void) {
 ],[AC_MSG_RESULT([no])
 ],[case "${host}" in
 	 *-*-cygwin*) AC_DEFINE([HAVE_TCGETS_OR_TCGETA_IN_TERMIOS_H],[1],[Define to 1 if TCGETS or TCGETA is in termios.h])
-			AC_MSG_RESULT([yes]) ;;
+	              AC_MSG_RESULT([yes]) ;;
 	 *) AC_MSG_ERROR([Expect cannot be cross compiled]) ;;
 	 esac
 ])dnl
@@ -1193,7 +1194,7 @@ main() {
 ],[AC_MSG_RESULT([no])
 ],[case "${host}" in
 	 *-*-cygwin*) AC_DEFINE([HAVE_TIOCGWINSZ_IN_TERMIOS_H],[1],[Define to 1 if TIOCGWINSZ is in termios.h])
-			AC_MSG_RESULT([yes]) ;;
+	              AC_MSG_RESULT([yes]) ;;
 	 *) AC_MSG_ERROR([Expect cannot be cross compiled]) ;;
 	 esac
 ])dnl
@@ -1234,11 +1235,11 @@ unset ac_cv_func_select
 AC_CHECK_FUNC([select],[select=1])
 AC_CHECK_FUNC([poll],[poll=1])
 AC_MSG_CHECKING([event handling])
-if test ${select} -eq 1 ; then
+if test ${select} -eq 1; then
   EVENT_TYPE=select
   EVENT_ABLE=event
   AC_MSG_RESULT([via select])
-elif test ${poll} -eq 1 ; then
+elif test ${poll} -eq 1; then
   EVENT_TYPE=poll
   EVENT_ABLE=event
   AC_MSG_RESULT([via poll])
@@ -1325,7 +1326,7 @@ if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then
 else
     EXP_LIB_VERSION=${EXP_VERSION_NODOTS}
 fi
-if test ${iunix} -eq 1 ; then
+if test ${iunix} -eq 1; then
     EXP_LIB_VERSION=${EXP_VERSION_NODOTS}
 fi
 
@@ -1451,6 +1452,6 @@ AC_SUBST([SETUID])dnl
 AC_SUBST([UNSHARED_RANLIB])dnl
 AC_SUBST([DEFAULT_STTY_ARGS])dnl
 AC_CONFIG_FILES([Makefile \
-	pkgIndex])
+                 pkgIndex])
 AC_CONFIG_COMMANDS([default],[chmod +x ${srcdir}/install-sh ${srcdir}/mkinstalldirs],[])
 AC_OUTPUT

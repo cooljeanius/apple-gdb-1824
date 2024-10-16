@@ -1114,7 +1114,7 @@ do-check: unstage [+
   ENDFOR target_modules +] stage
 
 # Automated reporting of test results.
-
+# FIXME: see GCC bug 103331: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=103331
 warning.log: $(srcdir)/contrib/warn_summary build.log
 	$(srcdir)/contrib/warn_summary build.log > $@
 
@@ -1124,7 +1124,7 @@ mail-report.log: $(srcdir)/contrib/test_summary
 	fi; \
 	$(srcdir)/contrib/test_summary -t >$@
 	chmod +x $@
-	echo If you really want to send e-mail, run ./$@ now
+	@echo "If you really want to send e-mail, run ./$@ now"
 
 mail-report-with-warnings.log: $(srcdir)/contrib/test_summary warning.log
 	if test x'$(BOOT_CFLAGS)' != x''; then \
@@ -1132,7 +1132,7 @@ mail-report-with-warnings.log: $(srcdir)/contrib/test_summary warning.log
 	fi; \
 	$(srcdir)/contrib/test_summary -t -i warning.log >$@
 	chmod +x $@
-	echo If you really want to send e-mail, run ./$@ now
+	@echo "If you really want to send e-mail, run ./$@ now"
 
 # Local Vim config
 

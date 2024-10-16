@@ -50,7 +50,7 @@ if test -f ${srcdir}/config.status; then
 fi
 AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu -Wno-obsolete])
 m4_ifdef([AM_MAINTAINER_MODE],[
-  test -e "."
+  test -e "." && test -d "." && test -r "." && stat "."
   if test -e "Makefile"; then
     AC_MSG_NOTICE([A Makefile is already present; removing it.])
     test -e "Makefile" && rm -f "Makefile"
@@ -75,7 +75,7 @@ export IN_MAINT_MODE="${enable_maintainer_mode}"
 AC_SUBST([IN_MAINT_MODE])dnl
 
 m4_ifdef([AM_SANITY_CHECK],[
-  test -e "."
+  (test -e "." && test -d "." && test -r ".") || (echo "error: sanity check failed!" >&2 && exit 1)
   if test -e "Makefile"; then
     AC_MSG_NOTICE([A Makefile is already present; removing it.])
     test -e "Makefile" && rm -f "Makefile"
@@ -131,10 +131,10 @@ AC_SUBST([INSTALLdir])dnl
 AC_PROG_LN_S
 AC_PROG_MKDIR_P
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   AC_PROG_RANLIB
 else
-  test ! -z "${RANLIB}"
+  test -n "${RANLIB}" && export RANLIB="${RANLIB}"
 fi
 AC_DEFUN([AC_REQUIRE_PROG_SED],[
   AC_REQUIRE([AC_PROG_SED])dnl
@@ -150,6 +150,7 @@ AX_PROG_BISON([
   EXTRA_YFLAGS_SEP='#'
 ])dnl##end bison conditional
 AC_SUBST([EXTRA_YFLAGS_SEP])dnl
+AC_PROG_LEX([yywrap])
 AM_PROG_LEX
 AC_PATH_PROG([GIT_BIN],[git])dnl
 
@@ -171,7 +172,7 @@ AC_HEADER_STAT
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_CHECK_HEADERS([argz.h bits/libc-lock.h byteswap.h ctype.h errno.h \
                   fcntl.h iconv.h io.h langinfo.h libintl.h limits.h locale.h \
-                  malloc.h malloc/malloc.h nl_types.h \
+                  malloc.h malloc/malloc.h nl_types.h php_iconv.h \
                   stddef.h stdio.h sys/mman.h sys/param.h wchar.h])dnl
 AC_CHECK_HEADERS_ONCE([sys/types.h])dnl
 
@@ -184,7 +185,15 @@ AC_C_VOLATILE
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 AC_TYPE_UINTMAX_T
-AC_CHECK_TYPES([iconv_t])dnl
+AC_CHECK_TYPES([iconv_t],[],[],[
+#ifdef HAVE_ICONV_H
+# include <iconv.h>
+#else
+# ifdef HAVE_PHP_ICONV_H
+#  include <php_iconv.h>
+# endif /* HAVE_PHP_ICONV_H */
+#endif /* HAVE_ICONV_H */
+])dnl
 
 # Checks for compiler flags.
 AC_MSG_CHECKING([compiler flags])
@@ -272,9 +281,9 @@ AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])dnl
 AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])dnl
 
 # Output:
-AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate'
-cleanly from AC\_LINK\_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
-functional but inelegant update, you should probably tune the result
+AC_DIAGNOSE([obsolete],[It is technically impossible to 'autoupdate'
+cleanly from AC\_LINK\_FILES to AC_CONFIG_LINKS. 'autoupdate' provides a
+functional but inelegant update, so you should probably tune the result
 yourself.])dnl
 ac_sources="${nls_cv_header_libgt}"
 ac_dests="${nls_cv_header_intl}"
@@ -363,6 +372,7 @@ fi
 AC_SUBST([BISON3_YES])dnl
 AC_SUBST([BISON3_NO])dnl
 
+# Output commands.
 AC_CONFIG_COMMANDS([libintl_h_compat],[
 if test -e libgettext.h -a ! -e libintl.h; then
   ln -sv libgettext.h libintl.h
@@ -412,6 +422,7 @@ fi
 dnl#FIXME: what is supposed to go in this variable?
 AC_SUBST([POMAKEFILEDEPS])dnl
 
+# Final output.
 AC_CONFIG_FILES([Makefile \
                  Makefile_orig \
                  po/Makefile.in \

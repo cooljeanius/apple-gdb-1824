@@ -31,6 +31,10 @@
 #else
 # if defined(HAVE_ICONV_H) && defined(HAVE_ICONV) && HAVE_ICONV
 #  include <iconv.h>
+# else
+#  if defined(HAVE_PHP_ICONV_H)
+#   include <php_iconv.h>
+#  endif /* HAVE_PHP_ICONV_H */
 # endif /* HAVE_ICONV_H && HAVE_ICONV */
 #endif /* _LIBC */
 
@@ -133,7 +137,11 @@ struct loaded_domain
   __gconv_t conv;
 #else
 # if defined(HAVE_ICONV) && HAVE_ICONV
+#  if defined(HAVE_ICONV_T) || defined(_ICONV_T)
   iconv_t conv;
+#  else
+  void *conv;
+#  endif /* HAVE_ICONV_T || _ICONV_T */
 # endif /* HAVE_ICONV */
 #endif /* _LIBC */
   char **conv_tab;

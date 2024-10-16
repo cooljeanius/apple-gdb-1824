@@ -5967,7 +5967,7 @@ fi
 
 
 
-  test -e "."
+  test -e "." && test -d "." && test -r "." && stat "."
   if test -e "Makefile"; then
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: A Makefile is already present; removing it." >&5
 printf "%s\n" "$as_me: A Makefile is already present; removing it." >&6;}
@@ -6005,7 +6005,7 @@ fi
 export IN_MAINT_MODE="${enable_maintainer_mode}"
 
 
-  test -e "."
+  (test -e "." && test -d "." && test -r ".") || (echo "error: sanity check failed!" >&2 && exit 1)
   if test -e "Makefile"; then
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: A Makefile is already present; removing it." >&5
 printf "%s\n" "$as_me: A Makefile is already present; removing it." >&6;}
@@ -19293,7 +19293,7 @@ fi
 
 
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -19399,7 +19399,7 @@ else
 fi
 
 else
-  test ! -z "${RANLIB}"
+  test -n "${RANLIB}" && export RANLIB="${RANLIB}"
 fi
 
 
@@ -19716,8 +19716,24 @@ else case e in #(
 esac
 fi
   ac_save_LIBS="$LIBS"
-      LIBS=
-      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing yywrap" >&5
+      if test -n "$LEXLIB"
+then :
+  LIBS="$LEXLIB"
+        ac_fn_c_check_func "$LINENO" "yywrap" "ac_cv_func_yywrap"
+if test "x$ac_cv_func_yywrap" = xyes
+then :
+  :
+else case e in #(
+  e) { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: $LEXLIB does not contain yywrap; giving up on $LEX" >&5
+printf "%s\n" "$as_me: WARNING: $LEXLIB does not contain yywrap; giving up on $LEX" >&2;}
+          LEX=: LEXLIB= ;;
+esac
+fi
+
+
+else case e in #(
+  e) LIBS=
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing yywrap" >&5
 printf %s "checking for library containing yywrap... " >&6; }
 if test ${ac_cv_search_yywrap+y}
 then :
@@ -19784,6 +19800,14 @@ then :
   LEXLIB="$LIBS"
 fi
 
+        if test x"$ac_cv_search_yywrap" = xno
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: yywrap not found; giving up on $LEX" >&5
+printf "%s\n" "$as_me: WARNING: yywrap not found; giving up on $LEX" >&2;}
+          LEX=: LEXLIB=
+fi ;;
+esac
+fi
       LIBS="$ac_save_LIBS" ;;
 esac
 fi
@@ -19828,6 +19852,7 @@ fi
 rm -f conftest.l $LEX_OUTPUT_ROOT.c
 
 fi
+
 if test "$LEX" = :; then
   LEX=${am_missing_run}flex
 fi
@@ -20441,6 +20466,12 @@ then :
   printf "%s\n" "#define HAVE_NL_TYPES_H 1" >>confdefs.h
 
 fi
+ac_fn_c_check_header_compile "$LINENO" "php_iconv.h" "ac_cv_header_php_iconv_h" "$ac_includes_default"
+if test "x$ac_cv_header_php_iconv_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_PHP_ICONV_H 1" >>confdefs.h
+
+fi
 ac_fn_c_check_header_compile "$LINENO" "stddef.h" "ac_cv_header_stddef_h" "$ac_includes_default"
 if test "x$ac_cv_header_stddef_h" = xyes
 then :
@@ -20973,7 +21004,16 @@ esac
 fi
 
 
-ac_fn_c_check_type "$LINENO" "iconv_t" "ac_cv_type_iconv_t" "$ac_includes_default"
+ac_fn_c_check_type "$LINENO" "iconv_t" "ac_cv_type_iconv_t" "
+#ifdef HAVE_ICONV_H
+# include <iconv.h>
+#else
+# ifdef HAVE_PHP_ICONV_H
+#  include <php_iconv.h>
+# endif /* HAVE_PHP_ICONV_H */
+#endif /* HAVE_ICONV_H */
+
+"
 if test "x$ac_cv_type_iconv_t" = xyes
 then :
 
@@ -26792,11 +26832,13 @@ printf "%s\n" "${ac_prog_version}" >&6; }
   fi
 fi
 
+# Output commands.
 ac_config_commands="$ac_config_commands libintl_h_compat"
 
 ac_config_commands="$ac_config_commands config_status_vpath_build_fix"
 
 
+# Final output.
 ac_config_files="$ac_config_files Makefile Makefile_orig po/Makefile.in po/Makevars po2tbl.sed config.intl"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure

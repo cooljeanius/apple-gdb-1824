@@ -6,12 +6,14 @@
 conf*/*.awk
 Makefile
 pkgIndex
+Dbg*/Dbg*
 Dbg_cf.h
 DbgMkfl
 expect_cf.h
 *~
 *.o
 shared
+ac_c_test.c
 core
 expect-bld.sh
 expect
