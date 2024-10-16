@@ -20412,6 +20412,12 @@ then :
   printf "%s\n" "#define HAVE_FCNTL_H 1" >>confdefs.h
 
 fi
+ac_fn_c_check_header_compile "$LINENO" "gcc/sys-types.h" "ac_cv_header_gcc_sys_types_h" "$ac_includes_default"
+if test "x$ac_cv_header_gcc_sys_types_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_GCC_SYS_TYPES_H 1" >>confdefs.h
+
+fi
 ac_fn_c_check_header_compile "$LINENO" "iconv.h" "ac_cv_header_iconv_h" "$ac_includes_default"
 if test "x$ac_cv_header_iconv_h" = xyes
 then :

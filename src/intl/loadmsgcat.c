@@ -24,17 +24,34 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
-#ifdef HAVE_FCNTL_H
+#if !defined(__has_include)
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
+#if defined(HAVE_FCNTL_H) || __has_include(<fcntl.h>)
 # include <fcntl.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #  warning "loadmsgcat.c expects <fcntl.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_FCNTL_H */
-#ifdef HAVE_MALLOC_H
+
+#if defined(HAVE_SYS_TYPES_H) || __has_include(<sys/types.h>)
+# include <sys/types.h>
+#else
+# if defined(HAVE_GCC_SYS_TYPES_H) || __has_include(<gcc/sys-types.h>)
+#  include <gcc/sys-types.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "loadmsgcat.c expects <sys/types.h> (or something) to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_GCC_SYS_TYPES_H */
+#endif /* HAVE_SYS_TYPES_H */
+
+#if defined(HAVE_MALLOC_H) || __has_include(<malloc.h>)
 # include <malloc.h>
 #else
-# ifdef HAVE_MALLOC_MALLOC_H
+# if defined(HAVE_MALLOC_MALLOC_H) || __has_include(<malloc/malloc.h>)
 #  include <malloc/malloc.h>
 # else
 #  if defined(HAVE_SYS_MALLOC_H) && defined(HAVE_U_SHORT) && defined(HAVE_U_INT64_T)
@@ -46,14 +63,8 @@
 #  endif /* HAVE_SYS_MALLOC_H && HAVE_U_SHORT && HAVE_U_INT64_T */
 # endif /* HAVE_MALLOC_MALLOC_H */
 #endif /* HAVE_MALLOC_H */
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#else
-# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "loadmsgcat.c expects <sys/types.h> to be included."
-# endif /* __GNUC__ && !__STRICT_ANSI__ */
-#endif /* HAVE_SYS_TYPES_H */
-#ifdef HAVE_SYS_STAT_H
+
+#if defined(HAVE_SYS_STAT_H) || __has_include(<sys/stat.h>)
 # include <sys/stat.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -61,7 +72,7 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_STAT_H */
 
-#if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
+#if defined(STDC_HEADERS) || defined(_LIBC) || defined(HAVE_STDLIB_H)
 # include <stdlib.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -69,7 +80,7 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H || _LIBC || STDC_HEADERS */
 
-#if defined HAVE_UNISTD_H || defined _LIBC
+#if defined(HAVE_UNISTD_H) || defined(_LIBC) || __has_include(<unistd.h>)
 # include <unistd.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -77,7 +88,8 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H || _LIBC */
 
-#if (defined HAVE_MMAP && defined HAVE_MUNMAP) || defined _LIBC || defined HAVE_SYS_MMAN_H
+#if (defined(HAVE_MMAP) && defined(HAVE_MUNMAP)) || defined(_LIBC) || \
+    defined(HAVE_SYS_MMAN_H) || __has_include(<sys/mman.h>)
 # include <sys/mman.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)

@@ -131,6 +131,9 @@
 /* Define to 1 if you have the 'free' function. */
 #undef HAVE_FREE
 
+/* Define to 1 if you have the <gcc/sys-types.h> header file. */
+#undef HAVE_GCC_SYS_TYPES_H
+
 /* Define to 1 if you have the 'getcwd' function. */
 #undef HAVE_GETCWD
 

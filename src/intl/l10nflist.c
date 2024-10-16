@@ -25,13 +25,17 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
-#if defined HAVE_STRING_H || defined _LIBC
+#if !defined(__has_include)
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
+#if defined(HAVE_STRING_H) || defined(_LIBC) || __has_include(<string.h>)
 # ifndef _GNU_SOURCE
 #  define _GNU_SOURCE 1
-# endif
+# endif /* !_GNU_SOURCE */
 # include <string.h>
 #else
-# if defined HAVE_STRINGS_H
+# if defined(HAVE_STRINGS_H) || __has_include(<strings.h>)
 #  include <strings.h>
 #  ifndef memcpy
 #   define memcpy(Dst, Src, Num) bcopy(Src, Dst, Num)
@@ -48,25 +52,39 @@
 # endif /* !strchr */
 #endif /* HAVE_STRING_H || _LIBC */
 
-#if defined _LIBC || defined HAVE_ARGZ_H
+#if defined(_LIBC) || defined(HAVE_ARGZ_H) || __has_include(<argz.h>)
 # include <argz.h>
 #else
 # if defined(__GNUC__) && defined(__STDC__) && defined(ANSI_PROTOTYPES) \
      && !defined(__STRICT_ANSI__)
 #  warning "l10nflist.c expects <argz.h> to be included on some systems."
 # endif /* __GNUC__ && __STDC__ && ANSI_PROTOTYPES && !__STRICT_ANSI__ */
-#endif /* HAVE_ARGZ_H */
-#ifdef HAVE_CTYPE_H
+#endif /* _LIBC || HAVE_ARGZ_H */
+
+#if defined(HAVE_CTYPE_H) || __has_include(<ctype.h>)
 # include <ctype.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #  warning "l10nflist.c expects <ctype.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CTYPE_H */
-#ifdef HAVE_MALLOC_H
+
+#if defined(HAVE_SYS_TYPES_H) || __has_include(<sys/types.h>)
+# include <sys/types.h>
+#else
+# if defined(HAVE_GCC_SYS_TYPES_H) || __has_include(<gcc/sys-types.h>)
+#  include <gcc/sys-types.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "l10nflist.c expects <sys/types.h> (or something) to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_GCC_SYS_TYPES_H */
+#endif /* HAVE_SYS_TYPES_H */
+
+#if defined(HAVE_MALLOC_H) || __has_include(<malloc.h>)
 # include <malloc.h>
 #else
-# ifdef HAVE_MALLOC_MALLOC_H
+# if defined(HAVE_MALLOC_MALLOC_H) || __has_include(<malloc/malloc.h>)
 #  include <malloc/malloc.h>
 # else
 #  if defined(HAVE_SYS_MALLOC_H) && defined(HAVE_U_SHORT) && defined(HAVE_U_INT64_T)
@@ -78,15 +96,8 @@
 #  endif /* HAVE_SYS_MALLOC_H && HAVE_U_SHORT && HAVE_U_INT64_T */
 # endif /* HAVE_MALLOC_MALLOC_H */
 #endif /* HAVE_MALLOC_H */
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#else
-# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "l10nflist.c expects <sys/types.h> to be included."
-# endif /* __GNUC__ && !__STRICT_ANSI__ */
-#endif /* HAVE_SYS_TYPES_H */
 
-#if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
+#if defined(STDC_HEADERS) || defined(_LIBC) || defined(HAVE_STDLIB_H)
 # include <stdlib.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
