@@ -21,49 +21,50 @@
 #define GDB_STRING_H
 
 #ifdef STDC_HEADERS
-#include <string.h>
-#ifdef HAVE_STRINGS_H
-#include <strings.h> /* strcasecmp etc..  */
-#endif
+# include <string.h>
+# ifdef HAVE_STRINGS_H
+#  include <strings.h> /* strcasecmp etc..  */
+# endif /* HAVE_STRINGS_H */
 #else
-#ifdef HAVE_STRING_H
-#include <string.h>
-#else
-#include <strings.h>
-#endif
+# ifdef HAVE_STRING_H
+#  include <string.h>
+# else
+#  include <strings.h>
+# endif /* HAVE_STRING_H */
 
-#ifndef strchr
-extern char *strchr (const char *, int);	/* X3.159-1989  4.11.5.2 */
-#endif
+# ifndef strchr
+extern char *strchr(const char *, int);   /* X3.159-1989  4.11.5.2 */
+# endif /* !strchr */
 
-#ifndef strrchr
-extern char *strrchr (const char *, int);	/* X3.159-1989  4.11.5.5 */
-#endif
+# ifndef strrchr
+extern char *strrchr(const char *, int);	/* X3.159-1989  4.11.5.5 */
+# endif /* !strrchr */
 
-#ifndef strtok
-extern char *strtok (char *, const char *);	/* X3.159-1989  4.11.5.8 */
-#endif
+# ifndef strtok
+extern char *strtok(char *, const char *);	/* X3.159-1989  4.11.5.8 */
+# endif /* !strtok */
 
-#ifdef HAVE_MEMORY_H
-#include <memory.h>
-#else
-extern void *memset ();
-extern void *memcpy ();
-extern void *memmove ();
-extern int memcmp ();
-#endif
+# ifdef HAVE_MEMORY_H
+#  include <memory.h>
+# else
+extern void *memset();
+extern void *memcpy();
+extern void *memmove();
+extern int memcmp();
+# endif /* HAVE_MEMORY_H */
 #endif /* STDC_HEADERS */
 
 #if !HAVE_DECL_STRERROR
-#ifndef strerror
-extern char *strerror (int);	/* X3.159-1989  4.11.6.2 */
-#endif
-#endif
+# if !defined(DEFS_H_DOING_POISONING) && \
+     !defined(DEFS_H_POISONING_STRERROR_TOO) && !defined(strerror)
+extern char *strerror(int);	/* X3.159-1989  4.11.6.2 */
+# endif /* !DEFS_H_DOING_POISONING && !DEFS_H_POISONING_STRERROR_TOO && !strerror */
+#endif /* !HAVE_DECL_STRERROR */
 
 #if !HAVE_DECL_STRSTR
-#ifndef strstr
-extern char *strstr (const char *, const char *); /* X3.159-1989  4.11.5.7 */
-#endif
-#endif
+# ifndef strstr
+extern char *strstr(const char *, const char *); /* X3.159-1989  4.11.5.7 */
+# endif /* !strstr */
+#endif /* !HAVE_DECL_STRERROR */
 
 #endif /* !defined(GDB_STRING_H) */

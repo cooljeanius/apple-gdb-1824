@@ -21016,6 +21016,15 @@ esac
 fi
 
 
+ac_fn_c_check_type "$LINENO" "u_short" "ac_cv_type_u_short" "$ac_includes_default"
+if test "x$ac_cv_type_u_short" = xyes
+then :
+
+printf "%s\n" "#define HAVE_U_SHORT 1" >>confdefs.h
+
+
+fi
+
 ac_fn_c_check_type "$LINENO" "iconv_t" "ac_cv_type_iconv_t" "
 #ifdef HAVE_ICONV_H
 # include <iconv.h>

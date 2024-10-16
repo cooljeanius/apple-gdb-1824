@@ -37,13 +37,13 @@
 # ifdef HAVE_MALLOC_MALLOC_H
 #  include <malloc/malloc.h>
 # else
-#  ifdef HAVE_SYS_MALLOC_H
+#  if defined(HAVE_SYS_MALLOC_H) && defined(HAVE_U_SHORT)
 #   include <sys/malloc.h>
 #  else
 #   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #    warning "loadmsgcat.c expects a malloc-related header to be included."
 #   endif /* __GNUC__ && !__STRICT_ANSI__ */
-#  endif /* HAVE_SYS_MALLOC_H */
+#  endif /* HAVE_SYS_MALLOC_H && HAVE_U_SHORT */
 # endif /* HAVE_MALLOC_MALLOC_H */
 #endif /* HAVE_MALLOC_H */
 #ifdef HAVE_SYS_TYPES_H

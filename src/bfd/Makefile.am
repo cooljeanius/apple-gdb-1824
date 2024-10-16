@@ -1470,8 +1470,7 @@ stmp-bfd-h: bfd-in3.h @MAINT@ headers @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	  cp $(AM_V_v) bfd-in3.h bfd-tmp.h; \
 	  $(RUN_MOVEIFCHANGE) bfd-tmp.h $(BFD_H); \
 	elif test -r bfd-in3.h && test "x$(AM_V_P)" != "xfalse"; then \
-	  stat bfd-in3.h; \
-	fi
+	  stat bfd-in3.h; fi
 	$(AM_V_at)if test $(BFD_H) -ot $@; then touch $(BFD_H); fi
 	$(AM_V_at)rm -f $(AM_V_v) bfd-tmp.h
 	$(AM_V_at)if test $@ -ot bfd-in3.h; then touch $@; fi
@@ -1541,22 +1540,19 @@ headers: $(sdocdir)/Makefile Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h \
 	elif test -r $(sdocdir)/libbfd.h && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat $(sdocdir)/libbfd.h; \
 	elif test -x "`which sync`"; then \
-	  sync; \
-	fi
+	  sync; fi
 	$(AM_V_at)if test ! -e $(sdocdir)/libcoff.h || test $(sdocdir)/libcoff.h -ot $(sdocdir)/Makefile; then \
 	  (cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) libcoff.h $(FLAGS_TO_PASS)); \
 	elif test -r $(sdocdir)/libcoff.h && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat $(sdocdir)/libcoff.h; \
 	elif test -x "`which sync`"; then \
-	  sync; \
-	fi
+	  sync; fi
 	$(AM_V_at)if test ! -e $(sdocdir)/bfd.h || test $(sdocdir)/bfd.h -ot $(sdocdir)/Makefile; then \
 	  (cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) bfd.h $(FLAGS_TO_PASS)); \
 	elif test -r $(sdocdir)/bfd.h && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat $(sdocdir)/bfd.h; \
 	elif test -x "`which sync`"; then \
-	  sync; \
-	fi
+	  sync; fi
 	$(AM_V_at)if test $(srcdir) != "."; then \
 	  echo "out-of-tree build detected; checking back in srcdir ($(srcdir)) for $@..."; \
 	  (cd $(sdocdir); $(MAKE) $(AM_V_MFLAG) $(srcdir)/libbfd.h $(FLAGS_TO_PASS)); \
@@ -1571,50 +1567,43 @@ headers: $(sdocdir)/Makefile Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h \
 	elif test -r bfd-in2.h-new && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat bfd-in2.h-new; \
 	elif test -x "`which sync`"; then \
-	  sync; \
-	fi
+	  sync; fi
 	$(AM_V_at)if test $(srcdir)/bfd-in2.h -ot stmp-bin2-h; then \
 	  touch $(srcdir)/bfd-in2.h; \
 	elif test stmp-bin2-h -ot $(srcdir)/bfd-in2.h; then \
 	  touch stmp-bin2-h; \
 	elif test -x "`which sync`"; then \
-	  sync; \
-	fi
+	  sync; fi
 	$(AM_V_at)if test ! -e libbfd.h-new || test libbfd.h-new -ot $(sdocdir)/libbfd.h; then \
 	  cp $(AM_V_v) $(sdocdir)/libbfd.h libbfd.h-new; \
 	  $(RUN_MOVEIFCHANGE) libbfd.h-new $(srcdir)/libbfd.h; \
 	elif test -r libbfd.h-new && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat libbfd.h-new; \
 	elif test -x "`which sync`"; then \
-	  sync; \
-	fi
+	  sync; fi
 	$(AM_V_at)if test $(srcdir)/libbfd.h -ot stmp-lbfd-h; then \
 	  touch $(srcdir)/libbfd.h; \
 	elif test stmp-lbfd-h -ot $(srcdir)/libbfd.h; then \
 	  touch stmp-lbfd-h; \
 	elif test -x "`which sync`"; then \
-	  sync; \
-	fi
+	  sync; fi
 	$(AM_V_at)if test ! -e libcoff.h-new || test libcoff.h-new -ot $(sdocdir)/libcoff.h; then \
 	  cp $(AM_V_v) $(sdocdir)/libcoff.h libcoff.h-new; \
 	  $(RUN_MOVEIFCHANGE) libcoff.h-new $(srcdir)/libcoff.h; \
 	elif test -r libcoff.h-new && test "x$(AM_V_P)" != "xfalse"; then \
 	  stat libcoff.h-new; \
 	elif test -x "`which sync`"; then \
-	  sync; \
-	fi
+	  sync; fi
 	$(AM_V_at)if test $(srcdir)/libcoff.h -ot stmp-lcoff-h; then \
 	  touch $(srcdir)/libcoff.h; \
 	elif test stmp-lcoff-h -ot $(srcdir)/libcoff.h; then \
 	  touch stmp-lcoff-h; \
 	elif test -x "`which sync`"; then \
-	  sync; \
-	fi
+	  sync; fi
 	$(AM_V_at)if test ! -e bfdver.h || test bfdver.h -ot $(srcdir)/version.h; then \
 	  $(MAKE) $(AM_V_MFLAG) bfdver.h; \
 	elif test -r bfdver.h && test "x$(AM_V_P)" != "xfalse"; then \
-	  stat bfdver.h; \
-	fi
+	  stat bfdver.h; fi
 	$(AM_V_at)for nn in 32 64; do \
 	  if test ! -e elf$${nn}-target.h || test elf$${nn}-target.h -ot elfxx-target.h; then \
 	    $(MAKE) $(AM_V_MFLAG) elf$${nn}-target.h; \
@@ -1680,8 +1669,7 @@ stmp-bin2-h: $(sdocdir)/Makefile $(BFD_H_FILES) $(BFD64_H_FILES) @MAINT@ $(PATH_
 	$(AM_V_at)if test $(srcdir)/bfd-in2.h -ot $@; then \
 	  touch $(srcdir)/bfd-in2.h; \
 	elif test $@ -ot $(srcdir)/bfd-in2.h; then \
-	  touch $@; \
-	fi
+	  touch $@; fi
 
 $(srcdir)/libbfd.h: @MAINT@ stmp-lbfd-h
 	@echo "this target, '$@' (in `pwd`), just makes its dependency, '$<', when in maintainer mode"
@@ -1698,8 +1686,7 @@ stmp-lbfd-h: $(sdocdir)/Makefile $(LIBBFD_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANG
 	$(AM_V_at)if test $(srcdir)/libbfd.h -ot $@; then \
 	  touch $(srcdir)/libbfd.h; \
 	elif test $@ -ot $(srcdir)/libbfd.h; then \
-	  touch $@; \
-	fi
+	  touch $@; fi
 
 $(srcdir)/libcoff.h: @MAINT@ stmp-lcoff-h
 	@echo "this target, '$@' (in `pwd`), just makes its dependency, '$<', when in maintainer mode"
@@ -1716,8 +1703,7 @@ stmp-lcoff-h: $(sdocdir)/Makefile $(LIBCOFF_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHA
 	$(AM_V_at)if test $(srcdir)/libcoff.h -ot $@; then \
 	  touch $(srcdir)/libcoff.h; \
 	elif test $@ -ot $(srcdir)/libcoff.h; then \
-	  touch $@; \
-	fi
+	  touch $@; fi
 
 MOSTLYCLEANFILES = tofiles ofiles stamp-ofiles
 MOSTLYCLEANFILES += tlofiles lofiles stamp-lofiles
