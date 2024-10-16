@@ -21025,6 +21025,15 @@ printf "%s\n" "#define HAVE_U_SHORT 1" >>confdefs.h
 
 fi
 
+ac_fn_c_check_type "$LINENO" "u_int64_t" "ac_cv_type_u_int64_t" "$ac_includes_default"
+if test "x$ac_cv_type_u_int64_t" = xyes
+then :
+
+printf "%s\n" "#define HAVE_U_INT64_T 1" >>confdefs.h
+
+
+fi
+
 ac_fn_c_check_type "$LINENO" "iconv_t" "ac_cv_type_iconv_t" "
 #ifdef HAVE_ICONV_H
 # include <iconv.h>

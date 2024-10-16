@@ -12,6 +12,7 @@
 Makefile
 Makefile.orig
 Makefile_orig
+confcache
 confdefs.h
 config.h
 config.intl
