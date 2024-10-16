@@ -1937,6 +1937,9 @@ extern struct cleanup *start_timer(int *timer_var, const char *timer_name,
 /* for similar reasons, such as libiberty also providing replacements: */
 # pragma GCC poison strndup memdup vsprintf vasprintf
 # ifndef strerror
+#  ifndef DEFS_H_POISONING_STRERROR_TOO
+#   define DEFS_H_POISONING_STRERROR_TOO 1
+#  endif /* !DEFS_H_POISONING_STRERROR_TOO */
 #  pragma GCC poison strerror
 # endif /* !strerror */
 /* also consider poisoining for similar reasons: asprintf atexit exit */

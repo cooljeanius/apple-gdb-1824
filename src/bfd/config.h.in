@@ -639,6 +639,9 @@
 /* Define to 1 if you have the <sys/file.h> header file. */
 #undef HAVE_SYS_FILE_H
 
+/* Define to 1 if you have the <sys/malloc.h> header file. */
+#undef HAVE_SYS_MALLOC_H
+
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #undef HAVE_SYS_MMAN_H
 
@@ -707,6 +710,9 @@
 
 /* Define to 1 if you have the 'uname' function. */
 #undef HAVE_UNAME
+
+/* Define to 1 if you have the <uniconv.h> header file. */
+#undef HAVE_UNICONV_H
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H

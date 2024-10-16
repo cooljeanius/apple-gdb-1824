@@ -318,6 +318,9 @@
 /* Define to 1 if you have the 'system' function. */
 #undef HAVE_SYSTEM
 
+/* Define to 1 if you have the <sys/malloc.h> header file. */
+#undef HAVE_SYS_MALLOC_H
+
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #undef HAVE_SYS_MMAN_H
 
@@ -335,6 +338,9 @@
 
 /* Define if you have the 'uintmax_t' type in <stdint.h> or <inttypes.h>. */
 #undef HAVE_UINTMAX_T
+
+/* Define to 1 if you have the <uniconv.h> header file. */
+#undef HAVE_UNICONV_H
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H

@@ -20484,6 +20484,12 @@ then :
   printf "%s\n" "#define HAVE_STDIO_H 1" >>confdefs.h
 
 fi
+ac_fn_c_check_header_compile "$LINENO" "sys/malloc.h" "ac_cv_header_sys_malloc_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_malloc_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_SYS_MALLOC_H 1" >>confdefs.h
+
+fi
 ac_fn_c_check_header_compile "$LINENO" "sys/mman.h" "ac_cv_header_sys_mman_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_mman_h" = xyes
 then :
@@ -20494,6 +20500,12 @@ ac_fn_c_check_header_compile "$LINENO" "sys/param.h" "ac_cv_header_sys_param_h" 
 if test "x$ac_cv_header_sys_param_h" = xyes
 then :
   printf "%s\n" "#define HAVE_SYS_PARAM_H 1" >>confdefs.h
+
+fi
+ac_fn_c_check_header_compile "$LINENO" "uniconv.h" "ac_cv_header_uniconv_h" "$ac_includes_default"
+if test "x$ac_cv_header_uniconv_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_UNICONV_H 1" >>confdefs.h
 
 fi
 ac_fn_c_check_header_compile "$LINENO" "wchar.h" "ac_cv_header_wchar_h" "$ac_includes_default"
@@ -21010,6 +21022,10 @@ ac_fn_c_check_type "$LINENO" "iconv_t" "ac_cv_type_iconv_t" "
 #else
 # ifdef HAVE_PHP_ICONV_H
 #  include <php_iconv.h>
+# else
+#  ifdef HAVE_UNICONV_H
+#   include <uniconv.h>
+#  endif /* HAVE_UNICONV_H */
 # endif /* HAVE_PHP_ICONV_H */
 #endif /* HAVE_ICONV_H */
 

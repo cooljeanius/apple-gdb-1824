@@ -1352,6 +1352,7 @@ bfd_mach_o_make_bfd_section(bfd *abfd, bfd_mach_o_section *section)
   bfdsec->alignment_power = (unsigned int)section->align;
   bfdsec->segment_mark = 0U;
 
+  /* FIXME: -Wtautological-compare in here: */
   if (((section->flags & BFD_MACH_O_SECTION_TYPE_MASK) == BFD_MACH_O_S_ZEROFILL)
       || ((section->flags & BFD_MACH_O_SECTION_TYPE_MASK) == BFD_MACH_O_S_GB_ZEROFILL))
     {

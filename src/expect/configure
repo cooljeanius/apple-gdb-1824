@@ -4587,7 +4587,6 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-
 ac_config_headers="$ac_config_headers expect_cf.h"
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
@@ -7444,7 +7443,6 @@ fi
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if stty reads stdout" >&5
 printf %s "checking if stty reads stdout... " >&6; }
-
 # On some systems stty cannot be run in the background (svr4) or get it
 # wrong because they fail to complain (NeXT, mach), so do NOT attempt
 # the test on some systems.
@@ -7654,7 +7652,6 @@ then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
-
 
 # On a few systems, libm.a is the same as libc.a
 # Do NOT bother to test against Tcl and Tk libs, they always include -lm

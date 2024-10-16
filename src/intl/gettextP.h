@@ -34,6 +34,10 @@
 # else
 #  if defined(HAVE_PHP_ICONV_H)
 #   include <php_iconv.h>
+#  else
+#   if defined(HAVE_UNICONV_H)
+#    include <uniconv.h>
+#   endif /* HAVE_UNICONV_H */
 #  endif /* HAVE_PHP_ICONV_H */
 # endif /* HAVE_ICONV_H && HAVE_ICONV */
 #endif /* _LIBC */

@@ -359,7 +359,6 @@ if test "x${WANT_CONVERSION_WARNS}" = "x" && test "x${enable_build_warnings}" = 
 fi
 AM_BINUTILS_WARNINGS
 AM_BINUTILS_CLANG_STATIC_ANALYSIS
-  ## FIXME: recheck documentation on this one; I might be using the wrong value...
 gl_WARN_ADD([-fstrict-flex-arrays=1],[FLEXMEMBER_STRICTNESS_FLAG])dnl
 
 dnl# add some insurance to our "config.h" header:
@@ -650,10 +649,11 @@ AC_CHECK_HEADERS([ctype.h errno.h fcntl.h gettext.h iconv.h libgen.h \
                   mach-o/loader.h malloca.h malloc/malloc.h math.h \
                   mingw/fcntl.h mingw/malloc.h mingw/sys/types.h \
                   realloc.h signal.h stdarg.h stddef.h stdio.h sys/acl.h \
-                  sys/core.h sys/errno.h sys/file.h sys/paccess.h \
-                  sys/param.h sys/region.h sys/resource.h sys/signal.h \
-                  sys/socket.h sys/time.h sys/user.h sys/utsname.h time.h \
-                  wchar.h wctype.h windef.h windows.h])dnl
+                  sys/core.h sys/errno.h sys/file.h sys/malloc.h \
+                  sys/paccess.h sys/param.h sys/region.h sys/resource.h \
+                  sys/signal.h sys/socket.h sys/time.h sys/user.h \
+                  sys/utsname.h time.h uniconv.h wchar.h wctype.h \
+                  windef.h windows.h])dnl
 GCC_HEADER_STDINT([bfd_stdint.h],[stdint.h])dnl
 AC_HEADER_TIME
 AC_HEADER_DIRENT

@@ -57,7 +57,7 @@ if test -n "${HOST_ARCHITECTURE}"; then
   AC_SUBST([C_ARCHFLAGS])
 fi
 
-ACX_PROG_CC_WARNING_OPTS([-Wreturn-type -Wfatal-errors])
+ACX_PROG_CC_WARNING_OPTS([-Wreturn-type -Wfatal-errors])dnl
 
 AC_CONFIG_HEADERS([expect_cf.h])dnl
 
@@ -270,7 +270,7 @@ else
   iunix=0
 fi
 
-AC_MSG_CHECKING([if stty reads stdout])
+AC_MSG_CHECKING([if stty reads stdout])dnl
 
 # On some systems stty cannot be run in the background (svr4) or get it
 # wrong because they fail to complain (NeXT, mach), so do NOT attempt
@@ -340,7 +340,7 @@ fi
 
 # Check for a regex library:
 AC_SEARCH_LIBS([regcomp],[iberty regex gregex gnuregex rx grx gnurx gnu c])
-AC_SEARCH_LIBS([regexec],[iberty regex gregex gnuregex rx grx gnurx gnu c])
+AC_SEARCH_LIBS([regexec],[iberty regex gregex gnuregex rx grx gnurx gnu c])dnl
 
 # On a few systems, libm.a is the same as libc.a
 # Do NOT bother to test against Tcl and Tk libs, they always include -lm
