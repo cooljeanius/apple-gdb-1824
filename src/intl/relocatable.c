@@ -33,6 +33,10 @@
 /* Specification: */
 #include "relocatable.h"
 
+#if !defined(__has_include)
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
 #if ENABLE_RELOCATABLE
 
 # include <stddef.h>
@@ -47,11 +51,29 @@
 # endif /* NO_XMALLOC */
 
 # if (defined(DEPENDS_ON_LIBCHARSET) && DEPENDS_ON_LIBCHARSET) || \
-     defined(HAVE_LIBCHARSET_H)
+     defined(HAVE_LIBCHARSET_H) || __has_include(<libcharset.h>)
 #  include <libcharset.h>
 # endif /* DEPENDS_ON_LIBCHARSET || HAVE_LIBCHARSET_H */
 # if DEPENDS_ON_LIBICONV && (defined(HAVE_ICONV) && HAVE_ICONV)
-#  include <iconv.h>
+#  if defined(HAVE_ICONV_H) || __has_include(<iconv.h>)
+#   include <iconv.h>
+#  else
+#   if defined(HAVE_LIBICONV_H) || __has_include(<libiconv.h>)
+#    include <libiconv.h>
+#   else
+#    if defined(HAVE_PHP_ICONV_H) || __has_include(<php_iconv.h>)
+#     include <php_iconv.h>
+#    else
+#     if defined(HAVE_UNICONV_H) || __has_include(<uniconv.h>)
+#      include <uniconv.h>
+#     else
+#      if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#       warning "relocatable.c expects an iconv-related header to be included."
+#      endif /* __GNUC__ && !__STRICT_ANSI__ */
+#     endif /* HAVE_UNICONV_H */
+#    endif /* HAVE_PHP_ICONV_H */
+#   endif /* HAVE_LIBICONV_H */
+#  endif /* HAVE_ICONV_H */
 # endif /* DEPENDS_ON_LIBICONV && HAVE_ICONV */
 # if (defined(DEPENDS_ON_LIBINTL) && DEPENDS_ON_LIBINTL) && ENABLE_NLS
 #  include <libintl.h>
