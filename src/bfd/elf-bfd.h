@@ -24,6 +24,8 @@
 
 #include "bfd.h"
 
+#include <stdlib.h>
+
 #include "elf/common.h"
 #include "elf/internal.h"
 #include "elf/external.h"
@@ -371,6 +373,7 @@ enum elf_target_id
   I386_ELF_DATA,
   IA64_ELF_DATA,
   LM32_ELF_DATA,
+  LARCH_ELF_DATA,
   M32R_ELF_DATA,
   M68HC11_ELF_DATA,
   M68K_ELF_DATA,

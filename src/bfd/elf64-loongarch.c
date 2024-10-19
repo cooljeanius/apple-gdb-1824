@@ -30,6 +30,8 @@
 #include "elfxx-loongarch.h"
 #include "opcode/loongarch.h"
 
+#include <inttypes.h>
+
 static bool
 loongarch_info_to_howto_rela (bfd *abfd, arelent *cache_ptr,
 			      Elf_Internal_Rela *dst)

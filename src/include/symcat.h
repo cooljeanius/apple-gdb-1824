@@ -30,6 +30,8 @@
 # define CONCAT2(a,b)	 a##b
 # define CONCAT3(a,b,c)	 a##b##c
 # define CONCAT4(a,b,c,d) a##b##c##d
+# define CONCAT5(a,b,c,d,e) a##b##c##d##e
+# define CONCAT6(a,b,c,d,e,f) a##b##c##d##e##f
 # define STRINGX(s) #s
 #else
 /* Note one should never pass extra whitespace to the CONCATn macros,
@@ -39,12 +41,16 @@
 # define CONCAT2(a,b)	 a/**/b
 # define CONCAT3(a,b,c)	 a/**/b/**/c
 # define CONCAT4(a,b,c,d) a/**/b/**/c/**/d
+# define CONCAT5(a,b,c,d,e) a/**/b/**/c/**/d/**/e
+# define CONCAT6(a,b,c,d,e,f) a/**/b/**/c/**/d/**/e/**/f
 # define STRINGX(s) "s"
 #endif /* __STDC__ || ALMOST_STDC || HAVE_STRINGIZE */
 
 #define XCONCAT2(a,b)     CONCAT2(a,b)
 #define XCONCAT3(a,b,c)   CONCAT3(a,b,c)
 #define XCONCAT4(a,b,c,d) CONCAT4(a,b,c,d)
+#define XCONCAT5(a,b,c,d,e) CONCAT5(a,b,c,d,e)
+#define XCONCAT6(a,b,c,d,e,f) CONCAT6(a,b,c,d,e,f)
 
 /* Note the layer of indirection here is typically used to allow
  * stringification of the expansion of macros.  I.e. "#define foo

@@ -364,7 +364,7 @@ main(argc, argv)
                          "program");
 
 		  section_address += count;
-		  fptr += count;
+		  fptr += (file_ptr)count;
 		  section_size -= count;
 		}
 	    }
