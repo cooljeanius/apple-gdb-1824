@@ -6385,20 +6385,20 @@ case "${target}" in
     fi
     ;;
   *mips*-*-pe* | *sh*-*-pe* | *arm*-*-wince | *arm*-wince-pe* | \
-  *arm*-*-mingw32ce* | *arm*-*-cegcc*)
+  *arm*-*-mingw32ce* | *arm*-*-cegcc* | *-*-windows*)
     if test -d ${srcdir}/wince; then
       configdirs="${configdirs} wince"
     fi
     ;;
   *-*-msdosdjgpp* | *-moss-msdos | i[3-7]86-*-msdos | i[3-7]86-*-moss* | \
-  *-coff-go32* | x86_64-*-rdos*)
+  *-coff-go32* | x86_64-*-rdos* | *-*-windows*)
     if test -d ${srcdir}/msdos; then
       configdirs="${configdirs} msdos"
     fi
     ;;
   a29k-*-udi* | udi29k | a29k-*-vxworks* | a29k-none-* | a29k-*-ebmon* | \
   a29k-*-coff* | a29k-*-sym1* | a29k-*-sysv* | a29k-*-aout* | a29k-*-bsd* | \
-  a29k-*-vsta*)
+  a29k-*-vsta* | a29k-*-windows* | x86_64-amd-windows*)
     if test -d ${srcdir}/amd-udi; then
       configdirs="${configdirs} amd-udi"
     fi

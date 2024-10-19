@@ -3979,6 +3979,7 @@ esac
 fi
 
 : ${AR=ar}
+: ${ARFLAGS=cr}
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking the archiver ($AR) interface" >&5
 printf %s "checking the archiver ($AR) interface... " >&6; }
@@ -3999,7 +4000,7 @@ int some_variable = 0;
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"
 then :
-  am_ar_try='$AR cru libconftest.a conftest.$ac_objext >&5'
+  am_ar_try='$AR $ARFLAGS libconftest.a conftest.$ac_objext >&5'
       { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$am_ar_try\""; } >&5
   (eval $am_ar_try) 2>&5
   ac_status=$?
