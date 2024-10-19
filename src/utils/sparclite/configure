@@ -647,6 +647,8 @@ LIBOBJS
 NETLIBS
 PROGS
 LD_ARCHFLAGS
+TARGET_ARCHITECTURE
+HOST_ARCHITECTURE
 target_os
 target_vendor
 target_cpu
@@ -662,8 +664,6 @@ build
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
-TARGET_ARCHITECTURE
-HOST_ARCHITECTURE
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -3808,7 +3808,6 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-
 ac_header= ac_cache=
 for ac_item in $ac_header_c_list
 do
@@ -4052,14 +4051,6 @@ then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
-   ## set these for use by the Makefile:
-if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
-  export HOST_ARCHITECTURE="${host_cpu}"
-  fi
-if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
-  export TARGET_ARCHITECTURE="${target_cpu}"
-    ## TODO: might also want to do likewise with the build arch...
-fi
 
 
 
@@ -4282,6 +4273,24 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+  ## set these for use by the Makefile:
+if test -z "${HOST_ARCHITECTURE}"; then
+  if test -n "${host_cpu}"; then
+    export HOST_ARCHITECTURE="${host_cpu}"
+  elif test -n "`uname -m`"; then
+    export HOST_ARCHITECTURE="`uname -m`"
+  else
+    export HOST_ARCHITECTURE="x86_64"
+  fi
+  fi
+if test -z "${TARGET_ARCHITECTURE}"; then
+  if test -n "${target_cpu}"; then
+    export TARGET_ARCHITECTURE="${target_cpu}"
+  else
+    export TARGET_ARCHITECTURE="sparclite"
+  fi
+    ## TODO: might also want to do likewise with the build arch...
+fi
 test "$program_prefix" != NONE &&
   program_transform_name="s&^&$program_prefix&;$program_transform_name"
 # Use a double $ so make ignores it.
@@ -4642,6 +4651,7 @@ then :
   printf "%s\n" "#define HAVE_VARARGS_H 1" >>confdefs.h
 
 fi
+  ## 1 of 3:
        for ac_header in termios.h
 do :
   ac_fn_c_check_header_compile "$LINENO" "termios.h" "ac_cv_header_termios_h" "$ac_includes_default"
@@ -4654,7 +4664,8 @@ printf "%s\n" "#define HAVE_TERMIOS 1" >>confdefs.h
                   termio=termios
 fi
 
-done       for ac_header in termio.h
+done  ## 2 of 3:
+       for ac_header in termio.h
 do :
   ac_fn_c_check_header_compile "$LINENO" "termio.h" "ac_cv_header_termio_h" "$ac_includes_default"
 if test "x$ac_cv_header_termio_h" = xyes
@@ -4666,7 +4677,8 @@ printf "%s\n" "#define HAVE_TERMIO 1" >>confdefs.h
                   termio=termio
 fi
 
-done       for ac_header in sgtty.h
+done  ## 3 of 3:
+       for ac_header in sgtty.h
 do :
   ac_fn_c_check_header_compile "$LINENO" "sgtty.h" "ac_cv_header_sgtty_h" "$ac_includes_default"
 if test "x$ac_cv_header_sgtty_h" = xyes

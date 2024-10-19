@@ -70,7 +70,7 @@ LIBIBERTY = ../../libiberty/libiberty.a
 BFD_DIR =  ../../bfd
 BFD = $(BFD_DIR)/libbfd.a
 BFD_SRC = $(srcdir)/$(BFD_DIR)
-BFD_CFLAGS = -I$(BFD_DIR) -I(BFD_SRC)
+BFD_CFLAGS = -Wp,-I$(BFD_DIR) -Wp,-I(BFD_SRC)
 
 # All the includes used for CFLAGS and for lint.
 # -I. for config files.
@@ -84,7 +84,7 @@ CWARNFLAGS = -Wall -Wextra -Wstrict-prototypes -Wconversion -Wundef \
 CFLAGS = -ggdb $(CWARNFLAGS) $(C_ARCHFLAGS)
 
 # INTERNAL_CFLAGS is the aggregate of all other *CFLAGS macros.
-INTERNAL_CFLAGS = $(CFLAGS) -I$(BFD_DIR) $(INCLUDE_CFLAGS) $(USER_CFLAGS) @DEFS@
+INTERNAL_CFLAGS = $(CFLAGS) -Wp,-I$(BFD_DIR) $(INCLUDE_CFLAGS) $(USER_CFLAGS) @DEFS@
 # None of the things in CFLAGS will do any harm, and on some systems
 #  (e.g. SunOS4) it is important to use the MH_CFLAGS.
 LDFLAGS = $(CFLAGS)
