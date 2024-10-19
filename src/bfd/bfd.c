@@ -204,9 +204,9 @@ CODE_FRAGMENT
 .
 */
 
+#include "sysdep.h"
 #include "bfd.h"
 #include "bfdver.h"
-#include "sysdep.h"
 #include <stdarg.h>
 #include "libiberty.h"
 #include "safe-ctype.h"

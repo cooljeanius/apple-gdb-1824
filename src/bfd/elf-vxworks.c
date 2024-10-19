@@ -20,8 +20,8 @@
 
 /* This file provides routines used by all VxWorks targets.  */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "libbfd.h"
 #include "elf-bfd.h"
 #include "elf-vxworks.h"

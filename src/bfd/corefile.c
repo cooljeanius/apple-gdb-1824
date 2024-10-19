@@ -27,8 +27,8 @@ DESCRIPTION
 	These are functions pertaining to core files.
 */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "libbfd.h"
 
 /*

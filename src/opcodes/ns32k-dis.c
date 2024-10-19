@@ -19,7 +19,7 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
-
+#include "config.h"
 #include "bfd.h"
 #include "sysdep.h"
 #include "dis-asm.h"
@@ -48,7 +48,7 @@ read_memory_integer (unsigned char * addr, int nr)
   return val;
 }
 
-/* 32000 instructions are never longer than this.  */
+/* 32000 instructions are never longer than this: */
 #define MAXLEN 62
 
 #include <setjmp.h>

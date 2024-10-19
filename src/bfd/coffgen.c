@@ -37,8 +37,8 @@
    Those functions may not use any COFF specific information, such as
    coff_data (abfd).  */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "libbfd.h"
 #include "coff/internal.h"
 #include "libcoff.h"
