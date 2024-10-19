@@ -923,7 +923,9 @@ enable_maintainer_mode
 enable_shared
 enable_fast_install
 enable_static
+enable_pic
 with_pic
+enable_aix_soname
 with_aix_soname
 with_gnu_ld
 with_sysroot
@@ -1609,6 +1611,11 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=no]
   --enable-static[=PKGS]  build static libraries [default=yes]
+  --enable-pic[=PKGS]     try to use only PIC/non-PIC objects [default=use
+                          both]
+  --enable-aix-soname=aix|svr4|both
+                          shared library versioning (aka "SONAME") variant to
+                          provide on AIX, [default=aix].
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-plugins        Enable support for plugins (defaults no)
   --enable-64-bit-bfd     64-bit support (on hosts with narrower word sizes)
@@ -1635,11 +1642,6 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-pic[=PKGS]       try to use only PIC/non-PIC objects [default=use
-                          both]
-  --with-aix-soname=aix|svr4|both
-                          shared library versioning (aka "SONAME") variant to
-                          provide on AIX, [default=aix].
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot[=DIR]    Search for dependent libraries within DIR (or the
                           compiler's sysroot if not specified).
@@ -8829,8 +8831,8 @@ esac
 
 
 
-macro_version='2.4.7'
-macro_revision='2.4.7'
+macro_version='2.5.3'
+macro_revision='2.5.3'
 
 
 
@@ -12717,7 +12719,7 @@ fi
 enable_win32_dll=yes
 
 case $host in
-*-*-cygwin* | *-*-mingw* | *-*-pw32* | *-*-cegcc*)
+*-*-cygwin* | *-*-mingw* | *-*-windows* | *-*-pw32* | *-*-cegcc*)
   if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}as", so it can be a program name with args.
 set dummy ${ac_tool_prefix}as; ac_word=$2
@@ -13057,28 +13059,51 @@ test -z "$OBJDUMP" && OBJDUMP=objdump
 
 
 
-
-# Check whether --with-pic was given.
+  # Check whether --enable-pic was given.
+if test ${enable_pic+y}
+then :
+  enableval=$enable_pic; lt_p=${PACKAGE-default}
+     case $enableval in
+     yes|no) pic_mode=$enableval ;;
+     *)
+       pic_mode=default
+       # Look at the argument we got.  We use all the common list separators.
+       lt_save_ifs=$IFS; IFS=$IFS$PATH_SEPARATOR,
+       for lt_pkg in $enableval; do
+	 IFS=$lt_save_ifs
+	 if test "X$lt_pkg" = "X$lt_p"; then
+	   pic_mode=yes
+	 fi
+       done
+       IFS=$lt_save_ifs
+       ;;
+     esac
+else case e in #(
+  e)           # Check whether --with-pic was given.
 if test ${with_pic+y}
 then :
   withval=$with_pic; lt_p=${PACKAGE-default}
-    case $withval in
-    yes|no) pic_mode=$withval ;;
-    *)
-      pic_mode=default
-      # Look at the argument we got.  We use all the common list separators.
-      lt_save_ifs=$IFS; IFS=$IFS$PATH_SEPARATOR,
-      for lt_pkg in $withval; do
-	IFS=$lt_save_ifs
-	if test "X$lt_pkg" = "X$lt_p"; then
-	  pic_mode=yes
-	fi
-      done
-      IFS=$lt_save_ifs
-      ;;
-    esac
+	 case $withval in
+	 yes|no) pic_mode=$withval ;;
+	 *)
+	   pic_mode=default
+	   # Look at the argument we got.  We use all the common list separators.
+	   lt_save_ifs=$IFS; IFS=$IFS$PATH_SEPARATOR,
+	   for lt_pkg in $withval; do
+	     IFS=$lt_save_ifs
+	     if test "X$lt_pkg" = "X$lt_p"; then
+	       pic_mode=yes
+	     fi
+	   done
+	   IFS=$lt_save_ifs
+	   ;;
+	 esac
 else case e in #(
   e) pic_mode=default ;;
+esac
+fi
+
+     ;;
 esac
 fi
 
@@ -13095,18 +13120,29 @@ case $host,$enable_shared in
 power*-*-aix[5-9]*,yes)
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking which variant of shared library versioning to provide" >&5
 printf %s "checking which variant of shared library versioning to provide... " >&6; }
-
-# Check whether --with-aix-soname was given.
+  # Check whether --enable-aix-soname was given.
+if test ${enable_aix_soname+y}
+then :
+  enableval=$enable_aix_soname; case $enableval in
+     aix|svr4|both)
+       ;;
+     *)
+       as_fn_error $? "Unknown argument to --enable-aix-soname" "$LINENO" 5
+       ;;
+     esac
+     lt_cv_with_aix_soname=$enable_aix_soname
+else case e in #(
+  e) # Check whether --with-aix-soname was given.
 if test ${with_aix_soname+y}
 then :
   withval=$with_aix_soname; case $withval in
-    aix|svr4|both)
-      ;;
-    *)
-      as_fn_error $? "Unknown argument to --with-aix-soname" "$LINENO" 5
-      ;;
-    esac
-    lt_cv_with_aix_soname=$with_aix_soname
+         aix|svr4|both)
+           ;;
+         *)
+           as_fn_error $? "Unknown argument to --with-aix-soname" "$LINENO" 5
+           ;;
+         esac
+         lt_cv_with_aix_soname=$with_aix_soname
 else case e in #(
   e) if test ${lt_cv_with_aix_soname+y}
 then :
@@ -13115,11 +13151,15 @@ else case e in #(
   e) lt_cv_with_aix_soname=aix ;;
 esac
 fi
-
-    with_aix_soname=$lt_cv_with_aix_soname ;;
+ ;;
 esac
 fi
 
+     enable_aix_soname=$lt_cv_with_aix_soname ;;
+esac
+fi
+
+  with_aix_soname=$enable_aix_soname
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $with_aix_soname" >&5
 printf "%s\n" "$with_aix_soname" >&6; }
   if test aix != "$with_aix_soname"; then
@@ -31136,6 +31176,9 @@ do
     l1om_elf64_fbsd_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
     lm32_elf32_vec) tb="${tb} elf32-lm32.lo elf32.lo ${elf}" ;;
     lm32_elf32_fdpic_vec) tb="${tb} elf32-lm32.lo elf32.lo ${elf}" ;;
+    loongarch_elf32_vec)	 tb="$tb elf32-loongarch.lo elfxx-loongarch.lo elf32.lo elf-ifunc.lo $elf" ;;
+    loongarch_elf64_vec)	 tb="$tb elf64-loongarch.lo elf64.lo elfxx-loongarch.lo elf32.lo elf-ifunc.lo $elf"; target_size=64 ;;
+    loongarch64_pei_vec)	 tb="$tb pei-loongarch64.lo pe-loongarch64igen.lo $coff"; target_size=64 ;;
     m32c_elf32_vec) tb="${tb} elf32-m32c.lo elf32.lo ${elf}" ;;
     m32r_elf32_vec) tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
     m32r_elf32_le_vec) tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;

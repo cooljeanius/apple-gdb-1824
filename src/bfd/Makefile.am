@@ -1272,6 +1272,14 @@ elf64-ia64.c : elfxx-ia64.c
 	$(SED) -e s/NN/64/g < $(srcdir)/elfxx-ia64.c >> elf64-ia64.new
 	mv -f $(AM_V_v) elf64-ia64.new $@
 
+elf32-loongarch.c : elfnn-loongarch.c
+	$(AM_V_at)echo "#line 1 \"$<\"" > $@
+	$(AM_V_GEN)$(SED) -e s/NN/32/g < $< >> $@
+
+elf64-loongarch.c : elfnn-loongarch.c
+	$(AM_V_at)echo "#line 1 \"$<\"" > $@
+	$(AM_V_GEN)$(SED) -e s/NN/64/g < $< >> $@
+
 peigen.c : peXXigen.c
 	$(AM_V_at)rm -f $(AM_V_v) $@
 	echo "/* DO NOT EDIT!  -*- buffer-read-only: t -*-  */" > peigen.new

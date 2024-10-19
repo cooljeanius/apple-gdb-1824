@@ -212,6 +212,24 @@ extern char *strrchr();
 # define SEEK_CUR 1
 #endif /* !SEEK_CUR */
 
+#ifdef HAVE_MMAP
+# include <sys/mman.h>
+#endif /* HAVE_MMAP */
+
+#ifndef MAP_FILE
+# define MAP_FILE 0
+#endif /* !MAP_FILE */
+
+#ifndef MAP_FAILED
+# define MAP_FAILED ((void *)-1)
+#endif /* !MAP_FAILED */
+
+#ifndef MAP_ANONYMOUS
+# ifdef MAP_ANON
+#  define MAP_ANONYMOUS MAP_ANON
+# endif /* MAP_ANON */
+#endif /* !MAP_ANONYMOUS */
+
 #include "filenames.h"
 
 #if !HAVE_DECL_FFS
@@ -274,6 +292,17 @@ size_t strnlen(const char *, size_t);
 #ifndef offsetof
 # define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 #endif /* !offsetof */
+
+#ifndef ENABLE_NLS
+  /* The Solaris version of locale.h always includes libintl.h.  If we have
+     been configured with --disable-nls then ENABLE_NLS will not be defined
+     and the dummy definitions of bindtextdomain (et al) below will conflict
+     with the defintions in libintl.h.  So we define these values to prevent
+     the bogus inclusion of libintl.h.  */
+# define _LIBINTL_H
+# define _LIBGETTEXT_H
+#endif
+#include <locale.h>
 
 #ifdef ENABLE_NLS
 # ifdef HAVE_LIBINTL_H

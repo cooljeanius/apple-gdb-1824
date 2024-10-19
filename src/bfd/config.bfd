@@ -107,7 +107,9 @@ case "${targ_cpu}" in
 aarch64*)	 targ_archs="bfd_aarch64_arch bfd_arm_arch";;
 alpha*)		 targ_archs=bfd_alpha_arch ;;
 am34*|am33_2.0*) targ_archs=bfd_mn10300_arch ;;
+arc*)		 targ_archs=bfd_arc_arch ;;
 arm*)		 targ_archs=bfd_arm_arch ;;
+amdgcn*)	 targ_archs=bfd_amdgcn_arch ;;
 bfin*)		 targ_archs=bfd_bfin_arch ;;
 c30*)		 targ_archs=bfd_tic30_arch ;;
 c4x*)		 targ_archs=bfd_tic4x_arch ;;
@@ -115,12 +117,16 @@ c54x*)		 targ_archs=bfd_tic54x_arch ;;
 cr16*)		 targ_archs=bfd_cr16_arch ;;
 crisv32)	 targ_archs=bfd_cris_arch ;;
 crx*)		 targ_archs=bfd_crx_arch ;;
+csky*)		 targ_archs=bfd_csky_arch ;;
 dlx*)		 targ_archs=bfd_dlx_arch ;;
 fido*)		 targ_archs=bfd_m68k_arch ;;
 hppa*)		 targ_archs=bfd_hppa_arch ;;
 i[3-7]86)	 targ_archs=bfd_i386_arch ;;
 i370)		 targ_archs=bfd_i370_arch ;;
+ia16)		 targ_archs=bfd_i386_arch ;;
+kvx)		 targ_archs=bfd_kvx_arch ;;
 lm32)	         targ_archs=bfd_lm32_arch ;;
+loongarch*)	 targ_archs=bfd_loongarch_arch ;;
 m6811*|m68hc11*) targ_archs="bfd_m68hc11_arch bfd_m68hc12_arch bfd_m9s12x_arch bfd_m9s12xg_arch" ;;
 m6812*|m68hc12*) targ_archs="bfd_m68hc12_arch bfd_m68hc11_arch bfd_m9s12x_arch bfd_m9s12xg_arch" ;;
 m68*)		 targ_archs=bfd_m68k_arch ;;
@@ -135,7 +141,10 @@ or32*)		 targ_archs=bfd_or32_arch ;;
 pdp11*)		 targ_archs=bfd_pdp11_arch ;;
 pj*)		 targ_archs="bfd_pj_arch bfd_i386_arch";;
 powerpc*)        targ_archs="bfd_rs6000_arch bfd_powerpc_arch" ;;
+pru*)		 targ_archs=bfd_pru_arch ;;
+riscv*)		 targ_archs=bfd_riscv_arch ;;
 rs6000)		 targ_archs="bfd_rs6000_arch bfd_powerpc_arch" ;;
+s12z*)		 targ_archs=bfd_s12z_arch ;;
 s390*)		 targ_archs=bfd_s390_arch ;;
 sh*)		 targ_archs=bfd_sh_arch ;;
 sparc*)		 targ_archs=bfd_sparc_arch ;;
@@ -145,11 +154,12 @@ tilegx*)	 targ_archs=bfd_tilegx_arch ;;
 tilepro*)	 targ_archs=bfd_tilepro_arch ;;
 thumb*)		 targ_archs=bfd_arm_arch ;;
 v850*)		 targ_archs="bfd_v850_arch bfd_v850_rh850_arch" ;;
+visium*)	 targ_archs=bfd_visium_arch ;;
 x86_64*)	 targ_archs=bfd_i386_arch ;;
 xscale*)	 targ_archs=bfd_arm_arch ;;
 xtensa*)	 targ_archs=bfd_xtensa_arch ;;
 xgate)		 targ_archs=bfd_xgate_arch ;;
-z80|r800)	 targ_archs=bfd_z80_arch ;;
+z80*|r800|z180|gbz80|ez80*)	 targ_archs=bfd_z80_arch ;;
 z8k*)		 targ_archs=bfd_z8k_arch ;;
 am33_2.0)	 targ_archs=bfd_mn10300_arch ;;
 *)		 targ_archs=bfd_${targ_cpu}_arch ;;
@@ -1909,6 +1919,20 @@ case "${targ}" in
     targ_underscore=yes
     ;;
 
+#ifdef BFD64
+  loongarch32-*)
+    targ_defvec=loongarch_elf32_vec
+    targ_selvecs="loongarch_elf32_vec"
+    want64=true
+    ;;
+
+  loongarch64-*)
+    targ_defvec=loongarch_elf64_vec
+    targ_selvecs="loongarch_elf32_vec loongarch_elf64_vec loongarch64_pei_vec"
+    want64=true
+    ;;
+#endif
+
   *-*-ieee*)
     targ_defvec=ieee_vec
     ;;
@@ -1928,6 +1952,12 @@ case "${targ}" in
     targ_selvecs=ieee_vec
     ;;
 # END OF targmatch.h
+  bpf-*-*)
+    echo "*** Configuration $targ is not fully supported." >&2
+    echo "*** Use bpf or bpf-*-none as the target instead." >&2
+    exit 1
+    ;;
+
   *)
     echo 1>&2 "*** BFD does not support target ${targ}."
     echo 1>&2 "*** Look in bfd/config.bfd for supported targets."
@@ -1982,5 +2012,18 @@ esac
 case "${targ_defvec} ${targ_selvecs}" in
   *k1om_elf64*)
     targ_archs="${targ_archs} bfd_k1om_arch"
+    ;;
+esac
+
+# If we support Intel MCU target, then add support for bfd_iamcu_arch.
+case "${targ_defvec} ${targ_selvecs}" in
+  *iamcu_elf32*)
+    targ_archs="$targ_archs bfd_iamcu_arch"
+    ;;
+esac
+
+case "${targ}" in
+  mipsisa32r6* | mipsisa64r6* | mips*-img-*)
+    targ_cflags="$targ_cflags -DMIPS_DEFAULT_R6=1"
     ;;
 esac

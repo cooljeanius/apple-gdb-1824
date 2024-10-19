@@ -139,6 +139,8 @@ DESCRIPTION
 .#define bfd_mach_spu		256
 .  bfd_arch_mips,      {* MIPS Rxxxx *}
 .#define bfd_mach_mips3000		3000
+.#define bfd_mach_mips_loongson_2e	3001
+.#define bfd_mach_mips_loongson_2f	3002
 .#define bfd_mach_mips3900		3900
 .#define bfd_mach_mips4000		4000
 .#define bfd_mach_mips4010		4010
@@ -458,6 +460,42 @@ DESCRIPTION
 .#define bfd_mach_nios2r2	2
 .  bfd_arch_visium,	{* Visium *}
 .#define bfd_mach_visium	1
+.  bfd_arch_wasm32,    {* WebAssembly.  *}
+.#define bfd_mach_wasm32	1
+.  bfd_arch_pru,       {* PRU.  *}
+.#define bfd_mach_pru		0
+.  bfd_arch_nfp,       {* Netronome Flow Processor *}
+.#define bfd_mach_nfp3200	0x3200
+.#define bfd_mach_nfp6000	0x6000
+.  bfd_arch_csky,      {* C-SKY.  *}
+.#define bfd_mach_ck_unknown    0
+.#define bfd_mach_ck510		1
+.#define bfd_mach_ck610		2
+.#define bfd_mach_ck801		3
+.#define bfd_mach_ck802		4
+.#define bfd_mach_ck803		5
+.#define bfd_mach_ck807		6
+.#define bfd_mach_ck810		7
+.#define bfd_mach_ck860		8
+.  bfd_arch_loongarch,       {* LoongArch *}
+.#define bfd_mach_loongarch32	1
+.#define bfd_mach_loongarch64	2
+.  bfd_arch_amdgcn,     {* AMDGCN *}
+.#define bfd_mach_amdgcn_unknown 0x000
+.#define bfd_mach_amdgcn_gfx900  0x02c
+.#define bfd_mach_amdgcn_gfx904  0x02e
+.#define bfd_mach_amdgcn_gfx906  0x02f
+.#define bfd_mach_amdgcn_gfx908  0x030
+.#define bfd_mach_amdgcn_gfx90a  0x03f
+.#define bfd_mach_amdgcn_gfx1010 0x033
+.#define bfd_mach_amdgcn_gfx1011 0x034
+.#define bfd_mach_amdgcn_gfx1012 0x035
+.#define bfd_mach_amdgcn_gfx1030 0x036
+.#define bfd_mach_amdgcn_gfx1031 0x037
+.#define bfd_mach_amdgcn_gfx1032 0x038
+.#define bfd_mach_amdgcn_gfx1100 0x041
+.#define bfd_mach_amdgcn_gfx1101 0x046
+.#define bfd_mach_amdgcn_gfx1102 0x047
 .  bfd_arch_last
 .  };
 */
@@ -532,6 +570,7 @@ extern const bfd_arch_info_type bfd_iq2000_arch;
 extern const bfd_arch_info_type bfd_k1om_arch;
 extern const bfd_arch_info_type bfd_l1om_arch;
 extern const bfd_arch_info_type bfd_lm32_arch;
+extern const bfd_arch_info_type bfd_loongarch_arch;
 extern const bfd_arch_info_type bfd_m32c_arch;
 extern const bfd_arch_info_type bfd_m32r_arch;
 extern const bfd_arch_info_type bfd_m68hc11_arch;
@@ -626,6 +665,7 @@ static const bfd_arch_info_type * const bfd_archures_list[] =
     &bfd_k1om_arch,
     &bfd_l1om_arch,
     &bfd_lm32_arch,
+    &bfd_loongarch_arch,
     &bfd_m32c_arch,
     &bfd_m32r_arch,
     &bfd_m68hc11_arch,
