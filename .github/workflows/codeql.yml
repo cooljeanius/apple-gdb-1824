@@ -1,5 +1,5 @@
 ---
-# .github/workflows/codeql.yml: codeql workflow for apple-gdb-1824
+# .github/workflows/codeql.yml: GHA CodeQL workflow for apple-gdb-1824
 # For most projects, this workflow file will not need changing; you simply need
 # to commit it to your repository.
 #
@@ -20,7 +20,8 @@ on:
       - main
       - dependabot/*
       - codeql-*
-      - autofix/alert-*
+      - autofix*alert*
+      - alert*autofix*
       - ruff_unsafe
   pull_request:
     # The branches below must be a subset of the branches above
@@ -29,7 +30,8 @@ on:
       - main
       - dependabot/*
       - codeql-*
-      - autofix/alert-*
+      - autofix*alert*
+      - alert*autofix*
       - ruff_unsafe
   schedule:
     - cron: '38 5 * * 2'
@@ -153,7 +155,7 @@ jobs:
             python3-pylsp-flake8 python3-flake8-class-newline \
             python3-flake8-quotes python3-flake8-import-order \
             python3-flake8-comprehensions python3-flake8-deprecated; \
-          pip install pylint flake8 ruff black pyupgrade; \
+          pip install pylint flake8 ruff black pyupgrade bandit; \
         elif test ${{ matrix.language }} == 'ruby'; then \
           sudo apt-get -y install ruby ruby-dev libruby rake ruby-full \
             ruby-ffi ruby-build jruby-openssl mruby libmruby-dev; \
@@ -280,7 +282,12 @@ jobs:
             stat "$(which pylint)"; \
           sync && (flake8 || ruff check || (stat "$(which ruff)" && sleep 1)); \
           if test -x "$(which yamllint)"; then \
-            yamllint .github/FUNDING.yml .github/dependabot.yml; \
+            yamllint .github/FUNDING.yml .github/dependabot.yml .yamllint.yml; \
+            if test -x "$(which bandit)"; then \
+              yamllint .github/workflows/bandit.yml || stat "$(which bandit)"; \
+            else \
+              sync && echo "skipping running yamllint on bandit workflow"; \
+            fi
           else \
             sync && echo "skipping yamllint..."; \
           fi; \

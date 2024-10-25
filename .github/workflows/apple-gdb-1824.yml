@@ -42,7 +42,7 @@ jobs:
             libgettextpo-dev tix tix-dev splint comprez cxref cxref-emacs \
             exuberant-ctags universal-ctags texi2html eslint uglifyjs \
             libjs-modernizr node-optionator node-babel-eslint npm doxygen \
-            doxygen-latex graphviz dot2tex
+            doxygen-latex graphviz dot2tex yamllint
       - run: cd .profile.d && test -e ./.profile_generic && test -r ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq | grep -v "\*\*\*" | grep -v "PWD\=") && sync && sleep 1 && sync
       - run: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --enable-silent-rules --with-system-zlib CC=${{ matrix.compiler }} OBJC=${{ matrix.compiler }}
       - run: cd src && make configure-zlib && sync && make configure-bfd
@@ -51,7 +51,7 @@ jobs:
       - run: cd src && if test -e autogen/Makefile; then (sync && make -C autogen && sync && sleep 1); elif test -d autogen; then (sync && echo "listing autogen Makefiles present" && sync && ls autogen/Makefile* && sync && sleep 1); else (sync && echo "skipping autogen" && sync && sleep 1); fi
       - run: cd src && make -C bfd diststuff
       - run: cd src && make all-zlib && sync && make all-bfd
-      - run: cd src && make all-opcodes
+      - run: cd src && make all-opcodes && sync
       - run: cd src && make configure-binutils
       - run: cd src && make info-binutils && sync && make dvi-binutils && sync && make TAGS-binutils
       - run: cd src && sync && make all-cgen && sync
@@ -59,7 +59,7 @@ jobs:
       - run: cd src && make all-electric-fence
       - run: cd src && make all-etc && sync && make check-etc
       - run: cd src && make all-libdecnumber
-      - run: cd src && make all-mmalloc
+      - run: cd src && make all-mmalloc && sync && (stat mmalloc || ls "mm*")
       - run: cd src && make configure-readline
       - run: cd src && for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/configure; then (echo "configuring in ${dir}" && make configure-${dir} && echo "done configuring in ${dir}"); elif test -d ${dir}; then ls ${dir}/configure*; else echo "skipping configuring in ${dir}"; fi; done
       - run: cd src && for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then (echo "building in ${dir}" && make -C ${dir}); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
@@ -68,6 +68,7 @@ jobs:
       - run: cd src/gdb/doc && make doxy && make all-doc && make diststuff && make links2roff
       - run: cd src && make info && sync && find . -name '*.info' -print
       - run: cd src && make check-zlib && sync && make check-libiberty
+      - run: cd src && yamllint zlib/contrib/perl/Compress-Raw-Zlib-*/META.yml
       - run: cd src/texinfo/js && (npm install || npm audit || npm ci || npm install-ci-test || npm install-test || stat package.json)
       - run: cd src && make check-texinfo_js && find . -name '*.js' -print
       - run: cd src && sync && find . -name '*.js' -print0 | xargs -0 node -c

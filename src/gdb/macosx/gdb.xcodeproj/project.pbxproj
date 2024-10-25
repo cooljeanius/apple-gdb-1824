@@ -5321,6 +5321,7 @@
 		A589D79E1A313AA000E717B9 /* template.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = template.h; path = ../../../template.h; sourceTree = "<group>"; };
 		A589D79F1A313AAF00E717B9 /* Special_Versions */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Special_Versions; path = ../../../Special_Versions; sourceTree = "<group>"; };
 		A589D7A01A313AB900E717B9 /* texi2html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.perl; name = texi2html; path = ../../../texi2html; sourceTree = "<group>"; };
+		A590CA052CCB45D3000FEB87 /* .yamllint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .yamllint.yml; path = ../../../.yamllint.yml; sourceTree = "<group>"; };
 		A59249D41AAFEF1A00050903 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
 		A59249D51AAFEF1A00050903 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
 		A59249DD1AAFEF1B00050903 /* coff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = coff.h; path = "/Users/ericgallager/apple-gdb-1824/src/utils/amd-udi/include/coff.h"; sourceTree = "<absolute>"; };
@@ -12818,6 +12819,7 @@
 			children = (
 				A50558F82AEB12BD00DFAB6C /* .github */,
 				A53D6E2C2C49F40500A3E712 /* .profile.d */,
+				A590CA052CCB45D3000FEB87 /* .yamllint.yml */,
 				A589C8E21A30EC7500E717B9 /* build.xml */,
 				A589C8E31A30EC8600E717B9 /* cache-symfiles.sh */,
 				A589C8E41A30ED2200E717B9 /* ChangeLog_just_me.txt */,

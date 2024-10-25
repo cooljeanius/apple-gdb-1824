@@ -21,7 +21,8 @@ on:
       - master
       - main
       - dependabot/*
-      - autofix/alert-*
+      - autofix*alert*
+      - alert*autofix*
       - ruff_unsafe
   pull_request:
     # The branches below must be a subset of the branches above:
@@ -29,7 +30,8 @@ on:
       - master
       - main
       - dependabot/*
-      - autofix/alert-*
+      - autofix*alert*
+      - alert*autofix*
       - ruff_unsafe
   schedule:
     - cron: '25 20 * * 6'

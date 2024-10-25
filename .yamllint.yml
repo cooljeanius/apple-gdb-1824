@@ -1,0 +1,20 @@
+---
+extends: default
+
+rules:
+  float-values: enable
+  indentation:
+    ignore:
+      - .github/workflows/apple-gdb-1824-macos.yml
+      - .github/workflows/codeql.yml
+  # some lines might be really long in this repo, and I don't feel like
+  # figuring out how to break them up:
+  line-length:
+    max: 99
+    level: warning
+    ignore:
+      - .github/workflows/apple-gdb-1824*.yml
+      - .github/workflows/codeql.yml
+      - .travis.yml
+  octal-values: enable
+  truthy: disable
