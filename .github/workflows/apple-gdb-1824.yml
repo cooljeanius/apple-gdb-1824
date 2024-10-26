@@ -68,7 +68,7 @@ jobs:
       - run: cd src/gdb/doc && make doxy && make all-doc && make diststuff && make links2roff
       - run: cd src && make info && sync && find . -name '*.info' -print
       - run: cd src && make check-zlib && sync && make check-libiberty
-      - run: cd src && yamllint zlib/contrib/perl/Compress-Raw-Zlib-*/META.yml
+      - run: cd src && yamllint ./*/*/*/*/META.yml && sync && echo "" && sleep 1
       - run: cd src/texinfo/js && (npm install || npm audit || npm ci || npm install-ci-test || npm install-test || stat package.json)
       - run: cd src && make check-texinfo_js && find . -name '*.js' -print
       - run: cd src && sync && find . -name '*.js' -print0 | xargs -0 node -c
