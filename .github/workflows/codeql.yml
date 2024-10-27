@@ -621,6 +621,8 @@ jobs:
           popd; \
         elif test -d gdb/testsuite/gdb.apple; then \
           sync && echo "skipping gdb/testsuite/gdb.apple; missing Makefile?"; \
+        else \
+          sync && echo "skipping gdb/testsuite/gdb.apple; missing subdir?"; \
         fi
         # shellcheck disable=SC2044
         for cppfile in $(find . -name '*.cpp' -type f); do \
@@ -634,7 +636,9 @@ jobs:
           cp -v ./*.o .. || ls ./*.o || pwd; \
           popd; \
         elif test -d gdb/testsuite/gdb.base; then \
-          sync && echo "skipping gdb/testsuite/gdb.base"; \
+          sync && echo "skipping gdb/testsuite/gdb.base; missing a file?"; \
+        else \
+          sync && echo "skipping gdb/testsuite/gdb.base; missing subdir?"; \
         fi
         # shellcheck disable=SC2044
         for cxxfile in $(find . -name '*.cxx' -type f); do \
@@ -649,6 +653,8 @@ jobs:
           popd; \
         elif test -d mmalloc; then \
           sync && echo "skipping mmalloc; missing Makefile?"; \
+        else \
+          sync && echo "skipping mmalloc; missing subdirectory?"; \
         fi
 
     - name: Extra coverage build (Java)
@@ -733,8 +739,8 @@ jobs:
         name: gdb-static-analysis-plists-${{ github.sha }}
         # A file, directory or wildcard pattern that describes what to upload:
         path: |
-            **/clang_static_analysis/*.plist
-            **/CFE_S_A/*.plist
+          **/clang_static_analysis/*.plist
+          **/CFE_S_A/*.plist
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
