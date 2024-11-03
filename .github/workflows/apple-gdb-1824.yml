@@ -1,5 +1,4 @@
 ---
-
 name: cooljeanius/apple-gdb-1824
 on:
   push:

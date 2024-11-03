@@ -34,7 +34,12 @@ jobs:
         else \
           COMPILER_FORMULA=""; \
         fi
-        brew install python@3.12 2>/dev/null || brew link --overwrite python@3.12 || (if test -L /usr/local/bin/2to3; then (readlink /usr/local/bin/2to3 && unlink /usr/local/bin/2to3); else rm '/usr/local/bin/2to3'; fi) || which -a 2to3
+        brew install python@3.12 2>/dev/null || \
+          brew link --overwrite python@3.12 || \
+          (if test -L /usr/local/bin/2to3; then \
+             (readlink /usr/local/bin/2to3 && unlink /usr/local/bin/2to3); \
+           else rm '/usr/local/bin/2to3'; fi) || \
+          which -a 2to3
         sync && date && sync
         brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar \
           osslsigncode gperf help2man findutils grep coreutils remake byacc \
@@ -283,16 +288,27 @@ jobs:
           sync && echo "nproc says we can use $(nproc) build jobs"; \
           if test "$(nproc)" -eq 4; then \
             sync && echo "Full build step: special-casing the 4-job build case…"; \
-            (make -j"$(nproc)" || make -j2 || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
+            (make -j"$(nproc)" || make -j2 || make || \
+               remake -dpPw --verbosity=terse >>config.log || \
+               remake --trace=noshell --verbosity=terse >>config.log || \
+               remake all-gdb >>config.log || clear || stat Makefile); \
           else
-            (make -j"$(nproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
+            (make -j"$(nproc)" || make || \
+               remake -dpPw --verbosity=terse >>config.log || \
+               remake --trace=noshell --verbosity=terse >>config.log || \
+               remake all-gdb >>config.log || clear || stat Makefile); \
           fi; \
         elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
           sync && echo "gnproc says we can use $(gnproc) build jobs"; \
-          (make -j"$(gnproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
+          (make -j"$(gnproc)" || make || \
+             remake -dpPw --verbosity=terse >>config.log || \
+             remake --trace=noshell --verbosity=terse >>config.log || \
+             remake all-gdb >>config.log || clear || stat Makefile); \
         else \
           sync && echo "Full build step: on the slow path..."; \
-          (make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
+          (make || remake -dpPw --verbosity=terse >>config.log || \
+             remake --trace=noshell --verbosity=terse >>config.log || \
+             remake all-gdb >>config.log || clear || stat Makefile); \
         fi
         sync && echo "Reached end of full build phase..."
     - run: cd src && make check-zlib && sync && make check-libiberty
