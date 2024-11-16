@@ -472,6 +472,13 @@ jobs:
         elif test -r /usr/x86_64-linux-gnu/include/proc_service.h; then \
           cat /usr/x86_64-linux-gnu/include/proc_service.h; \
         fi
+        if test ${{ matrix.language }} == 'go'; then \
+          if test -x "$(which go)"; then \
+            stat "$(which go)" && go version && go env; \
+          else \
+            sync && echo "no usable 'go' binary found"; \
+          fi; \
+        fi
 
     - name: Extra coverage build (C)
       if: matrix.language == 'c-cpp' && success()
