@@ -1,5 +1,10 @@
 ---
+# https://yamllint.readthedocs.io/en/stable/configuration.html
 extends: default
+
+ignore:
+  - src/gdb/*/*/*/build/*.build/Debug/*.build/all-product-headers.yaml
+  - src/tk/macosx/build/*.build/Development/*.build/all-product-headers.yaml
 
 rules:
   float-values: enable

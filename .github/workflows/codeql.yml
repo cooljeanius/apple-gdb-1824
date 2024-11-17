@@ -252,6 +252,8 @@ jobs:
               stat info.js.json || echo "info.js.json"; \
             elif test -r info.min.js && test -x "$(which du)"; then \
               stat info.min.js && du info.min.js; \
+            elif test -x "$(which yamllint)"; then \
+              pwd && (yamllint . || yamllint --version); \
             fi; \
             sync && echo "Done with texinfo javascript."; \
             popd || exit; \
@@ -277,6 +279,8 @@ jobs:
             find . -name '*.go' -print0 | xargs -0 gofmt; \
           elif test -x "$(which actionlint)"; then \
             sync && which actionlint && actionlint -verbose && sleep 1; \
+          elif test -x "$(which yamllint)"; then \
+            sync && which yamllint && yamllint . && sleep 1; \
           else \
             sync && echo "no linters found for go ($(which go))." && sleep 1; \
           fi; \
@@ -303,7 +307,7 @@ jobs:
           fi; \
         elif test ${{ matrix.language }} == 'csharp' && test -x "$(which yamllint)"; then \
           sync && which -a yamllint && sleep 1; \
-          yamllint .github/codeql/extensions/apple-gdb-1824-csharp/codeql-pack.yml; \
+          yamllint .github/codeql/extensions/apple-gdb*csharp/codeql-pack.yml; \
           stat "$(which csc)" || stat "$(which mcs)" || which -a dotnet; \
           sync && echo "TODO: find a proper linter for csharp…" && sleep 1; \
         else \
@@ -471,6 +475,13 @@ jobs:
           cat /usr/include/proc_service.h || stat /usr/include/proc_service.h; \
         elif test -r /usr/x86_64-linux-gnu/include/proc_service.h; then \
           cat /usr/x86_64-linux-gnu/include/proc_service.h; \
+        fi
+        if test ${{ matrix.language }} == 'go'; then \
+          if test -x "$(which go)"; then \
+            stat "$(which go)" && go version && go env; \
+          else \
+            sync && echo "no usable 'go' binary found"; \
+          fi; \
         fi
 
     - name: Extra coverage build (C)
