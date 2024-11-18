@@ -137,10 +137,10 @@ jobs:
         elif test ${{ matrix.language }} == 'javascript-typescript'; then \
           sudo apt-get -y install node-optionator eslint uglifyjs \
             libjs-modernizr node-babel-eslint npm wkhtmltopdf node-dompurify \
-            libjavascriptcoregtk-4.0-bin webkit2gtk-driver; \
+            libjavascriptcoregtk-4.0-bin webkit2gtk-driver yamllint; \
         elif test ${{ matrix.language }} == 'go'; then \
           sudo apt-get -y install gccgo gccgo-multilib golang golang-go \
-            golang-src golang-ar-dev golang-honnef-go-tools-dev; \
+            golang-src golang-ar-dev golang-honnef-go-tools-dev yamllint; \
         elif test ${{ matrix.language }} == 'csharp'; then \
           sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs nant \
             nunit mono-xbuild yamllint monodoc-nunit-manual; \
@@ -254,6 +254,8 @@ jobs:
               stat info.min.js && du info.min.js; \
             elif test -x "$(which yamllint)"; then \
               pwd && (yamllint . || yamllint --version); \
+            else \
+              stat "$(which npx)" && npx --version; \
             fi; \
             sync && echo "Done with texinfo javascript."; \
             popd || exit; \
@@ -371,7 +373,7 @@ jobs:
         make -ki -C libcheckpoint || \
           make -ki -C libcheckpoint -f Makefile_orig || \
           make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || \
-          (if test -x "$(which ant)"; then ant; fi)
+          (if test -x "$(which ant)"; then ant; else echo "no usable ant"; fi)
         cd src
         if test -x "$(which sccache)"; then \
           ./configure --disable-werror --enable-silent-rules \
@@ -815,7 +817,7 @@ jobs:
         fi
 
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.4.3
+      uses: actions/upload-artifact@v4
       if: matrix.language == 'c-cpp' && success()
       with:
         # Artifact name:
