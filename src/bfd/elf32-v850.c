@@ -1518,8 +1518,8 @@ v850_elf_final_link_relocate (reloc_howto_type *howto,
 
     case R_V850_CALLT_16_16_OFFSET:
       {
-	unsigned long                ctbp;
-	struct bfd_link_hash_entry * h;
+	unsigned long ctbp;
+	struct bfd_link_hash_entry *h;
 
 	if (sym_sec == NULL)
 	  return bfd_reloc_undefined;
@@ -1551,21 +1551,18 @@ v850_elf_final_link_relocate (reloc_howto_type *howto,
       return bfd_reloc_notsupported;
     }
 
-  /* Perform the relocation.  */
-  return v850_elf_perform_relocation (input_bfd, r_type, value + addend, hit_data);
+  /* Perform the relocation: */
+  return v850_elf_perform_relocation(input_bfd, r_type, (value + addend),
+                                     hit_data);
 }
 
-/* Relocate an V850 ELF section.  */
-
+/* Relocate an V850 ELF section: */
 static bfd_boolean
-v850_elf_relocate_section (bfd *output_bfd,
-			   struct bfd_link_info *info,
-			   bfd *input_bfd,
-			   asection *input_section,
-			   bfd_byte *contents,
-			   Elf_Internal_Rela *relocs,
-			   Elf_Internal_Sym *local_syms,
-			   asection **local_sections)
+v850_elf_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                          bfd *input_bfd, asection *input_section,
+                          bfd_byte *contents, Elf_Internal_Rela *relocs,
+                          Elf_Internal_Sym *local_syms,
+                          asection **local_sections)
 {
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
@@ -1575,16 +1572,16 @@ v850_elf_relocate_section (bfd *output_bfd,
   if (info->relocatable)
     return TRUE;
 
-  symtab_hdr = & elf_tdata (input_bfd)->symtab_hdr;
-  sym_hashes = elf_sym_hashes (input_bfd);
+  symtab_hdr = &elf_tdata(input_bfd)->symtab_hdr;
+  sym_hashes = elf_sym_hashes(input_bfd);
 
-  /* Reset the list of remembered HI16S relocs to empty.  */
-  free_hi16s     = previous_hi16s;
+  /* Reset the list of remembered HI16S relocs to empty: */
+  free_hi16s = previous_hi16s;
   previous_hi16s = NULL;
-  hi16s_counter  = 0;
+  hi16s_counter = 0;
 
-  rel    = relocs;
-  relend = relocs + input_section->reloc_count;
+  rel = relocs;
+  relend = (relocs + input_section->reloc_count);
   for (; rel < relend; rel++)
     {
       int r_type;
@@ -1594,25 +1591,26 @@ v850_elf_relocate_section (bfd *output_bfd,
       asection *sec;
       struct elf_link_hash_entry *h;
       bfd_vma relocation;
+      /* FIXME: r may contain values outside of this enum: */
       bfd_reloc_status_type r;
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
-      r_type   = ELF32_R_TYPE (rel->r_info);
+      r_symndx = ELF32_R_SYM(rel->r_info);
+      r_type = ELF32_R_TYPE(rel->r_info);
 
       if (r_type == R_V850_GNU_VTENTRY
           || r_type == R_V850_GNU_VTINHERIT)
         continue;
 
-      /* This is a final link.  */
-      howto = v850_elf_howto_table + r_type;
+      /* This is a final link: */
+      howto = (v850_elf_howto_table + r_type);
       h = NULL;
       sym = NULL;
       sec = NULL;
       if (r_symndx < symtab_hdr->sh_info)
 	{
-	  sym = local_syms + r_symndx;
+	  sym = (local_syms + r_symndx);
 	  sec = local_sections[r_symndx];
-	  relocation = _bfd_elf_rela_local_sym (output_bfd, sym, &sec, rel);
+	  relocation = _bfd_elf_rela_local_sym(output_bfd, sym, &sec, rel);
 	}
       else
 	{
@@ -1718,13 +1716,14 @@ v850_elf_relocate_section (bfd *output_bfd,
   return TRUE;
 }
 
+/* */
 static bfd_boolean
-v850_elf_gc_sweep_hook (bfd *abfd ATTRIBUTE_UNUSED,
-			struct bfd_link_info *info ATTRIBUTE_UNUSED,
-			asection *sec ATTRIBUTE_UNUSED,
-			const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED)
+v850_elf_gc_sweep_hook(bfd *abfd ATTRIBUTE_UNUSED,
+                       struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                       asection *sec ATTRIBUTE_UNUSED,
+                       const Elf_Internal_Rela *relocs ATTRIBUTE_UNUSED)
 {
-  /* No got and plt entries for v850-elf.  */
+  /* No got and plt entries for v850-elf: */
   return TRUE;
 }
 

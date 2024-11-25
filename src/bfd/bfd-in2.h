@@ -2336,8 +2336,9 @@ unsigned int bfd_arch_mach_octets_per_byte
 /* Extracted from reloc.c.  */
 typedef enum bfd_reloc_status
 {
-  /* No errors detected.  */
-  bfd_reloc_ok,
+  /* No errors detected.  Note - the value 2 is used so that it
+     will not be mistaken for the boolean TRUE or FALSE values.  */
+  bfd_reloc_ok = 2,
 
   /* The relocation was performed, but there was an overflow.  */
   bfd_reloc_overflow,
@@ -2351,16 +2352,15 @@ typedef enum bfd_reloc_status
   /* Unsupported relocation size requested.  */
   bfd_reloc_notsupported,
 
-  /* Unused.  */
+  /* Target specific meaning.  */
   bfd_reloc_other,
 
   /* The symbol to relocate against was undefined.  */
   bfd_reloc_undefined,
 
-  /* The relocation was performed, but may not be ok - presently
-     generated only when linking i960 coff files with i960 b.out
-     symbols.  If this type is returned, the error_message argument
-     to bfd_perform_relocation will be set.  */
+  /* The relocation was performed, but may not be ok, for example, when
+     linking i960 coff files with i960 b.out.  If this type is returned,
+     the error_message argument to bfd_perform_relocation will be set.  */
   bfd_reloc_dangerous
  }
  bfd_reloc_status_type;

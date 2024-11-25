@@ -1,11 +1,11 @@
-/* PPC ELF support for BFD.
-   Copyright 1995, 1996, 1998, 2000, 2001, 2002, 2003, 2005
-   Free Software Foundation, Inc.
-
-   By Michael Meissner, Cygnus Support, <meissner@cygnus.com>, from information
-   in the System V Application Binary Interface, PowerPC Processor Supplement
-   and the PowerPC Embedded Application Binary Interface (eabi).
-
+/* elf/ppc.h: PPC ELF support for BFD.
+ * Copyright 1995, 1996, 1998, 2000, 2001, 2002, 2003, 2005
+ * Free Software Foundation, Inc.
+ *
+ * By Michael Meissner, Cygnus Support, <meissner@cygnus.com>, from information
+ * in the System V Application Binary Interface, PowerPC Processor Supplement
+ * and the PowerPC Embedded Application Binary Interface (eabi). */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA. */
 
 /* This file holds definitions specific to the PPC ELF ABI.  Note
    that most of this is not actually implemented by BFD.  */
@@ -71,6 +71,17 @@ START_RELOC_NUMBERS (elf_ppc_reloc_type)
   RELOC_NUMBER (R_PPC_SECTOFF_HA,	 36)
   RELOC_NUMBER (R_PPC_ADDR30,		 37)
 
+#ifndef RELOC_MACROS_GEN_FUNC
+/* Relocations only used internally by ld.  If you need to use these
+   reloc numbers, you can change them to some other unused value
+   without affecting the ABI.  They will never appear in object files.  */
+  RELOC_NUMBER (R_PPC_RELAX,		 48)
+  RELOC_NUMBER (R_PPC_RELAX_PLT,	 49)
+  RELOC_NUMBER (R_PPC_RELAX_PLTREL24,	 50)
+/* Reloc only used internally by gas.  As above, value is unimportant.  */
+  RELOC_NUMBER (R_PPC_16DX_HA,		 51)
+#endif
+
   /* Relocs added to support TLS.  */
   RELOC_NUMBER (R_PPC_TLS,		 67)
   RELOC_NUMBER (R_PPC_DTPMOD32,		 68)
@@ -119,6 +130,30 @@ START_RELOC_NUMBERS (elf_ppc_reloc_type)
   RELOC_NUMBER (R_PPC_EMB_RELST_HA,	114)
   RELOC_NUMBER (R_PPC_EMB_BIT_FLD,	115)
   RELOC_NUMBER (R_PPC_EMB_RELSDA,	116)
+
+/* Marker reloc for inline plt call insns.  */
+  RELOC_NUMBER (R_PPC_PLTSEQ,		119)
+  RELOC_NUMBER (R_PPC_PLTCALL,		120)
+
+/* PowerPC VLE relocations.  */
+  RELOC_NUMBER (R_PPC_VLE_REL8,		216)
+  RELOC_NUMBER (R_PPC_VLE_REL15,	217)
+  RELOC_NUMBER (R_PPC_VLE_REL24,	218)
+  RELOC_NUMBER (R_PPC_VLE_LO16A,	219)
+  RELOC_NUMBER (R_PPC_VLE_LO16D,	220)
+  RELOC_NUMBER (R_PPC_VLE_HI16A,	221)
+  RELOC_NUMBER (R_PPC_VLE_HI16D,	222)
+  RELOC_NUMBER (R_PPC_VLE_HA16A,	223)
+  RELOC_NUMBER (R_PPC_VLE_HA16D,	224)
+  RELOC_NUMBER (R_PPC_VLE_SDA21,	225)
+  RELOC_NUMBER (R_PPC_VLE_SDA21_LO,	226)
+  RELOC_NUMBER (R_PPC_VLE_SDAREL_LO16A,	227)
+  RELOC_NUMBER (R_PPC_VLE_SDAREL_LO16D,	228)
+  RELOC_NUMBER (R_PPC_VLE_SDAREL_HI16A,	229)
+  RELOC_NUMBER (R_PPC_VLE_SDAREL_HI16D,	230)
+  RELOC_NUMBER (R_PPC_VLE_SDAREL_HA16A,	231)
+  RELOC_NUMBER (R_PPC_VLE_SDAREL_HA16D,	232)
+  RELOC_NUMBER (R_PPC_VLE_ADDR20,	233)
 
 /* Fake relocations for branch stubs, only used internally by ld.  */
 #define R_PPC_RELAX32 245
