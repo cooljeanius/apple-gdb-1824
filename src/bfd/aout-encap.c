@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 /* THIS MODULE IS NOT FINISHED. IT PROBABLY DOES NOT EVEN COMPILE. */
 
-#if 0 || (!defined(TARGET_PAGE_SIZE) && !defined(SEGMENT_SIZE) && !defined(TEXT_START_ADDR))
+#if !defined(TARGET_PAGE_SIZE) && !defined(SEGMENT_SIZE) && !defined(TEXT_START_ADDR)
 # define TARGET_PAGE_SIZE 4096
 # if !defined(SEGMENT_SIZE)
 #  if defined(TARGET_PAGE_SIZE)
@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #  endif /* TARGET_PAGE_SIZE */
 # endif /* !SEGMENT_SIZE */
 # define TEXT_START_ADDR 0
-#endif /* 0 && (!TARGET_PAGE_SIZE && !SEGMENT_SIZE && !TEXT_START_ADDR) */
+#endif /* !TARGET_PAGE_SIZE && !SEGMENT_SIZE && !TEXT_START_ADDR */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -76,13 +76,13 @@ struct exec_bytes {
 struct exec
 {
   unsigned long a_info; /* Use macros N_MAGIC, etc for access */
-  unsigned a_text; /* length of text, in bytes */
-  unsigned a_data; /* length of data, in bytes */
-  unsigned a_bss; /* length of uninitialized data area for file, in bytes */
-  unsigned a_syms; /* length of symbol table data in file, in bytes */
-  unsigned a_entry; /* start address */
-  unsigned a_trsize; /* length of relocation info for text, in bytes */
-  unsigned a_drsize; /* length of relocation info for data, in bytes */
+  unsigned int a_text; /* length of text, in bytes */
+  unsigned int a_data; /* length of data, in bytes */
+  unsigned int a_bss; /* length of uninitialized data area for file, in bytes */
+  unsigned int a_syms; /* length of symbol table data in file, in bytes */
+  unsigned int a_entry; /* start address */
+  unsigned int a_trsize; /* length of relocation info for text, in bytes */
+  unsigned int a_drsize; /* length of relocation info for data, in bytes */
 };
 #endif /* __STRUCT_EXEC_OVERRIDE__ */
 
