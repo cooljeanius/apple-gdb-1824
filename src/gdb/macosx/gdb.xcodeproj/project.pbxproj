@@ -4976,6 +4976,7 @@
 		A56E59D61B210132005E1D43 /* stub-loader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "stub-loader.c"; sourceTree = "<group>"; };
 		A56E59D81B210132005E1D43 /* testglue.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = testglue.c; sourceTree = "<group>"; };
 		A56E59E51B210132005E1D43 /* unit.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = unit.cc; sourceTree = "<group>"; };
+		A56FAF472D068CA8008EEFF0 /* maint-tool */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.perl; path = "maint-tool"; sourceTree = "<group>"; };
 		A57C97E42043C71100D09754 /* tm-i386-next.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-i386-next.h"; sourceTree = "<group>"; };
 		A57C980D2043C8BB00D09754 /* tm-obsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-obsd.h"; sourceTree = "<group>"; };
 		A57C980E2043C8BB00D09754 /* tm-ptx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tm-ptx.h"; sourceTree = "<group>"; };
@@ -9411,6 +9412,7 @@
 				2609DE230E82C411008125DE /* insque.c */,
 				2609DE240E82C411008125DE /* lbasename.c */,
 				2609DE260E82C411008125DE /* lrealpath.c */,
+				A56FAF472D068CA8008EEFF0 /* maint-tool */,
 				2609DE280E82C411008125DE /* make-relative-prefix.c */,
 				2609DE290E82C411008125DE /* make-temp-file.c */,
 				A53AC2D51A40F312002F20B2 /* malloca.c */,

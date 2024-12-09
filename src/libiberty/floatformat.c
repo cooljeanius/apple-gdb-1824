@@ -1,7 +1,7 @@
 /* IEEE floating point support routines, for GDB, the GNU Debugger.
-   Copyright 1991, 1994, 1999, 2000, 2003, 2005, 2006
-   Free Software Foundation, Inc.
-
+ * Copyright 1991, 1994, 1999, 2000, 2003, 2005, 2006
+ * Free Software Foundation, Inc. */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.  */
 
 #ifndef _GNU_SOURCE
 /* This is needed to pick up the NAN macro on some systems: */
@@ -568,7 +568,7 @@ floatformat_is_valid (const struct floatformat *fmt, const void *from)
 # include <stdio.h> /* for printf() */
 /* This is to be run on a host which uses IEEE floating point: */
 void
-ieee_test (double n)
+ieee_test(double n)
 {
   double result;
 # if IEEE_DEBUG > 1
@@ -576,15 +576,15 @@ ieee_test (double n)
 # endif /* IEEE_DEBUG > 1 */
 
   floatformat_to_double(&floatformat_ieee_double_little, &n, &result);
-  /* FIXME: '-Wfloat-equal': */
-  if (((n != result) && (! isnan((float)n) || ! isnan((float)result)))
+  /* FIXME: '-Wfloat-equal' and '-Wtraditional-conversion': */
+  if (((n != result) && (!isnan((float)n) || !isnan((float)result)))
       || ((n < 0) && (result >= 0))
       || ((n >= 0) && (result < 0)))
     printf("Differ(to): %.20g -> %.20g\n", n, result);
 
   floatformat_from_double(&floatformat_ieee_double_little, &n, &result);
-  /* FIXME: '-Wfloat-equal': */
-  if (((n != result) && (! isnan((float)n) || ! isnan((float)result)))
+  /* FIXME: '-Wfloat-equal' and '-Wtraditional-conversion': */
+  if (((n != result) && (!isnan((float)n) || !isnan((float)result)))
       || ((n < 0) && (result >= 0))
       || ((n >= 0) && (result < 0)))
     printf("Differ(from): %.20g -> %.20g\n", n, result);
@@ -596,8 +596,8 @@ ieee_test (double n)
 
     floatformat_from_double(&floatformat_m68881_ext, &n, exten);
     floatformat_to_double(&floatformat_m68881_ext, exten, &result);
-    /* FIXME: '-Wfloat-equal': */
-    if ((n != result) && (! isnan((float)n) || ! isnan((float)result))) {
+    /* FIXME: '-Wfloat-equal' and '-Wtraditional-conversion': */
+    if ((n != result) && (!isnan((float)n) || !isnan((float)result))) {
       printf("Differ(to+from): %.20g -> %.20g\n", n, result);
     }
 

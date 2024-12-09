@@ -1,7 +1,7 @@
 /* argv.c: Create and destroy argument vectors (argv's)
-   Copyright (C) 1992, 2001 Free Software Foundation, Inc.
-   Written by Fred Fish @ Cygnus Support
-
+ * Copyright (C) 1992, 2001 Free Software Foundation, Inc.
+ * Written by Fred Fish at Cygnus Support */
+/*
 This file is part of the libiberty library.
 Libiberty is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -542,6 +542,7 @@ static const char *const tests[] =
   NULL
 };
 
+/* */
 int
 main(void)
 {

@@ -1,7 +1,7 @@
 /* _doprnt.c: Provide a version of _doprnt in terms of fprintf.
-   Copyright (C) 1998, 1999, 2000, 2001, 2002   Free Software Foundation, Inc.
-   Contributed by Kaveh Ghazi  <ghazi@caip.rutgers.edu>  3/29/98
-
+ * Copyright (C) 1998, 1999, 2000, 2001, 2002   Free Software Foundation, Inc.
+ * Contributed by Kaveh Ghazi  <ghazi@caip.rutgers.edu>  3/29/98 */
+/*
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
 Free Software Foundation; either version 2, or (at your option) any
@@ -45,7 +45,7 @@ Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 	 char buf[32]; \
 	 ptr++; /* Go past the asterisk.  */ \
 	 *sptr = '\0'; /* NULL terminate sptr.  */ \
-	 sprintf(buf, "%d", value); \
+	 snprintf(buf, sizeof(buf), "%d", value); \
 	 strcat(sptr, buf); \
 	 while (*sptr) sptr++; \
      } while (0)
@@ -74,10 +74,11 @@ Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 	  } \
       } while (0)
 
+/* */
 int
-_doprnt (const char *format, va_list ap, FILE *stream)
+_doprnt(const char *format, va_list ap, FILE *stream)
 {
-  const char * ptr = format;
+  const char *ptr = format;
   char specifier[128];
   int total_printed = 0;
 
@@ -87,12 +88,12 @@ _doprnt (const char *format, va_list ap, FILE *stream)
 	PRINT_CHAR(*ptr);
       else /* We got a format specifier! */
 	{
-	  char * sptr = specifier;
+	  char *sptr = specifier;
 	  int wide_width = 0, short_width = 0;
 
 	  *sptr++ = *ptr++; /* Copy the % and move forward.  */
 
-	  while (strchr ("-+ #0", *ptr)) /* Move past flags.  */
+	  while (strchr("-+ #0", *ptr)) /* Move past flags.  */
 	    *sptr++ = *ptr++;
 
 	  if (*ptr == '*')
@@ -110,7 +111,7 @@ _doprnt (const char *format, va_list ap, FILE *stream)
 		while (ISDIGIT(*ptr)) /* Handle explicit numeric value.  */
 		  *sptr++ = *ptr++;
 	    }
-	  while (strchr ("hlL", *ptr))
+	  while (strchr("hlL", *ptr))
 	    {
 	      switch (*ptr)
 		{
@@ -160,7 +161,7 @@ _doprnt (const char *format, va_list ap, FILE *stream)
 			PRINT_TYPE(long long);
 #else
 			PRINT_TYPE(long); /* Fake it and hope for the best.  */
-#endif
+#endif /* (__GNUC__ || HAVE_LONG_LONG) && !__STRICT_ANSI__ */
 			break;
 		      } /* End of switch (wide_width) */
 		  } /* End of else statement */
@@ -180,7 +181,7 @@ _doprnt (const char *format, va_list ap, FILE *stream)
 		    PRINT_TYPE(long double);
 #else
 		    PRINT_TYPE(double); /* Fake it and hope for the best.  */
-#endif
+#endif /* __GNUC__ || HAVE_LONG_DOUBLE */
 		  }
 	      }
 	      break;
@@ -204,92 +205,99 @@ _doprnt (const char *format, va_list ap, FILE *stream)
 
 #ifdef TEST
 
-#include <math.h>
-#ifndef M_PI
-#define M_PI (3.1415926535897932385)
-#endif
+# include <math.h>
+# ifndef M_PI
+#  define M_PI (3.1415926535897932385)
+# endif /* !M_PI */
 
 #define RESULT(x) do \
 { \
     int i = (x); \
-    printf ("printed %d characters\n", i); \
+    printf("printed %d characters\n", i); \
     fflush(stdin); \
 } while (0)
 
-static int checkit (const char * format, ...) ATTRIBUTE_PRINTF_1;
+static int checkit(const char * format, ...) ATTRIBUTE_PRINTF_1;
 
 static int
-checkit (const char* format, ...)
+checkit(const char* format, ...)
 {
   int result;
-  VA_OPEN (args, format);
-  VA_FIXEDARG (args, char *, format);
+  VA_OPEN(args, format);
+  VA_FIXEDARG(args, char *, format);
 
-  result = _doprnt (format, args, stdout);
-  VA_CLOSE (args);
+  result = _doprnt(format, args, stdout);
+  VA_CLOSE(args);
 
   return result;
 }
 
+/* */
 int
-main (void)
+main(void)
 {
-  RESULT(checkit ("<%d>\n", 0x12345678));
-  RESULT(printf ("<%d>\n", 0x12345678));
+  RESULT(checkit("<%d>\n", 0x12345678));
+  RESULT(printf("<%d>\n", 0x12345678));
 
-  RESULT(checkit ("<%200d>\n", 5));
-  RESULT(printf ("<%200d>\n", 5));
+  RESULT(checkit("<%200d>\n", 5));
+  RESULT(printf("<%200d>\n", 5));
 
-  RESULT(checkit ("<%.300d>\n", 6));
-  RESULT(printf ("<%.300d>\n", 6));
+  RESULT(checkit("<%.300d>\n", 6));
+  RESULT(printf("<%.300d>\n", 6));
 
-  RESULT(checkit ("<%100.150d>\n", 7));
-  RESULT(printf ("<%100.150d>\n", 7));
+  RESULT(checkit("<%100.150d>\n", 7));
+  RESULT(printf("<%100.150d>\n", 7));
 
-  RESULT(checkit ("<%s>\n",
-		  "jjjjjjjjjiiiiiiiiiiiiiiioooooooooooooooooppppppppppppaa\n\
+  RESULT(checkit("<%s>\n",
+                 "jjjjjjjjjiiiiiiiiiiiiiiioooooooooooooooooppppppppppppaa\n\
 777777777777777777333333333333366666666666622222222222777777777777733333"));
-  RESULT(printf ("<%s>\n",
-		 "jjjjjjjjjiiiiiiiiiiiiiiioooooooooooooooooppppppppppppaa\n\
+  RESULT(printf("<%s>\n",
+                "jjjjjjjjjiiiiiiiiiiiiiiioooooooooooooooooppppppppppppaa\n\
 777777777777777777333333333333366666666666622222222222777777777777733333"));
 
-  RESULT(checkit ("<%f><%0+#f>%s%d%s>\n",
-		  1.0, 1.0, "foo", 77, "asdjffffffffffffffiiiiiiiiiiixxxxx"));
-  RESULT(printf ("<%f><%0+#f>%s%d%s>\n",
-		 1.0, 1.0, "foo", 77, "asdjffffffffffffffiiiiiiiiiiixxxxx"));
+  RESULT(checkit("<%f><%0+#f>%s%d%s>\n",
+                 1.0, 1.0, "foo", 77, "asdjffffffffffffffiiiiiiiiiiixxxxx"));
+  RESULT(printf("<%f><%0+#f>%s%d%s>\n",
+                1.0, 1.0, "foo", 77, "asdjffffffffffffffiiiiiiiiiiixxxxx"));
 
-  RESULT(checkit ("<%4f><%.4f><%%><%4.4f>\n", M_PI, M_PI, M_PI));
-  RESULT(printf ("<%4f><%.4f><%%><%4.4f>\n", M_PI, M_PI, M_PI));
+  RESULT(checkit("<%4f><%.4f><%%><%4.4f>\n", M_PI, M_PI, M_PI));
+  RESULT(printf("<%4f><%.4f><%%><%4.4f>\n", M_PI, M_PI, M_PI));
 
-  RESULT(checkit ("<%*f><%.*f><%%><%*.*f>\n", 3, M_PI, 3, M_PI, 3, 3, M_PI));
-  RESULT(printf ("<%*f><%.*f><%%><%*.*f>\n", 3, M_PI, 3, M_PI, 3, 3, M_PI));
+  RESULT(checkit("<%*f><%.*f><%%><%*.*f>\n", 3, M_PI, 3, M_PI, 3, 3, M_PI));
+  RESULT(printf("<%*f><%.*f><%%><%*.*f>\n", 3, M_PI, 3, M_PI, 3, 3, M_PI));
 
-  RESULT(checkit ("<%d><%i><%o><%u><%x><%X><%c>\n",
-		  75, 75, 75, 75, 75, 75, 75));
-  RESULT(printf ("<%d><%i><%o><%u><%x><%X><%c>\n",
-		 75, 75, 75, 75, 75, 75, 75));
+  RESULT(checkit("<%d><%i><%o><%u><%x><%X><%c>\n",
+                 75, 75, 75, 75, 75, 75, 75));
+  RESULT(printf("<%d><%i><%o><%u><%x><%X><%c>\n",
+                75, 75, 75, 75, 75, 75, 75));
 
-  RESULT(checkit ("<%d><%i><%o><%u><%x><%X><%c>\n",
-		  75, 75, 75, 75, 75, 75, 75));
-  RESULT(printf ("<%d><%i><%o><%u><%x><%X><%c>\n",
-		 75, 75, 75, 75, 75, 75, 75));
+  RESULT(checkit("<%d><%i><%o><%u><%x><%X><%c>\n",
+                 75, 75, 75, 75, 75, 75, 75));
+  RESULT(printf("<%d><%i><%o><%u><%x><%X><%c>\n",
+                75, 75, 75, 75, 75, 75, 75));
 
-  RESULT(checkit ("Testing (hd) short: <%d><%ld><%hd><%hd><%d>\n", 123, (long)234, 345, 123456789, 456));
-  RESULT(printf ("Testing (hd) short: <%d><%ld><%hd><%hd><%d>\n", 123, (long)234, 345, 123456789, 456));
+  RESULT(checkit("Testing (hd) short: <%d><%ld><%hd><%hd><%d>\n", 123,
+                 (long)234, 345, 123456789, 456));
+  RESULT(printf("Testing (hd) short: <%d><%ld><%hd><%hd><%d>\n", 123,
+                (long)234, 345, 123456789, 456));
 
 #if (defined(__GNUC__) || defined(HAVE_LONG_LONG)) && !defined(__STRICT_ANSI__)
-  RESULT(checkit ("Testing (lld) long long: <%d><%lld><%d>\n", 123, 234234234234234234LL, 345));
-  RESULT(printf ("Testing (lld) long long: <%d><%lld><%d>\n", 123, 234234234234234234LL, 345));
-  RESULT(checkit ("Testing (Ld) long long: <%d><%Ld><%d>\n", 123, 234234234234234234LL, 345));
-  RESULT(printf ("Testing (Ld) long long: <%d><%Ld><%d>\n", 123, 234234234234234234LL, 345));
-#endif
+  RESULT(checkit("Testing (lld) long long: <%d><%lld><%d>\n", 123,
+  		 234234234234234234LL, 345));
+  RESULT(printf("Testing (lld) long long: <%d><%lld><%d>\n", 123,
+  		234234234234234234LL, 345));
+  RESULT(checkit("Testing (Ld) long long: <%d><%Ld><%d>\n", 123,
+  		 234234234234234234LL, 345));
+  RESULT(printf("Testing (Ld) long long: <%d><%Ld><%d>\n", 123,
+  		234234234234234234LL, 345));
+#endif /* (__GNUC__ || HAVE_LONG_LONG) && !__STRICT_ANSI__ */
 
 #if defined(__GNUC__) || defined (HAVE_LONG_DOUBLE)
-  RESULT(checkit ("Testing (Lf) long double: <%.20f><%.20Lf><%0+#.20f>\n",
-		  1.23456, 1.234567890123456789L, 1.23456));
-  RESULT(printf ("Testing (Lf) long double: <%.20f><%.20Lf><%0+#.20f>\n",
-		 1.23456, 1.234567890123456789L, 1.23456));
-#endif
+  RESULT(checkit("Testing (Lf) long double: <%.20f><%.20Lf><%0+#.20f>\n",
+                 1.23456, 1.234567890123456789L, 1.23456));
+  RESULT(printf("Testing (Lf) long double: <%.20f><%.20Lf><%0+#.20f>\n",
+                1.23456, 1.234567890123456789L, 1.23456));
+#endif /* __GNUC__ || HAVE_LONG_DOUBLE */
 
   return 0;
 }

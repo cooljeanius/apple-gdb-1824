@@ -1,7 +1,7 @@
 /* concat.c: Concatenate variable number of strings.
-   Copyright (C) 1991, 1994, 2001 Free Software Foundation, Inc.
-   Written by Fred Fish @ Cygnus Support
-
+ * Copyright (C) 1991, 1994, 2001 Free Software Foundation, Inc.
+ * Written by Fred Fish at Cygnus Support */
+/*
 This file is part of the libiberty library.
 Libiberty is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -45,49 +45,49 @@ NOTES
 
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include "ansidecl.h"
 #include "libiberty.h"
 #include <sys/types.h>		/* size_t */
 
 #include <stdarg.h>
 
-# if HAVE_STRING_H
-#  include <string.h>
-# else
-#  if HAVE_STRINGS_H
-#   include <strings.h>
-#  endif
-# endif
+#if defined(HAVE_STRING_H) && HAVE_STRING_H
+# include <string.h>
+#else
+# if defined(HAVE_STRINGS_H) && HAVE_STRINGS_H
+#  include <strings.h>
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
 
-#if HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+#if defined(HAVE_STDLIB_H) && HAVE_STDLIB_H
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 
-static inline unsigned long vconcat_length (const char *, va_list);
+static inline unsigned long vconcat_length(const char *, va_list);
 static inline unsigned long
-vconcat_length (const char *first, va_list args)
+vconcat_length(const char *first, va_list args)
 {
-  unsigned long length = 0;
+  unsigned long length = 0UL;
   const char *arg;
 
-  for (arg = first; arg ; arg = va_arg (args, const char *))
-    length += strlen (arg);
+  for (arg = first; arg; arg = va_arg(args, const char *))
+    length += strlen(arg);
 
   return length;
 }
 
 static inline char *
-vconcat_copy (char *dst, const char *first, va_list args)
+vconcat_copy(char *dst, const char *first, va_list args)
 {
   char *end = dst;
   const char *arg;
 
-  for (arg = first; arg ; arg = va_arg (args, const char *))
+  for (arg = first; arg ; arg = va_arg(args, const char *))
     {
-      unsigned long length = strlen (arg);
-      memcpy (end, arg, length);
+      unsigned long length = strlen(arg);
+      memcpy(end, arg, length);
       end += length;
     }
   *end = '\000';
@@ -98,14 +98,14 @@ vconcat_copy (char *dst, const char *first, va_list args)
 /* @undocumented concat_length */
 
 unsigned long
-concat_length (const char *first, ...)
+concat_length(const char *first, ...)
 {
   unsigned long length;
 
-  VA_OPEN (args, first);
-  VA_FIXEDARG (args, const char *, first);
-  length = vconcat_length (first, args);
-  VA_CLOSE (args);
+  VA_OPEN(args, first);
+  VA_FIXEDARG(args, const char *, first);
+  length = vconcat_length(first, args);
+  VA_CLOSE(args);
 
   return length;
 }
@@ -113,16 +113,16 @@ concat_length (const char *first, ...)
 /* @undocumented concat_copy */
 
 char *
-concat_copy (char *dst, const char *first, ...)
+concat_copy(char *dst, const char *first, ...)
 {
   char *save_dst;
 
-  VA_OPEN (args, first);
-  VA_FIXEDARG (args, char *, dst);
-  VA_FIXEDARG (args, const char *, first);
-  vconcat_copy (dst, first, args);
+  VA_OPEN(args, first);
+  VA_FIXEDARG(args, char *, dst);
+  VA_FIXEDARG(args, const char *, first);
+  vconcat_copy(dst, first, args);
   save_dst = dst; /* With K&R C, dst goes out of scope here.  */
-  VA_CLOSE (args);
+  VA_CLOSE(args);
 
   return save_dst;
 }
@@ -186,25 +186,25 @@ loop:
 */
 
 char *
-reconcat (char *optr, const char *first, ...)
+reconcat(char *optr, const char *first, ...)
 {
   char *newstr;
 
-  /* First compute the size of the result and get sufficient memory.  */
-  VA_OPEN (args, first);
-  VA_FIXEDARG (args, char *, optr);
-  VA_FIXEDARG (args, const char *, first);
-  newstr = XNEWVEC (char, vconcat_length (first, args) + 1);
+  /* First compute the size of the result and get sufficient memory: */
+  VA_OPEN(args, first);
+  VA_FIXEDARG(args, char *, optr);
+  VA_FIXEDARG(args, const char *, first);
+  newstr = XNEWVEC(char, vconcat_length(first, args) + 1);
   VA_CLOSE (args);
 
-  /* Now copy the individual pieces to the result string. */
-  VA_OPEN (args, first);
-  VA_FIXEDARG (args, char *, optr);
-  VA_FIXEDARG (args, const char *, first);
-  vconcat_copy (newstr, first, args);
+  /* Now copy the individual pieces to the result string: */
+  VA_OPEN(args, first);
+  VA_FIXEDARG(args, char *, optr);
+  VA_FIXEDARG(args, const char *, first);
+  vconcat_copy(newstr, first, args);
   if (optr) /* Done before VA_CLOSE so optr stays in scope for K&R C.  */
-    free (optr);
-  VA_CLOSE (args);
+    free(optr);
+  VA_CLOSE(args);
 
   return newstr;
 }
@@ -219,7 +219,7 @@ reconcat (char *optr, const char *first, ...)
 int
 main(void)
 {
-  printf("\"\" = \"%s\"\n", concat(NULLP));
+  printf("\"\" = \"%s\"\n", concat(NULLP)); /* FIXME: -Wformat */
   printf("\"a\" = \"%s\"\n", concat("a", NULLP));
   printf("\"ab\" = \"%s\"\n", concat("a", "b", NULLP));
   printf("\"abc\" = \"%s\"\n", concat("a", "b", "c", NULLP));

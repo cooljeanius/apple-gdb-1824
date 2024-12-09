@@ -4208,7 +4208,7 @@ static void print_usage(FILE* fp, int exit_value)
   fprintf(fp, "  -h,--help       Display this message.\n");
   fprintf(fp, "  -p,--no-params  Do not display function parameters\n");
   fprintf(fp, "  -v,--verbose    Produce verbose demanglings.\n");
-  fprintf(fp, "If names are provided, %s will demangle them.", program_name);
+  fprintf(fp, "If names are provided, %s will demangle them.\n", program_name);
   fprintf(fp, "Otherwise, %s will filter standard input.\n", program_name);
 
   exit(exit_value);
