@@ -121,7 +121,7 @@ jobs:
             guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev \
             guile-3.0-libs libguile-ssh14 libiconv-hook1 libiconv-hook-dev \
             win-iconv-mingw-w64-dev mingw-w64 mingw-w64-i686-dev wine libwine \
-            libwine-dev libtbb-dev crosshurd libdispatch0 libdispatch-dev \
+            libwine-dev libtbb-dev crosshurd libdispatch-class-perl \
             libblocksruntime0 libblocksruntime-dev systemtap-sdt-dev \
             libfl-dev libiberty-dev libmpfr-dev gettext libisl-dev \
             gdb ddd texlive-binaries sharutils xutils-dev llvm libacl1-dev \
@@ -338,9 +338,10 @@ jobs:
         sync && echo "done with attempts at using the gradle wrapper..."
 
     # Getting autobuild to work for 'c-cpp' has been too difficult, so I am
-    # putting it back to "Disabled" again for now:
+    # putting it back to "Disabled" again for now. Also, 'csharp' broke in
+    # the transition from ubuntu 22 to 24, so disable that as well.
     - name: Autobuild
-      if: matrix.language != 'c-cpp'
+      if: matrix.language != 'c-cpp' && matrix.language != 'csharp'
       uses: github/codeql-action/autobuild@v3
 
     - name: Manual build
