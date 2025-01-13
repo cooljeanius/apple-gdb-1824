@@ -54,7 +54,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby']
+        language: ['c-cpp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby']
         # CodeQL supports the following languages:
         # 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript',
         # 'python', 'ruby', 'swift'
@@ -141,9 +141,6 @@ jobs:
         elif test ${{ matrix.language }} == 'go'; then \
           sudo apt-get -y install gccgo gccgo-multilib golang golang-go \
             golang-src golang-ar-dev golang-honnef-go-tools-dev yamllint; \
-        elif test ${{ matrix.language }} == 'csharp'; then \
-          sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs \
-            nunit mono-xbuild yamllint monodoc-nunit-manual; \
         elif test ${{ matrix.language }} == 'python'; then \
           sudo apt-get -y install --fix-missing jython pylint pymacs \
             tix flake8 python3-macholib yamllint black python3-pylsp-black \
@@ -306,11 +303,6 @@ jobs:
           else \
             sync && echo "autopep8 missing or unusable; skipping..."; \
           fi; \
-        elif test ${{ matrix.language }} == 'csharp' && test -x "$(which yamllint)"; then \
-          sync && which -a yamllint && sleep 1; \
-          yamllint .github/codeql/extensions/apple-gdb*csharp/codeql-pack.yml; \
-          stat "$(which csc)" || stat "$(which mcs)" || which -a dotnet; \
-          sync && echo "TODO: find a proper linter for csharp…" && sleep 1; \
         else \
           sync && echo "unhandled case for syntax check step!"; \
           sync && echo "(matrix.language is ${{ matrix.language }})"; \
@@ -338,10 +330,9 @@ jobs:
         sync && echo "done with attempts at using the gradle wrapper..."
 
     # Getting autobuild to work for 'c-cpp' has been too difficult, so I am
-    # putting it back to "Disabled" again for now. Also, 'csharp' broke in
-    # the transition from ubuntu 22 to 24, so disable that as well.
+    # putting it back to "Disabled" again for now:
     - name: Autobuild
-      if: matrix.language != 'c-cpp' && matrix.language != 'csharp'
+      if: matrix.language != 'c-cpp'
       uses: github/codeql-action/autobuild@v3
 
     - name: Manual build
