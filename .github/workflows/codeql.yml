@@ -54,7 +54,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby']
+        language: ['c-cpp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby']
         # CodeQL supports the following languages:
         # 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript',
         # 'python', 'ruby', 'swift'
@@ -119,9 +119,9 @@ jobs:
         if test ${{ matrix.language }} == 'c-cpp'; then \
           sudo apt-get -y install autopoint gobjc clang autogen curl \
             guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev \
-            guile-3.0-libs libguile-ssh13 libiconv-hook1 libiconv-hook-dev \
+            guile-3.0-libs libguile-ssh14 libiconv-hook1 libiconv-hook-dev \
             win-iconv-mingw-w64-dev mingw-w64 mingw-w64-i686-dev wine libwine \
-            libwine-dev libtbb-dev crosshurd libdispatch0 libdispatch-dev \
+            libwine-dev libtbb-dev crosshurd libdispatch-class-perl \
             libblocksruntime0 libblocksruntime-dev systemtap-sdt-dev \
             libfl-dev libiberty-dev libmpfr-dev gettext libisl-dev \
             gdb ddd texlive-binaries sharutils xutils-dev llvm libacl1-dev \
@@ -136,29 +136,25 @@ jobs:
             libgradle-jflex-plugin-java gradle-apt-plugin; \
         elif test ${{ matrix.language }} == 'javascript-typescript'; then \
           sudo apt-get -y install node-optionator eslint uglifyjs \
-            libjs-modernizr node-babel-eslint npm wkhtmltopdf node-dompurify \
+            libjs-modernizr npm wkhtmltopdf node-dompurify \
             libjavascriptcoregtk-4.0-bin webkit2gtk-driver yamllint; \
         elif test ${{ matrix.language }} == 'go'; then \
           sudo apt-get -y install gccgo gccgo-multilib golang golang-go \
             golang-src golang-ar-dev golang-honnef-go-tools-dev yamllint; \
-        elif test ${{ matrix.language }} == 'csharp'; then \
-          sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs nant \
-            nunit mono-xbuild yamllint monodoc-nunit-manual; \
         elif test ${{ matrix.language }} == 'python'; then \
-          sudo apt-get -y install --fix-missing jython pylint pymacs python-tk \
-            tix flake8 python3-macholib yamllint black python3-pyls-black \
-            python3-pylsp-black python3-pyflakes python3-pylint-plugin-utils \
-            python3-pylint-common pyflakes3 python3-pytest-pylint \
-            python3-flake8 python3-pytest-flake8 python3-pep8-naming \
-            python3-mccabe python3-autopep8 python3-flake8-docstrings \
-            python3-flake8-blind-except python3-flake8-builtins \
-            python3-pylsp-flake8 python3-flake8-class-newline \
+          sudo apt-get -y install --fix-missing jython pylint pymacs \
+            tix flake8 python3-macholib yamllint black python3-pylsp-black \
+            python3-pyflakes python3-pylint-plugin-utils python3-pylint-common \
+            pyflakes3 python3-pytest-pylint python3-flake8 python3-pytest-flake8 \
+            python3-pep8-naming python3-mccabe python3-autopep8 \
+            python3-flake8-docstrings python3-flake8-blind-except \
+            python3-flake8-builtins python3-flake8-class-newline \
             python3-flake8-quotes python3-flake8-import-order \
             python3-flake8-comprehensions python3-flake8-deprecated; \
           pip install pylint flake8 ruff black pyupgrade bandit; \
         elif test ${{ matrix.language }} == 'ruby'; then \
           sudo apt-get -y install ruby ruby-dev libruby rake ruby-full \
-            ruby-ffi ruby-build jruby-openssl mruby libmruby-dev; \
+            ruby-ffi ruby-build jruby mruby libmruby-dev; \
         else \
           sync && echo "unhandled language ${{ matrix.language }}" && sleep 1; \
         fi
@@ -307,11 +303,6 @@ jobs:
           else \
             sync && echo "autopep8 missing or unusable; skipping..."; \
           fi; \
-        elif test ${{ matrix.language }} == 'csharp' && test -x "$(which yamllint)"; then \
-          sync && which -a yamllint && sleep 1; \
-          yamllint .github/codeql/extensions/apple-gdb*csharp/codeql-pack.yml; \
-          stat "$(which csc)" || stat "$(which mcs)" || which -a dotnet; \
-          sync && echo "TODO: find a proper linter for csharp…" && sleep 1; \
         else \
           sync && echo "unhandled case for syntax check step!"; \
           sync && echo "(matrix.language is ${{ matrix.language }})"; \

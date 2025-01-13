@@ -11,7 +11,7 @@ rules:
   indentation:
     ignore:
       - .github/workflows/apple-gdb-1824-macos.yml
-      - .github/workflows/codeql.yml
+      - .github/workflows/codeql*.yml
   # some lines might be really long in this repo, and I don't feel like
   # figuring out how to break them up:
   line-length:

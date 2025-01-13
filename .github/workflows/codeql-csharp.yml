@@ -1,0 +1,141 @@
+---
+# .github/workflows/codeql-csharp.yml: GHA CodeQL workflow for apple-gdb-1824
+# This one is specifically for csharp
+
+name: "CodeQL-csharp"
+
+on:
+  push:
+    branches:
+      - master
+      - main
+      - dependabot/nuget/*
+      - codeql-*
+      - autofix*alert*
+      - alert*autofix*
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches:
+      - master
+      - main
+      - dependabot/nuget/*
+      - codeql-*
+      - autofix*alert*
+      - alert*autofix*
+  schedule:
+    - cron: '38 5 * * 2'
+
+jobs:
+  analyze:
+    name: Analyze
+    # Runner size impacts CodeQL analysis time. To learn more, please see:
+    #   - https://gh.io/recommended-hardware-resources-for-running-codeql
+    #   - https://gh.io/supported-runners-and-hardware-resources
+    #   - https://gh.io/using-larger-runners
+    # Consider using larger runners for possible analysis time improvements.
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['csharp']
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        # If you wish to specify custom queries, you can do so here or in a
+        # config file.
+        # By default, queries listed here will override any specified in a
+        # config file.
+        # Prefix the list here with "+" to use these queries and those in the
+        # config file.
+
+        # For more details on CodeQL's query packs, refer to:
+        # https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
+        # queries: security-extended,security-and-quality
+
+    - name: Create builddirs
+      run: |
+        if test ! -d build; then \
+          (sync && mkdir build && sync); \
+        else \
+          (sync && stat build && sync); \
+        fi
+        if test ! -d /home/runner/work/apple-gdb-1824/build; then \
+          if test -w /home/runner/work/apple-gdb-1824; then \
+            (sync && mkdir -v /home/runner/work/apple-gdb-1824/build && sync); \
+          elif test -w /home/runner/work -o -w /home/runner -o -w /home; then \
+            (sync && mkdir -pv /home/runner/work/apple-gdb-1824/build && sync); \
+          else \
+            (sync && (stat /home/runner/work || stat /home/runner || stat /home)); \
+            echo "unable to make the necessary builddir due to unwriteable directories"; \
+          fi; \
+        else \
+          (sync && stat /home/runner/work/apple-gdb-1824/build && sync); \
+        fi
+        (cd src && sync && echo "now in $(pwd)..." && sync)
+        sleep 1
+
+    - name: Dependencies
+      run: |
+        sudo apt-get -qq update
+        sudo apt-get -y install mono-csharp-shell dotnet-host mono-mcs nant \
+          nunit mono-xbuild yamllint monodoc-nunit-manual
+
+    - name: Syntax check (and similar stuff)
+      if: matrix.language != 'c-cpp' && matrix.language != 'java-kotlin'
+      run: |
+        if test -x "$(which yamllint)"; then \
+          sync && which -a yamllint && sleep 1; \
+          yamllint .github/codeql/extensions/apple-gdb*csharp/codeql-pack.yml; \
+          stat "$(which csc)" || stat "$(which mcs)" || which -a dotnet; \
+          sync && echo "TODO: find a proper linter for csharp…" && sleep 1; \
+        else \
+          sync && echo "yamllint is missing or unusable!"; \
+          sync && sleep 1; \
+        fi
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
+
+    - name: Debug failure
+      if: "${{ failure() }}"
+      run: |
+        find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
+
+    - name: Check what might be slowing CodeQL down
+      run: |
+        if test -x "$(which java)"; then \
+          sync && java --version; \
+          sync && java --help; \
+          sync && java --help-extra; \
+          sync && java --validate-modules; \
+        else \
+          sudo apt-get install --fix-missing default-jre-headless; \
+        fi
+        sync && echo "ps aux" && sync && ps aux
+        if test -x "$(which purge)"; then \
+          which -a purge; \
+          purge || sudo purge; \
+        elif test -x "$(which sync)"; then \
+          which sync && sync && stat "$(which sync)"; \
+          sync && echo "...and synced." && sleep 1; \
+        else \
+          sleep 1; \
+        fi
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
