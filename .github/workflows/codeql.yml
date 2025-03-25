@@ -109,7 +109,7 @@ jobs:
 
     - name: Run sccache-cache only on non-release runs
       if: github.event_name != 'release' && github.event_name != 'workflow_dispatch' && matrix.language == 'c-cpp'
-      uses: mozilla-actions/sccache-action@v0.0.7
+      uses: mozilla-actions/sccache-action@v0.0.8
       env:
         SCCACHE_GHA_ENABLED: "true"
 
