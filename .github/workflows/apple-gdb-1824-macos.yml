@@ -8,7 +8,7 @@ on:
       - "**/*"
   pull_request:
 jobs:
-  test:
+  test-macos:
     # "latest" and "14" now both default to arm, which will require work to
     # properly support, and, while they do have x86_64 images for versions 14+,
     # they require the "large" suffix, which would require a paid account, so
