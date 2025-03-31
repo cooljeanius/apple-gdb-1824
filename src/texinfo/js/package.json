@@ -21,7 +21,7 @@
     "eslint": "^9.23.0",
     "finalhandler": "^2.1.0",
     "modernizr": "^3.13.1",
-    "serve-static": "^1.16.2",
+    "serve-static": "^2.2.0",
     "typescript": "^5.8.2",
     "uglify-js": "^3.19.3"
   }
