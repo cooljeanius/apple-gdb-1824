@@ -15,10 +15,10 @@
   "license": "GPL-3.0",
   "dependencies": {
     "optionator": "^0.9.4",
-    "dompurify": "^3.2.5"
+    "dompurify": "^3.2.6"
   },
   "devDependencies": {
-    "eslint": "^9.24.0",
+    "eslint": "^9.28.0",
     "finalhandler": "^2.1.0",
     "modernizr": "^3.13.1",
     "serve-static": "^2.2.0",
