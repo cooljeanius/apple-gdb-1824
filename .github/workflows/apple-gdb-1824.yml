@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         # 'Transformers::TravisCI::Scripts::Dependencies' dependencies are
         # currently unsupported
         # 'compiler' was not transformed because there is no suitable equivalent
@@ -77,7 +77,7 @@ jobs:
       - run: (time (pwd && sync && ls && sync && stat . && sync)) && sleep 1 && echo "done"
         if: "${{ success() }}"
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: "${{ success() }}"
         with:
           # Artifact name

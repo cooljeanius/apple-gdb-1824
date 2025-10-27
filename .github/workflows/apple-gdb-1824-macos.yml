@@ -16,7 +16,7 @@ jobs:
     runs-on: macos-13
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     - name: Run sccache-cache only on non-release runs
       if: github.event_name != 'release' && github.event_name != 'workflow_dispatch'
       uses: mozilla-actions/sccache-action@v0.0.9
@@ -427,7 +427,7 @@ jobs:
         sync && echo "...done cleaning up."
         time (sync && pwd && sync && ls && sync && du && sync && df && sync)
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       if: "${{ always() }}"
       with:
         # Artifact name
