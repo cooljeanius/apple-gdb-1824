@@ -9,11 +9,9 @@ on:
   pull_request:
 jobs:
   test-macos:
-    # "latest" and "14" now both default to arm, which will require work to
-    # properly support, and, while they do have x86_64 images for versions 14+,
-    # they require the "large" suffix, which would require a paid account, so
-    # to stay on x86_64 for free, we need to stay on 13:
-    runs-on: macos-13
+    # "latest" defaults to arm, which will require work to properly support,
+    # but, it needs to be done eventually:
+    runs-on: macos-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
