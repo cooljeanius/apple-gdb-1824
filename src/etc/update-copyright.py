@@ -423,7 +423,6 @@ class Copyright:
         mode = None
         encoding = self.guess_encoding(pathname)
         with open(pathname, encoding=encoding) as file:
-            prev = None
             mode = os.fstat(file.fileno()).st_mode
             for line in file:
                 while line:

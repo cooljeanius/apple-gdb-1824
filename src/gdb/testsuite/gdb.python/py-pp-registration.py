@@ -41,8 +41,8 @@ class pp_s1(object):
         self.val = val
 
     def to_string(self):
-        a = self.val["a"]
-        b = self.val["b"]
+        self.val["a"]
+        self.val["b"]
         return "s1 a=<" + str(self.val["a"]) + "> b=<" + str(self.val["b"]) + ">"
 
 
@@ -51,8 +51,8 @@ class pp_s2(object):
         self.val = val
 
     def to_string(self):
-        a = self.val["a"]
-        b = self.val["b"]
+        self.val["a"]
+        self.val["b"]
         return "s2 a=<" + str(self.val["a"]) + "> b=<" + str(self.val["b"]) + ">"
 
 

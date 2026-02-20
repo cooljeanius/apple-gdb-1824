@@ -33,13 +33,16 @@ class NullLookup(perftest.TestCaseWithBasicMeasurements):
 
     def execute_test(self):
         for run in self.run_names:
-            this_run_binfile = "%s-%s" % (self.binfile, utils.convert_spaces(run))
+            this_run_binfile = "%s-%s" % (self.binfile,
+                                          utils.convert_spaces(run))
             utils.select_file(this_run_binfile)
             utils.runto_main()
             utils.safe_execute("mt expand-symtabs")
             iteration = 5
             while iteration > 0:
                 utils.safe_execute("mt flush-symbol-cache")
-                func = lambda: utils.safe_execute("p symbol_not_found")
+
+                def func():
+                    return utils.safe_execute("p symbol_not_found")
                 self.measure.measure(func, run)
                 iteration -= 1

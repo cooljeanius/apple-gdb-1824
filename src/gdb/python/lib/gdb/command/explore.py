@@ -532,7 +532,6 @@ class CompoundExplorer:
             print("'%s' is a %s with the following " "fields:\n" %
                   (name, type_desc))
 
-        has_explorable_fields = False
         current_choice = 0
         choice_to_compound_field_map = {}
         print_list = []
@@ -710,7 +709,7 @@ class ExploreCommand(gdb.Command):
         super().__init__(name="explore", command_class=gdb.COMMAND_DATA, prefix=True)
 
     def invoke(self, arg_str, from_tty):
-        if ExploreUtils.check_args("explore", arg_str) == False:
+        if ExploreUtils.check_args("explore", arg_str) is False:
             return
 
         # Check if it is a value
@@ -748,7 +747,7 @@ class ExploreValueCommand(gdb.Command):
         super().__init__(name="explore value", command_class=gdb.COMMAND_DATA)
 
     def invoke(self, arg_str, from_tty):
-        if ExploreUtils.check_args("explore value", arg_str) == False:
+        if ExploreUtils.check_args("explore value", arg_str) is False:
             return
 
         value = ExploreUtils.get_value_from_str(arg_str)
@@ -779,7 +778,7 @@ class ExploreTypeCommand(gdb.Command):
         super().__init__(name="explore type", command_class=gdb.COMMAND_DATA)
 
     def invoke(self, arg_str, from_tty):
-        if ExploreUtils.check_args("explore type", arg_str) == False:
+        if ExploreUtils.check_args("explore type", arg_str) is False:
             return
 
         datatype = ExploreUtils.get_type_from_str(arg_str)

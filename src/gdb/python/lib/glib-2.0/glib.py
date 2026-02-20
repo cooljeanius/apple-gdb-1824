@@ -7,7 +7,7 @@ def read_global_var(symname):
 
 
 def g_quark_to_string(quark):
-    if quark == None:
+    if quark is None:
         return None
     quark = int(quark)
     if quark == 0:
@@ -109,7 +109,7 @@ class GHashPrinter:
         def __next__(self):
             if self.ht == 0:
                 raise StopIteration
-            if self.value != None:
+            if self.value is not None:
                 v = self.value
                 self.value = None
                 return v
@@ -138,7 +138,7 @@ class GHashPrinter:
             string_hash = None
         if (
             self.val != 0
-            and string_hash != None
+            and string_hash is not None
             and self.val["hash_func"] == string_hash
         ):
             self.keys_are_strings = True
@@ -181,7 +181,7 @@ def pretty_printer_lookup(val):
 
 
 def register(obj):
-    if obj == None:
+    if obj is None:
         obj = gdb
 
     obj.pretty_printers.append(pretty_printer_lookup)

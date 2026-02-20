@@ -40,4 +40,5 @@ def build_pretty_printer():
     return pp
 
 
-gdb.printing.register_pretty_printer(gdb.current_objfile(), build_pretty_printer())
+gdb.printing.register_pretty_printer(
+    gdb.current_objfile(), build_pretty_printer())
